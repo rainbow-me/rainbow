@@ -3,8 +3,8 @@
  */
 
 import { time } from '@/utils/time';
-import { createQueryStore, getQueryKey } from '../../createQueryStore';
-import { QueryStatuses } from '../../queryStore/types';
+import { createQueryStore, getQueryKey } from '../createQueryStore';
+import { QueryStatuses } from './types';
 
 // For these tests we use a simple type for the fetched data and query parameters.
 type TestData = string;

@@ -1,4 +1,4 @@
-import { filterList } from '../search';
+import { filterList } from './search';
 
 it('filterListSimpleArray', () => {
   const list = ['a dog', 'black cat'];

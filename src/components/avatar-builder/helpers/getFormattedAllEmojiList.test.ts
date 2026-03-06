@@ -1,11 +1,11 @@
 import { describe, expect, test } from '@jest/globals';
 import emoji from 'emoji-datasource';
-import { Categories } from '../../Categories';
+import { Categories } from '../Categories';
 import getFormattedAllEmojiList, {
   type AllEmojiContentEntry,
   type AllEmojiEntry,
   type AllEmojiHeaderEntry,
-} from '../getFormattedAllEmojiList';
+} from './getFormattedAllEmojiList';
 
 const categoryKeys = Object.keys(Categories);
 const sourceEmojis = emoji.filter(entry => !entry.obsoleted_by);

@@ -3,11 +3,11 @@
  */
 
 import { deepEqual } from '@/worklets/comparisons';
-import { createDerivedStore } from '../../createDerivedStore';
-import { createQueryStore } from '../../createQueryStore';
-import { createRainbowStore } from '../../createRainbowStore';
-import { QueryStatuses } from '../../queryStore/types';
-import { type SubscribeArgs, type SubscribeOverloads } from '../../types';
+import { createDerivedStore } from '../createDerivedStore';
+import { createQueryStore } from '../createQueryStore';
+import { createRainbowStore } from '../createRainbowStore';
+import { QueryStatuses } from '../queryStore/types';
+import { type SubscribeArgs, type SubscribeOverloads } from '../types';
 
 /**
  * `createDerivedStore` uses `queueMicrotask` to batch updates, so we use

@@ -1,9 +1,9 @@
 import { getPlatformClient } from '@/resources/platform/client';
-import { fetchPositions, type PositionsParams } from '../../stores/fetcher';
-import { usePositionsStore } from '../../stores/positionsStore';
-import type { RainbowPositions } from '../../types';
-import { FIXTURE_LIST_POSITIONS_SUCCESS, FIXTURE_PARAMS } from '../../__fixtures__/ListPositions';
-import { createMockPositionsData } from '../mocks/positions';
+import { fetchPositions, type PositionsParams } from './fetcher';
+import { usePositionsStore } from './positionsStore';
+import type { RainbowPositions } from '../types';
+import { FIXTURE_LIST_POSITIONS_SUCCESS, FIXTURE_PARAMS } from '../__fixtures__/ListPositions';
+import { createMockPositionsData } from '../__tests__/mocks/positions';
 
 jest.mock('@/resources/platform/client');
 jest.mock('@/config/experimentalHooks', () => ({}));
@@ -18,7 +18,7 @@ jest.mock('@/state/backendNetworks/backendNetworks', () => ({
 jest.mock('@/state/assets/userAssetsStoreManager', () => {
   const { createStore: createZustandStore } = jest.requireActual<typeof import('zustand/vanilla')>('zustand/vanilla');
   const { FIXTURE_PARAMS: params, FIXTURE_WALLET_ADDRESS: address } =
-    jest.requireActual<typeof import('../../__fixtures__/ListPositions')>('../../__fixtures__/ListPositions');
+    jest.requireActual<typeof import('../__fixtures__/ListPositions')>('../__fixtures__/ListPositions');
   return {
     userAssetsStoreManager: createZustandStore(() => ({
       address,

@@ -1,11 +1,11 @@
-import { transformPositions } from '../../../stores/transform';
+import { transformPositions } from '.';
 import {
   FIXTURE_LIST_POSITIONS_SUCCESS,
   FIXTURE_LIST_POSITIONS_SUCCESS_EMPTY,
   FIXTURE_PARAMS,
   FIXTURE_GRAND_TOTAL,
-} from '../../../__fixtures__/ListPositions';
-import { PositionName, DetailType, type ListPositionsResponse, type PortfolioItem } from '../../../types/generated/positions/positions';
+} from '../../__fixtures__/ListPositions';
+import { PositionName, DetailType, type ListPositionsResponse, type PortfolioItem } from '../../types/generated/positions/positions';
 import {
   positionsWithFilteredItems,
   positionsWithoutFilteredItems,
@@ -13,9 +13,9 @@ import {
   positionsForProtocol,
   filteredItemsForPosition,
   filteredItemsForPositions,
-} from '../../../__fixtures__/helpers/filters';
-import { createMockAsset } from '../../mocks/assets';
-import { createSimpleDapp } from '../../mocks/positions';
+} from '../../__fixtures__/helpers/filters';
+import { createMockAsset } from '../../__tests__/mocks/assets';
+import { createSimpleDapp } from '../../__tests__/mocks/positions';
 
 jest.mock('@/config', () => ({
   getExperimentalFlag: jest.fn(() => true),
