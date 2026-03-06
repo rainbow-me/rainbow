@@ -170,7 +170,7 @@ describe('general functionality', () => {
       data: {},
       type: 'default',
       level: LogLevel.Debug,
-      timestamp: Date.now(),
+      timestamp: Date.now() / 1000,
     });
 
     sentryTransport(LogLevel.Info, message, { type: 'info', prop: true });
@@ -179,7 +179,7 @@ describe('general functionality', () => {
       data: { prop: true },
       type: 'info',
       level: LogLevel.Info,
-      timestamp: Date.now(),
+      timestamp: Date.now() / 1000,
     });
 
     sentryTransport(LogLevel.Log, message, {});
@@ -188,7 +188,7 @@ describe('general functionality', () => {
       data: {},
       type: 'default',
       level: 'debug',
-      timestamp: Date.now(),
+      timestamp: Date.now() / 1000,
     });
     expect(Sentry.captureMessage).toHaveBeenCalledWith(message, {
       tags: undefined,
@@ -201,7 +201,7 @@ describe('general functionality', () => {
       data: {},
       type: 'default',
       level: 'warning',
-      timestamp: Date.now(),
+      timestamp: Date.now() / 1000,
     });
     expect(Sentry.captureMessage).toHaveBeenCalledWith(message, {
       level: 'warning',
