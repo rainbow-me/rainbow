@@ -1,4 +1,4 @@
-import { resolveEmoji } from '../resolveEmoji';
+import { resolveEmoji } from './resolveEmoji';
 
 describe('resolveEmoji', () => {
   it('resolves emoji names from emojis data, including :wrapped: notation', () => {

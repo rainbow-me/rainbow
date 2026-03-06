@@ -1,6 +1,6 @@
-import { shouldFilterPosition, shouldFilterPortfolioItem } from '../../../stores/transform/filter';
-import { PositionName, DetailType } from '../../../types/generated/positions/positions';
-import { createMockRainbowPosition, createMockDeposit, createMockPortfolioItem } from '../../mocks/positions';
+import { shouldFilterPosition, shouldFilterPortfolioItem } from './filter';
+import { PositionName, DetailType } from '../../types/generated/positions/positions';
+import { createMockRainbowPosition, createMockDeposit, createMockPortfolioItem } from '../../__tests__/mocks/positions';
 
 jest.mock('@/config', () => ({
   getExperimentalFlag: jest.fn(() => true),

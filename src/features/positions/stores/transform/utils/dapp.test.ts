@@ -1,4 +1,4 @@
-import { normalizeDappName } from '../../../../stores/transform/utils/dapp';
+import { normalizeDappName } from './dapp';
 
 describe('normalizeDappName', () => {
   it('should remove version suffix with lowercase v', () => {

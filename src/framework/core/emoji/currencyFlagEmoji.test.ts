@@ -1,5 +1,5 @@
 import { supportedNativeCurrencies } from '@/references';
-import { resolveCurrencyFlagEmoji } from '../currencyFlagEmoji';
+import { resolveCurrencyFlagEmoji } from './currencyFlagEmoji';
 
 describe('resolveCurrencyFlagEmoji', () => {
   it('resolves every configured fiat currency flag from emojis data', () => {

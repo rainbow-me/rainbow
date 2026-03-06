@@ -1,4 +1,4 @@
-import { safeSum } from '../safeSum';
+import { safeSum } from './safeSum';
 
 it('safeSum sums selected raw values', () => {
   const values = [{ value: '10' }, { value: 5 }, undefined, { value: null }, { value: ' 7 ' }, { value: '3.14' }] as const;

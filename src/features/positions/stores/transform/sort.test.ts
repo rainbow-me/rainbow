@@ -1,6 +1,12 @@
-import { sortPositions } from '../../../stores/transform/sort';
-import type { RainbowPosition } from '../../../types';
-import { createMockRainbowPosition, createMockDeposit, createMockPool, createMockStake, createMockBorrow } from '../../mocks/positions';
+import { sortPositions } from './sort';
+import type { RainbowPosition } from '../../types';
+import {
+  createMockRainbowPosition,
+  createMockDeposit,
+  createMockPool,
+  createMockStake,
+  createMockBorrow,
+} from '../../__tests__/mocks/positions';
 
 describe('Sorting', () => {
   describe('sortPositions', () => {

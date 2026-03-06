@@ -1,4 +1,4 @@
-import { valueBasedDecimalFormatter } from '../decimalFormatter';
+import { valueBasedDecimalFormatter } from './decimalFormatter';
 
 // amounts
 const VERY_SMALL_AMOUNT = '0.0000000123456789';

@@ -1,5 +1,5 @@
 import { niceIncrementFormatter } from '@/__swaps__/utils/swaps';
-import { SLIDER_WIDTH } from '../constants';
+import { SLIDER_WIDTH } from './constants';
 
 type TestCase = {
   inputAssetBalance: number | string;
