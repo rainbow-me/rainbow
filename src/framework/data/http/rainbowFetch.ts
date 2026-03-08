@@ -46,6 +46,8 @@ export async function rainbowFetch<T>(url: RequestInfo, opts: RainbowFetchReques
         signal: abortController.signal,
       });
     } catch (fetchError) {
+      // fetch() only throws on network failures (TypeError) and abort signals (AbortError).
+      // Abort errors are re-thrown as-is so callers can detect them via error.name === 'AbortError'.
       if (fetchError instanceof DOMException && fetchError.name === 'AbortError') {
         throw fetchError;
       }
