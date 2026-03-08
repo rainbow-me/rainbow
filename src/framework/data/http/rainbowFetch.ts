@@ -46,6 +46,9 @@ export async function rainbowFetch<T>(url: RequestInfo, opts: RainbowFetchReques
         signal: abortController.signal,
       });
     } catch (fetchError) {
+      if (fetchError instanceof DOMException && fetchError.name === 'AbortError') {
+        throw fetchError;
+      }
       throw new RainbowFetchError({
         message: fetchError instanceof Error ? fetchError.message : 'Network request failed',
         requestBody: body,
