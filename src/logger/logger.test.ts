@@ -3,6 +3,7 @@ import { expect, test } from '@jest/globals';
 import * as Sentry from '@sentry/react-native';
 
 import { Logger, LogLevel, RainbowError, sentryTransport } from '@/logger';
+import { RainbowFetchError } from '@/framework/data/http/rainbowFetch';
 
 jest.mock('@sentry/react-native', () => ({
   addBreadcrumb: jest.fn(),
@@ -224,6 +225,45 @@ describe('general functionality', () => {
       extra: {
         prop: true,
       },
+    });
+  });
+
+  test('sentryTransport skips captureException when cause is RainbowFetchError with reportToSentry false', () => {
+    jest.clearAllMocks();
+
+    const fetchError = new RainbowFetchError({ message: 'Internal Server Error', reportToSentry: false });
+    const error = new RainbowError('fetch failed', fetchError);
+
+    sentryTransport(LogLevel.Error, error, { tags: { route: 'api' } });
+
+    expect(Sentry.captureException).not.toHaveBeenCalled();
+  });
+
+  test('sentryTransport reports captureException when cause is RainbowFetchError with reportToSentry true', () => {
+    jest.clearAllMocks();
+
+    const fetchError = new RainbowFetchError({ message: 'Not Found', reportToSentry: true });
+    const error = new RainbowError('fetch failed', fetchError);
+
+    sentryTransport(LogLevel.Error, error, { tags: { route: 'api' } });
+
+    expect(Sentry.captureException).toHaveBeenCalledWith(error, {
+      tags: { route: 'api' },
+      extra: {},
+    });
+  });
+
+  test('sentryTransport reports captureException for non-RainbowFetchError causes', () => {
+    jest.clearAllMocks();
+
+    const cause = new Error('something else');
+    const error = new RainbowError('generic failure', cause);
+
+    sentryTransport(LogLevel.Error, error, {});
+
+    expect(Sentry.captureException).toHaveBeenCalledWith(error, {
+      tags: undefined,
+      extra: {},
     });
   });
 
