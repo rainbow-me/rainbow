@@ -100,6 +100,7 @@ export const AddWalletSheet = () => {
     InteractionManager.runAfterInteractions(() => {
       navigate(Routes.PAIR_HARDWARE_WALLET_NAVIGATOR, {
         entryPoint: Routes.ADD_WALLET_SHEET,
+        flowContext,
         isFirstWallet,
       });
     });
