@@ -11,7 +11,7 @@ import {
   estimateENSSetAddressGasLimit,
   estimateENSSetRecordsGasLimit,
   formatRecordsForTransaction,
-} from '@/handlers/ens';
+} from '@/features/ens/utils/handlers';
 import svgToPngIfNeeded from '@/handlers/svgs';
 import { assetIsParsedAddressAsset, assetIsUniqueAsset, estimateGasLimit, getProvider } from '@/handlers/web3';
 import { removeFirstEmojiFromString, returnStringFirstEmoji } from '@/helpers/emojiHandler';
@@ -20,7 +20,7 @@ import { isENSAddressFormat, isValidDomainFormat } from '@/helpers/validators';
 import useColorForAsset from '@/hooks/useColorForAsset';
 import useContacts from '@/hooks/useContacts';
 import useDimensions from '@/hooks/useDimensions';
-import useENSAvatar from '@/hooks/useENSAvatar';
+import useENSAvatar from '@/features/ens/hooks/useENSAvatar';
 import useGas from '@/hooks/useGas';
 import useUserAccounts from '@/hooks/useUserAccounts';
 import * as i18n from '@/languages';
@@ -54,12 +54,12 @@ import { ContactAvatar } from '../components/contacts';
 import ImageAvatar from '../components/contacts/ImageAvatar';
 import CheckboxField from '../components/fields/CheckboxField';
 import { GasSpeedButton } from '../components/gas';
-import ENSCircleIcon from '../components/icons/svg/ENSCircleIcon';
+import ENSCircleIcon from '@/features/ens/components/ENSCircleIcon';
 import { Centered, Column, Row } from '../components/layout';
 import { SendButton } from '../components/send';
 import { SheetHandleFixedToTopHeight, SheetTitle, SlackSheet } from '../components/sheet';
 import { Text as OldText } from '../components/text';
-import { type ENSProfile } from '../entities/ens';
+import { type ENSProfile } from '@/features/ens/types/profile';
 import { useAccountAddress, useWalletsStore } from '@/state/wallets/walletsStore';
 import { address } from '../utils/abbreviations';
 import { addressHashedColorIndex, addressHashedEmoji } from '../utils/profileUtils';

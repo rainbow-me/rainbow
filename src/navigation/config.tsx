@@ -15,8 +15,8 @@ import { Icon } from '@/components/icons';
 import { SheetHandleFixedToTopHeight } from '@/components/sheet';
 import { Text } from '@/components/text';
 
-import { getENSAdditionalRecordsSheetHeight } from '@/screens/ENSAdditionalRecordsSheet';
-import { ENSConfirmRegisterSheetHeight } from '@/screens/ENSConfirmRegisterSheet';
+import { getENSAdditionalRecordsSheetHeight } from '@/features/ens/screens/ENSAdditionalRecordsSheet';
+import { ENSConfirmRegisterSheetHeight } from '@/features/ens/screens/ENSConfirmRegisterSheet';
 import { ExplainSheetHeight, getExplainSheetConfig } from '@/screens/ExplainSheet';
 import { ExternalLinkWarningSheetHeight } from '@/screens/ExternalLinkWarningSheet';
 import { getSheetHeight as getSendConfirmationSheetHeight } from '@/screens/SendConfirmationSheet';

@@ -1,7 +1,7 @@
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import { View } from 'react-native';
 import { addressHashedColorIndex, addressHashedEmoji } from '@/utils/profileUtils';
-import { fetchReverseRecord } from '@/handlers/ens';
+import { fetchReverseRecord } from '@/features/ens/utils/handlers';
 import ImageAvatar from '@/components/contacts/ImageAvatar';
 import { ContactAvatar } from '@/components/contacts';
 import { Box, Column, Columns, Cover, Stack, Text } from '@/design-system';
@@ -13,7 +13,7 @@ import haptics from '@/utils/haptics';
 import { formatAddressForDisplay } from '@/utils/abbreviations';
 import { type Contact } from '@/redux/contacts';
 import { type RainbowAccount } from '@/model/wallet';
-import { fetchENSAvatar } from '@/hooks/useENSAvatar';
+import { fetchENSAvatar } from '@/features/ens/hooks/useENSAvatar';
 import { removeFirstEmojiFromString, returnStringFirstEmoji } from '@/helpers/emojiHandler';
 import ContextMenuButton from '@/components/native-context-menu/contextMenu';
 import { Navigation } from '@/navigation';

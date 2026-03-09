@@ -18,7 +18,10 @@ import { DataProvider, RecyclerListView } from 'recyclerlistview';
 import { useMemoOne } from 'use-memo-one';
 import { type AssetListType } from '..';
 import { useRecyclerAssetListPosition } from './Contexts';
-import { ExternalENSProfileScrollViewWithRef, ExternalSelectNFTScrollViewWithRef } from './ExternalENSProfileScrollView';
+import {
+  ExternalENSProfileScrollViewWithRef,
+  ExternalSelectNFTScrollViewWithRef,
+} from '@/features/ens/components/ExternalENSProfileScrollView';
 import ExternalScrollViewWithRef from './ExternalScrollView';
 import RefreshControl from './RefreshControl';
 import rowRenderer from './RowRenderer';
