@@ -358,7 +358,8 @@
       "unhide": "Unhide",
       "unpin": "Unpin",
       "view": "View",
-      "hidden": "Hidden"
+      "hidden": "Hidden",
+      "claim": "Claim"
     },
     "cards": {
       "ens_create_profile": {
@@ -3844,6 +3845,12 @@
         "oh_i_see": "Oh I see..."
       },
       "longer_than_usual": "Claiming is taking longer than usual. It may take up to one minute."
+    },
+    "rnbw_membership": {
+      "claim_card": {
+        "airdrop": "Airdrop",
+        "rewards": "Rewards"
+      }
     },
     "wallet_error_sheet": {
       "title": "Restore your wallet",
