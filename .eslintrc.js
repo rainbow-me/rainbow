@@ -105,11 +105,11 @@ const allowedBarrelFiles = [
   'src/state/nonces/index.ts',
   'src/state/pendingTransactions/index.ts',
   'src/state/staleBalances/index.ts',
-  'src/state/walletConnectRequests/index.ts',
+  'src/features/wallet-connect/stores/walletConnectRequestsStore.ts',
   'src/storage/index.ts',
   'src/framework/ui/styled-thing/index.tsx',
   'src/theme/index.ts',
-  'src/walletConnect/index.tsx',
+  'src/features/wallet-connect/index.tsx',
 ];
 
 module.exports = {

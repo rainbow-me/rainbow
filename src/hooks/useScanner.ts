@@ -18,7 +18,7 @@ import ethereumUtils from '@/utils/ethereumUtils';
 import haptics from '@/utils/haptics';
 import { logger, RainbowError } from '@/logger';
 import { checkPushNotificationPermissions } from '@/notifications/permissions';
-import { pair as pairWalletConnect } from '@/walletConnect';
+import { pair as pairWalletConnect } from '@/features/wallet-connect';
 import { getPoapAndOpenSheetWithQRHash, getPoapAndOpenSheetWithSecretWord } from '@/utils/poaps';
 
 export default function useScanner(enabled: boolean, onSuccess: () => unknown) {

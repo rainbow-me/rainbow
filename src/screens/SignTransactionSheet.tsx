@@ -65,7 +65,7 @@ import { addNewTransaction } from '@/state/pendingTransactions';
 import { TimeToSignOperation, executeFn } from '@/state/performance/performance';
 import { getAccountProfileInfo, getWalletWithAccount, useAccountAddress, useWallets } from '@/state/wallets/walletsStore';
 import { RequestSource } from '@/utils/requestNavigationHandlers';
-import { type RequestData } from '@/walletConnect/types';
+import { type RequestData } from '@/features/wallet-connect/types';
 import { isAddress } from '@ethersproject/address';
 import { toChecksumAddress } from 'ethereumjs-util';
 import { switchWallet } from '@/state/wallets/switchWallet';
