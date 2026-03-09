@@ -8,7 +8,7 @@ beforeEach(() => {
 });
 
 describe('rainbowFetch', () => {
-  test('throws RainbowFetchError with reportToSentry false for 5xx responses', async () => {
+  test('throws RainbowFetchError with response for 5xx responses', async () => {
     mockFetch.mockResolvedValueOnce(
       new Response(JSON.stringify({ error: 'Internal Server Error' }), {
         status: 500,
@@ -17,12 +17,12 @@ describe('rainbowFetch', () => {
       })
     );
 
-    const promise = rainbowFetch('https://example.com', {});
-    await expect(promise).rejects.toThrow(RainbowFetchError);
-    await expect(promise).rejects.toMatchObject({ reportToSentry: false });
+    const error = await rainbowFetch('https://example.com', {}).catch(e => e);
+    expect(error).toBeInstanceOf(RainbowFetchError);
+    expect(error.response?.status).toBe(500);
   });
 
-  test('throws RainbowFetchError with reportToSentry true for 4xx responses', async () => {
+  test('throws RainbowFetchError with response for 4xx responses', async () => {
     mockFetch.mockResolvedValueOnce(
       new Response(JSON.stringify({ error: 'Not Found' }), {
         status: 404,
@@ -31,17 +31,17 @@ describe('rainbowFetch', () => {
       })
     );
 
-    const promise = rainbowFetch('https://example.com', {});
-    await expect(promise).rejects.toThrow(RainbowFetchError);
-    await expect(promise).rejects.toMatchObject({ reportToSentry: true });
+    const error = await rainbowFetch('https://example.com', {}).catch(e => e);
+    expect(error).toBeInstanceOf(RainbowFetchError);
+    expect(error.response?.status).toBe(404);
   });
 
-  test('throws RainbowFetchError with reportToSentry false for network errors', async () => {
+  test('throws RainbowFetchError without response for network errors', async () => {
     mockFetch.mockRejectedValueOnce(new TypeError('Network request failed'));
 
-    const promise = rainbowFetch('https://example.com', {});
-    await expect(promise).rejects.toThrow(RainbowFetchError);
-    await expect(promise).rejects.toMatchObject({ reportToSentry: false });
+    const error = await rainbowFetch('https://example.com', {}).catch(e => e);
+    expect(error).toBeInstanceOf(RainbowFetchError);
+    expect(error.response).toBeUndefined();
   });
 
   test('re-throws AbortError without wrapping', async () => {

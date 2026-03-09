@@ -4,7 +4,6 @@ import * as Sentry from '@sentry/react-native';
 import { type SeverityLevel } from '@sentry/types';
 
 import * as env from '@/env';
-import { RainbowFetchError } from '@/framework/data/http/rainbowFetch';
 import { DebugContext } from '@/logger/debugContext';
 import { device } from '@/storage';
 import { push } from '@/logger/logDump';
@@ -173,8 +172,6 @@ export const sentryTransport: Transport = (level: LogLevel, message, { type, tag
         extra: metadata,
       });
     }
-  } else if (message instanceof RainbowError && message.cause instanceof RainbowFetchError && !message.cause.reportToSentry) {
-    // Skip Sentry for non-actionable fetch errors (5xx, network errors)
   } else {
     Sentry.captureException(message, {
       tags,

@@ -54,7 +54,6 @@ export async function rainbowFetch<T>(url: RequestInfo, opts: RainbowFetchReques
       throw new RainbowFetchError({
         message: fetchError instanceof Error ? fetchError.message : 'Network request failed',
         requestBody: body,
-        reportToSentry: false,
       });
     }
 
@@ -73,7 +72,6 @@ export async function rainbowFetch<T>(url: RequestInfo, opts: RainbowFetchReques
         response,
         responseBody: errorResponseBody,
         requestBody: body,
-        reportToSentry: response.status < 500,
       });
     }
   } finally {
@@ -98,27 +96,23 @@ export class RainbowFetchError extends Error {
   response?: Response;
   responseBody?: any;
   requestBody?: RequestInit['body'];
-  reportToSentry: boolean;
 
   constructor({
     message,
     response,
     responseBody,
     requestBody,
-    reportToSentry = true,
   }: {
     message: string;
     response?: Response;
     responseBody?: any;
     requestBody?: RequestInit['body'];
-    reportToSentry?: boolean;
   }) {
     super(message);
     this.name = 'RainbowFetchError';
     this.response = response;
     this.responseBody = responseBody;
     this.requestBody = requestBody;
-    this.reportToSentry = reportToSentry;
   }
 }
 
