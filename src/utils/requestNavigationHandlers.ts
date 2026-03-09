@@ -12,14 +12,14 @@ import { getRequestDisplayDetails } from '@/parsers';
 import store from '@/redux/store';
 import { useBackendNetworksStore } from '@/state/backendNetworks/backendNetworks';
 import { ChainId } from '@/state/backendNetworks/types';
-import { removeWalletConnectRequest } from '@/state/walletConnectRequests';
-import { handleSessionRequestResponse } from '@/walletConnect';
+import { removeWalletConnectRequest } from '@/features/wallet-connect/stores/walletConnectRequestsStore';
+import { handleSessionRequestResponse } from '@/features/wallet-connect';
 import {
   type RequestData,
   type WalletconnectApprovalSheetRouteParams,
   type WalletconnectRequestData,
   type WalletconnectResultType,
-} from '@/walletConnect/types';
+} from '@/features/wallet-connect/types';
 import {
   type AppMetadata,
   type EthereumAction,

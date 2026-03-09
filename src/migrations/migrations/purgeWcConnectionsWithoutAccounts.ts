@@ -1,4 +1,4 @@
-import { disconnectSession, getAllActiveSessions } from '@/walletConnect';
+import { disconnectSession, getAllActiveSessions } from '@/features/wallet-connect';
 import { type Migration, MigrationName } from '../types';
 
 export function purgeWcConnectionsWithoutAccounts(): Migration {

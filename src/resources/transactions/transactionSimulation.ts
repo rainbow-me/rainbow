@@ -13,7 +13,7 @@ import type {
   TransactionSimulationResult,
 } from '@/graphql/__generated__/metadataPOST';
 import { isNil } from 'lodash';
-import { type RequestData } from '@/walletConnect/types';
+import { type RequestData } from '@/features/wallet-connect/types';
 import { type ChainId } from '@/state/backendNetworks/types';
 
 // ///////////////////////////////////////////////

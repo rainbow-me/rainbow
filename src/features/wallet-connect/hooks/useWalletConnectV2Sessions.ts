@@ -1,6 +1,6 @@
 import { useEffect, useCallback, useState } from 'react';
 
-import { getAllActiveSessionsSync } from '@/walletConnect';
+import { getAllActiveSessionsSync } from '..';
 import { events } from '@/handlers/appEvents';
 
 /**

@@ -4,10 +4,10 @@ import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import Divider from '@/components/Divider';
 import { Row } from '@/components/layout';
 import { Sheet, SheetHandleFixedToTop, SheetTitle } from '@/components/sheet';
-import { WalletConnectV2ListItem, WALLET_CONNECT_LIST_ITEM_HEIGHT } from '@/components/walletconnect-list/WalletConnectV2ListItem';
+import { WalletConnectV2ListItem, WALLET_CONNECT_LIST_ITEM_HEIGHT } from '../components/WalletConnectV2ListItem';
 import { useNavigation } from '@/navigation';
 import styled from '@/framework/ui/styled-thing';
-import { useWalletConnectV2Sessions } from '@/walletConnect/hooks/useWalletConnectV2Sessions';
+import { useWalletConnectV2Sessions } from '../hooks/useWalletConnectV2Sessions';
 import { useFocusEffect } from '@react-navigation/native';
 import { Text, Box } from '@/design-system';
 

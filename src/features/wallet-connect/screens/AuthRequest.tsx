@@ -10,7 +10,7 @@ import { useDappMetadata } from '@/resources/metadata/dapp';
 import { getAccountProfileInfo, useAccountAddress, useSelectedWallet } from '@/state/wallets/walletsStore';
 import { useTheme } from '@/theme';
 import { initials } from '@/utils/formatters';
-import { type AuthRequestAuthenticateSignature, AuthRequestResponseErrorReason } from '@/walletConnect/types';
+import { type AuthRequestAuthenticateSignature, AuthRequestResponseErrorReason } from '../types';
 import { useNavigation } from '@/navigation/Navigation';
 import { type WalletKitTypes } from '@reown/walletkit';
 import { type Verify } from '@walletconnect/types';

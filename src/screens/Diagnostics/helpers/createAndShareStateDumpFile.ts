@@ -4,7 +4,7 @@ import { APP_STATE_DUMP_FILE_NAME } from '@/screens/Diagnostics/constants';
 import RNShare from 'react-native-share';
 import { IS_ANDROID } from '@/env';
 import { logger, RainbowError } from '@/logger';
-import { getAllActiveSessions } from '@/walletConnect';
+import { getAllActiveSessions } from '@/features/wallet-connect';
 
 // function partially developed by ChatGPT that helps remove and trace cyclic references in javascript objects
 function cyclicReplacer() {

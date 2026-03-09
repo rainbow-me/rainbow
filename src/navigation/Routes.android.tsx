@@ -6,7 +6,7 @@ import { AddCashSheet } from '../screens/AddCash';
 import AvatarBuilder from '../screens/AvatarBuilder';
 import BackupSheet from '../components/backup/BackupSheet';
 import ChangeWalletSheet from '../screens/change-wallet/ChangeWalletSheet';
-import ConnectedDappsSheet from '../screens/ConnectedDappsSheet';
+import ConnectedDappsSheet from '@/features/wallet-connect/screens/ConnectedDappsSheet';
 import ENSAdditionalRecordsSheet from '@/features/ens/screens/ENSAdditionalRecordsSheet';
 import ENSConfirmRegisterSheet from '@/features/ens/screens/ENSConfirmRegisterSheet';
 import ExpandedAssetSheet from '../screens/ExpandedAssetSheet';

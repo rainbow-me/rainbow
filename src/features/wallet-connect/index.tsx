@@ -22,10 +22,10 @@ import * as explain from '@/screens/Explain';
 import * as portal from '@/screens/Portal';
 import { useBackendNetworksStore } from '@/state/backendNetworks/backendNetworks';
 import { ChainId } from '@/state/backendNetworks/types';
-import { addNewWalletConnectRequest, removeWalletConnectRequest } from '@/state/walletConnectRequests';
+import { addNewWalletConnectRequest, removeWalletConnectRequest } from './stores/walletConnectRequestsStore';
 import { getWallets, getWalletWithAccount } from '@/state/wallets/walletsStore';
 import { handleWalletConnectRequest } from '@/utils/requestNavigationHandlers';
-import { AuthRequest } from '@/walletConnect/sheets/AuthRequest';
+import { AuthRequest } from './screens/AuthRequest';
 import {
   type AuthRequestAuthenticateSignature,
   AuthRequestResponseErrorReason,
@@ -34,7 +34,7 @@ import {
   type WalletconnectApprovalSheetRouteParams,
   type WalletconnectRequestData,
   type WalletconnectResultType,
-} from '@/walletConnect/types';
+} from './types';
 import { getAddress, isAddress } from '@ethersproject/address';
 import { isHexString } from '@ethersproject/bytes';
 import { toUtf8String } from '@ethersproject/strings';

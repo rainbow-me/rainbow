@@ -1,5 +1,5 @@
-import { type WalletconnectRequestData } from '@/walletConnect/types';
-import { createStore } from '../internal/createStore';
+import { type WalletconnectRequestData } from '../types';
+import { createStore } from '@/state/internal/createStore';
 import { omitFlatten } from '@/helpers/utilities';
 
 interface RequestsState {

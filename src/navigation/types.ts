@@ -6,7 +6,11 @@ import { type ParsedAddressAsset } from '@/entities/tokens';
 import { type PendingTransaction, type RainbowTransaction } from '@/entities/transactions';
 import { type UniqueAsset } from '@/entities/uniqueAssets';
 import { type Claimable, type RainbowClaimable } from '@/resources/addys/claimables/types';
-import { type RequestData, type WalletconnectApprovalSheetRouteParams, type WalletconnectResultType } from '@/walletConnect/types';
+import {
+  type RequestData,
+  type WalletconnectApprovalSheetRouteParams,
+  type WalletconnectResultType,
+} from '@/features/wallet-connect/types';
 import { type WalletConnectApprovalSheetType } from '@/helpers/walletConnectApprovalSheetTypes';
 import { type RainbowWallet } from '@/model/wallet';
 import { type RainbowPosition } from '@/features/positions/types';
