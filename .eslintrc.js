@@ -134,6 +134,19 @@ module.exports = {
       },
     },
     {
+      files: ['**/__tests__/**/*', '**/tests/**/*.test.*'],
+      rules: {
+        'no-restricted-syntax': [
+          'error',
+          {
+            selector: 'Program',
+            message:
+              'Test files must be colocated next to the source file they test (e.g., foo.test.ts next to foo.ts). Do not place tests in __tests__/ or tests/ directories.',
+          },
+        ],
+      },
+    },
+    {
       files: ['**/index.ts', '**/index.tsx'],
       excludedFiles: allowedBarrelFiles,
       rules: {
