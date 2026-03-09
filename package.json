@@ -448,7 +448,7 @@
       "ios/**/*.*",
       "e2e/**/*.*",
       "rainbow-scripts/**/*.*",
-      "src/ens-avatar/**/*.*",
+      "src/vendor/ens-avatar/**/*.*",
       "src/react-native-animated-charts/**/*.*",
       "src/react-native-cool-modals/**/*.*",
       "src/react-native-shadow-stack/**/*.*"

@@ -21,7 +21,7 @@ import { ethUnits } from '@/references';
 import { ENS_NFT_CONTRACT_ADDRESS } from '../references';
 import labelhash from '@/utils/labelhash';
 import profileUtils from '@/utils/profileUtils';
-import { AvatarResolver } from '@/ens-avatar/src';
+import { AvatarResolver } from '@/vendor/ens-avatar';
 import { ensClient } from '@/graphql';
 import { prefetchFirstTransactionTimestamp } from '@/resources/transactions/firstTransactionTimestampQuery';
 import { prefetchENSAddress } from '../resources/addressQuery';
