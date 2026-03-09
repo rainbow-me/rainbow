@@ -127,7 +127,7 @@ function PanelContent({ symbol }: PanelContentProps) {
 
     try {
       const closeStatus = await hyperliquidAccountActions.closePosition({
-        symbol,
+        position,
         price: liveTokenPrice,
         size: mulWorklet(position.size, closePercentage),
       });
