@@ -11,6 +11,7 @@ import { hlOpenOrdersStoreActions } from '@/features/perps/stores/hlOpenOrdersSt
 import { refetchHyperliquidStores } from '@/features/perps/utils';
 import { truncateToDecimals } from '@/framework/core/safeMath';
 import { USD_DECIMALS } from '@/features/perps/constants';
+import type { OrderStatusResponse } from '@/features/perps/services/hyperliquid-exchange-client';
 
 type HyperliquidAccountActions = {
   getBalance: () => string;
@@ -89,15 +90,24 @@ async function cancelOrder({ symbol, orderId }: { symbol: string; orderId: numbe
   await hlOpenOrdersStoreActions.fetch(undefined, { force: true });
 }
 
-async function closePosition({ symbol, price, size }: { symbol: string; price: string; size: string }): Promise<void> {
+async function closePosition({
+  symbol,
+  price,
+  size,
+}: {
+  symbol: string;
+  price: string;
+  size: string;
+}): Promise<OrderStatusResponse | undefined> {
   const market = getMarket(symbol);
-  await getHyperliquidExchangeClient().closePosition({
+  const result = await getHyperliquidExchangeClient().closePosition({
     assetId: market.id,
     price,
     sizeDecimals: market.decimals,
     size,
   });
   await refetchHyperliquidStores();
+  return result;
 }
 
 async function createIsolatedMarginPosition({
