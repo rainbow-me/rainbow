@@ -399,7 +399,7 @@ describe('supports levels', () => {
 
 describe('beforeSend filtering', () => {
   const beforeSend = defaultOptions.beforeSend!;
-  const dummyEvent = { exception: { values: [{}] } } as Sentry.Event;
+  const dummyEvent = { exception: { values: [{}] } } as Sentry.ErrorEvent;
 
   test('drops events caused by 5xx RainbowFetchError', () => {
     const fetchError = new RainbowFetchError({ message: 'Internal Server Error', response: { status: 500 } as Response });
