@@ -33,8 +33,9 @@ export const defaultOptions: Sentry.ReactNativeOptions = {
     // The status code on the response is sufficient to decide; no need for a flag on the error.
     const error = hint?.originalException;
     if (error instanceof RainbowError && error.cause instanceof RainbowFetchError) {
-      const status = error.cause.response?.status;
-      if (!status || status >= 500) return null;
+      const { response } = error.cause;
+      if (!response) return null; // Network failure (no connectivity, timeout, etc.)
+      if (response.status >= 500) return null;
     }
 
     // Check if this is a captureMessage call.

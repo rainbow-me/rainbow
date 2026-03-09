@@ -173,6 +173,9 @@ export const sentryTransport: Transport = (level: LogLevel, message, { type, tag
       });
     }
   } else {
+    /**
+     * It's otherwise an Error and should be reported as onReady
+     */
     Sentry.captureException(message, {
       tags,
       extra: metadata,
