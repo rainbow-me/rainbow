@@ -6,7 +6,7 @@ import {
   createMockPool,
   createMockStake,
   createMockBorrow,
-} from '../../__tests__/mocks/positions';
+} from '../../__fixtures__/mocks/positions';
 
 describe('Sorting', () => {
   describe('sortPositions', () => {

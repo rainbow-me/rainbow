@@ -3,7 +3,7 @@ import { fetchPositions, type PositionsParams } from './fetcher';
 import { usePositionsStore } from './positionsStore';
 import type { RainbowPositions } from '../types';
 import { FIXTURE_LIST_POSITIONS_SUCCESS, FIXTURE_PARAMS } from '../__fixtures__/ListPositions';
-import { createMockPositionsData } from '../__tests__/mocks/positions';
+import { createMockPositionsData } from '../__fixtures__/mocks/positions';
 
 jest.mock('@/resources/platform/client');
 jest.mock('@/config/experimentalHooks', () => ({}));
