@@ -30,7 +30,6 @@ export const defaultOptions: Sentry.ReactNativeOptions = {
 
   beforeSend(event, hint) {
     // Drop non-actionable fetch errors (5xx, network failures).
-    // The status code on the response is sufficient to decide; no need for a flag on the error.
     const error = hint?.originalException;
     if (error instanceof RainbowError && error.cause instanceof RainbowFetchError) {
       const { response } = error.cause;
