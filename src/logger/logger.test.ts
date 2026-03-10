@@ -3,17 +3,26 @@ import { expect, test } from '@jest/globals';
 import * as Sentry from '@sentry/react-native';
 
 import { Logger, LogLevel, RainbowError, sentryTransport } from '@/logger';
+import { RainbowFetchError } from '@/framework/data/http/rainbowFetch';
+import { defaultOptions } from '@/logger/sentry';
 
 jest.mock('@sentry/react-native', () => ({
   addBreadcrumb: jest.fn(),
   captureException: jest.fn(),
   captureMessage: jest.fn(),
+  httpClientIntegration: jest.fn(),
   Severity: {
     Debug: 'debug',
     Info: 'info',
     Warning: 'warning',
     Error: 'error',
   },
+}));
+
+jest.mock('react-native-version-number', () => ({
+  appVersion: '1.0.0',
+  buildVersion: '1',
+  bundleIdentifier: 'com.test',
 }));
 
 describe('general functionality', () => {
@@ -227,6 +236,20 @@ describe('general functionality', () => {
     });
   });
 
+  test('sentryTransport always calls captureException for RainbowError', () => {
+    jest.clearAllMocks();
+
+    const fetchError = new RainbowFetchError({ message: 'Internal Server Error' });
+    const error = new RainbowError('fetch failed', fetchError);
+
+    sentryTransport(LogLevel.Error, error, { tags: { route: 'api' } });
+
+    expect(Sentry.captureException).toHaveBeenCalledWith(error, {
+      tags: { route: 'api' },
+      extra: {},
+    });
+  });
+
   test('add/remove transport', () => {
     const logger = new Logger({ enabled: true });
     const mockTransport = jest.fn();
@@ -371,5 +394,37 @@ describe('supports levels', () => {
     const e = new RainbowError('original message');
     logger.error(e);
     expect(mockTransport).toHaveBeenCalledWith(LogLevel.Error, e, {});
+  });
+});
+
+describe('beforeSend filtering', () => {
+  const beforeSend = defaultOptions.beforeSend!;
+  const dummyEvent = { exception: { values: [{}] } } as Sentry.ErrorEvent;
+
+  test('drops events caused by 5xx RainbowFetchError', () => {
+    const fetchError = new RainbowFetchError({ message: 'Internal Server Error', response: { status: 500 } as Response });
+    const error = new RainbowError('fetch failed', fetchError);
+    const result = beforeSend(dummyEvent, { originalException: error });
+    expect(result).toBeNull();
+  });
+
+  test('drops events caused by network errors (no response)', () => {
+    const fetchError = new RainbowFetchError({ message: 'Network request failed' });
+    const error = new RainbowError('fetch failed', fetchError);
+    const result = beforeSend(dummyEvent, { originalException: error });
+    expect(result).toBeNull();
+  });
+
+  test('keeps events caused by 4xx RainbowFetchError', () => {
+    const fetchError = new RainbowFetchError({ message: 'Not Found', response: { status: 404 } as Response });
+    const error = new RainbowError('fetch failed', fetchError);
+    const result = beforeSend(dummyEvent, { originalException: error });
+    expect(result).toBe(dummyEvent);
+  });
+
+  test('keeps events for non-fetch RainbowErrors', () => {
+    const error = new RainbowError('something broke');
+    const result = beforeSend(dummyEvent, { originalException: error });
+    expect(result).toBe(dummyEvent);
   });
 });

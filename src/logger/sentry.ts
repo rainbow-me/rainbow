@@ -3,6 +3,7 @@ import { SENTRY_ENDPOINT, SENTRY_ENVIRONMENT } from 'react-native-dotenv';
 import VersionNumber from 'react-native-version-number';
 
 import { IS_TEST, IS_TEST_FLIGHT } from '@/env';
+import { RainbowFetchError } from '@/framework/data/http/rainbowFetch';
 import { logger, RainbowError } from '@/logger';
 
 // Sentry tests each regex against these candidate strings:
@@ -27,7 +28,15 @@ const IGNORED_ERRORS: Array<string | RegExp> = [
 export const defaultOptions: Sentry.ReactNativeOptions = {
   attachStacktrace: true,
 
-  beforeSend(event) {
+  beforeSend(event, hint) {
+    // Drop non-actionable fetch errors (5xx, network failures).
+    const error = hint?.originalException;
+    if (error instanceof RainbowError && error.cause instanceof RainbowFetchError) {
+      const { response } = error.cause;
+      if (!response) return null; // Network failure (no connectivity, timeout, etc.)
+      if (response.status >= 500) return null;
+    }
+
     // Check if this is a captureMessage call.
     //
     // captureMessage events (logger.warn, logger.log) have event.message

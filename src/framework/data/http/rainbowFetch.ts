@@ -33,16 +33,29 @@ export async function rainbowFetch<T>(url: RequestInfo, opts: RainbowFetchReques
   const requestBody = body && typeof body === 'object' ? JSON.stringify(opts.body) : opts.body;
 
   try {
-    const response = await fetch(`${url}${createParams(params)}`, {
-      ...otherOpts,
-      body: requestBody,
-      headers: {
-        'Accept': 'application/json',
-        'Content-Type': 'application/json',
-        ...headers,
-      },
-      signal: abortController.signal,
-    });
+    let response: Response;
+    try {
+      response = await fetch(`${url}${createParams(params)}`, {
+        ...otherOpts,
+        body: requestBody,
+        headers: {
+          'Accept': 'application/json',
+          'Content-Type': 'application/json',
+          ...headers,
+        },
+        signal: abortController.signal,
+      });
+    } catch (fetchError) {
+      // fetch() only throws on network failures (TypeError) and abort signals (AbortError).
+      // Abort errors are re-thrown as-is so callers can detect them via error.name === 'AbortError'.
+      if (fetchError instanceof Error && fetchError.name === 'AbortError') {
+        throw fetchError;
+      }
+      throw new RainbowFetchError({
+        message: fetchError instanceof Error ? fetchError.message : 'Network request failed',
+        requestBody: body,
+      });
+    }
 
     const responseBody = await getBody(response);
 
@@ -51,14 +64,15 @@ export async function rainbowFetch<T>(url: RequestInfo, opts: RainbowFetchReques
       return { data: responseBody, headers, status };
     } else {
       const errorResponseBody = typeof responseBody === 'string' ? { error: responseBody } : responseBody;
+      const message =
+        errorResponseBody?.error || errorResponseBody?.message || response?.statusText || 'There was an error with the request.';
 
-      const error = generateError({
-        requestBody: body,
+      throw new RainbowFetchError({
+        message,
         response,
         responseBody: errorResponseBody,
+        requestBody: body,
       });
-
-      throw error;
     }
   } finally {
     if (timeoutId) clearTimeout(timeoutId);
@@ -78,30 +92,28 @@ function createParams(params: RainbowFetchRequestOpts['params']) {
   return params ? `?${new URLSearchParams(params)}` : '';
 }
 
-interface RainbowFetchError extends Error {
+export class RainbowFetchError extends Error {
   response?: Response;
   responseBody?: any;
   requestBody?: RequestInit['body'];
-}
 
-function generateError({
-  requestBody,
-  response,
-  responseBody,
-}: {
-  requestBody: RequestInit['body'];
-  response: Response;
-  responseBody: any;
-}) {
-  const message = responseBody?.error || responseBody?.message || response?.statusText || 'There was an error with the request.';
-
-  const error: RainbowFetchError = new Error(message);
-
-  error.response = response;
-  error.responseBody = responseBody;
-  error.requestBody = requestBody;
-
-  return error;
+  constructor({
+    message,
+    response,
+    responseBody,
+    requestBody,
+  }: {
+    message: string;
+    response?: Response;
+    responseBody?: any;
+    requestBody?: RequestInit['body'];
+  }) {
+    super(message);
+    this.name = 'RainbowFetchError';
+    this.response = response;
+    this.responseBody = responseBody;
+    this.requestBody = requestBody;
+  }
 }
 
 interface RainbowFetchClientOpts extends RainbowFetchRequestOpts {
