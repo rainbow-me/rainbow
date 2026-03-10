@@ -7,10 +7,11 @@ const { wrapWithReanimatedMetroConfig } = require('react-native-reanimated/metro
 
 // Deny list is a function that takes an array of regexes and combines
 // them with the default blacklist to return a single regex.
+const projectRoot = __dirname;
 const blacklistRE = blacklist([
   // Ignore native build directories to prevent Metro fast refresh during builds
-  /\/ios\/.*/,
-  /\/android\/.*/,
+  new RegExp(`^${projectRoot}/ios/.*`),
+  new RegExp(`^${projectRoot}/android/.*`),
   // react-native-animated-charts
   /src\/react-native-animated-charts\/Example\/.*/,
   /src\/react-native-animated-charts\/node_modules\/.*/,
