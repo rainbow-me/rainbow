@@ -10,9 +10,8 @@ import { PolymarketEventCategorySelector } from '@/features/polymarket/screens/p
 import { PolymarketSportsEventsScreen } from '@/features/polymarket/screens/polymarket-sports-events-screen/PolymarketSportsEventsScreen';
 import { usePolymarketContext } from '@/features/polymarket/screens/polymarket-navigator/PolymarketContext';
 import { usePolymarketCategoryStore } from '@/features/polymarket/stores/usePolymarketCategoryStore';
-import { usePolymarketEventsStore } from '@/features/polymarket/stores/polymarketEventsStore';
+import { polymarketEventsActions, usePolymarketEventsStore } from '@/features/polymarket/stores/polymarketEventsStore';
 import { useListen } from '@/state/internal/hooks/useListen';
-import { type PolymarketEvent } from '@/features/polymarket/types/polymarket-event';
 import { LEAGUE_SELECTOR_HEIGHT } from '@/features/polymarket/screens/polymarket-sports-events-screen/PolymarketLeagueSelector';
 
 export const PolymarketBrowseEventsScreen = memo(function PolymarketBrowseEventsScreen() {
@@ -23,8 +22,6 @@ export const PolymarketBrowseEventsScreen = memo(function PolymarketBrowseEvents
     </View>
   );
 });
-
-const EMPTY_EVENTS: PolymarketEvent[] = [];
 
 const PolymarketBrowseEventsList = () => {
   const { isDarkMode } = useColorMode();
@@ -54,8 +51,17 @@ const PolymarketBrowseEventsList = () => {
 
 const EventsList = ({ onScroll }: { onScroll: (event: NativeSyntheticEvent<NativeScrollEvent>) => void }) => {
   const { eventsListRef } = usePolymarketContext();
-  const events = usePolymarketEventsStore(state => state.getData() ?? EMPTY_EVENTS);
-  return <PolymarketEventsListBase events={events} listRef={eventsListRef} onScroll={onScroll} />;
+  const events = usePolymarketEventsStore(state => state.getEvents());
+
+  return (
+    <PolymarketEventsListBase
+      events={events}
+      listRef={eventsListRef}
+      onEndReached={polymarketEventsActions.fetchNextPage}
+      onEndReachedThreshold={1}
+      onScroll={onScroll}
+    />
+  );
 };
 
 const styles = StyleSheet.create({
