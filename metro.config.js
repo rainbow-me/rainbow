@@ -40,12 +40,6 @@ if (process.env.CI) {
  * @type {import('metro-config').MetroConfig}
  */
 const rainbowConfig = {
-  watcher: {
-    additionalExts: [],
-    watchman: {
-      ignore_dirs: ['ios', 'android'],
-    },
-  },
   resolver: {
     blacklistRE,
     resolveRequest: (context, moduleName, platform) => {
