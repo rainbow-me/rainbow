@@ -112,8 +112,6 @@ export async function submitRewardsClaim({
     pollResult = await pollForClaimStatus({ claimId, address, currency, chainId });
     const finalClaimResult = pollResult.result;
 
-    await useRewardsBalanceStore.getState().fetch(undefined, { force: true });
-
     analytics.track(analytics.event.rnbwRewardsClaim, {
       chainId,
       intentId,
@@ -134,6 +132,8 @@ export async function submitRewardsClaim({
 
     await useUserAssetsStore.getState().fetch(undefined, { force: true });
     setTimeout(() => useUserAssetsStore.getState().fetch(undefined, { force: true }), time.seconds(5));
+
+    await useRewardsBalanceStore.getState().fetch(undefined, { force: true });
 
     return finalClaimResult;
   } catch (e) {
