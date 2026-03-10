@@ -45,7 +45,8 @@ describe('rainbowFetch', () => {
   });
 
   test('re-throws AbortError without wrapping', async () => {
-    const abortError = new DOMException('The operation was aborted.', 'AbortError');
+    const abortError = new Error('The operation was aborted.');
+    abortError.name = 'AbortError';
     mockFetch.mockRejectedValueOnce(abortError);
 
     const promise = rainbowFetch('https://example.com', {});
