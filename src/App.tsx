@@ -45,7 +45,7 @@ import { MainThemeProvider } from '@/theme/ThemeContext';
 import { configure as configureDelegationClient } from '@rainbow-me/delegation';
 
 import { AbsolutePortalRoot } from './components/AbsolutePortal';
-import { TestDeeplinkHandler } from './components/TestDeeplinkHandler';
+import { TestDeeplinkHandler } from '@/features/e2e/ui/TestDeeplinkHandler';
 import { PerformanceReports, PerformanceReportSegments, PerformanceTracking } from './performance/tracking';
 
 if (IS_DEV) {
@@ -83,10 +83,10 @@ function AppComponent() {
         )}
         <OfflineToast />
         <Toaster />
+        {IS_TEST && <TestDeeplinkHandler />}
       </View>
       <NotificationsHandler />
       <DeeplinkHandler initialRoute={initialRoute} />
-      {IS_TEST && <TestDeeplinkHandler />}
       <BackupsSync />
       <AbsolutePortalRoot />
     </>

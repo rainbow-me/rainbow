@@ -24,7 +24,7 @@ Logs of the test run are saved in Github Actions artifacts. To access them go to
 
 ### E2E test commands
 
-To speedup getting the app into a specific state, we implement some commands. This is a deep link that we send to the app so it performs certain actions. The actions are implemented in `src/components/TestDeeplinkHandler.tsx`, and can be launched by using the following yaml.
+To speedup getting the app into a specific state, we implement some commands. This is a deep link that we send to the app so it performs certain actions. The actions are implemented in `src/features/e2e/ui/TestDeeplinkHandler.tsx`, and can be launched by using the following yaml.
 
 ```yaml
 - openLink: rainbow://e2e/<command>?param1=value1&param2=value2
