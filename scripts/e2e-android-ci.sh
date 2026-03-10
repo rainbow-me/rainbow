@@ -15,5 +15,5 @@ echo "Install app"
 adb install -r $ARTIFACT_PATH_FOR_E2E
 
 # Run the tests
-./scripts/e2e-run.sh --platform android --record-on-failure --shard-total ${SHARD_TOTAL:-1} --shard-index ${SHARD_INDEX:-1}
+./scripts/e2e-run.sh --platform android --record-on-failure --retries 3 --shard-total ${SHARD_TOTAL:-1} --shard-index ${SHARD_INDEX:-1}
 
