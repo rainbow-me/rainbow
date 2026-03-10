@@ -6,13 +6,18 @@ const { withSentryConfig } = require('@sentry/react-native/metro');
 const { wrapWithReanimatedMetroConfig } = require('react-native-reanimated/metro-config');
 const escapeRegExp = require('lodash/escapeRegExp');
 
+const makeProjectExclusionRE = re => new RegExp(`${escapeRegExp(__dirname)}\\/${re}`);
+
 // Deny list is a function that takes an array of regexes and combines
 // them with the default blacklist to return a single regex.
-const makeExclusionRE = re => new RegExp(`${escapeRegExp(__dirname)}\\/${re}`);
 const blacklistRE = blacklist([
   // Ignore native build directories to prevent Metro fast refresh during builds
-  makeExclusionRE('ios\\/.*'),
-  makeExclusionRE('android\\/.*'),
+  makeProjectExclusionRE('ios\\/.*'),
+  makeProjectExclusionRE('android\\/.*'),
+  // Also nested android build/generated directories (e.g. in node_modules) that cause fast reloads during android builds.
+  /.*\/android\/build\/.*/,
+  /.*\/android\/\.cxx\/.*/,
+  /.*\/android\/.*\.xml/,
   // react-native-animated-charts
   /src\/react-native-animated-charts\/Example\/.*/,
   /src\/react-native-animated-charts\/node_modules\/.*/,
@@ -20,8 +25,6 @@ const blacklistRE = blacklist([
   // react-native-reanimated <patch>
   /patches\/reanimated\/.*/,
 ]);
-
-console.log(blacklistRE);
 
 const transformer = {
   getTransformOptions: async () => ({
