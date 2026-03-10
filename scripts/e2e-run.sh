@@ -12,6 +12,7 @@ TEST_FILES=()
 ANVIL_PID=""
 PLATFORM=""
 RECORD_ON_FAILURE=false
+MAX_ATTEMPTS=1
 RECORDING_PID=""
 
 # Stop recording function
@@ -106,6 +107,10 @@ while [[ $# -gt 0 ]]; do
     --record-on-failure)
       RECORD_ON_FAILURE=true
       ;;
+    --retries)
+      MAX_ATTEMPTS="$2"
+      shift
+      ;;
     *)
       ARGS+=("$1")
       ;;
@@ -168,7 +173,7 @@ for TEST_FILE in "${TEST_FILES[@]}"; do
 
   SUCCESS=false
   SHOULD_RECORD=false
-  for ATTEMPT in {1..3}; do
+  for ATTEMPT in $(seq 1 "$MAX_ATTEMPTS"); do
     echo "🔁 Attempt $ATTEMPT for $TEST_NAME"
 
     START_TIME=$(date +%s)
@@ -228,7 +233,7 @@ for TEST_FILE in "${TEST_FILES[@]}"; do
 
 
   if ! $SUCCESS; then
-    echo "❌ Failed after 3 attempts: $TEST_NAME"
+    echo "❌ Failed after $MAX_ATTEMPTS attempt(s): $TEST_NAME"
     echo
     EXIT_CODE=1
   fi
