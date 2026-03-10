@@ -4,10 +4,10 @@ const blacklist = require('metro-config/src/defaults/exclusionList');
 const { mergeConfig, getDefaultConfig } = require('@react-native/metro-config');
 const { withSentryConfig } = require('@sentry/react-native/metro');
 const { wrapWithReanimatedMetroConfig } = require('react-native-reanimated/metro-config');
+const escapeRegExp = require('lodash/escapeRegExp');
 
 // Deny list is a function that takes an array of regexes and combines
 // them with the default blacklist to return a single regex.
-const escapeRegExp = require('lodash/escapeRegExp');
 const makeExclusionRE = re => new RegExp(`^${escapeRegExp(__dirname)}\\/${re}`);
 const blacklistRE = blacklist([
   // Ignore native build directories to prevent Metro fast refresh during builds
