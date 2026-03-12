@@ -30,3 +30,5 @@ tags:
 - assertVisible:
     id: sandbox-http_allowed
 - assertVisible: '.*(connection closed|no events fired).*'
+- assertVisible: '.*unexpected behavior.*'
+- assertVisible: '.*webview_blocked.*PASS.*'

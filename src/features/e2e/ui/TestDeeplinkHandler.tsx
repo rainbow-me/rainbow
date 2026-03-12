@@ -1,4 +1,4 @@
-import { type SandboxTestResult, runSandboxTests } from '../core/sandboxSecurityTest';
+import { type SandboxTestResult, type WebViewTest, createWebViewTest, runSandboxTests } from '../core/sandboxSecurityTest';
 import { savePIN } from '@/handlers/authentication';
 import { logger } from '@/logger';
 import Navigation from '@/navigation/Navigation';
@@ -14,6 +14,7 @@ import { SandboxSecurityResults } from './SandboxSecurityResults';
  */
 export function TestDeeplinkHandler() {
   const [sandboxResults, setSandboxResults] = useState<SandboxTestResult[] | null>(null);
+  const [webViewTest, setWebViewTest] = useState<WebViewTest | undefined>();
 
   useEffect(() => {
     const listener = Linking.addListener('url', async ({ url }) => {
@@ -37,8 +38,10 @@ export function TestDeeplinkHandler() {
           });
           break;
         case 'sandbox-test': {
+          const wvTest = createWebViewTest();
           const results = await runSandboxTests();
           setSandboxResults(results);
+          setWebViewTest(wvTest);
           break;
         }
         default:
@@ -51,7 +54,7 @@ export function TestDeeplinkHandler() {
   }, []);
 
   if (sandboxResults) {
-    return <SandboxSecurityResults results={sandboxResults} />;
+    return <SandboxSecurityResults results={sandboxResults} webViewTest={webViewTest} />;
   }
 
   return null;

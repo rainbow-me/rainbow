@@ -6,6 +6,12 @@ export interface SandboxTestResult {
   detail: string;
 }
 
+export interface WebViewTest {
+  promise: Promise<SandboxTestResult>;
+  onError: () => void;
+  onHttpError: () => void;
+}
+
 async function testHttpBlocked(): Promise<SandboxTestResult> {
   try {
     const response = await fetch('https://example.com');
@@ -51,11 +57,49 @@ function testWsBlocked(): Promise<SandboxTestResult> {
   });
 }
 
+function testNativeModuleBlocked(): SandboxTestResult {
+  try {
+    const { NativeModules } = require('react-native');
+    const _module = NativeModules.RNRestart;
+    return { name: 'native_module_blocked', passed: false, detail: 'no error thrown' };
+  } catch (e) {
+    const msg = (e as Error).message;
+    if (msg.includes('unexpected behavior')) {
+      return { name: 'native_module_blocked', passed: true, detail: 'blocked: Native Module unexpected behavior detected' };
+    }
+    return { name: 'native_module_blocked', passed: false, detail: `unexpected error: ${msg}` };
+  }
+}
+
+export function createWebViewTest(): WebViewTest {
+  let resolve: (result: SandboxTestResult) => void;
+  const promise = new Promise<SandboxTestResult>(r => {
+    resolve = r;
+  });
+
+  const timeout = setTimeout(() => {
+    resolve({ name: 'webview_blocked', passed: false, detail: 'no error within timeout' });
+  }, 10000);
+
+  return {
+    promise,
+    onError: () => {
+      clearTimeout(timeout);
+      resolve({ name: 'webview_blocked', passed: true, detail: 'blocked by onError' });
+    },
+    onHttpError: () => {
+      clearTimeout(timeout);
+      resolve({ name: 'webview_blocked', passed: true, detail: 'blocked by onHttpError' });
+    },
+  };
+}
+
 export async function runSandboxTests(): Promise<SandboxTestResult[]> {
   const results: SandboxTestResult[] = [];
   results.push(await testHttpBlocked());
   results.push(await testHttpAllowed());
   results.push(await testWsBlocked());
+  results.push(testNativeModuleBlocked());
   logger.info('[SandboxTest] results', { results });
   return results;
 }
