@@ -8,13 +8,15 @@ import { useEffect, useState } from 'react';
 import { Linking } from 'react-native';
 import URL from 'url-parse';
 import { SandboxSecurityResults } from './SandboxSecurityResults';
+import { SandboxWebViewTest } from './SandboxWebViewTest';
 
 /**
  * Handles E2E test commands. See e2e/README.md:31 for usage.
  */
 export function TestDeeplinkHandler() {
-  const [sandboxResults, setSandboxResults] = useState<SandboxTestResult[] | null>(null);
+  const [results, setResults] = useState<SandboxTestResult[] | null>(null);
   const [webViewTest, setWebViewTest] = useState<WebViewTest | undefined>();
+  const [webViewDone, setWebViewDone] = useState(false);
 
   useEffect(() => {
     const listener = Linking.addListener('url', async ({ url }) => {
@@ -39,9 +41,13 @@ export function TestDeeplinkHandler() {
           break;
         case 'sandbox-test': {
           const wvTest = createWebViewTest();
-          const results = await runSandboxTests();
-          setSandboxResults(results);
           setWebViewTest(wvTest);
+          wvTest.promise.then(result => {
+            setResults(prev => (prev ? [...prev, result] : [result]));
+            setWebViewDone(true);
+          });
+          const syncResults = await runSandboxTests();
+          setResults(syncResults);
           break;
         }
         default:
@@ -53,8 +59,13 @@ export function TestDeeplinkHandler() {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
-  if (sandboxResults) {
-    return <SandboxSecurityResults results={sandboxResults} webViewTest={webViewTest} />;
+  if (results) {
+    return (
+      <>
+        <SandboxSecurityResults results={results} allDone={webViewDone} />
+        {webViewTest && !webViewDone && <SandboxWebViewTest {...webViewTest} />}
+      </>
+    );
   }
 
   return null;
