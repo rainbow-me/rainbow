@@ -63,7 +63,6 @@ const allowedBarrelFiles = [
   'src/vendor/ens-avatar/index.ts',
   'src/entities/index.ts',
   'src/entities/transactions/index.ts',
-  'src/features/perps/components/Slider/index.ts',
   'src/features/perps/services/index.ts',
   'src/features/positions/stores/transform/index.ts',
   'src/features/positions/types/index.ts',

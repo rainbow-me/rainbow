@@ -17,7 +17,14 @@ import {
   useSharedValue,
   withSpring,
 } from 'react-native-reanimated';
-import { Slider, type SliderChangeSource, type SliderGestureState } from '@/features/perps/components/Slider';
+import {
+  Slider,
+  SLIDER_DEFAULT_SNAP_POINTS,
+  SLIDER_MAX,
+  SLIDER_MIN,
+  type SliderChangeSource,
+  type SliderGestureState,
+} from '@/features/perps/components/Slider/Slider';
 import { addCommasToNumber, clamp, trimCurrencyZeros } from '@/__swaps__/utils/swaps';
 import { opacity } from '@/framework/ui/utils/opacity';
 import { SPRING_CONFIGS } from '@/components/animations/animationConfigs';
@@ -34,7 +41,6 @@ import * as i18n from '@/languages';
 import { useDebouncedCallback } from 'use-debounce';
 import { time } from '@/utils/time';
 import { useStableValue } from '@/hooks/useStableValue';
-import { SLIDER_DEFAULT_SNAP_POINTS, SLIDER_MAX, SLIDER_MIN } from '@/features/perps/components/Slider/Slider';
 import { useLazyRef } from '@/hooks/useLazyRef';
 
 import { getAccountAddress } from '@/state/wallets/walletsStore';
