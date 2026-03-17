@@ -1,5 +1,5 @@
 import { GasSpeed } from '@/__swaps__/types/gas';
-import { weiToGwei } from '@/parsers';
+import { weiToGwei } from '@/parsers/gas';
 import { getCachedCurrentBaseFee, useMeteorologySuggestions } from '@/__swaps__/utils/meteorology';
 import { add, formatNumber } from '@/helpers/utilities';
 import { getColorValueForThemeWorklet } from '@/__swaps__/utils/swaps';

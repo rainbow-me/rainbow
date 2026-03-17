@@ -3,7 +3,7 @@ import { type NativeCurrencyKey } from '@/entities/nativeCurrencyTypes';
 import { type MeteorologyLegacyResponse, type MeteorologyResponse } from '@/entities/gas';
 import { rainbowMeteorologyGetData } from '@/handlers/gasFees';
 import { convertAmountToNativeDisplayWorklet, formatNumber, multiply } from '@/helpers/utilities';
-import { gweiToWei, weiToGwei } from '@/parsers';
+import { gweiToWei, weiToGwei } from '@/parsers/gas';
 import { estimateUnlockAndCrosschainSwap } from '@/raps/actions/crosschainSwap';
 import { estimateUnlockAndSwap } from '@/raps/actions/swap';
 import { gasUnits } from '@/references/gasUnits';

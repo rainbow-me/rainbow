@@ -8,7 +8,7 @@ import { toHex } from '@/handlers/web3';
 import { ENSRegistrationTransactionType, getENSExecutionDetails, REGISTRATION_MODES } from '../utils/helpers';
 import * as i18n from '@/languages';
 import { logger, RainbowError } from '@/logger';
-import { parseGasParamAmounts } from '@/parsers';
+import { parseGasParamAmounts } from '@/parsers/gas';
 import { type ENSActionParameters, type ENSRap, ENSRapActionType, type RapENSAction, type RapENSActionParameters } from './common';
 import { saveCommitRegistrationParameters, updateTransactionRegistrationParameters } from '../redux/registration';
 import store from '@/redux/store';
