@@ -2,15 +2,9 @@ import { analytics } from '@/analytics';
 import { type MinimalNotification } from '@/notifications/types';
 import { getPermissionStatus } from '@/notifications/permissions';
 import { RESULTS } from 'react-native-permissions';
-import {
-  WalletNotificationRelationship,
-  WALLET_GROUPS_STORAGE_KEY,
-  WALLET_TOPICS_STORAGE_KEY,
-  type GroupSettings,
-  type GlobalNotificationTopicType,
-  type WalletNotificationSettings,
-  notificationSettingsStorage,
-} from '@/notifications/settings';
+import { WalletNotificationRelationship, WALLET_GROUPS_STORAGE_KEY, WALLET_TOPICS_STORAGE_KEY } from '@/notifications/settings/constants';
+import type { GroupSettings, GlobalNotificationTopicType, WalletNotificationSettings } from '@/notifications/settings/types';
+import { notificationSettingsStorage } from '@/notifications/settings/storage';
 
 export const trackTappedPushNotification = (notification: MinimalNotification | undefined) => {
   analytics.track(analytics.event.notificationsPromoTapped, {

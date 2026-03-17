@@ -71,7 +71,6 @@ const allowedBarrelFiles = [
   'src/languages/index.ts',
   'src/logger/index.ts',
   'src/migrations/index.ts',
-  'src/notifications/settings/index.ts',
   'src/parsers/index.ts',
   'src/performance/start-time/index.ts',
   'src/performance/tracking/index.ts',
