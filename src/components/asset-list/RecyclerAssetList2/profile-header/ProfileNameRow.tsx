@@ -6,7 +6,7 @@ import { NAVBAR_HORIZONTAL_INSET } from '@/components/navbar/Navbar';
 import { NAVBAR_ICON_SIZE } from '@/components/navbar/NavbarTextIcon';
 import { Bleed, Box, Inset, Text, useForegroundColor } from '@/design-system';
 import useDimensions from '@/hooks/useDimensions';
-import { useNavigation } from '@/navigation';
+import { useNavigation } from '@/navigation/Navigation';
 import { addressCopiedToastAtom } from '@/recoil/addressCopiedToastAtom';
 import { formatAccountLabel, useAccountAddress, useAccountProfileInfo } from '@/state/wallets/walletsStore';
 import haptics from '@/utils/haptics';

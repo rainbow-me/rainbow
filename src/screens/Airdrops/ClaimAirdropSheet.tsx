@@ -31,7 +31,7 @@ import { useCleanup } from '@/hooks/useCleanup';
 import { fetchENSAvatar } from '@/features/ens/hooks/useENSAvatar';
 import { usePersistentDominantColorFromImage } from '@/hooks/usePersistentDominantColorFromImage';
 import * as i18n from '@/languages';
-import { useNavigation } from '@/navigation';
+import { useNavigation } from '@/navigation/Navigation';
 import Routes from '@/navigation/routesNames';
 import { type RootStackParamList } from '@/navigation/types';
 import { type RainbowClaimable } from '@/resources/addys/claimables/types';

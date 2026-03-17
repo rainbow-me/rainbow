@@ -1,6 +1,6 @@
 import { Box } from '@/design-system';
 import * as i18n from '@/languages';
-import { useNavigation } from '@/navigation';
+import { useNavigation } from '@/navigation/Navigation';
 import { ClaimableType } from '@/resources/addys/claimables/types';
 import { useWalletsStore, useIsReadOnlyWallet } from '@/state/wallets/walletsStore';
 import watchingAlert from '@/utils/watchingAlert';

@@ -3,7 +3,7 @@ import React from 'react';
 import { Switch } from 'react-native-gesture-handler';
 import ButtonPressAnimation from '@/components/animations/ButtonPressAnimation';
 import { Inline, Inset, Row, Rows, Separator, Text } from '@/design-system';
-import { useNavigation } from '@/navigation';
+import { useNavigation } from '@/navigation/Navigation';
 import Routes from '@/navigation/routesNames';
 import { colors } from '@/styles';
 

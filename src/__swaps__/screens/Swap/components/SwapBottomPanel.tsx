@@ -24,7 +24,7 @@ import { SwapActionButton } from './SwapActionButton';
 import { SettingsPanel } from './SettingsPanel';
 import { SPRING_CONFIGS } from '@/components/animations/animationConfigs';
 import { getIsHardwareWallet, useAccountAddress } from '@/state/wallets/walletsStore';
-import { useNavigation } from '@/navigation';
+import { useNavigation } from '@/navigation/Navigation';
 import Routes from '@/navigation/routesNames';
 import { logger, RainbowError } from '@/logger';
 import { useSwapsStore } from '@/state/swaps/swapsStore';

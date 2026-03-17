@@ -4,7 +4,7 @@ import { SheetActionButton } from '@/components/sheet';
 import { Box, Stack } from '@/design-system';
 import { type RainbowTransaction, TransactionStatus } from '@/entities/transactions';
 import * as i18n from '@/languages';
-import { Navigation } from '@/navigation';
+import Navigation from '@/navigation/Navigation';
 import Routes from '@/navigation/routesNames';
 import { swapMetadataStorage } from '@/raps/common';
 import { type SwapMetadata } from '@/raps/references';

@@ -20,7 +20,7 @@ import { ImgixImage } from '@/components/images';
 import { getFormattedTimeQuantity, convertAmountToNativeDisplay, handleSignificantDecimals } from '@/helpers/utilities';
 import { type NftOffer } from '@/graphql/__generated__/arc';
 import ButtonPressAnimation from '@/components/animations/ButtonPressAnimation';
-import { useNavigation } from '@/navigation';
+import { useNavigation } from '@/navigation/Navigation';
 import { IS_ANDROID } from '@/env';
 import ConditionalWrap from 'conditional-wrap';
 import Routes from '@/navigation/routesNames';

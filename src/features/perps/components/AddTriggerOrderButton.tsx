@@ -3,7 +3,7 @@ import { Box, TextShadow, Text, useColorMode, TextIcon } from '@/design-system';
 import { TriggerOrderType, TriggerOrderSource } from '@/features/perps/types';
 import { usePerpsAccentColorContext } from '@/features/perps/context/PerpsAccentColorContext';
 import { useCallback } from 'react';
-import { Navigation } from '@/navigation';
+import Navigation from '@/navigation/Navigation';
 import Routes from '@/navigation/routesNames';
 import * as i18n from '@/languages';
 import { THICK_BORDER_WIDTH } from '@/styles/constants';

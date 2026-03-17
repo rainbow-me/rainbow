@@ -3,7 +3,7 @@ import { Bleed, Box, Inline, Inset, Separator, Stack, Text } from '@/design-syst
 import walletBackupTypes from '@/helpers/walletBackupTypes';
 import walletTypes from '@/helpers/walletTypes';
 import * as i18n from '@/languages';
-import { useNavigation } from '@/navigation';
+import { useNavigation } from '@/navigation/Navigation';
 import Routes from '@/navigation/routesNames';
 import { useSelectedWallet } from '@/state/wallets/walletsStore';
 import React, { useCallback } from 'react';

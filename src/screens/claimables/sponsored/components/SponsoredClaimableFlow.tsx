@@ -1,5 +1,5 @@
 import * as i18n from '@/languages';
-import { useNavigation } from '@/navigation';
+import { useNavigation } from '@/navigation/Navigation';
 import watchingAlert from '@/utils/watchingAlert';
 import React, { useCallback, useMemo } from 'react';
 import { useIsReadOnlyWallet } from '@/state/wallets/walletsStore';

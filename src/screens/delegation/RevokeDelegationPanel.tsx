@@ -4,7 +4,7 @@ import { type RouteProp, useRoute } from '@react-navigation/native';
 import { Wallet } from '@ethersproject/wallet';
 import { LinearGradient } from 'expo-linear-gradient';
 import { EstimateGasExecutionError, IntrinsicGasTooLowError } from 'viem';
-import { useNavigation } from '@/navigation';
+import { useNavigation } from '@/navigation/Navigation';
 import { Box, Text, globalColors, Separator } from '@/design-system';
 import { HoldToActivateButton } from '@/components/hold-to-activate-button/HoldToActivateButton';
 import { PanelSheet } from '@/components/PanelSheet/PanelSheet';

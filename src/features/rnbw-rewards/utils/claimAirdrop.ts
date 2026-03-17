@@ -14,7 +14,7 @@ import { ChainId } from '@rainbow-me/swaps';
 import { type Address } from 'viem';
 import { time } from '@/utils/time';
 import { LedgerSigner } from '@/handlers/LedgerSigner';
-import { Navigation } from '@/navigation';
+import Navigation from '@/navigation/Navigation';
 
 type ClaimStatusPollResult = PollClaimStatusResult<ClaimAirdropResult, ClaimAirdropResponse>;
 

@@ -1,7 +1,7 @@
 import { AddWalletList } from '@/components/add-wallet/AddWalletList';
 import { type AddWalletItem } from '@/components/add-wallet/AddWalletRow';
 import { Box, globalColors, Inset } from '@/design-system';
-import { useNavigation } from '@/navigation';
+import { useNavigation } from '@/navigation/Navigation';
 import Routes from '@/navigation/routesNames';
 import React from 'react';
 import * as i18n from '@/languages';

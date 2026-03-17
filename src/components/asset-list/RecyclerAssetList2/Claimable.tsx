@@ -9,7 +9,7 @@ import { ChainId } from '@/state/backendNetworks/types';
 import deviceUtils, { DEVICE_WIDTH } from '@/utils/deviceUtils';
 import { FasterImageView } from '@candlefinance/faster-image';
 import React, { memo, useMemo } from 'react';
-import { Navigation } from '@/navigation';
+import Navigation from '@/navigation/Navigation';
 
 const RAINBOW_ICON_URL = 'https://rainbowme-res.cloudinary.com/image/upload/v1694722625/dapps/rainbow-icon-large.png';
 const avgCharWidth = 7;

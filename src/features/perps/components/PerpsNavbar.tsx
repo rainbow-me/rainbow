@@ -11,7 +11,7 @@ import { usePerpsNavigationStore } from '@/features/perps/screens/PerpsNavigator
 import { type VirtualNavigationStore } from '@/navigation/createVirtualNavigator';
 import { type PerpsRoute } from '@/navigation/types';
 import * as i18n from '@/languages';
-import { Navigation } from '@/navigation';
+import Navigation from '@/navigation/Navigation';
 import { THICK_BORDER_WIDTH } from '@/styles/constants';
 
 export const PerpsNavbar = function PerpsNavbar() {

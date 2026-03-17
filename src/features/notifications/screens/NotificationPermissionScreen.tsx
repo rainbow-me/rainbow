@@ -8,7 +8,8 @@ import { Box, Stack, Text, Bleed, Column, Columns, ColorModeProvider } from '@/d
 import { IS_ANDROID, IS_IOS } from '@/env';
 import { useHardwareBackOnFocus } from '@/hooks/useHardwareBack';
 import * as i18n from '@/languages';
-import { Navigation, useNavigation } from '@/navigation';
+import Navigation from '@/navigation/Navigation';
+import { useNavigation } from '@react-navigation/native';
 import Routes from '@/navigation/routesNames';
 import { isNotificationPermissionGranted, requestNotificationPermission } from '@/notifications/permissions';
 import { useTheme } from '@/theme';

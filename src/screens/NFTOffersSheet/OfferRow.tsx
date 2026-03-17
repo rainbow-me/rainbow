@@ -1,5 +1,5 @@
 import React from 'react';
-import { useNavigation } from '@/navigation';
+import { useNavigation } from '@/navigation/Navigation';
 import { Bleed, Box, Column, Columns, globalColors, Inline, Inset, Stack, Text, useBackgroundColor, useColorMode } from '@/design-system';
 import MaskedView from '@react-native-masked-view/masked-view';
 import { type NftOffer } from '@/graphql/__generated__/arc';

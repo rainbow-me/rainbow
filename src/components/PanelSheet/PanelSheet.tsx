@@ -4,13 +4,13 @@ import Animated, { type AnimatedStyle } from 'react-native-reanimated';
 import { Box, globalColors, useColorMode, useForegroundColor } from '@/design-system';
 import { SheetHandleFixedToTop } from '@/components/sheet';
 import { IS_IOS } from '@/env';
-import { useNavigation } from '@/navigation';
+import { useNavigation } from '@/navigation/Navigation';
+import { THICK_BORDER_WIDTH } from '@/styles/constants';
 import { opacity } from '@/framework/ui/utils/opacity';
 import safeAreaInsetValues from '@/utils/safeAreaInsetValues';
 import { DEVICE_HEIGHT, DEVICE_WIDTH } from '@/utils/deviceUtils';
 import { KeyboardStickyView } from 'react-native-keyboard-controller';
 import ConditionalWrap from 'conditional-wrap';
-import { THICK_BORDER_WIDTH } from '@/styles/constants';
 
 export const TapToDismiss = memo(function TapToDismiss() {
   const { goBack } = useNavigation();

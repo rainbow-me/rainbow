@@ -1,6 +1,6 @@
 import { initializeWallet } from '@/state/wallets/initializeWallet';
 import { logger } from '@/logger';
-import { Navigation } from '@/navigation';
+import Navigation from '@/navigation/Navigation';
 import Routes from '@/navigation/routesNames';
 import { useEffect } from 'react';
 import { Linking } from 'react-native';

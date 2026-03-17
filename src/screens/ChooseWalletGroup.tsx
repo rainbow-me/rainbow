@@ -9,7 +9,7 @@ import WalletTypes from '@/helpers/walletTypes';
 import * as i18n from '@/languages';
 import { logger, RainbowError } from '@/logger';
 import { createWallet, type RainbowAccount, type RainbowWallet } from '@/model/wallet';
-import { Navigation } from '@/navigation';
+import Navigation, { useNavigation } from '@/navigation/Navigation';
 import Routes from '@/navigation/routesNames';
 import { backupsStore } from '@/state/backups/backups';
 import { walletLoadingStore } from '@/state/walletLoading/walletLoading';
@@ -22,7 +22,6 @@ import chroma from 'chroma-js';
 import React, { useCallback, useRef } from 'react';
 import { Text as NativeText, View } from 'react-native';
 import { ScrollView } from 'react-native-gesture-handler';
-import { useNavigation } from '../navigation/Navigation';
 import { initializeWallet } from '@/state/wallets/initializeWallet';
 
 function NewWalletGroup({ numWalletGroups }: { numWalletGroups: number }) {

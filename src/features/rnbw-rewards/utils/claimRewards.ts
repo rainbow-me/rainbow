@@ -19,7 +19,7 @@ import {
 } from '@/features/rnbw-rewards/types/claimRewardsTypes';
 import { time } from '@/utils/time';
 import { LedgerSigner } from '@/handlers/LedgerSigner';
-import { Navigation } from '@/navigation';
+import Navigation from '@/navigation/Navigation';
 
 type ClaimStatusPollResult = PollClaimStatusResult<ClaimRewardsResult, ClaimRewardsResponse>;
 

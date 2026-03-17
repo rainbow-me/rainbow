@@ -9,7 +9,7 @@ import { PANEL_WIDTH, PanelSheet } from '@/components/PanelSheet/PanelSheet';
 import { type PolymarketEvent, type PolymarketMarket, type PolymarketMarketEvent } from '@/features/polymarket/types/polymarket-event';
 import ImgixImage from '@/components/images/ImgixImage';
 import ButtonPressAnimation from '@/components/animations/ButtonPressAnimation';
-import { Navigation } from '@/navigation';
+import Navigation from '@/navigation/Navigation';
 import { getColorValueForThemeWorklet } from '@/__swaps__/utils/swaps';
 import { opacity } from '@/framework/ui/utils/opacity';
 import { LinearGradient } from 'expo-linear-gradient';

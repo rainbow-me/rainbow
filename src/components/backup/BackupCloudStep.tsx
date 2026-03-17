@@ -21,9 +21,9 @@ import RainbowButtonTypes from '../buttons/rainbow-button/RainbowButtonTypes';
 import { usePasswordValidation } from './usePasswordValidation';
 import { type TextInput } from 'react-native';
 import { useTheme } from '@/theme';
-import { useNavigation } from '@/navigation';
-import type Routes from '@/navigation/routesNames';
 import { type RootStackParamList } from '@/navigation/types';
+import { useNavigation } from '@/navigation/Navigation';
+import type Routes from '@/navigation/routesNames';
 import { opacity } from '@/framework/ui/utils/opacity';
 
 type NativeEvent = {

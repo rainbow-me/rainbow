@@ -20,7 +20,7 @@ import { useAccountAddress, useIsHardwareWallet, useIsReadOnlyWallet } from '@/s
 import watchingAlert from '@/utils/watchingAlert';
 import { rewardsFlowActions } from '@/features/rnbw-rewards/stores/rewardsFlowStore';
 import { useTabBarOffset } from '@/hooks/useTabBarOffset';
-import { useNavigation } from '@/navigation';
+import { useNavigation } from '@/navigation/Navigation';
 import Routes from '@/navigation/routesNames';
 import { prepareRewardsClaim } from '@/features/rnbw-rewards/utils/claimRewards';
 

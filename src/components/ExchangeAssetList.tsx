@@ -21,7 +21,7 @@ import contextMenuProps from '@/components/exchangeAssetRowContextMenuProps';
 import { IS_ANDROID, IS_IOS } from '@/env';
 import useAndroidScrollViewGestureHandler from '@/hooks/useAndroidScrollViewGestureHandler';
 import usePrevious from '@/hooks/usePrevious';
-import { useNavigation } from '@/navigation';
+import { useNavigation } from '@/navigation/Navigation';
 import Routes from '@/navigation/routesNames';
 import { useTheme } from '@/theme';
 import abbreviations from '@/utils/abbreviations';

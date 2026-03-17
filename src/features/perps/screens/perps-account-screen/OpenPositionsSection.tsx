@@ -5,7 +5,7 @@ import { PerpPositionCard } from '@/features/perps/components/PerpPositionCard';
 import { DOWN_ARROW, HYPERLIQUID_COLORS, UP_ARROW } from '@/features/perps/constants';
 import { usePerpsPositionsInfo } from '@/features/perps/stores/derived/usePerpsPositionsInfo';
 import { navigateToPerpDetailScreen } from '@/features/perps/utils';
-import { Navigation } from '@/navigation';
+import Navigation from '@/navigation/Navigation';
 import Routes from '@/navigation/routesNames';
 import { Image, StyleSheet } from 'react-native';
 import infinityIcon from '@/assets/infinity.png';

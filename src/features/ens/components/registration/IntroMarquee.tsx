@@ -6,7 +6,7 @@ import { Box, Stack, Text } from '@/design-system';
 import type useENSRecords from '../../hooks/useENSRecords';
 import { ensRecordsQueryKey } from '../../hooks/useENSRecords';
 import { ImgixImage } from '@/components/images';
-import { useNavigation } from '@/navigation';
+import { useNavigation } from '@/navigation/Navigation';
 import { queryClient } from '@/react-query';
 import Routes from '@/navigation/routesNames';
 import { useEnsMarquee } from '../../resources/marqueeQuery';
