@@ -1,1 +1,18 @@
-{}
+{
+  "ignore_dirs": [
+    ".claude",
+    ".github",
+    ".husky",
+    ".idea",
+    ".vscode",
+    ".yarn",
+    "android",
+    "config",
+    "e2e",
+    "ios",
+    "patches",
+    "rainbow-scripts",
+    "scripts",
+    "types"
+  ]
+}

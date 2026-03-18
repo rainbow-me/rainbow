@@ -4,17 +4,11 @@ const blacklist = require('metro-config/src/defaults/exclusionList');
 const { mergeConfig, getDefaultConfig } = require('@react-native/metro-config');
 const { withSentryConfig } = require('@sentry/react-native/metro');
 const { wrapWithReanimatedMetroConfig } = require('react-native-reanimated/metro-config');
-const escapeRegExp = require('lodash/escapeRegExp');
-
-const makeProjectExclusionRE = re => new RegExp(`${escapeRegExp(__dirname)}\\/${re}`);
-
 // Deny list is a function that takes an array of regexes and combines
 // them with the default blacklist to return a single regex.
 const blacklistRE = blacklist([
-  // Ignore native build directories to prevent Metro fast refresh during builds
-  makeProjectExclusionRE('ios\\/.*'),
-  makeProjectExclusionRE('android\\/.*'),
-  // Also nested android build/generated directories (e.g. in node_modules) that cause fast reloads during android builds.
+  // Nested android build/generated directories (e.g. in node_modules) that cause fast reloads during android builds.
+  // Top-level ios/ and android/ dirs are excluded via .watchmanconfig ignore_dirs.
   /.*\/android\/build\/.*/,
   /.*\/android\/\.cxx\/.*/,
   /.*\/android\/.*\.xml/,
