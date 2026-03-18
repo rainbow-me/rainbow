@@ -22,7 +22,7 @@ import * as i18n from '@/languages';
 import { backupsStore } from '@/state/backups/backups';
 import { useIsReadOnlyWallet } from '@/state/wallets/walletsStore';
 import { ReviewPromptAction } from '@/storage/schema';
-import { Themes, useTheme } from '@/theme';
+import { Themes, useTheme } from '@/theme/ThemeContext';
 import { showActionSheetWithOptions } from '@/framework/ui/utils/actionsheet';
 import { openInBrowser } from '@/utils/openInBrowser';
 import { handleReviewPromptAction } from '@/utils/reviewAlert';

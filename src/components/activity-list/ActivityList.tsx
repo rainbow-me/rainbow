@@ -7,7 +7,7 @@ import { Skeleton } from '@/components/Skeleton';
 import { userAssetsStoreManager } from '@/state/assets/userAssetsStoreManager';
 import { useAccountAddress } from '@/state/wallets/walletsStore';
 import styled from '@/framework/ui/styled-thing';
-import { useTheme } from '@/theme';
+import { useTheme } from '@/theme/ThemeContext';
 import safeAreaInsetValues from '@/utils/safeAreaInsetValues';
 import { DEVICE_HEIGHT } from '@/utils/deviceUtils';
 import { LegendList, type LegendListRef } from '@legendapp/list';

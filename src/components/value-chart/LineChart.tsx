@@ -2,7 +2,7 @@ import React, { memo, useMemo } from 'react';
 import { Box, useColorMode } from '@/design-system';
 import { ExtremeLabels, LABEL_VERTICAL_EXTRA_OFFSET } from './ExtremeLabels';
 import { ChartDot, ChartPath, ChartPathProvider, useChartData } from '@/react-native-animated-charts/src';
-import { useTheme } from '@/theme';
+import { useTheme } from '@/theme/ThemeContext';
 import useChartThrottledPoints from '@/hooks/charts/useChartThrottledPoints';
 import { getSolidColorEquivalent } from '@/worklets/colors';
 import { useDelayedMount } from '@/hooks/useDelayedMount';

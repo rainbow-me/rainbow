@@ -2,7 +2,7 @@ import React from 'react';
 import { type StyleProp, StyleSheet, View, type ViewStyle } from 'react-native';
 import { Text, useForegroundColor } from '@/design-system';
 import { type RainbowTransaction, TransactionStatus } from '@/entities/transactions';
-import { type ThemeContextProps } from '@/theme';
+import { type ThemeContextProps } from '@/theme/ThemeContext';
 import * as i18n from '@/languages';
 import { ActivityTypeIcon } from './FastTransactionCoinRow';
 

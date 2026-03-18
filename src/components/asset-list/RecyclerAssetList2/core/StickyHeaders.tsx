@@ -14,7 +14,7 @@ import { Animated as RNAnimated } from 'react-native';
 import type Animated from 'react-native-reanimated';
 import { type BaseScrollView } from 'recyclerlistview';
 import { useRecyclerAssetListPosition } from './Contexts';
-import { useTheme } from '@/theme';
+import { useTheme } from '@/theme/ThemeContext';
 
 const Context = React.createContext<
   | {

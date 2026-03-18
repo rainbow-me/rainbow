@@ -1,4 +1,4 @@
-import { useTheme } from '@/theme';
+import { useTheme } from '@/theme/ThemeContext';
 import { useMemo } from 'react';
 
 export function useInfoIconColor() {

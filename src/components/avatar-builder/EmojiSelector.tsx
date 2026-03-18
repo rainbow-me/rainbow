@@ -25,7 +25,7 @@ import getFormattedAllEmojiList, {
   type AllEmojiHeaderEntry,
 } from './helpers/getFormattedAllEmojiList';
 import { type EmojiCategory, type EmojiEntry } from './types';
-import { useTheme } from '@/theme';
+import { useTheme } from '@/theme/ThemeContext';
 
 const { width } = Dimensions.get('screen');
 

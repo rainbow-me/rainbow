@@ -7,7 +7,7 @@ import usePersistentAspectRatio from '@/hooks/usePersistentAspectRatio';
 import styled from '@/framework/ui/styled-thing';
 import { shadow as shadowUtil } from '@/styles';
 import { usePersistentDominantColorFromImage } from '@/hooks/usePersistentDominantColorFromImage';
-import { type ThemeContextProps, useTheme } from '@/theme';
+import { type ThemeContextProps, useTheme } from '@/theme/ThemeContext';
 import { type StyleProp, View, type ViewStyle } from 'react-native';
 import type { UniqueAsset } from '@/entities/uniqueAssets';
 

@@ -4,7 +4,7 @@ import { Box, Stack, Text } from '@/design-system';
 import ButtonPressAnimation from '@/components/animations/ButtonPressAnimation';
 import * as i18n from '@/languages';
 import Routes from '@/navigation/routesNames';
-import { useTheme } from '@/theme';
+import { useTheme } from '@/theme/ThemeContext';
 import Menu from '../Menu';
 import MenuContainer from '../MenuContainer';
 import MenuItem from '../MenuItem';

@@ -7,7 +7,7 @@ import { Text } from '@/components/text';
 import { useNavigation } from '@/navigation/Navigation';
 import useAppState from '@/hooks/useAppState';
 import styled from '@/framework/ui/styled-thing';
-import { type ThemeContextProps, useTheme } from '@/theme';
+import { type ThemeContextProps, useTheme } from '@/theme/ThemeContext';
 import { type RootStackParamList } from '@/navigation/types';
 import type Routes from '@/navigation/routesNames';
 import { opacity } from '@/framework/ui/utils/opacity';

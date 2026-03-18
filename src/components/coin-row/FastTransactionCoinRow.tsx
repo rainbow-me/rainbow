@@ -5,7 +5,7 @@ import FastTransactionStatusBadge from './FastTransactionStatusBadge';
 import { Bleed, Box, Inline, Text, globalColors, useForegroundColor } from '@/design-system';
 import { type NativeCurrencyKey } from '@/entities/nativeCurrencyTypes';
 import { type RainbowTransaction, TransactionStatus, type TransactionType } from '@/entities/transactions';
-import { type ThemeContextProps } from '@/theme';
+import { type ThemeContextProps } from '@/theme/ThemeContext';
 import { useNavigation } from '@/navigation/Navigation';
 import Routes from '@rainbow-me/routes';
 import { ImgixImage } from '../images';

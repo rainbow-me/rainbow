@@ -104,7 +104,6 @@ const allowedBarrelFiles = [
   'src/features/wallet-connect/stores/walletConnectRequestsStore.ts',
   'src/storage/index.ts',
   'src/framework/ui/styled-thing/index.tsx',
-  'src/theme/index.ts',
   'src/features/wallet-connect/index.tsx',
 ];
 

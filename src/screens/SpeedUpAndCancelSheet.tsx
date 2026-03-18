@@ -22,7 +22,7 @@ import { updateTransaction } from '@/state/pendingTransactions';
 import { useAccountAddress, useIsHardwareWallet } from '@/state/wallets/walletsStore';
 import styled from '@/framework/ui/styled-thing';
 import { position } from '@/styles';
-import { type ThemeContextProps, useTheme } from '@/theme';
+import { type ThemeContextProps, useTheme } from '@/theme/ThemeContext';
 import gasUtils from '@/utils/gas';
 import safeAreaInsetValues from '@/utils/safeAreaInsetValues';
 import { type BigNumberish } from '@ethersproject/bignumber';

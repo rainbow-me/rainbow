@@ -22,7 +22,7 @@ import * as i18n from '@/languages';
 import { queryClient } from '@/react-query';
 import { nftOffersQueryKey, useNFTOffers } from '@/resources/reservoir/nftOffersQuery';
 import { useAccountProfileInfo } from '@/state/wallets/walletsStore';
-import { useTheme } from '@/theme';
+import { useTheme } from '@/theme/ThemeContext';
 import { FlashList } from '@shopify/flash-list';
 import React from 'react';
 import { FakeOfferRow, OfferRow } from './OfferRow';

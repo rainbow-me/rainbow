@@ -5,7 +5,7 @@ import { Bleed, Box, Text, TextIcon, useForegroundColor } from '@/design-system'
 import { type TextColor } from '@/design-system/color/palettes';
 import { type TextWeight } from '@/design-system/components/Text/Text';
 import { type TextSize } from '@/design-system/typography/typeHierarchy';
-import { useTheme } from '@/theme';
+import { useTheme } from '@/theme/ThemeContext';
 import { opacity } from '@/framework/ui/utils/opacity';
 
 export const ToolbarIcon = ({

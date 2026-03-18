@@ -23,7 +23,7 @@ import { getButtonDisabledBgColor, getButtonShadows } from './helpers/buttonStyl
 import { type HoldToAuthorizeBaseProps } from './types/HoldToAuthorizeBaseProps';
 import styled from '@/framework/ui/styled-thing';
 import { padding, position } from '@/styles';
-import { type ThemeContextProps, useTheme } from '@/theme';
+import { type ThemeContextProps, useTheme } from '@/theme/ThemeContext';
 import haptics from '@/utils/haptics';
 import ShadowStack from 'react-native-shadow-stack';
 import * as i18n from '@/languages';

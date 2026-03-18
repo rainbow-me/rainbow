@@ -1,6 +1,6 @@
 import React from 'react';
 import { Bleed, Box, Column, Columns, Inline, Stack, Text, useForegroundColor } from '@/design-system';
-import { useTheme } from '@/theme';
+import { useTheme } from '@/theme/ThemeContext';
 import {
   convertAmountToBalanceDisplay,
   convertAmountToPercentageDisplay,

@@ -4,7 +4,7 @@ import { type StackNavigationOptions, type TransitionPreset } from '@react-navig
 
 import { IS_ANDROID } from '@/env';
 import { lightModeThemeColors } from '@/styles';
-import { currentColors as colors } from '@/theme';
+import colors from '@/theme/currentColors';
 import deviceUtils from '@/utils/deviceUtils';
 import safeAreaInsetValues from '@/utils/safeAreaInsetValues';
 import { HARDWARE_WALLET_TX_NAVIGATOR_SHEET_HEIGHT } from '@/navigation/HardwareWalletTxNavigator';

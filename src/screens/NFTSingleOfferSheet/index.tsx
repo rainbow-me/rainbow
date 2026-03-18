@@ -38,7 +38,7 @@ import { privateKeyToAccount } from 'viem/accounts';
 import { createWalletClient, http } from 'viem';
 
 import { RainbowError, logger } from '@/logger';
-import { useTheme } from '@/theme';
+import { useTheme } from '@/theme/ThemeContext';
 import { type Network, ChainId } from '@/state/backendNetworks/types';
 import { CardSize } from '@/components/unique-token/CardSize';
 import { queryClient } from '@/react-query';

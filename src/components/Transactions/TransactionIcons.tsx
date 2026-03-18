@@ -5,7 +5,7 @@ import { Bleed, Box, Text, globalColors, useForegroundColor } from '@/design-sys
 import { type TextColor } from '@/design-system/color/palettes';
 import { infoForEventType, motiTimingConfig } from '@/components/Transactions/constants';
 
-import { useTheme } from '@/theme';
+import { useTheme } from '@/theme/ThemeContext';
 import { type DetailInfo, type EventInfo, type EventType } from '@/components/Transactions/types';
 import { opacity } from '@/framework/ui/utils/opacity';
 

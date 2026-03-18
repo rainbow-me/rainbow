@@ -9,7 +9,7 @@ import usePrevious from '@/hooks/usePrevious';
 import { useRemoteConfig } from '@/model/remoteConfig';
 import { useRecyclerListViewScrollToTopContext } from '@/navigation/RecyclerListViewScrollToTopContext';
 import { useUserAssetsStore } from '@/state/assets/userAssets';
-import { type ThemeContextProps, useTheme } from '@/theme';
+import { type ThemeContextProps, useTheme } from '@/theme/ThemeContext';
 import deviceUtils from '@/utils/deviceUtils';
 import React, { type LegacyRef, useCallback, useEffect, useMemo, useRef } from 'react';
 import { type LayoutChangeEvent } from 'react-native';

@@ -26,7 +26,7 @@ import Routes from '@/navigation/routesNames';
 import { SortMenu } from '@/components/nft-offers/SortMenu';
 import { type NftOffer } from '@/graphql/__generated__/arc';
 import { analytics } from '@/analytics';
-import { useTheme } from '@/theme';
+import { useTheme } from '@/theme/ThemeContext';
 import { queryClient } from '@/react-query';
 import ActivityIndicator from '@/components/ActivityIndicator';
 import { IS_ANDROID } from '@/env';

@@ -2,7 +2,7 @@ import * as i18n from '@/languages';
 import React from 'react';
 import neverRerender from '@/utils/neverRerender';
 import { Inset, Stack, Text } from '@/design-system';
-import { useTheme } from '@/theme';
+import { useTheme } from '@/theme/ThemeContext';
 import { logger } from '@/logger';
 import { useUserAssetsStore } from '@/state/assets/userAssets';
 

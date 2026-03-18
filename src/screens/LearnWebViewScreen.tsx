@@ -3,7 +3,7 @@ import React, { useCallback, useEffect, useRef, useState } from 'react';
 import { Share, View } from 'react-native';
 import { WebView } from 'react-native-webview';
 import useDimensions from '@/hooks/useDimensions';
-import { useTheme } from '@/theme';
+import { useTheme } from '@/theme/ThemeContext';
 import ActivityIndicator from '@/components/ActivityIndicator';
 import Spinner from '@/components/Spinner';
 import { SlackSheet } from '@/components/sheet';

@@ -15,7 +15,7 @@ import { useStableValue } from '@/hooks/useStableValue';
 import * as i18n from '@/languages';
 import Navigation from '@/navigation/Navigation';
 import Routes from '@/navigation/routesNames';
-import { useTheme } from '@/theme';
+import { useTheme } from '@/theme/ThemeContext';
 import React, { memo, useEffect, useMemo, useState } from 'react';
 import { Animated as RNAnimated } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';

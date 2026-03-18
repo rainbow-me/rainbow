@@ -23,7 +23,7 @@ import { analytics } from '@/analytics';
 import { useHardwareBackOnFocus } from '@/hooks/useHardwareBack';
 import { useNavigation } from '@/navigation/Navigation';
 import Routes from '@rainbow-me/routes';
-import { useTheme } from '@/theme';
+import { useTheme } from '@/theme/ThemeContext';
 import { ensureError, logger, RainbowError } from '@/logger';
 import { IS_ANDROID, IS_IOS, IS_TEST } from '@/env';
 import { WelcomeScreenRainbowButton } from '@/screens/WelcomeScreen/WelcomeScreenRainbowButton';

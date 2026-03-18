@@ -4,7 +4,7 @@ import magicMemo from '@/utils/magicMemo';
 import styled from '@/framework/ui/styled-thing';
 import { borders, position } from '@/styles';
 import { View } from 'react-native';
-import { type ThemeContextProps, useTheme } from '@/theme';
+import { type ThemeContextProps, useTheme } from '@/theme/ThemeContext';
 
 export const DividerSize = 2;
 

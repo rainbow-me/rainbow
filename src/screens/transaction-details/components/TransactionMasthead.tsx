@@ -8,7 +8,7 @@ import { Bleed, Box, Columns, Cover, Row, Rows, Separator, Stack, Text, type Tex
 
 import styled from '@/framework/ui/styled-thing';
 import { position } from '@/styles';
-import { type ThemeContextProps, useTheme } from '@/theme';
+import { type ThemeContextProps, useTheme } from '@/theme/ThemeContext';
 import { usePersistentDominantColorFromImage } from '@/hooks/usePersistentDominantColorFromImage';
 import RowWithMargins from '@/components/layout/RowWithMargins';
 import { IS_ANDROID } from '@/env';

@@ -5,7 +5,7 @@ import { Text } from '../text';
 import styled from '@/framework/ui/styled-thing';
 import { type Colors } from '../../styles/colors';
 import { Box } from '@/design-system';
-import { useTheme } from '@/theme';
+import { useTheme } from '@/theme/ThemeContext';
 import { View } from 'moti';
 import { opacity } from '@/framework/ui/utils/opacity';
 
