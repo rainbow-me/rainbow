@@ -4,10 +4,14 @@ const blacklist = require('metro-config/src/defaults/exclusionList');
 const { mergeConfig, getDefaultConfig } = require('@react-native/metro-config');
 const { withSentryConfig } = require('@sentry/react-native/metro');
 const { wrapWithReanimatedMetroConfig } = require('react-native-reanimated/metro-config');
-
 // Deny list is a function that takes an array of regexes and combines
 // them with the default blacklist to return a single regex.
 const blacklistRE = blacklist([
+  // Nested android build/generated directories (e.g. in node_modules) that cause fast reloads during android builds.
+  // Top-level ios/ and android/ dirs are excluded via .watchmanconfig ignore_dirs.
+  /.*\/android\/build\/.*/,
+  /.*\/android\/\.cxx\/.*/,
+  /.*\/android\/.*\.xml/,
   // react-native-animated-charts
   /src\/react-native-animated-charts\/Example\/.*/,
   /src\/react-native-animated-charts\/node_modules\/.*/,
