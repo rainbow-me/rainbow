@@ -83,7 +83,7 @@ export const WelcomeScreenRainbowButton = ({
     <ButtonPressAnimation onPress={onPress} radiusAndroid={height / 2} scaleTo={0.9} {...props}>
       {ios && <DarkShadow style={darkShadowStyle} />}
       <Shadow style={shadowStyle} />
-      <ButtonContainer height={height} style={[style, { elevation: 30 }]}>
+      <ButtonContainer height={height} style={[style, { elevation: 31, shadowColor: 'transparent' }]}>
         <ButtonContent>
           <ButtonEmoji name={emoji} />
           <ButtonLabel textColor={textColor}>{text}</ButtonLabel>
