@@ -1,7 +1,7 @@
 import remoteConfig, { type FirebaseRemoteConfigTypes } from '@react-native-firebase/remote-config';
 import { useEffect } from 'react';
 import { dequal } from 'dequal';
-import { IS_DEV, IS_TEST_FLIGHT } from '@/env';
+import { IS_DEV, IS_INTERNAL } from '@/env';
 import { CURRENT_APP_VERSION } from '@/hooks/useAppVersion';
 import { RainbowError, logger } from '@/logger';
 import { ChainId, Network } from '@/state/backendNetworks/types';
@@ -214,8 +214,8 @@ export const DEFAULT_CONFIG = {
   king_of_the_hill2_enabled: false,
   king_of_the_hill_enabled: false,
   prince_of_the_hill_enabled: false,
-  candlestick_charts_enabled: IS_DEV || IS_TEST_FLIGHT,
-  rainbow_toasts_enabled: IS_DEV || IS_TEST_FLIGHT,
+  candlestick_charts_enabled: IS_INTERNAL,
+  rainbow_toasts_enabled: IS_INTERNAL,
   perps_enabled: false,
   polymarket_enabled: false,
   dev_section_enabled: IS_DEV,

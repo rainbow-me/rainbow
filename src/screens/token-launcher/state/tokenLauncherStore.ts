@@ -26,7 +26,7 @@ import { type LaunchTokenResponse, TokenLauncherSDKError } from '@rainbow-me/tok
 import { Alert } from 'react-native';
 import { logger, RainbowError } from '@/logger';
 import { analytics } from '@/analytics';
-import { IS_DEV, IS_TEST_FLIGHT } from '@/env';
+import { IS_INTERNAL } from '@/env';
 import { type Link, type LinkType } from '../types';
 import { useSuperTokenStore } from './rainbowSuperTokenStore';
 import { calculateAndCacheDominantColor } from '@/hooks/usePersistentDominantColorFromImage';
@@ -38,7 +38,7 @@ import { type ParsedAsset } from '@/resources/assets/types';
 import { tokenLaunchErrorToErrorMessage } from '../helpers/tokenLaunchErrorToErrorMessage';
 
 // TODO: Remove this — temporary option for testing
-const REQUIRE_TOKEN_LOGO = !(IS_TEST_FLIGHT || IS_DEV);
+const REQUIRE_TOKEN_LOGO = !IS_INTERNAL;
 
 export const enum NavigationSteps {
   INFO = 0,

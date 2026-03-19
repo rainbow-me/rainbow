@@ -13,7 +13,7 @@ import ConditionalWrap from 'conditional-wrap';
 import { address } from '@/utils/abbreviations';
 import { removeFirstEmojiFromString } from '@/helpers/emojiHandler';
 import { PANEL_WIDTH } from '@/components/SmoothPager/ListPanel';
-import { IS_DEV, IS_IOS, IS_TEST_FLIGHT } from '@/env';
+import { IS_INTERNAL, IS_IOS } from '@/env';
 import { DELEGATION, getExperimentalFlag } from '@/config/experimentalHooks';
 import { getRemoteConfig } from '@/model/remoteConfig';
 import { useTheme } from '@/theme/ThemeContext';
@@ -223,9 +223,7 @@ export function PinnedWalletsGrid({ walletItems, onPress, editMode, menuItems, o
                       </Text>
                     ) : null}
 
-                    {(IS_DEV || IS_TEST_FLIGHT) && delegationEnabled && !account.isReadOnly ? (
-                      <DelegationBadge accountAddress={account.address} />
-                    ) : null}
+                    {IS_INTERNAL && delegationEnabled && !account.isReadOnly ? <DelegationBadge accountAddress={account.address} /> : null}
 
                     <Text numberOfLines={1} ellipsizeMode="middle" color="label" size="13pt" weight="bold">
                       {walletName}

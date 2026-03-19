@@ -26,3 +26,6 @@ export const RPC_PROXY_BASE_URL = RPC_PROXY_BASE_URL_PROD;
 export const RPC_PROXY_API_KEY = RPC_PROXY_API_KEY_PROD;
 
 export const IS_TEST_FLIGHT = IS_IOS && getInstallerPackageNameSync() === 'TestFlight';
+
+export const IS_STORE_INSTALL = !IS_DEV && !IS_TEST_FLIGHT;
+export const IS_INTERNAL = IS_DEV || !IS_STORE_INSTALL;
