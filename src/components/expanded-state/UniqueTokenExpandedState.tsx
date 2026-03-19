@@ -1,5 +1,5 @@
 import { analytics } from '@/analytics';
-import { PROFILES, useExperimentalFlag } from '@/config';
+import useExperimentalFlag, { PROFILES } from '@/config/experimentalHooks';
 import {
   AccentColorProvider,
   Bleed,

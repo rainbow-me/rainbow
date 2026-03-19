@@ -1,6 +1,6 @@
 import { useWillDelegate } from '@rainbow-me/delegation';
 import type { Address } from 'viem';
-import { DELEGATION, useExperimentalFlag } from '@/config';
+import useExperimentalFlag, { DELEGATION } from '@/config/experimentalHooks';
 import { useRemoteConfig } from '@/model/remoteConfig';
 import { useIsHardwareWallet } from '@/state/wallets/walletsStore';
 

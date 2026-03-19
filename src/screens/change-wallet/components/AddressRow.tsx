@@ -17,7 +17,7 @@ import { Icon } from '@/components/icons';
 import { removeFirstEmojiFromString } from '@/helpers/emojiHandler';
 import { address as abbreviateAddress } from '@/utils/abbreviations';
 import { IS_DEV, IS_TEST_FLIGHT } from '@/env';
-import { DELEGATION, getExperimentalFlag } from '@/config';
+import { DELEGATION, getExperimentalFlag } from '@/config/experimentalHooks';
 import { getRemoteConfig } from '@/model/remoteConfig';
 import { DelegationStatus, useDelegations, useDelegationDisabled } from '@rainbow-me/delegation';
 import type { Address } from 'viem';

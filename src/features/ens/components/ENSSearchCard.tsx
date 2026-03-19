@@ -1,5 +1,5 @@
 import { analytics } from '@/analytics';
-import { enableActionsOnReadOnlyWallet } from '@/config';
+import { enableActionsOnReadOnlyWallet } from '@/config/debug';
 import { Box, ColorModeProvider, globalColors, Stack, Text } from '@/design-system';
 import { REGISTRATION_MODES } from '../utils/helpers';
 import useENSPendingRegistrations from '../hooks/useENSPendingRegistrations';

@@ -8,7 +8,7 @@ import CloudBackedUpIcon from '@/assets/BackedUpCloud.png';
 import BackupWarningIcon from '@/assets/BackupWarning.png';
 import CloudBackupWarningIcon from '@/assets/CloudBackupWarning.png';
 import ManuallyBackedUpIcon from '@/assets/ManuallyBackedUp.png';
-import { DELEGATION, getExperimentalFlag } from '@/config';
+import { DELEGATION, getExperimentalFlag } from '@/config/experimentalHooks';
 import { useCreateBackup } from '@/components/backup/useCreateBackup';
 import { ContactAvatar } from '@/components/contacts';
 import ImageAvatar from '@/components/contacts/ImageAvatar';

@@ -1,6 +1,6 @@
 import useLatestCallback from '@/hooks/useLatestCallback';
 import { useRemoteConfig } from '@/model/remoteConfig';
-import { NFTS_ENABLED, useExperimentalFlag } from '@/config';
+import useExperimentalFlag, { NFTS_ENABLED } from '@/config/experimentalHooks';
 import * as i18n from '@/languages';
 import React, { useMemo, useRef } from 'react';
 import { Animated, Easing, StyleSheet, View } from 'react-native';

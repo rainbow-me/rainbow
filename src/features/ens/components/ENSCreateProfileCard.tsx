@@ -1,5 +1,5 @@
 import { analytics } from '@/analytics';
-import { enableActionsOnReadOnlyWallet } from '@/config';
+import { enableActionsOnReadOnlyWallet } from '@/config/debug';
 import { Bleed, Box, ColorModeProvider, Column, Columns, Stack, Text } from '@/design-system';
 import { prefetchENSAvatar } from '../hooks/useENSAvatar';
 import { prefetchENSRecords } from '../hooks/useENSRecords';

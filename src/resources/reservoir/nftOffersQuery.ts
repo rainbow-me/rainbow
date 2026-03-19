@@ -1,6 +1,6 @@
 import { analytics } from '@/analytics';
 import { nftOffersSortAtom } from '@/components/nft-offers/SortMenu';
-import { NFT_OFFERS, useExperimentalFlag } from '@/config';
+import useExperimentalFlag, { NFT_OFFERS } from '@/config/experimentalHooks';
 import { arcClient } from '@/graphql';
 import { type GetNftOffersQuery, type NftOffer, SortCriterion } from '@/graphql/__generated__/arc';
 import { type QueryFunctionArgs, type QueryFunctionResult, createQueryKey, queryClient } from '@/react-query';

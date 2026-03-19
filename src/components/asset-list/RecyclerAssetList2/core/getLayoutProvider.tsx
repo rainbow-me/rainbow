@@ -3,7 +3,7 @@ import ViewDimensions from './ViewDimensions';
 import { CellType, type CellTypes } from './ViewTypes';
 import deviceUtils from '@/utils/deviceUtils';
 import { type RainbowConfig } from '@/model/remoteConfig';
-import { NFTS_ENABLED } from '@/config';
+import { NFTS_ENABLED } from '@/config/experimentalHooks';
 import { type useContext } from 'react';
 import { type RainbowContextType } from '@/helpers/RainbowContext';
 

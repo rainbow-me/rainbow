@@ -4,7 +4,7 @@ import { useForegroundColor } from '@/design-system';
 import { useTheme } from '@/theme/ThemeContext';
 import { opacity } from '@/framework/ui/utils/opacity';
 import deviceUtils from '@/utils/deviceUtils';
-import { NFTS_ENABLED, useExperimentalFlag } from '@/config';
+import useExperimentalFlag, { NFTS_ENABLED } from '@/config/experimentalHooks';
 import { useRemoteConfig } from '@/model/remoteConfig';
 
 export const TokenFamilyHeaderHeight = 50;

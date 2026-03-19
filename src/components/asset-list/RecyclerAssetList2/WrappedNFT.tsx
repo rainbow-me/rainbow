@@ -5,7 +5,7 @@ import type { UniqueAsset } from '@/entities/uniqueAssets';
 import Navigation from '@/navigation/Navigation';
 import Routes from '@/navigation/routesNames';
 import { useRemoteConfig } from '@/model/remoteConfig';
-import { NFTS_ENABLED, useExperimentalFlag } from '@/config';
+import useExperimentalFlag, { NFTS_ENABLED } from '@/config/experimentalHooks';
 import { useNftsStore } from '@/state/nfts/nfts';
 
 export const WrappedNFT = React.memo(function WrappedNFT({

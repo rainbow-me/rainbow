@@ -1,4 +1,4 @@
-import { CANDLESTICK_CHARTS, useExperimentalFlag } from '@/config';
+import useExperimentalFlag, { CANDLESTICK_CHARTS } from '@/config/experimentalHooks';
 import { isHyperliquidToken } from '@/features/charts/utils';
 import { useRemoteConfig } from '@/model/remoteConfig';
 import { createRainbowStore } from '@/state/internal/createRainbowStore';

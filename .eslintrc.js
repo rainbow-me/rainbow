@@ -52,7 +52,6 @@ const allowedBarrelFiles = [
   'src/components/sheet/sheet-action-buttons/index.ts',
   'src/components/unique-token/index.ts',
   'src/components/video/index.ts',
-  'src/config/index.ts',
   'src/design-system/docs/components/CodePreview/index.tsx',
   'src/design-system/docs/components/DocsAccordion/index.tsx',
   'src/design-system/docs/components/index.tsx',

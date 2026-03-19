@@ -1,6 +1,6 @@
 import { analytics } from '@/analytics';
 import { useCallback, useEffect, useMemo } from 'react';
-import { MINTS, useExperimentalFlag } from '@/config';
+import useExperimentalFlag, { MINTS } from '@/config/experimentalHooks';
 import { IS_TEST } from '@/env';
 import { arcClient } from '@/graphql';
 import { type GetMintableCollectionsQuery } from '@/graphql/__generated__/arc';

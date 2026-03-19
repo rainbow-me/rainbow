@@ -4,7 +4,7 @@ import { useWalletsStore } from '@/state/wallets/walletsStore';
 import Navigation from '@/navigation/Navigation';
 import Routes from '@/navigation/routesNames';
 import { RevokeReason } from '@/screens/delegation/RevokeDelegationPanel';
-import { DELEGATION, getExperimentalFlag } from '@/config';
+import { DELEGATION, getExperimentalFlag } from '@/config/experimentalHooks';
 import { getRemoteConfig } from '@/model/remoteConfig';
 import { EthereumWalletType } from '@/helpers/walletTypes';
 

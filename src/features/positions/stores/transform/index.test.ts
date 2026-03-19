@@ -17,7 +17,7 @@ import {
 import { createMockAsset } from '../../__fixtures__/mocks/assets';
 import { createSimpleDapp } from '../../__fixtures__/mocks/positions';
 
-jest.mock('@/config', () => ({
+jest.mock('@/config/experimentalHooks', () => ({
   getExperimentalFlag: jest.fn(() => true),
   DEFI_POSITIONS_THRESHOLD_FILTER: 'defi_positions_threshold_filter',
 }));

@@ -3,7 +3,7 @@ import { TokenFamilyHeader } from '../../token-family';
 import useLatestCallback from '@/hooks/useLatestCallback';
 import { type ThemeContextProps } from '@/theme/ThemeContext';
 import { useRemoteConfig } from '@/model/remoteConfig';
-import { NFTS_ENABLED, useExperimentalFlag } from '@/config';
+import useExperimentalFlag, { NFTS_ENABLED } from '@/config/experimentalHooks';
 import { useNftsStore } from '@/state/nfts/nfts';
 import { useOpenCollectionsStore } from '@/state/nfts/openCollectionsStore';
 

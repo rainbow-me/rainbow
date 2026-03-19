@@ -1,7 +1,7 @@
 import { NavigationSteps, useSwapContext } from '@/__swaps__/screens/Swap/providers/swap-provider';
 import { opacity } from '@/framework/ui/utils/opacity';
 import { Box, Separator, Text, globalColors, useColorMode } from '@/design-system';
-import { ATOMIC_SWAPS, RNBW_REWARDS, getExperimentalFlag, useExperimentalFlag } from '@/config';
+import useExperimentalFlag, { ATOMIC_SWAPS, RNBW_REWARDS, getExperimentalFlag } from '@/config/experimentalHooks';
 import { getRemoteConfig, useRemoteConfig } from '@/model/remoteConfig';
 import React, { memo, useCallback } from 'react';
 import { StyleSheet } from 'react-native';
