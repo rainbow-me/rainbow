@@ -26,9 +26,3 @@ tags:
       id: sandbox-test-results
     timeout: 15000
 - assertVisible: 'SANDBOX_TEST_PASSED'
-- assertVisible: '.*status 500.*'
-- assertVisible:
-    id: sandbox-http_allowed
-- assertVisible: '.*(connection closed|no events fired).*'
-- assertVisible: '.*unexpected behavior.*'
-- assertVisible: '.*webview_blocked.*PASS.*'

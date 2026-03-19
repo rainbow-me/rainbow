@@ -1,15 +1,12 @@
-import { logger } from '@/logger';
-
 export interface SandboxTestResult {
   name: string;
   passed: boolean;
   detail: string;
 }
 
-export interface WebViewTest {
-  promise: Promise<SandboxTestResult>;
-  onError: () => void;
-  onHttpError: () => void;
+export interface WebViewTests {
+  initialLoad: { promise: Promise<SandboxTestResult>; onError: () => void };
+  jsNavigation: { promise: Promise<SandboxTestResult>; onMessage: (event: { nativeEvent: { data: string } }) => void };
 }
 
 async function testHttpBlocked(): Promise<SandboxTestResult> {
@@ -26,8 +23,11 @@ async function testHttpBlocked(): Promise<SandboxTestResult> {
 
 async function testHttpAllowed(): Promise<SandboxTestResult> {
   try {
-    const response = await fetch('https://rainbow-me.github.io');
-    return { name: 'http_allowed', passed: true, detail: `allowed with status ${response.status}` };
+    const response = await fetch('https://rainbow.me');
+    if (response.ok) {
+      return { name: 'http_allowed', passed: true, detail: `allowed with status ${response.status}` };
+    }
+    return { name: 'http_allowed', passed: false, detail: `unexpected status ${response.status}` };
   } catch (e) {
     return { name: 'http_allowed', passed: false, detail: `blocked with error: ${(e as Error).message}` };
   }
@@ -60,6 +60,7 @@ function testWsBlocked(): Promise<SandboxTestResult> {
 function testNativeModuleBlocked(): SandboxTestResult {
   try {
     const { NativeModules } = require('react-native');
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
     const _module = NativeModules.RNRestart;
     return { name: 'native_module_blocked', passed: false, detail: 'no error thrown' };
   } catch (e) {
@@ -71,25 +72,41 @@ function testNativeModuleBlocked(): SandboxTestResult {
   }
 }
 
-export function createWebViewTest(): WebViewTest {
-  let resolve: (result: SandboxTestResult) => void;
-  const promise = new Promise<SandboxTestResult>(r => {
-    resolve = r;
+/**
+ * Creates two WebView tests:
+ * 1. initialLoad — loads a blocked URL directly, expects onError
+ * 2. jsNavigation — loads an allowed page, attempts JS navigation to blocked URL,
+ *    then reports current URL via onMessage. If blocked, URL stays on allowed domain.
+ */
+export function createWebViewTests(): WebViewTests {
+  let resolveInitial: (result: SandboxTestResult) => void;
+  const initialPromise = new Promise<SandboxTestResult>(r => {
+    resolveInitial = r;
   });
 
-  const timeout = setTimeout(() => {
-    resolve({ name: 'webview_blocked', passed: false, detail: 'no error within timeout' });
-  }, 10000);
+  let resolveJs: (result: SandboxTestResult) => void;
+  const jsPromise = new Promise<SandboxTestResult>(r => {
+    resolveJs = r;
+  });
 
   return {
-    promise,
-    onError: () => {
-      clearTimeout(timeout);
-      resolve({ name: 'webview_blocked', passed: true, detail: 'blocked by onError' });
+    initialLoad: {
+      promise: initialPromise,
+      onError: () => {
+        resolveInitial({ name: 'webview_initial_blocked', passed: true, detail: 'blocked by onError' });
+      },
     },
-    onHttpError: () => {
-      clearTimeout(timeout);
-      resolve({ name: 'webview_blocked', passed: true, detail: 'blocked by onHttpError' });
+    jsNavigation: {
+      promise: jsPromise,
+      onMessage: (event: { nativeEvent: { data: string } }) => {
+        const url = event.nativeEvent.data;
+        const blocked = !url.includes('example.com');
+        resolveJs({
+          name: 'webview_js_nav_blocked',
+          passed: blocked,
+          detail: blocked ? `blocked: still on ${url}` : `not blocked: navigated to ${url}`,
+        });
+      },
     },
   };
 }
@@ -100,6 +117,5 @@ export async function runSandboxTests(): Promise<SandboxTestResult[]> {
   results.push(await testHttpAllowed());
   results.push(await testWsBlocked());
   results.push(testNativeModuleBlocked());
-  logger.info('[SandboxTest] results', { results });
   return results;
 }

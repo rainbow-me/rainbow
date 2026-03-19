@@ -1,4 +1,4 @@
-import { type SandboxTestResult, type WebViewTest, createWebViewTest, runSandboxTests } from '../core/sandboxSecurityTest';
+import { type SandboxTestResult, type WebViewTests, createWebViewTests, runSandboxTests } from '../core/sandboxSecurityTest';
 import { savePIN } from '@/handlers/authentication';
 import { logger } from '@/logger';
 import Navigation from '@/navigation/Navigation';
@@ -15,7 +15,7 @@ import { SandboxWebViewTest } from './SandboxWebViewTest';
  */
 export function TestDeeplinkHandler() {
   const [results, setResults] = useState<SandboxTestResult[] | null>(null);
-  const [webViewTest, setWebViewTest] = useState<WebViewTest | undefined>();
+  const [webViewTests, setWebViewTests] = useState<WebViewTests | undefined>();
   const [webViewDone, setWebViewDone] = useState(false);
 
   useEffect(() => {
@@ -40,10 +40,10 @@ export function TestDeeplinkHandler() {
           });
           break;
         case 'sandbox-test': {
-          const wvTest = createWebViewTest();
-          setWebViewTest(wvTest);
-          wvTest.promise.then(result => {
-            setResults(prev => (prev ? [...prev, result] : [result]));
+          const wvTests = createWebViewTests();
+          setWebViewTests(wvTests);
+          Promise.all([wvTests.initialLoad.promise, wvTests.jsNavigation.promise]).then(wvResults => {
+            setResults(prev => (prev ? [...prev, ...wvResults] : wvResults));
             setWebViewDone(true);
           });
           const syncResults = await runSandboxTests();
@@ -63,7 +63,8 @@ export function TestDeeplinkHandler() {
     return (
       <>
         <SandboxSecurityResults results={results} allDone={webViewDone} />
-        {webViewTest && !webViewDone && <SandboxWebViewTest {...webViewTest} />}
+        {/* eslint-disable-next-line react/jsx-props-no-spreading */}
+        {webViewTests && <SandboxWebViewTest {...webViewTests} />}
       </>
     );
   }
