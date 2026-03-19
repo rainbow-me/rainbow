@@ -10,7 +10,8 @@ import { type TransactionGasParams, type TransactionLegacyGasParams } from '@/__
 import { type NewTransaction, TransactionStatus } from '@/entities/transactions';
 import { addNewTransaction } from '@/state/pendingTransactions';
 import { RainbowError, ensureError, logger } from '@/logger';
-import { ETH_ADDRESS, gasUnits } from '@/references';
+import { gasUnits } from '@/references/gasUnits';
+import { ETH_ADDRESS } from '@/references/constants';
 import { type ActionProps, type PrepareActionProps, type RapActionResult, type RapUnlockActionParameters } from '../references';
 import { overrideWithFastSpeedIfNeeded } from './../utils';
 import { useBackendNetworksStore } from '@/state/backendNetworks/backendNetworks';

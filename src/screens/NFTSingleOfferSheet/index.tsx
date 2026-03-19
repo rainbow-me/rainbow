@@ -50,7 +50,7 @@ import { addNewTransaction } from '@/state/pendingTransactions';
 import { getUniqueId } from '@/utils/ethereumUtils';
 import { getNextNonce } from '@/state/nonces';
 import { metadataPOSTClient } from '@/graphql';
-import { ethUnits } from '@/references';
+import ethUnits from '@/references/ethereum-units.json';
 import { type Transaction } from '@/graphql/__generated__/metadataPOST';
 import { useBackendNetworksStore } from '@/state/backendNetworks/backendNetworks';
 import { openInBrowser } from '@/utils/openInBrowser';

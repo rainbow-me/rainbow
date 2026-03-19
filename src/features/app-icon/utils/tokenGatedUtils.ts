@@ -1,6 +1,6 @@
 import type { EthereumAddress } from '@/entities/wallet';
 import { getProvider } from '@/handlers/web3';
-import { tokenGateCheckerAbi } from '@/references';
+import tokenGateCheckerAbi from '@/references/token-gate-checker-abi.json';
 import { Network } from '@/state/backendNetworks/types';
 import { useBackendNetworksStore } from '@/state/backendNetworks/backendNetworks';
 import { Interface } from '@ethersproject/abi';

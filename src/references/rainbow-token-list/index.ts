@@ -1,7 +1,7 @@
 import { EventEmitter } from 'events';
 import { keyBy } from 'lodash';
 import { createMMKV } from 'react-native-mmkv';
-import { ETH_ADDRESS } from '../index';
+import { ETH_ADDRESS } from '../constants';
 import RAINBOW_TOKEN_LIST_DATA from './rainbow-token-list.json';
 import { type RainbowToken } from '@/entities/tokens';
 import { STORAGE_IDS } from '@/model/mmkv';

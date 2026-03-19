@@ -17,7 +17,8 @@ import { type NewTransaction, TransactionStatus, TransactionDirection } from '@/
 import { add } from '@/helpers/utilities';
 import { addNewTransaction } from '@/state/pendingTransactions';
 import { RainbowError, ensureError, logger } from '@/logger';
-import { gasUnits, REFERRER } from '@/references';
+import { gasUnits } from '@/references/gasUnits';
+import { REFERRER } from '@/references/constants';
 import { type TransactionGasParams, type TransactionLegacyGasParams } from '@/__swaps__/types/gas';
 import { type ActionProps, type PrepareActionProps, type RapActionResult, type RapSwapActionParameters } from '../references';
 import {

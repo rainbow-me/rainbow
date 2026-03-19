@@ -8,7 +8,7 @@ import { ContextMenuButton } from '@/components/context-menu';
 import { Box, Column, Columns, HitSlop, Inline, Text } from '@/design-system';
 import { setClipboard } from '@/hooks/useClipboard';
 import * as i18n from '@/languages';
-import { ETH_ADDRESS } from '@/references';
+import { ETH_ADDRESS } from '@/references/constants';
 import { toggleFavorite } from '@/resources/favorites';
 import { useUserAssetsStore } from '@/state/assets/userAssets';
 import { showActionSheetWithOptions } from '@/framework/ui/utils/actionsheet';

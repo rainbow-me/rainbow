@@ -13,7 +13,7 @@ import { loadWallet } from '@/model/wallet';
 import Navigation from '@/navigation/Navigation';
 import { walletExecuteRap } from '@/raps/execute';
 import { type RapSwapActionParameters, rapTypes } from '@/raps/references';
-import { erc20ABI } from '@/references';
+import erc20ABI from '@/references/erc20-abi.json';
 import { sumWorklet } from '@/framework/core/safeMath';
 import { useBackendNetworksStore } from '@/state/backendNetworks/backendNetworks';
 import { type ChainId } from '@/state/backendNetworks/types';

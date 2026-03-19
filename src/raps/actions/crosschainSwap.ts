@@ -4,7 +4,8 @@ import { type CrosschainQuote, prepareFillCrosschainQuote, SwapType } from '@rai
 import { estimateGasWithPadding, getProvider, toHex } from '@/handlers/web3';
 import { add } from '@/helpers/utilities';
 import { estimateApprove } from './unlock';
-import { REFERRER, gasUnits, type ReferrerType } from '@/references';
+import { gasUnits } from '@/references/gasUnits';
+import { REFERRER, type ReferrerType } from '@/references/constants';
 import { type ChainId } from '@/state/backendNetworks/types';
 import { type NewTransaction, TransactionDirection, TransactionStatus } from '@/entities/transactions';
 import { addNewTransaction } from '@/state/pendingTransactions';

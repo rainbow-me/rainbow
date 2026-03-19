@@ -8,7 +8,7 @@ import { getProvider } from '@/handlers/web3';
 import { add, addBuffer, greaterThan, lessThan, multiply, subtract } from '@/helpers/utilities';
 import { RainbowError } from '@/logger';
 import store from '@/redux/store';
-import { REFERRER_CLAIM } from '@/references';
+import { REFERRER_CLAIM } from '@/references/constants';
 import { addNewTransaction } from '@/state/pendingTransactions';
 import ethereumUtils from '@/utils/ethereumUtils';
 import { type ActionProps } from '../references';

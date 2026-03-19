@@ -5,7 +5,7 @@ import { IS_IOS } from '@/env';
 import { REGISTRATION_MODES } from '@/features/ens/utils/helpers';
 import { isZero } from '@/helpers/utilities';
 import Routes from '@/navigation/routesNames';
-import { ETH_ADDRESS } from '@/references';
+import { ETH_ADDRESS } from '@/references/constants';
 import { useAccountProfileInfo, getIsReadOnlyWallet, useWalletsStore, updateAccountInfo } from '@/state/wallets/walletsStore';
 import { showActionSheetWithOptions } from '@/framework/ui/utils/actionsheet';
 import { buildRainbowUrl } from '@/utils/buildRainbowUrl';

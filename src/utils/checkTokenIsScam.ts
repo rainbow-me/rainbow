@@ -1,4 +1,4 @@
-import { rainbowTokenList } from '@/references';
+import { rainbowTokenList } from '@/references/rainbow-token-list';
 
 export default function checkTokenIsScam(name: string, symbol: string): boolean {
   const nameFound = rainbowTokenList.TOKEN_SAFE_LIST[name?.toLowerCase()];

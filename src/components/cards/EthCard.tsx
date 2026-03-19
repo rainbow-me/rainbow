@@ -11,7 +11,7 @@ import { useRemoteConfig } from '@/model/remoteConfig';
 import { useNavigation } from '@/navigation/Navigation';
 import Routes from '@/navigation/routesNames';
 import { ChartDot, ChartPath, ChartPathProvider } from '@/react-native-animated-charts/src';
-import { ETH_ADDRESS } from '@/references';
+import { ETH_ADDRESS } from '@/references/constants';
 import { type FormattedExternalAsset, useExternalToken } from '@/resources/assets/externalAssetsQuery';
 import { ChainId, Network } from '@/state/backendNetworks/types';
 import { getIsDamagedWallet } from '@/state/wallets/walletsStore';

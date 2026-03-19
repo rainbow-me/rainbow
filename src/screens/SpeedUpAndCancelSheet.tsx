@@ -16,7 +16,7 @@ import { type RootStackParamList } from '@/navigation/types';
 import { parseGasParamsForTransaction } from '@/parsers/gas';
 import { removeRegistrationByName, saveCommitRegistrationParameters } from '@/features/ens/redux/registration';
 import { updateGasFeeForSpeed } from '@/redux/gas';
-import { ethUnits } from '@/references';
+import ethUnits from '@/references/ethereum-units.json';
 import { ChainId } from '@/state/backendNetworks/types';
 import { updateTransaction } from '@/state/pendingTransactions';
 import { useAccountAddress, useIsHardwareWallet } from '@/state/wallets/walletsStore';

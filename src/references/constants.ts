@@ -1,19 +1,5 @@
 import { type Asset } from '@/entities/tokens';
 
-export { default as balanceCheckerContractAbi } from './balances-checker-abi.json';
-export { default as chainAssets } from './chain-assets.json';
-export { signatureRegistryABI, SIGNATURE_REGISTRY_ADDRESS } from './signatureRegistry';
-export { default as erc20ABI } from './erc20-abi.json';
-export { default as tokenGateCheckerAbi } from './token-gate-checker-abi.json';
-export { default as optimismGasOracleAbi } from './optimism-gas-oracle-abi.json';
-export { default as ethUnits } from './ethereum-units.json';
-export { default as timeUnits } from './time-units.json';
-export { supportedCurrencies as supportedNativeCurrencies, type SupportedCurrencyKey, type SupportedCurrency } from './supportedCurrencies';
-export { default as shitcoins } from './shitcoins';
-export { default as smartContractMethods } from './smartcontract-methods.json';
-export { rainbowTokenList } from './rainbow-token-list';
-export { gasUnits } from './gasUnits';
-
 export const OVM_GAS_PRICE_ORACLE = '0x420000000000000000000000000000000000000F';
 
 // NFTs Contracts

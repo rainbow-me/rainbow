@@ -1,4 +1,4 @@
-import { supportedNativeCurrencies } from '@/references';
+import { supportedCurrencies as supportedNativeCurrencies } from '@/references/supportedCurrencies';
 import { resolveCurrencyFlagEmoji } from './currencyFlagEmoji';
 
 describe('resolveCurrencyFlagEmoji', () => {

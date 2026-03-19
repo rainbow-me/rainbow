@@ -11,7 +11,7 @@ import {
   getNameExpires,
   getRentPrice,
 } from '../utils/helpers';
-import { timeUnits } from '@/references';
+import timeUnits from '@/references/time-units.json';
 import ethereumUtils from '@/utils/ethereumUtils';
 import { validateENS } from '../utils/records';
 import { ChainId } from '@/state/backendNetworks/types';

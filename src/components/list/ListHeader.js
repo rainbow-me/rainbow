@@ -3,7 +3,7 @@ import useDimensions from '@/hooks/useDimensions';
 import useHiddenTokens from '@/hooks/useHiddenTokens';
 import useShowcaseTokens from '@/hooks/useShowcaseTokens';
 import * as i18n from '@/languages';
-import { RAINBOW_PROFILES_BASE_URL } from '@/references';
+import { RAINBOW_PROFILES_BASE_URL } from '@/references/constants';
 import { getIsReadOnlyWallet, useAccountAddress, useAccountProfileInfo } from '@/state/wallets/walletsStore';
 import styled from '@/framework/ui/styled-thing';
 import { padding } from '@/styles';

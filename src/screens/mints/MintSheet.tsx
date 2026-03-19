@@ -33,7 +33,7 @@ import { loadPrivateKey } from '@/model/wallet';
 import { useNavigation } from '@/navigation/Navigation';
 import Routes from '@/navigation/routesNames';
 import { type RootStackParamList } from '@/navigation/types';
-import { ETH_ADDRESS, ETH_SYMBOL } from '@/references';
+import { ETH_ADDRESS, ETH_SYMBOL } from '@/references/constants';
 import { getRainbowFeeAddress } from '@/resources/reservoir/utils';
 import { useBackendNetworksStore } from '@/state/backendNetworks/backendNetworks';
 import { ChainId } from '@/state/backendNetworks/types';

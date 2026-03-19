@@ -10,7 +10,7 @@ import Navigation, { useNavigation } from '../navigation/Navigation';
 import { fetchReverseRecordWithRetry } from '@/utils/profileUtils';
 import { analytics } from '@/analytics';
 import { checkIsValidAddressOrDomain, isENSAddressFormat } from '@/helpers/validators';
-import { POAP_BASE_URL, RAINBOW_PROFILES_BASE_URL } from '@/references';
+import { POAP_BASE_URL, RAINBOW_PROFILES_BASE_URL } from '@/references/constants';
 import Routes from '@/navigation/routesNames';
 import addressUtils from '@/utils/address';
 import ethereumUtils from '@/utils/ethereumUtils';

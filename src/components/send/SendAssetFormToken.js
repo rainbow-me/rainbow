@@ -2,7 +2,7 @@ import React, { Fragment } from 'react';
 import { Column } from '../layout';
 import SendAssetFormField from './SendAssetFormField';
 import useDimensions from '@/hooks/useDimensions';
-import { supportedNativeCurrencies } from '@/references';
+import { supportedCurrencies as supportedNativeCurrencies } from '@/references/supportedCurrencies';
 import styled from '@/framework/ui/styled-thing';
 import { removeLeadingZeros } from '@/utils/formatters';
 import { useTheme } from '@/theme/ThemeContext';
