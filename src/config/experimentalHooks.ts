@@ -1,10 +1,10 @@
 import { useContext } from 'react';
-import { IS_DEV, IS_TEST_FLIGHT } from '@/env';
+import { IS_INTERNAL } from '@/env';
 import { RainbowContext } from '@/helpers/RainbowContext';
 import { defaultConfig, defaultConfigValues, type ExperimentalConfigKey } from './experimental';
 
 const useExperimentalFlag = (name: ExperimentalConfigKey) => {
-  if (IS_DEV || IS_TEST_FLIGHT) {
+  if (IS_INTERNAL) {
     // eslint-disable-next-line react-hooks/rules-of-hooks
     return useContext(RainbowContext).config[name];
   } else {
@@ -13,7 +13,7 @@ const useExperimentalFlag = (name: ExperimentalConfigKey) => {
 };
 
 export const useExperimentalConfig = () => {
-  if (IS_DEV || IS_TEST_FLIGHT) {
+  if (IS_INTERNAL) {
     // eslint-disable-next-line react-hooks/rules-of-hooks
     return useContext(RainbowContext).config;
   } else {

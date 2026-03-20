@@ -1,6 +1,6 @@
 import { ImgixImage } from '@/components/images';
 import { defaultConfig, getExperimentalFlag, LOG_PUSH } from '@/config/experimentalHooks';
-import { IS_DEV, IS_TEST_FLIGHT } from '@/env';
+import { IS_INTERNAL } from '@/env';
 import { deleteAllBackups } from '@/handlers/cloudBackup';
 import { RainbowContext } from '@/helpers/RainbowContext';
 import { WrappedAlert as Alert } from '@/helpers/alert';
@@ -263,7 +263,7 @@ const DevSection = () => {
 
   return (
     <MenuContainer testID="developer-settings-sheet">
-      <Menu header={IS_DEV || IS_TEST_FLIGHT ? i18n.t(i18n.l.developer_settings.headers.normie_settings) : ''}>
+      <Menu header={IS_INTERNAL ? i18n.t(i18n.l.developer_settings.headers.normie_settings) : ''}>
         {/* <MenuItem
           disabled
           leftComponent={<MenuItem.TextIcon icon="🕹️" isEmoji />}
@@ -311,7 +311,7 @@ const DevSection = () => {
           titleComponent={<MenuItem.Title text="Wipe App + Restart" />}
         />
       </Menu>
-      {(IS_DEV || IS_TEST_FLIGHT) && (
+      {IS_INTERNAL && (
         <>
           <Menu header={i18n.t(i18n.l.developer_settings.headers.rainbow_developer_settings)}>
             <MenuItem

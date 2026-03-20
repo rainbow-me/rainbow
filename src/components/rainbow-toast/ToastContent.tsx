@@ -7,7 +7,7 @@ import { useToastColors } from '@/components/rainbow-toast/useToastColors';
 import { Text } from '@/design-system';
 import { AssetType } from '@/entities/assetTypes';
 import { TransactionStatus } from '@/entities/transactions';
-import { IS_DEV, IS_TEST_FLIGHT } from '@/env';
+import { IS_INTERNAL } from '@/env';
 import { useTransactionLaunchToken } from '@/helpers/transactions';
 import * as i18n from '@/languages';
 import React, { memo } from 'react';
@@ -115,7 +115,7 @@ function SwapToastContent({ toast }: { toast: RainbowToast }) {
   const subtitle = getSwapToastNetworkLabel(toast);
   const { batch, delegation } = toast.transaction;
   // Type 4 = new delegation + batch, Type 2 = already delegated + batch
-  const bottomLabel = (IS_DEV || IS_TEST_FLIGHT) && batch ? (delegation ? 'Type 4' : 'Type 2') : undefined;
+  const bottomLabel = IS_INTERNAL && batch ? (delegation ? 'Type 4' : 'Type 2') : undefined;
 
   return (
     <ToastContentDisplay
