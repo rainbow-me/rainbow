@@ -1,7 +1,7 @@
 import remoteConfig, { type FirebaseRemoteConfigTypes } from '@react-native-firebase/remote-config';
 import { useEffect } from 'react';
 import { dequal } from 'dequal';
-import { IS_DEV, IS_INTERNAL } from '@/env';
+import { IS_DEV } from '@/env';
 import { CURRENT_APP_VERSION } from '@/hooks/useAppVersion';
 import { RainbowError, logger } from '@/logger';
 import { ChainId, Network } from '@/state/backendNetworks/types';
@@ -198,14 +198,14 @@ export const DEFAULT_CONFIG = {
 
   base_swaps_enabled: true,
   blast_swaps_enabled: true,
-  mints_enabled: true,
+  mints_enabled: false,
   rpc_proxy_enabled: true,
   dapp_browser: true,
   idfa_check_enabled: false,
   rewards_enabled: true,
 
   degen_mode: true,
-  featured_results: true,
+  featured_results: false,
   claimables: true,
   nfts_enabled: true,
 
@@ -214,14 +214,14 @@ export const DEFAULT_CONFIG = {
   king_of_the_hill2_enabled: false,
   king_of_the_hill_enabled: false,
   prince_of_the_hill_enabled: false,
-  candlestick_charts_enabled: IS_INTERNAL,
-  rainbow_toasts_enabled: IS_INTERNAL,
-  perps_enabled: false,
-  polymarket_enabled: false,
+  candlestick_charts_enabled: true,
+  rainbow_toasts_enabled: true,
+  perps_enabled: true,
+  polymarket_enabled: true,
   dev_section_enabled: IS_DEV,
   rnbw_rewards_enabled: false,
-  delegation_enabled: false,
-  atomic_swaps_enabled: false,
+  delegation_enabled: true,
+  atomic_swaps_enabled: true,
 } as const satisfies Readonly<RainbowConfig>;
 
 type RemoteConfigKey = keyof typeof DEFAULT_CONFIG;
