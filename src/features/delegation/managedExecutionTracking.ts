@@ -4,6 +4,7 @@ import { logger, RainbowError } from '@/logger';
 import { addNewTransaction } from '@/state/pendingTransactions';
 import { type ChainId } from '@/state/backendNetworks/types';
 import { useRainbowToastsStore } from '@/components/rainbow-toast/useRainbowToastsStore';
+import { time } from '@/utils/time';
 import { relayService } from './relayService';
 
 // ============ Types ========================================================== //
@@ -42,7 +43,7 @@ export type ManagedExecutionObservation = {
 // ============ Constants ====================================================== //
 
 const MANAGED_EXECUTION_TRACKING_MAX_ATTEMPTS = 30;
-const MANAGED_EXECUTION_TRACKING_INTERVAL_MS = 1_000;
+const MANAGED_EXECUTION_TRACKING_INTERVAL_MS = time.seconds(1);
 
 // ============ API ============================================================ //
 
