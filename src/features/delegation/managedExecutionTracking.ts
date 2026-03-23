@@ -1,3 +1,4 @@
+import type { Hex } from 'viem';
 import { RelayExecutionStatus, type RelayStatusSnapshot } from '@rainbow-me/delegation';
 import type { NewTransaction, RainbowTransaction } from '@/entities/transactions';
 import { TransactionStatus } from '@/entities/transactions';
@@ -5,8 +6,8 @@ import { logger, RainbowError } from '@/logger';
 import { addNewTransaction } from '@/state/pendingTransactions';
 import { type ChainId } from '@/state/backendNetworks/types';
 import { useRainbowToastsStore } from '@/components/rainbow-toast/useRainbowToastsStore';
+import { delay } from '@/utils/delay';
 import { time } from '@/utils/time';
-import type { Hex } from 'viem';
 import { relayService } from './relayService';
 
 // ============ Constants ====================================================== //
@@ -154,10 +155,4 @@ function buildManagedExecutionToastTransaction(
 
 function isTerminalManagedStatus(status: RelayExecutionStatus): boolean {
   return status === RelayExecutionStatus.Confirmed || status === RelayExecutionStatus.Reverted || status === RelayExecutionStatus.Failed;
-}
-
-function delay(ms: number): Promise<void> {
-  return new Promise(resolve => {
-    setTimeout(resolve, ms);
-  });
 }

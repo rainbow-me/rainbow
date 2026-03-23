@@ -1,6 +1,8 @@
 /**
- * @desc Promise that will resolve after the ms interval
+ * Returns a promise that resolves after the specified duration.
  */
-export const delay = (ms: number): Promise<void> => {
-  return new Promise(resolve => setTimeout(resolve, ms));
-};
+export function delay(ms: number): Promise<void> {
+  return new Promise(resolve => {
+    setTimeout(resolve, ms);
+  });
+}
