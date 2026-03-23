@@ -728,11 +728,17 @@ export const createWallet = async ({
       existingWalletId = alreadyExistingWallet?.id;
 
       // Don't allow adding a readOnly wallet that you have already visible
-      // or a private key that you already have visible as a seed or mnemonic
+      // or a private key that you already have visible as a seed or mnemonic.
+      // Exception: allow overwriting if the existing wallet is damaged (keychain data lost) so users can repair it.
       const isPrivateKeyOverwritingSeedMnemonic =
         type === EthereumWalletType.privateKey &&
         (alreadyExistingWallet?.type === EthereumWalletType.seed || alreadyExistingWallet?.type === EthereumWalletType.mnemonic);
-      if (!overwrite && alreadyExistingWallet && (isReadOnlyType || isPrivateKeyOverwritingSeedMnemonic)) {
+      if (
+        !overwrite &&
+        alreadyExistingWallet &&
+        !alreadyExistingWallet.damaged &&
+        (isReadOnlyType || isPrivateKeyOverwritingSeedMnemonic)
+      ) {
         if (!isRestoring) {
           logger.debug('[wallet]: already imported this wallet', {}, DebugContext.wallet);
           const error = new Error(i18n.t(i18n.l.wallet.new.alert.looks_like_already_imported));
