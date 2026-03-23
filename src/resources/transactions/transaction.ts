@@ -5,6 +5,7 @@ import { useQuery } from '@tanstack/react-query';
 import { type consolidatedTransactionsQueryFunction, consolidatedTransactionsQueryKey } from './consolidatedTransactions';
 import { parseTransaction } from '@/parsers/transactions';
 import { RainbowError, logger } from '@/logger';
+import { type RainbowFetchError } from '@/framework/data/http/rainbowFetch';
 import { type ChainId } from '@/state/backendNetworks/types';
 import { useBackendNetworksStore } from '@/state/backendNetworks/backendNetworks';
 import { createPublicClient, http, type Hash, type PublicClient, type TransactionReceipt } from 'viem';
@@ -148,6 +149,11 @@ export const fetchRawTransaction = async ({
 
     return parsed;
   } catch (e) {
+    // 404 is expected during pending tx polling — the backend hasn't indexed the tx yet.
+    // Silently return null; the poller will retry on the next interval.
+    if ((e as RainbowFetchError).response?.status === 404) {
+      return null;
+    }
     logger.error(new RainbowError('[transaction]: Failed to fetch transaction', e));
     return null;
   }
