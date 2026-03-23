@@ -1,5 +1,5 @@
 import { createMMKV } from 'react-native-mmkv';
-import { IS_DEV, IS_INTERNAL, IS_TEST } from '@/env';
+import { IS_INTERNAL, IS_TEST } from '@/env';
 import { STORAGE_IDS } from '@/model/mmkv';
 
 /**
@@ -38,6 +38,9 @@ export const POLYMARKET = 'Polymarket';
 export const DEFI_POSITIONS_THRESHOLD_FILTER = 'DeFi Minimum Value Filter';
 export const RNBW_REWARDS = 'RNBW Rewards';
 export const DELEGATION = '7702 Delegation';
+
+/** Temporary point of control for skipping insufficient gas checks. */
+export const SKIP_SWAPS_GAS_CHECKS = 'Skip Swaps Gas Checks';
 
 /**
  * A developer setting that pushes log lines to an array in-memory so that
@@ -85,6 +88,7 @@ const config = {
   [POLYMARKET]: { settings: true, value: false },
   [RNBW_REWARDS]: { settings: true, value: false },
   [DELEGATION]: { settings: true, value: false },
+  [SKIP_SWAPS_GAS_CHECKS]: { settings: true, value: false },
 } as const;
 
 /** This flag is not reactive. We use this in a static context. */

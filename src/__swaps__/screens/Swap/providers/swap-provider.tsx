@@ -34,6 +34,7 @@ import { ChainId } from '@/state/backendNetworks/types';
 import { SwapAssetType, type InputKeys } from '@/__swaps__/types/swap';
 import { clamp, getDefaultSlippageWorklet, parseAssetAndExtend, trimTrailingZeros } from '@/__swaps__/utils/swaps';
 import { analytics } from '@/analytics';
+import { getExperimentalFlag, SKIP_SWAPS_GAS_CHECKS } from '@/config/experimental';
 import type { LegacyTransactionGasParamAmounts, TransactionGasParamAmounts } from '@/entities/gas';
 import { getProvider } from '@/handlers/web3';
 import { WrappedAlert as Alert } from '@/helpers/alert';
@@ -169,6 +170,9 @@ const getInitialSliderXPosition = ({
 };
 
 const SLIPPAGE_CONFIG = getRemoteConfig().default_slippage_bips_chainId;
+
+/** Temporary point of control for skipping insufficient gas checks. */
+const SKIP_INSUFFICIENT_GAS_CHECK = getExperimentalFlag(SKIP_SWAPS_GAS_CHECKS);
 
 export const SwapProvider = ({ children }: SwapProviderProps) => {
   const [{ currentCurrency, initialValues, nativeChainAssets }] = useState(() => ({
@@ -826,7 +830,7 @@ export const SwapProvider = ({ children }: SwapProviderProps) => {
       !equalWorklet(sellAsset.maxSwappableAmount, '0') &&
       lessThanOrEqualToWorklet(inputValues.value.inputAmount, sellAsset.maxSwappableAmount);
 
-    if (!enoughFundsForSwap && hasEnoughFundsForGas.value !== undefined) {
+    if (!SKIP_INSUFFICIENT_GAS_CHECK && !enoughFundsForSwap && hasEnoughFundsForGas.value !== undefined) {
       return { label: insufficientFunds, disabled: true, type: 'hold' };
     }
 
@@ -868,7 +872,7 @@ export const SwapProvider = ({ children }: SwapProviderProps) => {
       return { icon, label: isReviewSheetOpen ? quoteError : reviewLabel, disabled: true, type: 'hold' };
     }
 
-    if (hasEnoughFundsForGas.value === false) {
+    if (!SKIP_INSUFFICIENT_GAS_CHECK && hasEnoughFundsForGas.value === false) {
       const nativeCurrency = nativeChainAssets[sellAsset?.chainId || ChainId.mainnet];
       return {
         label: `${insufficient} ${nativeCurrency.symbol}`,
