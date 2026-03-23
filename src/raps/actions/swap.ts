@@ -1,5 +1,4 @@
 import { type Signer } from '@ethersproject/abstract-signer';
-import type { BatchCall } from '@rainbow-me/delegation';
 import {
   type Quote,
   SwapType,
@@ -12,6 +11,7 @@ import {
   wrapNativeAsset,
 } from '@rainbow-me/swaps';
 import { estimateGasWithPadding, getProvider, toHex } from '@/handlers/web3';
+import { type Call } from '@rainbow-me/delegation';
 import { type ChainId } from '@/state/backendNetworks/types';
 import { type NewTransaction, TransactionStatus, TransactionDirection } from '@/entities/transactions';
 import { add } from '@/helpers/utilities';
@@ -305,7 +305,7 @@ export const prepareSwap = async ({
   quote,
   wallet,
 }: PrepareActionProps<'swap'>): Promise<{
-  call: BatchCall;
+  call: Call;
   transaction: Omit<NewTransaction, 'hash'>;
 }> => {
   const nonce = requireNonce(parameters.nonce, 'swap parameters.nonce');
@@ -313,7 +313,7 @@ export const prepareSwap = async ({
 
   const preparedCall = {
     to: requireAddress(tx.to, 'swap prepared tx.to'),
-    value: toHex(tx.value ?? 0),
+    value: BigInt(tx.value?.toString() ?? '0'),
     data: requireHex(tx.data, 'swap prepared tx.data'),
   };
   const transaction = {

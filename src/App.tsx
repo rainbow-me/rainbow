@@ -41,9 +41,7 @@ import { TestDeeplinkHandler } from './components/TestDeeplinkHandler';
 import { RainbowToastDisplay } from '@/components/rainbow-toast/RainbowToast';
 import { KeyboardProvider } from 'react-native-keyboard-controller';
 import { ReducedMotionConfig, ReduceMotion } from 'react-native-reanimated';
-import { configure as configureDelegationClient } from '@rainbow-me/delegation';
-import { getPlatformClient } from '@/resources/platform/client';
-import { useWalletsStore } from '@/state/wallets/walletsStore';
+import { configureDelegationSdk } from '@/features/delegation/configureClient';
 
 if (IS_DEV) {
   reactNativeDisableYellowBox && LogBox.ignoreAllLogs();
@@ -181,12 +179,8 @@ async function initializeApplication() {
   await Promise.all([
     initializeRemoteConfig(),
     migrate(),
-    loadSettingsData(),
-    configureDelegationClient({
-      platformClient: getPlatformClient(),
-      logger: logger.createServiceLogger(logger.DebugContext.delegation),
-      getCurrentAddress: $ => $(useWalletsStore, s => s.accountAddress),
-    }),
+    loadSettingsData(), // load i18n early for first-render
+    configureDelegationSdk(),
   ]);
 
   /**

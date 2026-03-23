@@ -25,9 +25,7 @@ export const usePendingTransactionsStore = createRainbowStore<PendingTransaction
     addPendingTransaction: ({ address, pendingTransaction }) => {
       set(state => {
         const existingTransactions = state.pendingTransactions[address] || [];
-        const existingIndex = existingTransactions.findIndex(
-          transaction => transaction.chainId === pendingTransaction.chainId && transaction.nonce === pendingTransaction.nonce
-        );
+        const existingIndex = findPendingTransactionIndex(existingTransactions, pendingTransaction);
 
         let updatedTransactions: RainbowTransaction[];
         if (existingIndex >= 0) {
@@ -89,6 +87,9 @@ export const addNewTransaction = ({
 }) => {
   const parsedTransaction = convertNewTransactionToRainbowTransaction(transaction);
   pendingTransactionsActions.addPendingTransaction({ address, pendingTransaction: parsedTransaction });
+
+  if (transaction.relayExecutionId) return;
+
   const localNonceData = nonceActions.getNonce({ address, chainId });
   const localNonce = localNonceData?.currentNonce || -1;
   if (transaction.nonce > localNonce) {
@@ -115,3 +116,15 @@ export const updateTransaction = ({
     transaction,
   });
 };
+
+function findPendingTransactionIndex(transactions: RainbowTransaction[], nextTransaction: RainbowTransaction): number {
+  if (nextTransaction.relayExecutionId) {
+    return transactions.findIndex(
+      transaction => transaction.chainId === nextTransaction.chainId && transaction.relayExecutionId === nextTransaction.relayExecutionId
+    );
+  }
+
+  return transactions.findIndex(
+    transaction => transaction.chainId === nextTransaction.chainId && transaction.nonce === nextTransaction.nonce
+  );
+}

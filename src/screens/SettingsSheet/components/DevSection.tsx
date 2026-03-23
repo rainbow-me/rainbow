@@ -29,7 +29,8 @@ import { addDefaultNotificationGroupSettings } from '@/notifications/settings/in
 import { unsubscribeAllNotifications } from '@/notifications/settings/settings';
 import { getFCMToken } from '@/notifications/tokens';
 import { analyzeReactQueryStore, clearReactQueryCache } from '@/react-query/reactQueryUtils';
-import { resetCache as resetDelegationCache, getDelegations, DelegationStatus } from '@rainbow-me/delegation';
+import { delegation, type DelegationWithChainId } from '@rainbow-me/delegation';
+import { getDelegationContractAddress, isRainbowDelegated, isThirdPartyDelegated } from '@/features/delegation/status';
 import { RevokeReason } from '@/screens/delegation/RevokeDelegationPanel';
 import { ChainId } from '@/state/backendNetworks/types';
 import { useConnectedToAnvilStore } from '@/state/connectedToAnvil';
@@ -38,6 +39,7 @@ import { pendingTransactionsActions } from '@/state/pendingTransactions';
 import FastImage from 'react-native-fast-image';
 import { analyzeUserAssets } from '@/state/debug/analyzeUserAssets';
 import { getAllInternetCredentials, resetInternetCredentials } from 'react-native-keychain';
+import type { Address } from 'viem';
 
 const DevSection = () => {
   const { navigate } = useNavigation();
@@ -220,13 +222,15 @@ const DevSection = () => {
 
   const triggerRevokeSheet = useCallback(
     async (revokeReason: RevokeReason) => {
-      const delegations = await getDelegations({ address: accountAddress });
-      const rainbowDelegations = delegations.filter(d => d.delegationStatus === DelegationStatus.RAINBOW_DELEGATED);
-      const thirdPartyDelegations = delegations.filter(d => d.delegationStatus === DelegationStatus.THIRD_PARTY_DELEGATED);
+      if (!accountAddress) return;
 
-      const mapToRevokes = (delegationList: typeof delegations) =>
+      const delegations = await delegation.active({ address: accountAddress as Address });
+      const rainbowDelegations = delegations.filter(isRainbowDelegated);
+      const thirdPartyDelegations = delegations.filter(isThirdPartyDelegated);
+
+      const mapToRevokes = (delegationList: readonly DelegationWithChainId[]) =>
         delegationList.map(delegation => {
-          const contractAddress = delegation.revokeAddress || delegation.currentContract;
+          const contractAddress = getDelegationContractAddress(delegation);
           return contractAddress
             ? {
                 chainId: delegation.chainId,
@@ -481,12 +485,6 @@ const DevSection = () => {
             />
           </Menu>
           <Menu header={i18n.t(i18n.l.developer_settings.headers.delegation_settings)}>
-            <MenuItem
-              leftComponent={<MenuItem.TextIcon icon="💥" isEmoji />}
-              onPress={() => resetDelegationCache()}
-              size={52}
-              titleComponent={<MenuItem.Title text={i18n.t(i18n.l.developer_settings.delegation_settings.clear_store)} />}
-            />
             {Object.values(RevokeReason).map(reason => {
               const label = {
                 [RevokeReason.DISABLE_SMART_WALLET]: i18n.t(i18n.l.developer_settings.delegation_settings.simulate_disable_smart_wallet),

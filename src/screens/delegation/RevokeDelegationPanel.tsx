@@ -12,7 +12,7 @@ import { type RootStackParamList } from '@/navigation/types';
 import type Routes from '@/navigation/routesNames';
 import { logger, RainbowError } from '@/logger';
 import haptics from '@/utils/haptics';
-import { executeRevokeDelegation } from '@rainbow-me/delegation';
+import { delegation } from '@rainbow-me/delegation';
 import { loadWallet } from '@/model/wallet';
 import { getProvider } from '@/handlers/web3';
 import { getNextNonce } from '@/state/nonces';
@@ -267,23 +267,23 @@ export const RevokeDelegationPanel = () => {
       }
 
       const failedDelegations: DelegationToRevoke[] = [];
-      for (const delegation of pendingDelegations) {
+      for (const pendingDelegation of pendingDelegations) {
         try {
-          const revokeProvider = getProvider({ chainId: delegation.chainId });
+          const revokeProvider = getProvider({ chainId: pendingDelegation.chainId });
           const revokeSigner = wallet.connect(revokeProvider);
 
           const transactionGasOptions = await waitForRevokeGasOptions({
-            chainId: delegation.chainId,
+            chainId: pendingDelegation.chainId,
             startPollingGasFees,
           });
-          const nonce = await getNextNonce({ address, chainId: delegation.chainId });
+          const nonce = await getNextNonce({ address, chainId: pendingDelegation.chainId });
 
           let result;
           try {
-            result = await executeRevokeDelegation({
+            result = await delegation.revoke({
               signer: revokeSigner,
               provider: revokeProvider,
-              chainId: delegation.chainId,
+              chainId: pendingDelegation.chainId,
               transactionOptions: transactionGasOptions,
               nonce,
             });
@@ -291,14 +291,14 @@ export const RevokeDelegationPanel = () => {
             if (!isIntrinsicEstimateGasFailure(error)) throw error;
 
             logger.warn('Revoke gas estimate failed, retrying with fallback gas limit', {
-              chainId: delegation.chainId,
+              chainId: pendingDelegation.chainId,
               gasLimit: REVOKE_ESTIMATE_FALLBACK_GAS_LIMIT.toString(),
             });
 
-            result = await executeRevokeDelegation({
+            result = await delegation.revoke({
               signer: revokeSigner,
               provider: revokeProvider,
-              chainId: delegation.chainId,
+              chainId: pendingDelegation.chainId,
               transactionOptions: {
                 ...transactionGasOptions,
                 gasLimit: REVOKE_ESTIMATE_FALLBACK_GAS_LIMIT,
@@ -309,13 +309,13 @@ export const RevokeDelegationPanel = () => {
 
           logger.info('Delegation removed successfully', {
             hash: result.hash,
-            chainId: delegation.chainId,
+            chainId: pendingDelegation.chainId,
           });
         } catch (error) {
-          failedDelegations.push(delegation);
+          failedDelegations.push(pendingDelegation);
           logger.error(new RainbowError('Failed to revoke delegation'), {
             error,
-            chainId: delegation.chainId,
+            chainId: pendingDelegation.chainId,
           });
         }
       }

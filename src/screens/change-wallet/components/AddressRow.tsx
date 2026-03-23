@@ -17,9 +17,9 @@ import { Icon } from '@/components/icons';
 import { removeFirstEmojiFromString } from '@/helpers/emojiHandler';
 import { address as abbreviateAddress } from '@/utils/abbreviations';
 import { IS_INTERNAL } from '@/env';
-import { DELEGATION, getExperimentalFlag } from '@/config/experimentalHooks';
-import { getRemoteConfig } from '@/model/remoteConfig';
-import { DelegationStatus, useDelegations, useDelegationDisabled } from '@rainbow-me/delegation';
+import { useIsDelegationEnabled } from '@/features/delegation/featureFlags';
+import { isRainbowDelegated as hasRainbowDelegation, isThirdPartyDelegated as hasThirdPartyDelegation } from '@/features/delegation/status';
+import { useDelegations, useDelegationDisabled } from '@rainbow-me/delegation';
 import type { Address } from 'viem';
 
 const ROW_HEIGHT_WITH_PADDING = 64;
@@ -81,12 +81,11 @@ interface AddressRowProps {
 export function AddressRow({ data, editMode, onPress, menuItems, onPressMenuItem }: AddressRowProps) {
   const { address, color, emoji, balance, isSelected, isReadOnly, isLedger, label, image } = data;
 
-  const delegationEnabled = getRemoteConfig().delegation_enabled || getExperimentalFlag(DELEGATION);
-
+  const delegationEnabled = useIsDelegationEnabled();
   const delegations = useDelegations(address as Address);
   const isDelegationDisabled = useDelegationDisabled(address as Address);
-  const isDelegated = delegations?.some(d => d.delegationStatus === DelegationStatus.RAINBOW_DELEGATED) ?? false;
-  const isThirdPartyDelegated = delegations?.some(d => d.delegationStatus === DelegationStatus.THIRD_PARTY_DELEGATED) ?? false;
+  const isDelegated = delegations?.some(hasRainbowDelegation) ?? false;
+  const isThirdPartyDelegated = delegations?.some(hasThirdPartyDelegation) ?? false;
 
   const walletName = useMemo(() => {
     return removeFirstEmojiFromString(label) || abbreviateAddress(address, 4, 6);

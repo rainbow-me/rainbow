@@ -18,15 +18,12 @@ import ContextMenuButton from '@/components/native-context-menu/contextMenu';
 import { IS_DEV, IS_IOS } from '@/env';
 import * as ethereumUtils from '@/utils/ethereumUtils';
 import { formatAddressForDisplay } from '@/utils/abbreviations';
+import { delegation, type DelegationWithChainId, useDelegationDisabled, useDelegations } from '@rainbow-me/delegation';
 import {
-  DelegationStatus,
-  type DelegationWithChainId,
-  disableDelegation,
-  enableDelegation,
-  useDelegationDisabled,
-  useDelegations,
-  willDelegate,
-} from '@rainbow-me/delegation';
+  hasActiveDelegation,
+  isRainbowDelegated as hasRainbowDelegation,
+  isThirdPartyDelegated as hasThirdPartyDelegation,
+} from '@/features/delegation/status';
 import { backendNetworksActions } from '@/state/backendNetworks/backendNetworks';
 import type { Address } from 'viem';
 import { RevokeReason } from '@/screens/delegation/RevokeDelegationPanel';
@@ -119,10 +116,8 @@ function getChainName(chainId: ChainId): string {
   return backendNetworksActions.getChainsLabel()[chainId] || `Chain ${chainId}`;
 }
 
-function isDelegated(status: DelegationStatus): boolean {
-  if (status === DelegationStatus.RAINBOW_DELEGATED) return true;
-  if (status === DelegationStatus.THIRD_PARTY_DELEGATED) return true;
-  return false;
+function isDelegated(status: DelegationWithChainId['delegationStatus']): boolean {
+  return hasActiveDelegation(status);
 }
 
 export const ViewWalletDelegations = () => {
@@ -134,8 +129,8 @@ export const ViewWalletDelegations = () => {
 
   const { rainbowDelegations, thirdPartyDelegations } = useMemo(
     () => ({
-      rainbowDelegations: delegations.filter(d => d.delegationStatus === DelegationStatus.RAINBOW_DELEGATED),
-      thirdPartyDelegations: delegations.filter(d => d.delegationStatus === DelegationStatus.THIRD_PARTY_DELEGATED),
+      rainbowDelegations: delegations.filter(hasRainbowDelegation),
+      thirdPartyDelegations: delegations.filter(hasThirdPartyDelegation),
     }),
     [delegations]
   );
@@ -171,7 +166,7 @@ export const ViewWalletDelegations = () => {
 
   const handleToggleSmartWallet = useCallback(() => {
     if (isSmartWalletDisabled) {
-      enableDelegation(address);
+      delegation.enable(address);
       return;
     }
 
@@ -181,7 +176,7 @@ export const ViewWalletDelegations = () => {
     }));
 
     if (delegationsToRevoke.length === 0) {
-      disableDelegation(address);
+      delegation.disable(address);
       return;
     }
 
@@ -193,12 +188,12 @@ export const ViewWalletDelegations = () => {
         revokeReason: RevokeReason.DISABLE_SMART_WALLET,
         onSuccess: () => {
           // Set delegation preference to disabled after successful revocation
-          disableDelegation(address);
+          delegation.disable(address);
         },
       });
     } else {
       // No active delegations to revoke, just disable the preference
-      disableDelegation(address);
+      delegation.disable(address);
     }
   }, [address, isSmartWalletDisabled, rainbowDelegations]);
 
@@ -287,10 +282,7 @@ export const ViewWalletDelegations = () => {
         case NetworkMenuAction.RevokeDelegation: {
           // Determine the correct reason based on delegation status
           const delegation = delegations.find(d => d.chainId === chainId);
-          const revokeReason =
-            delegation?.delegationStatus === DelegationStatus.THIRD_PARTY_DELEGATED
-              ? RevokeReason.DISABLE_THIRD_PARTY
-              : RevokeReason.DISABLE_SINGLE_NETWORK;
+          const revokeReason = hasThirdPartyDelegation(delegation) ? RevokeReason.DISABLE_THIRD_PARTY : RevokeReason.DISABLE_SINGLE_NETWORK;
           handleRevokeDelegation(chainId, revokeReason);
           break;
         }
@@ -300,7 +292,8 @@ export const ViewWalletDelegations = () => {
 
         // -- Dev Settings
         case NetworkMenuAction.RefreshData:
-          willDelegate({ address, chainId, requireFreshStatus: true })
+          delegation
+            .willDelegate({ address, chainId, requireFreshStatus: true })
             .then(data => {
               Alert.alert(`Refreshed Data for ${getChainName(chainId)}`, JSON.stringify(data, null, 2));
             })

@@ -1,7 +1,7 @@
 import { type Signer } from '@ethersproject/abstract-signer';
-import type { BatchCall } from '@rainbow-me/delegation';
 import { type CrosschainQuote, prepareFillCrosschainQuote, SwapType } from '@rainbow-me/swaps';
 import { estimateGasWithPadding, getProvider, toHex } from '@/handlers/web3';
+import { type Call } from '@rainbow-me/delegation';
 import { add } from '@/helpers/utilities';
 import { estimateApprove } from './unlock';
 import { gasUnits } from '@/references/gasUnits';
@@ -207,7 +207,7 @@ export const prepareCrosschainSwap = async ({
   parameters,
   quote,
 }: PrepareActionProps<'crosschainSwap'>): Promise<{
-  call: BatchCall;
+  call: Call;
   transaction: Omit<NewTransaction, 'hash'>;
 }> => {
   const nonce = requireNonce(parameters.nonce, 'crosschainSwap parameters.nonce');
@@ -215,7 +215,7 @@ export const prepareCrosschainSwap = async ({
 
   const preparedCall = {
     to: requireAddress(tx.to, 'crosschain prepared tx.to'),
-    value: toHex(tx.value ?? 0),
+    value: BigInt(tx.value?.toString() ?? '0'),
     data: requireHex(tx.data, 'crosschain prepared tx.data'),
   };
   const transaction = {

@@ -104,6 +104,8 @@ export interface RainbowTransaction {
   fee?: RainbowTransactionFee;
   explorerLabel?: string;
   explorerUrl?: string;
+  /** Relay execution id when the transaction originated from managed relay execution. */
+  relayExecutionId?: string;
   /** True when transaction uses batched execution (atomic swaps) - applies to both type 2 and type 4 */
   batch?: boolean;
   /** True when transaction includes a new EIP-7702 delegation (type 4 only) */

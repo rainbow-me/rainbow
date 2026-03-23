@@ -14,12 +14,12 @@ import { address } from '@/utils/abbreviations';
 import { removeFirstEmojiFromString } from '@/helpers/emojiHandler';
 import { PANEL_WIDTH } from '@/components/SmoothPager/ListPanel';
 import { IS_INTERNAL, IS_IOS } from '@/env';
-import { DELEGATION, getExperimentalFlag } from '@/config/experimentalHooks';
-import { getRemoteConfig } from '@/model/remoteConfig';
+import { useIsDelegationEnabled } from '@/features/delegation/featureFlags';
+import { isRainbowDelegated as hasRainbowDelegation, isThirdPartyDelegated as hasThirdPartyDelegation } from '@/features/delegation/status';
 import { useTheme } from '@/theme/ThemeContext';
 import { triggerHaptics } from 'react-native-turbo-haptics';
 import { StyleSheet } from 'react-native';
-import { DelegationStatus, useDelegations, useDelegationDisabled } from '@rainbow-me/delegation';
+import { useDelegations, useDelegationDisabled } from '@rainbow-me/delegation';
 import type { Address } from 'viem';
 
 const UNPIN_BADGE_SIZE = 28;
@@ -38,8 +38,8 @@ type PinnedWalletsGridProps = {
 function DelegationBadge({ accountAddress }: { accountAddress: string }) {
   const delegations = useDelegations(accountAddress as Address);
   const isDisabled = useDelegationDisabled(accountAddress as Address);
-  const isDelegated = delegations?.some(d => d.delegationStatus === DelegationStatus.RAINBOW_DELEGATED) ?? false;
-  const isThirdPartyDelegated = delegations?.some(d => d.delegationStatus === DelegationStatus.THIRD_PARTY_DELEGATED) ?? false;
+  const isDelegated = delegations?.some(hasRainbowDelegation) ?? false;
+  const isThirdPartyDelegated = delegations?.some(hasThirdPartyDelegation) ?? false;
 
   return (
     <Text color={isDisabled ? 'red' : isDelegated ? 'green' : isThirdPartyDelegated ? 'labelTertiary' : 'labelQuaternary'} size="icon 10px">
@@ -50,7 +50,7 @@ function DelegationBadge({ accountAddress }: { accountAddress: string }) {
 
 export function PinnedWalletsGrid({ walletItems, onPress, editMode, menuItems, onPressMenuItem }: PinnedWalletsGridProps) {
   const { colors, isDarkMode } = useTheme();
-  const delegationEnabled = getRemoteConfig().delegation_enabled || getExperimentalFlag(DELEGATION);
+  const delegationEnabled = useIsDelegationEnabled();
 
   const removePinnedAddress = usePinnedWalletsStore(state => state.removePinnedAddress);
   const setPinnedAddresses = usePinnedWalletsStore(state => state.setPinnedAddresses);

@@ -1,8 +1,8 @@
 import { NavigationSteps, useSwapContext } from '@/__swaps__/screens/Swap/providers/swap-provider';
 import { opacity } from '@/framework/ui/utils/opacity';
 import { Box, Separator, Text, globalColors, useColorMode } from '@/design-system';
-import useExperimentalFlag, { ATOMIC_SWAPS, RNBW_REWARDS, getExperimentalFlag } from '@/config/experimentalHooks';
-import { getRemoteConfig, useRemoteConfig } from '@/model/remoteConfig';
+import useExperimentalFlag, { RNBW_REWARDS } from '@/config/experimentalHooks';
+import { useRemoteConfig } from '@/model/remoteConfig';
 import React, { memo, useCallback } from 'react';
 import { StyleSheet } from 'react-native';
 import { GestureDetector } from 'react-native-gesture-handler';
@@ -33,7 +33,7 @@ import { convertRawAmountToDecimalFormat, truncateToDecimalsWithThreshold } from
 import { LIGHT_SEPARATOR_COLOR, SEPARATOR_COLOR, THICK_BORDER_WIDTH } from '@/styles/constants';
 import { type ChainId } from '@/state/backendNetworks/types';
 import { type Address } from 'viem';
-import { useWillExecuteDelegation } from '@/hooks/useWillExecuteDelegation';
+import { useWillExecuteDelegation } from '@/features/delegation/willDelegate';
 
 const HOLD_TO_SWAP_DURATION_MS = 400;
 
@@ -211,8 +211,7 @@ const DelegationCallout = memo(function DelegationCallout() {
 });
 
 function WillDelegate(params: { address: Address; chainId: ChainId }) {
-  const atomicSwapsEnabled = getExperimentalFlag(ATOMIC_SWAPS) || getRemoteConfig().atomic_swaps_enabled;
-  const willDelegate = useWillExecuteDelegation(params.address, params.chainId) && atomicSwapsEnabled;
+  const willDelegate = useWillExecuteDelegation(params.address, params.chainId);
   if (!willDelegate) return null;
 
   return (
