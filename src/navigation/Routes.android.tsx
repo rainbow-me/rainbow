@@ -121,6 +121,7 @@ import { RnbwRewardsClaimSheet } from '@/features/rnbw-rewards/screens/rnbw-rewa
 import { RnbwRewardsEstimateSheet } from '@/features/rnbw-rewards/screens/rnbw-rewards-estimate-sheet/RnbwRewardsEstimateSheet';
 import { RnbwStakingLearnSheet } from '@/features/rnbw-staking/screens/rnbw-staking-learn-sheet/RnbwStakingLearnSheet';
 import { RnbwStakingScreen } from '@/features/rnbw-staking/screens/rnbw-staking-screen/RnbwStakingScreen';
+import { RnbwUnstakeSheet } from '@/features/rnbw-staking/screens/rnbw-unstake-sheet/RnbwUnstakeSheet';
 import WalletErrorSheet from '@/components/wallet-error/WalletErrorSheet';
 import { createBottomSheetNavigator } from './bottom-sheet/createBottomSheetNavigator';
 
@@ -313,6 +314,7 @@ function BSNavigator() {
       <BSStack.Screen component={RnbwRewardsEstimateSheet} name={Routes.RNBW_REWARDS_ESTIMATE_SHEET} />
       <BSStack.Screen component={RnbwStakingLearnSheet} name={Routes.RNBW_STAKING_LEARN_SHEET} />
       <BSStack.Screen component={RnbwStakingScreen} name={Routes.RNBW_STAKING_SCREEN} />
+      <BSStack.Screen component={RnbwUnstakeSheet} name={Routes.RNBW_UNSTAKE_SHEET} />
       <BSStack.Screen component={WalletErrorSheet} name={Routes.WALLET_ERROR_SHEET} />
     </BSStack.Navigator>
   );

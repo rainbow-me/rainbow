@@ -21,8 +21,8 @@ export const RnbwStakingCard = memo(function RnbwStakingCard() {
   }, [navigate]);
 
   const handlePressUnstake = useCallback(() => {
-    //
-  }, []);
+    navigate(Routes.RNBW_UNSTAKE_SHEET);
+  }, [navigate]);
 
   return (
     <Box background="surfacePrimary" borderRadius={24} padding="20px" gap={20} shadow={'18px'}>
