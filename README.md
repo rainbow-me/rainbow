@@ -12,7 +12,7 @@
 
 𝕏 [Follow us on X](https://x.com/rainbowdotme)
 
-## Setup
+## Setups
 
 > [!TIP] > **Internal developers** can also use the [`rainbow-me/rainbow-setup`](https://github.com/rainbow-me/rainbow-setup)
 > script to install all dependencies and configure the project in one step.
