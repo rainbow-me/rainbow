@@ -1,7 +1,6 @@
 import { ImgixImage } from '@/components/images';
 import { defaultConfig, getExperimentalFlag, LOG_PUSH } from '@/config/experimentalHooks';
-import { IS_INTERNAL } from '@/env';
-import { deleteAllBackups } from '@/handlers/cloudBackup';
+import { IS_ANDROID, IS_INTERNAL } from '@/env';
 import { RainbowContext } from '@/helpers/RainbowContext';
 import { WrappedAlert as Alert } from '@/helpers/alert';
 import { getPublicKeyOfTheSigningWalletAndCreateWalletIfNeeded } from '@/helpers/signingWallet';
@@ -13,7 +12,7 @@ import Navigation, { useNavigation } from '@/navigation/Navigation';
 import Routes from '@/navigation/routesNames';
 import { clearImageMetadataCache } from '@/redux/imageMetadata';
 import { SettingsLoadingIndicator } from '@/screens/SettingsSheet/components/SettingsLoadingIndicator';
-import { clearWalletState, updateWallets, useWallets, useWalletsStore } from '@/state/wallets/walletsStore';
+import { clearWalletState, useWallets, useWalletsStore } from '@/state/wallets/walletsStore';
 import { isAuthenticated } from '@/utils/authentication';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import Clipboard from '@react-native-clipboard/clipboard';
@@ -24,7 +23,6 @@ import Restart from 'react-native-restart';
 import Menu from './Menu';
 import MenuContainer from './MenuContainer';
 import MenuItem from './MenuItem';
-
 import { addDefaultNotificationGroupSettings } from '@/notifications/settings/initialization';
 import { unsubscribeAllNotifications } from '@/notifications/settings/settings';
 import { getFCMToken } from '@/notifications/tokens';
@@ -39,12 +37,10 @@ import { pendingTransactionsActions } from '@/state/pendingTransactions';
 import FastImage from 'react-native-fast-image';
 import { analyzeUserAssets } from '@/state/debug/analyzeUserAssets';
 import { getAllInternetCredentials, resetInternetCredentials } from 'react-native-keychain';
-import type { Address } from 'viem';
 
 const DevSection = () => {
   const { navigate } = useNavigation();
   const { config, setConfig } = useContext(RainbowContext) as any;
-  const wallets = useWallets();
   const setConnectedToAnvil = useConnectedToAnvilStore.getState().setConnectedToAnvil;
   const accountAddress = useWalletsStore(state => state.accountAddress);
 
@@ -80,31 +76,13 @@ const DevSection = () => {
   const checkAlert = useCallback(async () => {
     try {
       const request = await fetch('https://pro-api.coinmarketcap.com/v1/cryptocurrency/listings/latest');
-      if (android && request.status === 500) throw new Error('failed');
+      if (IS_ANDROID && request.status === 500) throw new Error('failed');
       await request.json();
       Alert.alert(i18n.t(i18n.l.developer_settings.status), i18n.t(i18n.l.developer_settings.not_applied));
     } catch (e) {
       Alert.alert(i18n.t(i18n.l.developer_settings.status), i18n.t(i18n.l.developer_settings.applied));
     }
   }, []);
-
-  const removeBackups = async () => {
-    const newWallets = { ...wallets };
-    Object.keys(newWallets).forEach(key => {
-      delete newWallets[key].backedUp;
-      delete newWallets[key].backupDate;
-      delete newWallets[key].backupFile;
-      delete newWallets[key].backupType;
-    });
-
-    await updateWallets(newWallets);
-
-    // Delete all backups (debugging)
-    await deleteAllBackups();
-
-    Alert.alert(i18n.t(i18n.l.developer_settings.backups_deleted_successfully));
-    Restart();
-  };
 
   const clearImageCache = async () => {
     try {
@@ -224,7 +202,7 @@ const DevSection = () => {
     async (revokeReason: RevokeReason) => {
       if (!accountAddress) return;
 
-      const delegations = await delegation.active({ address: accountAddress as Address });
+      const delegations = await delegation.active({ address: accountAddress });
       const rainbowDelegations = delegations.filter(isRainbowDelegated);
       const thirdPartyDelegations = delegations.filter(isThirdPartyDelegated);
 
