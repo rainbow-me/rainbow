@@ -147,6 +147,7 @@ const Routes = {
   RNBW_REWARDS_ESTIMATE_SHEET: 'RnbwRewardsEstimateSheet',
   RNBW_STAKING_LEARN_SCREEN: 'RnbwStakingLearnScreen',
   RNBW_STAKING_SCREEN: 'RnbwStakingScreen',
+  RNBW_UNSTAKE_SHEET: 'RnbwUnstakeSheet',
   WALLET_ERROR_SHEET: 'WalletErrorSheet',
 } as const;
 

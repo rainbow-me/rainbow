@@ -16,3 +16,4 @@ export const STAKING_ABI = parseAbi([
   'function minStakeAmount() view returns (uint256)',
 ]);
 export const STAKING_GAS_LIMIT = 200_000;
+export const UNSTAKE_PENALTY_PERCENTAGE = 10;

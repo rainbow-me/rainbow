@@ -73,5 +73,5 @@ function navigateToStakingScreen() {
 }
 
 function navigateToUnstakeSheet() {
-  // TODO:
+  Navigation.handleAction(Routes.RNBW_UNSTAKE_SHEET);
 }

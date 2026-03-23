@@ -17,6 +17,7 @@ type StakingTier = {
 };
 
 type StakingPnl = {
+  exchangeRateGain: string;
   netProfit: string;
   totalCashbackReceived: string;
   totalExitFeePaid: string;
