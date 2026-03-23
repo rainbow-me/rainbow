@@ -1,3 +1,4 @@
+import { RelayExecutionStatus, type RelayStatusSnapshot } from '@rainbow-me/delegation';
 import type { NewTransaction, RainbowTransaction } from '@/entities/transactions';
 import { TransactionStatus } from '@/entities/transactions';
 import { logger, RainbowError } from '@/logger';
@@ -5,40 +6,8 @@ import { addNewTransaction } from '@/state/pendingTransactions';
 import { type ChainId } from '@/state/backendNetworks/types';
 import { useRainbowToastsStore } from '@/components/rainbow-toast/useRainbowToastsStore';
 import { time } from '@/utils/time';
+import type { Hex } from 'viem';
 import { relayService } from './relayService';
-
-// ============ Types ========================================================== //
-
-export type ManagedExecutionStatus = 'PREPARED' | 'AWAITING_WALLET' | 'SUBMITTING' | 'PENDING' | 'CONFIRMED' | 'REVERTED' | 'FAILED';
-
-type ManagedExecutionTxSet = {
-  chainId: number;
-  txHashes: readonly `0x${string}`[];
-};
-
-type ManagedExecutionOnchain =
-  | {
-      type: 'singlechain';
-      origin: ManagedExecutionTxSet;
-    }
-  | {
-      type: 'crosschain';
-      origin: ManagedExecutionTxSet;
-      destination: ManagedExecutionTxSet;
-    };
-
-export type ManagedExecutionStatusUpdate = {
-  status: {
-    status: ManagedExecutionStatus;
-    updatedAtMs: number;
-    onchain?: ManagedExecutionOnchain;
-  };
-};
-
-export type ManagedExecutionObservation = {
-  status: ManagedExecutionStatus;
-  txHash?: NonNullable<NonNullable<ManagedExecutionStatusUpdate['status']['onchain']>['origin']>['txHashes'][number];
-};
 
 // ============ Constants ====================================================== //
 
@@ -46,6 +15,11 @@ const MANAGED_EXECUTION_TRACKING_MAX_ATTEMPTS = 30;
 const MANAGED_EXECUTION_TRACKING_INTERVAL_MS = time.seconds(1);
 
 // ============ API ============================================================ //
+
+export type ManagedExecutionObservation = {
+  status: RelayExecutionStatus;
+  txHash?: Hex;
+};
 
 export function trackManagedCallsExecution({
   address,
@@ -67,7 +41,7 @@ export function trackManagedCallsExecution({
   })
     .then(observation => {
       if (!observation.txHash) {
-        if (observation.status === 'FAILED' || observation.status === 'REVERTED') {
+        if (observation.status === RelayExecutionStatus.Failed || observation.status === RelayExecutionStatus.Reverted) {
           showManagedExecutionFailedToast(trackedTransaction);
           return;
         }
@@ -102,16 +76,16 @@ export async function waitForManagedExecutionOnchain({
   sleep = delay,
 }: {
   executionId: string;
-  getStatus: (executionId: string) => Promise<ManagedExecutionStatusUpdate>;
+  getStatus: (executionId: string) => Promise<{ status: RelayStatusSnapshot }>;
   maxAttempts?: number;
   intervalMs?: number;
   sleep?: (ms: number) => Promise<void>;
 }): Promise<ManagedExecutionObservation> {
-  let latestStatus: ManagedExecutionStatus | undefined;
+  let latestStatus: RelayExecutionStatus | undefined;
 
   for (let attempt = 0; attempt < maxAttempts; attempt++) {
     const update = await getStatus(executionId);
-    const txHash = readOriginTxHash(update);
+    const txHash = readOriginTxHash(update.status);
 
     latestStatus = update.status.status;
     if (txHash || isTerminalManagedStatus(latestStatus)) {
@@ -137,8 +111,8 @@ export async function waitForManagedExecutionOnchain({
 
 // ============ Local Helpers ================================================== //
 
-function readOriginTxHash(update: ManagedExecutionStatusUpdate): ManagedExecutionObservation['txHash'] {
-  const onchain = update.status.onchain;
+function readOriginTxHash(status: RelayStatusSnapshot): ManagedExecutionObservation['txHash'] {
+  const onchain = status.onchain;
   return onchain?.origin.txHashes[0];
 }
 
@@ -178,8 +152,8 @@ function buildManagedExecutionToastTransaction(
   };
 }
 
-function isTerminalManagedStatus(status: ManagedExecutionStatus): boolean {
-  return status === 'CONFIRMED' || status === 'REVERTED' || status === 'FAILED';
+function isTerminalManagedStatus(status: RelayExecutionStatus): boolean {
+  return status === RelayExecutionStatus.Confirmed || status === RelayExecutionStatus.Reverted || status === RelayExecutionStatus.Failed;
 }
 
 function delay(ms: number): Promise<void> {

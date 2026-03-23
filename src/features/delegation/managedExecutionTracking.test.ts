@@ -33,7 +33,8 @@ jest.mock('./relayService', () => ({
 
 import { TransactionStatus } from '@/entities/transactions';
 import { addNewTransaction } from '@/state/pendingTransactions';
-import { type ManagedExecutionStatusUpdate, trackManagedCallsExecution, waitForManagedExecutionOnchain } from './managedExecutionTracking';
+import { RelayExecutionStatus, type RelayStatusSnapshot } from '@rainbow-me/delegation';
+import { trackManagedCallsExecution, waitForManagedExecutionOnchain } from './managedExecutionTracking';
 
 describe('managedExecutionTracking', () => {
   beforeEach(() => {
@@ -43,7 +44,7 @@ describe('managedExecutionTracking', () => {
   it('shows a pending toast immediately and later stores the relay tx by execution id', async () => {
     mockRelayGetStatus.mockResolvedValue(
       buildStatusUpdate({
-        status: 'PENDING',
+        status: RelayExecutionStatus.Pending,
         txHash: '0x1111111111111111111111111111111111111111111111111111111111111111',
       })
     );
@@ -89,11 +90,11 @@ describe('managedExecutionTracking', () => {
 
   it('returns the first origin tx hash once relay status exposes onchain evidence', async () => {
     const getStatus = jest
-      .fn<Promise<ManagedExecutionStatusUpdate>, [string]>()
-      .mockResolvedValueOnce(buildStatusUpdate({ status: 'SUBMITTING' }))
+      .fn<Promise<{ status: RelayStatusSnapshot }>, [string]>()
+      .mockResolvedValueOnce(buildStatusUpdate({ status: RelayExecutionStatus.Submitting }))
       .mockResolvedValueOnce(
         buildStatusUpdate({
-          status: 'PENDING',
+          status: RelayExecutionStatus.Pending,
           txHash: '0x1111111111111111111111111111111111111111111111111111111111111111',
         })
       );
@@ -107,7 +108,7 @@ describe('managedExecutionTracking', () => {
     });
 
     expect(result).toEqual({
-      status: 'PENDING',
+      status: RelayExecutionStatus.Pending,
       txHash: '0x1111111111111111111111111111111111111111111111111111111111111111',
     });
     expect(getStatus).toHaveBeenCalledTimes(2);
@@ -115,7 +116,9 @@ describe('managedExecutionTracking', () => {
   });
 
   it('stops on terminal relay failure without onchain evidence', async () => {
-    const getStatus = jest.fn<Promise<ManagedExecutionStatusUpdate>, [string]>().mockResolvedValue(buildStatusUpdate({ status: 'FAILED' }));
+    const getStatus = jest
+      .fn<Promise<{ status: RelayStatusSnapshot }>, [string]>()
+      .mockResolvedValue(buildStatusUpdate({ status: RelayExecutionStatus.Failed }));
     const sleep = jest.fn<Promise<void>, [number]>().mockResolvedValue();
 
     const result = await waitForManagedExecutionOnchain({
@@ -126,15 +129,15 @@ describe('managedExecutionTracking', () => {
     });
 
     expect(result).toEqual({
-      status: 'FAILED',
+      status: RelayExecutionStatus.Failed,
     });
     expect(sleep).not.toHaveBeenCalled();
   });
 
   it('returns the last observed status when no onchain evidence appears before timeout', async () => {
     const getStatus = jest
-      .fn<Promise<ManagedExecutionStatusUpdate>, [string]>()
-      .mockResolvedValue(buildStatusUpdate({ status: 'SUBMITTING' }));
+      .fn<Promise<{ status: RelayStatusSnapshot }>, [string]>()
+      .mockResolvedValue(buildStatusUpdate({ status: RelayExecutionStatus.Submitting }));
     const sleep = jest.fn<Promise<void>, [number]>().mockResolvedValue();
 
     const result = await waitForManagedExecutionOnchain({
@@ -146,20 +149,14 @@ describe('managedExecutionTracking', () => {
     });
 
     expect(result).toEqual({
-      status: 'SUBMITTING',
+      status: RelayExecutionStatus.Submitting,
     });
     expect(getStatus).toHaveBeenCalledTimes(2);
     expect(sleep).toHaveBeenCalledTimes(1);
   });
 });
 
-function buildStatusUpdate({
-  status,
-  txHash,
-}: {
-  status: ManagedExecutionStatusUpdate['status']['status'];
-  txHash?: `0x${string}`;
-}): ManagedExecutionStatusUpdate {
+function buildStatusUpdate({ status, txHash }: { status: RelayExecutionStatus; txHash?: `0x${string}` }): { status: RelayStatusSnapshot } {
   return {
     status: {
       status,

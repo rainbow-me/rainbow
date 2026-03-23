@@ -10,7 +10,6 @@ import { ImgixImage } from '@/components/images';
 import { useTheme } from '@/theme/ThemeContext';
 import { type ImageSourcePropType } from 'react-native';
 import { type Width } from '@/design-system/layout/size';
-import { colors } from '@/styles';
 import { opacity } from '@/framework/ui/utils/opacity';
 
 interface ImageIconProps {
