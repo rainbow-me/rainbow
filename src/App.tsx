@@ -31,7 +31,7 @@ import { migrate } from '@/migrations';
 import { initializeReservoirClient } from '@/resources/reservoir/client';
 import { initializeRemoteConfig } from '@/model/remoteConfig';
 import { loadSettingsData } from '@/state/settings/loadSettingsData';
-import { IS_DEV, IS_PROD, IS_TEST } from '@/env';
+import { DANGER_INSTALL_SOURCE, IS_DEV, IS_PROD, IS_TEST } from '@/env';
 import Routes from '@/navigation/Routes';
 import { BackupsSync } from '@/state/sync/BackupsSync';
 import { AbsolutePortalRoot } from './components/AbsolutePortal';
@@ -177,6 +177,7 @@ async function initializeApplication() {
 
   Sentry.setUser({ id: deviceId });
   analytics.init({ deviceId });
+  analytics.identify({ installSource: DANGER_INSTALL_SOURCE });
 
   await Promise.all([
     initializeRemoteConfig(),

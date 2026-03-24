@@ -143,6 +143,8 @@
 		C9B378BB2C515A860085E5D0 /* ShareViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = C9B378BA2C515A860085E5D0 /* ShareViewController.swift */; };
 		C9B378BE2C515A860085E5D0 /* Base in Resources */ = {isa = PBXBuildFile; fileRef = C9B378BD2C515A860085E5D0 /* Base */; };
 		C9B378C22C515A860085E5D0 /* ShareWithRainbow.appex in Embed App Extensions */ = {isa = PBXBuildFile; fileRef = C9B378B82C515A860085E5D0 /* ShareWithRainbow.appex */; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };
+		CC31DFBA21E40E08FA23AEC8 /* AppInstallInfo.m in Sources */ = {isa = PBXBuildFile; fileRef = 25EC47FA7D8485D6DE97385B /* AppInstallInfo.m */; };
+		D57DF8DE7334657F937E570C /* AppInstallInfo.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9E32D5C136AD5C8520C49E22 /* AppInstallInfo.swift */; };
 		E8D2945956C9619768A8D361 /* ExpoModulesProvider.swift in Sources */ = {isa = PBXBuildFile; fileRef = 43C92E589571C27FFE89AB10 /* ExpoModulesProvider.swift */; };
 		ED2971652150620600B7C4FE /* JavaScriptCore.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = ED2971642150620600B7C4FE /* JavaScriptCore.framework */; };
 		FE44FC55302C54B7999CA03C /* libPods-Rainbow.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 5AB1118D6FC6EBBDADC0F01B /* libPods-Rainbow.a */; };
@@ -250,6 +252,7 @@
 		24979E7C20F84004007EB0DA /* FirebaseCoreDiagnostics.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = FirebaseCoreDiagnostics.framework; path = Frameworks/FirebaseCoreDiagnostics.framework; sourceTree = "<group>"; };
 		24979E7D20F84005007EB0DA /* module.modulemap */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = "sourcecode.module-map"; name = module.modulemap; path = Frameworks/module.modulemap; sourceTree = "<group>"; };
 		24979E7E20F84005007EB0DA /* nanopb.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = nanopb.framework; path = Frameworks/nanopb.framework; sourceTree = "<group>"; };
+		25EC47FA7D8485D6DE97385B /* AppInstallInfo.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; path = AppInstallInfo.m; sourceTree = "<group>"; };
 		3950E3F7A7C4CF855DF19F25 /* Pods-Rainbow.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Rainbow.debug.xcconfig"; path = "Target Support Files/Pods-Rainbow/Pods-Rainbow.debug.xcconfig"; sourceTree = "<group>"; };
 		3A71142BEB6837762DF54DBE /* Pods-SelectTokenIntent.localrelease.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-SelectTokenIntent.localrelease.xcconfig"; path = "Target Support Files/Pods-SelectTokenIntent/Pods-SelectTokenIntent.localrelease.xcconfig"; sourceTree = "<group>"; };
 		3C379D5D20FD1F92009AF81F /* Rainbow.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; name = Rainbow.entitlements; path = Rainbow/Rainbow.entitlements; sourceTree = "<group>"; };
@@ -276,6 +279,7 @@
 		98AED33BAB4247CEBEF8464D /* libz.tbd */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = "sourcecode.text-based-dylib-definition"; name = libz.tbd; path = usr/lib/libz.tbd; sourceTree = SDKROOT; };
 		9D411F67996894258977077F /* Pods-ImageNotification.localrelease.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-ImageNotification.localrelease.xcconfig"; path = "Target Support Files/Pods-ImageNotification/Pods-ImageNotification.localrelease.xcconfig"; sourceTree = "<group>"; };
 		9DEADFA4826D4D0BAA950D21 /* libRNFIRMessaging.a */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = archive.ar; path = libRNFIRMessaging.a; sourceTree = "<group>"; };
+		9E32D5C136AD5C8520C49E22 /* AppInstallInfo.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = AppInstallInfo.swift; sourceTree = "<group>"; };
 		A1DCD9F6831578F1F6ACDBA0 /* libPods-SelectTokenIntent.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = "libPods-SelectTokenIntent.a"; sourceTree = BUILT_PRODUCTS_DIR; };
 		A4277D9E23CBD1910042BAF4 /* Extensions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Extensions.swift; sourceTree = "<group>"; };
 		A4277DA223CFE85F0042BAF4 /* Theme.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Theme.swift; sourceTree = "<group>"; };
@@ -475,6 +479,8 @@
 				C04D10EF25AFC8C1003BEF7A /* Extras.json */,
 				AAE999CC2E41DD390072AFD5 /* RainbowSplashScreen.swift */,
 				AAE999D02E41E4670072AFD5 /* RainbowSplashScreen.m */,
+				9E32D5C136AD5C8520C49E22 /* AppInstallInfo.swift */,
+				25EC47FA7D8485D6DE97385B /* AppInstallInfo.m */,
 			);
 			name = Rainbow;
 			sourceTree = "<group>";
@@ -1486,6 +1492,8 @@ Upload Debug Symbols to Sentry */ = {
 				66A1FEBC24ACBBE600C3F539 /* RNCMPortal.m in Sources */,
 				C18FCD43273C64E40079CE28 /* PriceDataProvider.swift in Sources */,
 				E8D2945956C9619768A8D361 /* ExpoModulesProvider.swift in Sources */,
+				D57DF8DE7334657F937E570C /* AppInstallInfo.swift in Sources */,
+				CC31DFBA21E40E08FA23AEC8 /* AppInstallInfo.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
