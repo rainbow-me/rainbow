@@ -800,7 +800,7 @@ export const createWallet = async ({
 
     // Initiate auto account discovery for imported wallets via seedphrase
     // or for hardware wallets
-    if ((isHDWallet && root && isImported) || (isHardwareWallet && seed)) {
+    if (!isRestoring && ((isHDWallet && root && isImported) || (isHardwareWallet && seed))) {
       logger.debug('[wallet]: initializing account auto discovery', {}, DebugContext.wallet);
       let index = 1;
       let lookup = 0;
