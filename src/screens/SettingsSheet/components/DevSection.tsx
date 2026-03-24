@@ -466,7 +466,7 @@ const DevSection = () => {
               return (
                 <MenuItem
                   key={reason}
-                  leftComponent={<MenuItem.TextIcon icon={(reason as string).startsWith('alert_') ? '⚠️' : '🔧'} isEmoji />}
+                  leftComponent={<MenuItem.TextIcon icon={reason.startsWith('alert_') ? '⚠️' : '🔧'} isEmoji />}
                   onPress={() => triggerRevokeSheet(reason)}
                   size={52}
                   titleComponent={<MenuItem.Title text={label} />}
