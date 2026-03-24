@@ -149,18 +149,6 @@ const DevSection = () => {
     setLoadingStates(prev => ({ ...prev, clearMmkvStorage: false }));
   };
 
-  const clearWallets = async () => {
-    const isAuth = await isAuthenticated();
-    if (isAuth) {
-      const shouldWipeKeychain = await confirmKeychainAlert();
-      if (shouldWipeKeychain) {
-        await clearWalletState({ resetKeychain: true });
-      }
-    }
-    // we need to navigate back to the welcome screen
-    navigate(Routes.WELCOME_SCREEN);
-  };
-
   const wipeKeychainWithAlert = async () => {
     const isAuth = await isAuthenticated();
     // we should require auth before wiping the keychain
