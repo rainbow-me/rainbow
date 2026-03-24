@@ -1,4 +1,4 @@
-import ReactNative from 'react-native';
+import ReactNative, { NativeModules } from 'react-native';
 import { ENABLE_DEV_MODE, IS_TESTING, RPC_PROXY_BASE_URL_PROD, RPC_PROXY_API_KEY_PROD } from 'react-native-dotenv';
 import { getInstallerPackageNameSync } from 'react-native-device-info';
 
@@ -27,5 +27,12 @@ export const RPC_PROXY_API_KEY = RPC_PROXY_API_KEY_PROD;
 
 export const IS_TEST_FLIGHT = IS_IOS && getInstallerPackageNameSync() === 'TestFlight';
 
+// TODO: Replace IS_STORE_INSTALL with DANGER_INSTALL_SOURCE (renamed to INSTALL_SOURCE) once verified in production.
+// The AppInstallInfo native module is shipped but not wired in yet. DANGER_INSTALL_SOURCE
+// reads from the new native module for observation/verification only. Do NOT use it for
+// gating features or behavior until the values have been confirmed across all build types.
 export const IS_STORE_INSTALL = !IS_DEV && !IS_TEST_FLIGHT;
 export const IS_INTERNAL = IS_DEV || !IS_STORE_INSTALL;
+
+type InstallSource = 'store' | 'internal' | 'dev';
+export const DANGER_INSTALL_SOURCE: InstallSource = IS_DEV ? 'dev' : NativeModules.AppInstallInfo.isStoreInstall() ? 'store' : 'internal';

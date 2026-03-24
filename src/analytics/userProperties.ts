@@ -96,6 +96,7 @@ export interface UserProperties {
   screenHeight?: number;
   screenWidth?: number;
   screenScale?: number;
+  installSource?: 'store' | 'internal' | 'dev';
 
   // branch
   branchCampaign?: string;

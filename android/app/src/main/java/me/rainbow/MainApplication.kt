@@ -21,6 +21,7 @@ import me.rainbow.NativeModules.RNBip39.RNBip39Package
 import me.rainbow.NativeModules.RNTextAnimatorPackage.RNTextAnimatorPackage
 import me.rainbow.NativeModules.RNZoomableButton.RNZoomableButtonPackage
 import me.rainbow.NativeModules.NavbarHeight.NavbarHeightPackage
+import me.rainbow.NativeModules.AppInstallInfo.AppInstallInfoPackage
 import com.shopify.reactnativeperformance.ReactNativePerformance;
 
 class MainApplication : Application(), ReactApplication {
@@ -39,6 +40,7 @@ class MainApplication : Application(), ReactApplication {
             packages.add(InternalPackage())
             packages.add(RNHapticsPackage())
             packages.add(NavbarHeightPackage())
+            packages.add(AppInstallInfoPackage())
             return packages
         }
 
