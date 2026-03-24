@@ -60,7 +60,7 @@ class AppInstallInfoModule(reactContext: ReactApplicationContext) :
                     reactApplicationContext.packageName,
                     PackageManager.GET_SIGNATURES
                 )
-            val cert = packageInfo.signatures[0].toByteArray()
+            val cert = packageInfo.signatures!![0].toByteArray()
             val fingerprint = MessageDigest.getInstance("SHA-256").digest(cert)
             !fingerprint.contentEquals(UPLOAD_KEY_FINGERPRINT)
         } catch (_: Exception) {
