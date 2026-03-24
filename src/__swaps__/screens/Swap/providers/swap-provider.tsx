@@ -171,10 +171,10 @@ const getInitialSliderXPosition = ({
 
 const SLIPPAGE_CONFIG = getRemoteConfig().default_slippage_bips_chainId;
 
-/** Temporary point of control for skipping insufficient gas checks. */
-const SKIP_INSUFFICIENT_GAS_CHECK = getExperimentalFlag(SKIP_SWAPS_GAS_CHECKS);
-
 export const SwapProvider = ({ children }: SwapProviderProps) => {
+  /** Temporary point of control for skipping insufficient gas checks. */
+  const skipInsufficientGasCheck = getExperimentalFlag(SKIP_SWAPS_GAS_CHECKS);
+
   const [{ currentCurrency, initialValues, nativeChainAssets }] = useState(() => ({
     currentCurrency: userAssetsStoreManager.getState().currency,
     initialValues: getSwapsNavigationParams(),
@@ -437,6 +437,7 @@ export const SwapProvider = ({ children }: SwapProviderProps) => {
 
     runOnJS(getNonceAndPerformSwap)({ type, parameters });
   };
+
   const swapInfo = useDerivedValue(() => {
     const areAllInputsZero =
       equalWorklet(inputValues.value.inputAmount, '0') &&
@@ -830,7 +831,7 @@ export const SwapProvider = ({ children }: SwapProviderProps) => {
       !equalWorklet(sellAsset.maxSwappableAmount, '0') &&
       lessThanOrEqualToWorklet(inputValues.value.inputAmount, sellAsset.maxSwappableAmount);
 
-    if (!SKIP_INSUFFICIENT_GAS_CHECK && !enoughFundsForSwap && hasEnoughFundsForGas.value !== undefined) {
+    if (!skipInsufficientGasCheck && !enoughFundsForSwap && hasEnoughFundsForGas.value !== undefined) {
       return { label: insufficientFunds, disabled: true, type: 'hold' };
     }
 
@@ -872,7 +873,7 @@ export const SwapProvider = ({ children }: SwapProviderProps) => {
       return { icon, label: isReviewSheetOpen ? quoteError : reviewLabel, disabled: true, type: 'hold' };
     }
 
-    if (!SKIP_INSUFFICIENT_GAS_CHECK && hasEnoughFundsForGas.value === false) {
+    if (!skipInsufficientGasCheck && hasEnoughFundsForGas.value === false) {
       const nativeCurrency = nativeChainAssets[sellAsset?.chainId || ChainId.mainnet];
       return {
         label: `${insufficient} ${nativeCurrency.symbol}`,
