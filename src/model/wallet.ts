@@ -730,7 +730,7 @@ export const createWallet = async ({
       // Don't allow adding a readOnly wallet that you have already visible
       // or a private key that you already have visible as a seed or mnemonic.
       // Exception: allow overwriting if the existing wallet is damaged (keychain data lost) so users can repair it.
-      // Note: damaged status is read from the walletsStore (not keychain) since it's only persisted in-memory.
+      // Note: damaged status is read from the walletsStore since getAllWallets() reads from keychain where it's not persisted.
       const isPrivateKeyOverwritingSeedMnemonic =
         type === EthereumWalletType.privateKey &&
         (alreadyExistingWallet?.type === EthereumWalletType.seed || alreadyExistingWallet?.type === EthereumWalletType.mnemonic);
