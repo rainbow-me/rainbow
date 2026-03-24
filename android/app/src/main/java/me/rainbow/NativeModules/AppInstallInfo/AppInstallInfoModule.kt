@@ -36,7 +36,7 @@ class AppInstallInfoModule(reactContext: ReactApplicationContext) :
         const val NAME = "AppInstallInfo"
 
         // SHA-256 fingerprint of Rainbow's upload key certificate (rainbow-key.keystore, alias rainbow-alias).
-        // Extract with: keytool -list -v -keystore rainbow-key.keystore -alias rainbow-alias
+        // Extracted with: keytool -list -v -keystore rainbow-key.keystore -alias rainbow-alias
         // CD:34:1C:31:91:0F:63:D7:1A:3C:FA:6D:A4:95:81:11:E8:3A:BA:CA:64:14:79:3D:DB:86:A0:F9:0D:26:42:41
         private val UPLOAD_KEY_FINGERPRINT = intArrayOf(
             0xCD, 0x34, 0x1C, 0x31, 0x91, 0x0F, 0x63, 0xD7,
