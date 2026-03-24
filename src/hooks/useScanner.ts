@@ -47,9 +47,15 @@ export default function useScanner(enabled: boolean, onSuccess: () => unknown) {
     enabledVar.current = enabled;
   }, [enabled, disableScanning, enableScanning]);
 
-  const handleScanEthereumUrl = useCallback((data: string) => {
-    ethereumUtils.parseEthereumUrl(data);
-  }, []);
+  const handleScanEthereumUrl = useCallback(
+    (data: string) => {
+      // Navigate away first — prevents the QRScannerScreen beforeRemove listener from
+      // intercepting the SEND_FLOW navigation and looping forever.
+      navigate(Routes.WALLET_SCREEN);
+      ethereumUtils.parseEthereumUrl(data);
+    },
+    [navigate]
+  );
 
   const handleScanAddress = useCallback(
     async (address: string) => {
@@ -140,8 +146,6 @@ export default function useScanner(enabled: boolean, onSuccess: () => unknown) {
 
       // EIP 681 / 831
       if (data.startsWith('ethereum:')) {
-        onSuccess();
-
         return handleScanEthereumUrl(data);
       }
       const address = await addressUtils.getEthereumAddressFromQRCodeData(data);
