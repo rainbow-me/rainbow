@@ -34,5 +34,5 @@ export const IS_TEST_FLIGHT = IS_IOS && getInstallerPackageNameSync() === 'TestF
 export const IS_STORE_INSTALL = !IS_DEV && !IS_TEST_FLIGHT;
 export const IS_INTERNAL = IS_DEV || !IS_STORE_INSTALL;
 
-type InstallSource = 'store' | 'internal' | 'dev';
+export type InstallSource = 'store' | 'internal' | 'dev';
 export const DANGER_INSTALL_SOURCE: InstallSource = IS_DEV ? 'dev' : NativeModules.AppInstallInfo.isStoreInstall() ? 'store' : 'internal';

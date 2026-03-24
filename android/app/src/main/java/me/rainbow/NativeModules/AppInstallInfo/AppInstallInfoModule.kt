@@ -35,13 +35,15 @@ class AppInstallInfoModule(reactContext: ReactApplicationContext) :
     companion object {
         const val NAME = "AppInstallInfo"
 
-        // SHA-256 fingerprint of Rainbow's upload key certificate.
+        // SHA-256 fingerprint of Rainbow's upload key certificate (rainbow-key.keystore, alias rainbow-alias).
         // Extract with: keytool -list -v -keystore rainbow-key.keystore -alias rainbow-alias
-        // Then convert the hex fingerprint to a byte array.
-        // TODO: paste actual SHA-256 fingerprint bytes here
-        private val UPLOAD_KEY_FINGERPRINT = byteArrayOf(
-            // e.g. 0x2A, 0x3B, 0x4C, ...
-        )
+        // CD:34:1C:31:91:0F:63:D7:1A:3C:FA:6D:A4:95:81:11:E8:3A:BA:CA:64:14:79:3D:DB:86:A0:F9:0D:26:42:41
+        private val UPLOAD_KEY_FINGERPRINT = intArrayOf(
+            0xCD, 0x34, 0x1C, 0x31, 0x91, 0x0F, 0x63, 0xD7,
+            0x1A, 0x3C, 0xFA, 0x6D, 0xA4, 0x95, 0x81, 0x11,
+            0xE8, 0x3A, 0xBA, 0xCA, 0x64, 0x14, 0x79, 0x3D,
+            0xDB, 0x86, 0xA0, 0xF9, 0x0D, 0x26, 0x42, 0x41,
+        ).map { it.toByte() }.toByteArray()
     }
 
     override fun getName(): String = NAME
