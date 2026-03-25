@@ -23,11 +23,7 @@ jest.mock('@/components/rainbow-toast/useRainbowToastsStore', () => ({
 
 jest.mock('./relayService', () => ({
   relayService: {
-    intentRelay: {
-      transport: {
-        getStatus: (...args: [string]) => mockRelayGetStatus(...args),
-      },
-    },
+    getStatus: (...args: [string]) => mockRelayGetStatus(...args),
   },
 }));
 

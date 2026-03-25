@@ -38,7 +38,7 @@ export function trackManagedCallsExecution({
 
   void waitForManagedExecutionOnchain({
     executionId,
-    getStatus: relayService.intentRelay.transport.getStatus,
+    getStatus: relayService.getStatus,
   })
     .then(observation => {
       if (!observation.txHash) {

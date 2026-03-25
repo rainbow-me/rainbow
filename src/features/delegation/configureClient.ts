@@ -16,6 +16,6 @@ export function configureDelegationSdk(): void {
     platformClient: getPlatformClient(),
     logger: logger.createServiceLogger(logger.DebugContext.delegation),
     getCurrentAddress: $ => $(useWalletsStore, s => s.accountAddress),
-    ...relayService,
+    relayService,
   });
 }

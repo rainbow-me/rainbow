@@ -104,7 +104,7 @@ function prepareRequiredAtomicCalls({
     calls,
     requirements: {
       atomic: 'required',
-      fees: { subsidized: true },
+      fees: { payer: 'sponsor' },
     },
   });
 }

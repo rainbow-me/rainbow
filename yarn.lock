@@ -5771,7 +5771,7 @@ __metadata:
 
 "@rainbow-me/delegation@file:./rainbow-me-delegation-0.3.3.tgz::locator=Rainbow%40workspace%3A.":
   version: 0.3.3
-  resolution: "@rainbow-me/delegation@file:./rainbow-me-delegation-0.3.3.tgz#./rainbow-me-delegation-0.3.3.tgz::hash=3f1b56&locator=Rainbow%40workspace%3A."
+  resolution: "@rainbow-me/delegation@file:./rainbow-me-delegation-0.3.3.tgz#./rainbow-me-delegation-0.3.3.tgz::hash=48c716&locator=Rainbow%40workspace%3A."
   peerDependencies:
     "@storesjs/stores": ^0.8.6
     ethers: ^5.7.0
@@ -5782,7 +5782,7 @@ __metadata:
       optional: true
     react:
       optional: true
-  checksum: 10c0/3e35039e6901c99ea1958bb700ad71fc132dfece515524999c4d936980447468243b8d67811d659daaa2b6618192b205df59535492ddfd9cb0f7f3194097e7b2
+  checksum: 10c0/4058f22b6adcacdd649644be5ca8ee62c8e0d71b8aefd97362e866f3a2842dd38bcf2127f25cbddd1407ee43e03c3b1fd26753e639b0f9712876d0a961ab1562
   languageName: node
   linkType: hard
 
