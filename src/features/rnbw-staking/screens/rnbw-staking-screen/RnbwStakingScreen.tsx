@@ -4,15 +4,17 @@ import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import SheetHandleFixedToTop from '@/components/sheet/SheetHandleFixedToTop';
 import { HoldToActivateButton } from '@/components/hold-to-activate-button/HoldToActivateButton';
 import { Box, Stack, Text } from '@/design-system';
-import { useIsReadOnlyWallet, useIsHardwareWallet } from '@/state/wallets/walletsStore';
+import { useIsReadOnlyWallet, useIsHardwareWallet, useAccountAddress } from '@/state/wallets/walletsStore';
 import { useNavigation } from '@/navigation/Navigation';
 import Routes from '@/navigation/routesNames';
 import watchingAlert from '@/utils/watchingAlert';
 import { logger, RainbowError } from '@/logger';
+import { stakeRnbw } from '@/features/rnbw-staking/utils/stakeRnbw';
 
 export const RnbwStakingScreen = memo(function RnbwStakingScreen() {
   const { top: safeAreaTop } = useSafeAreaInsets();
   const { goBack, navigate } = useNavigation();
+  const accountAddress = useAccountAddress();
   const isReadOnlyWallet = useIsReadOnlyWallet();
   const isHardwareWallet = useIsHardwareWallet();
   const [isProcessing, setIsProcessing] = useState(false);
@@ -20,14 +22,14 @@ export const RnbwStakingScreen = memo(function RnbwStakingScreen() {
   const startStake = useCallback(async () => {
     setIsProcessing(true);
     try {
-      // TODO: Implement staking logic
+      await stakeRnbw({ address: accountAddress, amount: '1' });
       goBack();
     } catch (e) {
       setIsProcessing(false);
       Alert.alert('Staking Failed', 'Something went wrong while staking. Please try again.');
       logger.error(new RainbowError('[RnbwStakingScreen]: Staking failed', e));
     }
-  }, [goBack]);
+  }, [accountAddress, goBack]);
 
   const handleStake = useCallback(async () => {
     if (isReadOnlyWallet) {
