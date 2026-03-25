@@ -9,7 +9,7 @@ export default function watchingAlert() {
       onPress: () => {
         Navigation.handleAction(Routes.ADD_WALLET_NAVIGATOR, {
           screen: Routes.IMPORT_OR_WATCH_WALLET_SHEET,
-          params: { type: 'import', isFirstWallet: false },
+          params: { flowContext: 'in_app', type: 'import', isFirstWallet: false },
         });
       },
       text: i18n.t(i18n.l.wallet.alert.finish_importing),

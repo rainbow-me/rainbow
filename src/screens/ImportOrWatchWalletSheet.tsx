@@ -18,9 +18,12 @@ import { opacity } from '@/framework/ui/utils/opacity';
 const TRANSLATIONS = i18n.l.wallet.new.import_or_watch_wallet_sheet;
 
 export const ImportOrWatchWalletSheet = () => {
-  const { params: { type = 'watch' } = {} } = useRoute<RouteProp<RootStackParamList, typeof Routes.IMPORT_OR_WATCH_WALLET_SHEET>>();
+  const { params: { flowContext, type = 'watch' } = {} } =
+    useRoute<RouteProp<RootStackParamList, typeof Routes.IMPORT_OR_WATCH_WALLET_SHEET>>();
 
-  const { busy, handlePressImportButton, handleSetSeedPhrase, inputRef, isSecretValid, seedPhrase } = useImportingWallet();
+  const { busy, handlePressImportButton, handleSetSeedPhrase, inputRef, isSecretValid, seedPhrase } = useImportingWallet({
+    flowContext,
+  });
   const keyboardHeight = useKeyboardHeight();
 
   const textStyle = useTextStyle({

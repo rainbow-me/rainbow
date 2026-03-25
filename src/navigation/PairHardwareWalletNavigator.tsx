@@ -23,6 +23,7 @@ export const LedgerImportDeviceIdAtom = atom({
 
 export function PairHardwareWalletNavigator() {
   const { params } = useRoute<RouteProp<RootStackParamList, typeof Routes.PAIR_HARDWARE_WALLET_INTRO_SHEET>>();
+  const flowContext = params?.flowContext;
   const { height, width } = useDimensions();
 
   const [currentRouteName, setCurrentRouteName] = useState<string>(Routes.PAIR_HARDWARE_WALLET_INTRO_SHEET);
@@ -83,6 +84,7 @@ export function PairHardwareWalletNavigator() {
             />
             <Swipe.Screen
               component={PairHardwareWalletSigningSheet}
+              initialParams={{ flowContext }}
               name={Routes.PAIR_HARDWARE_WALLET_SIGNING_SHEET}
               listeners={{
                 focus: () => {

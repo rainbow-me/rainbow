@@ -197,6 +197,7 @@ export function WelcomeScreen() {
   const showRestoreSheet = useCallback(() => {
     analytics.track(analytics.event.welcomeAlreadyHave);
     navigate(Routes.ADD_WALLET_NAVIGATOR, {
+      flowContext: 'onboarding',
       isFirstWallet: true,
     });
   }, [navigate]);

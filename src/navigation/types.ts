@@ -229,9 +229,12 @@ export type ExplainSheetRouteParams = {
   [K in ExplainSheetType]: ExplainSheetParams<K>;
 }[ExplainSheetType];
 
+export type ImportFlowContext = 'onboarding' | 'in_app';
+
 type AddWalletNavigatorParams = {
   type?: 'import' | 'watch';
   isFirstWallet: boolean;
+  flowContext?: ImportFlowContext;
 };
 
 export type HardwareWalletTxParams = {
@@ -240,6 +243,7 @@ export type HardwareWalletTxParams = {
 
 export type PairHardwareWalletNavigatorParams = {
   entryPoint?: typeof Routes.ADD_WALLET_SHEET | typeof Routes.IMPORT_OR_WATCH_WALLET_SHEET;
+  flowContext?: ImportFlowContext;
   isFirstWallet?: boolean;
 };
 
@@ -544,6 +548,7 @@ type RouteParams = {
         };
       }>;
   [Routes.PAIR_HARDWARE_WALLET_SIGNING_SHEET]: {
+    flowContext?: ImportFlowContext;
     shouldGoBack?: boolean;
   };
   [Routes.DIAGNOSTICS_SHEET]: {
@@ -617,7 +622,7 @@ type RouteParams = {
   };
   [Routes.PAIR_HARDWARE_WALLET_NAVIGATOR]:
     | NavigatorScreenParams<{
-        [Routes.PAIR_HARDWARE_WALLET_SIGNING_SHEET]: { shouldGoBack?: boolean };
+        [Routes.PAIR_HARDWARE_WALLET_SIGNING_SHEET]: { flowContext?: ImportFlowContext; shouldGoBack?: boolean };
         [Routes.PAIR_HARDWARE_WALLET_INTRO_SHEET]: undefined;
       }>
     | PairHardwareWalletNavigatorParams
