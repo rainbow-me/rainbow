@@ -15,7 +15,7 @@ const Swipe = createMaterialTopTabNavigator();
 
 export const AddWalletNavigator = () => {
   const {
-    params: { isFirstWallet, type },
+    params: { flowContext = 'in_app', isFirstWallet, type },
   } = useRoute<RouteProp<RootStackParamList, typeof Routes.ADD_WALLET_SHEET>>();
 
   const [scrollEnabled, setScrollEnabled] = useState(false);
@@ -32,7 +32,7 @@ export const AddWalletNavigator = () => {
           >
             <Swipe.Screen
               component={AddWalletSheet}
-              initialParams={{ isFirstWallet }}
+              initialParams={{ flowContext, isFirstWallet }}
               name={Routes.ADD_WALLET_SHEET}
               listeners={{
                 focus: () => {
@@ -54,7 +54,7 @@ export const AddWalletNavigator = () => {
             />
             <Swipe.Screen
               component={ImportOrWatchWalletSheet}
-              initialParams={{ type }}
+              initialParams={{ flowContext, type }}
               name={Routes.IMPORT_OR_WATCH_WALLET_SHEET}
               listeners={{
                 focus: () => {

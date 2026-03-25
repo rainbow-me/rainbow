@@ -6,7 +6,7 @@ import useTimeout from '@/hooks/useTimeout';
 import { useNavigation } from '@/navigation/Navigation';
 import Routes from '@/navigation/routesNames';
 import styled from '@/framework/ui/styled-thing';
-import { IS_ANDROID, IS_IOS } from '@/env';
+import { DANGER_INSTALL_SOURCE, IS_ANDROID, IS_IOS } from '@/env';
 
 const DEBUG_TAP_COUNT = 15;
 
@@ -39,7 +39,7 @@ export function AppVersionStamp() {
   return (
     <StyledButton testID="app-version-stamp" hitSlop={10} onPress={handleVersionPress}>
       <Text color="secondary30 (Deprecated)" size="14px / 19px (Deprecated)" weight="bold">
-        {appVersion}
+        {`${appVersion} · ${DANGER_INSTALL_SOURCE}`}
       </Text>
     </StyledButton>
   );
