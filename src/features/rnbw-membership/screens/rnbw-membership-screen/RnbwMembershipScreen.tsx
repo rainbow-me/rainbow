@@ -5,6 +5,7 @@ import { AccountImage } from '@/components/AccountImage';
 import { Navbar } from '@/components/navbar/Navbar';
 import { RnbwRewardsClaimCard } from './components/RnbwRewardsClaimCard';
 import { RnbwAirdropClaimCard } from './components/RnbwAirdropClaimCard';
+import { RnbwStakingCard } from './components/RnbwStakingCard';
 
 export const RnbwMembershipScreen = memo(function RnbwMembershipScreen() {
   return (
@@ -12,6 +13,7 @@ export const RnbwMembershipScreen = memo(function RnbwMembershipScreen() {
       <Navbar hasStatusBarInset title="Membership" leftComponent={<AccountImage />} />
       <ScrollView contentContainerStyle={styles.scrollViewContentContainer} style={styles.flex}>
         <Box gap={16}>
+          <RnbwStakingCard />
           <RnbwRewardsClaimCard />
           <RnbwAirdropClaimCard />
         </Box>

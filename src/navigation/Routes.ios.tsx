@@ -143,6 +143,8 @@ import { PolymarketSellPositionSheet } from '@/features/polymarket/screens/polym
 import { RnbwAirdropScreen } from '@/features/rnbw-airdrop/screens/rnbw-airdrop-screen/RnbwAirdropScreen';
 import { RnbwRewardsClaimSheet } from '@/features/rnbw-rewards/screens/rnbw-rewards-claim-sheet/RnbwRewardsClaimSheet';
 import { RnbwRewardsEstimateSheet } from '@/features/rnbw-rewards/screens/rnbw-rewards-estimate-sheet/RnbwRewardsEstimateSheet';
+import { RnbwStakingLearnSheet } from '@/features/rnbw-staking/screens/rnbw-staking-learn-sheet/RnbwStakingLearnSheet';
+import { RnbwStakingScreen } from '@/features/rnbw-staking/screens/rnbw-staking-screen/RnbwStakingScreen';
 import WalletErrorSheet from '@/components/wallet-error/WalletErrorSheet';
 
 const Stack = createStackNavigator();
@@ -349,6 +351,8 @@ function NativeStackNavigator() {
       <NativeStack.Screen component={RnbwAirdropScreen} name={Routes.RNBW_AIRDROP_SCREEN} {...expandedAssetSheetV2Config} />
       <NativeStack.Screen component={RnbwRewardsClaimSheet} name={Routes.RNBW_REWARDS_CLAIM_SHEET} {...panelConfig} />
       <NativeStack.Screen component={RnbwRewardsEstimateSheet} name={Routes.RNBW_REWARDS_ESTIMATE_SHEET} {...panelConfig} />
+      <NativeStack.Screen component={RnbwStakingLearnSheet} name={Routes.RNBW_STAKING_LEARN_SHEET} {...expandedAssetSheetV2Config} />
+      <NativeStack.Screen component={RnbwStakingScreen} name={Routes.RNBW_STAKING_SCREEN} {...expandedAssetSheetV2Config} />
 
       <NativeStack.Screen
         component={PolymarketBrowseEventsScreen}
