@@ -71,6 +71,7 @@ jobs:
           mv rainbow-env/android/app/google-services.json android/app/google-services.json
           rm -rf rainbow-env
           sed -i "s/IS_TESTING=false/IS_TESTING=true/" .env
+          sed -i "s/ENABLE_DEV_MODE=1/ENABLE_DEV_MODE=0/" .env
           echo "1" > is_testing
       - name: Setup scripts
         env:
