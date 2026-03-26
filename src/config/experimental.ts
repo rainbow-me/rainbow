@@ -37,6 +37,7 @@ export const PERPS = 'Perps';
 export const POLYMARKET = 'Polymarket';
 export const DEFI_POSITIONS_THRESHOLD_FILTER = 'DeFi Minimum Value Filter';
 export const RNBW_REWARDS = 'RNBW Rewards';
+export const RNBW_MEMBERSHIP = 'RNBW Membership';
 export const DELEGATION = '7702 Delegation';
 export const ATOMIC_SWAPS = 'Atomic Swaps';
 
@@ -85,6 +86,7 @@ const config = {
   [DEFI_POSITIONS_THRESHOLD_FILTER]: { settings: true, value: true },
   [POLYMARKET]: { settings: true, value: false },
   [RNBW_REWARDS]: { settings: true, value: false },
+  [RNBW_MEMBERSHIP]: { settings: true, value: false },
   [DELEGATION]: { settings: true, value: false },
   [ATOMIC_SWAPS]: { settings: true, value: false },
 } as const;

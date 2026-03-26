@@ -45,6 +45,7 @@ import { TabHomeInnerFill } from './svg/TabHomeInnerFill';
 import { TabPoints } from './svg/TabPoints';
 import { TabPointsInner } from './svg/TabPointsInner';
 import { TabPointsInnerFill } from './svg/TabPointsInnerFill';
+import { TabMembership } from './svg/TabMembership';
 import { TabDappBrowser } from './svg/TabDappBrowser';
 import { TabDappBrowserInner } from './svg/TabDappBrowserInner';
 import { TabDappBrowserInnerFill } from './svg/TabDappBrowserInnerFill';
@@ -103,6 +104,7 @@ const IconTypes = {
   tabPoints: TabPoints,
   tabPointsInner: TabPointsInner,
   tabPointsInnerFill: TabPointsInnerFill,
+  tabMembership: TabMembership,
   tabDappBrowser: TabDappBrowser,
   tabDappBrowserInner: TabDappBrowserInner,
   tabDappBrowserInnerFill: TabDappBrowserInnerFill,
