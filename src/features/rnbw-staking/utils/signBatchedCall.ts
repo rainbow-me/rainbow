@@ -1,3 +1,4 @@
+import { type Signer } from '@ethersproject/abstract-signer';
 import { type Address, type Hex, decodeFunctionResult, encodeAbiParameters, encodeFunctionData, zeroAddress, zeroHash } from 'viem';
 import { loadWallet, signTypedDataMessage } from '@/model/wallet';
 import { getProvider } from '@/handlers/web3';
@@ -38,6 +39,7 @@ export async function prepareSignedBatchedCalldata({
   address,
   chainId,
   calls,
+  signer,
   keyHash = ROOT_KEY_HASH,
   executor = PERMISSIONLESS_EXECUTOR,
   deadline = BigInt(Math.floor(Date.now() / 1000) + time.hours(1) / 1000),
@@ -47,6 +49,7 @@ export async function prepareSignedBatchedCalldata({
   address: Address;
   chainId: number;
   calls: BatchCallForSigning[];
+  signer?: Signer;
   keyHash?: Hex;
   executor?: Address;
   deadline?: bigint;
@@ -72,6 +75,7 @@ export async function prepareSignedBatchedCalldata({
     provider,
     domain,
     signedBatchedCall,
+    signer,
   });
   const wrappedSignature = encodeAbiParameters([{ type: 'bytes' }, { type: 'bytes' }], [rawSignature, EMPTY_HOOK_DATA]);
 
@@ -128,14 +132,16 @@ async function signBatchedCallTypedData({
   provider,
   domain,
   signedBatchedCall,
+  signer: existingSigner,
 }: {
   address: Address;
   provider: StaticJsonRpcProvider;
   domain: CaliburDomain;
   signedBatchedCall: SignedBatchedCall;
+  signer?: Signer;
 }): Promise<Hex> {
   // Sign via EIP-712
-  const signer = await loadWallet({ address, provider });
+  const signer = existingSigner ?? (await loadWallet({ address, provider }));
   if (!signer) {
     throw new Error('Failed to load wallet for signing');
   }

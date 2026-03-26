@@ -9,7 +9,11 @@ import { useNavigation } from '@/navigation/Navigation';
 import Routes from '@/navigation/routesNames';
 import watchingAlert from '@/utils/watchingAlert';
 import { logger, RainbowError } from '@/logger';
+import { sumWorklet } from '@/framework/core/safeMath';
 import { stakeRnbw } from '@/features/rnbw-staking/utils/stakeRnbw';
+import { useRewardsBalanceStore } from '@/features/rnbw-rewards/stores/rewardsBalanceStore';
+import { formatUnits } from 'viem';
+import { RNBW_DECIMALS } from '@/features/rnbw-staking/constants';
 
 export const RnbwStakingScreen = memo(function RnbwStakingScreen() {
   const { top: safeAreaTop } = useSafeAreaInsets();
@@ -22,7 +26,11 @@ export const RnbwStakingScreen = memo(function RnbwStakingScreen() {
   const startStake = useCallback(async () => {
     setIsProcessing(true);
     try {
-      await stakeRnbw({ address: accountAddress, amount: '1' });
+      const claimableRnbwRaw = useRewardsBalanceStore.getState().getData()?.claimableRnbw ?? '0';
+      const claimableRnbw = formatUnits(BigInt(claimableRnbwRaw), RNBW_DECIMALS);
+      // TODO: Fixed amount of RNBW to stake
+      const stakeAmount = sumWorklet('1', claimableRnbw);
+      await stakeRnbw({ address: accountAddress, amount: stakeAmount });
       goBack();
     } catch (e) {
       setIsProcessing(false);

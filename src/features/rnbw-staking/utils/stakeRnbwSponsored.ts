@@ -1,3 +1,4 @@
+import { type Signer } from '@ethersproject/abstract-signer';
 import { type StaticJsonRpcProvider } from '@ethersproject/providers';
 import { type BatchCall } from '@rainbow-me/delegation';
 import { createGelatoEvmRelayerClient } from '@gelatocloud/gasless/_dist/relayer/evm/index.js';
@@ -14,22 +15,12 @@ export async function stakeRnbwSponsored({
   address,
   provider,
   stakeAmountRaw,
+  signer,
 }: {
   address: Address;
   provider: StaticJsonRpcProvider;
   stakeAmountRaw: string;
-}): Promise<Hash> {
-  return executeAtomicSponsoredStake({ address, provider, stakeAmountRaw });
-}
-
-async function executeAtomicSponsoredStake({
-  address,
-  provider,
-  stakeAmountRaw,
-}: {
-  address: Address;
-  provider: StaticJsonRpcProvider;
-  stakeAmountRaw: string;
+  signer: Signer;
 }): Promise<Hash> {
   const calls = await buildStakeCalls({ address, provider, stakeAmountRaw });
 
@@ -37,6 +28,7 @@ async function executeAtomicSponsoredStake({
     address,
     chainId: STAKING_CHAIN_ID,
     calls: calls.map(c => ({ to: c.to, value: BigInt(c.value), data: c.data })),
+    signer,
   });
 
   return relayTransaction({ from: address, chainId: STAKING_CHAIN_ID, to: signedTx.to, data: signedTx.data });
@@ -44,7 +36,6 @@ async function executeAtomicSponsoredStake({
 
 async function relayTransaction({ from, chainId, to, data }: { from: Address; chainId: number; to: Address; data: Hex }): Promise<Hash> {
   const provider = getProvider({ chainId });
-
   const gasEstimate = await provider.estimateGas({ from, to, data });
 
   const gelatoRelayer = createGelatoEvmRelayerClient({
