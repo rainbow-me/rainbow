@@ -2,25 +2,30 @@ import { memo } from 'react';
 import { StyleSheet } from 'react-native';
 import Animated from 'react-native-reanimated';
 import { Box, Text } from '@/design-system';
-import { RnbwRewardsScenes } from '@/features/rnbw-rewards/screens/rnbw-rewards-screen/constants/rewardsScenes';
+import { RnbwAirdropScenes } from '@/features/rnbw-airdrop/screens/rnbw-airdrop-screen/constants/airdropScenes';
 import { createScaleInFadeInSlideEnterAnimation, defaultExitAnimation } from '@/features/rnbw-rewards/animations/sceneTransitions';
-import { getCoinBottomPosition } from '@/features/rnbw-rewards/screens/rnbw-rewards-screen/components/RnbwHeroCoin';
+import { getCoinBottomPosition } from '@/features/rnbw-airdrop/screens/rnbw-airdrop-screen/components/RnbwHeroCoin';
 import { useAirdropBalanceStore } from '@/features/rnbw-rewards/stores/airdropBalanceStore';
 import * as i18n from '@/languages';
 import ButtonPressAnimation from '@/components/animations/ButtonPressAnimation';
 import { opacity } from '@/framework/ui/utils/opacity';
 import { RNBW_SYMBOL } from '@/features/rnbw-rewards/constants';
-import { rewardsFlowActions } from '@/features/rnbw-rewards/stores/rewardsFlowStore';
+import { useNavigation } from '@/navigation/Navigation';
 
 const enteringAnimation = createScaleInFadeInSlideEnterAnimation({ translateY: -24 });
 const exitingAnimation = defaultExitAnimation;
 
 export const AirdropClaimedScene = memo(function AirdropClaimedScene() {
   const { tokenAmount } = useAirdropBalanceStore(state => state.getFormattedAirdroppedBalance());
+  const { goBack } = useNavigation();
 
   return (
     <Animated.View style={styles.container} entering={enteringAnimation} exiting={exitingAnimation}>
-      <Box gap={24} alignItems="center" style={styles.claimInfoContainer}>
+      <Box
+        gap={24}
+        alignItems="center"
+        style={[styles.claimInfoContainer, { top: getCoinBottomPosition(RnbwAirdropScenes.AirdropClaimed) + 20 }]}
+      >
         <Text color="label" size="30pt" weight="heavy" align="center">
           {i18n.t(i18n.l.rnbw_rewards.airdrop_claim_finished.airdrop_claimed)}
         </Text>
@@ -31,11 +36,7 @@ export const AirdropClaimedScene = memo(function AirdropClaimedScene() {
           </Text>
         </Text>
       </Box>
-      <ButtonPressAnimation
-        onPress={() => rewardsFlowActions.setActiveScene(RnbwRewardsScenes.RewardsOverview)}
-        scaleTo={0.96}
-        style={styles.button}
-      >
+      <ButtonPressAnimation onPress={goBack} scaleTo={0.96} style={styles.button}>
         <Box
           backgroundColor={opacity('#F5F8FF', 0.06)}
           width="full"
@@ -47,7 +48,7 @@ export const AirdropClaimedScene = memo(function AirdropClaimedScene() {
           borderWidth={1}
         >
           <Text color="label" size="22pt" weight="heavy" align="center">
-            {i18n.t(i18n.l.button.continue)}
+            {i18n.t(i18n.l.button.done)}
           </Text>
         </Box>
       </ButtonPressAnimation>
@@ -63,7 +64,6 @@ const styles = StyleSheet.create({
   },
   claimInfoContainer: {
     position: 'absolute',
-    top: getCoinBottomPosition(RnbwRewardsScenes.AirdropEligibility) + 20,
     width: '100%',
     alignItems: 'center',
   },

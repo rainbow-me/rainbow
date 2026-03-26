@@ -1,11 +1,11 @@
-import { type RnbwRewardsScene, RnbwRewardsScenes } from '@/features/rnbw-rewards/screens/rnbw-rewards-screen/constants/rewardsScenes';
-import { useRnbwRewardsFlowContext } from '@/features/rnbw-rewards/screens/rnbw-rewards-screen/context/RnbwRewardsFlowContext';
+import { type RnbwAirdropScene, RnbwAirdropScenes } from '@/features/rnbw-airdrop/screens/rnbw-airdrop-screen/constants/airdropScenes';
+import { useAirdropFlowStore } from '@/features/rnbw-airdrop/stores/airdropFlowStore';
+import { useStoreSharedValue } from '@/state/internal/hooks/useStoreSharedValue';
 import { Blur, Canvas, LinearGradient, RoundedRect, vec } from '@shopify/react-native-skia';
 import { interpolate, interpolateColor, useAnimatedReaction, useDerivedValue, useSharedValue, withTiming } from 'react-native-reanimated';
 import { memo, useMemo } from 'react';
 import useDimensions from '@/hooks/useDimensions';
 import { time } from '@/utils/time';
-import { useAirdropBalanceStore } from '@/features/rnbw-rewards/stores/airdropBalanceStore';
 
 type GradientConfig = {
   colors: readonly string[];
@@ -15,7 +15,7 @@ type GradientConfig = {
 };
 
 type SceneGradient = {
-  scene: RnbwRewardsScene;
+  scene: RnbwAirdropScene;
   gradient: GradientConfig;
   opacity: number;
 };
@@ -40,31 +40,28 @@ const BLUE_ORANGE_GRADIENT: GradientConfig = {
 
 export const BottomGradientGlow = memo(function BottomGradientGlow() {
   const { width: screenWidth, height: screenHeight } = useDimensions();
-  const { activeScene } = useRnbwRewardsFlowContext();
-  const hasClaimableAirdrop = useAirdropBalanceStore(state => state.hasClaimableAirdrop());
+  const activeScene = useStoreSharedValue(useAirdropFlowStore, state => state.activeScene, { fireImmediately: true });
 
   const config = useMemo(() => {
     const sceneGradients: SceneGradient[] = [
-      { scene: RnbwRewardsScenes.AirdropClaimPrompt, gradient: BLUE_ORANGE_GRADIENT, opacity: 0.2 },
-      ...(hasClaimableAirdrop ? [{ scene: RnbwRewardsScenes.RewardsOverview, gradient: BLUE_ORANGE_GRADIENT, opacity: 0.12 }] : []),
-      { scene: RnbwRewardsScenes.AirdropClaimed, gradient: BLUE_ORANGE_GRADIENT, opacity: 0.12 },
-      { scene: RnbwRewardsScenes.RewardsClaimed, gradient: BLUE_ORANGE_GRADIENT, opacity: 0.12 },
+      { scene: RnbwAirdropScenes.AirdropClaimPrompt, gradient: BLUE_ORANGE_GRADIENT, opacity: 0.2 },
+      { scene: RnbwAirdropScenes.AirdropClaimed, gradient: BLUE_ORANGE_GRADIENT, opacity: 0.12 },
     ];
 
     const inputRange = sceneGradients.map((_, index) => index);
-    const sceneIndex = sceneGradients.reduce<Partial<Record<RnbwRewardsScene, number>>>(
+    const sceneIndex = sceneGradients.reduce<Partial<Record<RnbwAirdropScene, number>>>(
       (acc, item, index) => {
         acc[item.scene] = index;
         return acc;
       },
-      {} as Partial<Record<RnbwRewardsScene, number>>
+      {} as Partial<Record<RnbwAirdropScene, number>>
     );
-    const sceneOpacity = sceneGradients.reduce<Partial<Record<RnbwRewardsScene, number>>>(
+    const sceneOpacity = sceneGradients.reduce<Partial<Record<RnbwAirdropScene, number>>>(
       (acc, item) => {
         acc[item.scene] = item.opacity;
         return acc;
       },
-      {} as Partial<Record<RnbwRewardsScene, number>>
+      {} as Partial<Record<RnbwAirdropScene, number>>
     );
 
     const gradientSequence = sceneGradients.map(item => item.gradient);
@@ -99,7 +96,7 @@ export const BottomGradientGlow = memo(function BottomGradientGlow() {
       endX,
       endY,
     };
-  }, [hasClaimableAirdrop]);
+  }, []);
 
   const sceneProgress = useSharedValue(0);
   const opacity = useSharedValue(0);
