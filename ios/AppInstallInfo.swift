@@ -13,7 +13,7 @@ import Foundation
 class AppInstallInfo: NSObject {
 
   @objc
-  func isStoreInstall() -> Bool {
+  func isStoreInstall() -> NSNumber {
     // Local/ad-hoc builds have a provisioning profile.
     // App Store and TestFlight do not; Apple strips it.
     let hasProfile = Bundle.main.path(
@@ -24,7 +24,7 @@ class AppInstallInfo: NSObject {
     // No profile = went through Apple's pipeline.
     // TestFlight has sandboxReceipt, App Store has production receipt.
     guard let receiptURL = Bundle.main.appStoreReceiptURL else { return true }
-    return receiptURL.lastPathComponent != "sandboxReceipt"
+    return NSNumber(value: receiptURL.lastPathComponent != "sandboxReceipt")
   }
 
   @objc
