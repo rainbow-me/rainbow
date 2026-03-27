@@ -11,7 +11,7 @@ import styled from '@/framework/ui/styled-thing';
 import { padding, position } from '@/styles';
 import { useTheme } from '@/theme/ThemeContext';
 import { showActionSheetWithOptions } from '@/framework/ui/utils/actionsheet';
-import { changeAccount, disconnectSession } from '..';
+import { changeAccount, disconnectSession } from '../services/sessions';
 import { type SessionTypes } from '@walletconnect/types';
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import RadialGradient from 'react-native-radial-gradient';

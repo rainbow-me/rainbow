@@ -1,6 +1,6 @@
 import { useEffect, useCallback, useState } from 'react';
 
-import { getAllActiveSessionsSync } from '..';
+import { getAllActiveSessionsSync } from '../services/syncClient';
 import { events } from '@/handlers/appEvents';
 
 /**

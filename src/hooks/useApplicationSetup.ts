@@ -6,7 +6,10 @@ import { type InitialRoute } from '@/navigation/initialRoute';
 import Routes from '@/navigation/routesNames';
 import { saveFCMToken } from '@/notifications/tokens';
 import { PerformanceReports, PerformanceTracking } from '@/performance/tracking';
-import { initListeners as initWalletConnectListeners, initWalletConnectPushNotifications } from '@/features/wallet-connect';
+import {
+  initListeners as initWalletConnectListeners,
+  initWalletConnectPushNotifications,
+} from '@/features/wallet-connect/handlers/listeners';
 import { initializeWallet } from '@/state/wallets/initializeWallet';
 
 export function useApplicationSetup() {

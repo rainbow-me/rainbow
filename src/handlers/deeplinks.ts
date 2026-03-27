@@ -16,7 +16,7 @@ import { delay } from '@/utils/delay';
 import ethereumUtils, { getAddressAndChainIdFromUniqueId, getUniqueId } from '@/utils/ethereumUtils';
 import { getPoapAndOpenSheetWithQRHash, getPoapAndOpenSheetWithSecretWord } from '@/utils/poaps';
 import { fetchReverseRecordWithRetry } from '@/utils/profileUtils';
-import { pair as pairWalletConnect, setHasPendingDeeplinkPendingRedirect } from '@/features/wallet-connect';
+import { pair as pairWalletConnect, setHasPendingDeeplinkPendingRedirect } from '@/features/wallet-connect/services/pair';
 import { type useMobileWalletProtocolHost } from '@coinbase/mobile-wallet-protocol-host';
 
 import { navigateToSwaps, type NavigateToSwapsParams } from '@/__swaps__/screens/Swap/navigateToSwaps';
