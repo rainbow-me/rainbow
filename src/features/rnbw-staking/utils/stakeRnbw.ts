@@ -13,48 +13,57 @@ import { useRewardsBalanceStore } from '@/features/rnbw-rewards/stores/rewardsBa
 import { prepareRewardsClaim, submitRewardsClaim, type ClaimToDestination } from '@/features/rnbw-rewards/utils/claimRewards';
 import { userAssetsStoreManager } from '@/state/assets/userAssetsStoreManager';
 
-export async function stakeRnbw({ address, amount }: { address: Address; amount: string }): Promise<Hash> {
+export async function stakeRnbw({ address, amount }: { address: Address; amount: string }) {
   const provider = getProvider({ chainId: STAKING_CHAIN_ID });
   const signer = await loadWallet({ address, provider });
   if (!signer) {
     throw new Error('Failed to load wallet');
   }
 
-  const rnbwBalance = await provider.call({
-    to: RNBW_TOKEN_ADDRESS,
-    data: encodeFunctionData({ abi: erc20Abi, functionName: 'balanceOf', args: [address] }),
-  });
+  const stakeAmountRaw = parseUnits(amount, RNBW_DECIMALS).toString();
+  const { claimToDestination, requiredWalletBalance, claimFulfillsStake } = await resolveClaimStrategy(stakeAmountRaw);
 
-  /**
-   * This check is not strictly necessary, as the provider gas estimation will fail if the balance is insufficient.
-   * However, the error returned by the provider in that case is opaque.
-   */
-  const hasSufficientBalance = BigInt(rnbwBalance) >= BigInt(amount);
-  if (!hasSufficientBalance) {
-    throw new RainbowError('[stakeRnbw]: Insufficient balance');
+  if (requiredWalletBalance > 0n) {
+    const rnbwBalance = await provider.call({
+      to: RNBW_TOKEN_ADDRESS,
+      data: encodeFunctionData({ abi: erc20Abi, functionName: 'balanceOf', args: [address] }),
+    });
+
+    /**
+     * This check is not strictly necessary, as the provider gas estimation will fail if the balance is insufficient.
+     * However, the error returned by the provider in that case is opaque.
+     */
+    const hasSufficientBalance = BigInt(rnbwBalance) >= requiredWalletBalance;
+    if (!hasSufficientBalance) {
+      throw new RainbowError('[stakeRnbw]: Insufficient balance');
+    }
   }
 
-  const stakeAmountRaw = parseUnits(amount, RNBW_DECIMALS).toString();
   const delegations = await getDelegations({ address });
   const chainDelegation = delegations.find(delegation => delegation.chainId === STAKING_CHAIN_ID);
   const isRainbowDelegated = chainDelegation?.delegationStatus === DelegationStatus.RAINBOW_DELEGATED;
 
-  /**
-   * TODO: Add the claim-to-stake flow
-   * The flow will be the same as claimRewards but targeting the
-   * StakeRewards endpoint that deposits directly into the staking contract.
-   */
-  await claimRnbwRewards({ address, signer, claimToDestination: 'wallet' });
-
   const originalStakedRnbwShares = useStakingPositionStore.getState().getData()?.poolShares ?? '0';
 
-  const transactionHash: Hash = isRainbowDelegated
-    ? await stakeRnbwSponsored({ address, provider, stakeAmountRaw, signer })
-    : await stakeRnbwManual({ address, provider, stakeAmountRaw, signer });
+  await claimRnbwRewards({ address, signer, claimToDestination });
 
-  await pollForStakingUpdate(originalStakedRnbwShares);
+  if (claimFulfillsStake) {
+    await pollForStakingUpdate(originalStakedRnbwShares);
+    return;
+  }
 
-  return transactionHash;
+  /**
+   * Re-snapshot shares after the claim so the final poll baseline reflects the claim-to-staking.
+   * Without this, the poll would resolve as soon as the claim is indexed, before the wallet stake is reflected.
+   */
+  await useStakingPositionStore.getState().fetch(undefined, { force: true });
+  const postClaimShares = useStakingPositionStore.getState().getData()?.poolShares ?? originalStakedRnbwShares;
+
+  isRainbowDelegated
+    ? await stakeRnbwSponsored({ address, provider, stakeAmountRaw: requiredWalletBalance.toString(), signer })
+    : await stakeRnbwManual({ address, provider, stakeAmountRaw: requiredWalletBalance.toString(), signer });
+
+  await pollForStakingUpdate(postClaimShares);
 }
 
 async function claimRnbwRewards({
@@ -65,14 +74,30 @@ async function claimRnbwRewards({
   address: Address;
   signer: Signer;
   claimToDestination: ClaimToDestination;
-}): Promise<void> {
-  await useRewardsBalanceStore.getState().fetch(undefined, { force: true });
+}): Promise<Hash | undefined> {
   const hasClaimable = useRewardsBalanceStore.getState().hasClaimableRewards();
   const hasPendingClaim = useRewardsBalanceStore.getState().getData()?.hasPendingClaim;
 
-  if (!hasClaimable || hasPendingClaim) return;
+  if (!hasClaimable || hasPendingClaim) return undefined;
 
   const currency = userAssetsStoreManager.getState().currency;
   const preparedClaim = await prepareRewardsClaim({ address, signer });
   await submitRewardsClaim({ preparedClaim, currency, claimToDestination });
+}
+
+async function resolveClaimStrategy(stakeAmountRaw: string): Promise<{
+  claimToDestination: ClaimToDestination;
+  requiredWalletBalance: bigint;
+  claimFulfillsStake: boolean;
+}> {
+  await useRewardsBalanceStore.getState().fetch(undefined, { force: true });
+  const claimableRnbw = useRewardsBalanceStore.getState().getData()?.claimableRnbw ?? '0';
+  const hasClaimable = useRewardsBalanceStore.getState().hasClaimableRewards();
+  const claimToStaking = hasClaimable && BigInt(stakeAmountRaw) >= BigInt(claimableRnbw);
+
+  return {
+    claimToDestination: claimToStaking ? 'staking' : 'wallet',
+    requiredWalletBalance: claimToStaking ? BigInt(stakeAmountRaw) - BigInt(claimableRnbw) : BigInt(stakeAmountRaw),
+    claimFulfillsStake: claimToStaking && BigInt(stakeAmountRaw) === BigInt(claimableRnbw),
+  };
 }

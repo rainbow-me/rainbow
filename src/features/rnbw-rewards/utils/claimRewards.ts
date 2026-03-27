@@ -93,7 +93,7 @@ export async function submitRewardsClaim({
   currency: NativeCurrencyKey;
   claimToDestination?: ClaimToDestination;
 }): Promise<ClaimRewardsResult> {
-  const endpoint = claimToDestination === 'wallet' ? 'rewards/ClaimRewards' : 'staking/StakeRewards';
+  const endpoint = claimToDestination === 'wallet' ? '/rewards/ClaimRewards' : '/staking/StakeRewards';
   const { address, chainId, intentId, signedIntent } = preparedClaim;
   const platformClient = getPlatformClient();
 
@@ -115,7 +115,7 @@ export async function submitRewardsClaim({
     if (!claimId) {
       throw new Error(`${endpoint} response is missing claimId`);
     }
-    pollResult = await pollForClaimStatus({ claimId, address, currency, chainId });
+    pollResult = await pollForClaimStatus({ claimId, address, currency, chainId, claimToDestination });
     const finalClaimResult = pollResult.result;
 
     analytics.track(analytics.event.rnbwRewardsClaim, {
@@ -211,15 +211,18 @@ async function pollForClaimStatus({
   address,
   currency,
   chainId,
+  claimToDestination,
 }: {
   claimId: string;
   address: Address;
   currency: NativeCurrencyKey;
   chainId: ChainId;
+  claimToDestination: ClaimToDestination;
 }): Promise<ClaimStatusPollResult> {
+  const statusEndpoint = claimToDestination === 'wallet' ? '/rewards/GetClaimStatus' : '/staking/GetStakeStatus';
   return pollClaimStatus({
     fetchStatus: () =>
-      getPlatformClient().get<ClaimRewardsResponse>('/rewards/GetClaimStatus', {
+      getPlatformClient().get<ClaimRewardsResponse>(statusEndpoint, {
         params: {
           claimId,
           walletAddress: address,
@@ -227,6 +230,6 @@ async function pollForClaimStatus({
           currency,
         },
       }),
-    getResult: response => getPlatformResult(response, 'GetClaimStatus'),
+    getResult: response => getPlatformResult(response, statusEndpoint),
   });
 }
