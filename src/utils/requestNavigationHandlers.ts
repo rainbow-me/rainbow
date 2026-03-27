@@ -12,7 +12,7 @@ import store from '@/redux/store';
 import { useBackendNetworksStore } from '@/state/backendNetworks/backendNetworks';
 import { ChainId } from '@/state/backendNetworks/types';
 import { removeWalletConnectRequest } from '@/features/wallet-connect/stores/walletConnectRequestsStore';
-import { handleSessionRequestResponse } from '@/features/wallet-connect';
+import { handleSessionRequestResponse } from '@/features/wallet-connect/handlers/onSessionRequest';
 import {
   type RequestData,
   type WalletconnectApprovalSheetRouteParams,

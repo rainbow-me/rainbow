@@ -65,6 +65,7 @@ jobs:
           mv rainbow-env/dotenv .env
           rm -rf rainbow-env
           sed -i'' -e "s/IS_TESTING=false/IS_TESTING=true/" .env && rm -f .env-e
+          sed -i'' -e "s/ENABLE_DEV_MODE=1/ENABLE_DEV_MODE=0/" .env && rm -f .env-e
           echo "1" > is_testing
       - name: Setup scripts
         env:

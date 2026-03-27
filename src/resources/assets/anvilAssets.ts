@@ -1,17 +1,14 @@
 import { Contract } from '@ethersproject/contracts';
-import { keyBy, mapValues } from 'lodash';
 import { getProvider } from '@/handlers/web3';
 import balanceCheckerContractAbi from '@/references/balances-checker-abi.json';
-import chainAssets from '@/references/chain-assets.json';
+import type chainAssets from '@/references/chain-assets.json';
 import erc20ABI from '@/references/erc20-abi.json';
 import { ETH_ADDRESS } from '@/references/constants';
-import { parseAddressAsset } from './assets';
-import { type RainbowAddressAssets } from './types';
 import { logger, RainbowError } from '@/logger';
 import { type AddressOrEth, type UniqueId, type ZerionAsset } from '@/__swaps__/types/assets';
 import { AddressZero } from '@ethersproject/constants';
 import chainAssetsByChainId from '@/references/testnet-assets-by-chain';
-import { ChainId, ChainName, type Network } from '@/state/backendNetworks/types';
+import { ChainId, ChainName } from '@/state/backendNetworks/types';
 import { useBackendNetworksStore } from '@/state/backendNetworks/backendNetworks';
 import { useConnectedToAnvilStore } from '@/state/connectedToAnvil';
 
@@ -67,39 +64,6 @@ const fetchAnvilBalancesWithBalanceChecker = async (
     logger.error(new RainbowError(`[anvilAssets]: Error fetching balances from Anvil node: ${e}`));
     return null;
   }
-};
-
-/**
- * @deprecated - to be removed once rest of the app is converted to new userAssetsStore
- * Fetches the balances of the anvil assets for the given account address and network.
- * @param accountAddress - The address of the account to fetch the balances for.
- * @param network - The network to fetch the balances for.
- * @returns The balances of the anvil assets for the given account address and network.
- */
-export const fetchAnvilBalances = async (accountAddress: string, chainId: ChainId = ChainId.mainnet): Promise<RainbowAddressAssets> => {
-  const chainAssetsMap = keyBy(
-    chainAssets[`${chainId}` as keyof typeof chainAssets],
-    ({ asset }) => `${asset.asset_code}_${asset.chainId}`
-  );
-
-  const tokenAddresses = Object.values(chainAssetsMap).map(({ asset: { asset_code } }) =>
-    asset_code === ETH_ADDRESS ? AddressZero : asset_code.toLowerCase()
-  );
-  const balances = await fetchAnvilBalancesWithBalanceChecker(tokenAddresses, accountAddress, chainId);
-  if (!balances) return {};
-
-  const updatedAssets = mapValues(chainAssetsMap, chainAsset => {
-    const assetCode = chainAsset.asset.asset_code.toLowerCase();
-    const updatedAsset = {
-      asset: {
-        ...chainAsset.asset,
-        network: chainAsset.asset.network as Network,
-      },
-      quantity: balances[assetCode],
-    };
-    return parseAddressAsset({ assetData: updatedAsset });
-  });
-  return updatedAssets;
 };
 
 export const fetchAnvilBalancesByChainId = async (
