@@ -10,7 +10,7 @@ import { HoldToActivateButton } from '@/components/hold-to-activate-button/HoldT
 import { PanelSheet } from '@/components/PanelSheet/PanelSheet';
 import { type RootStackParamList } from '@/navigation/types';
 import type Routes from '@/navigation/routesNames';
-import { logger, RainbowError } from '@/logger';
+import { ensureError, logger, RainbowError } from '@/logger';
 import haptics from '@/utils/haptics';
 import { delegation } from '@rainbow-me/delegation';
 import { loadWallet } from '@/model/wallet';
@@ -313,9 +313,11 @@ export const RevokeDelegationPanel = () => {
           });
         } catch (error) {
           failedDelegations.push(pendingDelegation);
+          const message = ensureError(error).message;
           logger.error(new RainbowError('Failed to revoke delegation'), {
             error,
             chainId: pendingDelegation.chainId,
+            message,
           });
         }
       }
@@ -335,9 +337,11 @@ export const RevokeDelegationPanel = () => {
         goBack();
       }, REVOKE_SUCCESS_DELAY_MS);
     } catch (error) {
+      const message = ensureError(error).message;
       logger.error(new RainbowError('Failed to revoke delegation'), {
         error,
         chainId: pendingDelegations[0]?.chainId,
+        message,
       });
 
       haptics.notificationError();

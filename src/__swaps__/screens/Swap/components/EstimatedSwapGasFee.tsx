@@ -1,5 +1,6 @@
 import { AnimatedText, type TextProps, useForegroundColor } from '@/design-system';
 import React, { memo } from 'react';
+import { type StyleProp, type TextStyle } from 'react-native';
 import {
   type SharedValue,
   useAnimatedStyle,
@@ -19,7 +20,7 @@ import { useSwapEstimatedGasFee } from '@/__swaps__/screens/Swap/hooks/useEstima
 import { useSwapContext } from '@/__swaps__/screens/Swap/providers/swap-provider';
 
 type EstimatedSwapGasFeeProps = { gasSettings?: GasSettings } & Partial<
-  Pick<TextProps, 'align' | 'color' | 'size' | 'weight' | 'tabularNumbers'>
+  Pick<TextProps, 'align' | 'color' | 'size' | 'style' | 'weight' | 'tabularNumbers'>
 >;
 export function EstimatedSwapGasFeeSlot({
   color = 'labelTertiary',
@@ -30,13 +31,14 @@ export function EstimatedSwapGasFeeSlot({
   const label = useDerivedValue(() => props.text);
   return <GasFeeText color={color} size={size} weight={weight} {...props} label={label} />;
 }
-export function EstimatedSwapGasFee({ align, color, gasSettings, size, tabularNumbers, weight }: EstimatedSwapGasFeeProps) {
+export function EstimatedSwapGasFee({ align, color, gasSettings, size, style, tabularNumbers, weight }: EstimatedSwapGasFeeProps) {
   const estimatedGasFee = useSwapEstimatedGasFee(gasSettings) || '--';
   return (
     <EstimatedSwapGasFeeSlot
       align={align}
       color={color}
       size={size}
+      style={style}
       tabularNumbers={tabularNumbers}
       text={estimatedGasFee}
       weight={weight}
@@ -49,9 +51,12 @@ const GasFeeText = memo(function GasFeeText({
   color,
   label,
   size,
+  style,
   weight,
   tabularNumbers,
-}: { label: SharedValue<string> } & Pick<TextProps, 'align' | 'color' | 'size' | 'weight' | 'tabularNumbers'>) {
+}: { label: SharedValue<string> } & Pick<TextProps, 'align' | 'color' | 'size' | 'weight' | 'tabularNumbers'> & {
+    style?: StyleProp<TextStyle>;
+  }) {
   const { isFetching } = useSwapContext();
 
   const textColor = useForegroundColor(color);
@@ -70,7 +75,7 @@ const GasFeeText = memo(function GasFeeText({
 
   return (
     <AnimatedText
-      style={[animatedTextOpacity, { letterSpacing: 0.3 }]}
+      style={[animatedTextOpacity, { letterSpacing: 0.3 }, style]}
       align={align}
       color={color}
       size={size}

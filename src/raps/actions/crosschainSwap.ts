@@ -211,13 +211,7 @@ export const prepareCrosschainSwap = async ({
   transaction: Omit<NewTransaction, 'hash'>;
 }> => {
   const nonce = requireNonce(parameters.nonce, 'crosschainSwap parameters.nonce');
-  const tx = await prepareFillCrosschainQuote(quote, REFERRER);
-
-  const preparedCall = {
-    to: requireAddress(tx.to, 'crosschain prepared tx.to'),
-    value: BigInt(tx.value?.toString() ?? '0'),
-    data: requireHex(tx.data, 'crosschain prepared tx.data'),
-  };
+  const preparedCall = await prepareCrosschainSwapCall({ quote });
   const transaction = {
     ...buildCrosschainSwapTransaction(parameters, parameters.gasParams, nonce),
     to: preparedCall.to,
@@ -230,6 +224,16 @@ export const prepareCrosschainSwap = async ({
     transaction,
   };
 };
+
+export async function prepareCrosschainSwapCall({ quote }: { quote: CrosschainQuote }): Promise<Call> {
+  const tx = await prepareFillCrosschainQuote(quote, REFERRER);
+
+  return {
+    to: requireAddress(tx.to, 'crosschain prepared tx.to'),
+    value: BigInt(tx.value?.toString() ?? '0'),
+    data: requireHex(tx.data, 'crosschain prepared tx.data'),
+  };
+}
 
 export const crosschainSwap = async ({
   wallet,

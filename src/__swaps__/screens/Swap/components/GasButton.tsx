@@ -9,6 +9,7 @@ import { Centered } from '@/components/layout';
 import ContextMenuButton from '@/components/native-context-menu/contextMenu';
 import { Box, Inline, Text, TextIcon, useColorMode, useForegroundColor } from '@/design-system';
 import { IS_ANDROID } from '@/env';
+import { useIsSponsoredSwap } from '@/features/delegation/sponsoredSwapStore';
 import * as i18n from '@/languages';
 import { swapsStore } from '@/state/swaps/swapsStore';
 import gasUtils from '@/utils/gas';
@@ -44,41 +45,55 @@ function UnmountWhenGasButtonIsNotInScreen({ placeholder, children }: PropsWithC
 }
 
 function EstimatedGasFee() {
+  const isSponsoredSwap = useIsSponsoredSwap();
+
   return (
     <Inline alignVertical="center" space="4px">
-      <TextIcon color="labelQuaternary" height={10} size="icon 11px" weight="heavy" width={18}>
+      <TextIcon color={isSponsoredSwap ? 'labelQuinary' : 'labelQuaternary'} height={10} size="icon 11px" weight="heavy" width={18}>
         􀵟
       </TextIcon>
       <UnmountWhenGasButtonIsNotInScreen placeholder={<EstimatedSwapGasFeeSlot text="--" />}>
-        <EstimatedSwapGasFee />
+        <EstimatedSwapGasFee
+          color={isSponsoredSwap ? 'labelQuinary' : 'labelTertiary'}
+          style={isSponsoredSwap ? styles.sponsoredGasFeeText : undefined}
+        />
       </UnmountWhenGasButtonIsNotInScreen>
     </Inline>
   );
 }
 
-function SelectedGas({ isPill }: { isPill?: boolean }) {
+function SelectedGas({ isPill, sponsored }: { isPill?: boolean; sponsored?: boolean }) {
   const preferredNetwork = swapsStore(s => s.preferredNetwork);
   const chainId = swapsStore(s => s.inputAsset?.chainId || preferredNetwork || ChainId.mainnet);
   const selectedGasSpeed = useSelectedGasSpeed(chainId);
+
+  const buyTokenColor = swapsStore(s => s.outputAsset?.highContrastColor);
 
   return (
     <Inline alignVertical="center" space={{ custom: 5 }}>
       <Inline alignVertical="center" space="4px">
         <TextIcon
-          color={SWAP_GAS_ICONS[selectedGasSpeed].color}
+          color={sponsored && buyTokenColor ? { custom: buyTokenColor } : SWAP_GAS_ICONS[selectedGasSpeed].color}
           height={10}
           size="icon 13px"
           textStyle={{ top: IS_ANDROID ? 1 : 0 + (selectedGasSpeed === 'fast' ? 0.5 : 0) }}
           width={isPill ? 14 : 18}
-          weight="bold"
+          weight={sponsored ? 'heavy' : 'bold'}
         >
-          {SWAP_GAS_ICONS[selectedGasSpeed].icon}
+          {sponsored ? '􀁢' : SWAP_GAS_ICONS[selectedGasSpeed].icon}
         </TextIcon>
-        <Text align={isPill ? 'center' : 'left'} color="label" size="15pt" weight="heavy">
-          {i18n.t(i18n.l.gas.speeds[selectedGasSpeed])}
+        <Text align={isPill ? 'center' : 'left'} color={sponsored ? 'labelTertiary' : 'label'} size="15pt" weight="heavy">
+          {sponsored ? 'Free' : i18n.t(i18n.l.gas.speeds[selectedGasSpeed])}
         </Text>
       </Inline>
-      <TextIcon color="labelSecondary" height={10} size="icon 13px" weight="bold" width={12}>
+      <TextIcon
+        color="labelSecondary"
+        height={10}
+        size="icon 13px"
+        textStyle={sponsored ? { opacity: 0 } : undefined}
+        weight="bold"
+        width={12}
+      >
         􀆏
       </TextIcon>
     </Inline>
@@ -105,7 +120,15 @@ function keys<const T extends string>(obj: Record<T, unknown> | undefined) {
   return Object.keys(obj) as T[];
 }
 
-const GasMenu = ({ backToReview = false, children }: { backToReview?: boolean; children: ReactNode }) => {
+const GasMenu = ({
+  backToReview = false,
+  children,
+  disabled = false,
+}: {
+  backToReview?: boolean;
+  children: ReactNode;
+  disabled?: boolean;
+}) => {
   const { SwapNavigation } = useSwapContext();
 
   const preferredNetwork = swapsStore(s => s.preferredNetwork);
@@ -165,7 +188,12 @@ const GasMenu = ({ backToReview = false, children }: { backToReview?: boolean; c
   if (isLoading) return children;
 
   return (
-    <Box alignItems="center" justifyContent="center" style={{ margin: IS_ANDROID ? 0 : -GAS_BUTTON_HIT_SLOP }} testID="gas-speed-pager">
+    <Box
+      alignItems="center"
+      justifyContent="center"
+      style={{ margin: IS_ANDROID ? 0 : -GAS_BUTTON_HIT_SLOP, pointerEvents: disabled ? 'none' : 'auto' }}
+      testID="gas-speed-pager"
+    >
       {IS_ANDROID ? (
         <ContextMenu
           activeOpacity={0}
@@ -235,10 +263,11 @@ export function ReviewGasButton() {
 }
 
 export const GasButton = () => {
+  const isSponsoredSwap = useIsSponsoredSwap();
   return (
-    <GasMenu>
+    <GasMenu disabled={isSponsoredSwap}>
       <Box gap={12}>
-        <SelectedGas />
+        <SelectedGas sponsored={isSponsoredSwap} />
         <EstimatedGasFee />
       </Box>
     </GasMenu>
@@ -269,5 +298,8 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     overflow: 'hidden',
     paddingHorizontal: 8,
+  },
+  sponsoredGasFeeText: {
+    textDecorationLine: 'line-through',
   },
 });

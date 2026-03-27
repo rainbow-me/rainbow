@@ -152,23 +152,49 @@ export const populateApprove = async ({
   }
 };
 
+export async function prepareApprovalCall({
+  amount,
+  chainId,
+  owner,
+  spender,
+  tokenAddress,
+  useExactApproval = false,
+}: {
+  amount: string;
+  chainId: ChainId;
+  owner: Address;
+  spender: Address;
+  tokenAddress: Address;
+  useExactApproval?: boolean;
+}): Promise<Call | null> {
+  const tx = await populateApprove({
+    owner,
+    tokenAddress,
+    spender,
+    chainId,
+    amount,
+    useExactApproval,
+  });
+
+  if (!tx?.data) return null;
+  return {
+    to: tokenAddress,
+    value: BigInt(tx.value?.toString() ?? '0'),
+    data: requireHex(tx.data, 'unlock prepared tx.data'),
+  };
+}
+
 export const prepareUnlock = async ({ parameters }: PrepareActionProps<'unlock'>): Promise<{ call: Call | null }> => {
   const tokenAddress = requireAddress(parameters.assetToUnlock.address, 'unlock asset address');
-  const tx = await populateApprove({
-    owner: parameters.fromAddress,
-    tokenAddress,
-    spender: parameters.contractAddress,
-    chainId: parameters.chainId,
-    amount: parameters.amount,
-    useExactApproval: true,
-  });
-  if (!tx?.data) return { call: null };
   return {
-    call: {
-      to: tokenAddress,
-      value: BigInt(tx.value?.toString() ?? '0'),
-      data: requireHex(tx.data, 'unlock prepared tx.data'),
-    },
+    call: await prepareApprovalCall({
+      amount: parameters.amount,
+      chainId: parameters.chainId,
+      owner: parameters.fromAddress,
+      spender: parameters.contractAddress,
+      tokenAddress,
+      useExactApproval: true,
+    }),
   };
 };
 

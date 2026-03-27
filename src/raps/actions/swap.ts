@@ -309,13 +309,10 @@ export const prepareSwap = async ({
   transaction: Omit<NewTransaction, 'hash'>;
 }> => {
   const nonce = requireNonce(parameters.nonce, 'swap parameters.nonce');
-  const tx = await prepareFillQuote(quote, {}, wallet, false, quote.chainId, REFERRER);
-
-  const preparedCall = {
-    to: requireAddress(tx.to, 'swap prepared tx.to'),
-    value: BigInt(tx.value?.toString() ?? '0'),
-    data: requireHex(tx.data, 'swap prepared tx.data'),
-  };
+  const preparedCall = await prepareSwapCall({
+    quote,
+    wallet,
+  });
   const transaction = {
     ...buildSwapTransaction(parameters, parameters.gasParams, nonce),
     to: preparedCall.to,
@@ -328,6 +325,16 @@ export const prepareSwap = async ({
     transaction,
   };
 };
+
+export async function prepareSwapCall({ quote, wallet }: { quote: Quote; wallet: Signer }): Promise<Call> {
+  const tx = await prepareFillQuote(quote, {}, wallet, false, quote.chainId, REFERRER);
+
+  return {
+    to: requireAddress(tx.to, 'swap prepared tx.to'),
+    value: BigInt(tx.value?.toString() ?? '0'),
+    data: requireHex(tx.data, 'swap prepared tx.data'),
+  };
+}
 
 export const swap = async ({
   currentRap,
