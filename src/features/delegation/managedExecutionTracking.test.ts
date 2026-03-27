@@ -112,9 +112,13 @@ describe('managedExecutionTracking', () => {
   });
 
   it('stops on terminal relay failure without onchain evidence', async () => {
-    const getStatus = jest
-      .fn<Promise<{ status: RelayStatusSnapshot }>, [string]>()
-      .mockResolvedValue(buildStatusUpdate({ status: RelayExecutionStatus.Failed }));
+    const getStatus = jest.fn<Promise<{ status: RelayStatusSnapshot }>, [string]>().mockResolvedValue(
+      buildStatusUpdate({
+        status: RelayExecutionStatus.Failed,
+        errorCode: 'EXECUTE_TRANSPORT_ERROR',
+        errorMessage: 'relay.link POST /execute failed: HTTP 400: unsupported bridge rawCalls',
+      })
+    );
     const sleep = jest.fn<Promise<void>, [number]>().mockResolvedValue();
 
     const result = await waitForManagedExecutionOnchain({
@@ -125,6 +129,8 @@ describe('managedExecutionTracking', () => {
     });
 
     expect(result).toEqual({
+      errorCode: 'EXECUTE_TRANSPORT_ERROR',
+      errorMessage: 'relay.link POST /execute failed: HTTP 400: unsupported bridge rawCalls',
       status: RelayExecutionStatus.Failed,
     });
     expect(sleep).not.toHaveBeenCalled();
@@ -152,11 +158,23 @@ describe('managedExecutionTracking', () => {
   });
 });
 
-function buildStatusUpdate({ status, txHash }: { status: RelayExecutionStatus; txHash?: `0x${string}` }): { status: RelayStatusSnapshot } {
+function buildStatusUpdate({
+  status,
+  txHash,
+  errorCode,
+  errorMessage,
+}: {
+  status: RelayExecutionStatus;
+  txHash?: `0x${string}`;
+  errorCode?: string;
+  errorMessage?: string;
+}): { status: RelayStatusSnapshot } {
   return {
     status: {
       status,
       updatedAtMs: 0,
+      ...(errorCode ? { errorCode } : {}),
+      ...(errorMessage ? { errorMessage } : {}),
       onchain: txHash
         ? {
             type: 'singlechain',

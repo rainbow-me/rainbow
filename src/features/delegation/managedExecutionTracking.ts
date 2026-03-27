@@ -18,6 +18,8 @@ const MANAGED_EXECUTION_TRACKING_INTERVAL_MS = time.seconds(1);
 // ============ API ============================================================ //
 
 export type ManagedExecutionObservation = {
+  errorCode?: string;
+  errorMessage?: string;
   status: RelayExecutionStatus;
   txHash?: Hex;
 };
@@ -43,6 +45,12 @@ export function trackManagedCallsExecution({
     .then(observation => {
       if (!observation.txHash) {
         if (observation.status === RelayExecutionStatus.Failed || observation.status === RelayExecutionStatus.Reverted) {
+          logger.warn('[managedExecutionTracking]: managed relay execution failed before onchain evidence', {
+            executionId,
+            errorCode: observation.errorCode,
+            errorMessage: observation.errorMessage,
+            status: observation.status,
+          });
           showManagedExecutionFailedToast(trackedTransaction);
           return;
         }
@@ -83,14 +91,20 @@ export async function waitForManagedExecutionOnchain({
   sleep?: (ms: number) => Promise<void>;
 }): Promise<ManagedExecutionObservation> {
   let latestStatus: RelayExecutionStatus | undefined;
+  let latestErrorCode: string | undefined;
+  let latestErrorMessage: string | undefined;
 
   for (let attempt = 0; attempt < maxAttempts; attempt++) {
     const update = await getStatus(executionId);
     const txHash = readOriginTxHash(update.status);
 
     latestStatus = update.status.status;
+    latestErrorCode = update.status.errorCode;
+    latestErrorMessage = update.status.errorMessage;
     if (txHash || isTerminalManagedStatus(latestStatus)) {
       return {
+        errorCode: latestErrorCode,
+        errorMessage: latestErrorMessage,
         status: latestStatus,
         txHash,
       };
@@ -106,6 +120,8 @@ export async function waitForManagedExecutionOnchain({
   }
 
   return {
+    errorCode: latestErrorCode,
+    errorMessage: latestErrorMessage,
     status: latestStatus,
   };
 }

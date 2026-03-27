@@ -9,6 +9,7 @@ import {
   type PreparedCallsExecution,
 } from '@rainbow-me/delegation';
 import { trackManagedCallsExecution } from '@/features/delegation/managedExecutionTracking';
+import { relayService } from '@/features/delegation/relayService';
 import { ChainId } from '@/state/backendNetworks/types';
 import { ensureError, RainbowError, logger } from '@/logger';
 import { claim, swap, unlock } from './actions';
@@ -39,6 +40,7 @@ import { claimClaimable } from './actions/claimClaimable';
 import { IS_TEST } from '@/env';
 import { getProvider } from '@/handlers/web3';
 import { addNewTransaction } from '@/state/pendingTransactions';
+import { resolveManagedExecutionFailure } from './managedExecutionFailure';
 import { extractReplayableCall } from './replay';
 import { requireAddress } from './validation';
 
@@ -249,6 +251,21 @@ export const walletExecuteRap = async <T extends RapTypes>(
             metadata: { degenMode: swapsStore.getState().degenMode },
           })(prepared);
 
+          const failureMessage = await resolveManagedExecutionFailure({
+            executionId: execution.executionId,
+            getStatus: relayService.getStatus,
+            status: execution.status,
+          });
+
+          if (failureMessage) {
+            logger.error(new RainbowError(`[raps/execute]: ${rapName} - managed atomic execution failed before onchain submission`), {
+              executionId: execution.executionId,
+              status: execution.status,
+              failureMessage,
+            });
+            return { nonce: undefined, hash: null, errorMessage: failureMessage };
+          }
+
           if (pendingTransaction) {
             trackManagedCallsExecution({
               address: fromAddress,
@@ -284,7 +301,7 @@ export const walletExecuteRap = async <T extends RapTypes>(
             chainId,
             transaction: {
               ...pendingTransaction,
-              ...(replayableCall ?? {}),
+              ...replayableCall,
               hash: transactionResult.hash,
               batch: true,
               delegation: transactionResult.type === 'eip7702',
