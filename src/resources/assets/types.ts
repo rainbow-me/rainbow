@@ -1,5 +1,4 @@
 import type { NativeCurrencyKey } from '@/entities/nativeCurrencyTypes';
-import type { ParsedAddressAsset } from '@/entities/tokens';
 import { type TokenColors } from '@/graphql/__generated__/metadata';
 import { type Network } from '@/state/backendNetworks/types';
 
@@ -81,5 +80,3 @@ export interface ParsedAsset {
     animatedMimeType?: string | null | undefined;
   };
 }
-
-export type RainbowAddressAssets = Record<string, ParsedAddressAsset>;

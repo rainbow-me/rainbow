@@ -2,7 +2,7 @@ import * as i18n from '@/languages';
 import { isNativeAsset } from '@/handlers/assets';
 import { convertRawAmountToBalance } from '@/helpers/utilities';
 import type { ParsedAddressAsset } from '@/entities/tokens';
-import { type AddysAddressAsset, type AddysAsset, type ParsedAsset } from './types';
+import { type AddysAsset, type ParsedAsset } from './types';
 import { getUniqueId } from '@/utils/ethereumUtils';
 import { useBackendNetworksStore } from '@/state/backendNetworks/backendNetworks';
 import { ChainId } from '@/state/backendNetworks/types';
@@ -85,22 +85,6 @@ export function parseGoldskyAsset({ address, asset }: { address: string; asset: 
   };
 
   return parsedAsset;
-}
-
-// We are still using the Addys version for claimable
-export function parseAddressAsset({ assetData }: { assetData: AddysAddressAsset }): ParsedAddressAsset {
-  const asset = assetData?.asset;
-  const quantity = assetData?.quantity;
-  const address = assetData?.asset?.asset_code;
-
-  const parsedAsset = parseAsset({
-    address,
-    asset,
-  });
-  return {
-    ...parsedAsset,
-    balance: convertRawAmountToBalance(quantity, asset),
-  };
 }
 
 export function parseGoldskyAddressAsset({ assetData }: { assetData: { asset: Asset; quantity: string } }): ParsedAddressAsset {
