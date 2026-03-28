@@ -57,6 +57,7 @@ export const useSponsoredSwapStore = createQueryStore<PreparedCallsExecution | n
     params: {
       quoteKey: $ => $(useSponsoredSwapQuoteKey),
     },
+    keepPreviousData: true,
     cacheTime: time.minutes(1),
     staleTime: SPONSORED_SWAP_STALE_TIME_MS,
   },
