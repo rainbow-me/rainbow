@@ -18,18 +18,23 @@ import { pulsingConfig, sliderConfig } from '@/__swaps__/screens/Swap/constants'
 import { type GasSettings } from '@/__swaps__/screens/Swap/hooks/useCustomGas';
 import { useSwapEstimatedGasFee } from '@/__swaps__/screens/Swap/hooks/useEstimatedGasFee';
 import { useSwapContext } from '@/__swaps__/screens/Swap/providers/swap-provider';
+import { useStoreSharedValue } from '@/state/internal/hooks/useStoreSharedValue';
+import { useSponsoredSwapStore } from '@/features/delegation/sponsoredSwapStore';
 
 type EstimatedSwapGasFeeProps = { gasSettings?: GasSettings } & Partial<
   Pick<TextProps, 'align' | 'color' | 'size' | 'style' | 'weight' | 'tabularNumbers'>
 >;
 export function EstimatedSwapGasFeeSlot({
+  align,
   color = 'labelTertiary',
   size = '15pt',
+  style,
+  tabularNumbers,
+  text,
   weight = 'bold',
-  ...props
 }: { text: string } & Omit<EstimatedSwapGasFeeProps, 'gasSettings'>) {
-  const label = useDerivedValue(() => props.text);
-  return <GasFeeText color={color} size={size} weight={weight} {...props} label={label} />;
+  const label = useDerivedValue(() => text);
+  return <GasFeeText align={align} color={color} label={label} size={size} style={style} tabularNumbers={tabularNumbers} weight={weight} />;
 }
 export function EstimatedSwapGasFee({ align, color, gasSettings, size, style, tabularNumbers, weight }: EstimatedSwapGasFeeProps) {
   const estimatedGasFee = useSwapEstimatedGasFee(gasSettings) || '--';
@@ -64,7 +69,8 @@ const GasFeeText = memo(function GasFeeText({
   const zeroAmountColor = opacity(labelTertiary, 0.3);
 
   const isFetchingDelayed = useDelayedValue(isFetching, 1500);
-  const isLoading = useDerivedValue(() => isFetching.value || isFetchingDelayed.value);
+  const isLoadingSponsorshipVerdict = useStoreSharedValue(useSponsoredSwapStore, s => s.getStatus('isInitialLoad'));
+  const isLoading = useDerivedValue(() => isFetching.value || isFetchingDelayed.value || isLoadingSponsorshipVerdict.value);
 
   const animatedTextOpacity = useAnimatedStyle(() => ({
     color: withTiming(isLoading.value ? zeroAmountColor : textColor, TIMING_CONFIGS.slowFadeConfig),
