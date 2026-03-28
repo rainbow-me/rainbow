@@ -1,5 +1,5 @@
 import Divider from '@/components/Divider';
-import { type GasFeeType, GasFeeTypes, TransactionStatus } from '@/entities/transactions';
+import { canReplacePendingTransaction, type GasFeeType, GasFeeTypes, TransactionStatus } from '@/entities/transactions';
 import { type LegacyTransactionGasParamAmounts, type TransactionGasParamAmounts } from '@/entities/gas';
 import { getProvider, isL2Chain, toHex } from '@/handlers/web3';
 import { WrappedAlert as Alert } from '@/helpers/alert';
@@ -145,6 +145,7 @@ export default function SpeedUpAndCancelSheet() {
   const [to, setTo] = useState<string | undefined>(tx?.to ?? undefined);
   const [value, setValue] = useState<string>();
   const isL2 = isL2Chain({ chainId: tx?.chainId });
+  const canReplaceTransaction = canReplacePendingTransaction({ accountAddress, transaction: tx });
   const hasTransactionNonce = tx?.nonce !== undefined && tx?.nonce !== null;
 
   const getNewTransactionGasParams = useCallback(() => {
@@ -445,8 +446,8 @@ export default function SpeedUpAndCancelSheet() {
     return defaultSpeeds;
   }, [isL2]);
 
-  const isDelegationSpeedUp = type === SPEED_UP && tx.delegation;
-  if (isDelegationSpeedUp) {
+  const shouldHideReplacementSheet = !canReplaceTransaction || (type === SPEED_UP && tx.delegation);
+  if (shouldHideReplacementSheet) {
     goBack();
     return null;
   }

@@ -1,7 +1,7 @@
 import ButtonPressAnimation from '@/components/animations/ButtonPressAnimation';
 import ContextMenuButton, { type MenuConfig } from '@/components/native-context-menu/contextMenu';
 import { Box, Stack, Text } from '@/design-system';
-import { type PendingTransaction, type RainbowTransaction, TransactionStatus } from '@/entities/transactions';
+import { canReplacePendingTransaction, type PendingTransaction, type RainbowTransaction, TransactionStatus } from '@/entities/transactions';
 import * as i18n from '@/languages';
 import { formatTransactionDetailsDate } from '@/screens/transaction-details/helpers/formatTransactionDetailsDate';
 import { getIconColorAndGradientForTransactionStatus } from '@/screens/transaction-details/helpers/getIconColorAndGradientForTransactionStatus';
@@ -22,17 +22,16 @@ type Props = {
 };
 
 export const TransactionDetailsStatusActionsAndTimestampSection: React.FC<Props> = ({ transaction, hideIcon }) => {
-  const { minedAt, status, type, from } = transaction;
+  const { minedAt, status, type } = transaction;
   const { navigate } = useNavigation();
   const accountAddress = useAccountAddress();
   const date = formatTransactionDetailsDate(minedAt ?? undefined);
   const { colors } = useTheme();
   const { icon, color, gradient } = getIconColorAndGradientForTransactionStatus(colors, status);
 
-  const isOutgoing = from?.toLowerCase() === accountAddress?.toLowerCase();
-  const isPendingOutgoing = isOutgoing && !minedAt;
-  const canSpeedUp = isPendingOutgoing && !transaction.delegation;
-  const canCancel = isPendingOutgoing && !(type === 'cancel' && status === TransactionStatus.pending);
+  const canReplace = canReplacePendingTransaction({ accountAddress, transaction }) && !minedAt;
+  const canSpeedUp = canReplace && !transaction.delegation;
+  const canCancel = canReplace && !(type === 'cancel' && status === TransactionStatus.pending);
 
   const menuConfig = useMemo(
     () =>

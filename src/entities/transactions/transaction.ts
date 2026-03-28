@@ -271,6 +271,24 @@ export interface ExecuteRapResponse extends TransactionResponse {
   errorMessage?: string;
 }
 
+/**
+ * Returns true when the wallet can replace the pending transaction with the
+ * same nonce.
+ *
+ * Managed relay executions are excluded because the relay, not the wallet,
+ * owns onchain submission.
+ */
+export function canReplacePendingTransaction({
+  accountAddress,
+  transaction,
+}: {
+  accountAddress: string | undefined;
+  transaction: RainbowTransaction;
+}): boolean {
+  const isOutgoing = transaction.from?.toLowerCase() === accountAddress?.toLowerCase();
+  return transaction.status === TransactionStatus.pending && isOutgoing && !transaction.relayExecutionId;
+}
+
 export type TransactionApiResponse = {
   status: TransactionStatus;
   id: Hash;
