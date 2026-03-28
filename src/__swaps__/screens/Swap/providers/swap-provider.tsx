@@ -51,8 +51,8 @@ import { swapsStore } from '@/state/swaps/swapsStore';
 import { getNextNonce } from '@/state/nonces';
 import { type CrosschainQuote, type Quote, type QuoteError, SwapType } from '@rainbow-me/swaps';
 import { IS_IOS } from '@/env';
-import { isDelegationEnabled } from '@/features/delegation/featureFlags';
 import { useSponsoredSwapStore } from '@/features/delegation/sponsoredSwapStore';
+import { supportsDelegatedExecution } from '@/features/delegation/willDelegate';
 import { clearCustomGasSettings } from '../hooks/useCustomGas';
 import { getGasSettingsBySpeed, getSelectedGas } from '../hooks/useSelectedGas';
 import { useSwapOutputQuotesDisabled } from '../hooks/useSwapOutputQuotesDisabled';
@@ -274,8 +274,12 @@ export const SwapProvider = ({ children }: SwapProviderProps) => {
       }
 
       const degenMode = swapsStore.getState().degenMode;
-      const shouldUsePreparedSwapStore = isDelegationEnabled() && !connectedToAnvil;
-      const preparedSwapPromise = shouldUsePreparedSwapStore ? useSponsoredSwapStore.getState().getPreparedSwap() : Promise.resolve(null);
+      const preparedSwapPromise = connectedToAnvil
+        ? null
+        : useSponsoredSwapStore
+            .getState()
+            .getPreparedSwap()
+            .catch(() => null);
 
       const wallet = await executeFn(loadWallet, {
         screen: Screens.SWAPS,
@@ -290,7 +294,6 @@ export const SwapProvider = ({ children }: SwapProviderProps) => {
           metadata: { degenMode },
         },
       });
-      const isHardwareWallet = wallet instanceof LedgerSigner;
 
       if (!wallet) {
         isSwapping.value = false;
@@ -316,7 +319,15 @@ export const SwapProvider = ({ children }: SwapProviderProps) => {
         operation: TimeToSignOperation.GetNonce,
         metadata: { degenMode, chainId },
       })({ address: parameters.quote.from, chainId });
-      const preparedCalls = await preparedSwapPromise;
+
+      const canExecuteDelegatedSwap =
+        !connectedToAnvil &&
+        (await supportsDelegatedExecution({
+          address: parameters.quote.from,
+          chainId: parameters.chainId,
+        }));
+
+      const preparedCalls = canExecuteDelegatedSwap ? await preparedSwapPromise : null;
 
       const { errorMessage } = await executeFn(walletExecuteRap, {
         screen: Screens.SWAPS,
@@ -331,12 +342,14 @@ export const SwapProvider = ({ children }: SwapProviderProps) => {
           chainId,
           gasParams,
           gasFeeParamsBySpeed,
-          atomic: isDelegationEnabled(),
+          atomic: canExecuteDelegatedSwap,
         },
         { preparedCalls }
       );
 
       isSwapping.value = false;
+
+      const isHardwareWallet = wallet instanceof LedgerSigner;
 
       if (errorMessage) {
         runOnUI(() => {

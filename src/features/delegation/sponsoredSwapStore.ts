@@ -1,4 +1,3 @@
-import { VoidSigner } from '@ethersproject/abstract-signer';
 import { execute, type PreparedCallsExecution } from '@rainbow-me/delegation';
 import { type CrosschainQuote, type Quote, type QuoteError } from '@rainbow-me/swaps';
 import { createPublicClient, http, type PublicClient } from 'viem';
@@ -9,9 +8,9 @@ import { useBackendNetworksStore } from '@/state/backendNetworks/backendNetworks
 import { createDerivedStore } from '@/state/internal/createDerivedStore';
 import { createQueryStore } from '@/state/internal/createQueryStore';
 import { useSwapsStore } from '@/state/swaps/swapsStore';
-import { useWalletsStore } from '@/state/wallets/walletsStore';
+import { getAccountAddress, useWalletsStore } from '@/state/wallets/walletsStore';
 import { time } from '@/utils/time';
-import { isDelegationEnabled } from './featureFlags';
+import { canUseDelegatedExecution, supportsDelegatedExecution } from './willDelegate';
 
 // ============ Constants ====================================================== //
 
@@ -37,11 +36,10 @@ type CurrentSponsoredSwap = {
 const useSponsoredSwapQuoteKey = createDerivedStore(
   $ => {
     const accountAddress = $(useWalletsStore, state => state.accountAddress);
-    const isWalletEligible = $(useWalletsStore, state => !state.getIsHardwareWallet() && !state.getIsReadOnlyWallet());
     const quote = $(useSwapsStore, state => state.quote);
 
-    if (!accountAddress || !isWalletEligible) return null;
-    if (!isDelegationEnabled() || !isCurrentSponsoredSwapQuote(quote, accountAddress)) return null;
+    if (!accountAddress || !canUseDelegatedExecution(accountAddress)) return null;
+    if (!isCurrentSponsoredSwapQuote(quote, accountAddress)) return null;
 
     return performance.now();
   },
@@ -78,21 +76,27 @@ export function useIsSponsoredSwap(): boolean {
 // ============ Fetcher ======================================================== //
 
 async function fetchPreparedSponsoredSwap(): Promise<PreparedCallsExecution | null> {
-  const current = readCurrentSponsoredSwap();
+  const current = readCurrentSwapQuote();
   if (!current) return null;
 
-  const signer = new VoidSigner(current.quote.from, getProvider({ chainId: current.chainId }));
-  const publicClient = createDelegationPublicClient(current);
+  const address = current.quote.from;
+  const chainId = current.chainId;
+
+  const canExecuteAtomically = await supportsDelegatedExecution({ address, chainId });
+  if (!canExecuteAtomically) return null;
 
   const calls = await prepareAtomicSwapCalls({
-    chainId: current.chainId,
+    account: address,
+    chainId,
+    provider: getProvider({ chainId }),
     quote: current.quote,
-    signer,
   });
 
+  const publicClient = createDelegationPublicClient(current);
+
   return execute.prepare.calls({
-    account: current.quote.from,
-    chainId: current.chainId,
+    account: address,
+    chainId,
     calls,
     publicClient,
     requirements: {
@@ -104,26 +108,23 @@ async function fetchPreparedSponsoredSwap(): Promise<PreparedCallsExecution | nu
 
 // ============ Local Helpers ================================================= //
 
-function readCurrentSponsoredSwap(): CurrentSponsoredSwap | null {
-  const { accountAddress, getIsHardwareWallet, getIsReadOnlyWallet } = useWalletsStore.getState();
+function readCurrentSwapQuote(): CurrentSponsoredSwap | null {
+  const address = getAccountAddress();
   const quote = useSwapsStore.getState().quote;
 
-  if (!isDelegationEnabled()) return null;
-  if (!accountAddress || getIsHardwareWallet() || getIsReadOnlyWallet()) return null;
+  if (!isCurrentSponsoredSwapQuote(quote, address)) return null;
+  if (!canUseDelegatedExecution(address)) return null;
 
-  if (!isCurrentSponsoredSwapQuote(quote, accountAddress)) return null;
-
-  return {
-    chainId: quote.chainId,
-    quote,
-  };
+  return { chainId: quote.chainId, quote };
 }
 
 function isCurrentSponsoredSwapQuote(
   quote: Quote | CrosschainQuote | QuoteError | null,
   accountAddress: string
 ): quote is Quote | CrosschainQuote {
-  if (!(isQuote(quote) || isCrosschainQuote(quote))) return false;
+  if (!(isQuote(quote) || isCrosschainQuote(quote))) {
+    return false;
+  }
   return quote.from.toLowerCase() === accountAddress.toLowerCase();
 }
 

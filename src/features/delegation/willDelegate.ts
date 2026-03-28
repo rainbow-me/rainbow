@@ -1,6 +1,8 @@
 import { delegation, useWillDelegate } from '@rainbow-me/delegation';
 import { type Address } from 'viem';
-import { getWalletWithAccount, useIsHardwareWallet } from '@/state/wallets/walletsStore';
+import WalletTypes from '@/helpers/walletTypes';
+import { type RainbowWallet } from '@/model/wallet';
+import { getWalletWithAccount, useWalletsStore } from '@/state/wallets/walletsStore';
 import { isDelegationEnabled, useIsDelegationEnabled } from './featureFlags';
 
 // ============ Constants ====================================================== //
@@ -16,6 +18,26 @@ const WILL_NOT_DELEGATE: WillExecuteDelegationResult = Object.freeze({
 // ============ Delegation API ================================================= //
 
 /**
+ * Returns true when Rainbow can execute delegation-backed flows for `address`.
+ */
+export function canUseDelegatedExecution(address: Address): boolean {
+  if (!isDelegationEnabled()) return false;
+
+  return canUseDelegatedWallet(getWalletWithAccount(address));
+}
+
+/**
+ * Check whether exact-call execution can use delegation for the provided
+ * `{ address, chainId }` params.
+ */
+export async function supportsDelegatedExecution(params: WillExecuteDelegationParams): Promise<boolean> {
+  if (!canUseDelegatedExecution(params.address)) return false;
+
+  const support = await delegation.isSupported(params);
+  return support.supported;
+}
+
+/**
  * Check whether delegation is expected and executable for the provided
  * `{ address, chainId }` params.
  *
@@ -25,11 +47,7 @@ const WILL_NOT_DELEGATE: WillExecuteDelegationResult = Object.freeze({
  * ```
  */
 export async function willExecuteDelegation(params: WillExecuteDelegationParams): Promise<WillExecuteDelegationResult> {
-  const isHardwareWallet = Boolean(getWalletWithAccount(params.address)?.deviceId);
-
-  if (isHardwareWallet || !isDelegationEnabled()) {
-    return WILL_NOT_DELEGATE;
-  }
+  if (!canUseDelegatedExecution(params.address)) return WILL_NOT_DELEGATE;
 
   return delegation.willDelegate(params);
 }
@@ -42,11 +60,16 @@ export async function willExecuteDelegation(params: WillExecuteDelegationParams)
  * specified `(address, chainId)`.
  */
 export function useWillExecuteDelegation(address: Address, chainId: number): boolean {
-  const isHardwareWallet = useIsHardwareWallet();
   const delegationEnabled = useIsDelegationEnabled();
+  const wallet = useWalletsStore(state => state.getWalletWithAccount(address));
   const sdkWillDelegate = useWillDelegate(address, chainId);
 
-  if (isHardwareWallet || !delegationEnabled) return false;
+  const canUseDelegation = delegationEnabled && canUseDelegatedWallet(wallet);
+  if (!canUseDelegation) return false;
 
   return sdkWillDelegate;
+}
+
+function canUseDelegatedWallet(wallet: RainbowWallet | undefined): boolean {
+  return wallet !== undefined && !wallet.deviceId && wallet.type !== WalletTypes.readOnly;
 }

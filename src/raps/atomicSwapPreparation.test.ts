@@ -111,7 +111,7 @@ describe('atomicSwapPreparation', () => {
     ).rejects.toThrow('prepare failed');
 
     expect(prepareApprovalCall).not.toHaveBeenCalled();
-    expect(prepareSwapCall).toHaveBeenCalledWith({ quote, wallet: signer });
+    expect(prepareSwapCall).toHaveBeenCalledWith({ quote, provider });
     expect(execute.prepare.calls).toHaveBeenCalledWith({
       signer,
       provider,

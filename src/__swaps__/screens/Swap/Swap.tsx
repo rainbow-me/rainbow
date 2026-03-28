@@ -30,6 +30,7 @@ import { SwapWarning } from './components/SwapWarning';
 import { clearCustomGasSettings } from './hooks/useCustomGas';
 import { SwapProvider, useSwapContext } from './providers/swap-provider';
 import { useSwapsSearchStore } from './resources/search/searchV2';
+import { useSponsoredSwapStore } from '@/features/delegation/sponsoredSwapStore';
 
 /** README
  * This screen is largely driven by Reanimated and Gesture Handler, which
@@ -114,6 +115,7 @@ const useCleanupOnUnmount = () => {
       userAssetsStore.setState(state =>
         state.filter === 'all' && !state.inputSearchQuery.length ? state : { filter: 'all', inputSearchQuery: '' }
       );
+      useSponsoredSwapStore.setState({ queryCache: {} });
 
       clearCustomGasSettings();
     };

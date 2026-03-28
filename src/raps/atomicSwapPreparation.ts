@@ -1,8 +1,8 @@
-import { type Signer } from '@ethersproject/abstract-signer';
 import type { StaticJsonRpcProvider } from '@ethersproject/providers';
 import type { Wallet } from '@ethersproject/wallet';
 import { execute, type Call, type PreparedCallsExecution } from '@rainbow-me/delegation';
 import { type CrosschainQuote, type Quote } from '@rainbow-me/swaps';
+import { type Address } from 'viem';
 import { isCrosschainQuote } from '@/__swaps__/utils/quotes';
 import { resolveApprovalRequirement } from './approval';
 import { prepareCrosschainSwapCall } from './actions/crosschainSwap';
@@ -34,9 +34,10 @@ export async function prepareAtomicSwapExecution<T extends AtomicSwapPreparation
   signer,
 }: AtomicSwapPreparationParams<T>): Promise<PreparedCallsExecution> {
   const calls = await prepareAtomicSwapCalls({
+    account: quote.from,
     chainId,
+    provider,
     quote,
-    signer,
   });
 
   if (!calls.length) {
@@ -52,18 +53,21 @@ export async function prepareAtomicSwapExecution<T extends AtomicSwapPreparation
 }
 
 export async function prepareAtomicSwapCalls<T extends AtomicSwapPreparationType>({
+  account,
   chainId,
+  provider,
   quote,
-  signer,
 }: {
+  account: Address;
   chainId: number;
+  provider: StaticJsonRpcProvider;
   quote: AtomicSwapQuoteMap[T];
-  signer: Signer;
 }): Promise<Call[]> {
   return buildAtomicSwapCalls({
+    account,
     chainId,
+    provider,
     quote,
-    signer,
   });
 }
 
@@ -97,13 +101,15 @@ export function prepareRequiredAtomicCalls({
 // ============ Local Helpers ================================================= //
 
 async function buildAtomicSwapCalls<T extends AtomicSwapPreparationType>({
+  account,
   chainId,
+  provider,
   quote,
-  signer,
 }: {
+  account: Address;
   chainId: number;
+  provider: StaticJsonRpcProvider;
   quote: AtomicSwapQuoteMap[T];
-  signer: Signer;
 }): Promise<Call[]> {
   const calls: Call[] = [];
   const approval = await resolveApprovalRequirement({
@@ -116,33 +122,31 @@ async function buildAtomicSwapCalls<T extends AtomicSwapPreparationType>({
     const approvalCall = await prepareApprovalCall({
       amount: quote.sellAmount.toString(),
       chainId,
-      owner: quote.from,
+      owner: account,
       spender: approval.allowanceTargetAddress,
       tokenAddress: quote.sellTokenAddress,
       useExactApproval: true,
     });
 
-    if (approvalCall) {
-      calls.push(approvalCall);
-    }
+    if (approvalCall) calls.push(approvalCall);
   }
 
   const swapCall = await buildSwapCall({
+    provider,
     quote,
-    signer,
   });
 
   calls.push(swapCall);
   return calls;
 }
 
-async function buildSwapCall({ quote, signer }: { quote: Quote | CrosschainQuote; signer: Signer }): Promise<Call> {
+async function buildSwapCall({ provider, quote }: { provider: StaticJsonRpcProvider; quote: Quote | CrosschainQuote }): Promise<Call> {
   if (isCrosschainQuote(quote)) {
     return prepareCrosschainSwapCall({ quote });
   }
 
   return prepareSwapCall({
+    provider,
     quote,
-    wallet: signer,
   });
 }
