@@ -21,6 +21,69 @@ and this project adheres to [Semantic Versioning](http://semver.org/)
 
 ### Testing
 
+## [2.0.21](https://github.com/rainbow-me/rainbow/releases/tag/v2.0.21)
+
+### Added
+
+- Add regression tests for emoji resolution paths (https://github.com/rainbow-me/rainbow/pull/7173)
+- Always show notification prompt in onboarding (https://github.com/rainbow-me/rainbow/pull/7108)
+- Add perps PnL share image (https://github.com/rainbow-me/rainbow/pull/7139)
+- Add PnL graphic to trade details sheet (https://github.com/rainbow-me/rainbow/pull/7140)
+- Show trade details sheet after closing perps position (https://github.com/rainbow-me/rainbow/pull/7142)
+- Encode position leverage in cloid (https://github.com/rainbow-me/rainbow/pull/7143)
+- Add carousel for PnL share image selection (https://github.com/rainbow-me/rainbow/pull/7198)
+- Add paginated fetching for events browse screen in predictions (https://github.com/rainbow-me/rainbow/pull/7203)
+- Introduce IS_INTERNAL and IS_STORE_INSTALL flags (https://github.com/rainbow-me/rainbow/pull/7244)
+- Add cross-platform install source detection (https://github.com/rainbow-me/rainbow/pull/7258)
+- Add RNBW membership tab and feature flag (https://github.com/rainbow-me/rainbow/pull/7228)
+
+### Changed
+
+- Remove emoji-datasource from dependencies (https://github.com/rainbow-me/rainbow/pull/7174)
+- Remove points feature code (https://github.com/rainbow-me/rainbow/pull/7102)
+- Bump iOS and Android to v2.0.21 (https://github.com/rainbow-me/rainbow/pull/7214)
+- Remove all remote promo sheet related code (https://github.com/rainbow-me/rainbow/pull/7202)
+- Revert fix for missing timestamps on custom breadcrumbs (https://github.com/rainbow-me/rainbow/commit/99306878d16fa8fff2e3d58fa0119e3171dec968)
+- Colocate unit test files next to source modules (https://github.com/rainbow-me/rainbow/pull/7223)
+- Consolidate ENS domain into src/features/ens/ (https://github.com/rainbow-me/rainbow/pull/7197)
+- Move ens-avatar fork to src/vendor (https://github.com/rainbow-me/rainbow/pull/7231)
+- Consolidate wallet-connect domain into src/features/wallet-connect (https://github.com/rainbow-me/rainbow/pull/7230)
+- Colocate integration tests next to positions transform module (https://github.com/rainbow-me/rainbow/pull/7224)
+- Enforce colocated test file placement in ESLint (https://github.com/rainbow-me/rainbow/pull/7232)
+- Document SimpleHash shutdown and viem migration path for ens-avatar (https://github.com/rainbow-me/rainbow/pull/7238)
+- Remove src/features/perps/components/Slider/index.ts barrel file (https://github.com/rainbow-me/rainbow/pull/6995)
+- Remove stale CodeQL workflow in favor of GitHub default setup (https://github.com/rainbow-me/rainbow/pull/7241)
+- Remove src/navigation/index.ts barrel file (https://github.com/rainbow-me/rainbow/pull/6996)
+- Remove src/notifications/settings/index.ts barrel file (https://github.com/rainbow-me/rainbow/pull/6997)
+- Remove src/parsers/index.ts barrel file (https://github.com/rainbow-me/rainbow/pull/6998)
+- Remove unused SVG icons and dead Icon.js entries (https://github.com/rainbow-me/rainbow/pull/7243)
+- Remove src/theme/index.ts barrel file (https://github.com/rainbow-me/rainbow/pull/7000)
+- Remove src/references/index.ts barrel file (https://github.com/rainbow-me/rainbow/pull/6999)
+- Remove src/config/index.ts barrel file (https://github.com/rainbow-me/rainbow/pull/6991)
+- Upgrade yarn from 4.2.2 to 4.13.0 (https://github.com/rainbow-me/rainbow/pull/7245)
+- Remove unused ToolbarTextButton component from DappBrowser (https://github.com/rainbow-me/rainbow/pull/7268)
+- Remove dead code from pre-userAssetsStore era in assets (https://github.com/rainbow-me/rainbow/pull/7269)
+
+### Fixed
+
+- Use ignoreErrors instead of ignoreTransactions for error filtering in Sentry (https://github.com/rainbow-me/rainbow/pull/7212)
+- Handle swaps with multiple inputs/outputs in history (APP-3447) (https://github.com/rainbow-me/rainbow/pull/7131)
+- Add missing timestamps on custom breadcrumbs in Sentry (https://github.com/rainbow-me/rainbow/commit/4c03399f04b3341305f15339af4aa98400f46e57)
+- Prevent platform splitting of captureMessage issues in Sentry (https://github.com/rainbow-me/rainbow/pull/7221)
+- Add missing timestamps on custom breadcrumbs in Sentry (https://github.com/rainbow-me/rainbow/pull/7222)
+- Fix Android font rendering and share functionality (https://github.com/rainbow-me/rainbow/pull/7199)
+- Only retry E2E tests on CI (https://github.com/rainbow-me/rainbow/pull/7234)
+- Suppress non-actionable rainbowFetch errors in Sentry (https://github.com/rainbow-me/rainbow/pull/7229)
+- Prevent Metro from refreshing on ios/android folder changes (https://github.com/rainbow-me/rainbow/pull/7235)
+- Remove rainbow-scripts from watchman ignore (https://github.com/rainbow-me/rainbow/pull/7255)
+- Fix transaction not found Sentry noise during pending transaction polling (https://github.com/rainbow-me/rainbow/pull/7248)
+- Allow private key import over damaged seed wallet (APP-3443) (https://github.com/rainbow-me/rainbow/pull/7254)
+- Prevent backup sheet from showing over notification permissions (https://github.com/rainbow-me/rainbow/pull/7227)
+- Fix crash in AppInstallInfo when iOS sync method returns true (https://github.com/rainbow-me/rainbow/pull/7264)
+- Align E2E builds with production by disabling dev mode (https://github.com/rainbow-me/rainbow/pull/7260)
+- Fix debug key builds incorrectly classified as store installs in AppInstallInfo (https://github.com/rainbow-me/rainbow/pull/7265)
+- Fix crash when viewing connected dapps in wallet-connect (https://github.com/rainbow-me/rainbow/pull/7270)
+
 ## [2.0.20](https://github.com/rainbow-me/rainbow/releases/tag/v2.0.20)
 
 ### Added
