@@ -29,12 +29,10 @@ const PrivacySection = () => {
         device.set(['doNotTrack'], true);
         logger.debug(`[PrivacySection]: Analytics tracking disabled`);
         analytics.track(analytics.event.analyticsTrackingDisabled);
-        logger.disable();
         analytics.disable();
         return false;
       } else {
         device.set(['doNotTrack'], false);
-        logger.enable();
         analytics.enable();
         logger.debug(`[PrivacySection]: Analytics tracking enabled`);
         analytics.track(analytics.event.analyticsTrackingEnabled);

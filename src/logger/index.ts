@@ -5,7 +5,6 @@ import { type SeverityLevel } from '@sentry/types';
 
 import * as env from '@/env';
 import { DebugContext } from '@/logger/debugContext';
-import { device } from '@/storage';
 import { push } from '@/logger/logDump';
 import { getExperimentalFlag, LOG_PUSH } from '@/config/experimental';
 
@@ -214,22 +213,18 @@ export class Logger {
   LogLevel = LogLevel;
   DebugContext = DebugContext;
 
-  enabled: boolean;
   level: LogLevel;
   transports: Transport[] = [];
 
   protected debugContextRegexes: RegExp[] = [];
 
   constructor({
-    enabled = !device.get(['doNotTrack']),
     level = LOG_LEVEL as LogLevel,
     debug = LOG_DEBUG || '',
   }: {
-    enabled?: boolean;
     level?: LogLevel;
     debug?: string;
   } = {}) {
-    this.enabled = enabled !== false;
     this.level = debug ? LogLevel.Debug : level ?? LogLevel.Warn;
     this.debugContextRegexes = (debug || '').split(',').map(context => {
       return new RegExp(context.replace(/[^\w:*]/, '').replace(/\*/g, '.*'));
@@ -268,14 +263,6 @@ export class Logger {
     };
   }
 
-  disable() {
-    this.enabled = false;
-  }
-
-  enable() {
-    this.enabled = true;
-  }
-
   /**
    * Creates a scoped logger for service/SDK integration boundaries with
    * `[context]:` prefixed messages and debug-context filtering.
@@ -309,7 +296,6 @@ export class Logger {
   }
 
   protected transport(level: LogLevel, message: string | RainbowError, metadata?: Metadata) {
-    if (!this.enabled) return;
     if (!enabledLogLevels[this.level].includes(level)) return;
 
     const resolvedMetadata = metadata || EMPTY_METADATA;
@@ -328,10 +314,7 @@ export class Logger {
  *   `logger.debug(message[, metadata, debugContext])`
  *   `logger.info(message[, metadata])`
  *   `logger.warn(message[, metadata])`
- *   `logger.error(RainbowError[, metadata])`
- *   `logger.disable()`
- *   `logger.enable()`
- */
+ *   `logger.error(RainbowError[, metadata])` */
 export const logger = new Logger();
 
 /**
