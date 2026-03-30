@@ -358,7 +358,8 @@
       "unhide": "เลือกไม่ซ่อน",
       "unpin": "ยกเลิกการยึด",
       "view": "ดู",
-      "hidden": "ซ่อน"
+      "hidden": "ซ่อน",
+      "claim": "เคลม"
     },
     "cards": {
       "ens_create_profile": {
@@ -3837,6 +3838,7 @@
         "subtitle": "ขอต้อนรับ $RNBW ตรวจสอบสิทธิ์ของคุณตอนนี้"
       },
       "claim": {
+        "claim_title": "รับ $RNBW",
         "available_to_claim": "พร้อมสำหรับการรับ",
         "your_airdrop": "Airdrop ของคุณ",
         "your_airdrop_description": "ขอบคุณที่ใช้ Rainbow Airdrop ของคุณถูกคำนวณจากกิจกรรมก่อนหน้าของคุณ",
@@ -3876,6 +3878,12 @@
         "oh_i_see": "อ๋อ เข้าใจแล้ว..."
       },
       "longer_than_usual": "การขอรับใช้เวลานานกว่าปกติ อาจใช้เวลาสูงสุดหนึ่งนาที"
+    },
+    "rnbw_membership": {
+      "claim_card": {
+        "airdrop": "Airdrop",
+        "rewards": "รางวัล"
+      }
     },
     "wallet_error_sheet": {
       "title": "กู้คืนกระเป๋าเงินของคุณ",
