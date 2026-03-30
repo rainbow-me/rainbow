@@ -358,7 +358,8 @@
       "unhide": "Batal Sembunyikan",
       "unpin": "Lepaskan Pin",
       "view": "Lihat",
-      "hidden": "Tersembunyi"
+      "hidden": "Tersembunyi",
+      "claim": "Klaim"
     },
     "cards": {
       "ens_create_profile": {
@@ -3837,6 +3838,7 @@
         "subtitle": "Sapa $RNBW, periksa kelayakanmu sekarang."
       },
       "claim": {
+        "claim_title": "Klaim $RNBW",
         "available_to_claim": "Tersedia untuk Diklaim",
         "your_airdrop": "Airdrop Kamu",
         "your_airdrop_description": "Terima kasih telah menggunakan Rainbow. Airdrop kamu dihitung berdasarkan aktivitas kamu sebelumnya.",
@@ -3876,6 +3878,12 @@
         "oh_i_see": "Oh begitu..."
       },
       "longer_than_usual": "Proses klaim memakan waktu lebih lama dari biasanya. Ini bisa memakan waktu hingga satu menit."
+    },
+    "rnbw_membership": {
+      "claim_card": {
+        "airdrop": "Airdrop",
+        "rewards": "Hadiah"
+      }
     },
     "wallet_error_sheet": {
       "title": "Pulihkan dompet Anda",
