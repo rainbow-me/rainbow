@@ -1,13 +1,7 @@
-export const RnbwRewardsScenes = {
-  AirdropIntro: 'airdrop-intro',
-  AirdropEligibility: 'airdrop-eligibility',
-  AirdropClaiming: 'airdrop-claiming',
-  RewardsClaiming: 'rewards-claiming',
+export const RnbwAirdropScenes = {
   AirdropClaimPrompt: 'airdrop-claim-prompt',
+  AirdropClaiming: 'airdrop-claiming',
   AirdropClaimed: 'airdrop-claimed',
-  RewardsClaimed: 'rewards-claimed',
-  AirdropUnavailable: 'airdrop-unavailable',
-  RewardsOverview: 'rewards-overview',
 } as const;
 
-export type RnbwRewardsScene = (typeof RnbwRewardsScenes)[keyof typeof RnbwRewardsScenes];
+export type RnbwAirdropScene = (typeof RnbwAirdropScenes)[keyof typeof RnbwAirdropScenes];

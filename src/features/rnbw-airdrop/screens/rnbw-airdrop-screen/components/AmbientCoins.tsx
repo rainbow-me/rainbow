@@ -18,9 +18,10 @@ import { BlurView } from 'react-native-blur-view';
 import rnbwCoin from '@/assets/rnbw.png';
 import useTimeout from '@/hooks/useTimeout';
 import { time } from '@/utils/time';
-import { RnbwRewardsScenes } from '@/features/rnbw-rewards/screens/rnbw-rewards-screen/constants/rewardsScenes';
-import { useRnbwRewardsFlowContext } from '@/features/rnbw-rewards/screens/rnbw-rewards-screen/context/RnbwRewardsFlowContext';
-import { getCoinBottomPosition, getCoinCenterPosition } from '@/features/rnbw-rewards/screens/rnbw-rewards-screen/components/RnbwHeroCoin';
+import { RnbwAirdropScenes } from '@/features/rnbw-airdrop/screens/rnbw-airdrop-screen/constants/airdropScenes';
+import { useAirdropFlowStore } from '@/features/rnbw-airdrop/stores/airdropFlowStore';
+import { useStoreSharedValue } from '@/state/internal/hooks/useStoreSharedValue';
+import { getCoinCenterPosition } from '@/features/rnbw-airdrop/screens/rnbw-airdrop-screen/components/RnbwHeroCoin';
 
 // Original design dimensions
 const DESIGN_WIDTH = 393;
@@ -87,7 +88,7 @@ const COINS: CoinConfig[] = [
     pattern: 'a',
     duration: time.seconds(14),
     exitX: -48,
-    exitY: -54,
+    exitY: -100,
   },
   {
     left: 348,
@@ -108,7 +109,7 @@ const COINS: CoinConfig[] = [
     blur: 1,
     pattern: 'd',
     duration: time.seconds(20),
-    exitX: 72,
+    exitX: 96,
     exitY: 60,
   },
   {
@@ -141,8 +142,9 @@ const AmbientCoin = memo(function AmbientCoin({
 
   const { left, top, size } = config;
 
-  const claimedLeft = getCoinCenterPosition(RnbwRewardsScenes.AirdropClaimed).x - size / 2;
-  const claimedTop = getCoinBottomPosition(RnbwRewardsScenes.AirdropClaimed);
+  const claimedCenter = getCoinCenterPosition(RnbwAirdropScenes.AirdropClaimed);
+  const claimedLeft = claimedCenter.x - size / 2;
+  const claimedTop = claimedCenter.y - size / 2;
 
   const startFloatingAnimation = useCallback(() => {
     'worklet';
@@ -197,6 +199,8 @@ const AmbientCoin = memo(function AmbientCoin({
         // Normalize distance to 0-1 from 200-300
         const normalizedDistance = Math.max(0, Math.min(1, (distanceFromClaimPosition - 200) / 100));
         delay = normalizedDistance * time.ms(100);
+        // Reset to offscreen starting position so coins fly in from edges
+        exitProgress.value = 0;
       }
 
       exitProgress.value = withDelay(
@@ -213,8 +217,8 @@ const AmbientCoin = memo(function AmbientCoin({
   const containerStyle = useAnimatedStyle(() => {
     if (state.value === 'claimed') {
       return {
-        left: interpolate(exitProgress.value, [0, 1], [left, claimedLeft]),
-        top: interpolate(exitProgress.value, [0, 1], [top, claimedTop]),
+        left: interpolate(exitProgress.value, [0, 1], [left + config.exitX, claimedLeft]),
+        top: interpolate(exitProgress.value, [0, 1], [top + config.exitY, claimedTop]),
         transform: [{ translateX: floatX.value }, { translateY: floatY.value }],
       };
     }
@@ -292,18 +296,15 @@ const _AmbientCoins = memo(function _AmbientCoins({ state, entering }: { state: 
 });
 
 export const AmbientCoins = memo(function AmbientCoins() {
-  const { activeScene } = useRnbwRewardsFlowContext();
+  const activeScene = useStoreSharedValue(useAirdropFlowStore, state => state.activeScene, { fireImmediately: true });
   const [mountState, setMountState] = useState({ shouldRender: true, entering: false });
   const [startHideTimeout, stopHideTimeout] = useTimeout();
 
   const state = useDerivedValue(() => {
     switch (activeScene.value) {
-      case RnbwRewardsScenes.AirdropIntro:
-      case RnbwRewardsScenes.AirdropClaimPrompt:
+      case RnbwAirdropScenes.AirdropClaimPrompt:
         return 'visible';
-      case RnbwRewardsScenes.AirdropEligibility:
-        return 'hidden';
-      case RnbwRewardsScenes.AirdropClaimed:
+      case RnbwAirdropScenes.AirdropClaimed:
         return 'claimed';
       default:
         return 'hidden';
