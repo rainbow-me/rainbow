@@ -2288,7 +2288,7 @@
         "when_public_prefix": "公開にすると、NFTショーケースがRainbowウェブプロフィールで表示されます！次のリンクでプロフィールをご覧いただけます：",
         "view_profile": "プロフィールを表示",
         "analytics_toggle": "アナリティクス",
-        "analytics_toggle_description": "Help Rainbow improve its products and services by allowing analytics of usage data. Collected data is not associated with you or your account. When disabled, only essential crash diagnostics are collected."
+        "analytics_toggle_description": "使用データの分析を許可することで、Rainbowの製品とサービスの改善に役立ちます。収集されたデータは、あなたやあなたのアカウントと関連付けられません。無効にすると、必須のクラッシュ診断のみが収集されます。"
       },
       "restore": "元の展開に復元",
       "review": "Rainbowをレビュー",
