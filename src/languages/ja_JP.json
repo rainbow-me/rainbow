@@ -358,7 +358,8 @@
       "unhide": "表示する",
       "unpin": "固定を解除する",
       "view": "表示",
-      "hidden": "非表示"
+      "hidden": "非表示",
+      "claim": "請求"
     },
     "cards": {
       "ens_create_profile": {
@@ -3837,6 +3838,7 @@
         "subtitle": "$RNBWへようこそ。今すぐ対象状況を確認してください。"
       },
       "claim": {
+        "claim_title": "Claim $RNBW",
         "available_to_claim": "請求可能",
         "your_airdrop": "あなたのエアドロップ",
         "your_airdrop_description": "Rainbowをご利用いただきありがとうございます。エアドロップは、これまでのアクティビティに基づいて算出されます。",
@@ -3876,6 +3878,12 @@
         "oh_i_see": "なるほど..."
       },
       "longer_than_usual": "請求に通常より時間がかかっています。最大1分かかる場合があります。"
+    },
+    "rnbw_membership": {
+      "claim_card": {
+        "airdrop": "エアドロップ",
+        "rewards": "報酬"
+      }
     },
     "wallet_error_sheet": {
       "title": "ウォレットを復元する",
