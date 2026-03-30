@@ -38,6 +38,7 @@
     "ios",
     "android",
     "src/browser",
+    "src/design-system/docs",
     "src/react-native-animated-charts/Example",
     "patches",
     "InjectedJSBundle.js"

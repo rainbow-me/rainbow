@@ -97,8 +97,7 @@ jobs:
       - name: Install dependencies
         env:
           SSH_AUTH_SOCK: /tmp/ssh_agent_sandbox.sock
-        run: |
-          yarn install && yarn setup
+        run: yarn install
 
       - name: Check for frozen lockfile
         run: ./scripts/check-lockfile.sh

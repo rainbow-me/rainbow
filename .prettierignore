@@ -9,6 +9,7 @@ rainbow-scripts
 .next
 .vscode
 __generated__
+src/references/networks.json
 coverage
 InjectedJSBundle.js
 .yarn

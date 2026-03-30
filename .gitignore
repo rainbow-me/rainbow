@@ -106,7 +106,6 @@ coverage-ts
 
 # Generated TypeScript declarations
 src/languages/types-generated.d.ts
-__generated__/
 
 # graphql codegen
 src/graphql/config.js
@@ -128,7 +127,6 @@ InjectedJSBundle.js.LICENSE.txt
 !.yarn/sdks
 !.yarn/versions
 
-src/references/networks.json
 # Expo
 .expo
 dist/

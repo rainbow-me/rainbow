@@ -42,7 +42,7 @@ Set up these **before** running `yarn install`, as the postinstall script reads
    in this project.
 3. Clone [`rainbow-me/rainbow-scripts`](https://github.com/rainbow-me/rainbow-scripts)
    into the project root (the postinstall prebuild hooks depend on it).
-4. Install dependencies and run setup: `yarn install && yarn setup`
+4. Install dependencies: `yarn install`
 
 ### External contributors
 
@@ -55,7 +55,7 @@ Set up these **before** running `yarn install`, as the postinstall script reads
    - Imgix: https://www.imgix.com/
 2. Provide your own `google-services.json` in `android/app/` from a personal
    Firebase project registered under the package name `me.rainbow`.
-3. Install dependencies and run setup: `yarn install && yarn setup`
+3. Install dependencies: `yarn install`
 
 The iOS `GoogleService-Info.plist` is already in the repo and gets its API key
 patched by the postinstall script from `GOOGLE_SERVICE_API_KEY` in your `.env`.
