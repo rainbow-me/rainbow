@@ -3806,6 +3806,7 @@
         "subtitle": "Say hello to $RNBW, check your eligibility now."
       },
       "claim": {
+        "claim_title": "Claim $RNBW",
         "available_to_claim": "Available to Claim",
         "your_airdrop": "Your Airdrop",
         "your_airdrop_description": "Thanks for using Rainbow. Your airdrop is calculated based on your previous activity.",
