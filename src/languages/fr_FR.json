@@ -2288,7 +2288,7 @@
         "when_public_prefix": "Lorsqu'elle est publique, votre vitrine NFT sera visible sur votre profil web Rainbow ! Vous pouvez voir votre profil à",
         "view_profile": "Voir votre profil",
         "analytics_toggle": "Analyses",
-        "analytics_toggle_description": "Help Rainbow improve its products and services by allowing analytics of usage data. Collected data is not associated with you or your account. When disabled, only essential crash diagnostics are collected."
+        "analytics_toggle_description": "Aidez Rainbow à améliorer ses produits et services en autorisant l'analyse des données d'utilisation. Les données collectées ne sont pas associées à vous ou à votre compte. Lorsqu'elle est désactivée, seules les données de diagnostic essentielles en cas de plantage sont collectées."
       },
       "restore": "Restaurer à la déploiement original",
       "review": "Examiner Rainbow",
