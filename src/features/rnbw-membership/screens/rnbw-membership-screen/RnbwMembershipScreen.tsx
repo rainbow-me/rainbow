@@ -1,17 +1,24 @@
-import { memo } from 'react';
-import { ScrollView, StyleSheet, View } from 'react-native';
+import { memo, useState, useCallback } from 'react';
+import { RefreshControl, ScrollView, StyleSheet, View } from 'react-native';
 import { Box } from '@/design-system';
 import { AccountImage } from '@/components/AccountImage';
 import { Navbar } from '@/components/navbar/Navbar';
 import { RnbwRewardsClaimCard } from './components/RnbwRewardsClaimCard';
 import { RnbwAirdropClaimCard } from './components/RnbwAirdropClaimCard';
+import { RnbwStakingCard } from './components/RnbwStakingCard';
+import { useRewardsBalanceStore } from '@/features/rnbw-rewards/stores/rewardsBalanceStore';
+import { useStakingPositionStore } from '@/features/rnbw-staking/stores/rnbwStakingPositionStore';
+import { useAirdropBalanceStore } from '@/features/rnbw-rewards/stores/airdropBalanceStore';
+import { delay } from '@/utils/delay';
+import { time } from '@/utils/time';
 
 export const RnbwMembershipScreen = memo(function RnbwMembershipScreen() {
   return (
     <View style={styles.flex}>
       <Navbar hasStatusBarInset title="Membership" leftComponent={<AccountImage />} />
-      <ScrollView contentContainerStyle={styles.scrollViewContentContainer} style={styles.flex}>
+      <ScrollView refreshControl={<RefreshControlWrapper />} contentContainerStyle={styles.scrollViewContentContainer} style={styles.flex}>
         <Box gap={16}>
+          <RnbwStakingCard />
           <RnbwRewardsClaimCard />
           <RnbwAirdropClaimCard />
         </Box>
@@ -19,6 +26,25 @@ export const RnbwMembershipScreen = memo(function RnbwMembershipScreen() {
     </View>
   );
 });
+
+function RefreshControlWrapper() {
+  const [isRefreshing, setIsRefreshing] = useState(false);
+
+  const handleRefresh = useCallback(async () => {
+    setIsRefreshing(true);
+    await Promise.allSettled([
+      Promise.allSettled([
+        useRewardsBalanceStore.getState().fetch(undefined, { force: true }),
+        useAirdropBalanceStore.getState().fetch(undefined, { force: true }),
+        useStakingPositionStore.getState().fetch(undefined, { force: true }),
+      ]),
+      delay(time.seconds(1)),
+    ]);
+    setIsRefreshing(false);
+  }, []);
+
+  return <RefreshControl refreshing={isRefreshing} onRefresh={handleRefresh} />;
+}
 
 const styles = StyleSheet.create({
   flex: {
