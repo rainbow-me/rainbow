@@ -358,7 +358,8 @@
       "unhide": "Gizlemeyi Kaldır",
       "unpin": "Kaldır",
       "view": "Görüntüle",
-      "hidden": "Gizli"
+      "hidden": "Gizli",
+      "claim": "Talep Et"
     },
     "cards": {
       "ens_create_profile": {
@@ -3837,6 +3838,7 @@
         "subtitle": "$RNBW ile tanışın, uygunluğunuzu şimdi kontrol edin."
       },
       "claim": {
+        "claim_title": "Claim $RNBW",
         "available_to_claim": "Talep Edilebilir",
         "your_airdrop": "Airdrop'unuz",
         "your_airdrop_description": "Rainbow kullandığınız için teşekkürler. Airdrop'unuz önceki etkinliğinize göre hesaplanır.",
@@ -3876,6 +3878,12 @@
         "oh_i_see": "Anlıyorum..."
       },
       "longer_than_usual": "Talep etme işlemi normalden uzun sürüyor. Bir dakikaya kadar sürebilir."
+    },
+    "rnbw_membership": {
+      "claim_card": {
+        "airdrop": "Airdrop",
+        "rewards": "Ödüller"
+      }
     },
     "wallet_error_sheet": {
       "title": "Cüzdanınızı geri yükleyin",
