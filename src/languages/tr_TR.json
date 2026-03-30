@@ -2288,7 +2288,7 @@
         "when_public_prefix": "Herkese açık olduğunda, NFT Vitrininiz Rainbow web profilinizde görünür olacak! Profilinizi buradan görüntüleyebilirsiniz",
         "view_profile": "Profilinizi görüntüleyin",
         "analytics_toggle": "Analitik",
-        "analytics_toggle_description": "Kullanım verilerinin analizine izin vererek Rainbow'un ürünlerini ve hizmetlerini geliştirmesine yardımcı olun. Toplanan veriler sizinle veya hesabınızla ilişkilendirilmez."
+        "analytics_toggle_description": "Help Rainbow improve its products and services by allowing analytics of usage data. Collected data is not associated with you or your account. When disabled, only essential crash diagnostics are collected."
       },
       "restore": "Orijinal dağıtıma geri yükleyin",
       "review": "Rainbow'ı inceleyin",
