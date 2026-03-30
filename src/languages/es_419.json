@@ -358,7 +358,8 @@
       "unhide": "Mostrar",
       "unpin": "Desanclar",
       "view": "Ver",
-      "hidden": "Oculto"
+      "hidden": "Oculto",
+      "claim": "Reclamar"
     },
     "cards": {
       "ens_create_profile": {
@@ -3837,6 +3838,7 @@
         "subtitle": "Dale la bienvenida a $RNBW; verifica tu elegibilidad ahora."
       },
       "claim": {
+        "claim_title": "Reclamar $RNBW",
         "available_to_claim": "Disponible para Reclamar",
         "your_airdrop": "Tu airdrop",
         "your_airdrop_description": "Gracias por usar Rainbow. Tu airdrop se calcula según tu actividad previa.",
@@ -3876,6 +3878,12 @@
         "oh_i_see": "Ah, ya veo..."
       },
       "longer_than_usual": "El reclamo está tardando más de lo usual. Puede tardar hasta un minuto."
+    },
+    "rnbw_membership": {
+      "claim_card": {
+        "airdrop": "Airdrop",
+        "rewards": "Recompensas"
+      }
     },
     "wallet_error_sheet": {
       "title": "Restaura tu billetera",
