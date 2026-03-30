@@ -719,6 +719,8 @@ type RouteParams = {
   [Routes.RNBW_REWARDS_ESTIMATE_SHEET]: {
     estimatedAmount: string;
   };
+  [Routes.RNBW_STAKING_LEARN_SCREEN]: undefined;
+  [Routes.RNBW_STAKING_SCREEN]: undefined;
   [Routes.REVOKE_DELEGATION_PANEL]: {
     address: Address;
     delegationsToRevoke: Array<{
