@@ -358,7 +358,8 @@
       "unhide": "取消隐藏",
       "unpin": "取消置顶",
       "view": "查看",
-      "hidden": "隐藏"
+      "hidden": "隐藏",
+      "claim": "领取"
     },
     "cards": {
       "ens_create_profile": {
@@ -3837,6 +3838,7 @@
         "subtitle": "向您介绍 $RNBW，立即查看您的资格。"
       },
       "claim": {
+        "claim_title": "领取 $RNBW",
         "available_to_claim": "可领取",
         "your_airdrop": "您的空投",
         "your_airdrop_description": "感谢您使用 Rainbow。您的空投将根据您此前的活动来计算。",
@@ -3876,6 +3878,12 @@
         "oh_i_see": "哦，我明白了..."
       },
       "longer_than_usual": "领取所需时间比平时更长。可能最多需要一分钟。"
+    },
+    "rnbw_membership": {
+      "claim_card": {
+        "airdrop": "空投",
+        "rewards": "奖励"
+      }
     },
     "wallet_error_sheet": {
       "title": "恢复你的钱包",
