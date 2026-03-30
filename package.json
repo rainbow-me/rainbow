@@ -25,6 +25,7 @@
     "rc-push": "./scripts/rc-push.sh",
     "ds:install": "cd src/design-system/docs && yarn install",
     "ds": "cd src/design-system/docs && yarn dev",
+    "ds:playground": "DS_PLAYGROUND=1 react-native start",
     "fast": "yarn install && yarn setup && yarn install-pods-fast",
     "gradle": "cd android && ./gradlew",
     "anvil": "sh ./scripts/anvil.sh",

@@ -41,6 +41,14 @@ if (process.env.CI) {
  * @type {import('metro-config').MetroConfig}
  */
 const rainbowConfig = {
+  server: {
+    rewriteRequestUrl: url => {
+      if (process.env.DS_PLAYGROUND && url.includes('index.bundle')) {
+        return url.replace('index.bundle', 'index.playground.bundle');
+      }
+      return url;
+    },
+  },
   resolver: {
     blacklistRE,
     resolveRequest: (context, moduleName, platform) => {
