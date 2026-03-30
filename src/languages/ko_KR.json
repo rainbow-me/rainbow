@@ -358,7 +358,8 @@
       "unhide": "숨김 해제",
       "unpin": "고정 해제",
       "view": "보기",
-      "hidden": "숨겨진"
+      "hidden": "숨겨진",
+      "claim": "청구"
     },
     "cards": {
       "ens_create_profile": {
@@ -3837,6 +3838,7 @@
         "subtitle": "$RNBW를 만나보세요. 지금 자격을 확인하세요."
       },
       "claim": {
+        "claim_title": "Claim $RNBW",
         "available_to_claim": "클레임 가능",
         "your_airdrop": "내 에어드랍",
         "your_airdrop_description": "Rainbow를 사용해 주셔서 감사합니다. 에어드랍은 이전 활동을 기반으로 계산됩니다.",
@@ -3876,6 +3878,12 @@
         "oh_i_see": "아, 그렇군요..."
       },
       "longer_than_usual": "청구에 평소보다 시간이 더 걸리고 있습니다. 최대 1분이 걸릴 수 있습니다."
+    },
+    "rnbw_membership": {
+      "claim_card": {
+        "airdrop": "에어드랍",
+        "rewards": "보상"
+      }
     },
     "wallet_error_sheet": {
       "title": "지갑 복원",
