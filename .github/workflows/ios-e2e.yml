@@ -93,7 +93,7 @@ jobs:
       - name: Install dependencies
         env:
           SSH_AUTH_SOCK: /tmp/ssh_agent_sandbox.sock
-        run: yarn install && yarn setup
+        run: yarn install
 
       - name: Rock Remote Build - iOS simulator
         id: rock-remote-build-ios
