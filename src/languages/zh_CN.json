@@ -2288,7 +2288,7 @@
         "when_public_prefix": "公开时，您的 NFT 展示将在您的 Rainbow 网页个人资料中可见！您可以在以下网址查看您的个人资料：",
         "view_profile": "查看您的个人资料",
         "analytics_toggle": "分析",
-        "analytics_toggle_description": "通过允许使用数据分析来帮助Rainbow改善其产品和服务。收集的数据与您或您的帐户无关。"
+        "analytics_toggle_description": "通过允许对使用数据进行分析来帮助 Rainbow 改进其产品和服务。收集的数据不会与您或您的账户相关联。停用时，仅会收集必要的崩溃诊断数据。"
       },
       "restore": "恢复到原始部署",
       "review": "评价Rainbow",
