@@ -358,7 +358,8 @@
       "unhide": "الغاء الاخفاء",
       "unpin": "إلغاء التثبيت",
       "view": "عرض",
-      "hidden": "مخفي"
+      "hidden": "مخفي",
+      "claim": "المطالبة"
     },
     "cards": {
       "ens_create_profile": {
@@ -3837,6 +3838,7 @@
         "subtitle": "قل مرحبًا لـ $RNBW، تحقّق من أهليتك الآن."
       },
       "claim": {
+        "claim_title": "مطالبة $RNBW",
         "available_to_claim": "متاح للمطالبة",
         "your_airdrop": "الإسقاط الجوي الخاص بك",
         "your_airdrop_description": "شكرًا لاستخدامك Rainbow. يتم احتساب الإسقاط الجوي الخاص بك بناءً على نشاطك السابق.",
@@ -3876,6 +3878,12 @@
         "oh_i_see": "أوه، فهمت..."
       },
       "longer_than_usual": "تستغرق المطالبة وقتًا أطول من المعتاد. قد يستغرق ذلك ما يصل إلى دقيقة واحدة."
+    },
+    "rnbw_membership": {
+      "claim_card": {
+        "airdrop": "إسقاط جوي",
+        "rewards": "المكافآت"
+      }
     },
     "wallet_error_sheet": {
       "title": "استعادة محفظتك",
