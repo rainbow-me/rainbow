@@ -2288,7 +2288,7 @@
         "when_public_prefix": "Ketika publik, Pameran NFT Anda akan terlihat di profil web Rainbow Anda! Anda dapat melihat profil Anda di",
         "view_profile": "Lihat profil Anda",
         "analytics_toggle": "Analitik",
-        "analytics_toggle_description": "Bantu Rainbow meningkatkan produk dan layanannya dengan memungkinkan analitik dari data penggunaan. Data yang dikumpulkan tidak terkait dengan Anda atau akun Anda."
+        "analytics_toggle_description": "Bantu Rainbow meningkatkan produk dan layanannya dengan mengizinkan analitik data penggunaan. Data yang dikumpulkan tidak terkait dengan Anda atau akun Anda. Saat dinonaktifkan, hanya diagnostik crash penting yang dikumpulkan."
       },
       "restore": "Kembalikan ke penyebaran asli",
       "review": "Ulas Rainbow",
