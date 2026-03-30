@@ -10,4 +10,6 @@ To view the design system components in isolation on a device/simulator, run `ya
 
 The playground shell lives in `src/design-system/playground/` and imports `*.playground.tsx` files colocated with each component.
 
+When adding a new component, please ensure that it has a matching `*.playground.tsx` file and that it's imported in the main `Playground` component.
+
 When adding a new text/heading size, please ensure that you've added an example to the respective `*.playground.tsx` file and validate that the space is being trimmed correctly above capital letters and below the baseline on both iOS and Android.
