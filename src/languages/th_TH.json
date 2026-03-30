@@ -2288,7 +2288,7 @@
         "when_public_prefix": "เมื่อเป็นสาธารณะ, โชว์เคส NFT ของคุณจะปรากฏบนโปรไฟล์เว็บ Rainbow ของคุณ! คุณสามารถดูโปรไฟล์ของคุณที่",
         "view_profile": "ดูโปรไฟล์ของคุณ",
         "analytics_toggle": "วิเคราะห์",
-        "analytics_toggle_description": "ช่วยให้ Rainbow ปรับปรุงผลิตภัณฑ์และบริการของเราได้ดีขึ้นโดยอนุญาตให้วิเคราะห์ข้อมูลการใช้งาน ข้อมูลที่เก็บรวบรวมไม่ได้เชื่อมโยงกับคุณหรือบัญชีของคุณ"
+        "analytics_toggle_description": "Help Rainbow improve its products and services by allowing analytics of usage data. Collected data is not associated with you or your account. When disabled, only essential crash diagnostics are collected."
       },
       "restore": "สร้างคืนสู่การวางแผนเดิม",
       "review": "รีวิว Rainbow",
