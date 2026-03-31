@@ -2,18 +2,14 @@
 
 The Rainbow Design System documentation is currently available at [https://rds-jxom.vercel.app](https://rds-jxom.vercel.app).
 
-To view the documentation locally while working on the app, run `yarn ds` and open http://localhost:3000.
+To view the documentation locally, run `yarn ds:install && yarn ds` and open http://localhost:3000.
 
-## Contribution
+## Playground
 
-To view the design system components in isolation, ensure the following line is in `src/config/debug.js`.
+To view the design system components in isolation on a device/simulator, run `yarn ds:playground`. This starts Metro with a separate entry point that renders the playground instead of the wallet app.
 
-```
-export const designSystemPlaygroundEnabled = true;
-```
+The playground shell lives in `src/design-system/playground/` and imports `*.playground.tsx` files colocated with each component.
 
-This causes the app to render the design system playground instead of the regular app. The playground code is sourced from `src/design-system/playground/Playground.tsx`. This screen imports files named `*.docs.tsx` from each component folder.
+When adding a new component, please ensure that it has a matching `*.playground.tsx` file and that it's imported in the main `Playground` component.
 
-When adding a new component, please ensure that it has a matching docs file and that it's imported in the main `Playground` component.
-
-When adding a new text/heading size, please ensure that you've added an example to the respective `*.docs.tsx` file and validate that the space is being trimmed correctly above capital letters and below the baseline on both iOS and Android.
+When adding a new text/heading size, please ensure that you've added an example to the respective `*.playground.tsx` file and validate that the space is being trimmed correctly above capital letters and below the baseline on both iOS and Android.

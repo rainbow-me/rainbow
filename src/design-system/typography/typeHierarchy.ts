@@ -13,11 +13,10 @@
  * that these corrections are made at the lowest level possible and updated
  * whenever `fontSize` and/or `lineHeight` values are added or updated.
  *
- * While adding/updating margin corrections, edit `src/config/debug.ts` and set
- * `designSystemPlaygroundEnabled` to `true`. This will cause the design system
- * playground to be rendered instead of the app itself. You can then expand the
- * text examples and check that the vertical alignment is correct while
- * updating the values. This will require some trial and error. Note that React
+ * While adding/updating margin corrections, run `yarn ds:playground` to launch
+ * the design system playground. You can then expand the text examples and
+ * check that the vertical alignment is correct while updating the values.
+ * This will require some trial and error. Note that React
  * Native automatically rounds these to the nearest device pixel so you might
  * not see any difference until a large enough change has been made.
  *
