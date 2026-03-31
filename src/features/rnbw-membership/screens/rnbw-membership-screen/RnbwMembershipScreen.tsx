@@ -13,6 +13,7 @@ import { useStakingPositionStore } from '@/features/rnbw-staking/stores/rnbwStak
 import { useAirdropBalanceStore } from '@/features/rnbw-rewards/stores/airdropBalanceStore';
 import { delay } from '@/utils/delay';
 import { time } from '@/utils/time';
+import { RnbwStakingEarningsCard } from './components/RnbwStakingEarningsCard';
 
 export const RnbwMembershipScreen = memo(function RnbwMembershipScreen() {
   return (
@@ -23,6 +24,7 @@ export const RnbwMembershipScreen = memo(function RnbwMembershipScreen() {
           <RnbwStakingCard />
           <RnbwUnstakePenaltyRecoveryCard />
           <MembershipTierCard />
+          <RnbwStakingEarningsCard />
           <RnbwRewardsClaimCard />
           <RnbwAirdropClaimCard />
         </Box>
