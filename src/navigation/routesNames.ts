@@ -145,6 +145,8 @@ const Routes = {
   RNBW_REWARDS_SCREEN: 'RnbwRewardsScreen',
   RNBW_REWARDS_CLAIM_SHEET: 'RnbwRewardsClaimSheet',
   RNBW_REWARDS_ESTIMATE_SHEET: 'RnbwRewardsEstimateSheet',
+  RNBW_STAKING_LEARN_SCREEN: 'RnbwStakingLearnScreen',
+  RNBW_STAKING_SCREEN: 'RnbwStakingScreen',
   WALLET_ERROR_SHEET: 'WalletErrorSheet',
 } as const;
 

@@ -4,6 +4,8 @@ import { useRnbwStakingBalance } from '@/features/rnbw-staking/stores/derived/us
 import { useStakableRnbwBalance } from '@/state/rnbw/useStakableRnbwBalance';
 import { RNBW_SYMBOL } from '@/features/rnbw-rewards/constants';
 import ButtonPressAnimation from '@/components/animations/ButtonPressAnimation';
+import Navigation from '@/navigation/Navigation';
+import Routes from '@/navigation/routesNames';
 
 export const RnbwStakingCard = memo(function RnbwStakingCard() {
   const { tokenAmount, nativeCurrencyAmount, hasStakedPosition } = useRnbwStakingBalance();
@@ -63,11 +65,11 @@ export const RnbwStakingCard = memo(function RnbwStakingCard() {
 });
 
 function navigateToStakingLearnSheet() {
-  // TODO:
+  Navigation.handleAction(Routes.RNBW_STAKING_LEARN_SCREEN);
 }
 
 function navigateToStakingScreen() {
-  // TODO:
+  Navigation.handleAction(Routes.RNBW_STAKING_SCREEN);
 }
 
 function navigateToUnstakeSheet() {
