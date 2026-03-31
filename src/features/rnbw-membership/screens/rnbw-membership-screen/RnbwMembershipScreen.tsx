@@ -7,6 +7,7 @@ import { RnbwRewardsClaimCard } from './components/RnbwRewardsClaimCard';
 import { RnbwAirdropClaimCard } from './components/RnbwAirdropClaimCard';
 import { RnbwUnstakePenaltyRecoveryCard } from './components/RnbwUnstakePenaltyRecoveryCard';
 import { RnbwStakingCard } from './components/RnbwStakingCard';
+import { MembershipTierCard } from './components/MembershipTierCard';
 import { useRewardsBalanceStore } from '@/features/rnbw-rewards/stores/rewardsBalanceStore';
 import { useStakingPositionStore } from '@/features/rnbw-staking/stores/rnbwStakingPositionStore';
 import { useAirdropBalanceStore } from '@/features/rnbw-rewards/stores/airdropBalanceStore';
@@ -21,6 +22,7 @@ export const RnbwMembershipScreen = memo(function RnbwMembershipScreen() {
         <Box gap={16}>
           <RnbwStakingCard />
           <RnbwUnstakePenaltyRecoveryCard />
+          <MembershipTierCard />
           <RnbwRewardsClaimCard />
           <RnbwAirdropClaimCard />
         </Box>

@@ -6,15 +6,7 @@ import { createQueryStore } from '@/state/internal/createQueryStore';
 import { useWalletsStore } from '@/state/wallets/walletsStore';
 import { ChainId } from '@/state/backendNetworks/types';
 import { type Address } from 'viem';
-
-type StakingTierLevel = 'STAKING_TIER_LEVEL_UNSPECIFIED' | string;
-
-type StakingTier = {
-  cashbackBps: number;
-  level: StakingTierLevel;
-  minStakeAmount: string;
-  name: string;
-};
+import type { Tier } from '@/features/rnbw-membership/types';
 
 type StakingPnl = {
   exchangeRateGain: string;
@@ -26,7 +18,7 @@ type StakingPnl = {
 };
 
 type StakingPositionData = {
-  allTiers: StakingTier[];
+  allTiers: Tier[];
   decimals: number;
   hasPosition: boolean;
   lastUpdateTime: string;
@@ -36,7 +28,7 @@ type StakingPositionData = {
   stakedRnbw: string;
   stakedValueInCurrency: string;
   stakingStartTime: string;
-  tier: StakingTier;
+  tier: Tier;
 };
 
 type StakingPositionParams = {
