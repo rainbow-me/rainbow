@@ -5,6 +5,7 @@ import { AccountImage } from '@/components/AccountImage';
 import { Navbar } from '@/components/navbar/Navbar';
 import { RnbwRewardsClaimCard } from './components/RnbwRewardsClaimCard';
 import { RnbwAirdropClaimCard } from './components/RnbwAirdropClaimCard';
+import { RnbwUnstakePenaltyRecoveryCard } from './components/RnbwUnstakePenaltyRecoveryCard';
 import { RnbwStakingCard } from './components/RnbwStakingCard';
 import { useRewardsBalanceStore } from '@/features/rnbw-rewards/stores/rewardsBalanceStore';
 import { useStakingPositionStore } from '@/features/rnbw-staking/stores/rnbwStakingPositionStore';
@@ -19,6 +20,7 @@ export const RnbwMembershipScreen = memo(function RnbwMembershipScreen() {
       <ScrollView refreshControl={<RefreshControlWrapper />} contentContainerStyle={styles.scrollViewContentContainer} style={styles.flex}>
         <Box gap={16}>
           <RnbwStakingCard />
+          <RnbwUnstakePenaltyRecoveryCard />
           <RnbwRewardsClaimCard />
           <RnbwAirdropClaimCard />
         </Box>
