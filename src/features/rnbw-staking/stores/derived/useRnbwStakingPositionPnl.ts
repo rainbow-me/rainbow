@@ -7,7 +7,7 @@ import {
   toFixedWorklet,
   toPercentageWorklet,
 } from '@/framework/core/safeMath';
-import { convertRawAmountToDecimalFormatWorklet } from '@/helpers/utilities';
+import { convertRawAmountToDecimalFormatWorklet, formatNumber } from '@/helpers/utilities';
 import { createDerivedStore } from '@/state/internal/createDerivedStore';
 import { shallowEqual } from '@/worklets/comparisons';
 import { useStakingPositionStore } from '../rnbwStakingPositionStore';
@@ -17,12 +17,16 @@ type StakingPositionPnl = {
   exitFeeOffsetRatio: string;
   netPnl: string;
   isPositivePnl: boolean;
+  earnedFromExitFees: string;
+  earningsRequiredToBreakEven: string;
 };
 
 const EMPTY_VALUE: StakingPositionPnl = {
   exitFeeOffsetRatio: '0%',
   netPnl: '0',
   isPositivePnl: false,
+  earnedFromExitFees: '0',
+  earningsRequiredToBreakEven: '0',
 };
 
 export const useRnbwStakingPositionPnl = createDerivedStore<StakingPositionPnl>(
@@ -47,6 +51,8 @@ export const useRnbwStakingPositionPnl = createDerivedStore<StakingPositionPnl>(
     return {
       exitFeeOffsetRatio: exitFeeOffsetRatioFormatted,
       netPnl: isPositivePnl ? `+${netPnlFormatted}` : netPnlFormatted,
+      earnedFromExitFees: formatNumber(convertRawAmountToDecimalFormatWorklet(exchangeRateGain, decimals)),
+      earningsRequiredToBreakEven: formatNumber(convertRawAmountToDecimalFormatWorklet(subWorklet(exitFee, exchangeRateGain), decimals)),
       isPositivePnl,
     };
   },
