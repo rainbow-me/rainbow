@@ -13,57 +13,95 @@ import { prepareRewardsClaim, submitRewardsClaim } from '@/features/rnbw-rewards
 import { userAssetsStoreManager } from '@/state/assets/userAssetsStoreManager';
 import { isRainbowDelegatedForChain } from '@/features/delegation/utils/isRainbowDelegatedForChain';
 import { Alert } from 'react-native';
-import { greaterThanOrEqualToWorklet } from '@/framework/core/safeMath';
+import { equalWorklet, greaterThanOrEqualToWorklet, isPositive, subWorklet } from '@/framework/core/safeMath';
+import type { ClaimToDestination } from '@/features/rnbw-rewards/utils/claimRewards';
 
-export async function stakeRnbw({ address, amount }: { address: Address; amount: string }): Promise<Hash> {
+export async function stakeRnbw({ address, amount }: { address: Address; amount: string }) {
   const provider = getProvider({ chainId: STAKING_CHAIN_ID });
   const signer = await loadWallet({ address, provider });
   if (!signer) {
     throw new Error('Failed to load wallet');
   }
 
-  const rnbwBalanceRaw = BigInt(
-    await provider.call({
-      to: RNBW_TOKEN_ADDRESS,
-      data: encodeFunctionData({ abi: erc20Abi, functionName: 'balanceOf', args: [address] }),
-    })
-  ).toString();
-
   const stakeAmountRaw = parseUnits(amount, RNBW_DECIMALS).toString();
+  const { claimToDestination, requiredWalletBalanceRaw, claimFulfillsStake } = await resolveClaimStrategy(stakeAmountRaw);
 
-  /**
-   * This check is not strictly necessary, as the provider gas estimation will fail if the balance is insufficient.
-   * However, the error returned by the provider in that case is opaque.
-   */
-  const hasSufficientBalance = greaterThanOrEqualToWorklet(rnbwBalanceRaw, stakeAmountRaw);
-  if (!hasSufficientBalance) {
-    throw new RainbowError('[stakeRnbw]: Insufficient balance');
+  if (isPositive(requiredWalletBalanceRaw)) {
+    const rnbwBalanceRaw = BigInt(
+      await provider.call({
+        to: RNBW_TOKEN_ADDRESS,
+        data: encodeFunctionData({ abi: erc20Abi, functionName: 'balanceOf', args: [address] }),
+      })
+    ).toString();
+
+    /**
+     * This check is not strictly necessary, as the provider gas estimation will fail if the balance is insufficient.
+     * However, the error returned by the provider in that case is opaque.
+     */
+    const hasSufficientBalance = greaterThanOrEqualToWorklet(rnbwBalanceRaw, requiredWalletBalanceRaw);
+    if (!hasSufficientBalance) {
+      throw new RainbowError('[stakeRnbw]: Insufficient balance');
+    }
   }
+
   const isRainbowDelegated = await isRainbowDelegatedForChain(address, STAKING_CHAIN_ID);
-
-  await claimRnbwRewards({ address, signer });
-
   const originalStakedRnbwShares = useStakingPositionStore.getState().getData()?.poolShares ?? '0';
 
-  const transactionHash: Hash = isRainbowDelegated
-    ? await stakeRnbwSponsored({ signer, address, provider, stakeAmountRaw })
-    : await stakeRnbwManual({ signer, address, provider, stakeAmountRaw });
+  await claimRnbwRewards({ address, signer, claimToDestination });
 
-  await pollForStakingUpdate(originalStakedRnbwShares);
+  if (claimFulfillsStake) {
+    await pollForStakingUpdate(originalStakedRnbwShares);
+    return;
+  }
 
-  // TODO: For testing. Remove
-  Alert.alert(`Staked: ${amount} RNBW (${isRainbowDelegated ? 'Sponsored' : 'Manual'})`, transactionHash);
-  return transactionHash;
+  /**
+   * Re-snapshot shares after the claim so the final poll baseline reflects the claim-to-staking.
+   * Without this, the poll would resolve as soon as the claim is indexed, before the wallet stake is reflected.
+   */
+  await useStakingPositionStore.getState().fetch(undefined, { force: true });
+  const postClaimShares = useStakingPositionStore.getState().getData()?.poolShares ?? originalStakedRnbwShares;
+
+  isRainbowDelegated
+    ? await stakeRnbwSponsored({ address, provider, stakeAmountRaw: requiredWalletBalanceRaw, signer })
+    : await stakeRnbwManual({ address, provider, stakeAmountRaw: requiredWalletBalanceRaw, signer });
+
+  await pollForStakingUpdate(postClaimShares);
+  Alert.alert(`Staked: ${amount} RNBW (${isRainbowDelegated ? 'Sponsored' : 'Manual'})`);
 }
 
-async function claimRnbwRewards({ address, signer }: { address: Address; signer: Signer }): Promise<void> {
-  await useRewardsBalanceStore.getState().fetch(undefined, { force: true });
+async function claimRnbwRewards({
+  address,
+  signer,
+  claimToDestination,
+}: {
+  address: Address;
+  signer: Signer;
+  claimToDestination: ClaimToDestination;
+}): Promise<Hash | undefined> {
   const hasClaimable = useRewardsBalanceStore.getState().hasClaimableRewards();
   const hasPendingClaim = useRewardsBalanceStore.getState().getData()?.hasPendingClaim;
 
-  if (!hasClaimable || hasPendingClaim) return;
+  if (!hasClaimable || hasPendingClaim) return undefined;
 
   const currency = userAssetsStoreManager.getState().currency;
   const preparedClaim = await prepareRewardsClaim({ address, signer });
-  await submitRewardsClaim({ preparedClaim, currency });
+  await submitRewardsClaim({ preparedClaim, currency, claimToDestination });
+}
+
+async function resolveClaimStrategy(stakeAmountRaw: string): Promise<{
+  claimToDestination: ClaimToDestination;
+  requiredWalletBalanceRaw: string;
+  claimFulfillsStake: boolean;
+}> {
+  await useRewardsBalanceStore.getState().fetch(undefined, { force: true });
+  const claimableRnbw = useRewardsBalanceStore.getState().getData()?.claimableRnbw ?? '0';
+  const hasClaimable = useRewardsBalanceStore.getState().hasClaimableRewards();
+  const claimToStaking = hasClaimable && greaterThanOrEqualToWorklet(stakeAmountRaw, claimableRnbw);
+  const requiredWalletBalanceRaw = claimToStaking ? subWorklet(stakeAmountRaw, claimableRnbw) : stakeAmountRaw;
+
+  return {
+    claimToDestination: claimToStaking ? 'staking' : 'wallet',
+    requiredWalletBalanceRaw,
+    claimFulfillsStake: claimToStaking && equalWorklet(stakeAmountRaw, claimableRnbw),
+  };
 }
