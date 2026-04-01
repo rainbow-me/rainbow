@@ -10,6 +10,7 @@ import { loadWallet, signTypedDataMessage } from '@/model/wallet';
 import { type RainbowFetchResponse } from '@/framework/data/http/rainbowFetch';
 import { getPlatformClient } from '@/resources/platform/client';
 import { ChainId } from '@rainbow-me/swaps';
+import { type Signer } from '@ethersproject/abstract-signer';
 import { type Address } from 'viem';
 import {
   type ClaimRewardsResult,
@@ -30,7 +31,7 @@ export type PreparedRewardsClaim = {
   signedIntent: string;
 };
 
-export async function prepareRewardsClaim({ address }: { address: Address }): Promise<PreparedRewardsClaim> {
+export async function prepareRewardsClaim({ address, signer }: { address: Address; signer?: Signer }): Promise<PreparedRewardsClaim> {
   // Only base is supported for now
   const chainId = ChainId.base;
   const startedAt = Date.now();
@@ -56,7 +57,7 @@ export async function prepareRewardsClaim({ address }: { address: Address }): Pr
       throw new Error('GetClaimIntent response is missing intent data');
     }
 
-    const signedIntent = await signIntent({ address, intent: intentResult.intent, chainId });
+    const signedIntent = await signIntent({ address, intent: intentResult.intent, chainId, signer });
 
     return {
       address,
@@ -157,10 +158,20 @@ export async function submitRewardsClaim({
   }
 }
 
-async function signIntent({ address, intent, chainId }: { address: Address; intent: GetClaimIntentResult['intent']; chainId: ChainId }) {
+async function signIntent({
+  address,
+  intent,
+  chainId,
+  signer: existingSigner,
+}: {
+  address: Address;
+  intent: GetClaimIntentResult['intent'];
+  chainId: ChainId;
+  signer?: Signer;
+}) {
   const provider = getProvider({ chainId });
-  const signer = await loadWallet({ address, provider });
-  if (!signer) {
+  const resolvedSigner = existingSigner ?? (await loadWallet({ address, provider }));
+  if (!resolvedSigner) {
     throw new Error('Failed to load wallet');
   }
   const messageToSign = {
@@ -174,11 +185,10 @@ async function signIntent({ address, intent, chainId }: { address: Address; inte
     },
     message: intent.message,
   };
-  const signedIntent = await signTypedDataMessage(messageToSign, provider, signer);
+  const signedIntent = await signTypedDataMessage(messageToSign, provider, resolvedSigner);
 
-  // If the wallet is a hardware wallet, the hardware wallet navigator modal will be open
-  const isHardwareWallet = signer instanceof LedgerSigner;
-  if (isHardwareWallet) {
+  const isHardwareWalletNavigatorOpen = !existingSigner && resolvedSigner instanceof LedgerSigner;
+  if (isHardwareWalletNavigatorOpen) {
     Navigation.goBack();
   }
 

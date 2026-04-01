@@ -9,7 +9,9 @@ import { useNavigation } from '@/navigation/Navigation';
 import Routes from '@/navigation/routesNames';
 import watchingAlert from '@/utils/watchingAlert';
 import { logger, RainbowError } from '@/logger';
+import { sumWorklet } from '@/framework/core/safeMath';
 import { stakeRnbw } from '@/features/rnbw-staking/utils/stakeRnbw';
+import { useStakableRnbwBalance } from '@/state/rnbw/useStakableRnbwBalance';
 
 export const RnbwStakingScreen = memo(function RnbwStakingScreen() {
   const { top: safeAreaTop } = useSafeAreaInsets();
@@ -22,11 +24,15 @@ export const RnbwStakingScreen = memo(function RnbwStakingScreen() {
   const startStake = useCallback(async () => {
     setIsProcessing(true);
     try {
-      await stakeRnbw({ address: accountAddress, amount: '1' });
+      const claimableBalance = useStakableRnbwBalance.getState().claimableBalance;
+      // TODO: Fixed amount of RNBW to stake
+      const stakeAmount = sumWorklet('1', claimableBalance);
+      await stakeRnbw({ address: accountAddress, amount: stakeAmount });
       goBack();
     } catch (e) {
       setIsProcessing(false);
       Alert.alert('Staking Failed', 'Something went wrong while staking. Please try again.');
+      console.log('e', e);
       logger.error(new RainbowError('[RnbwStakingScreen]: Staking failed', e));
     }
   }, [accountAddress, goBack]);
