@@ -1,7 +1,7 @@
 import { encodeFunctionData, type Address, type Hash } from 'viem';
 import { getProvider } from '@/handlers/web3';
 import { loadWallet } from '@/model/wallet';
-import { STAKING_ABI, STAKING_CHAIN_ID, STAKING_CONTRACT_ADDRESS, STAKING_GAS_LIMIT } from '../constants';
+import { STAKING_ABI, STAKING_CHAIN_ID, STAKING_CONTRACT_ADDRESS } from '../constants';
 import { useStakingPositionStore } from '../stores/rnbwStakingPositionStore';
 import { pollForStakingUpdate } from './pollForStakingUpdate';
 
@@ -18,8 +18,8 @@ export async function unstakeRnbw({ address }: { address: Address }): Promise<Ha
   const tx = await signer.sendTransaction({
     to: STAKING_CONTRACT_ADDRESS,
     data,
-    gasLimit: STAKING_GAS_LIMIT,
   });
+
   await tx.wait();
   await pollForStakingUpdate(originalStakedRnbwShares);
 

@@ -43,6 +43,9 @@ const RNBW_SYNTHETIC_SOURCE_COLORS: NonNullable<ParsedSearchAsset['colors']> = {
   primary: '#F2C745',
 };
 
+const RNBW_SYNTHETIC_SOURCE_ICON_URL =
+  'https://rainbowme-res.cloudinary.com/image/upload/v1770040117/assets/base/0xa53887f7e7c1bf5010b8627f1c1ba94fe7a5d6e0.png';
+
 export const RNBW_SYNTHETIC_SOURCE_STATIC_CONFIG: SyntheticRnbwSourceStaticConfig = {
   address: RNBW_TOKEN_ADDRESS,
   bridging: RNBW_SYNTHETIC_SOURCE_BRIDGING,
@@ -93,7 +96,7 @@ export function buildSyntheticRnbwSourceAsset({
     chainName,
     colors: walletAsset?.colors ?? RNBW_SYNTHETIC_SOURCE_COLORS,
     highLiquidity: walletAsset?.highLiquidity ?? RNBW_SYNTHETIC_SOURCE_STATIC_CONFIG.highLiquidity,
-    icon_url: walletAsset?.icon_url,
+    icon_url: walletAsset?.icon_url ?? RNBW_SYNTHETIC_SOURCE_ICON_URL,
     isRainbowCurated: walletAsset?.isRainbowCurated ?? RNBW_SYNTHETIC_SOURCE_STATIC_CONFIG.isRainbowCurated,
     isVerified: walletAsset?.isVerified ?? RNBW_SYNTHETIC_SOURCE_STATIC_CONFIG.isVerified,
     mainnetAddress: walletAsset?.mainnetAddress ?? RNBW_SYNTHETIC_SOURCE_STATIC_CONFIG.mainnetAddress,

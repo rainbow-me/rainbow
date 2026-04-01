@@ -1,5 +1,5 @@
 import { memo, useState, useCallback } from 'react';
-import { RefreshControl, ScrollView, StyleSheet, View } from 'react-native';
+import { RefreshControl, ScrollView, StyleSheet } from 'react-native';
 import { Box } from '@/design-system';
 import { AccountImage } from '@/components/AccountImage';
 import { Navbar } from '@/components/navbar/Navbar';
@@ -14,22 +14,30 @@ import { useAirdropBalanceStore } from '@/features/rnbw-rewards/stores/airdropBa
 import { delay } from '@/utils/delay';
 import { time } from '@/utils/time';
 import { RnbwStakingEarningsCard } from './components/RnbwStakingEarningsCard';
+import { TAB_BAR_HEIGHT } from '@/navigation/SwipeNavigator';
 
 export const RnbwMembershipScreen = memo(function RnbwMembershipScreen() {
   return (
-    <View style={styles.flex}>
+    <Box background="surfaceSecondary" style={styles.flex}>
       <Navbar hasStatusBarInset title="Membership" leftComponent={<AccountImage />} />
-      <ScrollView refreshControl={<RefreshControlWrapper />} contentContainerStyle={styles.scrollViewContentContainer} style={styles.flex}>
-        <Box gap={16}>
+      <ScrollView
+        refreshControl={<RefreshControlWrapper />}
+        contentContainerStyle={styles.scrollViewContentContainer}
+        style={styles.flex}
+        contentInset={{
+          bottom: TAB_BAR_HEIGHT + 16,
+        }}
+      >
+        <Box gap={16} style={{ flex: 1 }}>
           <RnbwStakingCard />
+          <RnbwStakingEarningsCard />
           <RnbwUnstakePenaltyRecoveryCard />
           <MembershipTierCard />
-          <RnbwStakingEarningsCard />
           <RnbwRewardsClaimCard />
           <RnbwAirdropClaimCard />
         </Box>
       </ScrollView>
-    </View>
+    </Box>
   );
 });
 
