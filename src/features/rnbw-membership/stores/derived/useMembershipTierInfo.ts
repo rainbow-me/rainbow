@@ -6,24 +6,24 @@ import { RNBW_DECIMALS } from '@/features/rnbw-staking/constants';
 import { convertBipsToPercentage, convertRawAmountToDecimalFormat } from '@/helpers/utilities';
 import { formatNumber } from '@/helpers/strings';
 import type { Tier } from '@/features/rnbw-membership/types';
+import { FALLBACK_TIERS } from '@/features/rnbw-membership/constants';
 
 type MembershipTierInfo = {
   currentTier: Tier;
   stakeRequiredForNextTier: string;
   cashbackPercentage: string;
   currentTierProgress: number;
+  allTiers: Tier[];
+  currentTierIndex: number;
 };
 
 const EMPTY_TIER: MembershipTierInfo = {
-  currentTier: {
-    level: 'STAKING_TIER_LEVEL_BASIC',
-    name: 'Basic',
-    cashbackBps: 1_000,
-    minStakeAmount: '0',
-  },
+  currentTier: FALLBACK_TIERS[0],
   stakeRequiredForNextTier: '0',
   cashbackPercentage: '10%',
   currentTierProgress: 0,
+  allTiers: FALLBACK_TIERS,
+  currentTierIndex: 0,
 };
 
 export const useMembershipTierInfo = createDerivedStore<MembershipTierInfo>(
@@ -52,6 +52,8 @@ export const useMembershipTierInfo = createDerivedStore<MembershipTierInfo>(
       stakeRequiredForNextTier,
       cashbackPercentage,
       currentTierProgress,
+      allTiers,
+      currentTierIndex,
     };
   },
   { equalityFn: shallowEqual, fastMode: true }

@@ -147,6 +147,7 @@ import { RnbwStakingLearnScreen } from '@/features/rnbw-staking/screens/rnbw-sta
 import { RnbwStakingScreen } from '@/features/rnbw-staking/screens/rnbw-staking-screen/RnbwStakingScreen';
 import { RnbwUnstakeSheet } from '@/features/rnbw-staking/screens/rnbw-unstake-sheet/RnbwUnstakeSheet';
 import WalletErrorSheet from '@/components/wallet-error/WalletErrorSheet';
+import { RnbwMembershipTiersSheet } from '@/features/rnbw-membership/screens/rnbw-membership-tiers-sheet/RnbwMembershipTiersSheet';
 
 const Stack = createStackNavigator();
 const NativeStack = createNativeStackCoolModalNavigator();
@@ -355,13 +356,13 @@ function NativeStackNavigator() {
       <NativeStack.Screen component={RnbwStakingLearnScreen} name={Routes.RNBW_STAKING_LEARN_SCREEN} {...expandedAssetSheetV2Config} />
       <NativeStack.Screen component={RnbwStakingScreen} name={Routes.RNBW_STAKING_SCREEN} {...expandedAssetSheetV2Config} />
       <NativeStack.Screen component={RnbwUnstakeSheet} name={Routes.RNBW_UNSTAKE_SHEET} {...panelConfig} />
-
       <NativeStack.Screen
         component={PolymarketBrowseEventsScreen}
         name={Routes.POLYMARKET_BROWSE_EVENTS_SCREEN}
         {...expandedAssetSheetV2Config}
       />
       <NativeStack.Screen component={WalletErrorSheet} name={Routes.WALLET_ERROR_SHEET} {...walletErrorSheetConfig} />
+      <NativeStack.Screen component={RnbwMembershipTiersSheet} name={Routes.RNBW_MEMBERSHIP_TIERS_SHEET} {...learnSheetConfig} />
     </NativeStack.Navigator>
   );
 }
