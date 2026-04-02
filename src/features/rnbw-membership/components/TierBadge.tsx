@@ -9,6 +9,7 @@ import { getValueForColorMode, globalColors } from '@/design-system/color/palett
 import { StyleSheet, View } from 'react-native';
 import type { Tier as TierType } from '@/features/rnbw-membership/types';
 import GradientText from '@/components/text/GradientText';
+import type { TextSize, TextWeight } from '@/design-system/components/Text/Text';
 
 const BORDER_GRADIENT_START = { x: 0, y: 1 };
 const BORDER_GRADIENT_END = { x: 0, y: 0 };
@@ -17,7 +18,17 @@ const BADGE_GRADIENT_END = { x: 0, y: 1 };
 const BADGE_TEXT_GRADIENT_START = { x: 0, y: 0 };
 const BADGE_TEXT_GRADIENT_END = { x: 0, y: 1 };
 
-export const TierBadge = memo(function TierBadge({ tier }: { tier: TierType }) {
+export const TierBadge = memo(function TierBadge({
+  tier,
+  height = 42,
+  fontSize = '22pt',
+  weight = 'heavy',
+}: {
+  tier: TierType;
+  height?: number;
+  fontSize?: TextSize;
+  weight?: TextWeight;
+}) {
   const { colorMode } = useColorMode();
   const { badgeGradient, badgeTextGradient, badgeTextShadow, badgeShadow, badgeBorderGradient } = TIER_VISUALS[tier.level];
   const {
@@ -49,7 +60,7 @@ export const TierBadge = memo(function TierBadge({ tier }: { tier: TierType }) {
         start={borderStart}
         end={borderEnd}
         borderWidth={2}
-        style={styles.tierBadge}
+        style={[styles.tierBadge, { height, borderRadius: height / 2 }]}
       >
         <InnerShadow color={opacity(globalColors.white100, 0.1)} blur={1} dx={0} dy={3} />
         <LinearGradient
@@ -66,7 +77,7 @@ export const TierBadge = memo(function TierBadge({ tier }: { tier: TierType }) {
           end={badgeTextEnd}
           shadow={textShadowStyle}
         >
-          <Text size="22pt" weight="heavy" color="label">
+          <Text size={fontSize} weight={weight} color="label">
             {tier.name.toLocaleUpperCase()}
           </Text>
         </GradientText>

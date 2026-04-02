@@ -1,6 +1,6 @@
 import { memo, useState, useCallback } from 'react';
 import { RefreshControl, ScrollView, StyleSheet } from 'react-native';
-import { Box } from '@/design-system';
+import { Box, useColorMode } from '@/design-system';
 import { AccountImage } from '@/components/AccountImage';
 import { Navbar } from '@/components/navbar/Navbar';
 import { RnbwRewardsClaimCard } from './components/RnbwRewardsClaimCard';
@@ -15,13 +15,16 @@ import { delay } from '@/utils/delay';
 import { time } from '@/utils/time';
 import { RnbwStakingEarningsCard } from './components/RnbwStakingEarningsCard';
 import { TAB_BAR_HEIGHT } from '@/navigation/SwipeNavigator';
+import { TierBadge } from '@/features/rnbw-membership/components/TierBadge';
+import { useMembershipTierInfo } from '@/features/rnbw-membership/stores/derived/useMembershipTierInfo';
 
 export const RnbwMembershipScreen = memo(function RnbwMembershipScreen() {
   const hasPosition = useStakingPositionStore(s => s.hasPosition());
+  const { isDarkMode } = useColorMode();
 
   return (
-    <Box background="surfaceSecondary" style={styles.flex}>
-      <Navbar hasStatusBarInset title="Membership" leftComponent={<AccountImage />} />
+    <Box backgroundColor={isDarkMode ? '#090909' : '#F5F5F7'} style={styles.flex}>
+      <Navbar hasStatusBarInset titleComponent={<CurrentTierBadge />} leftComponent={<AccountImage />} />
       <ScrollView
         refreshControl={<RefreshControlWrapper />}
         contentContainerStyle={styles.scrollViewContentContainer}
@@ -60,6 +63,11 @@ function RefreshControlWrapper() {
   }, []);
 
   return <RefreshControl refreshing={isRefreshing} onRefresh={handleRefresh} />;
+}
+
+function CurrentTierBadge() {
+  const { currentTier } = useMembershipTierInfo();
+  return <TierBadge tier={currentTier} height={32} fontSize="17pt" />;
 }
 
 const styles = StyleSheet.create({

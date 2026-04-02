@@ -1,13 +1,5 @@
-import {
-  divWorklet,
-  greaterThanWorklet,
-  isPositive,
-  mulWorklet,
-  subWorklet,
-  toFixedWorklet,
-  toPercentageWorklet,
-} from '@/framework/core/safeMath';
-import { convertRawAmountToDecimalFormatWorklet, formatNumber } from '@/helpers/utilities';
+import { divWorklet, isPositive, mulWorklet, subWorklet, toFixedWorklet, toPercentageWorklet } from '@/framework/core/safeMath';
+import { convertRawAmountToDecimalFormatWorklet, formatNumber, isZero } from '@/helpers/utilities';
 import { createDerivedStore } from '@/state/internal/createDerivedStore';
 import { shallowEqual } from '@/worklets/comparisons';
 import { useStakingPositionStore } from '../rnbwStakingPositionStore';
@@ -15,6 +7,7 @@ import { UNSTAKE_PENALTY_PERCENTAGE } from '@/features/rnbw-staking/constants';
 
 type StakingPositionPnl = {
   exitFeeOffsetRatio: string;
+  exitFeeOffsetRatioDisplay: string;
   netPnl: string;
   isPositivePnl: boolean;
   earnedFromExitFees: string;
@@ -22,7 +15,8 @@ type StakingPositionPnl = {
 };
 
 const EMPTY_VALUE: StakingPositionPnl = {
-  exitFeeOffsetRatio: '0%',
+  exitFeeOffsetRatio: '0',
+  exitFeeOffsetRatioDisplay: '0%',
   netPnl: '0',
   isPositivePnl: false,
   earnedFromExitFees: '0',
@@ -40,16 +34,14 @@ export const useRnbwStakingPositionPnl = createDerivedStore<StakingPositionPnl>(
     const exchangeRateGain = sessionPnl?.exchangeRateGain ?? '0';
     const exitFee = mulWorklet(stakedRnbw, UNSTAKE_PENALTY_PERCENTAGE / 100);
     const exitFeeOffsetRatio = toFixedWorklet(divWorklet(exchangeRateGain, exitFee), 4);
-    const exitFeeOffsetRatioFormatted = !greaterThanWorklet(exitFeeOffsetRatio, '0')
-      ? '0%'
-      : `${toPercentageWorklet(exitFeeOffsetRatio, 0.001)}%`;
 
     const netPnl = subWorklet(exchangeRateGain, exitFee);
     const isPositivePnl = isPositive(netPnl);
     const netPnlFormatted = toFixedWorklet(convertRawAmountToDecimalFormatWorklet(netPnl, decimals), 4);
 
     return {
-      exitFeeOffsetRatio: exitFeeOffsetRatioFormatted,
+      exitFeeOffsetRatio,
+      exitFeeOffsetRatioDisplay: isZero(exitFeeOffsetRatio) ? '0%' : `${toPercentageWorklet(exitFeeOffsetRatio, 0.001)}%`,
       netPnl: isPositivePnl ? `+${netPnlFormatted}` : netPnlFormatted,
       earnedFromExitFees: formatNumber(convertRawAmountToDecimalFormatWorklet(exchangeRateGain, decimals)),
       earningsRequiredToBreakEven: formatNumber(convertRawAmountToDecimalFormatWorklet(subWorklet(exitFee, exchangeRateGain), decimals)),
