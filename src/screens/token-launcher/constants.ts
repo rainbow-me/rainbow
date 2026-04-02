@@ -42,7 +42,7 @@ export const TOTAL_SUPPLY_PREBUY_PERCENTAGES = [0.005, 0.01, 0.05, 0.1];
 
 // TODO: At some point these should be fetched through the sdk to the contract, because the contract can change these values
 export const CREATOR_BPS = 0;
-export const TOKEN_LAUNCH_GAS_LIMIT = '8000000';
+export const TOKEN_LAUNCH_GAS_LIMIT = '10000000';
 
 const ANIMATION_CONFIG = SPRING_CONFIGS.snappierSpringConfig;
 

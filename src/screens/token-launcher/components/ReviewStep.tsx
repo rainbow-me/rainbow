@@ -3,8 +3,8 @@ import { ContactAvatar } from '@/components/contacts';
 import { isValidURLWorklet } from '@/components/DappBrowser/utils';
 import { Box, Text, TextShadow } from '@/design-system';
 import { type TextSize } from '@/design-system/components/Text/Text';
-import { abbreviateNumber, convertAmountToNativeDisplay, convertAmountToPercentageDisplay } from '@/helpers/utilities';
 import { isENSAddressFormat } from '@/helpers/validators';
+import { abbreviateNumber, convertAmountToBalanceDisplay, convertAmountToNativeDisplay, convertAmountToPercentageDisplay } from '@/helpers/utilities';
 import * as i18n from '@/languages';
 import { AddressAvatar } from '@/screens/change-wallet/components/AddressAvatar';
 import { useBackendNetworksStore } from '@/state/backendNetworks/backendNetworks';
@@ -309,7 +309,7 @@ function TotalCostPill() {
       </Text>
       <Box flexDirection="row" alignItems="center" gap={4}>
         <Text size="17pt" weight="bold" color={{ custom: accentColors.opacity100 }}>
-          {`${extraBuyAmount} ${chainNativeAsset.symbol}`}
+          {convertAmountToBalanceDisplay(extraBuyAmount, chainNativeAsset)}
         </Text>
         <Text size="17pt" weight="bold" color={{ custom: accentColors.opacity30 }}>
           {'≈'}

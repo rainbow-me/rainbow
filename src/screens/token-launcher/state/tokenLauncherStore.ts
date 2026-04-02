@@ -1,10 +1,9 @@
-import { abbreviateNumber, convertAmountToNativeDisplay } from '@/helpers/utilities';
+import { abbreviateNumber, convertAmountToNativeDisplay, convertNumberToString } from '@/helpers/utilities';
+import { trimTrailingZeros, truncateToDecimals } from '@/framework/core/safeMath';
 import { createRainbowStore } from '@/state/internal/createRainbowStore';
 import { DEFAULT_CHAIN_ID, DEFAULT_MAX_AIRDROP_RECIPIENTS, DEFAULT_TOTAL_SUPPLY, MAX_TOTAL_SUPPLY } from '../constants';
 import { makeMutable, runOnUI, type SharedValue, withTiming } from 'react-native-reanimated';
 import { TIMING_CONFIGS } from '@/components/animations/animationConfigs';
-import chroma from 'chroma-js';
-import { memoFn } from '@/utils/memoFn';
 import { calculateTokenomics } from '../helpers/calculateTokenomics';
 import store from '@/redux/store';
 import { GasSpeed } from '@/__swaps__/types/gas';
@@ -18,11 +17,8 @@ import {
   validateTotalSupplyWorklet,
 } from '../helpers/inputValidators';
 import * as i18n from '@/languages';
-import { type Wallet } from '@ethersproject/wallet';
-import { parseUnits } from '@ethersproject/units';
-import { type TransactionOptions } from '@rainbow-me/swaps';
 import { TokenLauncherSDK } from '@/hooks/useTokenLauncher';
-import { type LaunchTokenResponse, TokenLauncherSDKError } from '@rainbow-me/token-launcher';
+import { type LaunchTokenResponse, Protocol, TokenLauncherSDKError } from '@rainbow-me/token-launcher';
 import { Alert } from 'react-native';
 import { logger, RainbowError } from '@/logger';
 import { analytics } from '@/analytics';
@@ -36,6 +32,7 @@ import { useBackendNetworksStore } from '@/state/backendNetworks/backendNetworks
 import { getUniqueId } from '@/utils/ethereumUtils';
 import { type ParsedAsset } from '@/resources/assets/types';
 import { tokenLaunchErrorToErrorMessage } from '../helpers/tokenLaunchErrorToErrorMessage';
+import { parseEther, type PublicClient, type WalletClient } from 'viem';
 
 // TODO: Remove this — temporary option for testing
 const REQUIRE_TOKEN_LOGO = !IS_INTERNAL;
@@ -181,11 +178,13 @@ interface TokenLauncherStore {
   setHasSufficientChainNativeAssetForTransactionGas: (hasSufficientChainNativeAssetForTransactionGas: boolean) => void;
   reset: () => void;
   createToken: ({
-    wallet,
-    transactionOptions,
+    walletClient,
+    publicClient,
+    accountAddress,
   }: {
-    wallet: Wallet;
-    transactionOptions: TransactionOptions;
+    walletClient: WalletClient;
+    publicClient: PublicClient;
+    accountAddress: string;
   }) => Promise<LaunchTokenResponse | undefined>;
 }
 
@@ -413,14 +412,8 @@ export const useTokenLauncherStore = createRainbowStore<TokenLauncherStore>((set
     set({ links: get().links.filter((_, i) => i !== index) });
   },
   setExtraBuyAmount: (amount: number) => {
-    let processedAmount = amount;
-    const amountStr = amount.toString();
-    if (amountStr.includes('.')) {
-      const [intPart, decPart] = amountStr.split('.');
-      const truncatedDecPart = decPart.substring(0, 7);
-      processedAmount = parseFloat(`${intPart}.${truncatedDecPart}`);
-    }
-    set({ extraBuyAmount: processedAmount });
+    const normalizedAmount = Number(trimTrailingZeros(truncateToDecimals(convertNumberToString(amount), 7)));
+    set({ extraBuyAmount: normalizedAmount });
   },
   setStep: (step: NavigationSteps) => {
     const { stepSharedValue, stepAnimatedSharedValue } = get();
@@ -555,67 +548,31 @@ export const useTokenLauncherStore = createRainbowStore<TokenLauncherStore>((set
     });
   },
   createToken: async ({
-    wallet,
-    transactionOptions,
+    walletClient,
+    publicClient,
+    accountAddress,
   }: {
-    wallet: Wallet;
-    transactionOptions: TransactionOptions;
+    walletClient: WalletClient;
+    publicClient: PublicClient;
+    accountAddress: string;
   }): Promise<LaunchTokenResponse | undefined> => {
-    const { name, chainId, symbol, description, imageUrl, tokenomics, totalSupply, extraBuyAmount, getAnalyticsParams } = get();
-
-    const airdropRecipients = get().validAirdropRecipients();
+    const { name, chainId, symbol, description, imageUrl, extraBuyAmount, getAnalyticsParams } = get();
     const analyticsParams = getAnalyticsParams();
-
-    const airdropPredefinedCohortIds = airdropRecipients.filter(r => r.type === 'group' && !r.addresses).map(recipient => recipient.value);
-    const airdropRecipientAddresses = airdropRecipients.filter(r => r.type === 'address').map(recipient => recipient.value);
-    const airdropPersonalizedCohortAddresses = airdropRecipients
-      .filter(r => r.type === 'group' && r.addresses)
-      .flatMap(recipient => recipient.addresses || []);
-    const allAirdropAddresses = [...airdropRecipientAddresses, ...airdropPersonalizedCohortAddresses];
-
-    const targetEth = tokenomics()?.price.targetEth;
-    const formattedTotalSupply = parseUnits(totalSupply.toString(), 18).toString();
     const linksByType = get().linkUrlsByType();
 
     try {
-      const initialTick = TokenLauncherSDK.getInitialTick(parseUnits(targetEth?.toFixed(18) ?? '0', 18));
-      // @ts-ignore - TODO: fix this Swap SDK types isn't supporting legacy gasPrice
-      const gasParams = transactionOptions.gasPrice
-        ? {
-            // @ts-ignore - TODO: fix this Swap SDK types isn't supporting legacy gasPrice
-            gasPrice: transactionOptions.gasPrice,
-          }
-        : {
-            maxFeePerGas: transactionOptions.maxFeePerGas,
-            maxPriorityFeePerGas: transactionOptions.maxPriorityFeePerGas,
-          };
       const params = {
+        protocol: Protocol.Liquid,
         name,
         symbol,
-        description,
-        logoUrl: imageUrl,
-        supply: formattedTotalSupply,
-        links: linksByType,
-        amountIn: parseUnits(extraBuyAmount.toString(), 18).toString(),
-        initialTick,
-        wallet,
-        transactionOptions: {
-          gasLimit: transactionOptions.gasLimit,
-          ...gasParams,
-        },
-        airdropMetadata: {
-          cohortIds: airdropPredefinedCohortIds,
-          addresses: allAirdropAddresses,
-        },
+        walletClient,
+        publicClient,
+        ...(description ? { description } : {}),
+        ...(imageUrl ? { logoUrl: imageUrl } : {}),
+        ...(Object.keys(linksByType).length ? { links: linksByType } : {}),
+        ...(extraBuyAmount > 0 ? { amountIn: parseEther(convertNumberToString(extraBuyAmount)).toString() } : {}),
       };
-
-      const shouldBuy = extraBuyAmount > 0;
-      let result;
-      if (shouldBuy) {
-        result = await TokenLauncherSDK.launchTokenAndBuy(params);
-      } else {
-        result = await TokenLauncherSDK.launchToken(params);
-      }
+      const result = await TokenLauncherSDK.launchToken(params);
 
       if (result) {
         set({ launchedTokenAddress: result.tokenAddress });
@@ -642,6 +599,7 @@ export const useTokenLauncherStore = createRainbowStore<TokenLauncherStore>((set
 
         const chainsName = useBackendNetworksStore.getState().getChainsName();
 
+        // Normalize viem bigint fields before persisting the pending transaction.
         const transaction: NewTransaction = {
           status: TransactionStatus.pending,
           chainId,
@@ -657,23 +615,23 @@ export const useTokenLauncherStore = createRainbowStore<TokenLauncherStore>((set
             isNativeAsset: false,
             network: chainsName[chainId],
           } satisfies ParsedAsset,
-          data: result.transaction.data,
+          data: result.transaction.input,
           from: result.transaction.from,
-          gasLimit: result.transaction.gasLimit,
+          gasLimit: result.transaction.gas?.toString(),
           hash: result.transaction.hash,
           network: chainsName[chainId] as Network,
           nonce: result.transaction.nonce,
           to: result.transaction.to ?? null,
           value: result.transaction.value.toString(),
           type: 'launch',
-          gasPrice: result.transaction.gasPrice,
-          maxFeePerGas: result.transaction.maxFeePerGas,
-          maxPriorityFeePerGas: result.transaction.maxPriorityFeePerGas,
+          gasPrice: result.transaction.gasPrice?.toString(),
+          maxFeePerGas: result.transaction.maxFeePerGas?.toString(),
+          maxPriorityFeePerGas: result.transaction.maxPriorityFeePerGas?.toString(),
         };
 
         addNewTransaction({
           transaction,
-          address: wallet.address,
+          address: accountAddress,
           chainId: chainId,
         });
       }
