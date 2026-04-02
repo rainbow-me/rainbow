@@ -17,6 +17,8 @@ import { RnbwStakingEarningsCard } from './components/RnbwStakingEarningsCard';
 import { TAB_BAR_HEIGHT } from '@/navigation/SwipeNavigator';
 
 export const RnbwMembershipScreen = memo(function RnbwMembershipScreen() {
+  const hasPosition = useStakingPositionStore(s => s.hasPosition());
+
   return (
     <Box background="surfaceSecondary" style={styles.flex}>
       <Navbar hasStatusBarInset title="Membership" leftComponent={<AccountImage />} />
@@ -30,8 +32,8 @@ export const RnbwMembershipScreen = memo(function RnbwMembershipScreen() {
       >
         <Box gap={16} style={{ flex: 1 }}>
           <RnbwStakingCard />
-          <RnbwStakingEarningsCard />
-          <RnbwUnstakePenaltyRecoveryCard />
+          {hasPosition && <RnbwStakingEarningsCard />}
+          {hasPosition && <RnbwUnstakePenaltyRecoveryCard />}
           <MembershipTierCard />
           <RnbwRewardsClaimCard />
           <RnbwAirdropClaimCard />
