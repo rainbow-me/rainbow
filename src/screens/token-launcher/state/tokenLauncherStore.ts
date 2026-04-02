@@ -5,7 +5,6 @@ import { makeMutable, runOnUI, type SharedValue, withTiming } from 'react-native
 import { TIMING_CONFIGS } from '@/components/animations/animationConfigs';
 import { calculateTokenomics } from '../helpers/calculateTokenomics';
 import store from '@/redux/store';
-import { GasSpeed } from '@/__swaps__/types/gas';
 import { type Network } from '@/state/backendNetworks/types';
 import { formatCurrency } from '@/helpers/strings';
 import {
@@ -78,7 +77,6 @@ interface TokenLauncherStore {
   stepAnimatedSharedValue: SharedValue<NavigationSteps>;
   chainNativeAssetUsdPrice: number;
   chainNativeAssetNativePrice: number;
-  gasSpeed: GasSpeed;
   chainNativeAssetRequiredForTransactionGas: string;
   hasSufficientChainNativeAssetForTransactionGas: boolean;
   hasValidPrebuyAmount: boolean;
@@ -110,7 +108,6 @@ interface TokenLauncherStore {
   setChainNativeAssetUsdPrice: (chainNativeAssetUsdPrice: number) => void;
   setChainNativeAssetNativePrice: (chainNativeAssetNativePrice: number) => void;
   setChainNativeAssetRequiredForTransactionGas: (chainNativeAssetRequiredForTransactionGas: string) => void;
-  setGasSpeed: (gasSpeed: GasSpeed) => void;
   setHasValidPrebuyAmount: (hasValidPrebuyAmount: boolean) => void;
   setHasSufficientChainNativeAssetForTransactionGas: (hasSufficientChainNativeAssetForTransactionGas: boolean) => void;
   reset: () => void;
@@ -155,7 +152,6 @@ export const useTokenLauncherStore = createRainbowStore<TokenLauncherStore>((set
   step: INITIAL_STEP,
   stepSharedValue: makeMutable(INITIAL_STEP as NavigationSteps),
   stepAnimatedSharedValue: makeMutable(INITIAL_STEP as NavigationSteps),
-  gasSpeed: GasSpeed.FAST,
   chainNativeAssetRequiredForTransactionGas: '0',
   hasSufficientChainNativeAssetForTransactionGas: true,
   hasValidPrebuyAmount: true,
@@ -307,9 +303,6 @@ export const useTokenLauncherStore = createRainbowStore<TokenLauncherStore>((set
   setChainNativeAssetNativePrice: (chainNativeAssetNativePrice: number) => {
     set({ chainNativeAssetNativePrice });
   },
-  setGasSpeed: (gasSpeed: GasSpeed) => {
-    set({ gasSpeed });
-  },
   setHasValidPrebuyAmount: (hasValidPrebuyAmount: boolean) => {
     set({ hasValidPrebuyAmount });
   },
@@ -332,7 +325,6 @@ export const useTokenLauncherStore = createRainbowStore<TokenLauncherStore>((set
       extraBuyAmount: 0,
       chainNativeAssetUsdPrice: 0,
       chainNativeAssetNativePrice: 0,
-      gasSpeed: GasSpeed.FAST,
       hasSufficientChainNativeAssetForTransactionGas: true,
       chainNativeAssetRequiredForTransactionGas: '0',
       hasValidPrebuyAmount: true,

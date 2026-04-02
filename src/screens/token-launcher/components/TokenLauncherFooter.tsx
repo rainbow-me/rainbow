@@ -2,7 +2,7 @@ import { analytics } from '@/analytics';
 import ButtonPressAnimation from '@/components/animations/ButtonPressAnimation';
 import { TIMING_CONFIGS } from '@/components/animations/animationConfigs';
 import RainbowCoinIcon from '@/components/coin-icon/RainbowCoinIcon';
-import { Box, Inline, Separator, Text } from '@/design-system';
+import { Box, Inline, Text } from '@/design-system';
 import { getColorForTheme } from '@/design-system/color/useForegroundColor';
 import { IS_ANDROID } from '@/env';
 import { buildTokenDeeplink } from '@/handlers/deeplinks';
@@ -19,24 +19,12 @@ import { useAccountAddress, useIsHardwareWallet } from '@/state/wallets/walletsS
 import { colors } from '@/styles';
 import React, { useCallback, useState } from 'react';
 import { Alert, Keyboard, Share } from 'react-native';
-import Animated, {
-  Extrapolation,
-  FadeIn,
-  FadeOut,
-  interpolate,
-  useAnimatedStyle,
-  useDerivedValue,
-  useSharedValue,
-  withTiming,
-} from 'react-native-reanimated';
+import Animated, { Extrapolation, FadeOut, interpolate, useAnimatedStyle, useSharedValue, withTiming } from 'react-native-reanimated';
 import { STEP_TRANSITION_DURATION } from '../constants';
 import { useTokenLauncherContext } from '../context/TokenLauncherContext';
-import { useTokenLaunchGasOptions } from '../hooks/useTokenLaunchGasOptions';
 import { NavigationSteps, useTokenLauncherStore } from '../state/tokenLauncherStore';
-import { GasButton } from './gas/GasButton';
 import { HoldToActivateButton } from '@/components/hold-to-activate-button/HoldToActivateButton';
 import Routes from '@/navigation/routesNames';
-import { SEPARATOR_COLOR } from '@/styles/constants';
 import { privateKeyToAccount } from 'viem/accounts';
 import { createPublicClient, createWalletClient, type Hex, http } from 'viem';
 import * as kc from '@/keychain';
@@ -289,26 +277,12 @@ function TokenPreview() {
 
 export function TokenLauncherFooter() {
   const navigation = useNavigation();
-  const chainId = useTokenLauncherStore(state => state.chainId);
   const step = useTokenLauncherStore(state => state.step);
   const stepSharedValue = useTokenLauncherStore(state => state.stepSharedValue);
   const stepAnimatedSharedValue = useTokenLauncherStore(state => state.stepAnimatedSharedValue);
 
-  const gasSpeed = useTokenLauncherStore(state => state.gasSpeed);
-  const setGasSpeed = useTokenLauncherStore(state => state.setGasSpeed);
-  const { transactionOptions } = useTokenLaunchGasOptions({
-    chainId,
-    gasSpeed,
-  });
-
   const containerWidth = useSharedValue(0);
   const continueButtonWidth = useSharedValue(0);
-  // We give this a default width so that the create button doesn't jump past before the gas button is measured
-  const gasButtonWidth = useSharedValue(100);
-
-  const createButtonWidth = useDerivedValue(() => {
-    return containerWidth.value - gasButtonWidth.value - 40;
-  });
 
   const continueButtonAnimatedStyle = useAnimatedStyle(() => {
     // Don't apply any width until we've measured the button
@@ -337,7 +311,7 @@ export function TokenLauncherFooter() {
       width: interpolate(
         stepAnimatedSharedValue.value,
         [NavigationSteps.INFO, NavigationSteps.REVIEW, NavigationSteps.CREATING],
-        [continueButtonWidth.value, createButtonWidth.value, fullWidth],
+        [continueButtonWidth.value, fullWidth, fullWidth],
         Extrapolation.CLAMP
       ),
       opacity: interpolate(stepAnimatedSharedValue.value, [NavigationSteps.INFO, NavigationSteps.REVIEW], [0, 1], Extrapolation.CLAMP),
@@ -377,20 +351,6 @@ export function TokenLauncherFooter() {
         }}
       >
         {step === NavigationSteps.INFO && <TokenPreview />}
-        {step === NavigationSteps.REVIEW && (
-          <Animated.View
-            entering={FadeIn.duration(STEP_TRANSITION_DURATION)}
-            onLayout={e => {
-              gasButtonWidth.value = e.nativeEvent.layout.width;
-            }}
-            style={{ flexDirection: 'row' }}
-          >
-            <GasButton gasSpeed={gasSpeed} chainId={chainId} gasLimit={transactionOptions.gasLimit} onSelectGasSpeed={setGasSpeed} />
-            <Box width={1} height={32} paddingHorizontal="12px">
-              <Separator thickness={1} direction="vertical" color={{ custom: SEPARATOR_COLOR }} />
-            </Box>
-          </Animated.View>
-        )}
         <Animated.View
           style={[continueButtonAnimatedStyle, { position: 'absolute', right: 20, top: 16 }]}
           onLayout={e => {
