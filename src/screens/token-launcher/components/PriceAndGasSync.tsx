@@ -4,6 +4,7 @@ import { useExternalToken } from '@/resources/assets/externalAssetsQuery';
 import { time } from '@/utils/time';
 import { useGasSettings } from '@/__swaps__/screens/Swap/hooks/useSelectedGas';
 import { calculateGasFeeWorklet } from '@/__swaps__/screens/Swap/providers/SyncSwapStateAndSharedValues';
+import { GasSpeed } from '@/__swaps__/types/gas';
 import { useBackendNetworksStore } from '@/state/backendNetworks/backendNetworks';
 import { useUserAssetsStore } from '@/state/assets/userAssets';
 import { formatUnits } from 'viem';
@@ -17,13 +18,12 @@ function _PriceAndGasSync() {
   const nativeCurrency = userAssetsStoreManager(state => state.currency);
 
   const chainId = useTokenLauncherStore(state => state.chainId);
-  const gasSpeed = useTokenLauncherStore(state => state.gasSpeed);
   const setChainNativeAssetRequiredForTransactionGas = useTokenLauncherStore(state => state.setChainNativeAssetRequiredForTransactionGas);
   const setHasSufficientChainNativeAssetForTransactionGas = useTokenLauncherStore(
     state => state.setHasSufficientChainNativeAssetForTransactionGas
   );
   const chainNativeAsset = useBackendNetworksStore(state => state.getChainsNativeAsset()[chainId]);
-  const gasSettings = useGasSettings(chainId, gasSpeed);
+  const gasSettings = useGasSettings(chainId, GasSpeed.FAST);
   const userNativeAsset = useUserAssetsStore(state => state.getNativeAssetForChain(chainId));
 
   const setChainNativeAssetUsdPrice = useTokenLauncherStore(state => state.setChainNativeAssetUsdPrice);
