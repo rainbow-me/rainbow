@@ -24,7 +24,6 @@ export const GHOST_INPUT_ACCESSORY_NATIVE_ID = 'input-accessory';
 export const MAX_SYMBOL_BYTES = 32;
 export const MAX_DESCRIPTION_BYTES = 2_000;
 export const MAX_NAME_BYTES = 32;
-export const DEFAULT_MAX_AIRDROP_RECIPIENTS = 20_000;
 
 export const DEFAULT_CHAIN_ID = base.id;
 export const DEFAULT_TOTAL_SUPPLY = 100_000_000_000;

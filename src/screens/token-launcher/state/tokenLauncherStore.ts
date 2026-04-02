@@ -1,6 +1,6 @@
 import { abbreviateNumber, convertAmountToNativeDisplay } from '@/helpers/utilities';
 import { createRainbowStore } from '@/state/internal/createRainbowStore';
-import { DEFAULT_CHAIN_ID, DEFAULT_MAX_AIRDROP_RECIPIENTS, DEFAULT_TOTAL_SUPPLY, MAX_TOTAL_SUPPLY } from '../constants';
+import { DEFAULT_CHAIN_ID, DEFAULT_TOTAL_SUPPLY, MAX_TOTAL_SUPPLY } from '../constants';
 import { makeMutable, runOnUI, type SharedValue, withTiming } from 'react-native-reanimated';
 import { TIMING_CONFIGS } from '@/components/animations/animationConfigs';
 import { calculateTokenomics } from '../helpers/calculateTokenomics';
@@ -50,18 +50,6 @@ const NavigationStepsNames: Record<NavigationSteps, string> = {
   [NavigationSteps.SUCCESS]: 'SUCCESS',
 };
 
-export type AirdropRecipient = {
-  type: 'group' | 'address';
-  id: string;
-  label: string;
-  value: string;
-  count: number;
-  isValid: boolean;
-  imageUrl: string | null;
-  addresses?: string[];
-  isSuggested?: boolean;
-};
-
 export type TokenLauncherAnalyticsParams = {
   address?: string;
   chainId: number;
@@ -73,18 +61,9 @@ export type TokenLauncherAnalyticsParams = {
   totalSupply: number;
   links: Record<string, string>;
   extraBuyAmount: number;
-  airdropTotalRecipientsCount: number;
-  airdropTotalAddressCount: number;
-  airdropManuallyAddedRecipientsCount: number;
-  airdropSuggestedRecipientsCount: number;
-  airdropPredefinedCohortRecipientsCount: number;
-  airdropSuggestedCohortRecipientsCount: number;
-  airdropPersonalizedCohortIds: string[];
-  airdropPredefinedCohortIds: string[];
 };
 
 interface TokenLauncherStore {
-  // base state
   imageUri: string;
   imageUrl: string;
   name: string;
@@ -94,7 +73,6 @@ interface TokenLauncherStore {
   description: string;
   links: Link[];
   extraBuyAmount: number;
-  airdropRecipients: AirdropRecipient[];
   step: NavigationSteps;
   stepSharedValue: SharedValue<NavigationSteps>;
   stepAnimatedSharedValue: SharedValue<NavigationSteps>;
@@ -104,33 +82,22 @@ interface TokenLauncherStore {
   chainNativeAssetRequiredForTransactionGas: string;
   hasSufficientChainNativeAssetForTransactionGas: boolean;
   hasValidPrebuyAmount: boolean;
-  maxAirdropRecipientCount: number;
   launchedTokenAddress: string | null;
   imageModerated: boolean;
-  // derived state
   hasEnteredAnyInfo: () => boolean;
   formattedTotalSupply: () => string;
-  validAirdropRecipients: () => AirdropRecipient[];
   validLinks: () => Link[];
   linkUrlsByType: () => Record<LinkType, string>;
-  hasExceededMaxAirdropRecipients: () => boolean;
   tokenPrice: () => string;
   tokenMarketCap: () => string;
   hasCompletedRequiredFields: () => boolean;
   canContinueToReview: () => boolean;
-  allocationBips: () => {
-    creator: number;
-    airdrop: number;
-    lp: number;
-  };
   tokenomics: () => ReturnType<typeof calculateTokenomics> | undefined;
   getAnalyticsParams: () => TokenLauncherAnalyticsParams;
-  // setters
   setImageUri: (uri: string) => void;
   setImageUrl: (url: string) => void;
   setName: (name: string) => void;
   setSymbol: (symbol: string) => void;
-  setMaxAirdropRecipientCount: (count: number) => void;
   setChainId: (chainId: number) => void;
   setTotalSupply: (totalSupply: number) => void;
   addLink: (type: LinkType) => void;
@@ -140,35 +107,6 @@ interface TokenLauncherStore {
   setDescription: (description: string) => void;
   setStep: (step: NavigationSteps) => void;
   setImageModerated: (moderated: boolean) => void;
-  addAirdropGroup: ({
-    groupId,
-    label,
-    count,
-    imageUrl,
-    addresses,
-  }: {
-    groupId: string;
-    label: string;
-    count: number;
-    imageUrl: string;
-    addresses?: string[];
-  }) => void;
-  addOrEditAirdropAddress: ({
-    id,
-    address,
-    isValid,
-    imageUrl,
-    isSuggested,
-    label,
-  }: {
-    id: string;
-    address: string;
-    isValid: boolean;
-    imageUrl?: string | null;
-    isSuggested?: boolean;
-    label?: string;
-  }) => void;
-  deleteAirdropRecipient: (id: string) => void;
   setChainNativeAssetUsdPrice: (chainNativeAssetUsdPrice: number) => void;
   setChainNativeAssetNativePrice: (chainNativeAssetNativePrice: number) => void;
   setChainNativeAssetRequiredForTransactionGas: (chainNativeAssetRequiredForTransactionGas: string) => void;
@@ -200,7 +138,6 @@ interface TokenLauncherStore {
 // description: 'This is a test token',
 // };
 
-// Should always be INFO, but can be changed to any step to test the flow easier
 const INITIAL_STEP = NavigationSteps.INFO;
 
 export const useTokenLauncherStore = createRainbowStore<TokenLauncherStore>((set, get) => ({
@@ -210,7 +147,6 @@ export const useTokenLauncherStore = createRainbowStore<TokenLauncherStore>((set
   symbol: '',
   description: '',
   links: [{ input: '', type: 'website' as LinkType }],
-  airdropRecipients: [],
   chainId: DEFAULT_CHAIN_ID,
   totalSupply: DEFAULT_TOTAL_SUPPLY,
   extraBuyAmount: 0,
@@ -223,12 +159,10 @@ export const useTokenLauncherStore = createRainbowStore<TokenLauncherStore>((set
   chainNativeAssetRequiredForTransactionGas: '0',
   hasSufficientChainNativeAssetForTransactionGas: true,
   hasValidPrebuyAmount: true,
-  maxAirdropRecipientCount: DEFAULT_MAX_AIRDROP_RECIPIENTS,
   launchedTokenAddress: null,
   imageModerated: false,
-  // derived state
   hasEnteredAnyInfo: () => {
-    const { name, symbol, imageUrl, totalSupply, description, extraBuyAmount, validLinks, validAirdropRecipients } = get();
+    const { name, symbol, imageUrl, totalSupply, description, extraBuyAmount, validLinks } = get();
     return (
       name !== '' ||
       symbol !== '' ||
@@ -236,18 +170,16 @@ export const useTokenLauncherStore = createRainbowStore<TokenLauncherStore>((set
       totalSupply !== DEFAULT_TOTAL_SUPPLY ||
       description !== '' ||
       validLinks().length > 0 ||
-      validAirdropRecipients().length > 0 ||
       extraBuyAmount > 0
     );
   },
   formattedTotalSupply: () => abbreviateNumber(get().totalSupply, 2, 'long', true),
-  validAirdropRecipients: () => get().airdropRecipients.filter(recipient => recipient.isValid),
   validLinks: () =>
     get()
       .links.filter(link => link.input.trim() !== '')
       .filter(link => !validateLinkWorklet({ link: link.input, type: link.type })),
-  linkUrlsByType: () => {
-    return get()
+  linkUrlsByType: () =>
+    get()
       .validLinks()
       .reduce(
         (acc, link) => {
@@ -255,13 +187,7 @@ export const useTokenLauncherStore = createRainbowStore<TokenLauncherStore>((set
           return acc;
         },
         {} as Record<LinkType, string>
-      );
-  },
-  hasExceededMaxAirdropRecipients: () => {
-    const { maxAirdropRecipientCount, airdropRecipients } = get();
-    const totalRecipientCount = airdropRecipients.reduce((acc, recipient) => acc + recipient.count, 0);
-    return totalRecipientCount > maxAirdropRecipientCount;
-  },
+      ),
   tokenPrice: () => {
     const { nativeCurrency } = store.getState().settings;
     const tokenomics = get().tokenomics();
@@ -296,35 +222,10 @@ export const useTokenLauncherStore = createRainbowStore<TokenLauncherStore>((set
     return !nameValidation?.error && !symbolValidation?.error && !supplyValidation?.error && (!REQUIRE_TOKEN_LOGO || imageUrl !== '');
   },
   canContinueToReview: () => {
-    const {
-      airdropRecipients,
-      links,
-      hasCompletedRequiredFields,
-      hasExceededMaxAirdropRecipients,
-      hasSufficientChainNativeAssetForTransactionGas,
-      hasValidPrebuyAmount,
-    } = get();
-
-    // Empty address inputs do not prevent continuing, they are just ignored
-    const allAirdropRecipientsValid = airdropRecipients.every(recipient => recipient.isValid || recipient.value === '');
+    const { links, hasCompletedRequiredFields, hasSufficientChainNativeAssetForTransactionGas, hasValidPrebuyAmount } = get();
     const allLinksValid = links.every(link => !validateLinkWorklet({ link: link.input, type: link.type }));
 
-    return (
-      hasCompletedRequiredFields() &&
-      !hasExceededMaxAirdropRecipients() &&
-      allAirdropRecipientsValid &&
-      allLinksValid &&
-      hasSufficientChainNativeAssetForTransactionGas &&
-      hasValidPrebuyAmount
-    );
-  },
-  allocationBips: () => {
-    const tokenomics = get().tokenomics();
-    return {
-      creator: tokenomics?.allocation.creator ?? 0,
-      airdrop: tokenomics?.allocation.airdrop ?? 0,
-      lp: tokenomics?.allocation.lp ?? 0,
-    };
+    return hasCompletedRequiredFields() && allLinksValid && hasSufficientChainNativeAssetForTransactionGas && hasValidPrebuyAmount;
   },
   tokenomics: () => {
     const { chainNativeAssetUsdPrice, totalSupply, extraBuyAmount } = get();
@@ -340,26 +241,6 @@ export const useTokenLauncherStore = createRainbowStore<TokenLauncherStore>((set
   },
   getAnalyticsParams: () => {
     const { name, chainId, symbol, description, imageUrl, totalSupply, extraBuyAmount, imageModerated } = get();
-
-    const airdropRecipients = get().validAirdropRecipients();
-
-    const airdropPredefinedCohortRecipients = airdropRecipients.filter(r => r.type === 'group' && !r.addresses);
-    const airdropPredefinedCohortIds = airdropPredefinedCohortRecipients.map(recipient => recipient.value);
-    const airdropPredefinedCohortRecipientsCount = airdropPredefinedCohortRecipients.reduce((acc, recipient) => acc + recipient.count, 0);
-    const airdropSuggestedCohortRecipients = airdropRecipients.filter(r => r.type === 'group' && r.addresses);
-    const airdropSuggestedCohortRecipientsCount = airdropSuggestedCohortRecipients.reduce((acc, recipient) => acc + recipient.count, 0);
-
-    // These are not really ids, but backend doesn't return ids for these in the same way
-    const airdropPersonalizedCohortIds = airdropRecipients
-      .filter(r => r.type === 'group' && r.addresses)
-      .flatMap(recipient => recipient.label);
-
-    const airdropRecipientAddresses = airdropRecipients.filter(r => r.type === 'address').map(recipient => recipient.value);
-    const airdropManuallyAddedRecipients = airdropRecipients.filter(r => r.type === 'address' && !r.isSuggested);
-    const airdropSuggestedRecipients = airdropRecipients.filter(r => r.type === 'address' && r.isSuggested);
-
-    const airdropTotalRecipientsCount = airdropRecipients.reduce((acc, recipient) => acc + recipient.count, 0);
-
     const linksByType = get().linkUrlsByType();
 
     return {
@@ -370,21 +251,10 @@ export const useTokenLauncherStore = createRainbowStore<TokenLauncherStore>((set
       description: description === '' ? undefined : description,
       totalSupply,
       links: linksByType,
-      extraBuyAmount: extraBuyAmount,
+      extraBuyAmount,
       imageModerated: imageUrl === '' ? undefined : imageModerated,
-      airdropTotalRecipientsCount,
-      // individual address counts
-      airdropTotalAddressCount: airdropRecipientAddresses.length,
-      airdropManuallyAddedRecipientsCount: airdropManuallyAddedRecipients.length,
-      airdropSuggestedRecipientsCount: airdropSuggestedRecipients.length,
-      // cohort counts
-      airdropPredefinedCohortRecipientsCount,
-      airdropSuggestedCohortRecipientsCount,
-      airdropPersonalizedCohortIds,
-      airdropPredefinedCohortIds,
     };
   },
-  // setters
   setImageUri: (uri: string) => {
     set({ imageUri: uri });
   },
@@ -392,9 +262,6 @@ export const useTokenLauncherStore = createRainbowStore<TokenLauncherStore>((set
     set({
       imageUrl: url,
     });
-  },
-  setMaxAirdropRecipientCount: (count: number) => {
-    set({ maxAirdropRecipientCount: count });
   },
   setName: (name: string) => set({ name }),
   setSymbol: (symbol: string) => set({ symbol }),
@@ -431,82 +298,6 @@ export const useTokenLauncherStore = createRainbowStore<TokenLauncherStore>((set
       step: NavigationStepsNames[step],
     });
   },
-  addAirdropGroup: ({
-    groupId,
-    label,
-    count,
-    imageUrl,
-    addresses,
-  }: {
-    groupId: string;
-    label: string;
-    count: number;
-    imageUrl: string;
-    addresses?: string[];
-  }) => {
-    const { airdropRecipients } = get();
-    const existingGroups = airdropRecipients.filter(recipient => recipient.type === 'group');
-    const existingGroup = existingGroups.find(group => group.value === groupId);
-    // You cannot add the same group twice
-    if (existingGroup) {
-      return;
-    }
-
-    const recipient = {
-      type: 'group' as const,
-      id: Math.random().toString(),
-      value: groupId,
-      label,
-      count,
-      isValid: true,
-      imageUrl,
-      // addresses are for personalized cohorts where we need to send the sdk the addresses and not the cohort id
-      addresses,
-    };
-    set({ airdropRecipients: [...airdropRecipients, recipient] });
-  },
-  // Add & edit are combined here to avoid the AddressInput component needing to subscribe to the list
-  addOrEditAirdropAddress: ({
-    id,
-    address,
-    isValid,
-    imageUrl,
-    isSuggested,
-    label,
-  }: {
-    id: string;
-    address: string;
-    isValid: boolean;
-    imageUrl?: string | null;
-    isSuggested?: boolean;
-    label?: string;
-  }) => {
-    const { airdropRecipients } = get();
-    const isExistingRecipient = airdropRecipients.some(recipient => recipient.id === id);
-
-    if (isExistingRecipient) {
-      set({
-        airdropRecipients: airdropRecipients.map(a =>
-          a.id === id ? { ...a, value: address, label: label ?? address, isValid, imageUrl: imageUrl ?? null } : a
-        ),
-      });
-    } else {
-      const recipient = {
-        type: 'address' as const,
-        id,
-        value: address,
-        label: label ?? address,
-        count: 1,
-        isValid,
-        imageUrl: imageUrl ?? null,
-        isSuggested,
-      };
-      set({ airdropRecipients: [...airdropRecipients, recipient] });
-    }
-  },
-  deleteAirdropRecipient: (id: string) => {
-    set({ airdropRecipients: get().airdropRecipients.filter(a => a.id !== id) });
-  },
   setChainNativeAssetRequiredForTransactionGas: (chainNativeAssetRequiredForTransactionGas: string) => {
     set({ chainNativeAssetRequiredForTransactionGas });
   },
@@ -528,7 +319,6 @@ export const useTokenLauncherStore = createRainbowStore<TokenLauncherStore>((set
   setImageModerated: (moderated: boolean) => {
     set({ imageModerated: moderated });
   },
-  // actions
   reset: () => {
     get().stepAnimatedSharedValue.value = NavigationSteps.INFO;
     get().stepSharedValue.value = NavigationSteps.INFO;
@@ -546,7 +336,6 @@ export const useTokenLauncherStore = createRainbowStore<TokenLauncherStore>((set
       hasSufficientChainNativeAssetForTransactionGas: true,
       chainNativeAssetRequiredForTransactionGas: '0',
       hasValidPrebuyAmount: true,
-      airdropRecipients: [],
       step: NavigationSteps.INFO,
       chainId: DEFAULT_CHAIN_ID,
       totalSupply: DEFAULT_TOTAL_SUPPLY,
@@ -584,7 +373,6 @@ export const useTokenLauncherStore = createRainbowStore<TokenLauncherStore>((set
 
         const color = await calculateAndCacheDominantColor(imageUrl);
 
-        // Add token to SuperTokenStore
         useSuperTokenStore.getState().addSuperToken({
           name,
           symbol,
@@ -637,7 +425,7 @@ export const useTokenLauncherStore = createRainbowStore<TokenLauncherStore>((set
         addNewTransaction({
           transaction,
           address: accountAddress,
-          chainId: chainId,
+          chainId,
         });
       }
       return result;
@@ -649,7 +437,7 @@ export const useTokenLauncherStore = createRainbowStore<TokenLauncherStore>((set
 
       if (error instanceof TokenLauncherSDKError) {
         metadata = { ...metadata, ...error.context };
-        const { header, body } = tokenLaunchErrorToErrorMessage(error as TokenLauncherSDKError);
+        const { header, body } = tokenLaunchErrorToErrorMessage(error);
         Alert.alert(header, body);
       } else {
         Alert.alert(i18n.t(i18n.l.token_launcher.errors.header), i18n.t(i18n.l.token_launcher.errors.unknown_error));
