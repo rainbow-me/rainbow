@@ -6,22 +6,19 @@ import { Box, Inline, Separator, Text } from '@/design-system';
 import { getColorForTheme } from '@/design-system/color/useForegroundColor';
 import { IS_ANDROID } from '@/env';
 import { buildTokenDeeplink } from '@/handlers/deeplinks';
-import { type LedgerSigner } from '@/handlers/LedgerSigner';
-import { getProvider } from '@/handlers/web3';
 import { BiometryTypes } from '@/helpers';
 import useBiometryType from '@/hooks/useBiometryType';
 import { useTokenLauncher } from '@/hooks/useTokenLauncher';
 import * as i18n from '@/languages';
 import { logger, RainbowError } from '@/logger';
-import { loadWallet } from '@/model/wallet';
+import { loadPrivateKey } from '@/model/wallet';
 import { useNavigation } from '@/navigation/Navigation';
 import { useBackendNetworksStore } from '@/state/backendNetworks/backendNetworks';
 import { staleBalancesStore } from '@/state/staleBalances';
 import { useAccountAddress, useIsHardwareWallet } from '@/state/wallets/walletsStore';
 import { colors } from '@/styles';
-import { type Wallet } from '@ethersproject/wallet';
 import React, { useCallback, useState } from 'react';
-import { Keyboard, Share } from 'react-native';
+import { Alert, Keyboard, Share } from 'react-native';
 import Animated, {
   Extrapolation,
   FadeIn,
@@ -40,6 +37,9 @@ import { GasButton } from './gas/GasButton';
 import { HoldToActivateButton } from '@/components/hold-to-activate-button/HoldToActivateButton';
 import Routes from '@/navigation/routesNames';
 import { SEPARATOR_COLOR } from '@/styles/constants';
+import { privateKeyToAccount } from 'viem/accounts';
+import { createPublicClient, createWalletClient, type Hex, http } from 'viem';
+import * as kc from '@/keychain';
 
 // height + top padding + bottom padding
 export const FOOTER_HEIGHT = 48 + 16 + 16;
@@ -49,15 +49,12 @@ function HoldToCreateButton() {
   const { accentColors } = useTokenLauncherContext();
   const createToken = useTokenLauncherStore(state => state.createToken);
   const setStep = useTokenLauncherStore(state => state.setStep);
-  const gasSpeed = useTokenLauncherStore(state => state.gasSpeed);
   const chainId = useTokenLauncherStore(state => state.chainId);
   const isHardwareWallet = useIsHardwareWallet();
   const biometryType = useBiometryType();
   const accountAddress = useAccountAddress();
-  const { transactionOptions } = useTokenLaunchGasOptions({
-    chainId,
-    gasSpeed,
-  });
+  const defaultChains = useBackendNetworksStore(state => state.getDefaultChains());
+  const getChainDefaultRpc = useBackendNetworksStore(state => state.getChainDefaultRpc);
 
   const { addStaleBalance } = staleBalancesStore.getState();
   const [isProcessing, setIsProcessing] = useState(false);
@@ -69,26 +66,37 @@ function HoldToCreateButton() {
   const handleLongPress = useCallback(async () => {
     setIsProcessing(true);
 
-    const provider = getProvider({ chainId });
-    let wallet: Wallet | LedgerSigner | null = null;
-
     try {
-      wallet = await loadWallet({ address: accountAddress, provider });
-    } catch (e) {
-      navigate(Routes.WALLET_ERROR_SHEET);
-      const error = e instanceof Error ? e : new Error(String(e));
-      logger.error(new RainbowError('[TokenLauncher]: Error Loading Wallet'), {
-        message: error.message,
-      });
-      analytics.track(analytics.event.tokenLauncherWalletLoadFailed, {
-        error: error.message,
-      });
-      setIsProcessing(false);
-    }
+      if (isHardwareWallet) {
+        Alert.alert(i18n.t(i18n.l.token_launcher.errors.header), i18n.t(i18n.l.token_launcher.errors.wallet_connection_error));
+        analytics.track(analytics.event.tokenLauncherWalletLoadFailed, {
+          error: 'Hardware wallets are not supported by the token launcher SDK',
+        });
+        setIsProcessing(false);
+        return;
+      }
 
-    if (wallet) {
+      const privateKey = await loadPrivateKey(accountAddress, isHardwareWallet);
+      if (!privateKey || privateKey === kc.ErrorType.UserCanceled || privateKey === kc.ErrorType.NotAuthenticated) {
+        setIsProcessing(false);
+        return;
+      }
+
+      const chain = defaultChains[chainId];
+      const transport = http(getChainDefaultRpc(chainId));
+      const account = privateKeyToAccount(privateKey as Hex);
+      const publicClient = createPublicClient({
+        chain,
+        transport,
+      });
+      const walletClient = createWalletClient({
+        account,
+        chain,
+        transport,
+      });
+
       setStep(NavigationSteps.CREATING);
-      const createTokenResponse = await createToken({ wallet: wallet as Wallet, transactionOptions });
+      const createTokenResponse = await createToken({ walletClient, publicClient, accountAddress });
       if (createTokenResponse) {
         addStaleBalance({
           address: accountAddress,
@@ -102,6 +110,17 @@ function HoldToCreateButton() {
       } else {
         setStep(NavigationSteps.REVIEW);
       }
+    } catch (e) {
+      navigate(Routes.WALLET_ERROR_SHEET);
+      const error = e instanceof Error ? e : new Error(String(e));
+      logger.error(new RainbowError('[TokenLauncher]: Error Loading Wallet'), {
+        message: error.message,
+      });
+      analytics.track(analytics.event.tokenLauncherWalletLoadFailed, {
+        error: error.message,
+      });
+      setIsProcessing(false);
+      return;
     }
 
     setIsProcessing(false);
@@ -110,7 +129,7 @@ function HoldToCreateButton() {
     // if (isHardwareWallet) {
     // navigate(Routes.HARDWARE_WALLET_TX_NAVIGATOR, { submit: createToken });
     // } else {}
-  }, [createToken, accountAddress, chainId, transactionOptions, setStep, addStaleBalance, navigate]);
+  }, [accountAddress, addStaleBalance, chainId, createToken, defaultChains, getChainDefaultRpc, isHardwareWallet, navigate, setStep]);
 
   return (
     <HoldToActivateButton
