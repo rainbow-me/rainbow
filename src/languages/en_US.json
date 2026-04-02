@@ -3601,7 +3601,8 @@
         "unknown_error": "Unknown error",
         "wallet_connection_error": "Wallet connection error",
         "invalid_params": "Invalid parameters",
-        "missing_required_param": "Missing required parameters"
+        "missing_required_param": "Missing required parameters",
+        "unsupported_network": "Token launching is not supported on this network"
       }
     },
     "done": "Done",
