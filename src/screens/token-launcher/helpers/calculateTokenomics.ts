@@ -98,11 +98,9 @@ export function calculateTokenomics({
       total: totalSupply,
       lp: lpSupply,
       creator: creatorAmount,
-      airdrop: 0,
     },
     allocation: {
       creator: creatorAllocationBips,
-      airdrop: 0,
       lp: lpAllocationBips,
     },
     price: {
