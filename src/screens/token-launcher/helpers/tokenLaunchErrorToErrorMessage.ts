@@ -17,7 +17,12 @@ export const tokenLaunchErrorToErrorMessage = (error: TokenLauncherSDKError) => 
       header: i18n.t(i18n.l.token_launcher.errors.header),
       body: i18n.t(i18n.l.token_launcher.errors.missing_required_param),
     };
-  } else if (error.code === TokenLauncherErrorCode.UNKNOWN_ERROR || error.code === TokenLauncherErrorCode.UNSUPPORTED_CHAIN_ID) {
+  } else if (error.code === TokenLauncherErrorCode.UNSUPPORTED_CHAIN_ID) {
+    return {
+      header: i18n.t(i18n.l.token_launcher.errors.header),
+      body: i18n.t(i18n.l.token_launcher.errors.unsupported_network),
+    };
+  } else if (error.code === TokenLauncherErrorCode.UNKNOWN_ERROR) {
     return {
       header: i18n.t(i18n.l.token_launcher.errors.header),
       body: i18n.t(i18n.l.token_launcher.errors.unknown_error),
