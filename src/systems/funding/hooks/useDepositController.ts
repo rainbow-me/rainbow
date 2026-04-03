@@ -14,15 +14,13 @@ import {
   toFixedWorklet,
   trimTrailingZeros,
 } from '@/framework/core/safeMath';
-import { useUserAssetsStore } from '@/state/assets/userAssets';
 import { useListen } from '@/state/internal/hooks/useListen';
 import { useStoreSharedValue } from '@/state/internal/hooks/useStoreSharedValue';
 import { useWalletsStore } from '@/state/wallets/walletsStore';
 import { type ExtendedAnimatedAssetWithColors } from '@/__swaps__/types/assets';
-import { addCommasToNumber, parseAssetAndExtend } from '@/__swaps__/utils/swaps';
+import { addCommasToNumber } from '@/__swaps__/utils/swaps';
 import { time } from '@/utils/time';
 import { sanitizeAmount } from '@/worklets/strings';
-import { INITIAL_SLIDER_PROGRESS } from '../constants';
 import {
   type AmountStoreType,
   type DepositGasStoresType,
@@ -30,7 +28,9 @@ import {
   type InputMethod,
   type InteractionSource,
   type MinifiedAsset,
+  type DepositConfig,
 } from '../types';
+import { resolveInitialDepositAsset } from '../utils/sourceAsset';
 import { amountFromSliderProgress, sliderProgressFromAmount } from '../utils/sliderWorklets';
 
 // ============ Controller Hook =============================================== //
@@ -42,6 +42,7 @@ type ComputeMaxSwappableFn = (
 ) => string | undefined;
 
 export function useDepositController(
+  config: DepositConfig,
   computeMaxSwappableAmount: ComputeMaxSwappableFn,
   gasStores: DepositGasStoresType,
   useAmountStore: AmountStoreType,
@@ -52,7 +53,10 @@ export function useDepositController(
   const assetDecimals = useStoreSharedValue(useDepositStore, state => state.asset?.decimals ?? 18);
   const assetPrice = useStoreSharedValue(useDepositStore, state => state.asset?.price?.value ?? 0);
 
-  const initialState = useStableValue(() => buildInitialState(useDepositStore, useAmountStore, gasStores.useMaxSwappableAmount.getState()));
+  const { initialSliderProgress } = config;
+  const initialState = useStableValue(() =>
+    buildInitialState(initialSliderProgress, useDepositStore, useAmountStore, gasStores.useMaxSwappableAmount.getState())
+  );
 
   const displayedAmount = useSharedValue(initialState.amount);
   const displayedNativeValue = useSharedValue(initialState.nativeValue);
@@ -60,7 +64,7 @@ export function useDepositController(
   const inputMethod = useSharedValue<InputMethod>('inputNativeValue');
   const interactionSource = useSharedValue<InteractionSource>('slider');
   const isSubmitting = useSharedValue(false);
-  const sliderProgress = useSharedValue(INITIAL_SLIDER_PROGRESS);
+  const sliderProgress = useSharedValue(initialSliderProgress);
 
   const primaryFormattedInput = useDerivedValue(() => {
     const isNativeInput = inputMethod.value === 'inputNativeValue';
@@ -171,7 +175,7 @@ export function useDepositController(
           assetDecimals: decimals,
           assetPrice: price,
           maxSwappableAmount: maxSwappable,
-          progress: sliderProgress.value || INITIAL_SLIDER_PROGRESS,
+          progress: sliderProgress.value || initialSliderProgress,
         });
       })();
     }
@@ -206,13 +210,7 @@ export function useDepositController(
     (current, previous) => {
       if (previous === null || current === previous) return;
       queueMicrotask(() => {
-        useDepositStore.getState().setAsset(
-          current
-            ? parseAssetAndExtend({
-                asset: useUserAssetsStore.getState().getHighestValueNativeAsset(),
-              })
-            : null
-        );
+        useDepositStore.getState().setAsset(current ? resolveInitialDepositAsset(config) : null);
       });
     }
   );
@@ -349,6 +347,7 @@ export type DepositControllerReturn = {
 // ============ Helper Functions ============================================== //
 
 function buildInitialState(
+  initialSliderProgress: number,
   useDepositStore: DepositStoreType,
   useAmountStore: AmountStoreType,
   initialMaxSwappableAmount: string | undefined
@@ -363,7 +362,7 @@ function buildInitialState(
   const nativePrice = asset?.price?.value || 0;
   const decimals = asset?.decimals || 18;
 
-  const { amount, nativeValue } = amountFromSliderProgress(INITIAL_SLIDER_PROGRESS, balance, nativePrice, decimals);
+  const { amount, nativeValue } = amountFromSliderProgress(initialSliderProgress, balance, nativePrice, decimals);
 
   return {
     amount,

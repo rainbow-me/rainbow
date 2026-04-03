@@ -1,21 +1,57 @@
-import { type BalanceQueryStore, type DepositConfig, type WithdrawalConfig } from './types';
+import * as i18n from '@/languages';
+import { INITIAL_SLIDER_PROGRESS } from './constants';
+import { type BalanceQueryStore, type DepositConfig, type DepositConfigInput, type DepositLabels, type WithdrawalConfig } from './types';
 
 // ============ Config Helpers ================================================= //
 
+function getDefaultDepositLabels(): DepositLabels {
+  return {
+    confirmButton: i18n.t(i18n.l.perps.deposit.confirm_button_text),
+    confirmButtonError: i18n.t(i18n.l.perps.deposit.confirm_button_error_text),
+    confirmButtonLoading: i18n.t(i18n.l.perps.deposit.confirm_button_loading_text),
+    confirmButtonOverBalance: i18n.t(i18n.l.perps.deposit.confirm_button_over_balance_text),
+    confirmButtonZeroAmount: i18n.t(i18n.l.perps.deposit.confirm_button_zero_text),
+    executionErrorTitle: i18n.t(i18n.l.swap.error_executing_swap),
+    gasSponsored: 'Free',
+    insufficientGas: i18n.t(i18n.l.perps.deposit.insufficient_gas),
+    invalidRouteRecipientError: 'Bridge route is not targeting your account. Please retry.',
+    missingRecipientError: 'Missing recipient address',
+    quoteError: i18n.t(i18n.l.perps.deposit.quote_error),
+    receive: i18n.t(i18n.l.perps.deposit.receive),
+    title: i18n.t(i18n.l.perps.deposit.title),
+  };
+}
+
 /**
- * Identity function enabling type inference for deposit configs.
+ * Creates a fully resolved deposit config from partial input.
+ * Fills in default labels, normalizes source and gas config.
  *
  * @example
  * ```ts
  * export const MY_DEPOSIT_CONFIG = createDepositConfig({
  *   id: 'my-feature',
  *   to: { chainId: ChainId.polygon, token: { ... } },
- *   // Full type checking without explicit type annotation
  * });
  * ```
  */
-export function createDepositConfig(config: DepositConfig): DepositConfig {
-  return config;
+export function createDepositConfig(config: DepositConfigInput): DepositConfig {
+  return {
+    ...config,
+    gas: config.gas,
+    hideReceiveAmount: config.hideReceiveAmount ?? false,
+    initialSliderProgress: config.initialSliderProgress ?? INITIAL_SLIDER_PROGRESS,
+    labels: {
+      ...getDefaultDepositLabels(),
+      ...config.labels,
+    },
+    source:
+      config.source?.mode === 'fixed'
+        ? {
+            mode: 'fixed',
+            resolveAsset: config.source.resolveAsset,
+          }
+        : { mode: 'selectable' },
+  };
 }
 
 /**

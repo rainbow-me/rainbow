@@ -23,6 +23,7 @@ type WithdrawalControllerOptions = {
   amountActions?: StoreActions<AmountStoreType>;
   balanceStore: BalanceStore;
   decimals: number;
+  initialSliderProgress?: number;
 };
 
 type WithdrawalControllerReturn = {
@@ -44,11 +45,12 @@ export function useWithdrawalController({
   amountActions,
   balanceStore,
   decimals,
+  initialSliderProgress = INITIAL_SLIDER_PROGRESS,
 }: WithdrawalControllerOptions): WithdrawalControllerReturn {
   const balance = useStoreSharedValue(balanceStore, state => state.getBalance());
-  const initial = getInitialValues(balanceStore, decimals);
+  const initial = getInitialValues(balanceStore, decimals, initialSliderProgress);
 
-  const sliderProgress = useSharedValue(INITIAL_SLIDER_PROGRESS);
+  const sliderProgress = useSharedValue(initialSliderProgress);
   const interactionSource = useSharedValue<InteractionSource>('slider');
   const inputMethod = useSharedValue('inputAmount');
   const displayedAmount = useSharedValue(initial.initialAmount);
@@ -180,12 +182,13 @@ export function useWithdrawalController({
 
 function getInitialValues(
   balanceStore: BalanceStore,
-  decimals: number
+  decimals: number,
+  initialSliderProgress: number
 ): {
   fields: Record<InputMethod, NumberPadField>;
   initialAmount: string;
 } {
-  const result = valueFromSliderProgress(INITIAL_SLIDER_PROGRESS, balanceStore.getState().getBalance(), decimals);
+  const result = valueFromSliderProgress(initialSliderProgress, balanceStore.getState().getBalance(), decimals);
   const initialAmount = sanitizeAmount(result.amount);
   return {
     fields: {

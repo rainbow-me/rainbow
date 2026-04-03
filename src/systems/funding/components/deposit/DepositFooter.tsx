@@ -3,7 +3,6 @@ import { type SharedValue, useDerivedValue } from 'react-native-reanimated';
 import { Box, Separator, useColorMode } from '@/design-system';
 import { PerpsSwapButton } from '@/features/perps/components/PerpsSwapButton';
 import { useStableValue } from '@/hooks/useStableValue';
-import * as i18n from '@/languages';
 import { createDerivedStore } from '@/state/internal/createDerivedStore';
 import { useStoreSharedValue } from '@/state/internal/hooks/useStoreSharedValue';
 import { type InferStoreState } from '@/state/internal/types';
@@ -14,7 +13,11 @@ import { GasButton } from './gas/GasButton';
 
 // ============ Types ========================================================== //
 
-type InputAmountError = DepositQuoteStatus.InsufficientBalance | DepositQuoteStatus.ZeroAmountError | null;
+type InputAmountError =
+  | DepositQuoteStatus.BelowMinimum
+  | DepositQuoteStatus.InsufficientBalance
+  | DepositQuoteStatus.ZeroAmountError
+  | null;
 
 type QuoteStatus =
   | DepositQuoteStatus.Error
@@ -22,17 +25,6 @@ type QuoteStatus =
   | DepositQuoteStatus.InsufficientGas
   | DepositQuoteStatus.Success
   | null;
-
-// ============ Translations =================================================== //
-
-const translations = {
-  confirm: i18n.t(i18n.l.perps.deposit.confirm_button_text),
-  error: i18n.t(i18n.l.perps.deposit.confirm_button_error_text),
-  insufficientGas: i18n.t(i18n.l.perps.deposit.insufficient_gas),
-  loading: i18n.t(i18n.l.perps.deposit.confirm_button_loading_text),
-  overBalance: i18n.t(i18n.l.perps.deposit.confirm_button_over_balance_text),
-  zeroAmount: i18n.t(i18n.l.perps.deposit.confirm_button_zero_text),
-};
 
 // ============ Footer ========================================================= //
 
@@ -57,14 +49,15 @@ export const DepositFooter = memo(function DepositFooter({ inputAmountError, isS
 // ============ Gas Button Wrapper ============================================= //
 
 const GasButtonWrapper = memo(function GasButtonWrapper() {
-  const { depositActions, gasStores, useQuoteStore } = useDepositContext();
+  const { config, depositActions, gasStores, useQuoteStore } = useDepositContext();
+  const useCustomExecute = Boolean(config.execute);
 
   const isLoading = useStoreSharedValue(
     useStableValue(() =>
       createDerivedStore(
         $ => {
           const isGasLimitLoading = $(gasStores.useGasLimitStore, state => !state.getData() && state.status === 'loading');
-          const isQuoteLoading = $(useQuoteStore, state => state.status === 'loading');
+          const isQuoteLoading = useCustomExecute ? false : $(useQuoteStore, state => state.status === 'loading');
           return isQuoteLoading || isGasLimitLoading;
         },
         { debounce: time.ms(100), fastMode: true }
@@ -90,26 +83,35 @@ type SubmitButtonProps = {
 
 const SubmitButton = memo(function SubmitButton({ inputAmountError, isSubmitting, onSubmit }: SubmitButtonProps) {
   const { isDarkMode } = useColorMode();
-  const { theme, useQuoteStore } = useDepositContext();
+  const { config, theme, useQuoteStore } = useDepositContext();
+  const useCustomExecute = Boolean(config.execute);
   const accentColor = getAccentColor(theme, isDarkMode);
 
   const quoteStatus = useStoreSharedValue(useQuoteStore, selectQuoteStatus);
 
+  const configLabels = config.labels;
+  const minAmountLabel = config.validation?.minAmount?.label;
+
   const label = useDerivedValue(() => {
     const inputError = inputAmountError.value;
     const status = quoteStatus.value;
+    const labels = configLabels;
 
-    if (inputError === DepositQuoteStatus.ZeroAmountError) return translations.zeroAmount;
-    if (inputError === DepositQuoteStatus.InsufficientBalance) return translations.overBalance;
-    if (status === DepositQuoteStatus.InsufficientGas) return translations.insufficientGas;
-    if (status === DepositQuoteStatus.Error || status === DepositQuoteStatus.InsufficientBalance) return translations.error;
-    if (isSubmitting.value) return translations.loading;
-    return translations.confirm;
+    if (inputError === DepositQuoteStatus.ZeroAmountError) return labels.confirmButtonZeroAmount;
+    if (inputError === DepositQuoteStatus.BelowMinimum) return minAmountLabel ?? labels.confirmButtonZeroAmount;
+    if (inputError === DepositQuoteStatus.InsufficientBalance) return labels.confirmButtonOverBalance;
+    if (status === DepositQuoteStatus.InsufficientGas) return labels.insufficientGas;
+    if (!useCustomExecute && (status === DepositQuoteStatus.Error || status === DepositQuoteStatus.InsufficientBalance)) {
+      return labels.confirmButtonError;
+    }
+    if (isSubmitting.value) return labels.confirmButtonLoading;
+    return labels.confirmButton;
   });
 
   const disabled = useDerivedValue(() => {
     if (isSubmitting.value) return true;
     if (inputAmountError.value !== null) return true;
+    if (useCustomExecute) return false;
 
     const status = quoteStatus.value;
     return status === null || status === DepositQuoteStatus.Error || status === DepositQuoteStatus.InsufficientGas;

@@ -29,10 +29,10 @@ type DepositProviderProps = {
 
 export function DepositProvider({ children, config, initialAsset, initialGasSpeed, theme }: DepositProviderProps): React.ReactElement {
   const stores = useStableValue(() => {
-    const useAmountStore = createDepositAmountStore(initialAsset);
+    const useAmountStore = createDepositAmountStore(initialAsset, config.initialSliderProgress);
     const useDepositStore = createDepositStore(config, initialAsset, initialGasSpeed);
     const useQuoteStore = createDepositQuoteStore(config, useAmountStore, useDepositStore);
-    const gasStores = createDepositGasStores(config, useDepositStore, useQuoteStore);
+    const gasStores = createDepositGasStores(config, useAmountStore, useDepositStore, useQuoteStore);
     const useAmountToReceive = createAmountToReceiveStore(useAmountStore, useQuoteStore, config.to.token.displaySymbol);
 
     const depositActions = createStoreActions(useAmountStore, createStoreActions(useDepositStore));
@@ -49,7 +49,13 @@ export function DepositProvider({ children, config, initialAsset, initialGasSpee
     };
   });
 
-  const controller = useDepositController(computeMaxSwappableAmount, stores.gasStores, stores.useAmountStore, stores.useDepositStore);
+  const controller = useDepositController(
+    config,
+    computeMaxSwappableAmount,
+    stores.gasStores,
+    stores.useAmountStore,
+    stores.useDepositStore
+  );
 
   const handleDeposit = useDepositHandler({
     config,
@@ -57,6 +63,7 @@ export function DepositProvider({ children, config, initialAsset, initialGasSpee
     gasStores: stores.gasStores,
     isSubmitting: controller.isSubmitting,
     quoteActions: stores.quoteActions,
+    useAmountStore: stores.useAmountStore,
   });
 
   const contextValue: DepositContextType = {
@@ -70,6 +77,7 @@ export function DepositProvider({ children, config, initialAsset, initialGasSpee
   useCleanup(() => {
     stores.gasStores.useMeteorologyStore.getState().reset(true);
     stores.gasStores.useGasLimitStore.getState().reset(true);
+    stores.gasStores.useGasSponsorshipStore.getState().reset(true);
     stores.useQuoteStore.getState().reset(true);
   });
 
