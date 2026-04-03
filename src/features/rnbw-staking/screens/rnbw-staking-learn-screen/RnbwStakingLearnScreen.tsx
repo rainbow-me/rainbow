@@ -36,7 +36,7 @@ export const RnbwStakingLearnScreen = memo(function RnbwStakingLearnScreen() {
       />
       <SheetHandleFixedToTop top={safeAreaTop + 6} />
       <View style={[styles.content, { marginTop: safeAreaTop + 40, paddingBottom: safeAreaBottom + 8 }]}>
-        <Box gap={64}>
+        <Box gap={64} flexGrow={1}>
           <Box alignItems="center" gap={24}>
             <Text align="center" size="17pt" weight="heavy" color={{ custom: '#D7A921' }}>
               {'INTRODUCING'}
@@ -159,7 +159,6 @@ const styles = StyleSheet.create({
     width: '100%',
   },
   button: {
-    marginTop: 'auto',
     width: '100%',
   },
   container: {

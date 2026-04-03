@@ -24,7 +24,7 @@ export const RnbwThemedButton = memo(function RnbwThemedButton({
   containerStyle?: StyleProp<ViewStyle>;
 }) {
   return (
-    <ButtonPressAnimation onPress={onPress} style={style} scaleTo={0.96}>
+    <ButtonPressAnimation onPress={onPress} style={style} wrapperStyle={style} scaleTo={0.96}>
       <RnbwButtonSurface variant={variant} height={height} style={containerStyle}>
         <RnbwButtonText variant={variant} size={size} weight={weight}>
           {label}

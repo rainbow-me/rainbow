@@ -1,8 +1,8 @@
 import { memo, useState, useCallback } from 'react';
-import { RefreshControl, ScrollView, StyleSheet } from 'react-native';
+import { RefreshControl, StyleSheet } from 'react-native';
 import { Box, useColorMode } from '@/design-system';
 import { AccountImage } from '@/components/AccountImage';
-import { Navbar } from '@/components/navbar/Navbar';
+import { Navbar, navbarHeight } from '@/components/navbar/Navbar';
 import { RnbwRewardsClaimCard } from './components/RnbwRewardsClaimCard';
 import { RnbwAirdropClaimCard } from './components/RnbwAirdropClaimCard';
 import { RnbwUnstakePenaltyRecoveryCard } from './components/RnbwUnstakePenaltyRecoveryCard';
@@ -17,36 +17,50 @@ import { RnbwStakingEarningsCard } from './components/RnbwStakingEarningsCard';
 import { TAB_BAR_HEIGHT } from '@/navigation/SwipeNavigator';
 import { TierBadge } from '@/features/rnbw-membership/components/TierBadge';
 import { useMembershipTierInfo } from '@/features/rnbw-membership/stores/derived/useMembershipTierInfo';
+import { IS_ANDROID } from '@/env';
+import { ScrollHeaderFade } from '@/components/scroll-header-fade/ScrollHeaderFade';
+import { useScrollFadeHandler } from '@/components/scroll-header-fade/useScrollFadeHandler';
+import Animated, { useSharedValue } from 'react-native-reanimated';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
+import { getValueForColorMode } from '@/design-system/color/palettes';
+import { MEMBERSHIP_SCREEN_BACKGROUND_COLOR } from '@/features/rnbw-membership/constants';
 
 export const RnbwMembershipScreen = memo(function RnbwMembershipScreen() {
-  const hasPosition = useStakingPositionStore(s => s.hasPosition());
-  const { isDarkMode } = useColorMode();
+  const hasStakingPosition = useStakingPositionStore(s => s.hasPosition());
+  const { colorMode } = useColorMode();
+  const safeAreaInsets = useSafeAreaInsets();
+  const backgroundColor = getValueForColorMode(MEMBERSHIP_SCREEN_BACKGROUND_COLOR, colorMode);
+  const scrollOffset = useSharedValue(0);
+  const onScroll = useScrollFadeHandler(scrollOffset);
+  const bottomInset = TAB_BAR_HEIGHT + 16;
 
   return (
-    <Box backgroundColor={isDarkMode ? '#090909' : '#F5F5F7'} style={styles.flex}>
+    <Box backgroundColor={backgroundColor} style={styles.flex}>
       <Navbar hasStatusBarInset titleComponent={<CurrentTierBadge />} leftComponent={<AccountImage />} />
-      <ScrollView
+      <ScrollHeaderFade color={backgroundColor} height={32} scrollOffset={scrollOffset} topInset={safeAreaInsets.top + navbarHeight} />
+      <Animated.ScrollView
         refreshControl={<RefreshControlWrapper />}
-        contentContainerStyle={styles.scrollViewContentContainer}
+        contentContainerStyle={[styles.scrollViewContentContainer, { paddingBottom: IS_ANDROID ? bottomInset : 0 }]}
         style={styles.flex}
+        onScroll={onScroll}
         contentInset={{
-          bottom: TAB_BAR_HEIGHT + 16,
+          bottom: bottomInset,
         }}
       >
-        <Box gap={16} style={{ flex: 1 }}>
+        <Box gap={16}>
           <RnbwStakingCard />
-          {hasPosition && <RnbwStakingEarningsCard />}
-          {hasPosition && <RnbwUnstakePenaltyRecoveryCard />}
+          {hasStakingPosition && <RnbwStakingEarningsCard />}
+          {hasStakingPosition && <RnbwUnstakePenaltyRecoveryCard />}
           <MembershipTierCard />
           <RnbwRewardsClaimCard />
           <RnbwAirdropClaimCard />
         </Box>
-      </ScrollView>
+      </Animated.ScrollView>
     </Box>
   );
 });
 
-function RefreshControlWrapper() {
+function RefreshControlWrapper(props: Omit<React.ComponentProps<typeof RefreshControl>, 'refreshing' | 'onRefresh'>) {
   const [isRefreshing, setIsRefreshing] = useState(false);
 
   const handleRefresh = useCallback(async () => {
@@ -62,7 +76,14 @@ function RefreshControlWrapper() {
     setIsRefreshing(false);
   }, []);
 
-  return <RefreshControl refreshing={isRefreshing} onRefresh={handleRefresh} />;
+  return (
+    <RefreshControl
+      // eslint-disable-next-line react/jsx-props-no-spreading
+      {...props}
+      refreshing={isRefreshing}
+      onRefresh={handleRefresh}
+    />
+  );
 }
 
 function CurrentTierBadge() {
