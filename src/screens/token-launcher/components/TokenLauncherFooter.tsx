@@ -77,7 +77,19 @@ function HoldToCreateButton() {
       }
 
       const privateKey = await loadPrivateKey(accountAddress, isHardwareWallet);
-      if (!privateKey || privateKey === kc.ErrorType.UserCanceled || privateKey === kc.ErrorType.NotAuthenticated) {
+      if (privateKey === kc.ErrorType.UserCanceled) {
+        setIsProcessing(false);
+        return;
+      }
+      if (!privateKey || privateKey === kc.ErrorType.NotAuthenticated) {
+        navigate(Routes.WALLET_ERROR_SHEET);
+        logger.error(new RainbowError('[TokenLauncher]: Private key unavailable'), {
+          isNull: !privateKey,
+          isNotAuthenticated: privateKey === kc.ErrorType.NotAuthenticated,
+        });
+        analytics.track(analytics.event.tokenLauncherWalletLoadFailed, {
+          error: !privateKey ? 'Private key is null' : 'Not authenticated',
+        });
         setIsProcessing(false);
         return;
       }
