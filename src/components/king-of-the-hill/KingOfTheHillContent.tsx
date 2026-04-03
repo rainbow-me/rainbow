@@ -148,9 +148,15 @@ export const KingOfTheHillContent = memo(function KingOfTheHillContent({
   );
 
   const keyExtractor = useCallback((item: ListItem) => {
-    if (item.type !== 'item') {
+    if (item.type === 'header') {
+      const token = item.data.current?.token;
+      return `header-${token?.address ?? 'unknown'}-${token?.chainId ?? 'unknown'}`;
+    }
+
+    if (item.type === 'past-winners') {
       return item.type;
     }
+
     return `${item.token.address}-${item.token.chainId}`;
   }, []);
 
