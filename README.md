@@ -51,7 +51,6 @@ Set up these **before** running `yarn install`, as the postinstall script reads
    Providers to provide open source API Keys.
    - Etherscan: https://etherscan.io/apis
    - Infura: https://infura.io/
-   - ETH Gas Station: https://docs.ethgasstation.info/
    - Imgix: https://www.imgix.com/
 2. Provide your own `google-services.json` in `android/app/` from a personal
    Firebase project registered under the package name `me.rainbow`.
