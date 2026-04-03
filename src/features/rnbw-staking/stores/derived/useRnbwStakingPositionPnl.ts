@@ -12,6 +12,7 @@ type StakingPositionPnl = {
   isPositivePnl: boolean;
   earnedFromExitFees: string;
   earningsRequiredToBreakEven: string;
+  rnbwAfterUnstake: string;
 };
 
 const EMPTY_VALUE: StakingPositionPnl = {
@@ -21,6 +22,7 @@ const EMPTY_VALUE: StakingPositionPnl = {
   isPositivePnl: false,
   earnedFromExitFees: '0',
   earningsRequiredToBreakEven: '0',
+  rnbwAfterUnstake: '0',
 };
 
 export const useRnbwStakingPositionPnl = createDerivedStore<StakingPositionPnl>(
@@ -45,6 +47,7 @@ export const useRnbwStakingPositionPnl = createDerivedStore<StakingPositionPnl>(
       netPnl: isPositivePnl ? `+${netPnlFormatted}` : netPnlFormatted,
       earnedFromExitFees: formatNumber(convertRawAmountToDecimalFormatWorklet(exchangeRateGain, decimals)),
       earningsRequiredToBreakEven: formatNumber(convertRawAmountToDecimalFormatWorklet(subWorklet(exitFee, exchangeRateGain), decimals)),
+      rnbwAfterUnstake: formatNumber(convertRawAmountToDecimalFormatWorklet(subWorklet(stakedRnbw, exitFee), decimals)),
       isPositivePnl,
     };
   },

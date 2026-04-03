@@ -17,7 +17,7 @@ import { useRnbwRewardsFlowContext } from '@/features/rnbw-rewards/screens/rnbw-
 import { DEVICE_WIDTH } from '@/utils/deviceUtils';
 import { time } from '@/utils/time';
 import { transitionEasing } from '@/features/rnbw-rewards/animations/sceneTransitions';
-import { LoadingSpinner } from '@/features/rnbw-rewards/screens/rnbw-rewards-screen/components/LoadingSpinner';
+import { LoadingSpinner } from '@/framework/ui/components/LoadingSpinner';
 import concentricCircleImage from '@/features/rnbw-rewards/assets/radial-circle.png';
 import { SpinnableCoin, type SpinnableCoinHandle } from '@/features/rnbw-rewards/screens/rnbw-rewards-screen/components/SpinnableCoin';
 import { opacity } from '@/framework/ui/utils/opacity';
