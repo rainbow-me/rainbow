@@ -185,7 +185,7 @@ function TotalCostPill() {
       </Text>
       <Box flexDirection="row" alignItems="center" gap={4}>
         <Text size="17pt" weight="bold" color={{ custom: accentColors.opacity100 }}>
-          {`${extraBuyAmount} ${chainNativeAsset.symbol}`}
+          {`${extraBuyAmount.toFixed(18).replace(/\.?0+$/, '')} ${chainNativeAsset.symbol}`}
         </Text>
         <Text size="17pt" weight="bold" color={{ custom: accentColors.opacity30 }}>
           {'≈'}

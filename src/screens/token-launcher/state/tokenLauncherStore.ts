@@ -356,7 +356,7 @@ export const useTokenLauncherStore = createRainbowStore<TokenLauncherStore>((set
         ...(description ? { description } : {}),
         ...(imageUrl ? { logoUrl: imageUrl } : {}),
         ...(Object.keys(linksByType).length ? { links: linksByType } : {}),
-        ...(extraBuyAmount > 0 ? { amountIn: parseEther(extraBuyAmount.toString()).toString() } : {}),
+        ...(extraBuyAmount > 0 ? { amountIn: parseEther(extraBuyAmount.toFixed(18)).toString() } : {}),
       };
       const result = await TokenLauncherSDK.launchToken(params);
 
