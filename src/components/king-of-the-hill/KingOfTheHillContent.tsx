@@ -173,6 +173,7 @@ export const KingOfTheHillContent = memo(function KingOfTheHillContent({
             scrollY.value = event.nativeEvent.contentOffset.y;
           }
         }}
+        maintainVisibleContentPosition={false}
         recycleItems
         style={styles.list}
       />

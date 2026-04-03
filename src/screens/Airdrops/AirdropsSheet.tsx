@@ -162,7 +162,7 @@ const AirdropsList = () => {
       estimatedItemSize={COIN_ROW_HEIGHT + COIN_ROW_GAP}
       keyExtractor={keyExtractor}
       keyboardShouldPersistTaps="always"
-      maintainVisibleContentPosition
+      maintainVisibleContentPosition={false}
       onEndReached={!airdrops || airdrops.length < INITIAL_PAGE_SIZE ? undefined : fetchNextPage}
       recycleItems
       renderItem={renderItem}

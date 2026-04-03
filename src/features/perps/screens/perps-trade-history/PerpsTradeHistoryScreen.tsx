@@ -77,6 +77,7 @@ export const PerpsTradeHistoryScreen = memo(function PerpsTradeHistoryScreen() {
             data={trades}
             estimatedItemSize={ESTIMATED_ITEM_HEIGHT}
             keyExtractor={keyExtractor}
+            maintainVisibleContentPosition={false}
             renderItem={renderTradeItem}
             scrollIndicatorInsets={SCROLL_INSETS}
             style={styles.list}
