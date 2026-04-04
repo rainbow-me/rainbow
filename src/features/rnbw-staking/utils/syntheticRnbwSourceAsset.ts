@@ -65,19 +65,16 @@ export const RNBW_SYNTHETIC_SOURCE_STATIC_CONFIG: SyntheticRnbwSourceStaticConfi
   uniqueId: RNBW_TOKEN_UNIQUE_ID,
 };
 
-type BuildSyntheticRnbwSourceAssetParams = {
-  claimableRnbwRaw: string;
-  hasPendingClaim: boolean;
-  unitPrice: number;
-  walletAsset: ParsedSearchAsset | null;
-};
-
 export function buildSyntheticRnbwSourceAsset({
-  claimableRnbwRaw,
-  hasPendingClaim,
-  unitPrice,
-  walletAsset,
-}: BuildSyntheticRnbwSourceAssetParams): ExtendedAnimatedAssetWithColors | null {
+  includeRewardsBalance = false,
+}: { includeRewardsBalance?: boolean } = {}): ExtendedAnimatedAssetWithColors | null {
+  const walletAsset = useUserAssetsStore.getState().getUserAsset(RNBW_TOKEN_UNIQUE_ID) ?? null;
+  const rewardsData = includeRewardsBalance ? useRewardsBalanceStore.getState().getData() : null;
+  const unitPrice = snapshotUnitPrice(rewardsData, walletAsset);
+
+  const claimableRnbwRaw = rewardsData?.claimableRnbw ?? '0';
+  const hasPendingClaim = rewardsData?.hasPendingClaim ?? false;
+
   const currency = userAssetsStoreManager.getState().currency;
   const chainName = walletAsset?.chainName ?? useBackendNetworksStore.getState().getChainsName()[RNBW_CHAIN_ID] ?? String(RNBW_CHAIN_ID);
   const symbol = walletAsset?.symbol ?? RNBW_SYNTHETIC_SOURCE_STATIC_CONFIG.symbol;
@@ -125,12 +122,13 @@ export function buildSyntheticRnbwSourceAsset({
   return parseAssetAndExtend({ asset: syntheticAsset });
 }
 
-export function getInitialSyntheticRnbwSourceUnitPrice(): number {
-  const rewardsData = useRewardsBalanceStore.getState().getData();
+function snapshotUnitPrice(
+  rewardsData: { claimableRnbw: string; claimableValueInCurrency: string; hasPendingClaim: boolean } | null,
+  walletAsset: ParsedSearchAsset | null
+): number {
   const claimableUnitPrice = getClaimableRnbwUnitPrice(rewardsData);
   if (claimableUnitPrice > 0) return claimableUnitPrice;
 
-  const walletAsset = useUserAssetsStore.getState().getUserAsset(RNBW_TOKEN_UNIQUE_ID);
   return walletAsset?.price?.value ?? walletAsset?.native.price?.amount ?? 0;
 }
 

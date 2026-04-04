@@ -1,13 +1,11 @@
-import { useRewardsBalanceStore } from '@/features/rnbw-rewards/stores/rewardsBalanceStore';
 import { createDepositConfig } from '@/systems/funding/config';
-import { useUserAssetsStore } from '@/state/assets/userAssets';
 import { time } from '@/utils/time';
-import { RNBW_DECIMALS, RNBW_TOKEN_ADDRESS, RNBW_TOKEN_UNIQUE_ID, STAKING_CHAIN_ID } from './constants';
+import { RNBW_DECIMALS, RNBW_TOKEN_ADDRESS, STAKING_CHAIN_ID } from './constants';
 import { estimateStakeGasLimit } from './utils/estimateStakeGasLimit';
 import { refreshStakingData } from './utils/refreshStakingData';
 import { stakeRnbw } from './utils/stakeRnbw';
 import { canUseSponsoredRnbwStaking } from './utils/canUseSponsoredRnbwStaking';
-import { buildSyntheticRnbwSourceAsset, getInitialSyntheticRnbwSourceUnitPrice } from './utils/syntheticRnbwSourceAsset';
+import { buildSyntheticRnbwSourceAsset } from './utils/syntheticRnbwSourceAsset';
 
 export const RNBW_STAKING_DEPOSIT_CONFIG = createDepositConfig({
   id: 'rnbwStakingDeposit',
@@ -18,13 +16,8 @@ export const RNBW_STAKING_DEPOSIT_CONFIG = createDepositConfig({
   source: {
     mode: 'fixed',
     resolveAsset: () => {
-      const rewardsData = useRewardsBalanceStore.getState().getData();
-
       return buildSyntheticRnbwSourceAsset({
-        claimableRnbwRaw: rewardsData?.claimableRnbw ?? '0',
-        hasPendingClaim: rewardsData?.hasPendingClaim ?? false,
-        unitPrice: getInitialSyntheticRnbwSourceUnitPrice(),
-        walletAsset: useUserAssetsStore.getState().getUserAsset(RNBW_TOKEN_UNIQUE_ID),
+        includeRewardsBalance: true,
       });
     },
   },
