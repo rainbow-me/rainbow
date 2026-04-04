@@ -52,9 +52,9 @@ export const RnbwStakingLearnScreen = memo(function RnbwStakingLearnScreen() {
           </Box>
           <Box gap={42} flexGrow={1}>
             <ReasonRow
-              title={i18n.t(i18n.l.rnbw_staking.learn_screen.put_your_rnbw_to_work_title)}
-              subtitle={i18n.t(i18n.l.rnbw_staking.learn_screen.put_your_rnbw_to_work_subtitle)}
-              icon={<PutYourRnbwToWorkIcon />}
+              title={i18n.t(i18n.l.rnbw_staking.learn_screen.fee_cashback)}
+              subtitle={i18n.t(i18n.l.rnbw_staking.learn_screen.fee_cashback_subtitle)}
+              icon={<LockedRnbwIcon />}
             />
             <ReasonRow
               title={i18n.t(i18n.l.rnbw_staking.learn_screen.exit_fee_title, { exitFeePercentage })}
@@ -62,9 +62,9 @@ export const RnbwStakingLearnScreen = memo(function RnbwStakingLearnScreen() {
               icon={<UnstakePenaltyIcon percentage={exitFeePercentage} />}
             />
             <ReasonRow
-              title={i18n.t(i18n.l.rnbw_staking.learn_screen.passive_income_title)}
-              subtitle={i18n.t(i18n.l.rnbw_staking.learn_screen.passive_income_subtitle)}
-              icon={<PassiveIncomeIcon />}
+              title={i18n.t(i18n.l.rnbw_staking.learn_screen.stay_in_to_earn_more)}
+              subtitle={i18n.t(i18n.l.rnbw_staking.learn_screen.stay_in_to_earn_more_subtitle)}
+              icon={<ProgressMeterIcon />}
             />
           </Box>
         </Box>
@@ -95,7 +95,7 @@ function ReasonRow({ title, subtitle, icon }: { title: string; subtitle: string;
   );
 }
 
-function PutYourRnbwToWorkIcon() {
+function LockedRnbwIcon() {
   const { isDarkMode } = useColorMode();
   return (
     <View style={styles.rnbwIconWrapper}>
@@ -137,7 +137,7 @@ function UnstakePenaltyIcon({ percentage }: { percentage: number }) {
   );
 }
 
-function PassiveIncomeIcon() {
+function ProgressMeterIcon() {
   const { isDarkMode } = useColorMode();
   const backgroundColor = isDarkMode ? '#383A40' : '#FFFFFF';
   return (

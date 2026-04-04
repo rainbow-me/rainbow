@@ -5,7 +5,6 @@ import { AccountImage } from '@/components/AccountImage';
 import { Navbar, navbarHeight } from '@/components/navbar/Navbar';
 import { RnbwRewardsClaimCard } from './components/RnbwRewardsClaimCard';
 import { RnbwAirdropClaimCard } from './components/RnbwAirdropClaimCard';
-import { RnbwUnstakePenaltyRecoveryCard } from './components/RnbwUnstakePenaltyRecoveryCard';
 import { RnbwStakingCard } from './components/RnbwStakingCard';
 import { MembershipTierCard } from './components/MembershipTierCard';
 import { useRewardsBalanceStore } from '@/features/rnbw-rewards/stores/rewardsBalanceStore';
@@ -24,9 +23,11 @@ import Animated, { useSharedValue } from 'react-native-reanimated';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { getValueForColorMode } from '@/design-system/color/palettes';
 import { MEMBERSHIP_SCREEN_BACKGROUND_COLOR } from '@/features/rnbw-membership/constants';
+import ButtonPressAnimation from '@/components/animations/ButtonPressAnimation';
+import Navigation from '@/navigation/Navigation';
+import Routes from '@/navigation/routesNames';
 
 export const RnbwMembershipScreen = memo(function RnbwMembershipScreen() {
-  const hasStakingPosition = useStakingPositionStore(s => s.hasPosition());
   const { colorMode } = useColorMode();
   const safeAreaInsets = useSafeAreaInsets();
   const backgroundColor = getValueForColorMode(MEMBERSHIP_SCREEN_BACKGROUND_COLOR, colorMode);
@@ -49,8 +50,7 @@ export const RnbwMembershipScreen = memo(function RnbwMembershipScreen() {
       >
         <Box gap={16}>
           <RnbwStakingCard />
-          {hasStakingPosition && <RnbwStakingEarningsCard />}
-          {hasStakingPosition && <RnbwUnstakePenaltyRecoveryCard />}
+          <RnbwStakingEarningsCard />
           <MembershipTierCard />
           <RnbwRewardsClaimCard />
           <RnbwAirdropClaimCard />
@@ -88,7 +88,16 @@ function RefreshControlWrapper(props: Omit<React.ComponentProps<typeof RefreshCo
 
 function CurrentTierBadge() {
   const { currentTier } = useMembershipTierInfo();
-  return <TierBadge tier={currentTier} height={32} fontSize="17pt" />;
+
+  return (
+    <ButtonPressAnimation onPress={navigateToMembershipTiersSheet}>
+      <TierBadge tier={currentTier} height={32} fontSize="17pt" />
+    </ButtonPressAnimation>
+  );
+}
+
+function navigateToMembershipTiersSheet() {
+  Navigation.handleAction(Routes.RNBW_MEMBERSHIP_TIERS_SHEET);
 }
 
 const styles = StyleSheet.create({

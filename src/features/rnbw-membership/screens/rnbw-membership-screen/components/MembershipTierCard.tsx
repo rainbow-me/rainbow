@@ -1,5 +1,5 @@
 import { memo } from 'react';
-import { Box, Separator, Text } from '@/design-system';
+import { Box, Separator, Text, TextIcon } from '@/design-system';
 import { useMembershipTierInfo } from '@/features/rnbw-membership/stores/derived/useMembershipTierInfo';
 import ButtonPressAnimation from '@/components/animations/ButtonPressAnimation';
 import Navigation from '@/navigation/Navigation';
@@ -18,6 +18,11 @@ export const MembershipTierCard = memo(function MembershipTierCard() {
   return (
     <ButtonPressAnimation onPress={navigateToMembershipTiersSheet} scaleTo={0.96}>
       <MembershipCard paddingHorizontal="20px" paddingVertical="24px">
+        <Box position="absolute" top={{ custom: 24 }} right={{ custom: 20 }}>
+          <TextIcon size="icon 17px" weight="bold" color="labelQuaternary">
+            {'􀅴'}
+          </TextIcon>
+        </Box>
         <Box gap={16}>
           <TierThemedLabel tier={currentTier}>
             <Text size="22pt" weight="heavy" color="label">
@@ -35,7 +40,7 @@ export const MembershipTierCard = memo(function MembershipTierCard() {
           <Box gap={16} paddingHorizontal={'4px'}>
             <Box flexDirection="row" justifyContent="space-between">
               <Text size="17pt" weight="semibold" color="labelTertiary">
-                {i18n.t(i18n.l.rnbw_membership.shared.rewards)}
+                {i18n.t(i18n.l.rnbw_membership.shared.fee_cashback)}
               </Text>
               <Text size="17pt" weight="bold" color="label">
                 {`${cashbackPercentage}%`}

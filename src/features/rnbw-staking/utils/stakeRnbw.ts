@@ -32,7 +32,7 @@ export async function stakeRnbw({ address, amount }: { address: Address; amount:
     const claimStrategy = await resolveClaimStrategy(stakeAmountRaw);
     claimToDestination = claimStrategy.claimToDestination;
     claimFulfillsStake = claimStrategy.claimFulfillsStake;
-    const { requiredWalletBalanceRaw } = claimStrategy;
+    const { requiredWalletBalanceRaw, walletStakeAmountRaw } = claimStrategy;
     const amountFromWallet = formatUnits(BigInt(requiredWalletBalanceRaw), RNBW_DECIMALS);
     const amountFromRewards = subWorklet(amount, amountFromWallet);
 
@@ -83,8 +83,8 @@ export async function stakeRnbw({ address, amount }: { address: Address; amount:
 
     executionMode = canUseSponsoredStaking ? 'sponsored' : 'manual';
     canUseSponsoredStaking
-      ? await stakeRnbwSponsored({ address, provider, stakeAmountRaw: requiredWalletBalanceRaw, signer })
-      : await stakeRnbwManual({ address, provider, stakeAmountRaw: requiredWalletBalanceRaw, signer });
+      ? await stakeRnbwSponsored({ address, provider, stakeAmountRaw: walletStakeAmountRaw, signer })
+      : await stakeRnbwManual({ address, provider, stakeAmountRaw: walletStakeAmountRaw, signer });
 
     await pollForStakingUpdate(postClaimShares);
 
@@ -132,20 +132,33 @@ async function claimRnbwRewards({
 async function resolveClaimStrategy(stakeAmountRaw: string): Promise<{
   claimToDestination: ClaimToDestination;
   requiredWalletBalanceRaw: string;
+  walletStakeAmountRaw: string;
   claimFulfillsStake: boolean;
 }> {
   await useRewardsBalanceStore.getState().fetch(undefined, { force: true });
   const claimableRnbw = useRewardsBalanceStore.getState().getData()?.claimableRnbw ?? '0';
   const hasClaimable = useRewardsBalanceStore.getState().hasClaimableRewards();
-  const claimToStaking =
-    hasClaimable &&
-    greaterThanOrEqualToWorklet(stakeAmountRaw, claimableRnbw) &&
-    greaterThanOrEqualToWorklet(claimableRnbw, MIN_CLAIM_TO_STAKING_RAW);
-  const requiredWalletBalanceRaw = claimToStaking ? subWorklet(stakeAmountRaw, claimableRnbw) : stakeAmountRaw;
+  const canOffsetWithClaim = hasClaimable && greaterThanOrEqualToWorklet(stakeAmountRaw, claimableRnbw);
+  const claimToStaking = canOffsetWithClaim && greaterThanOrEqualToWorklet(claimableRnbw, MIN_CLAIM_TO_STAKING_RAW);
+
+  /**
+   * The claim always executes before the stake tx, so any claimable rewards — whether routed
+   * to staking or to the wallet — reduce the wallet balance the user needs up front.
+   */
+  const requiredWalletBalanceRaw = canOffsetWithClaim ? subWorklet(stakeAmountRaw, claimableRnbw) : stakeAmountRaw;
+
+  /**
+   * When claiming to staking, the claimed tokens go directly to the staking contract,
+   * so only the remainder needs to be staked from the wallet.
+   * When claiming to wallet, the full stake amount is pulled from the wallet (which
+   * now includes the claimed tokens).
+   */
+  const walletStakeAmountRaw = claimToStaking ? subWorklet(stakeAmountRaw, claimableRnbw) : stakeAmountRaw;
 
   return {
     claimToDestination: claimToStaking ? 'staking' : 'wallet',
     requiredWalletBalanceRaw,
+    walletStakeAmountRaw,
     claimFulfillsStake: claimToStaking && equalWorklet(stakeAmountRaw, claimableRnbw),
   };
 }
