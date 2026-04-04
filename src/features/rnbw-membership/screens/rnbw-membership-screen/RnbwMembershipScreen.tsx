@@ -35,7 +35,7 @@ export const RnbwMembershipScreen = memo(function RnbwMembershipScreen() {
   const bottomInset = TAB_BAR_HEIGHT + 16;
 
   return (
-    <Box backgroundColor={backgroundColor} style={styles.flex}>
+    <Box backgroundColor={backgroundColor} style={styles.flex} testID="rnbw-membership-screen">
       <Navbar hasStatusBarInset titleComponent={<CurrentTierBadge />} leftComponent={<AccountImage />} />
       <ScrollHeaderFade color={backgroundColor} height={32} scrollOffset={scrollOffset} topInset={safeAreaInsets.top + navbarHeight} />
       <Animated.ScrollView

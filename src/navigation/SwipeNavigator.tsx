@@ -121,8 +121,8 @@ const TabBar = memo(function TabBar({ activeIndex, descriptorsRef, getIsFocused,
     'rnbw_membership_enabled'
   );
   const showDappBrowserTab = useExperimentalFlag(DAPP_BROWSER) || dapp_browser;
-  const showRnbwRewardsTab = useExperimentalFlag(RNBW_REWARDS) || rnbw_rewards_enabled || IS_TEST;
-  const showRnbwMembership = useExperimentalFlag(RNBW_MEMBERSHIP) || rnbw_membership_enabled;
+  const showRnbwRewardsTab = useExperimentalFlag(RNBW_REWARDS) || rnbw_rewards_enabled;
+  const showRnbwMembership = useExperimentalFlag(RNBW_MEMBERSHIP) || rnbw_membership_enabled || IS_TEST;
   const showRnbwRewardsOrMembershipTab = showRnbwRewardsTab || showRnbwMembership;
 
   const numberOfTabs = 3 + (showRnbwRewardsOrMembershipTab ? 1 : 0) + (showDappBrowserTab ? 1 : 0);
@@ -644,7 +644,7 @@ function SwipeNavigatorScreens() {
   const showDappBrowserTab = useExperimentalFlag(DAPP_BROWSER) || dapp_browser;
   const showKingOfTheHillTab = useShowKingOfTheHill();
   const showRnbwRewardsTab = useExperimentalFlag(RNBW_REWARDS) || rnbw_rewards_enabled || IS_TEST;
-  const showRnbwMembership = useExperimentalFlag(RNBW_MEMBERSHIP) || rnbw_membership_enabled;
+  const showRnbwMembership = useExperimentalFlag(RNBW_MEMBERSHIP) || rnbw_membership_enabled || IS_TEST;
   const showRnbwRewardsOrMembershipTab = showRnbwRewardsTab || showRnbwMembership;
 
   const { language } = useAccountSettings();

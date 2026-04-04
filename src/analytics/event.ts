@@ -333,6 +333,12 @@ export const event = {
   // rnbw airdrop
   rnbwAirdropClaim: 'rnbw_airdrop.claim',
   rnbwAirdropClaimFailed: 'rnbw_airdrop.claim.failed',
+
+  // rnbw staking
+  rnbwStakingStake: 'rnbw_staking.stake',
+  rnbwStakingStakeFailed: 'rnbw_staking.stake.failed',
+  rnbwStakingUnstake: 'rnbw_staking.unstake',
+  rnbwStakingUnstakeFailed: 'rnbw_staking.unstake.failed',
 } as const;
 
 type SwapEventParameters<T extends 'swap' | 'crosschainSwap'> = {
@@ -1386,5 +1392,37 @@ export type EventProperties = {
       claim?: string;
       status?: string;
     };
+  };
+
+  // rnbw staking
+  [event.rnbwStakingStake]: {
+    chainId: number;
+    amount: string;
+    amountFromWallet: string;
+    amountFromRewards: string;
+    executionMode: 'sponsored' | 'manual' | 'claim_only';
+    claimToDestination: 'staking' | 'wallet';
+    claimFulfillsStake: boolean;
+  };
+  [event.rnbwStakingStakeFailed]: {
+    chainId: number;
+    amount: string;
+    executionMode?: 'sponsored' | 'manual' | 'claim_only';
+    claimToDestination?: 'staking' | 'wallet';
+    claimFulfillsStake?: boolean;
+    errorMessage: string;
+  };
+  [event.rnbwStakingUnstake]: {
+    chainId: number;
+    txHash: string;
+    stakedAmount: string;
+    expectedExitFee: string;
+    expectedReceiveAmount: string;
+    pnl: string;
+  };
+  [event.rnbwStakingUnstakeFailed]: {
+    chainId: number;
+    stakedAmount?: string;
+    errorMessage: string;
   };
 };
