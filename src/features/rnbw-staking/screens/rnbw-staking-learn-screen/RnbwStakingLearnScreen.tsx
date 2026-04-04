@@ -6,7 +6,7 @@ import { Box, Text, useColorMode } from '@/design-system';
 import Routes from '@/navigation/routesNames';
 import Navigation from '@/navigation/Navigation';
 import { RnbwCoinIcon } from '@/components/RnbwCoinIcon';
-import { UNSTAKE_PENALTY_PERCENTAGE } from '@/features/rnbw-staking/constants';
+import { useStakingPositionStore } from '@/features/rnbw-staking/stores/rnbwStakingPositionStore';
 import { RnbwThemedButton } from '@/features/rnbw-membership/components/RnbwThemedButton';
 import { UnstakePenaltySign } from '@/features/rnbw-staking/components/UnstakePenaltySign';
 import { ProgressMeter } from '@/features/rnbw-membership/components/ProgressMeter';
@@ -21,6 +21,7 @@ const PROGRESS_LABEL_HEIGHT = 24;
 const ARROW_SIZE = 7;
 
 export const RnbwStakingLearnScreen = memo(function RnbwStakingLearnScreen() {
+  const exitFeePercentage = useStakingPositionStore(s => s.getExitFeePercentage());
   const { top: safeAreaTop, bottom: safeAreaBottom } = useSafeAreaInsets();
   const { isDarkMode } = useColorMode();
   const screenBackgroundColor = isDarkMode ? '#090909' : '#FEFEFE';
@@ -55,9 +56,9 @@ export const RnbwStakingLearnScreen = memo(function RnbwStakingLearnScreen() {
               icon={<PutYourRnbwToWorkIcon />}
             />
             <ReasonRow
-              title={`${UNSTAKE_PENALTY_PERCENTAGE}% Exit Fee`}
-              subtitle={`Unstaking comes with a ${UNSTAKE_PENALTY_PERCENTAGE}% fee.`}
-              icon={<UnstakePenaltyIcon />}
+              title={`${exitFeePercentage}% Exit Fee`}
+              subtitle={`Unstaking comes with a ${exitFeePercentage}% fee.`}
+              icon={<UnstakePenaltyIcon percentage={exitFeePercentage} />}
             />
             <ReasonRow
               title="Passive Income"
@@ -120,9 +121,10 @@ function PutYourRnbwToWorkIcon() {
   );
 }
 
-function UnstakePenaltyIcon() {
+function UnstakePenaltyIcon({ percentage }: { percentage: number }) {
   return (
     <UnstakePenaltySign
+      percentage={percentage}
       signFaceConfig={{ width: 62, height: 42, borderRadius: 14, borderWidth: 3.33, fontSize: '20pt', fontWeight: 'heavy' }}
       signPostConfig={{ width: 8, height: 16 }}
     />

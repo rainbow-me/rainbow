@@ -1,7 +1,7 @@
 import { encodeFunctionData, type Address, type Hash } from 'viem';
 import { getProvider } from '@/handlers/web3';
 import { loadWallet } from '@/model/wallet';
-import { STAKING_ABI, STAKING_CHAIN_ID, STAKING_CONTRACT_ADDRESS, UNSTAKE_PENALTY_PERCENTAGE } from '../constants';
+import { STAKING_ABI, STAKING_CHAIN_ID, STAKING_CONTRACT_ADDRESS } from '../constants';
 import { type StakingPositionData, useStakingPositionStore } from '../stores/rnbwStakingPositionStore';
 import { pollForStakingUpdate } from './pollForStakingUpdate';
 import { analytics } from '@/analytics';
@@ -11,7 +11,7 @@ import { RainbowError } from '@/logger';
 
 export async function unstakeRnbw({ address }: { address: Address }): Promise<Hash> {
   const positionData = useStakingPositionStore.getState().getData();
-  if (!positionData) {
+  if (!positionData || !positionData.exitFeePercentage) {
     throw new RainbowError('[unstakeRnbw]: Position data missing');
   }
   const positionSnapshot = snapshotUnstakeAnalytics(positionData);
@@ -53,7 +53,8 @@ export async function unstakeRnbw({ address }: { address: Address }): Promise<Ha
 
 function snapshotUnstakeAnalytics(positionData: StakingPositionData) {
   const { stakedRnbw: stakedRnbwRaw, decimals, sessionPnl } = positionData;
-  const exitFeeRaw = mulWorklet(stakedRnbwRaw, UNSTAKE_PENALTY_PERCENTAGE / 100);
+  const exitFeePercentage = useStakingPositionStore.getState().getExitFeePercentage();
+  const exitFeeRaw = mulWorklet(stakedRnbwRaw, exitFeePercentage / 100);
 
   return {
     stakedAmount: convertRawAmountToDecimalFormat(stakedRnbwRaw, decimals),

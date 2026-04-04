@@ -1,11 +1,11 @@
 import { memo } from 'react';
 import { Box, Text, useColorMode, type TextProps } from '@/design-system';
 import { StyleSheet, View } from 'react-native';
-import { UNSTAKE_PENALTY_PERCENTAGE } from '../constants';
 import { LinearGradient } from 'expo-linear-gradient';
 import { opacity } from '@/framework/ui/utils/opacity';
 
 type PenaltySignProps = {
+  percentage: number;
   signFaceConfig?: {
     width: number;
     height: number;
@@ -35,6 +35,7 @@ const SIGN_POST_CONFIG = {
 } as const;
 
 export const UnstakePenaltySign = memo(function UnstakePenaltySign({
+  percentage,
   signFaceConfig: signFaceConfig = SIGN_FACE_CONFIG,
   signPostConfig: signPostConfig = SIGN_POST_CONFIG,
 }: PenaltySignProps) {
@@ -68,7 +69,7 @@ export const UnstakePenaltySign = memo(function UnstakePenaltySign({
         }}
       >
         <Text color="label" size={signFaceConfig.fontSize} weight={signFaceConfig.fontWeight}>
-          {`${UNSTAKE_PENALTY_PERCENTAGE}%`}
+          {`${percentage}%`}
         </Text>
       </Box>
       {/* Sign Post */}
