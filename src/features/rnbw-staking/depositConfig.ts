@@ -7,6 +7,7 @@ import { refreshStakingData } from './utils/refreshStakingData';
 import { stakeRnbw } from './utils/stakeRnbw';
 import { canUseSponsoredRnbwStaking } from './utils/canUseSponsoredRnbwStaking';
 import { buildSyntheticRnbwSourceAsset } from './utils/syntheticRnbwSourceAsset';
+import * as i18n from '@/languages';
 
 export const RNBW_STAKING_DEPOSIT_CONFIG = createDepositConfig({
   id: 'rnbwStakingDeposit',
@@ -44,22 +45,22 @@ export const RNBW_STAKING_DEPOSIT_CONFIG = createDepositConfig({
   },
 
   labels: {
-    confirmButton: 'Hold to Stake',
-    confirmButtonError: 'Unable to stake',
-    confirmButtonLoading: 'Staking...',
-    confirmButtonOverBalance: 'Insufficient RNBW',
-    confirmButtonZeroAmount: 'Enter amount',
-    executionErrorTitle: 'Error Staking',
-    insufficientGas: 'Insufficient gas',
-    quoteError: 'Unable to prepare stake',
-    receive: 'Rewards will be automatically claimed',
-    title: 'Stake $RNBW',
+    confirmButton: i18n.t(i18n.l.rnbw_staking.deposit.confirm_button),
+    confirmButtonError: i18n.t(i18n.l.rnbw_staking.deposit.confirm_button_error),
+    confirmButtonLoading: i18n.t(i18n.l.rnbw_staking.deposit.confirm_button_loading),
+    confirmButtonOverBalance: i18n.t(i18n.l.rnbw_staking.deposit.confirm_button_over_balance),
+    confirmButtonZeroAmount: i18n.t(i18n.l.rnbw_staking.deposit.confirm_button_zero_amount),
+    executionErrorTitle: i18n.t(i18n.l.rnbw_staking.deposit.execution_error_title),
+    insufficientGas: i18n.t(i18n.l.rnbw_staking.deposit.insufficient_gas),
+    quoteError: i18n.t(i18n.l.rnbw_staking.deposit.quote_error),
+    receive: i18n.t(i18n.l.rnbw_staking.deposit.receive),
+    title: i18n.t(i18n.l.rnbw_staking.deposit.title),
   },
 
   submitButtonComponent: RnbwStakingSubmitButton,
 
   validation: {
-    minAmount: { label: 'Minimum 1 RNBW', value: '1' },
+    minAmount: { label: i18n.t(i18n.l.rnbw_staking.deposit.minimum_amount), value: '1' },
   },
 
   refresh: {

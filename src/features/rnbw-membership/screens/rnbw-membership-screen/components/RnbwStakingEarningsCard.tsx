@@ -5,6 +5,7 @@ import { RNBW_SYMBOL } from '@/features/rnbw-rewards/constants';
 import rnbwCoinImage from '@/assets/rnbw.png';
 import { Image } from 'react-native';
 import { MembershipCard } from '@/features/rnbw-membership/screens/rnbw-membership-screen/components/MembershipCard';
+import * as i18n from '@/languages';
 
 export const RnbwStakingEarningsCard = memo(function RnbwStakingEarningsCard() {
   const { totalEarnings, cashbackEarnings, cashbackShare, exitRewardsEarnings, exitRewardsShare } = useRnbwStakingEarnings();
@@ -13,7 +14,7 @@ export const RnbwStakingEarningsCard = memo(function RnbwStakingEarningsCard() {
     <MembershipCard padding="24px">
       <Box gap={16}>
         <Text size="17pt" weight="bold" color="labelTertiary" align="left">
-          {'Total Earnings'}
+          {i18n.t(i18n.l.rnbw_membership.staking_earnings_card.total_earnings)}
         </Text>
 
         <Box flexDirection="row" alignItems="center" gap={8}>
@@ -24,9 +25,17 @@ export const RnbwStakingEarningsCard = memo(function RnbwStakingEarningsCard() {
         </Box>
         <Separator color="separatorTertiary" thickness={1} />
         <Box gap={14}>
-          <EarningsRow label="Cashback" percentage={cashbackShare} amount={cashbackEarnings} />
+          <EarningsRow
+            label={i18n.t(i18n.l.rnbw_membership.staking_earnings_card.cashback)}
+            percentage={cashbackShare}
+            amount={cashbackEarnings}
+          />
           <Separator color="separatorTertiary" thickness={1} />
-          <EarningsRow label="Exit Rewards" percentage={exitRewardsShare} amount={exitRewardsEarnings} />
+          <EarningsRow
+            label={i18n.t(i18n.l.rnbw_membership.staking_earnings_card.exit_rewards)}
+            percentage={exitRewardsShare}
+            amount={exitRewardsEarnings}
+          />
         </Box>
       </Box>
     </MembershipCard>
