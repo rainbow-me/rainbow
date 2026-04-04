@@ -13,6 +13,7 @@ import { ProgressMeter } from '@/features/rnbw-membership/components/ProgressMet
 import { GradientBorderView } from '@/components/gradient-border/GradientBorderView';
 import { LinearGradient } from 'expo-linear-gradient';
 import { opacity } from '@/framework/ui/utils/opacity';
+import * as i18n from '@/languages';
 
 const ICON_CONTAINER_WIDTH = 62;
 const RNBW_ICON_SIZE = 52;
@@ -40,34 +41,39 @@ export const RnbwStakingLearnScreen = memo(function RnbwStakingLearnScreen() {
         <Box gap={64} flexGrow={1}>
           <Box alignItems="center" gap={24}>
             <Text align="center" size="17pt" weight="heavy" color={{ custom: '#D7A921' }}>
-              {'INTRODUCING'}
+              {i18n.t(i18n.l.rnbw_staking.learn_screen.introducing)}
             </Text>
             <Text align="center" color="label" size="44pt" weight="heavy">
-              {'Staking'}
+              {i18n.t(i18n.l.rnbw_staking.learn_screen.title)}
             </Text>
             <Text align="center" color="labelTertiary" size="20pt / 135%" weight="semibold">
-              {'Lock your $RNBW to join the pool. Stay longer to recover your exit fee and earn from those who leave.'}
+              {i18n.t(i18n.l.rnbw_staking.learn_screen.description)}
             </Text>
           </Box>
           <Box gap={42} flexGrow={1}>
             <ReasonRow
-              title="Put Your $RNBW to Work"
-              subtitle="Stake your RNBW to lock your position and start earning from the pool."
+              title={i18n.t(i18n.l.rnbw_staking.learn_screen.put_your_rnbw_to_work_title)}
+              subtitle={i18n.t(i18n.l.rnbw_staking.learn_screen.put_your_rnbw_to_work_subtitle)}
               icon={<PutYourRnbwToWorkIcon />}
             />
             <ReasonRow
-              title={`${exitFeePercentage}% Exit Fee`}
-              subtitle={`Unstaking comes with a ${exitFeePercentage}% fee.`}
+              title={i18n.t(i18n.l.rnbw_staking.learn_screen.exit_fee_title, { exitFeePercentage })}
+              subtitle={i18n.t(i18n.l.rnbw_staking.learn_screen.exit_fee_subtitle, { exitFeePercentage })}
               icon={<UnstakePenaltyIcon percentage={exitFeePercentage} />}
             />
             <ReasonRow
-              title="Passive Income"
-              subtitle="Benefit from every exit. Exit fees are distributed to the pool. Stay longer to offset your own fees and reach pure profit."
+              title={i18n.t(i18n.l.rnbw_staking.learn_screen.passive_income_title)}
+              subtitle={i18n.t(i18n.l.rnbw_staking.learn_screen.passive_income_subtitle)}
               icon={<PassiveIncomeIcon />}
             />
           </Box>
         </Box>
-        <RnbwThemedButton onPress={navigateToStakingScreen} label="Enable Staking" height={48} style={styles.button} />
+        <RnbwThemedButton
+          onPress={navigateToStakingScreen}
+          label={i18n.t(i18n.l.rnbw_staking.learn_screen.enable_staking)}
+          height={48}
+          style={styles.button}
+        />
       </View>
     </Box>
   );

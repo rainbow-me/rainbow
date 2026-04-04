@@ -198,6 +198,8 @@ export type DepositLabels = {
   insufficientGas: string;
   invalidRouteRecipientError: string;
   missingRecipientError: string;
+  noWalletConnected: string;
+  unknownExecutionError: string;
   quoteError: string;
   receive: string;
   title: string;

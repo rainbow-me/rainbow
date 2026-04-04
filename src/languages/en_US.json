@@ -1659,7 +1659,12 @@
         "confirm_button_error_text": "Quote Error",
         "quote_error": "􀇿 No quote available",
         "insufficient_balance": "􀫲 Insufficient Funds",
-        "insufficient_gas": "Insufficient Gas"
+        "insufficient_gas": "Insufficient Gas",
+        "gas_sponsored": "Free",
+        "invalid_route_recipient_error": "Bridge route is not targeting your account. Please retry.",
+        "missing_recipient_error": "Missing recipient address",
+        "no_wallet_connected": "No wallet connected",
+        "unknown_execution_error": "Unknown error while processing deposit"
       },
       "withdraw": {
         "title": "Withdraw",
@@ -3847,6 +3852,76 @@
       "claim_card": {
         "airdrop": "Airdrop",
         "rewards": "Rewards"
+      },
+      "shared": {
+        "tier_label": "%{tierName} Tier",
+        "rewards": "Rewards",
+        "loyalty_progress": "Loyalty Progress"
+      },
+      "membership_tier_card": {
+        "stake_to_next_tier": "Stake to next tier"
+      },
+      "membership_tiers_sheet": {
+        "stake_to_unlock": "Stake to unlock"
+      },
+      "staking_card": {
+        "stake": "Stake",
+        "enable_staking": "Enable Staking",
+        "buy_rnbw": "Buy RNBW",
+        "unstake": "Unstake",
+        "available_to_stake": "available to stake"
+      },
+      "staking_earnings_card": {
+        "total_earnings": "Total Earnings",
+        "cashback": "Cashback",
+        "exit_rewards": "Exit Rewards"
+      },
+      "unstake_penalty_recovery_card": {
+        "break_even_reached": "Break even reached!",
+        "earned_prefix": "You've earned ",
+        "earned_middle": " from the pool. Just ",
+        "earned_suffix": " more to reach pure profit."
+      }
+    },
+    "rnbw_staking": {
+      "deposit": {
+        "confirm_button": "Hold to Stake",
+        "confirm_button_error": "Unable to stake",
+        "confirm_button_loading": "Staking...",
+        "confirm_button_over_balance": "Insufficient RNBW",
+        "confirm_button_zero_amount": "Enter amount",
+        "execution_error_title": "Error Staking",
+        "insufficient_gas": "Insufficient gas",
+        "quote_error": "Unable to prepare stake",
+        "receive": "Rewards will be automatically claimed",
+        "title": "Stake $RNBW",
+        "minimum_amount": "Minimum 1 RNBW"
+      },
+      "learn_screen": {
+        "introducing": "INTRODUCING",
+        "title": "Staking",
+        "description": "Lock your $RNBW to join the pool. Stay longer to recover your exit fee and earn from those who leave.",
+        "put_your_rnbw_to_work_title": "Put Your $RNBW to Work",
+        "put_your_rnbw_to_work_subtitle": "Stake your RNBW to lock your position and start earning from the pool.",
+        "exit_fee_title": "%{exitFeePercentage}% Exit Fee",
+        "exit_fee_subtitle": "Unstaking comes with a %{exitFeePercentage}% fee.",
+        "passive_income_title": "Passive Income",
+        "passive_income_subtitle": "Benefit from every exit. Exit fees are distributed to the pool. Stay longer to offset your own fees and reach pure profit.",
+        "enable_staking": "Enable Staking"
+      },
+      "unstake_sheet": {
+        "exit_fee": "Exit Fee",
+        "warning_description": "Unstaking will charge a %{exitFeePercentage}% fee to your staked balance.",
+        "confirm_unstake": "Confirm Unstake",
+        "keep_staking": "Keep Staking",
+        "unstake_failed_title": "Unstake Failed",
+        "unstake_failed_message": "An error occurred while unstaking your RNBW. Please try again.",
+        "unstake_title": "Unstake $%{symbol}",
+        "loyalty_progress": "Loyalty Progress",
+        "receive": "Receive",
+        "total_return": "Total Return",
+        "hold_to_unstake": "Hold to Unstake",
+        "unstaking": "Unstaking..."
       }
     },
     "wallet_error_sheet": {

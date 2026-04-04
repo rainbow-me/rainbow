@@ -21,6 +21,7 @@ import { useStableValue } from '@/hooks/useStableValue';
 import { LinearGradient } from 'expo-linear-gradient';
 import { RnbwCoinIcon } from '@/components/RnbwCoinIcon';
 import { RnbwHoldToActivateButton } from '@/features/rnbw-membership/components/RnbwHoldToActivateButton';
+import * as i18n from '@/languages';
 
 const LAYOUT_ANIMATION_CONFIG = SPRING_CONFIGS.snappierSpringConfig;
 const LAYOUT_ANIMATION = LinearTransition.springify()
@@ -55,10 +56,10 @@ const WarningContent = memo(function WarningContent({ onProceed }: { onProceed: 
           <UnstakePenaltySign percentage={exitFeePercentage} />
           <Stack space="20px" alignHorizontal="center">
             <Text color="label" size="34pt" weight="heavy" align="center">
-              {'Exit Fee'}
+              {i18n.t(i18n.l.rnbw_staking.unstake_sheet.exit_fee)}
             </Text>
             <Text color="labelTertiary" size="17pt / 135%" weight="semibold" align="center">
-              {`Unstaking will charge a ${exitFeePercentage}% fee to your staked balance.`}
+              {i18n.t(i18n.l.rnbw_staking.unstake_sheet.warning_description, { exitFeePercentage })}
             </Text>
           </Stack>
         </Stack>
@@ -80,14 +81,14 @@ const WarningContent = memo(function WarningContent({ onProceed }: { onProceed: 
                 style={StyleSheet.absoluteFill}
               />
               <Text color={{ custom: globalColors.red60 }} size="22pt" weight="heavy">
-                {'Confirm Unstake'}
+                {i18n.t(i18n.l.rnbw_staking.unstake_sheet.confirm_unstake)}
               </Text>
             </Box>
           </ButtonPressAnimation>
           <Box height={48} justifyContent="center" alignItems="center">
             <ButtonPressAnimation onPress={goBack}>
               <Text color="label" size="22pt" weight="heavy">
-                {'Keep Staking'}
+                {i18n.t(i18n.l.rnbw_staking.unstake_sheet.keep_staking)}
               </Text>
             </ButtonPressAnimation>
           </Box>
@@ -115,7 +116,10 @@ const UnstakeContent = memo(function UnstakeContent() {
       goBack();
     } catch (e) {
       setIsProcessing(false);
-      Alert.alert('Unstake Failed', 'An error occurred while unstaking your RNBW. Please try again.');
+      Alert.alert(
+        i18n.t(i18n.l.rnbw_staking.unstake_sheet.unstake_failed_title),
+        i18n.t(i18n.l.rnbw_staking.unstake_sheet.unstake_failed_message)
+      );
       const error = ensureError(e);
       logger.error(new RainbowError('[RnbwUnstakeSheet]: Unstake failed', error));
     }
@@ -138,7 +142,7 @@ const UnstakeContent = memo(function UnstakeContent() {
     <View style={styles.unstakeContentContainer}>
       <Stack space="44px">
         <Text color="label" size="20pt" weight="heavy" align="center">
-          {`Unstake $${RNBW_SYMBOL}`}
+          {i18n.t(i18n.l.rnbw_staking.unstake_sheet.unstake_title, { symbol: RNBW_SYMBOL })}
         </Text>
         <Stack space="24px" alignHorizontal="center">
           <RnbwCoinIcon size={80} />
@@ -157,7 +161,7 @@ const UnstakeContent = memo(function UnstakeContent() {
         <Stack separator={<Separator color="separatorTertiary" thickness={1} />}>
           <Box flexDirection="row" height={44} alignItems="center" justifyContent="space-between" width="full">
             <Text color="labelTertiary" size="17pt" weight="semibold">
-              {'Exit Fee'}
+              {i18n.t(i18n.l.rnbw_staking.unstake_sheet.exit_fee)}
             </Text>
             <Text color="label" size="17pt" weight="bold">
               {`${exitFeePercentage}%`}
@@ -165,7 +169,7 @@ const UnstakeContent = memo(function UnstakeContent() {
           </Box>
           <Box flexDirection="row" height={44} alignItems="center" justifyContent="space-between" width="full">
             <Text color="labelTertiary" size="17pt" weight="semibold">
-              {'Loyalty Progress'}
+              {i18n.t(i18n.l.rnbw_staking.unstake_sheet.loyalty_progress)}
             </Text>
             <Text color="label" size="17pt" weight="bold">
               {`${exitFeeOffsetRatioDisplay}`}
@@ -173,7 +177,7 @@ const UnstakeContent = memo(function UnstakeContent() {
           </Box>
           <Box flexDirection="row" height={44} alignItems="center" justifyContent="space-between" width="full">
             <Text color="labelTertiary" size="17pt" weight="semibold">
-              {'Receive'}
+              {i18n.t(i18n.l.rnbw_staking.unstake_sheet.receive)}
             </Text>
             <Text color="label" size="17pt" weight="bold">
               {`${rnbwAfterUnstake} ${RNBW_SYMBOL}`}
@@ -181,7 +185,7 @@ const UnstakeContent = memo(function UnstakeContent() {
           </Box>
           <Box flexDirection="row" height={44} alignItems="center" justifyContent="space-between" width="full">
             <Text color="labelTertiary" size="17pt" weight="semibold">
-              {'Total Return'}
+              {i18n.t(i18n.l.rnbw_staking.unstake_sheet.total_return)}
             </Text>
             <Text color={isPositivePnl ? 'green' : 'red'} size="17pt" weight="bold">
               {`${netPnl} ${RNBW_SYMBOL}`}
@@ -191,8 +195,8 @@ const UnstakeContent = memo(function UnstakeContent() {
       </Box>
       <Box marginTop={{ custom: 32 }}>
         <RnbwHoldToActivateButton
-          label="Hold to Unstake"
-          processingLabel="Unstaking..."
+          label={i18n.t(i18n.l.rnbw_staking.unstake_sheet.hold_to_unstake)}
+          processingLabel={i18n.t(i18n.l.rnbw_staking.unstake_sheet.unstaking)}
           onActivate={handleUnstake}
           isProcessing={isProcessing}
           showBiometryIcon

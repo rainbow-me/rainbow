@@ -17,6 +17,7 @@ import { TIER_VISUALS } from '../../constants';
 import { LinearGradient, type LinearGradientProps } from 'expo-linear-gradient';
 import { getValueForColorMode } from '@/design-system/color/palettes';
 import { TierProgressBar } from '@/features/rnbw-membership/components/TierProgressBar';
+import * as i18n from '@/languages';
 
 const AnimatedLinearGradient = Animated.createAnimatedComponent(LinearGradient);
 
@@ -69,7 +70,7 @@ function Tier({ tier, tierIndex, tierCount }: { tier: TierType; tierIndex: numbe
         <Box gap={20}>
           <TierThemedLabel tier={tier}>
             <Text size="34pt" weight="heavy" color="label" align="center">
-              {`${tier.name} Tier`}
+              {i18n.t(i18n.l.rnbw_membership.shared.tier_label, { tierName: tier.name })}
             </Text>
           </TierThemedLabel>
           <Box flexDirection="row" justifyContent="center" gap={4}>
@@ -79,7 +80,7 @@ function Tier({ tier, tierIndex, tierCount }: { tier: TierType; tierIndex: numbe
               </Text>
             </TierThemedLabel>
             <Text size="17pt" weight="semibold" color="labelTertiary">
-              {'Rewards'}
+              {i18n.t(i18n.l.rnbw_membership.shared.rewards)}
             </Text>
           </Box>
         </Box>
@@ -87,7 +88,7 @@ function Tier({ tier, tierIndex, tierCount }: { tier: TierType; tierIndex: numbe
         <Box gap={16} paddingHorizontal={'8px'}>
           <Box flexDirection="row" justifyContent="space-between">
             <Text size="17pt" weight="semibold" color="labelTertiary">
-              {'Rewards'}
+              {i18n.t(i18n.l.rnbw_membership.shared.rewards)}
             </Text>
             <Text size="17pt" weight="bold" color="label">
               {tierCashbackDisplay}
@@ -96,7 +97,7 @@ function Tier({ tier, tierIndex, tierCount }: { tier: TierType; tierIndex: numbe
           <Separator thickness={1} color={'separatorTertiary'} />
           <Box flexDirection="row" justifyContent="space-between">
             <Text size="17pt" weight="semibold" color="labelTertiary">
-              {'Stake to unlock'}
+              {i18n.t(i18n.l.rnbw_membership.membership_tiers_sheet.stake_to_unlock)}
             </Text>
             <Text size="17pt" weight="bold" color="label">
               {`${stakeRequiredForTierDisplay} ${RNBW_SYMBOL}`}
