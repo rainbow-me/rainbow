@@ -17,7 +17,7 @@ type StakingPnl = {
   exchangeRateGain: string;
 };
 
-type StakingPositionData = {
+export type StakingPositionData = {
   allTiers: Tier[];
   decimals: number;
   hasPosition: boolean;

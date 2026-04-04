@@ -1,4 +1,4 @@
-import { encodeFunctionData, erc20Abi, parseUnits, type Address, type Hash } from 'viem';
+import { encodeFunctionData, erc20Abi, formatUnits, parseUnits, type Address, type Hash } from 'viem';
 import { stakeRnbwManual } from './stakeRnbwManual';
 import { stakeRnbwSponsored } from './stakeRnbwSponsored';
 import { getProvider } from '@/handlers/web3';
@@ -11,62 +11,103 @@ import type { Signer } from '@ethersproject/abstract-signer';
 import { useRewardsBalanceStore } from '@/features/rnbw-rewards/stores/rewardsBalanceStore';
 import { prepareRewardsClaim, submitRewardsClaim } from '@/features/rnbw-rewards/utils/claimRewards';
 import { userAssetsStoreManager } from '@/state/assets/userAssetsStoreManager';
-import { Alert } from 'react-native';
 import { equalWorklet, greaterThanOrEqualToWorklet, isPositive, subWorklet } from '@/framework/core/safeMath';
 import type { ClaimToDestination } from '@/features/rnbw-rewards/utils/claimRewards';
 import { canUseSponsoredRnbwStaking } from './canUseSponsoredRnbwStaking';
+import { analytics } from '@/analytics';
 
 export async function stakeRnbw({ address, amount }: { address: Address; amount: string }) {
-  const provider = getProvider({ chainId: STAKING_CHAIN_ID });
-  const signer = await loadWallet({ address, provider });
-  if (!signer) {
-    throw new Error('Failed to load wallet');
-  }
+  let claimToDestination: ClaimToDestination | undefined;
+  let claimFulfillsStake: boolean | undefined;
+  let executionMode: 'sponsored' | 'manual' | 'claim_only' | undefined;
 
-  const stakeAmountRaw = parseUnits(amount, RNBW_DECIMALS).toString();
-  const { claimToDestination, requiredWalletBalanceRaw, claimFulfillsStake } = await resolveClaimStrategy(stakeAmountRaw);
+  try {
+    const provider = getProvider({ chainId: STAKING_CHAIN_ID });
+    const signer = await loadWallet({ address, provider });
+    if (!signer) {
+      throw new Error('Failed to load wallet');
+    }
 
-  if (isPositive(requiredWalletBalanceRaw)) {
-    const rnbwBalanceRaw = BigInt(
-      await provider.call({
-        to: RNBW_TOKEN_ADDRESS,
-        data: encodeFunctionData({ abi: erc20Abi, functionName: 'balanceOf', args: [address] }),
-      })
-    ).toString();
+    const stakeAmountRaw = parseUnits(amount, RNBW_DECIMALS).toString();
+    const claimStrategy = await resolveClaimStrategy(stakeAmountRaw);
+    claimToDestination = claimStrategy.claimToDestination;
+    claimFulfillsStake = claimStrategy.claimFulfillsStake;
+    const { requiredWalletBalanceRaw } = claimStrategy;
+    const amountFromWallet = formatUnits(BigInt(requiredWalletBalanceRaw), RNBW_DECIMALS);
+    const amountFromRewards = subWorklet(amount, amountFromWallet);
+
+    if (isPositive(requiredWalletBalanceRaw)) {
+      const rnbwBalanceRaw = BigInt(
+        await provider.call({
+          to: RNBW_TOKEN_ADDRESS,
+          data: encodeFunctionData({ abi: erc20Abi, functionName: 'balanceOf', args: [address] }),
+        })
+      ).toString();
+
+      /**
+       * This check is not strictly necessary, as the provider gas estimation will fail if the balance is insufficient.
+       * However, the error returned by the provider in that case is opaque.
+       */
+      const hasSufficientBalance = greaterThanOrEqualToWorklet(rnbwBalanceRaw, requiredWalletBalanceRaw);
+      if (!hasSufficientBalance) {
+        throw new RainbowError('[stakeRnbw]: Insufficient balance');
+      }
+    }
+
+    const canUseSponsoredStaking = await canUseSponsoredRnbwStaking(address, STAKING_CHAIN_ID);
+    const originalStakedRnbwShares = useStakingPositionStore.getState().getData()?.poolShares ?? '0';
+
+    await claimRnbwRewards({ address, signer, claimToDestination });
+
+    if (claimFulfillsStake) {
+      await pollForStakingUpdate(originalStakedRnbwShares);
+
+      analytics.track(analytics.event.rnbwStakingStake, {
+        chainId: STAKING_CHAIN_ID,
+        amount,
+        amountFromWallet,
+        amountFromRewards,
+        executionMode: 'claim_only',
+        claimToDestination,
+        claimFulfillsStake,
+      });
+      return;
+    }
 
     /**
-     * This check is not strictly necessary, as the provider gas estimation will fail if the balance is insufficient.
-     * However, the error returned by the provider in that case is opaque.
+     * Re-snapshot shares after the claim so the final poll baseline reflects the claim-to-staking.
+     * Without this, the poll would resolve as soon as the claim is indexed, before the wallet stake is reflected.
      */
-    const hasSufficientBalance = greaterThanOrEqualToWorklet(rnbwBalanceRaw, requiredWalletBalanceRaw);
-    if (!hasSufficientBalance) {
-      throw new RainbowError('[stakeRnbw]: Insufficient balance');
-    }
+    await useStakingPositionStore.getState().fetch(undefined, { force: true });
+    const postClaimShares = useStakingPositionStore.getState().getData()?.poolShares ?? originalStakedRnbwShares;
+
+    executionMode = canUseSponsoredStaking ? 'sponsored' : 'manual';
+    canUseSponsoredStaking
+      ? await stakeRnbwSponsored({ address, provider, stakeAmountRaw: requiredWalletBalanceRaw, signer })
+      : await stakeRnbwManual({ address, provider, stakeAmountRaw: requiredWalletBalanceRaw, signer });
+
+    await pollForStakingUpdate(postClaimShares);
+
+    analytics.track(analytics.event.rnbwStakingStake, {
+      chainId: STAKING_CHAIN_ID,
+      amount,
+      amountFromWallet,
+      amountFromRewards,
+      executionMode,
+      claimToDestination,
+      claimFulfillsStake,
+    });
+  } catch (error) {
+    analytics.track(analytics.event.rnbwStakingStakeFailed, {
+      chainId: STAKING_CHAIN_ID,
+      amount,
+      executionMode,
+      claimToDestination,
+      claimFulfillsStake,
+      errorMessage: error instanceof Error ? error.message : 'Unknown error',
+    });
+    throw error;
   }
-
-  const canUseSponsoredStaking = await canUseSponsoredRnbwStaking(address, STAKING_CHAIN_ID);
-  const originalStakedRnbwShares = useStakingPositionStore.getState().getData()?.poolShares ?? '0';
-
-  await claimRnbwRewards({ address, signer, claimToDestination });
-
-  if (claimFulfillsStake) {
-    await pollForStakingUpdate(originalStakedRnbwShares);
-    return;
-  }
-
-  /**
-   * Re-snapshot shares after the claim so the final poll baseline reflects the claim-to-staking.
-   * Without this, the poll would resolve as soon as the claim is indexed, before the wallet stake is reflected.
-   */
-  await useStakingPositionStore.getState().fetch(undefined, { force: true });
-  const postClaimShares = useStakingPositionStore.getState().getData()?.poolShares ?? originalStakedRnbwShares;
-
-  canUseSponsoredStaking
-    ? await stakeRnbwSponsored({ address, provider, stakeAmountRaw: requiredWalletBalanceRaw, signer })
-    : await stakeRnbwManual({ address, provider, stakeAmountRaw: requiredWalletBalanceRaw, signer });
-
-  await pollForStakingUpdate(postClaimShares);
-  Alert.alert(`Staked: ${amount} RNBW (${canUseSponsoredStaking ? 'Sponsored' : 'Manual'})`);
 }
 
 async function claimRnbwRewards({
