@@ -1,5 +1,6 @@
 import { createDepositConfig } from '@/systems/funding/config';
 import { time } from '@/utils/time';
+import { RnbwStakingSubmitButton } from './components/RnbwStakingSubmitButton';
 import { RNBW_DECIMALS, RNBW_TOKEN_ADDRESS, STAKING_CHAIN_ID } from './constants';
 import { estimateStakeGasLimit } from './utils/estimateStakeGasLimit';
 import { refreshStakingData } from './utils/refreshStakingData';
@@ -15,11 +16,7 @@ export const RNBW_STAKING_DEPOSIT_CONFIG = createDepositConfig({
 
   source: {
     mode: 'fixed',
-    resolveAsset: () => {
-      return buildSyntheticRnbwSourceAsset({
-        includeRewardsBalance: true,
-      });
-    },
+    resolveAsset: () => buildSyntheticRnbwSourceAsset({ includeRewardsBalance: true }),
   },
 
   to: {
@@ -58,6 +55,8 @@ export const RNBW_STAKING_DEPOSIT_CONFIG = createDepositConfig({
     receive: 'Rewards will be automatically claimed',
     title: 'Stake $RNBW',
   },
+
+  submitButtonComponent: RnbwStakingSubmitButton,
 
   validation: {
     minAmount: { label: 'Minimum 1 RNBW', value: '1' },

@@ -85,6 +85,7 @@ const SubmitButton = memo(function SubmitButton({ inputAmountError, isSubmitting
   const { isDarkMode } = useColorMode();
   const { config, theme, useQuoteStore } = useDepositContext();
   const useCustomExecute = Boolean(config.execute);
+  const SubmitButtonComponent = config.submitButtonComponent;
   const accentColor = getAccentColor(theme, isDarkMode);
 
   const quoteStatus = useStoreSharedValue(useQuoteStore, selectQuoteStatus);
@@ -119,7 +120,11 @@ const SubmitButton = memo(function SubmitButton({ inputAmountError, isSubmitting
 
   return (
     <Box flexGrow={1}>
-      <PerpsSwapButton accentColor={accentColor} disabled={disabled} label={label} onLongPress={onSubmit} />
+      {SubmitButtonComponent ? (
+        <SubmitButtonComponent disabled={disabled} isSubmitting={isSubmitting} label={label} onSubmit={onSubmit} />
+      ) : (
+        <PerpsSwapButton accentColor={accentColor} disabled={disabled} label={label} onLongPress={onSubmit} />
+      )}
     </Box>
   );
 });
