@@ -1,4 +1,4 @@
-import { memo, useCallback, useState } from 'react';
+import { memo, useCallback, useRef, useState } from 'react';
 import { Alert, StyleSheet, View } from 'react-native';
 import { LinearTransition } from 'react-native-reanimated';
 import ButtonPressAnimation from '@/components/animations/ButtonPressAnimation';
@@ -17,7 +17,6 @@ import { RNBW_SYMBOL } from '@/features/rnbw-rewards/constants';
 import { useRnbwStakingBalance } from '../../stores/derived/useRnbwStakingBalance';
 import { useRnbwStakingPositionPnl } from '../../stores/derived/useRnbwStakingPositionPnl';
 import { useStakingPositionStore } from '../../stores/rnbwStakingPositionStore';
-import { useStableValue } from '@/hooks/useStableValue';
 import { LinearGradient } from 'expo-linear-gradient';
 import { RnbwCoinIcon } from '@/components/RnbwCoinIcon';
 import { RnbwHoldToActivateButton } from '@/features/rnbw-membership/components/RnbwHoldToActivateButton';
@@ -81,14 +80,14 @@ const WarningContent = memo(function WarningContent({ onProceed }: { onProceed: 
                 style={StyleSheet.absoluteFill}
               />
               <Text color={{ custom: globalColors.red60 }} size="22pt" weight="heavy">
-                {i18n.t(i18n.l.rnbw_staking.unstake_sheet.confirm_unstake)}
+                {i18n.t(i18n.l.button.continue)}
               </Text>
             </Box>
           </ButtonPressAnimation>
           <Box height={48} justifyContent="center" alignItems="center">
             <ButtonPressAnimation onPress={goBack}>
               <Text color="label" size="22pt" weight="heavy">
-                {i18n.t(i18n.l.rnbw_staking.unstake_sheet.keep_staking)}
+                {i18n.t(i18n.l.button.cancel)}
               </Text>
             </ButtonPressAnimation>
           </Box>
@@ -99,23 +98,36 @@ const WarningContent = memo(function WarningContent({ onProceed }: { onProceed: 
 });
 
 const UnstakeContent = memo(function UnstakeContent() {
-  // We use the initial values only so we do not display 0 prior to the sheet being dismissed after unstaking.
-  const { tokenAmount, nativeCurrencyAmount } = useStableValue(() => useRnbwStakingBalance.getState());
-  const { exitFeeOffsetRatioDisplay, netPnl, isPositivePnl, rnbwAfterUnstake } = useStableValue(() => useRnbwStakingPositionPnl.getState());
-  const exitFeePercentage = useStableValue(() => useStakingPositionStore.getState().getExitFeePercentage());
+  const { tokenAmount, nativeCurrencyAmount } = useRnbwStakingBalance();
+  const { netPnl, isPositivePnl, rnbwAfterUnstake } = useRnbwStakingPositionPnl();
+  const exitFeePercentage = useStakingPositionStore(s => s.getExitFeePercentage());
   const { goBack, navigate } = useNavigation();
   const accountAddress = useAccountAddress();
   const isReadOnlyWallet = useIsReadOnlyWallet();
   const isHardwareWallet = useIsHardwareWallet();
   const [isProcessing, setIsProcessing] = useState(false);
+  const liveDisplay = {
+    tokenAmount,
+    nativeCurrencyAmount,
+    netPnl,
+    isPositivePnl,
+    rnbwAfterUnstake,
+    exitFeePercentage,
+  };
+  const frozenDisplayRef = useRef<typeof liveDisplay | null>(null);
 
-  const startUnstake = useCallback(async () => {
+  // Keep values live until submit, then freeze to prevent a brief zero value flash during sheet dismissal.
+  const displayValues = isProcessing && frozenDisplayRef.current ? frozenDisplayRef.current : liveDisplay;
+
+  const startUnstake = async () => {
+    frozenDisplayRef.current = liveDisplay;
     setIsProcessing(true);
     try {
       await unstakeRnbw({ address: accountAddress });
       goBack();
     } catch (e) {
       setIsProcessing(false);
+      frozenDisplayRef.current = null;
       Alert.alert(
         i18n.t(i18n.l.rnbw_staking.unstake_sheet.unstake_failed_title),
         i18n.t(i18n.l.rnbw_staking.unstake_sheet.unstake_failed_message)
@@ -123,9 +135,9 @@ const UnstakeContent = memo(function UnstakeContent() {
       const error = ensureError(e);
       logger.error(new RainbowError('[RnbwUnstakeSheet]: Unstake failed', error));
     }
-  }, [accountAddress, goBack]);
+  };
 
-  const handleUnstake = useCallback(async () => {
+  const handleUnstake = async () => {
     if (isReadOnlyWallet) {
       watchingAlert();
       return;
@@ -136,7 +148,7 @@ const UnstakeContent = memo(function UnstakeContent() {
     } else {
       await startUnstake();
     }
-  }, [isHardwareWallet, isReadOnlyWallet, navigate, startUnstake]);
+  };
 
   return (
     <View style={styles.unstakeContentContainer}>
@@ -148,10 +160,10 @@ const UnstakeContent = memo(function UnstakeContent() {
           <RnbwCoinIcon size={80} />
           <Stack space="12px" alignHorizontal="center">
             <Text color="label" size="44pt" weight="heavy" align="center">
-              {tokenAmount}
+              {displayValues.tokenAmount}
             </Text>
             <Text color="labelTertiary" size="17pt" weight="bold" align="center">
-              {nativeCurrencyAmount}
+              {displayValues.nativeCurrencyAmount}
             </Text>
           </Stack>
         </Stack>
@@ -164,15 +176,7 @@ const UnstakeContent = memo(function UnstakeContent() {
               {i18n.t(i18n.l.rnbw_staking.unstake_sheet.exit_fee)}
             </Text>
             <Text color="label" size="17pt" weight="bold">
-              {`${exitFeePercentage}%`}
-            </Text>
-          </Box>
-          <Box flexDirection="row" height={44} alignItems="center" justifyContent="space-between" width="full">
-            <Text color="labelTertiary" size="17pt" weight="semibold">
-              {i18n.t(i18n.l.rnbw_staking.unstake_sheet.loyalty_progress)}
-            </Text>
-            <Text color="label" size="17pt" weight="bold">
-              {`${exitFeeOffsetRatioDisplay}`}
+              {`${displayValues.exitFeePercentage}%`}
             </Text>
           </Box>
           <Box flexDirection="row" height={44} alignItems="center" justifyContent="space-between" width="full">
@@ -180,15 +184,15 @@ const UnstakeContent = memo(function UnstakeContent() {
               {i18n.t(i18n.l.rnbw_staking.unstake_sheet.receive)}
             </Text>
             <Text color="label" size="17pt" weight="bold">
-              {`${rnbwAfterUnstake} ${RNBW_SYMBOL}`}
+              {`${displayValues.rnbwAfterUnstake} ${RNBW_SYMBOL}`}
             </Text>
           </Box>
           <Box flexDirection="row" height={44} alignItems="center" justifyContent="space-between" width="full">
             <Text color="labelTertiary" size="17pt" weight="semibold">
               {i18n.t(i18n.l.rnbw_staking.unstake_sheet.total_return)}
             </Text>
-            <Text color={isPositivePnl ? 'green' : 'red'} size="17pt" weight="bold">
-              {`${netPnl} ${RNBW_SYMBOL}`}
+            <Text color={displayValues.isPositivePnl ? 'green' : 'red'} size="17pt" weight="bold">
+              {`${displayValues.netPnl} ${RNBW_SYMBOL}`}
             </Text>
           </Box>
         </Stack>

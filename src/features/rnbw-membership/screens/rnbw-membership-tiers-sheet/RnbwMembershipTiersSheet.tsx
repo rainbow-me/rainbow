@@ -80,7 +80,7 @@ function Tier({ tier, tierIndex, tierCount }: { tier: TierType; tierIndex: numbe
               </Text>
             </TierThemedLabel>
             <Text size="17pt" weight="semibold" color="labelTertiary">
-              {i18n.t(i18n.l.rnbw_membership.shared.rewards)}
+              {i18n.t(i18n.l.rnbw_membership.shared.fee_cashback)}
             </Text>
           </Box>
         </Box>
@@ -88,7 +88,7 @@ function Tier({ tier, tierIndex, tierCount }: { tier: TierType; tierIndex: numbe
         <Box gap={16} paddingHorizontal={'8px'}>
           <Box flexDirection="row" justifyContent="space-between">
             <Text size="17pt" weight="semibold" color="labelTertiary">
-              {i18n.t(i18n.l.rnbw_membership.shared.rewards)}
+              {i18n.t(i18n.l.rnbw_membership.shared.fee_cashback)}
             </Text>
             <Text size="17pt" weight="bold" color="label">
               {tierCashbackDisplay}

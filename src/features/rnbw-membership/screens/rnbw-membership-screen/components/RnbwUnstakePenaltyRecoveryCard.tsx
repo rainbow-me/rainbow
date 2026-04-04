@@ -1,16 +1,16 @@
 import { memo } from 'react';
 import { Box, Separator, Text, useColorMode } from '@/design-system';
+import { useRnbwStakingEarnings } from '@/features/rnbw-staking/stores/derived/useRnbwStakingEarnings';
 import { useRnbwStakingPositionPnl } from '@/features/rnbw-staking/stores/derived/useRnbwStakingPositionPnl';
 import { RNBW_SYMBOL } from '@/features/rnbw-rewards/constants';
 import { ProgressMeter } from '@/features/rnbw-membership/components/ProgressMeter';
 import { MembershipCard } from '@/features/rnbw-membership/screens/rnbw-membership-screen/components/MembershipCard';
-import { formatNumber } from '@/helpers/strings';
 import * as i18n from '@/languages';
 
 export const RnbwUnstakePenaltyRecoveryCard = memo(function RnbwUnstakePenaltyRecoveryCard() {
   const { isDarkMode } = useColorMode();
-  const { exitFeeOffsetRatio, exitFeeOffsetRatioDisplay, earnedFromExitFees, earningsRequiredToBreakEven, isPositivePnl } =
-    useRnbwStakingPositionPnl();
+  const { exitRewardsEarnings } = useRnbwStakingEarnings();
+  const { exitFeeOffsetRatio, exitFeeOffsetRatioDisplay, earningsRequiredToBreakEven, isPositivePnl } = useRnbwStakingPositionPnl();
 
   return (
     <MembershipCard padding="24px">
@@ -35,11 +35,11 @@ export const RnbwUnstakePenaltyRecoveryCard = memo(function RnbwUnstakePenaltyRe
           <Text size="15pt" weight="medium" color="labelTertiary">
             {i18n.t(i18n.l.rnbw_membership.unstake_penalty_recovery_card.earned_prefix)}
             <Text size="15pt" weight="bold" color={isDarkMode ? 'labelSecondary' : 'label'}>
-              {`${formatNumber(earnedFromExitFees, { decimals: 2 })} ${RNBW_SYMBOL}`}
+              {`${exitRewardsEarnings} ${RNBW_SYMBOL}`}
             </Text>
             {i18n.t(i18n.l.rnbw_membership.unstake_penalty_recovery_card.earned_middle)}
             <Text size="15pt" weight="bold" color={isDarkMode ? 'labelSecondary' : 'label'}>
-              {`${formatNumber(earningsRequiredToBreakEven, { decimals: 2 })} ${RNBW_SYMBOL}`}
+              {`${earningsRequiredToBreakEven} ${RNBW_SYMBOL}`}
             </Text>
             {i18n.t(i18n.l.rnbw_membership.unstake_penalty_recovery_card.earned_suffix)}
           </Text>

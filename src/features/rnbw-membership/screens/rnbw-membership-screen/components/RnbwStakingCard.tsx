@@ -10,6 +10,7 @@ import { MembershipCard } from './MembershipCard';
 import { RnbwThemedButton } from '@/features/rnbw-membership/components/RnbwThemedButton';
 import { navigateToBuyRnbw } from '@/features/rnbw-membership/utils/navigateToBuyRnbw';
 import * as i18n from '@/languages';
+import { MIN_STAKE_AMOUNT } from '@/features/rnbw-staking/constants';
 
 export const RnbwStakingCard = memo(function RnbwStakingCard() {
   const { tokenAmount, nativeCurrencyAmount, hasStakedPosition } = useRnbwStakingBalance();
@@ -30,17 +31,7 @@ export const RnbwStakingCard = memo(function RnbwStakingCard() {
             {`${tokenAmount} ${RNBW_SYMBOL}`}
           </Text>
         </Box>
-        {!hasStakedPosition && (
-          <RnbwThemedButton
-            onPress={hasMinimumStakeAmount ? navigateToStakingLearnSheet : navigateToBuyRnbw}
-            label={
-              hasMinimumStakeAmount
-                ? i18n.t(i18n.l.rnbw_membership.staking_card.enable_staking)
-                : i18n.t(i18n.l.rnbw_membership.staking_card.buy_rnbw)
-            }
-          />
-        )}
-        {hasStakedPosition && (
+        {hasStakedPosition ? (
           <Box flexDirection="row" gap={10}>
             <RnbwThemedButton
               onPress={navigateToUnstakeSheet}
@@ -56,16 +47,34 @@ export const RnbwStakingCard = memo(function RnbwStakingCard() {
               label={hasMinimumStakeAmount ? i18n.t(i18n.l.button.add) : i18n.t(i18n.l.rnbw_membership.staking_card.buy_rnbw)}
             />
           </Box>
+        ) : (
+          <RnbwThemedButton
+            onPress={hasMinimumStakeAmount ? navigateToStakingLearnSheet : navigateToBuyRnbw}
+            label={
+              hasMinimumStakeAmount
+                ? i18n.t(i18n.l.rnbw_membership.staking_card.enable_staking)
+                : i18n.t(i18n.l.rnbw_membership.staking_card.buy_rnbw)
+            }
+          />
         )}
         <Box flexDirection="row" alignItems="center" justifyContent="center" gap={4}>
           <RnbwCoinIcon size={18} />
           <Text size="15pt" weight="bold" color="labelSecondary" align="center">
-            {`${availableAmount}`}
+            {availableAmount}
           </Text>
           <Text size="15pt" weight="semibold" color="labelQuaternary" align="center">
-            {i18n.t(i18n.l.rnbw_membership.staking_card.available_to_stake)}
+            {i18n.t(
+              hasStakedPosition
+                ? i18n.l.rnbw_membership.staking_card.available_to_add
+                : i18n.l.rnbw_membership.staking_card.available_to_stake
+            )}
           </Text>
         </Box>
+        {!hasMinimumStakeAmount && (
+          <Text size="15pt" weight="semibold" color="labelQuaternary" align="center">
+            {i18n.t(i18n.l.rnbw_membership.staking_card.minimum_stake_amount_required, { minStakeAmount: MIN_STAKE_AMOUNT })}
+          </Text>
+        )}
       </Box>
     </MembershipCard>
   );
