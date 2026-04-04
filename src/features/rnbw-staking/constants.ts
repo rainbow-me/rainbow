@@ -16,8 +16,9 @@ export const STAKING_ABI = parseAbi([
   'function stake(uint256 amount)',
   'function unstakeAll()',
   'function minStakeAmount() view returns (uint256)',
+  'function exitFeeBps() view returns (uint256)',
 ]);
 export const STAKING_GAS_LIMIT = 200_000;
-export const UNSTAKE_PENALTY_PERCENTAGE = 10;
+export const DEFAULT_EXIT_FEE_PERCENTAGE = 10;
 
 export const MIN_CLAIM_TO_STAKING_RAW = '1000000000000000000'; // 1 RNBW (10^18)
