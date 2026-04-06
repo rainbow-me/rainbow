@@ -9,6 +9,7 @@ import { RnbwCoinIcon } from '@/components/RnbwCoinIcon';
 import { MembershipCard } from './MembershipCard';
 import { RnbwThemedButton } from '@/features/rnbw-membership/components/RnbwThemedButton';
 import { navigateToBuyRnbw } from '@/features/rnbw-membership/utils/navigateToBuyRnbw';
+import { blockRnbwStakingAccessIfNeeded } from '@/features/rnbw-staking/utils/blockStakingAccessIfNeeded';
 import * as i18n from '@/languages';
 import { MIN_STAKE_AMOUNT } from '@/features/rnbw-staking/constants';
 
@@ -81,13 +82,22 @@ export const RnbwStakingCard = memo(function RnbwStakingCard() {
 });
 
 function navigateToStakingLearnSheet() {
+  if (blockRnbwStakingAccessIfNeeded()) {
+    return;
+  }
   Navigation.handleAction(Routes.RNBW_STAKING_LEARN_SCREEN);
 }
 
 function navigateToStakingScreen() {
+  if (blockRnbwStakingAccessIfNeeded()) {
+    return;
+  }
   Navigation.handleAction(Routes.RNBW_STAKING_SCREEN);
 }
 
 function navigateToUnstakeSheet() {
+  if (blockRnbwStakingAccessIfNeeded()) {
+    return;
+  }
   Navigation.handleAction(Routes.RNBW_UNSTAKE_SHEET);
 }

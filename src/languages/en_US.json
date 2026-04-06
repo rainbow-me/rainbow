@@ -3885,6 +3885,10 @@
       }
     },
     "rnbw_staking": {
+      "wallet_access": {
+        "hardware_wallet_not_supported_title": "Hardware Wallet Not Supported",
+        "hardware_wallet_not_supported_message": "RNBW staking is not available for hardware wallets right now."
+      },
       "deposit": {
         "confirm_button": "Hold to Stake",
         "confirm_button_error": "Unable to stake",
