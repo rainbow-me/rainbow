@@ -103,7 +103,7 @@ function HoldToCreateButton() {
           chainId,
           info: {
             address: createTokenResponse.tokenAddress,
-            transactionHash: createTokenResponse.transaction.hash,
+            transactionHash: createTokenResponse.txHash,
           },
         });
         setStep(NavigationSteps.SUCCESS);

@@ -369,7 +369,7 @@ export const useTokenLauncherStore = createRainbowStore<TokenLauncherStore>((set
           imageUrl,
           links: linksByType,
           color,
-          transactionHash: result.transaction.hash,
+          transactionHash: result.txHash,
         });
 
         analytics.track(analytics.event.tokenLauncherTokenCreated, {
@@ -379,7 +379,8 @@ export const useTokenLauncherStore = createRainbowStore<TokenLauncherStore>((set
 
         const chainsName = useBackendNetworksStore.getState().getChainsName();
 
-        // Normalize viem bigint fields before persisting the pending transaction.
+        const tx = await publicClient.getTransaction({ hash: result.txHash });
+
         const transaction: NewTransaction = {
           status: TransactionStatus.pending,
           chainId,
@@ -395,18 +396,18 @@ export const useTokenLauncherStore = createRainbowStore<TokenLauncherStore>((set
             isNativeAsset: false,
             network: chainsName[chainId],
           } satisfies ParsedAsset,
-          data: result.transaction.input,
-          from: result.transaction.from,
-          gasLimit: result.transaction.gas?.toString(),
-          hash: result.transaction.hash,
+          data: tx.input,
+          from: tx.from,
+          gasLimit: tx.gas?.toString(),
+          hash: result.txHash,
           network: chainsName[chainId] as Network,
-          nonce: result.transaction.nonce,
-          to: result.transaction.to ?? null,
-          value: result.transaction.value.toString(),
+          nonce: tx.nonce,
+          to: tx.to ?? null,
+          value: tx.value.toString(),
           type: 'launch',
-          gasPrice: result.transaction.gasPrice?.toString(),
-          maxFeePerGas: result.transaction.maxFeePerGas?.toString(),
-          maxPriorityFeePerGas: result.transaction.maxPriorityFeePerGas?.toString(),
+          gasPrice: tx.gasPrice?.toString(),
+          maxFeePerGas: tx.maxFeePerGas?.toString(),
+          maxPriorityFeePerGas: tx.maxPriorityFeePerGas?.toString(),
         };
 
         addNewTransaction({
