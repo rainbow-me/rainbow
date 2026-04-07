@@ -49,7 +49,7 @@ export function BalanceSection() {
 
   const tokenBalanceData = useDerivedValue(() => {
     const priceToUse =
-      chartType === ChartType.Candlestick ? currentCandlestickPrice.value?.price ?? liveTokenPrice.value : liveTokenPrice.value;
+      chartType === ChartType.Candlestick ? (currentCandlestickPrice.value?.price ?? liveTokenPrice.value) : liveTokenPrice.value;
 
     if (!priceToUse) {
       return { displayValue: liveTokenPrice.value, isCapped: false, uncappedValue: liveTokenPrice.value };

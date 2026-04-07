@@ -8,7 +8,7 @@ const InnerBorder = styled.View.withConfig({
   borderColor: color ?? colors.black,
   borderRadius: radius ?? 0,
   borderWidth: width ?? 0.5,
-  opacity: isDarkMode ? 0 : opacity ?? 0.06,
+  opacity: isDarkMode ? 0 : (opacity ?? 0.06),
 }));
 
 export default InnerBorder;

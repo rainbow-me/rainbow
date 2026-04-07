@@ -291,7 +291,7 @@ export const Box = forwardRef(function Box(
 
   const styleHasBackgroundColor = !!(styleProp && 'backgroundColor' in styleProp && styleProp.backgroundColor !== 'transparent');
   const backgroundToUse =
-    styleHasBackgroundColor && typeof styleProp.backgroundColor === 'string' ? styleProp.backgroundColor : background ?? backgroundColor;
+    styleHasBackgroundColor && typeof styleProp.backgroundColor === 'string' ? styleProp.backgroundColor : (background ?? backgroundColor);
 
   return backgroundToUse ? (
     <BackgroundProvider color={backgroundToUse} style={style}>

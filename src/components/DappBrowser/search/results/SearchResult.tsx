@@ -19,7 +19,7 @@ export const SearchResult = ({ index, goToUrl }: { index: number; goToUrl: (url:
   const { width: deviceWidth } = useDimensions();
 
   const dapp = useDerivedValue(() => (_WORKLET ? searchResults?.value[index] : null));
-  const iconUrl = useDerivedValue(() => (_WORKLET ? dapp.value?.iconUrl ?? dapp.value?.name : undefined));
+  const iconUrl = useDerivedValue(() => (_WORKLET ? (dapp.value?.iconUrl ?? dapp.value?.name) : undefined));
   const name = useDerivedValue(() => (_WORKLET ? dapp.value?.name : undefined));
   const urlDisplay = useDerivedValue(() => (_WORKLET ? dapp.value?.urlDisplay : undefined));
 

@@ -291,7 +291,7 @@ const SmoothPagerComponent = (
         const dragPages = dragDistance / (DEVICE_WIDTH + pageGap);
         let newPageIndex = (startPage.value ?? 0) - dragPages;
 
-        const minIndex = enableSwipeToGoBack ? 0 : startPage.value ?? 0;
+        const minIndex = enableSwipeToGoBack ? 0 : (startPage.value ?? 0);
         const maxIndex = maxForwardIndex.value ?? numberOfPages - 1;
 
         newPageIndex = clamp(newPageIndex, minIndex, maxIndex);

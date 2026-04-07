@@ -31,7 +31,7 @@ function AddressEmojiAvatar({
     typeof color === 'number'
       ? // sometimes the color is gonna be missing so we fallback to white
         // otherwise there will be only shadows without the the placeholder "circle"
-        colors.avatarBackgrounds[color] ?? fillTertiary
+        (colors.avatarBackgrounds[color] ?? fillTertiary)
       : color;
 
   const textSize = useMemo(() => {

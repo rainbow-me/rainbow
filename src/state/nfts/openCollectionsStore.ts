@@ -18,7 +18,7 @@ function getOrCreateStore(address?: Address | string): OpenCollectionsStoreType 
    * Fallback to ensure an address is always available on app launch, mirroring
    * the behavior in the user assets store.
    */
-  const accountAddress = rawAddress?.length ? rawAddress : cachedAddress ?? rawAddress;
+  const accountAddress = rawAddress?.length ? rawAddress : (cachedAddress ?? rawAddress);
 
   if (cachedStore && cachedAddress === accountAddress) return cachedStore;
 

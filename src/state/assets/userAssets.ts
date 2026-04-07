@@ -20,7 +20,7 @@ function getOrCreateStore(address?: Address | string): UserAssetsStoreType {
    * accountAddress. It's needed to ensure there's an address available immediately upon app
    * launch, which currently is not the case — the initial Redux address is an empty string.
    */
-  const accountAddress = rawAddress?.length ? rawAddress : cachedAddress ?? rawAddress;
+  const accountAddress = rawAddress?.length ? rawAddress : (cachedAddress ?? rawAddress);
 
   if (cachedStore && cachedAddress === accountAddress) return cachedStore;
 

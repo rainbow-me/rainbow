@@ -41,7 +41,7 @@ export function useForegroundColors(
       const colorForColorMode = getValueForColorMode(color, colorMode);
 
       return colorForColorMode === 'accent'
-        ? accentColor?.color ?? getDefaultAccentColorForColorMode(colorMode).color
+        ? (accentColor?.color ?? getDefaultAccentColorForColorMode(colorMode).color)
         : foregroundColors[colorForColorMode];
     }
 

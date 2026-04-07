@@ -343,7 +343,7 @@ const getColorForString = (colorString = '', providedThemeColors = colors) => {
   return isValidColorString
     ? colorString
     : // @ts-expect-error Used in JS code to safely retrieve a color
-      providedThemeColors?.[colorString] ?? null;
+      (providedThemeColors?.[colorString] ?? null);
 };
 
 export const darkModeThemeColors = getColorsByTheme(true);

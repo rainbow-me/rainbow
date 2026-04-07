@@ -213,12 +213,10 @@ const changed_at = changedAtStr ? token.asset.price.changedAt.getTime() : undefi
 ### Changes Made
 
 1. **`Position.protocolVersion: string`** → **`protocolVersion?: string`**
-
    - API omits this field for some protocols in the response
    - Example: Many positions in fixture have no `protocolVersion` property
 
 2. **`Detail` token lists** → all made optional
-
    - `supplyTokenList?: PositionToken[]`
    - `rewardTokenList?: PositionToken[]`
    - `borrowTokenList?: PositionToken[]`
@@ -227,34 +225,27 @@ const changed_at = changedAtStr ? token.asset.price.changedAt.getTime() : undefi
    - Example: Liquidity pool positions only have `supplyTokenList`, omit the others
 
 3. **`PortfolioItem.assetDict`** → **`Partial<Record<string, string>>`**
-
    - Was: `{ [key: string]: string }`
    - TypeScript's JSON import creates unions with `undefined` across heterogeneous objects
    - Example: Position A has `{"0xabc": "10"}`, Position B has `{"0xdef": "20"}` → TS infers both keys as optional on both objects
 
 4. **`ListPositionsResponse.errors: string[]`** → **`errors?: string[]`**
-
    - Success responses omit this field entirely instead of returning `[]`
 
 5. **`ListPositionsResponse_Result.uniqueTokens: string[]`** → **`uniqueTokens?: string[]`**
-
    - Empty position responses omit this field
 
 6. **`ListPositionsResponse_Result.stats`** → **`stats?: EnhancedStats`**
-
    - Empty position responses omit this field
 
 7. **`Asset.mainnetAddress: string`** → **`mainnetAddress?: string`**
-
    - Backend doesn't populate this field yet for any assets
    - Likely intended for L2→L1 token mapping
 
 8. **`AssetBridging.bridgeable: boolean`** → **`bridgeable?: boolean`**
-
    - API sends `bridging: {}` for assets without bridging support
 
 9. **`AssetBridging.networks`** → **`networks?: { [key: string]: AssetBridgeNetworkInfo }`**
-
    - API sends `bridging: {}` for assets without bridging support
 
 10. **`DApp_Colors.shadow: string`** → **`shadow?: string`**

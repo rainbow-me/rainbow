@@ -353,7 +353,7 @@
     "madge": "8.0.0",
     "metro-plugin-anisotropic-transform": "https://github.com/rainbow-me/metro-plugin-anisotropic-transform#593b1299f4fec3ddd3f8ad92d381e3d9ad171b82",
     "patch-package": "8.0.0",
-    "prettier": "3.2.5",
+    "prettier": "3.8.1",
     "react-native-dotenv": "2.4.2",
     "rn-nodeify": "10.2.0",
     "rock": "0.9.2",

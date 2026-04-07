@@ -233,7 +233,7 @@ export default function SendSheet() {
       const _assetAmount = newAssetAmount.replace(/[^0-9.]/g, '');
       let _nativeAmount = '';
       if (_assetAmount.length) {
-        const priceUnit = !isUniqueAsset ? selected?.price?.value ?? 0 : selected?.floorPrice ?? 0;
+        const priceUnit = !isUniqueAsset ? (selected?.price?.value ?? 0) : (selected?.floorPrice ?? 0);
         const { amount: convertedNativeAmount } = convertAmountAndPriceToNativeDisplay(_assetAmount, priceUnit, nativeCurrency);
         _nativeAmount = formatInputDecimals(convertedNativeAmount, _assetAmount);
       }
@@ -346,7 +346,7 @@ export default function SendSheet() {
       const _nativeAmount = newNativeAmount.replace(/[^0-9.]/g, '');
       let _assetAmount = '';
       if (_nativeAmount.length) {
-        const priceUnit = !isUniqueAsset ? selected?.price?.value ?? 0 : 0;
+        const priceUnit = !isUniqueAsset ? (selected?.price?.value ?? 0) : 0;
         const decimals = !isUniqueAsset ? (typeof selected?.decimals === 'number' ? selected.decimals : 18) : 0;
         const convertedAssetAmount = convertAmountFromNativeValue(_nativeAmount, priceUnit, decimals);
         _assetAmount = formatInputDecimals(convertedAssetAmount, _nativeAmount);
