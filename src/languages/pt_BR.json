@@ -3616,19 +3616,15 @@
       },
       "errors": {
         "header": "Erro ao lançar o token",
-        "api_request_failed": "Solicitação de API falhou",
-        "api_response_invalid": "Resposta de API inválida",
         "contract_interaction_failed": "Interação de contrato falhou",
         "gas_estimation_failed": "Falha na estimativa de gás",
         "insufficient_funds": "Fundos insuficientes",
-        "submission_details_missing": "Detalhes da submissão faltando",
-        "transaction_rejected": "Transação rejeitada",
-        "transaction_failed": "Falha na transação",
-        "transaction_simulation_failed": "Simulação de transação falhou",
         "unknown_error": "Erro Desconhecido",
+        "transaction_failed": "Falha na transação",
         "wallet_connection_error": "Erro de conexão da carteira",
         "invalid_params": "Parâmetros inválidos",
-        "missing_required_param": "Parâmetros obrigatórios ausentes"
+        "missing_required_param": "Parâmetros obrigatórios ausentes",
+        "unsupported_network": "O lançamento de tokens não é compatível com esta rede"
       }
     },
     "done": "Concluído",
