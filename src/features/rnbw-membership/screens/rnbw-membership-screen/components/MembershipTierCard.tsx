@@ -10,10 +10,17 @@ import { TierProgressBar } from '@/features/rnbw-membership/components/TierProgr
 import { RNBW_SYMBOL } from '@/features/rnbw-rewards/constants';
 import { DEVICE_WIDTH } from '@/utils/deviceUtils';
 import * as i18n from '@/languages';
+import { useStakingPositionStore } from '@/features/rnbw-staking/stores/rnbwStakingPositionStore';
+import { MembershipCardSkeleton } from './MembershipCardSkeleton';
 
 export const MembershipTierCard = memo(function MembershipTierCard() {
+  const showPositionSkeleton = useStakingPositionStore(state => state.getStatus('isInitialLoad') && !state.getData());
   const { currentTier, currentTierIndex, currentTierProgress, stakeRequiredForNextTier, cashbackPercentage, allTiers } =
     useMembershipTierInfo();
+
+  if (showPositionSkeleton) {
+    return <MembershipCardSkeleton height={183} />;
+  }
 
   return (
     <ButtonPressAnimation onPress={navigateToMembershipTiersSheet} scaleTo={0.96}>

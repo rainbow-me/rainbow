@@ -17,27 +17,14 @@ type MembershipTierInfo = {
   maxTierProgress: number;
 };
 
-const EMPTY_TIER: MembershipTierInfo = {
-  currentTier: FALLBACK_TIERS[0],
-  stakeRequiredForNextTier: '0',
-  cashbackPercentage: 10,
-  currentTierProgress: 0,
-  allTiers: FALLBACK_TIERS,
-  currentTierIndex: 0,
-  maxTierProgress: 0,
-};
-
 export const useMembershipTierInfo = createDerivedStore<MembershipTierInfo>(
   $ => {
-    const data = $(useStakingPositionStore, state => state.getData());
+    const currentTierLevel = $(useStakingPositionStore, state => state.getData()?.tier.level ?? FALLBACK_TIERS[0].level);
+    const allTiers = $(useStakingPositionStore, state => state.getData()?.allTiers ?? FALLBACK_TIERS);
+    const stakedRnbw = $(useStakingPositionStore, state => state.getData()?.stakedRnbw ?? '0');
 
-    if (!data) {
-      return EMPTY_TIER;
-    }
-
-    const { tier: currentTier, allTiers, stakedRnbw } = data;
-
-    const currentTierIndex = allTiers.findIndex(t => t.level === currentTier.level);
+    const currentTierIndex = allTiers.findIndex(t => t.level === currentTierLevel);
+    const currentTier = currentTierIndex >= 0 ? allTiers[currentTierIndex] : FALLBACK_TIERS[0];
     const nextTierIndex = currentTierIndex + 1;
     const nextTier = nextTierIndex < allTiers.length ? allTiers[nextTierIndex] : null;
     const maxTier = allTiers[allTiers.length - 1];

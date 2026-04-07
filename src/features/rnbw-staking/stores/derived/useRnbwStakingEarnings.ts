@@ -3,6 +3,7 @@ import { createDerivedStore, shallowEqual } from '@storesjs/stores';
 import { useStakingPositionStore } from '../rnbwStakingPositionStore';
 import { sumWorklet } from '@/framework/core/safeMath';
 import { formatNumber } from '@/helpers/strings';
+import { RNBW_DECIMALS } from '@/features/rnbw-staking/constants';
 
 type StakingEarnings = {
   totalEarnings: string;
@@ -10,22 +11,11 @@ type StakingEarnings = {
   exitRewardsEarnings: string;
 };
 
-const EMPTY_EARNINGS: StakingEarnings = {
-  totalEarnings: '0',
-  cashbackEarnings: '0',
-  exitRewardsEarnings: '0',
-};
-
 export const useRnbwStakingEarnings = createDerivedStore<StakingEarnings>(
   $ => {
-    const data = $(useStakingPositionStore, state => state.getData());
-
-    if (!data) return EMPTY_EARNINGS;
-
-    const tokenDecimals = data.decimals;
-    const lifetimePnl = data.pnl;
-    const cashbackRaw = lifetimePnl.totalCashbackReceived;
-    const exitRewardsRaw = lifetimePnl.exchangeRateGain;
+    const tokenDecimals = $(useStakingPositionStore, state => state.getData()?.decimals ?? RNBW_DECIMALS);
+    const cashbackRaw = $(useStakingPositionStore, state => state.getData()?.pnl.totalCashbackReceived ?? '0');
+    const exitRewardsRaw = $(useStakingPositionStore, state => state.getData()?.pnl.exchangeRateGain ?? '0');
     const totalRaw = sumWorklet(cashbackRaw, exitRewardsRaw);
     const totalEarnings = convertRawAmountToDecimalFormat(totalRaw, tokenDecimals);
     const cashbackEarnings = convertRawAmountToDecimalFormat(cashbackRaw, tokenDecimals);

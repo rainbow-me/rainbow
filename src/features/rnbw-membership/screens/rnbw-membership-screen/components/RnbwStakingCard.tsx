@@ -12,10 +12,17 @@ import { navigateToBuyRnbw } from '@/features/rnbw-membership/utils/navigateToBu
 import { blockRnbwStakingAccessIfNeeded } from '@/features/rnbw-staking/utils/blockStakingAccessIfNeeded';
 import * as i18n from '@/languages';
 import { MIN_STAKE_AMOUNT } from '@/features/rnbw-staking/constants';
+import { useStakingPositionStore } from '@/features/rnbw-staking/stores/rnbwStakingPositionStore';
+import { MembershipCardSkeleton } from './MembershipCardSkeleton';
 
 export const RnbwStakingCard = memo(function RnbwStakingCard() {
+  const showPositionSkeleton = useStakingPositionStore(state => state.getStatus('isInitialLoad') && !state.getData());
   const { tokenAmount, nativeCurrencyAmount, hasStakedPosition } = useRnbwStakingBalance();
   const { tokenAmountFormatted: availableAmount, hasMinimumStakeAmount } = useStakableRnbwBalance();
+
+  if (showPositionSkeleton) {
+    return <MembershipCardSkeleton height={319} />;
+  }
 
   return (
     <MembershipCard paddingHorizontal="20px" paddingTop="24px" paddingBottom="16px">

@@ -7,9 +7,16 @@ import { Image } from 'react-native';
 import { MembershipCard } from '@/features/rnbw-membership/screens/rnbw-membership-screen/components/MembershipCard';
 import * as i18n from '@/languages';
 import { isZero } from '@/helpers/utilities';
+import { useStakingPositionStore } from '@/features/rnbw-staking/stores/rnbwStakingPositionStore';
+import { MembershipCardSkeleton } from './MembershipCardSkeleton';
 
 export const RnbwStakingEarningsCard = memo(function RnbwStakingEarningsCard() {
+  const showPositionSkeleton = useStakingPositionStore(state => state.getStatus('isInitialLoad') && !state.getData());
   const { totalEarnings, cashbackEarnings, exitRewardsEarnings } = useRnbwStakingEarnings();
+
+  if (showPositionSkeleton) {
+    return <MembershipCardSkeleton height={195} />;
+  }
 
   const isZeroTotalEarnings = isZero(totalEarnings);
 

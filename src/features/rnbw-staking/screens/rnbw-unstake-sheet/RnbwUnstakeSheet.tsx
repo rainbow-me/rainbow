@@ -19,6 +19,7 @@ import { LinearGradient } from 'expo-linear-gradient';
 import { RnbwCoinIcon } from '@/components/RnbwCoinIcon';
 import { RnbwHoldToActivateButton } from '@/features/rnbw-membership/components/RnbwHoldToActivateButton';
 import * as i18n from '@/languages';
+import { LoadingSpinner } from '@/framework/ui/components/LoadingSpinner';
 
 const LAYOUT_ANIMATION_CONFIG = SPRING_CONFIGS.snappierSpringConfig;
 const LAYOUT_ANIMATION = LinearTransition.springify()
@@ -27,7 +28,10 @@ const LAYOUT_ANIMATION = LinearTransition.springify()
   .stiffness(LAYOUT_ANIMATION_CONFIG.stiffness);
 
 export const RnbwUnstakeSheet = memo(function RnbwUnstakeSheet() {
+  const labelSecondaryColor = useForegroundColor('labelSecondary');
   const [step, setStep] = useState<'warning' | 'unstake'>('warning');
+  const exitFeePercentage = useStakingPositionStore(s => s.getExitFeePercentage());
+  const showSkeleton = exitFeePercentage === undefined;
 
   const handleProceedToUnstake = useCallback(() => {
     setStep('unstake');
@@ -35,16 +39,29 @@ export const RnbwUnstakeSheet = memo(function RnbwUnstakeSheet() {
 
   return (
     <PanelSheet layoutAnimation={LAYOUT_ANIMATION}>
-      {step === 'warning' && <WarningContent onProceed={handleProceedToUnstake} />}
-      {step === 'unstake' && <UnstakeContent />}
+      {showSkeleton ? (
+        <Box alignItems="center" justifyContent="center" height={400}>
+          <LoadingSpinner color={labelSecondaryColor} size={40} />
+        </Box>
+      ) : (
+        <>
+          {step === 'warning' && <WarningContent exitFeePercentage={exitFeePercentage} onProceed={handleProceedToUnstake} />}
+          {step === 'unstake' && <UnstakeContent exitFeePercentage={exitFeePercentage} />}
+        </>
+      )}
     </PanelSheet>
   );
 });
 
-const WarningContent = memo(function WarningContent({ onProceed }: { onProceed: () => void }) {
+const WarningContent = memo(function WarningContent({
+  exitFeePercentage,
+  onProceed,
+}: {
+  exitFeePercentage: number;
+  onProceed: () => void;
+}) {
   const { goBack } = useNavigation();
   const redColor = useForegroundColor('red');
-  const exitFeePercentage = useStakingPositionStore(s => s.getExitFeePercentage());
 
   return (
     <View style={styles.warningContentContainer}>
@@ -95,10 +112,9 @@ const WarningContent = memo(function WarningContent({ onProceed }: { onProceed: 
   );
 });
 
-const UnstakeContent = memo(function UnstakeContent() {
+const UnstakeContent = memo(function UnstakeContent({ exitFeePercentage }: { exitFeePercentage: number }) {
   const { tokenAmount, nativeCurrencyAmount } = useRnbwStakingBalance();
   const { netPnl, isPositivePnl, rnbwAfterUnstake } = useRnbwStakingPositionPnl();
-  const exitFeePercentage = useStakingPositionStore(s => s.getExitFeePercentage());
   const { goBack } = useNavigation();
   const accountAddress = useAccountAddress();
   const [isProcessing, setIsProcessing] = useState(false);
