@@ -254,7 +254,6 @@ export const walletExecuteRap = async <T extends RapTypes>(
           if (pendingTransaction) {
             trackManagedCallsExecution({
               address: fromAddress,
-              chainId,
               executionId: execution.executionId,
               transaction: {
                 ...pendingTransaction,

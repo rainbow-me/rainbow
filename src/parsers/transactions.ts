@@ -2,8 +2,8 @@ import { type NativeCurrencyKey } from '@/entities/nativeCurrencyTypes';
 import {
   type RainbowTransaction,
   TransactionDirection,
-  PaginatedTransactionsApiResponse,
   type TransactionChanges,
+  buildTransactionTitle,
   TransactionStatus,
   type TransactionType,
   TransactionTypeMap,
@@ -153,7 +153,7 @@ export const convertNewTransactionToRainbowTransaction = (tx: NewTransaction): R
     asset,
     status: TransactionStatus.pending,
     data: tx.data,
-    title: `${tx.type}.${tx.status}`,
+    title: buildTransactionTitle(tx.type, tx.status),
     description: asset?.name,
     from: tx.from,
     changes: tx.changes,
@@ -202,13 +202,3 @@ export const isValidTransactionType = (type: string | undefined): type is Transa
   (TransactionTypeMap.withChanges.includes(type as TransactionWithChangesType) ||
     TransactionTypeMap.withoutChanges.includes(type as TransactionWithoutChangesType) ||
     type === 'sale');
-
-export const isValidTransactionStatus = (status: unknown): status is TransactionStatus =>
-  status === TransactionStatus.confirmed || status === TransactionStatus.failed || status === TransactionStatus.pending;
-
-/**
- * Builds a transaction `title` from a transaction `type` and `status`.
- */
-export function buildTransactionTitle(type: TransactionType, status: TransactionStatus): string {
-  return `${type}.${status}`;
-}

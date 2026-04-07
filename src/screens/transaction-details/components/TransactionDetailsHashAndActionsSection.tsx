@@ -2,7 +2,7 @@ import { navigateToSwaps } from '@/__swaps__/screens/Swap/navigateToSwaps';
 import ButtonPressAnimation from '@/components/animations/ButtonPressAnimation';
 import { SheetActionButton } from '@/components/sheet';
 import { Box, Stack } from '@/design-system';
-import { type RainbowTransaction, TransactionStatus } from '@/entities/transactions';
+import { type RainbowTransaction, TransactionStatus, isAwaitingRelayTransactionHash } from '@/entities/transactions';
 import * as i18n from '@/languages';
 import Navigation from '@/navigation/Navigation';
 import Routes from '@/navigation/routesNames';
@@ -49,7 +49,7 @@ export const TransactionDetailsHashAndActionsSection: React.FC<Props> = ({ trans
     navigateToSwaps();
   }, []);
 
-  if (!hash || !network) {
+  if (isAwaitingRelayTransactionHash(transaction) || !hash || !network) {
     return null;
   }
 

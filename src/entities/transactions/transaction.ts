@@ -267,6 +267,17 @@ export type TransactionWithoutChangesType = (typeof TransactionTypeMap.withoutCh
 
 export type TransactionType = TransactionWithChangesType | TransactionWithoutChangesType;
 
+export function isValidTransactionStatus(status: unknown): status is TransactionStatus {
+  return status === TransactionStatus.confirmed || status === TransactionStatus.failed || status === TransactionStatus.pending;
+}
+
+/**
+ * Builds a transaction `title` from a transaction `type` and `status`.
+ */
+export function buildTransactionTitle(type: TransactionType, status: TransactionStatus): string {
+  return `${type}.${status}`;
+}
+
 export interface ExecuteRapResponse extends TransactionResponse {
   errorMessage?: string;
 }
@@ -287,6 +298,18 @@ export function canReplacePendingTransaction({
 }): boolean {
   const isOutgoing = transaction.from?.toLowerCase() === accountAddress?.toLowerCase();
   return transaction.status === TransactionStatus.pending && isOutgoing && !transaction.relayExecutionId;
+}
+
+/**
+ * Returns true while a managed relay execution is still waiting for
+ * its first onchain transaction hash.
+ */
+export function isAwaitingRelayTransactionHash(transaction: Pick<RainbowTransaction, 'hash' | 'relayExecutionId' | 'status'>): boolean {
+  return (
+    transaction.status === TransactionStatus.pending &&
+    typeof transaction.relayExecutionId === 'string' &&
+    transaction.hash === transaction.relayExecutionId
+  );
 }
 
 export type TransactionApiResponse = {

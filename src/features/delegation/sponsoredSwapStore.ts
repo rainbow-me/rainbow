@@ -60,13 +60,23 @@ export const useSponsoredSwapStore = createQueryStore<PreparedCallsExecution | n
     staleTime: SPONSORED_SWAP_STALE_TIME_MS,
   },
 
-  (_, get) => ({
-    getPreparedSwap: async (): Promise<PreparedCallsExecution | null> => {
-      const quoteKey = useSponsoredSwapQuoteKey.getState();
-      if (quoteKey === null) return null;
-      return get().fetch({ quoteKey });
-    },
-  })
+  (_, get) => {
+    let consumedSponsoredSwapQuoteKey: number | null = null;
+
+    return {
+      getPreparedSwap: async (): Promise<PreparedCallsExecution | null> => {
+        const quoteKey = useSponsoredSwapQuoteKey.getState();
+        if (quoteKey === null) return null;
+
+        // Exact-call prepare embeds live nonce state, so the cached artifact is
+        // safe for the first submit but retries of the same quote must refresh.
+        const shouldForceRefresh = consumedSponsoredSwapQuoteKey === quoteKey;
+        consumedSponsoredSwapQuoteKey = quoteKey;
+
+        return get().fetch({ quoteKey }, shouldForceRefresh ? { force: true } : undefined);
+      },
+    };
+  }
 );
 
 export function useIsSponsoredSwap(): boolean {

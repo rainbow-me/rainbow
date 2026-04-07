@@ -44,18 +44,16 @@ function UnmountWhenGasButtonIsNotInScreen({ placeholder, children }: PropsWithC
   );
 }
 
-function EstimatedGasFee() {
-  const isSponsoredSwap = useIsSponsoredSwap();
-
+function EstimatedGasFee({ sponsored }: { sponsored: boolean }) {
   return (
     <Inline alignVertical="center" space="4px">
-      <TextIcon color={isSponsoredSwap ? 'labelQuinary' : 'labelQuaternary'} height={10} size="icon 11px" weight="heavy" width={18}>
+      <TextIcon color={sponsored ? 'labelQuinary' : 'labelQuaternary'} height={10} size="icon 11px" weight="heavy" width={18}>
         􀵟
       </TextIcon>
       <UnmountWhenGasButtonIsNotInScreen placeholder={<EstimatedSwapGasFeeSlot text="--" />}>
         <EstimatedSwapGasFee
-          color={isSponsoredSwap ? 'labelQuinary' : 'labelTertiary'}
-          style={isSponsoredSwap ? styles.sponsoredGasFeeText : undefined}
+          color={sponsored ? 'labelQuinary' : 'labelTertiary'}
+          style={sponsored ? styles.sponsoredGasFeeText : undefined}
         />
       </UnmountWhenGasButtonIsNotInScreen>
     </Inline>
@@ -268,7 +266,7 @@ export const GasButton = () => {
     <GasMenu disabled={isSponsoredSwap}>
       <Box gap={12}>
         <SelectedGas sponsored={isSponsoredSwap} />
-        <EstimatedGasFee />
+        <EstimatedGasFee sponsored={isSponsoredSwap} />
       </Box>
     </GasMenu>
   );

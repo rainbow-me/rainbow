@@ -61,7 +61,7 @@ export async function willExecuteDelegation(params: WillExecuteDelegationParams)
  */
 export function useWillExecuteDelegation(address: Address, chainId: number): boolean {
   const delegationEnabled = useIsDelegationEnabled();
-  const wallet = useWalletsStore(state => state.getWalletWithAccount(address));
+  const wallet = useWalletsStore(s => s.getWalletWithAccount(address));
   const sdkWillDelegate = useWillDelegate(address, chainId);
 
   const canUseDelegation = delegationEnabled && canUseDelegatedWallet(wallet);
