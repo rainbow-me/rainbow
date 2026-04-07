@@ -3598,7 +3598,11 @@
       },
       "errors": {
         "header": "Error launching token",
+        "contract_interaction_failed": "Contract interaction failed",
+        "gas_estimation_failed": "Gas estimation failed",
+        "insufficient_funds": "Insufficient funds",
         "unknown_error": "Unknown error",
+        "transaction_failed": "Transaction failed",
         "wallet_connection_error": "Wallet connection error",
         "invalid_params": "Invalid parameters",
         "missing_required_param": "Missing required parameters",
