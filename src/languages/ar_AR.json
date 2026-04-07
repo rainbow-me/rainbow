@@ -3616,19 +3616,15 @@
       },
       "errors": {
         "header": "خطأ في إطلاق الرمز",
-        "api_request_failed": "فشل طلب API",
-        "api_response_invalid": "استجابة API غير صالحة",
         "contract_interaction_failed": "فشل التفاعل مع العقد",
         "gas_estimation_failed": "فشل تقدير الغاز",
         "insufficient_funds": "أموال غير كافية",
-        "submission_details_missing": "تفاصيل الإرسال مفقودة",
-        "transaction_rejected": "تم رفض المعاملة",
-        "transaction_failed": "فشلت المعاملة",
-        "transaction_simulation_failed": "فشلت محاكاة المعاملة",
         "unknown_error": "خطأ غير معروف",
+        "transaction_failed": "فشلت المعاملة",
         "wallet_connection_error": "خطأ في اتصال المحفظة",
         "invalid_params": "معلمات غير صالحة",
-        "missing_required_param": "المعلمات المطلوبة مفقودة"
+        "missing_required_param": "المعلمات المطلوبة مفقودة",
+        "unsupported_network": "إطلاق التوكن غير مدعوم على هذه الشبكة"
       }
     },
     "done": "تم",
