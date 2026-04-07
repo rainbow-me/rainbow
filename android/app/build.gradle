@@ -159,8 +159,8 @@ android {
         applicationId "me.rainbow"
         minSdkVersion rootProject.ext.minSdkVersion
         targetSdkVersion rootProject.ext.targetSdkVersion
-        versionCode 294
-        versionName "2.0.21"
+        versionCode 296
+        versionName "2.0.22"
         missingDimensionStrategy 'react-native-camera', 'general'
         renderscriptTargetApi 23
         renderscriptSupportModeEnabled true

@@ -13,9 +13,8 @@ import { enableScreens } from 'react-native-screens';
 import { RecoilRoot } from 'recoil';
 import ErrorBoundary from '@/components/error-boundary/ErrorBoundary';
 import { OfflineToast } from '@/components/toasts';
-import { designSystemPlaygroundEnabled, reactNativeDisableYellowBox, showNetworkRequests, showNetworkResponses } from '@/config/debug';
+import { reactNativeDisableYellowBox, showNetworkRequests, showNetworkResponses } from '@/config/debug';
 import monitorNetwork from '@/debugging/network';
-import { Playground } from '@/design-system/playground/Playground';
 import RainbowContextWrapper from '@/helpers/RainbowContext';
 import { setNavigationRef } from '@/navigation/Navigation';
 import { PersistQueryClientProvider, persistOptions, queryClient } from '@/react-query';
@@ -145,18 +144,7 @@ function Root() {
 /** Wrapping Root allows Sentry to accurately track startup times */
 const RootWithSentry = Sentry.wrap(Root);
 
-const PlaygroundWithReduxStore = () => (
-  // @ts-expect-error - Property 'children' does not exist on type 'IntrinsicAttributes & IntrinsicClassAttributes<Provider<AppStateUpdateAction | ChartsUpdateAction | ContactsAction | ... 13 more ... | WalletsAction>> & Readonly<...>'
-  <ReduxProvider store={store}>
-    <MainThemeProvider>
-      <GestureHandlerRootView style={sx.container}>
-        <Playground />
-      </GestureHandlerRootView>
-    </MainThemeProvider>
-  </ReduxProvider>
-);
-
-AppRegistry.registerComponent('Rainbow', () => (designSystemPlaygroundEnabled ? PlaygroundWithReduxStore : RootWithSentry));
+AppRegistry.registerComponent('Rainbow', () => RootWithSentry);
 
 // The report param is not currently used as we have our own time tracking, but it is available at the time we want to finish the app startup report
 function onReportPrepared() {

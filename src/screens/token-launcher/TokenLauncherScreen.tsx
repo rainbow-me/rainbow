@@ -176,7 +176,7 @@ export function TokenLauncherScreen() {
     <ColorModeProvider value="dark">
       <TokenLauncherContextProvider>
         <TokenLauncherScreenContent />
-        {/* This component returns null, and is just used to sync price and gas data */}
+        {/* This component returns null and syncs price plus gas-fee estimates used for prebuy balance validation. */}
         <PriceAndGasSync />
       </TokenLauncherContextProvider>
     </ColorModeProvider>

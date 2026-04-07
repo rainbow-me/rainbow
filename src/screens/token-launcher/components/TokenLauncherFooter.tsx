@@ -2,44 +2,32 @@ import { analytics } from '@/analytics';
 import ButtonPressAnimation from '@/components/animations/ButtonPressAnimation';
 import { TIMING_CONFIGS } from '@/components/animations/animationConfigs';
 import RainbowCoinIcon from '@/components/coin-icon/RainbowCoinIcon';
-import { Box, Inline, Separator, Text } from '@/design-system';
+import { Box, Inline, Text } from '@/design-system';
 import { getColorForTheme } from '@/design-system/color/useForegroundColor';
 import { IS_ANDROID } from '@/env';
 import { buildTokenDeeplink } from '@/handlers/deeplinks';
-import { type LedgerSigner } from '@/handlers/LedgerSigner';
-import { getProvider } from '@/handlers/web3';
 import { BiometryTypes } from '@/helpers';
 import useBiometryType from '@/hooks/useBiometryType';
 import { useTokenLauncher } from '@/hooks/useTokenLauncher';
 import * as i18n from '@/languages';
-import { logger, RainbowError } from '@/logger';
-import { loadWallet } from '@/model/wallet';
+import { ensureError, logger, RainbowError } from '@/logger';
+import { loadPrivateKey } from '@/model/wallet';
 import { useNavigation } from '@/navigation/Navigation';
 import { useBackendNetworksStore } from '@/state/backendNetworks/backendNetworks';
 import { staleBalancesStore } from '@/state/staleBalances';
 import { useAccountAddress, useIsHardwareWallet } from '@/state/wallets/walletsStore';
 import { colors } from '@/styles';
-import { type Wallet } from '@ethersproject/wallet';
 import React, { useCallback, useState } from 'react';
-import { Keyboard, Share } from 'react-native';
-import Animated, {
-  Extrapolation,
-  FadeIn,
-  FadeOut,
-  interpolate,
-  useAnimatedStyle,
-  useDerivedValue,
-  useSharedValue,
-  withTiming,
-} from 'react-native-reanimated';
+import { Alert, Keyboard, Share } from 'react-native';
+import Animated, { Extrapolation, FadeOut, interpolate, useAnimatedStyle, useSharedValue, withTiming } from 'react-native-reanimated';
 import { STEP_TRANSITION_DURATION } from '../constants';
 import { useTokenLauncherContext } from '../context/TokenLauncherContext';
-import { useTokenLaunchGasOptions } from '../hooks/useTokenLaunchGasOptions';
 import { NavigationSteps, useTokenLauncherStore } from '../state/tokenLauncherStore';
-import { GasButton } from './gas/GasButton';
 import { HoldToActivateButton } from '@/components/hold-to-activate-button/HoldToActivateButton';
 import Routes from '@/navigation/routesNames';
-import { SEPARATOR_COLOR } from '@/styles/constants';
+import { privateKeyToAccount } from 'viem/accounts';
+import { createPublicClient, createWalletClient, http, isHex } from 'viem';
+import * as kc from '@/keychain';
 
 // height + top padding + bottom padding
 export const FOOTER_HEIGHT = 48 + 16 + 16;
@@ -49,15 +37,11 @@ function HoldToCreateButton() {
   const { accentColors } = useTokenLauncherContext();
   const createToken = useTokenLauncherStore(state => state.createToken);
   const setStep = useTokenLauncherStore(state => state.setStep);
-  const gasSpeed = useTokenLauncherStore(state => state.gasSpeed);
   const chainId = useTokenLauncherStore(state => state.chainId);
   const isHardwareWallet = useIsHardwareWallet();
   const biometryType = useBiometryType();
   const accountAddress = useAccountAddress();
-  const { transactionOptions } = useTokenLaunchGasOptions({
-    chainId,
-    gasSpeed,
-  });
+  const defaultChains = useBackendNetworksStore(state => state.getDefaultChains());
 
   const { addStaleBalance } = staleBalancesStore.getState();
   const [isProcessing, setIsProcessing] = useState(false);
@@ -69,14 +53,65 @@ function HoldToCreateButton() {
   const handleLongPress = useCallback(async () => {
     setIsProcessing(true);
 
-    const provider = getProvider({ chainId });
-    let wallet: Wallet | LedgerSigner | null = null;
-
     try {
-      wallet = await loadWallet({ address: accountAddress, provider });
+      if (isHardwareWallet) {
+        Alert.alert(i18n.t(i18n.l.token_launcher.errors.header), i18n.t(i18n.l.token_launcher.errors.wallet_connection_error));
+        analytics.track(analytics.event.tokenLauncherWalletLoadFailed, {
+          error: 'Hardware wallets are not supported by the token launcher SDK',
+        });
+        setIsProcessing(false);
+        return;
+      }
+
+      const privateKey = await loadPrivateKey(accountAddress, isHardwareWallet);
+      if (privateKey === kc.ErrorType.UserCanceled) {
+        setIsProcessing(false);
+        return;
+      }
+      if (!isHex(privateKey)) {
+        navigate(Routes.WALLET_ERROR_SHEET);
+        logger.error(new RainbowError('[TokenLauncher]: Private key unavailable'), {
+          isNull: !privateKey,
+          isNotAuthenticated: privateKey === kc.ErrorType.NotAuthenticated,
+        });
+        analytics.track(analytics.event.tokenLauncherWalletLoadFailed, {
+          error: !privateKey ? 'Private key is null' : 'Not authenticated',
+        });
+        setIsProcessing(false);
+        return;
+      }
+
+      const chain = defaultChains[chainId];
+      const transport = http(useBackendNetworksStore.getState().getChainDefaultRpc(chainId));
+      const account = privateKeyToAccount(privateKey);
+      const publicClient = createPublicClient({
+        chain,
+        transport,
+      });
+      const walletClient = createWalletClient({
+        account,
+        chain,
+        transport,
+      });
+
+      setStep(NavigationSteps.CREATING);
+      const createTokenResponse = await createToken({ walletClient, publicClient, accountAddress });
+      if (createTokenResponse) {
+        addStaleBalance({
+          address: accountAddress,
+          chainId,
+          info: {
+            address: createTokenResponse.tokenAddress,
+            transactionHash: createTokenResponse.txHash,
+          },
+        });
+        setStep(NavigationSteps.SUCCESS);
+      } else {
+        setStep(NavigationSteps.REVIEW);
+      }
     } catch (e) {
       navigate(Routes.WALLET_ERROR_SHEET);
-      const error = e instanceof Error ? e : new Error(String(e));
+      const error = ensureError(e);
       logger.error(new RainbowError('[TokenLauncher]: Error Loading Wallet'), {
         message: error.message,
       });
@@ -84,24 +119,7 @@ function HoldToCreateButton() {
         error: error.message,
       });
       setIsProcessing(false);
-    }
-
-    if (wallet) {
-      setStep(NavigationSteps.CREATING);
-      const createTokenResponse = await createToken({ wallet: wallet as Wallet, transactionOptions });
-      if (createTokenResponse) {
-        addStaleBalance({
-          address: accountAddress,
-          chainId,
-          info: {
-            address: createTokenResponse.tokenAddress,
-            transactionHash: createTokenResponse.transaction.hash,
-          },
-        });
-        setStep(NavigationSteps.SUCCESS);
-      } else {
-        setStep(NavigationSteps.REVIEW);
-      }
+      return;
     }
 
     setIsProcessing(false);
@@ -110,7 +128,7 @@ function HoldToCreateButton() {
     // if (isHardwareWallet) {
     // navigate(Routes.HARDWARE_WALLET_TX_NAVIGATOR, { submit: createToken });
     // } else {}
-  }, [createToken, accountAddress, chainId, transactionOptions, setStep, addStaleBalance, navigate]);
+  }, [accountAddress, addStaleBalance, chainId, createToken, defaultChains, isHardwareWallet, navigate, setStep]);
 
   return (
     <HoldToActivateButton
@@ -270,26 +288,12 @@ function TokenPreview() {
 
 export function TokenLauncherFooter() {
   const navigation = useNavigation();
-  const chainId = useTokenLauncherStore(state => state.chainId);
   const step = useTokenLauncherStore(state => state.step);
   const stepSharedValue = useTokenLauncherStore(state => state.stepSharedValue);
   const stepAnimatedSharedValue = useTokenLauncherStore(state => state.stepAnimatedSharedValue);
 
-  const gasSpeed = useTokenLauncherStore(state => state.gasSpeed);
-  const setGasSpeed = useTokenLauncherStore(state => state.setGasSpeed);
-  const { transactionOptions } = useTokenLaunchGasOptions({
-    chainId,
-    gasSpeed,
-  });
-
   const containerWidth = useSharedValue(0);
   const continueButtonWidth = useSharedValue(0);
-  // We give this a default width so that the create button doesn't jump past before the gas button is measured
-  const gasButtonWidth = useSharedValue(100);
-
-  const createButtonWidth = useDerivedValue(() => {
-    return containerWidth.value - gasButtonWidth.value - 40;
-  });
 
   const continueButtonAnimatedStyle = useAnimatedStyle(() => {
     // Don't apply any width until we've measured the button
@@ -318,7 +322,7 @@ export function TokenLauncherFooter() {
       width: interpolate(
         stepAnimatedSharedValue.value,
         [NavigationSteps.INFO, NavigationSteps.REVIEW, NavigationSteps.CREATING],
-        [continueButtonWidth.value, createButtonWidth.value, fullWidth],
+        [continueButtonWidth.value, fullWidth, fullWidth],
         Extrapolation.CLAMP
       ),
       opacity: interpolate(stepAnimatedSharedValue.value, [NavigationSteps.INFO, NavigationSteps.REVIEW], [0, 1], Extrapolation.CLAMP),
@@ -358,20 +362,6 @@ export function TokenLauncherFooter() {
         }}
       >
         {step === NavigationSteps.INFO && <TokenPreview />}
-        {step === NavigationSteps.REVIEW && (
-          <Animated.View
-            entering={FadeIn.duration(STEP_TRANSITION_DURATION)}
-            onLayout={e => {
-              gasButtonWidth.value = e.nativeEvent.layout.width;
-            }}
-            style={{ flexDirection: 'row' }}
-          >
-            <GasButton gasSpeed={gasSpeed} chainId={chainId} gasLimit={transactionOptions.gasLimit} onSelectGasSpeed={setGasSpeed} />
-            <Box width={1} height={32} paddingHorizontal="12px">
-              <Separator thickness={1} direction="vertical" color={{ custom: SEPARATOR_COLOR }} />
-            </Box>
-          </Animated.View>
-        )}
         <Animated.View
           style={[continueButtonAnimatedStyle, { position: 'absolute', right: 20, top: 16 }]}
           onLayout={e => {

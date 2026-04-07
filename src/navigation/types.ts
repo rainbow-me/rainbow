@@ -715,9 +715,13 @@ type RouteParams = {
   [Routes.POLYMARKET_EXPLAIN_SHEET]: {
     onDismiss?: () => void;
   };
+  [Routes.RNBW_REWARDS_CLAIM_SHEET]: undefined;
   [Routes.RNBW_REWARDS_ESTIMATE_SHEET]: {
     estimatedAmount: string;
   };
+  [Routes.RNBW_STAKING_LEARN_SCREEN]: undefined;
+  [Routes.RNBW_STAKING_SCREEN]: undefined;
+  [Routes.RNBW_UNSTAKE_SHEET]: undefined;
   [Routes.REVOKE_DELEGATION_PANEL]: {
     address: Address;
     delegationsToRevoke: Array<{

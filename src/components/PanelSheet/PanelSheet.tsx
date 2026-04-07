@@ -34,6 +34,7 @@ type PanelProps = {
   height?: number;
   innerBorderColor?: string;
   innerBorderWidth?: number;
+  layoutAnimation?: ComponentProps<typeof Animated.View>['layout'];
   outerBorderColor?: string;
   outerBorderWidth?: number;
   panelStyle?: StyleProp<ViewStyle> | AnimatedStyle;
@@ -44,6 +45,7 @@ const Panel = ({
   height,
   innerBorderColor,
   innerBorderWidth,
+  layoutAnimation,
   outerBorderColor,
   outerBorderWidth,
   panelStyle,
@@ -80,7 +82,7 @@ const Panel = ({
   }, [height, innerBorderColor, innerBorderWidth, isDarkMode, outerBorderColor, outerBorderWidth, separatorSecondary]);
 
   return (
-    <Animated.View style={[panelContainerStyle, panelStyle]}>
+    <Animated.View layout={layoutAnimation} style={[panelContainerStyle, panelStyle]}>
       {children}
       {borders}
     </Animated.View>
@@ -91,6 +93,7 @@ type PanelSheetProps = PanelProps & {
   bottomOffset?: number;
   containerStyle?: StyleProp<ViewStyle>;
   handleProps?: Partial<ComponentProps<typeof SheetHandleFixedToTop>>;
+  layoutAnimation?: ComponentProps<typeof Animated.View>['layout'];
   showHandle?: boolean;
   showTapToDismiss?: boolean;
   panelStyle?: StyleProp<ViewStyle> | AnimatedStyle;
@@ -111,6 +114,7 @@ export const PanelSheet = ({
   height,
   innerBorderColor,
   innerBorderWidth,
+  layoutAnimation,
   outerBorderColor,
   outerBorderWidth,
   showHandle = true,
@@ -122,7 +126,7 @@ export const PanelSheet = ({
   const { isDarkMode } = useColorMode();
   return (
     <>
-      <Box style={[panelSheetStyles.panelContainer, { bottom: bottomOffset }, containerStyle]}>
+      <Animated.View layout={layoutAnimation} style={[panelSheetStyles.panelContainer, { bottom: bottomOffset }, containerStyle]}>
         <ConditionalWrap
           wrap={children => <KeyboardStickyView offset={keyboardAvoidanceOffset}>{children}</KeyboardStickyView>}
           condition={enableKeyboardAvoidance}
@@ -139,6 +143,7 @@ export const PanelSheet = ({
               height={height}
               innerBorderColor={innerBorderColor}
               innerBorderWidth={innerBorderWidth}
+              layoutAnimation={layoutAnimation}
               outerBorderColor={outerBorderColor}
               outerBorderWidth={outerBorderWidth}
               panelStyle={panelStyle}
@@ -147,7 +152,7 @@ export const PanelSheet = ({
             </Panel>
           </>
         </ConditionalWrap>
-      </Box>
+      </Animated.View>
       {showTapToDismiss && <TapToDismiss />}
     </>
   );

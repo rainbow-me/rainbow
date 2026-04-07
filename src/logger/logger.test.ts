@@ -28,47 +28,14 @@ jest.mock('react-native-version-number', () => ({
 describe('general functionality', () => {
   test('default params', () => {
     const logger = new Logger();
-    expect(logger.enabled).toBeTruthy();
     expect(logger.level).toEqual(LogLevel.Warn);
   });
 
   test('can override default params', () => {
     const logger = new Logger({
-      enabled: true,
       level: LogLevel.Info,
     });
-    expect(logger.enabled).toBeTruthy();
     expect(logger.level).toEqual(LogLevel.Info);
-  });
-
-  test('disabled logger does not report', () => {
-    const logger = new Logger({
-      enabled: false,
-      level: LogLevel.Debug,
-    });
-
-    const mockTransport = jest.fn();
-
-    logger.addTransport(mockTransport);
-    logger.debug('message');
-
-    expect(mockTransport).not.toHaveBeenCalled();
-  });
-
-  test('disablement', () => {
-    const logger = new Logger({
-      enabled: true,
-      level: LogLevel.Debug,
-    });
-
-    logger.disable();
-
-    const mockTransport = jest.fn();
-
-    logger.addTransport(mockTransport);
-    logger.debug('message');
-
-    expect(mockTransport).not.toHaveBeenCalled();
   });
 
   test('passing debug contexts automatically enables debug mode', () => {
@@ -77,7 +44,7 @@ describe('general functionality', () => {
   });
 
   test('supports extra metadata', () => {
-    const logger = new Logger({ enabled: true });
+    const logger = new Logger();
 
     const mockTransport = jest.fn();
 
@@ -90,7 +57,7 @@ describe('general functionality', () => {
   });
 
   test('supports nullish/falsy metadata', () => {
-    const logger = new Logger({ enabled: true });
+    const logger = new Logger();
 
     const mockTransport = jest.fn();
 
@@ -119,7 +86,7 @@ describe('general functionality', () => {
   });
 
   test('logger.error expects a RainbowError', () => {
-    const logger = new Logger({ enabled: true });
+    const logger = new Logger();
 
     const mockTransport = jest.fn();
 
@@ -132,7 +99,6 @@ describe('general functionality', () => {
 
   test('createServiceLogger debug honors context filtering and prefixes messages', () => {
     const logger = new Logger({
-      enabled: true,
       debug: 'delegation',
     });
     const mockTransport = jest.fn();
@@ -147,7 +113,7 @@ describe('general functionality', () => {
   });
 
   test('createServiceLogger error wraps external errors into RainbowError', () => {
-    const logger = new Logger({ enabled: true, level: LogLevel.Error });
+    const logger = new Logger({ level: LogLevel.Error });
     const mockTransport = jest.fn();
     logger.addTransport(mockTransport);
 
@@ -251,7 +217,7 @@ describe('general functionality', () => {
   });
 
   test('add/remove transport', () => {
-    const logger = new Logger({ enabled: true });
+    const logger = new Logger();
     const mockTransport = jest.fn();
 
     const remove = logger.addTransport(mockTransport);
@@ -273,7 +239,6 @@ describe('debug contexts', () => {
   test('specific', () => {
     const message = nanoid();
     const logger = new Logger({
-      enabled: true,
       debug: 'specific',
     });
 
@@ -286,7 +251,6 @@ describe('debug contexts', () => {
   test('namespaced', () => {
     const message = nanoid();
     const logger = new Logger({
-      enabled: true,
       debug: 'namespace*',
     });
 
@@ -299,7 +263,6 @@ describe('debug contexts', () => {
   test('ignores inactive', () => {
     const message = nanoid();
     const logger = new Logger({
-      enabled: true,
       debug: 'namespace:foo:*',
     });
 
@@ -313,7 +276,6 @@ describe('debug contexts', () => {
 describe('supports levels', () => {
   test('debug', () => {
     const logger = new Logger({
-      enabled: true,
       level: LogLevel.Debug,
     });
     const message = nanoid();
@@ -337,7 +299,6 @@ describe('supports levels', () => {
 
   test('info', () => {
     const logger = new Logger({
-      enabled: true,
       level: LogLevel.Info,
     });
     const message = nanoid();
@@ -354,7 +315,6 @@ describe('supports levels', () => {
 
   test('warn', () => {
     const logger = new Logger({
-      enabled: true,
       level: LogLevel.Warn,
     });
     const message = nanoid();
@@ -374,7 +334,6 @@ describe('supports levels', () => {
 
   test('error', () => {
     const logger = new Logger({
-      enabled: true,
       level: LogLevel.Error,
     });
     const message = nanoid();

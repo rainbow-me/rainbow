@@ -140,9 +140,14 @@ const Routes = {
   POLYMARKET_MARKET_DESCRIPTION_SHEET: 'PolymarketMarketDescriptionSheet',
   POLYMARKET_EXPLAIN_SHEET: 'PolymarketExplainSheet',
   POLYMARKET_SELL_POSITION_SHEET: 'PolymarketSellPositionSheet',
+  RNBW_AIRDROP_SCREEN: 'RnbwAirdropScreen',
   RNBW_MEMBERSHIP_SCREEN: 'RnbwMembershipScreen',
   RNBW_REWARDS_SCREEN: 'RnbwRewardsScreen',
+  RNBW_REWARDS_CLAIM_SHEET: 'RnbwRewardsClaimSheet',
   RNBW_REWARDS_ESTIMATE_SHEET: 'RnbwRewardsEstimateSheet',
+  RNBW_STAKING_LEARN_SCREEN: 'RnbwStakingLearnScreen',
+  RNBW_STAKING_SCREEN: 'RnbwStakingScreen',
+  RNBW_UNSTAKE_SHEET: 'RnbwUnstakeSheet',
   WALLET_ERROR_SHEET: 'WalletErrorSheet',
 } as const;
 

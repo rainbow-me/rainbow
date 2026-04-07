@@ -1,6 +1,6 @@
 {
   "name": "Rainbow",
-  "version": "2.0.21-1",
+  "version": "2.0.22-1",
   "private": true,
   "scripts": {
     "setup": "yarn graphql-codegen:install && yarn ds:install && yarn graphql-codegen && yarn fetch:networks",
@@ -25,6 +25,7 @@
     "rc-push": "./scripts/rc-push.sh",
     "ds:install": "cd src/design-system/docs && yarn install",
     "ds": "cd src/design-system/docs && yarn dev",
+    "ds:playground": "DS_PLAYGROUND=1 react-native start",
     "fast": "yarn install && yarn setup && yarn install-pods-fast",
     "gradle": "cd android && ./gradlew",
     "anvil": "sh ./scripts/anvil.sh",
@@ -112,7 +113,7 @@
     "@rainbow-me/provider": "0.1.2",
     "@rainbow-me/react-native-animated-number": "0.0.2",
     "@rainbow-me/swaps": "0.41.0",
-    "@rainbow-me/token-launcher": "0.2.0",
+    "@rainbow-me/token-launcher": "0.3.0",
     "@react-native-async-storage/async-storage": "1.23.1",
     "@react-native-camera-roll/camera-roll": "7.10.0",
     "@react-native-clipboard/clipboard": "1.16.2",

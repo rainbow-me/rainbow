@@ -358,7 +358,8 @@
       "unhide": "Unhide",
       "unpin": "Unpin",
       "view": "View",
-      "hidden": "Hidden"
+      "hidden": "Hidden",
+      "claim": "Claim"
     },
     "cards": {
       "ens_create_profile": {
@@ -2269,7 +2270,7 @@
         "when_public_prefix": "When public, your NFT Showcase will be visible on your Rainbow web profile! You can view your profile at",
         "view_profile": "View your profile",
         "analytics_toggle": "Analytics",
-        "analytics_toggle_description": "Help Rainbow improve its products and services by allowing analytics of usage data. Collected data is not associated with you or your account."
+        "analytics_toggle_description": "Help Rainbow improve its products and services by allowing analytics of usage data. Collected data is not associated with you or your account. When disabled, only essential crash diagnostics are collected."
       },
       "restore": "Restore to original deployment",
       "review": "Review Rainbow",
@@ -3597,19 +3598,15 @@
       },
       "errors": {
         "header": "Error launching token",
-        "api_request_failed": "API request failed",
-        "api_response_invalid": "API response invalid",
         "contract_interaction_failed": "Contract interaction failed",
         "gas_estimation_failed": "Gas estimation failed",
         "insufficient_funds": "Insufficient funds",
-        "submission_details_missing": "Submission details missing",
-        "transaction_rejected": "Transaction rejected",
-        "transaction_failed": "Transaction failed",
-        "transaction_simulation_failed": "Transaction simulation failed",
         "unknown_error": "Unknown error",
+        "transaction_failed": "Transaction failed",
         "wallet_connection_error": "Wallet connection error",
         "invalid_params": "Invalid parameters",
-        "missing_required_param": "Missing required parameters"
+        "missing_required_param": "Missing required parameters",
+        "unsupported_network": "Token launching is not supported on this network"
       }
     },
     "done": "Done",
@@ -3805,6 +3802,7 @@
         "subtitle": "Say hello to $RNBW, check your eligibility now."
       },
       "claim": {
+        "claim_title": "Claim $RNBW",
         "available_to_claim": "Available to Claim",
         "your_airdrop": "Your Airdrop",
         "your_airdrop_description": "Thanks for using Rainbow. Your airdrop is calculated based on your previous activity.",
@@ -3844,6 +3842,12 @@
         "oh_i_see": "Oh I see..."
       },
       "longer_than_usual": "Claiming is taking longer than usual. It may take up to one minute."
+    },
+    "rnbw_membership": {
+      "claim_card": {
+        "airdrop": "Airdrop",
+        "rewards": "Rewards"
+      }
     },
     "wallet_error_sheet": {
       "title": "Restore your wallet",
