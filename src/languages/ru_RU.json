@@ -3624,7 +3624,7 @@
         "wallet_connection_error": "Ошибка подключения кошелька",
         "invalid_params": "Неверные параметры",
         "missing_required_param": "Отсутствуют обязательные параметры",
-        "unsupported_network": "Token launching is not supported on this network"
+        "unsupported_network": "Запуск токенов не поддерживается в этой сети"
       }
     },
     "done": "Готово",
