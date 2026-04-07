@@ -3624,7 +3624,7 @@
         "wallet_connection_error": "ウォレット接続エラー",
         "invalid_params": "無効なパラメータ",
         "missing_required_param": "必要なパラメータが不足しています",
-        "unsupported_network": "Token launching is not supported on this network"
+        "unsupported_network": "このネットワークではトークンのローンチはサポートされていません"
       }
     },
     "done": "完了",
