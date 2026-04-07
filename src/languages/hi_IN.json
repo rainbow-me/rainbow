@@ -3616,19 +3616,15 @@
       },
       "errors": {
         "header": "टोकन लांच करते समय त्रुटि",
-        "api_request_failed": "API अनुरोध विफल रहा",
-        "api_response_invalid": "API प्रतिक्रिया अमान्य",
         "contract_interaction_failed": "अनुबंध संवाद विफल रहा",
         "gas_estimation_failed": "गैस अनुमान विफल",
         "insufficient_funds": "अपर्याप्त धन",
-        "submission_details_missing": "प्रस्तुति विवरण गायब",
-        "transaction_rejected": "लेनदेन अस्वीकृत",
-        "transaction_failed": "लेन-देन विफल",
-        "transaction_simulation_failed": "लेन-देन सिमुलेशन विफल",
         "unknown_error": "अज्ञात त्रुटि",
+        "transaction_failed": "लेन-देन विफल",
         "wallet_connection_error": "वॉलेट कनेक्शन त्रुटि",
         "invalid_params": "अमान्य पैरामीटर",
-        "missing_required_param": "आवश्यक पैरामीटर अनुपलब्ध"
+        "missing_required_param": "आवश्यक पैरामीटर अनुपलब्ध",
+        "unsupported_network": "इस नेटवर्क पर टोकन लॉन्चिंग समर्थित नहीं है"
       }
     },
     "done": "हो गया",
