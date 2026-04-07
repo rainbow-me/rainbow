@@ -3616,19 +3616,15 @@
       },
       "errors": {
         "header": "Kesalahan meluncurkan token",
-        "api_request_failed": "Permintaan API gagal",
-        "api_response_invalid": "Respons API tidak valid",
         "contract_interaction_failed": "Interaksi kontrak gagal",
         "gas_estimation_failed": "Estimasi gas gagal",
         "insufficient_funds": "Dana Tidak Cukup",
-        "submission_details_missing": "Detail pengajuan hilang",
-        "transaction_rejected": "Transaksi ditolak",
-        "transaction_failed": "Transaksi gagal",
-        "transaction_simulation_failed": "Simulasi transaksi gagal",
         "unknown_error": "Kesalahan Tidak Diketahui",
+        "transaction_failed": "Transaksi gagal",
         "wallet_connection_error": "Kesalahan koneksi dompet",
         "invalid_params": "Parameter tidak valid",
-        "missing_required_param": "Parameter wajib hilang"
+        "missing_required_param": "Parameter wajib hilang",
+        "unsupported_network": "Peluncuran token tidak didukung di jaringan ini"
       }
     },
     "done": "Selesai",
