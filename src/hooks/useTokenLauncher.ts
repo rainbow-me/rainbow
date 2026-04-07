@@ -15,7 +15,6 @@ export function useTokenLauncher() {
     TokenLauncher.configure({
       chains: launcherSupportedChainIds,
     });
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [launcherSupportedChainIds]);
 
   return TokenLauncher;
