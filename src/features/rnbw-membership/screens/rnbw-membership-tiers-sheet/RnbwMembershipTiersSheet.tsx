@@ -13,7 +13,7 @@ import { formatNumber } from '@/helpers/strings';
 import { RNBW_SYMBOL } from '@/features/rnbw-rewards/constants';
 import { TierThemedLabel } from '../../components/TierThemedLabel';
 import { TierBadge } from '../../components/TierBadge';
-import { TIER_VISUALS } from '../../constants';
+import { getTierVisuals } from '../../constants';
 import { LinearGradient, type LinearGradientProps } from 'expo-linear-gradient';
 import { getValueForColorMode } from '@/design-system/color/palettes';
 import { TierProgressBar } from '@/features/rnbw-membership/components/TierProgressBar';
@@ -35,7 +35,7 @@ export const RnbwMembershipTiersSheet = memo(function RnbwMembershipTiersSheet()
         {allTiers.map((tier, index) => (
           <TierGradientLayer
             key={tier.level}
-            colors={getValueForColorMode(TIER_VISUALS[tier.level].backgroundGradient, colorMode).colors}
+            colors={getValueForColorMode(getTierVisuals(tier.level).backgroundGradient, colorMode).colors}
             index={index}
             pageIndex={currentPageIndex}
           />

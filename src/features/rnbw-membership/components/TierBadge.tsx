@@ -1,6 +1,6 @@
 import { memo } from 'react';
 import { Text, useColorMode } from '@/design-system';
-import { TIER_VISUALS } from '@/features/rnbw-membership/constants';
+import { getTierVisuals } from '@/features/rnbw-membership/constants';
 import { GradientBorderView } from '@/components/gradient-border/GradientBorderView';
 import { InnerShadow } from '@/features/polymarket/components/InnerShadow';
 import { LinearGradient } from 'expo-linear-gradient';
@@ -30,7 +30,7 @@ export const TierBadge = memo(function TierBadge({
   weight?: TextWeight;
 }) {
   const { colorMode } = useColorMode();
-  const { badgeGradient, badgeTextGradient, badgeTextShadow, badgeShadow, badgeBorderGradient } = TIER_VISUALS[tier.level];
+  const { badgeGradient, badgeTextGradient, badgeTextShadow, badgeShadow, badgeBorderGradient } = getTierVisuals(tier.level);
   const {
     colors: badgeGradientColors,
     locations: badgeGradientLocations,
