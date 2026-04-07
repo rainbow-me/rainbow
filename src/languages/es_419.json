@@ -3616,19 +3616,15 @@
       },
       "errors": {
         "header": "Error al lanzar el token",
-        "api_request_failed": "Fallo en la solicitud de API",
-        "api_response_invalid": "Respuesta de API inválida",
         "contract_interaction_failed": "Fallo en la interacción del contrato",
         "gas_estimation_failed": "Fallo en la estimación de gas",
         "insufficient_funds": "Fondos insuficientes",
-        "submission_details_missing": "Detalles de la presentación faltantes",
-        "transaction_rejected": "Transacción rechazada",
-        "transaction_failed": "Fallo en la transacción",
-        "transaction_simulation_failed": "Fallo en la simulación de la transacción",
         "unknown_error": "Error Desconocido",
+        "transaction_failed": "Fallo en la transacción",
         "wallet_connection_error": "Error de conexión de la billetera",
         "invalid_params": "Parámetros inválidos",
-        "missing_required_param": "Faltan parámetros requeridos"
+        "missing_required_param": "Faltan parámetros requeridos",
+        "unsupported_network": "El lanzamiento de tokens no es compatible en esta red"
       }
     },
     "done": "Listo",
