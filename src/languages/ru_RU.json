@@ -3616,19 +3616,15 @@
       },
       "errors": {
         "header": "Ошибка при запуске токена",
-        "api_request_failed": "Ошибка запроса API",
-        "api_response_invalid": "Некорректный ответ API",
         "contract_interaction_failed": "Ошибка взаимодействия с контрактом",
         "gas_estimation_failed": "Ошибка оценки газа",
         "insufficient_funds": "Недостаточно средств",
-        "submission_details_missing": "Отсутствуют данные о подаче",
-        "transaction_rejected": "Транзакция отклонена",
-        "transaction_failed": "Ошибка транзакции",
-        "transaction_simulation_failed": "Ошибка моделирования транзакции",
         "unknown_error": "Неизвестная ошибка",
+        "transaction_failed": "Ошибка транзакции",
         "wallet_connection_error": "Ошибка подключения кошелька",
         "invalid_params": "Неверные параметры",
-        "missing_required_param": "Отсутствуют обязательные параметры"
+        "missing_required_param": "Отсутствуют обязательные параметры",
+        "unsupported_network": "Token launching is not supported on this network"
       }
     },
     "done": "Готово",
