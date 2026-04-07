@@ -42,7 +42,6 @@ function HoldToCreateButton() {
   const biometryType = useBiometryType();
   const accountAddress = useAccountAddress();
   const defaultChains = useBackendNetworksStore(state => state.getDefaultChains());
-  const getChainDefaultRpc = useBackendNetworksStore(state => state.getChainDefaultRpc);
 
   const { addStaleBalance } = staleBalancesStore.getState();
   const [isProcessing, setIsProcessing] = useState(false);
@@ -83,7 +82,7 @@ function HoldToCreateButton() {
       }
 
       const chain = defaultChains[chainId];
-      const transport = http(getChainDefaultRpc(chainId));
+      const transport = http(useBackendNetworksStore.getState().getChainDefaultRpc(chainId));
       const account = privateKeyToAccount(privateKey);
       const publicClient = createPublicClient({
         chain,
@@ -129,7 +128,7 @@ function HoldToCreateButton() {
     // if (isHardwareWallet) {
     // navigate(Routes.HARDWARE_WALLET_TX_NAVIGATOR, { submit: createToken });
     // } else {}
-  }, [accountAddress, addStaleBalance, chainId, createToken, defaultChains, getChainDefaultRpc, isHardwareWallet, navigate, setStep]);
+  }, [accountAddress, addStaleBalance, chainId, createToken, defaultChains, isHardwareWallet, navigate, setStep]);
 
   return (
     <HoldToActivateButton
