@@ -19,7 +19,7 @@ inputs:
     required: true
 
 runs:
-  using: "composite"
+  using: 'composite'
   steps:
     - name: Enable KVM
       shell: bash
