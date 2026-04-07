@@ -31,7 +31,7 @@ import { useBackendNetworksStore } from '@/state/backendNetworks/backendNetworks
 import { getUniqueId } from '@/utils/ethereumUtils';
 import { type ParsedAsset } from '@/resources/assets/types';
 import { tokenLaunchErrorToErrorMessage } from '../helpers/tokenLaunchErrorToErrorMessage';
-import { parseEther, type PublicClient, type WalletClient } from 'viem';
+import { parseEther, type Account, type Chain, type PublicClient, type Transport, type WalletClient } from 'viem';
 
 // TODO: Remove this — temporary option for testing
 const REQUIRE_TOKEN_LOGO = !IS_INTERNAL;
@@ -117,8 +117,8 @@ interface TokenLauncherStore {
     publicClient,
     accountAddress,
   }: {
-    walletClient: WalletClient;
-    publicClient: PublicClient;
+    walletClient: WalletClient<Transport, Chain, Account>;
+    publicClient: PublicClient<Transport, Chain>;
     accountAddress: string;
   }) => Promise<LaunchTokenResponse | undefined>;
 }
@@ -333,8 +333,8 @@ export const useTokenLauncherStore = createRainbowStore<TokenLauncherStore>((set
     publicClient,
     accountAddress,
   }: {
-    walletClient: WalletClient;
-    publicClient: PublicClient;
+    walletClient: WalletClient<Transport, Chain, Account>;
+    publicClient: PublicClient<Transport, Chain>;
     accountAddress: string;
   }): Promise<LaunchTokenResponse | undefined> => {
     const { name, chainId, symbol, description, imageUrl, extraBuyAmount, getAnalyticsParams } = get();
