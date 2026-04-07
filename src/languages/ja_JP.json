@@ -3616,19 +3616,15 @@
       },
       "errors": {
         "header": "トークンの発行エラー",
-        "api_request_failed": "APIリクエストが失敗しました",
-        "api_response_invalid": "API応答が無効です",
         "contract_interaction_failed": "契約相互作用が失敗しました",
         "gas_estimation_failed": "ガス見積もりが失敗しました",
         "insufficient_funds": "資金が不足しています",
-        "submission_details_missing": "提出の詳細が不足しています",
-        "transaction_rejected": "トランザクションが拒否されました",
-        "transaction_failed": "トランザクションが失敗しました",
-        "transaction_simulation_failed": "トランザクションシミュレーションが失敗しました",
         "unknown_error": "不明なエラー",
+        "transaction_failed": "トランザクションが失敗しました",
         "wallet_connection_error": "ウォレット接続エラー",
         "invalid_params": "無効なパラメータ",
-        "missing_required_param": "必要なパラメータが不足しています"
+        "missing_required_param": "必要なパラメータが不足しています",
+        "unsupported_network": "Token launching is not supported on this network"
       }
     },
     "done": "完了",
