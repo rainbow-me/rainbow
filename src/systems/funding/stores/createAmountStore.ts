@@ -27,8 +27,11 @@ export function createAmountStore(initialAmount = '0'): AmountStoreType {
 
 // ============ Deposit-Specific Amount Store ================================= //
 
-export function createDepositAmountStore(initialAsset: ExtendedAnimatedAssetWithColors | null): AmountStoreType {
-  const initialAmount = computeInitialDepositAmount(initialAsset, undefined, undefined);
+export function createDepositAmountStore(
+  initialAsset: ExtendedAnimatedAssetWithColors | null,
+  initialSliderProgress: number
+): AmountStoreType {
+  const initialAmount = computeInitialDepositAmount(initialAsset, undefined, undefined, initialSliderProgress);
   return createAmountStore(initialAmount);
 }
 

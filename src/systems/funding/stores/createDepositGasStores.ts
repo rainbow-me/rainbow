@@ -3,35 +3,42 @@ import { type NativeCurrencyKey } from '@/entities/nativeCurrencyTypes';
 import { type MeteorologyLegacyResponse, type MeteorologyResponse } from '@/entities/gas';
 import { rainbowMeteorologyGetData } from '@/handlers/gasFees';
 import { convertAmountToNativeDisplayWorklet, formatNumber, multiply } from '@/helpers/utilities';
+import { logger } from '@/logger';
 import { gweiToWei, weiToGwei } from '@/parsers/gas';
 import { estimateUnlockAndCrosschainSwap } from '@/raps/actions/crosschainSwap';
 import { estimateUnlockAndSwap } from '@/raps/actions/swap';
 import { gasUnits } from '@/references/gasUnits';
 import { userAssetsStoreManager } from '@/state/assets/userAssetsStoreManager';
+import { ChainId } from '@/state/backendNetworks/types';
 import { createDerivedStore } from '@/state/internal/createDerivedStore';
 import { createQueryStore } from '@/state/internal/createQueryStore';
 import { type InferStoreState } from '@/state/internal/types';
+import { useWalletsStore } from '@/state/wallets/walletsStore';
 import { type GasSettings } from '@/__swaps__/screens/Swap/hooks/useCustomGas';
 import { safeBigInt } from '@/__swaps__/screens/Swap/hooks/useEstimatedGasFee';
 import { calculateGasFeeWorklet } from '@/__swaps__/screens/Swap/providers/SyncSwapStateAndSharedValues';
 import { GasSpeed } from '@/__swaps__/types/gas';
 import { isCrosschainQuote } from '@/__swaps__/utils/quotes';
+import { stripNonDecimalNumbers } from '@/__swaps__/utils/swaps';
 import { isLegacyMeteorologyFeeData } from '@/resources/meteorology/classification';
 import { time } from '@/utils/time';
 import { shallowEqual } from '@/worklets/comparisons';
 import { createExternalTokenStore, type FormattedExternalAsset } from './createExternalTokenStore';
 import { computeMaxSwappableAmount } from './createDepositStore';
-import { isValidQuote } from '../utils/quotes';
 import {
-  type DepositConfig,
+  type AmountStoreType,
+  type DepositGasHookParams,
   type DepositGasLimitParams,
+  type DepositGasSponsorshipParams,
   type DepositGasSuggestions,
   type DepositGasStoresType,
   type DepositMeteorologyActions,
   type DepositMeteorologyParams,
   type DepositQuoteStoreType,
   type DepositStoreType,
+  type DepositConfig,
 } from '../types';
+import { isValidQuote } from '../utils/quotes';
 
 // ============ Types ========================================================= //
 
@@ -41,10 +48,13 @@ type MeteorologyData = MeteorologyLegacyResponse | MeteorologyResponse;
 // ============ Gas Stores Factory ============================================ //
 
 export function createDepositGasStores(
-  _config: DepositConfig,
+  config: DepositConfig,
+  useAmountStore: AmountStoreType,
   useDepositStore: DepositStoreType,
   useQuoteStore: DepositQuoteStoreType
 ): DepositGasStoresType {
+  const hasCustomGasLimitEstimator = Boolean(config.gas?.estimateGasLimit);
+
   /**
    * Produces a numeric key each time the `quote` object identity
    * changes to avoid serializing large quote objects as query keys.
@@ -80,16 +90,61 @@ export function createDepositGasStores(
     })
   );
 
+  const useNormalizedAmount = createDerivedStore($ => $(useAmountStore, state => normalizeAmount(state.amount)), { fastMode: true });
+
+  const useCanEstimateGasLimit = createDerivedStore(
+    $ => {
+      const normalizedAmount = $(useNormalizedAmount);
+      const hasAmount = hasNonZeroAmount(normalizedAmount);
+      const hasAsset = $(useDepositStore, selectAssetUniqueId) !== null;
+
+      if (!hasAsset || !hasAmount) return false;
+      if (hasCustomGasLimitEstimator) return true;
+      return isValidQuoteKey($(useQuoteKey));
+    },
+    { fastMode: true }
+  );
+
+  const useCanCheckGasSponsorship = createDerivedStore(
+    $ => {
+      const hasSponsorshipHook = Boolean(config.gas?.isSponsored);
+      if (!hasSponsorshipHook) return false;
+
+      const normalizedAmount = $(useNormalizedAmount);
+      const hasAmount = hasNonZeroAmount(normalizedAmount);
+      const hasAsset = $(useDepositStore, selectAssetUniqueId) !== null;
+      const hasAccountAddress = $(useWalletsStore, state => Boolean(state.accountAddress));
+
+      return hasAccountAddress && hasAsset && hasAmount;
+    },
+    { fastMode: true }
+  );
+
   const useGasLimitStore = createQueryStore<GasLimit, DepositGasLimitParams>({
-    fetcher: createGasLimitFetcher(useDepositStore, useQuoteStore),
-    enabled: $ => $(useQuoteKey, isValidQuoteKey),
+    fetcher: createGasLimitFetcher(config, useAmountStore, useDepositStore, useQuoteStore),
+    enabled: $ => $(useCanEstimateGasLimit),
     params: {
+      amount: $ => $(useNormalizedAmount),
       assetToSellUniqueId: $ => $(useDepositStore, selectAssetUniqueId),
       quoteKey: $ => $(useQuoteKey),
     },
     cacheTime: time.minutes(1),
     keepPreviousData: true,
     staleTime: time.seconds(30),
+  });
+
+  const useGasSponsorshipStore = createQueryStore<boolean, DepositGasSponsorshipParams>({
+    fetcher: createGasSponsorshipFetcher(config, useAmountStore, useDepositStore, useQuoteStore),
+    enabled: $ => $(useCanCheckGasSponsorship),
+    params: {
+      accountAddress: $ => $(useWalletsStore).accountAddress,
+      amount: $ => $(useNormalizedAmount),
+      assetToSellUniqueId: $ => $(useDepositStore, selectAssetUniqueId),
+      quoteKey: $ => $(useQuoteKey),
+    },
+    cacheTime: time.seconds(20),
+    keepPreviousData: true,
+    staleTime: time.seconds(8),
   });
 
   const useNativeAssetStore = createExternalTokenStore(useDepositStore);
@@ -117,6 +172,13 @@ export function createDepositGasStores(
     { fastMode: true }
   );
 
+  const useIsGasSponsored = createDerivedStore(
+    $ => {
+      return $(useGasSponsorshipStore, state => state.getData()) ?? false;
+    },
+    { fastMode: true }
+  );
+
   const useMaxSwappableAmount = createDerivedStore(
     $ => {
       const asset = $(useDepositStore, state => state.getAsset());
@@ -131,6 +193,8 @@ export function createDepositGasStores(
     useEstimatedGasFee,
     useGasLimitStore,
     useGasSettings,
+    useGasSponsorshipStore,
+    useIsGasSponsored,
     useMaxSwappableAmount,
     useMeteorologyStore,
   };
@@ -149,6 +213,8 @@ async function fetchMeteorologyData(
 // ============ Gas Limit Fetching ============================================ //
 
 function createGasLimitFetcher(
+  config: DepositConfig,
+  useAmountStore: AmountStoreType,
   useDepositStore: DepositStoreType,
   useQuoteStore: DepositQuoteStoreType
 ): (params: DepositGasLimitParams) => Promise<GasLimit> {
@@ -157,8 +223,29 @@ function createGasLimitFetcher(
     const quote = useQuoteStore.getState().getData();
     const chainId = useDepositStore.getState().getAssetChainId();
 
-    if (!asset || !isValidQuote(quote)) {
-      return gasUnits.basic_swap[chainId];
+    if (!asset) {
+      return getDefaultGasLimit(chainId);
+    }
+
+    if (config.gas?.estimateGasLimit) {
+      const params = getGasHookParams(config, useAmountStore, useDepositStore, useQuoteStore);
+      if (!params) {
+        return getDefaultGasLimit(chainId);
+      }
+
+      try {
+        return await config.gas.estimateGasLimit(params);
+      } catch (error) {
+        logger.warn('[createDepositGasStores]: custom gas-limit estimation failed', {
+          error,
+          id: config.id,
+        });
+        return getDefaultGasLimit(chainId);
+      }
+    }
+
+    if (!isValidQuote(quote)) {
+      return getDefaultGasLimit(chainId);
     }
 
     if (isCrosschainQuote(quote)) {
@@ -175,10 +262,68 @@ function createGasLimitFetcher(
   };
 }
 
+function createGasSponsorshipFetcher(
+  config: DepositConfig,
+  useAmountStore: AmountStoreType,
+  useDepositStore: DepositStoreType,
+  useQuoteStore: DepositQuoteStoreType
+): (params: DepositGasSponsorshipParams) => Promise<boolean> {
+  return async function fetchIsGasSponsored(): Promise<boolean> {
+    const sponsorshipHook = config.gas?.isSponsored;
+    if (!sponsorshipHook) return false;
+
+    const params = getGasHookParams(config, useAmountStore, useDepositStore, useQuoteStore);
+    if (!params) return false;
+
+    try {
+      return Boolean(await sponsorshipHook(params));
+    } catch (error) {
+      logger.warn('[createDepositGasStores]: sponsorship check failed', {
+        error,
+        id: config.id,
+      });
+      return false;
+    }
+  };
+}
+
+function getGasHookParams(
+  config: DepositConfig,
+  useAmountStore: AmountStoreType,
+  useDepositStore: DepositStoreType,
+  useQuoteStore: DepositQuoteStoreType
+): DepositGasHookParams | null {
+  const accountAddress = useWalletsStore.getState().accountAddress;
+  const amount = normalizeAmount(useAmountStore.getState().amount);
+  const asset = useDepositStore.getState().asset;
+
+  if (!accountAddress || !asset || !hasNonZeroAmount(amount)) return null;
+
+  return {
+    accountAddress,
+    amount,
+    asset,
+    recipient: config.to.recipient?.getState() ?? null,
+    quote: useQuoteStore.getState().getData(),
+  };
+}
+
+function getDefaultGasLimit(chainId: ChainId): string {
+  return gasUnits.basic_swap[chainId] ?? gasUnits.basic_swap[ChainId.mainnet];
+}
+
 // ============ Selectors ===================================================== //
 
 function isValidQuoteKey(key: number | null): boolean {
   return key !== null;
+}
+
+function normalizeAmount(amount: string): string {
+  return stripNonDecimalNumbers(amount) || '0';
+}
+
+function hasNonZeroAmount(amount: string): boolean {
+  return Number(amount) > 0;
 }
 
 function selectAssetUniqueId(state: InferStoreState<DepositStoreType>): string | null {

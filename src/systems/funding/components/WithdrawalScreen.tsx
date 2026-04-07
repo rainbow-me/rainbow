@@ -95,6 +95,7 @@ const WithdrawalScreenContent = memo(function WithdrawalScreenContent() {
     amountActions,
     balanceStore: config.balanceStore,
     decimals: config.amountDecimals,
+    initialSliderProgress: config.initialSliderProgress,
   });
 
   const handleWithdrawal = useWithdrawalHandler({
