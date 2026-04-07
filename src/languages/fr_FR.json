@@ -3616,19 +3616,15 @@
       },
       "errors": {
         "header": "Erreur lors du lancement du jeton",
-        "api_request_failed": "Échec de la demande API",
-        "api_response_invalid": "Réponse API invalide",
         "contract_interaction_failed": "Échec de l'interaction du contrat",
         "gas_estimation_failed": "Échec de l'estimation de gaz",
         "insufficient_funds": "Fonds insuffisants",
-        "submission_details_missing": "Détails de soumission manquants",
-        "transaction_rejected": "Transaction rejetée",
-        "transaction_failed": "Transaction échouée",
-        "transaction_simulation_failed": "Échec de la simulation de transaction",
         "unknown_error": "Erreur inconnue",
+        "transaction_failed": "Transaction échouée",
         "wallet_connection_error": "Erreur de connexion du portefeuille",
         "invalid_params": "Paramètres invalides",
-        "missing_required_param": "Paramètres requis manquants"
+        "missing_required_param": "Paramètres requis manquants",
+        "unsupported_network": "Token launching is not supported on this network"
       }
     },
     "done": "Terminé",
