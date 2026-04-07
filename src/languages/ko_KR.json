@@ -3624,7 +3624,7 @@
         "wallet_connection_error": "지갑 연결 오류",
         "invalid_params": "잘못된 매개변수",
         "missing_required_param": "필수 매개변수가 누락되었습니다",
-        "unsupported_network": "Token launching is not supported on this network"
+        "unsupported_network": "이 네트워크에서는 토큰 출시를 지원하지 않습니다"
       }
     },
     "done": "완료",
