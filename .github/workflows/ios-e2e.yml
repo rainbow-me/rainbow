@@ -7,7 +7,7 @@ on:
   issue_comment:
     types: [created]
 env:
-  NODE_OPTIONS: "--max-old-space-size=6144"
+  NODE_OPTIONS: '--max-old-space-size=6144'
 
 jobs:
   # iOS build job
@@ -164,8 +164,8 @@ jobs:
       - uses: futureware-tech/simulator-action@dab10d813144ef59b48d401cd95da151222ef8cd
         id: simulator
         with:
-          model: "iPhone 16"
-          os_version: "18.5"
+          model: 'iPhone 16'
+          os_version: '18.5'
 
       - name: Ensure Simulator is fully booted
         run: |
