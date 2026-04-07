@@ -201,6 +201,15 @@ export const TIER_VISUALS: Record<TierId, TierVisuals> = {
   },
 };
 
+const UNKNOWN_TIER_VISUALS = TIER_VISUALS.STAKING_TIER_LEVEL_BASIC;
+
+export function getTierVisuals(level: string): TierVisuals {
+  if (level in TIER_VISUALS) {
+    return TIER_VISUALS[level as TierId];
+  }
+  return UNKNOWN_TIER_VISUALS;
+}
+
 export const FALLBACK_TIERS: Tier[] = [
   {
     level: 'STAKING_TIER_LEVEL_BASIC',

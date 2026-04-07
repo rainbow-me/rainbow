@@ -1,7 +1,7 @@
 import type { Tier } from '@/features/rnbw-membership/types';
 import { memo } from 'react';
 import { useColorMode, type TextProps } from '@/design-system';
-import { TIER_VISUALS } from '@/features/rnbw-membership/constants';
+import { getTierVisuals } from '@/features/rnbw-membership/constants';
 import GradientText from '@/components/text/GradientText';
 import { getValueForColorMode } from '@/design-system/color/palettes';
 
@@ -13,7 +13,7 @@ export const TierThemedLabel = memo(function TierThemedLabel({ tier, children }:
 
   if (isDarkMode) return children;
 
-  const { textGradient } = TIER_VISUALS[tier.level];
+  const { textGradient } = getTierVisuals(tier.level);
   const {
     colors: textGradientColors,
     locations: textGradientLocations,
