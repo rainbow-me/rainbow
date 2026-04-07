@@ -1,5 +1,5 @@
 import { type LegendListRef } from '@legendapp/list';
-import React, { createContext, type RefObject, useCallback, useEffect, useMemo, useRef } from 'react';
+import React, { createContext, type RefObject, useCallback, useEffect, useRef } from 'react';
 
 type ListScrollToTopRef = {
   scrollToTop: () => void;
@@ -16,16 +16,14 @@ export const MainListContext = createContext<MainListContext>(null);
 export function MainListProvider({ children }: { children: React.ReactNode }) {
   const scrollToTopRef = useRef<ListScrollToTopRef | null>(null);
 
-  const context: MainListContext = useMemo(() => {
-    return {
-      scrollToTop() {
-        scrollToTopRef.current?.scrollToTop();
-      },
-      setScrollToTopRef: ref => {
-        scrollToTopRef.current = ref;
-      },
-    };
-  }, [scrollToTopRef]);
+  const context: MainListContext = {
+    scrollToTop() {
+      scrollToTopRef.current?.scrollToTop();
+    },
+    setScrollToTopRef: ref => {
+      scrollToTopRef.current = ref;
+    },
+  };
 
   return <MainListContext.Provider value={context}>{children}</MainListContext.Provider>;
 }
@@ -37,13 +35,9 @@ export function useMainList() {
 export const useMainListScrollToTop = (scrollToTop: () => void) => {
   const { setScrollToTopRef } = useMainList() || {};
 
-  const scrollToTopRef = useMemo(() => {
-    return { scrollToTop };
-  }, [scrollToTop]);
-
   useEffect(() => {
-    setScrollToTopRef?.(scrollToTopRef);
-  }, [scrollToTopRef, setScrollToTopRef]);
+    setScrollToTopRef?.({ scrollToTop });
+  }, [scrollToTop, setScrollToTopRef]);
 };
 
 export const useLegendListNavBarScrollToTop = (listRef: RefObject<LegendListRef | null>) => {
