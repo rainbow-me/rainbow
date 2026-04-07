@@ -3616,19 +3616,15 @@
       },
       "errors": {
         "header": "Token başlatılırken hata",
-        "api_request_failed": "API isteği başarısız oldu",
-        "api_response_invalid": "API yanıtı geçersiz",
         "contract_interaction_failed": "Sözleşme etkileşimi başarısız oldu",
         "gas_estimation_failed": "Gas tahmini başarısız oldu",
         "insufficient_funds": "Yetersiz bakiye",
-        "submission_details_missing": "Gönderim ayrıntıları eksik",
-        "transaction_rejected": "İşlem reddedildi",
-        "transaction_failed": "İşlem başarısız oldu",
-        "transaction_simulation_failed": "İşlem simülasyonu başarısız oldu",
         "unknown_error": "Bilinmeyen hata",
+        "transaction_failed": "İşlem başarısız oldu",
         "wallet_connection_error": "Cüzdan bağlantı hatası",
         "invalid_params": "Geçersiz parametreler",
-        "missing_required_param": "Gerekli parametreler eksik"
+        "missing_required_param": "Gerekli parametreler eksik",
+        "unsupported_network": "Token launching is not supported on this network"
       }
     },
     "done": "Tamamlandı",
