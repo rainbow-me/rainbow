@@ -3624,7 +3624,7 @@
         "wallet_connection_error": "Cüzdan bağlantı hatası",
         "invalid_params": "Geçersiz parametreler",
         "missing_required_param": "Gerekli parametreler eksik",
-        "unsupported_network": "Token launching is not supported on this network"
+        "unsupported_network": "Bu ağda token lansmanı desteklenmiyor"
       }
     },
     "done": "Tamamlandı",
