@@ -3616,19 +3616,15 @@
       },
       "errors": {
         "header": "토큰 실행 오류",
-        "api_request_failed": "API 요청 실패",
-        "api_response_invalid": "API 응답이 유효하지 않음",
         "contract_interaction_failed": "계약 상호작용 실패",
         "gas_estimation_failed": "가스 예측 실패",
         "insufficient_funds": "자금이 부족합니다",
-        "submission_details_missing": "제출 세부 정보 누락",
-        "transaction_rejected": "거래 거부됨",
-        "transaction_failed": "거래 실패",
-        "transaction_simulation_failed": "거래 시뮬레이션 실패",
         "unknown_error": "알 수 없는 오류",
+        "transaction_failed": "거래 실패",
         "wallet_connection_error": "지갑 연결 오류",
         "invalid_params": "잘못된 매개변수",
-        "missing_required_param": "필수 매개변수가 누락되었습니다"
+        "missing_required_param": "필수 매개변수가 누락되었습니다",
+        "unsupported_network": "Token launching is not supported on this network"
       }
     },
     "done": "완료",
