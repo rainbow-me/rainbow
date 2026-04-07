@@ -3624,7 +3624,7 @@
         "wallet_connection_error": "Erreur de connexion du portefeuille",
         "invalid_params": "Paramètres invalides",
         "missing_required_param": "Paramètres requis manquants",
-        "unsupported_network": "Token launching is not supported on this network"
+        "unsupported_network": "Le lancement de jetons n\u0019est pas pris en charge sur ce r\u0015seau"
       }
     },
     "done": "Terminé",
