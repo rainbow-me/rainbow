@@ -3616,19 +3616,15 @@
       },
       "errors": {
         "header": "发行代币失败",
-        "api_request_failed": "API请求失败",
-        "api_response_invalid": "API响应无效",
         "contract_interaction_failed": "合约互动失败",
         "gas_estimation_failed": "燃气估算失败",
         "insufficient_funds": "资金不足",
-        "submission_details_missing": "缺少提交详情",
-        "transaction_rejected": "交易被拒绝",
-        "transaction_failed": "交易失败",
-        "transaction_simulation_failed": "交易模拟失败",
         "unknown_error": "未知错误",
+        "transaction_failed": "交易失败",
         "wallet_connection_error": "钱包连接错误",
         "invalid_params": "参数无效",
-        "missing_required_param": "缺少必需的参数"
+        "missing_required_param": "缺少必需的参数",
+        "unsupported_network": "此网络不支持代币发行"
       }
     },
     "done": "完成",
