@@ -2,7 +2,7 @@ import { memo, type ReactNode } from 'react';
 import { StyleSheet, View } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import SheetHandleFixedToTop from '@/components/sheet/SheetHandleFixedToTop';
-import { Box, Text, useColorMode } from '@/design-system';
+import { Box, Text, useColorMode, useForegroundColor } from '@/design-system';
 import Routes from '@/navigation/routesNames';
 import Navigation from '@/navigation/Navigation';
 import { RnbwCoinIcon } from '@/components/RnbwCoinIcon';
@@ -13,6 +13,7 @@ import { ProgressMeter } from '@/features/rnbw-membership/components/ProgressMet
 import { GradientBorderView } from '@/components/gradient-border/GradientBorderView';
 import { LinearGradient } from 'expo-linear-gradient';
 import { opacity } from '@/framework/ui/utils/opacity';
+import { LoadingSpinner } from '@/framework/ui/components/LoadingSpinner';
 import * as i18n from '@/languages';
 
 const ICON_CONTAINER_WIDTH = 62;
@@ -24,9 +25,16 @@ const ARROW_SIZE = 7;
 export const RnbwStakingLearnScreen = memo(function RnbwStakingLearnScreen() {
   const exitFeePercentage = useStakingPositionStore(s => s.getExitFeePercentage());
   const { top: safeAreaTop, bottom: safeAreaBottom } = useSafeAreaInsets();
+  const labelSecondaryColor = useForegroundColor('labelSecondary');
   const { isDarkMode } = useColorMode();
   const screenBackgroundColor = isDarkMode ? '#090909' : '#FEFEFE';
   const backgroundGradientColor = isDarkMode ? '#FADB71' : '#EFC035';
+  const showLoadingState = exitFeePercentage == null;
+
+  const contentContainerStyle = {
+    marginTop: safeAreaTop + 40,
+    paddingBottom: safeAreaBottom + 8,
+  };
 
   return (
     <Box backgroundColor={screenBackgroundColor} style={styles.container}>
@@ -37,44 +45,50 @@ export const RnbwStakingLearnScreen = memo(function RnbwStakingLearnScreen() {
         style={styles.backgroundGradient}
       />
       <SheetHandleFixedToTop top={safeAreaTop + 6} />
-      <View style={[styles.content, { marginTop: safeAreaTop + 40, paddingBottom: safeAreaBottom + 8 }]}>
-        <Box gap={64} flexGrow={1}>
-          <Box alignItems="center" gap={24}>
-            <Text align="center" size="17pt" weight="heavy" color={{ custom: '#D7A921' }}>
-              {i18n.t(i18n.l.rnbw_staking.learn_screen.introducing)}
-            </Text>
-            <Text align="center" color="label" size="44pt" weight="heavy">
-              {i18n.t(i18n.l.rnbw_staking.learn_screen.title)}
-            </Text>
-            <Text align="center" color="labelTertiary" size="20pt / 135%" weight="semibold">
-              {i18n.t(i18n.l.rnbw_staking.learn_screen.description)}
-            </Text>
+      {showLoadingState ? (
+        <View style={[styles.loadingContainer, contentContainerStyle]}>
+          <LoadingSpinner color={labelSecondaryColor} size={40} />
+        </View>
+      ) : (
+        <View style={[styles.content, contentContainerStyle]}>
+          <Box gap={64} flexGrow={1}>
+            <Box alignItems="center" gap={24}>
+              <Text align="center" size="17pt" weight="heavy" color={{ custom: '#D7A921' }}>
+                {i18n.t(i18n.l.rnbw_staking.learn_screen.introducing)}
+              </Text>
+              <Text align="center" color="label" size="44pt" weight="heavy">
+                {i18n.t(i18n.l.rnbw_staking.learn_screen.title)}
+              </Text>
+              <Text align="center" color="labelTertiary" size="20pt / 135%" weight="semibold">
+                {i18n.t(i18n.l.rnbw_staking.learn_screen.description)}
+              </Text>
+            </Box>
+            <Box gap={42} flexGrow={1}>
+              <ReasonRow
+                title={i18n.t(i18n.l.rnbw_staking.learn_screen.fee_cashback)}
+                subtitle={i18n.t(i18n.l.rnbw_staking.learn_screen.fee_cashback_subtitle)}
+                icon={<LockedRnbwIcon />}
+              />
+              <ReasonRow
+                title={i18n.t(i18n.l.rnbw_staking.learn_screen.exit_fee_title, { exitFeePercentage })}
+                subtitle={i18n.t(i18n.l.rnbw_staking.learn_screen.exit_fee_subtitle, { exitFeePercentage })}
+                icon={<UnstakePenaltyIcon percentage={exitFeePercentage} />}
+              />
+              <ReasonRow
+                title={i18n.t(i18n.l.rnbw_staking.learn_screen.stay_in_to_earn_more)}
+                subtitle={i18n.t(i18n.l.rnbw_staking.learn_screen.stay_in_to_earn_more_subtitle)}
+                icon={<ProgressMeterIcon />}
+              />
+            </Box>
           </Box>
-          <Box gap={42} flexGrow={1}>
-            <ReasonRow
-              title={i18n.t(i18n.l.rnbw_staking.learn_screen.fee_cashback)}
-              subtitle={i18n.t(i18n.l.rnbw_staking.learn_screen.fee_cashback_subtitle)}
-              icon={<LockedRnbwIcon />}
-            />
-            <ReasonRow
-              title={i18n.t(i18n.l.rnbw_staking.learn_screen.exit_fee_title, { exitFeePercentage })}
-              subtitle={i18n.t(i18n.l.rnbw_staking.learn_screen.exit_fee_subtitle, { exitFeePercentage })}
-              icon={<UnstakePenaltyIcon percentage={exitFeePercentage} />}
-            />
-            <ReasonRow
-              title={i18n.t(i18n.l.rnbw_staking.learn_screen.stay_in_to_earn_more)}
-              subtitle={i18n.t(i18n.l.rnbw_staking.learn_screen.stay_in_to_earn_more_subtitle)}
-              icon={<ProgressMeterIcon />}
-            />
-          </Box>
-        </Box>
-        <RnbwThemedButton
-          onPress={navigateToStakingScreen}
-          label={i18n.t(i18n.l.rnbw_staking.learn_screen.enable_staking)}
-          height={48}
-          style={styles.button}
-        />
-      </View>
+          <RnbwThemedButton
+            onPress={navigateToStakingScreen}
+            label={i18n.t(i18n.l.rnbw_staking.learn_screen.enable_staking)}
+            height={48}
+            style={styles.button}
+          />
+        </View>
+      )}
     </Box>
   );
 });
@@ -187,6 +201,12 @@ const styles = StyleSheet.create({
     alignItems: 'flex-start',
     justifyContent: 'center',
     width: ICON_CONTAINER_WIDTH,
+  },
+  loadingContainer: {
+    alignItems: 'center',
+    flex: 1,
+    justifyContent: 'center',
+    paddingHorizontal: 32,
   },
   passiveIncomeWrapper: {
     marginLeft: 8,
