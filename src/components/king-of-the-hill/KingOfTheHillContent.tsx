@@ -7,15 +7,14 @@ import { type KingOfTheHill, type KingOfTheHillRankingElem } from '@/graphql/__g
 import { formatCurrency } from '@/helpers/strings';
 import { abbreviateNumber } from '@/helpers/utilities';
 import { logger, RainbowError } from '@/logger';
-import { useLegendListNavBarScrollToTop } from '@/navigation/MainListContext';
+import { useMainListScrollToTop } from '@/navigation/MainListContext';
 import { useKingOfTheHillStore } from '@/state/kingOfTheHill/kingOfTheHillStore';
-import { LegendList, type LegendListRef } from '@legendapp/list';
 import chroma from 'chroma-js';
 import { dequal } from 'dequal';
 import makeColorMoreChill from 'make-color-more-chill';
 import React, { memo, type ReactNode, useCallback, useLayoutEffect, useMemo, useRef, useState } from 'react';
-import { Dimensions, StyleSheet, View } from 'react-native';
-import Animated, { interpolate, type SharedValue, useAnimatedStyle } from 'react-native-reanimated';
+import { type FlatList, Dimensions, StyleSheet, View } from 'react-native';
+import Animated, { interpolate, type SharedValue, useAnimatedScrollHandler, useAnimatedStyle } from 'react-native-reanimated';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { KingOfTheHillHeader } from './KingOfTheHillHeader';
 import { LaunchButton } from './LaunchButton';
@@ -38,6 +37,7 @@ type PastWinnersItem = {
 };
 
 type ListItem = HeaderItem | LeaderboardListItem | PastWinnersItem;
+const BOTTOM_CONTENT_PADDING = 180;
 
 export const KingOfTheHillContent = memo(function KingOfTheHillContent({
   scrollY,
@@ -51,15 +51,19 @@ export const KingOfTheHillContent = memo(function KingOfTheHillContent({
   const [backgroundColor, setBackgroundColor] = useState<string | null>(null);
   const { top: topInset } = useSafeAreaInsets();
   const [tokenDominantColor, setTokenDominantColor] = useState('#999');
-  const listRef = useRef<LegendListRef | null>(null);
-
-  useLegendListNavBarScrollToTop(listRef);
+  const listRef = useRef<FlatList<ListItem> | null>(null);
 
   const handleColorExtracted = useCallback((color: string | null) => {
     if (color) {
       setTokenDominantColor(color);
     }
   }, []);
+
+  const scrollToTop = useCallback(() => {
+    listRef.current?.scrollToOffset({ offset: 0, animated: true });
+  }, []);
+
+  useMainListScrollToTop(scrollToTop);
 
   // effect to account for switching dark to light mode
   useLayoutEffect(() => {
@@ -111,9 +115,18 @@ export const KingOfTheHillContent = memo(function KingOfTheHillContent({
     ];
   }, [kingOfTheHill, kingOfTheHillLeaderBoard]);
 
-  const ListHeaderComponent = useMemo(() => {
-    return <View style={{ height: topInset + 40, width: '100%' }} />;
+  const contentContainerStyle = useMemo(() => {
+    return [styles.listContentContainer, { paddingTop: topInset + 40 }];
   }, [topInset]);
+
+  const onScroll = useAnimatedScrollHandler(
+    {
+      onScroll: event => {
+        scrollY.value = event.contentOffset.y;
+      },
+    },
+    [scrollY]
+  );
 
   const renderItem = useCallback(
     ({ item }: { item: ListItem }) => {
@@ -160,20 +173,13 @@ export const KingOfTheHillContent = memo(function KingOfTheHillContent({
     content = <KingOfTheHillLoading />;
   } else {
     content = (
-      <LegendList
-        ListHeaderComponent={ListHeaderComponent}
-        ListFooterComponent={ListFooterComponent}
+      <Animated.FlatList
+        contentContainerStyle={contentContainerStyle}
         data={listData}
         ref={listRef}
         renderItem={renderItem}
         keyExtractor={keyExtractor}
-        onScroll={event => {
-          'worklet';
-          if (scrollY) {
-            scrollY.value = event.nativeEvent.contentOffset.y;
-          }
-        }}
-        recycleItems
+        onScroll={onScroll}
         style={styles.list}
       />
     );
@@ -187,10 +193,6 @@ export const KingOfTheHillContent = memo(function KingOfTheHillContent({
     </View>
   );
 });
-
-const ListFooterComponent = () => {
-  return <View style={styles.listFooter} />;
-};
 
 const HillBackground = memo(function HillBackground({ scrollY }: { scrollY: SharedValue<number> }) {
   const { isDarkMode } = useColorMode();
@@ -267,8 +269,7 @@ const styles = StyleSheet.create({
   list: {
     zIndex: 1,
   },
-  listFooter: {
-    height: 180,
-    width: '100%',
+  listContentContainer: {
+    paddingBottom: BOTTOM_CONTENT_PADDING,
   },
 });

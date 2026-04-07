@@ -15,8 +15,10 @@ import {
   roundWorklet,
   subWorklet,
   sumWorklet,
+  trimTrailingZeros,
   toFixedWorklet,
   toScaledIntegerWorklet,
+  truncateToDecimals,
 } from './safeMath';
 
 const RESULTS = {
@@ -131,6 +133,10 @@ describe('SafeMath', () => {
 
     const divN_125 = new BigNumber(VALUE_N).div('-1.25').toFixed();
     expect(divWorklet(VALUE_N, '-1.25')).toBe(divN_125);
+  });
+
+  test('truncateToDecimals handles exponent strings', () => {
+    expect(trimTrailingZeros(truncateToDecimals('1.2e-7', 7))).toBe('0.0000001');
   });
 
   test('modWorklet', () => {

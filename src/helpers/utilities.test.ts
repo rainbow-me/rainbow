@@ -2,6 +2,7 @@ import {
   addDisplay,
   convertAmountFromNativeValue,
   convertBipsToPercentage,
+  convertNumberToString,
   handleSignificantDecimals,
   updatePrecisionToDisplay,
 } from './utilities';
@@ -14,6 +15,10 @@ it('convertAmountFromNativeValue', () => {
 it('convertAmountFromNativeValue with trailing zeros', () => {
   const result = convertAmountFromNativeValue('1', '1', 5);
   expect(result).toBe('1');
+});
+
+it('convertNumberToString formats scientific notation using decimal notation', () => {
+  expect(convertNumberToString(1e-7)).toBe('0.0000001');
 });
 
 it('handleSignificantDecimals greater than 1, decimals 2', () => {

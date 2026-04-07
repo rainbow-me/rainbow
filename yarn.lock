@@ -5834,33 +5834,18 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@rainbow-me/token-launcher@npm:0.2.0":
-  version: 0.2.0
-  resolution: "@rainbow-me/token-launcher@npm:0.2.0"
+"@rainbow-me/token-launcher@npm:0.3.0":
+  version: 0.3.0
+  resolution: "@rainbow-me/token-launcher@npm:0.3.0"
   dependencies:
-    "@ethereumjs/util": "npm:9.0.0"
-    "@ethersproject/abi": "npm:5.7.0"
-    "@ethersproject/abstract-signer": "npm:5.7.0"
-    "@ethersproject/bignumber": "npm:5.7.0"
-    "@ethersproject/bytes": "npm:5.7.0"
-    "@ethersproject/contracts": "npm:5.7.0"
-    "@ethersproject/keccak256": "npm:5.7.0"
-    "@ethersproject/providers": "npm:5.7.0"
-    "@ethersproject/random": "npm:5.7.0"
-    "@ethersproject/solidity": "npm:5.7.0"
-    "@ethersproject/strings": "npm:5.7.0"
-    "@ethersproject/transactions": "npm:5.7.0"
-    "@ethersproject/units": "npm:5.7.0"
-    "@ethersproject/wallet": "npm:5.7.0"
-    "@metamask/eth-sig-util": "npm:7.0.0"
-    clanker-sdk: "npm:4.1.19"
-    decimal.js: "npm:^10.5.0"
-    eslint-config-rainbow: "npm:4.3.0"
+    clanker-sdk: "npm:4.2.16"
     jsbi: "npm:^4.3.0"
-    prettier: "npm:^3.3.3"
+    liquid-sdk: "patch:liquid-sdk@npm%3A1.7.2#~/.yarn/patches/liquid-sdk-npm-1.7.2-d7f43b4934.patch"
     tiny-invariant: "npm:^1.3.3"
-    viem: "npm:2.34.0"
-  checksum: 10c0/19b3a0f64476da164d6ac8b7b384e070bcfd866510702c3189ceda792dd82db0911ad468167f8fbbba30d127bec54592edfe3405b5476664fef050b85d9afa50
+    tslib: "npm:^2.6.0"
+  peerDependencies:
+    viem: ^2.38.0
+  checksum: 10c0/beeb226f06fab165e2b4a87d922fddcf9de1ef950733af997e4eab99ca2adfaf9c999a6740f2f205edce0d56433f4711252d61086652cfb9c7193784a3c0b7f1
   languageName: node
   linkType: hard
 
@@ -9449,7 +9434,7 @@ __metadata:
     "@rainbow-me/provider": "npm:0.1.2"
     "@rainbow-me/react-native-animated-number": "npm:0.0.2"
     "@rainbow-me/swaps": "npm:0.41.0"
-    "@rainbow-me/token-launcher": "npm:0.2.0"
+    "@rainbow-me/token-launcher": "npm:0.3.0"
     "@react-native-async-storage/async-storage": "npm:1.23.1"
     "@react-native-camera-roll/camera-roll": "npm:7.10.0"
     "@react-native-clipboard/clipboard": "npm:1.16.2"
@@ -11772,21 +11757,21 @@ __metadata:
   languageName: node
   linkType: hard
 
-"clanker-sdk@npm:4.1.19":
-  version: 4.1.19
-  resolution: "clanker-sdk@npm:4.1.19"
+"clanker-sdk@npm:4.2.16":
+  version: 4.2.16
+  resolution: "clanker-sdk@npm:4.2.16"
   dependencies:
     "@openzeppelin/merkle-tree": "npm:^1.0.8"
     abitype: "npm:^1.0.8"
-    dotenv: "npm:^16.4.7"
+    commander: "npm:^14.0.3"
     inquirer: "npm:^8.2.6"
-    viem: "npm:^2.7.9"
-    zod: "npm:^3.24.4"
+    viem: "npm:^2.38.3"
+    zod: "npm:^4.1.12"
   peerDependencies:
-    viem: ^2.7.9
+    viem: ^2.38.3
   bin:
     clanker-sdk: dist/cli/cli.js
-  checksum: 10c0/8b4304e9cea97ec804e43ec2e12bcf194497f284c62afaf5575e13baf9b25f720138ccb50b5955852adf54f73cf461e8245291ab106cff5bfbccfccc727ce1f2
+  checksum: 10c0/8d314600a6d60047f5ba26c649003c698ab3f505d3b96324f525e8d80ff0cfc0e4f30498f1c99a9cd02a3ccf4384741c48400d6bcd1d720897d0aeaf9e4a492b
   languageName: node
   linkType: hard
 
@@ -12121,6 +12106,13 @@ __metadata:
   version: 13.1.0
   resolution: "commander@npm:13.1.0"
   checksum: 10c0/7b8c5544bba704fbe84b7cab2e043df8586d5c114a4c5b607f83ae5060708940ed0b5bd5838cf8ce27539cde265c1cbd59ce3c8c6b017ed3eec8943e3a415164
+  languageName: node
+  linkType: hard
+
+"commander@npm:^14.0.3":
+  version: 14.0.3
+  resolution: "commander@npm:14.0.3"
+  checksum: 10c0/755652564bbf56ff2ff083313912b326450d3f8d8c85f4b71416539c9a05c3c67dbd206821ca72635bf6b160e2afdefcb458e86b317827d5cb333b69ce7f1a24
   languageName: node
   linkType: hard
 
@@ -12855,13 +12847,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"decimal.js@npm:^10.5.0":
-  version: 10.5.0
-  resolution: "decimal.js@npm:10.5.0"
-  checksum: 10c0/785c35279df32762143914668df35948920b6c1c259b933e0519a69b7003fc0a5ed2a766b1e1dda02574450c566b21738a45f15e274b47c2ac02072c0d1f3ac3
-  languageName: node
-  linkType: hard
-
 "decode-uri-component@npm:^0.2.0, decode-uri-component@npm:^0.2.2":
   version: 0.2.2
   resolution: "decode-uri-component@npm:0.2.2"
@@ -13545,13 +13530,6 @@ __metadata:
   version: 16.4.7
   resolution: "dotenv@npm:16.4.7"
   checksum: 10c0/be9f597e36a8daf834452daa1f4cc30e5375a5968f98f46d89b16b983c567398a330580c88395069a77473943c06b877d1ca25b4afafcdd6d4adb549e8293462
-  languageName: node
-  linkType: hard
-
-"dotenv@npm:^16.4.7":
-  version: 16.6.1
-  resolution: "dotenv@npm:16.6.1"
-  checksum: 10c0/15ce56608326ea0d1d9414a5c8ee6dcf0fffc79d2c16422b4ac2268e7e2d76ff5a572d37ffe747c377de12005f14b3cc22361e79fc7f1061cce81f77d2c973dc
   languageName: node
   linkType: hard
 
@@ -19401,6 +19379,24 @@ __metadata:
   languageName: node
   linkType: hard
 
+"liquid-sdk@npm:1.7.2":
+  version: 1.7.2
+  resolution: "liquid-sdk@npm:1.7.2"
+  peerDependencies:
+    viem: ^2.0.0
+  checksum: 10c0/afc7fdfda86568c220cc574e781cc4c7b68b67338deccf706cc17bb8e1e4996635faca12365631e7a6388c78e19d3ae8d3ee8a3d06dff795c86d65dc52618195
+  languageName: node
+  linkType: hard
+
+"liquid-sdk@patch:liquid-sdk@npm%3A1.7.2#~/.yarn/patches/liquid-sdk-npm-1.7.2-d7f43b4934.patch":
+  version: 1.7.2
+  resolution: "liquid-sdk@patch:liquid-sdk@npm%3A1.7.2#~/.yarn/patches/liquid-sdk-npm-1.7.2-d7f43b4934.patch::version=1.7.2&hash=b43aee"
+  peerDependencies:
+    viem: ^2.0.0
+  checksum: 10c0/891a13133261d1ee8af2571ca9ab1776ff67da6b2bb86a2b97428e0d5df9a42b973f90d7e0fe24342580167eabaf752d23dffecf199e425f85150d97d38b4984
+  languageName: node
+  linkType: hard
+
 "listhen@npm:^1.7.2":
   version: 1.7.2
   resolution: "listhen@npm:1.7.2"
@@ -22672,7 +22668,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"prettier@npm:^3.3.3, prettier@npm:^3.5.3":
+"prettier@npm:^3.5.3":
   version: 3.5.3
   resolution: "prettier@npm:3.5.3"
   bin:
@@ -27124,7 +27120,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"tslib@npm:1 || 2, tslib@npm:2.8.1, tslib@npm:^2.0.0, tslib@npm:^2.0.1, tslib@npm:^2.1.0, tslib@npm:^2.3.0, tslib@npm:^2.3.1, tslib@npm:^2.6.2, tslib@npm:^2.8.1":
+"tslib@npm:1 || 2, tslib@npm:2.8.1, tslib@npm:^2.0.0, tslib@npm:^2.0.1, tslib@npm:^2.1.0, tslib@npm:^2.3.0, tslib@npm:^2.3.1, tslib@npm:^2.6.0, tslib@npm:^2.6.2, tslib@npm:^2.8.1":
   version: 2.8.1
   resolution: "tslib@npm:2.8.1"
   checksum: 10c0/9c4759110a19c53f992d9aae23aac5ced636e99887b51b9e61def52611732872ff7668757d4e4c61f19691e36f4da981cd9485e869b4a7408d689f6bf1f14e62
@@ -28995,10 +28991,10 @@ __metadata:
   languageName: node
   linkType: hard
 
-"zod@npm:^3.24.4":
-  version: 3.25.76
-  resolution: "zod@npm:3.25.76"
-  checksum: 10c0/5718ec35e3c40b600316c5b4c5e4976f7fee68151bc8f8d90ec18a469be9571f072e1bbaace10f1e85cf8892ea12d90821b200e980ab46916a6166a4260a983c
+"zod@npm:^4.1.12":
+  version: 4.3.6
+  resolution: "zod@npm:4.3.6"
+  checksum: 10c0/860d25a81ab41d33aa25f8d0d07b091a04acb426e605f396227a796e9e800c44723ed96d0f53a512b57be3d1520f45bf69c0cb3b378a232a00787a2609625307
   languageName: node
   linkType: hard
 

@@ -1,6 +1,6 @@
 import { CREATOR_BPS, TARGET_MARKET_CAP_IN_ETH } from '../constants';
 import { TokenLauncherSDK } from '@/hooks/useTokenLauncher';
-import { parseUnits } from '@ethersproject/units';
+import { parseUnits } from 'viem';
 
 // 1% fee
 const POOL_FEE = 10000;
@@ -98,11 +98,9 @@ export function calculateTokenomics({
       total: totalSupply,
       lp: lpSupply,
       creator: creatorAmount,
-      airdrop: 0,
     },
     allocation: {
       creator: creatorAllocationBips,
-      airdrop: 0,
       lp: lpAllocationBips,
     },
     price: {

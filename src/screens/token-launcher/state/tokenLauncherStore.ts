@@ -1,13 +1,11 @@
-import { abbreviateNumber, convertAmountToNativeDisplay } from '@/helpers/utilities';
+import { abbreviateNumber, convertAmountToNativeDisplay, convertNumberToString } from '@/helpers/utilities';
+import { trimTrailingZeros, truncateToDecimals } from '@/framework/core/safeMath';
 import { createRainbowStore } from '@/state/internal/createRainbowStore';
-import { DEFAULT_CHAIN_ID, DEFAULT_MAX_AIRDROP_RECIPIENTS, DEFAULT_TOTAL_SUPPLY, MAX_TOTAL_SUPPLY } from '../constants';
+import { DEFAULT_CHAIN_ID, DEFAULT_TOTAL_SUPPLY, MAX_TOTAL_SUPPLY } from '../constants';
 import { makeMutable, runOnUI, type SharedValue, withTiming } from 'react-native-reanimated';
 import { TIMING_CONFIGS } from '@/components/animations/animationConfigs';
-import chroma from 'chroma-js';
-import { memoFn } from '@/utils/memoFn';
 import { calculateTokenomics } from '../helpers/calculateTokenomics';
 import store from '@/redux/store';
-import { GasSpeed } from '@/__swaps__/types/gas';
 import { type Network } from '@/state/backendNetworks/types';
 import { formatCurrency } from '@/helpers/strings';
 import {
@@ -18,11 +16,8 @@ import {
   validateTotalSupplyWorklet,
 } from '../helpers/inputValidators';
 import * as i18n from '@/languages';
-import { type Wallet } from '@ethersproject/wallet';
-import { parseUnits } from '@ethersproject/units';
-import { type TransactionOptions } from '@rainbow-me/swaps';
 import { TokenLauncherSDK } from '@/hooks/useTokenLauncher';
-import { type LaunchTokenResponse, TokenLauncherSDKError } from '@rainbow-me/token-launcher';
+import { type LaunchTokenResponse, Protocol, TokenLauncherSDKError } from '@rainbow-me/token-launcher';
 import { Alert } from 'react-native';
 import { logger, RainbowError } from '@/logger';
 import { analytics } from '@/analytics';
@@ -36,6 +31,7 @@ import { useBackendNetworksStore } from '@/state/backendNetworks/backendNetworks
 import { getUniqueId } from '@/utils/ethereumUtils';
 import { type ParsedAsset } from '@/resources/assets/types';
 import { tokenLaunchErrorToErrorMessage } from '../helpers/tokenLaunchErrorToErrorMessage';
+import { parseEther, type Account, type Chain, type PublicClient, type Transport, type WalletClient } from 'viem';
 
 // TODO: Remove this — temporary option for testing
 const REQUIRE_TOKEN_LOGO = !IS_INTERNAL;
@@ -54,18 +50,6 @@ const NavigationStepsNames: Record<NavigationSteps, string> = {
   [NavigationSteps.SUCCESS]: 'SUCCESS',
 };
 
-export type AirdropRecipient = {
-  type: 'group' | 'address';
-  id: string;
-  label: string;
-  value: string;
-  count: number;
-  isValid: boolean;
-  imageUrl: string | null;
-  addresses?: string[];
-  isSuggested?: boolean;
-};
-
 export type TokenLauncherAnalyticsParams = {
   address?: string;
   chainId: number;
@@ -77,18 +61,9 @@ export type TokenLauncherAnalyticsParams = {
   totalSupply: number;
   links: Record<string, string>;
   extraBuyAmount: number;
-  airdropTotalRecipientsCount: number;
-  airdropTotalAddressCount: number;
-  airdropManuallyAddedRecipientsCount: number;
-  airdropSuggestedRecipientsCount: number;
-  airdropPredefinedCohortRecipientsCount: number;
-  airdropSuggestedCohortRecipientsCount: number;
-  airdropPersonalizedCohortIds: string[];
-  airdropPredefinedCohortIds: string[];
 };
 
 interface TokenLauncherStore {
-  // base state
   imageUri: string;
   imageUrl: string;
   name: string;
@@ -98,43 +73,30 @@ interface TokenLauncherStore {
   description: string;
   links: Link[];
   extraBuyAmount: number;
-  airdropRecipients: AirdropRecipient[];
   step: NavigationSteps;
   stepSharedValue: SharedValue<NavigationSteps>;
   stepAnimatedSharedValue: SharedValue<NavigationSteps>;
   chainNativeAssetUsdPrice: number;
   chainNativeAssetNativePrice: number;
-  gasSpeed: GasSpeed;
   chainNativeAssetRequiredForTransactionGas: string;
   hasSufficientChainNativeAssetForTransactionGas: boolean;
   hasValidPrebuyAmount: boolean;
-  maxAirdropRecipientCount: number;
   launchedTokenAddress: string | null;
   imageModerated: boolean;
-  // derived state
   hasEnteredAnyInfo: () => boolean;
   formattedTotalSupply: () => string;
-  validAirdropRecipients: () => AirdropRecipient[];
   validLinks: () => Link[];
   linkUrlsByType: () => Record<LinkType, string>;
-  hasExceededMaxAirdropRecipients: () => boolean;
   tokenPrice: () => string;
   tokenMarketCap: () => string;
   hasCompletedRequiredFields: () => boolean;
   canContinueToReview: () => boolean;
-  allocationBips: () => {
-    creator: number;
-    airdrop: number;
-    lp: number;
-  };
   tokenomics: () => ReturnType<typeof calculateTokenomics> | undefined;
   getAnalyticsParams: () => TokenLauncherAnalyticsParams;
-  // setters
   setImageUri: (uri: string) => void;
   setImageUrl: (url: string) => void;
   setName: (name: string) => void;
   setSymbol: (symbol: string) => void;
-  setMaxAirdropRecipientCount: (count: number) => void;
   setChainId: (chainId: number) => void;
   setTotalSupply: (totalSupply: number) => void;
   addLink: (type: LinkType) => void;
@@ -144,48 +106,20 @@ interface TokenLauncherStore {
   setDescription: (description: string) => void;
   setStep: (step: NavigationSteps) => void;
   setImageModerated: (moderated: boolean) => void;
-  addAirdropGroup: ({
-    groupId,
-    label,
-    count,
-    imageUrl,
-    addresses,
-  }: {
-    groupId: string;
-    label: string;
-    count: number;
-    imageUrl: string;
-    addresses?: string[];
-  }) => void;
-  addOrEditAirdropAddress: ({
-    id,
-    address,
-    isValid,
-    imageUrl,
-    isSuggested,
-    label,
-  }: {
-    id: string;
-    address: string;
-    isValid: boolean;
-    imageUrl?: string | null;
-    isSuggested?: boolean;
-    label?: string;
-  }) => void;
-  deleteAirdropRecipient: (id: string) => void;
   setChainNativeAssetUsdPrice: (chainNativeAssetUsdPrice: number) => void;
   setChainNativeAssetNativePrice: (chainNativeAssetNativePrice: number) => void;
   setChainNativeAssetRequiredForTransactionGas: (chainNativeAssetRequiredForTransactionGas: string) => void;
-  setGasSpeed: (gasSpeed: GasSpeed) => void;
   setHasValidPrebuyAmount: (hasValidPrebuyAmount: boolean) => void;
   setHasSufficientChainNativeAssetForTransactionGas: (hasSufficientChainNativeAssetForTransactionGas: boolean) => void;
   reset: () => void;
   createToken: ({
-    wallet,
-    transactionOptions,
+    walletClient,
+    publicClient,
+    accountAddress,
   }: {
-    wallet: Wallet;
-    transactionOptions: TransactionOptions;
+    walletClient: WalletClient<Transport, Chain, Account>;
+    publicClient: PublicClient<Transport, Chain>;
+    accountAddress: string;
   }) => Promise<LaunchTokenResponse | undefined>;
 }
 
@@ -202,7 +136,6 @@ interface TokenLauncherStore {
 // description: 'This is a test token',
 // };
 
-// Should always be INFO, but can be changed to any step to test the flow easier
 const INITIAL_STEP = NavigationSteps.INFO;
 
 export const useTokenLauncherStore = createRainbowStore<TokenLauncherStore>((set, get) => ({
@@ -212,7 +145,6 @@ export const useTokenLauncherStore = createRainbowStore<TokenLauncherStore>((set
   symbol: '',
   description: '',
   links: [{ input: '', type: 'website' as LinkType }],
-  airdropRecipients: [],
   chainId: DEFAULT_CHAIN_ID,
   totalSupply: DEFAULT_TOTAL_SUPPLY,
   extraBuyAmount: 0,
@@ -221,16 +153,13 @@ export const useTokenLauncherStore = createRainbowStore<TokenLauncherStore>((set
   step: INITIAL_STEP,
   stepSharedValue: makeMutable(INITIAL_STEP as NavigationSteps),
   stepAnimatedSharedValue: makeMutable(INITIAL_STEP as NavigationSteps),
-  gasSpeed: GasSpeed.FAST,
   chainNativeAssetRequiredForTransactionGas: '0',
   hasSufficientChainNativeAssetForTransactionGas: true,
   hasValidPrebuyAmount: true,
-  maxAirdropRecipientCount: DEFAULT_MAX_AIRDROP_RECIPIENTS,
   launchedTokenAddress: null,
   imageModerated: false,
-  // derived state
   hasEnteredAnyInfo: () => {
-    const { name, symbol, imageUrl, totalSupply, description, extraBuyAmount, validLinks, validAirdropRecipients } = get();
+    const { name, symbol, imageUrl, totalSupply, description, extraBuyAmount, validLinks } = get();
     return (
       name !== '' ||
       symbol !== '' ||
@@ -238,18 +167,16 @@ export const useTokenLauncherStore = createRainbowStore<TokenLauncherStore>((set
       totalSupply !== DEFAULT_TOTAL_SUPPLY ||
       description !== '' ||
       validLinks().length > 0 ||
-      validAirdropRecipients().length > 0 ||
       extraBuyAmount > 0
     );
   },
   formattedTotalSupply: () => abbreviateNumber(get().totalSupply, 2, 'long', true),
-  validAirdropRecipients: () => get().airdropRecipients.filter(recipient => recipient.isValid),
   validLinks: () =>
     get()
       .links.filter(link => link.input.trim() !== '')
       .filter(link => !validateLinkWorklet({ link: link.input, type: link.type })),
-  linkUrlsByType: () => {
-    return get()
+  linkUrlsByType: () =>
+    get()
       .validLinks()
       .reduce(
         (acc, link) => {
@@ -257,13 +184,7 @@ export const useTokenLauncherStore = createRainbowStore<TokenLauncherStore>((set
           return acc;
         },
         {} as Record<LinkType, string>
-      );
-  },
-  hasExceededMaxAirdropRecipients: () => {
-    const { maxAirdropRecipientCount, airdropRecipients } = get();
-    const totalRecipientCount = airdropRecipients.reduce((acc, recipient) => acc + recipient.count, 0);
-    return totalRecipientCount > maxAirdropRecipientCount;
-  },
+      ),
   tokenPrice: () => {
     const { nativeCurrency } = store.getState().settings;
     const tokenomics = get().tokenomics();
@@ -298,35 +219,10 @@ export const useTokenLauncherStore = createRainbowStore<TokenLauncherStore>((set
     return !nameValidation?.error && !symbolValidation?.error && !supplyValidation?.error && (!REQUIRE_TOKEN_LOGO || imageUrl !== '');
   },
   canContinueToReview: () => {
-    const {
-      airdropRecipients,
-      links,
-      hasCompletedRequiredFields,
-      hasExceededMaxAirdropRecipients,
-      hasSufficientChainNativeAssetForTransactionGas,
-      hasValidPrebuyAmount,
-    } = get();
-
-    // Empty address inputs do not prevent continuing, they are just ignored
-    const allAirdropRecipientsValid = airdropRecipients.every(recipient => recipient.isValid || recipient.value === '');
+    const { links, hasCompletedRequiredFields, hasSufficientChainNativeAssetForTransactionGas, hasValidPrebuyAmount } = get();
     const allLinksValid = links.every(link => !validateLinkWorklet({ link: link.input, type: link.type }));
 
-    return (
-      hasCompletedRequiredFields() &&
-      !hasExceededMaxAirdropRecipients() &&
-      allAirdropRecipientsValid &&
-      allLinksValid &&
-      hasSufficientChainNativeAssetForTransactionGas &&
-      hasValidPrebuyAmount
-    );
-  },
-  allocationBips: () => {
-    const tokenomics = get().tokenomics();
-    return {
-      creator: tokenomics?.allocation.creator ?? 0,
-      airdrop: tokenomics?.allocation.airdrop ?? 0,
-      lp: tokenomics?.allocation.lp ?? 0,
-    };
+    return hasCompletedRequiredFields() && allLinksValid && hasSufficientChainNativeAssetForTransactionGas && hasValidPrebuyAmount;
   },
   tokenomics: () => {
     const { chainNativeAssetUsdPrice, totalSupply, extraBuyAmount } = get();
@@ -342,26 +238,6 @@ export const useTokenLauncherStore = createRainbowStore<TokenLauncherStore>((set
   },
   getAnalyticsParams: () => {
     const { name, chainId, symbol, description, imageUrl, totalSupply, extraBuyAmount, imageModerated } = get();
-
-    const airdropRecipients = get().validAirdropRecipients();
-
-    const airdropPredefinedCohortRecipients = airdropRecipients.filter(r => r.type === 'group' && !r.addresses);
-    const airdropPredefinedCohortIds = airdropPredefinedCohortRecipients.map(recipient => recipient.value);
-    const airdropPredefinedCohortRecipientsCount = airdropPredefinedCohortRecipients.reduce((acc, recipient) => acc + recipient.count, 0);
-    const airdropSuggestedCohortRecipients = airdropRecipients.filter(r => r.type === 'group' && r.addresses);
-    const airdropSuggestedCohortRecipientsCount = airdropSuggestedCohortRecipients.reduce((acc, recipient) => acc + recipient.count, 0);
-
-    // These are not really ids, but backend doesn't return ids for these in the same way
-    const airdropPersonalizedCohortIds = airdropRecipients
-      .filter(r => r.type === 'group' && r.addresses)
-      .flatMap(recipient => recipient.label);
-
-    const airdropRecipientAddresses = airdropRecipients.filter(r => r.type === 'address').map(recipient => recipient.value);
-    const airdropManuallyAddedRecipients = airdropRecipients.filter(r => r.type === 'address' && !r.isSuggested);
-    const airdropSuggestedRecipients = airdropRecipients.filter(r => r.type === 'address' && r.isSuggested);
-
-    const airdropTotalRecipientsCount = airdropRecipients.reduce((acc, recipient) => acc + recipient.count, 0);
-
     const linksByType = get().linkUrlsByType();
 
     return {
@@ -372,21 +248,10 @@ export const useTokenLauncherStore = createRainbowStore<TokenLauncherStore>((set
       description: description === '' ? undefined : description,
       totalSupply,
       links: linksByType,
-      extraBuyAmount: extraBuyAmount,
+      extraBuyAmount,
       imageModerated: imageUrl === '' ? undefined : imageModerated,
-      airdropTotalRecipientsCount,
-      // individual address counts
-      airdropTotalAddressCount: airdropRecipientAddresses.length,
-      airdropManuallyAddedRecipientsCount: airdropManuallyAddedRecipients.length,
-      airdropSuggestedRecipientsCount: airdropSuggestedRecipients.length,
-      // cohort counts
-      airdropPredefinedCohortRecipientsCount,
-      airdropSuggestedCohortRecipientsCount,
-      airdropPersonalizedCohortIds,
-      airdropPredefinedCohortIds,
     };
   },
-  // setters
   setImageUri: (uri: string) => {
     set({ imageUri: uri });
   },
@@ -394,9 +259,6 @@ export const useTokenLauncherStore = createRainbowStore<TokenLauncherStore>((set
     set({
       imageUrl: url,
     });
-  },
-  setMaxAirdropRecipientCount: (count: number) => {
-    set({ maxAirdropRecipientCount: count });
   },
   setName: (name: string) => set({ name }),
   setSymbol: (symbol: string) => set({ symbol }),
@@ -413,14 +275,8 @@ export const useTokenLauncherStore = createRainbowStore<TokenLauncherStore>((set
     set({ links: get().links.filter((_, i) => i !== index) });
   },
   setExtraBuyAmount: (amount: number) => {
-    let processedAmount = amount;
-    const amountStr = amount.toString();
-    if (amountStr.includes('.')) {
-      const [intPart, decPart] = amountStr.split('.');
-      const truncatedDecPart = decPart.substring(0, 7);
-      processedAmount = parseFloat(`${intPart}.${truncatedDecPart}`);
-    }
-    set({ extraBuyAmount: processedAmount });
+    const normalizedAmount = Number(trimTrailingZeros(truncateToDecimals(convertNumberToString(amount), 7)));
+    set({ extraBuyAmount: normalizedAmount });
   },
   setStep: (step: NavigationSteps) => {
     const { stepSharedValue, stepAnimatedSharedValue } = get();
@@ -433,82 +289,6 @@ export const useTokenLauncherStore = createRainbowStore<TokenLauncherStore>((set
       step: NavigationStepsNames[step],
     });
   },
-  addAirdropGroup: ({
-    groupId,
-    label,
-    count,
-    imageUrl,
-    addresses,
-  }: {
-    groupId: string;
-    label: string;
-    count: number;
-    imageUrl: string;
-    addresses?: string[];
-  }) => {
-    const { airdropRecipients } = get();
-    const existingGroups = airdropRecipients.filter(recipient => recipient.type === 'group');
-    const existingGroup = existingGroups.find(group => group.value === groupId);
-    // You cannot add the same group twice
-    if (existingGroup) {
-      return;
-    }
-
-    const recipient = {
-      type: 'group' as const,
-      id: Math.random().toString(),
-      value: groupId,
-      label,
-      count,
-      isValid: true,
-      imageUrl,
-      // addresses are for personalized cohorts where we need to send the sdk the addresses and not the cohort id
-      addresses,
-    };
-    set({ airdropRecipients: [...airdropRecipients, recipient] });
-  },
-  // Add & edit are combined here to avoid the AddressInput component needing to subscribe to the list
-  addOrEditAirdropAddress: ({
-    id,
-    address,
-    isValid,
-    imageUrl,
-    isSuggested,
-    label,
-  }: {
-    id: string;
-    address: string;
-    isValid: boolean;
-    imageUrl?: string | null;
-    isSuggested?: boolean;
-    label?: string;
-  }) => {
-    const { airdropRecipients } = get();
-    const isExistingRecipient = airdropRecipients.some(recipient => recipient.id === id);
-
-    if (isExistingRecipient) {
-      set({
-        airdropRecipients: airdropRecipients.map(a =>
-          a.id === id ? { ...a, value: address, label: label ?? address, isValid, imageUrl: imageUrl ?? null } : a
-        ),
-      });
-    } else {
-      const recipient = {
-        type: 'address' as const,
-        id,
-        value: address,
-        label: label ?? address,
-        count: 1,
-        isValid,
-        imageUrl: imageUrl ?? null,
-        isSuggested,
-      };
-      set({ airdropRecipients: [...airdropRecipients, recipient] });
-    }
-  },
-  deleteAirdropRecipient: (id: string) => {
-    set({ airdropRecipients: get().airdropRecipients.filter(a => a.id !== id) });
-  },
   setChainNativeAssetRequiredForTransactionGas: (chainNativeAssetRequiredForTransactionGas: string) => {
     set({ chainNativeAssetRequiredForTransactionGas });
   },
@@ -517,9 +297,6 @@ export const useTokenLauncherStore = createRainbowStore<TokenLauncherStore>((set
   },
   setChainNativeAssetNativePrice: (chainNativeAssetNativePrice: number) => {
     set({ chainNativeAssetNativePrice });
-  },
-  setGasSpeed: (gasSpeed: GasSpeed) => {
-    set({ gasSpeed });
   },
   setHasValidPrebuyAmount: (hasValidPrebuyAmount: boolean) => {
     set({ hasValidPrebuyAmount });
@@ -530,7 +307,6 @@ export const useTokenLauncherStore = createRainbowStore<TokenLauncherStore>((set
   setImageModerated: (moderated: boolean) => {
     set({ imageModerated: moderated });
   },
-  // actions
   reset: () => {
     get().stepAnimatedSharedValue.value = NavigationSteps.INFO;
     get().stepSharedValue.value = NavigationSteps.INFO;
@@ -544,85 +320,46 @@ export const useTokenLauncherStore = createRainbowStore<TokenLauncherStore>((set
       extraBuyAmount: 0,
       chainNativeAssetUsdPrice: 0,
       chainNativeAssetNativePrice: 0,
-      gasSpeed: GasSpeed.FAST,
       hasSufficientChainNativeAssetForTransactionGas: true,
       chainNativeAssetRequiredForTransactionGas: '0',
       hasValidPrebuyAmount: true,
-      airdropRecipients: [],
       step: NavigationSteps.INFO,
       chainId: DEFAULT_CHAIN_ID,
       totalSupply: DEFAULT_TOTAL_SUPPLY,
     });
   },
   createToken: async ({
-    wallet,
-    transactionOptions,
+    walletClient,
+    publicClient,
+    accountAddress,
   }: {
-    wallet: Wallet;
-    transactionOptions: TransactionOptions;
+    walletClient: WalletClient<Transport, Chain, Account>;
+    publicClient: PublicClient<Transport, Chain>;
+    accountAddress: string;
   }): Promise<LaunchTokenResponse | undefined> => {
-    const { name, chainId, symbol, description, imageUrl, tokenomics, totalSupply, extraBuyAmount, getAnalyticsParams } = get();
-
-    const airdropRecipients = get().validAirdropRecipients();
+    const { name, chainId, symbol, description, imageUrl, extraBuyAmount, getAnalyticsParams } = get();
     const analyticsParams = getAnalyticsParams();
-
-    const airdropPredefinedCohortIds = airdropRecipients.filter(r => r.type === 'group' && !r.addresses).map(recipient => recipient.value);
-    const airdropRecipientAddresses = airdropRecipients.filter(r => r.type === 'address').map(recipient => recipient.value);
-    const airdropPersonalizedCohortAddresses = airdropRecipients
-      .filter(r => r.type === 'group' && r.addresses)
-      .flatMap(recipient => recipient.addresses || []);
-    const allAirdropAddresses = [...airdropRecipientAddresses, ...airdropPersonalizedCohortAddresses];
-
-    const targetEth = tokenomics()?.price.targetEth;
-    const formattedTotalSupply = parseUnits(totalSupply.toString(), 18).toString();
     const linksByType = get().linkUrlsByType();
 
     try {
-      const initialTick = TokenLauncherSDK.getInitialTick(parseUnits(targetEth?.toFixed(18) ?? '0', 18));
-      // @ts-ignore - TODO: fix this Swap SDK types isn't supporting legacy gasPrice
-      const gasParams = transactionOptions.gasPrice
-        ? {
-            // @ts-ignore - TODO: fix this Swap SDK types isn't supporting legacy gasPrice
-            gasPrice: transactionOptions.gasPrice,
-          }
-        : {
-            maxFeePerGas: transactionOptions.maxFeePerGas,
-            maxPriorityFeePerGas: transactionOptions.maxPriorityFeePerGas,
-          };
       const params = {
+        protocol: Protocol.Liquid,
         name,
         symbol,
-        description,
-        logoUrl: imageUrl,
-        supply: formattedTotalSupply,
-        links: linksByType,
-        amountIn: parseUnits(extraBuyAmount.toString(), 18).toString(),
-        initialTick,
-        wallet,
-        transactionOptions: {
-          gasLimit: transactionOptions.gasLimit,
-          ...gasParams,
-        },
-        airdropMetadata: {
-          cohortIds: airdropPredefinedCohortIds,
-          addresses: allAirdropAddresses,
-        },
+        walletClient,
+        publicClient,
+        ...(description ? { description } : {}),
+        ...(imageUrl ? { logoUrl: imageUrl } : {}),
+        ...(Object.keys(linksByType).length ? { links: linksByType } : {}),
+        ...(extraBuyAmount > 0 ? { amountIn: parseEther(truncateToDecimals(convertNumberToString(extraBuyAmount), 18)).toString() } : {}),
       };
-
-      const shouldBuy = extraBuyAmount > 0;
-      let result;
-      if (shouldBuy) {
-        result = await TokenLauncherSDK.launchTokenAndBuy(params);
-      } else {
-        result = await TokenLauncherSDK.launchToken(params);
-      }
+      const result = await TokenLauncherSDK.launchToken(params);
 
       if (result) {
         set({ launchedTokenAddress: result.tokenAddress });
 
         const color = await calculateAndCacheDominantColor(imageUrl);
 
-        // Add token to SuperTokenStore
         useSuperTokenStore.getState().addSuperToken({
           name,
           symbol,
@@ -632,7 +369,7 @@ export const useTokenLauncherStore = createRainbowStore<TokenLauncherStore>((set
           imageUrl,
           links: linksByType,
           color,
-          transactionHash: result.transaction.hash,
+          transactionHash: result.txHash,
         });
 
         analytics.track(analytics.event.tokenLauncherTokenCreated, {
@@ -641,6 +378,8 @@ export const useTokenLauncherStore = createRainbowStore<TokenLauncherStore>((set
         });
 
         const chainsName = useBackendNetworksStore.getState().getChainsName();
+
+        const tx = await publicClient.getTransaction({ hash: result.txHash });
 
         const transaction: NewTransaction = {
           status: TransactionStatus.pending,
@@ -657,24 +396,24 @@ export const useTokenLauncherStore = createRainbowStore<TokenLauncherStore>((set
             isNativeAsset: false,
             network: chainsName[chainId],
           } satisfies ParsedAsset,
-          data: result.transaction.data,
-          from: result.transaction.from,
-          gasLimit: result.transaction.gasLimit,
-          hash: result.transaction.hash,
+          data: tx.input,
+          from: tx.from,
+          gasLimit: tx.gas?.toString(),
+          hash: result.txHash,
           network: chainsName[chainId] as Network,
-          nonce: result.transaction.nonce,
-          to: result.transaction.to ?? null,
-          value: result.transaction.value.toString(),
+          nonce: tx.nonce,
+          to: tx.to ?? null,
+          value: tx.value.toString(),
           type: 'launch',
-          gasPrice: result.transaction.gasPrice,
-          maxFeePerGas: result.transaction.maxFeePerGas,
-          maxPriorityFeePerGas: result.transaction.maxPriorityFeePerGas,
+          gasPrice: tx.gasPrice?.toString(),
+          maxFeePerGas: tx.maxFeePerGas?.toString(),
+          maxPriorityFeePerGas: tx.maxPriorityFeePerGas?.toString(),
         };
 
         addNewTransaction({
           transaction,
-          address: wallet.address,
-          chainId: chainId,
+          address: accountAddress,
+          chainId,
         });
       }
       return result;
@@ -686,7 +425,7 @@ export const useTokenLauncherStore = createRainbowStore<TokenLauncherStore>((set
 
       if (error instanceof TokenLauncherSDKError) {
         metadata = { ...metadata, ...error.context };
-        const { header, body } = tokenLaunchErrorToErrorMessage(error as TokenLauncherSDKError);
+        const { header, body } = tokenLaunchErrorToErrorMessage(error);
         Alert.alert(header, body);
       } else {
         Alert.alert(i18n.t(i18n.l.token_launcher.errors.header), i18n.t(i18n.l.token_launcher.errors.unknown_error));

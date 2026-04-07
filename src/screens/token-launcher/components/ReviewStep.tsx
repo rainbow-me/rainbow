@@ -1,22 +1,14 @@
 import { ChainImage } from '@/components/coin-icon/ChainImage';
-import { ContactAvatar } from '@/components/contacts';
 import { isValidURLWorklet } from '@/components/DappBrowser/utils';
 import { Box, Text, TextShadow } from '@/design-system';
 import { type TextSize } from '@/design-system/components/Text/Text';
-import { abbreviateNumber, convertAmountToNativeDisplay, convertAmountToPercentageDisplay } from '@/helpers/utilities';
-import { isENSAddressFormat } from '@/helpers/validators';
+import { abbreviateNumber, convertAmountToBalanceDisplay, convertAmountToNativeDisplay } from '@/helpers/utilities';
 import * as i18n from '@/languages';
-import { AddressAvatar } from '@/screens/change-wallet/components/AddressAvatar';
 import { useBackendNetworksStore } from '@/state/backendNetworks/backendNetworks';
-import { useAccountAddress, useAccountProfileInfo } from '@/state/wallets/walletsStore';
-import { colors } from '@/styles';
 import formatURLForDisplay from '@/utils/formatURLForDisplay';
-import { address as abbreviateAddress } from '@/utils/abbreviations';
-import { addressHashedColorIndex, addressHashedEmoji } from '@/utils/profileUtils';
 import React, { useMemo } from 'react';
 import { ScrollView, StyleSheet } from 'react-native';
 import FastImage from 'react-native-fast-image';
-import { isAddress } from 'viem';
 import { FIELD_BORDER_RADIUS, FIELD_BORDER_WIDTH, LINK_ICON_SIZE } from '../constants';
 import { useTokenLauncherContext } from '../context/TokenLauncherContext';
 import { NavigationSteps, useTokenLauncherStore } from '../state/tokenLauncherStore';
@@ -27,123 +19,7 @@ import { userAssetsStoreManager } from '@/state/assets/userAssetsStoreManager';
 import { THICK_BORDER_WIDTH } from '@/styles/constants';
 
 const CARD_BACKGROUND_COLOR = 'rgba(255, 255, 255, 0.03)';
-const SHOW_TOKEN_ALLOCATION_CARD = false;
 const TOTAL_COST_PILL_HEIGHT = 52;
-
-function TokenAllocationCard() {
-  const { accentColors } = useTokenLauncherContext();
-  const { accountColor, accountImage } = useAccountProfileInfo();
-  const accountAddress = useAccountAddress();
-
-  const allocationBips = useTokenLauncherStore(state => state.allocationBips());
-  const airdropRecipients = useTokenLauncherStore(state => state.validAirdropRecipients());
-  const totalAirdropAddresses = airdropRecipients.reduce((acc, recipient) => {
-    return acc + recipient.count;
-  }, 0);
-  const bipsPerAirdropAddress = allocationBips.airdrop / totalAirdropAddresses;
-
-  return (
-    <Box gap={20} backgroundColor={CARD_BACKGROUND_COLOR} padding={'20px'} borderRadius={FIELD_BORDER_RADIUS} width={'full'}>
-      <Text size="17pt" weight="heavy" color={'label'}>
-        {i18n.t(i18n.l.token_launcher.review.token_allocation)}
-      </Text>
-      <Box gap={4}>
-        <Box
-          flexDirection="row"
-          alignItems="center"
-          height={44}
-          paddingHorizontal={'16px'}
-          borderRadius={16}
-          borderWidth={FIELD_BORDER_WIDTH}
-          borderColor={{ custom: accentColors.opacity4 }}
-        >
-          <Box flexGrow={1} flexDirection="row" alignItems="center" gap={10}>
-            <AddressAvatar url={accountImage} address={accountAddress} label={accountAddress} color={accountColor} size={20} />
-            <Text size="17pt" weight="medium" color={'labelSecondary'}>
-              {i18n.t(i18n.l.token_launcher.review.your_share)}
-            </Text>
-          </Box>
-          <Text size="17pt" weight="bold" color={{ custom: accentColors.opacity100 }}>
-            {`${convertAmountToPercentageDisplay(allocationBips.creator / 100, 2, 2, false)}`}
-          </Text>
-        </Box>
-        {airdropRecipients.map(recipient => {
-          const isEnsOrCohort = isENSAddressFormat(recipient.label) || recipient.type === 'group';
-          const label = isEnsOrCohort
-            ? recipient.label
-            : isAddress(recipient.label)
-              ? abbreviateAddress(recipient.value, 4, 4)
-              : recipient.label;
-
-          return (
-            <Box
-              key={recipient.id}
-              height={44}
-              gap={32}
-              flexDirection="row"
-              justifyContent="space-between"
-              alignItems="center"
-              paddingHorizontal={'16px'}
-              backgroundColor={accentColors.opacity3}
-              borderRadius={16}
-              borderWidth={FIELD_BORDER_WIDTH}
-              borderColor={{ custom: accentColors.opacity2 }}
-            >
-              <Box flexDirection="row" alignItems="center" gap={8} style={{ flex: 1 }}>
-                {recipient.type === 'address' &&
-                  (recipient.imageUrl ? (
-                    <AddressAvatar
-                      address={recipient.value}
-                      url={recipient.imageUrl}
-                      size={20}
-                      color={accentColors.opacity100}
-                      label={''}
-                    />
-                  ) : (
-                    <ContactAvatar
-                      hideShadow
-                      color={colors.avatarBackgrounds[addressHashedColorIndex(recipient.label) ?? 0]}
-                      size="smaller"
-                      value={addressHashedEmoji(recipient.label)}
-                    />
-                  ))}
-                {recipient.type === 'group' && (
-                  <FastImage
-                    source={{ uri: recipient.imageUrl ?? '' }}
-                    style={{ width: 20, height: 20, borderRadius: 10 }}
-                    resizeMode="cover"
-                  />
-                )}
-                <Box flexDirection="row" alignItems="center" gap={8} style={{ flex: 1 }}>
-                  <Text size="17pt" weight="medium" color={'labelSecondary'} numberOfLines={1}>
-                    {label}
-                  </Text>
-                  {recipient.type === 'group' && (
-                    <Box
-                      height={18}
-                      borderRadius={7}
-                      borderWidth={1.667}
-                      paddingHorizontal={'4px'}
-                      justifyContent="center"
-                      alignItems="center"
-                    >
-                      <Text size="11pt" weight="heavy" color={'labelSecondary'}>
-                        {abbreviateNumber(recipient.count, 1)}
-                      </Text>
-                    </Box>
-                  )}
-                </Box>
-              </Box>
-              <Text size="17pt" weight="bold" color={{ custom: accentColors.opacity100 }}>
-                {`${convertAmountToPercentageDisplay((bipsPerAirdropAddress * recipient.count) / 100, 0, undefined, false)}`}
-              </Text>
-            </Box>
-          );
-        })}
-      </Box>
-    </Box>
-  );
-}
 
 function AboutCard() {
   const { accentColors } = useTokenLauncherContext();
@@ -309,7 +185,7 @@ function TotalCostPill() {
       </Text>
       <Box flexDirection="row" alignItems="center" gap={4}>
         <Text size="17pt" weight="bold" color={{ custom: accentColors.opacity100 }}>
-          {`${extraBuyAmount} ${chainNativeAsset.symbol}`}
+          {convertAmountToBalanceDisplay(extraBuyAmount, chainNativeAsset)}
         </Text>
         <Text size="17pt" weight="bold" color={{ custom: accentColors.opacity30 }}>
           {'≈'}
@@ -418,7 +294,6 @@ export function ReviewStep() {
               <>
                 <TotalSupplyCard />
                 <NetworkCard />
-                {SHOW_TOKEN_ALLOCATION_CARD && <TokenAllocationCard />}
                 <AboutCard />
               </>
             )}
