@@ -26,7 +26,7 @@ import { NavigationSteps, useTokenLauncherStore } from '../state/tokenLauncherSt
 import { HoldToActivateButton } from '@/components/hold-to-activate-button/HoldToActivateButton';
 import Routes from '@/navigation/routesNames';
 import { privateKeyToAccount } from 'viem/accounts';
-import { createPublicClient, createWalletClient, type Hex, http } from 'viem';
+import { createPublicClient, createWalletClient, http, isHex } from 'viem';
 import * as kc from '@/keychain';
 
 // height + top padding + bottom padding
@@ -69,7 +69,7 @@ function HoldToCreateButton() {
         setIsProcessing(false);
         return;
       }
-      if (!privateKey || privateKey === kc.ErrorType.NotAuthenticated) {
+      if (!isHex(privateKey)) {
         navigate(Routes.WALLET_ERROR_SHEET);
         logger.error(new RainbowError('[TokenLauncher]: Private key unavailable'), {
           isNull: !privateKey,
@@ -84,7 +84,7 @@ function HoldToCreateButton() {
 
       const chain = defaultChains[chainId];
       const transport = http(getChainDefaultRpc(chainId));
-      const account = privateKeyToAccount(privateKey as Hex);
+      const account = privateKeyToAccount(privateKey);
       const publicClient = createPublicClient({
         chain,
         transport,
