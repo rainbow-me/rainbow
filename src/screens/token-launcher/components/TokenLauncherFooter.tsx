@@ -10,7 +10,7 @@ import { BiometryTypes } from '@/helpers';
 import useBiometryType from '@/hooks/useBiometryType';
 import { useTokenLauncher } from '@/hooks/useTokenLauncher';
 import * as i18n from '@/languages';
-import { logger, RainbowError } from '@/logger';
+import { ensureError, logger, RainbowError } from '@/logger';
 import { loadPrivateKey } from '@/model/wallet';
 import { useNavigation } from '@/navigation/Navigation';
 import { useBackendNetworksStore } from '@/state/backendNetworks/backendNetworks';
@@ -111,7 +111,7 @@ function HoldToCreateButton() {
       }
     } catch (e) {
       navigate(Routes.WALLET_ERROR_SHEET);
-      const error = e instanceof Error ? e : new Error(String(e));
+      const error = ensureError(e);
       logger.error(new RainbowError('[TokenLauncher]: Error Loading Wallet'), {
         message: error.message,
       });
