@@ -117,7 +117,7 @@ export type MinedTransaction = RainbowTransaction & {
   blockNumber: number;
   minedAt: number;
   confirmations: number;
-  gasUsed: string;
+  gasUsed?: string;
 };
 
 export type NewTransaction = Omit<RainbowTransaction, 'title' | 'changes'> & {

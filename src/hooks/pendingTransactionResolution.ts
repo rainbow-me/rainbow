@@ -1,6 +1,7 @@
 import { RelayExecutionStatus, type RelayStatusSnapshot } from '@rainbow-me/delegation';
 import {
   type MinedTransaction,
+  type PendingTransaction,
   type RainbowTransaction,
   TransactionStatus,
   buildTransactionTitle,
@@ -16,8 +17,10 @@ type PendingTransactionResolution =
   | { kind: 'mined'; transaction: MinedTransaction }
   | { kind: 'toast'; transaction: RainbowTransaction };
 
+type OnchainTransaction = PendingTransaction | MinedTransaction;
+
 /**
- * Resolves one pending transaction using the owner that currently knows its progress.
+ * Resolves a pending transaction through the appropriate channel.
  *
  * Relay-managed transactions stay keyed by `relayExecutionId` until Relay exposes an
  * onchain tx hash. Wallet-owned transactions resolve directly by tx hash.
@@ -58,7 +61,7 @@ export async function resolvePendingTransaction({
 
   return {
     kind: 'mined',
-    transaction: nextTransaction as MinedTransaction,
+    transaction: nextTransaction,
   };
 }
 
@@ -72,7 +75,7 @@ async function fetchTransaction({
   address: string;
   currency: SupportedCurrencyKey;
   transaction: RainbowTransaction;
-}): Promise<RainbowTransaction> {
+}): Promise<OnchainTransaction> {
   try {
     if (!transaction.chainId || !transaction.hash) {
       throw new Error('Pending transaction missing chainId or hash');
@@ -92,7 +95,7 @@ async function fetchTransaction({
     logger.error(new RainbowError('[fetchTransaction]: Failed to fetch transaction', e), {
       transaction,
     });
-    return transaction;
+    return buildPendingTransaction(transaction);
   }
 }
 
@@ -131,7 +134,7 @@ async function resolveManagedPendingTransaction({
 
       return {
         kind: 'mined',
-        transaction: fetchedTransaction as MinedTransaction,
+        transaction: fetchedTransaction,
       };
     }
 
@@ -154,20 +157,23 @@ async function resolveManagedPendingTransaction({
   }
 }
 
-function applyTransactionUpdates(original: RainbowTransaction, fetched: RainbowTransaction | null): RainbowTransaction {
-  if (!fetched) return original;
+function applyTransactionUpdates(original: RainbowTransaction, fetched: RainbowTransaction | null): OnchainTransaction {
+  if (!fetched) return buildPendingTransaction(original);
 
   const status = isValidTransactionStatus(fetched.status) ? fetched.status : original.status;
-  if (status === original.status) return original;
+  if (status === TransactionStatus.pending) return buildPendingTransaction(original);
+  if (!isMinedTransaction(fetched)) return buildPendingTransaction(original);
 
-  if (status === TransactionStatus.confirmed && !shouldPreferLocalTransaction(original.type)) {
-    return { ...original, ...fetched };
-  }
+  if (!shouldPreferLocalTransaction(original.type)) return fetched;
 
+  return mergePreferredLocalMinedTransaction(original, fetched);
+}
+
+function buildPendingTransaction(transaction: RainbowTransaction): PendingTransaction {
   return {
-    ...original,
-    status,
-    title: buildTransactionTitle(original.type, status),
+    ...transaction,
+    status: TransactionStatus.pending,
+    title: buildTransactionTitle(transaction.type, TransactionStatus.pending),
   };
 }
 
@@ -181,6 +187,29 @@ function shouldPreferLocalTransaction(originalType: RainbowTransaction['type']):
     default:
       return false;
   }
+}
+
+function isMinedTransaction(transaction: RainbowTransaction): transaction is MinedTransaction {
+  return (
+    transaction.status !== TransactionStatus.pending &&
+    typeof transaction.blockNumber === 'number' &&
+    typeof transaction.confirmations === 'number' &&
+    typeof transaction.minedAt === 'number'
+  );
+}
+
+function mergePreferredLocalMinedTransaction(original: RainbowTransaction, fetched: MinedTransaction): MinedTransaction {
+  return {
+    ...fetched,
+    ...original,
+    blockNumber: fetched.blockNumber,
+    confirmations: fetched.confirmations,
+    gasUsed: fetched.gasUsed,
+    hash: fetched.hash,
+    minedAt: fetched.minedAt,
+    status: fetched.status,
+    title: buildTransactionTitle(original.type, fetched.status),
+  };
 }
 
 function readOriginTxHash(status: RelayStatusSnapshot): `0x${string}` | undefined {

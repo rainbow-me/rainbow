@@ -1,9 +1,9 @@
 import { type StaticJsonRpcProvider } from '@ethersproject/providers';
-import { type BatchCall } from '@rainbow-me/delegation';
+import { type Call } from '@rainbow-me/delegation';
 import { createGelatoEvmRelayerClient } from '@gelatocloud/gasless/_dist/relayer/evm/index.js';
 import { erc20Abi, encodeFunctionData, type Address, type Hash, type Hex } from 'viem';
 import { GELATO_API_KEY } from 'react-native-dotenv';
-import { getProvider, toHex } from '@/handlers/web3';
+import { getProvider } from '@/handlers/web3';
 import { RainbowError } from '@/logger';
 import { time } from '@/utils/time';
 import { STAKING_CHAIN_ID, STAKING_CONTRACT_ADDRESS, STAKING_ABI, RNBW_TOKEN_ADDRESS } from '../constants';
@@ -28,7 +28,7 @@ export async function stakeRnbwSponsored({
     signer,
     address,
     chainId: STAKING_CHAIN_ID,
-    calls: calls.map(c => ({ to: c.to, value: BigInt(c.value), data: c.data })),
+    calls: calls.map(c => ({ to: c.to, value: BigInt(c.value ?? 0), data: c.data })),
   });
 
   return relayTransaction({ from: address, chainId: STAKING_CHAIN_ID, to: signedTx.to, data: signedTx.data });
@@ -67,21 +67,21 @@ async function buildStakeCalls({
   address: Address;
   provider: StaticJsonRpcProvider;
   stakeAmountRaw: string;
-}): Promise<BatchCall[]> {
-  const calls: BatchCall[] = [];
+}): Promise<Call[]> {
+  const calls: Call[] = [];
 
   const needsApproval = await checkIfStakingNeedsApproval({ address, provider, stakeAmountRaw });
   if (needsApproval) {
     calls.push({
       to: RNBW_TOKEN_ADDRESS,
-      value: toHex(0),
+      value: 0n,
       data: encodeFunctionData({ abi: erc20Abi, functionName: 'approve', args: [STAKING_CONTRACT_ADDRESS, BigInt(stakeAmountRaw)] }),
     });
   }
 
   calls.push({
     to: STAKING_CONTRACT_ADDRESS,
-    value: toHex(0),
+    value: 0n,
     data: encodeFunctionData({ abi: STAKING_ABI, functionName: 'stake', args: [BigInt(stakeAmountRaw)] }),
   });
 

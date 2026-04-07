@@ -172,8 +172,12 @@ describe('pendingTransactionResolution', () => {
     expect(resolution).toEqual({
       kind: 'mined',
       transaction: expect.objectContaining({
+        blockNumber: 1,
+        confirmations: 1,
         hash: '0xaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa',
+        minedAt: 100,
         status: TransactionStatus.confirmed,
+        title: 'swap.confirmed',
       }),
     });
     expect(mockFetchRawTransaction).toHaveBeenCalledWith(
