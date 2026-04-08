@@ -45,7 +45,7 @@ export function ActionStatusScene<T>({ labels, task, onComplete }: ActionStatusS
     return () => clearInterval(interval);
   }, [labelIndex, allLabelsDisplayedAndTaskCompleted, onComplete, task.status, labels.length]);
 
-  const currentLabel = isExiting ? EMPTY_LABEL : labels[labelIndex] ?? fallbackLabel;
+  const currentLabel = isExiting ? EMPTY_LABEL : (labels[labelIndex] ?? fallbackLabel);
 
   return (
     <Animated.View key={currentLabel} entering={enteringAnimation} exiting={exitingAnimation}>

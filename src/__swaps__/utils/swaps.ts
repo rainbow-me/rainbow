@@ -70,7 +70,7 @@ export function getColorValueForThemeWorklet<T>(
 ): T | string {
   'worklet';
   if (!values) {
-    return isDarkMode ? fallbackColors?.dark ?? ETH_COLOR_DARK : fallbackColors?.light ?? ETH_COLOR;
+    return isDarkMode ? (fallbackColors?.dark ?? ETH_COLOR_DARK) : (fallbackColors?.light ?? ETH_COLOR);
   }
   return isDarkMode ? values.dark : values.light;
 }

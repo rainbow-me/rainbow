@@ -563,8 +563,8 @@ export class PolymarketChartManager {
     const seriesData: SeriesDataInput[] = series.map((s, i) => ({
       // Allow config palette to override incoming series colors when requested
       color: overrideSeriesColors
-        ? colors?.[i] ?? s.color ?? SERIES_COLORS[i % SERIES_COLORS.length]
-        : s.color ?? colors?.[i] ?? SERIES_COLORS[i % SERIES_COLORS.length],
+        ? (colors?.[i] ?? s.color ?? SERIES_COLORS[i % SERIES_COLORS.length])
+        : (s.color ?? colors?.[i] ?? SERIES_COLORS[i % SERIES_COLORS.length]),
       key: s.tokenId,
       label: s.label,
       prices: s.prices,

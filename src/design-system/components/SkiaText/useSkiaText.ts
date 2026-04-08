@@ -122,7 +122,7 @@ export function useSkiaText({
           segmentStyle.color = Skia.Color(opacity(segment.color, segment.opacity));
         }
         paragraphBuilder.pushStyle(segmentStyle, segment.foregroundPaint ?? foregroundPaint, segment.backgroundPaint ?? backgroundPaint);
-        paragraphBuilder.addText(typeof segment.text === 'string' ? segment.text : segment.text.value ?? '');
+        paragraphBuilder.addText(typeof segment.text === 'string' ? segment.text : (segment.text.value ?? ''));
         paragraphBuilder.pop();
       };
 
@@ -201,8 +201,8 @@ function getTextStyle({
       ? typeof colorOverride === 'string'
         ? Skia.Color(colorOverride)
         : colorOverride
-      : (defaultColor && 'value' in defaultColor ? defaultColor.value : defaultColor) ??
-        Skia.Color(typeof color === 'string' ? color : color.value),
+      : ((defaultColor && 'value' in defaultColor ? defaultColor.value : defaultColor) ??
+        Skia.Color(typeof color === 'string' ? color : color.value)),
     fontFamilies: IS_IOS ? SF_PRO_ROUNDED_IOS : [`SFProRounded-${weightOverride ?? weight}`],
     fontSize: fontInfo.fontSize,
     fontStyle: IS_IOS ? { weight: getSkiaFontWeight(weightOverride ?? weight) } : EMPTY_FONT_STYLE,

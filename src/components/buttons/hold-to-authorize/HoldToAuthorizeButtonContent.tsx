@@ -139,8 +139,8 @@ function HoldToAuthorizeButtonContent2({
   const isAuthorizing = isAuthorizingProp || isAuthorizingState;
 
   const bgColor = disabled
-    ? disabledBackgroundColor ?? getButtonDisabledBgColor(themeColors)[theme]
-    : backgroundColor ?? themeColors.appleBlue;
+    ? (disabledBackgroundColor ?? getButtonDisabledBgColor(themeColors)[theme])
+    : (backgroundColor ?? themeColors.appleBlue);
 
   const height = tinyButton ? TINY_BUTTON_HEIGHT : smallButton ? SMALL_BUTTON_HEIGHT : BUTTON_HEIGHT;
 

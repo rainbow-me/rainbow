@@ -85,7 +85,7 @@ const buildTextStyles = css`
   }}
 
   /* Font Size */
-  font-size:  ${({ size = 'medium' }) => (typeof size === 'number' ? size : fonts?.size?.[size] ?? size)};
+  font-size:  ${({ size = 'medium' }) => (typeof size === 'number' ? size : (fonts?.size?.[size] ?? size))};
 
   /* Font Weight */
   ${({ isEmoji, weight = 'regular' }) => (isEmoji || isNil(weight) || android ? '' : `font-weight: ${fonts?.weight?.[weight] ?? weight};`)}
@@ -130,7 +130,7 @@ buildTextStyles.object = ({
 }) => {
   const styles = {
     color: colors.get(color, theme.colors) || theme.colors.dark,
-    fontSize: typeof size === 'number' ? size : fonts.size[size] ?? size,
+    fontSize: typeof size === 'number' ? size : (fonts.size[size] ?? size),
   };
 
   if (!isEmoji) {

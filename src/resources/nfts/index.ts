@@ -67,7 +67,7 @@ export const useLegacyNFTs = function useLegacyNFTs<TSelected = NFTData>({
   });
 
   return {
-    data: (config?.select ? data ?? config.select(FALLBACK_DATA) : data ?? FALLBACK_DATA) as TSelected,
+    data: (config?.select ? (data ?? config.select(FALLBACK_DATA)) : (data ?? FALLBACK_DATA)) as TSelected,
     error,
     isLoading,
     isInitialLoading,

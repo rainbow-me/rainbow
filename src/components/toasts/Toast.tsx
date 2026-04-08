@@ -72,7 +72,7 @@ function Toast({ children, color, distance = 90, targetTranslate = 0, icon, isVi
     };
   });
 
-  const currentColor = color ?? isDarkMode ? colors.darkModeDark : colors.dark;
+  const currentColor = (color ?? isDarkMode) ? colors.darkModeDark : colors.dark;
 
   return (
     <Animated.View pointerEvents="none" style={animatedStyle}>

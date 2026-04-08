@@ -119,7 +119,7 @@ export const EmojiSelector = ({ columns = 7, showSectionTitles = true, showTabs 
 
     const nextSection = allEmojiList[(currentIndex.current + 1) * 2] as AllEmojiContentEntry;
 
-    const offsetY = category.index * 2 - 1 > 0 ? (allEmojiList[category.index * 2] as AllEmojiContentEntry).offset ?? 0 : 0;
+    const offsetY = category.index * 2 - 1 > 0 ? ((allEmojiList[category.index * 2] as AllEmojiContentEntry).offset ?? 0) : 0;
 
     scrollToOffset(offsetY, true);
     currentIndex.current = category.index;

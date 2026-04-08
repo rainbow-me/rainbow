@@ -15,8 +15,10 @@ import * as i18n from '@/languages';
 
 const REMOTE_CONFIG_VERSION = digitsOnly(CURRENT_APP_VERSION);
 
-export interface RainbowConfig
-  extends Record<string, string | boolean | number | Record<string, number> | number[] | { title: string; subtitle: string }> {
+export interface RainbowConfig extends Record<
+  string,
+  string | boolean | number | Record<string, number> | number[] | { title: string; subtitle: string }
+> {
   /* Objects */
   default_slippage_bips: Record<string, number>;
   default_slippage_bips_chainId: Record<string, number>;

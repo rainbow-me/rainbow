@@ -45,8 +45,10 @@ export enum RequestSource {
 
 // Mobile Wallet Protocol
 
-interface HandleMobileWalletProtocolRequestProps
-  extends Omit<ReturnType<typeof useMobileWalletProtocolHost>, 'message' | 'handleRequestUrl' | 'sendFailureToClient'> {
+interface HandleMobileWalletProtocolRequestProps extends Omit<
+  ReturnType<typeof useMobileWalletProtocolHost>,
+  'message' | 'handleRequestUrl' | 'sendFailureToClient'
+> {
   request: RequestMessage;
 }
 

@@ -225,7 +225,7 @@ export class Logger {
     level?: LogLevel;
     debug?: string;
   } = {}) {
-    this.level = debug ? LogLevel.Debug : level ?? LogLevel.Warn;
+    this.level = debug ? LogLevel.Debug : (level ?? LogLevel.Warn);
     this.debugContextRegexes = (debug || '').split(',').map(context => {
       return new RegExp(context.replace(/[^\w:*]/, '').replace(/\*/g, '.*'));
     });

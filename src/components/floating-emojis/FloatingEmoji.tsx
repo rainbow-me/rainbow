@@ -93,7 +93,7 @@ const FloatingEmoji: React.FC<FloatingEmojiProps> = ({
           left,
           marginTop,
           position: 'absolute',
-          top: centerVertically ? undefined : top ?? size * -0.5,
+          top: centerVertically ? undefined : (top ?? size * -0.5),
         },
         animatedStyle,
       ]}

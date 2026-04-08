@@ -99,8 +99,8 @@ export function getShowcaseAndHiddenTokenIds(address: Address | string, category
   if (category) {
     const tokens =
       category === 'showcase'
-        ? queryClient.getQueryData<string[]>(showcaseTokensQueryKey({ address })) ?? []
-        : queryClient.getQueryData<string[]>(hiddenTokensQueryKey({ address })) ?? [];
+        ? (queryClient.getQueryData<string[]>(showcaseTokensQueryKey({ address })) ?? [])
+        : (queryClient.getQueryData<string[]>(hiddenTokensQueryKey({ address })) ?? []);
 
     return new Set(tokens);
   }

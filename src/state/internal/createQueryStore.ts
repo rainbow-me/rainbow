@@ -208,7 +208,7 @@ export function createQueryStore<
   const persistConfig =
     typeof creatorOrPersistConfig === 'object' && 'storageKey' in creatorOrPersistConfig ? creatorOrPersistConfig : maybePersistConfig;
 
-  let staleTime = typeof config.staleTime === 'function' ? time.minutes(2) : config.staleTime ?? time.minutes(2);
+  let staleTime = typeof config.staleTime === 'function' ? time.minutes(2) : (config.staleTime ?? time.minutes(2));
 
   const {
     fetcher,
@@ -773,7 +773,7 @@ export function createQueryStore<
         const cacheEntry = get().queryCache[currentQueryKey];
         if (keepPreviousData) return cacheEntry?.data ?? null;
         const isExpired = !!cacheEntry?.lastFetchedAt && Date.now() - cacheEntry.lastFetchedAt >= cacheEntry.cacheTime;
-        return isExpired ? null : cacheEntry?.data ?? null;
+        return isExpired ? null : (cacheEntry?.data ?? null);
       },
 
       getStatus,
