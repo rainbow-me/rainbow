@@ -19,7 +19,7 @@ jest.mock('@/features/delegation/relayService', () => ({
   },
 }));
 
-import { TransactionStatus } from '@/entities/transactions';
+import { TransactionDirection, TransactionStatus } from '@/entities/transactions';
 import { logger } from '@/logger';
 import { resolvePendingTransaction } from './pendingTransactionResolution';
 
@@ -65,7 +65,48 @@ describe('pendingTransactionResolution', () => {
     );
   });
 
-  it('emits a failed toast transaction when relay fails before an onchain hash exists', async () => {
+  it('keeps an unchanged onchain pending transaction while the backend has not indexed it yet', async () => {
+    const transaction = buildOnchainPendingTransaction();
+    mockFetchRawTransaction.mockResolvedValue(null);
+
+    const resolution = await resolvePendingTransaction({
+      abortController: null,
+      address: '0x123',
+      currency: 'ETH',
+      transaction,
+    });
+
+    expect(resolution).toEqual({
+      kind: 'pending',
+      transaction,
+    });
+    expect(resolution.transaction).toBe(transaction);
+  });
+
+  it('keeps a managed pending transaction unchanged while relay is still working and no hash exists', async () => {
+    const transaction = buildManagedPendingTransaction();
+    mockGetStatus.mockResolvedValue(
+      buildRelayStatus({
+        status: 'PENDING',
+      })
+    );
+
+    const resolution = await resolvePendingTransaction({
+      abortController: null,
+      address: '0x123',
+      currency: 'ETH',
+      transaction,
+    });
+
+    expect(resolution).toEqual({
+      kind: 'pending',
+      transaction,
+    });
+    expect(resolution.transaction).toBe(transaction);
+    expect(mockFetchRawTransaction).not.toHaveBeenCalled();
+  });
+
+  it('settles a managed failure before an onchain hash exists', async () => {
     mockGetStatus.mockResolvedValue(
       buildRelayStatus({
         status: 'FAILED',
@@ -80,7 +121,7 @@ describe('pendingTransactionResolution', () => {
     });
 
     expect(resolution).toEqual({
-      kind: 'toast',
+      kind: 'settled',
       transaction: expect.objectContaining({
         hash: 'execution-1',
         relayExecutionId: 'execution-1',
@@ -90,10 +131,10 @@ describe('pendingTransactionResolution', () => {
     });
   });
 
-  it('emits a failed toast transaction when relay fails after an onchain hash exists', async () => {
+  it('resolves a relay-confirmed managed transaction immediately once an onchain hash exists', async () => {
     mockGetStatus.mockResolvedValue(
       buildRelayStatus({
-        status: 'FAILED',
+        status: 'CONFIRMED',
         txHash: '0x1111111111111111111111111111111111111111111111111111111111111111',
       })
     );
@@ -102,16 +143,86 @@ describe('pendingTransactionResolution', () => {
       abortController: null,
       address: '0x123',
       currency: 'ETH',
-      transaction: {
-        ...buildManagedPendingTransaction(),
-        hash: '0x1111111111111111111111111111111111111111111111111111111111111111',
-      },
+      transaction: buildManagedPendingTransaction(),
     });
 
     expect(resolution).toEqual({
-      kind: 'toast',
+      kind: 'settled',
       transaction: expect.objectContaining({
         hash: '0x1111111111111111111111111111111111111111111111111111111111111111',
+        relayExecutionId: 'execution-1',
+        status: TransactionStatus.confirmed,
+        title: 'swap.confirmed',
+      }),
+    });
+    expect(mockFetchRawTransaction).not.toHaveBeenCalled();
+    expect(logger.warn).not.toHaveBeenCalled();
+  });
+
+  it('resolves a plain confirmed transaction even before mined metadata arrives', async () => {
+    const asset = {
+      address: '0xaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa',
+      chainId: 8453,
+      decimals: 18,
+      name: 'Token A',
+      network: 'Base',
+      symbol: 'TKNA',
+      uniqueId: '0xaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa_8453',
+    };
+
+    const originalTransaction = {
+      ...buildOnchainPendingTransaction(),
+      changes: [
+        {
+          asset,
+          direction: TransactionDirection.OUT,
+        },
+      ],
+    };
+
+    mockFetchRawTransaction.mockResolvedValue({
+      ...buildOnchainPendingTransaction(),
+      changes: [],
+      status: TransactionStatus.confirmed,
+    });
+
+    const resolution = await resolvePendingTransaction({
+      abortController: null,
+      address: '0x123',
+      currency: 'ETH',
+      transaction: originalTransaction,
+    });
+
+    expect(resolution).toEqual({
+      kind: 'settled',
+      transaction: expect.objectContaining({
+        changes: originalTransaction.changes,
+        hash: '0xaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa',
+        status: TransactionStatus.confirmed,
+        title: 'swap.confirmed',
+      }),
+    });
+  });
+
+  it('settles a managed failure after an onchain hash exists', async () => {
+    mockGetStatus.mockResolvedValue(
+      buildRelayStatus({
+        status: 'FAILED',
+        txHash: '0x2222222222222222222222222222222222222222222222222222222222222222',
+      })
+    );
+
+    const resolution = await resolvePendingTransaction({
+      abortController: null,
+      address: '0x123',
+      currency: 'ETH',
+      transaction: buildManagedPendingTransaction(),
+    });
+
+    expect(resolution).toEqual({
+      kind: 'settled',
+      transaction: expect.objectContaining({
+        hash: '0x2222222222222222222222222222222222222222222222222222222222222222',
         relayExecutionId: 'execution-1',
         status: TransactionStatus.failed,
         title: 'swap.failed',
@@ -120,7 +231,7 @@ describe('pendingTransactionResolution', () => {
     expect(mockFetchRawTransaction).not.toHaveBeenCalled();
   });
 
-  it('drops a managed placeholder once relay reports confirmed without onchain evidence', async () => {
+  it('trusts relay confirmation even when onchain evidence has not been attached yet', async () => {
     mockGetStatus.mockResolvedValue(
       buildRelayStatus({
         status: 'CONFIRMED',
@@ -135,7 +246,7 @@ describe('pendingTransactionResolution', () => {
     });
 
     expect(resolution).toEqual({
-      kind: 'toast',
+      kind: 'settled',
       transaction: expect.objectContaining({
         hash: 'execution-1',
         relayExecutionId: 'execution-1',
@@ -152,7 +263,7 @@ describe('pendingTransactionResolution', () => {
     );
   });
 
-  it('treats a fetched confirmed onchain transaction as mined', async () => {
+  it('preserves mined metadata when the fetched onchain transaction is fully indexed', async () => {
     mockFetchRawTransaction.mockResolvedValue({
       ...buildOnchainPendingTransaction(),
       blockNumber: 1,
@@ -170,7 +281,7 @@ describe('pendingTransactionResolution', () => {
     });
 
     expect(resolution).toEqual({
-      kind: 'mined',
+      kind: 'settled',
       transaction: expect.objectContaining({
         blockNumber: 1,
         confirmations: 1,
@@ -188,6 +299,52 @@ describe('pendingTransactionResolution', () => {
         hash: '0xaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa',
       })
     );
+  });
+
+  it('resolves through the onchain owner when relay is still pending but mined metadata already exists', async () => {
+    mockGetStatus.mockResolvedValue(
+      buildRelayStatus({
+        status: 'PENDING',
+        txHash: '0xbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb',
+      })
+    );
+    mockFetchRawTransaction.mockResolvedValue({
+      ...buildOnchainPendingTransaction(),
+      blockNumber: 1,
+      confirmations: 1,
+      hash: '0xbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb',
+      minedAt: 100,
+      status: TransactionStatus.confirmed,
+    });
+
+    const resolution = await resolvePendingTransaction({
+      abortController: null,
+      address: '0x123',
+      currency: 'ETH',
+      transaction: buildManagedPendingTransaction(),
+    });
+
+    expect(resolution).toEqual({
+      kind: 'settled',
+      transaction: expect.objectContaining({
+        blockNumber: 1,
+        confirmations: 1,
+        hash: '0xbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb',
+        minedAt: 100,
+        relayExecutionId: 'execution-1',
+        status: TransactionStatus.confirmed,
+        title: 'swap.confirmed',
+      }),
+    });
+    expect(mockFetchRawTransaction).toHaveBeenCalledWith(
+      expect.objectContaining({
+        address: '0x123',
+        chainId: 8453,
+        currency: 'ETH',
+        hash: '0xbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb',
+      })
+    );
+    expect(logger.warn).not.toHaveBeenCalled();
   });
 });
 

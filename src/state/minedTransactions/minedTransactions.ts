@@ -1,56 +1,58 @@
-import { type MinedTransaction } from '@/entities/transactions';
+import { type RainbowTransaction } from '@/entities/transactions';
 import { createRainbowStore } from '../internal/createRainbowStore';
 
-export interface MinedTransactionWithPolling {
-  transaction: MinedTransaction;
+export type AssetUpdateTransaction = Pick<RainbowTransaction, 'asset' | 'chainId' | 'changes' | 'hash' | 'type'> & {
+  minedAt: number | undefined;
+};
+
+export type WatchedAssetUpdateTransaction = {
+  transaction: AssetUpdateTransaction;
   pollingStartedAt: number;
-}
+};
 
-interface MinedTransactionsState {
-  minedTransactions: Record<string, MinedTransactionWithPolling[]>;
-  addMinedTransactions: (params: { address: string; transactions: MinedTransaction[] }) => void;
-  clearMinedTransactions: (address: string) => void;
-}
+type AssetUpdatesStore = {
+  watchedTransactions: Record<string, WatchedAssetUpdateTransaction[]>;
+  addWatchedTransactions: (params: { address: string; transactions: AssetUpdateTransaction[] }) => void;
+  clearWatchedTransactions: (address: string) => void;
+};
 
-const EMPTY_MINED_TRANSACTIONS: MinedTransactionWithPolling[] = [];
+const EMPTY_WATCHED_TRANSACTIONS: WatchedAssetUpdateTransaction[] = [];
 
-export const useMinedTransactionsStore = createRainbowStore<MinedTransactionsState>((set, get) => ({
-  minedTransactions: {},
+export const useAssetUpdatesStore = createRainbowStore<AssetUpdatesStore>(set => ({
+  watchedTransactions: {},
 
-  addMinedTransactions: ({ address, transactions }) => {
-    const current = get().minedTransactions[address] || [];
-    const existingHashes = new Set(current.map(tx => tx.transaction.hash));
-    const now = Date.now();
+  addWatchedTransactions: ({ address, transactions }) => {
+    set(state => {
+      const current = state.watchedTransactions[address] || EMPTY_WATCHED_TRANSACTIONS;
+      const existingHashes = new Set(current.map(tx => tx.transaction.hash));
+      const now = Date.now();
 
-    const newTransactions = transactions
-      .filter(tx => !existingHashes.has(tx.hash))
-      .map(tx => {
-        const existing = current.find(item => item.transaction.hash === tx.hash);
-        return {
-          transaction: tx,
-          pollingStartedAt: existing?.pollingStartedAt || now,
-        };
-      });
+      const newTransactions = transactions
+        .filter(tx => !existingHashes.has(tx.hash))
+        .map(transaction => ({
+          transaction,
+          pollingStartedAt: now,
+        }));
 
-    if (newTransactions.length > 0) {
-      set(state => ({
-        minedTransactions: {
-          ...state.minedTransactions,
+      if (!newTransactions.length) return state;
+
+      return {
+        watchedTransactions: {
+          ...state.watchedTransactions,
           [address]: [...current, ...newTransactions],
         },
-      }));
-    }
+      };
+    });
   },
 
-  clearMinedTransactions: (address: string) => {
+  clearWatchedTransactions: address => {
     set(state => {
-      if (state.minedTransactions[address] === EMPTY_MINED_TRANSACTIONS) return state;
-      return {
-        minedTransactions: {
-          ...state.minedTransactions,
-          [address]: EMPTY_MINED_TRANSACTIONS,
-        },
-      };
+      if (!state.watchedTransactions[address]) return state;
+
+      const newTransactions = { ...state.watchedTransactions };
+      delete newTransactions[address];
+
+      return { watchedTransactions: newTransactions };
     });
   },
 }));

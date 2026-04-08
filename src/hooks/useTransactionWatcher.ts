@@ -1,20 +1,14 @@
 import { useCallback, useEffect, useRef } from 'react';
-import { type RainbowTransaction } from '@/entities/transactions';
 import { RainbowError, logger } from '@/logger';
-import { type MinedTransactionWithPolling } from '@/state/minedTransactions/minedTransactions';
 import { time } from '@/utils/time';
 
-interface UseTransactionWatcherProps<T extends RainbowTransaction | MinedTransactionWithPolling> {
+interface UseTransactionWatcherProps<T> {
   interval?: number;
   transactions: T[];
   watchFunction: (transactions: T[], abortController: AbortController) => Promise<void>;
 }
 
-export function useTransactionWatcher<T extends RainbowTransaction | MinedTransactionWithPolling>({
-  interval = time.seconds(1),
-  transactions,
-  watchFunction,
-}: UseTransactionWatcherProps<T>) {
+export function useTransactionWatcher<T>({ interval = time.seconds(1), transactions, watchFunction }: UseTransactionWatcherProps<T>) {
   const abortRef = useRef<AbortController | null>(null);
   const timeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const transactionsRef = useRef<T[]>(transactions);

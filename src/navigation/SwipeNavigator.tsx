@@ -61,7 +61,7 @@ import { ActivityTabIcon } from '@/components/tab-bar/ActivityTabIcon';
 import { BrowserTabIcon } from '@/components/tab-bar/BrowserTabIcon';
 import { initialWindowMetrics } from 'react-native-safe-area-context';
 import { PendingTransactionWatcher } from '@/components/pending-transaction-watcher/PendingTransactionWatcher';
-import { MinedTransactionWatcher } from '@/components/mined-transaction-watcher/MinedTransactionWatcher';
+import { AssetUpdateTransactionWatcher } from '@/components/mined-transaction-watcher/MinedTransactionWatcher';
 import { KingOfTheHillScreen } from '@/screens/KingOfTheHill';
 import { setActiveRoute, useNavigationStore } from '@/state/navigation/navigationStore';
 import { darkModeThemeColors, lightModeThemeColors } from '@/styles/colors';
@@ -734,7 +734,7 @@ export function SwipeNavigator() {
       </BrowserTabBarContextProvider>
 
       <PendingTransactionWatcher />
-      <MinedTransactionWatcher />
+      <AssetUpdateTransactionWatcher />
     </FlexItem>
   );
 }

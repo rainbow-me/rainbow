@@ -12,18 +12,21 @@ import { RainbowError, logger } from '@/logger';
 import type { SupportedCurrencyKey } from '@/references/supportedCurrencies';
 import { fetchRawTransaction } from '@/resources/transactions/transaction';
 
-type PendingTransactionResolution =
-  | { kind: 'pending'; transaction: RainbowTransaction }
-  | { kind: 'mined'; transaction: MinedTransaction }
-  | { kind: 'toast'; transaction: RainbowTransaction };
+type SettledTransaction = RainbowTransaction & {
+  status: TransactionStatus.confirmed | TransactionStatus.failed;
+};
 
-type OnchainTransaction = PendingTransaction | MinedTransaction;
+type PendingTransactionResolution =
+  | { kind: 'pending'; transaction: PendingTransaction }
+  | { kind: 'settled'; transaction: SettledTransaction };
 
 /**
- * Resolves a pending transaction through the appropriate channel.
+ * Checks a pending transaction and returns whether it is still pending or has
+ * settled.
  *
- * Relay-managed transactions stay keyed by `relayExecutionId` until Relay exposes an
- * onchain tx hash. Wallet-owned transactions resolve directly by tx hash.
+ * Wallet-owned transactions settle by transaction hash. Managed relay
+ * transactions settle by relay status, and use the origin hash only while the
+ * relay is still reporting a nonterminal state.
  */
 export async function resolvePendingTransaction({
   abortController,
@@ -45,24 +48,12 @@ export async function resolvePendingTransaction({
     });
   }
 
-  const nextTransaction = await fetchTransaction({
+  return resolveOnchainPendingTransaction({
     abortController,
     address,
     currency,
     transaction,
   });
-
-  if (nextTransaction.status === TransactionStatus.pending) {
-    return {
-      kind: 'pending',
-      transaction: nextTransaction,
-    };
-  }
-
-  return {
-    kind: 'mined',
-    transaction: nextTransaction,
-  };
 }
 
 async function fetchTransaction({
@@ -75,7 +66,7 @@ async function fetchTransaction({
   address: string;
   currency: SupportedCurrencyKey;
   transaction: RainbowTransaction;
-}): Promise<OnchainTransaction> {
+}): Promise<PendingTransaction | SettledTransaction> {
   try {
     if (!transaction.chainId || !transaction.hash) {
       throw new Error('Pending transaction missing chainId or hash');
@@ -95,8 +86,39 @@ async function fetchTransaction({
     logger.error(new RainbowError('[fetchTransaction]: Failed to fetch transaction', e), {
       transaction,
     });
-    return buildPendingTransaction(transaction);
+    return toPendingTransaction(transaction);
   }
+}
+
+async function resolveOnchainPendingTransaction({
+  abortController,
+  address,
+  currency,
+  transaction,
+}: {
+  abortController: AbortController | null;
+  address: string;
+  currency: SupportedCurrencyKey;
+  transaction: RainbowTransaction;
+}): Promise<PendingTransactionResolution> {
+  const nextTransaction = await fetchTransaction({
+    abortController,
+    address,
+    currency,
+    transaction,
+  });
+
+  if (nextTransaction.status === TransactionStatus.pending) {
+    return {
+      kind: 'pending',
+      transaction: nextTransaction,
+    };
+  }
+
+  return {
+    kind: 'settled',
+    transaction: nextTransaction,
+  };
 }
 
 async function resolveManagedPendingTransaction({
@@ -112,68 +134,89 @@ async function resolveManagedPendingTransaction({
 }): Promise<PendingTransactionResolution> {
   try {
     const executionId = transaction.relayExecutionId;
-    if (!executionId) return { kind: 'pending', transaction };
+    if (!executionId) return { kind: 'pending', transaction: toPendingTransaction(transaction) };
 
     const update = await relayService.getStatus(executionId);
     const trackedTransaction = bindManagedOriginTxHash(transaction, readOriginTxHash(update.status));
-    const hasOnchainTxHash = trackedTransaction.hash !== executionId;
+    const hasOriginTxHash = trackedTransaction.hash !== executionId;
 
-    const terminalStatus = toManagedToastStatus(update.status.status);
-    if (!terminalStatus) {
-      if (!hasOnchainTxHash) return { kind: 'pending', transaction: trackedTransaction };
+    switch (update.status.status) {
+      case RelayExecutionStatus.Confirmed:
+        if (!hasOriginTxHash) {
+          logger.warn('[resolvePendingTransaction]: managed relay execution finished without onchain transaction evidence', {
+            executionId,
+            status: update.status.status,
+          });
+        }
 
-      const fetchedTransaction = await fetchTransaction({
-        abortController,
-        address,
-        currency,
-        transaction: trackedTransaction,
-      });
-      if (fetchedTransaction.status === TransactionStatus.pending) {
-        return { kind: 'pending', transaction: fetchedTransaction };
-      }
+        return {
+          kind: 'settled',
+          transaction: buildSettledTransaction(trackedTransaction, TransactionStatus.confirmed),
+        };
 
-      return {
-        kind: 'mined',
-        transaction: fetchedTransaction,
-      };
+      case RelayExecutionStatus.Failed:
+      case RelayExecutionStatus.Reverted:
+        return {
+          kind: 'settled',
+          transaction: buildSettledTransaction(trackedTransaction, TransactionStatus.failed),
+        };
+
+      default:
+        if (!hasOriginTxHash) {
+          return { kind: 'pending', transaction: toPendingTransaction(trackedTransaction) };
+        }
+
+        return resolveOnchainPendingTransaction({
+          abortController,
+          address,
+          currency,
+          transaction: trackedTransaction,
+        });
     }
-
-    if (terminalStatus === TransactionStatus.confirmed && !hasOnchainTxHash) {
-      logger.warn('[resolvePendingTransaction]: managed relay execution finished without onchain transaction evidence', {
-        executionId,
-        status: update.status.status,
-      });
-    }
-
-    return {
-      kind: 'toast',
-      transaction: buildManagedExecutionToastTransaction(trackedTransaction, terminalStatus),
-    };
   } catch (e) {
     logger.error(new RainbowError('[resolvePendingTransaction]: Failed to fetch managed relay execution status', e), {
       executionId: transaction.relayExecutionId,
     });
-    return { kind: 'pending', transaction };
+    return { kind: 'pending', transaction: toPendingTransaction(transaction) };
   }
 }
 
-function applyTransactionUpdates(original: RainbowTransaction, fetched: RainbowTransaction | null): OnchainTransaction {
-  if (!fetched) return buildPendingTransaction(original);
+function applyTransactionUpdates(
+  original: RainbowTransaction,
+  fetched: RainbowTransaction | null
+): PendingTransaction | SettledTransaction {
+  if (!fetched) return toPendingTransaction(original);
 
-  const status = isValidTransactionStatus(fetched.status) ? fetched.status : original.status;
-  if (status === TransactionStatus.pending) return buildPendingTransaction(original);
-  if (!isMinedTransaction(fetched)) return buildPendingTransaction(original);
+  const settledStatus = readSettledStatus(original, fetched);
+  if (!settledStatus) return toPendingTransaction(original);
 
-  if (!shouldPreferLocalTransaction(original.type)) return fetched;
+  const prefersLocalTransaction = shouldPreferLocalTransaction(original.type);
+  if (!isMinedTransaction(fetched)) {
+    return prefersLocalTransaction ? buildSettledTransaction(original, settledStatus) : { ...original, ...fetched, status: settledStatus };
+  }
 
-  return mergePreferredLocalMinedTransaction(original, fetched);
+  return prefersLocalTransaction ? mergePreferredLocalMinedTransaction(original, fetched) : fetched;
 }
 
-function buildPendingTransaction(transaction: RainbowTransaction): PendingTransaction {
+function toPendingTransaction(transaction: RainbowTransaction): PendingTransaction {
+  const title = buildTransactionTitle(transaction.type, TransactionStatus.pending);
+
+  if (isPendingTransaction(transaction) && transaction.title === title) {
+    return transaction;
+  }
+
   return {
     ...transaction,
     status: TransactionStatus.pending,
-    title: buildTransactionTitle(transaction.type, TransactionStatus.pending),
+    title,
+  };
+}
+
+function buildSettledTransaction(transaction: RainbowTransaction, status: SettledTransaction['status']): SettledTransaction {
+  return {
+    ...transaction,
+    status,
+    title: buildTransactionTitle(transaction.type, status),
   };
 }
 
@@ -189,8 +232,22 @@ function shouldPreferLocalTransaction(originalType: RainbowTransaction['type']):
   }
 }
 
-function isMinedTransaction(transaction: RainbowTransaction): transaction is MinedTransaction {
+function isSettledStatus(status: TransactionStatus): status is SettledTransaction['status'] {
+  return status === TransactionStatus.confirmed || status === TransactionStatus.failed;
+}
+
+function isPendingTransaction(transaction: RainbowTransaction): transaction is PendingTransaction {
+  return transaction.status === TransactionStatus.pending;
+}
+
+function readSettledStatus(original: RainbowTransaction, fetched: RainbowTransaction): SettledTransaction['status'] | null {
+  const status = isValidTransactionStatus(fetched.status) ? fetched.status : original.status;
+  return isSettledStatus(status) ? status : null;
+}
+
+function isMinedTransaction(transaction: RainbowTransaction | null): transaction is MinedTransaction {
   return (
+    transaction !== null &&
     transaction.status !== TransactionStatus.pending &&
     typeof transaction.blockNumber === 'number' &&
     typeof transaction.confirmations === 'number' &&
@@ -219,32 +276,5 @@ function readOriginTxHash(status: RelayStatusSnapshot): `0x${string}` | undefine
 function bindManagedOriginTxHash(transaction: RainbowTransaction, txHash: `0x${string}` | undefined): RainbowTransaction {
   if (!txHash || transaction.hash === txHash) return transaction;
 
-  return {
-    ...transaction,
-    hash: txHash,
-  };
-}
-
-function toManagedToastStatus(status: RelayExecutionStatus): TransactionStatus.confirmed | TransactionStatus.failed | null {
-  switch (status) {
-    case RelayExecutionStatus.Confirmed:
-      return TransactionStatus.confirmed;
-    case RelayExecutionStatus.Failed:
-    case RelayExecutionStatus.Reverted:
-      return TransactionStatus.failed;
-    default:
-      return null;
-  }
-}
-
-function buildManagedExecutionToastTransaction(
-  transaction: RainbowTransaction,
-  status: TransactionStatus.confirmed | TransactionStatus.failed
-): RainbowTransaction {
-  return {
-    ...transaction,
-    status,
-    timestamp: Date.now(),
-    title: buildTransactionTitle(transaction.type, status),
-  };
+  return { ...transaction, hash: txHash };
 }

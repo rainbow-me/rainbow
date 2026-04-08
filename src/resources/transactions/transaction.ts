@@ -7,7 +7,7 @@ import { parseTransaction } from '@/parsers/transactions';
 import { RainbowError, logger } from '@/logger';
 import { type RainbowFetchError } from '@/framework/data/http/rainbowFetch';
 import { type ChainId } from '@/state/backendNetworks/types';
-import { useBackendNetworksStore } from '@/state/backendNetworks/backendNetworks';
+import { backendNetworksActions } from '@/state/backendNetworks/backendNetworks';
 import { createPublicClient, http, type Hash, type PublicClient, type TransactionReceipt } from 'viem';
 import { foundry } from 'viem/chains';
 import { Platform } from 'react-native';
@@ -192,7 +192,7 @@ export function useBackendTransaction({ hash, chainId }: BackendTransactionArgs)
   const paginatedTransactionsKey = consolidatedTransactionsQueryKey({
     address: accountAddress,
     currency: nativeCurrency,
-    chainIds: useBackendNetworksStore.getState().getSupportedMainnetChainIds(),
+    chainIds: backendNetworksActions.getSupportedMainnetChainIds(),
   });
 
   const params: TransactionArgs = {

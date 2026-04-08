@@ -1,13 +1,13 @@
 import { useCallback } from 'react';
-import { type RainbowTransaction, type MinedTransaction } from '@/entities/transactions';
+import { type RainbowTransaction, TransactionStatus } from '@/entities/transactions';
 import { consolidatedTransactionsQueryKey } from '@/resources/transactions/consolidatedTransactions';
 import { pendingTransactionsActions } from '@/state/pendingTransactions';
 import { useRainbowToastsStore } from '@/components/rainbow-toast/useRainbowToastsStore';
-import { useBackendNetworksStore } from '@/state/backendNetworks/backendNetworks';
 import { userAssetsStoreManager } from '@/state/assets/userAssetsStoreManager';
 import { analytics } from '@/analytics';
 import { event } from '@/analytics/event';
-import { useMinedTransactionsStore } from '@/state/minedTransactions/minedTransactions';
+import { type AssetUpdateTransaction, useAssetUpdatesStore } from '@/state/minedTransactions/minedTransactions';
+import { backendNetworksActions } from '@/state/backendNetworks/backendNetworks';
 import { queryClient } from '@/react-query';
 import { resolvePendingTransaction } from './pendingTransactionResolution';
 
@@ -26,9 +26,8 @@ export const useWatchPendingTransactions = ({ address }: { address: string }) =>
       });
 
       const now = Math.floor(Date.now() / 1000);
-
-      const resolvedTransactions = await Promise.all(
-        pendingTransactions.map((transaction: RainbowTransaction) =>
+      const resolutions = await Promise.all(
+        pendingTransactions.map(transaction =>
           resolvePendingTransaction({
             abortController,
             address,
@@ -40,31 +39,33 @@ export const useWatchPendingTransactions = ({ address }: { address: string }) =>
 
       if (canceled) return;
 
-      const { newPendingTransactions, minedTransactions, toastTransactions } = resolvedTransactions.reduce<{
+      const { newPendingTransactions, settledTransactions, transactionsToWatch } = resolutions.reduce<{
         newPendingTransactions: RainbowTransaction[];
-        minedTransactions: MinedTransaction[];
-        toastTransactions: RainbowTransaction[];
+        settledTransactions: RainbowTransaction[];
+        transactionsToWatch: AssetUpdateTransaction[];
       }>(
         (acc, resolution) => {
           if (resolution.kind === 'pending') {
             acc.newPendingTransactions.push(resolution.transaction);
-          } else if (resolution.kind === 'mined') {
-            acc.minedTransactions.push(resolution.transaction);
-            analytics.track(event.pendingTransactionResolved, {
-              chainId: resolution.transaction.chainId,
-              type: resolution.transaction.type,
-              timeToResolve: resolution.transaction.minedAt ? (now - resolution.transaction.minedAt) * 1000 : undefined,
-            });
           } else {
-            acc.toastTransactions.push(resolution.transaction);
+            const transaction = resolution.transaction;
+            acc.settledTransactions.push(transaction);
+            if (transaction.status === TransactionStatus.confirmed) {
+              acc.transactionsToWatch.push(createAssetUpdateTransaction(transaction));
+              analytics.track(event.pendingTransactionResolved, {
+                chainId: transaction.chainId,
+                type: transaction.type,
+                timeToResolve: typeof transaction.minedAt === 'number' ? (now - transaction.minedAt) * 1000 : undefined,
+              });
+            }
           }
 
           return acc;
         },
         {
           newPendingTransactions: [],
-          minedTransactions: [],
-          toastTransactions: [],
+          settledTransactions: [],
+          transactionsToWatch: [],
         }
       );
 
@@ -73,18 +74,21 @@ export const useWatchPendingTransactions = ({ address }: { address: string }) =>
         pendingTransactions: newPendingTransactions,
       });
 
-      toastTransactions.forEach(tx => useRainbowToastsStore.getState().handleTransaction(tx));
+      const handleTransaction = useRainbowToastsStore.getState().handleTransaction;
+      settledTransactions.forEach(tx => handleTransaction(tx));
 
-      if (!minedTransactions.length) return;
+      if (!transactionsToWatch.length) return;
 
-      useMinedTransactionsStore.getState().addMinedTransactions({ address, transactions: minedTransactions });
-      minedTransactions.forEach(tx => useRainbowToastsStore.getState().handleTransaction(tx));
+      useAssetUpdatesStore.getState().addWatchedTransactions({
+        address,
+        transactions: transactionsToWatch,
+      });
 
       await queryClient.refetchQueries({
         queryKey: consolidatedTransactionsQueryKey({
           address,
           currency: nativeCurrency,
-          chainIds: useBackendNetworksStore.getState().getSupportedChainIds(),
+          chainIds: backendNetworksActions.getSupportedMainnetChainIds(),
         }),
         type: 'all',
       });
@@ -94,3 +98,16 @@ export const useWatchPendingTransactions = ({ address }: { address: string }) =>
 
   return watchPendingTransactions;
 };
+
+function createAssetUpdateTransaction(
+  transaction: Pick<RainbowTransaction, 'asset' | 'chainId' | 'changes' | 'hash' | 'minedAt' | 'type'>
+): AssetUpdateTransaction {
+  return {
+    asset: transaction.asset,
+    chainId: transaction.chainId,
+    changes: transaction.changes,
+    hash: transaction.hash,
+    minedAt: typeof transaction.minedAt === 'number' ? transaction.minedAt : undefined,
+    type: transaction.type,
+  };
+}
