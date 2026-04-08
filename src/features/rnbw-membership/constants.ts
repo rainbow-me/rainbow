@@ -233,3 +233,8 @@ export const FALLBACK_TIERS: Tier[] = [
     cashbackBps: 10000,
   },
 ];
+
+export const MEMBERSHIP_SCREEN_BACKGROUND_COLOR = {
+  light: '#F5F5F7',
+  dark: '#090909',
+};

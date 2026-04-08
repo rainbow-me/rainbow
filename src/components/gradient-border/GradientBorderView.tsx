@@ -49,13 +49,11 @@ export const GradientBorderView = memo(function GradientBorderView({
 
   return (
     <View style={[styles.baseStyle, style, { backgroundColor }, radiusStyle]}>
-      <MaskedView
-        maskElement={<View style={[styles.maskElement, { borderWidth }, radiusStyle]} />}
-        style={styles.maskView}
-        pointerEvents="none"
-      >
-        <LinearGradient start={start} end={end} style={StyleSheet.absoluteFill} colors={borderGradientColors} locations={locations} />
-      </MaskedView>
+      <View style={styles.maskView} pointerEvents="none">
+        <MaskedView maskElement={<View style={[styles.maskElement, { borderWidth }, radiusStyle]} />} style={StyleSheet.absoluteFill}>
+          <LinearGradient start={start} end={end} style={StyleSheet.absoluteFill} colors={borderGradientColors} locations={locations} />
+        </MaskedView>
+      </View>
       {children}
     </View>
   );

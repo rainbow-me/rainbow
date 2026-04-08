@@ -62,7 +62,7 @@ const WarningContent = memo(function WarningContent({ onProceed }: { onProceed: 
           </Stack>
         </Stack>
         <Stack space="16px" alignHorizontal="center">
-          <ButtonPressAnimation onPress={onProceed} style={styles.fullWidthButton} scaleTo={0.96}>
+          <ButtonPressAnimation onPress={onProceed} style={styles.fullWidthButton} wrapperStyle={styles.fullWidthButton} scaleTo={0.96}>
             <Box
               borderRadius={24}
               height={48}
