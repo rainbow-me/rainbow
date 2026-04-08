@@ -21,6 +21,12 @@ and this project adheres to [Semantic Versioning](http://semver.org/)
 
 ### Testing
 
+## [2.0.22](https://github.com/rainbow-me/rainbow/releases/tag/v2.0.22)
+
+### Added
+
+- Feature: Liquid token launcher (https://github.com/rainbow-me/rainbow/pull/7292)
+
 ## [2.0.21](https://github.com/rainbow-me/rainbow/releases/tag/v2.0.21)
 
 ### Added
