@@ -24,5 +24,5 @@ export const RnbwRewardsClaimCard = memo(function RnbwRewardsClaimCard() {
 });
 
 function navigateToRewardsScreen() {
-  Navigation.handleAction(Routes.RNBW_REWARDS_SCREEN);
+  Navigation.handleAction(Routes.RNBW_REWARDS_CLAIM_SHEET);
 }
