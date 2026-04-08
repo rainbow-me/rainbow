@@ -20,9 +20,23 @@ type PenaltySignProps = {
   };
 };
 
+const SIGN_FACE_CONFIG = {
+  width: 81,
+  height: 58,
+  borderRadius: 18,
+  borderWidth: 4.33,
+  fontSize: '26pt',
+  fontWeight: 'heavy',
+} as const;
+
+const SIGN_POST_CONFIG = {
+  width: 8,
+  height: 24,
+} as const;
+
 export const UnstakePenaltySign = memo(function UnstakePenaltySign({
-  signFaceConfig: signFaceConfig = { width: 81, height: 58, borderRadius: 18, borderWidth: 4.33, fontSize: '26pt', fontWeight: 'heavy' },
-  signPostConfig: signPostConfig = { width: 8, height: 24 },
+  signFaceConfig: signFaceConfig = SIGN_FACE_CONFIG,
+  signPostConfig: signPostConfig = SIGN_POST_CONFIG,
 }: PenaltySignProps) {
   const { isDarkMode } = useColorMode();
   const signColor = isDarkMode ? 'rgba(255,255,255,0.6)' : '#000000';
