@@ -149,6 +149,7 @@ const Routes = {
   RNBW_STAKING_SCREEN: 'RnbwStakingScreen',
   RNBW_UNSTAKE_SHEET: 'RnbwUnstakeSheet',
   WALLET_ERROR_SHEET: 'WalletErrorSheet',
+  RNBW_MEMBERSHIP_TIERS_SHEET: 'RnbwMembershipTiersSheet',
 } as const;
 
 export const NATIVE_ROUTES = new Set<Route>([

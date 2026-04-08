@@ -124,6 +124,7 @@ import { RnbwStakingScreen } from '@/features/rnbw-staking/screens/rnbw-staking-
 import { RnbwUnstakeSheet } from '@/features/rnbw-staking/screens/rnbw-unstake-sheet/RnbwUnstakeSheet';
 import WalletErrorSheet from '@/components/wallet-error/WalletErrorSheet';
 import { createBottomSheetNavigator } from './bottom-sheet/createBottomSheetNavigator';
+import { RnbwMembershipTiersSheet } from '@/features/rnbw-membership/screens/rnbw-membership-tiers-sheet/RnbwMembershipTiersSheet';
 
 const Stack = createStackNavigator();
 const OuterStack = createStackNavigator();
@@ -316,6 +317,7 @@ function BSNavigator() {
       <BSStack.Screen component={RnbwStakingScreen} name={Routes.RNBW_STAKING_SCREEN} />
       <BSStack.Screen component={RnbwUnstakeSheet} name={Routes.RNBW_UNSTAKE_SHEET} />
       <BSStack.Screen component={WalletErrorSheet} name={Routes.WALLET_ERROR_SHEET} />
+      <BSStack.Screen component={RnbwMembershipTiersSheet} name={Routes.RNBW_MEMBERSHIP_TIERS_SHEET} />
     </BSStack.Navigator>
   );
 }
