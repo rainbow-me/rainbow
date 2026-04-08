@@ -17,6 +17,10 @@ type GradientBorderViewProps = {
   start?: { x: number; y: number };
   end?: { x: number; y: number };
   borderRadius?: number;
+  borderTopLeftRadius?: number;
+  borderTopRightRadius?: number;
+  borderBottomLeftRadius?: number;
+  borderBottomRightRadius?: number;
   backgroundColor?: string;
   style?: StyleProp<ViewStyle>;
 };
@@ -29,13 +33,24 @@ export const GradientBorderView = memo(function GradientBorderView({
   end = DEFAULT_END,
   borderWidth = THICK_BORDER_WIDTH,
   borderRadius = DEFAULT_BORDER_RADIUS,
+  borderTopLeftRadius,
+  borderTopRightRadius,
+  borderBottomLeftRadius,
+  borderBottomRightRadius,
   style,
   backgroundColor = DEFAULT_BACKGROUND_COLOR,
 }: GradientBorderViewProps) {
+  const radiusStyle = {
+    borderTopLeftRadius: borderTopLeftRadius ?? borderRadius,
+    borderTopRightRadius: borderTopRightRadius ?? borderRadius,
+    borderBottomLeftRadius: borderBottomLeftRadius ?? borderRadius,
+    borderBottomRightRadius: borderBottomRightRadius ?? borderRadius,
+  };
+
   return (
-    <View style={[styles.baseStyle, style, { backgroundColor, borderRadius }]}>
+    <View style={[styles.baseStyle, style, { backgroundColor }, radiusStyle]}>
       <MaskedView
-        maskElement={<View style={[styles.maskElement, { borderWidth, borderRadius }]} />}
+        maskElement={<View style={[styles.maskElement, { borderWidth }, radiusStyle]} />}
         style={styles.maskView}
         pointerEvents="none"
       >

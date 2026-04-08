@@ -11,19 +11,21 @@ import { FALLBACK_TIERS } from '@/features/rnbw-membership/constants';
 type MembershipTierInfo = {
   currentTier: Tier;
   stakeRequiredForNextTier: string;
-  cashbackPercentage: string;
+  cashbackPercentage: number;
   currentTierProgress: number;
   allTiers: Tier[];
   currentTierIndex: number;
+  maxTierProgress: number;
 };
 
 const EMPTY_TIER: MembershipTierInfo = {
   currentTier: FALLBACK_TIERS[0],
   stakeRequiredForNextTier: '0',
-  cashbackPercentage: '10%',
+  cashbackPercentage: 10,
   currentTierProgress: 0,
   allTiers: FALLBACK_TIERS,
   currentTierIndex: 0,
+  maxTierProgress: 0,
 };
 
 export const useMembershipTierInfo = createDerivedStore<MembershipTierInfo>(
@@ -39,13 +41,15 @@ export const useMembershipTierInfo = createDerivedStore<MembershipTierInfo>(
     const currentTierIndex = allTiers.findIndex(t => t.level === currentTier.level);
     const nextTierIndex = currentTierIndex + 1;
     const nextTier = nextTierIndex < allTiers.length ? allTiers[nextTierIndex] : null;
+    const maxTier = allTiers[allTiers.length - 1];
 
     const stakeRequiredForNextTierRaw = nextTier ? subWorklet(nextTier.minStakeAmount, stakedRnbw) : '0';
     const stakeRequiredForNextTier = formatNumber(convertRawAmountToDecimalFormat(stakeRequiredForNextTierRaw, RNBW_DECIMALS));
-    const cashbackPercentage = convertBipsToPercentage(currentTier.cashbackBps, 0);
+    const cashbackPercentage = Number(convertBipsToPercentage(currentTier.cashbackBps, 0));
     const stakedAboveCurrentTier = subWorklet(stakedRnbw, currentTier.minStakeAmount);
     const currentTierRange = subWorklet(nextTier?.minStakeAmount ?? currentTier.minStakeAmount, currentTier.minStakeAmount);
     const currentTierProgress = nextTier ? Number(toFixedWorklet(divWorklet(stakedAboveCurrentTier, currentTierRange), 3)) : 1;
+    const maxTierProgress = Math.min(1, Number(divWorklet(stakedRnbw, maxTier.minStakeAmount)));
 
     return {
       currentTier,
@@ -54,6 +58,7 @@ export const useMembershipTierInfo = createDerivedStore<MembershipTierInfo>(
       currentTierProgress,
       allTiers,
       currentTierIndex,
+      maxTierProgress,
     };
   },
   { equalityFn: shallowEqual, fastMode: true }

@@ -1,29 +1,57 @@
 import { memo } from 'react';
-import { Box, Text } from '@/design-system';
+import { Box, Separator, Text } from '@/design-system';
 import { useMembershipTierInfo } from '@/features/rnbw-membership/stores/derived/useMembershipTierInfo';
 import ButtonPressAnimation from '@/components/animations/ButtonPressAnimation';
 import Navigation from '@/navigation/Navigation';
 import Routes from '@/navigation/routesNames';
+import { MembershipCard } from '@/features/rnbw-membership/screens/rnbw-membership-screen/components/MembershipCard';
+import { TierThemedLabel } from '@/features/rnbw-membership/components/TierThemedLabel';
+import { TierProgressBar } from '@/features/rnbw-membership/components/TierProgressBar';
+import { RNBW_SYMBOL } from '@/features/rnbw-rewards/constants';
+import { DEVICE_WIDTH } from '@/utils/deviceUtils';
 
 export const MembershipTierCard = memo(function MembershipTierCard() {
-  const { currentTier, stakeRequiredForNextTier, cashbackPercentage, currentTierProgress } = useMembershipTierInfo();
+  const { currentTier, currentTierIndex, currentTierProgress, stakeRequiredForNextTier, cashbackPercentage, allTiers } =
+    useMembershipTierInfo();
 
   return (
     <ButtonPressAnimation onPress={navigateToMembershipTiersSheet} scaleTo={0.96}>
-      <Box background="surfacePrimary" borderRadius={24} padding="20px" gap={20} shadow={'18px'}>
-        <Text size="22pt" weight="heavy" color="label">
-          {`${currentTier.name} Tier`}
-        </Text>
-        <Text size="17pt" weight="heavy" color="label">
-          {`current tier progress: ${currentTierProgress * 100}/100`}
-        </Text>
-        <Text size="17pt" weight="heavy" color="label">
-          {`Cashback: ${cashbackPercentage}%`}
-        </Text>
-        <Text size="17pt" weight="heavy" color="label">
-          {`Stake to unlock: ${stakeRequiredForNextTier}`}
-        </Text>
-      </Box>
+      <MembershipCard paddingHorizontal="20px" paddingVertical="24px">
+        <Box gap={16}>
+          <TierThemedLabel tier={currentTier}>
+            <Text size="22pt" weight="heavy" color="label">
+              {`${currentTier.name} Tier`}
+            </Text>
+          </TierThemedLabel>
+          <TierProgressBar
+            width={DEVICE_WIDTH - 80}
+            height={24}
+            tier={currentTier}
+            tierIndex={currentTierIndex}
+            tierProgress={currentTierProgress}
+            tierCount={allTiers.length}
+          />
+          <Box gap={16} paddingHorizontal={'4px'}>
+            <Box flexDirection="row" justifyContent="space-between">
+              <Text size="17pt" weight="semibold" color="labelTertiary">
+                {'Rewards'}
+              </Text>
+              <Text size="17pt" weight="bold" color="label">
+                {`${cashbackPercentage}%`}
+              </Text>
+            </Box>
+            <Separator color="separatorTertiary" thickness={1} />
+            <Box flexDirection="row" justifyContent="space-between">
+              <Text size="17pt" weight="semibold" color="labelTertiary">
+                {'Stake to next tier'}
+              </Text>
+              <Text size="17pt" weight="bold" color="label">
+                {`${stakeRequiredForNextTier} ${RNBW_SYMBOL}`}
+              </Text>
+            </Box>
+          </Box>
+        </Box>
+      </MembershipCard>
     </ButtonPressAnimation>
   );
 });

@@ -10,13 +10,13 @@ import Animated, { Extrapolation, interpolate, useAnimatedStyle, useDerivedValue
 import { RNBW_DECIMALS } from '@/features/rnbw-staking/constants';
 import { convertRawAmountToDecimalFormat } from '@/helpers/utilities';
 import { formatNumber } from '@/helpers/strings';
-import { opacity } from '@/framework/ui/utils/opacity';
 import { RNBW_SYMBOL } from '@/features/rnbw-rewards/constants';
 import { TierThemedLabel } from '../../components/TierThemedLabel';
 import { TierBadge } from '../../components/TierBadge';
 import { TIER_VISUALS } from '../../constants';
 import { LinearGradient, type LinearGradientProps } from 'expo-linear-gradient';
 import { getValueForColorMode } from '@/design-system/color/palettes';
+import { TierProgressBar } from '@/features/rnbw-membership/components/TierProgressBar';
 
 const AnimatedLinearGradient = Animated.createAnimatedComponent(LinearGradient);
 
@@ -40,8 +40,12 @@ export const RnbwMembershipTiersSheet = memo(function RnbwMembershipTiersSheet()
           />
         ))}
         <SmoothPager enableSwipeToGoBack={true} enableSwipeToGoForward={'always'} initialPage={currentTier.level} ref={ref}>
-          {allTiers.map(tier => (
-            <SmoothPager.Page key={tier.level} component={<Tier tier={tier} />} id={tier.level} />
+          {allTiers.map((tier, index) => (
+            <SmoothPager.Page
+              key={tier.level}
+              component={<Tier tier={tier} tierIndex={index} tierCount={allTiers.length} />}
+              id={tier.level}
+            />
           ))}
         </SmoothPager>
         <StepIndicators
@@ -54,7 +58,7 @@ export const RnbwMembershipTiersSheet = memo(function RnbwMembershipTiersSheet()
   );
 });
 
-function Tier({ tier }: { tier: TierType }) {
+function Tier({ tier, tierIndex, tierCount }: { tier: TierType; tierIndex: number; tierCount: number }) {
   const stakeRequiredForTierDisplay = formatNumber(convertRawAmountToDecimalFormat(tier.minStakeAmount, RNBW_DECIMALS));
   const tierCashbackDisplay = `${tier.cashbackBps / 100}%`;
 
@@ -79,6 +83,7 @@ function Tier({ tier }: { tier: TierType }) {
             </Text>
           </Box>
         </Box>
+        <TierProgressBar width={PANEL_WIDTH - 64} height={24} tier={tier} tierIndex={tierIndex} tierProgress={0} tierCount={tierCount} />
         <Box gap={16} paddingHorizontal={'8px'}>
           <Box flexDirection="row" justifyContent="space-between">
             <Text size="17pt" weight="semibold" color="labelTertiary">
@@ -88,7 +93,7 @@ function Tier({ tier }: { tier: TierType }) {
               {tierCashbackDisplay}
             </Text>
           </Box>
-          <Separator thickness={1} color={{ custom: opacity(globalColors.grey100, 0.04) }} />
+          <Separator thickness={1} color={'separatorTertiary'} />
           <Box flexDirection="row" justifyContent="space-between">
             <Text size="17pt" weight="semibold" color="labelTertiary">
               {'Stake to unlock'}
