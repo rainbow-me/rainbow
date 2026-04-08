@@ -16,7 +16,7 @@ import { opacity } from '@/framework/ui/utils/opacity';
 import { RNBW_SYMBOL } from '@/features/rnbw-rewards/constants';
 import { useRnbwStakingBalance } from '../../stores/derived/useRnbwStakingBalance';
 import { useRnbwStakingPositionPnl } from '../../stores/derived/useRnbwStakingPositionPnl';
-import { UNSTAKE_PENALTY_PERCENTAGE } from '../../constants';
+import { useStakingPositionStore } from '../../stores/rnbwStakingPositionStore';
 import { useStableValue } from '@/hooks/useStableValue';
 import { LinearGradient } from 'expo-linear-gradient';
 import { RnbwCoinIcon } from '@/components/RnbwCoinIcon';
@@ -46,18 +46,19 @@ export const RnbwUnstakeSheet = memo(function RnbwUnstakeSheet() {
 const WarningContent = memo(function WarningContent({ onProceed }: { onProceed: () => void }) {
   const { goBack } = useNavigation();
   const redColor = useForegroundColor('red');
+  const exitFeePercentage = useStakingPositionStore(s => s.getExitFeePercentage());
 
   return (
     <View style={styles.warningContentContainer}>
       <Stack space="32px">
         <Stack space="24px" alignHorizontal="center">
-          <UnstakePenaltySign />
+          <UnstakePenaltySign percentage={exitFeePercentage} />
           <Stack space="20px" alignHorizontal="center">
             <Text color="label" size="34pt" weight="heavy" align="center">
               {'Exit Fee'}
             </Text>
             <Text color="labelTertiary" size="17pt / 135%" weight="semibold" align="center">
-              {'Unstaking will charge a 10% fee to your staked balance.'}
+              {`Unstaking will charge a ${exitFeePercentage}% fee to your staked balance.`}
             </Text>
           </Stack>
         </Stack>
@@ -100,6 +101,7 @@ const UnstakeContent = memo(function UnstakeContent() {
   // We use the initial values only so we do not display 0 prior to the sheet being dismissed after unstaking.
   const { tokenAmount, nativeCurrencyAmount } = useStableValue(() => useRnbwStakingBalance.getState());
   const { exitFeeOffsetRatioDisplay, netPnl, isPositivePnl, rnbwAfterUnstake } = useStableValue(() => useRnbwStakingPositionPnl.getState());
+  const exitFeePercentage = useStableValue(() => useStakingPositionStore.getState().getExitFeePercentage());
   const { goBack, navigate } = useNavigation();
   const accountAddress = useAccountAddress();
   const isReadOnlyWallet = useIsReadOnlyWallet();
@@ -158,7 +160,7 @@ const UnstakeContent = memo(function UnstakeContent() {
               {'Exit Fee'}
             </Text>
             <Text color="label" size="17pt" weight="bold">
-              {`${UNSTAKE_PENALTY_PERCENTAGE}%`}
+              {`${exitFeePercentage}%`}
             </Text>
           </Box>
           <Box flexDirection="row" height={44} alignItems="center" justifyContent="space-between" width="full">
