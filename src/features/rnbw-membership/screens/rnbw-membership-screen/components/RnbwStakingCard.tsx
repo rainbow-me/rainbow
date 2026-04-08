@@ -3,64 +3,56 @@ import { Text, Box } from '@/design-system';
 import { useRnbwStakingBalance } from '@/features/rnbw-staking/stores/derived/useRnbwStakingBalance';
 import { useStakableRnbwBalance } from '@/state/rnbw/useStakableRnbwBalance';
 import { RNBW_SYMBOL } from '@/features/rnbw-rewards/constants';
-import ButtonPressAnimation from '@/components/animations/ButtonPressAnimation';
 import Navigation from '@/navigation/Navigation';
 import Routes from '@/navigation/routesNames';
+import { RnbwCoinIcon } from '@/components/RnbwCoinIcon';
+import { MembershipCard } from './MembershipCard';
+import { RnbwThemedButton } from '@/features/rnbw-membership/components/RnbwThemedButton';
 
 export const RnbwStakingCard = memo(function RnbwStakingCard() {
   const { tokenAmount, nativeCurrencyAmount, hasStakedPosition } = useRnbwStakingBalance();
   const { tokenAmountFormatted: availableAmount } = useStakableRnbwBalance();
 
   return (
-    <Box background="surfacePrimary" borderRadius={24} padding="20px" gap={20} shadow={'18px'}>
-      <Text size="17pt" weight="bold" color="label">
-        {'Stake'}
-      </Text>
-      <Text size="44pt" weight="bold" color="label">
-        {nativeCurrencyAmount}
-      </Text>
-      <Text size="17pt" weight="bold" color="labelTertiary">
-        {`${tokenAmount} ${RNBW_SYMBOL}`}
-      </Text>
-      {!hasStakedPosition && (
-        <ButtonPressAnimation onPress={navigateToStakingLearnSheet}>
-          <Box backgroundColor="yellow" borderRadius={21} width={'full'} height={42} justifyContent="center" alignItems="center">
-            <Text size="17pt" weight="bold" color="label">
-              {'Enable Staking'}
-            </Text>
-          </Box>
-        </ButtonPressAnimation>
-      )}
-      {hasStakedPosition && (
-        <Box flexDirection="row" gap={10}>
-          <ButtonPressAnimation onPress={navigateToUnstakeSheet} style={{ flex: 1 }}>
-            <Box
-              flexGrow={1}
-              backgroundColor="yellow"
-              borderRadius={21}
-              width={'full'}
-              height={42}
-              justifyContent="center"
-              alignItems="center"
-            >
-              <Text size="17pt" weight="bold" color="label">
-                {'Unstake'}
-              </Text>
-            </Box>
-          </ButtonPressAnimation>
-          <ButtonPressAnimation onPress={navigateToStakingScreen} style={{ flex: 1 }}>
-            <Box backgroundColor="yellow" borderRadius={21} width={'full'} height={42} justifyContent="center" alignItems="center">
-              <Text size="17pt" weight="bold" color="label">
-                {'Add'}
-              </Text>
-            </Box>
-          </ButtonPressAnimation>
+    <MembershipCard paddingHorizontal="20px" paddingTop="24px" paddingBottom="16px">
+      <Box gap={16}>
+        <Text size="22pt" weight="heavy" color="label">
+          {'Stake'}
+        </Text>
+        <Box alignItems="center" gap={20}>
+          <RnbwCoinIcon size={80} />
+          <Text size="44pt" weight="heavy" color="label">
+            {nativeCurrencyAmount}
+          </Text>
+          <Text size="17pt" weight="bold" color="labelTertiary">
+            {`${tokenAmount} ${RNBW_SYMBOL}`}
+          </Text>
         </Box>
-      )}
-      <Text size="13pt" weight="semibold" color="labelTertiary" align="center">
-        {`${availableAmount} available to stake`}
-      </Text>
-    </Box>
+        {!hasStakedPosition && <RnbwThemedButton onPress={navigateToStakingLearnSheet} label="Enable Staking" />}
+        {hasStakedPosition && (
+          <Box flexDirection="row" gap={10}>
+            <RnbwThemedButton
+              onPress={navigateToUnstakeSheet}
+              style={{ flex: 1 }}
+              label="Unstake"
+              size="22pt"
+              weight="heavy"
+              variant="secondary"
+            />
+            <RnbwThemedButton onPress={navigateToStakingScreen} style={{ flex: 1 }} label="Add" />
+          </Box>
+        )}
+        <Box flexDirection="row" alignItems="center" justifyContent="center" gap={4}>
+          <RnbwCoinIcon size={18} />
+          <Text size="15pt" weight="bold" color="labelSecondary" align="center">
+            {`${availableAmount}`}
+          </Text>
+          <Text size="15pt" weight="semibold" color="labelQuaternary" align="center">
+            {'available to stake'}
+          </Text>
+        </Box>
+      </Box>
+    </MembershipCard>
   );
 });
 
