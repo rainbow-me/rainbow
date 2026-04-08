@@ -9,12 +9,12 @@ import { type Address } from 'viem';
 import type { Tier } from '@/features/rnbw-membership/types';
 
 type StakingPnl = {
-  exchangeRateGain: string;
   netProfit: string;
   totalCashbackReceived: string;
   totalExitFeePaid: string;
   totalRnbwStaked: string;
   totalRnbwUnstaked: string;
+  exchangeRateGain: string;
 };
 
 type StakingPositionData = {
