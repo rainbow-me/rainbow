@@ -2,7 +2,7 @@ import { convertRawAmountToDecimalFormat, isZero } from '@/helpers/utilities';
 import { createDerivedStore } from '@/state/internal/createDerivedStore';
 import { shallowEqual } from '@/worklets/comparisons';
 import { useStakingPositionStore } from '../rnbwStakingPositionStore';
-import { divWorklet, sumWorklet, toFixedWorklet, toPercentageWorklet } from '@/framework/core/safeMath';
+import { divWorklet, sumWorklet, toFixedWorklet, toPercentageWorklet, truncateToDecimals } from '@/framework/core/safeMath';
 import { formatNumber } from '@/helpers/strings';
 
 type StakingEarnings = {
@@ -41,10 +41,10 @@ export const useRnbwStakingEarnings = createDerivedStore<StakingEarnings>(
 
     return {
       totalEarnings: formatNumber(totalEarnings, { decimals: 4 }),
-      cashbackEarnings: formatNumber(cashbackEarnings),
-      cashbackShare: totalIsZero ? '0%' : `${toPercentageWorklet(cashbackRatio, 0.001)}%`,
-      exitRewardsEarnings: formatNumber(exitRewardsEarnings),
-      exitRewardsShare: totalIsZero ? '0%' : `${toPercentageWorklet(exitRewardsRatio, 0.001)}%`,
+      cashbackEarnings: isZero(cashbackEarnings) ? '0' : formatNumber(truncateToDecimals(cashbackEarnings, 2), { decimals: 2 }),
+      cashbackShare: totalIsZero ? '0%' : `${toPercentageWorklet(cashbackRatio)}%`,
+      exitRewardsEarnings: isZero(exitRewardsEarnings) ? '0' : formatNumber(truncateToDecimals(exitRewardsEarnings, 2), { decimals: 2 }),
+      exitRewardsShare: totalIsZero ? '0%' : `${toPercentageWorklet(exitRewardsRatio)}%`,
     };
   },
   { equalityFn: shallowEqual, fastMode: true }

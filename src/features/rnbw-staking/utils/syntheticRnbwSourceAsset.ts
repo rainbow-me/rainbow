@@ -1,6 +1,12 @@
 import { formatUnits, parseUnits } from 'viem';
 import { useRewardsBalanceStore } from '@/features/rnbw-rewards/stores/rewardsBalanceStore';
-import { RNBW_CHAIN_ID, RNBW_DECIMALS, RNBW_TOKEN_ADDRESS, RNBW_TOKEN_UNIQUE_ID } from '@/features/rnbw-staking/constants';
+import {
+  RNBW_CHAIN_ID,
+  RNBW_DECIMALS,
+  RNBW_TOKEN_ADDRESS,
+  RNBW_TOKEN_ICON_URL,
+  RNBW_TOKEN_UNIQUE_ID,
+} from '@/features/rnbw-staking/constants';
 import { convertAmountToBalanceDisplay, convertAmountToNativeDisplayWorklet } from '@/helpers/utilities';
 import { useBackendNetworksStore } from '@/state/backendNetworks/backendNetworks';
 import { useUserAssetsStore } from '@/state/assets/userAssets';
@@ -93,7 +99,7 @@ export function buildSyntheticRnbwSourceAsset({
     chainName,
     colors: walletAsset?.colors ?? RNBW_SYNTHETIC_SOURCE_COLORS,
     highLiquidity: walletAsset?.highLiquidity ?? RNBW_SYNTHETIC_SOURCE_STATIC_CONFIG.highLiquidity,
-    icon_url: walletAsset?.icon_url,
+    icon_url: walletAsset?.icon_url ?? RNBW_TOKEN_ICON_URL,
     isRainbowCurated: walletAsset?.isRainbowCurated ?? RNBW_SYNTHETIC_SOURCE_STATIC_CONFIG.isRainbowCurated,
     isVerified: walletAsset?.isVerified ?? RNBW_SYNTHETIC_SOURCE_STATIC_CONFIG.isVerified,
     mainnetAddress: walletAsset?.mainnetAddress ?? RNBW_SYNTHETIC_SOURCE_STATIC_CONFIG.mainnetAddress,
