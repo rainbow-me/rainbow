@@ -5,4 +5,5 @@ module.exports = {
   singleQuote: true,
   trailingComma: 'es5',
   printWidth: 140,
+  plugins: ['prettier-plugin-packagejson'],
 };

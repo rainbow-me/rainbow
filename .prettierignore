@@ -9,6 +9,7 @@ rainbow-scripts
 .vscode
 __generated__
 coverage
+src/react-native-animated-charts
 InjectedJSBundle.js
 .yarn
 .claude/settings.local.json
