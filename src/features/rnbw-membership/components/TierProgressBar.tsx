@@ -4,7 +4,7 @@ import { InnerShadow } from '@/features/polymarket/components/InnerShadow';
 import { useBackgroundColor, useColorMode } from '@/design-system';
 import { GradientBorderView } from '@/components/gradient-border/GradientBorderView';
 import { opacity } from '@/framework/ui/utils/opacity';
-import { TIER_VISUALS } from '@/features/rnbw-membership/constants';
+import { getTierVisuals } from '@/features/rnbw-membership/constants';
 import { getValueForColorMode } from '@/design-system/color/palettes';
 import { LinearGradient } from 'expo-linear-gradient';
 import { Blur, Canvas, LinearGradient as SkiaLinearGradient, RoundedRect, vec } from '@shopify/react-native-skia';
@@ -40,7 +40,7 @@ export const TierProgressBar = memo(function TierProgressBar({
   const isMaxTier = tierIndex === tierCount - 1;
 
   const { gradient, borderGradient, shadow, highlightGradient } = useMemo(() => {
-    const visuals = TIER_VISUALS[tier.level];
+    const visuals = getTierVisuals(tier.level);
     return {
       gradient: getValueForColorMode(visuals.progressBarGradient, colorMode),
       borderGradient: getValueForColorMode(visuals.progressBarBorderGradient, colorMode),
