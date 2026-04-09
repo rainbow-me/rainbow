@@ -3887,8 +3887,8 @@
       },
       "shared": {
         "tier_label": "Уровень %{tierName}",
-        "rewards": "Награды",
-        "loyalty_progress": "Прогресс лояльности"
+        "loyalty_progress": "Прогресс лояльности",
+        "fee_cashback": "Кэшбэк комиссий"
       },
       "membership_tier_card": {
         "stake_to_next_tier": "Стейкать до следующего уровня"
@@ -3901,12 +3901,13 @@
         "enable_staking": "Включить стейкинг",
         "buy_rnbw": "Купить RNBW",
         "unstake": "Отменить стейкинг",
-        "available_to_stake": "доступно для стейкинга"
+        "available_to_stake": "доступно для стейкинга",
+        "available_to_add": "доступно для добавления",
+        "minimum_stake_amount_required": "Чтобы застейкать, нужно как минимум %{minStakeAmount} RNBW"
       },
       "staking_earnings_card": {
-        "total_earnings": "Общий доход",
-        "cashback": "Кэшбэк",
-        "exit_rewards": "Награды за выход"
+        "lifetime_earnings": "Заработок за всё время",
+        "exit_fee_rewards": "Награды из комиссии за выход"
       },
       "unstake_penalty_recovery_card": {
         "break_even_reached": "Точка безубыточности достигнута!",
@@ -3916,6 +3917,10 @@
       }
     },
     "rnbw_staking": {
+      "wallet_access": {
+        "hardware_wallet_not_supported_title": "Аппаратный кошелёк не поддерживается",
+        "hardware_wallet_not_supported_message": "Стейкинг RNBW сейчас недоступен для аппаратных кошельков."
+      },
       "deposit": {
         "confirm_button": "Удерживайте для стейкинга",
         "confirm_button_error": "Не удалось застейкать",
@@ -3932,24 +3937,21 @@
       "learn_screen": {
         "introducing": "ПРЕДСТАВЛЯЕМ",
         "title": "Ставка",
-        "description": "Заблокируйте ваши $RNBW, чтобы присоединиться к пулу. Оставайтесь дольше, чтобы компенсировать комиссию за выход и зарабатывать на тех, кто выходит.",
-        "put_your_rnbw_to_work_title": "Заставьте ваши $RNBW работать",
-        "put_your_rnbw_to_work_subtitle": "Застейкайте ваши RNBW, чтобы зафиксировать свою позицию и начать зарабатывать из пула.",
+        "description": "Застейкайте RNBW, чтобы разблокировать уровни статуса и эксклюзивные преимущества участников.",
+        "fee_cashback": "Кэшбэк комиссий",
+        "fee_cashback_subtitle": "Получайте до 100% комиссий в виде застейканных RNBW.",
         "exit_fee_title": "Комиссия за выход %{exitFeePercentage}%",
-        "exit_fee_subtitle": "При выводе из стейкинга взимается комиссия %{exitFeePercentage}%.",
-        "passive_income_title": "Пассивный доход",
-        "passive_income_subtitle": "Получайте выгоду от каждого выхода. Комиссии за выход распределяются в пул. Оставайтесь дольше, чтобы компенсировать собственные комиссии и выйти в чистую прибыль.",
+        "exit_fee_subtitle": "Вы можете анстейкать в любое время. Просто оплатите комиссию за выход %{exitFeePercentage}%, которая распределяется между другими стейкерами.",
+        "stay_in_to_earn_more": "Оставайтесь, чтобы зарабатывать больше",
+        "stay_in_to_earn_more_subtitle": "Когда кто-то анстейкает свои RNBW, комиссии за выход возвращаются тем, кто всё ещё в пуле.",
         "enable_staking": "Включить стейкинг"
       },
       "unstake_sheet": {
         "exit_fee": "Комиссия за выход",
-        "warning_description": "При выводе из стейкинга с вашего застейканного баланса будет списана комиссия %{exitFeePercentage}%.",
-        "confirm_unstake": "Подтвердить вывод из стейкинга",
-        "keep_staking": "Продолжить стейкинг",
+        "warning_description": "При анстейкинге с вашего текущего застейканного баланса будет удержана комиссия %{exitFeePercentage}%.",
         "unstake_failed_title": "Отмена ставки не удалась",
         "unstake_failed_message": "Произошла ошибка при выводе ваших RNBW из стейкинга. Пожалуйста, попробуйте снова.",
         "unstake_title": "Отменить стейкинг $%{symbol}",
-        "loyalty_progress": "Прогресс лояльности",
         "receive": "Получить",
         "total_return": "Итоговый доход",
         "hold_to_unstake": "Удерживайте, чтобы вывести из стейкинга",
