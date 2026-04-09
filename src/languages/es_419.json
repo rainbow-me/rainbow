@@ -1668,7 +1668,12 @@
         "confirm_button_error_text": "Error en la cotización",
         "quote_error": "􀇿 Cotización no disponible",
         "insufficient_balance": "􀫲 Fondos Insuficientes",
-        "insufficient_gas": "Gas Insuficiente"
+        "insufficient_gas": "Gas Insuficiente",
+        "gas_sponsored": "Gratis",
+        "invalid_route_recipient_error": "La ruta del bridge no apunta a tu cuenta. Vuelve a intentarlo.",
+        "missing_recipient_error": "Falta la dirección del destinatario",
+        "no_wallet_connected": "No hay ninguna wallet conectada",
+        "unknown_execution_error": "Error desconocido al procesar el depósito"
       },
       "withdraw": {
         "title": "Retirar",
@@ -3879,6 +3884,76 @@
       "claim_card": {
         "airdrop": "Airdrop",
         "rewards": "Recompensas"
+      },
+      "shared": {
+        "tier_label": "Nivel %{tierName}",
+        "rewards": "Recompensas",
+        "loyalty_progress": "Progreso de lealtad"
+      },
+      "membership_tier_card": {
+        "stake_to_next_tier": "Haz staking para llegar al siguiente nivel"
+      },
+      "membership_tiers_sheet": {
+        "stake_to_unlock": "Haz staking para desbloquear"
+      },
+      "staking_card": {
+        "stake": "Hacer staking",
+        "enable_staking": "Activar staking",
+        "buy_rnbw": "Comprar RNBW",
+        "unstake": "Retirar del stake",
+        "available_to_stake": "disponible para hacer stake"
+      },
+      "staking_earnings_card": {
+        "total_earnings": "Ganancias Totales",
+        "cashback": "Cashback",
+        "exit_rewards": "Recompensas al salir"
+      },
+      "unstake_penalty_recovery_card": {
+        "break_even_reached": "¡Se alcanzó el punto de equilibrio!",
+        "earned_prefix": "Has ganado ",
+        "earned_middle": " del pool. Solo ",
+        "earned_suffix": " más para llegar a ganancia pura."
+      }
+    },
+    "rnbw_staking": {
+      "deposit": {
+        "confirm_button": "Mantén presionado para hacer stake",
+        "confirm_button_error": "No se puede hacer stake",
+        "confirm_button_loading": "Haciendo stake...",
+        "confirm_button_over_balance": "RNBW insuficiente",
+        "confirm_button_zero_amount": "Ingresa una cantidad",
+        "execution_error_title": "Error al hacer stake",
+        "insufficient_gas": "Gas insuficiente",
+        "quote_error": "No se pudo preparar el stake",
+        "receive": "Las recompensas se reclamarán automáticamente",
+        "title": "Haz stake de $RNBW",
+        "minimum_amount": "Mínimo 1 RNBW"
+      },
+      "learn_screen": {
+        "introducing": "PRESENTAMOS",
+        "title": "Aplicando stake",
+        "description": "Bloquea tu $RNBW para unirte al pool. Quédate más tiempo para recuperar tu comisión de salida y ganar de quienes se van.",
+        "put_your_rnbw_to_work_title": "Pon a trabajar tu $RNBW",
+        "put_your_rnbw_to_work_subtitle": "Haz stake de tu RNBW para bloquear tu posición y empezar a ganar del pool.",
+        "exit_fee_title": "Comisión de salida del %{exitFeePercentage}%",
+        "exit_fee_subtitle": "Retirar del stake tiene una comisión del %{exitFeePercentage}%.",
+        "passive_income_title": "Ingresos pasivos",
+        "passive_income_subtitle": "Benefíciate de cada salida. Las comisiones de salida se distribuyen al pool. Quédate más tiempo para compensar tus propias comisiones y llegar a ganancia pura.",
+        "enable_staking": "Activar staking"
+      },
+      "unstake_sheet": {
+        "exit_fee": "Comisión de salida",
+        "warning_description": "Retirar del stake cobrará una comisión del %{exitFeePercentage}% a tu balance en stake.",
+        "confirm_unstake": "Confirmar retiro del stake",
+        "keep_staking": "Seguir haciendo stake",
+        "unstake_failed_title": "Remoción de stake fallida",
+        "unstake_failed_message": "Ocurrió un error al retirar del stake tu RNBW. Inténtalo de nuevo.",
+        "unstake_title": "Retirar del stake $%{symbol}",
+        "loyalty_progress": "Progreso de lealtad",
+        "receive": "Recibir",
+        "total_return": "Retorno total",
+        "hold_to_unstake": "Mantén presionado para retirar del stake",
+        "unstaking": "Retirando del stake..."
       }
     },
     "wallet_error_sheet": {
