@@ -25,6 +25,7 @@ import {
   SIGN_TYPED_DATA_V4,
   isMessageDisplayType,
   isPersonalSign,
+  isSignTypedData,
 } from '@/utils/signingMethods';
 import { type Transaction } from '@ethersproject/transactions';
 import { type RouteProp, useRoute } from '@react-navigation/native';
@@ -163,6 +164,8 @@ export const SignTransactionSheet = () => {
 
   const isMessageRequest = isMessageDisplayType(transactionDetails.payload.method);
   const isPersonalSignRequest = isPersonalSign(transactionDetails.payload.method);
+  const isTypedDataRequest = isSignTypedData(transactionDetails.payload.method);
+  const isSimulationUnavailable = isPersonalSignRequest || isTypedDataRequest;
 
   const label = useForegroundColor('label');
   const surfacePrimary = useBackgroundColor('surfacePrimary');
@@ -238,7 +241,7 @@ export const SignTransactionSheet = () => {
       transactionDetails,
     },
     {
-      enabled: !isPersonalSignRequest,
+      enabled: !isSimulationUnavailable,
     }
   );
 
