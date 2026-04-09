@@ -3887,8 +3887,8 @@
       },
       "shared": {
         "tier_label": "Niveau %{tierName}",
-        "rewards": "Récompenses",
-        "loyalty_progress": "Progression de fidélité"
+        "loyalty_progress": "Progression de fidélité",
+        "fee_cashback": "Remboursement des frais"
       },
       "membership_tier_card": {
         "stake_to_next_tier": "Staker pour passer au niveau suivant"
@@ -3901,12 +3901,13 @@
         "enable_staking": "Activer le staking",
         "buy_rnbw": "Acheter RNBW",
         "unstake": "Retirer de la mise",
-        "available_to_stake": "disponible à staker"
+        "available_to_stake": "disponible à staker",
+        "available_to_add": "disponible à ajouter",
+        "minimum_stake_amount_required": "Vous devez staker au moins %{minStakeAmount} RNBW"
       },
       "staking_earnings_card": {
-        "total_earnings": "Gains totaux",
-        "cashback": "Cashback",
-        "exit_rewards": "Récompenses de sortie"
+        "lifetime_earnings": "Gains à vie",
+        "exit_fee_rewards": "Récompenses des frais de sortie"
       },
       "unstake_penalty_recovery_card": {
         "break_even_reached": "Seuil de rentabilité atteint !",
@@ -3916,6 +3917,10 @@
       }
     },
     "rnbw_staking": {
+      "wallet_access": {
+        "hardware_wallet_not_supported_title": "Portefeuille matériel non pris en charge",
+        "hardware_wallet_not_supported_message": "Le staking de RNBW n'est pas disponible pour les portefeuilles matériels pour le moment."
+      },
       "deposit": {
         "confirm_button": "Maintenir pour staker",
         "confirm_button_error": "Impossible de staker",
@@ -3932,24 +3937,21 @@
       "learn_screen": {
         "introducing": "PRÉSENTATION",
         "title": "Mise",
-        "description": "Verrouillez vos $RNBW pour rejoindre le pool. Restez plus longtemps pour récupérer vos frais de sortie et gagner grâce à ceux qui partent.",
-        "put_your_rnbw_to_work_title": "Faites travailler vos $RNBW",
-        "put_your_rnbw_to_work_subtitle": "Stake vos RNBW pour verrouiller votre position et commencer à gagner depuis le pool.",
+        "description": "Stake RNBW pour débloquer des niveaux de statut et des avantages exclusifs pour les membres.",
+        "fee_cashback": "Remboursement des frais",
+        "fee_cashback_subtitle": "Recevez jusqu'à 100 % des frais sous forme de RNBW staké.",
         "exit_fee_title": "Frais de sortie de %{exitFeePercentage}%",
-        "exit_fee_subtitle": "Le retrait de la mise entraîne des frais de %{exitFeePercentage}%.",
-        "passive_income_title": "Revenu passif",
-        "passive_income_subtitle": "Profitez de chaque sortie. Les frais de sortie sont distribués au pool. Restez plus longtemps pour compenser vos propres frais et atteindre le profit net.",
+        "exit_fee_subtitle": "Vous pouvez unstaker à tout moment. Il vous suffit de payer des frais de sortie de %{exitFeePercentage} %, qui sont distribués aux autres stakers.",
+        "stay_in_to_earn_more": "Restez dans le pool pour gagner plus",
+        "stay_in_to_earn_more_subtitle": "Lorsque quelqu'un unstake ses RNBW, les frais de sortie reviennent à ceux qui sont encore dans le pool.",
         "enable_staking": "Activer le staking"
       },
       "unstake_sheet": {
         "exit_fee": "Frais de sortie",
-        "warning_description": "Le retrait de la mise entraînera des frais de %{exitFeePercentage}% sur votre solde staké.",
-        "confirm_unstake": "Confirmer le retrait de la mise",
-        "keep_staking": "Continuer à staker",
+        "warning_description": "L'unstaking entraînera des frais de %{exitFeePercentage} % sur votre solde actuellement staké.",
         "unstake_failed_title": "Échec du retrait de la mise",
         "unstake_failed_message": "Une erreur est survenue lors du retrait de la mise de vos RNBW. Veuillez réessayer.",
         "unstake_title": "Retirer de la mise $%{symbol}",
-        "loyalty_progress": "Progression de fidélité",
         "receive": "Recevoir",
         "total_return": "Rendement total",
         "hold_to_unstake": "Maintenir pour retirer de la mise",
