@@ -8,10 +8,11 @@ import Routes from '@/navigation/routesNames';
 import { RnbwCoinIcon } from '@/components/RnbwCoinIcon';
 import { MembershipCard } from './MembershipCard';
 import { RnbwThemedButton } from '@/features/rnbw-membership/components/RnbwThemedButton';
+import { navigateToBuyRnbw } from '@/features/rnbw-membership/utils/navigateToBuyRnbw';
 
 export const RnbwStakingCard = memo(function RnbwStakingCard() {
   const { tokenAmount, nativeCurrencyAmount, hasStakedPosition } = useRnbwStakingBalance();
-  const { tokenAmountFormatted: availableAmount } = useStakableRnbwBalance();
+  const { tokenAmountFormatted: availableAmount, hasMinimumStakeAmount } = useStakableRnbwBalance();
 
   return (
     <MembershipCard paddingHorizontal="20px" paddingTop="24px" paddingBottom="16px">
@@ -28,7 +29,12 @@ export const RnbwStakingCard = memo(function RnbwStakingCard() {
             {`${tokenAmount} ${RNBW_SYMBOL}`}
           </Text>
         </Box>
-        {!hasStakedPosition && <RnbwThemedButton onPress={navigateToStakingLearnSheet} label="Enable Staking" />}
+        {!hasStakedPosition && (
+          <RnbwThemedButton
+            onPress={hasMinimumStakeAmount ? navigateToStakingLearnSheet : navigateToBuyRnbw}
+            label={hasMinimumStakeAmount ? 'Enable Staking' : 'Buy RNBW'}
+          />
+        )}
         {hasStakedPosition && (
           <Box flexDirection="row" gap={10}>
             <RnbwThemedButton
@@ -39,7 +45,11 @@ export const RnbwStakingCard = memo(function RnbwStakingCard() {
               weight="heavy"
               variant="secondary"
             />
-            <RnbwThemedButton onPress={navigateToStakingScreen} style={{ flex: 1 }} label="Add" />
+            <RnbwThemedButton
+              onPress={hasMinimumStakeAmount ? navigateToStakingScreen : navigateToBuyRnbw}
+              style={{ flex: 1 }}
+              label={hasMinimumStakeAmount ? 'Add' : 'Buy RNBW'}
+            />
           </Box>
         )}
         <Box flexDirection="row" alignItems="center" justifyContent="center" gap={4}>
