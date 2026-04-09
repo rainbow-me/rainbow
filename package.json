@@ -412,7 +412,7 @@
     "babel-plugin-transform-remove-console": "6.9.4",
     "dotenv": "8.2.0",
     "emoji-datasource": "4.1.0",
-    "eslint": "8.22.0",
+    "eslint": "8.57.1",
     "eslint-config-rainbow": "4.3.0",
     "eslint-plugin-yml": "1.18.0",
     "graphql": "15.3.0",
