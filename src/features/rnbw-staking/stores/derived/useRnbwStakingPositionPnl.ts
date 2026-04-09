@@ -25,11 +25,10 @@ const EMPTY_VALUE: StakingPositionPnl = {
 export const useRnbwStakingPositionPnl = createDerivedStore<StakingPositionPnl>(
   $ => {
     const data = $(useStakingPositionStore, state => state.getData());
-    const exitFeePercentage = $(useStakingPositionStore, state => state.getExitFeePercentage());
 
     if (!data || data?.stakedRnbw === '0') return EMPTY_VALUE;
 
-    const { stakedRnbw, sessionPnl, decimals } = data;
+    const { stakedRnbw, sessionPnl, decimals, exitFeePercentage } = data;
 
     const exchangeRateGain = sessionPnl?.exchangeRateGain ?? '0';
     const exitFee = mulWorklet(stakedRnbw, exitFeePercentage / 100);

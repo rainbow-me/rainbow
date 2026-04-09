@@ -10,10 +10,18 @@ import { convertRawAmountToDecimalFormat } from '@/helpers/utilities';
 import { RainbowError } from '@/logger';
 
 export async function unstakeRnbw({ address }: { address: Address }): Promise<Hash> {
+  const initialExitFeePercentage = useStakingPositionStore.getState().getData()?.exitFeePercentage;
+  await useStakingPositionStore.getState().fetch(undefined, { force: true });
   const positionData = useStakingPositionStore.getState().getData();
+
   if (!positionData || !positionData.exitFeePercentage) {
     throw new RainbowError('[unstakeRnbw]: Position data missing');
   }
+
+  if (initialExitFeePercentage !== positionData.exitFeePercentage) {
+    throw new RainbowError('[unstakeRnbw]: Exit fee percentage changed');
+  }
+
   const positionSnapshot = snapshotUnstakeAnalytics(positionData);
 
   try {
@@ -52,8 +60,7 @@ export async function unstakeRnbw({ address }: { address: Address }): Promise<Ha
 }
 
 function snapshotUnstakeAnalytics(positionData: StakingPositionData) {
-  const { stakedRnbw: stakedRnbwRaw, decimals, sessionPnl } = positionData;
-  const exitFeePercentage = useStakingPositionStore.getState().getExitFeePercentage();
+  const { stakedRnbw: stakedRnbwRaw, decimals, sessionPnl, exitFeePercentage } = positionData;
   const exitFeeRaw = mulWorklet(stakedRnbwRaw, exitFeePercentage / 100);
 
   return {

@@ -8,7 +8,7 @@ import { ChainId } from '@/state/backendNetworks/types';
 import { decodeFunctionResult, encodeFunctionData, type Address, type Hex } from 'viem';
 import type { Tier } from '@/features/rnbw-membership/types';
 import { getProvider } from '@/handlers/web3';
-import { DEFAULT_EXIT_FEE_PERCENTAGE, STAKING_ABI, STAKING_CHAIN_ID, STAKING_CONTRACT_ADDRESS } from '../constants';
+import { STAKING_ABI, STAKING_CHAIN_ID, STAKING_CONTRACT_ADDRESS } from '../constants';
 import { logger, RainbowError } from '@/logger';
 
 type StakingPnl = {
@@ -23,7 +23,7 @@ type StakingPnl = {
 export type StakingPositionData = {
   allTiers: Tier[];
   decimals: number;
-  exitFeePercentage: number | undefined;
+  exitFeePercentage: number;
   hasPosition: boolean;
   lastUpdateTime: string;
   pnl: StakingPnl;
@@ -41,7 +41,7 @@ type StakingPositionParams = {
 };
 
 type StakingPositionStore = {
-  getExitFeePercentage: () => number;
+  getExitFeePercentage: () => number | undefined;
   hasPosition: () => boolean;
 };
 
@@ -55,7 +55,7 @@ export const useStakingPositionStore = createQueryStore<StakingPositionData, Sta
   },
   (_, get) => ({
     getExitFeePercentage: () => {
-      return get().getData()?.exitFeePercentage ?? DEFAULT_EXIT_FEE_PERCENTAGE;
+      return get().getData()?.exitFeePercentage;
     },
     hasPosition: () => {
       const data = get().getData();
@@ -83,7 +83,7 @@ async function fetchStakingPosition({ currency, address }: StakingPositionParams
   return { ...response.data.result, exitFeePercentage };
 }
 
-async function readExitFeePercentage(): Promise<number | undefined> {
+async function readExitFeePercentage(): Promise<number> {
   try {
     const provider = getProvider({ chainId: STAKING_CHAIN_ID });
     const data = encodeFunctionData({ abi: STAKING_ABI, functionName: 'exitFeeBps' });
@@ -92,5 +92,6 @@ async function readExitFeePercentage(): Promise<number | undefined> {
     return Number(exitFeeBps) / 100;
   } catch (e) {
     logger.error(new RainbowError('[readExitFeePercentage]: Failed to read exit fee percentage', e));
+    throw e;
   }
 }
