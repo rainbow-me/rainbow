@@ -16,7 +16,7 @@ import Routes from '@/navigation/routesNames';
 import { type FarcasterUser, type TrendingToken, useTrendingTokens } from '@/resources/trendingTokens/trendingTokens';
 import { useNavigationStore } from '@/state/navigation/navigationStore';
 import { swapsStore } from '@/state/swaps/swapsStore';
-import { type ReactNode, useCallback, useEffect, useMemo } from 'react';
+import { type JSX, type ReactNode, useCallback, useEffect, useMemo } from 'react';
 import { FlatList, View } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
 import Animated, { type SharedValue, useSharedValue } from 'react-native-reanimated';

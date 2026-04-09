@@ -1,6 +1,7 @@
 // https://github.com/TanStack/query/blob/main/packages/react-query-persist-client/src/PersistQueryClientProvider.tsx
 
 import * as React from 'react';
+import { type JSX } from 'react';
 
 import { persistQueryClient, type PersistQueryClientOptions } from '@tanstack/react-query-persist-client';
 import { QueryClientProvider, type QueryClientProviderProps, IsRestoringProvider } from '@tanstack/react-query';

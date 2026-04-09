@@ -1,4 +1,4 @@
-import React, { useCallback, useEffect, useRef, useState } from 'react';
+import React, { type JSX, useCallback, useEffect, useRef, useState } from 'react';
 import { View } from 'react-native';
 import TokenFamilyHeader, { TokenFamilyHeaderAnimationDuration } from './TokenFamilyHeader';
 import { times } from '@/helpers/utilities';

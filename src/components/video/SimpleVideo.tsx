@@ -1,4 +1,4 @@
-import React, { useEffect, useLayoutEffect, useRef, useState } from 'react';
+import React, { type JSX, useEffect, useLayoutEffect, useRef, useState } from 'react';
 import { Animated, type RegisteredStyle, StyleSheet, View, type ViewStyle } from 'react-native';
 import Video, { type VideoRef } from 'react-native-video';
 import { ImgixImage } from '@/components/images';
