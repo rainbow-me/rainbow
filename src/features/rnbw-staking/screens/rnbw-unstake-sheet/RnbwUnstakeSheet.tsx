@@ -7,9 +7,7 @@ import { SPRING_CONFIGS } from '@/components/animations/animationConfigs';
 import { Box, globalColors, Separator, Stack, Text, useForegroundColor } from '@/design-system';
 import { ensureError, logger, RainbowError } from '@/logger';
 import { useNavigation } from '@/navigation/Navigation';
-import Routes from '@/navigation/routesNames';
-import { useAccountAddress, useIsHardwareWallet, useIsReadOnlyWallet } from '@/state/wallets/walletsStore';
-import watchingAlert from '@/utils/watchingAlert';
+import { useAccountAddress } from '@/state/wallets/walletsStore';
 import { unstakeRnbw } from '../../utils/unstakeRnbw';
 import { UnstakePenaltySign } from '@/features/rnbw-staking/components/UnstakePenaltySign';
 import { opacity } from '@/framework/ui/utils/opacity';
@@ -101,10 +99,8 @@ const UnstakeContent = memo(function UnstakeContent() {
   const { tokenAmount, nativeCurrencyAmount } = useRnbwStakingBalance();
   const { netPnl, isPositivePnl, rnbwAfterUnstake } = useRnbwStakingPositionPnl();
   const exitFeePercentage = useStakingPositionStore(s => s.getExitFeePercentage());
-  const { goBack, navigate } = useNavigation();
+  const { goBack } = useNavigation();
   const accountAddress = useAccountAddress();
-  const isReadOnlyWallet = useIsReadOnlyWallet();
-  const isHardwareWallet = useIsHardwareWallet();
   const [isProcessing, setIsProcessing] = useState(false);
   const liveDisplay = {
     tokenAmount,
@@ -138,16 +134,7 @@ const UnstakeContent = memo(function UnstakeContent() {
   };
 
   const handleUnstake = async () => {
-    if (isReadOnlyWallet) {
-      watchingAlert();
-      return;
-    }
-
-    if (isHardwareWallet) {
-      navigate(Routes.HARDWARE_WALLET_TX_NAVIGATOR, { submit: startUnstake });
-    } else {
-      await startUnstake();
-    }
+    await startUnstake();
   };
 
   return (
