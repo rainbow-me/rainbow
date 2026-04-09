@@ -1668,7 +1668,12 @@
         "confirm_button_error_text": "Teklif Hatası",
         "quote_error": "􀇿 Alıntı bulunamadı",
         "insufficient_balance": "􀫲 Yetersiz Bakiye",
-        "insufficient_gas": "Yetersiz Gaz"
+        "insufficient_gas": "Yetersiz Gaz",
+        "gas_sponsored": "Ücretsiz",
+        "invalid_route_recipient_error": "Köprü rotası hesabınızı hedeflemiyor. Lütfen tekrar deneyin.",
+        "missing_recipient_error": "Eksik alıcı adresi",
+        "no_wallet_connected": "Bağlı cüzdan yok",
+        "unknown_execution_error": "Yatırma işlemi işlenirken bilinmeyen bir hata oluştu"
       },
       "withdraw": {
         "title": "Çekme",
@@ -3879,6 +3884,76 @@
       "claim_card": {
         "airdrop": "Airdrop",
         "rewards": "Ödüller"
+      },
+      "shared": {
+        "tier_label": "%{tierName} Seviyesi",
+        "rewards": "Ödüller",
+        "loyalty_progress": "Sadakat İlerlemesi"
+      },
+      "membership_tier_card": {
+        "stake_to_next_tier": "Bir sonraki seviyeye geçmek için stake et"
+      },
+      "membership_tiers_sheet": {
+        "stake_to_unlock": "Kilidi açmak için stake et"
+      },
+      "staking_card": {
+        "stake": "Stake et",
+        "enable_staking": "Staking'i Etkinleştir",
+        "buy_rnbw": "RNBW Satın Al",
+        "unstake": "Stake'i Çöz",
+        "available_to_stake": "stake edilebilir"
+      },
+      "staking_earnings_card": {
+        "total_earnings": "Toplam Kazanç",
+        "cashback": "Cashback",
+        "exit_rewards": "Çıkış Ödülleri"
+      },
+      "unstake_penalty_recovery_card": {
+        "break_even_reached": "Başabaş noktasına ulaşıldı!",
+        "earned_prefix": "Kazandınız ",
+        "earned_middle": " havuzdan. Sadece ",
+        "earned_suffix": " daha kaldı, net kâra ulaşmak için."
+      }
+    },
+    "rnbw_staking": {
+      "deposit": {
+        "confirm_button": "Stake Etmek İçin Basılı Tutun",
+        "confirm_button_error": "Stake edilemiyor",
+        "confirm_button_loading": "Stake ediliyor...",
+        "confirm_button_over_balance": "Yetersiz RNBW",
+        "confirm_button_zero_amount": "Miktar girin",
+        "execution_error_title": "Stake Hatası",
+        "insufficient_gas": "Yetersiz gas",
+        "quote_error": "Stake hazırlanamıyor",
+        "receive": "Ödüller otomatik olarak talep edilecek",
+        "title": "$RNBW Stake Et",
+        "minimum_amount": "Minimum 1 RNBW"
+      },
+      "learn_screen": {
+        "introducing": "TANITIM",
+        "title": "Bahis",
+        "description": "Havuza katılmak için $RNBW'nizi kilitleyin. Çıkış ücretinizi geri kazanmak ve ayrılanlardan kazanç sağlamak için daha uzun süre kalın.",
+        "put_your_rnbw_to_work_title": "$RNBW'nizi Çalıştırın",
+        "put_your_rnbw_to_work_subtitle": "RNBW'nizi stake ederek pozisyonunuzu kilitleyin ve havuzdan kazanmaya başlayın.",
+        "exit_fee_title": "%{exitFeePercentage}% Çıkış Ücreti",
+        "exit_fee_subtitle": "Stake'i çözmek %{exitFeePercentage}% ücret içerir.",
+        "passive_income_title": "Pasif Gelir",
+        "passive_income_subtitle": "Her çıkıştan faydalanın. Çıkış ücretleri havuza dağıtılır. Kendi ücretlerinizi telafi etmek ve net kâra ulaşmak için daha uzun süre kalın.",
+        "enable_staking": "Staking'i Etkinleştir"
+      },
+      "unstake_sheet": {
+        "exit_fee": "Çıkış Ücreti",
+        "warning_description": "Stake'i çözmek, stake edilmiş bakiyenizden %{exitFeePercentage}% ücret alır.",
+        "confirm_unstake": "Stake Çözmeyi Onayla",
+        "keep_staking": "Stake Etmeye Devam Et",
+        "unstake_failed_title": "Bahisi Çekme Başarısız",
+        "unstake_failed_message": "RNBW'nizin stake'ini çözerken bir hata oluştu. Lütfen tekrar deneyin.",
+        "unstake_title": "$%{symbol} Stake'ini Çöz",
+        "loyalty_progress": "Sadakat İlerlemesi",
+        "receive": "Al",
+        "total_return": "Toplam Getiri",
+        "hold_to_unstake": "Stake'i Çözmek İçin Basılı Tutun",
+        "unstaking": "Stake çözülüyor..."
       }
     },
     "wallet_error_sheet": {
