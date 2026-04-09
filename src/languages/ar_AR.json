@@ -1668,7 +1668,12 @@
         "confirm_button_error_text": "خطأ في عرض السعر",
         "quote_error": "􀇿 لا يوجد اقتباس متاح",
         "insufficient_balance": "􀫲 أموال غير كافية",
-        "insufficient_gas": "غاز غير كافٍ"
+        "insufficient_gas": "غاز غير كافٍ",
+        "gas_sponsored": "مجانا",
+        "invalid_route_recipient_error": "مسار الجسر لا يستهدف حسابك. يُرجى إعادة المحاولة.",
+        "missing_recipient_error": "عنوان المستلم مفقود",
+        "no_wallet_connected": "لا توجد محفظة متصلة",
+        "unknown_execution_error": "حدث خطأ غير معروف أثناء معالجة الإيداع"
       },
       "withdraw": {
         "title": "سحب",
@@ -3879,6 +3884,76 @@
       "claim_card": {
         "airdrop": "إسقاط جوي",
         "rewards": "المكافآت"
+      },
+      "shared": {
+        "tier_label": "فئة %{tierName}",
+        "rewards": "المكافآت",
+        "loyalty_progress": "تقدّم الولاء"
+      },
+      "membership_tier_card": {
+        "stake_to_next_tier": "قم بالرهن للوصول إلى الفئة التالية"
+      },
+      "membership_tiers_sheet": {
+        "stake_to_unlock": "قم بالرهن لفتح القفل"
+      },
+      "staking_card": {
+        "stake": "رهن",
+        "enable_staking": "تفعيل الرهن",
+        "buy_rnbw": "شراء RNBW",
+        "unstake": "إلغاء الرهن",
+        "available_to_stake": "متاح للرهن"
+      },
+      "staking_earnings_card": {
+        "total_earnings": "الأرباح الكلية",
+        "cashback": "استرداد نقدي",
+        "exit_rewards": "مكافآت الخروج"
+      },
+      "unstake_penalty_recovery_card": {
+        "break_even_reached": "تم الوصول إلى نقطة التعادل!",
+        "earned_prefix": "لقد ربحت ",
+        "earned_middle": " من المُجمَّع. فقط ",
+        "earned_suffix": " أخرى للوصول إلى ربحٍ صافٍ."
+      }
+    },
+    "rnbw_staking": {
+      "deposit": {
+        "confirm_button": "اضغط مع الاستمرار للرهن",
+        "confirm_button_error": "تعذّر الرهن",
+        "confirm_button_loading": "جاري الرهن...",
+        "confirm_button_over_balance": "رصيد RNBW غير كافٍ",
+        "confirm_button_zero_amount": "أدخل المبلغ",
+        "execution_error_title": "خطأ في الرهن",
+        "insufficient_gas": "الغاز غير كافٍ",
+        "quote_error": "تعذّر تحضير الرهن",
+        "receive": "ستتم المطالبة بالمكافآت تلقائيًا",
+        "title": "ارهن $RNBW",
+        "minimum_amount": "الحد الأدنى 1 RNBW"
+      },
+      "learn_screen": {
+        "introducing": "مقدمة",
+        "title": "جاري الرهن",
+        "description": "اقفل $RNBW للانضمام إلى المُجمَّع. ابقَ لمدة أطول لاسترداد رسوم الخروج وكسب العوائد من الذين يغادرون.",
+        "put_your_rnbw_to_work_title": "اجعل $RNBW يعمل لصالحك",
+        "put_your_rnbw_to_work_subtitle": "ارهن RNBW لقفل مركزك وبدء الكسب من المُجمَّع.",
+        "exit_fee_title": "رسوم خروج %{exitFeePercentage}%",
+        "exit_fee_subtitle": "إلغاء الرهن يتضمن رسومًا بنسبة %{exitFeePercentage}%.",
+        "passive_income_title": "دخل سلبي",
+        "passive_income_subtitle": "استفد من كل عملية خروج. تُوزَّع رسوم الخروج على المُجمَّع. ابقَ لمدة أطول لتعويض رسومك والوصول إلى ربحٍ صافٍ.",
+        "enable_staking": "تفعيل الرهن"
+      },
+      "unstake_sheet": {
+        "exit_fee": "رسوم الخروج",
+        "warning_description": "سيتم تحصيل رسوم بنسبة %{exitFeePercentage}% من رصيدك المرهون عند إلغاء الرهن.",
+        "confirm_unstake": "تأكيد إلغاء الرهن",
+        "keep_staking": "متابعة الرهن",
+        "unstake_failed_title": "فشل الاسترداد",
+        "unstake_failed_message": "حدث خطأ أثناء إلغاء رهن RNBW الخاص بك. يُرجى المحاولة مرة أخرى.",
+        "unstake_title": "إلغاء رهن $%{symbol}",
+        "loyalty_progress": "تقدّم الولاء",
+        "receive": "استلم",
+        "total_return": "إجمالي العائد",
+        "hold_to_unstake": "اضغط مع الاستمرار لإلغاء الرهن",
+        "unstaking": "جارٍ إلغاء الرهن..."
       }
     },
     "wallet_error_sheet": {
