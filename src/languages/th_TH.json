@@ -3887,8 +3887,8 @@
       },
       "shared": {
         "tier_label": "ระดับ %{tierName}",
-        "rewards": "รางวัล",
-        "loyalty_progress": "ความคืบหน้าความภักดี"
+        "loyalty_progress": "ความคืบหน้าความภักดี",
+        "fee_cashback": "เงินคืนค่าธรรมเนียม"
       },
       "membership_tier_card": {
         "stake_to_next_tier": "สเตกเพื่อไปยังระดับถัดไป"
@@ -3901,12 +3901,13 @@
         "enable_staking": "เปิดใช้งานการสเตก",
         "buy_rnbw": "ซื้อ RNBW",
         "unstake": "ถอนสเตก",
-        "available_to_stake": "พร้อมสำหรับการสเตก"
+        "available_to_stake": "พร้อมสำหรับการสเตก",
+        "available_to_add": "พร้อมสำหรับการเพิ่ม",
+        "minimum_stake_amount_required": "คุณต้องมีอย่างน้อย %{minStakeAmount} RNBW เพื่อทำการสเตก"
       },
       "staking_earnings_card": {
-        "total_earnings": "รายได้รวม",
-        "cashback": "เงินคืน",
-        "exit_rewards": "รางวัลเมื่อออก"
+        "lifetime_earnings": "รายได้ตลอดอายุการใช้งาน",
+        "exit_fee_rewards": "รางวัลค่าธรรมเนียมการออก"
       },
       "unstake_penalty_recovery_card": {
         "break_even_reached": "ถึงจุดคุ้มทุนแล้ว!",
@@ -3916,6 +3917,10 @@
       }
     },
     "rnbw_staking": {
+      "wallet_access": {
+        "hardware_wallet_not_supported_title": "ไม่รองรับฮาร์ดแวร์วอลเล็ต",
+        "hardware_wallet_not_supported_message": "ขณะนี้ไม่สามารถสเตก RNBW ด้วยฮาร์ดแวร์วอลเล็ตได้"
+      },
       "deposit": {
         "confirm_button": "กดค้างเพื่อสเตก",
         "confirm_button_error": "ไม่สามารถสเตกได้",
@@ -3932,24 +3937,21 @@
       "learn_screen": {
         "introducing": "เราขอแนะนำ",
         "title": "กำลังวางเดิมทุน",
-        "description": "ล็อก $RNBW ของคุณเพื่อเข้าร่วมพูล อยู่ให้นานขึ้นเพื่อชดเชยค่าธรรมเนียมออกของคุณและรับส่วนแบ่งจากคนที่ออก",
-        "put_your_rnbw_to_work_title": "ให้ $RNBW ของคุณทำงาน",
-        "put_your_rnbw_to_work_subtitle": "สเตก RNBW ของคุณเพื่อล็อกตำแหน่งและเริ่มรับรายได้จากพูล",
+        "description": "สเตก RNBW เพื่อปลดล็อกระดับสถานะและสิทธิประโยชน์สำหรับสมาชิกสุดพิเศษ",
+        "fee_cashback": "เงินคืนค่าธรรมเนียม",
+        "fee_cashback_subtitle": "รับคืนค่าธรรมเนียมสูงสุด 100% เป็น RNBW ที่สเตกไว้",
         "exit_fee_title": "ค่าธรรมเนียมออก %{exitFeePercentage}%",
-        "exit_fee_subtitle": "การถอนสเตกมีค่าธรรมเนียม %{exitFeePercentage}%",
-        "passive_income_title": "รายได้แบบพาสซีฟ",
-        "passive_income_subtitle": "รับประโยชน์จากทุกการออก ค่าธรรมเนียมออกจะถูกแจกจ่ายให้กับพูล อยู่ให้นานขึ้นเพื่อชดเชยค่าธรรมเนียมของคุณเองและไปถึงกำไรล้วนๆ",
+        "exit_fee_subtitle": "คุณสามารถยกเลิกการสเตกได้ทุกเมื่อ เพียงจ่ายค่าธรรมเนียมการออก %{exitFeePercentage}% ซึ่งจะถูกแจกจ่ายให้กับผู้สเตกรายอื่น",
+        "stay_in_to_earn_more": "อยู่ต่อเพื่อรับมากขึ้น",
+        "stay_in_to_earn_more_subtitle": "เมื่อมีคนยกเลิกการสเตก RNBW ของตน ค่าธรรมเนียมการออกจะกลับไปให้กับผู้ที่ยังอยู่ในพูล",
         "enable_staking": "เปิดใช้งานการสเตก"
       },
       "unstake_sheet": {
         "exit_fee": "ค่าธรรมเนียมออก",
-        "warning_description": "การถอนสเตกจะคิดค่าธรรมเนียม %{exitFeePercentage}% จากยอดที่คุณสเตกไว้",
-        "confirm_unstake": "ยืนยันการถอนสเตก",
-        "keep_staking": "สเตกต่อไป",
+        "warning_description": "การยกเลิกการสเตกจะเรียกเก็บค่าธรรมเนียม %{exitFeePercentage}% จากยอดที่คุณสเตกอยู่ในปัจจุบัน",
         "unstake_failed_title": "การถอนสินทรัพย์ล้มเหลว",
         "unstake_failed_message": "เกิดข้อผิดพลาดขณะถอนสเตก RNBW ของคุณ โปรดลองอีกครั้ง",
         "unstake_title": "ถอนสเตก $%{symbol}",
-        "loyalty_progress": "ความคืบหน้าความภักดี",
         "receive": "รับ",
         "total_return": "ผลตอบแทนรวม",
         "hold_to_unstake": "กดค้างเพื่อถอนสเตก",
