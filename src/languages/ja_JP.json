@@ -1668,7 +1668,12 @@
         "confirm_button_error_text": "見積りエラー",
         "quote_error": "􀇿 見積もりは利用できません",
         "insufficient_balance": "􀫲 資金が不足しています",
-        "insufficient_gas": "ガスが不足しています"
+        "insufficient_gas": "ガスが不足しています",
+        "gas_sponsored": "無料",
+        "invalid_route_recipient_error": "ブリッジのルートがあなたのアカウント宛てではありません。もう一度お試しください。",
+        "missing_recipient_error": "受取人のアドレスがありません",
+        "no_wallet_connected": "ウォレットが接続されていません",
+        "unknown_execution_error": "入金の処理中に不明なエラーが発生しました"
       },
       "withdraw": {
         "title": "引き出す",
@@ -3879,6 +3884,76 @@
       "claim_card": {
         "airdrop": "エアドロップ",
         "rewards": "報酬"
+      },
+      "shared": {
+        "tier_label": "%{tierName} ティア",
+        "rewards": "報酬",
+        "loyalty_progress": "ロイヤルティの進捗"
+      },
+      "membership_tier_card": {
+        "stake_to_next_tier": "次のティアへステーク"
+      },
+      "membership_tiers_sheet": {
+        "stake_to_unlock": "ステークしてアンロック"
+      },
+      "staking_card": {
+        "stake": "ステーク",
+        "enable_staking": "ステーキングを有効にする",
+        "buy_rnbw": "RNBWを購入",
+        "unstake": "アンステーク",
+        "available_to_stake": "ステーク可能"
+      },
+      "staking_earnings_card": {
+        "total_earnings": "総収益",
+        "cashback": "キャッシュバック",
+        "exit_rewards": "退出報酬"
+      },
+      "unstake_penalty_recovery_card": {
+        "break_even_reached": "損益分岐点に到達！",
+        "earned_prefix": "あなたは稼ぎました ",
+        "earned_middle": " をプールから獲得。あと ",
+        "earned_suffix": " で純利益になります。"
+      }
+    },
+    "rnbw_staking": {
+      "deposit": {
+        "confirm_button": "長押しでステーク",
+        "confirm_button_error": "ステークできません",
+        "confirm_button_loading": "ステーキング...",
+        "confirm_button_over_balance": "RNBWが不足しています",
+        "confirm_button_zero_amount": "金額を入力してください",
+        "execution_error_title": "ステーキングエラー",
+        "insufficient_gas": "ガスが不足しています",
+        "quote_error": "ステークの準備ができません",
+        "receive": "報酬は自動的に請求されます",
+        "title": "$RNBWをステーク",
+        "minimum_amount": "最小 1 RNBW"
+      },
+      "learn_screen": {
+        "introducing": "紹介",
+        "title": "ステーキング",
+        "description": "$RNBWをロックしてプールに参加しましょう。長くステークするほど、退出手数料を回収でき、退出する人たちから収益を得られます。",
+        "put_your_rnbw_to_work_title": "$RNBWを運用しよう",
+        "put_your_rnbw_to_work_subtitle": "RNBWをステークしてポジションをロックし、プールからの収益獲得を始めましょう。",
+        "exit_fee_title": "%{exitFeePercentage}% 退出手数料",
+        "exit_fee_subtitle": "アンステークには%{exitFeePercentage}%の手数料がかかります。",
+        "passive_income_title": "不労所得",
+        "passive_income_subtitle": "退出のたびに利益を得られます。退出手数料はプールに分配されます。長くステークして自分の手数料分を相殺し、純利益を目指しましょう。",
+        "enable_staking": "ステーキングを有効にする"
+      },
+      "unstake_sheet": {
+        "exit_fee": "退出手数料",
+        "warning_description": "アンステークすると、ステーク残高に%{exitFeePercentage}%の手数料が適用されます。",
+        "confirm_unstake": "アンステークを確認",
+        "keep_staking": "ステーキングを続ける",
+        "unstake_failed_title": "アンステイク失敗",
+        "unstake_failed_message": "RNBWのアンステーク中にエラーが発生しました。もう一度お試しください。",
+        "unstake_title": "$%{symbol}をアンステーク",
+        "loyalty_progress": "ロイヤルティの進捗",
+        "receive": "受け取る",
+        "total_return": "総リターン",
+        "hold_to_unstake": "長押しでアンステーク",
+        "unstaking": "アンステーキング..."
       }
     },
     "wallet_error_sheet": {
