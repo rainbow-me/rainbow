@@ -1880,7 +1880,7 @@ PODS:
     - React
   - react-native-version-number (0.3.6):
     - React
-  - react-native-video (6.15.0):
+  - react-native-video (6.19.1):
     - DoubleConversion
     - glog
     - hermes-engine
@@ -1895,7 +1895,7 @@ PODS:
     - React-hermes
     - React-ImageManager
     - React-jsi
-    - react-native-video/Video (= 6.15.0)
+    - react-native-video/Video (= 6.19.1)
     - React-NativeModulesApple
     - React-RCTFabric
     - React-renderercss
@@ -1905,7 +1905,7 @@ PODS:
     - ReactCommon/turbomodule/bridging
     - ReactCommon/turbomodule/core
     - Yoga
-  - react-native-video/Video (6.15.0):
+  - react-native-video/Video (6.19.1):
     - DoubleConversion
     - glog
     - hermes-engine
@@ -3358,7 +3358,7 @@ SPEC CHECKSUMS:
   react-native-text-input-mask: b83b8b571cba4bf18fb9b7a0bb8319a14201db9e
   react-native-udp: afd81d997ff141501da6ac680667fd8319545da1
   react-native-version-number: 3d74b5224ca4e1032b1593937d86d3f3c94bf95c
-  react-native-video: 6fa10431df5753a4f40ff054898a3634f7123c5e
+  react-native-video: 9c4c3eae02d1582907c5262f90bf8194ec1b6683
   react-native-view-shot: 44e13d0424a6b0375eae31d89e161fc1153512e5
   react-native-webview: 1b5778b306d4ed09d13829a6e7a6550e3c1a644a
   react-native-widgetkit: 9138fc58146c4f39771516ea9ef0e2d6fb20a9cd
