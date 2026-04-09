@@ -1,0 +1,22 @@
+name: Relay External CI Status
+
+on:
+  workflow_run:
+    # These must match the `name:` field of each CI workflow exactly.
+    workflows: ['Unit tests', 'iOS Builds', 'Android', 'iOS']
+    types: [requested, in_progress, completed]
+    branches: ['ci/external-pr/**']
+
+permissions: {}
+
+jobs:
+  relay:
+    runs-on: ubuntu-latest
+    permissions:
+      checks: write
+      contents: read
+    steps:
+      - uses: ./.github/actions/run-script
+        with:
+          module: external-ci.js
+          function: relayStatus

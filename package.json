@@ -115,6 +115,8 @@
     "start:clean": "yarn clean:packager && yarn start --reset-cache",
     "start:client-logs": "react-native start --client-logs",
     "test": "jest --detectOpenHandles --forceExit",
+    "test:ci": "yarn test && yarn test:ci-scripts",
+    "test:ci-scripts": "jest --watchman=false --detectOpenHandles --forceExit --roots '.github/scripts'",
     "ts-coverage": "typescript-coverage-report",
     "ts-migrate-folder": "./scripts/ts-migrate-folder.sh",
     "uninstall:android": "adb uninstall me.rainbow; true",

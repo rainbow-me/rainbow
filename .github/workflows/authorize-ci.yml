@@ -1,0 +1,98 @@
+# Authorize External CI
+#
+# Allows running CI on pull requests from forks, which can't access repo
+# secrets by default. Maintainers approve by commenting `/authorize-ci <sha>`
+# on the fork PR, where <sha> is the HEAD commit they reviewed.
+#
+# How it works:
+#   1. Fork PR opened         -> bot posts a guide comment explaining the process
+#   2. Maintainers review     -> each comments `/authorize-ci <sha>`
+#   3. Required approvals met -> fork code is pushed to an internal branch
+#                                (ci/external-pr/<number>), triggering normal CI
+#   4. CI results are relayed -> relay-external-ci.yml mirrors check run status
+#                                back to the fork PR via the Checks API
+#   5. New commits pushed     -> internal branch deleted, approvals invalidated
+#   6. Maintainers re-review  -> repeat from step 2 with the new SHA
+#   7. PR closed              -> internal branch cleaned up
+#
+# Security:
+#   - Approvals are pinned to a specific SHA, so new commits can't reuse old approvals
+#   - Existing (and future) CI workflows only need a push branch trigger (no pull_request_target footgun)
+#   - Fork code runs through the exact same CI pipeline as internal code
+#
+# See .github/scripts/external-ci.js for configuration and implementation details.
+
+name: Authorize External CI
+
+on:
+  pull_request_target:
+    types: [opened, synchronize, closed]
+  issue_comment:
+    types: [created]
+
+permissions: {}
+
+jobs:
+  post-guide:
+    if: |
+      github.event_name == 'pull_request_target' &&
+      github.event.action == 'opened' &&
+      github.event.pull_request.head.repo.full_name != github.repository
+    runs-on: ubuntu-latest
+    permissions:
+      pull-requests: write
+      contents: read
+    steps:
+      - uses: ./.github/actions/run-script
+        with:
+          module: external-ci.js
+          function: postGuide
+
+  reset-on-push:
+    if: |
+      github.event_name == 'pull_request_target' &&
+      github.event.action == 'synchronize' &&
+      github.event.pull_request.head.repo.full_name != github.repository
+    runs-on: ubuntu-latest
+    permissions:
+      pull-requests: write
+      contents: write
+    steps:
+      - uses: ./.github/actions/run-script
+        with:
+          module: external-ci.js
+          function: resetOnPush
+
+  handle-authorization:
+    if: |
+      github.event_name == 'issue_comment' &&
+      github.event.issue.state == 'open' &&
+      github.event.issue.pull_request &&
+      startsWith(github.event.comment.body, '/authorize-ci')
+    concurrency:
+      group: authorize-ci-${{ github.event.issue.number }}
+      cancel-in-progress: false
+    runs-on: ubuntu-latest
+    permissions:
+      pull-requests: write
+      contents: write
+      checks: write
+    steps:
+      - uses: ./.github/actions/run-script
+        with:
+          module: external-ci.js
+          function: handleAuthorization
+
+  cleanup:
+    if: |
+      github.event_name == 'pull_request_target' &&
+      github.event.action == 'closed' &&
+      github.event.pull_request.head.repo.full_name != github.repository
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - uses: ./.github/actions/run-script
+        with:
+          module: external-ci.js
+          function: cleanup

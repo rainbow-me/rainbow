@@ -1,6 +1,9 @@
 name: Unit tests
 
-on: [pull_request]
+on:
+  pull_request:
+  push:
+    branches: [ci/external-pr/**]
 jobs:
   lint-and-unit-test:
     runs-on: blacksmith-2vcpu-ubuntu-2204
@@ -89,4 +92,4 @@ jobs:
         run: yarn lint:ci
 
       - name: Unit tests
-        run: yarn test
+        run: yarn test:ci

@@ -1,0 +1,23 @@
+name: Run Script
+description: Checks out .github/scripts and runs a named export from a JS module via actions/github-script.
+
+inputs:
+  module:
+    description: JS module filename in .github/scripts/ (e.g. external-ci.js)
+    required: true
+  function:
+    description: Named export to call (e.g. postGuide)
+    required: true
+
+runs:
+  using: composite
+  steps:
+    - uses: actions/checkout@08eba0b27e820071cde6df949e0beb9ba4906955
+      with:
+        sparse-checkout: .github/scripts
+        fetch-depth: 1
+    - uses: actions/github-script@ed597411d8f924073f98dfc5c65a23a2325f34cd # v8
+      with:
+        script: |
+          const { ${{ inputs.function }} } = require('./.github/scripts/${{ inputs.module }}');
+          await ${{ inputs.function }}({ github, context, core });

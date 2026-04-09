@@ -2,6 +2,8 @@ name: iOS Builds
 on:
   pull_request:
     types: [opened, synchronize, reopened, ready_for_review]
+  push:
+    branches: [ci/external-pr/**]
   workflow_dispatch:
 
 jobs:
@@ -12,7 +14,10 @@ jobs:
     env:
       NODE_OPTIONS: '--max-old-space-size=6144'
     timeout-minutes: 45
-    if: github.event.pull_request.draft == false && github.event.pull_request.merged == false
+    if: |
+      github.event_name == 'push' ||
+      github.event_name == 'workflow_dispatch' ||
+      (github.event.pull_request.draft == false && github.event.pull_request.merged == false)
     concurrency:
       group: ${{ github.workflow }}-simulator-${{ github.ref }}
       cancel-in-progress: true
@@ -107,7 +112,10 @@ jobs:
     env:
       NODE_OPTIONS: '--max-old-space-size=6144'
     timeout-minutes: 45
-    if: github.event.pull_request.draft == false && github.event.pull_request.merged == false
+    if: |
+      github.event_name == 'push' ||
+      github.event_name == 'workflow_dispatch' ||
+      (github.event.pull_request.draft == false && github.event.pull_request.merged == false)
     concurrency:
       group: ${{ github.workflow }}-device-${{ github.ref }}
       cancel-in-progress: true
