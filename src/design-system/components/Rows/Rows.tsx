@@ -1,4 +1,4 @@
-import React, { Children, type ReactNode } from 'react';
+import React, { Children, type JSX, type ReactNode } from 'react';
 import flattenChildren from 'react-flatten-children';
 import { type AlignVertical, alignVerticalToFlexAlign } from '../../layout/alignment';
 import { negateSpace, type Space } from '../../layout/space';

@@ -1,4 +1,4 @@
-import React, { useContext, useMemo } from 'react';
+import React, { type JSX, useContext, useMemo } from 'react';
 import { type StyleProp, type ViewStyle } from 'react-native';
 import { AccentColorContext } from '../../color/AccentColorContext';
 import { ColorModeContext, ColorModeProvider } from '../../color/ColorMode';

@@ -7730,13 +7730,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@types/dedent@npm:0.7.0":
-  version: 0.7.0
-  resolution: "@types/dedent@npm:0.7.0"
-  checksum: 10c0/84946a0b0791e31706860ef7efb83457549c25a66acf3d45a035a292d466b9f5a748b10c078ade917cc3661c4647282fe9400c5b685cadd664e6881f7ba9f268
-  languageName: node
-  linkType: hard
-
 "@types/estree@npm:^1.0.5":
   version: 1.0.5
   resolution: "@types/estree@npm:1.0.5"
@@ -9470,7 +9463,6 @@ __metadata:
     "@types/chroma-js": "npm:2.1.3"
     "@types/d3-scale": "npm:4.0.2"
     "@types/d3-shape": "npm:3.1.6"
-    "@types/dedent": "npm:0.7.0"
     "@types/i18n-js": "npm:3.0.3"
     "@types/jest": "npm:29.5.13"
     "@types/lodash": "npm:4.14.168"
@@ -9514,7 +9506,6 @@ __metadata:
     d3-scale: "npm:4.0.2"
     d3-shape: "npm:3.2.0"
     date-fns: "npm:2.16.1"
-    dedent: "npm:0.7.0"
     delay: "npm:4.4.0"
     deprecated-react-native-prop-types: "npm:2.2.0"
     dns.js: "npm:1.0.1"
@@ -12873,7 +12864,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"dedent@npm:0.7.0, dedent@npm:^0.7.0":
+"dedent@npm:^0.7.0":
   version: 0.7.0
   resolution: "dedent@npm:0.7.0"
   checksum: 10c0/7c3aa00ddfe3e5fcd477958e156156a5137e3bb6ff1493ca05edff4decf29a90a057974cc77e75951f8eb801c1816cb45aea1f52d628cdd000b82b36ab839d1b

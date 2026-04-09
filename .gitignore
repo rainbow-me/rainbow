@@ -96,9 +96,6 @@ patches/react-native-webview*
 
 .eslintcache
 
-# design system docs
-.next
-out/
 
 # Ts-coverage
 coverage-ts
