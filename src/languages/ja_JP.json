@@ -3887,8 +3887,8 @@
       },
       "shared": {
         "tier_label": "%{tierName} ティア",
-        "rewards": "報酬",
-        "loyalty_progress": "ロイヤルティの進捗"
+        "loyalty_progress": "ロイヤルティの進捗",
+        "fee_cashback": "手数料キャッシュバック"
       },
       "membership_tier_card": {
         "stake_to_next_tier": "次のティアへステーク"
@@ -3901,12 +3901,13 @@
         "enable_staking": "ステーキングを有効にする",
         "buy_rnbw": "RNBWを購入",
         "unstake": "アンステーク",
-        "available_to_stake": "ステーク可能"
+        "available_to_stake": "ステーク可能",
+        "available_to_add": "追加可能",
+        "minimum_stake_amount_required": "ステークするには最低%{minStakeAmount} RNBWが必要です"
       },
       "staking_earnings_card": {
-        "total_earnings": "総収益",
-        "cashback": "キャッシュバック",
-        "exit_rewards": "退出報酬"
+        "lifetime_earnings": "累計収益",
+        "exit_fee_rewards": "退出手数料報酬"
       },
       "unstake_penalty_recovery_card": {
         "break_even_reached": "損益分岐点に到達！",
@@ -3916,6 +3917,10 @@
       }
     },
     "rnbw_staking": {
+      "wallet_access": {
+        "hardware_wallet_not_supported_title": "ハードウェアウォレットはサポートされていません",
+        "hardware_wallet_not_supported_message": "現在、RNBWステーキングはハードウェアウォレットでは利用できません。"
+      },
       "deposit": {
         "confirm_button": "長押しでステーク",
         "confirm_button_error": "ステークできません",
@@ -3932,24 +3937,21 @@
       "learn_screen": {
         "introducing": "紹介",
         "title": "ステーキング",
-        "description": "$RNBWをロックしてプールに参加しましょう。長くステークするほど、退出手数料を回収でき、退出する人たちから収益を得られます。",
-        "put_your_rnbw_to_work_title": "$RNBWを運用しよう",
-        "put_your_rnbw_to_work_subtitle": "RNBWをステークしてポジションをロックし、プールからの収益獲得を始めましょう。",
+        "description": "RNBWをステークして、ステータスティアと会員限定特典をアンロックしましょう。",
+        "fee_cashback": "手数料キャッシュバック",
+        "fee_cashback_subtitle": "手数料の最大100%をステーク済みRNBWとして受け取れます。",
         "exit_fee_title": "%{exitFeePercentage}% 退出手数料",
-        "exit_fee_subtitle": "アンステークには%{exitFeePercentage}%の手数料がかかります。",
-        "passive_income_title": "不労所得",
-        "passive_income_subtitle": "退出のたびに利益を得られます。退出手数料はプールに分配されます。長くステークして自分の手数料分を相殺し、純利益を目指しましょう。",
+        "exit_fee_subtitle": "いつでもアンステークできます。%{exitFeePercentage}%の退出手数料を支払うだけで、その手数料は他のステーカーに分配されます。",
+        "stay_in_to_earn_more": "続けるほど、より多く稼げます",
+        "stay_in_to_earn_more_subtitle": "誰かがRNBWをアンステークすると、退出手数料はプールに残っている人に戻ります。",
         "enable_staking": "ステーキングを有効にする"
       },
       "unstake_sheet": {
         "exit_fee": "退出手数料",
-        "warning_description": "アンステークすると、ステーク残高に%{exitFeePercentage}%の手数料が適用されます。",
-        "confirm_unstake": "アンステークを確認",
-        "keep_staking": "ステーキングを続ける",
+        "warning_description": "アンステークすると、現在ステーク中の残高に対して%{exitFeePercentage}%の手数料がかかります。",
         "unstake_failed_title": "アンステイク失敗",
         "unstake_failed_message": "RNBWのアンステーク中にエラーが発生しました。もう一度お試しください。",
         "unstake_title": "$%{symbol}をアンステーク",
-        "loyalty_progress": "ロイヤルティの進捗",
         "receive": "受け取る",
         "total_return": "総リターン",
         "hold_to_unstake": "長押しでアンステーク",
