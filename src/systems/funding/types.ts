@@ -1,4 +1,5 @@
 import { type Signer } from '@ethersproject/abstract-signer';
+import { type ComponentType } from 'react';
 import { type Address } from 'viem';
 import { type DerivedValue, type SharedValue } from 'react-native-reanimated';
 import { type CrosschainQuote, type Quote, type Source } from '@rainbow-me/swaps';
@@ -202,6 +203,15 @@ export type DepositLabels = {
   title: string;
 };
 
+export type DepositSubmitButtonProps = {
+  disabled: SharedValue<boolean> | DerivedValue<boolean>;
+  isSubmitting: SharedValue<boolean>;
+  label: SharedValue<string> | DerivedValue<string>;
+  onSubmit: () => Promise<void>;
+};
+
+export type DepositSubmitButtonComponent = ComponentType<DepositSubmitButtonProps>;
+
 /**
  * ### `DepositConfig`
  *
@@ -284,6 +294,9 @@ type DepositConfigBaseInput = {
 
   /** Optional copy overrides for non-perps flows */
   labels?: Partial<DepositLabels>;
+
+  /** Optional custom submit button UI for the footer action */
+  submitButtonComponent?: DepositSubmitButtonComponent;
 
   /** Optional input validation rules */
   validation?: {
