@@ -3887,8 +3887,8 @@
       },
       "shared": {
         "tier_label": "فئة %{tierName}",
-        "rewards": "المكافآت",
-        "loyalty_progress": "تقدّم الولاء"
+        "loyalty_progress": "تقدّم الولاء",
+        "fee_cashback": "استرداد رسوم نقدًا"
       },
       "membership_tier_card": {
         "stake_to_next_tier": "قم بالرهن للوصول إلى الفئة التالية"
@@ -3901,12 +3901,13 @@
         "enable_staking": "تفعيل الرهن",
         "buy_rnbw": "شراء RNBW",
         "unstake": "إلغاء الرهن",
-        "available_to_stake": "متاح للرهن"
+        "available_to_stake": "متاح للرهن",
+        "available_to_add": "متاح للإضافة",
+        "minimum_stake_amount_required": "تحتاج إلى ما لا يقل عن %{minStakeAmount} RNBW للتخزين"
       },
       "staking_earnings_card": {
-        "total_earnings": "الأرباح الكلية",
-        "cashback": "استرداد نقدي",
-        "exit_rewards": "مكافآت الخروج"
+        "lifetime_earnings": "الأرباح مدى الحياة",
+        "exit_fee_rewards": "مكافآت رسوم الخروج"
       },
       "unstake_penalty_recovery_card": {
         "break_even_reached": "تم الوصول إلى نقطة التعادل!",
@@ -3916,6 +3917,10 @@
       }
     },
     "rnbw_staking": {
+      "wallet_access": {
+        "hardware_wallet_not_supported_title": "محفظة الأجهزة غير مدعومة",
+        "hardware_wallet_not_supported_message": "تخزين RNBW غير متاح لمحافظ الأجهزة في الوقت الحالي."
+      },
       "deposit": {
         "confirm_button": "اضغط مع الاستمرار للرهن",
         "confirm_button_error": "تعذّر الرهن",
@@ -3932,24 +3937,21 @@
       "learn_screen": {
         "introducing": "مقدمة",
         "title": "جاري الرهن",
-        "description": "اقفل $RNBW للانضمام إلى المُجمَّع. ابقَ لمدة أطول لاسترداد رسوم الخروج وكسب العوائد من الذين يغادرون.",
-        "put_your_rnbw_to_work_title": "اجعل $RNBW يعمل لصالحك",
-        "put_your_rnbw_to_work_subtitle": "ارهن RNBW لقفل مركزك وبدء الكسب من المُجمَّع.",
+        "description": "قم بتخزين RNBW لفتح مستويات الحالة ومزايا الأعضاء الحصرية.",
+        "fee_cashback": "استرداد رسوم نقدًا",
+        "fee_cashback_subtitle": "احصل على ما يصل إلى 100% من الرسوم على شكل RNBW مُخزَّن.",
         "exit_fee_title": "رسوم خروج %{exitFeePercentage}%",
-        "exit_fee_subtitle": "إلغاء الرهن يتضمن رسومًا بنسبة %{exitFeePercentage}%.",
-        "passive_income_title": "دخل سلبي",
-        "passive_income_subtitle": "استفد من كل عملية خروج. تُوزَّع رسوم الخروج على المُجمَّع. ابقَ لمدة أطول لتعويض رسومك والوصول إلى ربحٍ صافٍ.",
+        "exit_fee_subtitle": "يمكنك إلغاء التخزين في أي وقت. ما عليك سوى دفع رسوم خروج بنسبة %{exitFeePercentage}% تُوزَّع على المخزِّنين الآخرين.",
+        "stay_in_to_earn_more": "ابقَ لتكسب أكثر",
+        "stay_in_to_earn_more_subtitle": "عندما يُلغي شخص ما تخزين RNBW الخاص به، تعود رسوم الخروج إلى الذين ما زالوا في المجمّع.",
         "enable_staking": "تفعيل الرهن"
       },
       "unstake_sheet": {
         "exit_fee": "رسوم الخروج",
-        "warning_description": "سيتم تحصيل رسوم بنسبة %{exitFeePercentage}% من رصيدك المرهون عند إلغاء الرهن.",
-        "confirm_unstake": "تأكيد إلغاء الرهن",
-        "keep_staking": "متابعة الرهن",
+        "warning_description": "سيتم فرض رسوم بنسبة %{exitFeePercentage}% على رصيدك المُخزَّن حاليًا عند إلغاء التخزين.",
         "unstake_failed_title": "فشل الاسترداد",
         "unstake_failed_message": "حدث خطأ أثناء إلغاء رهن RNBW الخاص بك. يُرجى المحاولة مرة أخرى.",
         "unstake_title": "إلغاء رهن $%{symbol}",
-        "loyalty_progress": "تقدّم الولاء",
         "receive": "استلم",
         "total_return": "إجمالي العائد",
         "hold_to_unstake": "اضغط مع الاستمرار لإلغاء الرهن",
