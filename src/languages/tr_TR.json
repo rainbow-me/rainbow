@@ -3887,8 +3887,8 @@
       },
       "shared": {
         "tier_label": "%{tierName} Seviyesi",
-        "rewards": "Ödüller",
-        "loyalty_progress": "Sadakat İlerlemesi"
+        "loyalty_progress": "Sadakat İlerlemesi",
+        "fee_cashback": "Ücret Geri Ödemesi"
       },
       "membership_tier_card": {
         "stake_to_next_tier": "Bir sonraki seviyeye geçmek için stake et"
@@ -3901,12 +3901,13 @@
         "enable_staking": "Staking'i Etkinleştir",
         "buy_rnbw": "RNBW Satın Al",
         "unstake": "Stake'i Çöz",
-        "available_to_stake": "stake edilebilir"
+        "available_to_stake": "stake edilebilir",
+        "available_to_add": "eklemek için kullanılabilir",
+        "minimum_stake_amount_required": "Stake etmek için en az %{minStakeAmount} RNBW gerekir"
       },
       "staking_earnings_card": {
-        "total_earnings": "Toplam Kazanç",
-        "cashback": "Cashback",
-        "exit_rewards": "Çıkış Ödülleri"
+        "lifetime_earnings": "Ömür Boyu Kazançlar",
+        "exit_fee_rewards": "Çıkış Ücreti Ödülleri"
       },
       "unstake_penalty_recovery_card": {
         "break_even_reached": "Başabaş noktasına ulaşıldı!",
@@ -3916,6 +3917,10 @@
       }
     },
     "rnbw_staking": {
+      "wallet_access": {
+        "hardware_wallet_not_supported_title": "Donanım Cüzdanı Desteklenmiyor",
+        "hardware_wallet_not_supported_message": "RNBW stake etme şu anda donanım cüzdanları için kullanılamıyor."
+      },
       "deposit": {
         "confirm_button": "Stake Etmek İçin Basılı Tutun",
         "confirm_button_error": "Stake edilemiyor",
@@ -3932,24 +3937,21 @@
       "learn_screen": {
         "introducing": "TANITIM",
         "title": "Bahis",
-        "description": "Havuza katılmak için $RNBW'nizi kilitleyin. Çıkış ücretinizi geri kazanmak ve ayrılanlardan kazanç sağlamak için daha uzun süre kalın.",
-        "put_your_rnbw_to_work_title": "$RNBW'nizi Çalıştırın",
-        "put_your_rnbw_to_work_subtitle": "RNBW'nizi stake ederek pozisyonunuzu kilitleyin ve havuzdan kazanmaya başlayın.",
+        "description": "Statü seviyelerinin ve özel üye avantajlarının kilidini açmak için RNBW stake edin.",
+        "fee_cashback": "Ücret Geri Ödemesi",
+        "fee_cashback_subtitle": "Ücretlerin %100’üne kadarını stake edilmiş RNBW olarak alın.",
         "exit_fee_title": "%{exitFeePercentage}% Çıkış Ücreti",
-        "exit_fee_subtitle": "Stake'i çözmek %{exitFeePercentage}% ücret içerir.",
-        "passive_income_title": "Pasif Gelir",
-        "passive_income_subtitle": "Her çıkıştan faydalanın. Çıkış ücretleri havuza dağıtılır. Kendi ücretlerinizi telafi etmek ve net kâra ulaşmak için daha uzun süre kalın.",
+        "exit_fee_subtitle": "İstediğiniz zaman unstake edebilirsiniz. Diğer staker’lara dağıtılan %{exitFeePercentage}% çıkış ücretini ödemeniz yeterli.",
+        "stay_in_to_earn_more": "Daha fazla kazanmak için havuzda kalın",
+        "stay_in_to_earn_more_subtitle": "Birisi RNBW’sini unstake ettiğinde, çıkış ücretleri havuzda kalmaya devam edenlere geri gider.",
         "enable_staking": "Staking'i Etkinleştir"
       },
       "unstake_sheet": {
         "exit_fee": "Çıkış Ücreti",
-        "warning_description": "Stake'i çözmek, stake edilmiş bakiyenizden %{exitFeePercentage}% ücret alır.",
-        "confirm_unstake": "Stake Çözmeyi Onayla",
-        "keep_staking": "Stake Etmeye Devam Et",
+        "warning_description": "Unstake etmek, şu anda stake edilmiş bakiyenizden %{exitFeePercentage}% ücret alır.",
         "unstake_failed_title": "Bahisi Çekme Başarısız",
         "unstake_failed_message": "RNBW'nizin stake'ini çözerken bir hata oluştu. Lütfen tekrar deneyin.",
         "unstake_title": "$%{symbol} Stake'ini Çöz",
-        "loyalty_progress": "Sadakat İlerlemesi",
         "receive": "Al",
         "total_return": "Toplam Getiri",
         "hold_to_unstake": "Stake'i Çözmek İçin Basılı Tutun",
