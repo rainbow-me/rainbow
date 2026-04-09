@@ -1668,7 +1668,12 @@
         "confirm_button_error_text": "ข้อผิดพลาดของราคาที่เสนอ",
         "quote_error": "􀇿 ไม่มีใบเสนอราคา",
         "insufficient_balance": "􀫲 เงินทุนไม่เพียงพอ",
-        "insufficient_gas": "แก๊สไม่เพียงพอ"
+        "insufficient_gas": "แก๊สไม่เพียงพอ",
+        "gas_sponsored": "ฟรี",
+        "invalid_route_recipient_error": "เส้นทางบริดจ์ไม่ได้กำหนดเป้าหมายไปยังบัญชีของคุณ โปรดลองอีกครั้ง",
+        "missing_recipient_error": "ขาดที่อยู่ผู้รับ",
+        "no_wallet_connected": "ไม่มีวอลเล็ตที่เชื่อมต่ออยู่",
+        "unknown_execution_error": "เกิดข้อผิดพลาดที่ไม่ทราบระหว่างประมวลผลการฝาก"
       },
       "withdraw": {
         "title": "ถอน",
@@ -3879,6 +3884,76 @@
       "claim_card": {
         "airdrop": "Airdrop",
         "rewards": "รางวัล"
+      },
+      "shared": {
+        "tier_label": "ระดับ %{tierName}",
+        "rewards": "รางวัล",
+        "loyalty_progress": "ความคืบหน้าความภักดี"
+      },
+      "membership_tier_card": {
+        "stake_to_next_tier": "สเตกเพื่อไปยังระดับถัดไป"
+      },
+      "membership_tiers_sheet": {
+        "stake_to_unlock": "สเตกเพื่อปลดล็อก"
+      },
+      "staking_card": {
+        "stake": "สเตก",
+        "enable_staking": "เปิดใช้งานการสเตก",
+        "buy_rnbw": "ซื้อ RNBW",
+        "unstake": "ถอนสเตก",
+        "available_to_stake": "พร้อมสำหรับการสเตก"
+      },
+      "staking_earnings_card": {
+        "total_earnings": "รายได้รวม",
+        "cashback": "เงินคืน",
+        "exit_rewards": "รางวัลเมื่อออก"
+      },
+      "unstake_penalty_recovery_card": {
+        "break_even_reached": "ถึงจุดคุ้มทุนแล้ว!",
+        "earned_prefix": "คุณได้รับ ",
+        "earned_middle": " จากพูล แค่อีก ",
+        "earned_suffix": " เพื่อไปถึงกำไรล้วนๆ"
+      }
+    },
+    "rnbw_staking": {
+      "deposit": {
+        "confirm_button": "กดค้างเพื่อสเตก",
+        "confirm_button_error": "ไม่สามารถสเตกได้",
+        "confirm_button_loading": "กำลังสเตก...",
+        "confirm_button_over_balance": "RNBW ไม่เพียงพอ",
+        "confirm_button_zero_amount": "ป้อนจำนวน",
+        "execution_error_title": "เกิดข้อผิดพลาดในการสเตก",
+        "insufficient_gas": "แก๊สไม่เพียงพอ",
+        "quote_error": "ไม่สามารถเตรียมการสเตกได้",
+        "receive": "รางวัลจะถูกรับโดยอัตโนมัติ",
+        "title": "สเตก $RNBW",
+        "minimum_amount": "ขั้นต่ำ 1 RNBW"
+      },
+      "learn_screen": {
+        "introducing": "เราขอแนะนำ",
+        "title": "กำลังวางเดิมทุน",
+        "description": "ล็อก $RNBW ของคุณเพื่อเข้าร่วมพูล อยู่ให้นานขึ้นเพื่อชดเชยค่าธรรมเนียมออกของคุณและรับส่วนแบ่งจากคนที่ออก",
+        "put_your_rnbw_to_work_title": "ให้ $RNBW ของคุณทำงาน",
+        "put_your_rnbw_to_work_subtitle": "สเตก RNBW ของคุณเพื่อล็อกตำแหน่งและเริ่มรับรายได้จากพูล",
+        "exit_fee_title": "ค่าธรรมเนียมออก %{exitFeePercentage}%",
+        "exit_fee_subtitle": "การถอนสเตกมีค่าธรรมเนียม %{exitFeePercentage}%",
+        "passive_income_title": "รายได้แบบพาสซีฟ",
+        "passive_income_subtitle": "รับประโยชน์จากทุกการออก ค่าธรรมเนียมออกจะถูกแจกจ่ายให้กับพูล อยู่ให้นานขึ้นเพื่อชดเชยค่าธรรมเนียมของคุณเองและไปถึงกำไรล้วนๆ",
+        "enable_staking": "เปิดใช้งานการสเตก"
+      },
+      "unstake_sheet": {
+        "exit_fee": "ค่าธรรมเนียมออก",
+        "warning_description": "การถอนสเตกจะคิดค่าธรรมเนียม %{exitFeePercentage}% จากยอดที่คุณสเตกไว้",
+        "confirm_unstake": "ยืนยันการถอนสเตก",
+        "keep_staking": "สเตกต่อไป",
+        "unstake_failed_title": "การถอนสินทรัพย์ล้มเหลว",
+        "unstake_failed_message": "เกิดข้อผิดพลาดขณะถอนสเตก RNBW ของคุณ โปรดลองอีกครั้ง",
+        "unstake_title": "ถอนสเตก $%{symbol}",
+        "loyalty_progress": "ความคืบหน้าความภักดี",
+        "receive": "รับ",
+        "total_return": "ผลตอบแทนรวม",
+        "hold_to_unstake": "กดค้างเพื่อถอนสเตก",
+        "unstaking": "กำลังถอนสเตก..."
       }
     },
     "wallet_error_sheet": {
