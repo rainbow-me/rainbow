@@ -1,11 +1,13 @@
+import { useEffect, useMemo, useState } from 'react';
+
+import { isEmpty } from 'lodash';
+import { type Address } from 'viem';
+
 import walletTypes from '@/helpers/walletTypes';
 import { type AllRainbowWallets } from '@/model/wallet';
 import { getWalletSummary } from '@/state/wallets/useWalletSummaryStore';
 import { useAccountAddress, useWallets } from '@/state/wallets/walletsStore';
 import isLowerCaseMatch from '@/utils/isLowerCaseMatch';
-import { isEmpty } from 'lodash';
-import { useEffect, useMemo, useState } from 'react';
-import { type Address } from 'viem';
 
 const getWalletForAddress = (wallets: AllRainbowWallets | null, address: string) => {
   return Object.values(wallets || {}).find(wallet => (wallet.addresses || []).some(addr => isLowerCaseMatch(addr.address, address)));

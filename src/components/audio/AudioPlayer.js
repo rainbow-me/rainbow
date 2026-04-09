@@ -1,9 +1,12 @@
 import React, { useEffect } from 'react';
 import { StyleSheet } from 'react-native';
+
 import { WebView } from 'react-native-webview';
-import Spinner from '../Spinner';
-import { Centered, FlexItem } from '../layout';
+
 import styled from '@/framework/ui/styled-thing';
+
+import { Centered, FlexItem } from '../layout';
+import Spinner from '../Spinner';
 
 const Container = styled(FlexItem)({
   backgroundColor: ({ theme: { colors } }) => colors.transparent,

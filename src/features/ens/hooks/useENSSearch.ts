@@ -1,7 +1,14 @@
+import { useCallback, useEffect, useMemo, useState } from 'react';
+
 import { useQuery } from '@tanstack/react-query';
 import { format } from 'date-fns';
-import { useCallback, useEffect, useMemo, useState } from 'react';
-import useENSLocalTransactions from './useENSLocalTransactions';
+
+import timeUnits from '@/references/time-units.json';
+import { userAssetsStoreManager } from '@/state/assets/userAssetsStoreManager';
+import { ChainId } from '@/state/backendNetworks/types';
+import { useAccountAddress } from '@/state/wallets/walletsStore';
+import ethereumUtils from '@/utils/ethereumUtils';
+
 import { fetchRegistrationDate } from '../utils/handlers';
 import {
   ENS_DOMAIN,
@@ -11,12 +18,8 @@ import {
   getNameExpires,
   getRentPrice,
 } from '../utils/helpers';
-import timeUnits from '@/references/time-units.json';
-import ethereumUtils from '@/utils/ethereumUtils';
 import { validateENS } from '../utils/records';
-import { ChainId } from '@/state/backendNetworks/types';
-import { useAccountAddress } from '@/state/wallets/walletsStore';
-import { userAssetsStoreManager } from '@/state/assets/userAssetsStoreManager';
+import useENSLocalTransactions from './useENSLocalTransactions';
 
 const formatTime = (timestamp: string, abbreviated = true) => {
   const style = abbreviated ? 'MMM d, y' : 'MMMM d, y';

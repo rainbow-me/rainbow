@@ -1,6 +1,21 @@
+import React, { Fragment, useCallback, useEffect, useMemo, useRef, useState, type ComponentProps } from 'react';
+import { ActivityIndicator, View } from 'react-native';
+
+import { type BigNumberish } from '@ethersproject/bignumber';
+import { type BytesLike } from '@ethersproject/bytes';
+import { type StaticJsonRpcProvider } from '@ethersproject/providers';
+import { useRoute, type RouteProp } from '@react-navigation/native';
+import { BigNumber } from 'bignumber.js';
+import { isEmpty } from 'lodash';
+import Animated, { useSharedValue, withSpring } from 'react-native-reanimated';
+import { useDispatch } from 'react-redux';
+
 import Divider from '@/components/Divider';
-import { type GasFeeType, GasFeeTypes, TransactionStatus } from '@/entities/transactions';
 import { type LegacyTransactionGasParamAmounts, type TransactionGasParamAmounts } from '@/entities/gas';
+import { GasFeeTypes, TransactionStatus, type GasFeeType } from '@/entities/transactions';
+import { removeRegistrationByName, saveCommitRegistrationParameters } from '@/features/ens/redux/registration';
+import styled from '@/framework/ui/styled-thing';
+import { opacity } from '@/framework/ui/utils/opacity';
 import { getProvider, isL2Chain, toHex } from '@/handlers/web3';
 import { WrappedAlert as Alert } from '@/helpers/alert';
 import { greaterThan } from '@/helpers/utilities';
@@ -14,33 +29,21 @@ import { useNavigation } from '@/navigation/Navigation';
 import Routes from '@/navigation/routesNames';
 import { type RootStackParamList } from '@/navigation/types';
 import { parseGasParamsForTransaction } from '@/parsers/gas';
-import { removeRegistrationByName, saveCommitRegistrationParameters } from '@/features/ens/redux/registration';
 import { updateGasFeeForSpeed } from '@/redux/gas';
 import ethUnits from '@/references/ethereum-units.json';
 import { ChainId } from '@/state/backendNetworks/types';
 import { updateTransaction } from '@/state/pendingTransactions';
 import { useAccountAddress, useIsHardwareWallet } from '@/state/wallets/walletsStore';
-import styled from '@/framework/ui/styled-thing';
 import { position } from '@/styles';
-import { type ThemeContextProps, useTheme } from '@/theme/ThemeContext';
+import { useTheme, type ThemeContextProps } from '@/theme/ThemeContext';
 import gasUtils from '@/utils/gas';
 import safeAreaInsetValues from '@/utils/safeAreaInsetValues';
-import { type BigNumberish } from '@ethersproject/bignumber';
-import { type BytesLike } from '@ethersproject/bytes';
-import { type StaticJsonRpcProvider } from '@ethersproject/providers';
-import { type RouteProp, useRoute } from '@react-navigation/native';
-import { BigNumber } from 'bignumber.js';
-import { isEmpty } from 'lodash';
-import React, { type ComponentProps, Fragment, useCallback, useEffect, useMemo, useRef, useState } from 'react';
-import { ActivityIndicator, View } from 'react-native';
-import Animated, { useSharedValue, withSpring } from 'react-native-reanimated';
-import { useDispatch } from 'react-redux';
-import Spinner from '../components/Spinner';
+
 import { GasSpeedButton } from '../components/gas';
 import { Centered, Column, Row } from '../components/layout';
 import { SheetActionButton, SheetActionButtonRow, SheetHandleFixedToTop, SheetKeyboardAnimation, SlackSheet } from '../components/sheet';
+import Spinner from '../components/Spinner';
 import { Emoji, Text } from '../components/text';
-import { opacity } from '@/framework/ui/utils/opacity';
 
 const { CUSTOM, URGENT } = gasUtils;
 

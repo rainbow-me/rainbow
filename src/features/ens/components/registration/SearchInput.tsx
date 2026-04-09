@@ -1,12 +1,15 @@
-import MaskedView from '@react-native-masked-view/masked-view';
 import React, { useMemo, useRef } from 'react';
 import { type TextInput, type TextInputProps } from 'react-native';
-import Spinner from '@/components/Spinner';
+
+import MaskedView from '@react-native-masked-view/masked-view';
+
 import { Input } from '@/components/inputs';
-import SearchInputGradientBackground from './SearchInputGradientBackground';
+import Spinner from '@/components/Spinner';
 import { Box, Column, Columns, Cover, Heading, Inset, useHeadingStyle } from '@/design-system';
 import useDimensions from '@/hooks/useDimensions';
 import useMagicAutofocus from '@/hooks/useMagicAutofocus';
+
+import SearchInputGradientBackground from './SearchInputGradientBackground';
 
 export type SearchInputProps = {
   isLoading?: boolean;

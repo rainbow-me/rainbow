@@ -1,9 +1,10 @@
 import React, { memo } from 'react';
 import { StyleSheet, View } from 'react-native';
+
 import { Text, TextShadow, useColorMode, useForegroundColor } from '@/design-system';
 import { IS_IOS } from '@/env';
-import { DEVICE_WIDTH } from '@/utils/deviceUtils';
 import { opacity } from '@/framework/ui/utils/opacity';
+import { DEVICE_WIDTH } from '@/utils/deviceUtils';
 
 export const RewardsActionButton = memo(function RewardsActionButton({
   borderRadius = 20,

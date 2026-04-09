@@ -1,26 +1,29 @@
-import { Draggable, DraggableGrid, type DraggableGridProps, type UniqueIdentifier } from '@/components/drag-and-drop';
-import { Box, HitSlop, Inline, Stack, Text, TextIcon } from '@/design-system';
 import React, { useCallback, useMemo } from 'react';
-import { BlurView } from 'react-native-blur-view';
-import { type AddressItem, AddressMenuAction, type AddressMenuActionData, PANEL_INSET_HORIZONTAL } from '../ChangeWalletSheet';
-import { AddressAvatar } from './AddressAvatar';
-import ButtonPressAnimation from '@/components/animations/ButtonPressAnimation';
-import { usePinnedWalletsStore } from '@/state/wallets/pinnedWalletsStore';
-import { SelectedAddressBadge } from './SelectedAddressBadge';
-import { JiggleAnimation } from '@/components/animations/JiggleAnimation';
-import { DropdownMenu, type MenuItem } from '@/components/DropdownMenu';
-import ConditionalWrap from 'conditional-wrap';
-import { address } from '@/utils/abbreviations';
-import { removeFirstEmojiFromString } from '@/helpers/emojiHandler';
-import { PANEL_WIDTH } from '@/components/SmoothPager/ListPanel';
-import { IS_INTERNAL, IS_IOS } from '@/env';
-import { DELEGATION, getExperimentalFlag } from '@/config/experimentalHooks';
-import { getRemoteConfig } from '@/model/remoteConfig';
-import { useTheme } from '@/theme/ThemeContext';
-import { triggerHaptics } from 'react-native-turbo-haptics';
 import { StyleSheet } from 'react-native';
-import { DelegationStatus, useDelegations, useDelegationDisabled } from '@rainbow-me/delegation';
+
+import ConditionalWrap from 'conditional-wrap';
+import { BlurView } from 'react-native-blur-view';
+import { triggerHaptics } from 'react-native-turbo-haptics';
 import type { Address } from 'viem';
+
+import ButtonPressAnimation from '@/components/animations/ButtonPressAnimation';
+import { JiggleAnimation } from '@/components/animations/JiggleAnimation';
+import { Draggable, DraggableGrid, type DraggableGridProps, type UniqueIdentifier } from '@/components/drag-and-drop';
+import { DropdownMenu, type MenuItem } from '@/components/DropdownMenu';
+import { PANEL_WIDTH } from '@/components/SmoothPager/ListPanel';
+import { DELEGATION, getExperimentalFlag } from '@/config/experimentalHooks';
+import { Box, HitSlop, Inline, Stack, Text, TextIcon } from '@/design-system';
+import { IS_INTERNAL, IS_IOS } from '@/env';
+import { removeFirstEmojiFromString } from '@/helpers/emojiHandler';
+import { getRemoteConfig } from '@/model/remoteConfig';
+import { usePinnedWalletsStore } from '@/state/wallets/pinnedWalletsStore';
+import { useTheme } from '@/theme/ThemeContext';
+import { address } from '@/utils/abbreviations';
+import { DelegationStatus, useDelegationDisabled, useDelegations } from '@rainbow-me/delegation';
+
+import { AddressMenuAction, PANEL_INSET_HORIZONTAL, type AddressItem, type AddressMenuActionData } from '../ChangeWalletSheet';
+import { AddressAvatar } from './AddressAvatar';
+import { SelectedAddressBadge } from './SelectedAddressBadge';
 
 const UNPIN_BADGE_SIZE = 28;
 const PINS_PER_ROW = 3;

@@ -1,10 +1,11 @@
-import * as i18n from '@/languages';
-import { Screens } from '@/state/performance/operations';
-import safeAreaInsetValues from '@/utils/safeAreaInsetValues';
 import { type TransitionConfig } from 'moti';
 import { Easing } from 'react-native-reanimated';
+
 import { type EventInfo } from '@/components/Transactions/types';
+import * as i18n from '@/languages';
+import { Screens } from '@/state/performance/operations';
 import { RequestSource } from '@/utils/requestNavigationHandlers';
+import safeAreaInsetValues from '@/utils/safeAreaInsetValues';
 
 export const SCREEN_BOTTOM_INSET = safeAreaInsetValues.bottom + 20;
 export const GAS_BUTTON_SPACE =

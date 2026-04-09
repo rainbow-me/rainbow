@@ -1,12 +1,12 @@
-import { rainbowFetch } from '@/framework/data/http/rainbowFetch';
-import { time } from '@/utils/time';
-import { createQueryStore } from '@/state/internal/createQueryStore';
-import { type RawPolymarketEvent, type PolymarketEvent, type PolymarketMarket } from '@/features/polymarket/types/polymarket-event';
-import { RainbowError } from '@/logger';
 import { POLYMARKET_GAMMA_API_URL } from '@/features/polymarket/constants';
-import { processRawPolymarketEvent } from '@/features/polymarket/utils/transforms';
 import { type PolymarketTeamInfo } from '@/features/polymarket/types';
+import { type PolymarketEvent, type PolymarketMarket, type RawPolymarketEvent } from '@/features/polymarket/types/polymarket-event';
 import { fetchTeamsForEvent } from '@/features/polymarket/utils/sports';
+import { processRawPolymarketEvent } from '@/features/polymarket/utils/transforms';
+import { rainbowFetch } from '@/framework/data/http/rainbowFetch';
+import { RainbowError } from '@/logger';
+import { createQueryStore } from '@/state/internal/createQueryStore';
+import { time } from '@/utils/time';
 
 type FetchParams = { eventId: string | null };
 

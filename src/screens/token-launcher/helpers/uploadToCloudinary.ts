@@ -1,4 +1,5 @@
 import { CLOUDINARY_CLOUD_NAME } from 'react-native-dotenv';
+
 import { CLOUDINARY_TOKEN_LAUNCHER_PRESET, CLOUDINARY_TOKEN_LAUNCHER_PRESET_GIFS } from '../constants';
 
 const imageMimeTypes: Record<string, string> = {

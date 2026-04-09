@@ -1,16 +1,18 @@
-import React, { createContext, type ReactNode, useContext } from 'react';
+import React, { createContext, useContext, type ReactNode } from 'react';
+
 import { type ExtendedAnimatedAssetWithColors } from '@/__swaps__/types/assets';
 import { type GasSpeed } from '@/__swaps__/types/gas';
 import { useCleanup } from '@/hooks/useCleanup';
 import { useStableValue } from '@/hooks/useStableValue';
 import { createStoreActions } from '@/state/internal/utils/createStoreActions';
-import { createDepositAmountStore } from '../stores/createAmountStore';
-import { computeMaxSwappableAmount, createDepositStore } from '../stores/createDepositStore';
-import { createDepositQuoteStore } from '../stores/createDepositQuoteStore';
-import { createDepositGasStores } from '../stores/createDepositGasStores';
-import { createAmountToReceiveStore } from '../stores/derived/createAmountToReceiveStore';
+
 import { useDepositController } from '../hooks/useDepositController';
 import { useDepositHandler } from '../hooks/useDepositHandler';
+import { createDepositAmountStore } from '../stores/createAmountStore';
+import { createDepositGasStores } from '../stores/createDepositGasStores';
+import { createDepositQuoteStore } from '../stores/createDepositQuoteStore';
+import { computeMaxSwappableAmount, createDepositStore } from '../stores/createDepositStore';
+import { createAmountToReceiveStore } from '../stores/derived/createAmountToReceiveStore';
 import { type DepositConfig, type DepositContextType, type FundingScreenTheme } from '../types';
 
 // ============ Context ======================================================= //

@@ -1,13 +1,14 @@
+import * as i18n from '@/languages';
 import { createDepositConfig } from '@/systems/funding/config';
 import { time } from '@/utils/time';
+
 import { RnbwStakingSubmitButton } from './components/RnbwStakingSubmitButton';
 import { RNBW_DECIMALS, RNBW_TOKEN_ADDRESS, STAKING_CHAIN_ID } from './constants';
+import { canUseSponsoredRnbwStaking } from './utils/canUseSponsoredRnbwStaking';
 import { estimateStakeGasLimit } from './utils/estimateStakeGasLimit';
 import { refreshStakingData } from './utils/refreshStakingData';
 import { stakeRnbw } from './utils/stakeRnbw';
-import { canUseSponsoredRnbwStaking } from './utils/canUseSponsoredRnbwStaking';
 import { buildSyntheticRnbwSourceAsset } from './utils/syntheticRnbwSourceAsset';
-import * as i18n from '@/languages';
 
 export const RNBW_STAKING_DEPOSIT_CONFIG = createDepositConfig({
   id: 'rnbwStakingDeposit',

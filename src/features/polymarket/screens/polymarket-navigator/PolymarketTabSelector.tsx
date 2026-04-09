@@ -1,29 +1,31 @@
 import React, { memo, useCallback } from 'react';
 import { StyleSheet, View } from 'react-native';
+
+import { LinearGradient } from 'expo-linear-gradient';
+import { BlurView } from 'react-native-blur-view';
 import Animated, {
-  type DerivedValue,
   runOnJS,
-  type SharedValue,
   useAnimatedStyle,
   useDerivedValue,
   useSharedValue,
   withSpring,
+  type DerivedValue,
+  type SharedValue,
 } from 'react-native-reanimated';
-import { LinearGradient } from 'expo-linear-gradient';
-import { BlurView } from 'react-native-blur-view';
-import { opacity } from '@/framework/ui/utils/opacity';
+
 import { SPRING_CONFIGS } from '@/components/animations/animationConfigs';
-import { THICKER_BORDER_WIDTH } from '@/styles/constants';
 import { GestureHandlerButton } from '@/components/buttons/GestureHandlerButton';
 import { AnimatedText, Box, useColorMode, useForegroundColor } from '@/design-system';
-import * as i18n from '@/languages';
 import { IS_IOS } from '@/env';
 import { InnerShadow } from '@/features/polymarket/components/InnerShadow';
+import { POLYMARKET_BACKGROUND_LIGHT } from '@/features/polymarket/constants';
 import { usePolymarketContext } from '@/features/polymarket/screens/polymarket-navigator/PolymarketContext';
 import { PolymarketNavigation, usePolymarketNavigationStore } from '@/features/polymarket/screens/polymarket-navigator/PolymarketNavigator';
+import { opacity } from '@/framework/ui/utils/opacity';
+import * as i18n from '@/languages';
 import Routes from '@/navigation/routesNames';
 import { useListen } from '@/state/internal/hooks/useListen';
-import { POLYMARKET_BACKGROUND_LIGHT } from '@/features/polymarket/constants';
+import { THICKER_BORDER_WIDTH } from '@/styles/constants';
 
 const TABS = Object.freeze({
   [Routes.POLYMARKET_BROWSE_EVENTS_SCREEN]: {

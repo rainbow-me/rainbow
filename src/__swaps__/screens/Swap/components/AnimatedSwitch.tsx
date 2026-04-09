@@ -1,11 +1,13 @@
 /* eslint-disable react/jsx-props-no-spreading */
 import React from 'react';
-import { AnimatedText, Bleed, Box, Inline, globalColors, useColorMode, useForegroundColor } from '@/design-system';
-import Animated, { type SharedValue, useAnimatedStyle, useDerivedValue, withSpring, withTiming } from 'react-native-reanimated';
-import { opacity } from '@/framework/ui/utils/opacity';
-import { type GestureHandlerButtonProps, GestureHandlerButton } from '@/components/buttons/GestureHandlerButton';
 import { StyleSheet } from 'react-native';
+
+import Animated, { useAnimatedStyle, useDerivedValue, withSpring, withTiming, type SharedValue } from 'react-native-reanimated';
+
 import { SPRING_CONFIGS, TIMING_CONFIGS } from '@/components/animations/animationConfigs';
+import { GestureHandlerButton, type GestureHandlerButtonProps } from '@/components/buttons/GestureHandlerButton';
+import { AnimatedText, Bleed, Box, globalColors, Inline, useColorMode, useForegroundColor } from '@/design-system';
+import { opacity } from '@/framework/ui/utils/opacity';
 
 type AnimatedSwitchProps = {
   onToggle: () => void;

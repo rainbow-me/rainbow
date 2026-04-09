@@ -1,6 +1,7 @@
-import { useAnimatedStyle, useSharedValue, withSpring } from 'react-native-reanimated';
 import { useCallback, useMemo, useRef, useState } from 'react';
 import { type LayoutChangeEvent } from 'react-native';
+
+import { useAnimatedStyle, useSharedValue, withSpring } from 'react-native-reanimated';
 
 export default ({ contentHeight }: { contentHeight: number }) => {
   const offsetButtonAnimation = useSharedValue(0);

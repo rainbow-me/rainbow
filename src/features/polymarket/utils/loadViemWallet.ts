@@ -1,14 +1,15 @@
+import { type Provider } from '@ethersproject/providers';
+import { createWalletClient, http, type Hex } from 'viem';
+import { privateKeyToAccount } from 'viem/accounts';
+
+import { LedgerSigner } from '@/handlers/LedgerSigner';
 import walletTypes from '@/helpers/walletTypes';
+import * as kc from '@/keychain';
 import { logger, RainbowError } from '@/logger';
 import { getHdPath, isHardwareWalletKey, loadPrivateKey, WalletLibraryType } from '@/model/wallet';
 import { useBackendNetworksStore } from '@/state/backendNetworks/backendNetworks';
 import { ChainId } from '@/state/backendNetworks/types';
 import { getWalletWithAccount } from '@/state/wallets/walletsStore';
-import { createWalletClient, type Hex, http } from 'viem';
-import { privateKeyToAccount } from 'viem/accounts';
-import * as kc from '@/keychain';
-import { LedgerSigner } from '@/handlers/LedgerSigner';
-import { type Provider } from '@ethersproject/providers';
 
 export async function loadViemWallet(address: Hex, provider: Provider) {
   const selectedWallet = getWalletWithAccount(address);

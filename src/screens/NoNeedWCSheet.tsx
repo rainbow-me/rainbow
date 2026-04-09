@@ -1,18 +1,21 @@
-import * as i18n from '@/languages';
 import React, { useCallback, useEffect } from 'react';
+
+import { useRoute, type RouteProp } from '@react-navigation/native';
+
+import { analytics } from '@/analytics';
+import { Box } from '@/design-system';
+import styled from '@/framework/ui/styled-thing';
+import { opacity } from '@/framework/ui/utils/opacity';
+import * as i18n from '@/languages';
+import type Routes from '@/navigation/routesNames';
+import { type RootStackParamList } from '@/navigation/types';
+import { useTheme } from '@/theme/ThemeContext';
+
 import { Centered } from '../components/layout';
 import { Sheet, SheetActionButton } from '../components/sheet';
 import { Text } from '../components/text';
 import { useNavigation } from '../navigation/Navigation';
-import styled from '@/framework/ui/styled-thing';
-import { useTheme } from '@/theme/ThemeContext';
 import { type Colors } from '../styles/colors';
-import { Box } from '@/design-system';
-import { type RouteProp, useRoute } from '@react-navigation/native';
-import { analytics } from '@/analytics';
-import { type RootStackParamList } from '@/navigation/types';
-import type Routes from '@/navigation/routesNames';
-import { opacity } from '@/framework/ui/utils/opacity';
 
 const BodyText = styled(Text).attrs(({ theme: { colors } }: { theme: { colors: Colors } }) => ({
   align: 'center',

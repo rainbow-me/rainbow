@@ -1,12 +1,14 @@
 import rudderClient from '@rudderstack/rudder-sdk-react-native';
 import * as DeviceInfo from 'react-native-device-info';
 import { REACT_NATIVE_RUDDERSTACK_WRITE_KEY, RUDDERSTACK_DATA_PLANE_URL } from 'react-native-dotenv';
-import { type EventProperties, event } from '@/analytics/event';
+
+import { event, type EventProperties } from '@/analytics/event';
 import { type UserProperties } from '@/analytics/userProperties';
 import { IS_ANDROID, IS_TEST } from '@/env';
 import { logger, RainbowError } from '@/logger';
 import type Routes from '@/navigation/routesNames';
 import { device } from '@/storage';
+
 import { type WalletContext } from './getWalletContext';
 
 type DefaultMetadata = {

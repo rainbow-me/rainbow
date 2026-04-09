@@ -1,10 +1,11 @@
 import React from 'react';
 import { Pressable, StyleSheet } from 'react-native';
+
 import Animated, { useDerivedValue } from 'react-native-reanimated';
 
 import { NavigationSteps, useSwapContext } from '@/__swaps__/screens/Swap/providers/swap-provider';
-import { opacity } from '@/framework/ui/utils/opacity';
 import ButtonPressAnimation from '@/components/animations/ButtonPressAnimation';
+import { GestureHandlerButton } from '@/components/buttons/GestureHandlerButton';
 import { ContactAvatar } from '@/components/contacts';
 import ImageAvatar from '@/components/contacts/ImageAvatar';
 import { Navbar } from '@/components/navbar/Navbar';
@@ -13,23 +14,23 @@ import {
   AnimatedText,
   Bleed,
   Box,
+  globalColors,
   IconContainer,
   Inset,
   Text,
   TextShadow,
-  globalColors,
   useColorMode,
   useForegroundColor,
 } from '@/design-system';
 import { IS_ANDROID, IS_IOS } from '@/env';
+import { opacity } from '@/framework/ui/utils/opacity';
 import * as i18n from '@/languages';
 import { useRemoteConfig } from '@/model/remoteConfig';
 import { useNavigation } from '@/navigation/Navigation';
 import Routes from '@/navigation/routesNames';
 import { useAccountProfileInfo } from '@/state/wallets/walletsStore';
-import safeAreaInsetValues from '@/utils/safeAreaInsetValues';
-import { GestureHandlerButton } from '@/components/buttons/GestureHandlerButton';
 import { THICK_BORDER_WIDTH } from '@/styles/constants';
+import safeAreaInsetValues from '@/utils/safeAreaInsetValues';
 
 const SWAP_TITLE_LABEL = i18n.t(i18n.l.swap.modal_types.swap);
 const BRIDGE_TITLE_LABEL = i18n.t(i18n.l.swap.modal_types.bridge);

@@ -1,22 +1,24 @@
-import * as i18n from '@/languages';
 import React, { useCallback, useMemo } from 'react';
 import { Keyboard, Share } from 'react-native';
-import { IS_ANDROID, IS_IOS } from '@/env';
+
 import { showDeleteContactActionSheet } from '@/components/contacts';
-import More from '../MoreButton';
 import ContextMenuButton from '@/components/native-context-menu/contextMenu';
+import { IS_ANDROID, IS_IOS } from '@/env';
 import useClipboard from '@/hooks/useClipboard';
 import useContacts from '@/hooks/useContacts';
 import useWatchWallet from '@/hooks/useWatchWallet';
-import { useSelectedWallet } from '@/state/wallets/walletsStore';
+import * as i18n from '@/languages';
 import { useNavigation } from '@/navigation/Navigation';
-import { RAINBOW_PROFILES_BASE_URL } from '@/references/constants';
 import Routes from '@/navigation/routesNames';
-import ethereumUtils from '@/utils/ethereumUtils';
-import isLowerCaseMatch from '@/utils/isLowerCaseMatch';
-import { formatAddressForDisplay } from '@/utils/abbreviations';
+import { RAINBOW_PROFILES_BASE_URL } from '@/references/constants';
 import { ChainId } from '@/state/backendNetworks/types';
 import { switchWallet } from '@/state/wallets/switchWallet';
+import { useSelectedWallet } from '@/state/wallets/walletsStore';
+import { formatAddressForDisplay } from '@/utils/abbreviations';
+import ethereumUtils from '@/utils/ethereumUtils';
+import isLowerCaseMatch from '@/utils/isLowerCaseMatch';
+
+import More from '../MoreButton';
 
 const ACTIONS = {
   ADD_CONTACT: 'add-contact',

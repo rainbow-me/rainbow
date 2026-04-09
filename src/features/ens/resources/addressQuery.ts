@@ -1,7 +1,7 @@
 import { useQuery } from '@tanstack/react-query';
 
-import { createQueryKey, queryClient, type QueryFunctionArgs } from '@/react-query';
 import { getProvider } from '@/handlers/web3';
+import { createQueryKey, queryClient, type QueryFunctionArgs } from '@/react-query';
 import { ChainId } from '@/state/backendNetworks/types';
 
 // Set a default stale time of 10 seconds so we don't over-fetch

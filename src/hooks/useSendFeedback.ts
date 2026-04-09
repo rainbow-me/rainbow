@@ -1,13 +1,16 @@
-import Clipboard from '@react-native-clipboard/clipboard';
-import * as DeviceInfo from 'react-native-device-info';
-import * as i18n from '@/languages';
 import { Linking } from 'react-native';
+
+import Clipboard from '@react-native-clipboard/clipboard';
+import { capitalize } from 'lodash';
+import * as DeviceInfo from 'react-native-device-info';
+
+import { IS_IOS } from '@/env';
+import * as i18n from '@/languages';
+import { getWalletAddresses, getWallets } from '@/state/wallets/walletsStore';
+import { device } from '@/storage';
+
 import { Alert } from '../components/alerts';
 import useAppVersion from './useAppVersion';
-import { IS_IOS } from '@/env';
-import { device } from '@/storage';
-import { getWalletAddresses, getWallets } from '@/state/wallets/walletsStore';
-import { capitalize } from 'lodash';
 
 const FeedbackEmailAddress = 'support@rainbow.me';
 const platform = IS_IOS ? 'iOS' : 'Android';

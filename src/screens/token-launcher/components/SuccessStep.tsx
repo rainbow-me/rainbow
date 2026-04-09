@@ -1,14 +1,17 @@
 import React, { useCallback, useEffect, useMemo } from 'react';
-import * as i18n from '@/languages';
-import { Box, Text, TextShadow } from '@/design-system';
-import { useTokenLauncherStore } from '../state/tokenLauncherStore';
-import { Canvas, LinearGradient, Path, vec, Skia, Group, BlurMask } from '@shopify/react-native-skia';
-import { TokenImageBadge } from './TokenImageBadge';
-import { useTokenLauncherContext } from '../context/TokenLauncherContext';
-import { Easing, useDerivedValue, withRepeat, withTiming, useSharedValue, runOnUI } from 'react-native-reanimated';
+
+import { BlurMask, Canvas, Group, LinearGradient, Path, Skia, vec } from '@shopify/react-native-skia';
 import FastImage from 'react-native-fast-image';
-import useDimensions from '@/hooks/useDimensions';
+import { Easing, runOnUI, useDerivedValue, useSharedValue, withRepeat, withTiming } from 'react-native-reanimated';
+
+import { Box, Text, TextShadow } from '@/design-system';
 import { type TextSize } from '@/design-system/components/Text/Text';
+import useDimensions from '@/hooks/useDimensions';
+import * as i18n from '@/languages';
+
+import { useTokenLauncherContext } from '../context/TokenLauncherContext';
+import { useTokenLauncherStore } from '../state/tokenLauncherStore';
+import { TokenImageBadge } from './TokenImageBadge';
 
 function Cone({ height, baseWidth, headWidth }: { height: number; baseWidth: number; headWidth: number }) {
   const path = Skia.Path.Make();

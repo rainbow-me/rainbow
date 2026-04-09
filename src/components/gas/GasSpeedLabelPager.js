@@ -1,13 +1,16 @@
-import { upperFirst } from 'lodash';
 import React from 'react';
+
+import { upperFirst } from 'lodash';
+
+import styled from '@/framework/ui/styled-thing';
+import { opacity } from '@/framework/ui/utils/opacity';
+import { margin, padding } from '@/styles';
+import magicMemo from '@/utils/magicMemo';
+
+import { GasSpeedEmoji } from '.';
 import ButtonPressAnimation from '../animations/ButtonPressAnimation';
 import { Row } from '../layout';
 import { Text } from '../text';
-import { GasSpeedEmoji } from '.';
-import styled from '@/framework/ui/styled-thing';
-import { margin, padding } from '@/styles';
-import { opacity } from '@/framework/ui/utils/opacity';
-import magicMemo from '@/utils/magicMemo';
 
 const SpeedButton = styled(ButtonPressAnimation).attrs({
   hapticType: 'impactHeavy',

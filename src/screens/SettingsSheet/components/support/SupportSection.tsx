@@ -1,17 +1,19 @@
 import React, { useMemo } from 'react';
-import { useNavigation } from '@/navigation/Navigation';
-import { Box, Stack, Text } from '@/design-system';
+
 import ButtonPressAnimation from '@/components/animations/ButtonPressAnimation';
+import { Box, Stack, Text } from '@/design-system';
+import { opacity } from '@/framework/ui/utils/opacity';
+import { useSendFeedback } from '@/hooks/useSendFeedback';
 import * as i18n from '@/languages';
+import { useNavigation } from '@/navigation/Navigation';
 import Routes from '@/navigation/routesNames';
 import { useTheme } from '@/theme/ThemeContext';
+import { openInBrowser } from '@/utils/openInBrowser';
+
+import { SettingsExternalURLs } from '../../constants';
 import Menu from '../Menu';
 import MenuContainer from '../MenuContainer';
 import MenuItem from '../MenuItem';
-import { SettingsExternalURLs } from '../../constants';
-import { openInBrowser } from '@/utils/openInBrowser';
-import { useSendFeedback } from '@/hooks/useSendFeedback';
-import { opacity } from '@/framework/ui/utils/opacity';
 
 export const SupportSection = () => {
   return (

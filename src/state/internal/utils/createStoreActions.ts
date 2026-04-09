@@ -1,4 +1,5 @@
 import { type StoreApi } from 'zustand';
+
 import { type InferStoreState } from '../types';
 
 type UnknownFunction = (...args: never[]) => unknown;

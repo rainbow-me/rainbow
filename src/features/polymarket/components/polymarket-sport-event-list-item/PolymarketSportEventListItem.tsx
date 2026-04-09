@@ -1,24 +1,26 @@
 import { memo, useCallback, useMemo } from 'react';
-import { type StyleProp, StyleSheet, View, type ViewStyle } from 'react-native';
+import { StyleSheet, View, type StyleProp, type ViewStyle } from 'react-native';
+
 import ConditionalWrap from 'conditional-wrap';
-import { IS_ANDROID, IS_IOS } from '@/env';
-import { opacity } from '@/framework/ui/utils/opacity';
+
 import ButtonPressAnimation from '@/components/animations/ButtonPressAnimation';
 import ShimmerAnimation from '@/components/animations/ShimmerAnimation';
 import { LiveTokenText } from '@/components/live-token-text/LiveTokenText';
 import { Text, TextShadow, useBackgroundColor, useColorMode, useForegroundColor } from '@/design-system';
+import { IS_ANDROID, IS_IOS } from '@/env';
+import { TeamLogo } from '@/features/polymarket/components/TeamLogo';
 import { usePolymarketLiveGame } from '@/features/polymarket/hooks/usePolymarketLiveGame';
 import { type PolymarketEvent, type PolymarketMarket } from '@/features/polymarket/types/polymarket-event';
+import { getOutcomeColor } from '@/features/polymarket/utils/getMarketColor';
 import { parsePeriod, parseScore, selectGameInfo, type PolymarketEventGameInfo } from '@/features/polymarket/utils/sports';
+import { buildEventBetGrid, formatOdds, type BetCellData } from '@/features/polymarket/utils/sportsEventBetData';
+import { getTeamDisplayInfo } from '@/features/polymarket/utils/sportsEventTeams';
+import { opacity } from '@/framework/ui/utils/opacity';
 import * as i18n from '@/languages';
 import Navigation from '@/navigation/Navigation';
 import Routes from '@/navigation/routesNames';
 import { getPolymarketTokenId } from '@/state/liveTokens/polymarketAdapter';
 import { formatTimestamp, toUnixTime } from '@/worklets/dates';
-import { buildEventBetGrid, formatOdds, type BetCellData } from '@/features/polymarket/utils/sportsEventBetData';
-import { getTeamDisplayInfo } from '@/features/polymarket/utils/sportsEventTeams';
-import { getOutcomeColor } from '@/features/polymarket/utils/getMarketColor';
-import { TeamLogo } from '@/features/polymarket/components/TeamLogo';
 
 const BET_ROW_HEIGHT = 38;
 const BET_ROW_WIDTH = 60;

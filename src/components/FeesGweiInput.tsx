@@ -1,13 +1,15 @@
 import React, { useCallback, useEffect, useRef, useState } from 'react';
+import { type TextInput } from 'react-native';
+
 import ReactNativeHapticFeedback from 'react-native-haptic-feedback';
+
 import ButtonPressAnimation from '@/components/animations/ButtonPressAnimation';
 import GweiInputPill from '@/components/GweiInputPill';
+import { Box, Inline, Text } from '@/design-system';
+import { IS_ANDROID } from '@/env';
 import { delay } from '@/helpers/utilities';
 import usePrevious from '@/hooks/usePrevious';
-import { type TextInput } from 'react-native';
-import { Box, Inline, Text } from '@/design-system';
 import { colors } from '@/styles';
-import { IS_ANDROID } from '@/env';
 
 const PLUS_ACTION_TYPE = 'plus';
 const MINUS_ACTION_TYPE = 'minus';

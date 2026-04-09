@@ -1,4 +1,5 @@
 import * as React from 'react';
+
 import Svg, { ClipPath, Defs, G, Path, type SvgProps } from 'react-native-svg';
 
 export const CameraMaskSvg = ({ ...props }: SvgProps) => (

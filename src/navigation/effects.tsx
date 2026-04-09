@@ -1,19 +1,21 @@
 import React from 'react';
 import { Animated, View } from 'react-native';
-import { type StackNavigationOptions, type TransitionPreset } from '@react-navigation/stack';
 
+import { type StackNavigationOptions, type TransitionPreset } from '@react-navigation/stack';
+import { initialWindowMetrics } from 'react-native-safe-area-context';
+
+import { EmojiAvatar, ProfileAvatarSize } from '@/components/asset-list/RecyclerAssetList2/profile-header/ProfileAvatarRow';
+import { HeaderHeightWithStatusBar } from '@/components/header';
+import AvatarCircle from '@/components/profile/AvatarCircle';
 import { IS_ANDROID } from '@/env';
+import { HARDWARE_WALLET_TX_NAVIGATOR_SHEET_HEIGHT } from '@/navigation/HardwareWalletTxNavigator';
+import Routes from '@/navigation/routesNames';
 import { lightModeThemeColors } from '@/styles';
 import colors from '@/theme/currentColors';
 import deviceUtils from '@/utils/deviceUtils';
 import safeAreaInsetValues from '@/utils/safeAreaInsetValues';
-import { HARDWARE_WALLET_TX_NAVIGATOR_SHEET_HEIGHT } from '@/navigation/HardwareWalletTxNavigator';
-import { HeaderHeightWithStatusBar } from '@/components/header';
-import AvatarCircle from '@/components/profile/AvatarCircle';
-import Routes from '@/navigation/routesNames';
-import { EmojiAvatar, ProfileAvatarSize } from '@/components/asset-list/RecyclerAssetList2/profile-header/ProfileAvatarRow';
+
 import { type BottomSheetNavigationOptions } from './bottom-sheet/types';
-import { initialWindowMetrics } from 'react-native-safe-area-context';
 
 const statusBarHeight = safeAreaInsetValues.top;
 export const sheetVerticalOffset = statusBarHeight;

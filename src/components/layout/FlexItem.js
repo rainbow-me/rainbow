@@ -1,4 +1,5 @@
 import { isUndefined } from 'lodash';
+
 import styled from '@/framework/ui/styled-thing';
 
 const FlexItem = styled.View(({ flex, grow, shrink }) => {

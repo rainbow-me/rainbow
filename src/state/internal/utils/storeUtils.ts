@@ -1,4 +1,5 @@
 import { type StoreApi } from 'zustand';
+
 import { type BaseRainbowStore, type DerivedStore, type PersistedRainbowStore, type WithGetSnapshot } from '../types';
 
 export function getStoreName(store: BaseRainbowStore<unknown>): string {

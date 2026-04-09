@@ -1,4 +1,5 @@
 import { useQuery } from '@tanstack/react-query';
+
 import type { NativeCurrencyKey } from '@/entities/nativeCurrencyTypes';
 import { metadataClient } from '@/graphql';
 import { type Token } from '@/graphql/__generated__/metadata';

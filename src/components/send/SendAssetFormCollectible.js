@@ -1,13 +1,16 @@
 import React, { useCallback, useMemo, useState } from 'react';
+
 import { LinearGradient } from 'expo-linear-gradient';
+
+import { IS_ANDROID } from '@/env';
+import styled from '@/framework/ui/styled-thing';
+import useDimensions from '@/hooks/useDimensions';
+import useImageMetadata from '@/hooks/useImageMetadata';
+import { padding, position } from '@/styles';
+
 import OpacityToggler from '../animations/OpacityToggler';
 import { UniqueTokenExpandedStateContent } from '../expanded-state/unique-token';
 import { Column } from '../layout';
-import useDimensions from '@/hooks/useDimensions';
-import useImageMetadata from '@/hooks/useImageMetadata';
-import styled from '@/framework/ui/styled-thing';
-import { padding, position } from '@/styles';
-import { IS_ANDROID } from '@/env';
 
 const defaultImageDimensions = { height: 512, width: 512 };
 

@@ -1,7 +1,7 @@
-import { device } from '@/storage';
 import Navigation from '@/navigation/Navigation';
 import Routes from '@/navigation/routesNames';
 import { type RootStackParamList } from '@/navigation/types';
+import { device } from '@/storage';
 
 export function navigateToPerps(params?: RootStackParamList[typeof Routes.PERPS_NAVIGATOR]) {
   // TODO: Not sure this is the best place to store this

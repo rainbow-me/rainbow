@@ -1,32 +1,35 @@
-import * as i18n from '@/languages';
-import { startCase } from 'lodash';
 import React, { useCallback, useMemo } from 'react';
 import { View } from 'react-native';
+
+import { startCase } from 'lodash';
 import URL from 'url-parse';
-import ButtonPressAnimation from '../../animations/ButtonPressAnimation';
-import saveToCameraRoll from './saveToCameraRoll';
+
+import { ContextCircleButton } from '@/components/context-menu';
+import { ImgixImage } from '@/components/images';
 import ContextMenuButton from '@/components/native-context-menu/contextMenu';
-import { Bleed, Column, Columns, Heading, Inline, Inset, type Space, Stack, Text } from '@/design-system';
+import { Bleed, Column, Columns, Heading, Inline, Inset, Stack, Text, type Space } from '@/design-system';
 import type { UniqueAsset } from '@/entities/uniqueAssets';
+import { IS_ANDROID, IS_IOS } from '@/env';
+import styled from '@/framework/ui/styled-thing';
+import { showActionSheetWithOptions } from '@/framework/ui/utils/actionsheet';
+import { buildUniqueTokenName } from '@/helpers/assets';
 import useClipboard from '@/hooks/useClipboard';
 import useDimensions from '@/hooks/useDimensions';
 import useHiddenTokens from '@/hooks/useHiddenTokens';
 import useShowcaseTokens from '@/hooks/useShowcaseTokens';
-import { ImgixImage } from '@/components/images';
+import * as i18n from '@/languages';
 import { useNavigation } from '@/navigation/Navigation';
-import styled from '@/framework/ui/styled-thing';
+import { refreshNFTContractMetadata, reportNFT } from '@/resources/nfts/simplehash';
+import { ChainId } from '@/state/backendNetworks/types';
 import { position } from '@/styles';
-import { showActionSheetWithOptions } from '@/framework/ui/utils/actionsheet';
 import ethereumUtils from '@/utils/ethereumUtils';
+import { getFullResUrl } from '@/utils/getFullResUrl';
 import isLowerCaseMatch from '@/utils/isLowerCaseMatch';
 import magicMemo from '@/utils/magicMemo';
-import { getFullResUrl } from '@/utils/getFullResUrl';
-import { refreshNFTContractMetadata, reportNFT } from '@/resources/nfts/simplehash';
-import { ContextCircleButton } from '@/components/context-menu';
-import { IS_ANDROID, IS_IOS } from '@/env';
-import { ChainId } from '@/state/backendNetworks/types';
 import { openInBrowser } from '@/utils/openInBrowser';
-import { buildUniqueTokenName } from '@/helpers/assets';
+
+import ButtonPressAnimation from '../../animations/ButtonPressAnimation';
+import saveToCameraRoll from './saveToCameraRoll';
 
 const AssetActionsEnum = {
   copyTokenID: 'copyTokenID',

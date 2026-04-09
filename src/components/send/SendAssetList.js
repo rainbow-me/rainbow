@@ -1,17 +1,20 @@
 import React, { Fragment } from 'react';
 import { LayoutAnimation } from 'react-native';
+
 import { View } from 'react-primitives';
 import { DataProvider, LayoutProvider, RecyclerListView } from 'recyclerlistview';
-import { buildCoinsList } from '../../helpers/assets';
+
+import Divider, { DividerSize } from '@/components/Divider';
+import styled from '@/framework/ui/styled-thing';
 import deviceUtils from '@/utils/deviceUtils';
 import safeAreaInsetValues from '@/utils/safeAreaInsetValues';
-import Divider, { DividerSize } from '@/components/Divider';
+
+import { buildCoinsList } from '../../helpers/assets';
 import FlyInAnimation from '../animations/FlyInAnimation';
 import { CoinDividerOpenButton } from '../coin-divider';
 import { CollectiblesSendRow, SendCoinRow } from '../coin-row';
 import { Centered } from '../layout';
 import TokenFamilyHeader from '../token-family/TokenFamilyHeader';
-import styled from '@/framework/ui/styled-thing';
 
 const dividerMargin = 5;
 const dividerHeight = DividerSize + dividerMargin * 4;

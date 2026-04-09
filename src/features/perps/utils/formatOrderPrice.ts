@@ -1,3 +1,4 @@
+import { MAX_DECIMALS_PERP, MAX_DECIMALS_SPOT, MAX_SIG_FIGS } from '@/features/perps/constants';
 import {
   isNumberStringWorklet,
   orderOfMagnitudeWorklet,
@@ -6,7 +7,6 @@ import {
   toFixedWorklet,
   trimTrailingZeros,
 } from '@/framework/core/safeMath';
-import { MAX_SIG_FIGS, MAX_DECIMALS_PERP, MAX_DECIMALS_SPOT } from '@/features/perps/constants';
 
 function isInteger(rawBigInt: bigint, decimalPlaces: number): boolean {
   'worklet';

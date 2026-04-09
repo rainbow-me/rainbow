@@ -1,10 +1,10 @@
-import { type RainbowTransaction, type NewTransaction } from '@/entities/transactions';
+import { useRainbowToastsStore } from '@/components/rainbow-toast/useRainbowToastsStore';
+import { type NewTransaction, type RainbowTransaction } from '@/entities/transactions';
 import { convertNewTransactionToRainbowTransaction } from '@/parsers/transactions';
 import { type ChainId } from '@/state/backendNetworks/types';
 import { createRainbowStore } from '@/state/internal/createRainbowStore';
-import { nonceActions } from '@/state/nonces';
-import { useRainbowToastsStore } from '@/components/rainbow-toast/useRainbowToastsStore';
 import { createStoreActions } from '@/state/internal/utils/createStoreActions';
+import { nonceActions } from '@/state/nonces';
 import { shallowEqual } from '@/worklets/comparisons';
 
 export type PendingTransactionsState = {

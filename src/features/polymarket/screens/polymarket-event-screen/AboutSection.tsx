@@ -1,19 +1,21 @@
+import { memo, useMemo } from 'react';
+
+import ConditionalWrap from 'conditional-wrap';
+import { format } from 'date-fns';
+
 import { getColorValueForThemeWorklet } from '@/__swaps__/utils/swaps';
-import { opacity } from '@/framework/ui/utils/opacity';
 import ButtonPressAnimation from '@/components/animations/ButtonPressAnimation';
 import { EasingGradient } from '@/components/easing-gradient/EasingGradient';
 import { Box, globalColors, Text, TextIcon, TextShadow, useColorMode } from '@/design-system';
 import { CATEGORIES } from '@/features/polymarket/constants';
-import * as i18n from '@/languages';
 import { type PolymarketEvent, type PolymarketMarketEvent } from '@/features/polymarket/types/polymarket-event';
+import { opacity } from '@/framework/ui/utils/opacity';
+import * as i18n from '@/languages';
 import Navigation from '@/navigation/Navigation';
-import { getSolidColorEquivalent } from '@/worklets/colors';
-import { format } from 'date-fns';
-import { memo, useMemo } from 'react';
 import Routes from '@/navigation/routesNames';
-import ConditionalWrap from 'conditional-wrap';
-import { openInBrowser } from '@/utils/openInBrowser';
 import { THICK_BORDER_WIDTH } from '@/styles/constants';
+import { openInBrowser } from '@/utils/openInBrowser';
+import { getSolidColorEquivalent } from '@/worklets/colors';
 
 export const AboutSection = memo(function AboutSection({
   event,

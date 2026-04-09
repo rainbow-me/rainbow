@@ -1,14 +1,17 @@
 /* eslint-disable no-nested-ternary */
-import MaskedView from '@react-native-masked-view/masked-view';
 import React from 'react';
 import { View } from 'react-native';
+
+import MaskedView from '@react-native-masked-view/masked-view';
 import RadialGradient from 'react-native-radial-gradient';
-import { darkModeThemeColors } from '../../../styles/colors';
-import { useTheme } from '../../../theme/ThemeContext';
-import RainbowButtonTypes from './RainbowButtonTypes';
+
 import styled from '@/framework/ui/styled-thing';
 import { margin } from '@/styles';
 import magicMemo from '@/utils/magicMemo';
+
+import { darkModeThemeColors } from '../../../styles/colors';
+import { useTheme } from '../../../theme/ThemeContext';
+import RainbowButtonTypes from './RainbowButtonTypes';
 
 const RainbowGradientColorsFactory = (darkMode: boolean, disabled: boolean) => ({
   inner: {

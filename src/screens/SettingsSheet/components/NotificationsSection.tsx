@@ -1,33 +1,39 @@
+import React, { useCallback, useEffect, useMemo, useState } from 'react';
+import { Alert, Linking, Switch } from 'react-native';
+
+import { useNetInfo } from '@react-native-community/netinfo';
+import { useFocusEffect } from '@react-navigation/native';
+import { checkNotifications, RESULTS } from 'react-native-permissions';
+
 import { Box } from '@/design-system';
 import { isTestnetChain } from '@/handlers/web3';
 import { removeFirstEmojiFromString, returnStringFirstEmoji } from '@/helpers/emojiHandler';
 import WalletTypes from '@/helpers/walletTypes';
 import useAccountSettings from '@/hooks/useAccountSettings';
 import useAppState from '@/hooks/useAppState';
+import * as i18n from '@/languages';
 import { type RainbowAccount } from '@/model/wallet';
 import { useNavigation } from '@/navigation/Navigation';
 import Routes from '@/navigation/routesNames';
 import { isNotificationPermissionGranted, requestNotificationPermission } from '@/notifications/permissions';
-import { useAllNotificationSettingsFromStorage, useWalletGroupNotificationSettings } from '@/notifications/settings/hooks';
 import { WalletNotificationRelationship } from '@/notifications/settings/constants';
-import type { WalletNotificationSettings } from '@/notifications/settings/types';
+import { useAllNotificationSettingsFromStorage, useWalletGroupNotificationSettings } from '@/notifications/settings/hooks';
 import { toggleGlobalNotificationTopic } from '@/notifications/settings/settings';
 import { getNotificationSettingsForWalletWithAddress, setAllGlobalNotificationSettingsToStorage } from '@/notifications/settings/storage';
-import { type GlobalNotificationTopics, type GlobalNotificationTopicType } from '@/notifications/settings/types';
-import { SettingsLoadingIndicator } from '@/screens/SettingsSheet/components/SettingsLoadingIndicator';
+import {
+  type GlobalNotificationTopics,
+  type GlobalNotificationTopicType,
+  type WalletNotificationSettings,
+} from '@/notifications/settings/types';
 import { showNotificationSubscriptionErrorAlert, showOfflineAlert } from '@/screens/SettingsSheet/components/notificationAlerts';
+import { SettingsLoadingIndicator } from '@/screens/SettingsSheet/components/SettingsLoadingIndicator';
+import { useWallets, useWalletsStore } from '@/state/wallets/walletsStore';
 import abbreviations from '@/utils/abbreviations';
 import deviceUtils from '@/utils/deviceUtils';
 import profileUtils from '@/utils/profileUtils';
-import { useNetInfo } from '@react-native-community/netinfo';
-import { useFocusEffect } from '@react-navigation/native';
-import * as i18n from '@/languages';
-import React, { useCallback, useEffect, useMemo, useState } from 'react';
-import { Alert, Linking, Switch } from 'react-native';
-import { checkNotifications, RESULTS } from 'react-native-permissions';
+
 import { ContactAvatar } from '../../../components/contacts';
 import ImageAvatar from '../../../components/contacts/ImageAvatar';
-import { useWallets, useWalletsStore } from '@/state/wallets/walletsStore';
 import Menu from './Menu';
 import MenuContainer from './MenuContainer';
 import MenuItem from './MenuItem';

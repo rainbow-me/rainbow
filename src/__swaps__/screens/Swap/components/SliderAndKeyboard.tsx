@@ -1,11 +1,13 @@
 import React from 'react';
+
 import { PanGestureHandler } from 'react-native-gesture-handler';
 import Animated from 'react-native-reanimated';
 
-import { useSwapContext } from '@/__swaps__/screens/Swap/providers/swap-provider';
-import { Box } from '@/design-system';
 import { SwapNumberPad } from '@/__swaps__/screens/Swap/components/SwapNumberPad';
 import { SwapSlider } from '@/__swaps__/screens/Swap/components/SwapSlider';
+import { useSwapContext } from '@/__swaps__/screens/Swap/providers/swap-provider';
+import { Box } from '@/design-system';
+
 import { BOTTOM_ACTION_BAR_HEIGHT } from '../constants';
 
 export function SliderAndKeyboard() {

@@ -1,4 +1,5 @@
 import { isString } from 'lodash';
+
 import { emojisByName } from './emojisByName';
 
 function normalizeName(name: string): string {

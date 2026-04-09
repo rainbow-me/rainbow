@@ -1,6 +1,8 @@
-import * as i18n from '@/languages';
 import { findKey, isObjectLike, isString } from 'lodash';
 import parseMilliseconds from 'parse-ms';
+
+import * as i18n from '@/languages';
+
 import { convertStringToNumber, omitBy } from './utilities';
 
 const buildLocalizedTimeUnitString = ({ plural, short, unit }: { plural: boolean; short: boolean; unit: string }) => {

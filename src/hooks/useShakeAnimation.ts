@@ -1,4 +1,5 @@
 import { useCallback } from 'react';
+
 import { useSharedValue, withSpring, type WithSpringConfig } from 'react-native-reanimated';
 
 const springConfig: WithSpringConfig = {

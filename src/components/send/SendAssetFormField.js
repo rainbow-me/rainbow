@@ -1,15 +1,18 @@
-import * as i18n from '@/languages';
 import React, { useCallback } from 'react';
+
 import RadialGradient from 'react-native-radial-gradient';
+
+import { analytics } from '@/analytics';
+import styled from '@/framework/ui/styled-thing';
+import { opacity } from '@/framework/ui/utils/opacity';
+import useDimensions from '@/hooks/useDimensions';
+import * as i18n from '@/languages';
 import { useTheme } from '@/theme/ThemeContext';
+
 import ButtonPressAnimation from '../animations/ButtonPressAnimation';
 import { BubbleField } from '../fields';
 import { Row, RowWithMargins } from '../layout';
 import { Text } from '../text';
-import { analytics } from '@/analytics';
-import useDimensions from '@/hooks/useDimensions';
-import styled from '@/framework/ui/styled-thing';
-import { opacity } from '@/framework/ui/utils/opacity';
 
 const GradientBackground = styled(RadialGradient).attrs(({ colorForAsset, theme: { colors }, width }) => {
   const FieldWidth = width - 38;

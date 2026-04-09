@@ -1,10 +1,12 @@
-import { type RnbwAirdropScene, RnbwAirdropScenes } from '@/features/rnbw-airdrop/screens/rnbw-airdrop-screen/constants/airdropScenes';
-import { useAirdropFlowStore } from '@/features/rnbw-airdrop/stores/airdropFlowStore';
-import { useStoreSharedValue } from '@/state/internal/hooks/useStoreSharedValue';
+import { memo, useMemo } from 'react';
+
 import { Blur, Canvas, LinearGradient, RoundedRect, vec } from '@shopify/react-native-skia';
 import { interpolate, interpolateColor, useAnimatedReaction, useDerivedValue, useSharedValue, withTiming } from 'react-native-reanimated';
-import { memo, useMemo } from 'react';
+
+import { RnbwAirdropScenes, type RnbwAirdropScene } from '@/features/rnbw-airdrop/screens/rnbw-airdrop-screen/constants/airdropScenes';
+import { useAirdropFlowStore } from '@/features/rnbw-airdrop/stores/airdropFlowStore';
 import useDimensions from '@/hooks/useDimensions';
+import { useStoreSharedValue } from '@/state/internal/hooks/useStoreSharedValue';
 import { time } from '@/utils/time';
 
 type GradientConfig = {

@@ -1,24 +1,26 @@
+import React, { useCallback, useMemo } from 'react';
+import { type GestureResponderEvent } from 'react-native';
+
+import { startCase } from 'lodash';
+import { type OnPressMenuItemEventObject } from 'react-native-ios-context-menu';
+
 import { BalancePill } from '@/__swaps__/screens/Swap/components/BalancePill';
 import { CoinRowButton } from '@/__swaps__/screens/Swap/components/CoinRowButton';
 import { type AddressOrEth, type ParsedSearchAsset, type UniqueId } from '@/__swaps__/types/assets';
-import { ChainId } from '@/state/backendNetworks/types';
 import { type CoinRowItem } from '@/__swaps__/types/search';
 import ButtonPressAnimation from '@/components/animations/ButtonPressAnimation';
+import RainbowCoinIcon from '@/components/coin-icon/RainbowCoinIcon';
 import { ContextMenuButton } from '@/components/context-menu';
 import { Box, Column, Columns, HitSlop, Inline, Text } from '@/design-system';
+import { showActionSheetWithOptions } from '@/framework/ui/utils/actionsheet';
 import { setClipboard } from '@/hooks/useClipboard';
 import * as i18n from '@/languages';
 import { ETH_ADDRESS } from '@/references/constants';
 import { toggleFavorite } from '@/resources/favorites';
 import { useUserAssetsStore } from '@/state/assets/userAssets';
-import { showActionSheetWithOptions } from '@/framework/ui/utils/actionsheet';
+import { ChainId } from '@/state/backendNetworks/types';
 import ethereumUtils from '@/utils/ethereumUtils';
 import haptics from '@/utils/haptics';
-import { startCase } from 'lodash';
-import React, { useCallback, useMemo } from 'react';
-import { type GestureResponderEvent } from 'react-native';
-import { type OnPressMenuItemEventObject } from 'react-native-ios-context-menu';
-import RainbowCoinIcon from '@/components/coin-icon/RainbowCoinIcon';
 
 export const COIN_ROW_WITH_PADDING_HEIGHT = 56;
 

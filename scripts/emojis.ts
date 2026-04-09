@@ -7,7 +7,9 @@
 import fs from 'node:fs';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
+
 import emojiDatasource from 'emoji-datasource';
+
 import { CATEGORY_ID_BY_CATEGORY_NAME } from '../src/framework/core/emoji/constants';
 
 type CategoryName = keyof typeof CATEGORY_ID_BY_CATEGORY_NAME;

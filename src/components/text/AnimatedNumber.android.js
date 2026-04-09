@@ -1,7 +1,9 @@
 import React, { useCallback } from 'react';
-import Text from './Text';
+
 import styled from '@/framework/ui/styled-thing';
 import { buildTextStyles } from '@/styles';
+
+import Text from './Text';
 
 const TextWithStyles = styled(Text)(buildTextStyles.object);
 

@@ -1,5 +1,6 @@
 import React from 'react';
 import { StyleSheet } from 'react-native';
+
 import ShadowView from './ShadowView';
 
 const buildShadow = (width = 0, height = 0, radius, shadowColor = '#000000', shadowOpacity = 0.4) => ({

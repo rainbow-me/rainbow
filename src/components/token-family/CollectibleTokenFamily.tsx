@@ -1,8 +1,10 @@
 import React, { useCallback } from 'react';
+
+import { useOpenCollectionsStore } from '@/state/nfts/openCollectionsStore';
+import { type ThemeContextProps } from '@/theme/ThemeContext';
+
 import { UniqueTokenRow } from '../unique-token';
 import TokenFamilyWrap from './TokenFamilyWrap';
-import { type ThemeContextProps } from '@/theme/ThemeContext';
-import { useOpenCollectionsStore } from '@/state/nfts/openCollectionsStore';
 
 type Props = {
   childrenAmount: number;

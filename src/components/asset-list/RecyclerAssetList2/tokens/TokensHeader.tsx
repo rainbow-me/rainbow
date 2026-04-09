@@ -1,6 +1,8 @@
 import React from 'react';
+
 import { Box, Text } from '@/design-system';
 import * as i18n from '@/languages';
+
 import { AssetListHeaderHeight } from '../../AssetListHeader';
 
 export const TokensHeader = React.memo(function TokensHeader() {

@@ -1,15 +1,17 @@
+import type { Signer } from '@ethersproject/abstract-signer';
 import { type StaticJsonRpcProvider } from '@ethersproject/providers';
-import { type BatchCall } from '@rainbow-me/delegation';
 import { createGelatoEvmRelayerClient } from '@gelatocloud/gasless/_dist/relayer/evm/index.js';
-import { erc20Abi, encodeFunctionData, type Address, type Hash, type Hex } from 'viem';
 import { GELATO_API_KEY } from 'react-native-dotenv';
+import { encodeFunctionData, erc20Abi, type Address, type Hash, type Hex } from 'viem';
+
 import { getProvider, toHex } from '@/handlers/web3';
 import { RainbowError } from '@/logger';
 import { time } from '@/utils/time';
-import { STAKING_CHAIN_ID, STAKING_CONTRACT_ADDRESS, STAKING_ABI, RNBW_TOKEN_ADDRESS } from '../constants';
+import { type BatchCall } from '@rainbow-me/delegation';
+
 import { prepareSignedBatchedCalldata } from '../../delegation/utils/signBatchedCall';
+import { RNBW_TOKEN_ADDRESS, STAKING_ABI, STAKING_CHAIN_ID, STAKING_CONTRACT_ADDRESS } from '../constants';
 import { checkIfStakingNeedsApproval } from './checkIfStakingNeedsApproval';
-import type { Signer } from '@ethersproject/abstract-signer';
 
 export async function stakeRnbwSponsored({
   signer,

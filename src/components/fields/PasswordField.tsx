@@ -1,16 +1,18 @@
 import React, { forwardRef, useCallback, type Ref } from 'react';
-import { type ThemeContextProps, useTheme } from '../../theme/ThemeContext';
-import { Input } from '../inputs';
+import { View, type TextInput, type TextInputProps } from 'react-native';
+
+import { Box } from '@/design-system';
+import { IS_ANDROID, IS_IOS } from '@/env';
+import styled from '@/framework/ui/styled-thing';
+import { opacity } from '@/framework/ui/utils/opacity';
 import { cloudBackupPasswordMinLength } from '@/handlers/cloudBackup';
 import useDimensions from '@/hooks/useDimensions';
-import styled from '@/framework/ui/styled-thing';
-import { padding, position } from '@/styles';
 import ShadowStack from '@/react-native-shadow-stack';
-import { Box } from '@/design-system';
-import { type TextInput, type TextInputProps, View } from 'react-native';
-import { IS_IOS, IS_ANDROID } from '@/env';
+import { padding, position } from '@/styles';
+
+import { useTheme, type ThemeContextProps } from '../../theme/ThemeContext';
 import { Icon } from '../icons';
-import { opacity } from '@/framework/ui/utils/opacity';
+import { Input } from '../inputs';
 
 const FieldAccessoryBadgeSize = 22;
 const FieldAccessoryBadgeWrapper = styled(ShadowStack).attrs(

@@ -1,10 +1,10 @@
 import { DEFAULT_PERP_DEX_IDS } from '@/features/perps/constants';
-import { type HyperliquidDex } from '@/features/perps/types';
-import { logger, ensureError, RainbowError } from '@/logger';
 import { infoClient } from '@/features/perps/services/hyperliquid-info-client';
+import { type HyperliquidDex } from '@/features/perps/types';
+import { ensureError, logger, RainbowError } from '@/logger';
 import { createQueryStore } from '@/state/internal/createQueryStore';
-import { time } from '@/utils/time';
 import { createStoreActions } from '@/state/internal/utils/createStoreActions';
+import { time } from '@/utils/time';
 
 type HyperliquidDexStoreData = {
   dexes: HyperliquidDex[];

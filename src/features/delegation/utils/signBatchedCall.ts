@@ -1,9 +1,10 @@
-import { type Address, type Hex, decodeFunctionResult, encodeAbiParameters, encodeFunctionData, zeroAddress, zeroHash } from 'viem';
-import { signTypedDataMessage } from '@/model/wallet';
-import { getProvider } from '@/handlers/web3';
-import { time } from '@/utils/time';
-import type { StaticJsonRpcProvider } from '@ethersproject/providers';
 import type { Signer } from '@ethersproject/abstract-signer';
+import type { StaticJsonRpcProvider } from '@ethersproject/providers';
+import { decodeFunctionResult, encodeAbiParameters, encodeFunctionData, zeroAddress, zeroHash, type Address, type Hex } from 'viem';
+
+import { getProvider } from '@/handlers/web3';
+import { signTypedDataMessage } from '@/model/wallet';
+import { time } from '@/utils/time';
 
 type BatchCallForSigning = {
   to: Address;

@@ -1,15 +1,18 @@
 import React from 'react';
 import { StyleSheet } from 'react-native';
+
 import Animated, { interpolate, useAnimatedStyle } from 'react-native-reanimated';
+
 import { globalColors, useColorMode } from '@/design-system';
 import { opacity } from '@/framework/ui/utils/opacity';
+import { THICK_BORDER_WIDTH } from '@/styles/constants';
 import { DEVICE_WIDTH } from '@/utils/deviceUtils';
+
 import { useBrowserContext } from './BrowserContext';
-import { ZOOMED_TAB_BORDER_RADIUS } from './Dimensions';
 import { RAINBOW_HOME } from './constants';
+import { ZOOMED_TAB_BORDER_RADIUS } from './Dimensions';
 import { TabViewGestureStates } from './types';
 import { getTabInfo } from './utils/getTabInfo';
-import { THICK_BORDER_WIDTH } from '@/styles/constants';
 
 export const WebViewBorder = ({ tabId }: { tabId: string }) => {
   const {

@@ -1,5 +1,6 @@
-import { type AppDispatch, type AppGetState } from './store';
 import { getTransactionSignatures, saveTransactionSignatures } from '@/handlers/localstorage/globalSettings';
+
+import { type AppDispatch, type AppGetState } from './store';
 
 export const TRANSACTION_SIGNATURES_ADD_NEW_TRANSACTION_SIGNATURE_SUCCESS =
   'transactionSignatures/DATA_ADD_NEW_TRANSACTION_SIGNATURE_SUCCESS';

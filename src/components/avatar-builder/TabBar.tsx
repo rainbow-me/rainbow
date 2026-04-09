@@ -1,13 +1,16 @@
 import React from 'react';
 import { StyleSheet } from 'react-native';
+
 import { LinearGradient } from 'expo-linear-gradient';
+
+import { opacity } from '@/framework/ui/utils/opacity';
+import { position } from '@/styles';
+import { useTheme } from '@/theme/ThemeContext';
+
 import ButtonPressAnimation from '../animations/ButtonPressAnimation';
 import { Icon } from '../icons';
 import { Categories } from './Categories';
 import { type EmojiCategory } from './types';
-import { position } from '@/styles';
-import { useTheme } from '@/theme/ThemeContext';
-import { opacity } from '@/framework/ui/utils/opacity';
 
 interface Props {
   categoryKeys: string[];

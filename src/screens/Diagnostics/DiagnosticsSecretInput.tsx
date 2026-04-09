@@ -1,13 +1,15 @@
-import { useTheme } from '@/theme/ThemeContext';
 import React, { useCallback } from 'react';
+import { TextInput } from 'react-native';
+
+import Clipboard from '@react-native-clipboard/clipboard';
+
+import ButtonPressAnimation from '@/components/animations/ButtonPressAnimation';
+import { Row } from '@/components/layout';
+import { Text } from '@/components/text';
 import { WrappedAlert as Alert } from '@/helpers/alert';
 import * as i18n from '@/languages';
-import Clipboard from '@react-native-clipboard/clipboard';
+import { useTheme } from '@/theme/ThemeContext';
 import haptics from '@/utils/haptics';
-import { Row } from '@/components/layout';
-import { TextInput } from 'react-native';
-import ButtonPressAnimation from '@/components/animations/ButtonPressAnimation';
-import { Text } from '@/components/text';
 
 export const DiagnosticsSecretInput = ({ value, color }: { value: string; color: string }) => {
   const { colors } = useTheme();

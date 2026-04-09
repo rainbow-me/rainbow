@@ -1,17 +1,19 @@
+import { InteractionManager } from 'react-native';
+
 import isEmpty from 'lodash/isEmpty';
+
 import {
   DEFAULT_ENABLED_TOPIC_SETTINGS,
-  WalletNotificationRelationship,
   WALLET_GROUPS_STORAGE_KEY,
+  WalletNotificationRelationship,
 } from '@/notifications/settings/constants';
-import { type AddressWithRelationship, type WalletNotificationSettings } from '@/notifications/settings/types';
 import { publishAndSaveNotificationSettings } from '@/notifications/settings/settings';
 import {
   getAllGlobalNotificationSettingsFromStorage,
   getAllWalletNotificationSettingsFromStorage,
   notificationSettingsStorage,
 } from '@/notifications/settings/storage';
-import { InteractionManager } from 'react-native';
+import { type AddressWithRelationship, type WalletNotificationSettings } from '@/notifications/settings/types';
 
 /**
  Checks if group notification settings are present in storage

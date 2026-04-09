@@ -1,38 +1,41 @@
 /* eslint-disable no-nested-ternary */
+import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
+import { InteractionManager, Keyboard, View } from 'react-native';
+
 import AnimateNumber from '@bankify/react-native-animate-number';
-import * as i18n from '@/languages';
 import { isEmpty, isNaN, isNil, noop } from 'lodash';
 import makeColorMoreChill from 'make-color-more-chill';
 import { AnimatePresence, MotiView } from 'moti';
-import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
-import { InteractionManager, Keyboard, View } from 'react-native';
 import { Easing } from 'react-native-reanimated';
-import { darkModeThemeColors } from '../../styles/colors';
-import ButtonPressAnimation from '../animations/ButtonPressAnimation';
+
+import { type GasSpeed } from '@/__swaps__/types/gas';
 import { ChainImage } from '@/components/coin-icon/ChainImage';
-import { Centered, Column, Row } from '../layout';
-import { Text } from '../text';
-import { GasSpeedLabelPager } from '.';
 import ContextMenuButton from '@/components/native-context-menu/contextMenu';
+import type { ParsedAddressAsset } from '@/entities/tokens';
+import { IS_ANDROID } from '@/env';
+import styled from '@/framework/ui/styled-thing';
+import { opacity } from '@/framework/ui/utils/opacity';
 import { isL2Chain } from '@/handlers/web3';
 import { add, convertAmountToNativeDisplayWorklet, greaterThan, toFixedDecimals } from '@/helpers/utilities';
 import useColorForAsset from '@/hooks/useColorForAsset';
 import useGas from '@/hooks/useGas';
 import usePrevious from '@/hooks/usePrevious';
+import * as i18n from '@/languages';
 import { useNavigation } from '@/navigation/Navigation';
 import Routes from '@/navigation/routesNames';
-import styled from '@/framework/ui/styled-thing';
-import { fonts, fontWithWidth, margin, padding } from '@/styles';
-import gasUtils from '@/utils/gas';
-import { IS_ANDROID } from '@/env';
-import { ContextMenu } from '../context-menu';
-import { ChainId } from '@/state/backendNetworks/types';
-import { useBackendNetworksStore } from '@/state/backendNetworks/backendNetworks';
-import { type ThemeContextProps, useTheme } from '@/theme/ThemeContext';
-import type { ParsedAddressAsset } from '@/entities/tokens';
-import { type GasSpeed } from '@/__swaps__/types/gas';
 import { userAssetsStoreManager } from '@/state/assets/userAssetsStoreManager';
-import { opacity } from '@/framework/ui/utils/opacity';
+import { useBackendNetworksStore } from '@/state/backendNetworks/backendNetworks';
+import { ChainId } from '@/state/backendNetworks/types';
+import { fonts, fontWithWidth, margin, padding } from '@/styles';
+import { useTheme, type ThemeContextProps } from '@/theme/ThemeContext';
+import gasUtils from '@/utils/gas';
+
+import { GasSpeedLabelPager } from '.';
+import { darkModeThemeColors } from '../../styles/colors';
+import ButtonPressAnimation from '../animations/ButtonPressAnimation';
+import { ContextMenu } from '../context-menu';
+import { Centered, Column, Row } from '../layout';
+import { Text } from '../text';
 
 const { GAS_EMOJIS, GAS_ICONS, GasSpeedOrder, CUSTOM, URGENT, NORMAL, FAST, getGasLabel } = gasUtils;
 

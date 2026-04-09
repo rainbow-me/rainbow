@@ -1,12 +1,14 @@
 import React, { useCallback, useMemo } from 'react';
-import { UniqueTokenCard } from '../../unique-token';
+
+import useExperimentalFlag, { NFTS_ENABLED } from '@/config/experimentalHooks';
 import { Box, type BoxProps } from '@/design-system';
 import type { UniqueAsset } from '@/entities/uniqueAssets';
 import useCollectible from '@/hooks/useCollectible';
+import { useRemoteConfig } from '@/model/remoteConfig';
 import Navigation from '@/navigation/Navigation';
 import Routes from '@/navigation/routesNames';
-import { useRemoteConfig } from '@/model/remoteConfig';
-import useExperimentalFlag, { NFTS_ENABLED } from '@/config/experimentalHooks';
+
+import { UniqueTokenCard } from '../../unique-token';
 
 export default React.memo(function LegacyWrappedNFT({
   onPress,

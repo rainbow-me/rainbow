@@ -1,7 +1,18 @@
-import { useRoute } from '@react-navigation/native';
-import * as i18n from '@/languages';
 import React, { useCallback, useEffect, useRef, useState } from 'react';
 import { Keyboard } from 'react-native';
+
+import { useRoute } from '@react-navigation/native';
+
+import { ImgixImage } from '@/components/images';
+import styled from '@/framework/ui/styled-thing';
+import { WrappedAlert as Alert } from '@/helpers/alert';
+import { useBlockBackButton } from '@/hooks/useBlockBackButton';
+import useDimensions from '@/hooks/useDimensions';
+import useShakeAnimation from '@/hooks/useShakeAnimation';
+import * as i18n from '@/languages';
+import { padding } from '@/styles';
+import haptics from '@/utils/haptics';
+
 import RainbowLogo from '../assets/rainbows/light.png';
 import { Centered, Column, ColumnWithMargins } from '../components/layout';
 import { Numpad, PinValue } from '../components/numpad';
@@ -13,14 +24,6 @@ import {
   savePinAuthAttemptsLeft,
 } from '../handlers/localstorage/globalSettings';
 import { useNavigation } from '../navigation/Navigation';
-import { WrappedAlert as Alert } from '@/helpers/alert';
-import useDimensions from '@/hooks/useDimensions';
-import useShakeAnimation from '@/hooks/useShakeAnimation';
-import { useBlockBackButton } from '@/hooks/useBlockBackButton';
-import { ImgixImage } from '@/components/images';
-import styled from '@/framework/ui/styled-thing';
-import { padding } from '@/styles';
-import haptics from '@/utils/haptics';
 
 const Logo = styled(ImgixImage).attrs({
   source: RainbowLogo,

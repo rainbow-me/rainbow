@@ -1,19 +1,22 @@
 import React, { memo } from 'react';
 import { StyleSheet, type StyleProp, type ViewStyle } from 'react-native';
+
+import chroma from 'chroma-js';
 import Animated, { FadeIn, FadeOut, LinearTransition } from 'react-native-reanimated';
-import { type TextProps } from '@/design-system';
-import { GestureHandlerButton } from '@/components/buttons/GestureHandlerButton';
-import { useHoldToActivate } from '@/components/buttons/useHoldToActivate';
-import { HoldToActivateProgress } from '@/components/buttons/HoldToActivateProgress';
+
+import { SPRING_CONFIGS } from '@/components/animations/animationConfigs';
 import { useBiometryIconString } from '@/components/buttons/BiometricButtonContent';
+import { GestureHandlerButton } from '@/components/buttons/GestureHandlerButton';
+import { HoldToActivateProgress } from '@/components/buttons/HoldToActivateProgress';
+import { useHoldToActivate } from '@/components/buttons/useHoldToActivate';
 import { LedgerIcon } from '@/components/icons/svg/LedgerIcon';
+import { type TextProps } from '@/design-system';
 import { IS_ANDROID } from '@/env';
+import { LoadingSpinner } from '@/framework/ui/components/LoadingSpinner';
 import { useWalletsStore } from '@/state/wallets/walletsStore';
 import { time } from '@/utils/time';
-import { RnbwButtonSurface, RnbwButtonText, RNBW_BUTTON_CONFIG } from './RnbwButtonSurface';
-import { LoadingSpinner } from '@/framework/ui/components/LoadingSpinner';
-import { SPRING_CONFIGS } from '@/components/animations/animationConfigs';
-import chroma from 'chroma-js';
+
+import { RNBW_BUTTON_CONFIG, RnbwButtonSurface, RnbwButtonText } from './RnbwButtonSurface';
 
 const LAYOUT_ANIMATION_CONFIG = SPRING_CONFIGS.snappierSpringConfig;
 const LAYOUT_ANIMATION = LinearTransition.springify()

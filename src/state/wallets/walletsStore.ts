@@ -1,41 +1,43 @@
+import { captureMessage } from '@sentry/react-native';
+import { dequal } from 'dequal';
+import { toChecksumAddress } from 'ethereumjs-util';
+import { type Address } from 'viem';
+
+import { fetchENSAvatarWithRetry } from '@/features/ens/hooks/useENSAvatar';
 import { ensureValidHex, isValidHex } from '@/handlers/web3';
 import { removeFirstEmojiFromString, returnStringFirstEmoji } from '@/helpers/emojiHandler';
 import { getConsistentArray } from '@/helpers/getConsistentArray';
 import WalletTypes from '@/helpers/walletTypes';
-import { fetchENSAvatarWithRetry } from '@/features/ens/hooks/useENSAvatar';
+import * as kc from '@/keychain';
 import { ensureError, logger, RainbowError } from '@/logger';
 import { parseTimestampFromBackupFile } from '@/model/backup';
-import * as kc from '@/keychain';
 import { PreferenceActionType, setPreference } from '@/model/preferences';
-import Routes from '@/navigation/routesNames';
-import Navigation from '@/navigation/Navigation';
 import {
-  type AllRainbowWallets,
   checkWalletsDamagedState,
   cleanUpWalletKeys,
   generateAccount,
   getAllWallets,
   getSelectedWallet as getSelectedWalletFromKeychain,
   loadAddress,
-  type RainbowAccount,
-  type RainbowWallet,
   resetSelectedWallet as resetSelectedWalletInKeychain,
   saveAddress,
   saveAllWallets,
   setSelectedWallet as setSelectedWalletInKeychain,
+  type AllRainbowWallets,
+  type RainbowAccount,
+  type RainbowWallet,
 } from '@/model/wallet';
+import Navigation from '@/navigation/Navigation';
+import Routes from '@/navigation/routesNames';
 import { lightModeThemeColors } from '@/styles';
 import { useTheme } from '@/theme/ThemeContext';
 import isLowerCaseMatch from '@/utils/isLowerCaseMatch';
-import { time } from '@/utils/time';
-import watchingAlert from '@/utils/watchingAlert';
 import { didShowWalletErrorSheetKey } from '@/utils/keychainConstants';
 import { addressHashedColorIndex, addressHashedEmoji, fetchReverseRecordWithRetry, isValidImagePath } from '@/utils/profileUtils';
+import { time } from '@/utils/time';
+import watchingAlert from '@/utils/watchingAlert';
 import { shallowEqual } from '@/worklets/comparisons';
-import { captureMessage } from '@sentry/react-native';
-import { dequal } from 'dequal';
-import { toChecksumAddress } from 'ethereumjs-util';
-import { type Address } from 'viem';
+
 import { createRainbowStore } from '../internal/createRainbowStore';
 
 interface AccountProfileInfo {

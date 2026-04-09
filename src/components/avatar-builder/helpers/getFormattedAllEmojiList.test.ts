@@ -1,5 +1,6 @@
 import { describe, expect, test } from '@jest/globals';
 import emoji from 'emoji-datasource';
+
 import { Categories } from '../Categories';
 import getFormattedAllEmojiList, {
   type AllEmojiContentEntry,

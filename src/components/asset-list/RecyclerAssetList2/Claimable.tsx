@@ -1,15 +1,17 @@
+import React, { memo, useMemo } from 'react';
+
+import { FasterImageView } from '@candlefinance/faster-image';
+
 import { analytics } from '@/analytics';
 import ButtonPressAnimation from '@/components/animations/ButtonPressAnimation';
 import { ChainImage } from '@/components/coin-icon/ChainImage';
 import { Box, Inline, Stack, Text } from '@/design-system';
+import Navigation from '@/navigation/Navigation';
 import Routes from '@/navigation/routesNames';
 import { type Claimable as ClaimableType } from '@/resources/addys/claimables/types';
 import { getClaimableName, isRainbowEthRewards } from '@/resources/addys/claimables/utils';
 import { ChainId } from '@/state/backendNetworks/types';
 import deviceUtils, { DEVICE_WIDTH } from '@/utils/deviceUtils';
-import { FasterImageView } from '@candlefinance/faster-image';
-import React, { memo, useMemo } from 'react';
-import Navigation from '@/navigation/Navigation';
 
 const RAINBOW_ICON_URL = 'https://rainbowme-res.cloudinary.com/image/upload/v1694722625/dapps/rainbow-icon-large.png';
 const avgCharWidth = 7;

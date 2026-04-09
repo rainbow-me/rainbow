@@ -1,4 +1,5 @@
 import React, { memo } from 'react';
+
 import { POLYMARKET_ACCENT_COLOR, POLYMARKET_BACKGROUND_DARK, POLYMARKET_BACKGROUND_LIGHT } from '@/features/polymarket/constants';
 import { POLYMARKET_WITHDRAWAL_CONFIG } from '@/features/polymarket/withdrawalConfig';
 import { WithdrawalScreen } from '@/systems/funding/components/WithdrawalScreen';

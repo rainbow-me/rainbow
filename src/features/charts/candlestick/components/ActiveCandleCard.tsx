@@ -1,27 +1,30 @@
-import React, { type ComponentType, type ReactElement, type ReactNode, memo } from 'react';
+import React, { memo, type ComponentType, type ReactElement, type ReactNode } from 'react';
 import { StyleSheet, View } from 'react-native';
+
 import Animated, {
-  type SharedValue,
-  useDerivedValue,
   useAnimatedStyle,
+  useDerivedValue,
   withSpring,
   withTiming,
   type DerivedValue,
+  type SharedValue,
 } from 'react-native-reanimated';
+
+import { addCommasToNumber } from '@/__swaps__/utils/swaps';
 import { SPRING_CONFIGS, TIMING_CONFIGS } from '@/components/animations/animationConfigs';
-import { AnimatedText, type AnimatedTextProps, Box, type BoxProps, Text, type TextProps, TextShadow, useColorMode } from '@/design-system';
+import { AnimatedText, Box, Text, TextShadow, useColorMode, type AnimatedTextProps, type BoxProps, type TextProps } from '@/design-system';
 import { foregroundColors, globalColors } from '@/design-system/color/palettes';
 import type { NativeCurrencyKey } from '@/entities/nativeCurrencyTypes';
 import { IS_IOS } from '@/env';
+import { opacity } from '@/framework/ui/utils/opacity';
 import { formatAssetPrice } from '@/helpers/formatAssetPrice';
 import { abbreviateNumberWorklet } from '@/helpers/utilities';
 import * as i18n from '@/languages';
 import { supportedCurrencies as supportedNativeCurrencies, type SupportedCurrencyKey } from '@/references/supportedCurrencies';
-import { addCommasToNumber } from '@/__swaps__/utils/swaps';
-import { opacity } from '@/framework/ui/utils/opacity';
 import { DEVICE_WIDTH } from '@/utils/deviceUtils';
 import { getSolidColorEquivalent } from '@/worklets/colors';
-import { type FormatTimestampOptions, formatTimestamp } from '@/worklets/dates';
+import { formatTimestamp, type FormatTimestampOptions } from '@/worklets/dates';
+
 import { type Bar } from '../types';
 
 // ============ Types ========================================================== //

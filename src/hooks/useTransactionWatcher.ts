@@ -1,6 +1,7 @@
 import { useCallback, useEffect, useRef } from 'react';
+
 import { type RainbowTransaction } from '@/entities/transactions';
-import { RainbowError, logger } from '@/logger';
+import { logger, RainbowError } from '@/logger';
 import { type MinedTransactionWithPolling } from '@/state/minedTransactions/minedTransactions';
 import { time } from '@/utils/time';
 

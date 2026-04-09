@@ -1,31 +1,32 @@
+import type { NativeCurrencyKey } from '@/entities/nativeCurrencyTypes';
+import { convertAmountToNativeDisplay } from '@/helpers/utilities';
+
 import {
-  type RainbowPositions,
-  type RainbowPosition,
-  type RainbowUnderlyingAsset,
+  type PositionsTotals,
+  type RainbowBorrow,
   type RainbowDeposit,
   type RainbowPool,
-  type RainbowStake,
-  type RainbowBorrow,
+  type RainbowPosition,
+  type RainbowPositions,
   type RainbowReward,
-  type PositionsTotals,
+  type RainbowStake,
+  type RainbowUnderlyingAsset,
 } from '../../types';
 import {
   DetailType,
-  type ListPositionsResponse,
-  type Position,
-  type PortfolioItem,
-  type PositionToken,
-  type ExtendedStats,
   type EnhancedStats,
+  type ExtendedStats,
+  type ListPositionsResponse,
+  type PortfolioItem,
+  type Position,
+  type PositionToken,
 } from '../../types/generated/positions/positions';
 import type { PositionsParams } from '../fetcher';
 import { shouldFilterPortfolioItem, shouldFilterPosition, shouldFilterUnderlyingAsset } from './filter';
 import { sortPositions } from './sort';
 import { normalizeDappName } from './utils/dapp';
-import { isConcentratedLiquidityProtocol, calculateLiquidityRangeStatus, calculateLiquidityAllocation } from './utils/lp';
 import { normalizeDate, normalizeDateTime } from './utils/date';
-import { convertAmountToNativeDisplay } from '@/helpers/utilities';
-import type { NativeCurrencyKey } from '@/entities/nativeCurrencyTypes';
+import { calculateLiquidityAllocation, calculateLiquidityRangeStatus, isConcentratedLiquidityProtocol } from './utils/lp';
 
 // ============ Helpers ===================================================== //
 

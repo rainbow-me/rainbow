@@ -1,10 +1,11 @@
 import { memo } from 'react';
+
 import { Box, Separator, Text, useColorMode } from '@/design-system';
-import { useRnbwStakingEarnings } from '@/features/rnbw-staking/stores/derived/useRnbwStakingEarnings';
-import { useRnbwStakingPositionPnl } from '@/features/rnbw-staking/stores/derived/useRnbwStakingPositionPnl';
-import { RNBW_SYMBOL } from '@/features/rnbw-rewards/constants';
 import { ProgressMeter } from '@/features/rnbw-membership/components/ProgressMeter';
 import { MembershipCard } from '@/features/rnbw-membership/screens/rnbw-membership-screen/components/MembershipCard';
+import { RNBW_SYMBOL } from '@/features/rnbw-rewards/constants';
+import { useRnbwStakingEarnings } from '@/features/rnbw-staking/stores/derived/useRnbwStakingEarnings';
+import { useRnbwStakingPositionPnl } from '@/features/rnbw-staking/stores/derived/useRnbwStakingPositionPnl';
 import * as i18n from '@/languages';
 
 export const RnbwUnstakePenaltyRecoveryCard = memo(function RnbwUnstakePenaltyRecoveryCard() {

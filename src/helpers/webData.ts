@@ -1,8 +1,9 @@
-import { getFirstEmoji, getValidatedEmoji } from './emojiHandler';
-import { getPreference, PreferenceActionType, setPreference } from '../model/preferences';
 import WalletTypes from '@/helpers/walletTypes';
 import { logger, RainbowError } from '@/logger';
 import { getWalletWithAccount } from '@/state/wallets/walletsStore';
+
+import { getPreference, PreferenceActionType, setPreference } from '../model/preferences';
+import { getFirstEmoji, getValidatedEmoji } from './emojiHandler';
 
 export const getWebProfile = async (address: string) => {
   if (!address) return null;

@@ -1,12 +1,23 @@
+import path from 'path';
+
+import { captureException } from '@sentry/react-native';
+import { findKey, isEmpty, isNumber, keys } from 'lodash';
+import uniq from 'lodash/uniq';
+import FastImage from 'react-native-fast-image';
+import RNFS from 'react-native-fs';
+import { createMMKV } from 'react-native-mmkv';
+
 import { type UniqueId } from '@/__swaps__/types/assets';
-import { type UnlockableAppIconKey, unlockableAppIcons } from '@/features/app-icon/models/appIcons';
-import type { EthereumAddress } from '@/entities/wallet';
 import type { RainbowToken } from '@/entities/tokens';
+import type { EthereumAddress } from '@/entities/wallet';
+import { IS_IOS } from '@/env';
+import { unlockableAppIcons, type UnlockableAppIconKey } from '@/features/app-icon/models/appIcons';
 import { unlockableAppIconStorage } from '@/features/app-icon/utils/unlockableAppIconCheck';
 import { getAssets, getHiddenCoins, getPinnedCoins, saveHiddenCoins, savePinnedCoins } from '@/handlers/localstorage/accountLocal';
 import { getContacts, saveContacts } from '@/handlers/localstorage/contacts';
 import { resolveNameOrAddress } from '@/handlers/web3';
 import { removeFirstEmojiFromString, returnStringFirstEmoji } from '@/helpers/emojiHandler';
+import * as kc from '@/keychain';
 import { logger, RainbowError } from '@/logger';
 import { queryClient } from '@/react-query';
 import { clearReactQueryCache } from '@/react-query/reactQueryUtils';
@@ -19,14 +30,7 @@ import { swapsStore } from '@/state/swaps/swapsStore';
 import { getSelectedWallet, getWallets, setSelectedWallet, updateWallets } from '@/state/wallets/walletsStore';
 import ethereumUtils, { getAddressAndChainIdFromUniqueId, getUniqueId, getUniqueIdNetwork } from '@/utils/ethereumUtils';
 import profileUtils from '@/utils/profileUtils';
-import * as kc from '@/keychain';
-import { captureException } from '@sentry/react-native';
-import { findKey, isEmpty, isNumber, keys } from 'lodash';
-import uniq from 'lodash/uniq';
-import path from 'path';
-import FastImage from 'react-native-fast-image';
-import RNFS from 'react-native-fs';
-import { createMMKV } from 'react-native-mmkv';
+
 import { deprecatedRemoveLocal, getGlobal } from '../handlers/localstorage/common';
 import { getNativeCurrency, IMAGE_METADATA } from '../handlers/localstorage/globalSettings';
 import { getMigrationVersion, setMigrationVersion } from '../handlers/localstorage/migrations';
@@ -51,11 +55,10 @@ import {
   EncryptionType,
   getAllWallets,
   loadAddress,
+  saveAddress,
   type RainbowAccount,
   type RainbowWallet,
-  saveAddress,
 } from './wallet';
-import { IS_IOS } from '@/env';
 
 export default async function runMigrations() {
   // get current version

@@ -1,16 +1,19 @@
-import { format } from 'date-fns';
-import * as i18n from '@/languages';
 import React, { useMemo } from 'react';
 import { ScrollView } from 'react-native';
+
+import { format } from 'date-fns';
 import { LinearGradient } from 'expo-linear-gradient';
+
 import ButtonPressAnimation from '@/components/animations/ButtonPressAnimation';
 import { Icon } from '@/components/icons';
 import Skeleton from '@/components/skeleton/Skeleton';
 import { Bleed, Box, Inline, Inset, selectTextSizes, Text, useForegroundColor } from '@/design-system';
+import * as i18n from '@/languages';
+import { useTheme } from '@/theme/ThemeContext';
+
+import useENSRecordDisplayProperties from '../../hooks/useENSRecordDisplayProperties';
 import type { Records } from '../../types/registration';
 import { deprecatedTextRecordFields, ENS_RECORDS } from '../../utils/helpers';
-import useENSRecordDisplayProperties from '../../hooks/useENSRecordDisplayProperties';
-import { useTheme } from '@/theme/ThemeContext';
 
 const getRecordType = (recordKey: string) => {
   switch (recordKey) {

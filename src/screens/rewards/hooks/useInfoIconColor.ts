@@ -1,5 +1,6 @@
-import { useTheme } from '@/theme/ThemeContext';
 import { useMemo } from 'react';
+
+import { useTheme } from '@/theme/ThemeContext';
 
 export function useInfoIconColor() {
   const { isDarkMode } = useTheme();

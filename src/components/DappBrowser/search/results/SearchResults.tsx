@@ -1,29 +1,32 @@
 import React, { useCallback } from 'react';
 import { StyleSheet } from 'react-native';
+
 import { Directions, Gesture, GestureDetector } from 'react-native-gesture-handler';
 import Animated, {
   Easing,
   runOnJS,
-  type SharedValue,
   useAnimatedReaction,
   useAnimatedScrollHandler,
   useAnimatedStyle,
   withSpring,
+  type SharedValue,
 } from 'react-native-reanimated';
-import ButtonPressAnimation from '@/components/animations/ButtonPressAnimation';
+
 import { SPRING_CONFIGS } from '@/components/animations/animationConfigs';
+import ButtonPressAnimation from '@/components/animations/ButtonPressAnimation';
 import { EasingGradient } from '@/components/easing-gradient/EasingGradient';
 import { Bleed, Box, Inline, Inset, Stack, Text, TextIcon, useColorMode, useForegroundColor } from '@/design-system';
 import * as i18n from '@/languages';
-import { type Dapp, useBrowserDappsStore } from '@/resources/metadata/dapps';
+import { useBrowserDappsStore, type Dapp } from '@/resources/metadata/dapps';
+import { THICK_BORDER_WIDTH } from '@/styles/constants';
 import deviceUtils, { DEVICE_HEIGHT, DEVICE_WIDTH } from '@/utils/deviceUtils';
+
 import { useBrowserContext } from '../../BrowserContext';
-import { SEARCH_BAR_HEIGHT } from '../../Dimensions';
 import { HOMEPAGE_BACKGROUND_COLOR_DARK, HOMEPAGE_BACKGROUND_COLOR_LIGHT } from '../../constants';
+import { SEARCH_BAR_HEIGHT } from '../../Dimensions';
 import { isValidURLWorklet } from '../../utils';
 import { useSearchContext } from '../SearchContext';
 import { GoogleSearchResult, SearchResult } from './SearchResult';
-import { THICK_BORDER_WIDTH } from '@/styles/constants';
 
 const search = (query: string, dapps: Dapp[], numberOfResults = 4): Dapp[] => {
   'worklet';

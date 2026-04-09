@@ -1,6 +1,7 @@
-import { IS_TEST } from '@/env';
 import { useEffect, useState } from 'react';
 import { LayoutAnimation } from 'react-native';
+
+import { IS_TEST } from '@/env';
 
 export default function (value: any, property = LayoutAnimation.Properties.opacity) {
   const [delayedValue, setValue] = useState(value);

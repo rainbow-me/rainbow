@@ -1,7 +1,8 @@
+import { useQuery, type QueryFunction } from '@tanstack/react-query';
+
 import { metadataClient } from '@/graphql';
 import { DAppRankingPeriod, DAppStatus, type TrendingDAppsQuery } from '@/graphql/__generated__/metadata';
 import { createQueryKey, type QueryConfigWithSelect } from '@/react-query';
-import { type QueryFunction, useQuery } from '@tanstack/react-query';
 
 const trendingDAppsQueryKey = ({ period }: { period: DAppRankingPeriod }) =>
   createQueryKey('trendingDApps', { period }, { persisterVersion: 1 });

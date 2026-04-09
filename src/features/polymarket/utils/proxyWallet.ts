@@ -1,7 +1,7 @@
 import { type Signer } from '@ethersproject/abstract-signer';
 import { OperationType, RelayClient, RelayerTransactionState, type SafeTransaction } from '@polymarket/builder-relayer-client';
-import { ChainId } from '@rainbow-me/swaps';
 import { ethers, Wallet } from 'ethers';
+
 import {
   BUILDER_CONFIG,
   POLYGON_USDC_ADDRESS,
@@ -12,10 +12,12 @@ import {
   POLYMARKET_RELAYER_PROXY_URL,
 } from '@/features/polymarket/constants';
 import { getPolymarketRelayClient, usePolymarketClients } from '@/features/polymarket/stores/derived/usePolymarketClients';
-import { erc1155Interface, erc20Interface } from '@/features/polymarket/utils/erc20Interface';
+import { erc20Interface, erc1155Interface } from '@/features/polymarket/utils/erc20Interface';
 import { getProvider } from '@/handlers/web3';
 import { logger, RainbowError } from '@/logger';
 import erc20ABI from '@/references/erc20-abi.json';
+import { ChainId } from '@rainbow-me/swaps';
+
 import { awaitPolygonConfirmation } from './confirmation';
 
 // ============================================================================

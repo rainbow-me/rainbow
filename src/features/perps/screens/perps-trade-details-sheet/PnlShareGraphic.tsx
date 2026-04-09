@@ -4,45 +4,48 @@ import {
   ImageBackground,
   PixelRatio,
   StyleSheet,
-  View,
   Text,
+  View,
   type ImageSourcePropType,
   type NativeScrollEvent,
   type NativeSyntheticEvent,
 } from 'react-native';
+
+import { LinearGradient } from 'expo-linear-gradient';
 import { ScrollView } from 'react-native-gesture-handler';
-import { Box, globalColors } from '@/design-system';
-import { IS_ANDROID } from '@/env';
-import { fonts } from '@/design-system/typography/typography';
 import { captureRef } from 'react-native-view-shot';
+
+import rainbowPlainLogo from '@/assets/rainbows/plain.png';
+import rainbowTextLogo from '@/assets/rainbowTextLogo.png';
+import { PANEL_WIDTH } from '@/components/PanelSheet/PanelSheet';
+import { Box, globalColors } from '@/design-system';
+import { fonts } from '@/design-system/typography/typography';
+import { IS_ANDROID } from '@/env';
+import { PERPS_COLORS } from '@/features/perps/constants';
+import { useHyperliquidMarketsStore } from '@/features/perps/stores/hyperliquidMarketsStore';
+import { type HlTrade } from '@/features/perps/types';
+import { calculateTradePnlPercentage } from '@/features/perps/utils/calculateTradePnlPercentage';
+import { formatPerpAssetPrice } from '@/features/perps/utils/formatPerpsAssetPrice';
+import { extractBaseSymbol } from '@/features/perps/utils/hyperliquidSymbols';
+import { InnerShadow } from '@/features/polymarket/components/InnerShadow';
+import { opacity } from '@/framework/ui/utils/opacity';
+import * as i18n from '@/languages';
+import { THICK_BORDER_WIDTH } from '@/styles/constants';
+
 import greenArrowsBackground from '../../assets/pnl-share/green-arrows-background.png';
-import redArrowsBackground from '../../assets/pnl-share/red-arrows-background.png';
-import profitCharacter1 from '../../assets/pnl-share/profit-character-1.png';
-import profitCharacter2 from '../../assets/pnl-share/profit-character-2.png';
-import profitCharacter3 from '../../assets/pnl-share/profit-character-3.png';
-import profitCharacter4 from '../../assets/pnl-share/profit-character-4.png';
-import profitCharacter5 from '../../assets/pnl-share/profit-character-5.png';
-import profitCharacter6 from '../../assets/pnl-share/profit-character-6.png';
 import lossCharacter1 from '../../assets/pnl-share/loss-character-1.png';
 import lossCharacter2 from '../../assets/pnl-share/loss-character-2.png';
 import lossCharacter3 from '../../assets/pnl-share/loss-character-3.png';
 import lossCharacter4 from '../../assets/pnl-share/loss-character-4.png';
 import lossCharacter5 from '../../assets/pnl-share/loss-character-5.png';
 import lossCharacter6 from '../../assets/pnl-share/loss-character-6.png';
-import * as i18n from '@/languages';
-import { opacity } from '@/framework/ui/utils/opacity';
-import { THICK_BORDER_WIDTH } from '@/styles/constants';
-import { PERPS_COLORS } from '@/features/perps/constants';
-import { PANEL_WIDTH } from '@/components/PanelSheet/PanelSheet';
-import { extractBaseSymbol } from '@/features/perps/utils/hyperliquidSymbols';
-import { formatPerpAssetPrice } from '@/features/perps/utils/formatPerpsAssetPrice';
-import { calculateTradePnlPercentage } from '@/features/perps/utils/calculateTradePnlPercentage';
-import { useHyperliquidMarketsStore } from '@/features/perps/stores/hyperliquidMarketsStore';
-import { type HlTrade } from '@/features/perps/types';
-import { LinearGradient } from 'expo-linear-gradient';
-import { InnerShadow } from '@/features/polymarket/components/InnerShadow';
-import rainbowTextLogo from '@/assets/rainbowTextLogo.png';
-import rainbowPlainLogo from '@/assets/rainbows/plain.png';
+import profitCharacter1 from '../../assets/pnl-share/profit-character-1.png';
+import profitCharacter2 from '../../assets/pnl-share/profit-character-2.png';
+import profitCharacter3 from '../../assets/pnl-share/profit-character-3.png';
+import profitCharacter4 from '../../assets/pnl-share/profit-character-4.png';
+import profitCharacter5 from '../../assets/pnl-share/profit-character-5.png';
+import profitCharacter6 from '../../assets/pnl-share/profit-character-6.png';
+import redArrowsBackground from '../../assets/pnl-share/red-arrows-background.png';
 
 const ASPECT_RATIO = 16 / 9;
 const DESIGN_REFERENCE_WIDTH = 366;

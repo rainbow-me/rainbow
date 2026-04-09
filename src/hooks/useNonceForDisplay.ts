@@ -1,7 +1,8 @@
 import { useEffect, useState } from 'react';
-import { getNextNonce } from '@/state/nonces';
-import { type ChainId } from '@/state/backendNetworks/types';
+
 import { logger, RainbowError } from '@/logger';
+import { type ChainId } from '@/state/backendNetworks/types';
+import { getNextNonce } from '@/state/nonces';
 
 type UseNonceParams = {
   isMessageRequest: boolean;

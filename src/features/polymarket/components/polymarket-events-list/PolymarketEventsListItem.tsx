@@ -1,26 +1,28 @@
 import { memo, useMemo } from 'react';
-import { type StyleProp, StyleSheet, View, type ViewStyle } from 'react-native';
+import { StyleSheet, View, type StyleProp, type ViewStyle } from 'react-native';
+
 import { LinearGradient } from 'expo-linear-gradient';
+
 import { getColorValueForThemeWorklet } from '@/__swaps__/utils/swaps';
-import { opacity } from '@/framework/ui/utils/opacity';
 import ButtonPressAnimation from '@/components/animations/ButtonPressAnimation';
 import ShimmerAnimation from '@/components/animations/ShimmerAnimation';
 import { GradientBorderView } from '@/components/gradient-border/GradientBorderView';
 import ImgixImage from '@/components/images/ImgixImage';
 import { globalColors, Separator, Text, useBackgroundColor, useColorMode } from '@/design-system';
-import * as i18n from '@/languages';
+import { POLYMARKET_SPORTS_MARKET_TYPE } from '@/features/polymarket/constants';
 // import {
 //   polymarketRecommendationsActions,
 //   usePolymarketRecommendationsStore,
 // } from '@/features/polymarket/stores/polymarketRecommendationsStore';
 import { type PolymarketEvent, type PolymarketMarket } from '@/features/polymarket/types/polymarket-event';
+import { roundWorklet, toPercentageWorklet } from '@/framework/core/safeMath';
+import { opacity } from '@/framework/ui/utils/opacity';
+import * as i18n from '@/languages';
 import Navigation from '@/navigation/Navigation';
 import Routes from '@/navigation/routesNames';
-import { roundWorklet, toPercentageWorklet } from '@/framework/core/safeMath';
+import { THICK_BORDER_WIDTH } from '@/styles/constants';
 import { deepFreeze } from '@/utils/deepFreeze';
 import { createOpacityPalette } from '@/worklets/colors';
-import { POLYMARKET_SPORTS_MARKET_TYPE } from '@/features/polymarket/constants';
-import { THICK_BORDER_WIDTH } from '@/styles/constants';
 
 export const HEIGHT = 224;
 

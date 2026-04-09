@@ -1,7 +1,8 @@
 import { parseAbi, type Address } from 'viem';
+
+import { convertRawAmountToDecimalFormat } from '@/helpers/utilities';
 import { ChainId } from '@/state/backendNetworks/types';
 import { getUniqueId } from '@/utils/ethereumUtils';
-import { convertRawAmountToDecimalFormat } from '@/helpers/utilities';
 
 export const RNBW_TOKEN_ADDRESS: Address = '0xa53887f7e7c1bf5010b8627f1c1ba94fe7a5d6e0';
 export const RNBW_CHAIN_ID = ChainId.base;

@@ -1,16 +1,19 @@
-import React, { createContext, type Dispatch, type SetStateAction, useContext, useState } from 'react';
-import { type Claimable, type ClaimResponse, type SponsoredClaimable } from '@/resources/addys/claimables/types';
-import { logger, RainbowError } from '@/logger';
-import { getProvider } from '@/handlers/web3';
-import haptics from '@/utils/haptics';
-import { getAddysHttpClient } from '@/resources/addys/client';
+import React, { createContext, useContext, useState, type Dispatch, type SetStateAction } from 'react';
+
 import { useMutation } from '@tanstack/react-query';
-import { loadWallet } from '@/model/wallet';
-import { type ClaimStatus } from '../../shared/types';
-import { analytics } from '@/analytics';
 import { ADDYS_BASE_URL } from 'react-native-dotenv';
+
+import { analytics } from '@/analytics';
+import { getProvider } from '@/handlers/web3';
+import { logger, RainbowError } from '@/logger';
+import { loadWallet } from '@/model/wallet';
+import { type Claimable, type ClaimResponse, type SponsoredClaimable } from '@/resources/addys/claimables/types';
+import { getAddysHttpClient } from '@/resources/addys/client';
 import { useClaimablesStore } from '@/state/claimables/claimables';
 import { useAccountAddress } from '@/state/wallets/walletsStore';
+import haptics from '@/utils/haptics';
+
+import { type ClaimStatus } from '../../shared/types';
 
 enum ErrorMessages {
   CLAIM_API_CALL_FAILED = 'Failed to execute sponsored claim api call',

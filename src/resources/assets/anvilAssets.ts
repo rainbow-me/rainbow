@@ -1,15 +1,16 @@
+import { AddressZero } from '@ethersproject/constants';
 import { Contract } from '@ethersproject/contracts';
+
+import { type AddressOrEth, type UniqueId, type ZerionAsset } from '@/__swaps__/types/assets';
 import { getProvider } from '@/handlers/web3';
+import { logger, RainbowError } from '@/logger';
 import balanceCheckerContractAbi from '@/references/balances-checker-abi.json';
 import type chainAssets from '@/references/chain-assets.json';
-import erc20ABI from '@/references/erc20-abi.json';
 import { ETH_ADDRESS } from '@/references/constants';
-import { logger, RainbowError } from '@/logger';
-import { type AddressOrEth, type UniqueId, type ZerionAsset } from '@/__swaps__/types/assets';
-import { AddressZero } from '@ethersproject/constants';
+import erc20ABI from '@/references/erc20-abi.json';
 import chainAssetsByChainId from '@/references/testnet-assets-by-chain';
-import { ChainId, ChainName } from '@/state/backendNetworks/types';
 import { useBackendNetworksStore } from '@/state/backendNetworks/backendNetworks';
+import { ChainId, ChainName } from '@/state/backendNetworks/types';
 import { useConnectedToAnvilStore } from '@/state/connectedToAnvil';
 
 const fetchAnvilBalancesWithBalanceChecker = async (

@@ -1,10 +1,13 @@
 import React, { forwardRef, useCallback, useImperativeHandle, useRef } from 'react';
 import { type TextInput } from 'react-native';
-import { type SharedValue, runOnUI, useAnimatedStyle, useDerivedValue, useSharedValue, withTiming } from 'react-native-reanimated';
+
+import { runOnUI, useAnimatedStyle, useDerivedValue, useSharedValue, withTiming, type SharedValue } from 'react-native-reanimated';
+
 import { TIMING_CONFIGS } from '@/components/animations/animationConfigs';
-import { HiddenNativeInput } from './HiddenNativeInput';
+import { useTextStyle, type TextProps } from '@/design-system';
+
 import { CurrencyDisplay } from './CurrencyDisplay';
-import { type TextProps, useTextStyle } from '@/design-system';
+import { HiddenNativeInput } from './HiddenNativeInput';
 
 export type CurrencyInputProps = Omit<TextProps, 'color' | 'children'> & {
   initialValue: string;

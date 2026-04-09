@@ -1,26 +1,29 @@
-import { useFocusEffect } from '@react-navigation/native';
-import * as i18n from '@/languages';
 import React, { useCallback, useMemo, useState } from 'react';
 import { Keyboard } from 'react-native';
+
+import { useFocusEffect } from '@react-navigation/native';
 import { type Source } from 'react-native-fast-image';
 import { useDebounce } from 'use-debounce';
+
 import dice from '@/assets/dice.png';
 import TintButton from '@/components/buttons/TintButton';
+import { ImgixImage } from '@/components/images';
+import { SheetActionButton, SheetActionButtonRow } from '@/components/sheet';
+import { Box, Heading, Inline, Inset, Separator, Stack, Text } from '@/design-system';
+import * as i18n from '@/languages';
+import { useNavigation } from '@/navigation/Navigation';
+import Routes from '@/navigation/routesNames';
+import { colors } from '@/styles';
+
 import PendingRegistrations from '../components/registration/PendingRegistrations';
 import SearchInput from '../components/registration/SearchInput';
 import SearchResultGradientIndicator from '../components/registration/SearchResultGradientIndicator';
-import { SheetActionButton, SheetActionButtonRow } from '@/components/sheet';
-import { useNavigation } from '@/navigation/Navigation';
-import { Box, Heading, Inline, Inset, Separator, Stack, Text } from '@/design-system';
-import { ENS_DOMAIN, REGISTRATION_MODES } from '../utils/helpers';
 import useENSPendingRegistrations from '../hooks/useENSPendingRegistrations';
 import useENSRegistration from '../hooks/useENSRegistration';
 import useENSRegistrationCosts from '../hooks/useENSRegistrationCosts';
 import useENSRegistrationStepHandler from '../hooks/useENSRegistrationStepHandler';
 import useENSSearch from '../hooks/useENSSearch';
-import { ImgixImage } from '@/components/images';
-import Routes from '@/navigation/routesNames';
-import { colors } from '@/styles';
+import { ENS_DOMAIN, REGISTRATION_MODES } from '../utils/helpers';
 import { normalizeENS } from '../utils/records';
 
 export default function ENSSearchSheet() {

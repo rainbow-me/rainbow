@@ -1,6 +1,8 @@
 import React from 'react';
 import { Dimensions } from 'react-native';
+
 import { type SharedValue } from 'react-native-reanimated';
+
 import RainbowGreyNeon from '../../assets/rainbows/greyneon.png';
 import RainbowLight from '../../assets/rainbows/light.png';
 import RainbowLiquid from '../../assets/rainbows/liquid.png';

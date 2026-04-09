@@ -1,4 +1,7 @@
 /* eslint-disable no-promise-executor-return */
+import { useCallback } from 'react';
+import { InteractionManager } from 'react-native';
+
 import { analytics } from '@/analytics';
 import { DelayedAlert } from '@/components/alerts';
 import { maybeAuthenticateWithPIN } from '@/handlers/authentication';
@@ -11,8 +14,6 @@ import Routes from '@/navigation/routesNames';
 import { backupsStore, CloudBackupState } from '@/state/backups/backups';
 import { useWallets } from '@/state/wallets/walletsStore';
 import { cloudPlatform } from '@/utils/platform';
-import { useCallback } from 'react';
-import { InteractionManager } from 'react-native';
 
 type UseCreateBackupProps = {
   walletId?: string;

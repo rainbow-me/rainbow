@@ -1,6 +1,8 @@
 import React from 'react';
-import { Box, Columns, Column, globalColors } from '@/design-system';
+
 import { LinearGradient } from 'expo-linear-gradient';
+
+import { Box, Column, Columns, globalColors } from '@/design-system';
 
 export const FadeMask = ({
   fadeEdgeInset = 6,

@@ -1,17 +1,19 @@
 import React, { memo, useMemo } from 'react';
 import { Image } from 'react-native';
+
 import Animated, { useAnimatedStyle, useDerivedValue, withSpring } from 'react-native-reanimated';
+
 import CaretImageSource from '@/assets/family-dropdown-arrow.png';
-import * as i18n from '@/languages';
-import { formatCurrency } from '@/helpers/strings';
-import ButtonPressAnimation from '@/components/animations/ButtonPressAnimation';
 import { SPRING_CONFIGS } from '@/components/animations/animationConfigs';
+import ButtonPressAnimation from '@/components/animations/ButtonPressAnimation';
 import { Box, Inline, Text, TextIcon } from '@/design-system';
-import { useAccountAccentColor } from '@/hooks/useAccountAccentColor';
-import { opacity } from '@/framework/ui/utils/opacity';
 import { usePolymarketAccountValueSummary } from '@/features/polymarket/stores/derived/usePolymarketAccountValueSummary';
 import { navigateToPolymarket } from '@/features/polymarket/utils/navigateToPolymarket';
+import { opacity } from '@/framework/ui/utils/opacity';
+import { formatCurrency } from '@/helpers/strings';
+import { useAccountAccentColor } from '@/hooks/useAccountAccentColor';
 import useOpenPolymarket from '@/hooks/useOpenPolymarket';
+import * as i18n from '@/languages';
 
 const HEIGHT = 48;
 

@@ -1,27 +1,30 @@
-import * as i18n from '@/languages';
-import { type RouteProp, useIsFocused, useRoute } from '@react-navigation/native';
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import { InteractionManager, Keyboard, KeyboardAvoidingView } from 'react-native';
+
+import { useIsFocused, useRoute, type RouteProp } from '@react-navigation/native';
+
+import { useChainSupportsPriorityFee } from '@/__swaps__/utils/meteorology';
 import { Alert } from '@/components/alerts';
-import { useTheme } from '@/theme/ThemeContext';
 import ButtonPressAnimation from '@/components/animations/ButtonPressAnimation';
 import FeesGweiInput from '@/components/FeesGweiInput';
+import { Box, Inline, Inset, Row, Rows, Text } from '@/design-system';
+import { IS_ANDROID, IS_TEST } from '@/env';
+import { opacity } from '@/framework/ui/utils/opacity';
+import { isL2Chain } from '@/handlers/web3';
 import { calculateMinerTipAddDifference, calculateMinerTipSubstDifference } from '@/helpers/gas';
 import { add, greaterThan, isZero, lessThan, multiply, toFixedDecimals } from '@/helpers/utilities';
 import useFeesPanelInputRefs from '@/hooks/useFeesPanelInputRefs';
 import useGas from '@/hooks/useGas';
 import usePrevious from '@/hooks/usePrevious';
 import useTimeout from '@/hooks/useTimeout';
-import { gweiToWei, parseGasFeeParam } from '@/parsers/gas';
-import Routes from '@/navigation/routesNames';
-import gasUtils from '@/utils/gas';
-import { Box, Inline, Inset, Row, Rows, Text } from '@/design-system';
-import { IS_ANDROID, IS_TEST } from '@/env';
-import { isL2Chain } from '@/handlers/web3';
-import { type CurrentBaseFeeTypeKey, type ExplainSheetRouteParams, gasTrendToTrendType, type RootStackParamList } from '@/navigation/types';
+import * as i18n from '@/languages';
 import { useNavigation } from '@/navigation/Navigation';
-import { useChainSupportsPriorityFee } from '@/__swaps__/utils/meteorology';
-import { opacity } from '@/framework/ui/utils/opacity';
+import Routes from '@/navigation/routesNames';
+import { gasTrendToTrendType, type CurrentBaseFeeTypeKey, type ExplainSheetRouteParams, type RootStackParamList } from '@/navigation/types';
+import { gweiToWei, parseGasFeeParam } from '@/parsers/gas';
+import { useTheme } from '@/theme/ThemeContext';
+import gasUtils from '@/utils/gas';
+
 const MAX_TEXT_WIDTH = 210;
 const { CUSTOM, GAS_TRENDS, NORMAL, URGENT } = gasUtils;
 

@@ -1,4 +1,5 @@
 import React from 'react';
+
 import { Box, useForegroundColor } from '@/design-system';
 
 type SeparatorDotsProps = {

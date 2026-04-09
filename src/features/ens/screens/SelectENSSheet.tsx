@@ -1,23 +1,26 @@
-import { type RouteProp, useRoute } from '@react-navigation/native';
-import * as i18n from '@/languages';
 import React, { useCallback, useMemo } from 'react';
+import { View, type ListRenderItem } from 'react-native';
+
+import { useRoute, type RouteProp } from '@react-navigation/native';
 import { FlatList } from 'react-native-gesture-handler';
+
 import ButtonPressAnimation from '@/components/animations/ButtonPressAnimation';
+import { ImgixImage } from '@/components/images';
 import { Sheet } from '@/components/sheet';
-import { abbreviateEnsForDisplay } from '@/utils/abbreviations';
 import { AccentColorProvider, Bleed, Box, Heading, Inline, Inset, Stack, Text, useForegroundColor } from '@/design-system';
+import { type BaseEnsDomainFragment } from '@/graphql/__generated__/ens';
+import * as i18n from '@/languages';
+import { useNavigation } from '@/navigation/Navigation';
+import type Routes from '@/navigation/routesNames';
+import { type RootStackParamList } from '@/navigation/types';
+import { useTheme } from '@/theme/ThemeContext';
+import { abbreviateEnsForDisplay } from '@/utils/abbreviations';
+import deviceUtils from '@/utils/deviceUtils';
+
+import useAccountENSDomains from '../hooks/useAccountENSDomains';
 import useENSAvatar, { prefetchENSAvatar } from '../hooks/useENSAvatar';
 import { prefetchENSCover } from '../hooks/useENSCover';
 import { prefetchENSRecords } from '../hooks/useENSRecords';
-import useAccountENSDomains from '../hooks/useAccountENSDomains';
-import { ImgixImage } from '@/components/images';
-import { useNavigation } from '@/navigation/Navigation';
-import { useTheme } from '@/theme/ThemeContext';
-import deviceUtils from '@/utils/deviceUtils';
-import { type ListRenderItem, View } from 'react-native';
-import { type BaseEnsDomainFragment } from '@/graphql/__generated__/ens';
-import { type RootStackParamList } from '@/navigation/types';
-import type Routes from '@/navigation/routesNames';
 
 export const SelectENSSheetHeight = 400;
 

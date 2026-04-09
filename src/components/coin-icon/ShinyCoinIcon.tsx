@@ -1,20 +1,22 @@
-import React, { useMemo, memo } from 'react';
+import React, { memo, useMemo } from 'react';
+
 import {
   Canvas,
   Group,
   Image,
-  Box as SkBox,
-  Shadow,
-  rrect,
   rect,
-  type SkImage,
+  rrect,
+  Shadow,
+  Box as SkBox,
   useAnimatedImageValue,
   useImage,
+  type SkImage,
 } from '@shopify/react-native-skia';
 import { type SharedValue } from 'react-native-reanimated';
+
 import RainbowCoinIcon from '@/components/coin-icon/RainbowCoinIcon';
-import { type ChainId } from '@/state/backendNetworks/types';
 import { opacity } from '@/framework/ui/utils/opacity';
+import { type ChainId } from '@/state/backendNetworks/types';
 
 type ShinyCoinIconProps = {
   chainId: ChainId;

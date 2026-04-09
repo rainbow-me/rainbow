@@ -1,6 +1,8 @@
 import { useContext } from 'react';
+
 import { IS_INTERNAL } from '@/env';
 import { RainbowContext } from '@/helpers/RainbowContext';
+
 import { defaultConfig, defaultConfigValues, type ExperimentalConfigKey } from './experimental';
 
 const useExperimentalFlag = (name: ExperimentalConfigKey) => {

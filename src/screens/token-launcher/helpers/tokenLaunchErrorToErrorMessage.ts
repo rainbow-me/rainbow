@@ -1,5 +1,5 @@
-import { type TokenLauncherSDKError, TokenLauncherErrorCode } from '@rainbow-me/token-launcher';
 import * as i18n from '@/languages';
+import { TokenLauncherErrorCode, type TokenLauncherSDKError } from '@rainbow-me/token-launcher';
 
 export const tokenLaunchErrorToErrorMessage = (error: TokenLauncherSDKError) => {
   if (error.code === TokenLauncherErrorCode.INVALID_ADDRESS || error.code === TokenLauncherErrorCode.WALLET_CONNECTION_ERROR) {

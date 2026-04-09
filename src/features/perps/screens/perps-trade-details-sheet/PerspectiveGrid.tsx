@@ -1,5 +1,6 @@
 import React, { useMemo } from 'react';
-import { Path, Skia, Group, PaintStyle } from '@shopify/react-native-skia';
+
+import { Group, PaintStyle, Path, Skia } from '@shopify/react-native-skia';
 
 type PerspectiveGridProps = {
   width: number;

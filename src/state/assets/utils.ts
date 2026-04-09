@@ -1,6 +1,9 @@
 import { type Address } from 'viem';
-import type { ParsedAddressAsset } from '@/entities/tokens';
+
+import { type AddressOrEth, type ParsedSearchAsset, type UniqueId, type UserAssetFilter, type ZerionAsset } from '@/__swaps__/types/assets';
 import { AssetType } from '@/entities/assetTypes';
+import type { ParsedAddressAsset } from '@/entities/tokens';
+import { isNativeAsset } from '@/handlers/assets';
 import {
   add,
   convertAmountAndPriceToNativeDisplay,
@@ -10,20 +13,19 @@ import {
   greaterThan,
   multiply,
 } from '@/helpers/utilities';
-import { RainbowError, logger } from '@/logger';
+import { logger, RainbowError } from '@/logger';
 import { supportedCurrencies as supportedNativeCurrencies } from '@/references/supportedCurrencies';
 import { isStaging } from '@/resources/addys/client';
 import { fetchAnvilBalancesByChainId } from '@/resources/assets/anvilAssets';
+import { getPlatformClient } from '@/resources/platform/client';
 import { useBackendNetworksStore } from '@/state/backendNetworks/backendNetworks';
 import { ChainId, ChainName } from '@/state/backendNetworks/types';
-import { type AddressOrEth, type ParsedSearchAsset, type UniqueId, type UserAssetFilter, type ZerionAsset } from '@/__swaps__/types/assets';
-import { time } from '@/utils/time';
 import { getUniqueId } from '@/utils/ethereumUtils';
-import { isNativeAsset } from '@/handlers/assets';
-import { type UserAssetsState, type UserAssetsParams, type GetAssetsResponse, type Asset, type UserAsset } from './types';
+import { time } from '@/utils/time';
+
+import { type Asset, type GetAssetsResponse, type UserAsset, type UserAssetsParams, type UserAssetsState } from './types';
 import { userAssetsStore } from './userAssets';
 import { userAssetsStoreManager } from './userAssetsStoreManager';
-import { getPlatformClient } from '@/resources/platform/client';
 
 const USER_ASSETS_TIMEOUT_DURATION = time.seconds(isStaging() ? 40 : 20);
 

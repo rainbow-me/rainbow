@@ -1,9 +1,10 @@
 import React, { useMemo } from 'react';
-import { Box, Text, useForegroundColor } from '@/design-system';
+
 import { ImgixImage } from '@/components/images';
-import { addressHashedEmoji } from '@/utils/profileUtils';
+import { Box, Text, useForegroundColor } from '@/design-system';
 import { returnStringFirstEmoji } from '@/helpers/emojiHandler';
 import { colors } from '@/styles';
+import { addressHashedEmoji } from '@/utils/profileUtils';
 
 const DEFAULT_SIZE = 36;
 

@@ -1,13 +1,15 @@
+import React, { memo, useEffect } from 'react';
+import { type StyleProp, type ViewStyle } from 'react-native';
+
+import MaskedView from '@react-native-masked-view/masked-view';
+import { LinearGradient } from 'expo-linear-gradient';
+import FastImage, { type Source } from 'react-native-fast-image';
+import Animated, { runOnUI, useAnimatedStyle, useSharedValue, withRepeat, withTiming } from 'react-native-reanimated';
+
 import EthIcon from '@/assets/eth-icon.png';
 import { Border, Box, useColorMode } from '@/design-system';
 import { IS_TEST } from '@/env';
 import { THICK_BORDER_WIDTH } from '@/styles/constants';
-import MaskedView from '@react-native-masked-view/masked-view';
-import { LinearGradient } from 'expo-linear-gradient';
-import React, { memo, useEffect } from 'react';
-import { type StyleProp, type ViewStyle } from 'react-native';
-import FastImage, { type Source } from 'react-native-fast-image';
-import Animated, { runOnUI, useAnimatedStyle, useSharedValue, withRepeat, withTiming } from 'react-native-reanimated';
 
 export const EthRewardsCoinIcon = memo(function EthRewardsCoinIcon({
   animatedBorder,

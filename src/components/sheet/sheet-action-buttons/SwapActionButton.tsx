@@ -1,18 +1,22 @@
-import * as i18n from '@/languages';
 import React, { useCallback, useMemo } from 'react';
-import SheetActionButton from './SheetActionButton';
-import { useTheme } from '@/theme/ThemeContext';
+
+import { type AddressOrEth, type AssetType, type ParsedSearchAsset } from '@/__swaps__/types/assets';
+import { SwapAssetType } from '@/__swaps__/types/swap';
+import { isSameAsset, parseSearchAsset } from '@/__swaps__/utils/assets';
 import type { RainbowToken } from '@/entities/tokens';
 import { containsEmoji } from '@/helpers/strings';
-import ethereumUtils from '@/utils/ethereumUtils';
+import * as i18n from '@/languages';
 import { userAssetsStore } from '@/state/assets/userAssets';
-import { isSameAsset, parseSearchAsset } from '@/__swaps__/utils/assets';
-import { SwapAssetType } from '@/__swaps__/types/swap';
-import { type AddressOrEth, type AssetType, type ParsedSearchAsset } from '@/__swaps__/types/assets';
 import { useBackendNetworksStore } from '@/state/backendNetworks/backendNetworks';
-import {} from '@/__swaps__/utils/swaps';
+import { useTheme } from '@/theme/ThemeContext';
+import ethereumUtils from '@/utils/ethereumUtils';
+
+import SheetActionButton from './SheetActionButton';
+
+import '@/__swaps__/utils/swaps';
+
+import { navigateToSwaps, type NavigateToSwapsParams } from '@/__swaps__/screens/Swap/navigateToSwaps';
 import { Inline, Text, TextIcon } from '@/design-system';
-import { type NavigateToSwapsParams, navigateToSwaps } from '@/__swaps__/screens/Swap/navigateToSwaps';
 
 type SwapActionButtonProps = {
   asset: RainbowToken;

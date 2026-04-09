@@ -1,4 +1,5 @@
 import { TOKEN_PREFERRED_POSITIONS } from '@/features/positions/stores/transform/filter';
+
 import type { CanonicalProtocolStats, ListPositionsResponse, PortfolioItem, Position } from '../../types/generated/positions/positions';
 
 /**

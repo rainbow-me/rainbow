@@ -1,9 +1,10 @@
 import React from 'react';
+import { View } from 'react-native';
+
+import ShimmerAnimation from '@/components/animations/ShimmerAnimation';
 import RainbowCoinIcon from '@/components/coin-icon/RainbowCoinIcon';
 import { Bleed, Box, globalColors, Text, TextShadow, useColorMode } from '@/design-system';
-import { View } from 'react-native';
 import { IS_IOS } from '@/env';
-import ShimmerAnimation from '@/components/animations/ShimmerAnimation';
 
 export function ClaimValueDisplay({
   label,

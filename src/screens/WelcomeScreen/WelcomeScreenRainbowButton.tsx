@@ -1,13 +1,15 @@
-import { type ButtonPressAnimationProps } from '@/components/animations/ButtonPressAnimation/types';
-import { type StyleProp, type ViewStyle } from 'react-native';
-import ButtonPressAnimation from '@/components/animations/ButtonPressAnimation';
 import React from 'react';
-import styled from '@/framework/ui/styled-thing';
+import { type StyleProp, type ViewStyle } from 'react-native';
+
 import Reanimated from 'react-native-reanimated';
-import { Emoji, Text } from '@/components/text';
-import { type ThemeContextProps } from '@/theme/ThemeContext';
+
+import ButtonPressAnimation from '@/components/animations/ButtonPressAnimation';
+import { type ButtonPressAnimationProps } from '@/components/animations/ButtonPressAnimation/types';
 import { RowWithMargins } from '@/components/layout';
+import { Emoji, Text } from '@/components/text';
+import styled from '@/framework/ui/styled-thing';
 import { shadow } from '@/styles';
+import { type ThemeContextProps } from '@/theme/ThemeContext';
 
 const ButtonContainer = styled(Reanimated.View)({
   borderRadius: ({ height }: { height: number }) => height / 2,

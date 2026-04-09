@@ -1,8 +1,10 @@
-import * as i18n from '@/languages';
 import React, { useCallback, useState } from 'react';
-import ProfileModal from './profile/ProfileModal';
+
 import { analytics } from '@/analytics';
+import * as i18n from '@/languages';
 import { useNavigation } from '@/navigation/Navigation';
+
+import ProfileModal from './profile/ProfileModal';
 
 type NewWalletGroupStateProps = {
   onCloseModal: ({ name }: { name: string }) => void;

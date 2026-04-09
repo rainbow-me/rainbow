@@ -1,16 +1,18 @@
 import React from 'react';
 import { StyleSheet } from 'react-native';
+
 import Animated, {
   Easing,
-  type SharedValue,
   useAnimatedStyle,
   useDerivedValue,
   withRepeat,
   withSequence,
   withTiming,
+  type SharedValue,
 } from 'react-native-reanimated';
-import { Box, useColorMode } from '@/design-system';
+
 import { caretConfig } from '@/__swaps__/screens/Swap/constants';
+import { Box, useColorMode } from '@/design-system';
 
 interface CurrencyInputCaretProps {
   isFocused: SharedValue<boolean>;

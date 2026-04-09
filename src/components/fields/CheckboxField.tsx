@@ -1,6 +1,8 @@
 import React from 'react';
-import ButtonPressAnimation from '../animations/ButtonPressAnimation';
+
 import { AccentColorProvider, Box, Inline, Inset, Text, useForegroundColor } from '@/design-system';
+
+import ButtonPressAnimation from '../animations/ButtonPressAnimation';
 
 export default function CheckboxField({
   color: customColor,

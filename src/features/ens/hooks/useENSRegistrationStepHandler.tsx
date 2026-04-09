@@ -1,11 +1,16 @@
-import { differenceInSeconds } from 'date-fns';
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
+
+import { differenceInSeconds } from 'date-fns';
 import { useDispatch } from 'react-redux';
-import usePrevious from '@/hooks/usePrevious';
-import useENSRegistration from './useENSRegistration';
-import useInterval from '@/hooks/useInterval';
-import type { RegistrationParameters } from '../types/registration';
+
 import { getProvider } from '@/handlers/web3';
+import useInterval from '@/hooks/useInterval';
+import usePrevious from '@/hooks/usePrevious';
+import { ChainId } from '@/state/backendNetworks/types';
+import { useConnectedToAnvilStore } from '@/state/connectedToAnvil';
+
+import { updateTransactionRegistrationParameters } from '../redux/registration';
+import type { RegistrationParameters } from '../types/registration';
 import {
   ENS_SECONDS_PADDING,
   ENS_SECONDS_WAIT,
@@ -14,9 +19,7 @@ import {
   REGISTRATION_MODES,
   REGISTRATION_STEPS,
 } from '../utils/helpers';
-import { updateTransactionRegistrationParameters } from '../redux/registration';
-import { ChainId } from '@/state/backendNetworks/types';
-import { useConnectedToAnvilStore } from '@/state/connectedToAnvil';
+import useENSRegistration from './useENSRegistration';
 
 const checkRegisterBlockTimestamp = async ({
   registrationParameters,

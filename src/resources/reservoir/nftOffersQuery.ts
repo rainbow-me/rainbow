@@ -1,12 +1,14 @@
+import { useEffect } from 'react';
+
+import { useQuery } from '@tanstack/react-query';
+import { useRecoilValue } from 'recoil';
+
 import { analytics } from '@/analytics';
 import { nftOffersSortAtom } from '@/components/nft-offers/SortMenu';
 import useExperimentalFlag, { NFT_OFFERS } from '@/config/experimentalHooks';
 import { arcClient } from '@/graphql';
-import { type GetNftOffersQuery, type NftOffer, SortCriterion } from '@/graphql/__generated__/arc';
-import { type QueryFunctionArgs, type QueryFunctionResult, createQueryKey, queryClient } from '@/react-query';
-import { useQuery } from '@tanstack/react-query';
-import { useEffect } from 'react';
-import { useRecoilValue } from 'recoil';
+import { SortCriterion, type GetNftOffersQuery, type NftOffer } from '@/graphql/__generated__/arc';
+import { createQueryKey, queryClient, type QueryFunctionArgs, type QueryFunctionResult } from '@/react-query';
 
 export type NFTOffersArgs = {
   walletAddress: string;

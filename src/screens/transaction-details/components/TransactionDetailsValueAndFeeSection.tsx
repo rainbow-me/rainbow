@@ -1,16 +1,16 @@
 import React from 'react';
-import { DoubleLineTransactionDetailsRow } from '@/screens/transaction-details/components/DoubleLineTransactionDetailsRow';
-import { TransactionDetailsSymbol } from '@/screens/transaction-details/components/TransactionDetailsSymbol';
-import { type RainbowTransaction } from '@/entities/transactions/transaction';
-import { Box, Stack } from '@/design-system';
-import { TransactionDetailsDivider } from '@/screens/transaction-details/components/TransactionDetailsDivider';
-import * as i18n from '@/languages';
 
 import RainbowCoinIcon from '@/components/coin-icon/RainbowCoinIcon';
-import { convertAmountAndPriceToNativeDisplay, convertRawAmountToBalance } from '@/helpers/utilities';
-import { ChainId } from '@/state/backendNetworks/types';
-import { userAssetsStoreManager } from '@/state/assets/userAssetsStoreManager';
+import { Box, Stack } from '@/design-system';
+import { type RainbowTransaction } from '@/entities/transactions/transaction';
 import { checkForPendingSwap } from '@/helpers/transactions';
+import { convertAmountAndPriceToNativeDisplay, convertRawAmountToBalance } from '@/helpers/utilities';
+import * as i18n from '@/languages';
+import { DoubleLineTransactionDetailsRow } from '@/screens/transaction-details/components/DoubleLineTransactionDetailsRow';
+import { TransactionDetailsDivider } from '@/screens/transaction-details/components/TransactionDetailsDivider';
+import { TransactionDetailsSymbol } from '@/screens/transaction-details/components/TransactionDetailsSymbol';
+import { userAssetsStoreManager } from '@/state/assets/userAssetsStoreManager';
+import { ChainId } from '@/state/backendNetworks/types';
 
 type Props = {
   transaction: RainbowTransaction;

@@ -1,6 +1,8 @@
-import { CREATOR_BPS, TARGET_MARKET_CAP_IN_ETH } from '../constants';
-import { TokenLauncherSDK } from '@/hooks/useTokenLauncher';
 import { parseUnits } from 'viem';
+
+import { TokenLauncherSDK } from '@/hooks/useTokenLauncher';
+
+import { CREATOR_BPS, TARGET_MARKET_CAP_IN_ETH } from '../constants';
 
 // 1% fee
 const POOL_FEE = 10000;

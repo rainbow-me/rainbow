@@ -1,6 +1,7 @@
-import * as i18n from '@/languages';
 import uts46 from 'idna-uts46-hx';
+
 import type { UniqueAsset } from '@/entities/uniqueAssets';
+import * as i18n from '@/languages';
 import isLowerCaseMatch from '@/utils/isLowerCaseMatch';
 
 const supportedTLDs = ['eth'];

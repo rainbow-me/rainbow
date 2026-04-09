@@ -1,10 +1,13 @@
-import PropTypes from 'prop-types';
 import React, { Children, Component } from 'react';
 import { Animated, Easing } from 'react-native';
-import deviceUtils from '@/utils/deviceUtils';
-import AnimatedPagerItem from './AnimatedPagerItem';
+
+import PropTypes from 'prop-types';
+
 import styled from '@/framework/ui/styled-thing';
 import { position } from '@/styles';
+import deviceUtils from '@/utils/deviceUtils';
+
+import AnimatedPagerItem from './AnimatedPagerItem';
 
 const buildPagerAnimation = toValue => ({
   duration: 300,

@@ -1,4 +1,5 @@
 import React, { useCallback, useMemo } from 'react';
+
 import ButtonPressAnimation from '@/components/animations/ButtonPressAnimation';
 import { ContactAvatar } from '@/components/contacts';
 import ImageAvatar from '@/components/contacts/ImageAvatar';
@@ -8,6 +9,7 @@ import Routes from '@/navigation/routesNames';
 import { useAppSessionsStore } from '@/state/appSessions';
 import { useBrowserStore } from '@/state/browser/browserStore';
 import { useAccountAddress, useAccountProfileInfo } from '@/state/wallets/walletsStore';
+
 import { useBrowserContext } from '../BrowserContext';
 import { HOMEPAGE_BACKGROUND_COLOR_DARK, HOMEPAGE_BACKGROUND_COLOR_LIGHT, RAINBOW_HOME } from '../constants';
 import { getDappHost } from '../handleProviderRequest';

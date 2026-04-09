@@ -1,6 +1,8 @@
 import React from 'react';
+
 import styled from '@/framework/ui/styled-thing';
 import { padding } from '@/styles';
+
 import { Centered } from '../layout';
 import SheetHandle, { SHEET_HANDLE_HEIGHT } from './SheetHandle';
 

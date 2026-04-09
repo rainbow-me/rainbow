@@ -1,6 +1,7 @@
 import { MaxUint256 } from '@ethersproject/constants';
 import { OperationType, RelayerTransactionState, type SafeTransaction } from '@polymarket/builder-relayer-client';
 import { parseUnits } from 'ethers/lib/utils';
+
 import { analytics } from '@/analytics';
 import { USD_DECIMALS } from '@/features/perps/constants';
 import { logger, RainbowError } from '@/logger';
@@ -9,6 +10,7 @@ import { ChainId } from '@/state/backendNetworks/types';
 import { createWithdrawalConfig } from '@/systems/funding/config';
 import { type WithdrawalExecutionResult, type WithdrawalExecutorParams } from '@/systems/funding/types';
 import { time } from '@/utils/time';
+
 import { POLYGON_USDC_ADDRESS, POLYGON_USDC_DECIMALS } from './constants';
 import { getPolymarketRelayClient } from './stores/derived/usePolymarketClients';
 import { usePolymarketProxyAddress } from './stores/derived/usePolymarketProxyAddress';

@@ -1,3 +1,5 @@
+import type { Animated } from 'react-native';
+
 import { type BottomSheetProps } from '@gorhom/bottom-sheet';
 import { type BackdropPressBehavior } from '@gorhom/bottom-sheet/lib/typescript/components/bottomSheetBackdrop/types';
 import type {
@@ -9,7 +11,6 @@ import type {
   StackActionHelpers,
   StackNavigationState,
 } from '@react-navigation/native';
-import type { Animated } from 'react-native';
 
 export type BottomSheetNavigationEventMap = {
   /**

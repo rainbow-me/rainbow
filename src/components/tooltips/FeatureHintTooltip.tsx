@@ -1,13 +1,15 @@
 import React, { forwardRef, useCallback, useImperativeHandle, useMemo, useRef } from 'react';
-import { StyleSheet, View, type LayoutChangeEvent, useWindowDimensions } from 'react-native';
-import { BlurView } from 'react-native-blur-view';
-import Animated, { useSharedValue, useAnimatedStyle, withTiming, runOnJS } from 'react-native-reanimated';
-import { Box, globalColors, HitSlop, Text } from '@/design-system';
-import { LinearGradient } from 'expo-linear-gradient';
+import { StyleSheet, useWindowDimensions, View, type LayoutChangeEvent } from 'react-native';
+
 import MaskedView from '@react-native-masked-view/masked-view';
+import { LinearGradient } from 'expo-linear-gradient';
+import { BlurView } from 'react-native-blur-view';
+import Animated, { runOnJS, useAnimatedStyle, useSharedValue, withTiming } from 'react-native-reanimated';
 import Svg, { Path } from 'react-native-svg';
-import ButtonPressAnimation from '@/components/animations/ButtonPressAnimation';
+
 import { TIMING_CONFIGS } from '@/components/animations/animationConfigs';
+import ButtonPressAnimation from '@/components/animations/ButtonPressAnimation';
+import { Box, globalColors, HitSlop, Text } from '@/design-system';
 
 // which side of the child the tooltip is on
 type Side = 'top' | 'bottom';

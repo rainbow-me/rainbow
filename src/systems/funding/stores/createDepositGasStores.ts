@@ -1,6 +1,13 @@
 import { formatUnits } from 'viem';
-import { type NativeCurrencyKey } from '@/entities/nativeCurrencyTypes';
+
+import { type GasSettings } from '@/__swaps__/screens/Swap/hooks/useCustomGas';
+import { safeBigInt } from '@/__swaps__/screens/Swap/hooks/useEstimatedGasFee';
+import { calculateGasFeeWorklet } from '@/__swaps__/screens/Swap/providers/SyncSwapStateAndSharedValues';
+import { GasSpeed } from '@/__swaps__/types/gas';
+import { isCrosschainQuote } from '@/__swaps__/utils/quotes';
+import { stripNonDecimalNumbers } from '@/__swaps__/utils/swaps';
 import { type MeteorologyLegacyResponse, type MeteorologyResponse } from '@/entities/gas';
+import { type NativeCurrencyKey } from '@/entities/nativeCurrencyTypes';
 import { rainbowMeteorologyGetData } from '@/handlers/gasFees';
 import { convertAmountToNativeDisplayWorklet, formatNumber, multiply } from '@/helpers/utilities';
 import { logger } from '@/logger';
@@ -8,37 +15,32 @@ import { gweiToWei, weiToGwei } from '@/parsers/gas';
 import { estimateUnlockAndCrosschainSwap } from '@/raps/actions/crosschainSwap';
 import { estimateUnlockAndSwap } from '@/raps/actions/swap';
 import { gasUnits } from '@/references/gasUnits';
+import { isLegacyMeteorologyFeeData } from '@/resources/meteorology/classification';
 import { userAssetsStoreManager } from '@/state/assets/userAssetsStoreManager';
 import { ChainId } from '@/state/backendNetworks/types';
 import { createDerivedStore } from '@/state/internal/createDerivedStore';
 import { createQueryStore } from '@/state/internal/createQueryStore';
 import { type InferStoreState } from '@/state/internal/types';
 import { useWalletsStore } from '@/state/wallets/walletsStore';
-import { type GasSettings } from '@/__swaps__/screens/Swap/hooks/useCustomGas';
-import { safeBigInt } from '@/__swaps__/screens/Swap/hooks/useEstimatedGasFee';
-import { calculateGasFeeWorklet } from '@/__swaps__/screens/Swap/providers/SyncSwapStateAndSharedValues';
-import { GasSpeed } from '@/__swaps__/types/gas';
-import { isCrosschainQuote } from '@/__swaps__/utils/quotes';
-import { stripNonDecimalNumbers } from '@/__swaps__/utils/swaps';
-import { isLegacyMeteorologyFeeData } from '@/resources/meteorology/classification';
 import { time } from '@/utils/time';
 import { shallowEqual } from '@/worklets/comparisons';
-import { createExternalTokenStore, type FormattedExternalAsset } from './createExternalTokenStore';
-import { computeMaxSwappableAmount } from './createDepositStore';
+
 import {
   type AmountStoreType,
+  type DepositConfig,
   type DepositGasHookParams,
   type DepositGasLimitParams,
   type DepositGasSponsorshipParams,
-  type DepositGasSuggestions,
   type DepositGasStoresType,
+  type DepositGasSuggestions,
   type DepositMeteorologyActions,
   type DepositMeteorologyParams,
   type DepositQuoteStoreType,
   type DepositStoreType,
-  type DepositConfig,
 } from '../types';
 import { isValidQuote } from '../utils/quotes';
+import { computeMaxSwappableAmount } from './createDepositStore';
+import { createExternalTokenStore, type FormattedExternalAsset } from './createExternalTokenStore';
 
 // ============ Types ========================================================= //
 

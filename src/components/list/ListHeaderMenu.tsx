@@ -1,9 +1,10 @@
 import React from 'react';
-import ContextMenuButton, { type MenuConfig } from '@/components/native-context-menu/contextMenu';
+
 import ButtonPressAnimation from '@/components/animations/ButtonPressAnimation';
+import ContextMenuButton, { type MenuConfig } from '@/components/native-context-menu/contextMenu';
 import { Bleed, Box, Inline, Text, useForegroundColor } from '@/design-system';
-import haptics from '@/utils/haptics';
 import { type NftSort } from '@/state/nfts/nftsStoreManager';
+import haptics from '@/utils/haptics';
 
 type ListHeaderMenuProps = {
   selected: NftSort;

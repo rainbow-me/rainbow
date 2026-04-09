@@ -1,4 +1,5 @@
 import { type StateCreator } from 'zustand';
+
 import { type AttachValue, type SignalFunction } from '../signal';
 import { type BaseRainbowStore, type DebounceOptions, type RainbowStore } from '../types';
 

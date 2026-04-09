@@ -1,19 +1,19 @@
+import React, { useCallback } from 'react';
+
+import { useRoute, type RouteProp } from '@react-navigation/native';
+
 import { SheetActionButton } from '@/components/sheet';
 import { Bleed, Box, Column, Columns, Inset, Stack, Text } from '@/design-system';
 import { type TextColor } from '@/design-system/color/palettes';
 import { IS_ANDROID } from '@/env';
-import React, { useCallback } from 'react';
-
-import useDimensions from '@/hooks/useDimensions';
-import { useNavigation } from '@/navigation/Navigation';
-
 import WalletTypes from '@/helpers/walletTypes';
+import useDimensions from '@/hooks/useDimensions';
 import * as i18n from '@/languages';
 import { sharedCoolModalTopOffset } from '@/navigation/config';
+import { useNavigation } from '@/navigation/Navigation';
 import Routes from '@/navigation/routesNames';
 import { type RootStackParamList } from '@/navigation/types';
 import { useWallets } from '@/state/wallets/walletsStore';
-import { type RouteProp, useRoute } from '@react-navigation/native';
 
 const MIN_HEIGHT = 740;
 

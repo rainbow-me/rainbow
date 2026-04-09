@@ -1,14 +1,16 @@
 import { memo, useEffect, useMemo } from 'react';
 import { StyleSheet } from 'react-native';
+
 import Animated from 'react-native-reanimated';
+
 import { Box, Text } from '@/design-system';
-import { RnbwRewardsScenes } from '@/features/rnbw-rewards/screens/rnbw-rewards-screen/constants/rewardsScenes';
 import { createScaleInFadeInSlideEnterAnimation, defaultExitAnimation } from '@/features/rnbw-rewards/animations/sceneTransitions';
-import { getCoinBottomPosition } from '@/features/rnbw-rewards/screens/rnbw-rewards-screen/components/RnbwHeroCoin';
-import { rewardsFlowActions, useRewardsFlowStore } from '@/features/rnbw-rewards/stores/rewardsFlowStore';
 import { RNBW_SYMBOL } from '@/features/rnbw-rewards/constants';
-import * as i18n from '@/languages';
+import { getCoinBottomPosition } from '@/features/rnbw-rewards/screens/rnbw-rewards-screen/components/RnbwHeroCoin';
+import { RnbwRewardsScenes } from '@/features/rnbw-rewards/screens/rnbw-rewards-screen/constants/rewardsScenes';
+import { rewardsFlowActions, useRewardsFlowStore } from '@/features/rnbw-rewards/stores/rewardsFlowStore';
 import { convertRawAmountToDecimalFormat, truncateToDecimalsWithThreshold } from '@/helpers/utilities';
+import * as i18n from '@/languages';
 import { time } from '@/utils/time';
 
 const enteringAnimation = createScaleInFadeInSlideEnterAnimation({ translateY: -24 });

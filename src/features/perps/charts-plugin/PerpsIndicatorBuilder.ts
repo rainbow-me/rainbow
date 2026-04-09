@@ -2,28 +2,30 @@ import {
   BlendMode,
   BlurStyle,
   PaintStyle,
-  type SkCanvas,
-  type SkColor,
-  type SkPaint,
-  type SkPath,
-  type SkParagraph,
-  type SkPathEffect,
   Skia,
   StrokeCap,
   StrokeJoin,
   TileMode,
+  type SkCanvas,
+  type SkColor,
+  type SkPaint,
+  type SkParagraph,
+  type SkPath,
+  type SkPathEffect,
 } from '@shopify/react-native-skia';
+
 import { type TextSegment } from '@/design-system/components/SkiaText/useSkiaText';
 import { type DrawParams } from '@/features/charts/candlestick/classes/IndicatorBuilder';
 import { RED_CANDLE_COLOR } from '@/features/charts/candlestick/constants';
 import { HYPERLIQUID_GREEN } from '@/features/perps/context/PerpsAccentColorContext';
 import { deepFreeze } from '@/utils/deepFreeze';
+
 import {
+  PerpsIndicator,
+  PerpsIndicatorKey,
   type IndicatorStyle,
   type IndicatorTypeConfig,
-  PerpsIndicator,
   type PerpsIndicatorConfig,
-  PerpsIndicatorKey,
   type PerpsIndicatorPlugin,
 } from './PerpsIndicator';
 

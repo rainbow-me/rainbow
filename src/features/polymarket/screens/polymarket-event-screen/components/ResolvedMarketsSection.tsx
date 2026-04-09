@@ -1,10 +1,11 @@
-import { Box, Separator, Text } from '@/design-system';
-import * as i18n from '@/languages';
 import { memo, useState } from 'react';
+
+import ButtonPressAnimation from '@/components/animations/ButtonPressAnimation';
+import { Box, Separator, Text } from '@/design-system';
+import { ResolvedMarketsList } from '@/features/polymarket/screens/polymarket-event-screen/components/ResolvedMarketsList';
 import { type PolymarketMarket } from '@/features/polymarket/types/polymarket-event';
 import { opacity } from '@/framework/ui/utils/opacity';
-import ButtonPressAnimation from '@/components/animations/ButtonPressAnimation';
-import { ResolvedMarketsList } from '@/features/polymarket/screens/polymarket-event-screen/components/ResolvedMarketsList';
+import * as i18n from '@/languages';
 
 export const ResolvedMarketsSection = memo(function ResolvedMarketsSection({
   markets,

@@ -1,4 +1,5 @@
 import { getSvgPath } from 'figma-squircle';
+
 import { IS_IOS } from '@/env';
 
 /**

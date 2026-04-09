@@ -1,15 +1,17 @@
-import { type RouteProp, useRoute } from '@react-navigation/native';
 import React from 'react';
-import { View, ScrollView, StyleSheet } from 'react-native';
+import { ScrollView, StyleSheet, View } from 'react-native';
+
+import { useRoute, type RouteProp } from '@react-navigation/native';
+
 import { Panel } from '@/components/SmoothPager/ListPanel';
 import { MarkdownText, Separator, Stack, Text } from '@/design-system';
-import Navigation from '@/navigation/Navigation';
 import { containsEmoji } from '@/helpers/strings';
+import Navigation from '@/navigation/Navigation';
 import Routes from '@/navigation/routesNames';
 import { type RootStackParamList } from '@/navigation/types';
-import safeAreaInsetValues from '@/utils/safeAreaInsetValues';
-import { DEVICE_HEIGHT } from '@/utils/deviceUtils';
 import { THICK_BORDER_WIDTH } from '@/styles/constants';
+import { DEVICE_HEIGHT } from '@/utils/deviceUtils';
+import safeAreaInsetValues from '@/utils/safeAreaInsetValues';
 
 export interface LogEntry {
   message: string;

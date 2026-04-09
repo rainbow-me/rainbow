@@ -1,5 +1,6 @@
-import { Blur, Canvas, Circle, Group, LinearGradient, Mask, Paint, RadialGradient, Rect, vec } from '@shopify/react-native-skia';
 import React, { memo } from 'react';
+
+import { Blur, Canvas, Circle, Group, LinearGradient, Mask, Paint, RadialGradient, Rect, vec } from '@shopify/react-native-skia';
 
 type RainbowGlowProps = {
   // glow size = size of content its glowing around

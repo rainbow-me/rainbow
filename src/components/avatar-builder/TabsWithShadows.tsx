@@ -1,14 +1,17 @@
 import React from 'react';
 import { StyleSheet, View } from 'react-native';
+
 import { LinearGradient } from 'expo-linear-gradient';
-import EmojiTabBarShadow from '../../assets/emojiTabBarShadow.png';
-import { Categories } from './Categories';
-import TabBar from './TabBar';
-import { type EmojiCategory } from './types';
+
 import { ImgixImage } from '@/components/images';
 import { position } from '@/styles';
 import { useTheme } from '@/theme/ThemeContext';
 import magicMemo from '@/utils/magicMemo';
+
+import EmojiTabBarShadow from '../../assets/emojiTabBarShadow.png';
+import { Categories } from './Categories';
+import TabBar from './TabBar';
+import { type EmojiCategory } from './types';
 
 const categoryKeys = Object.keys(Categories);
 

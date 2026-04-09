@@ -1,7 +1,8 @@
+import { useCallback, useMemo } from 'react';
+
 import { removeWalletData } from '@/handlers/localstorage/removeWallet';
 import { type RainbowAccount, type RainbowWallet } from '@/model/wallet';
 import { updateWallets, useWallets } from '@/state/wallets/walletsStore';
-import { useCallback, useMemo } from 'react';
 
 export default function useDeleteWallet({ address: primaryAddress }: { address?: string }) {
   const wallets = useWallets();

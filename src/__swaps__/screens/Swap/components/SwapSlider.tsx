@@ -1,6 +1,6 @@
 import React, { useCallback, useMemo, useRef } from 'react';
 import { StyleSheet, View } from 'react-native';
-import * as i18n from '@/languages';
+
 import { Gesture, GestureDetector, type TapGesture } from 'react-native-gesture-handler';
 import Animated, {
   interpolate,
@@ -17,18 +17,20 @@ import Animated, {
   withTiming,
 } from 'react-native-reanimated';
 import { triggerHaptics } from 'react-native-turbo-haptics';
-import { SPRING_CONFIGS, TIMING_CONFIGS } from '@/components/animations/animationConfigs';
-import { AnimatedText, Bleed, Box, Column, Columns, Inline, globalColors, useColorMode, useForegroundColor } from '@/design-system';
-import { IS_IOS } from '@/env';
-import { greaterThanWorklet } from '@/framework/core/safeMath';
-import { SCRUBBER_WIDTH, SLIDER_COLLAPSED_HEIGHT, SLIDER_HEIGHT, SLIDER_WIDTH, pulsingConfig } from '@/__swaps__/screens/Swap/constants';
+
+import { pulsingConfig, SCRUBBER_WIDTH, SLIDER_COLLAPSED_HEIGHT, SLIDER_HEIGHT, SLIDER_WIDTH } from '@/__swaps__/screens/Swap/constants';
 import { useSwapContext } from '@/__swaps__/screens/Swap/providers/swap-provider';
 import { clamp, getColorValueForThemeWorklet } from '@/__swaps__/utils/swaps';
-import { opacity } from '@/framework/ui/utils/opacity';
-import { AnimatedSwapCoinIcon } from './AnimatedSwapCoinIcon';
+import { SPRING_CONFIGS, TIMING_CONFIGS } from '@/components/animations/animationConfigs';
 import { GestureHandlerButton } from '@/components/buttons';
-
+import { AnimatedText, Bleed, Box, Column, Columns, globalColors, Inline, useColorMode, useForegroundColor } from '@/design-system';
+import { IS_IOS } from '@/env';
+import { greaterThanWorklet } from '@/framework/core/safeMath';
+import { opacity } from '@/framework/ui/utils/opacity';
+import * as i18n from '@/languages';
 import { THICK_BORDER_WIDTH } from '@/styles/constants';
+
+import { AnimatedSwapCoinIcon } from './AnimatedSwapCoinIcon';
 
 type SwapSliderProps = {
   dualColor?: boolean;

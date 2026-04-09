@@ -1,12 +1,15 @@
-import React, { type ElementRef, forwardRef, type ReactNode, useEffect, useMemo } from 'react';
+import React, { forwardRef, useEffect, useMemo, type ElementRef, type ReactNode } from 'react';
 import { Text as NativeText } from 'react-native';
+
 import { SILENCE_EMOJI_WARNINGS } from 'react-native-dotenv';
+
 import { IS_DEV, IS_IOS } from '@/env';
+
+import { type TextColor } from '../../color/palettes';
 import { type CustomColor } from '../../color/useForegroundColor';
 import { createLineHeightFixNode } from '../../typography/createLineHeightFixNode';
 import { nodeHasEmoji, nodeIsString, renderStringWithEmoji } from '../../typography/renderStringWithEmoji';
 import { type headingSizes, type headingWeights } from '../../typography/typography';
-import { type TextColor } from '../../color/palettes';
 import { useHeadingStyle } from './useHeadingStyle';
 
 export type HeadingProps = {

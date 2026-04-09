@@ -1,15 +1,18 @@
 import React from 'react';
-import { type StyleProp, type ViewStyle, StyleSheet } from 'react-native';
+import { StyleSheet, type StyleProp, type ViewStyle } from 'react-native';
+
 import { BlurView } from 'react-native-blur-view';
-import { useTheme } from '../../theme/ThemeContext';
-import ActivityIndicator from '../ActivityIndicator';
-import Spinner from '../Spinner';
-import TouchableBackdrop from '../TouchableBackdrop';
+import Animated, { FadeIn, FadeOut } from 'react-native-reanimated';
+
 import { Box, globalColors, Text } from '@/design-system';
 import { IS_ANDROID, IS_IOS } from '@/env';
 import { opacity } from '@/framework/ui/utils/opacity';
 import neverRerender from '@/utils/neverRerender';
-import Animated, { FadeIn, FadeOut } from 'react-native-reanimated';
+
+import { useTheme } from '../../theme/ThemeContext';
+import ActivityIndicator from '../ActivityIndicator';
+import Spinner from '../Spinner';
+import TouchableBackdrop from '../TouchableBackdrop';
 
 type LoadingOverlayProps = {
   title?: string;

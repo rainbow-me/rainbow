@@ -1,4 +1,5 @@
 import { getNumberFormatter } from '@/helpers/intl';
+
 import { formatOrderPrice } from './formatOrderPrice';
 
 /**

@@ -1,4 +1,5 @@
 import { analytics } from '@/analytics';
+
 import { createRainbowStore } from '../internal/createRainbowStore';
 
 export interface FavoritedSite {

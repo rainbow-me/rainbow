@@ -1,11 +1,12 @@
 import React from 'react';
 import { StyleSheet, View } from 'react-native';
-import { useForegroundColor } from '@/design-system';
-import { useTheme } from '@/theme/ThemeContext';
-import { opacity } from '@/framework/ui/utils/opacity';
-import deviceUtils from '@/utils/deviceUtils';
+
 import useExperimentalFlag, { NFTS_ENABLED } from '@/config/experimentalHooks';
+import { useForegroundColor } from '@/design-system';
+import { opacity } from '@/framework/ui/utils/opacity';
 import { useRemoteConfig } from '@/model/remoteConfig';
+import { useTheme } from '@/theme/ThemeContext';
+import deviceUtils from '@/utils/deviceUtils';
 
 export const TokenFamilyHeaderHeight = 50;
 

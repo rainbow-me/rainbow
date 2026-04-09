@@ -1,16 +1,30 @@
+import React, { useCallback, useEffect, useMemo, useReducer, useRef, useState } from 'react';
+import { View } from 'react-native';
+
+import { useFocusEffect, useRoute, type RouteProp } from '@react-navigation/native';
+import { getClient, type Execute } from '@reservoir0x/reservoir-sdk';
+import { format } from 'date-fns';
+import { BlurView } from 'react-native-blur-view';
+import { useSharedValue } from 'react-native-reanimated';
+import { createWalletClient, http } from 'viem';
+import { privateKeyToAccount } from 'viem/accounts';
+
 import { analytics } from '@/analytics';
 import ButtonPressAnimation from '@/components/animations/ButtonPressAnimation';
 import { HoldToAuthorizeButton } from '@/components/buttons';
 import { ChainImage } from '@/components/coin-icon/ChainImage';
 import { ContactAvatar } from '@/components/contacts';
 import { GasSpeedButton } from '@/components/gas';
+import { useRainbowToastEnabled } from '@/components/rainbow-toast/useRainbowToastEnabled';
 import { Bleed, Box, ColorModeProvider, Column, Columns, Inline, Inset, Separator, Stack, Text } from '@/design-system';
-import { type NewTransaction, TransactionStatus } from '@/entities/transactions';
+import { TransactionStatus, type NewTransaction } from '@/entities/transactions';
 import { IS_ANDROID, IS_IOS } from '@/env';
+import useENSAvatar from '@/features/ens/hooks/useENSAvatar';
+import { fetchReverseRecord } from '@/features/ens/utils/handlers';
+import styled from '@/framework/ui/styled-thing';
 import { metadataPOSTClient } from '@/graphql';
 import { type ReservoirCollection } from '@/graphql/__generated__/arcDev';
 import { type Transaction } from '@/graphql/__generated__/metadataPOST';
-import { fetchReverseRecord } from '@/features/ens/utils/handlers';
 import { maybeSignUri } from '@/handlers/imgix';
 import { WrappedAlert as Alert } from '@/helpers/alert';
 import {
@@ -23,46 +37,35 @@ import {
   multiply,
 } from '@/helpers/utilities';
 import useDimensions from '@/hooks/useDimensions';
-import useENSAvatar from '@/features/ens/hooks/useENSAvatar';
 import useGas from '@/hooks/useGas';
 import usePersistentAspectRatio from '@/hooks/usePersistentAspectRatio';
 import { usePersistentDominantColorFromImage } from '@/hooks/usePersistentDominantColorFromImage';
 import * as i18n from '@/languages';
-import { RainbowError, logger } from '@/logger';
+import { logger, RainbowError } from '@/logger';
 import { loadPrivateKey } from '@/model/wallet';
 import { useNavigation } from '@/navigation/Navigation';
 import Routes from '@/navigation/routesNames';
 import { type RootStackParamList } from '@/navigation/types';
 import { ETH_ADDRESS, ETH_SYMBOL } from '@/references/constants';
 import { getRainbowFeeAddress } from '@/resources/reservoir/utils';
+import { userAssetsStoreManager } from '@/state/assets/userAssetsStoreManager';
 import { useBackendNetworksStore } from '@/state/backendNetworks/backendNetworks';
 import { ChainId } from '@/state/backendNetworks/types';
 import { getNextNonce } from '@/state/nonces';
 import { addNewTransaction } from '@/state/pendingTransactions';
-import { useAccountAddress, useIsReadOnlyWallet, useIsHardwareWallet } from '@/state/wallets/walletsStore';
-import styled from '@/framework/ui/styled-thing';
+import { useAccountAddress, useIsHardwareWallet, useIsReadOnlyWallet } from '@/state/wallets/walletsStore';
 import { position } from '@/styles';
 import { useTheme } from '@/theme/ThemeContext';
 import abbreviations from '@/utils/abbreviations';
 import ethereumUtils, { getUniqueId } from '@/utils/ethereumUtils';
-import watchingAlert from '@/utils/watchingAlert';
 import { openInBrowser } from '@/utils/openInBrowser';
 import { addressHashedColorIndex } from '@/utils/profileUtils';
-import { type RouteProp, useFocusEffect, useRoute } from '@react-navigation/native';
-import { type Execute, getClient } from '@reservoir0x/reservoir-sdk';
-import { format } from 'date-fns';
-import React, { useCallback, useEffect, useMemo, useReducer, useRef, useState } from 'react';
-import { View } from 'react-native';
-import { BlurView } from 'react-native-blur-view';
-import { useSharedValue } from 'react-native-reanimated';
-import { createWalletClient, http } from 'viem';
-import { privateKeyToAccount } from 'viem/accounts';
+import watchingAlert from '@/utils/watchingAlert';
+
 import ImgixImage from '../../components/images/ImgixImage';
 import { SlackSheet } from '../../components/sheet';
 import { CardSize } from '../../components/unique-token/CardSize';
 import { QuantityButton } from './components/QuantityButton';
-import { userAssetsStoreManager } from '@/state/assets/userAssetsStoreManager';
-import { useRainbowToastEnabled } from '@/components/rainbow-toast/useRainbowToastEnabled';
 
 const NFT_IMAGE_HEIGHT = 250;
 // inset * 2 -> 28 *2

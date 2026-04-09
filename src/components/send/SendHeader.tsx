@@ -1,33 +1,36 @@
-import { isHexString } from '@ethersproject/bytes';
-import * as i18n from '@/languages';
-import isEmpty from 'lodash/isEmpty';
 import React, { Fragment, useCallback, useEffect, useMemo, useState } from 'react';
 import { ActivityIndicator, Keyboard, type TextInput } from 'react-native';
-import { useNavigation } from '../../navigation/Navigation';
-import { type ThemeContextProps, useTheme } from '../../theme/ThemeContext';
+
+import { isHexString } from '@ethersproject/bytes';
+import isEmpty from 'lodash/isEmpty';
+
+import ButtonPressAnimation from '@/components/animations/ButtonPressAnimation';
 import Divider from '@/components/Divider';
 import Spinner from '@/components/Spinner';
-import ButtonPressAnimation from '@/components/animations/ButtonPressAnimation';
+import useExperimentalFlag, { PROFILES } from '@/config/experimentalHooks';
+import styled from '@/framework/ui/styled-thing';
+import { showActionSheetWithOptions } from '@/framework/ui/utils/actionsheet';
+import { opacity } from '@/framework/ui/utils/opacity';
+import { resolveNameOrAddress } from '@/handlers/web3';
+import { removeFirstEmojiFromString } from '@/helpers/emojiHandler';
+import useClipboard from '@/hooks/useClipboard';
+import type useContacts from '@/hooks/useContacts';
+import useDimensions from '@/hooks/useDimensions';
+import * as i18n from '@/languages';
+import { type RainbowAccount } from '@/model/wallet';
+import Routes from '@/navigation/routesNames';
+import { Contact } from '@/redux/contacts';
+import { padding } from '@/styles';
+import profileUtils from '@/utils/profileUtils';
+
+import { useNavigation } from '../../navigation/Navigation';
+import { useTheme, type ThemeContextProps } from '../../theme/ThemeContext';
 import { PasteAddressButton } from '../buttons';
 import showDeleteContactActionSheet from '../contacts/showDeleteContactActionSheet';
 import { AddressField } from '../fields';
 import { Row } from '../layout';
 import { SheetHandleFixedToTop, SheetTitle } from '../sheet';
 import { Label, Text } from '../text';
-import useExperimentalFlag, { PROFILES } from '@/config/experimentalHooks';
-import { resolveNameOrAddress } from '@/handlers/web3';
-import { removeFirstEmojiFromString } from '@/helpers/emojiHandler';
-import useClipboard from '@/hooks/useClipboard';
-import useDimensions from '@/hooks/useDimensions';
-import type useContacts from '@/hooks/useContacts';
-import Routes from '@/navigation/routesNames';
-import styled from '@/framework/ui/styled-thing';
-import { padding } from '@/styles';
-import { showActionSheetWithOptions } from '@/framework/ui/utils/actionsheet';
-import profileUtils from '@/utils/profileUtils';
-import { type RainbowAccount } from '@/model/wallet';
-import { Contact } from '@/redux/contacts';
-import { opacity } from '@/framework/ui/utils/opacity';
 
 type ComponentPropsWithTheme = {
   theme: ThemeContextProps;

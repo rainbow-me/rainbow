@@ -1,24 +1,26 @@
-import c from 'chroma-js';
 import React, { memo, useCallback, useMemo, useState } from 'react';
 import { Text as RNText, StyleSheet } from 'react-native';
-import Animated, { type AnimatedRef, useDerivedValue, useSharedValue } from 'react-native-reanimated';
-import * as i18n from '@/languages';
+
+import c from 'chroma-js';
+import Animated, { useDerivedValue, useSharedValue, type AnimatedRef } from 'react-native-reanimated';
+
 import { useSwapContext } from '@/__swaps__/screens/Swap/providers/swap-provider';
-import { ChainId } from '@/state/backendNetworks/types';
-import { opacity } from '@/framework/ui/utils/opacity';
-import { analytics } from '@/analytics';
-import { ChainImage } from '@/components/coin-icon/ChainImage';
-import { AnimatedText, Bleed, Box, Inline, Text, TextIcon, globalColors, useColorMode } from '@/design-system';
-import { useAccountAccentColor } from '@/hooks/useAccountAccentColor';
-import { useSharedValueState } from '@/hooks/reanimated/useSharedValueState';
-import { userAssetsStore, useUserAssetsStore } from '@/state/assets/userAssets';
-import { swapsStore } from '@/state/swaps/swapsStore';
-import { useBackendNetworksStore } from '@/state/backendNetworks/backendNetworks';
-import Routes from '@/navigation/routesNames';
-import { type TokenToBuyListItem } from '@/__swaps__/types/search';
-import Navigation from '@/navigation/Navigation';
-import { GestureHandlerButton } from '@/components/buttons/GestureHandlerButton';
 import { type UserAssetFilter } from '@/__swaps__/types/assets';
+import { type TokenToBuyListItem } from '@/__swaps__/types/search';
+import { analytics } from '@/analytics';
+import { GestureHandlerButton } from '@/components/buttons/GestureHandlerButton';
+import { ChainImage } from '@/components/coin-icon/ChainImage';
+import { AnimatedText, Bleed, Box, globalColors, Inline, Text, TextIcon, useColorMode } from '@/design-system';
+import { opacity } from '@/framework/ui/utils/opacity';
+import { useSharedValueState } from '@/hooks/reanimated/useSharedValueState';
+import { useAccountAccentColor } from '@/hooks/useAccountAccentColor';
+import * as i18n from '@/languages';
+import Navigation from '@/navigation/Navigation';
+import Routes from '@/navigation/routesNames';
+import { userAssetsStore, useUserAssetsStore } from '@/state/assets/userAssets';
+import { useBackendNetworksStore } from '@/state/backendNetworks/backendNetworks';
+import { ChainId } from '@/state/backendNetworks/types';
+import { swapsStore } from '@/state/swaps/swapsStore';
 
 type ChainSelectionProps = {
   allText?: string;

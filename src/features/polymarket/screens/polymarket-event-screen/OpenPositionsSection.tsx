@@ -1,8 +1,9 @@
+import { memo } from 'react';
+
 import { Box, Separator, Text, TextIcon, useColorMode } from '@/design-system';
 import { PolymarketPositionCard } from '@/features/polymarket/components/PolymarketPositionCard';
 import { usePolymarketPositionsStore } from '@/features/polymarket/stores/polymarketPositionsStore';
 import * as i18n from '@/languages';
-import { memo } from 'react';
 
 export const OpenPositionsSection = memo(function OpenPositionsSection({ eventId, eventColor }: { eventId: string; eventColor: string }) {
   const { isDarkMode } = useColorMode();

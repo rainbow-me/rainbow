@@ -1,4 +1,5 @@
 import URL from 'url-parse';
+
 import { memoFn } from '../utils/memoFn';
 
 export const getDappHostname = memoFn(url => {

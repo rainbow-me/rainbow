@@ -1,10 +1,12 @@
-import * as i18n from '@/languages';
 import React, { useCallback } from 'react';
-import ActionButton from './ActionButton';
-import { REGISTRATION_MODES } from '../../../utils/helpers';
-import useENSRegistration from '../../../hooks/useENSRegistration';
+
+import * as i18n from '@/languages';
 import { useNavigation } from '@/navigation/Navigation';
 import Routes from '@/navigation/routesNames';
+
+import useENSRegistration from '../../../hooks/useENSRegistration';
+import { REGISTRATION_MODES } from '../../../utils/helpers';
+import ActionButton from './ActionButton';
 
 export default function WatchButton({ ensName }: { ensName?: string }) {
   const { navigate } = useNavigation();

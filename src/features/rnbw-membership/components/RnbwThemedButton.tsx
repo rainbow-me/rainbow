@@ -1,7 +1,9 @@
 import React, { memo } from 'react';
 import { type StyleProp, type ViewStyle } from 'react-native';
+
 import ButtonPressAnimation from '@/components/animations/ButtonPressAnimation';
 import { type TextProps } from '@/design-system';
+
 import { RnbwButtonSurface, RnbwButtonText } from './RnbwButtonSurface';
 
 export const RnbwThemedButton = memo(function RnbwThemedButton({

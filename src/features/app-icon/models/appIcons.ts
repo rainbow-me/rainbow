@@ -1,25 +1,27 @@
-import type { EthereumAddress } from '@/entities/wallet';
 import { type ImageSourcePropType } from 'react-native';
+
+import AppIconAdworld from '@/assets/appIconAdworld.png';
+import AppIconBaggy from '@/assets/appIconBaggy.png';
+import AppIconChonks from '@/assets/appIconChonks.png';
+import AppIconFarcaster from '@/assets/appIconFarcaster.png';
 import AppIconFiniliar from '@/assets/appIconFiniliar.png';
 import AppIconGoldDoge from '@/assets/appIconGoldDoge.png';
-import AppIconRainDoge from '@/assets/appIconRainDoge.png';
+import AppIconMog from '@/assets/appIconMog.png';
 import AppIconOg from '@/assets/appIconOg.png';
 import AppIconOptimism from '@/assets/appIconOptimism.png';
 import AppIconPixel from '@/assets/appIconPixel.png';
+import AppIconPoolboy from '@/assets/appIconPoolboy.png';
 import AppIconPooly from '@/assets/appIconPooly.png';
+import AppIconRainDoge from '@/assets/appIconRainDoge.png';
+import AppIconRedacted from '@/assets/appIconRedacted.png';
 import AppIconSmol from '@/assets/appIconSmol.png';
 import AppIconZora from '@/assets/appIconZora.png';
 import AppIconZorb from '@/assets/appIconZorb.png';
-import AppIconPoolboy from '@/assets/appIconPoolboy.png';
-import AppIconAdworld from '@/assets/appIconAdworld.png';
-import AppIconFarcaster from '@/assets/appIconFarcaster.png';
-import AppIconRedacted from '@/assets/appIconRedacted.png';
-import AppIconBaggy from '@/assets/appIconBaggy.png';
-import AppIconChonks from '@/assets/appIconChonks.png';
-import AppIconMog from '@/assets/appIconMog.png';
 import { globalColors } from '@/design-system';
-import { type TokenGateCheckerNetwork, type TokenInfo } from '../utils/tokenGatedUtils';
+import type { EthereumAddress } from '@/entities/wallet';
 import { Network } from '@/state/backendNetworks/types';
+
+import { type TokenGateCheckerNetwork, type TokenInfo } from '../utils/tokenGatedUtils';
 
 const OPTIMISTIC_EXPLORER_NFT_ADDRESS: EthereumAddress = '0x81b30ff521D1fEB67EDE32db726D95714eb00637';
 

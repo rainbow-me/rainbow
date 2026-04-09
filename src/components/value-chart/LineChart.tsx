@@ -1,16 +1,19 @@
 import React, { memo, useMemo } from 'react';
-import { Box, useColorMode } from '@/design-system';
-import { ExtremeLabels, LABEL_VERTICAL_EXTRA_OFFSET } from './ExtremeLabels';
-import { ChartDot, ChartPath, ChartPathProvider, useChartData } from '@/react-native-animated-charts/src';
-import { useTheme } from '@/theme/ThemeContext';
-import useChartThrottledPoints from '@/hooks/charts/useChartThrottledPoints';
-import { getSolidColorEquivalent } from '@/worklets/colors';
-import { useDelayedMount } from '@/hooks/useDelayedMount';
-import { type SharedValue, useAnimatedReaction } from 'react-native-reanimated';
+
+import { useAnimatedReaction, type SharedValue } from 'react-native-reanimated';
+
 import { AnimatedSpinner } from '@/components/animations/AnimatedSpinner';
+import { Box, useColorMode } from '@/design-system';
 import { NoChartData } from '@/features/charts/components/NoChartData';
 import { useChartsStore } from '@/features/charts/stores/chartsStore';
 import { toLineChartTimespan } from '@/features/charts/utils';
+import useChartThrottledPoints from '@/hooks/charts/useChartThrottledPoints';
+import { useDelayedMount } from '@/hooks/useDelayedMount';
+import { ChartDot, ChartPath, ChartPathProvider, useChartData } from '@/react-native-animated-charts/src';
+import { useTheme } from '@/theme/ThemeContext';
+import { getSolidColorEquivalent } from '@/worklets/colors';
+
+import { ExtremeLabels, LABEL_VERTICAL_EXTRA_OFFSET } from './ExtremeLabels';
 
 const CHART_DOT_SIZE = 10;
 

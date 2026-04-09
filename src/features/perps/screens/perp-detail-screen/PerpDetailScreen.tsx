@@ -1,28 +1,31 @@
 import React, { memo, useMemo } from 'react';
-import { Bleed, Box, Inline, Separator, Text, TextShadow, useColorMode, useForegroundColor } from '@/design-system';
-import { type RouteProp, useRoute } from '@react-navigation/native';
-import { type RootStackParamList } from '@/navigation/types';
-import type Routes from '@/navigation/routesNames';
-import { HyperliquidTokenIcon } from '@/features/perps/components/HyperliquidTokenIcon';
-import { type PerpMarket, PerpPositionSide } from '@/features/perps/types';
-import { opacity } from '@/framework/ui/utils/opacity';
-import { PerpsAccentColorContextProvider, usePerpsAccentColorContext } from '@/features/perps/context/PerpsAccentColorContext';
-import { Chart } from '@/components/value-chart/Chart';
-import { useSafeAreaInsets } from 'react-native-safe-area-context';
-import { CollapsibleSectionBase } from '@/components/collapsible/CollapsibleSectionBase';
+
+import { useRoute, type RouteProp } from '@react-navigation/native';
 import { useSharedValue } from 'react-native-reanimated';
-import { HistorySection } from './HistorySection';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
+
+import { ETH_COLOR_DARK, ETH_COLOR_DARK_ACCENT } from '@/__swaps__/screens/Swap/constants';
+import { CollapsibleSectionBase } from '@/components/collapsible/CollapsibleSectionBase';
+import { EasingGradient } from '@/components/easing-gradient/EasingGradient';
+import SlackSheet from '@/components/sheet/SlackSheet';
+import { Chart } from '@/components/value-chart/Chart';
+import { Bleed, Box, Inline, Separator, Text, TextShadow, useColorMode, useForegroundColor } from '@/design-system';
+import { IS_ANDROID, IS_IOS } from '@/env';
+import { HyperliquidTokenIcon } from '@/features/perps/components/HyperliquidTokenIcon';
+import { PERPS_BACKGROUND_DARK, PERPS_BACKGROUND_LIGHT } from '@/features/perps/constants';
+import { PerpsAccentColorContextProvider, usePerpsAccentColorContext } from '@/features/perps/context/PerpsAccentColorContext';
 import { OpenPositionSection } from '@/features/perps/screens/perp-detail-screen/OpenPositionSection';
 import { TriggerOrdersSection } from '@/features/perps/screens/perp-detail-screen/TriggerOrdersSection';
-import SlackSheet from '@/components/sheet/SlackSheet';
-import { IS_ANDROID, IS_IOS } from '@/env';
-import { EasingGradient } from '@/components/easing-gradient/EasingGradient';
-import { ETH_COLOR_DARK, ETH_COLOR_DARK_ACCENT } from '@/__swaps__/screens/Swap/constants';
-import { SHEET_FOOTER_HEIGHT, SheetFooter } from './SheetFooter';
 import { useHyperliquidAccountStore } from '@/features/perps/stores/hyperliquidAccountStore';
-import { PERPS_BACKGROUND_DARK, PERPS_BACKGROUND_LIGHT } from '@/features/perps/constants';
-import * as i18n from '@/languages';
+import { PerpPositionSide, type PerpMarket } from '@/features/perps/types';
 import { extractBaseSymbol } from '@/features/perps/utils/hyperliquidSymbols';
+import { opacity } from '@/framework/ui/utils/opacity';
+import * as i18n from '@/languages';
+import type Routes from '@/navigation/routesNames';
+import { type RootStackParamList } from '@/navigation/types';
+
+import { HistorySection } from './HistorySection';
+import { SHEET_FOOTER_HEIGHT, SheetFooter } from './SheetFooter';
 
 export const NameAndPriceSection = memo(function NameAndPriceSection({
   symbol,

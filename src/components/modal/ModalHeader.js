@@ -1,11 +1,13 @@
-import * as i18n from '@/languages';
 import React from 'react';
+
+import styled from '@/framework/ui/styled-thing';
+import * as i18n from '@/languages';
+import { borders, position } from '@/styles';
+
 import { useTheme } from '../../theme/ThemeContext';
 import { Centered, Row } from '../layout';
 import { TruncatedText } from '../text';
 import ModalHeaderButton from './ModalHeaderButton';
-import styled from '@/framework/ui/styled-thing';
-import { borders, position } from '@/styles';
 
 export const ModalHeaderHeight = 50;
 

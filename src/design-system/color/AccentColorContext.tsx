@@ -1,5 +1,7 @@
+import React, { createContext, useContext, useMemo, type ReactNode } from 'react';
+
 import chroma from 'chroma-js';
-import React, { createContext, type ReactNode, useContext, useMemo } from 'react';
+
 import { useBackgroundColor } from '../components/BackgroundProvider/BackgroundProvider';
 import { type BackgroundColorValue } from './palettes';
 

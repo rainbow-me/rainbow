@@ -1,10 +1,10 @@
-import { type NativeCurrencyKey, NativeCurrencyKeys } from '@/entities/nativeCurrencyTypes';
+import { stripNonDecimalNumbers } from '@/__swaps__/utils/swaps';
+import { NativeCurrencyKeys, type NativeCurrencyKey } from '@/entities/nativeCurrencyTypes';
 import { multiply } from '@/helpers/utilities';
 import { getPlatformClient } from '@/resources/platform/client';
 import { type PlatformResponse } from '@/resources/platform/types';
 import { userAssetsStoreManager } from '@/state/assets/userAssetsStoreManager';
 import { createQueryStore } from '@/state/internal/createQueryStore';
-import { stripNonDecimalNumbers } from '@/__swaps__/utils/swaps';
 import { time } from '@/utils/time';
 
 type CurrencyConversionStore = {

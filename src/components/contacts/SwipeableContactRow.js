@@ -1,7 +1,13 @@
-import * as i18n from '@/languages';
 import React, { useCallback, useImperativeHandle, useRef } from 'react';
 import { Animated } from 'react-native';
+
 import Swipeable from 'react-native-gesture-handler/Swipeable';
+
+import { ImgixImage } from '@/components/images';
+import { opacity } from '@/framework/ui/utils/opacity';
+import * as i18n from '@/languages';
+import { margin, position } from '@/styles';
+
 import DeleteIcon from '../../assets/swipeToDelete.png';
 import EditIcon from '../../assets/swipeToEdit.png';
 import ButtonPressAnimation from '../animations/ButtonPressAnimation';
@@ -9,9 +15,6 @@ import { Centered, Row } from '../layout';
 import { Text } from '../text';
 import ContactRow from './ContactRow';
 import showDeleteContactActionSheet from './showDeleteContactActionSheet';
-import { ImgixImage } from '@/components/images';
-import { margin, position } from '@/styles';
-import { opacity } from '@/framework/ui/utils/opacity';
 
 const AnimatedCentered = Animated.createAnimatedComponent(Centered);
 

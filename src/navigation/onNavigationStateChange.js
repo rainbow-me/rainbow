@@ -1,12 +1,15 @@
 import { NativeModules } from 'react-native';
+
 import { SystemBars } from 'react-native-edge-to-edge';
+
 import { analytics } from '@/analytics';
+import { isSplashScreenHidden } from '@/hooks/useHideSplashScreen';
+import { logger } from '@/logger';
 import { isSwipeRoute, setActiveRoute } from '@/state/navigation/navigationStore';
 import currentColors from '@/theme/currentColors';
-import { logger } from '@/logger';
+
 import Navigation from './Navigation';
 import Routes from './routesNames';
-import { isSplashScreenHidden } from '@/hooks/useHideSplashScreen';
 
 let memState;
 let memRouteName;

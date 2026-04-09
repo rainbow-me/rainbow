@@ -1,28 +1,30 @@
+import type { WalletKitTypes } from '@reown/walletkit';
+import { getSdkError } from '@walletconnect/utils';
+import { uniq } from 'lodash';
+
 import { analytics } from '@/analytics';
 import Alert from '@/components/alerts/Alert';
 import { hideWalletConnectToast } from '@/components/toasts/WalletConnectToast';
 import { IS_IOS } from '@/env';
+import { events } from '@/handlers/appEvents';
+import { maybeSignUri } from '@/handlers/imgix';
 import * as i18n from '@/languages';
 import { logger, RainbowError } from '@/logger';
-import { maybeSignUri } from '@/handlers/imgix';
 import Navigation, { getActiveRoute } from '@/navigation/Navigation';
 import Routes from '@/navigation/routesNames';
 import { fetchDappMetadata } from '@/resources/metadata/dapp';
 import { useBackendNetworksStore } from '@/state/backendNetworks/backendNetworks';
-import { events } from '@/handlers/appEvents';
-import { type WalletconnectApprovalSheetRouteParams } from '../types';
-import type { WalletKitTypes } from '@reown/walletkit';
-import { getSdkError } from '@walletconnect/utils';
-import { uniq } from 'lodash';
+
+import { showErrorSheet } from '../components/showErrorSheet';
 import { getWalletKitClient } from '../services/client';
+import { lastConnector, maybeGoBackAndClearHasPendingRedirect, setHasPendingDeeplinkPendingRedirect } from '../services/pair';
+import { type WalletconnectApprovalSheetRouteParams } from '../types';
 import {
   getApprovedNamespaces,
   SUPPORTED_SESSION_EVENTS,
   SUPPORTED_SIGNING_METHODS,
   SUPPORTED_TRANSACTION_METHODS,
 } from '../utils/rpcParams';
-import { showErrorSheet } from '../components/showErrorSheet';
-import { lastConnector, maybeGoBackAndClearHasPendingRedirect, setHasPendingDeeplinkPendingRedirect } from '../services/pair';
 
 const T = i18n.l.walletconnect;
 

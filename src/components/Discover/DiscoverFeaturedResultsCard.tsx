@@ -1,10 +1,12 @@
 import React from 'react';
+import { StyleSheet } from 'react-native';
+
 import { GenericCard } from '@/components/cards/GenericCard';
 import { ImgixImage } from '@/components/images';
-import { HORIZONTAL_PADDING } from './DiscoverHome';
-import deviceUtils from '@/utils/deviceUtils';
 import { type FeaturedResult } from '@/graphql/__generated__/arc';
-import { StyleSheet } from 'react-native';
+import deviceUtils from '@/utils/deviceUtils';
+
+import { HORIZONTAL_PADDING } from './DiscoverHome';
 
 const { width: SCREEN_WIDTH } = deviceUtils.dimensions;
 const CARD_WIDTH = SCREEN_WIDTH - HORIZONTAL_PADDING * 2;

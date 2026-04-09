@@ -1,8 +1,9 @@
-import { useFocusEffect } from '@react-navigation/native';
 import React, { useCallback, useRef } from 'react';
-import { Gesture, GestureDetector } from 'react-native-gesture-handler';
 
+import { useFocusEffect } from '@react-navigation/native';
+import { Gesture, GestureDetector } from 'react-native-gesture-handler';
 import Animated, { cancelAnimation, runOnJS, useAnimatedStyle, useDerivedValue, useSharedValue, withDecay } from 'react-native-reanimated';
+
 import withSpeed from '@/utils/withSpeed';
 
 const DECCELERATION = 0.998;

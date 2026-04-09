@@ -1,10 +1,11 @@
-import MaskedView from '@react-native-masked-view/masked-view';
-import * as i18n from '@/languages';
 import React, { useCallback, useEffect, useRef } from 'react';
 import { Alert, StyleSheet, View } from 'react-native';
+
+import MaskedView from '@react-native-masked-view/masked-view';
+import { PerformanceMeasureView } from '@shopify/react-native-performance';
 import Animated, {
-  Easing,
   cancelAnimation,
+  Easing,
   interpolateColor,
   useAnimatedStyle,
   useDerivedValue,
@@ -16,26 +17,28 @@ import Animated, {
   withTiming,
 } from 'react-native-reanimated';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
+
+import { analytics } from '@/analytics';
+import { Box } from '@/design-system';
+import { IS_ANDROID, IS_IOS, IS_TEST } from '@/env';
+import { opacity } from '@/framework/ui/utils/opacity';
+import { WalletLoadingStates } from '@/helpers/walletLoadingStates';
+import { useHardwareBackOnFocus } from '@/hooks/useHardwareBack';
+import { hideSplashScreen } from '@/hooks/useHideSplashScreen';
+import * as i18n from '@/languages';
+import { ensureError, logger, RainbowError } from '@/logger';
+import { useNavigation } from '@/navigation/Navigation';
+import { navigateAfterOnboarding } from '@/navigation/onboardingNavigation';
+import { WelcomeScreenRainbowButton } from '@/screens/WelcomeScreen/WelcomeScreenRainbowButton';
+import { walletLoadingStore } from '@/state/walletLoading/walletLoading';
+import { initializeWallet } from '@/state/wallets/initializeWallet';
+import { useTheme } from '@/theme/ThemeContext';
+import { openInBrowser } from '@/utils/openInBrowser';
+import Routes from '@rainbow-me/routes';
+
 import RainbowText from '../../components/icons/svg/RainbowText';
 import { RainbowsBackground } from '../../components/rainbows-background/RainbowsBackground';
 import { Text } from '../../components/text';
-import { analytics } from '@/analytics';
-import { useHardwareBackOnFocus } from '@/hooks/useHardwareBack';
-import { useNavigation } from '@/navigation/Navigation';
-import Routes from '@rainbow-me/routes';
-import { useTheme } from '@/theme/ThemeContext';
-import { ensureError, logger, RainbowError } from '@/logger';
-import { IS_ANDROID, IS_IOS, IS_TEST } from '@/env';
-import { WelcomeScreenRainbowButton } from '@/screens/WelcomeScreen/WelcomeScreenRainbowButton';
-import { openInBrowser } from '@/utils/openInBrowser';
-import { PerformanceMeasureView } from '@shopify/react-native-performance';
-import { hideSplashScreen } from '@/hooks/useHideSplashScreen';
-import { walletLoadingStore } from '@/state/walletLoading/walletLoading';
-import { WalletLoadingStates } from '@/helpers/walletLoadingStates';
-import { initializeWallet } from '@/state/wallets/initializeWallet';
-import { Box } from '@/design-system';
-import { opacity } from '@/framework/ui/utils/opacity';
-import { navigateAfterOnboarding } from '@/navigation/onboardingNavigation';
 
 const RAINBOW_TEXT_HEIGHT = 32;
 const RAINBOW_TEXT_WIDTH = 125;

@@ -1,16 +1,18 @@
 import { memo } from 'react';
-import { Box, Separator, Text, TextIcon } from '@/design-system';
-import { useMembershipTierInfo } from '@/features/rnbw-membership/stores/derived/useMembershipTierInfo';
+
 import ButtonPressAnimation from '@/components/animations/ButtonPressAnimation';
+import { Box, Separator, Text, TextIcon } from '@/design-system';
+import { TierProgressBar } from '@/features/rnbw-membership/components/TierProgressBar';
+import { TierThemedLabel } from '@/features/rnbw-membership/components/TierThemedLabel';
+import { MembershipCard } from '@/features/rnbw-membership/screens/rnbw-membership-screen/components/MembershipCard';
+import { useMembershipTierInfo } from '@/features/rnbw-membership/stores/derived/useMembershipTierInfo';
+import { RNBW_SYMBOL } from '@/features/rnbw-rewards/constants';
+import { useStakingPositionStore } from '@/features/rnbw-staking/stores/rnbwStakingPositionStore';
+import * as i18n from '@/languages';
 import Navigation from '@/navigation/Navigation';
 import Routes from '@/navigation/routesNames';
-import { MembershipCard } from '@/features/rnbw-membership/screens/rnbw-membership-screen/components/MembershipCard';
-import { TierThemedLabel } from '@/features/rnbw-membership/components/TierThemedLabel';
-import { TierProgressBar } from '@/features/rnbw-membership/components/TierProgressBar';
-import { RNBW_SYMBOL } from '@/features/rnbw-rewards/constants';
 import { DEVICE_WIDTH } from '@/utils/deviceUtils';
-import * as i18n from '@/languages';
-import { useStakingPositionStore } from '@/features/rnbw-staking/stores/rnbwStakingPositionStore';
+
 import { MembershipCardSkeleton } from './MembershipCardSkeleton';
 
 export const MembershipTierCard = memo(function MembershipTierCard() {

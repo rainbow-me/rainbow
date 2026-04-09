@@ -1,17 +1,19 @@
 import { memo, useCallback, useEffect, useState } from 'react';
 import { Alert, StyleSheet, View } from 'react-native';
+
+import Animated from 'react-native-reanimated';
+
+import { ETH_COLOR_DARK } from '@/__swaps__/screens/Swap/constants';
 import { Box, Text, TextIcon } from '@/design-system';
+import { defaultEnterAnimation, defaultExitAnimation } from '@/features/rnbw-rewards/animations/sceneTransitions';
+import { getCoinBottomPosition } from '@/features/rnbw-rewards/screens/rnbw-rewards-screen/components/RnbwHeroCoin';
 import { RnbwRewardsScenes, type RnbwRewardsScene } from '@/features/rnbw-rewards/screens/rnbw-rewards-screen/constants/rewardsScenes';
 import { ActionStatusScene } from '@/features/rnbw-rewards/screens/rnbw-rewards-screen/scenes/ActionStatusScene';
 import { useAirdropBalanceStore } from '@/features/rnbw-rewards/stores/airdropBalanceStore';
-import { type AsyncActionState, useRewardsFlowStore, rewardsFlowActions } from '@/features/rnbw-rewards/stores/rewardsFlowStore';
-import * as i18n from '@/languages';
-import { getCoinBottomPosition } from '@/features/rnbw-rewards/screens/rnbw-rewards-screen/components/RnbwHeroCoin';
-import { ETH_COLOR_DARK } from '@/__swaps__/screens/Swap/constants';
+import { rewardsFlowActions, useRewardsFlowStore, type AsyncActionState } from '@/features/rnbw-rewards/stores/rewardsFlowStore';
 import { opacity } from '@/framework/ui/utils/opacity';
+import * as i18n from '@/languages';
 import { time } from '@/utils/time';
-import Animated from 'react-native-reanimated';
-import { defaultEnterAnimation, defaultExitAnimation } from '@/features/rnbw-rewards/animations/sceneTransitions';
 
 const LONGER_THAN_USUAL_TIME = time.seconds(10);
 

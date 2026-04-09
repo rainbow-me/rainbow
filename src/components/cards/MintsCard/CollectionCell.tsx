@@ -1,18 +1,19 @@
 import React, { useCallback, useEffect, useState } from 'react';
-import { globalColors } from '@/design-system/color/palettes';
-import { convertRawAmountToRoundedDecimal } from '@/helpers/utilities';
-import { AccentColorProvider, Bleed, Box, Cover, Inline, Inset, Text } from '@/design-system';
-import ButtonPressAnimation from '@/components/animations/ButtonPressAnimation';
-import { useTheme } from '@/theme/ThemeContext';
 import { View } from 'react-native';
-import { type MintableCollection } from '@/graphql/__generated__/arc';
-import { useNativeAsset } from '@/utils/ethereumUtils';
+
 import { analytics } from '@/analytics';
-import * as i18n from '@/languages';
-import { IS_IOS } from '@/env';
-import { ImgixImage } from '@/components/images';
-import { navigateToMintCollection } from '@/resources/reservoir/mints';
+import ButtonPressAnimation from '@/components/animations/ButtonPressAnimation';
 import RainbowCoinIcon from '@/components/coin-icon/RainbowCoinIcon';
+import { ImgixImage } from '@/components/images';
+import { AccentColorProvider, Bleed, Box, Cover, Inline, Inset, Text } from '@/design-system';
+import { globalColors } from '@/design-system/color/palettes';
+import { IS_IOS } from '@/env';
+import { type MintableCollection } from '@/graphql/__generated__/arc';
+import { convertRawAmountToRoundedDecimal } from '@/helpers/utilities';
+import * as i18n from '@/languages';
+import { navigateToMintCollection } from '@/resources/reservoir/mints';
+import { useTheme } from '@/theme/ThemeContext';
+import { useNativeAsset } from '@/utils/ethereumUtils';
 
 export const NFT_IMAGE_SIZE = 111;
 

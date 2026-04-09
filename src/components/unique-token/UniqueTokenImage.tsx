@@ -1,16 +1,19 @@
 import React, { useCallback, useMemo, useState } from 'react';
 import { StyleSheet } from 'react-native';
+
 import { BlurView } from 'react-native-blur-view';
+
+import { Text, useColorMode } from '@/design-system';
+import { opacity } from '@/framework/ui/utils/opacity';
+import useHiddenTokens from '@/hooks/useHiddenTokens';
+import { logger } from '@/logger';
+import { type Colors } from '@/styles';
+import isLowerCaseMatch from '@/utils/isLowerCaseMatch';
+
 import { buildUniqueTokenName } from '../../helpers/assets';
 import { useTheme } from '../../theme/ThemeContext';
 import { Centered } from '../layout';
-import { useColorMode, Text } from '@/design-system';
-import useHiddenTokens from '@/hooks/useHiddenTokens';
-import { type Colors } from '@/styles';
-import isLowerCaseMatch from '@/utils/isLowerCaseMatch';
 import { RainbowImage } from '../RainbowImage';
-import { logger } from '@/logger';
-import { opacity } from '@/framework/ui/utils/opacity';
 
 function getFallbackTextColor(bg: string, isDarkMode: boolean, colors: Colors) {
   const variants = {

@@ -1,16 +1,18 @@
 import { memo, useCallback, useMemo, useState } from 'react';
-import { type LayoutChangeEvent, StyleSheet, View } from 'react-native';
+import { StyleSheet, View, type LayoutChangeEvent } from 'react-native';
+
 import { LinearGradient } from 'expo-linear-gradient';
 import Animated, { useSharedValue } from 'react-native-reanimated';
+
 import { EasingGradient } from '@/components/easing-gradient/EasingGradient';
 import { PanelSheet } from '@/components/PanelSheet/PanelSheet';
 import { ScrollHeaderFade } from '@/components/scroll-header-fade/ScrollHeaderFade';
 import { useScrollFadeHandler } from '@/components/scroll-header-fade/useScrollFadeHandler';
 import { Box, globalColors, MarkdownText, Text, useColorMode } from '@/design-system';
 import * as i18n from '@/languages';
-import useUntrustedUrlOpener from '@/navigation/useUntrustedUrlOpener';
 import { useRoute } from '@/navigation/Navigation';
 import type Routes from '@/navigation/routesNames';
+import useUntrustedUrlOpener from '@/navigation/useUntrustedUrlOpener';
 import { THICKER_BORDER_WIDTH } from '@/styles/constants';
 import { DEVICE_HEIGHT } from '@/utils/deviceUtils';
 import { getSolidColorEquivalent } from '@/worklets/colors';

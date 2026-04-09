@@ -1,23 +1,26 @@
-import { useRoute, type RouteProp } from '@react-navigation/native';
-import { createMaterialTopTabNavigator } from '@react-navigation/material-top-tabs';
 import React, { useEffect, useMemo, useRef, useState } from 'react';
+
+import { createMaterialTopTabNavigator } from '@react-navigation/material-top-tabs';
+import { useRoute, type RouteProp } from '@react-navigation/native';
 import { useSetRecoilState } from 'recoil';
+
 import { SlackSheet } from '@/components/sheet';
+import { Box } from '@/design-system';
+import useDimensions from '@/hooks/useDimensions';
+import usePrevious from '@/hooks/usePrevious';
+import { sharedCoolModalTopOffset } from '@/navigation/config';
+import Routes from '@/navigation/routesNames';
+import { type RootStackParamList } from '@/navigation/types';
+import { useTheme } from '@/theme/ThemeContext';
+import deviceUtils from '@/utils/deviceUtils';
+
+import { avatarMetadataAtom } from '../components/registration/RegistrationAvatar';
+import useENSRegistration from '../hooks/useENSRegistration';
+import useENSRegistrationForm from '../hooks/useENSRegistrationForm';
 import ENSAssignRecordsSheet, { ENSAssignRecordsBottomActions } from '../screens/ENSAssignRecordsSheet';
 import ENSIntroSheet from '../screens/ENSIntroSheet';
 import ENSSearchSheet from '../screens/ENSSearchSheet';
-import { sharedCoolModalTopOffset } from '@/navigation/config';
-import { avatarMetadataAtom } from '../components/registration/RegistrationAvatar';
-import { Box } from '@/design-system';
 import { accentColorAtom, REGISTRATION_MODES } from '../utils/helpers';
-import useDimensions from '@/hooks/useDimensions';
-import useENSRegistration from '../hooks/useENSRegistration';
-import useENSRegistrationForm from '../hooks/useENSRegistrationForm';
-import usePrevious from '@/hooks/usePrevious';
-import Routes from '@/navigation/routesNames';
-import { useTheme } from '@/theme/ThemeContext';
-import deviceUtils from '@/utils/deviceUtils';
-import { type RootStackParamList } from '@/navigation/types';
 
 const Swipe = createMaterialTopTabNavigator();
 

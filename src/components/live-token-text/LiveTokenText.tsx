@@ -1,12 +1,14 @@
 import React, { useCallback, useEffect, useRef, useState } from 'react';
-import { AnimatedText, type TextProps, useForegroundColor } from '@/design-system';
-import { useTheme } from '@/theme/ThemeContext';
-import { useLiveTokensStore, addSubscribedToken, removeSubscribedToken, type TokenData } from '@/state/liveTokens/liveTokensStore';
-import { useSharedValue, type SharedValue, useAnimatedStyle, useAnimatedReaction, withTiming, withDelay } from 'react-native-reanimated';
-import { useListen } from '@/state/internal/hooks/useListen';
-import { useRoute } from '@/navigation/Navigation';
-import { toUnixTime } from '@/worklets/dates';
+
+import { useAnimatedReaction, useAnimatedStyle, useSharedValue, withDelay, withTiming, type SharedValue } from 'react-native-reanimated';
+
+import { AnimatedText, useForegroundColor, type TextProps } from '@/design-system';
 import usePrevious from '@/hooks/usePrevious';
+import { useRoute } from '@/navigation/Navigation';
+import { useListen } from '@/state/internal/hooks/useListen';
+import { addSubscribedToken, removeSubscribedToken, useLiveTokensStore, type TokenData } from '@/state/liveTokens/liveTokensStore';
+import { useTheme } from '@/theme/ThemeContext';
+import { toUnixTime } from '@/worklets/dates';
 
 interface LiveTokenValueParams {
   tokenId: string;

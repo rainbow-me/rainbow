@@ -1,9 +1,11 @@
 import { useQuery } from '@tanstack/react-query';
+
+import { queryClient, type QueryConfigDeprecated, type UseQueryData } from '@/react-query';
+
 import type { Records } from '../types/registration';
 import { fetchCoinAddresses, fetchContenthash, fetchRecords } from '../utils/handlers';
-import { getENSData, saveENSData } from '../utils/localStorage';
 import { type ENS_RECORDS } from '../utils/helpers';
-import { queryClient, type QueryConfigDeprecated, type UseQueryData } from '@/react-query';
+import { getENSData, saveENSData } from '../utils/localStorage';
 
 export const ensRecordsQueryKey = ({ name, supportedOnly }: { name: string; supportedOnly?: boolean }) => [
   'ens-records',

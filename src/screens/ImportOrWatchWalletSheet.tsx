@@ -1,19 +1,21 @@
+import React, { useCallback, useRef } from 'react';
+import { Keyboard } from 'react-native';
+
+import Clipboard from '@react-native-clipboard/clipboard';
+import { useFocusEffect, useRoute, type RouteProp } from '@react-navigation/native';
+
+import ButtonPressAnimation from '@/components/animations/ButtonPressAnimation';
 import { Input } from '@/components/inputs';
+import { LoadingOverlay } from '@/components/modal/LoadingOverlay';
 import { SheetHandleFixedToTopHeight } from '@/components/sheet';
 import { AccentColorProvider, Box, globalColors, Inset, Stack, Text, useForegroundColor, useTextStyle } from '@/design-system';
 import { IS_ANDROID } from '@/env';
+import { opacity } from '@/framework/ui/utils/opacity';
 import useImportingWallet from '@/hooks/useImportingWallet';
 import useKeyboardHeight from '@/hooks/useKeyboardHeight';
-import React, { useCallback, useRef } from 'react';
 import * as i18n from '@/languages';
-import ButtonPressAnimation from '@/components/animations/ButtonPressAnimation';
-import { type RouteProp, useFocusEffect, useRoute } from '@react-navigation/native';
-import Clipboard from '@react-native-clipboard/clipboard';
-import { LoadingOverlay } from '@/components/modal/LoadingOverlay';
-import { type RootStackParamList } from '@/navigation/types';
 import type Routes from '@/navigation/routesNames';
-import { Keyboard } from 'react-native';
-import { opacity } from '@/framework/ui/utils/opacity';
+import { type RootStackParamList } from '@/navigation/types';
 
 const TRANSLATIONS = i18n.l.wallet.new.import_or_watch_wallet_sheet;
 

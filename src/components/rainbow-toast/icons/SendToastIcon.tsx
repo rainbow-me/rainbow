@@ -1,3 +1,6 @@
+import React from 'react';
+import { StyleSheet, View } from 'react-native';
+
 import { ChainImage } from '@/components/coin-icon/ChainImage';
 import { TOAST_ICON_SIZE } from '@/components/rainbow-toast/constants';
 import { ToastSFSymbolIcon } from '@/components/rainbow-toast/ToastSFSymbolIcon';
@@ -5,8 +8,6 @@ import type { RainbowToast } from '@/components/rainbow-toast/types';
 import { RainbowImage } from '@/components/RainbowImage';
 import { TransactionStatus } from '@/entities/transactions';
 import { ChainId } from '@/state/backendNetworks/types';
-import React from 'react';
-import { StyleSheet, View } from 'react-native';
 
 export const SendToastIcon = ({ toast, size = TOAST_ICON_SIZE }: { toast: RainbowToast; size?: number }) => {
   const { transaction } = toast;

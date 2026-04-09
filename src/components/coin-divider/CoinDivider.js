@@ -1,21 +1,24 @@
-import * as i18n from '@/languages';
-import React, { useCallback, useContext, useRef, useState, memo } from 'react';
+import React, { memo, useCallback, useContext, useRef, useState } from 'react';
 import { Animated, LayoutAnimation, View } from 'react-native';
+
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
+
+import { navbarHeight } from '@/components/navbar/Navbar';
+import styled from '@/framework/ui/styled-thing';
+import EditAction from '@/helpers/EditAction';
+import useCoinListEditOptions, { useCoinListFinishEditingOptions } from '@/hooks/useCoinListEditOptions';
+import useDimensions from '@/hooks/useDimensions';
+import * as i18n from '@/languages';
+import { userAssetsStoreManager } from '@/state/assets/userAssetsStoreManager';
+import { useOpenSmallBalances } from '@/state/wallets/smallBalancesStore';
+import { padding } from '@/styles';
+
 import { useRecyclerAssetListPosition } from '../asset-list/RecyclerAssetList2/core/Contexts';
 import { StickyHeaderContext } from '../asset-list/RecyclerAssetList2/core/StickyHeaders';
 import { Row, RowWithMargins } from '../layout';
 import CoinDividerAssetsValue from './CoinDividerAssetsValue';
 import CoinDividerEditButton from './CoinDividerEditButton';
 import CoinDividerOpenButton from './CoinDividerOpenButton';
-import EditAction from '@/helpers/EditAction';
-import { navbarHeight } from '@/components/navbar/Navbar';
-import useCoinListEditOptions, { useCoinListFinishEditingOptions } from '@/hooks/useCoinListEditOptions';
-import useDimensions from '@/hooks/useDimensions';
-import styled from '@/framework/ui/styled-thing';
-import { padding } from '@/styles';
-import { useSafeAreaInsets } from 'react-native-safe-area-context';
-import { useOpenSmallBalances } from '@/state/wallets/smallBalancesStore';
-import { userAssetsStoreManager } from '@/state/assets/userAssetsStoreManager';
 
 export const CoinDividerHeight = 30;
 export const CoinDividerContainerHeight = CoinDividerHeight + 11;

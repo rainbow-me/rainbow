@@ -1,11 +1,12 @@
-import { AccentColorProvider } from '@/design-system';
-import { useNavigation } from '@/navigation/Navigation';
 import React, { useCallback } from 'react';
-import Routes from '@/navigation/routesNames';
-import { useAccountAccentColor } from '@/hooks/useAccountAccentColor';
-import { TintButton } from '@/components/cards/reusables/TintButton';
+
 import { analytics } from '@/analytics';
+import { TintButton } from '@/components/cards/reusables/TintButton';
+import { AccentColorProvider } from '@/design-system';
+import { useAccountAccentColor } from '@/hooks/useAccountAccentColor';
 import * as i18n from '@/languages';
+import { useNavigation } from '@/navigation/Navigation';
+import Routes from '@/navigation/routesNames';
 
 export const DISCOVER_MORE_BUTTON_HEIGHT = 40;
 

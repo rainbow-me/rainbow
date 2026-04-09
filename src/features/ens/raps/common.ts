@@ -1,6 +1,7 @@
-import { logger } from '@/logger';
+import type { GasFeeParamsBySpeed, LegacyGasFeeParamsBySpeed, LegacySelectedGasFee, SelectedGasFee } from '@/entities/gas';
 import type { EthereumAddress } from '@/entities/wallet';
-import type { LegacyGasFeeParamsBySpeed, LegacySelectedGasFee, SelectedGasFee, GasFeeParamsBySpeed } from '@/entities/gas';
+import { logger } from '@/logger';
+
 import type { Records } from '../types/registration';
 import { type REGISTRATION_MODES } from '../utils/helpers';
 

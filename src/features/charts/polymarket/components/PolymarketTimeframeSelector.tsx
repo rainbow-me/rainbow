@@ -1,6 +1,9 @@
 import React, { memo, useCallback } from 'react';
+
 import { runOnJS, useSharedValue } from 'react-native-reanimated';
+
 import { useStableValue } from '@/hooks/useStableValue';
+
 import { TimeframeSelectorCore, type TimeframeOption } from '../../components/TimeframeSelectorCore';
 import { polymarketChartsActions, usePolymarketStore } from '../stores/polymarketStore';
 import { type PolymarketInterval } from '../types';

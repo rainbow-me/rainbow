@@ -1,25 +1,28 @@
 import React, { useCallback, useRef } from 'react';
-import * as i18n from '@/languages';
-import { Bleed, Box, Text, Separator } from '@/design-system';
+import { StyleSheet, type NativeScrollEvent, type NativeSyntheticEvent } from 'react-native';
+
 import { KeyboardAwareScrollView } from 'react-native-keyboard-controller';
+import Animated from 'react-native-reanimated';
+
+import { Icon } from '@/components/icons';
+import { Bleed, Box, Separator, Text } from '@/design-system';
+import { getColorForTheme } from '@/design-system/color/useForegroundColor';
+import { IS_ANDROID } from '@/env';
+import { opacity } from '@/framework/ui/utils/opacity';
+import * as i18n from '@/languages';
+import { PrebuySection } from '@/screens/token-launcher/components/PrebuySection';
+
+import { COLLAPSABLE_FIELD_ANIMATION } from '../constants';
+import { useTokenLauncherContext } from '../context/TokenLauncherContext';
+import { validateNameWorklet, validateSymbolWorklet } from '../helpers/inputValidators';
+import { useTokenLauncherStore } from '../state/tokenLauncherStore';
+import { DescriptionField } from './DescriptionField';
+import { LinksSection } from './LinksSection';
+import { NetworkField } from './NetworkField';
+import { SingleFieldInput, type SingleFieldInputRef } from './SingleFieldInput';
 import { FOOTER_HEIGHT } from './TokenLauncherFooter';
 import { TOKEN_LAUNCHER_HEADER_HEIGHT, TOKEN_LAUNCHER_SCROLL_INDICATOR_INSETS } from './TokenLauncherHeader';
-import { SingleFieldInput, type SingleFieldInputRef } from './SingleFieldInput';
 import { TokenLogo } from './TokenLogo';
-import { useTokenLauncherStore } from '../state/tokenLauncherStore';
-import { NetworkField } from './NetworkField';
-import { LinksSection } from './LinksSection';
-import { DescriptionField } from './DescriptionField';
-import { COLLAPSABLE_FIELD_ANIMATION } from '../constants';
-import Animated from 'react-native-reanimated';
-import { validateNameWorklet, validateSymbolWorklet } from '../helpers/inputValidators';
-import { Icon } from '@/components/icons';
-import { IS_ANDROID } from '@/env';
-import { getColorForTheme } from '@/design-system/color/useForegroundColor';
-import { opacity } from '@/framework/ui/utils/opacity';
-import { type NativeScrollEvent, type NativeSyntheticEvent, StyleSheet } from 'react-native';
-import { useTokenLauncherContext } from '../context/TokenLauncherContext';
-import { PrebuySection } from '@/screens/token-launcher/components/PrebuySection';
 
 const LABEL_QUINARY = { custom: opacity(getColorForTheme('labelQuaternary', 'dark'), 0.3) };
 

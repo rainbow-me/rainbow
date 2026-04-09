@@ -1,7 +1,7 @@
-import type { DApp } from '../../types/generated/common/dapp';
-import type { ListPositionsResponse, PortfolioItem, PositionName, DetailType } from '../../types/generated/positions/positions';
-import type { RainbowPosition, RainbowPositions, RainbowDeposit, RainbowPool, RainbowStake, RainbowBorrow } from '../../types';
+import type { RainbowBorrow, RainbowDeposit, RainbowPool, RainbowPosition, RainbowPositions, RainbowStake } from '../../types';
 import type { Asset } from '../../types/generated/common/asset';
+import type { DApp } from '../../types/generated/common/dapp';
+import type { DetailType, ListPositionsResponse, PortfolioItem, PositionName } from '../../types/generated/positions/positions';
 import { createMockPositionAsset } from './assets';
 
 // ================================ HELPERS ================================

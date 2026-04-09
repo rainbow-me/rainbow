@@ -1,11 +1,13 @@
 import React, { useCallback, useMemo, useRef, useState } from 'react';
 import { type TextInputProps } from 'react-native';
+
+import { Bleed, Column, Columns, Inline, Inset, Text, useTextStyle, type TextProps } from '@/design-system';
+import { WrappedAlert as Alert } from '@/helpers/alert';
+import useDimensions from '@/hooks/useDimensions';
+
 import { useTheme } from '../../theme/ThemeContext';
 import ButtonPressAnimation from '../animations/ButtonPressAnimation';
 import Input from './Input';
-import { WrappedAlert as Alert } from '@/helpers/alert';
-import { Bleed, Column, Columns, Inline, Inset, Text, type TextProps, useTextStyle } from '@/design-system';
-import useDimensions from '@/hooks/useDimensions';
 
 const textSize: TextProps['size'] = '16px / 22px (Deprecated)';
 const textSizeNumeric = 16;

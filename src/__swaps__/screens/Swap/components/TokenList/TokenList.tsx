@@ -1,11 +1,12 @@
 import React from 'react';
-import { Box, Separator, Stack } from '@/design-system';
-import { EXPANDED_INPUT_HEIGHT } from '@/__swaps__/screens/Swap/constants';
+
 import { SearchInput } from '@/__swaps__/screens/Swap/components/SearchInput';
-import { TokenToSellList } from '@/__swaps__/screens/Swap/components/TokenList/TokenToSellList';
 import { TokenToBuyList } from '@/__swaps__/screens/Swap/components/TokenList/TokenToBuyList';
-import { DEVICE_WIDTH } from '@/utils/deviceUtils';
+import { TokenToSellList } from '@/__swaps__/screens/Swap/components/TokenList/TokenToSellList';
+import { EXPANDED_INPUT_HEIGHT } from '@/__swaps__/screens/Swap/constants';
 import { NAVBAR_HEIGHT_WITH_PADDING } from '@/components/navbar/constants';
+import { Box, Separator, Stack } from '@/design-system';
+import { DEVICE_WIDTH } from '@/utils/deviceUtils';
 
 export const TokenList = ({
   onCancelOrClosePressWorklet,

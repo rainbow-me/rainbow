@@ -1,27 +1,36 @@
+import { useCallback, useEffect, useRef } from 'react';
+import { AppState as ApplicationState, type AppStateStatus, type NativeEventSubscription } from 'react-native';
+
+import notifee, { EventType, type Event as NotifeeEvent } from '@notifee/react-native';
+import messaging, { type FirebaseMessagingTypes } from '@react-native-firebase/messaging';
+import { useDispatch } from 'react-redux';
+import { type AnyAction } from 'redux';
+import { type ThunkDispatch } from 'redux-thunk';
+
 import { useRainbowToastEnabled } from '@/components/rainbow-toast/useRainbowToastEnabled';
 import walletTypes from '@/helpers/walletTypes';
 import usePrevious from '@/hooks/usePrevious';
 import { logger } from '@/logger';
 import Navigation from '@/navigation/Navigation';
 import {
-  type NotificationSubscriptionChangesListener,
   registerNotificationSubscriptionChangesListener,
   resolveAndTrackPushNotificationPermissionStatus,
   trackTappedPushNotification,
   trackWalletsSubscribedForNotifications,
+  type NotificationSubscriptionChangesListener,
 } from '@/notifications/analytics';
 import { NotificationStorage } from '@/notifications/deferredNotificationStorage';
 import { handleShowingForegroundNotification } from '@/notifications/foregroundHandler';
-import type { AddressWithRelationship } from '@/notifications/settings/types';
 import { WalletNotificationRelationship } from '@/notifications/settings/constants';
 import { initializeNotificationSettingsForAllAddresses } from '@/notifications/settings/initialization';
+import type { AddressWithRelationship } from '@/notifications/settings/types';
 import { setupAndroidChannels } from '@/notifications/setupAndroidChannels';
 import { registerTokenRefreshListener, saveFCMToken } from '@/notifications/tokens';
 import {
+  NotificationTypes,
   type FixedRemoteMessage,
   type MarketingNotificationData,
   type MinimalNotification,
-  NotificationTypes,
   type TransactionNotificationData,
 } from '@/notifications/types';
 import store, { type AppState } from '@/redux/store';
@@ -29,14 +38,7 @@ import { fetchCachedTransaction } from '@/resources/transactions/transaction';
 import { switchWallet } from '@/state/wallets/switchWallet';
 import { getAccountAddress, getWalletReady, useWallets, useWalletsStore } from '@/state/wallets/walletsStore';
 import isLowerCaseMatch from '@/utils/isLowerCaseMatch';
-import notifee, { EventType, type Event as NotifeeEvent } from '@notifee/react-native';
 import Routes from '@rainbow-me/routes';
-import messaging, { type FirebaseMessagingTypes } from '@react-native-firebase/messaging';
-import { useCallback, useEffect, useRef } from 'react';
-import { AppState as ApplicationState, type AppStateStatus, type NativeEventSubscription } from 'react-native';
-import { useDispatch } from 'react-redux';
-import { type AnyAction } from 'redux';
-import { type ThunkDispatch } from 'redux-thunk';
 
 type Callback = () => void;
 

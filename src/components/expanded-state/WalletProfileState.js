@@ -1,17 +1,19 @@
-import * as i18n from '@/languages';
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
-import ProfileModal from './profile/ProfileModal';
+
 import { analytics } from '@/analytics';
+import { isValidHex } from '@/handlers/web3';
 import { removeFirstEmojiFromString } from '@/helpers/emojiHandler';
 import { getWalletProfileMeta } from '@/helpers/walletProfileHandler';
+import { getWebProfile } from '@/helpers/webData';
+import * as i18n from '@/languages';
 import { setCallbackAfterObtainingSeedsFromKeychainOrError } from '@/model/wallet';
 import { useNavigation } from '@/navigation/Navigation';
 import Routes from '@/navigation/routesNames';
+import { getAccountProfileInfo } from '@/state/wallets/walletsStore';
 import { colors } from '@/styles';
 import profileUtils from '@/utils/profileUtils';
-import { getAccountProfileInfo } from '@/state/wallets/walletsStore';
-import { isValidHex } from '@/handlers/web3';
-import { getWebProfile } from '@/helpers/webData';
+
+import ProfileModal from './profile/ProfileModal';
 
 export default function WalletProfileState({
   actionType,

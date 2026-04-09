@@ -1,16 +1,18 @@
 import { createGelatoEvmRelayerClient } from '@gelatocloud/gasless/_dist/relayer/evm/index.js';
-import { ChainId } from '@rainbow-me/swaps';
-import { type Address, erc20Abi, encodeFunctionData, parseUnits, zeroAddress } from 'viem';
 import { GELATO_API_KEY } from 'react-native-dotenv';
+import { encodeFunctionData, erc20Abi, parseUnits, zeroAddress, type Address } from 'viem';
+
+import { analytics } from '@/analytics';
 import { getPolymarketClobClient, usePolymarketClients } from '@/features/polymarket/stores/derived/usePolymarketClients';
+import { mulWorklet } from '@/framework/core/safeMath';
 import { getProvider } from '@/handlers/web3';
 import { ensureError, logger, RainbowError } from '@/logger';
-import { mulWorklet } from '@/framework/core/safeMath';
-import { POLYGON_USDC_ADDRESS, RAINBOW_POLYMARKET_FEE_ADDRESS, USD_FEE_PER_TOKEN } from '../constants';
-import { analytics } from '@/analytics';
-import ethereumUtils from '@/utils/ethereumUtils';
 import { ChainId as BackendChainId } from '@/state/backendNetworks/types';
+import ethereumUtils from '@/utils/ethereumUtils';
 import { time } from '@/utils/time';
+import { ChainId } from '@rainbow-me/swaps';
+
+import { POLYGON_USDC_ADDRESS, RAINBOW_POLYMARKET_FEE_ADDRESS, USD_FEE_PER_TOKEN } from '../constants';
 
 const ZERO_BN = 0n;
 

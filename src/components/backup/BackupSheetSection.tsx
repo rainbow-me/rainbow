@@ -1,14 +1,16 @@
 import React, { Fragment, useEffect } from 'react';
+
+import { analytics } from '@/analytics';
+import { Bleed, Separator } from '@/design-system';
+import styled from '@/framework/ui/styled-thing';
+import { opacity } from '@/framework/ui/utils/opacity';
+import { padding } from '@/styles';
+
 import { useTheme } from '../../theme/ThemeContext';
 import { RainbowButton } from '../buttons';
 import { Column, ColumnWithMargins } from '../layout';
 import { SheetActionButton } from '../sheet';
 import { Text } from '../text';
-import { analytics } from '@/analytics';
-import styled from '@/framework/ui/styled-thing';
-import { padding } from '@/styles';
-import { Bleed, Separator } from '@/design-system';
-import { opacity } from '@/framework/ui/utils/opacity';
 
 const Footer = styled(ColumnWithMargins).attrs({
   margin: 19,

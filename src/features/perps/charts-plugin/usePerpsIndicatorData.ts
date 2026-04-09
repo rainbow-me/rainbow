@@ -4,6 +4,7 @@ import { useHlOpenOrdersStore } from '@/features/perps/stores/hlOpenOrdersStore'
 import { useHyperliquidAccountStore } from '@/features/perps/stores/hyperliquidAccountStore';
 import { createDerivedStore } from '@/state/internal/createDerivedStore';
 import { shallowEqual } from '@/worklets/comparisons';
+
 import { PerpsIndicatorKey } from './PerpsIndicator';
 import { type PerpsIndicatorData } from './PerpsIndicatorBuilder';
 

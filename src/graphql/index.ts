@@ -1,14 +1,16 @@
 /* eslint-disable no-restricted-syntax */
 // TODO(FEPLAT-5): Legacy barrel files that are allowed to exist (but should be gradually removed)
 import gql from 'graphql-tag';
-import { config } from './config';
-import { getFetchRequester } from './utils/getFetchRequester';
-import { getSdk as getEnsSdk } from './__generated__/ens';
-import { getSdk as getMetadataSdk } from './__generated__/metadata';
-import { getSdk as getArcSdk } from './__generated__/arc';
-import { getSdk as getArcDevSdk } from './__generated__/arcDev';
+
 import { IS_PROD } from '@/env';
 import { type RainbowFetchRequestOpts } from '@/framework/data/http/rainbowFetch';
+
+import { getSdk as getArcSdk } from './__generated__/arc';
+import { getSdk as getArcDevSdk } from './__generated__/arcDev';
+import { getSdk as getEnsSdk } from './__generated__/ens';
+import { getSdk as getMetadataSdk } from './__generated__/metadata';
+import { config } from './config';
+import { getFetchRequester } from './utils/getFetchRequester';
 
 export const metadataRequester = getFetchRequester(config.metadata);
 

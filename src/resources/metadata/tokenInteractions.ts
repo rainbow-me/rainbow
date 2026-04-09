@@ -1,9 +1,9 @@
 import { useQuery } from '@tanstack/react-query';
+
 import { metadataClient } from '@/graphql';
 import { type QueryTokenInteractionsArgs, type TokenInteraction } from '@/graphql/__generated__/metadata';
-import { type QueryFunctionArgs, createQueryKey } from '@/react-query';
-
 import { logger, RainbowError } from '@/logger';
+import { createQueryKey, type QueryFunctionArgs } from '@/react-query';
 
 // ///////////////////////////////////////////////
 // Query Key

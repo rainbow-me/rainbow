@@ -1,7 +1,8 @@
+import type { LinearGradientProps } from 'expo-linear-gradient';
+
 import { globalColors } from '@/design-system/color/palettes';
 import type { Tier, TierId } from '@/features/rnbw-membership/types';
 import { opacity } from '@/framework/ui/utils/opacity';
-import type { LinearGradientProps } from 'expo-linear-gradient';
 
 type Themed<T> = { light: T; dark: T };
 

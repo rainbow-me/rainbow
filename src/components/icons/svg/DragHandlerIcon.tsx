@@ -1,5 +1,7 @@
 import React from 'react';
+
 import { Circle, type SvgProps } from 'react-native-svg';
+
 import Svg from '../Svg';
 
 export function DragHandlerIcon({ color, ...props }: SvgProps) {

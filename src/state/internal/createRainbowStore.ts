@@ -1,9 +1,11 @@
 import { debounce } from 'lodash';
-import { type PersistOptions, type PersistStorage, persist, subscribeWithSelector } from 'zustand/middleware';
+import { persist, subscribeWithSelector, type PersistOptions, type PersistStorage } from 'zustand/middleware';
 import { createWithEqualityFn } from 'zustand/traditional';
+
 import { IS_IOS, IS_TEST } from '@/env';
-import { RainbowError, logger } from '@/logger';
+import { logger, RainbowError } from '@/logger';
 import { time } from '@/utils/time';
+
 import { rainbowStorage } from './rainbowStorage';
 import {
   type LazyPersistParams,

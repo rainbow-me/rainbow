@@ -1,3 +1,8 @@
+import React, { useCallback, useEffect, useState } from 'react';
+import { View } from 'react-native';
+
+import { BlurView } from 'react-native-blur-view';
+
 import { analytics } from '@/analytics';
 import {
   AccentColorProvider,
@@ -6,24 +11,22 @@ import {
   Column,
   Columns,
   Cover,
+  globalColors,
   Inline,
   Stack,
   Text,
-  globalColors,
   useColorMode,
   useForegroundColor,
 } from '@/design-system';
 import { IS_IOS } from '@/env';
+import styled from '@/framework/ui/styled-thing';
 import { abbreviateNumber, convertRawAmountToRoundedDecimal } from '@/helpers/utilities';
 import useDimensions from '@/hooks/useDimensions';
 import { usePersistentDominantColorFromImage } from '@/hooks/usePersistentDominantColorFromImage';
 import * as i18n from '@/languages';
 import { useMints } from '@/resources/mints';
 import { navigateToMintCollection } from '@/resources/reservoir/mints';
-import styled from '@/framework/ui/styled-thing';
-import React, { useCallback, useEffect, useState } from 'react';
-import { View } from 'react-native';
-import { BlurView } from 'react-native-blur-view';
+
 import { useAccountAddress } from '../../state/wallets/walletsStore';
 import ButtonPressAnimation from '../animations/ButtonPressAnimation';
 import { ImgixImage } from '../images';

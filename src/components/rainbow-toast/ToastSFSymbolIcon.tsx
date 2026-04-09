@@ -1,8 +1,9 @@
+import React from 'react';
+import { StyleSheet, View } from 'react-native';
+
 import { TOAST_ICON_SIZE } from '@/components/rainbow-toast/constants';
 import { useToastColors } from '@/components/rainbow-toast/useToastColors';
 import { Text } from '@/design-system';
-import React from 'react';
-import { StyleSheet, View } from 'react-native';
 
 const sfSymbols = {
   check: '􀆅',

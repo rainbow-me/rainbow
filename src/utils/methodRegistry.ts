@@ -1,8 +1,10 @@
 import { Contract } from '@ethersproject/contracts';
+
+import { metadataClient } from '@/graphql';
+
 import { getProvider } from '../handlers/web3';
 import namesOverrides from '../references/method-names-overrides.json';
 import methodRegistryABI from '../references/method-registry-abi.json';
-import { metadataClient } from '@/graphql';
 
 const METHOD_REGISTRY_ADDRESS = '0x44691B39d1a75dC4E0A0346CBB15E310e6ED1E86';
 

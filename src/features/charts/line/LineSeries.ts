@@ -2,18 +2,20 @@ import {
   BlendMode,
   BlurStyle,
   PaintStyle,
+  Skia,
+  StrokeCap,
+  StrokeJoin,
   type SkCanvas,
   type SkColor,
   type SkPaint,
   type SkPath,
-  Skia,
-  StrokeCap,
-  StrokeJoin,
 } from '@shopify/react-native-skia';
 import { convertToRGBA, interpolateColor } from 'react-native-reanimated';
+
 import { ETH_COLOR, ETH_COLOR_DARK } from '@/__swaps__/screens/Swap/constants';
 import { getColorValueForThemeWorklet, type ResponseByTheme } from '@/__swaps__/utils/swaps';
-import { LineSmoothing, buildSmoothedPath, buildSmoothedPathAnimated } from './LineSmoothingAlgorithms';
+
+import { buildSmoothedPath, buildSmoothedPathAnimated, LineSmoothing } from './LineSmoothingAlgorithms';
 import { type DrawParams } from './types';
 
 export type LineEffectsConfig = {

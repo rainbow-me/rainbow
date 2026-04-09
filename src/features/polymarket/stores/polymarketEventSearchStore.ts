@@ -1,10 +1,10 @@
-import { rainbowFetch } from '@/framework/data/http/rainbowFetch';
-import { time } from '@/utils/time';
-import { createQueryStore } from '@/state/internal/createQueryStore';
-import { type RawPolymarketEvent, type PolymarketEvent } from '@/features/polymarket/types/polymarket-event';
 import { POLYMARKET_GAMMA_API_URL } from '@/features/polymarket/constants';
+import { type PolymarketEvent, type RawPolymarketEvent } from '@/features/polymarket/types/polymarket-event';
 import { processRawPolymarketEvent } from '@/features/polymarket/utils/transforms';
+import { rainbowFetch } from '@/framework/data/http/rainbowFetch';
+import { createQueryStore } from '@/state/internal/createQueryStore';
 import { createStoreActions } from '@/state/internal/utils/createStoreActions';
+import { time } from '@/utils/time';
 
 const PAGE_SIZE = 10;
 const EMPTY_RESULT = Object.freeze({ events: [], pagination: { hasMore: false, totalResults: 0 } });

@@ -1,3 +1,9 @@
+import React, { useCallback, useRef } from 'react';
+import { Text as NativeText, View } from 'react-native';
+
+import chroma from 'chroma-js';
+import { ScrollView } from 'react-native-gesture-handler';
+
 import CreateNewWalletGroupIcon from '@/assets/CreateNewWalletGroup.png';
 import ButtonPressAnimation from '@/components/animations/ButtonPressAnimation';
 import { ImgixImage } from '@/components/images';
@@ -5,6 +11,7 @@ import { Box, Separator, Text, useForegroundColor } from '@/design-system';
 import { removeFirstEmojiFromString, returnStringFirstEmoji } from '@/helpers/emojiHandler';
 import walletBackupStepTypes from '@/helpers/walletBackupStepTypes';
 import walletBackupTypes from '@/helpers/walletBackupTypes';
+import { WalletLoadingStates } from '@/helpers/walletLoadingStates';
 import WalletTypes from '@/helpers/walletTypes';
 import * as i18n from '@/languages';
 import { logger, RainbowError } from '@/logger';
@@ -13,16 +20,11 @@ import Navigation, { useNavigation } from '@/navigation/Navigation';
 import Routes from '@/navigation/routesNames';
 import { backupsStore } from '@/state/backups/backups';
 import { walletLoadingStore } from '@/state/walletLoading/walletLoading';
-import { WalletLoadingStates } from '@/helpers/walletLoadingStates';
+import { initializeWallet } from '@/state/wallets/initializeWallet';
 import { createAccountInExistingWallet, getIsDamagedWallet, loadWallets, useWallets } from '@/state/wallets/walletsStore';
 import { useTheme } from '@/theme/ThemeContext';
-import profileUtils from '@/utils/profileUtils';
 import { abbreviateEnsForDisplay, formatAddressForDisplay } from '@/utils/abbreviations';
-import chroma from 'chroma-js';
-import React, { useCallback, useRef } from 'react';
-import { Text as NativeText, View } from 'react-native';
-import { ScrollView } from 'react-native-gesture-handler';
-import { initializeWallet } from '@/state/wallets/initializeWallet';
+import profileUtils from '@/utils/profileUtils';
 
 function NewWalletGroup({ numWalletGroups }: { numWalletGroups: number }) {
   const isCreatingWallet = useRef(false);

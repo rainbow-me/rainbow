@@ -1,21 +1,23 @@
 import { memo, useCallback } from 'react';
 import { Image, StyleSheet, View } from 'react-native';
-import * as i18n from '@/languages';
-import { Box, Text } from '@/design-system';
-import { useAirdropBalanceStore } from '@/features/rnbw-rewards/stores/airdropBalanceStore';
-import ButtonPressAnimation from '@/components/animations/ButtonPressAnimation';
-import { opacity } from '@/framework/ui/utils/opacity';
+
+import { Blur, Canvas, LinearGradient, RoundedRect } from '@shopify/react-native-skia';
+import { BlurView } from 'react-native-blur-view';
+import { runOnJS } from 'react-native-reanimated';
+
 import { ETH_COLOR_DARK, ETH_COLOR_DARK_ACCENT } from '@/__swaps__/screens/Swap/constants';
 import rnbwCoinImage from '@/assets/rnbw.png';
-import { BlurView } from 'react-native-blur-view';
-import { RnbwRewardsScenes } from '@/features/rnbw-rewards/screens/rnbw-rewards-screen/constants/rewardsScenes';
+import ButtonPressAnimation from '@/components/animations/ButtonPressAnimation';
+import { Box, Text } from '@/design-system';
 import { RNBW_SYMBOL } from '@/features/rnbw-rewards/constants';
-import { useIsReadOnlyWallet } from '@/state/wallets/walletsStore';
-import { runOnJS } from 'react-native-reanimated';
-import watchingAlert from '@/utils/watchingAlert';
-import { Blur, Canvas, LinearGradient, RoundedRect } from '@shopify/react-native-skia';
-import { useStableValue } from '@/hooks/useStableValue';
+import { RnbwRewardsScenes } from '@/features/rnbw-rewards/screens/rnbw-rewards-screen/constants/rewardsScenes';
+import { useAirdropBalanceStore } from '@/features/rnbw-rewards/stores/airdropBalanceStore';
 import { rewardsFlowActions } from '@/features/rnbw-rewards/stores/rewardsFlowStore';
+import { opacity } from '@/framework/ui/utils/opacity';
+import { useStableValue } from '@/hooks/useStableValue';
+import * as i18n from '@/languages';
+import { useIsReadOnlyWallet } from '@/state/wallets/walletsStore';
+import watchingAlert from '@/utils/watchingAlert';
 
 const BORDER_RADIUS = 32;
 

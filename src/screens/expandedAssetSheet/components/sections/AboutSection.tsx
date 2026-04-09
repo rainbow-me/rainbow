@@ -1,13 +1,15 @@
 import React, { memo, useMemo } from 'react';
+
 import Animated, { FadeIn } from 'react-native-reanimated';
 import { type Address } from 'viem';
 
-import * as i18n from '@/languages';
 import { Box } from '@/design-system';
-import { CollapsibleSection } from '../shared/CollapsibleSection';
-import { SheetSeparator } from '@/screens/expandedAssetSheet/components/shared/Separator';
-import { SectionId, useExpandedAssetSheetContext } from '../../context/ExpandedAssetSheetContext';
+import * as i18n from '@/languages';
 import { AssetInfoItem } from '@/screens/expandedAssetSheet/components/sections/marketSection/AssetInfoList';
+import { SheetSeparator } from '@/screens/expandedAssetSheet/components/shared/Separator';
+
+import { SectionId, useExpandedAssetSheetContext } from '../../context/ExpandedAssetSheetContext';
+import { CollapsibleSection } from '../shared/CollapsibleSection';
 import { CreatorInfoRow } from './shared/CreatorInfoRow';
 
 const LAYOUT_ANIMATION = FadeIn.duration(160);

@@ -1,20 +1,23 @@
-import React, { forwardRef, type PropsWithChildren, useCallback, useContext, useMemo, useRef } from 'react';
+import React, { forwardRef, useCallback, useContext, useMemo, useRef, type PropsWithChildren } from 'react';
 import { processColor, requireNativeComponent, StyleSheet, View } from 'react-native';
-import { createNativeWrapper, type RawButtonProps, State } from 'react-native-gesture-handler';
+
+import { createNativeWrapper, State, type RawButtonProps } from 'react-native-gesture-handler';
 import { PureNativeButton } from 'react-native-gesture-handler/src/components/GestureButtons';
 import ReactNativeHapticFeedback, { HapticFeedbackTypes } from 'react-native-haptic-feedback';
 import Animated, {
-  type AnimatedProps,
   Easing,
   useAnimatedStyle,
   useDerivedValue,
   useSharedValue,
   withTiming,
+  type AnimatedProps,
 } from 'react-native-reanimated';
+
+import useLongPressEvents from '@/hooks/useLongPressEvents';
+
 import { normalizeTransformOrigin } from './NativeButton';
 import { ScaleButtonContext } from './ScaleButtonZoomable';
 import { type ButtonPressAnimationProps } from './types';
-import useLongPressEvents from '@/hooks/useLongPressEvents';
 
 interface ButtonElementProps extends ButtonPressAnimationProps {
   isLongPress?: boolean;

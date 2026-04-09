@@ -1,5 +1,5 @@
-import type { Asset, AssetContract } from '@/entities/tokens';
 import { type AssetType } from '@/entities/assetTypes';
+import type { Asset, AssetContract } from '@/entities/tokens';
 import { type Network } from '@/state/backendNetworks/types';
 
 export enum NFTMarketplaceId {

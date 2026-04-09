@@ -1,15 +1,16 @@
 import { memo } from 'react';
-import { type PolymarketEvent, type PolymarketMarket } from '@/features/polymarket/types/polymarket-event';
+
 import { Box, useColorMode } from '@/design-system';
-import Navigation from '@/navigation/Navigation';
-import Routes from '@/navigation/routesNames';
+import { OverUnderIcon } from '@/features/polymarket/screens/polymarket-event-screen/components/OverUnderIcon';
+import { ResolvedMarketRow } from '@/features/polymarket/screens/polymarket-event-screen/components/ResolvedMarketRow';
 import { MarketRow } from '@/features/polymarket/screens/polymarket-event-screen/MarketRow';
 import { type PolymarketTeamInfo } from '@/features/polymarket/types';
-import { ResolvedMarketRow } from '@/features/polymarket/screens/polymarket-event-screen/components/ResolvedMarketRow';
-import { getOutcomeTeam } from '@/features/polymarket/utils/getOutcomeTeam';
+import { type PolymarketEvent, type PolymarketMarket } from '@/features/polymarket/types/polymarket-event';
 import { getOutcomeColor } from '@/features/polymarket/utils/getMarketColor';
+import { getOutcomeTeam } from '@/features/polymarket/utils/getOutcomeTeam';
 import { isTeamBasedOutcome } from '@/features/polymarket/utils/marketClassification';
-import { OverUnderIcon } from '@/features/polymarket/screens/polymarket-event-screen/components/OverUnderIcon';
+import Navigation from '@/navigation/Navigation';
+import Routes from '@/navigation/routesNames';
 
 export const SingleMarketEventOutcomes = memo(function SingleMarketEventOutcomes({
   market,

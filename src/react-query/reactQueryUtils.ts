@@ -1,12 +1,13 @@
 import { hydrate } from '@tanstack/react-query';
 import { createMMKV } from 'react-native-mmkv';
-import { type LogEntry, showLogSheet } from '@/components/debugging/LogSheet';
+
+import { showLogSheet, type LogEntry } from '@/components/debugging/LogSheet';
 import { IS_DEV, IS_INTERNAL } from '@/env';
-import { RainbowError, logger } from '@/logger';
+import { getDateFormatter } from '@/helpers/intl';
+import { logger, RainbowError } from '@/logger';
 import { persistOptions, queryClient } from '@/react-query';
 import { favoritesQueryKey } from '@/resources/favorites';
 import { REACT_QUERY_STORAGE_ID } from '@/storage/legacy';
-import { getDateFormatter } from '@/helpers/intl';
 
 // ============ clearReactQueryCache =========================================== //
 

@@ -1,5 +1,6 @@
 import { type StorageValue } from 'zustand/middleware';
-import { RainbowError, logger } from '@/logger';
+
+import { logger, RainbowError } from '@/logger';
 
 /**
  * Default partialize function if none is provided. It omits top-level store

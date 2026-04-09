@@ -2,29 +2,31 @@ import { dequal } from 'dequal';
 import { debounce } from 'lodash';
 import { subscribeWithSelector } from 'zustand/middleware';
 import { createWithEqualityFn } from 'zustand/traditional';
+
 import { IS_DEV, IS_TEST } from '@/env';
-import { RainbowError, ensureError, logger } from '@/logger';
+import { ensureError, logger, RainbowError } from '@/logger';
 import { time } from '@/utils/time';
+
 import { createRainbowStore } from './createRainbowStore';
 import { SubscriptionManager } from './queryStore/classes/SubscriptionManager';
 import {
+  QueryStatuses,
   type BaseQueryStoreState,
   type CacheEntry,
   type FetchOptions,
   type InternalStateKeys,
   type ParamResolvable,
   type QueryStatusInfo,
-  QueryStatuses,
+  type QueryStore,
   type QueryStoreConfig,
   type QueryStoreParams,
   type QueryStoreState,
   type QueryStoreStateCreator,
-  type QueryStore,
   type ResolvedEnabledResult,
   type ResolvedParamsResult,
   type StoreState,
 } from './queryStore/types';
-import { $, type AttachValue, type SignalFunction, type Unsubscribe, attachValueSubscriptionMap } from './signal';
+import { $, attachValueSubscriptionMap, type AttachValue, type SignalFunction, type Unsubscribe } from './signal';
 import {
   type OptionallyPersistedRainbowStore,
   type PersistedRainbowStore,

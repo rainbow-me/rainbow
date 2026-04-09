@@ -1,9 +1,9 @@
-import store from '@/redux/store';
+import { type MenuItem } from '@/components/DropdownMenu';
 import { showActionSheetWithOptions } from '@/framework/ui/utils/actionsheet';
 import * as i18n from '@/languages';
-import { ChainId } from '@/state/backendNetworks/types';
+import store from '@/redux/store';
 import { useBackendNetworksStore } from '@/state/backendNetworks/backendNetworks';
-import { type MenuItem } from '@/components/DropdownMenu';
+import { ChainId } from '@/state/backendNetworks/types';
 
 const androidNetworkActions = () => {
   const { testnetsEnabled } = store.getState().settings;

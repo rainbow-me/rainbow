@@ -1,4 +1,5 @@
 import React, { memo } from 'react';
+
 import { RNBW_STAKING_DEPOSIT_CONFIG } from '@/features/rnbw-staking/depositConfig';
 import { DepositScreen } from '@/systems/funding/components/DepositScreen';
 

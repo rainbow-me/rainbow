@@ -1,36 +1,39 @@
-import { type RouteProp, useRoute } from '@react-navigation/native';
 import React, { useCallback, useMemo } from 'react';
-import { StyleSheet, Text as NativeText, Alert } from 'react-native';
-import { Box, Separator, Stack, Text, useForegroundColor } from '@/design-system';
-import * as i18n from '@/languages';
-import Routes from '@/navigation/routesNames';
-import Menu from '../Menu';
-import MenuContainer from '../MenuContainer';
-import MenuItem from '../MenuItem';
-import { ChainImage } from '@/components/coin-icon/ChainImage';
-import { GradientBorderView } from '@/components/gradient-border/GradientBorderView';
-import { type ChainId } from '@/state/backendNetworks/types';
-import { fonts } from '@/design-system/typography/typography';
-import { useTheme } from '@/theme/ThemeContext';
+import { Alert, Text as NativeText, StyleSheet } from 'react-native';
+
+import { useRoute, type RouteProp } from '@react-navigation/native';
 import { LinearGradient } from 'expo-linear-gradient';
+import type { Address } from 'viem';
+
+import { ChainImage } from '@/components/coin-icon/ChainImage';
 import { ContextCircleButton } from '@/components/context-menu';
+import { GradientBorderView } from '@/components/gradient-border/GradientBorderView';
 import ContextMenuButton from '@/components/native-context-menu/contextMenu';
+import { Box, Separator, Stack, Text, useForegroundColor } from '@/design-system';
+import { fonts } from '@/design-system/typography/typography';
 import { IS_DEV, IS_IOS } from '@/env';
-import * as ethereumUtils from '@/utils/ethereumUtils';
+import * as i18n from '@/languages';
+import { navigate } from '@/navigation/Navigation';
+import Routes from '@/navigation/routesNames';
+import { RevokeReason } from '@/screens/delegation/RevokeDelegationPanel';
+import { backendNetworksActions } from '@/state/backendNetworks/backendNetworks';
+import { type ChainId } from '@/state/backendNetworks/types';
+import { useTheme } from '@/theme/ThemeContext';
 import { formatAddressForDisplay } from '@/utils/abbreviations';
+import * as ethereumUtils from '@/utils/ethereumUtils';
 import {
   DelegationStatus,
-  type DelegationWithChainId,
   disableDelegation,
   enableDelegation,
   useDelegationDisabled,
   useDelegations,
   willDelegate,
+  type DelegationWithChainId,
 } from '@rainbow-me/delegation';
-import { backendNetworksActions } from '@/state/backendNetworks/backendNetworks';
-import type { Address } from 'viem';
-import { RevokeReason } from '@/screens/delegation/RevokeDelegationPanel';
-import { navigate } from '@/navigation/Navigation';
+
+import Menu from '../Menu';
+import MenuContainer from '../MenuContainer';
+import MenuItem from '../MenuItem';
 
 type ViewWalletDelegationsParams = {
   ViewWalletDelegations: { walletId: string; address: Address; title: string };

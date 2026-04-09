@@ -1,4 +1,4 @@
-import { MAX_SIG_FIGS, MAX_DECIMALS_PERP, MAX_DECIMALS_SPOT } from '@/features/perps/constants';
+import { MAX_DECIMALS_PERP, MAX_DECIMALS_SPOT, MAX_SIG_FIGS } from '@/features/perps/constants';
 
 /**
  * Formats trigger order price input according to Hyperliquid's decimal precision rules

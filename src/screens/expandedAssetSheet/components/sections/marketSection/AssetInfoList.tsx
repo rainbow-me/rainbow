@@ -1,19 +1,22 @@
 import React, { memo, useMemo } from 'react';
-import * as i18n from '@/languages';
-import { Box, Text, TextIcon, TextShadow, useColorMode, useBackgroundColor, AnimatedText } from '@/design-system';
-import { bigNumberFormat } from '@/helpers/bigNumberFormat';
-import { Row } from '../../shared/Row';
-import { abbreviateNumber } from '@/helpers/utilities';
-import Animated, { FadeIn, useAnimatedStyle, useDerivedValue, useSharedValue, withSpring } from 'react-native-reanimated';
-import { useExpandedAssetSheetContext } from '@/screens/expandedAssetSheet/context/ExpandedAssetSheetContext';
-import { SPRING_CONFIGS } from '@/components/animations/animationConfigs';
-import { formatDate } from '@/utils/formatDate';
-import { opacity } from '@/framework/ui/utils/opacity';
-import { GestureHandlerButton } from '@/components/buttons/GestureHandlerButton';
-import ShimmerAnimation from '@/components/animations/ShimmerAnimation';
-import { useLiveTokenValue } from '@/components/live-token-text/LiveTokenText';
-import { userAssetsStoreManager } from '@/state/assets/userAssetsStoreManager';
+
 import FastImage from 'react-native-fast-image';
+import Animated, { FadeIn, useAnimatedStyle, useDerivedValue, useSharedValue, withSpring } from 'react-native-reanimated';
+
+import { SPRING_CONFIGS } from '@/components/animations/animationConfigs';
+import ShimmerAnimation from '@/components/animations/ShimmerAnimation';
+import { GestureHandlerButton } from '@/components/buttons/GestureHandlerButton';
+import { useLiveTokenValue } from '@/components/live-token-text/LiveTokenText';
+import { AnimatedText, Box, Text, TextIcon, TextShadow, useBackgroundColor, useColorMode } from '@/design-system';
+import { opacity } from '@/framework/ui/utils/opacity';
+import { bigNumberFormat } from '@/helpers/bigNumberFormat';
+import { abbreviateNumber } from '@/helpers/utilities';
+import * as i18n from '@/languages';
+import { useExpandedAssetSheetContext } from '@/screens/expandedAssetSheet/context/ExpandedAssetSheetContext';
+import { userAssetsStoreManager } from '@/state/assets/userAssetsStoreManager';
+import { formatDate } from '@/utils/formatDate';
+
+import { Row } from '../../shared/Row';
 import { CreatorInfoRow } from '../shared/CreatorInfoRow';
 
 const DEFAULT_VISIBLE_ITEM_COUNT = 3;

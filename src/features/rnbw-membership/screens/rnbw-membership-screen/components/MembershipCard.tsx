@@ -1,11 +1,12 @@
 import type { ReactNode } from 'react';
 import { StyleSheet } from 'react-native';
+
 import { LinearGradient } from 'expo-linear-gradient';
-import type { Space } from '@/design-system';
-import { Border, Box, useColorMode } from '@/design-system';
-import { opacity } from '@/framework/ui/utils/opacity';
-import { InnerShadow } from '@/features/polymarket/components/InnerShadow';
+
 import { GradientBorderView } from '@/components/gradient-border/GradientBorderView';
+import { Border, Box, useColorMode, type Space } from '@/design-system';
+import { InnerShadow } from '@/features/polymarket/components/InnerShadow';
+import { opacity } from '@/framework/ui/utils/opacity';
 
 type MembershipCardProps = {
   children: ReactNode;

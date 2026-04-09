@@ -1,41 +1,42 @@
-import * as i18n from '@/languages';
-import React, { type PropsWithChildren, type ReactNode, useCallback, useEffect, useMemo, useState } from 'react';
+import React, { useCallback, useEffect, useMemo, useState, type PropsWithChildren, type ReactNode } from 'react';
 import { type LayoutChangeEvent } from 'react-native';
+
 import Animated, { runOnJS, useAnimatedReaction, useAnimatedStyle, useSharedValue, withDelay, withSpring } from 'react-native-reanimated';
 
 import { ACTION_BUTTON_HEIGHT } from '@/__swaps__/screens/Swap/constants';
 import { NavigationSteps, useSwapContext } from '@/__swaps__/screens/Swap/providers/swap-provider';
-import { ChainId } from '@/state/backendNetworks/types';
 import { GasSpeed } from '@/__swaps__/types/gas';
-import { gweiToWei, weiToGwei } from '@/parsers/gas';
 import {
   getCachedCurrentBaseFee,
   getSelectedSpeedSuggestion,
   useBaseFee,
+  useChainSupportsPriorityFee,
   useGasTrend,
   useIsChainEIP1559,
   useMeteorologySuggestion,
   useMeteorologySuggestions,
-  useChainSupportsPriorityFee,
 } from '@/__swaps__/utils/meteorology';
-import { add, greaterThan, multiply, subtract, lessThan, formatNumber } from '@/helpers/utilities';
-import { opacity } from '@/framework/ui/utils/opacity';
-import ButtonPressAnimation from '@/components/animations/ButtonPressAnimation';
 import { SPRING_CONFIGS } from '@/components/animations/animationConfigs';
-import { Bleed, Box, Inline, Separator, Stack, Text, globalColors, useColorMode, useForegroundColor } from '@/design-system';
+import ButtonPressAnimation from '@/components/animations/ButtonPressAnimation';
+import { Bleed, Box, globalColors, Inline, Separator, Stack, Text, useColorMode, useForegroundColor } from '@/design-system';
 import { IS_ANDROID } from '@/env';
+import { opacity } from '@/framework/ui/utils/opacity';
+import { add, formatNumber, greaterThan, lessThan, multiply, subtract } from '@/helpers/utilities';
+import * as i18n from '@/languages';
 import { useNavigation } from '@/navigation/Navigation';
 import Routes from '@/navigation/routesNames';
+import { gasTrendToTrendType, type ExplainSheetParams } from '@/navigation/types';
+import { gweiToWei, weiToGwei } from '@/parsers/gas';
+import { ChainId } from '@/state/backendNetworks/types';
 import { createRainbowStore } from '@/state/internal/createRainbowStore';
 import { swapsStore, useSwapsStore } from '@/state/swaps/swapsStore';
+import { THICK_BORDER_WIDTH } from '@/styles/constants';
 import gasUtils from '@/utils/gas';
-import { type GasSettings, getCustomGasSettings, setCustomGasSettings, useCustomGasStore } from '../hooks/useCustomGas';
+
+import { getCustomGasSettings, setCustomGasSettings, useCustomGasStore, type GasSettings } from '../hooks/useCustomGas';
 import { getSelectedGas, setSelectedGasSpeed, useSelectedGasSpeed } from '../hooks/useSelectedGas';
 import { EstimatedSwapGasFee, EstimatedSwapGasFeeSlot } from './EstimatedSwapGasFee';
 import { UnmountOnAnimatedReaction } from './UnmountOnAnimatedReaction';
-import { type ExplainSheetParams, gasTrendToTrendType } from '@/navigation/types';
-
-import { THICK_BORDER_WIDTH } from '@/styles/constants';
 
 const { GAS_TRENDS } = gasUtils;
 

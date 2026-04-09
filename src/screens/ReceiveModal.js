@@ -1,22 +1,25 @@
+import React, { useCallback, useState } from 'react';
+
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
+
 import { SimpleSheet } from '@/components/sheet/SimpleSheet';
 import { Box } from '@/design-system';
 import { IS_ANDROID, IS_IOS } from '@/env';
+import styled from '@/framework/ui/styled-thing';
 import { toChecksumAddress } from '@/handlers/web3';
 import useDimensions from '@/hooks/useDimensions';
 import { sharedCoolModalTopOffset } from '@/navigation/config';
 import { useAccountAddress, useAccountProfileInfo } from '@/state/wallets/walletsStore';
-import styled from '@/framework/ui/styled-thing';
 import { padding, shadow } from '@/styles';
-import React, { useCallback, useState } from 'react';
-import { useSafeAreaInsets } from 'react-native-safe-area-context';
+import abbreviations from '@/utils/abbreviations';
+import deviceUtils from '@/utils/deviceUtils';
+
 import { CopyFloatingEmojis } from '../components/floating-emojis';
 import { Column, ColumnWithMargins } from '../components/layout';
 import QRCode from '../components/qr-code/QRCode';
 import ShareButton from '../components/qr-code/ShareButton';
 import { Text, TruncatedAddress } from '../components/text';
 import { CopyToast, ToastPositionContainer } from '../components/toasts';
-import abbreviations from '@/utils/abbreviations';
-import deviceUtils from '@/utils/deviceUtils';
 
 const QRCodeSize = IS_IOS ? 250 : Math.min(230, deviceUtils.dimensions.width - 20);
 

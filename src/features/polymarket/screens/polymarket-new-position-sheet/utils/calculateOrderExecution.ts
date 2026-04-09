@@ -1,3 +1,4 @@
+import { USD_FEE_PER_TOKEN } from '@/features/polymarket/constants';
 import { type OrderBook } from '@/features/polymarket/stores/polymarketOrderBookStore';
 import {
   ceilWorklet,
@@ -8,7 +9,6 @@ import {
   subWorklet,
   sumWorklet,
 } from '@/framework/core/safeMath';
-import { USD_FEE_PER_TOKEN } from '@/features/polymarket/constants';
 
 export type OrderExecution = {
   averagePrice: string;

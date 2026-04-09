@@ -1,6 +1,8 @@
 import { useCallback } from 'react';
-import { Easing, type SharedValue, useSharedValue, withSpring, withTiming } from 'react-native-reanimated';
+
+import { Easing, useSharedValue, withSpring, withTiming, type SharedValue } from 'react-native-reanimated';
 import { triggerHaptics } from 'react-native-turbo-haptics';
+
 import { SPRING_CONFIGS } from '@/components/animations/animationConfigs';
 import { LONG_PRESS_DURATION_IN_MS } from '@/components/buttons/hold-to-authorize/constants';
 

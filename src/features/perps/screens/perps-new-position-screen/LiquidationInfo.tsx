@@ -1,17 +1,19 @@
 import { memo } from 'react';
 import { StyleSheet } from 'react-native';
-import { type DerivedValue, type SharedValue, useAnimatedStyle, useDerivedValue } from 'react-native-reanimated';
+
+import { useAnimatedStyle, useDerivedValue, type DerivedValue, type SharedValue } from 'react-native-reanimated';
+
 import { useLiveTokenSharedValue } from '@/components/live-token-text/LiveTokenText';
 import { AnimatedText, Bleed, Box, useColorMode } from '@/design-system';
-import { type AnimatedTextSelectorProps } from '@/design-system/components/Text/AnimatedText';
 import { getColorForTheme } from '@/design-system/color/useForegroundColor';
+import { type AnimatedTextSelectorProps } from '@/design-system/components/Text/AnimatedText';
 import { HyperliquidTokenIcon } from '@/features/perps/components/HyperliquidTokenIcon';
 import { useLiquidationInfo } from '@/features/perps/stores/derived/useLiquidationInfo';
 import { type PerpMarket } from '@/features/perps/types';
 import { getHyperliquidTokenId } from '@/features/perps/utils';
+import { type LiquidationData } from '@/features/perps/utils/buildLiquidationInfo';
 import * as i18n from '@/languages';
 import { type TokenData } from '@/state/liveTokens/liveTokensStore';
-import { type LiquidationData } from '@/features/perps/utils/buildLiquidationInfo';
 
 type LiquidationInfoProps = {
   getInfo?: (leverage: number, midPrice: string) => LiquidationData | null;

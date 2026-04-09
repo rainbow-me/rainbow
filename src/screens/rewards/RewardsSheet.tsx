@@ -1,3 +1,8 @@
+import React, { useCallback, useEffect, useState } from 'react';
+
+import { useFocusEffect } from '@react-navigation/native';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
+
 import { analytics } from '@/analytics';
 import { DynamicHeightSheet } from '@/components/sheet';
 import { BackgroundProvider, Box } from '@/design-system';
@@ -5,9 +10,6 @@ import useDimensions from '@/hooks/useDimensions';
 import { useRewards } from '@/resources/rewards/rewardsQuery';
 import { RewardsContent } from '@/screens/rewards/components/RewardsContent';
 import { useAccountAddress } from '@/state/wallets/walletsStore';
-import { useFocusEffect } from '@react-navigation/native';
-import React, { useCallback, useEffect, useState } from 'react';
-import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 export const RewardsSheet: React.FC = () => {
   const { height } = useDimensions();

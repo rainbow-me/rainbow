@@ -1,13 +1,15 @@
 /* eslint-disable no-nested-ternary */
-import { Bleed, Box, Column, Columns, Stack, Text, useColorMode, useForegroundColor } from '@/design-system';
 import React, { useEffect, useRef, useState } from 'react';
-import { FlashList, type ListRenderItem } from '@shopify/flash-list';
-import ButtonPressAnimation from '@/components/animations/ButtonPressAnimation';
-import useDimensions from '@/hooks/useDimensions';
-import ActivityIndicator from '@/components/ActivityIndicator';
-import { IS_ANDROID } from '@/env';
-import Spinner from '@/components/Spinner';
 import { ScrollView, View } from 'react-native';
+
+import { FlashList, type ListRenderItem } from '@shopify/flash-list';
+
+import ActivityIndicator from '@/components/ActivityIndicator';
+import ButtonPressAnimation from '@/components/animations/ButtonPressAnimation';
+import Spinner from '@/components/Spinner';
+import { Bleed, Box, Column, Columns, Stack, Text, useColorMode, useForegroundColor } from '@/design-system';
+import { IS_ANDROID } from '@/env';
+import useDimensions from '@/hooks/useDimensions';
 
 const HORIZONTAL_PADDING = 20;
 

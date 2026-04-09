@@ -1,18 +1,21 @@
 import React, { useCallback } from 'react';
-import { type StyleProp, StyleSheet, type ViewStyle } from 'react-native';
+import { StyleSheet, type StyleProp, type ViewStyle } from 'react-native';
+
 import Animated, {
   FadeIn,
   interpolate,
-  type SharedValue,
   useAnimatedReaction,
   useAnimatedStyle,
   useSharedValue,
   withTiming,
+  type SharedValue,
 } from 'react-native-reanimated';
+
 import { TIMING_CONFIGS } from '@/components/animations/animationConfigs';
-import { Box, globalColors, Text, useForegroundColor } from '@/design-system';
 import { GestureHandlerButton } from '@/components/buttons/GestureHandlerButton';
-import { FIELD_BACKGROUND_COLOR, FIELD_BORDER_RADIUS, FIELD_BORDER_WIDTH, COLLAPSABLE_FIELD_ANIMATION } from '../constants';
+import { Box, globalColors, Text, useForegroundColor } from '@/design-system';
+
+import { COLLAPSABLE_FIELD_ANIMATION, FIELD_BACKGROUND_COLOR, FIELD_BORDER_RADIUS, FIELD_BORDER_WIDTH } from '../constants';
 
 const HIT_SLOP = 24;
 

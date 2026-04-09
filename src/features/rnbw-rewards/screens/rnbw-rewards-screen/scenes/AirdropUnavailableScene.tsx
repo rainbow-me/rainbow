@@ -1,15 +1,17 @@
 import { memo } from 'react';
 import { StyleSheet } from 'react-native';
+
 import Animated from 'react-native-reanimated';
+
+import ButtonPressAnimation from '@/components/animations/ButtonPressAnimation';
 import { Box, Text } from '@/design-system';
-import { RnbwRewardsScenes } from '@/features/rnbw-rewards/screens/rnbw-rewards-screen/constants/rewardsScenes';
 import { createScaleInFadeInSlideEnterAnimation, defaultExitAnimation } from '@/features/rnbw-rewards/animations/sceneTransitions';
 import { getCoinBottomPosition } from '@/features/rnbw-rewards/screens/rnbw-rewards-screen/components/RnbwHeroCoin';
-import * as i18n from '@/languages';
-import ButtonPressAnimation from '@/components/animations/ButtonPressAnimation';
-import { opacity } from '@/framework/ui/utils/opacity';
+import { RnbwRewardsScenes } from '@/features/rnbw-rewards/screens/rnbw-rewards-screen/constants/rewardsScenes';
 import { useAirdropBalanceStore } from '@/features/rnbw-rewards/stores/airdropBalanceStore';
 import { rewardsFlowActions } from '@/features/rnbw-rewards/stores/rewardsFlowStore';
+import { opacity } from '@/framework/ui/utils/opacity';
+import * as i18n from '@/languages';
 
 const enteringAnimation = createScaleInFadeInSlideEnterAnimation({ translateY: -24 });
 const exitingAnimation = defaultExitAnimation;

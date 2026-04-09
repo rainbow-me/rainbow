@@ -1,12 +1,14 @@
 import React from 'react';
 import { Text as NativeText } from 'react-native';
+
 import Animated from 'react-native-reanimated';
+
+import { ImgixImage } from '@/components/images';
 import { ImagePreviewOverlayTarget } from '@/components/images/ImagePreviewOverlay';
 import Skeleton from '@/components/skeleton/Skeleton';
 import AvatarCoverPhotoMaskSvg from '@/components/svg/AvatarCoverPhotoMaskSvg';
 import { BackgroundProvider, Box, Cover } from '@/design-system';
 import useFadeImage from '@/hooks/useFadeImage';
-import { ImgixImage } from '@/components/images';
 import { sharedCoolModalTopOffset } from '@/navigation/config';
 
 const imagePreviewOverlayTopOffset = ios ? 68 + sharedCoolModalTopOffset : 107;

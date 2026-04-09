@@ -1,7 +1,9 @@
 import React, { useImperativeHandle, useState } from 'react';
-import Text from './Text';
+
 import styled from '@/framework/ui/styled-thing';
 import { opacity } from '@/framework/ui/utils/opacity';
+
+import Text from './Text';
 
 const Placeholder = styled(Text).attrs(({ theme: { colors } }) => ({
   align: 'center',

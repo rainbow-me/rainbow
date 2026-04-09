@@ -1,9 +1,10 @@
 import { type Dispatch } from 'redux';
+
 import { getContacts, saveContacts } from '@/handlers/localstorage/contacts';
 import { omitFlatten } from '@/helpers/utilities';
 import { type AppGetState } from '@/redux/store';
-import { handleReviewPromptAction } from '@/utils/reviewAlert';
 import { ReviewPromptAction } from '@/storage/schema';
+import { handleReviewPromptAction } from '@/utils/reviewAlert';
 
 // -- Constants --------------------------------------- //
 const CONTACTS_UPDATE = 'contacts/CONTACTS_UPDATE';

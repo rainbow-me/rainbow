@@ -1,8 +1,9 @@
 import React, { memo, useState } from 'react';
 import { StyleSheet, View } from 'react-native';
+
+import { type ResponseByTheme } from '@/__swaps__/utils/swaps';
 import { ImgixImage } from '@/components/images';
 import { Text, useColorMode } from '@/design-system';
-import { type ResponseByTheme } from '@/__swaps__/utils/swaps';
 
 type TeamLogoProps = {
   team: {

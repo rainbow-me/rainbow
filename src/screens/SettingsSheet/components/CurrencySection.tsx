@@ -1,21 +1,24 @@
 import React, { useCallback } from 'react';
 import { Platform, View } from 'react-native';
+
 import { reloadTimelines } from 'react-native-widgetkit';
-import Menu from './Menu';
-import MenuContainer from './MenuContainer';
-import MenuItem from './MenuItem';
+
 import { analytics } from '@/analytics';
+import RainbowCoinIcon from '@/components/coin-icon/RainbowCoinIcon';
+import type { NativeCurrencyKey } from '@/entities/nativeCurrencyTypes';
 import { IS_IOS } from '@/env';
 import { resolveCurrencyFlagEmoji } from '@/framework/core/emoji/currencyFlagEmoji';
 import useAccountSettings from '@/hooks/useAccountSettings';
+import * as i18n from '@/languages';
 import { ETH_ADDRESS, WBTC_ADDRESS } from '@/references/constants';
 import { supportedCurrencies as supportedNativeCurrencies } from '@/references/supportedCurrencies';
 import { useExternalToken } from '@/resources/assets/externalAssetsQuery';
-import RainbowCoinIcon from '@/components/coin-icon/RainbowCoinIcon';
 import { userAssetsStoreManager } from '@/state/assets/userAssetsStoreManager';
 import { ChainId } from '@/state/backendNetworks/types';
-import type { NativeCurrencyKey } from '@/entities/nativeCurrencyTypes';
-import * as i18n from '@/languages';
+
+import Menu from './Menu';
+import MenuContainer from './MenuContainer';
+import MenuItem from './MenuItem';
 
 const currencyListItems = Object.values(supportedNativeCurrencies).map(({ currency, ...item }) => ({
   ...item,

@@ -1,21 +1,24 @@
+import React, { createContext, useCallback, useEffect, useMemo, useState, type PropsWithChildren } from 'react';
+
 import { JsonRpcProvider } from '@ethersproject/providers';
 import { parseEther } from '@ethersproject/units';
 import { Wallet } from '@ethersproject/wallet';
-import React, { createContext, type PropsWithChildren, useCallback, useEffect, useMemo, useState } from 'react';
 import { createMMKV } from 'react-native-mmkv';
 import { useSharedValue } from 'react-native-reanimated';
+
+import { defaultConfigValues, type defaultConfig } from '@/config/experimental';
+import { IS_ANDROID, IS_DEV, IS_TEST } from '@/env';
+import Emoji from '@/framework/ui/components/Emoji';
+import { logger, RainbowError } from '@/logger';
+import { STORAGE_IDS } from '@/model/mmkv';
+import Navigation from '@/navigation/Navigation';
+import { getFavorites } from '@/resources/favorites';
+import { useConnectedToAnvilStore } from '@/state/connectedToAnvil';
+import Routes from '@rainbow-me/routes';
+
 import DevButton from '../components/dev-buttons/DevButton';
 import { showConnectToAnvilButton, showReloadButton, showSwitchModeButton } from '../config/debug';
-import { type defaultConfig, defaultConfigValues } from '@/config/experimental';
-import Emoji from '@/framework/ui/components/Emoji';
 import { useTheme } from '../theme/ThemeContext';
-import { STORAGE_IDS } from '@/model/mmkv';
-import { logger, RainbowError } from '@/logger';
-import Navigation from '@/navigation/Navigation';
-import Routes from '@rainbow-me/routes';
-import { useConnectedToAnvilStore } from '@/state/connectedToAnvil';
-import { IS_ANDROID, IS_DEV, IS_TEST } from '@/env';
-import { getFavorites } from '@/resources/favorites';
 
 export type RainbowContextType = {
   config: Record<keyof typeof defaultConfig, boolean> | Record<string, never>;

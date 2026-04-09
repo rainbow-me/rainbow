@@ -1,6 +1,7 @@
-import { createQueryKey, type QueryConfig, type QueryFunctionArgs } from '@/react-query';
 import { useQuery } from '@tanstack/react-query';
-import { RainbowError, logger } from '@/logger';
+import { isNil } from 'lodash';
+
+import { type RequestData } from '@/features/wallet-connect/types';
 import { metadataPOSTClient } from '@/graphql';
 import type {
   MessageResult,
@@ -12,8 +13,8 @@ import type {
   TransactionScanResultType,
   TransactionSimulationResult,
 } from '@/graphql/__generated__/metadataPOST';
-import { isNil } from 'lodash';
-import { type RequestData } from '@/features/wallet-connect/types';
+import { logger, RainbowError } from '@/logger';
+import { createQueryKey, type QueryConfig, type QueryFunctionArgs } from '@/react-query';
 import { type ChainId } from '@/state/backendNetworks/types';
 
 // ///////////////////////////////////////////////

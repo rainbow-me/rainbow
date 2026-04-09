@@ -1,6 +1,6 @@
-import { memoFn } from '@/utils/memoFn';
-import { convertAmountToNativeDisplay, divide, greaterThan } from '@/helpers/utilities';
 import type { NativeCurrencyKey } from '@/entities/nativeCurrencyTypes';
+import { convertAmountToNativeDisplay, divide, greaterThan } from '@/helpers/utilities';
+import { memoFn } from '@/utils/memoFn';
 
 export const bigNumberFormat = memoFn((value: string | number, nativeCurrency: NativeCurrencyKey, skipDecimals: boolean) => {
   'worklet';

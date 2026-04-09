@@ -1,5 +1,6 @@
 import React, { memo, useCallback } from 'react';
 import { StyleSheet } from 'react-native';
+
 import { RnbwHoldToActivateButton } from '@/features/rnbw-membership/components/RnbwHoldToActivateButton';
 import { useSharedValueState } from '@/hooks/reanimated/useSharedValueState';
 import { type DepositSubmitButtonProps } from '@/systems/funding/types';

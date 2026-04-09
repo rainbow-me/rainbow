@@ -1,19 +1,21 @@
 import React, { memo, useCallback, useEffect, useMemo, useRef } from 'react';
-import { ScrollView, type ScrollViewProps, type StyleProp, StyleSheet, type ViewStyle, View } from 'react-native';
+import { ScrollView, StyleSheet, View, type ScrollViewProps, type StyleProp, type ViewStyle } from 'react-native';
+
 import Animated, {
-  type DerivedValue,
   runOnJS,
-  type SharedValue,
   useAnimatedStyle,
   useDerivedValue,
   useSharedValue,
   withSpring,
+  type DerivedValue,
+  type SharedValue,
 } from 'react-native-reanimated';
-import { SPRING_CONFIGS, easing } from '@/components/animations/animationConfigs';
+
+import { easing, SPRING_CONFIGS } from '@/components/animations/animationConfigs';
+import { GestureHandlerButton } from '@/components/buttons/GestureHandlerButton';
 import { EasingGradient } from '@/components/easing-gradient/EasingGradient';
 import { AnimatedText, Box, useColorMode, useForegroundColor } from '@/design-system';
 import { IS_IOS } from '@/env';
-import { GestureHandlerButton } from '@/components/buttons/GestureHandlerButton';
 import { opacity } from '@/framework/ui/utils/opacity';
 
 // ============ Constants ====================================================== //

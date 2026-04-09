@@ -1,15 +1,17 @@
+import { memo, useCallback, useState } from 'react';
+
+import { format } from 'date-fns';
+
+import ButtonPressAnimation from '@/components/animations/ButtonPressAnimation';
 import { Box, Text, TextIcon, useColorMode } from '@/design-system';
 import { HyperliquidTokenIcon } from '@/features/perps/components/HyperliquidTokenIcon';
+import { TradeExecutionType, type HlTrade } from '@/features/perps/types';
+import { formatCurrency } from '@/features/perps/utils/formatCurrency';
 import { formatPerpAssetPrice } from '@/features/perps/utils/formatPerpsAssetPrice';
 import { extractBaseSymbol } from '@/features/perps/utils/hyperliquidSymbols';
-import { formatCurrency } from '@/features/perps/utils/formatCurrency';
-import { format } from 'date-fns';
-import ButtonPressAnimation from '@/components/animations/ButtonPressAnimation';
-import { type HlTrade, TradeExecutionType } from '@/features/perps/types';
-import { memo, useCallback, useState } from 'react';
+import { opacity } from '@/framework/ui/utils/opacity';
 import * as i18n from '@/languages';
 import { THICKER_BORDER_WIDTH } from '@/styles/constants';
-import { opacity } from '@/framework/ui/utils/opacity';
 
 export function TradeDetailsSection({ trade }: { trade: HlTrade }) {
   const isOpen = trade.executionType === TradeExecutionType.LONG_OPENED || trade.executionType === TradeExecutionType.SHORT_OPENED;

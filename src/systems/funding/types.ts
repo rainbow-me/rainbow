@@ -1,16 +1,18 @@
-import { type Signer } from '@ethersproject/abstract-signer';
 import { type ComponentType } from 'react';
-import { type Address } from 'viem';
+
+import { type Signer } from '@ethersproject/abstract-signer';
 import { type DerivedValue, type SharedValue } from 'react-native-reanimated';
-import { type CrosschainQuote, type Quote, type Source } from '@rainbow-me/swaps';
-import { type AddressOrEth, type ExtendedAnimatedAssetWithColors } from '@/__swaps__/types/assets';
+import { type Address } from 'viem';
+
 import { type GasSettings } from '@/__swaps__/screens/Swap/hooks/useCustomGas';
+import { type AddressOrEth, type ExtendedAnimatedAssetWithColors } from '@/__swaps__/types/assets';
 import { type GasSpeed } from '@/__swaps__/types/gas';
-import { type ChainId } from '@/state/backendNetworks/types';
-import { type BaseRainbowStore, type DerivedStore, type RainbowStore } from '@/state/internal/types';
-import { type QueryStore, type StoreState } from '@/state/internal/queryStore/types';
-import { type StoreActions } from '@/state/internal/utils/createStoreActions';
 import { type NumberPadField } from '@/features/perps/components/NumberPad/NumberPadKey';
+import { type ChainId } from '@/state/backendNetworks/types';
+import { type QueryStore, type StoreState } from '@/state/internal/queryStore/types';
+import { type BaseRainbowStore, type DerivedStore, type RainbowStore } from '@/state/internal/types';
+import { type StoreActions } from '@/state/internal/utils/createStoreActions';
+import { type CrosschainQuote, type Quote, type Source } from '@rainbow-me/swaps';
 
 // ============ Shared Types =================================================== //
 

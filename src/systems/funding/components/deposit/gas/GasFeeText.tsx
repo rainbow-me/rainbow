@@ -1,18 +1,20 @@
 import React, { memo } from 'react';
+
 import {
-  type SharedValue,
   useAnimatedStyle,
   useDerivedValue,
   withRepeat,
   withSequence,
   withSpring,
   withTiming,
+  type SharedValue,
 } from 'react-native-reanimated';
-import { TIMING_CONFIGS } from '@/components/animations/animationConfigs';
-import { AnimatedText, Box, type TextProps, useForegroundColor } from '@/design-system';
-import { useStoreSharedValue } from '@/state/internal/hooks/useStoreSharedValue';
+
 import { pulsingConfig, sliderConfig } from '@/__swaps__/screens/Swap/constants';
+import { TIMING_CONFIGS } from '@/components/animations/animationConfigs';
+import { AnimatedText, Box, useForegroundColor, type TextProps } from '@/design-system';
 import { opacity } from '@/framework/ui/utils/opacity';
+import { useStoreSharedValue } from '@/state/internal/hooks/useStoreSharedValue';
 import { useDepositContext } from '@/systems/funding/contexts/DepositContext';
 
 export const GasFeeText = memo(function GasFeeText({

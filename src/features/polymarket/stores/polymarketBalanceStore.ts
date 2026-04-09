@@ -1,14 +1,15 @@
-import { ChainId } from '@rainbow-me/swaps';
-import { type BigNumber, ethers } from 'ethers';
+import { ethers, type BigNumber } from 'ethers';
+
 import { USD_DECIMALS } from '@/features/perps/constants';
 import { POLYGON_USDC_ADDRESS } from '@/features/polymarket/constants';
 import { usePolymarketClients } from '@/features/polymarket/stores/derived/usePolymarketClients';
+import { truncateToDecimals } from '@/framework/core/safeMath';
 import { getProvider } from '@/handlers/web3';
 import { RainbowError } from '@/logger';
 import erc20ABI from '@/references/erc20-abi.json';
-import { truncateToDecimals } from '@/framework/core/safeMath';
 import { createQueryStore } from '@/state/internal/createQueryStore';
 import { time } from '@/utils/time';
+import { ChainId } from '@rainbow-me/swaps';
 
 type PolymarketBalanceStoreActions = {
   getBalance: () => string;

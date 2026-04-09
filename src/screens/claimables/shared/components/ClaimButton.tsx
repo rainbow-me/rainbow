@@ -1,13 +1,15 @@
+import React from 'react';
+
+import { debounce } from 'lodash';
+
 import ButtonPressAnimation from '@/components/animations/ButtonPressAnimation';
 import ShimmerAnimation from '@/components/animations/ShimmerAnimation';
+import { HoldToActivateButton } from '@/components/hold-to-activate-button/HoldToActivateButton';
 import { enableActionsOnReadOnlyWallet } from '@/config/debug';
 import { AccentColorProvider, Box, Inline, Text, TextShadow } from '@/design-system';
-import { HoldToActivateButton } from '@/components/hold-to-activate-button/HoldToActivateButton';
 import { getIsReadOnlyWallet } from '@/state/wallets/walletsStore';
 import deviceUtils from '@/utils/deviceUtils';
 import watchingAlert from '@/utils/watchingAlert';
-import { debounce } from 'lodash';
-import React from 'react';
 
 const BUTTON_WIDTH = deviceUtils.dimensions.width - 52;
 

@@ -1,7 +1,9 @@
-import React, { type ReactNode, memo, useMemo } from 'react';
-import { type StyleProp, StyleSheet, type ViewStyle } from 'react-native';
+import React, { memo, useMemo, type ReactNode } from 'react';
+import { StyleSheet, type StyleProp, type ViewStyle } from 'react-native';
+
 import { BlurView } from 'react-native-blur-view';
-import Animated, { type AnimatedStyle, Easing } from 'react-native-reanimated';
+import Animated, { Easing, type AnimatedStyle } from 'react-native-reanimated';
+
 import { EasingGradient } from '@/components/easing-gradient/EasingGradient';
 import { useColorMode } from '@/design-system';
 import { IS_IOS } from '@/env';

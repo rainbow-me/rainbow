@@ -1,8 +1,10 @@
 import { useRoute } from '@react-navigation/native';
-import useENSUniqueToken from './useENSUniqueToken';
+
 import type { UniqueAsset } from '@/entities/uniqueAssets';
 import { useNavigation } from '@/navigation/Navigation';
 import Routes from '@/navigation/routesNames';
+
+import useENSUniqueToken from './useENSUniqueToken';
 
 /** @description Returns a press handler to open an ENS NFT in an expanded state sheet. */
 export default function useOpenENSNFTHandler({ uniqueTokens, value }: { uniqueTokens?: UniqueAsset[]; value?: string }) {

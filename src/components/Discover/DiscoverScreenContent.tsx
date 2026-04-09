@@ -1,10 +1,12 @@
 import React from 'react';
 import { View } from 'react-native';
+
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
+
+import { useDiscoverSearchQueryStore } from '@/__swaps__/screens/Swap/resources/search/searchV2';
 import DiscoverHome from '@/components/Discover/DiscoverHome';
 import DiscoverSearch from '@/components/Discover/DiscoverSearch';
 import { Box, Inset } from '@/design-system';
-import { useSafeAreaInsets } from 'react-native-safe-area-context';
-import { useDiscoverSearchQueryStore } from '@/__swaps__/screens/Swap/resources/search/searchV2';
 
 export function DiscoverScreenContent() {
   const insets = useSafeAreaInsets();

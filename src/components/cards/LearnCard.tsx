@@ -1,15 +1,18 @@
-import { Box, Column, Columns, Inline, Stack, Text } from '@/design-system';
 import React from 'react';
-import { type CardType, GenericCard } from './GenericCard';
-import { getLearnCardColorway } from './utils/constants';
-import { type LearnCardDetails } from './utils/types';
-import { IconOrb } from './reusables/IconOrb';
+
+import { useRoute } from '@react-navigation/native';
+
+import { analytics } from '@/analytics';
+import { Box, Column, Columns, Inline, Stack, Text } from '@/design-system';
+import * as i18n from '@/languages';
 import { useNavigation } from '@/navigation/Navigation';
 import Routes from '@/navigation/routesNames';
-import * as i18n from '@/languages';
 import { useTheme } from '@/theme/ThemeContext';
-import { useRoute } from '@react-navigation/native';
-import { analytics } from '@/analytics';
+
+import { GenericCard, type CardType } from './GenericCard';
+import { IconOrb } from './reusables/IconOrb';
+import { getLearnCardColorway } from './utils/constants';
+import { type LearnCardDetails } from './utils/types';
 
 type LearnCardProps = {
   cardDetails: LearnCardDetails;

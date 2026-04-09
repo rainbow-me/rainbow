@@ -1,22 +1,24 @@
+import { useCallback, useState } from 'react';
+
+import delay from 'delay';
+
 import { analytics } from '@/analytics';
+import { hyperliquidAccountActions } from '@/features/perps/stores/hyperliquidAccountStore';
+import { usePolymarketBalanceStore } from '@/features/polymarket/stores/polymarketBalanceStore';
+import { usePolymarketPositionsStore } from '@/features/polymarket/stores/polymarketPositionsStore';
+import { usePositionsStore } from '@/features/positions/stores/positionsStore';
+import { hiddenTokensQueryKey } from '@/hooks/useFetchHiddenTokens';
+import { showcaseTokensQueryKey } from '@/hooks/useFetchShowcaseTokens';
 import { logger, RainbowError } from '@/logger';
 import { createQueryKey, queryClient } from '@/react-query';
 import { useUserAssetsStore } from '@/state/assets/userAssets';
 import { useBackendNetworksStore } from '@/state/backendNetworks/backendNetworks';
 import { useClaimablesStore } from '@/state/claimables/claimables';
-import { usePositionsStore } from '@/features/positions/stores/positionsStore';
+import { PAGE_SIZE } from '@/state/nfts/createNftsStore';
+import { useNftsStore } from '@/state/nfts/nfts';
 import { refetchWalletSummary } from '@/state/wallets/useWalletSummaryStore';
 import { getAccountAddress, refreshWalletInfo } from '@/state/wallets/walletsStore';
 import { time } from '@/utils/time';
-import delay from 'delay';
-import { useCallback, useState } from 'react';
-import { useNftsStore } from '@/state/nfts/nfts';
-import { PAGE_SIZE } from '@/state/nfts/createNftsStore';
-import { hiddenTokensQueryKey } from '@/hooks/useFetchHiddenTokens';
-import { showcaseTokensQueryKey } from '@/hooks/useFetchShowcaseTokens';
-import { hyperliquidAccountActions } from '@/features/perps/stores/hyperliquidAccountStore';
-import { usePolymarketPositionsStore } from '@/features/polymarket/stores/polymarketPositionsStore';
-import { usePolymarketBalanceStore } from '@/features/polymarket/stores/polymarketBalanceStore';
 
 // minimum duration we want the "Pull to Refresh" animation to last
 const MIN_REFRESH_DURATION = 1_250;

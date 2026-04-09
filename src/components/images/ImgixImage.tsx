@@ -1,9 +1,12 @@
-import { FasterImageView, type ImageOptions } from '@candlefinance/faster-image';
 import * as React from 'react';
 import { PixelRatio, StyleSheet } from 'react-native';
+
+import { FasterImageView, type ImageOptions } from '@candlefinance/faster-image';
 import FastImage, { type FastImageProps, type Source } from 'react-native-fast-image';
-import { maybeSignSource } from '../../handlers/imgix';
+
 import { IS_IOS } from '@/env';
+
+import { maybeSignSource } from '../../handlers/imgix';
 
 export type ImgixImageProps = FastImageProps & {
   Component?: React.ElementType;

@@ -1,14 +1,16 @@
-import { type RouteProp, useRoute } from '@react-navigation/native';
 import { useCallback, useEffect, useRef } from 'react';
-import { type EmitterSubscription, Keyboard, type KeyboardEventListener } from 'react-native';
-import { useDispatch, useSelector } from 'react-redux';
+import { Keyboard, type EmitterSubscription, type KeyboardEventListener } from 'react-native';
+
+import { useRoute, type RouteProp } from '@react-navigation/native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
+import { useDispatch, useSelector } from 'react-redux';
+
+import { IS_ANDROID } from '@/env';
 import KeyboardTypes from '@/helpers/keyboardTypes';
 import { type Route } from '@/navigation/routesNames';
 import { type RootStackParamList } from '@/navigation/types';
 import { setKeyboardHeight } from '@/redux/keyboardHeight';
 import { type AppState } from '@/redux/store';
-import { IS_ANDROID } from '@/env';
 import { isRouteActive } from '@/state/navigation/navigationStore';
 
 interface UseKeyboardHeightOptions {

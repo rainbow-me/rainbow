@@ -1,5 +1,5 @@
-import * as i18n from '@/languages';
 import { WrappedAlert as Alert } from '@/helpers/alert';
+import * as i18n from '@/languages';
 import Navigation from '@/navigation/Navigation';
 import Routes from '@/navigation/routesNames';
 

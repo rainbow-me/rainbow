@@ -1,4 +1,5 @@
 import * as i18n from '@/languages';
+
 import { INITIAL_SLIDER_PROGRESS } from './constants';
 import { type BalanceQueryStore, type DepositConfig, type DepositConfigInput, type DepositLabels, type WithdrawalConfig } from './types';
 

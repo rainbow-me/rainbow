@@ -1,5 +1,4 @@
 import {
-  type SharedValue,
   interpolateColor,
   useAnimatedStyle,
   useDerivedValue,
@@ -7,16 +6,17 @@ import {
   withSequence,
   withSpring,
   withTiming,
+  type SharedValue,
 } from 'react-native-reanimated';
-import { useColorMode, useForegroundColor } from '@/design-system';
 
 import { ETH_COLOR_DARK, ETH_COLOR_DARK_ACCENT, pulsingConfig } from '@/__swaps__/screens/Swap/constants';
+import { type ExtendedAnimatedAssetWithColors } from '@/__swaps__/types/assets';
 import { type InputMethods, type InputValues } from '@/__swaps__/types/swap';
 import { getColorValueForThemeWorklet } from '@/__swaps__/utils/swaps';
-import { opacity } from '@/framework/ui/utils/opacity';
-import { type ExtendedAnimatedAssetWithColors } from '@/__swaps__/types/assets';
-import { equalWorklet } from '@/framework/core/safeMath';
 import { SPRING_CONFIGS, TIMING_CONFIGS } from '@/components/animations/animationConfigs';
+import { useColorMode, useForegroundColor } from '@/design-system';
+import { equalWorklet } from '@/framework/core/safeMath';
+import { opacity } from '@/framework/ui/utils/opacity';
 
 export function useSwapTextStyles({
   inputMethod,

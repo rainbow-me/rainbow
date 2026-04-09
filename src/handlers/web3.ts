@@ -3,20 +3,19 @@ import { BigNumber, type BigNumberish } from '@ethersproject/bignumber';
 import { isHexString as isEthersHexString } from '@ethersproject/bytes';
 import { type Contract } from '@ethersproject/contracts';
 import { isValidMnemonic as ethersIsValidMnemonic } from '@ethersproject/hdnode';
-import { type Block, JsonRpcBatchProvider, StaticJsonRpcProvider, type TransactionRequest } from '@ethersproject/providers';
+import { JsonRpcBatchProvider, StaticJsonRpcProvider, type Block, type TransactionRequest } from '@ethersproject/providers';
 import { parseEther } from '@ethersproject/units';
 import Resolution from '@unstoppabledomains/resolution';
 import { startsWith } from 'lodash';
 import { type Address, type Hex } from 'viem';
+
 import { AssetType } from '@/entities/assetTypes';
-import { type NewTransaction } from '@/entities/transactions';
 import { type ParsedAddressAsset } from '@/entities/tokens';
+import { type NewTransaction } from '@/entities/transactions';
 import { type UniqueAsset } from '@/entities/uniqueAssets';
+import { IS_IOS, RPC_PROXY_API_KEY, RPC_PROXY_BASE_URL } from '@/env';
+import { NftTokenType } from '@/graphql/__generated__/arc';
 import { isNativeAsset } from '@/handlers/assets';
-import { isUnstoppableAddressFormat } from '@/helpers/validators';
-import ethUnits from '@/references/ethereum-units.json';
-import smartContractMethods from '@/references/smartcontract-methods.json';
-import { CRYPTO_KITTIES_NFT_ADDRESS, CRYPTO_PUNKS_NFT_ADDRESS } from '@/references/constants';
 import {
   addBuffer,
   convertAmountToRawAmount,
@@ -27,13 +26,15 @@ import {
   multiply,
   omitFlatten,
 } from '@/helpers/utilities';
-import ethereumUtils from '@/utils/ethereumUtils';
+import { isUnstoppableAddressFormat } from '@/helpers/validators';
 import { logger, RainbowError } from '@/logger';
-import { IS_IOS, RPC_PROXY_API_KEY, RPC_PROXY_BASE_URL } from '@/env';
-import { ChainId, chainAnvil } from '@/state/backendNetworks/types';
+import { CRYPTO_KITTIES_NFT_ADDRESS, CRYPTO_PUNKS_NFT_ADDRESS } from '@/references/constants';
+import ethUnits from '@/references/ethereum-units.json';
+import smartContractMethods from '@/references/smartcontract-methods.json';
 import { useBackendNetworksStore } from '@/state/backendNetworks/backendNetworks';
+import { chainAnvil, ChainId } from '@/state/backendNetworks/types';
 import { useConnectedToAnvilStore } from '@/state/connectedToAnvil';
-import { NftTokenType } from '@/graphql/__generated__/arc';
+import ethereumUtils from '@/utils/ethereumUtils';
 
 export const chainsProviders = new Map<ChainId, StaticJsonRpcProvider>();
 

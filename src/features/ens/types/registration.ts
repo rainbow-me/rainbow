@@ -1,4 +1,5 @@
 import { type EthereumAddress } from '@/entities/wallet';
+
 import { type ENS_RECORDS, type REGISTRATION_MODES } from '../utils/helpers';
 
 export type Records = { [key in ENS_RECORDS]?: string };

@@ -1,3 +1,9 @@
+import React, { useCallback, useEffect, useRef, useState } from 'react';
+import { StyleSheet } from 'react-native';
+
+import Animated from 'react-native-reanimated';
+import { ScreenCornerRadius } from 'react-native-screen-corner-radius';
+
 import { ExchangeRateBubble } from '@/__swaps__/screens/Swap/components/ExchangeRateBubble';
 import { FlipButton } from '@/__swaps__/screens/Swap/components/FlipButton';
 import { SliderAndKeyboard } from '@/__swaps__/screens/Swap/components/SliderAndKeyboard';
@@ -20,10 +26,7 @@ import { userAssetsStoreManager } from '@/state/assets/userAssetsStoreManager';
 import { ChainId } from '@/state/backendNetworks/types';
 import { useSwapsStore } from '@/state/swaps/swapsStore';
 import safeAreaInsetValues from '@/utils/safeAreaInsetValues';
-import React, { useCallback, useEffect, useRef, useState } from 'react';
-import { StyleSheet } from 'react-native';
-import Animated from 'react-native-reanimated';
-import { ScreenCornerRadius } from 'react-native-screen-corner-radius';
+
 import { NavigateToSwapSettingsTrigger } from './components/NavigateToSwapSettingsTrigger';
 import { ReviewButton } from './components/ReviewButton';
 import { SwapWarning } from './components/SwapWarning';

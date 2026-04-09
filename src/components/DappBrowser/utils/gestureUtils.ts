@@ -1,6 +1,7 @@
 import { type SharedValue } from 'react-native-reanimated';
-import { TAB_VIEW_COLUMN_WIDTH } from '../Dimensions';
+
 import { RAINBOW_HOME } from '../constants';
+import { TAB_VIEW_COLUMN_WIDTH } from '../Dimensions';
 import { type ActiveTabCloseGestures, type GestureManagerState, type TabCloseGesture, type TabId } from '../types';
 import { type TabHitResult } from '../utils/tabHitTest';
 

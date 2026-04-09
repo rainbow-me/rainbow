@@ -1,18 +1,6 @@
-import ShimmerAnimation from '@/components/animations/ShimmerAnimation';
-import { AnimatedSpinner } from '@/components/animations/AnimatedSpinner';
-import { SPRING_CONFIGS } from '@/components/animations/animationConfigs';
-import { useBiometryIconString } from '@/components/buttons/BiometricButtonContent';
-import HoldToAuthorizeButtonIcon from '@/components/buttons/hold-to-authorize/HoldToAuthorizeButtonIcon';
-import { LedgerIcon } from '@/components/icons/svg/LedgerIcon';
-import { Box, type BoxProps, Text, type TextProps, useColorMode } from '@/design-system';
-import { getColorForTheme } from '@/design-system/color/useForegroundColor';
-import { IS_ANDROID } from '@/env';
-import { useWalletsStore } from '@/state/wallets/walletsStore';
-import { colors } from '@/styles';
-import { useTheme } from '@/theme/ThemeContext';
-import { time } from '@/utils/time';
 import React, { useCallback, useMemo } from 'react';
-import { type StyleProp, type TextStyle, type ViewStyle, StyleSheet } from 'react-native';
+import { StyleSheet, type StyleProp, type TextStyle, type ViewStyle } from 'react-native';
+
 import { Gesture, GestureDetector } from 'react-native-gesture-handler';
 import Animated, {
   FadeIn,
@@ -24,6 +12,20 @@ import Animated, {
   withTiming,
 } from 'react-native-reanimated';
 import { triggerHaptics } from 'react-native-turbo-haptics';
+
+import { AnimatedSpinner } from '@/components/animations/AnimatedSpinner';
+import { SPRING_CONFIGS } from '@/components/animations/animationConfigs';
+import ShimmerAnimation from '@/components/animations/ShimmerAnimation';
+import { useBiometryIconString } from '@/components/buttons/BiometricButtonContent';
+import HoldToAuthorizeButtonIcon from '@/components/buttons/hold-to-authorize/HoldToAuthorizeButtonIcon';
+import { LedgerIcon } from '@/components/icons/svg/LedgerIcon';
+import { Box, Text, useColorMode, type BoxProps, type TextProps } from '@/design-system';
+import { getColorForTheme } from '@/design-system/color/useForegroundColor';
+import { IS_ANDROID } from '@/env';
+import { useWalletsStore } from '@/state/wallets/walletsStore';
+import { colors } from '@/styles';
+import { useTheme } from '@/theme/ThemeContext';
+import { time } from '@/utils/time';
 
 const BUTTON_HEIGHT = 56;
 

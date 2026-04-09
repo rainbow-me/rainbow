@@ -1,9 +1,10 @@
 import React, { useCallback, useMemo } from 'react';
+
 import ButtonPressAnimation from '@/components/animations/ButtonPressAnimation';
-import { Inline, Inset, Text } from '@/design-system';
-import haptics from '@/utils/haptics';
-import { MintsFilter, getMintsFilterLabel, useMintsFilter } from '@/resources/mints';
 import { DropdownMenu, type MenuConfig } from '@/components/DropdownMenu';
+import { Inline, Inset, Text } from '@/design-system';
+import { getMintsFilterLabel, MintsFilter, useMintsFilter } from '@/resources/mints';
+import haptics from '@/utils/haptics';
 
 export function Menu() {
   const { filter, setFilter } = useMintsFilter();

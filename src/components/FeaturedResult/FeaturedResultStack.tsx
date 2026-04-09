@@ -1,12 +1,14 @@
 import React from 'react';
-import useAccountSettings from '@/hooks/useAccountSettings';
-import { useFeaturedResults } from '@/resources/featuredResults/getFeaturedResults';
-import { languageLocaleToCountry } from '@/utils/languageLocaleToCountry';
-import { getFeaturedResultsById } from '@/resources/featuredResults/_selectors/getFeaturedResultIds';
+
 import { useSharedValue } from 'react-native-reanimated';
+
 import { FeaturedResultCard } from '@/components/FeaturedResult/FeaturedResultCard';
 import { type FeaturedResult } from '@/graphql/__generated__/arc';
+import useAccountSettings from '@/hooks/useAccountSettings';
+import { getFeaturedResultsById } from '@/resources/featuredResults/_selectors/getFeaturedResultIds';
+import { useFeaturedResults } from '@/resources/featuredResults/getFeaturedResults';
 import { useAccountAddress } from '@/state/wallets/walletsStore';
+import { languageLocaleToCountry } from '@/utils/languageLocaleToCountry';
 
 export type FeaturedResultStackProps = {
   onNavigate: (url: string) => void;

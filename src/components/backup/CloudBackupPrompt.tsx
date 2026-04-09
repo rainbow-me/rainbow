@@ -1,3 +1,8 @@
+import React, { useCallback } from 'react';
+
+import { format } from 'date-fns';
+import { type Source } from 'react-native-fast-image';
+
 import WalletsAndBackupIcon from '@/assets/WalletsAndBackup.png';
 import { Bleed, Box, Inline, Inset, Separator, Stack, Text } from '@/design-system';
 import * as i18n from '@/languages';
@@ -7,9 +12,7 @@ import Routes from '@/navigation/routesNames';
 import { backupsStore } from '@/state/backups/backups';
 import { useSelectedWallet } from '@/state/wallets/walletsStore';
 import { cloudPlatform } from '@/utils/platform';
-import { format } from 'date-fns';
-import React, { useCallback } from 'react';
-import { type Source } from 'react-native-fast-image';
+
 import ButtonPressAnimation from '../animations/ButtonPressAnimation';
 import { ImgixImage } from '../images';
 import { useCreateBackup } from './useCreateBackup';

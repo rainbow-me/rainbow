@@ -1,15 +1,17 @@
 import React from 'react';
+
 import Animated, { interpolate, interpolateColor, useAnimatedStyle, useDerivedValue, withTiming } from 'react-native-reanimated';
+
 import { AnimatedTextIcon } from '@/components/AnimatedComponents/AnimatedTextIcon';
 import { TIMING_CONFIGS } from '@/components/animations/animationConfigs';
 import { AnimatedText, Box, Inline, useForegroundColor } from '@/design-system';
 import { USD_DECIMALS } from '@/features/perps/constants';
 import { useOrderAmountValidation } from '@/features/perps/stores/derived/useOrderAmountValidation';
-import { formatCurrency } from '@/features/perps/utils/formatCurrency';
-import * as i18n from '@/languages';
-import { equalWorklet, truncateToDecimals } from '@/framework/core/safeMath';
-import { type ReadOnlySharedValue, useStoreSharedValue } from '@/state/internal/hooks/useStoreSharedValue';
 import { type OrderAmountValidation } from '@/features/perps/utils/buildOrderAmountValidation';
+import { formatCurrency } from '@/features/perps/utils/formatCurrency';
+import { equalWorklet, truncateToDecimals } from '@/framework/core/safeMath';
+import * as i18n from '@/languages';
+import { useStoreSharedValue, type ReadOnlySharedValue } from '@/state/internal/hooks/useStoreSharedValue';
 
 const translations = {
   availableSuffix: i18n.t(i18n.l.perps.inputs.available),

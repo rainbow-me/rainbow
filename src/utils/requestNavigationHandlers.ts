@@ -1,29 +1,10 @@
-import Navigation, { getActiveRoute } from '@/navigation/Navigation';
-import Routes from '@/navigation/routesNames';
+import { InteractionManager } from 'react-native';
 
-import { MobileWalletProtocolUserErrors } from '@/components/MobileWalletProtocolListener';
-import { hideWalletConnectToast } from '@/components/toasts/WalletConnectToast';
-import { enableActionsOnReadOnlyWallet } from '@/config/debug';
-import { maybeSignUri } from '@/handlers/imgix';
-import walletTypes from '@/helpers/walletTypes';
-import { logger, RainbowError } from '@/logger';
-import { getRequestDisplayDetails } from '@/parsers/requests';
-import store from '@/redux/store';
-import { useBackendNetworksStore } from '@/state/backendNetworks/backendNetworks';
-import { ChainId } from '@/state/backendNetworks/types';
-import { removeWalletConnectRequest } from '@/features/wallet-connect/stores/walletConnectRequestsStore';
-import { handleSessionRequestResponse } from '@/features/wallet-connect/handlers/onSessionRequest';
 import {
-  type RequestData,
-  type WalletconnectApprovalSheetRouteParams,
-  type WalletconnectRequestData,
-  type WalletconnectResultType,
-} from '@/features/wallet-connect/types';
-import {
-  type AppMetadata,
-  type EthereumAction,
   isEthereumAction,
   isHandshakeAction,
+  type AppMetadata,
+  type EthereumAction,
   type PersonalSignAction,
   type RequestMessage,
   type useMobileWalletProtocolHost,
@@ -31,9 +12,30 @@ import {
 import { BigNumber } from '@ethersproject/bignumber';
 import { toUtf8String } from '@ethersproject/strings';
 import { noop } from 'lodash';
-import { InteractionManager } from 'react-native';
 import { type Address } from 'viem';
+
+import { MobileWalletProtocolUserErrors } from '@/components/MobileWalletProtocolListener';
+import { hideWalletConnectToast } from '@/components/toasts/WalletConnectToast';
+import { enableActionsOnReadOnlyWallet } from '@/config/debug';
+import { handleSessionRequestResponse } from '@/features/wallet-connect/handlers/onSessionRequest';
+import { removeWalletConnectRequest } from '@/features/wallet-connect/stores/walletConnectRequestsStore';
+import {
+  type RequestData,
+  type WalletconnectApprovalSheetRouteParams,
+  type WalletconnectRequestData,
+  type WalletconnectResultType,
+} from '@/features/wallet-connect/types';
+import { maybeSignUri } from '@/handlers/imgix';
+import walletTypes from '@/helpers/walletTypes';
+import { logger, RainbowError } from '@/logger';
+import Navigation, { getActiveRoute } from '@/navigation/Navigation';
+import Routes from '@/navigation/routesNames';
+import { getRequestDisplayDetails } from '@/parsers/requests';
+import store from '@/redux/store';
+import { useBackendNetworksStore } from '@/state/backendNetworks/backendNetworks';
+import { ChainId } from '@/state/backendNetworks/types';
 import { getAccountAddress, getIsReadOnlyWallet, getWalletWithAccount } from '@/state/wallets/walletsStore';
+
 import { SEND_TRANSACTION } from './signingMethods';
 import watchingAlert from './watchingAlert';
 

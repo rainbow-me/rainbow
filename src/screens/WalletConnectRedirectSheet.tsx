@@ -1,16 +1,19 @@
-import { type RouteProp, useRoute } from '@react-navigation/native';
-import * as i18n from '@/languages';
 import React, { useEffect } from 'react';
+
+import { useRoute, type RouteProp } from '@react-navigation/native';
+
 import { Centered } from '@/components/layout';
 import { Sheet } from '@/components/sheet';
 import { Text } from '@/components/text';
-import { useNavigation } from '@/navigation/Navigation';
-import useAppState from '@/hooks/useAppState';
 import styled from '@/framework/ui/styled-thing';
-import { type ThemeContextProps, useTheme } from '@/theme/ThemeContext';
-import { type RootStackParamList } from '@/navigation/types';
-import type Routes from '@/navigation/routesNames';
 import { opacity } from '@/framework/ui/utils/opacity';
+import useAppState from '@/hooks/useAppState';
+import * as i18n from '@/languages';
+import { useNavigation } from '@/navigation/Navigation';
+import type Routes from '@/navigation/routesNames';
+import { type RootStackParamList } from '@/navigation/types';
+import { useTheme, type ThemeContextProps } from '@/theme/ThemeContext';
+
 const BodyText = styled(Text).attrs(({ theme: { colors } }: { theme: ThemeContextProps }) => ({
   align: 'center',
   color: opacity(colors.blueGreyDark, 0.6),

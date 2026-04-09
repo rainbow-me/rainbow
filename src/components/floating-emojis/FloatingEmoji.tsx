@@ -1,5 +1,7 @@
 import React, { useLayoutEffect } from 'react';
+
 import Animated, { Easing, interpolate, useAnimatedStyle, useSharedValue, withTiming } from 'react-native-reanimated';
+
 import { Emoji } from '../text';
 
 interface FloatingEmojiProps {

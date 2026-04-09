@@ -1,6 +1,18 @@
 import React, { useCallback, useMemo, useState } from 'react';
 import { Platform } from 'react-native';
+
 import { LinearGradient } from 'expo-linear-gradient';
+import { KeyboardAwareScrollView } from 'react-native-keyboard-controller';
+
+import { IS_IOS } from '@/env';
+import styled from '@/framework/ui/styled-thing';
+import { assetIsUniqueAsset } from '@/handlers/web3';
+import useDimensions from '@/hooks/useDimensions';
+import ShadowStack from '@/react-native-shadow-stack';
+import { padding, position } from '@/styles';
+import { useTheme } from '@/theme/ThemeContext';
+import { NAVIGATION_BAR_HEIGHT } from '@/utils/deviceUtils';
+
 import ButtonPressAnimation from '../animations/ButtonPressAnimation';
 import { SendCoinRow } from '../coin-row';
 import CollectiblesSendRow from '../coin-row/CollectiblesSendRow';
@@ -8,15 +20,6 @@ import { Column } from '../layout';
 import { Text } from '../text';
 import SendAssetFormCollectible from './SendAssetFormCollectible';
 import SendAssetFormToken from './SendAssetFormToken';
-import useDimensions from '@/hooks/useDimensions';
-import styled from '@/framework/ui/styled-thing';
-import { padding, position } from '@/styles';
-import ShadowStack from '@/react-native-shadow-stack';
-import { assetIsUniqueAsset } from '@/handlers/web3';
-import { KeyboardAwareScrollView } from 'react-native-keyboard-controller';
-import { useTheme } from '@/theme/ThemeContext';
-import { IS_IOS } from '@/env';
-import { NAVIGATION_BAR_HEIGHT } from '@/utils/deviceUtils';
 
 const AssetRowShadow = colors => [
   [0, 10, 30, colors.shadow, 0.12],

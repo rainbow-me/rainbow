@@ -1,9 +1,11 @@
 import React from 'react';
 import { StyleSheet, View } from 'react-native';
+
 import { ChainId } from '@/state/backendNetworks/types';
 import { borders, fonts } from '@/styles';
 import { useTheme } from '@/theme/ThemeContext';
 import FallbackIcon from '@/utils/CoinIcons/FallbackIcon';
+
 import { FastFallbackCoinIconImage } from '../asset-list/RecyclerAssetList2/FastComponents/FastFallbackCoinIconImage';
 import { ChainImage } from './ChainImage';
 

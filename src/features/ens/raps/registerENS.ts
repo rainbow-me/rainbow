@@ -1,6 +1,6 @@
 import { AddressZero } from '@ethersproject/constants';
 import { isEmpty } from 'lodash';
-import { createNewENSAction, createNewENSRap, type ENSActionParameters, type RapENSAction, ENSRapActionType } from './common';
+
 import type { Records } from '../types/registration';
 import {
   formatRecordsForTransaction,
@@ -9,6 +9,7 @@ import {
   recordsForTransactionAreValid,
 } from '../utils/handlers';
 import { ENS_RECORDS } from '../utils/helpers';
+import { createNewENSAction, createNewENSRap, ENSRapActionType, type ENSActionParameters, type RapENSAction } from './common';
 
 export const createSetRecordsENSRap = async (ensActionParameters: ENSActionParameters) => {
   let actions: RapENSAction[] = [];

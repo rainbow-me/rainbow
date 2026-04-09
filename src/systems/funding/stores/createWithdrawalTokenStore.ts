@@ -1,11 +1,13 @@
 import { getAddress } from 'viem';
-import { type Token } from '@/graphql/__generated__/metadata';
+
+import type { AddressOrEth } from '@/__swaps__/types/assets';
 import { metadataClient } from '@/graphql';
+import { type Token } from '@/graphql/__generated__/metadata';
 import { type ChainId } from '@/state/backendNetworks/types';
 import { createQueryStore } from '@/state/internal/createQueryStore';
 import { time } from '@/utils/time';
+
 import { type WithdrawalTokenData, type WithdrawalTokenStoreType } from '../types';
-import type { AddressOrEth } from '@/__swaps__/types/assets';
 
 // ============ Types ========================================================== //
 

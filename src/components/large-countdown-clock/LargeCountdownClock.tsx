@@ -1,12 +1,15 @@
+import React, { useState, type ReactNode } from 'react';
+
 import useCountdown from '@bradgarropy/use-countdown';
-import React, { type ReactNode, useState } from 'react';
 import ReactNativeHapticFeedback from 'react-native-haptic-feedback';
 import Animated, { Easing, useAnimatedProps, useSharedValue, withSpring, withTiming } from 'react-native-reanimated';
 import { Circle, Defs, G, RadialGradient, Stop, Svg } from 'react-native-svg';
+
+import { Box, useForegroundColor, useTextStyle } from '@/design-system';
+
 import { CheckmarkAnimation } from '../animations/CheckmarkAnimation';
 import { SeparatorDots } from './SeparatorDots';
 import { useVariableFont } from './useVariableFont';
-import { Box, useForegroundColor, useTextStyle } from '@/design-system';
 
 type LargeCountdownClockProps = {
   initialSeconds?: number;

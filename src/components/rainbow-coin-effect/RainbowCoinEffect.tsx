@@ -1,6 +1,7 @@
-import { BlendColor, Blur, Canvas, Circle, Fill, Image, Paint, Shadow, SweepGradient, useImage } from '@shopify/react-native-skia';
 import React, { memo, useCallback, useMemo } from 'react';
 import { StyleSheet } from 'react-native';
+
+import { BlendColor, Blur, Canvas, Circle, Fill, Image, Paint, Shadow, SweepGradient, useImage } from '@shopify/react-native-skia';
 import Animated, {
   interpolate,
   runOnUI,
@@ -12,13 +13,15 @@ import Animated, {
   withTiming,
 } from 'react-native-reanimated';
 import { triggerHaptics } from 'react-native-turbo-haptics';
+
 import { TIMING_CONFIGS } from '@/components/animations/animationConfigs';
+import { GestureHandlerButton } from '@/components/buttons/GestureHandlerButton';
 import { globalColors, useColorMode } from '@/design-system';
 import { getSizedImageUrl } from '@/handlers/imgix';
 import { useCleanup } from '@/hooks/useCleanup';
 import Routes from '@/navigation/routesNames';
 import { useNavigationStore } from '@/state/navigation/navigationStore';
-import { GestureHandlerButton } from '@/components/buttons/GestureHandlerButton';
+
 import { ANIMATION_CONFIGS, BORDER_THICKNESS, INTERNAL_SPRING_CONFIGS } from './constants';
 import { cancelAnimations, getRainbowCoinEffectConfig, onPressCoinIcon, startAnimations } from './utils';
 

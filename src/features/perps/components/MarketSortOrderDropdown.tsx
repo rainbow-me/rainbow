@@ -1,8 +1,9 @@
 import React, { memo, useCallback, useMemo } from 'react';
+
 import { DropdownMenu, type MenuItem } from '@/components/DropdownMenu';
-import { MarketSortOrder } from '@/features/perps/types';
-import { hyperliquidMarketsActions, useHyperliquidMarketsStore } from '@/features/perps/stores/hyperliquidMarketsStore';
 import { useMarketSortOrderLabels } from '@/features/perps/hooks/useMarketSortOrderLabels';
+import { hyperliquidMarketsActions, useHyperliquidMarketsStore } from '@/features/perps/stores/hyperliquidMarketsStore';
+import { MarketSortOrder } from '@/features/perps/types';
 
 export const MarketSortOrderDropdown = memo(function MarketSortOrderDropdown({ children }: { children: React.ReactElement }) {
   const selectedSortOrder = useHyperliquidMarketsStore(state => state.sortOrder);

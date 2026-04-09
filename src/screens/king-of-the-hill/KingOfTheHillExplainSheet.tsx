@@ -1,14 +1,16 @@
 import React from 'react';
-import * as i18n from '@/languages';
 import { Text as NativeText } from 'react-native';
-import { Box, ColorModeProvider, Text } from '@/design-system';
-import currentKingImage from '@/assets/kingOfTheHillExplainer/currentKing.png';
-import FastImage from 'react-native-fast-image';
-import { fonts } from '@/styles';
-import { ExplainerSheet, type ExplainerSheetStep } from '@/components/explainer-sheet/ExplainerSheet';
-import { GradientText } from '@/components/text';
+
 import chroma from 'chroma-js';
 import { type LinearGradientProps } from 'expo-linear-gradient';
+import FastImage from 'react-native-fast-image';
+
+import currentKingImage from '@/assets/kingOfTheHillExplainer/currentKing.png';
+import { ExplainerSheet, type ExplainerSheetStep } from '@/components/explainer-sheet/ExplainerSheet';
+import { GradientText } from '@/components/text';
+import { Box, ColorModeProvider, Text } from '@/design-system';
+import * as i18n from '@/languages';
+import { fonts } from '@/styles';
 
 const GRADIENT_COLORS = ['#8754C8', '#EE431D', '#FFF000', '#02ADDE'];
 const PANEL_INNER_WIDTH = 332;

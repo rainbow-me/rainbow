@@ -1,13 +1,14 @@
 import React, { forwardRef, type ForwardRefRenderFunction } from 'react';
 import { type SectionList } from 'react-native';
-import magicMemo from '@/utils/magicMemo';
+
+import type { SearchAsset } from '@/__swaps__/types/search';
 import EmptyAssetList from '@/components/asset-list/EmptyAssetList';
+import ExchangeAssetList, { type EnrichedExchangeAsset } from '@/components/ExchangeAssetList';
 import { Centered } from '@/components/layout';
 import { NoResults } from '@/components/list';
-import ExchangeAssetList, { type EnrichedExchangeAsset } from '@/components/ExchangeAssetList';
-import { Box } from '@/design-system';
 import { NoResultsType } from '@/components/list/NoResults';
-import type { SearchAsset } from '@/__swaps__/types/search';
+import { Box } from '@/design-system';
+import magicMemo from '@/utils/magicMemo';
 
 const CurrencySelectModalHeaderHeight = 59;
 const SearchHeight = 40;

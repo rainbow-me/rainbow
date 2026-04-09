@@ -1,26 +1,28 @@
-import * as i18n from '@/languages';
-import type { NativeCurrencyKey } from '@/entities/nativeCurrencyTypes';
-import { type Claimable, ClaimableType, type ConsolidatedClaimablesResponse } from './types';
-import { logger, RainbowError } from '@/logger';
-import { parseClaimables } from './utils';
-import { useBackendNetworksStore } from '@/state/backendNetworks/backendNetworks';
-import { getAddysHttpClient } from '../client';
+import { throttle } from 'lodash';
 import { type Address } from 'viem';
+
+import { analytics } from '@/analytics';
+import type { NativeCurrencyKey } from '@/entities/nativeCurrencyTypes';
+import { metadataPOSTClient } from '@/graphql';
 import {
+  add,
+  convertAmountAndPriceToNativeDisplay,
+  convertAmountToNativeDisplay,
   convertRawAmountToBalance,
   greaterThan,
-  convertAmountAndPriceToNativeDisplay,
   isZero,
-  convertAmountToNativeDisplay,
-  add,
 } from '@/helpers/utilities';
-import { metadataPOSTClient } from '@/graphql';
-import { getNativeAssetForNetwork } from '@/utils/ethereumUtils';
+import * as i18n from '@/languages';
+import { logger, RainbowError } from '@/logger';
+import { useBackendNetworksStore } from '@/state/backendNetworks/backendNetworks';
 import { ChainId } from '@/state/backendNetworks/types';
-import { time } from '@/utils/time';
-import { throttle } from 'lodash';
-import { analytics } from '@/analytics';
 import { type ClaimablesStore } from '@/state/claimables/claimables';
+import { getNativeAssetForNetwork } from '@/utils/ethereumUtils';
+import { time } from '@/utils/time';
+
+import { getAddysHttpClient } from '../client';
+import { ClaimableType, type Claimable, type ConsolidatedClaimablesResponse } from './types';
+import { parseClaimables } from './utils';
 
 export type ClaimablesArgs = {
   address: Address | string | null;

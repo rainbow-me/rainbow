@@ -1,13 +1,15 @@
 import React from 'react';
-import { Text } from '../text';
+
+import { IS_ANDROID } from '@/env';
+import styled from '@/framework/ui/styled-thing';
 import { BiometryTypes } from '@/helpers';
 import useBiometryType from '@/hooks/useBiometryType';
 import { useIsHardwareWallet } from '@/state/wallets/walletsStore';
-import styled from '@/framework/ui/styled-thing';
 import { fonts } from '@/styles';
-import { LedgerIcon } from '../icons/svg/LedgerIcon';
-import { IS_ANDROID } from '@/env';
 import { useTheme } from '@/theme/ThemeContext';
+
+import { LedgerIcon } from '../icons/svg/LedgerIcon';
+import { Text } from '../text';
 
 const { Face, FaceID, Fingerprint, none, passcode, TouchID } = BiometryTypes;
 

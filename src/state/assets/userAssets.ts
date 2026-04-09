@@ -1,12 +1,14 @@
-import { getAccountAddress, useAccountAddress } from '@/state/wallets/walletsStore';
 import { type Address } from 'viem';
+
+import { getAccountAddress, useAccountAddress } from '@/state/wallets/walletsStore';
+
 import { type EqualityFn, type Selector } from '../internal/types';
 import { createStoreFactoryUtils } from '../internal/utils/factoryUtils';
 import { createUserAssetsStore } from './createUserAssetsStore';
 import { type UserAssetsStateToPersist } from './persistence';
+import { cleanupPositionsAssetsSync, setupPositionsAssetsSync } from './positionsSync';
 import { type QueryEnabledUserAssetsState, type UserAssetsRouter, type UserAssetsStoreType } from './types';
 import { userAssetsStoreManager } from './userAssetsStoreManager';
-import { setupPositionsAssetsSync, cleanupPositionsAssetsSync } from './positionsSync';
 
 const { persist, portableSubscribe, rebindSubscriptions } = createStoreFactoryUtils<UserAssetsStoreType, UserAssetsStateToPersist>(
   getOrCreateStore

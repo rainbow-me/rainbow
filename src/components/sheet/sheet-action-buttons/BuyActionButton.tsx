@@ -1,14 +1,16 @@
-import * as i18n from '@/languages';
 import React, { useCallback } from 'react';
-import SheetActionButton, { type SheetActionButtonProps } from './SheetActionButton';
+
+import { useRoute } from '@react-navigation/native';
+
 import { analytics } from '@/analytics';
 import { Text } from '@/design-system';
-import { getIsDamagedWallet } from '@/state/wallets/walletsStore';
-
-import Routes from '@/navigation/routesNames';
-import { colors } from '@/styles';
-import { useRoute } from '@react-navigation/native';
 import useNavigationForNonReadOnlyWallets from '@/hooks/useNavigationForNonReadOnlyWallets';
+import * as i18n from '@/languages';
+import Routes from '@/navigation/routesNames';
+import { getIsDamagedWallet } from '@/state/wallets/walletsStore';
+import { colors } from '@/styles';
+
+import SheetActionButton, { type SheetActionButtonProps } from './SheetActionButton';
 
 type BuyActionButtonProps = SheetActionButtonProps;
 

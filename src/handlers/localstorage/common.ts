@@ -1,6 +1,6 @@
 /* global storage*/
-import { legacy } from '@/storage/legacy';
 import { logger, RainbowError } from '@/logger';
+import { legacy } from '@/storage/legacy';
 
 const defaultVersion = '0.1.0';
 

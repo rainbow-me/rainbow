@@ -1,14 +1,16 @@
 import { memo, useMemo } from 'react';
 import { StyleSheet, View } from 'react-native';
-import { InnerShadow } from '@/features/polymarket/components/InnerShadow';
-import { useBackgroundColor, useColorMode } from '@/design-system';
-import { GradientBorderView } from '@/components/gradient-border/GradientBorderView';
-import { opacity } from '@/framework/ui/utils/opacity';
-import { getTierVisuals } from '@/features/rnbw-membership/constants';
-import { getValueForColorMode } from '@/design-system/color/palettes';
+
+import { Blur, Canvas, RoundedRect, LinearGradient as SkiaLinearGradient, vec } from '@shopify/react-native-skia';
 import { LinearGradient } from 'expo-linear-gradient';
-import { Blur, Canvas, LinearGradient as SkiaLinearGradient, RoundedRect, vec } from '@shopify/react-native-skia';
+
+import { GradientBorderView } from '@/components/gradient-border/GradientBorderView';
+import { useBackgroundColor, useColorMode } from '@/design-system';
+import { getValueForColorMode } from '@/design-system/color/palettes';
+import { InnerShadow } from '@/features/polymarket/components/InnerShadow';
+import { getTierVisuals } from '@/features/rnbw-membership/constants';
 import type { Tier } from '@/features/rnbw-membership/types';
+import { opacity } from '@/framework/ui/utils/opacity';
 
 const PROGRESS_BAR_HORIZONTAL_PADDING = 12;
 const PROGRESS_HIGHLIGHT_INSET = 5;

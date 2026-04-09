@@ -1,20 +1,31 @@
+import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
+import { Alert, InteractionManager, type LayoutChangeEvent } from 'react-native';
+
+import Clipboard from '@react-native-clipboard/clipboard';
+import { useRoute, type RouteProp } from '@react-navigation/native';
+import ConditionalWrap from 'conditional-wrap';
+import ReactNativeHapticFeedback from 'react-native-haptic-feedback';
+import type { Address } from 'viem';
+
 import { analytics } from '@/analytics';
-import { type MenuConfig, type MenuItem } from '@/components/DropdownMenu';
-import { Panel, TapToDismiss } from '@/components/SmoothPager/ListPanel';
 import ButtonPressAnimation from '@/components/animations/ButtonPressAnimation';
+import { type MenuConfig, type MenuItem } from '@/components/DropdownMenu';
 import { EasingGradient } from '@/components/easing-gradient/EasingGradient';
 import { SheetHandleFixedToTop } from '@/components/sheet';
+import { Panel, TapToDismiss } from '@/components/SmoothPager/ListPanel';
 import { FeatureHintTooltip, type TooltipRef } from '@/components/tooltips/FeatureHintTooltip';
 import useExperimentalFlag, { NOTIFICATIONS } from '@/config/experimentalHooks';
 import { Box, globalColors, HitSlop, Inline, Text } from '@/design-system';
 import type { EthereumAddress } from '@/entities/wallet';
 import { IS_ANDROID, IS_IOS } from '@/env';
+import { showActionSheetWithOptions } from '@/framework/ui/utils/actionsheet';
+import { opacity } from '@/framework/ui/utils/opacity';
 import { removeWalletData } from '@/handlers/localstorage/removeWallet';
 import { isValidHex } from '@/handlers/web3';
-import type { Address } from 'viem';
 import WalletTypes from '@/helpers/walletTypes';
-import useWalletsWithBalancesAndNames from '@/hooks/useWalletsWithBalancesAndNames';
+import { updateWebProfile } from '@/helpers/webData';
 import { useLiveWalletBalance } from '@/hooks/useLiveWalletBalance';
+import useWalletsWithBalancesAndNames from '@/hooks/useWalletsWithBalancesAndNames';
 import { useWalletTransactionCounts } from '@/hooks/useWalletTransactionCounts';
 import * as i18n from '@/languages';
 import { logger, RainbowError } from '@/logger';
@@ -23,8 +34,8 @@ import { useNavigation } from '@/navigation/Navigation';
 import Routes from '@/navigation/routesNames';
 import { type RootStackParamList } from '@/navigation/types';
 import { getNotificationSettingsForWalletWithAddress } from '@/notifications/settings/storage';
-import { SettingsPages } from '@/screens/SettingsSheet/SettingsPages';
 import { WalletList } from '@/screens/change-wallet/components/WalletList';
+import { SettingsPages } from '@/screens/SettingsSheet/SettingsPages';
 import { initializeWallet } from '@/state/wallets/initializeWallet';
 import { MAX_PINNED_ADDRESSES, usePinnedWalletsStore } from '@/state/wallets/pinnedWalletsStore';
 import {
@@ -37,18 +48,9 @@ import {
   useWallets,
 } from '@/state/wallets/walletsStore';
 import { useTheme } from '@/theme/ThemeContext';
-import { showActionSheetWithOptions } from '@/framework/ui/utils/actionsheet';
+import { DEVICE_HEIGHT } from '@/utils/deviceUtils';
 import doesWalletsContainAddress from '@/utils/doesWalletsContainAddress';
 import safeAreaInsetValues from '@/utils/safeAreaInsetValues';
-import { DEVICE_HEIGHT } from '@/utils/deviceUtils';
-import Clipboard from '@react-native-clipboard/clipboard';
-import { type RouteProp, useRoute } from '@react-navigation/native';
-import ConditionalWrap from 'conditional-wrap';
-import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
-import { Alert, InteractionManager, type LayoutChangeEvent } from 'react-native';
-import ReactNativeHapticFeedback from 'react-native-haptic-feedback';
-import { updateWebProfile } from '@/helpers/webData';
-import { opacity } from '@/framework/ui/utils/opacity';
 
 const PANEL_BOTTOM_OFFSET = Math.max(safeAreaInsetValues.bottom + 5, IS_IOS ? 8 : 30);
 

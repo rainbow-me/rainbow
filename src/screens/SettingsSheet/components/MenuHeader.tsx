@@ -1,10 +1,12 @@
 import React from 'react';
-import { type Source } from 'react-native-fast-image';
-import { Box, type Space, Stack, Text } from '@/design-system';
-import { ImgixImage } from '@/components/images';
-import { useTheme } from '@/theme/ThemeContext';
 import { type ImageSourcePropType } from 'react-native';
+
+import { type Source } from 'react-native-fast-image';
+
+import { ImgixImage } from '@/components/images';
+import { Box, Stack, Text, type Space } from '@/design-system';
 import { opacity } from '@/framework/ui/utils/opacity';
+import { useTheme } from '@/theme/ThemeContext';
 
 interface ImageIconProps {
   size?: number;

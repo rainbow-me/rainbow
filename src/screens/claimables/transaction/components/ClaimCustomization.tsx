@@ -1,19 +1,21 @@
-import { Box, Text, useColorMode } from '@/design-system';
-import haptics from '@/utils/haptics';
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
-import { useBackendNetworksStore } from '@/state/backendNetworks/backendNetworks';
-import { useUserAssetsStore } from '@/state/assets/userAssets';
-import { ETH_SYMBOL, USDC_ADDRESS } from '@/references/constants';
-import { ClaimableMenu } from '../../shared/components/ClaimableMenu';
-import { type TokenToReceive } from '../types';
-import { useTransactionClaimableContext } from '../context/TransactionClaimableContext';
+
 import { searchVerifiedTokens, TokenLists } from '@/__swaps__/screens/Swap/resources/search/searchV2';
 import { type SearchAsset } from '@/__swaps__/types/search';
-import * as i18n from '@/languages';
-import { IS_ANDROID } from '@/env';
-import { type MenuItem } from '@/components/DropdownMenu';
 import { NetworkSelectorButton } from '@/components/buttons/NetworkSelectorButton';
+import { type MenuItem } from '@/components/DropdownMenu';
+import { Box, Text, useColorMode } from '@/design-system';
+import { IS_ANDROID } from '@/env';
+import * as i18n from '@/languages';
+import { ETH_SYMBOL, USDC_ADDRESS } from '@/references/constants';
+import { useUserAssetsStore } from '@/state/assets/userAssets';
+import { useBackendNetworksStore } from '@/state/backendNetworks/backendNetworks';
 import { ChainId } from '@/state/backendNetworks/types';
+import haptics from '@/utils/haptics';
+
+import { ClaimableMenu } from '../../shared/components/ClaimableMenu';
+import { useTransactionClaimableContext } from '../context/TransactionClaimableContext';
+import { type TokenToReceive } from '../types';
 
 type TokenMap = Record<TokenToReceive['symbol'], TokenToReceive>;
 

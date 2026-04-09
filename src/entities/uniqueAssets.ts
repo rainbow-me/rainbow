@@ -1,7 +1,9 @@
-import { type ChainId, type Network } from '@/state/backendNetworks/types';
-import { type AssetType } from './assetTypes';
 import { type Address } from 'viem';
+
 import { type NftTokenType } from '@/graphql/__generated__/arc';
+import { type ChainId, type Network } from '@/state/backendNetworks/types';
+
+import { type AssetType } from './assetTypes';
 
 export interface UniqueAssetTrait {
   trait_type: string;

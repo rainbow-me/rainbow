@@ -1,6 +1,6 @@
-import { ChainId } from '@/state/backendNetworks/types';
 import type { EthereumAddress } from '@/entities/wallet';
 import { useBackendNetworksStore } from '@/state/backendNetworks/backendNetworks';
+import { ChainId } from '@/state/backendNetworks/types';
 
 export default function getUrlForTrustIconFallback(address: EthereumAddress, chainId: ChainId): string | null {
   if (!address) return null;

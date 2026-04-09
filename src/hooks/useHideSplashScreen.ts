@@ -1,12 +1,16 @@
 /* eslint-disable @typescript-eslint/no-var-requires */
 import { InteractionManager, NativeModules } from 'react-native';
-import { PerformanceReports, PerformanceReportSegments, PerformanceTracking } from '../performance/tracking';
-import { IS_ANDROID, IS_IOS } from '@/env';
-import { onHandleStatusBar } from '@/navigation/onNavigationStateChange';
-import { getAppIcon } from '@/handlers/localstorage/globalSettings';
-import { RainbowError, logger } from '@/logger';
-import { type AppIconKey } from '@/features/app-icon/models/appIcons';
+
 import { SystemBars } from 'react-native-edge-to-edge';
+
+import { IS_ANDROID, IS_IOS } from '@/env';
+import { type AppIconKey } from '@/features/app-icon/models/appIcons';
+import { getAppIcon } from '@/handlers/localstorage/globalSettings';
+import { logger, RainbowError } from '@/logger';
+import { onHandleStatusBar } from '@/navigation/onNavigationStateChange';
+
+import { PerformanceReports, PerformanceReportSegments, PerformanceTracking } from '../performance/tracking';
+
 const { RainbowSplashScreen } = NativeModules;
 
 let alreadyLoggedPerformance = false;

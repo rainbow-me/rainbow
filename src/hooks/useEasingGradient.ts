@@ -1,6 +1,7 @@
+import { useMemo } from 'react';
+
 import chroma from 'chroma-js';
 import { type LinearGradientProps } from 'expo-linear-gradient';
-import { useMemo } from 'react';
 import { Easing, type EasingFunction } from 'react-native-reanimated';
 
 type PositionObject = { x: number; y: number };

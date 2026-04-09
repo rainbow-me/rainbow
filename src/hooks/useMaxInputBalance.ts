@@ -1,9 +1,11 @@
 import { useCallback, useState } from 'react';
-import useGas from './useGas';
-import ethereumUtils from '@/utils/ethereumUtils';
+
 import type { ParsedAddressAsset } from '@/entities/tokens';
 import type { UniqueAsset } from '@/entities/uniqueAssets';
 import { assetIsUniqueAsset } from '@/handlers/web3';
+import ethereumUtils from '@/utils/ethereumUtils';
+
+import useGas from './useGas';
 
 export default function useMaxInputBalance() {
   const [maxInputBalance, setMaxInputBalance] = useState<string>('0');

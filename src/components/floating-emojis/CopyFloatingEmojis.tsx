@@ -1,9 +1,12 @@
 import React, { type FC, type ReactNode } from 'react';
+
 import { HapticFeedbackTypes } from 'react-native-haptic-feedback';
-import ButtonPressAnimation from '../animations/ButtonPressAnimation';
-import FloatingEmojis from './FloatingEmojis';
+
 import useClipboard from '@/hooks/useClipboard';
 import magicMemo from '@/utils/magicMemo';
+
+import ButtonPressAnimation from '../animations/ButtonPressAnimation';
+import FloatingEmojis from './FloatingEmojis';
 
 interface CopyFloatingEmojisProps {
   /** Child elements or nodes to render inside this component */

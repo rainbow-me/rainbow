@@ -1,8 +1,10 @@
+import React, { useCallback, useMemo } from 'react';
+
 import * as i18n from '@/languages';
 import { useNavigation } from '@/navigation/Navigation';
-import watchingAlert from '@/utils/watchingAlert';
-import React, { useCallback, useMemo } from 'react';
 import { useIsReadOnlyWallet } from '@/state/wallets/walletsStore';
+import watchingAlert from '@/utils/watchingAlert';
+
 import { ClaimButton } from '../../shared/components/ClaimButton';
 import { ClaimPanel } from '../../shared/components/ClaimPanel';
 import { ClaimValueDisplay } from '../../shared/components/ClaimValueDisplay';

@@ -1,17 +1,18 @@
 import React from 'react';
-import { nanoid } from 'nanoid/non-secure';
 
-import { logger, RainbowError } from '@/logger';
-import { type ProviderConfig } from '@/screens/AddCash/types';
-import { ProviderCard } from '@/screens/AddCash/components/ProviderCard';
-import ButtonPressAnimation from '@/components/animations/ButtonPressAnimation';
+import { nanoid } from 'nanoid/non-secure';
+import { type Address } from 'viem';
+
 import { analytics } from '@/analytics';
+import ButtonPressAnimation from '@/components/animations/ButtonPressAnimation';
+import { FiatProviderName } from '@/entities/f2c';
 import { WrappedAlert } from '@/helpers/alert';
 import * as i18n from '@/languages';
-import { openInBrowser } from '@/utils/openInBrowser';
+import { logger, RainbowError } from '@/logger';
 import { type GetWidgetURL } from '@/resources/f2c';
-import { type Address } from 'viem';
-import { FiatProviderName } from '@/entities/f2c';
+import { ProviderCard } from '@/screens/AddCash/components/ProviderCard';
+import { type ProviderConfig } from '@/screens/AddCash/types';
+import { openInBrowser } from '@/utils/openInBrowser';
 
 interface ProviderListItemProps {
   config: ProviderConfig;

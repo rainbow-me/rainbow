@@ -1,13 +1,15 @@
 import React, { memo, useMemo } from 'react';
-import { LinearGradient } from 'expo-linear-gradient';
 import { StyleSheet, type StyleProp, type ViewStyle } from 'react-native';
-import { Text, useColorMode, type TextProps } from '@/design-system';
-import { GradientText } from '@/components/text';
+
+import { LinearGradient } from 'expo-linear-gradient';
+
 import { GradientBorderView } from '@/components/gradient-border/GradientBorderView';
-import { THICK_BORDER_WIDTH } from '@/styles/constants';
+import { GradientText } from '@/components/text';
+import { Text, useColorMode, type TextProps } from '@/design-system';
+import { getValueForColorMode } from '@/design-system/color/palettes';
 import { InnerShadow } from '@/features/polymarket/components/InnerShadow';
 import { opacity } from '@/framework/ui/utils/opacity';
-import { getValueForColorMode } from '@/design-system/color/palettes';
+import { THICK_BORDER_WIDTH } from '@/styles/constants';
 
 type ShadowStyle = Pick<ViewStyle, 'shadowColor' | 'shadowOffset' | 'shadowOpacity' | 'shadowRadius'>;
 

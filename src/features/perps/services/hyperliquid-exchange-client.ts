@@ -1,27 +1,29 @@
-import { multiply } from '@/helpers/utilities';
+import { type Wallet } from '@ethersproject/wallet';
 import * as hl from '@nktkas/hyperliquid';
 import { type CancelSuccessResponse } from '@nktkas/hyperliquid';
 import { type Address, type Hex } from 'viem';
-import { DEFAULT_SLIPPAGE_BIPS, RAINBOW_BUILDER_SETTINGS, RAINBOW_REFERRAL_CODE } from '../constants';
-import { PerpPositionSide, type PerpsPosition, type TriggerOrder, type TriggerOrderType } from '../types';
-import { type HyperliquidAccountClient } from './hyperliquid-account-client';
-import { type Wallet } from '@ethersproject/wallet';
-import { isPositive, toFixedWorklet } from '@/framework/core/safeMath';
+
+import { getOppositePositionSide } from '@/features/perps/utils';
 import { formatOrderPrice } from '@/features/perps/utils/formatOrderPrice';
+import { generateCloid } from '@/features/perps/utils/hyperliquidCloid';
+import { isBuilderDexAssetId } from '@/features/perps/utils/hyperliquidSymbols';
 import {
   buildMarketOrder,
   buildMarketTriggerOrder,
   calculatePositionSizeFromMarginAmount,
   getMarketType,
 } from '@/features/perps/utils/orders';
-import { getOppositePositionSide } from '@/features/perps/utils';
+import { isPositive, toFixedWorklet } from '@/framework/core/safeMath';
 import { getProvider } from '@/handlers/web3';
-import { ChainId } from '@/state/backendNetworks/types';
-import { loadWallet } from '@/model/wallet';
-import { checkIfReadOnlyWallet } from '@/state/wallets/walletsStore';
+import { multiply } from '@/helpers/utilities';
 import { logger, RainbowError } from '@/logger';
-import { isBuilderDexAssetId } from '@/features/perps/utils/hyperliquidSymbols';
-import { generateCloid } from '@/features/perps/utils/hyperliquidCloid';
+import { loadWallet } from '@/model/wallet';
+import { ChainId } from '@/state/backendNetworks/types';
+import { checkIfReadOnlyWallet } from '@/state/wallets/walletsStore';
+
+import { DEFAULT_SLIPPAGE_BIPS, RAINBOW_BUILDER_SETTINGS, RAINBOW_REFERRAL_CODE } from '../constants';
+import { PerpPositionSide, type PerpsPosition, type TriggerOrder, type TriggerOrderType } from '../types';
+import { type HyperliquidAccountClient } from './hyperliquid-account-client';
 
 export type OrderStatusResponse = hl.OrderSuccessResponse['response']['data']['statuses'][number];
 

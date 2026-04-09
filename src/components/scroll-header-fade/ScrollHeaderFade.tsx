@@ -1,6 +1,8 @@
 import { memo } from 'react';
 import { StyleSheet } from 'react-native';
-import Animated, { interpolate, type SharedValue, useAnimatedStyle } from 'react-native-reanimated';
+
+import Animated, { interpolate, useAnimatedStyle, type SharedValue } from 'react-native-reanimated';
+
 import { EasingGradient } from '@/components/easing-gradient/EasingGradient';
 import { globalColors, useColorMode } from '@/design-system';
 import { DEVICE_WIDTH } from '@/utils/deviceUtils';

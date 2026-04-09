@@ -1,21 +1,22 @@
 import React, { memo, useCallback, useMemo } from 'react';
-import { Bleed, Box, Separator, Text, TextShadow, useForegroundColor } from '@/design-system';
-import { type PerpsPosition } from '@/features/perps/types';
-import { PositionSideBadge } from '@/features/perps/components/PositionSideBadge';
-import { LeverageBadge } from '@/features/perps/components/LeverageBadge';
-import { HyperliquidTokenIcon } from '@/features/perps/components/HyperliquidTokenIcon';
-import { abs } from '@/helpers/utilities';
-import { DOWN_ARROW, UP_ARROW } from '@/features/perps/constants';
-import { opacity } from '@/framework/ui/utils/opacity';
+
 import ButtonPressAnimation from '@/components/animations/ButtonPressAnimation';
+import { Bleed, Box, Separator, Text, TextShadow, useForegroundColor } from '@/design-system';
+import { HyperliquidTokenIcon } from '@/features/perps/components/HyperliquidTokenIcon';
+import { LeverageBadge } from '@/features/perps/components/LeverageBadge';
+import { PositionSideBadge } from '@/features/perps/components/PositionSideBadge';
+import { DOWN_ARROW, UP_ARROW } from '@/features/perps/constants';
 import { useHyperliquidMarketsStore } from '@/features/perps/stores/hyperliquidMarketsStore';
+import { type PerpsPosition } from '@/features/perps/types';
 import { navigateToPerpDetailScreen } from '@/features/perps/utils';
 import { formatCurrency } from '@/features/perps/utils/formatCurrency';
+import { formatPerpAssetPrice } from '@/features/perps/utils/formatPerpsAssetPrice';
+import { extractBaseSymbol } from '@/features/perps/utils/hyperliquidSymbols';
+import { opacity } from '@/framework/ui/utils/opacity';
+import { abs } from '@/helpers/utilities';
+import * as i18n from '@/languages';
 import Navigation from '@/navigation/Navigation';
 import Routes from '@/navigation/routesNames';
-import { formatPerpAssetPrice } from '@/features/perps/utils/formatPerpsAssetPrice';
-import * as i18n from '@/languages';
-import { extractBaseSymbol } from '@/features/perps/utils/hyperliquidSymbols';
 import { THICK_BORDER_WIDTH } from '@/styles/constants';
 
 export const PerpsPositionRow = memo(function PerpsPositionRow({ position }: { position: PerpsPosition }) {

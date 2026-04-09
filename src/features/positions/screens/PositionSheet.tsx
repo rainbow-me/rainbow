@@ -1,28 +1,31 @@
 import React, { useCallback } from 'react';
-import { BackgroundProvider, Box, globalColors, Inline, Separator, Stack, Text, useColorMode } from '@/design-system';
-import { type RouteProp, useRoute } from '@react-navigation/native';
-import { analytics } from '@/analytics';
-import RequestVendorLogoIcon from '@/components/coin-icon/RequestVendorLogoIcon';
-import startCase from 'lodash/startCase';
-import { useTheme } from '@/theme/ThemeContext';
-import ButtonPressAnimation from '@/components/animations/ButtonPressAnimation';
-import { PositionListItem } from '../components/PositionListItem';
-import * as i18n from '@/languages';
+
+import { useRoute, type RouteProp } from '@react-navigation/native';
 import { capitalize } from 'lodash';
-import type { RainbowPosition, PositionAsset } from '@/features/positions/types';
-import { LpPositionListItem } from '../components/LpPositionListItem';
-import { type RootStackParamList } from '@/navigation/types';
-import { openInBrowser } from '@/utils/openInBrowser';
-import Routes from '@/navigation/routesNames';
-import safeAreaInsetValues from '@/utils/safeAreaInsetValues';
-import Navigation from '@/navigation/Navigation';
-import { userAssetsStoreManager } from '@/state/assets/userAssetsStoreManager';
-import { NativeCurrencyKeys } from '@/entities/nativeCurrencyTypes';
-import { SimpleSheet } from '@/components/sheet/SimpleSheet';
-import { IS_IOS } from '@/env';
-import useDimensions from '@/hooks/useDimensions';
+import startCase from 'lodash/startCase';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
+
+import { analytics } from '@/analytics';
+import ButtonPressAnimation from '@/components/animations/ButtonPressAnimation';
+import RequestVendorLogoIcon from '@/components/coin-icon/RequestVendorLogoIcon';
+import { SimpleSheet } from '@/components/sheet/SimpleSheet';
+import { BackgroundProvider, Box, globalColors, Inline, Separator, Stack, Text, useColorMode } from '@/design-system';
+import { NativeCurrencyKeys } from '@/entities/nativeCurrencyTypes';
+import { IS_IOS } from '@/env';
+import type { PositionAsset, RainbowPosition } from '@/features/positions/types';
 import { opacity } from '@/framework/ui/utils/opacity';
+import useDimensions from '@/hooks/useDimensions';
+import * as i18n from '@/languages';
+import Navigation from '@/navigation/Navigation';
+import Routes from '@/navigation/routesNames';
+import { type RootStackParamList } from '@/navigation/types';
+import { userAssetsStoreManager } from '@/state/assets/userAssetsStoreManager';
+import { useTheme } from '@/theme/ThemeContext';
+import { openInBrowser } from '@/utils/openInBrowser';
+import safeAreaInsetValues from '@/utils/safeAreaInsetValues';
+
+import { LpPositionListItem } from '../components/LpPositionListItem';
+import { PositionListItem } from '../components/PositionListItem';
 
 const DEPOSIT_ITEM_HEIGHT = 44;
 const BORROW_ITEM_HEIGHT = 44;

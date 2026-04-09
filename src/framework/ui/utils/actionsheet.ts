@@ -1,6 +1,8 @@
-import { IS_IOS } from '@/env';
 import { ActionSheetIOS, type ActionSheetIOSOptions } from 'react-native';
+
 import ActionSheet from 'react-native-action-sheet';
+
+import { IS_IOS } from '@/env';
 
 /**
  * @desc Safely convert options to strings.

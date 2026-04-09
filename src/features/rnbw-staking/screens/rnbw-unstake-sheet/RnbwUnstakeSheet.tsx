@@ -1,25 +1,28 @@
 import { memo, useCallback, useRef, useState } from 'react';
 import { Alert, StyleSheet, View } from 'react-native';
+
+import { LinearGradient } from 'expo-linear-gradient';
 import { LinearTransition } from 'react-native-reanimated';
+
+import { SPRING_CONFIGS } from '@/components/animations/animationConfigs';
 import ButtonPressAnimation from '@/components/animations/ButtonPressAnimation';
 import { PanelSheet } from '@/components/PanelSheet/PanelSheet';
-import { SPRING_CONFIGS } from '@/components/animations/animationConfigs';
+import { RnbwCoinIcon } from '@/components/RnbwCoinIcon';
 import { Box, globalColors, Separator, Stack, Text, useForegroundColor } from '@/design-system';
+import { RnbwHoldToActivateButton } from '@/features/rnbw-membership/components/RnbwHoldToActivateButton';
+import { RNBW_SYMBOL } from '@/features/rnbw-rewards/constants';
+import { UnstakePenaltySign } from '@/features/rnbw-staking/components/UnstakePenaltySign';
+import { LoadingSpinner } from '@/framework/ui/components/LoadingSpinner';
+import { opacity } from '@/framework/ui/utils/opacity';
+import * as i18n from '@/languages';
 import { ensureError, logger, RainbowError } from '@/logger';
 import { useNavigation } from '@/navigation/Navigation';
 import { useAccountAddress } from '@/state/wallets/walletsStore';
-import { unstakeRnbw } from '../../utils/unstakeRnbw';
-import { UnstakePenaltySign } from '@/features/rnbw-staking/components/UnstakePenaltySign';
-import { opacity } from '@/framework/ui/utils/opacity';
-import { RNBW_SYMBOL } from '@/features/rnbw-rewards/constants';
+
 import { useRnbwStakingBalance } from '../../stores/derived/useRnbwStakingBalance';
 import { useRnbwStakingPositionPnl } from '../../stores/derived/useRnbwStakingPositionPnl';
 import { useStakingPositionStore } from '../../stores/rnbwStakingPositionStore';
-import { LinearGradient } from 'expo-linear-gradient';
-import { RnbwCoinIcon } from '@/components/RnbwCoinIcon';
-import { RnbwHoldToActivateButton } from '@/features/rnbw-membership/components/RnbwHoldToActivateButton';
-import * as i18n from '@/languages';
-import { LoadingSpinner } from '@/framework/ui/components/LoadingSpinner';
+import { unstakeRnbw } from '../../utils/unstakeRnbw';
 
 const LAYOUT_ANIMATION_CONFIG = SPRING_CONFIGS.snappierSpringConfig;
 const LAYOUT_ANIMATION = LinearTransition.springify()

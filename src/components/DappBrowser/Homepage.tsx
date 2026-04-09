@@ -1,48 +1,51 @@
 import React, { memo, useCallback, useLayoutEffect, useMemo, useRef, useState } from 'react';
 import { ScrollView, StyleSheet, View } from 'react-native';
-import { BlurView } from 'react-native-blur-view';
+
 import { LinearGradient } from 'expo-linear-gradient';
+import { uniqBy } from 'lodash';
+import { BlurView } from 'react-native-blur-view';
 import Animated, { runOnJS, useAnimatedReaction, useAnimatedStyle } from 'react-native-reanimated';
 import { triggerHaptics } from 'react-native-turbo-haptics';
+
+import { analytics } from '@/analytics';
 import ButtonPressAnimation from '@/components/animations/ButtonPressAnimation';
+import { FeaturedResultStack, type FeaturedResultStackProps } from '@/components/FeaturedResult/FeaturedResultStack';
+import { ImgixImage } from '@/components/images';
+import ContextMenuButton from '@/components/native-context-menu/contextMenu';
+import useExperimentalFlag, { FEATURED_RESULTS } from '@/config/experimentalHooks';
 import {
   Bleed,
   Border,
   Box,
   ColorModeProvider,
+  globalColors,
   Inline,
   Inset,
   Stack,
   Text,
   TextIcon,
-  globalColors,
   useBackgroundColor,
   useColorMode,
 } from '@/design-system';
-import { ImgixImage } from '@/components/images';
-import ContextMenuButton from '@/components/native-context-menu/contextMenu';
 import { IS_ANDROID, IS_IOS, IS_TEST } from '@/env';
 import { opacity } from '@/framework/ui/utils/opacity';
-import { type FavoritedSite, useFavoriteDappsStore } from '@/state/browser/favoriteDappsStore';
-import { type Site, useBrowserHistoryStore } from '@/state/browserHistory';
-import { getDappHost } from './handleProviderRequest';
-import { uniqBy } from 'lodash';
-import { DEVICE_WIDTH } from '@/utils/deviceUtils';
-import { EXTRA_WEBVIEW_HEIGHT, WEBVIEW_HEIGHT } from './Dimensions';
-import { analytics } from '@/analytics';
+import { type DApp } from '@/graphql/__generated__/metadata';
 import * as i18n from '@/languages';
+import { useRemoteConfig } from '@/model/remoteConfig';
+import { useTrendingDApps } from '@/resources/metadata/trendingDapps';
 import { useBrowserStore } from '@/state/browser/browserStore';
+import { useFavoriteDappsStore, type FavoritedSite } from '@/state/browser/favoriteDappsStore';
+import { useBrowserHistoryStore, type Site } from '@/state/browserHistory';
+import { THICK_BORDER_WIDTH } from '@/styles/constants';
+import { DEVICE_WIDTH } from '@/utils/deviceUtils';
+
 import { DndProvider, Draggable, DraggableGrid, type DraggableGridProps, type UniqueIdentifier } from '../drag-and-drop';
 import { EasingGradient } from '../easing-gradient/EasingGradient';
 import { useBrowserContext } from './BrowserContext';
-import { getNameFromFormattedUrl } from './utils';
-import { useTrendingDApps } from '@/resources/metadata/trendingDapps';
-import { type DApp } from '@/graphql/__generated__/metadata';
 import { HOMEPAGE_BACKGROUND_COLOR_DARK, HOMEPAGE_BACKGROUND_COLOR_LIGHT, HTTP, HTTPS } from './constants';
-import { useRemoteConfig } from '@/model/remoteConfig';
-import useExperimentalFlag, { FEATURED_RESULTS } from '@/config/experimentalHooks';
-import { FeaturedResultStack, type FeaturedResultStackProps } from '@/components/FeaturedResult/FeaturedResultStack';
-import { THICK_BORDER_WIDTH } from '@/styles/constants';
+import { EXTRA_WEBVIEW_HEIGHT, WEBVIEW_HEIGHT } from './Dimensions';
+import { getDappHost } from './handleProviderRequest';
+import { getNameFromFormattedUrl } from './utils';
 
 const HORIZONTAL_PAGE_INSET = 24;
 const MAX_RECENTS_TO_DISPLAY = 6;

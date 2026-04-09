@@ -1,16 +1,18 @@
 import { memo, useCallback, useEffect, useState } from 'react';
 import { Alert, StyleSheet, View } from 'react-native';
-import { Box, Text, TextIcon } from '@/design-system';
-import { RnbwAirdropScenes } from '@/features/rnbw-airdrop/screens/rnbw-airdrop-screen/constants/airdropScenes';
-import { ActionStatusScene } from '@/features/rnbw-rewards/screens/rnbw-rewards-screen/scenes/ActionStatusScene';
-import { useAirdropFlowStore, airdropFlowActions } from '@/features/rnbw-airdrop/stores/airdropFlowStore';
-import * as i18n from '@/languages';
-import { getCoinBottomPosition } from '@/features/rnbw-airdrop/screens/rnbw-airdrop-screen/components/RnbwHeroCoin';
-import { ETH_COLOR_DARK } from '@/__swaps__/screens/Swap/constants';
-import { opacity } from '@/framework/ui/utils/opacity';
-import { time } from '@/utils/time';
+
 import Animated from 'react-native-reanimated';
+
+import { ETH_COLOR_DARK } from '@/__swaps__/screens/Swap/constants';
+import { Box, Text, TextIcon } from '@/design-system';
+import { getCoinBottomPosition } from '@/features/rnbw-airdrop/screens/rnbw-airdrop-screen/components/RnbwHeroCoin';
+import { RnbwAirdropScenes } from '@/features/rnbw-airdrop/screens/rnbw-airdrop-screen/constants/airdropScenes';
+import { airdropFlowActions, useAirdropFlowStore } from '@/features/rnbw-airdrop/stores/airdropFlowStore';
 import { defaultEnterAnimation, defaultExitAnimation } from '@/features/rnbw-rewards/animations/sceneTransitions';
+import { ActionStatusScene } from '@/features/rnbw-rewards/screens/rnbw-rewards-screen/scenes/ActionStatusScene';
+import { opacity } from '@/framework/ui/utils/opacity';
+import * as i18n from '@/languages';
+import { time } from '@/utils/time';
 
 const LONGER_THAN_USUAL_TIME = time.seconds(10);
 

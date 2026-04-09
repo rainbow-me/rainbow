@@ -1,20 +1,21 @@
+import type { Signer } from '@ethersproject/abstract-signer';
 import { encodeFunctionData, erc20Abi, formatUnits, parseUnits, type Address, type Hash } from 'viem';
-import { stakeRnbwManual } from './stakeRnbwManual';
-import { stakeRnbwSponsored } from './stakeRnbwSponsored';
+
+import { analytics } from '@/analytics';
+import { useRewardsBalanceStore } from '@/features/rnbw-rewards/stores/rewardsBalanceStore';
+import { prepareRewardsClaim, submitRewardsClaim, type ClaimToDestination } from '@/features/rnbw-rewards/utils/claimRewards';
+import { equalWorklet, greaterThanOrEqualToWorklet, isPositive, subWorklet } from '@/framework/core/safeMath';
 import { getProvider } from '@/handlers/web3';
+import { RainbowError } from '@/logger';
 import { loadWallet } from '@/model/wallet';
+import { userAssetsStoreManager } from '@/state/assets/userAssetsStoreManager';
+
 import { MIN_CLAIM_TO_STAKING_RAW, RNBW_DECIMALS, RNBW_TOKEN_ADDRESS, STAKING_CHAIN_ID } from '../constants';
 import { useStakingPositionStore } from '../stores/rnbwStakingPositionStore';
-import { pollForStakingUpdate } from './pollForStakingUpdate';
-import { RainbowError } from '@/logger';
-import type { Signer } from '@ethersproject/abstract-signer';
-import { useRewardsBalanceStore } from '@/features/rnbw-rewards/stores/rewardsBalanceStore';
-import { prepareRewardsClaim, submitRewardsClaim } from '@/features/rnbw-rewards/utils/claimRewards';
-import { userAssetsStoreManager } from '@/state/assets/userAssetsStoreManager';
-import { equalWorklet, greaterThanOrEqualToWorklet, isPositive, subWorklet } from '@/framework/core/safeMath';
-import type { ClaimToDestination } from '@/features/rnbw-rewards/utils/claimRewards';
 import { canUseSponsoredRnbwStaking } from './canUseSponsoredRnbwStaking';
-import { analytics } from '@/analytics';
+import { pollForStakingUpdate } from './pollForStakingUpdate';
+import { stakeRnbwManual } from './stakeRnbwManual';
+import { stakeRnbwSponsored } from './stakeRnbwSponsored';
 
 export async function stakeRnbw({ address, amount }: { address: Address; amount: string }) {
   let claimToDestination: ClaimToDestination | undefined;

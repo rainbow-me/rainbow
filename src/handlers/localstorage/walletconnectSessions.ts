@@ -1,6 +1,8 @@
 import type WalletConnect from '@walletconnect/client';
-import { getGlobal, saveGlobal } from './common';
+
 import { omitFlatten, pickBy } from '@/helpers/utilities';
+
+import { getGlobal, saveGlobal } from './common';
 
 const WALLETCONNECT = 'walletconnect';
 

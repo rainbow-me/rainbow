@@ -1,5 +1,6 @@
 import React, { useMemo, type FunctionComponent, type PropsWithChildren } from 'react';
 import { View, type FlexStyle, type ViewProps } from 'react-native';
+
 import { useChildrenIds } from '../../../hooks';
 import { useDraggableStack, type UseDraggableStackOptions } from '../hooks/useDraggableStack';
 

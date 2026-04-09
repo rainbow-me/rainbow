@@ -1,4 +1,7 @@
 import { type ResponseByTheme } from '@/__swaps__/utils/swaps';
+import { useCurrencyConversionStore } from '@/features/perps/stores/currencyConversionStore';
+import { getLeague } from '@/features/polymarket/leagues';
+import { type PolymarketPosition, type PolymarketTeamInfo, type RawPolymarketPosition } from '@/features/polymarket/types';
 import {
   type PolymarketEvent,
   type PolymarketMarket,
@@ -7,12 +10,9 @@ import {
   type RawPolymarketMarket,
   type RawPolymarketOptimizedEvent,
 } from '@/features/polymarket/types/polymarket-event';
-import { type PolymarketPosition, type PolymarketTeamInfo, type RawPolymarketPosition } from '@/features/polymarket/types';
-import { useCurrencyConversionStore } from '@/features/perps/stores/currencyConversionStore';
-import { getMarketColors } from '@/features/polymarket/utils/getMarketColor';
 import { getImagePrimaryColor } from '@/features/polymarket/utils/getImageColors';
+import { getMarketColors } from '@/features/polymarket/utils/getMarketColor';
 import { getHighContrastColor } from '@/hooks/useAccountAccentColor';
-import { getLeague } from '@/features/polymarket/leagues';
 
 export function processRawPolymarketMarket(market: RawPolymarketMarket, eventColor: ResponseByTheme<string>): PolymarketMarket {
   return {

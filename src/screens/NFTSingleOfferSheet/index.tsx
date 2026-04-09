@@ -1,62 +1,63 @@
 import React, { useCallback, useEffect, useRef, useState } from 'react';
-import * as i18n from '@/languages';
 import { View } from 'react-native';
-import { WrappedAlert as Alert } from '@/helpers/alert';
-import { type RouteProp, useRoute } from '@react-navigation/native';
+
+import { BigNumber } from '@ethersproject/bignumber';
+import { useRoute, type RouteProp } from '@react-navigation/native';
+import { getClient, type Execute } from '@reservoir0x/reservoir-sdk';
+import ConditionalWrap from 'conditional-wrap';
+import { createWalletClient, http } from 'viem';
+import { privateKeyToAccount } from 'viem/accounts';
+
+import { analytics } from '@/analytics';
+import ButtonPressAnimation from '@/components/animations/ButtonPressAnimation';
+import { HoldToAuthorizeButton } from '@/components/buttons';
+import RainbowCoinIcon from '@/components/coin-icon/RainbowCoinIcon';
+import { GasSpeedButton } from '@/components/gas';
+import { ImgixImage } from '@/components/images';
+import { useRainbowToastEnabled } from '@/components/rainbow-toast/useRainbowToastEnabled';
 import { SimpleSheet } from '@/components/sheet/SimpleSheet';
+import { CardSize } from '@/components/unique-token/CardSize';
 import {
   AccentColorProvider,
   BackgroundProvider,
   Box,
+  Column,
+  Columns,
   Inline,
   Inset,
   Separator,
   Text,
-  Columns,
-  Column,
   useForegroundColor,
 } from '@/design-system';
-import { ImgixImage } from '@/components/images';
-import { getFormattedTimeQuantity, convertAmountToNativeDisplay, handleSignificantDecimals } from '@/helpers/utilities';
-import { type NftOffer } from '@/graphql/__generated__/arc';
-import ButtonPressAnimation from '@/components/animations/ButtonPressAnimation';
-import { useNavigation } from '@/navigation/Navigation';
+import { TransactionDirection, TransactionStatus, type NewTransaction } from '@/entities/transactions';
 import { IS_ANDROID } from '@/env';
-import ConditionalWrap from 'conditional-wrap';
-import Routes from '@/navigation/routesNames';
-import { useLegacyNFTs } from '@/resources/nfts';
+import { metadataPOSTClient } from '@/graphql';
+import { type NftOffer } from '@/graphql/__generated__/arc';
+import { type Transaction } from '@/graphql/__generated__/metadataPOST';
+import { WrappedAlert as Alert } from '@/helpers/alert';
+import { convertAmountToNativeDisplay, getFormattedTimeQuantity, handleSignificantDecimals } from '@/helpers/utilities';
 import useGas from '@/hooks/useGas';
-import { useAccountAddress, useIsReadOnlyWallet } from '@/state/wallets/walletsStore';
-import { type NewTransaction, TransactionDirection, TransactionStatus } from '@/entities/transactions';
-import { analytics } from '@/analytics';
-import { BigNumber } from '@ethersproject/bignumber';
-import { HoldToAuthorizeButton } from '@/components/buttons';
-import { GasSpeedButton } from '@/components/gas';
+import * as i18n from '@/languages';
+import { logger, RainbowError } from '@/logger';
 import { loadPrivateKey } from '@/model/wallet';
-import { type Execute, getClient } from '@reservoir0x/reservoir-sdk';
-import { privateKeyToAccount } from 'viem/accounts';
-import { createWalletClient, http } from 'viem';
-
-import { RainbowError, logger } from '@/logger';
-import { useTheme } from '@/theme/ThemeContext';
-import { type Network, ChainId } from '@/state/backendNetworks/types';
-import { CardSize } from '@/components/unique-token/CardSize';
+import { useNavigation } from '@/navigation/Navigation';
+import Routes from '@/navigation/routesNames';
+import { type RootStackParamList } from '@/navigation/types';
 import { queryClient } from '@/react-query';
+import ethUnits from '@/references/ethereum-units.json';
+import { useExternalToken } from '@/resources/assets/externalAssetsQuery';
+import { useLegacyNFTs } from '@/resources/nfts';
 import { nftOffersQueryKey } from '@/resources/reservoir/nftOffersQuery';
 import { getRainbowFeeAddress } from '@/resources/reservoir/utils';
-import { useExternalToken } from '@/resources/assets/externalAssetsQuery';
-import RainbowCoinIcon from '@/components/coin-icon/RainbowCoinIcon';
-import { addNewTransaction } from '@/state/pendingTransactions';
-import { getUniqueId } from '@/utils/ethereumUtils';
-import { getNextNonce } from '@/state/nonces';
-import { metadataPOSTClient } from '@/graphql';
-import ethUnits from '@/references/ethereum-units.json';
-import { type Transaction } from '@/graphql/__generated__/metadataPOST';
-import { useBackendNetworksStore } from '@/state/backendNetworks/backendNetworks';
-import { openInBrowser } from '@/utils/openInBrowser';
-import { type RootStackParamList } from '@/navigation/types';
 import { userAssetsStoreManager } from '@/state/assets/userAssetsStoreManager';
-import { useRainbowToastEnabled } from '@/components/rainbow-toast/useRainbowToastEnabled';
+import { useBackendNetworksStore } from '@/state/backendNetworks/backendNetworks';
+import { ChainId, type Network } from '@/state/backendNetworks/types';
+import { getNextNonce } from '@/state/nonces';
+import { addNewTransaction } from '@/state/pendingTransactions';
+import { useAccountAddress, useIsReadOnlyWallet } from '@/state/wallets/walletsStore';
+import { useTheme } from '@/theme/ThemeContext';
+import { getUniqueId } from '@/utils/ethereumUtils';
+import { openInBrowser } from '@/utils/openInBrowser';
 
 const NFT_IMAGE_HEIGHT = 160;
 const TWO_HOURS_MS = 2 * 60 * 60 * 1000;

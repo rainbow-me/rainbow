@@ -1,13 +1,15 @@
-import { isEmpty } from 'lodash';
 import React from 'react';
+
+import { isEmpty } from 'lodash';
+
 import ButtonPressAnimation from '@/components/animations/ButtonPressAnimation';
-import useGas from '@/hooks/useGas';
-import { colors } from '@/styles';
-import gasUtils from '@/utils/gas';
 import { AccentColorProvider, Box, Inline, Inset, Text } from '@/design-system';
 import { IS_ANDROID } from '@/env';
 import { opacity } from '@/framework/ui/utils/opacity';
+import useGas from '@/hooks/useGas';
+import { colors } from '@/styles';
 import { useTheme } from '@/theme/ThemeContext';
+import gasUtils from '@/utils/gas';
 
 const { CUSTOM, URGENT, GasSpeedOrder } = gasUtils;
 

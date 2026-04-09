@@ -1,4 +1,5 @@
 import { useContext } from 'react';
+
 import { BottomSheetNavigatorContext } from '../contexts/internal';
 
 export const useBottomSheetNavigator = () => {

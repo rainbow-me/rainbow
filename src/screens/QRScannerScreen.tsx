@@ -1,26 +1,28 @@
 import React, { useCallback, useEffect, useState } from 'react';
 import { View } from 'react-native';
+
+import { useIsFocused } from '@react-navigation/native';
 import { useIsEmulator } from 'react-native-device-info';
 import Animated, { interpolate, useAnimatedStyle } from 'react-native-reanimated';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
+import { useCameraPermission, useCodeScanner } from 'react-native-vision-camera';
+
 import { Header } from '@/components/header';
 import { Centered } from '@/components/layout';
 import { Navbar } from '@/components/navbar/Navbar';
 import { CameraDimmer, QRCodeScanner } from '@/components/qrcode-scanner';
 import { AccentColorProvider, Box, ColorModeProvider, Text } from '@/design-system';
+import styled from '@/framework/ui/styled-thing';
 import useDimensions from '@/hooks/useDimensions';
 import useHardwareBack from '@/hooks/useHardwareBack';
+import { useIsForeground } from '@/hooks/useIsForeground';
 import useScanner from '@/hooks/useScanner';
+import * as i18n from '@/languages';
 import { useNavigation } from '@/navigation/Navigation';
 import Routes from '@/navigation/routesNames';
 import { usePagerPosition } from '@/navigation/ScrollPositionContext';
-import styled from '@/framework/ui/styled-thing';
 import { position } from '@/styles';
 import { useTheme } from '@/theme/ThemeContext';
-import * as i18n from '@/languages';
-import { useIsFocused } from '@react-navigation/native';
-import { useIsForeground } from '@/hooks/useIsForeground';
-import { useCameraPermission, useCodeScanner } from 'react-native-vision-camera';
 
 const Background = styled(View)({
   backgroundColor: 'black',

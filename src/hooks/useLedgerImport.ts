@@ -1,10 +1,12 @@
-import TransportBLE from '@ledgerhq/react-native-hw-transport-ble';
 import { useCallback, useEffect, useRef } from 'react';
-import { DebugContext } from '@/logger/debugContext';
-import { logger, RainbowError } from '@/logger';
+
 import { type Subscription } from '@ledgerhq/hw-transport';
-import { checkAndRequestAndroidBluetooth, showBluetoothPermissionsAlert, showBluetoothPoweredOffAlert } from '@/utils/bluetoothPermissions';
+import TransportBLE from '@ledgerhq/react-native-hw-transport-ble';
+
 import { IS_ANDROID, IS_IOS } from '@/env';
+import { logger, RainbowError } from '@/logger';
+import { DebugContext } from '@/logger/debugContext';
+import { checkAndRequestAndroidBluetooth, showBluetoothPermissionsAlert, showBluetoothPoweredOffAlert } from '@/utils/bluetoothPermissions';
 import { ledgerErrorHandler, type LEDGER_ERROR_CODES } from '@/utils/ledger';
 
 /**

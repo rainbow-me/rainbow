@@ -1,31 +1,34 @@
-import { memo, useState, useCallback } from 'react';
+import { memo, useCallback, useState } from 'react';
 import { RefreshControl, StyleSheet } from 'react-native';
-import { Box, useColorMode } from '@/design-system';
-import { AccountImage } from '@/components/AccountImage';
-import { Navbar, navbarHeight } from '@/components/navbar/Navbar';
-import { RnbwRewardsClaimCard } from './components/RnbwRewardsClaimCard';
-import { RnbwAirdropClaimCard } from './components/RnbwAirdropClaimCard';
-import { RnbwStakingCard } from './components/RnbwStakingCard';
-import { MembershipTierCard } from './components/MembershipTierCard';
-import { useRewardsBalanceStore } from '@/features/rnbw-rewards/stores/rewardsBalanceStore';
-import { useStakingPositionStore } from '@/features/rnbw-staking/stores/rnbwStakingPositionStore';
-import { useAirdropBalanceStore } from '@/features/rnbw-rewards/stores/airdropBalanceStore';
-import { delay } from '@/utils/delay';
-import { time } from '@/utils/time';
-import { RnbwStakingEarningsCard } from './components/RnbwStakingEarningsCard';
-import { TAB_BAR_HEIGHT } from '@/navigation/SwipeNavigator';
-import { TierBadge } from '@/features/rnbw-membership/components/TierBadge';
-import { useMembershipTierInfo } from '@/features/rnbw-membership/stores/derived/useMembershipTierInfo';
-import { IS_ANDROID } from '@/env';
-import { ScrollHeaderFade } from '@/components/scroll-header-fade/ScrollHeaderFade';
-import { useScrollFadeHandler } from '@/components/scroll-header-fade/useScrollFadeHandler';
+
 import Animated, { useSharedValue } from 'react-native-reanimated';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
-import { getValueForColorMode } from '@/design-system/color/palettes';
-import { MEMBERSHIP_SCREEN_BACKGROUND_COLOR } from '@/features/rnbw-membership/constants';
+
+import { AccountImage } from '@/components/AccountImage';
 import ButtonPressAnimation from '@/components/animations/ButtonPressAnimation';
+import { Navbar, navbarHeight } from '@/components/navbar/Navbar';
+import { ScrollHeaderFade } from '@/components/scroll-header-fade/ScrollHeaderFade';
+import { useScrollFadeHandler } from '@/components/scroll-header-fade/useScrollFadeHandler';
+import { Box, useColorMode } from '@/design-system';
+import { getValueForColorMode } from '@/design-system/color/palettes';
+import { IS_ANDROID } from '@/env';
+import { TierBadge } from '@/features/rnbw-membership/components/TierBadge';
+import { MEMBERSHIP_SCREEN_BACKGROUND_COLOR } from '@/features/rnbw-membership/constants';
+import { useMembershipTierInfo } from '@/features/rnbw-membership/stores/derived/useMembershipTierInfo';
+import { useAirdropBalanceStore } from '@/features/rnbw-rewards/stores/airdropBalanceStore';
+import { useRewardsBalanceStore } from '@/features/rnbw-rewards/stores/rewardsBalanceStore';
+import { useStakingPositionStore } from '@/features/rnbw-staking/stores/rnbwStakingPositionStore';
 import Navigation from '@/navigation/Navigation';
 import Routes from '@/navigation/routesNames';
+import { TAB_BAR_HEIGHT } from '@/navigation/SwipeNavigator';
+import { delay } from '@/utils/delay';
+import { time } from '@/utils/time';
+
+import { MembershipTierCard } from './components/MembershipTierCard';
+import { RnbwAirdropClaimCard } from './components/RnbwAirdropClaimCard';
+import { RnbwRewardsClaimCard } from './components/RnbwRewardsClaimCard';
+import { RnbwStakingCard } from './components/RnbwStakingCard';
+import { RnbwStakingEarningsCard } from './components/RnbwStakingEarningsCard';
 
 export const RnbwMembershipScreen = memo(function RnbwMembershipScreen() {
   const { colorMode } = useColorMode();

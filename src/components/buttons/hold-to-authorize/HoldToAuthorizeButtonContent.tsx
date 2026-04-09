@@ -1,17 +1,28 @@
-import React, { Fragment, type PropsWithChildren, useCallback, useEffect, useState } from 'react';
+import React, { Fragment, useCallback, useEffect, useState, type PropsWithChildren } from 'react';
 import { Keyboard } from 'react-native';
+
 import {
   State as GestureHandlerState,
-  type HandlerStateChangeEvent,
   LongPressGestureHandler,
   TapGestureHandler,
+  type HandlerStateChangeEvent,
 } from 'react-native-gesture-handler';
 import Animated, { runOnJS, useAnimatedStyle, useSharedValue, withTiming } from 'react-native-reanimated';
-import Spinner from '../../Spinner';
+
+import styled from '@/framework/ui/styled-thing';
+import useDimensions from '@/hooks/useDimensions';
+import * as i18n from '@/languages';
+import { useNavigation } from '@/navigation/Navigation';
+import Routes from '@/navigation/routesNames';
+import { padding, position } from '@/styles';
+import { useTheme, type ThemeContextProps } from '@/theme/ThemeContext';
+import haptics from '@/utils/haptics';
+import ShadowStack from 'react-native-shadow-stack';
+
 import ShimmerAnimation from '../../animations/ShimmerAnimation';
 import { Centered, InnerBorder } from '../../layout';
+import Spinner from '../../Spinner';
 import BiometricButtonContent from '../BiometricButtonContent';
-import HoldToAuthorizeButtonIcon from './HoldToAuthorizeButtonIcon';
 import {
   BUTTON_HEIGHT,
   BUTTON_SCALE_DURATION_IN_MS,
@@ -20,16 +31,8 @@ import {
   TINY_BUTTON_HEIGHT,
 } from './constants';
 import { getButtonDisabledBgColor, getButtonShadows } from './helpers/buttonStyleValues';
+import HoldToAuthorizeButtonIcon from './HoldToAuthorizeButtonIcon';
 import { type HoldToAuthorizeBaseProps } from './types/HoldToAuthorizeBaseProps';
-import styled from '@/framework/ui/styled-thing';
-import { padding, position } from '@/styles';
-import { type ThemeContextProps, useTheme } from '@/theme/ThemeContext';
-import haptics from '@/utils/haptics';
-import ShadowStack from 'react-native-shadow-stack';
-import * as i18n from '@/languages';
-import { useNavigation } from '@/navigation/Navigation';
-import Routes from '@/navigation/routesNames';
-import useDimensions from '@/hooks/useDimensions';
 
 const { ACTIVE, BEGAN, END, FAILED } = GestureHandlerState;
 

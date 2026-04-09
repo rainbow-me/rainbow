@@ -1,9 +1,11 @@
 import React, { memo, useCallback } from 'react';
 import { StyleSheet, View } from 'react-native';
+
 import ButtonPressAnimation from '@/components/animations/ButtonPressAnimation';
 import { Text, useColorMode } from '@/design-system';
-import { INTERVAL_LABELS, type PolymarketInterval } from '../types';
+
 import { usePolymarketStore } from '../stores/polymarketStore';
+import { INTERVAL_LABELS, type PolymarketInterval } from '../types';
 
 // ============ Types ========================================================== //
 

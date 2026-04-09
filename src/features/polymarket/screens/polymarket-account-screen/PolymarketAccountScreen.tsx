@@ -1,23 +1,25 @@
 import React, { useCallback, useState } from 'react';
 import { RefreshControl, StyleSheet, View } from 'react-native';
+
 import Animated, { useSharedValue } from 'react-native-reanimated';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
+
 import { ScrollHeaderFade } from '@/components/scroll-header-fade/ScrollHeaderFade';
 import { useScrollFadeHandler } from '@/components/scroll-header-fade/useScrollFadeHandler';
 import { Box, Separator, useColorMode } from '@/design-system';
 import { PolymarketAccountBalanceCard } from '@/features/polymarket/components/PolymarketAccountBalanceCard';
 import { PolymarketPositionsSection } from '@/features/polymarket/components/PolymarketOpenPositionsSection';
-import { usePolymarketContext } from '@/features/polymarket/screens/polymarket-navigator/PolymarketContext';
 import {
   NAVIGATOR_FOOTER_CLEARANCE,
   NAVIGATOR_FOOTER_HEIGHT,
   POLYMARKET_BACKGROUND_DARK,
   POLYMARKET_BACKGROUND_LIGHT,
 } from '@/features/polymarket/constants';
+import { usePolymarketContext } from '@/features/polymarket/screens/polymarket-navigator/PolymarketContext';
 import { refetchPolymarketStores } from '@/features/polymarket/utils/refetchPolymarketStores';
+import { THICK_BORDER_WIDTH } from '@/styles/constants';
 import { delay } from '@/utils/delay';
 import { time } from '@/utils/time';
-import { THICK_BORDER_WIDTH } from '@/styles/constants';
 
 export const PolymarketAccountScreen = function PolymarketAccountScreen() {
   const { isDarkMode } = useColorMode();

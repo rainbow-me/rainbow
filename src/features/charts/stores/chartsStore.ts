@@ -4,7 +4,8 @@ import { useRemoteConfig } from '@/model/remoteConfig';
 import { createRainbowStore } from '@/state/internal/createRainbowStore';
 import { createStoreActions } from '@/state/internal/utils/createStoreActions';
 import { type Exact } from '@/types/objects';
-import { CandleResolution, ChartType, type HyperliquidSymbol, LineChartTimePeriod, type Token } from '../types';
+
+import { CandleResolution, ChartType, LineChartTimePeriod, type HyperliquidSymbol, type Token } from '../types';
 
 // ============ Charts Store =================================================== //
 

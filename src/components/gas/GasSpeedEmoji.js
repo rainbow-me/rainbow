@@ -1,9 +1,11 @@
 import React from 'react';
-import { Emoji } from '../text';
+
 import styled from '@/framework/ui/styled-thing';
 import { margin } from '@/styles';
 import gasUtils from '@/utils/gas';
 import magicMemo from '@/utils/magicMemo';
+
+import { Emoji } from '../text';
 
 const EmojiForGasSpeedType = {
   [gasUtils.URGENT]: {

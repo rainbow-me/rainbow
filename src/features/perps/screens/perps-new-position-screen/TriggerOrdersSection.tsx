@@ -1,16 +1,18 @@
-import { Box } from '@/design-system';
 import React, { useMemo } from 'react';
-import { hlNewPositionStoreActions, useHlNewPositionStore } from '@/features/perps/stores/hlNewPositionStore';
-import { TriggerOrderCard } from '@/features/perps/components/TriggerOrderCard';
-import { PerpPositionSide, TriggerOrderSource, TriggerOrderType } from '@/features/perps/types';
-import { AddTriggerOrderButton } from '@/features/perps/components/AddTriggerOrderButton';
+
 import Animated from 'react-native-reanimated';
+
+import { useLiveTokenValue } from '@/components/live-token-text/LiveTokenText';
+import { Box } from '@/design-system';
+import { AddTriggerOrderButton } from '@/features/perps/components/AddTriggerOrderButton';
+import { TriggerOrderCard } from '@/features/perps/components/TriggerOrderCard';
 import { LAYOUT_ANIMATION } from '@/features/perps/constants';
+import { hlNewPositionStoreActions, useHlNewPositionStore } from '@/features/perps/stores/hlNewPositionStore';
+import { PerpPositionSide, TriggerOrderSource, TriggerOrderType } from '@/features/perps/types';
+import { getHyperliquidTokenId } from '@/features/perps/utils';
 import { estimatePnl } from '@/features/perps/utils/estimatePnl';
 import { formatCurrency } from '@/features/perps/utils/formatCurrency';
 import { mulWorklet } from '@/framework/core/safeMath';
-import { getHyperliquidTokenId } from '@/features/perps/utils';
-import { useLiveTokenValue } from '@/components/live-token-text/LiveTokenText';
 
 export const TriggerOrdersSection = function TriggerOrdersSection() {
   const market = useHlNewPositionStore(state => state.market);

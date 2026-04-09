@@ -1,19 +1,21 @@
 import { type BigNumberish } from '@ethersproject/bignumber';
-import { type Block, type StaticJsonRpcProvider } from '@ethersproject/providers';
-import { type CrosschainQuote, getQuoteExecutionDetails, getTargetAddress, type Quote } from '@rainbow-me/swaps';
-import { Contract } from '@ethersproject/contracts';
 import { MaxUint256 } from '@ethersproject/constants';
-import { type Token } from '../entities/tokens';
-import { estimateGasWithPadding, getProvider, toHexNoLeadingZeros } from './web3';
-import { getRemoteConfig } from '@/model/remoteConfig';
+import { Contract } from '@ethersproject/contracts';
+import { type Block, type StaticJsonRpcProvider } from '@ethersproject/providers';
+
 import type { Asset } from '@/entities/tokens';
+import { IS_TEST } from '@/env';
 import { add, convertRawAmountToDecimalFormat, divide, lessThan, multiply, subtract } from '@/helpers/utilities';
+import { logger, RainbowError } from '@/logger';
+import { getRemoteConfig } from '@/model/remoteConfig';
 import erc20ABI from '@/references/erc20-abi.json';
 import ethUnits from '@/references/ethereum-units.json';
-import ethereumUtils from '@/utils/ethereumUtils';
-import { logger, RainbowError } from '@/logger';
 import { ChainId } from '@/state/backendNetworks/types';
-import { IS_TEST } from '@/env';
+import ethereumUtils from '@/utils/ethereumUtils';
+import { getQuoteExecutionDetails, getTargetAddress, type CrosschainQuote, type Quote } from '@rainbow-me/swaps';
+
+import { type Token } from '../entities/tokens';
+import { estimateGasWithPadding, getProvider, toHexNoLeadingZeros } from './web3';
 
 export enum Field {
   INPUT = 'INPUT',

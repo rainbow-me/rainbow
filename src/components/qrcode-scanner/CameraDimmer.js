@@ -1,8 +1,9 @@
 import React from 'react';
+
 import Animated from 'react-native-reanimated';
 
-import useDelayedValueWithLayoutAnimation from '@/hooks/useDelayedValueWithLayoutAnimation';
 import styled from '@/framework/ui/styled-thing';
+import useDelayedValueWithLayoutAnimation from '@/hooks/useDelayedValueWithLayoutAnimation';
 
 const Dim = styled(Animated.View)({
   flex: 1,

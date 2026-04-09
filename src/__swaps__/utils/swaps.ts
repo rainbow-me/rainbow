@@ -1,4 +1,8 @@
+import { type BigNumberish } from '@ethersproject/bignumber';
 import c from 'chroma-js';
+// DO NOT REMOVE THESE COMMENTED ENV VARS
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
+import { IS_APK_BUILD } from 'react-native-dotenv';
 import { type SharedValue } from 'react-native-reanimated';
 import { getAddress, type Address } from 'viem';
 
@@ -11,17 +15,9 @@ import {
   STABLECOIN_MINIMUM_SIGNIFICANT_DECIMALS,
 } from '@/__swaps__/screens/Swap/constants';
 import { globalColors } from '@/design-system';
-import { type ForegroundColor, palettes } from '@/design-system/color/palettes';
-import { type TokenColors } from '@/graphql/__generated__/metadata';
-import * as i18n from '@/languages';
-import { DEFAULT_SLIPPAGE_BIPS_CHAINID, type RainbowConfig } from '@/model/remoteConfig';
-import store from '@/redux/store';
-import { supportedCurrencies as supportedNativeCurrencies } from '@/references/supportedCurrencies';
-import { useUserAssetsStore } from '@/state/assets/userAssets';
-import { colors } from '@/styles';
-import { type BigNumberish } from '@ethersproject/bignumber';
-import { type CrosschainQuote, ETH_ADDRESS, type Quote, type QuoteError, type QuoteParams } from '@rainbow-me/swaps';
-import { swapsStore } from '../../state/swaps/swapsStore';
+import { palettes, type ForegroundColor } from '@/design-system/color/palettes';
+import type { NativeCurrencyKey } from '@/entities/nativeCurrencyTypes';
+import { IS_TEST } from '@/env';
 import {
   divWorklet,
   equalWorklet,
@@ -34,18 +30,22 @@ import {
   roundWorklet,
   toFixedWorklet,
 } from '@/framework/core/safeMath';
+import { type TokenColors } from '@/graphql/__generated__/metadata';
+import { convertAmountToRawAmount } from '@/helpers/utilities';
+import * as i18n from '@/languages';
+import { DEFAULT_SLIPPAGE_BIPS_CHAINID, type RainbowConfig } from '@/model/remoteConfig';
+import store from '@/redux/store';
+import { supportedCurrencies as supportedNativeCurrencies } from '@/references/supportedCurrencies';
+import { useUserAssetsStore } from '@/state/assets/userAssets';
+import { ChainId } from '@/state/backendNetworks/types';
+import { colors } from '@/styles';
+import { getUniqueId } from '@/utils/ethereumUtils';
+import { ETH_ADDRESS, type CrosschainQuote, type Quote, type QuoteError, type QuoteParams } from '@rainbow-me/swaps';
+
+import { swapsStore } from '../../state/swaps/swapsStore';
 import { type ExtendedAnimatedAssetWithColors, type ParsedSearchAsset } from '../types/assets';
 import { type InputKeys } from '../types/swap';
 import { valueBasedDecimalFormatter } from './decimalFormatter';
-import { convertAmountToRawAmount } from '@/helpers/utilities';
-import { ChainId } from '@/state/backendNetworks/types';
-import { getUniqueId } from '@/utils/ethereumUtils';
-
-// DO NOT REMOVE THESE COMMENTED ENV VARS
-// eslint-disable-next-line @typescript-eslint/no-unused-vars
-import { IS_APK_BUILD } from 'react-native-dotenv';
-import type { NativeCurrencyKey } from '@/entities/nativeCurrencyTypes';
-import { IS_TEST } from '@/env';
 
 const DEFAULT_SLIPPAGE_BIPS = 500;
 const TEST_MODE_SLIPPAGE_BIPS = 9999; // 99.99% slippage for test mode

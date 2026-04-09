@@ -1,6 +1,8 @@
 import * as React from 'react';
+
 import Svg, { Path } from 'react-native-svg';
-import { type IconProps, DEFAULT_SIZE } from '../LeagueIcon';
+
+import { DEFAULT_SIZE, type IconProps } from '../LeagueIcon';
 
 export const NhlIcon = ({ color, width = DEFAULT_SIZE, height = DEFAULT_SIZE }: IconProps) => (
   <Svg viewBox="0 0 24 24" width={width} height={height} fill="none">

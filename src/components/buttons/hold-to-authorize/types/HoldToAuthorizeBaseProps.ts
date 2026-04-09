@@ -1,4 +1,5 @@
 import { type StyleProp, type ViewStyle } from 'react-native';
+
 import type { DeviceDimensions } from '@/hooks/useDimensions';
 import { type Colors } from '@/styles';
 

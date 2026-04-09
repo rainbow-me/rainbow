@@ -1,13 +1,13 @@
-import { type PerpMarket, PerpPositionSide, type TriggerOrderType } from '@/features/perps/types';
+import { PerpsNavigation } from '@/features/perps/screens/PerpsNavigator';
 import { infoClient } from '@/features/perps/services/hyperliquid-info-client';
-import { useWalletsStore } from '@/state/wallets/walletsStore';
+import { hyperliquidAccountActions } from '@/features/perps/stores/hyperliquidAccountStore';
+import { PerpPositionSide, type PerpMarket, type TriggerOrderType } from '@/features/perps/types';
+import { greaterThanWorklet, toFixedWorklet } from '@/framework/core/safeMath';
+import { divide } from '@/helpers/utilities';
+import Routes from '@/navigation/routesNames';
 import { createRainbowStore } from '@/state/internal/createRainbowStore';
 import { createStoreActions } from '@/state/internal/utils/createStoreActions';
-import { divide } from '@/helpers/utilities';
-import { greaterThanWorklet, toFixedWorklet } from '@/framework/core/safeMath';
-import { hyperliquidAccountActions } from '@/features/perps/stores/hyperliquidAccountStore';
-import { PerpsNavigation } from '@/features/perps/screens/PerpsNavigator';
-import Routes from '@/navigation/routesNames';
+import { useWalletsStore } from '@/state/wallets/walletsStore';
 
 type TriggerOrder = {
   localId: string;

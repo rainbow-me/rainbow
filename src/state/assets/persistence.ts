@@ -1,6 +1,7 @@
-import { RainbowError, logger } from '@/logger';
-import { type ChainId } from '@/state/backendNetworks/types';
 import { type ParsedSearchAsset, type UniqueId, type UserAssetFilter } from '@/__swaps__/types/assets';
+import { logger, RainbowError } from '@/logger';
+import { type ChainId } from '@/state/backendNetworks/types';
+
 import { type UserAssetsState } from './types';
 
 export type UserAssetsStateToPersist = Pick<

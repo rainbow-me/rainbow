@@ -1,43 +1,45 @@
 import { type Signer } from '@ethersproject/abstract-signer';
+
+import { type TransactionGasParams, type TransactionLegacyGasParams } from '@/__swaps__/types/gas';
+import { TransactionDirection, TransactionStatus, type NewTransaction } from '@/entities/transactions';
+import { estimateGasWithPadding, getProvider, toHex } from '@/handlers/web3';
+import { add } from '@/helpers/utilities';
+import { ensureError, logger, RainbowError } from '@/logger';
+import { REFERRER } from '@/references/constants';
+import { gasUnits } from '@/references/gasUnits';
+import { useBackendNetworksStore } from '@/state/backendNetworks/backendNetworks';
+import { type ChainId } from '@/state/backendNetworks/types';
+import { addNewTransaction } from '@/state/pendingTransactions';
+import { executeFn, Screens, TimeToSignOperation } from '@/state/performance/performance';
+import { swapsStore } from '@/state/swaps/swapsStore';
 import type { BatchCall } from '@rainbow-me/delegation';
 import {
-  type Quote,
-  SwapType,
-  prepareFillQuote,
   getQuoteExecutionDetails,
   getTargetAddress,
   getWrappedAssetAddress,
   getWrappedAssetMethod,
+  prepareFillQuote,
+  SwapType,
   unwrapNativeAsset,
   wrapNativeAsset,
+  type Quote,
 } from '@rainbow-me/swaps';
-import { estimateGasWithPadding, getProvider, toHex } from '@/handlers/web3';
-import { type ChainId } from '@/state/backendNetworks/types';
-import { type NewTransaction, TransactionStatus, TransactionDirection } from '@/entities/transactions';
-import { add } from '@/helpers/utilities';
-import { addNewTransaction } from '@/state/pendingTransactions';
-import { RainbowError, ensureError, logger } from '@/logger';
-import { gasUnits } from '@/references/gasUnits';
-import { REFERRER } from '@/references/constants';
-import { type TransactionGasParams, type TransactionLegacyGasParams } from '@/__swaps__/types/gas';
+
+import { swapMetadataStorage } from '../common';
 import { type ActionProps, type PrepareActionProps, type RapActionResult, type RapSwapActionParameters } from '../references';
+import { extractReplayableExecution, type ReplayableExecution } from '../replay';
+import { toTransactionAsset } from '../transactionAsset';
 import {
   CHAIN_IDS_WITH_TRACE_SUPPORT,
-  SWAP_GAS_PADDING,
   estimateSwapGasLimitWithFakeApproval,
   estimateTransactionsGasLimit,
   getDefaultGasLimitForTrade,
   overrideWithFastSpeedIfNeeded,
   populateSwap,
+  SWAP_GAS_PADDING,
 } from '../utils';
-import { estimateApprove, populateApprove } from './unlock';
-import { swapMetadataStorage } from '../common';
-import { Screens, TimeToSignOperation, executeFn } from '@/state/performance/performance';
-import { swapsStore } from '@/state/swaps/swapsStore';
-import { useBackendNetworksStore } from '@/state/backendNetworks/backendNetworks';
 import { getQuoteAllowanceTargetAddress, requireAddress, requireHex, requireNonce } from '../validation';
-import { extractReplayableExecution, type ReplayableExecution } from '../replay';
-import { toTransactionAsset } from '../transactionAsset';
+import { estimateApprove, populateApprove } from './unlock';
 
 const WRAP_GAS_PADDING = 1.002;
 

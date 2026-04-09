@@ -1,22 +1,24 @@
+import { memo, useMemo, type ReactNode } from 'react';
 import { StyleSheet, View } from 'react-native';
-import { Box, Text, TextShadow, useBackgroundColor, useColorMode, useForegroundColor } from '@/design-system';
-import { useLiveTokenValue } from '@/components/live-token-text/LiveTokenText';
-import { getPolymarketTokenId } from '@/state/liveTokens/polymarketAdapter';
-import { type ReactNode, memo, useMemo } from 'react';
-import { GradientBorderView } from '@/components/gradient-border/GradientBorderView';
+
 import { LinearGradient } from 'expo-linear-gradient';
-import ImgixImage from '@/components/images/ImgixImage';
-import { toPercentageWorklet } from '@/framework/core/safeMath';
-import { formatNumber } from '@/helpers/strings';
-import { InnerShadow } from '@/features/polymarket/components/InnerShadow';
-import { formatPrice } from '@/features/polymarket/utils/formatPrice';
-import { createOpacityPalette } from '@/worklets/colors';
+
 import ButtonPressAnimation from '@/components/animations/ButtonPressAnimation';
-import { THICKER_BORDER_WIDTH } from '@/styles/constants';
-import { opacity } from '@/framework/ui/utils/opacity';
 import ShimmerAnimation from '@/components/animations/ShimmerAnimation';
-import * as i18n from '@/languages';
+import { GradientBorderView } from '@/components/gradient-border/GradientBorderView';
+import ImgixImage from '@/components/images/ImgixImage';
+import { useLiveTokenValue } from '@/components/live-token-text/LiveTokenText';
+import { Box, Text, TextShadow, useBackgroundColor, useColorMode, useForegroundColor } from '@/design-system';
+import { InnerShadow } from '@/features/polymarket/components/InnerShadow';
 import { type UmaResolutionStatus } from '@/features/polymarket/types/polymarket-event';
+import { formatPrice } from '@/features/polymarket/utils/formatPrice';
+import { toPercentageWorklet } from '@/framework/core/safeMath';
+import { opacity } from '@/framework/ui/utils/opacity';
+import { formatNumber } from '@/helpers/strings';
+import * as i18n from '@/languages';
+import { getPolymarketTokenId } from '@/state/liveTokens/polymarketAdapter';
+import { THICKER_BORDER_WIDTH } from '@/styles/constants';
+import { createOpacityPalette } from '@/worklets/colors';
 
 type MarketRowProps = {
   accentColor: string;

@@ -1,6 +1,7 @@
-import colors from '../styles/colors';
 import { type EthereumAddress } from '@/entities/wallet';
 import { fetchReverseRecord } from '@/features/ens/utils/handlers';
+
+import colors from '../styles/colors';
 
 // avatars groups emojis with their respective color backgrounds in the `avatarBackgrounds` object in colors.js
 export const avatars = [

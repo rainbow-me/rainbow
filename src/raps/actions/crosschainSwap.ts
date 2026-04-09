@@ -1,31 +1,33 @@
 import { type Signer } from '@ethersproject/abstract-signer';
-import type { BatchCall } from '@rainbow-me/delegation';
-import { type CrosschainQuote, prepareFillCrosschainQuote, SwapType } from '@rainbow-me/swaps';
+
+import { type TransactionGasParams, type TransactionLegacyGasParams } from '@/__swaps__/types/gas';
+import { TransactionDirection, TransactionStatus, type NewTransaction } from '@/entities/transactions';
 import { estimateGasWithPadding, getProvider, toHex } from '@/handlers/web3';
 import { add } from '@/helpers/utilities';
-import { estimateApprove } from './unlock';
-import { gasUnits } from '@/references/gasUnits';
+import { ensureError, logger, RainbowError } from '@/logger';
 import { REFERRER, type ReferrerType } from '@/references/constants';
+import { gasUnits } from '@/references/gasUnits';
+import { type ParsedAsset } from '@/resources/assets/types';
+import { useBackendNetworksStore } from '@/state/backendNetworks/backendNetworks';
 import { type ChainId } from '@/state/backendNetworks/types';
-import { type NewTransaction, TransactionDirection, TransactionStatus } from '@/entities/transactions';
 import { addNewTransaction } from '@/state/pendingTransactions';
-import { RainbowError, ensureError, logger } from '@/logger';
-import { type TransactionGasParams, type TransactionLegacyGasParams } from '@/__swaps__/types/gas';
+import { executeFn, Screens, TimeToSignOperation } from '@/state/performance/performance';
+import { swapsStore } from '@/state/swaps/swapsStore';
+import type { BatchCall } from '@rainbow-me/delegation';
+import { prepareFillCrosschainQuote, SwapType, type CrosschainQuote } from '@rainbow-me/swaps';
+
 import { type ActionProps, type PrepareActionProps, type RapActionResult, type RapSwapActionParameters } from '../references';
+import { extractReplayableExecution, type ReplayableExecution } from '../replay';
+import { toTransactionAsset } from '../transactionAsset';
 import {
   CHAIN_IDS_WITH_TRACE_SUPPORT,
-  SWAP_GAS_PADDING,
   estimateSwapGasLimitWithFakeApproval,
   getDefaultGasLimitForTrade,
   overrideWithFastSpeedIfNeeded,
+  SWAP_GAS_PADDING,
 } from '../utils';
-import { type ParsedAsset } from '@/resources/assets/types';
-import { Screens, TimeToSignOperation, executeFn } from '@/state/performance/performance';
-import { swapsStore } from '@/state/swaps/swapsStore';
-import { useBackendNetworksStore } from '@/state/backendNetworks/backendNetworks';
 import { getQuoteAllowanceTargetAddress, requireAddress, requireHex, requireNonce } from '../validation';
-import { extractReplayableExecution, type ReplayableExecution } from '../replay';
-import { toTransactionAsset } from '../transactionAsset';
+import { estimateApprove } from './unlock';
 
 const getCrosschainSwapDefaultGasLimit = (quote: CrosschainQuote) => quote?.routes?.[0]?.userTxs?.[0]?.gasFees?.gasLimit;
 

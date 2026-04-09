@@ -1,11 +1,13 @@
 import React from 'react';
 import { View } from 'react-native';
-import { BlurView } from 'react-native-blur-view';
+
 import { LinearGradient } from 'expo-linear-gradient';
+import { BlurView } from 'react-native-blur-view';
+
 import ButtonPressAnimation from '@/components/animations/ButtonPressAnimation';
-import { AccentColorProvider, Box, Cover, Inline, globalColors, Text } from '@/design-system';
+import { AccentColorProvider, Box, Cover, globalColors, Inline, Text } from '@/design-system';
 import { IS_IOS } from '@/env';
-import { MintsFilter, getMintsFilterLabel, useMintsFilter } from '@/resources/mints';
+import { getMintsFilterLabel, MintsFilter, useMintsFilter } from '@/resources/mints';
 import { useTheme } from '@/theme/ThemeContext';
 
 function FilterButton({ filter }: { filter: MintsFilter }) {

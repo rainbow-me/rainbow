@@ -1,6 +1,8 @@
 import React, { Children, type JSX, type ReactNode } from 'react';
+
 import flattenChildren from 'react-flatten-children';
-import { type AlignVertical, alignVerticalToFlexAlign } from '../../layout/alignment';
+
+import { alignVerticalToFlexAlign, type AlignVertical } from '../../layout/alignment';
 import { negateSpace, type Space } from '../../layout/space';
 import { Box, type BoxProps } from '../Box/Box';
 

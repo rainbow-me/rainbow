@@ -1,15 +1,10 @@
-import {
-  type GlobalNotificationTopics,
-  type GroupSettings,
-  type WalletNotificationRelationshipType,
-  type WalletNotificationSettings,
-} from '@/notifications/settings/types';
 import { useCallback, useEffect, useMemo, useState } from 'react';
+
 import {
   GLOBAL_TOPICS_STORAGE_KEY,
-  WalletNotificationRelationship,
   WALLET_GROUPS_STORAGE_KEY,
   WALLET_TOPICS_STORAGE_KEY,
+  WalletNotificationRelationship,
 } from '@/notifications/settings/constants';
 import { toggleGroupNotifications } from '@/notifications/settings/settings';
 import {
@@ -19,6 +14,12 @@ import {
   notificationSettingsStorage,
   updateGroupSettings,
 } from '@/notifications/settings/storage';
+import {
+  type GlobalNotificationTopics,
+  type GroupSettings,
+  type WalletNotificationRelationshipType,
+  type WalletNotificationSettings,
+} from '@/notifications/settings/types';
 
 /**
  Hook to constantly listen to notification settings.

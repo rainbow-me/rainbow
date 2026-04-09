@@ -1,7 +1,8 @@
 import { isValidAddress } from 'ethereumjs-util';
+
 import { getProvider, isHexStringIgnorePrefix, isValidMnemonic, resolveUnstoppableDomain } from '@/handlers/web3';
-import { sanitizeSeedPhrase } from '@/utils/formatters';
 import { ChainId } from '@/state/backendNetworks/types';
+import { sanitizeSeedPhrase } from '@/utils/formatters';
 
 // Currently supported Top Level Domains from Unstoppable Domains
 const supportedUnstoppableDomains = ['888', 'bitcoin', 'blockchain', 'coin', 'crypto', 'dao', 'nft', 'wallet', 'x', 'zil'];

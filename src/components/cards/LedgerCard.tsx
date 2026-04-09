@@ -1,17 +1,20 @@
-import * as i18n from '@/languages';
 import React from 'react';
-import { useNavigation } from '../../navigation/Navigation';
+
+import { useRoute } from '@react-navigation/native';
+import { type Source } from 'react-native-fast-image';
+
 import { analytics } from '@/analytics';
+import ledgerNano from '@/assets/ledger-nano.png';
+import ledgerLogo from '@/assets/ledgerLogo.png';
 import { Box, ColorModeProvider, Column, Columns, Stack, Text } from '@/design-system';
+import * as i18n from '@/languages';
 import Routes from '@/navigation/routesNames';
+import { LEDGER_NANO_HEIGHT, LEDGER_NANO_WIDTH } from '@/screens/hardware-wallets/components/NanoXDeviceAnimation';
+
+import { useNavigation } from '../../navigation/Navigation';
+import { ImgixImage } from '../images';
 import { GenericCard, type Gradient } from './GenericCard';
 import { ORB_SIZE } from './reusables/IconOrb';
-import { useRoute } from '@react-navigation/native';
-import ledgerLogo from '@/assets/ledgerLogo.png';
-import { ImgixImage } from '../images';
-import ledgerNano from '@/assets/ledger-nano.png';
-import { type Source } from 'react-native-fast-image';
-import { LEDGER_NANO_HEIGHT, LEDGER_NANO_WIDTH } from '@/screens/hardware-wallets/components/NanoXDeviceAnimation';
 
 const TRANSLATIONS = i18n.l.cards.ledger;
 const GRADIENT: Gradient = {

@@ -1,4 +1,5 @@
-import { type SharedValue, executeOnUIRuntimeSync, runOnUI, useSharedValue } from 'react-native-reanimated';
+import { executeOnUIRuntimeSync, runOnUI, useSharedValue, type SharedValue } from 'react-native-reanimated';
+
 import { useRunOnce } from '@/hooks/useRunOnce';
 
 type Initializer<T> = () => T;

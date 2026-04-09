@@ -1,10 +1,12 @@
-import { difference } from 'lodash';
 import { useCallback, useMemo, useRef } from 'react';
+
+import { difference } from 'lodash';
 import { useMMKVObject } from 'react-native-mmkv';
 import { atom, useRecoilState, useSetRecoilState } from 'recoil';
-import { useAccountAddress } from '@/state/wallets/walletsStore';
+
 import EditAction from '@/helpers/EditAction';
 import { useUserAssetsStore } from '@/state/assets/userAssets';
+import { useAccountAddress } from '@/state/wallets/walletsStore';
 
 const selectedItemsAtom = atom<string[]>({
   default: [],

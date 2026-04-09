@@ -1,6 +1,8 @@
-import { logger, RainbowError } from '@/logger';
 import type { SessionTypes } from '@walletconnect/types';
 import { getSdkError } from '@walletconnect/utils';
+
+import { logger, RainbowError } from '@/logger';
+
 import { getWalletKitClient } from './client';
 
 /**

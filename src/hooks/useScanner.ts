@@ -1,24 +1,27 @@
-import { isValidAddress } from 'ethereumjs-util';
-import * as i18n from '@/languages';
-import qs from 'qs';
 import { useCallback, useEffect, useRef } from 'react';
 import { InteractionManager } from 'react-native';
-import URL from 'url-parse';
+
 import { parseUri } from '@walletconnect/utils';
-import { Alert } from '../components/alerts';
-import Navigation, { useNavigation } from '../navigation/Navigation';
-import { fetchReverseRecordWithRetry } from '@/utils/profileUtils';
+import { isValidAddress } from 'ethereumjs-util';
+import qs from 'qs';
+import URL from 'url-parse';
+
 import { analytics } from '@/analytics';
+import { pair as pairWalletConnect } from '@/features/wallet-connect/services/pair';
 import { checkIsValidAddressOrDomain, isENSAddressFormat } from '@/helpers/validators';
-import { POAP_BASE_URL, RAINBOW_PROFILES_BASE_URL } from '@/references/constants';
+import * as i18n from '@/languages';
+import { logger, RainbowError } from '@/logger';
 import Routes from '@/navigation/routesNames';
+import { checkPushNotificationPermissions } from '@/notifications/permissions';
+import { POAP_BASE_URL, RAINBOW_PROFILES_BASE_URL } from '@/references/constants';
 import addressUtils from '@/utils/address';
 import ethereumUtils from '@/utils/ethereumUtils';
 import haptics from '@/utils/haptics';
-import { logger, RainbowError } from '@/logger';
-import { checkPushNotificationPermissions } from '@/notifications/permissions';
-import { pair as pairWalletConnect } from '@/features/wallet-connect/services/pair';
 import { getPoapAndOpenSheetWithQRHash, getPoapAndOpenSheetWithSecretWord } from '@/utils/poaps';
+import { fetchReverseRecordWithRetry } from '@/utils/profileUtils';
+
+import { Alert } from '../components/alerts';
+import Navigation, { useNavigation } from '../navigation/Navigation';
 
 export default function useScanner(enabled: boolean, onSuccess: () => unknown) {
   const { navigate, goBack } = useNavigation();
