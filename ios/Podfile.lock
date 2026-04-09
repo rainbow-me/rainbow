@@ -1671,7 +1671,7 @@ PODS:
     - ReactCommon/turbomodule/bridging
     - ReactCommon/turbomodule/core
     - Yoga
-  - react-native-ble-plx (3.2.1):
+  - react-native-ble-plx (3.4.0):
     - DoubleConversion
     - glog
     - hermes-engine
@@ -3356,7 +3356,7 @@ SPEC CHECKSUMS:
   React-microtasksnativemodule: bda561d2648e1e52bd9e5a87f8889836bdbde2e2
   react-native-aes-crypto: 598b531c1dcdec9830e0475459c53e13e01fcbf0
   react-native-animateable-text: 601c0df62a50bf2d603e4c6800e7db4ab9c581eb
-  react-native-ble-plx: 77db31f067bba0f74b6ba2c81c6b521849a524b1
+  react-native-ble-plx: b29d777cab9d3a6c0f03bce86b414c864a71725d
   react-native-blur-view: fae19bca8ac76a4ca6a8a6f101cf37c8ec1ad4f5
   react-native-branch: 46dc8cb067af50455db675370c3cd63425f85bea
   react-native-cameraroll: 870e36cfbf3a3d1de81dec3244c59a906e5787bb
