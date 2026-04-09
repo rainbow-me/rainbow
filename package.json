@@ -1,6 +1,6 @@
 {
   "name": "Rainbow",
-  "version": "2.0.23-1",
+  "version": "2.0.24-1",
   "private": true,
   "browser": {
     "@tanstack/query-async-storage-persister": "@tanstack/query-async-storage-persister/build/esm/index",
