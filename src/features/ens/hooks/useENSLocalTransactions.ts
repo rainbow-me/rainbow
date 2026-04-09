@@ -1,13 +1,16 @@
-import { useSelector } from 'react-redux';
 import { useMemo } from 'react';
-import { useAccountAddress } from '@/state/wallets/walletsStore';
-import usePendingTransactions from '@/hooks/usePendingTransactions';
-import { type ENSRegistrationState } from '../types/registration';
+
+import { useSelector } from 'react-redux';
+
 import { type RainbowTransaction } from '@/entities/transactions';
+import usePendingTransactions from '@/hooks/usePendingTransactions';
 import { type AppState } from '@/redux/store';
-import ethereumUtils from '@/utils/ethereumUtils';
 import { useConsolidatedTransactions } from '@/resources/transactions/consolidatedTransactions';
 import { userAssetsStoreManager } from '@/state/assets/userAssetsStoreManager';
+import { useAccountAddress } from '@/state/wallets/walletsStore';
+import ethereumUtils from '@/utils/ethereumUtils';
+
+import { type ENSRegistrationState } from '../types/registration';
 
 /**
  * @description Returns the local ENS transactions for a given name.

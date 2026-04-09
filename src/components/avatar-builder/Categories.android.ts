@@ -1,6 +1,7 @@
 import * as i18n from '@/languages';
-import { type EmojiCategory } from './types';
+
 import getCategoryIndexAndName from './helpers/getCategoryIndexAndName';
+import { type EmojiCategory } from './types';
 
 // `name` is used for filtering Emoji, while `getTitle` is used to render the
 // title shown to users. Therefore, `name` fields do not use i18n while

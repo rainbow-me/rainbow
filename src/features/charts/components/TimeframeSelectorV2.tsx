@@ -1,25 +1,28 @@
-import React, { memo, type RefObject, useCallback, useRef } from 'react';
-import { type ScrollView, StyleSheet, View } from 'react-native';
+import React, { memo, useCallback, useRef, type RefObject } from 'react';
+import { StyleSheet, View, type ScrollView } from 'react-native';
+
 import Animated, {
-  type AnimatedStyle,
-  type SharedValue,
   runOnJS,
   useAnimatedStyle,
   useSharedValue,
   withSpring,
+  type AnimatedStyle,
+  type SharedValue,
 } from 'react-native-reanimated';
+
 import { SPRING_CONFIGS } from '@/components/animations/animationConfigs';
+import { GestureHandlerButton } from '@/components/buttons/GestureHandlerButton';
 import { globalColors, useColorMode } from '@/design-system';
 import { IS_IOS } from '@/env';
+import { opacity } from '@/framework/ui/utils/opacity';
 import { useStableValue } from '@/hooks/useStableValue';
 import { DEVICE_WIDTH } from '@/utils/deviceUtils';
-import { GestureHandlerButton } from '@/components/buttons/GestureHandlerButton';
-import { opacity } from '@/framework/ui/utils/opacity';
 import { getSolidColorEquivalent } from '@/worklets/colors';
+
 import { GREEN_CANDLE_COLOR, RED_CANDLE_COLOR } from '../candlestick/constants';
 import { CANDLE_RESOLUTIONS, LINE_CHART_TIME_PERIODS } from '../constants';
 import { chartsActions, useChartsStore, useChartType } from '../stores/chartsStore';
-import { type CandleResolution, ChartType, type LineChartTimePeriod } from '../types';
+import { ChartType, type CandleResolution, type LineChartTimePeriod } from '../types';
 import { BASE_HORIZONTAL_INSET, PILL, TimeframeSelectorCore } from './TimeframeSelectorCore';
 
 // ============ Constants ====================================================== //

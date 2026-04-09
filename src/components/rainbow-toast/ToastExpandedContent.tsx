@@ -1,3 +1,6 @@
+import React, { useMemo, type ReactNode } from 'react';
+import { StyleSheet, View } from 'react-native';
+
 import { TOAST_ICON_SIZE } from '@/components/rainbow-toast/constants';
 import { BaseToastIcon } from '@/components/rainbow-toast/icons/BaseToastIcon';
 import { isWideSwapIcon, SwapToastIcon } from '@/components/rainbow-toast/icons/SwapToastIcon';
@@ -5,12 +8,11 @@ import { getSwapToastNetworkLabel, getToastTitle } from '@/components/rainbow-to
 import type { RainbowToast } from '@/components/rainbow-toast/types';
 import Spinner from '@/components/Spinner';
 import { Text } from '@/design-system';
-import { type RainbowTransaction, TransactionStatus } from '@/entities/transactions';
+import { TransactionStatus, type RainbowTransaction } from '@/entities/transactions';
 import { returnStringFirstEmoji } from '@/helpers/emojiHandler';
 import { activityValues, useTransactionLaunchToken } from '@/helpers/transactions';
 import { userAssetsStoreManager } from '@/state/assets/userAssetsStoreManager';
-import React, { useMemo, type ReactNode } from 'react';
-import { StyleSheet, View } from 'react-native';
+
 import { SendToastIcon } from './icons/SendToastIcon';
 import { useToastColors } from './useToastColors';
 

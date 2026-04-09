@@ -1,12 +1,14 @@
-import * as i18n from '@/languages';
 import React from 'react';
+
+import { SeedWordGrid } from '@/components/secret-display/SeedWordGrid';
+import { Box, Inset } from '@/design-system';
+import { IS_ANDROID } from '@/env';
+import WalletTypes, { EthereumWalletType } from '@/helpers/walletTypes';
+import * as i18n from '@/languages';
+
 import CopyTooltip from '../copy-tooltip';
 import { Centered } from '../layout';
 import { Text } from '../text';
-import { Box, Inset } from '@/design-system';
-import WalletTypes, { EthereumWalletType } from '@/helpers/walletTypes';
-import { SeedWordGrid } from '@/components/secret-display/SeedWordGrid';
-import { IS_ANDROID } from '@/env';
 
 interface SecretDisplayCardProps {
   seed: string;

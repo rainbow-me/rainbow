@@ -1,4 +1,5 @@
 import React from 'react';
+
 import RadialGradient from 'react-native-radial-gradient';
 import Animated, {
   useAnimatedStyle,
@@ -9,9 +10,11 @@ import Animated, {
   withSpring,
   withTiming,
 } from 'react-native-reanimated';
-import { LargeCheckmarkIcon } from '../icons/svg/LargeCheckmarkIcon';
+
 import { Box } from '@/design-system';
 import { colors } from '@/styles';
+
+import { LargeCheckmarkIcon } from '../icons/svg/LargeCheckmarkIcon';
 
 export function CheckmarkAnimation() {
   const circleEntering = () => {

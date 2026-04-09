@@ -1,18 +1,21 @@
-import * as i18n from '@/languages';
+import React from 'react';
+
 import { upperCase, upperFirst } from 'lodash';
 import PropTypes from 'prop-types';
-import React from 'react';
-import ButtonPressAnimation from '../animations/ButtonPressAnimation';
-import { Centered, Column } from '../layout';
-import { Text as TextElement } from '../text';
+
 import ContextMenuButton from '@/components/native-context-menu/contextMenu';
 import { Inline } from '@/design-system';
 import styled from '@/framework/ui/styled-thing';
-import { padding } from '@/styles';
 import { showActionSheetWithOptions } from '@/framework/ui/utils/actionsheet';
+import { opacity } from '@/framework/ui/utils/opacity';
+import * as i18n from '@/languages';
+import { padding } from '@/styles';
 import magicMemo from '@/utils/magicMemo';
 import { openInBrowser } from '@/utils/openInBrowser';
-import { opacity } from '@/framework/ui/utils/opacity';
+
+import ButtonPressAnimation from '../animations/ButtonPressAnimation';
+import { Centered, Column } from '../layout';
+import { Text as TextElement } from '../text';
 
 const HairlineSpace = '\u200a';
 

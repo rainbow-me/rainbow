@@ -1,15 +1,18 @@
-import { Canvas, Rect, LinearGradient, vec } from '@shopify/react-native-skia';
 import React from 'react';
 import { StyleSheet, View } from 'react-native';
+
+import { Canvas, LinearGradient, Rect, vec } from '@shopify/react-native-skia';
 import { useDerivedValue, withTiming } from 'react-native-reanimated';
+
+import { useSwapContext } from '@/__swaps__/screens/Swap/providers/swap-provider';
+import { getColorValueForThemeWorklet, getTintedBackgroundColor } from '@/__swaps__/utils/swaps';
 import { TIMING_CONFIGS } from '@/components/animations/animationConfigs';
 import { useColorMode } from '@/design-system';
 import { IS_ANDROID, IS_TEST } from '@/env';
 import { useStableValue } from '@/hooks/useStableValue';
 import { useSwapsStore } from '@/state/swaps/swapsStore';
-import { useSwapContext } from '@/__swaps__/screens/Swap/providers/swap-provider';
-import { getColorValueForThemeWorklet, getTintedBackgroundColor } from '@/__swaps__/utils/swaps';
 import { DEVICE_HEIGHT, DEVICE_WIDTH } from '@/utils/deviceUtils';
+
 import { ETH_COLOR, ETH_COLOR_DARK } from '../constants';
 
 const DEFAULT_BACKGROUND_COLOR = getTintedBackgroundColor({ dark: ETH_COLOR_DARK, light: ETH_COLOR });

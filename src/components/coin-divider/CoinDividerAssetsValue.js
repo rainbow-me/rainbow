@@ -1,10 +1,12 @@
 import React from 'react';
+
+import styled from '@/framework/ui/styled-thing';
+import { opacity } from '@/framework/ui/utils/opacity';
+import { position } from '@/styles';
+
 import { convertAmountToNativeDisplay } from '../../helpers/utilities';
 import OpacityToggler from '../animations/OpacityToggler';
 import { Text } from '../text';
-import styled from '@/framework/ui/styled-thing';
-import { position } from '@/styles';
-import { opacity } from '@/framework/ui/utils/opacity';
 
 const Container = styled(OpacityToggler)({
   height: 30,

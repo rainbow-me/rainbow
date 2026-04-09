@@ -1,10 +1,13 @@
-import { useFocusEffect, useIsFocused } from '@react-navigation/native';
 import type React from 'react';
 import { useCallback, useEffect, useRef } from 'react';
 import { InteractionManager, TextInput } from 'react-native';
-import { setListener } from '@/navigation/nativeStackHelpers';
-import useInteraction from './useInteraction';
+
+import { useFocusEffect, useIsFocused } from '@react-navigation/native';
+
 import { IS_ANDROID } from '@/env';
+import { setListener } from '@/navigation/nativeStackHelpers';
+
+import useInteraction from './useInteraction';
 
 const { currentlyFocusedInput, focusTextInput } = TextInput.State;
 

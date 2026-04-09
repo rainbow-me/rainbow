@@ -1,9 +1,10 @@
-import { useAccountAddress } from '@/state/wallets/walletsStore';
-import { useWatchPendingTransactions } from '@/hooks/useWatchPendingTxs';
-import { useTransactionWatcher } from '@/hooks/useTransactionWatcher';
 import { memo } from 'react';
+
 import { type RainbowTransaction } from '@/entities/transactions';
+import { useTransactionWatcher } from '@/hooks/useTransactionWatcher';
+import { useWatchPendingTransactions } from '@/hooks/useWatchPendingTxs';
 import { usePendingTransactionsStore } from '@/state/pendingTransactions';
+import { useAccountAddress } from '@/state/wallets/walletsStore';
 
 const EMPTY_PENDING_TRANSACTIONS: RainbowTransaction[] = [];
 

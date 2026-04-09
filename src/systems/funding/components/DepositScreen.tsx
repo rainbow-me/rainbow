@@ -1,14 +1,19 @@
-import React, { memo, type ReactNode, useCallback, useMemo } from 'react';
+import React, { memo, useCallback, useMemo, type ReactNode } from 'react';
+
 import Animated, {
   runOnUI,
-  type SharedValue,
   useAnimatedReaction,
   useAnimatedStyle,
   useDerivedValue,
   useSharedValue,
   withTiming,
+  type SharedValue,
 } from 'react-native-reanimated';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
+
+import { type ParsedSearchAsset } from '@/__swaps__/types/assets';
+import { GasSpeed } from '@/__swaps__/types/gas';
+import { clamp, getColorValueForThemeWorklet, parseAssetAndExtend } from '@/__swaps__/utils/swaps';
 import { AccountImage } from '@/components/AccountImage';
 import { TIMING_CONFIGS } from '@/components/animations/animationConfigs';
 import RainbowCoinIcon from '@/components/coin-icon/RainbowCoinIcon';
@@ -18,24 +23,22 @@ import { DecoyScrollView } from '@/components/sheet/DecoyScrollView';
 import { Box, useColorMode, useForegroundColor } from '@/design-system';
 import { NumberPad } from '@/features/perps/components/NumberPad/NumberPad';
 import { SheetHandle } from '@/features/perps/components/SheetHandle';
-import { SliderWithLabels } from '@/features/perps/components/Slider/SliderWithLabels';
 import { SLIDER_MAX, type SliderColors } from '@/features/perps/components/Slider/Slider';
+import { SliderWithLabels } from '@/features/perps/components/Slider/SliderWithLabels';
 import { PerpsAccentColorContextProvider } from '@/features/perps/context/PerpsAccentColorContext';
+import { divWorklet, equalWorklet, greaterThanWorklet, lessThanWorklet, mulWorklet } from '@/framework/core/safeMath';
 import { useStableValue } from '@/hooks/useStableValue';
 import * as i18n from '@/languages';
-import { divWorklet, equalWorklet, greaterThanWorklet, lessThanWorklet, mulWorklet } from '@/framework/core/safeMath';
 import { useStoreSharedValue } from '@/state/internal/hooks/useStoreSharedValue';
-import { type ParsedSearchAsset } from '@/__swaps__/types/assets';
-import { GasSpeed } from '@/__swaps__/types/gas';
-import { clamp, getColorValueForThemeWorklet, parseAssetAndExtend } from '@/__swaps__/utils/swaps';
 import { sanitizeAmount } from '@/worklets/strings';
+
 import { createDepositConfig } from '../config';
 import { FOOTER_HEIGHT, NavigationSteps, SLIDER_WIDTH, SLIDER_WITH_LABELS_HEIGHT } from '../constants';
 import { DepositProvider, useDepositContext } from '../contexts/DepositContext';
 import { computeMaxSwappableAmount } from '../stores/createDepositStore';
-import { type DepositConfigInput, DepositQuoteStatus, type FundingScreenTheme, getAccentColor } from '../types';
-import { resolveInitialDepositAsset } from '../utils/sourceAsset';
+import { DepositQuoteStatus, getAccentColor, type DepositConfigInput, type FundingScreenTheme } from '../types';
 import { amountFromSliderProgress } from '../utils/sliderWorklets';
+import { resolveInitialDepositAsset } from '../utils/sourceAsset';
 import { DepositAmountInput } from './deposit/DepositAmountInput';
 import { DepositFooter } from './deposit/DepositFooter';
 import { DepositInputContainer } from './deposit/DepositInputContainer';

@@ -1,13 +1,16 @@
+import { useCallback } from 'react';
+
+import { useDispatch } from 'react-redux';
+
 import { getWalletBalances, WALLET_BALANCES_FROM_STORAGE } from '@/handlers/localstorage/walletBalances';
+import { logger } from '@/logger';
 import { queryClient } from '@/react-query';
 import { contactsLoadState } from '@/redux/contacts';
 import { imageMetadataCacheLoadState } from '@/redux/imageMetadata';
 import { keyboardHeightsLoadState } from '@/redux/keyboardHeight';
 import { transactionSignaturesLoadState } from '@/redux/transactionSignatures';
 import promiseUtils from '@/utils/promise';
-import { logger } from '@/logger';
-import { useCallback } from 'react';
-import { useDispatch } from 'react-redux';
+
 import { useWalletsStore } from '../state/wallets/walletsStore';
 
 const loadWalletBalanceNamesToCache = () => queryClient.prefetchQuery([WALLET_BALANCES_FROM_STORAGE], getWalletBalances);

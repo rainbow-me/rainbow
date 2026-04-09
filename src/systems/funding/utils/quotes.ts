@@ -1,6 +1,7 @@
-import { ChainId as SwapsChainId, type CrosschainQuote, type Quote, type QuoteError } from '@rainbow-me/swaps';
-import { type ChainId } from '@/state/backendNetworks/types';
 import { isQuoteError } from '@/__swaps__/utils/quotes';
+import { type ChainId } from '@/state/backendNetworks/types';
+import { ChainId as SwapsChainId, type CrosschainQuote, type Quote, type QuoteError } from '@rainbow-me/swaps';
+
 import { DepositQuoteStatus } from '../types';
 
 // ============ Chain Guards =================================================== //

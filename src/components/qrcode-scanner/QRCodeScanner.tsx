@@ -1,14 +1,17 @@
-import * as i18n from '@/languages';
 import React, { useCallback } from 'react';
-import { Camera, type CodeScanner, useCameraDevice } from 'react-native-vision-camera';
+
+import { useFocusEffect } from '@react-navigation/native';
 import Animated from 'react-native-reanimated';
+import { Camera, useCameraDevice, type CodeScanner } from 'react-native-vision-camera';
+
+import { Box, Cover, Row, Rows } from '@/design-system';
+import { IS_ANDROID } from '@/env';
+import * as i18n from '@/languages';
+import deviceUtils, { NAVIGATION_BAR_HEIGHT } from '@/utils/deviceUtils';
+
+import { CameraMaskSvg } from '../svg/CameraMaskSvg';
 import { ErrorText } from '../text';
 import QRCodeScannerNeedsAuthorization from './QRCodeScannerNeedsAuthorization';
-import deviceUtils, { NAVIGATION_BAR_HEIGHT } from '@/utils/deviceUtils';
-import { Box, Cover, Rows, Row } from '@/design-system';
-import { CameraMaskSvg } from '../svg/CameraMaskSvg';
-import { IS_ANDROID } from '@/env';
-import { useFocusEffect } from '@react-navigation/native';
 
 const deviceWidth = deviceUtils.dimensions.width;
 const deviceHeight = deviceUtils.dimensions.height;

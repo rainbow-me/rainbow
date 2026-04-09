@@ -1,16 +1,18 @@
 import { memo, useCallback } from 'react';
 import { StyleSheet, View } from 'react-native';
-import Animated, { type SharedValue, useAnimatedStyle, useSharedValue, withSpring } from 'react-native-reanimated';
+
+import Animated, { useAnimatedStyle, useSharedValue, withSpring, type SharedValue } from 'react-native-reanimated';
+
 import { AnimatedTextIcon } from '@/components/AnimatedComponents/AnimatedTextIcon';
 import { SPRING_CONFIGS } from '@/components/animations/animationConfigs';
+import { GestureHandlerButton } from '@/components/buttons/GestureHandlerButton';
 import { Border, Box, globalColors, useColorMode, useForegroundColor } from '@/design-system';
 import { IS_IOS } from '@/env';
 import { chartsActions, useChartsStore, useChartType } from '@/features/charts/stores/chartsStore';
 import { ChartType } from '@/features/charts/types';
 import { useHasPositionCheck } from '@/features/perps/stores/derived/useHasPositionCheck';
-import { GestureHandlerButton } from '@/components/buttons/GestureHandlerButton';
-import { THICKER_BORDER_WIDTH } from '@/styles/constants';
 import { opacity } from '@/framework/ui/utils/opacity';
+import { THICKER_BORDER_WIDTH } from '@/styles/constants';
 import { getSolidColorEquivalent } from '@/worklets/colors';
 
 // ============ Constants ====================================================== //

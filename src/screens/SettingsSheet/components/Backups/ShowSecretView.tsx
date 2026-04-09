@@ -1,7 +1,8 @@
 import React, { useEffect } from 'react';
+
+import { analytics } from '@/analytics';
 import { Centered } from '@/components/layout';
 import { ModalHeaderHeight } from '@/components/modal';
-import { analytics } from '@/analytics';
 import { SecretDisplaySection } from '@/components/secret-display/SecretDisplaySection';
 
 export default function ShowSecretView() {

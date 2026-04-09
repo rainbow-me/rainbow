@@ -1,6 +1,7 @@
-import { type QueryConfigWithSelect, createQueryKey } from '@/react-query';
 import { useMutation } from '@tanstack/react-query';
+
 import { arcPOSTClient } from '@/graphql';
+import { createQueryKey, type QueryConfigWithSelect } from '@/react-query';
 
 export type TrackFeaturedResultVariables = Parameters<typeof arcPOSTClient.trackFeaturedResult>['0'];
 export type TrackFeaturedResultResult = Awaited<ReturnType<typeof arcPOSTClient.trackFeaturedResult>>;

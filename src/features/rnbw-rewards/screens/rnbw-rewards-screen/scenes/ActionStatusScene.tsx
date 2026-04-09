@@ -1,13 +1,15 @@
 import { useEffect, useState } from 'react';
+
 import Animated from 'react-native-reanimated';
+
 import { Text } from '@/design-system';
-import { type AsyncActionState } from '@/features/rnbw-rewards/stores/rewardsFlowStore';
-import { time } from '@/utils/time';
 import {
-  createScaleOutFadeOutSlideExitAnimation,
   createScaleInFadeInSlideEnterAnimation,
+  createScaleOutFadeOutSlideExitAnimation,
 } from '@/features/rnbw-rewards/animations/sceneTransitions';
+import { type AsyncActionState } from '@/features/rnbw-rewards/stores/rewardsFlowStore';
 import * as i18n from '@/languages';
+import { time } from '@/utils/time';
 
 const EXIT_ANIMATION_DURATION = time.ms(500);
 const LABEL_CYCLE_INTERVAL = time.seconds(2);

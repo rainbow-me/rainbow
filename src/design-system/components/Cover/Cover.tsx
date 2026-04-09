@@ -1,6 +1,7 @@
 import React from 'react';
 import { type StyleProp, type ViewProps, type ViewStyle } from 'react-native';
-import { type AlignHorizontal, alignHorizontalToFlexAlign, type AlignVertical, alignVerticalToFlexAlign } from '../../layout/alignment';
+
+import { alignHorizontalToFlexAlign, alignVerticalToFlexAlign, type AlignHorizontal, type AlignVertical } from '../../layout/alignment';
 import { Box, type BoxProps } from '../Box/Box';
 
 export type CoverProps = {

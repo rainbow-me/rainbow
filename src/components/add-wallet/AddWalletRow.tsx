@@ -1,14 +1,16 @@
 import React from 'react';
 import { type ImageSourcePropType } from 'react-native';
 
-import { Box, Stack, Text, useForegroundColor } from '@/design-system';
-import styled from '@/framework/ui/styled-thing';
-import { Icon } from '../icons';
-import deviceUtils from '@/utils/deviceUtils';
-import ButtonPressAnimation from '../animations/ButtonPressAnimation';
-import { ImgixImage } from '../images';
 import { type Source } from 'react-native-fast-image';
+
+import { Box, Stack, Text, useForegroundColor } from '@/design-system';
 import { type TextColor } from '@/design-system/color/palettes';
+import styled from '@/framework/ui/styled-thing';
+import deviceUtils from '@/utils/deviceUtils';
+
+import ButtonPressAnimation from '../animations/ButtonPressAnimation';
+import { Icon } from '../icons';
+import { ImgixImage } from '../images';
 
 const CaretIcon = styled(Icon).attrs(({ color }: { color: string }) => ({
   name: 'caret',

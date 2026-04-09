@@ -1,28 +1,28 @@
-import { type QueryConfigWithSelect, createQueryKey } from '@/react-query';
 import { useQuery } from '@tanstack/react-query';
-import { arcClient } from '@/graphql';
 import qs from 'qs';
-
-import { type TrendingCategory, type TrendingSort, type TrendingTimeframe } from '@/state/trendingTokens/trendingTokens';
+import { TOKEN_SEARCH_URL } from 'react-native-dotenv';
 import { type Address } from 'viem';
+
+import { type AddressOrEth, type UniqueId } from '@/__swaps__/types/assets';
 import type { NativeCurrencyKey } from '@/entities/nativeCurrencyTypes';
-import store from '@/redux/store';
+import { RainbowFetchClient } from '@/framework/data/http/rainbowFetch';
+import { arcClient } from '@/graphql';
 import {
-  type SortDirection,
   TrendingSort as ArcTrendingSort,
+  Timeframe,
+  type Bridging,
   type Colors,
   type Market,
-  type Bridging,
+  type SortDirection,
   type TrendingData,
-  Timeframe,
 } from '@/graphql/__generated__/arc';
-import { type AddressOrEth, type UniqueId } from '@/__swaps__/types/assets';
-import { type ChainId } from '@/state/backendNetworks/types';
-import { RainbowFetchClient } from '@/framework/data/http/rainbowFetch';
-import { TOKEN_SEARCH_URL } from 'react-native-dotenv';
-import { time } from '@/utils/time';
-import { getUniqueId } from '@/utils/ethereumUtils';
 import { logger, RainbowError } from '@/logger';
+import { createQueryKey, type QueryConfigWithSelect } from '@/react-query';
+import store from '@/redux/store';
+import { type ChainId } from '@/state/backendNetworks/types';
+import { type TrendingCategory, type TrendingSort, type TrendingTimeframe } from '@/state/trendingTokens/trendingTokens';
+import { getUniqueId } from '@/utils/ethereumUtils';
+import { time } from '@/utils/time';
 
 export type FarcasterUser = {
   username: string;

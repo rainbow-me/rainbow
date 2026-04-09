@@ -1,36 +1,39 @@
-import React, { memo, type MutableRefObject, useEffect, useRef, useState } from 'react';
-import { Freeze } from 'react-freeze';
+import React, { memo, useEffect, useRef, useState, type MutableRefObject } from 'react';
 import { StyleSheet } from 'react-native';
-import Animated, { type AnimatedStyle, type DerivedValue, FadeIn, type SharedValue, useAnimatedProps } from 'react-native-reanimated';
+
+import { Freeze } from 'react-freeze';
+import Animated, { FadeIn, useAnimatedProps, type AnimatedStyle, type DerivedValue, type SharedValue } from 'react-native-reanimated';
 import ViewShot from 'react-native-view-shot';
 import { type WebViewProps } from 'react-native-webview';
 import type WebView from 'react-native-webview';
+
 import { globalColors, useColorMode } from '@/design-system';
 import { IS_DEV, IS_IOS } from '@/env';
-import { type BrowserState, useBrowserStore } from '@/state/browser/browserStore';
+import { useBrowserStore, type BrowserState } from '@/state/browser/browserStore';
 import { type BrowserHistoryStore } from '@/state/browserHistory';
 import { DEVICE_WIDTH } from '@/utils/deviceUtils';
+
 import { AnimatedFasterImage } from '../AnimatedComponents/AnimatedFasterImage';
 import { useBrowserContext } from './BrowserContext';
 import { CloseTabButton } from './CloseTabButton';
+import {
+  RAINBOW_HOME,
+  TAB_SCREENSHOT_FASTER_IMAGE_CONFIG,
+  TAB_SCREENSHOT_FILE_FORMAT,
+  USER_AGENT,
+  USER_AGENT_APPLICATION_NAME,
+} from './constants';
 import { WebViewShadows } from './DappBrowserShadows';
 import DappBrowserWebview from './DappBrowserWebview';
 import { EXTRA_WEBVIEW_HEIGHT, TOP_INSET, WEBVIEW_HEIGHT } from './Dimensions';
 import { ErrorPage } from './ErrorPage';
 import { Homepage } from './Homepage';
-import { WebViewBorder } from './WebViewBorder';
-import {
-  RAINBOW_HOME,
-  TAB_SCREENSHOT_FILE_FORMAT,
-  TAB_SCREENSHOT_FASTER_IMAGE_CONFIG,
-  USER_AGENT,
-  USER_AGENT_APPLICATION_NAME,
-} from './constants';
 import { useAnimatedTab } from './hooks/useAnimatedTab';
 import { useTabScreenshotProvider } from './hooks/useTabScreenshotProvider';
 import { useWebViewHandlers } from './hooks/useWebViewHandlers';
-import { SCRIPTS_TO_INJECT, freezeWebsite, unfreezeWebsite } from './scripts';
+import { freezeWebsite, SCRIPTS_TO_INJECT, unfreezeWebsite } from './scripts';
 import { type BrowserTabProps, type ScreenshotType } from './types';
+import { WebViewBorder } from './WebViewBorder';
 
 export const BrowserTab = memo(function BrowserTab({ addRecent, setLogo, setTitle, tabId }: BrowserTabProps) {
   const viewShotRef = useRef<ViewShot | null>(null);

@@ -1,18 +1,20 @@
 import { memo } from 'react';
-import { Text, Box } from '@/design-system';
-import { useRnbwStakingBalance } from '@/features/rnbw-staking/stores/derived/useRnbwStakingBalance';
-import { useStakableRnbwBalance } from '@/state/rnbw/useStakableRnbwBalance';
-import { RNBW_SYMBOL } from '@/features/rnbw-rewards/constants';
-import Navigation from '@/navigation/Navigation';
-import Routes from '@/navigation/routesNames';
+
 import { RnbwCoinIcon } from '@/components/RnbwCoinIcon';
-import { MembershipCard } from './MembershipCard';
+import { Box, Text } from '@/design-system';
 import { RnbwThemedButton } from '@/features/rnbw-membership/components/RnbwThemedButton';
 import { navigateToBuyRnbw } from '@/features/rnbw-membership/utils/navigateToBuyRnbw';
+import { RNBW_SYMBOL } from '@/features/rnbw-rewards/constants';
+import { MIN_STAKE_AMOUNT } from '@/features/rnbw-staking/constants';
+import { useRnbwStakingBalance } from '@/features/rnbw-staking/stores/derived/useRnbwStakingBalance';
+import { useStakingPositionStore } from '@/features/rnbw-staking/stores/rnbwStakingPositionStore';
 import { blockRnbwStakingAccessIfNeeded } from '@/features/rnbw-staking/utils/blockStakingAccessIfNeeded';
 import * as i18n from '@/languages';
-import { MIN_STAKE_AMOUNT } from '@/features/rnbw-staking/constants';
-import { useStakingPositionStore } from '@/features/rnbw-staking/stores/rnbwStakingPositionStore';
+import Navigation from '@/navigation/Navigation';
+import Routes from '@/navigation/routesNames';
+import { useStakableRnbwBalance } from '@/state/rnbw/useStakableRnbwBalance';
+
+import { MembershipCard } from './MembershipCard';
 import { MembershipCardSkeleton } from './MembershipCardSkeleton';
 
 export const RnbwStakingCard = memo(function RnbwStakingCard() {

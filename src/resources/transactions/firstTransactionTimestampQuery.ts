@@ -1,8 +1,8 @@
 import { useQuery } from '@tanstack/react-query';
 
+import { fetchENSAddress } from '@/features/ens/resources/addressQuery';
 import { createQueryKey, queryClient, type QueryConfig, type QueryFunctionArgs, type QueryFunctionResult } from '@/react-query';
 import { getFirstTransactionTimestamp } from '@/utils/ethereumUtils';
-import { fetchENSAddress } from '@/features/ens/resources/addressQuery';
 
 // ///////////////////////////////////////////////
 // Query Types

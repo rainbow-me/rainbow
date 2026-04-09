@@ -1,16 +1,19 @@
 import { useMemo } from 'react';
+
+import { type NotifyOnChangeProps } from '@tanstack/react-query';
+
+import { GasSpeed } from '@/__swaps__/types/gas';
+import { getCachedGasSuggestions, useMeteorologySuggestions, type MeteorologyGasSuggestions } from '@/__swaps__/utils/meteorology';
 import { type ChainId } from '@/state/backendNetworks/types';
 import { createRainbowStore } from '@/state/internal/createRainbowStore';
-import { GasSpeed } from '@/__swaps__/types/gas';
-import { type MeteorologyGasSuggestions, getCachedGasSuggestions, useMeteorologySuggestions } from '@/__swaps__/utils/meteorology';
+
 import {
+  getCustomGasSettings,
+  useCustomGasSettings,
   type EIP1159GasSettings,
   type GasSettings,
   type LegacyGasSettings,
-  getCustomGasSettings,
-  useCustomGasSettings,
 } from './useCustomGas';
-import { type NotifyOnChangeProps } from '@tanstack/react-query';
 
 type CustomGasType = { custom: GasSettings | undefined };
 type GasSpeedsObject<T> = { fast: T; normal: T; urgent: T };

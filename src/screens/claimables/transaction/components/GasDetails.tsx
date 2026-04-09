@@ -1,8 +1,11 @@
-import { Box, Inline, Text } from '@/design-system';
 import React, { useEffect } from 'react';
-import * as i18n from '@/languages';
+
 import Animated, { useAnimatedStyle, useSharedValue, withTiming } from 'react-native-reanimated';
+
+import { Box, Inline, Text } from '@/design-system';
+import * as i18n from '@/languages';
 import { useBackendNetworksStore } from '@/state/backendNetworks/backendNetworks';
+
 import { useTransactionClaimableContext } from '../context/TransactionClaimableContext';
 
 export function GasDetails() {

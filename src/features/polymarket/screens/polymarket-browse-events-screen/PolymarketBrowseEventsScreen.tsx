@@ -1,18 +1,20 @@
 import { memo } from 'react';
-import { type NativeScrollEvent, type NativeSyntheticEvent, StyleSheet, View } from 'react-native';
+import { StyleSheet, View, type NativeScrollEvent, type NativeSyntheticEvent } from 'react-native';
+
 import { useSharedValue } from 'react-native-reanimated';
+
 import { ScrollHeaderFade } from '@/components/scroll-header-fade/ScrollHeaderFade';
 import { useScrollFadeHandler } from '@/components/scroll-header-fade/useScrollFadeHandler';
 import { useColorMode } from '@/design-system';
-import { CATEGORIES, POLYMARKET_BACKGROUND_DARK, POLYMARKET_BACKGROUND_LIGHT } from '@/features/polymarket/constants';
 import { PolymarketEventsListBase } from '@/features/polymarket/components/polymarket-events-list/PolymarketEventsListBase';
+import { CATEGORIES, POLYMARKET_BACKGROUND_DARK, POLYMARKET_BACKGROUND_LIGHT } from '@/features/polymarket/constants';
 import { PolymarketEventCategorySelector } from '@/features/polymarket/screens/polymarket-browse-events-screen/PolymarketEventCategorySelector';
-import { PolymarketSportsEventsScreen } from '@/features/polymarket/screens/polymarket-sports-events-screen/PolymarketSportsEventsScreen';
 import { usePolymarketContext } from '@/features/polymarket/screens/polymarket-navigator/PolymarketContext';
-import { usePolymarketCategoryStore } from '@/features/polymarket/stores/usePolymarketCategoryStore';
-import { polymarketEventsActions, usePolymarketEventsStore } from '@/features/polymarket/stores/polymarketEventsStore';
-import { useListen } from '@/state/internal/hooks/useListen';
 import { LEAGUE_SELECTOR_HEIGHT } from '@/features/polymarket/screens/polymarket-sports-events-screen/PolymarketLeagueSelector';
+import { PolymarketSportsEventsScreen } from '@/features/polymarket/screens/polymarket-sports-events-screen/PolymarketSportsEventsScreen';
+import { polymarketEventsActions, usePolymarketEventsStore } from '@/features/polymarket/stores/polymarketEventsStore';
+import { usePolymarketCategoryStore } from '@/features/polymarket/stores/usePolymarketCategoryStore';
+import { useListen } from '@/state/internal/hooks/useListen';
 
 export const PolymarketBrowseEventsScreen = memo(function PolymarketBrowseEventsScreen() {
   return (

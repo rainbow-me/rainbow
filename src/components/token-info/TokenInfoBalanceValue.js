@@ -1,11 +1,13 @@
 import React from 'react';
+import { View } from 'react-native';
+
+import styled from '@/framework/ui/styled-thing';
+import useColorForAsset from '@/hooks/useColorForAsset';
+import magicMemo from '@/utils/magicMemo';
+
+import RainbowCoinIcon from '../coin-icon/RainbowCoinIcon';
 import { RowWithMargins } from '../layout';
 import TokenInfoValue from './TokenInfoValue';
-import useColorForAsset from '@/hooks/useColorForAsset';
-import styled from '@/framework/ui/styled-thing';
-import magicMemo from '@/utils/magicMemo';
-import RainbowCoinIcon from '../coin-icon/RainbowCoinIcon';
-import { View } from 'react-native';
 
 const InfoValue = styled(TokenInfoValue)(android ? { height: 37.7 } : {});
 

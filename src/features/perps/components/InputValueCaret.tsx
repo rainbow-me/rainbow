@@ -1,16 +1,18 @@
-import { caretConfig } from '@/__swaps__/screens/Swap/constants';
-import { Box } from '@/design-system';
 import React from 'react';
 import { StyleSheet } from 'react-native';
+
 import Animated, {
   Easing,
-  type SharedValue,
   useAnimatedStyle,
   useDerivedValue,
   withRepeat,
   withSequence,
   withTiming,
+  type SharedValue,
 } from 'react-native-reanimated';
+
+import { caretConfig } from '@/__swaps__/screens/Swap/constants';
+import { Box } from '@/design-system';
 
 export function InputValueCaret({
   disabled,

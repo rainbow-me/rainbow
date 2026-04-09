@@ -1,11 +1,12 @@
 import { debounce } from 'lodash';
 import { createMMKV } from 'react-native-mmkv';
-import { type PersistStorage, type StorageValue, persist, subscribeWithSelector } from 'zustand/middleware';
+import { persist, subscribeWithSelector, type PersistStorage, type StorageValue } from 'zustand/middleware';
 import { createWithEqualityFn } from 'zustand/traditional';
+
 import { RAINBOW_HOME } from '@/components/DappBrowser/constants';
 import { type TabData, type TabId } from '@/components/DappBrowser/types';
 import { normalizeUrlWorklet } from '@/components/DappBrowser/utils';
-import { RainbowError, logger } from '@/logger';
+import { logger, RainbowError } from '@/logger';
 import { time } from '@/utils/time';
 import { generateUniqueId } from '@/worklets/strings';
 

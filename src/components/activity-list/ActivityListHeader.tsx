@@ -1,5 +1,6 @@
 import React from 'react';
 import { StyleSheet, View } from 'react-native';
+
 import { Text } from '@/design-system';
 
 const sx = StyleSheet.create({

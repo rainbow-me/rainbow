@@ -1,21 +1,23 @@
-import { ethers } from 'ethers';
 import { useCallback } from 'react';
 import { Alert } from 'react-native';
+
+import { ethers } from 'ethers';
 import { type SharedValue } from 'react-native-reanimated';
 import { triggerHaptics } from 'react-native-turbo-haptics';
-import { crosschainQuoteTargetsRecipient, isCrosschainQuote } from '@/__swaps__/utils/quotes';
+
 import { type GasSettings } from '@/__swaps__/screens/Swap/hooks/useCustomGas';
 import { type ParsedAsset } from '@/__swaps__/types/assets';
+import { crosschainQuoteTargetsRecipient, isCrosschainQuote } from '@/__swaps__/utils/quotes';
 import type { LegacyTransactionGasParamAmounts, TransactionGasParamAmounts } from '@/entities/gas';
+import { sumWorklet } from '@/framework/core/safeMath';
 import { estimateGasWithPadding, getProvider, toHex } from '@/handlers/web3';
 import { logger, RainbowError } from '@/logger';
 import { loadWallet } from '@/model/wallet';
 import Navigation from '@/navigation/Navigation';
 import Routes from '@/navigation/routesNames';
 import { walletExecuteRap } from '@/raps/execute';
-import { type RapSwapActionParameters, rapTypes } from '@/raps/references';
+import { rapTypes, type RapSwapActionParameters } from '@/raps/references';
 import erc20ABI from '@/references/erc20-abi.json';
-import { sumWorklet } from '@/framework/core/safeMath';
 import { useBackendNetworksStore } from '@/state/backendNetworks/backendNetworks';
 import { type ChainId } from '@/state/backendNetworks/types';
 import { type StoreActions } from '@/state/internal/utils/createStoreActions';
@@ -23,21 +25,22 @@ import { getNextNonce } from '@/state/nonces';
 import { executeFn, Screens, startTimeToSignTracking, TimeToSignOperation } from '@/state/performance/performance';
 import { useWalletsStore } from '@/state/wallets/walletsStore';
 import { isValidQuote } from '@/systems/funding/utils/quotes';
-import { time } from '@/utils/time';
 import { getUniqueId } from '@/utils/ethereumUtils';
+import { time } from '@/utils/time';
 import watchingAlert from '@/utils/watchingAlert';
 import { sanitizeAmount } from '@/worklets/strings';
+
 import { determineStrategy, type ExecutionStrategy } from '../execution/strategy';
 import {
   type AmountStoreType,
+  type DepositConfig,
   type DepositFailureMetadata,
   type DepositGasStoresType,
   type DepositMeteorologyActions,
   type DepositQuoteStoreType,
-  type DepositSuccessMetadata,
   type DepositStoreType,
+  type DepositSuccessMetadata,
   type DepositToken,
-  type DepositConfig,
 } from '../types';
 import { executeRefreshSchedule, type RefreshConfig } from '../utils/scheduleRefreshes';
 

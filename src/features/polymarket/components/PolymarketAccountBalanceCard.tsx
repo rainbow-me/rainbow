@@ -1,19 +1,20 @@
 import React, { memo } from 'react';
+import { View } from 'react-native';
+
+import ButtonPressAnimation from '@/components/animations/ButtonPressAnimation';
+import { ImgixImage } from '@/components/images';
 import { Box, Stack, Text, TextIcon, TextShadow, useColorMode } from '@/design-system';
 import { USDC_ICON_URL } from '@/features/perps/constants';
-import ButtonPressAnimation from '@/components/animations/ButtonPressAnimation';
-import Navigation from '@/navigation/Navigation';
-import Routes from '@/navigation/routesNames';
-import { View } from 'react-native';
-import { ImgixImage } from '@/components/images';
-import { THICKER_BORDER_WIDTH } from '@/styles/constants';
-import { useUserAssetsStore } from '@/state/assets/userAssets';
 import { formatCurrency } from '@/features/perps/utils/formatCurrency';
-import * as i18n from '@/languages';
-import { getIsReadOnlyWallet } from '@/state/wallets/walletsStore';
+import { PolymarketButton } from '@/features/polymarket/components/PolymarketButton';
 import { usePolymarketBalanceStore } from '@/features/polymarket/stores/polymarketBalanceStore';
 import { opacity } from '@/framework/ui/utils/opacity';
-import { PolymarketButton } from '@/features/polymarket/components/PolymarketButton';
+import * as i18n from '@/languages';
+import Navigation from '@/navigation/Navigation';
+import Routes from '@/navigation/routesNames';
+import { useUserAssetsStore } from '@/state/assets/userAssets';
+import { getIsReadOnlyWallet } from '@/state/wallets/walletsStore';
+import { THICKER_BORDER_WIDTH } from '@/styles/constants';
 
 export const PolymarketAccountBalanceCard = memo(function PolymarketAccountBalanceCard({ accentColor }: { accentColor: string }) {
   const { isDarkMode } = useColorMode();

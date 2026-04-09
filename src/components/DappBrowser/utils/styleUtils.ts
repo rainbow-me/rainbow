@@ -1,6 +1,8 @@
 /* eslint-disable no-nested-ternary */
 import { interpolate, withSpring } from 'react-native-reanimated';
+
 import { SPRING_CONFIGS } from '@/components/animations/animationConfigs';
+
 import {
   COLLAPSED_WEBVIEW_HEIGHT_UNSCALED,
   MULTI_TAB_SCALE,

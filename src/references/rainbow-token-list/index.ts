@@ -1,12 +1,15 @@
 import { EventEmitter } from 'events';
+
 import { keyBy } from 'lodash';
 import { createMMKV } from 'react-native-mmkv';
+
+import { type RainbowToken } from '@/entities/tokens';
+import { logger, RainbowError } from '@/logger';
+import { STORAGE_IDS } from '@/model/mmkv';
+import { ChainId, Network } from '@/state/backendNetworks/types';
+
 import { ETH_ADDRESS } from '../constants';
 import RAINBOW_TOKEN_LIST_DATA from './rainbow-token-list.json';
-import { type RainbowToken } from '@/entities/tokens';
-import { STORAGE_IDS } from '@/model/mmkv';
-import { logger, RainbowError } from '@/logger';
-import { Network, ChainId } from '@/state/backendNetworks/types';
 
 export const rainbowListStorage = createMMKV({
   id: STORAGE_IDS.RAINBOW_TOKEN_LIST,

@@ -1,7 +1,8 @@
 import type { Address } from 'viem';
+import * as chain from 'viem/chains';
+
 import type { AddressOrEth } from '@/__swaps__/types/assets';
 import { IS_ANDROID } from '@/env';
-import * as chain from 'viem/chains';
 
 const ANVIL_CHAIN_ID = 1337;
 const ANVIL_OP_CHAIN_ID = 1338;

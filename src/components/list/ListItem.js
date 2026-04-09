@@ -1,10 +1,13 @@
-import { isString } from 'lodash';
 import React, { useCallback } from 'react';
+
+import { isString } from 'lodash';
+
+import { padding, position } from '@/styles';
+
 import ButtonPressAnimation from '../animations/ButtonPressAnimation';
 import { Icon } from '../icons';
 import { Centered, Row, RowWithMargins } from '../layout';
 import { TruncatedText } from '../text';
-import { padding, position } from '@/styles';
 
 const ListItemHeight = 56;
 

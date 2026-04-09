@@ -1,15 +1,17 @@
 import { memo } from 'react';
-import { Text, useColorMode } from '@/design-system';
-import { getTierVisuals } from '@/features/rnbw-membership/constants';
-import { GradientBorderView } from '@/components/gradient-border/GradientBorderView';
-import { InnerShadow } from '@/features/polymarket/components/InnerShadow';
-import { LinearGradient } from 'expo-linear-gradient';
-import { opacity } from '@/framework/ui/utils/opacity';
-import { getValueForColorMode, globalColors } from '@/design-system/color/palettes';
 import { StyleSheet, View } from 'react-native';
-import type { Tier as TierType } from '@/features/rnbw-membership/types';
+
+import { LinearGradient } from 'expo-linear-gradient';
+
+import { GradientBorderView } from '@/components/gradient-border/GradientBorderView';
 import GradientText from '@/components/text/GradientText';
+import { Text, useColorMode } from '@/design-system';
+import { getValueForColorMode, globalColors } from '@/design-system/color/palettes';
 import type { TextSize, TextWeight } from '@/design-system/components/Text/Text';
+import { InnerShadow } from '@/features/polymarket/components/InnerShadow';
+import { getTierVisuals } from '@/features/rnbw-membership/constants';
+import type { Tier as TierType } from '@/features/rnbw-membership/types';
+import { opacity } from '@/framework/ui/utils/opacity';
 
 const BORDER_GRADIENT_START = { x: 0, y: 1 };
 const BORDER_GRADIENT_END = { x: 0, y: 0 };

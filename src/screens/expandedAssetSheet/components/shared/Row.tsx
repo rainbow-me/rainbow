@@ -1,9 +1,12 @@
 import React from 'react';
-import Animated, { type SharedValue, useAnimatedStyle } from 'react-native-reanimated';
+
+import Animated, { useAnimatedStyle, type SharedValue } from 'react-native-reanimated';
+
 import { Box, useColorMode, useForegroundColor } from '@/design-system';
 import { opacity } from '@/framework/ui/utils/opacity';
-import { useExpandedAssetSheetContext } from '../../context/ExpandedAssetSheetContext';
 import { THICK_BORDER_WIDTH } from '@/styles/constants';
+
+import { useExpandedAssetSheetContext } from '../../context/ExpandedAssetSheetContext';
 
 interface RowProps {
   children: React.ReactNode;

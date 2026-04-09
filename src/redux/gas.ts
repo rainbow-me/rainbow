@@ -1,9 +1,8 @@
 import { Mutex } from 'async-mutex';
 import type BigNumber from 'bignumber.js';
 import { isEmpty } from 'lodash';
-import { type AppDispatch, type AppGetState } from './store';
+
 import { analytics } from '@/analytics';
-import { logger, RainbowError } from '@/logger';
 import type {
   BlocksToConfirmation,
   CurrentBlockParams,
@@ -21,9 +20,10 @@ import type {
   SelectedGasFee,
 } from '@/entities/gas';
 import type { NativeCurrencyKey } from '@/entities/nativeCurrencyTypes';
-
 import { rainbowMeteorologyGetData } from '@/handlers/gasFees';
 import { getProvider } from '@/handlers/web3';
+import { addBuffer } from '@/helpers/utilities';
+import { logger, RainbowError } from '@/logger';
 import {
   defaultGasParamsFormat,
   gweiToWei,
@@ -36,11 +36,12 @@ import {
   weiToGwei,
 } from '@/parsers/gas';
 import ethUnits from '@/references/ethereum-units.json';
+import { useBackendNetworksStore } from '@/state/backendNetworks/backendNetworks';
+import { ChainId } from '@/state/backendNetworks/types';
 import ethereumUtils from '@/utils/ethereumUtils';
 import gasUtils from '@/utils/gas';
-import { ChainId } from '@/state/backendNetworks/types';
-import { useBackendNetworksStore } from '@/state/backendNetworks/backendNetworks';
-import { addBuffer } from '@/helpers/utilities';
+
+import { type AppDispatch, type AppGetState } from './store';
 
 const { CUSTOM, NORMAL, URGENT } = gasUtils;
 

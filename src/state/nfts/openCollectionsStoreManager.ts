@@ -1,5 +1,7 @@
 import { type Address } from 'viem';
+
 import { createRainbowStore } from '@/state/internal/createRainbowStore';
+
 import { type OpenCollectionsStoreType } from './types';
 
 interface OpenCollectionsStoreManagerState {

@@ -1,6 +1,8 @@
 import { useCallback, useContext, useEffect } from 'react';
-import useTimeout from './useTimeout';
+
 import { RainbowContext } from '@/helpers/RainbowContext';
+
+import useTimeout from './useTimeout';
 
 export default function useInvalidPaste() {
   const [startTimeout, stopTimeout] = useTimeout();

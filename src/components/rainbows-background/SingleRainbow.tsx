@@ -1,4 +1,5 @@
 import React from 'react';
+
 import Animated, {
   interpolate,
   useAnimatedReaction,
@@ -8,9 +9,11 @@ import Animated, {
   withSpring,
   type SharedValue,
 } from 'react-native-reanimated';
-import { type RainbowAnimationDetails } from './types';
+
 import styled from '@/framework/ui/styled-thing';
+
 import { ImgixImage } from '../images';
+import { type RainbowAnimationDetails } from './types';
 
 const INITIAL_SIZE = 375;
 const BASE_DELAY = 69;

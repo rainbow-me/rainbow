@@ -1,12 +1,15 @@
 import React, { useLayoutEffect, useState } from 'react';
+
 import Animated, { Easing, interpolate, runOnJS, useAnimatedStyle, useSharedValue, withTiming } from 'react-native-reanimated';
+
+import styled from '@/framework/ui/styled-thing';
+import { opacity } from '@/framework/ui/utils/opacity';
+import { position } from '@/styles';
 import magicMemo from '@/utils/magicMemo';
+
 import ButtonPressAnimation from '../animations/ButtonPressAnimation';
 import { Centered } from '../layout';
 import { Text } from '../text';
-import styled from '@/framework/ui/styled-thing';
-import { position } from '@/styles';
-import { opacity } from '@/framework/ui/utils/opacity';
 
 const START_SCALE = 0.5;
 const FINISH_SCALE = 1;

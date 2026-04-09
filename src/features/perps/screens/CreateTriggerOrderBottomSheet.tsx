@@ -1,51 +1,52 @@
 import React, { memo, useCallback, useRef } from 'react';
 import { Alert, StyleSheet, View } from 'react-native';
-import { AnimatedText, Box, Separator, Text, useColorMode, useForegroundColor } from '@/design-system';
-import { PerpsAccentColorContextProvider, usePerpsAccentColorContext } from '@/features/perps/context/PerpsAccentColorContext';
+
+import { KeyboardProvider, KeyboardStickyView } from 'react-native-keyboard-controller';
 import { useAnimatedStyle, useDerivedValue, useSharedValue } from 'react-native-reanimated';
+
+import { ETH_COLOR_DARK } from '@/__swaps__/screens/Swap/constants';
 import { addCommasToNumber } from '@/__swaps__/utils/swaps';
-import { opacity } from '@/framework/ui/utils/opacity';
+import { analytics } from '@/analytics';
 import { CurrencyInput, type CurrencyInputRef } from '@/components/CurrencyInput/CurrencyInput';
 import { TapToDismiss } from '@/components/DappBrowser/control-panel/ControlPanel';
-import { Panel } from '@/components/SmoothPager/ListPanel';
-import { DEVICE_HEIGHT } from '@/utils/deviceUtils';
-import safeAreaInsetValues from '@/utils/safeAreaInsetValues';
-import { KeyboardProvider, KeyboardStickyView } from 'react-native-keyboard-controller';
-import { type PerpMarket, PerpPositionSide, type PerpsPosition, TriggerOrderType, TriggerOrderSource } from '@/features/perps/types';
-import { useNavigation, useRoute } from '@/navigation/Navigation';
-import type Routes from '@/navigation/routesNames';
 import { useLiveTokenSharedValue } from '@/components/live-token-text/LiveTokenText';
+import { SheetHandleFixedToTop } from '@/components/sheet';
+import { Panel } from '@/components/SmoothPager/ListPanel';
+import { AnimatedText, Box, Separator, Text, useColorMode, useForegroundColor } from '@/design-system';
+import { PerpBottomSheetHeader } from '@/features/perps/components/PerpBottomSheetHeader';
+import { PerpsSheetActionButtons } from '@/features/perps/components/PerpsSheetActionButtons';
+import { PerpsAccentColorContextProvider, usePerpsAccentColorContext } from '@/features/perps/context/PerpsAccentColorContext';
+import { hlNewPositionStoreActions, useHlNewPositionStore } from '@/features/perps/stores/hlNewPositionStore';
+import { hyperliquidAccountActions, useHyperliquidAccountStore } from '@/features/perps/stores/hyperliquidAccountStore';
+import { useHyperliquidMarketsStore } from '@/features/perps/stores/hyperliquidMarketsStore';
+import { PerpPositionSide, TriggerOrderSource, TriggerOrderType, type PerpMarket, type PerpsPosition } from '@/features/perps/types';
 import { getHyperliquidTokenId, parseHyperliquidErrorMessage } from '@/features/perps/utils';
-import { ETH_COLOR_DARK } from '@/__swaps__/screens/Swap/constants';
+import { calculateIsolatedLiquidationPriceFromMargin } from '@/features/perps/utils/calculateLiquidationPrice';
 import { estimatePnl } from '@/features/perps/utils/estimatePnl';
+import { formatCurrency } from '@/features/perps/utils/formatCurrency';
+import { formatPerpAssetPrice } from '@/features/perps/utils/formatPerpsAssetPrice';
+import { formatTriggerOrderInput } from '@/features/perps/utils/formatTriggerOrderInput';
 import {
   getPercentageDifferenceWorklet,
+  greaterThanOrEqualToWorklet,
   greaterThanWorklet,
   lessThanOrEqualToWorklet,
-  greaterThanOrEqualToWorklet,
   mulWorklet,
   subWorklet,
 } from '@/framework/core/safeMath';
-import { hlNewPositionStoreActions, useHlNewPositionStore } from '@/features/perps/stores/hlNewPositionStore';
-import { formatCurrency } from '@/features/perps/utils/formatCurrency';
-import { PerpBottomSheetHeader } from '@/features/perps/components/PerpBottomSheetHeader';
-import { SheetHandleFixedToTop } from '@/components/sheet';
-import { useHyperliquidMarketsStore } from '@/features/perps/stores/hyperliquidMarketsStore';
-import { hyperliquidAccountActions, useHyperliquidAccountStore } from '@/features/perps/stores/hyperliquidAccountStore';
-import { formatTriggerOrderInput } from '@/features/perps/utils/formatTriggerOrderInput';
-import { useSharedValueState } from '@/hooks/reanimated/useSharedValueState';
-import { colors } from '@/styles';
+import { opacity } from '@/framework/ui/utils/opacity';
 import { abbreviateNumberWorklet } from '@/helpers/utilities';
-import { calculateIsolatedLiquidationPriceFromMargin } from '@/features/perps/utils/calculateLiquidationPrice';
-import { formatPerpAssetPrice } from '@/features/perps/utils/formatPerpsAssetPrice';
-import { logger, RainbowError } from '@/logger';
-import * as i18n from '@/languages';
-import { analytics } from '@/analytics';
-import { sanitizeAmount } from '@/worklets/strings';
+import { useSharedValueState } from '@/hooks/reanimated/useSharedValueState';
 import { useStableValue } from '@/hooks/useStableValue';
-import { PerpsSheetActionButtons } from '@/features/perps/components/PerpsSheetActionButtons';
-
+import * as i18n from '@/languages';
+import { logger, RainbowError } from '@/logger';
+import { useNavigation, useRoute } from '@/navigation/Navigation';
+import type Routes from '@/navigation/routesNames';
+import { colors } from '@/styles';
 import { THICK_BORDER_WIDTH } from '@/styles/constants';
+import { DEVICE_HEIGHT } from '@/utils/deviceUtils';
+import safeAreaInsetValues from '@/utils/safeAreaInsetValues';
+import { sanitizeAmount } from '@/worklets/strings';
 
 // Translations for worklets
 const translations = {

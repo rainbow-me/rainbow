@@ -1,12 +1,14 @@
-import * as i18n from '@/languages';
 import React, { useCallback, useMemo } from 'react';
 import { Share } from 'react-native';
+
+import styled from '@/framework/ui/styled-thing';
+import * as i18n from '@/languages';
+import ShadowStack from '@/react-native-shadow-stack';
+
 import { useTheme } from '../../theme/ThemeContext';
 import ButtonPressAnimation from '../animations/ButtonPressAnimation';
 import { Centered, InnerBorder, Row } from '../layout';
 import { Text } from '../text';
-import styled from '@/framework/ui/styled-thing';
-import ShadowStack from '@/react-native-shadow-stack';
 
 const Label = styled(Text).attrs(({ theme: { colors } }) => ({
   align: 'center',

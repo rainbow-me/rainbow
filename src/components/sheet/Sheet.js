@@ -1,14 +1,16 @@
-import PropTypes from 'prop-types';
 import React from 'react';
-import { useSafeAreaInsets } from 'react-native-safe-area-context';
-import { useNavigation } from '../../navigation/Navigation';
-import { useTheme } from '../../theme/ThemeContext';
 
-import TouchableBackdrop from '../TouchableBackdrop';
-import { Centered, Column } from '../layout';
-import SheetHandle from './SheetHandle';
+import PropTypes from 'prop-types';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
+
 import useDimensions from '@/hooks/useDimensions';
 import { borders } from '@/styles';
+
+import { useNavigation } from '../../navigation/Navigation';
+import { useTheme } from '../../theme/ThemeContext';
+import { Centered, Column } from '../layout';
+import TouchableBackdrop from '../TouchableBackdrop';
+import SheetHandle from './SheetHandle';
 
 const Sheet = ({ borderRadius = 39, children, hideHandle = false, noInsets = false, paddingBottom = 7, paddingTop = 6 }) => {
   const { width } = useDimensions();

@@ -1,25 +1,28 @@
-import ConditionalWrap from 'conditional-wrap';
 import React, { memo, useCallback, useMemo } from 'react';
 import { StyleSheet, type TextInput } from 'react-native';
+
+import ConditionalWrap from 'conditional-wrap';
 import { BlurView } from 'react-native-blur-view';
-import { type AnimatedRef, runOnJS, runOnUI, useAnimatedStyle, useDerivedValue } from 'react-native-reanimated';
+import { runOnJS, runOnUI, useAnimatedStyle, useDerivedValue, type AnimatedRef } from 'react-native-reanimated';
+
+import { GestureHandlerButton } from '@/components/buttons/GestureHandlerButton';
 import ContextMenuButton from '@/components/native-context-menu/contextMenu';
 import { AnimatedText, Bleed, Box, globalColors, useColorMode, useForegroundColor } from '@/design-system';
 import { IS_IOS } from '@/env';
+import { showActionSheetWithOptions } from '@/framework/ui/utils/actionsheet';
+import { opacity } from '@/framework/ui/utils/opacity';
 import { useSharedValueState } from '@/hooks/reanimated/useSharedValueState';
 import * as i18n from '@/languages';
 import { useBrowserStore } from '@/state/browser/browserStore';
+import { THICK_BORDER_WIDTH } from '@/styles/constants';
 import position from '@/styles/position';
-import { GestureHandlerButton } from '@/components/buttons/GestureHandlerButton';
-import { opacity } from '@/framework/ui/utils/opacity';
-import { showActionSheetWithOptions } from '@/framework/ui/utils/actionsheet';
 import haptics from '@/utils/haptics';
+
 import { useBrowserContext } from '../BrowserContext';
 import { useBrowserWorkletsContext } from '../BrowserWorkletsContext';
-import { BrowserButtonShadows } from '../DappBrowserShadows';
 import { RAINBOW_HOME } from '../constants';
+import { BrowserButtonShadows } from '../DappBrowserShadows';
 import { useSearchContext } from '../search/SearchContext';
-import { THICK_BORDER_WIDTH } from '@/styles/constants';
 
 const TAB_BUTTON_SIZE = 44;
 

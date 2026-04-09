@@ -1,6 +1,7 @@
-import { type QueryConfigWithSelect, createQueryKey } from '@/react-query';
 import { useQuery } from '@tanstack/react-query';
+
 import { arcClient } from '@/graphql';
+import { createQueryKey, type QueryConfigWithSelect } from '@/react-query';
 
 export type FeaturedResultsVariables = Parameters<typeof arcClient.getFeaturedResults>['0'];
 export type FeaturedResults = Awaited<ReturnType<typeof arcClient.getFeaturedResults>>;

@@ -1,23 +1,23 @@
-import { CoinDividerContainerHeight } from '@/components/coin-divider';
-import { CoinRowHeight } from '@/components/coin-row';
-import { TokenFamilyHeaderHeight } from '@/components/token-family';
 import { AssetListHeaderHeight } from '@/components/asset-list/AssetListHeader';
 import { AssetListItemSkeletonHeight } from '@/components/asset-list/AssetListItemSkeleton';
+import { POLYMARKET_FEATURE_CARD_HEIGHT } from '@/components/asset-list/RecyclerAssetList2/cards/PolymarketFeatureCard';
+import { RNBW_FEATURE_CARD_HEIGHT } from '@/components/asset-list/RecyclerAssetList2/cards/RnbwFeatureCard';
+import { DISCOVER_MORE_BUTTON_HEIGHT } from '@/components/asset-list/RecyclerAssetList2/core/DiscoverMoreButton';
 import { CellType } from '@/components/asset-list/RecyclerAssetList2/core/ViewTypes';
 import { ProfileActionButtonsRowHeight } from '@/components/asset-list/RecyclerAssetList2/profile-header/ProfileActionButtonsRow';
 import {
   ProfileAvatarRowHeight,
   ProfileAvatarRowTopInset,
 } from '@/components/asset-list/RecyclerAssetList2/profile-header/ProfileAvatarRow';
-import { ProfileNameRowHeight } from '@/components/asset-list/RecyclerAssetList2/profile-header/ProfileNameRow';
 import { ProfileBalanceRowHeight } from '@/components/asset-list/RecyclerAssetList2/profile-header/ProfileBalanceRow';
+import { ProfileNameRowHeight } from '@/components/asset-list/RecyclerAssetList2/profile-header/ProfileNameRow';
 import { ProfileStickyHeaderHeight } from '@/components/asset-list/RecyclerAssetList2/profile-header/ProfileStickyHeader';
-import { RECEIVE_CARD_HEIGHT } from '@/components/cards/ReceiveAssetsCard';
 import { ETH_CARD_HEIGHT } from '@/components/cards/EthCard';
+import { RECEIVE_CARD_HEIGHT } from '@/components/cards/ReceiveAssetsCard';
 import { LEARN_CARD_HEIGHT } from '@/components/cards/RotatingLearnCard';
-import { POLYMARKET_FEATURE_CARD_HEIGHT } from '@/components/asset-list/RecyclerAssetList2/cards/PolymarketFeatureCard';
-import { RNBW_FEATURE_CARD_HEIGHT } from '@/components/asset-list/RecyclerAssetList2/cards/RnbwFeatureCard';
-import { DISCOVER_MORE_BUTTON_HEIGHT } from '@/components/asset-list/RecyclerAssetList2/core/DiscoverMoreButton';
+import { CoinDividerContainerHeight } from '@/components/coin-divider';
+import { CoinRowHeight } from '@/components/coin-row';
+import { TokenFamilyHeaderHeight } from '@/components/token-family';
 import { CardSize, UniqueTokenCardMargin } from '@/components/unique-token/CardSize';
 import { IS_IOS } from '@/env';
 import deviceUtils from '@/utils/deviceUtils';

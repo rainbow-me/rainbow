@@ -1,9 +1,44 @@
 import React from 'react';
+
+import { PerpsHeader } from '@/components/asset-list/RecyclerAssetList2/perps/PerpsHeader';
+import { PerpsPositionRow } from '@/components/asset-list/RecyclerAssetList2/perps/PerpsPositionRow';
+import { PolymarketHeader } from '@/components/asset-list/RecyclerAssetList2/polymarket/PolymarketHeader';
+import { PolymarketPositionRow } from '@/components/asset-list/RecyclerAssetList2/polymarket/PolymarketPositionRow';
+import { SectionAvailableBalance } from '@/components/asset-list/RecyclerAssetList2/SectionAvailableBalance';
+import { TokensHeader } from '@/components/asset-list/RecyclerAssetList2/tokens/TokensHeader';
+import { EthCard } from '@/components/cards/EthCard';
+import { ReceiveAssetsCard } from '@/components/cards/ReceiveAssetsCard';
+import { RotatingLearnCard } from '@/components/cards/RotatingLearnCard';
+import { navigateToPerps } from '@/features/perps/utils/navigateToPerps';
+import { usePolymarketNavigationStore } from '@/features/polymarket/screens/polymarket-navigator/PolymarketNavigator';
+import { navigateToPolymarket } from '@/features/polymarket/utils/navigateToPolymarket';
+import assertNever from '@/helpers/assertNever';
+import Routes from '@/navigation/routesNames';
+
 import { CoinDivider } from '../../../coin-divider';
 import AssetListItemSkeleton from '../../AssetListItemSkeleton';
+import { CardRowWrapper } from '../cards/CardRowWrapper';
+import { PolymarketFeatureCard } from '../cards/PolymarketFeatureCard';
+import { RnbwFeatureCard } from '../cards/RnbwFeatureCard';
+import { Claimable } from '../Claimable';
+import { ClaimablesListHeader } from '../ClaimablesListHeader';
 import FastBalanceCoinRow from '../FastComponents/FastBalanceCoinRow';
+import LegacyWrappedNFT from '../LegacyWrappedNFT';
+import LegacyWrappedTokenFamilyHeader from '../LegacyWrappedTokenFamilyHeader';
+import { NFTEmptyState } from '../NFTEmptyState';
+import NFTLoadingSkeleton from '../NFTLoadingSkeleton';
+import { ProfileActionButtonsRow } from '../profile-header/ProfileActionButtonsRow';
+import { ProfileAvatarRow } from '../profile-header/ProfileAvatarRow';
+import { ProfileBalanceRow } from '../profile-header/ProfileBalanceRow';
+import { ProfileNameRow } from '../profile-header/ProfileNameRow';
+import { ProfileRowWrapper } from '../profile-header/ProfileRowWrapper';
+import { ProfileStickyHeader } from '../profile-header/ProfileStickyHeader';
+import WrappedCollectiblesHeader from '../WrappedCollectiblesHeader';
 import WrappedNFT from '../WrappedNFT';
+import WrappedPosition from '../WrappedPosition';
+import WrappedPositionsListHeader from '../WrappedPositionsListHeader';
 import WrappedTokenFamilyHeader from '../WrappedTokenFamilyHeader';
+import { DiscoverMoreButton } from './DiscoverMoreButton';
 import { type ExtendedState } from './RawRecyclerList';
 import {
   CellType,
@@ -15,46 +50,13 @@ import {
   type LegacyNFTFamilyExtraData,
   type NFTExtraData,
   type NFTFamilyExtraData,
-  type PositionExtraData,
-  type PositionHeaderExtraData,
   type PerpsBalanceExtraData,
   type PerpsPositionExtraData,
   type PolymarketBalanceExtraData,
   type PolymarketPositionExtraData,
+  type PositionExtraData,
+  type PositionHeaderExtraData,
 } from './ViewTypes';
-import assertNever from '@/helpers/assertNever';
-import { ProfileRowWrapper } from '../profile-header/ProfileRowWrapper';
-import { ProfileStickyHeader } from '../profile-header/ProfileStickyHeader';
-import { ProfileActionButtonsRow } from '../profile-header/ProfileActionButtonsRow';
-import { ProfileAvatarRow } from '../profile-header/ProfileAvatarRow';
-import { ProfileBalanceRow } from '../profile-header/ProfileBalanceRow';
-import { ProfileNameRow } from '../profile-header/ProfileNameRow';
-import { EthCard } from '@/components/cards/EthCard';
-import { ReceiveAssetsCard } from '@/components/cards/ReceiveAssetsCard';
-import { CardRowWrapper } from '../cards/CardRowWrapper';
-import { DiscoverMoreButton } from './DiscoverMoreButton';
-import { RotatingLearnCard } from '@/components/cards/RotatingLearnCard';
-import { PolymarketFeatureCard } from '../cards/PolymarketFeatureCard';
-import { RnbwFeatureCard } from '../cards/RnbwFeatureCard';
-import WrappedPosition from '../WrappedPosition';
-import WrappedPositionsListHeader from '../WrappedPositionsListHeader';
-import WrappedCollectiblesHeader from '../WrappedCollectiblesHeader';
-import NFTLoadingSkeleton from '../NFTLoadingSkeleton';
-import { NFTEmptyState } from '../NFTEmptyState';
-import { ClaimablesListHeader } from '../ClaimablesListHeader';
-import { Claimable } from '../Claimable';
-import LegacyWrappedNFT from '../LegacyWrappedNFT';
-import LegacyWrappedTokenFamilyHeader from '../LegacyWrappedTokenFamilyHeader';
-import { PerpsHeader } from '@/components/asset-list/RecyclerAssetList2/perps/PerpsHeader';
-import { PerpsPositionRow } from '@/components/asset-list/RecyclerAssetList2/perps/PerpsPositionRow';
-import { TokensHeader } from '@/components/asset-list/RecyclerAssetList2/tokens/TokensHeader';
-import { SectionAvailableBalance } from '@/components/asset-list/RecyclerAssetList2/SectionAvailableBalance';
-import { navigateToPerps } from '@/features/perps/utils/navigateToPerps';
-import { navigateToPolymarket } from '@/features/polymarket/utils/navigateToPolymarket';
-import Routes from '@/navigation/routesNames';
-import { PolymarketHeader } from '@/components/asset-list/RecyclerAssetList2/polymarket/PolymarketHeader';
-import { PolymarketPositionRow } from '@/components/asset-list/RecyclerAssetList2/polymarket/PolymarketPositionRow';
-import { usePolymarketNavigationStore } from '@/features/polymarket/screens/polymarket-navigator/PolymarketNavigator';
 
 function rowRenderer(type: CellType, { uid }: { uid: string }, _: unknown, extendedState: ExtendedState) {
   const data = extendedState.additionalData[uid];

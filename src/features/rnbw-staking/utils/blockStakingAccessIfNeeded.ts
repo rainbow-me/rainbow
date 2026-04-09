@@ -1,4 +1,5 @@
 import { Alert } from 'react-native';
+
 import * as i18n from '@/languages';
 import { getIsHardwareWallet, getIsReadOnlyWallet } from '@/state/wallets/walletsStore';
 import watchingAlert from '@/utils/watchingAlert';

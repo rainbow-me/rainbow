@@ -1,10 +1,12 @@
-import * as i18n from '@/languages';
 import React, { useCallback } from 'react';
+
 import ButtonPressAnimation from '@/components/animations/ButtonPressAnimation';
 import Skeleton, { FakeText } from '@/components/skeleton/Skeleton';
 import { Box, Column, Columns, Inset, Stack, Text } from '@/design-system';
-import { REGISTRATION_MODES } from '../../utils/helpers';
 import useInterval from '@/hooks/useInterval';
+import * as i18n from '@/languages';
+
+import { REGISTRATION_MODES } from '../../utils/helpers';
 
 const MIN_LONG_PRESS_DURATION = 200;
 const LONG_PRESS_INTERVAL = 69;

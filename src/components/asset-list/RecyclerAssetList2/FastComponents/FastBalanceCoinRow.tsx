@@ -1,22 +1,24 @@
 import React, { useCallback, useRef } from 'react';
 import { StyleSheet, View } from 'react-native';
-import CoinIconIndicator from '@/components/coin-icon/CoinIconIndicator';
-import { Icon } from '@/components/icons';
+
 import ButtonPressAnimation from '@/components/animations/ButtonPressAnimation';
-import { type ExtendedState } from '../core/RawRecyclerList';
+import CoinIconIndicator from '@/components/coin-icon/CoinIconIndicator';
+import RainbowCoinIcon from '@/components/coin-icon/RainbowCoinIcon';
+import { Icon } from '@/components/icons';
+import { LiveTokenText } from '@/components/live-token-text/LiveTokenText';
 import { Text } from '@/design-system';
+import type { NativeCurrencyKey } from '@/entities/nativeCurrencyTypes';
+import { opacity } from '@/framework/ui/utils/opacity';
+import { toSignificantDigits } from '@/helpers/utilities';
 import useAccountAsset from '@/hooks/useAccountAsset';
 import { useCoinListFinishEditingOptions } from '@/hooks/useCoinListEditOptions';
-import Routes from '@/navigation/routesNames';
-import { borders, colors, padding, shadow } from '@/styles';
-import RainbowCoinIcon from '@/components/coin-icon/RainbowCoinIcon';
-import type { NativeCurrencyKey } from '@/entities/nativeCurrencyTypes';
-import { ChainId } from '@/state/backendNetworks/types';
 import Navigation from '@/navigation/Navigation';
-import { LiveTokenText } from '@/components/live-token-text/LiveTokenText';
-import { toSignificantDigits } from '@/helpers/utilities';
+import Routes from '@/navigation/routesNames';
+import { ChainId } from '@/state/backendNetworks/types';
 import { getLiquidityCappedBalance, type TokenData } from '@/state/liveTokens/liveTokensStore';
-import { opacity } from '@/framework/ui/utils/opacity';
+import { borders, colors, padding, shadow } from '@/styles';
+
+import { type ExtendedState } from '../core/RawRecyclerList';
 
 interface CoinCheckButtonProps {
   isHidden: boolean;

@@ -1,24 +1,27 @@
 import React from 'react';
+
 import { BlurView } from 'react-native-blur-view';
 import Animated, { interpolate, useAnimatedStyle } from 'react-native-reanimated';
 import { type HapticType } from 'react-native-turbo-haptics';
-import { Bleed, Box, type BoxProps, Text, globalColors, useColorMode, useForegroundColor } from '@/design-system';
+
+import { clamp } from '@/__swaps__/utils/swaps';
+import { GestureHandlerButton } from '@/components/buttons/GestureHandlerButton';
+import { Bleed, Box, globalColors, Text, useColorMode, useForegroundColor, type BoxProps } from '@/design-system';
 import { type TextColor } from '@/design-system/color/palettes';
 import { type TextWeight } from '@/design-system/components/Text/Text';
 import { type TextSize } from '@/design-system/typography/typeHierarchy';
 import { IS_IOS } from '@/env';
+import { opacity } from '@/framework/ui/utils/opacity';
 import * as i18n from '@/languages';
 import { TAB_BAR_HEIGHT } from '@/navigation/SwipeNavigator';
 import { position } from '@/styles';
-import { GestureHandlerButton } from '@/components/buttons/GestureHandlerButton';
-import { clamp } from '@/__swaps__/utils/swaps';
-import { opacity } from '@/framework/ui/utils/opacity';
+import { THICK_BORDER_WIDTH } from '@/styles/constants';
 import { DEVICE_WIDTH } from '@/utils/deviceUtils';
+
 import { useBrowserContext } from './BrowserContext';
 import { useBrowserWorkletsContext } from './BrowserWorkletsContext';
 import { BrowserButtonShadows } from './DappBrowserShadows';
 import { type BrowserWorkletsContextType } from './types';
-import { THICK_BORDER_WIDTH } from '@/styles/constants';
 
 export const TabViewToolbar = () => {
   const { extraWebViewHeight, tabViewProgress, tabViewVisible } = useBrowserContext();

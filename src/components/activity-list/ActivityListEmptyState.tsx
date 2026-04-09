@@ -1,14 +1,17 @@
-import * as i18n from '@/languages';
 import React from 'react';
 import { View } from 'react-native';
+
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
-import { useTheme } from '../../theme/ThemeContext';
-import deviceUtils from '@/utils/deviceUtils';
-import { Centered, Column } from '../layout';
+
 import { navbarHeight } from '@/components/navbar/Navbar';
-import { Text } from '../text';
 import styled from '@/framework/ui/styled-thing';
 import { opacity } from '@/framework/ui/utils/opacity';
+import * as i18n from '@/languages';
+import deviceUtils from '@/utils/deviceUtils';
+
+import { useTheme } from '../../theme/ThemeContext';
+import { Centered, Column } from '../layout';
+import { Text } from '../text';
 
 const Container = styled(Column)({
   alignSelf: 'center',

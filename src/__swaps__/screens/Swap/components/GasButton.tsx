@@ -1,28 +1,31 @@
+import React, { useCallback, useMemo, type PropsWithChildren, type ReactNode } from 'react';
+import { StyleSheet } from 'react-native';
+
+import Animated, { runOnUI, useAnimatedStyle } from 'react-native-reanimated';
+
 import { GasSpeed } from '@/__swaps__/types/gas';
-import { weiToGwei } from '@/parsers/gas';
 import { getCachedCurrentBaseFee, useMeteorologySuggestions } from '@/__swaps__/utils/meteorology';
-import { add, formatNumber } from '@/helpers/utilities';
 import { getColorValueForThemeWorklet } from '@/__swaps__/utils/swaps';
 import ButtonPressAnimation from '@/components/animations/ButtonPressAnimation';
+import { GestureHandlerButton } from '@/components/buttons/GestureHandlerButton';
 import { ContextMenu } from '@/components/context-menu';
 import { Centered } from '@/components/layout';
 import ContextMenuButton from '@/components/native-context-menu/contextMenu';
 import { Box, Inline, Text, TextIcon, useColorMode, useForegroundColor } from '@/design-system';
 import { IS_ANDROID } from '@/env';
+import { add, formatNumber } from '@/helpers/utilities';
 import * as i18n from '@/languages';
+import { weiToGwei } from '@/parsers/gas';
+import { ChainId } from '@/state/backendNetworks/types';
 import { swapsStore } from '@/state/swaps/swapsStore';
-import gasUtils from '@/utils/gas';
-import React, { type PropsWithChildren, type ReactNode, useCallback, useMemo } from 'react';
-import { StyleSheet } from 'react-native';
-import Animated, { runOnUI, useAnimatedStyle } from 'react-native-reanimated';
 import { THICK_BORDER_WIDTH } from '@/styles/constants';
-import { type GasSettings, useCustomGasSettings } from '../hooks/useCustomGas';
+import gasUtils from '@/utils/gas';
+
+import { useCustomGasSettings, type GasSettings } from '../hooks/useCustomGas';
 import { setSelectedGasSpeed, useSelectedGasSpeed } from '../hooks/useSelectedGas';
 import { NavigationSteps, useSwapContext } from '../providers/swap-provider';
 import { EstimatedSwapGasFee, EstimatedSwapGasFeeSlot } from './EstimatedSwapGasFee';
-import { GestureHandlerButton } from '@/components/buttons/GestureHandlerButton';
 import { UnmountOnAnimatedReaction } from './UnmountOnAnimatedReaction';
-import { ChainId } from '@/state/backendNetworks/types';
 
 const { SWAP_GAS_ICONS } = gasUtils;
 const GAS_BUTTON_HIT_SLOP = 16;

@@ -1,8 +1,10 @@
 import { memo } from 'react';
-import { Box } from '@/design-system';
-import { MembershipCard } from './MembershipCard';
-import { Skeleton } from '@/components/Skeleton';
 import type { DimensionValue } from 'react-native';
+
+import { Skeleton } from '@/components/Skeleton';
+import { Box } from '@/design-system';
+
+import { MembershipCard } from './MembershipCard';
 
 type MembershipCardSkeletonProps = {
   width?: DimensionValue;

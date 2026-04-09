@@ -1,3 +1,9 @@
+import React, { useEffect, useState } from 'react';
+import { Alert, Pressable, View } from 'react-native';
+
+import Clipboard from '@react-native-clipboard/clipboard';
+import { resetInternetCredentials } from 'react-native-keychain';
+
 import CopyTooltip from '@/components/copy-tooltip';
 import { Box, Text } from '@/design-system';
 import { WalletLoadingStates } from '@/helpers/walletLoadingStates';
@@ -11,10 +17,6 @@ import { rainbowStorage } from '@/state/internal/rainbowStorage';
 import { walletLoadingStore } from '@/state/walletLoading/walletLoading';
 import { updateWalletsBackedUpState } from '@/state/wallets/updateWalletsBackedUpState';
 import { clearWalletState } from '@/state/wallets/walletsStore';
-import Clipboard from '@react-native-clipboard/clipboard';
-import React, { useEffect, useState } from 'react';
-import { Alert, Pressable, View } from 'react-native';
-import { resetInternetCredentials } from 'react-native-keychain';
 
 export const DevTestBackupState = () => {
   const [exported, setExported] = useState('test123');

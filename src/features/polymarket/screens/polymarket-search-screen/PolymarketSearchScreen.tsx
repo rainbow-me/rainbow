@@ -1,9 +1,10 @@
 import React, { memo } from 'react';
-import { View, StyleSheet } from 'react-native';
+import { StyleSheet, View } from 'react-native';
+
 import { Text } from '@/design-system';
-import * as i18n from '@/languages';
-import { polymarketEventSearchActions, usePolymarketEventSearchStore } from '@/features/polymarket/stores/polymarketEventSearchStore';
 import { PolymarketEventsListBase } from '@/features/polymarket/components/polymarket-events-list/PolymarketEventsListBase';
+import { polymarketEventSearchActions, usePolymarketEventSearchStore } from '@/features/polymarket/stores/polymarketEventSearchStore';
+import * as i18n from '@/languages';
 
 export const PolymarketSearchScreen = memo(function PolymarketSearchScreen() {
   return (

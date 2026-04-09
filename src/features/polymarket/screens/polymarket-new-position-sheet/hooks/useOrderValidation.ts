@@ -1,7 +1,9 @@
-import { useSyncSharedValue } from '@/hooks/reanimated/useSyncSharedValue';
-import { greaterThanWorklet, lessThanWorklet } from '@/framework/core/safeMath';
 import { useState } from 'react';
+
 import { useDerivedValue, type SharedValue } from 'react-native-reanimated';
+
+import { greaterThanWorklet, lessThanWorklet } from '@/framework/core/safeMath';
+import { useSyncSharedValue } from '@/hooks/reanimated/useSyncSharedValue';
 
 type OrderValidation = {
   isAboveMax: boolean;

@@ -1,18 +1,21 @@
-import React, { useMemo, useEffect } from 'react';
-import * as i18n from '@/languages';
+import React, { useEffect, useMemo } from 'react';
+import { Share } from 'react-native';
+
+import Clipboard from '@react-native-clipboard/clipboard';
+
 import { DropdownMenu, type MenuConfig, type MenuItem } from '@/components/DropdownMenu';
 import { SheetActionButton } from '@/components/sheet';
-import useCoinListEditOptions, { useCoinListFinishEditingOptions } from '@/hooks/useCoinListEditOptions';
-import { useExpandedAssetSheetContext } from '../context/ExpandedAssetSheetContext';
-import { useUserAssetsStore } from '@/state/assets/userAssets';
-import ethereumUtils from '@/utils/ethereumUtils';
-import EditAction from '@/helpers/EditAction';
-import Clipboard from '@react-native-clipboard/clipboard';
-import { IS_ANDROID } from '@/env';
 import { Box, TextIcon } from '@/design-system';
+import { IS_ANDROID } from '@/env';
 import { buildTokenDeeplink } from '@/handlers/deeplinks';
-import { Share } from 'react-native';
+import EditAction from '@/helpers/EditAction';
+import useCoinListEditOptions, { useCoinListFinishEditingOptions } from '@/hooks/useCoinListEditOptions';
+import * as i18n from '@/languages';
+import { useUserAssetsStore } from '@/state/assets/userAssets';
 import { useBackendNetworksStore } from '@/state/backendNetworks/backendNetworks';
+import ethereumUtils from '@/utils/ethereumUtils';
+
+import { useExpandedAssetSheetContext } from '../context/ExpandedAssetSheetContext';
 
 // This is meant to for the context menu to be offset properly, but it does not work for the horizontal offset
 const HIT_SLOP = 16;

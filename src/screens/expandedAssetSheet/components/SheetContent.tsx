@@ -1,20 +1,23 @@
 import React, { memo } from 'react';
+
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
+
 import { AccentColorProvider, Box, ColorModeProvider, useColorMode } from '@/design-system';
+
 import {
-  DetailsSection,
+  AboutPlacement,
+  AboutSection,
   BalanceSection,
   BuySection,
-  MarketStatsSection,
   ChartSection,
   ClaimSection,
+  DetailsSection,
   HistorySection,
-  AboutSection,
-  AboutPlacement,
+  MarketStatsSection,
 } from './sections';
-import { SHEET_FOOTER_HEIGHT } from './SheetFooter';
-import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { Placement } from './sections/BuySection';
 import { NameAndLogoSection } from './sections/NameAndLogoSection';
+import { SHEET_FOOTER_HEIGHT } from './SheetFooter';
 
 export const SheetContent = memo(function SheetContent({ accentColor }: { accentColor: string }) {
   const { colorMode } = useColorMode();

@@ -1,11 +1,15 @@
 import React from 'react';
-import { type RouteProp, useRoute } from '@react-navigation/native';
-import { TransactionClaimableFlow } from './transaction/components/TransactionClaimableFlow';
-import { SponsoredClaimableFlow } from './sponsored/components/SponsoredClaimableFlow';
-import { type RootStackParamList } from '@/navigation/types';
-import { TransactionClaimableContextProvider } from './transaction/context/TransactionClaimableContext';
-import { SponsoredClaimableContextProvider } from './sponsored/context/SponsoredClaimableContext';
+
+import { useRoute, type RouteProp } from '@react-navigation/native';
+
 import type Routes from '@/navigation/routesNames';
+import { type RootStackParamList } from '@/navigation/types';
+
+import { SponsoredClaimableFlow } from './sponsored/components/SponsoredClaimableFlow';
+import { SponsoredClaimableContextProvider } from './sponsored/context/SponsoredClaimableContext';
+import { TransactionClaimableFlow } from './transaction/components/TransactionClaimableFlow';
+import { TransactionClaimableContextProvider } from './transaction/context/TransactionClaimableContext';
+
 export const ClaimClaimablePanel = () => {
   const {
     params: { claimable },

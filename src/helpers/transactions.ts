@@ -1,6 +1,8 @@
+import { useMemo } from 'react';
+
 import { AssetType } from '@/entities/assetTypes';
 import { type NativeCurrencyKey } from '@/entities/nativeCurrencyTypes';
-import { type RainbowTransaction, TransactionStatus } from '@/entities/transactions';
+import { TransactionStatus, type RainbowTransaction } from '@/entities/transactions';
 import {
   convertAmountAndPriceToNativeDisplay,
   convertAmountToBalanceDisplay,
@@ -11,7 +13,7 @@ import {
 } from '@/helpers/utilities';
 import * as i18n from '@/languages';
 import { useSuperTokenStore } from '@/screens/token-launcher/state/rainbowSuperTokenStore';
-import { useMemo } from 'react';
+
 import { safeSum } from '../utils/safeSum';
 
 export const calculateTimestampOfToday = () => {

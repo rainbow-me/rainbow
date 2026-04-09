@@ -1,13 +1,16 @@
 import React, { useEffect, useState } from 'react';
+
+import { useNetInfo } from '@react-native-community/netinfo';
+
+import { useColorMode } from '@/design-system';
+import { useBackendNetworksStore } from '@/state/backendNetworks/backendNetworks';
+import { ChainId } from '@/state/backendNetworks/types';
+import { useConnectedToAnvilStore } from '@/state/connectedToAnvil';
+import { useTheme } from '@/theme/ThemeContext';
+
 import { Icon } from '../icons';
 import { Nbsp, Text } from '../text';
 import Toast from './Toast';
-import { ChainId } from '@/state/backendNetworks/types';
-import { useConnectedToAnvilStore } from '@/state/connectedToAnvil';
-import { useBackendNetworksStore } from '@/state/backendNetworks/backendNetworks';
-import { useNetInfo } from '@react-native-community/netinfo';
-import { useTheme } from '@/theme/ThemeContext';
-import { useColorMode } from '@/design-system';
 
 const TestnetToast = ({ chainId }: { chainId: ChainId }) => {
   const { colors } = useTheme();

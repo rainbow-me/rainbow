@@ -1,77 +1,77 @@
+import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
+import { Image, InteractionManager, PixelRatio, ScrollView } from 'react-native';
+
+import { isAddress } from '@ethersproject/address';
+import { type Transaction } from '@ethersproject/transactions';
+import { useRoute, type RouteProp } from '@react-navigation/native';
+import { toChecksumAddress } from 'ethereumjs-util';
+import { AnimatePresence, MotiView } from 'moti';
+import { PanGestureHandler } from 'react-native-gesture-handler';
+import Animated from 'react-native-reanimated';
+import { type Address } from 'viem';
+
+import { analytics } from '@/analytics';
 import { ChainImage } from '@/components/coin-icon/ChainImage';
 import { ContactAvatar } from '@/components/contacts';
 import ImageAvatar from '@/components/contacts/ImageAvatar';
 import { GasSpeedButton } from '@/components/gas';
 import { SheetActionButton } from '@/components/sheet';
-import { Bleed, Box, Columns, Inline, Inset, Stack, Text, globalColors, useBackgroundColor, useForegroundColor } from '@/design-system';
-import { type NewTransaction, TransactionStatus } from '@/entities/transactions';
-import { type ParsedAddressAsset } from '@/entities/tokens';
-import { IS_IOS } from '@/env';
-import { TransactionScanResultType } from '@/graphql/__generated__/metadataPOST';
-import { getProvider } from '@/handlers/web3';
-import { delay } from '@/helpers/utilities';
-import useGas from '@/hooks/useGas';
-import * as i18n from '@/languages';
-import { RainbowError, logger } from '@/logger';
-import { type ChainId, type Network } from '@/state/backendNetworks/types';
-import { useNavigation } from '@/navigation/Navigation';
-import { useTheme } from '@/theme/ThemeContext';
-import deviceUtils from '@/utils/deviceUtils';
-import ethereumUtils from '@/utils/ethereumUtils';
 import {
-  PERSONAL_SIGN,
-  SEND_TRANSACTION,
-  SIGN_TYPED_DATA,
-  SIGN_TYPED_DATA_V4,
-  isMessageDisplayType,
-  isPersonalSign,
-} from '@/utils/signingMethods';
-import { type Transaction } from '@ethersproject/transactions';
-import { type RouteProp, useRoute } from '@react-navigation/native';
-import { AnimatePresence, MotiView } from 'moti';
-import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
-import { Image, InteractionManager, PixelRatio, ScrollView } from 'react-native';
-import { PanGestureHandler } from 'react-native-gesture-handler';
-import Animated from 'react-native-reanimated';
-
-import { loadWallet, sendTransaction, signPersonalMessage, signTransaction, signTypedDataMessage } from '@/model/wallet';
-
-import { analytics } from '@/analytics';
+  EXPANDED_CARD_BOTTOM_INSET,
+  GAS_BUTTON_SPACE,
+  infoForEventType,
+  motiTimingConfig,
+  SCREEN_BOTTOM_INSET,
+  SCREEN_FOR_REQUEST_SOURCE,
+} from '@/components/Transactions/constants';
 import { TransactionDetailsCard } from '@/components/Transactions/TransactionDetailsCard';
 import { VerifiedBadge } from '@/components/Transactions/TransactionIcons';
 import { TransactionMessageCard } from '@/components/Transactions/TransactionMessageCard';
 import { TransactionSimulationCard } from '@/components/Transactions/TransactionSimulationCard';
-import {
-  EXPANDED_CARD_BOTTOM_INSET,
-  GAS_BUTTON_SPACE,
-  SCREEN_BOTTOM_INSET,
-  SCREEN_FOR_REQUEST_SOURCE,
-  infoForEventType,
-  motiTimingConfig,
-} from '@/components/Transactions/constants';
+import { Bleed, Box, Columns, globalColors, Inline, Inset, Stack, Text, useBackgroundColor, useForegroundColor } from '@/design-system';
+import { type ParsedAddressAsset } from '@/entities/tokens';
+import { TransactionStatus, type NewTransaction } from '@/entities/transactions';
+import { IS_IOS } from '@/env';
+import { type RequestData } from '@/features/wallet-connect/types';
+import { opacity } from '@/framework/ui/utils/opacity';
+import { TransactionScanResultType } from '@/graphql/__generated__/metadataPOST';
 import { maybeSignUri } from '@/handlers/imgix';
+import { getProvider } from '@/handlers/web3';
 import { buildTransaction } from '@/helpers/buildTransaction';
+import { delay } from '@/helpers/utilities';
 import { useCalculateGasLimit } from '@/hooks/useCalculateGasLimit';
 import { useConfirmTransaction } from '@/hooks/useConfirmTransaction';
+import useGas from '@/hooks/useGas';
 import { useHasEnoughBalance } from '@/hooks/useHasEnoughBalance';
 import { useNonceForDisplay } from '@/hooks/useNonceForDisplay';
 import { useTransactionSubmission } from '@/hooks/useSubmitTransaction';
 import { useTransactionSetup } from '@/hooks/useTransactionSetup';
+import * as i18n from '@/languages';
+import { logger, RainbowError } from '@/logger';
+import { loadWallet, sendTransaction, signPersonalMessage, signTransaction, signTypedDataMessage } from '@/model/wallet';
+import { useNavigation } from '@/navigation/Navigation';
 import type Routes from '@/navigation/routesNames';
 import { type RootStackParamList } from '@/navigation/types';
 import { useSimulation } from '@/resources/transactions/transactionSimulation';
-import { useBackendNetworksStore } from '@/state/backendNetworks/backendNetworks';
-import { addNewTransaction } from '@/state/pendingTransactions';
-import { TimeToSignOperation, executeFn } from '@/state/performance/performance';
-import { getAccountProfileInfo, getWalletWithAccount, useAccountAddress, useWallets } from '@/state/wallets/walletsStore';
-import { RequestSource } from '@/utils/requestNavigationHandlers';
-import { type RequestData } from '@/features/wallet-connect/types';
-import { isAddress } from '@ethersproject/address';
-import { toChecksumAddress } from 'ethereumjs-util';
-import { switchWallet } from '@/state/wallets/switchWallet';
 import { userAssetsStoreManager } from '@/state/assets/userAssetsStoreManager';
-import { type Address } from 'viem';
-import { opacity } from '@/framework/ui/utils/opacity';
+import { useBackendNetworksStore } from '@/state/backendNetworks/backendNetworks';
+import { type ChainId, type Network } from '@/state/backendNetworks/types';
+import { addNewTransaction } from '@/state/pendingTransactions';
+import { executeFn, TimeToSignOperation } from '@/state/performance/performance';
+import { switchWallet } from '@/state/wallets/switchWallet';
+import { getAccountProfileInfo, getWalletWithAccount, useAccountAddress, useWallets } from '@/state/wallets/walletsStore';
+import { useTheme } from '@/theme/ThemeContext';
+import deviceUtils from '@/utils/deviceUtils';
+import ethereumUtils from '@/utils/ethereumUtils';
+import { RequestSource } from '@/utils/requestNavigationHandlers';
+import {
+  isMessageDisplayType,
+  isPersonalSign,
+  PERSONAL_SIGN,
+  SEND_TRANSACTION,
+  SIGN_TYPED_DATA,
+  SIGN_TYPED_DATA_V4,
+} from '@/utils/signingMethods';
 
 type SignTransactionSheetParams = {
   transactionDetails: RequestData;

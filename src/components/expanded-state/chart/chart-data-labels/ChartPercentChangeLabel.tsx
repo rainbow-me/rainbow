@@ -1,13 +1,15 @@
 import React, { memo } from 'react';
+
 import {
-  type DerivedValue,
-  type SharedValue,
   useAnimatedReaction,
   useAnimatedStyle,
   useDerivedValue,
   useSharedValue,
   withTiming,
+  type DerivedValue,
+  type SharedValue,
 } from 'react-native-reanimated';
+
 import { AnimatedNumber } from '@/components/animated-number/AnimatedNumber';
 import { TIMING_CONFIGS } from '@/components/animations/animationConfigs';
 import { AnimatedText, Box, useColorMode, useForegroundColor } from '@/design-system';

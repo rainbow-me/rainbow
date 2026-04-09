@@ -1,19 +1,21 @@
 import React, { memo } from 'react';
-import * as i18n from '@/languages';
 import { StyleSheet, View } from 'react-native';
-import { AnimatedText, Border, Box, useColorMode, useForegroundColor } from '@/design-system';
-import { PerpPositionSide } from '@/features/perps/types';
-import { hlNewPositionStoreActions, useHlNewPositionStore } from '@/features/perps/stores/hlNewPositionStore';
-import { useStoreSharedValue } from '@/state/internal/hooks/useStoreSharedValue';
-import { GradientBorderView } from '@/components/gradient-border/GradientBorderView';
-import { opacity } from '@/framework/ui/utils/opacity';
+
 import Animated, { interpolate, interpolateColor, useAnimatedStyle, useDerivedValue, withSpring } from 'react-native-reanimated';
-import { DEVICE_WIDTH } from '@/utils/deviceUtils';
+
 import { SPRING_CONFIGS } from '@/components/animations/animationConfigs';
-import { PERPS_BACKGROUND_DARK, PERPS_BACKGROUND_LIGHT, PERPS_COLORS } from '@/features/perps/constants';
 import { GestureHandlerButton } from '@/components/buttons/GestureHandlerButton';
-import { THICKER_BORDER_WIDTH } from '@/styles/constants';
+import { GradientBorderView } from '@/components/gradient-border/GradientBorderView';
+import { AnimatedText, Border, Box, useColorMode, useForegroundColor } from '@/design-system';
 import { fonts } from '@/design-system/typography/typography';
+import { PERPS_BACKGROUND_DARK, PERPS_BACKGROUND_LIGHT, PERPS_COLORS } from '@/features/perps/constants';
+import { hlNewPositionStoreActions, useHlNewPositionStore } from '@/features/perps/stores/hlNewPositionStore';
+import { PerpPositionSide } from '@/features/perps/types';
+import { opacity } from '@/framework/ui/utils/opacity';
+import * as i18n from '@/languages';
+import { useStoreSharedValue } from '@/state/internal/hooks/useStoreSharedValue';
+import { THICKER_BORDER_WIDTH } from '@/styles/constants';
+import { DEVICE_WIDTH } from '@/utils/deviceUtils';
 
 export const POSITION_SIDE_SELECTOR_HEIGHT = 36;
 export const POSITION_SIDE_SELECTOR_HEIGHT_WITH_PADDING = POSITION_SIDE_SELECTOR_HEIGHT + 8;

@@ -1,11 +1,14 @@
 import { useCallback } from 'react';
-import { getIsReadOnlyWallet, useAccountAddress } from '@/state/wallets/walletsStore';
+
 import { useMutation } from '@tanstack/react-query';
-import useFetchShowcaseTokens, { showcaseTokensQueryKey } from './useFetchShowcaseTokens';
+
 import { getPreference, PreferenceActionType, setPreference } from '@/model/preferences';
-import isLowerCaseMatch from '@/utils/isLowerCaseMatch';
 import { queryClient } from '@/react-query';
 import { useOpenCollectionsStore } from '@/state/nfts/openCollectionsStore';
+import { getIsReadOnlyWallet, useAccountAddress } from '@/state/wallets/walletsStore';
+import isLowerCaseMatch from '@/utils/isLowerCaseMatch';
+
+import useFetchShowcaseTokens, { showcaseTokensQueryKey } from './useFetchShowcaseTokens';
 
 export default function useShowcaseTokens(address?: string) {
   const accountAddress = useAccountAddress();

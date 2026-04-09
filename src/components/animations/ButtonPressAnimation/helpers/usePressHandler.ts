@@ -1,4 +1,4 @@
-import { type MutableRefObject, useCallback, useEffect, useRef } from 'react';
+import { useCallback, useEffect, useRef, type MutableRefObject } from 'react';
 import { type Handle } from 'react-native';
 
 interface UsePressHandlerParams {

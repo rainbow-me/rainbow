@@ -1,10 +1,13 @@
-import { AccentColorProvider, Box, Text, useAccentColor } from '@/design-system';
 import React from 'react';
-import ButtonPressAnimation from '../../animations/ButtonPressAnimation';
+
 import ConditionalWrap from 'conditional-wrap';
-import { colors } from '@/styles';
+
 import Skeleton, { FakeText } from '@/components/skeleton/Skeleton';
+import { AccentColorProvider, Box, Text, useAccentColor } from '@/design-system';
 import { opacity } from '@/framework/ui/utils/opacity';
+import { colors } from '@/styles';
+
+import ButtonPressAnimation from '../../animations/ButtonPressAnimation';
 
 interface TintButtonProps {
   children: string;

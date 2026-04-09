@@ -1,11 +1,13 @@
 import React, { useEffect, useMemo, useState } from 'react';
-import useOpenPositionCards from '@/hooks/useOpenPositionCards';
 import { Animated, Easing, Image } from 'react-native';
+
+import { Box, Inline, Text } from '@/design-system';
+import useOpenPositionCards from '@/hooks/useOpenPositionCards';
+import * as i18n from '@/languages';
+
 import CaretImageSource from '../../../assets/family-dropdown-arrow.png';
 import { useTheme } from '../../../theme/ThemeContext';
 import ButtonPressAnimation from '../../animations/ButtonPressAnimation';
-import { Box, Inline, Text } from '@/design-system';
-import * as i18n from '@/languages';
 
 const AnimatedImgixImage = Animated.createAnimatedComponent(Image);
 

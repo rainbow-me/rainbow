@@ -1,11 +1,13 @@
 import { formatsByName } from '@ensdomains/address-encoder';
 import { hash } from '@ensdomains/eth-ens-namehash';
+import { type Signer } from '@ethersproject/abstract-signer';
 import { BigNumber, type BigNumberish } from '@ethersproject/bignumber';
 import { Contract } from '@ethersproject/contracts';
-import { type Signer } from '@ethersproject/abstract-signer';
-import * as i18n from '@/languages';
 import { atom } from 'recoil';
+
 import { type InlineFieldProps } from '@/components/inputs/InlineField';
+import type { EthereumAddress } from '@/entities/wallet';
+import { getProvider, toHex } from '@/handlers/web3';
 import {
   add,
   addBuffer,
@@ -15,10 +17,13 @@ import {
   handleSignificantDecimals,
   multiply,
 } from '@/helpers/utilities';
-import type { ENSRegistrationRecords } from '../types/registration';
-import type { EthereumAddress } from '@/entities/wallet';
-import { getProvider, toHex } from '@/handlers/web3';
+import * as i18n from '@/languages';
 import { gweiToWei } from '@/parsers/gas';
+import { ChainId } from '@/state/backendNetworks/types';
+import { colors } from '@/styles';
+import { encodeContenthash, isValidContenthash } from '@/utils/contenthash';
+import labelhash from '@/utils/labelhash';
+
 import {
   ENSBaseRegistrarImplementationABI,
   ensBaseRegistrarImplementationAddress,
@@ -31,10 +36,7 @@ import {
   ENSReverseRegistrarABI,
   ensReverseRegistrarAddress,
 } from '../references';
-import { colors } from '@/styles';
-import labelhash from '@/utils/labelhash';
-import { encodeContenthash, isValidContenthash } from '@/utils/contenthash';
-import { ChainId } from '@/state/backendNetworks/types';
+import type { ENSRegistrationRecords } from '../types/registration';
 
 export const ENS_SECONDS_WAIT = 60;
 export const ENS_SECONDS_PADDING = 5;

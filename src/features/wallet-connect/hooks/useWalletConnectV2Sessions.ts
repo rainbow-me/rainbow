@@ -1,7 +1,8 @@
-import { useEffect, useCallback, useState } from 'react';
+import { useCallback, useEffect, useState } from 'react';
+
+import { events } from '@/handlers/appEvents';
 
 import { getAllActiveSessionsSync } from '../services/syncClient';
-import { events } from '@/handlers/appEvents';
 
 /**
  * Stateful hook that returns a list of all sessions, as well as a `reload`

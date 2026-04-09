@@ -1,15 +1,22 @@
+import React, { useCallback, useMemo, useState } from 'react';
+import { View } from 'react-native';
+
+import { useMutation } from '@tanstack/react-query';
+import Animated, { useAnimatedStyle, withTiming } from 'react-native-reanimated';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
+
 import { getGasSettingsBySpeed } from '@/__swaps__/screens/Swap/hooks/useSelectedGas';
 import { type ParsedAsset } from '@/__swaps__/types/assets';
 import { useMeteorologySuggestions } from '@/__swaps__/utils/meteorology';
-import { ListHeader, ListPanel, Panel, TapToDismiss, controlPanelStyles } from '@/components/SmoothPager/ListPanel';
-import { SmoothPager, usePagerNavigation } from '@/components/SmoothPager/SmoothPager';
-import ButtonPressAnimation from '@/components/animations/ButtonPressAnimation';
 import { AnimatedSpinner } from '@/components/animations/AnimatedSpinner';
 import { TIMING_CONFIGS } from '@/components/animations/animationConfigs';
+import ButtonPressAnimation from '@/components/animations/ButtonPressAnimation';
 import { ChainImage } from '@/components/coin-icon/ChainImage';
 import { ContactAvatar } from '@/components/contacts';
 import ImageAvatar from '@/components/contacts/ImageAvatar';
-import { Bleed, Box, Text, TextShadow, globalColors, useBackgroundColor, useColorMode } from '@/design-system';
+import { controlPanelStyles, ListHeader, ListPanel, Panel, TapToDismiss } from '@/components/SmoothPager/ListPanel';
+import { SmoothPager, usePagerNavigation } from '@/components/SmoothPager/SmoothPager';
+import { Bleed, Box, globalColors, Text, TextShadow, useBackgroundColor, useColorMode } from '@/design-system';
 import type { LegacyTransactionGasParamAmounts, TransactionGasParamAmounts } from '@/entities/gas';
 import { IS_IOS } from '@/env';
 import { PointsErrorType } from '@/graphql/__generated__/metadata';
@@ -18,9 +25,9 @@ import { convertAmountAndPriceToNativeDisplay, convertRawAmountToBalance } from 
 import { useAccountAccentColor } from '@/hooks/useAccountAccentColor';
 import useAccountSettings from '@/hooks/useAccountSettings';
 import * as i18n from '@/languages';
-import { RainbowError, logger } from '@/logger';
-import { loadWallet } from '@/model/wallet';
+import { logger, RainbowError } from '@/logger';
 import { useRemoteConfig } from '@/model/remoteConfig';
+import { loadWallet } from '@/model/wallet';
 import { useNavigation } from '@/navigation/Navigation';
 import { walletExecuteRap } from '@/raps/execute';
 import { type RapSwapActionParameters } from '@/raps/references';
@@ -29,17 +36,13 @@ import { NanoXDeviceAnimation } from '@/screens/hardware-wallets/components/Nano
 import { useBackendNetworksStore } from '@/state/backendNetworks/backendNetworks';
 import { ChainId } from '@/state/backendNetworks/types';
 import { useAccountAddress, useAccountProfileInfo, useIsReadOnlyWallet } from '@/state/wallets/walletsStore';
-import safeAreaInsetValues from '@/utils/safeAreaInsetValues';
-import watchingAlert from '@/utils/watchingAlert';
 import { DEVICE_WIDTH } from '@/utils/deviceUtils';
 import ethereumUtils, { useNativeAsset } from '@/utils/ethereumUtils';
-import { useMutation } from '@tanstack/react-query';
-import React, { useCallback, useMemo, useState } from 'react';
-import { View } from 'react-native';
-import Animated, { useAnimatedStyle, withTiming } from 'react-native-reanimated';
-import { RewardsActionButton } from './RewardsActionButton';
+import safeAreaInsetValues from '@/utils/safeAreaInsetValues';
+import watchingAlert from '@/utils/watchingAlert';
+
 import { EthRewardsCoinIcon } from './EthRewardsCoinIcon';
-import { useSafeAreaInsets } from 'react-native-safe-area-context';
+import { RewardsActionButton } from './RewardsActionButton';
 
 type ClaimStatus = 'idle' | 'claiming' | 'success' | PointsErrorType | 'error' | 'bridge-error';
 

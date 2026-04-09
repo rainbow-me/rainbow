@@ -1,7 +1,8 @@
 import { memo } from 'react';
+
 import { useTransactionWatcher } from '@/hooks/useTransactionWatcher';
 import { useWatchMinedTransactions } from '@/hooks/useWatchMinedTransactions';
-import { type MinedTransactionWithPolling, useMinedTransactionsStore } from '@/state/minedTransactions/minedTransactions';
+import { useMinedTransactionsStore, type MinedTransactionWithPolling } from '@/state/minedTransactions/minedTransactions';
 import { useAccountAddress } from '@/state/wallets/walletsStore';
 
 const EMPTY_MINED_TRANSACTIONS: MinedTransactionWithPolling[] = [];

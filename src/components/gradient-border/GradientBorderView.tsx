@@ -1,7 +1,9 @@
-import MaskedView from '@react-native-masked-view/masked-view';
 import React, { memo } from 'react';
-import { type StyleProp, StyleSheet, View, type ViewStyle } from 'react-native';
+import { StyleSheet, View, type StyleProp, type ViewStyle } from 'react-native';
+
+import MaskedView from '@react-native-masked-view/masked-view';
 import { LinearGradient, type LinearGradientProps } from 'expo-linear-gradient';
+
 import { THICK_BORDER_WIDTH } from '@/styles/constants';
 
 const DEFAULT_START = { x: 0, y: 0 };

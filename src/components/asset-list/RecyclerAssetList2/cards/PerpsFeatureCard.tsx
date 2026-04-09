@@ -1,17 +1,19 @@
 import React, { memo, useMemo } from 'react';
 import { Image, StyleSheet, View } from 'react-native';
-import { Box, Inline, Stack, Text, AccentColorProvider, TextIcon, useColorMode } from '@/design-system';
-import { useAccountAccentColor } from '@/hooks/useAccountAccentColor';
-import { opacity } from '@/framework/ui/utils/opacity';
-import { GradientBorderView } from '@/components/gradient-border/GradientBorderView';
-import infinityIcon from '@/assets/infinity.png';
+
+import ConditionalWrap from 'conditional-wrap';
 import { LinearGradient } from 'expo-linear-gradient';
+
+import infinityIcon from '@/assets/infinity.png';
 import ButtonPressAnimation from '@/components/animations/ButtonPressAnimation';
+import { GradientBorderView } from '@/components/gradient-border/GradientBorderView';
+import { AccentColorProvider, Box, Inline, Stack, Text, TextIcon, useColorMode } from '@/design-system';
 import { usePerpsFeatureCard } from '@/features/perps/hooks/usePerpsFeatureCard';
 import { navigateToPerps } from '@/features/perps/utils/navigateToPerps';
-import { useRemoteConfig } from '@/model/remoteConfig';
+import { opacity } from '@/framework/ui/utils/opacity';
+import { useAccountAccentColor } from '@/hooks/useAccountAccentColor';
 import * as i18n from '@/languages';
-import ConditionalWrap from 'conditional-wrap';
+import { useRemoteConfig } from '@/model/remoteConfig';
 import { THICKER_BORDER_WIDTH } from '@/styles/constants';
 
 export const PERPS_FEATURE_CARD_HEIGHT = 92;

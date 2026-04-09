@@ -1,8 +1,9 @@
-import { useWillDelegate } from '@rainbow-me/delegation';
 import type { Address } from 'viem';
+
 import useExperimentalFlag, { DELEGATION } from '@/config/experimentalHooks';
 import { useRemoteConfig } from '@/model/remoteConfig';
 import { useIsHardwareWallet } from '@/state/wallets/walletsStore';
+import { useWillDelegate } from '@rainbow-me/delegation';
 
 /**
  * Returns whether delegation is expected and executable for the current wallet.

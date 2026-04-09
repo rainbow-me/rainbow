@@ -1,22 +1,17 @@
+import { isEmpty } from 'lodash';
 import { type Address } from 'viem';
-import { arcClient } from '@/graphql';
-import { logger, RainbowError } from '@/logger';
-import { createQueryStore } from '@/state/internal/createQueryStore';
-import { time } from '@/utils/time';
-import {
-  type NftsState,
-  type NftParams,
-  type NftsQueryData,
-  type PaginationInfo,
-  type CollectionId,
-  type UniqueId,
-  type Collection,
-} from './types';
-import { parseUniqueAsset, parseUniqueId } from '@/resources/nfts/utils';
-import { useBackendNetworksStore } from '../backendNetworks/backendNetworks';
+
+import type { UniqueAsset } from '@/entities/uniqueAssets';
 import { IS_DEV } from '@/env';
-import { getShowcase } from '@/hooks/useFetchShowcaseTokens';
+import { arcClient } from '@/graphql';
+import { updateWebHidden, updateWebShowcase } from '@/helpers/webData';
 import { getHidden } from '@/hooks/useFetchHiddenTokens';
+import { getShowcase } from '@/hooks/useFetchShowcaseTokens';
+import { logger, RainbowError } from '@/logger';
+import { parseUniqueAsset, parseUniqueId } from '@/resources/nfts/utils';
+import { createQueryStore } from '@/state/internal/createQueryStore';
+import { useNftsStore } from '@/state/nfts/nfts';
+import { useOpenCollectionsStore } from '@/state/nfts/openCollectionsStore';
 import {
   getHiddenAndShowcaseCollectionIds,
   mergeMaps,
@@ -24,12 +19,19 @@ import {
   pruneStaleAndClosedCollections,
   replaceEthereumWithMainnet,
 } from '@/state/nfts/utils';
-import type { UniqueAsset } from '@/entities/uniqueAssets';
-import { useNftsStore } from '@/state/nfts/nfts';
-import { isEmpty } from 'lodash';
-import { updateWebHidden, updateWebShowcase } from '@/helpers/webData';
 import { getIsReadOnlyWallet } from '@/state/wallets/walletsStore';
-import { useOpenCollectionsStore } from '@/state/nfts/openCollectionsStore';
+import { time } from '@/utils/time';
+
+import { useBackendNetworksStore } from '../backendNetworks/backendNetworks';
+import {
+  type Collection,
+  type CollectionId,
+  type NftParams,
+  type NftsQueryData,
+  type NftsState,
+  type PaginationInfo,
+  type UniqueId,
+} from './types';
 
 export const PAGE_SIZE = 12;
 export const STALE_TIME = time.minutes(10);

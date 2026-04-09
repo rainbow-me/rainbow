@@ -1,20 +1,21 @@
 import Animated, {
-  type SharedValue,
-  useSharedValue,
-  useDerivedValue,
-  useAnimatedReaction,
-  useAnimatedStyle,
   Easing,
   interpolateColor,
-  withTiming,
+  useAnimatedReaction,
+  useAnimatedStyle,
+  useDerivedValue,
+  useSharedValue,
   withDelay,
+  withTiming,
+  type SharedValue,
 } from 'react-native-reanimated';
-import { TIMING_CONFIGS } from '@/components/animations/animationConfigs';
-import { HitSlop, Text, useColorMode, useForegroundColor } from '@/design-system';
-import { GestureHandlerButton } from '@/components/buttons/GestureHandlerButton';
 import { triggerHaptics } from 'react-native-turbo-haptics';
-import { colors } from '@/styles';
+
+import { TIMING_CONFIGS } from '@/components/animations/animationConfigs';
+import { GestureHandlerButton } from '@/components/buttons/GestureHandlerButton';
+import { HitSlop, Text, useColorMode, useForegroundColor } from '@/design-system';
 import { IS_IOS } from '@/env';
+import { colors } from '@/styles';
 import { THICK_BORDER_WIDTH } from '@/styles/constants';
 
 const LONG_PRESS_DELAY_DURATION = 400;

@@ -1,23 +1,24 @@
 import React, { useCallback, useState } from 'react';
-import { useAndroidBackHandler } from 'react-navigation-backhandler';
-import { logger, RainbowError } from '@/logger';
-import * as i18n from '@/languages';
 
-import ButtonPressAnimation from '@/components/animations/ButtonPressAnimation';
-import { type RouteProp, useRoute } from '@react-navigation/native';
-import { type RootStackParamList } from '@/navigation/types';
-import * as kc from '@/keychain';
-import { Alert } from '@/components/alerts';
-import { BackgroundProvider, Bleed, Box, Inline, Inset, Separator, Stack, Text } from '@/design-system';
-import { SimpleSheet } from '@/components/sheet/SimpleSheet';
-import { getHeightForStep } from '@/navigation/config';
-import walletBackupStepTypes from '@/helpers/walletBackupStepTypes';
-import { ImgixImage } from '@/components/images';
-import RestoreYourWallet from '@/assets/RestoreYourWallet.png';
+import { useRoute, type RouteProp } from '@react-navigation/native';
 import { type Source } from 'react-native-fast-image';
+import { useAndroidBackHandler } from 'react-navigation-backhandler';
+
+import RestoreYourWallet from '@/assets/RestoreYourWallet.png';
+import { Alert } from '@/components/alerts';
+import ButtonPressAnimation from '@/components/animations/ButtonPressAnimation';
+import { ImgixImage } from '@/components/images';
+import { SimpleSheet } from '@/components/sheet/SimpleSheet';
+import { BackgroundProvider, Bleed, Box, Inline, Inset, Separator, Stack, Text } from '@/design-system';
+import walletBackupStepTypes from '@/helpers/walletBackupStepTypes';
+import * as kc from '@/keychain';
+import * as i18n from '@/languages';
+import { logger, RainbowError } from '@/logger';
+import { getHeightForStep } from '@/navigation/config';
 import { useNavigation } from '@/navigation/Navigation';
-import { openInBrowser } from '@/utils/openInBrowser';
 import type Routes from '@/navigation/routesNames';
+import { type RootStackParamList } from '@/navigation/types';
+import { openInBrowser } from '@/utils/openInBrowser';
 
 const imageSize = 40;
 

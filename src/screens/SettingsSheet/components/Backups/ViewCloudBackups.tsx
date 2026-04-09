@@ -1,21 +1,23 @@
-import * as i18n from '@/languages';
-import styled from '@/framework/ui/styled-thing';
 import React, { useCallback } from 'react';
+
+import ActivityIndicator from '@/components/ActivityIndicator';
+import { Page } from '@/components/layout';
+import Spinner from '@/components/Spinner';
 import { Text as RNText } from '@/components/text';
+import { Box } from '@/design-system';
+import styled from '@/framework/ui/styled-thing';
+import walletBackupStepTypes from '@/helpers/walletBackupStepTypes';
+import * as i18n from '@/languages';
+import { parseTimestampFromFilename, type BackupFile } from '@/model/backup';
+import { useNavigation } from '@/navigation/Navigation';
+import Routes from '@/navigation/routesNames';
+import { dateFormatter, titleForBackupState } from '@/screens/SettingsSheet/utils';
+import { backupsStore, CloudBackupState, LoadingStates } from '@/state/backups/backups';
+import { useTheme, type ThemeContextProps } from '@/theme/ThemeContext';
+
 import Menu from '../Menu';
 import MenuContainer from '../MenuContainer';
 import MenuItem from '../MenuItem';
-import { type BackupFile, parseTimestampFromFilename } from '@/model/backup';
-import { useNavigation } from '@/navigation/Navigation';
-import Routes from '@/navigation/routesNames';
-import walletBackupStepTypes from '@/helpers/walletBackupStepTypes';
-import { Page } from '@/components/layout';
-import Spinner from '@/components/Spinner';
-import ActivityIndicator from '@/components/ActivityIndicator';
-import { type ThemeContextProps, useTheme } from '@/theme/ThemeContext';
-import { CloudBackupState, LoadingStates, backupsStore } from '@/state/backups/backups';
-import { titleForBackupState, dateFormatter } from '@/screens/SettingsSheet/utils';
-import { Box } from '@/design-system';
 
 type LoadingTextProps = {
   theme: ThemeContextProps;

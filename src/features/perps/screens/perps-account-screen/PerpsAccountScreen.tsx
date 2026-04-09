@@ -1,6 +1,8 @@
 import React, { useEffect, useRef } from 'react';
 import { StyleSheet, View } from 'react-native';
+
 import Animated, { useSharedValue } from 'react-native-reanimated';
+
 import { ScrollHeaderFade } from '@/components/scroll-header-fade/ScrollHeaderFade';
 import { useScrollFadeHandler } from '@/components/scroll-header-fade/useScrollFadeHandler';
 import { Box, Separator, Stack, useColorMode } from '@/design-system';

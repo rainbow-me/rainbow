@@ -1,3 +1,8 @@
+import * as React from 'react';
+
+import Clipboard from '@react-native-clipboard/clipboard';
+import { useRecoilState } from 'recoil';
+
 import ButtonPressAnimation from '@/components/animations/ButtonPressAnimation';
 import { FloatingEmojis } from '@/components/floating-emojis';
 import { Icon } from '@/components/icons';
@@ -9,12 +14,9 @@ import useDimensions from '@/hooks/useDimensions';
 import { useNavigation } from '@/navigation/Navigation';
 import { addressCopiedToastAtom } from '@/recoil/addressCopiedToastAtom';
 import { formatAccountLabel, useAccountAddress, useAccountProfileInfo } from '@/state/wallets/walletsStore';
-import haptics from '@/utils/haptics';
 import { abbreviateEnsForDisplay, address } from '@/utils/abbreviations';
+import haptics from '@/utils/haptics';
 import Routes from '@rainbow-me/routes';
-import Clipboard from '@react-native-clipboard/clipboard';
-import * as React from 'react';
-import { useRecoilState } from 'recoil';
 
 export const ProfileNameRowHeight = 16;
 const CARET_ICON_WIDTH = 22;

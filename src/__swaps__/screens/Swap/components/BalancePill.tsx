@@ -1,4 +1,5 @@
 import React from 'react';
+
 import { Box, Text, useColorMode } from '@/design-system';
 import { LIGHT_SEPARATOR_COLOR, SEPARATOR_COLOR, THICK_BORDER_WIDTH } from '@/styles/constants';
 

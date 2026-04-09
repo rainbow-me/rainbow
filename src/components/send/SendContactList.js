@@ -1,26 +1,29 @@
-import { toChecksumAddress } from 'ethereumjs-util';
-import * as i18n from '@/languages';
-import { sortBy } from 'lodash';
 import React, { useCallback, useMemo, useRef } from 'react';
 import { SectionList } from 'react-native';
-import * as DeviceInfo from 'react-native-device-info';
+
+import { toChecksumAddress } from 'ethereumjs-util';
 import { LinearGradient } from 'expo-linear-gradient';
+import { sortBy } from 'lodash';
+import * as DeviceInfo from 'react-native-device-info';
 import { useDeepCompareMemo } from 'use-deep-compare';
+
+import styled from '@/framework/ui/styled-thing';
+import { opacity } from '@/framework/ui/utils/opacity';
+import useKeyboardHeight from '@/hooks/useKeyboardHeight';
+import * as i18n from '@/languages';
+import { useNavigation } from '@/navigation/Navigation';
+import Routes from '@/navigation/routesNames';
+import { useAccountAddress } from '@/state/wallets/walletsStore';
+import { useTheme } from '@/theme/ThemeContext';
+import isLowerCaseMatch from '@/utils/isLowerCaseMatch';
+import { filterList } from '@/utils/search';
+
 import FlyInAnimation from '../animations/FlyInAnimation';
 import { ContactRow, SwipeableContactRow } from '../contacts';
 import { SheetHandleFixedToTopHeight } from '../sheet';
 import { Text } from '../text';
 import { InvalidPasteToast, ToastPositionContainer } from '../toasts';
 import SendEmptyState from './SendEmptyState';
-import useKeyboardHeight from '@/hooks/useKeyboardHeight';
-import { useNavigation } from '@/navigation/Navigation';
-import Routes from '@/navigation/routesNames';
-import styled from '@/framework/ui/styled-thing';
-import { useTheme } from '@/theme/ThemeContext';
-import { filterList } from '@/utils/search';
-import isLowerCaseMatch from '@/utils/isLowerCaseMatch';
-import { useAccountAddress } from '@/state/wallets/walletsStore';
-import { opacity } from '@/framework/ui/utils/opacity';
 
 const KeyboardArea = styled.View({
   height: ({ keyboardHeight }) => keyboardHeight,

@@ -1,9 +1,11 @@
-import * as i18n from '@/languages';
 import React, { useEffect } from 'react';
-import Toast from './Toast';
+
 import useBooleanState from '@/hooks/useBooleanState';
 import usePrevious from '@/hooks/usePrevious';
+import * as i18n from '@/languages';
 import magicMemo from '@/utils/magicMemo';
+
+import Toast from './Toast';
 
 const CopyToast = ({ copiedText, copyCount }) => {
   const [isVisible, showToast] = useBooleanState(false, 3000);

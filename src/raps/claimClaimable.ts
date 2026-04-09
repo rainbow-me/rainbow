@@ -1,8 +1,9 @@
+import { isCrosschainQuote } from '@/__swaps__/utils/quotes';
+import { logger, RainbowError } from '@/logger';
+
+import { resolveApprovalRequirement } from './approval';
 import { createNewAction, createNewRap } from './common';
 import { type RapAction, type RapSwapActionParameters } from './references';
-import { logger, RainbowError } from '@/logger';
-import { isCrosschainQuote } from '@/__swaps__/utils/quotes';
-import { resolveApprovalRequirement } from './approval';
 
 export async function createClaimClaimableRap(parameters: RapSwapActionParameters<'claimClaimable'>) {
   let actions: RapAction<'claimClaimable' | 'crosschainSwap' | 'unlock' | 'swap'>[] = [];

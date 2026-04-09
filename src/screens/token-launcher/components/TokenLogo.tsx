@@ -1,17 +1,20 @@
 import React, { useCallback, useMemo } from 'react';
+import { StyleSheet } from 'react-native';
+
+import { Canvas, Group, Image, rect, rrect, Shadow, Box as SkBox } from '@shopify/react-native-skia';
+import * as ImagePicker from 'expo-image-picker';
+import { Extrapolation, interpolate, useDerivedValue } from 'react-native-reanimated';
 import Svg, { Circle } from 'react-native-svg';
-import * as i18n from '@/languages';
+
+import ButtonPressAnimation from '@/components/animations/ButtonPressAnimation';
 import { Box, Text, TextIcon, TextShadow } from '@/design-system';
 import { IS_IOS } from '@/env';
-import ButtonPressAnimation from '@/components/animations/ButtonPressAnimation';
-import { StyleSheet } from 'react-native';
-import * as ImagePicker from 'expo-image-picker';
+import * as i18n from '@/languages';
+
+import { ERROR_RED } from '../constants';
+import { useTokenLauncherContext } from '../context/TokenLauncherContext';
 import { useUploadToCloudinary } from '../hooks/useUploadToCloudinary';
 import { NavigationSteps, useTokenLauncherStore } from '../state/tokenLauncherStore';
-import { Canvas, Image, Shadow, rrect, rect, Box as SkBox, Group } from '@shopify/react-native-skia';
-import { useTokenLauncherContext } from '../context/TokenLauncherContext';
-import { Extrapolation, interpolate, useDerivedValue } from 'react-native-reanimated';
-import { ERROR_RED } from '../constants';
 
 const SIZE = 112;
 

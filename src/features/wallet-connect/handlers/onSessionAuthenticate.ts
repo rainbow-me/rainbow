@@ -1,3 +1,5 @@
+import type { WalletKitTypes } from '@reown/walletkit';
+
 import { IS_ANDROID } from '@/env';
 import { DAppStatus } from '@/graphql/__generated__/metadata';
 import { getProvider } from '@/handlers/web3';
@@ -10,12 +12,12 @@ import { fetchDappMetadata } from '@/resources/metadata/dapp';
 import * as portal from '@/screens/Portal';
 import { ChainId } from '@/state/backendNetworks/types';
 import { getWalletWithAccount } from '@/state/wallets/walletsStore';
+
 import { AuthRequest } from '../screens/AuthRequest';
-import { type AuthRequestAuthenticateSignature, AuthRequestResponseErrorReason } from '../types';
-import type { WalletKitTypes } from '@reown/walletkit';
 import { getWalletKitClient } from '../services/client';
-import { trackTopicHandler } from './onSessionProposal';
 import { maybeGoBackAndClearHasPendingRedirect } from '../services/pair';
+import { AuthRequestResponseErrorReason, type AuthRequestAuthenticateSignature } from '../types';
+import { trackTopicHandler } from './onSessionProposal';
 
 export async function onSessionAuthenticate(event: WalletKitTypes.SessionAuthenticate) {
   trackTopicHandler(event);

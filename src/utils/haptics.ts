@@ -1,4 +1,5 @@
 import ReactNativeHapticFeedback, { HapticFeedbackTypes } from 'react-native-haptic-feedback';
+
 import reduceArrayToObject from './reduceArrayToObject';
 
 const hapticToTrigger = (haptic: HapticFeedbackTypes) => ({

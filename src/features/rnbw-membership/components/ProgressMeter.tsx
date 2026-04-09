@@ -1,10 +1,12 @@
 import { memo, useMemo } from 'react';
 import { StyleSheet, View } from 'react-native';
+
+import { LinearGradient } from 'expo-linear-gradient';
+
+import { GradientBorderView } from '@/components/gradient-border/GradientBorderView';
 import { Box, useBackgroundColor, useColorMode } from '@/design-system';
 import { InnerShadow } from '@/features/polymarket/components/InnerShadow';
 import { opacity } from '@/framework/ui/utils/opacity';
-import { LinearGradient } from 'expo-linear-gradient';
-import { GradientBorderView } from '@/components/gradient-border/GradientBorderView';
 
 const GRADIENT_FILL_COLORS = ['#27D857', '#1DB847'] as const;
 const GRADIENT_FILL_START = { x: 0, y: 0.5 };

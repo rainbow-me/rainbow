@@ -1,7 +1,9 @@
 import React from 'react';
 import { ScrollView } from 'react-native';
-import { Box, Inset, type Space, Stack } from '@/design-system';
+
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
+
+import { Box, Inset, Stack, type Space } from '@/design-system';
 
 interface MenuContainerProps {
   scrollviewRef?: React.RefObject<ScrollView | null>;

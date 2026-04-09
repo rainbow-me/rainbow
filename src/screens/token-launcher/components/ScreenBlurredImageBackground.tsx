@@ -1,6 +1,7 @@
 import React from 'react';
 
-import { Canvas, Image, Fill, Blur } from '@shopify/react-native-skia';
+import { Blur, Canvas, Fill, Image } from '@shopify/react-native-skia';
+
 import { useTokenLauncherContext } from '../context/TokenLauncherContext';
 import { useTokenLauncherStore } from '../state/tokenLauncherStore';
 

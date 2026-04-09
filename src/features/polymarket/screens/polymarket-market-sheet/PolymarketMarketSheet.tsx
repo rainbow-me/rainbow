@@ -1,25 +1,27 @@
 import { memo, useMemo } from 'react';
 import { StyleSheet } from 'react-native';
-import { type RouteProp, useRoute } from '@react-navigation/native';
-import { type RootStackParamList } from '@/navigation/types';
-import Routes from '@/navigation/routesNames';
-import { Bleed, Box, globalColors, Separator, Text, TextShadow, useColorMode, useForegroundColor } from '@/design-system';
-import * as i18n from '@/languages';
-import { PANEL_WIDTH, PanelSheet } from '@/components/PanelSheet/PanelSheet';
-import { type PolymarketEvent, type PolymarketMarket, type PolymarketMarketEvent } from '@/features/polymarket/types/polymarket-event';
-import ImgixImage from '@/components/images/ImgixImage';
-import ButtonPressAnimation from '@/components/animations/ButtonPressAnimation';
-import Navigation from '@/navigation/Navigation';
-import { getColorValueForThemeWorklet } from '@/__swaps__/utils/swaps';
-import { opacity } from '@/framework/ui/utils/opacity';
+
+import { useRoute, type RouteProp } from '@react-navigation/native';
 import { LinearGradient } from 'expo-linear-gradient';
+
+import { getColorValueForThemeWorklet } from '@/__swaps__/utils/swaps';
+import ButtonPressAnimation from '@/components/animations/ButtonPressAnimation';
+import ImgixImage from '@/components/images/ImgixImage';
+import { LiveTokenText } from '@/components/live-token-text/LiveTokenText';
+import { PANEL_WIDTH, PanelSheet } from '@/components/PanelSheet/PanelSheet';
+import { Bleed, Box, globalColors, Separator, Text, TextShadow, useColorMode, useForegroundColor } from '@/design-system';
 import { PolymarketChart } from '@/features/charts/polymarket/components/PolymarketChart';
 import { PolymarketTimeframeSelector } from '@/features/charts/polymarket/components/PolymarketTimeframeSelector';
 import { getChartLineColors } from '@/features/charts/polymarket/utils/getChartLineColors';
-import { THICKER_BORDER_WIDTH } from '@/styles/constants';
+import { type PolymarketEvent, type PolymarketMarket, type PolymarketMarketEvent } from '@/features/polymarket/types/polymarket-event';
 import { toPercentageWorklet } from '@/framework/core/safeMath';
-import { LiveTokenText } from '@/components/live-token-text/LiveTokenText';
+import { opacity } from '@/framework/ui/utils/opacity';
+import * as i18n from '@/languages';
+import Navigation from '@/navigation/Navigation';
+import Routes from '@/navigation/routesNames';
+import { type RootStackParamList } from '@/navigation/types';
 import { getPolymarketTokenId } from '@/state/liveTokens/polymarketAdapter';
+import { THICKER_BORDER_WIDTH } from '@/styles/constants';
 
 export const PolymarketMarketSheet = memo(function PolymarketMarketSheet() {
   const {

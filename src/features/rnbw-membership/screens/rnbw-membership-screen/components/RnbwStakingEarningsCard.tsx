@@ -1,13 +1,15 @@
 import { memo } from 'react';
-import { Box, Separator, Text } from '@/design-system';
-import { useRnbwStakingEarnings } from '@/features/rnbw-staking/stores/derived/useRnbwStakingEarnings';
-import { RNBW_SYMBOL } from '@/features/rnbw-rewards/constants';
-import rnbwCoinImage from '@/assets/rnbw.png';
 import { Image } from 'react-native';
+
+import rnbwCoinImage from '@/assets/rnbw.png';
+import { Box, Separator, Text } from '@/design-system';
 import { MembershipCard } from '@/features/rnbw-membership/screens/rnbw-membership-screen/components/MembershipCard';
-import * as i18n from '@/languages';
-import { isZero } from '@/helpers/utilities';
+import { RNBW_SYMBOL } from '@/features/rnbw-rewards/constants';
+import { useRnbwStakingEarnings } from '@/features/rnbw-staking/stores/derived/useRnbwStakingEarnings';
 import { useStakingPositionStore } from '@/features/rnbw-staking/stores/rnbwStakingPositionStore';
+import { isZero } from '@/helpers/utilities';
+import * as i18n from '@/languages';
+
 import { MembershipCardSkeleton } from './MembershipCardSkeleton';
 
 export const RnbwStakingEarningsCard = memo(function RnbwStakingEarningsCard() {

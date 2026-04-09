@@ -1,32 +1,35 @@
-import { AnimatedText, type TextProps, useTextStyle } from '@/design-system';
-import React, { useMemo, useCallback, useState } from 'react';
-import { type StyleProp, type TextStyle, StyleSheet, type ViewStyle, View } from 'react-native';
-import Animated, {
-  useSharedValue,
-  useAnimatedStyle,
-  withTiming,
-  type ExitAnimationsValues,
-  runOnUI,
-  type LayoutAnimationsValues,
-  useAnimatedRef,
-  measure,
-  interpolate,
-  type WithTimingConfig,
-  type SharedValue,
-  useAnimatedReaction,
-  runOnJS,
-  type DerivedValue,
-  LayoutAnimationConfig,
-  useDerivedValue,
-  type BaseAnimationBuilder,
-  type EntryExitAnimationFunction,
-} from 'react-native-reanimated';
-import { EasingGradient } from '../easing-gradient/EasingGradient';
+import React, { useCallback, useMemo, useState } from 'react';
+import { StyleSheet, View, type StyleProp, type TextStyle, type ViewStyle } from 'react-native';
+
 import MaskedView from '@react-native-masked-view/masked-view';
+import Animated, {
+  interpolate,
+  LayoutAnimationConfig,
+  measure,
+  runOnJS,
+  runOnUI,
+  useAnimatedReaction,
+  useAnimatedRef,
+  useAnimatedStyle,
+  useDerivedValue,
+  useSharedValue,
+  withTiming,
+  type BaseAnimationBuilder,
+  type DerivedValue,
+  type EntryExitAnimationFunction,
+  type ExitAnimationsValues,
+  type LayoutAnimationsValues,
+  type SharedValue,
+  type WithTimingConfig,
+} from 'react-native-reanimated';
+
 import { buildTestSafeConfig } from '@/components/animations/animationConfigs';
-import { measureTextSync } from '@/utils/measureText';
+import { AnimatedText, useTextStyle, type TextProps } from '@/design-system';
 import { useIsFirstRender } from '@/hooks/useIsFirstRender';
 import usePrevious from '@/hooks/usePrevious';
+import { measureTextSync } from '@/utils/measureText';
+
+import { EasingGradient } from '../easing-gradient/EasingGradient';
 
 // reanimated defines but does not export this type
 type EntryOrExitLayoutType = BaseAnimationBuilder | typeof BaseAnimationBuilder | EntryExitAnimationFunction;

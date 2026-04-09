@@ -1,29 +1,31 @@
 import React, { useCallback, useEffect, useRef, useState } from 'react';
 import { StyleSheet } from 'react-native';
-import { type RouteProp, useRoute } from '@react-navigation/native';
+
 import { Wallet } from '@ethersproject/wallet';
+import { useRoute, type RouteProp } from '@react-navigation/native';
 import { LinearGradient } from 'expo-linear-gradient';
 import { EstimateGasExecutionError, IntrinsicGasTooLowError } from 'viem';
-import { useNavigation } from '@/navigation/Navigation';
-import { Box, Text, globalColors, Separator } from '@/design-system';
+
 import { HoldToActivateButton } from '@/components/hold-to-activate-button/HoldToActivateButton';
 import { PanelSheet } from '@/components/PanelSheet/PanelSheet';
-import { type RootStackParamList } from '@/navigation/types';
-import type Routes from '@/navigation/routesNames';
-import { logger, RainbowError } from '@/logger';
-import haptics from '@/utils/haptics';
-import { executeRevokeDelegation } from '@rainbow-me/delegation';
-import { loadWallet } from '@/model/wallet';
-import { getProvider } from '@/handlers/web3';
-import { getNextNonce } from '@/state/nonces';
-import { backendNetworksActions } from '@/state/backendNetworks/backendNetworks';
-import reduxStore from '@/redux/store';
-import * as i18n from '@/languages';
-import useGas from '@/hooks/useGas';
+import { Box, globalColors, Separator, Text } from '@/design-system';
 import { type GasFee, type LegacySelectedGasFee, type SelectedGasFee } from '@/entities/gas';
 import { opacity } from '@/framework/ui/utils/opacity';
+import { getProvider } from '@/handlers/web3';
 import { convertAmountToNativeDisplayWorklet } from '@/helpers/utilities';
+import useGas from '@/hooks/useGas';
+import * as i18n from '@/languages';
+import { logger, RainbowError } from '@/logger';
+import { loadWallet } from '@/model/wallet';
+import { useNavigation } from '@/navigation/Navigation';
+import type Routes from '@/navigation/routesNames';
+import { type RootStackParamList } from '@/navigation/types';
+import reduxStore from '@/redux/store';
 import { userAssetsStoreManager } from '@/state/assets/userAssetsStoreManager';
+import { backendNetworksActions } from '@/state/backendNetworks/backendNetworks';
+import { getNextNonce } from '@/state/nonces';
+import haptics from '@/utils/haptics';
+import { executeRevokeDelegation } from '@rainbow-me/delegation';
 
 /**
  * Reasons for revoking delegation - determines the panel's appearance and messaging

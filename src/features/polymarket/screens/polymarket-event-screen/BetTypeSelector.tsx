@@ -1,9 +1,12 @@
 import React, { memo, useCallback, useMemo } from 'react';
 import { StyleSheet, View } from 'react-native';
+
 import { useAnimatedStyle } from 'react-native-reanimated';
+
 import { AnimatedText, useForegroundColor } from '@/design-system';
 import { IS_IOS } from '@/env';
 import * as i18n from '@/languages';
+
 import { ItemSelector, type Item, type RenderItemProps } from './ItemSelector';
 import { BET_TYPE, type BetType } from './utils/getMarketsGroupedByBetType';
 

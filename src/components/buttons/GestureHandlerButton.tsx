@@ -1,8 +1,10 @@
-import React, { type RefObject, useMemo } from 'react';
+import React, { useMemo, type RefObject } from 'react';
 import { type Insets, type LayoutChangeEvent, type StyleProp, type ViewProps, type ViewStyle } from 'react-native';
+
 import { Gesture, GestureDetector, type GestureType, type LongPressGesture, type TapGesture } from 'react-native-gesture-handler';
-import Animated, { type AnimatedStyle, runOnJS, useAnimatedStyle, useSharedValue, withTiming } from 'react-native-reanimated';
-import { type HapticType, triggerHaptics } from 'react-native-turbo-haptics';
+import Animated, { runOnJS, useAnimatedStyle, useSharedValue, withTiming, type AnimatedStyle } from 'react-native-reanimated';
+import { triggerHaptics, type HapticType } from 'react-native-turbo-haptics';
+
 import { TIMING_CONFIGS } from '@/components/animations/animationConfigs';
 import { LONG_PRESS_DURATION_IN_MS } from '@/components/buttons/hold-to-authorize/constants';
 

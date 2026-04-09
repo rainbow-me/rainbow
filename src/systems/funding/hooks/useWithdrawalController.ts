@@ -1,5 +1,7 @@
 import { useCallback, useEffect, useRef } from 'react';
+
 import { runOnJS, runOnUI, useAnimatedReaction, useSharedValue, withSpring } from 'react-native-reanimated';
+
 import { SPRING_CONFIGS } from '@/components/animations/animationConfigs';
 import { type NumberPadField } from '@/features/perps/components/NumberPad/NumberPadKey';
 import { SLIDER_MAX } from '@/features/perps/components/Slider/Slider';
@@ -9,6 +11,7 @@ import { useStoreSharedValue } from '@/state/internal/hooks/useStoreSharedValue'
 import { type RainbowStore } from '@/state/internal/types';
 import { type StoreActions } from '@/state/internal/utils/createStoreActions';
 import { sanitizeAmount } from '@/worklets/strings';
+
 import { INITIAL_SLIDER_PROGRESS } from '../constants';
 import { type AmountStoreType, type InteractionSource } from '../types';
 import { sliderProgressFromAmount, valueFromSliderProgress } from '../utils/sliderWorklets';

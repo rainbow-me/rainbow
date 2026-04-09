@@ -1,12 +1,15 @@
 import React, { createContext, useCallback, useContext } from 'react';
+
 import { runOnJS, useAnimatedReaction, useSharedValue, withSpring } from 'react-native-reanimated';
+
 import { SPRING_CONFIGS } from '@/components/animations/animationConfigs';
 import { useBrowserStore } from '@/state/browser/browserStore';
 import { deepEqual } from '@/worklets/comparisons';
 import { generateUniqueId } from '@/worklets/strings';
+
 import { useBrowserContext, useBrowserTabBarContext } from './BrowserContext';
 import { RAINBOW_HOME } from './constants';
-import { type BrowserWorkletsContextType, type ScreenshotType, type TabOperation, TabViewGestureStates } from './types';
+import { TabViewGestureStates, type BrowserWorkletsContextType, type ScreenshotType, type TabOperation } from './types';
 import { normalizeUrlWorklet } from './utils';
 
 export const BrowserWorkletsContext = createContext<BrowserWorkletsContextType | undefined>(undefined);

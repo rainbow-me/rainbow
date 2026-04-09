@@ -1,5 +1,7 @@
 import { type LayoutRectangle } from 'react-native';
-import { type SharedValue, withSpring, type AnimatableValue, type AnimationCallback, type WithSpringConfig } from 'react-native-reanimated';
+
+import { withSpring, type AnimatableValue, type AnimationCallback, type SharedValue, type WithSpringConfig } from 'react-native-reanimated';
+
 import type { SharedPoint } from '../hooks';
 import type { AnyData } from '../types';
 

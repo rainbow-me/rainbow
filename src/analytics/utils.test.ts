@@ -1,8 +1,8 @@
-import { expect, test, describe, beforeEach } from '@jest/globals';
+import { beforeEach, describe, expect, test } from '@jest/globals';
 
-import * as ls from '@/storage';
 import { getOrCreateDeviceId } from '@/analytics/utils';
 import * as keychain from '@/model/keychain';
+import * as ls from '@/storage';
 
 jest.mock('@/model/keychain', () => ({
   loadString: jest.fn(),

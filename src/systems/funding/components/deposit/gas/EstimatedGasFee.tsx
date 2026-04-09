@@ -1,6 +1,9 @@
 import React from 'react';
-import { Inline, TextIcon, type TextProps } from '@/design-system';
+
 import { type SharedValue } from 'react-native-reanimated';
+
+import { Inline, TextIcon, type TextProps } from '@/design-system';
+
 import { GasFeeText } from './GasFeeText';
 
 type EstimatedGasFeeProps = {

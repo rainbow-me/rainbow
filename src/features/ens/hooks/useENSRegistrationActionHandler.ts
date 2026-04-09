@@ -1,34 +1,36 @@
-import { type StaticJsonRpcProvider } from '@ethersproject/providers';
-import { useNavigation } from '@/navigation/Navigation';
 import { useCallback, useEffect, useRef } from 'react';
-import { type ImagePickerAsset } from 'expo-image-picker';
-import { useRecoilValue } from 'recoil';
-import { avatarMetadataAtom } from '../components/registration/RegistrationAvatar';
-import { coverMetadataAtom } from '../components/registration/RegistrationCover';
-import { type ENSActionParameters, ENSRapActionType } from '../raps/common';
-import usePendingTransactions from '@/hooks/usePendingTransactions';
 
-import { refreshWalletInfo, useAccountAddress, useIsHardwareWallet } from '@/state/wallets/walletsStore';
+import { type StaticJsonRpcProvider } from '@ethersproject/providers';
+import { type ImagePickerAsset } from 'expo-image-picker';
+import { noop } from 'lodash';
+import { useRecoilValue } from 'recoil';
+import { type Hex } from 'viem';
+
 import { type PendingTransaction } from '@/entities/transactions';
-import { type Records, type RegistrationParameters } from '../types/registration';
-import { fetchResolver } from '../utils/handlers';
-import { saveNameFromLabelhash } from '../utils/localStorage';
+import { IS_IOS } from '@/env';
 import { uploadImage } from '@/handlers/pinata';
 import { getProvider } from '@/handlers/web3';
-import { ENS_DOMAIN, generateSalt, getRentPrice, REGISTRATION_STEPS } from '../utils/helpers';
-import { loadWallet } from '@/model/wallet';
-import timeUnits from '@/references/time-units.json';
-import Routes from '@/navigation/routesNames';
-import labelhash from '@/utils/labelhash';
-import { getNextNonce } from '@/state/nonces';
-import { type Hex } from 'viem';
-import { executeENSRap } from '../raps/actions';
-import store from '@/redux/store';
-import { executeFn, Screens, TimeToSignOperation } from '@/state/performance/performance';
-import { noop } from 'lodash';
+import usePendingTransactions from '@/hooks/usePendingTransactions';
 import { logger, RainbowError } from '@/logger';
+import { loadWallet } from '@/model/wallet';
+import { useNavigation } from '@/navigation/Navigation';
+import Routes from '@/navigation/routesNames';
+import store from '@/redux/store';
+import timeUnits from '@/references/time-units.json';
 import { ChainId } from '@/state/backendNetworks/types';
-import { IS_IOS } from '@/env';
+import { getNextNonce } from '@/state/nonces';
+import { executeFn, Screens, TimeToSignOperation } from '@/state/performance/performance';
+import { refreshWalletInfo, useAccountAddress, useIsHardwareWallet } from '@/state/wallets/walletsStore';
+import labelhash from '@/utils/labelhash';
+
+import { avatarMetadataAtom } from '../components/registration/RegistrationAvatar';
+import { coverMetadataAtom } from '../components/registration/RegistrationCover';
+import { executeENSRap } from '../raps/actions';
+import { ENSRapActionType, type ENSActionParameters } from '../raps/common';
+import { type Records, type RegistrationParameters } from '../types/registration';
+import { fetchResolver } from '../utils/handlers';
+import { ENS_DOMAIN, generateSalt, getRentPrice, REGISTRATION_STEPS } from '../utils/helpers';
+import { saveNameFromLabelhash } from '../utils/localStorage';
 import useENSRegistration from './useENSRegistration';
 
 // Generic type for action functions

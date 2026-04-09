@@ -1,12 +1,12 @@
-import { sortPositions } from './sort';
-import type { RainbowPosition } from '../../types';
 import {
-  createMockRainbowPosition,
+  createMockBorrow,
   createMockDeposit,
   createMockPool,
+  createMockRainbowPosition,
   createMockStake,
-  createMockBorrow,
 } from '../../__fixtures__/mocks/positions';
+import type { RainbowPosition } from '../../types';
+import { sortPositions } from './sort';
 
 describe('Sorting', () => {
   describe('sortPositions', () => {

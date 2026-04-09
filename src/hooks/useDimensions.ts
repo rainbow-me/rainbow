@@ -1,4 +1,5 @@
-import { type ScaledSize, useWindowDimensions } from 'react-native';
+import { useWindowDimensions, type ScaledSize } from 'react-native';
+
 import { useSafeAreaFrame } from 'react-native-safe-area-context';
 
 const deviceDimensions = {

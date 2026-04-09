@@ -1,6 +1,7 @@
-import * as i18n from '@/languages';
 import React from 'react';
+
 import Text from '@/components/text/Text';
+import * as i18n from '@/languages';
 import abbreviations from '@/utils/abbreviations';
 
 const TruncatedENS = ({ ens, truncationLength, ...props }, ref) => {

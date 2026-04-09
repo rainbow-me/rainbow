@@ -1,8 +1,8 @@
+import { type SecureStorage } from '@coinbase/mobile-wallet-protocol-host';
 import { createMMKV, type MMKV } from 'react-native-mmkv';
 
-import { type Cards, type Device, type Review, type WatchedWalletCohort } from '@/storage/schema';
 import { type RainbowTransaction } from '@/entities/transactions';
-import { type SecureStorage } from '@coinbase/mobile-wallet-protocol-host';
+import { type Cards, type Device, type Review, type WatchedWalletCohort } from '@/storage/schema';
 
 /**
  * Generic storage class. DO NOT use this directly. Instead, use the exported

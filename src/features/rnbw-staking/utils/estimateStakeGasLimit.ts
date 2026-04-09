@@ -1,6 +1,8 @@
-import { erc20Abi, encodeFunctionData, parseUnits, type Address } from 'viem';
+import { encodeFunctionData, erc20Abi, parseUnits, type Address } from 'viem';
+
 import { getProvider } from '@/handlers/web3';
 import { gasUnits } from '@/references/gasUnits';
+
 import { RNBW_DECIMALS, RNBW_TOKEN_ADDRESS, STAKING_ABI, STAKING_CHAIN_ID, STAKING_CONTRACT_ADDRESS } from '../constants';
 import { checkIfStakingNeedsApproval } from './checkIfStakingNeedsApproval';
 

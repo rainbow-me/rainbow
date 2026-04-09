@@ -1,21 +1,24 @@
 import React, { createContext, useContext, useEffect, useMemo, useRef } from 'react';
-import { useTokenLauncherStore } from '../state/tokenLauncherStore';
-import { usePersistentDominantColorFromImage } from '@/hooks/usePersistentDominantColorFromImage';
-import { getHighContrastColor } from '@/hooks/useAccountAccentColor';
-import { useColorMode } from '@/design-system';
-import { useTheme } from '@/theme/ThemeContext';
-import { DEFAULT_TOKEN_IMAGE_PRIMARY_COLOR } from '../constants';
-import { type BackendNetwork } from '@/state/backendNetworks/types';
-import { useBackendNetworksStore } from '@/state/backendNetworks/backendNetworks';
-import { type SkImage, useAnimatedImageValue, useImage } from '@shopify/react-native-skia';
-import { getHighContrastTextColorWorklet } from '@/worklets/colors';
+import { type ScrollView } from 'react-native';
+
+import { useAnimatedImageValue, useImage, type SkImage } from '@shopify/react-native-skia';
 import { type SharedValue } from 'react-native-reanimated';
-import { logger, RainbowError } from '@/logger';
+
+import { useColorMode } from '@/design-system';
+import { opacity } from '@/framework/ui/utils/opacity';
+import { getHighContrastColor } from '@/hooks/useAccountAccentColor';
 import { useCleanup } from '@/hooks/useCleanup';
 import useCoinListEditOptions from '@/hooks/useCoinListEditOptions';
+import { usePersistentDominantColorFromImage } from '@/hooks/usePersistentDominantColorFromImage';
+import { logger, RainbowError } from '@/logger';
+import { useBackendNetworksStore } from '@/state/backendNetworks/backendNetworks';
+import { type BackendNetwork } from '@/state/backendNetworks/types';
+import { useTheme } from '@/theme/ThemeContext';
 import { getUniqueId } from '@/utils/ethereumUtils';
-import { type ScrollView } from 'react-native';
-import { opacity } from '@/framework/ui/utils/opacity';
+import { getHighContrastTextColorWorklet } from '@/worklets/colors';
+
+import { DEFAULT_TOKEN_IMAGE_PRIMARY_COLOR } from '../constants';
+import { useTokenLauncherStore } from '../state/tokenLauncherStore';
 
 type TokenLauncherContextType = {
   tokenBackgroundImage: SkImage | null;

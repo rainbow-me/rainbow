@@ -1,23 +1,24 @@
 import React, { memo, useMemo } from 'react';
-import { Bleed, Box, type BoxProps, globalColors, Separator, Stack, Text, useColorMode } from '@/design-system';
-import { type PerpsPosition } from '@/features/perps/types';
-import { LeverageBadge } from '@/features/perps/components/LeverageBadge';
-import { HyperliquidTokenIcon } from '@/features/perps/components/HyperliquidTokenIcon';
-import { PositionSideBadge } from '@/features/perps/components/PositionSideBadge';
+
+import { ETH_COLOR_DARK } from '@/__swaps__/screens/Swap/constants';
 import { getColorValueForThemeWorklet, getHighContrastColor } from '@/__swaps__/utils/swaps';
+import { LiveTokenText } from '@/components/live-token-text/LiveTokenText';
+import { Bleed, Box, globalColors, Separator, Stack, Text, useColorMode, type BoxProps } from '@/design-system';
+import { HyperliquidTokenIcon } from '@/features/perps/components/HyperliquidTokenIcon';
+import { LeverageBadge } from '@/features/perps/components/LeverageBadge';
+import { PositionSideBadge } from '@/features/perps/components/PositionSideBadge';
+import { useHyperliquidMarketsStore } from '@/features/perps/stores/hyperliquidMarketsStore';
+import { type PerpsPosition } from '@/features/perps/types';
+import { getHyperliquidTokenId } from '@/features/perps/utils';
+import { formatCurrency } from '@/features/perps/utils/formatCurrency';
+import { formatPerpAssetPrice } from '@/features/perps/utils/formatPerpsAssetPrice';
+import { extractBaseSymbol } from '@/features/perps/utils/hyperliquidSymbols';
 import { opacity } from '@/framework/ui/utils/opacity';
 import { abs } from '@/helpers/utilities';
 import { useStableValue } from '@/hooks/useStableValue';
-import { LiveTokenText } from '@/components/live-token-text/LiveTokenText';
-import { getHyperliquidTokenId } from '@/features/perps/utils';
-import { type TokenData } from '@/state/liveTokens/liveTokensStore';
-import { formatCurrency } from '@/features/perps/utils/formatCurrency';
-import { formatPerpAssetPrice } from '@/features/perps/utils/formatPerpsAssetPrice';
-import { useHyperliquidMarketsStore } from '@/features/perps/stores/hyperliquidMarketsStore';
-import { ETH_COLOR_DARK } from '@/__swaps__/screens/Swap/constants';
-import { THICKER_BORDER_WIDTH } from '@/styles/constants';
 import * as i18n from '@/languages';
-import { extractBaseSymbol } from '@/features/perps/utils/hyperliquidSymbols';
+import { type TokenData } from '@/state/liveTokens/liveTokensStore';
+import { THICKER_BORDER_WIDTH } from '@/styles/constants';
 
 type PerpPositionCardProps = {
   position: PerpsPosition;

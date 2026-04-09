@@ -1,18 +1,20 @@
 import React from 'react';
+
+import ButtonPressAnimation from '@/components/animations/ButtonPressAnimation';
+import { ContactAvatar } from '@/components/contacts';
+import ImageAvatar from '@/components/contacts/ImageAvatar';
+import { Navbar } from '@/components/navbar/Navbar';
+import { DelayedMount } from '@/components/utilities/DelayedMount';
+import styled from '@/framework/ui/styled-thing';
+import * as i18n from '@/languages';
+import Navigation from '@/navigation/Navigation';
+import Routes from '@/navigation/routesNames';
+import { useAccountProfileInfo } from '@/state/wallets/walletsStore';
+import { position } from '@/styles';
+import { time } from '@/utils/time';
+
 import { ActivityList } from '../components/activity-list';
 import { Page } from '../components/layout';
-import Navigation from '@/navigation/Navigation';
-import ButtonPressAnimation from '@/components/animations/ButtonPressAnimation';
-import Routes from '@/navigation/routesNames';
-import styled from '@/framework/ui/styled-thing';
-import { position } from '@/styles';
-import { Navbar } from '@/components/navbar/Navbar';
-import ImageAvatar from '@/components/contacts/ImageAvatar';
-import { ContactAvatar } from '@/components/contacts';
-import { useAccountProfileInfo } from '@/state/wallets/walletsStore';
-import { DelayedMount } from '@/components/utilities/DelayedMount';
-import { time } from '@/utils/time';
-import * as i18n from '@/languages';
 
 const ProfileScreenPage = styled(Page)({
   ...position.sizeAsObject('100%'),

@@ -1,6 +1,8 @@
-import { type NavigationProp } from '@react-navigation/native';
 import { useCallback, useRef } from 'react';
 import { type NativeScrollEvent, type NativeSyntheticEvent } from 'react-native';
+
+import { type NavigationProp } from '@react-navigation/native';
+
 import { useNavigation } from '@/navigation/Navigation';
 
 /**

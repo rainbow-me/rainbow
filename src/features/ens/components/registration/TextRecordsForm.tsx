@@ -1,12 +1,15 @@
-import { useFocusEffect } from '@react-navigation/native';
-import { debounce, isEmpty } from 'lodash';
 import React, { useCallback, useEffect, useState } from 'react';
 import { type LayoutChangeEvent, type TextInputProps, type ViewProps } from 'react-native';
+
+import { useFocusEffect } from '@react-navigation/native';
+import { debounce, isEmpty } from 'lodash';
+
 import InlineField, { type InlineFieldProps } from '@/components/inputs/InlineField';
 import Skeleton, { FakeText } from '@/components/skeleton/Skeleton';
 import { Box, Column, Columns, Separator, Stack } from '@/design-system';
-import { ENS_RECORDS } from '../../utils/helpers';
+
 import useENSRegistrationForm from '../../hooks/useENSRegistrationForm';
+import { ENS_RECORDS } from '../../utils/helpers';
 
 export default function TextRecordsForm({
   autoFocusKey,

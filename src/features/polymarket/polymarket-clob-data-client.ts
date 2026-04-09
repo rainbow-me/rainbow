@@ -1,4 +1,5 @@
 import { Chain, ClobClient } from '@polymarket/clob-client';
+
 import { POLYMARKET_CLOB_URL } from '@/features/polymarket/constants';
 
 /**

@@ -1,15 +1,18 @@
-import * as i18n from '@/languages';
 import React, { useMemo } from 'react';
 import { StyleSheet, View } from 'react-native';
+
 import { type Source } from 'react-native-fast-image';
-import eyeSlash from '../../assets/sf-eye.slash.png';
-import { Text } from '@/design-system';
+
 import { ImgixImage } from '@/components/images';
+import { Text } from '@/design-system';
+import * as i18n from '@/languages';
+import ShadowStack from '@/react-native-shadow-stack';
 import { borders } from '@/styles';
 import { type ThemeContextProps } from '@/theme/ThemeContext';
 import FallbackIcon from '@/utils/CoinIcons/FallbackIcon';
 import { initials } from '@/utils/formatters';
-import ShadowStack from '@/react-native-shadow-stack';
+
+import eyeSlash from '../../assets/sf-eye.slash.png';
 
 type Props = {
   familyName: string;

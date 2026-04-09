@@ -1,8 +1,10 @@
 import { useEffect } from 'react';
+
+import { useQuery } from '@tanstack/react-query';
+
 import { metadataPOSTClient } from '@/graphql';
 import { type GetPointsDataForWalletQuery } from '@/graphql/__generated__/metadataPOST';
 import { createQueryKey, queryClient } from '@/react-query';
-import { useQuery } from '@tanstack/react-query';
 
 export function pointsQueryKey({ address }: { address: string }) {
   return createQueryKey('points', { address }, { persisterVersion: 1 });

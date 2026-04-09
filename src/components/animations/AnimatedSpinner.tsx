@@ -1,16 +1,18 @@
-import { Canvas, Image, Mask, Rect, useImage } from '@shopify/react-native-skia';
 import React, { type ReactNode } from 'react';
-import { type StyleProp, View, type ViewStyle } from 'react-native';
+import { View, type StyleProp, type ViewStyle } from 'react-native';
+
+import { Canvas, Image, Mask, Rect, useImage } from '@shopify/react-native-skia';
 import Animated, {
   Easing,
-  type SharedValue,
   useAnimatedReaction,
   useAnimatedStyle,
   useDerivedValue,
   useSharedValue,
   withRepeat,
   withTiming,
+  type SharedValue,
 } from 'react-native-reanimated';
+
 import { TIMING_CONFIGS } from '@/components/animations/animationConfigs';
 import { useForegroundColor } from '@/design-system';
 import { useCleanup } from '@/hooks/useCleanup';

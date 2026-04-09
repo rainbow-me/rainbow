@@ -1,33 +1,32 @@
+import { type useMobileWalletProtocolHost } from '@coinbase/mobile-wallet-protocol-host';
 import { parseUri } from '@walletconnect/utils';
 import URL from 'url-parse';
+import { isAddress } from 'viem';
 
+import { navigateToSwaps, type NavigateToSwapsParams } from '@/__swaps__/screens/Swap/navigateToSwaps';
+import { searchVerifiedTokens, TokenLists } from '@/__swaps__/screens/Swap/resources/search/searchV2';
 import { type ParsedSearchAsset } from '@/__swaps__/types/assets';
 import { GasSpeed } from '@/__swaps__/types/gas';
+import { parseSearchAsset } from '@/__swaps__/utils/assets';
+import { clamp } from '@/__swaps__/utils/swaps';
 import { analytics } from '@/analytics';
 import { showWalletConnectToast } from '@/components/toasts/WalletConnectToast';
 import { FiatProviderName } from '@/entities/f2c';
+import { pair as pairWalletConnect, setHasPendingDeeplinkPendingRedirect } from '@/features/wallet-connect/services/pair';
 import { checkIsValidAddressOrDomain, isENSAddressFormat } from '@/helpers/validators';
 import { logger } from '@/logger';
 import { type InitialRoute } from '@/navigation/initialRoute';
 import Navigation from '@/navigation/Navigation';
 import Routes from '@/navigation/routesNames';
 import store from '@/redux/store';
-import { delay } from '@/utils/delay';
-import ethereumUtils, { getAddressAndChainIdFromUniqueId, getUniqueId } from '@/utils/ethereumUtils';
-import { getPoapAndOpenSheetWithQRHash, getPoapAndOpenSheetWithSecretWord } from '@/utils/poaps';
-import { fetchReverseRecordWithRetry } from '@/utils/profileUtils';
-import { pair as pairWalletConnect, setHasPendingDeeplinkPendingRedirect } from '@/features/wallet-connect/services/pair';
-import { type useMobileWalletProtocolHost } from '@coinbase/mobile-wallet-protocol-host';
-
-import { navigateToSwaps, type NavigateToSwapsParams } from '@/__swaps__/screens/Swap/navigateToSwaps';
-import { searchVerifiedTokens, TokenLists } from '@/__swaps__/screens/Swap/resources/search/searchV2';
-import { parseSearchAsset } from '@/__swaps__/utils/assets';
-import { clamp } from '@/__swaps__/utils/swaps';
 import { fetchExternalToken } from '@/resources/assets/externalAssetsQuery';
 import { userAssetsStore } from '@/state/assets/userAssets';
 import { useBackendNetworksStore } from '@/state/backendNetworks/backendNetworks';
 import { getWalletReady, getWallets, setSelectedWallet } from '@/state/wallets/walletsStore';
-import { isAddress } from 'viem';
+import { delay } from '@/utils/delay';
+import ethereumUtils, { getAddressAndChainIdFromUniqueId, getUniqueId } from '@/utils/ethereumUtils';
+import { getPoapAndOpenSheetWithQRHash, getPoapAndOpenSheetWithSecretWord } from '@/utils/poaps';
+import { fetchReverseRecordWithRetry } from '@/utils/profileUtils';
 
 interface DeeplinkHandlerProps extends Pick<ReturnType<typeof useMobileWalletProtocolHost>, 'handleRequestUrl' | 'sendFailureToClient'> {
   url: string;

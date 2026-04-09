@@ -1,15 +1,14 @@
+import AppIconSettingsSection from '@/features/app-icon/components/AppIconSettingsSection';
 import * as i18n from '@/languages';
-
 import Routes from '@/navigation/routesNames';
 
-import AppIconSettingsSection from '@/features/app-icon/components/AppIconSettingsSection';
 import WalletsAndBackup from './components/Backups/WalletsAndBackup';
 import CurrencySection from './components/CurrencySection';
-import LanguageSection from './components/LanguageSection';
 import DevSection from './components/DevSection';
+import LanguageSection from './components/LanguageSection';
 import NetworkSection from './components/NetworkSection';
-import PrivacySection from './components/PrivacySection';
 import NotificationsSection from './components/NotificationsSection';
+import PrivacySection from './components/PrivacySection';
 import { SupportSection } from './components/support/SupportSection';
 
 export const SettingsPages = {

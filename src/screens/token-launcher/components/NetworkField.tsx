@@ -1,18 +1,20 @@
 import React from 'react';
-import * as i18n from '@/languages';
-import { Bleed, Box, Inline, Text, TextIcon } from '@/design-system';
-import { FieldContainer } from './FieldContainer';
-import { FieldLabel } from './FieldLabel';
-import { useTokenLauncherStore } from '../state/tokenLauncherStore';
-import { ChainImage } from '@/components/coin-icon/ChainImage';
-import { useBackendNetworksStore } from '@/state/backendNetworks/backendNetworks';
-import { ERROR_RED, FIELD_BORDER_COLOR, FIELD_BORDER_WIDTH, INPUT_HEIGHT } from '../constants';
+
 import ButtonPressAnimation from '@/components/animations/ButtonPressAnimation';
+import { ChainImage } from '@/components/coin-icon/ChainImage';
+import { Bleed, Box, Inline, Text, TextIcon } from '@/design-system';
+import * as i18n from '@/languages';
 import { useNavigation } from '@/navigation/Navigation';
 import Routes from '@/navigation/routesNames';
 import { useUserAssetsStore } from '@/state/assets/userAssets';
-import { useTokenLauncherContext } from '../context/TokenLauncherContext';
+import { useBackendNetworksStore } from '@/state/backendNetworks/backendNetworks';
 import { type ChainId } from '@/state/backendNetworks/types';
+
+import { ERROR_RED, FIELD_BORDER_COLOR, FIELD_BORDER_WIDTH, INPUT_HEIGHT } from '../constants';
+import { useTokenLauncherContext } from '../context/TokenLauncherContext';
+import { useTokenLauncherStore } from '../state/tokenLauncherStore';
+import { FieldContainer } from './FieldContainer';
+import { FieldLabel } from './FieldLabel';
 
 export function NetworkField() {
   const { accentColors } = useTokenLauncherContext();

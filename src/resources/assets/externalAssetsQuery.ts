@@ -1,12 +1,13 @@
 import { useQuery } from '@tanstack/react-query';
-import { metadataClient } from '@/graphql';
-import { createQueryKey, queryClient, type QueryConfig, type QueryFunctionArgs, type QueryFunctionResult } from '@/react-query';
-import { convertAmountAndPriceToNativeDisplay, convertAmountToPercentageDisplay } from '@/helpers/utilities';
-import type { NativeCurrencyKey } from '@/entities/nativeCurrencyTypes';
-import { type Token } from '@/graphql/__generated__/metadata';
-import { type ChainId } from '@/state/backendNetworks/types';
-import { isNativeAsset } from '@/handlers/assets';
+
 import { type AddressOrEth } from '@/__swaps__/types/assets';
+import type { NativeCurrencyKey } from '@/entities/nativeCurrencyTypes';
+import { metadataClient } from '@/graphql';
+import { type Token } from '@/graphql/__generated__/metadata';
+import { isNativeAsset } from '@/handlers/assets';
+import { convertAmountAndPriceToNativeDisplay, convertAmountToPercentageDisplay } from '@/helpers/utilities';
+import { createQueryKey, queryClient, type QueryConfig, type QueryFunctionArgs, type QueryFunctionResult } from '@/react-query';
+import { type ChainId } from '@/state/backendNetworks/types';
 
 export const EXTERNAL_TOKEN_CACHE_TIME = 1000 * 60 * 60 * 24; // 24 hours
 export const EXTERNAL_TOKEN_STALE_TIME = 1000 * 60; // 1 minute

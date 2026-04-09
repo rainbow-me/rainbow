@@ -1,27 +1,26 @@
 import React, { useState } from 'react';
-import * as i18n from '@/languages';
+
 import Animated, { interpolate, useAnimatedStyle, useSharedValue } from 'react-native-reanimated';
 
+import { FadedScrollCard } from '@/components/FadedScrollCard';
+import {
+  CARD_BORDER_WIDTH,
+  CARD_ROW_HEIGHT,
+  COLLAPSED_CARD_HEIGHT,
+  EXPANDED_CARD_TOP_INSET,
+  MAX_CARD_HEIGHT,
+} from '@/components/Transactions/constants';
+import { TransactionDetailsRow } from '@/components/Transactions/TransactionDetailsRow';
+import { IconContainer } from '@/components/Transactions/TransactionIcons';
 import { Box, Inline, Stack, Text } from '@/design-system';
 import { type TextColor } from '@/design-system/color/palettes';
-
+import { type TransactionSimulationMeta } from '@/graphql/__generated__/metadataPOST';
+import * as i18n from '@/languages';
+import { useBackendNetworksStore } from '@/state/backendNetworks/backendNetworks';
+import { type ChainId } from '@/state/backendNetworks/types';
 import abbreviations from '@/utils/abbreviations';
 import ethereumUtils from '@/utils/ethereumUtils';
-import { type TransactionSimulationMeta } from '@/graphql/__generated__/metadataPOST';
-import { type ChainId } from '@/state/backendNetworks/types';
-
-import { TransactionDetailsRow } from '@/components/Transactions/TransactionDetailsRow';
-import { FadedScrollCard } from '@/components/FadedScrollCard';
-import { IconContainer } from '@/components/Transactions/TransactionIcons';
 import { formatDate } from '@/utils/formatDate';
-import {
-  COLLAPSED_CARD_HEIGHT,
-  MAX_CARD_HEIGHT,
-  CARD_ROW_HEIGHT,
-  CARD_BORDER_WIDTH,
-  EXPANDED_CARD_TOP_INSET,
-} from '@/components/Transactions/constants';
-import { useBackendNetworksStore } from '@/state/backendNetworks/backendNetworks';
 
 interface TransactionDetailsCardProps {
   chainId: ChainId;

@@ -1,6 +1,8 @@
+import { PixelRatio, Platform } from 'react-native';
+
 import { precomputeValues } from '@capsizecss/core';
 import { mapValues } from 'lodash';
-import { PixelRatio, Platform } from 'react-native';
+
 import { fontWeights } from './fontWeights';
 import { typeHierarchy } from './typeHierarchy';
 

@@ -1,20 +1,22 @@
 import { createSelector } from 'reselect';
-import { buildBriefCoinsList, buildBriefUniqueTokenList } from './assets';
+
+import { type UniqueId } from '@/__swaps__/types/assets';
+import { type AssetListType } from '@/components/asset-list/RecyclerAssetList2';
+import { CellType, type CellTypes } from '@/components/asset-list/RecyclerAssetList2/core/ViewTypes';
+import { type useExperimentalConfig } from '@/config/experimentalHooks';
 import type { NativeCurrencyKey } from '@/entities/nativeCurrencyTypes';
 import type { ParsedAddressAsset } from '@/entities/tokens';
 import type { UniqueAsset } from '@/entities/uniqueAssets';
-import { CellType, type CellTypes } from '@/components/asset-list/RecyclerAssetList2/core/ViewTypes';
-import { type RainbowPositions } from '@/features/positions/types';
-import { type UniqueId } from '@/__swaps__/types/assets';
-import { type Language } from '@/languages';
-import { type Network } from '@/state/backendNetworks/types';
-import { type BooleanMap } from '@/hooks/useCoinListEditOptions';
-import { type useExperimentalConfig } from '@/config/experimentalHooks';
-import { type ClaimablesStore } from '@/state/claimables/claimables';
-import { type AssetListType } from '@/components/asset-list/RecyclerAssetList2';
-import { type Collection, type CollectionId } from '@/state/nfts/types';
 import { type PerpsWalletListData } from '@/features/perps/types';
 import { type PolymarketWalletListData } from '@/features/polymarket/types';
+import { type RainbowPositions } from '@/features/positions/types';
+import { type BooleanMap } from '@/hooks/useCoinListEditOptions';
+import { type Language } from '@/languages';
+import { type Network } from '@/state/backendNetworks/types';
+import { type ClaimablesStore } from '@/state/claimables/claimables';
+import { type Collection, type CollectionId } from '@/state/nfts/types';
+
+import { buildBriefCoinsList, buildBriefUniqueTokenList } from './assets';
 
 const CONTENT_PLACEHOLDER: CellTypes[] = [
   { type: CellType.LOADING_ASSETS, uid: 'loadings-asset-1' },

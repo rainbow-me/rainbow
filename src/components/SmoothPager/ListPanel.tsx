@@ -1,6 +1,8 @@
 import React, { memo, useCallback, useMemo } from 'react';
-import { ScrollView, type ScrollViewProps, type StyleProp, StyleSheet, TouchableWithoutFeedback, View, type ViewStyle } from 'react-native';
-import Animated, { type AnimatedStyle, type SharedValue, useAnimatedStyle } from 'react-native-reanimated';
+import { ScrollView, StyleSheet, TouchableWithoutFeedback, View, type ScrollViewProps, type StyleProp, type ViewStyle } from 'react-native';
+
+import Animated, { useAnimatedStyle, type AnimatedStyle, type SharedValue } from 'react-native-reanimated';
+
 import ButtonPressAnimation from '@/components/animations/ButtonPressAnimation';
 import { ImgixImage } from '@/components/images';
 import {
@@ -8,26 +10,27 @@ import {
   Box,
   Column,
   Columns,
+  globalColors,
   Separator,
   Stack,
   Text,
-  globalColors,
   useColorMode,
   useForegroundColor,
 } from '@/design-system';
 import { type TextColor } from '@/design-system/color/palettes';
 import { IS_ANDROID, IS_IOS } from '@/env';
+import { opacity } from '@/framework/ui/utils/opacity';
 import { returnStringFirstEmoji } from '@/helpers/emojiHandler';
 import { useAccountAccentColor } from '@/hooks/useAccountAccentColor';
 import { useNavigation } from '@/navigation/Navigation';
 import { colors } from '@/styles';
 import { fontWithWidthWorklet } from '@/styles/buildTextStyles';
-import { opacity } from '@/framework/ui/utils/opacity';
+import { THICK_BORDER_WIDTH } from '@/styles/constants';
 import { DEVICE_HEIGHT, DEVICE_WIDTH } from '@/utils/deviceUtils';
 import { addressHashedEmoji } from '@/utils/profileUtils';
-import { TOP_INSET } from '../DappBrowser/Dimensions';
 import safeAreaInsetValues from '@/utils/safeAreaInsetValues';
-import { THICK_BORDER_WIDTH } from '@/styles/constants';
+
+import { TOP_INSET } from '../DappBrowser/Dimensions';
 
 export const TapToDismiss = memo(function TapToDismiss() {
   const { goBack } = useNavigation();

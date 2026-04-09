@@ -1,20 +1,22 @@
 import React, { memo, useMemo } from 'react';
-import { useColorMode } from '@/design-system';
-import { SPORT_LEAGUES, getLeagueId } from '@/features/polymarket/leagues';
+
 import { getColorValueForThemeWorklet } from '@/__swaps__/utils/swaps';
+import { useColorMode } from '@/design-system';
+import { getLeagueId, SPORT_LEAGUES } from '@/features/polymarket/leagues';
+
+import { BaseballIcon } from './icons/BaseballIcon';
 import { CfbIcon } from './icons/CfbIcon';
-import { Cs2Icon } from './icons/Cs2Icon';
 import { CricketIcon } from './icons/CricketIcon';
+import { Cs2Icon } from './icons/Cs2Icon';
 import { Dota2Icon } from './icons/Dota2Icon';
-import { SoccerIcon } from './icons/SoccerIcon';
 import { HockeyIcon } from './icons/HockeyIcon';
 import { NbaIcon } from './icons/NbaIcon';
+import { NflIcon } from './icons/NflIcon';
 import { NhlIcon } from './icons/NhlIcon';
+import { SoccerIcon } from './icons/SoccerIcon';
 import { TennisIcon } from './icons/TennisIcon';
 import { UfcIcon } from './icons/UfcIcon';
 import { ValorantIcon } from './icons/ValorantIcon';
-import { NflIcon } from './icons/NflIcon';
-import { BaseballIcon } from './icons/BaseballIcon';
 
 export const DEFAULT_SIZE = 24;
 

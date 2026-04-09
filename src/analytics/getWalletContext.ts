@@ -1,7 +1,8 @@
+import type { Address } from 'viem';
+
 import { securelyHashWalletAddress } from '@/analytics/utils';
 import { EthereumWalletType } from '@/helpers/walletTypes';
 import { getWalletWithAccount } from '@/state/wallets/walletsStore';
-import type { Address } from 'viem';
 
 export type WalletContext = {
   walletType?: 'owned' | 'hardware' | 'watched';

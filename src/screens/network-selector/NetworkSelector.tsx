@@ -1,10 +1,42 @@
+import { memo, useCallback, useEffect, useMemo, useRef, useState, type PropsWithChildren } from 'react';
+import { Pressable, ScrollView, StyleSheet, View, type TextInput } from 'react-native';
+
+import MaskedView from '@react-native-masked-view/masked-view';
+import { useRoute, type RouteProp } from '@react-navigation/native';
+import chroma from 'chroma-js';
+import { LinearGradient } from 'expo-linear-gradient';
+import { noop } from 'lodash';
 import { BlurView } from 'react-native-blur-view';
-import { opacity } from '@/framework/ui/utils/opacity';
-import { useBackendNetworksStore } from '@/state/backendNetworks/backendNetworks';
-import { ChainId } from '@/state/backendNetworks/types';
-import ButtonPressAnimation from '@/components/animations/ButtonPressAnimation';
+import { Gesture, GestureDetector } from 'react-native-gesture-handler';
+import { KeyboardAwareScrollView, KeyboardStickyView } from 'react-native-keyboard-controller';
+import Animated, {
+  Easing,
+  FadeIn,
+  FadeOutUp,
+  runOnJS,
+  useAnimatedReaction,
+  useAnimatedStyle,
+  useDerivedValue,
+  useSharedValue,
+  withClamp,
+  withSequence,
+  withSpring,
+  withTiming,
+  type DerivedValue,
+  type SharedValue,
+} from 'react-native-reanimated';
+import Svg, { Path } from 'react-native-svg';
+import { triggerHaptics } from 'react-native-turbo-haptics';
+import { type Chain } from 'viem/chains';
+
+import { type UserAssetFilter } from '@/__swaps__/types/assets';
+import { AnimatedTextIcon } from '@/components/AnimatedComponents/AnimatedTextIcon';
 import { SPRING_CONFIGS, TIMING_CONFIGS } from '@/components/animations/animationConfigs';
+import ButtonPressAnimation from '@/components/animations/ButtonPressAnimation';
+import { GestureHandlerButton } from '@/components/buttons/GestureHandlerButton';
 import { ChainImage } from '@/components/coin-icon/ChainImage';
+import { TapToDismiss } from '@/components/DappBrowser/control-panel/ControlPanel';
+import { EasingGradient } from '@/components/easing-gradient/EasingGradient';
 import {
   AnimatedText,
   Box,
@@ -18,33 +50,14 @@ import {
   useColorMode,
 } from '@/design-system';
 import { useForegroundColor } from '@/design-system/color/useForegroundColor';
+import { IS_IOS } from '@/env';
+import { opacity } from '@/framework/ui/utils/opacity';
 import * as i18n from '@/languages';
-import deviceUtils, { DEVICE_WIDTH } from '@/utils/deviceUtils';
-import MaskedView from '@react-native-masked-view/masked-view';
-import chroma from 'chroma-js';
-import { memo, type PropsWithChildren, useCallback, useEffect, useMemo, useRef, useState } from 'react';
-import { Pressable, StyleSheet, View, type TextInput, ScrollView } from 'react-native';
-import { type RouteProp, useRoute } from '@react-navigation/native';
-import { Gesture, GestureDetector } from 'react-native-gesture-handler';
-import { LinearGradient } from 'expo-linear-gradient';
-import { EasingGradient } from '@/components/easing-gradient/EasingGradient';
-import Animated, {
-  type DerivedValue,
-  Easing,
-  FadeIn,
-  FadeOutUp,
-  runOnJS,
-  type SharedValue,
-  useAnimatedReaction,
-  useAnimatedStyle,
-  useDerivedValue,
-  useSharedValue,
-  withClamp,
-  withSequence,
-  withSpring,
-  withTiming,
-} from 'react-native-reanimated';
-import Svg, { Path } from 'react-native-svg';
+import Navigation, { useNavigation } from '@/navigation/Navigation';
+import type Routes from '@/navigation/routesNames';
+import { type RootStackParamList } from '@/navigation/types';
+import { useBackendNetworksStore } from '@/state/backendNetworks/backendNetworks';
+import { ChainId } from '@/state/backendNetworks/types';
 import {
   customizeNetworksBannerStore,
   defaultPinnedNetworks,
@@ -52,21 +65,11 @@ import {
   networkSwitcherStore,
   shouldShowCustomizeNetworksBanner,
 } from '@/state/networkSwitcher/networkSwitcher';
-import { type RootStackParamList } from '@/navigation/types';
-import { IS_IOS } from '@/env';
-import safeAreaInsetValues from '@/utils/safeAreaInsetValues';
-import { noop } from 'lodash';
-import { TapToDismiss } from '@/components/DappBrowser/control-panel/ControlPanel';
-import { GestureHandlerButton } from '@/components/buttons/GestureHandlerButton';
-import { triggerHaptics } from 'react-native-turbo-haptics';
-import { AnimatedTextIcon } from '@/components/AnimatedComponents/AnimatedTextIcon';
-import { type UserAssetFilter } from '@/__swaps__/types/assets';
-import Navigation, { useNavigation } from '@/navigation/Navigation';
-import type Routes from '@/navigation/routesNames';
-import { SEARCH_BAR_HEIGHT, SearchBar } from './components/SearchBar';
-import { KeyboardStickyView, KeyboardAwareScrollView } from 'react-native-keyboard-controller';
-import { type Chain } from 'viem/chains';
 import { THICK_BORDER_WIDTH, THICKER_BORDER_WIDTH } from '@/styles/constants';
+import deviceUtils, { DEVICE_WIDTH } from '@/utils/deviceUtils';
+import safeAreaInsetValues from '@/utils/safeAreaInsetValues';
+
+import { SEARCH_BAR_HEIGHT, SearchBar } from './components/SearchBar';
 
 type RouteParams = RouteProp<RootStackParamList, 'NetworkSelector'>['params'];
 

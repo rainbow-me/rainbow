@@ -1,10 +1,12 @@
 import React, { type ComponentProps, type ReactElement } from 'react';
+
 import Animated, { useAnimatedRef, useAnimatedScrollHandler, useSharedValue } from 'react-native-reanimated';
+
 import { useDndContext } from '../DndContext';
 import { type UseDraggableSortOptions } from '../features';
-import { swapByItemCenterPoint } from '../utils';
-import { useChildrenIds } from '../hooks';
 import { useDraggableScroll } from '../features/sort/hooks/useDraggableScroll';
+import { useChildrenIds } from '../hooks';
+import { swapByItemCenterPoint } from '../utils';
 
 type AnimatedScrollViewProps = ComponentProps<typeof Animated.ScrollView>;
 

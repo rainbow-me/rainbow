@@ -1,13 +1,16 @@
 import React, { useCallback } from 'react';
 import { type TextInput } from 'react-native';
-import { type SharedValue, useAnimatedRef, useAnimatedStyle, useDerivedValue } from 'react-native-reanimated';
+
+import { useAnimatedRef, useAnimatedStyle, useDerivedValue, type SharedValue } from 'react-native-reanimated';
+
+import { getColorValueForThemeWorklet } from '@/__swaps__/utils/swaps';
 import { SearchInput as BaseSearchInput } from '@/components/token-search/SearchInput';
 import { getTokenSearchButtonWrapperStyle } from '@/components/token-search/styles';
 import { useColorMode } from '@/design-system';
-import { getColorValueForThemeWorklet } from '@/__swaps__/utils/swaps';
+import * as i18n from '@/languages';
 import { useUserAssetsStore } from '@/state/assets/userAssets';
 import { useStoreSharedValue } from '@/state/internal/hooks/useStoreSharedValue';
-import * as i18n from '@/languages';
+
 import { NavigationSteps } from '../../constants';
 import { useDepositContext } from '../../contexts/DepositContext';
 

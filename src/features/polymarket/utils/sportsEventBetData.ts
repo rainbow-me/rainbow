@@ -4,8 +4,8 @@ import {
   type LineBasedGroup,
   type MoneylineGroup,
 } from '@/features/polymarket/screens/polymarket-event-screen/utils/getMarketsGroupedByBetType';
-import { type PolymarketEvent, type PolymarketMarket } from '@/features/polymarket/types/polymarket-event';
 import { type PolymarketTeamInfo, type TeamSide } from '@/features/polymarket/types';
+import { type PolymarketEvent, type PolymarketMarket } from '@/features/polymarket/types/polymarket-event';
 import { isDrawMarket } from '@/features/polymarket/utils/sports';
 import { getEventTeams } from '@/features/polymarket/utils/sportsEventTeams';
 import { roundWorklet, toPercentageWorklet } from '@/framework/core/safeMath';

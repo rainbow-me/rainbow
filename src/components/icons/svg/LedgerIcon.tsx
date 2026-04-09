@@ -1,5 +1,7 @@
 import React from 'react';
+
 import { Path, type SvgProps } from 'react-native-svg';
+
 import Svg from '../Svg';
 
 export function LedgerIcon({ color, ...props }: SvgProps) {

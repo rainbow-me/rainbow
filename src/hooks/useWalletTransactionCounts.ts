@@ -1,7 +1,9 @@
+import { useMemo } from 'react';
+
+import { type Address } from 'viem';
+
 import { useWalletSummary } from '@/state/wallets/useWalletSummaryStore';
 import { useWalletAddresses } from '@/state/wallets/walletsStore';
-import { useMemo } from 'react';
-import { type Address } from 'viem';
 
 export type WalletTransactionCountsResult = {
   transactionCounts: Record<string, number>;

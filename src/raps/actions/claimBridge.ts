@@ -1,22 +1,24 @@
 import { AddressZero } from '@ethersproject/constants';
-import { type CrosschainQuote, type QuoteError, getClaimBridgeQuote } from '@rainbow-me/swaps';
 import type { Address, Hash } from 'viem';
+
+import { getDefaultSlippageWorklet } from '@/__swaps__/utils/swaps';
 import { type TransactionGasParamAmounts } from '@/entities/gas';
 import { type ParsedAddressAsset } from '@/entities/tokens';
-import { type NewTransaction, TransactionDirection, TransactionStatus } from '@/entities/transactions';
+import { TransactionDirection, TransactionStatus, type NewTransaction } from '@/entities/transactions';
 import { getProvider } from '@/handlers/web3';
 import { add, addBuffer, greaterThan, lessThan, multiply, subtract } from '@/helpers/utilities';
 import { RainbowError } from '@/logger';
+import { getRemoteConfig } from '@/model/remoteConfig';
 import store from '@/redux/store';
 import { REFERRER_CLAIM } from '@/references/constants';
+import { useBackendNetworksStore } from '@/state/backendNetworks/backendNetworks';
+import { ChainId } from '@/state/backendNetworks/types';
 import { addNewTransaction } from '@/state/pendingTransactions';
 import ethereumUtils from '@/utils/ethereumUtils';
+import { getClaimBridgeQuote, type CrosschainQuote, type QuoteError } from '@rainbow-me/swaps';
+
 import { type ActionProps } from '../references';
 import { executeCrosschainSwap } from './crosschainSwap';
-import { ChainId } from '@/state/backendNetworks/types';
-import { useBackendNetworksStore } from '@/state/backendNetworks/backendNetworks';
-import { getDefaultSlippageWorklet } from '@/__swaps__/utils/swaps';
-import { getRemoteConfig } from '@/model/remoteConfig';
 
 // This action is used to bridge the claimed funds to another chain
 export async function claimBridge({ parameters, wallet, baseNonce }: ActionProps<'claimBridge'>) {

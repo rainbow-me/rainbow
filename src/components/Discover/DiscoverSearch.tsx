@@ -1,28 +1,29 @@
 import React, { useCallback, useEffect, useMemo } from 'react';
 import { View } from 'react-native';
+
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useDebounce } from 'use-debounce';
 
-import deviceUtils from '@/utils/deviceUtils';
+import { useDiscoverSearchQueryStore, useDiscoverSearchStore } from '@/__swaps__/screens/Swap/resources/search/searchV2';
+import { analytics } from '@/analytics';
 import CurrencySelectionList from '@/components/CurrencySelectionList';
 import { useDiscoverScreenContext } from '@/components/Discover/DiscoverScreenContext';
-import { analytics } from '@/analytics';
-import useSearchCurrencyList from '@/hooks/useSearchCurrencyList';
-import { useHardwareBackOnFocus } from '@/hooks/useHardwareBack';
-import Navigation from '@/navigation/Navigation';
-import Routes from '@/navigation/routesNames';
-import ethereumUtils from '@/utils/ethereumUtils';
-import { getPoapAndOpenSheetWithQRHash, getPoapAndOpenSheetWithSecretWord } from '@/utils/poaps';
-import { navigateToMintCollection } from '@/resources/reservoir/mints';
-import { TAB_BAR_HEIGHT } from '@/navigation/SwipeNavigator';
+import { type EnrichedExchangeAsset } from '@/components/ExchangeAssetList';
 import { navbarHeight } from '@/components/navbar/Navbar';
 import { IS_TEST } from '@/env';
-import { type EnrichedExchangeAsset } from '@/components/ExchangeAssetList';
+import { useHardwareBackOnFocus } from '@/hooks/useHardwareBack';
+import useSearchCurrencyList from '@/hooks/useSearchCurrencyList';
+import { useTimeoutEffect } from '@/hooks/useTimeout';
+import Navigation from '@/navigation/Navigation';
+import Routes from '@/navigation/routesNames';
+import { TAB_BAR_HEIGHT } from '@/navigation/SwipeNavigator';
+import { navigateToMintCollection } from '@/resources/reservoir/mints';
 import { useBackendNetworksStore } from '@/state/backendNetworks/backendNetworks';
 import { ChainId, Network } from '@/state/backendNetworks/types';
-import { useTimeoutEffect } from '@/hooks/useTimeout';
-import { useDiscoverSearchQueryStore, useDiscoverSearchStore } from '@/__swaps__/screens/Swap/resources/search/searchV2';
-import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useAccountAddress } from '@/state/wallets/walletsStore';
+import deviceUtils from '@/utils/deviceUtils';
+import ethereumUtils from '@/utils/ethereumUtils';
+import { getPoapAndOpenSheetWithQRHash, getPoapAndOpenSheetWithSecretWord } from '@/utils/poaps';
 
 export default function DiscoverSearch() {
   const accountAddress = useAccountAddress();

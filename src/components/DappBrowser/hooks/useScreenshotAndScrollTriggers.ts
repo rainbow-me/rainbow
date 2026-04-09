@@ -1,7 +1,10 @@
 import { useCallback } from 'react';
+
 import { dispatchCommand, runOnJS, runOnUI, useAnimatedReaction } from 'react-native-reanimated';
+
 import { IS_IOS } from '@/env';
-import { RainbowError, logger } from '@/logger';
+import { logger, RainbowError } from '@/logger';
+
 import { useBrowserContext } from '../BrowserContext';
 import { useBrowserWorkletsContext } from '../BrowserWorkletsContext';
 import { RAINBOW_HOME } from '../constants';

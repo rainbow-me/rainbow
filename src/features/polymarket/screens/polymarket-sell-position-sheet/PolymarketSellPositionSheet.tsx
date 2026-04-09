@@ -1,34 +1,36 @@
 import { memo, useCallback, useMemo, useState } from 'react';
 import { Alert, StyleSheet, View } from 'react-native';
-import { type RouteProp, useRoute } from '@react-navigation/native';
-import { type RootStackParamList } from '@/navigation/types';
-import type Routes from '@/navigation/routesNames';
-import { Box, globalColors, Separator, Text, useColorMode, useForegroundColor } from '@/design-system';
-import * as i18n from '@/languages';
-import { PanelSheet } from '@/components/PanelSheet/PanelSheet';
-import { HoldToActivateButton } from '@/components/hold-to-activate-button/HoldToActivateButton';
-import { usePolymarketPositionsStore } from '@/features/polymarket/stores/polymarketPositionsStore';
-import { ensureError, logger, RainbowError } from '@/logger';
-import { formatCurrency } from '@/features/perps/utils/formatCurrency';
+
+import { useRoute, type RouteProp } from '@react-navigation/native';
 import { LinearGradient } from 'expo-linear-gradient';
+import { BlurView } from 'react-native-blur-view';
+
 import { getColorValueForThemeWorklet } from '@/__swaps__/utils/swaps';
-import { opacity } from '@/framework/ui/utils/opacity';
-import { getSolidColorEquivalent } from '@/worklets/colors';
-import { mulWorklet, subWorklet, toFixedWorklet, trimTrailingZeros } from '@/framework/core/safeMath';
+import { analytics } from '@/analytics';
+import { HoldToActivateButton } from '@/components/hold-to-activate-button/HoldToActivateButton';
+import { PanelSheet } from '@/components/PanelSheet/PanelSheet';
+import { Box, globalColors, Separator, Text, useColorMode, useForegroundColor } from '@/design-system';
+import { formatCurrency } from '@/features/perps/utils/formatCurrency';
+import { PolymarketNoLiquidityCard } from '@/features/polymarket/components/PolymarketNoLiquidityCard';
+import { PolymarketOutcomeCard } from '@/features/polymarket/components/PolymarketOutcomeCard';
+import { POLYMARKET_BACKGROUND_LIGHT } from '@/features/polymarket/constants';
+import { createSellExecutionStore } from '@/features/polymarket/screens/polymarket-sell-position-sheet/stores/createSellExecutionStore';
+import { usePolymarketClients } from '@/features/polymarket/stores/derived/usePolymarketClients';
+import { usePolymarketPositionsStore } from '@/features/polymarket/stores/polymarketPositionsStore';
+import { getPositionAccentColor } from '@/features/polymarket/utils/getMarketColor';
+import { getOutcomeDescriptions } from '@/features/polymarket/utils/getOutcomeDescriptions';
 import { marketSellTotalPosition } from '@/features/polymarket/utils/orders';
 import { trackPolymarketOrder } from '@/features/polymarket/utils/polymarketOrderTracker';
-import Navigation from '@/navigation/Navigation';
 import { waitForPositionSizeUpdate } from '@/features/polymarket/utils/refetchPolymarketStores';
-import { getPositionAccentColor } from '@/features/polymarket/utils/getMarketColor';
-import { BlurView } from 'react-native-blur-view';
-import { analytics } from '@/analytics';
+import { mulWorklet, subWorklet, toFixedWorklet, trimTrailingZeros } from '@/framework/core/safeMath';
+import { opacity } from '@/framework/ui/utils/opacity';
+import * as i18n from '@/languages';
+import { ensureError, logger, RainbowError } from '@/logger';
+import Navigation from '@/navigation/Navigation';
+import type Routes from '@/navigation/routesNames';
+import { type RootStackParamList } from '@/navigation/types';
 import { checkIfReadOnlyWallet } from '@/state/wallets/walletsStore';
-import { usePolymarketClients } from '@/features/polymarket/stores/derived/usePolymarketClients';
-import { createSellExecutionStore } from '@/features/polymarket/screens/polymarket-sell-position-sheet/stores/createSellExecutionStore';
-import { getOutcomeDescriptions } from '@/features/polymarket/utils/getOutcomeDescriptions';
-import { PolymarketOutcomeCard } from '@/features/polymarket/components/PolymarketOutcomeCard';
-import { PolymarketNoLiquidityCard } from '@/features/polymarket/components/PolymarketNoLiquidityCard';
-import { POLYMARKET_BACKGROUND_LIGHT } from '@/features/polymarket/constants';
+import { getSolidColorEquivalent } from '@/worklets/colors';
 
 export const PolymarketSellPositionSheet = memo(function PolymarketSellPositionSheet() {
   const {

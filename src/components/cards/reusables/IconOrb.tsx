@@ -1,6 +1,7 @@
 import React from 'react';
-import { AccentColorProvider, Box, ColorModeProvider, Text } from '@/design-system';
+
 import Skeleton, { FakeText } from '@/components/skeleton/Skeleton';
+import { AccentColorProvider, Box, ColorModeProvider, Text } from '@/design-system';
 import { type TextSize, type TextWeight } from '@/design-system/components/Text/Text';
 import { useTheme } from '@/theme/ThemeContext';
 

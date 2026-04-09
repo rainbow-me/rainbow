@@ -1,17 +1,18 @@
-import { useOpenCollectionsStore } from '@/state/nfts/openCollectionsStore';
-import { getShowcase, showcaseTokensQueryKey } from '@/hooks/useFetchShowcaseTokens';
-import { getHidden, hiddenTokensQueryKey } from '@/hooks/useFetchHiddenTokens';
-import { queryClient } from '@/react-query';
 import { type Address } from 'viem';
-import { useNftsStore } from '@/state/nfts/nfts';
-import { STALE_TIME } from '@/state/nfts/createNftsStore';
-import { type NftsState } from '@/state/nfts/types';
-import { parseUniqueId } from '@/resources/nfts/utils';
-import isLowerCaseMatch from '@/utils/isLowerCaseMatch';
-import { ENS_NFT_CONTRACT_ADDRESS } from '@/features/ens/references';
+
 import type { UniqueAsset } from '@/entities/uniqueAssets';
-import { fetchNFTData, type NFTData, nftsQueryKey } from '@/resources/nfts';
+import { ENS_NFT_CONTRACT_ADDRESS } from '@/features/ens/references';
 import { isENSAddressFormat } from '@/helpers/validators';
+import { getHidden, hiddenTokensQueryKey } from '@/hooks/useFetchHiddenTokens';
+import { getShowcase, showcaseTokensQueryKey } from '@/hooks/useFetchShowcaseTokens';
+import { queryClient } from '@/react-query';
+import { fetchNFTData, nftsQueryKey, type NFTData } from '@/resources/nfts';
+import { parseUniqueId } from '@/resources/nfts/utils';
+import { STALE_TIME } from '@/state/nfts/createNftsStore';
+import { useNftsStore } from '@/state/nfts/nfts';
+import { useOpenCollectionsStore } from '@/state/nfts/openCollectionsStore';
+import { type NftsState } from '@/state/nfts/types';
+import isLowerCaseMatch from '@/utils/isLowerCaseMatch';
 
 export function isDataComplete(tokens: string[]) {
   if (!tokens.length) return true;

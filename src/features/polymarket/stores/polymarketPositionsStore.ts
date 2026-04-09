@@ -1,14 +1,14 @@
-import { RainbowError } from '@/logger';
-import { createQueryStore } from '@/state/internal/createQueryStore';
-import { time } from '@/utils/time';
-import { rainbowFetch } from '@/framework/data/http/rainbowFetch';
 import { POLYMARKET_DATA_API_URL, POLYMARKET_GAMMA_API_URL } from '@/features/polymarket/constants';
 import { usePolymarketClients } from '@/features/polymarket/stores/derived/usePolymarketClients';
 import { type PolymarketPosition, type RawPolymarketPosition } from '@/features/polymarket/types';
 import { type RawPolymarketMarket } from '@/features/polymarket/types/polymarket-event';
-import { processRawPolymarketPosition } from '@/features/polymarket/utils/transforms';
 import { fetchTeamsForGameMarkets } from '@/features/polymarket/utils/sports';
+import { processRawPolymarketPosition } from '@/features/polymarket/utils/transforms';
+import { rainbowFetch } from '@/framework/data/http/rainbowFetch';
+import { RainbowError } from '@/logger';
+import { createQueryStore } from '@/state/internal/createQueryStore';
 import { createStoreActions } from '@/state/internal/utils/createStoreActions';
+import { time } from '@/utils/time';
 
 type PolymarketPositionsStoreActions = {
   getPositions: () => PolymarketPosition[] | undefined;

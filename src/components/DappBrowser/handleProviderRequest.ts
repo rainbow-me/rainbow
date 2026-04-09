@@ -1,28 +1,29 @@
+import { Alert } from 'react-native';
+
+import { BigNumber } from '@ethersproject/bignumber';
+import { debounce } from 'lodash';
+import { UserRejectedRequestError } from 'viem';
+
 import { type Messenger } from '@/browserMessaging/AppMessenger';
+import { getProvider } from '@/handlers/web3';
+import * as i18n from '@/languages';
+import { logger } from '@/logger';
+import Routes from '@/navigation/routesNames';
+import { getDappMetadata } from '@/resources/metadata/dapp';
+import { useAppSessionsStore } from '@/state/appSessions';
+import { useBackendNetworksStore } from '@/state/backendNetworks/backendNetworks';
+import { ChainId } from '@/state/backendNetworks/types';
+import { useNavigationStore } from '@/state/navigation/navigationStore';
+import { handleDappBrowserConnectionPrompt, handleDappBrowserRequest } from '@/utils/requestNavigationHandlers';
+import { time } from '@/utils/time';
 import {
+  handleProviderRequest,
   type AddEthereumChainProposedChain,
   type RequestArguments,
   type RequestResponse,
-  handleProviderRequest,
 } from '@rainbow-me/provider';
-import * as i18n from '@/languages';
-
-import { getProvider } from '@/handlers/web3';
-import { UserRejectedRequestError } from 'viem';
-import { logger } from '@/logger';
 import { type ActiveSession } from '@rainbow-me/provider/dist/references/appSession';
-import { handleDappBrowserConnectionPrompt, handleDappBrowserRequest } from '@/utils/requestNavigationHandlers';
 import { type Tab } from '@rainbow-me/provider/dist/references/messengers';
-import { getDappMetadata } from '@/resources/metadata/dapp';
-import { useAppSessionsStore } from '@/state/appSessions';
-import { BigNumber } from '@ethersproject/bignumber';
-import { ChainId } from '@/state/backendNetworks/types';
-import { useBackendNetworksStore } from '@/state/backendNetworks/backendNetworks';
-import { Alert } from 'react-native';
-import { debounce } from 'lodash';
-import { useNavigationStore } from '@/state/navigation/navigationStore';
-import Routes from '@/navigation/routesNames';
-import { time } from '@/utils/time';
 
 export type ProviderRequestPayload = RequestArguments & {
   id: number;

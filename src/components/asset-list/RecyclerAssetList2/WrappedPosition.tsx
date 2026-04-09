@@ -1,4 +1,5 @@
 import React from 'react';
+
 import { Box, type BoxProps } from '@/design-system';
 import { PositionCard } from '@/features/positions/components/PositionCard';
 import { type RainbowPosition } from '@/features/positions/types';

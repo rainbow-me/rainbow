@@ -1,17 +1,20 @@
-import { useEffect, useMemo, memo } from 'react';
-import { useTokenLauncherStore } from '../state/tokenLauncherStore';
-import { useExternalToken } from '@/resources/assets/externalAssetsQuery';
-import { time } from '@/utils/time';
+import { memo, useEffect, useMemo } from 'react';
+
+import { formatUnits } from 'viem';
+
+import { safeBigInt } from '@/__swaps__/screens/Swap/hooks/useEstimatedGasFee';
 import { useGasSettings } from '@/__swaps__/screens/Swap/hooks/useSelectedGas';
 import { calculateGasFeeWorklet } from '@/__swaps__/screens/Swap/providers/SyncSwapStateAndSharedValues';
 import { GasSpeed } from '@/__swaps__/types/gas';
-import { useBackendNetworksStore } from '@/state/backendNetworks/backendNetworks';
-import { useUserAssetsStore } from '@/state/assets/userAssets';
-import { formatUnits } from 'viem';
-import { safeBigInt } from '@/__swaps__/screens/Swap/hooks/useEstimatedGasFee';
 import { lessThanOrEqualToWorklet } from '@/framework/core/safeMath';
-import { TOKEN_LAUNCH_GAS_LIMIT } from '../constants';
+import { useExternalToken } from '@/resources/assets/externalAssetsQuery';
+import { useUserAssetsStore } from '@/state/assets/userAssets';
 import { userAssetsStoreManager } from '@/state/assets/userAssetsStoreManager';
+import { useBackendNetworksStore } from '@/state/backendNetworks/backendNetworks';
+import { time } from '@/utils/time';
+
+import { TOKEN_LAUNCH_GAS_LIMIT } from '../constants';
+import { useTokenLauncherStore } from '../state/tokenLauncherStore';
 
 // Handles syncing price and gas data without triggering high level re-renders
 function _PriceAndGasSync() {

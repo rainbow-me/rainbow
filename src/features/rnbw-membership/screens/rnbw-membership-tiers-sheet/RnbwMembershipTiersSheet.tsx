@@ -1,23 +1,26 @@
+import { memo } from 'react';
 import { StyleSheet } from 'react-native';
+
+import { LinearGradient, type LinearGradientProps } from 'expo-linear-gradient';
+import Animated, { Extrapolation, interpolate, useAnimatedStyle, useDerivedValue, type SharedValue } from 'react-native-reanimated';
+
 import { StepIndicators } from '@/components/explainer-sheet/components/StepIndicators';
-import { PanelSheet, PANEL_WIDTH } from '@/components/PanelSheet/PanelSheet';
+import { PANEL_WIDTH, PanelSheet } from '@/components/PanelSheet/PanelSheet';
 import { downscalePagerIndex, SmoothPager, usePagerNavigation } from '@/components/SmoothPager/SmoothPager';
 import { Box, globalColors, Separator, Text, useColorMode } from '@/design-system';
-import { useMembershipTierInfo } from '../../stores/derived/useMembershipTierInfo';
-import { memo } from 'react';
-import type { Tier as TierType } from '../../types';
-import Animated, { Extrapolation, interpolate, useAnimatedStyle, useDerivedValue, type SharedValue } from 'react-native-reanimated';
-import { RNBW_DECIMALS } from '@/features/rnbw-staking/constants';
-import { convertRawAmountToDecimalFormat } from '@/helpers/utilities';
-import { formatNumber } from '@/helpers/strings';
-import { RNBW_SYMBOL } from '@/features/rnbw-rewards/constants';
-import { TierThemedLabel } from '../../components/TierThemedLabel';
-import { TierBadge } from '../../components/TierBadge';
-import { getTierVisuals } from '../../constants';
-import { LinearGradient, type LinearGradientProps } from 'expo-linear-gradient';
 import { getValueForColorMode } from '@/design-system/color/palettes';
 import { TierProgressBar } from '@/features/rnbw-membership/components/TierProgressBar';
+import { RNBW_SYMBOL } from '@/features/rnbw-rewards/constants';
+import { RNBW_DECIMALS } from '@/features/rnbw-staking/constants';
+import { formatNumber } from '@/helpers/strings';
+import { convertRawAmountToDecimalFormat } from '@/helpers/utilities';
 import * as i18n from '@/languages';
+
+import { TierBadge } from '../../components/TierBadge';
+import { TierThemedLabel } from '../../components/TierThemedLabel';
+import { getTierVisuals } from '../../constants';
+import { useMembershipTierInfo } from '../../stores/derived/useMembershipTierInfo';
+import type { Tier as TierType } from '../../types';
 
 const AnimatedLinearGradient = Animated.createAnimatedComponent(LinearGradient);
 

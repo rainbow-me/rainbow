@@ -1,15 +1,17 @@
-import { analytics } from '@/analytics';
 import { useCallback, useEffect, useMemo } from 'react';
+
+import { useQuery } from '@tanstack/react-query';
+import { createMMKV } from 'react-native-mmkv';
+import { atom, useRecoilState } from 'recoil';
+
+import { analytics } from '@/analytics';
 import useExperimentalFlag, { MINTS } from '@/config/experimentalHooks';
 import { IS_TEST } from '@/env';
 import { arcClient } from '@/graphql';
 import { type GetMintableCollectionsQuery } from '@/graphql/__generated__/arc';
-import { createQueryKey } from '@/react-query';
-import { useQuery } from '@tanstack/react-query';
-import { atom, useRecoilState } from 'recoil';
-import { createMMKV } from 'react-native-mmkv';
 import * as i18n from '@/languages';
 import { useRemoteConfig } from '@/model/remoteConfig';
+import { createQueryKey } from '@/react-query';
 
 const mmkv = createMMKV();
 

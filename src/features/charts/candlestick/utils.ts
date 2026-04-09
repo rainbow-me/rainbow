@@ -1,8 +1,9 @@
+import { addCommasToNumber } from '@/__swaps__/utils/swaps';
 import type { NativeCurrencyKey } from '@/entities/nativeCurrencyTypes';
+import { greaterThanOrEqualToWorklet } from '@/framework/core/safeMath';
 import { formatAssetPrice } from '@/helpers/formatAssetPrice';
 import { supportedCurrencies as supportedNativeCurrencies } from '@/references/supportedCurrencies';
-import { greaterThanOrEqualToWorklet } from '@/framework/core/safeMath';
-import { addCommasToNumber } from '@/__swaps__/utils/swaps';
+
 import { CandleResolution } from '../types';
 import { type Bar, type CandlestickEndpointResponse, type Price } from './types';
 

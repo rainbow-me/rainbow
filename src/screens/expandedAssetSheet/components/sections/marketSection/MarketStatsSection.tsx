@@ -1,12 +1,15 @@
 import React, { memo } from 'react';
+
 import Animated from 'react-native-reanimated';
-import * as i18n from '@/languages';
+
 import { Box } from '@/design-system';
+import * as i18n from '@/languages';
 import { CollapsibleSection, LAYOUT_ANIMATION } from '@/screens/expandedAssetSheet/components/shared/CollapsibleSection';
 import { SheetSeparator } from '@/screens/expandedAssetSheet/components/shared/Separator';
 import { SectionId } from '@/screens/expandedAssetSheet/context/ExpandedAssetSheetContext';
-import { MarketStatsCard } from './MarketStatsCard';
+
 import { AssetInfoList } from './AssetInfoList';
+import { MarketStatsCard } from './MarketStatsCard';
 
 export const MarketStatsSection = memo(function MarketStatsSection() {
   return (

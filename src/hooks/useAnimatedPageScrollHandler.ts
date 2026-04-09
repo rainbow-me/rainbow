@@ -1,5 +1,5 @@
-import { type MutableRefObject, type RefObject, useEffect, useRef } from 'react';
-import { type NativeScrollEvent, Platform } from 'react-native';
+import { useEffect, useRef, type MutableRefObject, type RefObject } from 'react';
+import { Platform, type NativeScrollEvent } from 'react-native';
 
 // we convert it to require to make sure each type is any
 // otherwise it breaks ts linting

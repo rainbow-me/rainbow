@@ -1,8 +1,10 @@
+import { createDerivedStore, shallowEqual } from '@storesjs/stores';
+
+import { RNBW_DECIMALS } from '@/features/rnbw-staking/constants';
 import { convertAmountToNativeDisplayWorklet, convertRawAmountToDecimalFormat, truncateToDecimalsWithThreshold } from '@/helpers/utilities';
 import { userAssetsStoreManager } from '@/state/assets/userAssetsStoreManager';
-import { createDerivedStore, shallowEqual } from '@storesjs/stores';
+
 import { useStakingPositionStore } from '../rnbwStakingPositionStore';
-import { RNBW_DECIMALS } from '@/features/rnbw-staking/constants';
 
 type StakingBalance = {
   tokenAmount: string;

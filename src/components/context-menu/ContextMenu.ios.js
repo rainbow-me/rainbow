@@ -1,10 +1,14 @@
 import React, { Fragment, useCallback, useRef, useState } from 'react';
+
 import ActionSheet from 'react-native-actionsheet';
+
+import { omitFlatten, pickShallow } from '@/helpers/utilities';
+import { padding } from '@/styles';
+
 import ButtonPressAnimation from '../animations/ButtonPressAnimation';
 import { Icon } from '../icons';
 import { Centered } from '../layout';
-import { omitFlatten, pickShallow } from '@/helpers/utilities';
-import { padding } from '@/styles';
+
 const style = padding.object(12, 8);
 
 const ActionSheetProps = ['cancelButtonIndex', 'destructiveButtonIndex', 'message', 'onPress', 'options', 'tintColor', 'title'];

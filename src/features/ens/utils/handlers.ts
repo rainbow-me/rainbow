@@ -1,36 +1,38 @@
 import { formatsByCoinType, formatsByName } from '@ensdomains/address-encoder';
 import { getAddress } from '@ethersproject/address';
-import { type Resolver } from '@ethersproject/providers';
-import { type Duration, sub } from 'date-fns';
-import { isValidAddress, isZeroAddress } from 'ethereumjs-util';
 import { BigNumber } from '@ethersproject/bignumber';
+import { type Resolver } from '@ethersproject/providers';
+import { sub, type Duration } from 'date-fns';
+import { isValidAddress, isZeroAddress } from 'ethereumjs-util';
 import { debounce, isEmpty, sortBy } from 'lodash';
-import { fetchENSAvatar } from '../hooks/useENSAvatar';
-import { prefetchENSCover } from '../hooks/useENSCover';
-import { prefetchENSRecords } from '../hooks/useENSRecords';
-import { type ENSActionParameters, ENSRapActionType } from '../raps/common';
-import { getENSData, getNameFromLabelhash, saveENSData } from './localStorage';
-import { estimateGasWithPadding, getProvider } from '@/handlers/web3';
-import { AssetType } from '@/entities/assetTypes';
-import type { ENSRegistrationRecords, Records } from '../types/registration';
-import type { UniqueAsset } from '@/entities/uniqueAssets';
-import { ENS_DOMAIN, ENS_RECORDS, ENSRegistrationTransactionType, generateSalt, getENSExecutionDetails, getNameOwner } from './helpers';
-import { add } from '@/helpers/utilities';
+import { type Address } from 'viem';
+
 import { ImgixImage } from '@/components/images';
+import { AssetType } from '@/entities/assetTypes';
+import type { UniqueAsset } from '@/entities/uniqueAssets';
+import { ensClient } from '@/graphql';
+import { NftTokenType } from '@/graphql/__generated__/arc';
+import { estimateGasWithPadding, getProvider } from '@/handlers/web3';
+import { add } from '@/helpers/utilities';
+import { logger, RainbowError } from '@/logger';
+import store from '@/redux/store';
 import ethUnits from '@/references/ethereum-units.json';
-import { ENS_NFT_CONTRACT_ADDRESS } from '../references';
+import { prefetchFirstTransactionTimestamp } from '@/resources/transactions/firstTransactionTimestampQuery';
+import { ChainId, Network } from '@/state/backendNetworks/types';
+import { handleNFTImages, MimeType } from '@/utils/handleNFTImages';
 import labelhash from '@/utils/labelhash';
 import profileUtils from '@/utils/profileUtils';
 import { AvatarResolver } from '@/vendor/ens-avatar';
-import { ensClient } from '@/graphql';
-import { prefetchFirstTransactionTimestamp } from '@/resources/transactions/firstTransactionTimestampQuery';
+
+import { fetchENSAvatar } from '../hooks/useENSAvatar';
+import { prefetchENSCover } from '../hooks/useENSCover';
+import { prefetchENSRecords } from '../hooks/useENSRecords';
+import { ENSRapActionType, type ENSActionParameters } from '../raps/common';
+import { ENS_NFT_CONTRACT_ADDRESS } from '../references';
 import { prefetchENSAddress } from '../resources/addressQuery';
-import { MimeType, handleNFTImages } from '@/utils/handleNFTImages';
-import store from '@/redux/store';
-import { logger, RainbowError } from '@/logger';
-import { ChainId, Network } from '@/state/backendNetworks/types';
-import { type Address } from 'viem';
-import { NftTokenType } from '@/graphql/__generated__/arc';
+import type { ENSRegistrationRecords, Records } from '../types/registration';
+import { ENS_DOMAIN, ENS_RECORDS, ENSRegistrationTransactionType, generateSalt, getENSExecutionDetails, getNameOwner } from './helpers';
+import { getENSData, getNameFromLabelhash, saveENSData } from './localStorage';
 
 const DUMMY_RECORDS = {
   description: 'description',

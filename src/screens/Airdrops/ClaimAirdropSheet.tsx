@@ -1,34 +1,50 @@
-import { GestureHandlerButton } from '@/components/buttons/GestureHandlerButton';
-import { opacity } from '@/framework/ui/utils/opacity';
+import React, { memo, useCallback, useEffect, useMemo, useState } from 'react';
+import { StyleSheet, View } from 'react-native';
+
+import { useRoute, type RouteProp } from '@react-navigation/native';
+import { Blur, Canvas, Circle, Fill, Group, Image, Paint, point, Shadow, useImage } from '@shopify/react-native-skia';
+import c from 'chroma-js';
+import Animated, {
+  runOnJS,
+  useAnimatedStyle,
+  useDerivedValue,
+  useSharedValue,
+  withTiming,
+  type SharedValue,
+} from 'react-native-reanimated';
+import { type Address } from 'viem';
+
 import { AnimatedImage } from '@/components/AnimatedComponents/AnimatedImage';
 import { AnimatedTextIcon } from '@/components/AnimatedComponents/AnimatedTextIcon';
-import { PANEL_WIDTH, Panel, TapToDismiss } from '@/components/SmoothPager/ListPanel';
-import ButtonPressAnimation from '@/components/animations/ButtonPressAnimation';
 import { TIMING_CONFIGS } from '@/components/animations/animationConfigs';
+import ButtonPressAnimation from '@/components/animations/ButtonPressAnimation';
+import { GestureHandlerButton } from '@/components/buttons/GestureHandlerButton';
 import { SheetHandleFixedToTop } from '@/components/sheet';
+import { Panel, PANEL_WIDTH, TapToDismiss } from '@/components/SmoothPager/ListPanel';
 import {
   AnimatedText,
   Bleed,
   Box,
   ColorModeProvider,
+  globalColors,
   IconContainer,
   Inline,
   Separator,
   Stack,
   Text,
   TextShadow,
-  globalColors,
   useForegroundColor,
 } from '@/design-system';
 import { foregroundColors } from '@/design-system/color/palettes';
 import { getColorForTheme } from '@/design-system/color/useForegroundColor';
 import { IS_IOS } from '@/env';
+import { fetchENSAvatar } from '@/features/ens/hooks/useENSAvatar';
 import { fetchReverseRecord } from '@/features/ens/utils/handlers';
+import { opacity } from '@/framework/ui/utils/opacity';
 import { getSizedImageUrl } from '@/handlers/imgix';
 import { containsEmoji } from '@/helpers/strings';
 import { convertAmountToBalanceDisplay } from '@/helpers/utilities';
 import { useCleanup } from '@/hooks/useCleanup';
-import { fetchENSAvatar } from '@/features/ens/hooks/useENSAvatar';
 import { usePersistentDominantColorFromImage } from '@/hooks/usePersistentDominantColorFromImage';
 import * as i18n from '@/languages';
 import { useNavigation } from '@/navigation/Navigation';
@@ -36,33 +52,20 @@ import Routes from '@/navigation/routesNames';
 import { type RootStackParamList } from '@/navigation/types';
 import { type RainbowClaimable } from '@/resources/addys/claimables/types';
 import { useBackendNetworksStore } from '@/state/backendNetworks/backendNetworks';
+import { useIsReadOnlyWallet } from '@/state/wallets/walletsStore';
 import { darkModeThemeColors } from '@/styles/colors';
-import safeAreaInsetValues from '@/utils/safeAreaInsetValues';
-import { time } from '@/utils/time';
-import watchingAlert from '@/utils/watchingAlert';
+import { THICK_BORDER_WIDTH } from '@/styles/constants';
 import { formatAddressForDisplay } from '@/utils/abbreviations';
 import { DEVICE_HEIGHT, DEVICE_WIDTH } from '@/utils/deviceUtils';
 import { addressHashedColorIndex, addressHashedEmoji } from '@/utils/profileUtils';
+import safeAreaInsetValues from '@/utils/safeAreaInsetValues';
+import { time } from '@/utils/time';
+import watchingAlert from '@/utils/watchingAlert';
 import { getHighContrastTextColorWorklet } from '@/worklets/colors';
 import { getCirclePath } from '@/worklets/skia';
-import { type RouteProp, useRoute } from '@react-navigation/native';
-import { Blur, Canvas, Circle, Fill, Group, Image, Paint, Shadow, point, useImage } from '@shopify/react-native-skia';
-import c from 'chroma-js';
-import React, { memo, useCallback, useEffect, useMemo, useState } from 'react';
-import { StyleSheet, View } from 'react-native';
-import Animated, {
-  type SharedValue,
-  runOnJS,
-  useAnimatedStyle,
-  useDerivedValue,
-  useSharedValue,
-  withTiming,
-} from 'react-native-reanimated';
-import { type Address } from 'viem';
-import { useIsReadOnlyWallet } from '@/state/wallets/walletsStore';
-import { type AirdropGasInfo, ClaimStatus, useClaimAirdrop } from './useClaimAirdrop';
+
+import { ClaimStatus, useClaimAirdrop, type AirdropGasInfo } from './useClaimAirdrop';
 import { type GasInfo } from './utils';
-import { THICK_BORDER_WIDTH } from '@/styles/constants';
 
 const COIN_ICON_SIZE = 96;
 const PANEL_HEIGHT = 593;

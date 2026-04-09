@@ -1,7 +1,9 @@
 import { PixelRatio } from 'react-native';
+
+import { CardSize } from '@/components/unique-token/CardSize';
 import { maybeSignUri } from '@/handlers/imgix';
 import deviceUtils from '@/utils/deviceUtils';
-import { CardSize } from '@/components/unique-token/CardSize';
+
 import { GOOGLE_USER_CONTENT_URL } from './getFullResUrl';
 
 const pixelRatio = PixelRatio.get();

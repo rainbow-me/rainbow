@@ -1,19 +1,20 @@
 'use strict';
 
+import { type Provider, type TransactionRequest } from '@ethersproject/abstract-provider';
+import { Signer } from '@ethersproject/abstract-signer';
+import { getAddress } from '@ethersproject/address';
+import { BigNumber } from '@ethersproject/bignumber';
+import { hexlify, joinSignature, type Bytes } from '@ethersproject/bytes';
+import { defineReadOnly, resolveProperties } from '@ethersproject/properties';
+import { toUtf8Bytes } from '@ethersproject/strings';
+import { serialize, type UnsignedTransaction } from '@ethersproject/transactions';
 import type AppEth from '@ledgerhq/hw-app-eth';
 import { ledgerService } from '@ledgerhq/hw-app-eth';
 import { SignTypedDataVersion, TypedDataUtils } from '@metamask/eth-sig-util';
-import { Signer } from '@ethersproject/abstract-signer';
-import { type Bytes, hexlify, joinSignature } from '@ethersproject/bytes';
-import { defineReadOnly, resolveProperties } from '@ethersproject/properties';
-import { type Provider, type TransactionRequest } from '@ethersproject/abstract-provider';
-import { toUtf8Bytes } from '@ethersproject/strings';
-import { type UnsignedTransaction, serialize } from '@ethersproject/transactions';
-import { BigNumber } from '@ethersproject/bignumber';
+
 import { logger, RainbowError } from '@/logger';
 import Navigation from '@/navigation/Navigation';
 import Routes from '@/navigation/routesNames';
-import { getAddress } from '@ethersproject/address';
 import { getEthApp } from '@/utils/ledger';
 
 function waiter(duration: number): Promise<void> {

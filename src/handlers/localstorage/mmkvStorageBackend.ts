@@ -1,4 +1,5 @@
 import { createMMKV } from 'react-native-mmkv';
+
 import { STORAGE_IDS } from '../../model/mmkv';
 
 const mmkvLocalStorage = createMMKV({

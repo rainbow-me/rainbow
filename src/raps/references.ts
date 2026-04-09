@@ -1,7 +1,7 @@
 import { type Signer } from '@ethersproject/abstract-signer';
-import { type CrosschainQuote, type Quote } from '@rainbow-me/swaps';
 import { type Address } from 'viem';
 
+import { type SwapsGasFeeParamsBySpeed } from '@/__swaps__/screens/Swap/hooks/useSelectedGas';
 import { type ParsedAsset } from '@/__swaps__/types/assets';
 import type {
   GasFeeParamsBySpeed,
@@ -9,9 +9,9 @@ import type {
   LegacyTransactionGasParamAmounts,
   TransactionGasParamAmounts,
 } from '@/entities/gas';
-import { type ChainId } from '@/state/backendNetworks/types';
 import { type TransactionClaimableTxPayload } from '@/screens/claimables/transaction/types';
-import { type SwapsGasFeeParamsBySpeed } from '@/__swaps__/screens/Swap/hooks/useSelectedGas';
+import { type ChainId } from '@/state/backendNetworks/types';
+import { type CrosschainQuote, type Quote } from '@rainbow-me/swaps';
 
 export enum SwapModalField {
   input = 'inputAmount',

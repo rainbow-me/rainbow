@@ -1,8 +1,11 @@
+import React from 'react';
+
+import Animated, { useAnimatedStyle, useSharedValue, withTiming, type SharedValue } from 'react-native-reanimated';
+
 import { TIMING_CONFIGS } from '@/components/animations/animationConfigs';
 import { Box, Columns } from '@/design-system';
-import React from 'react';
-import Animated, { type SharedValue, useAnimatedStyle, useSharedValue, withTiming } from 'react-native-reanimated';
-import { type NumberPadField, NumberPadKey } from './NumberPadKey';
+
+import { NumberPadKey, type NumberPadField } from './NumberPadKey';
 
 const BOTTOM_PADDING = 16;
 export const CUSTOM_KEYBOARD_HEIGHT = 202 + BOTTOM_PADDING;

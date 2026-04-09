@@ -1,6 +1,8 @@
 import React, { createContext, useContext } from 'react';
 import { type TextInput } from 'react-native';
-import { type AnimatedRef, type SharedValue, useAnimatedRef, useSharedValue } from 'react-native-reanimated';
+
+import { useAnimatedRef, useSharedValue, type AnimatedRef, type SharedValue } from 'react-native-reanimated';
+
 import { type Dapp } from '@/resources/metadata/dapps';
 import { getDefaultKeyboardHeight } from '@/utils/keyboardHeight';
 

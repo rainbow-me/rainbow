@@ -1,28 +1,31 @@
-import * as i18n from '@/languages';
 import React, { useCallback } from 'react';
-import { Text as RNText } from '../text';
-import WalletAndBackup from '@/assets/WalletsAndBackup.png';
-import useDimensions from '@/hooks/useDimensions';
-import styled from '@/framework/ui/styled-thing';
-import { useNavigation } from '@/navigation/Navigation';
-import { margin, padding } from '@/styles';
-import { Box, Stack } from '@/design-system';
-import { sharedCoolModalTopOffset } from '@/navigation/config';
-import { ImgixImage } from '@/components/images';
-import MenuContainer from '@/screens/SettingsSheet/components/MenuContainer';
-import Menu from '@/screens/SettingsSheet/components/Menu';
-import MenuItem from '@/screens/SettingsSheet/components/MenuItem';
-import Routes from '@/navigation/routesNames';
-import { type BackupFile, parseTimestampFromFilename } from '@/model/backup';
+
 import { type Source } from 'react-native-fast-image';
-import { IS_ANDROID } from '@/env';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
+
+import WalletAndBackup from '@/assets/WalletsAndBackup.png';
+import ActivityIndicator from '@/components/ActivityIndicator';
+import { ImgixImage } from '@/components/images';
 import { Page } from '@/components/layout';
 import Spinner from '@/components/Spinner';
-import ActivityIndicator from '@/components/ActivityIndicator';
-import { useTheme } from '@/theme/ThemeContext';
-import { backupsStore, CloudBackupState, LoadingStates } from '@/state/backups/backups';
+import { Box, Stack } from '@/design-system';
+import { IS_ANDROID } from '@/env';
+import styled from '@/framework/ui/styled-thing';
+import useDimensions from '@/hooks/useDimensions';
+import * as i18n from '@/languages';
+import { parseTimestampFromFilename, type BackupFile } from '@/model/backup';
+import { sharedCoolModalTopOffset } from '@/navigation/config';
+import { useNavigation } from '@/navigation/Navigation';
+import Routes from '@/navigation/routesNames';
+import Menu from '@/screens/SettingsSheet/components/Menu';
+import MenuContainer from '@/screens/SettingsSheet/components/MenuContainer';
+import MenuItem from '@/screens/SettingsSheet/components/MenuItem';
 import { dateFormatter, titleForBackupState } from '@/screens/SettingsSheet/utils';
+import { backupsStore, CloudBackupState, LoadingStates } from '@/state/backups/backups';
+import { margin, padding } from '@/styles';
+import { useTheme } from '@/theme/ThemeContext';
+
+import { Text as RNText } from '../text';
 
 const Title = styled(RNText).attrs({
   align: 'left',

@@ -1,24 +1,27 @@
-import { type RouteProp, useRoute } from '@react-navigation/native';
 import React, { createContext, useEffect, useMemo } from 'react';
 import { Dimensions } from 'react-native';
-import RecyclerAssetList2 from '../components/asset-list/RecyclerAssetList2';
-import ProfileSheetHeader from '@/features/ens/components/profile/ProfileSheetHeader';
-import Skeleton from '../components/skeleton/Skeleton';
+
+import { useRoute, type RouteProp } from '@react-navigation/native';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
+
 import { analytics } from '@/analytics';
 import { AccentColorProvider, Box, Column, Columns, Inline, Inset, Stack } from '@/design-system';
-import useDimensions from '@/hooks/useDimensions';
+import ProfileSheetHeader from '@/features/ens/components/profile/ProfileSheetHeader';
 import useENSAvatar from '@/features/ens/hooks/useENSAvatar';
+import { useENSAddress } from '@/features/ens/resources/addressQuery';
+import useDimensions from '@/hooks/useDimensions';
 import useExternalWalletSectionsData from '@/hooks/useExternalWalletSectionsData';
+import { usePersistentDominantColorFromImage } from '@/hooks/usePersistentDominantColorFromImage';
 import { sharedCoolModalTopOffset } from '@/navigation/config';
 import Routes from '@/navigation/routesNames';
+import { type RootStackParamList } from '@/navigation/types';
+import { useFirstTransactionTimestamp } from '@/resources/transactions/firstTransactionTimestampQuery';
+import { useAccountAddress } from '@/state/wallets/walletsStore';
 import { useTheme } from '@/theme/ThemeContext';
 import { addressHashedColorIndex } from '@/utils/profileUtils';
-import { useFirstTransactionTimestamp } from '@/resources/transactions/firstTransactionTimestampQuery';
-import { useENSAddress } from '@/features/ens/resources/addressQuery';
-import { usePersistentDominantColorFromImage } from '@/hooks/usePersistentDominantColorFromImage';
-import { type RootStackParamList } from '@/navigation/types';
-import { useAccountAddress } from '@/state/wallets/walletsStore';
-import { useSafeAreaInsets } from 'react-native-safe-area-context';
+
+import RecyclerAssetList2 from '../components/asset-list/RecyclerAssetList2';
+import Skeleton from '../components/skeleton/Skeleton';
 
 export const ProfileSheetConfigContext = createContext<{
   enableZoomableImages: boolean;

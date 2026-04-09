@@ -1,4 +1,5 @@
 import React from 'react';
+
 import Svg, { Path } from 'react-native-svg';
 
 export default function AvatarCoverPhotoMaskSvg({ backgroundColor }: { backgroundColor?: string }) {

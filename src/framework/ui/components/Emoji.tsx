@@ -1,8 +1,9 @@
 import React, { type ReactNode } from 'react';
+import { type StyleProp, type TextStyle } from 'react-native';
+
 import Text from '@/components/text/Text';
+import { type TextAlign, type TextLetterSpacing, type TextLineHeight, type TextSize } from '@/components/text/types';
 import { resolveEmoji } from '@/framework/core/emoji/resolveEmoji';
-import { type TextAlign, type TextLetterSpacing, type TextSize, type TextLineHeight } from '@/components/text/types';
-import { type TextStyle, type StyleProp } from 'react-native';
 
 interface EmojiProps {
   letterSpacing?: TextLetterSpacing;

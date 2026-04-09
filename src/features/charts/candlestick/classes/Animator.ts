@@ -1,13 +1,13 @@
 import {
   Easing,
-  type SharedValue,
-  type WithDecayConfig,
-  type WithSpringConfig,
-  type WithTimingConfig,
   makeMutable,
   withDecay,
   withSpring,
   withTiming,
+  type SharedValue,
+  type WithDecayConfig,
+  type WithSpringConfig,
+  type WithTimingConfig,
 } from 'react-native-reanimated';
 
 type AnimationCallback = {

@@ -1,24 +1,27 @@
-import { createStackNavigator } from '@react-navigation/stack';
-import * as i18n from '@/languages';
 import React, { useCallback, useMemo } from 'react';
-import ModalHeaderButton from '../../components/modal/ModalHeaderButton';
-import { useTheme } from '@/theme/ThemeContext';
+
+import { createStackNavigator } from '@react-navigation/stack';
+
+import { SimpleSheet } from '@/components/sheet/SimpleSheet';
 import { BackgroundProvider } from '@/design-system';
+import useAccountSettings from '@/hooks/useAccountSettings';
+import * as i18n from '@/languages';
+import { settingsOptions } from '@/navigation/config';
 import { useNavigation } from '@/navigation/Navigation';
-import { SettingsPages } from './SettingsPages';
-import { settingsCardStyleInterpolator } from './settingsCardStyleInterpolator';
-import WiewWalletBackup from './components/Backups/ViewWalletBackup';
-import ShowSecretView from './components/Backups/ShowSecretView';
+import Routes from '@/navigation/routesNames';
+import { useTheme } from '@/theme/ThemeContext';
+
+import ModalHeaderButton from '../../components/modal/ModalHeaderButton';
 import SecretWarning from './components/Backups/SecretWarning';
+import ShowSecretView from './components/Backups/ShowSecretView';
+import ViewCloudBackups from './components/Backups/ViewCloudBackups';
+import WiewWalletBackup from './components/Backups/ViewWalletBackup';
+import { ViewWalletDelegations } from './components/Backups/ViewWalletDelegations';
 import SettingsSection from './components/SettingsSection';
 import { SupportCategoryPickerView } from './components/support/SupportCategoryPickerView';
 import WalletNotificationsSettings from './components/WalletNotificationsSettings';
-import { settingsOptions } from '@/navigation/config';
-import ViewCloudBackups from './components/Backups/ViewCloudBackups';
-import { ViewWalletDelegations } from './components/Backups/ViewWalletDelegations';
-import { SimpleSheet } from '@/components/sheet/SimpleSheet';
-import Routes from '@/navigation/routesNames';
-import useAccountSettings from '@/hooks/useAccountSettings';
+import { settingsCardStyleInterpolator } from './settingsCardStyleInterpolator';
+import { SettingsPages } from './SettingsPages';
 
 const Stack = createStackNavigator();
 

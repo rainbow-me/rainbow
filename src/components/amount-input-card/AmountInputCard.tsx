@@ -1,22 +1,22 @@
 import React, { memo, useCallback, useMemo, useRef, useState } from 'react';
-import { Box, Text, useColorMode } from '@/design-system';
-import {
-  SLIDER_WIDTH,
-  SLIDER_HEIGHT,
-  SLIDER_EXPANDED_HEIGHT,
-  INPUT_CARD_HEIGHT,
-  USD_CURRENCY,
-  USD_DECIMALS,
-} from '@/features/perps/constants';
+import { StyleSheet, type LayoutChangeEvent } from 'react-native';
+
 import {
   runOnJS,
   runOnUI,
-  type SharedValue,
   useAnimatedReaction,
   useDerivedValue,
   useSharedValue,
   withSpring,
+  type SharedValue,
 } from 'react-native-reanimated';
+import { triggerHaptics } from 'react-native-turbo-haptics';
+import { useDebouncedCallback } from 'use-debounce';
+
+import { addCommasToNumber, clamp, trimCurrencyZeros } from '@/__swaps__/utils/swaps';
+import { SPRING_CONFIGS } from '@/components/animations/animationConfigs';
+import { CurrencyInput, type CurrencyInputRef } from '@/components/CurrencyInput/CurrencyInput';
+import { Box, Text, useColorMode } from '@/design-system';
 import {
   Slider,
   SLIDER_DEFAULT_SNAP_POINTS,
@@ -25,10 +25,15 @@ import {
   type SliderChangeSource,
   type SliderGestureState,
 } from '@/features/perps/components/Slider/Slider';
-import { addCommasToNumber, clamp, trimCurrencyZeros } from '@/__swaps__/utils/swaps';
-import { opacity } from '@/framework/ui/utils/opacity';
-import { SPRING_CONFIGS } from '@/components/animations/animationConfigs';
-import { CurrencyInput, type CurrencyInputRef } from '@/components/CurrencyInput/CurrencyInput';
+import {
+  INPUT_CARD_HEIGHT,
+  SLIDER_EXPANDED_HEIGHT,
+  SLIDER_HEIGHT,
+  SLIDER_WIDTH,
+  USD_CURRENCY,
+  USD_DECIMALS,
+} from '@/features/perps/constants';
+import { type OrderAmountValidation } from '@/features/perps/utils/buildOrderAmountValidation';
 import {
   divWorklet,
   equalWorklet,
@@ -37,20 +42,17 @@ import {
   mulWorklet,
   toFixedWorklet,
 } from '@/framework/core/safeMath';
-import * as i18n from '@/languages';
-import { useDebouncedCallback } from 'use-debounce';
-import { time } from '@/utils/time';
-import { useStableValue } from '@/hooks/useStableValue';
+import { opacity } from '@/framework/ui/utils/opacity';
 import { useLazyRef } from '@/hooks/useLazyRef';
-
-import { getAccountAddress } from '@/state/wallets/walletsStore';
-import { triggerHaptics } from 'react-native-turbo-haptics';
-import { sanitizeAmount } from '@/worklets/strings';
-import { AmountInputCardSubtitle } from './AmountInputCardSubtitle';
-import { type LayoutChangeEvent, StyleSheet } from 'react-native';
-import { type OrderAmountValidation } from '@/features/perps/utils/buildOrderAmountValidation';
-import { type ReadOnlySharedValue } from '@/state/internal/hooks/useStoreSharedValue';
 import { useOnChange } from '@/hooks/useOnChange';
+import { useStableValue } from '@/hooks/useStableValue';
+import * as i18n from '@/languages';
+import { type ReadOnlySharedValue } from '@/state/internal/hooks/useStoreSharedValue';
+import { getAccountAddress } from '@/state/wallets/walletsStore';
+import { time } from '@/utils/time';
+import { sanitizeAmount } from '@/worklets/strings';
+
+import { AmountInputCardSubtitle } from './AmountInputCardSubtitle';
 
 type InteractionMode = 'slider' | 'keyboard';
 

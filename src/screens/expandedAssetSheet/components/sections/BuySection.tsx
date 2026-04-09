@@ -1,25 +1,28 @@
 import React, { memo, useMemo } from 'react';
-import * as i18n from '@/languages';
-import { Bleed, Box, IconContainer, Stack, Text, TextShadow } from '@/design-system';
-import { SectionId, useExpandedAssetSheetContext } from '../../context/ExpandedAssetSheetContext';
+
 import { ScrollView } from 'react-native-gesture-handler';
-import ButtonPressAnimation from '@/components/animations/ButtonPressAnimation';
-import { Row } from '../shared/Row';
-import { EasingGradient } from '@/components/easing-gradient/EasingGradient';
-import RainbowCoinIcon from '@/components/coin-icon/RainbowCoinIcon';
+import Animated from 'react-native-reanimated';
+
 import { navigateToSwaps } from '@/__swaps__/screens/Swap/navigateToSwaps';
 import { transformRainbowTokenToParsedSearchAsset } from '@/__swaps__/utils/assets';
-import { convertAmountToNativeDisplay, convertStringToNumber, roundToSignificant1or5 } from '@/helpers/utilities';
-import useAccountAsset from '@/hooks/useAccountAsset';
-import { useUserAssetsStore } from '@/state/assets/userAssets';
+import ButtonPressAnimation from '@/components/animations/ButtonPressAnimation';
+import RainbowCoinIcon from '@/components/coin-icon/RainbowCoinIcon';
+import { EasingGradient } from '@/components/easing-gradient/EasingGradient';
+import { Bleed, Box, IconContainer, Stack, Text, TextShadow } from '@/design-system';
 import { IS_INTERNAL } from '@/env';
 import { isL2Chain } from '@/handlers/web3';
-import { DEVICE_WIDTH } from '@/utils/deviceUtils';
-import { CollapsibleSection, LAYOUT_ANIMATION } from '../shared/CollapsibleSection';
-import { SheetSeparator } from '../shared/Separator';
-import Animated from 'react-native-reanimated';
+import { convertAmountToNativeDisplay, convertStringToNumber, roundToSignificant1or5 } from '@/helpers/utilities';
+import useAccountAsset from '@/hooks/useAccountAsset';
+import * as i18n from '@/languages';
+import { useUserAssetsStore } from '@/state/assets/userAssets';
 import { userAssetsStoreManager } from '@/state/assets/userAssetsStoreManager';
 import { THICK_BORDER_WIDTH } from '@/styles/constants';
+import { DEVICE_WIDTH } from '@/utils/deviceUtils';
+
+import { SectionId, useExpandedAssetSheetContext } from '../../context/ExpandedAssetSheetContext';
+import { CollapsibleSection, LAYOUT_ANIMATION } from '../shared/CollapsibleSection';
+import { Row } from '../shared/Row';
+import { SheetSeparator } from '../shared/Separator';
 
 const GRADIENT_FADE_WIDTH = 24;
 const DEFAULT_PERCENTAGES_OF_BALANCE = [0.05, 0.1, 0.25, 0.5, 0.75];

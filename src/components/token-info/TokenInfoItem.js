@@ -1,17 +1,20 @@
-import ConditionalWrap from 'conditional-wrap';
 import React from 'react';
 import { View } from 'react-native';
+
+import ConditionalWrap from 'conditional-wrap';
+
+import { Column, Columns } from '@/design-system';
+import styled from '@/framework/ui/styled-thing';
+import { opacity } from '@/framework/ui/utils/opacity';
+import useDelayedValueWithLayoutAnimation from '@/hooks/useDelayedValueWithLayoutAnimation';
+import { useTheme } from '@/theme/ThemeContext';
+
 import ButtonPressAnimation from '../animations/ButtonPressAnimation';
 import ShimmerAnimation from '../animations/ShimmerAnimation';
 import { ColumnWithMargins, RowWithMargins } from '../layout';
 import TokenInfoBalanceValue from './TokenInfoBalanceValue';
 import TokenInfoHeading from './TokenInfoHeading';
 import TokenInfoValue from './TokenInfoValue';
-import { Column, Columns } from '@/design-system';
-import useDelayedValueWithLayoutAnimation from '@/hooks/useDelayedValueWithLayoutAnimation';
-import styled from '@/framework/ui/styled-thing';
-import { useTheme } from '@/theme/ThemeContext';
-import { opacity } from '@/framework/ui/utils/opacity';
 
 const VerticalDivider = styled.View({
   backgroundColor: ({ theme: { colors } }) => colors.rowDividerExtraLight,

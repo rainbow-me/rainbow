@@ -1,22 +1,24 @@
 import React, { memo, useCallback, useMemo, useState } from 'react';
-import { Box, IconContainer, Inline, Text, TextShadow } from '@/design-system';
-import { type HlOpenOrder, useHlOpenOrdersStore } from '@/features/perps/stores/hlOpenOrdersStore';
-import { PerpPositionSide, TriggerOrderSource, TriggerOrderType } from '@/features/perps/types';
-import { TriggerOrderCard } from '@/features/perps/components/TriggerOrderCard';
-import { abs, isZero } from '@/helpers/utilities';
-import { usePerpsAccentColorContext } from '@/features/perps/context/PerpsAccentColorContext';
-import { logger, RainbowError } from '@/logger';
 import { Alert } from 'react-native';
-import { hyperliquidAccountActions, useHyperliquidAccountStore } from '@/features/perps/stores/hyperliquidAccountStore';
+
 import Animated, { FadeIn, FadeOut } from 'react-native-reanimated';
-import { toFixedWorklet, subWorklet, mulWorklet } from '@/framework/core/safeMath';
-import { AddTriggerOrderButton } from '@/features/perps/components/AddTriggerOrderButton';
-import * as i18n from '@/languages';
-import { LAYOUT_ANIMATION } from '@/features/perps/constants';
-import { TIMING_CONFIGS } from '@/components/animations/animationConfigs';
+
 import { analytics } from '@/analytics';
+import { TIMING_CONFIGS } from '@/components/animations/animationConfigs';
+import { Box, IconContainer, Inline, Text, TextShadow } from '@/design-system';
+import { AddTriggerOrderButton } from '@/features/perps/components/AddTriggerOrderButton';
+import { TriggerOrderCard } from '@/features/perps/components/TriggerOrderCard';
+import { LAYOUT_ANIMATION } from '@/features/perps/constants';
+import { usePerpsAccentColorContext } from '@/features/perps/context/PerpsAccentColorContext';
+import { useHlOpenOrdersStore, type HlOpenOrder } from '@/features/perps/stores/hlOpenOrdersStore';
+import { hyperliquidAccountActions, useHyperliquidAccountStore } from '@/features/perps/stores/hyperliquidAccountStore';
+import { PerpPositionSide, TriggerOrderSource, TriggerOrderType } from '@/features/perps/types';
 import { parseHyperliquidErrorMessage } from '@/features/perps/utils';
 import { formatCurrency } from '@/features/perps/utils/formatCurrency';
+import { mulWorklet, subWorklet, toFixedWorklet } from '@/framework/core/safeMath';
+import { abs, isZero } from '@/helpers/utilities';
+import * as i18n from '@/languages';
+import { logger, RainbowError } from '@/logger';
 
 type TriggerOrdersSectionProps = {
   symbol: string;

@@ -1,38 +1,41 @@
+import { useCallback, useEffect, useMemo, type JSX, type ReactNode } from 'react';
+import { FlatList, View } from 'react-native';
+
+import { LinearGradient } from 'expo-linear-gradient';
+import Animated, { useSharedValue, type SharedValue } from 'react-native-reanimated';
+
+import { getColorWorklet, getMixedColor } from '@/__swaps__/utils/swaps';
+import { analytics } from '@/analytics';
+import { ChainImage } from '@/components/coin-icon/ChainImage';
+import RainbowCoinIcon from '@/components/coin-icon/RainbowCoinIcon';
 import { DropdownMenu } from '@/components/DropdownMenu';
+import Skeleton, { FakeAvatar, FakeText } from '@/components/skeleton/Skeleton';
 import { globalColors, IconContainer, Text, TextIcon, useBackgroundColor, useColorMode } from '@/design-system';
 import { useForegroundColor } from '@/design-system/color/useForegroundColor';
-import RainbowCoinIcon from '@/components/coin-icon/RainbowCoinIcon';
-import { analytics } from '@/analytics';
-import { useBackendNetworksStore } from '@/state/backendNetworks/backendNetworks';
-import { ChainId } from '@/state/backendNetworks/types';
-import { ChainImage } from '@/components/coin-icon/ChainImage';
-import Skeleton, { FakeAvatar, FakeText } from '@/components/skeleton/Skeleton';
+import { type NativeCurrencyKey } from '@/entities/nativeCurrencyTypes';
+import { IS_IOS } from '@/env';
+import { opacity } from '@/framework/ui/utils/opacity';
 import { SortDirection, Timeframe, TrendingSort } from '@/graphql/__generated__/arc';
-import { categories, type TrendingCategory, sortFilters, timeFilters, useTrendingTokensStore } from '@/state/trendingTokens/trendingTokens';
 import { formatCurrency, formatNumber } from '@/helpers/strings';
+import { useFarcasterAccountForWallets } from '@/hooks/useFarcasterAccountForWallets';
 import * as i18n from '@/languages';
+import { useRemoteConfig } from '@/model/remoteConfig';
 import Navigation from '@/navigation/Navigation';
 import Routes from '@/navigation/routesNames';
-import { type FarcasterUser, type TrendingToken, useTrendingTokens } from '@/resources/trendingTokens/trendingTokens';
+import { useTrendingTokens, type FarcasterUser, type TrendingToken } from '@/resources/trendingTokens/trendingTokens';
+import { userAssetsStoreManager } from '@/state/assets/userAssetsStoreManager';
+import { useBackendNetworksStore } from '@/state/backendNetworks/backendNetworks';
+import { ChainId } from '@/state/backendNetworks/types';
 import { useNavigationStore } from '@/state/navigation/navigationStore';
 import { swapsStore } from '@/state/swaps/swapsStore';
-import { type JSX, type ReactNode, useCallback, useEffect, useMemo } from 'react';
-import { FlatList, View } from 'react-native';
-import { LinearGradient } from 'expo-linear-gradient';
-import Animated, { type SharedValue, useSharedValue } from 'react-native-reanimated';
-import ButtonPressAnimation from '../animations/ButtonPressAnimation';
-import { useFarcasterAccountForWallets } from '@/hooks/useFarcasterAccountForWallets';
-import { ImgixImage } from '../images';
-import { useRemoteConfig } from '@/model/remoteConfig';
-import { getColorWorklet, getMixedColor } from '@/__swaps__/utils/swaps';
-import { opacity } from '@/framework/ui/utils/opacity';
-import { IS_IOS } from '@/env';
+import { categories, sortFilters, timeFilters, useTrendingTokensStore, type TrendingCategory } from '@/state/trendingTokens/trendingTokens';
+import { THICK_BORDER_WIDTH } from '@/styles/constants';
 import { DEVICE_WIDTH } from '@/utils/deviceUtils';
 import { shallowEqual } from '@/worklets/comparisons';
-import { type NativeCurrencyKey } from '@/entities/nativeCurrencyTypes';
+
+import ButtonPressAnimation from '../animations/ButtonPressAnimation';
+import { ImgixImage } from '../images';
 import { LiveTokenText } from '../live-token-text/LiveTokenText';
-import { userAssetsStoreManager } from '@/state/assets/userAssetsStoreManager';
-import { THICK_BORDER_WIDTH } from '@/styles/constants';
 
 const t = i18n.l.trending_tokens;
 

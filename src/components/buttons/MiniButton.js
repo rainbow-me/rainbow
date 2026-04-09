@@ -1,13 +1,15 @@
 import React from 'react';
 import { View } from 'react-native';
+
+import styled from '@/framework/ui/styled-thing';
+import ShadowStack from '@/react-native-shadow-stack';
+import { padding, position } from '@/styles';
+
 import { darkModeThemeColors, lightModeThemeColors } from '../../styles/colors';
 import { useTheme } from '../../theme/ThemeContext';
 import ButtonPressAnimation from '../animations/ButtonPressAnimation';
 import { RowWithMargins } from '../layout';
 import { Text } from '../text';
-import styled from '@/framework/ui/styled-thing';
-import { padding, position } from '@/styles';
-import ShadowStack from '@/react-native-shadow-stack';
 
 const shadowsFactory = darkMode => ({
   default: [[0, 4, 12, darkMode ? darkModeThemeColors.shadow : lightModeThemeColors.appleBlue, 0.4]],

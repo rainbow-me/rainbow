@@ -1,9 +1,12 @@
+import React, { useMemo } from 'react';
+
+import { FasterImageView } from '@candlefinance/faster-image';
+
 import { ListHeader } from '@/components/SmoothPager/ListPanel';
 import { Box, Text, TextShadow } from '@/design-system';
-import { FasterImageView } from '@candlefinance/faster-image';
-import React, { useMemo } from 'react';
-import * as i18n from '@/languages';
 import { type TextColor } from '@/design-system/color/palettes';
+import * as i18n from '@/languages';
+
 import { type ClaimStatus } from '../../shared/types';
 
 export function ClaimPanelHeader({

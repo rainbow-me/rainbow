@@ -1,6 +1,6 @@
-import neverRerender from '@/utils/neverRerender';
 import Divider from '@/components/Divider';
 import styled from '@/framework/ui/styled-thing';
+import neverRerender from '@/utils/neverRerender';
 
 const SheetDivider = styled(Divider).attrs(({ theme: { colors } }) => ({
   color: colors.rowDividerExtraLight,

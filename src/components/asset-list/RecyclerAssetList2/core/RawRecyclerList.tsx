@@ -1,7 +1,18 @@
+import React, { useCallback, useEffect, useMemo, useRef, type LegacyRef } from 'react';
+import { type LayoutChangeEvent } from 'react-native';
+
+import { type SetterOrUpdater } from 'recoil';
+import { DataProvider, RecyclerListView } from 'recyclerlistview';
+import { useMemoOne } from 'use-memo-one';
+
 import { type UniqueId } from '@/__swaps__/types/assets';
 import { useExperimentalConfig } from '@/config/experimentalHooks';
 import type { NativeCurrencyKey } from '@/entities/nativeCurrencyTypes';
 import type { UniqueAsset } from '@/entities/uniqueAssets';
+import {
+  ExternalENSProfileScrollViewWithRef,
+  ExternalSelectNFTScrollViewWithRef,
+} from '@/features/ens/components/ExternalENSProfileScrollView';
 import useAccountSettings from '@/hooks/useAccountSettings';
 import useCoinListEdited from '@/hooks/useCoinListEdited';
 import useCoinListEditOptions, { type BooleanMap } from '@/hooks/useCoinListEditOptions';
@@ -9,27 +20,19 @@ import usePrevious from '@/hooks/usePrevious';
 import { useRemoteConfig } from '@/model/remoteConfig';
 import { useRecyclerListViewScrollToTopContext } from '@/navigation/RecyclerListViewScrollToTopContext';
 import { useUserAssetsStore } from '@/state/assets/userAssets';
-import { type ThemeContextProps, useTheme } from '@/theme/ThemeContext';
+import { useListen } from '@/state/internal/hooks/useListen';
+import { useTheme, type ThemeContextProps } from '@/theme/ThemeContext';
 import deviceUtils from '@/utils/deviceUtils';
-import React, { type LegacyRef, useCallback, useEffect, useMemo, useRef } from 'react';
-import { type LayoutChangeEvent } from 'react-native';
-import { type SetterOrUpdater } from 'recoil';
-import { DataProvider, RecyclerListView } from 'recyclerlistview';
-import { useMemoOne } from 'use-memo-one';
+
 import { type AssetListType } from '..';
+import { useWalletsStore } from '../../../../state/wallets/walletsStore';
 import { useRecyclerAssetListPosition } from './Contexts';
-import {
-  ExternalENSProfileScrollViewWithRef,
-  ExternalSelectNFTScrollViewWithRef,
-} from '@/features/ens/components/ExternalENSProfileScrollView';
 import ExternalScrollViewWithRef from './ExternalScrollView';
+import getLayoutProvider from './getLayoutProvider';
 import RefreshControl from './RefreshControl';
 import rowRenderer from './RowRenderer';
-import { type BaseCellType, type CellTypes, type RecyclerListViewRef } from './ViewTypes';
-import getLayoutProvider from './getLayoutProvider';
 import useLayoutItemAnimator from './useLayoutItemAnimator';
-import { useWalletsStore } from '../../../../state/wallets/walletsStore';
-import { useListen } from '@/state/internal/hooks/useListen';
+import { type BaseCellType, type CellTypes, type RecyclerListViewRef } from './ViewTypes';
 
 const dimensions = {
   height: deviceUtils.dimensions.height,

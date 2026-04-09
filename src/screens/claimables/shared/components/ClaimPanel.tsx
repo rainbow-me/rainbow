@@ -1,10 +1,12 @@
+import React from 'react';
+
 import { controlPanelStyles, Panel, TapToDismiss } from '@/components/SmoothPager/ListPanel';
 import { Box } from '@/design-system';
 import { IS_IOS } from '@/env';
 import safeAreaInsetValues from '@/utils/safeAreaInsetValues';
-import React from 'react';
-import { ClaimPanelHeader } from './ClaimPanelHeader';
+
 import { type ClaimStatus } from '../../shared/types';
+import { ClaimPanelHeader } from './ClaimPanelHeader';
 
 export function ClaimPanel({
   children,

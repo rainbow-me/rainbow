@@ -1,13 +1,14 @@
+import { type OpenOrder } from '@polymarket/clob-client';
+
 import { analytics } from '@/analytics';
+import { USD_FEE_PER_TOKEN } from '@/features/polymarket/constants';
 import { getPolymarketClobClient } from '@/features/polymarket/stores/derived/usePolymarketClients';
 import { collectTradeFee } from '@/features/polymarket/utils/collectTradeFee';
-import { USD_FEE_PER_TOKEN } from '@/features/polymarket/constants';
-import { ensureError } from '@/logger';
+import { type SuccessfulOrderResult } from '@/features/polymarket/utils/orders';
 import { divWorklet, mulWorklet } from '@/framework/core/safeMath';
+import { ensureError } from '@/logger';
 import { delay } from '@/utils/delay';
 import { time } from '@/utils/time';
-import { type OpenOrder } from '@polymarket/clob-client';
-import { type SuccessfulOrderResult } from '@/features/polymarket/utils/orders';
 
 const POLL_INTERVAL = time.seconds(1);
 const POLL_TIMEOUT = time.minutes(2);

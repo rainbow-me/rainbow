@@ -1,15 +1,17 @@
-import remoteConfig, { type FirebaseRemoteConfigTypes } from '@react-native-firebase/remote-config';
 import { useEffect } from 'react';
+
+import remoteConfig, { type FirebaseRemoteConfigTypes } from '@react-native-firebase/remote-config';
 import { dequal } from 'dequal';
+
 import { IS_DEV, IS_INTERNAL } from '@/env';
 import { CURRENT_APP_VERSION } from '@/hooks/useAppVersion';
-import { RainbowError, logger } from '@/logger';
+import * as i18n from '@/languages';
+import { logger, RainbowError } from '@/logger';
 import { ChainId, Network } from '@/state/backendNetworks/types';
 import { createQueryStore } from '@/state/internal/createQueryStore';
 import { delay } from '@/utils/delay';
 import { time } from '@/utils/time';
 import { shallowEqual } from '@/worklets/comparisons';
-import * as i18n from '@/languages';
 
 // ============ RainbowConfig ================================================== //
 

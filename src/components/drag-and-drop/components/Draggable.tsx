@@ -1,8 +1,11 @@
 import React, { type FunctionComponent, type PropsWithChildren } from 'react';
 import { type ViewProps } from 'react-native';
+
 import Animated, { useAnimatedStyle, withTiming, type AnimatedProps } from 'react-native-reanimated';
+
 import { TIMING_CONFIGS } from '@/components/animations/animationConfigs';
 import { IS_IOS } from '@/env';
+
 import { useDraggable, type DraggableConstraints, type UseDroppableOptions } from '../hooks';
 import type { AnimatedStyleWorklet } from '../types';
 

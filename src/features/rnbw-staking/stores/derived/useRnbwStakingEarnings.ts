@@ -1,9 +1,11 @@
-import { convertRawAmountToDecimalFormat, isZero, truncateToDecimalsWithThreshold } from '@/helpers/utilities';
 import { createDerivedStore, shallowEqual } from '@storesjs/stores';
-import { useStakingPositionStore } from '../rnbwStakingPositionStore';
+
+import { RNBW_DECIMALS } from '@/features/rnbw-staking/constants';
 import { sumWorklet } from '@/framework/core/safeMath';
 import { formatNumber } from '@/helpers/strings';
-import { RNBW_DECIMALS } from '@/features/rnbw-staking/constants';
+import { convertRawAmountToDecimalFormat, isZero, truncateToDecimalsWithThreshold } from '@/helpers/utilities';
+
+import { useStakingPositionStore } from '../rnbwStakingPositionStore';
 
 type StakingEarnings = {
   totalEarnings: string;

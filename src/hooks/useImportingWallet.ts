@@ -1,34 +1,37 @@
-import { isValidAddress } from 'ethereumjs-util';
-import * as i18n from '@/languages';
-import { keys } from 'lodash';
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { InteractionManager, Keyboard, type TextInput } from 'react-native';
+
+import { isValidAddress } from 'ethereumjs-util';
+import { keys } from 'lodash';
 import { useDispatch } from 'react-redux';
-import { fetchENSAvatar } from '@/features/ens/hooks/useENSAvatar';
-import { initializeWallet } from '../state/wallets/initializeWallet';
-import useIsWalletEthZero from './useIsWalletEthZero';
-import usePrevious from './usePrevious';
-import { WrappedAlert as Alert } from '@/helpers/alert';
+
 import { analytics } from '@/analytics';
 import useExperimentalFlag, { PROFILES } from '@/config/experimentalHooks';
+import { IS_ANDROID, IS_TEST } from '@/env';
+import { fetchENSAvatar } from '@/features/ens/hooks/useENSAvatar';
 import { fetchReverseRecord } from '@/features/ens/utils/handlers';
 import { getProvider, isValidBluetoothDeviceId, resolveUnstoppableDomain } from '@/handlers/web3';
+import { WrappedAlert as Alert } from '@/helpers/alert';
 import { isENSAddressFormat, isUnstoppableAddressFormat, isValidWallet } from '@/helpers/validators';
-import Navigation, { useNavigation } from '@/navigation/Navigation';
-import Routes from '@/navigation/routesNames';
-import { sanitizeSeedPhrase } from '@/utils/formatters';
-import { deriveAccountFromWalletInput } from '@/utils/wallet';
+import WalletBackupStepTypes from '@/helpers/walletBackupStepTypes';
+import walletBackupTypes from '@/helpers/walletBackupTypes';
+import { WalletLoadingStates } from '@/helpers/walletLoadingStates';
+import * as i18n from '@/languages';
 import { logger, RainbowError } from '@/logger';
+import Navigation, { useNavigation } from '@/navigation/Navigation';
+import { navigateAfterOnboarding } from '@/navigation/onboardingNavigation';
+import Routes from '@/navigation/routesNames';
+import { type ImportFlowContext } from '@/navigation/types';
 import { ChainId } from '@/state/backendNetworks/types';
 import { backupsStore } from '@/state/backups/backups';
 import { walletLoadingStore } from '@/state/walletLoading/walletLoading';
-import { WalletLoadingStates } from '@/helpers/walletLoadingStates';
-import { IS_ANDROID, IS_TEST } from '@/env';
-import walletBackupTypes from '@/helpers/walletBackupTypes';
-import WalletBackupStepTypes from '@/helpers/walletBackupStepTypes';
-import { useWallets, useAccountAddress } from '@/state/wallets/walletsStore';
-import { type ImportFlowContext } from '@/navigation/types';
-import { navigateAfterOnboarding } from '@/navigation/onboardingNavigation';
+import { useAccountAddress, useWallets } from '@/state/wallets/walletsStore';
+import { sanitizeSeedPhrase } from '@/utils/formatters';
+import { deriveAccountFromWalletInput } from '@/utils/wallet';
+
+import { initializeWallet } from '../state/wallets/initializeWallet';
+import useIsWalletEthZero from './useIsWalletEthZero';
+import usePrevious from './usePrevious';
 
 export default function useImportingWallet({
   flowContext,

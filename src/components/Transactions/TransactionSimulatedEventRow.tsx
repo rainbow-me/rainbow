@@ -1,21 +1,19 @@
 import React, { useMemo } from 'react';
-import * as i18n from '@/languages';
 import { Image, PixelRatio } from 'react-native';
 
-import { Bleed, Box, Inline, Text } from '@/design-system';
-
-import { TransactionAssetType, type TransactionSimulationAsset } from '@/graphql/__generated__/metadataPOST';
-import { type Network } from '@/state/backendNetworks/types';
-import { convertAmountToNativeDisplay, convertRawAmountToBalance } from '@/helpers/utilities';
-
-import { maybeSignUri } from '@/handlers/imgix';
 import RainbowCoinIcon from '@/components/coin-icon/RainbowCoinIcon';
-import { useExternalToken } from '@/resources/assets/externalAssetsQuery';
-import { type EventInfo, type EventType } from '@/components/Transactions/types';
-import { infoForEventType, CARD_ROW_HEIGHT } from '@/components/Transactions/constants';
+import { CARD_ROW_HEIGHT, infoForEventType } from '@/components/Transactions/constants';
 import { EventIcon } from '@/components/Transactions/TransactionIcons';
-import { useBackendNetworksStore } from '@/state/backendNetworks/backendNetworks';
+import { type EventInfo, type EventType } from '@/components/Transactions/types';
+import { Bleed, Box, Inline, Text } from '@/design-system';
+import { TransactionAssetType, type TransactionSimulationAsset } from '@/graphql/__generated__/metadataPOST';
+import { maybeSignUri } from '@/handlers/imgix';
+import { convertAmountToNativeDisplay, convertRawAmountToBalance } from '@/helpers/utilities';
+import * as i18n from '@/languages';
+import { useExternalToken } from '@/resources/assets/externalAssetsQuery';
 import { userAssetsStoreManager } from '@/state/assets/userAssetsStoreManager';
+import { useBackendNetworksStore } from '@/state/backendNetworks/backendNetworks';
+import { type Network } from '@/state/backendNetworks/types';
 
 type TransactionSimulatedEventRowProps = {
   amount: string | 'unlimited';

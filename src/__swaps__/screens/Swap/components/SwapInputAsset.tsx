@@ -1,30 +1,29 @@
-import MaskedView from '@react-native-masked-view/masked-view';
 import React from 'react';
 import { StyleSheet } from 'react-native';
+
+import Clipboard from '@react-native-clipboard/clipboard';
+import MaskedView from '@react-native-masked-view/masked-view';
 import Animated, { useDerivedValue } from 'react-native-reanimated';
 import { ScreenCornerRadius } from 'react-native-screen-corner-radius';
 
-import { AnimatedText, Box, Column, Columns, Stack, useColorMode } from '@/design-system';
-
 import { BalanceBadge } from '@/__swaps__/screens/Swap/components/BalanceBadge';
 import { FadeMask } from '@/__swaps__/screens/Swap/components/FadeMask';
-import { GestureHandlerButton } from '@/components/buttons/GestureHandlerButton';
 import { SwapActionButton } from '@/__swaps__/screens/Swap/components/SwapActionButton';
 import { SwapInput } from '@/__swaps__/screens/Swap/components/SwapInput';
-import { SwapNativeInput } from '@/__swaps__/screens/Swap/components/SwapNativeInput';
 import { SwapInputValuesCaret } from '@/__swaps__/screens/Swap/components/SwapInputValuesCaret';
+import { SwapNativeInput } from '@/__swaps__/screens/Swap/components/SwapNativeInput';
 import { TokenList } from '@/__swaps__/screens/Swap/components/TokenList/TokenList';
 import { BASE_INPUT_WIDTH, INPUT_INNER_WIDTH } from '@/__swaps__/screens/Swap/constants';
-import { TOKEN_SEARCH_INPUT_HORIZONTAL_PADDING } from '@/components/token-search/constants';
-
 import { useSwapContext } from '@/__swaps__/screens/Swap/providers/swap-provider';
+import { GestureHandlerButton } from '@/components/buttons/GestureHandlerButton';
+import { TOKEN_SEARCH_INPUT_HORIZONTAL_PADDING } from '@/components/token-search/constants';
+import { AnimatedText, Box, Column, Columns, Stack, useColorMode } from '@/design-system';
 import { IS_ANDROID, IS_IOS } from '@/env';
 import * as i18n from '@/languages';
+import { THICK_BORDER_WIDTH } from '@/styles/constants';
 
-import Clipboard from '@react-native-clipboard/clipboard';
 import { AnimatedSwapCoinIcon } from './AnimatedSwapCoinIcon';
 import { CopyPasteMenu } from './CopyPasteMenu';
-import { THICK_BORDER_WIDTH } from '@/styles/constants';
 
 const SELECT_LABEL = i18n.t(i18n.l.swap.select);
 const NO_BALANCE_LABEL = i18n.t(i18n.l.swap.no_balance);

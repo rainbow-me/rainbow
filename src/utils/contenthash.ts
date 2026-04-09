@@ -1,4 +1,5 @@
 import contentHash from '@ensdomains/content-hash';
+
 import { isHexString } from '@/handlers/web3';
 
 const supportedCodecs = ['ipns-ns', 'ipfs-ns', 'swarm-ns', 'onion', 'onion3', 'skynet-ns', 'arweave-ns'];

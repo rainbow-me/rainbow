@@ -1,24 +1,26 @@
 import React from 'react';
-import { useNavigation } from '@/navigation/Navigation';
-import { Bleed, Box, Column, Columns, globalColors, Inline, Inset, Stack, Text, useBackgroundColor, useColorMode } from '@/design-system';
-import MaskedView from '@react-native-masked-view/masked-view';
-import { type NftOffer } from '@/graphql/__generated__/arc';
-import { ImgixImage } from '@/components/images';
-import { convertAmountToNativeDisplay, handleSignificantDecimals } from '@/helpers/utilities';
-import ButtonPressAnimation from '@/components/animations/ButtonPressAnimation';
-import * as i18n from '@/languages';
-import Routes from '@/navigation/routesNames';
-import { analytics } from '@/analytics';
-import { useTheme } from '@/theme/ThemeContext';
-import { CardSize } from '@/components/unique-token/CardSize';
 import { View } from 'react-native';
+
+import MaskedView from '@react-native-masked-view/masked-view';
 import Svg, { Path } from 'react-native-svg';
-import { useExternalToken } from '@/resources/assets/externalAssetsQuery';
-import { type Network } from '@/state/backendNetworks/types';
-import RainbowCoinIcon from '@/components/coin-icon/RainbowCoinIcon';
+
 import { type AddressOrEth } from '@/__swaps__/types/assets';
-import { useBackendNetworksStore } from '@/state/backendNetworks/backendNetworks';
+import { analytics } from '@/analytics';
+import ButtonPressAnimation from '@/components/animations/ButtonPressAnimation';
+import RainbowCoinIcon from '@/components/coin-icon/RainbowCoinIcon';
+import { ImgixImage } from '@/components/images';
+import { CardSize } from '@/components/unique-token/CardSize';
+import { Bleed, Box, Column, Columns, globalColors, Inline, Inset, Stack, Text, useBackgroundColor, useColorMode } from '@/design-system';
+import { type NftOffer } from '@/graphql/__generated__/arc';
+import { convertAmountToNativeDisplay, handleSignificantDecimals } from '@/helpers/utilities';
+import * as i18n from '@/languages';
+import { useNavigation } from '@/navigation/Navigation';
+import Routes from '@/navigation/routesNames';
+import { useExternalToken } from '@/resources/assets/externalAssetsQuery';
 import { userAssetsStoreManager } from '@/state/assets/userAssetsStoreManager';
+import { useBackendNetworksStore } from '@/state/backendNetworks/backendNetworks';
+import { type Network } from '@/state/backendNetworks/types';
+import { useTheme } from '@/theme/ThemeContext';
 
 const NFT_SIZE = 50;
 const MARKETPLACE_ORB_SIZE = 18;

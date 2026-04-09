@@ -1,4 +1,5 @@
 import { memo } from 'react';
+
 import { Box, Text, TextIcon } from '@/design-system';
 
 type PolymarketNoLiquidityCardProps = {

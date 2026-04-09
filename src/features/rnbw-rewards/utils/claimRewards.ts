@@ -1,26 +1,27 @@
+import { type Signer } from '@ethersproject/abstract-signer';
+import { type Address } from 'viem';
+
 import { analytics } from '@/analytics';
 import { type NativeCurrencyKey } from '@/entities/nativeCurrencyTypes';
 import { useRewardsBalanceStore } from '@/features/rnbw-rewards/stores/rewardsBalanceStore';
-import { useUserAssetsStore } from '@/state/assets/userAssets';
-import { getPlatformResult } from '@/features/rnbw-rewards/utils/getPlatformResult';
-import { pollClaimStatus, type PollClaimStatusResult } from '@/features/rnbw-rewards/utils/pollClaimStatus';
-import { getProvider } from '@/handlers/web3';
-import { logger, RainbowError } from '@/logger';
-import { loadWallet, signTypedDataMessage } from '@/model/wallet';
-import { type RainbowFetchResponse } from '@/framework/data/http/rainbowFetch';
-import { getPlatformClient } from '@/resources/platform/client';
-import { ChainId } from '@rainbow-me/swaps';
-import { type Signer } from '@ethersproject/abstract-signer';
-import { type Address } from 'viem';
 import {
-  type ClaimRewardsResult,
   type ClaimRewardsResponse,
+  type ClaimRewardsResult,
   type GetClaimIntentResponse,
   type GetClaimIntentResult,
 } from '@/features/rnbw-rewards/types/claimRewardsTypes';
-import { time } from '@/utils/time';
+import { getPlatformResult } from '@/features/rnbw-rewards/utils/getPlatformResult';
+import { pollClaimStatus, type PollClaimStatusResult } from '@/features/rnbw-rewards/utils/pollClaimStatus';
+import { type RainbowFetchResponse } from '@/framework/data/http/rainbowFetch';
 import { LedgerSigner } from '@/handlers/LedgerSigner';
+import { getProvider } from '@/handlers/web3';
+import { logger, RainbowError } from '@/logger';
+import { loadWallet, signTypedDataMessage } from '@/model/wallet';
 import Navigation from '@/navigation/Navigation';
+import { getPlatformClient } from '@/resources/platform/client';
+import { useUserAssetsStore } from '@/state/assets/userAssets';
+import { time } from '@/utils/time';
+import { ChainId } from '@rainbow-me/swaps';
 
 type ClaimStatusPollResult = PollClaimStatusResult<ClaimRewardsResult, ClaimRewardsResponse>;
 

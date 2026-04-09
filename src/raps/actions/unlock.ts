@@ -2,23 +2,25 @@ import { type Signer } from '@ethersproject/abstract-signer';
 import { MaxUint256 } from '@ethersproject/constants';
 import { Contract, type PopulatedTransaction } from '@ethersproject/contracts';
 import { parseUnits } from '@ethersproject/units';
-import { supportsDelegation, type BatchCall } from '@rainbow-me/delegation';
-import { getProvider, toHex } from '@/handlers/web3';
-import { type Address, erc20Abi, erc721Abi } from 'viem';
-import { type ChainId } from '@/state/backendNetworks/types';
+import { erc20Abi, erc721Abi, type Address } from 'viem';
+
 import { type TransactionGasParams, type TransactionLegacyGasParams } from '@/__swaps__/types/gas';
-import { type NewTransaction, TransactionStatus } from '@/entities/transactions';
-import { addNewTransaction } from '@/state/pendingTransactions';
-import { RainbowError, ensureError, logger } from '@/logger';
-import { gasUnits } from '@/references/gasUnits';
-import { ETH_ADDRESS } from '@/references/constants';
-import { type ActionProps, type PrepareActionProps, type RapActionResult, type RapUnlockActionParameters } from '../references';
-import { overrideWithFastSpeedIfNeeded } from './../utils';
-import { useBackendNetworksStore } from '@/state/backendNetworks/backendNetworks';
-import { getRemoteConfig } from '@/model/remoteConfig';
 import { DELEGATION, getExperimentalFlag } from '@/config/experimental';
-import { requireAddress, requireHex } from '../validation';
+import { TransactionStatus, type NewTransaction } from '@/entities/transactions';
+import { getProvider, toHex } from '@/handlers/web3';
+import { ensureError, logger, RainbowError } from '@/logger';
+import { getRemoteConfig } from '@/model/remoteConfig';
+import { ETH_ADDRESS } from '@/references/constants';
+import { gasUnits } from '@/references/gasUnits';
+import { useBackendNetworksStore } from '@/state/backendNetworks/backendNetworks';
+import { type ChainId } from '@/state/backendNetworks/types';
+import { addNewTransaction } from '@/state/pendingTransactions';
+import { supportsDelegation, type BatchCall } from '@rainbow-me/delegation';
+
+import { type ActionProps, type PrepareActionProps, type RapActionResult, type RapUnlockActionParameters } from '../references';
 import { toTransactionAsset } from '../transactionAsset';
+import { requireAddress, requireHex } from '../validation';
+import { overrideWithFastSpeedIfNeeded } from './../utils';
 
 /**
  * Determines the approval amount based on delegation support.

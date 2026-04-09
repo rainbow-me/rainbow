@@ -1,7 +1,9 @@
 import React from 'react';
+
+import { times } from '@/helpers/utilities';
+
 import AssetListItemSkeleton from '../asset-list/AssetListItemSkeleton';
 import { Column } from '../layout';
-import { times } from '@/helpers/utilities';
 
 type LoadingStateProps = {
   children: React.ReactNode;

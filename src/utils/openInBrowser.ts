@@ -1,8 +1,10 @@
+import { Linking } from 'react-native';
+
+import * as WebBrowser from 'expo-web-browser';
+
 import { logger } from '@/logger';
 import Navigation from '@/navigation/Navigation';
 import Routes from '@/navigation/routesNames';
-import { Linking } from 'react-native';
-import * as WebBrowser from 'expo-web-browser';
 
 export const openInBrowser = (url: string | null | undefined, useDappBrowser = true, useInAppBrowser = false) => {
   if (!url) {

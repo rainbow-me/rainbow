@@ -1,22 +1,24 @@
 import React, { useCallback, useEffect, useState } from 'react';
 import { type LayoutChangeEvent } from 'react-native';
+
+import { useRoute, type RouteProp } from '@react-navigation/native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
+
+import { useRainbowToastsStore } from '@/components/rainbow-toast/useRainbowToastsStore';
 import { SlackSheet } from '@/components/sheet';
-import { type RouteProp, useRoute } from '@react-navigation/native';
-import { IS_ANDROID } from '@/env';
-import { BackgroundProvider, Box } from '@/design-system';
-import { TransactionDetailsValueAndFeeSection } from '@/screens/transaction-details/components/TransactionDetailsValueAndFeeSection';
-import { TransactionDetailsHashAndActionsSection } from '@/screens/transaction-details/components/TransactionDetailsHashAndActionsSection';
-import { TransactionDetailsFromToSection } from '@/screens/transaction-details/components/TransactionDetailsFromToSection';
 import { Toast, ToastPositionContainer } from '@/components/toasts';
-import * as i18n from '@/languages';
-import { TransactionDetailsStatusActionsAndTimestampSection } from '@/screens/transaction-details/components/TransactionDetailsStatusActionsAndTimestampSection';
-import { useTransactionDetailsToasts } from '@/screens/transaction-details/hooks/useTransactionDetailsToasts';
+import { BackgroundProvider, Box } from '@/design-system';
+import { IS_ANDROID } from '@/env';
 import useDimensions from '@/hooks/useDimensions';
-import { type RootStackParamList } from '@/navigation/types';
+import * as i18n from '@/languages';
 import { useNavigation } from '@/navigation/Navigation';
 import type Routes from '@/navigation/routesNames';
-import { useRainbowToastsStore } from '@/components/rainbow-toast/useRainbowToastsStore';
+import { type RootStackParamList } from '@/navigation/types';
+import { TransactionDetailsFromToSection } from '@/screens/transaction-details/components/TransactionDetailsFromToSection';
+import { TransactionDetailsHashAndActionsSection } from '@/screens/transaction-details/components/TransactionDetailsHashAndActionsSection';
+import { TransactionDetailsStatusActionsAndTimestampSection } from '@/screens/transaction-details/components/TransactionDetailsStatusActionsAndTimestampSection';
+import { TransactionDetailsValueAndFeeSection } from '@/screens/transaction-details/components/TransactionDetailsValueAndFeeSection';
+import { useTransactionDetailsToasts } from '@/screens/transaction-details/hooks/useTransactionDetailsToasts';
 
 export const TransactionDetails = () => {
   const {

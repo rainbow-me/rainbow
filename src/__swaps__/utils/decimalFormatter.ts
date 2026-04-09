@@ -3,10 +3,10 @@ import {
   divWorklet,
   floorWorklet,
   mulWorklet,
-  roundWorklet,
-  toFixedWorklet,
   orderOfMagnitudeWorklet,
+  roundWorklet,
   significantDecimalsWorklet,
+  toFixedWorklet,
 } from '@/framework/core/safeMath';
 
 const MAXIMUM_SIGNIFICANT_DECIMALS = 6;

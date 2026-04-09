@@ -1,9 +1,11 @@
 /** @refresh reset */
 import React from 'react';
-import Animated, { type DerivedValue, LinearTransition, type SharedValue, useAnimatedStyle, withSpring } from 'react-native-reanimated';
-import { Bleed, Box, IconContainer, Text, TextShadow } from '@/design-system';
-import { GestureHandlerButton } from '@/components/buttons/GestureHandlerButton';
+
+import Animated, { LinearTransition, useAnimatedStyle, withSpring, type DerivedValue, type SharedValue } from 'react-native-reanimated';
+
 import { SPRING_CONFIGS } from '@/components/animations/animationConfigs';
+import { GestureHandlerButton } from '@/components/buttons/GestureHandlerButton';
+import { Bleed, Box, IconContainer, Text, TextShadow } from '@/design-system';
 
 const ANIMATION_CONFIG = SPRING_CONFIGS.snappierSpringConfig;
 

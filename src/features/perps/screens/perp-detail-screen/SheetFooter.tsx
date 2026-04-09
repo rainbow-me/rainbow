@@ -1,17 +1,19 @@
 import React, { useMemo } from 'react';
+import { InteractionManager, View } from 'react-native';
+
+import { useNavigation } from '@react-navigation/native';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
+
 import { EasingGradient } from '@/components/easing-gradient/EasingGradient';
 import { Box, Text, useColorMode } from '@/design-system';
-import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { HyperliquidButton } from '@/features/perps/components/HyperliquidButton';
 import { useHyperliquidAccountStore } from '@/features/perps/stores/hyperliquidAccountStore';
-import Routes from '@/navigation/routesNames';
-import Navigation from '@/navigation/Navigation';
-import { navigateToNewPositionScreen } from '@/features/perps/utils';
 import { type PerpMarket } from '@/features/perps/types';
-import { useNavigation } from '@react-navigation/native';
-import { InteractionManager, View } from 'react-native';
-import { useUserAssetsStore } from '@/state/assets/userAssets';
+import { navigateToNewPositionScreen } from '@/features/perps/utils';
 import * as i18n from '@/languages';
+import Navigation from '@/navigation/Navigation';
+import Routes from '@/navigation/routesNames';
+import { useUserAssetsStore } from '@/state/assets/userAssets';
 
 // 32px for the easing gradient + 48px for the buttons + 12px for the extra bottom padding away from the area inset
 export const SHEET_FOOTER_HEIGHT = 32 + 48 + 12;

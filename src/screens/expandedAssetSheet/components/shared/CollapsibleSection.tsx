@@ -1,8 +1,11 @@
 /** @refresh reset */
 import React from 'react';
+
 import { useDerivedValue } from 'react-native-reanimated';
+
 import { CollapsibleSectionBase } from '@/components/collapsible/CollapsibleSectionBase';
-import { type SectionId, useExpandedAssetSheetContext } from '../../context/ExpandedAssetSheetContext';
+
+import { useExpandedAssetSheetContext, type SectionId } from '../../context/ExpandedAssetSheetContext';
 
 interface CollapsibleSectionProps {
   content: React.ReactNode;

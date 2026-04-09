@@ -1,9 +1,11 @@
 import { useMemo } from 'react';
-import { type AssetListType } from '../components/asset-list/RecyclerAssetList2';
+
 import { legacyBuildBriefUniqueTokenList } from '@/helpers/assets';
-import { useLegacyNFTs } from '@/resources/nfts';
-import useShowcaseTokens from '@/hooks/useShowcaseTokens';
 import useHiddenTokens from '@/hooks/useHiddenTokens';
+import useShowcaseTokens from '@/hooks/useShowcaseTokens';
+import { useLegacyNFTs } from '@/resources/nfts';
+
+import { type AssetListType } from '../components/asset-list/RecyclerAssetList2';
 
 export default function useExternalWalletSectionsData({ address, type }: { address?: string; type?: AssetListType }) {
   const {

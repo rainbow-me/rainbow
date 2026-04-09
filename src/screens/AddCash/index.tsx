@@ -1,24 +1,25 @@
 import React from 'react';
-import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { ScrollView } from 'react-native';
+
 import { useQuery } from '@tanstack/react-query';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import wait from 'w2t';
 
 import { SheetHandle } from '@/components/sheet';
-import deviceUtils from '@/utils/deviceUtils';
-import useDimensions from '@/hooks/useDimensions';
-import { borders } from '@/styles';
-import { Box, Text, Separator, useForegroundColor, useBackgroundColor } from '@/design-system';
-import { getProviders, getWidgetURL } from '@/resources/f2c';
 import Skeleton from '@/components/skeleton/Skeleton';
-import Navigation from '@/navigation/Navigation';
-import { WrappedAlert } from '@/helpers/alert';
-import { logger, RainbowError } from '@/logger';
-
-import * as i18n from '@/languages';
-import { useAccountAddress } from '@/state/wallets/walletsStore';
-import { ProviderListItem } from './ProviderListItem';
+import { Box, Separator, Text, useBackgroundColor, useForegroundColor } from '@/design-system';
 import { FiatProviderName } from '@/entities/f2c';
+import { WrappedAlert } from '@/helpers/alert';
+import useDimensions from '@/hooks/useDimensions';
+import * as i18n from '@/languages';
+import { logger, RainbowError } from '@/logger';
+import Navigation from '@/navigation/Navigation';
+import { getProviders, getWidgetURL } from '@/resources/f2c';
+import { useAccountAddress } from '@/state/wallets/walletsStore';
+import { borders } from '@/styles';
+import deviceUtils from '@/utils/deviceUtils';
+
+import { ProviderListItem } from './ProviderListItem';
 
 const deviceHeight = deviceUtils.dimensions.height;
 

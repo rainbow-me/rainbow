@@ -1,3 +1,9 @@
+import * as React from 'react';
+import { Text as NativeText, Animated as RNAnimated } from 'react-native';
+
+import Animated, { Easing, useAnimatedStyle, useDerivedValue, withSpring, withTiming } from 'react-native-reanimated';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
+
 import ButtonPressAnimation from '@/components/animations/ButtonPressAnimation';
 import { ImgixImage } from '@/components/images';
 import ContextMenu from '@/components/native-context-menu/contextMenu';
@@ -10,10 +16,7 @@ import { usePersistentDominantColorFromImage } from '@/hooks/usePersistentDomina
 import { useAccountProfileInfo } from '@/state/wallets/walletsStore';
 import { useTheme } from '@/theme/ThemeContext';
 import { getFirstGrapheme } from '@/utils/formatters';
-import * as React from 'react';
-import { Text as NativeText, Animated as RNAnimated } from 'react-native';
-import Animated, { Easing, useAnimatedStyle, useDerivedValue, withSpring, withTiming } from 'react-native-reanimated';
-import { useSafeAreaInsets } from 'react-native-safe-area-context';
+
 import { useRecyclerAssetListPosition } from '../core/Contexts';
 
 export const ProfileAvatarRowHeight = 80;

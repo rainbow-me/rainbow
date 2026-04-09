@@ -1,18 +1,21 @@
 import React, { useCallback } from 'react';
+import { StyleSheet } from 'react-native';
+
 import Animated from 'react-native-reanimated';
-import { Box, Stack, Text, useColorMode } from '@/design-system';
-import * as i18n from '@/languages';
-import { TokenFamilyHeaderHeight } from './NFTLoadingSkeleton';
+
+import { analytics } from '@/analytics';
+import { GestureHandlerButton } from '@/components/buttons/GestureHandlerButton';
 import useExperimentalFlag, { MINTS, NFTS_ENABLED } from '@/config/experimentalHooks';
+import { Box, Stack, Text, useColorMode } from '@/design-system';
+import { convertRawAmountToRoundedDecimal } from '@/helpers/utilities';
+import * as i18n from '@/languages';
 import { useRemoteConfig } from '@/model/remoteConfig';
 import { useMints } from '@/resources/mints';
-import { useAccountAddress } from '@/state/wallets/walletsStore';
-import { GestureHandlerButton } from '@/components/buttons/GestureHandlerButton';
-import { StyleSheet } from 'react-native';
-import { analytics } from '@/analytics';
-import { convertRawAmountToRoundedDecimal } from '@/helpers/utilities';
 import { navigateToMintCollection } from '@/resources/reservoir/mints';
+import { useAccountAddress } from '@/state/wallets/walletsStore';
 import { LIGHT_SEPARATOR_COLOR, SEPARATOR_COLOR } from '@/styles/constants';
+
+import { TokenFamilyHeaderHeight } from './NFTLoadingSkeleton';
 
 type LaunchFeaturedMintButtonProps = {
   featuredMint: ReturnType<typeof useMints>['data']['featuredMint'];

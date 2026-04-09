@@ -1,8 +1,8 @@
 import React, { useCallback, useState } from 'react';
 import { TouchableWithoutFeedback } from 'react-native';
+
 import Animated, {
   Easing,
-  type SharedValue,
   interpolate,
   interpolateColor,
   measure,
@@ -13,14 +13,13 @@ import Animated, {
   useAnimatedStyle,
   useSharedValue,
   withTiming,
+  type SharedValue,
 } from 'react-native-reanimated';
 
-import { globalColors } from '@/design-system';
-
-import { useTheme } from '@/theme/ThemeContext';
-
-import useDimensions from '@/hooks/useDimensions';
 import { FadeGradient } from '@/components/FadeGradient';
+import { globalColors } from '@/design-system';
+import useDimensions from '@/hooks/useDimensions';
+import { useTheme } from '@/theme/ThemeContext';
 
 const COLLAPSED_CARD_HEIGHT = 56;
 const MAX_CARD_HEIGHT = 176;

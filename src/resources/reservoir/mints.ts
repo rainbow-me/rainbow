@@ -1,11 +1,12 @@
+import { type BigNumberish } from '@ethersproject/bignumber';
+
 import type { EthereumAddress } from '@/entities/wallet';
 import { arcClient } from '@/graphql';
-import Navigation from '@/navigation/Navigation';
-import Routes from '@/navigation/routesNames';
-import { logger } from '@/logger';
 import { WrappedAlert as Alert } from '@/helpers/alert';
 import * as i18n from '@/languages';
-import { type BigNumberish } from '@ethersproject/bignumber';
+import { logger } from '@/logger';
+import Navigation from '@/navigation/Navigation';
+import Routes from '@/navigation/routesNames';
 import { type ChainId } from '@/state/backendNetworks/types';
 
 const showAlert = () => {

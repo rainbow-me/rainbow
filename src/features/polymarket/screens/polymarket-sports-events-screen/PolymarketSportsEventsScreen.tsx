@@ -1,10 +1,11 @@
 import { memo } from 'react';
-import { type NativeScrollEvent, type NativeSyntheticEvent, StyleSheet, View } from 'react-native';
-import { PolymarketSportsEventsList } from '@/features/polymarket/screens/polymarket-sports-events-screen/PolymarketSportsEventsList';
+import { StyleSheet, View, type NativeScrollEvent, type NativeSyntheticEvent } from 'react-native';
+
+import { usePolymarketContext } from '@/features/polymarket/screens/polymarket-navigator/PolymarketContext';
 import { PolymarketLeagueSelector } from '@/features/polymarket/screens/polymarket-sports-events-screen/PolymarketLeagueSelector';
+import { PolymarketSportsEventsList } from '@/features/polymarket/screens/polymarket-sports-events-screen/PolymarketSportsEventsList';
 import { usePolymarketSportsEventsStore } from '@/features/polymarket/stores/polymarketSportsEventsStore';
 import { useListen } from '@/state/internal/hooks/useListen';
-import { usePolymarketContext } from '@/features/polymarket/screens/polymarket-navigator/PolymarketContext';
 
 type PolymarketSportsEventsScreenProps = {
   onScroll: (event: NativeSyntheticEvent<NativeScrollEvent>) => void;

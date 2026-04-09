@@ -1,7 +1,8 @@
-import { type Migration, MigrationName } from '@/migrations/types';
+import AsyncStorage from '@react-native-async-storage/async-storage';
+
+import { MigrationName, type Migration } from '@/migrations/types';
 import { queryClient } from '@/react-query';
 import { favoritesQueryKey } from '@/resources/favorites';
-import AsyncStorage from '@react-native-async-storage/async-storage';
 
 export function migratePersistedQueriesToMMKV(): Migration {
   return {

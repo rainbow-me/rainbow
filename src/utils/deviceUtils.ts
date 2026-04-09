@@ -1,6 +1,8 @@
-import { Dimensions, PixelRatio, Platform, NativeModules } from 'react-native';
-import { IS_ANDROID, IS_IOS } from '@/env';
+import { Dimensions, NativeModules, PixelRatio, Platform } from 'react-native';
+
 import { initialWindowMetrics } from 'react-native-safe-area-context';
+
+import { IS_ANDROID, IS_IOS } from '@/env';
 
 const scale = Dimensions.get('screen').scale;
 const { height, width } = Dimensions.get('window');

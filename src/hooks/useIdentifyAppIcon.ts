@@ -1,6 +1,7 @@
 import { useEffect } from 'react';
-import useAccountSettings from '@/hooks/useAccountSettings';
+
 import { analytics } from '@/analytics';
+import useAccountSettings from '@/hooks/useAccountSettings';
 
 export const useAppIconIdentify = () => {
   const { appIcon } = useAccountSettings();

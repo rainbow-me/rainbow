@@ -1,8 +1,10 @@
-import { useCleanup } from '@/hooks/useCleanup';
-import { Canvas, type DataSourceParam, ImageShader, Rect, Shader, Skia, useImage, vec } from '@shopify/react-native-skia';
 import { forwardRef, memo, useImperativeHandle } from 'react';
+
+import { Canvas, ImageShader, Rect, Shader, Skia, useImage, vec, type DataSourceParam } from '@shopify/react-native-skia';
 import { cancelAnimation, convertToRGBA, useDerivedValue, useSharedValue, withTiming } from 'react-native-reanimated';
+
 import { transitionEasing } from '@/features/rnbw-rewards/animations/sceneTransitions';
+import { useCleanup } from '@/hooks/useCleanup';
 
 const DEFAULT_SIZE = 160;
 const DEFAULT_EDGE_THICKNESS = 12;

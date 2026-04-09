@@ -1,4 +1,12 @@
+import { useEffect, useMemo, useState } from 'react';
+
 import BigNumber from 'bignumber.js';
+import { debounce } from 'lodash';
+import { runOnJS, runOnUI, useAnimatedReaction, useSharedValue } from 'react-native-reanimated';
+import { create } from 'zustand';
+
+import { type ExtendedAnimatedAssetWithColors } from '@/__swaps__/types/assets';
+import { analytics } from '@/analytics';
 import {
   divWorklet,
   equalWorklet,
@@ -13,25 +21,20 @@ import {
   toFixedWorklet,
   toScaledIntegerWorklet,
 } from '@/framework/core/safeMath';
-import { type ExtendedAnimatedAssetWithColors } from '@/__swaps__/types/assets';
+import Routes from '@/navigation/routesNames';
+import { useUserAssetsStore } from '@/state/assets/userAssets';
+import { useBackendNetworksStore } from '@/state/backendNetworks/backendNetworks';
 import { ChainId } from '@/state/backendNetworks/types';
-import { type CrosschainQuote, type Quote, type QuoteError } from '@rainbow-me/swaps';
+import { useSwapsStore } from '@/state/swaps/swapsStore';
+import { getUniqueId } from '@/utils/ethereumUtils';
 import { deepEqual } from '@/worklets/comparisons';
-import { debounce } from 'lodash';
-import { useEffect, useMemo, useState } from 'react';
-import { runOnJS, runOnUI, useAnimatedReaction, useSharedValue } from 'react-native-reanimated';
-import { create } from 'zustand';
+import { type CrosschainQuote, type Quote, type QuoteError } from '@rainbow-me/swaps';
+
 import { type GasSettings } from '../hooks/useCustomGas';
 import { useSelectedGas } from '../hooks/useSelectedGas';
 import { useSwapEstimatedGasLimit } from '../hooks/useSwapEstimatedGasLimit';
-import { useSwapContext } from './swap-provider';
-import { useUserAssetsStore } from '@/state/assets/userAssets';
-import { getUniqueId } from '@/utils/ethereumUtils';
-import { useSwapsStore } from '@/state/swaps/swapsStore';
-import { useBackendNetworksStore } from '@/state/backendNetworks/backendNetworks';
 import { getSwapsNavigationParams } from '../navigateToSwaps';
-import { analytics } from '@/analytics';
-import Routes from '@/navigation/routesNames';
+import { useSwapContext } from './swap-provider';
 
 const BUFFER_RATIO = 0.5;
 

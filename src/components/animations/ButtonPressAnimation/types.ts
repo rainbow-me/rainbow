@@ -1,4 +1,5 @@
 import { type GestureResponderEvent, type PressableProps, type StyleProp, type ViewProps, type ViewStyle } from 'react-native';
+
 import { type HapticFeedbackTypes } from 'react-native-haptic-feedback';
 
 export type TransformOrigin = [number, number];

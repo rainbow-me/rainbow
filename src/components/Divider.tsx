@@ -1,10 +1,12 @@
-import { isNil, isNumber } from 'lodash';
 import React from 'react';
-import magicMemo from '@/utils/magicMemo';
+import { View } from 'react-native';
+
+import { isNil, isNumber } from 'lodash';
+
 import styled from '@/framework/ui/styled-thing';
 import { borders, position } from '@/styles';
-import { View } from 'react-native';
-import { type ThemeContextProps, useTheme } from '@/theme/ThemeContext';
+import { useTheme, type ThemeContextProps } from '@/theme/ThemeContext';
+import magicMemo from '@/utils/magicMemo';
 
 export const DividerSize = 2;
 

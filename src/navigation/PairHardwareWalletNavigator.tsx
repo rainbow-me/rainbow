@@ -1,16 +1,19 @@
 import React, { useEffect, useState } from 'react';
-import { BackgroundProvider } from '@/design-system';
+
 import { createMaterialTopTabNavigator } from '@react-navigation/material-top-tabs';
+import { useRoute, type RouteProp } from '@react-navigation/native';
+import { atom, useRecoilState } from 'recoil';
+
+import { analytics } from '@/analytics';
+import { SimpleSheet } from '@/components/sheet/SimpleSheet';
+import { BackgroundProvider } from '@/design-system';
+import useDimensions from '@/hooks/useDimensions';
+import Routes from '@/navigation/routesNames';
+import { NanoXDeviceAnimation } from '@/screens/hardware-wallets/components/NanoXDeviceAnimation';
 import { PairHardwareWalletIntroSheet } from '@/screens/hardware-wallets/PairHardwareWalletIntroSheet';
 import { PairHardwareWalletSearchSheet } from '@/screens/hardware-wallets/PairHardwareWalletSearchSheet';
 import { PairHardwareWalletSigningSheet } from '@/screens/hardware-wallets/PairHardwareWalletSigningSheet';
-import { NanoXDeviceAnimation } from '@/screens/hardware-wallets/components/NanoXDeviceAnimation';
-import useDimensions from '@/hooks/useDimensions';
-import { SimpleSheet } from '@/components/sheet/SimpleSheet';
-import { atom, useRecoilState } from 'recoil';
-import Routes from '@/navigation/routesNames';
-import { type RouteProp, useRoute } from '@react-navigation/native';
-import { analytics } from '@/analytics';
+
 import { type RootStackParamList } from './types';
 
 const Swipe = createMaterialTopTabNavigator();

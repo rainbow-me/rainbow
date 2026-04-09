@@ -1,8 +1,7 @@
 import { useQuery } from '@tanstack/react-query';
 
-import { createQueryKey, queryClient, type QueryConfig, type QueryFunctionResult } from '@/react-query';
-
 import { metadataClient } from '@/graphql';
+import { createQueryKey, queryClient, type QueryConfig, type QueryFunctionResult } from '@/react-query';
 
 import ensIntroMarqueeNames from '../references/ens-intro-marquee-names.json';
 

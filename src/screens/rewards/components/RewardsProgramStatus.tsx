@@ -1,4 +1,5 @@
 import React from 'react';
+
 import { Box, Stack, Text } from '@/design-system';
 
 type Props = {

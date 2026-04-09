@@ -1,18 +1,19 @@
 import { useCallback } from 'react';
-import { type RainbowTransaction, type MinedTransaction, TransactionStatus } from '@/entities/transactions';
-import { fetchRawTransaction } from '@/resources/transactions/transaction';
-import { RainbowError, logger } from '@/logger';
-import { buildTransactionTitle, isValidTransactionStatus } from '@/parsers/transactions';
-import { consolidatedTransactionsQueryKey } from '@/resources/transactions/consolidatedTransactions';
-import { pendingTransactionsActions } from '@/state/pendingTransactions';
-import { useRainbowToastsStore } from '@/components/rainbow-toast/useRainbowToastsStore';
-import { useBackendNetworksStore } from '@/state/backendNetworks/backendNetworks';
-import { userAssetsStoreManager } from '@/state/assets/userAssetsStoreManager';
-import type { SupportedCurrencyKey } from '@/references/supportedCurrencies';
+
 import { analytics } from '@/analytics';
 import { event } from '@/analytics/event';
-import { useMinedTransactionsStore } from '@/state/minedTransactions/minedTransactions';
+import { useRainbowToastsStore } from '@/components/rainbow-toast/useRainbowToastsStore';
+import { TransactionStatus, type MinedTransaction, type RainbowTransaction } from '@/entities/transactions';
+import { logger, RainbowError } from '@/logger';
+import { buildTransactionTitle, isValidTransactionStatus } from '@/parsers/transactions';
 import { queryClient } from '@/react-query';
+import type { SupportedCurrencyKey } from '@/references/supportedCurrencies';
+import { consolidatedTransactionsQueryKey } from '@/resources/transactions/consolidatedTransactions';
+import { fetchRawTransaction } from '@/resources/transactions/transaction';
+import { userAssetsStoreManager } from '@/state/assets/userAssetsStoreManager';
+import { useBackendNetworksStore } from '@/state/backendNetworks/backendNetworks';
+import { useMinedTransactionsStore } from '@/state/minedTransactions/minedTransactions';
+import { pendingTransactionsActions } from '@/state/pendingTransactions';
 
 async function fetchTransaction({
   abortController,

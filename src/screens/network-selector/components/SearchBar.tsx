@@ -1,13 +1,15 @@
-import React, { useCallback, memo } from 'react';
-import { Box, Text, useColorMode, globalColors } from '@/design-system';
-import { AnimatedInput } from '@/components/AnimatedComponents/AnimatedInput';
-import { networkSwitcherStore } from '@/state/networkSwitcher/networkSwitcher';
-import ButtonPressAnimation from '@/components/animations/ButtonPressAnimation';
+import React, { memo, useCallback } from 'react';
 import { StyleSheet, type TextInput } from 'react-native';
+
+import { triggerHaptics } from 'react-native-turbo-haptics';
+
+import { AnimatedInput } from '@/components/AnimatedComponents/AnimatedInput';
+import ButtonPressAnimation from '@/components/animations/ButtonPressAnimation';
+import { Box, globalColors, Text, useColorMode } from '@/design-system';
 import { useForegroundColor } from '@/design-system/color/useForegroundColor';
 import { opacity } from '@/framework/ui/utils/opacity';
-import { triggerHaptics } from 'react-native-turbo-haptics';
 import * as i18n from '@/languages';
+import { networkSwitcherStore } from '@/state/networkSwitcher/networkSwitcher';
 
 export const SEARCH_BAR_HEIGHT = 48;
 const SEARCH_BAR_BORDER_RADIUS = SEARCH_BAR_HEIGHT / 2;

@@ -1,10 +1,13 @@
 import { Buffer } from 'buffer';
+
 import { Contract } from '@ethersproject/contracts';
 import { type BaseProvider } from '@ethersproject/providers';
-import { type AvatarRequestOpts } from '..';
-import { resolveURI } from '../utils';
+
 import svgToPngIfNeeded from '@/handlers/svgs';
 import { fetchSimpleHashNFT } from '@/resources/nfts/simplehash';
+
+import { type AvatarRequestOpts } from '..';
+import { resolveURI } from '../utils';
 
 const abi = [
   'function uri(uint256 _id) public view returns (string memory)',

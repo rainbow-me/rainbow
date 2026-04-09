@@ -1,8 +1,9 @@
 import { useEffect } from 'react';
+
 import { IS_ANDROID } from '@/env';
 import { useNavigation } from '@/navigation/Navigation';
-import { useRemoveFirst } from '@/navigation/useRemoveFirst';
 import type Routes from '@/navigation/routesNames';
+import { useRemoveFirst } from '@/navigation/useRemoveFirst';
 
 export type RouteName = (typeof Routes)[keyof typeof Routes];
 

@@ -1,13 +1,15 @@
-import { type ReactNode, memo, useMemo } from 'react';
-import { GradientBorderView } from '@/components/gradient-border/GradientBorderView';
-import { opacity } from '@/framework/ui/utils/opacity';
-import { LinearGradient } from 'expo-linear-gradient';
+import { memo, useMemo, type ReactNode } from 'react';
 import { StyleSheet } from 'react-native';
-import { Box, Text, useColorMode, useForegroundColor } from '@/design-system';
+
+import { LinearGradient } from 'expo-linear-gradient';
+
+import { GradientBorderView } from '@/components/gradient-border/GradientBorderView';
 import ImgixImage from '@/components/images/ImgixImage';
+import { Box, Text, useColorMode, useForegroundColor } from '@/design-system';
+import { InnerShadow } from '@/features/polymarket/components/InnerShadow';
+import { opacity } from '@/framework/ui/utils/opacity';
 import { formatNumber } from '@/helpers/strings';
 import * as i18n from '@/languages';
-import { InnerShadow } from '@/features/polymarket/components/InnerShadow';
 
 type ResolvedMarketRowProps = {
   accentColor: string;

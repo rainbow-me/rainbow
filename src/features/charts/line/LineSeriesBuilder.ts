@@ -1,6 +1,8 @@
-import { type SkCanvas, type SkPath, Skia } from '@shopify/react-native-skia';
+import { Skia, type SkCanvas, type SkPath } from '@shopify/react-native-skia';
+
 import { type ResponseByTheme } from '@/__swaps__/utils/swaps';
-import { type InteractionConfig, type LineEffectsConfig, LineSeries, type LineSeriesConfig, type MinMax } from './LineSeries';
+
+import { LineSeries, type InteractionConfig, type LineEffectsConfig, type LineSeriesConfig, type MinMax } from './LineSeries';
 import { type LineSmoothing } from './LineSmoothingAlgorithms';
 import { type DrawParams } from './types';
 

@@ -1,33 +1,36 @@
 import React, { memo, useCallback, useMemo } from 'react';
-import RecyclerAssetList2 from '../../components/asset-list/RecyclerAssetList2';
-import { Page } from '../../components/layout';
+import { InteractionManager } from 'react-native';
+
+import { PerformanceMeasureView } from '@shopify/react-native-performance';
+import { debounce } from 'lodash';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
+import { useRecoilValue } from 'recoil';
+
+import { type CellTypes } from '@/components/asset-list/RecyclerAssetList2/core/ViewTypes';
 import { MobileWalletProtocolListener } from '@/components/MobileWalletProtocolListener';
 import { navbarHeight } from '@/components/navbar/Navbar';
 import { Toast, ToastPositionContainer } from '@/components/toasts';
 import { Box } from '@/design-system';
 import { useAccountAccentColor } from '@/hooks/useAccountAccentColor';
 import useFetchOpenCollectionsOnMount from '@/hooks/useFetchOpenCollectionsOnMount';
-import useWalletSectionsData from '@/hooks/useWalletSectionsData';
 import { hideSplashScreen } from '@/hooks/useHideSplashScreen';
 import { useAppIconIdentify } from '@/hooks/useIdentifyAppIcon';
 import { useLoadDeferredWalletData } from '@/hooks/useLoadDeferredWalletData';
 import { useRemoveScreen } from '@/hooks/useRemoveFirstScreen';
+import { useShouldRevokeDelegation } from '@/hooks/useShouldRevokeDelegation';
+import { useStableValue } from '@/hooks/useStableValue';
 import { useWalletCohort } from '@/hooks/useWalletCohort';
+import useWalletSectionsData from '@/hooks/useWalletSectionsData';
+import { useRoute } from '@/navigation/Navigation';
 import Routes from '@/navigation/routesNames';
 import { addressCopiedToastAtom } from '@/recoil/addressCopiedToastAtom';
-import { useNavigationStore } from '@/state/navigation/navigationStore';
-import { type CellTypes } from '@/components/asset-list/RecyclerAssetList2/core/ViewTypes';
 import { addSubscribedTokens, removeSubscribedTokens, useLiveTokensStore } from '@/state/liveTokens/liveTokensStore';
-import { debounce } from 'lodash';
-import { SessionEntryPromptSync } from '@/state/sync/SessionEntryPromptSync';
-import { PerformanceMeasureView } from '@shopify/react-native-performance';
-import { InteractionManager } from 'react-native';
-import { useSafeAreaInsets } from 'react-native-safe-area-context';
-import { useRecoilValue } from 'recoil';
+import { useNavigationStore } from '@/state/navigation/navigationStore';
 import { useNftsStore } from '@/state/nfts/nfts';
-import { useStableValue } from '@/hooks/useStableValue';
-import { useRoute } from '@/navigation/Navigation';
-import { useShouldRevokeDelegation } from '@/hooks/useShouldRevokeDelegation';
+import { SessionEntryPromptSync } from '@/state/sync/SessionEntryPromptSync';
+
+import RecyclerAssetList2 from '../../components/asset-list/RecyclerAssetList2';
+import { Page } from '../../components/layout';
 
 const UtilityComponents = memo(function UtilityComponents() {
   return (

@@ -1,18 +1,20 @@
+import React, { useCallback, useMemo } from 'react';
+import { StyleSheet } from 'react-native';
+
+import RadialGradient from 'react-native-radial-gradient';
+
 import ButtonPressAnimation from '@/components/animations/ButtonPressAnimation';
 import ContextMenuButton, { type MenuConfig } from '@/components/native-context-menu/contextMenu';
 import { Box, Stack, Text } from '@/design-system';
-import { type PendingTransaction, type RainbowTransaction, TransactionStatus } from '@/entities/transactions';
+import { TransactionStatus, type PendingTransaction, type RainbowTransaction } from '@/entities/transactions';
 import * as i18n from '@/languages';
+import { useNavigation } from '@/navigation/Navigation';
 import { formatTransactionDetailsDate } from '@/screens/transaction-details/helpers/formatTransactionDetailsDate';
 import { getIconColorAndGradientForTransactionStatus } from '@/screens/transaction-details/helpers/getIconColorAndGradientForTransactionStatus';
+import { useAccountAddress } from '@/state/wallets/walletsStore';
 import { useTheme } from '@/theme/ThemeContext';
 import haptics from '@/utils/haptics';
 import Routes from '@rainbow-me/routes';
-import { useNavigation } from '@/navigation/Navigation';
-import React, { useCallback, useMemo } from 'react';
-import { StyleSheet } from 'react-native';
-import RadialGradient from 'react-native-radial-gradient';
-import { useAccountAddress } from '@/state/wallets/walletsStore';
 
 const SIZE = 40;
 

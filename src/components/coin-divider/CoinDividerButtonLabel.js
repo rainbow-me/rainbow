@@ -1,9 +1,11 @@
 import React from 'react';
-import magicMemo from '@/utils/magicMemo';
-import OpacityToggler from '../animations/OpacityToggler';
-import { Text } from '../text';
+
 import styled from '@/framework/ui/styled-thing';
 import { opacity } from '@/framework/ui/utils/opacity';
+import magicMemo from '@/utils/magicMemo';
+
+import OpacityToggler from '../animations/OpacityToggler';
+import { Text } from '../text';
 
 const LabelText = styled(Text).attrs(({ shareButton, theme: { colors } }) => ({
   color: opacity(colors.blueGreyDark, 0.6),

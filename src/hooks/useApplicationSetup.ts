@@ -1,15 +1,16 @@
-import { type Dispatch, type SetStateAction, useEffect, useState } from 'react';
+import { useEffect, useState, type Dispatch, type SetStateAction } from 'react';
 import { InteractionManager } from 'react-native';
+
+import {
+  initListeners as initWalletConnectListeners,
+  initWalletConnectPushNotifications,
+} from '@/features/wallet-connect/handlers/listeners';
 import { checkIdentifierOnLaunch } from '@/model/backup';
 import { loadAddress } from '@/model/wallet';
 import { type InitialRoute } from '@/navigation/initialRoute';
 import Routes from '@/navigation/routesNames';
 import { saveFCMToken } from '@/notifications/tokens';
 import { PerformanceReports, PerformanceTracking } from '@/performance/tracking';
-import {
-  initListeners as initWalletConnectListeners,
-  initWalletConnectPushNotifications,
-} from '@/features/wallet-connect/handlers/listeners';
 import { initializeWallet } from '@/state/wallets/initializeWallet';
 
 export function useApplicationSetup() {

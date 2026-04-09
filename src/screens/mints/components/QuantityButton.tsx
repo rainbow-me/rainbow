@@ -1,13 +1,15 @@
 import React, { useCallback, useEffect, useRef, useState } from 'react';
+
 import ReactNativeHapticFeedback from 'react-native-haptic-feedback';
-import { delay } from '@/utils/delay';
-import usePrevious from '@/hooks/usePrevious';
-import styled from '@/framework/ui/styled-thing';
+
 import ButtonPressAnimation from '@/components/animations/ButtonPressAnimation';
 import Row from '@/components/layout/Row';
 import { Box, Inline, Text } from '@/design-system';
-import { useTheme } from '@/theme/ThemeContext';
+import styled from '@/framework/ui/styled-thing';
 import { opacity } from '@/framework/ui/utils/opacity';
+import usePrevious from '@/hooks/usePrevious';
+import { useTheme } from '@/theme/ThemeContext';
+import { delay } from '@/utils/delay';
 
 const PLUS_ACTION_TYPE = 'plus';
 const MINUS_ACTION_TYPE = 'minus';

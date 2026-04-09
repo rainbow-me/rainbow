@@ -1,5 +1,6 @@
-import { getDateFnsLocale } from '@/languages';
 import format from 'date-fns/format';
+
+import { getDateFnsLocale } from '@/languages';
 
 export function formatTransactionDetailsDate(minedAtInSeconds?: number): string | undefined {
   if (!minedAtInSeconds) {

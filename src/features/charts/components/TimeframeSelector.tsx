@@ -1,28 +1,31 @@
-import React, { memo, type RefObject, useCallback, useMemo, useRef } from 'react';
-import { ScrollView, type ScrollViewProps, StyleSheet, View } from 'react-native';
+import React, { memo, useCallback, useMemo, useRef, type RefObject } from 'react';
+import { ScrollView, StyleSheet, View, type ScrollViewProps } from 'react-native';
+
 import Animated, {
-  type AnimatedStyle,
-  type DerivedValue,
-  type SharedValue,
   runOnJS,
   useAnimatedStyle,
   useDerivedValue,
   useSharedValue,
   withSpring,
+  type AnimatedStyle,
+  type DerivedValue,
+  type SharedValue,
 } from 'react-native-reanimated';
-import { SPRING_CONFIGS, easing } from '@/components/animations/animationConfigs';
+
+import { easing, SPRING_CONFIGS } from '@/components/animations/animationConfigs';
+import { GestureHandlerButton } from '@/components/buttons/GestureHandlerButton';
 import { EasingGradient } from '@/components/easing-gradient/EasingGradient';
 import { AnimatedText, globalColors, useColorMode, useForegroundColor } from '@/design-system';
 import { IS_IOS } from '@/env';
-import { useStableValue } from '@/hooks/useStableValue';
-import { GestureHandlerButton } from '@/components/buttons/GestureHandlerButton';
 import { opacity } from '@/framework/ui/utils/opacity';
+import { useStableValue } from '@/hooks/useStableValue';
 import { DEVICE_WIDTH } from '@/utils/deviceUtils';
 import { getSolidColorEquivalent } from '@/worklets/colors';
+
 import { GREEN_CANDLE_COLOR, RED_CANDLE_COLOR } from '../candlestick/constants';
 import { CANDLE_RESOLUTIONS, LINE_CHART_TIME_PERIODS } from '../constants';
 import { chartsActions, useChartsStore, useChartType } from '../stores/chartsStore';
-import { type CandleResolution, ChartType, type LineChartTimePeriod } from '../types';
+import { ChartType, type CandleResolution, type LineChartTimePeriod } from '../types';
 
 // ============ Constants ====================================================== //
 

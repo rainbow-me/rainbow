@@ -1,5 +1,7 @@
-import { type RefObject, useLayoutEffect } from 'react';
+import { useLayoutEffect, type RefObject } from 'react';
+
 import { useLazyRef as useRef } from '@/hooks/useLazyRef';
+
 import { type BaseRainbowStore, type EqualityFn, type InferStoreState, type Selector } from '../types';
 
 // ============ Types ========================================================== //

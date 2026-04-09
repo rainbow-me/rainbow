@@ -1,10 +1,15 @@
 import React, { useCallback, useMemo, useRef } from 'react';
-import * as i18n from '@/languages';
-import { AnimatedText, Box, Separator, TextShadow, useForegroundColor } from '@/design-system';
-import { CollapsableField } from './CollapsableField';
+
+import { runOnJS, useAnimatedReaction, useAnimatedStyle, useDerivedValue, useSharedValue, type SharedValue } from 'react-native-reanimated';
+import { useDebouncedCallback } from 'use-debounce';
+
 import { GestureHandlerButton } from '@/components/buttons/GestureHandlerButton';
-import { useTokenLauncherStore } from '../state/tokenLauncherStore';
-import { runOnJS, type SharedValue, useAnimatedReaction, useAnimatedStyle, useDerivedValue, useSharedValue } from 'react-native-reanimated';
+import { AnimatedText, Box, Separator, TextShadow, useForegroundColor } from '@/design-system';
+import { lessThanWorklet } from '@/framework/core/safeMath';
+import { convertAmountToBalanceDisplay, lessThan, subtract } from '@/helpers/utilities';
+import * as i18n from '@/languages';
+import { useUserAssetsStore } from '@/state/assets/userAssets';
+
 import {
   ERROR_RED,
   FIELD_BORDER_RADIUS,
@@ -14,13 +19,11 @@ import {
   SMALL_INPUT_HEIGHT,
   TOTAL_SUPPLY_PREBUY_PERCENTAGES,
 } from '../constants';
+import { useTokenLauncherContext } from '../context/TokenLauncherContext';
+import { useTokenLauncherStore } from '../state/tokenLauncherStore';
+import { CollapsableField } from './CollapsableField';
 import { Grid } from './Grid';
 import { SingleFieldInput, type SingleFieldInputRef } from './SingleFieldInput';
-import { useUserAssetsStore } from '@/state/assets/userAssets';
-import { useTokenLauncherContext } from '../context/TokenLauncherContext';
-import { convertAmountToBalanceDisplay, lessThan, subtract } from '@/helpers/utilities';
-import { lessThanWorklet } from '@/framework/core/safeMath';
-import { useDebouncedCallback } from 'use-debounce';
 
 function PrebuyAmountButton({
   label,

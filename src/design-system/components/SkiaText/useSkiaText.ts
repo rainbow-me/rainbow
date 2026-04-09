@@ -1,5 +1,7 @@
-import { useDerivedValue } from 'react-native-reanimated';
+import { useCallback } from 'react';
+
 import {
+  Skia,
   type SkColor,
   type SkPaint,
   type SkParagraph,
@@ -7,19 +9,20 @@ import {
   type SkTextFontStyle,
   type SkTextShadow,
   type SkTextStyle,
-  Skia,
 } from '@shopify/react-native-skia';
-import { useCallback } from 'react';
+import { useDerivedValue } from 'react-native-reanimated';
+
 import { type TextAlign } from '@/components/text/types';
 import { useColorMode } from '@/design-system/color/ColorMode';
 import { type TextColor } from '@/design-system/color/palettes';
 import { getColorForTheme } from '@/design-system/color/useForegroundColor';
 import { type SharedOrDerivedValueText } from '@/design-system/components/Text/AnimatedText';
 import { type TextWeight } from '@/design-system/components/Text/Text';
-import { type TextSize, typeHierarchy } from '@/design-system/typography/typeHierarchy';
+import { typeHierarchy, type TextSize } from '@/design-system/typography/typeHierarchy';
 import { IS_IOS } from '@/env';
 import { opacity } from '@/framework/ui/utils/opacity';
 import { type SharedOrDerivedValue } from '@/types/reanimated';
+
 import { getSkiaFontWeight, useSkiaFontManager } from './skiaFontManager';
 
 export type TextSegment = {

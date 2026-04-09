@@ -1,27 +1,30 @@
-import { type RouteProp, useRoute } from '@react-navigation/native';
 import React, { useContext, useMemo } from 'react';
-import { ModalContext } from '@/react-native-cool-modals/NativeStackView';
-import { ProfileSheetConfigContext } from '@/screens/ProfileSheet';
+
+import { useRoute, type RouteProp } from '@react-navigation/native';
+
 import Skeleton from '@/components/skeleton/Skeleton';
+import useExperimentalFlag, { PROFILES } from '@/config/experimentalHooks';
+import { Bleed, Box, Column, Columns, Heading, Inset, Separator, Stack } from '@/design-system';
+import type Routes from '@/navigation/routesNames';
+import { type RootStackParamList } from '@/navigation/types';
+import { ModalContext } from '@/react-native-cool-modals/NativeStackView';
+import { useLegacyNFTs } from '@/resources/nfts';
+import { useFirstTransactionTimestamp } from '@/resources/transactions/firstTransactionTimestampQuery';
+import { ProfileSheetConfigContext } from '@/screens/ProfileSheet';
+import { abbreviateEnsForDisplay } from '@/utils/abbreviations';
+import { addressHashedEmoji } from '@/utils/profileUtils';
+
+import useENSAvatar from '../../hooks/useENSAvatar';
+import useENSCover from '../../hooks/useENSCover';
+import useENSRecords from '../../hooks/useENSRecords';
+import useOpenENSNFTHandler from '../../hooks/useOpenENSNFTHandler';
+import { useENSAddress } from '../../resources/addressQuery';
+import { ENS_RECORDS } from '../../utils/helpers';
 import ActionButtons from './ActionButtons/ActionButtons';
 import ProfileAvatar from './ProfileAvatar';
 import ProfileCover from './ProfileCover';
 import ProfileDescription from './ProfileDescription';
 import RecordTags, { Placeholder as RecordTagsPlaceholder } from './RecordTags';
-import { abbreviateEnsForDisplay } from '@/utils/abbreviations';
-import useExperimentalFlag, { PROFILES } from '@/config/experimentalHooks';
-import { Bleed, Box, Column, Columns, Heading, Inset, Separator, Stack } from '@/design-system';
-import { ENS_RECORDS } from '../../utils/helpers';
-import useENSAvatar from '../../hooks/useENSAvatar';
-import useENSCover from '../../hooks/useENSCover';
-import useENSRecords from '../../hooks/useENSRecords';
-import useOpenENSNFTHandler from '../../hooks/useOpenENSNFTHandler';
-import { addressHashedEmoji } from '@/utils/profileUtils';
-import { useFirstTransactionTimestamp } from '@/resources/transactions/firstTransactionTimestampQuery';
-import { useENSAddress } from '../../resources/addressQuery';
-import { type RootStackParamList } from '@/navigation/types';
-import type Routes from '@/navigation/routesNames';
-import { useLegacyNFTs } from '@/resources/nfts';
 
 export default function ProfileSheetHeader({
   ensName: defaultEnsName,

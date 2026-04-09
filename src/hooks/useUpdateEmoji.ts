@@ -1,8 +1,9 @@
-import { useAccountProfileInfo, useAccountAddress, useSelectedWallet, updateAccountInfo, getWallets } from '@/state/wallets/walletsStore';
+import { useCallback } from 'react';
+
+import { updateWebProfile } from '@/helpers/webData';
+import { getWallets, updateAccountInfo, useAccountAddress, useAccountProfileInfo, useSelectedWallet } from '@/state/wallets/walletsStore';
 import { useTheme } from '@/theme/ThemeContext';
 import { getNextEmojiWithColor } from '@/utils/profileUtils';
-import { useCallback } from 'react';
-import { updateWebProfile } from '@/helpers/webData';
 
 export default function useUpdateEmoji() {
   const { accountColor, accountSymbol } = useAccountProfileInfo();

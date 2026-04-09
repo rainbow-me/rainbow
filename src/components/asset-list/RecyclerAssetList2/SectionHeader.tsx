@@ -1,8 +1,9 @@
 import React, { memo, useMemo } from 'react';
+
 import ButtonPressAnimation from '@/components/animations/ButtonPressAnimation';
 import { Box, Inline, Text, TextIcon } from '@/design-system';
-import { useAccountAccentColor } from '@/hooks/useAccountAccentColor';
 import { opacity } from '@/framework/ui/utils/opacity';
+import { useAccountAccentColor } from '@/hooks/useAccountAccentColor';
 
 const HEIGHT = 48;
 

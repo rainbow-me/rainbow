@@ -1,5 +1,5 @@
-import { isConcentratedLiquidityProtocol, calculateLiquidityRangeStatus, calculateLiquidityAllocation } from './lp';
 import type { PositionAsset, RainbowUnderlyingAsset } from '../../../types';
+import { calculateLiquidityAllocation, calculateLiquidityRangeStatus, isConcentratedLiquidityProtocol } from './lp';
 
 describe('LP Position Detection', () => {
   describe('isConcentratedLiquidityProtocol', () => {

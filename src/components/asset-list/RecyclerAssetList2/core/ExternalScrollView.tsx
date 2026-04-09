@@ -1,13 +1,16 @@
 import React, { useContext, useImperativeHandle } from 'react';
 import { Animated as RNAnimated, type ScrollViewProps, type ViewStyle } from 'react-native';
+
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { type ScrollViewDefaultProps } from 'recyclerlistview/dist/reactnative/core/scrollcomponent/BaseScrollView';
 import type BaseScrollView from 'recyclerlistview/dist/reactnative/core/scrollcomponent/BaseScrollView';
 import { useMemoOne } from 'use-memo-one';
+
+import { IS_ANDROID } from '@/env';
+import safeAreaInsetValues from '@/utils/safeAreaInsetValues';
+
 import { useRecyclerAssetListPosition } from './Contexts';
 import { StickyHeaderContext } from './StickyHeaders';
-import safeAreaInsetValues from '@/utils/safeAreaInsetValues';
-import { IS_ANDROID } from '@/env';
 
 const extraPadding = { paddingBottom: 100 + safeAreaInsetValues.bottom };
 const ExternalScrollViewWithRef = React.forwardRef<BaseScrollView, ScrollViewDefaultProps & { contentContainerStyle: ViewStyle }>(

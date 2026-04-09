@@ -1,5 +1,7 @@
 import React from 'react';
-import { type DerivedValue, useAnimatedStyle } from 'react-native-reanimated';
+
+import { useAnimatedStyle, type DerivedValue } from 'react-native-reanimated';
+
 import { AnimatedText, Bleed, Box, useColorMode } from '@/design-system';
 import { type TextColor } from '@/design-system/color/palettes';
 import { type TextWeight } from '@/design-system/components/Text/Text';

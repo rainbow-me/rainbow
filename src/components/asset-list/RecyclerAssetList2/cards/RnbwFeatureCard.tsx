@@ -1,21 +1,22 @@
 import React, { memo } from 'react';
-import { type GestureResponderEvent, Image, StyleSheet, View } from 'react-native';
+import { Image, StyleSheet, View, type GestureResponderEvent } from 'react-native';
+
 import { Blur, Canvas, LinearGradient, RoundedRect } from '@shopify/react-native-skia';
 import { BlurView } from 'react-native-blur-view';
-import { Box, globalColors, Inline, Text, TextIcon, useColorMode } from '@/design-system';
-import ButtonPressAnimation from '@/components/animations/ButtonPressAnimation';
-import { opacity } from '@/framework/ui/utils/opacity';
-import rnbwCoinImage from '@/assets/rnbw.png';
-import { useRnbwFeatureCard } from '@/features/rnbw-rewards/hooks/useRnbwFeatureCard';
-import * as i18n from '@/languages';
+
 import { ETH_COLOR_DARK_ACCENT } from '@/__swaps__/screens/Swap/constants';
-import Navigation from '@/navigation/Navigation';
+import rnbwCoinImage from '@/assets/rnbw.png';
+import ButtonPressAnimation from '@/components/animations/ButtonPressAnimation';
 import { RNBW_MEMBERSHIP } from '@/config/experimental';
 import useExperimentalFlag from '@/config/experimentalHooks';
-import Routes from '@/navigation/routesNames';
+import { Box, globalColors, Inline, Text, TextIcon, useColorMode } from '@/design-system';
 import { IS_IOS } from '@/env';
+import { useRnbwFeatureCard } from '@/features/rnbw-rewards/hooks/useRnbwFeatureCard';
+import { opacity } from '@/framework/ui/utils/opacity';
+import * as i18n from '@/languages';
 import { useRemoteConfig } from '@/model/remoteConfig';
-
+import Navigation from '@/navigation/Navigation';
+import Routes from '@/navigation/routesNames';
 import { THICK_BORDER_WIDTH } from '@/styles/constants';
 
 export const RNBW_FEATURE_CARD_HEIGHT = 131;

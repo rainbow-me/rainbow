@@ -1,8 +1,9 @@
-import { rainbowFetch, type RainbowFetchRequestOpts } from '@/framework/data/http/rainbowFetch';
 import { type DocumentNode } from 'graphql';
 import { resolveRequestDocument } from 'graphql-request';
-import { buildGetQueryParams } from '@/graphql/utils/buildGetQueryParams';
 import { ARC_GRAPHQL_API_KEY, METADATA_GRAPHQL_API_KEY } from 'react-native-dotenv';
+
+import { rainbowFetch, type RainbowFetchRequestOpts } from '@/framework/data/http/rainbowFetch';
+import { buildGetQueryParams } from '@/graphql/utils/buildGetQueryParams';
 
 const allowedOperations = ['mutation', 'query'];
 

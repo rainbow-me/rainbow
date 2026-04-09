@@ -1,11 +1,14 @@
-import { partition } from 'lodash';
 import React, { useMemo } from 'react';
+
+import { partition } from 'lodash';
+
 import ButtonPressAnimation from '@/components/animations/ButtonPressAnimation';
-import InfoRow, { InfoRowSkeleton } from './InfoRow';
 import { Stack } from '@/design-system';
+
+import useENSRecordDisplayProperties from '../../hooks/useENSRecordDisplayProperties';
 import type { Records } from '../../types/registration';
 import { deprecatedTextRecordFields, ENS_RECORDS } from '../../utils/helpers';
-import useENSRecordDisplayProperties from '../../hooks/useENSRecordDisplayProperties';
+import InfoRow, { InfoRowSkeleton } from './InfoRow';
 
 const omitRecordKeys = [ENS_RECORDS.avatar, ENS_RECORDS.displayName];
 const topRecordKeys = [ENS_RECORDS.header, ENS_RECORDS.name, ENS_RECORDS.description];

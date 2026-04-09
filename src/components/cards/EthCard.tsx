@@ -1,32 +1,35 @@
-import { analytics } from '@/analytics';
+import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import { type GestureResponderEvent } from 'react-native';
+
+import { useRoute } from '@react-navigation/native';
+
+import { analytics } from '@/analytics';
 import { ChainImage } from '@/components/coin-icon/ChainImage';
+import { ExtremeLabels } from '@/components/value-chart/ExtremeLabels';
 import { AccentColorProvider, Bleed, Box, Inline, Stack, Text } from '@/design-system';
 import { IS_IOS } from '@/env';
+import { opacity } from '@/framework/ui/utils/opacity';
 import useChartThrottledPoints from '@/hooks/charts/useChartThrottledPoints';
-import useColorForAsset from '@/hooks/useColorForAsset';
 import { useAccountAccentColor } from '@/hooks/useAccountAccentColor';
+import useColorForAsset from '@/hooks/useColorForAsset';
 import * as i18n from '@/languages';
 import { useRemoteConfig } from '@/model/remoteConfig';
 import { useNavigation } from '@/navigation/Navigation';
 import Routes from '@/navigation/routesNames';
 import { ChartDot, ChartPath, ChartPathProvider } from '@/react-native-animated-charts/src';
 import { ETH_ADDRESS } from '@/references/constants';
-import { type FormattedExternalAsset, useExternalToken } from '@/resources/assets/externalAssetsQuery';
+import { useExternalToken, type FormattedExternalAsset } from '@/resources/assets/externalAssetsQuery';
+import { userAssetsStoreManager } from '@/state/assets/userAssetsStoreManager';
 import { ChainId, Network } from '@/state/backendNetworks/types';
 import { getIsDamagedWallet } from '@/state/wallets/walletsStore';
 import { useTheme } from '@/theme/ThemeContext';
 import deviceUtils from '@/utils/deviceUtils';
 import { getUniqueId } from '@/utils/ethereumUtils';
-import { useRoute } from '@react-navigation/native';
-import React, { useCallback, useEffect, useMemo, useState } from 'react';
-import Spinner from '../Spinner';
+
 import ButtonPressAnimation from '../animations/ButtonPressAnimation';
 import Skeleton, { FakeText } from '../skeleton/Skeleton';
-import { ExtremeLabels } from '@/components/value-chart/ExtremeLabels';
+import Spinner from '../Spinner';
 import { GenericCard } from './GenericCard';
-import { userAssetsStoreManager } from '@/state/assets/userAssetsStoreManager';
-import { opacity } from '@/framework/ui/utils/opacity';
 
 export const ETH_CARD_HEIGHT = 284.3;
 

@@ -1,10 +1,13 @@
 import { useCallback } from 'react';
+
 import { useMutation, useQueryClient } from '@tanstack/react-query';
+
 import { analytics } from '@/analytics';
 import type { UniqueAsset } from '@/entities/uniqueAssets';
-import { useAccountAddress, getIsReadOnlyWallet } from '@/state/wallets/walletsStore';
-import useFetchHiddenTokens, { hiddenTokensQueryKey } from './useFetchHiddenTokens';
 import { getPreference, PreferenceActionType, setPreference } from '@/model/preferences';
+import { getIsReadOnlyWallet, useAccountAddress } from '@/state/wallets/walletsStore';
+
+import useFetchHiddenTokens, { hiddenTokensQueryKey } from './useFetchHiddenTokens';
 
 export default function useHiddenTokens(address?: string) {
   const queryClient = useQueryClient();

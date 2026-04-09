@@ -1,3 +1,17 @@
+import { useCallback } from 'react';
+
+import {
+  runOnJS,
+  runOnUI,
+  useAnimatedReaction,
+  useDerivedValue,
+  useSharedValue,
+  withSpring,
+  type SharedValue,
+} from 'react-native-reanimated';
+import { triggerHaptics } from 'react-native-turbo-haptics';
+import { useDebouncedCallback } from 'use-debounce';
+
 import {
   SCRUBBER_WIDTH,
   SLIDER_COLLAPSED_HEIGHT,
@@ -22,6 +36,7 @@ import {
 import { analytics } from '@/analytics';
 import { SPRING_CONFIGS } from '@/components/animations/animationConfigs';
 import type { NativeCurrencyKey } from '@/entities/nativeCurrencyTypes';
+import { divWorklet, equalWorklet, greaterThanWorklet, isNumberStringWorklet, mulWorklet, toFixedWorklet } from '@/framework/core/safeMath';
 import {
   convertAmountToNativeDisplayWorklet,
   convertRawAmountToDecimalFormat,
@@ -29,22 +44,10 @@ import {
 } from '@/helpers/utilities';
 import { useAnimatedInterval } from '@/hooks/reanimated/useAnimatedInterval';
 import { logger } from '@/logger';
-import { divWorklet, equalWorklet, greaterThanWorklet, isNumberStringWorklet, mulWorklet, toFixedWorklet } from '@/framework/core/safeMath';
 import { swapsStore } from '@/state/swaps/swapsStore';
 import { getAccountAddress } from '@/state/wallets/walletsStore';
-import { type CrosschainQuote, type Quote, type QuoteError, getCrosschainQuote, getQuote } from '@rainbow-me/swaps';
-import { useCallback } from 'react';
-import {
-  type SharedValue,
-  runOnJS,
-  runOnUI,
-  useAnimatedReaction,
-  useDerivedValue,
-  useSharedValue,
-  withSpring,
-} from 'react-native-reanimated';
-import { triggerHaptics } from 'react-native-turbo-haptics';
-import { useDebouncedCallback } from 'use-debounce';
+import { getCrosschainQuote, getQuote, type CrosschainQuote, type Quote, type QuoteError } from '@rainbow-me/swaps';
+
 import { type SwapsParams } from '../navigateToSwaps';
 import { analyticsTrackQuoteFailed } from './analyticsTrackQuoteFailed';
 import { NavigationSteps } from './useSwapNavigation';

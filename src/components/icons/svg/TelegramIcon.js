@@ -1,5 +1,7 @@
 import React from 'react';
+
 import { Path } from 'react-native-svg';
+
 import Svg from '../Svg';
 
 const TelegramIcon = ({ colors, color = colors.black, ...props }) => {

@@ -1,17 +1,20 @@
 import React from 'react';
+
 import Animated, { useAnimatedStyle, withDelay, withSpring } from 'react-native-reanimated';
+
 import { SPRING_CONFIGS } from '@/components/animations/animationConfigs';
+import { GestureHandlerButton } from '@/components/buttons/GestureHandlerButton';
 import { NetworkSelectorButton } from '@/components/buttons/NetworkSelectorButton';
 import { Bleed, Border, Box, Column, Columns, Separator, Stack, Text, TextIcon, useColorMode, useForegroundColor } from '@/design-system';
-import * as i18n from '@/languages';
-import { useSwapsStore } from '@/state/swaps/swapsStore';
 import { opacity } from '@/framework/ui/utils/opacity';
+import * as i18n from '@/languages';
+import { useUserAssetsStore } from '@/state/assets/userAssets';
+import { useSwapsStore } from '@/state/swaps/swapsStore';
 import { THICK_BORDER_WIDTH } from '@/styles/constants';
+
 import { NavigationSteps, useSwapContext } from '../providers/swap-provider';
 import { AnimatedSwitch } from './AnimatedSwitch';
-import { GestureHandlerButton } from '@/components/buttons/GestureHandlerButton';
 import { SlippageRow } from './ReviewPanel';
-import { useUserAssetsStore } from '@/state/assets/userAssets';
 
 const PreferredNetworkMenu = () => {
   const preferredNetwork = useSwapsStore(state => state.preferredNetwork);

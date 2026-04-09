@@ -1,4 +1,5 @@
 import create from 'zustand';
+
 import { standardizeUrl } from '../browser/favoriteDappsStore';
 import { createStore } from '../internal/createStore';
 

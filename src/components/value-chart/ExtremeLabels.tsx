@@ -1,12 +1,13 @@
 import React, { memo, useCallback, useMemo, useState } from 'react';
-import { type LayoutChangeEvent, type StyleProp, View, type ViewStyle } from 'react-native';
-import { useChartData } from '@/react-native-animated-charts/src';
+import { View, type LayoutChangeEvent, type StyleProp, type ViewStyle } from 'react-native';
+
 import { Text } from '@/design-system';
+import { type TextSize } from '@/design-system/typography/typeHierarchy';
+import { opacity } from '@/framework/ui/utils/opacity';
+import { formatAssetPrice } from '@/helpers/formatAssetPrice';
 import useAccountSettings from '@/hooks/useAccountSettings';
 import useDimensions from '@/hooks/useDimensions';
-import { type TextSize } from '@/design-system/typography/typeHierarchy';
-import { formatAssetPrice } from '@/helpers/formatAssetPrice';
-import { opacity } from '@/framework/ui/utils/opacity';
+import { useChartData } from '@/react-native-animated-charts/src';
 
 export const LABEL_VERTICAL_EXTRA_OFFSET = 12;
 const LABEL_MIN_HORIZONTAL_INSET = 12;

@@ -1,4 +1,4 @@
-import { isColor, convertToRGBA } from 'react-native-reanimated';
+import { convertToRGBA, isColor } from 'react-native-reanimated';
 
 export const opacity = (color: string, opacity: number) => {
   'worklet';

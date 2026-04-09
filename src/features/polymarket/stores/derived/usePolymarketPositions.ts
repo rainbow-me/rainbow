@@ -1,6 +1,6 @@
-import { createDerivedStore } from '@/state/internal/createDerivedStore';
-import { type PolymarketPosition } from '@/features/polymarket/types';
 import { usePolymarketPositionsStore } from '@/features/polymarket/stores/polymarketPositionsStore';
+import { type PolymarketPosition } from '@/features/polymarket/types';
+import { createDerivedStore } from '@/state/internal/createDerivedStore';
 import { shallowEqual } from '@/worklets/comparisons';
 
 export type PolymarketPositions = {

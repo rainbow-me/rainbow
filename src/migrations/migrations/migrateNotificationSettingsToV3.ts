@@ -1,4 +1,4 @@
-import { type Migration, MigrationName } from '@/migrations/types';
+import { MigrationName, type Migration } from '@/migrations/types';
 import { getAllWalletNotificationSettingsFromStorage, setAllWalletNotificationSettingsToStorage } from '@/notifications/settings/storage';
 
 export function migrateNotificationSettingsToV3(): Migration {

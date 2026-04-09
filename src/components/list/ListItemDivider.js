@@ -1,4 +1,5 @@
 import { PropTypes } from 'prop-types';
+
 import Divider from '@/components/Divider';
 import styled from '@/framework/ui/styled-thing';
 import neverRerender from '@/utils/neverRerender';

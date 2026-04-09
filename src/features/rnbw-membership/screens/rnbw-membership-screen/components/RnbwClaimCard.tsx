@@ -1,11 +1,12 @@
-import { Box, Text } from '@/design-system';
-import { Image, StyleSheet } from 'react-native';
 import { memo } from 'react';
+import { Image, StyleSheet } from 'react-native';
+
 import rnbwCoinImage from '@/assets/rnbw.png';
+import { Box, Text } from '@/design-system';
+import { RnbwThemedButton } from '@/features/rnbw-membership/components/RnbwThemedButton';
+import { MembershipCard } from '@/features/rnbw-membership/screens/rnbw-membership-screen/components/MembershipCard';
 import { RNBW_SYMBOL } from '@/features/rnbw-rewards/constants';
 import * as i18n from '@/languages';
-import { MembershipCard } from '@/features/rnbw-membership/screens/rnbw-membership-screen/components/MembershipCard';
-import { RnbwThemedButton } from '@/features/rnbw-membership/components/RnbwThemedButton';
 
 type RnbwClaimCardProps = {
   tokenAmount: string;

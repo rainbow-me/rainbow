@@ -1,20 +1,22 @@
 import { memo, useCallback, useState } from 'react';
-import { Alert, View, StyleSheet } from 'react-native';
-import { Box, globalColors, Text } from '@/design-system';
-import * as i18n from '@/languages';
-import { RnbwAirdropScenes } from '@/features/rnbw-airdrop/screens/rnbw-airdrop-screen/constants/airdropScenes';
+import { Alert, StyleSheet, View } from 'react-native';
+
 import Animated from 'react-native-reanimated';
-import { time } from '@/utils/time';
-import { defaultExitAnimation, createScaleInFadeInSlideEnterAnimation } from '@/features/rnbw-rewards/animations/sceneTransitions';
-import { getCoinBottomPosition } from '@/features/rnbw-airdrop/screens/rnbw-airdrop-screen/components/RnbwHeroCoin';
+
 import { HoldToActivateButton } from '@/components/hold-to-activate-button/HoldToActivateButton';
-import { useAirdropBalanceStore } from '@/features/rnbw-rewards/stores/airdropBalanceStore';
-import { RNBW_SYMBOL } from '@/features/rnbw-rewards/constants';
+import { Box, globalColors, Text } from '@/design-system';
+import { getCoinBottomPosition } from '@/features/rnbw-airdrop/screens/rnbw-airdrop-screen/components/RnbwHeroCoin';
+import { RnbwAirdropScenes } from '@/features/rnbw-airdrop/screens/rnbw-airdrop-screen/constants/airdropScenes';
 import { airdropFlowActions } from '@/features/rnbw-airdrop/stores/airdropFlowStore';
-import { useAccountAddress, useIsHardwareWallet } from '@/state/wallets/walletsStore';
+import { createScaleInFadeInSlideEnterAnimation, defaultExitAnimation } from '@/features/rnbw-rewards/animations/sceneTransitions';
+import { RNBW_SYMBOL } from '@/features/rnbw-rewards/constants';
+import { useAirdropBalanceStore } from '@/features/rnbw-rewards/stores/airdropBalanceStore';
+import { prepareAirdropClaim } from '@/features/rnbw-rewards/utils/claimAirdrop';
+import * as i18n from '@/languages';
 import { useNavigation } from '@/navigation/Navigation';
 import Routes from '@/navigation/routesNames';
-import { prepareAirdropClaim } from '@/features/rnbw-rewards/utils/claimAirdrop';
+import { useAccountAddress, useIsHardwareWallet } from '@/state/wallets/walletsStore';
+import { time } from '@/utils/time';
 
 const enteringAnimation = createScaleInFadeInSlideEnterAnimation({ translateY: 24, delay: time.ms(200) });
 

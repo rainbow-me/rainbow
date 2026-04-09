@@ -1,10 +1,13 @@
 import React from 'react';
+
 // @ts-expect-error - No types for this library
 import { UIActivityIndicator } from 'react-native-indicators';
-import { useTheme } from '../theme/ThemeContext';
-import { Centered } from './layout';
+
 import styled from '@/framework/ui/styled-thing';
 import { position } from '@/styles';
+
+import { useTheme } from '../theme/ThemeContext';
+import { Centered } from './layout';
 
 const Container = styled(Centered)(({ size }: { size: number }) => position.sizeAsObject(Number(size)));
 

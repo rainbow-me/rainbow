@@ -1,8 +1,10 @@
 import React, { createContext, useContext, useMemo } from 'react';
-import { useColorMode } from '@/design-system';
-import { opacity } from '@/framework/ui/utils/opacity';
-import { getColorForTheme } from '@/design-system/color/useForegroundColor';
+
 import { type LinearGradientProps } from 'expo-linear-gradient';
+
+import { useColorMode } from '@/design-system';
+import { getColorForTheme } from '@/design-system/color/useForegroundColor';
+import { opacity } from '@/framework/ui/utils/opacity';
 
 export const HYPERLIQUID_GREEN = '#3ECFAD';
 export const HYPERLIQUID_GREEN_LIGHT = '#31C8A4';

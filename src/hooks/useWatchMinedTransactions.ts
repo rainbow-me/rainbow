@@ -1,22 +1,23 @@
 import { useCallback } from 'react';
-import { RainbowError, logger } from '@/logger';
-import { invalidateAddressNftsQueries } from '@/resources/nfts';
-import { userAssetsStore } from '@/state/assets/userAssets';
-import { getPlatformClient } from '@/resources/platform/client';
-import { type GetAssetsResponse, type UserAsset } from '@/state/assets/types';
-import { time } from '@/utils/time';
-import { getUniqueId } from '@/utils/ethereumUtils';
-import { usePositionsStore } from '@/features/positions/stores/positionsStore';
-import { useClaimablesStore } from '@/state/claimables/claimables';
-import { useRewardsBalanceStore } from '@/features/rnbw-rewards/stores/rewardsBalanceStore';
+
+import { type ParsedSearchAsset } from '@/__swaps__/types/assets';
 import { analytics } from '@/analytics';
 import { event } from '@/analytics/event';
-import { useMinedTransactionsStore, type MinedTransactionWithPolling } from '@/state/minedTransactions/minedTransactions';
-import { userAssetsStoreManager } from '@/state/assets/userAssetsStoreManager';
+import { usePositionsStore } from '@/features/positions/stores/positionsStore';
+import { useRewardsBalanceStore } from '@/features/rnbw-rewards/stores/rewardsBalanceStore';
 import { convertAmountToRawAmount } from '@/helpers/utilities';
+import { logger, RainbowError } from '@/logger';
+import { invalidateAddressNftsQueries } from '@/resources/nfts';
+import { getPlatformClient } from '@/resources/platform/client';
+import { type GetAssetsResponse, type UserAsset } from '@/state/assets/types';
+import { userAssetsStore } from '@/state/assets/userAssets';
+import { userAssetsStoreManager } from '@/state/assets/userAssetsStoreManager';
 import { filterZeroBalanceAssets, setUserAssets } from '@/state/assets/utils';
+import { useClaimablesStore } from '@/state/claimables/claimables';
+import { useMinedTransactionsStore, type MinedTransactionWithPolling } from '@/state/minedTransactions/minedTransactions';
 import { staleBalancesStore } from '@/state/staleBalances';
-import { type ParsedSearchAsset } from '@/__swaps__/types/assets';
+import { getUniqueId } from '@/utils/ethereumUtils';
+import { time } from '@/utils/time';
 
 const ASSET_DETECTION_TIMEOUT = time.seconds(30);
 

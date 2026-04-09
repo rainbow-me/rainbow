@@ -1,11 +1,13 @@
 import React from 'react';
+
+import { Box } from '@/design-system';
 import * as i18n from '@/languages';
+
+import { FIELD_INNER_BORDER_RADIUS, INNER_FIELD_BACKGROUND_COLOR } from '../constants';
+import { validateDescriptionWorklet } from '../helpers/inputValidators';
+import { useTokenLauncherStore } from '../state/tokenLauncherStore';
 import { CollapsableField } from './CollapsableField';
 import { SingleFieldInput } from './SingleFieldInput';
-import { FIELD_INNER_BORDER_RADIUS, INNER_FIELD_BACKGROUND_COLOR } from '../constants';
-import { useTokenLauncherStore } from '../state/tokenLauncherStore';
-import { validateDescriptionWorklet } from '../helpers/inputValidators';
-import { Box } from '@/design-system';
 
 export function DescriptionField() {
   const setDescription = useTokenLauncherStore(state => state.setDescription);

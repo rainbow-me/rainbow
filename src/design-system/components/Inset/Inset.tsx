@@ -1,7 +1,7 @@
 import React, { useMemo } from 'react';
 
 import { space, type Space } from '../../layout/space';
-import { Box, type BoxProps, resolveToken } from '../Box/Box';
+import { Box, resolveToken, type BoxProps } from '../Box/Box';
 
 export type InsetProps = {
   children: BoxProps['children'];

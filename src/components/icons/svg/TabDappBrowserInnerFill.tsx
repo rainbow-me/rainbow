@@ -1,7 +1,10 @@
 import React from 'react';
+
 import { Circle } from 'react-native-svg';
-import Svg from '../Svg';
+
 import { globalColors } from '@/design-system';
+
+import Svg from '../Svg';
 
 export const TabDappBrowserInnerFill = ({ color = globalColors.grey100 }: { color: string }) => {
   return (

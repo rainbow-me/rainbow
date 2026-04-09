@@ -1,5 +1,6 @@
-import Clipboard from '@react-native-clipboard/clipboard';
 import React, { useCallback, useEffect, useRef } from 'react';
+
+import Clipboard from '@react-native-clipboard/clipboard';
 import ToolTip from 'react-native-tooltip';
 
 function CopyTooltip({ textToCopy, tooltipText, ...props }) {

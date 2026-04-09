@@ -1,10 +1,12 @@
 import React from 'react';
+
 import { useDerivedValue } from 'react-native-reanimated';
-import { SearchInput as BaseSearchInput } from '@/components/token-search/SearchInput';
+
 import { NavigationSteps, useSwapContext } from '@/__swaps__/screens/Swap/providers/swap-provider';
 import { useSwapsSearchStore } from '@/__swaps__/screens/Swap/resources/search/searchV2';
-import { useUserAssetsStore } from '@/state/assets/userAssets';
+import { SearchInput as BaseSearchInput } from '@/components/token-search/SearchInput';
 import * as i18n from '@/languages';
+import { useUserAssetsStore } from '@/state/assets/userAssets';
 
 const FIND_A_TOKEN_TO_BUY_LABEL = i18n.t(i18n.l.swap.find_a_token_to_buy);
 const SEARCH_YOUR_TOKENS_LABEL = i18n.t(i18n.l.swap.search_your_tokens);

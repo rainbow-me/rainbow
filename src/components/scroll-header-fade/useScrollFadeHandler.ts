@@ -1,4 +1,5 @@
-import { type SharedValue, useAnimatedScrollHandler } from 'react-native-reanimated';
+import { useAnimatedScrollHandler, type SharedValue } from 'react-native-reanimated';
+
 import { DEFAULT_SCROLL_FADE_DISTANCE } from '@/components/scroll-header-fade/ScrollHeaderFade';
 import { clamp } from '@/worklets/numbers';
 

@@ -1,5 +1,6 @@
-import PropTypes from 'prop-types';
 import React from 'react';
+
+import PropTypes from 'prop-types';
 import Svg, { Defs, Path, RadialGradient, Stop } from 'react-native-svg';
 
 const EmojiFlagsIcon = ({ color = null, ...props }) => (

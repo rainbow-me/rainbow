@@ -1,9 +1,10 @@
-import type { Tier } from '@/features/rnbw-membership/types';
 import { memo } from 'react';
-import { useColorMode, type TextProps } from '@/design-system';
-import { getTierVisuals } from '@/features/rnbw-membership/constants';
+
 import GradientText from '@/components/text/GradientText';
+import { useColorMode, type TextProps } from '@/design-system';
 import { getValueForColorMode } from '@/design-system/color/palettes';
+import { getTierVisuals } from '@/features/rnbw-membership/constants';
+import type { Tier } from '@/features/rnbw-membership/types';
 
 const GRADIENT_START = { x: 0, y: 0 };
 const GRADIENT_END = { x: 0, y: 1 };

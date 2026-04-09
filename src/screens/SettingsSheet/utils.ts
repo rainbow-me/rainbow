@@ -1,15 +1,16 @@
+import { format } from 'date-fns';
+import { isEmpty } from 'lodash';
+
 import { IS_ANDROID, IS_IOS } from '@/env';
 import { normalizeAndroidBackupFilename } from '@/handlers/cloudBackup';
 import WalletBackupTypes from '@/helpers/walletBackupTypes';
 import WalletTypes from '@/helpers/walletTypes';
 import * as i18n from '@/languages';
-import { type BackupFile, type CloudBackups, parseTimestampFromFilename } from '@/model/backup';
+import { parseTimestampFromFilename, type BackupFile, type CloudBackups } from '@/model/backup';
 import { type RainbowWallet } from '@/model/wallet';
 import { backupsStore, CloudBackupState } from '@/state/backups/backups';
-import { cloudPlatform } from '@/utils/platform';
-import { format } from 'date-fns';
-import { isEmpty } from 'lodash';
 import { getWallets } from '@/state/wallets/walletsStore';
+import { cloudPlatform } from '@/utils/platform';
 
 type WalletBackupStatus = {
   allBackedUp: boolean;

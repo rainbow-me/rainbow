@@ -1,13 +1,14 @@
 import React, { useEffect } from 'react';
+
 import Animated, {
-  useSharedValue,
-  useAnimatedStyle,
-  withTiming,
-  withRepeat,
   cancelAnimation,
   useAnimatedReaction,
-  type SharedValue,
+  useAnimatedStyle,
+  useSharedValue,
+  withRepeat,
   withSequence,
+  withTiming,
+  type SharedValue,
 } from 'react-native-reanimated';
 
 type JiggleAnimationProps = {

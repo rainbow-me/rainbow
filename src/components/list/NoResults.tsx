@@ -1,10 +1,11 @@
-import * as i18n from '@/languages';
 import React from 'react';
-import neverRerender from '@/utils/neverRerender';
+
 import { Inset, Stack, Text } from '@/design-system';
-import { useTheme } from '@/theme/ThemeContext';
+import * as i18n from '@/languages';
 import { logger } from '@/logger';
 import { useUserAssetsStore } from '@/state/assets/userAssets';
+import { useTheme } from '@/theme/ThemeContext';
+import neverRerender from '@/utils/neverRerender';
 
 export enum NoResultsType {
   Discover = 'discover',

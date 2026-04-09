@@ -1,32 +1,33 @@
 import { memo, useCallback, useMemo, useState } from 'react';
 import { Alert } from 'react-native';
-import Navigation from '@/navigation/Navigation';
-import { Box, Separator, Text, TextIcon, useForegroundColor } from '@/design-system';
-import { PerpsAccentColorContextProvider, usePerpsAccentColorContext } from '@/features/perps/context/PerpsAccentColorContext';
-import { PanelSheet } from '@/components/PanelSheet/PanelSheet';
-import { PerpBottomSheetHeader } from '@/features/perps/components/PerpBottomSheetHeader';
-import { type RouteProp, useRoute } from '@react-navigation/native';
-import type Routes from '@/navigation/routesNames';
-import { type RootStackParamList } from '@/navigation/types';
-import { type PerpMarket, type PerpsPosition } from '@/features/perps/types';
-import { hyperliquidAccountActions, useHyperliquidAccountStore } from '@/features/perps/stores/hyperliquidAccountStore';
-import { AmountInputCard } from '@/components/amount-input-card/AmountInputCard';
-import { PerpsSheetActionButtons } from '@/features/perps/components/PerpsSheetActionButtons';
-import { opacity } from '@/framework/ui/utils/opacity';
-import { ETH_COLOR_DARK } from '@/__swaps__/screens/Swap/constants';
-import { formatCurrency } from '@/features/perps/utils/formatCurrency';
-import { LiquidationInfo } from '@/features/perps/screens/perps-new-position-screen/LiquidationInfo';
+
+import { useRoute, type RouteProp } from '@react-navigation/native';
 import { useDerivedValue } from 'react-native-reanimated';
-import { divWorklet, greaterThanWorklet, mulWorklet, sumWorklet, toFixedWorklet } from '@/framework/core/safeMath';
+
+import { ETH_COLOR_DARK } from '@/__swaps__/screens/Swap/constants';
+import { analytics } from '@/analytics';
+import { AmountInputCard } from '@/components/amount-input-card/AmountInputCard';
+import { PanelSheet } from '@/components/PanelSheet/PanelSheet';
+import { Box, Separator, Text, TextIcon, useForegroundColor } from '@/design-system';
+import { PerpBottomSheetHeader } from '@/features/perps/components/PerpBottomSheetHeader';
+import { PerpsSheetActionButtons } from '@/features/perps/components/PerpsSheetActionButtons';
+import { PerpsAccentColorContextProvider, usePerpsAccentColorContext } from '@/features/perps/context/PerpsAccentColorContext';
+import { LiquidationInfo } from '@/features/perps/screens/perps-new-position-screen/LiquidationInfo';
+import { hyperliquidAccountActions, useHyperliquidAccountStore } from '@/features/perps/stores/hyperliquidAccountStore';
+import { type PerpMarket, type PerpsPosition } from '@/features/perps/types';
+import { getHyperliquidTokenId, parseHyperliquidErrorMessage } from '@/features/perps/utils';
 import { buildLiquidationInfo } from '@/features/perps/utils/buildLiquidationInfo';
 import { buildOrderAmountValidation } from '@/features/perps/utils/buildOrderAmountValidation';
-import { useLiveTokensStore } from '@/state/liveTokens/liveTokensStore';
-import { getHyperliquidTokenId, parseHyperliquidErrorMessage } from '@/features/perps/utils';
-import { analytics } from '@/analytics';
-import { logger, RainbowError } from '@/logger';
-import * as i18n from '@/languages';
+import { formatCurrency } from '@/features/perps/utils/formatCurrency';
+import { divWorklet, greaterThanWorklet, mulWorklet, sumWorklet, toFixedWorklet } from '@/framework/core/safeMath';
+import { opacity } from '@/framework/ui/utils/opacity';
 import { divide } from '@/helpers/utilities';
-
+import * as i18n from '@/languages';
+import { logger, RainbowError } from '@/logger';
+import Navigation from '@/navigation/Navigation';
+import type Routes from '@/navigation/routesNames';
+import { type RootStackParamList } from '@/navigation/types';
+import { useLiveTokensStore } from '@/state/liveTokens/liveTokensStore';
 import { THICK_BORDER_WIDTH } from '@/styles/constants';
 
 function calculateWeightedEntryPrice({

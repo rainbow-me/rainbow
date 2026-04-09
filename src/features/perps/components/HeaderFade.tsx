@@ -1,5 +1,6 @@
 import { memo } from 'react';
 import { StyleSheet } from 'react-native';
+
 import { EasingGradient } from '@/components/easing-gradient/EasingGradient';
 import { useColorMode } from '@/design-system';
 import { PERPS_BACKGROUND_DARK, PERPS_BACKGROUND_LIGHT } from '@/features/perps/constants';

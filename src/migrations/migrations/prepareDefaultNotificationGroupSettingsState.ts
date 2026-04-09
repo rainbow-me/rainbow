@@ -1,4 +1,4 @@
-import { type Migration, MigrationName } from '@/migrations/types';
+import { MigrationName, type Migration } from '@/migrations/types';
 import { addDefaultNotificationGroupSettings } from '@/notifications/settings/initialization';
 
 export function prepareDefaultNotificationGroupSettingsState(): Migration {

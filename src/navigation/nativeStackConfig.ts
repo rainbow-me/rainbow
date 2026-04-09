@@ -1,6 +1,7 @@
 import { Keyboard } from 'react-native';
-import { onDidPop, onWillPop } from './Navigation';
+
 import { appearListener } from './nativeStackHelpers';
+import { onDidPop, onWillPop } from './Navigation';
 
 type NativeStackConfig = {
   mode: 'modal';

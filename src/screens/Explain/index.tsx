@@ -1,11 +1,11 @@
 import React from 'react';
-import { useTheme } from '@/theme/ThemeContext';
+import { ScrollView, StyleSheet, type ImageSourcePropType } from 'react-native';
 
-import { Box, Text, type TextProps, AccentColorProvider, Stack } from '@/design-system';
 import { ImgixImage } from '@/components/images';
 import SheetActionButton from '@/components/sheet/sheet-action-buttons/SheetActionButton';
-import { type ImageSourcePropType, ScrollView, StyleSheet } from 'react-native';
+import { AccentColorProvider, Box, Stack, Text, type TextProps } from '@/design-system';
 import { opacity } from '@/framework/ui/utils/opacity';
+import { useTheme } from '@/theme/ThemeContext';
 
 export { open, close, useOpen } from '@/screens/Portal';
 

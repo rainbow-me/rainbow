@@ -1,15 +1,18 @@
 import React from 'react';
-import { ExpandedAssetSheetContextProvider, useExpandedAssetSheetContext } from './context/ExpandedAssetSheetContext';
-import { type RouteProp, useRoute } from '@react-navigation/native';
-import { SheetContent } from './components/SheetContent';
-import { SlackSheet } from '@/components/sheet';
-import { IS_ANDROID, IS_IOS } from '@/env';
-import { Box, useColorMode } from '@/design-system';
-import { SheetFooter } from './components/SheetFooter';
-import { EasingGradient } from '@/components/easing-gradient/EasingGradient';
-import { type RootStackParamList } from '@/navigation/types';
+
+import { useRoute, type RouteProp } from '@react-navigation/native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
+
+import { EasingGradient } from '@/components/easing-gradient/EasingGradient';
+import { SlackSheet } from '@/components/sheet';
+import { Box, useColorMode } from '@/design-system';
+import { IS_ANDROID, IS_IOS } from '@/env';
 import type Routes from '@/navigation/routesNames';
+import { type RootStackParamList } from '@/navigation/types';
+
+import { SheetContent } from './components/SheetContent';
+import { SheetFooter } from './components/SheetFooter';
+import { ExpandedAssetSheetContextProvider, useExpandedAssetSheetContext } from './context/ExpandedAssetSheetContext';
 
 const HANDLE_COLOR = 'rgba(245, 248, 255, 0.3)';
 const LIGHT_HANDLE_COLOR = 'rgba(9, 17, 31, 0.3)';

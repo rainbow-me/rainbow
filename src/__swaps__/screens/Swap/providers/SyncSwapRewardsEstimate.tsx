@@ -1,8 +1,9 @@
 import { useCallback, useEffect, useRef } from 'react';
+
+import { buildEstimateRewardPayload, fetchEstimateReward } from '@/features/rnbw-rewards/utils/estimateReward';
 import { logger, RainbowError } from '@/logger';
 import { userAssetsStoreManager } from '@/state/assets/userAssetsStoreManager';
 import { swapsStore, useSwapsStore } from '@/state/swaps/swapsStore';
-import { buildEstimateRewardPayload, fetchEstimateReward } from '@/features/rnbw-rewards/utils/estimateReward';
 
 export function SyncSwapRewardsEstimate() {
   const quote = useSwapsStore(state => state.quote);

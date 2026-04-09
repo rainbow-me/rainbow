@@ -1,4 +1,4 @@
-import { type KeyOption, matchSorter, type MatchSorterOptions } from 'match-sorter';
+import { matchSorter, type KeyOption, type MatchSorterOptions } from 'match-sorter';
 
 export const filterList = <T>(list: T[], searchQuery: string, keys?: KeyOption<T>[], options?: MatchSorterOptions<T>) =>
   matchSorter(list, searchQuery, {

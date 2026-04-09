@@ -1,4 +1,5 @@
 import { mapValues } from 'lodash';
+
 import { supportedCurrencies as supportedNativeCurrencies } from '@/references/supportedCurrencies';
 
 export type NativeCurrencyKey = keyof typeof supportedNativeCurrencies;

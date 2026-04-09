@@ -1,15 +1,16 @@
+import { LinearTransition } from 'react-native-reanimated';
 import type { Address } from 'viem';
+
 import { type ParsedAsset } from '@/__swaps__/types/assets';
-import { type HlBuilderSettings, MarketSortOrder } from '@/features/perps/types';
-import safeAreaInsetValues from '@/utils/safeAreaInsetValues';
+import { type SearchAsset } from '@/__swaps__/types/search';
+import { SPRING_CONFIGS } from '@/components/animations/animationConfigs';
+import { NativeCurrencyKeys, type NativeCurrencyKey } from '@/entities/nativeCurrencyTypes';
+import { MarketSortOrder, type HlBuilderSettings } from '@/features/perps/types';
+import { supportedCurrencies as supportedNativeCurrencies } from '@/references/supportedCurrencies';
+import { ChainId } from '@/state/backendNetworks/types';
 import { DEVICE_WIDTH } from '@/utils/deviceUtils';
 import { getUniqueId } from '@/utils/ethereumUtils';
-import { type SearchAsset } from '@/__swaps__/types/search';
-import { ChainId } from '@/state/backendNetworks/types';
-import { LinearTransition } from 'react-native-reanimated';
-import { SPRING_CONFIGS } from '@/components/animations/animationConfigs';
-import { supportedCurrencies as supportedNativeCurrencies } from '@/references/supportedCurrencies';
-import { NativeCurrencyKeys, type NativeCurrencyKey } from '@/entities/nativeCurrencyTypes';
+import safeAreaInsetValues from '@/utils/safeAreaInsetValues';
 
 export const DEFAULT_SLIPPAGE_BIPS = 500;
 export const RAINBOW_BUILDER_SETTINGS = {

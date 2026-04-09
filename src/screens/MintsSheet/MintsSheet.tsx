@@ -1,20 +1,24 @@
+import React from 'react';
+
+import { FlashList } from '@shopify/flash-list';
+
 import ActivityIndicator from '@/components/ActivityIndicator';
-import Spinner from '@/components/Spinner';
 import ButtonPressAnimation from '@/components/animations/ButtonPressAnimation';
 import { ContactAvatar } from '@/components/contacts';
 import { ImgixImage } from '@/components/images';
 import { SimpleSheet } from '@/components/sheet/SimpleSheet';
+import Spinner from '@/components/Spinner';
 import {
   AccentColorProvider,
   BackgroundProvider,
   Box,
   Column,
   Columns,
+  globalColors,
   Inset,
   Separator,
   Stack,
   Text,
-  globalColors,
   useColorMode,
 } from '@/design-system';
 import { IS_ANDROID, IS_IOS } from '@/env';
@@ -25,10 +29,9 @@ import Routes from '@/navigation/routesNames';
 import { queryClient } from '@/react-query';
 import { mintsQueryKey, useMints } from '@/resources/mints';
 import { useAccountProfileInfo } from '@/state/wallets/walletsStore';
-import { FlashList } from '@shopify/flash-list';
-import React from 'react';
-import { TabBar } from './TabBar';
+
 import { Card } from './card/Card';
+import { TabBar } from './TabBar';
 
 const LoadingSpinner = IS_ANDROID ? Spinner : ActivityIndicator;
 

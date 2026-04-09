@@ -1,12 +1,14 @@
 import React, { useEffect, useState } from 'react';
-import { getGoogleAccountUserData, type GoogleDriveUserData, logoutFromGoogleDrive } from '@/handlers/cloudBackup';
+
 import ImageAvatar from '@/components/contacts/ImageAvatar';
 import { showActionSheetWithOptions } from '@/framework/ui/utils/actionsheet';
+import { getGoogleAccountUserData, logoutFromGoogleDrive, type GoogleDriveUserData } from '@/handlers/cloudBackup';
 import * as i18n from '@/languages';
-import Menu from './Menu';
-import MenuItem from './MenuItem';
 import { logger, RainbowError } from '@/logger';
 import { backupsStore } from '@/state/backups/backups';
+
+import Menu from './Menu';
+import MenuItem from './MenuItem';
 
 export const GoogleAccountSection: React.FC = () => {
   const [accountDetails, setAccountDetails] = useState<GoogleDriveUserData | undefined>(undefined);

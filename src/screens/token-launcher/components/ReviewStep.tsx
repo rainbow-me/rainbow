@@ -1,22 +1,25 @@
+import React, { useMemo } from 'react';
+import { ScrollView, StyleSheet } from 'react-native';
+
+import FastImage from 'react-native-fast-image';
+
 import { ChainImage } from '@/components/coin-icon/ChainImage';
 import { isValidURLWorklet } from '@/components/DappBrowser/utils';
 import { Box, Text, TextShadow } from '@/design-system';
 import { type TextSize } from '@/design-system/components/Text/Text';
 import { abbreviateNumber, convertAmountToBalanceDisplay, convertAmountToNativeDisplay } from '@/helpers/utilities';
 import * as i18n from '@/languages';
+import { userAssetsStoreManager } from '@/state/assets/userAssetsStoreManager';
 import { useBackendNetworksStore } from '@/state/backendNetworks/backendNetworks';
+import { THICK_BORDER_WIDTH } from '@/styles/constants';
 import formatURLForDisplay from '@/utils/formatURLForDisplay';
-import React, { useMemo } from 'react';
-import { ScrollView, StyleSheet } from 'react-native';
-import FastImage from 'react-native-fast-image';
+
 import { FIELD_BORDER_RADIUS, FIELD_BORDER_WIDTH, LINK_ICON_SIZE } from '../constants';
 import { useTokenLauncherContext } from '../context/TokenLauncherContext';
 import { NavigationSteps, useTokenLauncherStore } from '../state/tokenLauncherStore';
 import { LINK_SETTINGS } from './LinksSection';
 import { TOKEN_LAUNCHER_HEADER_HEIGHT, TOKEN_LAUNCHER_SCROLL_INDICATOR_INSETS } from './TokenLauncherHeader';
 import { TokenLogo } from './TokenLogo';
-import { userAssetsStoreManager } from '@/state/assets/userAssetsStoreManager';
-import { THICK_BORDER_WIDTH } from '@/styles/constants';
 
 const CARD_BACKGROUND_COLOR = 'rgba(255, 255, 255, 0.03)';
 const TOTAL_COST_PILL_HEIGHT = 52;

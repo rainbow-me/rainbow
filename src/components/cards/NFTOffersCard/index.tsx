@@ -1,3 +1,16 @@
+import React, { useEffect, useState } from 'react';
+import { ScrollView } from 'react-native';
+
+import { FlashList } from '@shopify/flash-list';
+import Animated, { useAnimatedStyle, useSharedValue, withTiming } from 'react-native-reanimated';
+
+import { analytics } from '@/analytics';
+import ActivityIndicator from '@/components/ActivityIndicator';
+import ButtonPressAnimation from '@/components/animations/ButtonPressAnimation';
+import ShimmerAnimation from '@/components/animations/ShimmerAnimation';
+import { DiscoverSeparator } from '@/components/Discover/DiscoverSeparator';
+import { SortMenu } from '@/components/nft-offers/SortMenu';
+import Spinner from '@/components/Spinner';
 import {
   AccentColorProvider,
   Bleed,
@@ -11,29 +24,19 @@ import {
   useColorMode,
   useForegroundColor,
 } from '@/design-system';
-import React, { useEffect, useState } from 'react';
-import { FlashList } from '@shopify/flash-list';
-import ButtonPressAnimation from '@/components/animations/ButtonPressAnimation';
-import ShimmerAnimation from '@/components/animations/ShimmerAnimation';
-import useDimensions from '@/hooks/useDimensions';
-import { nftOffersQueryKey, useNFTOffers } from '@/resources/reservoir/nftOffersQuery';
+import { IS_ANDROID } from '@/env';
+import { type NftOffer } from '@/graphql/__generated__/arc';
 import { convertAmountToNativeDisplay } from '@/helpers/utilities';
+import useDimensions from '@/hooks/useDimensions';
 import * as i18n from '@/languages';
-import Animated, { useAnimatedStyle, useSharedValue, withTiming } from 'react-native-reanimated';
-import { CELL_HORIZONTAL_PADDING, FakeOffer, NFT_IMAGE_SIZE, Offer } from './Offer';
 import Navigation from '@/navigation/Navigation';
 import Routes from '@/navigation/routesNames';
-import { SortMenu } from '@/components/nft-offers/SortMenu';
-import { type NftOffer } from '@/graphql/__generated__/arc';
-import { analytics } from '@/analytics';
-import { useTheme } from '@/theme/ThemeContext';
 import { queryClient } from '@/react-query';
-import ActivityIndicator from '@/components/ActivityIndicator';
-import { IS_ANDROID } from '@/env';
-import Spinner from '@/components/Spinner';
-import { ScrollView } from 'react-native';
-import { DiscoverSeparator } from '@/components/Discover/DiscoverSeparator';
+import { nftOffersQueryKey, useNFTOffers } from '@/resources/reservoir/nftOffersQuery';
 import { useAccountAddress } from '@/state/wallets/walletsStore';
+import { useTheme } from '@/theme/ThemeContext';
+
+import { CELL_HORIZONTAL_PADDING, FakeOffer, NFT_IMAGE_SIZE, Offer } from './Offer';
 
 const CARD_HEIGHT = 250;
 const OFFER_CELL_HEIGHT = NFT_IMAGE_SIZE + 60;

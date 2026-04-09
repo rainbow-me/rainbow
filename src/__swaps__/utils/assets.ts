@@ -1,4 +1,3 @@
-import type { SupportedCurrencyKey } from '@/references/supportedCurrencies';
 import {
   type AddressOrEth,
   type AssetApiResponse,
@@ -11,11 +10,8 @@ import {
   type ZerionAsset,
   type ZerionAssetPrice,
 } from '@/__swaps__/types/assets';
-import { ChainId, ChainName } from '@/state/backendNetworks/types';
-
-import * as i18n from '@/languages';
 import { type SearchAsset } from '@/__swaps__/types/search';
-
+import type { RainbowToken } from '@/entities/tokens';
 import { isNativeAsset } from '@/handlers/assets';
 import {
   convertAmountAndPriceToNativeDisplay,
@@ -24,10 +20,12 @@ import {
   convertAmountToPercentageDisplay,
   convertRawAmountToDecimalFormat,
 } from '@/helpers/utilities';
-import isLowerCaseMatch from '@/utils/isLowerCaseMatch';
-import { useBackendNetworksStore } from '@/state/backendNetworks/backendNetworks';
-import type { RainbowToken } from '@/entities/tokens';
+import * as i18n from '@/languages';
+import type { SupportedCurrencyKey } from '@/references/supportedCurrencies';
 import { userAssetsStore } from '@/state/assets/userAssets';
+import { useBackendNetworksStore } from '@/state/backendNetworks/backendNetworks';
+import { ChainId, ChainName } from '@/state/backendNetworks/types';
+import isLowerCaseMatch from '@/utils/isLowerCaseMatch';
 
 export const isSameAsset = (a1: Pick<ParsedAsset, 'chainId' | 'address'>, a2: Pick<ParsedAsset, 'chainId' | 'address'>) =>
   +a1.chainId === +a2.chainId && isLowerCaseMatch(a1.address, a2.address);

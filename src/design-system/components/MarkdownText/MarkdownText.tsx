@@ -1,6 +1,8 @@
-import React, { Children, createContext, Fragment, memo, type ReactNode, useContext, useMemo } from 'react';
+import React, { Children, createContext, Fragment, memo, useContext, useMemo, type ReactNode } from 'react';
 import { Text as NativeText, Platform, StyleSheet, View } from 'react-native';
+
 import MarkdownDisplay, { type ASTNode, type RenderRules } from 'react-native-markdown-display';
+
 import { negateSpace, type Space } from '../../layout/space';
 import { renderStringWithEmoji } from '../../typography/renderStringWithEmoji';
 import { fonts } from '../../typography/typography';

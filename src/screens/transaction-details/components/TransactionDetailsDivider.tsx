@@ -1,4 +1,5 @@
 import React from 'react';
+
 import { Bleed, Separator } from '@/design-system';
 
 export const TransactionDetailsDivider: React.FC = () => (

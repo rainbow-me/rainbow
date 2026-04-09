@@ -1,6 +1,7 @@
 import React, { createContext, type PropsWithChildren } from 'react';
 import { type ViewProps } from 'react-native';
-import Animated, { Easing, type SharedValue, useAnimatedStyle, useDerivedValue, useSharedValue, withTiming } from 'react-native-reanimated';
+
+import Animated, { Easing, useAnimatedStyle, useDerivedValue, useSharedValue, withTiming, type SharedValue } from 'react-native-reanimated';
 
 type ScaleButtonContextProps = SharedValue<number> | null;
 

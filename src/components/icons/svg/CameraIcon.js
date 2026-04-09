@@ -1,5 +1,7 @@
 import React from 'react';
+
 import { Path } from 'react-native-svg';
+
 import Svg from '../Svg';
 
 export default function CameraIcon({ color: givenColor, colors, outerOpacity = 1, ...props }) {

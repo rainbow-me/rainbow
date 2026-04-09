@@ -1,22 +1,23 @@
 import React, { memo } from 'react';
 import { Keyboard } from 'react-native';
-import { Box, Separator, Text, TextIcon, TextShadow, useColorMode } from '@/design-system';
-import { useFilteredHyperliquidMarkets, useHyperliquidMarketsStore } from '@/features/perps/stores/hyperliquidMarketsStore';
-import { PerpMarketsList } from '@/features/perps/components/PerpMarketsList';
-import { PERPS_BACKGROUND_DARK, PERPS_BACKGROUND_LIGHT, FOOTER_HEIGHT } from '@/features/perps/constants';
-import { navigateToNewPositionScreen, navigateToPerpDetailScreen } from '@/features/perps/utils';
-import { type PerpMarket } from '@/features/perps/types';
-import { useOnLeaveRoute } from '@/hooks/useOnLeaveRoute';
-import Routes from '@/navigation/routesNames';
-import { PerpsNavigation, usePerpsNavigationStore } from '@/features/perps/screens/PerpsNavigator';
+
 import { DelayedMount } from '@/components/utilities/DelayedMount';
+import { Box, Separator, Text, TextIcon, TextShadow, useColorMode } from '@/design-system';
+import { MarketSortOrderDropdown } from '@/features/perps/components/MarketSortOrderDropdown';
+import { PerpMarketsList } from '@/features/perps/components/PerpMarketsList';
+import { FOOTER_HEIGHT, PERPS_BACKGROUND_DARK, PERPS_BACKGROUND_LIGHT } from '@/features/perps/constants';
+import { usePerpsAccentColorContext } from '@/features/perps/context/PerpsAccentColorContext';
+import { useMarketSortOrderLabels } from '@/features/perps/hooks/useMarketSortOrderLabels';
+import { PerpsNavigation, usePerpsNavigationStore } from '@/features/perps/screens/PerpsNavigator';
+import { useFilteredHyperliquidMarkets, useHyperliquidMarketsStore } from '@/features/perps/stores/hyperliquidMarketsStore';
+import { type PerpMarket } from '@/features/perps/types';
+import { navigateToNewPositionScreen, navigateToPerpDetailScreen } from '@/features/perps/utils';
+import { opacity } from '@/framework/ui/utils/opacity';
+import { useOnLeaveRoute } from '@/hooks/useOnLeaveRoute';
+import * as i18n from '@/languages';
+import Routes from '@/navigation/routesNames';
 import { THICK_BORDER_WIDTH, THICKER_BORDER_WIDTH } from '@/styles/constants';
 import { time } from '@/utils/time';
-import * as i18n from '@/languages';
-import { usePerpsAccentColorContext } from '@/features/perps/context/PerpsAccentColorContext';
-import { opacity } from '@/framework/ui/utils/opacity';
-import { MarketSortOrderDropdown } from '@/features/perps/components/MarketSortOrderDropdown';
-import { useMarketSortOrderLabels } from '@/features/perps/hooks/useMarketSortOrderLabels';
 
 export const PerpsSearchScreen = memo(function PerpsSearchScreen() {
   const { isDarkMode } = useColorMode();
