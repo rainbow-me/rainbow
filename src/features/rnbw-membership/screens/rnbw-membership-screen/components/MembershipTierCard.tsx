@@ -9,6 +9,7 @@ import { TierThemedLabel } from '@/features/rnbw-membership/components/TierTheme
 import { TierProgressBar } from '@/features/rnbw-membership/components/TierProgressBar';
 import { RNBW_SYMBOL } from '@/features/rnbw-rewards/constants';
 import { DEVICE_WIDTH } from '@/utils/deviceUtils';
+import * as i18n from '@/languages';
 
 export const MembershipTierCard = memo(function MembershipTierCard() {
   const { currentTier, currentTierIndex, currentTierProgress, stakeRequiredForNextTier, cashbackPercentage, allTiers } =
@@ -20,7 +21,7 @@ export const MembershipTierCard = memo(function MembershipTierCard() {
         <Box gap={16}>
           <TierThemedLabel tier={currentTier}>
             <Text size="22pt" weight="heavy" color="label">
-              {`${currentTier.name} Tier`}
+              {i18n.t(i18n.l.rnbw_membership.shared.tier_label, { tierName: currentTier.name })}
             </Text>
           </TierThemedLabel>
           <TierProgressBar
@@ -34,7 +35,7 @@ export const MembershipTierCard = memo(function MembershipTierCard() {
           <Box gap={16} paddingHorizontal={'4px'}>
             <Box flexDirection="row" justifyContent="space-between">
               <Text size="17pt" weight="semibold" color="labelTertiary">
-                {'Rewards'}
+                {i18n.t(i18n.l.rnbw_membership.shared.rewards)}
               </Text>
               <Text size="17pt" weight="bold" color="label">
                 {`${cashbackPercentage}%`}
@@ -43,7 +44,7 @@ export const MembershipTierCard = memo(function MembershipTierCard() {
             <Separator color="separatorTertiary" thickness={1} />
             <Box flexDirection="row" justifyContent="space-between">
               <Text size="17pt" weight="semibold" color="labelTertiary">
-                {'Stake to next tier'}
+                {i18n.t(i18n.l.rnbw_membership.membership_tier_card.stake_to_next_tier)}
               </Text>
               <Text size="17pt" weight="bold" color="label">
                 {`${stakeRequiredForNextTier} ${RNBW_SYMBOL}`}

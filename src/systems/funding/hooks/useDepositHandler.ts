@@ -134,7 +134,7 @@ async function runDepositExecutionFlow({
       executionStrategy: result.executionStrategy,
     });
   } catch (error) {
-    const message = error instanceof Error ? error.message : 'Unknown error while processing deposit';
+    const message = error instanceof Error ? error.message : config.labels.unknownExecutionError;
     logger.error(new RainbowError(`[useDepositHandler]: ${message}`, error), {
       data: { type: rapTypes.crosschainSwap },
     });
@@ -208,7 +208,7 @@ export function useDepositHandler({
           error: 'No wallet connected',
           stage: 'validation',
         });
-        Alert.alert(config.labels.executionErrorTitle, 'No wallet connected');
+        Alert.alert(config.labels.executionErrorTitle, config.labels.noWalletConnected);
         return;
       }
 
