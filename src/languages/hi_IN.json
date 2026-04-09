@@ -3887,8 +3887,8 @@
       },
       "shared": {
         "tier_label": "%{tierName} टियर",
-        "rewards": "इनाम",
-        "loyalty_progress": "लॉयल्टी प्रगति"
+        "loyalty_progress": "लॉयल्टी प्रगति",
+        "fee_cashback": "फ़ीस कैशबैक"
       },
       "membership_tier_card": {
         "stake_to_next_tier": "अगले टियर के लिए स्टेक करें"
@@ -3901,12 +3901,13 @@
         "enable_staking": "स्टेकिंग सक्षम करें",
         "buy_rnbw": "RNBW खरीदें",
         "unstake": "अनस्टेक करें",
-        "available_to_stake": "स्टेक करने के लिए उपलब्ध"
+        "available_to_stake": "स्टेक करने के लिए उपलब्ध",
+        "available_to_add": "जोड़ने के लिए उपलब्ध",
+        "minimum_stake_amount_required": "स्टेक करने के लिए आपको कम से कम %{minStakeAmount} RNBW चाहिए"
       },
       "staking_earnings_card": {
-        "total_earnings": "कुल कमाई",
-        "cashback": "कैशबैक",
-        "exit_rewards": "एग्ज़िट रिवॉर्ड्स"
+        "lifetime_earnings": "जीवनकाल की कमाई",
+        "exit_fee_rewards": "एग्ज़िट फ़ीस रिवॉर्ड्स"
       },
       "unstake_penalty_recovery_card": {
         "break_even_reached": "ब्रेक-ईवन हो गया!",
@@ -3916,6 +3917,10 @@
       }
     },
     "rnbw_staking": {
+      "wallet_access": {
+        "hardware_wallet_not_supported_title": "हार्डवेयर वॉलेट समर्थित नहीं है",
+        "hardware_wallet_not_supported_message": "RNBW स्टेकिंग अभी हार्डवेयर वॉलेट्स के लिए उपलब्ध नहीं है।"
+      },
       "deposit": {
         "confirm_button": "स्टेक करने के लिए होल्ड करें",
         "confirm_button_error": "स्टेक नहीं कर पा रहे हैं",
@@ -3932,24 +3937,21 @@
       "learn_screen": {
         "introducing": "परिचयकरण",
         "title": "शेयर जमा कर रहा है",
-        "description": "पूल में शामिल होने के लिए अपने $RNBW को लॉक करें। अपनी एग्ज़िट फ़ीस रिकवर करने और जो लोग बाहर निकलते हैं उनसे कमाने के लिए ज़्यादा समय तक बने रहें।",
-        "put_your_rnbw_to_work_title": "अपने $RNBW को काम पर लगाएं",
-        "put_your_rnbw_to_work_subtitle": "अपनी पोज़िशन लॉक करने और पूल से कमाई शुरू करने के लिए अपना RNBW स्टेक करें।",
+        "description": "स्टेटस टियर और एक्सक्लूसिव मेंबर लाभ अनलॉक करने के लिए RNBW स्टेक करें।",
+        "fee_cashback": "फ़ीस कैशबैक",
+        "fee_cashback_subtitle": "स्टेक किए गए RNBW के रूप में फ़ीस का 100% तक प्राप्त करें।",
         "exit_fee_title": "%{exitFeePercentage}% एग्ज़िट फ़ीस",
-        "exit_fee_subtitle": "अनस्टेक करने पर %{exitFeePercentage}% फ़ीस लगती है।",
-        "passive_income_title": "पैसिव इनकम",
-        "passive_income_subtitle": "हर एग्ज़िट से फ़ायदा पाएं। एग्ज़िट फ़ीस पूल में बांटी जाती हैं। अपनी फ़ीस की भरपाई करने और शुद्ध मुनाफ़े तक पहुंचने के लिए ज़्यादा समय तक बने रहें।",
+        "exit_fee_subtitle": "आप कभी भी अनस्टेक कर सकते हैं। बस %{exitFeePercentage}% एग्ज़िट फ़ीस दें, जो अन्य स्टेकर्स में वितरित की जाती है।",
+        "stay_in_to_earn_more": "और अधिक कमाने के लिए बने रहें",
+        "stay_in_to_earn_more_subtitle": "जब कोई अपना RNBW अनस्टेक करता है, तो एग्ज़िट फ़ीस वापस उन लोगों को मिलती है जो अभी भी पूल में हैं।",
         "enable_staking": "स्टेकिंग सक्षम करें"
       },
       "unstake_sheet": {
         "exit_fee": "एग्ज़िट फ़ीस",
-        "warning_description": "अनस्टेक करने पर आपके स्टेक किए गए बैलेंस से %{exitFeePercentage}% फ़ीस काटी जाएगी।",
-        "confirm_unstake": "अनस्टेक की पुष्टि करें",
-        "keep_staking": "स्टेकिंग जारी रखें",
+        "warning_description": "अनस्टेक करने पर आपकी वर्तमान में स्टेक की गई शेष राशि पर %{exitFeePercentage}% फ़ीस लगेगी।",
         "unstake_failed_title": "शेयर निष्काशन में विफल",
         "unstake_failed_message": "आपके RNBW को अनस्टेक करते समय एक त्रुटि हुई। कृपया फिर से कोशिश करें।",
         "unstake_title": "$%{symbol} अनस्टेक करें",
-        "loyalty_progress": "लॉयल्टी प्रगति",
         "receive": "प्राप्त करें",
         "total_return": "कुल रिटर्न",
         "hold_to_unstake": "अनस्टेक करने के लिए होल्ड करें",
