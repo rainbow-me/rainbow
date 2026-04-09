@@ -3887,8 +3887,8 @@
       },
       "shared": {
         "tier_label": "Tingkat %{tierName}",
-        "rewards": "Hadiah",
-        "loyalty_progress": "Progres Loyalti"
+        "loyalty_progress": "Progres Loyalti",
+        "fee_cashback": "Cashback Biaya"
       },
       "membership_tier_card": {
         "stake_to_next_tier": "Stake untuk naik ke tingkat berikutnya"
@@ -3901,12 +3901,13 @@
         "enable_staking": "Aktifkan staking",
         "buy_rnbw": "Beli RNBW",
         "unstake": "Unstake",
-        "available_to_stake": "tersedia untuk stake"
+        "available_to_stake": "tersedia untuk stake",
+        "available_to_add": "tersedia untuk ditambahkan",
+        "minimum_stake_amount_required": "Anda memerlukan setidaknya %{minStakeAmount} RNBW untuk staking"
       },
       "staking_earnings_card": {
-        "total_earnings": "Total Penghasilan",
-        "cashback": "Cashback",
-        "exit_rewards": "Hadiah Keluar"
+        "lifetime_earnings": "Pendapatan Seumur Hidup",
+        "exit_fee_rewards": "Hadiah Biaya Keluar"
       },
       "unstake_penalty_recovery_card": {
         "break_even_reached": "Titik impas tercapai!",
@@ -3916,6 +3917,10 @@
       }
     },
     "rnbw_staking": {
+      "wallet_access": {
+        "hardware_wallet_not_supported_title": "Wallet Hardware Tidak Didukung",
+        "hardware_wallet_not_supported_message": "Staking RNBW tidak tersedia untuk wallet hardware saat ini."
+      },
       "deposit": {
         "confirm_button": "Tahan untuk Stake",
         "confirm_button_error": "Tidak dapat melakukan stake",
@@ -3932,24 +3937,21 @@
       "learn_screen": {
         "introducing": "MEMPERKENALKAN",
         "title": "Menyimpan",
-        "description": "Kunci $RNBW Anda untuk bergabung ke pool. Tetap lebih lama untuk memulihkan biaya keluar Anda dan dapatkan dari mereka yang keluar.",
-        "put_your_rnbw_to_work_title": "Jadikan $RNBW Anda Lebih Produktif",
-        "put_your_rnbw_to_work_subtitle": "Stake RNBW Anda untuk mengunci posisi Anda dan mulai mendapatkan dari pool.",
+        "description": "Staking RNBW untuk membuka tingkatan status dan manfaat anggota eksklusif.",
+        "fee_cashback": "Cashback Biaya",
+        "fee_cashback_subtitle": "Terima hingga 100% biaya sebagai RNBW yang di-stake.",
         "exit_fee_title": "Biaya Keluar %{exitFeePercentage}%",
-        "exit_fee_subtitle": "Unstaking dikenakan biaya %{exitFeePercentage}%.",
-        "passive_income_title": "Pendapatan Pasif",
-        "passive_income_subtitle": "Dapatkan manfaat dari setiap proses keluar. Biaya keluar didistribusikan ke pool. Tetap lebih lama untuk mengimbangi biaya Anda sendiri dan mencapai keuntungan murni.",
+        "exit_fee_subtitle": "Anda dapat melakukan unstake kapan saja. Cukup bayar biaya keluar %{exitFeePercentage}% yang didistribusikan kepada staker lainnya.",
+        "stay_in_to_earn_more": "Tetap staking untuk mendapatkan lebih banyak",
+        "stay_in_to_earn_more_subtitle": "Saat seseorang melakukan unstake RNBW mereka, biaya keluar akan kembali kepada mereka yang masih berada di pool.",
         "enable_staking": "Aktifkan staking"
       },
       "unstake_sheet": {
         "exit_fee": "Biaya Keluar",
-        "warning_description": "Unstaking akan mengenakan biaya %{exitFeePercentage}% pada saldo yang Anda stake.",
-        "confirm_unstake": "Konfirmasi Unstake",
-        "keep_staking": "Lanjutkan Staking",
+        "warning_description": "Unstake akan membebankan biaya %{exitFeePercentage}% pada saldo yang saat ini Anda stake.",
         "unstake_failed_title": "Penghapusan Simpanan Gagal",
         "unstake_failed_message": "Terjadi kesalahan saat melakukan unstake RNBW Anda. Silakan coba lagi.",
         "unstake_title": "Unstake $%{symbol}",
-        "loyalty_progress": "Progres Loyalti",
         "receive": "Terima",
         "total_return": "Total Pengembalian",
         "hold_to_unstake": "Tahan untuk Unstake",
