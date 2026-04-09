@@ -1668,7 +1668,12 @@
         "confirm_button_error_text": "Kesalahan Kutipan",
         "quote_error": "􀇿 Tidak ada penawaran yang tersedia",
         "insufficient_balance": "􀫲 Dana Tidak Cukup",
-        "insufficient_gas": "Gas Tidak Cukup"
+        "insufficient_gas": "Gas Tidak Cukup",
+        "gas_sponsored": "Gratis",
+        "invalid_route_recipient_error": "Rute bridge tidak mengarah ke akun Anda. Silakan coba lagi.",
+        "missing_recipient_error": "Alamat penerima tidak ada",
+        "no_wallet_connected": "Tidak ada wallet yang terhubung",
+        "unknown_execution_error": "Terjadi kesalahan tidak diketahui saat memproses deposit"
       },
       "withdraw": {
         "title": "Tarik",
@@ -3879,6 +3884,76 @@
       "claim_card": {
         "airdrop": "Airdrop",
         "rewards": "Hadiah"
+      },
+      "shared": {
+        "tier_label": "Tingkat %{tierName}",
+        "rewards": "Hadiah",
+        "loyalty_progress": "Progres Loyalti"
+      },
+      "membership_tier_card": {
+        "stake_to_next_tier": "Stake untuk naik ke tingkat berikutnya"
+      },
+      "membership_tiers_sheet": {
+        "stake_to_unlock": "Stake untuk membuka"
+      },
+      "staking_card": {
+        "stake": "Stake",
+        "enable_staking": "Aktifkan staking",
+        "buy_rnbw": "Beli RNBW",
+        "unstake": "Unstake",
+        "available_to_stake": "tersedia untuk stake"
+      },
+      "staking_earnings_card": {
+        "total_earnings": "Total Penghasilan",
+        "cashback": "Cashback",
+        "exit_rewards": "Hadiah Keluar"
+      },
+      "unstake_penalty_recovery_card": {
+        "break_even_reached": "Titik impas tercapai!",
+        "earned_prefix": "Anda telah menghasilkan ",
+        "earned_middle": " dari pool. Tinggal ",
+        "earned_suffix": " lagi untuk mencapai keuntungan murni."
+      }
+    },
+    "rnbw_staking": {
+      "deposit": {
+        "confirm_button": "Tahan untuk Stake",
+        "confirm_button_error": "Tidak dapat melakukan stake",
+        "confirm_button_loading": "Staking...",
+        "confirm_button_over_balance": "RNBW Tidak Cukup",
+        "confirm_button_zero_amount": "Masukkan jumlah",
+        "execution_error_title": "Kesalahan Staking",
+        "insufficient_gas": "Gas tidak cukup",
+        "quote_error": "Tidak dapat menyiapkan stake",
+        "receive": "Hadiah akan diklaim secara otomatis",
+        "title": "Stake $RNBW",
+        "minimum_amount": "Minimal 1 RNBW"
+      },
+      "learn_screen": {
+        "introducing": "MEMPERKENALKAN",
+        "title": "Menyimpan",
+        "description": "Kunci $RNBW Anda untuk bergabung ke pool. Tetap lebih lama untuk memulihkan biaya keluar Anda dan dapatkan dari mereka yang keluar.",
+        "put_your_rnbw_to_work_title": "Jadikan $RNBW Anda Lebih Produktif",
+        "put_your_rnbw_to_work_subtitle": "Stake RNBW Anda untuk mengunci posisi Anda dan mulai mendapatkan dari pool.",
+        "exit_fee_title": "Biaya Keluar %{exitFeePercentage}%",
+        "exit_fee_subtitle": "Unstaking dikenakan biaya %{exitFeePercentage}%.",
+        "passive_income_title": "Pendapatan Pasif",
+        "passive_income_subtitle": "Dapatkan manfaat dari setiap proses keluar. Biaya keluar didistribusikan ke pool. Tetap lebih lama untuk mengimbangi biaya Anda sendiri dan mencapai keuntungan murni.",
+        "enable_staking": "Aktifkan staking"
+      },
+      "unstake_sheet": {
+        "exit_fee": "Biaya Keluar",
+        "warning_description": "Unstaking akan mengenakan biaya %{exitFeePercentage}% pada saldo yang Anda stake.",
+        "confirm_unstake": "Konfirmasi Unstake",
+        "keep_staking": "Lanjutkan Staking",
+        "unstake_failed_title": "Penghapusan Simpanan Gagal",
+        "unstake_failed_message": "Terjadi kesalahan saat melakukan unstake RNBW Anda. Silakan coba lagi.",
+        "unstake_title": "Unstake $%{symbol}",
+        "loyalty_progress": "Progres Loyalti",
+        "receive": "Terima",
+        "total_return": "Total Pengembalian",
+        "hold_to_unstake": "Tahan untuk Unstake",
+        "unstaking": "Unstaking..."
       }
     },
     "wallet_error_sheet": {
