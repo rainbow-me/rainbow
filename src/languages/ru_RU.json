@@ -1668,7 +1668,12 @@
         "confirm_button_error_text": "Ошибка котировки",
         "quote_error": "􀇿 Нет доступной цитаты",
         "insufficient_balance": "􀫲 Недостаточно средств",
-        "insufficient_gas": "Недостаточно газа"
+        "insufficient_gas": "Недостаточно газа",
+        "gas_sponsored": "Бесплатно",
+        "invalid_route_recipient_error": "Маршрут моста не нацелен на ваш аккаунт. Пожалуйста, попробуйте снова.",
+        "missing_recipient_error": "Отсутствует адрес получателя",
+        "no_wallet_connected": "Кошелёк не подключён",
+        "unknown_execution_error": "Неизвестная ошибка при обработке депозита"
       },
       "withdraw": {
         "title": "Вывести",
@@ -3879,6 +3884,76 @@
       "claim_card": {
         "airdrop": "Аирдроп",
         "rewards": "Награды"
+      },
+      "shared": {
+        "tier_label": "Уровень %{tierName}",
+        "rewards": "Награды",
+        "loyalty_progress": "Прогресс лояльности"
+      },
+      "membership_tier_card": {
+        "stake_to_next_tier": "Стейкать до следующего уровня"
+      },
+      "membership_tiers_sheet": {
+        "stake_to_unlock": "Стейкать, чтобы разблокировать"
+      },
+      "staking_card": {
+        "stake": "Стейкать",
+        "enable_staking": "Включить стейкинг",
+        "buy_rnbw": "Купить RNBW",
+        "unstake": "Отменить стейкинг",
+        "available_to_stake": "доступно для стейкинга"
+      },
+      "staking_earnings_card": {
+        "total_earnings": "Общий доход",
+        "cashback": "Кэшбэк",
+        "exit_rewards": "Награды за выход"
+      },
+      "unstake_penalty_recovery_card": {
+        "break_even_reached": "Точка безубыточности достигнута!",
+        "earned_prefix": "Вы заработали ",
+        "earned_middle": " из пула. Осталось всего ",
+        "earned_suffix": " до чистой прибыли."
+      }
+    },
+    "rnbw_staking": {
+      "deposit": {
+        "confirm_button": "Удерживайте для стейкинга",
+        "confirm_button_error": "Не удалось застейкать",
+        "confirm_button_loading": "Стейкинг...",
+        "confirm_button_over_balance": "Недостаточно RNBW",
+        "confirm_button_zero_amount": "Введите сумму",
+        "execution_error_title": "Ошибка стейкинга",
+        "insufficient_gas": "Недостаточно газа",
+        "quote_error": "Не удалось подготовить стейкинг",
+        "receive": "Награды будут получаться автоматически",
+        "title": "Стейкать $RNBW",
+        "minimum_amount": "Минимум 1 RNBW"
+      },
+      "learn_screen": {
+        "introducing": "ПРЕДСТАВЛЯЕМ",
+        "title": "Ставка",
+        "description": "Заблокируйте ваши $RNBW, чтобы присоединиться к пулу. Оставайтесь дольше, чтобы компенсировать комиссию за выход и зарабатывать на тех, кто выходит.",
+        "put_your_rnbw_to_work_title": "Заставьте ваши $RNBW работать",
+        "put_your_rnbw_to_work_subtitle": "Застейкайте ваши RNBW, чтобы зафиксировать свою позицию и начать зарабатывать из пула.",
+        "exit_fee_title": "Комиссия за выход %{exitFeePercentage}%",
+        "exit_fee_subtitle": "При выводе из стейкинга взимается комиссия %{exitFeePercentage}%.",
+        "passive_income_title": "Пассивный доход",
+        "passive_income_subtitle": "Получайте выгоду от каждого выхода. Комиссии за выход распределяются в пул. Оставайтесь дольше, чтобы компенсировать собственные комиссии и выйти в чистую прибыль.",
+        "enable_staking": "Включить стейкинг"
+      },
+      "unstake_sheet": {
+        "exit_fee": "Комиссия за выход",
+        "warning_description": "При выводе из стейкинга с вашего застейканного баланса будет списана комиссия %{exitFeePercentage}%.",
+        "confirm_unstake": "Подтвердить вывод из стейкинга",
+        "keep_staking": "Продолжить стейкинг",
+        "unstake_failed_title": "Отмена ставки не удалась",
+        "unstake_failed_message": "Произошла ошибка при выводе ваших RNBW из стейкинга. Пожалуйста, попробуйте снова.",
+        "unstake_title": "Отменить стейкинг $%{symbol}",
+        "loyalty_progress": "Прогресс лояльности",
+        "receive": "Получить",
+        "total_return": "Итоговый доход",
+        "hold_to_unstake": "Удерживайте, чтобы вывести из стейкинга",
+        "unstaking": "Вывод из стейкинга..."
       }
     },
     "wallet_error_sheet": {
