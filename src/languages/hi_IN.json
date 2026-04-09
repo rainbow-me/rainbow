@@ -1668,7 +1668,12 @@
         "confirm_button_error_text": "कोट त्रुटि",
         "quote_error": "􀇿 कोई भाव उपलब्ध नहीं है",
         "insufficient_balance": "􀫲 अपर्याप्त धन",
-        "insufficient_gas": "अपर्याप्त गैस"
+        "insufficient_gas": "अपर्याप्त गैस",
+        "gas_sponsored": "मुफ्त",
+        "invalid_route_recipient_error": "ब्रिज रूट आपके अकाउंट को लक्षित नहीं कर रहा है। कृपया फिर से प्रयास करें।",
+        "missing_recipient_error": "प्राप्तकर्ता का पता मौजूद नहीं है",
+        "no_wallet_connected": "कोई वॉलेट कनेक्ट नहीं है",
+        "unknown_execution_error": "डिपॉजिट प्रोसेस करते समय अज्ञात त्रुटि"
       },
       "withdraw": {
         "title": "निकासी",
@@ -3879,6 +3884,76 @@
       "claim_card": {
         "airdrop": "एयरड्रॉप",
         "rewards": "इनाम"
+      },
+      "shared": {
+        "tier_label": "%{tierName} टियर",
+        "rewards": "इनाम",
+        "loyalty_progress": "लॉयल्टी प्रगति"
+      },
+      "membership_tier_card": {
+        "stake_to_next_tier": "अगले टियर के लिए स्टेक करें"
+      },
+      "membership_tiers_sheet": {
+        "stake_to_unlock": "अनलॉक करने के लिए स्टेक करें"
+      },
+      "staking_card": {
+        "stake": "स्टेक",
+        "enable_staking": "स्टेकिंग सक्षम करें",
+        "buy_rnbw": "RNBW खरीदें",
+        "unstake": "अनस्टेक करें",
+        "available_to_stake": "स्टेक करने के लिए उपलब्ध"
+      },
+      "staking_earnings_card": {
+        "total_earnings": "कुल कमाई",
+        "cashback": "कैशबैक",
+        "exit_rewards": "एग्ज़िट रिवॉर्ड्स"
+      },
+      "unstake_penalty_recovery_card": {
+        "break_even_reached": "ब्रेक-ईवन हो गया!",
+        "earned_prefix": "आपने कमाया ",
+        "earned_middle": " पूल से। बस ",
+        "earned_suffix": " और, शुद्ध मुनाफ़े तक पहुंचने के लिए।"
+      }
+    },
+    "rnbw_staking": {
+      "deposit": {
+        "confirm_button": "स्टेक करने के लिए होल्ड करें",
+        "confirm_button_error": "स्टेक नहीं कर पा रहे हैं",
+        "confirm_button_loading": "स्टेक कर रहे हैं...",
+        "confirm_button_over_balance": "अपर्याप्त RNBW",
+        "confirm_button_zero_amount": "राशि दर्ज करें",
+        "execution_error_title": "स्टेकिंग में त्रुटि",
+        "insufficient_gas": "अपर्याप्त गैस",
+        "quote_error": "स्टेक तैयार नहीं हो पा रहा है",
+        "receive": "रिवॉर्ड्स अपने-आप क्लेम हो जाएंगे",
+        "title": "$RNBW स्टेक करें",
+        "minimum_amount": "न्यूनतम 1 RNBW"
+      },
+      "learn_screen": {
+        "introducing": "परिचयकरण",
+        "title": "शेयर जमा कर रहा है",
+        "description": "पूल में शामिल होने के लिए अपने $RNBW को लॉक करें। अपनी एग्ज़िट फ़ीस रिकवर करने और जो लोग बाहर निकलते हैं उनसे कमाने के लिए ज़्यादा समय तक बने रहें।",
+        "put_your_rnbw_to_work_title": "अपने $RNBW को काम पर लगाएं",
+        "put_your_rnbw_to_work_subtitle": "अपनी पोज़िशन लॉक करने और पूल से कमाई शुरू करने के लिए अपना RNBW स्टेक करें।",
+        "exit_fee_title": "%{exitFeePercentage}% एग्ज़िट फ़ीस",
+        "exit_fee_subtitle": "अनस्टेक करने पर %{exitFeePercentage}% फ़ीस लगती है।",
+        "passive_income_title": "पैसिव इनकम",
+        "passive_income_subtitle": "हर एग्ज़िट से फ़ायदा पाएं। एग्ज़िट फ़ीस पूल में बांटी जाती हैं। अपनी फ़ीस की भरपाई करने और शुद्ध मुनाफ़े तक पहुंचने के लिए ज़्यादा समय तक बने रहें।",
+        "enable_staking": "स्टेकिंग सक्षम करें"
+      },
+      "unstake_sheet": {
+        "exit_fee": "एग्ज़िट फ़ीस",
+        "warning_description": "अनस्टेक करने पर आपके स्टेक किए गए बैलेंस से %{exitFeePercentage}% फ़ीस काटी जाएगी।",
+        "confirm_unstake": "अनस्टेक की पुष्टि करें",
+        "keep_staking": "स्टेकिंग जारी रखें",
+        "unstake_failed_title": "शेयर निष्काशन में विफल",
+        "unstake_failed_message": "आपके RNBW को अनस्टेक करते समय एक त्रुटि हुई। कृपया फिर से कोशिश करें।",
+        "unstake_title": "$%{symbol} अनस्टेक करें",
+        "loyalty_progress": "लॉयल्टी प्रगति",
+        "receive": "प्राप्त करें",
+        "total_return": "कुल रिटर्न",
+        "hold_to_unstake": "अनस्टेक करने के लिए होल्ड करें",
+        "unstaking": "अनस्टेक कर रहे हैं..."
       }
     },
     "wallet_error_sheet": {
