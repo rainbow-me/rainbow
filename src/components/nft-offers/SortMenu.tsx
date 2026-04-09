@@ -2,6 +2,7 @@ import React from 'react';
 
 import ConditionalWrap from 'conditional-wrap';
 import { createMMKV } from 'react-native-mmkv';
+import { triggerHaptics } from 'react-native-turbo-haptics';
 import { atom, useRecoilState } from 'recoil';
 
 import { analytics } from '@/analytics';
@@ -10,7 +11,6 @@ import ContextMenuButton from '@/components/native-context-menu/contextMenu';
 import { Box, Inline, Inset, Text } from '@/design-system';
 import { SortCriterion } from '@/graphql/__generated__/arc';
 import * as i18n from '@/languages';
-import haptics from '@/utils/haptics';
 
 const mmkv = createMMKV();
 
@@ -96,7 +96,7 @@ export const SortMenu = ({ type }: { type: 'card' | 'sheet' }) => {
   };
 
   const onPressMenuItem = ({ nativeEvent: { actionKey: sortCriterion } }: { nativeEvent: { actionKey: SortCriterion } }) => {
-    haptics.selection();
+    triggerHaptics('selection');
     setSortCriterion(sortCriterion);
     mmkv.set(MMKV_KEY, sortCriterion);
     analytics.track(analytics.event.nftOffersSelectedSortCriterion, {

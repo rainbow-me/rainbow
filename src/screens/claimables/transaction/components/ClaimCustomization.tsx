@@ -1,5 +1,7 @@
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
 
+import { triggerHaptics } from 'react-native-turbo-haptics';
+
 import { searchVerifiedTokens, TokenLists } from '@/__swaps__/screens/Swap/resources/search/searchV2';
 import { type SearchAsset } from '@/__swaps__/types/search';
 import { NetworkSelectorButton } from '@/components/buttons/NetworkSelectorButton';
@@ -11,7 +13,6 @@ import { ETH_SYMBOL, USDC_ADDRESS } from '@/references/constants';
 import { useUserAssetsStore } from '@/state/assets/userAssets';
 import { useBackendNetworksStore } from '@/state/backendNetworks/backendNetworks';
 import { ChainId } from '@/state/backendNetworks/types';
-import haptics from '@/utils/haptics';
 
 import { ClaimableMenu } from '../../shared/components/ClaimableMenu';
 import { useTransactionClaimableContext } from '../context/TransactionClaimableContext';
@@ -193,7 +194,7 @@ export function ClaimCustomization() {
 
   const handleTokenSelection = useCallback(
     (actionKey: string) => {
-      haptics.selection();
+      triggerHaptics('selection');
       if (actionKey === 'reset') {
         resetState();
       } else {

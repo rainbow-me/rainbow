@@ -3,6 +3,7 @@ import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import Clipboard from '@react-native-clipboard/clipboard';
 import { useRoute, type RouteProp } from '@react-navigation/native';
 import { type UserCredentials } from 'react-native-keychain';
+import { triggerHaptics } from 'react-native-turbo-haptics';
 
 import { getDeviceId } from '@/analytics/utils';
 import { SimpleSheet } from '@/components/sheet/SimpleSheet';
@@ -18,7 +19,6 @@ import { useNavigation } from '@/navigation/Navigation';
 import Routes from '@/navigation/routesNames';
 import { type RootStackParamList } from '@/navigation/types';
 import { DiagnosticsContent } from '@/screens/Diagnostics/DiagnosticsContent';
-import haptics from '@/utils/haptics';
 import { privateKeyKey, seedPhraseKey } from '@/utils/keychainConstants';
 import { deriveAccountFromWalletInput } from '@/utils/wallet';
 
@@ -146,7 +146,7 @@ export const WalletDiagnosticsSheet = () => {
 
   const copyUUID = () => {
     if (uuid) {
-      haptics.notificationSuccess();
+      triggerHaptics('notificationSuccess');
       Clipboard.setString(uuid);
       presentToast();
     }

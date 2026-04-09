@@ -2,6 +2,7 @@ import React, { useCallback, useMemo } from 'react';
 
 import Clipboard from '@react-native-clipboard/clipboard';
 import startCase from 'lodash/startCase';
+import { triggerHaptics } from 'react-native-turbo-haptics';
 
 import { navigateToSwaps } from '@/__swaps__/screens/Swap/navigateToSwaps';
 import ButtonPressAnimation from '@/components/animations/ButtonPressAnimation';
@@ -19,7 +20,6 @@ import { shortenTxHashString } from '@/screens/transaction-details/helpers/short
 import { useIsReadOnlyWallet } from '@/state/wallets/walletsStore';
 import { useTheme } from '@/theme/ThemeContext';
 import ethereumUtils from '@/utils/ethereumUtils';
-import haptics from '@/utils/haptics';
 import { openInBrowser } from '@/utils/openInBrowser';
 
 type Props = {
@@ -57,7 +57,7 @@ export const TransactionDetailsHashAndActionsSection: React.FC<Props> = ({ trans
 
   const onHashPress = () => {
     presentToast?.();
-    haptics.notificationSuccess();
+    triggerHaptics('notificationSuccess');
     Clipboard.setString(hash);
   };
 

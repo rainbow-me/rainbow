@@ -1,6 +1,6 @@
 import React, { useCallback, useEffect, useRef, useState } from 'react';
 
-import ReactNativeHapticFeedback from 'react-native-haptic-feedback';
+import { triggerHaptics } from 'react-native-turbo-haptics';
 
 import ButtonPressAnimation from '@/components/animations/ButtonPressAnimation';
 import Row from '@/components/layout/Row';
@@ -134,12 +134,12 @@ export function QuantityButton({ value, plusAction, minusAction, buttonColor, di
       if (actionType === PLUS_ACTION_TYPE) {
         plusAction();
         if (!android) {
-          ReactNativeHapticFeedback.trigger('selection');
+          triggerHaptics('selection');
         }
       } else if (actionType === MINUS_ACTION_TYPE) {
         minusAction();
         if (!android) {
-          ReactNativeHapticFeedback.trigger('selection');
+          triggerHaptics('selection');
         }
       }
     }

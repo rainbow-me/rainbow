@@ -4,6 +4,7 @@ import { StyleSheet } from 'react-native';
 import { Wallet } from '@ethersproject/wallet';
 import { useRoute, type RouteProp } from '@react-navigation/native';
 import { LinearGradient } from 'expo-linear-gradient';
+import { triggerHaptics } from 'react-native-turbo-haptics';
 import { EstimateGasExecutionError, IntrinsicGasTooLowError } from 'viem';
 
 import { HoldToActivateButton } from '@/components/hold-to-activate-button/HoldToActivateButton';
@@ -24,7 +25,6 @@ import reduxStore from '@/redux/store';
 import { userAssetsStoreManager } from '@/state/assets/userAssetsStoreManager';
 import { backendNetworksActions } from '@/state/backendNetworks/backendNetworks';
 import { getNextNonce } from '@/state/nonces';
-import haptics from '@/utils/haptics';
 import { executeRevokeDelegation } from '@rainbow-me/delegation';
 
 /**
@@ -324,12 +324,12 @@ export const RevokeDelegationPanel = () => {
 
       if (failedDelegations.length > 0) {
         replacePendingDelegations(pendingDelegationsRef, failedDelegations);
-        haptics.notificationError();
+        triggerHaptics('notificationError');
         setRevokeStatus('recoverableError');
         return;
       }
 
-      haptics.notificationSuccess();
+      triggerHaptics('notificationSuccess');
       setRevokeStatus('success');
 
       setTimeout(() => {
@@ -342,7 +342,7 @@ export const RevokeDelegationPanel = () => {
         chainId: pendingDelegations[0]?.chainId,
       });
 
-      haptics.notificationError();
+      triggerHaptics('notificationError');
       setRevokeStatus('recoverableError');
     }
   }, [address, goBack, onSuccess, startPollingGasFees]);

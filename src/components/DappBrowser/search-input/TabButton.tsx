@@ -4,6 +4,7 @@ import { StyleSheet, type TextInput } from 'react-native';
 import ConditionalWrap from 'conditional-wrap';
 import { BlurView } from 'react-native-blur-view';
 import { runOnJS, runOnUI, useAnimatedStyle, useDerivedValue, type AnimatedRef } from 'react-native-reanimated';
+import { triggerHaptics } from 'react-native-turbo-haptics';
 
 import { GestureHandlerButton } from '@/components/buttons/GestureHandlerButton';
 import ContextMenuButton from '@/components/native-context-menu/contextMenu';
@@ -16,7 +17,6 @@ import * as i18n from '@/languages';
 import { useBrowserStore } from '@/state/browser/browserStore';
 import { THICK_BORDER_WIDTH } from '@/styles/constants';
 import position from '@/styles/position';
-import haptics from '@/utils/haptics';
 
 import { useBrowserContext } from '../BrowserContext';
 import { useBrowserWorkletsContext } from '../BrowserWorkletsContext';
@@ -141,7 +141,7 @@ export const TabButton = React.memo(function TabButton({
 
   const onPressMenuItem = useCallback(
     async ({ nativeEvent: { actionKey } }: { nativeEvent: { actionKey: MenuActionKey } }) => {
-      haptics.selection();
+      triggerHaptics('selection');
       if (actionKey === 'closeThisTab') {
         runOnUI(() => {
           const multipleTabsOpen = currentlyOpenTabIds.value.length > 1;

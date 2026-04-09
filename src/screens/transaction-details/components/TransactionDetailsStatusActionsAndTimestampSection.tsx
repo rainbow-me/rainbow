@@ -2,6 +2,7 @@ import React, { useCallback, useMemo } from 'react';
 import { StyleSheet } from 'react-native';
 
 import RadialGradient from 'react-native-radial-gradient';
+import { triggerHaptics } from 'react-native-turbo-haptics';
 
 import ButtonPressAnimation from '@/components/animations/ButtonPressAnimation';
 import ContextMenuButton, { type MenuConfig } from '@/components/native-context-menu/contextMenu';
@@ -13,7 +14,6 @@ import { formatTransactionDetailsDate } from '@/screens/transaction-details/help
 import { getIconColorAndGradientForTransactionStatus } from '@/screens/transaction-details/helpers/getIconColorAndGradientForTransactionStatus';
 import { useAccountAddress } from '@/state/wallets/walletsStore';
 import { useTheme } from '@/theme/ThemeContext';
-import haptics from '@/utils/haptics';
 import Routes from '@rainbow-me/routes';
 
 const SIZE = 40;
@@ -75,7 +75,7 @@ export const TransactionDetailsStatusActionsAndTimestampSection: React.FC<Props>
     // @ts-expect-error ContextMenu is an untyped JS component and can't type its onPress handler properly
     e => {
       const { actionKey } = e.nativeEvent;
-      haptics.selection();
+      triggerHaptics('selection');
       switch (actionKey) {
         case 'speedUp':
           navigate(Routes.SPEED_UP_AND_CANCEL_SHEET, {

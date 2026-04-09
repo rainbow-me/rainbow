@@ -16,6 +16,7 @@ import Animated, {
   type DerivedValue,
   type SharedValue,
 } from 'react-native-reanimated';
+import { triggerHaptics } from 'react-native-turbo-haptics';
 
 import { FadeMask } from '@/__swaps__/screens/Swap/components/FadeMask';
 import { AnimatedInput } from '@/components/AnimatedComponents/AnimatedInput';
@@ -33,7 +34,6 @@ import { useFavoriteDappsStore, type FavoritedSite } from '@/state/browser/favor
 import { fontWithWidth } from '@/styles';
 import { THICK_BORDER_WIDTH } from '@/styles/constants';
 import font from '@/styles/fonts';
-import haptics from '@/utils/haptics';
 
 import { useBrowserContext } from '../BrowserContext';
 import { useBrowserWorkletsContext } from '../BrowserWorkletsContext';
@@ -155,7 +155,7 @@ const ThreeDotMenu = function ThreeDotMenu({ formattedUrlValue }: { formattedUrl
 
   const onPressMenuItem = useCallback(
     async ({ nativeEvent: { actionKey } }: { nativeEvent: { actionKey: MenuActionKey } }) => {
-      haptics.selection();
+      triggerHaptics('selection');
       if (actionKey === 'favorite') {
         handleFavoritePress();
       } else if (actionKey === 'back') {

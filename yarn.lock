@@ -9672,7 +9672,6 @@ __metadata:
     react-native-fs: "npm:2.16.6"
     react-native-gesture-handler: "npm:2.27.2"
     react-native-get-random-values: "npm:1.5.0"
-    react-native-haptic-feedback: "npm:2.2.0"
     react-native-image-colors: "npm:2.5.1"
     react-native-indicators: "npm:0.17.0"
     react-native-ios-context-menu: "npm:1.15.3"
@@ -9706,7 +9705,7 @@ __metadata:
     react-native-text-size: "rainbow-me/react-native-text-size#15b21c9f88c6df0d1b5e0f2ba792fe59b5dc255a"
     react-native-tooltip: "rainbow-me/react-native-tooltip#db20e9521c5be9e151728ce402cd70fdb556bd97"
     react-native-tooltips: "rainbow-me/react-native-tooltips#fdafbc7ba33ee231229f5d3f58b29d0d1c55ddfa"
-    react-native-turbo-haptics: "npm:1.0.8"
+    react-native-turbo-haptics: "npm:1.0.9"
     react-native-udp: "npm:2.7.0"
     react-native-url-polyfill: "npm:2.0.0"
     react-native-version-number: "npm:0.3.6"
@@ -23567,15 +23566,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"react-native-haptic-feedback@npm:2.2.0":
-  version: 2.2.0
-  resolution: "react-native-haptic-feedback@npm:2.2.0"
-  peerDependencies:
-    react-native: ">=0.60.0"
-  checksum: 10c0/6939804b1e3a4c1e35052a65c2536a00b6d7d93b2b5a5c4fc6ef690a06d043c38bf95536f9b54acfb32d08abf901b847171a574d0d863acfdee59cce012d2497
-  languageName: node
-  linkType: hard
-
 "react-native-image-colors@npm:2.5.1":
   version: 2.5.1
   resolution: "react-native-image-colors@npm:2.5.1"
@@ -23965,13 +23955,13 @@ __metadata:
   languageName: node
   linkType: hard
 
-"react-native-turbo-haptics@npm:1.0.8":
-  version: 1.0.8
-  resolution: "react-native-turbo-haptics@npm:1.0.8"
+"react-native-turbo-haptics@npm:1.0.9":
+  version: 1.0.9
+  resolution: "react-native-turbo-haptics@npm:1.0.9"
   peerDependencies:
     react: ">=18.2.0"
     react-native: ">=0.72.0"
-  checksum: 10c0/383897abc72153e416ef68fa96e8aeb10eba0c8f51a21afa6b15cb6d992fb25accb8460fd0b21c8bc5ee70089403da0ad5e020269f61353eec2e1b8e105a5035
+  checksum: 10c0/26b17519b6c5353287ea746e2ab0ff7d3a56af3dcdff179fc871092e775832cc291c08469a9c91c799bc6d77ec44c491a0e19884d84f34590569eb4003b2738a
   languageName: node
   linkType: hard
 

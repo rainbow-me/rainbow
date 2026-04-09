@@ -1,6 +1,6 @@
 import { type GestureResponderEvent, type PressableProps, type StyleProp, type ViewProps, type ViewStyle } from 'react-native';
 
-import { type HapticFeedbackTypes } from 'react-native-haptic-feedback';
+import { type HapticType } from 'react-native-turbo-haptics';
 
 export type TransformOrigin = [number, number];
 export type Direction = 'bottom' | 'left' | 'right' | 'top';
@@ -18,7 +18,7 @@ export interface ButtonPressAnimationProps
   transformOrigin?: TransformOrigin | Direction;
   scaleTo?: number;
   enableHapticFeedback?: boolean;
-  hapticType?: HapticFeedbackTypes;
+  hapticType?: HapticType;
   shouldLongPressHoldPress?: boolean;
 
   /** @platform ios */

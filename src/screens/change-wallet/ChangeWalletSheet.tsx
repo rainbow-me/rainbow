@@ -4,7 +4,7 @@ import { Alert, InteractionManager, type LayoutChangeEvent } from 'react-native'
 import Clipboard from '@react-native-clipboard/clipboard';
 import { useRoute, type RouteProp } from '@react-navigation/native';
 import ConditionalWrap from 'conditional-wrap';
-import ReactNativeHapticFeedback from 'react-native-haptic-feedback';
+import { triggerHaptics } from 'react-native-turbo-haptics';
 import type { Address } from 'viem';
 
 import { analytics } from '@/analytics';
@@ -369,7 +369,7 @@ export default function ChangeWalletSheet() {
           if (buttonIndex === 0) {
             analytics.track(analytics.event.tappedDeleteWalletConfirm);
             await deleteWallet(walletId, address);
-            ReactNativeHapticFeedback.trigger('notificationSuccess');
+            triggerHaptics('notificationSuccess');
             if (!isLastAvailableWallet) {
               await cleanUpWalletKeys();
               goBack();

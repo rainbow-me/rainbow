@@ -1,9 +1,9 @@
 import React, { useState, type ReactNode } from 'react';
 
 import useCountdown from '@bradgarropy/use-countdown';
-import ReactNativeHapticFeedback from 'react-native-haptic-feedback';
 import Animated, { Easing, useAnimatedProps, useSharedValue, withSpring, withTiming } from 'react-native-reanimated';
 import { Circle, Defs, G, RadialGradient, Stop, Svg } from 'react-native-svg';
+import { triggerHaptics } from 'react-native-turbo-haptics';
 
 import { Box, useForegroundColor, useTextStyle } from '@/design-system';
 
@@ -31,7 +31,7 @@ export default function LargeCountdownClock({ minutes, seconds, initialSeconds, 
     minutes,
     onCompleted: () => {
       setCompleted(true);
-      ReactNativeHapticFeedback.trigger('notificationSuccess');
+      triggerHaptics('notificationSuccess');
       setTimeout(() => {
         onFinished();
       }, 1500);

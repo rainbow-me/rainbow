@@ -1,10 +1,11 @@
 import React from 'react';
 
+import { triggerHaptics } from 'react-native-turbo-haptics';
+
 import ButtonPressAnimation from '@/components/animations/ButtonPressAnimation';
 import ContextMenuButton, { type MenuConfig } from '@/components/native-context-menu/contextMenu';
 import { Bleed, Box, Inline, Text, useForegroundColor } from '@/design-system';
 import { type NftSort } from '@/state/nfts/nftsStoreManager';
-import haptics from '@/utils/haptics';
 
 type ListHeaderMenuProps = {
   selected: NftSort;
@@ -23,7 +24,7 @@ export function ListHeaderMenu({ menuItems, selectItem, icon, text }: ListHeader
   };
 
   const onPressMenuItem = ({ nativeEvent: { actionKey: item } }: { nativeEvent: { actionKey: string } }) => {
-    haptics.selection();
+    triggerHaptics('selection');
     selectItem(item as NftSort);
   };
 

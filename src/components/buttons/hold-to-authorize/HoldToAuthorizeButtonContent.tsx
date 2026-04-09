@@ -8,6 +8,7 @@ import {
   type HandlerStateChangeEvent,
 } from 'react-native-gesture-handler';
 import Animated, { runOnJS, useAnimatedStyle, useSharedValue, withTiming } from 'react-native-reanimated';
+import { triggerHaptics } from 'react-native-turbo-haptics';
 
 import styled from '@/framework/ui/styled-thing';
 import useDimensions from '@/hooks/useDimensions';
@@ -16,7 +17,6 @@ import { useNavigation } from '@/navigation/Navigation';
 import Routes from '@/navigation/routesNames';
 import { padding, position } from '@/styles';
 import { useTheme, type ThemeContextProps } from '@/theme/ThemeContext';
-import haptics from '@/utils/haptics';
 import ShadowStack from 'react-native-shadow-stack';
 
 import ShimmerAnimation from '../../animations/ShimmerAnimation';
@@ -161,7 +161,7 @@ function HoldToAuthorizeButtonContent2({
 
   const onLongPressChange = ({ nativeEvent: { state } }: HandlerStateChangeEvent) => {
     if (state === ACTIVE && !disabled) {
-      haptics.notificationSuccess();
+      triggerHaptics('notificationSuccess');
       Keyboard.dismiss();
 
       buttonScale.value = withTiming(1, { duration: BUTTON_SCALE_DURATION_IN_MS }, () => runOnJS(setIsAuthorizing)(true));
@@ -173,7 +173,7 @@ function HoldToAuthorizeButtonContent2({
   const onTapChange = ({ nativeEvent: { state } }: HandlerStateChangeEvent) => {
     if (disabled) {
       if (state === END) {
-        haptics.notificationWarning();
+        triggerHaptics('notificationWarning');
         buttonScale.value = withTiming(
           1.02,
           {

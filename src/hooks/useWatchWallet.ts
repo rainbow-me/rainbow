@@ -1,6 +1,6 @@
 import { useCallback, useMemo } from 'react';
 
-import ReactNativeHapticFeedback from 'react-native-haptic-feedback';
+import { triggerHaptics } from 'react-native-turbo-haptics';
 
 import useDeleteWallet from '@/hooks/useDeleteWallet';
 import useImportingWallet from '@/hooks/useImportingWallet';
@@ -85,7 +85,7 @@ export default function useWatchWallet({
         return false;
       });
       await deleteWallet();
-      ReactNativeHapticFeedback.trigger('notificationSuccess');
+      triggerHaptics('notificationSuccess');
       if (!isLastAvailableWallet) {
         await cleanUpWalletKeys();
         goBack();
