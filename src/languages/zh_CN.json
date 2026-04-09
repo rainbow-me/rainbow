@@ -3887,8 +3887,8 @@
       },
       "shared": {
         "tier_label": "%{tierName} 等级",
-        "rewards": "奖励",
-        "loyalty_progress": "忠诚度进度"
+        "loyalty_progress": "忠诚度进度",
+        "fee_cashback": "手续费返现"
       },
       "membership_tier_card": {
         "stake_to_next_tier": "质押以升至下一等级"
@@ -3901,12 +3901,13 @@
         "enable_staking": "启用质押",
         "buy_rnbw": "购买 RNBW",
         "unstake": "撤销质押",
-        "available_to_stake": "可用于质押"
+        "available_to_stake": "可用于质押",
+        "available_to_add": "可添加",
+        "minimum_stake_amount_required": "你至少需要质押 %{minStakeAmount} RNBW"
       },
       "staking_earnings_card": {
-        "total_earnings": "总收入",
-        "cashback": "返现",
-        "exit_rewards": "退出奖励"
+        "lifetime_earnings": "累计收益",
+        "exit_fee_rewards": "退出手续费奖励"
       },
       "unstake_penalty_recovery_card": {
         "break_even_reached": "已达到盈亏平衡！",
@@ -3916,6 +3917,10 @@
       }
     },
     "rnbw_staking": {
+      "wallet_access": {
+        "hardware_wallet_not_supported_title": "不支持硬件钱包",
+        "hardware_wallet_not_supported_message": "目前硬件钱包暂不支持 RNBW 质押。"
+      },
       "deposit": {
         "confirm_button": "按住以质押",
         "confirm_button_error": "无法质押",
@@ -3932,24 +3937,21 @@
       "learn_screen": {
         "introducing": "介绍",
         "title": "质押中",
-        "description": "锁定你的 $RNBW 以加入资金池。停留时间越长，越能收回退出费用，并从离开的人那里获得收益。",
-        "put_your_rnbw_to_work_title": "让你的 $RNBW 发挥作用",
-        "put_your_rnbw_to_work_subtitle": "质押你的 RNBW 以锁定仓位，并开始从资金池中赚取收益。",
+        "description": "质押 RNBW 以解锁状态等级和专属会员权益。",
+        "fee_cashback": "手续费返现",
+        "fee_cashback_subtitle": "以已质押的 RNBW 形式返还最高 100% 的手续费。",
         "exit_fee_title": "%{exitFeePercentage}% 退出费",
-        "exit_fee_subtitle": "撤销质押会收取 %{exitFeePercentage}% 的费用。",
-        "passive_income_title": "被动收入",
-        "passive_income_subtitle": "从每次退出中获益。退出费用会分配给资金池。停留更久以抵消你自己的费用，并达到纯利润。",
+        "exit_fee_subtitle": "你可以随时解除质押。只需支付 %{exitFeePercentage}% 的退出手续费，该费用将分配给其他质押者。",
+        "stay_in_to_earn_more": "继续质押，赚得更多",
+        "stay_in_to_earn_more_subtitle": "当有人解除质押其 RNBW 时，退出手续费会返还给仍在池中的人。",
         "enable_staking": "启用质押"
       },
       "unstake_sheet": {
         "exit_fee": "退出费",
-        "warning_description": "撤销质押将对你的已质押余额收取 %{exitFeePercentage}% 的费用。",
-        "confirm_unstake": "确认撤销质押",
-        "keep_staking": "继续质押",
+        "warning_description": "解除质押将对你当前已质押的余额收取 %{exitFeePercentage}% 的手续费。",
         "unstake_failed_title": "撤销质押失败",
         "unstake_failed_message": "撤销质押你的 RNBW 时发生错误。请重试。",
         "unstake_title": "撤销质押 $%{symbol}",
-        "loyalty_progress": "忠诚度进度",
         "receive": "接收",
         "total_return": "总回报",
         "hold_to_unstake": "按住以撤销质押",
