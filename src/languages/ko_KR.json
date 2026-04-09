@@ -3887,8 +3887,8 @@
       },
       "shared": {
         "tier_label": "%{tierName} 티어",
-        "rewards": "보상",
-        "loyalty_progress": "로열티 진행 상황"
+        "loyalty_progress": "로열티 진행 상황",
+        "fee_cashback": "수수료 캐시백"
       },
       "membership_tier_card": {
         "stake_to_next_tier": "다음 티어로 스테이킹"
@@ -3901,12 +3901,13 @@
         "enable_staking": "스테이킹 활성화",
         "buy_rnbw": "RNBW 구매",
         "unstake": "언스테이킹",
-        "available_to_stake": "스테이킹 가능"
+        "available_to_stake": "스테이킹 가능",
+        "available_to_add": "추가 가능",
+        "minimum_stake_amount_required": "스테이킹하려면 최소 %{minStakeAmount} RNBW가 필요합니다"
       },
       "staking_earnings_card": {
-        "total_earnings": "총 수익",
-        "cashback": "캐시백",
-        "exit_rewards": "출금 리워드"
+        "lifetime_earnings": "누적 수익",
+        "exit_fee_rewards": "출금 수수료 리워드"
       },
       "unstake_penalty_recovery_card": {
         "break_even_reached": "손익분기점에 도달했어요!",
@@ -3916,6 +3917,10 @@
       }
     },
     "rnbw_staking": {
+      "wallet_access": {
+        "hardware_wallet_not_supported_title": "하드웨어 지갑은 지원되지 않습니다",
+        "hardware_wallet_not_supported_message": "현재 하드웨어 지갑에서는 RNBW 스테이킹을 사용할 수 없습니다."
+      },
       "deposit": {
         "confirm_button": "누르고 스테이킹",
         "confirm_button_error": "스테이킹할 수 없음",
@@ -3932,24 +3937,21 @@
       "learn_screen": {
         "introducing": "소개합니다",
         "title": "스테이킹 중",
-        "description": "풀에 참여하려면 $RNBW를 락업하세요. 더 오래 유지할수록 출금 수수료를 회복하고, 떠나는 사람들의 수수료로부터 수익을 얻을 수 있어요.",
-        "put_your_rnbw_to_work_title": "$RNBW를 굴려보세요",
-        "put_your_rnbw_to_work_subtitle": "RNBW를 스테이킹해 포지션을 락업하고 풀에서 수익을 얻기 시작하세요.",
+        "description": "RNBW를 스테이킹하여 등급 티어와 멤버 전용 혜택을 잠금 해제하세요.",
+        "fee_cashback": "수수료 캐시백",
+        "fee_cashback_subtitle": "수수료의 최대 100%를 스테이킹된 RNBW로 받으세요.",
         "exit_fee_title": "%{exitFeePercentage}% 출금 수수료",
-        "exit_fee_subtitle": "언스테이킹 시 %{exitFeePercentage}% 수수료가 부과됩니다.",
-        "passive_income_title": "패시브 인컴",
-        "passive_income_subtitle": "모든 출금에서 혜택을 받으세요. 출금 수수료는 풀에 분배됩니다. 더 오래 유지할수록 내 수수료를 상쇄하고 순수익에 도달할 수 있어요.",
+        "exit_fee_subtitle": "언제든지 언스테이킹할 수 있습니다. 다른 스테이커들에게 분배되는 %{exitFeePercentage}%의 출금 수수료만 지불하면 됩니다.",
+        "stay_in_to_earn_more": "더 많이 벌려면 계속 유지하세요",
+        "stay_in_to_earn_more_subtitle": "누군가 RNBW를 언스테이킹하면, 출금 수수료는 풀에 남아 있는 사람들에게 돌아갑니다.",
         "enable_staking": "스테이킹 활성화"
       },
       "unstake_sheet": {
         "exit_fee": "출금 수수료",
-        "warning_description": "언스테이킹하면 스테이킹된 잔액에 %{exitFeePercentage}% 수수료가 부과됩니다.",
-        "confirm_unstake": "언스테이킹 확인",
-        "keep_staking": "계속 스테이킹",
+        "warning_description": "언스테이킹 시 현재 스테이킹된 잔액에 %{exitFeePercentage}%의 수수료가 부과됩니다.",
         "unstake_failed_title": "언스테이크 실패",
         "unstake_failed_message": "RNBW 언스테이킹 중 오류가 발생했습니다. 다시 시도해 주세요.",
         "unstake_title": "$%{symbol} 언스테이킹",
-        "loyalty_progress": "로열티 진행 상황",
         "receive": "받기",
         "total_return": "총 수익",
         "hold_to_unstake": "누르고 언스테이킹",
