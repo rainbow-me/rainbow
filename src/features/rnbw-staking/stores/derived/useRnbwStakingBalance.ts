@@ -1,7 +1,6 @@
 import { convertAmountToNativeDisplayWorklet, convertRawAmountToDecimalFormat, truncateToDecimalsWithThreshold } from '@/helpers/utilities';
 import { userAssetsStoreManager } from '@/state/assets/userAssetsStoreManager';
-import { createDerivedStore } from '@/state/internal/createDerivedStore';
-import { shallowEqual } from '@/worklets/comparisons';
+import { createDerivedStore, shallowEqual } from '@storesjs/stores';
 import { useStakingPositionStore } from '../rnbwStakingPositionStore';
 import { RNBW_DECIMALS } from '@/features/rnbw-staking/constants';
 
@@ -30,5 +29,5 @@ export const useRnbwStakingBalance = createDerivedStore<StakingBalance>(
       hasStakedPosition: !isZero,
     };
   },
-  { equalityFn: shallowEqual, fastMode: true }
+  { equalityFn: shallowEqual, lockDependencies: true }
 );

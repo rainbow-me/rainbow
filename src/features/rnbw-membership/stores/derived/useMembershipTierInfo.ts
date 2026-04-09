@@ -1,5 +1,4 @@
-import { createDerivedStore } from '@/state/internal/createDerivedStore';
-import { shallowEqual } from '@/worklets/comparisons';
+import { createDerivedStore, shallowEqual } from '@storesjs/stores';
 import { useStakingPositionStore } from '@/features/rnbw-staking/stores/rnbwStakingPositionStore';
 import { divWorklet, subWorklet, toFixedWorklet } from '@/framework/core/safeMath';
 import { RNBW_DECIMALS } from '@/features/rnbw-staking/constants';
@@ -61,5 +60,5 @@ export const useMembershipTierInfo = createDerivedStore<MembershipTierInfo>(
       maxTierProgress,
     };
   },
-  { equalityFn: shallowEqual, fastMode: true }
+  { equalityFn: shallowEqual, lockDependencies: true }
 );

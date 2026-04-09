@@ -3855,8 +3855,8 @@
       },
       "shared": {
         "tier_label": "%{tierName} Tier",
-        "rewards": "Rewards",
-        "loyalty_progress": "Loyalty Progress"
+        "loyalty_progress": "Loyalty Progress",
+        "fee_cashback": "Fee Cashback"
       },
       "membership_tier_card": {
         "stake_to_next_tier": "Stake to next tier"
@@ -3869,12 +3869,13 @@
         "enable_staking": "Enable Staking",
         "buy_rnbw": "Buy RNBW",
         "unstake": "Unstake",
-        "available_to_stake": "available to stake"
+        "available_to_stake": "available to stake",
+        "available_to_add": "available to add",
+        "minimum_stake_amount_required": "You need at least %{minStakeAmount} RNBW to stake"
       },
       "staking_earnings_card": {
-        "total_earnings": "Total Earnings",
-        "cashback": "Cashback",
-        "exit_rewards": "Exit Rewards"
+        "lifetime_earnings": "Lifetime Earnings",
+        "exit_fee_rewards": "Exit Fee Rewards"
       },
       "unstake_penalty_recovery_card": {
         "break_even_reached": "Break even reached!",
@@ -3900,24 +3901,21 @@
       "learn_screen": {
         "introducing": "INTRODUCING",
         "title": "Staking",
-        "description": "Lock your $RNBW to join the pool. Stay longer to recover your exit fee and earn from those who leave.",
-        "put_your_rnbw_to_work_title": "Put Your $RNBW to Work",
-        "put_your_rnbw_to_work_subtitle": "Stake your RNBW to lock your position and start earning from the pool.",
+        "description": "Stake RNBW to unlock status tiers and exclusive member benefits.",
+        "fee_cashback": "Fee Cashback",
+        "fee_cashback_subtitle": "Receive up to 100% of fees as staked RNBW.",
         "exit_fee_title": "%{exitFeePercentage}% Exit Fee",
-        "exit_fee_subtitle": "Unstaking comes with a %{exitFeePercentage}% fee.",
-        "passive_income_title": "Passive Income",
-        "passive_income_subtitle": "Benefit from every exit. Exit fees are distributed to the pool. Stay longer to offset your own fees and reach pure profit.",
+        "exit_fee_subtitle": "You can unstake anytime. Just pay a %{exitFeePercentage}% exit fee that's distributed to other stakers.",
+        "stay_in_to_earn_more": "Stay in to earn more",
+        "stay_in_to_earn_more_subtitle": "When someone unstakes their RNBW, exit fees go back to those still in the pool.",
         "enable_staking": "Enable Staking"
       },
       "unstake_sheet": {
         "exit_fee": "Exit Fee",
-        "warning_description": "Unstaking will charge a %{exitFeePercentage}% fee to your staked balance.",
-        "confirm_unstake": "Confirm Unstake",
-        "keep_staking": "Keep Staking",
+        "warning_description": "Unstaking will charge a %{exitFeePercentage}% fee to your currently staked balance.",
         "unstake_failed_title": "Unstake Failed",
         "unstake_failed_message": "An error occurred while unstaking your RNBW. Please try again.",
         "unstake_title": "Unstake $%{symbol}",
-        "loyalty_progress": "Loyalty Progress",
         "receive": "Receive",
         "total_return": "Total Return",
         "hold_to_unstake": "Hold to Unstake",

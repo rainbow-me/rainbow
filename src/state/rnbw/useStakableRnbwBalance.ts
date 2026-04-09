@@ -4,17 +4,14 @@ import {
   convertRawAmountToDecimalFormat,
   greaterThanOrEqualTo,
   isPositive,
+  truncateToDecimalsWithThreshold,
 } from '@/helpers/utilities';
 import { useRewardsBalanceStore } from '@/features/rnbw-rewards/stores/rewardsBalanceStore';
-import { MIN_CLAIM_TO_STAKING_RAW, RNBW_DECIMALS, RNBW_TOKEN_UNIQUE_ID } from '@/features/rnbw-staking/constants';
+import { MIN_STAKE_AMOUNT, RNBW_DECIMALS, RNBW_TOKEN_UNIQUE_ID } from '@/features/rnbw-staking/constants';
 import { useUserAssetsStore } from '@/state/assets/userAssets';
 import { userAssetsStoreManager } from '@/state/assets/userAssetsStoreManager';
 import { createDerivedStore } from '@/state/internal/createDerivedStore';
 import { shallowEqual } from '@/worklets/comparisons';
-import { toFixedWorklet } from '@/framework/core/safeMath';
-import { formatNumber } from '@/helpers/strings';
-
-const MIN_STAKE_AMOUNT = convertRawAmountToDecimalFormat(MIN_CLAIM_TO_STAKING_RAW, RNBW_DECIMALS);
 
 type RnbwBalance = {
   walletBalance: string;
@@ -45,7 +42,8 @@ export const useStakableRnbwBalance = createDerivedStore<RnbwBalance>(
     return {
       walletBalance: walletAmount,
       claimableBalance: claimableAmount,
-      tokenAmountFormatted: formatNumber(toFixedWorklet(totalAmount, 2)),
+      tokenAmountFormatted:
+        totalAmount === '0' ? '0' : truncateToDecimalsWithThreshold({ value: totalAmount, decimals: 2, threshold: '0.01' }),
       nativeCurrencyAmount: convertAmountToNativeDisplayWorklet(totalNativeValue, currency, hasBalance),
       hasBalance,
       hasMinimumStakeAmount: greaterThanOrEqualTo(totalAmount, MIN_STAKE_AMOUNT),

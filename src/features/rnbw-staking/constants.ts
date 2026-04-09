@@ -1,10 +1,10 @@
 import { parseAbi, type Address } from 'viem';
 import { ChainId } from '@/state/backendNetworks/types';
 import { getUniqueId } from '@/utils/ethereumUtils';
+import { convertRawAmountToDecimalFormat } from '@/helpers/utilities';
 
 export const RNBW_TOKEN_ADDRESS: Address = '0xa53887f7e7c1bf5010b8627f1c1ba94fe7a5d6e0';
 export const RNBW_CHAIN_ID = ChainId.base;
-export const RNBW_UNIQUE_ID = getUniqueId(RNBW_TOKEN_ADDRESS, RNBW_CHAIN_ID).toLowerCase();
 export const RNBW_DECIMALS = 18;
 export const RNBW_TOKEN_UNIQUE_ID = getUniqueId(RNBW_TOKEN_ADDRESS, RNBW_CHAIN_ID).toLowerCase();
 export const RNBW_TOKEN_ICON_URL =
@@ -22,3 +22,4 @@ export const STAKING_GAS_LIMIT = 200_000;
 export const DEFAULT_EXIT_FEE_PERCENTAGE = 10;
 
 export const MIN_CLAIM_TO_STAKING_RAW = '1000000000000000000'; // 1 RNBW (10^18)
+export const MIN_STAKE_AMOUNT = convertRawAmountToDecimalFormat(MIN_CLAIM_TO_STAKING_RAW, RNBW_DECIMALS);

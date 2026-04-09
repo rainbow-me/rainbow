@@ -1,7 +1,7 @@
 import { divWorklet, isPositive, mulWorklet, subWorklet, toFixedWorklet, toPercentageWorklet } from '@/framework/core/safeMath';
-import { convertRawAmountToDecimalFormatWorklet, formatNumber, isZero } from '@/helpers/utilities';
-import { createDerivedStore } from '@/state/internal/createDerivedStore';
-import { shallowEqual } from '@/worklets/comparisons';
+import { convertRawAmountToDecimalFormatWorklet, isZero } from '@/helpers/utilities';
+import { formatNumber } from '@/helpers/strings';
+import { createDerivedStore, shallowEqual } from '@storesjs/stores';
 import { useStakingPositionStore } from '../rnbwStakingPositionStore';
 
 type StakingPositionPnl = {
@@ -9,7 +9,6 @@ type StakingPositionPnl = {
   exitFeeOffsetRatioDisplay: string;
   netPnl: string;
   isPositivePnl: boolean;
-  earnedFromExitFees: string;
   earningsRequiredToBreakEven: string;
   rnbwAfterUnstake: string;
 };
@@ -19,7 +18,6 @@ const EMPTY_VALUE: StakingPositionPnl = {
   exitFeeOffsetRatioDisplay: '0%',
   netPnl: '0',
   isPositivePnl: false,
-  earnedFromExitFees: '0',
   earningsRequiredToBreakEven: '0',
   rnbwAfterUnstake: '0',
 };
@@ -39,17 +37,16 @@ export const useRnbwStakingPositionPnl = createDerivedStore<StakingPositionPnl>(
 
     const netPnl = subWorklet(exchangeRateGain, exitFee);
     const isPositivePnl = isPositive(netPnl);
-    const netPnlFormatted = toFixedWorklet(convertRawAmountToDecimalFormatWorklet(netPnl, decimals), 4);
+    const netPnlFormatted = formatNumber(toFixedWorklet(convertRawAmountToDecimalFormatWorklet(netPnl, decimals), 4));
 
     return {
       exitFeeOffsetRatio,
       exitFeeOffsetRatioDisplay: isZero(exitFeeOffsetRatio) ? '0%' : `${toPercentageWorklet(exitFeeOffsetRatio, 0.001)}%`,
       netPnl: isPositivePnl ? `+${netPnlFormatted}` : netPnlFormatted,
-      earnedFromExitFees: formatNumber(convertRawAmountToDecimalFormatWorklet(exchangeRateGain, decimals)),
       earningsRequiredToBreakEven: formatNumber(convertRawAmountToDecimalFormatWorklet(subWorklet(exitFee, exchangeRateGain), decimals)),
       rnbwAfterUnstake: formatNumber(convertRawAmountToDecimalFormatWorklet(subWorklet(stakedRnbw, exitFee), decimals)),
       isPositivePnl,
     };
   },
-  { equalityFn: shallowEqual, fastMode: true }
+  { equalityFn: shallowEqual, lockDependencies: true }
 );

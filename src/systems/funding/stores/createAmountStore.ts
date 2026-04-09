@@ -44,6 +44,11 @@ export function computeInitialDepositAmount(
   sliderProgress = INITIAL_SLIDER_PROGRESS
 ): string {
   const maxSwappableAmount = computeMaxSwappableAmount(asset, gasSettings, gasLimit ?? undefined) || '0';
-  const { amount } = amountFromSliderProgress(sliderProgress, maxSwappableAmount, asset?.price?.value ?? 0, asset?.decimals ?? 18);
-  return amount;
+  const { amount, trueBalance } = amountFromSliderProgress(
+    sliderProgress,
+    maxSwappableAmount,
+    asset?.price?.value ?? 0,
+    asset?.decimals ?? 18
+  );
+  return trueBalance ?? amount;
 }
