@@ -1668,7 +1668,12 @@
         "confirm_button_error_text": "报价错误",
         "quote_error": "􀇿 没有报价可用",
         "insufficient_balance": "􀫲 资金不足",
-        "insufficient_gas": "Gas不足"
+        "insufficient_gas": "Gas不足",
+        "gas_sponsored": "免费",
+        "invalid_route_recipient_error": "跨链桥路线未指向你的账户。请重试。",
+        "missing_recipient_error": "缺少收件人地址",
+        "no_wallet_connected": "未连接钱包",
+        "unknown_execution_error": "处理存入时发生未知错误"
       },
       "withdraw": {
         "title": "提款",
@@ -3879,6 +3884,76 @@
       "claim_card": {
         "airdrop": "空投",
         "rewards": "奖励"
+      },
+      "shared": {
+        "tier_label": "%{tierName} 等级",
+        "rewards": "奖励",
+        "loyalty_progress": "忠诚度进度"
+      },
+      "membership_tier_card": {
+        "stake_to_next_tier": "质押以升至下一等级"
+      },
+      "membership_tiers_sheet": {
+        "stake_to_unlock": "质押以解锁"
+      },
+      "staking_card": {
+        "stake": "质押",
+        "enable_staking": "启用质押",
+        "buy_rnbw": "购买 RNBW",
+        "unstake": "撤销质押",
+        "available_to_stake": "可用于质押"
+      },
+      "staking_earnings_card": {
+        "total_earnings": "总收入",
+        "cashback": "返现",
+        "exit_rewards": "退出奖励"
+      },
+      "unstake_penalty_recovery_card": {
+        "break_even_reached": "已达到盈亏平衡！",
+        "earned_prefix": "你赚到了 ",
+        "earned_middle": "来自资金池。只差 ",
+        "earned_suffix": " 即可达到纯利润。"
+      }
+    },
+    "rnbw_staking": {
+      "deposit": {
+        "confirm_button": "按住以质押",
+        "confirm_button_error": "无法质押",
+        "confirm_button_loading": "质押中...",
+        "confirm_button_over_balance": "RNBW 不足",
+        "confirm_button_zero_amount": "输入金额",
+        "execution_error_title": "质押出错",
+        "insufficient_gas": "Gas 不足",
+        "quote_error": "无法准备质押",
+        "receive": "奖励将自动领取",
+        "title": "质押 $RNBW",
+        "minimum_amount": "最低 1 RNBW"
+      },
+      "learn_screen": {
+        "introducing": "介绍",
+        "title": "质押中",
+        "description": "锁定你的 $RNBW 以加入资金池。停留时间越长，越能收回退出费用，并从离开的人那里获得收益。",
+        "put_your_rnbw_to_work_title": "让你的 $RNBW 发挥作用",
+        "put_your_rnbw_to_work_subtitle": "质押你的 RNBW 以锁定仓位，并开始从资金池中赚取收益。",
+        "exit_fee_title": "%{exitFeePercentage}% 退出费",
+        "exit_fee_subtitle": "撤销质押会收取 %{exitFeePercentage}% 的费用。",
+        "passive_income_title": "被动收入",
+        "passive_income_subtitle": "从每次退出中获益。退出费用会分配给资金池。停留更久以抵消你自己的费用，并达到纯利润。",
+        "enable_staking": "启用质押"
+      },
+      "unstake_sheet": {
+        "exit_fee": "退出费",
+        "warning_description": "撤销质押将对你的已质押余额收取 %{exitFeePercentage}% 的费用。",
+        "confirm_unstake": "确认撤销质押",
+        "keep_staking": "继续质押",
+        "unstake_failed_title": "撤销质押失败",
+        "unstake_failed_message": "撤销质押你的 RNBW 时发生错误。请重试。",
+        "unstake_title": "撤销质押 $%{symbol}",
+        "loyalty_progress": "忠诚度进度",
+        "receive": "接收",
+        "total_return": "总回报",
+        "hold_to_unstake": "按住以撤销质押",
+        "unstaking": "撤销质押中..."
       }
     },
     "wallet_error_sheet": {
