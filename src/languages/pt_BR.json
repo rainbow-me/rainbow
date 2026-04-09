@@ -1668,7 +1668,12 @@
         "confirm_button_error_text": "Erro na Cotação",
         "quote_error": "􀇿 Nenhuma cotação disponível",
         "insufficient_balance": "􀫲 Fundos insuficientes",
-        "insufficient_gas": "Gasolina insuficiente"
+        "insufficient_gas": "Gasolina insuficiente",
+        "gas_sponsored": "Grátis",
+        "invalid_route_recipient_error": "A rota da bridge n\u0003o est\u0003a mirando na sua conta. Tente novamente.",
+        "missing_recipient_error": "Faltando endere\u0007o do destinat\u0003rio",
+        "no_wallet_connected": "Nenhuma carteira conectada",
+        "unknown_execution_error": "Erro desconhecido ao processar o dep\u0003sito"
       },
       "withdraw": {
         "title": "Retirar",
@@ -3879,6 +3884,76 @@
       "claim_card": {
         "airdrop": "Distribuição",
         "rewards": "Recompensas"
+      },
+      "shared": {
+        "tier_label": "N\u0003vel %{tierName}",
+        "rewards": "Recompensas",
+        "loyalty_progress": "Progresso de fidelidade"
+      },
+      "membership_tier_card": {
+        "stake_to_next_tier": "Fazer stake para o pr\u0003ximo n\u0003vel"
+      },
+      "membership_tiers_sheet": {
+        "stake_to_unlock": "Fazer stake para desbloquear"
+      },
+      "staking_card": {
+        "stake": "Fazer stake",
+        "enable_staking": "Ativar staking",
+        "buy_rnbw": "Comprar RNBW",
+        "unstake": "Desapostar",
+        "available_to_stake": "disponível para apostar"
+      },
+      "staking_earnings_card": {
+        "total_earnings": "Ganhos Totais",
+        "cashback": "Cashback",
+        "exit_rewards": "Recompensas de Saída"
+      },
+      "unstake_penalty_recovery_card": {
+        "break_even_reached": "Ponto de equilíbrio atingido!",
+        "earned_prefix": "Você ganhou ",
+        "earned_middle": " do pool. Só ",
+        "earned_suffix": " a mais para chegar ao lucro puro."
+      }
+    },
+    "rnbw_staking": {
+      "deposit": {
+        "confirm_button": "Segure para Apostar",
+        "confirm_button_error": "Não foi possível apostar",
+        "confirm_button_loading": "Apostando...",
+        "confirm_button_over_balance": "RNBW insuficiente",
+        "confirm_button_zero_amount": "Insira um valor",
+        "execution_error_title": "Erro ao Apostar",
+        "insufficient_gas": "Gas insuficiente",
+        "quote_error": "Não foi possível preparar a aposta",
+        "receive": "As recompensas serão reivindicadas automaticamente",
+        "title": "Apostar $RNBW",
+        "minimum_amount": "Mínimo de 1 RNBW"
+      },
+      "learn_screen": {
+        "introducing": "APRESENTANDO",
+        "title": "Apostando",
+        "description": "Trave seu $RNBW para entrar no pool. Fique mais tempo para recuperar sua taxa de saída e ganhar com quem sai.",
+        "put_your_rnbw_to_work_title": "Coloque seu $RNBW para Trabalhar",
+        "put_your_rnbw_to_work_subtitle": "Aposte seu RNBW para travar sua posição e começar a ganhar com o pool.",
+        "exit_fee_title": "Taxa de Saída de %{exitFeePercentage}%",
+        "exit_fee_subtitle": "Desapostar tem uma taxa de %{exitFeePercentage}%.",
+        "passive_income_title": "Renda Passiva",
+        "passive_income_subtitle": "Beneficie-se de cada saída. As taxas de saída são distribuídas ao pool. Fique mais tempo para compensar suas próprias taxas e chegar ao lucro puro.",
+        "enable_staking": "Ativar staking"
+      },
+      "unstake_sheet": {
+        "exit_fee": "Taxa de Saída",
+        "warning_description": "Ao desapostar, será cobrada uma taxa de %{exitFeePercentage}% do seu saldo em stake.",
+        "confirm_unstake": "Confirmar Desaposta",
+        "keep_staking": "Continuar Apostando",
+        "unstake_failed_title": "Desaposta falhou",
+        "unstake_failed_message": "Ocorreu um erro ao desapostar seu RNBW. Tente novamente.",
+        "unstake_title": "Desapostar $%{symbol}",
+        "loyalty_progress": "Progresso de fidelidade",
+        "receive": "Receber",
+        "total_return": "Retorno Total",
+        "hold_to_unstake": "Segure para Desapostar",
+        "unstaking": "Desapostando..."
       }
     },
     "wallet_error_sheet": {
