@@ -3887,8 +3887,8 @@
       },
       "shared": {
         "tier_label": "N\u0003vel %{tierName}",
-        "rewards": "Recompensas",
-        "loyalty_progress": "Progresso de fidelidade"
+        "loyalty_progress": "Progresso de fidelidade",
+        "fee_cashback": "Cashback de taxas"
       },
       "membership_tier_card": {
         "stake_to_next_tier": "Fazer stake para o pr\u0003ximo n\u0003vel"
@@ -3901,12 +3901,13 @@
         "enable_staking": "Ativar staking",
         "buy_rnbw": "Comprar RNBW",
         "unstake": "Desapostar",
-        "available_to_stake": "disponível para apostar"
+        "available_to_stake": "disponível para apostar",
+        "available_to_add": "disponível para adicionar",
+        "minimum_stake_amount_required": "Você precisa de pelo menos %{minStakeAmount} RNBW para fazer staking"
       },
       "staking_earnings_card": {
-        "total_earnings": "Ganhos Totais",
-        "cashback": "Cashback",
-        "exit_rewards": "Recompensas de Saída"
+        "lifetime_earnings": "Ganhos vitalícios",
+        "exit_fee_rewards": "Recompensas da taxa de saída"
       },
       "unstake_penalty_recovery_card": {
         "break_even_reached": "Ponto de equilíbrio atingido!",
@@ -3916,6 +3917,10 @@
       }
     },
     "rnbw_staking": {
+      "wallet_access": {
+        "hardware_wallet_not_supported_title": "Carteira de hardware não suportada",
+        "hardware_wallet_not_supported_message": "O staking de RNBW não está disponível para carteiras de hardware no momento."
+      },
       "deposit": {
         "confirm_button": "Segure para Apostar",
         "confirm_button_error": "Não foi possível apostar",
@@ -3932,24 +3937,21 @@
       "learn_screen": {
         "introducing": "APRESENTANDO",
         "title": "Apostando",
-        "description": "Trave seu $RNBW para entrar no pool. Fique mais tempo para recuperar sua taxa de saída e ganhar com quem sai.",
-        "put_your_rnbw_to_work_title": "Coloque seu $RNBW para Trabalhar",
-        "put_your_rnbw_to_work_subtitle": "Aposte seu RNBW para travar sua posição e começar a ganhar com o pool.",
+        "description": "Faça staking de RNBW para desbloquear níveis de status e benefícios exclusivos para membros.",
+        "fee_cashback": "Cashback de taxas",
+        "fee_cashback_subtitle": "Receba até 100% das taxas como RNBW em staking.",
         "exit_fee_title": "Taxa de Saída de %{exitFeePercentage}%",
-        "exit_fee_subtitle": "Desapostar tem uma taxa de %{exitFeePercentage}%.",
-        "passive_income_title": "Renda Passiva",
-        "passive_income_subtitle": "Beneficie-se de cada saída. As taxas de saída são distribuídas ao pool. Fique mais tempo para compensar suas próprias taxas e chegar ao lucro puro.",
+        "exit_fee_subtitle": "Você pode fazer unstake a qualquer momento. Basta pagar uma taxa de saída de %{exitFeePercentage}% que é distribuída a outros stakers.",
+        "stay_in_to_earn_more": "Fique para ganhar mais",
+        "stay_in_to_earn_more_subtitle": "Quando alguém faz unstake do seu RNBW, as taxas de saída voltam para quem ainda está no pool.",
         "enable_staking": "Ativar staking"
       },
       "unstake_sheet": {
         "exit_fee": "Taxa de Saída",
-        "warning_description": "Ao desapostar, será cobrada uma taxa de %{exitFeePercentage}% do seu saldo em stake.",
-        "confirm_unstake": "Confirmar Desaposta",
-        "keep_staking": "Continuar Apostando",
+        "warning_description": "Fazer unstake cobrará uma taxa de %{exitFeePercentage}% sobre o seu saldo atualmente em staking.",
         "unstake_failed_title": "Desaposta falhou",
         "unstake_failed_message": "Ocorreu um erro ao desapostar seu RNBW. Tente novamente.",
         "unstake_title": "Desapostar $%{symbol}",
-        "loyalty_progress": "Progresso de fidelidade",
         "receive": "Receber",
         "total_return": "Retorno Total",
         "hold_to_unstake": "Segure para Desapostar",
