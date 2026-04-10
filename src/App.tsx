@@ -43,6 +43,7 @@ import { useWalletsStore } from '@/state/wallets/walletsStore';
 import * as ls from '@/storage';
 import { MainThemeProvider } from '@/theme/ThemeContext';
 import { configure as configureDelegationClient } from '@rainbow-me/delegation';
+import { configureSDK } from '@rainbow-me/swaps';
 
 import { AbsolutePortalRoot } from './components/AbsolutePortal';
 import { TestDeeplinkHandler } from './components/TestDeeplinkHandler';
@@ -170,6 +171,9 @@ async function initializeApplication() {
   Sentry.setUser({ id: deviceId });
   analytics.init({ deviceId });
   analytics.identify({ installSource: DANGER_INSTALL_SOURCE });
+  configureSDK({
+    apiBaseUrl: 'https://swap.s.rainbow.me',
+  });
 
   await Promise.all([
     initializeRemoteConfig(),
