@@ -9,7 +9,7 @@ import { triggerHaptics } from 'react-native-turbo-haptics';
 import ButtonPressAnimation from '@/components/animations/ButtonPressAnimation';
 import { ContactAvatar } from '@/components/contacts';
 import ImageAvatar from '@/components/contacts/ImageAvatar';
-import ContextMenu from '@/components/context-menu/ContextMenu.android';
+import { ContextMenu } from '@/components/context-menu';
 import ContextMenuButton from '@/components/native-context-menu/contextMenu';
 import { Box, Column, Columns, Cover, Stack, Text } from '@/design-system';
 import { IS_ANDROID, IS_IOS } from '@/env';
