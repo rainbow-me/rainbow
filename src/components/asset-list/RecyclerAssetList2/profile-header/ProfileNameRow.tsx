@@ -1,6 +1,7 @@
 import * as React from 'react';
 
 import Clipboard from '@react-native-clipboard/clipboard';
+import { triggerHaptics } from 'react-native-turbo-haptics';
 import { useRecoilState } from 'recoil';
 
 import ButtonPressAnimation from '@/components/animations/ButtonPressAnimation';
@@ -15,7 +16,6 @@ import { useNavigation } from '@/navigation/Navigation';
 import { addressCopiedToastAtom } from '@/recoil/addressCopiedToastAtom';
 import { formatAccountLabel, useAccountAddress, useAccountProfileInfo } from '@/state/wallets/walletsStore';
 import { abbreviateEnsForDisplay, address } from '@/utils/abbreviations';
-import haptics from '@/utils/haptics';
 import Routes from '@rainbow-me/routes';
 
 export const ProfileNameRowHeight = 16;
@@ -57,7 +57,7 @@ export const ProfileNameRow = React.memo(function ProfileNameRow({
         setToastActive(false);
       }, 2000);
     }
-    haptics.notificationSuccess();
+    triggerHaptics('notificationSuccess');
     onNewEmoji?.current && onNewEmoji.current();
     Clipboard.setString(accountAddress);
   }, [accountAddress, disableOnPress, isToastActive, setToastActive]);

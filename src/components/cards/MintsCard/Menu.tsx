@@ -1,10 +1,11 @@
 import React, { useCallback, useMemo } from 'react';
 
+import { triggerHaptics } from 'react-native-turbo-haptics';
+
 import ButtonPressAnimation from '@/components/animations/ButtonPressAnimation';
 import { DropdownMenu, type MenuConfig } from '@/components/DropdownMenu';
 import { Inline, Inset, Text } from '@/design-system';
 import { getMintsFilterLabel, MintsFilter, useMintsFilter } from '@/resources/mints';
-import haptics from '@/utils/haptics';
 
 export function Menu() {
   const { filter, setFilter } = useMintsFilter();
@@ -33,7 +34,7 @@ export function Menu() {
 
   const onPressMenuItem = useCallback(
     (selection: MintsFilter) => {
-      haptics.selection();
+      triggerHaptics('selection');
       setFilter(selection);
     },
     [setFilter]

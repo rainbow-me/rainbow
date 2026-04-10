@@ -2,6 +2,7 @@ import React, { useCallback, useEffect, useRef, useState } from 'react';
 import { Keyboard } from 'react-native';
 
 import { useRoute } from '@react-navigation/native';
+import { triggerHaptics } from 'react-native-turbo-haptics';
 
 import { ImgixImage } from '@/components/images';
 import styled from '@/framework/ui/styled-thing';
@@ -11,7 +12,6 @@ import useDimensions from '@/hooks/useDimensions';
 import useShakeAnimation from '@/hooks/useShakeAnimation';
 import * as i18n from '@/languages';
 import { padding } from '@/styles';
-import haptics from '@/utils/haptics';
 
 import RainbowLogo from '../assets/rainbows/light.png';
 import { Centered, Column, ColumnWithMargins } from '../components/layout';
@@ -128,7 +128,7 @@ const PinAuthenticationScreen = () => {
 
   const handleNumpadPress = useCallback(
     newValue => {
-      android && haptics.keyboardPress();
+      android && triggerHaptics('selection');
       setValue(prevValue => {
         let nextValue = prevValue;
         if (nextValue === null) {

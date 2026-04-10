@@ -1,4 +1,4 @@
-import ReactNativeHapticFeedback from 'react-native-haptic-feedback';
+import { triggerHaptics } from 'react-native-turbo-haptics';
 
 import { showActionSheetWithOptions } from '@/framework/ui/utils/actionsheet';
 import { removeFirstEmojiFromString } from '@/helpers/emojiHandler';
@@ -15,7 +15,7 @@ const showDeleteContactActionSheet = ({ address, nickname, onDelete = () => unde
     async buttonIndex => {
       if (buttonIndex === 0) {
         removeContact(address);
-        ReactNativeHapticFeedback.trigger('notificationSuccess');
+        triggerHaptics('notificationSuccess');
         onDelete?.();
       }
     }

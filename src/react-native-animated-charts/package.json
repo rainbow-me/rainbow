@@ -23,7 +23,7 @@
     "react": "*",
     "react-native": "*",
     "react-native-gesture-handler": "^1.7.0",
-    "react-native-haptic-feedback": "^1.11.0",
+    "react-native-turbo-haptics": "*",
     "react-native-reanimated": "^3.0.0",
     "react-native-redash": "^16.3.0",
     "react-native-svg": "^13.9.0"

@@ -4,6 +4,7 @@ import { View } from 'react-native';
 import { startCase } from 'lodash';
 import { ContextMenuButton } from 'react-native-ios-context-menu';
 import RadialGradient from 'react-native-radial-gradient';
+import { triggerHaptics } from 'react-native-turbo-haptics';
 
 import { IS_TEST } from '@/env';
 import styled from '@/framework/ui/styled-thing';
@@ -14,7 +15,6 @@ import * as i18n from '@/languages';
 import { fonts, fontWithWidth, padding } from '@/styles';
 import abbreviations from '@/utils/abbreviations';
 import ethereumUtils from '@/utils/ethereumUtils';
-import haptics from '@/utils/haptics';
 
 import ButtonPressAnimation from './animations/ButtonPressAnimation';
 import { CoinRowHeight } from './coin-row/CoinRow';
@@ -92,7 +92,7 @@ const ContactRowInfoButton = ({ children, item, chainId, scaleTo }) => {
   const { setClipboard } = useClipboard();
   const handleCopyAddress = useCallback(
     address => {
-      haptics.selection();
+      triggerHaptics('selection');
       setClipboard(address);
     },
     [setClipboard]

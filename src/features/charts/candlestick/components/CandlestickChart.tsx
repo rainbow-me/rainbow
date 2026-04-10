@@ -18,7 +18,6 @@ import {
 import { dequal } from 'dequal';
 import { cloneDeep, merge } from 'lodash';
 import { Gesture, GestureDetector, State as GestureState } from 'react-native-gesture-handler';
-import { HapticFeedbackTypes } from 'react-native-haptic-feedback';
 import Animated, {
   Easing,
   runOnJS,
@@ -2073,7 +2072,7 @@ export const CandlestickChart = memo(function CandlestickChart({
               color={accentColor}
               idleComponent={
                 <ButtonPressAnimation
-                  hapticType={HapticFeedbackTypes.soft}
+                  hapticType="soft"
                   onPress={() => fetchAdditionalCandles(true)}
                   style={{ height: SPINNER_HIT_AREA_SIZE + 16, marginTop: 16, width: SPINNER_HIT_AREA_SIZE }}
                 >

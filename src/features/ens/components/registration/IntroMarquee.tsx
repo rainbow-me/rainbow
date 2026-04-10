@@ -1,6 +1,6 @@
 import React, { useCallback, useMemo } from 'react';
 
-import ReactNativeHapticFeedback from 'react-native-haptic-feedback';
+import { triggerHaptics } from 'react-native-turbo-haptics';
 
 import ButtonPressAnimation from '@/components/animations/ButtonPressAnimation';
 import { ImgixImage } from '@/components/images';
@@ -99,7 +99,7 @@ function ENSAvatarPlaceholder({
       onCancel={({ nativeEvent: { state, close } }) => {
         // Ensure the press has been triggered
         if (state === 5 && close) {
-          ReactNativeHapticFeedback.trigger('selection');
+          triggerHaptics('selection');
           onPress();
         }
       }}

@@ -3,7 +3,6 @@ import { processColor, requireNativeComponent, StyleSheet, View } from 'react-na
 
 import { createNativeWrapper, State, type RawButtonProps } from 'react-native-gesture-handler';
 import { PureNativeButton } from 'react-native-gesture-handler/src/components/GestureButtons';
-import ReactNativeHapticFeedback, { HapticFeedbackTypes } from 'react-native-haptic-feedback';
 import Animated, {
   Easing,
   useAnimatedStyle,
@@ -12,6 +11,7 @@ import Animated, {
   withTiming,
   type AnimatedProps,
 } from 'react-native-reanimated';
+import { triggerHaptics } from 'react-native-turbo-haptics';
 
 import useLongPressEvents from '@/hooks/useLongPressEvents';
 
@@ -191,7 +191,7 @@ const SimpleScaleButton = forwardRef(function SimpleScaleButton(
         onLongPressEnded?.();
       } else {
         onPress?.();
-        enableHapticFeedback && ReactNativeHapticFeedback.trigger(hapticType);
+        enableHapticFeedback && triggerHaptics(hapticType);
       }
     },
     [enableHapticFeedback, hapticType, onLongPress, onLongPressEnded, onPress, shouldLongPressHoldPress]
@@ -245,7 +245,7 @@ export default forwardRef(function ButtonPressAnimation(
     testID,
     transformOrigin,
     wrapperStyle,
-    hapticType = HapticFeedbackTypes.selection,
+    hapticType = 'selection',
     enableHapticFeedback = true,
     disallowInterruption = false,
   }: ButtonElementProps,

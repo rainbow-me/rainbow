@@ -3,6 +3,7 @@ import { type GestureResponderEvent } from 'react-native';
 
 import { startCase } from 'lodash';
 import { type OnPressMenuItemEventObject } from 'react-native-ios-context-menu';
+import { triggerHaptics } from 'react-native-turbo-haptics';
 
 import { BalancePill } from '@/__swaps__/screens/Swap/components/BalancePill';
 import { CoinRowButton } from '@/__swaps__/screens/Swap/components/CoinRowButton';
@@ -20,7 +21,6 @@ import { toggleFavorite } from '@/resources/favorites';
 import { useUserAssetsStore } from '@/state/assets/userAssets';
 import { ChainId } from '@/state/backendNetworks/types';
 import ethereumUtils from '@/utils/ethereumUtils';
-import haptics from '@/utils/haptics';
 
 export const COIN_ROW_WITH_PADDING_HEIGHT = 56;
 
@@ -216,7 +216,7 @@ const InfoButton = ({
   isVerified: boolean | undefined;
 }) => {
   const handleCopy = useCallback(() => {
-    haptics.selection();
+    triggerHaptics('selection');
     setClipboard(address);
   }, [address]);
 

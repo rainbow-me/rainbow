@@ -1,7 +1,5 @@
 import React, { type FC, type ReactNode } from 'react';
 
-import { HapticFeedbackTypes } from 'react-native-haptic-feedback';
-
 import useClipboard from '@/hooks/useClipboard';
 import magicMemo from '@/utils/magicMemo';
 
@@ -32,7 +30,7 @@ const CopyFloatingEmojis: FC<CopyFloatingEmojisProps> = ({ children, disabled = 
     <FloatingEmojis emojis={['thumbs_up']} distance={250} duration={500} fadeOut={false} scaleTo={0} size={50} wiggleFactor={0} {...props}>
       {({ onNewEmoji }) => (
         <ButtonPressAnimation
-          hapticType={HapticFeedbackTypes.impactLight}
+          hapticType="impactLight"
           onPress={() => {
             onPress?.(textToCopy);
             if (!disabled) {

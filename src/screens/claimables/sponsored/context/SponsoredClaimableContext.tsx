@@ -2,6 +2,7 @@ import React, { createContext, useContext, useState, type Dispatch, type SetStat
 
 import { useMutation } from '@tanstack/react-query';
 import { ADDYS_BASE_URL } from 'react-native-dotenv';
+import { triggerHaptics } from 'react-native-turbo-haptics';
 
 import { analytics } from '@/analytics';
 import { getProvider } from '@/handlers/web3';
@@ -11,7 +12,6 @@ import { type Claimable, type ClaimResponse, type SponsoredClaimable } from '@/r
 import { getAddysHttpClient } from '@/resources/addys/client';
 import { useClaimablesStore } from '@/state/claimables/claimables';
 import { useAccountAddress } from '@/state/wallets/walletsStore';
-import haptics from '@/utils/haptics';
 
 import { type ClaimStatus } from '../../shared/types';
 
@@ -56,7 +56,7 @@ export function SponsoredClaimableContextProvider({ claimable, children }: { cla
 
       if (!wallet) {
         // Biometrics auth failure (retry possible)
-        haptics.notificationError();
+        triggerHaptics('notificationError');
         setClaimStatus('recoverableError');
         return;
       }
@@ -68,7 +68,7 @@ export function SponsoredClaimableContextProvider({ claimable, children }: { cla
         try {
           response = await getAddysHttpClient().get(path);
         } catch (e) {
-          haptics.notificationError();
+          triggerHaptics('notificationError');
           setClaimStatus('recoverableError');
           logger.error(new RainbowError(`[SponsoredClaimableContext]: ${ErrorMessages.CLAIM_API_CALL_FAILED}`));
           analytics.track(analytics.event.claimClaimableFailed, {
@@ -89,7 +89,7 @@ export function SponsoredClaimableContextProvider({ claimable, children }: { cla
         try {
           response = await getAddysHttpClient().post(path);
         } catch (e) {
-          haptics.notificationError();
+          triggerHaptics('notificationError');
           setClaimStatus('recoverableError');
           logger.error(new RainbowError(`[SponsoredClaimableContext]: ${ErrorMessages.CLAIM_API_CALL_FAILED}`));
           analytics.track(analytics.event.claimClaimableFailed, {
@@ -109,7 +109,7 @@ export function SponsoredClaimableContextProvider({ claimable, children }: { cla
       }
 
       if (!response.data.payload.success) {
-        haptics.notificationError();
+        triggerHaptics('notificationError');
         setClaimStatus('recoverableError');
         logger.error(new RainbowError(`[SponsoredClaimableContext]: ${ErrorMessages.CLAIM_API_UNSUCCESSFUL_RESPONSE}`));
         analytics.track(analytics.event.claimClaimableFailed, {
@@ -125,7 +125,7 @@ export function SponsoredClaimableContextProvider({ claimable, children }: { cla
           errorMessage: ErrorMessages.CLAIM_API_UNSUCCESSFUL_RESPONSE,
         });
       } else {
-        haptics.notificationSuccess();
+        triggerHaptics('notificationSuccess');
 
         if (response.data.payload.claim_transaction_status?.transaction_hash) {
           setClaimStatus('success');
@@ -149,7 +149,7 @@ export function SponsoredClaimableContextProvider({ claimable, children }: { cla
       }
     },
     onError: e => {
-      haptics.notificationError();
+      triggerHaptics('notificationError');
       setClaimStatus('recoverableError');
       logger.error(new RainbowError(`[SponsoredClaimableContext]: ${ErrorMessages.UNHANDLED_ERROR}`), {
         message: (e as Error)?.message,
@@ -169,7 +169,7 @@ export function SponsoredClaimableContextProvider({ claimable, children }: { cla
     },
     onSuccess: () => {
       if (claimStatus === 'claiming') {
-        haptics.notificationError();
+        triggerHaptics('notificationError');
         setClaimStatus('recoverableError');
         logger.error(new RainbowError(`[SponsoredClaimableContext]: ${ErrorMessages.UNRESOLVED_CLAIM_STATUS}`));
         analytics.track(analytics.event.claimClaimableFailed, {

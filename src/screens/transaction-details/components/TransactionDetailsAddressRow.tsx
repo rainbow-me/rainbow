@@ -4,6 +4,7 @@ import { View } from 'react-native';
 import Clipboard from '@react-native-clipboard/clipboard';
 import Animated, { Easing, interpolate, useAnimatedStyle } from 'react-native-reanimated';
 import { useTiming } from 'react-native-redash';
+import { triggerHaptics } from 'react-native-turbo-haptics';
 
 import ButtonPressAnimation from '@/components/animations/ButtonPressAnimation';
 import { ContactAvatar } from '@/components/contacts';
@@ -21,7 +22,6 @@ import { type RainbowAccount } from '@/model/wallet';
 import Navigation from '@/navigation/Navigation';
 import { type Contact } from '@/redux/contacts';
 import { formatAddressForDisplay } from '@/utils/abbreviations';
-import haptics from '@/utils/haptics';
 import { addressHashedColorIndex, addressHashedEmoji } from '@/utils/profileUtils';
 import Routes from '@rainbow-me/routes';
 
@@ -89,12 +89,12 @@ const ContextMenuRenderer = ({
     e => {
       const actionKey = e.nativeEvent.actionKey;
       if (actionKey !== 'copy') {
-        haptics.selection();
+        triggerHaptics('selection');
       }
       switch (actionKey) {
         case 'copy':
           onAddressCopied?.();
-          haptics.notificationSuccess();
+          triggerHaptics('notificationSuccess');
           Clipboard.setString(address);
           return;
         case 'contact':
@@ -148,7 +148,7 @@ const ContextMenuRenderer = ({
           return;
         case 2:
           onAddressCopied?.();
-          haptics.notificationSuccess();
+          triggerHaptics('notificationSuccess');
           Clipboard.setString(address);
           return;
       }

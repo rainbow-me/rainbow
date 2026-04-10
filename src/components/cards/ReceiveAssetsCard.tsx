@@ -1,5 +1,6 @@
 import React, { useCallback } from 'react';
 
+import { triggerHaptics } from 'react-native-turbo-haptics';
 import { useRecoilState } from 'recoil';
 
 import { analytics } from '@/analytics';
@@ -12,7 +13,6 @@ import { useNavigation } from '@/navigation/Navigation';
 import Routes from '@/navigation/routesNames';
 import { addressCopiedToastAtom } from '@/recoil/addressCopiedToastAtom';
 import { useAccountAddress } from '@/state/wallets/walletsStore';
-import haptics from '@/utils/haptics';
 
 import ButtonPressAnimation from '../animations/ButtonPressAnimation';
 import Skeleton, { FakeText } from '../skeleton/Skeleton';
@@ -37,7 +37,7 @@ export const ReceiveAssetsCard = React.memo(function ReceiveAssetsCard() {
           setToastActive(false);
         }, 2000);
       }
-      haptics.notificationSuccess();
+      triggerHaptics('notificationSuccess');
       onNewEmoji();
       setClipboard(accountAddress);
     },
