@@ -2617,7 +2617,7 @@ PODS:
     - ReactCommon/turbomodule/bridging
     - ReactCommon/turbomodule/core
     - Yoga
-  - RNSentry (6.15.1):
+  - RNSentry (7.13.0):
     - DoubleConversion
     - glog
     - hermes-engine
@@ -2640,7 +2640,7 @@ PODS:
     - ReactCodegen
     - ReactCommon/turbomodule/bridging
     - ReactCommon/turbomodule/core
-    - Sentry/HybridSDK (= 8.52.1)
+    - Sentry/HybridSDK (= 8.58.0)
     - Yoga
   - RNShare (12.2.5):
     - DoubleConversion
@@ -2685,7 +2685,7 @@ PODS:
   - SDWebImageWebPCoder (0.14.6):
     - libwebp (~> 1.0)
     - SDWebImage/Core (~> 5.17)
-  - Sentry/HybridSDK (8.52.1)
+  - Sentry/HybridSDK (8.58.0)
   - Shimmer (1.0.2)
   - SocketRocket (0.7.1)
   - SRSRadialGradient (1.0.10):
@@ -3440,7 +3440,7 @@ SPEC CHECKSUMS:
   RNReanimated: 3e727b205ad6d3d48f9f5b07887ebefb4b20e9a4
   RNRudderSdk: cea1f6a95ceab29ceaf75bdadccba5f78121a4ce
   RNScreens: 586139d98cad59cc4c56443b9bd5c8b9b0b6da0e
-  RNSentry: 4ebc4a48794b704751504d654f5e1ac98f08a819
+  RNSentry: 5903eefdcd6446708f27c2a7035f019b59d54a9a
   RNShare: e374836177ff2675dbc659f2e52a59bf6060d200
   RNSound: 314cc5226453ef4a3314a196c65e8a65e5106a7b
   RNSVG: c8ba193e7bea6983ebdf544a6ee7b0f706c64559
@@ -3450,7 +3450,7 @@ SPEC CHECKSUMS:
   RudderKit: f272f9872183946452ac94cd7bb2244a71e6ca8f
   SDWebImage: 2d6d229046fea284d62e36bfb8ebe8287dfc5b10
   SDWebImageWebPCoder: e38c0a70396191361d60c092933e22c20d5b1380
-  Sentry: 2cbbe3592f30050c60e916c63c7f5a2fa584005e
+  Sentry: d587a8fe91ca13503ecd69a1905f3e8a0fcf61be
   Shimmer: c5374be1c2b0c9e292fb05b339a513cf291cac86
   SocketRocket: d4aabe649be1e368d1318fdf28a022d714d65748
   SRSRadialGradient: e12dc19f12c3e27f9a44b51916a9e28a35d434b6
