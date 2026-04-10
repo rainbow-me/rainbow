@@ -1858,7 +1858,7 @@ PODS:
   - react-native-palette-full (1.2.0):
     - React
     - SDWebImage (~> 5)
-  - react-native-quick-md5 (3.0.6):
+  - react-native-quick-md5 (3.0.9):
     - React-Core
   - react-native-randombytes (3.5.3):
     - React
@@ -3371,7 +3371,7 @@ SPEC CHECKSUMS:
   react-native-netinfo: cec9c4e86083cb5b6aba0e0711f563e2fbbff187
   react-native-pager-view: 4a60c3b694a1cf20d0b2c94be89a713e7954a39a
   react-native-palette-full: d25c07e220328405154382094a6e933ad76f74dc
-  react-native-quick-md5: 368e091d448aa3d32a0cbb5d3ce883ae85b72596
+  react-native-quick-md5: b648df1c4f23f4cc9df48c97f60c254dda2ae0b9
   react-native-randombytes: 4a00fba06ca0d80a7c02a6b73cfe58ffa4a093a0
   react-native-restart: f6f591aeb40194c41b9b5013901f00e6cf7d0f29
   react-native-safe-area-context: 9d72abf6d8473da73033b597090a80b709c0b2f1
