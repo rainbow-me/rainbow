@@ -1,4 +1,3 @@
-// @ts-expect-error - changeIcon has no declaration file
 import { changeIcon } from 'react-native-change-icon';
 import { type Dispatch } from 'redux';
 import { type ThunkDispatch } from 'redux-thunk';

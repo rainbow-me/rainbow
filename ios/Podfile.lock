@@ -1747,8 +1747,30 @@ PODS:
     - ReactCommon/turbomodule/bridging
     - ReactCommon/turbomodule/core
     - Yoga
-  - react-native-change-icon (4.0.0):
+  - react-native-change-icon (5.0.0):
+    - DoubleConversion
+    - glog
+    - hermes-engine
+    - RCT-Folly (= 2024.11.18.00)
+    - RCTRequired
+    - RCTTypeSafety
     - React-Core
+    - React-debug
+    - React-Fabric
+    - React-featureflags
+    - React-graphics
+    - React-hermes
+    - React-ImageManager
+    - React-jsi
+    - React-NativeModulesApple
+    - React-RCTFabric
+    - React-renderercss
+    - React-rendererdebug
+    - React-utils
+    - ReactCodegen
+    - ReactCommon/turbomodule/bridging
+    - ReactCommon/turbomodule/core
+    - Yoga
   - react-native-cloud-fs (2.6.2):
     - React
   - react-native-compat (2.17.0):
@@ -3338,7 +3360,7 @@ SPEC CHECKSUMS:
   react-native-blur-view: fae19bca8ac76a4ca6a8a6f101cf37c8ec1ad4f5
   react-native-branch: 46dc8cb067af50455db675370c3cd63425f85bea
   react-native-cameraroll: 870e36cfbf3a3d1de81dec3244c59a906e5787bb
-  react-native-change-icon: 36c90b0e3bae4e9882423e29a7f9367c29699277
+  react-native-change-icon: 02e9605be069426ecfb3c29bbf1f3bd6fdba8804
   react-native-cloud-fs: 0646046c613edacda3902576805cee7c61813801
   react-native-compat: 0d09c4eb4d94ae3af6cc5e34d3d4a8e798c5fb2e
   react-native-get-random-values: 04e59f21c9076958ba50576bdd51878fac5b35ef
