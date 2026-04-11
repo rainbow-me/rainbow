@@ -1,11 +1,13 @@
-import { initializeWallet } from '@/state/wallets/initializeWallet';
+import { useEffect } from 'react';
+import { Linking } from 'react-native';
+
+import URL from 'url-parse';
+
+import { savePIN } from '@/handlers/authentication';
 import { logger } from '@/logger';
 import Navigation from '@/navigation/Navigation';
 import Routes from '@/navigation/routesNames';
-import { useEffect } from 'react';
-import { Linking } from 'react-native';
-import URL from 'url-parse';
-import { savePIN } from '@/handlers/authentication';
+import { initializeWallet } from '@/state/wallets/initializeWallet';
 
 /**
  * Handles E2E test commands. See e2e/README.md:31 for usage.

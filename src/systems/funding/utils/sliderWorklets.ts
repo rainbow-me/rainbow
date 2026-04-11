@@ -1,5 +1,4 @@
 import { SLIDER_MAX, SLIDER_MIN } from '@/features/perps/components/Slider/Slider';
-import { handleSignificantDecimalsWorklet } from '@/helpers/utilities';
 import {
   divWorklet,
   equalWorklet,
@@ -9,6 +8,7 @@ import {
   toFixedWorklet,
   truncateToDecimals,
 } from '@/framework/core/safeMath';
+import { handleSignificantDecimalsWorklet } from '@/helpers/utilities';
 import { clamp } from '@/worklets/numbers';
 import { sanitizeAmount } from '@/worklets/strings';
 

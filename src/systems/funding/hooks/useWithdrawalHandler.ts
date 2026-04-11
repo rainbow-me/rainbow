@@ -1,25 +1,28 @@
 import { useCallback } from 'react';
 import { Alert } from 'react-native';
+
 import { type SharedValue } from 'react-native-reanimated';
+
+import { type AddressOrEth } from '@/__swaps__/types/assets';
 import { logger, RainbowError } from '@/logger';
+import Navigation from '@/navigation/Navigation';
 import { type ChainId } from '@/state/backendNetworks/types';
 import { type StoreActions } from '@/state/internal/utils/createStoreActions';
-import Navigation from '@/navigation/Navigation';
 import { useWalletsStore } from '@/state/wallets/walletsStore';
 import { sanitizeAmount } from '@/worklets/strings';
+
 import {
+  WithdrawalQuoteStatus,
   type BalanceQueryStore,
   type WithdrawalChainInfo,
   type WithdrawalConfig,
   type WithdrawalContextType,
   type WithdrawalExecutorParams,
-  WithdrawalQuoteStatus,
   type WithdrawalStoreType,
   type WithdrawalSwapQuote,
 } from '../types';
 import { executeRefreshSchedule } from '../utils/scheduleRefreshes';
 import { getWithdrawalSwapRequirement, resolveTokenAddressForChain } from '../utils/withdrawalSwap';
-import { type AddressOrEth } from '@/__swaps__/types/assets';
 
 // ============ Types ========================================================== //
 

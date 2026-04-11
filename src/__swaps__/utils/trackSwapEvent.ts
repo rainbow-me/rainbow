@@ -3,6 +3,7 @@ import { type EventProperties } from '@/analytics/event';
 import { type RapSwapActionParameters } from '@/raps/references';
 import { ChainId } from '@/state/backendNetworks/types';
 import { useSwapsStore } from '@/state/swaps/swapsStore';
+
 import { type SwapsParams } from '../screens/Swap/navigateToSwaps';
 
 type SwapEventTypes = typeof analytics.event.swapsSubmitted | typeof analytics.event.swapsFailed;

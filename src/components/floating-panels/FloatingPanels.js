@@ -1,6 +1,8 @@
 import React from 'react';
-import { ColumnWithMargins } from '../layout';
+
 import { position } from '@/styles';
+
+import { ColumnWithMargins } from '../layout';
 
 const FloatingPanelsMargin = 20;
 

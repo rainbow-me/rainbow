@@ -1,5 +1,6 @@
-import { time } from '@/utils/time';
 import { useEffect, useState } from 'react';
+
+import { time } from '@/utils/time';
 
 // ============ Types ========================================================== //
 

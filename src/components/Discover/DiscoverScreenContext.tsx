@@ -1,8 +1,11 @@
-import { analytics } from '@/analytics';
-import React, { createContext, type RefObject, useRef, useCallback, useEffect } from 'react';
+import React, { createContext, useCallback, useEffect, useRef, type RefObject } from 'react';
 import { type SectionList, type TextInput } from 'react-native';
+
 import type Animated from 'react-native-reanimated';
+
 import { useDiscoverSearchQueryStore } from '@/__swaps__/screens/Swap/resources/search/searchV2';
+import { analytics } from '@/analytics';
+
 import { useTrackDiscoverScreenTime } from './useTrackDiscoverScreenTime';
 
 export let discoverScrollToTopFnRef: () => number | null = () => null;

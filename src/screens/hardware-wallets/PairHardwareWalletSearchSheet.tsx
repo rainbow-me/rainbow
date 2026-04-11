@@ -1,14 +1,17 @@
-import * as i18n from '@/languages';
 import React from 'react';
-import { Box, Inset, Stack, Text } from '@/design-system';
-import { Layout } from '@/screens/hardware-wallets/components/Layout';
-import { TRANSLATIONS } from '@/screens/hardware-wallets/constants';
+
 import { useSetRecoilState } from 'recoil';
+
+import { Box, Inset, Stack, Text } from '@/design-system';
 import { useLedgerImport } from '@/hooks/useLedgerImport';
-import Routes from '@/navigation/routesNames';
+import * as i18n from '@/languages';
 import { useNavigation } from '@/navigation/Navigation';
 import { LedgerImportDeviceIdAtom } from '@/navigation/PairHardwareWalletNavigator';
+import Routes from '@/navigation/routesNames';
 import { ActionButton } from '@/screens/hardware-wallets/components/ActionButton';
+import { Layout } from '@/screens/hardware-wallets/components/Layout';
+import { TRANSLATIONS } from '@/screens/hardware-wallets/constants';
+
 import { CancelButton } from './components/CancelButton';
 
 export const PairHardwareWalletSearchSheet = () => {

@@ -1,4 +1,5 @@
 import React from 'react';
+
 import { ColumnWithDividers } from '../layout';
 import FloatingPanel from './FloatingPanel';
 

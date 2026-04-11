@@ -1,11 +1,12 @@
-import ButtonPressAnimation from '@/components/animations/ButtonPressAnimation';
-import { Box, TextShadow, Text, useColorMode, TextIcon } from '@/design-system';
-import { TriggerOrderType, TriggerOrderSource } from '@/features/perps/types';
-import { usePerpsAccentColorContext } from '@/features/perps/context/PerpsAccentColorContext';
 import { useCallback } from 'react';
+
+import ButtonPressAnimation from '@/components/animations/ButtonPressAnimation';
+import { Box, Text, TextIcon, TextShadow, useColorMode } from '@/design-system';
+import { usePerpsAccentColorContext } from '@/features/perps/context/PerpsAccentColorContext';
+import { TriggerOrderSource, TriggerOrderType } from '@/features/perps/types';
+import * as i18n from '@/languages';
 import Navigation from '@/navigation/Navigation';
 import Routes from '@/navigation/routesNames';
-import * as i18n from '@/languages';
 import { THICK_BORDER_WIDTH } from '@/styles/constants';
 
 type AddTriggerOrderButtonProps = {

@@ -1,4 +1,4 @@
-import { type DependencyList, useLayoutEffect, useRef } from 'react';
+import { useLayoutEffect, useRef, type DependencyList } from 'react';
 
 export function useLatestValue<T>(value: T, dependencies: DependencyList = [value]) {
   const valueRef = useRef<T>(value);

@@ -1,22 +1,24 @@
 import qs from 'qs';
+
 import type { NativeCurrencyKey } from '@/entities/nativeCurrencyTypes';
 import { IS_DEV } from '@/env';
 import {
-  type HyperliquidChartParams,
-  MAX_HYPERLIQUID_CANDLES_PER_REQUEST,
   fetchHyperliquidChart,
+  MAX_HYPERLIQUID_CANDLES_PER_REQUEST,
+  type HyperliquidChartParams,
 } from '@/features/charts/candlestick/hyperliquid/hyperliquidCharts';
-import { type ChartsState, chartsActions, useChartsStore } from '@/features/charts/stores/chartsStore';
+import { chartsActions, useChartsStore, type ChartsState } from '@/features/charts/stores/chartsStore';
 import { isHyperliquidToken } from '@/features/charts/utils';
 import { ensureError } from '@/logger';
 import { getPlatformClient } from '@/resources/platform/client';
 import { type ExpandedSheetParamAsset } from '@/screens/expandedAssetSheet/context/ExpandedAssetSheetContext';
 import { userAssetsStoreManager } from '@/state/assets/userAssetsStoreManager';
 import { createQueryStore, getQueryKey } from '@/state/internal/createQueryStore';
-import { createStoreActions } from '@/state/internal/utils/createStoreActions';
 import { type CacheEntry, type SetDataParams } from '@/state/internal/queryStore/types';
+import { createStoreActions } from '@/state/internal/utils/createStoreActions';
 import { type Exact } from '@/types/objects';
 import { time } from '@/utils/time';
+
 import {
   type Bar,
   type CandlestickChartMetadata,
@@ -27,7 +29,7 @@ import {
 } from '../candlestick/types';
 import { areCandlesEqual, getResolutionMinutes, transformApiResponseToBars } from '../candlestick/utils';
 import { INITIAL_BAR_COUNT } from '../constants';
-import { type CandleResolution, ChartType, type HyperliquidSymbol, type Token } from '../types';
+import { ChartType, type CandleResolution, type HyperliquidSymbol, type Token } from '../types';
 
 // ============ Core Types ===================================================== //
 

@@ -1,12 +1,13 @@
 /* eslint-disable react/jsx-props-no-spreading */
-import * as i18n from '@/languages';
-import React, { type PropsWithChildren, useState } from 'react';
+import React, { useState, type PropsWithChildren } from 'react';
 import { Pressable, Text, View } from 'react-native';
+
+import Clipboard from '@react-native-clipboard/clipboard';
 import Animated, { FadeIn, FadeOut } from 'react-native-reanimated';
+import Svg, { Path } from 'react-native-svg';
 
 import { AbsolutePortal } from '@/components/AbsolutePortal';
-import Clipboard from '@react-native-clipboard/clipboard';
-import Svg, { Path } from 'react-native-svg';
+import * as i18n from '@/languages';
 
 const color = '#000000d9'; // black with 85% opacity
 const separatorColor = '#ffffff26'; // white with 15% opacity

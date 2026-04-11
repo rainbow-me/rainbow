@@ -1,23 +1,26 @@
-import ConditionalWrap from 'conditional-wrap';
-import * as i18n from '@/languages';
 import React, { useCallback, useEffect, useState } from 'react';
 import { View } from 'react-native';
+
+import ConditionalWrap from 'conditional-wrap';
+import { type ImagePickerAsset } from 'expo-image-picker';
 import RadialGradient from 'react-native-radial-gradient';
 import { atom, useSetRecoilState } from 'recoil';
+
 import ButtonPressAnimation from '@/components/animations/ButtonPressAnimation';
+import { ImgixImage } from '@/components/images';
 import Skeleton from '@/components/skeleton/Skeleton';
 import { Box, Cover, Text, useForegroundColor } from '@/design-system';
 import type { UniqueAsset } from '@/entities/uniqueAssets';
 import { type UploadImageReturnData } from '@/handlers/pinata';
+import useSelectImageMenu from '@/hooks/useSelectImageMenu';
+import * as i18n from '@/languages';
+import magicMemo from '@/utils/magicMemo';
+
 import useENSModifiedRegistration from '../../hooks/useENSModifiedRegistration';
 import useENSRegistration from '../../hooks/useENSRegistration';
 import useENSRegistrationForm from '../../hooks/useENSRegistrationForm';
-import useSelectImageMenu from '@/hooks/useSelectImageMenu';
-import { ImgixImage } from '@/components/images';
-import magicMemo from '@/utils/magicMemo';
-import { stringifyENSNFTRecord } from '../../utils/records';
 import { ENS_RECORDS } from '../../utils/helpers';
-import { type ImagePickerAsset } from 'expo-image-picker';
+import { stringifyENSNFTRecord } from '../../utils/records';
 
 export const coverMetadataAtom = atom<ImagePickerAsset | undefined>({
   default: undefined,

@@ -1,11 +1,14 @@
 import React from 'react';
+
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
-import { useTheme } from '../../theme/ThemeContext';
-import TouchableBackdrop from '../TouchableBackdrop';
-import { Centered, Column } from '../layout';
-import useDimensions from '@/hooks/useDimensions';
+
 import styled from '@/framework/ui/styled-thing';
+import useDimensions from '@/hooks/useDimensions';
 import { position } from '@/styles';
+
+import { useTheme } from '../../theme/ThemeContext';
+import { Centered, Column } from '../layout';
+import TouchableBackdrop from '../TouchableBackdrop';
 
 const Container = styled(Centered).attrs(({ fixedToTop }) => ({
   direction: 'column',

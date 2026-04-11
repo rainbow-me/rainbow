@@ -1,15 +1,16 @@
-import { useTheme } from '@/theme/ThemeContext';
-import useImportingWallet from '@/hooks/useImportingWallet';
 import React, { useCallback } from 'react';
-import { WrappedAlert as Alert } from '@/helpers/alert';
-import * as i18n from '@/languages';
-import { logger, RainbowError } from '@/logger';
+import { View } from 'react-native';
+
+import ButtonPressAnimation from '@/components/animations/ButtonPressAnimation';
+import Divider from '@/components/Divider';
 import { ColumnWithMargins, RowWithMargins } from '@/components/layout';
 import { Bold, Text } from '@/components/text';
-import ButtonPressAnimation from '@/components/animations/ButtonPressAnimation';
-import { View } from 'react-native';
-import Divider from '@/components/Divider';
+import { WrappedAlert as Alert } from '@/helpers/alert';
+import useImportingWallet from '@/hooks/useImportingWallet';
+import * as i18n from '@/languages';
+import { logger, RainbowError } from '@/logger';
 import { DiagnosticsSecretInput } from '@/screens/Diagnostics/DiagnosticsSecretInput';
+import { useTheme } from '@/theme/ThemeContext';
 
 export const DiagnosticsItemRow = ({ data }: any) => {
   const { colors } = useTheme();

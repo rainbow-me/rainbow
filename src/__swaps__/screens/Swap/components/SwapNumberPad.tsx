@@ -1,7 +1,7 @@
 import React from 'react';
+
 import Animated, {
   Easing,
-  type SharedValue,
   interpolateColor,
   useAnimatedReaction,
   useAnimatedStyle,
@@ -9,22 +9,23 @@ import Animated, {
   useSharedValue,
   withDelay,
   withTiming,
+  type SharedValue,
 } from 'react-native-reanimated';
 import { triggerHaptics } from 'react-native-turbo-haptics';
-import { supportedCurrencies as supportedNativeCurrencies } from '@/references/supportedCurrencies';
-import { TIMING_CONFIGS } from '@/components/animations/animationConfigs';
-import { Bleed, Box, Columns, HitSlop, Separator, Text, useColorMode, useForegroundColor } from '@/design-system';
-import { IS_IOS } from '@/env';
-import { equalWorklet } from '@/framework/core/safeMath';
-import { userAssetsStoreManager } from '@/state/assets/userAssetsStoreManager';
-import { colors } from '@/styles';
+
 import { CUSTOM_KEYBOARD_HEIGHT, LONG_PRESS_DELAY_DURATION, LONG_PRESS_REPEAT_DURATION } from '@/__swaps__/screens/Swap/constants';
 import { NavigationSteps, useSwapContext } from '@/__swaps__/screens/Swap/providers/swap-provider';
 import { type InputKeys } from '@/__swaps__/types/swap';
 import { stripNonDecimalNumbers } from '@/__swaps__/utils/swaps';
-import { opacity } from '@/framework/ui/utils/opacity';
+import { TIMING_CONFIGS } from '@/components/animations/animationConfigs';
 import { GestureHandlerButton } from '@/components/buttons/GestureHandlerButton';
-
+import { Bleed, Box, Columns, HitSlop, Separator, Text, useColorMode, useForegroundColor } from '@/design-system';
+import { IS_IOS } from '@/env';
+import { equalWorklet } from '@/framework/core/safeMath';
+import { opacity } from '@/framework/ui/utils/opacity';
+import { supportedCurrencies as supportedNativeCurrencies } from '@/references/supportedCurrencies';
+import { userAssetsStoreManager } from '@/state/assets/userAssetsStoreManager';
+import { colors } from '@/styles';
 import { LIGHT_SEPARATOR_COLOR, SEPARATOR_COLOR, THICK_BORDER_WIDTH } from '@/styles/constants';
 
 type numberPadCharacter = number | 'backspace' | '.';

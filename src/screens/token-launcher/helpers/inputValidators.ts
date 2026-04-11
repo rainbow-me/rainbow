@@ -1,5 +1,6 @@
-import * as i18n from '@/languages';
 import { isValidURLWorklet } from '@/components/DappBrowser/utils';
+import * as i18n from '@/languages';
+
 import { MAX_DESCRIPTION_BYTES, MAX_NAME_BYTES, MAX_SYMBOL_BYTES, MAX_TOTAL_SUPPLY } from '../constants';
 import { type LinkType } from '../types';
 

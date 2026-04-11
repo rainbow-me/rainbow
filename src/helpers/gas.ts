@@ -1,7 +1,8 @@
-import { memoFn } from '../utils/memoFn';
-import gasUtils from '@/utils/gas';
-import { type ChainId } from '@/state/backendNetworks/types';
 import { isL2Chain } from '@/handlers/web3';
+import { type ChainId } from '@/state/backendNetworks/types';
+import gasUtils from '@/utils/gas';
+
+import { memoFn } from '../utils/memoFn';
 
 const { GasTrends } = gasUtils;
 const { FALLING, NO_TREND, RISING, STABLE, SURGING } = GasTrends;

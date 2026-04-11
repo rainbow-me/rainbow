@@ -1,5 +1,7 @@
 import React from 'react';
+
 import { Path } from 'react-native-svg';
+
 import Svg from '@/components/icons/Svg';
 
 export const XIcon = ({ color, size = 38 }: { color: string; size?: number }) => {

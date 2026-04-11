@@ -1,6 +1,7 @@
+import { useMemo } from 'react';
+
 import { useColorMode } from '@/design-system';
 import { useTheme } from '@/theme/ThemeContext';
-import { useMemo } from 'react';
 
 export const useToastColors = () => {
   const { isDarkMode } = useColorMode();

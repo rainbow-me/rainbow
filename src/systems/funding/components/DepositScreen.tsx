@@ -1,14 +1,19 @@
-import React, { memo, type ReactNode, useCallback, useMemo } from 'react';
+import React, { memo, useCallback, useMemo, type ReactNode } from 'react';
+
 import Animated, {
   runOnUI,
-  type SharedValue,
   useAnimatedReaction,
   useAnimatedStyle,
   useDerivedValue,
   useSharedValue,
   withTiming,
+  type SharedValue,
 } from 'react-native-reanimated';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
+
+import { type ParsedSearchAsset } from '@/__swaps__/types/assets';
+import { GasSpeed } from '@/__swaps__/types/gas';
+import { clamp, getColorValueForThemeWorklet, parseAssetAndExtend } from '@/__swaps__/utils/swaps';
 import { AccountImage } from '@/components/AccountImage';
 import { TIMING_CONFIGS } from '@/components/animations/animationConfigs';
 import RainbowCoinIcon from '@/components/coin-icon/RainbowCoinIcon';
@@ -18,23 +23,22 @@ import { DecoyScrollView } from '@/components/sheet/DecoyScrollView';
 import { Box, useColorMode, useForegroundColor } from '@/design-system';
 import { NumberPad } from '@/features/perps/components/NumberPad/NumberPad';
 import { SheetHandle } from '@/features/perps/components/SheetHandle';
-import { SliderWithLabels } from '@/features/perps/components/Slider/SliderWithLabels';
 import { SLIDER_MAX, type SliderColors } from '@/features/perps/components/Slider/Slider';
+import { SliderWithLabels } from '@/features/perps/components/Slider/SliderWithLabels';
 import { PerpsAccentColorContextProvider } from '@/features/perps/context/PerpsAccentColorContext';
+import { divWorklet, equalWorklet, greaterThanWorklet, lessThanWorklet, mulWorklet } from '@/framework/core/safeMath';
 import { useStableValue } from '@/hooks/useStableValue';
 import * as i18n from '@/languages';
-import { divWorklet, equalWorklet, greaterThanWorklet, mulWorklet } from '@/framework/core/safeMath';
-import { useUserAssetsStore } from '@/state/assets/userAssets';
 import { useStoreSharedValue } from '@/state/internal/hooks/useStoreSharedValue';
-import { type ParsedSearchAsset } from '@/__swaps__/types/assets';
-import { GasSpeed } from '@/__swaps__/types/gas';
-import { clamp, getColorValueForThemeWorklet, parseAssetAndExtend } from '@/__swaps__/utils/swaps';
 import { sanitizeAmount } from '@/worklets/strings';
-import { FOOTER_HEIGHT, INITIAL_SLIDER_PROGRESS, NavigationSteps, SLIDER_WIDTH, SLIDER_WITH_LABELS_HEIGHT } from '../constants';
+
+import { createDepositConfig } from '../config';
+import { FOOTER_HEIGHT, NavigationSteps, SLIDER_WIDTH, SLIDER_WITH_LABELS_HEIGHT } from '../constants';
 import { DepositProvider, useDepositContext } from '../contexts/DepositContext';
 import { computeMaxSwappableAmount } from '../stores/createDepositStore';
-import { type DepositConfig, DepositQuoteStatus, type FundingScreenTheme, getAccentColor } from '../types';
+import { DepositQuoteStatus, getAccentColor, type DepositConfigInput, type FundingScreenTheme } from '../types';
 import { amountFromSliderProgress } from '../utils/sliderWorklets';
+import { resolveInitialDepositAsset } from '../utils/sourceAsset';
 import { DepositAmountInput } from './deposit/DepositAmountInput';
 import { DepositFooter } from './deposit/DepositFooter';
 import { DepositInputContainer } from './deposit/DepositInputContainer';
@@ -43,20 +47,18 @@ import { DepositTokenList } from './deposit/DepositTokenList';
 // ============ Types ========================================================== //
 
 type DepositScreenProps = {
-  config: DepositConfig;
+  config: DepositConfigInput;
   theme: FundingScreenTheme;
 };
 
 // ============ Main Screen ==================================================== //
 
 export const DepositScreen = memo(function DepositScreen({ config, theme }: DepositScreenProps) {
-  const initialAsset = useStableValue(() => {
-    const highestValueNativeAsset = useUserAssetsStore.getState().getHighestValueNativeAsset();
-    return highestValueNativeAsset ? parseAssetAndExtend({ asset: highestValueNativeAsset }) : null;
-  });
+  const resolvedConfig = useMemo(() => createDepositConfig(config), [config]);
+  const resolvedInitialAsset = useStableValue(() => resolveInitialDepositAsset(resolvedConfig));
 
   return (
-    <DepositProvider config={config} initialAsset={initialAsset} initialGasSpeed={GasSpeed.FAST} theme={theme}>
+    <DepositProvider config={resolvedConfig} initialAsset={resolvedInitialAsset} initialGasSpeed={GasSpeed.FAST} theme={theme}>
       <DepositScreenContent />
     </DepositProvider>
   );
@@ -66,10 +68,12 @@ export const DepositScreen = memo(function DepositScreen({ config, theme }: Depo
 
 function getInputAmountError(
   amount: string,
-  balance: string
-): DepositQuoteStatus.InsufficientBalance | DepositQuoteStatus.ZeroAmountError | null {
+  balance: string,
+  minAmount: string | undefined
+): DepositQuoteStatus.BelowMinimum | DepositQuoteStatus.InsufficientBalance | DepositQuoteStatus.ZeroAmountError | null {
   'worklet';
   if (equalWorklet(amount, '0')) return DepositQuoteStatus.ZeroAmountError;
+  if (minAmount && lessThanWorklet(amount, minAmount)) return DepositQuoteStatus.BelowMinimum;
   if (greaterThanWorklet(amount, balance)) return DepositQuoteStatus.InsufficientBalance;
   return null;
 }
@@ -77,8 +81,18 @@ function getInputAmountError(
 // ============ Screen Content ================================================= //
 
 const DepositScreenContent = memo(function DepositScreenContent() {
-  const { displayedAmount, fields, gasStores, handleDeposit, handleNumberPadChange, inputMethod, isSubmitting, minifiedAsset, theme } =
-    useDepositContext();
+  const {
+    config,
+    displayedAmount,
+    fields,
+    gasStores,
+    handleDeposit,
+    handleNumberPadChange,
+    inputMethod,
+    isSubmitting,
+    minifiedAsset,
+    theme,
+  } = useDepositContext();
 
   const { isDarkMode } = useColorMode();
   const separatorSecondary = useForegroundColor('separatorSecondary');
@@ -113,9 +127,11 @@ const DepositScreenContent = memo(function DepositScreenContent() {
     [separatorSecondary]
   );
 
+  const minAmountValue = config.validation?.minAmount?.value;
+
   const inputAmountErrorShared = useDerivedValue(() => {
     const balance = maxSwappableAmount.value || '0';
-    return getInputAmountError(displayedAmount.value, balance);
+    return getInputAmountError(displayedAmount.value, balance, minAmountValue);
   });
 
   const focusedSearchNavbarStyle = useAnimatedStyle(() => {
@@ -142,7 +158,7 @@ const DepositScreenContent = memo(function DepositScreenContent() {
           <SheetHandle backgroundColor={isDarkMode ? theme.backgroundDark : theme.backgroundLight} withoutGradient />
         </Animated.View>
         <Box as={Animated.View} paddingVertical="8px" style={focusedSearchNavbarStyle}>
-          <Navbar hasStatusBarInset leftComponent={<AccountImage />} title={i18n.t(i18n.l.perps.deposit.title)} />
+          <Navbar hasStatusBarInset leftComponent={<AccountImage />} title={config.labels.title} />
         </Box>
 
         <Box alignItems="center">
@@ -204,6 +220,7 @@ const DepositSlider = ({ assetColor, sliderColors }: { assetColor: SharedValue<s
 
 const DepositInput = ({ inputProgress }: { inputProgress: SharedValue<number> }) => {
   const {
+    config,
     depositActions,
     displayedAmount,
     displayedNativeValue,
@@ -213,6 +230,7 @@ const DepositInput = ({ inputProgress }: { inputProgress: SharedValue<number> })
     setInputAmounts,
     useAmountStore,
   } = useDepositContext();
+  const isSourceSelectable = config.source.mode === 'selectable';
 
   const handleSelectAsset = useCallback(
     (assetParam: ParsedSearchAsset | null) => {
@@ -223,7 +241,7 @@ const DepositInput = ({ inputProgress }: { inputProgress: SharedValue<number> })
       const isBalanceZero = equalWorklet(currentMaxSwappable, '0');
       const previousAmount = useAmountStore.getState().amount;
       const estimatedSliderProgress =
-        Number(mulWorklet(divWorklet(previousAmount, currentMaxSwappable, '0'), SLIDER_MAX)) || INITIAL_SLIDER_PROGRESS;
+        Number(mulWorklet(divWorklet(previousAmount, currentMaxSwappable, '0'), SLIDER_MAX)) || config.initialSliderProgress;
       const newSliderProgress = isBalanceZero ? 0 : clamp(estimatedSliderProgress, 0, SLIDER_MAX);
 
       const assetDecimals = extendedAsset?.decimals ?? 18;
@@ -253,8 +271,26 @@ const DepositInput = ({ inputProgress }: { inputProgress: SharedValue<number> })
 
   const handleOpenTokenList = useCallback(() => {
     'worklet';
+    if (!isSourceSelectable) return;
     inputProgress.value = NavigationSteps.TOKEN_LIST_FOCUSED;
-  }, [inputProgress]);
+  }, [inputProgress, isSourceSelectable]);
+
+  const tokenListOverlay = useMemo(() => {
+    if (!isSourceSelectable) return null;
+
+    return (
+      <TokenListOverlay inputProgress={inputProgress}>
+        <DepositTokenList
+          inputProgress={inputProgress}
+          onSelectToken={token => {
+            inputProgress.value = NavigationSteps.INPUT_ELEMENT_FOCUSED;
+            handleSelectAsset(token);
+          }}
+        />
+        <DecoyScrollView />
+      </TokenListOverlay>
+    );
+  }, [handleSelectAsset, inputProgress, isSourceSelectable]);
 
   return (
     <DepositInputContainer progress={inputProgress}>
@@ -264,27 +300,14 @@ const DepositInput = ({ inputProgress }: { inputProgress: SharedValue<number> })
             displayedAmount={displayedAmount}
             displayedNativeValue={displayedNativeValue}
             inputMethod={inputMethod}
+            isSourceSelectable={isSourceSelectable}
             onChangeInputMethodWorklet={handleInputMethodChangeWorklet}
             onSelectAssetWorklet={handleOpenTokenList}
           />
         </Box>
       </DepositInputWrapper>
 
-      {useMemo(
-        () => (
-          <TokenListOverlay inputProgress={inputProgress}>
-            <DepositTokenList
-              inputProgress={inputProgress}
-              onSelectToken={token => {
-                inputProgress.value = NavigationSteps.INPUT_ELEMENT_FOCUSED;
-                handleSelectAsset(token);
-              }}
-            />
-            <DecoyScrollView />
-          </TokenListOverlay>
-        ),
-        [handleSelectAsset, inputProgress]
-      )}
+      {tokenListOverlay}
     </DepositInputContainer>
   );
 };

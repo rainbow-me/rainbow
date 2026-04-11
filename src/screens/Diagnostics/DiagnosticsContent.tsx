@@ -1,16 +1,18 @@
 import React, { Fragment, type PropsWithChildren } from 'react';
-import { SheetActionButton } from '@/components/sheet';
-import { IS_ANDROID } from '@/env';
-import { Column } from '@/components/layout';
-import { DiagnosticsItemRow } from '@/screens/Diagnostics/DiagnosticsItemRow';
+
 import { type UserCredentials } from 'react-native-keychain';
-import { useTheme } from '@/theme/ThemeContext';
-import Spinner from '@/components/Spinner';
+
 import ActivityIndicator from '@/components/ActivityIndicator';
-import { Box, Stack, Text } from '@/design-system';
-import * as i18n from '@/languages';
-import { opacity } from '@/framework/ui/utils/opacity';
 import ButtonPressAnimation from '@/components/animations/ButtonPressAnimation';
+import { Column } from '@/components/layout';
+import { SheetActionButton } from '@/components/sheet';
+import Spinner from '@/components/Spinner';
+import { Box, Stack, Text } from '@/design-system';
+import { IS_ANDROID } from '@/env';
+import { opacity } from '@/framework/ui/utils/opacity';
+import * as i18n from '@/languages';
+import { DiagnosticsItemRow } from '@/screens/Diagnostics/DiagnosticsItemRow';
+import { useTheme } from '@/theme/ThemeContext';
 
 const LoadingSpinner = IS_ANDROID ? Spinner : ActivityIndicator;
 
@@ -140,12 +142,20 @@ export function DiagnosticsContent({
       )}
       {pkeys?.length !== undefined && pkeys.length > 0 && (
         <Fragment>
-          <Column>{pkeys?.map(key => <DiagnosticsItemRow data={key} key={`row_${key.username}`} />)}</Column>
+          <Column>
+            {pkeys?.map(key => (
+              <DiagnosticsItemRow data={key} key={`row_${key.username}`} />
+            ))}
+          </Column>
         </Fragment>
       )}
       {keys?.length !== undefined && keys.length > 0 && (
         <Fragment>
-          <Column>{oldSeed?.map(key => <DiagnosticsItemRow data={key} key={`row_${key.username}`} />)}</Column>
+          <Column>
+            {oldSeed?.map(key => (
+              <DiagnosticsItemRow data={key} key={`row_${key.username}`} />
+            ))}
+          </Column>
         </Fragment>
       )}
       {keys && (

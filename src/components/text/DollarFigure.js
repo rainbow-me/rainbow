@@ -1,8 +1,11 @@
-import PropTypes from 'prop-types';
 import React from 'react';
+
+import PropTypes from 'prop-types';
+
+import styled from '@/framework/ui/styled-thing';
+
 import { Row } from '../layout';
 import Text from './Text';
-import styled from '@/framework/ui/styled-thing';
 
 const Cents = styled(Text).attrs(({ theme: { colors } }) => ({
   align: 'right',

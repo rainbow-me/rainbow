@@ -1,16 +1,26 @@
 /* eslint-disable react/jsx-props-no-spreading */
+import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
+import { ActivityIndicator, InteractionManager } from 'react-native';
+
+import { useRoute, type RouteProp } from '@react-navigation/native';
+import { noop } from 'lodash';
+import { type Address } from 'viem';
+
 import { analytics } from '@/analytics';
-import Divider from '@/components/Divider';
-import Spinner from '@/components/Spinner';
 import ButtonPressAnimation from '@/components/animations/ButtonPressAnimation';
-import RequestVendorLogoIcon from '@/components/coin-icon/RequestVendorLogoIcon';
 import { ChainImage } from '@/components/coin-icon/ChainImage';
+import RequestVendorLogoIcon from '@/components/coin-icon/RequestVendorLogoIcon';
 import { ContactAvatar } from '@/components/contacts';
 import ImageAvatar from '@/components/contacts/ImageAvatar';
+import Divider from '@/components/Divider';
 import { InfoAlert } from '@/components/info-alert/info-alert';
 import { Centered, Column, Flex, Row } from '@/components/layout';
 import { Sheet, SheetActionButton, SheetActionButtonRow } from '@/components/sheet';
+import Spinner from '@/components/Spinner';
 import { Box, Columns, Inline, Column as RDSColumn, Text, type TextProps } from '@/design-system';
+import { type WalletconnectMeta } from '@/features/wallet-connect/types';
+import styled from '@/framework/ui/styled-thing';
+import { opacity } from '@/framework/ui/utils/opacity';
 import { DAppStatus } from '@/graphql/__generated__/metadata';
 import { getDappHostname } from '@/helpers/dappNameHandler';
 import { WalletConnectApprovalSheetType } from '@/helpers/walletConnectApprovalSheetTypes';
@@ -25,15 +35,7 @@ import { useDappMetadata } from '@/resources/metadata/dapp';
 import { useBackendNetworksStore } from '@/state/backendNetworks/backendNetworks';
 import { ChainId } from '@/state/backendNetworks/types';
 import { getAccountProfileInfo, getWalletWithAccount, useAccountAddress, useSelectedWallet } from '@/state/wallets/walletsStore';
-import styled from '@/framework/ui/styled-thing';
-import { type ThemeContextProps, useTheme } from '@/theme/ThemeContext';
-import { type WalletconnectMeta } from '@/features/wallet-connect/types';
-import { type RouteProp, useRoute } from '@react-navigation/native';
-import { noop } from 'lodash';
-import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
-import { ActivityIndicator, InteractionManager } from 'react-native';
-import { type Address } from 'viem';
-import { opacity } from '@/framework/ui/utils/opacity';
+import { useTheme, type ThemeContextProps } from '@/theme/ThemeContext';
 
 type WithThemeProps = {
   theme: ThemeContextProps;

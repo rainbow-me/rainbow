@@ -1,5 +1,6 @@
 import { expect, test } from '@jest/globals';
 
+import { Analytics } from '@/analytics';
 import Routes from '@/navigation/routesNames';
 
 jest.mock('@/env', () => ({
@@ -19,8 +20,6 @@ jest.mock('@rudderstack/rudder-sdk-react-native', () => ({
   identify: jest.fn(),
   screen: jest.fn(),
 }));
-
-import { Analytics } from '@/analytics';
 
 const flushPromises = () => new Promise(resolve => setImmediate(resolve));
 

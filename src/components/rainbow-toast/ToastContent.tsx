@@ -1,3 +1,6 @@
+import React, { memo } from 'react';
+import { Text as RNText, StyleSheet, View } from 'react-native';
+
 import { SWAP_ICON_WIDTH, TOAST_ICON_SIZE } from '@/components/rainbow-toast/constants';
 import { BaseToastIcon } from '@/components/rainbow-toast/icons/BaseToastIcon';
 import { SendToastIcon } from '@/components/rainbow-toast/icons/SendToastIcon';
@@ -10,8 +13,6 @@ import { TransactionStatus } from '@/entities/transactions';
 import { IS_INTERNAL } from '@/env';
 import { useTransactionLaunchToken } from '@/helpers/transactions';
 import * as i18n from '@/languages';
-import React, { memo } from 'react';
-import { Text as RNText, StyleSheet, View } from 'react-native';
 
 type ToastContentProps = {
   title: React.ReactNode;

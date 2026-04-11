@@ -1,10 +1,12 @@
 import React, { type ComponentProps, type ReactNode } from 'react';
-import { Box, type BoxProps, useColorMode } from '@/design-system';
-import ButtonPressAnimation from '@/components/animations/ButtonPressAnimation';
-import { LinearGradient } from 'expo-linear-gradient';
 import { StyleSheet, View } from 'react-native';
-import { opacity } from '@/framework/ui/utils/opacity';
+
+import { LinearGradient } from 'expo-linear-gradient';
+
+import ButtonPressAnimation from '@/components/animations/ButtonPressAnimation';
+import { Box, useColorMode, type BoxProps } from '@/design-system';
 import { usePerpsAccentColorContext } from '@/features/perps/context/PerpsAccentColorContext';
+import { opacity } from '@/framework/ui/utils/opacity';
 
 type ButtonPressAnimationProps = ComponentProps<typeof ButtonPressAnimation>;
 

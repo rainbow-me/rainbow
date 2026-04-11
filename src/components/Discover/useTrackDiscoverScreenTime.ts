@@ -1,9 +1,10 @@
-import { useNavigationStore } from '@/state/navigation/navigationStore';
 import { useEffect, useRef } from 'react';
-import Routes from '@/navigation/routesNames';
-import usePrevious from '@/hooks/usePrevious';
+
 import { analytics } from '@/analytics';
 import { event } from '@/analytics/event';
+import usePrevious from '@/hooks/usePrevious';
+import Routes from '@/navigation/routesNames';
+import { useNavigationStore } from '@/state/navigation/navigationStore';
 
 export const useTrackDiscoverScreenTime = () => {
   const isOnDiscoverScreen = useNavigationStore(state => state.isRouteActive(Routes.DISCOVER_SCREEN));

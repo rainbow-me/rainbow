@@ -1,6 +1,9 @@
-import { LegendList } from '@legendapp/list';
 import React, { memo, useCallback } from 'react';
 import { StyleSheet, View } from 'react-native';
+
+import { LegendList } from '@legendapp/list';
+
+import { Box, Text } from '@/design-system';
 import { PerpMarketDisabledRow } from '@/features/perps/components/PerpMarketDisabledRow';
 import { PerpMarketRow } from '@/features/perps/components/PerpMarketRow';
 import { FOOTER_HEIGHT, FOOTER_HEIGHT_WITH_SAFE_AREA } from '@/features/perps/constants';
@@ -8,7 +11,6 @@ import { usePerpsAccentColorContext } from '@/features/perps/context/PerpsAccent
 import { useHasPositionCheck } from '@/features/perps/stores/derived/useHasPositionCheck';
 import { useFilteredHyperliquidMarkets } from '@/features/perps/stores/hyperliquidMarketsStore';
 import { type PerpMarket } from '@/features/perps/types';
-import { Box, Text } from '@/design-system';
 import * as i18n from '@/languages';
 
 type PerpMarketsListProps = {

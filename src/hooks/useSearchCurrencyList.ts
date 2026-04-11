@@ -1,17 +1,20 @@
-import * as i18n from '@/languages';
-import { rankings } from 'match-sorter';
 import { useCallback, useMemo } from 'react';
-import { useTheme } from '../theme/ThemeContext';
+
+import { isAddress } from '@ethersproject/address';
+import { rankings } from 'match-sorter';
+
+import { useDiscoverSearchQueryStore, useDiscoverSearchStore } from '@/__swaps__/screens/Swap/resources/search/searchV2';
+import { type SearchAsset, type TokenSearchAssetKey, type TokenSearchThreshold } from '@/__swaps__/types/search';
+import { IS_TEST } from '@/env';
 import { addHexPrefix } from '@/handlers/web3';
 import tokenSectionTypes from '@/helpers/tokenSectionTypes';
-import { filterList } from '@/utils/search';
-import { IS_TEST } from '@/env';
+import * as i18n from '@/languages';
 import { useFavorites } from '@/resources/favorites';
 import { ChainId } from '@/state/backendNetworks/types';
 import { getUniqueId } from '@/utils/ethereumUtils';
-import { useDiscoverSearchQueryStore, useDiscoverSearchStore } from '@/__swaps__/screens/Swap/resources/search/searchV2';
-import { type SearchAsset, type TokenSearchAssetKey, type TokenSearchThreshold } from '@/__swaps__/types/search';
-import { isAddress } from '@ethersproject/address';
+import { filterList } from '@/utils/search';
+
+import { useTheme } from '../theme/ThemeContext';
 
 const MAX_VERIFIED_RESULTS = 24;
 const MAX_HIGH_LIQUIDITY_RESULTS = 6;

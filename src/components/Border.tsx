@@ -1,4 +1,5 @@
 import React from 'react';
+
 import { Cover, useColorMode, useForegroundColor } from '@/design-system';
 import { type ForegroundColor } from '@/design-system/color/palettes';
 import { IS_IOS } from '@/env';

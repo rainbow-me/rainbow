@@ -1,9 +1,11 @@
 import React, { createElement } from 'react';
-import { Column, Row } from '../layout';
-import useAccountSettings from '@/hooks/useAccountSettings';
+
 import styled from '@/framework/ui/styled-thing';
+import useAccountSettings from '@/hooks/useAccountSettings';
 import { padding } from '@/styles';
+
 import RainbowCoinIcon from '../coin-icon/RainbowCoinIcon';
+import { Column, Row } from '../layout';
 
 const CoinIconSize = 40;
 const CoinRowPaddingTop = 9;

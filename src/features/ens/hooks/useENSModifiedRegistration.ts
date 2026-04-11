@@ -1,20 +1,23 @@
-import { differenceWith, isEqual } from 'lodash';
 import { useEffect, useMemo } from 'react';
+
+import { differenceWith, isEqual } from 'lodash';
 import { useDispatch } from 'react-redux';
+
+import type { UniqueAsset } from '@/entities/uniqueAssets';
+import svgToPngIfNeeded from '@/handlers/svgs';
+import usePrevious from '@/hooks/usePrevious';
+import { useLegacyNFTs } from '@/resources/nfts';
+import { useAccountAddress } from '@/state/wallets/walletsStore';
+import isLowerCaseMatch from '@/utils/isLowerCaseMatch';
+
+import * as ensRedux from '../redux/registration';
+import type { Records } from '../types/registration';
+import { deprecatedTextRecordFields, REGISTRATION_MODES } from '../utils/helpers';
+import { getENSNFTAvatarUrl, isENSNFTRecord, parseENSNFTRecord } from '../utils/records';
 import useENSAvatar from './useENSAvatar';
 import useENSCover from './useENSCover';
 import useENSRecords from './useENSRecords';
 import useENSRegistration from './useENSRegistration';
-import usePrevious from '@/hooks/usePrevious';
-import type { Records } from '../types/registration';
-import type { UniqueAsset } from '@/entities/uniqueAssets';
-import svgToPngIfNeeded from '@/handlers/svgs';
-import { deprecatedTextRecordFields, REGISTRATION_MODES } from '../utils/helpers';
-import * as ensRedux from '../redux/registration';
-import { getENSNFTAvatarUrl, isENSNFTRecord, parseENSNFTRecord } from '../utils/records';
-import isLowerCaseMatch from '@/utils/isLowerCaseMatch';
-import { useLegacyNFTs } from '@/resources/nfts';
-import { useAccountAddress } from '@/state/wallets/walletsStore';
 
 const getImageUrl = (
   key: 'avatar' | 'header',

@@ -1,11 +1,13 @@
-import * as i18n from '@/languages';
 import React from 'react';
-import Toast from './Toast';
+
 import useAccountSettings from '@/hooks/useAccountSettings';
 import useIsOffline from '@/hooks/useIsOffline';
+import * as i18n from '@/languages';
 import { ChainId } from '@/state/backendNetworks/types';
 import { useConnectedToAnvilStore } from '@/state/connectedToAnvil';
 import { time } from '@/utils/time';
+
+import Toast from './Toast';
 
 const OfflineToast = () => {
   const isOffline = useIsOffline({ debounceMs: time.seconds(0.5) });

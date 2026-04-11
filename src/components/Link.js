@@ -1,13 +1,15 @@
 import React, { useCallback } from 'react';
-import { useTheme } from '../theme/ThemeContext';
+
+import styled from '@/framework/ui/styled-thing';
 import formatURLForDisplay from '@/utils/formatURLForDisplay';
 import magicMemo from '@/utils/magicMemo';
+import { openInBrowser } from '@/utils/openInBrowser';
+
+import { useTheme } from '../theme/ThemeContext';
 import ButtonPressAnimation from './animations/ButtonPressAnimation';
 import { Icon } from './icons';
 import { RowWithMargins } from './layout';
 import { Text } from './text';
-import styled from '@/framework/ui/styled-thing';
-import { openInBrowser } from '@/utils/openInBrowser';
 
 const Container = styled(RowWithMargins).attrs({
   align: 'center',

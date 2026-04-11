@@ -1,16 +1,17 @@
 import React, { memo, useState } from 'react';
+import { StyleSheet } from 'react-native';
+
 import ButtonPressAnimation from '@/components/animations/ButtonPressAnimation';
 import { Bleed, Box, Stack, Text, TextIcon, TextShadow } from '@/design-system';
 import { DOWN_ARROW, UP_ARROW } from '@/features/perps/constants';
+import { PolymarketPositionCard } from '@/features/polymarket/components/PolymarketPositionCard';
 import { POLYMARKET_ACCENT_COLOR } from '@/features/polymarket/constants';
+import { usePolymarketPositions } from '@/features/polymarket/stores/derived/usePolymarketPositions';
+import { usePolymarketPositionsSummary } from '@/features/polymarket/stores/derived/usePolymarketPositionsSummary';
+import { opacity } from '@/framework/ui/utils/opacity';
+import * as i18n from '@/languages';
 import Navigation from '@/navigation/Navigation';
 import Routes from '@/navigation/routesNames';
-import { StyleSheet } from 'react-native';
-import * as i18n from '@/languages';
-import { PolymarketPositionCard } from '@/features/polymarket/components/PolymarketPositionCard';
-import { usePolymarketPositionsSummary } from '@/features/polymarket/stores/derived/usePolymarketPositionsSummary';
-import { usePolymarketPositions } from '@/features/polymarket/stores/derived/usePolymarketPositions';
-import { opacity } from '@/framework/ui/utils/opacity';
 
 export const PolymarketPositionsSection = function PolymarketPositionsSection() {
   const { hasActivePositions } = usePolymarketPositionsSummary();

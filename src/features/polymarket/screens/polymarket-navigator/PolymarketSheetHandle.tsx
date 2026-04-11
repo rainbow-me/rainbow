@@ -1,8 +1,10 @@
 import React from 'react';
-import { Box, useColorMode } from '@/design-system';
-import { EasingGradient } from '@/components/easing-gradient/EasingGradient';
+
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
+
+import { EasingGradient } from '@/components/easing-gradient/EasingGradient';
 import { DEFAULT_HANDLE_COLOR_DARK, DEFAULT_HANDLE_COLOR_LIGHT } from '@/components/PanelSheet/PanelSheet';
+import { Box, useColorMode } from '@/design-system';
 import { POLYMARKET_BACKGROUND_DARK, POLYMARKET_BACKGROUND_LIGHT } from '@/features/polymarket/constants';
 
 export type SheetHandleProps = {

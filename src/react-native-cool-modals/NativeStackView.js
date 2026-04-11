@@ -1,7 +1,9 @@
-import { StackActions, useTheme } from '@react-navigation/native';
 import React, { createContext, useMemo, useRef } from 'react';
 import { findNodeHandle, NativeModules, StyleSheet, View } from 'react-native';
+
+import { StackActions, useTheme } from '@react-navigation/native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
+
 import Components from './screens';
 
 export const ModalContext = createContext();

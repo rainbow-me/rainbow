@@ -1,30 +1,26 @@
 import { type NativeCurrencyKey } from '@/entities/nativeCurrencyTypes';
 import {
-  type RainbowTransaction,
   TransactionDirection,
-  type TransactionChanges,
-  buildTransactionTitle,
   TransactionStatus,
-  type TransactionType,
   TransactionTypeMap,
+  type RainbowTransaction,
+  type TransactionChanges,
+  type TransactionType,
   type TransactionWithChangesType,
   type TransactionWithoutChangesType,
 } from '@/entities/transactions';
-
+import { buildTransactionTitle, type NewTransaction, type RainbowTransactionFee } from '@/entities/transactions/transaction';
+import { type Meta, type Transaction } from '@/features/positions/types/generated/transaction/transaction';
 import {
   convertAmountAndPriceToNativeDisplay,
   convertRawAmountToBalance,
   convertRawAmountToNativeDisplay,
   toFixedDecimals,
 } from '@/helpers/utilities';
-
-import { type NewTransaction, type RainbowTransactionFee } from '@/entities/transactions/transaction';
 import { parseGoldskyAddressAsset, parseGoldskyAsset } from '@/resources/assets/assets';
 import { type ParsedAsset } from '@/resources/assets/types';
-
-import { type ChainId } from '@/state/backendNetworks/types';
 import { useBackendNetworksStore } from '@/state/backendNetworks/backendNetworks';
-import { type Meta, type Transaction } from '@/features/positions/types/generated/transaction/transaction';
+import { type ChainId } from '@/state/backendNetworks/types';
 
 const TransactionOutTypes = [
   'burn',

@@ -1,5 +1,6 @@
 import React, { memo } from 'react';
 import { ScrollView, StyleSheet } from 'react-native';
+
 import { IS_IOS } from '@/env';
 
 /**

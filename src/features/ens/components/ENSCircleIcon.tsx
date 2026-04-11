@@ -1,4 +1,5 @@
 import * as React from 'react';
+
 import Svg, { Circle, Defs, LinearGradient, Path, Stop, type SvgProps } from 'react-native-svg';
 
 const ENSCircleIcon = (props: SvgProps) => (

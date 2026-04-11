@@ -1,9 +1,11 @@
 import React, { useCallback, useEffect, useMemo, useState, type ReactNode } from 'react';
 import { Animated, View, type ViewProps } from 'react-native';
-import FloatingEmoji from './FloatingEmoji';
-import GravityEmoji from './GravityEmoji';
+
 import useTimeout from '@/hooks/useTimeout';
 import { position } from '@/styles';
+
+import FloatingEmoji from './FloatingEmoji';
+import GravityEmoji from './GravityEmoji';
 
 interface Emoji {
   emojiToRender: string;

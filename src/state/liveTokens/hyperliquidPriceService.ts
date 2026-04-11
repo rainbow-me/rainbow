@@ -1,8 +1,9 @@
-import { transformHyperliquidMarketToTokenData } from './hyperliquidAdapter';
-import { type TokenData } from './liveTokensStore';
-import { logger, RainbowError } from '@/logger';
 import { getHyperliquidTokenId } from '@/features/perps/utils';
 import { getAllMarketsInfo } from '@/features/perps/utils/hyperliquid';
+import { logger, RainbowError } from '@/logger';
+
+import { transformHyperliquidMarketToTokenData } from './hyperliquidAdapter';
+import { type TokenData } from './liveTokensStore';
 
 export async function fetchHyperliquidPrices(symbols: string[]): Promise<Record<string, TokenData>> {
   try {

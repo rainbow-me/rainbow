@@ -1,11 +1,8 @@
-import React, { type ForwardedRef, forwardRef, useCallback, useImperativeHandle, useMemo, useRef, useState } from 'react';
+import React, { forwardRef, useCallback, useImperativeHandle, useMemo, useRef, useState, type ForwardedRef } from 'react';
 import { StyleSheet } from 'react-native';
+
 import { Gesture, GestureDetector } from 'react-native-gesture-handler';
 import Animated, {
-  type DerivedValue,
-  type SharedValue,
-  type WithSpringConfig,
-  type WithTimingConfig,
   interpolate,
   runOnJS,
   runOnUI,
@@ -16,12 +13,17 @@ import Animated, {
   useSharedValue,
   withSpring,
   withTiming,
+  type DerivedValue,
+  type SharedValue,
+  type WithSpringConfig,
+  type WithTimingConfig,
 } from 'react-native-reanimated';
+
+import { clamp } from '@/__swaps__/utils/swaps';
 import { TIMING_CONFIGS } from '@/components/animations/animationConfigs';
 import { Box } from '@/design-system';
-import { type AlignVertical, alignVerticalToFlexAlign } from '@/design-system/layout/alignment';
+import { alignVerticalToFlexAlign, type AlignVertical } from '@/design-system/layout/alignment';
 import { useStableValue } from '@/hooks/useStableValue';
-import { clamp } from '@/__swaps__/utils/swaps';
 import deviceUtils from '@/utils/deviceUtils';
 
 // ============ Constants ====================================================== //
@@ -291,7 +293,7 @@ const SmoothPagerComponent = (
         const dragPages = dragDistance / (DEVICE_WIDTH + pageGap);
         let newPageIndex = (startPage.value ?? 0) - dragPages;
 
-        const minIndex = enableSwipeToGoBack ? 0 : startPage.value ?? 0;
+        const minIndex = enableSwipeToGoBack ? 0 : (startPage.value ?? 0);
         const maxIndex = maxForwardIndex.value ?? numberOfPages - 1;
 
         newPageIndex = clamp(newPageIndex, minIndex, maxIndex);

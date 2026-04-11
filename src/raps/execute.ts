@@ -1,16 +1,25 @@
 import { type Signer } from '@ethersproject/abstract-signer';
 import { Wallet } from '@ethersproject/wallet';
-import { execute, type Call, type ExecuteCallsResult, type ExecutionResult, type PreparedCallsExecution } from '@rainbow-me/delegation';
-import { trackManagedCallsExecution } from '@/features/delegation/managedExecutionTracking';
-import { relayService } from '@/features/delegation/relayService';
+
+import type { LegacyTransactionGasParamAmounts, TransactionGasParamAmounts } from '@/entities/gas';
+import type { NewTransaction } from '@/entities/transactions';
+import { IS_TEST } from '@/env';
+import { getProvider } from '@/handlers/web3';
+import { ensureError, logger, RainbowError } from '@/logger';
 import { ChainId } from '@/state/backendNetworks/types';
-import { ensureError, RainbowError, logger } from '@/logger';
-import { prepareRequiredAtomicCalls } from './atomicSwapPreparation';
+import { addNewTransaction } from '@/state/pendingTransactions';
+import { executeFn, Screens, TimeToSignOperation } from '@/state/performance/performance';
+import { swapsStore } from '@/state/swaps/swapsStore';
+import { execute, type Call, type ExecuteCallsResult, type ExecutionResult, type PreparedCallsExecution } from '@rainbow-me/delegation';
+
 import { claim, swap, unlock } from './actions';
-import { crosschainSwap, prepareCrosschainSwap } from './actions/crosschainSwap';
 import { claimBridge } from './actions/claimBridge';
-import { prepareUnlock } from './actions/unlock';
+import { claimClaimable } from './actions/claimClaimable';
+import { crosschainSwap, prepareCrosschainSwap } from './actions/crosschainSwap';
 import { prepareSwap } from './actions/swap';
+import { prepareUnlock } from './actions/unlock';
+import { createClaimAndBridgeRap } from './claimAndBridge';
+import { createClaimClaimableRap } from './claimClaimable';
 import type {
   ActionProps,
   PrepareActionProps,
@@ -22,22 +31,15 @@ import type {
   RapSwapActionParameters,
   RapTypes,
 } from './references';
-import { createUnlockAndCrosschainSwapRap } from './unlockAndCrosschainSwap';
-import { createClaimAndBridgeRap } from './claimAndBridge';
-import { createUnlockAndSwapRap } from './unlockAndSwap';
-import type { LegacyTransactionGasParamAmounts, TransactionGasParamAmounts } from '@/entities/gas';
-import type { NewTransaction } from '@/entities/transactions';
-import { Screens, TimeToSignOperation, executeFn } from '@/state/performance/performance';
-import { swapsStore } from '@/state/swaps/swapsStore';
-import { createClaimClaimableRap } from './claimClaimable';
-import { claimClaimable } from './actions/claimClaimable';
-import { IS_TEST } from '@/env';
-import { getProvider } from '@/handlers/web3';
-import { addNewTransaction } from '@/state/pendingTransactions';
-import { resolveManagedExecutionFailure } from './managedExecutionFailure';
 import { extractReplayableCall } from './replay';
+import { createUnlockAndCrosschainSwapRap } from './unlockAndCrosschainSwap';
+import { createUnlockAndSwapRap } from './unlockAndSwap';
 import { requireAddress } from './validation';
 import type { StaticJsonRpcProvider } from '@ethersproject/providers';
+import { prepareRequiredAtomicCalls } from '@/raps/atomicSwapPreparation';
+import { resolveManagedExecutionFailure } from '@/raps/managedExecutionFailure';
+import { trackManagedCallsExecution } from '@/features/delegation/managedExecutionTracking';
+import { relayService } from '@/features/delegation/relayService';
 
 type AtomicPrepareActionType = Extract<RapActionTypes, 'unlock' | 'swap' | 'crosschainSwap'>;
 type PrepareActionResult = { call: Call | null } | { call: Call; transaction: Omit<NewTransaction, 'hash'> };

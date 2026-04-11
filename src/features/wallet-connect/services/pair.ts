@@ -1,8 +1,11 @@
+import { InteractionManager } from 'react-native';
+
+import { parseUri } from '@walletconnect/utils';
+import Minimizer from 'react-native-minimizer';
+
 import { IS_IOS } from '@/env';
 import { logger } from '@/logger';
-import { InteractionManager } from 'react-native';
-import Minimizer from 'react-native-minimizer';
-import { parseUri } from '@walletconnect/utils';
+
 import { getWalletKitClient } from './client';
 
 /**

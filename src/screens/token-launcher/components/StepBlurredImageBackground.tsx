@@ -1,8 +1,10 @@
 import React, { memo } from 'react';
-import { Canvas, Image, Fill, Blur } from '@shopify/react-native-skia';
-import { NavigationSteps, useTokenLauncherStore } from '../state/tokenLauncherStore';
+
+import { Blur, Canvas, Fill, Image } from '@shopify/react-native-skia';
 import { Extrapolation, interpolate, useDerivedValue } from 'react-native-reanimated';
+
 import { useTokenLauncherContext } from '../context/TokenLauncherContext';
+import { NavigationSteps, useTokenLauncherStore } from '../state/tokenLauncherStore';
 
 export const StepBlurredImageBackground = memo(function StepBlurredImageBackground({ width, height }: { width: number; height: number }) {
   const { tokenBackgroundImage } = useTokenLauncherContext();

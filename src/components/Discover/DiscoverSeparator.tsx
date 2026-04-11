@@ -1,4 +1,5 @@
 import React, { memo } from 'react';
+
 import { Separator, useColorMode } from '@/design-system';
 import { foregroundColors } from '@/design-system/color/palettes';
 import { opacity } from '@/framework/ui/utils/opacity';

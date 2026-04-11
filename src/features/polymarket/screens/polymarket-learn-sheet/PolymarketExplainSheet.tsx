@@ -1,16 +1,18 @@
 import React, { useCallback } from 'react';
-import { View, StyleSheet } from 'react-native';
-import * as i18n from '@/languages';
-import { Box, ColorModeProvider, Text } from '@/design-system';
+import { StyleSheet, View } from 'react-native';
+
+import { useFocusEffect, useRoute, type RouteProp } from '@react-navigation/native';
+import { LinearGradient } from 'expo-linear-gradient';
+import FastImage from 'react-native-fast-image';
+
 import step1Image from '@/assets/polymarketExplainer/step1.png';
 import step2Image from '@/assets/polymarketExplainer/step2.png';
 import step3Image from '@/assets/polymarketExplainer/step3.png';
-import FastImage from 'react-native-fast-image';
 import { ExplainerSheet, type ExplainerSheetStep } from '@/components/explainer-sheet/ExplainerSheet';
-import { LinearGradient } from 'expo-linear-gradient';
-import { useFocusEffect, type RouteProp, useRoute } from '@react-navigation/native';
-import { type RootStackParamList } from '@/navigation/types';
+import { Box, ColorModeProvider, Text } from '@/design-system';
+import * as i18n from '@/languages';
 import type Routes from '@/navigation/routesNames';
+import { type RootStackParamList } from '@/navigation/types';
 
 const PANEL_INNER_WIDTH = 332;
 

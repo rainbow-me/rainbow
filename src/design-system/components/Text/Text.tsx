@@ -1,7 +1,10 @@
-import React, { type ReactNode, useMemo, useEffect, type Ref } from 'react';
+import React, { useEffect, useMemo, type ReactNode, type Ref } from 'react';
 import { Text as NativeText, type StyleProp, type TextStyle } from 'react-native';
+
 import { SILENCE_EMOJI_WARNINGS } from 'react-native-dotenv';
+
 import { IS_DEV, IS_IOS } from '@/env';
+
 import { type TextColor } from '../../color/palettes';
 import { type CustomColor } from '../../color/useForegroundColor';
 import { createLineHeightFixNode } from '../../typography/createLineHeightFixNode';

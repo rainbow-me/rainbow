@@ -1,19 +1,21 @@
-import * as i18n from '@/languages';
 import React, { useCallback } from 'react';
-import { Box, Inset, Stack, Text } from '@/design-system';
-import { Layout } from '@/screens/hardware-wallets/components/Layout';
-import { type RouteProp, useRoute } from '@react-navigation/native';
-import useDimensions from '@/hooks/useDimensions';
+
+import { useRoute, type RouteProp } from '@react-navigation/native';
 import { type Source } from 'react-native-fast-image';
-import ledgerNanoUnlock from '@/assets/ledger-nano-unlock.png';
+
 import ledgerNanoEthApp from '@/assets/ledger-nano-eth-app.png';
+import ledgerNanoUnlock from '@/assets/ledger-nano-unlock.png';
 import { ImgixImage } from '@/components/images';
-import { TRANSLATIONS } from '@/screens/hardware-wallets/constants';
-import { LEDGER_ERROR_CODES } from '@/utils/ledger';
+import { Box, Inset, Stack, Text } from '@/design-system';
+import useDimensions from '@/hooks/useDimensions';
 import { useLedgerConnect } from '@/hooks/useLedgerConnect';
+import * as i18n from '@/languages';
 import { useNavigation } from '@/navigation/Navigation';
 import Routes from '@/navigation/routesNames';
 import { type RootStackParamList } from '@/navigation/types';
+import { Layout } from '@/screens/hardware-wallets/components/Layout';
+import { TRANSLATIONS } from '@/screens/hardware-wallets/constants';
+import { LEDGER_ERROR_CODES } from '@/utils/ledger';
 
 const IMAGE_ASPECT_RATIO = 1.547;
 const IMAGE_LEFT_OFFSET = 36;

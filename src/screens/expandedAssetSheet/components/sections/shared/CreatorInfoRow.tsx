@@ -1,8 +1,8 @@
 import React, { memo, useEffect } from 'react';
-import { type Address } from 'viem';
+import { StyleSheet, View } from 'react-native';
+
 import Animated, {
   FadeIn,
-  type SharedValue,
   useAnimatedStyle,
   useDerivedValue,
   useSharedValue,
@@ -10,22 +10,23 @@ import Animated, {
   withSequence,
   withSpring,
   withTiming,
+  type SharedValue,
 } from 'react-native-reanimated';
-import { View, StyleSheet } from 'react-native';
+import { type Address } from 'viem';
 
+import { pulsingConfig, sliderConfig } from '@/__swaps__/screens/Swap/constants';
 import { AnimatedImage } from '@/components/AnimatedComponents/AnimatedImage';
+import { TIMING_CONFIGS } from '@/components/animations/animationConfigs';
 import { AnimatedText, Bleed, Box, Text, TextIcon, TextShadow, useBackgroundColor } from '@/design-system';
+import { IS_IOS } from '@/env';
+import { opacity } from '@/framework/ui/utils/opacity';
+import { useStableValue } from '@/hooks/useStableValue';
+import { fetchAndSetEnsData } from '@/screens/Airdrops/ClaimAirdropSheet';
 import { Row } from '@/screens/expandedAssetSheet/components/shared/Row';
 import { useExpandedAssetSheetContext } from '@/screens/expandedAssetSheet/context/ExpandedAssetSheetContext';
-import { addressHashedColorIndex, addressHashedEmoji } from '@/utils/profileUtils';
-import { formatAddressForDisplay } from '@/utils/abbreviations';
-import { fetchAndSetEnsData } from '@/screens/Airdrops/ClaimAirdropSheet';
-import { TIMING_CONFIGS } from '@/components/animations/animationConfigs';
-import { sliderConfig, pulsingConfig } from '@/__swaps__/screens/Swap/constants';
-import { opacity } from '@/framework/ui/utils/opacity';
 import { useTheme } from '@/theme/ThemeContext';
-import { IS_IOS } from '@/env';
-import { useStableValue } from '@/hooks/useStableValue';
+import { formatAddressForDisplay } from '@/utils/abbreviations';
+import { addressHashedColorIndex, addressHashedEmoji } from '@/utils/profileUtils';
 
 type CreatorInfoRowProps = {
   address?: Address | string | null;

@@ -1,6 +1,9 @@
 import { useCallback, useMemo } from 'react';
-import { type DerivedValue, type SharedValue, useAnimatedReaction, useSharedValue } from 'react-native-reanimated';
+
+import { useAnimatedReaction, useSharedValue, type DerivedValue, type SharedValue } from 'react-native-reanimated';
+
 import { deepEqual, shallowEqual } from '@/worklets/comparisons';
+
 import { useAnimatedTime } from './useAnimatedTime';
 
 interface DelayedValueConfig {

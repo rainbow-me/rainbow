@@ -1,5 +1,6 @@
 import { createDepositConfig } from '@/systems/funding/config';
 import { time } from '@/utils/time';
+
 import { HYPERCORE_PSEUDO_CHAIN_ID, HYPERLIQUID_USDC_ADDRESS, USDC_ICON_URL } from './constants';
 import { refetchHyperliquidBalance } from './utils';
 

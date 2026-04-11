@@ -1,11 +1,12 @@
 import { NFT_API_KEY, NFT_API_URL } from 'react-native-dotenv';
-import { RainbowFetchClient } from '@/framework/data/http/rainbowFetch';
-import { type SimpleHashListing, type SimpleHashNFT, SimpleHashMarketplaceId } from '@/resources/nfts/simplehash/types';
+
 import { AssetType } from '@/entities/assetTypes';
 import { type UniqueAsset } from '@/entities/uniqueAssets';
-import { RainbowError, logger } from '@/logger';
-import { ChainId } from '@/state/backendNetworks/types';
+import { RainbowFetchClient } from '@/framework/data/http/rainbowFetch';
+import { logger, RainbowError } from '@/logger';
+import { SimpleHashMarketplaceId, type SimpleHashListing, type SimpleHashNFT } from '@/resources/nfts/simplehash/types';
 import { useBackendNetworksStore } from '@/state/backendNetworks/backendNetworks';
+import { ChainId } from '@/state/backendNetworks/types';
 
 export const START_CURSOR = 'start';
 

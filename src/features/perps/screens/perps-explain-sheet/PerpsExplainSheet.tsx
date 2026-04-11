@@ -1,20 +1,22 @@
 import React, { useCallback } from 'react';
-import { View, StyleSheet, type ViewStyle } from 'react-native';
-import { AnimatedText, Box, ColorModeProvider, Text, TextShadow } from '@/design-system';
-import { ExplainerSheet, type ExplainerSheetStep, PANEL_INNER_WIDTH } from '@/components/explainer-sheet/ExplainerSheet';
+import { StyleSheet, View, type ViewStyle } from 'react-native';
+
+import { useFocusEffect } from '@react-navigation/native';
 import FastImage from 'react-native-fast-image';
-import magicOrbImage from '@/assets/perpsExplainer/magicOrb.png';
+
 import leverageImage from '@/assets/perpsExplainer/leverage.png';
 import longShortImage from '@/assets/perpsExplainer/long-short.png';
+import magicOrbImage from '@/assets/perpsExplainer/magicOrb.png';
+import { easing } from '@/components/animations/animationConfigs';
+import { EasingGradient } from '@/components/easing-gradient/EasingGradient';
+import { ExplainerSheet, PANEL_INNER_WIDTH, type ExplainerSheetStep } from '@/components/explainer-sheet/ExplainerSheet';
+import { AnimatedText, Box, ColorModeProvider, Text, TextShadow } from '@/design-system';
 import { HyperliquidButton } from '@/features/perps/components/HyperliquidButton';
+import { HyperliquidLogo } from '@/features/perps/components/HyperliquidLogo';
 import { PerpsAccentColorContextProvider } from '@/features/perps/context/PerpsAccentColorContext';
-import { useFocusEffect } from '@react-navigation/native';
+import { opacity } from '@/framework/ui/utils/opacity';
 import * as i18n from '@/languages';
 import { useRoute } from '@/navigation/Navigation';
-import { HyperliquidLogo } from '@/features/perps/components/HyperliquidLogo';
-import { EasingGradient } from '@/components/easing-gradient/EasingGradient';
-import { opacity } from '@/framework/ui/utils/opacity';
-import { easing } from '@/components/animations/animationConfigs';
 
 const translations = i18n.l.perps.explain_sheet;
 

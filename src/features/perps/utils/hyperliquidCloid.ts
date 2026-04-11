@@ -1,4 +1,4 @@
-import { type Hex, isHex } from 'viem';
+import { isHex, type Hex } from 'viem';
 
 const CLOID_HEX_LENGTH = 34;
 const MARKER_HEX = '7262'; // "rb" (rainbow) marker

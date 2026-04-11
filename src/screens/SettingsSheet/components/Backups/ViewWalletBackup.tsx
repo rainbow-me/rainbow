@@ -1,8 +1,12 @@
-import { ContextCircleButton } from '@/components/context-menu';
-import ContextMenuButton from '@/components/native-context-menu/contextMenu';
-import { cloudPlatform } from '@/utils/platform';
+import React, { useCallback, useMemo, useRef } from 'react';
+import { InteractionManager } from 'react-native';
+
 import Clipboard from '@react-native-clipboard/clipboard';
-import { type RouteProp, useRoute } from '@react-navigation/native';
+import { useRoute, type RouteProp } from '@react-navigation/native';
+import { format } from 'date-fns';
+import { useRecoilState } from 'recoil';
+import type { Address } from 'viem';
+
 import { analytics } from '@/analytics';
 import CloudBackedUpIcon from '@/assets/BackedUpCloud.png';
 import BackupWarningIcon from '@/assets/BackupWarning.png';
@@ -11,14 +15,16 @@ import ManuallyBackedUpIcon from '@/assets/ManuallyBackedUp.png';
 import { useCreateBackup } from '@/components/backup/useCreateBackup';
 import { ContactAvatar } from '@/components/contacts';
 import ImageAvatar from '@/components/contacts/ImageAvatar';
+import { ContextCircleButton } from '@/components/context-menu';
+import ContextMenuButton from '@/components/native-context-menu/contextMenu';
 import { Box, Stack } from '@/design-system';
 import { IS_IOS } from '@/env';
+import { useIsDelegationEnabled } from '@/features/delegation/featureFlags';
+import useENSAvatar from '@/features/ens/hooks/useENSAvatar';
 import { removeFirstEmojiFromString } from '@/helpers/emojiHandler';
 import walletBackupTypes from '@/helpers/walletBackupTypes';
 import { WalletLoadingStates } from '@/helpers/walletLoadingStates';
 import WalletTypes from '@/helpers/walletTypes';
-import { useIsDelegationEnabled } from '@/features/delegation/featureFlags';
-import useENSAvatar from '@/features/ens/hooks/useENSAvatar';
 import * as i18n from '@/languages';
 import { logger, RainbowError } from '@/logger';
 import { executeFnIfCloudBackupAvailable } from '@/model/backup';
@@ -30,19 +36,15 @@ import { backupsStore } from '@/state/backups/backups';
 import { walletLoadingStore } from '@/state/walletLoading/walletLoading';
 import { createAccountInExistingWallet, formatAccountLabel, getIsDamagedWallet, useWallet } from '@/state/wallets/walletsStore';
 import abbreviations from '@/utils/abbreviations';
+import { cloudPlatform } from '@/utils/platform';
 import { addressHashedEmoji } from '@/utils/profileUtils';
-import { format } from 'date-fns';
-import React, { useCallback, useMemo, useRef } from 'react';
-import { InteractionManager } from 'react-native';
-import { useRecoilState } from 'recoil';
+
 import { isWalletBackedUpForCurrentAccount } from '../../utils';
 import Menu from '../Menu';
 import MenuContainer from '../MenuContainer';
 import MenuHeader from '../MenuHeader';
 import MenuItem from '../MenuItem';
 import { BackUpMenuItem } from './BackUpMenuButton';
-import type { Address } from 'viem';
-import { getRemoteConfig } from '@/model/remoteConfig';
 
 type ViewWalletBackupParams = {
   ViewWalletBackup: { walletId: string; title: string; imported?: boolean };

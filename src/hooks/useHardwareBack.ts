@@ -1,6 +1,7 @@
-import { useFocusEffect } from '@react-navigation/native';
 import { useCallback, useEffect } from 'react';
 import { BackHandler } from 'react-native';
+
+import { useFocusEffect } from '@react-navigation/native';
 
 /**
  * Hook which will allow us to disable react navigation back behavior on Android

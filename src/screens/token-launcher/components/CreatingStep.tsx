@@ -1,9 +1,11 @@
 import React from 'react';
-import * as i18n from '@/languages';
+
 import { Box, Text } from '@/design-system';
+import * as i18n from '@/languages';
+
+import { useTokenLauncherContext } from '../context/TokenLauncherContext';
 import { useTokenLauncherStore } from '../state/tokenLauncherStore';
 import { RainbowTokenFlip } from './RainbowTokenFlip';
-import { useTokenLauncherContext } from '../context/TokenLauncherContext';
 
 export function CreatingStep() {
   const { tokenImage, accentColors } = useTokenLauncherContext();

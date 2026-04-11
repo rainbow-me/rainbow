@@ -1,15 +1,32 @@
+import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
+import { InteractionManager, Keyboard, View, type TextInput } from 'react-native';
+
+import { type StaticJsonRpcProvider } from '@ethersproject/providers';
+import { Wallet } from '@ethersproject/wallet';
+import { useRoute, type RouteProp } from '@react-navigation/native';
+import { useQueryClient } from '@tanstack/react-query';
+import { isEmpty, isEqual, isString } from 'lodash';
+import { useDebounce } from 'use-debounce';
+import { type Address } from 'viem';
+
 import { analytics } from '@/analytics';
 import { NoResults } from '@/components/list';
 import { NoResultsType } from '@/components/list/NoResults';
 import { useRainbowToastEnabled } from '@/components/rainbow-toast/useRainbowToastEnabled';
 import useExperimentalFlag, { PROFILES } from '@/config/experimentalHooks';
 import { AssetType } from '@/entities/assetTypes';
-import { type NewTransaction, TransactionStatus } from '@/entities/transactions';
 import { type ParsedAddressAsset } from '@/entities/tokens';
+import { TransactionStatus, type NewTransaction } from '@/entities/transactions';
 import { type UniqueAsset } from '@/entities/uniqueAssets';
 import { IS_ANDROID, IS_IOS } from '@/env';
-import { isNativeAsset } from '@/handlers/assets';
+import { prefetchENSAvatar } from '@/features/ens/hooks/useENSAvatar';
+import { prefetchENSCover } from '@/features/ens/hooks/useENSCover';
+import useENSProfile from '@/features/ens/hooks/useENSProfile';
+import useENSRegistrationActionHandler from '@/features/ens/hooks/useENSRegistrationActionHandler';
 import { debouncedFetchSuggestions } from '@/features/ens/utils/handlers';
+import { REGISTRATION_STEPS } from '@/features/ens/utils/helpers';
+import styled from '@/framework/ui/styled-thing';
+import { isNativeAsset } from '@/handlers/assets';
 import {
   assetIsUniqueAsset,
   buildTransaction,
@@ -17,28 +34,24 @@ import {
   estimateGasLimit,
   getProvider,
   isL2Chain,
-  type NewTransactionNonNullable,
   resolveNameOrAddress,
+  type NewTransactionNonNullable,
 } from '@/handlers/web3';
 import { WrappedAlert as Alert } from '@/helpers/alert';
-import { REGISTRATION_STEPS } from '@/features/ens/utils/helpers';
 import { convertAmountAndPriceToNativeDisplay, convertAmountFromNativeValue, formatInputDecimals, lessThan } from '@/helpers/utilities';
 import { checkIsValidAddressOrDomain, checkIsValidAddressOrDomainFormat, isENSAddressFormat } from '@/helpers/validators';
-import { prefetchENSAvatar } from '@/features/ens/hooks/useENSAvatar';
-import { prefetchENSCover } from '@/features/ens/hooks/useENSCover';
 import useAccountSettings from '@/hooks/useAccountSettings';
 import useCoinListEditOptions from '@/hooks/useCoinListEditOptions';
 import useColorForAsset from '@/hooks/useColorForAsset';
 import useContacts from '@/hooks/useContacts';
-import useENSProfile from '@/features/ens/hooks/useENSProfile';
-import useENSRegistrationActionHandler from '@/features/ens/hooks/useENSRegistrationActionHandler';
 import useGas from '@/hooks/useGas';
 import useMaxInputBalance from '@/hooks/useMaxInputBalance';
+import { usePersistentDominantColorFromImage } from '@/hooks/usePersistentDominantColorFromImage';
 import usePrevious from '@/hooks/usePrevious';
 import useSendableUniqueTokens from '@/hooks/useSendableUniqueTokens';
 import useSendSheetInputRefs from '@/hooks/useSendSheetInputRefs';
 import useUserAccounts from '@/hooks/useUserAccounts';
-import { usePersistentDominantColorFromImage } from '@/hooks/usePersistentDominantColorFromImage';
+import * as i18n from '@/languages';
 import { logger, RainbowError } from '@/logger';
 import { loadWallet, sendTransaction } from '@/model/wallet';
 import { setHardwareTXError } from '@/navigation/HardwareWalletTxNavigator';
@@ -58,24 +71,14 @@ import { getNextNonce } from '@/state/nonces';
 import { addNewTransaction } from '@/state/pendingTransactions';
 import { executeFn, Screens, TimeToSignOperation } from '@/state/performance/performance';
 import { getWallets, useAccountAddress, useIsHardwareWallet } from '@/state/wallets/walletsStore';
-import styled from '@/framework/ui/styled-thing';
 import { borders } from '@/styles';
-import { type ThemeContextProps, useTheme } from '@/theme/ThemeContext';
+import { useTheme, type ThemeContextProps } from '@/theme/ThemeContext';
 import deviceUtils from '@/utils/deviceUtils';
 import ethereumUtils from '@/utils/ethereumUtils';
 import isLowerCaseMatch from '@/utils/isLowerCaseMatch';
 import safeAreaInsetValues from '@/utils/safeAreaInsetValues';
 import { time } from '@/utils/time';
-import { type StaticJsonRpcProvider } from '@ethersproject/providers';
-import { Wallet } from '@ethersproject/wallet';
-import { type RouteProp, useRoute } from '@react-navigation/native';
-import { useQueryClient } from '@tanstack/react-query';
-import * as i18n from '@/languages';
-import { isEmpty, isEqual, isString } from 'lodash';
-import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
-import { InteractionManager, Keyboard, type TextInput, View } from 'react-native';
-import { useDebounce } from 'use-debounce';
-import { type Address } from 'viem';
+
 import { GasSpeedButton } from '../components/gas';
 import { Column } from '../components/layout';
 import { SendAssetForm, SendAssetList, SendContactList, SendHeader } from '../components/send';
@@ -233,7 +236,7 @@ export default function SendSheet() {
       const _assetAmount = newAssetAmount.replace(/[^0-9.]/g, '');
       let _nativeAmount = '';
       if (_assetAmount.length) {
-        const priceUnit = !isUniqueAsset ? selected?.price?.value ?? 0 : selected?.floorPrice ?? 0;
+        const priceUnit = !isUniqueAsset ? (selected?.price?.value ?? 0) : (selected?.floorPrice ?? 0);
         const { amount: convertedNativeAmount } = convertAmountAndPriceToNativeDisplay(_assetAmount, priceUnit, nativeCurrency);
         _nativeAmount = formatInputDecimals(convertedNativeAmount, _assetAmount);
       }
@@ -346,7 +349,7 @@ export default function SendSheet() {
       const _nativeAmount = newNativeAmount.replace(/[^0-9.]/g, '');
       let _assetAmount = '';
       if (_nativeAmount.length) {
-        const priceUnit = !isUniqueAsset ? selected?.price?.value ?? 0 : 0;
+        const priceUnit = !isUniqueAsset ? (selected?.price?.value ?? 0) : 0;
         const decimals = !isUniqueAsset ? (typeof selected?.decimals === 'number' ? selected.decimals : 18) : 0;
         const convertedAssetAmount = convertAmountFromNativeValue(_nativeAmount, priceUnit, decimals);
         _assetAmount = formatInputDecimals(convertedAssetAmount, _nativeAmount);

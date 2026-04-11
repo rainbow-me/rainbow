@@ -1,7 +1,9 @@
 import { PixelRatio } from 'react-native';
+
+import { CardSize } from '@/components/unique-token/CardSize';
 import { maybeSignUri } from '@/handlers/imgix';
 import deviceUtils from '@/utils/deviceUtils';
-import { CardSize } from '@/components/unique-token/CardSize';
+
 import { GOOGLE_USER_CONTENT_URL } from './getFullResUrl';
 
 const pixelRatio = PixelRatio.get();
@@ -40,18 +42,18 @@ export function handleNFTImages({
   const isGIF = mimeType === MimeType.GIF;
   const highResUrl = url?.startsWith?.(GOOGLE_USER_CONTENT_URL)
     ? url.replace(/=s\d+$/, `=s${FULL_NFT_IMAGE_SIZE}`)
-    : maybeSignUri(url, {
+    : (maybeSignUri(url, {
         // decrease size for GIFs to avoid hitting imgix's 10MB limit
         w: isGIF ? cardSize : FULL_NFT_IMAGE_SIZE,
-      }) ?? null;
+      }) ?? null);
 
   const lowResUrl =
     previewUrl?.startsWith?.(GOOGLE_USER_CONTENT_URL) && !isGIF
       ? previewUrl
-      : maybeSignUri(url, {
+      : (maybeSignUri(url, {
           w: cardSize,
           // reformat to png in the case that the image may be an SVG or is a GIF
           fm: (!previewUrl && (!mimeType || isSVG)) || isGIF ? 'png' : undefined,
-        }) ?? null;
+        }) ?? null);
   return { highResUrl, lowResUrl };
 }

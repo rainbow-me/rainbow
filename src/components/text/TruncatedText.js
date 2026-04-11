@@ -1,6 +1,8 @@
 import React from 'react';
-import Text from './Text';
+
 import styled from '@/framework/ui/styled-thing';
+
+import Text from './Text';
 
 const TruncatedTextComponent = styled(Text).attrs(({ ellipsizeMode = 'tail', numberOfLines = 1, testID }) => ({
   ellipsizeMode,

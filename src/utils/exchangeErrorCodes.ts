@@ -1,5 +1,5 @@
-import { type QuoteError } from '@rainbow-me/swaps';
 import * as i18n from '@/languages';
+import { type QuoteError } from '@rainbow-me/swaps';
 
 export interface ExchangeQuoteError extends QuoteError {
   buttonLabel: string;

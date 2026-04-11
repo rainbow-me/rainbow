@@ -1,14 +1,10 @@
+import { useEffect, useMemo, useRef } from 'react';
+
 import { isAddress } from '@ethersproject/address';
 import { rankings } from 'match-sorter';
-import { useEffect, useMemo, useRef } from 'react';
 import { useDeepCompareMemo } from 'use-deep-compare';
 import { type Address } from 'viem';
-import { analytics } from '@/analytics';
-import { isNativeAsset } from '@/handlers/assets';
-import { addHexPrefix } from '@/handlers/web3';
-import { useFavorites } from '@/resources/favorites';
-import { ChainId } from '@/state/backendNetworks/types';
-import { useSwapsStore } from '@/state/swaps/swapsStore';
+
 import {
   ADDRESS_SEARCH_KEY,
   NAME_SYMBOL_SEARCH_KEYS,
@@ -19,10 +15,17 @@ import {
 import { type AddressOrEth, type AssetType, type ExtendedAnimatedAssetWithColors, type ParsedSearchAsset } from '@/__swaps__/types/assets';
 import { type AssetToBuySectionId, type FavoritedAsset, type SearchAsset, type TokenToBuyListItem } from '@/__swaps__/types/search';
 import { type RecentSwap } from '@/__swaps__/types/swap';
+import { analytics } from '@/analytics';
+import { isNativeAsset } from '@/handlers/assets';
+import { addHexPrefix } from '@/handlers/web3';
+import { useFavorites } from '@/resources/favorites';
+import { ChainId } from '@/state/backendNetworks/types';
+import { useSwapsStore } from '@/state/swaps/swapsStore';
+import { getUniqueId } from '@/utils/ethereumUtils';
 import isLowerCaseMatch from '@/utils/isLowerCaseMatch';
 import { filterList } from '@/utils/search';
 import { time } from '@/utils/time';
-import { getUniqueId } from '@/utils/ethereumUtils';
+
 import { usePopularTokensStore } from '../resources/search/discovery';
 
 const ANALYTICS_LOG_THROTTLE_MS = time.seconds(5);

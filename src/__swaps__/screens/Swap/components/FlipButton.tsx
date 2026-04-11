@@ -1,20 +1,22 @@
 import React, { useCallback, useEffect, useRef } from 'react';
 import { InteractionManager, StyleSheet } from 'react-native';
+
 import Animated, { runOnJS, useAnimatedStyle, useDerivedValue, withTiming } from 'react-native-reanimated';
-import { analytics } from '@/analytics';
-import { AnimatedBlurView } from '@/components/AnimatedComponents/AnimatedBlurView';
-import { AnimatedSpinner } from '@/components/animations/AnimatedSpinner';
-import { TIMING_CONFIGS } from '@/components/animations/animationConfigs';
-import { Bleed, Box, IconContainer, Text, globalColors, useColorMode } from '@/design-system';
-import { IS_ANDROID, IS_IOS } from '@/env';
-import { ChainId } from '@/state/backendNetworks/types';
-import { useSwapsStore } from '@/state/swaps/swapsStore';
+
 import { useSwapContext } from '@/__swaps__/screens/Swap/providers/swap-provider';
 import { type ExtendedAnimatedAssetWithColors } from '@/__swaps__/types/assets';
 import { SwapAssetType } from '@/__swaps__/types/swap';
 import { getColorValueForThemeWorklet } from '@/__swaps__/utils/swaps';
-import { opacity } from '@/framework/ui/utils/opacity';
+import { analytics } from '@/analytics';
+import { AnimatedBlurView } from '@/components/AnimatedComponents/AnimatedBlurView';
+import { AnimatedSpinner } from '@/components/animations/AnimatedSpinner';
+import { TIMING_CONFIGS } from '@/components/animations/animationConfigs';
 import { GestureHandlerButton } from '@/components/buttons/GestureHandlerButton';
+import { Bleed, Box, globalColors, IconContainer, Text, useColorMode } from '@/design-system';
+import { IS_ANDROID, IS_IOS } from '@/env';
+import { opacity } from '@/framework/ui/utils/opacity';
+import { ChainId } from '@/state/backendNetworks/types';
+import { useSwapsStore } from '@/state/swaps/swapsStore';
 import { SEPARATOR_COLOR } from '@/styles/constants';
 
 export const FlipButton = () => {

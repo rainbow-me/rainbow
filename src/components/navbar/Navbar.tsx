@@ -1,12 +1,14 @@
 import React from 'react';
-import { Box, Text } from '@/design-system';
 import { StyleSheet } from 'react-native';
 
-import { NavbarSvgIcon } from './NavbarSvgIcon';
-import { NavbarItem } from './NavbarItem';
-import { NavbarTextIcon } from './NavbarTextIcon';
+import Animated, { interpolate, useAnimatedStyle, type SharedValue } from 'react-native-reanimated';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
-import Animated, { type SharedValue, useAnimatedStyle, interpolate } from 'react-native-reanimated';
+
+import { Box, Text } from '@/design-system';
+
+import { NavbarItem } from './NavbarItem';
+import { NavbarSvgIcon } from './NavbarSvgIcon';
+import { NavbarTextIcon } from './NavbarTextIcon';
 
 type NavbarProps = {
   hasStatusBarInset?: boolean;

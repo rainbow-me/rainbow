@@ -1,13 +1,15 @@
 import React, { memo, useMemo } from 'react';
-import { type GestureResponderEvent, StyleSheet, View } from 'react-native';
-import { Box, Inline, Stack, Text, AccentColorProvider, TextIcon, useColorMode, useForegroundColor } from '@/design-system';
-import { GradientBorderView } from '@/components/gradient-border/GradientBorderView';
+import { StyleSheet, View, type GestureResponderEvent } from 'react-native';
+
+import ConditionalWrap from 'conditional-wrap';
 import { LinearGradient } from 'expo-linear-gradient';
+
 import ButtonPressAnimation from '@/components/animations/ButtonPressAnimation';
+import { GradientBorderView } from '@/components/gradient-border/GradientBorderView';
+import { AccentColorProvider, Box, Inline, Stack, Text, TextIcon, useColorMode, useForegroundColor } from '@/design-system';
 import { usePolymarketFeatureCard } from '@/features/polymarket/hooks/usePolymarketFeatureCard';
 import { navigateToPolymarket } from '@/features/polymarket/utils/navigateToPolymarket';
 import * as i18n from '@/languages';
-import ConditionalWrap from 'conditional-wrap';
 import { THICKER_BORDER_WIDTH } from '@/styles/constants';
 import { deepFreeze } from '@/utils/deepFreeze';
 import { createOpacityPalette } from '@/worklets/colors';

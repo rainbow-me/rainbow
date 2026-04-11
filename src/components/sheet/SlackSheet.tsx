@@ -1,28 +1,31 @@
 /* eslint-disable no-nested-ternary */
-import { BottomSheetScrollView } from '@gorhom/bottom-sheet';
-import { BottomSheetContext } from '@gorhom/bottom-sheet/src/contexts/external';
 import React, { forwardRef, Fragment, useContext, useEffect, useImperativeHandle, useMemo, useRef } from 'react';
 import {
-  type ColorValue,
-  type FlexStyle,
-  type Insets,
   Pressable,
   StyleSheet,
   TouchableWithoutFeedback,
   View,
+  type ColorValue,
+  type FlexStyle,
+  type Insets,
   type ViewStyle,
 } from 'react-native';
-import Animated, { type SharedValue, useAnimatedScrollHandler, useSharedValue } from 'react-native-reanimated';
+
+import { BottomSheetScrollView } from '@gorhom/bottom-sheet';
+import { BottomSheetContext } from '@gorhom/bottom-sheet/src/contexts/external';
+import { ScrollView } from 'react-native-gesture-handler';
+import Animated, { useAnimatedScrollHandler, useSharedValue, type SharedValue } from 'react-native-reanimated';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
+
+import { IS_ANDROID, IS_IOS } from '@/env';
+import styled from '@/framework/ui/styled-thing';
+import useDimensions from '@/hooks/useDimensions';
+import { useNavigation } from '@/navigation/Navigation';
+import { position } from '@/styles';
+
 import { useTheme } from '../../theme/ThemeContext';
 import { Centered } from '../layout';
 import SheetHandleFixedToTop, { SheetHandleFixedToTopHeight } from './SheetHandleFixedToTop';
-import useDimensions from '@/hooks/useDimensions';
-import styled from '@/framework/ui/styled-thing';
-import { useNavigation } from '@/navigation/Navigation';
-import { position } from '@/styles';
-import { IS_ANDROID, IS_IOS } from '@/env';
-import { ScrollView } from 'react-native-gesture-handler';
 
 const AnimatedRNGHScrollView = Animated.createAnimatedComponent(ScrollView);
 

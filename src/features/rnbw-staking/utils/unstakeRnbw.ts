@@ -1,27 +1,74 @@
 import { encodeFunctionData, type Address, type Hash } from 'viem';
+
+import { analytics } from '@/analytics';
+import { mulWorklet, subWorklet } from '@/framework/core/safeMath';
 import { getProvider } from '@/handlers/web3';
+import { convertRawAmountToDecimalFormat } from '@/helpers/utilities';
+import { RainbowError } from '@/logger';
 import { loadWallet } from '@/model/wallet';
-import { STAKING_ABI, STAKING_CHAIN_ID, STAKING_CONTRACT_ADDRESS, STAKING_GAS_LIMIT } from '../constants';
-import { useStakingPositionStore } from '../stores/rnbwStakingPositionStore';
+
+import { STAKING_ABI, STAKING_CHAIN_ID, STAKING_CONTRACT_ADDRESS } from '../constants';
+import { useStakingPositionStore, type StakingPositionData } from '../stores/rnbwStakingPositionStore';
 import { pollForStakingUpdate } from './pollForStakingUpdate';
 
 export async function unstakeRnbw({ address }: { address: Address }): Promise<Hash> {
-  const provider = getProvider({ chainId: STAKING_CHAIN_ID });
-  const signer = await loadWallet({ address, provider });
-  if (!signer) {
-    throw new Error('Failed to load wallet');
+  const initialExitFeePercentage = useStakingPositionStore.getState().getData()?.exitFeePercentage;
+  await useStakingPositionStore.getState().fetch(undefined, { force: true });
+  const positionData = useStakingPositionStore.getState().getData();
+
+  if (!positionData || !positionData.exitFeePercentage) {
+    throw new RainbowError('[unstakeRnbw]: Position data missing');
   }
 
-  const originalStakedRnbwShares = useStakingPositionStore.getState().getData()?.poolShares ?? '0';
-  const data = encodeFunctionData({ abi: STAKING_ABI, functionName: 'unstakeAll' });
+  if (initialExitFeePercentage !== positionData.exitFeePercentage) {
+    throw new RainbowError('[unstakeRnbw]: Exit fee percentage changed');
+  }
 
-  const tx = await signer.sendTransaction({
-    to: STAKING_CONTRACT_ADDRESS,
-    data,
-    gasLimit: STAKING_GAS_LIMIT,
-  });
-  await tx.wait();
-  await pollForStakingUpdate(originalStakedRnbwShares);
+  const positionSnapshot = snapshotUnstakeAnalytics(positionData);
 
-  return tx.hash as Hash;
+  try {
+    const provider = getProvider({ chainId: STAKING_CHAIN_ID });
+    const signer = await loadWallet({ address, provider });
+    if (!signer) {
+      throw new Error('Failed to load wallet');
+    }
+
+    const originalStakedRnbwShares = positionData.poolShares;
+    const data = encodeFunctionData({ abi: STAKING_ABI, functionName: 'unstakeAll' });
+
+    const tx = await signer.sendTransaction({
+      to: STAKING_CONTRACT_ADDRESS,
+      data,
+    });
+
+    await tx.wait();
+    await pollForStakingUpdate(originalStakedRnbwShares);
+
+    analytics.track(analytics.event.rnbwStakingUnstake, {
+      chainId: STAKING_CHAIN_ID,
+      txHash: tx.hash as string,
+      ...positionSnapshot,
+    });
+
+    return tx.hash as Hash;
+  } catch (error) {
+    analytics.track(analytics.event.rnbwStakingUnstakeFailed, {
+      chainId: STAKING_CHAIN_ID,
+      stakedAmount: positionSnapshot.stakedAmount,
+      errorMessage: error instanceof Error ? error.message : 'Unknown error',
+    });
+    throw error;
+  }
+}
+
+function snapshotUnstakeAnalytics(positionData: StakingPositionData) {
+  const { stakedRnbw: stakedRnbwRaw, decimals, sessionPnl, exitFeePercentage } = positionData;
+  const exitFeeRaw = mulWorklet(stakedRnbwRaw, exitFeePercentage / 100);
+
+  return {
+    stakedAmount: convertRawAmountToDecimalFormat(stakedRnbwRaw, decimals),
+    expectedExitFee: convertRawAmountToDecimalFormat(exitFeeRaw, decimals),
+    expectedReceiveAmount: convertRawAmountToDecimalFormat(subWorklet(stakedRnbwRaw, exitFeeRaw), decimals),
+    pnl: convertRawAmountToDecimalFormat(subWorklet(sessionPnl.exchangeRateGain, exitFeeRaw), decimals),
+  };
 }

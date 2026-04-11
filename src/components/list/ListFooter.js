@@ -1,4 +1,5 @@
 import React from 'react';
+
 import styled from '@/framework/ui/styled-thing';
 
 export const ListFooterHeight = 27;

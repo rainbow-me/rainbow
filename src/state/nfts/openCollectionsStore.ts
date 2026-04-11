@@ -1,9 +1,11 @@
 import { type Address } from 'viem';
+
 import { createStoreFactoryUtils } from '@/state/internal/utils/factoryUtils';
+import { getAccountAddress, useAccountAddress } from '@/state/wallets/walletsStore';
+
 import { createOpenCollectionsStore } from './createOpenCollectionsStore';
 import { openCollectionsStoreManager } from './openCollectionsStoreManager';
-import { type OpenCollectionsRouter, type OpenCollectionsStoreType, type OpenCollectionsState } from './types';
-import { getAccountAddress, useAccountAddress } from '@/state/wallets/walletsStore';
+import { type OpenCollectionsRouter, type OpenCollectionsState, type OpenCollectionsStoreType } from './types';
 
 const { persist, portableSubscribe, rebindSubscriptions } = createStoreFactoryUtils<
   OpenCollectionsStoreType,
@@ -18,7 +20,7 @@ function getOrCreateStore(address?: Address | string): OpenCollectionsStoreType 
    * Fallback to ensure an address is always available on app launch, mirroring
    * the behavior in the user assets store.
    */
-  const accountAddress = rawAddress?.length ? rawAddress : cachedAddress ?? rawAddress;
+  const accountAddress = rawAddress?.length ? rawAddress : (cachedAddress ?? rawAddress);
 
   if (cachedStore && cachedAddress === accountAddress) return cachedStore;
 

@@ -1,9 +1,10 @@
 import { getPlatformClient } from '@/resources/platform/client';
-import { fetchPositions, type PositionsParams } from './fetcher';
-import { usePositionsStore } from './positionsStore';
-import type { RainbowPositions } from '../types';
+
 import { FIXTURE_LIST_POSITIONS_SUCCESS, FIXTURE_PARAMS } from '../__fixtures__/ListPositions';
 import { createMockPositionsData } from '../__fixtures__/mocks/positions';
+import type { RainbowPositions } from '../types';
+import { fetchPositions, type PositionsParams } from './fetcher';
+import { usePositionsStore } from './positionsStore';
 
 jest.mock('@/resources/platform/client');
 jest.mock('@/config/experimentalHooks', () => ({}));

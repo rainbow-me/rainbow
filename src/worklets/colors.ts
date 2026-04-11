@@ -1,4 +1,5 @@
-import { type ParsedColorArray, convertToRGBA } from 'react-native-reanimated';
+import { convertToRGBA, type ParsedColorArray } from 'react-native-reanimated';
+
 import { globalColors } from '@/design-system';
 
 export interface HSV {

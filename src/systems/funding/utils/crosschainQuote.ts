@@ -1,5 +1,5 @@
-import { buildRainbowCrosschainQuoteUrl, type CrosschainQuote, type QuoteError, type QuoteParams } from '@rainbow-me/swaps';
 import { crosschainQuoteTargetsRecipient, isCrosschainQuote, isQuoteError, shouldSuppressQuoteError } from '@/__swaps__/utils/quotes';
+import { buildRainbowCrosschainQuoteUrl, type CrosschainQuote, type QuoteError, type QuoteParams } from '@rainbow-me/swaps';
 
 // ============ Crosschain Quote Fetching ====================================== //
 

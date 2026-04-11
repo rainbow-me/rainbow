@@ -1,4 +1,6 @@
 import { NOTIFICATIONS_API_KEY } from 'react-native-dotenv';
+
+import { rainbowFetch } from '@/framework/data/http/rainbowFetch';
 import { logger, RainbowError } from '@/logger';
 import {
   type GlobalNotificationTopics,
@@ -6,7 +8,6 @@ import {
   type WalletNotificationSettings,
 } from '@/notifications/settings/types';
 import { getFCMToken, saveFCMToken } from '@/notifications/tokens';
-import { rainbowFetch } from '@/framework/data/http/rainbowFetch';
 
 const NOTIFICATION_SUBSCRIPTIONS_URL = 'https://notifications.p.rainbow.me/api/v1/subscriptions';
 

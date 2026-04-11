@@ -1,5 +1,6 @@
 import { Gesture } from 'react-native-gesture-handler';
 import { interpolate, useSharedValue, withSpring } from 'react-native-reanimated';
+
 import { NavigationSteps, useSwapContext } from '@/__swaps__/screens/Swap/providers/swap-provider';
 import { SPRING_CONFIGS } from '@/components/animations/animationConfigs';
 

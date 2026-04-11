@@ -1,5 +1,5 @@
 import React from 'react';
-import { type StyleProp, StyleSheet, View, type ViewStyle } from 'react-native';
+import { StyleSheet, View, type StyleProp, type ViewStyle } from 'react-native';
 
 import type { AndroidShadowItem } from './ApplyShadow';
 

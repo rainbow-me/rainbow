@@ -1,26 +1,28 @@
-import * as i18n from '@/languages';
 import React, { useMemo } from 'react';
-import { LinearGradient } from 'expo-linear-gradient';
-import { useTheme } from '@/theme/ThemeContext';
-import ButtonPressAnimation from '@/components/animations/ButtonPressAnimation';
+
 import ConditionalWrap from 'conditional-wrap';
-import { Box, Inline, Stack, Text, useForegroundColor, useColorMode, TextIcon, globalColors } from '@/design-system';
-import { type AddressItem, AddressMenuAction } from '@/screens/change-wallet/ChangeWalletSheet';
-import { type TextSize } from '@/design-system/typography/typeHierarchy';
-import { type TextWeight } from '@/design-system/components/Text/Text';
-import { opacity } from '@/framework/ui/utils/opacity';
-import { usePinnedWalletsStore } from '@/state/wallets/pinnedWalletsStore';
-import { AddressAvatar } from '@/screens/change-wallet/components/AddressAvatar';
-import { SelectedAddressBadge } from '@/screens/change-wallet/components/SelectedAddressBadge';
+import { LinearGradient } from 'expo-linear-gradient';
+import type { Address } from 'viem';
+
+import ButtonPressAnimation from '@/components/animations/ButtonPressAnimation';
 import { DropdownMenu, type MenuItem } from '@/components/DropdownMenu';
 import { Icon } from '@/components/icons';
-import { removeFirstEmojiFromString } from '@/helpers/emojiHandler';
-import { address as abbreviateAddress } from '@/utils/abbreviations';
+import { Box, globalColors, Inline, Stack, Text, TextIcon, useColorMode, useForegroundColor } from '@/design-system';
+import { type TextWeight } from '@/design-system/components/Text/Text';
+import { type TextSize } from '@/design-system/typography/typeHierarchy';
 import { IS_INTERNAL } from '@/env';
 import { useIsDelegationEnabled } from '@/features/delegation/featureFlags';
 import { isRainbowDelegated as hasRainbowDelegation, isThirdPartyDelegated as hasThirdPartyDelegation } from '@/features/delegation/status';
-import { useDelegations, useDelegationDisabled } from '@rainbow-me/delegation';
-import type { Address } from 'viem';
+import { opacity } from '@/framework/ui/utils/opacity';
+import { removeFirstEmojiFromString } from '@/helpers/emojiHandler';
+import * as i18n from '@/languages';
+import { AddressMenuAction, type AddressItem } from '@/screens/change-wallet/ChangeWalletSheet';
+import { AddressAvatar } from '@/screens/change-wallet/components/AddressAvatar';
+import { SelectedAddressBadge } from '@/screens/change-wallet/components/SelectedAddressBadge';
+import { usePinnedWalletsStore } from '@/state/wallets/pinnedWalletsStore';
+import { useTheme } from '@/theme/ThemeContext';
+import { address as abbreviateAddress } from '@/utils/abbreviations';
+import { useDelegationDisabled, useDelegations } from '@rainbow-me/delegation';
 
 const ROW_HEIGHT_WITH_PADDING = 64;
 const BUTTON_SIZE = 28;

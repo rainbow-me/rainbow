@@ -1,24 +1,23 @@
 import React, { useCallback, useMemo, useState } from 'react';
-import * as i18n from '@/languages';
+
 import { useSharedValue } from 'react-native-reanimated';
 
 import ButtonPressAnimation from '@/components/animations/ButtonPressAnimation';
+import { FadedScrollCard } from '@/components/FadedScrollCard';
+import {
+  CARD_BORDER_WIDTH,
+  CARD_ROW_HEIGHT,
+  estimateMessageHeight,
+  EXPANDED_CARD_TOP_INSET,
+  MAX_CARD_HEIGHT,
+} from '@/components/Transactions/constants';
+import { AnimatedCheckmark, IconContainer } from '@/components/Transactions/TransactionIcons';
 import { Bleed, Box, Inline, Text } from '@/design-system';
-
 import useClipboard from '@/hooks/useClipboard';
+import * as i18n from '@/languages';
 import { logger } from '@/logger';
 import { isSignTypedData } from '@/utils/signingMethods';
-
 import { sanitizeTypedData } from '@/utils/signingUtils';
-import {
-  estimateMessageHeight,
-  MAX_CARD_HEIGHT,
-  CARD_ROW_HEIGHT,
-  CARD_BORDER_WIDTH,
-  EXPANDED_CARD_TOP_INSET,
-} from '@/components/Transactions/constants';
-import { FadedScrollCard } from '@/components/FadedScrollCard';
-import { AnimatedCheckmark, IconContainer } from '@/components/Transactions/TransactionIcons';
 
 type TransactionMessageCardProps = {
   expandedCardBottomInset: number;

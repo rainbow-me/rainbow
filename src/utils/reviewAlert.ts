@@ -1,10 +1,11 @@
-import * as ls from '@/storage';
-import { ReviewPromptAction } from '@/storage/schema';
-import { logger, RainbowError } from '@/logger';
 import * as StoreReview from 'expo-store-review';
-import { IS_DEV, IS_TEST } from '@/env';
+
 import { analytics } from '@/analytics';
 import { event } from '@/analytics/event';
+import { IS_DEV, IS_TEST } from '@/env';
+import { logger, RainbowError } from '@/logger';
+import * as ls from '@/storage';
+import { ReviewPromptAction } from '@/storage/schema';
 import { time } from '@/utils/time';
 
 export const numberOfTimesBeforePrompt: {

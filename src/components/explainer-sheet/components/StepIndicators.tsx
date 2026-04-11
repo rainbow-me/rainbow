@@ -1,5 +1,7 @@
 import React, { memo } from 'react';
+
 import Animated, { Extrapolation, interpolate, useAnimatedStyle, type SharedValue } from 'react-native-reanimated';
+
 import { Box } from '@/design-system';
 
 type StepIndicatorDotProps = {

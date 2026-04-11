@@ -1,25 +1,27 @@
 import { type Block, type Provider } from '@ethersproject/abstract-provider';
+import { BigNumber } from '@ethersproject/bignumber';
 import { Contract, type PopulatedTransaction } from '@ethersproject/contracts';
 import { type StaticJsonRpcProvider } from '@ethersproject/providers';
-import { type CrosschainQuote, type Quote, getQuoteExecutionDetails } from '@rainbow-me/swaps';
+import { erc20Abi, type Chain } from 'viem';
 import { mainnet } from 'viem/chains';
-import { type Chain, erc20Abi } from 'viem';
+
+import { type SwapsGasFeeParamsBySpeed } from '@/__swaps__/screens/Swap/hooks/useSelectedGas';
 import type {
   GasFeeParamsBySpeed,
   LegacyGasFeeParamsBySpeed,
   LegacyTransactionGasParamAmounts,
   TransactionGasParamAmounts,
 } from '@/entities/gas';
-import gasUtils from '@/utils/gas';
-import { add, greaterThan, multiply } from '@/helpers/utilities';
-import { ChainId } from '@/state/backendNetworks/types';
-import { gasUnits } from '@/references/gasUnits';
-import { toHexNoLeadingZeros } from '@/handlers/web3';
-import { BigNumber } from '@ethersproject/bignumber';
-import { type SwapsGasFeeParamsBySpeed } from '@/__swaps__/screens/Swap/hooks/useSelectedGas';
 import type { Transaction } from '@/graphql/__generated__/metadataPOST';
+import { toHexNoLeadingZeros } from '@/handlers/web3';
+import { add, greaterThan, multiply } from '@/helpers/utilities';
 import { ensureError, logger, RainbowError } from '@/logger';
+import { gasUnits } from '@/references/gasUnits';
 import { simulateTransactions } from '@/resources/transactions/transactionSimulation';
+import { ChainId } from '@/state/backendNetworks/types';
+import gasUtils from '@/utils/gas';
+import { getQuoteExecutionDetails, type CrosschainQuote, type Quote } from '@rainbow-me/swaps';
+
 import { getQuoteAllowanceTargetAddress } from './validation';
 
 export const CHAIN_IDS_WITH_TRACE_SUPPORT: ChainId[] = [mainnet.id];

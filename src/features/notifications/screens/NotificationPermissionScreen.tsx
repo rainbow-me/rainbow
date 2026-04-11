@@ -1,24 +1,26 @@
-import MaskedView from '@react-native-masked-view/masked-view';
 import React, { useCallback } from 'react';
-import { ImageBackground, StyleSheet, Image, View } from 'react-native';
+import { Image, ImageBackground, StyleSheet, View } from 'react-native';
+
+import MaskedView from '@react-native-masked-view/masked-view';
+import { useNavigation } from '@react-navigation/native';
 import { LinearGradient } from 'expo-linear-gradient';
-import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { SystemBars } from 'react-native-edge-to-edge';
-import { Box, Stack, Text, Bleed, Column, Columns, ColorModeProvider } from '@/design-system';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
+
+import { analytics } from '@/analytics';
+import { event } from '@/analytics/event';
+import mockNotificationsAndroid from '@/assets/mockNotificationsAndroid.png';
+import mockNotificationsIOS from '@/assets/mockNotificationsIOS.png';
+import backgroundImage from '@/assets/notificationsPromoSheetBackground.png';
+import ButtonPressAnimation from '@/components/animations/ButtonPressAnimation';
+import { Bleed, Box, ColorModeProvider, Column, Columns, Stack, Text } from '@/design-system';
 import { IS_ANDROID, IS_IOS } from '@/env';
 import { useHardwareBackOnFocus } from '@/hooks/useHardwareBack';
 import * as i18n from '@/languages';
 import Navigation from '@/navigation/Navigation';
-import { useNavigation } from '@react-navigation/native';
 import Routes from '@/navigation/routesNames';
 import { isNotificationPermissionGranted, requestNotificationPermission } from '@/notifications/permissions';
 import { useTheme } from '@/theme/ThemeContext';
-import backgroundImage from '@/assets/notificationsPromoSheetBackground.png';
-import ButtonPressAnimation from '@/components/animations/ButtonPressAnimation';
-import mockNotificationsIOS from '@/assets/mockNotificationsIOS.png';
-import mockNotificationsAndroid from '@/assets/mockNotificationsAndroid.png';
-import { analytics } from '@/analytics';
-import { event } from '@/analytics/event';
 
 const TRANSLATIONS = i18n.l.promos.notifications_launch;
 

@@ -1,18 +1,20 @@
 import React from 'react';
-import { CarouselCard } from '../CarouselCard';
-import { CollectionCell, NFT_IMAGE_SIZE, Placeholder } from './CollectionCell';
-import { Menu } from './Menu';
-import { useNavigation } from '@/navigation/Navigation';
-import Routes from '@/navigation/routesNames';
-import { mintsQueryKey, useMints, useMintsFilter } from '@/resources/mints';
-import { type MintableCollection } from '@/graphql/__generated__/arc';
-import { queryClient } from '@/react-query';
+
+import { analytics } from '@/analytics';
 import ButtonPressAnimation from '@/components/animations/ButtonPressAnimation';
 import ShimmerAnimation from '@/components/animations/ShimmerAnimation';
 import { Box, Text, useForegroundColor } from '@/design-system';
-import { analytics } from '@/analytics';
+import { type MintableCollection } from '@/graphql/__generated__/arc';
 import * as i18n from '@/languages';
+import { useNavigation } from '@/navigation/Navigation';
+import Routes from '@/navigation/routesNames';
+import { queryClient } from '@/react-query';
+import { mintsQueryKey, useMints, useMintsFilter } from '@/resources/mints';
 import { useAccountAddress } from '@/state/wallets/walletsStore';
+
+import { CarouselCard } from '../CarouselCard';
+import { CollectionCell, NFT_IMAGE_SIZE, Placeholder } from './CollectionCell';
+import { Menu } from './Menu';
 
 export function MintsCard() {
   const { navigate } = useNavigation();

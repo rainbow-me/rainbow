@@ -1,15 +1,18 @@
+import { type ComponentType } from 'react';
+
 import { type Signer } from '@ethersproject/abstract-signer';
-import { type Address } from 'viem';
 import { type DerivedValue, type SharedValue } from 'react-native-reanimated';
-import { type CrosschainQuote, type Quote, type Source } from '@rainbow-me/swaps';
-import { type AddressOrEth, type ExtendedAnimatedAssetWithColors } from '@/__swaps__/types/assets';
+import { type Address } from 'viem';
+
 import { type GasSettings } from '@/__swaps__/screens/Swap/hooks/useCustomGas';
+import { type AddressOrEth, type ExtendedAnimatedAssetWithColors } from '@/__swaps__/types/assets';
 import { type GasSpeed } from '@/__swaps__/types/gas';
-import { type ChainId } from '@/state/backendNetworks/types';
-import { type BaseRainbowStore, type DerivedStore, type RainbowStore } from '@/state/internal/types';
-import { type QueryStore, type StoreState } from '@/state/internal/queryStore/types';
-import { type StoreActions } from '@/state/internal/utils/createStoreActions';
 import { type NumberPadField } from '@/features/perps/components/NumberPad/NumberPadKey';
+import { type ChainId } from '@/state/backendNetworks/types';
+import { type QueryStore, type StoreState } from '@/state/internal/queryStore/types';
+import { type BaseRainbowStore, type DerivedStore, type RainbowStore } from '@/state/internal/types';
+import { type StoreActions } from '@/state/internal/utils/createStoreActions';
+import { type CrosschainQuote, type Quote, type Source } from '@rainbow-me/swaps';
 
 // ============ Shared Types =================================================== //
 
@@ -53,7 +56,7 @@ export type DepositSuccessMetadata = {
   /** Symbol of the source asset */
   assetSymbol: string;
   /** Execution path taken */
-  executionStrategy: 'crosschainSwap' | 'directTransfer' | 'swap';
+  executionStrategy: 'crosschainSwap' | 'directTransfer' | 'custom' | 'swap';
 };
 
 export type DepositFailureMetadata = {
@@ -89,6 +92,131 @@ export type DepositToken = {
 };
 
 /**
+ * Source asset selection configuration for the deposit flow.
+ *
+ * - `selectable` (default): user can pick any owned source token.
+ * - `fixed`: source token is locked to one specific asset.
+ */
+export type DepositSourceConfigInput =
+  | {
+      mode?: 'selectable';
+    }
+  | {
+      mode: 'fixed';
+      /**
+       * Resolves the fixed source asset used by the flow.
+       * Called when the screen initializes and when account changes.
+       */
+      resolveAsset: () => ExtendedAnimatedAssetWithColors | null;
+    };
+
+export type DepositExecutionBaseParams = {
+  /** Connected wallet address submitting the deposit */
+  accountAddress: Address;
+  /** Sanitized human-readable amount */
+  amount: string;
+  /** Selected source asset */
+  asset: ExtendedAnimatedAssetWithColors;
+  /** Current recipient from config (if any) */
+  recipient: Address | null;
+  /** Current quote data (may be null/unavailable) */
+  quote: DepositQuoteResult;
+};
+
+export type DepositExecuteParams = DepositExecutionBaseParams & {
+  /** Chain of the selected source asset */
+  assetChainId: ChainId;
+};
+
+export type DepositExecuteSuccess = {
+  /**
+   * Chain used for confirmation polling when `hash` is provided.
+   * Falls back to source asset chain when omitted.
+   */
+  confirmationChainId?: ChainId;
+  /** Execution path label for analytics */
+  executionStrategy?: DepositSuccessMetadata['executionStrategy'];
+  /**
+   * Optional transaction hash for confirmation-aware refresh scheduling.
+   * If omitted, refresh scheduling executes immediately on success.
+   */
+  hash?: string;
+  /**
+   * Whether the transaction is already confirmed.
+   * Only relevant when `hash` is provided.
+   * @default false
+   */
+  isConfirmed?: boolean;
+  success: true;
+  /**
+   * Optional explicit confirmation waiter.
+   * When present, this takes precedence over `hash` polling.
+   */
+  waitForConfirmation?: () => Promise<void>;
+};
+
+export type DepositExecuteFailure = {
+  /**
+   * Error message for user display.
+   * Use `'handled'` when UI was already surfaced by the executor.
+   */
+  error: string;
+  success: false;
+};
+
+export type DepositExecuteResult = DepositExecuteFailure | DepositExecuteSuccess;
+
+/**
+ * Optional custom execution callback for deposit submission.
+ *
+ * Use when the flow should keep deposit UX/state coordination but submit
+ * custom transaction logic (e.g. staking).
+ */
+export type DepositExecutor = (params: DepositExecuteParams) => Promise<DepositExecuteResult>;
+
+export type DepositGasHookParams = DepositExecutionBaseParams;
+
+export type DepositGasConfig = {
+  /**
+   * Optional custom gas-limit estimator.
+   * When omitted, the framework uses quote/swap estimation.
+   */
+  estimateGasLimit?: (params: DepositGasHookParams) => Promise<string>;
+  /**
+   * Optional sponsorship signal for UI display.
+   * When true, gas is shown as "estimated (struck-through) + Free".
+   */
+  isSponsored?: (params: DepositGasHookParams) => Promise<boolean> | boolean;
+};
+
+export type DepositLabels = {
+  confirmButton: string;
+  confirmButtonError: string;
+  confirmButtonLoading: string;
+  confirmButtonOverBalance: string;
+  confirmButtonZeroAmount: string;
+  executionErrorTitle: string;
+  gasSponsored: string;
+  insufficientGas: string;
+  invalidRouteRecipientError: string;
+  missingRecipientError: string;
+  noWalletConnected: string;
+  unknownExecutionError: string;
+  quoteError: string;
+  receive: string;
+  title: string;
+};
+
+export type DepositSubmitButtonProps = {
+  disabled: SharedValue<boolean> | DerivedValue<boolean>;
+  isSubmitting: SharedValue<boolean>;
+  label: SharedValue<string> | DerivedValue<string>;
+  onSubmit: () => Promise<void>;
+};
+
+export type DepositSubmitButtonComponent = ComponentType<DepositSubmitButtonProps>;
+
+/**
  * ### `DepositConfig`
  *
  * Configuration for the deposit flow. Defines where funds go, quote behavior,
@@ -114,7 +242,7 @@ export type DepositToken = {
  * });
  * ```
  */
-export type DepositConfig = {
+type DepositConfigBaseInput = {
   /** Unique identifier for logging and analytics */
   id: string;
 
@@ -149,8 +277,36 @@ export type DepositConfig = {
    */
   directTransferEnabled?: boolean;
 
-  /** Callback invoked immediately after transaction submission */
-  onSubmit?: OnDepositSubmit;
+  /**
+   * Source asset behavior.
+   * @default { mode: 'selectable' }
+   */
+  source?: DepositSourceConfigInput;
+
+  /** Optional gas extension hooks */
+  gas?: DepositGasConfig;
+
+  /** Initial slider position (0–100). @default 25 */
+  initialSliderProgress?: number;
+
+  /**
+   * When true, the receive row shows only the `labels.receive` text
+   * without appending the quoted amount.
+   * @default false
+   */
+  hideReceiveAmount?: boolean;
+
+  /** Optional copy overrides for non-perps flows */
+  labels?: Partial<DepositLabels>;
+
+  /** Optional custom submit button UI for the footer action */
+  submitButtonComponent?: DepositSubmitButtonComponent;
+
+  /** Optional input validation rules */
+  validation?: {
+    /** Minimum deposit amount (human-readable, e.g. '1' for 1 token) */
+    minAmount?: { label: string; value: string };
+  };
 
   /** Store refresh behavior after confirmation */
   refresh?: RefreshConfig;
@@ -162,9 +318,51 @@ export type DepositConfig = {
   trackSuccess?: (metadata: DepositSuccessMetadata) => void;
 };
 
+type DepositExecutionCallbacks =
+  | {
+      /**
+       * Custom execution mode.
+       * Use this when the flow handles transaction submission itself.
+       * In this mode, post-submit side effects must also be handled by the executor.
+       */
+      execute: DepositExecutor;
+      /**
+       * Disallowed in custom execution mode.
+       * The framework will not invoke `onSubmit` when `execute` is present.
+       */
+      onSubmit?: never;
+    }
+  | {
+      /**
+       * Framework execution mode (quote/swap/direct-transfer).
+       * Keep `execute` unset to use the built-in execution pipeline.
+       */
+      execute?: never;
+      /**
+       * Optional post-submit hook for framework execution mode.
+       * Invoked immediately after transaction submission with the active signer.
+       */
+      onSubmit?: OnDepositSubmit;
+    };
+
+export type DepositConfigInput = DepositConfigBaseInput & DepositExecutionCallbacks;
+
+export type DepositSourceConfig = { mode: 'selectable' } | Extract<DepositSourceConfigInput, { mode: 'fixed' }>;
+
+type DepositConfigBase = Omit<DepositConfigBaseInput, 'gas' | 'hideReceiveAmount' | 'initialSliderProgress' | 'labels' | 'source'> & {
+  hideReceiveAmount: boolean;
+  gas: DepositGasConfig | undefined;
+  initialSliderProgress: number;
+  labels: DepositLabels;
+  source: DepositSourceConfig;
+};
+
+export type DepositConfig = DepositConfigBase & DepositExecutionCallbacks;
+
 // ============ Quote Status =================================================== //
 
 export enum DepositQuoteStatus {
+  BelowMinimum = 'belowMinimum',
   Error = 'error',
   InsufficientBalance = 'insufficientBalance',
   InsufficientGas = 'insufficientGas',
@@ -235,6 +433,14 @@ export type DepositQuoteStoreType = QueryStore<DepositQuoteResult, DepositQuoteS
 // ============ Gas Store Types ================================================ //
 
 export type DepositGasLimitParams = {
+  amount: string;
+  assetToSellUniqueId: string | null;
+  quoteKey: number | null;
+};
+
+export type DepositGasSponsorshipParams = {
+  accountAddress: Address;
+  amount: string;
   assetToSellUniqueId: string | null;
   quoteKey: number | null;
 };
@@ -254,6 +460,8 @@ export type DepositMeteorologyActions = {
 export type DepositGasStoresType = {
   useEstimatedGasFee: DerivedStore<string | undefined>;
   useGasLimitStore: QueryStore<string, DepositGasLimitParams>;
+  useGasSponsorshipStore: QueryStore<boolean, DepositGasSponsorshipParams>;
+  useIsGasSponsored: DerivedStore<boolean>;
   useGasSettings: DerivedStore<GasSettings | undefined>;
   useMaxSwappableAmount: DerivedStore<string | undefined>;
   useMeteorologyStore: QueryStore<DepositGasSuggestions, DepositMeteorologyParams, DepositMeteorologyActions>;
@@ -603,6 +811,9 @@ export type WithdrawalConfig<TBalanceStore extends BalanceQueryStore> = {
 
   /** Decimal precision for amount display */
   amountDecimals: number;
+
+  /** Initial slider position (0–100). @default 25 */
+  initialSliderProgress?: number;
 
   /**
    * Routing configuration for multi-chain withdrawals.

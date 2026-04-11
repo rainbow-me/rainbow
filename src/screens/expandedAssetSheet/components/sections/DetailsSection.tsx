@@ -1,17 +1,19 @@
 import React, { memo, useMemo, useState } from 'react';
-import * as i18n from '@/languages';
-import { Bleed, Box, IconContainer, Inline, Text, TextShadow } from '@/design-system';
-import { Row } from '../shared/Row';
-import { SectionId, useExpandedAssetSheetContext } from '../../context/ExpandedAssetSheetContext';
+
 import ButtonPressAnimation from '@/components/animations/ButtonPressAnimation';
-import formatURLForDisplay from '@/utils/formatURLForDisplay';
-import { XIcon } from '../../icons/XIcon';
-import { Icon } from '@/components/icons';
 import { formatUrl } from '@/components/DappBrowser/utils';
-import { openInBrowser } from '@/utils/openInBrowser';
+import { Icon } from '@/components/icons';
+import { Bleed, Box, IconContainer, Inline, Text, TextShadow } from '@/design-system';
+import * as i18n from '@/languages';
 import { logger } from '@/logger';
-import { CollapsibleSection } from '../shared/CollapsibleSection';
 import { THICK_BORDER_WIDTH } from '@/styles/constants';
+import formatURLForDisplay from '@/utils/formatURLForDisplay';
+import { openInBrowser } from '@/utils/openInBrowser';
+
+import { SectionId, useExpandedAssetSheetContext } from '../../context/ExpandedAssetSheetContext';
+import { XIcon } from '../../icons/XIcon';
+import { CollapsibleSection } from '../shared/CollapsibleSection';
+import { Row } from '../shared/Row';
 
 interface RowItem {
   icon?: string;

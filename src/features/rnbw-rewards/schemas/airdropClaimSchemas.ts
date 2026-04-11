@@ -1,4 +1,5 @@
 import { z } from 'zod';
+
 import { platformResponseSchema } from '@/features/rnbw-rewards/schemas/platformResponseSchemas';
 
 export const claimStatusSchema = z.enum([

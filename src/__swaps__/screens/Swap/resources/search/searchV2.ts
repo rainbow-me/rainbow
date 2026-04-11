@@ -1,21 +1,23 @@
-import qs from 'qs';
 import { getAddress, isAddress } from '@ethersproject/address';
-import { getUniqueId } from '@/utils/ethereumUtils';
-import { groupBy } from 'lodash';
-import { getProvider } from '@/handlers/web3';
-import { RainbowError, logger } from '@/logger';
-import { RainbowFetchClient } from '@/framework/data/http/rainbowFetch';
 import { Contract } from '@ethersproject/contracts';
-import erc20ABI from '@/references/erc20-abi.json';
-import { ChainId } from '@/state/backendNetworks/types';
-import { useBackendNetworksStore } from '@/state/backendNetworks/backendNetworks';
-import { createRainbowStore } from '@/state/internal/createRainbowStore';
-import { createQueryStore } from '@/state/internal/createQueryStore';
-import { useSwapsStore } from '@/state/swaps/swapsStore';
-import { type SearchAsset, type TokenSearchAssetKey, TokenSearchThreshold } from '@/__swaps__/types/search';
-import { time } from '@/utils/time';
-import { parseTokenSearchResults, parseTokenSearchAcrossNetworks } from './utils';
+import { groupBy } from 'lodash';
+import qs from 'qs';
 import { TOKEN_SEARCH_URL } from 'react-native-dotenv';
+
+import { TokenSearchThreshold, type SearchAsset, type TokenSearchAssetKey } from '@/__swaps__/types/search';
+import { RainbowFetchClient } from '@/framework/data/http/rainbowFetch';
+import { getProvider } from '@/handlers/web3';
+import { logger, RainbowError } from '@/logger';
+import erc20ABI from '@/references/erc20-abi.json';
+import { useBackendNetworksStore } from '@/state/backendNetworks/backendNetworks';
+import { ChainId } from '@/state/backendNetworks/types';
+import { createQueryStore } from '@/state/internal/createQueryStore';
+import { createRainbowStore } from '@/state/internal/createRainbowStore';
+import { useSwapsStore } from '@/state/swaps/swapsStore';
+import { getUniqueId } from '@/utils/ethereumUtils';
+import { time } from '@/utils/time';
+
+import { parseTokenSearchAcrossNetworks, parseTokenSearchResults } from './utils';
 
 type SearchItemWithRelevance = SearchAsset & {
   relevance: number;

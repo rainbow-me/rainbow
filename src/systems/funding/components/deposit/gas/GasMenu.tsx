@@ -1,4 +1,7 @@
-import React, { type ReactNode, useCallback, useMemo } from 'react';
+import React, { useCallback, useMemo, type ReactNode } from 'react';
+
+import { type GasSettings } from '@/__swaps__/screens/Swap/hooks/useCustomGas';
+import { type GasSpeed } from '@/__swaps__/types/gas';
 import ButtonPressAnimation from '@/components/animations/ButtonPressAnimation';
 import { ContextMenu } from '@/components/context-menu';
 import { Centered } from '@/components/layout';
@@ -8,8 +11,6 @@ import { IS_ANDROID } from '@/env';
 import { add, formatNumber } from '@/helpers/utilities';
 import * as i18n from '@/languages';
 import { weiToGwei } from '@/parsers/gas';
-import { type GasSettings } from '@/__swaps__/screens/Swap/hooks/useCustomGas';
-import { type GasSpeed } from '@/__swaps__/types/gas';
 import { useDepositContext } from '@/systems/funding/contexts/DepositContext';
 import gasUtils from '@/utils/gas';
 
@@ -18,6 +19,7 @@ const SWAP_GAS_ICONS = gasUtils.SWAP_GAS_ICONS;
 
 export function GasMenu({ children, onSelectGasSpeed }: { children: ReactNode; onSelectGasSpeed: (speed: GasSpeed) => void }) {
   const { gasStores } = useDepositContext();
+  const isGasSponsored = gasStores.useIsGasSponsored(state => state);
   const metereologySuggestions = gasStores.useMeteorologyStore(state => state.getGasSuggestions());
   const menuOptions = useMemo(() => keys(metereologySuggestions), [metereologySuggestions]);
 
@@ -58,11 +60,16 @@ export function GasMenu({ children, onSelectGasSpeed }: { children: ReactNode; o
   }, [menuOptions, metereologySuggestions]);
 
   return (
-    <Box alignItems="center" justifyContent="center" style={{ margin: IS_ANDROID ? 0 : -GAS_BUTTON_HIT_SLOP }} testID="gas-speed-pager">
+    <Box
+      alignItems="center"
+      justifyContent="center"
+      style={{ margin: IS_ANDROID ? 0 : -GAS_BUTTON_HIT_SLOP }}
+      testID="gas-speed-pager"
+      pointerEvents={isGasSponsored ? 'none' : 'auto'}
+    >
       {IS_ANDROID ? (
         <ContextMenu
           activeOpacity={0}
-          enableContextMenu
           isAnchoredToRight
           isMenuPrimaryAction
           onPressActionSheet={handlePressActionSheet}
@@ -75,13 +82,7 @@ export function GasMenu({ children, onSelectGasSpeed }: { children: ReactNode; o
           </Centered>
         </ContextMenu>
       ) : (
-        <ContextMenuButton
-          enableContextMenu
-          isMenuPrimaryAction
-          menuConfig={menuConfig}
-          onPressMenuItem={handlePressMenuItem}
-          useActionSheetFallback={false}
-        >
+        <ContextMenuButton isMenuPrimaryAction menuConfig={menuConfig} onPressMenuItem={handlePressMenuItem} useActionSheetFallback={false}>
           <ButtonPressAnimation scaleTo={0.825} style={{ padding: GAS_BUTTON_HIT_SLOP }}>
             {children}
           </ButtonPressAnimation>

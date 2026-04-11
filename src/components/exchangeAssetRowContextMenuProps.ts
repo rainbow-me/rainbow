@@ -1,13 +1,15 @@
-import * as i18n from '@/languages';
-import { startCase } from 'lodash';
 import { type NativeSyntheticEvent } from 'react-native';
-import { setClipboard } from '@/hooks/useClipboard';
+
+import { startCase } from 'lodash';
+import { triggerHaptics } from 'react-native-turbo-haptics';
+
 import { showActionSheetWithOptions } from '@/framework/ui/utils/actionsheet';
+import { setClipboard } from '@/hooks/useClipboard';
+import * as i18n from '@/languages';
+import { useBackendNetworksStore } from '@/state/backendNetworks/backendNetworks';
+import { type ChainId } from '@/state/backendNetworks/types';
 import abbreviations from '@/utils/abbreviations';
 import ethereumUtils from '@/utils/ethereumUtils';
-import haptics from '@/utils/haptics';
-import { type ChainId } from '@/state/backendNetworks/types';
-import { useBackendNetworksStore } from '@/state/backendNetworks/backendNetworks';
 
 const buildBlockExplorerAction = (chainId: ChainId) => {
   const blockExplorerText = i18n.t(i18n.l.exchange.coin_row.view_on, {
@@ -41,7 +43,7 @@ const CoinRowActions = {
 
 export default function contextMenuProps(item: any, onCopySwapDetailsText: (address: string) => void) {
   const handleCopyContractAddress = (address: string) => {
-    haptics.selection();
+    triggerHaptics('selection');
     setClipboard(address);
     onCopySwapDetailsText(address);
   };

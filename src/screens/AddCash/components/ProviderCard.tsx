@@ -1,21 +1,20 @@
 import React from 'react';
 import { ScrollView } from 'react-native';
-import { LinearGradient } from 'expo-linear-gradient';
+
 import chroma from 'chroma-js';
+import { LinearGradient } from 'expo-linear-gradient';
 
-import { IS_IOS } from '@/env';
-import { Box, Text, Inline, Bleed, useBackgroundColor } from '@/design-system';
 import { ChainImage } from '@/components/coin-icon/ChainImage';
-
-import { Ramp as RampLogo } from '@/components/icons/svg/Ramp';
 import { Coinbase as CoinbaseLogo } from '@/components/icons/svg/Coinbase';
 import { Moonpay as MoonpayLogo } from '@/components/icons/svg/Moonpay';
+import { Ramp as RampLogo } from '@/components/icons/svg/Ramp';
 import { Stripe as StripeLogo } from '@/components/icons/svg/Stripe';
-
+import { Bleed, Box, Inline, Text, useBackgroundColor } from '@/design-system';
 import { FiatProviderName } from '@/entities/f2c';
-import { convertAPINetworkToInternalChainIds } from '@/screens/AddCash/utils';
-import { type ProviderConfig, CalloutType, PaymentMethod } from '@/screens/AddCash/types';
+import { IS_IOS } from '@/env';
 import * as i18n from '@/languages';
+import { CalloutType, PaymentMethod, type ProviderConfig } from '@/screens/AddCash/types';
+import { convertAPINetworkToInternalChainIds } from '@/screens/AddCash/utils';
 import { type ChainId } from '@/state/backendNetworks/types';
 
 type PaymentMethodConfig = {

@@ -1,10 +1,12 @@
 import React from 'react';
-import { RewardsSectionCard } from './RewardsSectionCard';
+
+import ButtonPressAnimation from '@/components/animations/ButtonPressAnimation';
 import { Inline, Stack, Text } from '@/design-system';
 import { type TextColor } from '@/design-system/color/palettes';
 import { type CustomColor } from '@/design-system/color/useForegroundColor';
-import ButtonPressAnimation from '@/components/animations/ButtonPressAnimation';
 import { useInfoIconColor } from '@/screens/rewards/hooks/useInfoIconColor';
+
+import { RewardsSectionCard } from './RewardsSectionCard';
 
 type Props = {
   title: string;

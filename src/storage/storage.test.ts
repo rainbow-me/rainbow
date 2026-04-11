@@ -1,4 +1,5 @@
-import { test, expect, beforeEach } from '@jest/globals';
+import { beforeEach, expect, test } from '@jest/globals';
+
 import { Storage } from '@/storage';
 
 type Schema = {

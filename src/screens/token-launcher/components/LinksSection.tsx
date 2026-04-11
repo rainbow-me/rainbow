@@ -1,31 +1,34 @@
 import React, { useCallback, useMemo, useState } from 'react';
-import { useDebouncedCallback } from 'use-debounce';
-import * as i18n from '@/languages';
 import { StyleSheet } from 'react-native';
-import { CollapsableField } from './CollapsableField';
-import { Bleed, Box, IconContainer, Separator, Text, TextIcon, TextShadow } from '@/design-system';
-import { useTokenLauncherStore } from '../state/tokenLauncherStore';
+
+import FastImage from 'react-native-fast-image';
 import Animated from 'react-native-reanimated';
-import { SingleFieldInput } from './SingleFieldInput';
+import { useDebouncedCallback } from 'use-debounce';
+
 import ButtonPressAnimation from '@/components/animations/ButtonPressAnimation';
 import { Icon } from '@/components/icons';
+import { Bleed, Box, IconContainer, Separator, Text, TextIcon, TextShadow } from '@/design-system';
+import { opacity } from '@/framework/ui/utils/opacity';
+import * as i18n from '@/languages';
+import { colors } from '@/styles';
+import { useTheme } from '@/theme/ThemeContext';
+
 import {
   COLLAPSABLE_FIELD_ANIMATION,
+  ERROR_RED,
   FIELD_BORDER_RADIUS,
   FIELD_BORDER_WIDTH,
   FIELD_INNER_BORDER_RADIUS,
   INNER_FIELD_BACKGROUND_COLOR,
-  SMALL_INPUT_HEIGHT,
   LINK_ICON_SIZE,
-  ERROR_RED,
+  SMALL_INPUT_HEIGHT,
 } from '../constants';
-import { useTheme } from '@/theme/ThemeContext';
-import FastImage from 'react-native-fast-image';
-import { Grid } from './Grid';
 import { validateLinkWorklet } from '../helpers/inputValidators';
-import { colors } from '@/styles';
+import { useTokenLauncherStore } from '../state/tokenLauncherStore';
 import { type Link, type LinkType } from '../types';
-import { opacity } from '@/framework/ui/utils/opacity';
+import { CollapsableField } from './CollapsableField';
+import { Grid } from './Grid';
+import { SingleFieldInput } from './SingleFieldInput';
 
 export const LINK_SETTINGS = {
   x: {

@@ -1,12 +1,14 @@
-import { opacity } from '@/framework/ui/utils/opacity';
+import { memo } from 'react';
+
+import { Blur, Canvas, Group, LinearGradient, Oval, Rect, vec } from '@shopify/react-native-skia';
+
 import { PANEL_BACKGROUND_DARK, PANEL_BACKGROUND_LIGHT } from '@/components/PanelSheet/PanelSheet';
 import { Box, useColorMode } from '@/design-system';
 import { FloatingSparks } from '@/features/perps/screens/perps-trade-details-sheet/FloatingSparks';
 import { PerspectiveGrid } from '@/features/perps/screens/perps-trade-details-sheet/PerspectiveGrid';
-import { type HlTrade, TradeExecutionType } from '@/features/perps/types';
+import { TradeExecutionType, type HlTrade } from '@/features/perps/types';
+import { opacity } from '@/framework/ui/utils/opacity';
 import useDimensions from '@/hooks/useDimensions';
-import { Blur, Canvas, Group, LinearGradient, Oval, Rect, vec } from '@shopify/react-native-skia';
-import { memo } from 'react';
 
 const CONFIG = {
   layout: {

@@ -1,10 +1,12 @@
+import messaging from '@react-native-firebase/messaging';
+import { gretch } from 'gretchen';
+
 import { IS_DEV } from '@/env';
 import { events } from '@/handlers/appEvents';
 import { logger, RainbowError } from '@/logger';
 import { getFCMToken } from '@/notifications/tokens';
 import { PerformanceReports, PerformanceReportSegments, PerformanceTracking } from '@/performance/tracking';
-import messaging from '@react-native-firebase/messaging';
-import { gretch } from 'gretchen';
+
 import { getWalletKitClient } from '../services/client';
 import { setSyncWalletKitClient } from '../services/syncClient';
 import { onSessionProposal } from './onSessionProposal';

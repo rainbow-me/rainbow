@@ -1,29 +1,32 @@
+import React, { useCallback, useEffect, useMemo, useState } from 'react';
+
+import { type SessionTypes } from '@walletconnect/types';
+import RadialGradient from 'react-native-radial-gradient';
+
 import { analytics } from '@/analytics';
 import { ChainImage } from '@/components/coin-icon/ChainImage';
-import { Box, Inline } from '@/design-system';
-import { changeConnectionMenuItems } from '@/helpers/walletConnectNetworks';
-import * as i18n from '@/languages';
-import Navigation, { useNavigation } from '@/navigation/Navigation';
-import Routes from '@/navigation/routesNames';
-import { useBackendNetworksStore } from '@/state/backendNetworks/backendNetworks';
-import { ChainId } from '@/state/backendNetworks/types';
-import styled from '@/framework/ui/styled-thing';
-import { padding, position } from '@/styles';
-import { useTheme } from '@/theme/ThemeContext';
-import { showActionSheetWithOptions } from '@/framework/ui/utils/actionsheet';
-import { changeAccount, disconnectSession } from '../services/sessions';
-import { type SessionTypes } from '@walletconnect/types';
-import React, { useCallback, useEffect, useMemo, useState } from 'react';
-import RadialGradient from 'react-native-radial-gradient';
-import { getAccountProfileInfo } from '@/state/wallets/walletsStore';
 import RequestVendorLogoIcon from '@/components/coin-icon/RequestVendorLogoIcon';
 import { ContactAvatar } from '@/components/contacts';
 import ImageAvatar from '@/components/contacts/ImageAvatar';
 import { ContextMenuButton } from '@/components/context-menu';
 import { Centered, ColumnWithMargins, Row } from '@/components/layout';
 import { TruncatedText } from '@/components/text';
-import { isValidHex } from '@/handlers/web3';
+import { Box, Inline } from '@/design-system';
+import styled from '@/framework/ui/styled-thing';
+import { showActionSheetWithOptions } from '@/framework/ui/utils/actionsheet';
 import { opacity } from '@/framework/ui/utils/opacity';
+import { isValidHex } from '@/handlers/web3';
+import { changeConnectionMenuItems } from '@/helpers/walletConnectNetworks';
+import * as i18n from '@/languages';
+import Navigation, { useNavigation } from '@/navigation/Navigation';
+import Routes from '@/navigation/routesNames';
+import { useBackendNetworksStore } from '@/state/backendNetworks/backendNetworks';
+import { ChainId } from '@/state/backendNetworks/types';
+import { getAccountProfileInfo } from '@/state/wallets/walletsStore';
+import { padding, position } from '@/styles';
+import { useTheme } from '@/theme/ThemeContext';
+
+import { changeAccount, disconnectSession } from '../services/sessions';
 
 const CONTAINER_PADDING = 15;
 const VENDOR_LOGO_ICON_SIZE = 50;

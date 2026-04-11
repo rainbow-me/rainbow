@@ -1,17 +1,20 @@
+import React from 'react';
+import { View } from 'react-native';
+
+import { useSharedValue } from 'react-native-reanimated';
+
 import ButtonPressAnimation from '@/components/animations/ButtonPressAnimation';
 import { ContactAvatar } from '@/components/contacts';
 import ImageAvatar from '@/components/contacts/ImageAvatar';
 import { Navbar } from '@/components/navbar/Navbar';
+import { IS_ANDROID } from '@/env';
+import * as i18n from '@/languages';
 import Navigation from '@/navigation/Navigation';
 import Routes from '@/navigation/routesNames';
 import { useAccountProfileInfo } from '@/state/wallets/walletsStore';
 import { useTheme } from '@/theme/ThemeContext';
-import React from 'react';
-import { View } from 'react-native';
-import { useSharedValue } from 'react-native-reanimated';
+
 import { ActivityList } from '../components/activity-list';
-import { IS_ANDROID } from '@/env';
-import * as i18n from '@/languages';
 
 export function ActivitySheetScreen() {
   const { accountSymbol, accountColor, accountImage, accountAddress } = useAccountProfileInfo();

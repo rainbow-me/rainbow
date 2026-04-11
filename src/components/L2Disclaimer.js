@@ -1,15 +1,18 @@
 import React from 'react';
+
 import RadialGradient from 'react-native-radial-gradient';
-import Divider from '@/components/Divider';
-import ButtonPressAnimation from './animations/ButtonPressAnimation';
+
 import { ChainImage } from '@/components/coin-icon/ChainImage';
-import { Column, Row } from './layout';
-import { Text } from './text';
-import { padding, position } from '@/styles';
-import { darkModeThemeColors } from '@/styles/colors';
+import Divider from '@/components/Divider';
+import { opacity } from '@/framework/ui/utils/opacity';
 import * as i18n from '@/languages';
 import { useBackendNetworksStore } from '@/state/backendNetworks/backendNetworks';
-import { opacity } from '@/framework/ui/utils/opacity';
+import { padding, position } from '@/styles';
+import { darkModeThemeColors } from '@/styles/colors';
+
+import ButtonPressAnimation from './animations/ButtonPressAnimation';
+import { Column, Row } from './layout';
+import { Text } from './text';
 
 const L2Disclaimer = ({
   chainId,

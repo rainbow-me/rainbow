@@ -1,11 +1,12 @@
-import * as i18n from '@/languages';
 import { useCallback, useEffect, useState } from 'react';
 import { InteractionManager } from 'react-native';
-import type useGas from '@/hooks/useGas';
-import { methodRegistryLookupAndParse } from '@/utils/methodRegistry';
+
 import { analytics } from '@/analytics';
-import { type RequestSource } from '@/utils/requestNavigationHandlers';
+import type useGas from '@/hooks/useGas';
+import * as i18n from '@/languages';
 import { type ChainId } from '@/state/backendNetworks/types';
+import { methodRegistryLookupAndParse } from '@/utils/methodRegistry';
+import { type RequestSource } from '@/utils/requestNavigationHandlers';
 
 type TransactionSetupParams = {
   chainId: ChainId;

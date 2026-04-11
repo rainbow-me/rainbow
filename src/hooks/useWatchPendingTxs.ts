@@ -1,14 +1,16 @@
 import { useCallback } from 'react';
-import { type RainbowTransaction, TransactionStatus } from '@/entities/transactions';
-import { consolidatedTransactionsQueryKey } from '@/resources/transactions/consolidatedTransactions';
-import { pendingTransactionsActions } from '@/state/pendingTransactions';
-import { useRainbowToastsStore } from '@/components/rainbow-toast/useRainbowToastsStore';
-import { userAssetsStoreManager } from '@/state/assets/userAssetsStoreManager';
+
 import { analytics } from '@/analytics';
 import { event } from '@/analytics/event';
-import { type AssetUpdateTransaction, useAssetUpdatesStore } from '@/state/minedTransactions/minedTransactions';
-import { backendNetworksActions } from '@/state/backendNetworks/backendNetworks';
+import { useRainbowToastsStore } from '@/components/rainbow-toast/useRainbowToastsStore';
+import { type RainbowTransaction, TransactionStatus } from '@/entities/transactions';
 import { queryClient } from '@/react-query';
+import { consolidatedTransactionsQueryKey } from '@/resources/transactions/consolidatedTransactions';
+import { userAssetsStoreManager } from '@/state/assets/userAssetsStoreManager';
+import { backendNetworksActions } from '@/state/backendNetworks/backendNetworks';
+import { type AssetUpdateTransaction, useAssetUpdatesStore } from '@/state/minedTransactions/minedTransactions';
+import { pendingTransactionsActions } from '@/state/pendingTransactions';
+
 import { resolvePendingTransaction } from './pendingTransactionResolution';
 
 export const useWatchPendingTransactions = ({ address }: { address: string }) => {

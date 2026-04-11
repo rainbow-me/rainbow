@@ -1,15 +1,18 @@
 import React from 'react';
 import { StyleSheet } from 'react-native';
+
 import { BlurView } from 'react-native-blur-view';
 import Animated, { interpolate, useAnimatedStyle, withTiming } from 'react-native-reanimated';
+
 import { Box, TextIcon, useColorMode } from '@/design-system';
 import { IS_IOS } from '@/env';
 import deviceUtils from '@/utils/deviceUtils';
-import { useBrowserContext } from './BrowserContext';
-import { TAB_VIEW_COLUMN_WIDTH } from './Dimensions';
+
 import { TIMING_CONFIGS } from '../animations/animationConfigs';
+import { useBrowserContext } from './BrowserContext';
 import { RAINBOW_HOME } from './constants';
-import { type TabId, TabViewGestureStates } from './types';
+import { TAB_VIEW_COLUMN_WIDTH } from './Dimensions';
+import { TabViewGestureStates, type TabId } from './types';
 import { getTabInfo } from './utils/getTabInfo';
 
 export const X_BUTTON_SIZE = 22;

@@ -1,10 +1,13 @@
-import MaskedView from '@react-native-masked-view/masked-view';
 import React from 'react';
-import Animated, { interpolate, interpolateColor, useAnimatedStyle, type SharedValue, type AnimatedStyle } from 'react-native-reanimated';
+
+import MaskedView from '@react-native-masked-view/masked-view';
+import Animated, { interpolate, interpolateColor, useAnimatedStyle, type AnimatedStyle, type SharedValue } from 'react-native-reanimated';
+
 import { Icon } from '@/components/icons';
 import { Box, Cover, useColorMode } from '@/design-system';
 import { globalColors } from '@/design-system/color/palettes';
 import { useTheme } from '@/theme/ThemeContext';
+
 import { TAB_BAR_ICON_SIZE } from './dimensions';
 
 type TabBarIconProps = {

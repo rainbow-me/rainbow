@@ -1,33 +1,31 @@
+import { decodeFunctionResult, encodeFunctionData, type Address, type Hex } from 'viem';
+
 import { type NativeCurrencyKey } from '@/entities/nativeCurrencyTypes';
+import type { Tier } from '@/features/rnbw-membership/types';
+import { getProvider } from '@/handlers/web3';
+import { logger, RainbowError } from '@/logger';
 import { getPlatformClient } from '@/resources/platform/client';
 import { type PlatformResponse } from '@/resources/platform/types';
 import { userAssetsStoreManager } from '@/state/assets/userAssetsStoreManager';
+import { ChainId } from '@/state/backendNetworks/types';
 import { createQueryStore } from '@/state/internal/createQueryStore';
 import { useWalletsStore } from '@/state/wallets/walletsStore';
-import { ChainId } from '@/state/backendNetworks/types';
-import { type Address } from 'viem';
 
-type StakingTierLevel = 'STAKING_TIER_LEVEL_UNSPECIFIED' | string;
-
-type StakingTier = {
-  cashbackBps: number;
-  level: StakingTierLevel;
-  minStakeAmount: string;
-  name: string;
-};
+import { STAKING_ABI, STAKING_CHAIN_ID, STAKING_CONTRACT_ADDRESS } from '../constants';
 
 type StakingPnl = {
-  exchangeRateGain: string;
   netProfit: string;
   totalCashbackReceived: string;
   totalExitFeePaid: string;
   totalRnbwStaked: string;
   totalRnbwUnstaked: string;
+  exchangeRateGain: string;
 };
 
-type StakingPositionData = {
-  allTiers: StakingTier[];
+export type StakingPositionData = {
+  allTiers: Tier[];
   decimals: number;
+  exitFeePercentage: number;
   hasPosition: boolean;
   lastUpdateTime: string;
   pnl: StakingPnl;
@@ -36,7 +34,7 @@ type StakingPositionData = {
   stakedRnbw: string;
   stakedValueInCurrency: string;
   stakingStartTime: string;
-  tier: StakingTier;
+  tier: Tier;
 };
 
 type StakingPositionParams = {
@@ -45,6 +43,7 @@ type StakingPositionParams = {
 };
 
 type StakingPositionStore = {
+  getExitFeePercentage: () => number | undefined;
   hasPosition: () => boolean;
 };
 
@@ -57,6 +56,9 @@ export const useStakingPositionStore = createQueryStore<StakingPositionData, Sta
     },
   },
   (_, get) => ({
+    getExitFeePercentage: () => {
+      return get().getData()?.exitFeePercentage;
+    },
     hasPosition: () => {
       const data = get().getData();
       return data?.hasPosition ?? false;
@@ -65,17 +67,33 @@ export const useStakingPositionStore = createQueryStore<StakingPositionData, Sta
   { storageKey: 'rnbwStakingPosition' }
 );
 
-type StakingPositionResponse = PlatformResponse<StakingPositionData>;
+type StakingPositionResponse = PlatformResponse<Omit<StakingPositionData, 'exitFeePercentage'>>;
 
 async function fetchStakingPosition({ currency, address }: StakingPositionParams): Promise<StakingPositionData> {
-  const response = await getPlatformClient().get<StakingPositionResponse>('/staking/GetStakingPosition', {
-    params: {
-      walletAddress: address,
-      chainId: String(ChainId.base),
-      currency,
-      includeTiers: String(true),
-    },
-  });
+  const [response, exitFeePercentage] = await Promise.all([
+    getPlatformClient().get<StakingPositionResponse>('/staking/GetStakingPosition', {
+      params: {
+        walletAddress: address,
+        chainId: String(ChainId.base),
+        currency,
+        includeTiers: String(true),
+      },
+    }),
+    readExitFeePercentage(),
+  ]);
 
-  return response.data.result;
+  return { ...response.data.result, exitFeePercentage };
+}
+
+async function readExitFeePercentage(): Promise<number> {
+  try {
+    const provider = getProvider({ chainId: STAKING_CHAIN_ID });
+    const data = encodeFunctionData({ abi: STAKING_ABI, functionName: 'exitFeeBps' });
+    const result = await provider.call({ to: STAKING_CONTRACT_ADDRESS, data });
+    const exitFeeBps = decodeFunctionResult({ abi: STAKING_ABI, functionName: 'exitFeeBps', data: result as Hex });
+    return Number(exitFeeBps) / 100;
+  } catch (e) {
+    logger.error(new RainbowError('[readExitFeePercentage]: Failed to read exit fee percentage', e));
+    throw e;
+  }
 }

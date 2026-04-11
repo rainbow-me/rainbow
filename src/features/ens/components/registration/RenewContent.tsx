@@ -1,11 +1,14 @@
-import { format } from 'date-fns';
 import React from 'react';
-import RegistrationReviewRows from './RegistrationReviewRows';
+
+import { format } from 'date-fns';
+
 import { Inset, Separator, Stack } from '@/design-system';
-import { ENS_DOMAIN, REGISTRATION_MODES } from '../../utils/helpers';
 import useDimensions from '@/hooks/useDimensions';
-import useENSRegistrant from '../../hooks/useENSRegistrant';
 import timeUnits from '@/references/time-units.json';
+
+import useENSRegistrant from '../../hooks/useENSRegistrant';
+import { ENS_DOMAIN, REGISTRATION_MODES } from '../../utils/helpers';
+import RegistrationReviewRows from './RegistrationReviewRows';
 
 const RenewContent = ({
   yearsDuration,

@@ -1,15 +1,17 @@
 import { verifyMessage, Wallet } from '@ethersproject/wallet';
 import { generateMnemonic } from 'bip39';
 import { RAINBOW_MASTER_KEY } from 'react-native-dotenv';
-import { loadString, publicAccessControlOptions, saveString } from '../model/keychain';
-import { ChainId } from '@/state/backendNetworks/types';
-import { ensureLibWallet, loadWallet } from '../model/wallet';
-import { signingWalletAddress, signingWallet as signingWalletKeychain } from '../utils/keychainConstants';
+
 import type { EthereumAddress } from '@/entities/wallet';
 import AesEncryptor from '@/handlers/aesEncryption';
 import { addHexPrefix, getProvider } from '@/handlers/web3';
-import { deriveAccountFromWalletInput } from '@/utils/wallet';
 import { logger, RainbowError } from '@/logger';
+import { ChainId } from '@/state/backendNetworks/types';
+import { deriveAccountFromWalletInput } from '@/utils/wallet';
+
+import { loadString, publicAccessControlOptions, saveString } from '../model/keychain';
+import { ensureLibWallet, loadWallet } from '../model/wallet';
+import { signingWalletAddress, signingWallet as signingWalletKeychain } from '../utils/keychainConstants';
 
 export async function getPublicKeyOfTheSigningWalletAndCreateWalletIfNeeded(): Promise<EthereumAddress | null> {
   let alreadyExistingWallet = await loadString(signingWalletAddress);

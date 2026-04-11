@@ -1,11 +1,12 @@
 import React, { useEffect, useMemo, useState } from 'react';
 import { Animated, Easing, Image } from 'react-native';
+
 import CaretImageSource from '@/assets/family-dropdown-arrow.png';
-import { useTheme } from '@/theme/ThemeContext';
 import ButtonPressAnimation from '@/components/animations/ButtonPressAnimation';
 import { Box, Inline, Text } from '@/design-system';
-import * as i18n from '@/languages';
 import useOpenClaimables from '@/hooks/useOpenClaimables';
+import * as i18n from '@/languages';
+import { useTheme } from '@/theme/ThemeContext';
 
 const AnimatedImgixImage = Animated.createAnimatedComponent(Image);
 

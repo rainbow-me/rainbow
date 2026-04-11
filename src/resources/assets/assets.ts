@@ -1,12 +1,13 @@
-import * as i18n from '@/languages';
+import type { ParsedAddressAsset } from '@/entities/tokens';
+import { type Asset, type NetworkMapping } from '@/features/positions/types/generated/transaction/transaction';
 import { isNativeAsset } from '@/handlers/assets';
 import { convertRawAmountToBalance } from '@/helpers/utilities';
-import type { ParsedAddressAsset } from '@/entities/tokens';
-import { type AddysAsset, type ParsedAsset } from './types';
-import { getUniqueId } from '@/utils/ethereumUtils';
+import * as i18n from '@/languages';
 import { useBackendNetworksStore } from '@/state/backendNetworks/backendNetworks';
 import { ChainId } from '@/state/backendNetworks/types';
-import { type Asset, type NetworkMapping } from '@/features/positions/types/generated/transaction/transaction';
+import { getUniqueId } from '@/utils/ethereumUtils';
+
+import { type AddysAsset, type ParsedAsset } from './types';
 
 function parseNetworks(networks: NetworkMapping[] | undefined) {
   if (!networks) return {};

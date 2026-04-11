@@ -1,9 +1,12 @@
-import { NavigationHelpersContext, StackActions, type StackNavigationState } from '@react-navigation/native';
 import React, { useCallback, useMemo, useRef } from 'react';
-import type { BottomSheetDescriptorMap, BottomSheetNavigationConfig, BottomSheetNavigationHelpers } from '../types';
-import BottomSheetRoute from './BottomSheetRoute';
+
+import { NavigationHelpersContext, StackActions, type StackNavigationState } from '@react-navigation/native';
+
 import useForceUpdate from '@/hooks/useForceUpdate';
 import { type RootStackParamList } from '@/navigation/types';
+
+import type { BottomSheetDescriptorMap, BottomSheetNavigationConfig, BottomSheetNavigationHelpers } from '../types';
+import BottomSheetRoute from './BottomSheetRoute';
 
 type Props = BottomSheetNavigationConfig & {
   state: StackNavigationState<RootStackParamList>;

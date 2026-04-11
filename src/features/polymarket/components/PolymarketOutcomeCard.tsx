@@ -1,9 +1,10 @@
 import { memo, useMemo } from 'react';
 import { StyleSheet } from 'react-native';
-import { Box, Text, useColorMode, globalColors } from '@/design-system';
-import { opacity } from '@/framework/ui/utils/opacity';
+
 import ImgixImage from '@/components/images/ImgixImage';
+import { Box, globalColors, Text, useColorMode } from '@/design-system';
 import { OutcomeBadge } from '@/features/polymarket/components/OutcomeBadge';
+import { opacity } from '@/framework/ui/utils/opacity';
 
 type OutcomeCardProps = {
   accentColor: string;

@@ -1,7 +1,8 @@
-import { type StaticJsonRpcProvider } from '@ethersproject/providers';
 import { type Signer } from '@ethersproject/abstract-signer';
-import { erc20Abi, encodeFunctionData, type Address, type Hash } from 'viem';
-import { STAKING_CONTRACT_ADDRESS, STAKING_ABI, RNBW_TOKEN_ADDRESS, STAKING_GAS_LIMIT } from '../constants';
+import { type StaticJsonRpcProvider } from '@ethersproject/providers';
+import { encodeFunctionData, erc20Abi, type Address, type Hash } from 'viem';
+
+import { RNBW_TOKEN_ADDRESS, STAKING_ABI, STAKING_CONTRACT_ADDRESS, STAKING_GAS_LIMIT } from '../constants';
 import { checkIfStakingNeedsApproval } from './checkIfStakingNeedsApproval';
 
 export async function stakeRnbwManual({

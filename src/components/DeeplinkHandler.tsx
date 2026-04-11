@@ -1,11 +1,14 @@
 import { useCallback, useEffect, useRef } from 'react';
 import { Linking } from 'react-native';
-import branch from 'react-native-branch';
+
 import { useMobileWalletProtocolHost } from '@coinbase/mobile-wallet-protocol-host';
+import branch from 'react-native-branch';
+
 import handleDeeplink from '@/handlers/deeplinks';
-import { type InitialRoute } from '@/navigation/initialRoute';
 import { logger, RainbowError } from '@/logger';
+import { type InitialRoute } from '@/navigation/initialRoute';
 import { branchListener } from '@/utils/branch';
+
 import { useWalletsStore } from '../state/wallets/walletsStore';
 
 type DeeplinkHandlerProps = {

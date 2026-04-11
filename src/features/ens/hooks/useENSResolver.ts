@@ -1,8 +1,10 @@
 import { useQuery } from '@tanstack/react-query';
+
+import { queryClient, type QueryConfigDeprecated, type UseQueryData } from '@/react-query';
+
+import { ensPublicResolverAddress } from '../references';
 import { fetchResolver } from '../utils/handlers';
 import { getENSData, saveENSData } from '../utils/localStorage';
-import { queryClient, type QueryConfigDeprecated, type UseQueryData } from '@/react-query';
-import { ensPublicResolverAddress } from '../references';
 
 export const ensResolverQueryKey = (name: string) => ['ens-resolver', name];
 

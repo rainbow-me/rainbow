@@ -1,11 +1,12 @@
+import { type Address } from 'viem';
+
 import { type NativeCurrencyKey } from '@/entities/nativeCurrencyTypes';
+import { convertAmountToNativeDisplayWorklet, truncateToDecimalsWithThreshold } from '@/helpers/utilities';
 import { getPlatformClient } from '@/resources/platform/client';
 import { type PlatformResponse } from '@/resources/platform/types';
 import { userAssetsStoreManager } from '@/state/assets/userAssetsStoreManager';
 import { createQueryStore } from '@/state/internal/createQueryStore';
 import { useWalletsStore } from '@/state/wallets/walletsStore';
-import { type Address } from 'viem';
-import { convertAmountToNativeDisplayWorklet, truncateToDecimalsWithThreshold } from '@/helpers/utilities';
 
 type AirdropBalanceStore = {
   getFormattedBalance: () => {

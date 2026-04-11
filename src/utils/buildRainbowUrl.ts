@@ -1,8 +1,9 @@
-import type { EthereumAddress } from '@/entities/wallet';
+import { qs } from 'url-parse';
+
 import type { UniqueAsset } from '@/entities/uniqueAssets';
+import type { EthereumAddress } from '@/entities/wallet';
 import { logger, RainbowError } from '@/logger';
 import { RAINBOW_PROFILES_BASE_URL } from '@/references/constants';
-import { qs } from 'url-parse';
 
 export function parseCollectionSlugFromUrl(url: string) {
   if (!url.trim()) {

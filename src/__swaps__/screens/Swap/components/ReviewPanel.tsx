@@ -1,11 +1,22 @@
+import React, { useCallback } from 'react';
+import { StyleSheet, View } from 'react-native';
+
+import Animated, {
+  runOnJS,
+  useAnimatedReaction,
+  useAnimatedStyle,
+  useDerivedValue,
+  useSharedValue,
+  withDelay,
+  withSpring,
+} from 'react-native-reanimated';
+
 import { AnimatedChainImage } from '@/__swaps__/screens/Swap/components/AnimatedChainImage';
 import { ReviewGasButton } from '@/__swaps__/screens/Swap/components/GasButton';
-import { GestureHandlerButton } from '@/components/buttons/GestureHandlerButton';
 import { useEstimatedTime } from '@/__swaps__/utils/meteorology';
-import { convertRawAmountToBalance, convertRawAmountToBalanceWorklet, handleSignificantDecimals, multiply } from '@/helpers/utilities';
-import { opacity } from '@/framework/ui/utils/opacity';
-import ButtonPressAnimation from '@/components/animations/ButtonPressAnimation';
 import { SPRING_CONFIGS } from '@/components/animations/animationConfigs';
+import ButtonPressAnimation from '@/components/animations/ButtonPressAnimation';
+import { GestureHandlerButton } from '@/components/buttons/GestureHandlerButton';
 import {
   AnimatedText,
   Bleed,
@@ -20,32 +31,25 @@ import {
   useColorMode,
   useForegroundColor,
 } from '@/design-system';
+import { opacity } from '@/framework/ui/utils/opacity';
+import { convertRawAmountToBalance, convertRawAmountToBalanceWorklet, handleSignificantDecimals, multiply } from '@/helpers/utilities';
+import { useWillExecuteDelegation } from '@/hooks/useWillExecuteDelegation';
 import * as i18n from '@/languages';
 import { useNavigation } from '@/navigation/Navigation';
 import Routes from '@/navigation/routesNames';
+import { backendNetworksActions } from '@/state/backendNetworks/backendNetworks';
+import { ChainId } from '@/state/backendNetworks/types';
 import { swapsStore, useSwapsStore } from '@/state/swaps/swapsStore';
-import { type CrosschainQuote, type Quote, type QuoteError } from '@rainbow-me/swaps';
-import React, { useCallback } from 'react';
-import { StyleSheet, View } from 'react-native';
-import Animated, {
-  runOnJS,
-  useAnimatedReaction,
-  useAnimatedStyle,
-  useDerivedValue,
-  useSharedValue,
-  withDelay,
-  withSpring,
-} from 'react-native-reanimated';
+import { getAccountAddress, useAccountAddress } from '@/state/wallets/walletsStore';
 import { THICK_BORDER_WIDTH } from '@/styles/constants';
+import { type CrosschainQuote, type Quote, type QuoteError } from '@rainbow-me/swaps';
+
 import { REVIEW_SHEET_ROW_HEIGHT } from '../constants';
 import { useSelectedGasSpeed } from '../hooks/useSelectedGas';
-import { useWillExecuteDelegation, willExecuteDelegation } from '@/features/delegation/willDelegate';
-import { getAccountAddress, useAccountAddress } from '@/state/wallets/walletsStore';
 import { NavigationSteps, useSwapContext } from '../providers/swap-provider';
 import { EstimatedSwapGasFee, EstimatedSwapGasFeeSlot } from './EstimatedSwapGasFee';
 import { UnmountOnAnimatedReaction } from './UnmountOnAnimatedReaction';
-import { backendNetworksActions } from '@/state/backendNetworks/backendNetworks';
-import { ChainId } from '@/state/backendNetworks/types';
+import { willExecuteDelegation } from '@/features/delegation/willDelegate';
 
 const UNKNOWN_LABEL = i18n.t(i18n.l.swap.unknown);
 const REVIEW_LABEL = i18n.t(i18n.l.expanded_state.swap_details.review);

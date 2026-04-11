@@ -1,13 +1,13 @@
-import { getNumberFormatter } from '@/helpers/intl';
 import {
-  isNumberStringWorklet,
-  toFixedWorklet,
-  trimTrailingZeros,
-  lessThanWorklet,
-  greaterThanOrEqualToWorklet,
   divWorklet,
+  greaterThanOrEqualToWorklet,
+  isNumberStringWorklet,
+  lessThanWorklet,
+  toFixedWorklet,
   toStringWorklet,
+  trimTrailingZeros,
 } from '@/framework/core/safeMath';
+import { getNumberFormatter } from '@/helpers/intl';
 
 // There are many other formatCurrency functions, but this is simplified for hyperliquid which is all USD
 export function formatCurrency(

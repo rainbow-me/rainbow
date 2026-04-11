@@ -1,4 +1,5 @@
 import { useCallback, useEffect, useRef } from 'react';
+
 import { RainbowError, logger } from '@/logger';
 import { time } from '@/utils/time';
 

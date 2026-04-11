@@ -1,5 +1,7 @@
-import { useDerivedValue } from 'react-native-reanimated';
+import { useCallback } from 'react';
+
 import {
+  Skia,
   type SkColor,
   type SkPaint,
   type SkParagraph,
@@ -7,19 +9,20 @@ import {
   type SkTextFontStyle,
   type SkTextShadow,
   type SkTextStyle,
-  Skia,
 } from '@shopify/react-native-skia';
-import { useCallback } from 'react';
+import { useDerivedValue } from 'react-native-reanimated';
+
 import { type TextAlign } from '@/components/text/types';
 import { useColorMode } from '@/design-system/color/ColorMode';
 import { type TextColor } from '@/design-system/color/palettes';
 import { getColorForTheme } from '@/design-system/color/useForegroundColor';
 import { type SharedOrDerivedValueText } from '@/design-system/components/Text/AnimatedText';
 import { type TextWeight } from '@/design-system/components/Text/Text';
-import { type TextSize, typeHierarchy } from '@/design-system/typography/typeHierarchy';
+import { typeHierarchy, type TextSize } from '@/design-system/typography/typeHierarchy';
 import { IS_IOS } from '@/env';
 import { opacity } from '@/framework/ui/utils/opacity';
 import { type SharedOrDerivedValue } from '@/types/reanimated';
+
 import { getSkiaFontWeight, useSkiaFontManager } from './skiaFontManager';
 
 export type TextSegment = {
@@ -122,7 +125,7 @@ export function useSkiaText({
           segmentStyle.color = Skia.Color(opacity(segment.color, segment.opacity));
         }
         paragraphBuilder.pushStyle(segmentStyle, segment.foregroundPaint ?? foregroundPaint, segment.backgroundPaint ?? backgroundPaint);
-        paragraphBuilder.addText(typeof segment.text === 'string' ? segment.text : segment.text.value ?? '');
+        paragraphBuilder.addText(typeof segment.text === 'string' ? segment.text : (segment.text.value ?? ''));
         paragraphBuilder.pop();
       };
 
@@ -201,8 +204,8 @@ function getTextStyle({
       ? typeof colorOverride === 'string'
         ? Skia.Color(colorOverride)
         : colorOverride
-      : (defaultColor && 'value' in defaultColor ? defaultColor.value : defaultColor) ??
-        Skia.Color(typeof color === 'string' ? color : color.value),
+      : ((defaultColor && 'value' in defaultColor ? defaultColor.value : defaultColor) ??
+        Skia.Color(typeof color === 'string' ? color : color.value)),
     fontFamilies: IS_IOS ? SF_PRO_ROUNDED_IOS : [`SFProRounded-${weightOverride ?? weight}`],
     fontSize: fontInfo.fontSize,
     fontStyle: IS_IOS ? { weight: getSkiaFontWeight(weightOverride ?? weight) } : EMPTY_FONT_STYLE,

@@ -1,4 +1,5 @@
 import BigNumber from 'bignumber.js';
+
 import {
   ceilWorklet,
   divWorklet,
@@ -15,9 +16,9 @@ import {
   roundWorklet,
   subWorklet,
   sumWorklet,
-  trimTrailingZeros,
   toFixedWorklet,
   toScaledIntegerWorklet,
+  trimTrailingZeros,
   truncateToDecimals,
 } from './safeMath';
 

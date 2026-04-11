@@ -1,13 +1,15 @@
-import { opacity } from '@/framework/ui/utils/opacity';
+import React, { memo, useState } from 'react';
+import { StyleSheet, View } from 'react-native';
+
+import { Canvas, Group, LinearGradient, Paint, RoundedRect, Shadow, vec } from '@shopify/react-native-skia';
+
 import ButtonPressAnimation from '@/components/animations/ButtonPressAnimation';
 import { GradientText } from '@/components/text';
 import { globalColors, Text, useColorMode } from '@/design-system';
+import { opacity } from '@/framework/ui/utils/opacity';
 import * as i18n from '@/languages';
 import Navigation from '@/navigation/Navigation';
 import Routes from '@/navigation/routesNames';
-import { Canvas, Group, Paint, RoundedRect, Shadow, LinearGradient, vec } from '@shopify/react-native-skia';
-import React, { memo, useState } from 'react';
-import { StyleSheet, View } from 'react-native';
 import { TAB_BAR_HEIGHT } from '@/navigation/SwipeNavigator';
 
 const BORDER_RADIUS = 28;

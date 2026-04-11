@@ -1,20 +1,22 @@
+import * as React from 'react';
+
+import Animated, { useAnimatedStyle, useDerivedValue, withSpring } from 'react-native-reanimated';
+import { useRecoilState } from 'recoil';
+
+import { navigateToSwaps } from '@/__swaps__/screens/Swap/navigateToSwaps';
+import { analytics } from '@/analytics';
 import ButtonPressAnimation from '@/components/animations/ButtonPressAnimation';
 import { CopyFloatingEmojis } from '@/components/floating-emojis';
+import { enableActionsOnReadOnlyWallet } from '@/config/debug';
 import { AccentColorProvider, Box, Column, Columns, Inset, Stack, Text, useColorMode } from '@/design-system';
+import { useAccountAccentColor } from '@/hooks/useAccountAccentColor';
 import * as i18n from '@/languages';
+import { useRemoteConfig } from '@/model/remoteConfig';
 import Navigation from '@/navigation/Navigation';
 import Routes from '@/navigation/routesNames';
 import { addressCopiedToastAtom } from '@/recoil/addressCopiedToastAtom';
 import { getIsDamagedWallet, getIsReadOnlyWallet, useAccountAddress, useIsDamagedWallet } from '@/state/wallets/walletsStore';
 import watchingAlert from '@/utils/watchingAlert';
-import { navigateToSwaps } from '@/__swaps__/screens/Swap/navigateToSwaps';
-import { analytics } from '@/analytics';
-import { enableActionsOnReadOnlyWallet } from '@/config/debug';
-import { useAccountAccentColor } from '@/hooks/useAccountAccentColor';
-import { useRemoteConfig } from '@/model/remoteConfig';
-import * as React from 'react';
-import Animated, { useAnimatedStyle, useDerivedValue, withSpring } from 'react-native-reanimated';
-import { useRecoilState } from 'recoil';
 
 export const ProfileActionButtonsRowHeight = 80;
 

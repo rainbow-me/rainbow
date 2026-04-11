@@ -1,12 +1,13 @@
-import { RainbowImage } from '@/components/RainbowImage';
-import ShimmerAnimation from '@/components/animations/ShimmerAnimation';
-import { ToastSFSymbolIcon } from '@/components/rainbow-toast/ToastSFSymbolIcon';
-import { TOAST_ICON_SIZE } from '@/components/rainbow-toast/constants';
-import type { RainbowToast } from '@/components/rainbow-toast/types';
-import { useToastColors } from '@/components/rainbow-toast/useToastColors';
-import { TransactionStatus } from '@/entities/transactions';
 import React, { memo } from 'react';
 import { View } from 'react-native';
+
+import ShimmerAnimation from '@/components/animations/ShimmerAnimation';
+import { TOAST_ICON_SIZE } from '@/components/rainbow-toast/constants';
+import { ToastSFSymbolIcon } from '@/components/rainbow-toast/ToastSFSymbolIcon';
+import type { RainbowToast } from '@/components/rainbow-toast/types';
+import { useToastColors } from '@/components/rainbow-toast/useToastColors';
+import { RainbowImage } from '@/components/RainbowImage';
+import { TransactionStatus } from '@/entities/transactions';
 
 const BORDER_RADIUS = 10;
 

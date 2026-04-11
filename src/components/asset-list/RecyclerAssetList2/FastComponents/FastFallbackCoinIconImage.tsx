@@ -1,5 +1,6 @@
 import React, { memo, useState } from 'react';
 import { StyleSheet, View } from 'react-native';
+
 import { ImgixImage } from '@/components/images';
 import { type ThemeContextProps } from '@/theme/ThemeContext';
 

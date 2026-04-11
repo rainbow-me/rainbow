@@ -1,9 +1,11 @@
 import React from 'react';
-import { Box } from '@/design-system';
-import { useTheme } from '@/theme/ThemeContext';
-import Animated, { useAnimatedStyle, useSharedValue, withTiming } from 'react-native-reanimated';
 import { type LayoutChangeEvent } from 'react-native';
+
+import Animated, { useAnimatedStyle, useSharedValue, withTiming } from 'react-native-reanimated';
+
+import { Box } from '@/design-system';
 import { opacity } from '@/framework/ui/utils/opacity';
+import { useTheme } from '@/theme/ThemeContext';
 
 type Props = {
   // Between 0 and 1

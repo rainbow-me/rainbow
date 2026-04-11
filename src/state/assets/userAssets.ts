@@ -1,12 +1,14 @@
-import { getAccountAddress, useAccountAddress } from '@/state/wallets/walletsStore';
 import { type Address } from 'viem';
+
+import { getAccountAddress, useAccountAddress } from '@/state/wallets/walletsStore';
+
 import { type EqualityFn, type Selector } from '../internal/types';
 import { createStoreFactoryUtils } from '../internal/utils/factoryUtils';
 import { createUserAssetsStore } from './createUserAssetsStore';
 import { type UserAssetsStateToPersist } from './persistence';
+import { cleanupPositionsAssetsSync, setupPositionsAssetsSync } from './positionsSync';
 import { type QueryEnabledUserAssetsState, type UserAssetsRouter, type UserAssetsStoreType } from './types';
 import { userAssetsStoreManager } from './userAssetsStoreManager';
-import { setupPositionsAssetsSync, cleanupPositionsAssetsSync } from './positionsSync';
 
 const { persist, portableSubscribe, rebindSubscriptions } = createStoreFactoryUtils<UserAssetsStoreType, UserAssetsStateToPersist>(
   getOrCreateStore
@@ -20,7 +22,7 @@ function getOrCreateStore(address?: Address | string): UserAssetsStoreType {
    * accountAddress. It's needed to ensure there's an address available immediately upon app
    * launch, which currently is not the case — the initial Redux address is an empty string.
    */
-  const accountAddress = rawAddress?.length ? rawAddress : cachedAddress ?? rawAddress;
+  const accountAddress = rawAddress?.length ? rawAddress : (cachedAddress ?? rawAddress);
 
   if (cachedStore && cachedAddress === accountAddress) return cachedStore;
 

@@ -1,18 +1,19 @@
 import React, { memo } from 'react';
+
 import ButtonPressAnimation from '@/components/animations/ButtonPressAnimation';
 import { Bleed, Box, Text, TextIcon, TextShadow, useColorMode } from '@/design-system';
+import { MarketSortOrderDropdown } from '@/features/perps/components/MarketSortOrderDropdown';
 import { PerpMarketRow } from '@/features/perps/components/PerpMarketRow';
 import { usePerpsAccentColorContext } from '@/features/perps/context/PerpsAccentColorContext';
+import { useMarketSortOrderLabels } from '@/features/perps/hooks/useMarketSortOrderLabels';
 import { PerpsNavigation } from '@/features/perps/screens/PerpsNavigator';
 import { useHyperliquidMarketsStore, useSortedHyperliquidMarkets } from '@/features/perps/stores/hyperliquidMarketsStore';
 import { type PerpMarket } from '@/features/perps/types';
+import { opacity } from '@/framework/ui/utils/opacity';
+import * as i18n from '@/languages';
 import Navigation from '@/navigation/Navigation';
 import Routes from '@/navigation/routesNames';
 import { THICK_BORDER_WIDTH, THICKER_BORDER_WIDTH } from '@/styles/constants';
-import * as i18n from '@/languages';
-import { MarketSortOrderDropdown } from '@/features/perps/components/MarketSortOrderDropdown';
-import { opacity } from '@/framework/ui/utils/opacity';
-import { useMarketSortOrderLabels } from '@/features/perps/hooks/useMarketSortOrderLabels';
 
 const MAX_MARKETS_TO_SHOW = 8;
 

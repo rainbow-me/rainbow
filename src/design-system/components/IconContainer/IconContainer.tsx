@@ -1,4 +1,5 @@
 import React from 'react';
+
 import { Bleed } from '../Bleed/Bleed';
 import { Box, type BoxProps } from '../Box/Box';
 

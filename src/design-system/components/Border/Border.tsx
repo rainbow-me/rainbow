@@ -1,4 +1,5 @@
 import React, { memo } from 'react';
+
 import { Cover, useColorMode, useForegroundColor } from '@/design-system';
 import { type ForegroundColor } from '@/design-system/color/palettes';
 import { type CustomColor } from '@/design-system/color/useForegroundColor';
@@ -11,6 +12,10 @@ export type BorderProps = {
   borderTopLeftRadius?: number;
   borderTopRightRadius?: number;
   borderRadius?: number;
+  borderBottomWidth?: number;
+  borderLeftWidth?: number;
+  borderRightWidth?: number;
+  borderTopWidth?: number;
   borderWidth?: number;
   enableInLightMode?: boolean;
   enableOnAndroid?: boolean;
@@ -40,6 +45,10 @@ export const Border = memo(function Border({
   borderTopLeftRadius,
   borderTopRadius,
   borderTopRightRadius,
+  borderBottomWidth,
+  borderLeftWidth,
+  borderRightWidth,
+  borderTopWidth,
   borderWidth = 1,
   enableInLightMode,
   enableOnAndroid = true,
@@ -57,7 +66,10 @@ export const Border = memo(function Border({
         borderCurve: 'continuous',
         borderTopLeftRadius: borderTopLeftRadius ?? borderTopRadius ?? borderLeftRadius ?? borderRadius,
         borderTopRightRadius: borderTopRightRadius ?? borderTopRadius ?? borderRightRadius ?? borderRadius,
-        borderWidth,
+        borderBottomWidth: borderBottomWidth ?? borderWidth,
+        borderLeftWidth: borderLeftWidth ?? borderWidth,
+        borderRightWidth: borderRightWidth ?? borderWidth,
+        borderTopWidth: borderTopWidth ?? borderWidth,
         overflow: 'hidden',
         pointerEvents: 'none',
         zIndex: 100,

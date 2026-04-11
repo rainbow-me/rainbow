@@ -1,17 +1,20 @@
 import React, { useCallback } from 'react';
 import { StyleSheet } from 'react-native';
+
 import { type Source } from 'react-native-fast-image';
 import Animated, { useAnimatedProps, useAnimatedStyle, useDerivedValue } from 'react-native-reanimated';
+
 import GoogleSearchIcon from '@/assets/googleSearchIcon.png';
 import { AnimatedFasterImage } from '@/components/AnimatedComponents/AnimatedFasterImage';
 import ButtonPressAnimation from '@/components/animations/ButtonPressAnimation';
 import { ImgixImage } from '@/components/images';
 import { DEFAULT_FASTER_IMAGE_CONFIG } from '@/components/images/ImgixImage';
-import { AnimatedText, Box, Inline, Stack, Text, globalColors, useColorMode, useForegroundColor } from '@/design-system';
+import { AnimatedText, Box, globalColors, Inline, Stack, Text, useColorMode, useForegroundColor } from '@/design-system';
 import useDimensions from '@/hooks/useDimensions';
 import * as i18n from '@/languages';
-import { useSearchContext } from '../SearchContext';
 import { THICK_BORDER_WIDTH } from '@/styles/constants';
+
+import { useSearchContext } from '../SearchContext';
 
 export const SearchResult = ({ index, goToUrl }: { index: number; goToUrl: (url: string) => void }) => {
   const { searchResults } = useSearchContext();
@@ -19,7 +22,7 @@ export const SearchResult = ({ index, goToUrl }: { index: number; goToUrl: (url:
   const { width: deviceWidth } = useDimensions();
 
   const dapp = useDerivedValue(() => (_WORKLET ? searchResults?.value[index] : null));
-  const iconUrl = useDerivedValue(() => (_WORKLET ? dapp.value?.iconUrl ?? dapp.value?.name : undefined));
+  const iconUrl = useDerivedValue(() => (_WORKLET ? (dapp.value?.iconUrl ?? dapp.value?.name) : undefined));
   const name = useDerivedValue(() => (_WORKLET ? dapp.value?.name : undefined));
   const urlDisplay = useDerivedValue(() => (_WORKLET ? dapp.value?.urlDisplay : undefined));
 

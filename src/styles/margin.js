@@ -1,5 +1,6 @@
-import buildLayoutStyles from './buildLayoutStyles';
 import { memoFn } from '@/utils/memoFn';
+
+import buildLayoutStyles from './buildLayoutStyles';
 
 export default function margin(...options) {
   return buildLayoutStyles(options, 'margin', true);

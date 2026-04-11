@@ -1,6 +1,8 @@
 import { StyleSheet, View } from 'react-native';
-import { Text, TextShadow } from '@/design-system';
+
 import { LinearGradient } from 'expo-linear-gradient';
+
+import { Text, TextShadow } from '@/design-system';
 import { opacity } from '@/framework/ui/utils/opacity';
 
 const SIZE = 32;

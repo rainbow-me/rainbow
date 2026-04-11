@@ -1,15 +1,17 @@
 import React, { useCallback, useMemo } from 'react';
+import { View, type StyleProp, type ViewStyle } from 'react-native';
+
+import type { UniqueAsset } from '@/entities/uniqueAssets';
+import styled from '@/framework/ui/styled-thing';
+import usePersistentAspectRatio from '@/hooks/usePersistentAspectRatio';
+import { usePersistentDominantColorFromImage } from '@/hooks/usePersistentDominantColorFromImage';
+import { shadow as shadowUtil } from '@/styles';
+import { useTheme, type ThemeContextProps } from '@/theme/ThemeContext';
+
 import ButtonPressAnimation from '../animations/ButtonPressAnimation';
 import { InnerBorder } from '../layout';
 import { CardSize } from './CardSize';
 import { UniqueTokenImage } from './UniqueTokenImage';
-import usePersistentAspectRatio from '@/hooks/usePersistentAspectRatio';
-import styled from '@/framework/ui/styled-thing';
-import { shadow as shadowUtil } from '@/styles';
-import { usePersistentDominantColorFromImage } from '@/hooks/usePersistentDominantColorFromImage';
-import { type ThemeContextProps, useTheme } from '@/theme/ThemeContext';
-import { type StyleProp, View, type ViewStyle } from 'react-native';
-import type { UniqueAsset } from '@/entities/uniqueAssets';
 
 const UniqueTokenCardBorderRadius = 20;
 const UniqueTokenCardShadowFactory = (colors: ThemeContextProps['colors']) => [0, 2, 6, colors.shadow, 0.08];

@@ -1,6 +1,15 @@
+import React, { useCallback, useEffect, useRef, useState } from 'react';
+import { InteractionManager, type TextInput } from 'react-native';
+
+import { useRoute, type RouteProp } from '@react-navigation/native';
+import { isEmpty } from 'lodash';
+import { type Source } from 'react-native-fast-image';
+
 import WalletAndBackup from '@/assets/WalletsAndBackup.png';
 import { Box, Inset, Stack } from '@/design-system';
 import { IS_ANDROID } from '@/env';
+import styled from '@/framework/ui/styled-thing';
+import { opacity } from '@/framework/ui/utils/opacity';
 import { isCloudBackupPasswordValid, normalizeAndroidBackupFilename } from '@/handlers/cloudBackup';
 import { WrappedAlert as Alert } from '@/helpers/alert';
 import { WalletLoadingStates } from '@/helpers/walletLoadingStates';
@@ -8,31 +17,24 @@ import useDimensions from '@/hooks/useDimensions';
 import * as i18n from '@/languages';
 import { logger } from '@/logger';
 import { getLocalBackupPassword, restoreCloudBackup, RestoreCloudBackupResultStates, saveLocalBackupPassword } from '@/model/backup';
-
-import Navigation, { useNavigation } from '@/navigation/Navigation';
 import { sharedCoolModalTopOffset } from '@/navigation/config';
+import Navigation, { useNavigation } from '@/navigation/Navigation';
+import { navigateAfterOnboarding } from '@/navigation/onboardingNavigation';
 import Routes from '@/navigation/routesNames';
 import { type RootStackParamList } from '@/navigation/types';
 import { backupsStore } from '@/state/backups/backups';
 import { walletLoadingStore } from '@/state/walletLoading/walletLoading';
+import { updateWalletsBackedUpState } from '@/state/wallets/updateWalletsBackedUpState';
 import { loadWallets } from '@/state/wallets/walletsStore';
-import styled from '@/framework/ui/styled-thing';
 import { padding } from '@/styles';
-import { type ThemeContextProps, useTheme } from '@/theme/ThemeContext';
+import { useTheme, type ThemeContextProps } from '@/theme/ThemeContext';
 import { cloudPlatform } from '@/utils/platform';
-import { type RouteProp, useRoute } from '@react-navigation/native';
-import { isEmpty } from 'lodash';
-import React, { useCallback, useEffect, useRef, useState } from 'react';
-import { InteractionManager, type TextInput } from 'react-native';
-import { type Source } from 'react-native-fast-image';
+
 import { RainbowButton } from '../buttons';
 import RainbowButtonTypes from '../buttons/rainbow-button/RainbowButtonTypes';
 import { PasswordField } from '../fields';
 import { ImgixImage } from '../images';
 import { Text } from '../text';
-import { updateWalletsBackedUpState } from '@/state/wallets/updateWalletsBackedUpState';
-import { opacity } from '@/framework/ui/utils/opacity';
-import { navigateAfterOnboarding } from '@/navigation/onboardingNavigation';
 
 type ComponentProps = {
   theme: ThemeContextProps;

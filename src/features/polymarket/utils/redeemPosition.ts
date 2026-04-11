@@ -1,11 +1,13 @@
 import { Interface } from '@ethersproject/abi';
-import { type SafeTransaction, OperationType, type RelayerTransaction, RelayerTransactionState } from '@polymarket/builder-relayer-client';
+import { OperationType, RelayerTransactionState, type RelayerTransaction, type SafeTransaction } from '@polymarket/builder-relayer-client';
+import { zeroHash } from 'viem';
+
+import { analytics } from '@/analytics';
+import { ensureError, RainbowError } from '@/logger';
+
 import { POLYGON_USDC_ADDRESS, POLYMARKET_CTF_ADDRESS, POLYMARKET_NEG_RISK_ADAPTER_ADDRESS } from '../constants';
 import { getPolymarketRelayClient } from '../stores/derived/usePolymarketClients';
 import { type PolymarketPosition } from '../types';
-import { zeroHash } from 'viem';
-import { ensureError, RainbowError } from '@/logger';
-import { analytics } from '@/analytics';
 
 const ctfInterface = new Interface([
   'function redeemPositions(address collateralToken, bytes32 parentCollectionId, bytes32 conditionId, uint256[] indexSets)',

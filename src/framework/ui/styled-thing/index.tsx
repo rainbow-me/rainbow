@@ -1,10 +1,12 @@
 /* eslint-disable @typescript-eslint/prefer-for-of */
 /* eslint-disable no-multi-assign */
 import React from 'react';
+
 import isEqual from 'react-fast-compare';
 import { css } from 'styled-components';
 
 import hoist from './hoist';
+
 // eslint-disable-next-line import/no-commonjs
 const reactNative = require('react-native');
 // @ts-expect-error ts-migrate(2554) FIXME: Expected 1 arguments, but got 0.

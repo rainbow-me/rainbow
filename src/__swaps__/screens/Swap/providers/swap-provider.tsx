@@ -1,10 +1,8 @@
 // @refresh
-import React, { type ReactNode, createContext, useCallback, useContext, useEffect, useRef, useState } from 'react';
+import React, { createContext, useCallback, useContext, useEffect, useRef, useState, type ReactNode } from 'react';
 import { InteractionManager, NativeModules, type StyleProp, type TextInput, type TextStyle } from 'react-native';
+
 import {
-  type AnimatedRef,
-  type DerivedValue,
-  type SharedValue,
   runOnJS,
   runOnUI,
   useAnimatedReaction,
@@ -13,9 +11,12 @@ import {
   useDerivedValue,
   useSharedValue,
   withSpring,
+  type AnimatedRef,
+  type DerivedValue,
+  type SharedValue,
 } from 'react-native-reanimated';
 import { triggerHaptics } from 'react-native-turbo-haptics';
-import { divWorklet, equalWorklet, lessThanOrEqualToWorklet, mulWorklet, sumWorklet } from '@/framework/core/safeMath';
+
 import {
   INITIAL_SLIDER_POSITION,
   SLIDER_COLLAPSED_HEIGHT,
@@ -30,43 +31,45 @@ import { useSwapSettings } from '@/__swaps__/screens/Swap/hooks/useSwapSettings'
 import { useSwapTextStyles } from '@/__swaps__/screens/Swap/hooks/useSwapTextStyles';
 import { SwapWarningType, useSwapWarning } from '@/__swaps__/screens/Swap/hooks/useSwapWarning';
 import { type ExtendedAnimatedAssetWithColors, type ParsedSearchAsset, type ParsedUserAsset } from '@/__swaps__/types/assets';
-import { ChainId } from '@/state/backendNetworks/types';
 import { SwapAssetType, type InputKeys } from '@/__swaps__/types/swap';
+import { getInputValuesForSliderPositionWorklet, updateInputValuesAfterFlip } from '@/__swaps__/utils/flipAssets';
 import { clamp, getDefaultSlippageWorklet, parseAssetAndExtend, trimTrailingZeros } from '@/__swaps__/utils/swaps';
+import { trackSwapEvent } from '@/__swaps__/utils/trackSwapEvent';
 import { analytics } from '@/analytics';
-import { getExperimentalFlag, SKIP_SWAPS_GAS_CHECKS } from '@/config/experimental';
+import { getExperimentalFlag, SKIP_SWAPS_GAS_CHECKS } from '@/config/experimentalHooks';
 import type { LegacyTransactionGasParamAmounts, TransactionGasParamAmounts } from '@/entities/gas';
+import { IS_IOS } from '@/env';
+import { useSponsoredSwapStore } from '@/features/delegation/sponsoredSwapStore';
+import { supportsDelegatedExecution } from '@/features/delegation/willDelegate';
+import { divWorklet, equalWorklet, lessThanOrEqualToWorklet, mulWorklet, sumWorklet } from '@/framework/core/safeMath';
+import { LedgerSigner } from '@/handlers/LedgerSigner';
 import { getProvider } from '@/handlers/web3';
 import { WrappedAlert as Alert } from '@/helpers/alert';
 import { type useAnimatedInterval } from '@/hooks/reanimated/useAnimatedInterval';
 import * as i18n from '@/languages';
 import { logger, RainbowError } from '@/logger';
+import { getRemoteConfig } from '@/model/remoteConfig';
 import { loadWallet } from '@/model/wallet';
 import Navigation from '@/navigation/Navigation';
 import Routes from '@/navigation/routesNames';
 import { walletExecuteRap } from '@/raps/execute';
 import { type RapSwapActionParameters } from '@/raps/references';
 import { useUserAssetsStore } from '@/state/assets/userAssets';
-import { swapsStore } from '@/state/swaps/swapsStore';
+import { userAssetsStoreManager } from '@/state/assets/userAssetsStoreManager';
+import { useBackendNetworksStore } from '@/state/backendNetworks/backendNetworks';
+import { ChainId } from '@/state/backendNetworks/types';
+import { useConnectedToAnvilStore } from '@/state/connectedToAnvil';
 import { getNextNonce } from '@/state/nonces';
-import { type CrosschainQuote, type Quote, type QuoteError, SwapType } from '@rainbow-me/swaps';
-import { IS_IOS } from '@/env';
-import { useSponsoredSwapStore } from '@/features/delegation/sponsoredSwapStore';
-import { supportsDelegatedExecution } from '@/features/delegation/willDelegate';
+import { executeFn, Screens, startTimeToSignTracking, TimeToSignOperation } from '@/state/performance/performance';
+import { swapsStore } from '@/state/swaps/swapsStore';
+import { SwapType, type CrosschainQuote, type Quote, type QuoteError } from '@rainbow-me/swaps';
+
 import { clearCustomGasSettings } from '../hooks/useCustomGas';
 import { getGasSettingsBySpeed, getSelectedGas } from '../hooks/useSelectedGas';
 import { useSwapOutputQuotesDisabled } from '../hooks/useSwapOutputQuotesDisabled';
-import { SyncGasStateToSharedValues, SyncQuoteSharedValuesToState } from './SyncSwapStateAndSharedValues';
-import { SyncSwapRewardsEstimate } from './SyncSwapRewardsEstimate';
-import { executeFn, Screens, TimeToSignOperation, startTimeToSignTracking } from '@/state/performance/performance';
-import { useConnectedToAnvilStore } from '@/state/connectedToAnvil';
-import { useBackendNetworksStore } from '@/state/backendNetworks/backendNetworks';
-import { userAssetsStoreManager } from '@/state/assets/userAssetsStoreManager';
 import { getSwapsNavigationParams } from '../navigateToSwaps';
-import { LedgerSigner } from '@/handlers/LedgerSigner';
-import { getRemoteConfig } from '@/model/remoteConfig';
-import { getInputValuesForSliderPositionWorklet, updateInputValuesAfterFlip } from '@/__swaps__/utils/flipAssets';
-import { trackSwapEvent } from '@/__swaps__/utils/trackSwapEvent';
+import { SyncSwapRewardsEstimate } from './SyncSwapRewardsEstimate';
+import { SyncGasStateToSharedValues, SyncQuoteSharedValuesToState } from './SyncSwapStateAndSharedValues';
 
 const swapping = i18n.t(i18n.l.swap.actions.swapping);
 const holdToSwap = i18n.t(i18n.l.swap.actions.hold_to_swap);

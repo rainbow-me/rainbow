@@ -1,31 +1,7 @@
-import ConditionalWrap from 'conditional-wrap';
-import { BrowserTabBarContextProvider, useBrowserTabBarContext } from '@/components/DappBrowser/BrowserContext';
-import ButtonPressAnimation from '@/components/animations/ButtonPressAnimation';
-import { FlexItem } from '@/components/layout';
-import { TabBarIcon } from '@/components/tab-bar/TabBarIcon';
-import {
-  TAB_BAR_PILL_HEIGHT,
-  TAB_BAR_HORIZONTAL_INSET,
-  TAB_BAR_PILL_WIDTH,
-  TAB_BAR_INNER_PADDING,
-  TAB_BAR_WIDTH,
-} from '@/components/tab-bar/dimensions';
-import { DAPP_BROWSER, LAZY_TABS, RNBW_MEMBERSHIP, RNBW_REWARDS } from '@/config/experimental';
-import useExperimentalFlag from '@/config/experimentalHooks';
-import { Box, Columns, globalColors, useColorMode, Column, ColorModeProvider } from '@/design-system';
-import { IS_IOS, IS_TEST } from '@/env';
-import { useAccountAccentColor } from '@/hooks/useAccountAccentColor';
-import useAccountSettings from '@/hooks/useAccountSettings';
-import useCoinListEdited from '@/hooks/useCoinListEdited';
-import useDimensions from '@/hooks/useDimensions';
-import { useRemoteConfig } from '@/model/remoteConfig';
-import {
-  RecyclerListViewScrollToTopProvider,
-  useRecyclerListViewScrollToTopContext,
-} from '@/navigation/RecyclerListViewScrollToTopContext';
-import { DappBrowser } from '@/components/DappBrowser/DappBrowser';
-import WalletScreen from '@/screens/WalletScreen/WalletScreen';
-import deviceUtils, { DEVICE_HEIGHT, DEVICE_WIDTH } from '@/utils/deviceUtils';
+import React, { memo, useCallback, useMemo, useRef, useState, type MutableRefObject } from 'react';
+import { InteractionManager, StyleSheet, View } from 'react-native';
+
+import MaskedView from '@react-native-masked-view/masked-view';
 import { createMaterialTopTabNavigator, type MaterialTopTabNavigationEventMap } from '@react-navigation/material-top-tabs';
 import {
   type MaterialTopTabBarProps,
@@ -33,49 +9,76 @@ import {
   type MaterialTopTabNavigationOptions,
 } from '@react-navigation/material-top-tabs/lib/typescript/src/types';
 import { type NavigationHelpers, type ParamListBase, type RouteProp } from '@react-navigation/native';
-import React, { type MutableRefObject, memo, useCallback, useMemo, useRef, useState } from 'react';
-import { InteractionManager, StyleSheet, View } from 'react-native';
+import ConditionalWrap from 'conditional-wrap';
+import { LinearGradient } from 'expo-linear-gradient';
 import Animated, {
-  type DerivedValue,
   Easing,
   interpolate,
   runOnJS,
-  type SharedValue,
   useAnimatedReaction,
   useAnimatedStyle,
   useDerivedValue,
   useSharedValue,
   withSpring,
   withTiming,
+  type DerivedValue,
+  type SharedValue,
 } from 'react-native-reanimated';
-import { BROWSER_BACKGROUND_COLOR_DARK, BROWSER_BACKGROUND_COLOR_LIGHT } from '@/components/DappBrowser/constants';
+import { initialWindowMetrics } from 'react-native-safe-area-context';
+
 import { SPRING_CONFIGS, TIMING_CONFIGS } from '@/components/animations/animationConfigs';
-import { useBrowserStore } from '@/state/browser/browserStore';
-import { opacity } from '@/framework/ui/utils/opacity';
-import ProfileScreen from '../screens/ProfileScreen';
-import DiscoverScreen from '@/screens/DiscoverScreen';
-import { discoverScrollToTopFnRef, discoverOpenSearchFnRef } from '@/components/Discover/DiscoverScreenContext';
-import { MainListProvider, useMainList } from './MainListContext';
-import Routes, { type Route } from './routesNames';
+import ButtonPressAnimation from '@/components/animations/ButtonPressAnimation';
+import { BlurGradient } from '@/components/blur/BlurGradient';
+import { BrowserTabBarContextProvider, useBrowserTabBarContext } from '@/components/DappBrowser/BrowserContext';
+import { BROWSER_BACKGROUND_COLOR_DARK, BROWSER_BACKGROUND_COLOR_LIGHT } from '@/components/DappBrowser/constants';
+import { DappBrowser } from '@/components/DappBrowser/DappBrowser';
+import { discoverOpenSearchFnRef, discoverScrollToTopFnRef } from '@/components/Discover/DiscoverScreenContext';
+import { EasingGradient } from '@/components/easing-gradient/EasingGradient';
+import { useShowKingOfTheHill } from '@/components/king-of-the-hill/useShowKingOfTheHill';
+import { FlexItem } from '@/components/layout';
+import { AssetUpdateTransactionWatcher } from '@/components/mined-transaction-watcher/MinedTransactionWatcher';
+import { PendingTransactionWatcher } from '@/components/pending-transaction-watcher/PendingTransactionWatcher';
+import { PANEL_COLOR_DARK } from '@/components/SmoothPager/ListPanel';
 import { ActivityTabIcon } from '@/components/tab-bar/ActivityTabIcon';
 import { BrowserTabIcon } from '@/components/tab-bar/BrowserTabIcon';
-import { initialWindowMetrics } from 'react-native-safe-area-context';
-import { PendingTransactionWatcher } from '@/components/pending-transaction-watcher/PendingTransactionWatcher';
-import { AssetUpdateTransactionWatcher } from '@/components/mined-transaction-watcher/MinedTransactionWatcher';
-import { KingOfTheHillScreen } from '@/screens/KingOfTheHill';
-import { setActiveRoute, useNavigationStore } from '@/state/navigation/navigationStore';
-import { darkModeThemeColors, lightModeThemeColors } from '@/styles/colors';
-import { BlurGradient } from '@/components/blur/BlurGradient';
-import { LinearGradient } from 'expo-linear-gradient';
-import { EasingGradient } from '@/components/easing-gradient/EasingGradient';
-import MaskedView from '@react-native-masked-view/masked-view';
-import { PANEL_COLOR_DARK } from '@/components/SmoothPager/ListPanel';
-import { useStoreSharedValue } from '@/state/internal/hooks/useStoreSharedValue';
-import { useShowKingOfTheHill } from '@/components/king-of-the-hill/useShowKingOfTheHill';
+import {
+  TAB_BAR_HORIZONTAL_INSET,
+  TAB_BAR_INNER_PADDING,
+  TAB_BAR_PILL_HEIGHT,
+  TAB_BAR_PILL_WIDTH,
+  TAB_BAR_WIDTH,
+} from '@/components/tab-bar/dimensions';
+import { TabBarIcon } from '@/components/tab-bar/TabBarIcon';
+import { DAPP_BROWSER, LAZY_TABS, RNBW_MEMBERSHIP, RNBW_REWARDS } from '@/config/experimental';
+import useExperimentalFlag from '@/config/experimentalHooks';
+import { Box, ColorModeProvider, Column, Columns, globalColors, useColorMode } from '@/design-system';
+import { IS_IOS, IS_TEST } from '@/env';
 import { RnbwMembershipScreen } from '@/features/rnbw-membership/screens/rnbw-membership-screen/RnbwMembershipScreen';
 import { RnbwRewardsScreen } from '@/features/rnbw-rewards/screens/rnbw-rewards-screen/RnbwRewardsScreen';
+import { opacity } from '@/framework/ui/utils/opacity';
+import { useAccountAccentColor } from '@/hooks/useAccountAccentColor';
+import useAccountSettings from '@/hooks/useAccountSettings';
+import useCoinListEdited from '@/hooks/useCoinListEdited';
+import useDimensions from '@/hooks/useDimensions';
+import { useRemoteConfig } from '@/model/remoteConfig';
 import { BASE_TAB_BAR_HEIGHT } from '@/navigation/constants';
+import {
+  RecyclerListViewScrollToTopProvider,
+  useRecyclerListViewScrollToTopContext,
+} from '@/navigation/RecyclerListViewScrollToTopContext';
+import DiscoverScreen from '@/screens/DiscoverScreen';
+import { KingOfTheHillScreen } from '@/screens/KingOfTheHill';
+import WalletScreen from '@/screens/WalletScreen/WalletScreen';
+import { useBrowserStore } from '@/state/browser/browserStore';
+import { useStoreSharedValue } from '@/state/internal/hooks/useStoreSharedValue';
+import { setActiveRoute, useNavigationStore } from '@/state/navigation/navigationStore';
+import { darkModeThemeColors, lightModeThemeColors } from '@/styles/colors';
 import { THICK_BORDER_WIDTH } from '@/styles/constants';
+import deviceUtils, { DEVICE_HEIGHT, DEVICE_WIDTH } from '@/utils/deviceUtils';
+
+import ProfileScreen from '../screens/ProfileScreen';
+import { MainListProvider, useMainList } from './MainListContext';
+import Routes, { type Route } from './routesNames';
 
 export const TAB_BAR_HEIGHT = getTabBarHeight();
 
@@ -121,8 +124,8 @@ const TabBar = memo(function TabBar({ activeIndex, descriptorsRef, getIsFocused,
     'rnbw_membership_enabled'
   );
   const showDappBrowserTab = useExperimentalFlag(DAPP_BROWSER) || dapp_browser;
-  const showRnbwRewardsTab = useExperimentalFlag(RNBW_REWARDS) || rnbw_rewards_enabled || IS_TEST;
-  const showRnbwMembership = useExperimentalFlag(RNBW_MEMBERSHIP) || rnbw_membership_enabled;
+  const showRnbwRewardsTab = useExperimentalFlag(RNBW_REWARDS) || rnbw_rewards_enabled;
+  const showRnbwMembership = useExperimentalFlag(RNBW_MEMBERSHIP) || rnbw_membership_enabled || IS_TEST;
   const showRnbwRewardsOrMembershipTab = showRnbwRewardsTab || showRnbwMembership;
 
   const numberOfTabs = 3 + (showRnbwRewardsOrMembershipTab ? 1 : 0) + (showDappBrowserTab ? 1 : 0);
@@ -644,7 +647,7 @@ function SwipeNavigatorScreens() {
   const showDappBrowserTab = useExperimentalFlag(DAPP_BROWSER) || dapp_browser;
   const showKingOfTheHillTab = useShowKingOfTheHill();
   const showRnbwRewardsTab = useExperimentalFlag(RNBW_REWARDS) || rnbw_rewards_enabled || IS_TEST;
-  const showRnbwMembership = useExperimentalFlag(RNBW_MEMBERSHIP) || rnbw_membership_enabled;
+  const showRnbwMembership = useExperimentalFlag(RNBW_MEMBERSHIP) || rnbw_membership_enabled || IS_TEST;
   const showRnbwRewardsOrMembershipTab = showRnbwRewardsTab || showRnbwMembership;
 
   const { language } = useAccountSettings();

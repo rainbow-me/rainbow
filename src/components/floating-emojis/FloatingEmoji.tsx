@@ -1,5 +1,7 @@
 import React, { useLayoutEffect } from 'react';
+
 import Animated, { Easing, interpolate, useAnimatedStyle, useSharedValue, withTiming } from 'react-native-reanimated';
+
 import { Emoji } from '../text';
 
 interface FloatingEmojiProps {
@@ -93,7 +95,7 @@ const FloatingEmoji: React.FC<FloatingEmojiProps> = ({
           left,
           marginTop,
           position: 'absolute',
-          top: centerVertically ? undefined : top ?? size * -0.5,
+          top: centerVertically ? undefined : (top ?? size * -0.5),
         },
         animatedStyle,
       ]}

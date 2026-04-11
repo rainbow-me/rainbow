@@ -1,9 +1,12 @@
 import React from 'react';
+
 import MaskedView from '@react-native-masked-view/masked-view';
 import { LinearGradient, type LinearGradientProps } from 'expo-linear-gradient';
 import { Circle } from 'react-native-svg';
-import Svg from '../icons/Svg';
+
 import { Box } from '@/design-system';
+
+import Svg from '../icons/Svg';
 
 const maskElement = (
   <Svg viewBox="0 0 54 54" fill="none" xmlns="http://www.w3.org/2000/svg">

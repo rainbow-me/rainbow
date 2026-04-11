@@ -1,9 +1,10 @@
 import * as React from 'react';
-import Spinner from '@/components/Spinner';
-import styled from '@/framework/ui/styled-thing';
-import { IS_IOS } from '@/env';
-import { useTheme } from '@/theme/ThemeContext';
 import { ActivityIndicator } from 'react-native';
+
+import Spinner from '@/components/Spinner';
+import { IS_IOS } from '@/env';
+import styled from '@/framework/ui/styled-thing';
+import { useTheme } from '@/theme/ThemeContext';
 
 const ActivityIndicatorIos = styled(ActivityIndicator).attrs({
   size: 22,

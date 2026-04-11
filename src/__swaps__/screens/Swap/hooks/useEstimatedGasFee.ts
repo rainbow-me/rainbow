@@ -1,15 +1,18 @@
-import { ChainId } from '@/state/backendNetworks/types';
-import { weiToGwei } from '@/parsers/gas';
-import { convertAmountToNativeDisplayWorklet, formatNumber, multiply } from '@/helpers/utilities';
-import { useNativeAsset } from '@/utils/ethereumUtils';
 import { useMemo } from 'react';
+
 import { formatUnits } from 'viem';
+
+import { convertAmountToNativeDisplayWorklet, formatNumber, multiply } from '@/helpers/utilities';
+import { weiToGwei } from '@/parsers/gas';
+import { userAssetsStoreManager } from '@/state/assets/userAssetsStoreManager';
+import { ChainId } from '@/state/backendNetworks/types';
+import { useSwapsStore } from '@/state/swaps/swapsStore';
+import { useNativeAsset } from '@/utils/ethereumUtils';
+
 import { calculateGasFeeWorklet, useSyncedSwapQuoteStore } from '../providers/SyncSwapStateAndSharedValues';
 import { type GasSettings } from './useCustomGas';
 import { useSelectedGas } from './useSelectedGas';
 import { useSwapEstimatedGasLimit } from './useSwapEstimatedGasLimit';
-import { useSwapsStore } from '@/state/swaps/swapsStore';
-import { userAssetsStoreManager } from '@/state/assets/userAssetsStoreManager';
 
 export function safeBigInt(value: string) {
   try {

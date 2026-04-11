@@ -1,3 +1,8 @@
+import React, { useCallback, useMemo } from 'react';
+import { Share } from 'react-native';
+
+import { ContextMenuButton, type MenuActionConfig } from 'react-native-ios-context-menu';
+
 import BackupWarningIcon from '@/assets/BackupWarning.png';
 import CloudBackupWarningIcon from '@/assets/CloudBackupWarning.png';
 import AppIconIcon from '@/assets/settingsAppIcon.png';
@@ -14,28 +19,26 @@ import PrivacyIcon from '@/assets/settingsPrivacy.png';
 import PrivacyIconDark from '@/assets/settingsPrivacyDark.png';
 import WalletsAndBackupIcon from '@/assets/WalletsAndBackup.png';
 import { AppVersionStamp } from '@/components/AppVersionStamp';
+import { XIcon } from '@/components/icons/svg/XIcon';
 import useExperimentalFlag, { LANGUAGE_SETTINGS, NOTIFICATIONS } from '@/config/experimentalHooks';
 import { Box } from '@/design-system';
+import { showActionSheetWithOptions } from '@/framework/ui/utils/actionsheet';
 import walletBackupTypes from '@/helpers/walletBackupTypes';
 import useAccountSettings from '@/hooks/useAccountSettings';
 import * as i18n from '@/languages';
+import { useRemoteConfig } from '@/model/remoteConfig';
 import { backupsStore } from '@/state/backups/backups';
 import { useIsReadOnlyWallet } from '@/state/wallets/walletsStore';
 import { ReviewPromptAction } from '@/storage/schema';
 import { Themes, useTheme } from '@/theme/ThemeContext';
-import { showActionSheetWithOptions } from '@/framework/ui/utils/actionsheet';
 import { openInBrowser } from '@/utils/openInBrowser';
 import { handleReviewPromptAction } from '@/utils/reviewAlert';
-import React, { useCallback, useMemo } from 'react';
-import { Share } from 'react-native';
-import { ContextMenuButton, type MenuActionConfig } from 'react-native-ios-context-menu';
+
 import { SettingsExternalURLs } from '../constants';
 import { checkLocalWalletsForBackupStatus } from '../utils';
 import Menu from './Menu';
 import MenuContainer from './MenuContainer';
 import MenuItem from './MenuItem';
-import { XIcon } from '@/components/icons/svg/XIcon';
-import { useRemoteConfig } from '@/model/remoteConfig';
 
 interface SettingsSectionProps {
   onCloseModal: () => void;

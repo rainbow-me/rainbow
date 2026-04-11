@@ -1,14 +1,16 @@
 import React from 'react';
-import * as i18n from '@/languages';
-import ButtonPressAnimation from '@/components/animations/ButtonPressAnimation';
-import { Box, Inline, Text } from '@/design-system';
-import DiscoverSearchInput from '@/components/Discover/DiscoverSearchInput';
-import { useDiscoverScreenContext } from '@/components/Discover/DiscoverScreenContext';
-import deviceUtils from '@/utils/deviceUtils';
-import useDelayedValueWithLayoutAnimation from '@/hooks/useDelayedValueWithLayoutAnimation';
+
 import { useDiscoverSearchQueryStore } from '@/__swaps__/screens/Swap/resources/search/searchV2';
-import { NAVBAR_HORIZONTAL_INSET, navbarHeight } from '../navbar/Navbar';
+import ButtonPressAnimation from '@/components/animations/ButtonPressAnimation';
+import { useDiscoverScreenContext } from '@/components/Discover/DiscoverScreenContext';
+import DiscoverSearchInput from '@/components/Discover/DiscoverSearchInput';
+import { Box, Inline, Text } from '@/design-system';
+import useDelayedValueWithLayoutAnimation from '@/hooks/useDelayedValueWithLayoutAnimation';
+import * as i18n from '@/languages';
 import { useTheme } from '@/theme/ThemeContext';
+import deviceUtils from '@/utils/deviceUtils';
+
+import { NAVBAR_HORIZONTAL_INSET, navbarHeight } from '../navbar/Navbar';
 
 const placeholderText = deviceUtils.isNarrowPhone
   ? i18n.t(i18n.l.discover.search.search_ethereum_short)

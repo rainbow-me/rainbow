@@ -1,13 +1,15 @@
 import React, { memo } from 'react';
-import { LinearGradient } from 'expo-linear-gradient';
 import { StyleSheet } from 'react-native';
-import { Box, Text } from '@/design-system';
+
+import { LinearGradient } from 'expo-linear-gradient';
+
 import ButtonPressAnimation from '@/components/animations/ButtonPressAnimation';
-import { ImgixImage } from '@/components/images';
-import { USDC_COLORS, USDC_ICON_URL } from '@/features/perps/constants';
 import { GradientBorderView } from '@/components/gradient-border/GradientBorderView';
-import { opacity } from '@/framework/ui/utils/opacity';
+import { ImgixImage } from '@/components/images';
+import { Box, Text } from '@/design-system';
+import { USDC_COLORS, USDC_ICON_URL } from '@/features/perps/constants';
 import { formatCurrency } from '@/features/perps/utils/formatCurrency';
+import { opacity } from '@/framework/ui/utils/opacity';
 import * as i18n from '@/languages';
 
 type SectionAvailableBalanceProps = {

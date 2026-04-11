@@ -1,16 +1,18 @@
 import { useContext } from 'react';
+
 import { type SharedValue } from 'react-native-reanimated';
+
 import { AccentColorContext } from './AccentColorContext';
 import { ColorModeContext } from './ColorMode';
 import {
+  foregroundColors,
+  getDefaultAccentColorForColorMode,
+  getValueForColorMode,
   type BackgroundColorValue,
   type ColorMode,
   type ContextualColorValue,
   type ForegroundColor,
   type TextColor,
-  foregroundColors,
-  getDefaultAccentColorForColorMode,
-  getValueForColorMode,
 } from './palettes';
 
 export type CustomColor<Value extends string = string> = {
@@ -41,7 +43,7 @@ export function useForegroundColors(
       const colorForColorMode = getValueForColorMode(color, colorMode);
 
       return colorForColorMode === 'accent'
-        ? accentColor?.color ?? getDefaultAccentColorForColorMode(colorMode).color
+        ? (accentColor?.color ?? getDefaultAccentColorForColorMode(colorMode).color)
         : foregroundColors[colorForColorMode];
     }
 

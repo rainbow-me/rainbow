@@ -1,6 +1,6 @@
 import { formatUrl } from '@/components/DappBrowser/utils';
 import { metadataClient } from '@/graphql';
-import { RainbowError, logger } from '@/logger';
+import { logger, RainbowError } from '@/logger';
 import { createQueryStore } from '@/state/internal/createQueryStore';
 import { time } from '@/utils/time';
 

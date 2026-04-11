@@ -1,4 +1,5 @@
 import React, { memo } from 'react';
+
 import { Inline, Text, TextIcon } from '@/design-system';
 import { IS_ANDROID } from '@/env';
 import * as i18n from '@/languages';

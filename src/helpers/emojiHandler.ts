@@ -1,4 +1,5 @@
 import GraphemeSplitter from 'grapheme-splitter';
+
 import { memoFn } from '../utils/memoFn';
 
 const regex =

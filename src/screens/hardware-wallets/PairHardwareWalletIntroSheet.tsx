@@ -1,11 +1,12 @@
-import * as i18n from '@/languages';
 import React from 'react';
+
+import ButtonPressAnimation from '@/components/animations/ButtonPressAnimation';
 import { Inset, Stack, Text } from '@/design-system';
-import { Layout } from '@/screens/hardware-wallets/components/Layout';
+import * as i18n from '@/languages';
 import { useNavigation } from '@/navigation/Navigation';
 import Routes from '@/navigation/routesNames';
-import ButtonPressAnimation from '@/components/animations/ButtonPressAnimation';
 import { ActionButton } from '@/screens/hardware-wallets/components/ActionButton';
+import { Layout } from '@/screens/hardware-wallets/components/Layout';
 import { TRANSLATIONS } from '@/screens/hardware-wallets/constants';
 import { openInBrowser } from '@/utils/openInBrowser';
 

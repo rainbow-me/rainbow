@@ -1,9 +1,10 @@
+import React from 'react';
+import { View } from 'react-native';
+
 import { Box, Text } from '@/design-system';
 import { HyperliquidTokenIcon } from '@/features/perps/components/HyperliquidTokenIcon';
 import { type PerpMarket } from '@/features/perps/types';
 import * as i18n from '@/languages';
-import React from 'react';
-import { View } from 'react-native';
 
 type PerpMarketDisabledRowProps = {
   market: PerpMarket;

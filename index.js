@@ -5,9 +5,10 @@ It needs to be an import statement because otherwise it doesn't load properly
 likely because of typescript.
 */
 import '@walletconnect/react-native-compat';
+
 import { initSentry } from '@/logger/sentry';
-import { PerformanceTracking, PerformanceReports, PerformanceReportSegments } from '@/performance/tracking';
 import { APP_START_TIME } from '@/performance/start-time';
+import { PerformanceReports, PerformanceReportSegments, PerformanceTracking } from '@/performance/tracking';
 
 PerformanceTracking.startReport(PerformanceReports.appStartup, APP_START_TIME);
 PerformanceTracking.logReportSegmentRelative(PerformanceReports.appStartup, PerformanceReportSegments.appStartup.loadJSBundle);

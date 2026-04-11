@@ -1,16 +1,18 @@
-import React, { type ComponentProps, memo, useMemo } from 'react';
-import { type StyleProp, StyleSheet, TouchableWithoutFeedback, View, type ViewStyle } from 'react-native';
-import Animated, { type AnimatedStyle } from 'react-native-reanimated';
-import { Box, globalColors, useColorMode, useForegroundColor } from '@/design-system';
-import { SheetHandleFixedToTop } from '@/components/sheet';
-import { IS_IOS } from '@/env';
-import { useNavigation } from '@/navigation/Navigation';
-import { opacity } from '@/framework/ui/utils/opacity';
-import safeAreaInsetValues from '@/utils/safeAreaInsetValues';
-import { DEVICE_HEIGHT, DEVICE_WIDTH } from '@/utils/deviceUtils';
-import { KeyboardStickyView } from 'react-native-keyboard-controller';
+import React, { memo, useMemo, type ComponentProps } from 'react';
+import { StyleSheet, TouchableWithoutFeedback, View, type StyleProp, type ViewStyle } from 'react-native';
+
 import ConditionalWrap from 'conditional-wrap';
+import { KeyboardStickyView } from 'react-native-keyboard-controller';
+import Animated, { type AnimatedStyle } from 'react-native-reanimated';
+
+import { SheetHandleFixedToTop } from '@/components/sheet';
+import { Box, globalColors, useColorMode, useForegroundColor } from '@/design-system';
+import { IS_IOS } from '@/env';
+import { opacity } from '@/framework/ui/utils/opacity';
+import { useNavigation } from '@/navigation/Navigation';
 import { THICK_BORDER_WIDTH } from '@/styles/constants';
+import { DEVICE_HEIGHT, DEVICE_WIDTH } from '@/utils/deviceUtils';
+import safeAreaInsetValues from '@/utils/safeAreaInsetValues';
 
 export const TapToDismiss = memo(function TapToDismiss() {
   const { goBack } = useNavigation();

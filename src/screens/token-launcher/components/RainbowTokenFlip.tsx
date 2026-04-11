@@ -1,3 +1,6 @@
+import React, { memo, useCallback, useEffect, useMemo, useState } from 'react';
+import { StyleSheet, type ViewStyle } from 'react-native';
+
 import {
   BlendColor,
   Blur,
@@ -7,22 +10,19 @@ import {
   Group,
   ImageShader,
   Paint,
+  point,
   Shadow,
+  Skia,
+  SweepGradient,
   type SkImage,
   type SkPath,
   type SkPoint,
   type SkRect,
-  Skia,
-  SweepGradient,
-  point,
 } from '@shopify/react-native-skia';
-import React, { memo, useCallback, useEffect, useMemo, useState } from 'react';
-import { StyleSheet, type ViewStyle } from 'react-native';
 import Animated, {
   Easing,
   makeMutable,
   runOnUI,
-  type SharedValue,
   useAnimatedReaction,
   useAnimatedStyle,
   useDerivedValue,
@@ -31,13 +31,15 @@ import Animated, {
   withSequence,
   withSpring,
   withTiming,
+  type SharedValue,
 } from 'react-native-reanimated';
 import { triggerHaptics } from 'react-native-turbo-haptics';
+
+import { clamp } from '@/__swaps__/utils/swaps';
 import { TIMING_CONFIGS } from '@/components/animations/animationConfigs';
 import { globalColors, useColorMode } from '@/design-system';
-import { getHighContrastColor } from '@/hooks/useAccountAccentColor';
-import { clamp } from '@/__swaps__/utils/swaps';
 import { opacity } from '@/framework/ui/utils/opacity';
+import { getHighContrastColor } from '@/hooks/useAccountAccentColor';
 
 interface RainbowCoinEffectProps {
   color: string;

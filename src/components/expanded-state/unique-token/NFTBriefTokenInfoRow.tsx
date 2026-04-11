@@ -1,19 +1,21 @@
-import * as i18n from '@/languages';
 import React, { useCallback, useEffect, useState } from 'react';
-import { TokenInfoItem } from '../../token-info';
+
 import { Columns } from '@/design-system';
+import type { UniqueAsset } from '@/entities/uniqueAssets';
+import { opacity } from '@/framework/ui/utils/opacity';
+import { convertAmountToNativeDisplay, convertRawAmountToRoundedDecimal } from '@/helpers/utilities';
+import * as i18n from '@/languages';
 import { useNavigation } from '@/navigation/Navigation';
 import Routes from '@/navigation/routesNames';
-import { useTheme } from '@/theme/ThemeContext';
-import { convertAmountToNativeDisplay, convertRawAmountToRoundedDecimal } from '@/helpers/utilities';
 import { useNFTListing } from '@/resources/nfts';
-import type { UniqueAsset } from '@/entities/uniqueAssets';
 import { fetchReservoirNFTFloorPrice } from '@/resources/nfts/utils';
-import { handleReviewPromptAction } from '@/utils/reviewAlert';
-import { ReviewPromptAction } from '@/storage/schema';
-import { useNativeAsset } from '@/utils/ethereumUtils';
 import { userAssetsStoreManager } from '@/state/assets/userAssetsStoreManager';
-import { opacity } from '@/framework/ui/utils/opacity';
+import { ReviewPromptAction } from '@/storage/schema';
+import { useTheme } from '@/theme/ThemeContext';
+import { useNativeAsset } from '@/utils/ethereumUtils';
+import { handleReviewPromptAction } from '@/utils/reviewAlert';
+
+import { TokenInfoItem } from '../../token-info';
 
 const NONE = 'None';
 

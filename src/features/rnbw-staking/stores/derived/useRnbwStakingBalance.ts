@@ -1,9 +1,10 @@
+import { createDerivedStore, shallowEqual } from '@storesjs/stores';
+
+import { RNBW_DECIMALS } from '@/features/rnbw-staking/constants';
 import { convertAmountToNativeDisplayWorklet, convertRawAmountToDecimalFormat, truncateToDecimalsWithThreshold } from '@/helpers/utilities';
 import { userAssetsStoreManager } from '@/state/assets/userAssetsStoreManager';
-import { createDerivedStore } from '@/state/internal/createDerivedStore';
-import { shallowEqual } from '@/worklets/comparisons';
+
 import { useStakingPositionStore } from '../rnbwStakingPositionStore';
-import { RNBW_DECIMALS } from '@/features/rnbw-staking/constants';
 
 type StakingBalance = {
   tokenAmount: string;
@@ -13,12 +14,10 @@ type StakingBalance = {
 
 export const useRnbwStakingBalance = createDerivedStore<StakingBalance>(
   $ => {
-    const data = $(useStakingPositionStore, state => state.getData());
+    const rawStakedRnbw = $(useStakingPositionStore, state => state.getData()?.stakedRnbw ?? '0');
+    const stakedValueInCurrency = $(useStakingPositionStore, state => state.getData()?.stakedValueInCurrency ?? '0');
+    const decimals = $(useStakingPositionStore, state => state.getData()?.decimals ?? RNBW_DECIMALS);
     const currency = $(userAssetsStoreManager, state => state.currency);
-
-    const rawStakedRnbw = data?.stakedRnbw ?? '0';
-    const stakedValueInCurrency = data?.stakedValueInCurrency ?? '0';
-    const decimals = data?.decimals ?? RNBW_DECIMALS;
     const isZero = rawStakedRnbw === '0';
 
     const decimalAmount = convertRawAmountToDecimalFormat(rawStakedRnbw, decimals);
@@ -30,5 +29,5 @@ export const useRnbwStakingBalance = createDerivedStore<StakingBalance>(
       hasStakedPosition: !isZero,
     };
   },
-  { equalityFn: shallowEqual, fastMode: true }
+  { equalityFn: shallowEqual, lockDependencies: true }
 );

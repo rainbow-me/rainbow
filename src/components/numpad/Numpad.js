@@ -1,12 +1,14 @@
 import React, { useCallback } from 'react';
+
+import styled from '@/framework/ui/styled-thing';
+import { opacity } from '@/framework/ui/utils/opacity';
+import useDimensions from '@/hooks/useDimensions';
+import { useTheme } from '@/theme/ThemeContext';
+
 import ButtonPressAnimation from '../animations/ButtonPressAnimation';
 import { Icon } from '../icons';
 import { Centered, Column, Row } from '../layout';
 import { Text } from '../text';
-import useDimensions from '@/hooks/useDimensions';
-import styled from '@/framework/ui/styled-thing';
-import { useTheme } from '@/theme/ThemeContext';
-import { opacity } from '@/framework/ui/utils/opacity';
 
 const KeyboardButtonContent = styled(Centered)({
   height: ({ height }) => height,

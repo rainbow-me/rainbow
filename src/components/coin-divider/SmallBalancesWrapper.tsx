@@ -1,8 +1,9 @@
 import React, { useMemo } from 'react';
+import { StyleSheet } from 'react-native';
+
 import OpacityToggler from '@/components/animations/OpacityToggler';
 import { CoinRowHeight } from '@/components/coin-row';
 import useFrameDelayedValue from '@/hooks/useFrameDelayedValue';
-import { StyleSheet } from 'react-native';
 import { useOpenSmallBalances } from '@/state/wallets/smallBalancesStore';
 
 const sx = StyleSheet.create({

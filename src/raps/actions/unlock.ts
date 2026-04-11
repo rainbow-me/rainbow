@@ -2,21 +2,23 @@ import { type Signer } from '@ethersproject/abstract-signer';
 import { MaxUint256 } from '@ethersproject/constants';
 import { Contract, type PopulatedTransaction } from '@ethersproject/contracts';
 import { parseUnits } from '@ethersproject/units';
-import { getProvider, toHex } from '@/handlers/web3';
 import { type Call } from '@rainbow-me/delegation';
-import { type Address, erc20Abi, erc721Abi } from 'viem';
-import { type ChainId } from '@/state/backendNetworks/types';
+import { erc20Abi, erc721Abi, type Address } from 'viem';
+
 import { type TransactionGasParams, type TransactionLegacyGasParams } from '@/__swaps__/types/gas';
-import { type NewTransaction, TransactionStatus } from '@/entities/transactions';
-import { addNewTransaction } from '@/state/pendingTransactions';
-import { RainbowError, ensureError, logger } from '@/logger';
-import { gasUnits } from '@/references/gasUnits';
+import { TransactionStatus, type NewTransaction } from '@/entities/transactions';
+import { getProvider, toHex } from '@/handlers/web3';
+import { ensureError, logger, RainbowError } from '@/logger';
 import { ETH_ADDRESS } from '@/references/constants';
-import { type ActionProps, type PrepareActionProps, type RapActionResult, type RapUnlockActionParameters } from '../references';
-import { overrideWithFastSpeedIfNeeded } from './../utils';
+import { gasUnits } from '@/references/gasUnits';
 import { useBackendNetworksStore } from '@/state/backendNetworks/backendNetworks';
-import { requireAddress, requireHex } from '../validation';
+import { type ChainId } from '@/state/backendNetworks/types';
+import { addNewTransaction } from '@/state/pendingTransactions';
+
+import { type ActionProps, type PrepareActionProps, type RapActionResult, type RapUnlockActionParameters } from '../references';
 import { toTransactionAsset } from '../transactionAsset';
+import { requireAddress, requireHex } from '../validation';
+import { overrideWithFastSpeedIfNeeded } from './../utils';
 
 const UNLIMITED_APPROVAL_AMOUNT = MaxUint256.toString();
 

@@ -1,46 +1,50 @@
 import '@/languages';
-import * as Sentry from '@sentry/react-native';
+
 import React, { memo, useCallback, useEffect, useState } from 'react';
-import { Provider as ReduxProvider } from 'react-redux';
 import { AppRegistry, Dimensions, LogBox, StyleSheet, View } from 'react-native';
-import { Toaster } from 'sonner-native';
+
 import { MobileWalletProtocolProvider } from '@coinbase/mobile-wallet-protocol-host';
-import { DeeplinkHandler } from '@/components/DeeplinkHandler';
-import { useApplicationSetup } from '@/hooks/useApplicationSetup';
+import * as Sentry from '@sentry/react-native';
+import { PerformanceProfiler } from '@shopify/react-native-performance';
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
-import { SafeAreaProvider, initialWindowMetrics } from 'react-native-safe-area-context';
+import { KeyboardProvider } from 'react-native-keyboard-controller';
+import { ReducedMotionConfig, ReduceMotion } from 'react-native-reanimated';
+import { initialWindowMetrics, SafeAreaProvider } from 'react-native-safe-area-context';
 import { enableScreens } from 'react-native-screens';
+import { Provider as ReduxProvider } from 'react-redux';
 import { RecoilRoot } from 'recoil';
+import { Toaster } from 'sonner-native';
+
+import { analytics } from '@/analytics';
+import { getOrCreateDeviceId } from '@/analytics/utils';
+import { DeeplinkHandler } from '@/components/DeeplinkHandler';
 import ErrorBoundary from '@/components/error-boundary/ErrorBoundary';
+import { RainbowToastDisplay } from '@/components/rainbow-toast/RainbowToast';
 import { OfflineToast } from '@/components/toasts';
 import { reactNativeDisableYellowBox, showNetworkRequests, showNetworkResponses } from '@/config/debug';
 import monitorNetwork from '@/debugging/network';
-import RainbowContextWrapper from '@/helpers/RainbowContext';
-import { setNavigationRef } from '@/navigation/Navigation';
-import { PersistQueryClientProvider, persistOptions, queryClient } from '@/react-query';
-import store from '@/redux/store';
-import { MainThemeProvider } from '@/theme/ThemeContext';
-import { InitialRouteContext } from '@/navigation/initialRoute';
-import { NotificationsHandler } from '@/notifications/NotificationsHandler';
-import { analytics } from '@/analytics';
-import { getOrCreateDeviceId } from '@/analytics/utils';
-import { logger, RainbowError } from '@/logger';
-import * as ls from '@/storage';
-import { migrate } from '@/migrations';
-import { initializeReservoirClient } from '@/resources/reservoir/client';
-import { initializeRemoteConfig } from '@/model/remoteConfig';
-import { loadSettingsData } from '@/state/settings/loadSettingsData';
 import { DANGER_INSTALL_SOURCE, IS_DEV, IS_PROD, IS_TEST } from '@/env';
-import Routes from '@/navigation/Routes';
-import { BackupsSync } from '@/state/sync/BackupsSync';
-import { AbsolutePortalRoot } from './components/AbsolutePortal';
-import { PerformanceProfiler } from '@shopify/react-native-performance';
-import { PerformanceReports, PerformanceReportSegments, PerformanceTracking } from './performance/tracking';
-import { TestDeeplinkHandler } from './components/TestDeeplinkHandler';
-import { RainbowToastDisplay } from '@/components/rainbow-toast/RainbowToast';
-import { KeyboardProvider } from 'react-native-keyboard-controller';
-import { ReducedMotionConfig, ReduceMotion } from 'react-native-reanimated';
 import { configureDelegationSdk } from '@/features/delegation/configureClient';
+import RainbowContextWrapper from '@/helpers/RainbowContext';
+import { useApplicationSetup } from '@/hooks/useApplicationSetup';
+import { logger, RainbowError } from '@/logger';
+import { migrate } from '@/migrations';
+import { initializeRemoteConfig } from '@/model/remoteConfig';
+import { InitialRouteContext } from '@/navigation/initialRoute';
+import { setNavigationRef } from '@/navigation/Navigation';
+import Routes from '@/navigation/Routes';
+import { NotificationsHandler } from '@/notifications/NotificationsHandler';
+import { persistOptions, PersistQueryClientProvider, queryClient } from '@/react-query';
+import store from '@/redux/store';
+import { initializeReservoirClient } from '@/resources/reservoir/client';
+import { loadSettingsData } from '@/state/settings/loadSettingsData';
+import { BackupsSync } from '@/state/sync/BackupsSync';
+import * as ls from '@/storage';
+import { MainThemeProvider } from '@/theme/ThemeContext';
+
+import { AbsolutePortalRoot } from './components/AbsolutePortal';
+import { TestDeeplinkHandler } from './components/TestDeeplinkHandler';
+import { PerformanceReports, PerformanceReportSegments, PerformanceTracking } from './performance/tracking';
 
 if (IS_DEV) {
   reactNativeDisableYellowBox && LogBox.ignoreAllLogs();
@@ -165,12 +169,7 @@ async function initializeApplication() {
   analytics.init({ deviceId });
   analytics.identify({ installSource: DANGER_INSTALL_SOURCE });
 
-  await Promise.all([
-    initializeRemoteConfig(),
-    migrate(),
-    loadSettingsData(), // load i18n early for first-render
-    configureDelegationSdk(),
-  ]);
+  await Promise.all([initializeRemoteConfig(), migrate(), loadSettingsData(), configureDelegationSdk()]);
 
   /**
    * We previously relied on the existence of a deviceId on keychain to

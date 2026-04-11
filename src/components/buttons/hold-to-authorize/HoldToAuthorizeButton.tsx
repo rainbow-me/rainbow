@@ -1,11 +1,13 @@
-import * as i18n from '@/languages';
 import React from 'react';
-import HoldToAuthorizeButtonContent from './HoldToAuthorizeButtonContent';
-import { type HoldToAuthorizeBaseProps } from './types/HoldToAuthorizeBaseProps';
+
 import { BiometryTypes } from '@/helpers';
 import useBiometryType from '@/hooks/useBiometryType';
 import useDimensions from '@/hooks/useDimensions';
+import * as i18n from '@/languages';
 import { useTheme } from '@/theme/ThemeContext';
+
+import HoldToAuthorizeButtonContent from './HoldToAuthorizeButtonContent';
+import { type HoldToAuthorizeBaseProps } from './types/HoldToAuthorizeBaseProps';
 
 interface WrapperProps extends HoldToAuthorizeBaseProps {
   label: string;

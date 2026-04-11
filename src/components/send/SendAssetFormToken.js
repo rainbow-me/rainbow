@@ -1,14 +1,16 @@
 import React, { Fragment } from 'react';
-import { Column } from '../layout';
-import SendAssetFormField from './SendAssetFormField';
+
+import { IS_ANDROID } from '@/env';
+import styled from '@/framework/ui/styled-thing';
+import { opacity } from '@/framework/ui/utils/opacity';
 import useDimensions from '@/hooks/useDimensions';
 import { supportedCurrencies as supportedNativeCurrencies } from '@/references/supportedCurrencies';
-import styled from '@/framework/ui/styled-thing';
-import { removeLeadingZeros } from '@/utils/formatters';
 import { useTheme } from '@/theme/ThemeContext';
-import { IS_ANDROID } from '@/env';
 import { NAVIGATION_BAR_HEIGHT } from '@/utils/deviceUtils';
-import { opacity } from '@/framework/ui/utils/opacity';
+import { removeLeadingZeros } from '@/utils/formatters';
+
+import { Column } from '../layout';
+import SendAssetFormField from './SendAssetFormField';
 
 const FooterContainer = styled(Column).attrs({
   justify: 'end',

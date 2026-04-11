@@ -1,9 +1,11 @@
-import { type RootStackParamList } from '@/navigation/types';
-import { type RouteProp, useRoute } from '@react-navigation/native';
-import { useNavigation } from '@/navigation/Navigation';
+import { useRoute, type RouteProp } from '@react-navigation/native';
 import { runOnJS, useAnimatedReaction } from 'react-native-reanimated';
-import { useSwapContext } from '../providers/swap-provider';
+
+import { useNavigation } from '@/navigation/Navigation';
 import type Routes from '@/navigation/routesNames';
+import { type RootStackParamList } from '@/navigation/types';
+
+import { useSwapContext } from '../providers/swap-provider';
 
 export const NavigateToSwapSettingsTrigger = () => {
   const route = useRoute<RouteProp<RootStackParamList, typeof Routes.SWAP>>();

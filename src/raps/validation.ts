@@ -1,6 +1,7 @@
-import { type CrosschainQuote, type Quote } from '@rainbow-me/swaps';
 import { getAddress, isHex, type Address, type Hex } from 'viem';
+
 import { RainbowError } from '@/logger';
+import { type CrosschainQuote, type Quote } from '@rainbow-me/swaps';
 
 /**
  * Validates and normalizes a string into a viem `Address`.

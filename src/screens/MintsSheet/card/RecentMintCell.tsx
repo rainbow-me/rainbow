@@ -1,13 +1,15 @@
 import React, { useEffect, useState } from 'react';
-import { globalColors } from '@/design-system/color/palettes';
-import { Box, Cover, Text } from '@/design-system';
-import { useTheme } from '@/theme/ThemeContext';
 import { View } from 'react-native';
-import { type MintedNft } from '@/graphql/__generated__/arc';
-import { IS_IOS } from '@/env';
-import deviceUtils from '@/utils/deviceUtils';
-import { NUM_NFTS } from './Card';
+
 import { ImgixImage } from '@/components/images';
+import { Box, Cover, Text } from '@/design-system';
+import { globalColors } from '@/design-system/color/palettes';
+import { IS_IOS } from '@/env';
+import { type MintedNft } from '@/graphql/__generated__/arc';
+import { useTheme } from '@/theme/ThemeContext';
+import deviceUtils from '@/utils/deviceUtils';
+
+import { NUM_NFTS } from './Card';
 
 const NFT_IMAGE_SIZE = (deviceUtils.dimensions.width - 40 - (NUM_NFTS - 1) * 10) / NUM_NFTS;
 

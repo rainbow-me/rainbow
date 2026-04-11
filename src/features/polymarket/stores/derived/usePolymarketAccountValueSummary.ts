@@ -1,10 +1,10 @@
+import { USD_DECIMALS } from '@/features/perps/constants';
 import { useCurrencyConversionStore } from '@/features/perps/stores/currencyConversionStore';
-import { createDerivedStore } from '@/state/internal/createDerivedStore';
 import { usePolymarketPositionsSummary } from '@/features/polymarket/stores/derived/usePolymarketPositionsSummary';
 import { usePolymarketBalanceStore } from '@/features/polymarket/stores/polymarketBalanceStore';
-import { add, isZero } from '@/helpers/utilities';
 import { truncateToDecimals } from '@/framework/core/safeMath';
-import { USD_DECIMALS } from '@/features/perps/constants';
+import { add, isZero } from '@/helpers/utilities';
+import { createDerivedStore } from '@/state/internal/createDerivedStore';
 
 export type PolymarketAccountValueSummary = {
   balance: string;

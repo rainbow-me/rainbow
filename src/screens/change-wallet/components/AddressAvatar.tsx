@@ -1,9 +1,10 @@
 import React, { useMemo } from 'react';
-import { Box, Text, useForegroundColor } from '@/design-system';
+
 import { ImgixImage } from '@/components/images';
-import { addressHashedEmoji } from '@/utils/profileUtils';
+import { Box, Text, useForegroundColor } from '@/design-system';
 import { returnStringFirstEmoji } from '@/helpers/emojiHandler';
 import { colors } from '@/styles';
+import { addressHashedEmoji } from '@/utils/profileUtils';
 
 const DEFAULT_SIZE = 36;
 
@@ -31,7 +32,7 @@ function AddressEmojiAvatar({
     typeof color === 'number'
       ? // sometimes the color is gonna be missing so we fallback to white
         // otherwise there will be only shadows without the the placeholder "circle"
-        colors.avatarBackgrounds[color] ?? fillTertiary
+        (colors.avatarBackgrounds[color] ?? fillTertiary)
       : color;
 
   const textSize = useMemo(() => {

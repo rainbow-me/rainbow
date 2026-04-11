@@ -1,21 +1,23 @@
 import { useQuery } from '@tanstack/react-query';
 import { omit } from 'lodash';
 import isEqual from 'react-fast-compare';
+
+import { type AddressOrEth, type UniqueId } from '@/__swaps__/types/assets';
 import { analytics } from '@/analytics';
 import { NativeCurrencyKeys } from '@/entities/nativeCurrencyTypes';
 import type { RainbowToken } from '@/entities/tokens';
-import { RainbowError, logger } from '@/logger';
+import { IS_TEST } from '@/env';
+import { logger, RainbowError } from '@/logger';
 import { createQueryKey, queryClient } from '@/react-query';
 import { DAI_ADDRESS, ETH_ADDRESS, SOCKS_ADDRESS, WBTC_ADDRESS, WETH_ADDRESS } from '@/references/constants';
 import { useBackendNetworksStore } from '@/state/backendNetworks/backendNetworks';
 import { ChainId, type Network } from '@/state/backendNetworks/types';
 import { createRainbowStore } from '@/state/internal/createRainbowStore';
-import { type AddressOrEth, type UniqueId } from '@/__swaps__/types/assets';
+import { getUniqueId } from '@/utils/ethereumUtils';
 import promiseUtils from '@/utils/promise';
 import { time } from '@/utils/time';
-import { getUniqueId } from '@/utils/ethereumUtils';
+
 import { externalTokenQueryKey, fetchExternalToken } from './assets/externalAssetsQuery';
-import { IS_TEST } from '@/env';
 
 export const favoritesQueryKey = createQueryKey('favorites', {}, { persisterVersion: 4 });
 

@@ -1,8 +1,9 @@
+import { runOnJS } from 'react-native-reanimated';
+
 import { type ExtendedAnimatedAssetWithColors } from '@/__swaps__/types/assets';
 import { analytics } from '@/analytics';
 import { type EventProperties } from '@/analytics/event';
 import { type QuoteError } from '@rainbow-me/swaps';
-import { runOnJS } from 'react-native-reanimated';
 
 const analyticsTrack: typeof analytics.track = (...args) => analytics.track(...args);
 let lastParams: EventProperties[typeof analytics.event.swapsQuoteFailed];

@@ -1,13 +1,16 @@
-import PropTypes from 'prop-types';
 import React, { useCallback } from 'react';
+
+import PropTypes from 'prop-types';
+
+import styled from '@/framework/ui/styled-thing';
+import Navigation from '@/navigation/Navigation';
+import Routes from '@/navigation/routesNames';
+import { padding, position } from '@/styles';
 import magicMemo from '@/utils/magicMemo';
+
 import { Row } from '../layout';
 import { CardSize, UniqueTokenCardMargin, UniqueTokenRowPadding } from './CardSize';
 import UniqueTokenCard from './UniqueTokenCard';
-import Routes from '@/navigation/routesNames';
-import styled from '@/framework/ui/styled-thing';
-import { padding, position } from '@/styles';
-import Navigation from '@/navigation/Navigation';
 
 const Container = styled(Row).attrs({ align: 'center' })({
   ...padding.object(0, UniqueTokenRowPadding),

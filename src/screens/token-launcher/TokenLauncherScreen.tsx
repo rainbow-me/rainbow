@@ -1,24 +1,27 @@
 import React, { useEffect, useMemo } from 'react';
+import { Dimensions, StyleSheet, type StyleProp, type ViewStyle } from 'react-native';
+
+import { KeyboardAvoidingView, KeyboardStickyView } from 'react-native-keyboard-controller';
+import Animated, { Extrapolation, FadeIn, FadeOut, interpolate, useAnimatedStyle, withTiming } from 'react-native-reanimated';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
+
 import { PANEL_COLOR_DARK } from '@/components/SmoothPager/ListPanel';
 import { Border, Box, ColorModeProvider, globalColors } from '@/design-system';
+import { IS_ANDROID } from '@/env';
+import { THICK_BORDER_WIDTH } from '@/styles/constants';
+
+import { CreatingStep } from './components/CreatingStep';
+import { InfoInputStep } from './components/InfoInputStep';
+import { PriceAndGasSync } from './components/PriceAndGasSync';
+import { ReviewStep } from './components/ReviewStep';
+import { ScreenBlurredImageBackground } from './components/ScreenBlurredImageBackground';
+import { StepBlurredImageBackground } from './components/StepBlurredImageBackground';
+import { StepBorderEffects } from './components/StepBorderEffects';
+import { SuccessStep } from './components/SuccessStep';
 import { FOOTER_HEIGHT, TokenLauncherFooter } from './components/TokenLauncherFooter';
 import { TokenLauncherHeader } from './components/TokenLauncherHeader';
-import { InfoInputStep } from './components/InfoInputStep';
-import { ReviewStep } from './components/ReviewStep';
-import { KeyboardAvoidingView, KeyboardStickyView } from 'react-native-keyboard-controller';
-import { NavigationSteps, useTokenLauncherStore } from './state/tokenLauncherStore';
-import Animated, { Extrapolation, FadeIn, FadeOut, interpolate, useAnimatedStyle, withTiming } from 'react-native-reanimated';
-import { StepBlurredImageBackground } from './components/StepBlurredImageBackground';
 import { TokenLauncherContextProvider } from './context/TokenLauncherContext';
-import { CreatingStep } from './components/CreatingStep';
-import { Dimensions, type StyleProp, StyleSheet, type ViewStyle } from 'react-native';
-import { SuccessStep } from './components/SuccessStep';
-import { ScreenBlurredImageBackground } from './components/ScreenBlurredImageBackground';
-import { IS_ANDROID } from '@/env';
-import { useSafeAreaInsets } from 'react-native-safe-area-context';
-import { StepBorderEffects } from './components/StepBorderEffects';
-import { PriceAndGasSync } from './components/PriceAndGasSync';
-import { THICK_BORDER_WIDTH } from '@/styles/constants';
+import { NavigationSteps, useTokenLauncherStore } from './state/tokenLauncherStore';
 
 function reviewStepExitingAnimation() {
   'worklet';

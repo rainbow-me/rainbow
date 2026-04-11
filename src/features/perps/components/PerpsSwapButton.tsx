@@ -1,23 +1,25 @@
-import { GestureHandlerButton } from '@/components/buttons/GestureHandlerButton';
-import { opacity } from '@/framework/ui/utils/opacity';
-import { SPRING_CONFIGS, TIMING_CONFIGS } from '@/components/animations/animationConfigs';
-import { Box, Cover, useColorMode, useForegroundColor } from '@/design-system';
-import { AnimatedText, type SharedOrDerivedValueText } from '@/design-system/components/Text/AnimatedText';
-import { IS_IOS } from '@/env';
-import { usePerpsAccentColorContext } from '@/features/perps/context/PerpsAccentColorContext';
-import chroma from 'chroma-js';
 import { StyleSheet, View, type ViewStyle } from 'react-native';
+
+import chroma from 'chroma-js';
 import { LinearGradient } from 'expo-linear-gradient';
 import Animated, {
   Easing,
   interpolate,
-  type SharedValue,
   useAnimatedStyle,
   useSharedValue,
   withSpring,
   withTiming,
+  type SharedValue,
 } from 'react-native-reanimated';
 import { triggerHaptics } from 'react-native-turbo-haptics';
+
+import { SPRING_CONFIGS, TIMING_CONFIGS } from '@/components/animations/animationConfigs';
+import { GestureHandlerButton } from '@/components/buttons/GestureHandlerButton';
+import { Box, Cover, useColorMode, useForegroundColor } from '@/design-system';
+import { AnimatedText, type SharedOrDerivedValueText } from '@/design-system/components/Text/AnimatedText';
+import { IS_IOS } from '@/env';
+import { usePerpsAccentColorContext } from '@/features/perps/context/PerpsAccentColorContext';
+import { opacity } from '@/framework/ui/utils/opacity';
 
 const HOLD_TO_SWAP_DURATION_MS = 400;
 

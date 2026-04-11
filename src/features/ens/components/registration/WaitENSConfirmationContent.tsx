@@ -1,8 +1,10 @@
-import * as i18n from '@/languages';
 import React from 'react';
+
 import LargeCountdownClock from '@/components/large-countdown-clock/LargeCountdownClock';
 import StepIndicator from '@/components/step-indicator/StepIndicator';
 import { Box, Heading, Inset, Row, Rows, Stack, Text } from '@/design-system';
+import * as i18n from '@/languages';
+
 import { ENS_SECONDS_WAIT } from '../../utils/helpers';
 
 const WaitENSConfirmationContent = ({ seconds }: { seconds: number | undefined }) => (

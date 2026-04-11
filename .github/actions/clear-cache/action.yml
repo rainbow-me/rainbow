@@ -1,10 +1,9 @@
-name: "clear-cache"
+name: 'clear-cache'
 description: 'Clear macstadium cache on a specific instance'
 runs:
-  using: "composite"
+  using: 'composite'
   steps:
     - id: clean
       shell: bash
       run: |
         yarn nuke
-

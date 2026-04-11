@@ -1,15 +1,16 @@
 import React, { useMemo } from 'react';
-import * as i18n from '@/languages';
-import { Box, Text } from '@/design-system';
-import { type PerpMarket } from '@/features/perps/types';
-import { LeverageBadge } from '@/features/perps/components/LeverageBadge';
-import { HyperliquidTokenIcon } from '@/features/perps/components/HyperliquidTokenIcon';
-import { formatNumber } from '@/helpers/strings';
-import { LiveTokenText } from '@/components/live-token-text/LiveTokenText';
-import { formatPriceChange, getHyperliquidTokenId } from '@/features/perps/utils';
+
 import ButtonPressAnimation from '@/components/animations/ButtonPressAnimation';
-import { type TokenData } from '@/state/liveTokens/liveTokensStore';
+import { LiveTokenText } from '@/components/live-token-text/LiveTokenText';
+import { Box, Text } from '@/design-system';
+import { HyperliquidTokenIcon } from '@/features/perps/components/HyperliquidTokenIcon';
+import { LeverageBadge } from '@/features/perps/components/LeverageBadge';
+import { type PerpMarket } from '@/features/perps/types';
+import { formatPriceChange, getHyperliquidTokenId } from '@/features/perps/utils';
 import { formatPerpAssetPrice } from '@/features/perps/utils/formatPerpsAssetPrice';
+import { formatNumber } from '@/helpers/strings';
+import * as i18n from '@/languages';
+import { type TokenData } from '@/state/liveTokens/liveTokensStore';
 
 type PerpMarketRowProps = {
   market: PerpMarket;

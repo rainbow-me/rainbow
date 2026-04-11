@@ -1,9 +1,11 @@
 import React from 'react';
 import { Dimensions, StyleSheet, Text, View } from 'react-native';
-import { Categories } from './Categories';
-import { avatarBuilderStyles } from './avatarBuilderStyles';
-import { useTheme } from '@/theme/ThemeContext';
+
 import { opacity } from '@/framework/ui/utils/opacity';
+import { useTheme } from '@/theme/ThemeContext';
+
+import { avatarBuilderStyles } from './avatarBuilderStyles';
+import { Categories } from './Categories';
 
 const { width } = Dimensions.get('screen');
 

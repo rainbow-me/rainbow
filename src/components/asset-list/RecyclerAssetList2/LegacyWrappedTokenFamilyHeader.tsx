@@ -1,17 +1,19 @@
-import useLatestCallback from '@/hooks/useLatestCallback';
-import { useRemoteConfig } from '@/model/remoteConfig';
-import useExperimentalFlag, { NFTS_ENABLED } from '@/config/experimentalHooks';
-import * as i18n from '@/languages';
 import React, { useMemo, useRef } from 'react';
 import { Animated, Easing, StyleSheet, View } from 'react-native';
+
 import FastImage from 'react-native-fast-image';
+
 import CaretImageSource from '@/assets/family-dropdown-arrow.png';
 import ButtonPressAnimation from '@/components/animations/ButtonPressAnimation';
-import TokenFamilyHeaderIcon from '@/components/token-family/TokenFamilyHeaderIcon';
-import { Text } from '@/design-system';
 import { ImgixImage } from '@/components/images';
-import { type ThemeContextProps } from '@/theme/ThemeContext';
+import TokenFamilyHeaderIcon from '@/components/token-family/TokenFamilyHeaderIcon';
+import useExperimentalFlag, { NFTS_ENABLED } from '@/config/experimentalHooks';
+import { Text } from '@/design-system';
+import useLatestCallback from '@/hooks/useLatestCallback';
+import * as i18n from '@/languages';
+import { useRemoteConfig } from '@/model/remoteConfig';
 import { useOpenCollectionsStore } from '@/state/nfts/openCollectionsStore';
+import { type ThemeContextProps } from '@/theme/ThemeContext';
 
 type Props = {
   name: string;

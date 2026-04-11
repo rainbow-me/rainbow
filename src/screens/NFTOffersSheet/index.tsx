@@ -1,3 +1,7 @@
+import React from 'react';
+
+import { FlashList } from '@shopify/flash-list';
+
 import ButtonPressAnimation from '@/components/animations/ButtonPressAnimation';
 import { ContactAvatar } from '@/components/contacts';
 import { ImgixImage } from '@/components/images';
@@ -23,8 +27,7 @@ import { queryClient } from '@/react-query';
 import { nftOffersQueryKey, useNFTOffers } from '@/resources/reservoir/nftOffersQuery';
 import { useAccountProfileInfo } from '@/state/wallets/walletsStore';
 import { useTheme } from '@/theme/ThemeContext';
-import { FlashList } from '@shopify/flash-list';
-import React from 'react';
+
 import { FakeOfferRow, OfferRow } from './OfferRow';
 
 const PROFILE_AVATAR_SIZE = 36;

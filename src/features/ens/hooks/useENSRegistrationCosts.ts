@@ -1,10 +1,20 @@
-import { useQueries } from '@tanstack/react-query';
-import { type BigNumberish } from '@ethersproject/bignumber';
-import { isEmpty } from 'lodash';
 import { useCallback, useEffect, useMemo, useState } from 'react';
-import useENSRegistration from './useENSRegistration';
+
+import { type BigNumberish } from '@ethersproject/bignumber';
+import { useQueries } from '@tanstack/react-query';
+import { isEmpty } from 'lodash';
+
+import { add, addBuffer, addDisplay, fromWei, greaterThanOrEqualTo, multiply } from '@/helpers/utilities';
 import useGas from '@/hooks/useGas';
 import usePrevious from '@/hooks/usePrevious';
+import ethUnits from '@/references/ethereum-units.json';
+import timeUnits from '@/references/time-units.json';
+import { userAssetsStoreManager } from '@/state/assets/userAssetsStoreManager';
+import { ChainId } from '@/state/backendNetworks/types';
+import { useAccountAddress } from '@/state/wallets/walletsStore';
+import ethereumUtils from '@/utils/ethereumUtils';
+import gasUtils from '@/utils/gas';
+
 import {
   estimateENSCommitGasLimit,
   estimateENSRegisterSetRecordsAndNameGasLimit,
@@ -23,14 +33,7 @@ import {
   REGISTRATION_MODES,
   REGISTRATION_STEPS,
 } from '../utils/helpers';
-import { add, addBuffer, addDisplay, fromWei, greaterThanOrEqualTo, multiply } from '@/helpers/utilities';
-import ethUnits from '@/references/ethereum-units.json';
-import timeUnits from '@/references/time-units.json';
-import ethereumUtils from '@/utils/ethereumUtils';
-import gasUtils from '@/utils/gas';
-import { ChainId } from '@/state/backendNetworks/types';
-import { useAccountAddress } from '@/state/wallets/walletsStore';
-import { userAssetsStoreManager } from '@/state/assets/userAssetsStoreManager';
+import useENSRegistration from './useENSRegistration';
 
 enum QUERY_KEYS {
   GET_COMMIT_GAS_LIMIT = 'GET_COMMIT_GAS_LIMIT',

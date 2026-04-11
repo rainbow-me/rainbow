@@ -1,16 +1,19 @@
 import { useMemo } from 'react';
+
 import { useDeepCompareMemo } from 'use-deep-compare';
-import { type AssetListType } from '..';
-import { CellType, type CellTypes, type CoinExtraData, type LegacyNFTFamilyExtraData, type NFTFamilyExtraData } from './ViewTypes';
+
 import useCoinListEdited from '@/hooks/useCoinListEdited';
 import useExternalWalletSectionsData from '@/hooks/useExternalWalletSectionsData';
-import useWalletSectionsData from '@/hooks/useWalletSectionsData';
-import useOpenPositionCards from '@/hooks/useOpenPositionCards';
 import useOpenClaimables from '@/hooks/useOpenClaimables';
 import useOpenPolymarket from '@/hooks/useOpenPolymarket';
+import useOpenPositionCards from '@/hooks/useOpenPositionCards';
+import useWalletSectionsData from '@/hooks/useWalletSectionsData';
 import { useUserAssetsStore } from '@/state/assets/userAssets';
-import { useOpenSmallBalances } from '@/state/wallets/smallBalancesStore';
 import { useOpenCollectionsStore } from '@/state/nfts/openCollectionsStore';
+import { useOpenSmallBalances } from '@/state/wallets/smallBalancesStore';
+
+import { type AssetListType } from '..';
+import { CellType, type CellTypes, type CoinExtraData, type LegacyNFTFamilyExtraData, type NFTFamilyExtraData } from './ViewTypes';
 
 const FILTER_TYPES = {
   'ens-profile': [CellType.NFT_SPACE_AFTER, CellType.LEGACY_NFT, CellType.LEGACY_FAMILY_HEADER],

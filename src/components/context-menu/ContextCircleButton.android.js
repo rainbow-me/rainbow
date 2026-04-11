@@ -1,11 +1,14 @@
 import React, { useMemo } from 'react';
+
 import RadialGradient from 'react-native-radial-gradient';
-import { Text } from '../text';
+
 import ContextMenuButton from '@/components/native-context-menu/contextMenu';
-import useLatestCallback from '@/hooks/useLatestCallback';
 import styled from '@/framework/ui/styled-thing';
-import { borders, position } from '@/styles';
 import { opacity } from '@/framework/ui/utils/opacity';
+import useLatestCallback from '@/hooks/useLatestCallback';
+import { borders, position } from '@/styles';
+
+import { Text } from '../text';
 
 const CircleButton = styled(RadialGradient).attrs(({ theme: { colors } }) => ({
   center: [0, 20],

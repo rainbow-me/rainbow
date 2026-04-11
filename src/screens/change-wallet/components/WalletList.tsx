@@ -1,30 +1,33 @@
 import React, { useCallback, useMemo, useRef } from 'react';
 import { StyleSheet, View } from 'react-native';
+
+import { type PanGesture } from 'react-native-gesture-handler';
 import Animated, { FadeIn, FadeOut } from 'react-native-reanimated';
-import * as i18n from '@/languages';
+import { triggerHaptics } from 'react-native-turbo-haptics';
+
+import { SPRING_CONFIGS } from '@/components/animations/animationConfigs';
 import EmptyAssetList from '@/components/asset-list/EmptyAssetList';
-import { AddressRow } from './AddressRow';
+import { DndProvider, Draggable, type DraggableScrollViewProps, type UniqueIdentifier } from '@/components/drag-and-drop';
+import { DraggableScrollView } from '@/components/drag-and-drop/components/DraggableScrollView';
+import { type MenuItem } from '@/components/DropdownMenu';
+import { Box, Separator, Text } from '@/design-system';
 import { type EthereumAddress } from '@/entities/wallet';
 import styled from '@/framework/ui/styled-thing';
-import { position } from '@/styles';
+import * as i18n from '@/languages';
 import {
-  type AddressItem,
-  type AddressMenuAction,
-  type AddressMenuActionData,
   FOOTER_HEIGHT,
   MAX_PANEL_HEIGHT,
   PANEL_HEADER_HEIGHT,
   PANEL_INSET_HORIZONTAL,
+  type AddressItem,
+  type AddressMenuAction,
+  type AddressMenuActionData,
 } from '@/screens/change-wallet/ChangeWalletSheet';
-import { Box, Separator, Text } from '@/design-system';
-import { DndProvider, Draggable, type DraggableScrollViewProps, type UniqueIdentifier } from '@/components/drag-and-drop';
 import { PinnedWalletsGrid } from '@/screens/change-wallet/components/PinnedWalletsGrid';
 import { usePinnedWalletsStore } from '@/state/wallets/pinnedWalletsStore';
-import { type MenuItem } from '@/components/DropdownMenu';
-import { DraggableScrollView } from '@/components/drag-and-drop/components/DraggableScrollView';
-import { triggerHaptics } from 'react-native-turbo-haptics';
-import { SPRING_CONFIGS } from '@/components/animations/animationConfigs';
-import { type PanGesture } from 'react-native-gesture-handler';
+import { position } from '@/styles';
+
+import { AddressRow } from './AddressRow';
 
 const DRAG_ACTIVATION_DELAY = 150;
 const FADE_TRANSITION_DURATION = 75;

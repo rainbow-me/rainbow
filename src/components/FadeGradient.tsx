@@ -1,12 +1,12 @@
 import React from 'react';
 import { type StyleProp, type ViewStyle } from 'react-native';
+
 import { LinearGradient } from 'expo-linear-gradient';
 import Animated from 'react-native-reanimated';
 
 import { Box, globalColors } from '@/design-system';
-
-import { useTheme } from '@/theme/ThemeContext';
 import { opacity } from '@/framework/ui/utils/opacity';
+import { useTheme } from '@/theme/ThemeContext';
 
 type FadeGradientProps = { side: 'top' | 'bottom'; style?: StyleProp<Animated.AnimateStyle<StyleProp<ViewStyle>>> };
 

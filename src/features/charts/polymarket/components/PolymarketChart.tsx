@@ -1,38 +1,41 @@
-import { Canvas, Picture, type SkPicture } from '@shopify/react-native-skia';
-import { cloneDeep, merge } from 'lodash';
 import React, { memo, useCallback, useMemo } from 'react';
 import { StyleSheet, View } from 'react-native';
+
+import { Canvas, Picture, type SkPicture } from '@shopify/react-native-skia';
+import { cloneDeep, merge } from 'lodash';
 import { Gesture, GestureDetector } from 'react-native-gesture-handler';
 import Animated, {
-  type SharedValue,
   runOnUI,
   useAnimatedStyle,
   useDerivedValue,
   useSharedValue,
   withSpring,
+  type SharedValue,
 } from 'react-native-reanimated';
-import { SPRING_CONFIGS } from '@/components/animations/animationConfigs';
+
 import { AnimatedSpinner } from '@/components/animations/AnimatedSpinner';
+import { SPRING_CONFIGS } from '@/components/animations/animationConfigs';
 import { globalColors, useColorMode, useForegroundColor } from '@/design-system';
 import { useSkiaText } from '@/design-system/components/SkiaText/useSkiaText';
 import { IS_IOS } from '@/env';
+import { opacity } from '@/framework/ui/utils/opacity';
 import { useWorkletClass } from '@/hooks/reanimated/useWorkletClass';
 import { useCleanup } from '@/hooks/useCleanup';
 import { useOnChange } from '@/hooks/useOnChange';
 import { useStableValue } from '@/hooks/useStableValue';
 import { useListen } from '@/state/internal/hooks/useListen';
+import { useListenerRouteGuard } from '@/state/internal/hooks/useListenerRouteGuard';
 import { type DeepPartial } from '@/types/objects';
 import { deepFreeze } from '@/utils/deepFreeze';
 import { DEVICE_WIDTH } from '@/utils/deviceUtils';
-import { opacity } from '@/framework/ui/utils/opacity';
 import { createBlankPicture } from '@/worklets/skia';
+
 import { NoChartData } from '../../components/NoChartData';
 import { type LineSmoothing } from '../../line/LineSmoothingAlgorithms';
-import { type ActiveInteractionData, type PolymarketChartConfig, PolymarketChartManager } from '../classes/PolymarketChartManager';
+import { PolymarketChartManager, type ActiveInteractionData, type PolymarketChartConfig } from '../classes/PolymarketChartManager';
 import { usePolymarketChartStore, usePolymarketMarketChartStore } from '../stores/polymarketChartStore';
 import { usePolymarketStore } from '../stores/polymarketStore';
-import { EntranceAnimation, type PolymarketChartData, SERIES_PALETTES, SeriesPalette } from '../types';
-import { useListenerRouteGuard } from '@/state/internal/hooks/useListenerRouteGuard';
+import { EntranceAnimation, SERIES_PALETTES, SeriesPalette, type PolymarketChartData } from '../types';
 
 export type PartialPolymarketChartConfig = DeepPartial<
   Omit<PolymarketChartConfig, 'chart'> & { chart: Omit<PolymarketChartConfig['chart'], 'backgroundColor'> }

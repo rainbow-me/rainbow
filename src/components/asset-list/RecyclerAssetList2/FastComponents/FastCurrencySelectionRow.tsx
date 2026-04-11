@@ -1,18 +1,21 @@
 import React from 'react';
-import isEqual from 'react-fast-compare';
 import { Text as RNText, StyleSheet, View } from 'react-native';
+
+import isEqual from 'react-fast-compare';
 import RadialGradient from 'react-native-radial-gradient';
+
+import RainbowCoinIcon from '@/components/coin-icon/RainbowCoinIcon';
+import ContextMenuButton from '@/components/native-context-menu/contextMenu';
+import { Text, TextIcon } from '@/design-system';
+import { IS_ANDROID, IS_IOS, IS_TEST } from '@/env';
+import { opacity } from '@/framework/ui/utils/opacity';
+import { isNativeAsset } from '@/handlers/assets';
+import { ChainId } from '@/state/backendNetworks/types';
+import { colors, fonts, fontWithWidth, getFontSize } from '@/styles';
+
 import ButtonPressAnimation from '../../../animations/ButtonPressAnimation';
 import { CoinRowHeight } from '../../../coin-row';
 import { FloatingEmojis } from '../../../floating-emojis';
-import ContextMenuButton from '@/components/native-context-menu/contextMenu';
-import { Text, TextIcon } from '@/design-system';
-import { isNativeAsset } from '@/handlers/assets';
-import { colors, fonts, fontWithWidth, getFontSize } from '@/styles';
-import RainbowCoinIcon from '@/components/coin-icon/RainbowCoinIcon';
-import { ChainId } from '@/state/backendNetworks/types';
-import { IS_ANDROID, IS_IOS, IS_TEST } from '@/env';
-import { opacity } from '@/framework/ui/utils/opacity';
 
 const SafeRadialGradient = (IS_TEST ? View : RadialGradient) as typeof RadialGradient;
 

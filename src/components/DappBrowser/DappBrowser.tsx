@@ -1,8 +1,10 @@
 import React, { memo, useEffect } from 'react';
 import { StyleSheet } from 'react-native';
+
+import { useRoute, type RouteProp } from '@react-navigation/native';
 import { GestureDetector } from 'react-native-gesture-handler';
 import Animated, { interpolateColor, runOnJS, useAnimatedReaction, useAnimatedStyle, useDerivedValue } from 'react-native-reanimated';
-import { type RouteProp, useRoute } from '@react-navigation/native';
+
 import { Page } from '@/components/layout';
 import { Box, globalColors, useColorMode } from '@/design-system';
 import { IS_ANDROID } from '@/env';
@@ -14,11 +16,10 @@ import { useBrowserStore } from '@/state/browser/browserStore';
 import { useBrowserHistoryStore } from '@/state/browserHistory';
 import { DEVICE_HEIGHT, DEVICE_WIDTH } from '@/utils/deviceUtils';
 import { generateUniqueId } from '@/worklets/strings';
+
 import { BrowserContextProvider, useBrowserContext } from './BrowserContext';
 import { BrowserTab } from './BrowserTab';
 import { BrowserWorkletsContextProvider, useBrowserWorkletsContext } from './BrowserWorkletsContext';
-import { ProgressBar } from './ProgressBar';
-import { TabViewToolbar } from './TabViewToolbar';
 import {
   BROWSER_BACKGROUND_COLOR_DARK,
   BROWSER_BACKGROUND_COLOR_LIGHT,
@@ -28,10 +29,12 @@ import {
 } from './constants';
 import { useBrowserScrollView } from './hooks/useBrowserScrollView';
 import { useScreenshotAndScrollTriggers } from './hooks/useScreenshotAndScrollTriggers';
+import { ProgressBar } from './ProgressBar';
 import { schedulePruneScreenshots } from './screenshots';
 import { Search } from './search/Search';
 import { SearchContextProvider } from './search/SearchContext';
-import { type AnimatedTabUrls, TabViewGestureStates } from './types';
+import { TabViewToolbar } from './TabViewToolbar';
+import { TabViewGestureStates, type AnimatedTabUrls } from './types';
 
 export const DappBrowser = () => {
   const { isDarkMode } = useColorMode();

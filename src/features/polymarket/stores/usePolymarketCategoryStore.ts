@@ -1,5 +1,5 @@
-import { createRainbowStore } from '@/state/internal/createRainbowStore';
 import { DEFAULT_CATEGORY_KEY } from '@/features/polymarket/constants';
+import { createRainbowStore } from '@/state/internal/createRainbowStore';
 
 type PolymarketCategoryStoreState = {
   tagId: string;

@@ -1,6 +1,8 @@
-import React, { useCallback, useEffect, useMemo, useState } from 'react';
+import React, { useCallback, useEffect, useMemo, useState, type JSX } from 'react';
 import { Animated, PanResponder, StyleSheet, View, type ViewStyle } from 'react-native';
+
 import { WebView, type WebViewMessageEvent } from 'react-native-webview';
+
 import { ImgixImage } from '@/components/images';
 import styled from '@/framework/ui/styled-thing';
 import { padding, position } from '@/styles';

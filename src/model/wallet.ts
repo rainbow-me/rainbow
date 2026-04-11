@@ -1,4 +1,5 @@
 import { type TransactionRequest } from '@ethersproject/abstract-provider';
+import { type Signer } from '@ethersproject/abstract-signer';
 import { arrayify } from '@ethersproject/bytes';
 import { HDNode } from '@ethersproject/hdnode';
 import { type Provider, type StaticJsonRpcProvider } from '@ethersproject/providers';
@@ -8,9 +9,36 @@ import { signTypedData, type SignTypedDataVersion, type TypedMessage } from '@me
 import { generateMnemonic } from 'bip39';
 import { isValidAddress, toBuffer, toChecksumAddress } from 'ethereumjs-util';
 import { type hdkey as EthereumHDKey, type default as LibWallet } from 'ethereumjs-wallet';
-import * as i18n from '@/languages';
-import { analytics } from '@/analytics';
 import { findKey, isEmpty } from 'lodash';
+import { type GetOptions, type SetOptions } from 'react-native-keychain';
+
+import { analytics } from '@/analytics';
+import type { EthereumAddress } from '@/entities/wallet';
+import { IS_IOS } from '@/env';
+import { maybeAuthenticateWithPIN, maybeAuthenticateWithPINAndCreateIfNeeded } from '@/handlers/authentication';
+import { LedgerSigner } from '@/handlers/LedgerSigner';
+import { addHexPrefix, isHexString, isHexStringIgnorePrefix, isValidBluetoothDeviceId, isValidMnemonic } from '@/handlers/web3';
+import { WrappedAlert as Alert } from '@/helpers/alert';
+import { createSignature } from '@/helpers/signingWallet';
+import walletTypes, { EthereumWalletType } from '@/helpers/walletTypes';
+import * as kc from '@/keychain';
+import * as i18n from '@/languages';
+import { ensureError, logger, RainbowError } from '@/logger';
+import { DebugContext } from '@/logger/debugContext';
+import * as keychain from '@/model/keychain';
+import { setHardwareTXError } from '@/navigation/HardwareWalletTxNavigator';
+import Navigation from '@/navigation/Navigation';
+import Routes from '@/navigation/routesNames';
+import { WalletNotificationRelationship } from '@/notifications/settings/constants';
+import { initializeNotificationSettingsForAddresses } from '@/notifications/settings/initialization';
+import type { AddressWithRelationship } from '@/notifications/settings/types';
+import { Network } from '@/state/backendNetworks/types';
+import { executeFn, type ExecuteFnParams, type Screen } from '@/state/performance/performance';
+import { getIsDamagedWallet, getWalletWithAccount, setWalletDamaged } from '@/state/wallets/walletsStore';
+import ethereumUtils from '@/utils/ethereumUtils';
+import { sanitizeTypedData } from '@/utils/signingUtils';
+import { deriveAccountFromBluetoothHardwareWallet, deriveAccountFromMnemonic, deriveAccountFromWalletInput } from '@/utils/wallet';
+
 import { lightModeThemeColors } from '../styles/colors';
 import {
   addressKey,
@@ -22,33 +50,7 @@ import {
   selectedWalletKey,
 } from '../utils/keychainConstants';
 import profileUtils, { addressHashedColorIndex, addressHashedEmoji } from '../utils/profileUtils';
-import * as keychain from '@/model/keychain';
-import * as kc from '@/keychain';
 import { PreferenceActionType, setPreference } from './preferences';
-import { LedgerSigner } from '@/handlers/LedgerSigner';
-import { WrappedAlert as Alert } from '@/helpers/alert';
-import type { EthereumAddress } from '@/entities/wallet';
-import { maybeAuthenticateWithPIN, maybeAuthenticateWithPINAndCreateIfNeeded } from '@/handlers/authentication';
-import { addHexPrefix, isHexString, isHexStringIgnorePrefix, isValidBluetoothDeviceId, isValidMnemonic } from '@/handlers/web3';
-import { createSignature } from '@/helpers/signingWallet';
-import walletTypes, { EthereumWalletType } from '@/helpers/walletTypes';
-import ethereumUtils from '@/utils/ethereumUtils';
-import { ensureError, logger, RainbowError } from '@/logger';
-import { deriveAccountFromBluetoothHardwareWallet, deriveAccountFromMnemonic, deriveAccountFromWalletInput } from '@/utils/wallet';
-import type { AddressWithRelationship } from '@/notifications/settings/types';
-import { initializeNotificationSettingsForAddresses } from '@/notifications/settings/initialization';
-import { WalletNotificationRelationship } from '@/notifications/settings/constants';
-import { DebugContext } from '@/logger/debugContext';
-import { setHardwareTXError } from '@/navigation/HardwareWalletTxNavigator';
-import { type Signer } from '@ethersproject/abstract-signer';
-import { sanitizeTypedData } from '@/utils/signingUtils';
-import { executeFn, type ExecuteFnParams, type Screen } from '@/state/performance/performance';
-import { Network } from '@/state/backendNetworks/types';
-import { type GetOptions, type SetOptions } from 'react-native-keychain';
-import { getIsDamagedWallet, getWalletWithAccount, setWalletDamaged } from '@/state/wallets/walletsStore';
-import Routes from '@/navigation/routesNames';
-import Navigation from '@/navigation/Navigation';
-import { IS_IOS } from '@/env';
 
 export type EthereumPrivateKey = string;
 type EthereumMnemonic = string;

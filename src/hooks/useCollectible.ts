@@ -6,7 +6,7 @@ export default function useCollectible(uniqueId: string, externalAddress?: strin
   const accountAddress = useAccountAddress();
 
   const isExternal = Boolean(externalAddress);
-  const address = isExternal ? externalAddress ?? '' : accountAddress;
+  const address = isExternal ? (externalAddress ?? '') : accountAddress;
 
   const { data: asset } = useLegacyNFTs({
     address,

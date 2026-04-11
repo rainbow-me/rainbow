@@ -1,14 +1,17 @@
-import { createMaterialTopTabNavigator } from '@react-navigation/material-top-tabs';
 import React, { useState } from 'react';
+
+import { createMaterialTopTabNavigator } from '@react-navigation/material-top-tabs';
+import { useRoute, type RouteProp } from '@react-navigation/native';
+
+import { SimpleSheet } from '@/components/sheet/SimpleSheet';
+import { BackgroundProvider } from '@/design-system';
 import Routes from '@/navigation/routesNames';
-import deviceUtils from '@/utils/deviceUtils';
 import { AddWalletSheet } from '@/screens/AddWalletSheet';
 import { ChooseWalletGroup } from '@/screens/ChooseWalletGroup';
 import { ImportOrWatchWalletSheet } from '@/screens/ImportOrWatchWalletSheet';
-import { BackgroundProvider } from '@/design-system';
-import { type RouteProp, useRoute } from '@react-navigation/native';
-import { SimpleSheet } from '@/components/sheet/SimpleSheet';
 import { setActiveRoute } from '@/state/navigation/navigationStore';
+import deviceUtils from '@/utils/deviceUtils';
+
 import { type RootStackParamList } from './types';
 
 const Swipe = createMaterialTopTabNavigator();

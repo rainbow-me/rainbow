@@ -1,8 +1,10 @@
 import { Dimensions } from 'react-native';
+
+import { emojisByCategory } from '@/framework/core/emoji/emojisByCategory';
+
 import { Categories } from '../Categories';
 import { EMOJIS_CONTAINER_HORIZONTAL_MARGIN, EMOJIS_TOP_OFFSET } from '../constants';
 import { type EmojiEntry } from '../types';
-import { emojisByCategory } from '@/framework/core/emoji/emojisByCategory';
 
 const { width } = Dimensions.get('screen');
 

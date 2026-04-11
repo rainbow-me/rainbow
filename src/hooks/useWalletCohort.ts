@@ -1,8 +1,10 @@
 import { useEffect, useRef } from 'react';
-import walletTypes from '@/helpers/walletTypes';
-import { analytics } from '@/analytics';
-import { isEmpty } from 'lodash';
 import { InteractionManager } from 'react-native';
+
+import { isEmpty } from 'lodash';
+
+import { analytics } from '@/analytics';
+import walletTypes from '@/helpers/walletTypes';
 import { useWallets } from '@/state/wallets/walletsStore';
 
 export const useWalletCohort = () => {

@@ -1,7 +1,9 @@
-import React, { type ComponentRef, useMemo } from 'react';
+import React, { useMemo, type ComponentRef } from 'react';
 import { type StyleProp, type TextStyle } from 'react-native';
+
 import AnimateableText from 'react-native-animateable-text';
-import { type DerivedValue, type SharedValue, useAnimatedProps } from 'react-native-reanimated';
+import { useAnimatedProps, type DerivedValue, type SharedValue } from 'react-native-reanimated';
+
 import { type TextColor } from '../../color/palettes';
 import { type CustomColor } from '../../color/useForegroundColor';
 import { createLineHeightFixNode } from '../../typography/createLineHeightFixNode';

@@ -1,12 +1,13 @@
+import { type Address } from 'viem';
+
 import { type NativeCurrencyKey } from '@/entities/nativeCurrencyTypes';
+import { convertAmountToNativeDisplayWorklet, convertRawAmountToDecimalFormat, truncateToDecimalsWithThreshold } from '@/helpers/utilities';
 import { getPlatformClient } from '@/resources/platform/client';
 import { type PlatformResponse } from '@/resources/platform/types';
 import { userAssetsStoreManager } from '@/state/assets/userAssetsStoreManager';
+import { ChainId } from '@/state/backendNetworks/types';
 import { createQueryStore } from '@/state/internal/createQueryStore';
 import { useWalletsStore } from '@/state/wallets/walletsStore';
-import { type Address } from 'viem';
-import { convertAmountToNativeDisplayWorklet, convertRawAmountToDecimalFormat, truncateToDecimalsWithThreshold } from '@/helpers/utilities';
-import { ChainId } from '@/state/backendNetworks/types';
 
 type RewardsBalanceStore = {
   getFormattedBalance: () => {

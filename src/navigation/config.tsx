@@ -1,41 +1,40 @@
 import React from 'react';
 import { Keyboard } from 'react-native';
-import { type RouteProp } from '@react-navigation/native';
 
-import { useTheme } from '@/theme/ThemeContext';
-import colors from '@/theme/currentColors';
-import styled from '@/framework/ui/styled-thing';
-import { fonts } from '@/styles';
-import WalletBackupStepTypes from '@/helpers/walletBackupStepTypes';
-import deviceUtils from '@/utils/deviceUtils';
-import safeAreaInsetValues from '@/utils/safeAreaInsetValues';
-import { getPositionSheetHeight } from '@/features/positions/screens/PositionSheet';
+import { type RouteProp } from '@react-navigation/native';
+import { type StackNavigationOptions } from '@react-navigation/stack';
 
 import { Icon } from '@/components/icons';
 import { SheetHandleFixedToTopHeight } from '@/components/sheet';
 import { Text } from '@/components/text';
-
+import { getWalletErrorSheetHeight } from '@/components/wallet-error/WalletErrorSheet';
+import { Box } from '@/design-system';
+import { IS_ANDROID } from '@/env';
 import { getENSAdditionalRecordsSheetHeight } from '@/features/ens/screens/ENSAdditionalRecordsSheet';
 import { ENSConfirmRegisterSheetHeight } from '@/features/ens/screens/ENSConfirmRegisterSheet';
-import { ExplainSheetHeight, getExplainSheetConfig } from '@/screens/ExplainSheet';
-import { ExternalLinkWarningSheetHeight } from '@/screens/ExternalLinkWarningSheet';
-import { getSheetHeight as getSendConfirmationSheetHeight } from '@/screens/SendConfirmationSheet';
-
-import { onWillPop } from '@/navigation/Navigation';
+import { getPositionSheetHeight } from '@/features/positions/screens/PositionSheet';
+import styled from '@/framework/ui/styled-thing';
+import WalletBackupStepTypes from '@/helpers/walletBackupStepTypes';
+import { type BottomSheetNavigationOptions } from '@/navigation/bottom-sheet/types';
 import { HARDWARE_WALLET_TX_NAVIGATOR_SHEET_HEIGHT } from '@/navigation/HardwareWalletTxNavigator';
-import { type StackNavigationOptions } from '@react-navigation/stack';
+import { onWillPop } from '@/navigation/Navigation';
 import {
   type ExplainSheetRouteParams,
   type ExplainSheetType,
   type PartialNavigatorConfigOptions,
   type RootStackParamList,
 } from '@/navigation/types';
-import { type BottomSheetNavigationOptions } from '@/navigation/bottom-sheet/types';
-import { Box } from '@/design-system';
-import { IS_ANDROID } from '@/env';
+import { ExplainSheetHeight, getExplainSheetConfig } from '@/screens/ExplainSheet';
+import { ExternalLinkWarningSheetHeight } from '@/screens/ExternalLinkWarningSheet';
+import { getSheetHeight as getSendConfirmationSheetHeight } from '@/screens/SendConfirmationSheet';
+import { fonts } from '@/styles';
+import colors from '@/theme/currentColors';
+import { useTheme } from '@/theme/ThemeContext';
+import deviceUtils from '@/utils/deviceUtils';
 import { RequestSource } from '@/utils/requestNavigationHandlers';
+import safeAreaInsetValues from '@/utils/safeAreaInsetValues';
+
 import type Routes from './routesNames';
-import { getWalletErrorSheetHeight } from '@/components/wallet-error/WalletErrorSheet';
 
 export const sharedCoolModalTopOffset = safeAreaInsetValues.top;
 

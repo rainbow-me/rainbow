@@ -1,7 +1,8 @@
-import { type OrderBook, usePolymarketOrderBookStore } from '@/features/polymarket/stores/polymarketOrderBookStore';
+import { usePolymarketOrderBookStore, type OrderBook } from '@/features/polymarket/stores/polymarketOrderBookStore';
 import { createDerivedStore } from '@/state/internal/createDerivedStore';
 import { type DerivedStore, type InferStoreState, type Selector } from '@/state/internal/types';
 import { shallowEqual } from '@/worklets/comparisons';
+
 import { calculateSellExecution, type SellExecution } from '../utils/calculateSellExecution';
 
 type SellExecutionStore = DerivedStore<SellExecution>;

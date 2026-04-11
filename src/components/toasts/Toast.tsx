@@ -1,14 +1,17 @@
-import React, { Fragment, type PropsWithChildren, memo, useLayoutEffect } from 'react';
+import React, { Fragment, memo, useLayoutEffect, type PropsWithChildren } from 'react';
 import { type Insets, type ViewProps } from 'react-native';
+
 import Animated, { interpolate, useAnimatedStyle, useSharedValue, withSpring, type WithSpringConfig } from 'react-native-reanimated';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
-import { type ThemeContextProps, useTheme } from '../../theme/ThemeContext';
+
+import styled from '@/framework/ui/styled-thing';
+import useDimensions from '@/hooks/useDimensions';
+import { padding, position, shadow } from '@/styles';
+
+import { useTheme, type ThemeContextProps } from '../../theme/ThemeContext';
 import { Icon } from '../icons';
 import { RowWithMargins } from '../layout';
 import { TruncatedText } from '../text';
-import useDimensions from '@/hooks/useDimensions';
-import styled from '@/framework/ui/styled-thing';
-import { padding, position, shadow } from '@/styles';
 
 const springConfig: WithSpringConfig = {
   damping: 14,
@@ -72,7 +75,7 @@ function Toast({ children, color, distance = 90, targetTranslate = 0, icon, isVi
     };
   });
 
-  const currentColor = color ?? isDarkMode ? colors.darkModeDark : colors.dark;
+  const currentColor = (color ?? isDarkMode) ? colors.darkModeDark : colors.dark;
 
   return (
     <Animated.View pointerEvents="none" style={animatedStyle}>

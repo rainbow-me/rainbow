@@ -1,22 +1,25 @@
 import React, { useCallback } from 'react';
 import { type TextInput } from 'react-native';
-import { GestureHandlerButton } from '@/components/buttons/GestureHandlerButton';
-import { AnimatedText, Box } from '@/design-system';
+
+import Clipboard from '@react-native-clipboard/clipboard';
 import Animated, {
-  type AnimatedRef,
-  type SharedValue,
   runOnJS,
   useAnimatedStyle,
   useDerivedValue,
   withTiming,
+  type AnimatedRef,
+  type SharedValue,
 } from 'react-native-reanimated';
 import { triggerHaptics } from 'react-native-turbo-haptics';
-import Clipboard from '@react-native-clipboard/clipboard';
+
+import { TIMING_CONFIGS } from '@/components/animations/animationConfigs';
+import { GestureHandlerButton } from '@/components/buttons/GestureHandlerButton';
+import { AnimatedText, Box } from '@/design-system';
+import { IS_ANDROID } from '@/env';
+import useClipboard from '@/hooks/useClipboard';
 import * as i18n from '@/languages';
 import { THICK_BORDER_WIDTH } from '@/styles/constants';
-import useClipboard from '@/hooks/useClipboard';
-import { TIMING_CONFIGS } from '@/components/animations/animationConfigs';
-import { IS_ANDROID } from '@/env';
+
 import { TOKEN_SEARCH_CONTROL_ITEM_HEIGHT } from './constants';
 
 const CANCEL_LABEL = i18n.t(i18n.l.button.cancel);

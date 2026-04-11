@@ -1,5 +1,6 @@
-import PropTypes from 'prop-types';
 import { ViewPropTypes } from 'deprecated-react-native-prop-types';
+import PropTypes from 'prop-types';
+
 import styled from '@/framework/ui/styled-thing';
 import { buildTextStyles } from '@/styles';
 

@@ -1,9 +1,11 @@
-import React, { useCallback, useEffect, useRef, useState } from 'react';
+import React, { useCallback, useEffect, useRef, useState, type JSX } from 'react';
 import { View } from 'react-native';
-import TokenFamilyHeader, { TokenFamilyHeaderAnimationDuration } from './TokenFamilyHeader';
+
 import { times } from '@/helpers/utilities';
 import useTimeout from '@/hooks/useTimeout';
 import { type ThemeContextProps } from '@/theme/ThemeContext';
+
+import TokenFamilyHeader, { TokenFamilyHeaderAnimationDuration } from './TokenFamilyHeader';
 
 type Props = {
   childrenAmount: number;

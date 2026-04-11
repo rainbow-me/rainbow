@@ -1,20 +1,22 @@
 import React, { memo } from 'react';
-import { Box, Inline, Stack, Text, AnimatedText, useForegroundColor } from '@/design-system';
-import { useExpandedAssetSheetContext } from '@/screens/expandedAssetSheet/context/ExpandedAssetSheetContext';
+
 import Animated, {
-  type SharedValue,
   useAnimatedReaction,
   useAnimatedStyle,
   useDerivedValue,
   useSharedValue,
   withTiming,
+  type SharedValue,
 } from 'react-native-reanimated';
-import { GestureHandlerButton } from '@/components/buttons/GestureHandlerButton';
-import { colors } from '@/styles';
+
 import { TIMING_CONFIGS } from '@/components/animations/animationConfigs';
-import { abbreviateNumberWorklet } from '@/helpers/utilities';
-import { type MarketStats, type TimeFrames, useTokenMarketStats } from '@/resources/metadata/tokenStats';
+import { GestureHandlerButton } from '@/components/buttons/GestureHandlerButton';
+import { AnimatedText, Box, Inline, Stack, Text, useForegroundColor } from '@/design-system';
 import { getNumberFormatter } from '@/helpers/intl';
+import { abbreviateNumberWorklet } from '@/helpers/utilities';
+import { useTokenMarketStats, type MarketStats, type TimeFrames } from '@/resources/metadata/tokenStats';
+import { useExpandedAssetSheetContext } from '@/screens/expandedAssetSheet/context/ExpandedAssetSheetContext';
+import { colors } from '@/styles';
 
 const TIMEFRAME_SWITCH_CONFIG = TIMING_CONFIGS.buttonPressConfig;
 

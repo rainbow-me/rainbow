@@ -1,7 +1,9 @@
 import { useAnimatedStyle, useDerivedValue, withSpring } from 'react-native-reanimated';
+
 import { SPRING_CONFIGS } from '@/components/animations/animationConfigs';
 import { useStableValue } from '@/hooks/useStableValue';
 import { useBrowserStore } from '@/state/browser/browserStore';
+
 import { useBrowserContext } from '../BrowserContext';
 import { findTabScreenshot } from '../screenshots';
 

@@ -1,7 +1,7 @@
 import BigNumber from 'bignumber.js';
 import currency from 'currency.js';
 import { isNil } from 'lodash';
-import { supportedCurrencies as supportedNativeCurrencies } from '@/references/supportedCurrencies';
+
 import {
   divWorklet,
   lessThanWorklet,
@@ -11,6 +11,7 @@ import {
   truncateToDecimals,
 } from '@/framework/core/safeMath';
 import { getNumberFormatter } from '@/helpers/intl';
+import { supportedCurrencies as supportedNativeCurrencies } from '@/references/supportedCurrencies';
 
 export type BigNumberish = number | string | BigNumber;
 

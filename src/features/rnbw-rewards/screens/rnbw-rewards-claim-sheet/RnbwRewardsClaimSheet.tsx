@@ -1,19 +1,20 @@
 import { memo, useCallback, useState } from 'react';
 import { Alert, Image, StyleSheet, View } from 'react-native';
-import { Box, Stack, Text } from '@/design-system';
+
+import rnbwCoinImage from '@/assets/rnbw.png';
 import { PanelSheet } from '@/components/PanelSheet/PanelSheet';
-import { HoldToActivateButton } from '@/components/hold-to-activate-button/HoldToActivateButton';
+import { Box, Stack, Text } from '@/design-system';
+import { RnbwHoldToActivateButton } from '@/features/rnbw-membership/components/RnbwHoldToActivateButton';
+import { RNBW_SYMBOL } from '@/features/rnbw-rewards/constants';
 import { useRewardsBalanceStore } from '@/features/rnbw-rewards/stores/rewardsBalanceStore';
 import { prepareRewardsClaim, submitRewardsClaim } from '@/features/rnbw-rewards/utils/claimRewards';
-import { RNBW_SYMBOL } from '@/features/rnbw-rewards/constants';
-import { useAccountAddress, useIsHardwareWallet, useIsReadOnlyWallet } from '@/state/wallets/walletsStore';
-import { userAssetsStoreManager } from '@/state/assets/userAssetsStoreManager';
+import { useStableValue } from '@/hooks/useStableValue';
+import * as i18n from '@/languages';
 import { useNavigation } from '@/navigation/Navigation';
 import Routes from '@/navigation/routesNames';
+import { userAssetsStoreManager } from '@/state/assets/userAssetsStoreManager';
+import { useAccountAddress, useIsHardwareWallet, useIsReadOnlyWallet } from '@/state/wallets/walletsStore';
 import watchingAlert from '@/utils/watchingAlert';
-import * as i18n from '@/languages';
-import rnbwCoinImage from '@/assets/rnbw.png';
-import { useStableValue } from '@/hooks/useStableValue';
 
 export const RnbwRewardsClaimSheet = memo(function RnbwRewardsClaimSheet() {
   const { goBack, navigate } = useNavigation();
@@ -66,17 +67,12 @@ export const RnbwRewardsClaimSheet = memo(function RnbwRewardsClaimSheet() {
               </Text>
             </Stack>
           </Stack>
-          <Box width="full" paddingHorizontal="20px">
-            <HoldToActivateButton
-              label={i18n.t(i18n.l.button.hold_to_authorize.hold_to_claim)}
-              processingLabel={i18n.t(i18n.l.button.hold_to_authorize.claiming)}
-              onLongPress={handleClaim}
+          <Box width="full">
+            <RnbwHoldToActivateButton
               isProcessing={isProcessing}
-              backgroundColor="white"
-              disabledBackgroundColor="white"
-              progressColor="black"
-              showBiometryIcon
-              style={styles.button}
+              label={i18n.t(i18n.l.button.hold_to_authorize.hold_to_claim)}
+              onActivate={handleClaim}
+              processingLabel={i18n.t(i18n.l.button.hold_to_authorize.claiming)}
             />
           </Box>
         </Stack>
@@ -88,7 +84,7 @@ export const RnbwRewardsClaimSheet = memo(function RnbwRewardsClaimSheet() {
 const styles = StyleSheet.create({
   content: {
     paddingTop: 36,
-    paddingBottom: 36,
+    paddingBottom: 20,
     paddingHorizontal: 24,
   },
   coinImage: {

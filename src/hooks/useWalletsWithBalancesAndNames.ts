@@ -1,9 +1,12 @@
+import { useMemo } from 'react';
+
+import mapValues from 'lodash/mapValues';
+import { type Address } from 'viem';
+
 import { convertAmountToNativeDisplay, subtract } from '@/helpers/utilities';
 import { userAssetsStoreManager } from '@/state/assets/userAssetsStoreManager';
 import { useWallets } from '@/state/wallets/walletsStore';
-import mapValues from 'lodash/mapValues';
-import { useMemo } from 'react';
-import { type Address } from 'viem';
+
 import useWalletBalances from './useWalletBalances';
 
 export default function useWalletsWithBalancesAndNames() {

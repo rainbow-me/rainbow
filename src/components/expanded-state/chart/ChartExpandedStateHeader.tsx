@@ -1,16 +1,19 @@
 import React, { memo } from 'react';
 import { View } from 'react-native';
-import { type DerivedValue, type SharedValue, useDerivedValue } from 'react-native-reanimated';
+
+import { useDerivedValue, type DerivedValue, type SharedValue } from 'react-native-reanimated';
+
 import { ChartPriceLabel } from '@/components/expanded-state/chart/chart-data-labels/ChartPriceLabel';
-import { AnimatedText, Bleed, Box, Stack, globalColors, useColorMode } from '@/design-system';
+import { AnimatedText, Bleed, Box, globalColors, Stack, useColorMode } from '@/design-system';
 import { CANDLE_RESOLUTIONS, LINE_CHART_TIME_PERIODS } from '@/features/charts/constants';
 import { useChartsStore, useChartType } from '@/features/charts/stores/chartsStore';
 import { ChartType, type LineChartTimePeriod } from '@/features/charts/types';
+import { opacity } from '@/framework/ui/utils/opacity';
 import * as i18n from '@/languages';
 import { useStoreSharedValue } from '@/state/internal/hooks/useStoreSharedValue';
-import { opacity } from '@/framework/ui/utils/opacity';
 import { getSolidColorEquivalent } from '@/worklets/colors';
 import { formatTimestamp } from '@/worklets/dates';
+
 import { ChartPercentChangeLabel } from './chart-data-labels';
 
 type ChartExpandedStateHeaderProps = {

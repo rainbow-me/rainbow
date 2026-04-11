@@ -4,28 +4,28 @@ import {
   ACCESSIBLE,
   getAllInternetCredentials,
   getInternetCredentials,
-  getSupportedBiometryType as originalGetSupportedBiometryType,
   hasInternetCredentials,
+  getSupportedBiometryType as originalGetSupportedBiometryType,
+  isPasscodeAuthAvailable as originalIsPasscodeAuthAvailable,
+  setSharedWebCredentials as originalSetSharedWebCredentials,
+  requestSharedWebCredentials,
   resetInternetCredentials,
   setInternetCredentials,
-  type UserCredentials,
-  type BIOMETRY_TYPE,
-  requestSharedWebCredentials,
-  setSharedWebCredentials as originalSetSharedWebCredentials,
-  isPasscodeAuthAvailable as originalIsPasscodeAuthAvailable,
-  type SharedWebCredentials,
-  type SetOptions,
-  type GetOptions,
   STORAGE_TYPE,
+  type BIOMETRY_TYPE,
+  type GetOptions,
+  type SetOptions,
+  type SharedWebCredentials,
+  type UserCredentials,
 } from 'react-native-keychain';
 import { createMMKV } from 'react-native-mmkv';
 
-import * as keychainConstants from '@/utils/keychainConstants';
+import { IS_ANDROID, IS_DEV, IS_IOS } from '@/env';
 import AesEncryptor from '@/handlers/aesEncryption';
-import { delay } from '@/utils/delay';
-import { IS_DEV, IS_ANDROID, IS_IOS } from '@/env';
+import { authenticateWithPIN, authenticateWithPINAndCreateIfNeeded, shouldAuthenticateWithPIN } from '@/handlers/authentication';
 import { logger, RainbowError } from '@/logger';
-import { authenticateWithPINAndCreateIfNeeded, authenticateWithPIN, shouldAuthenticateWithPIN } from '@/handlers/authentication';
+import { delay } from '@/utils/delay';
+import * as keychainConstants from '@/utils/keychainConstants';
 
 export const encryptor = new AesEncryptor();
 

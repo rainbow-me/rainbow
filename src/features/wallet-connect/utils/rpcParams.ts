@@ -1,10 +1,12 @@
-import * as i18n from '@/languages';
-import { logger, RainbowError } from '@/logger';
-import { RPCMethod, type RPCPayload } from '../types';
 import { getAddress, isAddress } from '@ethersproject/address';
 import { isHexString } from '@ethersproject/bytes';
 import { toUtf8String } from '@ethersproject/strings';
 import { buildApprovedNamespaces } from '@walletconnect/utils';
+
+import * as i18n from '@/languages';
+import { logger, RainbowError } from '@/logger';
+
+import { RPCMethod, type RPCPayload } from '../types';
 
 const T = i18n.l.walletconnect;
 

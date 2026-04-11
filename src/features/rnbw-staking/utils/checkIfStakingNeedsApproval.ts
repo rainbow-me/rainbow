@@ -1,7 +1,9 @@
 import { type StaticJsonRpcProvider } from '@ethersproject/providers';
-import { decodeFunctionResult, erc20Abi, encodeFunctionData, type Address, type Hex } from 'viem';
-import { STAKING_CONTRACT_ADDRESS, RNBW_TOKEN_ADDRESS } from '../constants';
+import { decodeFunctionResult, encodeFunctionData, erc20Abi, type Address, type Hex } from 'viem';
+
 import { lessThanWorklet } from '@/framework/core/safeMath';
+
+import { RNBW_TOKEN_ADDRESS, STAKING_CONTRACT_ADDRESS } from '../constants';
 
 export async function checkIfStakingNeedsApproval({
   address,

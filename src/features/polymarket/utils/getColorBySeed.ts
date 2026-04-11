@@ -1,7 +1,8 @@
+import { isHex, keccak256, stringToHex } from 'viem';
+
+import { type ResponseByTheme } from '@/__swaps__/utils/swaps';
 import { getHighContrastColor } from '@/hooks/useAccountAccentColor';
 import { oklchToHex } from '@/worklets/colors';
-import { isHex, keccak256, stringToHex } from 'viem';
-import { type ResponseByTheme } from '@/__swaps__/utils/swaps';
 
 const TWO_PI = Math.PI * 2;
 const UINT32_MAX = 0xffffffff;

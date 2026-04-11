@@ -1,18 +1,21 @@
 import React, { memo } from 'react';
 import { StyleSheet, View, type ViewStyle } from 'react-native';
-import { borders } from '@/styles';
-import { useTheme } from '@/theme/ThemeContext';
+
 import Animated, { useAnimatedProps, useAnimatedStyle, useDerivedValue, useSharedValue, withTiming } from 'react-native-reanimated';
-import { DEFAULT_FASTER_IMAGE_CONFIG } from '@/components/images/ImgixImage';
+
+import { getColorValueForThemeWorklet } from '@/__swaps__/utils/swaps';
 import { AnimatedFasterImage } from '@/components/AnimatedComponents/AnimatedFasterImage';
-import { AnimatedChainImage } from './AnimatedChainImage';
-import { fadeConfig } from '../constants';
-import { SwapCoinIconTextFallback } from './SwapCoinIconTextFallback';
+import { DEFAULT_FASTER_IMAGE_CONFIG } from '@/components/images/ImgixImage';
 import { Box, globalColors, useColorMode } from '@/design-system';
 import { IS_ANDROID, IS_IOS } from '@/env';
+import { borders } from '@/styles';
+import { useTheme } from '@/theme/ThemeContext';
 import { PIXEL_RATIO } from '@/utils/deviceUtils';
+
+import { fadeConfig } from '../constants';
 import { useSwapContext } from '../providers/swap-provider';
-import { getColorValueForThemeWorklet } from '@/__swaps__/utils/swaps';
+import { AnimatedChainImage } from './AnimatedChainImage';
+import { SwapCoinIconTextFallback } from './SwapCoinIconTextFallback';
 
 export const AnimatedSwapCoinIcon = memo(function AnimatedSwapCoinIcon({
   assetType,

@@ -1,7 +1,7 @@
 import { memo, useRef } from 'react';
-import { View, StyleSheet, Image } from 'react-native';
-import { Box, globalColors, Text } from '@/design-system';
-import rnbwCoinImage from '@/assets/rnbw.png';
+import { Image, StyleSheet, View } from 'react-native';
+
+import { Blur, Canvas, RoundedRect } from '@shopify/react-native-skia';
 import Animated, {
   FadeIn,
   FadeOut,
@@ -12,19 +12,21 @@ import Animated, {
   ZoomIn,
   ZoomOut,
 } from 'react-native-reanimated';
-import { type RnbwRewardsScene, RnbwRewardsScenes } from '@/features/rnbw-rewards/screens/rnbw-rewards-screen/constants/rewardsScenes';
-import { useRnbwRewardsFlowContext } from '@/features/rnbw-rewards/screens/rnbw-rewards-screen/context/RnbwRewardsFlowContext';
-import { DEVICE_WIDTH } from '@/utils/deviceUtils';
-import { time } from '@/utils/time';
+
+import rnbwCoinImage from '@/assets/rnbw.png';
+import { Box, globalColors, Text } from '@/design-system';
+import { InnerShadow } from '@/features/polymarket/components/InnerShadow';
 import { transitionEasing } from '@/features/rnbw-rewards/animations/sceneTransitions';
-import { LoadingSpinner } from '@/features/rnbw-rewards/screens/rnbw-rewards-screen/components/LoadingSpinner';
 import concentricCircleImage from '@/features/rnbw-rewards/assets/radial-circle.png';
 import { SpinnableCoin, type SpinnableCoinHandle } from '@/features/rnbw-rewards/screens/rnbw-rewards-screen/components/SpinnableCoin';
-import { opacity } from '@/framework/ui/utils/opacity';
-import { InnerShadow } from '@/features/polymarket/components/InnerShadow';
+import { RnbwRewardsScenes, type RnbwRewardsScene } from '@/features/rnbw-rewards/screens/rnbw-rewards-screen/constants/rewardsScenes';
+import { useRnbwRewardsFlowContext } from '@/features/rnbw-rewards/screens/rnbw-rewards-screen/context/RnbwRewardsFlowContext';
 import { useRewardsFlowStore } from '@/features/rnbw-rewards/stores/rewardsFlowStore';
-import { Blur, Canvas, RoundedRect } from '@shopify/react-native-skia';
+import { LoadingSpinner } from '@/framework/ui/components/LoadingSpinner';
+import { opacity } from '@/framework/ui/utils/opacity';
 import { THICK_BORDER_WIDTH } from '@/styles/constants';
+import { DEVICE_WIDTH } from '@/utils/deviceUtils';
+import { time } from '@/utils/time';
 
 const COIN_SIZE = 160;
 const SMALL_COIN_SIZE = 90;

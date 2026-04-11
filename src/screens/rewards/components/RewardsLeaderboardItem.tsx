@@ -1,19 +1,21 @@
 import React from 'react';
-import { Bleed, Box, Column, Columns, Inline, Stack, Text } from '@/design-system';
-import ImageAvatar from '@/components/contacts/ImageAvatar';
-import { TOP_RANK_SYMBOLS } from '@/screens/rewards/constants';
-import { addressHashedColorIndex, addressHashedEmoji } from '@/utils/profileUtils';
-import { ContactAvatar } from '@/components/contacts';
+import { StyleSheet } from 'react-native';
+
 import MaskedView from '@react-native-masked-view/masked-view';
 import { LinearGradient, type LinearGradientProps } from 'expo-linear-gradient';
-import { StyleSheet } from 'react-native';
-import { getGradientColorsForRank } from '@/screens/rewards/helpers/getGradientColorsForRank';
-import { useTheme } from '@/theme/ThemeContext';
+
+import { analytics } from '@/analytics';
+import ButtonPressAnimation from '@/components/animations/ButtonPressAnimation';
+import { ContactAvatar } from '@/components/contacts';
+import ImageAvatar from '@/components/contacts/ImageAvatar';
+import { Bleed, Box, Column, Columns, Inline, Stack, Text } from '@/design-system';
 import { useNavigation } from '@/navigation/Navigation';
 import Routes from '@/navigation/routesNames';
-import ButtonPressAnimation from '@/components/animations/ButtonPressAnimation';
+import { TOP_RANK_SYMBOLS } from '@/screens/rewards/constants';
 import { formatTokenDisplayValue } from '@/screens/rewards/helpers/formatTokenDisplayValue';
-import { analytics } from '@/analytics';
+import { getGradientColorsForRank } from '@/screens/rewards/helpers/getGradientColorsForRank';
+import { useTheme } from '@/theme/ThemeContext';
+import { addressHashedColorIndex, addressHashedEmoji } from '@/utils/profileUtils';
 
 const MaskedGradientText: React.FC<{
   text: string;

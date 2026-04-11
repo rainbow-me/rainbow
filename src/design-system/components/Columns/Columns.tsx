@@ -1,10 +1,12 @@
 /* eslint-disable no-nested-ternary */
-import React, { Children, type ReactNode } from 'react';
+import React, { Children, type JSX, type ReactNode } from 'react';
+
 import flattenChildren from 'react-flatten-children';
-import { type AlignHorizontal, alignHorizontalToFlexAlign, type AlignVertical, alignVerticalToFlexAlign } from '../../layout/alignment';
+import Animated, { type AnimatedStyle } from 'react-native-reanimated';
+
+import { alignHorizontalToFlexAlign, alignVerticalToFlexAlign, type AlignHorizontal, type AlignVertical } from '../../layout/alignment';
 import { negateSpace, type Space } from '../../layout/space';
 import { Box, type BoxProps } from '../Box/Box';
-import Animated, { type AnimatedStyle } from 'react-native-reanimated';
 
 type Width = Exclude<NonNullable<BoxProps['width']>, 'full'>;
 

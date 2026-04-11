@@ -1,4 +1,5 @@
 import React from 'react';
+
 import { Text } from 'react-primitives';
 
 const unicodeValue = '\xa0';

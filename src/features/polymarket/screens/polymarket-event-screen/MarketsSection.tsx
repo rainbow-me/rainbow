@@ -1,22 +1,23 @@
-import { Bleed, Box, Text, TextIcon, useColorMode } from '@/design-system';
-import * as i18n from '@/languages';
 import { memo, useMemo, useState } from 'react';
+
+import { getColorValueForThemeWorklet } from '@/__swaps__/utils/swaps';
+import ButtonPressAnimation from '@/components/animations/ButtonPressAnimation';
+import { EasingGradient } from '@/components/easing-gradient/EasingGradient';
+import { Bleed, Box, Text, TextIcon, useColorMode } from '@/design-system';
+import { POLYMARKET_BACKGROUND_LIGHT } from '@/features/polymarket/constants';
+import { ResolvedMarketsList } from '@/features/polymarket/screens/polymarket-event-screen/components/ResolvedMarketsList';
+import { ResolvedMarketsSection } from '@/features/polymarket/screens/polymarket-event-screen/components/ResolvedMarketsSection';
+import { SingleMarketEventOutcomes } from '@/features/polymarket/screens/polymarket-event-screen/components/SingleMarketEvent';
+import { MarketRow, MarketRowLoadingSkeleton } from '@/features/polymarket/screens/polymarket-event-screen/MarketRow';
 import { usePolymarketEventStore } from '@/features/polymarket/stores/polymarketEventStore';
 import { type PolymarketEvent, type PolymarketMarket, type PolymarketMarketEvent } from '@/features/polymarket/types/polymarket-event';
-import ButtonPressAnimation from '@/components/animations/ButtonPressAnimation';
+import { opacity } from '@/framework/ui/utils/opacity';
+import useDimensions from '@/hooks/useDimensions';
+import * as i18n from '@/languages';
 import Navigation from '@/navigation/Navigation';
 import Routes from '@/navigation/routesNames';
-import { MarketRow, MarketRowLoadingSkeleton } from '@/features/polymarket/screens/polymarket-event-screen/MarketRow';
-import { ResolvedMarketsList } from '@/features/polymarket/screens/polymarket-event-screen/components/ResolvedMarketsList';
-import { SingleMarketEventOutcomes } from '@/features/polymarket/screens/polymarket-event-screen/components/SingleMarketEvent';
-import { getColorValueForThemeWorklet } from '@/__swaps__/utils/swaps';
-import { opacity } from '@/framework/ui/utils/opacity';
-import { EasingGradient } from '@/components/easing-gradient/EasingGradient';
-import { getSolidColorEquivalent } from '@/worklets/colors';
-import { POLYMARKET_BACKGROUND_LIGHT } from '@/features/polymarket/constants';
-import useDimensions from '@/hooks/useDimensions';
 import { THICKER_BORDER_WIDTH } from '@/styles/constants';
-import { ResolvedMarketsSection } from '@/features/polymarket/screens/polymarket-event-screen/components/ResolvedMarketsSection';
+import { getSolidColorEquivalent } from '@/worklets/colors';
 
 const INITIAL_MARKETS_TO_SHOW = 10;
 

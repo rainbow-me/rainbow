@@ -2,6 +2,7 @@
 import { url as cloudinaryURL } from 'cloudinary/lib/cloudinary';
 // @ts-ignore
 import { pickScale } from 'react-native/Libraries/Image/AssetUtils';
+
 import { memoFn } from '@/utils/memoFn';
 
 type CloudinaryConfig = {

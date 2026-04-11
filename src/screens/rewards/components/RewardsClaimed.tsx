@@ -1,19 +1,21 @@
 import React from 'react';
-import { RewardsSectionCard } from '@/screens/rewards/components/RewardsSectionCard';
-import { Box, Column, Columns, Stack, Text } from '@/design-system';
-import * as i18n from '@/languages';
-import { useInfoIconColor } from '@/screens/rewards/hooks/useInfoIconColor';
-import { RewardsProgressBar } from '@/screens/rewards/components/RewardsProgressBar';
+
 import { addDays, differenceInDays, differenceInHours, fromUnixTime } from 'date-fns';
+import { useSelector } from 'react-redux';
+
+import { analytics } from '@/analytics';
 import ButtonPressAnimation from '@/components/animations/ButtonPressAnimation';
+import { Box, Column, Columns, Stack, Text } from '@/design-system';
+import { getNumberFormatter } from '@/helpers/intl';
+import { convertAmountAndPriceToNativeDisplay, convertAmountToNativeDisplay } from '@/helpers/utilities';
+import * as i18n from '@/languages';
 import { useNavigation } from '@/navigation/Navigation';
 import Routes from '@/navigation/routesNames';
-import { convertAmountAndPriceToNativeDisplay, convertAmountToNativeDisplay } from '@/helpers/utilities';
-import { useSelector } from 'react-redux';
 import { type AppState } from '@/redux/store';
-import { analytics } from '@/analytics';
+import { RewardsProgressBar } from '@/screens/rewards/components/RewardsProgressBar';
+import { RewardsSectionCard } from '@/screens/rewards/components/RewardsSectionCard';
 import { formatTokenDisplayValue } from '@/screens/rewards/helpers/formatTokenDisplayValue';
-import { getNumberFormatter } from '@/helpers/intl';
+import { useInfoIconColor } from '@/screens/rewards/hooks/useInfoIconColor';
 
 type Props = {
   assetPrice?: number;

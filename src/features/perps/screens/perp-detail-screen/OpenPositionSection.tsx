@@ -1,17 +1,18 @@
-import { memo, useMemo, Fragment } from 'react';
-import { type PerpMarket, type PerpsPosition } from '@/features/perps/types';
-import { useHyperliquidAccountStore } from '@/features/perps/stores/hyperliquidAccountStore';
-import { Box, Text, TextShadow, Separator, useColorMode } from '@/design-system';
-import { abs, greaterThan, isEqual, isPositive, multiply } from '@/helpers/utilities';
-import { toFixedWorklet, getPercentageDifferenceWorklet } from '@/framework/core/safeMath';
+import { Fragment, memo, useMemo } from 'react';
+
+import { useLiveTokenValue } from '@/components/live-token-text/LiveTokenText';
+import { Box, Separator, Text, TextShadow, useColorMode } from '@/design-system';
 import { DOWN_ARROW, UP_ARROW } from '@/features/perps/constants';
 import { usePerpsAccentColorContext } from '@/features/perps/context/PerpsAccentColorContext';
+import { useHyperliquidAccountStore } from '@/features/perps/stores/hyperliquidAccountStore';
+import { type PerpMarket, type PerpsPosition } from '@/features/perps/types';
+import { getHyperliquidTokenId } from '@/features/perps/utils';
 import { formatCurrency } from '@/features/perps/utils/formatCurrency';
 import { formatPerpAssetPrice } from '@/features/perps/utils/formatPerpsAssetPrice';
-import { useLiveTokenValue } from '@/components/live-token-text/LiveTokenText';
-import { getHyperliquidTokenId } from '@/features/perps/utils';
-import * as i18n from '@/languages';
+import { getPercentageDifferenceWorklet, toFixedWorklet } from '@/framework/core/safeMath';
 import { opacity } from '@/framework/ui/utils/opacity';
+import { abs, greaterThan, isEqual, isPositive, multiply } from '@/helpers/utilities';
+import * as i18n from '@/languages';
 import { THICK_BORDER_WIDTH } from '@/styles/constants';
 
 export const PositionValueCard = memo(function PositionValueCard({ position }: { position: PerpsPosition }) {

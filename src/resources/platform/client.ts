@@ -1,4 +1,5 @@
 import { PLATFORM_API_KEY, PLATFORM_BASE_URL } from 'react-native-dotenv';
+
 import { RainbowFetchClient } from '@/framework/data/http/rainbowFetch';
 
 let platformClient: RainbowFetchClient | undefined;

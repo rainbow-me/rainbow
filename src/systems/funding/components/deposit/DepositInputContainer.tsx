@@ -1,25 +1,28 @@
 import React, { type ReactNode } from 'react';
 import { StyleSheet } from 'react-native';
+
 import Animated, {
   interpolate,
   interpolateColor,
-  type SharedValue,
   useAnimatedStyle,
   useDerivedValue,
   withSpring,
   withTiming,
+  type SharedValue,
 } from 'react-native-reanimated';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
+
+import { BASE_INPUT_WIDTH, ETH_COLOR_DARK, ETH_COLOR_DARK_ACCENT } from '@/__swaps__/screens/Swap/constants';
+import { getColorValueForThemeWorklet } from '@/__swaps__/utils/swaps';
 import { SPRING_CONFIGS, TIMING_CONFIGS } from '@/components/animations/animationConfigs';
 import { NAVBAR_HEIGHT_WITH_PADDING } from '@/components/navbar/constants';
-import { Box, globalColors, useColorMode } from '@/design-system';
-import { BASE_INPUT_WIDTH, ETH_COLOR_DARK, ETH_COLOR_DARK_ACCENT } from '@/__swaps__/screens/Swap/constants';
 import { TOKEN_SEARCH_FOCUSED_INPUT_HEIGHT } from '@/components/token-search/constants';
-import { getColorValueForThemeWorklet } from '@/__swaps__/utils/swaps';
+import { Box, globalColors, useColorMode } from '@/design-system';
 import { opacity } from '@/framework/ui/utils/opacity';
+import { THICKER_BORDER_WIDTH } from '@/styles/constants';
+
 import { BASE_INPUT_HEIGHT, EXPANDED_INPUT_HEIGHT, NavigationSteps } from '../../constants';
 import { useDepositContext } from '../../contexts/DepositContext';
-import { THICKER_BORDER_WIDTH } from '@/styles/constants';
 
 // ============ Constants ====================================================== //
 

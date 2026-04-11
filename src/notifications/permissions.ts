@@ -1,11 +1,12 @@
-import { type PermissionStatus, requestNotifications, RESULTS, checkNotifications } from 'react-native-permissions';
-import { subscribeExistingNotificationsSettings } from '@/notifications/settings/initialization';
+import { checkNotifications, requestNotifications, RESULTS, type PermissionStatus } from 'react-native-permissions';
+
 import { Alert } from '@/components/alerts';
 import * as i18n from '@/languages';
-import { saveFCMToken } from '@/notifications/tokens';
-import { trackPushNotificationPermissionStatus } from '@/notifications/analytics';
 import { logger, RainbowError } from '@/logger';
+import { trackPushNotificationPermissionStatus } from '@/notifications/analytics';
+import { subscribeExistingNotificationsSettings } from '@/notifications/settings/initialization';
 import { notificationSettingsStorage } from '@/notifications/settings/storage';
+import { saveFCMToken } from '@/notifications/tokens';
 
 const HAS_SHOWN_PERMISSION_SCREEN_KEY = 'hasShownNotificationPermissionScreen';
 

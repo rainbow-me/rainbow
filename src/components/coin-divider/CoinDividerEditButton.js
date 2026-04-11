@@ -1,14 +1,16 @@
 import React, { useCallback } from 'react';
 import { LayoutAnimation } from 'react-native';
-import { useTheme } from '../../theme/ThemeContext';
+
+import styled from '@/framework/ui/styled-thing';
+import { opacity } from '@/framework/ui/utils/opacity';
+import { padding, shadow } from '@/styles';
 import magicMemo from '@/utils/magicMemo';
+
+import { useTheme } from '../../theme/ThemeContext';
 import ButtonPressAnimation from '../animations/ButtonPressAnimation';
 import OpacityToggler from '../animations/OpacityToggler';
 import { Row } from '../layout';
 import { Text } from '../text';
-import styled from '@/framework/ui/styled-thing';
-import { padding, shadow } from '@/styles';
-import { opacity } from '@/framework/ui/utils/opacity';
 
 const ButtonContent = styled(Row).attrs({
   justify: 'center',

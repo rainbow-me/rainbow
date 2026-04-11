@@ -1,7 +1,8 @@
-import { type BooleanMap } from '@/hooks/useCoinListEditOptions';
-import { type Migration, MigrationName } from '@/migrations/types';
-import { loadAddress } from '@/model/wallet';
 import { createMMKV } from 'react-native-mmkv';
+
+import { type BooleanMap } from '@/hooks/useCoinListEditOptions';
+import { MigrationName, type Migration } from '@/migrations/types';
+import { loadAddress } from '@/model/wallet';
 
 const storage = createMMKV();
 

@@ -1,15 +1,17 @@
 import React, { useMemo } from 'react';
-import { Box, Column, Columns, Inline, Stack, Text, useForegroundColor } from '@/design-system';
-import { useTheme } from '@/theme/ThemeContext';
-import { type RainbowUnderlyingAsset, type RangeStatus, type LpAllocation } from '@/features/positions/types';
-import RainbowCoinIcon from '@/components/coin-icon/RainbowCoinIcon';
-import { LpPositionRangeBadge } from './LpPositionRangeBadge';
-import { TwoCoinsIcon } from '@/components/coin-icon/TwoCoinsIcon';
-import { IS_IOS } from '@/env';
-import * as i18n from '@/languages';
+
 import ButtonPressAnimation from '@/components/animations/ButtonPressAnimation';
-import { ChainId } from '@/state/backendNetworks/types';
+import RainbowCoinIcon from '@/components/coin-icon/RainbowCoinIcon';
+import { TwoCoinsIcon } from '@/components/coin-icon/TwoCoinsIcon';
+import { Box, Column, Columns, Inline, Stack, Text, useForegroundColor } from '@/design-system';
+import { IS_IOS } from '@/env';
+import { type LpAllocation, type RainbowUnderlyingAsset, type RangeStatus } from '@/features/positions/types';
+import * as i18n from '@/languages';
 import { useBackendNetworksStore } from '@/state/backendNetworks/backendNetworks';
+import { ChainId } from '@/state/backendNetworks/types';
+import { useTheme } from '@/theme/ThemeContext';
+
+import { LpPositionRangeBadge } from './LpPositionRangeBadge';
 
 type LpPositionListItemProps = {
   assets: RainbowUnderlyingAsset[];

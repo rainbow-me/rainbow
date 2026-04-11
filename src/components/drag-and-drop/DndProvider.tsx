@@ -1,22 +1,24 @@
-import React, { type ComponentType, forwardRef, type PropsWithChildren, type RefObject, useImperativeHandle, useMemo, useRef } from 'react';
-import { type LayoutRectangle, type StyleProp, View, type ViewStyle } from 'react-native';
+import React, { forwardRef, useImperativeHandle, useMemo, useRef, type ComponentType, type PropsWithChildren, type RefObject } from 'react';
+import { View, type LayoutRectangle, type StyleProp, type ViewStyle } from 'react-native';
+
 import {
   Gesture,
   GestureDetector,
+  State,
   type GestureEventPayload,
   type GestureStateChangeEvent,
   type GestureType,
   type GestureUpdateEvent,
   type PanGestureHandlerEventPayload,
-  State,
 } from 'react-native-gesture-handler';
-import ReactNativeHapticFeedback, { type HapticFeedbackTypes } from 'react-native-haptic-feedback';
 import { cancelAnimation, runOnJS, useAnimatedReaction, useSharedValue, type WithSpringConfig } from 'react-native-reanimated';
+import { triggerHaptics, type HapticType } from 'react-native-turbo-haptics';
+
 import {
   DndContext,
-  type DraggableStates,
   type DndContextValue,
   type DraggableOptions,
+  type DraggableStates,
   type DroppableOptions,
   type ItemOptions,
   type Layouts,
@@ -36,7 +38,7 @@ export type DndProviderProps = {
   debug?: boolean;
   disabled?: boolean;
   gestureRef?: React.MutableRefObject<GestureType | undefined>;
-  hapticFeedback?: HapticFeedbackTypes;
+  hapticFeedback?: HapticType;
   minDistance?: number;
   onStart?: (
     event: GestureStateChangeEvent<PanGestureHandlerEventPayload>,
@@ -101,7 +103,7 @@ export const DndProvider = forwardRef<DndProviderHandle, PropsWithChildren<DndPr
 
   const runFeedback = () => {
     if (hapticFeedback) {
-      ReactNativeHapticFeedback.trigger(hapticFeedback);
+      triggerHaptics(hapticFeedback);
     }
   };
 

@@ -1,29 +1,31 @@
 import { memo, useCallback, useMemo, useState } from 'react';
 import { Alert, StyleSheet, View } from 'react-native';
-import { type RouteProp, useRoute } from '@react-navigation/native';
-import { type RootStackParamList } from '@/navigation/types';
-import type Routes from '@/navigation/routesNames';
-import { Box, globalColors, Text, useColorMode, useForegroundColor } from '@/design-system';
-import * as i18n from '@/languages';
-import { PanelSheet } from '@/components/PanelSheet/PanelSheet';
-import { PolymarketPositionCard } from '@/features/polymarket/components/PolymarketPositionCard';
-import { HoldToActivateButton } from '@/components/hold-to-activate-button/HoldToActivateButton';
-import { usePolymarketPositionsStore } from '@/features/polymarket/stores/polymarketPositionsStore';
-import { logger, RainbowError } from '@/logger';
-import { formatCurrency } from '@/features/perps/utils/formatCurrency';
+
+import { useRoute, type RouteProp } from '@react-navigation/native';
 import { LinearGradient } from 'expo-linear-gradient';
-import { getColorValueForThemeWorklet } from '@/__swaps__/utils/swaps';
-import { opacity } from '@/framework/ui/utils/opacity';
-import { getSolidColorEquivalent } from '@/worklets/colors';
-import { getPositionAction, PositionAction } from '@/features/polymarket/utils/getPositionAction';
-import Navigation from '@/navigation/Navigation';
-import { refetchPolymarketStores } from '@/features/polymarket/utils/refetchPolymarketStores';
-import { redeemPosition } from '@/features/polymarket/utils/redeemPosition';
-import { getPositionAccentColor } from '@/features/polymarket/utils/getMarketColor';
 import { BlurView } from 'react-native-blur-view';
-import { checkIfReadOnlyWallet } from '@/state/wallets/walletsStore';
-import { usePolymarketClients } from '@/features/polymarket/stores/derived/usePolymarketClients';
+
+import { getColorValueForThemeWorklet } from '@/__swaps__/utils/swaps';
+import { HoldToActivateButton } from '@/components/hold-to-activate-button/HoldToActivateButton';
+import { PanelSheet } from '@/components/PanelSheet/PanelSheet';
+import { Box, globalColors, Text, useColorMode, useForegroundColor } from '@/design-system';
+import { formatCurrency } from '@/features/perps/utils/formatCurrency';
+import { PolymarketPositionCard } from '@/features/polymarket/components/PolymarketPositionCard';
 import { POLYMARKET_BACKGROUND_LIGHT } from '@/features/polymarket/constants';
+import { usePolymarketClients } from '@/features/polymarket/stores/derived/usePolymarketClients';
+import { usePolymarketPositionsStore } from '@/features/polymarket/stores/polymarketPositionsStore';
+import { getPositionAccentColor } from '@/features/polymarket/utils/getMarketColor';
+import { getPositionAction, PositionAction } from '@/features/polymarket/utils/getPositionAction';
+import { redeemPosition } from '@/features/polymarket/utils/redeemPosition';
+import { refetchPolymarketStores } from '@/features/polymarket/utils/refetchPolymarketStores';
+import { opacity } from '@/framework/ui/utils/opacity';
+import * as i18n from '@/languages';
+import { logger, RainbowError } from '@/logger';
+import Navigation from '@/navigation/Navigation';
+import type Routes from '@/navigation/routesNames';
+import { type RootStackParamList } from '@/navigation/types';
+import { checkIfReadOnlyWallet } from '@/state/wallets/walletsStore';
+import { getSolidColorEquivalent } from '@/worklets/colors';
 
 export const PolymarketRedeemPositionSheet = memo(function PolymarketRedeemPositionSheet() {
   const {

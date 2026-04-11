@@ -1,13 +1,15 @@
 import { useEffect, useState } from 'react';
+
 import Animated from 'react-native-reanimated';
+
 import { Text } from '@/design-system';
-import { type AsyncActionState } from '@/features/rnbw-rewards/stores/rewardsFlowStore';
-import { time } from '@/utils/time';
 import {
-  createScaleOutFadeOutSlideExitAnimation,
   createScaleInFadeInSlideEnterAnimation,
+  createScaleOutFadeOutSlideExitAnimation,
 } from '@/features/rnbw-rewards/animations/sceneTransitions';
+import { type AsyncActionState } from '@/features/rnbw-rewards/stores/rewardsFlowStore';
 import * as i18n from '@/languages';
+import { time } from '@/utils/time';
 
 const EXIT_ANIMATION_DURATION = time.ms(500);
 const LABEL_CYCLE_INTERVAL = time.seconds(2);
@@ -45,7 +47,7 @@ export function ActionStatusScene<T>({ labels, task, onComplete }: ActionStatusS
     return () => clearInterval(interval);
   }, [labelIndex, allLabelsDisplayedAndTaskCompleted, onComplete, task.status, labels.length]);
 
-  const currentLabel = isExiting ? EMPTY_LABEL : labels[labelIndex] ?? fallbackLabel;
+  const currentLabel = isExiting ? EMPTY_LABEL : (labels[labelIndex] ?? fallbackLabel);
 
   return (
     <Animated.View key={currentLabel} entering={enteringAnimation} exiting={exitingAnimation}>

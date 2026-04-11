@@ -1,28 +1,29 @@
 import React, { useCallback, useMemo } from 'react';
 import { StyleSheet, View } from 'react-native';
-import ButtonPressAnimation from '../animations/ButtonPressAnimation';
-import FastTransactionStatusBadge from './FastTransactionStatusBadge';
-import { Bleed, Box, Inline, Text, globalColors, useForegroundColor } from '@/design-system';
-import { type NativeCurrencyKey } from '@/entities/nativeCurrencyTypes';
-import { type RainbowTransaction, TransactionStatus, type TransactionType } from '@/entities/transactions';
-import { type ThemeContextProps } from '@/theme/ThemeContext';
-import { useNavigation } from '@/navigation/Navigation';
-import Routes from '@rainbow-me/routes';
-import { ImgixImage } from '../images';
-import { CardSize } from '../unique-token/CardSize';
-import { ChainId } from '@/state/backendNetworks/types';
-import { address } from '@/utils/abbreviations';
-import { TwoCoinsIcon } from '../coin-icon/TwoCoinsIcon';
-import Spinner from '../Spinner';
 
-import RainbowCoinIcon from '@/components/coin-icon/RainbowCoinIcon';
-import { ChainImage } from '../coin-icon/ChainImage';
-import { useSuperTokenStore } from '@/screens/token-launcher/state/rainbowSuperTokenStore';
-import { activityValues, useTransactionLaunchToken } from '@/helpers/transactions';
-import { opacity } from '@/framework/ui/utils/opacity';
-import * as i18n from '@/languages';
 import smartWalletIcon from '@/assets/smartWalletIcon.png';
 import smartWalletRevoke from '@/assets/smartWalletRevoke.png';
+import RainbowCoinIcon from '@/components/coin-icon/RainbowCoinIcon';
+import { Bleed, Box, globalColors, Inline, Text, useForegroundColor } from '@/design-system';
+import { type NativeCurrencyKey } from '@/entities/nativeCurrencyTypes';
+import { TransactionStatus, type RainbowTransaction, type TransactionType } from '@/entities/transactions';
+import { opacity } from '@/framework/ui/utils/opacity';
+import { activityValues, useTransactionLaunchToken } from '@/helpers/transactions';
+import * as i18n from '@/languages';
+import { useNavigation } from '@/navigation/Navigation';
+import { useSuperTokenStore } from '@/screens/token-launcher/state/rainbowSuperTokenStore';
+import { ChainId } from '@/state/backendNetworks/types';
+import { type ThemeContextProps } from '@/theme/ThemeContext';
+import { address } from '@/utils/abbreviations';
+import Routes from '@rainbow-me/routes';
+
+import ButtonPressAnimation from '../animations/ButtonPressAnimation';
+import { ChainImage } from '../coin-icon/ChainImage';
+import { TwoCoinsIcon } from '../coin-icon/TwoCoinsIcon';
+import { ImgixImage } from '../images';
+import Spinner from '../Spinner';
+import { CardSize } from '../unique-token/CardSize';
+import FastTransactionStatusBadge from './FastTransactionStatusBadge';
 
 const getIconTopMargin = (type: TransactionType) => {
   switch (type) {

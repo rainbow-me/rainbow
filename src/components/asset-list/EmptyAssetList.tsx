@@ -1,15 +1,18 @@
-import ConditionalWrap from 'conditional-wrap';
 import React from 'react';
 import { RefreshControl, ScrollView, type ViewProps } from 'react-native';
-import AddFundsInterstitial from '../AddFundsInterstitial';
-import { Centered, Column } from '../layout';
-import AssetListHeader from './AssetListHeader';
-import AssetListItemSkeleton from './AssetListItemSkeleton';
+
+import ConditionalWrap from 'conditional-wrap';
+
+import styled from '@/framework/ui/styled-thing';
 import { times } from '@/helpers/utilities';
 import useRefreshAccountData from '@/hooks/useRefreshAccountData';
-import styled from '@/framework/ui/styled-thing';
 import { position } from '@/styles';
+
+import AddFundsInterstitial from '../AddFundsInterstitial';
+import { Centered, Column } from '../layout';
 import { navbarHeight } from '../navbar/Navbar';
+import AssetListHeader from './AssetListHeader';
+import AssetListItemSkeleton from './AssetListItemSkeleton';
 
 const Container = styled(Column)({
   ...position.sizeAsObject('100%'),

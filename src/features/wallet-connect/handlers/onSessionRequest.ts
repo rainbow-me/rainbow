@@ -1,24 +1,26 @@
+import { formatJsonRpcError, formatJsonRpcResult } from '@json-rpc-tools/utils';
+import type { SignClientTypes } from '@walletconnect/types';
+
 import { analytics } from '@/analytics';
 import { IS_IOS } from '@/env';
+import { maybeSignUri } from '@/handlers/imgix';
 import WalletTypes from '@/helpers/walletTypes';
 import * as i18n from '@/languages';
 import { logger, RainbowError } from '@/logger';
-import { maybeSignUri } from '@/handlers/imgix';
 import Navigation from '@/navigation/Navigation';
 import Routes from '@/navigation/routesNames';
 import { getRequestDisplayDetails } from '@/parsers/requests';
-import { fetchDappMetadata } from '@/resources/metadata/dapp';
 import store from '@/redux/store';
-import { addNewWalletConnectRequest, removeWalletConnectRequest } from '../stores/walletConnectRequestsStore';
+import { fetchDappMetadata } from '@/resources/metadata/dapp';
 import { getWallets, getWalletWithAccount } from '@/state/wallets/walletsStore';
 import { handleWalletConnectRequest } from '@/utils/requestNavigationHandlers';
-import { RPCMethod, type WalletconnectRequestData, type WalletconnectResultType } from '../types';
-import type { SignClientTypes } from '@walletconnect/types';
-import { formatJsonRpcError, formatJsonRpcResult } from '@json-rpc-tools/utils';
-import { getWalletKitClient } from '../services/client';
-import { isSupportedMethod, isSupportedSigningMethod, parseRPCParams } from '../utils/rpcParams';
+
 import { showErrorSheet } from '../components/showErrorSheet';
+import { getWalletKitClient } from '../services/client';
 import { maybeGoBackAndClearHasPendingRedirect, setHasPendingDeeplinkPendingRedirect } from '../services/pair';
+import { addNewWalletConnectRequest, removeWalletConnectRequest } from '../stores/walletConnectRequestsStore';
+import { RPCMethod, type WalletconnectRequestData, type WalletconnectResultType } from '../types';
+import { isSupportedMethod, isSupportedSigningMethod, parseRPCParams } from '../utils/rpcParams';
 
 const T = i18n.l.walletconnect;
 

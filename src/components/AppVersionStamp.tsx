@@ -1,12 +1,13 @@
 import React, { useCallback, useState } from 'react';
 import { Pressable } from 'react-native';
+
 import { Text } from '@/design-system';
+import { DANGER_INSTALL_SOURCE, IS_ANDROID, IS_IOS } from '@/env';
+import styled from '@/framework/ui/styled-thing';
 import useAppVersion from '@/hooks/useAppVersion';
 import useTimeout from '@/hooks/useTimeout';
 import { useNavigation } from '@/navigation/Navigation';
 import Routes from '@/navigation/routesNames';
-import styled from '@/framework/ui/styled-thing';
-import { DANGER_INSTALL_SOURCE, IS_ANDROID, IS_IOS } from '@/env';
 
 const DEBUG_TAP_COUNT = 15;
 

@@ -1,15 +1,17 @@
 import React, { memo, useCallback } from 'react';
+
 import {
   runOnJS,
   runOnUI,
-  type SharedValue,
   useAnimatedReaction,
   useDerivedValue,
   useSharedValue,
   withSpring,
+  type SharedValue,
 } from 'react-native-reanimated';
 import { triggerHaptics } from 'react-native-turbo-haptics';
 import { useDebouncedCallback } from 'use-debounce';
+
 import { SPRING_CONFIGS } from '@/components/animations/animationConfigs';
 import { AnimatedText, Box, Inline, Text, useColorMode } from '@/design-system';
 import { Slider, SLIDER_MAX, type SliderGestureState, type SliderProps } from '@/features/perps/components/Slider/Slider';

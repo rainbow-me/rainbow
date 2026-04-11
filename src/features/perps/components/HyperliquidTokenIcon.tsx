@@ -1,9 +1,10 @@
 import React, { memo, useMemo } from 'react';
 import { View } from 'react-native';
-import { Text, useForegroundColor } from '@/design-system';
-import { hyperliquidMarketsActions, useHyperliquidMarketsStore } from '@/features/perps/stores/hyperliquidMarketsStore';
+
 import { ImgixImage } from '@/components/images';
 import { type ImgixImageProps } from '@/components/images/ImgixImage';
+import { Text, useForegroundColor } from '@/design-system';
+import { hyperliquidMarketsActions, useHyperliquidMarketsStore } from '@/features/perps/stores/hyperliquidMarketsStore';
 import { extractBaseSymbol } from '@/features/perps/utils/hyperliquidSymbols';
 
 type HyperliquidTokenIconProps = Omit<ImgixImageProps, 'source'> & {

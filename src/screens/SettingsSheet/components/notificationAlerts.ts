@@ -1,4 +1,5 @@
 import { Alert } from 'react-native';
+
 import * as i18n from '@/languages';
 
 export function showNotificationSubscriptionErrorAlert() {

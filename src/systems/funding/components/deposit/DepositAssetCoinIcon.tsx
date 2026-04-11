@@ -1,6 +1,8 @@
 import React from 'react';
+
 import RainbowCoinIcon from '@/components/coin-icon/RainbowCoinIcon';
 import { ChainId } from '@/state/backendNetworks/types';
+
 import { useDepositContext } from '../../contexts/DepositContext';
 
 export const DepositAssetCoinIcon = ({ showBadge, size }: { showBadge?: boolean; size: number }) => {

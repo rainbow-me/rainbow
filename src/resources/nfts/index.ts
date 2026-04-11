@@ -1,9 +1,10 @@
-import { type QueryFunction, useQuery } from '@tanstack/react-query';
-import { type QueryConfigWithSelect, createQueryKey, queryClient } from '@/react-query';
-import { type SimpleHashListing } from '@/resources/nfts/simplehash/types';
-import { simpleHashNFTToUniqueAsset } from '@/resources/nfts/simplehash/utils';
+import { useQuery, type QueryFunction } from '@tanstack/react-query';
+
 import { type UniqueAsset } from '@/entities/uniqueAssets';
 import { arcClient } from '@/graphql';
+import { createQueryKey, queryClient, type QueryConfigWithSelect } from '@/react-query';
+import { type SimpleHashListing } from '@/resources/nfts/simplehash/types';
+import { simpleHashNFTToUniqueAsset } from '@/resources/nfts/simplehash/utils';
 import { type ChainId } from '@/state/backendNetworks/types';
 import { time } from '@/utils/time';
 
@@ -67,7 +68,7 @@ export const useLegacyNFTs = function useLegacyNFTs<TSelected = NFTData>({
   });
 
   return {
-    data: (config?.select ? data ?? config.select(FALLBACK_DATA) : data ?? FALLBACK_DATA) as TSelected,
+    data: (config?.select ? (data ?? config.select(FALLBACK_DATA)) : (data ?? FALLBACK_DATA)) as TSelected,
     error,
     isLoading,
     isInitialLoading,

@@ -1,15 +1,17 @@
-import { IS_IOS } from '@/env';
-import { logger } from '@/logger';
 import { Alert, Linking } from 'react-native';
-import * as i18n from '@/languages';
+
 import {
   checkMultiple as checkForMultiplePermissions,
   PERMISSIONS,
-  RESULTS,
-  request as requestPermission,
-  type AndroidPermission,
   requestMultiple as requestMultiplePermissions,
+  request as requestPermission,
+  RESULTS,
+  type AndroidPermission,
 } from 'react-native-permissions';
+
+import { IS_IOS } from '@/env';
+import * as i18n from '@/languages';
+import { logger } from '@/logger';
 
 /**
  * Shows an alert if device's bluetooth is powered off

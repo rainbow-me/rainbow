@@ -1,29 +1,30 @@
+import { type SwapsParams } from '@/__swaps__/screens/Swap/navigateToSwaps';
 import { type AddressOrEth, type ExtendedAnimatedAssetWithColors, type ParsedSearchAsset } from '@/__swaps__/types/assets';
 import { type SwapAssetType } from '@/__swaps__/types/swap';
-import { type UnlockableAppIconKey } from '@/features/app-icon/models/appIcons';
 import { type CardType } from '@/components/cards/GenericCard';
 import { type LearnCategory } from '@/components/cards/utils/types';
 import { type FiatProviderName } from '@/entities/f2c';
+import { type UnlockableAppIconKey } from '@/features/app-icon/models/appIcons';
 import { type CandleResolution, type ChartType } from '@/features/charts/types';
+import { type ENSRapActionType } from '@/features/ens/raps/common';
+import { type PerpPositionSide, type TriggerOrderType } from '@/features/perps/types';
+import { type EthereumWalletType } from '@/helpers/walletTypes';
+import { type WalletLibraryType } from '@/model/wallet';
+import { type PairHardwareWalletNavigatorParams } from '@/navigation/types';
 import { type TrendingToken } from '@/resources/trendingTokens/trendingTokens';
 import { type TokenLauncherAnalyticsParams } from '@/screens/token-launcher/state/tokenLauncherStore';
 import { type ChainId, type Network } from '@/state/backendNetworks/types';
+import { type FavoritedSite } from '@/state/browser/favoriteDappsStore';
 import {
   type DepositFailureMetadata,
   type DepositSuccessMetadata,
   type WithdrawalFailureMetadata,
   type WithdrawalSuccessMetadata,
 } from '@/systems/funding/types';
-import { type FavoritedSite } from '@/state/browser/favoriteDappsStore';
 import { type RequestSource } from '@/utils/requestNavigationHandlers';
 import { type CrosschainQuote, type Quote, type QuoteError } from '@rainbow-me/swaps';
-import { type ENSRapActionType } from '@/features/ens/raps/common';
+
 import { type AnyPerformanceLog, type Screen } from '../state/performance/operations';
-import { type PairHardwareWalletNavigatorParams } from '@/navigation/types';
-import { type SwapsParams } from '@/__swaps__/screens/Swap/navigateToSwaps';
-import { type PerpPositionSide, type TriggerOrderType } from '@/features/perps/types';
-import { type EthereumWalletType } from '@/helpers/walletTypes';
-import { type WalletLibraryType } from '@/model/wallet';
 
 /**
  * All events, used by `analytics.track()`
@@ -333,6 +334,12 @@ export const event = {
   // rnbw airdrop
   rnbwAirdropClaim: 'rnbw_airdrop.claim',
   rnbwAirdropClaimFailed: 'rnbw_airdrop.claim.failed',
+
+  // rnbw staking
+  rnbwStakingStake: 'rnbw_staking.stake',
+  rnbwStakingStakeFailed: 'rnbw_staking.stake.failed',
+  rnbwStakingUnstake: 'rnbw_staking.unstake',
+  rnbwStakingUnstakeFailed: 'rnbw_staking.unstake.failed',
 } as const;
 
 type SwapEventParameters<T extends 'swap' | 'crosschainSwap'> = {
@@ -1386,5 +1393,37 @@ export type EventProperties = {
       claim?: string;
       status?: string;
     };
+  };
+
+  // rnbw staking
+  [event.rnbwStakingStake]: {
+    chainId: number;
+    amount: string;
+    amountFromWallet: string;
+    amountFromRewards: string;
+    executionMode: 'sponsored' | 'manual' | 'claim_only';
+    claimToDestination: 'staking' | 'wallet';
+    claimFulfillsStake: boolean;
+  };
+  [event.rnbwStakingStakeFailed]: {
+    chainId: number;
+    amount: string;
+    executionMode?: 'sponsored' | 'manual' | 'claim_only';
+    claimToDestination?: 'staking' | 'wallet';
+    claimFulfillsStake?: boolean;
+    errorMessage: string;
+  };
+  [event.rnbwStakingUnstake]: {
+    chainId: number;
+    txHash: string;
+    stakedAmount: string;
+    expectedExitFee: string;
+    expectedReceiveAmount: string;
+    pnl: string;
+  };
+  [event.rnbwStakingUnstakeFailed]: {
+    chainId: number;
+    stakedAmount?: string;
+    errorMessage: string;
   };
 };

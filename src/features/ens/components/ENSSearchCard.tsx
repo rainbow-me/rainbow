@@ -1,18 +1,21 @@
-import { analytics } from '@/analytics';
-import { enableActionsOnReadOnlyWallet } from '@/config/debug';
-import { Box, ColorModeProvider, globalColors, Stack, Text } from '@/design-system';
-import { REGISTRATION_MODES } from '../utils/helpers';
-import useENSPendingRegistrations from '../hooks/useENSPendingRegistrations';
-import * as i18n from '@/languages';
-import Routes from '@/navigation/routesNames';
-import watchingAlert from '@/utils/watchingAlert';
-import { useRoute } from '@react-navigation/native';
 import React, { useEffect } from 'react';
+
+import { useRoute } from '@react-navigation/native';
 import Animated, { useAnimatedStyle, useSharedValue, withSpring } from 'react-native-reanimated';
-import { useNavigation } from '@/navigation/Navigation';
-import { getIsReadOnlyWallet } from '@/state/wallets/walletsStore';
+
+import { analytics } from '@/analytics';
 import { GenericCard, type Gradient } from '@/components/cards/GenericCard';
 import { IconOrb } from '@/components/cards/reusables/IconOrb';
+import { enableActionsOnReadOnlyWallet } from '@/config/debug';
+import { Box, ColorModeProvider, globalColors, Stack, Text } from '@/design-system';
+import * as i18n from '@/languages';
+import { useNavigation } from '@/navigation/Navigation';
+import Routes from '@/navigation/routesNames';
+import { getIsReadOnlyWallet } from '@/state/wallets/walletsStore';
+import watchingAlert from '@/utils/watchingAlert';
+
+import useENSPendingRegistrations from '../hooks/useENSPendingRegistrations';
+import { REGISTRATION_MODES } from '../utils/helpers';
 
 const TRANSLATIONS = i18n.l.cards.ens_search;
 const GRADIENT: Gradient = {

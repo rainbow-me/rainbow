@@ -4,9 +4,11 @@ import { useWindowDimensions } from 'react-native';
 import { Gesture, GestureDetector } from 'react-native-gesture-handler';
 import Animated, { useAnimatedStyle, useSharedValue, withDecay, withSpring } from 'react-native-reanimated';
 import RNRestart from 'react-native-restart';
+
+import styled from '@/framework/ui/styled-thing';
+
 import ButtonPressAnimation from '../animations/ButtonPressAnimation';
 import { Icon } from '../icons';
-import styled from '@/framework/ui/styled-thing';
 
 const Button = styled(ButtonPressAnimation)(({ size, color }) => ({
   alignItems: 'center',

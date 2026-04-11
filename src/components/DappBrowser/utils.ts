@@ -1,7 +1,10 @@
 import { Share } from 'react-native';
+
 import { type WebViewNavigationEvent } from 'react-native-webview/lib/RNCWebViewNativeComponent';
-import { RainbowError, ensureError, logger } from '@/logger';
-import { HTTP, HTTPS, RAINBOW_HOME, APP_STORE_URL_PREFIXES } from './constants';
+
+import { ensureError, logger, RainbowError } from '@/logger';
+
+import { APP_STORE_URL_PREFIXES, HTTP, HTTPS, RAINBOW_HOME } from './constants';
 
 // ---------------------------------------------------------------------------- //
 // URL validation regex breakdown here: https://mathiasbynens.be/demo/url-regex

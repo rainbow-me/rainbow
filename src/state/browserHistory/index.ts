@@ -1,6 +1,7 @@
 import { normalizeUrlForRecents } from '@/components/DappBrowser/utils';
-import { createRainbowStore } from '../internal/createRainbowStore';
 import { logger, RainbowError } from '@/logger';
+
+import { createRainbowStore } from '../internal/createRainbowStore';
 
 export interface Site {
   name: string;

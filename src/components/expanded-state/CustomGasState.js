@@ -1,22 +1,25 @@
-import { useIsFocused, useRoute } from '@react-navigation/native';
 import React, { useEffect, useState } from 'react';
+
+import { useIsFocused, useRoute } from '@react-navigation/native';
+
 import Divider from '@/components/Divider';
 import { ExchangeHeader } from '@/components/ExchangeHeader';
-import { FloatingPanel } from '../floating-panels';
+import FeesPanel from '@/components/FeesPanel';
+import FeesPanelTabs from '@/components/FeesPanelTabs';
 import { GasSpeedButton } from '@/components/gas';
 import { Column } from '@/components/layout';
 import { SlackSheet } from '@/components/sheet';
+import styled from '@/framework/ui/styled-thing';
 import { getTrendKey } from '@/helpers/gas';
+import { KeyboardType } from '@/helpers/keyboardTypes';
 import useColorForAsset from '@/hooks/useColorForAsset';
 import useGas from '@/hooks/useGas';
 import useKeyboardHeight from '@/hooks/useKeyboardHeight';
-import styled from '@/framework/ui/styled-thing';
 import { useNavigation } from '@/navigation/Navigation';
 import { margin } from '@/styles';
 import deviceUtils from '@/utils/deviceUtils';
-import FeesPanel from '@/components/FeesPanel';
-import FeesPanelTabs from '@/components/FeesPanelTabs';
-import { KeyboardType } from '@/helpers/keyboardTypes';
+
+import { FloatingPanel } from '../floating-panels';
 
 const FOOTER_HEIGHT = 79;
 const CONTENT_HEIGHT = 342;

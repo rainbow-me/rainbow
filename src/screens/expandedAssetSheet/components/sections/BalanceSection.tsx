@@ -1,23 +1,26 @@
 import React, { useMemo } from 'react';
-import * as i18n from '@/languages';
-import { AnimatedText, Box, Text, TextShadow } from '@/design-system';
-import { useExpandedAssetSheetContext } from '../../context/ExpandedAssetSheetContext';
-import RainbowCoinIcon from '@/components/coin-icon/RainbowCoinIcon';
-import { SheetSeparator } from '../shared/Separator';
-import Animated, { useDerivedValue, useAnimatedStyle, type DerivedValue } from 'react-native-reanimated';
-import { LAYOUT_ANIMATION } from '../shared/CollapsibleSection';
-import { useLiveTokenSharedValue, useLiveTokenValue } from '@/components/live-token-text/LiveTokenText';
-import useAccountSettings from '@/hooks/useAccountSettings';
+
+import Animated, { useAnimatedStyle, useDerivedValue, type DerivedValue } from 'react-native-reanimated';
+
 import { AnimatedNumber } from '@/components/animated-number/AnimatedNumber';
-import { getSolidColorEquivalent } from '@/worklets/colors';
-import { useCandlestickPrice } from '@/features/charts/stores/derived/useCandlestickPrice';
-import { convertAmountToNativeDisplayWorklet } from '@/helpers/utilities';
-import { greaterThanWorklet, mulWorklet } from '@/framework/core/safeMath';
+import RainbowCoinIcon from '@/components/coin-icon/RainbowCoinIcon';
+import { useLiveTokenSharedValue, useLiveTokenValue } from '@/components/live-token-text/LiveTokenText';
+import { AnimatedText, Box, Text, TextShadow } from '@/design-system';
 import { arePricesEqual } from '@/features/charts/candlestick/utils';
 import { useChartType } from '@/features/charts/stores/chartsStore';
+import { useCandlestickPrice } from '@/features/charts/stores/derived/useCandlestickPrice';
 import { ChartType } from '@/features/charts/types';
+import { greaterThanWorklet, mulWorklet } from '@/framework/core/safeMath';
+import { convertAmountToNativeDisplayWorklet } from '@/helpers/utilities';
+import useAccountSettings from '@/hooks/useAccountSettings';
+import * as i18n from '@/languages';
 import { useListenerRouteGuard } from '@/state/internal/hooks/useListenerRouteGuard';
 import { useStoreSharedValue } from '@/state/internal/hooks/useStoreSharedValue';
+import { getSolidColorEquivalent } from '@/worklets/colors';
+
+import { useExpandedAssetSheetContext } from '../../context/ExpandedAssetSheetContext';
+import { LAYOUT_ANIMATION } from '../shared/CollapsibleSection';
+import { SheetSeparator } from '../shared/Separator';
 
 export function BalanceSection() {
   const { accentColors, accountAsset: asset, isOwnedAsset } = useExpandedAssetSheetContext();
@@ -49,7 +52,7 @@ export function BalanceSection() {
 
   const tokenBalanceData = useDerivedValue(() => {
     const priceToUse =
-      chartType === ChartType.Candlestick ? currentCandlestickPrice.value?.price ?? liveTokenPrice.value : liveTokenPrice.value;
+      chartType === ChartType.Candlestick ? (currentCandlestickPrice.value?.price ?? liveTokenPrice.value) : liveTokenPrice.value;
 
     if (!priceToUse) {
       return { displayValue: liveTokenPrice.value, isCapped: false, uncappedValue: liveTokenPrice.value };

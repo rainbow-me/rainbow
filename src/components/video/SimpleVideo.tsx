@@ -1,10 +1,12 @@
-import React, { useEffect, useLayoutEffect, useRef, useState } from 'react';
-import { Animated, type RegisteredStyle, StyleSheet, View, type ViewStyle } from 'react-native';
+import React, { useEffect, useLayoutEffect, useRef, useState, type JSX } from 'react';
+import { Animated, StyleSheet, View, type RegisteredStyle, type ViewStyle } from 'react-native';
+
 import Video, { type VideoRef } from 'react-native-video';
+
 import { ImgixImage } from '@/components/images';
 import styled from '@/framework/ui/styled-thing';
-import { position } from '@/styles';
 import { logger, RainbowError } from '@/logger';
+import { position } from '@/styles';
 
 export type SimpleVideoProps = {
   readonly style?: ViewStyle | RegisteredStyle<ViewStyle>;

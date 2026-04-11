@@ -1,14 +1,16 @@
 import React from 'react';
+
+import styled from '@/framework/ui/styled-thing';
+import { opacity } from '@/framework/ui/utils/opacity';
+import { useCoinListFinishEditingOptions } from '@/hooks/useCoinListEditOptions';
+import { borders, padding, position, shadow } from '@/styles';
 import magicMemo from '@/utils/magicMemo';
+
 import ButtonPressAnimation from '../animations/ButtonPressAnimation';
 import OpacityToggler from '../animations/OpacityToggler';
 import CoinIconIndicator from '../coin-icon/CoinIconIndicator';
 import { Icon } from '../icons';
 import { Row } from '../layout';
-import { useCoinListFinishEditingOptions } from '@/hooks/useCoinListEditOptions';
-import styled from '@/framework/ui/styled-thing';
-import { borders, padding, position, shadow } from '@/styles';
-import { opacity } from '@/framework/ui/utils/opacity';
 
 const CoinIconSize = 40;
 

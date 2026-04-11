@@ -1,9 +1,11 @@
+import { PixelRatio } from 'react-native';
+
 // @ts-expect-error ts-migrate(7016) FIXME: Could not find a declaration file for module 'clou... Remove this comment to see the full error message
 import { image as cloudinaryImage } from 'cloudinary/lib/cloudinary';
 // @ts-expect-error ts-migrate(7016) FIXME: Could not find a declaration file for module 'clou... Remove this comment to see the full error message
 import cloudinaryConfig from 'cloudinary/lib/config';
-import { PixelRatio } from 'react-native';
 import { CLOUDINARY_API_KEY as apiKey, CLOUDINARY_API_SECRET as apiSecret, CLOUDINARY_CLOUD_NAME as cloudName } from 'react-native-dotenv';
+
 import deviceUtils from '@/utils/deviceUtils';
 import isSVGImage from '@/utils/isSVG';
 

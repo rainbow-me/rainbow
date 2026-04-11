@@ -1,17 +1,19 @@
 import { type BigNumberish } from '@ethersproject/bignumber';
+import { type BytesLike } from '@ethersproject/bytes';
+import { type TransactionResponse } from '@ethersproject/providers';
 import { type Hash } from 'viem';
+
+import { type Transaction } from '@/features/positions/types/generated/transaction/transaction';
+import { type SwapMetadata } from '@/raps/references';
+import type { AddCashCurrencyAsset } from '@/references/constants';
+import { type AddysAsset, type ParsedAsset } from '@/resources/assets/types';
+import { type ChainId, type Network } from '@/state/backendNetworks/types';
+import { type SwapType } from '@rainbow-me/swaps';
+
 import { type ProtocolType } from '../protocolTypes';
 import { type ParsedAddressAsset, type ZerionAsset } from '../tokens';
-import { type EthereumAddress } from '../wallet';
-import type { AddCashCurrencyAsset } from '@/references/constants';
-import { type SwapType } from '@rainbow-me/swaps';
-import { type SwapMetadata } from '@/raps/references';
 import { type UniqueAsset } from '../uniqueAssets';
-import { type ParsedAsset, type AddysAsset } from '@/resources/assets/types';
-import { type ChainId, type Network } from '@/state/backendNetworks/types';
-import { type TransactionResponse } from '@ethersproject/providers';
-import { type BytesLike } from '@ethersproject/bytes';
-import { type Transaction } from '@/features/positions/types/generated/transaction/transaction';
+import { type EthereumAddress } from '../wallet';
 
 export enum TransactionDirection {
   IN = 'in',

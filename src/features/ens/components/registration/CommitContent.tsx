@@ -1,12 +1,15 @@
-import * as i18n from '@/languages';
 import React from 'react';
+
 import { type Source } from 'react-native-fast-image';
+
 import brain from '@/assets/brain.png';
-import RegistrationReviewRows from './RegistrationReviewRows';
-import { Box, Inline, Inset, Separator, Stack, Text } from '@/design-system';
-import { REGISTRATION_MODES } from '../../utils/helpers';
-import useDimensions from '@/hooks/useDimensions';
 import { ImgixImage } from '@/components/images';
+import { Box, Inline, Inset, Separator, Stack, Text } from '@/design-system';
+import useDimensions from '@/hooks/useDimensions';
+import * as i18n from '@/languages';
+
+import { REGISTRATION_MODES } from '../../utils/helpers';
+import RegistrationReviewRows from './RegistrationReviewRows';
 
 const CommitContent = ({
   duration,

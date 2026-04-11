@@ -1,15 +1,17 @@
 import React, { useCallback } from 'react';
+import { type TextInput } from 'react-native';
+
 import { LinearGradient } from 'expo-linear-gradient';
 // @ts-expect-error - no declaration file
 import TextInputMask from 'react-native-text-input-mask';
+
 import ButtonPressAnimation from '@/components/animations/ButtonPressAnimation';
-import styled from '@/framework/ui/styled-thing';
-import { buildTextStyles, padding } from '@/styles';
-import { useTheme } from '@/theme/ThemeContext';
-import { type TextInput } from 'react-native';
 import { Box, Inline, Inset, Text } from '@/design-system';
 import { IS_ANDROID, IS_TEST } from '@/env';
+import styled from '@/framework/ui/styled-thing';
 import { opacity } from '@/framework/ui/utils/opacity';
+import { buildTextStyles, padding } from '@/styles';
+import { useTheme } from '@/theme/ThemeContext';
 
 type GweiInputPillProps = {
   color: string;

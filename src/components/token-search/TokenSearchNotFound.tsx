@@ -1,4 +1,5 @@
 import React, { memo } from 'react';
+
 import { Box, Stack, Text } from '@/design-system';
 import * as i18n from '@/languages';
 

@@ -3,32 +3,34 @@ import {
   BlurStyle,
   ClipOp,
   PaintStyle,
+  Skia,
+  StrokeCap,
+  StrokeJoin,
+  TileMode,
   type SkCanvas,
   type SkColor,
   type SkPaint,
   type SkParagraph,
   type SkPicture,
-  Skia,
-  StrokeCap,
-  StrokeJoin,
-  TileMode,
 } from '@shopify/react-native-skia';
 import { State as GestureState } from 'react-native-gesture-handler';
 import { type SharedValue } from 'react-native-reanimated';
 import { triggerHaptics } from 'react-native-turbo-haptics';
+
+import { type ResponseByTheme } from '@/__swaps__/utils/swaps';
 import { getColorForTheme } from '@/design-system/color/useForegroundColor';
 import { type TextSegment } from '@/design-system/components/SkiaText/useSkiaText';
 import { type InteractionConfig, type LineEffectsConfig } from '@/features/charts/line/LineSeries';
-import { type ResponseByTheme } from '@/__swaps__/utils/swaps';
 import { deepFreeze } from '@/utils/deepFreeze';
 import { normalizeSpringConfig } from '@/worklets/animations';
 import { createBlankPicture } from '@/worklets/skia';
+
 import { Animator } from '../../candlestick/classes/Animator';
 import { TimeFormatter } from '../../candlestick/classes/TimeFormatter';
-import { type LineSmoothing } from '../../line/LineSmoothingAlgorithms';
 import { LineSeriesBuilder, type SeriesDataInput } from '../../line/LineSeriesBuilder';
+import { type LineSmoothing } from '../../line/LineSmoothingAlgorithms';
 import { type DrawParams } from '../../line/types';
-import { EntranceAnimation, type OutcomeSeries, SERIES_COLORS, SERIES_PALETTES, type SeriesPaletteColors } from '../types';
+import { EntranceAnimation, SERIES_COLORS, SERIES_PALETTES, type OutcomeSeries, type SeriesPaletteColors } from '../types';
 
 // ============ Types ========================================================== //
 
@@ -563,8 +565,8 @@ export class PolymarketChartManager {
     const seriesData: SeriesDataInput[] = series.map((s, i) => ({
       // Allow config palette to override incoming series colors when requested
       color: overrideSeriesColors
-        ? colors?.[i] ?? s.color ?? SERIES_COLORS[i % SERIES_COLORS.length]
-        : s.color ?? colors?.[i] ?? SERIES_COLORS[i % SERIES_COLORS.length],
+        ? (colors?.[i] ?? s.color ?? SERIES_COLORS[i % SERIES_COLORS.length])
+        : (s.color ?? colors?.[i] ?? SERIES_COLORS[i % SERIES_COLORS.length]),
       key: s.tokenId,
       label: s.label,
       prices: s.prices,

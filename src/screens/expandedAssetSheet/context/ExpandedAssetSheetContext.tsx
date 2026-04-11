@@ -1,26 +1,28 @@
+import React, { createContext, useContext, useMemo } from 'react';
+
+import chroma from 'chroma-js';
+import { useSharedValue, type SharedValue } from 'react-native-reanimated';
+
+import { type UniqueId } from '@/__swaps__/types/assets';
+import { extractColorValueForColors } from '@/__swaps__/utils/swaps';
+import { type EnrichedExchangeAsset } from '@/components/ExchangeAssetList';
+import { useColorMode } from '@/design-system';
 import type { ParsedAddressAsset } from '@/entities/tokens';
+import { opacity } from '@/framework/ui/utils/opacity';
+import { type Token } from '@/graphql/__generated__/metadata';
+import { isNativeAsset } from '@/handlers/assets';
+import useAccountAsset from '@/hooks/useAccountAsset';
 import useAdditionalAssetData, { type TokenMetadata } from '@/hooks/useAdditionalAssetData';
 import useColorForAsset from '@/hooks/useColorForAsset';
-import useAccountAsset from '@/hooks/useAccountAsset';
-import { getUniqueId } from '@/utils/ethereumUtils';
-import chroma from 'chroma-js';
-import React, { createContext, useContext, useMemo } from 'react';
-import { type SharedValue, useSharedValue } from 'react-native-reanimated';
-import { type ChainId } from '@/state/backendNetworks/types';
+import { useExternalToken, type FormattedExternalAsset } from '@/resources/assets/externalAssetsQuery';
 import { type TrendingToken } from '@/resources/trendingTokens/trendingTokens';
-import { type UniqueId } from '@/__swaps__/types/assets';
-import { isNativeAsset } from '@/handlers/assets';
-import { type Token } from '@/graphql/__generated__/metadata';
-import { useColorMode } from '@/design-system';
-import { type FormattedExternalAsset, useExternalToken } from '@/resources/assets/externalAssetsQuery';
-import { useBackendNetworksStore } from '@/state/backendNetworks/backendNetworks';
-import { type EnrichedExchangeAsset } from '@/components/ExchangeAssetList';
-import { useTheme } from '@/theme/ThemeContext';
-import { time } from '@/utils/time';
-import { extractColorValueForColors } from '@/__swaps__/utils/swaps';
 import { useSuperTokenStore } from '@/screens/token-launcher/state/rainbowSuperTokenStore';
 import { userAssetsStoreManager } from '@/state/assets/userAssetsStoreManager';
-import { opacity } from '@/framework/ui/utils/opacity';
+import { useBackendNetworksStore } from '@/state/backendNetworks/backendNetworks';
+import { type ChainId } from '@/state/backendNetworks/types';
+import { useTheme } from '@/theme/ThemeContext';
+import { getUniqueId } from '@/utils/ethereumUtils';
+import { time } from '@/utils/time';
 
 export enum SectionId {
   PROFIT = 'profit',

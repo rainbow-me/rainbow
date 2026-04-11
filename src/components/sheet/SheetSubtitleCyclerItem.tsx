@@ -1,4 +1,5 @@
 import React, { useLayoutEffect } from 'react';
+
 import Animated, {
   Easing,
   interpolateColor,
@@ -7,10 +8,12 @@ import Animated, {
   useSharedValue,
   withTiming,
 } from 'react-native-reanimated';
-import { Text } from '../text';
+
 import styled from '@/framework/ui/styled-thing';
 import { position } from '@/styles';
 import { useTheme } from '@/theme/ThemeContext';
+
+import { Text } from '../text';
 
 const AnimatedText = Animated.createAnimatedComponent(Text);
 

@@ -1,8 +1,9 @@
-import { equalWorklet, trimTrailingZeros } from '@/framework/core/safeMath';
-import { createRainbowStore } from '@/state/internal/createRainbowStore';
 import { type GasSettings } from '@/__swaps__/screens/Swap/hooks/useCustomGas';
 import { type ExtendedAnimatedAssetWithColors } from '@/__swaps__/types/assets';
+import { equalWorklet, trimTrailingZeros } from '@/framework/core/safeMath';
+import { createRainbowStore } from '@/state/internal/createRainbowStore';
 import { sanitizeAmount } from '@/worklets/strings';
+
 import { INITIAL_SLIDER_PROGRESS } from '../constants';
 import { type AmountState, type AmountStoreType } from '../types';
 import { amountFromSliderProgress } from '../utils/sliderWorklets';
@@ -27,8 +28,11 @@ export function createAmountStore(initialAmount = '0'): AmountStoreType {
 
 // ============ Deposit-Specific Amount Store ================================= //
 
-export function createDepositAmountStore(initialAsset: ExtendedAnimatedAssetWithColors | null): AmountStoreType {
-  const initialAmount = computeInitialDepositAmount(initialAsset, undefined, undefined);
+export function createDepositAmountStore(
+  initialAsset: ExtendedAnimatedAssetWithColors | null,
+  initialSliderProgress: number
+): AmountStoreType {
+  const initialAmount = computeInitialDepositAmount(initialAsset, undefined, undefined, initialSliderProgress);
   return createAmountStore(initialAmount);
 }
 
@@ -41,6 +45,11 @@ export function computeInitialDepositAmount(
   sliderProgress = INITIAL_SLIDER_PROGRESS
 ): string {
   const maxSwappableAmount = computeMaxSwappableAmount(asset, gasSettings, gasLimit ?? undefined) || '0';
-  const { amount } = amountFromSliderProgress(sliderProgress, maxSwappableAmount, asset?.price?.value ?? 0, asset?.decimals ?? 18);
-  return amount;
+  const { amount, trueBalance } = amountFromSliderProgress(
+    sliderProgress,
+    maxSwappableAmount,
+    asset?.price?.value ?? 0,
+    asset?.decimals ?? 18
+  );
+  return trueBalance ?? amount;
 }

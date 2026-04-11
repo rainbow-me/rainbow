@@ -1,35 +1,37 @@
 import { memo, useCallback, useState } from 'react';
 import { Alert, StyleSheet, View } from 'react-native';
-import { type RouteProp, useRoute } from '@react-navigation/native';
-import { type RootStackParamList } from '@/navigation/types';
-import Routes from '@/navigation/routesNames';
-import { Box, globalColors, Text, TextShadow, useColorMode } from '@/design-system';
-import * as i18n from '@/languages';
-import { PanelSheet } from '@/components/PanelSheet/PanelSheet';
-import { ensureError, logger, RainbowError } from '@/logger';
-import { opacity } from '@/framework/ui/utils/opacity';
-import { AmountInputCard } from '@/components/amount-input-card/AmountInputCard';
-import { HoldToActivateButton } from '@/components/hold-to-activate-button/HoldToActivateButton';
-import ButtonPressAnimation from '@/components/animations/ButtonPressAnimation';
+
+import { useRoute, type RouteProp } from '@react-navigation/native';
 import { LinearGradient } from 'expo-linear-gradient';
-import { waitForPositionSizeUpdate } from '@/features/polymarket/utils/refetchPolymarketStores';
-import Navigation from '@/navigation/Navigation';
-import { getSolidColorEquivalent } from '@/worklets/colors';
-import { useNewPositionForm } from '@/features/polymarket/screens/polymarket-new-position-sheet/hooks/useNewPositionForm';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
+
+import { analytics } from '@/analytics';
+import { AmountInputCard } from '@/components/amount-input-card/AmountInputCard';
+import ButtonPressAnimation from '@/components/animations/ButtonPressAnimation';
+import { HoldToActivateButton } from '@/components/hold-to-activate-button/HoldToActivateButton';
+import { PanelSheet } from '@/components/PanelSheet/PanelSheet';
+import { Box, globalColors, Text, TextShadow, useColorMode } from '@/design-system';
 import { formatCurrency } from '@/features/perps/utils/formatCurrency';
-import { marketBuyToken } from '@/features/polymarket/utils/orders';
-import { mulWorklet, subWorklet, toFixedWorklet, trimTrailingZeros } from '@/framework/core/safeMath';
-import { trackPolymarketOrder } from '@/features/polymarket/utils/polymarketOrderTracker';
+import { PolymarketNoLiquidityCard } from '@/features/polymarket/components/PolymarketNoLiquidityCard';
+import { PolymarketOutcomeCard } from '@/features/polymarket/components/PolymarketOutcomeCard';
 import { POLYMARKET_BACKGROUND_LIGHT } from '@/features/polymarket/constants';
 import { POLYMARKET_CLOB_API_ERRORS } from '@/features/polymarket/errors';
-import { analytics } from '@/analytics';
-import { useSafeAreaInsets } from 'react-native-safe-area-context';
-import { checkIfReadOnlyWallet } from '@/state/wallets/walletsStore';
-import { usePolymarketClients } from '@/features/polymarket/stores/derived/usePolymarketClients';
+import { useNewPositionForm } from '@/features/polymarket/screens/polymarket-new-position-sheet/hooks/useNewPositionForm';
 import { usePolymarketAccountValueSummary } from '@/features/polymarket/stores/derived/usePolymarketAccountValueSummary';
+import { usePolymarketClients } from '@/features/polymarket/stores/derived/usePolymarketClients';
 import { getOutcomeDescriptions } from '@/features/polymarket/utils/getOutcomeDescriptions';
-import { PolymarketOutcomeCard } from '@/features/polymarket/components/PolymarketOutcomeCard';
-import { PolymarketNoLiquidityCard } from '@/features/polymarket/components/PolymarketNoLiquidityCard';
+import { marketBuyToken } from '@/features/polymarket/utils/orders';
+import { trackPolymarketOrder } from '@/features/polymarket/utils/polymarketOrderTracker';
+import { waitForPositionSizeUpdate } from '@/features/polymarket/utils/refetchPolymarketStores';
+import { mulWorklet, subWorklet, toFixedWorklet, trimTrailingZeros } from '@/framework/core/safeMath';
+import { opacity } from '@/framework/ui/utils/opacity';
+import * as i18n from '@/languages';
+import { ensureError, logger, RainbowError } from '@/logger';
+import Navigation from '@/navigation/Navigation';
+import Routes from '@/navigation/routesNames';
+import { type RootStackParamList } from '@/navigation/types';
+import { checkIfReadOnlyWallet } from '@/state/wallets/walletsStore';
+import { getSolidColorEquivalent } from '@/worklets/colors';
 
 export const PolymarketNewPositionSheet = memo(function PolymarketNewPositionSheet() {
   const {

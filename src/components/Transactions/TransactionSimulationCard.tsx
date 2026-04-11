@@ -1,5 +1,6 @@
 import React, { useMemo } from 'react';
-import * as i18n from '@/languages';
+
+import { isEmpty } from 'lodash';
 import Animated, {
   interpolate,
   useAnimatedReaction,
@@ -9,30 +10,28 @@ import Animated, {
   withTiming,
 } from 'react-native-reanimated';
 
-import { Box, Inline, Stack, Text } from '@/design-system';
-import { type TextColor } from '@/design-system/color/palettes';
-
-import {
-  type TransactionErrorType,
-  type TransactionSimulationResult,
-  TransactionScanResultType,
-} from '@/graphql/__generated__/metadataPOST';
-
-import { isEmpty } from 'lodash';
-import { TransactionSimulatedEventRow } from '@/components/Transactions/TransactionSimulatedEventRow';
 import { FadedScrollCard } from '@/components/FadedScrollCard';
-import { EventIcon, IconContainer } from '@/components/Transactions/TransactionIcons';
 import {
-  COLLAPSED_CARD_HEIGHT,
-  MAX_CARD_HEIGHT,
-  CARD_ROW_HEIGHT,
   CARD_BORDER_WIDTH,
+  CARD_ROW_HEIGHT,
+  COLLAPSED_CARD_HEIGHT,
   EXPANDED_CARD_TOP_INSET,
+  MAX_CARD_HEIGHT,
   rotationConfig,
   timingConfig,
 } from '@/components/Transactions/constants';
-import { type ChainId } from '@/state/backendNetworks/types';
+import { EventIcon, IconContainer } from '@/components/Transactions/TransactionIcons';
+import { TransactionSimulatedEventRow } from '@/components/Transactions/TransactionSimulatedEventRow';
+import { Box, Inline, Stack, Text } from '@/design-system';
+import { type TextColor } from '@/design-system/color/palettes';
+import {
+  TransactionScanResultType,
+  type TransactionErrorType,
+  type TransactionSimulationResult,
+} from '@/graphql/__generated__/metadataPOST';
+import * as i18n from '@/languages';
 import { useBackendNetworksStore } from '@/state/backendNetworks/backendNetworks';
+import { type ChainId } from '@/state/backendNetworks/types';
 
 interface TransactionSimulationCardProps {
   chainId: ChainId;

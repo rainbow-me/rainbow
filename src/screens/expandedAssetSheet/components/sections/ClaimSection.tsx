@@ -1,20 +1,23 @@
 import React, { memo, useState } from 'react';
 import { StyleSheet, View } from 'react-native';
+
+import Animated from 'react-native-reanimated';
+
 import ButtonPressAnimation from '@/components/animations/ButtonPressAnimation';
 import RainbowCoinIcon from '@/components/coin-icon/RainbowCoinIcon';
-import { Border, Box, Text, TextShadow, globalColors } from '@/design-system';
+import { Border, Box, globalColors, Text, TextShadow } from '@/design-system';
+import { opacity } from '@/framework/ui/utils/opacity';
 import * as i18n from '@/languages';
 import { useNavigation } from '@/navigation/Navigation';
 import Routes from '@/navigation/routesNames';
 import { type RainbowClaimable } from '@/resources/addys/claimables/types';
-import { type AirdropClaimable, BalancePill } from '@/screens/Airdrops/AirdropsSheet';
-import { opacity } from '@/framework/ui/utils/opacity';
-import { SectionId, useExpandedAssetSheetContext } from '../../context/ExpandedAssetSheetContext';
+import { BalancePill, type AirdropClaimable } from '@/screens/Airdrops/AirdropsSheet';
 import { useAirdropsStore } from '@/state/claimables/airdropsStore';
+import { THICK_BORDER_WIDTH } from '@/styles/constants';
+
+import { SectionId, useExpandedAssetSheetContext } from '../../context/ExpandedAssetSheetContext';
 import { CollapsibleSection, LAYOUT_ANIMATION } from '../shared/CollapsibleSection';
 import { SheetSeparator } from '../shared/Separator';
-import Animated from 'react-native-reanimated';
-import { THICK_BORDER_WIDTH } from '@/styles/constants';
 
 const COIN_ROW_HEIGHT = 40;
 

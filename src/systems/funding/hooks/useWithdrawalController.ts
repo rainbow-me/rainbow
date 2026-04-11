@@ -1,5 +1,7 @@
 import { useCallback, useEffect, useRef } from 'react';
+
 import { runOnJS, runOnUI, useAnimatedReaction, useSharedValue, withSpring } from 'react-native-reanimated';
+
 import { SPRING_CONFIGS } from '@/components/animations/animationConfigs';
 import { type NumberPadField } from '@/features/perps/components/NumberPad/NumberPadKey';
 import { SLIDER_MAX } from '@/features/perps/components/Slider/Slider';
@@ -9,6 +11,7 @@ import { useStoreSharedValue } from '@/state/internal/hooks/useStoreSharedValue'
 import { type RainbowStore } from '@/state/internal/types';
 import { type StoreActions } from '@/state/internal/utils/createStoreActions';
 import { sanitizeAmount } from '@/worklets/strings';
+
 import { INITIAL_SLIDER_PROGRESS } from '../constants';
 import { type AmountStoreType, type InteractionSource } from '../types';
 import { sliderProgressFromAmount, valueFromSliderProgress } from '../utils/sliderWorklets';
@@ -23,6 +26,7 @@ type WithdrawalControllerOptions = {
   amountActions?: StoreActions<AmountStoreType>;
   balanceStore: BalanceStore;
   decimals: number;
+  initialSliderProgress?: number;
 };
 
 type WithdrawalControllerReturn = {
@@ -44,11 +48,12 @@ export function useWithdrawalController({
   amountActions,
   balanceStore,
   decimals,
+  initialSliderProgress = INITIAL_SLIDER_PROGRESS,
 }: WithdrawalControllerOptions): WithdrawalControllerReturn {
   const balance = useStoreSharedValue(balanceStore, state => state.getBalance());
-  const initial = getInitialValues(balanceStore, decimals);
+  const initial = getInitialValues(balanceStore, decimals, initialSliderProgress);
 
-  const sliderProgress = useSharedValue(INITIAL_SLIDER_PROGRESS);
+  const sliderProgress = useSharedValue(initialSliderProgress);
   const interactionSource = useSharedValue<InteractionSource>('slider');
   const inputMethod = useSharedValue('inputAmount');
   const displayedAmount = useSharedValue(initial.initialAmount);
@@ -180,12 +185,13 @@ export function useWithdrawalController({
 
 function getInitialValues(
   balanceStore: BalanceStore,
-  decimals: number
+  decimals: number,
+  initialSliderProgress: number
 ): {
   fields: Record<InputMethod, NumberPadField>;
   initialAmount: string;
 } {
-  const result = valueFromSliderProgress(INITIAL_SLIDER_PROGRESS, balanceStore.getState().getBalance(), decimals);
+  const result = valueFromSliderProgress(initialSliderProgress, balanceStore.getState().getBalance(), decimals);
   const initialAmount = sanitizeAmount(result.amount);
   return {
     fields: {

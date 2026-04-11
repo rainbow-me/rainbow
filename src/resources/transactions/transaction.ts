@@ -1,21 +1,24 @@
-import { type NativeCurrencyKey } from '@/entities/nativeCurrencyTypes';
-import { TransactionStatus, type MinedTransaction, type RainbowTransaction, type TransactionType } from '@/entities/transactions';
-import { createQueryKey, queryClient, type QueryFunctionArgs, type QueryFunctionResult } from '@/react-query';
+import { Platform } from 'react-native';
+
 import { useQuery } from '@tanstack/react-query';
-import { type consolidatedTransactionsQueryFunction, consolidatedTransactionsQueryKey } from './consolidatedTransactions';
-import { parseTransaction } from '@/parsers/transactions';
-import { RainbowError, logger } from '@/logger';
-import { type RainbowFetchError } from '@/framework/data/http/rainbowFetch';
-import { type ChainId } from '@/state/backendNetworks/types';
-import { backendNetworksActions } from '@/state/backendNetworks/backendNetworks';
 import { createPublicClient, http, type Hash, type PublicClient, type TransactionReceipt } from 'viem';
 import { foundry } from 'viem/chains';
-import { Platform } from 'react-native';
+
+import { type NativeCurrencyKey } from '@/entities/nativeCurrencyTypes';
+import { TransactionStatus, type MinedTransaction, type RainbowTransaction, type TransactionType } from '@/entities/transactions';
 import { IS_TEST } from '@/env';
-import { useAccountAddress } from '@/state/wallets/walletsStore';
-import { userAssetsStoreManager } from '@/state/assets/userAssetsStoreManager';
 import { type GetTransactionByHashResponse } from '@/features/positions/types/generated/transaction/transaction';
+import { type RainbowFetchError } from '@/framework/data/http/rainbowFetch';
+import { logger, RainbowError } from '@/logger';
+import { parseTransaction } from '@/parsers/transactions';
+import { createQueryKey, queryClient, type QueryFunctionArgs, type QueryFunctionResult } from '@/react-query';
 import { getPlatformClient } from '@/resources/platform/client';
+import { userAssetsStoreManager } from '@/state/assets/userAssetsStoreManager';
+import { backendNetworksActions } from '@/state/backendNetworks/backendNetworks';
+import { type ChainId } from '@/state/backendNetworks/types';
+import { useAccountAddress } from '@/state/wallets/walletsStore';
+
+import { consolidatedTransactionsQueryKey, type consolidatedTransactionsQueryFunction } from './consolidatedTransactions';
 
 export const e2eAnvilConfirmedTransactions: RainbowTransaction[] = [];
 

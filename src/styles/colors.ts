@@ -1,10 +1,12 @@
 import chroma from 'chroma-js';
+import { type LinearGradientProps } from 'expo-linear-gradient';
 import PropTypes from 'prop-types';
+
 import { globalColors } from '@/design-system/color/palettes';
+import { opacity } from '@/framework/ui/utils/opacity';
+
 import currentColors from '../theme/currentColors';
 import { memoFn } from '../utils/memoFn';
-import { opacity } from '@/framework/ui/utils/opacity';
-import { type LinearGradientProps } from 'expo-linear-gradient';
 
 export type Colors = ReturnType<typeof getColorsByTheme>;
 
@@ -343,7 +345,7 @@ const getColorForString = (colorString = '', providedThemeColors = colors) => {
   return isValidColorString
     ? colorString
     : // @ts-expect-error Used in JS code to safely retrieve a color
-      providedThemeColors?.[colorString] ?? null;
+      (providedThemeColors?.[colorString] ?? null);
 };
 
 export const darkModeThemeColors = getColorsByTheme(true);

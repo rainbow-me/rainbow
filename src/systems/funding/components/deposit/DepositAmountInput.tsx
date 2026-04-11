@@ -1,17 +1,20 @@
 import React, { memo } from 'react';
-import Animated, { type SharedValue, useAnimatedStyle, useDerivedValue } from 'react-native-reanimated';
+
+import Animated, { useAnimatedStyle, useDerivedValue, type SharedValue } from 'react-native-reanimated';
+
+import { BalanceBadge } from '@/__swaps__/screens/Swap/components/BalanceBadge';
+import { SwapActionButton } from '@/__swaps__/screens/Swap/components/SwapActionButton';
+import { getColorValueForThemeWorklet } from '@/__swaps__/utils/swaps';
 import { AnimatedTextIcon } from '@/components/AnimatedComponents/AnimatedTextIcon';
+import { GestureHandlerButton } from '@/components/buttons/GestureHandlerButton';
 import { ImgixImage } from '@/components/images';
 import { AnimatedText, Bleed, Box, Column, Columns, Separator, Stack, Text, useColorMode } from '@/design-system';
 import { type TextColor } from '@/design-system/color/palettes';
 import { InputValueCaret } from '@/features/perps/components/InputValueCaret';
 import { PerpsTextSkeleton } from '@/features/perps/components/PerpsTextSkeleton';
 import * as i18n from '@/languages';
-import { BalanceBadge } from '@/__swaps__/screens/Swap/components/BalanceBadge';
-import { GestureHandlerButton } from '@/components/buttons/GestureHandlerButton';
-import { SwapActionButton } from '@/__swaps__/screens/Swap/components/SwapActionButton';
-import { getColorValueForThemeWorklet } from '@/__swaps__/utils/swaps';
 import { DepositQuoteStatus } from '@/systems/funding/types';
+
 import { useDepositContext } from '../../contexts/DepositContext';
 import { DepositAssetCoinIcon } from './DepositAssetCoinIcon';
 
@@ -21,6 +24,7 @@ type DepositAmountInputProps = {
   displayedAmount: SharedValue<string>;
   displayedNativeValue: SharedValue<string>;
   inputMethod: SharedValue<'inputAmount' | 'inputNativeValue'>;
+  isSourceSelectable: boolean;
   onChangeInputMethodWorklet: () => void;
   onSelectAssetWorklet: () => void;
 };
@@ -29,6 +33,7 @@ type DepositAmountInputProps = {
 
 export const DepositAmountInput = memo(function DepositAmountInput({
   inputMethod,
+  isSourceSelectable,
   onChangeInputMethodWorklet,
   onSelectAssetWorklet,
 }: DepositAmountInputProps) {
@@ -80,7 +85,7 @@ export const DepositAmountInput = memo(function DepositAmountInput({
             <BalanceBadge label={balanceLabel} />
           </Stack>
         </Column>
-        {isAssetSelected && (
+        {isAssetSelected && isSourceSelectable && (
           <Column width="content">
             <SwapActionButton
               asset={minifiedAsset}
@@ -147,14 +152,31 @@ export const DepositAmountInput = memo(function DepositAmountInput({
         </GestureHandlerButton>
       </Box>
 
-      {isAssetSelected && <QuoteOutput targetTokenIconUrl={config.to.token.iconUrl} />}
+      {isAssetSelected && (
+        <QuoteOutput
+          hideAmount={config.hideReceiveAmount}
+          quoteErrorLabel={config.labels.quoteError}
+          receiveLabel={config.labels.receive}
+          targetTokenIconUrl={config.to.token.iconUrl}
+        />
+      )}
     </Box>
   );
 });
 
 // ============ Quote Output =================================================== //
 
-const QuoteOutput = memo(function QuoteOutput({ targetTokenIconUrl }: { targetTokenIconUrl?: string }) {
+const QuoteOutput = memo(function QuoteOutput({
+  hideAmount,
+  quoteErrorLabel,
+  receiveLabel,
+  targetTokenIconUrl,
+}: {
+  hideAmount: boolean;
+  quoteErrorLabel: string;
+  receiveLabel: string;
+  targetTokenIconUrl?: string;
+}) {
   const { useAmountToReceive } = useDepositContext();
   const { formattedAmount, status } = useAmountToReceive();
 
@@ -163,9 +185,9 @@ const QuoteOutput = memo(function QuoteOutput({ targetTokenIconUrl }: { targetTo
       <Separator color="separatorTertiary" thickness={1} />
 
       <Box alignItems="center" flexDirection="row" height={10} justifyContent="center">
-        {quoteHasError(status) ? (
+        {!hideAmount && quoteHasError(status) ? (
           <Text align="center" color={getErrorTextColor(status)} size="15pt" weight="bold">
-            {getErrorLabel(status)}
+            {getErrorLabel(status, quoteErrorLabel)}
           </Text>
         ) : (
           <>
@@ -180,16 +202,18 @@ const QuoteOutput = memo(function QuoteOutput({ targetTokenIconUrl }: { targetTo
               </Bleed>
             )}
             <Text color="labelQuaternary" size="15pt" weight="bold">
-              {i18n.t(i18n.l.perps.deposit.receive)}{' '}
+              {receiveLabel}
+              {hideAmount ? '' : ' '}
             </Text>
 
-            {status === DepositQuoteStatus.Pending ? (
-              <PerpsTextSkeleton height={15} width={90} />
-            ) : (
-              <Text color="labelTertiary" size="15pt" weight="bold">
-                {formattedAmount}
-              </Text>
-            )}
+            {!hideAmount &&
+              (status === DepositQuoteStatus.Pending ? (
+                <PerpsTextSkeleton height={15} width={90} />
+              ) : (
+                <Text color="labelTertiary" size="15pt" weight="bold">
+                  {formattedAmount}
+                </Text>
+              ))}
           </>
         )}
       </Box>
@@ -200,11 +224,12 @@ const QuoteOutput = memo(function QuoteOutput({ targetTokenIconUrl }: { targetTo
 // ============ Helpers ======================================================== //
 
 function getErrorLabel(
-  status: DepositQuoteStatus.Error | DepositQuoteStatus.InsufficientBalance | DepositQuoteStatus.ZeroAmountError
+  status: DepositQuoteStatus.Error | DepositQuoteStatus.InsufficientBalance | DepositQuoteStatus.ZeroAmountError,
+  quoteErrorLabel: string
 ): string {
   switch (status) {
     case DepositQuoteStatus.Error:
-      return i18n.t(i18n.l.perps.deposit.quote_error);
+      return quoteErrorLabel;
     case DepositQuoteStatus.InsufficientBalance:
       return i18n.t(i18n.l.perps.deposit.insufficient_balance);
     case DepositQuoteStatus.ZeroAmountError:

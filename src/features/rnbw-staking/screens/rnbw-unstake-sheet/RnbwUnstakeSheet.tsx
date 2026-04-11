@@ -1,25 +1,28 @@
-import { memo, useCallback, useState } from 'react';
-import { Alert, Image, StyleSheet, View } from 'react-native';
+import { memo, useCallback, useRef, useState } from 'react';
+import { Alert, StyleSheet, View } from 'react-native';
+
+import { LinearGradient } from 'expo-linear-gradient';
 import { LinearTransition } from 'react-native-reanimated';
+
+import { SPRING_CONFIGS } from '@/components/animations/animationConfigs';
 import ButtonPressAnimation from '@/components/animations/ButtonPressAnimation';
 import { PanelSheet } from '@/components/PanelSheet/PanelSheet';
-import { HoldToActivateButton } from '@/components/hold-to-activate-button/HoldToActivateButton';
-import { SPRING_CONFIGS } from '@/components/animations/animationConfigs';
-import { Box, Separator, Stack, Text, useForegroundColor } from '@/design-system';
+import { RnbwCoinIcon } from '@/components/RnbwCoinIcon';
+import { Box, globalColors, Separator, Stack, Text, useForegroundColor } from '@/design-system';
+import { RnbwHoldToActivateButton } from '@/features/rnbw-membership/components/RnbwHoldToActivateButton';
+import { RNBW_SYMBOL } from '@/features/rnbw-rewards/constants';
+import { UnstakePenaltySign } from '@/features/rnbw-staking/components/UnstakePenaltySign';
+import { LoadingSpinner } from '@/framework/ui/components/LoadingSpinner';
+import { opacity } from '@/framework/ui/utils/opacity';
+import * as i18n from '@/languages';
 import { ensureError, logger, RainbowError } from '@/logger';
 import { useNavigation } from '@/navigation/Navigation';
-import Routes from '@/navigation/routesNames';
-import { useAccountAddress, useIsHardwareWallet, useIsReadOnlyWallet } from '@/state/wallets/walletsStore';
-import watchingAlert from '@/utils/watchingAlert';
-import { unstakeRnbw } from '../../utils/unstakeRnbw';
-import { UnstakePenaltySign } from '@/features/rnbw-staking/components/UnstakePenaltySign';
-import { opacity } from '@/framework/ui/utils/opacity';
-import { RNBW_SYMBOL } from '@/features/rnbw-rewards/constants';
+import { useAccountAddress } from '@/state/wallets/walletsStore';
+
 import { useRnbwStakingBalance } from '../../stores/derived/useRnbwStakingBalance';
 import { useRnbwStakingPositionPnl } from '../../stores/derived/useRnbwStakingPositionPnl';
-import { UNSTAKE_PENALTY_PERCENTAGE } from '../../constants';
-import { useStableValue } from '@/hooks/useStableValue';
-import rnbwCoinImage from '@/assets/rnbw.png';
+import { useStakingPositionStore } from '../../stores/rnbwStakingPositionStore';
+import { unstakeRnbw } from '../../utils/unstakeRnbw';
 
 const LAYOUT_ANIMATION_CONFIG = SPRING_CONFIGS.snappierSpringConfig;
 const LAYOUT_ANIMATION = LinearTransition.springify()
@@ -28,7 +31,10 @@ const LAYOUT_ANIMATION = LinearTransition.springify()
   .stiffness(LAYOUT_ANIMATION_CONFIG.stiffness);
 
 export const RnbwUnstakeSheet = memo(function RnbwUnstakeSheet() {
+  const labelSecondaryColor = useForegroundColor('labelSecondary');
   const [step, setStep] = useState<'warning' | 'unstake'>('warning');
+  const exitFeePercentage = useStakingPositionStore(s => s.getExitFeePercentage());
+  const showSkeleton = exitFeePercentage === undefined;
 
   const handleProceedToUnstake = useCallback(() => {
     setStep('unstake');
@@ -36,34 +42,47 @@ export const RnbwUnstakeSheet = memo(function RnbwUnstakeSheet() {
 
   return (
     <PanelSheet layoutAnimation={LAYOUT_ANIMATION}>
-      {step === 'warning' && <WarningContent onProceed={handleProceedToUnstake} />}
-      {step === 'unstake' && <UnstakeContent />}
+      {showSkeleton ? (
+        <Box alignItems="center" justifyContent="center" height={400}>
+          <LoadingSpinner color={labelSecondaryColor} size={40} />
+        </Box>
+      ) : (
+        <>
+          {step === 'warning' && <WarningContent exitFeePercentage={exitFeePercentage} onProceed={handleProceedToUnstake} />}
+          {step === 'unstake' && <UnstakeContent exitFeePercentage={exitFeePercentage} />}
+        </>
+      )}
     </PanelSheet>
   );
 });
 
-const WarningContent = memo(function WarningContent({ onProceed }: { onProceed: () => void }) {
+const WarningContent = memo(function WarningContent({
+  exitFeePercentage,
+  onProceed,
+}: {
+  exitFeePercentage: number;
+  onProceed: () => void;
+}) {
   const { goBack } = useNavigation();
   const redColor = useForegroundColor('red');
 
   return (
-    <View style={styles.content}>
-      <Stack space="24px">
+    <View style={styles.warningContentContainer}>
+      <Stack space="32px">
         <Stack space="24px" alignHorizontal="center">
-          <UnstakePenaltySign />
+          <UnstakePenaltySign percentage={exitFeePercentage} />
           <Stack space="20px" alignHorizontal="center">
             <Text color="label" size="34pt" weight="heavy" align="center">
-              {'Exit Fee'}
+              {i18n.t(i18n.l.rnbw_staking.unstake_sheet.exit_fee)}
             </Text>
-            <Text color="labelTertiary" size="17pt" weight="semibold" align="center">
-              {'Be aware of unstaking penalty. Earn yield, unlock swap discounts, and more.'}
+            <Text color="labelTertiary" size="17pt / 135%" weight="semibold" align="center">
+              {i18n.t(i18n.l.rnbw_staking.unstake_sheet.warning_description, { exitFeePercentage })}
             </Text>
           </Stack>
         </Stack>
-        <Stack space="32px" alignHorizontal="center">
-          <ButtonPressAnimation onPress={onProceed} style={{ width: '100%' }}>
+        <Stack space="16px" alignHorizontal="center">
+          <ButtonPressAnimation onPress={onProceed} style={styles.fullWidthButton} wrapperStyle={styles.fullWidthButton} scaleTo={0.96}>
             <Box
-              backgroundColor={opacity(redColor, 0.2)}
               borderRadius={24}
               height={48}
               justifyContent="center"
@@ -72,117 +91,126 @@ const WarningContent = memo(function WarningContent({ onProceed }: { onProceed: 
               borderColor={{ custom: opacity(redColor, 0.1) }}
               borderWidth={2}
             >
-              <Text color={{ custom: redColor }} size="22pt" weight="heavy">
-                {'I understand'}
+              <LinearGradient
+                colors={[opacity(globalColors.red60, 0.16), opacity('#E72E28', 0.16)]}
+                start={{ x: 0.5, y: 0 }}
+                end={{ x: 0.5, y: 1 }}
+                style={StyleSheet.absoluteFill}
+              />
+              <Text color={{ custom: globalColors.red60 }} size="22pt" weight="heavy">
+                {i18n.t(i18n.l.button.continue)}
               </Text>
             </Box>
           </ButtonPressAnimation>
-          <ButtonPressAnimation onPress={goBack}>
-            <Text color="label" size="22pt" weight="heavy">
-              {'Cancel'}
-            </Text>
-          </ButtonPressAnimation>
+          <Box height={48} justifyContent="center" alignItems="center">
+            <ButtonPressAnimation onPress={goBack}>
+              <Text color="label" size="22pt" weight="heavy">
+                {i18n.t(i18n.l.button.cancel)}
+              </Text>
+            </ButtonPressAnimation>
+          </Box>
         </Stack>
       </Stack>
     </View>
   );
 });
 
-const UnstakeContent = memo(function UnstakeContent() {
-  // We use the initial values only so we do not display 0 prior to the sheet being dismissed after unstaking.
-  const { tokenAmount, nativeCurrencyAmount } = useStableValue(() => useRnbwStakingBalance.getState());
-  const { exitFeeOffsetRatio, netPnl, isPositivePnl } = useStableValue(() => useRnbwStakingPositionPnl.getState());
-  const { goBack, navigate } = useNavigation();
+const UnstakeContent = memo(function UnstakeContent({ exitFeePercentage }: { exitFeePercentage: number }) {
+  const { tokenAmount, nativeCurrencyAmount } = useRnbwStakingBalance();
+  const { netPnl, isPositivePnl, rnbwAfterUnstake } = useRnbwStakingPositionPnl();
+  const { goBack } = useNavigation();
   const accountAddress = useAccountAddress();
-  const isReadOnlyWallet = useIsReadOnlyWallet();
-  const isHardwareWallet = useIsHardwareWallet();
   const [isProcessing, setIsProcessing] = useState(false);
+  const liveDisplay = {
+    tokenAmount,
+    nativeCurrencyAmount,
+    netPnl,
+    isPositivePnl,
+    rnbwAfterUnstake,
+    exitFeePercentage,
+  };
+  const frozenDisplayRef = useRef<typeof liveDisplay | null>(null);
 
-  const startUnstake = useCallback(async () => {
+  // Keep values live until submit, then freeze to prevent a brief zero value flash during sheet dismissal.
+  const displayValues = isProcessing && frozenDisplayRef.current ? frozenDisplayRef.current : liveDisplay;
+
+  const startUnstake = async () => {
+    frozenDisplayRef.current = liveDisplay;
     setIsProcessing(true);
     try {
       await unstakeRnbw({ address: accountAddress });
       goBack();
     } catch (e) {
-      const error = ensureError(e);
       setIsProcessing(false);
-      // TODO: For internal testing. Remove before production
-      Alert.alert('Unstake Failed', error.message);
+      frozenDisplayRef.current = null;
+      Alert.alert(
+        i18n.t(i18n.l.rnbw_staking.unstake_sheet.unstake_failed_title),
+        i18n.t(i18n.l.rnbw_staking.unstake_sheet.unstake_failed_message)
+      );
+      const error = ensureError(e);
       logger.error(new RainbowError('[RnbwUnstakeSheet]: Unstake failed', error));
     }
-  }, [accountAddress, goBack]);
+  };
 
-  const handleUnstake = useCallback(async () => {
-    if (isReadOnlyWallet) {
-      watchingAlert();
-      return;
-    }
-
-    if (isHardwareWallet) {
-      navigate(Routes.HARDWARE_WALLET_TX_NAVIGATOR, { submit: startUnstake });
-    } else {
-      await startUnstake();
-    }
-  }, [isHardwareWallet, isReadOnlyWallet, navigate, startUnstake]);
+  const handleUnstake = async () => {
+    await startUnstake();
+  };
 
   return (
-    <View style={styles.content}>
+    <View style={styles.unstakeContentContainer}>
       <Stack space="44px">
         <Text color="label" size="20pt" weight="heavy" align="center">
-          {`Unstake $${RNBW_SYMBOL}`}
+          {i18n.t(i18n.l.rnbw_staking.unstake_sheet.unstake_title, { symbol: RNBW_SYMBOL })}
         </Text>
         <Stack space="24px" alignHorizontal="center">
-          <Image source={rnbwCoinImage} style={styles.coinImage} />
+          <RnbwCoinIcon size={80} />
           <Stack space="12px" alignHorizontal="center">
             <Text color="label" size="44pt" weight="heavy" align="center">
-              {nativeCurrencyAmount}
+              {displayValues.tokenAmount}
             </Text>
             <Text color="labelTertiary" size="17pt" weight="bold" align="center">
-              {`${tokenAmount} ${RNBW_SYMBOL}`}
+              {displayValues.nativeCurrencyAmount}
             </Text>
           </Stack>
         </Stack>
       </Stack>
       <Box paddingHorizontal="16px" marginTop={{ custom: 48 }}>
-        <Separator color="separator" thickness={1} />
-        <Stack separator={<Separator color="separator" thickness={1} />}>
+        <Separator color="separatorTertiary" thickness={1} />
+        <Stack separator={<Separator color="separatorTertiary" thickness={1} />}>
           <Box flexDirection="row" height={44} alignItems="center" justifyContent="space-between" width="full">
             <Text color="labelTertiary" size="17pt" weight="semibold">
-              {'Exit Penalty'}
+              {i18n.t(i18n.l.rnbw_staking.unstake_sheet.exit_fee)}
             </Text>
             <Text color="label" size="17pt" weight="bold">
-              {`${UNSTAKE_PENALTY_PERCENTAGE}%`}
+              {`${displayValues.exitFeePercentage}%`}
             </Text>
           </Box>
           <Box flexDirection="row" height={44} alignItems="center" justifyContent="space-between" width="full">
             <Text color="labelTertiary" size="17pt" weight="semibold">
-              {'Exit Fee Recovered'}
+              {i18n.t(i18n.l.rnbw_staking.unstake_sheet.receive)}
             </Text>
             <Text color="label" size="17pt" weight="bold">
-              {exitFeeOffsetRatio}
+              {`${displayValues.rnbwAfterUnstake} ${RNBW_SYMBOL}`}
             </Text>
           </Box>
           <Box flexDirection="row" height={44} alignItems="center" justifyContent="space-between" width="full">
             <Text color="labelTertiary" size="17pt" weight="semibold">
-              {'PnL'}
+              {i18n.t(i18n.l.rnbw_staking.unstake_sheet.total_return)}
             </Text>
-            <Text color={isPositivePnl ? 'green' : 'red'} size="17pt" weight="bold">
-              {`${netPnl} ${RNBW_SYMBOL}`}
+            <Text color={displayValues.isPositivePnl ? 'green' : 'red'} size="17pt" weight="bold">
+              {`${displayValues.netPnl} ${RNBW_SYMBOL}`}
             </Text>
           </Box>
         </Stack>
       </Box>
-      <Box marginTop={{ custom: 24 }}>
-        <HoldToActivateButton
-          label="Hold to Unstake"
-          processingLabel="Unstaking..."
-          onLongPress={handleUnstake}
+      <Box marginTop={{ custom: 32 }}>
+        <RnbwHoldToActivateButton
+          label={i18n.t(i18n.l.rnbw_staking.unstake_sheet.hold_to_unstake)}
+          processingLabel={i18n.t(i18n.l.rnbw_staking.unstake_sheet.unstaking)}
+          onActivate={handleUnstake}
           isProcessing={isProcessing}
-          backgroundColor="white"
-          disabledBackgroundColor="white"
-          progressColor="black"
           showBiometryIcon
-          style={styles.holdButton}
+          style={styles.fullWidthButton}
         />
       </Box>
     </View>
@@ -190,16 +218,17 @@ const UnstakeContent = memo(function UnstakeContent() {
 });
 
 const styles = StyleSheet.create({
-  content: {
-    paddingBottom: 24,
+  warningContentContainer: {
+    paddingBottom: 20,
     paddingHorizontal: 20,
-    paddingTop: 44,
+    paddingTop: 52,
   },
-  holdButton: {
+  unstakeContentContainer: {
+    paddingBottom: 20,
+    paddingHorizontal: 20,
+    paddingTop: 33,
+  },
+  fullWidthButton: {
     width: '100%',
-  },
-  coinImage: {
-    width: 80,
-    height: 80,
   },
 });

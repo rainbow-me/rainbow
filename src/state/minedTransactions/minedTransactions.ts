@@ -1,4 +1,5 @@
 import { type RainbowTransaction } from '@/entities/transactions';
+
 import { createRainbowStore } from '../internal/createRainbowStore';
 
 export type AssetUpdateTransaction = Pick<RainbowTransaction, 'asset' | 'chainId' | 'changes' | 'hash' | 'type'> & {

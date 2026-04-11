@@ -1,11 +1,14 @@
-import React, { useMemo, memo } from 'react';
-import { Canvas, Shadow, Group, Path } from '@shopify/react-native-skia';
-import { NavigationSteps, useTokenLauncherStore } from '../state/tokenLauncherStore';
-import { useTokenLauncherContext } from '../context/TokenLauncherContext';
+import React, { memo, useMemo } from 'react';
+
+import { Canvas, Group, Path, Shadow } from '@shopify/react-native-skia';
 import Animated, { interpolate, useAnimatedStyle, useDerivedValue } from 'react-native-reanimated';
+
 import { useForegroundColor } from '@/design-system';
 import { getSquirclePath } from '@/design-system/layout/shapes';
 import { THICK_BORDER_WIDTH } from '@/styles/constants';
+
+import { useTokenLauncherContext } from '../context/TokenLauncherContext';
+import { NavigationSteps, useTokenLauncherStore } from '../state/tokenLauncherStore';
 
 export const StepBorderEffects = memo(function StepBorderEffects({ width, height }: { width: number; height: number }) {
   const separatorSecondaryColor = useForegroundColor('separatorSecondary');

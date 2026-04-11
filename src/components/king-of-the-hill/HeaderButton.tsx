@@ -1,10 +1,11 @@
+import React from 'react';
+import { StyleSheet, View } from 'react-native';
+
 import ButtonPressAnimation from '@/components/animations/ButtonPressAnimation';
 import { CHEVRON_RIGHT_SYMBOL } from '@/components/king-of-the-hill/constants';
 import { GradientBorderContent } from '@/components/king-of-the-hill/GradientBorderContent';
 import { RainbowImage } from '@/components/RainbowImage';
 import { Text } from '@/design-system';
-import React from 'react';
-import { StyleSheet, View } from 'react-native';
 
 type HeaderButtonProps = {
   onPress: () => void;

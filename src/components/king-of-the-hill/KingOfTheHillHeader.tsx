@@ -1,3 +1,11 @@
+import React, { memo, useEffect, useLayoutEffect, useState } from 'react';
+import { StyleSheet, useWindowDimensions, View } from 'react-native';
+
+import { Canvas, Circle, LinearGradient, vec } from '@shopify/react-native-skia';
+import { BlurView } from 'react-native-blur-view';
+import { useSharedValue } from 'react-native-reanimated';
+import { type Address } from 'viem';
+
 import crownImage from '@/assets/crown.png';
 import ButtonPressAnimation from '@/components/animations/ButtonPressAnimation';
 import { ChainImage } from '@/components/coin-icon/ChainImage';
@@ -14,14 +22,9 @@ import * as i18n from '@/languages';
 import Navigation from '@/navigation/Navigation';
 import Routes from '@/navigation/routesNames';
 import { fetchAndSetEnsData } from '@/screens/Airdrops/ClaimAirdropSheet';
-import { time } from '@/utils/time';
 import { formatAddressForDisplay } from '@/utils/abbreviations';
-import { Canvas, Circle, LinearGradient, vec } from '@shopify/react-native-skia';
-import React, { memo, useEffect, useLayoutEffect, useState } from 'react';
-import { StyleSheet, useWindowDimensions, View } from 'react-native';
-import { BlurView } from 'react-native-blur-view';
-import { useSharedValue } from 'react-native-reanimated';
-import { type Address } from 'viem';
+import { time } from '@/utils/time';
+
 import { HeaderButton } from './HeaderButton';
 import { RainbowGlow } from './RainbowGlow';
 import { formatPriceChange, getPriceChangeColor } from './utils';

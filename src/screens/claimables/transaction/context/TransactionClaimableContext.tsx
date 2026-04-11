@@ -1,50 +1,53 @@
-import React, { type Dispatch, type SetStateAction, createContext, useCallback, useContext, useEffect, useMemo, useState } from 'react';
-import { type ChainId } from '@/state/backendNetworks/types';
-import { type TokenToReceive, type TransactionClaimableTxPayload } from '../types';
-import { type CrosschainQuote, ETH_ADDRESS, getCrosschainQuote, getQuote, type Quote, type QuoteParams } from '@rainbow-me/swaps';
-import { type Claimable, ClaimableType, type TransactionClaimable } from '@/resources/addys/claimables/types';
-import { logger, RainbowError } from '@/logger';
-import useAccountSettings from '@/hooks/useAccountSettings';
-import {
-  convertAmountToNativeDisplay,
-  convertAmountToRawAmount,
-  convertAmountToBalanceDisplay,
-  convertRawAmountToDecimalFormat,
-  multiply,
-  formatNumber,
-  convertAmountToNativeDisplayWorklet,
-  add,
-} from '@/helpers/utilities';
-import { GasSpeed } from '@/__swaps__/types/gas';
-import { getGasSettingsBySpeed, useGasSettings } from '@/__swaps__/screens/Swap/hooks/useSelectedGas';
-import type { LegacyTransactionGasParamAmounts, TransactionGasParamAmounts } from '@/entities/gas';
-import { getNextNonce } from '@/state/nonces';
-import { getProvider } from '@/handlers/web3';
-import { calculateGasFeeWorklet } from '@/__swaps__/screens/Swap/providers/SyncSwapStateAndSharedValues';
-import { formatUnits, getAddress } from 'viem';
-import { safeBigInt } from '@/__swaps__/screens/Swap/hooks/useEstimatedGasFee';
-import haptics from '@/utils/haptics';
-import { queryClient } from '@/react-query';
+import React, { createContext, useCallback, useContext, useEffect, useMemo, useState, type Dispatch, type SetStateAction } from 'react';
+
 import { useMutation } from '@tanstack/react-query';
-import { loadWallet } from '@/model/wallet';
-import { externalTokenQueryFunction, externalTokenQueryKey } from '@/resources/assets/externalAssetsQuery';
-import { walletExecuteRap } from '@/raps/execute';
-import { executeClaim } from '../claim';
-import { weiToGwei } from '@/parsers/gas';
-import { lessThanOrEqualToWorklet } from '@/framework/core/safeMath';
-import { type ClaimStatus } from '../../shared/types';
-import { analytics } from '@/analytics';
-import { getDefaultSlippageWorklet } from '@/__swaps__/utils/swaps';
-import { getRemoteConfig } from '@/model/remoteConfig';
-import { estimateClaimUnlockSwap } from '../estimateGas';
-import { useBackendNetworksStore } from '@/state/backendNetworks/backendNetworks';
-import { userAssetsStore } from '@/state/assets/userAssets';
-import { useClaimablesStore } from '@/state/claimables/claimables';
+import { triggerHaptics } from 'react-native-turbo-haptics';
+import { formatUnits, getAddress } from 'viem';
+
+import { safeBigInt } from '@/__swaps__/screens/Swap/hooks/useEstimatedGasFee';
+import { getGasSettingsBySpeed, useGasSettings } from '@/__swaps__/screens/Swap/hooks/useSelectedGas';
+import { calculateGasFeeWorklet } from '@/__swaps__/screens/Swap/providers/SyncSwapStateAndSharedValues';
+import { GasSpeed } from '@/__swaps__/types/gas';
 import { transformRainbowTokenToParsedSearchAsset } from '@/__swaps__/utils/assets';
-import { useAccountAddress } from '@/state/wallets/walletsStore';
-import { userAssetsStoreManager } from '@/state/assets/userAssetsStoreManager';
-import Routes from '@/navigation/routesNames';
+import { getDefaultSlippageWorklet } from '@/__swaps__/utils/swaps';
+import { analytics } from '@/analytics';
+import type { LegacyTransactionGasParamAmounts, TransactionGasParamAmounts } from '@/entities/gas';
+import { lessThanOrEqualToWorklet } from '@/framework/core/safeMath';
+import { getProvider } from '@/handlers/web3';
+import {
+  add,
+  convertAmountToBalanceDisplay,
+  convertAmountToNativeDisplay,
+  convertAmountToNativeDisplayWorklet,
+  convertAmountToRawAmount,
+  convertRawAmountToDecimalFormat,
+  formatNumber,
+  multiply,
+} from '@/helpers/utilities';
+import useAccountSettings from '@/hooks/useAccountSettings';
+import { logger, RainbowError } from '@/logger';
+import { getRemoteConfig } from '@/model/remoteConfig';
+import { loadWallet } from '@/model/wallet';
 import Navigation from '@/navigation/Navigation';
+import Routes from '@/navigation/routesNames';
+import { weiToGwei } from '@/parsers/gas';
+import { walletExecuteRap } from '@/raps/execute';
+import { queryClient } from '@/react-query';
+import { ClaimableType, type Claimable, type TransactionClaimable } from '@/resources/addys/claimables/types';
+import { externalTokenQueryFunction, externalTokenQueryKey } from '@/resources/assets/externalAssetsQuery';
+import { userAssetsStore } from '@/state/assets/userAssets';
+import { userAssetsStoreManager } from '@/state/assets/userAssetsStoreManager';
+import { useBackendNetworksStore } from '@/state/backendNetworks/backendNetworks';
+import { type ChainId } from '@/state/backendNetworks/types';
+import { useClaimablesStore } from '@/state/claimables/claimables';
+import { getNextNonce } from '@/state/nonces';
+import { useAccountAddress } from '@/state/wallets/walletsStore';
+import { ETH_ADDRESS, getCrosschainQuote, getQuote, type CrosschainQuote, type Quote, type QuoteParams } from '@rainbow-me/swaps';
+
+import { type ClaimStatus } from '../../shared/types';
+import { executeClaim } from '../claim';
+import { estimateClaimUnlockSwap } from '../estimateGas';
+import { type TokenToReceive, type TransactionClaimableTxPayload } from '../types';
 
 enum ErrorMessages {
   SWAP_ERROR = 'Failed to swap claimed asset due to swap action error',
@@ -319,7 +322,7 @@ export function TransactionClaimableContextProvider({
         !outputTokenAddress ||
         (requiresSwap && (!quoteState.quote || 'error' in quoteState.quote))
       ) {
-        haptics.notificationError();
+        triggerHaptics('notificationError');
         setClaimStatus('recoverableError');
         logger.warn('[TransactionClaimableContext]: Somehow entered unreachable state in claim');
         return;
@@ -337,7 +340,7 @@ export function TransactionClaimableContextProvider({
 
       if (!wallet) {
         // Biometrics auth failure (retry possible)
-        haptics.notificationError();
+        triggerHaptics('notificationError');
         setClaimStatus('recoverableError');
         return;
       }
@@ -376,14 +379,14 @@ export function TransactionClaimableContextProvider({
           });
 
           if (!outputAsset) {
-            haptics.notificationError();
+            triggerHaptics('notificationError');
             setClaimStatus('recoverableError');
             logger.error(new RainbowError('[TransactionClaimableContext]: Failed to claim claimable due to error fetching output asset'));
             return;
           }
 
           if (!quoteState.quote) {
-            haptics.notificationError();
+            triggerHaptics('notificationError');
             setClaimStatus('recoverableError');
             logger.error(new RainbowError('[TransactionClaimableContext]: Failed to claim claimable due to undefined quote'));
             return;
@@ -413,7 +416,7 @@ export function TransactionClaimableContextProvider({
           });
 
           if (errorMessage) {
-            haptics.notificationError();
+            triggerHaptics('notificationError');
             if (errorMessage.includes('[CLAIM-CLAIMABLE]')) {
               // Claim error (retry possible)
               setClaimStatus('recoverableError');
@@ -490,7 +493,7 @@ export function TransactionClaimableContextProvider({
 
         useClaimablesStore.getState().markClaimed(claimable.uniqueId);
       } catch (e) {
-        haptics.notificationError();
+        triggerHaptics('notificationError');
         setClaimStatus('recoverableError');
         logger.error(new RainbowError(`[TransactionClaimableContext]: ${ErrorMessages.CLAIM_ERROR}`), {
           message: (e as Error)?.message,
@@ -514,7 +517,7 @@ export function TransactionClaimableContextProvider({
       }
     },
     onError: e => {
-      haptics.notificationError();
+      triggerHaptics('notificationError');
       setClaimStatus('recoverableError');
       logger.error(new RainbowError(`[TransactionClaimableContext]: ${ErrorMessages.UNHANDLED_ERROR}`), {
         message: (e as Error)?.message,
@@ -535,7 +538,7 @@ export function TransactionClaimableContextProvider({
     onSuccess: () => {
       // claimStatus should not be set to claiming at this point, if it is, something went wrong
       if (claimStatus === 'claiming') {
-        haptics.notificationError();
+        triggerHaptics('notificationError');
         setClaimStatus('recoverableError');
         logger.error(new RainbowError(`[TransactionClaimableContext]: ${ErrorMessages.UNRESOLVED_CLAIM_STATUS}`));
         analytics.track(analytics.event.claimClaimableFailed, {

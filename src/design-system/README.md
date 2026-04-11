@@ -1,15 +1,23 @@
-# 🎨📦🌈 Rainbow Design System 🌈📦🎨
+# Rainbow Design System
 
-The Rainbow Design System documentation is currently available at [https://rds-jxom.vercel.app](https://rds-jxom.vercel.app).
+The design system provides the foundational UI primitives used throughout the Rainbow app. All components are exported from `src/design-system/index.ts`.
 
-To view the documentation locally, run `yarn ds:install && yarn ds` and open http://localhost:3000.
+## Color
 
-## Playground
+Color is modeled based on _why_ something should be a certain color, defined with semantic names that allow them to adjust based on context. This makes it trivial to re-use components in different environments without having to manually adjust foreground colors.
 
-To view the design system components in isolation on a device/simulator, run `yarn ds:playground`. This starts Metro with a separate entry point that renders the playground instead of the wallet app.
+When setting a background with `Box`, the color mode is automatically configured for nested elements based on whether the background is dark or light, meaning that foreground colors usually won't need to be changed.
 
-The playground shell lives in `src/design-system/playground/` and imports `*.playground.tsx` files colocated with each component.
+## Typography
 
-When adding a new component, please ensure that it has a matching `*.playground.tsx` file and that it's imported in the main `Playground` component.
+Native text nodes contain additional space above capital letters and below the baseline. This is completely different to how designers think about typography and ends up creating extra work during development to fix unbalanced spacing.
 
-When adding a new text/heading size, please ensure that you've added an example to the respective `*.playground.tsx` file and validate that the space is being trimmed correctly above capital letters and below the baseline on both iOS and Android.
+To correct for this, we use [Capsize](https://seek-oss.github.io/capsize) (with a thin wrapper adapting it to React Native) which applies negative margins above and below text nodes, ensuring that their space in the layout is aligned with the actual glyphs on screen.
+
+Capsize in React Native gets us close, but we still see some minor vertical alignment issues, so we also apply magic-number corrections for each font size in `typeHierarchy.ts` -- usually a decimal between 1 and -1.
+
+## Layout
+
+The role of layout components is to apply space within containers and between sibling elements. For this model to work, individual components should **not** have any surrounding space. If components have margins built into them, it becomes difficult to compose them into a layout because space will be unbalanced by default.
+
+All layout components accept spacing values from the standard space scale (e.g. `space="20px"`) to reduce variation in layouts. If you need a value outside the scale, use `space={{ custom: 17 }}`.

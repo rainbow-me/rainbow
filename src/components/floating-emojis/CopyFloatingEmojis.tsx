@@ -1,9 +1,10 @@
 import React, { type FC, type ReactNode } from 'react';
-import { HapticFeedbackTypes } from 'react-native-haptic-feedback';
-import ButtonPressAnimation from '../animations/ButtonPressAnimation';
-import FloatingEmojis from './FloatingEmojis';
+
 import useClipboard from '@/hooks/useClipboard';
 import magicMemo from '@/utils/magicMemo';
+
+import ButtonPressAnimation from '../animations/ButtonPressAnimation';
+import FloatingEmojis from './FloatingEmojis';
 
 interface CopyFloatingEmojisProps {
   /** Child elements or nodes to render inside this component */
@@ -29,7 +30,7 @@ const CopyFloatingEmojis: FC<CopyFloatingEmojisProps> = ({ children, disabled = 
     <FloatingEmojis emojis={['thumbs_up']} distance={250} duration={500} fadeOut={false} scaleTo={0} size={50} wiggleFactor={0} {...props}>
       {({ onNewEmoji }) => (
         <ButtonPressAnimation
-          hapticType={HapticFeedbackTypes.impactLight}
+          hapticType="impactLight"
           onPress={() => {
             onPress?.(textToCopy);
             if (!disabled) {

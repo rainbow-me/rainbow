@@ -13,16 +13,14 @@
  * that these corrections are made at the lowest level possible and updated
  * whenever `fontSize` and/or `lineHeight` values are added or updated.
  *
- * While adding/updating margin corrections, run `yarn ds:playground` to launch
- * the design system playground. You can then expand the text examples and
- * check that the vertical alignment is correct while updating the values.
- * This will require some trial and error. Note that React
- * Native automatically rounds these to the nearest device pixel so you might
- * not see any difference until a large enough change has been made.
+ * While adding/updating margin corrections, test the Text and Heading
+ * components on both iOS and Android to verify vertical alignment. This will
+ * require some trial and error. Note that React Native automatically rounds
+ * these to the nearest device pixel so you might not see any difference until
+ * a large enough change has been made.
  *
  * To make it easier for reviewers, it's a good idea to include screenshots in
- * your PR showing the text size being added/modified within the design system
- * playground on both iOS and Android.
+ * your PR showing the text size being added/modified on both iOS and Android.
  */
 
 export const typeHierarchy = {

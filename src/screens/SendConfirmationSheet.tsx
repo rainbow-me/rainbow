@@ -1,17 +1,29 @@
-import { opacity } from '@/framework/ui/utils/opacity';
-import Divider from '@/components/Divider';
+import React, { Fragment, useCallback, useEffect, useMemo, useState } from 'react';
+import { Keyboard } from 'react-native';
+
+import { AddressZero } from '@ethersproject/constants';
+import { useRoute, type RouteProp } from '@react-navigation/native';
+import { toChecksumAddress } from 'ethereumjs-util';
+import { isEmpty } from 'lodash';
+
 import ShimmerAnimation from '@/components/animations/ShimmerAnimation';
 import RainbowCoinIcon from '@/components/coin-icon/RainbowCoinIcon';
+import Divider from '@/components/Divider';
 import useExperimentalFlag, { PROFILES } from '@/config/experimentalHooks';
 import { Box, Heading, Inset, Stack, Text, useBackgroundColor, useColorMode } from '@/design-system';
 import { AssetType } from '@/entities/assetTypes';
 import { IS_ANDROID, IS_IOS } from '@/env';
+import ENSCircleIcon from '@/features/ens/components/ENSCircleIcon';
+import useENSAvatar from '@/features/ens/hooks/useENSAvatar';
+import { type ENSProfile } from '@/features/ens/types/profile';
 import {
   estimateENSReclaimGasLimit,
   estimateENSSetAddressGasLimit,
   estimateENSSetRecordsGasLimit,
   formatRecordsForTransaction,
 } from '@/features/ens/utils/handlers';
+import styled from '@/framework/ui/styled-thing';
+import { opacity } from '@/framework/ui/utils/opacity';
 import svgToPngIfNeeded from '@/handlers/svgs';
 import { assetIsParsedAddressAsset, assetIsUniqueAsset, estimateGasLimit, getProvider } from '@/handlers/web3';
 import { removeFirstEmojiFromString, returnStringFirstEmoji } from '@/helpers/emojiHandler';
@@ -20,7 +32,6 @@ import { isENSAddressFormat, isValidDomainFormat } from '@/helpers/validators';
 import useColorForAsset from '@/hooks/useColorForAsset';
 import useContacts from '@/hooks/useContacts';
 import useDimensions from '@/hooks/useDimensions';
-import useENSAvatar from '@/features/ens/hooks/useENSAvatar';
 import useGas from '@/hooks/useGas';
 import useUserAccounts from '@/hooks/useUserAccounts';
 import * as i18n from '@/languages';
@@ -29,41 +40,33 @@ import { useNavigation } from '@/navigation/Navigation';
 import Routes from '@/navigation/routesNames';
 import { type RootStackParamList } from '@/navigation/types';
 import { useInteractionsCount } from '@/resources/addys/interactions';
+import { userAssetsStoreManager } from '@/state/assets/userAssetsStoreManager';
 import { useBackendNetworksStore } from '@/state/backendNetworks/backendNetworks';
 import { type ChainId } from '@/state/backendNetworks/types';
-import { startTimeToSignTracking, Screens } from '@/state/performance/performance';
-import styled from '@/framework/ui/styled-thing';
+import { Screens, startTimeToSignTracking } from '@/state/performance/performance';
+import { useAccountAddress, useWalletsStore } from '@/state/wallets/walletsStore';
 import { position } from '@/styles';
 import { useTheme } from '@/theme/ThemeContext';
 import promiseUtils from '@/utils/promise';
 import safeAreaInsetValues from '@/utils/safeAreaInsetValues';
-import { AddressZero } from '@ethersproject/constants';
-import { type RouteProp, useRoute } from '@react-navigation/native';
-import { toChecksumAddress } from 'ethereumjs-util';
-import { isEmpty } from 'lodash';
-import React, { Fragment, useCallback, useEffect, useMemo, useState } from 'react';
-import { Keyboard } from 'react-native';
-import ContactRowInfoButton from '../components/ContactRowInfoButton';
-import L2Disclaimer from '../components/L2Disclaimer';
-import Pill from '../components/Pill';
-import TouchableBackdrop from '../components/TouchableBackdrop';
+
 import ButtonPressAnimation from '../components/animations/ButtonPressAnimation';
 import Callout from '../components/callout/Callout';
 import RequestVendorLogoIcon from '../components/coin-icon/RequestVendorLogoIcon';
+import ContactRowInfoButton from '../components/ContactRowInfoButton';
 import { ContactAvatar } from '../components/contacts';
 import ImageAvatar from '../components/contacts/ImageAvatar';
 import CheckboxField from '../components/fields/CheckboxField';
 import { GasSpeedButton } from '../components/gas';
-import ENSCircleIcon from '@/features/ens/components/ENSCircleIcon';
+import L2Disclaimer from '../components/L2Disclaimer';
 import { Centered, Column, Row } from '../components/layout';
+import Pill from '../components/Pill';
 import { SendButton } from '../components/send';
 import { SheetHandleFixedToTopHeight, SheetTitle, SlackSheet } from '../components/sheet';
 import { Text as OldText } from '../components/text';
-import { type ENSProfile } from '@/features/ens/types/profile';
-import { useAccountAddress, useWalletsStore } from '@/state/wallets/walletsStore';
+import TouchableBackdrop from '../components/TouchableBackdrop';
 import { address } from '../utils/abbreviations';
 import { addressHashedColorIndex, addressHashedEmoji } from '../utils/profileUtils';
-import { userAssetsStoreManager } from '@/state/assets/userAssetsStoreManager';
 
 const Container = styled(Centered).attrs({
   direction: 'column',

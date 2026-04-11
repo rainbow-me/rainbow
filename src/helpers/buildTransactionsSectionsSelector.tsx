@@ -1,11 +1,14 @@
+import { type SectionListData } from 'react-native';
+
 import { format } from 'date-fns';
 import { capitalize, groupBy, isEmpty } from 'lodash';
-import { thisMonthTimestamp, thisYearTimestamp, todayTimestamp, yesterdayTimestamp } from './transactions';
+
 import { type NativeCurrencyKey } from '@/entities/nativeCurrencyTypes';
-import { type RainbowTransaction, TransactionStatus } from '@/entities/transactions';
+import { TransactionStatus, type RainbowTransaction } from '@/entities/transactions';
 import * as i18n from '@/languages';
 import { type Contact } from '@/redux/contacts';
-import { type SectionListData } from 'react-native';
+
+import { thisMonthTimestamp, thisYearTimestamp, todayTimestamp, yesterdayTimestamp } from './transactions';
 
 export type RainbowTransactionWithContact = RainbowTransaction & {
   contact: Contact | null;

@@ -1,17 +1,20 @@
 import React, { useCallback, useMemo } from 'react';
-import ReactNativeHapticFeedback from 'react-native-haptic-feedback';
+
+import { triggerHaptics } from 'react-native-turbo-haptics';
+
 import ButtonPressAnimation from '@/components/animations/ButtonPressAnimation';
+import { ImgixImage } from '@/components/images';
 import { MarqueeList } from '@/components/list';
 import { Box, Stack, Text } from '@/design-system';
+import { type EnsMarqueeAccount } from '@/graphql/__generated__/metadata';
+import { useNavigation } from '@/navigation/Navigation';
+import Routes from '@/navigation/routesNames';
+import { queryClient } from '@/react-query';
+
 import type useENSRecords from '../../hooks/useENSRecords';
 import { ensRecordsQueryKey } from '../../hooks/useENSRecords';
-import { ImgixImage } from '@/components/images';
-import { useNavigation } from '@/navigation/Navigation';
-import { queryClient } from '@/react-query';
-import Routes from '@/navigation/routesNames';
-import { useEnsMarquee } from '../../resources/marqueeQuery';
-import { type EnsMarqueeAccount } from '@/graphql/__generated__/metadata';
 import ensIntroMarqueeNames from '../../references/ens-intro-marquee-names.json';
+import { useEnsMarquee } from '../../resources/marqueeQuery';
 
 type MarqueeItemType = {
   account: EnsMarqueeAccount;
@@ -96,7 +99,7 @@ function ENSAvatarPlaceholder({
       onCancel={({ nativeEvent: { state, close } }) => {
         // Ensure the press has been triggered
         if (state === 5 && close) {
-          ReactNativeHapticFeedback.trigger('selection');
+          triggerHaptics('selection');
           onPress();
         }
       }}

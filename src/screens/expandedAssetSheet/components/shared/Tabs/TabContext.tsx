@@ -1,4 +1,5 @@
-import React, { createContext, type PropsWithChildren, useContext } from 'react';
+import React, { createContext, useContext, type PropsWithChildren } from 'react';
+
 import { makeMutable, type SharedValue } from 'react-native-reanimated';
 
 export type BaseTabContext<T extends ReadonlyArray<string>> = {

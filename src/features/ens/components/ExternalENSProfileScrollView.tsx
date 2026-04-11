@@ -1,17 +1,19 @@
+import React, { useCallback, useContext, useEffect, useImperativeHandle, useState, type RefObject } from 'react';
+import { Animated as RNAnimated, type ScrollViewProps, type ViewStyle } from 'react-native';
+
 import { BottomSheetScrollView } from '@gorhom/bottom-sheet';
 import { BottomSheetContext } from '@gorhom/bottom-sheet/src/contexts/external';
-import React, { type RefObject, useCallback, useContext, useEffect, useImperativeHandle, useState } from 'react';
-import { type ScrollViewProps, type ViewStyle, Animated as RNAnimated } from 'react-native';
 import { useSharedValue } from 'react-native-reanimated';
-
 import { type ScrollViewDefaultProps } from 'recyclerlistview/dist/reactnative/core/scrollcomponent/BaseScrollView';
 import type BaseScrollView from 'recyclerlistview/dist/reactnative/core/scrollcomponent/BaseScrollView';
-import { ProfileSheetConfigContext } from '@/screens/ProfileSheet';
-import ProfileSheetHeader from './profile/ProfileSheetHeader';
-import ImagePreviewOverlay from '@/components/images/ImagePreviewOverlay';
-import { StickyHeaderContext } from '@/components/asset-list/RecyclerAssetList2/core/StickyHeaders';
 import { useMemoOne } from 'use-memo-one';
+
 import { useRecyclerAssetListPosition } from '@/components/asset-list/RecyclerAssetList2/core/Contexts';
+import { StickyHeaderContext } from '@/components/asset-list/RecyclerAssetList2/core/StickyHeaders';
+import ImagePreviewOverlay from '@/components/images/ImagePreviewOverlay';
+import { ProfileSheetConfigContext } from '@/screens/ProfileSheet';
+
+import ProfileSheetHeader from './profile/ProfileSheetHeader';
 
 const extraPadding = { paddingBottom: 144 };
 const ExternalENSProfileScrollViewWithRefFactory = (type: string) =>

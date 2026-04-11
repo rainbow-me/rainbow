@@ -1,7 +1,8 @@
 import { memo } from 'react';
+
 import { useTransactionWatcher } from '@/hooks/useTransactionWatcher';
 import { useWatchAssetUpdateTransactions } from '@/hooks/useWatchMinedTransactions';
-import { type WatchedAssetUpdateTransaction, useAssetUpdatesStore } from '@/state/minedTransactions/minedTransactions';
+import { useAssetUpdatesStore, type WatchedAssetUpdateTransaction } from '@/state/minedTransactions/minedTransactions';
 import { useAccountAddress } from '@/state/wallets/walletsStore';
 
 const EMPTY_ASSET_UPDATE_TRANSACTION_WATCHES: WatchedAssetUpdateTransaction[] = [];

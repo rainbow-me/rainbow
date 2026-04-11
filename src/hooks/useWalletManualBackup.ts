@@ -1,6 +1,7 @@
+import { useCallback } from 'react';
+
 import WalletBackupTypes from '@/helpers/walletBackupTypes';
 import { logger, RainbowError } from '@/logger';
-import { useCallback } from 'react';
 import { setWalletBackedUp } from '@/state/wallets/walletsStore';
 
 export default function useWalletManualBackup() {

@@ -1,44 +1,47 @@
-import { queryClient } from '@/react-query';
+import { InteractionManager } from 'react-native';
+
 import { type BigNumberish } from '@ethersproject/bignumber';
+import { Contract } from '@ethersproject/contracts';
 import { type StaticJsonRpcProvider, type TransactionRequest } from '@ethersproject/providers';
 import { serialize } from '@ethersproject/transactions';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+// @ts-expect-error ts-migrate(7016) FIXME: Could not find a declaration file for module 'eth-... Remove this comment to see the full error message
+import { parse } from 'eth-url-parser';
+import { addHexPrefix, isValidAddress, toChecksumAddress } from 'ethereumjs-util';
+import { cloneDeep, isEmpty, isString, replace } from 'lodash';
+import { ETHERSCAN_API_KEY } from 'react-native-dotenv';
+
 import { type AddressOrEth } from '@/__swaps__/types/assets';
-import { type EthereumAddress } from '@/entities/wallet';
 import { type GasFee, type LegacySelectedGasFee, type SelectedGasFee } from '@/entities/gas';
-import { type NewTransaction, type RainbowTransaction } from '@/entities/transactions';
 import { type ParsedAddressAsset } from '@/entities/tokens';
+import { type NewTransaction, type RainbowTransaction } from '@/entities/transactions';
+import { type EthereumAddress } from '@/entities/wallet';
 import { IS_IOS } from '@/env';
 import { getOnchainAssetBalance } from '@/handlers/assets';
 import { getProvider, isTestnetChain, toHex } from '@/handlers/web3';
 import { WrappedAlert as Alert } from '@/helpers/alert';
 import { add, convertRawAmountToDecimalFormat, fromWei, greaterThan, isZero, subtract } from '@/helpers/utilities';
+import * as i18n from '@/languages';
 import { logger, RainbowError } from '@/logger';
 import Navigation from '@/navigation/Navigation';
 import Routes from '@/navigation/routesNames';
 import { parseAssetNative } from '@/parsers/accounts';
+import { queryClient } from '@/react-query';
 import store from '@/redux/store';
+import { ETH_ADDRESS, OVM_GAS_PRICE_ORACLE } from '@/references/constants';
 import ethUnits from '@/references/ethereum-units.json';
 import optimismGasOracleAbi from '@/references/optimism-gas-oracle-abi.json';
-import { ETH_ADDRESS, OVM_GAS_PRICE_ORACLE } from '@/references/constants';
 import {
   externalTokenQueryKey,
   fetchExternalToken,
-  type FormattedExternalAsset,
   useExternalToken,
+  type FormattedExternalAsset,
 } from '@/resources/assets/externalAssetsQuery';
 import { userAssetsStore } from '@/state/assets/userAssets';
 import { useBackendNetworksStore } from '@/state/backendNetworks/backendNetworks';
 import { ChainId, type Network } from '@/state/backendNetworks/types';
-import { Contract } from '@ethersproject/contracts';
-// @ts-expect-error ts-migrate(7016) FIXME: Could not find a declaration file for module 'eth-... Remove this comment to see the full error message
-import { parse } from 'eth-url-parser';
-import { addHexPrefix, isValidAddress, toChecksumAddress } from 'ethereumjs-util';
-import * as i18n from '@/languages';
-import { cloneDeep, isEmpty, isString, replace } from 'lodash';
-import { InteractionManager } from 'react-native';
-import { ETHERSCAN_API_KEY } from 'react-native-dotenv';
 import { getAccountAddress } from '@/state/wallets/walletsStore';
+
 import { openInBrowser } from './openInBrowser';
 
 /**

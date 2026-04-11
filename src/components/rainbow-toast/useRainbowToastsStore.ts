@@ -1,8 +1,9 @@
+import { useMemo } from 'react';
+
 import { TOAST_HIDE_TIMEOUT_MS } from '@/components/rainbow-toast/constants';
 import type { RainbowToast } from '@/components/rainbow-toast/types';
 import type { RainbowTransaction } from '@/entities/transactions';
 import { createRainbowStore } from '@/state/internal/createRainbowStore';
-import { useMemo } from 'react';
 
 const toToastId = (tx: RainbowTransaction): string => {
   const identity = tx.relayExecutionId ?? (tx.nonce !== null && tx.nonce !== undefined ? String(tx.nonce) : tx.hash);

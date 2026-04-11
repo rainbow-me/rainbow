@@ -1,26 +1,28 @@
+import { memo, useCallback, useMemo } from 'react';
 import { StyleSheet } from 'react-native';
+
 import {
   Canvas,
   Group,
   LinearGradient,
   Rect,
-  RoundedRect,
-  Shadow,
-  type SkParagraph,
   rect,
+  RoundedRect,
   rrect,
+  Shadow,
   vec,
-  type Vector,
   type LinearGradientProps,
+  type SkParagraph,
   type SkRRect,
+  type Vector,
 } from '@shopify/react-native-skia';
-import { memo, useCallback, useMemo } from 'react';
-import Animated, { type SharedValue, useAnimatedStyle, useDerivedValue, useSharedValue } from 'react-native-reanimated';
+import Animated, { useAnimatedStyle, useDerivedValue, useSharedValue, type SharedValue } from 'react-native-reanimated';
+
 import { SkiaText, useColorMode } from '@/design-system';
-import { type TextSize } from '@/design-system/typography/typeHierarchy';
-import { type TextWeight } from '@/design-system/components/Text/Text';
 import { type TextColor } from '@/design-system/color/palettes';
 import { type CustomColor } from '@/design-system/color/useForegroundColor';
+import { type TextWeight } from '@/design-system/components/Text/Text';
+import { type TextSize } from '@/design-system/typography/typeHierarchy';
 
 type Shadow = {
   dx: number;

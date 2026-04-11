@@ -1,6 +1,8 @@
 import { useCallback, useEffect, useRef, useState } from 'react';
-import NetInfo, { type NetInfoState, type NetInfoSubscription } from '@react-native-community/netinfo';
 import { AppState } from 'react-native';
+
+import NetInfo, { type NetInfoState, type NetInfoSubscription } from '@react-native-community/netinfo';
+
 import { analytics } from '@/analytics';
 
 function getIsOnline(state: NetInfoState) {

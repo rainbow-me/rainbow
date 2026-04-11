@@ -1,42 +1,45 @@
+import React, { useCallback, useContext, useState } from 'react';
+
+import { delegation, type DelegationWithChainId } from '@rainbow-me/delegation';
+import AsyncStorage from '@react-native-async-storage/async-storage';
+import Clipboard from '@react-native-clipboard/clipboard';
+import FastImage from 'react-native-fast-image';
+import { getAllInternetCredentials, resetInternetCredentials } from 'react-native-keychain';
+// @ts-expect-error - react-native-restart is not typed
+import Restart from 'react-native-restart';
+
 import { ImgixImage } from '@/components/images';
 import { defaultConfig, getExperimentalFlag, LOG_PUSH } from '@/config/experimentalHooks';
 import { IS_ANDROID, IS_INTERNAL } from '@/env';
-import { RainbowContext } from '@/helpers/RainbowContext';
+import { getDelegationContractAddress, isRainbowDelegated, isThirdPartyDelegated } from '@/features/delegation/status';
 import { WrappedAlert as Alert } from '@/helpers/alert';
+import { RainbowContext } from '@/helpers/RainbowContext';
 import { getPublicKeyOfTheSigningWalletAndCreateWalletIfNeeded } from '@/helpers/signingWallet';
+import * as i18n from '@/languages';
 import { logger, RainbowError } from '@/logger';
 import { serialize } from '@/logger/logDump';
 import { wipeKeychain } from '@/model/keychain';
 import { clearAllStorages } from '@/model/mmkv';
 import Navigation, { useNavigation } from '@/navigation/Navigation';
 import Routes from '@/navigation/routesNames';
-import { clearImageMetadataCache } from '@/redux/imageMetadata';
-import { SettingsLoadingIndicator } from '@/screens/SettingsSheet/components/SettingsLoadingIndicator';
-import { clearWalletState, useWalletsStore } from '@/state/wallets/walletsStore';
-import { isAuthenticated } from '@/utils/authentication';
-import AsyncStorage from '@react-native-async-storage/async-storage';
-import Clipboard from '@react-native-clipboard/clipboard';
-import * as i18n from '@/languages';
-import React, { useCallback, useContext, useState } from 'react';
-// @ts-expect-error - react-native-restart is not typed
-import Restart from 'react-native-restart';
-import Menu from './Menu';
-import MenuContainer from './MenuContainer';
-import MenuItem from './MenuItem';
 import { addDefaultNotificationGroupSettings } from '@/notifications/settings/initialization';
 import { unsubscribeAllNotifications } from '@/notifications/settings/settings';
 import { getFCMToken } from '@/notifications/tokens';
 import { analyzeReactQueryStore, clearReactQueryCache } from '@/react-query/reactQueryUtils';
-import { delegation, type DelegationWithChainId } from '@rainbow-me/delegation';
-import { getDelegationContractAddress, isRainbowDelegated, isThirdPartyDelegated } from '@/features/delegation/status';
+import { clearImageMetadataCache } from '@/redux/imageMetadata';
 import { RevokeReason } from '@/screens/delegation/RevokeDelegationPanel';
+import { SettingsLoadingIndicator } from '@/screens/SettingsSheet/components/SettingsLoadingIndicator';
 import { ChainId } from '@/state/backendNetworks/types';
 import { useConnectedToAnvilStore } from '@/state/connectedToAnvil';
+import { analyzeUserAssets } from '@/state/debug/analyzeUserAssets';
 import { nonceActions } from '@/state/nonces';
 import { pendingTransactionsActions } from '@/state/pendingTransactions';
-import FastImage from 'react-native-fast-image';
-import { analyzeUserAssets } from '@/state/debug/analyzeUserAssets';
-import { getAllInternetCredentials, resetInternetCredentials } from 'react-native-keychain';
+import { clearWalletState, useWalletsStore } from '@/state/wallets/walletsStore';
+import { isAuthenticated } from '@/utils/authentication';
+
+import Menu from './Menu';
+import MenuContainer from './MenuContainer';
+import MenuItem from './MenuItem';
 
 const DevSection = () => {
   const { navigate } = useNavigation();

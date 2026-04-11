@@ -1,8 +1,9 @@
-import { type HlTrade } from '../types';
-import { hlTradesStoreActions } from '../stores/hlTradesStore';
-import { getHyperliquidAccountClient } from '../services';
 import { delay } from '@/utils/delay';
 import { time } from '@/utils/time';
+
+import { getHyperliquidAccountClient } from '../services';
+import { hlTradesStoreActions } from '../stores/hlTradesStore';
+import { type HlTrade } from '../types';
 
 const DEFAULT_TIMEOUT_MS = time.seconds(5);
 const POLL_INTERVAL_MS = time.ms(500);

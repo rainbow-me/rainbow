@@ -1,4 +1,5 @@
 import React from 'react';
+
 import { Box, Text } from '@/design-system';
 
 type InfoAlertProps = {

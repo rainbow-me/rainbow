@@ -1,18 +1,21 @@
-import { BottomSheetScrollView } from '@gorhom/bottom-sheet';
-import { BottomSheetContext } from '@gorhom/bottom-sheet/src/contexts/external';
 import React, { forwardRef, Fragment, useContext, useEffect, useImperativeHandle, useMemo, useRef } from 'react';
 import { Pressable, StyleSheet, TouchableWithoutFeedback } from 'react-native';
+
+import { BottomSheetScrollView } from '@gorhom/bottom-sheet';
+import { BottomSheetContext } from '@gorhom/bottom-sheet/src/contexts/external';
 import Animated, { useAnimatedScrollHandler, useSharedValue } from 'react-native-reanimated';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
-import { useTheme } from '../../theme/ThemeContext';
-import { Centered } from '../layout';
-import SheetHandleFixedToTop, { SheetHandleFixedToTopHeight } from './SheetHandleFixedToTop';
-import useDimensions from '@/hooks/useDimensions';
+
+import { IS_ANDROID, IS_IOS } from '@/env';
 import styled from '@/framework/ui/styled-thing';
+import useDimensions from '@/hooks/useDimensions';
 import { useNavigation } from '@/navigation/Navigation';
 import { position } from '@/styles';
-import { IS_ANDROID, IS_IOS } from '@/env';
+
+import { useTheme } from '../../theme/ThemeContext';
+import { Centered } from '../layout';
 import TouchableBackdrop from '../TouchableBackdrop';
+import SheetHandleFixedToTop, { SheetHandleFixedToTopHeight } from './SheetHandleFixedToTop';
 
 const AndroidBackground = styled.View({
   ...position.coverAsObject,

@@ -1,25 +1,28 @@
-import { type RouteProp, useRoute } from '@react-navigation/native';
 import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
-import { loadAllKeys } from '@/model/keychain';
-import { useNavigation } from '@/navigation/Navigation';
-import { privateKeyKey, seedPhraseKey } from '@/utils/keychainConstants';
+
+import Clipboard from '@react-native-clipboard/clipboard';
+import { useRoute, type RouteProp } from '@react-navigation/native';
+import { type UserCredentials } from 'react-native-keychain';
+import { triggerHaptics } from 'react-native-turbo-haptics';
+
+import { getDeviceId } from '@/analytics/utils';
+import { SimpleSheet } from '@/components/sheet/SimpleSheet';
+import { Toast, ToastPositionContainer } from '@/components/toasts';
+import { BackgroundProvider, Box } from '@/design-system';
 import AesEncryptor from '@/handlers/aesEncryption';
 import { authenticateWithPINAndCreateIfNeeded } from '@/handlers/authentication';
 import useWalletsWithBalancesAndNames from '@/hooks/useWalletsWithBalancesAndNames';
-import Routes from '@/navigation/routesNames';
-import { logger, RainbowError } from '@/logger';
-import { deriveAccountFromWalletInput } from '@/utils/wallet';
-import { getDeviceId } from '@/analytics/utils';
-import { type UserCredentials } from 'react-native-keychain';
-import { DiagnosticsContent } from '@/screens/Diagnostics/DiagnosticsContent';
-import { BackgroundProvider, Box } from '@/design-system';
-import { Toast, ToastPositionContainer } from '@/components/toasts';
 import * as i18n from '@/languages';
-import { createAndShareStateDumpFile } from './helpers/createAndShareStateDumpFile';
-import haptics from '@/utils/haptics';
-import Clipboard from '@react-native-clipboard/clipboard';
-import { SimpleSheet } from '@/components/sheet/SimpleSheet';
+import { logger, RainbowError } from '@/logger';
+import { loadAllKeys } from '@/model/keychain';
+import { useNavigation } from '@/navigation/Navigation';
+import Routes from '@/navigation/routesNames';
 import { type RootStackParamList } from '@/navigation/types';
+import { DiagnosticsContent } from '@/screens/Diagnostics/DiagnosticsContent';
+import { privateKeyKey, seedPhraseKey } from '@/utils/keychainConstants';
+import { deriveAccountFromWalletInput } from '@/utils/wallet';
+
+import { createAndShareStateDumpFile } from './helpers/createAndShareStateDumpFile';
 
 const encryptor = new AesEncryptor();
 
@@ -143,7 +146,7 @@ export const WalletDiagnosticsSheet = () => {
 
   const copyUUID = () => {
     if (uuid) {
-      haptics.notificationSuccess();
+      triggerHaptics('notificationSuccess');
       Clipboard.setString(uuid);
       presentToast();
     }

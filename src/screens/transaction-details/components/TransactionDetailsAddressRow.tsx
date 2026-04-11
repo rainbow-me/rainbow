@@ -1,27 +1,29 @@
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import { View } from 'react-native';
-import { addressHashedColorIndex, addressHashedEmoji } from '@/utils/profileUtils';
-import { fetchReverseRecord } from '@/features/ens/utils/handlers';
-import ImageAvatar from '@/components/contacts/ImageAvatar';
-import { ContactAvatar } from '@/components/contacts';
-import { Box, Column, Columns, Cover, Stack, Text } from '@/design-system';
+
+import Clipboard from '@react-native-clipboard/clipboard';
 import Animated, { Easing, interpolate, useAnimatedStyle } from 'react-native-reanimated';
 import { useTiming } from 'react-native-redash';
+import { triggerHaptics } from 'react-native-turbo-haptics';
+
 import ButtonPressAnimation from '@/components/animations/ButtonPressAnimation';
-import Clipboard from '@react-native-clipboard/clipboard';
-import haptics from '@/utils/haptics';
-import { formatAddressForDisplay } from '@/utils/abbreviations';
-import { type Contact } from '@/redux/contacts';
-import { type RainbowAccount } from '@/model/wallet';
-import { fetchENSAvatar } from '@/features/ens/hooks/useENSAvatar';
-import { removeFirstEmojiFromString, returnStringFirstEmoji } from '@/helpers/emojiHandler';
+import { ContactAvatar } from '@/components/contacts';
+import ImageAvatar from '@/components/contacts/ImageAvatar';
+import ContextMenu from '@/components/context-menu/ContextMenu.android';
 import ContextMenuButton from '@/components/native-context-menu/contextMenu';
-import Navigation from '@/navigation/Navigation';
-import Routes from '@rainbow-me/routes';
+import { Box, Column, Columns, Cover, Stack, Text } from '@/design-system';
 import { IS_ANDROID, IS_IOS } from '@/env';
+import { fetchENSAvatar } from '@/features/ens/hooks/useENSAvatar';
+import { fetchReverseRecord } from '@/features/ens/utils/handlers';
+import { removeFirstEmojiFromString, returnStringFirstEmoji } from '@/helpers/emojiHandler';
 import { isENSAddressFormat } from '@/helpers/validators';
 import * as i18n from '@/languages';
-import ContextMenu from '@/components/context-menu/ContextMenu.android';
+import { type RainbowAccount } from '@/model/wallet';
+import Navigation from '@/navigation/Navigation';
+import { type Contact } from '@/redux/contacts';
+import { formatAddressForDisplay } from '@/utils/abbreviations';
+import { addressHashedColorIndex, addressHashedEmoji } from '@/utils/profileUtils';
+import Routes from '@rainbow-me/routes';
 
 type ContextMenuRendererProps = {
   children: React.ReactNode;
@@ -87,12 +89,12 @@ const ContextMenuRenderer = ({
     e => {
       const actionKey = e.nativeEvent.actionKey;
       if (actionKey !== 'copy') {
-        haptics.selection();
+        triggerHaptics('selection');
       }
       switch (actionKey) {
         case 'copy':
           onAddressCopied?.();
-          haptics.notificationSuccess();
+          triggerHaptics('notificationSuccess');
           Clipboard.setString(address);
           return;
         case 'contact':
@@ -146,7 +148,7 @@ const ContextMenuRenderer = ({
           return;
         case 2:
           onAddressCopied?.();
-          haptics.notificationSuccess();
+          triggerHaptics('notificationSuccess');
           Clipboard.setString(address);
           return;
       }

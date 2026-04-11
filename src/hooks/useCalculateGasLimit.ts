@@ -1,16 +1,18 @@
-import { useEffect, useRef, useCallback } from 'react';
+import { useCallback, useEffect, useRef } from 'react';
+import { InteractionManager } from 'react-native';
+
+import { type StaticJsonRpcProvider } from '@ethersproject/providers';
+import { isEmpty } from 'lodash';
+import { hexToNumber, isHex } from 'viem';
+
+import type { GasFeeParamsBySpeed } from '@/entities/gas';
 import { estimateGas, toHex } from '@/handlers/web3';
 import { convertHexToString, omitFlatten } from '@/helpers/utilities';
-import { logger, RainbowError } from '@/logger';
-import ethereumUtils from '@/utils/ethereumUtils';
-import { hexToNumber, isHex } from 'viem';
-import { isEmpty } from 'lodash';
-import { InteractionManager } from 'react-native';
-import type { GasFeeParamsBySpeed } from '@/entities/gas';
-import { type StaticJsonRpcProvider } from '@ethersproject/providers';
 import type useGas from '@/hooks/useGas';
-import { type ChainId } from '@/state/backendNetworks/types';
+import { logger, RainbowError } from '@/logger';
 import { useBackendNetworksStore } from '@/state/backendNetworks/backendNetworks';
+import { type ChainId } from '@/state/backendNetworks/types';
+import ethereumUtils from '@/utils/ethereumUtils';
 
 type CalculateGasLimitProps = {
   isMessageRequest: boolean;

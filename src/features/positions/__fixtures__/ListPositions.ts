@@ -1,11 +1,10 @@
 import type { ListPositionsResponse } from '../types/generated/positions/positions';
 import { grandTotal } from './helpers/filters';
-
-import successResponse from './ListPositions-success.json';
-import emptyResponse from './ListPositions-success-empty.json';
 import invalidAddressError from './ListPositions-error-invalid-address.json';
 import invalidApiKeyError from './ListPositions-error-invalid-api-key.json';
 import missingAddressError from './ListPositions-error-missing-address.json';
+import emptyResponse from './ListPositions-success-empty.json';
+import successResponse from './ListPositions-success.json';
 
 // ============ Constants ================================================ //
 

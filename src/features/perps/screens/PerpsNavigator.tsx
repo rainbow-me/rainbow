@@ -1,23 +1,25 @@
-import { KeyboardProvider } from 'react-native-keyboard-controller';
 import { memo } from 'react';
 import { StyleSheet } from 'react-native';
-import { SmoothPager, usePagerNavigation } from '@/components/SmoothPager/SmoothPager';
+
+import { KeyboardProvider } from 'react-native-keyboard-controller';
+
 import { SPRING_CONFIGS } from '@/components/animations/animationConfigs';
+import { SmoothPager, usePagerNavigation } from '@/components/SmoothPager/SmoothPager';
 import { Box, useColorMode } from '@/design-system';
 import { PerpsNavbar } from '@/features/perps/components/PerpsNavbar';
 import { PerpsNavigatorFooter } from '@/features/perps/components/PerpsNavigatorFooter';
+import { SheetHandle } from '@/features/perps/components/SheetHandle';
 import { PERPS_BACKGROUND_DARK, PERPS_BACKGROUND_LIGHT } from '@/features/perps/constants';
 import { PerpsAccentColorContextProvider } from '@/features/perps/context/PerpsAccentColorContext';
-import { PerpsSearchScreen } from '@/features/perps/screens/PerpsSearchScreen';
 import { PerpsAccountScreen } from '@/features/perps/screens/perps-account-screen/PerpsAccountScreen';
 import { PerpsNewPositionScreen } from '@/features/perps/screens/perps-new-position-screen/PerpsNewPositionScreen';
+import { PerpsSearchScreen } from '@/features/perps/screens/PerpsSearchScreen';
 import { useCleanup } from '@/hooks/useCleanup';
 import { useStableValue } from '@/hooks/useStableValue';
 import { createVirtualNavigator } from '@/navigation/createVirtualNavigator';
 import Routes from '@/navigation/routesNames';
 import { type PerpsRoute } from '@/navigation/types';
 import { useListen } from '@/state/internal/hooks/useListen';
-import { SheetHandle } from '@/features/perps/components/SheetHandle';
 
 const Navigator = createVirtualNavigator<PerpsRoute>({
   initialRoute: Routes.PERPS_ACCOUNT_SCREEN,

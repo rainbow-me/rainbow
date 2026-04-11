@@ -1,25 +1,26 @@
-import { AnimatedText, type TextProps, useForegroundColor } from '@/design-system';
 import React, { memo } from 'react';
 import { type StyleProp, type TextStyle } from 'react-native';
+
 import {
-  type SharedValue,
   useAnimatedStyle,
   useDerivedValue,
   withRepeat,
   withSequence,
   withSpring,
   withTiming,
+  type SharedValue,
 } from 'react-native-reanimated';
 
-import { opacity } from '@/framework/ui/utils/opacity';
-import { TIMING_CONFIGS } from '@/components/animations/animationConfigs';
-import { useDelayedValue } from '@/hooks/reanimated/useDelayedValue';
 import { pulsingConfig, sliderConfig } from '@/__swaps__/screens/Swap/constants';
 import { type GasSettings } from '@/__swaps__/screens/Swap/hooks/useCustomGas';
 import { useSwapEstimatedGasFee } from '@/__swaps__/screens/Swap/hooks/useEstimatedGasFee';
 import { useSwapContext } from '@/__swaps__/screens/Swap/providers/swap-provider';
-import { useStoreSharedValue } from '@/state/internal/hooks/useStoreSharedValue';
+import { TIMING_CONFIGS } from '@/components/animations/animationConfigs';
+import { AnimatedText, useForegroundColor, type TextProps } from '@/design-system';
 import { useSponsoredSwapStore } from '@/features/delegation/sponsoredSwapStore';
+import { opacity } from '@/framework/ui/utils/opacity';
+import { useDelayedValue } from '@/hooks/reanimated/useDelayedValue';
+import { useStoreSharedValue } from '@/state/internal/hooks/useStoreSharedValue';
 
 type EstimatedSwapGasFeeProps = { gasSettings?: GasSettings } & Partial<
   Pick<TextProps, 'align' | 'color' | 'size' | 'style' | 'weight' | 'tabularNumbers'>

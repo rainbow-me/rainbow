@@ -1,22 +1,26 @@
-import remoteConfig, { type FirebaseRemoteConfigTypes } from '@react-native-firebase/remote-config';
 import { useEffect } from 'react';
+
+import remoteConfig, { type FirebaseRemoteConfigTypes } from '@react-native-firebase/remote-config';
 import { dequal } from 'dequal';
+
 import { IS_DEV, IS_INTERNAL } from '@/env';
 import { CURRENT_APP_VERSION } from '@/hooks/useAppVersion';
-import { RainbowError, logger } from '@/logger';
+import * as i18n from '@/languages';
+import { logger, RainbowError } from '@/logger';
 import { ChainId, Network } from '@/state/backendNetworks/types';
 import { createQueryStore } from '@/state/internal/createQueryStore';
 import { delay } from '@/utils/delay';
 import { time } from '@/utils/time';
 import { shallowEqual } from '@/worklets/comparisons';
-import * as i18n from '@/languages';
 
 // ============ RainbowConfig ================================================== //
 
 const REMOTE_CONFIG_VERSION = digitsOnly(CURRENT_APP_VERSION);
 
-export interface RainbowConfig
-  extends Record<string, string | boolean | number | Record<string, number> | number[] | { title: string; subtitle: string }> {
+export interface RainbowConfig extends Record<
+  string,
+  string | boolean | number | Record<string, number> | number[] | { title: string; subtitle: string }
+> {
   /* Objects */
   default_slippage_bips: Record<string, number>;
   default_slippage_bips_chainId: Record<string, number>;

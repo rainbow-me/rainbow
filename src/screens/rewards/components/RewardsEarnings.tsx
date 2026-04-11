@@ -1,19 +1,21 @@
 import React, { useMemo } from 'react';
 import { Image, ImageBackground } from 'react-native';
-import { RewardsSectionCard } from '@/screens/rewards/components/RewardsSectionCard';
-import { AccentColorProvider, Box, Columns, Inline, Stack, Text } from '@/design-system';
-import * as i18n from '@/languages';
-import { type RewardsAmount } from '@/graphql/__generated__/metadata';
-import { formatTokenDisplayValue } from '@/screens/rewards/helpers/formatTokenDisplayValue';
+
 import { addDays, differenceInDays, differenceInHours, fromUnixTime, isPast } from 'date-fns';
-import { useInfoIconColor } from '@/screens/rewards/hooks/useInfoIconColor';
-import { useNavigation } from '@/navigation/Navigation';
-import ButtonPressAnimation from '@/components/animations/ButtonPressAnimation';
-import Routes from '@/navigation/routesNames';
-import { convertAmountAndPriceToNativeDisplay, convertAmountToNativeDisplay } from '@/helpers/utilities';
 import { useSelector } from 'react-redux';
-import { type AppState } from '@/redux/store';
+
 import { analytics } from '@/analytics';
+import ButtonPressAnimation from '@/components/animations/ButtonPressAnimation';
+import { AccentColorProvider, Box, Columns, Inline, Stack, Text } from '@/design-system';
+import { type RewardsAmount } from '@/graphql/__generated__/metadata';
+import { convertAmountAndPriceToNativeDisplay, convertAmountToNativeDisplay } from '@/helpers/utilities';
+import * as i18n from '@/languages';
+import { useNavigation } from '@/navigation/Navigation';
+import Routes from '@/navigation/routesNames';
+import { type AppState } from '@/redux/store';
+import { RewardsSectionCard } from '@/screens/rewards/components/RewardsSectionCard';
+import { formatTokenDisplayValue } from '@/screens/rewards/helpers/formatTokenDisplayValue';
+import { useInfoIconColor } from '@/screens/rewards/hooks/useInfoIconColor';
 
 type Props = {
   assetPrice?: number;

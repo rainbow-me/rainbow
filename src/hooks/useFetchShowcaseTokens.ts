@@ -1,11 +1,12 @@
 import { useQuery } from '@tanstack/react-query';
-import { getPreference } from '@/model/preferences';
-import { time } from '@/utils/time';
-import { queryClient } from '@/react-query';
-import { isDataComplete } from '@/state/nfts/utils';
-import { useNftsStore } from '@/state/nfts/nfts';
-import { getWalletWithAccount } from '@/state/wallets/walletsStore';
+
 import { EthereumWalletType } from '@/helpers/walletTypes';
+import { getPreference } from '@/model/preferences';
+import { queryClient } from '@/react-query';
+import { useNftsStore } from '@/state/nfts/nfts';
+import { isDataComplete } from '@/state/nfts/utils';
+import { getWalletWithAccount } from '@/state/wallets/walletsStore';
+import { time } from '@/utils/time';
 
 export const showcaseTokensQueryKey = ({ address }: { address: string }) => ['showcase-tokens', address];
 

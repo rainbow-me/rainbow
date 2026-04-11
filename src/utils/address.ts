@@ -1,5 +1,6 @@
-import { checkIsValidAddressOrDomain } from '../helpers/validators';
 import type { EthereumAddress } from '@/entities/wallet';
+
+import { checkIsValidAddressOrDomain } from '../helpers/validators';
 
 /**
  * @desc get ethereum address from raw QR Code data

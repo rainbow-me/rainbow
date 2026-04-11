@@ -1,23 +1,26 @@
-import * as i18n from '@/languages';
-import { isEmpty } from 'lodash';
 import React, { useCallback, useEffect, useMemo, useRef } from 'react';
+
+import { isEmpty } from 'lodash';
 import RadialGradient from 'react-native-radial-gradient';
 import Animated, { Easing, useAnimatedProps, useAnimatedStyle, useSharedValue, withRepeat, withTiming } from 'react-native-reanimated';
+
+import { useDiscoverSearchQueryStore, useDiscoverSearchStore } from '@/__swaps__/screens/Swap/resources/search/searchV2';
+import { analytics } from '@/analytics';
 import Spinner from '@/assets/chartSpinner.png';
+import { useDiscoverScreenContext } from '@/components/Discover/DiscoverScreenContext';
+import { ImgixImage } from '@/components/images';
 import { ClearInputDecorator, Input } from '@/components/inputs';
 import { Row } from '@/components/layout';
 import { TextIcon } from '@/design-system';
-import { analytics } from '@/analytics';
-import { ImgixImage } from '@/components/images';
 import styled from '@/framework/ui/styled-thing';
-import { padding } from '@/styles';
-import deviceUtils from '@/utils/deviceUtils';
-import { type ThemeContextProps, useTheme } from '@/theme/ThemeContext';
-import { useDiscoverScreenContext } from '@/components/Discover/DiscoverScreenContext';
+import { opacity } from '@/framework/ui/utils/opacity';
+import * as i18n from '@/languages';
 import { useBackendNetworksStore } from '@/state/backendNetworks/backendNetworks';
 import { type ChainId } from '@/state/backendNetworks/types';
-import { useDiscoverSearchQueryStore, useDiscoverSearchStore } from '@/__swaps__/screens/Swap/resources/search/searchV2';
-import { opacity } from '@/framework/ui/utils/opacity';
+import { padding } from '@/styles';
+import { useTheme, type ThemeContextProps } from '@/theme/ThemeContext';
+import deviceUtils from '@/utils/deviceUtils';
+
 const SearchHeight = 40;
 const SearchWidth = deviceUtils.dimensions.width - 30;
 

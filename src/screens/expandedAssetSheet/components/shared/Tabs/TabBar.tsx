@@ -1,13 +1,16 @@
 import React, { useCallback, useContext } from 'react';
-import { TabContext } from './TabContext';
 import { StyleSheet, View } from 'react-native';
-import { GestureHandlerButton } from '@/components/buttons/GestureHandlerButton';
+
 import { useAnimatedStyle, withTiming } from 'react-native-reanimated';
+
+import { TIMING_CONFIGS } from '@/components/animations/animationConfigs';
+import { GestureHandlerButton } from '@/components/buttons/GestureHandlerButton';
+import { AnimatedText, useForegroundColor } from '@/design-system';
 import { opacity } from '@/framework/ui/utils/opacity';
 import { colors } from '@/styles';
-import { AnimatedText, useForegroundColor } from '@/design-system';
-import { TIMING_CONFIGS } from '@/components/animations/animationConfigs';
 import { THICK_BORDER_WIDTH } from '@/styles/constants';
+
+import { TabContext } from './TabContext';
 
 export const TabPill = ({ tab, index }: { tab: string; index: number }) => {
   const { activeTabIndex, accentColor, setActiveTabIndex } = useContext(TabContext);

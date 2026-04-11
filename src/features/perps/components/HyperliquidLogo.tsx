@@ -1,8 +1,9 @@
 import React from 'react';
 import { Image } from 'react-native';
+
+import hyperliquidLogo from '@/assets/hyperliquidLogo.png';
 import { Bleed, Box } from '@/design-system';
 import { HYPERLIQUID_COLORS } from '@/features/perps/constants';
-import hyperliquidLogo from '@/assets/hyperliquidLogo.png';
 
 export const HyperliquidLogo = ({ size = 20 }: { size?: number }) => {
   return (

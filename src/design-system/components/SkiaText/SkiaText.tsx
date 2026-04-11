@@ -1,19 +1,22 @@
+import React, { useCallback, useMemo, type ComponentType, type ReactNode } from 'react';
+
 import {
-  type AnimatedProp,
   Paragraph,
+  type AnimatedProp,
   type SkPaint,
   type SkParagraph,
   type SkTextShadow,
   type Transforms3d,
 } from '@shopify/react-native-skia';
-import React, { type ComponentType, type ReactNode, useCallback, useMemo } from 'react';
 import { isSharedValue, runOnUI, useDerivedValue } from 'react-native-reanimated';
+
 import { type TextAlign } from '@/components/text/types';
 import { type ColorMode, type TextColor } from '@/design-system/color/palettes';
-import { type CustomColor, getColorForTheme } from '@/design-system/color/useForegroundColor';
+import { getColorForTheme, type CustomColor } from '@/design-system/color/useForegroundColor';
 import { useSkiaText } from '@/design-system/components/SkiaText/useSkiaText';
 import { type TextWeight } from '@/design-system/components/Text/Text';
 import { type TextSize } from '@/design-system/typography/typeHierarchy';
+
 import { type SharedOrDerivedValueText } from '../Text/AnimatedText';
 
 export type SkiaTextProps = {

@@ -1,21 +1,24 @@
 import React, { useCallback, useMemo } from 'react';
+
 import { type Source } from 'react-native-fast-image';
+
+import { analytics } from '@/analytics';
+import { ImgixImage } from '@/components/images';
+import { Box } from '@/design-system';
+import useAccountSettings from '@/hooks/useAccountSettings';
+import { logger } from '@/logger';
 import Menu from '@/screens/SettingsSheet/components/Menu';
 import MenuContainer from '@/screens/SettingsSheet/components/MenuContainer';
 import MenuItem from '@/screens/SettingsSheet/components/MenuItem';
-import { Box } from '@/design-system';
-import useAccountSettings from '@/hooks/useAccountSettings';
-import { ImgixImage } from '@/components/images';
 import { useTheme } from '@/theme/ThemeContext';
-import { logger } from '@/logger';
-import { analytics } from '@/analytics';
+
 import {
+  freeAppIcons,
+  unlockableAppIcons,
   type AppIcon,
   type AppIconKey,
   type UnlockableAppIcon,
   type UnlockableAppIconKey,
-  freeAppIcons,
-  unlockableAppIcons,
 } from '../models/appIcons';
 import { unlockableAppIconStorage } from '../utils/unlockableAppIconCheck';
 

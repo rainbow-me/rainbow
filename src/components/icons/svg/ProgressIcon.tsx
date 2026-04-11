@@ -1,11 +1,14 @@
 import React, { type PropsWithChildren } from 'react';
+
 import Animated, { useAnimatedProps, type SharedValue } from 'react-native-reanimated';
 import { G, Path } from 'react-native-svg';
-import { Centered } from '../../layout';
-import Svg from '../Svg';
+
+import { opacity } from '@/framework/ui/utils/opacity';
 import { position } from '@/styles';
 import { useTheme } from '@/theme/ThemeContext';
-import { opacity } from '@/framework/ui/utils/opacity';
+
+import { Centered } from '../../layout';
+import Svg from '../Svg';
 
 const AnimatedSvg = Animated.createAnimatedComponent<PropsWithChildren>(Svg);
 const AnimatedPath = Animated.createAnimatedComponent(Path);

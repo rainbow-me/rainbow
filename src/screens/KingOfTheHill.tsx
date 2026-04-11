@@ -1,3 +1,9 @@
+import React, { memo, useCallback, useEffect, useLayoutEffect, useState } from 'react';
+import { Keyboard, StatusBar, StyleSheet, View } from 'react-native';
+
+import { useIsFocused } from '@react-navigation/native';
+import { useSharedValue } from 'react-native-reanimated';
+
 import ButtonPressAnimation from '@/components/animations/ButtonPressAnimation';
 import { ContactAvatar } from '@/components/contacts';
 import ImageAvatar from '@/components/contacts/ImageAvatar';
@@ -13,10 +19,6 @@ import { useAirdropsStore } from '@/state/claimables/airdropsStore';
 import { useKingOfTheHillStore } from '@/state/kingOfTheHill/kingOfTheHillStore';
 import { useNavigationStore } from '@/state/navigation/navigationStore';
 import { useAccountProfileInfo } from '@/state/wallets/walletsStore';
-import { useIsFocused } from '@react-navigation/native';
-import React, { memo, useCallback, useEffect, useLayoutEffect, useState } from 'react';
-import { Keyboard, StatusBar, StyleSheet, View } from 'react-native';
-import { useSharedValue } from 'react-native-reanimated';
 import { THICK_BORDER_WIDTH } from '@/styles/constants';
 
 export const KingOfTheHillScreen = () => {

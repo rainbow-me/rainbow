@@ -1,31 +1,33 @@
 import { memo, useMemo } from 'react';
 import { StyleSheet, View } from 'react-native';
+
+import Animated, { useAnimatedStyle } from 'react-native-reanimated';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
+
 import { AccountImage } from '@/components/AccountImage';
+import { Navbar, navbarHeight } from '@/components/navbar/Navbar';
+import { ColorModeProvider } from '@/design-system';
+import { AmbientCoins } from '@/features/rnbw-rewards/screens/rnbw-rewards-screen/components/AmbientCoins';
 import { BottomGradientGlow } from '@/features/rnbw-rewards/screens/rnbw-rewards-screen/components/BottomGradientGlow';
 import { RnbwHeroCoin } from '@/features/rnbw-rewards/screens/rnbw-rewards-screen/components/RnbwHeroCoin';
-import { AmbientCoins } from '@/features/rnbw-rewards/screens/rnbw-rewards-screen/components/AmbientCoins';
-import {
-  AirdropEligibilityScene,
-  AirdropClaimingScene,
-  RewardsClaimingScene,
-} from '@/features/rnbw-rewards/screens/rnbw-rewards-screen/scenes/ActionStatusScenes';
+import { RnbwRewardsScenes } from '@/features/rnbw-rewards/screens/rnbw-rewards-screen/constants/rewardsScenes';
 import {
   RnbwRewardsFlowContextProvider,
   useRnbwRewardsFlowContext,
 } from '@/features/rnbw-rewards/screens/rnbw-rewards-screen/context/RnbwRewardsFlowContext';
-import { RnbwRewardsScenes } from '@/features/rnbw-rewards/screens/rnbw-rewards-screen/constants/rewardsScenes';
-import { useTabBarOffset } from '@/hooks/useTabBarOffset';
-import { AirdropIntroScene } from '@/features/rnbw-rewards/screens/rnbw-rewards-screen/scenes/AirdropIntroScene';
-import { AirdropClaimPromptScene } from '@/features/rnbw-rewards/screens/rnbw-rewards-screen/scenes/AirdropClaimPromptScene';
+import {
+  AirdropClaimingScene,
+  AirdropEligibilityScene,
+  RewardsClaimingScene,
+} from '@/features/rnbw-rewards/screens/rnbw-rewards-screen/scenes/ActionStatusScenes';
 import { AirdropClaimedScene } from '@/features/rnbw-rewards/screens/rnbw-rewards-screen/scenes/AirdropClaimedScene';
+import { AirdropClaimPromptScene } from '@/features/rnbw-rewards/screens/rnbw-rewards-screen/scenes/AirdropClaimPromptScene';
+import { AirdropIntroScene } from '@/features/rnbw-rewards/screens/rnbw-rewards-screen/scenes/AirdropIntroScene';
+import { AirdropUnavailableScene } from '@/features/rnbw-rewards/screens/rnbw-rewards-screen/scenes/AirdropUnavailableScene';
 import { RewardsClaimedScene } from '@/features/rnbw-rewards/screens/rnbw-rewards-screen/scenes/RewardsClaimedScene';
 import { RewardsOverviewScene } from '@/features/rnbw-rewards/screens/rnbw-rewards-screen/scenes/RewardsOverviewScene';
-import { Navbar, navbarHeight } from '@/components/navbar/Navbar';
-import Animated, { useAnimatedStyle } from 'react-native-reanimated';
-import { AirdropUnavailableScene } from '@/features/rnbw-rewards/screens/rnbw-rewards-screen/scenes/AirdropUnavailableScene';
-import { ColorModeProvider } from '@/design-system';
 import { useRewardsFlowStore } from '@/features/rnbw-rewards/stores/rewardsFlowStore';
+import { useTabBarOffset } from '@/hooks/useTabBarOffset';
 
 export const RnbwRewardsScreen = memo(function RnbwRewardsScreen() {
   return (

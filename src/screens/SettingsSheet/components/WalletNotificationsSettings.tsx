@@ -1,26 +1,29 @@
-import * as i18n from '@/languages';
 import React, { useCallback, useMemo, useState } from 'react';
 import { Switch } from 'react-native';
+
+import { useNetInfo } from '@react-native-community/netinfo';
+import { useRoute, type RouteProp } from '@react-navigation/native';
 import Animated, { Easing, useAnimatedStyle, withTiming } from 'react-native-reanimated';
-import Menu from './Menu';
-import MenuContainer from './MenuContainer';
-import MenuItem from './MenuItem';
-import { type ThemeContextProps, useTheme } from '@/theme/ThemeContext';
-import { type RouteProp, useRoute } from '@react-navigation/native';
+
+import * as i18n from '@/languages';
+import type Routes from '@/navigation/routesNames';
+import { type RootStackParamList } from '@/navigation/types';
 import {
   DEFAULT_ENABLED_TOPIC_SETTINGS,
   WalletNotificationRelationship,
   WalletNotificationTopic,
 } from '@/notifications/settings/constants';
-import type { WalletNotificationTopicType, WalletNotificationSettings } from '@/notifications/settings/types';
-import { updateGroupSettings } from '@/notifications/settings/storage';
 import { useWalletGroupNotificationSettings } from '@/notifications/settings/hooks';
 import { toggleGroupNotifications, toggleTopicForWallet } from '@/notifications/settings/settings';
-import { SettingsLoadingIndicator } from '@/screens/SettingsSheet/components/SettingsLoadingIndicator';
+import { updateGroupSettings } from '@/notifications/settings/storage';
+import type { WalletNotificationSettings, WalletNotificationTopicType } from '@/notifications/settings/types';
 import { showNotificationSubscriptionErrorAlert, showOfflineAlert } from '@/screens/SettingsSheet/components/notificationAlerts';
-import { useNetInfo } from '@react-native-community/netinfo';
-import { type RootStackParamList } from '@/navigation/types';
-import type Routes from '@/navigation/routesNames';
+import { SettingsLoadingIndicator } from '@/screens/SettingsSheet/components/SettingsLoadingIndicator';
+import { useTheme, type ThemeContextProps } from '@/theme/ThemeContext';
+
+import Menu from './Menu';
+import MenuContainer from './MenuContainer';
+import MenuItem from './MenuItem';
 
 const makeTopicRowsData = (colors: ThemeContextProps['colors']) => [
   {

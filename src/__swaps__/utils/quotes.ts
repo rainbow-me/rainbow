@@ -1,4 +1,4 @@
-import { type CrosschainQuote, type Quote, type QuoteError, SwapType } from '@rainbow-me/swaps';
+import { SwapType, type CrosschainQuote, type Quote, type QuoteError } from '@rainbow-me/swaps';
 
 // ============ Constants ====================================================== //
 

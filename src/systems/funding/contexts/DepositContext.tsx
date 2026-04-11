@@ -1,16 +1,18 @@
-import React, { createContext, type ReactNode, useContext } from 'react';
+import React, { createContext, useContext, type ReactNode } from 'react';
+
 import { type ExtendedAnimatedAssetWithColors } from '@/__swaps__/types/assets';
 import { type GasSpeed } from '@/__swaps__/types/gas';
 import { useCleanup } from '@/hooks/useCleanup';
 import { useStableValue } from '@/hooks/useStableValue';
 import { createStoreActions } from '@/state/internal/utils/createStoreActions';
-import { createDepositAmountStore } from '../stores/createAmountStore';
-import { computeMaxSwappableAmount, createDepositStore } from '../stores/createDepositStore';
-import { createDepositQuoteStore } from '../stores/createDepositQuoteStore';
-import { createDepositGasStores } from '../stores/createDepositGasStores';
-import { createAmountToReceiveStore } from '../stores/derived/createAmountToReceiveStore';
+
 import { useDepositController } from '../hooks/useDepositController';
 import { useDepositHandler } from '../hooks/useDepositHandler';
+import { createDepositAmountStore } from '../stores/createAmountStore';
+import { createDepositGasStores } from '../stores/createDepositGasStores';
+import { createDepositQuoteStore } from '../stores/createDepositQuoteStore';
+import { computeMaxSwappableAmount, createDepositStore } from '../stores/createDepositStore';
+import { createAmountToReceiveStore } from '../stores/derived/createAmountToReceiveStore';
 import { type DepositConfig, type DepositContextType, type FundingScreenTheme } from '../types';
 
 // ============ Context ======================================================= //
@@ -29,10 +31,10 @@ type DepositProviderProps = {
 
 export function DepositProvider({ children, config, initialAsset, initialGasSpeed, theme }: DepositProviderProps): React.ReactElement {
   const stores = useStableValue(() => {
-    const useAmountStore = createDepositAmountStore(initialAsset);
+    const useAmountStore = createDepositAmountStore(initialAsset, config.initialSliderProgress);
     const useDepositStore = createDepositStore(config, initialAsset, initialGasSpeed);
     const useQuoteStore = createDepositQuoteStore(config, useAmountStore, useDepositStore);
-    const gasStores = createDepositGasStores(config, useDepositStore, useQuoteStore);
+    const gasStores = createDepositGasStores(config, useAmountStore, useDepositStore, useQuoteStore);
     const useAmountToReceive = createAmountToReceiveStore(useAmountStore, useQuoteStore, config.to.token.displaySymbol);
 
     const depositActions = createStoreActions(useAmountStore, createStoreActions(useDepositStore));
@@ -49,7 +51,13 @@ export function DepositProvider({ children, config, initialAsset, initialGasSpee
     };
   });
 
-  const controller = useDepositController(computeMaxSwappableAmount, stores.gasStores, stores.useAmountStore, stores.useDepositStore);
+  const controller = useDepositController(
+    config,
+    computeMaxSwappableAmount,
+    stores.gasStores,
+    stores.useAmountStore,
+    stores.useDepositStore
+  );
 
   const handleDeposit = useDepositHandler({
     config,
@@ -57,6 +65,7 @@ export function DepositProvider({ children, config, initialAsset, initialGasSpee
     gasStores: stores.gasStores,
     isSubmitting: controller.isSubmitting,
     quoteActions: stores.quoteActions,
+    useAmountStore: stores.useAmountStore,
   });
 
   const contextValue: DepositContextType = {
@@ -70,6 +79,7 @@ export function DepositProvider({ children, config, initialAsset, initialGasSpee
   useCleanup(() => {
     stores.gasStores.useMeteorologyStore.getState().reset(true);
     stores.gasStores.useGasLimitStore.getState().reset(true);
+    stores.gasStores.useGasSponsorshipStore.getState().reset(true);
     stores.useQuoteStore.getState().reset(true);
   });
 

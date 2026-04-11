@@ -1,25 +1,27 @@
 import React, { Fragment, useEffect, useMemo, useState } from 'react';
-import { removeFirstEmojiFromString, returnStringFirstEmoji } from '../../helpers/emojiHandler';
+import { StyleSheet } from 'react-native';
+
+import useENSAvatar from '@/features/ens/hooks/useENSAvatar';
+import { fetchReverseRecord } from '@/features/ens/utils/handlers';
+import { ENS_DOMAIN } from '@/features/ens/utils/helpers';
+import styled from '@/framework/ui/styled-thing';
+import { opacity } from '@/framework/ui/utils/opacity';
+import { isENSAddressFormat, isValidDomainFormat } from '@/helpers/validators';
+import useContacts from '@/hooks/useContacts';
+import useDimensions from '@/hooks/useDimensions';
+import * as i18n from '@/languages';
+import { margin } from '@/styles';
 import abbreviations from '@/utils/abbreviations';
 import magicMemo from '@/utils/magicMemo';
 import profileUtils, { addressHashedColorIndex, addressHashedEmoji } from '@/utils/profileUtils';
+
+import { removeFirstEmojiFromString, returnStringFirstEmoji } from '../../helpers/emojiHandler';
 import ButtonPressAnimation from '../animations/ButtonPressAnimation';
 import { BottomRowText } from '../coin-row';
 import { Column, RowWithMargins } from '../layout';
 import { TruncatedAddress, TruncatedENS, TruncatedText } from '../text';
 import ContactAvatar from './ContactAvatar';
 import ImageAvatar from './ImageAvatar';
-import { fetchReverseRecord } from '@/features/ens/utils/handlers';
-import { ENS_DOMAIN } from '@/features/ens/utils/helpers';
-import { isENSAddressFormat, isValidDomainFormat } from '@/helpers/validators';
-import useContacts from '@/hooks/useContacts';
-import useDimensions from '@/hooks/useDimensions';
-import useENSAvatar from '@/features/ens/hooks/useENSAvatar';
-import styled from '@/framework/ui/styled-thing';
-import { margin } from '@/styles';
-import * as i18n from '@/languages';
-import { StyleSheet } from 'react-native';
-import { opacity } from '@/framework/ui/utils/opacity';
 
 const ContactAddress = styled(TruncatedAddress).attrs(({ theme: { colors }, lite }) => ({
   align: 'left',

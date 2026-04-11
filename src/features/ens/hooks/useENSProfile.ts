@@ -1,14 +1,16 @@
 import { useQuery } from '@tanstack/react-query';
+
+import { queryClient, type QueryConfigDeprecated, type UseQueryData } from '@/react-query';
+import { useAccountAddress, useWalletsStore } from '@/state/wallets/walletsStore';
+
+import { fetchENSAddress } from '../resources/addressQuery';
+import { getENSProfile, saveENSProfile } from '../utils/localStorage';
 import { ensAvatarQueryKey, fetchENSAvatar } from './useENSAvatar';
 import { ensCoverQueryKey, fetchENSCover } from './useENSCover';
 import { ensOwnerQueryKey, fetchENSOwner } from './useENSOwner';
 import { ensRecordsQueryKey, fetchENSRecords } from './useENSRecords';
 import { ensRegistrantQueryKey, fetchENSRegistrant } from './useENSRegistrant';
 import { ensResolverQueryKey, fetchENSResolver } from './useENSResolver';
-import { useAccountAddress, useWalletsStore } from '@/state/wallets/walletsStore';
-import { getENSProfile, saveENSProfile } from '../utils/localStorage';
-import { queryClient, type QueryConfigDeprecated, type UseQueryData } from '@/react-query';
-import { fetchENSAddress } from '../resources/addressQuery';
 
 const queryKey = (name: string, { supportedRecordsOnly }: { supportedRecordsOnly?: boolean } = {}) => [
   'ens-profile',

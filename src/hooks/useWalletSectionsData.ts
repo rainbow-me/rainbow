@@ -1,36 +1,38 @@
 import { useEffect, useMemo } from 'react';
-import useAccountSettings from './useAccountSettings';
-import useCoinListEditOptions from './useCoinListEditOptions';
-import useCoinListEdited from './useCoinListEdited';
-import useIsWalletEthZero from './useIsWalletEthZero';
-import { buildBriefWalletSectionsSelector, type WalletSectionsState } from '@/helpers/buildWalletSections';
-import useWalletsWithBalancesAndNames from './useWalletsWithBalancesAndNames';
-import { useUserAssetsStore } from '@/state/assets/userAssets';
-import { useRemoteConfig } from '@/model/remoteConfig';
-import { usePositionsStore } from '@/features/positions/stores/positionsStore';
-import { useClaimablesStore } from '@/state/claimables/claimables';
-import { CLAIMABLES, DEFI_POSITIONS, RNBW_REWARDS, useExperimentalConfig } from '@/config/experimentalHooks';
+
 import { analytics } from '@/analytics';
-import { type CellTypes } from '@/components/asset-list/RecyclerAssetList2/core/ViewTypes';
 import { type AssetListType } from '@/components/asset-list/RecyclerAssetList2';
+import { type CellTypes } from '@/components/asset-list/RecyclerAssetList2/core/ViewTypes';
+import { CLAIMABLES, DEFI_POSITIONS, RNBW_REWARDS, useExperimentalConfig } from '@/config/experimentalHooks';
 import { IS_TEST } from '@/env';
-import { useNftsStore } from '@/state/nfts/nfts';
-import { useAccountAddress, useIsReadOnlyWallet, useSelectedWallet } from '@/state/wallets/walletsStore';
-import useShowcaseTokens from '@/hooks/useShowcaseTokens';
-import useHiddenTokens from '@/hooks/useHiddenTokens';
-import { isDataComplete } from '@/state/nfts/utils';
-import { type PerpsPositionsInfo, usePerpsPositionsInfo } from '@/features/perps/stores/derived/usePerpsPositionsInfo';
-import { type PerpsWalletListData } from '@/features/perps/types';
 import { usePerpsFeatureCard } from '@/features/perps/hooks/usePerpsFeatureCard';
+import { usePerpsPositionsInfo, type PerpsPositionsInfo } from '@/features/perps/stores/derived/usePerpsPositionsInfo';
+import { type PerpsWalletListData } from '@/features/perps/types';
 import { usePolymarketFeatureCard } from '@/features/polymarket/hooks/usePolymarketFeatureCard';
-import { useRnbwFeatureCard } from '@/features/rnbw-rewards/hooks/useRnbwFeatureCard';
-import { shallowEqual } from '@/worklets/comparisons';
-import { type PolymarketPosition, type PolymarketWalletListData } from '@/features/polymarket/types';
-import { usePolymarketPositions } from '@/features/polymarket/stores/derived/usePolymarketPositions';
 import {
-  type PolymarketAccountValueSummary,
   usePolymarketAccountValueSummary,
+  type PolymarketAccountValueSummary,
 } from '@/features/polymarket/stores/derived/usePolymarketAccountValueSummary';
+import { usePolymarketPositions } from '@/features/polymarket/stores/derived/usePolymarketPositions';
+import { type PolymarketPosition, type PolymarketWalletListData } from '@/features/polymarket/types';
+import { usePositionsStore } from '@/features/positions/stores/positionsStore';
+import { useRnbwFeatureCard } from '@/features/rnbw-rewards/hooks/useRnbwFeatureCard';
+import { buildBriefWalletSectionsSelector, type WalletSectionsState } from '@/helpers/buildWalletSections';
+import useHiddenTokens from '@/hooks/useHiddenTokens';
+import useShowcaseTokens from '@/hooks/useShowcaseTokens';
+import { useRemoteConfig } from '@/model/remoteConfig';
+import { useUserAssetsStore } from '@/state/assets/userAssets';
+import { useClaimablesStore } from '@/state/claimables/claimables';
+import { useNftsStore } from '@/state/nfts/nfts';
+import { isDataComplete } from '@/state/nfts/utils';
+import { useAccountAddress, useIsReadOnlyWallet, useSelectedWallet } from '@/state/wallets/walletsStore';
+import { shallowEqual } from '@/worklets/comparisons';
+
+import useAccountSettings from './useAccountSettings';
+import useCoinListEdited from './useCoinListEdited';
+import useCoinListEditOptions from './useCoinListEditOptions';
+import useIsWalletEthZero from './useIsWalletEthZero';
+import useWalletsWithBalancesAndNames from './useWalletsWithBalancesAndNames';
 
 export interface WalletSectionsResult {
   briefSectionsData: CellTypes[];

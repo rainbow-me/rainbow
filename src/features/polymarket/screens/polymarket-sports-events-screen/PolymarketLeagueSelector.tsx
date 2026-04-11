@@ -1,20 +1,22 @@
 import { Fragment, memo, useCallback, useMemo, useRef } from 'react';
-import { type LayoutChangeEvent, StyleSheet, View } from 'react-native';
+import { StyleSheet, View, type LayoutChangeEvent } from 'react-native';
+
 import { ScrollView } from 'react-native-gesture-handler';
-import Animated, { type SharedValue, useAnimatedStyle, useSharedValue } from 'react-native-reanimated';
-import { THICK_BORDER_WIDTH, THICKER_BORDER_WIDTH } from '@/styles/constants';
+import Animated, { useAnimatedStyle, useSharedValue, type SharedValue } from 'react-native-reanimated';
+
 import ButtonPressAnimation from '@/components/animations/ButtonPressAnimation';
 import { Border, globalColors, Text, useColorMode } from '@/design-system';
-import { DEFAULT_SPORTS_LEAGUE_KEY } from '@/features/polymarket/constants';
-import { LEAGUE_SELECTOR_ORDER, SPORT_LEAGUES, type LeagueId } from '@/features/polymarket/leagues';
 import { InnerShadow } from '@/features/polymarket/components/InnerShadow';
 import { getIconByLeagueId, LeagueIcon } from '@/features/polymarket/components/league-icon/LeagueIcon';
+import { DEFAULT_SPORTS_LEAGUE_KEY } from '@/features/polymarket/constants';
+import { LEAGUE_SELECTOR_ORDER, SPORT_LEAGUES, type LeagueId } from '@/features/polymarket/leagues';
 import { usePolymarketContext } from '@/features/polymarket/screens/polymarket-navigator/PolymarketContext';
 import { usePolymarketSportsEventsStore } from '@/features/polymarket/stores/polymarketSportsEventsStore';
+import { opacity } from '@/framework/ui/utils/opacity';
+import { THICK_BORDER_WIDTH, THICKER_BORDER_WIDTH } from '@/styles/constants';
 import { deepFreeze } from '@/utils/deepFreeze';
 import { DEVICE_WIDTH } from '@/utils/deviceUtils';
 import { createOpacityPalette } from '@/worklets/colors';
-import { opacity } from '@/framework/ui/utils/opacity';
 
 type LeagueItemKey = LeagueId | typeof DEFAULT_SPORTS_LEAGUE_KEY;
 type LeagueItem = {

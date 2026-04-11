@@ -1,20 +1,21 @@
+import { type Address } from 'viem';
+
 import { analytics } from '@/analytics';
 import { type NativeCurrencyKey } from '@/entities/nativeCurrencyTypes';
 import { useAirdropBalanceStore } from '@/features/rnbw-rewards/stores/airdropBalanceStore';
-import { useUserAssetsStore } from '@/state/assets/userAssets';
 import { type ClaimAirdropResponse, type ClaimAirdropResult } from '@/features/rnbw-rewards/types/claimAirdropTypes';
 import { getPlatformResult } from '@/features/rnbw-rewards/utils/getPlatformResult';
 import { pollClaimStatus, type PollClaimStatusResult } from '@/features/rnbw-rewards/utils/pollClaimStatus';
+import { type RainbowFetchResponse } from '@/framework/data/http/rainbowFetch';
+import { LedgerSigner } from '@/handlers/LedgerSigner';
 import { getProvider } from '@/handlers/web3';
 import { logger, RainbowError } from '@/logger';
 import { loadWallet, signPersonalMessage } from '@/model/wallet';
-import { type RainbowFetchResponse } from '@/framework/data/http/rainbowFetch';
-import { getPlatformClient } from '@/resources/platform/client';
-import { ChainId } from '@rainbow-me/swaps';
-import { type Address } from 'viem';
-import { time } from '@/utils/time';
-import { LedgerSigner } from '@/handlers/LedgerSigner';
 import Navigation from '@/navigation/Navigation';
+import { getPlatformClient } from '@/resources/platform/client';
+import { useUserAssetsStore } from '@/state/assets/userAssets';
+import { time } from '@/utils/time';
+import { ChainId } from '@rainbow-me/swaps';
 
 type ClaimStatusPollResult = PollClaimStatusResult<ClaimAirdropResult, ClaimAirdropResponse>;
 

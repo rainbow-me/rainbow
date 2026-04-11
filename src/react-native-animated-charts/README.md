@@ -190,7 +190,6 @@ Generator accepts object of parameters as an argument:
 - `includeExtremes`. If it's vital to include extremes in the output, set to true. However, the data might not be fully equidistant.
 - `removePointsSurroundingExtremes`. Makes sense only if `includeExtremes` set to `true`. When disabled, it might be possible that extremes look very "pointy". To get rid of this, you can remove points surrounding extremes.
   E.g.
-
   - `removePointsSurroundingExtremes = false`
 
     `o---------o----Min--o---------o---------o---------o---------o`

@@ -1,14 +1,17 @@
-import { toUpper } from 'lodash';
 import React, { useMemo } from 'react';
+
+import { toUpper } from 'lodash';
+
+import { useColorMode } from '@/design-system';
+import { IS_ANDROID } from '@/env';
+import ShadowStack from '@/react-native-shadow-stack';
+import { borders } from '@/styles';
+import { getFirstGrapheme } from '@/utils/formatters';
+
 import { darkModeThemeColors } from '../../styles/colors';
 import { useTheme } from '../../theme/ThemeContext';
-import { getFirstGrapheme } from '@/utils/formatters';
 import { Centered } from '../layout';
 import { Text } from '../text';
-import { borders } from '@/styles';
-import ShadowStack from '@/react-native-shadow-stack';
-import { IS_ANDROID } from '@/env';
-import { useColorMode } from '@/design-system';
 
 const buildShadows = (color, size, darkMode, colors) => {
   if (size === 'small') {
@@ -114,7 +117,7 @@ const ContactAvatar = ({ color, size = 'medium', value, ...props }) => {
     typeof color === 'number'
       ? // sometimes the color is gonna be missing so we fallback to white
         // otherwise there will be only shadows without the the placeholder "circle"
-        colors.avatarBackgrounds[color] ?? colors.white
+        (colors.avatarBackgrounds[color] ?? colors.white)
       : color;
 
   return (

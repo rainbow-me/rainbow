@@ -1,25 +1,25 @@
+import React, { memo, useCallback, useMemo, useRef } from 'react';
+import { StyleSheet, View } from 'react-native';
+
 import {
   BlendMode,
   Canvas,
   ClipOp,
   PaintStyle,
   Picture,
+  Skia,
+  StrokeCap,
+  StrokeJoin,
   type SkCanvas,
   type SkColor,
   type SkParagraph,
   type SkPicture,
-  Skia,
-  StrokeCap,
-  StrokeJoin,
 } from '@shopify/react-native-skia';
 import { dequal } from 'dequal';
 import { cloneDeep, merge } from 'lodash';
-import React, { memo, useCallback, useMemo, useRef } from 'react';
-import { StyleSheet, View } from 'react-native';
 import { Gesture, GestureDetector, State as GestureState } from 'react-native-gesture-handler';
 import Animated, {
   Easing,
-  type SharedValue,
   runOnJS,
   runOnUI,
   useAnimatedReaction,
@@ -28,25 +28,34 @@ import Animated, {
   useSharedValue,
   withSpring,
   withTiming,
+  type SharedValue,
 } from 'react-native-reanimated';
-import { HapticFeedbackTypes } from 'react-native-haptic-feedback';
 import { triggerHaptics } from 'react-native-turbo-haptics';
-import ButtonPressAnimation from '@/components/animations/ButtonPressAnimation';
+
+import { clamp } from '@/__swaps__/utils/swaps';
 import { AnimatedSpinner } from '@/components/animations/AnimatedSpinner';
 import { SPRING_CONFIGS, TIMING_CONFIGS } from '@/components/animations/animationConfigs';
+import ButtonPressAnimation from '@/components/animations/ButtonPressAnimation';
 import { EasingGradient } from '@/components/easing-gradient/EasingGradient';
 import { DelayedMount } from '@/components/utilities/DelayedMount';
 import { MountWhenFocused } from '@/components/utilities/MountWhenFocused';
 import useExperimentalFlag, { CANDLESTICK_DATA_MONITOR } from '@/config/experimentalHooks';
-import { Text, TextIcon, globalColors, useColorMode, useForegroundColor } from '@/design-system';
+import { globalColors, Text, TextIcon, useColorMode, useForegroundColor } from '@/design-system';
 import { getColorForTheme } from '@/design-system/color/useForegroundColor';
-import { type TextSegment, useSkiaText } from '@/design-system/components/SkiaText/useSkiaText';
+import { useSkiaText, type TextSegment } from '@/design-system/components/SkiaText/useSkiaText';
 import { NativeCurrencyKeys, type NativeCurrencyKey } from '@/entities/nativeCurrencyTypes';
 import { IS_DEV, IS_IOS } from '@/env';
 import { areCandlesEqual, formatCandlestickPrice } from '@/features/charts/candlestick/utils';
 import { candlestickActions, fetchHistoricalCandles, useCandlestickStore } from '@/features/charts/stores/candlestickStore';
 import { useChartsStore } from '@/features/charts/stores/chartsStore';
 import { isHyperliquidToken } from '@/features/charts/utils';
+import {
+  PerpsIndicatorBuilder,
+  type IndicatorPosition,
+  type PerpsIndicatorData,
+} from '@/features/perps/charts-plugin/PerpsIndicatorBuilder';
+import { usePerpsIndicatorData } from '@/features/perps/charts-plugin/usePerpsIndicatorData';
+import { opacity } from '@/framework/ui/utils/opacity';
 import { useWorkletClass } from '@/hooks/reanimated/useWorkletClass';
 import { useCleanup } from '@/hooks/useCleanup';
 import { useOnChange } from '@/hooks/useOnChange';
@@ -57,22 +66,15 @@ import { userAssetsStoreManager } from '@/state/assets/userAssetsStoreManager';
 import { type ChainId } from '@/state/backendNetworks/types';
 import { useListen } from '@/state/internal/hooks/useListen';
 import { useListenerRouteGuard } from '@/state/internal/hooks/useListenerRouteGuard';
-import { clamp } from '@/__swaps__/utils/swaps';
-import { opacity } from '@/framework/ui/utils/opacity';
 import { type DeepPartial } from '@/types/objects';
 import { deepFreeze } from '@/utils/deepFreeze';
 import { DEVICE_WIDTH } from '@/utils/deviceUtils';
 import { time } from '@/utils/time';
-import { type DampingMassStiffnessConfig, normalizeSpringConfig } from '@/worklets/animations';
+import { normalizeSpringConfig, type DampingMassStiffnessConfig } from '@/worklets/animations';
 import { createBlankPicture } from '@/worklets/skia';
+
 import { NoChartData } from '../../components/NoChartData';
 import { type HyperliquidSymbol, type Token } from '../../types';
-import {
-  type IndicatorPosition,
-  type PerpsIndicatorData,
-  PerpsIndicatorBuilder,
-} from '@/features/perps/charts-plugin/PerpsIndicatorBuilder';
-import { usePerpsIndicatorData } from '@/features/perps/charts-plugin/usePerpsIndicatorData';
 import { Animator } from '../classes/Animator';
 import { EmaIndicator, IndicatorBuilder, type IndicatorKey } from '../classes/IndicatorBuilder';
 import { TimeFormatter } from '../classes/TimeFormatter';
@@ -2070,7 +2072,7 @@ export const CandlestickChart = memo(function CandlestickChart({
               color={accentColor}
               idleComponent={
                 <ButtonPressAnimation
-                  hapticType={HapticFeedbackTypes.soft}
+                  hapticType="soft"
                   onPress={() => fetchAdditionalCandles(true)}
                   style={{ height: SPINNER_HIT_AREA_SIZE + 16, marginTop: 16, width: SPINNER_HIT_AREA_SIZE }}
                 >

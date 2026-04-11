@@ -1,9 +1,11 @@
+import { useCallback } from 'react';
 import { type LayoutRectangle } from 'react-native';
+
 import { runOnJS, useAnimatedReaction, useSharedValue } from 'react-native-reanimated';
+
 import { useDndContext } from '../../../DndContext';
 import type { UniqueIdentifier } from '../../../types';
-import { applyOffset, arraysEqual, type Direction, doesOverlapOnAxis, moveArrayIndex, type Rectangle } from '../../../utils';
-import { useCallback } from 'react';
+import { applyOffset, arraysEqual, doesOverlapOnAxis, moveArrayIndex, type Direction, type Rectangle } from '../../../utils';
 
 export type ShouldSwapWorklet = (activeLayout: Rectangle, itemLayout: Rectangle, direction: Direction) => boolean;
 

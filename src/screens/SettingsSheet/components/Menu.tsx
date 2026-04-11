@@ -1,4 +1,5 @@
 import React from 'react';
+
 import { Box, Separator, Stack, Text, type BoxProps } from '@/design-system';
 
 type DescriptionContent = string | React.ReactNode;

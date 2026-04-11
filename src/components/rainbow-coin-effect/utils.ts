@@ -1,12 +1,15 @@
-import { type SkPath, type SkPoint, type SkRect, point } from '@shopify/react-native-skia';
-import { Easing, type SharedValue, withRepeat, withSequence, withSpring, withTiming } from 'react-native-reanimated';
 import { type ViewStyle } from 'react-native';
+
+import { point, type SkPath, type SkPoint, type SkRect } from '@shopify/react-native-skia';
+import { Easing, withRepeat, withSequence, withSpring, withTiming, type SharedValue } from 'react-native-reanimated';
+
 import { TIMING_CONFIGS } from '@/components/animations/animationConfigs';
 import { globalColors } from '@/design-system';
-import { getHighContrastColor } from '@/hooks/useAccountAccentColor';
 import { opacity } from '@/framework/ui/utils/opacity';
+import { getHighContrastColor } from '@/hooks/useAccountAccentColor';
 import { generateRainbowGradient } from '@/worklets/gradients';
 import { getCirclePath } from '@/worklets/skia';
+
 import { ANIMATION_CONFIGS, CANVAS_VIEW_BUFFER_FACTOR, INTERNAL_SPRING_CONFIGS } from './constants';
 
 interface RainbowCoinEffectConfig {

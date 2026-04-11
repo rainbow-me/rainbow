@@ -1,4 +1,5 @@
 import { useAnimatedReaction, useSharedValue } from 'react-native-reanimated';
+
 import type { DependencyList } from '../types';
 
 export function useLatestSharedValue<T>(value: T, dependencies: DependencyList = [value]) {

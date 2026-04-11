@@ -1,11 +1,13 @@
-import { add, greaterThan } from '@/helpers/utilities';
 import { type HistoricalOrdersResponse, type UserFillsResponse } from '@nktkas/hyperliquid';
 import { type Address } from 'viem';
+
 import { RAINBOW_BUILDER_SETTINGS } from '@/features/perps/constants';
-import { PerpPositionSide, type PerpAccount, type PerpsPosition } from '../types';
-import { normalizeDexSymbol } from '@/features/perps/utils/hyperliquidSymbols';
 import { infoClient } from '@/features/perps/services/hyperliquid-info-client';
 import { hyperliquidDexActions } from '@/features/perps/stores/hyperliquidDexStore';
+import { normalizeDexSymbol } from '@/features/perps/utils/hyperliquidSymbols';
+import { add, greaterThan } from '@/helpers/utilities';
+
+import { PerpPositionSide, type PerpAccount, type PerpsPosition } from '../types';
 
 export class HyperliquidAccountClient {
   constructor(private userAddress: Address) {}

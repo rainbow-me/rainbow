@@ -1,13 +1,14 @@
+import { type Address } from 'viem';
+
 import { AssetType } from '@/entities/assetTypes';
 import type { UniqueAsset } from '@/entities/uniqueAssets';
 import { ENS_NFT_CONTRACT_ADDRESS } from '@/features/ens/references';
-import { POAP_NFT_ADDRESS } from '@/references/constants';
-import { convertRawAmountToRoundedDecimal } from '@/helpers/utilities';
-import { handleNFTImages } from '@/utils/handleNFTImages';
 import { NftTokenType, type SimpleHashNft } from '@/graphql/__generated__/arc';
-import { type Network } from '@/state/backendNetworks/types';
+import { convertRawAmountToRoundedDecimal } from '@/helpers/utilities';
+import { POAP_NFT_ADDRESS } from '@/references/constants';
 import { useBackendNetworksStore } from '@/state/backendNetworks/backendNetworks';
-import { type Address } from 'viem';
+import { type Network } from '@/state/backendNetworks/types';
+import { handleNFTImages } from '@/utils/handleNFTImages';
 
 /**
  * @deprecated Should not use this and instead use parseUniqueAsset: https://github.com/rainbow-me/rainbow/blob/2559ee2a5924404de5e723fb11a8e3723c98842d/src/resources/nfts/utils.ts#L75

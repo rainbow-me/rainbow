@@ -1,19 +1,22 @@
-import { type NotifyOnChangeProps, useQuery } from '@tanstack/react-query';
-import { type ChainId } from '@/state/backendNetworks/types';
-import { rainbowMeteorologyGetData } from '@/handlers/gasFees';
-import { abs, lessThan, subtract, isZero } from '@/helpers/utilities';
-import { gweiToWei } from '@/parsers/gas';
-import { type QueryConfig, type QueryFunctionArgs, type QueryFunctionResult, createQueryKey, queryClient } from '@/react-query';
 import { useCallback } from 'react';
+
+import { useQuery, type NotifyOnChangeProps } from '@tanstack/react-query';
+
+import { mockMeteorologyData } from '@/e2e-mocks/meteorology';
+import { type MeteorologyLegacyResponse, type MeteorologyResponse } from '@/entities/gas';
+import { IS_TEST } from '@/env';
+import { rainbowMeteorologyGetData } from '@/handlers/gasFees';
+import { getMinimalTimeUnitStringForMs } from '@/helpers/time';
+import { abs, isZero, lessThan, subtract } from '@/helpers/utilities';
+import { gweiToWei } from '@/parsers/gas';
+import { createQueryKey, queryClient, type QueryConfig, type QueryFunctionArgs, type QueryFunctionResult } from '@/react-query';
+import { isLegacyMeteorologyFeeData } from '@/resources/meteorology/classification';
+import { type ChainId } from '@/state/backendNetworks/types';
+import { useConnectedToAnvilStore } from '@/state/connectedToAnvil';
+
 import { type GasSettings } from '../screens/Swap/hooks/useCustomGas';
 import { getSelectedGasSpeed, useGasSettings } from '../screens/Swap/hooks/useSelectedGas';
 import { GasSpeed } from '../types/gas';
-import { type MeteorologyLegacyResponse, type MeteorologyResponse } from '@/entities/gas';
-import { getMinimalTimeUnitStringForMs } from '@/helpers/time';
-import { IS_TEST } from '@/env';
-import { useConnectedToAnvilStore } from '@/state/connectedToAnvil';
-import { mockMeteorologyData } from '@/e2e-mocks/meteorology';
-import { isLegacyMeteorologyFeeData } from '@/resources/meteorology/classification';
 
 // Query Types
 

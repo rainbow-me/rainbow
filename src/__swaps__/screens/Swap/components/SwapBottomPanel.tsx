@@ -1,10 +1,6 @@
-import { NavigationSteps, useSwapContext } from '@/__swaps__/screens/Swap/providers/swap-provider';
-import { opacity } from '@/framework/ui/utils/opacity';
-import { Box, Separator, Text, globalColors, useColorMode } from '@/design-system';
-import useExperimentalFlag, { RNBW_REWARDS } from '@/config/experimentalHooks';
-import { useRemoteConfig } from '@/model/remoteConfig';
 import React, { memo, useCallback } from 'react';
 import { StyleSheet } from 'react-native';
+
 import { GestureDetector } from 'react-native-gesture-handler';
 import Animated, {
   Easing,
@@ -16,24 +12,31 @@ import Animated, {
   withTiming,
 } from 'react-native-reanimated';
 import { triggerHaptics } from 'react-native-turbo-haptics';
+import { type Address } from 'viem';
+
+import { NavigationSteps, useSwapContext } from '@/__swaps__/screens/Swap/providers/swap-provider';
+import { SPRING_CONFIGS } from '@/components/animations/animationConfigs';
+import useExperimentalFlag, { RNBW_REWARDS } from '@/config/experimentalHooks';
+import { Box, globalColors, Separator, Text, useColorMode } from '@/design-system';
+import { opacity } from '@/framework/ui/utils/opacity';
+import { convertRawAmountToDecimalFormat, truncateToDecimalsWithThreshold } from '@/helpers/utilities';
+import { useWillExecuteDelegation } from '@/hooks/useWillExecuteDelegation';
+import * as i18n from '@/languages';
+import { logger, RainbowError } from '@/logger';
+import { useRemoteConfig } from '@/model/remoteConfig';
+import { useNavigation } from '@/navigation/Navigation';
+import Routes from '@/navigation/routesNames';
+import { type ChainId } from '@/state/backendNetworks/types';
+import { useSwapsStore } from '@/state/swaps/swapsStore';
+import { getIsHardwareWallet, useAccountAddress } from '@/state/wallets/walletsStore';
+import { LIGHT_SEPARATOR_COLOR, SEPARATOR_COLOR, THICK_BORDER_WIDTH } from '@/styles/constants';
+
 import { useBottomPanelGestureHandler } from '../hooks/useBottomPanelGestureHandler';
 import { GasButton } from './GasButton';
 import { GasPanel } from './GasPanel';
 import { ReviewPanel } from './ReviewPanel';
-import { SwapActionButton } from './SwapActionButton';
 import { SettingsPanel } from './SettingsPanel';
-import { SPRING_CONFIGS } from '@/components/animations/animationConfigs';
-import { getIsHardwareWallet, useAccountAddress } from '@/state/wallets/walletsStore';
-import { useNavigation } from '@/navigation/Navigation';
-import Routes from '@/navigation/routesNames';
-import { logger, RainbowError } from '@/logger';
-import { useSwapsStore } from '@/state/swaps/swapsStore';
-import * as i18n from '@/languages';
-import { convertRawAmountToDecimalFormat, truncateToDecimalsWithThreshold } from '@/helpers/utilities';
-import { LIGHT_SEPARATOR_COLOR, SEPARATOR_COLOR, THICK_BORDER_WIDTH } from '@/styles/constants';
-import { type ChainId } from '@/state/backendNetworks/types';
-import { type Address } from 'viem';
-import { useWillExecuteDelegation } from '@/features/delegation/willDelegate';
+import { SwapActionButton } from './SwapActionButton';
 
 const HOLD_TO_SWAP_DURATION_MS = 400;
 

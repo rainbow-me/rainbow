@@ -1,54 +1,52 @@
 // @refresh reset
 
 import React, { useEffect, useMemo, useState } from 'react';
+
+import { useDelegations } from '@rainbow-me/delegation';
+import Animated, { Easing, interpolate, useAnimatedStyle, useSharedValue, withTiming } from 'react-native-reanimated';
+import { useTiming } from 'react-native-redash';
+import { useSelector } from 'react-redux';
+import type { Address } from 'viem';
+
+import rainbowIcon from '@/assets/rainbow-icon-circle.png';
+import smartWalletIcon from '@/assets/smartWalletIcon.png';
+import { ChainImage } from '@/components/coin-icon/ChainImage';
+import RainbowCoinIcon from '@/components/coin-icon/RainbowCoinIcon';
+import { ContactAvatar } from '@/components/contacts';
+import ImageAvatar from '@/components/contacts/ImageAvatar';
+import { ImgixImage } from '@/components/images';
+import RowWithMargins from '@/components/layout/RowWithMargins';
+import { Bleed, Box, Columns, Cover, Row, Rows, Separator, Stack, Text, type TextProps } from '@/design-system';
 import { type ParsedAddressAsset } from '@/entities/tokens';
 import { type RainbowTransaction } from '@/entities/transactions';
-
-import { Bleed, Box, Columns, Cover, Row, Rows, Separator, Stack, Text, type TextProps } from '@/design-system';
-
-import styled from '@/framework/ui/styled-thing';
-import { position } from '@/styles';
-import { type ThemeContextProps, useTheme } from '@/theme/ThemeContext';
-import { usePersistentDominantColorFromImage } from '@/hooks/usePersistentDominantColorFromImage';
-import RowWithMargins from '@/components/layout/RowWithMargins';
 import { IS_ANDROID } from '@/env';
+import { getDelegationContractAddress, isRainbowDelegated } from '@/features/delegation/status';
+import { fetchENSAvatar } from '@/features/ens/hooks/useENSAvatar';
+import { fetchReverseRecord } from '@/features/ens/utils/handlers';
+import styled from '@/framework/ui/styled-thing';
+import { opacity } from '@/framework/ui/utils/opacity';
+import { removeFirstEmojiFromString, returnStringFirstEmoji } from '@/helpers/emojiHandler';
+import { checkForPendingSwap } from '@/helpers/transactions';
 import {
   convertAmountAndPriceToNativeDisplay,
   convertAmountToBalanceDisplay,
   convertRawAmountToDecimalFormat,
   handleSignificantDecimals,
 } from '@/helpers/utilities';
-import { fetchENSAvatar } from '@/features/ens/hooks/useENSAvatar';
-import { fetchReverseRecord } from '@/features/ens/utils/handlers';
-
-import { formatAddressForDisplay } from '@/utils/abbreviations';
-import { ContactAvatar } from '@/components/contacts';
-import isLowerCaseMatch from '@/utils/isLowerCaseMatch';
-import { useSelector } from 'react-redux';
-import { type AppState } from '@/redux/store';
 import useContacts from '@/hooks/useContacts';
+import { usePersistentDominantColorFromImage } from '@/hooks/usePersistentDominantColorFromImage';
+import usePrevious from '@/hooks/usePrevious';
 import useUserAccounts from '@/hooks/useUserAccounts';
-import { useTiming } from 'react-native-redash';
-import Animated, { Easing, interpolate, useAnimatedStyle, useSharedValue, withTiming } from 'react-native-reanimated';
-import { removeFirstEmojiFromString, returnStringFirstEmoji } from '@/helpers/emojiHandler';
-import { addressHashedColorIndex, addressHashedEmoji } from '@/utils/profileUtils';
-import ImageAvatar from '@/components/contacts/ImageAvatar';
-import RainbowCoinIcon from '@/components/coin-icon/RainbowCoinIcon';
 import * as i18n from '@/languages';
+import { type AppState } from '@/redux/store';
 import { ChainId } from '@/state/backendNetworks/types';
 import { useAccountAddress } from '@/state/wallets/walletsStore';
-import { checkForPendingSwap } from '@/helpers/transactions';
+import { position } from '@/styles';
+import { useTheme, type ThemeContextProps } from '@/theme/ThemeContext';
+import { formatAddressForDisplay } from '@/utils/abbreviations';
+import isLowerCaseMatch from '@/utils/isLowerCaseMatch';
+import { addressHashedColorIndex, addressHashedEmoji } from '@/utils/profileUtils';
 import { safeSum } from '@/utils/safeSum';
-import { opacity } from '@/framework/ui/utils/opacity';
-import { ChainImage } from '@/components/coin-icon/ChainImage';
-import { ImgixImage } from '@/components/images';
-import { useDelegations } from '@rainbow-me/delegation';
-import { getDelegationContractAddress, isRainbowDelegated } from '@/features/delegation/status';
-import usePrevious from '@/hooks/usePrevious';
-import type { Address } from 'viem';
-
-import rainbowIcon from '@/assets/rainbow-icon-circle.png';
-import smartWalletIcon from '@/assets/smartWalletIcon.png';
 
 const TransactionMastheadHeight = android ? 153 : 135;
 

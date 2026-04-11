@@ -1,27 +1,30 @@
 import { getAddress, type Address } from 'viem';
-import {
-  type ChainId as SwapsChainId,
-  type Quote,
-  type QuoteParams,
-  Source,
-  SwapType,
-  type TokenAsset,
-  ETH_ADDRESS,
-} from '@rainbow-me/swaps';
-import { convertAmountToRawAmount } from '@/helpers/utilities';
+
+import { stripNonDecimalNumbers } from '@/__swaps__/utils/swaps';
 import { equalWorklet, greaterThanWorklet } from '@/framework/core/safeMath';
+import { isNativeAsset } from '@/handlers/assets';
+import { convertAmountToRawAmount } from '@/helpers/utilities';
 import { userAssetsStoreManager } from '@/state/assets/userAssetsStoreManager';
 import { type ChainId } from '@/state/backendNetworks/types';
 import { createQueryStore } from '@/state/internal/createQueryStore';
 import { type InferStoreState } from '@/state/internal/types';
 import { useWalletsStore } from '@/state/wallets/walletsStore';
-import { stripNonDecimalNumbers } from '@/__swaps__/utils/swaps';
 import { time } from '@/utils/time';
 import {
+  ETH_ADDRESS,
+  Source,
+  SwapType,
+  type Quote,
+  type QuoteParams,
+  type ChainId as SwapsChainId,
+  type TokenAsset,
+} from '@rainbow-me/swaps';
+
+import {
+  DepositQuoteStatus,
   type AmountStoreType,
   type DepositConfig,
   type DepositQuoteResult,
-  DepositQuoteStatus,
   type DepositQuoteStoreParams,
   type DepositQuoteStoreType,
   type DepositStoreType,
@@ -30,7 +33,6 @@ import { fetchAndValidateCrosschainQuote } from '../utils/crosschainQuote';
 import { isValidSwapsChainId } from '../utils/quotes';
 import { fetchAndValidateSameChainQuote } from '../utils/sameChainQuote';
 import { resolveDefaultSlippage } from '../utils/slippage';
-import { isNativeAsset } from '@/handlers/assets';
 
 // ============ Quote Store Factory ============================================ //
 

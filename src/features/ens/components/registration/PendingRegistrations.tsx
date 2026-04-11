@@ -1,14 +1,17 @@
-import * as i18n from '@/languages';
 import React, { useCallback, useEffect } from 'react';
+
 import { LinearGradient } from 'expo-linear-gradient';
+
 import { Alert } from '@/components/alerts';
 import ButtonPressAnimation from '@/components/animations/ButtonPressAnimation';
 import ImageAvatar from '@/components/contacts/ImageAvatar';
-import { abbreviateEnsForDisplay } from '@/utils/abbreviations';
 import { Box, Column, Columns, Inset, Separator, Stack, Text } from '@/design-system';
-import type { RegistrationParameters } from '../../types/registration';
-import useENSPendingRegistrations from '../../hooks/useENSPendingRegistrations';
+import * as i18n from '@/languages';
 import { colors } from '@/styles';
+import { abbreviateEnsForDisplay } from '@/utils/abbreviations';
+
+import useENSPendingRegistrations from '../../hooks/useENSPendingRegistrations';
+import type { RegistrationParameters } from '../../types/registration';
 
 const PendingRegistration = ({
   registration,

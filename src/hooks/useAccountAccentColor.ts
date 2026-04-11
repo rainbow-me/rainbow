@@ -1,9 +1,11 @@
+import { useMemo } from 'react';
+
+import chroma from 'chroma-js';
+
 import { globalColors, useColorMode } from '@/design-system';
 import { usePersistentDominantColorFromImage } from '@/hooks/usePersistentDominantColorFromImage';
 import { useAccountProfileInfo } from '@/state/wallets/walletsStore';
 import { useTheme } from '@/theme/ThemeContext';
-import chroma from 'chroma-js';
-import { useMemo } from 'react';
 
 const CONTRAST_THRESHOLD = 2.125;
 

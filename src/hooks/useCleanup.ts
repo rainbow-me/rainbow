@@ -1,4 +1,4 @@
-import { type DependencyList, useEffect } from 'react';
+import { useEffect, type DependencyList } from 'react';
 
 const EMPTY_DEPS: DependencyList = [];
 
