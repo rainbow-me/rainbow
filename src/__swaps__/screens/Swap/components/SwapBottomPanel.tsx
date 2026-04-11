@@ -18,9 +18,9 @@ import { NavigationSteps, useSwapContext } from '@/__swaps__/screens/Swap/provid
 import { SPRING_CONFIGS } from '@/components/animations/animationConfigs';
 import useExperimentalFlag, { RNBW_REWARDS } from '@/config/experimentalHooks';
 import { Box, globalColors, Separator, Text, useColorMode } from '@/design-system';
+import { useWillExecuteDelegation } from '@/features/delegation/willDelegate';
 import { opacity } from '@/framework/ui/utils/opacity';
 import { convertRawAmountToDecimalFormat, truncateToDecimalsWithThreshold } from '@/helpers/utilities';
-import { useWillExecuteDelegation } from '@/hooks/useWillExecuteDelegation';
 import * as i18n from '@/languages';
 import { logger, RainbowError } from '@/logger';
 import { useRemoteConfig } from '@/model/remoteConfig';

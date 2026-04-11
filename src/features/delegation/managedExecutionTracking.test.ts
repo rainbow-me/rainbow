@@ -1,3 +1,7 @@
+import { TransactionStatus } from '@/entities/transactions';
+
+import { trackManagedCallsExecution } from './managedExecutionTracking';
+
 const mockAddPendingTransaction = jest.fn();
 
 jest.mock('@/state/pendingTransactions', () => ({
@@ -5,9 +9,6 @@ jest.mock('@/state/pendingTransactions', () => ({
     addPendingTransaction: (...args: unknown[]) => mockAddPendingTransaction(...args),
   },
 }));
-
-import { TransactionStatus } from '@/entities/transactions';
-import { trackManagedCallsExecution } from './managedExecutionTracking';
 
 describe('managedExecutionTracking', () => {
   beforeEach(() => {

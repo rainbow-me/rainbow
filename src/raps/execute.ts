@@ -1,11 +1,16 @@
 import { type Signer } from '@ethersproject/abstract-signer';
+import type { StaticJsonRpcProvider } from '@ethersproject/providers';
 import { Wallet } from '@ethersproject/wallet';
 
 import type { LegacyTransactionGasParamAmounts, TransactionGasParamAmounts } from '@/entities/gas';
 import type { NewTransaction } from '@/entities/transactions';
 import { IS_TEST } from '@/env';
+import { trackManagedCallsExecution } from '@/features/delegation/managedExecutionTracking';
+import { relayService } from '@/features/delegation/relayService';
 import { getProvider } from '@/handlers/web3';
 import { ensureError, logger, RainbowError } from '@/logger';
+import { prepareRequiredAtomicCalls } from '@/raps/atomicSwapPreparation';
+import { resolveManagedExecutionFailure } from '@/raps/managedExecutionFailure';
 import { ChainId } from '@/state/backendNetworks/types';
 import { addNewTransaction } from '@/state/pendingTransactions';
 import { executeFn, Screens, TimeToSignOperation } from '@/state/performance/performance';
@@ -35,11 +40,6 @@ import { extractReplayableCall } from './replay';
 import { createUnlockAndCrosschainSwapRap } from './unlockAndCrosschainSwap';
 import { createUnlockAndSwapRap } from './unlockAndSwap';
 import { requireAddress } from './validation';
-import type { StaticJsonRpcProvider } from '@ethersproject/providers';
-import { prepareRequiredAtomicCalls } from '@/raps/atomicSwapPreparation';
-import { resolveManagedExecutionFailure } from '@/raps/managedExecutionFailure';
-import { trackManagedCallsExecution } from '@/features/delegation/managedExecutionTracking';
-import { relayService } from '@/features/delegation/relayService';
 
 type AtomicPrepareActionType = Extract<RapActionTypes, 'unlock' | 'swap' | 'crosschainSwap'>;
 type PrepareActionResult = { call: Call | null } | { call: Call; transaction: Omit<NewTransaction, 'hash'> };
@@ -175,7 +175,7 @@ export const walletExecuteRap = async <T extends RapTypes>(
   const actions = rap.actions;
   const rapName = getRapFullName(rap.actions);
   const canAttemptAtomic = Boolean(parameters.atomic) && isAtomicRapType(type);
-  const cachedPreparedCalls = isAtomicRapType(type) ? options?.preparedCalls ?? null : null;
+  const cachedPreparedCalls = isAtomicRapType(type) ? (options?.preparedCalls ?? null) : null;
 
   if (canAttemptAtomic && isAtomicRapType(type)) {
     const { chainId, quote, nonce } = parameters;

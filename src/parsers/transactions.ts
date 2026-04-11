@@ -84,7 +84,7 @@ export const parseTransaction = (transaction: Transaction, nativeCurrency: Nativ
 
   const asset: RainbowTransaction['asset'] = meta?.asset?.assetCode
     ? parseGoldskyAsset({ asset: meta.asset, address: meta.asset.assetCode })
-    : getAssetFromChanges(changes, type) ?? fallbackMetaAsset;
+    : (getAssetFromChanges(changes, type) ?? fallbackMetaAsset);
 
   const direction = txn.direction || getDirection(type);
 

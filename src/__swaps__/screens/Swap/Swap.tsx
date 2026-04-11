@@ -20,6 +20,7 @@ import { navbarHeight } from '@/components/navbar/Navbar';
 import { DecoyScrollView } from '@/components/sheet/DecoyScrollView';
 import { Box } from '@/design-system';
 import { IS_ANDROID } from '@/env';
+import { useSponsoredSwapStore } from '@/features/delegation/sponsoredSwapStore';
 import { useDelayedMount } from '@/hooks/useDelayedMount';
 import { userAssetsStore } from '@/state/assets/userAssets';
 import { userAssetsStoreManager } from '@/state/assets/userAssetsStoreManager';
@@ -33,7 +34,6 @@ import { SwapWarning } from './components/SwapWarning';
 import { clearCustomGasSettings } from './hooks/useCustomGas';
 import { SwapProvider, useSwapContext } from './providers/swap-provider';
 import { useSwapsSearchStore } from './resources/search/searchV2';
-import { useSponsoredSwapStore } from '@/features/delegation/sponsoredSwapStore';
 
 /** README
  * This screen is largely driven by Reanimated and Gesture Handler, which

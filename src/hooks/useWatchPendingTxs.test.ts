@@ -1,3 +1,7 @@
+import { TransactionDirection, TransactionStatus } from '@/entities/transactions';
+
+import { useWatchPendingTransactions } from './useWatchPendingTxs';
+
 const mockResolvePendingTransaction = jest.fn();
 const mockSetPendingTransactions = jest.fn();
 const mockHandleTransaction = jest.fn();
@@ -58,9 +62,6 @@ jest.mock('@/state/minedTransactions/minedTransactions', () => {
     },
   };
 });
-
-import { TransactionDirection, TransactionStatus } from '@/entities/transactions';
-import { useWatchPendingTransactions } from './useWatchPendingTxs';
 
 describe('useWatchPendingTransactions', () => {
   beforeEach(() => {

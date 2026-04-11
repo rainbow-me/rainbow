@@ -1,5 +1,4 @@
-import type { NewTransaction, RainbowTransaction } from '@/entities/transactions';
-import { TransactionStatus } from '@/entities/transactions';
+import { TransactionStatus, type NewTransaction, type RainbowTransaction } from '@/entities/transactions';
 import { pendingTransactionsActions } from '@/state/pendingTransactions';
 
 type ManagedExecutionTransaction = Omit<NewTransaction, 'hash'> & {

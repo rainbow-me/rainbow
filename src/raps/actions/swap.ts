@@ -3,7 +3,6 @@ import { type Signer } from '@ethersproject/abstract-signer';
 import { keccak256 } from '@ethersproject/keccak256';
 import type { StaticJsonRpcProvider } from '@ethersproject/providers';
 import { toUtf8Bytes } from '@ethersproject/strings';
-import type { Call } from '@rainbow-me/delegation';
 
 import { type TransactionGasParams, type TransactionLegacyGasParams } from '@/__swaps__/types/gas';
 import { TransactionDirection, TransactionStatus, type NewTransaction } from '@/entities/transactions';
@@ -17,6 +16,7 @@ import { type ChainId } from '@/state/backendNetworks/types';
 import { addNewTransaction } from '@/state/pendingTransactions';
 import { executeFn, Screens, TimeToSignOperation } from '@/state/performance/performance';
 import { swapsStore } from '@/state/swaps/swapsStore';
+import type { Call } from '@rainbow-me/delegation';
 import {
   getQuoteExecutionDetails,
   getTargetAddress,

@@ -1,16 +1,16 @@
-import { RelayExecutionStatus, type RelayStatusSnapshot } from '@rainbow-me/delegation';
 import {
+  buildTransactionTitle,
+  isValidTransactionStatus,
+  TransactionStatus,
   type MinedTransaction,
   type PendingTransaction,
   type RainbowTransaction,
-  TransactionStatus,
-  buildTransactionTitle,
-  isValidTransactionStatus,
 } from '@/entities/transactions';
 import { relayService } from '@/features/delegation/relayService';
-import { RainbowError, logger } from '@/logger';
+import { logger, RainbowError } from '@/logger';
 import type { SupportedCurrencyKey } from '@/references/supportedCurrencies';
 import { fetchRawTransaction } from '@/resources/transactions/transaction';
+import { RelayExecutionStatus, type RelayStatusSnapshot } from '@rainbow-me/delegation';
 
 type SettledTransaction = RainbowTransaction & {
   status: TransactionStatus.confirmed | TransactionStatus.failed;

@@ -2,7 +2,6 @@ import React, { useCallback, useEffect, useRef, useState } from 'react';
 import { StyleSheet } from 'react-native';
 
 import { Wallet } from '@ethersproject/wallet';
-import { delegation } from '@rainbow-me/delegation';
 import { useRoute, type RouteProp } from '@react-navigation/native';
 import { LinearGradient } from 'expo-linear-gradient';
 import { triggerHaptics } from 'react-native-turbo-haptics';
@@ -26,6 +25,7 @@ import reduxStore from '@/redux/store';
 import { userAssetsStoreManager } from '@/state/assets/userAssetsStoreManager';
 import { backendNetworksActions } from '@/state/backendNetworks/backendNetworks';
 import { getNextNonce } from '@/state/nonces';
+import { delegation } from '@rainbow-me/delegation';
 
 /**
  * Reasons for revoking delegation - determines the panel's appearance and messaging

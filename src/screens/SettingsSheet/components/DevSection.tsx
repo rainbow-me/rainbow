@@ -1,6 +1,5 @@
 import React, { useCallback, useContext, useState } from 'react';
 
-import { delegation, type DelegationWithChainId } from '@rainbow-me/delegation';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import Clipboard from '@react-native-clipboard/clipboard';
 import FastImage from 'react-native-fast-image';
@@ -36,6 +35,7 @@ import { nonceActions } from '@/state/nonces';
 import { pendingTransactionsActions } from '@/state/pendingTransactions';
 import { clearWalletState, useWalletsStore } from '@/state/wallets/walletsStore';
 import { isAuthenticated } from '@/utils/authentication';
+import { delegation, type DelegationWithChainId } from '@rainbow-me/delegation';
 
 import Menu from './Menu';
 import MenuContainer from './MenuContainer';

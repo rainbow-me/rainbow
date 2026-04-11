@@ -1,3 +1,15 @@
+import { StaticJsonRpcProvider } from '@ethersproject/providers';
+import { Wallet } from '@ethersproject/wallet';
+
+import { execute, type Call } from '@rainbow-me/delegation';
+import { SwapType, type CrosschainQuote, type Quote } from '@rainbow-me/swaps';
+
+import { prepareCrosschainSwapCall } from './actions/crosschainSwap';
+import { prepareSwapCall } from './actions/swap';
+import { prepareApprovalCall } from './actions/unlock';
+import { resolveApprovalRequirement } from './approval';
+import { prepareAtomicSwapExecution } from './atomicSwapPreparation';
+
 jest.mock('@rainbow-me/delegation', () => ({
   execute: {
     prepare: {
@@ -21,16 +33,6 @@ jest.mock('./actions/swap', () => ({
 jest.mock('./actions/crosschainSwap', () => ({
   prepareCrosschainSwapCall: jest.fn(),
 }));
-
-import { StaticJsonRpcProvider } from '@ethersproject/providers';
-import { type Call, execute } from '@rainbow-me/delegation';
-import { type CrosschainQuote, type Quote, SwapType } from '@rainbow-me/swaps';
-import { Wallet } from '@ethersproject/wallet';
-import { prepareAtomicSwapExecution } from './atomicSwapPreparation';
-import { resolveApprovalRequirement } from './approval';
-import { prepareCrosschainSwapCall } from './actions/crosschainSwap';
-import { prepareSwapCall } from './actions/swap';
-import { prepareApprovalCall } from './actions/unlock';
 
 // ============ Helpers ======================================================= //
 

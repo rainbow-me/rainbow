@@ -1,13 +1,13 @@
 import type { Signer } from '@ethersproject/abstract-signer';
 import { type StaticJsonRpcProvider } from '@ethersproject/providers';
 import { createGelatoEvmRelayerClient } from '@gelatocloud/gasless/_dist/relayer/evm/index.js';
-import { type Call } from '@rainbow-me/delegation';
 import { GELATO_API_KEY } from 'react-native-dotenv';
 import { encodeFunctionData, erc20Abi, type Address, type Hash, type Hex } from 'viem';
 
 import { getProvider } from '@/handlers/web3';
 import { RainbowError } from '@/logger';
 import { time } from '@/utils/time';
+import { type Call } from '@rainbow-me/delegation';
 
 import { prepareSignedBatchedCalldata } from '../../delegation/utils/signBatchedCall';
 import { RNBW_TOKEN_ADDRESS, STAKING_ABI, STAKING_CHAIN_ID, STAKING_CONTRACT_ADDRESS } from '../constants';

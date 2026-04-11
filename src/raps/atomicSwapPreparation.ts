@@ -1,13 +1,15 @@
 import type { StaticJsonRpcProvider } from '@ethersproject/providers';
 import type { Wallet } from '@ethersproject/wallet';
+import { type Address } from 'viem';
+
+import { isCrosschainQuote } from '@/__swaps__/utils/quotes';
 import { execute, type Call, type PreparedCallsExecution } from '@rainbow-me/delegation';
 import { type CrosschainQuote, type Quote } from '@rainbow-me/swaps';
-import { type Address } from 'viem';
-import { isCrosschainQuote } from '@/__swaps__/utils/quotes';
-import { resolveApprovalRequirement } from './approval';
+
 import { prepareCrosschainSwapCall } from './actions/crosschainSwap';
 import { prepareSwapCall } from './actions/swap';
 import { prepareApprovalCall } from './actions/unlock';
+import { resolveApprovalRequirement } from './approval';
 
 // ============ Types ========================================================= //
 

@@ -2,7 +2,6 @@ import { type Signer } from '@ethersproject/abstract-signer';
 import { MaxUint256 } from '@ethersproject/constants';
 import { Contract, type PopulatedTransaction } from '@ethersproject/contracts';
 import { parseUnits } from '@ethersproject/units';
-import { type Call } from '@rainbow-me/delegation';
 import { erc20Abi, erc721Abi, type Address } from 'viem';
 
 import { type TransactionGasParams, type TransactionLegacyGasParams } from '@/__swaps__/types/gas';
@@ -14,6 +13,7 @@ import { gasUnits } from '@/references/gasUnits';
 import { useBackendNetworksStore } from '@/state/backendNetworks/backendNetworks';
 import { type ChainId } from '@/state/backendNetworks/types';
 import { addNewTransaction } from '@/state/pendingTransactions';
+import { type Call } from '@rainbow-me/delegation';
 
 import { type ActionProps, type PrepareActionProps, type RapActionResult, type RapUnlockActionParameters } from '../references';
 import { toTransactionAsset } from '../transactionAsset';

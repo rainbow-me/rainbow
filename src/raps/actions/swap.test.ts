@@ -1,3 +1,14 @@
+import { BigNumber } from '@ethersproject/bignumber';
+import { keccak256 } from '@ethersproject/keccak256';
+import { StaticJsonRpcProvider } from '@ethersproject/providers';
+import { toUtf8Bytes } from '@ethersproject/strings';
+
+import { REFERRER } from '@/references/constants';
+import { SwapType, type Quote } from '@rainbow-me/swaps';
+
+import { populateSwap } from '../utils';
+import { prepareSwapCall } from './swap';
+
 jest.mock('../utils', () => ({
   populateSwap: jest.fn(),
 }));
@@ -45,15 +56,6 @@ jest.mock('../replay', () => ({
 jest.mock('../transactionAsset', () => ({
   toTransactionAsset: jest.fn(),
 }));
-
-import { StaticJsonRpcProvider } from '@ethersproject/providers';
-import { BigNumber } from '@ethersproject/bignumber';
-import { keccak256 } from '@ethersproject/keccak256';
-import { toUtf8Bytes } from '@ethersproject/strings';
-import { type Quote, SwapType } from '@rainbow-me/swaps';
-import { REFERRER } from '@/references/constants';
-import { prepareSwapCall } from './swap';
-import { populateSwap } from '../utils';
 
 const provider = new StaticJsonRpcProvider('http://127.0.0.1:8545', 8453);
 

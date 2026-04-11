@@ -1,3 +1,8 @@
+import { TransactionDirection, TransactionStatus } from '@/entities/transactions';
+import { logger } from '@/logger';
+
+import { resolvePendingTransaction } from './pendingTransactionResolution';
+
 const mockFetchRawTransaction = jest.fn();
 const mockGetStatus = jest.fn();
 
@@ -18,10 +23,6 @@ jest.mock('@/features/delegation/relayService', () => ({
     getStatus: (...args: unknown[]) => mockGetStatus(...args),
   },
 }));
-
-import { TransactionDirection, TransactionStatus } from '@/entities/transactions';
-import { logger } from '@/logger';
-import { resolvePendingTransaction } from './pendingTransactionResolution';
 
 describe('pendingTransactionResolution', () => {
   beforeEach(() => {

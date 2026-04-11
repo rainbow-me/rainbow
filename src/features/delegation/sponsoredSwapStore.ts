@@ -1,6 +1,5 @@
-import { execute, type PreparedCallsExecution } from '@rainbow-me/delegation';
-import { type CrosschainQuote, type Quote, type QuoteError } from '@rainbow-me/swaps';
 import { createPublicClient, http, type PublicClient } from 'viem';
+
 import { isCrosschainQuote, isQuote } from '@/__swaps__/utils/quotes';
 import { getProvider } from '@/handlers/web3';
 import { isPreparedCallsExecutionSponsored, prepareAtomicSwapCalls } from '@/raps/atomicSwapPreparation';
@@ -10,6 +9,9 @@ import { createQueryStore } from '@/state/internal/createQueryStore';
 import { useSwapsStore } from '@/state/swaps/swapsStore';
 import { getAccountAddress, useWalletsStore } from '@/state/wallets/walletsStore';
 import { time } from '@/utils/time';
+import { execute, type PreparedCallsExecution } from '@rainbow-me/delegation';
+import { type CrosschainQuote, type Quote, type QuoteError } from '@rainbow-me/swaps';
+
 import { canUseDelegatedExecution, supportsDelegatedExecution } from './willDelegate';
 
 // ============ Constants ====================================================== //

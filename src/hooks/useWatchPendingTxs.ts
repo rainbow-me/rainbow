@@ -3,12 +3,12 @@ import { useCallback } from 'react';
 import { analytics } from '@/analytics';
 import { event } from '@/analytics/event';
 import { useRainbowToastsStore } from '@/components/rainbow-toast/useRainbowToastsStore';
-import { type RainbowTransaction, TransactionStatus } from '@/entities/transactions';
+import { TransactionStatus, type RainbowTransaction } from '@/entities/transactions';
 import { queryClient } from '@/react-query';
 import { consolidatedTransactionsQueryKey } from '@/resources/transactions/consolidatedTransactions';
 import { userAssetsStoreManager } from '@/state/assets/userAssetsStoreManager';
 import { backendNetworksActions } from '@/state/backendNetworks/backendNetworks';
-import { type AssetUpdateTransaction, useAssetUpdatesStore } from '@/state/minedTransactions/minedTransactions';
+import { useAssetUpdatesStore, type AssetUpdateTransaction } from '@/state/minedTransactions/minedTransactions';
 import { pendingTransactionsActions } from '@/state/pendingTransactions';
 
 import { resolvePendingTransaction } from './pendingTransactionResolution';

@@ -13,6 +13,7 @@ import { DropdownMenu, type MenuItem } from '@/components/DropdownMenu';
 import { PANEL_WIDTH } from '@/components/SmoothPager/ListPanel';
 import { Box, HitSlop, Inline, Stack, Text, TextIcon } from '@/design-system';
 import { IS_INTERNAL, IS_IOS } from '@/env';
+import { useIsDelegationEnabled } from '@/features/delegation/featureFlags';
 import { isRainbowDelegated as hasRainbowDelegation, isThirdPartyDelegated as hasThirdPartyDelegation } from '@/features/delegation/status';
 import { removeFirstEmojiFromString } from '@/helpers/emojiHandler';
 import { usePinnedWalletsStore } from '@/state/wallets/pinnedWalletsStore';
@@ -23,7 +24,6 @@ import { useDelegationDisabled, useDelegations } from '@rainbow-me/delegation';
 import { AddressMenuAction, PANEL_INSET_HORIZONTAL, type AddressItem, type AddressMenuActionData } from '../ChangeWalletSheet';
 import { AddressAvatar } from './AddressAvatar';
 import { SelectedAddressBadge } from './SelectedAddressBadge';
-import { useIsDelegationEnabled } from '@/features/delegation/featureFlags';
 
 const UNPIN_BADGE_SIZE = 28;
 const PINS_PER_ROW = 3;

@@ -1,6 +1,6 @@
 import { useCallback, useEffect, useRef } from 'react';
 
-import { RainbowError, logger } from '@/logger';
+import { logger, RainbowError } from '@/logger';
 import { time } from '@/utils/time';
 
 interface UseTransactionWatcherProps<T> {

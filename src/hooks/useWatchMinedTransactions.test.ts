@@ -1,3 +1,7 @@
+import { TransactionDirection } from '@/entities/transactions';
+
+import { useWatchAssetUpdateTransactions } from './useWatchMinedTransactions';
+
 const mockTrack = jest.fn();
 const mockWarn = jest.fn();
 const mockError = jest.fn();
@@ -107,9 +111,6 @@ jest.mock('@/features/rnbw-rewards/stores/rewardsBalanceStore', () => ({
     }),
   },
 }));
-
-import { useWatchAssetUpdateTransactions } from './useWatchMinedTransactions';
-import { TransactionDirection } from '@/entities/transactions';
 
 describe('useWatchAssetUpdateTransactions', () => {
   beforeEach(() => {

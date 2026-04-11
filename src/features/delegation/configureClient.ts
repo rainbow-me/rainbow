@@ -1,7 +1,8 @@
-import { configure as configureDelegationClient } from '@rainbow-me/delegation';
 import { logger } from '@/logger';
 import { getPlatformClient } from '@/resources/platform/client';
 import { useWalletsStore } from '@/state/wallets/walletsStore';
+import { configure as configureDelegationClient } from '@rainbow-me/delegation';
+
 import { relayService } from './relayService';
 
 // ============ Delegation Client ============================================== //

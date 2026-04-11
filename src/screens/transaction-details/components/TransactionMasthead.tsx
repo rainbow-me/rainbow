@@ -2,7 +2,6 @@
 
 import React, { useEffect, useMemo, useState } from 'react';
 
-import { useDelegations } from '@rainbow-me/delegation';
 import Animated, { Easing, interpolate, useAnimatedStyle, useSharedValue, withTiming } from 'react-native-reanimated';
 import { useTiming } from 'react-native-redash';
 import { useSelector } from 'react-redux';
@@ -47,6 +46,7 @@ import { formatAddressForDisplay } from '@/utils/abbreviations';
 import isLowerCaseMatch from '@/utils/isLowerCaseMatch';
 import { addressHashedColorIndex, addressHashedEmoji } from '@/utils/profileUtils';
 import { safeSum } from '@/utils/safeSum';
+import { useDelegations } from '@rainbow-me/delegation';
 
 const TransactionMastheadHeight = android ? 153 : 135;
 
