@@ -24,7 +24,7 @@
 3. Install Ruby (version specified in `.ruby-version`). macOS system Ruby is
    too old and will not work. Use a version manager such as
    [rbenv](https://github.com/rbenv/rbenv) or [rvm](https://rvm.io/).
-4. Enable yarn: `corepack enable`
+4. Enable yarn: `corepack enable`dssdsfds
 
 **Note:** On future terminal sessions, run `nvm use` to activate the correct
 Node.js version. Alternatively, set up
