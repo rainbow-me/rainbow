@@ -25,7 +25,7 @@
    too old and will not work. Use a version manager such as
    [rbenv](https://github.com/rbenv/rbenv) or [rvm](https://rvm.io/).
 4. Enable yarn: `corepack enable`
-
+s
 **Note:** On future terminal sessions, run `nvm use` to activate the correct
 Node.js version. Alternatively, set up
 [automatic nvm switching](https://github.com/nvm-sh/nvm#deeper-shell-integration)
