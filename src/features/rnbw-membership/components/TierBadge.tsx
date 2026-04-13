@@ -23,11 +23,13 @@ const BADGE_TEXT_GRADIENT_END = { x: 0, y: 1 };
 export const TierBadge = memo(function TierBadge({
   tier,
   height = 42,
+  borderWidth = 2,
   fontSize = '22pt',
   weight = 'heavy',
 }: {
   tier: TierType;
   height?: number;
+  borderWidth?: number;
   fontSize?: TextSize;
   weight?: TextWeight;
 }) {
@@ -61,7 +63,7 @@ export const TierBadge = memo(function TierBadge({
         locations={borderGradientLocations}
         start={borderStart}
         end={borderEnd}
-        borderWidth={2}
+        borderWidth={borderWidth}
         style={[styles.tierBadge, { height, borderRadius: height / 2 }]}
       >
         <InnerShadow color={opacity(globalColors.white100, 0.1)} blur={1} dx={0} dy={3} />
