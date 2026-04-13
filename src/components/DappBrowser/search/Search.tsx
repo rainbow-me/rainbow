@@ -59,7 +59,8 @@ export const Search = () => {
   }));
 
   const bottomBarStyle = useAnimatedStyle(() => {
-    const translateY = _WORKLET && isFocused.value ? -(keyboardHeight.value - TAB_BAR_HEIGHT + extraWebViewHeight.value) : 0;
+    const translateY =
+      _WORKLET && isFocused.value ? -(keyboardHeight.value - (IS_IOS ? TAB_BAR_HEIGHT : 46) + extraWebViewHeight.value) : 0;
     return {
       transform: [
         {
