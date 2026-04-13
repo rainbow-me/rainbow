@@ -63,7 +63,7 @@
   "scripts": {
     "// Fetch backend networks": "",
     "adb-all": "adb devices | tail -n +2 | cut -sf 1 | xargs -I {} adb -s {}",
-    "android": "react-native run-android --main-activity MainActivityog",
+    "android": "react-native run-android --main-activity MainActivityog --active-arch-only",
     "android:apk": "yarn gradle assembleRelease && yarn uninstall:android && yarn android:load-apk",
     "android:bundle": "./scripts/check-env.sh && yarn gradle bundleRelease && open android/app/build/outputs/bundle/release/",
     "android:load-apk": "adb install android/app/build/outputs/apk/release/app-release.apk",
