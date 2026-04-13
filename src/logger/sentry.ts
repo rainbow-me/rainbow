@@ -63,6 +63,7 @@ export const defaultOptions: Sentry.ReactNativeOptions = {
   enableAppHangTracking: false,
   enableAutoPerformanceTracing: false,
   enableAutoSessionTracking: false,
+  enableTracing: false,
   environment: IS_TEST_FLIGHT ? 'Testflight' : SENTRY_ENVIRONMENT,
   ignoreErrors: IGNORED_ERRORS,
   integrations: [Sentry.httpClientIntegration()], // http client integration will help us see payload / response from errored out requests to better understand the issue
