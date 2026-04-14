@@ -4,7 +4,7 @@ import { PixelRatio, StyleSheet, View, type LayoutChangeEvent } from 'react-nati
 import ButtonPressAnimation from '@/components/animations/ButtonPressAnimation';
 import { RnbwCoinIcon } from '@/components/RnbwCoinIcon';
 import { Box, Text } from '@/design-system';
-import { RnbwThemedButton } from '@/features/rnbw-membership/components/RnbwThemedButton';
+import { MembershipTierButton } from '@/features/rnbw-membership/components/MembershipTierButton/MembershipTierButton';
 import { TierBadge } from '@/features/rnbw-membership/components/TierBadge';
 import { useMembershipTierInfo } from '@/features/rnbw-membership/stores/derived/useMembershipTierInfo';
 import { navigateToBuyRnbw } from '@/features/rnbw-membership/utils/navigateToBuyRnbw';
@@ -75,22 +75,23 @@ export const RnbwStakingCard = memo(function RnbwStakingCard({ width }: RnbwStak
         </Box>
         {hasStakedPosition ? (
           <Box flexDirection="row" gap={10}>
-            <RnbwThemedButton
+            <MembershipTierButton
+              tier={currentTier}
               onPress={navigateToUnstakeSheet}
               style={styles.flexButton}
               label={i18n.t(i18n.l.rnbw_membership.staking_card.unstake)}
-              size="22pt"
-              weight="heavy"
               variant="secondary"
             />
-            <RnbwThemedButton
+            <MembershipTierButton
+              tier={currentTier}
               onPress={hasMinimumStakeAmount ? navigateToStakingScreen : navigateToBuyRnbw}
               style={styles.flexButton}
               label={hasMinimumStakeAmount ? i18n.t(i18n.l.button.add) : i18n.t(i18n.l.rnbw_membership.staking_card.buy_rnbw)}
             />
           </Box>
         ) : (
-          <RnbwThemedButton
+          <MembershipTierButton
+            tier={currentTier}
             onPress={hasMinimumStakeAmount ? navigateToStakingLearnSheet : navigateToBuyRnbw}
             label={
               hasMinimumStakeAmount
