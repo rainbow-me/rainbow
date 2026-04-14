@@ -7,7 +7,7 @@ import { LinearGradient } from 'expo-linear-gradient';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 import ActivityIndicator from '@/components/ActivityIndicator';
-import ContextMenu from '@/components/context-menu/ContextMenu.android';
+import { ContextMenu } from '@/components/context-menu';
 import ContextMenuButton from '@/components/native-context-menu/contextMenu';
 import { SheetActionButton } from '@/components/sheet';
 import { Bleed, Box, Column, Columns, Heading, Inset, Row, Rows, Separator, Stack, Text } from '@/design-system';
