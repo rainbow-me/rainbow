@@ -21,6 +21,48 @@ and this project adheres to [Semantic Versioning](http://semver.org/)
 
 ### Testing
 
+## [2.0.26](https://github.com/rainbow-me/rainbow/releases/tag/v2.0.26)
+
+### Added
+
+- Add Liquid token launcher (https://github.com/rainbow-me/rainbow/pull/7292)
+- Add staking amount selection screen (https://github.com/rainbow-me/rainbow/pull/7272)
+- Add basic membership tier card (https://github.com/rainbow-me/rainbow/pull/7281)
+- Add basic earnings card (https://github.com/rainbow-me/rainbow/pull/7282)
+- Add membership tiers sheet (https://github.com/rainbow-me/rainbow/pull/7284)
+- Add membership card wrapper and card redesigns (https://github.com/rainbow-me/rainbow/pull/7286)
+- Add tier progress bar and membership tier card redesign (https://github.com/rainbow-me/rainbow/pull/7287)
+- Add exit penalty recovery progress meter and screen polish (https://github.com/rainbow-me/rainbow/pull/7288)
+- Add unstake sheet complete design (https://github.com/rainbow-me/rainbow/pull/7290)
+- Add staking learn sheet complete designs (https://github.com/rainbow-me/rainbow/pull/7291)
+- Add buy CTA if min stake balance not met (https://github.com/rainbow-me/rainbow/pull/7297)
+- Add custom submit button support for deposit funding system (https://github.com/rainbow-me/rainbow/pull/7298)
+- Prevent hardware wallets from using staking (https://github.com/rainbow-me/rainbow/pull/7301)
+- Add skeleton loading states and no fallback exit penalty (https://github.com/rainbow-me/rainbow/pull/7305)
+
+### Changed
+
+- Include .github in prettier formatting (https://github.com/rainbow-me/rainbow/pull/7306)
+- Bump iOS and Android to v2.0.23 (https://github.com/rainbow-me/rainbow/pull/7307)
+- Upgrade prettier v3.2.5 to v3.8.1 (https://github.com/rainbow-me/rainbow/pull/7309)
+- Auto-sort package.json keys via Prettier plugin (https://github.com/rainbow-me/rainbow/pull/7310)
+- Small design and formatting fixes (https://github.com/rainbow-me/rainbow/pull/7285)
+- Add staking analytics events (https://github.com/rainbow-me/rainbow/pull/7295)
+- Read unstake penalty from contract (https://github.com/rainbow-me/rainbow/pull/7296)
+- Move strings to i18n (https://github.com/rainbow-me/rainbow/pull/7300)
+- Remove dead DS docs site and playground (https://github.com/rainbow-me/rainbow/pull/7313)
+- Bump iOS and Android to v2.0.24 (https://github.com/rainbow-me/rainbow/pull/7315)
+- Bump iOS and Android to v2.0.25 (https://github.com/rainbow-me/rainbow/pull/7346)
+- Bump iOS and Android to v2.0.26 (https://github.com/rainbow-me/rainbow/commit/e71dd9a86cd21a289d96cd2772e47ba73287dec4)
+
+### Fixed
+
+- Fix misc Android fixes (https://github.com/rainbow-me/rainbow/pull/7293)
+- Fix RNBW rewards claim sheet design and nav (https://github.com/rainbow-me/rainbow/pull/7294)
+- Fix misc small fixes (https://github.com/rainbow-me/rainbow/pull/7299)
+- Add fallback tier visuals (https://github.com/rainbow-me/rainbow/pull/7308)
+- Fix to align market fetching to new Polymarket api (https://github.com/rainbow-me/rainbow/pull/7328)
+
 ## [2.0.22](https://github.com/rainbow-me/rainbow/releases/tag/v2.0.22)
 
 ### Added
