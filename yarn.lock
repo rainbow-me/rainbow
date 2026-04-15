@@ -4760,15 +4760,15 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@ledgerhq/devices@npm:8.14.0":
-  version: 8.14.0
-  resolution: "@ledgerhq/devices@npm:8.14.0"
+"@ledgerhq/devices@npm:8.13.0":
+  version: 8.13.0
+  resolution: "@ledgerhq/devices@npm:8.13.0"
   dependencies:
-    "@ledgerhq/errors": "npm:^6.33.0"
-    "@ledgerhq/logs": "npm:^6.17.0"
+    "@ledgerhq/errors": "npm:^6.32.0"
+    "@ledgerhq/logs": "npm:^6.16.0"
     rxjs: "npm:7.8.2"
     semver: "npm:7.7.3"
-  checksum: 10c0/c57a12c8b41e6f34e0de6a79623742869c578f6d55384f22d8104f263d520d71d1abed6dd70b8f730838d70eb40e28d9edd7db619b34ea98714407ea5a9091c5
+  checksum: 10c0/8a147260994e30643cb1ca64a6548bacec2f80e980224310c0392e3bbc8a91292827272dc117fcf5c4ca8b97fb4909d8a8d5bcb27d8bc7dd0503950f7fc114c6
   languageName: node
   linkType: hard
 
@@ -4818,10 +4818,10 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@ledgerhq/errors@npm:^6.21.0, @ledgerhq/errors@npm:^6.33.0":
-  version: 6.33.0
-  resolution: "@ledgerhq/errors@npm:6.33.0"
-  checksum: 10c0/3e23f6514f186f5d9a352e2c6a77a96cdb4b6d450d83fa57bc973b0201924993bbd3a6115aa8fe168bbec789c61fda5f8bee7bee1d82713ece189b5a0027afa5
+"@ledgerhq/errors@npm:^6.21.0, @ledgerhq/errors@npm:^6.32.0":
+  version: 6.32.0
+  resolution: "@ledgerhq/errors@npm:6.32.0"
+  checksum: 10c0/e2dcd57a2292c4e2d3711115898d0246abc4033b2c6c0986cb68a34176e1a4012eb19b92d5930e23757193dca36dd3286180234821dace5ae6a04ed9f7710690
   languageName: node
   linkType: hard
 
@@ -4883,14 +4883,14 @@ __metadata:
   linkType: hard
 
 "@ledgerhq/hw-transport@npm:^6.31.5":
-  version: 6.35.0
-  resolution: "@ledgerhq/hw-transport@npm:6.35.0"
+  version: 6.34.1
+  resolution: "@ledgerhq/hw-transport@npm:6.34.1"
   dependencies:
-    "@ledgerhq/devices": "npm:8.14.0"
-    "@ledgerhq/errors": "npm:^6.33.0"
-    "@ledgerhq/logs": "npm:^6.17.0"
+    "@ledgerhq/devices": "npm:8.13.0"
+    "@ledgerhq/errors": "npm:^6.32.0"
+    "@ledgerhq/logs": "npm:^6.16.0"
     events: "npm:^3.3.0"
-  checksum: 10c0/214344cbd7bbbc5b96f179017c9c2aef31a2243604a09d084aabe05e325a512f54ff7ecd71319e3a3346c48e95611beb51d85377580e027fa88f3f5550492e08
+  checksum: 10c0/4dba9fed2c5c3d9bde02cd3a60c3c8fe842295404504a6693f8b015146fa528c59a1d7dc180da5014003b81c090379f6309dd7c1de5d1a25637dc2a2292af728
   languageName: node
   linkType: hard
 
@@ -4904,17 +4904,10 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@ledgerhq/logs@npm:^6.12.0":
-  version: 6.12.0
-  resolution: "@ledgerhq/logs@npm:6.12.0"
-  checksum: 10c0/573122867ae807a60c3218234019ba7c4b35c14551b90c291fd589d7c2e7f002c2e84151868e67801c9f89a33d8a5569da77aef83b5f5e03b5faa2811cab6a86
-  languageName: node
-  linkType: hard
-
-"@ledgerhq/logs@npm:^6.17.0":
-  version: 6.17.0
-  resolution: "@ledgerhq/logs@npm:6.17.0"
-  checksum: 10c0/3f90895048b04dd79a916a87cde6ec4b28d60b059d865697a1429d83af54e17066a113de17c52c91bd638b3d9bf2df0c196ea783119f0d18869923dbc6d973e8
+"@ledgerhq/logs@npm:^6.12.0, @ledgerhq/logs@npm:^6.16.0":
+  version: 6.16.0
+  resolution: "@ledgerhq/logs@npm:6.16.0"
+  checksum: 10c0/f2af7231c578bda193348c2aa23c396967812d542d331628780eebc354363862e99415a9f83a50d3de68668305bd699772c2db469befc7f6931873b94832c0fe
   languageName: node
   linkType: hard
 
@@ -8077,11 +8070,11 @@ __metadata:
   linkType: hard
 
 "@types/node@npm:>=12.12.47, @types/node@npm:>=13.7.0":
-  version: 25.5.2
-  resolution: "@types/node@npm:25.5.2"
+  version: 25.6.0
+  resolution: "@types/node@npm:25.6.0"
   dependencies:
-    undici-types: "npm:~7.18.0"
-  checksum: 10c0/11e41a85401724cd1a4de6fb7bd4264ec46db10c09fc8cf8d41de4ede0a7063db458348f859ead4ec0929906aa26aaf45a5fef3aa59742ca0521cda9cee52377
+    undici-types: "npm:~7.19.0"
+  checksum: 10c0/d2d2015630ff098a201407f55f5077a20270ae4f465c739b40865cd9933b91b9c5d2b85568eadaf3db0801b91e267333ca7eb39f007428b173d1cdab4b339ac5
   languageName: node
   linkType: hard
 
@@ -9765,7 +9758,7 @@ __metadata:
     react-native-pager-view: "npm:6.8.1"
     react-native-palette-full: "npm:1.2.0"
     react-native-permissions: "npm:3.10.1"
-    react-native-quick-md5: "npm:3.0.6"
+    react-native-quick-md5: "npm:3.0.9"
     react-native-radial-gradient: "rainbow-me/react-native-radial-gradient#b99ab59d27dba70364ef516bd5193c37657ba95c"
     react-native-randombytes: "npm:3.5.3"
     react-native-reanimated: "npm:3.19.4"
@@ -22384,8 +22377,8 @@ __metadata:
   linkType: hard
 
 "protobufjs@npm:^7.2.5":
-  version: 7.5.4
-  resolution: "protobufjs@npm:7.5.4"
+  version: 7.5.5
+  resolution: "protobufjs@npm:7.5.5"
   dependencies:
     "@protobufjs/aspromise": "npm:^1.1.2"
     "@protobufjs/base64": "npm:^1.1.2"
@@ -22399,7 +22392,7 @@ __metadata:
     "@protobufjs/utf8": "npm:^1.1.0"
     "@types/node": "npm:>=13.7.0"
     long: "npm:^5.0.0"
-  checksum: 10c0/913b676109ffb3c05d3d31e03a684e569be91f3bba8613da4a683d69d9dba948daa2afd7d2e7944d1aa6c417890c35d9d9a8883c1160affafb0f9670d59ef722
+  checksum: 10c0/3d48896a916761e3e60b52f80027eb4fba3f5a6e3f8461e04939db18812db2cb0db4c73d03e1134a960e99525ae1d236f076a0bc01273016f573b76f33ffbd47
   languageName: node
   linkType: hard
 
@@ -23189,15 +23182,15 @@ __metadata:
   languageName: node
   linkType: hard
 
-"react-native-quick-md5@npm:3.0.6":
-  version: 3.0.6
-  resolution: "react-native-quick-md5@npm:3.0.6"
+"react-native-quick-md5@npm:3.0.9":
+  version: 3.0.9
+  resolution: "react-native-quick-md5@npm:3.0.9"
   dependencies:
     spark-md5: "npm:^3.0.2"
   peerDependencies:
     react: "*"
     react-native: "*"
-  checksum: 10c0/99e0fe2a33ed89fdbb10276a6611a9cd82f49927dd2d4613b1ea50406d7beabad98cac2bdc324c4f8f23fb7670252ff52086f61a8ceac13261be743dadf97176
+  checksum: 10c0/ba7811cd73b0e937de517ad1281a34f89de0d7d4ffb0fa5767bc04d5327d47320a0771d4b6604fa7f9d72ffe987984c19b64db0e27cf25616750dcbb4f046b2d
   languageName: node
   linkType: hard
 
@@ -26911,10 +26904,10 @@ __metadata:
   languageName: node
   linkType: hard
 
-"undici-types@npm:~7.18.0":
-  version: 7.18.2
-  resolution: "undici-types@npm:7.18.2"
-  checksum: 10c0/85a79189113a238959d7a647368e4f7c5559c3a404ebdb8fc4488145ce9426fcd82252a844a302798dfc0e37e6fb178ff481ed03bc4caf634c5757d9ef43521d
+"undici-types@npm:~7.19.0":
+  version: 7.19.2
+  resolution: "undici-types@npm:7.19.2"
+  checksum: 10c0/7159f10546f9f6c47d36776bb1bbf8671e87c1e587a6fee84ae1f111ae8de4f914efa8ca0dfcd224f4f4a9dfc3f6028f627ccb5ddaccf82d7fd54671b89fac3e
   languageName: node
   linkType: hard
 
