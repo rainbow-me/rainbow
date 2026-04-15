@@ -4904,7 +4904,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@ledgerhq/logs@npm:^6.12.0, @ledgerhq/logs@npm:^6.16.0":
+"@ledgerhq/logs@npm:6.16.0":
   version: 6.16.0
   resolution: "@ledgerhq/logs@npm:6.16.0"
   checksum: 10c0/f2af7231c578bda193348c2aa23c396967812d542d331628780eebc354363862e99415a9f83a50d3de68668305bd699772c2db469befc7f6931873b94832c0fe

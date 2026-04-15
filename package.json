@@ -130,6 +130,7 @@
     ]
   },
   "resolutions": {
+    "@ledgerhq/logs": "6.16.0",
     "@rainbow-me/delegation/viem": "2.38.0",
     "@rainbow-me/provider/viem": "2.38.0",
     "@tanstack/query-core": "4.36.1",
