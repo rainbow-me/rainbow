@@ -7,6 +7,7 @@ import { GradientBorderView } from '@/components/gradient-border/GradientBorderV
 import { useColorMode } from '@/design-system';
 import { getValueForColorMode } from '@/design-system/color/palettes';
 import { InnerShadow } from '@/features/polymarket/components/InnerShadow';
+import { RainbowShimmerFill } from '@/features/rnbw-membership/components/RainbowShimmerFill';
 import { ShadowLayers } from '@/features/rnbw-membership/components/ShadowLayers';
 import { MEMBERSHIP_CARD_BACKGROUND_COLOR } from '@/features/rnbw-membership/membershipCardTheme';
 import { getTierPrimaryButtonTheme, getTierSecondaryButtonTheme } from '@/features/rnbw-membership/tierVisuals';
@@ -39,7 +40,7 @@ export const MembershipTierButtonSurface = memo(function MembershipTierButtonSur
   const borderRadius = height / 2;
   const shadowLayerBackgroundColor = getValueForColorMode(MEMBERSHIP_CARD_BACKGROUND_COLOR, colorMode);
 
-  const { borderGradient, surfaceGradient, surfaceHighlight, shadows } = useMemo(() => {
+  const { borderGradient, surfaceGradient, surfaceHighlight, shadows, overlay } = useMemo(() => {
     const surfaceTheme =
       variant === 'primary' ? getTierPrimaryButtonTheme(tier.level).surface : getTierSecondaryButtonTheme(tier.level).surface;
 
@@ -48,6 +49,7 @@ export const MembershipTierButtonSurface = memo(function MembershipTierButtonSur
       surfaceGradient: getValueForColorMode(surfaceTheme.fill, colorMode),
       surfaceHighlight: surfaceTheme.highlight ? getValueForColorMode(surfaceTheme.highlight, colorMode) : null,
       shadows: getValueForColorMode(surfaceTheme.shadows, colorMode),
+      overlay: surfaceTheme.overlay ? getValueForColorMode(surfaceTheme.overlay, colorMode) : null,
     };
   }, [tier.level, variant, colorMode]);
 
@@ -66,13 +68,24 @@ export const MembershipTierButtonSurface = memo(function MembershipTierButtonSur
         end={borderGradient.end ?? GRADIENT_END}
         style={resolvedContainerStyle}
       >
-        <LinearGradient
-          colors={surfaceGradient.colors}
-          locations={surfaceGradient.locations}
-          start={surfaceGradient.start ?? GRADIENT_START}
-          end={surfaceGradient.end ?? GRADIENT_END}
-          style={[StyleSheet.absoluteFill, { borderRadius }]}
-        />
+        {overlay ? (
+          <RainbowShimmerFill
+            fillColors={surfaceGradient.colors}
+            fillLocations={surfaceGradient.locations}
+            fillStart={surfaceGradient.start ?? GRADIENT_START}
+            fillEnd={surfaceGradient.end ?? GRADIENT_END}
+            borderRadius={borderRadius}
+            overlay={overlay}
+          />
+        ) : (
+          <LinearGradient
+            colors={surfaceGradient.colors}
+            locations={surfaceGradient.locations}
+            start={surfaceGradient.start ?? GRADIENT_START}
+            end={surfaceGradient.end ?? GRADIENT_END}
+            style={[StyleSheet.absoluteFill, { borderRadius }]}
+          />
+        )}
         {surfaceHighlight && (
           <LinearGradient
             colors={surfaceHighlight.colors}

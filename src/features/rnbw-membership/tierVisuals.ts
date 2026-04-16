@@ -1,5 +1,3 @@
-import type { LinearGradientProps } from 'expo-linear-gradient';
-
 import { globalColors } from '@/design-system/color/palettes';
 import { RNBW_BUTTON_CONFIG } from '@/features/rnbw-membership/rnbwButtonTheme';
 import type { TierId } from '@/features/rnbw-membership/types';
@@ -9,10 +7,12 @@ import { opacity } from '@/framework/ui/utils/opacity';
 
 type Point = { x: number; y: number };
 type Themed<T> = { light: T; dark: T };
+export type GradientColors = readonly [string, string, ...string[]];
+export type GradientLocations = readonly [number, number, ...number[]];
 
 type Gradient = {
-  colors: LinearGradientProps['colors'];
-  locations?: LinearGradientProps['locations'];
+  colors: GradientColors;
+  locations?: GradientLocations;
   start?: Point;
   end?: Point;
 };
@@ -30,6 +30,27 @@ type TextShadow = {
   textShadowRadius: number;
 };
 
+export type HardLightOverlay = {
+  colors: GradientColors;
+  locations: GradientLocations;
+  maskShadow: {
+    blur: number;
+    dx: number;
+    dy: number;
+  };
+};
+
+export type GradientShadow = {
+  colors: GradientColors;
+  locations?: GradientLocations;
+  start?: Point;
+  end?: Point;
+  opacity: number;
+  blur: number;
+  dx?: number;
+  dy?: number;
+};
+
 type GradientTextTheme = {
   gradient: Themed<Gradient>;
   shadow: Themed<TextShadow>;
@@ -40,6 +61,8 @@ type BadgeTheme = {
   border: Themed<Gradient>;
   shadows: Themed<readonly Shadow[]>;
   text: GradientTextTheme;
+  overlay?: Themed<HardLightOverlay>;
+  backgroundShadow?: Themed<GradientShadow>;
 };
 
 type ButtonSurfaceTheme = {
@@ -47,6 +70,7 @@ type ButtonSurfaceTheme = {
   border: Themed<Gradient>;
   shadows: Themed<readonly Shadow[]>;
   highlight?: Themed<Gradient>;
+  overlay?: Themed<HardLightOverlay>;
 };
 
 type PrimaryButtonTheme = {
@@ -64,6 +88,7 @@ type ProgressBarTheme = {
   border: Themed<Gradient>;
   shadow: Themed<Shadow>;
   highlight: Themed<Gradient>;
+  backgroundShadow?: Themed<GradientShadow>;
 };
 
 type TierTheme = {
@@ -80,6 +105,7 @@ type PrimaryButtonConfig = {
   border?: Themed<Gradient>;
   shadows?: Themed<readonly Shadow[]>;
   highlight?: Themed<Gradient>;
+  overlay?: Themed<HardLightOverlay>;
   text?: {
     gradient?: Themed<Gradient>;
     shadow?: Themed<TextShadow>;
@@ -90,6 +116,7 @@ type SecondaryButtonConfig = {
   fill: Themed<Gradient>;
   border?: Themed<Gradient>;
   shadows?: Themed<readonly Shadow[]>;
+  overlay?: Themed<HardLightOverlay>;
   textColor: Themed<string>;
 };
 
@@ -119,12 +146,16 @@ const textShadow = (textShadowColor: string, textShadowOffset: TextShadow['textS
   textShadowRadius,
 });
 
+function isShadowArray(value: Shadow | readonly Shadow[]): value is readonly Shadow[] {
+  return Array.isArray(value);
+}
+
 function toShadowArray(value: Shadow | readonly Shadow[]): readonly Shadow[] {
-  if (Array.isArray(value)) {
-    return value as readonly Shadow[];
+  if (isShadowArray(value)) {
+    return value;
   }
 
-  return [value as Shadow];
+  return [value];
 }
 
 const themedShadows = (light: Shadow | readonly Shadow[], dark?: Shadow | readonly Shadow[]): Themed<readonly Shadow[]> =>
@@ -133,27 +164,34 @@ const themedShadows = (light: Shadow | readonly Shadow[], dark?: Shadow | readon
 const background = (lightColor: string, darkColor = lightColor): Themed<Gradient> =>
   themed(gradient([opacity(lightColor, 0.4), opacity(lightColor, 0)]), gradient([opacity(darkColor, 0.16), opacity(darkColor, 0)]));
 
-const badgePrimaryButton = (badge: BadgeTheme, config: PrimaryButtonConfig = {}): PrimaryButtonTheme => ({
-  surface: {
-    fill: config.fill ?? badge.fill,
-    border: config.border ?? badge.border,
-    shadows: config.shadows ?? badge.shadows,
-    ...(config.highlight ? { highlight: config.highlight } : {}),
-  },
-  text: {
-    gradient: config.text?.gradient ?? badge.text.gradient,
-    shadow: config.text?.shadow ?? badge.text.shadow,
-  },
-});
+const badgePrimaryButton = (badge: BadgeTheme, config: PrimaryButtonConfig = {}): PrimaryButtonTheme => {
+  const overlay = config.overlay ?? badge.overlay;
+  return {
+    surface: {
+      fill: config.fill ?? badge.fill,
+      border: config.border ?? badge.border,
+      shadows: config.shadows ?? badge.shadows,
+      ...(config.highlight ? { highlight: config.highlight } : {}),
+      ...(overlay ? { overlay } : {}),
+    },
+    text: {
+      gradient: config.text?.gradient ?? badge.text.gradient,
+      shadow: config.text?.shadow ?? badge.text.shadow,
+    },
+  };
+};
 
-const secondaryButton = (badge: BadgeTheme, config: SecondaryButtonConfig): SecondaryButtonTheme => ({
-  surface: {
-    fill: config.fill,
-    border: config.border ?? badge.border,
-    shadows: config.shadows ?? badge.shadows,
-  },
-  textColor: config.textColor,
-});
+const secondaryButton = (badge: BadgeTheme, config: SecondaryButtonConfig): SecondaryButtonTheme => {
+  return {
+    surface: {
+      fill: config.fill,
+      border: config.border ?? badge.border,
+      shadows: config.shadows ?? badge.shadows,
+      ...(config.overlay ? { overlay: config.overlay } : {}),
+    },
+    textColor: config.textColor,
+  };
+};
 
 // ============ Shared Tokens ================================================== //
 
@@ -161,6 +199,30 @@ const LIGHT_BADGE_BORDER_COLORS: Gradient['colors'] = [opacity(globalColors.grey
 const DEFAULT_BADGE_SHADOW = shadow('#000000', { width: 0, height: 4 }, 0.06, 6);
 const DEFAULT_PROGRESS_HIGHLIGHT = themed(solid('#FFFFFF'));
 const MONO_LABEL_GRADIENT = themed(solid('#000000'), solid('#FFFFFF'));
+const TRANSPARENT_BORDER_COLORS: Gradient['colors'] = ['rgba(0,0,0,0)', 'rgba(0,0,0,0)'];
+
+const BLACK_TIER_RAINBOW_OVERLAY_COLORS: HardLightOverlay['colors'] = ['#A78BFF', '#8AD7FF', '#70D59E', '#FADA5D', '#FF9C92', '#FBAFD0'];
+const BLACK_TIER_RAINBOW_OVERLAY_LOCATIONS: HardLightOverlay['locations'] = [0, 0.147, 0.362, 0.566, 0.785, 1];
+
+const BLACK_TIER_BADGE_RAINBOW_OVERLAY: Themed<HardLightOverlay> = themed({
+  colors: BLACK_TIER_RAINBOW_OVERLAY_COLORS,
+  locations: BLACK_TIER_RAINBOW_OVERLAY_LOCATIONS,
+  maskShadow: {
+    blur: 2,
+    dx: 0,
+    dy: 2,
+  },
+});
+
+const BLACK_TIER_PRIMARY_BUTTON_RAINBOW_OVERLAY: Themed<HardLightOverlay> = themed({
+  colors: BLACK_TIER_RAINBOW_OVERLAY_COLORS,
+  locations: BLACK_TIER_RAINBOW_OVERLAY_LOCATIONS,
+  maskShadow: {
+    blur: 2.5,
+    dx: 0,
+    dy: 4,
+  },
+});
 
 // ============ Badges ========================================================= //
 
@@ -215,12 +277,20 @@ const DIAMOND_BADGE: BadgeTheme = {
 
 const BLACK_BADGE: BadgeTheme = {
   fill: themed(gradient(['#444444', '#000000'])),
-  border: themed(gradient(LIGHT_BADGE_BORDER_COLORS)),
+  border: themed(gradient(TRANSPARENT_BORDER_COLORS)),
   shadows: themedShadows(DEFAULT_BADGE_SHADOW),
   text: {
     gradient: themed(solid('#FFFFFF')),
     shadow: themed(textShadow('rgba(0, 0, 0, 0)', { width: 0, height: 0 }, 0)),
   },
+  overlay: BLACK_TIER_BADGE_RAINBOW_OVERLAY,
+  backgroundShadow: themed({
+    colors: BLACK_TIER_RAINBOW_OVERLAY_COLORS,
+    locations: BLACK_TIER_RAINBOW_OVERLAY_LOCATIONS,
+    opacity: 0.5,
+    blur: 16,
+    dy: 0,
+  }),
 };
 
 // ============ Buttons ======================================================== //
@@ -333,7 +403,8 @@ const TIER_THEMES: Record<TierId, TierTheme> = {
     labelGradient: MONO_LABEL_GRADIENT,
     badge: BLACK_BADGE,
     primaryButton: badgePrimaryButton(BLACK_BADGE, {
-      fill: themed(solid('#1A1716')),
+      fill: themed(gradient(['#2A2A2A', '#141414']), gradient(['#272727', '#141414'])),
+      overlay: BLACK_TIER_PRIMARY_BUTTON_RAINBOW_OVERLAY,
     }),
     secondaryButton: secondaryButton(BLACK_BADGE, {
       fill: themed(
@@ -348,6 +419,13 @@ const TIER_THEMES: Record<TierId, TierTheme> = {
       fill: themed(gradient(['#444444', '#000000'])),
       border: themed(solid('rgba(0,0,0,0)')),
       shadow: themed(shadow('#000000', { width: 0, height: 4 }, 0.06, 6)),
+      backgroundShadow: themed({
+        colors: BLACK_TIER_RAINBOW_OVERLAY_COLORS,
+        locations: BLACK_TIER_RAINBOW_OVERLAY_LOCATIONS,
+        opacity: 0.24,
+        blur: 12,
+        dy: 0,
+      }),
       highlight: themed(
         gradient(['#7D53FF', '#3FBDFF', '#4BFF9D', '#FFD73A', '#FF5E4D', '#FF3C91'], {
           locations: [0, 0.15, 0.36, 0.57, 0.79, 1],
@@ -361,8 +439,12 @@ const TIER_THEMES: Record<TierId, TierTheme> = {
 
 const FALLBACK_TIER_THEME = TIER_THEMES.STAKING_TIER_LEVEL_BASIC;
 
+function isTierId(level: string): level is TierId {
+  return level in TIER_THEMES;
+}
+
 function resolveTierTheme(level: TierId | string): TierTheme {
-  return TIER_THEMES[level as TierId] ?? FALLBACK_TIER_THEME;
+  return isTierId(level) ? TIER_THEMES[level] : FALLBACK_TIER_THEME;
 }
 
 export function getTierBackgroundTheme(level: TierId | string): { gradient: Themed<Gradient> } {

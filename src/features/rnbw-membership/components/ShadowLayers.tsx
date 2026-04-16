@@ -13,6 +13,7 @@ type ShadowLayersProps = {
   borderRadius: number;
   backgroundColor: string;
   children: ReactNode;
+  outerGlowLayer?: ReactNode;
   style?: StyleProp<ViewStyle>;
 };
 
@@ -30,9 +31,17 @@ function getShadowLayerStyle(shadowStyle: ShadowStyle): ViewStyle {
   return shadowStyle;
 }
 
-export const ShadowLayers = memo(function ShadowLayers({ shadows, borderRadius, backgroundColor, children, style }: ShadowLayersProps) {
+export const ShadowLayers = memo(function ShadowLayers({
+  shadows,
+  borderRadius,
+  backgroundColor,
+  children,
+  outerGlowLayer,
+  style,
+}: ShadowLayersProps) {
   return (
     <View style={[styles.container, style]}>
+      {outerGlowLayer}
       {shadows.map((shadowStyle, index) => (
         <View
           key={`${shadowStyle.shadowColor}-${index}`}

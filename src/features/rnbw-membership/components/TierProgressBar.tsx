@@ -8,6 +8,7 @@ import { GradientBorderView } from '@/components/gradient-border/GradientBorderV
 import { useBackgroundColor, useColorMode } from '@/design-system';
 import { getValueForColorMode } from '@/design-system/color/palettes';
 import { InnerShadow } from '@/features/polymarket/components/InnerShadow';
+import { SkiaGradientShadow } from '@/features/rnbw-membership/components/SkiaGradientShadow';
 import { getTierProgressBarTheme } from '@/features/rnbw-membership/tierVisuals';
 import type { Tier } from '@/features/rnbw-membership/types';
 import { opacity } from '@/framework/ui/utils/opacity';
@@ -41,13 +42,14 @@ export const TierProgressBar = memo(function TierProgressBar({
   const backgroundColor = isDarkMode ? '#242529' : surfaceSecondary;
   const isMaxTier = tierIndex === tierCount - 1;
 
-  const { gradient, borderGradient, shadow, highlightGradient } = useMemo(() => {
+  const { gradient, borderGradient, shadow, highlightGradient, backgroundShadow } = useMemo(() => {
     const progressTheme = getTierProgressBarTheme(tier.level);
     return {
       gradient: getValueForColorMode(progressTheme.fill, colorMode),
       borderGradient: getValueForColorMode(progressTheme.border, colorMode),
       shadow: getValueForColorMode(progressTheme.shadow, colorMode),
       highlightGradient: getValueForColorMode(progressTheme.highlight, colorMode),
+      backgroundShadow: progressTheme.backgroundShadow ? getValueForColorMode(progressTheme.backgroundShadow, colorMode) : null,
     };
   }, [tier.level, colorMode]);
 
@@ -82,6 +84,13 @@ export const TierProgressBar = memo(function TierProgressBar({
     };
   }, [fillWidth]);
 
+  // Skia wants mutable arrays
+  const skiaHighlightColors = useMemo(() => [...highlightGradient.colors], [highlightGradient.colors]);
+  const skiaHighlightLocations = useMemo(
+    () => (highlightGradient.locations ? [...highlightGradient.locations] : undefined),
+    [highlightGradient.locations]
+  );
+
   return (
     <GradientBorderView
       borderGradientColors={isDarkMode ? [opacity('#9AA2A7', 0.016), opacity('#9AA2A7', 0.08)] : ['rgba(0,0,0,0)', 'rgba(0,0,0,0)']}
@@ -92,68 +101,76 @@ export const TierProgressBar = memo(function TierProgressBar({
       style={{ height, width, overflow: 'visible' }}
     >
       <TierDots tierCount={tierCount} />
-      <GradientBorderView
-        borderGradientColors={borderGradient.colors}
-        start={{ x: 0, y: 0 }}
-        end={{ x: 0, y: 1 }}
-        borderWidth={1}
-        borderTopRightRadius={rightRadius}
-        borderBottomRightRadius={rightRadius}
-        borderTopLeftRadius={leftRadius}
-        borderBottomLeftRadius={leftRadius}
+      <View
         style={{
-          height,
-          width: fillWidth,
           position: 'absolute',
           top: 0,
           left: 0,
+          width: fillWidth,
+          height,
           overflow: 'visible',
-          ...shadow,
         }}
       >
-        <LinearGradient
-          colors={gradient.colors}
-          start={gradient.start}
-          end={gradient.end}
-          style={[
-            StyleSheet.absoluteFill,
-            {
-              borderTopRightRadius: rightRadius,
-              borderBottomRightRadius: rightRadius,
-              borderTopLeftRadius: leftRadius,
-              borderBottomLeftRadius: leftRadius,
-              borderCurve: 'continuous',
-            },
-          ]}
-        />
-        <Canvas
+        {backgroundShadow ? <SkiaGradientShadow borderRadius={height / 2} shadow={backgroundShadow} /> : null}
+        <GradientBorderView
+          borderGradientColors={borderGradient.colors}
+          start={{ x: 0, y: 0 }}
+          end={{ x: 0, y: 1 }}
+          borderWidth={1}
+          borderTopRightRadius={rightRadius}
+          borderBottomRightRadius={rightRadius}
+          borderTopLeftRadius={leftRadius}
+          borderBottomLeftRadius={leftRadius}
           style={{
-            position: 'absolute',
-            top: progressHighlight.canvasTop,
-            left: progressHighlight.canvasLeft,
-            height: progressHighlight.canvasHeight,
-            width: progressHighlight.canvasWidth,
+            height,
+            width: fillWidth,
+            overflow: 'visible',
+            ...shadow,
           }}
         >
-          <RoundedRect
-            x={progressHighlight.rectX}
-            y={progressHighlight.rectY}
-            width={progressHighlight.rectWidth}
-            height={PROGRESS_HIGHLIGHT_HEIGHT}
-            r={PROGRESS_HIGHLIGHT_RADIUS}
-            opacity={0.5}
+          <LinearGradient
+            colors={gradient.colors}
+            start={gradient.start}
+            end={gradient.end}
+            style={[
+              StyleSheet.absoluteFill,
+              {
+                borderTopRightRadius: rightRadius,
+                borderBottomRightRadius: rightRadius,
+                borderTopLeftRadius: leftRadius,
+                borderBottomLeftRadius: leftRadius,
+                borderCurve: 'continuous',
+              },
+            ]}
+          />
+          <Canvas
+            style={{
+              position: 'absolute',
+              top: progressHighlight.canvasTop,
+              left: progressHighlight.canvasLeft,
+              height: progressHighlight.canvasHeight,
+              width: progressHighlight.canvasWidth,
+            }}
           >
-            <SkiaLinearGradient
-              start={vec(progressHighlight.rectX, progressHighlight.rectY)}
-              end={vec(progressHighlight.rectX + progressHighlight.rectWidth, progressHighlight.rectY)}
-              // Cast expo LinearGradientProps for Skia compatibility
-              positions={highlightGradient.locations as unknown as number[] | undefined}
-              colors={highlightGradient.colors as unknown as string[]}
-            />
-            <Blur blur={PROGRESS_HIGHLIGHT_BLUR} />
-          </RoundedRect>
-        </Canvas>
-      </GradientBorderView>
+            <RoundedRect
+              x={progressHighlight.rectX}
+              y={progressHighlight.rectY}
+              width={progressHighlight.rectWidth}
+              height={PROGRESS_HIGHLIGHT_HEIGHT}
+              r={PROGRESS_HIGHLIGHT_RADIUS}
+              opacity={0.5}
+            >
+              <SkiaLinearGradient
+                start={vec(progressHighlight.rectX, progressHighlight.rectY)}
+                end={vec(progressHighlight.rectX + progressHighlight.rectWidth, progressHighlight.rectY)}
+                positions={skiaHighlightLocations}
+                colors={skiaHighlightColors}
+              />
+              <Blur blur={PROGRESS_HIGHLIGHT_BLUR} />
+            </RoundedRect>
+          </Canvas>
+        </GradientBorderView>
+      </View>
       <InnerShadow
         width={width}
         height={height}
