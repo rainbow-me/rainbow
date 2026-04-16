@@ -10,6 +10,7 @@ import { initSentry } from '@/logger/sentry';
 import { APP_START_TIME } from '@/performance/start-time';
 import { PerformanceReports, PerformanceReportSegments, PerformanceTracking } from '@/performance/tracking';
 
+// TODO: Migrate to modular API and remove this stopgap (FEPLAT-80)
 // Silence RNFB v23 namespaced-API deprecation warnings to keep Sentry breadcrumbs useful.
 globalThis.RNFB_SILENCE_MODULAR_DEPRECATION_WARNINGS = true;
 
