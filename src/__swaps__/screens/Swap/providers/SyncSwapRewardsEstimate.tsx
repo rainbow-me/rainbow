@@ -8,6 +8,7 @@ import { swapsStore, useSwapsStore } from '@/state/swaps/swapsStore';
 export function SyncSwapRewardsEstimate() {
   const quote = useSwapsStore(state => state.quote);
   const currency = userAssetsStoreManager(state => state.currency);
+  const walletAddress = userAssetsStoreManager(state => state.address);
 
   const requestKeyRef = useRef<string | null>(null);
   const abortRef = useRef<AbortController | null>(null);
@@ -31,7 +32,7 @@ export function SyncSwapRewardsEstimate() {
       return;
     }
 
-    const payload = buildEstimateRewardPayload({ quote, currency });
+    const payload = buildEstimateRewardPayload({ quote, currency, walletAddress });
     if (!payload) {
       resetEstimate();
       return;
@@ -70,7 +71,7 @@ export function SyncSwapRewardsEstimate() {
     return () => {
       abortController.abort();
     };
-  }, [currency, quote, resetEstimate]);
+  }, [currency, quote, resetEstimate, walletAddress]);
 
   return null;
 }
