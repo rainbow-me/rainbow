@@ -1,8 +1,11 @@
 import { decodeFunctionResult, encodeFunctionData, type Address, type Hex } from 'viem';
 
+import { analytics } from '@/analytics';
 import { type NativeCurrencyKey } from '@/entities/nativeCurrencyTypes';
 import type { Tier } from '@/features/rnbw-membership/types';
 import { getProvider } from '@/handlers/web3';
+import { convertRawAmountToDecimalFormat } from '@/helpers/utilities';
+import WalletTypes from '@/helpers/walletTypes';
 import { logger, RainbowError } from '@/logger';
 import { getPlatformClient } from '@/resources/platform/client';
 import { type PlatformResponse } from '@/resources/platform/types';
@@ -50,6 +53,20 @@ type StakingPositionStore = {
 export const useStakingPositionStore = createQueryStore<StakingPositionData, StakingPositionParams, StakingPositionStore>(
   {
     fetcher: fetchStakingPosition,
+    onFetched: ({ data, params }) => {
+      const fetchedAddress = params.address?.toLowerCase();
+
+      requestIdleCallback(() => {
+        const { accountAddress, selected } = useWalletsStore.getState();
+        const currentAddress = accountAddress?.toLowerCase();
+        if (currentAddress !== fetchedAddress || selected?.type === WalletTypes.readOnly) return;
+
+        analytics.identify({
+          stakedRnbw: convertRawAmountToDecimalFormat(data.stakedRnbw, data.decimals),
+          rnbwMembershipTier: data.tier.level,
+        });
+      });
+    },
     params: {
       currency: $ => $(userAssetsStoreManager).currency,
       address: $ => $(useWalletsStore).accountAddress,
