@@ -4,10 +4,12 @@ import { buildEstimateRewardPayload, fetchEstimateReward } from '@/features/rnbw
 import { logger, RainbowError } from '@/logger';
 import { userAssetsStoreManager } from '@/state/assets/userAssetsStoreManager';
 import { swapsStore, useSwapsStore } from '@/state/swaps/swapsStore';
+import { useAccountAddress } from '@/state/wallets/walletsStore';
 
 export function SyncSwapRewardsEstimate() {
   const quote = useSwapsStore(state => state.quote);
   const currency = userAssetsStoreManager(state => state.currency);
+  const walletAddress = useAccountAddress();
 
   const requestKeyRef = useRef<string | null>(null);
   const abortRef = useRef<AbortController | null>(null);
@@ -20,9 +22,7 @@ export function SyncSwapRewardsEstimate() {
     if (requestKeyRef.current) {
       requestKeyRef.current = null;
     }
-    swapsStore.setState({
-      rewardsEstimate: null,
-    });
+    swapsStore.setState({ rewardsEstimate: null });
   }, []);
 
   useEffect(() => {
@@ -31,7 +31,7 @@ export function SyncSwapRewardsEstimate() {
       return;
     }
 
-    const payload = buildEstimateRewardPayload({ quote, currency });
+    const payload = buildEstimateRewardPayload({ quote, currency, walletAddress });
     if (!payload) {
       resetEstimate();
       return;
@@ -52,16 +52,12 @@ export function SyncSwapRewardsEstimate() {
 
         if (abortController.signal.aborted || requestKeyRef.current !== nextKey) return;
 
-        swapsStore.setState({
-          rewardsEstimate: result,
-        });
+        swapsStore.setState({ rewardsEstimate: result });
       } catch (error) {
         if (abortController.signal.aborted || requestKeyRef.current !== nextKey) return;
 
         logger.error(new RainbowError('[SyncSwapRewardsEstimate]: Failed to fetch rewards estimate', error));
-        swapsStore.setState({
-          rewardsEstimate: null,
-        });
+        swapsStore.setState({ rewardsEstimate: null });
       }
     };
 
@@ -70,7 +66,7 @@ export function SyncSwapRewardsEstimate() {
     return () => {
       abortController.abort();
     };
-  }, [currency, quote, resetEstimate]);
+  }, [currency, quote, resetEstimate, walletAddress]);
 
   return null;
 }
