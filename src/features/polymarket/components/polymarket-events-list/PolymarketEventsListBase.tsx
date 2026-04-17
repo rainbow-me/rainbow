@@ -14,6 +14,7 @@ import { DEVICE_HEIGHT, DEVICE_WIDTH } from '@/utils/deviceUtils';
 import safeAreaInsetValues from '@/utils/safeAreaInsetValues';
 
 const ITEM_GAP = 12;
+const ITEM_GAP_BOTTOM = 8;
 const ROW_HEIGHT = ITEM_HEIGHT + ITEM_GAP;
 const ITEM_WIDTH = (DEVICE_WIDTH - ITEM_GAP * 3) / 2;
 
@@ -67,7 +68,7 @@ export const PolymarketEventsListBase = memo(function PolymarketEventsListBase({
       renderItem={renderItem}
       scrollIndicatorInsets={listStyles.scrollIndicatorInsets}
       style={styles.list}
-      windowSize={12}
+      windowSize={16}
     />
   );
 });
@@ -109,6 +110,7 @@ const styles = StyleSheet.create({
   },
   itemWrapper: {
     margin: ITEM_GAP / 2,
+    marginBottom: ITEM_GAP_BOTTOM / 2,
     width: ITEM_WIDTH,
   },
   skeletonContainer: {
@@ -118,8 +120,9 @@ const styles = StyleSheet.create({
   },
   skeletonItemWrapper: {
     height: ITEM_HEIGHT,
-    width: ITEM_WIDTH,
     margin: ITEM_GAP / 2,
+    marginBottom: ITEM_GAP_BOTTOM / 2,
+    width: ITEM_WIDTH,
   },
   skeletonCard: {
     backgroundColor: 'black',

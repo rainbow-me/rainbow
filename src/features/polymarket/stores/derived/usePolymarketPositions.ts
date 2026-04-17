@@ -1,6 +1,6 @@
-import { createDerivedStore } from '@/state/internal/createDerivedStore';
-import { PolymarketPosition } from '@/features/polymarket/types';
 import { usePolymarketPositionsStore } from '@/features/polymarket/stores/polymarketPositionsStore';
+import { PolymarketPosition } from '@/features/polymarket/types';
+import { createDerivedStore } from '@/state/internal/createDerivedStore';
 import { shallowEqual } from '@/worklets/comparisons';
 
 export type PolymarketPositions = {
@@ -11,32 +11,39 @@ export type PolymarketPositions = {
   hasPositions: boolean;
 };
 
-const EMPTY_POSITIONS: PolymarketPosition[] = [];
-
 const EMPTY_RESULT: PolymarketPositions = {
-  positions: [],
   activePositions: [],
-  redeemablePositions: [],
-  lostPositions: [],
   hasPositions: false,
+  lostPositions: [],
+  positions: [],
+  redeemablePositions: [],
 };
 
 export const usePolymarketPositions = createDerivedStore<PolymarketPositions>(
   $ => {
-    const positions = $(usePolymarketPositionsStore, state => state.getPositions() ?? EMPTY_POSITIONS);
+    const positions = $(usePolymarketPositionsStore, state => state.getPositions());
 
-    if (!positions.length) return EMPTY_RESULT;
+    if (!positions?.length) return EMPTY_RESULT;
 
-    const activePositions = positions.filter(position => !(position.redeemable && position.currentValue === 0));
-    const redeemablePositions = positions.filter(position => position.redeemable);
-    const lostPositions = positions.filter(position => position.redeemable && position.currentValue === 0);
+    let activePositions: PolymarketPosition[] = [];
+    let lostPositions: PolymarketPosition[] = [];
+    let redeemablePositions: PolymarketPosition[] = [];
+
+    for (const position of positions) {
+      const isRedeemable = position.redeemable;
+      const isLost = isRedeemable && position.currentValue === 0;
+
+      if (isRedeemable) redeemablePositions.push(position);
+      if (isLost) lostPositions.push(position);
+      else activePositions.push(position);
+    }
 
     return {
-      positions,
       activePositions,
-      redeemablePositions,
-      lostPositions,
       hasPositions: true,
+      lostPositions,
+      positions,
+      redeemablePositions,
     };
   },
 

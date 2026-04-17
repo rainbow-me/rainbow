@@ -1,13 +1,13 @@
 import walletTypes from '@/helpers/walletTypes';
 import { logger, RainbowError } from '@/logger';
 import { getHdPath, isHardwareWalletKey, loadPrivateKey, WalletLibraryType } from '@/model/wallet';
-import { useBackendNetworksStore } from '@/state/backendNetworks/backendNetworks';
 import { ChainId } from '@/state/backendNetworks/types';
 import { getWalletWithAccount } from '@/state/wallets/walletsStore';
-import { createWalletClient, Hex, http } from 'viem';
-import { privateKeyToAccount } from 'viem/accounts';
+import { Wallet } from 'ethers';
+import { Hex } from 'viem';
 import * as kc from '@/keychain';
 import { LedgerSigner } from '@/handlers/LedgerSigner';
+import { getProvider } from '@/handlers/web3';
 import { Provider } from '@ethersproject/providers';
 
 export async function loadViemWallet(address: Hex, provider: Provider) {
@@ -33,12 +33,5 @@ export async function loadViemWallet(address: Hex, provider: Provider) {
     }
   }
 
-  const account = privateKeyToAccount(privateKey as Hex);
-  const chain = useBackendNetworksStore.getState().getDefaultChains()[ChainId.polygon];
-
-  return createWalletClient({
-    account,
-    chain,
-    transport: http(useBackendNetworksStore.getState().getChainDefaultRpc(ChainId.polygon)),
-  });
+  return new Wallet(privateKey as Hex, provider || getProvider({ chainId: ChainId.polygon }));
 }

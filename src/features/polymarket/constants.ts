@@ -63,17 +63,25 @@ export const POLYMARKET_SPORTS_MARKET_TYPE = {
 export const DEFAULT_CATEGORY_KEY = 'trending';
 export const DEFAULT_SPORTS_LEAGUE_KEY = 'all' as const;
 export const CATEGORIES = {
-  trending: {
-    label: 'Trending',
-    icon: '􀙭',
-    // Trending represents the default 'all' category
+  'forYou': {
+    label: 'For You',
+    icon: '􀩾',
     tagId: null,
     color: {
       dark: '#C863E8',
       light: '#E445D3',
     },
   },
-  sports: {
+  'trending': {
+    label: 'Trending',
+    icon: '􀙭',
+    tagId: null,
+    color: {
+      dark: '#FF4F38',
+      light: '#FF3D2E',
+    },
+  },
+  'sports': {
     label: 'Sports',
     icon: '􁗉',
     tagId: 'sports',
@@ -82,7 +90,7 @@ export const CATEGORIES = {
       light: '#1DB847',
     },
   },
-  politics: {
+  'politics': {
     label: 'Politics',
     icon: '􀤩',
     tagId: 'politics',
@@ -91,7 +99,7 @@ export const CATEGORIES = {
       light: '#F8A24B',
     },
   },
-  finance: {
+  'finance': {
     label: 'Finance',
     icon: '􁎢',
     tagId: 'finance',
@@ -100,7 +108,7 @@ export const CATEGORIES = {
       light: '#4F60FF',
     },
   },
-  crypto: {
+  'crypto': {
     label: 'Crypto',
     icon: '􁑞',
     tagId: 'crypto',
@@ -109,7 +117,7 @@ export const CATEGORIES = {
       light: '#8943F8',
     },
   },
-  geopolitics: {
+  'geopolitics': {
     label: 'Geopolitics',
     icon: '􀵲',
     tagId: 'geopolitics',
@@ -118,7 +126,7 @@ export const CATEGORIES = {
       light: '#D39013',
     },
   },
-  earnings: {
+  'earnings': {
     label: 'Earnings',
     icon: '􀑁',
     tagId: 'earnings',
@@ -127,7 +135,7 @@ export const CATEGORIES = {
       light: '#92BF16',
     },
   },
-  tech: {
+  'tech': {
     label: 'Tech',
     icon: '􀓗',
     tagId: 'tech',
@@ -136,7 +144,7 @@ export const CATEGORIES = {
       light: '#438DFB',
     },
   },
-  ['pop-culture']: {
+  'pop-culture': {
     label: 'Culture',
     icon: '􀫔',
     tagId: 'pop-culture',
@@ -145,7 +153,7 @@ export const CATEGORIES = {
       light: '#F54F4F',
     },
   },
-  world: {
+  'world': {
     label: 'World',
     icon: '􀆪',
     tagId: 'world',
@@ -154,7 +162,7 @@ export const CATEGORIES = {
       light: '#6BBDFF',
     },
   },
-  economy: {
+  'economy': {
     label: 'Economy',
     icon: '􀎜',
     tagId: 'economy',
@@ -163,7 +171,7 @@ export const CATEGORIES = {
       light: '#43D4C8',
     },
   },
-  elections: {
+  'elections': {
     label: 'Elections',
     icon: '􁅈',
     tagId: 'elections',
@@ -172,7 +180,7 @@ export const CATEGORIES = {
       light: '#479DE4',
     },
   },
-  ['mention-markets']: {
+  'mention-markets': {
     label: 'Mentions',
     icon: '􀿋',
     tagId: 'mention-markets',

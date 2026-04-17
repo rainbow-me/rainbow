@@ -5,6 +5,7 @@ import { usePolymarketBalanceStore } from '@/features/polymarket/stores/polymark
 import { add, isZero } from '@/helpers/utilities';
 import { truncateToDecimals } from '@/safe-math/SafeMath';
 import { USD_DECIMALS } from '@/features/perps/constants';
+import { shallowEqual } from '@/worklets/comparisons';
 
 export type PolymarketAccountValueSummary = {
   balance: string;
@@ -28,5 +29,5 @@ export const usePolymarketAccountValueSummary = createDerivedStore<PolymarketAcc
       totalValueNative: nativeCurrencyAccountValue,
     };
   },
-  { fastMode: true }
+  { equalityFn: shallowEqual, fastMode: true }
 );

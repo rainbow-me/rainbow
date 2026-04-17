@@ -30,7 +30,7 @@ export const SportsEventMarkets = memo(function SportsEventMarkets() {
   const groupedMarkets = event ? getMarketsGroupedByBetType(event) : null;
 
   const availableBetTypes = useMemo(() => {
-    if (!groupedMarkets) return [];
+    if (!groupedMarkets) return undefined;
     const types: BetType[] = [];
     if (groupedMarkets.moneyline.length > 0) types.push(BET_TYPE.MONEYLINE);
     if (groupedMarkets.spreads.length > 0) types.push(BET_TYPE.SPREADS);
@@ -39,7 +39,7 @@ export const SportsEventMarkets = memo(function SportsEventMarkets() {
     return types;
   }, [groupedMarkets]);
 
-  const [selectedBetType, setSelectedBetType] = useState<BetType>(availableBetTypes[0] ?? BET_TYPE.MONEYLINE);
+  const [selectedBetType, setSelectedBetType] = useState<BetType>(availableBetTypes?.[0] ?? BET_TYPE.MONEYLINE);
 
   const backgroundColor = isDarkMode ? PERPS_BACKGROUND_DARK : PERPS_BACKGROUND_LIGHT;
 
@@ -49,7 +49,7 @@ export const SportsEventMarkets = memo(function SportsEventMarkets() {
 
   return (
     <Box gap={24}>
-      {availableBetTypes.length > 1 && (
+      {availableBetTypes?.length ? (
         <BetTypeSelector
           availableBetTypes={availableBetTypes}
           backgroundColor={backgroundColor}
@@ -58,7 +58,7 @@ export const SportsEventMarkets = memo(function SportsEventMarkets() {
           onSelectBetType={setSelectedBetType}
           selectedBetType={selectedBetType}
         />
-      )}
+      ) : null}
       <Markets markets={groupedMarkets} selectedBetType={selectedBetType} teams={event.teams} event={event} />
     </Box>
   );

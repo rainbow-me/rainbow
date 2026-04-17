@@ -2,6 +2,7 @@ import { polymarketChartsActions } from '@/features/charts/polymarket/stores/pol
 import { prefetchCandlestickData } from '@/features/charts/stores/candlestickStore';
 import { prefetchPolymarketEvent } from '@/features/polymarket/stores/polymarketEventStore';
 import { usePolymarketOrderBookStore } from '@/features/polymarket/stores/polymarketOrderBookStore';
+import { polymarketRecommendationsActions } from '@/features/polymarket/stores/polymarketRecommendationsStore';
 import Routes, { Route } from '@/navigation/routesNames';
 import { RootStackParamList } from '@/navigation/types';
 import { deepFreeze } from '@/utils/deepFreeze';
@@ -25,6 +26,7 @@ export const prefetchRegistry = deepFreeze<PrefetchRegistry>({
   [Routes.POLYMARKET_EVENT_SCREEN]: ({ eventId, event }) => {
     prefetchPolymarketEvent(eventId);
     if (event?.slug) polymarketChartsActions.setSelectedEventSlug(event.slug);
+    if ('markets' in event) requestIdleCallback(() => polymarketRecommendationsActions.trackView(event));
   },
 
   [Routes.POLYMARKET_MARKET_SHEET]: ({ market }) => {

@@ -6,12 +6,12 @@ import { opacity } from '@/framework/ui/utils/opacity';
 import { ButtonPressAnimation, ShimmerAnimation } from '@/components/animations';
 import { GradientBorderView } from '@/components/gradient-border/GradientBorderView';
 import ImgixImage from '@/components/images/ImgixImage';
-import { globalColors, Separator, Text, useBackgroundColor, useColorMode } from '@/design-system';
+import { Separator, Text, TextShadow, globalColors, useBackgroundColor, useColorMode } from '@/design-system';
 import * as i18n from '@/languages';
-// import {
-//   polymarketRecommendationsActions,
-//   usePolymarketRecommendationsStore,
-// } from '@/features/polymarket/stores/polymarketRecommendationsStore';
+import {
+  polymarketRecommendationsActions,
+  usePolymarketRecommendationsStore,
+} from '@/features/polymarket/stores/polymarketRecommendationsStore';
 import { PolymarketEvent, PolymarketMarket } from '@/features/polymarket/types/polymarket-event';
 import { Navigation } from '@/navigation';
 import Routes from '@/navigation/routesNames';
@@ -175,33 +175,35 @@ export const PolymarketEventsListItem = memo(function PolymarketEventsListItem({
         </GradientBorderView>
       </ButtonPressAnimation>
 
-      {/* <BookmarkIcon event={event} /> */}
+      <BookmarkIcon event={event} />
     </View>
   );
 });
 
-// const BookmarkIcon = ({ event }: { event: PolymarketEvent }) => {
-//   const isBookmarked = usePolymarketRecommendationsStore(state => state.isBookmarked(event.id));
-//   return (
-//     <ButtonPressAnimation
-//       onPress={() => polymarketRecommendationsActions.toggleBookmark(event)}
-//       scaleTo={0.8}
-//       style={styles.bookmarkButton}
-//     >
-//       <TextShadow blur={18} shadowOpacity={isBookmarked ? 0.32 : 0}>
-//         <Text align="center" color={isBookmarked ? 'yellow' : 'labelQuinary'} size="icon 13px" weight="black">
-//           􀋃
-//         </Text>
-//       </TextShadow>
-//     </ButtonPressAnimation>
-//   );
-// };
+const BookmarkIcon = ({ event }: { event: PolymarketEvent }) => {
+  const isBookmarked = usePolymarketRecommendationsStore(state => state.isBookmarked(event.id));
+  return (
+    <ButtonPressAnimation
+      onPress={() => polymarketRecommendationsActions.toggleBookmark(event)}
+      scaleTo={0.8}
+      style={styles.bookmarkButton}
+    >
+      <TextShadow blur={18} shadowOpacity={isBookmarked ? 0.32 : 0}>
+        <Text align="center" color={isBookmarked ? 'yellow' : 'labelQuinary'} size="icon 13px" weight="black">
+          􀋃
+        </Text>
+      </TextShadow>
+    </ButtonPressAnimation>
+  );
+};
 
 export const LoadingSkeleton = memo(function LoadingSkeleton() {
   const { isDarkMode } = useColorMode();
   const fillQuaternary = useBackgroundColor('fillQuaternary');
   const fillSecondary = useBackgroundColor('fillSecondary');
-  const shimmerColor = opacity(fillSecondary, 0.1);
+
+  const lightModeShimmerColor = opacity(fillSecondary, 0.1);
+  const shimmerColor = isDarkMode ? fillQuaternary : lightModeShimmerColor;
   const skeletonColor = isDarkMode ? fillQuaternary : fillSecondary;
 
   return (

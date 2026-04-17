@@ -9,7 +9,6 @@ import { PolymarketEventsListBase } from '@/features/polymarket/components/polym
 import { PolymarketEventCategorySelector } from '@/features/polymarket/screens/polymarket-browse-events-screen/PolymarketEventCategorySelector';
 import { PolymarketSportsEventsScreen } from '@/features/polymarket/screens/polymarket-sports-events-screen/PolymarketSportsEventsScreen';
 import { usePolymarketContext } from '@/features/polymarket/screens/polymarket-navigator/PolymarketContext';
-import { usePolymarketCategoryStore } from '@/features/polymarket/stores/usePolymarketCategoryStore';
 import { usePolymarketEventsStore } from '@/features/polymarket/stores/polymarketEventsStore';
 import { useListen } from '@/state/internal/hooks/useListen';
 import { PolymarketEvent } from '@/features/polymarket/types/polymarket-event';
@@ -29,17 +28,15 @@ const EMPTY_EVENTS: PolymarketEvent[] = [];
 const PolymarketBrowseEventsList = () => {
   const { isDarkMode } = useColorMode();
   const { eventsListRef } = usePolymarketContext();
-  const isSportsCategory = usePolymarketCategoryStore(state => state.tagId === CATEGORIES.sports.tagId);
+  const isSportsCategory = usePolymarketEventsStore(state => state.categoryKey === CATEGORIES.sports.tagId);
 
   const scrollOffset = useSharedValue(0);
   const onScroll = useScrollFadeHandler(scrollOffset);
 
   useListen(
-    usePolymarketCategoryStore,
-    state => state.tagId,
-    () => {
-      eventsListRef.current?.scrollToOffset({ offset: 0, animated: true });
-    }
+    usePolymarketEventsStore,
+    state => state.categoryKey,
+    () => eventsListRef.current?.scrollToOffset({ animated: true, offset: 0 })
   );
 
   const backgroundColor = isDarkMode ? POLYMARKET_BACKGROUND_DARK : POLYMARKET_BACKGROUND_LIGHT;

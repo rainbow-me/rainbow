@@ -37,7 +37,7 @@ export const PolymarketNavigator = memo(function PolymarketNavigator() {
 const PolymarketNavigatorContent = () => {
   const { isDarkMode } = useColorMode();
   const { ref, goToPage } = usePagerNavigation();
-  const { categorySelectorRef } = usePolymarketContext();
+  const { categorySelectorRef, leagueSelectorRef } = usePolymarketContext();
 
   const screenBackgroundColor = isDarkMode ? POLYMARKET_BACKGROUND_DARK : POLYMARKET_BACKGROUND_LIGHT;
 
@@ -66,7 +66,7 @@ const PolymarketNavigatorContent = () => {
             ref={ref}
             scaleTo={1}
             springConfig={SPRING_CONFIGS.snappyMediumSpringConfig}
-            waitFor={categorySelectorRef}
+            waitFor={[categorySelectorRef, leagueSelectorRef]}
           >
             <SmoothPager.Page
               component={

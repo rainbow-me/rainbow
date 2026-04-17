@@ -16,7 +16,10 @@ export type VirtualNavigator<VirtualRoute extends Route> = {
   isRouteActive: (route: VirtualRoute) => boolean;
   navigate: <R extends VirtualRoute>(route: R, params?: RouteParams<R>) => void;
   resetNavigationState: () => void;
-  setParams: <R extends VirtualRoute>(route: R, params: RouteParams<R> | undefined) => void;
+  setParams: <R extends VirtualRoute>(
+    route: R,
+    params: RouteParams<R> | ((previousParams: RouteParams<R> | undefined) => RouteParams<R>) | undefined
+  ) => void;
 };
 
 type VirtualNavigationState<VirtualRoute extends Route> = {
@@ -106,9 +109,10 @@ export function createVirtualNavigator<VirtualRoute extends Route>({
 
     setParams: (route, params) =>
       set(state => {
-        if (shallowEqual(state.params[route], params)) return state;
+        const newParams = typeof params === 'function' ? params(state.params[route]) : params;
+        if (shallowEqual(state.params[route], newParams)) return state;
         return {
-          params: { ...state.params, [route]: params },
+          params: { ...state.params, [route]: newParams },
         };
       }),
   }));

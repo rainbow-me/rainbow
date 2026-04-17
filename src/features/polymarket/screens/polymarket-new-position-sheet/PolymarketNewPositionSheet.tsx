@@ -13,6 +13,8 @@ import { HoldToActivateButton } from '@/components/hold-to-activate-button/HoldT
 import ButtonPressAnimation from '@/components/animations/ButtonPressAnimation';
 import LinearGradient from 'react-native-linear-gradient';
 import { waitForPositionSizeUpdate } from '@/features/polymarket/utils/refetchPolymarketStores';
+import { usePolymarketEventStore } from '@/features/polymarket/stores/polymarketEventStore';
+import { polymarketRecommendationsActions } from '@/features/polymarket/stores/polymarketRecommendationsStore';
 import { Navigation } from '@/navigation';
 import { getSolidColorEquivalent } from '@/worklets/colors';
 import { useNewPositionForm } from '@/features/polymarket/screens/polymarket-new-position-sheet/hooks/useNewPositionForm';
@@ -100,6 +102,15 @@ export const PolymarketNewPositionSheet = memo(function PolymarketNewPositionShe
         Navigation.goBack();
       } else {
         Navigation.goBack();
+      }
+
+      try {
+        requestIdleCallback(() => {
+          const event = usePolymarketEventStore.getState().getData();
+          if (event) polymarketRecommendationsActions.trackBet(event, Number(buyAmount));
+        });
+      } catch (e) {
+        logger.error(new RainbowError('[PolymarketNewPositionSheet] Error tracking bet', ensureError(e)));
       }
     } catch (e) {
       const error = ensureError(e);

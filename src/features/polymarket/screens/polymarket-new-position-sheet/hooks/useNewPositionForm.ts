@@ -22,9 +22,7 @@ export function useNewPositionForm({ tokenId }: UseNewPositionFormParams) {
   const buyAmount = orderFormStore(state => state.buyAmount);
   const setBuyAmount = orderFormStore(state => state.setBuyAmount);
 
-  const { bestPrice, averagePrice, worstPrice, spread, fee, tokensBought, minBuyAmountUsd, hasInsufficientLiquidity } = executionStore(
-    state => state
-  );
+  const { bestPrice, averagePrice, worstPrice, spread, fee, tokensBought, minBuyAmountUsd } = executionStore(state => state);
 
   const { validation, isValid } = useOrderValidation({
     buyAmount,

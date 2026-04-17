@@ -55,7 +55,6 @@ export type PolymarketWalletListData = {
   hasPositions: boolean;
   positions: PolymarketPosition[];
   value: string;
-  enabled: boolean;
 };
 
 export type { PolymarketGameMetadata, PolymarketTeamInfo, RawPolymarketTeamInfo, TeamSide } from '@/features/polymarket/types/team-info';
