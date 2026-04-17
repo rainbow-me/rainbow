@@ -44,7 +44,7 @@ Set up these **before** running `yarn install`, as the postinstall script reads
    into the project root (the postinstall prebuild hooks depend on it).
 4. Install dependencies and run setup: `yarn install && yarn setup`
 
-### External contributors
+### External contributorss
 
 1. Copy `.env.example` to `.env` and fill in your own API keys. Note that some
    features are currently not accessible; we are working with our Data
