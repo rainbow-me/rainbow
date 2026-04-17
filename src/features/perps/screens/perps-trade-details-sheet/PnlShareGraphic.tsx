@@ -61,6 +61,7 @@ const SHARE_CARD_WIDTH = PANEL_WIDTH - SHARE_CARD_SIDE_PEEK * 2;
 const SHARE_CARD_GAP = 8;
 const SHARE_CARD_SNAP_INTERVAL = SHARE_CARD_WIDTH + SHARE_CARD_GAP;
 const SHARE_CAROUSEL_WIDTH = SHARE_CARD_WIDTH + SHARE_CARD_SIDE_PEEK * 2;
+const SHARE_CARD_BORDER_RADIUS = 20;
 const ANDROID_TEXT_FIX = IS_ANDROID ? ({ includeFontPadding: false, textAlignVertical: 'center' } as const) : {};
 const SF_BOLD = { ...fonts.SFProRounded.bold, ...ANDROID_TEXT_FIX };
 const SF_BLACK = { ...fonts.SFProRounded.black, ...ANDROID_TEXT_FIX };
@@ -95,6 +96,7 @@ type PnlShareImageProps = {
 };
 
 type PnlShareContentProps = Omit<PnlShareImageProps, 'width' | 'includeDisplay' | 'includeCapture'> & {
+  borderRadius: number;
   scale: number;
 };
 
@@ -115,6 +117,7 @@ function PnlShareContent({
   markPrice,
   isLong,
   characterImage,
+  borderRadius,
   scale,
 }: PnlShareContentProps) {
   const isPositivePnl = pnlPercentage >= 0;
@@ -217,7 +220,7 @@ function PnlShareContent({
       style={scaledStyles.container}
       borderWidth={s(THICK_BORDER_WIDTH)}
       borderColor={{ custom: opacity(globalColors.white100, 0.07) }}
-      borderRadius={s(20)}
+      borderRadius={s(borderRadius)}
       backgroundColor={'#18191B'}
     >
       <LinearGradient
@@ -351,6 +354,7 @@ const PnlShareImage = memo(
             <PnlShareContent
               // eslint-disable-next-line react/jsx-props-no-spreading
               {...contentProps}
+              borderRadius={SHARE_CARD_BORDER_RADIUS}
               scale={displayScale}
             />
           </Box>
@@ -361,6 +365,7 @@ const PnlShareImage = memo(
             <PnlShareContent
               // eslint-disable-next-line react/jsx-props-no-spreading
               {...contentProps}
+              borderRadius={0}
               scale={captureScale}
             />
           </View>
