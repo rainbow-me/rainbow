@@ -6,7 +6,6 @@ module.exports.transform = function applyRainbowTransform({ src, filename, optio
   const opts = merge(options, {
     customTransformOptions: {
       'metro-plugin-anisotropic-transform': {
-        cyclicDependents: /.+\/node_modules\/react-native\/Libraries\/BatchedBridge\/NativeModules\.js$/,
         globalScopeFilter: {
           '@react-native-clipboard/clipboard': {},
           'react-native-keychain': {},
