@@ -317,8 +317,6 @@ export const event = {
   // predictions
   predictionsPlaceOrder: 'predictions.place_order',
   predictionsPlaceOrderFailed: 'predictions.place_order.failed',
-  predictionsCollectTradeFee: 'predictions.collect_trade_fee',
-  predictionsCollectTradeFeeFailed: 'predictions.collect_trade_fee.failed',
   predictionsRedeemPosition: 'predictions.redeem_position',
   predictionsRedeemPositionFailed: 'predictions.redeem_position.failed',
   predictionsDeposit: 'predictions.deposit',
@@ -1281,18 +1279,6 @@ export type EventProperties = {
     orderPriceUsd?: number;
     feeAmountUsd?: number;
     orderAmountUsd?: number;
-    errorMessage: string;
-  };
-  [event.predictionsCollectTradeFee]: {
-    feeAmountUsd: number;
-    gasCostUsd: number;
-    netFeeAmountUsd: number;
-  };
-  [event.predictionsCollectTradeFeeFailed]: {
-    tokenAmount: number;
-    feeAmountUsd: number;
-    taskId: string | undefined;
-    safeAddress: string;
     errorMessage: string;
   };
   [event.predictionsRedeemPosition]: {

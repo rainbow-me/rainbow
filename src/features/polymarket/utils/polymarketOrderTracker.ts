@@ -1,9 +1,8 @@
-import { type OpenOrder } from '@polymarket/clob-client';
+import { type OpenOrder } from '@polymarket/clob-client-v2';
 
 import { analytics } from '@/analytics';
 import { USD_FEE_PER_TOKEN } from '@/features/polymarket/constants';
 import { getPolymarketClobClient } from '@/features/polymarket/stores/derived/usePolymarketClients';
-import { collectTradeFee } from '@/features/polymarket/utils/collectTradeFee';
 import { type SuccessfulOrderResult } from '@/features/polymarket/utils/orders';
 import { divWorklet, mulWorklet } from '@/framework/core/safeMath';
 import { ensureError } from '@/logger';
@@ -49,7 +48,7 @@ export function trackPolymarketOrder({ orderResult, context }: { orderResult: Su
   }
 
   if (status === MATCHED_STATUS && matchedAmounts) {
-    trackMatchedOrderAndCollectFee(context, matchedAmounts);
+    trackMatchedOrder(context, matchedAmounts);
     return;
   }
 
@@ -80,7 +79,7 @@ async function pollForMatch({
       if (status === MATCHED_STATUS) {
         const amounts = getMatchedAmountsFromOrder(order);
         if (amounts) {
-          trackMatchedOrderAndCollectFee(context, amounts);
+          trackMatchedOrder(context, amounts);
           return;
         }
       }
@@ -109,7 +108,7 @@ function getMatchedAmountsFromOrder(order: OpenOrder) {
   };
 }
 
-function trackMatchedOrderAndCollectFee(context: OrderTrackingContext, amounts: MatchedAmounts) {
+function trackMatchedOrder(context: OrderTrackingContext, amounts: MatchedAmounts) {
   const feeAmountUsd = mulWorklet(amounts.tokens, USD_FEE_PER_TOKEN);
 
   analytics.track(analytics.event.predictionsPlaceOrder, {
@@ -126,8 +125,6 @@ function trackMatchedOrderAndCollectFee(context: OrderTrackingContext, amounts: 
     orderPriceUsd: Number(context.orderPriceUsd),
     averagePriceUsd: Number(amounts.tokens) > 0 ? Number(divWorklet(amounts.usd, amounts.tokens)) : 0,
   });
-
-  void collectTradeFee(amounts.tokens);
 }
 
 function trackOrderMatchFailed({

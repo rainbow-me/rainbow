@@ -6,9 +6,9 @@ import {
   BUILDER_CONFIG,
   POLYGON_USDC_ADDRESS,
   POLYMARKET_CTF_ADDRESS,
-  POLYMARKET_EXCHANGE_ADDRESS,
+  POLYMARKET_CTF_EXCHANGE_ADDRESS,
   POLYMARKET_NEG_RISK_ADAPTER_ADDRESS,
-  POLYMARKET_NEG_RISK_EXCHANGE_ADDRESS,
+  POLYMARKET_NEG_RISK_CTF_EXCHANGE_ADDRESS,
   POLYMARKET_RELAYER_PROXY_URL,
 } from '@/features/polymarket/constants';
 import { getPolymarketRelayClient, usePolymarketClients } from '@/features/polymarket/stores/derived/usePolymarketClients';
@@ -41,8 +41,8 @@ const ctfContract = new ethers.Contract(
  * Multi-outcome (neg-risk) markets use NegRiskExchange + NegRiskAdapter.
  */
 const APPROVAL_TARGETS = {
-  Exchange: POLYMARKET_EXCHANGE_ADDRESS,
-  NegRiskExchange: POLYMARKET_NEG_RISK_EXCHANGE_ADDRESS,
+  Exchange: POLYMARKET_CTF_EXCHANGE_ADDRESS,
+  NegRiskExchange: POLYMARKET_NEG_RISK_CTF_EXCHANGE_ADDRESS,
   NegRiskAdapter: POLYMARKET_NEG_RISK_ADAPTER_ADDRESS,
 } as const;
 

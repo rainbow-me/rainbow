@@ -1,6 +1,8 @@
-import { OrderType, Side } from '@polymarket/clob-client';
+import { OrderType, Side } from '@polymarket/clob-client-v2';
 
+import { POLYMARKET_BUILDER_CODE } from '@/features/polymarket/constants';
 import { getPolymarketClobClient, usePolymarketClients } from '@/features/polymarket/stores/derived/usePolymarketClients';
+import { usePolymarketBalanceStore } from '@/features/polymarket/stores/polymarketBalanceStore';
 import { type PolymarketPosition } from '@/features/polymarket/types';
 import { ensureTradingApprovals } from '@/features/polymarket/utils/proxyWallet';
 import { RainbowError } from '@/logger';
@@ -38,12 +40,15 @@ export async function marketBuyToken({
 
   await ensureTradingApprovals(proxyAddress);
   const client = await getPolymarketClobClient();
+  const userUSDCBalance = Number(usePolymarketBalanceStore.getState().getBalance());
 
   const order = await client.createMarketOrder({
     side: Side.BUY,
     tokenID: tokenId,
     amount: typeof amount === 'number' ? amount : Number(amount),
     price: typeof price === 'number' ? price : Number(price),
+    userUSDCBalance,
+    builderCode: POLYMARKET_BUILDER_CODE,
   });
 
   const result = (await client.postOrder(order, OrderType.FOK)) as OrderResult;
@@ -80,6 +85,7 @@ async function marketSellToken({
     tokenID: tokenId,
     amount: Number(amount),
     price: Number(price),
+    builderCode: POLYMARKET_BUILDER_CODE,
   });
 
   const result = (await client.postOrder(order, OrderType.FOK)) as OrderResult;
