@@ -14,6 +14,28 @@ PLATFORM=""
 RECORD_ON_FAILURE=false
 MAX_ATTEMPTS=1
 RECORDING_PID=""
+LOG_CAPTURE_PID=""
+
+stop_log_capture() {
+  if [ -n "${LOG_CAPTURE_PID:-}" ]; then
+    echo "📋 Stopping adb logcat capture..."
+    kill "$LOG_CAPTURE_PID" 2>/dev/null || true
+    wait "$LOG_CAPTURE_PID" 2>/dev/null || true
+    LOG_CAPTURE_PID=""
+  fi
+}
+
+start_log_capture() {
+  local log_dir=$1
+
+  if [ "$PLATFORM" = "android" ]; then
+    echo "📋 Starting adb logcat capture..."
+    mkdir -p "$log_dir"
+    adb logcat -c >/dev/null 2>&1 || true
+    adb logcat -v time > "$log_dir/logcat.txt" &
+    LOG_CAPTURE_PID=$!
+  fi
+}
 
 # Stop recording function
 stop_recording() {
@@ -70,6 +92,7 @@ cleanup() {
     fi
     RECORDING_PID=""
   fi
+  stop_log_capture
   if [ -n "${ANVIL_PID:-}" ]; then
     echo "🛑 Killing Anvil (PID: $ANVIL_PID)"
     kill "$ANVIL_PID" 2>/dev/null || true
@@ -182,6 +205,7 @@ for TEST_FILE in "${TEST_FILES[@]}"; do
     # Start recording for attempts after first failure
     if [ "$SHOULD_RECORD" = "true" ]; then
       start_recording "$DEBUG_OUTPUT"
+      start_log_capture "$DEBUG_OUTPUT"
     fi
 
     CMD=(maestro test
@@ -207,6 +231,7 @@ for TEST_FILE in "${TEST_FILES[@]}"; do
       # Stop recording (if recording was active)
       if [ "$SHOULD_RECORD" = "true" ]; then
         stop_recording "$DEBUG_OUTPUT"
+        stop_log_capture
       fi
 
       mv "$DEBUG_OUTPUT" "$ARTIFACTS_FOLDER/maestro/✅-$TEST_NAME-$ATTEMPT"
@@ -220,6 +245,7 @@ for TEST_FILE in "${TEST_FILES[@]}"; do
       # Stop recording (if recording was active)
       if [ "$SHOULD_RECORD" = "true" ]; then
         stop_recording "$DEBUG_OUTPUT"
+        stop_log_capture
       fi
 
       mv "$DEBUG_OUTPUT" "$ARTIFACTS_FOLDER/maestro/❌-$TEST_NAME-$ATTEMPT"

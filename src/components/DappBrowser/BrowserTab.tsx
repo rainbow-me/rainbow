@@ -245,7 +245,6 @@ const TabWebViewComponent = (props: WebViewProps, ref: React.Ref<WebView>) => {
       automaticallyAdjustContentInsets
       automaticallyAdjustsScrollIndicatorInsets={false}
       contentInset={{ bottom: 0, left: 0, right: 0, top: 0 }}
-      decelerationRate="normal"
       fraudulentWebsiteWarningEnabled
       injectedJavaScript={SCRIPTS_TO_INJECT}
       mediaPlaybackRequiresUserAction
