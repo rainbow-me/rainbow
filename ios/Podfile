@@ -117,5 +117,16 @@ target 'Rainbow' do
 
       File.write(xcconfig_path, xcconfig.gsub(' -weak_framework "FirebaseFirestoreInternal"', ''))
     end
+
+    # Xcode 26.4 fails to compile React Native's vendored fmt 11.0.2 in C++20 mode.
+    installer.pods_project.targets.each do |target|
+      next unless target.name == 'fmt'
+
+      target.build_configurations.each do |config|
+        config.build_settings['CLANG_CXX_LANGUAGE_STANDARD'] = 'c++17'
+        definitions = config.build_settings['GCC_PREPROCESSOR_DEFINITIONS'] ||= ['$(inherited)']
+        definitions << 'FMT_USE_CONSTEVAL=0' unless definitions.include?('FMT_USE_CONSTEVAL=0')
+      end
+    end
   end
 end
