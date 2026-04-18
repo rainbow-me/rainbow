@@ -1,12 +1,15 @@
-import { type SandboxTestResult, type WebViewTests, createWebViewTests, runSandboxTests } from '../core/sandboxSecurityTest';
+import { useEffect, useState } from 'react';
+import { Linking } from 'react-native';
+
+import URL from 'url-parse';
+
 import { savePIN } from '@/handlers/authentication';
 import { logger } from '@/logger';
 import Navigation from '@/navigation/Navigation';
 import Routes from '@/navigation/routesNames';
 import { initializeWallet } from '@/state/wallets/initializeWallet';
-import { useEffect, useState } from 'react';
-import { Linking } from 'react-native';
-import URL from 'url-parse';
+
+import { createWebViewTests, runSandboxTests, type SandboxTestResult, type WebViewTests } from '../core/sandboxSecurityTest';
 import { SandboxSecurityResults } from './SandboxSecurityResults';
 import { SandboxWebViewTest } from './SandboxWebViewTest';
 

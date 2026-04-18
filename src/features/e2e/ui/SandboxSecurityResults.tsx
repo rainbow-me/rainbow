@@ -1,5 +1,6 @@
-import { type SandboxTestResult } from '../core/sandboxSecurityTest';
 import { StyleSheet, Text, View } from 'react-native';
+
+import { type SandboxTestResult } from '../core/sandboxSecurityTest';
 
 interface Props {
   results: SandboxTestResult[];

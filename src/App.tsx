@@ -24,6 +24,7 @@ import { OfflineToast } from '@/components/toasts';
 import { reactNativeDisableYellowBox, showNetworkRequests, showNetworkResponses } from '@/config/debug';
 import monitorNetwork from '@/debugging/network';
 import { DANGER_INSTALL_SOURCE, IS_DEV, IS_PROD, IS_TEST } from '@/env';
+import { TestDeeplinkHandler } from '@/features/e2e/ui/TestDeeplinkHandler';
 import RainbowContextWrapper from '@/helpers/RainbowContext';
 import { useApplicationSetup } from '@/hooks/useApplicationSetup';
 import { logger, RainbowError } from '@/logger';
@@ -45,7 +46,6 @@ import { MainThemeProvider } from '@/theme/ThemeContext';
 import { configure as configureDelegationClient } from '@rainbow-me/delegation';
 
 import { AbsolutePortalRoot } from './components/AbsolutePortal';
-import { TestDeeplinkHandler } from '@/features/e2e/ui/TestDeeplinkHandler';
 import { PerformanceReports, PerformanceReportSegments, PerformanceTracking } from './performance/tracking';
 
 if (IS_DEV) {

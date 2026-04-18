@@ -1,6 +1,8 @@
-import { type WebViewTests } from '../core/sandboxSecurityTest';
 import { StyleSheet, View } from 'react-native';
+
 import WebView from 'react-native-webview';
+
+import { type WebViewTests } from '../core/sandboxSecurityTest';
 
 // Navigates to a blocked domain after the allowed page loads
 const NAVIGATE_JS = `
