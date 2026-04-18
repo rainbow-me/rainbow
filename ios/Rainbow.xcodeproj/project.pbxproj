@@ -10,7 +10,7 @@
 		0299CE7F2886202800B5C7E7 /* ImageNotification.appex in Embed App Extensions */ = {isa = PBXBuildFile; fileRef = 0299CE772886202800B5C7E7 /* ImageNotification.appex */; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };
 		0C88C38F2E30192C0057BDCE /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0C88C38E2E30192C0057BDCE /* AppDelegate.swift */; };
 		0CE2E0352F3675EA00568A89 /* NotificationService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0CE2E0342F3675EA00568A89 /* NotificationService.swift */; };
-		13B07FBD1A68108700A75B9A /* LaunchScreen.xib in Resources */ = {isa = PBXBuildFile; fileRef = 13B07FB11A68108700A75B9A /* LaunchScreen.xib */; };
+		13B07FBD1A68108700A75B9A /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 13B07FB11A68108700A75B9A /* LaunchScreen.storyboard */; };
 		14AC9DFF00D48616B4236214 /* libPods-PriceWidgetExtension.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 4A32A99B185B4FC9E76B8151 /* libPods-PriceWidgetExtension.a */; };
 		152643472B9AD97E004AC9AA /* InjectedJSBundle.js in Resources */ = {isa = PBXBuildFile; fileRef = 152643462B9AD97E004AC9AA /* InjectedJSBundle.js */; };
 		152A3A6B2D0BD28E00E70431 /* redacted@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 152A3A692D0BD28E00E70431 /* redacted@2x.png */; };
@@ -217,7 +217,7 @@
 		0C88C38E2E30192C0057BDCE /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
 		0CE2E0342F3675EA00568A89 /* NotificationService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NotificationService.swift; sourceTree = "<group>"; };
 		13B07F961A680F5B00A75B9A /* Rainbow.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Rainbow.app; sourceTree = BUILT_PRODUCTS_DIR; };
-		13B07FB21A68108700A75B9A /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.xib; name = Base; path = Base.lproj/LaunchScreen.xib; sourceTree = "<group>"; };
+		13B07FB21A68108700A75B9A /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/LaunchScreen.storyboard; sourceTree = "<group>"; };
 		13B07FB61A68108700A75B9A /* Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; name = Info.plist; path = Rainbow/Info.plist; sourceTree = "<group>"; };
 		152643462B9AD97E004AC9AA /* InjectedJSBundle.js */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.javascript; name = InjectedJSBundle.js; path = ../InjectedJSBundle.js; sourceTree = "<group>"; };
 		152A3A692D0BD28E00E70431 /* redacted@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "redacted@2x.png"; sourceTree = "<group>"; };
@@ -471,7 +471,7 @@
 				008F07F21AC5B25A0029DE68 /* main.jsbundle */,
 				AAA0EF342BF5A4AD00A19A53 /* PrivacyInfo.xcprivacy */,
 				13B07FB61A68108700A75B9A /* Info.plist */,
-				13B07FB11A68108700A75B9A /* LaunchScreen.xib */,
+				13B07FB11A68108700A75B9A /* LaunchScreen.storyboard */,
 				3CBE29CB2381E43800BE05AC /* Rainbow-Bridging-Header.h */,
 				0C88C38E2E30192C0057BDCE /* AppDelegate.swift */,
 				A4277D9E23CBD1910042BAF4 /* Extensions.swift */,
@@ -1003,7 +1003,7 @@ Upload Debug Symbols to Sentry */,
 			buildActionMask = 2147483647;
 			files = (
 				B54C1D1329358946007560D9 /* raindoge@2x.png in Resources */,
-				13B07FBD1A68108700A75B9A /* LaunchScreen.xib in Resources */,
+				13B07FBD1A68108700A75B9A /* LaunchScreen.storyboard in Resources */,
 				B5D7F2F129E8D41E003D6A54 /* finiliar@2x.png in Resources */,
 				B597E7C22B8E9E18004782B6 /* farcaster@3x.png in Resources */,
 				152643472B9AD97E004AC9AA /* InjectedJSBundle.js in Resources */,
@@ -1655,7 +1655,7 @@ Upload Debug Symbols to Sentry */ = {
 /* End PBXTargetDependency section */
 
 /* Begin PBXVariantGroup section */
-		13B07FB11A68108700A75B9A /* LaunchScreen.xib */ = {
+		13B07FB11A68108700A75B9A /* LaunchScreen.storyboard */ = {
 			isa = PBXVariantGroup;
 			children = (
 				13B07FB21A68108700A75B9A /* Base */,

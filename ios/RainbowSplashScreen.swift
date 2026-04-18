@@ -56,8 +56,8 @@ class RainbowSplashScreen: NSObject {
     }
 
     if loadingView == nil {
-        guard let view = Bundle.main.loadNibNamed(splashScreen, owner: self, options: nil)?.first as? UIView else {
-          print("WARNING: SplashScreen nib not found")
+        guard let view = loadSplashView(named: splashScreen) else {
+          print("WARNING: SplashScreen view not found")
           return
         }
         loadingView = view
@@ -67,6 +67,15 @@ class RainbowSplashScreen: NSObject {
     if let loadingView = loadingView {
         rootView.addSubview(loadingView)
     }
+  }
+
+  private static func loadSplashView(named splashScreen: String) -> UIView? {
+    if Bundle.main.path(forResource: splashScreen, ofType: "nib") != nil,
+       let view = Bundle.main.loadNibNamed(splashScreen, owner: self, options: nil)?.first as? UIView {
+      return view
+    }
+
+    return UIStoryboard(name: splashScreen, bundle: .main).instantiateInitialViewController()?.view
   }
   
   static func hide() {
