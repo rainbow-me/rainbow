@@ -3,7 +3,15 @@ import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import AnimateNumber from '@bankify/react-native-animate-number';
 import { useIsFocused } from '@react-navigation/native';
 import { isNaN } from 'lodash';
-import Animated, { Easing, useAnimatedStyle, useSharedValue, withSequence, withSpring, withTiming } from 'react-native-reanimated';
+import Animated, {
+  Easing,
+  useAnimatedStyle,
+  useSharedValue,
+  withSequence,
+  withSpring,
+  withTiming,
+  type EasingFunction,
+} from 'react-native-reanimated';
 
 import { AccentColorProvider, Box, globalColors, Stack, Text } from '@/design-system';
 import { add } from '@/helpers/utilities';
@@ -15,7 +23,7 @@ import { GenericCard, SQUARE_CARD_SIZE } from './GenericCard';
 
 type AnimationConfigOptions = {
   duration: number;
-  easing: Animated.EasingFunction;
+  easing: EasingFunction;
 };
 
 const TRANSLATIONS = i18n.l.cards.gas;
