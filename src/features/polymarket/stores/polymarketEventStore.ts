@@ -4,7 +4,6 @@ import { type PolymarketEvent, type PolymarketMarket, type RawPolymarketEvent } 
 import { fetchTeamsForEvent } from '@/features/polymarket/utils/sports';
 import { processRawPolymarketEvent } from '@/features/polymarket/utils/transforms';
 import { rainbowFetch } from '@/framework/data/http/rainbowFetch';
-import { RainbowError } from '@/logger';
 import { createQueryStore } from '@/state/internal/createQueryStore';
 import { time } from '@/utils/time';
 
@@ -25,7 +24,7 @@ export const MarketSortOrder = {
 
 type MarketSortOrder = (typeof MarketSortOrder)[keyof typeof MarketSortOrder];
 
-export const usePolymarketEventStore = createQueryStore<PolymarketEvent, FetchParams, PolymarketEventStoreState>(
+export const usePolymarketEventStore = createQueryStore<PolymarketEvent | null, FetchParams, PolymarketEventStoreState>(
   {
     fetcher: fetchPolymarketEvent,
     params: { eventId: ($, store) => $(store).eventId },
@@ -41,7 +40,8 @@ export const usePolymarketEventStore = createQueryStore<PolymarketEvent, FetchPa
       if (!markets) return undefined;
       return sortMarkets(markets, sortBy);
     },
-  })
+  }),
+  { storageKey: 'polymarketEventStore', version: 1 }
 );
 
 function sortMarkets(markets: PolymarketMarket[], sortOrder: MarketSortOrder) {
@@ -61,12 +61,36 @@ function sortMarkets(markets: PolymarketMarket[], sortOrder: MarketSortOrder) {
   });
 }
 
+// Do NOT call in a loop: each call clobbers `eventId` and `abortInterruptedFetches` cancels the
+// previous in-flight request. Use `prefetchPolymarketEvents` for concurrent priming.
 export function prefetchPolymarketEvent(eventId: string) {
   usePolymarketEventStore.setState({ eventId });
 }
 
-async function fetchPolymarketEvent({ eventId }: FetchParams, abortController: AbortController | null): Promise<PolymarketEvent> {
-  if (!eventId) throw new RainbowError('[PolymarketEventStore] eventId is required');
+// Primes many events concurrently without touching the primary `eventId` slot.
+// `updateQueryKey: false` keeps each fetch on its own per-params cache entry so concurrent calls
+// don't abort each other; `force: true` bypasses the staleTime cache check.
+const inFlightPolymarketEventFetches = new Set<string>();
+
+export function prefetchPolymarketEvents(eventIds: readonly string[]): void {
+  if (!eventIds.length) return;
+  const store = usePolymarketEventStore.getState();
+  for (const eventId of eventIds) {
+    if (!eventId) continue;
+    if (inFlightPolymarketEventFetches.has(eventId)) continue;
+    if (store.getData({ eventId })) continue;
+
+    inFlightPolymarketEventFetches.add(eventId);
+    store.fetch({ eventId }, { force: true, updateQueryKey: false }).finally(() => {
+      inFlightPolymarketEventFetches.delete(eventId);
+    });
+  }
+}
+
+async function fetchPolymarketEvent({ eventId }: FetchParams, abortController: AbortController | null): Promise<PolymarketEvent | null> {
+  // Default `eventId: null` resolves to `null` without hitting the network. Throwing here would
+  // hammer the retry loop and trip LogBox. Explicit prefetch helpers provide a real eventId.
+  if (!eventId) return null;
 
   const url = `${POLYMARKET_GAMMA_API_URL}/events/${eventId}`;
   const { data: event } = await rainbowFetch<RawPolymarketEvent>(url, { abortController, timeout: time.seconds(15) });
