@@ -207,6 +207,9 @@ export const event = {
   // token lists (wallet, swap, send)
   tokenList: 'token_list',
 
+  // discover placements
+  discoverPlacementsCardPressed: 'discover_placements.card_pressed',
+
   // trending tokens
   viewTrendingToken: 'trending_tokens.view_trending_token',
   viewRankedCategory: 'trending_tokens.view_ranked_category',
@@ -1425,5 +1428,12 @@ export type EventProperties = {
     chainId: number;
     stakedAmount?: string;
     errorMessage: string;
+  };
+
+  [event.discoverPlacementsCardPressed]: {
+    placementId: string;
+    source: string;
+    refId: string;
+    index: number;
   };
 };

@@ -7,17 +7,22 @@ import { LedgerCard } from '@/components/cards/LedgerCard';
 import { MintsCard } from '@/components/cards/MintsCard/MintsCard';
 import { OpRewardsCard } from '@/components/cards/OpRewardsCard';
 import { avoidScamsCard, backupsCard, cryptoAndWalletsCard } from '@/components/cards/utils/constants';
-import { FeatureCard } from '@/components/Discover/FeatureCard';
+import { MarketCarousel } from '@/components/Discover/MarketCarousel';
+import { PerpMarketCard } from '@/components/Discover/PerpMarketCard';
+import { PredictionMarketCard } from '@/components/Discover/PredictionMarketCard';
 import { TrendingTokens } from '@/components/Discover/TrendingTokens';
+import { useDiscoverPlacements } from '@/components/Discover/useDiscoverPlacements';
 import { FeaturedResultStack } from '@/components/FeaturedResult/FeaturedResultStack';
 import { Box, Inline, Inset, Stack } from '@/design-system';
 import { IS_TEST } from '@/env';
 import { ENSCreateProfileCard } from '@/features/ens/components/ENSCreateProfileCard';
+import { useHyperliquidMarketsStore } from '@/features/perps/stores/hyperliquidMarketsStore';
+import { navigateToPerps } from '@/features/perps/utils/navigateToPerps';
+import { type PlacementItem } from '@/features/placements/types';
 import { navigateToPolymarket } from '@/features/polymarket/utils/navigateToPolymarket';
 import { isTestnetChain } from '@/handlers/web3';
 import walletTypes from '@/helpers/walletTypes';
 import useAccountSettings from '@/hooks/useAccountSettings';
-import * as i18n from '@/languages';
 import { useRemoteConfig } from '@/model/remoteConfig';
 import Navigation from '@/navigation/Navigation';
 import Routes from '@/navigation/routesNames';
@@ -27,7 +32,6 @@ import useExperimentalFlag, {
   HARDWARE_WALLETS,
   MINTS,
   OP_REWARDS,
-  POLYMARKET,
   PROFILES,
   TRENDING_TOKENS,
 } from '@rainbow-me/config/experimentalHooks';
@@ -37,6 +41,13 @@ import { DiscoverSeparator } from './DiscoverSeparator';
 
 export const HORIZONTAL_PADDING = 20;
 
+const PERPS_PLACEMENT_ID = 'discover_featured_perps_carousel';
+const PREDICTIONS_PLACEMENT_ID = 'discover_featured_predictions_carousel';
+
+const keyExtractor = (item: PlacementItem) => `${item.ref.source}:${item.ref.id}`;
+const renderPerpCard = (item: PlacementItem) => <PerpMarketCard item={item} />;
+const renderPredictionCard = (item: PlacementItem) => <PredictionMarketCard item={item} />;
+
 function onNavigate(url: string): void {
   Navigation.handleAction(Routes.DAPP_BROWSER_SCREEN, {
     url,
@@ -44,15 +55,8 @@ function onNavigate(url: string): void {
 }
 
 export default function DiscoverHome() {
-  const {
-    profiles_enabled,
-    mints_enabled,
-    op_rewards_enabled,
-    featured_results,
-    trending_tokens_enabled,
-    perps_enabled,
-    polymarket_enabled,
-  } = useRemoteConfig();
+  const { profiles_enabled, mints_enabled, op_rewards_enabled, featured_results, trending_tokens_enabled, discover_placements_enabled } =
+    useRemoteConfig();
   const profilesEnabledLocalFlag = useExperimentalFlag(PROFILES);
   const profilesEnabledRemoteFlag = profiles_enabled;
   const hardwareWalletsEnabled = useExperimentalFlag(HARDWARE_WALLETS);
@@ -61,8 +65,13 @@ export default function DiscoverHome() {
   const opRewardsLocalFlag = useExperimentalFlag(OP_REWARDS);
   const opRewardsRemoteFlag = op_rewards_enabled;
   const trendingTokensEnabled = (useExperimentalFlag(TRENDING_TOKENS) || trending_tokens_enabled) && !IS_TEST;
-  const perpsEnabled = perps_enabled;
-  const polymarketEnabled = (useExperimentalFlag(POLYMARKET) || polymarket_enabled) && !IS_TEST;
+  const discoverPlacementsEnabled = discover_placements_enabled && !IS_TEST;
+
+  const { placements, isLoading } = useDiscoverPlacements();
+  const marketsLoaded = useHyperliquidMarketsStore(state => Object.keys(state.markets).length > 0);
+
+  const perpsPlacement = placements.find(p => p.id === PERPS_PLACEMENT_ID);
+  const predictionsPlacement = placements.find(p => p.id === PREDICTIONS_PLACEMENT_ID);
 
   const { chainId } = useAccountSettings();
   const testNetwork = isTestnetChain({ chainId });
@@ -76,28 +85,30 @@ export default function DiscoverHome() {
     <Inset top="12px" bottom={{ custom: 200 }} horizontal={{ custom: HORIZONTAL_PADDING }}>
       {!testNetwork ? (
         <Box gap={20}>
-          <Box flexDirection="row" gap={11}>
-            {polymarketEnabled && (
-              <FeatureCard
-                accentColor={'#C863E8'}
-                icon="􀫸"
-                title={i18n.t(i18n.l.predictions.feature_card.title)}
-                subtitle={i18n.t(i18n.l.predictions.feature_card.subtitle)}
-                onPress={navigateToPolymarket}
-              />
-            )}
-            {perpsEnabled && (
-              <FeatureCard
-                accentColor={'#3ECFAD'}
+          {discoverPlacementsEnabled && (
+            <Box gap={20}>
+              <MarketCarousel
                 icon="􀯠"
-                title={i18n.t(i18n.l.perps.feature_card.title)}
-                subtitle={i18n.t(i18n.l.perps.feature_card.subtitle)}
-                onPress={() => {
-                  Navigation.handleAction(Routes.PERPS_NAVIGATOR);
-                }}
+                title="Perps"
+                accentColor="#3ECFAD"
+                onSeeAll={navigateToPerps}
+                data={perpsPlacement?.items ?? []}
+                renderItem={renderPerpCard}
+                keyExtractor={keyExtractor}
+                loading={isLoading || !marketsLoaded}
               />
-            )}
-          </Box>
+              <MarketCarousel
+                icon="􀫸"
+                title="Predictions"
+                accentColor="#C863E8"
+                onSeeAll={navigateToPolymarket}
+                data={predictionsPlacement?.items ?? []}
+                renderItem={renderPredictionCard}
+                keyExtractor={keyExtractor}
+                loading={isLoading}
+              />
+            </Box>
+          )}
           <DiscoverSeparator />
           {trendingTokensEnabled && <TrendingTokens />}
           {mintsEnabled && (
