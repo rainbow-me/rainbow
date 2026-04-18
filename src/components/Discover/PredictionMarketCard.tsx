@@ -32,6 +32,7 @@ export const PredictionMarketCard = memo(function PredictionMarketCard({ item }:
   const event = usePolymarketEventStore(state => state.getData({ eventId: item.ref.id })) as PolymarketEvent | null;
 
   if (!event) return <PredictionCardSkeleton />;
+  if (event.closed === true || event.active === false) return null;
 
   return <PredictionMarketCardContent item={item} event={event} isDarkMode={isDarkMode} />;
 });
