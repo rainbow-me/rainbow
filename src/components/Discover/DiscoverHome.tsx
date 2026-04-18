@@ -17,7 +17,7 @@ import { Box, Inline, Inset, Stack } from '@/design-system';
 import { IS_TEST } from '@/env';
 import { ENSCreateProfileCard } from '@/features/ens/components/ENSCreateProfileCard';
 import { useHyperliquidMarketsStore } from '@/features/perps/stores/hyperliquidMarketsStore';
-import { navigateToPerps } from '@/features/perps/utils/navigateToPerps';
+import { navigateToPerpsSearch } from '@/features/perps/utils/navigateToPerps';
 import { type PlacementItem } from '@/features/placements/types';
 import { navigateToPolymarket } from '@/features/polymarket/utils/navigateToPolymarket';
 import { isTestnetChain } from '@/handlers/web3';
@@ -91,7 +91,7 @@ export default function DiscoverHome() {
                 icon="􀯠"
                 title="Perps"
                 accentColor="#3ECFAD"
-                onSeeAll={navigateToPerps}
+                onSeeAll={navigateToPerpsSearch}
                 data={perpsPlacement?.items ?? []}
                 renderItem={renderPerpCard}
                 keyExtractor={keyExtractor}

@@ -1,6 +1,7 @@
 import { memo } from 'react';
 import { StyleSheet } from 'react-native';
 
+import { useRoute, type RouteProp } from '@react-navigation/native';
 import { KeyboardProvider } from 'react-native-keyboard-controller';
 
 import { SPRING_CONFIGS } from '@/components/animations/animationConfigs';
@@ -18,7 +19,7 @@ import { useCleanup } from '@/hooks/useCleanup';
 import { useStableValue } from '@/hooks/useStableValue';
 import { createVirtualNavigator } from '@/navigation/createVirtualNavigator';
 import Routes from '@/navigation/routesNames';
-import { type PerpsRoute } from '@/navigation/types';
+import { type PerpsRoute, type RootStackParamList } from '@/navigation/types';
 import { useListen } from '@/state/internal/hooks/useListen';
 
 const Navigator = createVirtualNavigator<PerpsRoute>({
@@ -32,8 +33,15 @@ export const usePerpsNavigationStore = Navigator.useNavigationStore;
 export const PerpsNavigator = memo(function PerpsNavigator() {
   const { isDarkMode } = useColorMode();
   const { ref, goToPage } = usePagerNavigation();
+  const { params } = useRoute<RouteProp<RootStackParamList, typeof Routes.PERPS_NAVIGATOR>>();
 
   const screenBackgroundColor = isDarkMode ? PERPS_BACKGROUND_DARK : PERPS_BACKGROUND_LIGHT;
+
+  const initialPage = useStableValue<PerpsRoute>(() => {
+    const paramPage = params?.initialPerpsPage;
+    const activeRoute = PerpsNavigation.getActiveRoute();
+    return paramPage ?? activeRoute ?? Routes.PERPS_ACCOUNT_SCREEN;
+  });
 
   useListen(
     usePerpsNavigationStore,
@@ -56,7 +64,7 @@ export const PerpsNavigator = memo(function PerpsNavigator() {
             <SmoothPager
               enableSwipeToGoBack={true}
               enableSwipeToGoForward={true}
-              initialPage={Routes.PERPS_ACCOUNT_SCREEN}
+              initialPage={initialPage}
               onNewIndex={Navigator.handlePagerIndexChange}
               ref={ref}
               scaleTo={1}
