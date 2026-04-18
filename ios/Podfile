@@ -8,6 +8,8 @@ $VCEnableLocation = false
 
 pod 'Firebase', :modular_headers => true
 pod 'FirebaseCore', :modular_headers => true
+pod 'FirebaseFirestore', :modular_headers => true
+pod 'FirebaseFirestoreInternal', :modular_headers => true
 pod 'FirebaseRemoteConfig', :modular_headers => true
 pod 'FirebaseABTesting', :modular_headers => true
 pod 'FirebaseCoreExtension', :modular_headers => true
@@ -107,6 +109,28 @@ target 'Rainbow' do
           config.build_settings['CODE_SIGNING_ALLOWED'] = 'NO'
         end
       end
+    end
+
+    installer.pods_project.targets.each do |target|
+      next unless target.name == 'fmt'
+
+      target.build_configurations.each do |config|
+        config.build_settings['CLANG_CXX_LANGUAGE_STANDARD'] = 'c++17'
+
+        xcconfig_path = config.base_configuration_reference&.real_path
+        next unless xcconfig_path && File.exist?(xcconfig_path)
+
+        xcconfig = File.read(xcconfig_path)
+        xcconfig.gsub!(/^CLANG_CXX_LANGUAGE_STANDARD = .*$/, 'CLANG_CXX_LANGUAGE_STANDARD = c++17')
+        File.write(xcconfig_path, xcconfig)
+      end
+    end
+
+    Dir.glob(File.join(__dir__, 'Pods/Target Support Files/Pods-*/*.xcconfig')).each do |xcconfig_path|
+      xcconfig = File.read(xcconfig_path)
+      next unless xcconfig.include?('-weak_framework "FirebaseFirestoreInternal"')
+
+      File.write(xcconfig_path, xcconfig.gsub(' -weak_framework "FirebaseFirestoreInternal"', ''))
     end
   end
 end
