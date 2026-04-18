@@ -733,9 +733,11 @@ function TrendingTokenData() {
 }
 
 function RainbowFeatureFlagListener() {
-  // If the rainbow list was selected and the flag is disabled, set the category to the "Trending" category
+  // If the rainbow list was selected and the flag is disabled, set the category to the "Trending" category.
+  // Also reset to "Trending" if the persisted selection is "Farcaster", since that tab is currently hidden.
   useEffect(() => {
-    if (useTrendingTokensStore.getState().category === 'Rainbow') {
+    const { category } = useTrendingTokensStore.getState();
+    if (category === 'Rainbow' || category === categories[3]) {
       useTrendingTokensStore.getState().setCategory(categories[0]);
     }
   }, []);
@@ -773,15 +775,6 @@ export function TrendingTokens() {
             iconColor={{ default: isDarkMode ? globalColors.yellow60 : '#FFBB00', selected: '#F5A200' }}
             highlightedBackgroundColor={'#FFEAC2'}
             iconWidth={18}
-            selectedChainId={selectedChainId}
-          />
-          <CategoryFilterButton
-            category={categories[3]}
-            label={i18n.t(t.filters.categories.FARCASTER)}
-            icon="􀌥"
-            iconColor={'#5F5AFA'}
-            highlightedBackgroundColor={'#B9B7F7'}
-            iconWidth={20}
             selectedChainId={selectedChainId}
           />
         </Animated.ScrollView>
