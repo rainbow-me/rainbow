@@ -13,7 +13,7 @@ import { PredictionMarketCard } from '@/components/Discover/PredictionMarketCard
 import { TrendingTokens } from '@/components/Discover/TrendingTokens';
 import { useDiscoverPlacements } from '@/components/Discover/useDiscoverPlacements';
 import { FeaturedResultStack } from '@/components/FeaturedResult/FeaturedResultStack';
-import { Box, Inline, Inset, Stack } from '@/design-system';
+import { Box, Inline, Inset, Stack, Text } from '@/design-system';
 import { IS_TEST } from '@/env';
 import { ENSCreateProfileCard } from '@/features/ens/components/ENSCreateProfileCard';
 import { useHyperliquidMarketsStore } from '@/features/perps/stores/hyperliquidMarketsStore';
@@ -37,7 +37,6 @@ import useExperimentalFlag, {
 } from '@rainbow-me/config/experimentalHooks';
 
 import { DiscoverFeaturedResultsCard } from './DiscoverFeaturedResultsCard';
-import { DiscoverSeparator } from './DiscoverSeparator';
 
 export const HORIZONTAL_PADDING = 20;
 
@@ -109,8 +108,14 @@ export default function DiscoverHome() {
               />
             </Box>
           )}
-          <DiscoverSeparator />
-          {trendingTokensEnabled && <TrendingTokens />}
+          {trendingTokensEnabled && (
+            <Box gap={20}>
+              <Text size="22pt" weight="heavy" color="label">
+                Tokens
+              </Text>
+              <TrendingTokens />
+            </Box>
+          )}
           {mintsEnabled && (
             <Stack space="20px">
               <FeaturedMintCard />
