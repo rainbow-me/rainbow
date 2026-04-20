@@ -9630,7 +9630,7 @@ __metadata:
     react-native-video: "npm:6.15.0"
     react-native-view-shot: "npm:4.0.3"
     react-native-vision-camera: "npm:4.7.3"
-    react-native-webview: "npm:13.13.5"
+    react-native-webview: "rainbow-me/rainbow-react-native-webview#ffa216cb4542f19f42c3e5cb56743f041867c65a"
     react-native-widgetkit: "npm:1.0.9"
     react-navigation-backhandler: "npm:2.0.3"
     react-primitives: "npm:0.8.1"
@@ -23983,16 +23983,16 @@ __metadata:
   languageName: node
   linkType: hard
 
-"react-native-webview@npm:13.13.5":
-  version: 13.13.5
-  resolution: "react-native-webview@npm:13.13.5"
+"react-native-webview@rainbow-me/rainbow-react-native-webview#ffa216cb4542f19f42c3e5cb56743f041867c65a":
+  version: 13.16.1
+  resolution: "react-native-webview@https://github.com/rainbow-me/rainbow-react-native-webview.git#commit=ffa216cb4542f19f42c3e5cb56743f041867c65a"
   dependencies:
     escape-string-regexp: "npm:^4.0.0"
     invariant: "npm:2.2.4"
   peerDependencies:
     react: "*"
     react-native: "*"
-  checksum: 10c0/187441eac5a747acb58ae388b07611fcb13c6c8c801b7e3fc5175ea46e20cbc28db38ce777459fa4f405a3b4703e3011cd04c9218ac4a088a8a06031a8a2629c
+  checksum: 10c0/c74ec0b60f026db1c148c4fdec4734e3143e522e9393b792a1038836b3f0810aa2879d8381404616e56f303a2891d6abc8e826669836e2bdc65396002aafa105
   languageName: node
   linkType: hard
 
