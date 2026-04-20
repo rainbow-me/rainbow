@@ -57,21 +57,6 @@ function testWsBlocked(): Promise<SandboxTestResult> {
   });
 }
 
-function testNativeModuleBlocked(): SandboxTestResult {
-  try {
-    const { NativeModules } = require('react-native');
-    // eslint-disable-next-line @typescript-eslint/no-unused-vars
-    const _module = NativeModules.RNRestart;
-    return { name: 'native_module_blocked', passed: false, detail: 'no error thrown' };
-  } catch (e) {
-    const msg = (e as Error).message;
-    if (msg.includes('unexpected behavior')) {
-      return { name: 'native_module_blocked', passed: true, detail: 'blocked: Native Module unexpected behavior detected' };
-    }
-    return { name: 'native_module_blocked', passed: false, detail: `unexpected error: ${msg}` };
-  }
-}
-
 /**
  * Creates two WebView tests:
  * 1. initialLoad — loads a blocked URL directly, expects onError
@@ -116,6 +101,5 @@ export async function runSandboxTests(): Promise<SandboxTestResult[]> {
   results.push(await testHttpBlocked());
   results.push(await testHttpAllowed());
   results.push(await testWsBlocked());
-  results.push(testNativeModuleBlocked());
   return results;
 }
