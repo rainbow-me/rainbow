@@ -10008,7 +10008,7 @@ __metadata:
     react-native-restart: "npm:0.0.22"
     react-native-safe-area-context: "npm:5.7.0"
     react-native-screen-corner-radius: "npm:0.2.3"
-    react-native-screens: "npm:4.16.0"
+    react-native-screens: "npm:4.24.0"
     react-native-share: "npm:12.2.5"
     react-native-sound: "npm:0.11.2"
     react-native-storage: "npm:1.0.1"
@@ -23987,17 +23987,16 @@ __metadata:
   languageName: node
   linkType: hard
 
-"react-native-screens@npm:4.16.0":
-  version: 4.16.0
-  resolution: "react-native-screens@npm:4.16.0"
+"react-native-screens@npm:4.24.0":
+  version: 4.24.0
+  resolution: "react-native-screens@npm:4.24.0"
   dependencies:
     react-freeze: "npm:^1.0.0"
-    react-native-is-edge-to-edge: "npm:^1.2.1"
     warn-once: "npm:^0.1.0"
   peerDependencies:
     react: "*"
     react-native: "*"
-  checksum: 10c0/8ec459ff52cbd317bfca598843a0010b4ca9070d05664f28d792594d8ceabb398b9d68abb578f40295e41f906308efe7ac7359046fba7aaf318a0d9d65446102
+  checksum: 10c0/49299e694ed20cf5a8c0f86702eb77df03f5b7353d9b73e7415bb593ac5ff3aa4dfe76b1e9d8efb0fd926917e507f02f13e0a8791c8833910080454b66d99943
   languageName: node
   linkType: hard
 
