@@ -1,12 +1,13 @@
 // eslint-disable-next-line import/no-extraneous-dependencies
-const blacklist = require('metro-config/src/defaults/exclusionList');
+// @ts-ignore — types ship only via `exports` field, which moduleResolution:"node" ignores.
+const exclusionList = require('metro-config/private/defaults/exclusionList').default;
 // @ts-ignore — types ship in dist/ but only via `exports` field, which moduleResolution:"node" ignores. Resolvable after migrating to moduleResolution:"bundler".
 const { mergeConfig, getDefaultConfig } = require('@react-native/metro-config');
 const { withSentryConfig } = require('@sentry/react-native/metro');
 const { wrapWithReanimatedMetroConfig } = require('react-native-reanimated/metro-config');
-// Deny list is a function that takes an array of regexes and combines
-// them with the default blacklist to return a single regex.
-const blacklistRE = blacklist([
+// Block list is a function that takes an array of regexes and combines
+// them with the default exclusion list to return a single regex.
+const blockList = exclusionList([
   // Nested android build/generated directories (e.g. in node_modules) that cause fast reloads during android builds.
   // Top-level ios/ and android/ dirs are excluded via .watchmanconfig ignore_dirs.
   /.*\/android\/build\/.*/,
@@ -42,7 +43,7 @@ if (process.env.CI) {
  */
 const rainbowConfig = {
   resolver: {
-    blacklistRE,
+    blockList,
     resolveRequest: (context, moduleName, platform) => {
       try {
         return context.resolveRequest(context, moduleName, platform);
@@ -97,8 +98,5 @@ const config = mergeConfig(getDefaultConfig(__dirname), rainbowConfig);
 const sentryConfig = withSentryConfig(config, {
   annotateReactComponents: true,
 });
-
-// Need support for import.meta to enable this.
-sentryConfig.resolver.unstable_enablePackageExports = false;
 
 module.exports = wrapWithReanimatedMetroConfig(sentryConfig);
