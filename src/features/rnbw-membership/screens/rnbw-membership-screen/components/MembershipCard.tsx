@@ -6,7 +6,17 @@ import { LinearGradient } from 'expo-linear-gradient';
 import { GradientBorderView } from '@/components/gradient-border/GradientBorderView';
 import { Border, Box, useColorMode, type Space } from '@/design-system';
 import { InnerShadow } from '@/features/polymarket/components/InnerShadow';
-import { opacity } from '@/framework/ui/utils/opacity';
+
+import {
+  MEMBERSHIP_CARD_BORDER_RADIUS,
+  MEMBERSHIP_CARD_DARK_FILL,
+  MEMBERSHIP_CARD_DARK_INNER_SHADOW,
+  MEMBERSHIP_CARD_DARK_TOP_HIGHLIGHT,
+  MEMBERSHIP_CARD_LIGHT_BORDER_GRADIENT,
+  MEMBERSHIP_CARD_LIGHT_FILL,
+  MEMBERSHIP_CARD_LIGHT_GRADIENT_END,
+  MEMBERSHIP_CARD_LIGHT_GRADIENT_START,
+} from './membershipCardVisuals';
 
 type MembershipCardProps = {
   children: ReactNode;
@@ -20,7 +30,7 @@ type MembershipCardProps = {
 
 export function MembershipCard({
   children,
-  borderRadius = 32,
+  borderRadius = MEMBERSHIP_CARD_BORDER_RADIUS,
   padding,
   paddingHorizontal,
   paddingVertical,
@@ -32,7 +42,7 @@ export function MembershipCard({
   if (isDarkMode) {
     return (
       <Box
-        backgroundColor={opacity('#202429', 0.4)}
+        backgroundColor={MEMBERSHIP_CARD_DARK_FILL}
         borderRadius={borderRadius}
         padding={padding}
         paddingHorizontal={paddingHorizontal}
@@ -40,8 +50,14 @@ export function MembershipCard({
         paddingTop={paddingTop}
         paddingBottom={paddingBottom}
       >
-        <Border borderTopWidth={2} borderRadius={borderRadius} borderColor={{ custom: opacity('#D6D6D6', 0.02) }} />
-        <InnerShadow borderRadius={borderRadius} color={opacity('#FFFFFF', 0.06)} blur={2.5} dx={0} dy={1} />
+        <Border borderTopWidth={2} borderRadius={borderRadius} borderColor={{ custom: MEMBERSHIP_CARD_DARK_TOP_HIGHLIGHT }} />
+        <InnerShadow
+          borderRadius={borderRadius}
+          color={MEMBERSHIP_CARD_DARK_INNER_SHADOW.color}
+          blur={MEMBERSHIP_CARD_DARK_INNER_SHADOW.blur}
+          dx={MEMBERSHIP_CARD_DARK_INNER_SHADOW.dx}
+          dy={MEMBERSHIP_CARD_DARK_INNER_SHADOW.dy}
+        />
         {children}
       </Box>
     );
@@ -50,9 +66,9 @@ export function MembershipCard({
   return (
     <GradientBorderView
       borderRadius={borderRadius}
-      borderGradientColors={['#FFFFFF', opacity('#FFFFFF', 0.3)]}
-      start={{ x: 0.5, y: 0 }}
-      end={{ x: 0.5, y: 0.57 }}
+      borderGradientColors={MEMBERSHIP_CARD_LIGHT_BORDER_GRADIENT}
+      start={MEMBERSHIP_CARD_LIGHT_GRADIENT_START}
+      end={MEMBERSHIP_CARD_LIGHT_GRADIENT_END}
       style={styles.shadow}
     >
       <Box
@@ -65,9 +81,9 @@ export function MembershipCard({
         paddingBottom={paddingBottom}
       >
         <LinearGradient
-          colors={['#FFFFFF', '#FFFFFF']}
-          start={{ x: 0.5, y: 0 }}
-          end={{ x: 0.5, y: 0.57 }}
+          colors={[MEMBERSHIP_CARD_LIGHT_FILL, MEMBERSHIP_CARD_LIGHT_FILL]}
+          start={MEMBERSHIP_CARD_LIGHT_GRADIENT_START}
+          end={MEMBERSHIP_CARD_LIGHT_GRADIENT_END}
           style={StyleSheet.absoluteFill}
         />
         {children}
