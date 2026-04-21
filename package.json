@@ -194,7 +194,7 @@
     "@react-native-firebase/messaging": "23.8.8",
     "@react-native-firebase/remote-config": "23.8.8",
     "@react-native-masked-view/masked-view": "0.3.2",
-    "@react-native-menu/menu": "1.2.3",
+    "@react-native-menu/menu": "2.0.0",
     "@react-navigation/core": "6.4.16",
     "@react-navigation/material-top-tabs": "6.6.2",
     "@react-navigation/native": "6.1.17",

@@ -6765,13 +6765,13 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@react-native-menu/menu@npm:1.2.3":
-  version: 1.2.3
-  resolution: "@react-native-menu/menu@npm:1.2.3"
+"@react-native-menu/menu@npm:2.0.0":
+  version: 2.0.0
+  resolution: "@react-native-menu/menu@npm:2.0.0"
   peerDependencies:
     react: "*"
     react-native: "*"
-  checksum: 10c0/135c22c58d69016f4d693da05ca3fcb7011aecf9a2ea43f0ad4e0d1aee523ab629d45f347ed719d1015e0bbf816a71a0b2edc1ca0b722ea295b32c924e95988d
+  checksum: 10c0/1e88e1892730c70e28a654a8df6427f80f1b88880eaa62f2744072b9cebead4e834490d15ef7f0b91eadf9cb1ec9241b29f116ce7e94661685b41faf10af3fa3
   languageName: node
   linkType: hard
 
@@ -9847,7 +9847,7 @@ __metadata:
     "@react-native-firebase/messaging": "npm:23.8.8"
     "@react-native-firebase/remote-config": "npm:23.8.8"
     "@react-native-masked-view/masked-view": "npm:0.3.2"
-    "@react-native-menu/menu": "npm:1.2.3"
+    "@react-native-menu/menu": "npm:2.0.0"
     "@react-native/babel-preset": "npm:0.81.6"
     "@react-native/metro-config": "npm:0.81.6"
     "@react-native/typescript-config": "npm:0.81.6"
