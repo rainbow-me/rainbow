@@ -18,7 +18,13 @@ class MainActivity : ReactActivity() {
         if (!isE2ETest) {
             RNBootSplash.init(this, R.style.BootTheme) // Initialize the splash screen
         }
-        super.onCreate(null) // Pass null here as required by react-native-screens
+        // Pass null instead of savedInstanceState to skip Android's fragment restoration
+        // after config change or process death — react-native-screens recreates fragments
+        // from JS and Android restoring them in parallel causes duplicates
+        // (software-mansion/react-native-screens#17). react-native-screens 4.16+ offers a
+        // scoped alternative via RNScreensFragmentFactory, but we have no other native
+        // fragment consumers, so the blunt `null` still does the right thing.
+        super.onCreate(null)
         OkHttpClientProvider.setOkHttpClientFactory(CustomNetworkModule())
         WebView.setWebContentsDebuggingEnabled(false)
     }
