@@ -42,6 +42,16 @@ appId: ${APP_ID}
       - inputText: ${CLOUD_BACKUP_PASSWORD}
       - tapOn: 'NEXT'
 
+      # Optional "Sign in with ease" phone-number prompt — Google sometimes
+      # offers to look up accounts via carrier info after password entry.
+      # Guarded with `when.visible` so the flow still works if Google removes
+      # or reorders the screen later.
+      - runFlow:
+          when:
+            visible: Sign in with ease
+          commands:
+            - tapOn: 'SKIP'
+
       # Handle Google Password Manager prompt
       - runFlow:
           when:
