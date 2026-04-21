@@ -12,11 +12,13 @@ import { useHoldToActivate } from '@/components/buttons/useHoldToActivate';
 import { LedgerIcon } from '@/components/icons/svg/LedgerIcon';
 import { type TextProps } from '@/design-system';
 import { IS_ANDROID } from '@/env';
+import { RNBW_BUTTON_CONFIG } from '@/features/rnbw-membership/rnbwButtonTheme';
 import { LoadingSpinner } from '@/framework/ui/components/LoadingSpinner';
 import { useWalletsStore } from '@/state/wallets/walletsStore';
 import { time } from '@/utils/time';
 
-import { RNBW_BUTTON_CONFIG, RnbwButtonSurface, RnbwButtonText } from './RnbwButtonSurface';
+import { RnbwButtonSurface } from './RnbwButtonSurface';
+import { RnbwButtonText } from './RnbwButtonText';
 
 const LAYOUT_ANIMATION_CONFIG = SPRING_CONFIGS.snappierSpringConfig;
 const LAYOUT_ANIMATION = LinearTransition.springify()

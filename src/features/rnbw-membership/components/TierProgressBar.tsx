@@ -8,7 +8,7 @@ import { GradientBorderView } from '@/components/gradient-border/GradientBorderV
 import { useBackgroundColor, useColorMode } from '@/design-system';
 import { getValueForColorMode } from '@/design-system/color/palettes';
 import { InnerShadow } from '@/features/polymarket/components/InnerShadow';
-import { getTierVisuals } from '@/features/rnbw-membership/constants';
+import { getTierProgressBarTheme } from '@/features/rnbw-membership/tierVisuals';
 import type { Tier } from '@/features/rnbw-membership/types';
 import { opacity } from '@/framework/ui/utils/opacity';
 
@@ -42,12 +42,12 @@ export const TierProgressBar = memo(function TierProgressBar({
   const isMaxTier = tierIndex === tierCount - 1;
 
   const { gradient, borderGradient, shadow, highlightGradient } = useMemo(() => {
-    const visuals = getTierVisuals(tier.level);
+    const progressTheme = getTierProgressBarTheme(tier.level);
     return {
-      gradient: getValueForColorMode(visuals.progressBarGradient, colorMode),
-      borderGradient: getValueForColorMode(visuals.progressBarBorderGradient, colorMode),
-      shadow: getValueForColorMode(visuals.progressBarShadow, colorMode),
-      highlightGradient: getValueForColorMode(visuals.progressHighlightGradient, colorMode),
+      gradient: getValueForColorMode(progressTheme.fill, colorMode),
+      borderGradient: getValueForColorMode(progressTheme.border, colorMode),
+      shadow: getValueForColorMode(progressTheme.shadow, colorMode),
+      highlightGradient: getValueForColorMode(progressTheme.highlight, colorMode),
     };
   }, [tier.level, colorMode]);
 

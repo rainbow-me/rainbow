@@ -1,5 +1,5 @@
 import { memo } from 'react';
-import { StyleSheet, View } from 'react-native';
+import { StyleSheet } from 'react-native';
 
 import { LinearGradient } from 'expo-linear-gradient';
 
@@ -9,7 +9,8 @@ import { Text, useColorMode } from '@/design-system';
 import { getValueForColorMode, globalColors } from '@/design-system/color/palettes';
 import type { TextSize, TextWeight } from '@/design-system/components/Text/Text';
 import { InnerShadow } from '@/features/polymarket/components/InnerShadow';
-import { getTierVisuals } from '@/features/rnbw-membership/constants';
+import { ShadowLayers } from '@/features/rnbw-membership/components/ShadowLayers';
+import { getTierBadgeTheme } from '@/features/rnbw-membership/tierVisuals';
 import type { Tier as TierType } from '@/features/rnbw-membership/types';
 import { opacity } from '@/framework/ui/utils/opacity';
 
@@ -34,7 +35,8 @@ export const TierBadge = memo(function TierBadge({
   weight?: TextWeight;
 }) {
   const { colorMode } = useColorMode();
-  const { badgeGradient, badgeTextGradient, badgeTextShadow, badgeShadow, badgeBorderGradient } = getTierVisuals(tier.level);
+  const borderRadius = height / 2;
+  const { fill: badgeGradient, text, shadows: badgeShadows, border: badgeBorderGradient } = getTierBadgeTheme(tier.level);
   const {
     colors: badgeGradientColors,
     locations: badgeGradientLocations,
@@ -46,27 +48,34 @@ export const TierBadge = memo(function TierBadge({
     locations: badgeTextGradientLocations,
     start: badgeTextStart = BADGE_TEXT_GRADIENT_START,
     end: badgeTextEnd = BADGE_TEXT_GRADIENT_END,
-  } = getValueForColorMode(badgeTextGradient, colorMode);
+  } = getValueForColorMode(text.gradient, colorMode);
   const {
     colors: borderGradientColors,
     locations: borderGradientLocations,
     start: borderStart = BORDER_GRADIENT_START,
     end: borderEnd = BORDER_GRADIENT_END,
   } = getValueForColorMode(badgeBorderGradient, colorMode);
-  const shadowStyle = getValueForColorMode(badgeShadow, colorMode);
-  const textShadowStyle = getValueForColorMode(badgeTextShadow, colorMode);
+  const shadowStyles = getValueForColorMode(badgeShadows, colorMode);
+  const textShadowStyle = getValueForColorMode(text.shadow, colorMode);
+  const [firstBadgeGradientColor] = badgeGradientColors;
+  const shadowLayerBackgroundColor = typeof firstBadgeGradientColor === 'string' ? firstBadgeGradientColor : '#FFFFFF';
 
   return (
-    <View style={[styles.shadowWrapper, shadowStyle]}>
+    <ShadowLayers
+      shadows={shadowStyles}
+      borderRadius={borderRadius}
+      backgroundColor={shadowLayerBackgroundColor}
+      style={styles.shadowStack}
+    >
       <GradientBorderView
         borderGradientColors={borderGradientColors}
         locations={borderGradientLocations}
         start={borderStart}
         end={borderEnd}
         borderWidth={borderWidth}
-        style={[styles.tierBadge, { height, borderRadius: height / 2 }]}
+        style={[styles.tierBadge, { height, borderRadius }]}
       >
-        <InnerShadow color={opacity(globalColors.white100, 0.1)} blur={1} dx={0} dy={3} />
+        <InnerShadow color={opacity(globalColors.white100, 0.1)} blur={1} dx={0} dy={3} borderRadius={borderRadius} />
         <LinearGradient
           colors={badgeGradientColors}
           locations={badgeGradientLocations}
@@ -86,14 +95,13 @@ export const TierBadge = memo(function TierBadge({
           </Text>
         </GradientText>
       </GradientBorderView>
-    </View>
+    </ShadowLayers>
   );
 });
 
 const styles = StyleSheet.create({
-  shadowWrapper: {
+  shadowStack: {
     alignSelf: 'center',
-    borderRadius: 21,
   },
   tierBadge: {
     height: 42,
