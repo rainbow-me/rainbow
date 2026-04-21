@@ -53,7 +53,7 @@ type PanelContentProps = {
 };
 
 function getOrderIdFromCloseStatus(status: OrderStatusResponse | undefined): number | undefined {
-  if (!status) return;
+  if (!status || typeof status !== 'object') return;
   if ('filled' in status) return status.filled.oid;
   if ('resting' in status) return status.resting.oid;
 }
