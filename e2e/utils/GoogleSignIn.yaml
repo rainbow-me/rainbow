@@ -1,5 +1,22 @@
 appId: ${APP_ID}
 ---
+# Wait for the Google login flow to open — on CI emulators this can take
+# 15+ seconds after tapping the backup button. Google may also show a new
+# "Sign in with ease" phone-lookup interstitial before the account picker,
+# so accept any of the three screens as a valid initial state.
+- extendedWaitUntil:
+    visible:
+      text: '(Sign in|Choose an account|Sign in with ease)'
+    timeout: 30000
+
+# Skip the phone-lookup interstitial if that's what showed up. Optional
+# so the flow still works when Google removes or reorders the screen.
+- runFlow:
+    when:
+      visible: 'Sign in with ease'
+    commands:
+      - tapOn: 'SKIP'
+
 - assertVisible: '(Sign in|Choose an account)'
 
 - runScript:
