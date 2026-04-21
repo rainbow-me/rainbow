@@ -67,6 +67,14 @@ tags:
           text: '1'
           repeat: 4
           delay: 1000
+      # Skip the "Sign in with ease" phone-lookup interstitial if Google
+      # shows it before the account picker, so the next tap lands on the
+      # account picker.
+      - runFlow:
+          when:
+            visible: 'Sign in with ease'
+          commands:
+            - tapOn: 'SKIP'
       - assertVisible: '(Sign in|Choose an account)'
       - tapOn: ${CLOUD_BACKUP_EMAIL}
 
