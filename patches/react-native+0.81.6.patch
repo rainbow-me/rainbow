@@ -2,15 +2,14 @@ diff --git a/node_modules/react-native/React/Views/RCTView.m b/node_modules/reac
 index 0a2fa36..21a5099 100644
 --- a/node_modules/react-native/React/Views/RCTView.m
 +++ b/node_modules/react-native/React/Views/RCTView.m
-@@ -828,6 +828,10 @@ - (void)displayLayer:(CALayer *)layer
+@@ -829,6 +829,10 @@
    // correctly clip the subviews.
-
+ 
    UIColor *backgroundColor = [_backgroundColor resolvedColorWithTraitCollection:self.traitCollection];
-
++
 +  if (@available(iOS 13.0, *)) {
 +    layer.cornerCurve = kCACornerCurveContinuous;
 +  }
-+
+ 
    if (useIOSBorderRendering) {
      layer.cornerRadius = cornerRadii.topLeftHorizontal;
-     layer.borderColor = borderColors.left.CGColor;
