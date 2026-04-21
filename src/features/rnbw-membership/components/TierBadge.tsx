@@ -9,7 +9,9 @@ import { Text, useColorMode } from '@/design-system';
 import { getValueForColorMode, globalColors } from '@/design-system/color/palettes';
 import type { TextSize, TextWeight } from '@/design-system/components/Text/Text';
 import { InnerShadow } from '@/features/polymarket/components/InnerShadow';
+import { RainbowShimmerFill } from '@/features/rnbw-membership/components/RainbowShimmerFill';
 import { ShadowLayers } from '@/features/rnbw-membership/components/ShadowLayers';
+import { SkiaGradientShadow } from '@/features/rnbw-membership/components/SkiaGradientShadow';
 import { getTierBadgeTheme } from '@/features/rnbw-membership/tierVisuals';
 import type { Tier as TierType } from '@/features/rnbw-membership/types';
 import { opacity } from '@/framework/ui/utils/opacity';
@@ -36,7 +38,14 @@ export const TierBadge = memo(function TierBadge({
 }) {
   const { colorMode } = useColorMode();
   const borderRadius = height / 2;
-  const { fill: badgeGradient, text, shadows: badgeShadows, border: badgeBorderGradient } = getTierBadgeTheme(tier.level);
+  const {
+    fill: badgeGradient,
+    text,
+    shadows: badgeShadows,
+    border: badgeBorderGradient,
+    overlay,
+    backgroundShadow,
+  } = getTierBadgeTheme(tier.level);
   const {
     colors: badgeGradientColors,
     locations: badgeGradientLocations,
@@ -57,6 +66,8 @@ export const TierBadge = memo(function TierBadge({
   } = getValueForColorMode(badgeBorderGradient, colorMode);
   const shadowStyles = getValueForColorMode(badgeShadows, colorMode);
   const textShadowStyle = getValueForColorMode(text.shadow, colorMode);
+  const resolvedOverlay = overlay ? getValueForColorMode(overlay, colorMode) : null;
+  const resolvedBackgroundShadow = backgroundShadow ? getValueForColorMode(backgroundShadow, colorMode) : null;
   const [firstBadgeGradientColor] = badgeGradientColors;
   const shadowLayerBackgroundColor = typeof firstBadgeGradientColor === 'string' ? firstBadgeGradientColor : '#FFFFFF';
 
@@ -65,6 +76,9 @@ export const TierBadge = memo(function TierBadge({
       shadows={shadowStyles}
       borderRadius={borderRadius}
       backgroundColor={shadowLayerBackgroundColor}
+      outerGlowLayer={
+        resolvedBackgroundShadow ? <SkiaGradientShadow borderRadius={borderRadius} shadow={resolvedBackgroundShadow} /> : null
+      }
       style={styles.shadowStack}
     >
       <GradientBorderView
@@ -76,13 +90,24 @@ export const TierBadge = memo(function TierBadge({
         style={[styles.tierBadge, { height, borderRadius }]}
       >
         <InnerShadow color={opacity(globalColors.white100, 0.1)} blur={1} dx={0} dy={3} borderRadius={borderRadius} />
-        <LinearGradient
-          colors={badgeGradientColors}
-          locations={badgeGradientLocations}
-          start={badgeStart}
-          end={badgeEnd}
-          style={StyleSheet.absoluteFill}
-        />
+        {resolvedOverlay ? (
+          <RainbowShimmerFill
+            fillColors={badgeGradientColors}
+            fillLocations={badgeGradientLocations}
+            fillStart={badgeStart}
+            fillEnd={badgeEnd}
+            borderRadius={borderRadius}
+            overlay={resolvedOverlay}
+          />
+        ) : (
+          <LinearGradient
+            colors={badgeGradientColors}
+            locations={badgeGradientLocations}
+            start={badgeStart}
+            end={badgeEnd}
+            style={StyleSheet.absoluteFill}
+          />
+        )}
         <GradientText
           colors={badgeTextGradientColors}
           locations={badgeTextGradientLocations}
