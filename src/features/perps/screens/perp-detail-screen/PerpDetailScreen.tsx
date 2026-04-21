@@ -9,21 +9,23 @@ import { CollapsibleSectionBase } from '@/components/collapsible/CollapsibleSect
 import { EasingGradient } from '@/components/easing-gradient/EasingGradient';
 import SlackSheet from '@/components/sheet/SlackSheet';
 import { Chart } from '@/components/value-chart/Chart';
-import { Bleed, Box, Inline, Separator, Text, TextShadow, useColorMode, useForegroundColor } from '@/design-system';
+import { Bleed, Box, Inline, Separator, Text, useColorMode, useForegroundColor } from '@/design-system';
 import { IS_ANDROID, IS_IOS } from '@/env';
 import { HyperliquidTokenIcon } from '@/features/perps/components/HyperliquidTokenIcon';
+import { PerpsNameRow } from '@/features/perps/components/PerpsNameRow';
 import { PERPS_BACKGROUND_DARK, PERPS_BACKGROUND_LIGHT } from '@/features/perps/constants';
 import { PerpsAccentColorContextProvider, usePerpsAccentColorContext } from '@/features/perps/context/PerpsAccentColorContext';
 import { OpenPositionSection } from '@/features/perps/screens/perp-detail-screen/OpenPositionSection';
 import { TriggerOrdersSection } from '@/features/perps/screens/perp-detail-screen/TriggerOrdersSection';
 import { useHyperliquidAccountStore } from '@/features/perps/stores/hyperliquidAccountStore';
+import { usePerpAnnotationsStore } from '@/features/perps/stores/perpAnnotationsStore';
 import { PerpPositionSide, type PerpMarket } from '@/features/perps/types';
-import { extractBaseSymbol } from '@/features/perps/utils/hyperliquidSymbols';
 import { opacity } from '@/framework/ui/utils/opacity';
 import * as i18n from '@/languages';
 import type Routes from '@/navigation/routesNames';
 import { type RootStackParamList } from '@/navigation/types';
 
+import { AboutSection } from './AboutSection';
 import { HistorySection } from './HistorySection';
 import { SHEET_FOOTER_HEIGHT, SheetFooter } from './SheetFooter';
 
@@ -36,6 +38,8 @@ export const NameAndPriceSection = memo(function NameAndPriceSection({
   leverage?: number;
   side?: PerpPositionSide;
 }) {
+  const name = usePerpAnnotationsStore(state => state.getAnnotation()?.displayName);
+  const isNameLoading = usePerpAnnotationsStore(state => state.getStatus('isInitialLoad'));
   const { isDarkMode } = useColorMode();
   const green = useForegroundColor('green');
   const red = useForegroundColor('red');
@@ -57,12 +61,16 @@ export const NameAndPriceSection = memo(function NameAndPriceSection({
     <Box gap={20}>
       <HyperliquidTokenIcon size={44} symbol={symbol} />
 
-      <Box flexDirection="row" alignItems="center" gap={8}>
-        <TextShadow blur={12} shadowOpacity={0.16}>
-          <Text color={isDarkMode ? { custom: ETH_COLOR_DARK_ACCENT } : 'labelSecondary'} size="22pt" weight="heavy">
-            {extractBaseSymbol(symbol)}
-          </Text>
-        </TextShadow>
+      <Box flexDirection="row" alignItems="flex-end" gap={8}>
+        <PerpsNameRow
+          symbol={symbol}
+          name={name}
+          isLoading={isNameLoading}
+          nameColor={isDarkMode ? { custom: ETH_COLOR_DARK_ACCENT } : 'labelSecondary'}
+          nameSize="22pt"
+          nameShadow
+          suffixSize="17pt"
+        />
         <Bleed vertical="8px">
           <Inline space="6px">
             {leverage && (
@@ -133,11 +141,18 @@ const LIGHT_HANDLE_COLOR = 'rgba(9, 17, 31, 0.3)';
 
 const PerpsDetailScreenContent = memo(function PerpsDetailScreenContent({ market }: { market: PerpMarket }) {
   const position = useHyperliquidAccountStore(state => state.getPosition(market.symbol));
+
   const { isDarkMode } = useColorMode();
   const backgroundColor = isDarkMode ? PERPS_BACKGROUND_DARK : PERPS_BACKGROUND_LIGHT;
   const colors = usePerpsAccentColorContext();
   const safeAreaInsets = useSafeAreaInsets();
+  const aboutExpanded = useSharedValue(true);
   const historyExpanded = useSharedValue(true);
+
+  const onToggleAbout = () => {
+    'worklet';
+    aboutExpanded.value = !aboutExpanded.value;
+  };
 
   const onToggleHistory = () => {
     'worklet';
@@ -177,6 +192,16 @@ const PerpsDetailScreenContent = memo(function PerpsDetailScreenContent({ market
               <TriggerOrdersSection symbol={market.symbol} />
             </>
           )}
+          <Separator color={'separatorTertiary'} direction="horizontal" thickness={1} />
+          <CollapsibleSectionBase
+            iconColor={colors.accentColors.opacity100}
+            icon="􀠒"
+            iconComponent={<HyperliquidTokenIcon size={24} symbol={market.symbol} />}
+            content={<AboutSection market={market} />}
+            primaryText={i18n.t(i18n.l.perps.about.title)}
+            expanded={aboutExpanded}
+            onToggle={onToggleAbout}
+          />
           <Separator color={'separatorTertiary'} direction="horizontal" thickness={1} />
           <CollapsibleSectionBase
             iconColor={colors.accentColors.opacity100}

@@ -66,6 +66,7 @@ function processMarketsForDex({
         marginTiers: marginTable?.marginTiers,
         decimals: asset.szDecimals,
         fundingRate: assetPricingInfo.funding,
+        openInterest: assetPricingInfo.openInterest,
         dex,
       } satisfies PerpMarket;
     })

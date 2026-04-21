@@ -34,6 +34,7 @@ export type PerpMarket = {
   marginTiers?: MarginTier[];
   decimals: number;
   fundingRate: string;
+  openInterest: string;
   dex: string;
 };
 
