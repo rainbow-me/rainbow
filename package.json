@@ -58,12 +58,7 @@
     "timers": "timers-browserify",
     "tty": "tty-browserify",
     "vm": "vm-browserify",
-    "tls": false,
-    "zustand": "zustand/index.js",
-    "zustand/context": "zustand/context.js",
-    "zustand/middleware": "zustand/middleware.js",
-    "zustand/traditional": "zustand/traditional.js",
-    "zustand/vanilla": "zustand/vanilla.js"
+    "tls": false
   },
   "scripts": {
     "// Fetch backend networks": "",
