@@ -321,15 +321,16 @@ export function createQueryStore<
       const isPartialFunction = typeof partial === 'function';
       if (isPartialFunction || partial.enabled !== undefined) {
         let handleNewEnabled: (() => void) | undefined;
+        // Cast to satisfy zustand v5's narrowed setState overloads while forwarding the caller's boolean `replace`.
         originalSet(state => {
           const newPartial = isPartialFunction ? partial(state) : partial;
           const newEnabled = newPartial.enabled !== undefined ? newPartial.enabled : state.enabled;
           if (newEnabled !== state.enabled) handleNewEnabled = () => handleEnabledChange(state.enabled, newEnabled);
           return newPartial;
-        }, replace);
+        }, replace as false);
         handleNewEnabled?.();
       } else {
-        originalSet(partial, replace);
+        originalSet(partial, replace as false);
       }
     };
 

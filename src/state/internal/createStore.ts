@@ -1,5 +1,5 @@
-import { persist, type PersistOptions } from 'zustand/middleware';
-import create, { type Mutate, type StoreApi } from 'zustand/vanilla';
+import { createJSONStorage, persist, type PersistOptions } from 'zustand/middleware';
+import { createStore as createVanillaStore, type Mutate, type StoreApi } from 'zustand/vanilla';
 
 import { persistStorage } from './persistStorage';
 
@@ -17,11 +17,11 @@ export function createStore<TState>(
 ) {
   const name = `rainbow.zustand.${persistOptions?.name}`;
   return Object.assign(
-    create(
+    createVanillaStore(
       persist(initializer, {
         ...persistOptions,
         name,
-        getStorage: () => persistStorage,
+        storage: createJSONStorage(() => persistStorage),
       })
     ),
     { initializer }

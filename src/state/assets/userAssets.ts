@@ -6,7 +6,7 @@ import { type EqualityFn, type Selector } from '../internal/types';
 import { createStoreFactoryUtils } from '../internal/utils/factoryUtils';
 import { createUserAssetsStore } from './createUserAssetsStore';
 import { type UserAssetsStateToPersist } from './persistence';
-import { cleanupPositionsAssetsSync, setupPositionsAssetsSync } from './positionsSync';
+import { setupPositionsAssetsSync } from './positionsSync';
 import { type QueryEnabledUserAssetsState, type UserAssetsRouter, type UserAssetsStoreType } from './types';
 import { userAssetsStoreManager } from './userAssetsStoreManager';
 
@@ -49,16 +49,13 @@ function useUserAssetsStoreInternal<T>(
 }
 
 export const useUserAssetsStore: UserAssetsRouter = Object.assign(useUserAssetsStoreInternal, {
-  destroy: () => {
-    cleanupPositionsAssetsSync();
-    return getOrCreateStore().destroy();
-  },
   getInitialState: () => getOrCreateStore().getInitialState(),
   getState: (address?: Address | string) => getOrCreateStore(address).getState(),
   persist,
   setState: (...args: Parameters<UserAssetsRouter['setState']>) => {
     const [partial, replace, address] = args;
-    return getOrCreateStore(address).setState(partial, replace);
+    // Cast to satisfy zustand v5's narrowed setState overloads while preserving the router's boolean `replace`.
+    return getOrCreateStore(address).setState(partial, replace as false);
   },
   subscribe: portableSubscribe,
 });

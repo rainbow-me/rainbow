@@ -41,13 +41,13 @@ function useNftsStoreInternal<T>(
 }
 
 export const useNftsStore: NftsRouter = Object.assign(useNftsStoreInternal, {
-  destroy: () => getOrCreateStore().destroy(),
   getInitialState: () => getOrCreateStore().getInitialState(),
   getState: (address?: Address | string) => getOrCreateStore(address).getState(),
   persist,
   setState: (...args: Parameters<NftsRouter['setState']>) => {
     const [partial, replace, address] = args;
-    return getOrCreateStore(address).setState(partial, replace);
+    // Cast to satisfy zustand v5's narrowed setState overloads while preserving the router's boolean `replace`.
+    return getOrCreateStore(address).setState(partial, replace as false);
   },
   subscribe: portableSubscribe,
 });
