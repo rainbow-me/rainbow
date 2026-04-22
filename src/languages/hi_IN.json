@@ -1726,6 +1726,13 @@
         "minimum_amount_is": "न्यूनतम राशि है",
         "no_balance": "कोई बैलेंस नहीं"
       },
+      "about": {
+        "title": "के बारे में",
+        "read_more": "अधिक पढ़ें",
+        "volume_24h": "24 घंटे की मात्रा",
+        "open_interest": "ओपन इंटरेस्ट",
+        "funding": "फंडिंग"
+      },
       "history": {
         "title": "इतिहास",
         "no_trades": "कोई ट्रेड नहीं",
