@@ -1726,6 +1726,13 @@
         "minimum_amount_is": "الحد الأدنى هو",
         "no_balance": "لا يوجد رصيد"
       },
+      "about": {
+        "title": "حول",
+        "read_more": "اقرأ المزيد",
+        "volume_24h": "الحجم في 24 ساعة",
+        "open_interest": "الفائدة المفتوحة",
+        "funding": "التمويل"
+      },
       "history": {
         "title": "التاريخ",
         "no_trades": "لا توجد تداولات",
