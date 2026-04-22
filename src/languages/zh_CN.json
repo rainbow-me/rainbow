@@ -1726,6 +1726,13 @@
         "minimum_amount_is": "最低金额是",
         "no_balance": "无余额"
       },
+      "about": {
+        "title": "关于",
+        "read_more": "阅读更多",
+        "volume_24h": "24小时交易量",
+        "open_interest": "未平仓量",
+        "funding": "资金"
+      },
       "history": {
         "title": "历史记录",
         "no_trades": "没有交易",
