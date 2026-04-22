@@ -9753,7 +9753,7 @@ __metadata:
     react-native-reanimated: "npm:3.19.4"
     react-native-redash: "npm:16.3.0"
     react-native-restart: "npm:0.0.22"
-    react-native-safe-area-context: "npm:5.4.0"
+    react-native-safe-area-context: "npm:5.7.0"
     react-native-screen-corner-radius: "npm:0.2.3"
     react-native-screens: "npm:4.16.0"
     react-native-share: "npm:12.2.5"
@@ -23252,13 +23252,13 @@ __metadata:
   languageName: node
   linkType: hard
 
-"react-native-safe-area-context@npm:5.4.0":
-  version: 5.4.0
-  resolution: "react-native-safe-area-context@npm:5.4.0"
+"react-native-safe-area-context@npm:5.7.0":
+  version: 5.7.0
+  resolution: "react-native-safe-area-context@npm:5.7.0"
   peerDependencies:
     react: "*"
     react-native: "*"
-  checksum: 10c0/729fef1f768d57b905f51882374aa93b209d54576b8a0cf328e0a349c8dc9705ae8f9032e572fd7a7c9e94b588105f44760c0bb15ab9911b7977073d6754b54d
+  checksum: 10c0/c3799e17321b41df1e0a10492c98472f8f8225ef0bbaf8146c4a9acb9519aae9ac11429059143c215e4402c2808e8445274850a339f8477522ded2461e18da80
   languageName: node
   linkType: hard
 

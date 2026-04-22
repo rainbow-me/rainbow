@@ -1866,7 +1866,7 @@ PODS:
     - React
   - react-native-restart (0.0.22):
     - React-Core
-  - react-native-safe-area-context (5.4.0):
+  - react-native-safe-area-context (5.7.0):
     - React-Core
   - react-native-screen-corner-radius (0.2.3):
     - React
@@ -3439,7 +3439,7 @@ SPEC CHECKSUMS:
   react-native-quick-md5: b648df1c4f23f4cc9df48c97f60c254dda2ae0b9
   react-native-randombytes: 4a00fba06ca0d80a7c02a6b73cfe58ffa4a093a0
   react-native-restart: f6f591aeb40194c41b9b5013901f00e6cf7d0f29
-  react-native-safe-area-context: 9d72abf6d8473da73033b597090a80b709c0b2f1
+  react-native-safe-area-context: e89848fc12d32ccca63d0d7d16dd96918d07c730
   react-native-screen-corner-radius: ebd0d3258fcc894571b41d25ee3db7569d375153
   react-native-skia: 3467bce4be38029a4af437022b88a45e68f4210e
   react-native-text-input-mask: b83b8b571cba4bf18fb9b7a0bb8319a14201db9e
