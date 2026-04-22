@@ -37,6 +37,8 @@ import {
   ensReverseRegistrarAddress,
 } from '../references';
 import type { ENSRegistrationRecords } from '../types/registration';
+import { ENS_REFERRAL_CONTRACTS, RAINBOW_REFERRER } from '../references/ens-referral';
+import { UNWRAPPED_REGISTRAR_ABI, UNIVERSAL_RENEWAL_ABI } from '../references/ens-referral-abis';
 
 export const ENS_SECONDS_WAIT = 60;
 export const ENS_SECONDS_PADDING = 5;
@@ -538,15 +540,20 @@ const getENSExecutionDetails = async ({
     case ENSRegistrationTransactionType.REGISTER_WITH_CONFIG: {
       if (!name || !ownerAddress || !duration || !rentPrice) throw new Error('Bad arguments for registerWithConfig');
       value = toHex(addBuffer(rentPrice, 1.1));
-      args = [name.replace(ENS_DOMAIN, ''), ownerAddress, duration, salt, ensPublicResolverAddress, ownerAddress];
+      args = [name.replace(ENS_DOMAIN, ''), ownerAddress, duration, salt, ensPublicResolverAddress, ownerAddress, RAINBOW_REFERRER];
       contract = await getENSRegistrarControllerContract(wallet);
       break;
     }
-    case ENSRegistrationTransactionType.RENEW: {
+   case ENSRegistrationTransactionType.RENEW: {
       if (!name || !duration || !rentPrice) throw new Error('Bad arguments for renew');
+      const signerOrProvider = wallet || (await getProvider({ chainId: ChainId.mainnet }));
       value = toHex(addBuffer(rentPrice, 1.1));
-      args = [name.replace(ENS_DOMAIN, ''), duration];
-      contract = await getENSRegistrarControllerContract(wallet);
+      args = [name.replace(ENS_DOMAIN, ''), duration, RAINBOW_REFERRER];
+      contract = new Contract(
+      ENS_REFERRAL_CONTRACTS.mainnet.universalRenewalWithReferrer,
+      UNIVERSAL_RENEWAL_ABI,
+      signerOrProvider
+      );
       break;
     }
     case ENSRegistrationTransactionType.SET_NAME:
