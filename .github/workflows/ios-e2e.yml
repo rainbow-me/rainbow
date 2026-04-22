@@ -170,6 +170,7 @@ jobs:
           model: 'iPhone 16'
           os_version: '18.5'
           wait_for_boot: true
+          boot_timeout_seconds: 180
 
       - name: Run Tests
         run: ./scripts/e2e-ios-ci.sh
