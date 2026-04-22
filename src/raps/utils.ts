@@ -1,4 +1,4 @@
-import { type Block, type Provider } from '@ethersproject/abstract-provider';
+import { type Block } from '@ethersproject/abstract-provider';
 import { BigNumber } from '@ethersproject/bignumber';
 import { Contract, type PopulatedTransaction } from '@ethersproject/contracts';
 import { type StaticJsonRpcProvider } from '@ethersproject/providers';
@@ -61,7 +61,7 @@ export const overrideWithFastSpeedIfNeeded = ({
   return transactionGasParams;
 };
 
-const getStateDiff = async (provider: Provider, quote: Quote | CrosschainQuote): Promise<unknown> => {
+const getStateDiff = async (provider: StaticJsonRpcProvider, quote: Quote | CrosschainQuote): Promise<unknown> => {
   const tokenAddress = quote.sellTokenAddress;
   const fromAddr = quote.from;
   const toAddr = getQuoteAllowanceTargetAddress(quote);
@@ -85,7 +85,7 @@ const getStateDiff = async (provider: Provider, quote: Quote | CrosschainQuote):
     toHexNoLeadingZeros(blockNumber - TRACE_CALL_BLOCK_NUMBER_OFFSET),
   ];
 
-  const trace = await (provider as StaticJsonRpcProvider).send('trace_call', callParams);
+  const trace = await provider.send('trace_call', callParams);
 
   if (trace.stateDiff) {
     const slotAddress = Object.keys(trace.stateDiff[tokenAddress]?.storage)?.[0];
@@ -156,18 +156,14 @@ export const getDefaultGasLimitForTrade = (quote: Quote, chainId: Chain['id']): 
 
 export const estimateSwapGasLimitWithFakeApproval = async (
   chainId: number,
-  provider: Provider,
+  provider: StaticJsonRpcProvider,
   quote: Quote | CrosschainQuote
 ): Promise<string> => {
   let stateDiff: unknown;
 
   try {
     stateDiff = await getStateDiff(provider, quote);
-    const { router, methodName, params, methodArgs } = getQuoteExecutionDetails(
-      quote,
-      { from: quote.from },
-      provider as StaticJsonRpcProvider
-    );
+    const { router, methodName, params, methodArgs } = getQuoteExecutionDetails(quote, { from: quote.from }, provider);
 
     const { data } = await router.populateTransaction[methodName](...(methodArgs ?? []), params);
 
@@ -185,7 +181,7 @@ export const estimateSwapGasLimitWithFakeApproval = async (
       ];
 
       try {
-        await (provider as StaticJsonRpcProvider).send('eth_call', [...callParams, stateDiff]);
+        await provider.send('eth_call', [...callParams, stateDiff]);
         return true;
       } catch (e) {
         return false;
@@ -204,7 +200,7 @@ export const populateSwap = async ({
   provider,
   quote,
 }: {
-  provider: Provider;
+  provider: StaticJsonRpcProvider;
   quote: Quote | CrosschainQuote;
 }): Promise<PopulatedTransaction | null> => {
   if (quote.swapType === 'cross-chain') {
@@ -216,11 +212,7 @@ export const populateSwap = async ({
     };
   } else {
     try {
-      const { router, methodName, params, methodArgs } = getQuoteExecutionDetails(
-        quote,
-        { from: quote.from },
-        provider as StaticJsonRpcProvider
-      );
+      const { router, methodName, params, methodArgs } = getQuoteExecutionDetails(quote, { from: quote.from }, provider);
       const swapTransaction = await router.populateTransaction[methodName](...(methodArgs ?? []), params);
       return swapTransaction;
     } catch (e) {

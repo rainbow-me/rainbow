@@ -28,6 +28,7 @@ import { initialWindowMetrics } from 'react-native-safe-area-context';
 
 import { SPRING_CONFIGS, TIMING_CONFIGS } from '@/components/animations/animationConfigs';
 import ButtonPressAnimation from '@/components/animations/ButtonPressAnimation';
+import { AssetUpdateTransactionWatcher } from '@/components/asset-update-transaction-watcher/AssetUpdateTransactionWatcher';
 import { BlurGradient } from '@/components/blur/BlurGradient';
 import { BrowserTabBarContextProvider, useBrowserTabBarContext } from '@/components/DappBrowser/BrowserContext';
 import { BROWSER_BACKGROUND_COLOR_DARK, BROWSER_BACKGROUND_COLOR_LIGHT } from '@/components/DappBrowser/constants';
@@ -36,7 +37,6 @@ import { discoverOpenSearchFnRef, discoverScrollToTopFnRef } from '@/components/
 import { EasingGradient } from '@/components/easing-gradient/EasingGradient';
 import { useShowKingOfTheHill } from '@/components/king-of-the-hill/useShowKingOfTheHill';
 import { FlexItem } from '@/components/layout';
-import { AssetUpdateTransactionWatcher } from '@/components/mined-transaction-watcher/MinedTransactionWatcher';
 import { PendingTransactionWatcher } from '@/components/pending-transaction-watcher/PendingTransactionWatcher';
 import { PANEL_COLOR_DARK } from '@/components/SmoothPager/ListPanel';
 import { ActivityTabIcon } from '@/components/tab-bar/ActivityTabIcon';

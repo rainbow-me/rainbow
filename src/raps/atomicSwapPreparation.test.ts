@@ -1,20 +1,32 @@
 import { StaticJsonRpcProvider } from '@ethersproject/providers';
-import { Wallet } from '@ethersproject/wallet';
 
-import { execute, type Call } from '@rainbow-me/delegation';
+import { backendNetworksActions } from '@/state/backendNetworks/backendNetworks';
+import { type Call } from '@rainbow-me/delegation';
 import { SwapType, type CrosschainQuote, type Quote } from '@rainbow-me/swaps';
 
 import { prepareCrosschainSwapCall } from './actions/crosschainSwap';
 import { prepareSwapCall } from './actions/swap';
 import { prepareApprovalCall } from './actions/unlock';
 import { resolveApprovalRequirement } from './approval';
-import { prepareAtomicSwapExecution } from './atomicSwapPreparation';
+import { buildAtomicExecutionRequirements, prepareAtomicSwapCalls } from './atomicSwapPreparation';
+
+const mockGetRemoteConfig = jest.fn(() => ({ sponsored_swaps_enabled: true }));
 
 jest.mock('@rainbow-me/delegation', () => ({
   execute: {
     prepare: {
       calls: jest.fn(),
     },
+  },
+}));
+
+jest.mock('@/model/remoteConfig', () => ({
+  getRemoteConfig: () => mockGetRemoteConfig(),
+}));
+
+jest.mock('@/state/backendNetworks/backendNetworks', () => ({
+  backendNetworksActions: {
+    isSponsorshipEligible: jest.fn(),
   },
 }));
 
@@ -36,7 +48,7 @@ jest.mock('./actions/crosschainSwap', () => ({
 
 // ============ Helpers ======================================================= //
 
-function buildQuote(): Quote {
+function buildQuote(chainId = 8453): Quote {
   return {
     allowanceNeeded: false,
     allowanceTarget: '0x1111111111111111111111111111111111111111',
@@ -46,7 +58,7 @@ function buildQuote(): Quote {
     buyAmountInEth: '0',
     buyAmountMinusFees: '2',
     buyTokenAddress: '0x2222222222222222222222222222222222222222',
-    chainId: 8453,
+    chainId,
     data: '0x1234',
     fee: '0',
     feeInEth: '0',
@@ -65,17 +77,13 @@ function buildQuote(): Quote {
   };
 }
 
-function buildCrosschainQuote(): CrosschainQuote {
+function buildCrosschainQuote(chainId = 8453): CrosschainQuote {
   return {
-    ...buildQuote(),
+    ...buildQuote(chainId),
     refuel: null,
     routes: [],
     swapType: SwapType.crossChain,
   };
-}
-
-function buildSigner(provider: StaticJsonRpcProvider): Wallet {
-  return Wallet.createRandom().connect(provider);
 }
 
 // ============ Tests ========================================================= //
@@ -85,11 +93,12 @@ describe('atomicSwapPreparation', () => {
 
   beforeEach(() => {
     jest.clearAllMocks();
+    jest.mocked(backendNetworksActions.isSponsorshipEligible).mockImplementation(chainId => chainId !== 1);
+    mockGetRemoteConfig.mockReturnValue({ sponsored_swaps_enabled: true });
   });
 
-  it('prepares a sponsored same-chain atomic plan without approval when none is required', async () => {
+  it('builds the same-chain atomic call list without approval when none is required', async () => {
     const quote = buildQuote();
-    const signer = buildSigner(provider);
     const swapCall: Call = {
       data: '0xaaaa',
       to: '0xaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa',
@@ -101,34 +110,22 @@ describe('atomicSwapPreparation', () => {
       requiresApprove: false,
     });
     jest.mocked(prepareSwapCall).mockResolvedValue(swapCall);
-    jest.mocked(execute.prepare.calls).mockRejectedValue(new Error('prepare failed'));
 
     await expect(
-      prepareAtomicSwapExecution({
+      prepareAtomicSwapCalls({
+        account: quote.from,
         chainId: quote.chainId,
         provider,
         quote,
-        signer,
       })
-    ).rejects.toThrow('prepare failed');
+    ).resolves.toEqual([swapCall]);
 
     expect(prepareApprovalCall).not.toHaveBeenCalled();
     expect(prepareSwapCall).toHaveBeenCalledWith({ quote, provider });
-    expect(execute.prepare.calls).toHaveBeenCalledWith({
-      signer,
-      provider,
-      chainId: quote.chainId,
-      calls: [swapCall],
-      requirements: {
-        atomic: 'required',
-        fees: { payer: 'sponsor' },
-      },
-    });
   });
 
-  it('includes approval before the bridge call when approval is required', async () => {
+  it('builds approval before the bridge call when approval is required', async () => {
     const quote = buildCrosschainQuote();
-    const signer = buildSigner(provider);
     const approvalCall: Call = {
       data: '0xbbbb',
       to: '0xbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb',
@@ -146,16 +143,15 @@ describe('atomicSwapPreparation', () => {
     });
     jest.mocked(prepareApprovalCall).mockResolvedValue(approvalCall);
     jest.mocked(prepareCrosschainSwapCall).mockResolvedValue(bridgeCall);
-    jest.mocked(execute.prepare.calls).mockRejectedValue(new Error('prepare failed'));
 
     await expect(
-      prepareAtomicSwapExecution({
+      prepareAtomicSwapCalls({
+        account: quote.from,
         chainId: quote.chainId,
         provider,
         quote,
-        signer,
       })
-    ).rejects.toThrow('prepare failed');
+    ).resolves.toEqual([approvalCall, bridgeCall]);
 
     expect(prepareApprovalCall).toHaveBeenCalledWith({
       amount: quote.sellAmount.toString(),
@@ -166,10 +162,19 @@ describe('atomicSwapPreparation', () => {
       useExactApproval: true,
     });
     expect(prepareCrosschainSwapCall).toHaveBeenCalledWith({ quote });
-    expect(execute.prepare.calls).toHaveBeenCalledWith(
-      expect.objectContaining({
-        calls: [approvalCall, bridgeCall],
-      })
-    );
+  });
+
+  it('requests sponsor fees only when sponsorship is enabled and eligible', async () => {
+    expect(buildAtomicExecutionRequirements(8453)).toEqual({
+      atomic: 'required',
+      fees: { payer: 'sponsor' },
+    });
+
+    mockGetRemoteConfig.mockReturnValue({ sponsored_swaps_enabled: false });
+
+    expect(buildAtomicExecutionRequirements(8453)).toEqual({
+      atomic: 'required',
+      fees: undefined,
+    });
   });
 });

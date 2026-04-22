@@ -1,3 +1,6 @@
+import { BigNumber } from '@ethersproject/bignumber';
+import { hexlify } from '@ethersproject/bytes';
+
 import { type NativeCurrencyKey } from '@/entities/nativeCurrencyTypes';
 import {
   TransactionDirection,
@@ -143,13 +146,14 @@ export const parseTransaction = (transaction: Transaction, nativeCurrency: Nativ
 
 export const convertNewTransactionToRainbowTransaction = (tx: NewTransaction): RainbowTransaction => {
   const asset = tx?.changes?.[0]?.asset || tx.asset;
+  const status = TransactionStatus.pending;
 
   return {
     ...tx,
     asset,
-    status: TransactionStatus.pending,
-    data: tx.data,
-    title: buildTransactionTitle(tx.type, tx.status),
+    status,
+    data: serializeTransactionData(tx.data),
+    title: buildTransactionTitle(tx.type, status),
     description: asset?.name,
     from: tx.from,
     changes: tx.changes,
@@ -159,11 +163,23 @@ export const convertNewTransactionToRainbowTransaction = (tx: NewTransaction): R
     timestamp: Date.now(),
     to: tx.to,
     type: tx.type,
-    gasPrice: tx.gasPrice,
-    maxFeePerGas: tx.maxFeePerGas,
-    maxPriorityFeePerGas: tx.maxPriorityFeePerGas,
+    value: serializeBigNumberish(tx.value),
+    gasLimit: serializeBigNumberish(tx.gasLimit),
+    gasPrice: serializeBigNumberish(tx.gasPrice),
+    maxFeePerGas: serializeBigNumberish(tx.maxFeePerGas),
+    maxPriorityFeePerGas: serializeBigNumberish(tx.maxPriorityFeePerGas),
   };
 };
+
+function serializeBigNumberish(value: RainbowTransaction['value']): string | undefined {
+  if (value === undefined || value === null) return undefined;
+  return BigNumber.from(value).toString();
+}
+
+function serializeTransactionData(data: RainbowTransaction['data']): string | undefined {
+  if (data === undefined || data === null) return undefined;
+  return typeof data === 'string' ? data : hexlify(data);
+}
 
 /**
  * Helper for retrieving tx fee sent by zerion, works only for mainnet only

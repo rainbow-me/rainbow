@@ -176,6 +176,7 @@ function buildCrosschainSwapTransaction(
     asset: parameters.assetToSell,
     chainName: chainsName[parameters.assetToSell.chainId],
   });
+  const isBridge = isBridging(updatedAssetToSell, assetToBuy);
 
   return {
     chainId: parameters.chainId,
@@ -200,7 +201,13 @@ function buildCrosschainSwapTransaction(
     nonce,
     network: chainsName[parameters.chainId],
     status: TransactionStatus.pending,
-    type: isBridging(updatedAssetToSell, assetToBuy) ? 'bridge' : 'swap',
+    type: isBridge ? 'bridge' : 'swap',
+    swap: {
+      type: SwapType.crossChain,
+      fromChainId: parameters.assetToSell.chainId,
+      toChainId: parameters.assetToBuy.chainId,
+      isBridge,
+    },
     ...gasParams,
   };
 }

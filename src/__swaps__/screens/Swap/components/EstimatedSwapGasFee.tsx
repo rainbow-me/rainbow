@@ -17,7 +17,7 @@ import { useSwapEstimatedGasFee } from '@/__swaps__/screens/Swap/hooks/useEstima
 import { useSwapContext } from '@/__swaps__/screens/Swap/providers/swap-provider';
 import { TIMING_CONFIGS } from '@/components/animations/animationConfigs';
 import { AnimatedText, useForegroundColor, type TextProps } from '@/design-system';
-import { useSponsoredSwapStore } from '@/features/delegation/sponsoredSwapStore';
+import { useIsSponsoredSwap } from '@/features/delegation/sponsoredSwapStore';
 import { opacity } from '@/framework/ui/utils/opacity';
 import { useDelayedValue } from '@/hooks/reanimated/useDelayedValue';
 import { useStoreSharedValue } from '@/state/internal/hooks/useStoreSharedValue';
@@ -70,8 +70,8 @@ const GasFeeText = memo(function GasFeeText({
   const zeroAmountColor = opacity(labelTertiary, 0.3);
 
   const isFetchingDelayed = useDelayedValue(isFetching, 1500);
-  const isLoadingSponsorshipVerdict = useStoreSharedValue(useSponsoredSwapStore, s => s.getStatus('isInitialLoad'));
-  const isLoading = useDerivedValue(() => isFetching.value || isFetchingDelayed.value || isLoadingSponsorshipVerdict.value);
+  const isSponsored = useStoreSharedValue(useIsSponsoredSwap, s => s);
+  const isLoading = useDerivedValue(() => isFetching.value || (isFetchingDelayed.value && !isSponsored.value));
 
   const animatedTextOpacity = useAnimatedStyle(() => ({
     color: withTiming(isLoading.value ? zeroAmountColor : textColor, TIMING_CONFIGS.slowFadeConfig),

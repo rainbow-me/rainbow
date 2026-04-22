@@ -1,11 +1,11 @@
+import { createDerivedStore, createQueryStore } from '@storesjs/stores';
 import { createPublicClient, http, type PublicClient } from 'viem';
 
 import { isCrosschainQuote, isQuote } from '@/__swaps__/utils/quotes';
 import { getProvider } from '@/handlers/web3';
-import { isPreparedCallsExecutionSponsored, prepareAtomicSwapCalls } from '@/raps/atomicSwapPreparation';
-import { useBackendNetworksStore } from '@/state/backendNetworks/backendNetworks';
-import { createDerivedStore } from '@/state/internal/createDerivedStore';
-import { createQueryStore } from '@/state/internal/createQueryStore';
+import { useRemoteConfigStore } from '@/model/remoteConfig';
+import { buildAtomicExecutionRequirements, isPreparedCallsExecutionSponsored, prepareAtomicSwapCalls } from '@/raps/atomicSwapPreparation';
+import { backendNetworksActions, useBackendNetworksStore } from '@/state/backendNetworks/backendNetworks';
 import { useSwapsStore } from '@/state/swaps/swapsStore';
 import { getAccountAddress, useWalletsStore } from '@/state/wallets/walletsStore';
 import { time } from '@/utils/time';
@@ -37,15 +37,14 @@ type CurrentSponsoredSwap = {
 
 const useSponsoredSwapQuoteKey = createDerivedStore(
   $ => {
-    const accountAddress = $(useWalletsStore, state => state.accountAddress);
-    const quote = $(useSwapsStore, state => state.quote);
+    const accountAddress = $(useWalletsStore, s => s.accountAddress);
+    const quote = $(useSwapsStore, s => s.quote);
 
-    if (!accountAddress || !canUseDelegatedExecution(accountAddress)) return null;
-    if (!isCurrentSponsoredSwapQuote(quote, accountAddress)) return null;
+    if (!isValidSponsoredSwapQuote(quote, accountAddress)) return null;
 
     return performance.now();
   },
-  { fastMode: true }
+  { lockDependencies: true }
 );
 
 // ============ Store ========================================================= //
@@ -57,23 +56,20 @@ export const useSponsoredSwapStore = createQueryStore<PreparedCallsExecution | n
     params: {
       quoteKey: $ => $(useSponsoredSwapQuoteKey),
     },
-    keepPreviousData: true,
     cacheTime: time.minutes(1),
     staleTime: SPONSORED_SWAP_STALE_TIME_MS,
   },
 
   (_, get) => {
-    let consumedSponsoredSwapQuoteKey: number | null = null;
+    let consumedQuoteKey: number | null = null;
 
     return {
-      getPreparedSwap: async (): Promise<PreparedCallsExecution | null> => {
+      getPreparedSwap: async () => {
         const quoteKey = useSponsoredSwapQuoteKey.getState();
         if (quoteKey === null) return null;
 
-        // Exact-call prepare embeds live nonce state, so the cached artifact is
-        // safe for the first submit but retries of the same quote must refresh.
-        const shouldForceRefresh = consumedSponsoredSwapQuoteKey === quoteKey;
-        consumedSponsoredSwapQuoteKey = quoteKey;
+        const shouldForceRefresh = consumedQuoteKey === quoteKey;
+        consumedQuoteKey = quoteKey;
 
         return get().fetch({ quoteKey }, shouldForceRefresh ? { force: true } : undefined);
       },
@@ -81,9 +77,22 @@ export const useSponsoredSwapStore = createQueryStore<PreparedCallsExecution | n
   }
 );
 
-export function useIsSponsoredSwap(): boolean {
-  return useSponsoredSwapStore(state => isPreparedCallsExecutionSponsored(state.getData()));
-}
+export const useIsSponsoredSwap = createDerivedStore<boolean>(
+  $ => {
+    const canDelegate = $(useWalletsStore, s => canUseDelegatedExecution(s.accountAddress));
+    const inputChainId = $(useSwapsStore, s => s.inputAsset?.chainId);
+    const preparedSwap = $(useSponsoredSwapStore, s => s.getData());
+    const sponsoredSwapsEnabled = $(useRemoteConfigStore, s => s.config.sponsored_swaps_enabled);
+
+    if (!sponsoredSwapsEnabled) return false;
+
+    const canSponsor = canDelegate && (inputChainId === undefined || backendNetworksActions.isSponsorshipEligible(inputChainId));
+    if (!canSponsor || !preparedSwap) return canSponsor;
+
+    return isPreparedCallsExecutionSponsored(preparedSwap);
+  },
+  { lockDependencies: true }
+);
 
 // ============ Fetcher ======================================================== //
 
@@ -111,10 +120,7 @@ async function fetchPreparedSponsoredSwap(): Promise<PreparedCallsExecution | nu
     chainId,
     calls,
     publicClient,
-    requirements: {
-      atomic: 'required',
-      fees: { payer: 'sponsor' },
-    },
+    requirements: buildAtomicExecutionRequirements(chainId),
   });
 }
 
@@ -124,20 +130,9 @@ function readCurrentSwapQuote(): CurrentSponsoredSwap | null {
   const address = getAccountAddress();
   const quote = useSwapsStore.getState().quote;
 
-  if (!isCurrentSponsoredSwapQuote(quote, address)) return null;
-  if (!canUseDelegatedExecution(address)) return null;
+  if (!isValidSponsoredSwapQuote(quote, address)) return null;
 
   return { chainId: quote.chainId, quote };
-}
-
-function isCurrentSponsoredSwapQuote(
-  quote: Quote | CrosschainQuote | QuoteError | null,
-  accountAddress: string
-): quote is Quote | CrosschainQuote {
-  if (!(isQuote(quote) || isCrosschainQuote(quote))) {
-    return false;
-  }
-  return quote.from.toLowerCase() === accountAddress.toLowerCase();
 }
 
 function createDelegationPublicClient(current: CurrentSponsoredSwap): PublicClient {
@@ -153,4 +148,14 @@ function createDelegationPublicClient(current: CurrentSponsoredSwap): PublicClie
     chain,
     transport: http(rpcUrl),
   });
+}
+
+function isValidSponsoredSwapQuote(
+  quote: Quote | CrosschainQuote | QuoteError | null,
+  accountAddress: string
+): quote is Quote | CrosschainQuote {
+  if (!(isQuote(quote) || isCrosschainQuote(quote))) {
+    return false;
+  }
+  return quote.from.toLowerCase() === accountAddress.toLowerCase();
 }

@@ -1,24 +1,20 @@
+import { relayService } from '@/features/delegation/relayService';
 import { RelayExecutionStatus, type RelayStatusSnapshot } from '@rainbow-me/delegation';
 
 // ============ Types ========================================================= //
 
 type ManagedExecutionFailureParams = {
   executionId: string;
-  getStatus: (executionId: string) => Promise<{ status: RelayStatusSnapshot }>;
   status: RelayExecutionStatus;
 };
 
 // ============ API =========================================================== //
 
-export async function resolveManagedExecutionFailure({
-  executionId,
-  getStatus,
-  status,
-}: ManagedExecutionFailureParams): Promise<string | null> {
+export async function resolveManagedExecutionFailure({ executionId, status }: ManagedExecutionFailureParams): Promise<string | null> {
   if (!isManagedExecutionFailure(status)) return null;
 
   try {
-    const update = await getStatus(executionId);
+    const update = await relayService.getStatus(executionId);
     return formatManagedExecutionFailure(update.status);
   } catch {
     return fallbackManagedExecutionFailureMessage(status);

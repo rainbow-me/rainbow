@@ -41,9 +41,6 @@ export const RNBW_REWARDS = 'RNBW Rewards';
 export const RNBW_MEMBERSHIP = 'RNBW Membership';
 export const DELEGATION = '7702 Delegation';
 
-/** Temporary point of control for skipping insufficient gas checks. */
-export const SKIP_SWAPS_GAS_CHECKS = 'Skip Swaps Gas Checks';
-
 /**
  * A developer setting that pushes log lines to an array in-memory so that
  * they can be "dumped" or copied out of the app and analyzed.
@@ -91,7 +88,6 @@ const config = {
   [RNBW_REWARDS]: { settings: true, value: false },
   [RNBW_MEMBERSHIP]: { settings: true, value: false },
   [DELEGATION]: { settings: true, value: false },
-  [SKIP_SWAPS_GAS_CHECKS]: { settings: true, value: false },
 } as const;
 
 /** This flag is not reactive. We use this in a static context. */

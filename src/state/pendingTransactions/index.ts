@@ -1,5 +1,5 @@
 import { useRainbowToastsStore } from '@/components/rainbow-toast/useRainbowToastsStore';
-import { type NewTransaction, type RainbowTransaction } from '@/entities/transactions';
+import { type NewTransaction, type PendingTransaction, type RainbowTransaction } from '@/entities/transactions';
 import { convertNewTransactionToRainbowTransaction } from '@/parsers/transactions';
 import { type ChainId } from '@/state/backendNetworks/types';
 import { createRainbowStore } from '@/state/internal/createRainbowStore';
@@ -11,21 +11,23 @@ export type PendingTransactionsState = {
   pendingTransactions: Partial<Record<string, RainbowTransaction[]>>;
   addPendingTransaction: ({ address, pendingTransaction }: { address: string; pendingTransaction: RainbowTransaction }) => void;
   clearPendingTransactions: () => void;
-  getPendingTransactionsInReverseOrder: (address: string) => RainbowTransaction[];
+  getPendingTransactions: (address: string) => PendingTransaction[];
+  getTransactionsInReverseOrder: (address: string) => RainbowTransaction[];
   setPendingTransactions: ({ address, pendingTransactions }: { address: string; pendingTransactions: RainbowTransaction[] }) => void;
 };
 
-const EMPTY_PENDING_TRANSACTIONS: Record<string, RainbowTransaction[]> = {};
+const EMPTY_PENDING_TRANSACTIONS_BY_ADDRESS: Record<string, RainbowTransaction[]> = {};
 const EMPTY_TRANSACTIONS: RainbowTransaction[] = [];
+const EMPTY_PENDING_TRANSACTIONS: PendingTransaction[] = [];
 
 export const usePendingTransactionsStore = createRainbowStore<PendingTransactionsState>(
   (set, get) => ({
-    pendingTransactions: EMPTY_PENDING_TRANSACTIONS,
+    pendingTransactions: EMPTY_PENDING_TRANSACTIONS_BY_ADDRESS,
 
     addPendingTransaction: ({ address, pendingTransaction }) => {
       set(state => {
         const existingTransactions = state.pendingTransactions[address] || [];
-        const existingIndex = findPendingTransactionIndex(existingTransactions, pendingTransaction);
+        const existingIndex = findTransactionIndex(existingTransactions, pendingTransaction);
 
         let updatedTransactions: RainbowTransaction[];
         if (existingIndex >= 0) {
@@ -48,13 +50,20 @@ export const usePendingTransactionsStore = createRainbowStore<PendingTransaction
 
     clearPendingTransactions: () =>
       set({
-        pendingTransactions: EMPTY_PENDING_TRANSACTIONS,
+        pendingTransactions: EMPTY_PENDING_TRANSACTIONS_BY_ADDRESS,
       }),
 
-    getPendingTransactionsInReverseOrder: address => {
-      const pendingTransactionsForAddress = get().pendingTransactions[address];
-      if (!pendingTransactionsForAddress) return EMPTY_TRANSACTIONS;
-      return [...pendingTransactionsForAddress].reverse();
+    getPendingTransactions: address => {
+      const transactionsForAddress = get().pendingTransactions[address];
+      if (!transactionsForAddress) return EMPTY_PENDING_TRANSACTIONS;
+
+      return transactionsForAddress.filter(isPendingTransaction);
+    },
+
+    getTransactionsInReverseOrder: address => {
+      const transactionsForAddress = get().pendingTransactions[address];
+      if (!transactionsForAddress) return EMPTY_TRANSACTIONS;
+      return [...transactionsForAddress].reverse();
     },
 
     setPendingTransactions: ({ address, pendingTransactions }) =>
@@ -117,7 +126,7 @@ export const updateTransaction = ({
   });
 };
 
-function findPendingTransactionIndex(transactions: RainbowTransaction[], nextTransaction: RainbowTransaction): number {
+function findTransactionIndex(transactions: RainbowTransaction[], nextTransaction: RainbowTransaction): number {
   if (nextTransaction.relayExecutionId) {
     return transactions.findIndex(
       transaction => transaction.chainId === nextTransaction.chainId && transaction.relayExecutionId === nextTransaction.relayExecutionId
@@ -127,4 +136,8 @@ function findPendingTransactionIndex(transactions: RainbowTransaction[], nextTra
   return transactions.findIndex(
     transaction => transaction.chainId === nextTransaction.chainId && transaction.nonce === nextTransaction.nonce
   );
+}
+
+function isPendingTransaction(transaction: RainbowTransaction): transaction is PendingTransaction {
+  return transaction.status === 'pending';
 }

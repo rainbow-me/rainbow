@@ -1,7 +1,7 @@
 import { TransactionDirection, TransactionStatus } from '@/entities/transactions';
 import { logger } from '@/logger';
 
-import { resolvePendingTransaction } from './pendingTransactionResolution';
+import { resolveTrackedTransaction } from './pendingTransactionResolution';
 
 const mockFetchRawTransaction = jest.fn();
 const mockGetStatus = jest.fn();
@@ -42,20 +42,21 @@ describe('pendingTransactionResolution', () => {
       status: TransactionStatus.pending,
     });
 
-    const resolution = await resolvePendingTransaction({
+    const resolution = await resolveTrackedTransaction({
       abortController: null,
       address: '0x123',
       currency: 'ETH',
       transaction: buildManagedPendingTransaction(),
     });
 
-    expect(resolution).toEqual({
+    expect(resolution).toMatchObject({
       kind: 'pending',
       transaction: expect.objectContaining({
         hash: '0x1111111111111111111111111111111111111111111111111111111111111111',
         relayExecutionId: 'execution-1',
       }),
     });
+    expect(resolution.relayStatus?.status).toBe('PENDING');
     expect(mockFetchRawTransaction).toHaveBeenCalledWith(
       expect.objectContaining({
         address: '0x123',
@@ -70,14 +71,14 @@ describe('pendingTransactionResolution', () => {
     const transaction = buildOnchainPendingTransaction();
     mockFetchRawTransaction.mockResolvedValue(null);
 
-    const resolution = await resolvePendingTransaction({
+    const resolution = await resolveTrackedTransaction({
       abortController: null,
       address: '0x123',
       currency: 'ETH',
       transaction,
     });
 
-    expect(resolution).toEqual({
+    expect(resolution).toMatchObject({
       kind: 'pending',
       transaction,
     });
@@ -92,18 +93,66 @@ describe('pendingTransactionResolution', () => {
       })
     );
 
-    const resolution = await resolvePendingTransaction({
+    const resolution = await resolveTrackedTransaction({
       abortController: null,
       address: '0x123',
       currency: 'ETH',
       transaction,
     });
 
-    expect(resolution).toEqual({
+    expect(resolution).toMatchObject({
       kind: 'pending',
       transaction,
     });
     expect(resolution.transaction).toBe(transaction);
+    expect(mockFetchRawTransaction).not.toHaveBeenCalled();
+  });
+
+  it('keeps a confirmed managed transaction settled when relay refresh fails', async () => {
+    mockGetStatus.mockRejectedValue(new Error('relay unavailable'));
+
+    const resolution = await resolveTrackedTransaction({
+      abortController: null,
+      address: '0x123',
+      currency: 'ETH',
+      transaction: buildManagedConfirmedTransaction(),
+    });
+
+    expect(resolution).toMatchObject({
+      kind: 'settled',
+      transaction: expect.objectContaining({
+        hash: 'execution-1',
+        relayExecutionId: 'execution-1',
+        status: TransactionStatus.confirmed,
+        title: 'swap.confirmed',
+      }),
+    });
+  });
+
+  it('keeps a confirmed managed transaction settled while relay exposes a late origin hash', async () => {
+    mockGetStatus.mockResolvedValue(
+      buildRelayStatus({
+        status: 'PENDING',
+        txHash: '0x1111111111111111111111111111111111111111111111111111111111111111',
+      })
+    );
+
+    const resolution = await resolveTrackedTransaction({
+      abortController: null,
+      address: '0x123',
+      currency: 'ETH',
+      transaction: buildManagedConfirmedTransaction(),
+    });
+
+    expect(resolution).toMatchObject({
+      kind: 'settled',
+      transaction: expect.objectContaining({
+        hash: '0x1111111111111111111111111111111111111111111111111111111111111111',
+        relayExecutionId: 'execution-1',
+        status: TransactionStatus.confirmed,
+        title: 'swap.confirmed',
+      }),
+    });
     expect(mockFetchRawTransaction).not.toHaveBeenCalled();
   });
 
@@ -114,14 +163,14 @@ describe('pendingTransactionResolution', () => {
       })
     );
 
-    const resolution = await resolvePendingTransaction({
+    const resolution = await resolveTrackedTransaction({
       abortController: null,
       address: '0x123',
       currency: 'ETH',
       transaction: buildManagedPendingTransaction(),
     });
 
-    expect(resolution).toEqual({
+    expect(resolution).toMatchObject({
       kind: 'settled',
       transaction: expect.objectContaining({
         hash: 'execution-1',
@@ -140,14 +189,14 @@ describe('pendingTransactionResolution', () => {
       })
     );
 
-    const resolution = await resolvePendingTransaction({
+    const resolution = await resolveTrackedTransaction({
       abortController: null,
       address: '0x123',
       currency: 'ETH',
       transaction: buildManagedPendingTransaction(),
     });
 
-    expect(resolution).toEqual({
+    expect(resolution).toMatchObject({
       kind: 'settled',
       transaction: expect.objectContaining({
         hash: '0x1111111111111111111111111111111111111111111111111111111111111111',
@@ -187,7 +236,7 @@ describe('pendingTransactionResolution', () => {
       status: TransactionStatus.confirmed,
     });
 
-    const resolution = await resolvePendingTransaction({
+    const resolution = await resolveTrackedTransaction({
       abortController: null,
       address: '0x123',
       currency: 'ETH',
@@ -213,14 +262,14 @@ describe('pendingTransactionResolution', () => {
       })
     );
 
-    const resolution = await resolvePendingTransaction({
+    const resolution = await resolveTrackedTransaction({
       abortController: null,
       address: '0x123',
       currency: 'ETH',
       transaction: buildManagedPendingTransaction(),
     });
 
-    expect(resolution).toEqual({
+    expect(resolution).toMatchObject({
       kind: 'settled',
       transaction: expect.objectContaining({
         hash: '0x2222222222222222222222222222222222222222222222222222222222222222',
@@ -239,14 +288,14 @@ describe('pendingTransactionResolution', () => {
       })
     );
 
-    const resolution = await resolvePendingTransaction({
+    const resolution = await resolveTrackedTransaction({
       abortController: null,
       address: '0x123',
       currency: 'ETH',
       transaction: buildManagedPendingTransaction(),
     });
 
-    expect(resolution).toEqual({
+    expect(resolution).toMatchObject({
       kind: 'settled',
       transaction: expect.objectContaining({
         hash: 'execution-1',
@@ -256,7 +305,7 @@ describe('pendingTransactionResolution', () => {
       }),
     });
     expect(logger.warn).toHaveBeenCalledWith(
-      '[resolvePendingTransaction]: managed relay execution finished without onchain transaction evidence',
+      '[resolveTrackedTransaction]: managed relay execution finished without onchain transaction evidence',
       expect.objectContaining({
         executionId: 'execution-1',
         status: 'CONFIRMED',
@@ -274,14 +323,14 @@ describe('pendingTransactionResolution', () => {
       status: TransactionStatus.confirmed,
     });
 
-    const resolution = await resolvePendingTransaction({
+    const resolution = await resolveTrackedTransaction({
       abortController: null,
       address: '0x123',
       currency: 'ETH',
       transaction: buildOnchainPendingTransaction(),
     });
 
-    expect(resolution).toEqual({
+    expect(resolution).toMatchObject({
       kind: 'settled',
       transaction: expect.objectContaining({
         blockNumber: 1,
@@ -318,14 +367,14 @@ describe('pendingTransactionResolution', () => {
       status: TransactionStatus.confirmed,
     });
 
-    const resolution = await resolvePendingTransaction({
+    const resolution = await resolveTrackedTransaction({
       abortController: null,
       address: '0x123',
       currency: 'ETH',
       transaction: buildManagedPendingTransaction(),
     });
 
-    expect(resolution).toEqual({
+    expect(resolution).toMatchObject({
       kind: 'settled',
       transaction: expect.objectContaining({
         blockNumber: 1,
@@ -362,6 +411,14 @@ function buildManagedPendingTransaction() {
     title: 'swap.pending',
     to: null,
     type: 'swap' as const,
+  };
+}
+
+function buildManagedConfirmedTransaction() {
+  return {
+    ...buildManagedPendingTransaction(),
+    status: TransactionStatus.confirmed,
+    title: 'swap.confirmed',
   };
 }
 

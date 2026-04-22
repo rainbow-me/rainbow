@@ -36,7 +36,6 @@ import { getInputValuesForSliderPositionWorklet, updateInputValuesAfterFlip } fr
 import { clamp, getDefaultSlippageWorklet, parseAssetAndExtend, trimTrailingZeros } from '@/__swaps__/utils/swaps';
 import { trackSwapEvent } from '@/__swaps__/utils/trackSwapEvent';
 import { analytics } from '@/analytics';
-import { getExperimentalFlag, SKIP_SWAPS_GAS_CHECKS } from '@/config/experimentalHooks';
 import type { LegacyTransactionGasParamAmounts, TransactionGasParamAmounts } from '@/entities/gas';
 import { IS_IOS } from '@/env';
 import { useSponsoredSwapStore } from '@/features/delegation/sponsoredSwapStore';
@@ -176,9 +175,6 @@ const getInitialSliderXPosition = ({
 const SLIPPAGE_CONFIG = getRemoteConfig().default_slippage_bips_chainId;
 
 export const SwapProvider = ({ children }: SwapProviderProps) => {
-  /** Temporary point of control for skipping insufficient gas checks. */
-  const skipInsufficientGasCheck = getExperimentalFlag(SKIP_SWAPS_GAS_CHECKS);
-
   const [{ currentCurrency, initialValues, nativeChainAssets }] = useState(() => ({
     currentCurrency: userAssetsStoreManager.getState().currency,
     initialValues: getSwapsNavigationParams(),
@@ -856,7 +852,7 @@ export const SwapProvider = ({ children }: SwapProviderProps) => {
       !equalWorklet(sellAsset.maxSwappableAmount, '0') &&
       lessThanOrEqualToWorklet(inputValues.value.inputAmount, sellAsset.maxSwappableAmount);
 
-    if (!skipInsufficientGasCheck && !enoughFundsForSwap && hasEnoughFundsForGas.value !== undefined) {
+    if (!enoughFundsForSwap && hasEnoughFundsForGas.value !== undefined) {
       return { label: insufficientFunds, disabled: true, type: 'hold' };
     }
 
@@ -898,7 +894,7 @@ export const SwapProvider = ({ children }: SwapProviderProps) => {
       return { icon, label: isReviewSheetOpen ? quoteError : reviewLabel, disabled: true, type: 'hold' };
     }
 
-    if (!skipInsufficientGasCheck && hasEnoughFundsForGas.value === false) {
+    if (hasEnoughFundsForGas.value === false) {
       const nativeCurrency = nativeChainAssets[sellAsset?.chainId || ChainId.mainnet];
       return {
         label: `${insufficient} ${nativeCurrency.symbol}`,
