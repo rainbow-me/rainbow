@@ -1726,6 +1726,13 @@
         "minimum_amount_is": "最小金額は",
         "no_balance": "残高なし"
       },
+      "about": {
+        "title": "概要",
+        "read_more": "続きを読む",
+        "volume_24h": "24時間のボリューム",
+        "open_interest": "建玉",
+        "funding": "資金調達"
+      },
       "history": {
         "title": "履歴",
         "no_trades": "取引なし",
