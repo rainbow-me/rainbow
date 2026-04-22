@@ -1726,6 +1726,13 @@
         "minimum_amount_is": "최소 금액은",
         "no_balance": "잔액 없음"
       },
+      "about": {
+        "title": "정보",
+        "read_more": "더 읽기",
+        "volume_24h": "24시간 거래량",
+        "open_interest": "미결제약정",
+        "funding": "자금 조달"
+      },
       "history": {
         "title": "기록",
         "no_trades": "거래 없음",
