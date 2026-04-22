@@ -1726,6 +1726,13 @@
         "minimum_amount_is": "La cantidad mínima es",
         "no_balance": "Sin Balance"
       },
+      "about": {
+        "title": "Acerca de",
+        "read_more": "Leer más",
+        "volume_24h": "Volumen de 24h",
+        "open_interest": "Interés abierto",
+        "funding": "Financiamiento"
+      },
       "history": {
         "title": "Historial",
         "no_trades": "Sin operaciones",
