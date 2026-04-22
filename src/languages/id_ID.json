@@ -1726,6 +1726,13 @@
         "minimum_amount_is": "Jumlah minimum adalah",
         "no_balance": "Tidak Ada Saldo"
       },
+      "about": {
+        "title": "Tentang",
+        "read_more": "Baca lebih lanjut",
+        "volume_24h": "Volume 24h",
+        "open_interest": "Minat Terbuka",
+        "funding": "Pendanaan"
+      },
       "history": {
         "title": "Riwayat",
         "no_trades": "Tidak ada perdagangan",
