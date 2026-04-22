@@ -164,7 +164,7 @@ jobs:
           APP_PATH=$(find downloaded-artifacts -name "*.app" -type d | head -n 1)
           echo "ARTIFACT_PATH_FOR_E2E=$APP_PATH" >> $GITHUB_ENV
 
-      - uses: futureware-tech/simulator-action@dab10d813144ef59b48d401cd95da151222ef8cd
+      - uses: futureware-tech/simulator-action@e89aa8f93d3aec35083ff49d2854d07f7186f7f5 # v5
         id: simulator
         with:
           model: 'iPhone 16'
