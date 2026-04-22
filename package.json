@@ -177,7 +177,7 @@
     "@ledgerhq/react-native-hw-transport-ble": "6.34.1",
     "@legendapp/list": "2.0.16",
     "@metamask/eth-sig-util": "7.0.2",
-    "@nktkas/hyperliquid": "0.25.5",
+    "@nktkas/hyperliquid": "0.32.2",
     "@notifee/react-native": "7.8.2",
     "@polymarket/builder-relayer-client": "0.0.7",
     "@polymarket/clob-client": "4.22.8",
@@ -322,9 +322,9 @@
     "react-native-reanimated": "3.19.4",
     "react-native-redash": "16.3.0",
     "react-native-restart": "0.0.22",
-    "react-native-safe-area-context": "5.4.0",
+    "react-native-safe-area-context": "5.7.0",
     "react-native-screen-corner-radius": "0.2.3",
-    "react-native-screens": "4.10.0",
+    "react-native-screens": "4.16.0",
     "react-native-share": "12.2.5",
     "react-native-sound": "0.11.2",
     "react-native-storage": "1.0.1",
@@ -342,7 +342,7 @@
     "react-native-video": "6.19.1",
     "react-native-view-shot": "4.0.3",
     "react-native-vision-camera": "4.7.3",
-    "react-native-webview": "13.13.5",
+    "react-native-webview": "rainbow-me/rainbow-react-native-webview#ffa216cb4542f19f42c3e5cb56743f041867c65a",
     "react-native-widgetkit": "1.0.9",
     "react-navigation-backhandler": "2.0.3",
     "react-primitives": "0.8.1",
@@ -371,7 +371,7 @@
     "w2t": "3.0.2",
     "zeego": "1.10.0",
     "zod": "3.23.8",
-    "zustand": "4.5.5"
+    "zustand": "5.0.10"
   },
   "devDependencies": {
     "@babel/core": "^7.25.2",

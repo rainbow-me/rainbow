@@ -23,11 +23,11 @@
       "react-native-cool-modals": ["src/react-native-cool-modals"],
       "@rainbow-me/animated-charts": ["src/react-native-animated-charts/src"],
       "react-native-shadow-stack": ["src/react-native-shadow-stack"],
-      "@nktkas/hyperliquid/api/info": ["node_modules/@nktkas/hyperliquid/esm/src/api/info/~mod.d.ts"],
-      "@nktkas/hyperliquid/api/exchange": ["node_modules/@nktkas/hyperliquid/esm/src/api/exchange/~mod.d.ts"],
-      "@nktkas/hyperliquid/api/subscription": ["node_modules/@nktkas/hyperliquid/esm/src/api/subscription/~mod.d.ts"],
-      "@nktkas/hyperliquid/utils": ["node_modules/@nktkas/hyperliquid/esm/src/utils/mod.d.ts"],
-      "@nktkas/hyperliquid/signing": ["node_modules/@nktkas/hyperliquid/esm/src/signing/mod.d.ts"]
+      "@nktkas/hyperliquid/api/info": ["node_modules/@nktkas/hyperliquid/esm/api/info/mod"],
+      "@nktkas/hyperliquid/api/exchange": ["node_modules/@nktkas/hyperliquid/esm/api/exchange/mod"],
+      "@nktkas/hyperliquid/api/subscription": ["node_modules/@nktkas/hyperliquid/esm/api/subscription/mod"],
+      "@nktkas/hyperliquid/utils": ["node_modules/@nktkas/hyperliquid/esm/utils/mod"],
+      "@nktkas/hyperliquid/signing": ["node_modules/@nktkas/hyperliquid/esm/signing/mod"]
     },
     "resolveJsonModule": true
   },

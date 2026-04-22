@@ -1866,7 +1866,7 @@ PODS:
     - React
   - react-native-restart (0.0.22):
     - React-Core
-  - react-native-safe-area-context (5.4.0):
+  - react-native-safe-area-context (5.7.0):
     - React-Core
   - react-native-screen-corner-radius (0.2.3):
     - React
@@ -1977,7 +1977,7 @@ PODS:
     - ReactCommon/turbomodule/bridging
     - ReactCommon/turbomodule/core
     - Yoga
-  - react-native-webview (13.13.5):
+  - react-native-webview (13.16.1):
     - DoubleConversion
     - glog
     - hermes-engine
@@ -2658,7 +2658,7 @@ PODS:
   - RNRudderSdk (2.0.0):
     - React
     - Rudder (< 2.0.0, >= 1.31.0)
-  - RNScreens (4.10.0):
+  - RNScreens (4.16.0):
     - DoubleConversion
     - glog
     - hermes-engine
@@ -3439,15 +3439,15 @@ SPEC CHECKSUMS:
   react-native-quick-md5: b648df1c4f23f4cc9df48c97f60c254dda2ae0b9
   react-native-randombytes: 4a00fba06ca0d80a7c02a6b73cfe58ffa4a093a0
   react-native-restart: f6f591aeb40194c41b9b5013901f00e6cf7d0f29
-  react-native-safe-area-context: 9d72abf6d8473da73033b597090a80b709c0b2f1
+  react-native-safe-area-context: e89848fc12d32ccca63d0d7d16dd96918d07c730
   react-native-screen-corner-radius: ebd0d3258fcc894571b41d25ee3db7569d375153
   react-native-skia: 3467bce4be38029a4af437022b88a45e68f4210e
   react-native-text-input-mask: b83b8b571cba4bf18fb9b7a0bb8319a14201db9e
-  react-native-udp: 33844c2b4a0430271e46cd069a6152cc4c482095
+  react-native-udp: afd81d997ff141501da6ac680667fd8319545da1
   react-native-version-number: 3d74b5224ca4e1032b1593937d86d3f3c94bf95c
   react-native-video: 9c4c3eae02d1582907c5262f90bf8194ec1b6683
   react-native-view-shot: 44e13d0424a6b0375eae31d89e161fc1153512e5
-  react-native-webview: 1b5778b306d4ed09d13829a6e7a6550e3c1a644a
+  react-native-webview: 7c27252c8f027e2720f69eb194811c587f9a846e
   react-native-widgetkit: 9138fc58146c4f39771516ea9ef0e2d6fb20a9cd
   React-NativeModulesApple: 1ecb83880dd11baf2228f8dd89d8419c387e03ad
   React-oscompat: 0592889a9fcf0eacb205532028e4a364e22907dd
@@ -3503,7 +3503,7 @@ SPEC CHECKSUMS:
   RNPermissions: bd0d9ca7969ff7b999aa605ee2e5919c12522bfe
   RNReanimated: 3e727b205ad6d3d48f9f5b07887ebefb4b20e9a4
   RNRudderSdk: cea1f6a95ceab29ceaf75bdadccba5f78121a4ce
-  RNScreens: 586139d98cad59cc4c56443b9bd5c8b9b0b6da0e
+  RNScreens: 0cba9551497bcf6ceaa75878c08f5cb9a2fac6a4
   RNSentry: 5903eefdcd6446708f27c2a7035f019b59d54a9a
   RNShare: e374836177ff2675dbc659f2e52a59bf6060d200
   RNSound: 314cc5226453ef4a3314a196c65e8a65e5106a7b

@@ -1,6 +1,5 @@
 import { type Wallet } from '@ethersproject/wallet';
 import * as hl from '@nktkas/hyperliquid';
-import { type CancelSuccessResponse } from '@nktkas/hyperliquid';
 import { type Address, type Hex } from 'viem';
 
 import { getOppositePositionSide } from '@/features/perps/utils';
@@ -244,7 +243,7 @@ export class HyperliquidExchangeClient {
     return result.response.data.statuses[0];
   }
 
-  async cancelOrder({ assetId, orderId }: { assetId: number; orderId: number }): Promise<CancelSuccessResponse | undefined> {
+  async cancelOrder({ assetId, orderId }: { assetId: number; orderId: number }): Promise<hl.CancelSuccessResponse | undefined> {
     if (checkIfReadOnlyWallet(this.userAddress)) return undefined;
 
     const exchangeClient = await this.getExchangeClient();
@@ -255,7 +254,7 @@ export class HyperliquidExchangeClient {
     });
   }
 
-  async ensureReferralCodeSet(): Promise<hl.SuccessResponse | undefined> {
+  async ensureReferralCodeSet(): Promise<hl.SetReferrerSuccessResponse | undefined> {
     if (checkIfReadOnlyWallet(this.userAddress)) return;
 
     const isSet = await this.accountClient.isReferralCodeSet();
@@ -269,7 +268,7 @@ export class HyperliquidExchangeClient {
     });
   }
 
-  async ensureApprovedBuilderFee(): Promise<hl.SuccessResponse | void> {
+  async ensureApprovedBuilderFee(): Promise<hl.ApproveBuilderFeeSuccessResponse | void> {
     if (checkIfReadOnlyWallet(this.userAddress)) return undefined;
 
     const isApproved = await this.accountClient.isBuilderFeeApproved();
@@ -284,7 +283,7 @@ export class HyperliquidExchangeClient {
     });
   }
 
-  async ensureDexAbstractionEnabled(assetId: number): Promise<hl.SuccessResponse | undefined> {
+  async ensureDexAbstractionEnabled(assetId: number): Promise<hl.UserDexAbstractionSuccessResponse | undefined> {
     if (!isBuilderDexAssetId(assetId)) return;
     if (checkIfReadOnlyWallet(this.userAddress)) return;
 

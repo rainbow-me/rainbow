@@ -4,12 +4,9 @@ import { useFavoriteDappsStore } from './favoriteDappsStore';
 describe.skip('FavoriteDappsStore', () => {
   beforeEach(() => {
     // Reset the store to its initial state before each test
-    useFavoriteDappsStore.setState(
-      {
-        favoriteDapps: [],
-      },
-      true
-    ); // The second argument 'true' is to replace the state instead of merging
+    useFavoriteDappsStore.setState({
+      favoriteDapps: [],
+    });
   });
 
   test('should be able to add a favorite site', () => {

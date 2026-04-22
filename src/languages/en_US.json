@@ -1717,6 +1717,13 @@
         "minimum_amount_is": "Minimum amount is",
         "no_balance": "No Balance"
       },
+      "about": {
+        "title": "About",
+        "read_more": "Read more",
+        "volume_24h": "24h Volume",
+        "open_interest": "Open Interest",
+        "funding": "Funding"
+      },
       "history": {
         "title": "History",
         "no_trades": "No trades",
