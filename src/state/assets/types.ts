@@ -32,6 +32,13 @@ export type FetchedUserAssetsData = {
   userAssets: UserAsset[] | null;
 } | null;
 
+export type HighestValueAssetOptions = {
+  /** Restricts search to native assets or prefers native assets when available. */
+  nativeAsset?: 'preferred' | 'required';
+  /** Chain to prioritize, if assets are available on the specified chain. */
+  preferredChainId?: ChainId;
+};
+
 export type UserAssetsParams = {
   address: Address | string;
   currency: SupportedCurrencyKey;
@@ -56,7 +63,7 @@ export interface UserAssetsState {
   getChainsWithBalance: () => ChainId[];
   getFilteredUserAssetIds: () => UniqueId[];
   getHiddenAssetsIds: () => UniqueId[];
-  getHighestValueNativeAsset: () => ParsedSearchAsset | null;
+  getHighestValueAsset: (options?: HighestValueAssetOptions) => ParsedSearchAsset | null;
   getLegacyUserAsset: (uniqueId: UniqueId) => ParsedAddressAsset | null;
   getNativeAssetForChain: (chainId: ChainId) => ParsedSearchAsset | null;
   getTotalBalance: () => number;
