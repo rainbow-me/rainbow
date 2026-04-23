@@ -23,7 +23,8 @@ export function applyManagedExecutionStatus<T extends RainbowTransaction>(transa
 }
 
 /**
- * Equality check that compares
+ * Equality check that compares relay destination chain transaction
+ * hashes. Assumes consistent hash sorting within arrays.
  */
 export function areDestinationTxHashesEqual(
   currentTxHashes: readonly Hash[] | undefined,
