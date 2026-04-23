@@ -116,7 +116,7 @@ export const settingsLoadState =
       });
       // Paired probe. Companion to the installSource probe in App.tsx; see
       // event.debugIdentifyProbe for rationale. Remove after FEPLAT-67 wraps up.
-      analytics.track(analytics.event.debugIdentifyProbe, { probe: 'currency', value: nativeCurrency });
+      analytics.track(analytics.event.debugIdentifyProbe, { probe: 'currency', value: String(nativeCurrency) });
 
       dispatch({
         payload: { nativeCurrency, testnetsEnabled },

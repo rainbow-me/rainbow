@@ -173,7 +173,7 @@ async function initializeApplication() {
   // Paired probe event. Lets us distinguish "identify trait dropped by pipeline"
   // from "whole session too short to flush" by comparing track delivery to
   // user-property delivery in Amplitude. Remove after FEPLAT-67 wraps up.
-  analytics.track(analytics.event.debugIdentifyProbe, { probe: 'installSource', value: DANGER_INSTALL_SOURCE });
+  analytics.track(analytics.event.debugIdentifyProbe, { probe: 'installSource', value: String(DANGER_INSTALL_SOURCE) });
 
   await Promise.all([
     initializeRemoteConfig(),
