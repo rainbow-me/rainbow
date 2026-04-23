@@ -23,7 +23,14 @@ import { ChainId, ChainName } from '@/state/backendNetworks/types';
 import { getUniqueId } from '@/utils/ethereumUtils';
 import { time } from '@/utils/time';
 
-import { type Asset, type GetAssetsResponse, type UserAsset, type UserAssetsParams, type UserAssetsState } from './types';
+import {
+  type Asset,
+  type GetAssetsResponse,
+  type HighestValueAssetOptions,
+  type UserAsset,
+  type UserAssetsParams,
+  type UserAssetsState,
+} from './types';
 import { userAssetsStore } from './userAssets';
 import { userAssetsStoreManager } from './userAssetsStoreManager';
 
@@ -100,6 +107,48 @@ function getUserAssetsTimeoutDuration() {
 }
 
 // ============ Asset Utils ==================================================== //
+
+const EMPTY_ASSET_SEARCH_OPTIONS = Object.freeze<HighestValueAssetOptions>({});
+
+/**
+ * Selects the highest-value user asset, optionally preferring
+ * or requiring native assets and a preferred chain.
+ */
+export function selectHighestValueAsset(
+  assets: Iterable<ParsedSearchAsset>,
+  { nativeAsset, preferredChainId }: HighestValueAssetOptions = EMPTY_ASSET_SEARCH_OPTIONS
+): ParsedSearchAsset | null {
+  const shouldRequireNativeAsset = nativeAsset === 'required';
+  const shouldTrackAnyAsset = !shouldRequireNativeAsset;
+  const shouldTrackNativeAsset = shouldRequireNativeAsset || nativeAsset === 'preferred';
+
+  let highestValueAsset: ParsedSearchAsset | null = null;
+  let highestValueNativeAsset: ParsedSearchAsset | null = null;
+  let preferredAsset: ParsedSearchAsset | null = null;
+  let preferredNativeAsset: ParsedSearchAsset | null = null;
+
+  for (const asset of assets) {
+    const isPreferredChain = preferredChainId === asset.chainId;
+
+    if (shouldTrackAnyAsset) {
+      if (isHigherValueAsset(asset, highestValueAsset)) highestValueAsset = asset;
+      if (isPreferredChain && isHigherValueAsset(asset, preferredAsset)) preferredAsset = asset;
+    }
+
+    if (shouldTrackNativeAsset && asset.isNativeAsset) {
+      if (isHigherValueAsset(asset, highestValueNativeAsset)) highestValueNativeAsset = asset;
+      if (isPreferredChain && isHigherValueAsset(asset, preferredNativeAsset)) preferredNativeAsset = asset;
+    }
+  }
+
+  if (shouldRequireNativeAsset) return preferredNativeAsset ?? highestValueNativeAsset;
+  if (nativeAsset === 'preferred') return preferredNativeAsset ?? highestValueNativeAsset ?? preferredAsset ?? highestValueAsset;
+  return preferredAsset ?? highestValueAsset;
+}
+
+function isHigherValueAsset(asset: ParsedSearchAsset, selectedAsset: ParsedSearchAsset | null): boolean {
+  return !selectedAsset || greaterThan(asset.native.balance.amount, selectedAsset.native.balance.amount);
+}
 
 export function setUserAssets({
   address,

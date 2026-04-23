@@ -7,6 +7,10 @@ export function resolveInitialDepositAsset(config: DepositConfig) {
   if (config.source.mode === 'fixed') {
     return config.source.resolveAsset();
   }
-  const sourceAsset = useUserAssetsStore.getState().getHighestValueNativeAsset();
+
+  const sourceAsset = useUserAssetsStore.getState().getHighestValueAsset({
+    nativeAsset: 'required',
+  });
+
   return sourceAsset ? parseAssetAndExtend({ asset: sourceAsset }) : null;
 }

@@ -98,11 +98,12 @@ export function SwapScreen() {
 const useCleanupOnUnmount = () => {
   useEffect(() => {
     return () => {
-      const highestValueEth = userAssetsStore.getState().getHighestValueNativeAsset();
+      const preferredChainId = useSwapsStore.getState().preferredNetwork;
+      const defaultInputAsset = userAssetsStore.getState().getHighestValueAsset({ nativeAsset: 'preferred', preferredChainId });
 
       useSwapsStore.setState(state => {
-        const didInputAssetChange = state.inputAsset?.uniqueId !== highestValueEth?.uniqueId;
-        const inputAsset = didInputAssetChange ? parseAssetAndExtend({ asset: highestValueEth }) : state.inputAsset;
+        const didInputAssetChange = state.inputAsset?.uniqueId !== defaultInputAsset?.uniqueId;
+        const inputAsset = didInputAssetChange ? parseAssetAndExtend({ asset: defaultInputAsset }) : state.inputAsset;
         return {
           inputAsset,
           isSwapsOpen: false,
@@ -131,13 +132,13 @@ const WalletAddressObserver = () => {
   const lastAccountAddress = useRef(accountAddress);
 
   const setNewInputAsset = useCallback(() => {
-    const { filter, getHighestValueNativeAsset, userAssets } = userAssetsStore.getState();
+    const { filter, getHighestValueAsset } = userAssetsStore.getState();
+    const preferredChainId = useSwapsStore.getState().preferredNetwork;
 
     if (filter !== 'all') userAssetsStore.setState({ filter: 'all' });
-    const hasAssets = userAssets.size > 0;
 
     setAsset({
-      asset: hasAssets ? getHighestValueNativeAsset() : null,
+      asset: getHighestValueAsset({ nativeAsset: 'preferred', preferredChainId }),
       didWalletChange: true,
       type: SwapAssetType.inputAsset,
     });
