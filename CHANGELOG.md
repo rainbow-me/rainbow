@@ -21,6 +21,21 @@ and this project adheres to [Semantic Versioning](http://semver.org/)
 
 ### Testing
 
+## [2.0.27](https://github.com/rainbow-me/rainbow/releases/tag/v2.0.27)
+
+### Added
+
+- Add RNBW app icon (https://github.com/rainbow-me/rainbow/pull/7379)
+
+### Changed
+
+- chore: retire native module whitelisting (https://github.com/rainbow-me/rainbow/pull/7357)
+- Bump iOS and Android to v2.0.27 (https://github.com/rainbow-me/rainbow/pull/7352)
+
+### Fixed
+
+- Pinned the webview fork to a specific commit SHA for deterministic installs, replacing a branch-based reference (https://github.com/rainbow-me/rainbow/pull/7314)
+
 ## [2.0.26](https://github.com/rainbow-me/rainbow/releases/tag/v2.0.26)
 
 ### Added
