@@ -201,7 +201,7 @@ export const unlockableAppIcons: Record<UnlockableAppIconKey, UnlockableAppIcon>
     unlockingNFTs: { [Network.base]: [MOG_NFT_ADDRESS] },
   },
   rnbw: {
-    accentColor: '#BA8509',
+    accentColor: '#BF8909',
     displayName: 'Golden $RNBW',
     image: AppIconRnbw,
     unlockingNFTs: { [Network.base]: [RNBW_NFT_ADDRESS] },
