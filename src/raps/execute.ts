@@ -1,15 +1,13 @@
 import { type Signer } from '@ethersproject/abstract-signer';
-import type { StaticJsonRpcProvider } from '@ethersproject/providers';
 import { Wallet } from '@ethersproject/wallet';
 
 import type { LegacyTransactionGasParamAmounts, TransactionGasParamAmounts } from '@/entities/gas';
 import type { NewTransaction } from '@/entities/transactions';
 import { IS_TEST } from '@/env';
-import { trackManagedCallsExecution } from '@/features/delegation/managedExecutionTracking';
-import { relayService } from '@/features/delegation/relayService';
+import { trackManagedExecution } from '@/features/delegation/managedExecutionTracking';
 import { getProvider } from '@/handlers/web3';
 import { ensureError, logger, RainbowError } from '@/logger';
-import { prepareRequiredAtomicCalls } from '@/raps/atomicSwapPreparation';
+import { buildAtomicExecutionRequirements } from '@/raps/atomicSwapPreparation';
 import { resolveManagedExecutionFailure } from '@/raps/managedExecutionFailure';
 import { ChainId } from '@/state/backendNetworks/types';
 import { addNewTransaction } from '@/state/pendingTransactions';
@@ -44,15 +42,12 @@ import { requireAddress } from './validation';
 type AtomicPrepareActionType = Extract<RapActionTypes, 'unlock' | 'swap' | 'crosschainSwap'>;
 type PrepareActionResult = { call: Call | null } | { call: Call; transaction: Omit<NewTransaction, 'hash'> };
 type RapFactoryResult = { actions: RapAction<RapActionTypes>[] };
+type WalletExecuteRapOptions = { preparedCalls?: PreparedCallsExecution | null };
 
 type Executors = {
   action: { [K in RapActionTypes]: (props: ActionProps<K>) => Promise<RapActionResult> };
   prepare: { [K in AtomicPrepareActionType]: (props: PrepareActionProps<K>) => Promise<PrepareActionResult> };
   rapFactory: { [K in RapTypes]: (params: RapSwapActionParameters<K>) => Promise<RapFactoryResult> };
-};
-
-export type WalletExecuteRapOptions = {
-  preparedCalls?: PreparedCallsExecution | null;
 };
 
 const executors: Executors = {
@@ -77,7 +72,7 @@ const executors: Executors = {
   },
 };
 
-export function createSwapRapByType<T extends RapTypes>(type: T, swapParameters: RapSwapActionParameters<T>): Promise<RapFactoryResult> {
+function createSwapRapByType<T extends RapTypes>(type: T, swapParameters: RapSwapActionParameters<T>): Promise<RapFactoryResult> {
   return executors.rapFactory[type](swapParameters);
 }
 
@@ -89,7 +84,7 @@ function runAtomicPrepareAction<T extends AtomicPrepareActionType>(type: T, prop
   return executors.prepare[type](props);
 }
 
-export async function executeAction<T extends RapActionTypes>({
+async function executeAction<T extends RapActionTypes>({
   action,
   wallet,
   rap,
@@ -155,12 +150,12 @@ function getNodeAckDelay(chainId: ChainId): number {
 
 const PERF_TRACKING_EXEMPTIONS: RapTypes[] = ['claimBridge', 'claimClaimable'];
 
-export const walletExecuteRap = async <T extends RapTypes>(
+export async function walletExecuteRap<T extends RapTypes>(
   wallet: Signer,
   type: T,
   parameters: RapSwapActionParameters<T>,
   options?: WalletExecuteRapOptions
-): Promise<{ errorMessage: string | null; hash: string | null; nonce: number | undefined }> => {
+): Promise<{ errorMessage: string | null; hash: string | null; nonce: number | undefined }> {
   // NOTE: We don't care to track claimBridge raps
   const rap = PERF_TRACKING_EXEMPTIONS.includes(type)
     ? await createSwapRapByType(type, parameters)
@@ -219,28 +214,27 @@ export const walletExecuteRap = async <T extends RapTypes>(
 
         const prepared =
           cachedPreparedCalls ??
-          (await prepareRequiredAtomicCalls({
+          (await execute.prepare.calls({
             signer: wallet,
             provider,
             chainId,
             calls,
+            requirements: buildAtomicExecutionRequirements(chainId),
           }));
 
-        const execution = await executeFn(executePreparedAtomicCalls, {
+        const execution = await executeFn(execute.calls, {
           screen: Screens.SWAPS,
           operation: TimeToSignOperation.BroadcastTransaction,
           metadata: { degenMode: swapsStore.getState().degenMode },
-        })({
+        })(prepared, {
           chainId,
-          prepared,
           provider,
-          wallet,
+          signer: wallet,
         });
 
         if (execution.kind === 'calls.managed') {
           const failureMessage = await resolveManagedExecutionFailure({
             executionId: execution.executionId,
-            getStatus: relayService.getStatus,
             status: execution.status,
           });
 
@@ -254,7 +248,7 @@ export const walletExecuteRap = async <T extends RapTypes>(
           }
 
           if (pendingTransaction) {
-            trackManagedCallsExecution({
+            trackManagedExecution({
               address: fromAddress,
               executionId: execution.executionId,
               transaction: {
@@ -368,26 +362,6 @@ export const walletExecuteRap = async <T extends RapTypes>(
     }
   }
   return { errorMessage, hash, nonce };
-};
-
-async function executePreparedAtomicCalls({
-  chainId,
-  prepared,
-  provider,
-  wallet,
-}: {
-  chainId: number;
-  prepared: PreparedCallsExecution;
-  provider: StaticJsonRpcProvider;
-  wallet: Wallet;
-}): Promise<ExecuteCallsResult> {
-  const result = await execute.calls(prepared, {
-    signer: wallet,
-    provider,
-    chainId,
-  });
-
-  return result;
 }
 
 function isAtomicPrepareAction(action: RapAction<RapActionTypes>): action is RapAction<AtomicPrepareActionType> {

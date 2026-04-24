@@ -1,11 +1,10 @@
 import { type BigNumberish } from '@ethersproject/bignumber';
 import { MaxUint256 } from '@ethersproject/constants';
 import { Contract } from '@ethersproject/contracts';
-import { type Block, type StaticJsonRpcProvider } from '@ethersproject/providers';
+import { type StaticJsonRpcProvider } from '@ethersproject/providers';
 
-import type { Asset } from '@/entities/tokens';
 import { IS_TEST } from '@/env';
-import { add, convertRawAmountToDecimalFormat, divide, lessThan, multiply, subtract } from '@/helpers/utilities';
+import { lessThan } from '@/helpers/utilities';
 import { logger, RainbowError } from '@/logger';
 import { getRemoteConfig } from '@/model/remoteConfig';
 import erc20ABI from '@/references/erc20-abi.json';
@@ -14,7 +13,6 @@ import { ChainId } from '@/state/backendNetworks/types';
 import ethereumUtils from '@/utils/ethereumUtils';
 import { getQuoteExecutionDetails, getTargetAddress, type CrosschainQuote, type Quote } from '@rainbow-me/swaps';
 
-import { type Token } from '../entities/tokens';
 import { estimateGasWithPadding, getProvider, toHexNoLeadingZeros } from './web3';
 
 export enum Field {
@@ -84,12 +82,20 @@ export const getDefaultGasLimitForTrade = (tradeDetails: Quote, chainId: ChainId
   return Number(defaultGasLimit || 0) || ethereumUtils.getBasicSwapGasLimit(Number(chainId)) * EXTRA_GAS_PADDING;
 };
 
-export const getStateDiff = async (provider: StaticJsonRpcProvider, tradeDetails: Quote): Promise<any> => {
+export type StateDiff = {
+  [x: string]: {
+    stateDiff: {
+      [x: string]: string;
+    };
+  };
+};
+
+export async function getStateDiff(provider: StaticJsonRpcProvider, tradeDetails: Quote): Promise<StateDiff | undefined> {
   const tokenAddress = tradeDetails.sellTokenAddress;
   const fromAddr = tradeDetails.from;
   const toAddr = getTargetAddress(tradeDetails);
   const tokenContract = new Contract(tokenAddress, erc20ABI, provider);
-  const { number: blockNumber } = await (provider.getBlock as () => Promise<Block>)();
+  const { number: blockNumber } = await provider.getBlock('latest');
 
   // Get data
   const { data } = await tokenContract.populateTransaction.approve(toAddr, MaxUint256.toHexString());
@@ -124,14 +130,14 @@ export const getStateDiff = async (provider: StaticJsonRpcProvider, tradeDetails
   logger.debug('[swap]: Couldnt get stateDiff...', {
     trace,
   });
-};
+}
 
 export const getSwapGasLimitWithFakeApproval = async (
   chainId: number,
   provider: StaticJsonRpcProvider,
   tradeDetails: Quote
 ): Promise<number> => {
-  let stateDiff: any;
+  let stateDiff: StateDiff | undefined;
 
   try {
     stateDiff = await getStateDiff(provider, tradeDetails);
@@ -251,29 +257,4 @@ export const estimateCrosschainSwapGasLimit = async ({
     }
     return fallbackGasLimit;
   }
-};
-
-export const computeSlippageAdjustedAmounts = (trade: any, allowedSlippageInBlips: string): { [field in Field]: BigNumberish } => {
-  let input = trade?.sellAmount;
-  let output = trade?.buyAmount;
-  if (trade?.tradeType === 'exact_input' && trade?.buyAmount) {
-    const product = multiply(trade.buyAmount, allowedSlippageInBlips);
-    const result = divide(product, '10000');
-    output = convertRawAmountToDecimalFormat(subtract(output, result), trade.outputTokenDecimals);
-  } else if (trade?.tradeType === 'exact_output' && trade?.sellAmount) {
-    const product = multiply(trade.sellAmount, allowedSlippageInBlips);
-    const result = divide(product, '10000');
-
-    input = convertRawAmountToDecimalFormat(add(input, result), trade.inputTokenDecimals);
-  }
-
-  const results = {
-    [Field.INPUT]: input,
-    [Field.OUTPUT]: output,
-  };
-  return results;
-};
-
-export const getTokenForCurrency = (currency: Asset, chainId: ChainId): Token => {
-  return { ...currency, chainId: chainId as number } as Token;
 };
