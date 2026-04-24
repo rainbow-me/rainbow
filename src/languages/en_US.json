@@ -2404,7 +2404,8 @@
         "fast": "Fast",
         "network_fee": "Network Fee",
         "normal": "Normal",
-        "slow": "Slow"
+        "slow": "Slow",
+        "gas_sponsored": "Free"
       },
       "loading": "Loading...",
       "modal_types": {
