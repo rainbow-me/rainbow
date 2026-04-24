@@ -1,9 +1,11 @@
 import type { StaticJsonRpcProvider } from '@ethersproject/providers';
-import type { Wallet } from '@ethersproject/wallet';
 import { type Address } from 'viem';
 
 import { isCrosschainQuote } from '@/__swaps__/utils/quotes';
-import { execute, type Call, type PreparedCallsExecution } from '@rainbow-me/delegation';
+import { getRemoteConfig } from '@/model/remoteConfig';
+import { backendNetworksActions } from '@/state/backendNetworks/backendNetworks';
+import { type ChainId } from '@/state/backendNetworks/types';
+import { type Call, type PreparedCallsExecution } from '@rainbow-me/delegation';
 import { type CrosschainQuote, type Quote } from '@rainbow-me/swaps';
 
 import { prepareCrosschainSwapCall } from './actions/crosschainSwap';
@@ -20,40 +22,36 @@ type AtomicSwapQuoteMap = {
   crosschainSwap: CrosschainQuote;
 };
 
-type AtomicSwapPreparationParams<T extends AtomicSwapPreparationType> = {
-  chainId: number;
-  provider: StaticJsonRpcProvider;
-  quote: AtomicSwapQuoteMap[T];
-  signer: Wallet;
-};
-
 // ============ Preparation =================================================== //
 
-export async function prepareAtomicSwapExecution<T extends AtomicSwapPreparationType>({
-  chainId,
-  provider,
-  quote,
-  signer,
-}: AtomicSwapPreparationParams<T>): Promise<PreparedCallsExecution> {
-  const calls = await prepareAtomicSwapCalls({
-    account: quote.from,
-    chainId,
-    provider,
-    quote,
-  });
+/**
+ * Builds the shared SDK execution requirements for atomic swap preparation.
+ *
+ * Requests sponsorship when chain policy allows.
+ */
+export function buildAtomicExecutionRequirements(chainId: ChainId): {
+  atomic: 'required';
+  fees?: { payer: 'sponsor' };
+} {
+  const sponsoredSwapsEnabled = getRemoteConfig().sponsored_swaps_enabled;
+  const shouldRequestSponsorship = sponsoredSwapsEnabled && backendNetworksActions.isSponsorshipEligible(chainId);
 
-  if (!calls.length) {
-    throw new Error('No calls to execute');
-  }
-
-  return prepareRequiredAtomicCalls({
-    calls,
-    chainId,
-    provider,
-    signer,
-  });
+  return {
+    atomic: 'required',
+    fees: shouldRequestSponsorship ? { payer: 'sponsor' } : undefined,
+  };
 }
 
+/**
+ * Returns true when a prepared managed execution is sponsored.
+ */
+export function isPreparedCallsExecutionSponsored(prepared: PreparedCallsExecution | null): boolean {
+  return prepared?.kind === 'calls.managed' && prepared.review.fees.payer === 'sponsor';
+}
+
+/**
+ * Builds the atomic approval + swap call sequence for a swap quote.
+ */
 export async function prepareAtomicSwapCalls<T extends AtomicSwapPreparationType>({
   account,
   chainId,
@@ -65,64 +63,14 @@ export async function prepareAtomicSwapCalls<T extends AtomicSwapPreparationType
   provider: StaticJsonRpcProvider;
   quote: AtomicSwapQuoteMap[T];
 }): Promise<Call[]> {
-  return buildAtomicSwapCalls({
-    account,
-    chainId,
-    provider,
-    quote,
-  });
-}
-
-export function isPreparedCallsExecutionSponsored(prepared: PreparedCallsExecution | null): boolean {
-  return prepared?.kind === 'calls.managed' && prepared.review.fees.payer === 'sponsor';
-}
-
-export function prepareRequiredAtomicCalls({
-  calls,
-  chainId,
-  provider,
-  signer,
-}: {
-  calls: readonly Call[];
-  chainId: number;
-  provider: StaticJsonRpcProvider;
-  signer: Wallet;
-}): Promise<PreparedCallsExecution> {
-  return execute.prepare.calls({
-    signer,
-    provider,
-    chainId,
-    calls,
-    requirements: {
-      atomic: 'required',
-      fees: { payer: 'sponsor' },
-    },
-  });
-}
-
-// ============ Local Helpers ================================================= //
-
-async function buildAtomicSwapCalls<T extends AtomicSwapPreparationType>({
-  account,
-  chainId,
-  provider,
-  quote,
-}: {
-  account: Address;
-  chainId: number;
-  provider: StaticJsonRpcProvider;
-  quote: AtomicSwapQuoteMap[T];
-}): Promise<Call[]> {
   const calls: Call[] = [];
-  const approval = await resolveApprovalRequirement({
-    chainId,
-    quote,
-    sellAmount: quote.sellAmount.toString(),
-  });
+  const sellAmount = quote.sellAmount.toString();
+
+  const approval = await resolveApprovalRequirement({ chainId, quote, sellAmount });
 
   if (approval.requiresApprove && approval.allowanceTargetAddress) {
     const approvalCall = await prepareApprovalCall({
-      amount: quote.sellAmount.toString(),
+      amount: sellAmount,
       chainId,
       owner: account,
       spender: approval.allowanceTargetAddress,
@@ -142,13 +90,11 @@ async function buildAtomicSwapCalls<T extends AtomicSwapPreparationType>({
   return calls;
 }
 
+// ============ Local Helpers ================================================= //
+
 async function buildSwapCall({ provider, quote }: { provider: StaticJsonRpcProvider; quote: Quote | CrosschainQuote }): Promise<Call> {
   if (isCrosschainQuote(quote)) {
     return prepareCrosschainSwapCall({ quote });
   }
-
-  return prepareSwapCall({
-    provider,
-    quote,
-  });
+  return prepareSwapCall({ provider, quote });
 }

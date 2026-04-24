@@ -23,7 +23,7 @@ const WILL_NOT_DELEGATE: WillExecuteDelegationResult = Object.freeze({
  * Returns true when Rainbow can execute delegation-backed flows for `address`.
  */
 export function canUseDelegatedExecution(address: Address): boolean {
-  if (!isDelegationEnabled()) return false;
+  if (!isDelegationEnabled() || !delegation.isEnabled(address)) return false;
 
   return canUseDelegatedWallet(getWalletWithAccount(address));
 }

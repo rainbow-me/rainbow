@@ -16,14 +16,14 @@ import { type Address } from 'viem';
 
 import { NavigationSteps, useSwapContext } from '@/__swaps__/screens/Swap/providers/swap-provider';
 import { SPRING_CONFIGS } from '@/components/animations/animationConfigs';
-import useExperimentalFlag, { ATOMIC_SWAPS, getExperimentalFlag, RNBW_REWARDS } from '@/config/experimentalHooks';
+import useExperimentalFlag, { RNBW_REWARDS } from '@/config/experimentalHooks';
 import { Box, globalColors, Separator, Text, useColorMode } from '@/design-system';
+import { useWillExecuteDelegation } from '@/features/delegation/willDelegate';
 import { opacity } from '@/framework/ui/utils/opacity';
 import { convertRawAmountToDecimalFormat, truncateToDecimalsWithThreshold } from '@/helpers/utilities';
-import { useWillExecuteDelegation } from '@/hooks/useWillExecuteDelegation';
 import * as i18n from '@/languages';
 import { logger, RainbowError } from '@/logger';
-import { getRemoteConfig, useRemoteConfig } from '@/model/remoteConfig';
+import { useRemoteConfig } from '@/model/remoteConfig';
 import { useNavigation } from '@/navigation/Navigation';
 import Routes from '@/navigation/routesNames';
 import { type ChainId } from '@/state/backendNetworks/types';
@@ -214,8 +214,7 @@ const DelegationCallout = memo(function DelegationCallout() {
 });
 
 function WillDelegate(params: { address: Address; chainId: ChainId }) {
-  const atomicSwapsEnabled = getExperimentalFlag(ATOMIC_SWAPS) || getRemoteConfig().atomic_swaps_enabled;
-  const willDelegate = useWillExecuteDelegation(params.address, params.chainId) && atomicSwapsEnabled;
+  const willDelegate = useWillExecuteDelegation(params.address, params.chainId);
   if (!willDelegate) return null;
 
   return (

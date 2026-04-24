@@ -36,9 +36,10 @@ import { getInputValuesForSliderPositionWorklet, updateInputValuesAfterFlip } fr
 import { clamp, getDefaultSlippageWorklet, parseAssetAndExtend, trimTrailingZeros } from '@/__swaps__/utils/swaps';
 import { trackSwapEvent } from '@/__swaps__/utils/trackSwapEvent';
 import { analytics } from '@/analytics';
-import { ATOMIC_SWAPS, getExperimentalFlag } from '@/config/experimentalHooks';
 import type { LegacyTransactionGasParamAmounts, TransactionGasParamAmounts } from '@/entities/gas';
 import { IS_IOS } from '@/env';
+import { useSponsoredSwapStore } from '@/features/delegation/sponsoredSwapStore';
+import { supportsDelegatedExecution } from '@/features/delegation/willDelegate';
 import { divWorklet, equalWorklet, lessThanOrEqualToWorklet, mulWorklet, sumWorklet } from '@/framework/core/safeMath';
 import { LedgerSigner } from '@/handlers/LedgerSigner';
 import { getProvider } from '@/handlers/web3';
@@ -272,6 +273,12 @@ export const SwapProvider = ({ children }: SwapProviderProps) => {
       }
 
       const degenMode = swapsStore.getState().degenMode;
+      const preparedSwapPromise = connectedToAnvil
+        ? null
+        : useSponsoredSwapStore
+            .getState()
+            .getPreparedSwap()
+            .catch(() => null);
 
       const wallet = await executeFn(loadWallet, {
         screen: Screens.SWAPS,
@@ -286,7 +293,6 @@ export const SwapProvider = ({ children }: SwapProviderProps) => {
           metadata: { degenMode },
         },
       });
-      const isHardwareWallet = wallet instanceof LedgerSigner;
 
       if (!wallet) {
         isSwapping.value = false;
@@ -313,24 +319,36 @@ export const SwapProvider = ({ children }: SwapProviderProps) => {
         metadata: { degenMode, chainId },
       })({ address: parameters.quote.from, chainId });
 
-      // Flag if atomic swaps are enabled and supported by the wallet
-      // Upon execution, we do the same for delegation specifically
-      const atomicSwapsEnabled = getRemoteConfig().atomic_swaps_enabled || getExperimentalFlag(ATOMIC_SWAPS);
+      const canExecuteDelegatedSwap =
+        !connectedToAnvil &&
+        (await supportsDelegatedExecution({
+          address: parameters.quote.from,
+          chainId: parameters.chainId,
+        }));
+
+      const preparedCalls = canExecuteDelegatedSwap ? await preparedSwapPromise : null;
 
       const { errorMessage } = await executeFn(walletExecuteRap, {
         screen: Screens.SWAPS,
         operation: TimeToSignOperation.SignTransaction,
         metadata: { degenMode },
-      })(wallet, type, {
-        ...parameters,
-        nonce,
-        chainId,
-        gasParams,
-        gasFeeParamsBySpeed,
-        atomic: atomicSwapsEnabled && !isHardwareWallet,
-      });
+      })(
+        wallet,
+        type,
+        {
+          ...parameters,
+          nonce,
+          chainId,
+          gasParams,
+          gasFeeParamsBySpeed,
+          atomic: canExecuteDelegatedSwap,
+        },
+        { preparedCalls }
+      );
 
       isSwapping.value = false;
+
+      const isHardwareWallet = wallet instanceof LedgerSigner;
 
       if (errorMessage) {
         runOnUI(() => {
@@ -440,6 +458,7 @@ export const SwapProvider = ({ children }: SwapProviderProps) => {
 
     runOnJS(getNonceAndPerformSwap)({ type, parameters });
   };
+
   const swapInfo = useDerivedValue(() => {
     const areAllInputsZero =
       equalWorklet(inputValues.value.inputAmount, '0') &&
