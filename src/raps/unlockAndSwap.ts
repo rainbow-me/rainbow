@@ -1,7 +1,8 @@
 import { isAllowedTargetContract } from '@rainbow-me/swaps';
+
+import { resolveApprovalRequirement } from './approval';
 import { createNewAction, createNewRap } from './common';
 import type { RapAction, RapSwapActionParameters } from './references';
-import { resolveApprovalRequirement } from './approval';
 
 export const createUnlockAndSwapRap = async (swapParameters: RapSwapActionParameters<'swap'>) => {
   let actions: RapAction<'swap' | 'unlock'>[] = [];

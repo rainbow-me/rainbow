@@ -1,11 +1,13 @@
 import { useCallback } from 'react';
+
 import { runOnJS, runOnUI, useAnimatedReaction, useDerivedValue, useSharedValue, withSpring } from 'react-native-reanimated';
 import { useDebouncedCallback } from 'use-debounce';
+
+import { type ExtendedAnimatedAssetWithColors } from '@/__swaps__/types/assets';
+import { addCommasToNumber } from '@/__swaps__/utils/swaps';
 import { SPRING_CONFIGS } from '@/components/animations/animationConfigs';
 import { type NumberPadField } from '@/features/perps/components/NumberPad/NumberPadKey';
 import { SLIDER_MAX } from '@/features/perps/components/Slider/Slider';
-import { handleSignificantDecimalsWorklet } from '@/helpers/utilities';
-import { useStableValue } from '@/hooks/useStableValue';
 import {
   divWorklet,
   equalWorklet,
@@ -14,24 +16,25 @@ import {
   toFixedWorklet,
   trimTrailingZeros,
 } from '@/framework/core/safeMath';
+import { handleSignificantDecimalsWorklet } from '@/helpers/utilities';
+import { useStableValue } from '@/hooks/useStableValue';
 import { useListen } from '@/state/internal/hooks/useListen';
 import { useStoreSharedValue } from '@/state/internal/hooks/useStoreSharedValue';
 import { useWalletsStore } from '@/state/wallets/walletsStore';
-import { type ExtendedAnimatedAssetWithColors } from '@/__swaps__/types/assets';
-import { addCommasToNumber } from '@/__swaps__/utils/swaps';
 import { time } from '@/utils/time';
 import { sanitizeAmount } from '@/worklets/strings';
+
 import {
   type AmountStoreType,
+  type DepositConfig,
   type DepositGasStoresType,
   type DepositStoreType,
   type InputMethod,
   type InteractionSource,
   type MinifiedAsset,
-  type DepositConfig,
 } from '../types';
-import { resolveInitialDepositAsset } from '../utils/sourceAsset';
 import { amountFromSliderProgress, sliderProgressFromAmount } from '../utils/sliderWorklets';
+import { resolveInitialDepositAsset } from '../utils/sourceAsset';
 
 // ============ Controller Hook =============================================== //
 

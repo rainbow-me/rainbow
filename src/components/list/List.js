@@ -1,8 +1,10 @@
+import React, { useContext } from 'react';
+import { FlatList } from 'react-native';
+
 import { BottomSheetFlatList } from '@gorhom/bottom-sheet';
 import { BottomSheetContext } from '@gorhom/bottom-sheet/src/contexts/external';
 import { PropTypes } from 'prop-types';
-import React, { useContext } from 'react';
-import { FlatList } from 'react-native';
+
 import ListItem from './ListItem';
 import ListItemDivider from './ListItemDivider';
 

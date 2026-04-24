@@ -1,7 +1,8 @@
-import { useNavigation } from '@/navigation/Navigation';
 import React, { useCallback } from 'react';
+
 import ButtonPressAnimation from '@/components/animations/ButtonPressAnimation';
 import { Text } from '@/design-system';
+import { useNavigation } from '@/navigation/Navigation';
 import Routes from '@/navigation/routesNames';
 import { openInBrowser } from '@/utils/openInBrowser';
 

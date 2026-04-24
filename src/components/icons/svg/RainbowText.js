@@ -1,6 +1,8 @@
-import PropTypes from 'prop-types';
 import React from 'react';
+
+import PropTypes from 'prop-types';
 import { Path } from 'react-native-svg';
+
 import Svg from '../Svg';
 
 const RainbowText = ({ colors, color = colors.black, ...props }) => (

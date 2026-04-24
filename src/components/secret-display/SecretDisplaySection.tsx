@@ -1,33 +1,35 @@
+import React, { useCallback, useEffect, useState, type ReactNode } from 'react';
+import { InteractionManager } from 'react-native';
+
+import { useRoute, type RouteProp } from '@react-navigation/native';
+import { type Source } from 'react-native-fast-image';
+
 import ManuallyBackedUpIcon from '@/assets/ManuallyBackedUp.png';
+import { SecretDisplayError } from '@/components/secret-display/SecretDisplayError';
+import { SecretDisplayStates, type SecretDisplayStatesType } from '@/components/secret-display/states';
 import { Bleed, Box, Inline, Inset, Stack, Text } from '@/design-system';
 import { IS_ANDROID } from '@/env';
+import WalletBackupTypes from '@/helpers/walletBackupTypes';
 import WalletTypes, { type EthereumWalletType } from '@/helpers/walletTypes';
 import useDimensions from '@/hooks/useDimensions';
 import useWalletManualBackup from '@/hooks/useWalletManualBackup';
 import * as i18n from '@/languages';
 import { logger, RainbowError } from '@/logger';
 import { createdWithBiometricError, identifyWalletType, loadPrivateKey, loadSeedPhraseAndMigrateIfNeeded } from '@/model/wallet';
-import { useTheme } from '@/theme/ThemeContext';
-import { type RouteProp, useRoute } from '@react-navigation/native';
-import React, { type ReactNode, useCallback, useEffect, useState } from 'react';
-import ActivityIndicator from '../ActivityIndicator';
-import Spinner from '../Spinner';
-import { CopyFloatingEmojis } from '../floating-emojis';
-import SecretDisplayCard from './SecretDisplayCard';
-
-import { SecretDisplayError } from '@/components/secret-display/SecretDisplayError';
-import { SecretDisplayStates, type SecretDisplayStatesType } from '@/components/secret-display/states';
-import WalletBackupTypes from '@/helpers/walletBackupTypes';
-import { useNavigation } from '@/navigation/Navigation';
 import { sharedCoolModalTopOffset } from '@/navigation/config';
+import { useNavigation } from '@/navigation/Navigation';
 import Routes from '@/navigation/routesNames';
 import { type RootStackParamList } from '@/navigation/types';
 import { backupsStore } from '@/state/backups/backups';
 import { useSelectedWallet, useWallets } from '@/state/wallets/walletsStore';
-import { InteractionManager } from 'react-native';
-import { type Source } from 'react-native-fast-image';
+import { useTheme } from '@/theme/ThemeContext';
+
+import ActivityIndicator from '../ActivityIndicator';
+import { CopyFloatingEmojis } from '../floating-emojis';
 import { ImgixImage } from '../images';
 import { SheetActionButton } from '../sheet';
+import Spinner from '../Spinner';
+import SecretDisplayCard from './SecretDisplayCard';
 
 const MIN_HEIGHT = 740;
 

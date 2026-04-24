@@ -1,19 +1,20 @@
 import React, { memo } from 'react';
-import { Box, Stack, Text, TextIcon, TextShadow, useColorMode } from '@/design-system';
-import { USDC_ICON_URL } from '@/features/perps/constants';
-import { useHyperliquidAccountStore } from '@/features/perps/stores/hyperliquidAccountStore';
-import ButtonPressAnimation from '@/components/animations/ButtonPressAnimation';
-import { usePerpsAccentColorContext } from '@/features/perps/context/PerpsAccentColorContext';
-import Navigation from '@/navigation/Navigation';
-import Routes from '@/navigation/routesNames';
 import { View } from 'react-native';
-import { HyperliquidButton } from '@/features/perps/components/HyperliquidButton';
+
+import ButtonPressAnimation from '@/components/animations/ButtonPressAnimation';
 import { ImgixImage } from '@/components/images';
-import { THICKER_BORDER_WIDTH } from '@/styles/constants';
-import { useUserAssetsStore } from '@/state/assets/userAssets';
+import { Box, Stack, Text, TextIcon, TextShadow, useColorMode } from '@/design-system';
+import { HyperliquidButton } from '@/features/perps/components/HyperliquidButton';
+import { USDC_ICON_URL } from '@/features/perps/constants';
+import { usePerpsAccentColorContext } from '@/features/perps/context/PerpsAccentColorContext';
+import { useHyperliquidAccountStore } from '@/features/perps/stores/hyperliquidAccountStore';
 import { formatCurrency } from '@/features/perps/utils/formatCurrency';
 import * as i18n from '@/languages';
+import Navigation from '@/navigation/Navigation';
+import Routes from '@/navigation/routesNames';
+import { useUserAssetsStore } from '@/state/assets/userAssets';
 import { checkIfReadOnlyWallet, useWalletsStore } from '@/state/wallets/walletsStore';
+import { THICKER_BORDER_WIDTH } from '@/styles/constants';
 
 export const PerpsAccountBalanceCard = memo(function PerpsAccountBalanceCard() {
   const { isDarkMode } = useColorMode();

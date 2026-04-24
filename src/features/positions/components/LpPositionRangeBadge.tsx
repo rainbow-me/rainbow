@@ -1,6 +1,8 @@
 import React from 'react';
 import { StyleSheet } from 'react-native';
+
 import { LinearGradient } from 'expo-linear-gradient';
+
 import { Box } from '@/design-system';
 import { IS_IOS } from '@/env';
 

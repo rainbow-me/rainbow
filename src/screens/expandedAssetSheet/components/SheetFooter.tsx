@@ -1,19 +1,22 @@
-import c from 'chroma-js';
 import React, { useMemo } from 'react';
-import { EasingGradient } from '@/components/easing-gradient/EasingGradient';
-import { Box, ColorModeProvider, Column, Columns, useColorMode } from '@/design-system';
-import { useExpandedAssetSheetContext } from '../context/ExpandedAssetSheetContext';
-import * as i18n from '@/languages';
-import { SwapAssetType } from '@/__swaps__/types/swap';
-import { BuyActionButton, SendActionButton, SwapActionButton } from '@/components/sheet';
-import { useRemoteConfig } from '@/model/remoteConfig';
-import { useBackendNetworksStore } from '@/state/backendNetworks/backendNetworks';
-import { AssetContextMenu } from './AssetContextMenu';
-import { isTestnetChain } from '@/handlers/web3';
-import { useUserAssetsStore } from '@/state/assets/userAssets';
-import { type ColorMode, globalColors } from '@/design-system/color/palettes';
-import type { ParsedAddressAsset } from '@/entities/tokens';
+
+import c from 'chroma-js';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
+
+import { SwapAssetType } from '@/__swaps__/types/swap';
+import { EasingGradient } from '@/components/easing-gradient/EasingGradient';
+import { BuyActionButton, SendActionButton, SwapActionButton } from '@/components/sheet';
+import { Box, ColorModeProvider, Column, Columns, useColorMode } from '@/design-system';
+import { globalColors, type ColorMode } from '@/design-system/color/palettes';
+import type { ParsedAddressAsset } from '@/entities/tokens';
+import { isTestnetChain } from '@/handlers/web3';
+import * as i18n from '@/languages';
+import { useRemoteConfig } from '@/model/remoteConfig';
+import { useUserAssetsStore } from '@/state/assets/userAssets';
+import { useBackendNetworksStore } from '@/state/backendNetworks/backendNetworks';
+
+import { useExpandedAssetSheetContext } from '../context/ExpandedAssetSheetContext';
+import { AssetContextMenu } from './AssetContextMenu';
 
 // 32px for the easing gradient + 48px for the buttons + 12px for the extra bottom padding away from the area inset
 export const SHEET_FOOTER_HEIGHT = 32 + 48 + 12;

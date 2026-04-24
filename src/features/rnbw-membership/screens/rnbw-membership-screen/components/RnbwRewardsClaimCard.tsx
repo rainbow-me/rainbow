@@ -1,6 +1,7 @@
 import { memo } from 'react';
-import { useRewardsBalanceStore } from '@/features/rnbw-rewards/stores/rewardsBalanceStore';
+
 import { RnbwClaimCard } from '@/features/rnbw-membership/screens/rnbw-membership-screen/components/RnbwClaimCard';
+import { useRewardsBalanceStore } from '@/features/rnbw-rewards/stores/rewardsBalanceStore';
 import * as i18n from '@/languages';
 import Navigation from '@/navigation/Navigation';
 import Routes from '@/navigation/routesNames';

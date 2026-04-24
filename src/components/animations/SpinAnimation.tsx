@@ -1,5 +1,6 @@
-import React, { type PropsWithChildren, useLayoutEffect } from 'react';
+import React, { useLayoutEffect, type PropsWithChildren } from 'react';
 import { type StyleProp, type ViewStyle } from 'react-native';
+
 import Animated, { Easing, useAnimatedStyle, useSharedValue, withRepeat, withTiming } from 'react-native-reanimated';
 
 type Props = PropsWithChildren<{

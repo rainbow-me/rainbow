@@ -1,9 +1,12 @@
 import React from 'react';
 import { StyleSheet, View } from 'react-native';
-import Animated, { type AnimatedStyle, useAnimatedStyle } from 'react-native-reanimated';
+
+import Animated, { useAnimatedStyle, type AnimatedStyle } from 'react-native-reanimated';
+
+import { clamp } from '@/__swaps__/utils/swaps';
 import { globalColors, useColorMode } from '@/design-system';
 import { IS_IOS } from '@/env';
-import { clamp } from '@/__swaps__/utils/swaps';
+
 import { useBrowserContext } from './BrowserContext';
 import { RAINBOW_HOME } from './constants';
 import { TabViewGestureStates } from './types';

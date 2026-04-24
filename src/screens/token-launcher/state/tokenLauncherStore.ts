@@ -1,13 +1,30 @@
-import { abbreviateNumber, convertAmountToNativeDisplay, convertNumberToString } from '@/helpers/utilities';
-import { trimTrailingZeros, truncateToDecimals } from '@/framework/core/safeMath';
-import { createRainbowStore } from '@/state/internal/createRainbowStore';
-import { DEFAULT_CHAIN_ID, DEFAULT_TOTAL_SUPPLY, MAX_TOTAL_SUPPLY } from '../constants';
-import { makeMutable, runOnUI, type SharedValue, withTiming } from 'react-native-reanimated';
+import { Alert } from 'react-native';
+
+import { makeMutable, runOnUI, withTiming, type SharedValue } from 'react-native-reanimated';
+import { parseEther, type Account, type Chain, type PublicClient, type Transport, type WalletClient } from 'viem';
+
+import { analytics } from '@/analytics';
 import { TIMING_CONFIGS } from '@/components/animations/animationConfigs';
-import { calculateTokenomics } from '../helpers/calculateTokenomics';
-import store from '@/redux/store';
-import { type Network } from '@/state/backendNetworks/types';
+import { TransactionStatus, type NewTransaction } from '@/entities/transactions/transaction';
+import { IS_INTERNAL } from '@/env';
+import { trimTrailingZeros, truncateToDecimals } from '@/framework/core/safeMath';
 import { formatCurrency } from '@/helpers/strings';
+import { abbreviateNumber, convertAmountToNativeDisplay, convertNumberToString } from '@/helpers/utilities';
+import { calculateAndCacheDominantColor } from '@/hooks/usePersistentDominantColorFromImage';
+import { TokenLauncherSDK } from '@/hooks/useTokenLauncher';
+import * as i18n from '@/languages';
+import { logger, RainbowError } from '@/logger';
+import store from '@/redux/store';
+import { type ParsedAsset } from '@/resources/assets/types';
+import { useBackendNetworksStore } from '@/state/backendNetworks/backendNetworks';
+import { type Network } from '@/state/backendNetworks/types';
+import { createRainbowStore } from '@/state/internal/createRainbowStore';
+import { addNewTransaction } from '@/state/pendingTransactions';
+import { getUniqueId } from '@/utils/ethereumUtils';
+import { Protocol, TokenLauncherSDKError, type LaunchTokenResponse } from '@rainbow-me/token-launcher';
+
+import { DEFAULT_CHAIN_ID, DEFAULT_TOTAL_SUPPLY, MAX_TOTAL_SUPPLY } from '../constants';
+import { calculateTokenomics } from '../helpers/calculateTokenomics';
 import {
   formatLinkInputToUrl,
   validateLinkWorklet,
@@ -15,23 +32,9 @@ import {
   validateSymbolWorklet,
   validateTotalSupplyWorklet,
 } from '../helpers/inputValidators';
-import * as i18n from '@/languages';
-import { TokenLauncherSDK } from '@/hooks/useTokenLauncher';
-import { type LaunchTokenResponse, Protocol, TokenLauncherSDKError } from '@rainbow-me/token-launcher';
-import { Alert } from 'react-native';
-import { logger, RainbowError } from '@/logger';
-import { analytics } from '@/analytics';
-import { IS_INTERNAL } from '@/env';
+import { tokenLaunchErrorToErrorMessage } from '../helpers/tokenLaunchErrorToErrorMessage';
 import { type Link, type LinkType } from '../types';
 import { useSuperTokenStore } from './rainbowSuperTokenStore';
-import { calculateAndCacheDominantColor } from '@/hooks/usePersistentDominantColorFromImage';
-import { addNewTransaction } from '@/state/pendingTransactions';
-import { type NewTransaction, TransactionStatus } from '@/entities/transactions/transaction';
-import { useBackendNetworksStore } from '@/state/backendNetworks/backendNetworks';
-import { getUniqueId } from '@/utils/ethereumUtils';
-import { type ParsedAsset } from '@/resources/assets/types';
-import { tokenLaunchErrorToErrorMessage } from '../helpers/tokenLaunchErrorToErrorMessage';
-import { parseEther, type Account, type Chain, type PublicClient, type Transport, type WalletClient } from 'viem';
 
 // TODO: Remove this — temporary option for testing
 const REQUIRE_TOKEN_LOGO = !IS_INTERNAL;

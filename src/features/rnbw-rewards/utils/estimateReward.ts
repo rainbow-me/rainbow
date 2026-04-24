@@ -1,5 +1,5 @@
-import { type CrosschainQuote, getTargetAddress, type Quote } from '@rainbow-me/swaps';
 import { getPlatformClient } from '@/resources/platform/client';
+import { getTargetAddress, type CrosschainQuote, type Quote } from '@rainbow-me/swaps';
 
 type EstimateRewardToken = {
   address: string;
@@ -8,6 +8,7 @@ type EstimateRewardToken = {
 
 type EstimateRewardPayload = {
   currency: string;
+  walletAddress: string;
   swap: {
     feeRaw: string;
     feeToken: EstimateRewardToken;
@@ -35,9 +36,11 @@ type EstimateRewardResponse = {
 export function buildEstimateRewardPayload({
   quote,
   currency,
+  walletAddress,
 }: {
   quote: Quote | CrosschainQuote;
   currency: string;
+  walletAddress?: string | null;
 }): EstimateRewardPayload | null {
   const targetRouter = getTargetAddress(quote);
 
@@ -48,7 +51,7 @@ export function buildEstimateRewardPayload({
   const sellToken = quote.sellTokenAsset;
   const buyToken = quote.buyTokenAsset;
 
-  if (!feeTokenAddress || !feeTokenChainId || !targetRouter || !sellToken || !buyToken) return null;
+  if (!walletAddress || !feeTokenAddress || !feeTokenChainId || !targetRouter || !sellToken || !buyToken) return null;
 
   const inputToken = {
     address: quote.sellTokenAddress,
@@ -64,6 +67,7 @@ export function buildEstimateRewardPayload({
   };
   return {
     currency,
+    walletAddress,
     swap: {
       feeRaw: String(quote.fee),
       feeToken,

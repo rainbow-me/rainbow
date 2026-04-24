@@ -1,5 +1,6 @@
-import { BASE_TAB_BAR_HEIGHT } from '@/navigation/constants';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
+
+import { BASE_TAB_BAR_HEIGHT } from '@/navigation/constants';
 
 export const useTabBarOffset = () => {
   const { bottom: bottomInset } = useSafeAreaInsets();

@@ -1,25 +1,28 @@
-import { useIsFocused } from '@react-navigation/native';
 import React, { memo, useEffect } from 'react';
 import { Keyboard } from 'react-native';
+
+import { useIsFocused } from '@react-navigation/native';
 import Animated, { useAnimatedScrollHandler, useSharedValue } from 'react-native-reanimated';
-import { DiscoverScreenContent } from '@/components/Discover/DiscoverScreenContent';
-import DiscoverScreenProvider, { useDiscoverScreenContext } from '@/components/Discover/DiscoverScreenContext';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
+
+import { useDiscoverSearchQueryStore } from '@/__swaps__/screens/Swap/resources/search/searchV2';
 import ButtonPressAnimation from '@/components/animations/ButtonPressAnimation';
 import { ContactAvatar } from '@/components/contacts';
 import ImageAvatar from '@/components/contacts/ImageAvatar';
+import { DiscoverScreenContent } from '@/components/Discover/DiscoverScreenContent';
+import DiscoverScreenProvider, { useDiscoverScreenContext } from '@/components/Discover/DiscoverScreenContext';
+import { DiscoverSearchBar } from '@/components/Discover/DiscoverSearchBar';
 import { Navbar } from '@/components/navbar/Navbar';
 import { Box, globalColors, TextIcon, useColorMode } from '@/design-system';
 import { IS_IOS } from '@/env';
 import * as i18n from '@/languages';
-import { useDiscoverSearchQueryStore } from '@/__swaps__/screens/Swap/resources/search/searchV2';
 import Navigation from '@/navigation/Navigation';
 import Routes from '@/navigation/routesNames';
-import safeAreaInsetValues from '@/utils/safeAreaInsetValues';
-import { PullToRefresh } from './Airdrops/AirdropsSheet';
-import { DiscoverSearchBar } from '@/components/Discover/DiscoverSearchBar';
-import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useAccountProfileInfo } from '@/state/wallets/walletsStore';
 import { THICK_BORDER_WIDTH } from '@/styles/constants';
+import safeAreaInsetValues from '@/utils/safeAreaInsetValues';
+
+import { PullToRefresh } from './Airdrops/AirdropsSheet';
 
 const Content = () => {
   const { isDarkMode } = useColorMode();

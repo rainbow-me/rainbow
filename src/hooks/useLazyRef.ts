@@ -1,4 +1,4 @@
-import { type MutableRefObject, useRef } from 'react';
+import { useRef, type MutableRefObject } from 'react';
 
 const UNINITIALIZED = Symbol();
 

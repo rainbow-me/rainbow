@@ -1,21 +1,24 @@
-import { SimpleSheet } from '@/components/sheet/SimpleSheet';
-import { useNavigation } from '@/navigation/Navigation';
 import React, { useCallback, useEffect } from 'react';
 import { View } from 'react-native';
-import { AccentColorProvider, Box, Inset, Stack, Text, useBackgroundColor } from '@/design-system';
-import { unlockableAppIcons } from '../models/appIcons';
-import { ImgixImage } from '@/components/images';
+
+import { useRoute, type RouteProp } from '@react-navigation/native';
 import { type Source } from 'react-native-fast-image';
-import { type RouteProp, useRoute } from '@react-navigation/native';
-import { useTheme } from '@/theme/ThemeContext';
-import * as i18n from '@/languages';
-import { delay } from '@/utils/delay';
-import Routes from '@/navigation/routesNames';
-import { SheetActionButton } from '@/components/sheet';
+
 import { analytics } from '@/analytics';
-import { SettingsPages } from '@/screens/SettingsSheet/SettingsPages';
-import { type RootStackParamList } from '@/navigation/types';
+import { ImgixImage } from '@/components/images';
+import { SheetActionButton } from '@/components/sheet';
+import { SimpleSheet } from '@/components/sheet/SimpleSheet';
+import { AccentColorProvider, Box, Inset, Stack, Text, useBackgroundColor } from '@/design-system';
 import { opacity } from '@/framework/ui/utils/opacity';
+import * as i18n from '@/languages';
+import { useNavigation } from '@/navigation/Navigation';
+import Routes from '@/navigation/routesNames';
+import { type RootStackParamList } from '@/navigation/types';
+import { SettingsPages } from '@/screens/SettingsSheet/SettingsPages';
+import { useTheme } from '@/theme/ThemeContext';
+import { delay } from '@/utils/delay';
+
+import { unlockableAppIcons } from '../models/appIcons';
 
 const APP_ICON_SIZE = 64;
 

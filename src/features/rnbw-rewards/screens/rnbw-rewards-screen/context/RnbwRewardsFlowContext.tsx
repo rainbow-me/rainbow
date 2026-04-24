@@ -1,12 +1,14 @@
-import { type RnbwRewardsScene, RnbwRewardsScenes } from '@/features/rnbw-rewards/screens/rnbw-rewards-screen/constants/rewardsScenes';
+import { createContext, useContext, useEffect, type ReactNode } from 'react';
+
+import { useAnimatedScrollHandler, useSharedValue, type SharedValue } from 'react-native-reanimated';
+
+import { RnbwRewardsScenes, type RnbwRewardsScene } from '@/features/rnbw-rewards/screens/rnbw-rewards-screen/constants/rewardsScenes';
 import { useHasCompletedAirdropFlow } from '@/features/rnbw-rewards/screens/rnbw-rewards-screen/hooks/useHasCompletedAirdropFlow';
+import { useAirdropBalanceStore } from '@/features/rnbw-rewards/stores/airdropBalanceStore';
 import { rewardsFlowActions, useRewardsFlowStore } from '@/features/rnbw-rewards/stores/rewardsFlowStore';
 import usePrevious from '@/hooks/usePrevious';
-import { useAccountAddress } from '@/state/wallets/walletsStore';
-import { createContext, type ReactNode, useContext, useEffect } from 'react';
-import { type SharedValue, useAnimatedScrollHandler, useSharedValue } from 'react-native-reanimated';
-import { useAirdropBalanceStore } from '@/features/rnbw-rewards/stores/airdropBalanceStore';
 import { useStoreSharedValue } from '@/state/internal/hooks/useStoreSharedValue';
+import { useAccountAddress } from '@/state/wallets/walletsStore';
 
 type RnbwRewardsFlowContextType = {
   activeScene: SharedValue<RnbwRewardsScene>;

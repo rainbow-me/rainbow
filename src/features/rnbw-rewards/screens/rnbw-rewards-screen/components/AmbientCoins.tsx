@@ -1,11 +1,12 @@
 import { memo, useCallback, useEffect, useMemo, useState } from 'react';
-import { StyleSheet, useWindowDimensions, View, Image } from 'react-native';
+import { Image, StyleSheet, useWindowDimensions, View } from 'react-native';
+
+import { BlurView } from 'react-native-blur-view';
 import Animated, {
   cancelAnimation,
   Easing,
   interpolate,
   runOnJS,
-  type SharedValue,
   useAnimatedReaction,
   useAnimatedStyle,
   useDerivedValue,
@@ -13,14 +14,15 @@ import Animated, {
   withDelay,
   withRepeat,
   withTiming,
+  type SharedValue,
 } from 'react-native-reanimated';
-import { BlurView } from 'react-native-blur-view';
+
 import rnbwCoin from '@/assets/rnbw.png';
-import useTimeout from '@/hooks/useTimeout';
-import { time } from '@/utils/time';
+import { getCoinBottomPosition, getCoinCenterPosition } from '@/features/rnbw-rewards/screens/rnbw-rewards-screen/components/RnbwHeroCoin';
 import { RnbwRewardsScenes } from '@/features/rnbw-rewards/screens/rnbw-rewards-screen/constants/rewardsScenes';
 import { useRnbwRewardsFlowContext } from '@/features/rnbw-rewards/screens/rnbw-rewards-screen/context/RnbwRewardsFlowContext';
-import { getCoinBottomPosition, getCoinCenterPosition } from '@/features/rnbw-rewards/screens/rnbw-rewards-screen/components/RnbwHeroCoin';
+import useTimeout from '@/hooks/useTimeout';
+import { time } from '@/utils/time';
 
 // Original design dimensions
 const DESIGN_WIDTH = 393;

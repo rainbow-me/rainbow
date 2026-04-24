@@ -1,4 +1,5 @@
 import { initialWindowMetrics } from 'react-native-safe-area-context';
+
 import { DEVICE_WIDTH } from '@/utils/deviceUtils';
 
 export const TAB_BAR_HORIZONTAL_INSET = (initialWindowMetrics?.insets.bottom ?? 0) + 6;

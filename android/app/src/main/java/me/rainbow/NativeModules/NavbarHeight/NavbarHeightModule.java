@@ -31,36 +31,6 @@ public class NavbarHeightModule extends ReactContextBaseJavaModule {
         return NAME;
     }
 
-    // Example method
-    // See https://reactnative.dev/docs/native-modules-android
-    @ReactMethod
-    public double getNavigationBarHeightSync() {
-        Context context = getReactApplicationContext();
-        WindowManager windowManager = (WindowManager) context.getSystemService(Context.WINDOW_SERVICE);
-        if (Build.VERSION.SDK_INT >= 30) {
-            return windowManager
-                    .getCurrentWindowMetrics()
-                    .getWindowInsets()
-                    .getInsets(WindowInsets.Type.navigationBars())
-                    .bottom;
-        } else {
-            Point appUsableSize = getAppUsableScreenSize(context);
-            Point realScreenSize = getRealScreenSize(context);
-
-            // navigation bar on the side
-            if (appUsableSize.x < realScreenSize.x) {
-                return appUsableSize.y;
-            }
-
-            // navigation bar at the bottom
-            if (appUsableSize.y < realScreenSize.y) {
-                return realScreenSize.y - appUsableSize.y;
-            }
-
-            // navigation bar is not present
-            return 0;
-        }
-    }
     public Point getAppUsableScreenSize(Context context) {
         WindowManager windowManager = (WindowManager) context.getSystemService(Context.WINDOW_SERVICE);
         Display display = windowManager.getDefaultDisplay();
@@ -86,6 +56,30 @@ public class NavbarHeightModule extends ReactContextBaseJavaModule {
     }
     @ReactMethod(isBlockingSynchronousMethod = true)
     public double getNavigationBarHeight() {
-        return getNavigationBarHeightSync();
+        Context context = getReactApplicationContext();
+        WindowManager windowManager = (WindowManager) context.getSystemService(Context.WINDOW_SERVICE);
+        if (Build.VERSION.SDK_INT >= 30) {
+            return windowManager
+                    .getCurrentWindowMetrics()
+                    .getWindowInsets()
+                    .getInsets(WindowInsets.Type.navigationBars())
+                    .bottom;
+        } else {
+            Point appUsableSize = getAppUsableScreenSize(context);
+            Point realScreenSize = getRealScreenSize(context);
+
+            // navigation bar on the side
+            if (appUsableSize.x < realScreenSize.x) {
+                return appUsableSize.y;
+            }
+
+            // navigation bar at the bottom
+            if (appUsableSize.y < realScreenSize.y) {
+                return realScreenSize.y - appUsableSize.y;
+            }
+
+            // navigation bar is not present
+            return 0;
+        }
     }
 }

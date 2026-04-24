@@ -1,5 +1,6 @@
 import produce from 'immer';
 import { type Dispatch } from 'redux';
+
 import { getImageMetadata, saveImageMetadata } from '@/handlers/localstorage/globalSettings';
 import { type AppGetState } from '@/redux/store';
 

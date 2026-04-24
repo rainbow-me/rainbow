@@ -1,5 +1,6 @@
 import React, { useCallback } from 'react';
 import { StyleSheet, View } from 'react-native';
+
 import ShadowItem from './ShadowItem';
 
 const ShadowStack = React.forwardRef(

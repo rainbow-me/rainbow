@@ -1,13 +1,16 @@
 import { memo } from 'react';
-import { Box, Separator, Text } from '@/design-system';
-import { useRnbwStakingEarnings } from '@/features/rnbw-staking/stores/derived/useRnbwStakingEarnings';
-import { RNBW_SYMBOL } from '@/features/rnbw-rewards/constants';
-import rnbwCoinImage from '@/assets/rnbw.png';
 import { Image } from 'react-native';
+
+import rnbwCoinImage from '@/assets/rnbw.png';
+import { Box, Separator, Text } from '@/design-system';
 import { MembershipCard } from '@/features/rnbw-membership/screens/rnbw-membership-screen/components/MembershipCard';
-import * as i18n from '@/languages';
-import { isZero } from '@/helpers/utilities';
+import { RNBW_SYMBOL } from '@/features/rnbw-rewards/constants';
+import { useRnbwStakingEarnings } from '@/features/rnbw-staking/stores/derived/useRnbwStakingEarnings';
 import { useStakingPositionStore } from '@/features/rnbw-staking/stores/rnbwStakingPositionStore';
+import { parseDecimalParts } from '@/framework/core/utils/parseDecimalParts';
+import { isZero } from '@/helpers/utilities';
+import * as i18n from '@/languages';
+
 import { MembershipCardSkeleton } from './MembershipCardSkeleton';
 
 export const RnbwStakingEarningsCard = memo(function RnbwStakingEarningsCard() {
@@ -19,6 +22,7 @@ export const RnbwStakingEarningsCard = memo(function RnbwStakingEarningsCard() {
   }
 
   const isZeroTotalEarnings = isZero(totalEarnings);
+  const { whole: totalEarningsWhole, fractionalSuffix: totalEarningsFractionalSuffix } = parseDecimalParts(totalEarnings);
 
   return (
     <MembershipCard padding="24px">
@@ -30,7 +34,12 @@ export const RnbwStakingEarningsCard = memo(function RnbwStakingEarningsCard() {
         <Box flexDirection="row" alignItems="center" gap={8}>
           <Image source={rnbwCoinImage} style={{ width: 40, height: 40 }} />
           <Text size="34pt" weight="bold" color={isZeroTotalEarnings ? 'labelQuaternary' : 'label'}>
-            {totalEarnings}
+            {totalEarningsWhole}
+            {totalEarningsFractionalSuffix && (
+              <Text size="26pt" weight="bold" color="labelQuaternary">
+                {totalEarningsFractionalSuffix}
+              </Text>
+            )}
           </Text>
         </Box>
         <Separator color="separatorTertiary" thickness={1} />

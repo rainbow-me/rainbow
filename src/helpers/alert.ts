@@ -1,4 +1,5 @@
-import { Alert, type AlertButton, type AlertOptions, ToastAndroid } from 'react-native';
+import { Alert, ToastAndroid, type AlertButton, type AlertOptions } from 'react-native';
+
 import { IS_TEST } from '@/env';
 
 const WrappedAlert = {

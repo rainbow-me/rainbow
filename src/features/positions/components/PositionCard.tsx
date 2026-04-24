@@ -1,20 +1,21 @@
-import { Box, Column, Columns, Inline, Stack, Text, globalColors } from '@/design-system';
 import React, { memo, useCallback, useMemo } from 'react';
-import { useTheme } from '@/theme/ThemeContext';
 
-import { GenericCard } from '@/components/cards/GenericCard';
+import { capitalize, uniqBy } from 'lodash';
 import startCase from 'lodash/startCase';
+
+import { analytics } from '@/analytics';
+import { GenericCard } from '@/components/cards/GenericCard';
+import RainbowCoinIcon from '@/components/coin-icon/RainbowCoinIcon';
 import RequestVendorLogoIcon from '@/components/coin-icon/RequestVendorLogoIcon';
+import { Box, Column, Columns, globalColors, Inline, Stack, Text } from '@/design-system';
+import { NativeCurrencyKeys } from '@/entities/nativeCurrencyTypes';
+import { IS_ANDROID } from '@/env';
+import { type PositionAsset, type RainbowPosition } from '@/features/positions/types';
+import { opacity } from '@/framework/ui/utils/opacity';
 import { useNavigation } from '@/navigation/Navigation';
 import Routes from '@/navigation/routesNames';
-import { analytics } from '@/analytics';
-import { IS_ANDROID } from '@/env';
-import { capitalize, uniqBy } from 'lodash';
-import { type PositionAsset, type RainbowPosition } from '@/features/positions/types';
-import RainbowCoinIcon from '@/components/coin-icon/RainbowCoinIcon';
 import { userAssetsStoreManager } from '@/state/assets/userAssetsStoreManager';
-import { opacity } from '@/framework/ui/utils/opacity';
-import { NativeCurrencyKeys } from '@/entities/nativeCurrencyTypes';
+import { useTheme } from '@/theme/ThemeContext';
 
 type PositionCardProps = {
   position: RainbowPosition;

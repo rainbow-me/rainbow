@@ -1,6 +1,7 @@
+import { useEffect } from 'react';
+
 import { useBackendNetworksStore } from '@/state/backendNetworks/backendNetworks';
 import { TokenLauncher, type SDKConfig } from '@rainbow-me/token-launcher';
-import { useEffect } from 'react';
 
 const config: SDKConfig = {
   chains: [],

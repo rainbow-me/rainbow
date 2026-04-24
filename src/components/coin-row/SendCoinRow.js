@@ -1,18 +1,21 @@
 import React from 'react';
 import { TouchableWithoutFeedback } from 'react-native';
+
 import { LinearGradient } from 'expo-linear-gradient';
-import { useTheme } from '../../theme/ThemeContext';
+
+import styled from '@/framework/ui/styled-thing';
+import { opacity } from '@/framework/ui/utils/opacity';
+import { isL2Chain } from '@/handlers/web3';
+import useColorForAsset from '@/hooks/useColorForAsset';
+import { padding } from '@/styles';
 import deviceUtils from '@/utils/deviceUtils';
+
+import { useTheme } from '../../theme/ThemeContext';
 import ButtonPressAnimation from '../animations/ButtonPressAnimation';
+import RainbowCoinIcon from '../coin-icon/RainbowCoinIcon';
 import { Text } from '../text';
 import CoinName from './CoinName';
 import CoinRow from './CoinRow';
-import { isL2Chain } from '@/handlers/web3';
-import useColorForAsset from '@/hooks/useColorForAsset';
-import styled from '@/framework/ui/styled-thing';
-import { padding } from '@/styles';
-import RainbowCoinIcon from '../coin-icon/RainbowCoinIcon';
-import { opacity } from '@/framework/ui/utils/opacity';
 
 const isSmallPhone = deviceUtils.dimensions.height <= 667;
 const isTinyPhone = deviceUtils.dimensions.height <= 568;

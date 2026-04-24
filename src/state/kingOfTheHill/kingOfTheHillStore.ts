@@ -1,9 +1,10 @@
 import { metadataClient } from '@/graphql';
 import { type KingOfTheHill, type KingOfTheHillRankings } from '@/graphql/__generated__/metadata';
-import { RainbowError, logger } from '@/logger';
+import { logger, RainbowError } from '@/logger';
 import Routes from '@/navigation/routesNames';
 import { createQueryStore } from '@/state/internal/createQueryStore';
 import { time } from '@/utils/time';
+
 import { userAssetsStoreManager } from '../assets/userAssetsStoreManager';
 import { useNavigationStore } from '../navigation/navigationStore';
 

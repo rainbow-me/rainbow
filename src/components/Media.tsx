@@ -1,8 +1,11 @@
 import React from 'react';
-import { maybeSignUri } from '@/handlers/imgix';
 import { StyleSheet, View } from 'react-native';
+
 import FastImage from 'react-native-fast-image';
 import Video from 'react-native-video';
+
+import { maybeSignUri } from '@/handlers/imgix';
+
 import SvgImage from './svg/SvgImage';
 
 export enum MimeType {

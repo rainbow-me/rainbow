@@ -1,15 +1,17 @@
 import { useCallback, useMemo } from 'react';
-import { type DerivedValue, type SharedValue, useAnimatedReaction, useDerivedValue, useSharedValue } from 'react-native-reanimated';
-import { useForegroundColor } from '@/design-system';
-import { convertAmountToNativeDisplayWorklet } from '@/helpers/utilities';
-import * as i18n from '@/languages';
-import { type CrosschainQuote, type Quote, type QuoteError } from '@rainbow-me/swaps';
-import { divWorklet, greaterThanOrEqualToWorklet, mulWorklet, subWorklet } from '@/framework/core/safeMath';
-import { userAssetsStoreManager } from '@/state/assets/userAssetsStoreManager';
+
+import { useAnimatedReaction, useDerivedValue, useSharedValue, type DerivedValue, type SharedValue } from 'react-native-reanimated';
+
 import { highPriceImpactThreshold, severePriceImpactThreshold } from '@/__swaps__/screens/Swap/constants';
 import { type ExtendedAnimatedAssetWithColors } from '@/__swaps__/types/assets';
 import { type InputValues } from '@/__swaps__/types/swap';
 import { getCrossChainTimeEstimateWorklet, getQuoteServiceTimeWorklet } from '@/__swaps__/utils/swaps';
+import { useForegroundColor } from '@/design-system';
+import { divWorklet, greaterThanOrEqualToWorklet, mulWorklet, subWorklet } from '@/framework/core/safeMath';
+import { convertAmountToNativeDisplayWorklet } from '@/helpers/utilities';
+import * as i18n from '@/languages';
+import { userAssetsStoreManager } from '@/state/assets/userAssetsStoreManager';
+import { type CrosschainQuote, type Quote, type QuoteError } from '@rainbow-me/swaps';
 
 export enum SwapWarningType {
   unknown = 'unknown',

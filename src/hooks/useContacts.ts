@@ -1,9 +1,12 @@
-import { sortBy, values } from 'lodash';
 import { useCallback } from 'react';
+
+import { sortBy, values } from 'lodash';
 import { useDispatch, useSelector } from 'react-redux';
 import { createSelector } from 'reselect';
-import { contactsAddOrUpdate, removeContact } from '../redux/contacts';
+
 import { type AppState } from '@/redux/store';
+
+import { contactsAddOrUpdate, removeContact } from '../redux/contacts';
 
 const contactsSelector = createSelector(
   ({ contacts: { contacts } }: AppState) => contacts,

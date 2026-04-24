@@ -1,6 +1,7 @@
-import { type TokenData, type PriceReliabilityStatus } from './liveTokensStore';
-import { type PerpMarket } from '@/features/perps/types';
 import { HYPERLIQUID_TOKEN_ID_SUFFIX } from '@/features/perps/constants';
+import { type PerpMarket } from '@/features/perps/types';
+
+import { type PriceReliabilityStatus, type TokenData } from './liveTokensStore';
 
 // Arbitrary value, only set for type compatibility
 const DEFAULT_LIQUIDITY_CAP = '1000000000';

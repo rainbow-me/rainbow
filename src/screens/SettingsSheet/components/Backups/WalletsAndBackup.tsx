@@ -1,3 +1,9 @@
+import React, { useCallback, useMemo, useRef } from 'react';
+import { type ScrollView } from 'react-native';
+
+import { useRoute } from '@react-navigation/native';
+import { format } from 'date-fns';
+
 import CloudBackedUpIcon from '@/assets/BackedUpCloud.png';
 import CloudBackupWarningIcon from '@/assets/CloudBackupWarning.png';
 import WalletsAndBackupIcon from '@/assets/WalletsAndBackup.png';
@@ -8,39 +14,36 @@ import { ContactAvatar } from '@/components/contacts';
 import ImageAvatar from '@/components/contacts/ImageAvatar';
 import { Box, Inline, Stack, Text } from '@/design-system';
 import { IS_ANDROID, IS_DEV } from '@/env';
+import useENSAvatar from '@/features/ens/hooks/useENSAvatar';
 import { removeFirstEmojiFromString } from '@/helpers/emojiHandler';
 import walletBackupStepTypes from '@/helpers/walletBackupStepTypes';
 import WalletBackupTypes from '@/helpers/walletBackupTypes';
 import { WalletLoadingStates } from '@/helpers/walletLoadingStates';
 import WalletTypes, { EthereumWalletType } from '@/helpers/walletTypes';
-import useENSAvatar from '@/features/ens/hooks/useENSAvatar';
 import useManageCloudBackups from '@/hooks/useManageCloudBackups';
 import { useStableValue } from '@/hooks/useStableValue';
 import * as i18n from '@/languages';
-import { RainbowError, logger } from '@/logger';
+import { logger, RainbowError } from '@/logger';
 import { executeFnIfCloudBackupAvailable } from '@/model/backup';
-import { type RainbowAccount, createWallet } from '@/model/wallet';
+import { createWallet, type RainbowAccount } from '@/model/wallet';
 import Navigation, { useNavigation } from '@/navigation/Navigation';
 import Routes from '@/navigation/routesNames';
-import { CloudBackupState, backupsStore } from '@/state/backups/backups';
+import { backupsStore, CloudBackupState } from '@/state/backups/backups';
 import { walletLoadingStore } from '@/state/walletLoading/walletLoading';
+import { initializeWallet } from '@/state/wallets/initializeWallet';
 import { formatAccountLabel, loadWallets, useWallets } from '@/state/wallets/walletsStore';
 import abbreviations from '@/utils/abbreviations';
+import { DEVICE_WIDTH } from '@/utils/deviceUtils';
 import { cloudPlatform } from '@/utils/platform';
 import { addressHashedEmoji } from '@/utils/profileUtils';
-import { useRoute } from '@react-navigation/native';
-import { format } from 'date-fns';
-import React, { useCallback, useMemo, useRef } from 'react';
-import { type ScrollView } from 'react-native';
-import { type WalletCountPerType, useVisibleWallets } from '../../useVisibleWallets';
+
+import { useVisibleWallets, type WalletCountPerType } from '../../useVisibleWallets';
 import { checkLocalWalletsForBackupStatus, isWalletBackedUpForCurrentAccount } from '../../utils';
 import Menu from '../Menu';
 import MenuContainer from '../MenuContainer';
 import MenuHeader, { type StatusType } from '../MenuHeader';
 import MenuItem from '../MenuItem';
 import { BackUpMenuItem } from './BackUpMenuButton';
-import { initializeWallet } from '@/state/wallets/initializeWallet';
-import { DEVICE_WIDTH } from '@/utils/deviceUtils';
 
 type WalletPillProps = {
   account: RainbowAccount;

@@ -1,6 +1,6 @@
-import { shouldFilterPosition, shouldFilterPortfolioItem } from './filter';
-import { PositionName, DetailType } from '../../types/generated/positions/positions';
-import { createMockRainbowPosition, createMockDeposit, createMockPortfolioItem } from '../../__fixtures__/mocks/positions';
+import { createMockDeposit, createMockPortfolioItem, createMockRainbowPosition } from '../../__fixtures__/mocks/positions';
+import { DetailType, PositionName } from '../../types/generated/positions/positions';
+import { shouldFilterPortfolioItem, shouldFilterPosition } from './filter';
 
 jest.mock('@/config/experimentalHooks', () => ({
   getExperimentalFlag: jest.fn(() => true),

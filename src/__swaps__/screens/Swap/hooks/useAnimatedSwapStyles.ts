@@ -1,4 +1,14 @@
 import {
+  interpolate,
+  useAnimatedStyle,
+  useDerivedValue,
+  withSpring,
+  withTiming,
+  type DerivedValue,
+  type SharedValue,
+} from 'react-native-reanimated';
+
+import {
   BASE_INPUT_HEIGHT,
   BOTTOM_ACTION_BAR_HEIGHT,
   EXPANDED_INPUT_HEIGHT,
@@ -11,27 +21,18 @@ import {
 import { SwapWarningType, type useSwapWarning } from '@/__swaps__/screens/Swap/hooks/useSwapWarning';
 import { type ExtendedAnimatedAssetWithColors } from '@/__swaps__/types/assets';
 import { getColorValueForThemeWorklet } from '@/__swaps__/utils/swaps';
-import { opacity } from '@/framework/ui/utils/opacity';
 import { spinnerExitConfig } from '@/components/animations/AnimatedSpinner';
+import { SPRING_CONFIGS, TIMING_CONFIGS } from '@/components/animations/animationConfigs';
 import { TOKEN_SEARCH_FOCUSED_INPUT_HEIGHT } from '@/components/token-search/constants';
+import { getTokenSearchButtonWrapperStyle } from '@/components/token-search/styles';
 import { useColorMode } from '@/design-system';
 import { foregroundColors } from '@/design-system/color/palettes';
-import { getTokenSearchButtonWrapperStyle } from '@/components/token-search/styles';
 import { IS_ANDROID } from '@/env';
-import safeAreaInsetValues from '@/utils/safeAreaInsetValues';
-import {
-  type DerivedValue,
-  type SharedValue,
-  interpolate,
-  useAnimatedStyle,
-  useDerivedValue,
-  withSpring,
-  withTiming,
-} from 'react-native-reanimated';
-import { NavigationSteps } from '../providers/swap-provider';
-import { SPRING_CONFIGS, TIMING_CONFIGS } from '@/components/animations/animationConfigs';
-
+import { opacity } from '@/framework/ui/utils/opacity';
 import { THICK_BORDER_WIDTH } from '@/styles/constants';
+import safeAreaInsetValues from '@/utils/safeAreaInsetValues';
+
+import { NavigationSteps } from '../providers/swap-provider';
 
 const INSET_BOTTOM = safeAreaInsetValues.bottom + 16;
 

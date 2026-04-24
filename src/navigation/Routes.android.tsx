@@ -1,16 +1,85 @@
 /* eslint-disable react/jsx-props-no-spreading */
+import React, { useContext } from 'react';
+
 import { NavigationContainer, type NavigationContainerRef } from '@react-navigation/native';
 import { createStackNavigator } from '@react-navigation/stack';
-import React, { useContext } from 'react';
-import { AddCashSheet } from '../screens/AddCash';
-import AvatarBuilder from '../screens/AvatarBuilder';
-import BackupSheet from '../components/backup/BackupSheet';
-import ChangeWalletSheet from '../screens/change-wallet/ChangeWalletSheet';
-import ConnectedDappsSheet from '@/features/wallet-connect/screens/ConnectedDappsSheet';
+
+import { SwapScreen } from '@/__swaps__/screens/Swap/Swap';
+import { ControlPanel } from '@/components/DappBrowser/control-panel/ControlPanel';
+import { LogSheet } from '@/components/debugging/LogSheet';
+import { useShowKingOfTheHill } from '@/components/king-of-the-hill/useShowKingOfTheHill';
+import WalletErrorSheet from '@/components/wallet-error/WalletErrorSheet';
+import useExperimentalFlag, { PROFILES } from '@/config/experimentalHooks';
+import AppIconUnlockSheet from '@/features/app-icon/screens/AppIconUnlockSheet';
+import RegisterENSNavigator from '@/features/ens/navigation/RegisterENSNavigator';
 import ENSAdditionalRecordsSheet from '@/features/ens/screens/ENSAdditionalRecordsSheet';
 import ENSConfirmRegisterSheet from '@/features/ens/screens/ENSConfirmRegisterSheet';
-import ExpandedAssetSheet from '../screens/ExpandedAssetSheet';
+import SelectENSSheet from '@/features/ens/screens/SelectENSSheet';
+import { NotificationPermissionScreen } from '@/features/notifications/screens/NotificationPermissionScreen';
+import { ClosePositionBottomSheet } from '@/features/perps/screens/ClosePositionBottomSheet';
+import { CreateTriggerOrderBottomSheet } from '@/features/perps/screens/CreateTriggerOrderBottomSheet';
+import { PerpsDetailScreen } from '@/features/perps/screens/perp-detail-screen/PerpDetailScreen';
+import { PerpsAboutSheet } from '@/features/perps/screens/perps-about-sheet/PerpsAboutSheet';
+import { PerpsAddToPositionSheet } from '@/features/perps/screens/perps-add-to-position-sheet/PerpsAddToPositionSheet';
+import { PerpsDepositScreen } from '@/features/perps/screens/perps-deposit-withdraw-screen/PerpsDepositScreen';
+import { PerpsWithdrawalScreen } from '@/features/perps/screens/perps-deposit-withdraw-screen/PerpsWithdrawalScreen';
+import { PerpsExplainSheet } from '@/features/perps/screens/perps-explain-sheet/PerpsExplainSheet';
+import { PerpsTradeDetailsSheet } from '@/features/perps/screens/perps-trade-details-sheet/PerpsTradeDetailsSheet';
+import { PerpsTradeHistoryScreen } from '@/features/perps/screens/perps-trade-history/PerpsTradeHistoryScreen';
+import { PerpsNavigator } from '@/features/perps/screens/PerpsNavigator';
+import { PolymarketDepositScreen } from '@/features/polymarket/funding/screens/PolymarketDepositScreen';
+import { PolymarketWithdrawalScreen } from '@/features/polymarket/funding/screens/PolymarketWithdrawalScreen';
+import { PolymarketAccountScreen } from '@/features/polymarket/screens/polymarket-account-screen/PolymarketAccountScreen';
+import { PolymarketBrowseEventsScreen } from '@/features/polymarket/screens/polymarket-browse-events-screen/PolymarketBrowseEventsScreen';
+import { PolymarketEventScreen } from '@/features/polymarket/screens/polymarket-event-screen/PolymarketEventScreen';
+import { PolymarketExplainSheet } from '@/features/polymarket/screens/polymarket-learn-sheet/PolymarketExplainSheet';
+import { PolymarketMarketDescriptionSheet } from '@/features/polymarket/screens/polymarket-market-description-sheet/PolymarketMarketDescriptionSheet';
+import { PolymarketMarketSheet } from '@/features/polymarket/screens/polymarket-market-sheet/PolymarketMarketSheet';
+import { PolymarketNavigator } from '@/features/polymarket/screens/polymarket-navigator/PolymarketNavigator';
+import { PolymarketNewPositionSheet } from '@/features/polymarket/screens/polymarket-new-position-sheet/PolymarketNewPositionSheet';
+import { PolymarketRedeemPositionSheet } from '@/features/polymarket/screens/polymarket-redeem-position-sheet/PolymarketRedeemPositionSheet';
+import { PolymarketSellPositionSheet } from '@/features/polymarket/screens/polymarket-sell-position-sheet/PolymarketSellPositionSheet';
+import { PositionSheet } from '@/features/positions/screens/PositionSheet';
+import { RnbwAirdropScreen } from '@/features/rnbw-airdrop/screens/rnbw-airdrop-screen/RnbwAirdropScreen';
+import { RnbwMembershipTiersSheet } from '@/features/rnbw-membership/screens/rnbw-membership-tiers-sheet/RnbwMembershipTiersSheet';
+import { RnbwRewardsClaimSheet } from '@/features/rnbw-rewards/screens/rnbw-rewards-claim-sheet/RnbwRewardsClaimSheet';
+import { RnbwRewardsEstimateSheet } from '@/features/rnbw-rewards/screens/rnbw-rewards-estimate-sheet/RnbwRewardsEstimateSheet';
+import { RnbwStakingLearnScreen } from '@/features/rnbw-staking/screens/rnbw-staking-learn-screen/RnbwStakingLearnScreen';
+import { RnbwStakingScreen } from '@/features/rnbw-staking/screens/rnbw-staking-screen/RnbwStakingScreen';
+import { RnbwUnstakeSheet } from '@/features/rnbw-staking/screens/rnbw-unstake-sheet/RnbwUnstakeSheet';
+import ConnectedDappsSheet from '@/features/wallet-connect/screens/ConnectedDappsSheet';
+import walletBackupStepTypes from '@/helpers/walletBackupStepTypes';
+import { Portal as CMPortal } from '@/react-native-cool-modals/Portal';
+import { ActivitySheetScreen } from '@/screens/ActivitySheetScreen';
+import { AirdropsSheet } from '@/screens/Airdrops/AirdropsSheet';
+import { ClaimAirdropSheet } from '@/screens/Airdrops/ClaimAirdropSheet';
+import { ClaimClaimablePanel } from '@/screens/claimables/ClaimPanel';
+import { ClaimRewardsPanel } from '@/screens/claimables/ClaimRewardsPanel';
+import { RevokeDelegationPanel } from '@/screens/delegation/RevokeDelegationPanel';
 import { ExpandedAssetSheet as ExpandedAssetSheetV2 } from '@/screens/expandedAssetSheet/ExpandedAssetSheet';
+import { KingOfTheHillExplainSheet } from '@/screens/king-of-the-hill/KingOfTheHillExplainSheet';
+import LearnWebViewScreen from '@/screens/LearnWebViewScreen';
+import MintSheet from '@/screens/mints/MintSheet';
+import PoapSheet from '@/screens/mints/PoapSheet';
+import { MintsSheet } from '@/screens/MintsSheet/MintsSheet';
+import { NetworkSelector } from '@/screens/network-selector/NetworkSelector';
+import { NFTOffersSheet } from '@/screens/NFTOffersSheet';
+import { NFTSingleOfferSheet } from '@/screens/NFTSingleOfferSheet';
+import { Portal } from '@/screens/Portal';
+import QRScannerScreen from '@/screens/QRScannerScreen';
+import { RewardsSheet } from '@/screens/rewards/RewardsSheet';
+import ShowSecretView from '@/screens/SettingsSheet/components/Backups/ShowSecretView';
+import { SettingsSheet } from '@/screens/SettingsSheet/SettingsSheet';
+import { SignTransactionSheet } from '@/screens/SignTransactionSheet';
+import { TokenLauncherScreen } from '@/screens/token-launcher/TokenLauncherScreen';
+import { TransactionDetails } from '@/screens/transaction-details/TransactionDetails';
+
+import BackupSheet from '../components/backup/BackupSheet';
+import { AddCashSheet } from '../screens/AddCash';
+import AvatarBuilder from '../screens/AvatarBuilder';
+import ChangeWalletSheet from '../screens/change-wallet/ChangeWalletSheet';
+import { WalletDiagnosticsSheet } from '../screens/Diagnostics';
+import ExpandedAssetSheet from '../screens/ExpandedAssetSheet';
 import ExplainSheet from '../screens/ExplainSheet';
 import ExternalLinkWarningSheet from '../screens/ExternalLinkWarningSheet';
 import ModalScreen from '../screens/ModalScreen';
@@ -18,113 +87,48 @@ import PinAuthenticationScreen from '../screens/PinAuthenticationScreen';
 import ProfileSheet from '../screens/ProfileSheet';
 import ReceiveModal from '../screens/ReceiveModal';
 import { RestoreSheet } from '../screens/RestoreSheet';
-import SelectENSSheet from '@/features/ens/screens/SelectENSSheet';
 import SelectUniqueTokenSheet from '../screens/SelectUniqueTokenSheet';
 import { SendConfirmationSheet } from '../screens/SendConfirmationSheet';
 import SendSheet from '../screens/SendSheet';
 import SpeedUpAndCancelSheet from '../screens/SpeedUpAndCancelSheet';
-import { NotificationPermissionScreen } from '@/features/notifications/screens/NotificationPermissionScreen';
 import WalletConnectApprovalSheet from '../screens/WalletConnectApprovalSheet';
 import WalletConnectRedirectSheet from '../screens/WalletConnectRedirectSheet';
-import { WalletDiagnosticsSheet } from '../screens/Diagnostics';
 import { WelcomeScreen } from '../screens/WelcomeScreen/WelcomeScreen';
-import RegisterENSNavigator from '@/features/ens/navigation/RegisterENSNavigator';
-import { SwipeNavigator } from './SwipeNavigator';
+import { AddWalletNavigator } from './AddWalletNavigator';
+import { createBottomSheetNavigator } from './bottom-sheet/createBottomSheetNavigator';
 import {
+  backupSheetSizes,
   closeKeyboardOnClose,
   defaultScreenStackOptions,
-  stackNavigationConfig,
   learnWebViewScreenConfig,
-  backupSheetSizes,
+  stackNavigationConfig,
 } from './config';
 import {
+  addCashSheet,
   addWalletNavigatorPreset,
   androidRecievePreset,
+  appIconUnlockSheetPreset,
   bottomSheetPreset,
-  hardwareWalletTxNavigatorPreset,
   emojiPreset,
   exchangePreset,
   expandedPreset,
   expandedPresetWithSmallGestureResponseDistance,
+  hardwareWalletTxNavigatorPreset,
+  nftSingleOfferSheetPreset,
   sheetPreset,
   speedUpAndCancelStyleInterpolator,
-  wcPromptPreset,
-  addCashSheet,
-  nftSingleOfferSheetPreset,
-  walletconnectBottomSheetPreset,
-  appIconUnlockSheetPreset,
   swapSheetPreset,
   tokenLauncherSheetPreset,
+  walletconnectBottomSheetPreset,
+  wcPromptPreset,
 } from './effects';
+import { HardwareWalletTxNavigator } from './HardwareWalletTxNavigator';
 import { InitialRouteContext } from './initialRoute';
 import { onNavigationStateChange } from './onNavigationStateChange';
-import Routes from './routesNames';
-import useExperimentalFlag, { PROFILES } from '@/config/experimentalHooks';
-import QRScannerScreen from '@/screens/QRScannerScreen';
 import { PairHardwareWalletNavigator } from './PairHardwareWalletNavigator';
-import LearnWebViewScreen from '@/screens/LearnWebViewScreen';
-import { TransactionDetails } from '@/screens/transaction-details/TransactionDetails';
-import { AddWalletNavigator } from './AddWalletNavigator';
-import { HardwareWalletTxNavigator } from './HardwareWalletTxNavigator';
-import { ClaimAirdropSheet } from '@/screens/Airdrops/ClaimAirdropSheet';
-import { AirdropsSheet } from '@/screens/Airdrops/AirdropsSheet';
-import { RewardsSheet } from '@/screens/rewards/RewardsSheet';
-import { SettingsSheet } from '@/screens/SettingsSheet/SettingsSheet';
-import { Portal } from '@/screens/Portal';
-import { NFTOffersSheet } from '@/screens/NFTOffersSheet';
-import { NFTSingleOfferSheet } from '@/screens/NFTSingleOfferSheet';
-import ShowSecretView from '@/screens/SettingsSheet/components/Backups/ShowSecretView';
-import PoapSheet from '@/screens/mints/PoapSheet';
-import { PositionSheet } from '@/features/positions/screens/PositionSheet';
-import MintSheet from '@/screens/mints/MintSheet';
-import { MintsSheet } from '@/screens/MintsSheet/MintsSheet';
-import { SignTransactionSheet } from '@/screens/SignTransactionSheet';
-import walletBackupStepTypes from '@/helpers/walletBackupStepTypes';
-import AppIconUnlockSheet from '@/features/app-icon/screens/AppIconUnlockSheet';
-import { SwapScreen } from '@/__swaps__/screens/Swap/Swap';
-import { ControlPanel } from '@/components/DappBrowser/control-panel/ControlPanel';
-import { ClaimRewardsPanel } from '@/screens/claimables/ClaimRewardsPanel';
-import { ClaimClaimablePanel } from '@/screens/claimables/ClaimPanel';
-import { RevokeDelegationPanel } from '@/screens/delegation/RevokeDelegationPanel';
+import Routes from './routesNames';
+import { SwipeNavigator } from './SwipeNavigator';
 import { type RootStackParamList } from './types';
-import { Portal as CMPortal } from '@/react-native-cool-modals/Portal';
-import { LogSheet } from '@/components/debugging/LogSheet';
-import { TokenLauncherScreen } from '@/screens/token-launcher/TokenLauncherScreen';
-import { NetworkSelector } from '@/screens/network-selector/NetworkSelector';
-import { KingOfTheHillExplainSheet } from '@/screens/king-of-the-hill/KingOfTheHillExplainSheet';
-import { ActivitySheetScreen } from '@/screens/ActivitySheetScreen';
-import { useShowKingOfTheHill } from '@/components/king-of-the-hill/useShowKingOfTheHill';
-import { PerpsDepositScreen } from '@/features/perps/screens/perps-deposit-withdraw-screen/PerpsDepositScreen';
-import { PerpsWithdrawalScreen } from '@/features/perps/screens/perps-deposit-withdraw-screen/PerpsWithdrawalScreen';
-import { PerpsDetailScreen } from '@/features/perps/screens/perp-detail-screen/PerpDetailScreen';
-import { PerpsNavigator } from '@/features/perps/screens/PerpsNavigator';
-import { PerpsTradeHistoryScreen } from '@/features/perps/screens/perps-trade-history/PerpsTradeHistoryScreen';
-import { CreateTriggerOrderBottomSheet } from '@/features/perps/screens/CreateTriggerOrderBottomSheet';
-import { ClosePositionBottomSheet } from '@/features/perps/screens/ClosePositionBottomSheet';
-import { PerpsExplainSheet } from '@/features/perps/screens/perps-explain-sheet/PerpsExplainSheet';
-import { PerpsAddToPositionSheet } from '@/features/perps/screens/perps-add-to-position-sheet/PerpsAddToPositionSheet';
-import { PerpsTradeDetailsSheet } from '@/features/perps/screens/perps-trade-details-sheet/PerpsTradeDetailsSheet';
-import { PolymarketDepositScreen } from '@/features/polymarket/funding/screens/PolymarketDepositScreen';
-import { PolymarketWithdrawalScreen } from '@/features/polymarket/funding/screens/PolymarketWithdrawalScreen';
-import { PolymarketEventScreen } from '@/features/polymarket/screens/polymarket-event-screen/PolymarketEventScreen';
-import { PolymarketRedeemPositionSheet } from '@/features/polymarket/screens/polymarket-redeem-position-sheet/PolymarketRedeemPositionSheet';
-import { PolymarketMarketSheet } from '@/features/polymarket/screens/polymarket-market-sheet/PolymarketMarketSheet';
-import { PolymarketNewPositionSheet } from '@/features/polymarket/screens/polymarket-new-position-sheet/PolymarketNewPositionSheet';
-import { PolymarketAccountScreen } from '@/features/polymarket/screens/polymarket-account-screen/PolymarketAccountScreen';
-import { PolymarketBrowseEventsScreen } from '@/features/polymarket/screens/polymarket-browse-events-screen/PolymarketBrowseEventsScreen';
-import { PolymarketNavigator } from '@/features/polymarket/screens/polymarket-navigator/PolymarketNavigator';
-import { PolymarketMarketDescriptionSheet } from '@/features/polymarket/screens/polymarket-market-description-sheet/PolymarketMarketDescriptionSheet';
-import { PolymarketExplainSheet } from '@/features/polymarket/screens/polymarket-learn-sheet/PolymarketExplainSheet';
-import { PolymarketSellPositionSheet } from '@/features/polymarket/screens/polymarket-sell-position-sheet/PolymarketSellPositionSheet';
-import { RnbwAirdropScreen } from '@/features/rnbw-airdrop/screens/rnbw-airdrop-screen/RnbwAirdropScreen';
-import { RnbwRewardsClaimSheet } from '@/features/rnbw-rewards/screens/rnbw-rewards-claim-sheet/RnbwRewardsClaimSheet';
-import { RnbwRewardsEstimateSheet } from '@/features/rnbw-rewards/screens/rnbw-rewards-estimate-sheet/RnbwRewardsEstimateSheet';
-import { RnbwStakingLearnScreen } from '@/features/rnbw-staking/screens/rnbw-staking-learn-screen/RnbwStakingLearnScreen';
-import { RnbwStakingScreen } from '@/features/rnbw-staking/screens/rnbw-staking-screen/RnbwStakingScreen';
-import { RnbwUnstakeSheet } from '@/features/rnbw-staking/screens/rnbw-unstake-sheet/RnbwUnstakeSheet';
-import WalletErrorSheet from '@/components/wallet-error/WalletErrorSheet';
-import { createBottomSheetNavigator } from './bottom-sheet/createBottomSheetNavigator';
-import { RnbwMembershipTiersSheet } from '@/features/rnbw-membership/screens/rnbw-membership-tiers-sheet/RnbwMembershipTiersSheet';
 
 const Stack = createStackNavigator();
 const OuterStack = createStackNavigator();
@@ -299,6 +303,7 @@ function BSNavigator() {
       <BSStack.Screen component={KingOfTheHillExplainSheet} name={Routes.KING_OF_THE_HILL_EXPLAIN_SHEET} />
       <BSStack.Screen component={PerpsExplainSheet} name={Routes.PERPS_EXPLAIN_SHEET} />
       <BSStack.Screen component={PerpsAddToPositionSheet} name={Routes.PERPS_ADD_TO_POSITION_SHEET} />
+      <BSStack.Screen component={PerpsAboutSheet} name={Routes.PERPS_ABOUT_SHEET} />
       <BSStack.Screen component={PerpsTradeDetailsSheet} name={Routes.PERPS_TRADE_DETAILS_SHEET} />
       <BSStack.Screen component={PolymarketEventScreen} name={Routes.POLYMARKET_EVENT_SCREEN} />
       <BSStack.Screen component={PolymarketRedeemPositionSheet} name={Routes.POLYMARKET_MANAGE_POSITION_SHEET} />

@@ -1,7 +1,10 @@
 import React from 'react';
+
 import Animated, { useAnimatedStyle } from 'react-native-reanimated';
-import { Column, Flex } from '../../components/layout';
+
 import styled from '@/framework/ui/styled-thing';
+
+import { Column, Flex } from '../../components/layout';
 
 const FilledValue = styled(Column)({
   borderRadius: 20,

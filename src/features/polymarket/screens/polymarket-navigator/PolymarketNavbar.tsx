@@ -1,14 +1,16 @@
 import React from 'react';
-import { Box, Text, TextShadow } from '@/design-system';
-import { AccountImage } from '@/components/AccountImage';
-import { Navbar } from '@/components/navbar/Navbar';
-import Routes from '@/navigation/routesNames';
+
 import Animated, { FadeIn, FadeOut } from 'react-native-reanimated';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
-import { type VirtualNavigationStore } from '@/navigation/createVirtualNavigator';
-import { type PolymarketRoute } from '@/navigation/types';
-import * as i18n from '@/languages';
+
+import { AccountImage } from '@/components/AccountImage';
+import { Navbar } from '@/components/navbar/Navbar';
+import { Box, Text, TextShadow } from '@/design-system';
 import { usePolymarketNavigationStore } from '@/features/polymarket/screens/polymarket-navigator/PolymarketNavigator';
+import * as i18n from '@/languages';
+import { type VirtualNavigationStore } from '@/navigation/createVirtualNavigator';
+import Routes from '@/navigation/routesNames';
+import { type PolymarketRoute } from '@/navigation/types';
 
 export const PolymarketNavbar = function PolymarketNavbar() {
   const safeAreaInsets = useSafeAreaInsets();

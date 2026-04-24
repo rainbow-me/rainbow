@@ -1,25 +1,28 @@
 import React, { memo } from 'react';
 import { Keyboard, ScrollView } from 'react-native';
+
 import Animated, { useSharedValue } from 'react-native-reanimated';
-import { Box, Separator, Stack, useColorMode } from '@/design-system';
+
 import { AmountInputCard } from '@/components/amount-input-card/AmountInputCard';
-import { LeverageInputCard } from './LeverageInputCard';
-import { POSITION_SIDE_SELECTOR_HEIGHT_WITH_PADDING, PositionSideSelector } from './PositionSideSelector';
-import { DetailsSection } from './DetailsSection';
-import { useOnLeaveRoute } from '@/hooks/useOnLeaveRoute';
-import { hlNewPositionStoreActions, useHlNewPositionStore } from '@/features/perps/stores/hlNewPositionStore';
+import { Box, Separator, Stack, useColorMode } from '@/design-system';
+import { IS_ANDROID } from '@/env';
+import { HeaderFade } from '@/features/perps/components/HeaderFade';
+import { FOOTER_HEIGHT_WITH_SAFE_AREA, LAYOUT_ANIMATION, PERPS_BACKGROUND_DARK, PERPS_BACKGROUND_LIGHT } from '@/features/perps/constants';
+import { usePerpsAccentColorContext } from '@/features/perps/context/PerpsAccentColorContext';
 import { LiquidationInfo } from '@/features/perps/screens/perps-new-position-screen/LiquidationInfo';
 import { TriggerOrdersSection } from '@/features/perps/screens/perps-new-position-screen/TriggerOrdersSection';
-import { FOOTER_HEIGHT_WITH_SAFE_AREA, LAYOUT_ANIMATION, PERPS_BACKGROUND_DARK, PERPS_BACKGROUND_LIGHT } from '@/features/perps/constants';
-import { MarketInfoSection } from './MarketInfoSection';
-import { HeaderFade } from '@/features/perps/components/HeaderFade';
-import { IS_ANDROID } from '@/env';
-import { type PerpMarket } from '@/features/perps/types';
-import { useStableValue } from '@/hooks/useStableValue';
+import { hlNewPositionStoreActions, useHlNewPositionStore } from '@/features/perps/stores/hlNewPositionStore';
 import { useHyperliquidAccountStore } from '@/features/perps/stores/hyperliquidAccountStore';
+import { type PerpMarket } from '@/features/perps/types';
+import { useOnLeaveRoute } from '@/hooks/useOnLeaveRoute';
+import { useStableValue } from '@/hooks/useStableValue';
 import { useWalletsStore } from '@/state/wallets/walletsStore';
-import { usePerpsAccentColorContext } from '@/features/perps/context/PerpsAccentColorContext';
 import { THICK_BORDER_WIDTH } from '@/styles/constants';
+
+import { DetailsSection } from './DetailsSection';
+import { LeverageInputCard } from './LeverageInputCard';
+import { MarketInfoSection } from './MarketInfoSection';
+import { POSITION_SIDE_SELECTOR_HEIGHT_WITH_PADDING, PositionSideSelector } from './PositionSideSelector';
 
 export const PerpsNewPositionScreen = memo(function PerpsNewPositionScreen() {
   const { isDarkMode } = useColorMode();

@@ -1,11 +1,13 @@
 import React from 'react';
-import { TokenFamilyHeader } from '../../token-family';
-import useLatestCallback from '@/hooks/useLatestCallback';
-import { type ThemeContextProps } from '@/theme/ThemeContext';
-import { useRemoteConfig } from '@/model/remoteConfig';
+
 import useExperimentalFlag, { NFTS_ENABLED } from '@/config/experimentalHooks';
+import useLatestCallback from '@/hooks/useLatestCallback';
+import { useRemoteConfig } from '@/model/remoteConfig';
 import { useNftsStore } from '@/state/nfts/nfts';
 import { useOpenCollectionsStore } from '@/state/nfts/openCollectionsStore';
+import { type ThemeContextProps } from '@/theme/ThemeContext';
+
+import { TokenFamilyHeader } from '../../token-family';
 
 type Props = {
   name: string;

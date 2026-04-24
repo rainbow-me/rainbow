@@ -1,9 +1,10 @@
-import { memoFn } from '../utils/memoFn';
-import { supportedCurrencies as supportedNativeCurrencies } from '@/references/supportedCurrencies';
 import type { NativeCurrencyKey } from '@/entities/nativeCurrencyTypes';
-import { convertAmountToNativeDisplayWorklet } from './utilities';
-import { userAssetsStoreManager } from '@/state/assets/userAssetsStoreManager';
 import { getNumberFormatter } from '@/helpers/intl';
+import { supportedCurrencies as supportedNativeCurrencies } from '@/references/supportedCurrencies';
+import { userAssetsStoreManager } from '@/state/assets/userAssetsStoreManager';
+
+import { memoFn } from '../utils/memoFn';
+import { convertAmountToNativeDisplayWorklet } from './utilities';
 
 /**
  * @desc subtracts two numbers

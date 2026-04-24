@@ -1,9 +1,12 @@
-import { MenuView, type NativeActionEvent, type MenuComponentRef } from '@react-native-menu/menu';
-import React, { type PropsWithChildren, useMemo, useRef } from 'react';
+import React, { useMemo, useRef, type PropsWithChildren } from 'react';
 import { View } from 'react-native';
-import { Gesture, GestureDetector } from 'react-native-gesture-handler';
-import useLatestCallback from '@/hooks/useLatestCallback';
+
+import { MenuView, type MenuComponentRef, type NativeActionEvent } from '@react-native-menu/menu';
 import { type NativeMenuComponentProps } from '@react-native-menu/menu/lib/typescript/src/types';
+import { Gesture, GestureDetector } from 'react-native-gesture-handler';
+
+import useLatestCallback from '@/hooks/useLatestCallback';
+
 import { type MenuConfig } from './contextMenu';
 
 export default function ContextMenuAndroid({

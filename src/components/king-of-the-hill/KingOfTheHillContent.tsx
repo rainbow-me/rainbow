@@ -1,3 +1,12 @@
+import React, { memo, useCallback, useLayoutEffect, useMemo, useRef, useState, type ReactNode } from 'react';
+import { Dimensions, StyleSheet, View, type FlatList } from 'react-native';
+
+import chroma from 'chroma-js';
+import { dequal } from 'dequal';
+import makeColorMoreChill from 'make-color-more-chill';
+import Animated, { interpolate, useAnimatedScrollHandler, useAnimatedStyle, type SharedValue } from 'react-native-reanimated';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
+
 import hillImage from '@/assets/hill.png';
 import ShimmerAnimation from '@/components/animations/ShimmerAnimation';
 import { KingOfTheHillPastWinners } from '@/components/king-of-the-hill/KingOfTheHillPastWinners';
@@ -9,13 +18,7 @@ import { abbreviateNumber } from '@/helpers/utilities';
 import { logger, RainbowError } from '@/logger';
 import { useMainListScrollToTop } from '@/navigation/MainListContext';
 import { useKingOfTheHillStore } from '@/state/kingOfTheHill/kingOfTheHillStore';
-import chroma from 'chroma-js';
-import { dequal } from 'dequal';
-import makeColorMoreChill from 'make-color-more-chill';
-import React, { memo, type ReactNode, useCallback, useLayoutEffect, useMemo, useRef, useState } from 'react';
-import { type FlatList, Dimensions, StyleSheet, View } from 'react-native';
-import Animated, { interpolate, type SharedValue, useAnimatedScrollHandler, useAnimatedStyle } from 'react-native-reanimated';
-import { useSafeAreaInsets } from 'react-native-safe-area-context';
+
 import { KingOfTheHillHeader } from './KingOfTheHillHeader';
 import { LaunchButton } from './LaunchButton';
 import { LeaderboardItem } from './LeaderboardItem';

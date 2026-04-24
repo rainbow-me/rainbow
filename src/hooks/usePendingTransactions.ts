@@ -1,9 +1,10 @@
 import { useCallback } from 'react';
-import ethereumUtils from '@/utils/ethereumUtils';
-import isLowerCaseMatch from '@/utils/isLowerCaseMatch';
+
+import { type RainbowTransaction } from '@/entities/transactions';
 import { usePendingTransactionsStore } from '@/state/pendingTransactions';
 import { useAccountAddress } from '@/state/wallets/walletsStore';
-import { type RainbowTransaction } from '@/entities/transactions';
+import ethereumUtils from '@/utils/ethereumUtils';
+import isLowerCaseMatch from '@/utils/isLowerCaseMatch';
 
 const EMPTY_PENDING_TRANSACTIONS: RainbowTransaction[] = [];
 

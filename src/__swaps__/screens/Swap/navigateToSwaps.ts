@@ -10,17 +10,18 @@ import {
   trimTrailingZeros,
 } from '@/__swaps__/utils/swaps';
 import { enableActionsOnReadOnlyWallet } from '@/config/debug';
+import { divWorklet, mulWorklet, toFixedWorklet } from '@/framework/core/safeMath';
 import { getRemoteConfig } from '@/model/remoteConfig';
 import Navigation from '@/navigation/Navigation';
 import Routes from '@/navigation/routesNames';
 import store from '@/redux/store';
-import { divWorklet, mulWorklet, toFixedWorklet } from '@/framework/core/safeMath';
 import { useUserAssetsStore } from '@/state/assets/userAssets';
 import { userAssetsStoreManager } from '@/state/assets/userAssetsStoreManager';
 import { ChainId } from '@/state/backendNetworks/types';
-import { type SwapsState, useSwapsStore } from '@/state/swaps/swapsStore';
+import { useSwapsStore, type SwapsState } from '@/state/swaps/swapsStore';
 import { getIsReadOnlyWallet } from '@/state/wallets/walletsStore';
 import watchingAlert from '@/utils/watchingAlert';
+
 import { INITIAL_SLIDER_POSITION, SLIDER_WIDTH } from './constants';
 import { setSelectedGasSpeed } from './hooks/useSelectedGas';
 

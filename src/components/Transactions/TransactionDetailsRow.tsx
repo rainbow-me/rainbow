@@ -1,14 +1,13 @@
 import React from 'react';
-import * as i18n from '@/languages';
 import { TouchableWithoutFeedback } from 'react-native';
 
 import ButtonPressAnimation from '@/components/animations/ButtonPressAnimation';
 import { ChainImage } from '@/components/coin-icon/ChainImage';
-import { Box, Inline, Text } from '@/design-system';
-
-import { DetailIcon, DetailBadge, IconContainer } from '@/components/Transactions/TransactionIcons';
 import { SMALL_CARD_ROW_HEIGHT } from '@/components/Transactions/constants';
-import { type DetailType, type DetailInfo } from '@/components/Transactions/types';
+import { DetailBadge, DetailIcon, IconContainer } from '@/components/Transactions/TransactionIcons';
+import { type DetailInfo, type DetailType } from '@/components/Transactions/types';
+import { Box, Inline, Text } from '@/design-system';
+import * as i18n from '@/languages';
 import { type ChainId } from '@/state/backendNetworks/types';
 
 interface TransactionDetailsRowProps {

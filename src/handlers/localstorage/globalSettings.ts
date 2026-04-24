@@ -1,7 +1,8 @@
-import { ChainId } from '@/state/backendNetworks/types';
-import { getGlobal, saveGlobal } from './common';
 import { NativeCurrencyKeys } from '@/entities/nativeCurrencyTypes';
 import { Language } from '@/languages';
+import { ChainId } from '@/state/backendNetworks/types';
+
+import { getGlobal, saveGlobal } from './common';
 
 export const IMAGE_METADATA = 'imageMetadata';
 const KEYBOARD_HEIGHT = 'keyboardHeight';

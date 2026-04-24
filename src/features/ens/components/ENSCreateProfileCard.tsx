@@ -1,22 +1,25 @@
-import { analytics } from '@/analytics';
-import { enableActionsOnReadOnlyWallet } from '@/config/debug';
-import { Bleed, Box, ColorModeProvider, Column, Columns, Stack, Text } from '@/design-system';
-import { prefetchENSAvatar } from '../hooks/useENSAvatar';
-import { prefetchENSRecords } from '../hooks/useENSRecords';
-import useAccountENSDomains from '../hooks/useAccountENSDomains';
-import useDimensions from '@/hooks/useDimensions';
-import * as i18n from '@/languages';
-import Routes from '@/navigation/routesNames';
-import watchingAlert from '@/utils/watchingAlert';
-import { useRoute } from '@react-navigation/native';
 import React, { useCallback } from 'react';
-import ENSAvatarGrid from '../assets/ensAvatarGrid.png';
-import ENSIcon from '../assets/ensIcon.png';
-import { useNavigation } from '@/navigation/Navigation';
-import { getIsReadOnlyWallet } from '@/state/wallets/walletsStore';
-import ImgixImage from '@/components/images/ImgixImage';
+
+import { useRoute } from '@react-navigation/native';
+
+import { analytics } from '@/analytics';
 import { GenericCard, type Gradient } from '@/components/cards/GenericCard';
 import { ORB_SIZE } from '@/components/cards/reusables/IconOrb';
+import ImgixImage from '@/components/images/ImgixImage';
+import { enableActionsOnReadOnlyWallet } from '@/config/debug';
+import { Bleed, Box, ColorModeProvider, Column, Columns, Stack, Text } from '@/design-system';
+import useDimensions from '@/hooks/useDimensions';
+import * as i18n from '@/languages';
+import { useNavigation } from '@/navigation/Navigation';
+import Routes from '@/navigation/routesNames';
+import { getIsReadOnlyWallet } from '@/state/wallets/walletsStore';
+import watchingAlert from '@/utils/watchingAlert';
+
+import ENSAvatarGrid from '../assets/ensAvatarGrid.png';
+import ENSIcon from '../assets/ensIcon.png';
+import useAccountENSDomains from '../hooks/useAccountENSDomains';
+import { prefetchENSAvatar } from '../hooks/useENSAvatar';
+import { prefetchENSRecords } from '../hooks/useENSRecords';
 
 const ASPECT_RATIO = 112 / 350;
 const ARBITRARILY_LARGE_NUMBER = 1000;

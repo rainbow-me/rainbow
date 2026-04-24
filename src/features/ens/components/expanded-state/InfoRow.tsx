@@ -1,20 +1,23 @@
 import React, { Fragment, useCallback, useState } from 'react';
+
 import { Switch } from 'react-native-gesture-handler';
-import { useNavigation } from '@/navigation/Navigation';
-import { useTheme } from '@/theme/ThemeContext';
-import ShimmerAnimation from '@/components/animations/ShimmerAnimation';
+
 import ButtonPressAnimation from '@/components/animations/ButtonPressAnimation';
+import ShimmerAnimation from '@/components/animations/ShimmerAnimation';
 import { Icon } from '@/components/icons';
-import { ImagePreviewOverlayTarget } from '@/components/images/ImagePreviewOverlay';
-import useOpenENSNFTHandler from '../../hooks/useOpenENSNFTHandler';
-import { Bleed, Box, Inline, Inset, Text, useForegroundColor } from '@/design-system';
 import { ImgixImage } from '@/components/images';
-import Routes from '@/navigation/routesNames';
-import { useENSAddress } from '../../resources/addressQuery';
+import { ImagePreviewOverlayTarget } from '@/components/images/ImagePreviewOverlay';
 import { CardSize } from '@/components/unique-token/CardSize';
+import { Bleed, Box, Inline, Inset, Text, useForegroundColor } from '@/design-system';
+import { opacity } from '@/framework/ui/utils/opacity';
+import { useNavigation } from '@/navigation/Navigation';
+import Routes from '@/navigation/routesNames';
 import { useLegacyNFTs } from '@/resources/nfts';
 import { useAccountAddress } from '@/state/wallets/walletsStore';
-import { opacity } from '@/framework/ui/utils/opacity';
+import { useTheme } from '@/theme/ThemeContext';
+
+import useOpenENSNFTHandler from '../../hooks/useOpenENSNFTHandler';
+import { useENSAddress } from '../../resources/addressQuery';
 
 export function InfoRowSkeleton() {
   const { colors } = useTheme();

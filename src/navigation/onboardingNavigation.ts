@@ -1,6 +1,6 @@
 import Navigation from '@/navigation/Navigation';
 import Routes from '@/navigation/routesNames';
-import { shouldShowNotificationPermissionScreen, setHasShownNotificationPermissionScreen } from '@/notifications/permissions';
+import { setHasShownNotificationPermissionScreen, shouldShowNotificationPermissionScreen } from '@/notifications/permissions';
 
 export const navigateAfterOnboarding = async (): Promise<void> => {
   const shouldShowNotifications = await shouldShowNotificationPermissionScreen();

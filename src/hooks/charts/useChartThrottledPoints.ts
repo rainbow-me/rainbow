@@ -1,8 +1,11 @@
-import { debounce } from 'lodash';
 import { useEffect, useMemo, useRef, useState } from 'react';
+
+import { debounce } from 'lodash';
+
 import { monotoneCubicInterpolation } from '@/react-native-animated-charts/src';
 import { userAssetsStoreManager } from '@/state/assets/userAssetsStoreManager';
-import { type ChartData, type ChartTime, usePriceChart } from './useChartInfo';
+
+import { usePriceChart, type ChartData, type ChartTime } from './useChartInfo';
 
 const traverseData = (prev: { nativePoints: ChartData[]; points: ChartData[] }, data: ChartData[]) => {
   if (!data || data.length === 0) {

@@ -1,18 +1,20 @@
 import { memo, useCallback } from 'react';
 import { StyleSheet } from 'react-native';
-import { Box, globalColors, Text } from '@/design-system';
-import ButtonPressAnimation from '@/components/animations/ButtonPressAnimation';
-import * as i18n from '@/languages';
-import { RnbwRewardsScenes } from '@/features/rnbw-rewards/screens/rnbw-rewards-screen/constants/rewardsScenes';
+
 import Animated, { runOnJS } from 'react-native-reanimated';
-import { time } from '@/utils/time';
+
+import ButtonPressAnimation from '@/components/animations/ButtonPressAnimation';
+import { Box, globalColors, Text } from '@/design-system';
 import {
   createScaleInFadeInSlideEnterAnimation,
   createScaleOutFadeOutSlideExitAnimation,
 } from '@/features/rnbw-rewards/animations/sceneTransitions';
-import { useIsReadOnlyWallet } from '@/state/wallets/walletsStore';
-import watchingAlert from '@/utils/watchingAlert';
+import { RnbwRewardsScenes } from '@/features/rnbw-rewards/screens/rnbw-rewards-screen/constants/rewardsScenes';
 import { rewardsFlowActions } from '@/features/rnbw-rewards/stores/rewardsFlowStore';
+import * as i18n from '@/languages';
+import { useIsReadOnlyWallet } from '@/state/wallets/walletsStore';
+import { time } from '@/utils/time';
+import watchingAlert from '@/utils/watchingAlert';
 
 const enteringAnimation = createScaleInFadeInSlideEnterAnimation({ delay: time.ms(200) });
 

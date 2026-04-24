@@ -1,5 +1,7 @@
-import { delay } from '@/helpers/utilities';
 import React, { useReducer } from 'react';
+
+import { delay } from '@/helpers/utilities';
+
 import { LearnCard } from './LearnCard';
 import {
   avoidScamsCard,

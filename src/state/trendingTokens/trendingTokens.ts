@@ -1,11 +1,12 @@
 import { analytics } from '@/analytics';
-import { type ChainId } from '@/state/backendNetworks/types';
-import { createRainbowStore } from '../internal/createRainbowStore';
 import {
-  TrendingCategory as ArcTrendingCategory,
   Timeframe as ArcTimeframe,
+  TrendingCategory as ArcTrendingCategory,
   TrendingSort as ArcTrendingSort,
 } from '@/graphql/__generated__/arc';
+import { type ChainId } from '@/state/backendNetworks/types';
+
+import { createRainbowStore } from '../internal/createRainbowStore';
 
 export const categories = [ArcTrendingCategory.Trending, 'Rainbow', ArcTrendingCategory.New, ArcTrendingCategory.Farcaster] as const;
 export type TrendingCategory = (typeof categories)[number];

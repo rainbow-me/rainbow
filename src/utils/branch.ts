@@ -2,10 +2,11 @@
 import pako from 'pako';
 import qs from 'qs';
 import branch from 'react-native-branch';
+
 import { analytics } from '@/analytics';
-import * as ls from '@/storage';
-import { logger, RainbowError } from '@/logger';
 import { IS_TEST } from '@/env';
+import { logger, RainbowError } from '@/logger';
+import * as ls from '@/storage';
 
 const isEmpty = <T extends object>(obj: T | undefined): obj is undefined => !obj || Object.keys(obj).length === 0;
 

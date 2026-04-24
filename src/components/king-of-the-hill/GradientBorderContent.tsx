@@ -1,6 +1,7 @@
+import React, { type ReactNode } from 'react';
+
 import { GradientBorderView } from '@/components/gradient-border/GradientBorderView';
 import { useBackgroundColor, useColorMode } from '@/design-system';
-import React, { type ReactNode } from 'react';
 
 export const GradientBorderContent = ({
   children,

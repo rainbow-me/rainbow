@@ -1,13 +1,15 @@
 import { memo } from 'react';
-import * as i18n from '@/languages';
 import { Image, StyleSheet, View } from 'react-native';
+
+import { Blur, Canvas, LinearGradient, RoundedRect } from '@shopify/react-native-skia';
+
 import { Box, Text } from '@/design-system';
+import baseImage from '@/features/rnbw-rewards/assets/rnbw-reward-methods/base.png';
+import bridgeImage from '@/features/rnbw-rewards/assets/rnbw-reward-methods/bridge.png';
+import btcImage from '@/features/rnbw-rewards/assets/rnbw-reward-methods/btc.png';
 import ethImage from '@/features/rnbw-rewards/assets/rnbw-reward-methods/eth.png';
 import usdcImage from '@/features/rnbw-rewards/assets/rnbw-reward-methods/usdc.png';
-import bridgeImage from '@/features/rnbw-rewards/assets/rnbw-reward-methods/bridge.png';
-import baseImage from '@/features/rnbw-rewards/assets/rnbw-reward-methods/base.png';
-import btcImage from '@/features/rnbw-rewards/assets/rnbw-reward-methods/btc.png';
-import { Blur, Canvas, LinearGradient, RoundedRect } from '@shopify/react-native-skia';
+import * as i18n from '@/languages';
 
 const HEIGHT = 188;
 const BORDER_RADIUS = 32;

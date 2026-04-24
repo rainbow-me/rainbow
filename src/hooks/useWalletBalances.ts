@@ -1,10 +1,12 @@
+import { useMemo } from 'react';
+
+import { type Address } from 'viem';
+
 import { add, convertAmountToNativeDisplay } from '@/helpers/utilities';
 import { type AllRainbowWallets } from '@/model/wallet';
 import { userAssetsStoreManager } from '@/state/assets/userAssetsStoreManager';
 import { useWalletSummary } from '@/state/wallets/useWalletSummaryStore';
 import { getWalletAddresses } from '@/state/wallets/walletsStore';
-import { useMemo } from 'react';
-import { type Address } from 'viem';
 
 export type WalletBalance = {
   assetBalanceAmount: string;

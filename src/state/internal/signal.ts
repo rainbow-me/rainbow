@@ -1,5 +1,6 @@
 import { dequal } from 'dequal';
 import { type StoreApi } from 'zustand';
+
 import { type BaseRainbowStore } from '@/state/internal/types';
 import { hasGetSnapshot } from '@/state/internal/utils/storeUtils';
 

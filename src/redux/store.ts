@@ -1,5 +1,6 @@
-import { type AnyAction, applyMiddleware, createStore } from 'redux';
+import { applyMiddleware, createStore, type AnyAction } from 'redux';
 import thunk, { type ThunkMiddleware } from 'redux-thunk';
+
 import reducers from './reducers';
 
 const store = createStore(reducers, applyMiddleware(thunk as ThunkMiddleware<ReturnType<typeof reducers>, AnyAction, undefined>));

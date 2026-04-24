@@ -1,16 +1,17 @@
 import React, { memo, useMemo } from 'react';
-import * as i18n from '@/languages';
+
+import { useLiveTokenValue } from '@/components/live-token-text/LiveTokenText';
 import { Box, Text, TextShadow, useColorMode } from '@/design-system';
-import { type PolymarketEvent, type PolymarketMarketEvent, type PolymarketMarket } from '@/features/polymarket/types/polymarket-event';
-import { getMarketsGroupedByBetType } from '@/features/polymarket/screens/polymarket-event-screen/utils/getMarketsGroupedByBetType';
 import { POLYMARKET_SPORTS_MARKET_TYPE } from '@/features/polymarket/constants';
+import { getMarketsGroupedByBetType } from '@/features/polymarket/screens/polymarket-event-screen/utils/getMarketsGroupedByBetType';
+import { type PolymarketTeamInfo } from '@/features/polymarket/types';
+import { type PolymarketEvent, type PolymarketMarket, type PolymarketMarketEvent } from '@/features/polymarket/types/polymarket-event';
+import { formatPrice } from '@/features/polymarket/utils/formatPrice';
 import { getOutcomeColor } from '@/features/polymarket/utils/getMarketColor';
 import { isDrawMarket } from '@/features/polymarket/utils/sports';
-import { useLiveTokenValue } from '@/components/live-token-text/LiveTokenText';
-import { getPolymarketTokenId } from '@/state/liveTokens/polymarketAdapter';
-import { formatPrice } from '@/features/polymarket/utils/formatPrice';
-import { type PolymarketTeamInfo } from '@/features/polymarket/types';
 import { formatNumber } from '@/helpers/strings';
+import * as i18n from '@/languages';
+import { getPolymarketTokenId } from '@/state/liveTokens/polymarketAdapter';
 
 const BAR_HEIGHT = 8;
 const BAR_GAP = 4;

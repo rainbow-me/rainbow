@@ -1,4 +1,4 @@
-import { type MutableRefObject, useCallback, useEffect, useLayoutEffect, useRef } from 'react';
+import { useCallback, useEffect, useLayoutEffect, useRef, type MutableRefObject } from 'react';
 
 export default function useTimeout(): [(func: () => void, ms?: number) => void, () => void, MutableRefObject<NodeJS.Timeout | null>] {
   const handle = useRef<NodeJS.Timeout | null>(null);

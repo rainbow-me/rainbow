@@ -1,9 +1,7 @@
-import { supportedCurrencies as supportedNativeCurrencies } from '@/references/supportedCurrencies';
-import { convertAmountToNativeDisplayWorklet } from './utilities';
 import type { NativeCurrencyKey } from '@/entities/nativeCurrencyTypes';
 import {
-  equalWorklet as safeEqualWorklet,
   divWorklet as safeDivWorklet,
+  equalWorklet as safeEqualWorklet,
   greaterThanOrEqualToWorklet as safeGreaterThanOrEqualToWorklet,
   isNumberStringWorklet as safeIsNumberStringWorklet,
   lessThanWorklet as safeLessThanWorklet,
@@ -14,7 +12,10 @@ import {
   toFixedWorklet as safeToFixedWorklet,
   toStringWorklet as safeToStringWorklet,
 } from '@/framework/core/safeMath';
+import { supportedCurrencies as supportedNativeCurrencies } from '@/references/supportedCurrencies';
+
 import { toSubscript, toSuperscript } from './strings';
+import { convertAmountToNativeDisplayWorklet } from './utilities';
 
 interface ThresholdConfig {
   threshold: number;

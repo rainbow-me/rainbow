@@ -1,9 +1,12 @@
-import ConditionalWrap from 'conditional-wrap';
-import * as i18n from '@/languages';
 import React, { useCallback, useMemo, useState } from 'react';
+
+import ConditionalWrap from 'conditional-wrap';
 import { ContextMenuButton, type MenuConfig } from 'react-native-ios-context-menu';
-import ActionButton from './ActionButton';
+
 import useWatchWallet from '@/hooks/useWatchWallet';
+import * as i18n from '@/languages';
+
+import ActionButton from './ActionButton';
 
 export default function WatchButton({ address, ensName, avatarUrl }: { address?: string; ensName?: string; avatarUrl?: string | null }) {
   const { isImporting, isWatching, watchWallet } = useWatchWallet({

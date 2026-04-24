@@ -1,7 +1,9 @@
 import React from 'react';
+
 import { Box } from '@/design-system';
-import { TransactionDetailsDivider } from '@/screens/transaction-details/components/TransactionDetailsDivider';
 import { type RainbowTransaction } from '@/entities/transactions';
+import { TransactionDetailsDivider } from '@/screens/transaction-details/components/TransactionDetailsDivider';
+
 import TransactionMasthead from './TransactionMasthead';
 
 type Props = {

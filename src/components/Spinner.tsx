@@ -1,12 +1,14 @@
 import React from 'react';
 import { type StyleProp, type ViewStyle } from 'react-native';
+
+import { ImgixImage } from '@/components/images';
+import { IS_TEST } from '@/env';
+import { position } from '@/styles';
+
 import SpinnerImageSource from '../assets/spinner.png';
 import { useTheme } from '../theme/ThemeContext';
 import { SpinAnimation } from './animations/SpinAnimation';
 import { Centered } from './layout';
-import { ImgixImage } from '@/components/images';
-import { position } from '@/styles';
-import { IS_TEST } from '@/env';
 
 type SpinnerProps = {
   color?: string;

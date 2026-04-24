@@ -1,16 +1,19 @@
-import * as i18n from '@/languages';
-import pWaitFor from 'p-wait-for';
 import React, { useCallback } from 'react';
 import { AppState, Linking } from 'react-native';
+
+import pWaitFor from 'p-wait-for';
+
+import { Box } from '@/design-system';
+import styled from '@/framework/ui/styled-thing';
+import { opacity } from '@/framework/ui/utils/opacity';
+import * as i18n from '@/languages';
+import { margin, padding, position } from '@/styles';
+import { delay } from '@/utils/delay';
+
 import { darkModeThemeColors } from '../../styles/colors';
 import ButtonPressAnimation from '../animations/ButtonPressAnimation';
 import { Icon } from '../icons';
 import { Text } from '../text';
-import { delay } from '@/utils/delay';
-import styled from '@/framework/ui/styled-thing';
-import { margin, padding, position } from '@/styles';
-import { Box } from '@/design-system';
-import { opacity } from '@/framework/ui/utils/opacity';
 
 const Button = styled(ButtonPressAnimation).attrs({
   scaleTo: 1.08,

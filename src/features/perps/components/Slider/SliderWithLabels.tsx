@@ -1,7 +1,7 @@
 import React, { useCallback } from 'react';
 import { View } from 'react-native';
+
 import Animated, {
-  type SharedValue,
   useAnimatedStyle,
   useDerivedValue,
   useSharedValue,
@@ -9,13 +9,16 @@ import Animated, {
   withSequence,
   withSpring,
   withTiming,
+  type SharedValue,
 } from 'react-native-reanimated';
-import { AnimatedText, Bleed, Column, Columns, Inline, useColorMode, useForegroundColor } from '@/design-system';
-import { SPRING_CONFIGS, TIMING_CONFIGS } from '@/components/animations/animationConfigs';
-import { opacity } from '@/framework/ui/utils/opacity';
+
 import { pulsingConfig } from '@/__swaps__/screens/Swap/constants';
-import { Slider, type SliderProps, type SliderVisualState, SLIDER_DEFAULT_WIDTH } from './Slider';
+import { SPRING_CONFIGS, TIMING_CONFIGS } from '@/components/animations/animationConfigs';
 import { GestureHandlerButton } from '@/components/buttons';
+import { AnimatedText, Bleed, Column, Columns, Inline, useColorMode, useForegroundColor } from '@/design-system';
+import { opacity } from '@/framework/ui/utils/opacity';
+
+import { Slider, SLIDER_DEFAULT_WIDTH, type SliderProps, type SliderVisualState } from './Slider';
 
 export type SliderLabels = {
   title?: string | SharedValue<string>;

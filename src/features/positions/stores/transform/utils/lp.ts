@@ -1,4 +1,4 @@
-import { type RainbowUnderlyingAsset, type RangeStatus, type LpAllocation } from '../../../types';
+import { type LpAllocation, type RainbowUnderlyingAsset, type RangeStatus } from '../../../types';
 
 // ============ Constants ====================================================== //
 

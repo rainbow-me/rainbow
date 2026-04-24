@@ -1,7 +1,8 @@
 import { useMemo } from 'react';
-import * as i18n from '@/languages';
+
 import { MarketSortOrder } from '@/features/perps/types';
 import useAccountSettings from '@/hooks/useAccountSettings';
+import * as i18n from '@/languages';
 
 export const useMarketSortOrderLabels = () => {
   const { language } = useAccountSettings();

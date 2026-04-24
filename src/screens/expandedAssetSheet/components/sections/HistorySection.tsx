@@ -1,37 +1,40 @@
 import React, { memo, useCallback, useMemo, useState } from 'react';
-import { AnimatedText, Box, Text, TextShadow, useBackgroundColor, useColorMode, useForegroundColor } from '@/design-system';
-import { SectionId, useExpandedAssetSheetContext } from '../../context/ExpandedAssetSheetContext';
-import ButtonPressAnimation from '@/components/animations/ButtonPressAnimation';
-import ShimmerAnimation from '@/components/animations/ShimmerAnimation';
-import { DEVICE_WIDTH } from '@/utils/deviceUtils';
-import { Tabs } from '../shared/Tabs/Tabs';
-import { type TokenInteraction, TokenInteractionDirection, TokenInteractionType } from '@/graphql/__generated__/metadata';
-import { useTabContext } from '../shared/Tabs/TabContext';
-import { opacity } from '@/framework/ui/utils/opacity';
-import { GestureHandlerButton } from '@/components/buttons/GestureHandlerButton';
+
+import { format } from 'date-fns';
 import Animated, {
   clamp,
-  type SharedValue,
   useAnimatedStyle,
   useDerivedValue,
+  useSharedValue,
+  withDelay,
   withSpring,
   withTiming,
-  withDelay,
-  useSharedValue,
+  type SharedValue,
 } from 'react-native-reanimated';
+
 import { SPRING_CONFIGS, TIMING_CONFIGS } from '@/components/animations/animationConfigs';
-import { format } from 'date-fns';
-import { convertRawAmountToBalanceWorklet, convertRawAmountToNativeDisplay } from '@/helpers/utilities';
+import ButtonPressAnimation from '@/components/animations/ButtonPressAnimation';
+import ShimmerAnimation from '@/components/animations/ShimmerAnimation';
+import { GestureHandlerButton } from '@/components/buttons/GestureHandlerButton';
+import { AnimatedText, Box, Text, TextShadow, useBackgroundColor, useColorMode, useForegroundColor } from '@/design-system';
 import { type NativeCurrencyKey } from '@/entities/nativeCurrencyTypes';
-import { openInBrowser } from '@/utils/openInBrowser';
-import * as i18n from '@/languages';
 import { minWorklet, mulWorklet, subWorklet, sumWorklet } from '@/framework/core/safeMath';
+import { opacity } from '@/framework/ui/utils/opacity';
+import { TokenInteractionDirection, TokenInteractionType, type TokenInteraction } from '@/graphql/__generated__/metadata';
+import { convertRawAmountToBalanceWorklet, convertRawAmountToNativeDisplay } from '@/helpers/utilities';
+import * as i18n from '@/languages';
 import { useTokenInteractions } from '@/resources/metadata/tokenInteractions';
+import { userAssetsStoreManager } from '@/state/assets/userAssetsStoreManager';
+import { useAccountAddress } from '@/state/wallets/walletsStore';
+import { THICK_BORDER_WIDTH } from '@/styles/constants';
+import { DEVICE_WIDTH } from '@/utils/deviceUtils';
+import { openInBrowser } from '@/utils/openInBrowser';
+
+import { SectionId, useExpandedAssetSheetContext } from '../../context/ExpandedAssetSheetContext';
 import { CollapsibleSection, LAYOUT_ANIMATION } from '../shared/CollapsibleSection';
 import { SheetSeparator } from '../shared/Separator';
-import { useAccountAddress } from '@/state/wallets/walletsStore';
-import { userAssetsStoreManager } from '@/state/assets/userAssetsStoreManager';
-import { THICK_BORDER_WIDTH } from '@/styles/constants';
+import { useTabContext } from '../shared/Tabs/TabContext';
+import { Tabs } from '../shared/Tabs/Tabs';
 
 const l = i18n.l.expanded_state.sections.history;
 

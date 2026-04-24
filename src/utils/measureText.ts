@@ -1,7 +1,9 @@
-import TextSize from 'react-native-text-size';
-import { fonts } from '../styles';
-import * as MeasureText from '@domir/react-native-measure-text';
 import { PixelRatio } from 'react-native';
+
+import * as MeasureText from '@domir/react-native-measure-text';
+import TextSize from 'react-native-text-size';
+
+import { fonts } from '../styles';
 
 const defaultTextStyles = {
   fontFamily: fonts.family.SFProRounded,

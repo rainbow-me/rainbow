@@ -1,27 +1,28 @@
-import { Box, globalColors, Separator, Text, TextIcon, useColorMode } from '@/design-system';
-import { usePolymarketEventStore } from '@/features/polymarket/stores/polymarketEventStore';
-import { PERPS_BACKGROUND_DARK, PERPS_BACKGROUND_LIGHT } from '@/features/perps/constants';
 import React, { memo, useMemo, useState } from 'react';
+
+import { Box, globalColors, Separator, Text, TextIcon, useColorMode } from '@/design-system';
+import { PERPS_BACKGROUND_DARK, PERPS_BACKGROUND_LIGHT } from '@/features/perps/constants';
+import { POLYMARKET_SPORTS_MARKET_TYPE } from '@/features/polymarket/constants';
+import { BetTypeSelector } from '@/features/polymarket/screens/polymarket-event-screen/BetTypeSelector';
+import { SingleMarketEventOutcomes } from '@/features/polymarket/screens/polymarket-event-screen/components/SingleMarketEvent';
+import { ItemSelector } from '@/features/polymarket/screens/polymarket-event-screen/ItemSelector';
+import { MarketRow } from '@/features/polymarket/screens/polymarket-event-screen/MarketRow';
 import {
   BET_TYPE,
-  type BetType,
   getMarketsGroupedByBetType,
+  type BetType,
   type GroupedSportsMarkets,
   type LineBasedGroup,
   type MoneylineGroup,
 } from '@/features/polymarket/screens/polymarket-event-screen/utils/getMarketsGroupedByBetType';
-import useDimensions from '@/hooks/useDimensions';
-import { POLYMARKET_SPORTS_MARKET_TYPE } from '@/features/polymarket/constants';
-import { SingleMarketEventOutcomes } from '@/features/polymarket/screens/polymarket-event-screen/components/SingleMarketEvent';
-import { ItemSelector } from '@/features/polymarket/screens/polymarket-event-screen/ItemSelector';
-import { BetTypeSelector } from '@/features/polymarket/screens/polymarket-event-screen/BetTypeSelector';
-import { MarketRow } from '@/features/polymarket/screens/polymarket-event-screen/MarketRow';
+import { usePolymarketEventStore } from '@/features/polymarket/stores/polymarketEventStore';
 import { type PolymarketTeamInfo } from '@/features/polymarket/types';
+import { type PolymarketEvent } from '@/features/polymarket/types/polymarket-event';
+import { getOutcomeColor } from '@/features/polymarket/utils/getMarketColor';
+import { getOutcomeTeam } from '@/features/polymarket/utils/getOutcomeTeam';
+import useDimensions from '@/hooks/useDimensions';
 import Navigation from '@/navigation/Navigation';
 import Routes from '@/navigation/routesNames';
-import { type PolymarketEvent } from '@/features/polymarket/types/polymarket-event';
-import { getOutcomeTeam } from '@/features/polymarket/utils/getOutcomeTeam';
-import { getOutcomeColor } from '@/features/polymarket/utils/getMarketColor';
 
 export const SportsEventMarkets = memo(function SportsEventMarkets() {
   const { isDarkMode } = useColorMode();

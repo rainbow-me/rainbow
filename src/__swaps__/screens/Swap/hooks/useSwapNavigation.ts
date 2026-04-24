@@ -1,7 +1,9 @@
 import { useCallback } from 'react';
-import { type DerivedValue, type SharedValue, useSharedValue } from 'react-native-reanimated';
-import { type useAnimatedInterval } from '@/hooks/reanimated/useAnimatedInterval';
+
+import { useSharedValue, type DerivedValue, type SharedValue } from 'react-native-reanimated';
+
 import { type ExtendedAnimatedAssetWithColors } from '@/__swaps__/types/assets';
+import { type useAnimatedInterval } from '@/hooks/reanimated/useAnimatedInterval';
 
 export const enum NavigationSteps {
   INPUT_ELEMENT_FOCUSED = 0,

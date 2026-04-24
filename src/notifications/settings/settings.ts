@@ -1,18 +1,17 @@
+import { trackChangedGlobalNotificationSettings } from '@/notifications/analytics';
 import { DEFAULT_ENABLED_TOPIC_SETTINGS } from '@/notifications/settings/constants';
-import {
-  type GlobalNotificationTopics,
-  type GlobalNotificationTopicType,
-  type WalletNotificationTopicType,
-  type WalletNotificationSettings,
-} from '@/notifications/settings/types';
+import { publishWalletSettings } from '@/notifications/settings/firebase';
 import {
   getAllGlobalNotificationSettingsFromStorage,
   getAllWalletNotificationSettingsFromStorage,
   setAllWalletNotificationSettingsToStorage,
 } from '@/notifications/settings/storage';
-import { trackChangedGlobalNotificationSettings } from '@/notifications/analytics';
-
-import { publishWalletSettings } from '@/notifications/settings/firebase';
+import {
+  type GlobalNotificationTopics,
+  type GlobalNotificationTopicType,
+  type WalletNotificationSettings,
+  type WalletNotificationTopicType,
+} from '@/notifications/settings/types';
 
 /**
  1. Reads notification settings for all wallets from storage.

@@ -1,13 +1,15 @@
 import { encodeFunctionData, type Address, type Hash } from 'viem';
-import { getProvider } from '@/handlers/web3';
-import { loadWallet } from '@/model/wallet';
-import { STAKING_ABI, STAKING_CHAIN_ID, STAKING_CONTRACT_ADDRESS } from '../constants';
-import { type StakingPositionData, useStakingPositionStore } from '../stores/rnbwStakingPositionStore';
-import { pollForStakingUpdate } from './pollForStakingUpdate';
+
 import { analytics } from '@/analytics';
 import { mulWorklet, subWorklet } from '@/framework/core/safeMath';
+import { getProvider } from '@/handlers/web3';
 import { convertRawAmountToDecimalFormat } from '@/helpers/utilities';
 import { RainbowError } from '@/logger';
+import { loadWallet } from '@/model/wallet';
+
+import { STAKING_ABI, STAKING_CHAIN_ID, STAKING_CONTRACT_ADDRESS } from '../constants';
+import { useStakingPositionStore, type StakingPositionData } from '../stores/rnbwStakingPositionStore';
+import { pollForStakingUpdate } from './pollForStakingUpdate';
 
 export async function unstakeRnbw({ address }: { address: Address }): Promise<Hash> {
   const initialExitFeePercentage = useStakingPositionStore.getState().getData()?.exitFeePercentage;

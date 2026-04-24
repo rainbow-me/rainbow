@@ -1,6 +1,13 @@
-import { subDays } from 'date-fns';
 import { type Dispatch } from 'react';
+
+import { subDays } from 'date-fns';
+
+import { getLocalENSRegistrations, saveLocalENSRegistrations } from '@/handlers/localstorage/accountLocal';
+import { omitFlatten } from '@/helpers/utilities';
 import { type AppDispatch, type AppGetState } from '@/redux/store';
+import { Network } from '@/state/backendNetworks/types';
+import { getAccountAddress } from '@/state/wallets/walletsStore';
+
 import type {
   ENSRegistrations,
   ENSRegistrationState,
@@ -8,11 +15,7 @@ import type {
   RegistrationParameters,
   TransactionRegistrationParameters,
 } from '../types/registration';
-import { getLocalENSRegistrations, saveLocalENSRegistrations } from '@/handlers/localstorage/accountLocal';
 import { type ENS_RECORDS, type REGISTRATION_MODES } from '../utils/helpers';
-import { omitFlatten } from '@/helpers/utilities';
-import { Network } from '@/state/backendNetworks/types';
-import { getAccountAddress } from '@/state/wallets/walletsStore';
 
 const ENS_REGISTRATION_SET_CHANGED_RECORDS = 'ensRegistration/ENS_REGISTRATION_SET_CHANGED_RECORDS';
 const ENS_REGISTRATION_SET_INITIAL_RECORDS = 'ensRegistration/ENS_REGISTRATION_SET_INITIAL_RECORDS';

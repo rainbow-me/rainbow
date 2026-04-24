@@ -1,19 +1,21 @@
 import { chunk, compact, groupBy, isEmpty, slice, sortBy } from 'lodash';
-import { add, greaterThan } from './utilities';
+
+import { type UniqueId } from '@/__swaps__/types/assets';
 import { type AssetListType } from '@/components/asset-list/RecyclerAssetList2';
-import { supportedCurrencies as supportedNativeCurrencies } from '@/references/supportedCurrencies';
-import * as i18n from '@/languages';
+import { CellType, type CellTypes } from '@/components/asset-list/RecyclerAssetList2/core/ViewTypes';
 import { AssetType } from '@/entities/assetTypes';
 import type { NativeCurrencyKey } from '@/entities/nativeCurrencyTypes';
 import type { ParsedAddressAsset } from '@/entities/tokens';
 import type { UniqueAsset } from '@/entities/uniqueAssets';
-import { type UniqueId } from '@/__swaps__/types/assets';
-import { CellType, type CellTypes } from '@/components/asset-list/RecyclerAssetList2/core/ViewTypes';
-import { type BooleanMap } from '@/hooks/useCoinListEditOptions';
-import { type Collection, type CollectionId } from '@/state/nfts/types';
-import { parseUniqueId } from '@/resources/nfts/utils';
 import { NftCollectionSortCriterion } from '@/graphql/__generated__/arc';
 import { assetIsUniqueAsset } from '@/handlers/web3';
+import { type BooleanMap } from '@/hooks/useCoinListEditOptions';
+import * as i18n from '@/languages';
+import { supportedCurrencies as supportedNativeCurrencies } from '@/references/supportedCurrencies';
+import { parseUniqueId } from '@/resources/nfts/utils';
+import { type Collection, type CollectionId } from '@/state/nfts/types';
+
+import { add, greaterThan } from './utilities';
 
 const COINS_TO_SHOW = 5;
 

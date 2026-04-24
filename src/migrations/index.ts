@@ -2,13 +2,13 @@ import { InteractionManager } from 'react-native';
 
 import * as env from '@/env';
 import { logger, RainbowError } from '@/logger';
-import { Storage } from '@/storage';
-
 import { deleteImgixMMKVCache } from '@/migrations/migrations/deleteImgixMMKVCache';
 import { migrateNotificationSettingsToV2 } from '@/migrations/migrations/migrateNotificationSettingsToV2';
 import { migrateNotificationSettingsToV3 } from '@/migrations/migrations/migrateNotificationSettingsToV3';
 import { prepareDefaultNotificationGroupSettingsState } from '@/migrations/migrations/prepareDefaultNotificationGroupSettingsState';
-import { type Migration, type MigrationName, MIGRATIONS_DEBUG_CONTEXT, MIGRATIONS_STORAGE_ID } from '@/migrations/types';
+import { MIGRATIONS_DEBUG_CONTEXT, MIGRATIONS_STORAGE_ID, type Migration, type MigrationName } from '@/migrations/types';
+import { Storage } from '@/storage';
+
 import { changeLanguageKeys } from './migrations/changeLanguageKeys';
 import { fixHiddenUSDC } from './migrations/fixHiddenUSDC';
 import { migrateFavoritesV2, migrateFavoritesV3 } from './migrations/migrateFavorites';

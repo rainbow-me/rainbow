@@ -1,4 +1,5 @@
 import { isNumber } from 'lodash';
+
 import colors from './colors';
 
 const addUnitToNumberValues = value => (isNumber(value) ? `${value}px` : value);

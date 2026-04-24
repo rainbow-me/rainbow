@@ -1,7 +1,9 @@
 import { memo } from 'react';
-import { Box, Text, useColorMode, type TextProps } from '@/design-system';
 import { StyleSheet, View } from 'react-native';
+
 import { LinearGradient } from 'expo-linear-gradient';
+
+import { Box, Text, useColorMode, type TextProps } from '@/design-system';
 import { opacity } from '@/framework/ui/utils/opacity';
 
 type PenaltySignProps = {

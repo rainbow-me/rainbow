@@ -1,16 +1,17 @@
-import { time } from '@/utils/time';
-import { createQueryStore } from '@/state/internal/createQueryStore';
-import { type NavigationState, useNavigationStore } from '@/state/navigation/navigationStore';
-import { useUserAssetsStore } from '../assets/userAssets';
-import { userAssetsStoreManager } from '@/state/assets/userAssetsStoreManager';
+import { convertAmountAndPriceToNativeDisplay, convertAmountToNativeDisplayWorklet, greaterThan, multiply } from '@/helpers/utilities';
+import Routes, { type Route } from '@/navigation/routesNames';
 import { ETH_ADDRESS, WETH_ADDRESS } from '@/references/constants';
 import type { SupportedCurrencyKey } from '@/references/supportedCurrencies';
 import { getPlatformClient } from '@/resources/platform/client';
-import { convertAmountAndPriceToNativeDisplay, convertAmountToNativeDisplayWorklet, greaterThan, multiply } from '@/helpers/utilities';
-import { fetchHyperliquidPrices } from './hyperliquidPriceService';
-import Routes, { type Route } from '@/navigation/routesNames';
+import { userAssetsStoreManager } from '@/state/assets/userAssetsStoreManager';
+import { createQueryStore } from '@/state/internal/createQueryStore';
+import { fetchPolymarketPrices, isPolymarketToken } from '@/state/liveTokens/polymarketAdapter';
+import { useNavigationStore, type NavigationState } from '@/state/navigation/navigationStore';
+import { time } from '@/utils/time';
+
+import { useUserAssetsStore } from '../assets/userAssets';
 import { isHyperliquidToken, parseHyperliquidTokenId } from './hyperliquidAdapter';
-import { isPolymarketToken, fetchPolymarketPrices } from '@/state/liveTokens/polymarketAdapter';
+import { fetchHyperliquidPrices } from './hyperliquidPriceService';
 
 const ETH_MAINNET_TOKEN_ID = `${ETH_ADDRESS}:1`;
 

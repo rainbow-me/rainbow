@@ -1,3 +1,9 @@
+import React from 'react';
+
+import { type WalletKitTypes } from '@reown/walletkit';
+import { type Verify } from '@walletconnect/types';
+import { type Address } from 'viem';
+
 import { Alert } from '@/components/alerts';
 import ButtonPressAnimation from '@/components/animations/ButtonPressAnimation';
 import { ImgixImage } from '@/components/images';
@@ -5,17 +11,14 @@ import { InfoAlert } from '@/components/info-alert/info-alert';
 import { AccentColorProvider, BackgroundProvider, Box, Separator, Text } from '@/design-system';
 import { DAppStatus } from '@/graphql/__generated__/metadata';
 import * as i18n from '@/languages';
+import { useNavigation } from '@/navigation/Navigation';
 import Routes from '@/navigation/routesNames';
 import { useDappMetadata } from '@/resources/metadata/dapp';
 import { getAccountProfileInfo, useAccountAddress, useSelectedWallet } from '@/state/wallets/walletsStore';
 import { useTheme } from '@/theme/ThemeContext';
 import { initials } from '@/utils/formatters';
-import { type AuthRequestAuthenticateSignature, AuthRequestResponseErrorReason } from '../types';
-import { useNavigation } from '@/navigation/Navigation';
-import { type WalletKitTypes } from '@reown/walletkit';
-import { type Verify } from '@walletconnect/types';
-import React from 'react';
-import { type Address } from 'viem';
+
+import { AuthRequestResponseErrorReason, type AuthRequestAuthenticateSignature } from '../types';
 
 export function AuthRequest({
   requesterMeta,

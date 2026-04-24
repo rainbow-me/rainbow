@@ -1,7 +1,13 @@
-import * as i18n from '@/languages';
 import React, { useCallback, useRef } from 'react';
 import { View } from 'react-native';
+
 import Divider from '@/components/Divider';
+import styled from '@/framework/ui/styled-thing';
+import { opacity } from '@/framework/ui/utils/opacity';
+import * as i18n from '@/languages';
+import { margin, padding, position } from '@/styles';
+import { useTheme } from '@/theme/ThemeContext';
+
 import ButtonPressAnimation from '../../animations/ButtonPressAnimation';
 import { BiometricButtonContent } from '../../buttons';
 import CopyTooltip from '../../copy-tooltip';
@@ -10,10 +16,6 @@ import { AvatarCircle } from '../../profile';
 import { Text, TruncatedAddress } from '../../text';
 import ProfileModalContainer from './ProfileModalContainer';
 import ProfileNameInput from './ProfileNameInput';
-import styled from '@/framework/ui/styled-thing';
-import { margin, padding, position } from '@/styles';
-import { useTheme } from '@/theme/ThemeContext';
-import { opacity } from '@/framework/ui/utils/opacity';
 
 const ProfileAddressText = styled(TruncatedAddress).attrs(({ theme: { colors } }: any) => ({
   align: 'center',

@@ -1,10 +1,13 @@
 import React, { useCallback, useEffect, useLayoutEffect, useState } from 'react';
+
 import { TouchableWithoutFeedback } from 'react-native-gesture-handler';
 import Animated, { Easing, interpolate, useAnimatedStyle, useSharedValue, withTiming, type SharedValue } from 'react-native-reanimated';
-import { Centered } from '../layout';
-import { SheetSubtitleCyclerItem } from './SheetSubtitleCyclerItem';
+
 import useInterval from '@/hooks/useInterval';
 import useTimeout from '@/hooks/useTimeout';
+
+import { Centered } from '../layout';
+import { SheetSubtitleCyclerItem } from './SheetSubtitleCyclerItem';
 
 interface Props {
   sharedValue: SharedValue<number>;

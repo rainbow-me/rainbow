@@ -1,6 +1,10 @@
+import React, { useCallback, useMemo } from 'react';
+
+import { type Source } from 'react-native-fast-image';
+
+import Caret from '@/assets/family-dropdown-arrow.png';
 import ManuallyBackedUpIcon from '@/assets/ManuallyBackedUp.png';
 import WalletsAndBackupIcon from '@/assets/WalletsAndBackup.png';
-import Caret from '@/assets/family-dropdown-arrow.png';
 import { useCreateBackup } from '@/components/backup/useCreateBackup';
 import { Bleed, Box, Inline, Inset, Separator, Stack, Text } from '@/design-system';
 import { type TextColor } from '@/design-system/color/palettes';
@@ -15,8 +19,7 @@ import { backupsStore, CloudBackupState } from '@/state/backups/backups';
 import { useSelectedWallet } from '@/state/wallets/walletsStore';
 import { useTheme } from '@/theme/ThemeContext';
 import { cloudPlatform } from '@/utils/platform';
-import React, { useCallback, useMemo } from 'react';
-import { type Source } from 'react-native-fast-image';
+
 import ButtonPressAnimation from '../animations/ButtonPressAnimation';
 import { ImgixImage } from '../images';
 

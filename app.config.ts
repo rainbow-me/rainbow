@@ -1,5 +1,5 @@
-import { type ExpoConfig } from 'expo/config';
 import { withSentry } from '@sentry/react-native/expo';
+import { type ExpoConfig } from 'expo/config';
 
 const config: ExpoConfig = {
   name: 'Rainbow',

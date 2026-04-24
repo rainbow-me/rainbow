@@ -1,7 +1,8 @@
-import Clipboard from '@react-native-clipboard/clipboard';
-import PropTypes from 'prop-types';
 import React, { Fragment, useRef, useState } from 'react';
 import { TouchableOpacity, View } from 'react-native';
+
+import Clipboard from '@react-native-clipboard/clipboard';
+import PropTypes from 'prop-types';
 import Tooltips from 'react-native-tooltips';
 
 const CopyTooltip = ({ children, textToCopy, tooltipText }) => {

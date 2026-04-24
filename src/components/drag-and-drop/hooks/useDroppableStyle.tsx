@@ -1,4 +1,5 @@
 import { useAnimatedStyle } from 'react-native-reanimated';
+
 import { useDndContext } from '..';
 import type { AnimatedStyle, UniqueIdentifier } from '../types';
 

@@ -1,14 +1,17 @@
 import React, { useMemo } from 'react';
+
+import { useSelector } from 'react-redux';
+
+import { analytics } from '@/analytics';
 import { Box, Stack, Text } from '@/design-system';
+import { RewardStatsActionType, type RewardStatsAction } from '@/graphql/__generated__/metadata';
+import { convertAmountAndPriceToNativeDisplay, convertAmountToNativeDisplay } from '@/helpers/utilities';
 import * as i18n from '@/languages';
-import { RewardsStatsCard } from './RewardsStatsCard';
-import { type RewardStatsAction, RewardStatsActionType } from '@/graphql/__generated__/metadata';
 import { useNavigation } from '@/navigation/Navigation';
 import Routes from '@/navigation/routesNames';
-import { convertAmountAndPriceToNativeDisplay, convertAmountToNativeDisplay } from '@/helpers/utilities';
-import { useSelector } from 'react-redux';
 import { type AppState } from '@/redux/store';
-import { analytics } from '@/analytics';
+
+import { RewardsStatsCard } from './RewardsStatsCard';
 
 type Props = {
   assetPrice?: number;

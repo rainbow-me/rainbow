@@ -1,21 +1,25 @@
-import { type RouteProp, useRoute } from '@react-navigation/native';
-import * as i18n from '@/languages';
 import React, { useCallback } from 'react';
+
+import { useRoute, type RouteProp } from '@react-navigation/native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import styled from 'styled-components';
+
+import { IS_ANDROID } from '@/env';
+import { opacity } from '@/framework/ui/utils/opacity';
+import useDimensions from '@/hooks/useDimensions';
+import * as i18n from '@/languages';
+import type Routes from '@/navigation/routesNames';
+import { type RootStackParamList } from '@/navigation/types';
+import { fonts, fontWithWidth, position } from '@/styles';
+import { useTheme } from '@/theme/ThemeContext';
+import formatURLForDisplay from '@/utils/formatURLForDisplay';
+import { openInBrowser } from '@/utils/openInBrowser';
+
 import { Centered, Column, ColumnWithMargins } from '../components/layout';
 import { SheetActionButton, SheetTitle, SlackSheet } from '../components/sheet';
 import { Emoji, Text } from '../components/text';
 import { useNavigation } from '../navigation/Navigation';
-import useDimensions from '@/hooks/useDimensions';
-import { fonts, fontWithWidth, position } from '@/styles';
-import { useTheme } from '@/theme/ThemeContext';
-import formatURLForDisplay from '@/utils/formatURLForDisplay';
-import { IS_ANDROID } from '@/env';
-import { openInBrowser } from '@/utils/openInBrowser';
-import { type RootStackParamList } from '@/navigation/types';
-import type Routes from '@/navigation/routesNames';
-import { opacity } from '@/framework/ui/utils/opacity';
+
 export const ExternalLinkWarningSheetHeight = 380 + (IS_ANDROID ? 20 : 0);
 
 const Container = styled(Centered).attrs({ direction: 'column' })(({ deviceHeight, height }) => ({

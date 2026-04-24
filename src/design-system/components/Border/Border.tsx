@@ -1,4 +1,5 @@
 import React, { memo } from 'react';
+
 import { Cover, useColorMode, useForegroundColor } from '@/design-system';
 import { type ForegroundColor } from '@/design-system/color/palettes';
 import { type CustomColor } from '@/design-system/color/useForegroundColor';

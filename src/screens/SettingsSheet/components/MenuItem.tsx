@@ -1,17 +1,20 @@
 import React from 'react';
+import { type ImageSourcePropType } from 'react-native';
+
 import { type Source } from 'react-native-fast-image';
+
+import Chevron from '@/assets/chevronUpDown.png';
+import Caret from '@/assets/family-dropdown-arrow.png';
+import { ImgixImage } from '@/components/images';
+import { Box, Inline, Stack, Text } from '@/design-system';
+import { type Width } from '@/design-system/layout/size';
+import { opacity } from '@/framework/ui/utils/opacity';
+import { colors } from '@/styles';
+import { useTheme } from '@/theme/ThemeContext';
+
 import ButtonPressAnimation from '../../../components/animations/ButtonPressAnimation';
 import CheckmarkCircledIcon from '../../../components/icons/svg/CheckmarkCircledIcon';
 import WarningIcon from '../../../components/icons/svg/WarningIcon';
-import Chevron from '@/assets/chevronUpDown.png';
-import Caret from '@/assets/family-dropdown-arrow.png';
-import { Box, Inline, Stack, Text } from '@/design-system';
-import { ImgixImage } from '@/components/images';
-import { useTheme } from '@/theme/ThemeContext';
-import { type ImageSourcePropType } from 'react-native';
-import { type Width } from '@/design-system/layout/size';
-import { colors } from '@/styles';
-import { opacity } from '@/framework/ui/utils/opacity';
 
 interface ImageIconProps {
   size?: number;

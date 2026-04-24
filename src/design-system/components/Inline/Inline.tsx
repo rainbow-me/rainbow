@@ -1,6 +1,7 @@
 import React, { Children, Fragment, type ReactElement, type ReactNode } from 'react';
-import { type AlignHorizontal, alignHorizontalToFlexAlign, type AlignVertical, alignVerticalToFlexAlign } from '../../layout/alignment';
-import { type Space, space as spaceTokens } from '../../layout/space';
+
+import { alignHorizontalToFlexAlign, alignVerticalToFlexAlign, type AlignHorizontal, type AlignVertical } from '../../layout/alignment';
+import { space as spaceTokens, type Space } from '../../layout/space';
 import { Box, resolveToken } from '../Box/Box';
 
 export type InlineProps = {

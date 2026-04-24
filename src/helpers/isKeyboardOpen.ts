@@ -1,4 +1,5 @@
 import { Keyboard } from 'react-native';
+
 let keyboardOpen = false;
 
 Keyboard.addListener('keyboardDidShow', () => {

@@ -1,9 +1,11 @@
 import * as React from 'react';
-import { Box } from '@/design-system';
+
 import { navbarHeight } from '@/components/navbar/Navbar';
-import { StickyHeader } from '../core/StickyHeaders';
-import { useTheme } from '@/theme/ThemeContext';
+import { Box } from '@/design-system';
 import { IS_IOS } from '@/env';
+import { useTheme } from '@/theme/ThemeContext';
+
+import { StickyHeader } from '../core/StickyHeaders';
 
 export const ProfileStickyHeaderHeight = 52;
 const visiblePosition = IS_IOS ? navbarHeight : navbarHeight + 80;

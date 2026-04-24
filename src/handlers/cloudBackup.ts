@@ -2,10 +2,12 @@ import { sortBy } from 'lodash';
 // @ts-expect-error ts-migrate(7016) FIXME: Could not find a declaration file for module 'reac... Remove this comment to see the full error message
 import RNCloudFs from 'react-native-cloud-fs';
 import RNFS from 'react-native-fs';
-import AesEncryptor from '../handlers/aesEncryption';
-import { logger, RainbowError } from '@/logger';
+
 import { IS_ANDROID, IS_IOS } from '@/env';
+import { logger, RainbowError } from '@/logger';
 import { type BackupFile, type CloudBackups } from '@/model/backup';
+
+import AesEncryptor from '../handlers/aesEncryption';
 
 const REMOTE_BACKUP_WALLET_DIR = 'rainbow.me/wallet-backups';
 export const USERDATA_FILE = 'UserData.json';

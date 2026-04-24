@@ -1,10 +1,13 @@
 import React from 'react';
 import { StyleSheet, View } from 'react-native';
+
 import Animated, { useAnimatedStyle, withSpring, withTiming } from 'react-native-reanimated';
+
 import { SPRING_CONFIGS, TIMING_CONFIGS } from '@/components/animations/animationConfigs';
 import { useAccountAccentColor } from '@/hooks/useAccountAccentColor';
 import { TAB_BAR_HEIGHT } from '@/navigation/SwipeNavigator';
 import { DEVICE_WIDTH } from '@/utils/deviceUtils';
+
 import { useBrowserContext } from './BrowserContext';
 import { EXTRA_WEBVIEW_HEIGHT } from './Dimensions';
 

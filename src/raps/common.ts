@@ -1,6 +1,8 @@
 import { createMMKV } from 'react-native-mmkv';
-import { type RapAction, type RapActionParameterMap, type RapActionTypes } from './references';
+
 import { STORAGE_IDS } from '@/model/mmkv';
+
+import { type RapAction, type RapActionParameterMap, type RapActionTypes } from './references';
 
 export function createNewAction<T extends RapActionTypes>(type: T, parameters: RapActionParameterMap[T]): RapAction<T> {
   const newAction = {

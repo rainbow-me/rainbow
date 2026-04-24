@@ -1,5 +1,6 @@
 import { type ImageOptions } from '@candlefinance/faster-image';
 import { type CaptureOptions } from 'react-native-view-shot';
+
 import { globalColors } from '@/design-system';
 import { IS_IOS } from '@/env';
 

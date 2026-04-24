@@ -1,9 +1,10 @@
 import React, { useEffect, useRef } from 'react';
 import { InteractionManager } from 'react-native';
-import { type UnlockableAppIconKey, unlockableAppIcons } from '@/features/app-icon/models/appIcons';
-import { unlockableAppIconCheck } from '@/features/app-icon/utils/unlockableAppIconCheck';
+
 import { type EthereumAddress } from '@/entities/wallet';
 import { IS_TEST } from '@/env';
+import { unlockableAppIcons, type UnlockableAppIconKey } from '@/features/app-icon/models/appIcons';
+import { unlockableAppIconCheck } from '@/features/app-icon/utils/unlockableAppIconCheck';
 import WalletBackupStepTypes from '@/helpers/walletBackupStepTypes';
 import walletBackupTypes from '@/helpers/walletBackupTypes';
 import WalletTypes from '@/helpers/walletTypes';

@@ -1,4 +1,5 @@
-import { type DerivedValue, type SharedValue, runOnJS, useAnimatedReaction } from 'react-native-reanimated';
+import { runOnJS, useAnimatedReaction, type DerivedValue, type SharedValue } from 'react-native-reanimated';
+
 import { deepEqual, shallowEqual } from '@/worklets/comparisons';
 
 interface BaseSyncParams<T> {

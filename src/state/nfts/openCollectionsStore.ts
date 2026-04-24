@@ -1,9 +1,11 @@
 import { type Address } from 'viem';
+
 import { createStoreFactoryUtils } from '@/state/internal/utils/factoryUtils';
+import { getAccountAddress, useAccountAddress } from '@/state/wallets/walletsStore';
+
 import { createOpenCollectionsStore } from './createOpenCollectionsStore';
 import { openCollectionsStoreManager } from './openCollectionsStoreManager';
-import { type OpenCollectionsRouter, type OpenCollectionsStoreType, type OpenCollectionsState } from './types';
-import { getAccountAddress, useAccountAddress } from '@/state/wallets/walletsStore';
+import { type OpenCollectionsRouter, type OpenCollectionsState, type OpenCollectionsStoreType } from './types';
 
 const { persist, portableSubscribe, rebindSubscriptions } = createStoreFactoryUtils<
   OpenCollectionsStoreType,
@@ -42,12 +44,16 @@ function useOpenCollectionsStoreInternal<T>(
 }
 
 export const useOpenCollectionsStore: OpenCollectionsRouter = Object.assign(useOpenCollectionsStoreInternal, {
-  destroy: () => getOrCreateStore().destroy(),
   getInitialState: () => getOrCreateStore().getInitialState(),
   getState: (address?: Address | string) => getOrCreateStore(address).getState(),
   persist,
   setState: (...args: Parameters<OpenCollectionsRouter['setState']>) => {
     const [partial, replace, address] = args;
+    // @ts-expect-error — zustand v5 narrowed setState into two literal
+    // overloads (`replace?: false` + Partial, or `replace: true` + full
+    // state). The router's own signature keeps a boolean `replace`, so TS
+    // can't pick an overload when forwarding; the forwarder is correct at
+    // runtime because v5's impl handles both forms.
     return getOrCreateStore(address).setState(partial, replace);
   },
   subscribe: portableSubscribe,

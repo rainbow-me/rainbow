@@ -1,4 +1,5 @@
 import React from 'react';
+
 import { Box, Columns, Inline, Text } from '@/design-system';
 import { TransactionDetailsSymbol } from '@/screens/transaction-details/components/TransactionDetailsSymbol';
 

@@ -1,10 +1,12 @@
-import { isEmpty } from 'lodash';
 import { useCallback, useEffect, useMemo, useState } from 'react';
+
+import { isEmpty } from 'lodash';
 import { atom, useRecoilState } from 'recoil';
+
+import type { Records } from '../types/registration';
+import { deprecatedTextRecordFields, ENS_RECORDS, REGISTRATION_MODES, textRecordFields, type TextRecordField } from '../utils/helpers';
 import useENSModifiedRegistration from './useENSModifiedRegistration';
 import useENSRegistration from './useENSRegistration';
-import type { Records } from '../types/registration';
-import { deprecatedTextRecordFields, ENS_RECORDS, REGISTRATION_MODES, type TextRecordField, textRecordFields } from '../utils/helpers';
 
 const disabledAtom = atom({
   default: false,

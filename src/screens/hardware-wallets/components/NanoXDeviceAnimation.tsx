@@ -1,17 +1,19 @@
-import { BackdropBlur, Canvas, Circle, Group, Paint, Rect, mix } from '@shopify/react-native-skia';
 import React, { useEffect } from 'react';
-import { type StyleProp, StyleSheet, type ViewStyle } from 'react-native';
+import { StyleSheet, type StyleProp, type ViewStyle } from 'react-native';
+
+import { BackdropBlur, Canvas, Circle, Group, mix, Paint, Rect } from '@shopify/react-native-skia';
 import { type Source } from 'react-native-fast-image';
 import Animated, {
   Easing,
-  type SharedValue,
   interpolateColor,
   useAnimatedReaction,
   useAnimatedStyle,
   useSharedValue,
   withRepeat,
   withTiming,
+  type SharedValue,
 } from 'react-native-reanimated';
+
 import gridDotsDark from '@/assets/dot-grid-dark.png';
 import gridDotsLight from '@/assets/dot-grid-light.png';
 import ledgerNano from '@/assets/ledger-nano.png';

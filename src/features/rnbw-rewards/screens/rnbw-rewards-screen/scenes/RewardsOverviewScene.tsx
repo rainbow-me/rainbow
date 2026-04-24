@@ -1,28 +1,30 @@
 import { memo, useCallback, useState } from 'react';
-import { Alert, View, RefreshControl, StyleSheet } from 'react-native';
+import { Alert, RefreshControl, StyleSheet, View } from 'react-native';
+
+import Animated, { runOnJS } from 'react-native-reanimated';
+
+import { HoldToActivateButton } from '@/components/hold-to-activate-button/HoldToActivateButton';
 import { Box, Text } from '@/design-system';
-import { useRewardsBalanceStore } from '@/features/rnbw-rewards/stores/rewardsBalanceStore';
+import { createScaleInFadeInSlideEnterAnimation, defaultExitAnimation } from '@/features/rnbw-rewards/animations/sceneTransitions';
+import { RNBW_SYMBOL } from '@/features/rnbw-rewards/constants';
 import { AirdropSummaryCard } from '@/features/rnbw-rewards/screens/rnbw-rewards-screen/components/AirdropSummaryCard';
-import { useAirdropBalanceStore } from '@/features/rnbw-rewards/stores/airdropBalanceStore';
-import { delay } from '@/utils/delay';
-import { time } from '@/utils/time';
+import { RewardsHowToEarnCard } from '@/features/rnbw-rewards/screens/rnbw-rewards-screen/components/RewardsHowToEarnCard';
 import { getCoinBottomPosition } from '@/features/rnbw-rewards/screens/rnbw-rewards-screen/components/RnbwHeroCoin';
 import { RnbwRewardsScenes } from '@/features/rnbw-rewards/screens/rnbw-rewards-screen/constants/rewardsScenes';
 import { useRnbwRewardsFlowContext } from '@/features/rnbw-rewards/screens/rnbw-rewards-screen/context/RnbwRewardsFlowContext';
-import { HoldToActivateButton } from '@/components/hold-to-activate-button/HoldToActivateButton';
-import Animated, { runOnJS } from 'react-native-reanimated';
-import { defaultExitAnimation, createScaleInFadeInSlideEnterAnimation } from '@/features/rnbw-rewards/animations/sceneTransitions';
-import { opacity } from '@/framework/ui/utils/opacity';
-import { RewardsHowToEarnCard } from '@/features/rnbw-rewards/screens/rnbw-rewards-screen/components/RewardsHowToEarnCard';
-import { RNBW_SYMBOL } from '@/features/rnbw-rewards/constants';
-import * as i18n from '@/languages';
-import { useAccountAddress, useIsHardwareWallet, useIsReadOnlyWallet } from '@/state/wallets/walletsStore';
-import watchingAlert from '@/utils/watchingAlert';
+import { useAirdropBalanceStore } from '@/features/rnbw-rewards/stores/airdropBalanceStore';
+import { useRewardsBalanceStore } from '@/features/rnbw-rewards/stores/rewardsBalanceStore';
 import { rewardsFlowActions } from '@/features/rnbw-rewards/stores/rewardsFlowStore';
+import { prepareRewardsClaim } from '@/features/rnbw-rewards/utils/claimRewards';
+import { opacity } from '@/framework/ui/utils/opacity';
 import { useTabBarOffset } from '@/hooks/useTabBarOffset';
+import * as i18n from '@/languages';
 import { useNavigation } from '@/navigation/Navigation';
 import Routes from '@/navigation/routesNames';
-import { prepareRewardsClaim } from '@/features/rnbw-rewards/utils/claimRewards';
+import { useAccountAddress, useIsHardwareWallet, useIsReadOnlyWallet } from '@/state/wallets/walletsStore';
+import { delay } from '@/utils/delay';
+import { time } from '@/utils/time';
+import watchingAlert from '@/utils/watchingAlert';
 
 const enterAnimation = createScaleInFadeInSlideEnterAnimation({ delay: time.ms(200) });
 

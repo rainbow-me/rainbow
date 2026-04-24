@@ -1,8 +1,14 @@
+import React, { useCallback, useMemo } from 'react';
+
+import Clipboard from '@react-native-clipboard/clipboard';
+import startCase from 'lodash/startCase';
+import { triggerHaptics } from 'react-native-turbo-haptics';
+
 import { navigateToSwaps } from '@/__swaps__/screens/Swap/navigateToSwaps';
 import ButtonPressAnimation from '@/components/animations/ButtonPressAnimation';
 import { SheetActionButton } from '@/components/sheet';
 import { Box, Stack } from '@/design-system';
-import { type RainbowTransaction, TransactionStatus } from '@/entities/transactions';
+import { TransactionStatus, type RainbowTransaction } from '@/entities/transactions';
 import * as i18n from '@/languages';
 import Navigation from '@/navigation/Navigation';
 import Routes from '@/navigation/routesNames';
@@ -14,11 +20,7 @@ import { shortenTxHashString } from '@/screens/transaction-details/helpers/short
 import { useIsReadOnlyWallet } from '@/state/wallets/walletsStore';
 import { useTheme } from '@/theme/ThemeContext';
 import ethereumUtils from '@/utils/ethereumUtils';
-import haptics from '@/utils/haptics';
 import { openInBrowser } from '@/utils/openInBrowser';
-import Clipboard from '@react-native-clipboard/clipboard';
-import startCase from 'lodash/startCase';
-import React, { useCallback, useMemo } from 'react';
 
 type Props = {
   transaction: RainbowTransaction;
@@ -55,7 +57,7 @@ export const TransactionDetailsHashAndActionsSection: React.FC<Props> = ({ trans
 
   const onHashPress = () => {
     presentToast?.();
-    haptics.notificationSuccess();
+    triggerHaptics('notificationSuccess');
     Clipboard.setString(hash);
   };
 

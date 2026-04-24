@@ -1,22 +1,24 @@
-import { type RouteProp, useRoute } from '@react-navigation/native';
 import React, { useCallback, useEffect, useRef, useState } from 'react';
 import { Share, View } from 'react-native';
+
+import { useRoute, type RouteProp } from '@react-navigation/native';
 import { WebView } from 'react-native-webview';
-import useDimensions from '@/hooks/useDimensions';
-import { useTheme } from '@/theme/ThemeContext';
-import ActivityIndicator from '@/components/ActivityIndicator';
-import Spinner from '@/components/Spinner';
-import { SlackSheet } from '@/components/sheet';
-import { Box, Text, useBackgroundColor } from '@/design-system';
-import { sharedCoolModalTopOffset } from '@/navigation/config';
-import { globalColors } from '@/design-system/color/palettes';
-import ButtonPressAnimation from '@/components/animations/ButtonPressAnimation';
-import { IS_ANDROID } from '@/env';
+
 import { analytics } from '@/analytics';
+import ActivityIndicator from '@/components/ActivityIndicator';
+import ButtonPressAnimation from '@/components/animations/ButtonPressAnimation';
+import { SlackSheet } from '@/components/sheet';
+import Spinner from '@/components/Spinner';
+import { Box, Text, useBackgroundColor } from '@/design-system';
+import { globalColors } from '@/design-system/color/palettes';
+import { IS_ANDROID } from '@/env';
+import useDimensions from '@/hooks/useDimensions';
 import * as i18n from '@/languages';
-import { buildRainbowLearnUrl, LearnUTMCampaign } from '@/utils/buildRainbowUrl';
-import { type RootStackParamList } from '@/navigation/types';
+import { sharedCoolModalTopOffset } from '@/navigation/config';
 import type Routes from '@/navigation/routesNames';
+import { type RootStackParamList } from '@/navigation/types';
+import { useTheme } from '@/theme/ThemeContext';
+import { buildRainbowLearnUrl, LearnUTMCampaign } from '@/utils/buildRainbowUrl';
 
 const HEADER_HEIGHT = 60;
 

@@ -1,12 +1,14 @@
 import { useMemo } from 'react';
-import { lightModeThemeColors } from '../styles/colors';
+
 import type { ParsedAddressAsset } from '@/entities/tokens';
+import { getDeterministicIndex } from '@/framework/core/utils/getDeterministicIndex';
+import { useTheme } from '@/theme/ThemeContext';
 import ethereumUtils from '@/utils/ethereumUtils';
 import isETH from '@/utils/isETH';
-import { getDeterministicIndex } from '@/framework/core/utils/getDeterministicIndex';
+
+import { lightModeThemeColors } from '../styles/colors';
 import { getHighContrastColor } from './useAccountAccentColor';
 import { usePersistentDominantColorFromImage } from './usePersistentDominantColorFromImage';
-import { useTheme } from '@/theme/ThemeContext';
 
 export default function useColorForAsset(
   asset: Partial<ParsedAddressAsset> = {},

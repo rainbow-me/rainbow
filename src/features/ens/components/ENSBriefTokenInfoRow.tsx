@@ -1,18 +1,21 @@
-import { useNavigation } from '@/navigation/Navigation';
-import { format, formatDistanceStrict } from 'date-fns';
-import * as i18n from '@/languages';
 import React, { useCallback, useState } from 'react';
 import { InteractionManager } from 'react-native';
-import { ENSConfirmRenewSheetHeight } from '../screens/ENSConfirmRegisterSheet';
+
+import { format, formatDistanceStrict } from 'date-fns';
+
 import ButtonPressAnimation from '@/components/animations/ButtonPressAnimation';
 import { TokenInfoItem, TokenInfoValue } from '@/components/token-info';
 import useExperimentalFlag, { PROFILES } from '@/config/experimentalHooks';
 import { Column, Columns, Inset } from '@/design-system';
-import { REGISTRATION_MODES } from '../utils/helpers';
-import useENSAvatar from '../hooks/useENSAvatar';
-import useENSRegistration from '../hooks/useENSRegistration';
+import * as i18n from '@/languages';
+import { useNavigation } from '@/navigation/Navigation';
 import Routes from '@/navigation/routesNames';
 import { useTheme } from '@/theme/ThemeContext';
+
+import useENSAvatar from '../hooks/useENSAvatar';
+import useENSRegistration from '../hooks/useENSRegistration';
+import { ENSConfirmRenewSheetHeight } from '../screens/ENSConfirmRegisterSheet';
+import { REGISTRATION_MODES } from '../utils/helpers';
 
 export default function ENSBriefTokenInfoRow({
   color,

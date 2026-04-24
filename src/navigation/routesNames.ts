@@ -126,6 +126,7 @@ const Routes = {
   PERPS_ADD_TO_POSITION_SHEET: 'PerpsAddToPositionSheet',
   PERPS_EXPLAIN_SHEET: 'PerpsExplainSheet',
   PERPS_TRADE_HISTORY_SCREEN: 'PerpsTradeHistoryScreen',
+  PERPS_ABOUT_SHEET: 'PerpsAboutSheet',
   PERPS_TRADE_DETAILS_SHEET: 'PerpsTradeDetailsSheet',
   POLYMARKET_EVENT_SCREEN: 'PolymarketEventScreen',
   POLYMARKET_MANAGE_POSITION_SHEET: 'PolymarketManagePositionSheet',

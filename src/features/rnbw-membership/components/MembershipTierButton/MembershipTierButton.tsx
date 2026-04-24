@@ -1,20 +1,26 @@
 import React, { memo } from 'react';
 import { type StyleProp, type ViewStyle } from 'react-native';
+
 import ButtonPressAnimation from '@/components/animations/ButtonPressAnimation';
 import { type TextProps } from '@/design-system';
-import { RnbwButtonSurface, RnbwButtonText } from './RnbwButtonSurface';
+import type { Tier } from '@/features/rnbw-membership/types';
 
-export const RnbwThemedButton = memo(function RnbwThemedButton({
+import { MembershipTierButtonSurface, type MembershipTierButtonVariant } from './MembershipTierButtonSurface';
+import { MembershipTierButtonText } from './MembershipTierButtonText';
+
+export const MembershipTierButton = memo(function MembershipTierButton({
+  tier,
   variant = 'primary',
   label,
-  height = 42,
+  height = 44,
   size = '22pt',
   weight = 'heavy',
   onPress,
   style,
   containerStyle,
 }: {
-  variant?: 'primary' | 'secondary';
+  tier: Tier;
+  variant?: MembershipTierButtonVariant;
   label: string;
   height?: number;
   size?: TextProps['size'];
@@ -25,11 +31,11 @@ export const RnbwThemedButton = memo(function RnbwThemedButton({
 }) {
   return (
     <ButtonPressAnimation onPress={onPress} style={style} wrapperStyle={style} scaleTo={0.96}>
-      <RnbwButtonSurface variant={variant} height={height} style={containerStyle}>
-        <RnbwButtonText variant={variant} size={size} weight={weight}>
+      <MembershipTierButtonSurface tier={tier} variant={variant} height={height} style={containerStyle}>
+        <MembershipTierButtonText tier={tier} variant={variant} size={size} weight={weight}>
           {label}
-        </RnbwButtonText>
-      </RnbwButtonSurface>
+        </MembershipTierButtonText>
+      </MembershipTierButtonSurface>
     </ButtonPressAnimation>
   );
 });

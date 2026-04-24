@@ -1,22 +1,25 @@
-import ConditionalWrap from 'conditional-wrap';
 import React, { useCallback, useEffect, useState } from 'react';
+
+import ConditionalWrap from 'conditional-wrap';
 import { type ImagePickerAsset } from 'expo-image-picker';
 import { atom, useSetRecoilState } from 'recoil';
+
 import ButtonPressAnimation from '@/components/animations/ButtonPressAnimation';
+import { ImgixImage } from '@/components/images';
 import Skeleton from '@/components/skeleton/Skeleton';
 import AvatarCoverPhotoMaskSvg from '@/components/svg/AvatarCoverPhotoMaskSvg';
 import { AccentColorProvider, BackgroundProvider, Box, Cover, Text, useForegroundColor } from '@/design-system';
 import type { UniqueAsset } from '@/entities/uniqueAssets';
+import { IS_TEST } from '@/env';
 import { type UploadImageReturnData } from '@/handlers/pinata';
+import useSelectImageMenu from '@/hooks/useSelectImageMenu';
+import magicMemo from '@/utils/magicMemo';
+
 import useENSModifiedRegistration from '../../hooks/useENSModifiedRegistration';
 import useENSRegistration from '../../hooks/useENSRegistration';
 import useENSRegistrationForm from '../../hooks/useENSRegistrationForm';
-import useSelectImageMenu from '@/hooks/useSelectImageMenu';
-import { ImgixImage } from '@/components/images';
-import magicMemo from '@/utils/magicMemo';
-import { stringifyENSNFTRecord } from '../../utils/records';
 import { ENS_RECORDS } from '../../utils/helpers';
-import { IS_TEST } from '@/env';
+import { stringifyENSNFTRecord } from '../../utils/records';
 
 export const avatarMetadataAtom = atom<ImagePickerAsset | undefined>({
   default: undefined,

@@ -1,15 +1,17 @@
 import React from 'react';
 import { StyleSheet, View } from 'react-native';
+
 import { toast } from 'sonner-native';
+
 import { globalColors } from '@/design-system';
 import { typeHierarchy } from '@/design-system/typography/typeHierarchy';
 import { IS_IOS } from '@/env';
+import { opacity } from '@/framework/ui/utils/opacity';
 import * as i18n from '@/languages';
 import { fontWithWidth } from '@/styles';
-import font from '@/styles/fonts';
-import { opacity } from '@/framework/ui/utils/opacity';
-import { isDarkTheme } from '@/theme/ThemeContext';
 import { THICK_BORDER_WIDTH } from '@/styles/constants';
+import font from '@/styles/fonts';
+import { isDarkTheme } from '@/theme/ThemeContext';
 
 const WALLETCONNECT_TOAST_ID = 'walletConnect';
 const HIDE_BUFFER_MS = 750;

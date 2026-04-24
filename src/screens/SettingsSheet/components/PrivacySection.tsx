@@ -1,19 +1,22 @@
+import React, { useCallback, useReducer } from 'react';
+
+import { Switch } from 'react-native-gesture-handler';
+
 import { analytics } from '@/analytics';
 import useExperimentalFlag, { PROFILES } from '@/config/experimentalHooks';
+import { initWebData, wipeWebData } from '@/helpers/webData';
+import useHiddenTokens from '@/hooks/useHiddenTokens';
+import useShowcaseTokens from '@/hooks/useShowcaseTokens';
 import * as i18n from '@/languages';
 import { logger } from '@/logger';
 import { useNavigation } from '@/navigation/Navigation';
 import Routes from '@/navigation/routesNames';
 import { useAccountProfileInfo } from '@/state/wallets/walletsStore';
 import { device } from '@/storage';
-import React, { useCallback, useReducer } from 'react';
-import { Switch } from 'react-native-gesture-handler';
+
 import Menu from './Menu';
 import MenuContainer from './MenuContainer';
 import MenuItem from './MenuItem';
-import useHiddenTokens from '@/hooks/useHiddenTokens';
-import useShowcaseTokens from '@/hooks/useShowcaseTokens';
-import { wipeWebData, initWebData } from '@/helpers/webData';
 
 const TRANSLATIONS = i18n.l.settings.privacy_section;
 

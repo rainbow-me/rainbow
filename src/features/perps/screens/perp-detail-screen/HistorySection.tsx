@@ -1,13 +1,15 @@
 import { Fragment, memo, useState } from 'react';
-import { type PerpMarket } from '@/features/perps/types';
+
+import ButtonPressAnimation from '@/components/animations/ButtonPressAnimation';
+import { Box, Separator, Text, TextShadow } from '@/design-system';
 import { usePerpsAccentColorContext } from '@/features/perps/context/PerpsAccentColorContext';
 import { useHlTradesStore } from '@/features/perps/stores/hlTradesStore';
-import { Box, Separator, Text, TextShadow } from '@/design-system';
-import ButtonPressAnimation from '@/components/animations/ButtonPressAnimation';
+import { type PerpMarket } from '@/features/perps/types';
 import * as i18n from '@/languages';
-import { TradeListItem } from '../../components/TradeListItem';
 import Navigation from '@/navigation/Navigation';
 import Routes from '@/navigation/routesNames';
+
+import { TradeListItem } from '../../components/TradeListItem';
 
 const DEFAULT_VISIBLE_TRADE_COUNT = 10;
 

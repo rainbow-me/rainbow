@@ -1,16 +1,19 @@
-import { type RouteProp, useRoute } from '@react-navigation/native';
 import React, { useMemo } from 'react';
 import { useWindowDimensions } from 'react-native';
+
+import { useRoute, type RouteProp } from '@react-navigation/native';
 import { useRecoilState } from 'recoil';
-import SelectableButton from '../components/registration/SelectableButton';
+
 import { SlackSheet } from '@/components/sheet';
 import { AccentColorProvider, Box, Inline } from '@/design-system';
-import { accentColorAtom, textRecordFields } from '../utils/helpers';
-import useENSRegistrationForm from '../hooks/useENSRegistrationForm';
-import deviceUtils from '@/utils/deviceUtils';
 import { IS_ANDROID } from '@/env';
 import type Routes from '@/navigation/routesNames';
 import { type RootStackParamList } from '@/navigation/types';
+import deviceUtils from '@/utils/deviceUtils';
+
+import SelectableButton from '../components/registration/SelectableButton';
+import useENSRegistrationForm from '../hooks/useENSRegistrationForm';
+import { accentColorAtom, textRecordFields } from '../utils/helpers';
 
 export const ENSAdditionalRecordsSheetHeight = 262;
 const recordLineHeight = 30;

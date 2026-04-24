@@ -1,19 +1,22 @@
 import React from 'react';
-import { AccentColorProvider, Bleed, Box, Cover, IconContainer, Separator, Text, TextShadow } from '@/design-system';
-import { useExpandedAssetSheetContext } from '../../context/ExpandedAssetSheetContext';
-import { type ChainId } from '@/state/backendNetworks/types';
-import { useBackendNetworksStore } from '@/state/backendNetworks/backendNetworks';
-import ButtonPressAnimation from '@/components/animations/ButtonPressAnimation';
 import { View } from 'react-native';
-import { SPRING_CONFIGS } from '@/components/animations/animationConfigs';
-import Animated, { type SharedValue, useAnimatedStyle, useSharedValue, withSpring } from 'react-native-reanimated';
-import { GestureHandlerButton } from '@/components/buttons/GestureHandlerButton';
-import { ChainImage } from '@/components/coin-icon/ChainImage';
-import useAsset from '@/hooks/useAsset';
+
+import Animated, { useAnimatedStyle, useSharedValue, withSpring, type SharedValue } from 'react-native-reanimated';
 import { type Address } from 'viem';
+
 import { navigateToSwaps } from '@/__swaps__/screens/Swap/navigateToSwaps';
 import { transformRainbowTokenToParsedSearchAsset } from '@/__swaps__/utils/assets';
+import { SPRING_CONFIGS } from '@/components/animations/animationConfigs';
+import ButtonPressAnimation from '@/components/animations/ButtonPressAnimation';
+import { GestureHandlerButton } from '@/components/buttons/GestureHandlerButton';
+import { ChainImage } from '@/components/coin-icon/ChainImage';
+import { AccentColorProvider, Bleed, Box, Cover, IconContainer, Separator, Text, TextShadow } from '@/design-system';
+import useAsset from '@/hooks/useAsset';
+import { useBackendNetworksStore } from '@/state/backendNetworks/backendNetworks';
+import { type ChainId } from '@/state/backendNetworks/types';
 import { getUniqueId } from '@/utils/ethereumUtils';
+
+import { useExpandedAssetSheetContext } from '../../context/ExpandedAssetSheetContext';
 
 // Constants for layout
 const GRID_GAP = 9;

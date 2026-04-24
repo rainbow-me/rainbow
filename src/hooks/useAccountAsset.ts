@@ -1,8 +1,9 @@
 import type { NativeCurrencyKey } from '@/entities/nativeCurrencyTypes';
-import useAccountSettings from './useAccountSettings';
 import { parseAssetNative } from '@/parsers/accounts';
-import { useUserAssetsStore } from '@/state/assets/userAssets';
 import { useSuperTokenStore } from '@/screens/token-launcher/state/rainbowSuperTokenStore';
+import { useUserAssetsStore } from '@/state/assets/userAssets';
+
+import useAccountSettings from './useAccountSettings';
 
 // this is meant to be used for assets contained in the current wallet
 export default function useAccountAsset(uniqueId: string, nativeCurrency: NativeCurrencyKey | undefined = undefined) {

@@ -1,9 +1,10 @@
 import { type Address } from 'viem';
 
-import { staleBalancesStore } from '.';
 import { DAI_ADDRESS } from '@/references/constants';
-import { ETH_ADDRESS } from '@rainbow-me/swaps';
 import { ChainId } from '@/state/backendNetworks/types';
+import { ETH_ADDRESS } from '@rainbow-me/swaps';
+
+import { staleBalancesStore } from '.';
 
 const TEST_ADDRESS_1 = '0xFOO';
 const TEST_ADDRESS_2 = '0xBAR';

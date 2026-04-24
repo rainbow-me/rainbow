@@ -1,9 +1,10 @@
 import React, { useMemo } from 'react';
 import { StyleSheet } from 'react-native';
+
 import { ColumnWithMargins, Row, RowWithMargins } from '@/components/layout';
+import { Box, Separator, Text } from '@/design-system';
 import { times } from '@/helpers/utilities';
 import { fonts } from '@/styles';
-import { Box, Text, Separator } from '@/design-system';
 
 interface Props {
   seed: string;

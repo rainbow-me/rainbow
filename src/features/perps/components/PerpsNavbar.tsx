@@ -1,17 +1,19 @@
 import React from 'react';
-import ButtonPressAnimation from '@/components/animations/ButtonPressAnimation';
-import { Box, Text, TextIcon } from '@/design-system';
-import { AccountImage } from '@/components/AccountImage';
-import { Navbar } from '@/components/navbar/Navbar';
-import { HyperliquidLogo } from '@/features/perps/components/HyperliquidLogo';
-import Routes from '@/navigation/routesNames';
+
 import Animated, { FadeIn, FadeOut } from 'react-native-reanimated';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
+
+import { AccountImage } from '@/components/AccountImage';
+import ButtonPressAnimation from '@/components/animations/ButtonPressAnimation';
+import { Navbar } from '@/components/navbar/Navbar';
+import { Box, Text, TextIcon } from '@/design-system';
+import { HyperliquidLogo } from '@/features/perps/components/HyperliquidLogo';
 import { usePerpsNavigationStore } from '@/features/perps/screens/PerpsNavigator';
-import { type VirtualNavigationStore } from '@/navigation/createVirtualNavigator';
-import { type PerpsRoute } from '@/navigation/types';
 import * as i18n from '@/languages';
+import { type VirtualNavigationStore } from '@/navigation/createVirtualNavigator';
 import Navigation from '@/navigation/Navigation';
+import Routes from '@/navigation/routesNames';
+import { type PerpsRoute } from '@/navigation/types';
 import { THICK_BORDER_WIDTH } from '@/styles/constants';
 
 export const PerpsNavbar = function PerpsNavbar() {

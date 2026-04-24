@@ -1,24 +1,26 @@
-import { analytics } from '@/analytics';
-import { event } from '@/analytics/event';
-import { getOrCreateDeviceId } from '@/analytics/utils';
-import { getWalletContext } from '@/analytics/getWalletContext';
-import { WrappedAlert as Alert } from '@/helpers/alert';
-import * as i18n from '@/languages';
-import { RainbowError, ensureError, logger } from '@/logger';
 import * as Sentry from '@sentry/react-native';
 import { isNil } from 'lodash';
 import { type Address } from 'viem';
-import runMigrations from '../../model/migrations';
-import { createWallet, type InitializeWalletParams, walletInit } from '../../model/wallet';
-import { settingsLoadNetwork } from '../../redux/settings';
-import { checkKeychainIntegrity, loadWallets, setAccountAddress, setWalletReady } from '@/state/wallets/walletsStore';
+
+import { analytics } from '@/analytics';
+import { event } from '@/analytics/event';
+import { getWalletContext } from '@/analytics/getWalletContext';
+import { getOrCreateDeviceId } from '@/analytics/utils';
+import { WrappedAlert as Alert } from '@/helpers/alert';
 import { hideSplashScreen } from '@/hooks/useHideSplashScreen';
-import { loadSettingsData } from '../settings/loadSettingsData';
-import { PerformanceTracking } from '../../performance/tracking';
-import { ensureValidHex } from '../../handlers/web3';
+import * as i18n from '@/languages';
+import { ensureError, logger, RainbowError } from '@/logger';
 import store from '@/redux/store';
 import { setIsSmallBalancesOpen } from '@/state/wallets/smallBalancesStore';
+import { checkKeychainIntegrity, loadWallets, setAccountAddress, setWalletReady } from '@/state/wallets/walletsStore';
 import { time } from '@/utils/time';
+
+import { ensureValidHex } from '../../handlers/web3';
+import runMigrations from '../../model/migrations';
+import { createWallet, walletInit, type InitializeWalletParams } from '../../model/wallet';
+import { PerformanceTracking } from '../../performance/tracking';
+import { settingsLoadNetwork } from '../../redux/settings';
+import { loadSettingsData } from '../settings/loadSettingsData';
 
 type WalletStatus = 'unknown' | 'new' | 'imported' | 'old';
 

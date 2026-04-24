@@ -1,18 +1,21 @@
 import React from 'react';
 import { ActivityIndicator, StyleSheet, View } from 'react-native';
+
+import { type DerivedValue, type SharedValue } from 'react-native-reanimated';
+
+import type { UniqueAsset } from '@/entities/uniqueAssets';
+import { IS_IOS } from '@/env';
+import styled from '@/framework/ui/styled-thing';
+import useAnimationType from '@/hooks/useAnimationType';
+import usePersistentAspectRatio from '@/hooks/usePersistentAspectRatio';
+import { position } from '@/styles';
 import magicMemo from '@/utils/magicMemo';
+
 import { SimpleModelView } from '../../3d';
 import { AudioPlayer } from '../../audio';
 import { UniqueTokenImage } from '../../unique-token';
 import { SimpleVideo } from '../../video';
 import { ZoomableWrapper } from './ZoomableWrapper';
-import usePersistentAspectRatio from '@/hooks/usePersistentAspectRatio';
-import useAnimationType from '@/hooks/useAnimationType';
-import styled from '@/framework/ui/styled-thing';
-import { position } from '@/styles';
-import type { UniqueAsset } from '@/entities/uniqueAssets';
-import { type DerivedValue, type SharedValue } from 'react-native-reanimated';
-import { IS_IOS } from '@/env';
 
 const ModelView = styled(SimpleModelView)(position.sizeAsObject('100%'));
 

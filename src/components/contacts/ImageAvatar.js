@@ -1,12 +1,14 @@
 import React, { useMemo } from 'react';
-import { Centered } from '../layout';
+
 import { ImgixImage } from '@/components/images';
-import styled from '@/framework/ui/styled-thing';
-import { borders } from '@/styles';
-import ShadowStack from '@/react-native-shadow-stack';
-import { IS_ANDROID } from '@/env';
-import { useAccountAccentColor } from '@/hooks/useAccountAccentColor';
 import { useColorMode } from '@/design-system';
+import { IS_ANDROID } from '@/env';
+import styled from '@/framework/ui/styled-thing';
+import { useAccountAccentColor } from '@/hooks/useAccountAccentColor';
+import ShadowStack from '@/react-native-shadow-stack';
+import { borders } from '@/styles';
+
+import { Centered } from '../layout';
 
 const buildSmallShadows = (color, colors) => [
   [0, 3, 5, colors.shadow, 0.14],

@@ -1,7 +1,8 @@
-import { getLocal, saveLocal } from '@/handlers/localstorage/common';
-import { getPermissionStatus, isNotificationPermissionGranted } from '@/notifications/permissions';
-import { logger } from '@/logger';
 import messaging from '@react-native-firebase/messaging';
+
+import { getLocal, saveLocal } from '@/handlers/localstorage/common';
+import { logger } from '@/logger';
+import { getPermissionStatus, isNotificationPermissionGranted } from '@/notifications/permissions';
 
 const RAINBOW_FCM_TOKEN_KEY = 'rainbowFcmToken';
 

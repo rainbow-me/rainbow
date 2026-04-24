@@ -1,15 +1,16 @@
 import React from 'react';
+import { Image, StyleSheet } from 'react-native';
+
+import infinityIcon from '@/assets/infinity.png';
 import ButtonPressAnimation from '@/components/animations/ButtonPressAnimation';
 import { Box, Stack, Text, TextShadow } from '@/design-system';
 import { PerpPositionCard } from '@/features/perps/components/PerpPositionCard';
 import { DOWN_ARROW, HYPERLIQUID_COLORS, UP_ARROW } from '@/features/perps/constants';
 import { usePerpsPositionsInfo } from '@/features/perps/stores/derived/usePerpsPositionsInfo';
 import { navigateToPerpDetailScreen } from '@/features/perps/utils';
+import * as i18n from '@/languages';
 import Navigation from '@/navigation/Navigation';
 import Routes from '@/navigation/routesNames';
-import { Image, StyleSheet } from 'react-native';
-import infinityIcon from '@/assets/infinity.png';
-import * as i18n from '@/languages';
 
 export const OpenPositionsSection = function OpenPositionsSection() {
   const positionsInfo = usePerpsPositionsInfo();

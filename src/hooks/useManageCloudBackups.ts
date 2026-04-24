@@ -1,21 +1,24 @@
+import { useCallback, useEffect, useState } from 'react';
+
+import { useDispatch } from 'react-redux';
+
 import { IS_ANDROID } from '@/env';
+import { showActionSheetWithOptions } from '@/framework/ui/utils/actionsheet';
 import { maybeAuthenticateWithPIN } from '@/handlers/authentication';
 import {
-  type GoogleDriveUserData,
   deleteAllBackups,
   getGoogleAccountUserData,
   login,
   logoutFromGoogleDrive as logout,
+  type GoogleDriveUserData,
 } from '@/handlers/cloudBackup';
 import { WrappedAlert as Alert } from '@/helpers/alert';
 import * as keychain from '@/keychain';
 import * as i18n from '@/languages';
-import { RainbowError, logger } from '@/logger';
-import { CloudBackupState, backupsStore } from '@/state/backups/backups';
+import { logger, RainbowError } from '@/logger';
+import { backupsStore, CloudBackupState } from '@/state/backups/backups';
 import { clearAllWalletsBackupStatus } from '@/state/wallets/walletsStore';
-import { showActionSheetWithOptions } from '@/framework/ui/utils/actionsheet';
-import { useCallback, useEffect, useState } from 'react';
-import { useDispatch } from 'react-redux';
+
 import { cloudPlatform } from '../utils/platform';
 
 export default function useManageCloudBackups() {

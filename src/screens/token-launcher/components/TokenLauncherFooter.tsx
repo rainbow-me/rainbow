@@ -1,7 +1,15 @@
+import React, { useCallback, useState } from 'react';
+import { Alert, Keyboard, Share } from 'react-native';
+
+import Animated, { Extrapolation, FadeOut, interpolate, useAnimatedStyle, useSharedValue, withTiming } from 'react-native-reanimated';
+import { createPublicClient, createWalletClient, http, isHex } from 'viem';
+import { privateKeyToAccount } from 'viem/accounts';
+
 import { analytics } from '@/analytics';
-import ButtonPressAnimation from '@/components/animations/ButtonPressAnimation';
 import { TIMING_CONFIGS } from '@/components/animations/animationConfigs';
+import ButtonPressAnimation from '@/components/animations/ButtonPressAnimation';
 import RainbowCoinIcon from '@/components/coin-icon/RainbowCoinIcon';
+import { HoldToActivateButton } from '@/components/hold-to-activate-button/HoldToActivateButton';
 import { Box, Inline, Text } from '@/design-system';
 import { getColorForTheme } from '@/design-system/color/useForegroundColor';
 import { IS_ANDROID } from '@/env';
@@ -9,25 +17,20 @@ import { buildTokenDeeplink } from '@/handlers/deeplinks';
 import { BiometryTypes } from '@/helpers';
 import useBiometryType from '@/hooks/useBiometryType';
 import { useTokenLauncher } from '@/hooks/useTokenLauncher';
+import * as kc from '@/keychain';
 import * as i18n from '@/languages';
 import { ensureError, logger, RainbowError } from '@/logger';
 import { loadPrivateKey } from '@/model/wallet';
 import { useNavigation } from '@/navigation/Navigation';
+import Routes from '@/navigation/routesNames';
 import { useBackendNetworksStore } from '@/state/backendNetworks/backendNetworks';
 import { staleBalancesStore } from '@/state/staleBalances';
 import { useAccountAddress, useIsHardwareWallet } from '@/state/wallets/walletsStore';
 import { colors } from '@/styles';
-import React, { useCallback, useState } from 'react';
-import { Alert, Keyboard, Share } from 'react-native';
-import Animated, { Extrapolation, FadeOut, interpolate, useAnimatedStyle, useSharedValue, withTiming } from 'react-native-reanimated';
+
 import { STEP_TRANSITION_DURATION } from '../constants';
 import { useTokenLauncherContext } from '../context/TokenLauncherContext';
 import { NavigationSteps, useTokenLauncherStore } from '../state/tokenLauncherStore';
-import { HoldToActivateButton } from '@/components/hold-to-activate-button/HoldToActivateButton';
-import Routes from '@/navigation/routesNames';
-import { privateKeyToAccount } from 'viem/accounts';
-import { createPublicClient, createWalletClient, http, isHex } from 'viem';
-import * as kc from '@/keychain';
 
 // height + top padding + bottom padding
 export const FOOTER_HEIGHT = 48 + 16 + 16;

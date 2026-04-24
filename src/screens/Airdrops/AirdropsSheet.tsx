@@ -1,40 +1,42 @@
+import React, { memo, useCallback, useEffect, useState } from 'react';
+import { RefreshControl, ScrollView, StyleSheet, View, type ScrollViewProps } from 'react-native';
+
 import { BottomSheetScrollView } from '@gorhom/bottom-sheet';
 import { LegendList } from '@legendapp/list';
-import React, { memo, useCallback, useEffect, useState } from 'react';
-import { RefreshControl, ScrollView, type ScrollViewProps, StyleSheet, View } from 'react-native';
-import { TOP_INSET } from '@/components/DappBrowser/Dimensions';
-import { PANEL_COLOR_DARK, PANEL_COLOR_LIGHT, Panel } from '@/components/SmoothPager/ListPanel';
+
 import ButtonPressAnimation from '@/components/animations/ButtonPressAnimation';
 import RainbowCoinIcon from '@/components/coin-icon/RainbowCoinIcon';
+import { TOP_INSET } from '@/components/DappBrowser/Dimensions';
 import { EasingGradient } from '@/components/easing-gradient/EasingGradient';
 import { SheetHandleFixedToTop } from '@/components/sheet';
 import { DecoyScrollView } from '@/components/sheet/DecoyScrollView';
+import { Panel, PANEL_COLOR_DARK, PANEL_COLOR_LIGHT } from '@/components/SmoothPager/ListPanel';
 import {
   Box,
-  type BoxProps,
+  globalColors,
   IconContainer,
   Separator,
   Stack,
   Text,
-  type TextProps,
   TextShadow,
-  globalColors,
   useColorMode,
   useForegroundColor,
+  type BoxProps,
+  type TextProps,
 } from '@/design-system';
 import { getColorForTheme } from '@/design-system/color/useForegroundColor';
 import { IS_IOS } from '@/env';
+import { opacity } from '@/framework/ui/utils/opacity';
 import * as i18n from '@/languages';
 import { useNavigation } from '@/navigation/Navigation';
 import Routes from '@/navigation/routesNames';
 import { type RainbowClaimable } from '@/resources/addys/claimables/types';
 import { type ChainId } from '@/state/backendNetworks/types';
 import { FULL_PAGE_SIZE, INITIAL_PAGE_SIZE, useAirdropsStore } from '@/state/claimables/airdropsStore';
-import { opacity } from '@/framework/ui/utils/opacity';
+import { THICK_BORDER_WIDTH } from '@/styles/constants';
+import { DEVICE_HEIGHT, DEVICE_WIDTH } from '@/utils/deviceUtils';
 import safeAreaInsetValues from '@/utils/safeAreaInsetValues';
 import { time } from '@/utils/time';
-import { DEVICE_HEIGHT, DEVICE_WIDTH } from '@/utils/deviceUtils';
-import { THICK_BORDER_WIDTH } from '@/styles/constants';
 
 export interface AirdropClaimable {
   address: string;

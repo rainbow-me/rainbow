@@ -1,5 +1,6 @@
-import type { UniqueAsset } from '@/entities/uniqueAssets';
 import React from 'react';
+
+import type { UniqueAsset } from '@/entities/uniqueAssets';
 
 type AnimationType = '3d' | 'video' | 'audio';
 

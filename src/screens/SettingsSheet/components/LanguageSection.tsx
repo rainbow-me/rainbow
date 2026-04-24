@@ -1,10 +1,12 @@
 import React, { useCallback } from 'react';
+
+import { analytics } from '@/analytics';
+import useAccountSettings from '@/hooks/useAccountSettings';
+
 import { resources, supportedLanguages } from '../../../languages';
 import Menu from './Menu';
 import MenuContainer from './MenuContainer';
 import MenuItem from './MenuItem';
-import { analytics } from '@/analytics';
-import useAccountSettings from '@/hooks/useAccountSettings';
 
 const languageListItems = Object.keys(supportedLanguages)
   .filter(code => resources[code as keyof typeof resources]?.translation?.wallet) // Only show languages that have 'wallet' translations available.

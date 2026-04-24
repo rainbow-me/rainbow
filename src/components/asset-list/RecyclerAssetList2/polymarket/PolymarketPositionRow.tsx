@@ -1,25 +1,27 @@
 import { memo, useMemo } from 'react';
 import { StyleSheet } from 'react-native';
-import { Bleed, Box, Text, useColorMode } from '@/design-system';
-import { type PolymarketPosition } from '@/features/polymarket/types';
-import ImgixImage from '@/components/images/ImgixImage';
+
+import { LinearGradient } from 'expo-linear-gradient';
+
+import { getColorValueForThemeWorklet } from '@/__swaps__/utils/swaps';
 import ButtonPressAnimation from '@/components/animations/ButtonPressAnimation';
+import { GradientBorderView } from '@/components/gradient-border/GradientBorderView';
+import ImgixImage from '@/components/images/ImgixImage';
+import { useLiveTokenValue } from '@/components/live-token-text/LiveTokenText';
+import { Bleed, Box, Text, useColorMode } from '@/design-system';
+import { formatCurrency } from '@/features/perps/utils/formatCurrency';
+import { CheckOrXBadge } from '@/features/polymarket/components/CheckOrXBadge';
+import { OutcomeBadge } from '@/features/polymarket/components/OutcomeBadge';
+import { WinOrLossBadge } from '@/features/polymarket/components/WinOrLossBadge';
+import { type PolymarketPosition } from '@/features/polymarket/types';
+import { formatPrice } from '@/features/polymarket/utils/formatPrice';
+import { getPositionAccentColor } from '@/features/polymarket/utils/getMarketColor';
+import { getPositionTokenId } from '@/features/polymarket/utils/getPositionTokenId';
+import { mulWorklet, subWorklet } from '@/framework/core/safeMath';
+import { opacity } from '@/framework/ui/utils/opacity';
 import Navigation from '@/navigation/Navigation';
 import Routes from '@/navigation/routesNames';
-import { OutcomeBadge } from '@/features/polymarket/components/OutcomeBadge';
-import { GradientBorderView } from '@/components/gradient-border/GradientBorderView';
-import { getColorValueForThemeWorklet } from '@/__swaps__/utils/swaps';
-import { opacity } from '@/framework/ui/utils/opacity';
-import { LinearGradient } from 'expo-linear-gradient';
-import { formatCurrency } from '@/features/perps/utils/formatCurrency';
-import { WinOrLossBadge } from '@/features/polymarket/components/WinOrLossBadge';
-import { CheckOrXBadge } from '@/features/polymarket/components/CheckOrXBadge';
-import { getPositionAccentColor } from '@/features/polymarket/utils/getMarketColor';
 import { THICKER_BORDER_WIDTH } from '@/styles/constants';
-import { useLiveTokenValue } from '@/components/live-token-text/LiveTokenText';
-import { getPositionTokenId } from '@/features/polymarket/utils/getPositionTokenId';
-import { formatPrice } from '@/features/polymarket/utils/formatPrice';
-import { mulWorklet, subWorklet } from '@/framework/core/safeMath';
 
 export const PolymarketPositionRow = memo(function PolymarketPositionRow({ position }: { position: PolymarketPosition }) {
   const { isDarkMode } = useColorMode();

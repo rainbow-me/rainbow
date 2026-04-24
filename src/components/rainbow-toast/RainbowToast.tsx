@@ -1,3 +1,20 @@
+import React, { memo, useCallback, useEffect, useMemo, useRef, useState, type PropsWithChildren } from 'react';
+import { StyleSheet, View, type LayoutChangeEvent } from 'react-native';
+
+import { LinearGradient } from 'expo-linear-gradient';
+import { Gesture, GestureDetector } from 'react-native-gesture-handler';
+import Animated, {
+  interpolate,
+  runOnJS,
+  useAnimatedStyle,
+  useSharedValue,
+  withSpring,
+  withTiming,
+  type WithSpringConfig,
+} from 'react-native-reanimated';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
+import { FullWindowOverlay } from 'react-native-screens';
+
 import { SPRING_CONFIGS } from '@/components/animations/animationConfigs';
 import ShimmerAnimation from '@/components/animations/ShimmerAnimation';
 import { BlurGradient } from '@/components/blur/BlurGradient';
@@ -21,21 +38,7 @@ import { IS_ANDROID, IS_IOS, IS_TEST } from '@/env';
 import useAccountSettings from '@/hooks/useAccountSettings';
 import useDimensions from '@/hooks/useDimensions';
 import { useAccountAddress } from '@/state/wallets/walletsStore';
-import React, { memo, type PropsWithChildren, useCallback, useEffect, useMemo, useRef, useState } from 'react';
-import { type LayoutChangeEvent, StyleSheet, View } from 'react-native';
-import { Gesture, GestureDetector } from 'react-native-gesture-handler';
-import { LinearGradient } from 'expo-linear-gradient';
-import Animated, {
-  interpolate,
-  runOnJS,
-  useAnimatedStyle,
-  useSharedValue,
-  withSpring,
-  type WithSpringConfig,
-  withTiming,
-} from 'react-native-reanimated';
-import { useSafeAreaInsets } from 'react-native-safe-area-context';
-import { FullWindowOverlay } from 'react-native-screens';
+
 import { RainbowToastExpandedDisplay } from './RainbowToastExpandedDisplay';
 import { useVerticalDismissPanGesture } from './useVerticalDismissPanGesture';
 
@@ -388,7 +391,7 @@ const RainbowToastItem = memo(function RainbowToast({ toast, minWidth: minWidthP
           />
 
           {/* separate inner view because overflow hidden + shadow breaks */}
-          <View style={[contentContainerStyle, styles.innerContent]}>
+          <Animated.View style={[contentContainerStyle, styles.innerContent]}>
             {IS_IOS ? (
               <>
                 <BlurGradient
@@ -435,7 +438,7 @@ const RainbowToastItem = memo(function RainbowToast({ toast, minWidth: minWidthP
             <Animated.View style={innerContainerStyle} onLayout={handleLayout}>
               <ToastContent toast={toast} />
             </Animated.View>
-          </View>
+          </Animated.View>
         </Animated.View>
       </GestureDetector>
     </Animated.View>

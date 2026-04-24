@@ -1,11 +1,13 @@
 import React from 'react';
+
+import useExperimentalFlag, { NFTS_ENABLED } from '@/config/experimentalHooks';
 import { Box, Inline, Text } from '@/design-system';
 import * as i18n from '@/languages';
 // import { ListHeaderMenu } from '@/components/list/ListHeaderMenu';
 // import { NftCollectionSortCriterion, SortDirection } from '@/graphql/__generated__/arc';
 // import { colors } from '@/styles';
 import { useRemoteConfig } from '@/model/remoteConfig';
-import useExperimentalFlag, { NFTS_ENABLED } from '@/config/experimentalHooks';
+
 // import { IS_IOS } from '@/env';
 // import { nftsStoreManager } from '@/state/nfts/nftsStoreManager';
 

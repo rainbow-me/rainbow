@@ -1,28 +1,31 @@
-import MaskedView from '@react-native-masked-view/masked-view';
-import { type RouteProp, useRoute } from '@react-navigation/native';
-import * as i18n from '@/languages';
 import React, { useCallback, useMemo } from 'react';
 import { InteractionManager, View } from 'react-native';
+
+import MaskedView from '@react-native-masked-view/masked-view';
+import { useRoute, type RouteProp } from '@react-navigation/native';
 import { LinearGradient } from 'expo-linear-gradient';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
+
 import ActivityIndicator from '@/components/ActivityIndicator';
-import IntroMarquee from '../components/registration/IntroMarquee';
-import { SheetActionButton } from '@/components/sheet';
-import { useNavigation } from '@/navigation/Navigation';
+import { ContextMenu } from '@/components/context-menu';
 import ContextMenuButton from '@/components/native-context-menu/contextMenu';
-import { abbreviateEnsForDisplay } from '@/utils/abbreviations';
+import { SheetActionButton } from '@/components/sheet';
 import { Bleed, Box, Column, Columns, Heading, Inset, Row, Rows, Separator, Stack, Text } from '@/design-system';
-import { REGISTRATION_MODES } from '../utils/helpers';
-import useAccountENSDomains from '../hooks/useAccountENSDomains';
+import { IS_ANDROID, IS_TEST } from '@/env';
 import useDimensions from '@/hooks/useDimensions';
+import * as i18n from '@/languages';
+import { useNavigation } from '@/navigation/Navigation';
+import Routes from '@/navigation/routesNames';
+import { type RootStackParamList } from '@/navigation/types';
+import { useTheme } from '@/theme/ThemeContext';
+import { abbreviateEnsForDisplay } from '@/utils/abbreviations';
+
+import IntroMarquee from '../components/registration/IntroMarquee';
+import useAccountENSDomains from '../hooks/useAccountENSDomains';
 import useENSAvatar from '../hooks/useENSAvatar';
 import useENSRecords from '../hooks/useENSRecords';
 import useENSRegistration from '../hooks/useENSRegistration';
-import Routes from '@/navigation/routesNames';
-import { useTheme } from '@/theme/ThemeContext';
-import { IS_ANDROID, IS_TEST } from '@/env';
-import ContextMenu from '@/components/context-menu/ContextMenu.android';
-import { type RootStackParamList } from '@/navigation/types';
-import { useSafeAreaInsets } from 'react-native-safe-area-context';
+import { REGISTRATION_MODES } from '../utils/helpers';
 
 enum AnotherENSEnum {
   search = 'search',

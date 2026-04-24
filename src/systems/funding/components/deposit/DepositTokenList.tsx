@@ -1,12 +1,19 @@
-import c from 'chroma-js';
 import React, { memo, useCallback, useMemo } from 'react';
-import { Keyboard, StyleSheet, Text as RNText } from 'react-native';
-import Animated, { type SharedValue, useAnimatedStyle } from 'react-native-reanimated';
+import { Keyboard, Text as RNText, StyleSheet } from 'react-native';
+
 import { LegendList } from '@legendapp/list';
-import { DelayedMount } from '@/components/utilities/DelayedMount';
+import c from 'chroma-js';
+import Animated, { useAnimatedStyle, type SharedValue } from 'react-native-reanimated';
+
+import { CoinRow } from '@/__swaps__/screens/Swap/components/CoinRow';
+import { type ParsedSearchAsset } from '@/__swaps__/types/assets';
+import { GestureHandlerButton } from '@/components/buttons/GestureHandlerButton';
 import { NAVBAR_HEIGHT_WITH_PADDING } from '@/components/navbar/constants';
+import { TOKEN_SEARCH_FOCUSED_INPUT_HEIGHT } from '@/components/token-search/constants';
 import { TokenSearchNotFound } from '@/components/token-search/TokenSearchNotFound';
+import { DelayedMount } from '@/components/utilities/DelayedMount';
 import { AnimatedText, Bleed, Box, globalColors, Inline, Separator, Stack, Text, useColorMode } from '@/design-system';
+import { opacity } from '@/framework/ui/utils/opacity';
 import { useAccountAccentColor } from '@/hooks/useAccountAccentColor';
 import * as i18n from '@/languages';
 import Navigation from '@/navigation/Navigation';
@@ -15,13 +22,9 @@ import { useUserAssetsStore } from '@/state/assets/userAssets';
 import { useBackendNetworksStore } from '@/state/backendNetworks/backendNetworks';
 import { type ChainId } from '@/state/backendNetworks/types';
 import { useAccountAddress } from '@/state/wallets/walletsStore';
-import { CoinRow } from '@/__swaps__/screens/Swap/components/CoinRow';
-import { GestureHandlerButton } from '@/components/buttons/GestureHandlerButton';
-import { type ParsedSearchAsset } from '@/__swaps__/types/assets';
-import { opacity } from '@/framework/ui/utils/opacity';
-import { TOKEN_SEARCH_FOCUSED_INPUT_HEIGHT } from '@/components/token-search/constants';
-import safeAreaInsetValues from '@/utils/safeAreaInsetValues';
 import { DEVICE_WIDTH } from '@/utils/deviceUtils';
+import safeAreaInsetValues from '@/utils/safeAreaInsetValues';
+
 import { EXPANDED_INPUT_HEIGHT, NavigationSteps } from '../../constants';
 import { useDepositContext } from '../../contexts/DepositContext';
 import { SearchInput } from './SearchInput';

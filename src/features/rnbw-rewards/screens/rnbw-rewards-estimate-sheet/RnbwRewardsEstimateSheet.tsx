@@ -1,15 +1,17 @@
 import { memo } from 'react';
 import { Image, StyleSheet, View } from 'react-native';
-import { PanelSheet, PANEL_WIDTH } from '@/components/PanelSheet/PanelSheet';
+
+import { Blur, Canvas, LinearGradient, RoundedRect } from '@shopify/react-native-skia';
+import { BlurView } from 'react-native-blur-view';
+
+import rnbwCoinImage from '@/assets/rnbw.png';
+import { PANEL_WIDTH, PanelSheet } from '@/components/PanelSheet/PanelSheet';
 import { ColorModeProvider, Stack, Text } from '@/design-system';
 import { RNBW_SYMBOL } from '@/features/rnbw-rewards/constants';
 import { useStableValue } from '@/hooks/useStableValue';
+import * as i18n from '@/languages';
 import { useRoute } from '@/navigation/Navigation';
 import type Routes from '@/navigation/routesNames';
-import { BlurView } from 'react-native-blur-view';
-import rnbwCoinImage from '@/assets/rnbw.png';
-import { Blur, Canvas, LinearGradient, RoundedRect } from '@shopify/react-native-skia';
-import * as i18n from '@/languages';
 
 export const RnbwRewardsEstimateSheet = memo(function RnbwRewardsEstimateSheet() {
   const {

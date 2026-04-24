@@ -1,12 +1,15 @@
-import BottomSheet, { BottomSheetBackdrop, type BottomSheetBackdropProps } from '@gorhom/bottom-sheet';
 import React, { useCallback, useEffect, useMemo, useRef } from 'react';
 import { Keyboard, View, type ViewStyle } from 'react-native';
+
+import BottomSheet, { BottomSheetBackdrop, type BottomSheetBackdropProps } from '@gorhom/bottom-sheet';
+import { useSharedValue } from 'react-native-reanimated';
+
+import { IS_ANDROID } from '@/env';
+
 import { isKeyboardOpen } from '../../../helpers';
 import { CONTAINER_HEIGHT, DEFAULT_BACKDROP_COLOR, DEFAULT_BACKDROP_OPACITY, DEFAULT_HEIGHT } from '../constants';
 import { BottomSheetNavigatorContext } from '../contexts/internal';
 import type { BottomSheetDescriptor } from '../types';
-import { IS_ANDROID } from '@/env';
-import { useSharedValue } from 'react-native-reanimated';
 
 interface Props {
   routeKey: string;

@@ -1,15 +1,18 @@
-import * as i18n from '@/languages';
+import React, { useCallback, useMemo, type PropsWithChildren } from 'react';
+
 import { upperFirst } from 'lodash';
-import React, { type PropsWithChildren, useCallback, useMemo } from 'react';
 import URL from 'url-parse';
-import useClipboard from '@/hooks/useClipboard';
-import useENSRegistration from './useENSRegistration';
+
 import ContextMenuButton from '@/components/native-context-menu/contextMenu';
-import { ENS_RECORDS, REGISTRATION_MODES, textRecordFields } from '../utils/helpers';
+import useClipboard from '@/hooks/useClipboard';
+import * as i18n from '@/languages';
 import { useNavigation } from '@/navigation/Navigation';
 import Routes from '@/navigation/routesNames';
 import { formatAddressForDisplay } from '@/utils/abbreviations';
 import { openInBrowser } from '@/utils/openInBrowser';
+
+import { ENS_RECORDS, REGISTRATION_MODES, textRecordFields } from '../utils/helpers';
+import useENSRegistration from './useENSRegistration';
 
 type ImageSource = { imageUrl?: string | null };
 type ENSImages = {

@@ -1,35 +1,51 @@
-import { GestureHandlerButton } from '@/components/buttons/GestureHandlerButton';
+import React, { memo, useCallback, useEffect, useMemo, useState } from 'react';
+import { ScrollView, StyleSheet, TouchableWithoutFeedback, View } from 'react-native';
+
+import { useRoute, type RouteProp } from '@react-navigation/native';
+import chroma from 'chroma-js';
+import Animated, {
+  runOnJS,
+  useAnimatedStyle,
+  useDerivedValue,
+  useSharedValue,
+  withTiming,
+  type SharedValue,
+} from 'react-native-reanimated';
+import { toHex } from 'viem';
+
 import { navigateToSwaps } from '@/__swaps__/screens/Swap/navigateToSwaps';
-import { opacity } from '@/framework/ui/utils/opacity';
-import { SmoothPager, usePagerNavigation } from '@/components/SmoothPager/SmoothPager';
-import ButtonPressAnimation from '@/components/animations/ButtonPressAnimation';
 import { TIMING_CONFIGS } from '@/components/animations/animationConfigs';
+import ButtonPressAnimation from '@/components/animations/ButtonPressAnimation';
+import { GestureHandlerButton } from '@/components/buttons/GestureHandlerButton';
 import { ChainImage } from '@/components/coin-icon/ChainImage';
 import { ImgixImage } from '@/components/images';
+import { SmoothPager, usePagerNavigation } from '@/components/SmoothPager/SmoothPager';
 import {
   AnimatedText,
   Bleed,
   Box,
   Column,
   Columns,
+  globalColors,
   HitSlop,
   Inline,
   Separator,
   Stack,
   Text,
-  globalColors,
   useColorMode,
   useForegroundColor,
 } from '@/design-system';
 import { type TextColor } from '@/design-system/color/palettes';
 import { IS_ANDROID, IS_IOS } from '@/env';
+import { opacity } from '@/framework/ui/utils/opacity';
 import { removeFirstEmojiFromString, returnStringFirstEmoji } from '@/helpers/emojiHandler';
 import { greaterThan } from '@/helpers/utilities';
 import WalletTypes from '@/helpers/walletTypes';
-import useWalletsWithBalancesAndNames from '@/hooks/useWalletsWithBalancesAndNames';
 import { useSyncSharedValue } from '@/hooks/reanimated/useSyncSharedValue';
 import { usePersistentDominantColorFromImage } from '@/hooks/usePersistentDominantColorFromImage';
+import useWalletsWithBalancesAndNames from '@/hooks/useWalletsWithBalancesAndNames';
 import * as i18n from '@/languages';
+import Navigation from '@/navigation/Navigation';
 import type Routes from '@/navigation/routesNames';
 import { type RootStackParamList } from '@/navigation/types';
 import store from '@/redux/store';
@@ -37,36 +53,23 @@ import { useAppSessionsStore } from '@/state/appSessions';
 import { useBackendNetworksStore } from '@/state/backendNetworks/backendNetworks';
 import { ChainId } from '@/state/backendNetworks/types';
 import { useBrowserStore } from '@/state/browser/browserStore';
-import { type FavoritedSite, useFavoriteDappsStore } from '@/state/browser/favoriteDappsStore';
+import { useFavoriteDappsStore, type FavoritedSite } from '@/state/browser/favoriteDappsStore';
+import { initializeWallet } from '@/state/wallets/initializeWallet';
 import { getWalletWithAccount, setSelectedWallet, useAccountAddress } from '@/state/wallets/walletsStore';
 import { colors } from '@/styles';
 import { fontWithWidthWorklet } from '@/styles/buildTextStyles';
+import { THICK_BORDER_WIDTH } from '@/styles/constants';
+import { address } from '@/utils/abbreviations';
 import deviceUtils from '@/utils/deviceUtils';
+import { addressHashedEmoji } from '@/utils/profileUtils';
 import safeAreaInsetValues from '@/utils/safeAreaInsetValues';
 import watchingAlert from '@/utils/watchingAlert';
-import { address } from '@/utils/abbreviations';
-import { addressHashedEmoji } from '@/utils/profileUtils';
 import { getHighContrastTextColorWorklet } from '@/worklets/colors';
-import { type RouteProp, useRoute } from '@react-navigation/native';
-import chroma from 'chroma-js';
-import React, { memo, useCallback, useEffect, useMemo, useState } from 'react';
-import { ScrollView, StyleSheet, TouchableWithoutFeedback, View } from 'react-native';
-import Animated, {
-  type SharedValue,
-  runOnJS,
-  useAnimatedStyle,
-  useDerivedValue,
-  useSharedValue,
-  withTiming,
-} from 'react-native-reanimated';
-import { toHex } from 'viem';
-import { TOP_INSET } from '../Dimensions';
-import Navigation from '@/navigation/Navigation';
+
 import { RAINBOW_HOME } from '../constants';
+import { TOP_INSET } from '../Dimensions';
 import { getDappHost } from '../handleProviderRequest';
 import { formatUrl } from '../utils';
-import { initializeWallet } from '@/state/wallets/initializeWallet';
-import { THICK_BORDER_WIDTH } from '@/styles/constants';
 
 const PAGES = {
   HOME: 'home',

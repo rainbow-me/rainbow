@@ -1,4 +1,5 @@
 import PropTypes from 'prop-types';
+
 import { WrappedAlert as Alert } from '@/helpers/alert';
 
 const BaseAlert = ({ alertType, buttons, callback, message, title, type }) => Alert[alertType](title, message, buttons || callback, type);

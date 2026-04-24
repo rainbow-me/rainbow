@@ -1,36 +1,37 @@
 import React, { memo, useCallback, useMemo, useState } from 'react';
-import { AnimatedText, Box, Inline, Text, TextIcon, useColorMode, useForegroundColor } from '@/design-system';
-import { PerpsAccentColorContextProvider, usePerpsAccentColorContext } from '@/features/perps/context/PerpsAccentColorContext';
+import { Alert, InteractionManager } from 'react-native';
+
+import { useNavigation, useRoute, type RouteProp } from '@react-navigation/native';
 import { runOnJS, useAnimatedReaction, useDerivedValue, useSharedValue } from 'react-native-reanimated';
-import { opacity } from '@/framework/ui/utils/opacity';
+
+import { ETH_COLOR_DARK } from '@/__swaps__/screens/Swap/constants';
+import { analytics } from '@/analytics';
 import { TapToDismiss } from '@/components/DappBrowser/control-panel/ControlPanel';
-import { Panel, controlPanelStyles, PANEL_BOTTOM_OFFSET } from '@/components/SmoothPager/ListPanel';
-import { type RouteProp, useRoute, useNavigation } from '@react-navigation/native';
+import { HoldToActivateButton } from '@/components/hold-to-activate-button/HoldToActivateButton';
+import { useLiveTokenValue } from '@/components/live-token-text/LiveTokenText';
+import { SheetHandleFixedToTop } from '@/components/sheet';
+import { controlPanelStyles, Panel, PANEL_BOTTOM_OFFSET } from '@/components/SmoothPager/ListPanel';
+import { AnimatedText, Box, Inline, Text, TextIcon, useColorMode, useForegroundColor } from '@/design-system';
+import { PerpBottomSheetHeader } from '@/features/perps/components/PerpBottomSheetHeader';
+import { PositionPercentageSlider } from '@/features/perps/components/PositionPercentageSlider';
+import { SLIDER_MAX } from '@/features/perps/components/Slider/Slider';
+import { HANDLE_COLOR, LIGHT_HANDLE_COLOR, MIN_ORDER_SIZE_USD, SLIDER_WIDTH } from '@/features/perps/constants';
+import { PerpsAccentColorContextProvider, usePerpsAccentColorContext } from '@/features/perps/context/PerpsAccentColorContext';
+import { type OrderStatusResponse } from '@/features/perps/services/hyperliquid-exchange-client';
+import { useHlOpenOrdersStore } from '@/features/perps/stores/hlOpenOrdersStore';
+import { hyperliquidAccountActions, useHyperliquidAccountStore } from '@/features/perps/stores/hyperliquidAccountStore';
+import { TriggerOrderType } from '@/features/perps/types';
+import { getHyperliquidTokenId, parseHyperliquidErrorMessage } from '@/features/perps/utils';
+import { formatCurrency } from '@/features/perps/utils/formatCurrency';
+import { waitForTradeByOrderId } from '@/features/perps/utils/waitForTradeByOrderId';
+import { divWorklet, mulWorklet } from '@/framework/core/safeMath';
+import { opacity } from '@/framework/ui/utils/opacity';
+import * as i18n from '@/languages';
+import { logger, RainbowError } from '@/logger';
+import Navigation from '@/navigation/Navigation';
 import Routes from '@/navigation/routesNames';
 import { type RootStackParamList } from '@/navigation/types';
-import Navigation from '@/navigation/Navigation';
-import { useLiveTokenValue } from '@/components/live-token-text/LiveTokenText';
-import { getHyperliquidTokenId, parseHyperliquidErrorMessage } from '@/features/perps/utils';
-import { waitForTradeByOrderId } from '@/features/perps/utils/waitForTradeByOrderId';
-import { ETH_COLOR_DARK } from '@/__swaps__/screens/Swap/constants';
-import { hyperliquidAccountActions, useHyperliquidAccountStore } from '@/features/perps/stores/hyperliquidAccountStore';
-import { PositionPercentageSlider } from '@/features/perps/components/PositionPercentageSlider';
-import { SheetHandleFixedToTop } from '@/components/sheet';
-import { PerpBottomSheetHeader } from '@/features/perps/components/PerpBottomSheetHeader';
-import { HANDLE_COLOR, LIGHT_HANDLE_COLOR, MIN_ORDER_SIZE_USD, SLIDER_WIDTH } from '@/features/perps/constants';
-import { formatCurrency } from '@/features/perps/utils/formatCurrency';
-import { divWorklet, mulWorklet } from '@/framework/core/safeMath';
-import { logger, RainbowError } from '@/logger';
-import { HoldToActivateButton } from '@/components/hold-to-activate-button/HoldToActivateButton';
 import { colors } from '@/styles';
-import * as i18n from '@/languages';
-import { analytics } from '@/analytics';
-import { useHlOpenOrdersStore } from '@/features/perps/stores/hlOpenOrdersStore';
-import { TriggerOrderType } from '@/features/perps/types';
-import { Alert, InteractionManager } from 'react-native';
-import { SLIDER_MAX } from '@/features/perps/components/Slider/Slider';
-import { type OrderStatusResponse } from '@/features/perps/services/hyperliquid-exchange-client';
-
 import { THICK_BORDER_WIDTH } from '@/styles/constants';
 import { time } from '@/utils/time';
 
@@ -52,7 +53,7 @@ type PanelContentProps = {
 };
 
 function getOrderIdFromCloseStatus(status: OrderStatusResponse | undefined): number | undefined {
-  if (!status) return;
+  if (!status || typeof status !== 'object') return;
   if ('filled' in status) return status.filled.oid;
   if ('resting' in status) return status.resting.oid;
 }

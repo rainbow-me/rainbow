@@ -1,11 +1,13 @@
-import { useTheme } from '@/theme/ThemeContext';
-import React, { useState, useMemo, useEffect } from 'react';
-import * as i18n from '@/languages';
-import MenuItem from '../MenuItem';
-import Spinner from '@/components/Spinner';
+import React, { useEffect, useMemo, useState } from 'react';
+
 import { FloatingEmojis } from '@/components/floating-emojis';
+import Spinner from '@/components/Spinner';
 import useDimensions from '@/hooks/useDimensions';
+import * as i18n from '@/languages';
 import { CloudBackupState } from '@/state/backups/backups';
+import { useTheme } from '@/theme/ThemeContext';
+
+import MenuItem from '../MenuItem';
 
 export const BackUpMenuItem = ({
   icon = '􀊯',

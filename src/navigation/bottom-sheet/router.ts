@@ -1,14 +1,16 @@
 import {
+  StackRouter,
   type CommonNavigationAction,
   type PartialState,
   type Router,
   type StackActionType,
   type StackNavigationState,
-  StackRouter,
   type StackRouterOptions,
 } from '@react-navigation/native';
-import { actions } from './actions';
+
 import { type RootStackParamList } from '@/navigation/types';
+
+import { actions } from './actions';
 
 export const router = (
   routerOptions: StackRouterOptions

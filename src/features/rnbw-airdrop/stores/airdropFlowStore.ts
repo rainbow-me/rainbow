@@ -1,4 +1,4 @@
-import { type RnbwAirdropScene, RnbwAirdropScenes } from '@/features/rnbw-airdrop/screens/rnbw-airdrop-screen/constants/airdropScenes';
+import { RnbwAirdropScenes, type RnbwAirdropScene } from '@/features/rnbw-airdrop/screens/rnbw-airdrop-screen/constants/airdropScenes';
 import { submitAirdropClaim, type PreparedAirdropClaim } from '@/features/rnbw-rewards/utils/claimAirdrop';
 import { ensureError } from '@/logger';
 import { userAssetsStoreManager } from '@/state/assets/userAssetsStoreManager';

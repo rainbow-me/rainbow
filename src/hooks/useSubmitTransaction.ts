@@ -1,10 +1,11 @@
 import { useCallback, useState } from 'react';
-import Routes from '@/navigation/routesNames';
-import { type RequestSource } from '@/utils/requestNavigationHandlers';
-import { useNavigation } from '@/navigation/Navigation';
-import { logger, RainbowError } from '@/logger';
-import { startTimeToSignTracking } from '@/state/performance/performance';
+
 import { SCREEN_FOR_REQUEST_SOURCE } from '@/components/Transactions/constants';
+import { logger, RainbowError } from '@/logger';
+import { useNavigation } from '@/navigation/Navigation';
+import Routes from '@/navigation/routesNames';
+import { startTimeToSignTracking } from '@/state/performance/performance';
+import { type RequestSource } from '@/utils/requestNavigationHandlers';
 
 export const useTransactionSubmission = ({
   isMessageRequest,

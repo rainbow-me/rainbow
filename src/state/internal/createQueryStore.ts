@@ -2,29 +2,31 @@ import { dequal } from 'dequal';
 import { debounce } from 'lodash';
 import { subscribeWithSelector } from 'zustand/middleware';
 import { createWithEqualityFn } from 'zustand/traditional';
+
 import { IS_DEV, IS_TEST } from '@/env';
-import { RainbowError, ensureError, logger } from '@/logger';
+import { ensureError, logger, RainbowError } from '@/logger';
 import { time } from '@/utils/time';
+
 import { createRainbowStore } from './createRainbowStore';
 import { SubscriptionManager } from './queryStore/classes/SubscriptionManager';
 import {
+  QueryStatuses,
   type BaseQueryStoreState,
   type CacheEntry,
   type FetchOptions,
   type InternalStateKeys,
   type ParamResolvable,
   type QueryStatusInfo,
-  QueryStatuses,
+  type QueryStore,
   type QueryStoreConfig,
   type QueryStoreParams,
   type QueryStoreState,
   type QueryStoreStateCreator,
-  type QueryStore,
   type ResolvedEnabledResult,
   type ResolvedParamsResult,
   type StoreState,
 } from './queryStore/types';
-import { $, type AttachValue, type SignalFunction, type Unsubscribe, attachValueSubscriptionMap } from './signal';
+import { $, attachValueSubscriptionMap, type AttachValue, type SignalFunction, type Unsubscribe } from './signal';
 import {
   type OptionallyPersistedRainbowStore,
   type PersistedRainbowStore,
@@ -319,6 +321,10 @@ export function createQueryStore<
       const isPartialFunction = typeof partial === 'function';
       if (isPartialFunction || partial.enabled !== undefined) {
         let handleNewEnabled: (() => void) | undefined;
+        // @ts-expect-error — the outer setState's overloads enforce the
+        // correct partial/replace pairing at the caller boundary; inside
+        // the impl TS sees the union of both overloads and can't match
+        // either of zustand v5's narrowed setState overloads.
         originalSet(state => {
           const newPartial = isPartialFunction ? partial(state) : partial;
           const newEnabled = newPartial.enabled !== undefined ? newPartial.enabled : state.enabled;
@@ -327,6 +333,8 @@ export function createQueryStore<
         }, replace);
         handleNewEnabled?.();
       } else {
+        // @ts-expect-error — see the block above for why this forwarder
+        // call can't satisfy zustand v5's narrowed setState overloads.
         originalSet(partial, replace);
       }
     };

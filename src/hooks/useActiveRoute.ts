@@ -1,5 +1,6 @@
-import Navigation, { useNavigation } from '@/navigation/Navigation';
 import { useEffect, useState } from 'react';
+
+import Navigation, { useNavigation } from '@/navigation/Navigation';
 
 export const useActiveRoute = () => {
   const { addListener } = useNavigation();

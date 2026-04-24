@@ -1,7 +1,9 @@
-import { FasterImageView, type ImageOptions, type FasterImageProps } from '@candlefinance/faster-image';
 import React from 'react';
 import { Image } from 'react-native';
+
+import { FasterImageView, type FasterImageProps, type ImageOptions } from '@candlefinance/faster-image';
 import FastImage from 'react-native-fast-image';
+
 import { withStaticProperties } from '../helpers/withStaticProperties';
 import { memoFn } from '../utils/memoFn';
 

@@ -1,9 +1,12 @@
 import React from 'react';
+
 import * as Sentry from '@sentry/react-native';
-import Fallback from './Fallback';
+
+import { analytics } from '@/analytics';
 import { IS_TEST } from '@/env';
 import { useTheme } from '@/theme/ThemeContext';
-import { analytics } from '@/analytics';
+
+import Fallback from './Fallback';
 
 const NoErrorBoundary = ({ children }: { children: React.ReactNode }) => children;
 

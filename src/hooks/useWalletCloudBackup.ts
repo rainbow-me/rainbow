@@ -1,3 +1,7 @@
+import { useCallback } from 'react';
+
+import { values } from 'lodash';
+
 import { analytics } from '@/analytics';
 import { IS_ANDROID } from '@/env';
 import { maybeAuthenticateWithPIN } from '@/handlers/authentication';
@@ -9,8 +13,7 @@ import { logger, RainbowError } from '@/logger';
 import { backupsStore } from '@/state/backups/backups';
 import { setWalletBackedUp, useWallets } from '@/state/wallets/walletsStore';
 import { openInBrowser } from '@/utils/openInBrowser';
-import { values } from 'lodash';
-import { useCallback } from 'react';
+
 import { addWalletToCloudBackup, backupWalletToCloud } from '../model/backup';
 import { cloudPlatform } from '../utils/platform';
 

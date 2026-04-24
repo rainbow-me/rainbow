@@ -1,19 +1,3 @@
-import lang from 'i18n-js';
-import ar_AR from './ar_AR.json';
-import en_US from './en_US.json';
-import es_419 from './es_419.json';
-import fr_FR from './fr_FR.json';
-import hi_IN from './hi_IN.json';
-import id_ID from './id_ID.json';
-import ja_JP from './ja_JP.json';
-import ko_KR from './ko_KR.json';
-import pt_BR from './pt_BR.json';
-import ru_RU from './ru_RU.json';
-import th_TH from './th_TH.json';
-import tr_TR from './tr_TR.json';
-import zh_CN from './zh_CN.json';
-
-import { simpleObjectProxy } from '@/languages/utils';
 // The `import/no-duplicates` rule false-positives here because all locale subpaths resolve
 // to the same `date-fns/typings.d.ts` declaration file, making ESLint think they are
 // duplicate imports from one module — they are not.
@@ -31,6 +15,24 @@ import ru from 'date-fns/locale/ru';
 import th from 'date-fns/locale/th';
 import tr from 'date-fns/locale/tr';
 import zhCN from 'date-fns/locale/zh-CN';
+import lang from 'i18n-js';
+
+import { simpleObjectProxy } from '@/languages/utils';
+
+import ar_AR from './ar_AR.json';
+import en_US from './en_US.json';
+import es_419 from './es_419.json';
+import fr_FR from './fr_FR.json';
+import hi_IN from './hi_IN.json';
+import id_ID from './id_ID.json';
+import ja_JP from './ja_JP.json';
+import ko_KR from './ko_KR.json';
+import pt_BR from './pt_BR.json';
+import ru_RU from './ru_RU.json';
+import th_TH from './th_TH.json';
+import tr_TR from './tr_TR.json';
+import zh_CN from './zh_CN.json';
+
 /* eslint-enable import/no-duplicates */
 
 /**

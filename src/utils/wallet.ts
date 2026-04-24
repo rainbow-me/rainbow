@@ -1,20 +1,23 @@
 import { NativeModules } from 'react-native';
-import { hdkey } from 'ethereumjs-wallet';
+
 import { Wallet } from '@ethersproject/wallet';
+import { mnemonicToSeed } from 'bip39';
+import { hdkey } from 'ethereumjs-wallet';
+
+import { IS_IOS } from '@/env';
 import { addHexPrefix, ensureChecksumAddress } from '@/handlers/web3';
 import WalletTypes from '@/helpers/walletTypes';
 import {
   DEFAULT_HD_PATH,
+  getHdPath,
   identifyWalletType,
   WalletLibraryType,
   type EthereumPrivateKey,
-  type EthereumWalletSeed,
-  getHdPath,
   type EthereumWalletFromSeed,
+  type EthereumWalletSeed,
   type ReadOnlyWallet,
 } from '@/model/wallet';
-import { mnemonicToSeed } from 'bip39';
-import { IS_IOS } from '@/env';
+
 import { getEthApp } from './ledger';
 
 const { RNBip39 } = NativeModules;

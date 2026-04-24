@@ -1,20 +1,22 @@
 import { memo, type ReactNode } from 'react';
 import { StyleSheet, View } from 'react-native';
+
+import { LinearGradient } from 'expo-linear-gradient';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
+
+import { GradientBorderView } from '@/components/gradient-border/GradientBorderView';
+import { RnbwCoinIcon } from '@/components/RnbwCoinIcon';
 import SheetHandleFixedToTop from '@/components/sheet/SheetHandleFixedToTop';
 import { Box, Text, useColorMode, useForegroundColor } from '@/design-system';
-import Routes from '@/navigation/routesNames';
-import Navigation from '@/navigation/Navigation';
-import { RnbwCoinIcon } from '@/components/RnbwCoinIcon';
-import { useStakingPositionStore } from '@/features/rnbw-staking/stores/rnbwStakingPositionStore';
-import { RnbwThemedButton } from '@/features/rnbw-membership/components/RnbwThemedButton';
-import { UnstakePenaltySign } from '@/features/rnbw-staking/components/UnstakePenaltySign';
 import { ProgressMeter } from '@/features/rnbw-membership/components/ProgressMeter';
-import { GradientBorderView } from '@/components/gradient-border/GradientBorderView';
-import { LinearGradient } from 'expo-linear-gradient';
-import { opacity } from '@/framework/ui/utils/opacity';
+import { RnbwButton } from '@/features/rnbw-membership/components/RnbwButton/RnbwButton';
+import { UnstakePenaltySign } from '@/features/rnbw-staking/components/UnstakePenaltySign';
+import { useStakingPositionStore } from '@/features/rnbw-staking/stores/rnbwStakingPositionStore';
 import { LoadingSpinner } from '@/framework/ui/components/LoadingSpinner';
+import { opacity } from '@/framework/ui/utils/opacity';
 import * as i18n from '@/languages';
+import Navigation from '@/navigation/Navigation';
+import Routes from '@/navigation/routesNames';
 
 const ICON_CONTAINER_WIDTH = 62;
 const RNBW_ICON_SIZE = 52;
@@ -81,7 +83,7 @@ export const RnbwStakingLearnScreen = memo(function RnbwStakingLearnScreen() {
               />
             </Box>
           </Box>
-          <RnbwThemedButton
+          <RnbwButton
             onPress={navigateToStakingScreen}
             label={i18n.t(i18n.l.rnbw_staking.learn_screen.enable_staking)}
             height={48}

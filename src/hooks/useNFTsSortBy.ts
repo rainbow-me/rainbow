@@ -1,5 +1,6 @@
-import { NftCollectionSortCriterion, SortDirection } from '@/graphql/__generated__/arc';
 import { useMMKVString } from 'react-native-mmkv';
+
+import { NftCollectionSortCriterion, SortDirection } from '@/graphql/__generated__/arc';
 import { useAccountAddress } from '@/state/wallets/walletsStore';
 
 const getStorageKey = (accountAddress: string) => `nfts-sort-${accountAddress}`;

@@ -1,14 +1,15 @@
-import BigNumber from 'bignumber.js';
-import { isNil } from 'lodash';
-import { isHexString } from '@/handlers/web3';
-import ethUnits from '@/references/ethereum-units.json';
-import smartContractMethods from '@/references/smartcontract-methods.json';
-import { convertAmountAndPriceToNativeDisplay, convertHexToString, convertRawAmountToDecimalFormat, fromWei } from '@/helpers/utilities';
-import { logger } from '@/logger';
-import ethereumUtils from '@/utils/ethereumUtils';
-import { isSignTypedData, SIGN, PERSONAL_SIGN, SEND_TRANSACTION, SIGN_TRANSACTION } from '@/utils/signingMethods';
 import { isAddress } from '@ethersproject/address';
 import { toUtf8String } from '@ethersproject/strings';
+import BigNumber from 'bignumber.js';
+import { isNil } from 'lodash';
+
+import { isHexString } from '@/handlers/web3';
+import { convertAmountAndPriceToNativeDisplay, convertHexToString, convertRawAmountToDecimalFormat, fromWei } from '@/helpers/utilities';
+import { logger } from '@/logger';
+import ethUnits from '@/references/ethereum-units.json';
+import smartContractMethods from '@/references/smartcontract-methods.json';
+import ethereumUtils from '@/utils/ethereumUtils';
+import { isSignTypedData, PERSONAL_SIGN, SEND_TRANSACTION, SIGN, SIGN_TRANSACTION } from '@/utils/signingMethods';
 
 export const getRequestDisplayDetails = async (payload, nativeCurrency, chainId) => {
   const timestampInMs = Date.now();

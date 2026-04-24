@@ -1,5 +1,6 @@
-import { TruncatedText } from '../text';
 import styled from '@/framework/ui/styled-thing';
+
+import { TruncatedText } from '../text';
 
 const TokenInfoValue = styled(TruncatedText).attrs(({ color, isNft, lineHeight, size, theme: { colors }, weight = 'semibold' }) => ({
   color: color || colors.dark,

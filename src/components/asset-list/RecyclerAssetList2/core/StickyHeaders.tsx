@@ -1,20 +1,23 @@
 /* eslint-disable react-hooks/rules-of-hooks */
-import { sortBy } from 'lodash';
 import React, {
-  type MutableRefObject,
-  type ReactElement,
   useCallback,
   useContext,
   useLayoutEffect,
   useMemo,
   useRef,
   useState,
+  type MutableRefObject,
+  type ReactElement,
 } from 'react';
 import { Animated as RNAnimated } from 'react-native';
+
+import { sortBy } from 'lodash';
 import type Animated from 'react-native-reanimated';
 import { type BaseScrollView } from 'recyclerlistview';
-import { useRecyclerAssetListPosition } from './Contexts';
+
 import { useTheme } from '@/theme/ThemeContext';
+
+import { useRecyclerAssetListPosition } from './Contexts';
 
 const Context = React.createContext<
   | {

@@ -1,15 +1,17 @@
+import { type ResponseByTheme } from '@/__swaps__/utils/swaps';
 import { POLYMARKET_SPORTS_MARKET_TYPE } from '@/features/polymarket/constants';
-import { isDrawMarket } from '@/features/polymarket/utils/sports';
 import { usePolymarketEventStore } from '@/features/polymarket/stores/polymarketEventStore';
 import { getOutcomeTeamColor } from '@/features/polymarket/utils/getOutcomeTeam';
 import { isThreeWayMoneyline } from '@/features/polymarket/utils/marketClassification';
+import { isDrawMarket } from '@/features/polymarket/utils/sports';
 import { createQueryStore } from '@/state/internal/createQueryStore';
-import { type ResponseByTheme } from '@/__swaps__/utils/swaps';
 import { time } from '@/utils/time';
+
 import { fetchPriceHistory } from '../api/clobClient';
 import { fetchGammaEvent } from '../api/gammaClient';
 import {
   FIDELITY_MAP,
+  SERIES_COLORS,
   type GammaEvent,
   type GammaMarket,
   type MarketFilter,
@@ -19,9 +21,8 @@ import {
   type PolymarketInterval,
   type PolymarketMarketChartParams,
   type PricePoint,
-  SERIES_COLORS,
 } from '../types';
-import { type PolymarketStoreState, usePolymarketStore } from './polymarketStore';
+import { usePolymarketStore, type PolymarketStoreState } from './polymarketStore';
 
 // ============ Constants ====================================================== //
 

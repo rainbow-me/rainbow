@@ -1,11 +1,13 @@
-import { type RnbwRewardsScene, RnbwRewardsScenes } from '@/features/rnbw-rewards/screens/rnbw-rewards-screen/constants/rewardsScenes';
-import { useRnbwRewardsFlowContext } from '@/features/rnbw-rewards/screens/rnbw-rewards-screen/context/RnbwRewardsFlowContext';
+import { memo, useMemo } from 'react';
+
 import { Blur, Canvas, LinearGradient, RoundedRect, vec } from '@shopify/react-native-skia';
 import { interpolate, interpolateColor, useAnimatedReaction, useDerivedValue, useSharedValue, withTiming } from 'react-native-reanimated';
-import { memo, useMemo } from 'react';
+
+import { RnbwRewardsScenes, type RnbwRewardsScene } from '@/features/rnbw-rewards/screens/rnbw-rewards-screen/constants/rewardsScenes';
+import { useRnbwRewardsFlowContext } from '@/features/rnbw-rewards/screens/rnbw-rewards-screen/context/RnbwRewardsFlowContext';
+import { useAirdropBalanceStore } from '@/features/rnbw-rewards/stores/airdropBalanceStore';
 import useDimensions from '@/hooks/useDimensions';
 import { time } from '@/utils/time';
-import { useAirdropBalanceStore } from '@/features/rnbw-rewards/stores/airdropBalanceStore';
 
 type GradientConfig = {
   colors: readonly string[];

@@ -1,30 +1,33 @@
-import React, { useCallback, forwardRef, useImperativeHandle, useState } from 'react';
-import { AnimatedText, Box, Text, useTextStyle } from '@/design-system';
-import { type AnimatedTextChildProps } from '@/design-system/components/Text/AnimatedText';
-import { AnimatedInput } from '@/components/AnimatedComponents/AnimatedInput';
+import React, { forwardRef, useCallback, useImperativeHandle, useState } from 'react';
+import { type StyleProp, type TextInput, type TextInputProps, type TextStyle, type ViewStyle } from 'react-native';
+
+import Clipboard from '@react-native-clipboard/clipboard';
 import Animated, {
-  withTiming,
+  runOnJS,
   runOnUI,
+  useAnimatedReaction,
   useAnimatedRef,
   useAnimatedStyle,
   useSharedValue,
-  runOnJS,
-  useAnimatedReaction,
+  withTiming,
   type AnimatedStyle,
 } from 'react-native-reanimated';
-import { type TextInput, type TextInputProps, type StyleProp, type TextStyle, type ViewStyle } from 'react-native';
-import Clipboard from '@react-native-clipboard/clipboard';
+
+import { AnimatedInput } from '@/components/AnimatedComponents/AnimatedInput';
 import { TIMING_CONFIGS } from '@/components/animations/animationConfigs';
+import ButtonPressAnimation from '@/components/animations/ButtonPressAnimation';
+import { AnimatedText, Box, Text, useTextStyle } from '@/design-system';
+import { type AnimatedTextChildProps } from '@/design-system/components/Text/AnimatedText';
+
+import {
+  ERROR_RED,
+  FOCUSED_FIELD_BORDER_COLOR,
+  GHOST_INPUT_ACCESSORY_NATIVE_ID,
+  INPUT_HEIGHT,
+  UNFOCUSED_FIELD_BORDER_COLOR,
+} from '../constants';
 import { FieldContainer } from './FieldContainer';
 import { FieldLabel } from './FieldLabel';
-import {
-  UNFOCUSED_FIELD_BORDER_COLOR,
-  FOCUSED_FIELD_BORDER_COLOR,
-  INPUT_HEIGHT,
-  ERROR_RED,
-  GHOST_INPUT_ACCESSORY_NATIVE_ID,
-} from '../constants';
-import ButtonPressAnimation from '@/components/animations/ButtonPressAnimation';
 
 const TITLE_GAP = 10;
 

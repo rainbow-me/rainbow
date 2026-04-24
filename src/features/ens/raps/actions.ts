@@ -1,23 +1,25 @@
+import { type Signer } from '@ethersproject/abstract-signer';
+import { Logger } from '@ethersproject/logger';
+
 import { analytics } from '@/analytics';
-import { type ENSRegistrationRecords } from '../types/registration';
-import { type NewTransaction, TransactionStatus } from '@/entities/transactions';
 import { type TransactionGasParamAmounts } from '@/entities/gas';
+import { TransactionStatus, type NewTransaction } from '@/entities/transactions';
 import { IS_TEST } from '@/env';
-import { estimateENSTransactionGasLimit, formatRecordsForTransaction } from '../utils/handlers';
 import { toHex } from '@/handlers/web3';
-import { ENSRegistrationTransactionType, getENSExecutionDetails, REGISTRATION_MODES } from '../utils/helpers';
 import * as i18n from '@/languages';
 import { logger, RainbowError } from '@/logger';
 import { parseGasParamAmounts } from '@/parsers/gas';
-import { type ENSActionParameters, type ENSRap, ENSRapActionType, type RapENSAction, type RapENSActionParameters } from './common';
-import { saveCommitRegistrationParameters, updateTransactionRegistrationParameters } from '../redux/registration';
 import store from '@/redux/store';
 import { ChainId, Network } from '@/state/backendNetworks/types';
 import { addNewTransaction } from '@/state/pendingTransactions';
 import { executeFn, Screens, TimeToSignOperation } from '@/state/performance/performance';
-import { type Signer } from '@ethersproject/abstract-signer';
-import { Logger } from '@ethersproject/logger';
 import { getAccountAddress } from '@/state/wallets/walletsStore';
+
+import { saveCommitRegistrationParameters, updateTransactionRegistrationParameters } from '../redux/registration';
+import { type ENSRegistrationRecords } from '../types/registration';
+import { estimateENSTransactionGasLimit, formatRecordsForTransaction } from '../utils/handlers';
+import { ENSRegistrationTransactionType, getENSExecutionDetails, REGISTRATION_MODES } from '../utils/helpers';
+import { ENSRapActionType, type ENSActionParameters, type ENSRap, type RapENSAction, type RapENSActionParameters } from './common';
 import {
   createCommitENSRap,
   createRegisterENSRap,

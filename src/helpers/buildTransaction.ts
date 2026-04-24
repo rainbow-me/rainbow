@@ -1,13 +1,15 @@
-import { RainbowError, logger } from '@/logger';
-import { greaterThan, convertHexToString } from './utilities';
-import { isNil } from 'lodash';
-import { estimateGasWithPadding, toHex } from '@/handlers/web3';
 import { type StaticJsonRpcProvider, type TransactionRequest } from '@ethersproject/providers';
-import type { SelectedGasFee } from '@/entities/gas';
-import { parseGasParamsForTransaction } from '@/parsers/gas';
-import { getNextNonce } from '@/state/nonces';
-import { type ChainId } from '@/state/backendNetworks/types';
+import { isNil } from 'lodash';
 import { hexToNumber } from 'viem';
+
+import type { SelectedGasFee } from '@/entities/gas';
+import { estimateGasWithPadding, toHex } from '@/handlers/web3';
+import { logger, RainbowError } from '@/logger';
+import { parseGasParamsForTransaction } from '@/parsers/gas';
+import { type ChainId } from '@/state/backendNetworks/types';
+import { getNextNonce } from '@/state/nonces';
+
+import { convertHexToString, greaterThan } from './utilities';
 
 export const getGasLimitForSuggestedGas = async (params: any, provider: StaticJsonRpcProvider) => {
   const gasLimitFromPayload = params.gasLimit;

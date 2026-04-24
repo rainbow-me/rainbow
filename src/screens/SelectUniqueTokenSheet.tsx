@@ -1,14 +1,17 @@
-import { type RouteProp, useNavigation, useRoute } from '@react-navigation/native';
 import React, { useCallback, useContext, useEffect } from 'react';
+
+import { useNavigation, useRoute, type RouteProp } from '@react-navigation/native';
+
+import { Box } from '@/design-system';
+import type { UniqueAsset } from '@/entities/uniqueAssets';
+import useWalletSectionsData from '@/hooks/useWalletSectionsData';
+import type Routes from '@/navigation/routesNames';
+import { type RootStackParamList } from '@/navigation/types';
+import { useNftsStore } from '@/state/nfts/nfts';
+
 import RecyclerAssetList2 from '../components/asset-list/RecyclerAssetList2';
 import { SheetHandle } from '../components/sheet';
 import { ModalContext } from '../react-native-cool-modals/NativeStackView';
-import { Box } from '@/design-system';
-import type { UniqueAsset } from '@/entities/uniqueAssets';
-import { type RootStackParamList } from '@/navigation/types';
-import type Routes from '@/navigation/routesNames';
-import { useNftsStore } from '@/state/nfts/nfts';
-import useWalletSectionsData from '@/hooks/useWalletSectionsData';
 
 export default function SelectUniqueTokenSheet() {
   const { params } = useRoute<RouteProp<RootStackParamList, typeof Routes.SELECT_UNIQUE_TOKEN_SHEET>>();

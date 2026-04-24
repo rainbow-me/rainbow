@@ -1,11 +1,12 @@
 import { memo, useCallback, useEffect, useMemo, useState } from 'react';
-import { StyleSheet, useWindowDimensions, View, Image } from 'react-native';
+import { Image, StyleSheet, useWindowDimensions, View } from 'react-native';
+
+import { BlurView } from 'react-native-blur-view';
 import Animated, {
   cancelAnimation,
   Easing,
   interpolate,
   runOnJS,
-  type SharedValue,
   useAnimatedReaction,
   useAnimatedStyle,
   useDerivedValue,
@@ -13,15 +14,16 @@ import Animated, {
   withDelay,
   withRepeat,
   withTiming,
+  type SharedValue,
 } from 'react-native-reanimated';
-import { BlurView } from 'react-native-blur-view';
+
 import rnbwCoin from '@/assets/rnbw.png';
-import useTimeout from '@/hooks/useTimeout';
-import { time } from '@/utils/time';
+import { getCoinCenterPosition } from '@/features/rnbw-airdrop/screens/rnbw-airdrop-screen/components/RnbwHeroCoin';
 import { RnbwAirdropScenes } from '@/features/rnbw-airdrop/screens/rnbw-airdrop-screen/constants/airdropScenes';
 import { useAirdropFlowStore } from '@/features/rnbw-airdrop/stores/airdropFlowStore';
+import useTimeout from '@/hooks/useTimeout';
 import { useStoreSharedValue } from '@/state/internal/hooks/useStoreSharedValue';
-import { getCoinCenterPosition } from '@/features/rnbw-airdrop/screens/rnbw-airdrop-screen/components/RnbwHeroCoin';
+import { time } from '@/utils/time';
 
 // Original design dimensions
 const DESIGN_WIDTH = 393;

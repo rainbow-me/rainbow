@@ -1,23 +1,25 @@
-import * as i18n from '@/languages';
 import React, { useCallback } from 'react';
 import { Alert } from 'react-native';
-import { Box, Column, Columns, Inset, Stack, Text, useForegroundColor } from '@/design-system';
-import { Layout } from '@/screens/hardware-wallets/components/Layout';
+
+import TransportBLE from '@ledgerhq/react-native-hw-transport-ble';
+import { useRoute, type RouteProp } from '@react-navigation/native';
+import { useRecoilValue } from 'recoil';
+
 import ButtonPressAnimation from '@/components/animations/ButtonPressAnimation';
-import { TRANSLATIONS } from '@/screens/hardware-wallets/constants';
+import { Box, Column, Columns, Inset, Stack, Text, useForegroundColor } from '@/design-system';
 import useDimensions from '@/hooks/useDimensions';
 import useImportingWallet from '@/hooks/useImportingWallet';
-import { ActionButton } from '@/screens/hardware-wallets/components/ActionButton';
-import { useRecoilValue } from 'recoil';
-import { RainbowError, logger } from '@/logger';
-import { LedgerImportDeviceIdAtom } from '@/navigation/PairHardwareWalletNavigator';
-import { checkLedgerConnection, LEDGER_ERROR_CODES } from '@/utils/ledger';
+import * as i18n from '@/languages';
+import { logger, RainbowError } from '@/logger';
 import { useNavigation } from '@/navigation/Navigation';
+import { LedgerImportDeviceIdAtom } from '@/navigation/PairHardwareWalletNavigator';
 import Routes from '@/navigation/routesNames';
-import { type RouteProp, useRoute } from '@react-navigation/native';
-import TransportBLE from '@ledgerhq/react-native-hw-transport-ble';
-import { openInBrowser } from '@/utils/openInBrowser';
 import { type RootStackParamList } from '@/navigation/types';
+import { ActionButton } from '@/screens/hardware-wallets/components/ActionButton';
+import { Layout } from '@/screens/hardware-wallets/components/Layout';
+import { TRANSLATIONS } from '@/screens/hardware-wallets/constants';
+import { checkLedgerConnection, LEDGER_ERROR_CODES } from '@/utils/ledger';
+import { openInBrowser } from '@/utils/openInBrowser';
 
 const NUMBER_BOX_SIZE = 28;
 const HORIZONTAL_INSET = 36;

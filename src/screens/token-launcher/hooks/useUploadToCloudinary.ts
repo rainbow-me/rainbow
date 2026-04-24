@@ -1,7 +1,9 @@
 import { useState } from 'react';
-import { uploadImageToCloudinary } from '../helpers/uploadToCloudinary';
-import { logger, RainbowError } from '@/logger';
+
 import { analytics } from '@/analytics';
+import { logger, RainbowError } from '@/logger';
+
+import { uploadImageToCloudinary } from '../helpers/uploadToCloudinary';
 
 export function useUploadToCloudinary() {
   const [isUploading, setIsUploading] = useState(false);

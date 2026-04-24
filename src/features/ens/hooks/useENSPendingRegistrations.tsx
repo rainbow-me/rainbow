@@ -1,15 +1,18 @@
 import { useCallback, useMemo } from 'react';
+
 import { useDispatch, useSelector } from 'react-redux';
-import useENSRegistration from './useENSRegistration';
-import type { ENSRegistrationState } from '../types/registration';
-import { REGISTRATION_MODES } from '../utils/helpers';
-import { removeExpiredRegistrations } from '../redux/registration';
-import { type AppState } from '@/redux/store';
+
 import { useNavigation } from '@/navigation/Navigation';
 import Routes from '@/navigation/routesNames';
-import { getENSNFTAvatarUrl } from '../utils/records';
+import { type AppState } from '@/redux/store';
 import { useLegacyNFTs } from '@/resources/nfts';
 import { useAccountAddress } from '@/state/wallets/walletsStore';
+
+import { removeExpiredRegistrations } from '../redux/registration';
+import type { ENSRegistrationState } from '../types/registration';
+import { REGISTRATION_MODES } from '../utils/helpers';
+import { getENSNFTAvatarUrl } from '../utils/records';
+import useENSRegistration from './useENSRegistration';
 
 export default function useENSPendingRegistrations() {
   const accountAddress = useAccountAddress();

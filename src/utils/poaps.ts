@@ -1,7 +1,7 @@
 import { arcClient } from '@/graphql';
+import { logger } from '@/logger';
 import Navigation from '@/navigation/Navigation';
 import Routes from '@/navigation/routesNames';
-import { logger } from '@/logger';
 
 export type PoapMintError = 'LIMIT_EXCEEDED' | 'EVENT_EXPIRED' | 'UNKNOWN';
 

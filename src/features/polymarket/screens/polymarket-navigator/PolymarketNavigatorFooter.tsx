@@ -1,21 +1,24 @@
 import React, { memo } from 'react';
 import { StyleSheet, View } from 'react-native';
-import { Box, globalColors, useColorMode } from '@/design-system';
-import { opacity } from '@/framework/ui/utils/opacity';
-import { easing } from '@/components/animations/animationConfigs';
-import { useSafeAreaInsets } from 'react-native-safe-area-context';
-import { EasingGradient } from '@/components/easing-gradient/EasingGradient';
-import { PolymarketTabSelector } from './PolymarketTabSelector';
-import { PolymarketSearchButton } from '@/features/polymarket/screens/polymarket-navigator/PolymarketSearchButton';
-import { usePolymarketNavigationStore } from '@/features/polymarket/screens/polymarket-navigator/PolymarketNavigator';
-import { type PolymarketRoute } from '@/navigation/types';
-import Routes from '@/navigation/routesNames';
-import Animated from 'react-native-reanimated';
-import { DEFAULT_MOUNT_ANIMATIONS } from '@/components/utilities/MountWhenFocused';
-import { NAVIGATOR_FOOTER_HEIGHT } from '@/features/polymarket/constants';
+
 import { KeyboardStickyView } from 'react-native-keyboard-controller';
+import Animated from 'react-native-reanimated';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
+
+import { easing } from '@/components/animations/animationConfigs';
+import { EasingGradient } from '@/components/easing-gradient/EasingGradient';
+import { DEFAULT_MOUNT_ANIMATIONS } from '@/components/utilities/MountWhenFocused';
+import { Box, globalColors, useColorMode } from '@/design-system';
 import { IS_ANDROID } from '@/env';
+import { NAVIGATOR_FOOTER_HEIGHT } from '@/features/polymarket/constants';
+import { usePolymarketNavigationStore } from '@/features/polymarket/screens/polymarket-navigator/PolymarketNavigator';
+import { PolymarketSearchButton } from '@/features/polymarket/screens/polymarket-navigator/PolymarketSearchButton';
 import { PolymarketSearchFooter } from '@/features/polymarket/screens/polymarket-navigator/PolymarketSearchFooter';
+import { opacity } from '@/framework/ui/utils/opacity';
+import Routes from '@/navigation/routesNames';
+import { type PolymarketRoute } from '@/navigation/types';
+
+import { PolymarketTabSelector } from './PolymarketTabSelector';
 
 const MAGIC_KEYBOARD_OFFSET_NUDGE = 6;
 const DISTANCE_FROM_KEYBOARD = 20;

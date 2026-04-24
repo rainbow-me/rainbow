@@ -10,6 +10,7 @@ rainbow-scripts
 __generated__
 coverage
 src/react-native-animated-charts
+src/components/DappBrowser/DappBrowserWebview.tsx
 InjectedJSBundle.js
 .yarn
 .claude/settings.local.json

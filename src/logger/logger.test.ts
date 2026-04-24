@@ -1,9 +1,9 @@
-import { nanoid } from 'nanoid';
 import { expect, test } from '@jest/globals';
 import * as Sentry from '@sentry/react-native';
+import { nanoid } from 'nanoid';
 
-import { Logger, LogLevel, RainbowError, sentryTransport } from '@/logger';
 import { RainbowFetchError } from '@/framework/data/http/rainbowFetch';
+import { Logger, LogLevel, RainbowError, sentryTransport } from '@/logger';
 import { defaultOptions } from '@/logger/sentry';
 
 jest.mock('@sentry/react-native', () => ({

@@ -1,21 +1,23 @@
-import useDimensions from '@/hooks/useDimensions';
-import styled from '@/framework/ui/styled-thing';
-import { position } from '@/styles';
-import safeAreaInsetValues from '@/utils/safeAreaInsetValues';
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import { StyleSheet, View } from 'react-native';
+
 import { SystemBars } from 'react-native-edge-to-edge';
 import { Gesture, GestureDetector } from 'react-native-gesture-handler';
 import Animated, {
   Easing,
   runOnJS,
-  type SharedValue,
   useAnimatedStyle,
   useSharedValue,
   withSpring,
   withTiming,
+  type SharedValue,
 } from 'react-native-reanimated';
 import vstyled from 'styled-components';
+
+import styled from '@/framework/ui/styled-thing';
+import useDimensions from '@/hooks/useDimensions';
+import { position } from '@/styles';
+import safeAreaInsetValues from '@/utils/safeAreaInsetValues';
 
 const adjustConfig = {
   duration: 300,

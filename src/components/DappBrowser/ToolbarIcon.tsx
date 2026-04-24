@@ -1,5 +1,6 @@
 import React from 'react';
 import { StyleSheet } from 'react-native';
+
 import ButtonPressAnimation from '@/components/animations/ButtonPressAnimation';
 import { TextIcon } from '@/design-system';
 import { type TextColor } from '@/design-system/color/palettes';

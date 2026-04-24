@@ -1,15 +1,17 @@
-import { type NativeScrollEvent, type NativeSyntheticEvent, StyleSheet, View } from 'react-native';
+import { memo, useMemo, type ComponentProps, type ComponentType, type ReactElement, type RefObject } from 'react';
+import { StyleSheet, View, type NativeScrollEvent, type NativeSyntheticEvent } from 'react-native';
+
 import { type FlatList } from 'react-native-gesture-handler';
 import Animated from 'react-native-reanimated';
-import { type PolymarketEvent } from '@/features/polymarket/types/polymarket-event';
-import { type ComponentProps, type ComponentType, type ReactElement, type RefObject, memo, useMemo } from 'react';
-import { NAVIGATOR_FOOTER_CLEARANCE, NAVIGATOR_FOOTER_HEIGHT } from '@/features/polymarket/constants';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
+
 import {
-  PolymarketEventsListItem,
   HEIGHT as ITEM_HEIGHT,
   LoadingSkeleton,
+  PolymarketEventsListItem,
 } from '@/features/polymarket/components/polymarket-events-list/PolymarketEventsListItem';
+import { NAVIGATOR_FOOTER_CLEARANCE, NAVIGATOR_FOOTER_HEIGHT } from '@/features/polymarket/constants';
+import { type PolymarketEvent } from '@/features/polymarket/types/polymarket-event';
 import { DEVICE_HEIGHT, DEVICE_WIDTH } from '@/utils/deviceUtils';
 import safeAreaInsetValues from '@/utils/safeAreaInsetValues';
 

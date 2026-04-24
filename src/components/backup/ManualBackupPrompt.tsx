@@ -1,3 +1,7 @@
+import React, { useCallback } from 'react';
+
+import { type Source } from 'react-native-fast-image';
+
 import ManuallyBackedUpIcon from '@/assets/ManuallyBackedUp.png';
 import { Bleed, Box, Inline, Inset, Separator, Stack, Text } from '@/design-system';
 import walletBackupTypes from '@/helpers/walletBackupTypes';
@@ -6,8 +10,7 @@ import * as i18n from '@/languages';
 import { useNavigation } from '@/navigation/Navigation';
 import Routes from '@/navigation/routesNames';
 import { useSelectedWallet } from '@/state/wallets/walletsStore';
-import React, { useCallback } from 'react';
-import { type Source } from 'react-native-fast-image';
+
 import ButtonPressAnimation from '../animations/ButtonPressAnimation';
 import { ImgixImage } from '../images';
 

@@ -1,8 +1,10 @@
 import { useEffect, useState } from 'react';
-import { fromWei, greaterThanOrEqualTo } from '@/helpers/utilities';
+
 import BigNumber from 'bignumber.js';
-import type { ParsedAddressAsset } from '@/entities/tokens';
+
 import type { SelectedGasFee } from '@/entities/gas';
+import type { ParsedAddressAsset } from '@/entities/tokens';
+import { fromWei, greaterThanOrEqualTo } from '@/helpers/utilities';
 import { type ChainId } from '@/state/backendNetworks/types';
 
 type BalanceCheckParams = {

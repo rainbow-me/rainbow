@@ -1,3 +1,13 @@
+import React, { useCallback, useMemo, useRef, useState, type ReactNode } from 'react';
+import { InteractionManager, Share, View } from 'react-native';
+
+import { useFocusEffect } from '@react-navigation/native';
+import c from 'chroma-js';
+import { BlurView } from 'react-native-blur-view';
+import Animated, { useAnimatedStyle, useDerivedValue, useSharedValue } from 'react-native-reanimated';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
+import URL from 'url-parse';
+
 import { analytics } from '@/analytics';
 import useExperimentalFlag, { PROFILES } from '@/config/experimentalHooks';
 import {
@@ -7,68 +17,61 @@ import {
   ColorModeProvider,
   Columns,
   Heading,
-  type HeadingProps,
   Inline,
   Inset,
   MarkdownText,
-  type MarkdownTextProps,
   Separator,
-  type Space,
   Stack,
   Text,
+  type HeadingProps,
+  type MarkdownTextProps,
+  type Space,
   type TextProps,
 } from '@/design-system';
 import { AssetType } from '@/entities/assetTypes';
 import type { UniqueAsset } from '@/entities/uniqueAssets';
 import { IS_ANDROID, IS_IOS } from '@/env';
+import ENSBriefTokenInfoRow from '@/features/ens/components/ENSBriefTokenInfoRow';
+import ConfigurationSection from '@/features/ens/components/expanded-state/ConfigurationSection';
+import ProfileInfoSection from '@/features/ens/components/expanded-state/ProfileInfoSection';
+import useENSProfile from '@/features/ens/hooks/useENSProfile';
+import useENSRegistration from '@/features/ens/hooks/useENSRegistration';
 import { ENS_RECORDS, REGISTRATION_MODES } from '@/features/ens/utils/helpers';
+import styled from '@/framework/ui/styled-thing';
+import { opacity } from '@/framework/ui/utils/opacity';
+import { buildUniqueTokenName } from '@/helpers/assets';
 import isHttpUrl from '@/helpers/isHttpUrl';
 import useBooleanState from '@/hooks/useBooleanState';
 import useDimensions from '@/hooks/useDimensions';
-import useENSProfile from '@/features/ens/hooks/useENSProfile';
-import useENSRegistration from '@/features/ens/hooks/useENSRegistration';
 import useHiddenTokens from '@/hooks/useHiddenTokens';
-import useShowcaseTokens from '@/hooks/useShowcaseTokens';
 import { usePersistentDominantColorFromImage } from '@/hooks/usePersistentDominantColorFromImage';
+import useShowcaseTokens from '@/hooks/useShowcaseTokens';
 import { useTimeoutEffect } from '@/hooks/useTimeout';
+import * as i18n from '@/languages';
 import { useNavigation } from '@/navigation/Navigation';
-import useUntrustedUrlOpener from '@/navigation/useUntrustedUrlOpener';
 import Routes from '@/navigation/routesNames';
+import useUntrustedUrlOpener from '@/navigation/useUntrustedUrlOpener';
 import { ChainId } from '@/state/backendNetworks/types';
 import { useAccountAddress, useIsReadOnlyWallet } from '@/state/wallets/walletsStore';
-import styled from '@/framework/ui/styled-thing';
 import { lightModeThemeColors, position } from '@/styles';
 import { useTheme } from '@/theme/ThemeContext';
-import magicMemo from '@/utils/magicMemo';
-import safeAreaInsetValues from '@/utils/safeAreaInsetValues';
-import isLowerCaseMatch from '@/utils/isLowerCaseMatch';
 import { buildRainbowUrl } from '@/utils/buildRainbowUrl';
 import { getAddressAndChainIdFromUniqueId } from '@/utils/ethereumUtils';
+import isLowerCaseMatch from '@/utils/isLowerCaseMatch';
+import magicMemo from '@/utils/magicMemo';
 import { openInBrowser } from '@/utils/openInBrowser';
-import { useFocusEffect } from '@react-navigation/native';
-import c from 'chroma-js';
-import * as i18n from '@/languages';
-import React, { type ReactNode, useCallback, useMemo, useRef, useState } from 'react';
-import { InteractionManager, Share, View } from 'react-native';
-import { BlurView } from 'react-native-blur-view';
-import Animated, { useAnimatedStyle, useDerivedValue, useSharedValue } from 'react-native-reanimated';
-import URL from 'url-parse';
+import safeAreaInsetValues from '@/utils/safeAreaInsetValues';
+
 import partyLogo from '../../assets/partyLogo.png';
-import L2Disclaimer from '../L2Disclaimer';
-import Link from '../Link';
 import ButtonPressAnimation from '../animations/ButtonPressAnimation';
 import ImagePreviewOverlay from '../images/ImagePreviewOverlay';
 import ImgixImage from '../images/ImgixImage';
+import L2Disclaimer from '../L2Disclaimer';
+import Link from '../Link';
 import { SendActionButton, SheetActionButton, SheetHandle, SlackSheet } from '../sheet';
 import { Toast, ToastPositionContainer, ToggleStateToast } from '../toasts';
 import { UniqueTokenAttributes, UniqueTokenImage } from '../unique-token';
-import ConfigurationSection from '@/features/ens/components/expanded-state/ConfigurationSection';
-import ProfileInfoSection from '@/features/ens/components/expanded-state/ProfileInfoSection';
 import { UniqueTokenExpandedStateContent, UniqueTokenExpandedStateHeader } from './unique-token';
-import ENSBriefTokenInfoRow from '@/features/ens/components/ENSBriefTokenInfoRow';
-import { useSafeAreaInsets } from 'react-native-safe-area-context';
-import { buildUniqueTokenName } from '@/helpers/assets';
-import { opacity } from '@/framework/ui/utils/opacity';
 
 const BackgroundBlur = styled(BlurView).attrs({
   blurIntensity: 100,

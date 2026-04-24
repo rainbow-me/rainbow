@@ -1,13 +1,15 @@
 import { useEffect, useRef } from 'react';
+
 import {
   addDiagnosticLogListener,
   getAndroidIntentUrl,
   isHandshakeAction,
   useMobileWalletProtocolHost,
 } from '@coinbase/mobile-wallet-protocol-host';
-import { handleMobileWalletProtocolRequest } from '@/utils/requestNavigationHandlers';
-import { logger, RainbowError } from '@/logger';
+
 import { IS_ANDROID, IS_DEV } from '@/env';
+import { logger, RainbowError } from '@/logger';
+import { handleMobileWalletProtocolRequest } from '@/utils/requestNavigationHandlers';
 
 export enum MobileWalletProtocolUserErrors {
   USER_REJECTED_HANDSHAKE = 'User rejected the handshake',

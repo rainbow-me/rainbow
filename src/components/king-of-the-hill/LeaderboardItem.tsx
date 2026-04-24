@@ -1,3 +1,6 @@
+import React, { memo, useMemo } from 'react';
+import { StyleSheet, View } from 'react-native';
+
 import ButtonPressAnimation from '@/components/animations/ButtonPressAnimation';
 import { ChainImage } from '@/components/coin-icon/ChainImage';
 import RainbowCoinIcon from '@/components/coin-icon/RainbowCoinIcon';
@@ -9,8 +12,7 @@ import * as i18n from '@/languages';
 import Navigation from '@/navigation/Navigation';
 import Routes from '@/navigation/routesNames';
 import { DEVICE_WIDTH } from '@/utils/deviceUtils';
-import React, { memo, useMemo } from 'react';
-import { StyleSheet, View } from 'react-native';
+
 import { formatPriceChange, getPriceChangeColor } from './utils';
 
 type LeaderboardItemProps = {

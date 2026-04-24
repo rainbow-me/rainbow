@@ -1,8 +1,9 @@
-import { TabBar } from './TabBar';
-import { TabView } from './TabView';
-import { TabProvider, useTabContext, type TabContextType } from './TabContext';
 import React, { useMemo } from 'react';
 import { View } from 'react-native';
+
+import { TabBar } from './TabBar';
+import { TabProvider, useTabContext, type TabContextType } from './TabContext';
+import { TabView } from './TabView';
 
 type TabsProps<T extends ReadonlyArray<string>> = TabContextType<T> & {
   children: readonly [...{ [K in keyof T]: React.ReactNode }] | React.ReactNode;

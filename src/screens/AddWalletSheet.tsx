@@ -1,25 +1,27 @@
+import React from 'react';
+import { InteractionManager } from 'react-native';
+
+import { useRoute, type RouteProp } from '@react-navigation/native';
+
+import { analytics } from '@/analytics';
+import BackupWarning from '@/assets/BackupWarning.png';
+import CreateNewWallet from '@/assets/CreateNewWallet.png';
+import ImportSecretPhraseOrPrivateKey from '@/assets/ImportSecretPhraseOrPrivateKey.png';
+import PairHairwareWallet from '@/assets/PairHardwareWallet.png';
+import WalletsAndBackup from '@/assets/WalletsAndBackup.png';
+import WatchWalletIcon from '@/assets/watchWallet.png';
 import { AddWalletList } from '@/components/add-wallet/AddWalletList';
 import { type AddWalletItem } from '@/components/add-wallet/AddWalletRow';
+import useExperimentalFlag, { HARDWARE_WALLETS } from '@/config/experimentalHooks';
 import { Box, globalColors, Inset } from '@/design-system';
+import { IS_DEV } from '@/env';
+import * as i18n from '@/languages';
+import { logger, RainbowError } from '@/logger';
+import { executeFnIfCloudBackupAvailable } from '@/model/backup';
 import { useNavigation } from '@/navigation/Navigation';
 import Routes from '@/navigation/routesNames';
-import React from 'react';
-import * as i18n from '@/languages';
-import useExperimentalFlag, { HARDWARE_WALLETS } from '@/config/experimentalHooks';
-import { analytics } from '@/analytics';
-import { InteractionManager } from 'react-native';
-import { logger, RainbowError } from '@/logger';
-import WalletsAndBackup from '@/assets/WalletsAndBackup.png';
-import CreateNewWallet from '@/assets/CreateNewWallet.png';
-import BackupWarning from '@/assets/BackupWarning.png';
-import PairHairwareWallet from '@/assets/PairHardwareWallet.png';
-import ImportSecretPhraseOrPrivateKey from '@/assets/ImportSecretPhraseOrPrivateKey.png';
-import WatchWalletIcon from '@/assets/watchWallet.png';
-import { cloudPlatform } from '@/utils/platform';
-import { type RouteProp, useRoute } from '@react-navigation/native';
-import { executeFnIfCloudBackupAvailable } from '@/model/backup';
 import { type ImportFlowContext, type RootStackParamList } from '@/navigation/types';
-import { IS_DEV } from '@/env';
+import { cloudPlatform } from '@/utils/platform';
 
 const TRANSLATIONS = i18n.l.wallet.new.add_wallet_sheet;
 

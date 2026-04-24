@@ -1,4 +1,4 @@
-import { type BigNumberish, convertStringToNumber } from '@/helpers/utilities';
+import { convertStringToNumber, type BigNumberish } from '@/helpers/utilities';
 
 type MappableValue = BigNumberish | null | undefined;
 

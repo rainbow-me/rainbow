@@ -1,8 +1,11 @@
 import { useCallback } from 'react';
+
 import URL from 'url-parse';
+
+import { openInBrowser } from '@/utils/openInBrowser';
+
 import { useNavigation } from './Navigation';
 import Routes from './routesNames';
-import { openInBrowser } from '@/utils/openInBrowser';
 
 // External link warnings will be skipped for these domains
 const trustedDomains = [

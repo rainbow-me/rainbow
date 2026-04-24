@@ -1,9 +1,10 @@
-import { RainbowFetchClient } from '@/framework/data/http/rainbowFetch';
+import { type Address } from 'viem';
+
 import type { EthereumAddress } from '@/entities/wallet';
+import { RainbowFetchClient } from '@/framework/data/http/rainbowFetch';
 import { getSignatureForSigningWalletAndCreateSignatureIfNeeded, signWithSigningWallet } from '@/helpers/signingWallet';
 import { logger } from '@/logger';
 import { type Network } from '@/state/backendNetworks/types';
-import { type Address } from 'viem';
 
 export const PREFS_ENDPOINT = 'https://api.rainbow.me';
 const preferencesAPI = new RainbowFetchClient({

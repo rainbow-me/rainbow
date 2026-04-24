@@ -1,7 +1,9 @@
 import { isNil } from 'lodash';
+
+import { css } from '@/framework/ui/styled-thing';
+
 import colors from './colors';
 import fonts from './fonts';
-import { css } from '@/framework/ui/styled-thing';
 
 function capitalizeFirstLetter(string) {
   return string.charAt(0).toUpperCase() + string.slice(1);

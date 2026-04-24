@@ -1,8 +1,10 @@
-import * as i18n from '@/languages';
 import React from 'react';
+
 import { LinearGradient, type LinearGradientProps } from 'expo-linear-gradient';
+
 import { AccentColorProvider, Box, Inset, Text } from '@/design-system';
 import useDimensions from '@/hooks/useDimensions';
+import * as i18n from '@/languages';
 import { useTheme } from '@/theme/ThemeContext';
 
 type Props = {

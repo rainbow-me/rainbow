@@ -1,4 +1,5 @@
 import type { HostComponent, ViewProps, ViewStyle } from 'react-native';
+
 import type { SharedValue, useAnimatedStyle } from 'react-native-reanimated';
 
 export type UniqueIdentifier = string | number;

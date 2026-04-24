@@ -1,5 +1,5 @@
-import { type MutableRefObject, useCallback, useEffect, useRef } from 'react';
-import { type Handle, InteractionManager } from 'react-native';
+import { useCallback, useEffect, useRef, type MutableRefObject } from 'react';
+import { InteractionManager, type Handle } from 'react-native';
 
 type CreateHandleType = (callback?: () => void) => void;
 type RemoveHandleType = () => void;

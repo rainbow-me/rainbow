@@ -1,13 +1,15 @@
 import React, { useCallback, useEffect, useRef, useState } from 'react';
-import ReactNativeHapticFeedback from 'react-native-haptic-feedback';
+import { type TextInput } from 'react-native';
+
+import { triggerHaptics } from 'react-native-turbo-haptics';
+
 import ButtonPressAnimation from '@/components/animations/ButtonPressAnimation';
 import GweiInputPill from '@/components/GweiInputPill';
+import { Box, Inline, Text } from '@/design-system';
+import { IS_ANDROID } from '@/env';
 import { delay } from '@/helpers/utilities';
 import usePrevious from '@/hooks/usePrevious';
-import { type TextInput } from 'react-native';
-import { Box, Inline, Text } from '@/design-system';
 import { colors } from '@/styles';
-import { IS_ANDROID } from '@/env';
 
 const PLUS_ACTION_TYPE = 'plus';
 const MINUS_ACTION_TYPE = 'minus';
@@ -123,10 +125,10 @@ export default function FeesGweiInput({
     if (!prevTrigger && trigger) {
       if (actionType === PLUS_ACTION_TYPE) {
         plusAction();
-        ReactNativeHapticFeedback.trigger('selection');
+        triggerHaptics('selection');
       } else if (actionType === MINUS_ACTION_TYPE) {
         minusAction();
-        ReactNativeHapticFeedback.trigger('selection');
+        triggerHaptics('selection');
       }
     }
   }, [trigger, prevTrigger, actionType, plusAction, minusAction]);

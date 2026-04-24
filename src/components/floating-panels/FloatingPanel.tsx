@@ -1,5 +1,6 @@
 import React, { type ReactNode } from 'react';
 import { type FlexStyle, type StyleProp, type ViewStyle } from 'react-native';
+
 import { Box, type Space } from '@/design-system';
 
 type FloatingPanelProps = {

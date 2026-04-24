@@ -1,11 +1,13 @@
 import React, { useCallback } from 'react';
+
+import styled from '@/framework/ui/styled-thing';
+import { fonts, fontWithWidth } from '@/styles';
+
 import { useNavigation } from '../../navigation/Navigation';
 import Icon from '../icons/Icon';
 import { Row } from '../layout';
 import Text from '../text/Text';
 import HeaderButton from './HeaderButton';
-import styled from '@/framework/ui/styled-thing';
-import { fonts, fontWithWidth } from '@/styles';
 
 const Container = styled(Row).attrs({ align: 'center' })({
   height: 44,

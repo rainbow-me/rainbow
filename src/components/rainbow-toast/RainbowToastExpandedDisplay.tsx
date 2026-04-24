@@ -1,3 +1,10 @@
+import React, { memo, useCallback, useEffect, useState, type ReactNode } from 'react';
+import { StyleSheet, TouchableWithoutFeedback, View } from 'react-native';
+
+import { Gesture, GestureDetector, type PanGesture } from 'react-native-gesture-handler';
+import Animated, { runOnJS, useAnimatedStyle, useSharedValue, withSpring } from 'react-native-reanimated';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
+
 import { TOAST_EXPANDED_DISMISS_SENSITIVITY, TOAST_EXPANDED_UPWARD_SENSITIVITY_MULTIPLIER } from '@/components/rainbow-toast/constants';
 import { ToastExpandedContent } from '@/components/rainbow-toast/ToastExpandedContent';
 import { useToastColors } from '@/components/rainbow-toast/useToastColors';
@@ -6,11 +13,7 @@ import { Box } from '@/design-system';
 import useDimensions from '@/hooks/useDimensions';
 import Navigation from '@/navigation/Navigation';
 import Routes from '@/navigation/routesNames';
-import React, { memo, type ReactNode, useCallback, useEffect, useState } from 'react';
-import { StyleSheet, TouchableWithoutFeedback, View } from 'react-native';
-import { Gesture, GestureDetector, type PanGesture } from 'react-native-gesture-handler';
-import Animated, { runOnJS, useAnimatedStyle, useSharedValue, withSpring } from 'react-native-reanimated';
-import { useSafeAreaInsets } from 'react-native-safe-area-context';
+
 import { useRainbowToasts, useRainbowToastsStore } from './useRainbowToastsStore';
 import { springConfigDismiss, springConfigEnter, useVerticalDismissPanGesture } from './useVerticalDismissPanGesture';
 

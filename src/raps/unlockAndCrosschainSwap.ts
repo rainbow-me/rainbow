@@ -1,6 +1,6 @@
+import { resolveApprovalRequirement } from './approval';
 import { createNewAction, createNewRap } from './common';
 import type { RapAction, RapSwapActionParameters, RapUnlockActionParameters } from './references';
-import { resolveApprovalRequirement } from './approval';
 
 export const createUnlockAndCrosschainSwapRap = async (swapParameters: RapSwapActionParameters<'crosschainSwap'>) => {
   let actions: RapAction<'crosschainSwap' | 'unlock'>[] = [];

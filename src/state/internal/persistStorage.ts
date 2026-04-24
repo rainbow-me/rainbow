@@ -1,4 +1,5 @@
 import { type StateStorage } from 'zustand/middleware';
+
 import { zustandStorage } from '@/storage/legacy';
 
 /**

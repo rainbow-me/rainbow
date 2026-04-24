@@ -1,16 +1,19 @@
 import React, { memo } from 'react';
 import { StyleSheet } from 'react-native';
-import Animated, { type SharedValue, useAnimatedStyle, useDerivedValue, withTiming } from 'react-native-reanimated';
-import { useBrowserTabBarContext } from '@/components/DappBrowser/BrowserContext';
+
+import Animated, { useAnimatedStyle, useDerivedValue, withTiming, type SharedValue } from 'react-native-reanimated';
+
 import ButtonPressAnimation from '@/components/animations/ButtonPressAnimation';
+import { useBrowserTabBarContext } from '@/components/DappBrowser/BrowserContext';
 import { TabBarIcon } from '@/components/tab-bar/TabBarIcon';
-import { Box, useColorMode, TextIcon } from '@/design-system';
-import { useBrowserStore } from '@/state/browser/browserStore';
+import { Box, TextIcon, useColorMode } from '@/design-system';
 import { opacity } from '@/framework/ui/utils/opacity';
+import { useBrowserStore } from '@/state/browser/browserStore';
+import { THICK_BORDER_WIDTH } from '@/styles/constants';
 import { shallowEqual } from '@/worklets/comparisons';
+
 import { TIMING_CONFIGS } from '../animations/animationConfigs';
 import { TAB_BAR_PILL_HEIGHT } from './dimensions';
-import { THICK_BORDER_WIDTH } from '@/styles/constants';
 
 export const BrowserTabIcon = memo(function BrowserTabIcon({
   accentColor,

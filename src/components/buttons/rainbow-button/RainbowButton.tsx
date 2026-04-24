@@ -1,6 +1,15 @@
-import MaskedView from '@react-native-masked-view/masked-view';
-import * as i18n from '@/languages';
 import React from 'react';
+import { View } from 'react-native';
+
+import MaskedView from '@react-native-masked-view/masked-view';
+
+import { ImgixImage } from '@/components/images';
+import styled from '@/framework/ui/styled-thing';
+import useDimensions from '@/hooks/useDimensions';
+import * as i18n from '@/languages';
+import ShadowView from '@/react-native-shadow-stack/ShadowView';
+import { position, shadow } from '@/styles';
+
 import AddCashIconSource from '../../../assets/addCashIcon.png';
 import { useTheme } from '../../../theme/ThemeContext';
 import ButtonPressAnimation from '../../animations/ButtonPressAnimation';
@@ -8,12 +17,6 @@ import { RowWithMargins } from '../../layout';
 import { Text } from '../../text';
 import RainbowButtonBackground from './RainbowButtonBackground';
 import RainbowButtonTypes from './RainbowButtonTypes';
-import useDimensions from '@/hooks/useDimensions';
-import { ImgixImage } from '@/components/images';
-import styled from '@/framework/ui/styled-thing';
-import { position, shadow } from '@/styles';
-import ShadowView from '@/react-native-shadow-stack/ShadowView';
-import { View } from 'react-native';
 
 const AddCashIcon = styled(ImgixImage).attrs({
   resizeMode: ImgixImage.resizeMode.contain,

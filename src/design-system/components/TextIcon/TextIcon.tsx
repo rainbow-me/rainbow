@@ -1,5 +1,6 @@
 import React from 'react';
 import { type StyleProp, type TextStyle } from 'react-native';
+
 import { type TextColor } from '../../color/palettes';
 import { type CustomColor } from '../../color/useForegroundColor';
 import { Bleed } from '../Bleed/Bleed';

@@ -1,28 +1,31 @@
 /* eslint-disable no-nested-ternary */
-import { BottomSheetScrollView } from '@gorhom/bottom-sheet';
-import { BottomSheetContext } from '@gorhom/bottom-sheet/src/contexts/external';
 import React, { forwardRef, Fragment, useContext, useEffect, useImperativeHandle, useMemo, useRef } from 'react';
 import {
-  type ColorValue,
-  type FlexStyle,
-  type Insets,
   Pressable,
   StyleSheet,
   TouchableWithoutFeedback,
   View,
+  type ColorValue,
+  type FlexStyle,
+  type Insets,
   type ViewStyle,
 } from 'react-native';
-import Animated, { type SharedValue, useAnimatedScrollHandler, useSharedValue } from 'react-native-reanimated';
+
+import { BottomSheetScrollView } from '@gorhom/bottom-sheet';
+import { BottomSheetContext } from '@gorhom/bottom-sheet/src/contexts/external';
+import { ScrollView } from 'react-native-gesture-handler';
+import Animated, { useAnimatedScrollHandler, useSharedValue, type SharedValue } from 'react-native-reanimated';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
+
+import { IS_ANDROID, IS_IOS } from '@/env';
+import styled from '@/framework/ui/styled-thing';
+import useDimensions from '@/hooks/useDimensions';
+import { useNavigation } from '@/navigation/Navigation';
+import { position } from '@/styles';
+
 import { useTheme } from '../../theme/ThemeContext';
 import { Centered } from '../layout';
 import SheetHandleFixedToTop, { SheetHandleFixedToTopHeight } from './SheetHandleFixedToTop';
-import useDimensions from '@/hooks/useDimensions';
-import styled from '@/framework/ui/styled-thing';
-import { useNavigation } from '@/navigation/Navigation';
-import { position } from '@/styles';
-import { IS_ANDROID, IS_IOS } from '@/env';
-import { ScrollView } from 'react-native-gesture-handler';
 
 const AnimatedRNGHScrollView = Animated.createAnimatedComponent(ScrollView);
 
@@ -41,12 +44,12 @@ interface ContainerProps {
   contentHeight?: number;
   deferredHeight?: boolean;
   deviceHeight: number;
-  borderRadius?: number;
+  topBorderRadius?: number;
 }
 
 const Container = styled(Centered).attrs({
   direction: 'column',
-})(({ backgroundColor, additionalTopPadding, contentHeight, deferredHeight, deviceHeight, borderRadius }: ContainerProps) => ({
+})(({ backgroundColor, additionalTopPadding, contentHeight, deferredHeight, deviceHeight, topBorderRadius }: ContainerProps) => ({
   ...(deferredHeight || IS_IOS
     ? {}
     : {
@@ -57,7 +60,7 @@ const Container = styled(Centered).attrs({
               ? deviceHeight - contentHeight
               : 0,
       }),
-  ...(IS_ANDROID ? { borderTopLeftRadius: borderRadius ?? 30, borderTopRightRadius: borderRadius ?? 30 } : {}),
+  ...(IS_ANDROID ? { borderTopLeftRadius: topBorderRadius ?? 30, borderTopRightRadius: topBorderRadius ?? 30 } : {}),
   backgroundColor: backgroundColor,
   bottom: 0,
   left: 0,
@@ -116,7 +119,7 @@ interface SlackSheetProps extends ViewStyle {
   hideHandle?: boolean;
   limitScrollViewContent?: boolean;
   onContentSizeChange?: () => void;
-  renderHeader?: (yPosition: Animated.SharedValue<number>) => React.ReactNode;
+  renderHeader?: (yPosition: SharedValue<number>) => React.ReactNode;
   scrollEnabled?: boolean;
   scrollIndicatorInsets?: Insets;
   showsHorizontalScrollIndicator?: boolean;
@@ -218,7 +221,7 @@ export default forwardRef<unknown, SlackSheetProps>(function SlackSheet(
         deferredHeight={deferredHeight}
         deviceHeight={deviceHeight}
         testID={testID}
-        borderRadius={borderRadius}
+        topBorderRadius={borderRadius}
         {...props}
       >
         {IS_ANDROID && (

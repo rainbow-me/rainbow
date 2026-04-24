@@ -1,4 +1,5 @@
-import { type SharedValue, useDerivedValue } from 'react-native-reanimated';
+import { useDerivedValue, type SharedValue } from 'react-native-reanimated';
+
 import { type ExtendedAnimatedAssetWithColors } from '@/__swaps__/types/assets';
 import { useBackendNetworksStore } from '@/state/backendNetworks/backendNetworks';
 

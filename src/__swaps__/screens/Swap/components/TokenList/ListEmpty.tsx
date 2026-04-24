@@ -1,16 +1,19 @@
 import React, { memo, useMemo } from 'react';
+
 import Animated, { useAnimatedStyle, withTiming } from 'react-native-reanimated';
+
 import { TIMING_CONFIGS } from '@/components/animations/animationConfigs';
-import { Box } from '@/design-system';
+import { TOKEN_SEARCH_FOCUSED_INPUT_HEIGHT } from '@/components/token-search/constants';
 import { TokenSearchNotFound } from '@/components/token-search/TokenSearchNotFound';
+import { Box } from '@/design-system';
+import { isL2Chain } from '@/handlers/web3';
 import * as i18n from '@/languages';
 import { swapsStore } from '@/state/swaps/swapsStore';
+
 import { EXPANDED_INPUT_HEIGHT } from '../../constants';
 import { useSwapContext } from '../../providers/swap-provider';
 import { BUY_LIST_HEADER_HEIGHT } from './TokenToBuyList';
 import { SELL_LIST_HEADER_HEIGHT } from './TokenToSellList';
-import { isL2Chain } from '@/handlers/web3';
-import { TOKEN_SEARCH_FOCUSED_INPUT_HEIGHT } from '@/components/token-search/constants';
 
 type ListEmptyProps = {
   action?: 'swap' | 'bridge';

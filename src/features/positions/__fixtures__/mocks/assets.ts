@@ -1,5 +1,5 @@
-import type { Asset } from '../../types/generated/common/asset';
 import type { PositionAsset } from '../../types';
+import type { Asset } from '../../types/generated/common/asset';
 
 export function createMockPositionAsset(symbol: string, price: number, overrides?: Partial<PositionAsset>): PositionAsset {
   const chainId = overrides?.chainId ?? 1;

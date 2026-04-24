@@ -1,3 +1,9 @@
+import { NativeModules } from 'react-native';
+
+import AsyncStorage from '@react-native-async-storage/async-storage';
+import { captureException } from '@sentry/react-native';
+import { endsWith } from 'lodash';
+
 import { analytics } from '@/analytics';
 import { Alert as NativeAlert } from '@/components/alerts';
 import { IS_ANDROID, IS_DEV } from '@/env';
@@ -26,15 +32,12 @@ import { loadWallets, refreshWalletInfo, setAllWalletsWithIdsAsBackedUp } from '
 import { identifierForVendorKey, pinKey, privateKeyKey, seedPhraseKey } from '@/utils/keychainConstants';
 import { openInBrowser } from '@/utils/openInBrowser';
 import { cloudPlatform } from '@/utils/platform';
-import AsyncStorage from '@react-native-async-storage/async-storage';
-import { captureException } from '@sentry/react-native';
-import { endsWith } from 'lodash';
-import { NativeModules } from 'react-native';
+
 import AesEncryptor from '../handlers/aesEncryption';
 import WalletBackupTypes from '../helpers/walletBackupTypes';
 import { clearAllStorages } from './mmkv';
 import { getRemoteConfig } from './remoteConfig';
-import { type AllRainbowWallets, createWallet, loadWallet, type RainbowWallet } from './wallet';
+import { createWallet, loadWallet, type AllRainbowWallets, type RainbowWallet } from './wallet';
 
 const { DeviceUUID } = NativeModules;
 const encryptor = new AesEncryptor();

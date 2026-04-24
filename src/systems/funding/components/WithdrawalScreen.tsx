@@ -1,7 +1,10 @@
 import React, { memo, useCallback, useMemo } from 'react';
 import { View } from 'react-native';
-import Animated, { type SharedValue, useDerivedValue } from 'react-native-reanimated';
+
+import Animated, { useDerivedValue, type SharedValue } from 'react-native-reanimated';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
+
+import { addCommasToNumber, stripNonDecimalNumbers } from '@/__swaps__/utils/swaps';
 import { AccountImage } from '@/components/AccountImage';
 import RainbowCoinIcon from '@/components/coin-icon/RainbowCoinIcon';
 import Page from '@/components/layout/Page';
@@ -16,19 +19,21 @@ import { SheetHandle } from '@/features/perps/components/SheetHandle';
 import { SliderWithLabels } from '@/features/perps/components/Slider/SliderWithLabels';
 import { USDC_ASSET } from '@/features/perps/constants';
 import { PerpsAccentColorContextProvider } from '@/features/perps/context/PerpsAccentColorContext';
+import { toFixedWorklet } from '@/framework/core/safeMath';
+import { opacity } from '@/framework/ui/utils/opacity';
 import * as i18n from '@/languages';
 import Navigation from '@/navigation/Navigation';
 import Routes from '@/navigation/routesNames';
-import { toFixedWorklet } from '@/framework/core/safeMath';
 import { type ChainId } from '@/state/backendNetworks/types';
 import { useStoreSharedValue } from '@/state/internal/hooks/useStoreSharedValue';
-import { addCommasToNumber, stripNonDecimalNumbers } from '@/__swaps__/utils/swaps';
-import { opacity } from '@/framework/ui/utils/opacity';
+import { SEPARATOR_COLOR, THICKER_BORDER_WIDTH } from '@/styles/constants';
+
 import { FOOTER_HEIGHT, SLIDER_WIDTH, SLIDER_WITH_LABELS_HEIGHT } from '../constants';
 import { useWithdrawalContext, WithdrawalProvider } from '../contexts/WithdrawalContext';
 import { useWithdrawalController } from '../hooks/useWithdrawalController';
 import { useWithdrawalHandler } from '../hooks/useWithdrawalHandler';
 import {
+  getAccentColor,
   type BalanceQueryStore,
   type FundingScreenTheme,
   type WithdrawalConfig,
@@ -36,10 +41,8 @@ import {
   type WithdrawalStoreType,
   type WithdrawalTokenData,
   type WithdrawalTokenStoreType,
-  getAccentColor,
 } from '../types';
 import { ChainSelectorButton } from './shared/ChainSelectorButton';
-import { SEPARATOR_COLOR, THICKER_BORDER_WIDTH } from '@/styles/constants';
 
 // ============ Types ========================================================== //
 

@@ -1,20 +1,22 @@
 import { getAddress } from 'viem';
-import { type CrosschainQuote, ETH_ADDRESS, type Quote, type QuoteParams, Source } from '@rainbow-me/swaps';
-import { convertAmountToRawAmount } from '@/helpers/utilities';
+
+import { stripNonDecimalNumbers } from '@/__swaps__/utils/swaps';
 import { equalWorklet, greaterThanWorklet } from '@/framework/core/safeMath';
+import { isNativeAsset } from '@/handlers/assets';
+import { convertAmountToRawAmount } from '@/helpers/utilities';
 import { userAssetsStoreManager } from '@/state/assets/userAssetsStoreManager';
 import { createDerivedStore } from '@/state/internal/createDerivedStore';
 import { createQueryStore } from '@/state/internal/createQueryStore';
 import { useWalletsStore } from '@/state/wallets/walletsStore';
-import { stripNonDecimalNumbers } from '@/__swaps__/utils/swaps';
 import { time } from '@/utils/time';
+import { ETH_ADDRESS, Source, type CrosschainQuote, type Quote, type QuoteParams } from '@rainbow-me/swaps';
 
 import {
+  WithdrawalQuoteStatus,
   type AmountStoreType,
   type BalanceQueryStore,
   type RouteConfig,
   type WithdrawalConfig,
-  WithdrawalQuoteStatus,
   type WithdrawalQuoteStoreParams,
   type WithdrawalQuoteStoreType,
   type WithdrawalStoreType,
@@ -24,7 +26,6 @@ import { fetchAndValidateCrosschainQuote } from '../utils/crosschainQuote';
 import { fetchAndValidateSameChainQuote } from '../utils/sameChainQuote';
 import { resolveDefaultSlippage } from '../utils/slippage';
 import { getWithdrawalSwapRequirement, resolveTokenAddressForChain } from '../utils/withdrawalSwap';
-import { isNativeAsset } from '@/handlers/assets';
 
 // ============ Quote Store Factory ============================================ //
 

@@ -1,15 +1,16 @@
 import { DEVICE_WIDTH } from '@/utils/deviceUtils';
+
 import { X_BUTTON_TAPPABLE_AREA } from '../CloseTabButton';
 import {
+  SINGLE_TAB_SCALE,
   TAB_VIEW_COLUMN_GAP,
-  TAB_VIEW_ROW_GAP,
   TAB_VIEW_COLUMN_WIDTH,
   TAB_VIEW_EXTRA_TOP_PADDING,
-  TOP_INSET,
-  TAB_VIEW_TAB_HEIGHT,
-  TAB_VIEW_SINGLE_TAB_WIDTH,
+  TAB_VIEW_ROW_GAP,
   TAB_VIEW_SINGLE_TAB_HEIGHT,
-  SINGLE_TAB_SCALE,
+  TAB_VIEW_SINGLE_TAB_WIDTH,
+  TAB_VIEW_TAB_HEIGHT,
+  TOP_INSET,
 } from '../Dimensions';
 
 export type TabHitResult = {

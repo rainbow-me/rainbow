@@ -1,11 +1,14 @@
-import { type BaseEnsDomainFragment } from '@/graphql/__generated__/ens';
-import { fetchAccountDomains } from '../utils/handlers';
-import { getENSDomains, setENSDomains } from '../utils/localStorage';
-import { queryClient } from '@/react-query';
-import { useAccountProfileInfo } from '@/state/wallets/walletsStore';
+import { useMemo } from 'react';
+
 import { useQuery } from '@tanstack/react-query';
 import { uniqBy } from 'lodash';
-import { useMemo } from 'react';
+
+import { type BaseEnsDomainFragment } from '@/graphql/__generated__/ens';
+import { queryClient } from '@/react-query';
+import { useAccountProfileInfo } from '@/state/wallets/walletsStore';
+
+import { fetchAccountDomains } from '../utils/handlers';
+import { getENSDomains, setENSDomains } from '../utils/localStorage';
 import { prefetchENSAvatar } from './useENSAvatar';
 
 const queryKey = ({ accountAddress }: { accountAddress: string }) => ['domains', accountAddress];

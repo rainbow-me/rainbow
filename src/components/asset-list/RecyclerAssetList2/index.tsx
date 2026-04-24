@@ -1,6 +1,12 @@
+import React, { memo, useEffect, useMemo, useState } from 'react';
+import { Animated as RNAnimated } from 'react-native';
+
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
+
 import { analytics } from '@/analytics';
 import { AnimatedSpinner } from '@/components/animations/AnimatedSpinner';
 import { DropdownMenu, type MenuItem } from '@/components/DropdownMenu';
+import { useShowKingOfTheHill } from '@/components/king-of-the-hill/useShowKingOfTheHill';
 import { Navbar, navbarHeight } from '@/components/navbar/Navbar';
 import { NAVBAR_ICON_SIZE, NavBarTextIconFrame } from '@/components/navbar/NavbarTextIcon';
 import { Box, Cover, Text } from '@/design-system';
@@ -10,21 +16,18 @@ import { IS_ANDROID } from '@/env';
 import { useAccountAccentColor } from '@/hooks/useAccountAccentColor';
 import useAccountSettings from '@/hooks/useAccountSettings';
 import usePendingTransactions from '@/hooks/usePendingTransactions';
-import type useWalletSectionsData from '@/hooks/useWalletSectionsData';
 import { useStableValue } from '@/hooks/useStableValue';
+import type useWalletSectionsData from '@/hooks/useWalletSectionsData';
 import * as i18n from '@/languages';
 import Navigation from '@/navigation/Navigation';
 import Routes from '@/navigation/routesNames';
 import { useTheme } from '@/theme/ThemeContext';
-import React, { memo, useEffect, useMemo, useState } from 'react';
-import { Animated as RNAnimated } from 'react-native';
-import { useSafeAreaInsets } from 'react-native-safe-area-context';
+
 import { RecyclerAssetListScrollPositionContext } from './core/Contexts';
 import RawMemoRecyclerAssetList, { type ViewableItemsChangedCallback } from './core/RawRecyclerList';
 import { StickyHeaderManager } from './core/StickyHeaders';
 import useMemoBriefSectionData from './core/useMemoBriefSectionData';
 import { ProfileNameRow } from './profile-header/ProfileNameRow';
-import { useShowKingOfTheHill } from '@/components/king-of-the-hill/useShowKingOfTheHill';
 
 export type AssetListType = 'wallet' | 'ens-profile' | 'select-nft';
 

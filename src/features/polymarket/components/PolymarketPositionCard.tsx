@@ -1,34 +1,36 @@
-import { type GestureResponderEvent, StyleSheet } from 'react-native';
-import { Bleed, Box, Separator, Text, useColorMode } from '@/design-system';
-import * as i18n from '@/languages';
-import { type PolymarketPosition } from '@/features/polymarket/types';
 import { memo, useCallback, useMemo } from 'react';
-import { OutcomeBadge } from '@/features/polymarket/components/OutcomeBadge';
-import ImgixImage from '@/components/images/ImgixImage';
-import { mulWorklet, subWorklet, toPercentageWorklet } from '@/framework/core/safeMath';
-import ButtonPressAnimation from '@/components/animations/ButtonPressAnimation';
-import Navigation from '@/navigation/Navigation';
-import Routes from '@/navigation/routesNames';
-import { GradientBorderView } from '@/components/gradient-border/GradientBorderView';
+import { StyleSheet, type GestureResponderEvent } from 'react-native';
+
+import ConditionalWrap from 'conditional-wrap';
 import { LinearGradient } from 'expo-linear-gradient';
-import { formatNumber } from '@/helpers/strings';
-import { formatCurrency } from '@/features/perps/utils/formatCurrency';
-import { createOpacityPalette, getSolidColorEquivalent } from '@/worklets/colors';
+
+import { getColorValueForThemeWorklet } from '@/__swaps__/utils/swaps';
+import ButtonPressAnimation from '@/components/animations/ButtonPressAnimation';
+import { GradientBorderView } from '@/components/gradient-border/GradientBorderView';
+import ImgixImage from '@/components/images/ImgixImage';
 import { LiveTokenText, useLiveTokenValue } from '@/components/live-token-text/LiveTokenText';
-import { getPolymarketTokenId } from '@/state/liveTokens/polymarketAdapter';
-import { InnerShadow } from '@/features/polymarket/components/InnerShadow';
+import { Bleed, Box, Separator, Text, useColorMode } from '@/design-system';
+import { IS_IOS } from '@/env';
+import { formatCurrency } from '@/features/perps/utils/formatCurrency';
 import { CheckOrXBadge } from '@/features/polymarket/components/CheckOrXBadge';
-import { PositionAction, getPositionAction } from '@/features/polymarket/utils/getPositionAction';
-import { getPositionTokenId } from '@/features/polymarket/utils/getPositionTokenId';
+import { InnerShadow } from '@/features/polymarket/components/InnerShadow';
+import { OutcomeBadge } from '@/features/polymarket/components/OutcomeBadge';
+import { WinOrLossBadge } from '@/features/polymarket/components/WinOrLossBadge';
+import { type PolymarketPosition } from '@/features/polymarket/types';
 import { formatPrice } from '@/features/polymarket/utils/formatPrice';
 import { getPositionAccentColor } from '@/features/polymarket/utils/getMarketColor';
-import { WinOrLossBadge } from '@/features/polymarket/components/WinOrLossBadge';
-import { getColorValueForThemeWorklet } from '@/__swaps__/utils/swaps';
-import { opacity } from '@/framework/ui/utils/opacity';
-import { greaterThan } from '@/helpers/utilities';
-import ConditionalWrap from 'conditional-wrap';
-import { IS_IOS } from '@/env';
 import { getOutcomeDescriptions } from '@/features/polymarket/utils/getOutcomeDescriptions';
+import { getPositionAction, PositionAction } from '@/features/polymarket/utils/getPositionAction';
+import { getPositionTokenId } from '@/features/polymarket/utils/getPositionTokenId';
+import { mulWorklet, subWorklet, toPercentageWorklet } from '@/framework/core/safeMath';
+import { opacity } from '@/framework/ui/utils/opacity';
+import { formatNumber } from '@/helpers/strings';
+import { greaterThan } from '@/helpers/utilities';
+import * as i18n from '@/languages';
+import Navigation from '@/navigation/Navigation';
+import Routes from '@/navigation/routesNames';
+import { getPolymarketTokenId } from '@/state/liveTokens/polymarketAdapter';
+import { createOpacityPalette, getSolidColorEquivalent } from '@/worklets/colors';
 
 export const PolymarketPositionCard = memo(function PolymarketPositionCard({
   position,

@@ -1,14 +1,30 @@
 import { type Signer } from '@ethersproject/abstract-signer';
 import { ErrorCode as EthersErrorCode } from '@ethersproject/logger';
 import { Wallet } from '@ethersproject/wallet';
-import { type BatchCall, executeBatchedTransaction, supportsDelegation, type UnsupportedReason } from '@rainbow-me/delegation';
+import { UserRejectedRequestError } from 'viem';
+
+import { DELEGATION, getExperimentalFlag } from '@/config/experimental';
+import type { LegacyTransactionGasParamAmounts, TransactionGasParamAmounts } from '@/entities/gas';
+import type { NewTransaction } from '@/entities/transactions';
+import { IS_TEST } from '@/env';
+import { getProvider } from '@/handlers/web3';
+import { ensureError, logger, RainbowError } from '@/logger';
+import { getRemoteConfig } from '@/model/remoteConfig';
 import { ChainId } from '@/state/backendNetworks/types';
-import { ensureError, RainbowError, logger } from '@/logger';
+import { addNewTransaction } from '@/state/pendingTransactions';
+import { executeFn, Screens, TimeToSignOperation } from '@/state/performance/performance';
+import { swapsStore } from '@/state/swaps/swapsStore';
+import { isRecordLike } from '@/types/guards';
+import { executeBatchedTransaction, supportsDelegation, type BatchCall, type UnsupportedReason } from '@rainbow-me/delegation';
+
 import { claim, swap, unlock } from './actions';
-import { crosschainSwap, prepareCrosschainSwap } from './actions/crosschainSwap';
 import { claimBridge } from './actions/claimBridge';
-import { prepareUnlock } from './actions/unlock';
+import { claimClaimable } from './actions/claimClaimable';
+import { crosschainSwap, prepareCrosschainSwap } from './actions/crosschainSwap';
 import { prepareSwap } from './actions/swap';
+import { prepareUnlock } from './actions/unlock';
+import { createClaimAndBridgeRap } from './claimAndBridge';
+import { createClaimClaimableRap } from './claimClaimable';
 import type {
   ActionProps,
   PrepareActionProps,
@@ -20,23 +36,9 @@ import type {
   RapSwapActionParameters,
   RapTypes,
 } from './references';
-import { createUnlockAndCrosschainSwapRap } from './unlockAndCrosschainSwap';
-import { createClaimAndBridgeRap } from './claimAndBridge';
-import { createUnlockAndSwapRap } from './unlockAndSwap';
-import type { LegacyTransactionGasParamAmounts, TransactionGasParamAmounts } from '@/entities/gas';
-import type { NewTransaction } from '@/entities/transactions';
-import { Screens, TimeToSignOperation, executeFn } from '@/state/performance/performance';
-import { swapsStore } from '@/state/swaps/swapsStore';
-import { createClaimClaimableRap } from './claimClaimable';
-import { claimClaimable } from './actions/claimClaimable';
-import { IS_TEST } from '@/env';
-import { getProvider } from '@/handlers/web3';
-import { UserRejectedRequestError } from 'viem';
-import { addNewTransaction } from '@/state/pendingTransactions';
-import { DELEGATION, getExperimentalFlag } from '@/config/experimental';
-import { getRemoteConfig } from '@/model/remoteConfig';
-import { isRecordLike } from '@/types/guards';
 import { extractReplayableCall } from './replay';
+import { createUnlockAndCrosschainSwapRap } from './unlockAndCrosschainSwap';
+import { createUnlockAndSwapRap } from './unlockAndSwap';
 import { requireAddress } from './validation';
 
 type AtomicPrepareActionType = Extract<RapActionTypes, 'unlock' | 'swap' | 'crosschainSwap'>;

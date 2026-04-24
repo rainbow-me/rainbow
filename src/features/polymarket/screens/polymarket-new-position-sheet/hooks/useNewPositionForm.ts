@@ -1,9 +1,11 @@
+import { useMemo } from 'react';
+
 import { usePolymarketBalanceStore } from '@/features/polymarket/stores/polymarketBalanceStore';
 import { toPercentageWorklet } from '@/framework/core/safeMath';
-import { useMemo } from 'react';
 import { useStableValue } from '@/hooks/useStableValue';
-import { createOrderFormStore } from '../stores/createOrderFormStore';
+
 import { createOrderExecutionStore } from '../stores/createOrderExecutionStore';
+import { createOrderFormStore } from '../stores/createOrderFormStore';
 import { useOrderValidation } from './useOrderValidation';
 
 type UseNewPositionFormParams = {

@@ -1,27 +1,29 @@
 import { memo, useCallback, useMemo, type RefObject } from 'react';
-import { type NativeScrollEvent, type NativeSyntheticEvent, StyleSheet, View, type ViewToken } from 'react-native';
-import Animated from 'react-native-reanimated';
-import { useSafeAreaInsets } from 'react-native-safe-area-context';
+import { StyleSheet, View, type NativeScrollEvent, type NativeSyntheticEvent, type ViewToken } from 'react-native';
+
 import { format } from 'date-fns';
 import { debounce } from 'lodash';
+import Animated from 'react-native-reanimated';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
+
 import { Text, useForegroundColor } from '@/design-system';
-import * as i18n from '@/languages';
-import { DEFAULT_SPORTS_LEAGUE_KEY, NAVIGATOR_FOOTER_CLEARANCE, NAVIGATOR_FOOTER_HEIGHT } from '@/features/polymarket/constants';
+import { LeagueIcon } from '@/features/polymarket/components/league-icon/LeagueIcon';
 import {
-  PolymarketSportEventListItem,
   HEIGHT as ITEM_HEIGHT,
   LoadingSkeleton,
+  PolymarketSportEventListItem,
 } from '@/features/polymarket/components/polymarket-sport-event-list-item/PolymarketSportEventListItem';
-import { type PolymarketEvent } from '@/features/polymarket/types/polymarket-event';
-import { usePolymarketSportsEventsStore } from '@/features/polymarket/stores/polymarketSportsEventsStore';
-import { getSportsEventsDayBoundaries } from '@/features/polymarket/utils/getSportsEventsDateRange';
+import { DEFAULT_SPORTS_LEAGUE_KEY, NAVIGATOR_FOOTER_CLEARANCE, NAVIGATOR_FOOTER_HEIGHT } from '@/features/polymarket/constants';
 import { getLeague, getLeagueId, getLeagueSlugId, LEAGUE_LIST_ORDER } from '@/features/polymarket/leagues';
-import { DEVICE_HEIGHT } from '@/utils/deviceUtils';
-import { LeagueIcon } from '@/features/polymarket/components/league-icon/LeagueIcon';
-import { addSubscribedTokens, removeSubscribedTokens, useLiveTokensStore } from '@/state/liveTokens/liveTokensStore';
-import { useStableValue } from '@/hooks/useStableValue';
+import { usePolymarketSportsEventsStore } from '@/features/polymarket/stores/polymarketSportsEventsStore';
+import { type PolymarketEvent } from '@/features/polymarket/types/polymarket-event';
+import { getSportsEventsDayBoundaries } from '@/features/polymarket/utils/getSportsEventsDateRange';
 import { getSportsEventTokenIds } from '@/features/polymarket/utils/sportsEventBetData';
+import { useStableValue } from '@/hooks/useStableValue';
+import * as i18n from '@/languages';
 import Routes from '@/navigation/routesNames';
+import { addSubscribedTokens, removeSubscribedTokens, useLiveTokensStore } from '@/state/liveTokens/liveTokensStore';
+import { DEVICE_HEIGHT } from '@/utils/deviceUtils';
 
 const ITEM_GAP = 8;
 const EMPTY_EVENTS: PolymarketEvent[] = [];

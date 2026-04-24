@@ -1,5 +1,5 @@
-import React, { type ReactNode, useState } from 'react';
-import { StyleSheet, View, Text } from 'react-native';
+import React, { useState, type ReactNode } from 'react';
+import { StyleSheet, Text, View } from 'react-native';
 
 const styles = StyleSheet.create({
   debug: {

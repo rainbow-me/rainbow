@@ -1,8 +1,9 @@
-import React, { type LegacyRef, useMemo } from 'react';
+import React, { useMemo, type LegacyRef } from 'react';
 import { requireNativeComponent, View, type ViewStyle } from 'react-native';
-import { type ButtonPressAnimationProps, type TransformOrigin } from './types';
+
 import styled from '@/framework/ui/styled-thing';
-import { HapticFeedbackTypes } from 'react-native-haptic-feedback';
+
+import { type ButtonPressAnimationProps, type TransformOrigin } from './types';
 
 interface SpecificRawNativeButtonProps extends ButtonPressAnimationProps {
   transformOrigin?: TransformOrigin;
@@ -53,7 +54,7 @@ const NativeButton = React.forwardRef(
   (
     {
       duration = 160,
-      hapticType = HapticFeedbackTypes.selection,
+      hapticType = 'selection',
       scaleTo = 0.86,
       useLateHaptic = true,
       minLongPressDuration = 500,

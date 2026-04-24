@@ -1,5 +1,6 @@
-import React, { type ReactNode, useCallback } from 'react';
+import React, { useCallback, type ReactNode } from 'react';
 import { Text as NativeText, type TextStyle } from 'react-native';
+
 import { openInBrowser } from '@/utils/openInBrowser';
 
 const style: TextStyle = {

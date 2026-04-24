@@ -1,11 +1,14 @@
 import React from 'react';
+
 import { BorderlessButton } from 'react-native-gesture-handler';
+
+import { IS_ANDROID } from '@/env';
+import styled from '@/framework/ui/styled-thing';
+
 import { Button } from '../buttons';
 import { Icon } from '../icons';
 import { Row } from '../layout';
 import { Text as UnstyledText } from '../text';
-import styled from '@/framework/ui/styled-thing';
-import { IS_ANDROID } from '@/env';
 
 const BackArrow = styled(Icon).attrs(({ theme: { colors } }) => ({
   color: colors.appleBlue,

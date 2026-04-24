@@ -1,5 +1,6 @@
-import { type StackCardInterpolationProps } from '@react-navigation/stack';
 import { Animated } from 'react-native';
+
+import { type StackCardInterpolationProps } from '@react-navigation/stack';
 
 export function settingsCardStyleInterpolator({ current, next, inverted, layouts: { screen } }: StackCardInterpolationProps) {
   const translateFocused = Animated.multiply(

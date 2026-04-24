@@ -1,27 +1,28 @@
-import { multiply } from '@/helpers/utilities';
-import * as hl from '@nktkas/hyperliquid';
-import { type CancelSuccessResponse } from '@nktkas/hyperliquid';
-import { type Address, type Hex } from 'viem';
-import { DEFAULT_SLIPPAGE_BIPS, RAINBOW_BUILDER_SETTINGS, RAINBOW_REFERRAL_CODE } from '../constants';
-import { PerpPositionSide, type PerpsPosition, type TriggerOrder, type TriggerOrderType } from '../types';
-import { type HyperliquidAccountClient } from './hyperliquid-account-client';
 import { type Wallet } from '@ethersproject/wallet';
-import { isPositive, toFixedWorklet } from '@/framework/core/safeMath';
+import * as hl from '@nktkas/hyperliquid';
+import { type Address, type Hex } from 'viem';
+
+import { getOppositePositionSide } from '@/features/perps/utils';
 import { formatOrderPrice } from '@/features/perps/utils/formatOrderPrice';
+import { generateCloid } from '@/features/perps/utils/hyperliquidCloid';
+import { isBuilderDexAssetId } from '@/features/perps/utils/hyperliquidSymbols';
 import {
   buildMarketOrder,
   buildMarketTriggerOrder,
   calculatePositionSizeFromMarginAmount,
   getMarketType,
 } from '@/features/perps/utils/orders';
-import { getOppositePositionSide } from '@/features/perps/utils';
+import { isPositive, toFixedWorklet } from '@/framework/core/safeMath';
 import { getProvider } from '@/handlers/web3';
-import { ChainId } from '@/state/backendNetworks/types';
-import { loadWallet } from '@/model/wallet';
-import { checkIfReadOnlyWallet } from '@/state/wallets/walletsStore';
+import { multiply } from '@/helpers/utilities';
 import { logger, RainbowError } from '@/logger';
-import { isBuilderDexAssetId } from '@/features/perps/utils/hyperliquidSymbols';
-import { generateCloid } from '@/features/perps/utils/hyperliquidCloid';
+import { loadWallet } from '@/model/wallet';
+import { ChainId } from '@/state/backendNetworks/types';
+import { checkIfReadOnlyWallet } from '@/state/wallets/walletsStore';
+
+import { DEFAULT_SLIPPAGE_BIPS, RAINBOW_BUILDER_SETTINGS, RAINBOW_REFERRAL_CODE } from '../constants';
+import { PerpPositionSide, type PerpsPosition, type TriggerOrder, type TriggerOrderType } from '../types';
+import { type HyperliquidAccountClient } from './hyperliquid-account-client';
 
 export type OrderStatusResponse = hl.OrderSuccessResponse['response']['data']['statuses'][number];
 
@@ -242,7 +243,7 @@ export class HyperliquidExchangeClient {
     return result.response.data.statuses[0];
   }
 
-  async cancelOrder({ assetId, orderId }: { assetId: number; orderId: number }): Promise<CancelSuccessResponse | undefined> {
+  async cancelOrder({ assetId, orderId }: { assetId: number; orderId: number }): Promise<hl.CancelSuccessResponse | undefined> {
     if (checkIfReadOnlyWallet(this.userAddress)) return undefined;
 
     const exchangeClient = await this.getExchangeClient();
@@ -253,7 +254,7 @@ export class HyperliquidExchangeClient {
     });
   }
 
-  async ensureReferralCodeSet(): Promise<hl.SuccessResponse | undefined> {
+  async ensureReferralCodeSet(): Promise<hl.SetReferrerSuccessResponse | undefined> {
     if (checkIfReadOnlyWallet(this.userAddress)) return;
 
     const isSet = await this.accountClient.isReferralCodeSet();
@@ -267,7 +268,7 @@ export class HyperliquidExchangeClient {
     });
   }
 
-  async ensureApprovedBuilderFee(): Promise<hl.SuccessResponse | void> {
+  async ensureApprovedBuilderFee(): Promise<hl.ApproveBuilderFeeSuccessResponse | void> {
     if (checkIfReadOnlyWallet(this.userAddress)) return undefined;
 
     const isApproved = await this.accountClient.isBuilderFeeApproved();
@@ -282,7 +283,7 @@ export class HyperliquidExchangeClient {
     });
   }
 
-  async ensureDexAbstractionEnabled(assetId: number): Promise<hl.SuccessResponse | undefined> {
+  async ensureDexAbstractionEnabled(assetId: number): Promise<hl.UserDexAbstractionSuccessResponse | undefined> {
     if (!isBuilderDexAssetId(assetId)) return;
     if (checkIfReadOnlyWallet(this.userAddress)) return;
 

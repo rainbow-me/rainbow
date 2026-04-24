@@ -1,12 +1,15 @@
-import { type MutableRefObject, useMemo } from 'react';
+import { useMemo, type MutableRefObject } from 'react';
 import { LayoutAnimation, type LayoutAnimationConfig } from 'react-native';
+
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { BaseItemAnimator } from 'recyclerlistview';
+
+import deviceUtils from '@/utils/deviceUtils';
+
 import { FabWrapperBottomPosition, FloatingActionButtonSize } from '../../../fab';
 import { ListFooter } from '../../../list';
 import { AssetListHeaderHeight } from '../../AssetListHeader';
 import { type RecyclerListViewRef } from './ViewTypes';
-import deviceUtils from '@/utils/deviceUtils';
 
 const easingAnimation: LayoutAnimationConfig = {
   duration: 250,

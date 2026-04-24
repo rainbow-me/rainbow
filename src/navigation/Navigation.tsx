@@ -1,19 +1,22 @@
+import { createContext, useContext, useMemo } from 'react';
+
 import {
   CommonActions,
+  StackActions,
+  useNavigation as useReactNavigation,
+  useRoute as useReactNavigationRoute,
   type NavigationAction,
   type NavigationContainerRef,
   type NavigationState,
   type Route as ReactNavigationRoute,
   type RouteProp,
-  StackActions,
-  useNavigation as useReactNavigation,
-  useRoute as useReactNavigationRoute,
 } from '@react-navigation/native';
 import { type StackNavigationOptions, type StackNavigationProp } from '@react-navigation/stack';
-import { createContext, useContext, useMemo } from 'react';
 import { useCallbackOne } from 'use-memo-one';
+
 import { IS_DEV } from '@/env';
 import { setActiveRoute } from '@/state/navigation/navigationStore';
+
 import { prefetchRegistry } from './prefetchRegistry';
 import Routes, { NATIVE_ROUTES, type Route } from './routesNames';
 import { type RootStackParamList, type RoutesWithOptionalParams } from './types';

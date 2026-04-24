@@ -1,5 +1,6 @@
-import { useNavigationState } from '@react-navigation/native';
 import { useMemo } from 'react';
+
+import { useNavigationState } from '@react-navigation/native';
 
 export default function useRouteExistsInNavigationState(routeName: string) {
   const routes = useNavigationState(state => state.routes);

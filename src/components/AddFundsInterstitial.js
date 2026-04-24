@@ -1,28 +1,31 @@
+import React, { Fragment, useCallback } from 'react';
+import { View } from 'react-native';
+
+import { useRoute } from '@react-navigation/native';
+import { captureMessage } from '@sentry/react-native';
+
 import { analytics } from '@/analytics';
-import Divider from '@/components/Divider';
 import ButtonPressAnimation, { ScaleButtonZoomableAndroid } from '@/components/animations/ButtonPressAnimation';
+import Divider from '@/components/Divider';
 import { Icon } from '@/components/icons';
+import styled from '@/framework/ui/styled-thing';
+import { opacity } from '@/framework/ui/utils/opacity';
 import useDimensions from '@/hooks/useDimensions';
+import * as i18n from '@/languages';
 import Routes from '@/navigation/routesNames';
 import ShadowStack from '@/react-native-shadow-stack';
 import { Network } from '@/state/backendNetworks/types';
 import { getIsDamagedWallet, useAccountAddress } from '@/state/wallets/walletsStore';
-import styled from '@/framework/ui/styled-thing';
 import { padding, position } from '@/styles';
+import deviceUtils from '@/utils/deviceUtils';
+import magicMemo from '@/utils/magicMemo';
 import { openInBrowser } from '@/utils/openInBrowser';
-import { useRoute } from '@react-navigation/native';
-import { captureMessage } from '@sentry/react-native';
-import * as i18n from '@/languages';
-import React, { Fragment, useCallback } from 'react';
-import { View } from 'react-native';
+
 import networkInfo from '../helpers/networkInfo';
 import { useNavigation } from '../navigation/Navigation';
 import { useTheme } from '../theme/ThemeContext';
-import deviceUtils from '@/utils/deviceUtils';
-import magicMemo from '@/utils/magicMemo';
 import { Centered, Row, RowWithMargins } from './layout';
 import { Text } from './text';
-import { opacity } from '@/framework/ui/utils/opacity';
 
 const ContainerWidth = 261;
 

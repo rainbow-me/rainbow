@@ -1,11 +1,15 @@
 import { useMemo } from 'react';
+
 import { Gesture } from 'react-native-gesture-handler';
 import { Easing, interpolate, runOnJS, useSharedValue, withSpring, withTiming } from 'react-native-reanimated';
+
+import { clamp } from '@/__swaps__/utils/swaps';
 import { SPRING_CONFIGS } from '@/components/animations/animationConfigs';
 import { useBrowserStore } from '@/state/browser/browserStore';
-import { clamp } from '@/__swaps__/utils/swaps';
 import { generateUniqueId } from '@/worklets/strings';
+
 import { useBrowserContext } from '../BrowserContext';
+import { RAINBOW_HOME } from '../constants';
 import {
   MULTI_TAB_SCALE,
   SINGLE_TAB_SCALE,
@@ -14,7 +18,6 @@ import {
   TAB_SWITCH_X_AMPLIFICATION,
   WEBVIEW_HEIGHT,
 } from '../Dimensions';
-import { RAINBOW_HOME } from '../constants';
 import { TabViewGestureStates } from '../types';
 
 export const HIDE_SURROUNDING_TABS_X_OFFSET = 100;

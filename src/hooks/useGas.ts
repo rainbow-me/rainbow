@@ -1,7 +1,9 @@
 import { useCallback, useEffect, useMemo, useRef } from 'react';
+
+import { useQueries } from '@tanstack/react-query';
 import { useDispatch, useSelector } from 'react-redux';
-import { type AppState } from '../redux/store';
-import usePrevious from './usePrevious';
+
+import { analytics } from '@/analytics';
 import type {
   CurrentBlockParams,
   GasFee,
@@ -14,6 +16,7 @@ import type {
 } from '@/entities/gas';
 import type { ParsedAddressAsset } from '@/entities/tokens';
 import { fromWei, greaterThan, greaterThanOrEqualTo } from '@/helpers/utilities';
+import { useRoute } from '@/navigation/Navigation';
 import {
   gasPricesStartPolling,
   gasPricesStopPolling,
@@ -22,21 +25,21 @@ import {
   gasUpdateToCustomGasFee,
   gasUpdateTxFee,
 } from '@/redux/gas';
-import ethereumUtils from '@/utils/ethereumUtils';
-import isLowerCaseMatch from '@/utils/isLowerCaseMatch';
+import { ETH_ADDRESS } from '@/references/constants';
 import {
   EXTERNAL_TOKEN_CACHE_TIME,
   EXTERNAL_TOKEN_STALE_TIME,
   externalTokenQueryKey,
   fetchExternalToken,
 } from '@/resources/assets/externalAssetsQuery';
-import { ChainId } from '@/state/backendNetworks/types';
-import { useQueries } from '@tanstack/react-query';
-import { useBackendNetworksStore } from '@/state/backendNetworks/backendNetworks';
-import { ETH_ADDRESS } from '@/references/constants';
-import { analytics } from '@/analytics';
-import { useRoute } from '@/navigation/Navigation';
 import { userAssetsStoreManager } from '@/state/assets/userAssetsStoreManager';
+import { useBackendNetworksStore } from '@/state/backendNetworks/backendNetworks';
+import { ChainId } from '@/state/backendNetworks/types';
+import ethereumUtils from '@/utils/ethereumUtils';
+import isLowerCaseMatch from '@/utils/isLowerCaseMatch';
+
+import { type AppState } from '../redux/store';
+import usePrevious from './usePrevious';
 
 const checkSufficientGas = (txFee: LegacyGasFee | GasFee, chainId: ChainId, nativeAsset?: ParsedAddressAsset) => {
   const isLegacyGasNetwork = !(txFee as GasFee)?.maxFee;

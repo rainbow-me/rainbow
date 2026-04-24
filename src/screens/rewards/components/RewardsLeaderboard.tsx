@@ -1,10 +1,12 @@
 import React from 'react';
-import { Box, Columns, Separator, Stack, Text } from '@/design-system';
-import * as i18n from '@/languages';
-import { RewardsSectionCard } from '@/screens/rewards/components/RewardsSectionCard';
-import { RewardsLeaderboardItem } from '@/screens/rewards/components/RewardsLeaderboardItem';
+
 import { differenceInDays, fromUnixTime } from 'date-fns';
-import { type RewardsLeaderboardAccount, RewardsMetaStatus } from '@/graphql/__generated__/metadata';
+
+import { Box, Columns, Separator, Stack, Text } from '@/design-system';
+import { RewardsMetaStatus, type RewardsLeaderboardAccount } from '@/graphql/__generated__/metadata';
+import * as i18n from '@/languages';
+import { RewardsLeaderboardItem } from '@/screens/rewards/components/RewardsLeaderboardItem';
+import { RewardsSectionCard } from '@/screens/rewards/components/RewardsSectionCard';
 
 const getRHSValueBasedOnStatus = (status: RewardsMetaStatus, daysLeftValue: number) => {
   switch (status) {

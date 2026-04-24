@@ -1,27 +1,30 @@
-import { TOP_INSET } from '@/components/DappBrowser/Dimensions';
+import React, { memo, useCallback, useEffect, useMemo, useRef, useState } from 'react';
+import { StyleSheet, View, type NativeScrollEvent, type NativeSyntheticEvent } from 'react-native';
+
+import { LegendList, type LegendListRef } from '@legendapp/list';
+import { type SharedValue } from 'react-native-reanimated';
+
 import { FastTransactionCoinRow } from '@/components/coin-row';
+import { TOP_INSET } from '@/components/DappBrowser/Dimensions';
+import { Skeleton } from '@/components/Skeleton';
 import { type RainbowTransaction } from '@/entities/transactions';
+import styled from '@/framework/ui/styled-thing';
+import { opacity } from '@/framework/ui/utils/opacity';
 import { type TransactionSection } from '@/helpers/buildTransactionsSectionsSelector';
 import useAccountTransactions from '@/hooks/useAccountTransactions';
-import { Skeleton } from '@/components/Skeleton';
+import { useLegendListNavBarScrollToTop } from '@/navigation/MainListContext';
 import { userAssetsStoreManager } from '@/state/assets/userAssetsStoreManager';
 import { useAccountAddress } from '@/state/wallets/walletsStore';
-import styled from '@/framework/ui/styled-thing';
 import { useTheme } from '@/theme/ThemeContext';
-import safeAreaInsetValues from '@/utils/safeAreaInsetValues';
 import { DEVICE_HEIGHT } from '@/utils/deviceUtils';
-import { LegendList, type LegendListRef } from '@legendapp/list';
-import React, { memo, useCallback, useEffect, useMemo, useRef, useState } from 'react';
-import { type NativeScrollEvent, type NativeSyntheticEvent, StyleSheet, View } from 'react-native';
-import { type SharedValue } from 'react-native-reanimated';
+import safeAreaInsetValues from '@/utils/safeAreaInsetValues';
+
 import ActivityIndicator from '../ActivityIndicator';
-import Spinner from '../Spinner';
 import ButtonPressAnimation from '../animations/ButtonPressAnimation';
+import Spinner from '../Spinner';
 import Text from '../text/Text';
 import ActivityListEmptyState from './ActivityListEmptyState';
 import ActivityListHeader from './ActivityListHeader';
-import { useLegendListNavBarScrollToTop } from '@/navigation/MainListContext';
-import { opacity } from '@/framework/ui/utils/opacity';
 
 const PANEL_HEIGHT = DEVICE_HEIGHT - TOP_INSET - safeAreaInsetValues.bottom;
 

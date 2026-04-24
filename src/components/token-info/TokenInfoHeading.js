@@ -1,7 +1,8 @@
-import { Text } from '../text';
 import styled from '@/framework/ui/styled-thing';
-import { fonts, fontWithWidth } from '@/styles';
 import { opacity } from '@/framework/ui/utils/opacity';
+import { fonts, fontWithWidth } from '@/styles';
+
+import { Text } from '../text';
 
 const TokenInfoHeading = styled(Text).attrs(({ color, isNft, theme: { colors } }) => ({
   color: color || opacity(isNft ? colors.whiteLabel : colors.blueGreyDark, 0.5),

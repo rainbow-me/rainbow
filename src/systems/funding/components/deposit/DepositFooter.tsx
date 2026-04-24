@@ -1,13 +1,16 @@
 import { memo } from 'react';
-import { type SharedValue, useDerivedValue } from 'react-native-reanimated';
+
+import { useDerivedValue, type SharedValue } from 'react-native-reanimated';
+
 import { Box, Separator, useColorMode } from '@/design-system';
 import { PerpsSwapButton } from '@/features/perps/components/PerpsSwapButton';
 import { useStableValue } from '@/hooks/useStableValue';
 import { createDerivedStore } from '@/state/internal/createDerivedStore';
 import { useStoreSharedValue } from '@/state/internal/hooks/useStoreSharedValue';
 import { type InferStoreState } from '@/state/internal/types';
-import { DepositQuoteStatus, type DepositQuoteStoreType, getAccentColor } from '@/systems/funding/types';
+import { DepositQuoteStatus, getAccentColor, type DepositQuoteStoreType } from '@/systems/funding/types';
 import { time } from '@/utils/time';
+
 import { useDepositContext } from '../../contexts/DepositContext';
 import { GasButton } from './gas/GasButton';
 

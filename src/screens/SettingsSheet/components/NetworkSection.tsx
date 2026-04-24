@@ -1,16 +1,19 @@
 import React, { useCallback } from 'react';
 import { InteractionManager } from 'react-native';
+
 import { useDispatch } from 'react-redux';
+
+import { analytics } from '@/analytics';
+import { Separator, Stack } from '@/design-system';
+import { isL2Chain } from '@/handlers/web3';
+import useAccountSettings from '@/hooks/useAccountSettings';
+import { settingsUpdateNetwork } from '@/redux/settings';
+import { useBackendNetworksStore } from '@/state/backendNetworks/backendNetworks';
+import { type ChainId } from '@/state/backendNetworks/types';
+
 import Menu from './Menu';
 import MenuContainer from './MenuContainer';
 import MenuItem from './MenuItem';
-import { analytics } from '@/analytics';
-import { Separator, Stack } from '@/design-system';
-import useAccountSettings from '@/hooks/useAccountSettings';
-import { settingsUpdateNetwork } from '@/redux/settings';
-import { type ChainId } from '@/state/backendNetworks/types';
-import { useBackendNetworksStore } from '@/state/backendNetworks/backendNetworks';
-import { isL2Chain } from '@/handlers/web3';
 
 interface NetworkSectionProps {
   inDevSection?: boolean;

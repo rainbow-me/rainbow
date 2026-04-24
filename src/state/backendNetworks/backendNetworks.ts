@@ -1,16 +1,17 @@
 import isEqual from 'react-fast-compare';
 import { type Chain } from 'viem/chains';
+
+import { GasSpeed } from '@/__swaps__/types/gas';
 import { IS_TEST } from '@/env';
 import buildTimeNetworks from '@/references/networks.json';
 import { fetchBackendNetworks, type BackendNetworksResponse } from '@/resources/metadata/backendNetworks';
+import { chainAnvil, chainAnvilOptimism, ChainId, type BackendNetwork, type BackendNetworkServices } from '@/state/backendNetworks/types';
 import { filterSupportedNetworks, transformBackendNetworksToChains } from '@/state/backendNetworks/utils';
-import { type BackendNetwork, type BackendNetworkServices, chainAnvil, chainAnvilOptimism, ChainId } from '@/state/backendNetworks/types';
 import { useConnectedToAnvilStore } from '@/state/connectedToAnvil';
 import { createQueryStore } from '@/state/internal/createQueryStore';
-import { colors as globalColors } from '@/styles';
-import { GasSpeed } from '@/__swaps__/types/gas';
-import { time } from '@/utils/time';
 import { createStoreActions } from '@/state/internal/utils/createStoreActions';
+import { colors as globalColors } from '@/styles';
+import { time } from '@/utils/time';
 
 const INITIAL_BACKEND_NETWORKS = buildTimeNetworks.networks as BackendNetwork[];
 const DEFAULT_PRIVATE_MEMPOOL_TIMEOUT = time.minutes(2);

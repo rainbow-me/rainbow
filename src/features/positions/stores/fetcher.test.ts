@@ -1,5 +1,5 @@
-import { fetchPositions } from './fetcher';
 import { FIXTURE_LIST_POSITIONS_SUCCESS, FIXTURE_PARAMS } from '../__fixtures__/ListPositions';
+import { fetchPositions } from './fetcher';
 
 jest.mock('@/config/experimentalHooks', () => ({
   getExperimentalFlag: jest.fn(() => false),

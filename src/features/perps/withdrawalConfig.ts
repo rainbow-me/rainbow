@@ -4,6 +4,7 @@ import { logger, RainbowError } from '@/logger';
 import { createWithdrawalConfig } from '@/systems/funding/config';
 import { type WithdrawalExecutionResult, type WithdrawalExecutorParams } from '@/systems/funding/types';
 import { time } from '@/utils/time';
+
 import { USD_DECIMALS } from './constants';
 import { getHyperliquidExchangeClient } from './services';
 import { useHyperliquidAccountStore } from './stores/hyperliquidAccountStore';

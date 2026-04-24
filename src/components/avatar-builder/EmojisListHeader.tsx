@@ -1,10 +1,13 @@
 import React from 'react';
 import { Text } from 'react-native';
+
 import Animated, { useAnimatedStyle, type SharedValue } from 'react-native-reanimated';
-import { avatarBuilderStyles } from './avatarBuilderStyles';
-import { useTheme } from '@/theme/ThemeContext';
+
 import { opacity } from '@/framework/ui/utils/opacity';
+import { useTheme } from '@/theme/ThemeContext';
 import magicMemo from '@/utils/magicMemo';
+
+import { avatarBuilderStyles } from './avatarBuilderStyles';
 
 interface Props {
   title: string;

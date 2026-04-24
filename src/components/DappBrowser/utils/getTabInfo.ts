@@ -1,4 +1,4 @@
-import { type TabId, type TabInfo, TabViewGestureStates } from '../types';
+import { TabViewGestureStates, type TabId, type TabInfo } from '../types';
 
 export function getTabInfo({
   animatedActiveTabIndex,

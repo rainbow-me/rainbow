@@ -1,4 +1,5 @@
 import { useMemo } from 'react';
+
 import { useForegroundColor } from '../../color/useForegroundColor';
 import { headingSizes, headingWeights } from '../../typography/typography';
 import { type HeadingProps } from './Heading';

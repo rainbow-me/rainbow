@@ -1,5 +1,6 @@
-import { Box } from '@/design-system';
 import React from 'react';
+
+import { Box } from '@/design-system';
 
 type Props = {
   children: React.ReactNode;

@@ -1,22 +1,25 @@
 import React, { useCallback, useMemo } from 'react';
 import { StyleSheet, type TextInput } from 'react-native';
+
 import Animated, {
-  type AnimatedRef,
   runOnJS,
   runOnUI,
-  type SharedValue,
   useAnimatedProps,
   useAnimatedReaction,
   useSharedValue,
+  type AnimatedRef,
+  type SharedValue,
 } from 'react-native-reanimated';
+
 import { Input } from '@/components/inputs';
 import { Bleed, Box, Column, Columns, Text, useColorMode, useForegroundColor } from '@/design-system';
+import { opacity } from '@/framework/ui/utils/opacity';
 import Routes from '@/navigation/routesNames';
 import { useNavigationStore } from '@/state/navigation/navigationStore';
 import { LIGHT_SEPARATOR_COLOR, SEPARATOR_COLOR, THICK_BORDER_WIDTH } from '@/styles/constants';
-import { opacity } from '@/framework/ui/utils/opacity';
-import { SearchInputButton, type AnimatedButtonStyles } from './SearchInputButton';
+
 import { TOKEN_SEARCH_CONTROL_ITEM_HEIGHT, TOKEN_SEARCH_INPUT_HORIZONTAL_PADDING } from './constants';
+import { SearchInputButton, type AnimatedButtonStyles } from './SearchInputButton';
 
 const AnimatedInput = Animated.createAnimatedComponent(Input);
 

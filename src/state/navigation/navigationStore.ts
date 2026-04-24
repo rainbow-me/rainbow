@@ -1,7 +1,9 @@
 import { makeMutable, type SharedValue } from 'react-native-reanimated';
+
 import { type Route } from '@/navigation/Navigation';
 import Routes from '@/navigation/routesNames';
 import { VIRTUAL_NAVIGATORS } from '@/navigation/virtualNavigators';
+
 import { createRainbowStore } from '../internal/createRainbowStore';
 
 export type NavigationState = {

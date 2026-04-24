@@ -1,15 +1,17 @@
+import { useCallback, useMemo } from 'react';
+
+import { triggerHaptics } from 'react-native-turbo-haptics';
+
 import useDeleteWallet from '@/hooks/useDeleteWallet';
 import useImportingWallet from '@/hooks/useImportingWallet';
 import { logger, RainbowError } from '@/logger';
 import { cleanUpWalletKeys, type RainbowWallet } from '@/model/wallet';
-import Routes from '@/navigation/routesNames';
-import { setSelectedWallet, useAccountAddress, useWallets } from '@/state/wallets/walletsStore';
-import doesWalletsContainAddress from '@/utils/doesWalletsContainAddress';
 import { useNavigation } from '@/navigation/Navigation';
-import { useCallback, useMemo } from 'react';
-import ReactNativeHapticFeedback from 'react-native-haptic-feedback';
+import Routes from '@/navigation/routesNames';
 import { walletLoadingStore } from '@/state/walletLoading/walletLoading';
 import { initializeWallet } from '@/state/wallets/initializeWallet';
+import { setSelectedWallet, useAccountAddress, useWallets } from '@/state/wallets/walletsStore';
+import doesWalletsContainAddress from '@/utils/doesWalletsContainAddress';
 
 export default function useWatchWallet({
   address: primaryAddress,
@@ -83,7 +85,7 @@ export default function useWatchWallet({
         return false;
       });
       await deleteWallet();
-      ReactNativeHapticFeedback.trigger('notificationSuccess');
+      triggerHaptics('notificationSuccess');
       if (!isLastAvailableWallet) {
         await cleanUpWalletKeys();
         goBack();

@@ -1,4 +1,5 @@
 import { Easing } from 'react-native-reanimated';
+
 import { time } from '@/utils/time';
 
 export const BORDER_THICKNESS = 2;

@@ -1,19 +1,22 @@
 import React, { useCallback, useMemo, useRef, useState } from 'react';
+
+import { useRoute } from '@react-navigation/native';
 import Animated, { useAnimatedStyle, useSharedValue, withSpring } from 'react-native-reanimated';
 import { triggerHaptics } from 'react-native-turbo-haptics';
-import { useRoute } from '@react-navigation/native';
-import TouchableBackdrop from '../components/TouchableBackdrop';
+
+import styled from '@/framework/ui/styled-thing';
+import useDimensions from '@/hooks/useDimensions';
+import { AVATAR_CIRCLE_TOP_MARGIN } from '@/navigation/effects';
+import { useTheme } from '@/theme/ThemeContext';
+import deviceUtils from '@/utils/deviceUtils';
+
 import ColorCircle from '../components/avatar-builder/ColorCircle';
 import { EmojiSelector } from '../components/avatar-builder/EmojiSelector';
 import { HeaderHeightWithStatusBar } from '../components/header';
 import { Column, Row } from '../components/layout';
+import TouchableBackdrop from '../components/TouchableBackdrop';
 import useUpdateEmoji from '../hooks/useUpdateEmoji';
 import { useNavigation } from '../navigation/Navigation';
-import deviceUtils from '@/utils/deviceUtils';
-import { AVATAR_CIRCLE_TOP_MARGIN } from '@/navigation/effects';
-import useDimensions from '@/hooks/useDimensions';
-import styled from '@/framework/ui/styled-thing';
-import { useTheme } from '@/theme/ThemeContext';
 
 const AvatarCircleHeight = 60;
 const AvatarCircleMarginTop = 2;

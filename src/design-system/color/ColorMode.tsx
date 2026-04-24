@@ -1,5 +1,6 @@
-import React, { createContext, type ReactNode, useContext, useMemo } from 'react';
-import { type ColorMode, type Palette, palettes } from './palettes';
+import React, { createContext, useContext, useMemo, type ReactNode } from 'react';
+
+import { palettes, type ColorMode, type Palette } from './palettes';
 
 export type { ColorMode };
 

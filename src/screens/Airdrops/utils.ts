@@ -1,30 +1,31 @@
 import { type TransactionReceipt, type TransactionRequest } from '@ethersproject/abstract-provider';
 import { type Wallet } from '@ethersproject/wallet';
-import { type Address, formatUnits } from 'viem';
+import { formatUnits, type Address } from 'viem';
+
+import { type GasSettings } from '@/__swaps__/screens/Swap/hooks/useCustomGas';
+import { safeBigInt } from '@/__swaps__/screens/Swap/hooks/useEstimatedGasFee';
+import { calculateGasFeeWorklet } from '@/__swaps__/screens/Swap/providers/SyncSwapStateAndSharedValues';
 import { analytics } from '@/analytics';
 import { type NativeCurrencyKey } from '@/entities/nativeCurrencyTypes';
-import { type NewTransaction, TransactionStatus } from '@/entities/transactions';
+import { TransactionStatus, type NewTransaction } from '@/entities/transactions';
+import { lessThanOrEqualToWorklet } from '@/framework/core/safeMath';
 import { type LedgerSigner } from '@/handlers/LedgerSigner';
 import { getProvider, toHex } from '@/handlers/web3';
-import { add, convertAmountToNativeDisplayWorklet, multiply, formatNumber } from '@/helpers/utilities';
+import { add, convertAmountToNativeDisplayWorklet, formatNumber, multiply } from '@/helpers/utilities';
 import { logger, RainbowError } from '@/logger';
 import { loadWallet } from '@/model/wallet';
+import Navigation from '@/navigation/Navigation';
+import Routes from '@/navigation/routesNames';
 import { weiToGwei } from '@/parsers/gas';
 import { type RainbowClaimable } from '@/resources/addys/claimables/types';
 import { isStaging } from '@/resources/addys/client';
-import { lessThanOrEqualToWorklet } from '@/framework/core/safeMath';
 import { userAssetsStore } from '@/state/assets/userAssets';
 import { useBackendNetworksStore } from '@/state/backendNetworks/backendNetworks';
 import { type ChainId } from '@/state/backendNetworks/types';
 import { getNextNonce } from '@/state/nonces';
 import { addNewTransaction } from '@/state/pendingTransactions';
-import { type GasSettings } from '@/__swaps__/screens/Swap/hooks/useCustomGas';
-import { safeBigInt } from '@/__swaps__/screens/Swap/hooks/useEstimatedGasFee';
-import { calculateGasFeeWorklet } from '@/__swaps__/screens/Swap/providers/SyncSwapStateAndSharedValues';
 import ethereumUtils from '@/utils/ethereumUtils';
 import { time } from '@/utils/time';
-import Navigation from '@/navigation/Navigation';
-import Routes from '@/navigation/routesNames';
 
 export interface GasInfo {
   gasFeeDisplay: string | undefined;

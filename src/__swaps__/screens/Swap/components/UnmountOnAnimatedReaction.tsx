@@ -1,4 +1,5 @@
-import { type PropsWithChildren, type ReactNode, useState } from 'react';
+import { useState, type PropsWithChildren, type ReactNode } from 'react';
+
 import { runOnJS, useAnimatedReaction } from 'react-native-reanimated';
 
 export function UnmountOnAnimatedReaction({

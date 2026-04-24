@@ -1,12 +1,13 @@
-import { Box, Text, TextIcon, useColorMode } from '@/design-system';
-import { TriggerOrderType } from '@/features/perps/types';
 import React, { memo } from 'react';
-import { usePerpsAccentColorContext } from '@/features/perps/context/PerpsAccentColorContext';
-import ButtonPressAnimation from '@/components/animations/ButtonPressAnimation';
-import { formatAssetPrice } from '@/helpers/formatAssetPrice';
+
 import { AnimatedSpinner } from '@/components/animations/AnimatedSpinner';
-import * as i18n from '@/languages';
+import ButtonPressAnimation from '@/components/animations/ButtonPressAnimation';
+import { Box, Text, TextIcon, useColorMode } from '@/design-system';
+import { usePerpsAccentColorContext } from '@/features/perps/context/PerpsAccentColorContext';
+import { TriggerOrderType } from '@/features/perps/types';
 import { opacity } from '@/framework/ui/utils/opacity';
+import { formatAssetPrice } from '@/helpers/formatAssetPrice';
+import * as i18n from '@/languages';
 import { THICK_BORDER_WIDTH } from '@/styles/constants';
 
 type TriggerOrderCardProps = {

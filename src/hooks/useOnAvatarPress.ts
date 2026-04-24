@@ -1,26 +1,29 @@
+import { useCallback } from 'react';
+
+import { type ImagePickerAsset } from 'expo-image-picker';
+
 import { analytics } from '@/analytics';
 import { type MenuConfig } from '@/components/native-context-menu/contextMenu';
 import { enableActionsOnReadOnlyWallet } from '@/config/debug';
 import useExperimentalFlag, { PROFILES } from '@/config/experimentalHooks';
 import { IS_IOS } from '@/env';
-import { REGISTRATION_MODES } from '@/features/ens/utils/helpers';
-import { isZero } from '@/helpers/utilities';
-import Routes from '@/navigation/routesNames';
-import { ETH_ADDRESS } from '@/references/constants';
-import { useAccountProfileInfo, getIsReadOnlyWallet, useWalletsStore, updateAccountInfo } from '@/state/wallets/walletsStore';
-import { showActionSheetWithOptions } from '@/framework/ui/utils/actionsheet';
-import { buildRainbowUrl } from '@/utils/buildRainbowUrl';
-import { openInBrowser } from '@/utils/openInBrowser';
-import * as i18n from '@/languages';
-import { useCallback } from 'react';
-import { type ImagePickerAsset } from 'expo-image-picker';
-import { useNavigation } from '../navigation/Navigation';
-import useAccountAsset from './useAccountAsset';
 import useENSAvatar, { prefetchENSAvatar } from '@/features/ens/hooks/useENSAvatar';
 import { prefetchENSCover } from '@/features/ens/hooks/useENSCover';
 import useENSOwner from '@/features/ens/hooks/useENSOwner';
 import { prefetchENSRecords } from '@/features/ens/hooks/useENSRecords';
 import useENSRegistration from '@/features/ens/hooks/useENSRegistration';
+import { REGISTRATION_MODES } from '@/features/ens/utils/helpers';
+import { showActionSheetWithOptions } from '@/framework/ui/utils/actionsheet';
+import { isZero } from '@/helpers/utilities';
+import * as i18n from '@/languages';
+import Routes from '@/navigation/routesNames';
+import { ETH_ADDRESS } from '@/references/constants';
+import { getIsReadOnlyWallet, updateAccountInfo, useAccountProfileInfo, useWalletsStore } from '@/state/wallets/walletsStore';
+import { buildRainbowUrl } from '@/utils/buildRainbowUrl';
+import { openInBrowser } from '@/utils/openInBrowser';
+
+import { useNavigation } from '../navigation/Navigation';
+import useAccountAsset from './useAccountAsset';
 import useImagePicker from './useImagePicker';
 import useUpdateEmoji from './useUpdateEmoji';
 

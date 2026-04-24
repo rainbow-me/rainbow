@@ -1,5 +1,6 @@
 import React from 'react';
 import { StyleSheet, Text } from 'react-native';
+
 import Animated from 'react-native-reanimated';
 
 const sx = StyleSheet.create({

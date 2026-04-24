@@ -1,10 +1,11 @@
-import { RainbowProvider } from '@rainbow-me/provider';
 import { announceProvider, EIP1193Provider } from 'mipd';
 
-import { toHex, RAINBOW_ICON_RAW_SVG, getDappHost, isValidUrl, shouldInjectProvider, uuid4, IN_DAPP_NOTIFICATION_STATUS } from './utils';
-import { messenger, providerRequestTransport } from './messenger';
-import { Ethereum } from '@rainbow-me/provider/dist/references/ethereum';
+import { RainbowProvider } from '@rainbow-me/provider';
 import { ChainId } from '@rainbow-me/provider/dist/references/chains';
+import { Ethereum } from '@rainbow-me/provider/dist/references/ethereum';
+
+import { messenger, providerRequestTransport } from './messenger';
+import { getDappHost, IN_DAPP_NOTIFICATION_STATUS, isValidUrl, RAINBOW_ICON_RAW_SVG, shouldInjectProvider, toHex, uuid4 } from './utils';
 
 declare global {
   interface Window {

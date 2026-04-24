@@ -1,9 +1,11 @@
-import { convertRawAmountToDecimalFormat, isZero, truncateToDecimalsWithThreshold } from '@/helpers/utilities';
 import { createDerivedStore, shallowEqual } from '@storesjs/stores';
-import { useStakingPositionStore } from '../rnbwStakingPositionStore';
+
+import { RNBW_DECIMALS } from '@/features/rnbw-staking/constants';
 import { sumWorklet } from '@/framework/core/safeMath';
 import { formatNumber } from '@/helpers/strings';
-import { RNBW_DECIMALS } from '@/features/rnbw-staking/constants';
+import { convertRawAmountToDecimalFormat, isZero, truncateToDecimalsWithThreshold } from '@/helpers/utilities';
+
+import { useStakingPositionStore } from '../rnbwStakingPositionStore';
 
 type StakingEarnings = {
   totalEarnings: string;
@@ -22,7 +24,7 @@ export const useRnbwStakingEarnings = createDerivedStore<StakingEarnings>(
     const exitRewardsEarnings = convertRawAmountToDecimalFormat(exitRewardsRaw, tokenDecimals);
 
     return {
-      totalEarnings: isZero(totalEarnings) ? '0' : formatNumber(totalEarnings, { decimals: 4 }),
+      totalEarnings: isZero(totalEarnings) ? '0' : formatNumber(totalEarnings, { decimals: 5 }),
       cashbackEarnings: isZero(cashbackEarnings)
         ? '0'
         : truncateToDecimalsWithThreshold({ value: cashbackEarnings, decimals: 2, threshold: '0.01' }),

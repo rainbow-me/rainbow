@@ -1,6 +1,7 @@
-import { SPRING_CONFIGS } from '@/components/animations/animationConfigs';
 import { LinearTransition } from 'react-native-reanimated';
 import { base } from 'viem/chains';
+
+import { SPRING_CONFIGS } from '@/components/animations/animationConfigs';
 
 export const BLUE = '#268FFF';
 export const ERROR_RED = '#FF4143';

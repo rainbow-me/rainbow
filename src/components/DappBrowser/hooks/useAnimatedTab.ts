@@ -9,13 +9,16 @@ import {
   withSpring,
   withTiming,
 } from 'react-native-reanimated';
+
 import { SPRING_CONFIGS, TIMING_CONFIGS } from '@/components/animations/animationConfigs';
 import { globalColors, useColorMode } from '@/design-system';
 import { IS_ANDROID } from '@/env';
 import { useStableValue } from '@/hooks/useStableValue';
 import { useBrowserStore } from '@/state/browser/browserStore';
+
 import { useBrowserContext } from '../BrowserContext';
 import { useBrowserWorkletsContext } from '../BrowserWorkletsContext';
+import { HOMEPAGE_BACKGROUND_COLOR_DARK, HOMEPAGE_BACKGROUND_COLOR_LIGHT, RAINBOW_HOME } from '../constants';
 import {
   COLLAPSED_WEBVIEW_HEIGHT_UNSCALED,
   EXTRA_WEBVIEW_HEIGHT,
@@ -28,7 +31,6 @@ import {
   WEBVIEW_HEIGHT,
   ZOOMED_TAB_BORDER_RADIUS,
 } from '../Dimensions';
-import { HOMEPAGE_BACKGROUND_COLOR_DARK, HOMEPAGE_BACKGROUND_COLOR_LIGHT, RAINBOW_HOME } from '../constants';
 import { TabViewGestureStates } from '../types';
 import { getTabInfo } from '../utils/getTabInfo';
 import { calculateTabViewBorderRadius } from '../utils/layoutUtils';
@@ -270,7 +272,9 @@ export function useAnimatedTab({ tabId }: { tabId: string }) {
       );
 
     const wasCloseButtonPressed = gestureScale.value === 1 && gestureX.value < 0;
-    const zIndex = scaleWeighting * (isPendingActiveTab || gestureScale.value > 1 ? 9999 : 1) + (wasCloseButtonPressed ? 9999 : 0);
+    const zIndex = Math.round(
+      scaleWeighting * (isPendingActiveTab || gestureScale.value > 1 ? 9999 : 1) + (wasCloseButtonPressed ? 9999 : 0)
+    );
 
     return { zIndex };
   });

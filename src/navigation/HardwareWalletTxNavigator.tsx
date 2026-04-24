@@ -1,3 +1,10 @@
+import React, { useCallback, useEffect } from 'react';
+
+import { createMaterialTopTabNavigator } from '@react-navigation/material-top-tabs';
+import { useRoute, type RouteProp } from '@react-navigation/native';
+import { createMMKV } from 'react-native-mmkv';
+import { atom, useRecoilState, useSetRecoilState } from 'recoil';
+
 import { SimpleSheet } from '@/components/sheet/SimpleSheet';
 import { BackgroundProvider } from '@/design-system';
 import useDimensions from '@/hooks/useDimensions';
@@ -7,13 +14,9 @@ import { useNavigation } from '@/navigation/Navigation';
 import Routes from '@/navigation/routesNames';
 import { PairHardwareWalletAgainSheet } from '@/screens/hardware-wallets/PairHardwareWalletAgainSheet';
 import { PairHardwareWalletErrorSheet } from '@/screens/hardware-wallets/PairHardwareWalletErrorSheet';
-import { LEDGER_ERROR_CODES } from '@/utils/ledger';
-import { createMaterialTopTabNavigator } from '@react-navigation/material-top-tabs';
-import React, { useCallback, useEffect } from 'react';
 import { useSelectedWallet } from '@/state/wallets/walletsStore';
-import { type RouteProp, useRoute } from '@react-navigation/native';
-import { createMMKV } from 'react-native-mmkv';
-import { atom, useRecoilState, useSetRecoilState } from 'recoil';
+import { LEDGER_ERROR_CODES } from '@/utils/ledger';
+
 import { type RootStackParamList } from './types';
 
 export const ledgerStorage = createMMKV({

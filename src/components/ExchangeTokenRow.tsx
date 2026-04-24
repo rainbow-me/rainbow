@@ -1,16 +1,18 @@
 import React from 'react';
+import { View } from 'react-native';
+
 import isEqual from 'react-fast-compare';
+
+import ButtonPressAnimation from '@/components/animations/ButtonPressAnimation';
+import { FavStar, Info } from '@/components/asset-list/RecyclerAssetList2/FastComponents/FastCurrencySelectionRow';
+import RainbowCoinIcon from '@/components/coin-icon/RainbowCoinIcon';
+import { FloatingEmojis } from '@/components/floating-emojis';
 import { Box, Column, Columns, Inline, Stack, Text } from '@/design-system';
+import type { ParsedAddressAsset } from '@/entities/tokens';
+import { IS_IOS } from '@/env';
 import { isNativeAsset } from '@/handlers/assets';
 import useAsset from '@/hooks/useAsset';
-import ButtonPressAnimation from '@/components/animations/ButtonPressAnimation';
-import { FloatingEmojis } from '@/components/floating-emojis';
-import { IS_IOS } from '@/env';
-import { FavStar, Info } from '@/components/asset-list/RecyclerAssetList2/FastComponents/FastCurrencySelectionRow';
-import { View } from 'react-native';
-import RainbowCoinIcon from '@/components/coin-icon/RainbowCoinIcon';
 import { ChainId } from '@/state/backendNetworks/types';
-import type { ParsedAddressAsset } from '@/entities/tokens';
 
 interface ExchangeTokenRowProps {
   item: any;

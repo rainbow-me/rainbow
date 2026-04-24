@@ -1,19 +1,21 @@
 import React, { useCallback, useEffect, useMemo } from 'react';
 import { StyleSheet } from 'react-native';
+
 import { LinearGradient } from 'expo-linear-gradient';
 import Animated, {
-  Easing,
-  useAnimatedStyle,
-  withRepeat,
-  withTiming,
-  withSequence,
   cancelAnimation,
-  useSharedValue,
+  Easing,
   useAnimatedReaction,
+  useAnimatedStyle,
+  useSharedValue,
+  withRepeat,
+  withSequence,
+  withTiming,
 } from 'react-native-reanimated';
+
 import { IS_TEST } from '@/env';
-import { useTheme } from '@/theme/ThemeContext';
 import { opacity } from '@/framework/ui/utils/opacity';
+import { useTheme } from '@/theme/ThemeContext';
 
 const timingConfig = {
   duration: 2500,

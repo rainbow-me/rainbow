@@ -1,13 +1,16 @@
 import { useCallback, useRef } from 'react';
 import { type GestureResponderEvent, type NativeSyntheticEvent } from 'react-native';
+
 import { useAnimatedReaction, useSharedValue } from 'react-native-reanimated';
+
 import { clamp } from '@/__swaps__/utils/swaps';
+
 import { EXTRA_WEBVIEW_HEIGHT, GROW_WEBVIEW_THRESHOLD, SHRINK_WEBVIEW_THRESHOLD, WEBVIEW_HEIGHT } from '../Dimensions';
 import {
+  TabViewGestureStates,
   type ActiveTabCloseGestures,
   type BrowserContextType,
   type GestureManagerState,
-  TabViewGestureStates,
   type WebViewScrollEvent,
 } from '../types';
 

@@ -1,32 +1,34 @@
-import { type RouteProp, useRoute, type NavigationProp } from '@react-navigation/native';
-import * as i18n from '@/languages';
 import React, { useCallback, useMemo } from 'react';
+
+import { useRoute, type NavigationProp, type RouteProp } from '@react-navigation/native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
+
 import { ChainImage } from '@/components/coin-icon/ChainImage';
+import RainbowCoinIcon from '@/components/coin-icon/RainbowCoinIcon';
+import { DoubleChevron } from '@/components/icons';
+import { Box, Text as DSText, Separator } from '@/design-system';
+import styled from '@/framework/ui/styled-thing';
+import { opacity } from '@/framework/ui/utils/opacity';
+import useDimensions from '@/hooks/useDimensions';
+import * as i18n from '@/languages';
+import { logger } from '@/logger';
+import type Routes from '@/navigation/routesNames';
+import { type ExplainSheetRouteParams, type RootStackParamList } from '@/navigation/types';
+import { useBackendNetworksStore } from '@/state/backendNetworks/backendNetworks';
+import { type ChainId } from '@/state/backendNetworks/types';
+import { fonts, fontWithWidth, padding, position } from '@/styles';
+import { useTheme, type ThemeContextProps } from '@/theme/ThemeContext';
+import { buildRainbowLearnUrl, LearnUTMCampaign } from '@/utils/buildRainbowUrl';
+import ethereumUtils from '@/utils/ethereumUtils';
+import gasUtils from '@/utils/gas';
+import { openInBrowser } from '@/utils/openInBrowser';
+import { cloudPlatformAccountName } from '@/utils/platform';
+import safeAreaInsetValues from '@/utils/safeAreaInsetValues';
+
 import { Centered, Column, ColumnWithMargins, Row, RowWithMargins } from '../components/layout';
 import { SheetActionButton, SheetHandleFixedToTopHeight, SheetTitle, SlackSheet } from '../components/sheet';
 import { Emoji, Text } from '../components/text';
 import { useNavigation } from '../navigation/Navigation';
-import { DoubleChevron } from '@/components/icons';
-import { Box, Text as DSText, Separator } from '@/design-system';
-import useDimensions from '@/hooks/useDimensions';
-import styled from '@/framework/ui/styled-thing';
-import { fonts, fontWithWidth, padding, position } from '@/styles';
-import ethereumUtils from '@/utils/ethereumUtils';
-import gasUtils from '@/utils/gas';
-import safeAreaInsetValues from '@/utils/safeAreaInsetValues';
-import { buildRainbowLearnUrl, LearnUTMCampaign } from '@/utils/buildRainbowUrl';
-import { cloudPlatformAccountName } from '@/utils/platform';
-import { type ThemeContextProps, useTheme } from '@/theme/ThemeContext';
-import type Routes from '@/navigation/routesNames';
-
-import RainbowCoinIcon from '@/components/coin-icon/RainbowCoinIcon';
-import { useBackendNetworksStore } from '@/state/backendNetworks/backendNetworks';
-import { openInBrowser } from '@/utils/openInBrowser';
-import { type ChainId } from '@/state/backendNetworks/types';
-import { type ExplainSheetRouteParams, type RootStackParamList } from '@/navigation/types';
-import { logger } from '@/logger';
-import { opacity } from '@/framework/ui/utils/opacity';
 
 const { GAS_TRENDS } = gasUtils;
 export const ExplainSheetHeight = 415 + SheetHandleFixedToTopHeight + safeAreaInsetValues.bottom;

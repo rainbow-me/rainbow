@@ -1,9 +1,18 @@
+import React, { useCallback, useEffect, useRef, useState } from 'react';
+import { View } from 'react-native';
+
+import { useFocusEffect, useRoute, type RouteProp } from '@react-navigation/native';
+import { format } from 'date-fns';
+import { BlurView } from 'react-native-blur-view';
+import { useSharedValue } from 'react-native-reanimated';
+
 import { analytics } from '@/analytics';
 import ButtonPressAnimation from '@/components/animations/ButtonPressAnimation';
 import Spinner from '@/components/Spinner';
 import { Box, ColorModeProvider, Row, Rows, Stack, Text } from '@/design-system';
 import type { UniqueAsset } from '@/entities/uniqueAssets';
 import { IS_ANDROID, IS_IOS } from '@/env';
+import styled from '@/framework/ui/styled-thing';
 import { arcClient } from '@/graphql';
 import { maybeSignUri } from '@/handlers/imgix';
 import useDimensions from '@/hooks/useDimensions';
@@ -14,19 +23,13 @@ import Routes from '@/navigation/routesNames';
 import { type RootStackParamList } from '@/navigation/types';
 import { useLegacyNFTs } from '@/resources/nfts';
 import { useAccountAddress, useIsReadOnlyWallet } from '@/state/wallets/walletsStore';
-import styled from '@/framework/ui/styled-thing';
 import { position } from '@/styles';
 import { useTheme } from '@/theme/ThemeContext';
-import watchingAlert from '@/utils/watchingAlert';
 import { delay } from '@/utils/delay';
 import { openInBrowser } from '@/utils/openInBrowser';
 import { type PoapMintError } from '@/utils/poaps';
-import { type RouteProp, useFocusEffect, useRoute } from '@react-navigation/native';
-import { format } from 'date-fns';
-import React, { useCallback, useEffect, useRef, useState } from 'react';
-import { View } from 'react-native';
-import { BlurView } from 'react-native-blur-view';
-import { useSharedValue } from 'react-native-reanimated';
+import watchingAlert from '@/utils/watchingAlert';
+
 import ImgixImage from '../../components/images/ImgixImage';
 import { SheetActionButton, SheetActionButtonRow, SlackSheet } from '../../components/sheet';
 import { CardSize } from '../../components/unique-token/CardSize';

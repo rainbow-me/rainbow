@@ -1,4 +1,4 @@
-import { type IWalletKit, WalletKit } from '@reown/walletkit';
+import { WalletKit, type IWalletKit } from '@reown/walletkit';
 import type WalletConnectCore from '@walletconnect/core';
 import { Core } from '@walletconnect/core';
 import { WC_PROJECT_ID } from 'react-native-dotenv';

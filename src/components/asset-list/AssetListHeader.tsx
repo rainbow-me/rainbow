@@ -1,19 +1,22 @@
+import React, { useCallback, useEffect, useMemo, useState, type ComponentProps } from 'react';
+import { View } from 'react-native';
+
+import { LinearGradient } from 'expo-linear-gradient';
+
 import { IS_TEST } from '@/env';
+import styled from '@/framework/ui/styled-thing';
 import useDimensions from '@/hooks/useDimensions';
 import * as i18n from '@/languages';
 import { useNavigation } from '@/navigation/Navigation';
 import Routes from '@/navigation/routesNames';
 import { useUserAssetsStore } from '@/state/assets/userAssets';
 import { useAccountProfileInfo } from '@/state/wallets/walletsStore';
-import styled from '@/framework/ui/styled-thing';
 import { fonts, position } from '@/styles';
 import { useTheme } from '@/theme/ThemeContext';
-import React, { type ComponentProps, useCallback, useEffect, useMemo, useState } from 'react';
-import { View } from 'react-native';
-import { LinearGradient } from 'expo-linear-gradient';
 import abbreviations from '@/utils/abbreviations';
 import magicMemo from '@/utils/magicMemo';
 import measureText from '@/utils/measureText';
+
 import ButtonPressAnimation from '../animations/ButtonPressAnimation';
 import { Icon } from '../icons';
 import { Centered, Row } from '../layout';

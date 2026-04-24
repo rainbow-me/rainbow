@@ -1,7 +1,9 @@
 import { createContext, useContext, type RefObject } from 'react';
 import type { LayoutRectangle, View } from 'react-native';
+
 import type { GestureEventPayload } from 'react-native-gesture-handler';
 import type { SharedValue } from 'react-native-reanimated';
+
 import type { DraggableConstraints, SharedPoint } from './hooks';
 import type { SharedData, UniqueIdentifier } from './types';
 

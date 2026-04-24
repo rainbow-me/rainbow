@@ -1,17 +1,19 @@
-import { type MintableCollection, type MintedNft } from '@/graphql/__generated__/arc';
 import React, { useEffect, useState } from 'react';
-import { getTimeElapsedFromDate } from '../utils';
-import { Bleed, Box, Cover, Inline, Inset, Stack, Text, useForegroundColor } from '@/design-system';
-import { abbreviateNumber, convertRawAmountToRoundedDecimal } from '@/helpers/utilities';
-import ButtonPressAnimation from '@/components/animations/ButtonPressAnimation';
-import { Placeholder, RecentMintCell } from './RecentMintCell';
 import { View } from 'react-native';
-import { useTheme } from '@/theme/ThemeContext';
+
 import { analytics } from '@/analytics';
-import * as i18n from '@/languages';
+import ButtonPressAnimation from '@/components/animations/ButtonPressAnimation';
 import { ChainImage } from '@/components/coin-icon/ChainImage';
+import { Bleed, Box, Cover, Inline, Inset, Stack, Text, useForegroundColor } from '@/design-system';
+import { type MintableCollection, type MintedNft } from '@/graphql/__generated__/arc';
+import { abbreviateNumber, convertRawAmountToRoundedDecimal } from '@/helpers/utilities';
+import * as i18n from '@/languages';
 import { navigateToMintCollection } from '@/resources/reservoir/mints';
 import { useBackendNetworksStore } from '@/state/backendNetworks/backendNetworks';
+import { useTheme } from '@/theme/ThemeContext';
+
+import { getTimeElapsedFromDate } from '../utils';
+import { Placeholder, RecentMintCell } from './RecentMintCell';
 
 export const NUM_NFTS = 3;
 

@@ -1,30 +1,32 @@
 import React, { useCallback, useEffect, useRef, useState } from 'react';
-import { type RouteProp, useRoute } from '@react-navigation/native';
+import { type TextInput } from 'react-native';
+
+import { useRoute, type RouteProp } from '@react-navigation/native';
 import { type Source } from 'react-native-fast-image';
 
-import * as i18n from '@/languages';
-import { sharedCoolModalTopOffset } from '@/navigation/config';
-import { cloudPlatform } from '@/utils/platform';
+import { analytics } from '@/analytics';
+import WalletAndBackup from '@/assets/WalletsAndBackup.png';
 import { PasswordField } from '@/components/fields';
 import { Text } from '@/components/text';
-import WalletAndBackup from '@/assets/WalletsAndBackup.png';
-import { analytics } from '@/analytics';
+import { Box, Inset, Stack } from '@/design-system';
+import styled from '@/framework/ui/styled-thing';
+import { opacity } from '@/framework/ui/utils/opacity';
 import { cloudBackupPasswordMinLength, isCloudBackupPasswordValid } from '@/handlers/cloudBackup';
 import useDimensions from '@/hooks/useDimensions';
 import useMagicAutofocus from '@/hooks/useMagicAutofocus';
-import styled from '@/framework/ui/styled-thing';
-import { padding } from '@/styles';
-import { Box, Inset, Stack } from '@/design-system';
-import { ImgixImage } from '../images';
-import { RainbowButton } from '../buttons';
-import RainbowButtonTypes from '../buttons/rainbow-button/RainbowButtonTypes';
-import { usePasswordValidation } from './usePasswordValidation';
-import { type TextInput } from 'react-native';
-import { useTheme } from '@/theme/ThemeContext';
-import { type RootStackParamList } from '@/navigation/types';
+import * as i18n from '@/languages';
+import { sharedCoolModalTopOffset } from '@/navigation/config';
 import { useNavigation } from '@/navigation/Navigation';
 import type Routes from '@/navigation/routesNames';
-import { opacity } from '@/framework/ui/utils/opacity';
+import { type RootStackParamList } from '@/navigation/types';
+import { padding } from '@/styles';
+import { useTheme } from '@/theme/ThemeContext';
+import { cloudPlatform } from '@/utils/platform';
+
+import { RainbowButton } from '../buttons';
+import RainbowButtonTypes from '../buttons/rainbow-button/RainbowButtonTypes';
+import { ImgixImage } from '../images';
+import { usePasswordValidation } from './usePasswordValidation';
 
 type NativeEvent = {
   nativeEvent: {

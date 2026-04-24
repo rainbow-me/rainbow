@@ -1,13 +1,14 @@
+import { equalWorklet } from '@/framework/core/safeMath';
 import { getNumberFormatter } from '@/helpers/intl';
 import { convertRawAmountToDecimalFormat } from '@/helpers/utilities';
-import { equalWorklet } from '@/framework/core/safeMath';
 import { createDerivedStore } from '@/state/internal/createDerivedStore';
 import { type InferStoreState } from '@/state/internal/types';
 import { shallowEqual } from '@/worklets/comparisons';
+
 import {
+  DepositQuoteStatus,
   type AmountStoreType,
   type DepositAmountToReceiveStore,
-  DepositQuoteStatus,
   type DepositQuoteStoreType,
   type FormattedQuoteResult,
 } from '../../types';

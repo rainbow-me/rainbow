@@ -1,9 +1,10 @@
+import { memo } from 'react';
+
 import { LiveTokenText } from '@/components/live-token-text/LiveTokenText';
 import { Box, Text } from '@/design-system';
 import { HyperliquidTokenIcon } from '@/features/perps/components/HyperliquidTokenIcon';
 import { getHyperliquidTokenId } from '@/features/perps/utils';
 import { formatPerpAssetPrice } from '@/features/perps/utils/formatPerpsAssetPrice';
-import { memo } from 'react';
 import * as i18n from '@/languages';
 
 type PerpBottomSheetHeaderProps = {

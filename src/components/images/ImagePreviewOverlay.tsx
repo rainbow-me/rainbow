@@ -1,19 +1,22 @@
-import { uniqueId } from 'lodash';
 import React, { createContext, useCallback, useContext, useEffect, useMemo, useRef, useState } from 'react';
-import { InteractionManager, type LayoutChangeEvent, Pressable, type PressableProps, StyleSheet, View } from 'react-native';
+import { InteractionManager, Pressable, StyleSheet, View, type LayoutChangeEvent, type PressableProps } from 'react-native';
+
+import { uniqueId } from 'lodash';
 import { BlurView } from 'react-native-blur-view';
-import Animated, { type SharedValue, useAnimatedStyle, useDerivedValue, useSharedValue, withSpring } from 'react-native-reanimated';
+import Animated, { useAnimatedStyle, useDerivedValue, useSharedValue, withSpring, type SharedValue } from 'react-native-reanimated';
 import { atom, atomFamily, RecoilRoot, useRecoilState, useRecoilValue, useSetRecoilState } from 'recoil';
+
+import { ImgixImage } from '@/components/images';
+import { BackgroundProvider, Box, Cover, useColorMode, type BoxProps } from '@/design-system';
+import useDimensions from '@/hooks/useDimensions';
+import usePersistentAspectRatio from '@/hooks/usePersistentAspectRatio';
+import { colors, position } from '@/styles';
+import { FULL_NFT_IMAGE_SIZE } from '@/utils/handleNFTImages';
+import safeAreaInsetValues from '@/utils/safeAreaInsetValues';
+
 import { ZoomableWrapper } from '../expanded-state/unique-token/ZoomableWrapper';
 import { SheetHandleFixedToTopHeight } from '../sheet';
 import AvatarCoverPhotoMaskSvg from '../svg/AvatarCoverPhotoMaskSvg';
-import { BackgroundProvider, Box, type BoxProps, Cover, useColorMode } from '@/design-system';
-import useDimensions from '@/hooks/useDimensions';
-import usePersistentAspectRatio from '@/hooks/usePersistentAspectRatio';
-import { ImgixImage } from '@/components/images';
-import { colors, position } from '@/styles';
-import safeAreaInsetValues from '@/utils/safeAreaInsetValues';
-import { FULL_NFT_IMAGE_SIZE } from '@/utils/handleNFTImages';
 
 const idsAtom = atom<string[]>({
   default: [],

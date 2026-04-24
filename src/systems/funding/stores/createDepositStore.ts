@@ -1,10 +1,11 @@
-import { isNativeAsset } from '@/handlers/assets';
-import { divWorklet, greaterThanWorklet, powWorklet, subWorklet } from '@/framework/core/safeMath';
-import { createRainbowStore } from '@/state/internal/createRainbowStore';
 import { type GasSettings } from '@/__swaps__/screens/Swap/hooks/useCustomGas';
 import { calculateGasFeeWorklet } from '@/__swaps__/screens/Swap/providers/SyncSwapStateAndSharedValues';
 import { type ExtendedAnimatedAssetWithColors } from '@/__swaps__/types/assets';
 import { type GasSpeed } from '@/__swaps__/types/gas';
+import { divWorklet, greaterThanWorklet, powWorklet, subWorklet } from '@/framework/core/safeMath';
+import { isNativeAsset } from '@/handlers/assets';
+import { createRainbowStore } from '@/state/internal/createRainbowStore';
+
 import { type DepositConfig, type DepositStoreState, type DepositStoreType } from '../types';
 
 // ============ Deposit Store Factory ========================================= //

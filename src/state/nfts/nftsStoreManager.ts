@@ -1,6 +1,8 @@
 import { type Address } from 'viem';
-import { createRainbowStore } from '@/state/internal/createRainbowStore';
+
 import { type NftCollectionSortCriterion, type SortDirection } from '@/graphql/__generated__/arc';
+import { createRainbowStore } from '@/state/internal/createRainbowStore';
+
 import { type NftsStoreType } from './types';
 
 interface NftsStoreManagerState {

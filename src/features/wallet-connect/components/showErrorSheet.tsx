@@ -1,7 +1,8 @@
+import React from 'react';
+
 import { Box } from '@/design-system';
 import * as i18n from '@/languages';
 import * as explain from '@/screens/Explain';
-import React from 'react';
 
 const T = i18n.l.walletconnect;
 

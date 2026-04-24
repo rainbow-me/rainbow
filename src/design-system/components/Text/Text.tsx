@@ -1,7 +1,10 @@
-import React, { type ReactNode, useMemo, useEffect, type Ref } from 'react';
-import { Text as NativeText, type StyleProp, type TextStyle } from 'react-native';
+import React, { useEffect, useMemo, type ReactNode, type Ref } from 'react';
+import { Text as NativeText, type NativeSyntheticEvent, type StyleProp, type TextLayoutEventData, type TextStyle } from 'react-native';
+
 import { SILENCE_EMOJI_WARNINGS } from 'react-native-dotenv';
+
 import { IS_DEV, IS_IOS } from '@/env';
+
 import { type TextColor } from '../../color/palettes';
 import { type CustomColor } from '../../color/useForegroundColor';
 import { createLineHeightFixNode } from '../../typography/createLineHeightFixNode';
@@ -27,6 +30,7 @@ export type TextProps = {
   uppercase?: boolean;
   weight?: TextWeight;
   onPress?: () => void;
+  onTextLayout?: (event: NativeSyntheticEvent<TextLayoutEventData>) => void;
 } & (
   | {
       containsEmoji: true;
@@ -51,6 +55,7 @@ export function Text({
   uppercase,
   weight,
   onPress,
+  onTextLayout,
   style,
   ref,
 }: TextProps) {
@@ -92,6 +97,7 @@ export function Text({
       style={[textStyle, style || {}]}
       testID={testID}
       onPress={onPress}
+      onTextLayout={onTextLayout}
     >
       {IS_IOS && containsEmojiProp && nodeIsString(children) ? renderStringWithEmoji(children) : children}
       {lineHeightFixNode}

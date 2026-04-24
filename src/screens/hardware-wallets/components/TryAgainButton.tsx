@@ -1,6 +1,7 @@
-import { Box, Text } from '@/design-system';
 import React from 'react';
+
 import ButtonPressAnimation from '@/components/animations/ButtonPressAnimation';
+import { Box, Text } from '@/design-system';
 import * as i18n from '@/languages';
 
 export const TryAgainButton = ({ onPress }: { onPress: () => void }) => (

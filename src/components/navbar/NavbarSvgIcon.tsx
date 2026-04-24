@@ -1,5 +1,6 @@
-import { useForegroundColor } from '@/design-system';
 import React from 'react';
+
+import { useForegroundColor } from '@/design-system';
 
 type NavbarIconProps = {
   icon: React.ElementType;

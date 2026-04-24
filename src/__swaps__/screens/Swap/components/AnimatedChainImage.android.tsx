@@ -1,5 +1,6 @@
 import React, { useMemo } from 'react';
 import { Image, View } from 'react-native';
+
 import { getChainBadgeStyles } from '@/components/coin-icon/ChainImage';
 import { useColorMode } from '@/design-system';
 import { useBackendNetworksStore } from '@/state/backendNetworks/backendNetworks';

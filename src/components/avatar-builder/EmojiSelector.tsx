@@ -1,5 +1,6 @@
-import React, { type PropsWithChildren, useCallback, useEffect, useMemo, useRef, useState } from 'react';
+import React, { useCallback, useEffect, useMemo, useRef, useState, type PropsWithChildren } from 'react';
 import { Dimensions, StyleSheet, View, type ViewStyle } from 'react-native';
+
 import {
   State as GestureHandlerState,
   ScrollView,
@@ -8,24 +9,26 @@ import {
 } from 'react-native-gesture-handler';
 import { useSharedValue } from 'react-native-reanimated';
 import { DataProvider, LayoutProvider, ProgressiveListView } from 'recyclerlistview';
-import StickyContainer from 'recyclerlistview/dist/reactnative/core/StickyContainer';
 import { type ScrollEvent } from 'recyclerlistview/dist/reactnative/core/scrollcomponent/BaseScrollView';
+import StickyContainer from 'recyclerlistview/dist/reactnative/core/StickyContainer';
+
+import { useTheme } from '@/theme/ThemeContext';
 import deviceUtils from '@/utils/deviceUtils';
+
 import { Categories } from './Categories';
 import EmojiContent from './EmojiContent';
 import EmojisListHeader from './EmojisListHeader';
 import EmojisLoader from './EmojisLoader';
 import EmojisStickyListItem from './EmojisStickyListItem';
-import InitialEmojis from './InitialEmojis';
-import TabsWithShadows from './TabsWithShadows';
 import getEmojiCellsProperties from './helpers/getEmojiCellProperties';
 import getFormattedAllEmojiList, {
   type AllEmojiContentEntry,
   type AllEmojiEntry,
   type AllEmojiHeaderEntry,
 } from './helpers/getFormattedAllEmojiList';
+import InitialEmojis from './InitialEmojis';
+import TabsWithShadows from './TabsWithShadows';
 import { type EmojiCategory, type EmojiEntry } from './types';
-import { useTheme } from '@/theme/ThemeContext';
 
 const { width } = Dimensions.get('screen');
 

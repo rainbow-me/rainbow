@@ -1,13 +1,15 @@
 import { memo, useMemo } from 'react';
 import { StyleSheet } from 'react-native';
-import { type HlTrade, TradeExecutionType } from '@/features/perps/types';
-import { Box, Text, TextIcon } from '@/design-system';
-import { divWorklet, mulWorklet, toFixedWorklet } from '@/framework/core/safeMath';
+
 import { format } from 'date-fns';
-import { formatPerpAssetPrice } from '@/features/perps/utils/formatPerpsAssetPrice';
-import { formatCurrency } from '@/features/perps/utils/formatCurrency';
-import { abs } from '@/helpers/utilities';
+
+import { Box, Text, TextIcon } from '@/design-system';
 import { HyperliquidTokenIcon } from '@/features/perps/components/HyperliquidTokenIcon';
+import { TradeExecutionType, type HlTrade } from '@/features/perps/types';
+import { formatCurrency } from '@/features/perps/utils/formatCurrency';
+import { formatPerpAssetPrice } from '@/features/perps/utils/formatPerpsAssetPrice';
+import { divWorklet, mulWorklet, toFixedWorklet } from '@/framework/core/safeMath';
+import { abs } from '@/helpers/utilities';
 
 const LARGE_SPACE = ' ';
 

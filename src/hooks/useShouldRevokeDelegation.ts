@@ -1,12 +1,13 @@
 import { useEffect } from 'react';
-import { shouldRevokeDelegation } from '@rainbow-me/delegation';
-import { useWalletsStore } from '@/state/wallets/walletsStore';
+
+import { DELEGATION, getExperimentalFlag } from '@/config/experimentalHooks';
+import { EthereumWalletType } from '@/helpers/walletTypes';
+import { getRemoteConfig } from '@/model/remoteConfig';
 import Navigation from '@/navigation/Navigation';
 import Routes from '@/navigation/routesNames';
 import { RevokeReason } from '@/screens/delegation/RevokeDelegationPanel';
-import { DELEGATION, getExperimentalFlag } from '@/config/experimentalHooks';
-import { getRemoteConfig } from '@/model/remoteConfig';
-import { EthereumWalletType } from '@/helpers/walletTypes';
+import { useWalletsStore } from '@/state/wallets/walletsStore';
+import { shouldRevokeDelegation } from '@rainbow-me/delegation';
 
 export function useShouldRevokeDelegation() {
   const { accountAddress, walletType } = useWalletsStore(state => ({

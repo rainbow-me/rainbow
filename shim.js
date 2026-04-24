@@ -1,16 +1,22 @@
 import 'react-native-get-random-values';
 import 'react-native-url-polyfill/auto';
 import '@ethersproject/shims';
-import AsyncStorage from '@react-native-async-storage/async-storage';
+
 import ReactNative from 'react-native';
+
+import AsyncStorage from '@react-native-async-storage/async-storage';
 import Storage from 'react-native-storage';
+
 // import { debugLayoutAnimations } from './src/config/debug';
 import { mmkvStorageBackend } from '@/handlers/localstorage/mmkvStorageBackend';
 import { logger } from '@/logger';
+
 import 'fast-text-encoding';
-import globalVariables from './globalVariables';
+
 // @ts-ignore – Event shadows the global, triggering TS2866 under isolatedModules
 import { Event, EventTarget } from 'event-target-shim';
+
+import globalVariables from './globalVariables';
 
 if (typeof BigInt === 'undefined') global.BigInt = require('big-integer');
 

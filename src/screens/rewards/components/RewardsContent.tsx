@@ -1,13 +1,15 @@
 import React from 'react';
-import { RewardsTitle } from '@/screens/rewards/components/RewardsTitle';
-import { RewardsEarnings } from '@/screens/rewards/components/RewardsEarnings';
-import { type GetRewardsDataForWalletQuery } from '@/graphql/__generated__/metadata';
-import { RewardsStats } from './RewardsStats';
-import { RewardsFakeContent } from '@/screens/rewards/components/RewardsFakeContent';
-import { RewardsProgramStatus } from '@/screens/rewards/components/RewardsProgramStatus';
-import * as i18n from '@/languages';
+
 import { InfoAlert } from '@/components/info-alert/info-alert';
 import { Box, Text } from '@/design-system';
+import { type GetRewardsDataForWalletQuery } from '@/graphql/__generated__/metadata';
+import * as i18n from '@/languages';
+import { RewardsEarnings } from '@/screens/rewards/components/RewardsEarnings';
+import { RewardsFakeContent } from '@/screens/rewards/components/RewardsFakeContent';
+import { RewardsProgramStatus } from '@/screens/rewards/components/RewardsProgramStatus';
+import { RewardsTitle } from '@/screens/rewards/components/RewardsTitle';
+
+import { RewardsStats } from './RewardsStats';
 
 type Props = {
   assetPrice?: number;

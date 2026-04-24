@@ -1,13 +1,15 @@
-import { useNavigation } from '@/navigation/Navigation';
-import * as i18n from '@/languages';
 import React from 'react';
-import { ENSConfirmUpdateSheetHeight } from '../../screens/ENSConfirmRegisterSheet';
-import InfoRow, { InfoRowSkeleton } from './InfoRow';
+
 import { Stack } from '@/design-system';
-import { REGISTRATION_MODES } from '../../utils/helpers';
-import useENSRegistration from '../../hooks/useENSRegistration';
+import * as i18n from '@/languages';
+import { useNavigation } from '@/navigation/Navigation';
 import Routes from '@/navigation/routesNames';
 import { formatAddressForDisplay } from '@/utils/abbreviations';
+
+import useENSRegistration from '../../hooks/useENSRegistration';
+import { ENSConfirmUpdateSheetHeight } from '../../screens/ENSConfirmRegisterSheet';
+import { REGISTRATION_MODES } from '../../utils/helpers';
+import InfoRow, { InfoRowSkeleton } from './InfoRow';
 
 export default function ConfigurationSection({
   isLoading,

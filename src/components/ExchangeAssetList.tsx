@@ -1,37 +1,40 @@
-import { useIsFocused } from '@react-navigation/native';
 import React, {
-  type ForwardRefRenderFunction,
-  type MutableRefObject,
-  type ReactElement,
   forwardRef,
   memo,
   useCallback,
   useImperativeHandle,
   useMemo,
   useState,
+  type ForwardRefRenderFunction,
+  type MutableRefObject,
+  type ReactElement,
 } from 'react';
-import { InteractionManager, Keyboard, SectionList, type SectionListData, StyleSheet } from 'react-native';
+import { InteractionManager, Keyboard, SectionList, StyleSheet, type SectionListData } from 'react-native';
+
+import { useIsFocused } from '@react-navigation/native';
+import ConditionalWrap from 'conditional-wrap';
 import { triggerHaptics } from 'react-native-turbo-haptics';
-import useAccountSettings from '@/hooks/useAccountSettings';
+
 import FastCurrencySelectionRow from '@/components/asset-list/RecyclerAssetList2/FastComponents/FastCurrencySelectionRow';
 import { ContactRow } from '@/components/contacts';
+import contextMenuProps from '@/components/exchangeAssetRowContextMenuProps';
+import ExchangeTokenRow from '@/components/ExchangeTokenRow';
 import { GradientText } from '@/components/text';
 import { CopyToast, ToastPositionContainer } from '@/components/toasts';
-import contextMenuProps from '@/components/exchangeAssetRowContextMenuProps';
+import { Box, globalColors, Text, useColorMode } from '@/design-system';
+import type { SwappableAsset } from '@/entities/tokens';
 import { IS_ANDROID, IS_IOS } from '@/env';
+import useAccountSettings from '@/hooks/useAccountSettings';
 import useAndroidScrollViewGestureHandler from '@/hooks/useAndroidScrollViewGestureHandler';
 import usePrevious from '@/hooks/usePrevious';
 import { useNavigation } from '@/navigation/Navigation';
 import Routes from '@/navigation/routesNames';
+import { toggleFavorite, useFavorites } from '@/resources/favorites';
+import { colors } from '@/styles';
 import { useTheme } from '@/theme/ThemeContext';
 import abbreviations from '@/utils/abbreviations';
 import magicMemo from '@/utils/magicMemo';
-import { Box, globalColors, Text, useColorMode } from '@/design-system';
-import { colors } from '@/styles';
-import ExchangeTokenRow from '@/components/ExchangeTokenRow';
-import type { SwappableAsset } from '@/entities/tokens';
-import { toggleFavorite, useFavorites } from '@/resources/favorites';
-import ConditionalWrap from 'conditional-wrap';
+
 import { EasingGradient } from './easing-gradient/EasingGradient';
 
 export interface EnrichedExchangeAsset extends SwappableAsset {

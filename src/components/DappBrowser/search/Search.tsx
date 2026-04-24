@@ -1,27 +1,30 @@
 import React, { useCallback, useMemo } from 'react';
 import { StyleSheet, View } from 'react-native';
+
 import { Gesture, GestureDetector } from 'react-native-gesture-handler';
-import Animated, { dispatchCommand, runOnJS, useAnimatedStyle, withSpring } from 'react-native-reanimated';
+import Animated, { runOnJS, useAnimatedStyle, withSpring } from 'react-native-reanimated';
+
 import { SPRING_CONFIGS } from '@/components/animations/animationConfigs';
 import { useColorMode } from '@/design-system';
 import { IS_IOS } from '@/env';
-import useKeyboardHeight from '@/hooks/useKeyboardHeight';
 import { useSharedValueState } from '@/hooks/reanimated/useSharedValueState';
 import { useSyncSharedValue } from '@/hooks/reanimated/useSyncSharedValue';
+import useKeyboardHeight from '@/hooks/useKeyboardHeight';
 import { TAB_BAR_HEIGHT } from '@/navigation/SwipeNavigator';
 import { DEVICE_WIDTH } from '@/utils/deviceUtils';
+
 import { useBrowserContext } from '../BrowserContext';
 import { useBrowserWorkletsContext } from '../BrowserWorkletsContext';
-import { BOTTOM_BAR_HEIGHT } from '../Dimensions';
 import { GOOGLE_SEARCH_URL, HOMEPAGE_BACKGROUND_COLOR_DARK, HOMEPAGE_BACKGROUND_COLOR_LIGHT, HTTPS } from '../constants';
+import { BOTTOM_BAR_HEIGHT } from '../Dimensions';
 import { useTabSwitchGestures } from '../hooks/useTabSwitchGestures';
 import { AccountIcon } from '../search-input/AccountIcon';
 import { SearchInput } from '../search-input/SearchInput';
 import { TabButton } from '../search-input/TabButton';
-import { isMissingValidProtocolWorklet, isValidURLWorklet } from '../utils';
-import { useSearchContext } from './SearchContext';
-import { SearchResults } from './results/SearchResults';
 import { TabViewGestureStates } from '../types';
+import { isMissingValidProtocolWorklet, isValidURLWorklet } from '../utils';
+import { SearchResults } from './results/SearchResults';
+import { useSearchContext } from './SearchContext';
 
 export const Search = () => {
   const {
@@ -56,8 +59,7 @@ export const Search = () => {
   }));
 
   const bottomBarStyle = useAnimatedStyle(() => {
-    const translateY =
-      _WORKLET && isFocused.value ? -(keyboardHeight.value - (IS_IOS ? TAB_BAR_HEIGHT : 46) + extraWebViewHeight.value) : 0;
+    const translateY = _WORKLET && isFocused.value ? -(keyboardHeight.value - TAB_BAR_HEIGHT + extraWebViewHeight.value) : 0;
     return {
       transform: [
         {
@@ -118,12 +120,16 @@ export const Search = () => {
     [goToUrl, inputRef, searchQuery, searchResults]
   );
 
+  const focusInput = useCallback(() => {
+    inputRef.current?.focus();
+  }, [inputRef]);
+
   const onAddressInputPressWorklet = useCallback(() => {
     'worklet';
     isFocused.value = true;
     searchViewProgress.value = withSpring(100, SPRING_CONFIGS.snappierSpringConfig);
-    dispatchCommand(inputRef, 'focus');
-  }, [inputRef, isFocused, searchViewProgress]);
+    runOnJS(focusInput)();
+  }, [focusInput, isFocused, searchViewProgress]);
 
   const onBlurWorklet = useCallback(() => {
     'worklet';

@@ -1,9 +1,11 @@
 import { type MutableRefObject } from 'react';
 import { type GestureResponderEvent, type NativeScrollEvent, type NativeSyntheticEvent } from 'react-native';
+
 import { type AnimatedRef, type DerivedValue, type SharedValue } from 'react-native-reanimated';
 import type Animated from 'react-native-reanimated';
 import type ViewShot from 'react-native-view-shot';
 import type WebView from 'react-native-webview';
+
 import { type Site } from '@/state/browserHistory';
 
 export type TabId = string;

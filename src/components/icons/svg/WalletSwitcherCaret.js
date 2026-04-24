@@ -1,8 +1,11 @@
-import PropTypes from 'prop-types';
 import React from 'react';
+
+import PropTypes from 'prop-types';
 import { Path } from 'react-native-svg';
-import Svg from '../Svg';
+
 import { opacity } from '@/framework/ui/utils/opacity';
+
+import Svg from '../Svg';
 
 const WalletSwitcherCaret = ({ color, colors, ...props }) => {
   return (

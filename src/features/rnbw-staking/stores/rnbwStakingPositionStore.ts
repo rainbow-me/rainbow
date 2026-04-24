@@ -1,15 +1,17 @@
+import { decodeFunctionResult, encodeFunctionData, type Address, type Hex } from 'viem';
+
 import { type NativeCurrencyKey } from '@/entities/nativeCurrencyTypes';
+import type { Tier } from '@/features/rnbw-membership/types';
+import { getProvider } from '@/handlers/web3';
+import { logger, RainbowError } from '@/logger';
 import { getPlatformClient } from '@/resources/platform/client';
 import { type PlatformResponse } from '@/resources/platform/types';
 import { userAssetsStoreManager } from '@/state/assets/userAssetsStoreManager';
+import { ChainId } from '@/state/backendNetworks/types';
 import { createQueryStore } from '@/state/internal/createQueryStore';
 import { useWalletsStore } from '@/state/wallets/walletsStore';
-import { ChainId } from '@/state/backendNetworks/types';
-import { decodeFunctionResult, encodeFunctionData, type Address, type Hex } from 'viem';
-import type { Tier } from '@/features/rnbw-membership/types';
-import { getProvider } from '@/handlers/web3';
+
 import { STAKING_ABI, STAKING_CHAIN_ID, STAKING_CONTRACT_ADDRESS } from '../constants';
-import { logger, RainbowError } from '@/logger';
 
 type StakingPnl = {
   netProfit: string;

@@ -1,8 +1,10 @@
 import { memo } from 'react';
-import { Cover, useColorMode } from '@/design-system';
-import { IS_IOS } from '@/env';
+
 import chroma from 'chroma-js';
 import Animated, { interpolate, useAnimatedStyle, type SharedValue } from 'react-native-reanimated';
+
+import { Cover, useColorMode } from '@/design-system';
+import { IS_IOS } from '@/env';
 
 type HoldToActivateProgressProps = {
   holdProgress: SharedValue<number>;

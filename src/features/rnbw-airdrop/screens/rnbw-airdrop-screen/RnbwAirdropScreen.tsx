@@ -1,16 +1,18 @@
 import { memo, useEffect } from 'react';
 import { StyleSheet, View } from 'react-native';
+
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
+
 import SheetHandleFixedToTop from '@/components/sheet/SheetHandleFixedToTop';
-import { RnbwHeroCoin } from '@/features/rnbw-airdrop/screens/rnbw-airdrop-screen/components/RnbwHeroCoin';
+import { ColorModeProvider } from '@/design-system';
 import { AmbientCoins } from '@/features/rnbw-airdrop/screens/rnbw-airdrop-screen/components/AmbientCoins';
 import { BottomGradientGlow } from '@/features/rnbw-airdrop/screens/rnbw-airdrop-screen/components/BottomGradientGlow';
+import { RnbwHeroCoin } from '@/features/rnbw-airdrop/screens/rnbw-airdrop-screen/components/RnbwHeroCoin';
 import { RnbwAirdropScenes } from '@/features/rnbw-airdrop/screens/rnbw-airdrop-screen/constants/airdropScenes';
-import { ColorModeProvider } from '@/design-system';
-import { useAirdropFlowStore, airdropFlowActions } from '@/features/rnbw-airdrop/stores/airdropFlowStore';
-import { AirdropClaimPromptScene } from '@/features/rnbw-airdrop/screens/rnbw-airdrop-screen/scenes/AirdropClaimPromptScene';
-import { AirdropClaimingScene } from '@/features/rnbw-airdrop/screens/rnbw-airdrop-screen/scenes/AirdropClaimingScene';
 import { AirdropClaimedScene } from '@/features/rnbw-airdrop/screens/rnbw-airdrop-screen/scenes/AirdropClaimedScene';
+import { AirdropClaimingScene } from '@/features/rnbw-airdrop/screens/rnbw-airdrop-screen/scenes/AirdropClaimingScene';
+import { AirdropClaimPromptScene } from '@/features/rnbw-airdrop/screens/rnbw-airdrop-screen/scenes/AirdropClaimPromptScene';
+import { airdropFlowActions, useAirdropFlowStore } from '@/features/rnbw-airdrop/stores/airdropFlowStore';
 
 export const RnbwAirdropScreen = memo(function RnbwAirdropScreen() {
   const { top: safeAreaTop, bottom: safeAreaBottom } = useSafeAreaInsets();

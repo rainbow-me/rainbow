@@ -1,13 +1,13 @@
-import { type HyperliquidTokenMetadata, MarketSortOrder, type PerpMarketWithMetadata } from '@/features/perps/types';
-import { createQueryStore } from '@/state/internal/createQueryStore';
-import { time } from '@/utils/time';
-import { createStoreActions } from '@/state/internal/utils/createStoreActions';
 import { HYPERCORE_PSEUDO_CHAIN_ID } from '@/features/perps/constants';
-import { getPlatformClient } from '@/resources/platform/client';
+import { MarketSortOrder, type HyperliquidTokenMetadata, type PerpMarketWithMetadata } from '@/features/perps/types';
 import { formatPerpAssetPrice } from '@/features/perps/utils/formatPerpsAssetPrice';
 import { getAllMarketsInfo } from '@/features/perps/utils/hyperliquid';
-import { createRainbowStore } from '@/state/internal/createRainbowStore';
+import { getPlatformClient } from '@/resources/platform/client';
 import { createDerivedStore } from '@/state/internal/createDerivedStore';
+import { createQueryStore } from '@/state/internal/createQueryStore';
+import { createRainbowStore } from '@/state/internal/createRainbowStore';
+import { createStoreActions } from '@/state/internal/utils/createStoreActions';
+import { time } from '@/utils/time';
 
 type PerpMarketsBySymbol = Partial<Record<string, PerpMarketWithMetadata>>;
 

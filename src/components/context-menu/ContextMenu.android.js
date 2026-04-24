@@ -1,10 +1,12 @@
 import React, { Fragment, useCallback } from 'react';
-import { Icon } from '../icons';
-import { Centered } from '../layout';
+
+import ButtonPressAnimation from '@/components/animations/ButtonPressAnimation';
+import { showActionSheetWithOptions } from '@/framework/ui/utils/actionsheet';
 import { omitFlatten } from '@/helpers/utilities';
 import { padding } from '@/styles';
-import { showActionSheetWithOptions } from '@/framework/ui/utils/actionsheet';
-import ButtonPressAnimation from '@/components/animations/ButtonPressAnimation';
+
+import { Icon } from '../icons';
+import { Centered } from '../layout';
 
 const ActionSheetProps = ['cancelButtonIndex', 'destructiveButtonIndex', 'message', 'onPress', 'options', 'tintColor', 'title'];
 

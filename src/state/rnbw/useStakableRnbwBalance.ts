@@ -1,3 +1,5 @@
+import { useRewardsBalanceStore } from '@/features/rnbw-rewards/stores/rewardsBalanceStore';
+import { MIN_STAKE_AMOUNT, RNBW_DECIMALS, RNBW_TOKEN_UNIQUE_ID } from '@/features/rnbw-staking/constants';
 import {
   add,
   convertAmountToNativeDisplayWorklet,
@@ -6,8 +8,6 @@ import {
   isPositive,
   truncateToDecimalsWithThreshold,
 } from '@/helpers/utilities';
-import { useRewardsBalanceStore } from '@/features/rnbw-rewards/stores/rewardsBalanceStore';
-import { MIN_STAKE_AMOUNT, RNBW_DECIMALS, RNBW_TOKEN_UNIQUE_ID } from '@/features/rnbw-staking/constants';
 import { useUserAssetsStore } from '@/state/assets/userAssets';
 import { userAssetsStoreManager } from '@/state/assets/userAssetsStoreManager';
 import { createDerivedStore } from '@/state/internal/createDerivedStore';

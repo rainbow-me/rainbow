@@ -1,19 +1,21 @@
 import { memo, useCallback, useMemo, useRef } from 'react';
-import { type LayoutChangeEvent, StyleSheet, View } from 'react-native';
+import { StyleSheet, View, type LayoutChangeEvent } from 'react-native';
+
 import { ScrollView } from 'react-native-gesture-handler';
-import Animated, { type SharedValue, useAnimatedStyle, useSharedValue } from 'react-native-reanimated';
-import { THICKER_BORDER_WIDTH } from '@/styles/constants';
-import ButtonPressAnimation from '@/components/animations/ButtonPressAnimation';
+import Animated, { useAnimatedStyle, useSharedValue, type SharedValue } from 'react-native-reanimated';
+
 import { AnimatedTextIcon } from '@/components/AnimatedComponents/AnimatedTextIcon';
+import ButtonPressAnimation from '@/components/animations/ButtonPressAnimation';
 import { Border, globalColors, Text, useColorMode, useForegroundColor } from '@/design-system';
-import { CATEGORIES, type Category } from '@/features/polymarket/constants';
 import { InnerShadow } from '@/features/polymarket/components/InnerShadow';
+import { CATEGORIES, type Category } from '@/features/polymarket/constants';
 import { usePolymarketContext } from '@/features/polymarket/screens/polymarket-navigator/PolymarketContext';
 import { usePolymarketCategoryStore } from '@/features/polymarket/stores/usePolymarketCategoryStore';
+import { opacity } from '@/framework/ui/utils/opacity';
+import { THICKER_BORDER_WIDTH } from '@/styles/constants';
 import { deepFreeze } from '@/utils/deepFreeze';
 import { DEVICE_WIDTH } from '@/utils/deviceUtils';
 import { createOpacityPalette } from '@/worklets/colors';
-import { opacity } from '@/framework/ui/utils/opacity';
 
 type CategoryKey = keyof typeof CATEGORIES;
 type CategoryWithKey = Category & { key: CategoryKey };

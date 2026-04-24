@@ -1,11 +1,12 @@
 import { createDerivedStore, shallowEqual } from '@storesjs/stores';
+
+import { FALLBACK_TIERS } from '@/features/rnbw-membership/constants';
+import type { Tier } from '@/features/rnbw-membership/types';
+import { RNBW_DECIMALS } from '@/features/rnbw-staking/constants';
 import { useStakingPositionStore } from '@/features/rnbw-staking/stores/rnbwStakingPositionStore';
 import { divWorklet, subWorklet, toFixedWorklet } from '@/framework/core/safeMath';
-import { RNBW_DECIMALS } from '@/features/rnbw-staking/constants';
-import { convertBipsToPercentage, convertRawAmountToDecimalFormat } from '@/helpers/utilities';
 import { formatNumber } from '@/helpers/strings';
-import type { Tier } from '@/features/rnbw-membership/types';
-import { FALLBACK_TIERS } from '@/features/rnbw-membership/constants';
+import { convertBipsToPercentage, convertRawAmountToDecimalFormat } from '@/helpers/utilities';
 
 type MembershipTierInfo = {
   currentTier: Tier;

@@ -1,14 +1,16 @@
-import * as i18n from '@/languages';
 import React, { useCallback, useEffect, useState } from 'react';
+
+import styled from '@/framework/ui/styled-thing';
+import { opacity } from '@/framework/ui/utils/opacity';
+import useClipboard from '@/hooks/useClipboard';
+import useDimensions from '@/hooks/useDimensions';
+import * as i18n from '@/languages';
+import abbreviations from '@/utils/abbreviations';
+import addressUtils from '@/utils/address';
+
 import { isHexString } from '../../handlers/web3';
 import { Input } from '../inputs';
 import { Row } from '../layout';
-import useClipboard from '@/hooks/useClipboard';
-import useDimensions from '@/hooks/useDimensions';
-import styled from '@/framework/ui/styled-thing';
-import { opacity } from '@/framework/ui/utils/opacity';
-import abbreviations from '@/utils/abbreviations';
-import addressUtils from '@/utils/address';
 
 const AddressInput = styled(Input).attrs({
   autoCapitalize: 'none',

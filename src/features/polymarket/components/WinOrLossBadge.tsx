@@ -1,10 +1,11 @@
-import { opacity } from '@/framework/ui/utils/opacity';
+import { memo, useMemo } from 'react';
+
 import { Box, Text, useColorMode, useForegroundColor } from '@/design-system';
 import { type TextSize } from '@/design-system/typography/typeHierarchy';
 import { InnerShadow } from '@/features/polymarket/components/InnerShadow';
 import { type PolymarketPosition } from '@/features/polymarket/types';
+import { opacity } from '@/framework/ui/utils/opacity';
 import * as i18n from '@/languages';
-import { memo, useMemo } from 'react';
 
 export const WinOrLossBadge = memo(function WinOrLossBadge({
   borderWidth = 2,

@@ -1,7 +1,9 @@
 import React, { type ReactNode } from 'react';
+
+import { AccentColorProvider, Box, Cover, Text, useForegroundColor } from '@/design-system';
+
 import { type TextColor } from '../../design-system/color/palettes';
 import ButtonPressAnimation from '../animations/ButtonPressAnimation';
-import { AccentColorProvider, Box, Cover, Text, useForegroundColor } from '@/design-system';
 
 const TintButton = ({
   children,

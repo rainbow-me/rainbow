@@ -1,8 +1,11 @@
 import React, { memo, useContext } from 'react';
-import { TabContext } from './TabContext';
-import Animated, { useAnimatedStyle, withTiming } from 'react-native-reanimated';
-import { TIMING_CONFIGS } from '@/components/animations/animationConfigs';
 import { StyleSheet } from 'react-native';
+
+import Animated, { useAnimatedStyle, withTiming } from 'react-native-reanimated';
+
+import { TIMING_CONFIGS } from '@/components/animations/animationConfigs';
+
+import { TabContext } from './TabContext';
 
 const TabViewChild = ({ child, index }: { child: React.ReactNode; index: number }) => {
   const { activeTabIndex } = useContext(TabContext);

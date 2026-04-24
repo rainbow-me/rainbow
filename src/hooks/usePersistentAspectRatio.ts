@@ -1,6 +1,8 @@
 import { useEffect, useState } from 'react';
 import { Image } from 'react-native';
+
 import { createMMKV, useMMKVNumber } from 'react-native-mmkv';
+
 import { STORAGE_IDS } from '@/model/mmkv';
 
 const storage = createMMKV({

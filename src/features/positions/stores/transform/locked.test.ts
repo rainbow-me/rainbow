@@ -1,9 +1,9 @@
 import { transformPositions } from '.';
-import { usePositionsStore } from '../positionsStore';
-import { PositionName, DetailType } from '../../types/generated/positions/positions';
 import { FIXTURE_PARAMS } from '../../__fixtures__/ListPositions';
 import { createMockAsset } from '../../__fixtures__/mocks/assets';
-import { createMockStats, createMockPosition, createMockResponse } from '../../__fixtures__/mocks/positions';
+import { createMockPosition, createMockResponse, createMockStats } from '../../__fixtures__/mocks/positions';
+import { DetailType, PositionName } from '../../types/generated/positions/positions';
+import { usePositionsStore } from '../positionsStore';
 
 // Mock config to avoid React Native gesture handler imports
 jest.mock('@/config/experimentalHooks', () => ({

@@ -1,9 +1,11 @@
+import React, { memo, useMemo } from 'react';
+import { StyleSheet, View, type TextStyle } from 'react-native';
+
+import MaskedView from '@react-native-masked-view/masked-view';
+import { LinearGradient, type LinearGradientProps } from 'expo-linear-gradient';
+
 import { type TextProps } from '@/design-system/components/Text/Text';
 import { useTextStyle } from '@/design-system/components/Text/useTextStyle';
-import MaskedView from '@react-native-masked-view/masked-view';
-import React, { memo, useMemo } from 'react';
-import { StyleSheet, type TextStyle, View } from 'react-native';
-import { LinearGradient, type LinearGradientProps } from 'expo-linear-gradient';
 
 interface TextShadowConfig {
   textShadowColor: string;

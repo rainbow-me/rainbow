@@ -1,12 +1,13 @@
-import { infoClient } from '@/features/perps/services/hyperliquid-info-client';
-import { type PerpMarket } from '@/features/perps/types';
-import { divide, subtract, multiply } from '@/helpers/utilities';
 import { type MetaAndAssetCtxsResponse } from '@nktkas/hyperliquid';
+import { type SymbolConverter } from '@nktkas/hyperliquid/utils';
+
+import { SUPPORTED_COLLATERAL_TOKENS } from '@/features/perps/constants';
+import { infoClient } from '@/features/perps/services/hyperliquid-info-client';
+import { hyperliquidDexActions } from '@/features/perps/stores/hyperliquidDexStore';
+import { type PerpMarket } from '@/features/perps/types';
 import { getSymbolConverter } from '@/features/perps/utils/hyperliquidSymbolConverter';
 import { extractBaseSymbol, normalizeDexSymbol } from '@/features/perps/utils/hyperliquidSymbols';
-import { type SymbolConverter } from '@nktkas/hyperliquid/utils';
-import { hyperliquidDexActions } from '@/features/perps/stores/hyperliquidDexStore';
-import { SUPPORTED_COLLATERAL_TOKENS } from '@/features/perps/constants';
+import { divide, multiply, subtract } from '@/helpers/utilities';
 
 function processMarketsForDex({
   metaAndAssetCtxs,
@@ -65,6 +66,7 @@ function processMarketsForDex({
         marginTiers: marginTable?.marginTiers,
         decimals: asset.szDecimals,
         fundingRate: assetPricingInfo.funding,
+        openInterest: assetPricingInfo.openInterest,
         dex,
       } satisfies PerpMarket;
     })

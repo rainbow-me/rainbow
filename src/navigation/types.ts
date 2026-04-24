@@ -1,52 +1,54 @@
+import { type RefObject } from 'react';
+import { type ScrollView } from 'react-native';
+
+import { type BigNumberish } from '@ethersproject/bignumber';
+import { type NavigatorScreenParams } from '@react-navigation/native';
 import { type createStackNavigator } from '@react-navigation/stack';
-import { type Route } from '@/navigation/routesNames';
-import type Routes from '@/navigation/routesNames';
-import { type REGISTRATION_MODES } from '@/features/ens/utils/helpers';
+import { type SharedValue } from 'react-native-reanimated';
+import { type Address } from 'viem';
+
+import { type SwapsParams } from '@/__swaps__/screens/Swap/navigateToSwaps';
+import { type UserAssetFilter } from '@/__swaps__/types/assets';
+import { type GasTrend } from '@/__swaps__/utils/meteorology';
+import { type CardType } from '@/components/cards/GenericCard';
+import { type LearnCardKey, type LearnCategory } from '@/components/cards/utils/types';
+import { type ActiveTabRef } from '@/components/DappBrowser/types';
+import { type TextProps } from '@/design-system';
 import { type ParsedAddressAsset } from '@/entities/tokens';
 import { type PendingTransaction, type RainbowTransaction } from '@/entities/transactions';
 import { type UniqueAsset } from '@/entities/uniqueAssets';
-import { type Claimable, type RainbowClaimable } from '@/resources/addys/claimables/types';
+import { type UnlockableAppIconKey } from '@/features/app-icon/models/appIcons';
+import { type ENSProfile } from '@/features/ens/types/profile';
+import { type REGISTRATION_MODES } from '@/features/ens/utils/helpers';
+import { type HlTrade, type PerpMarket, type PerpsPosition, type TriggerOrderSource, type TriggerOrderType } from '@/features/perps/types';
+import { type PolymarketPosition } from '@/features/polymarket/types';
+import { type PolymarketEvent, type PolymarketMarket, type PolymarketMarketEvent } from '@/features/polymarket/types/polymarket-event';
+import { type RainbowPosition } from '@/features/positions/types';
 import {
   type RequestData,
   type WalletconnectApprovalSheetRouteParams,
   type WalletconnectResultType,
 } from '@/features/wallet-connect/types';
-import { type WalletConnectApprovalSheetType } from '@/helpers/walletConnectApprovalSheetTypes';
-import { type RainbowWallet } from '@/model/wallet';
-import { type RainbowPosition } from '@/features/positions/types';
-import { type Address } from 'viem';
-import { type SharedValue } from 'react-native-reanimated';
-import { type ChainId } from '@/state/backendNetworks/types';
-import { type ExpandedSheetParamAsset } from '@/screens/expandedAssetSheet/context/ExpandedAssetSheetContext';
-import { type TextProps } from '@/design-system';
-import { type TokenColors } from '@/graphql/__generated__/metadata';
-import { type GasTrend } from '@/__swaps__/utils/meteorology';
-import { type RequestSource } from '@/utils/requestNavigationHandlers';
-import { type Checkbox } from '@/screens/SendConfirmationSheet';
-import { type ENSProfile } from '@/features/ens/types/profile';
-import { type SwapsParams } from '@/__swaps__/screens/Swap/navigateToSwaps';
-import { type BackupFile, type CloudBackups } from '@/model/backup';
-import type walletBackupStepTypes from '@/helpers/walletBackupStepTypes';
-import { type UserAssetFilter } from '@/__swaps__/types/assets';
 import { type NftOffer, type PoapEvent, type ReservoirCollection } from '@/graphql/__generated__/arc';
-import { type Contact } from '@/redux/contacts';
-import { type NavigatorScreenParams } from '@react-navigation/native';
+import { type TokenColors } from '@/graphql/__generated__/metadata';
+import type walletBackupStepTypes from '@/helpers/walletBackupStepTypes';
 import type WalletBackupTypes from '@/helpers/walletBackupTypes';
-import { type LearnCardKey, type LearnCategory } from '@/components/cards/utils/types';
-import { type CardType } from '@/components/cards/GenericCard';
-import { type RefObject } from 'react';
-import { type ActiveTabRef } from '@/components/DappBrowser/types';
-import { type WalletNotificationSettings } from '@/notifications/settings/types';
-import { type LEDGER_ERROR_CODES } from '@/utils/ledger';
-import { type BigNumberish } from '@ethersproject/bignumber';
-import { type UnlockableAppIconKey } from '@/features/app-icon/models/appIcons';
+import { type WalletConnectApprovalSheetType } from '@/helpers/walletConnectApprovalSheetTypes';
 import { type ChartTime } from '@/hooks/charts/useChartInfo';
-import { type AreAllKeysOptional, type ExtractOptionalKeys } from '@/types/objects';
-import { type ScrollView } from 'react-native';
-import { type HlTrade, type PerpMarket, type PerpsPosition, type TriggerOrderSource, type TriggerOrderType } from '@/features/perps/types';
-import { type PolymarketPosition } from '@/features/polymarket/types';
-import { type PolymarketEvent, type PolymarketMarket, type PolymarketMarketEvent } from '@/features/polymarket/types/polymarket-event';
+import { type BackupFile, type CloudBackups } from '@/model/backup';
+import { type RainbowWallet } from '@/model/wallet';
+import { type Route } from '@/navigation/routesNames';
+import type Routes from '@/navigation/routesNames';
+import { type WalletNotificationSettings } from '@/notifications/settings/types';
+import { type Contact } from '@/redux/contacts';
+import { type Claimable, type RainbowClaimable } from '@/resources/addys/claimables/types';
 import { type RevokeReason } from '@/screens/delegation/RevokeDelegationPanel';
+import { type ExpandedSheetParamAsset } from '@/screens/expandedAssetSheet/context/ExpandedAssetSheetContext';
+import { type Checkbox } from '@/screens/SendConfirmationSheet';
+import { type ChainId } from '@/state/backendNetworks/types';
+import { type AreAllKeysOptional, type ExtractOptionalKeys } from '@/types/objects';
+import { type LEDGER_ERROR_CODES } from '@/utils/ledger';
+import { type RequestSource } from '@/utils/requestNavigationHandlers';
 
 export type PortalSheetProps = {
   children: React.FC;
@@ -682,6 +684,7 @@ type RouteParams = {
     market: PerpMarket;
     position: PerpsPosition;
   };
+  [Routes.PERPS_ABOUT_SHEET]: undefined;
   [Routes.PERPS_TRADE_DETAILS_SHEET]: {
     trade: HlTrade;
   };

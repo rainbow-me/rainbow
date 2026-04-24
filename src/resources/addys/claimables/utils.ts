@@ -1,17 +1,18 @@
-import * as i18n from '@/languages';
 import type { NativeCurrencyKey } from '@/entities/nativeCurrencyTypes';
 import { add, convertAmountToNativeDisplayWorklet, convertRawAmountToBalanceWorklet } from '@/helpers/utilities';
+import * as i18n from '@/languages';
 import { parseAsset } from '@/resources/assets/assets';
 import { useBackendNetworksStore } from '@/state/backendNetworks/backendNetworks';
 import { type Network } from '@/state/backendNetworks/types';
+
 import {
   acceptedClaimableTypes,
+  ClaimableType,
+  type AcceptedClaimableType,
   type AddysClaimable,
   type BaseClaimable,
   type Claimable,
   type RainbowClaimable,
-  type AcceptedClaimableType,
-  ClaimableType,
 } from './types';
 
 function isAcceptedClaimableType(type: AddysClaimable['claim_action_type']): type is AcceptedClaimableType {

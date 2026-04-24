@@ -1,15 +1,18 @@
-import * as i18n from '@/languages';
 import React, { useEffect, useState } from 'react';
+
+import { useFocusEffect } from '@react-navigation/native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
+
 import Divider from '@/components/Divider';
 import { Row } from '@/components/layout';
 import { Sheet, SheetHandleFixedToTop, SheetTitle } from '@/components/sheet';
-import { WalletConnectV2ListItem, WALLET_CONNECT_LIST_ITEM_HEIGHT } from '../components/WalletConnectV2ListItem';
+import { Box, Text } from '@/design-system';
 import styled from '@/framework/ui/styled-thing';
-import { useWalletConnectV2Sessions } from '../hooks/useWalletConnectV2Sessions';
+import * as i18n from '@/languages';
 import { useNavigation } from '@/navigation/Navigation';
-import { useFocusEffect } from '@react-navigation/native';
-import { Text, Box } from '@/design-system';
+
+import { WALLET_CONNECT_LIST_ITEM_HEIGHT, WalletConnectV2ListItem } from '../components/WalletConnectV2ListItem';
+import { useWalletConnectV2Sessions } from '../hooks/useWalletConnectV2Sessions';
 
 const MAX_VISIBLE_DAPPS = 7;
 

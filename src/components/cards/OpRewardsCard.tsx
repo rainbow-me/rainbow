@@ -1,14 +1,16 @@
 import React from 'react';
-import { GenericCard, type Gradient } from './GenericCard';
-import { AccentColorProvider, Box, Cover, globalColors, Stack, Text, useColorMode } from '@/design-system';
-import ButtonPressAnimation from '@/components/animations/ButtonPressAnimation';
 import { ImageBackground } from 'react-native';
-import OpRewardsCardBackgroundImage from '../../assets/opRewardsCardBackgroundImage.png';
+
+import ButtonPressAnimation from '@/components/animations/ButtonPressAnimation';
+import { AccentColorProvider, Box, Cover, globalColors, Stack, Text, useColorMode } from '@/design-system';
 import * as i18n from '@/languages';
 import { useNavigation } from '@/navigation/Navigation';
 import Routes from '@/navigation/routesNames';
-import { ChainId } from '@/state/backendNetworks/types';
 import { useBackendNetworksStore } from '@/state/backendNetworks/backendNetworks';
+import { ChainId } from '@/state/backendNetworks/types';
+
+import OpRewardsCardBackgroundImage from '../../assets/opRewardsCardBackgroundImage.png';
+import { GenericCard, type Gradient } from './GenericCard';
 
 const GRADIENT: Gradient = {
   colors: ['#520907', '#B22824'],

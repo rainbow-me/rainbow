@@ -1,10 +1,13 @@
-import { useRoute } from '@react-navigation/native';
 import React from 'react';
-import TouchableBackdrop from '../../TouchableBackdrop';
+
+import { useRoute } from '@react-navigation/native';
+
+import { IS_IOS } from '@/env';
+import useDimensions from '@/hooks/useDimensions';
+
 import { AssetPanel, FloatingPanels } from '../../floating-panels';
 import { KeyboardFixedOpenLayout } from '../../layout';
-import useDimensions from '@/hooks/useDimensions';
-import { IS_IOS } from '@/env';
+import TouchableBackdrop from '../../TouchableBackdrop';
 
 export default function ProfileModalContainer({ onPressBackdrop, ...props }) {
   const { width: deviceWidth } = useDimensions();

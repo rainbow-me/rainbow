@@ -1,5 +1,7 @@
 import React from 'react';
+
 import { Path } from 'react-native-svg';
+
 import Svg from '../Svg';
 
 const DOGEIcon = ({ colors = undefined, color = colors.black, ...props }) => {

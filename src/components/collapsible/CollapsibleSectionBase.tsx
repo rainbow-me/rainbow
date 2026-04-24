@@ -1,9 +1,11 @@
 /** @refresh reset */
 import React from 'react';
-import Animated, { type DerivedValue, LinearTransition, type SharedValue, useAnimatedStyle, withSpring } from 'react-native-reanimated';
-import { Bleed, Box, IconContainer, Text, TextShadow } from '@/design-system';
-import { GestureHandlerButton } from '@/components/buttons/GestureHandlerButton';
+
+import Animated, { LinearTransition, useAnimatedStyle, withSpring, type DerivedValue, type SharedValue } from 'react-native-reanimated';
+
 import { SPRING_CONFIGS } from '@/components/animations/animationConfigs';
+import { GestureHandlerButton } from '@/components/buttons/GestureHandlerButton';
+import { Bleed, Box, IconContainer, Text, TextShadow } from '@/design-system';
 
 const ANIMATION_CONFIG = SPRING_CONFIGS.snappierSpringConfig;
 
@@ -17,6 +19,7 @@ const AnimatedBox = Animated.createAnimatedComponent(Box);
 export interface CollapsibleSectionBaseProps {
   content: React.ReactNode;
   icon: string;
+  iconComponent?: React.ReactNode;
   primaryText: string;
   secondaryText?: string;
   expanded: SharedValue<boolean> | DerivedValue<boolean>;
@@ -28,6 +31,7 @@ export interface CollapsibleSectionBaseProps {
 export function CollapsibleSectionBase({
   content,
   icon,
+  iconComponent,
   primaryText,
   secondaryText,
   expanded,
@@ -46,6 +50,7 @@ export function CollapsibleSectionBase({
     <AnimatedBox layout={LAYOUT_ANIMATION}>
       <SectionHeaderView
         icon={icon}
+        iconComponent={iconComponent}
         primaryText={primaryText}
         secondaryText={secondaryText}
         expanded={expanded}
@@ -61,6 +66,7 @@ export function CollapsibleSectionBase({
 
 const SectionHeaderView = React.memo(function SectionHeaderView({
   icon,
+  iconComponent,
   primaryText,
   secondaryText,
   expanded,
@@ -92,13 +98,15 @@ const SectionHeaderView = React.memo(function SectionHeaderView({
       <Bleed vertical="4px">
         <Box height={'full'} flexDirection="row" justifyContent="space-between" alignItems="center">
           <Box flexDirection="row" gap={10} alignItems="center">
-            <IconContainer height={14} width={24}>
-              <TextShadow blur={12} shadowOpacity={0.24}>
-                <Text align="center" color={resolvedIconColor} size="icon 17px" weight="bold">
-                  {icon}
-                </Text>
-              </TextShadow>
-            </IconContainer>
+            {iconComponent ?? (
+              <IconContainer height={14} width={24}>
+                <TextShadow blur={12} shadowOpacity={0.24}>
+                  <Text align="center" color={resolvedIconColor} size="icon 17px" weight="bold">
+                    {icon}
+                  </Text>
+                </TextShadow>
+              </IconContainer>
+            )}
             <Box flexDirection="row" gap={5}>
               <Text weight="heavy" size="20pt" color="label">
                 {primaryText}

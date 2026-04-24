@@ -1,12 +1,14 @@
-import * as i18n from '@/languages';
 import React, { useCallback, useEffect, useState } from 'react';
-import ButtonPressAnimation from '../animations/ButtonPressAnimation';
-import { Text } from '../text';
-import { checkIsValidAddressOrDomain } from '@/helpers/validators';
+
 import { opacity } from '@/framework/ui/utils/opacity';
+import { checkIsValidAddressOrDomain } from '@/helpers/validators';
 import useClipboard from '@/hooks/useClipboard';
 import useInvalidPaste from '@/hooks/useInvalidPaste';
+import * as i18n from '@/languages';
 import deviceUtils from '@/utils/deviceUtils';
+
+import ButtonPressAnimation from '../animations/ButtonPressAnimation';
+import { Text } from '../text';
 
 export default function PasteAddressButton({ onPress }) {
   const [isValid, setIsValid] = useState(false);

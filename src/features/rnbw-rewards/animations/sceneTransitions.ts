@@ -1,4 +1,5 @@
-import { Easing, type EntryAnimationsValues, type ExitAnimationsValues, withDelay, withTiming } from 'react-native-reanimated';
+import { Easing, withDelay, withTiming, type EntryAnimationsValues, type ExitAnimationsValues } from 'react-native-reanimated';
+
 import { time } from '@/utils/time';
 
 export const transitionEasing = Easing.bezier(0.2, 0.9, 0.2, 1).factory();

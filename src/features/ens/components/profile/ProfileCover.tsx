@@ -1,14 +1,16 @@
 import React from 'react';
 import { View } from 'react-native';
+
 import RadialGradient from 'react-native-radial-gradient';
 import Animated from 'react-native-reanimated';
+
+import { ImgixImage } from '@/components/images';
 import { ImagePreviewOverlayTarget } from '@/components/images/ImagePreviewOverlay';
 import Skeleton from '@/components/skeleton/Skeleton';
+import { CardSize } from '@/components/unique-token/CardSize';
 import { Box, useForegroundColor } from '@/design-system';
 import useFadeImage from '@/hooks/useFadeImage';
-import { ImgixImage } from '@/components/images';
 import { sharedCoolModalTopOffset } from '@/navigation/config';
-import { CardSize } from '@/components/unique-token/CardSize';
 
 const imagePreviewOverlayTopOffset = ios ? 68 + sharedCoolModalTopOffset : 107;
 

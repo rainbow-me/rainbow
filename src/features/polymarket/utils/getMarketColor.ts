@@ -1,12 +1,12 @@
 import { getColorValueForThemeWorklet, type ResponseByTheme } from '@/__swaps__/utils/swaps';
 import { palettes } from '@/design-system/color/palettes';
-import { isDrawMarket } from '@/features/polymarket/utils/sports';
 import { type PolymarketPosition, type PolymarketTeamInfo } from '@/features/polymarket/types';
 import { type PolymarketMarket, type RawPolymarketMarket } from '@/features/polymarket/types/polymarket-event';
-import { getOutcomeTeamColor } from '@/features/polymarket/utils/getOutcomeTeam';
-import { getHighContrastColor } from '@/hooks/useAccountAccentColor';
-import { isTeamBasedOutcome } from '@/features/polymarket/utils/marketClassification';
 import { getColorBySeed } from '@/features/polymarket/utils/getColorBySeed';
+import { getOutcomeTeamColor } from '@/features/polymarket/utils/getOutcomeTeam';
+import { isTeamBasedOutcome } from '@/features/polymarket/utils/marketClassification';
+import { isDrawMarket } from '@/features/polymarket/utils/sports';
+import { getHighContrastColor } from '@/hooks/useAccountAccentColor';
 
 type MarketColors = {
   color: ResponseByTheme<string>;

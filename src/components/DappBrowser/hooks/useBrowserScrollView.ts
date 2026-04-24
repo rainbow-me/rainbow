@@ -1,4 +1,5 @@
 import { useCallback, useEffect, useMemo } from 'react';
+
 import { Gesture } from 'react-native-gesture-handler';
 import {
   dispatchCommand,
@@ -10,16 +11,18 @@ import {
   withSpring,
 } from 'react-native-reanimated';
 import { triggerHaptics } from 'react-native-turbo-haptics';
+
 import { SPRING_CONFIGS } from '@/components/animations/animationConfigs';
 import { IS_ANDROID, IS_IOS } from '@/env';
 import { useStableValue } from '@/hooks/useStableValue';
 import { useBrowserStore } from '@/state/browser/browserStore';
-import safeAreaInsetValues from '@/utils/safeAreaInsetValues';
 import { DEVICE_HEIGHT, DEVICE_WIDTH } from '@/utils/deviceUtils';
+import safeAreaInsetValues from '@/utils/safeAreaInsetValues';
+
 import { useBrowserContext } from '../BrowserContext';
 import { useBrowserWorkletsContext } from '../BrowserWorkletsContext';
-import { TAB_VIEW_ROW_HEIGHT } from '../Dimensions';
 import { RAINBOW_HOME } from '../constants';
+import { TAB_VIEW_ROW_HEIGHT } from '../Dimensions';
 import {
   determineGestureType,
   determineTapResult,
@@ -28,7 +31,7 @@ import {
   updateTabGestureState,
 } from '../utils/gestureUtils';
 import { calculateScrollPositionToCenterTab } from '../utils/layoutUtils';
-import { type TabHitResult, tabHitTest } from '../utils/tabHitTest';
+import { tabHitTest, type TabHitResult } from '../utils/tabHitTest';
 
 const ENABLE_PAN_LOGS = false;
 const ENABLE_SCROLL_VIEW_LOGS = false;

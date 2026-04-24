@@ -1,8 +1,10 @@
-import { createNavigatorFactory, StackRouter as OldStackRouter, StackActions, useNavigationBuilder } from '@react-navigation/native';
 import * as React from 'react';
 
-import NativeStackView from './NativeStackView';
+import { createNavigatorFactory, StackRouter as OldStackRouter, StackActions, useNavigationBuilder } from '@react-navigation/native';
+
 import { logger } from '@/logger';
+
+import NativeStackView from './NativeStackView';
 
 function NativeStackNavigator(props) {
   const { children, initialRouteName, screenOptions, ...rest } = props;

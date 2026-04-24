@@ -1,24 +1,27 @@
-import { isValidAddress } from 'ethereumjs-util';
-import * as i18n from '@/languages';
-import qs from 'qs';
 import { useCallback, useEffect, useRef } from 'react';
 import { InteractionManager } from 'react-native';
-import URL from 'url-parse';
+
 import { parseUri } from '@walletconnect/utils';
-import { Alert } from '../components/alerts';
-import Navigation, { useNavigation } from '../navigation/Navigation';
-import { fetchReverseRecordWithRetry } from '@/utils/profileUtils';
+import { isValidAddress } from 'ethereumjs-util';
+import qs from 'qs';
+import { triggerHaptics } from 'react-native-turbo-haptics';
+import URL from 'url-parse';
+
 import { analytics } from '@/analytics';
+import { pair as pairWalletConnect } from '@/features/wallet-connect/services/pair';
 import { checkIsValidAddressOrDomain, isENSAddressFormat } from '@/helpers/validators';
-import { POAP_BASE_URL, RAINBOW_PROFILES_BASE_URL } from '@/references/constants';
+import * as i18n from '@/languages';
+import { logger, RainbowError } from '@/logger';
 import Routes from '@/navigation/routesNames';
+import { checkPushNotificationPermissions } from '@/notifications/permissions';
+import { POAP_BASE_URL, RAINBOW_PROFILES_BASE_URL } from '@/references/constants';
 import addressUtils from '@/utils/address';
 import ethereumUtils from '@/utils/ethereumUtils';
-import haptics from '@/utils/haptics';
-import { logger, RainbowError } from '@/logger';
-import { checkPushNotificationPermissions } from '@/notifications/permissions';
-import { pair as pairWalletConnect } from '@/features/wallet-connect/services/pair';
 import { getPoapAndOpenSheetWithQRHash, getPoapAndOpenSheetWithSecretWord } from '@/utils/poaps';
+import { fetchReverseRecordWithRetry } from '@/utils/profileUtils';
+
+import { Alert } from '../components/alerts';
+import Navigation, { useNavigation } from '../navigation/Navigation';
 
 export default function useScanner(enabled: boolean, onSuccess: () => unknown) {
   const { navigate, goBack } = useNavigation();
@@ -50,7 +53,7 @@ export default function useScanner(enabled: boolean, onSuccess: () => unknown) {
 
   const handleScanAddress = useCallback(
     async (address: string) => {
-      haptics.notificationSuccess();
+      triggerHaptics('notificationSuccess');
       analytics.track(analytics.event.qrCodeScannedAddress);
       const ensName = isENSAddressFormat(address) ? address : await fetchReverseRecordWithRetry(address);
       // First navigate to wallet screen
@@ -71,7 +74,7 @@ export default function useScanner(enabled: boolean, onSuccess: () => unknown) {
 
   const handleScanRainbowProfile = useCallback(
     async (url: string) => {
-      haptics.notificationSuccess();
+      triggerHaptics('notificationSuccess');
       analytics.track(analytics.event.qrCodeScannedProfile);
 
       const urlObj = new URL(url);
@@ -98,7 +101,7 @@ export default function useScanner(enabled: boolean, onSuccess: () => unknown) {
 
   const handleScanWalletConnect = useCallback(
     async (uri: string, connector?: string) => {
-      haptics.notificationSuccess();
+      triggerHaptics('notificationSuccess');
       analytics.track(analytics.event.qrCodeScannedWalletConnect);
       await checkPushNotificationPermissions();
       goBack();
@@ -117,7 +120,7 @@ export default function useScanner(enabled: boolean, onSuccess: () => unknown) {
 
   const handleScanInvalid = useCallback(
     (qrCodeData: string) => {
-      haptics.notificationError();
+      triggerHaptics('notificationError');
       analytics.track(analytics.event.qrCodeScannedInvalid, { qrCodeData });
 
       Alert({

@@ -1,5 +1,6 @@
 import React, { memo, useMemo } from 'react';
-import { Skia, Group, Path, LinearGradient, vec, Blur } from '@shopify/react-native-skia';
+
+import { Blur, Group, LinearGradient, Path, Skia, vec } from '@shopify/react-native-skia';
 
 function createConePath({ headWidth, baseWidth, height }: { headWidth: number; baseWidth: number; height: number }) {
   const path = Skia.Path.Make();

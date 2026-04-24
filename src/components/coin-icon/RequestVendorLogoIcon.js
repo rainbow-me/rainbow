@@ -1,13 +1,15 @@
 import React, { useMemo, useState } from 'react';
 import { View } from 'react-native';
-import { useTheme } from '../../theme/ThemeContext';
-import { initials } from '@/utils/formatters';
-import { Centered } from '../layout';
-import { Text } from '../text';
+
 import { ImgixImage } from '@/components/images';
 import styled from '@/framework/ui/styled-thing';
-import { position } from '@/styles';
 import ShadowStack from '@/react-native-shadow-stack';
+import { position } from '@/styles';
+import { initials } from '@/utils/formatters';
+
+import { useTheme } from '../../theme/ThemeContext';
+import { Centered } from '../layout';
+import { Text } from '../text';
 import { ChainImage } from './ChainImage';
 
 const RequestVendorLogoIconSize = 40;
