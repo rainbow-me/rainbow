@@ -72,7 +72,7 @@ async function fetchPolymarketPositions(
   const openSlugs = new Set<string>();
   const closedSlugs = new Set<string>();
   for (const position of rawPositions) {
-    if (position.redeemable || position.mergeable) {
+    if (position.redeemable) {
       closedSlugs.add(position.slug);
     } else {
       openSlugs.add(position.slug);
@@ -146,6 +146,8 @@ async function fetchPolymarketMarkets({
       if (closed) {
         url.searchParams.set('closed', 'true');
       }
+
+      console.log('[fetchPolymarketMarkets] url', url.toString());
 
       const { data } = await rainbowFetch<RawPolymarketMarket[]>(url.toString(), {
         abortController,

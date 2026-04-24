@@ -1,6 +1,7 @@
-import { Chain, ClobClient, type ClobToken } from '@polymarket/clob-client-v2';
+import { type ClobToken } from '@polymarket/clob-client-v2';
 
 import { POLYMARKET_BUILDER_CODE, POLYMARKET_CLOB_PROXY_URL } from '@/features/polymarket/constants';
+import { polymarketClobDataClient } from '@/features/polymarket/polymarket-clob-data-client';
 import { EMPTY_POLYMARKET_FEE_INFO, type PolymarketFeeInfo } from '@/features/polymarket/utils/orderExecution';
 import { rainbowFetch } from '@/framework/data/http/rainbowFetch';
 import { createQueryStore } from '@/state/internal/createQueryStore';
@@ -16,11 +17,6 @@ type RawBuilderFeesResponse = {
 };
 
 type RawBuilderFeesPayload = RawBuilderFeesResponse | string;
-
-const publicClobClient = new ClobClient({
-  host: POLYMARKET_CLOB_PROXY_URL,
-  chain: Chain.POLYGON,
-});
 
 type FeeDetails = {
   r?: number;
@@ -74,7 +70,7 @@ export function prefetchPolymarketFeeInfo(conditionId: string) {
 async function fetchPolymarketFeeInfo({ conditionId }: FetchParams, abortController: AbortController | null): Promise<PolymarketFeeInfo> {
   if (!conditionId) return EMPTY_POLYMARKET_FEE_INFO;
 
-  const marketInfoPromise = publicClobClient.getClobMarketInfo(conditionId) as Promise<MarketDetails>;
+  const marketInfoPromise = polymarketClobDataClient.getClobMarketInfo(conditionId) as Promise<MarketDetails>;
   const builderFeesPromise = rainbowFetch<RawBuilderFeesPayload>(
     `${POLYMARKET_CLOB_PROXY_URL}/fees/builder-fees/${POLYMARKET_BUILDER_CODE}`,
     {
