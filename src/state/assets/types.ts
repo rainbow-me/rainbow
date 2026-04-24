@@ -1,4 +1,4 @@
-import { type Address } from 'viem';
+import { type Address, type Prettify } from 'viem';
 
 import { type ParsedSearchAsset, type UniqueId, type UserAssetFilter } from '@/__swaps__/types/assets';
 import type { ParsedAddressAsset } from '@/entities/tokens';
@@ -63,7 +63,7 @@ export interface UserAssetsState {
   getChainsWithBalance: () => ChainId[];
   getFilteredUserAssetIds: () => UniqueId[];
   getHiddenAssetsIds: () => UniqueId[];
-  getHighestValueAsset: (options?: HighestValueAssetOptions) => ParsedSearchAsset | null;
+  getHighestValueAsset: (options?: Prettify<HighestValueAssetOptions>) => ParsedSearchAsset | null;
   getLegacyUserAsset: (uniqueId: UniqueId) => ParsedAddressAsset | null;
   getNativeAssetForChain: (chainId: ChainId) => ParsedSearchAsset | null;
   getTotalBalance: () => number;
