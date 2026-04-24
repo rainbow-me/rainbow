@@ -1,5 +1,5 @@
 import { BuilderConfig } from '@polymarket/builder-signing-sdk';
-import { PLATFORM_API_KEY } from 'react-native-dotenv';
+import { PLATFORM_API_KEY, PLATFORM_BASE_URL } from 'react-native-dotenv';
 import { type Address } from 'viem';
 
 import { getSolidColorEquivalent } from '@/worklets/colors';
@@ -31,7 +31,7 @@ export const POLYMARKET_PROXY_FACTORY_ADDRESS: Address = '0xaB45c5A4B0c941a2F231
 export const POLYMARKET_UMA_ADAPTER_ADDRESS: Address = '0x6A9D222616C90FcA5754cd1333cFD9b7fb6a4F74';
 export const POLYMARKET_UMA_OPTIMISTIC_ORACLE_ADDRESS: Address = '0xCB1822859cEF82Cd2Eb4E6276C7916e692995130';
 
-const RAINBOW_POLYMARKET_PROXY_URL = 'https://platform.s.rainbow.me/v1/polymarket';
+const RAINBOW_POLYMARKET_PROXY_URL = `${PLATFORM_BASE_URL}/v1/polymarket`;
 
 export const POLYMARKET_CLOB_PROXY_URL = `${RAINBOW_POLYMARKET_PROXY_URL}/clob`;
 export const POLYMARKET_RELAYER_PROXY_URL = `${RAINBOW_POLYMARKET_PROXY_URL}/relayer`;
