@@ -2,25 +2,26 @@ import { createRainbowStore } from '../internal/createRainbowStore';
 
 const TIME_TO_WATCH = 600000;
 
-interface StaleBalanceInfo {
+type StaleBalanceInfo = {
   address: string;
   expirationTime?: number;
   transactionHash: string;
-}
+};
 
-interface StaleBalances {
+type StaleBalances = {
   [key: string]: StaleBalanceInfo;
-}
-interface StaleBalancesByChainId {
-  [key: number]: StaleBalances;
-}
+};
 
-export interface StaleBalancesState {
+export type StaleBalancesByChainId = {
+  [key: number]: StaleBalances;
+};
+
+export type StaleBalancesState = {
   addStaleBalance: ({ address, chainId, info }: { address: string; chainId: number; info: StaleBalanceInfo }) => void;
   clearExpiredData: (address: string) => void;
   getStaleBalancesQueryParam: (address: string) => string;
   staleBalances: Record<string, StaleBalancesByChainId>;
-}
+};
 
 export const staleBalancesStore = createRainbowStore<StaleBalancesState>(
   (set, get) => ({

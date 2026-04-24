@@ -1,34 +1,41 @@
 import {
   buildTransactionTitle,
+  isAwaitingRelayTransactionHash,
   isValidTransactionStatus,
   TransactionStatus,
   type MinedTransaction,
   type PendingTransaction,
   type RainbowTransaction,
+  type TransactionType,
 } from '@/entities/transactions';
+import { applyManagedExecutionStatus } from '@/features/delegation/managedExecutionStatus';
 import { relayService } from '@/features/delegation/relayService';
 import { logger, RainbowError } from '@/logger';
 import type { SupportedCurrencyKey } from '@/references/supportedCurrencies';
 import { fetchRawTransaction } from '@/resources/transactions/transaction';
 import { RelayExecutionStatus, type RelayStatusSnapshot } from '@rainbow-me/delegation';
 
+// ============ Types ========================================================= //
+
 type SettledTransaction = RainbowTransaction & {
   status: TransactionStatus.confirmed | TransactionStatus.failed;
 };
 
-type PendingTransactionResolution =
-  | { kind: 'pending'; transaction: PendingTransaction }
-  | { kind: 'settled'; transaction: SettledTransaction };
+type TrackedTransactionResolution =
+  | { kind: 'pending'; relayStatus?: RelayStatusSnapshot; transaction: PendingTransaction }
+  | { kind: 'settled'; relayStatus?: RelayStatusSnapshot; transaction: SettledTransaction };
+
+// ============ API =========================================================== //
 
 /**
- * Checks a pending transaction and returns whether it is still pending or has
- * settled.
+ * Resolves a locally tracked transaction overlay to its current onchain
+ * or relay-backed state.
  *
  * Wallet-owned transactions settle by transaction hash. Managed relay
- * transactions settle by relay status, and use the origin hash only while the
- * relay is still reporting a nonterminal state.
+ * transactions settle by relay status and may be re-resolved after local
+ * confirmation while relay-owned onchain evidence is still incomplete.
  */
-export async function resolvePendingTransaction({
+export async function resolveTrackedTransaction({
   abortController,
   address,
   currency,
@@ -38,9 +45,9 @@ export async function resolvePendingTransaction({
   address: string;
   currency: SupportedCurrencyKey;
   transaction: RainbowTransaction;
-}): Promise<PendingTransactionResolution> {
+}): Promise<TrackedTransactionResolution> {
   if (transaction.relayExecutionId) {
-    return resolveManagedPendingTransaction({
+    return resolveManagedTrackedTransaction({
       abortController,
       address,
       currency,
@@ -55,6 +62,8 @@ export async function resolvePendingTransaction({
     transaction,
   });
 }
+
+// ============ Fetch Functions ============================================== //
 
 async function fetchTransaction({
   abortController,
@@ -100,7 +109,7 @@ async function resolveOnchainPendingTransaction({
   address: string;
   currency: SupportedCurrencyKey;
   transaction: RainbowTransaction;
-}): Promise<PendingTransactionResolution> {
+}): Promise<TrackedTransactionResolution> {
   const nextTransaction = await fetchTransaction({
     abortController,
     address,
@@ -121,7 +130,7 @@ async function resolveOnchainPendingTransaction({
   };
 }
 
-async function resolveManagedPendingTransaction({
+async function resolveManagedTrackedTransaction({
   abortController,
   address,
   currency,
@@ -131,26 +140,27 @@ async function resolveManagedPendingTransaction({
   address: string;
   currency: SupportedCurrencyKey;
   transaction: RainbowTransaction;
-}): Promise<PendingTransactionResolution> {
+}): Promise<TrackedTransactionResolution> {
   try {
     const executionId = transaction.relayExecutionId;
-    if (!executionId) return { kind: 'pending', transaction: toPendingTransaction(transaction) };
+    if (!executionId) return preserveTrackedTransaction(transaction);
 
-    const update = await relayService.getStatus(executionId);
-    const trackedTransaction = bindManagedOriginTxHash(transaction, readOriginTxHash(update.status));
-    const hasOriginTxHash = trackedTransaction.hash !== executionId;
+    const { status: relayStatus } = await relayService.getStatus(executionId);
+    const trackedTransaction = applyManagedExecutionStatus(transaction, relayStatus);
+    const isAwaitingOriginTxHash = isAwaitingRelayTransactionHash(trackedTransaction);
 
-    switch (update.status.status) {
+    switch (relayStatus.status) {
       case RelayExecutionStatus.Confirmed:
-        if (!hasOriginTxHash) {
-          logger.warn('[resolvePendingTransaction]: managed relay execution finished without onchain transaction evidence', {
+        if (isAwaitingOriginTxHash) {
+          logger.warn('[resolveTrackedTransaction]: managed relay execution finished without onchain transaction evidence', {
             executionId,
-            status: update.status.status,
+            status: relayStatus.status,
           });
         }
 
         return {
           kind: 'settled',
+          relayStatus,
           transaction: buildSettledTransaction(trackedTransaction, TransactionStatus.confirmed),
         };
 
@@ -158,28 +168,42 @@ async function resolveManagedPendingTransaction({
       case RelayExecutionStatus.Reverted:
         return {
           kind: 'settled',
+          relayStatus,
           transaction: buildSettledTransaction(trackedTransaction, TransactionStatus.failed),
         };
 
       default:
-        if (!hasOriginTxHash) {
-          return { kind: 'pending', transaction: toPendingTransaction(trackedTransaction) };
+        if (isSettledStatus(transaction.status)) {
+          return {
+            kind: 'settled',
+            relayStatus,
+            transaction: buildSettledTransaction(trackedTransaction, transaction.status),
+          };
         }
 
-        return resolveOnchainPendingTransaction({
-          abortController,
-          address,
-          currency,
-          transaction: trackedTransaction,
-        });
+        if (isAwaitingOriginTxHash) {
+          return { kind: 'pending', relayStatus, transaction: toPendingTransaction(trackedTransaction) };
+        }
+
+        return {
+          ...(await resolveOnchainPendingTransaction({
+            abortController,
+            address,
+            currency,
+            transaction: trackedTransaction,
+          })),
+          relayStatus,
+        };
     }
   } catch (e) {
-    logger.error(new RainbowError('[resolvePendingTransaction]: Failed to fetch managed relay execution status', e), {
+    logger.error(new RainbowError('[resolveTrackedTransaction]: Failed to fetch managed relay execution status', e), {
       executionId: transaction.relayExecutionId,
     });
-    return { kind: 'pending', transaction: toPendingTransaction(transaction) };
+    return preserveTrackedTransaction(transaction);
   }
 }
+
+// ============ Helpers ======================================================= //
 
 function applyTransactionUpdates(
   original: RainbowTransaction,
@@ -190,12 +214,13 @@ function applyTransactionUpdates(
   const settledStatus = readSettledStatus(original, fetched);
   if (!settledStatus) return toPendingTransaction(original);
 
-  const prefersLocalTransaction = shouldPreferLocalTransaction(original.type);
+  const preferLocalTransaction = shouldPreferLocalTransaction(original.type);
+
   if (!isMinedTransaction(fetched)) {
-    return prefersLocalTransaction ? buildSettledTransaction(original, settledStatus) : { ...original, ...fetched, status: settledStatus };
+    return preferLocalTransaction ? buildSettledTransaction(original, settledStatus) : { ...original, ...fetched, status: settledStatus };
   }
 
-  return prefersLocalTransaction ? mergePreferredLocalMinedTransaction(original, fetched) : fetched;
+  return preferLocalTransaction ? mergePreferredLocalMinedTransaction(original, fetched) : fetched;
 }
 
 function toPendingTransaction(transaction: RainbowTransaction): PendingTransaction {
@@ -212,15 +237,33 @@ function toPendingTransaction(transaction: RainbowTransaction): PendingTransacti
   };
 }
 
-function buildSettledTransaction(transaction: RainbowTransaction, status: SettledTransaction['status']): SettledTransaction {
+function preserveTrackedTransaction(transaction: RainbowTransaction): TrackedTransactionResolution {
+  if (isSettledStatus(transaction.status)) {
+    return {
+      kind: 'settled',
+      transaction: buildSettledTransaction(transaction, transaction.status),
+    };
+  }
+
   return {
-    ...transaction,
-    status,
-    title: buildTransactionTitle(transaction.type, status),
+    kind: 'pending',
+    transaction: toPendingTransaction(transaction),
   };
 }
 
-function shouldPreferLocalTransaction(originalType: RainbowTransaction['type']): boolean {
+function buildSettledTransaction(transaction: RainbowTransaction, status: SettledTransaction['status']): SettledTransaction {
+  const title = buildTransactionTitle(transaction.type, status);
+
+  if (isMatchingSettledTransaction(transaction, status, title)) return transaction;
+
+  return {
+    ...transaction,
+    status,
+    title,
+  };
+}
+
+function shouldPreferLocalTransaction(originalType: TransactionType): boolean {
   switch (originalType) {
     case 'bridge':
     case 'cancel':
@@ -232,27 +275,9 @@ function shouldPreferLocalTransaction(originalType: RainbowTransaction['type']):
   }
 }
 
-function isSettledStatus(status: TransactionStatus): status is SettledTransaction['status'] {
-  return status === TransactionStatus.confirmed || status === TransactionStatus.failed;
-}
-
-function isPendingTransaction(transaction: RainbowTransaction): transaction is PendingTransaction {
-  return transaction.status === TransactionStatus.pending;
-}
-
 function readSettledStatus(original: RainbowTransaction, fetched: RainbowTransaction): SettledTransaction['status'] | null {
   const status = isValidTransactionStatus(fetched.status) ? fetched.status : original.status;
   return isSettledStatus(status) ? status : null;
-}
-
-function isMinedTransaction(transaction: RainbowTransaction | null): transaction is MinedTransaction {
-  return (
-    transaction !== null &&
-    transaction.status !== TransactionStatus.pending &&
-    typeof transaction.blockNumber === 'number' &&
-    typeof transaction.confirmations === 'number' &&
-    typeof transaction.minedAt === 'number'
-  );
 }
 
 function mergePreferredLocalMinedTransaction(original: RainbowTransaction, fetched: MinedTransaction): MinedTransaction {
@@ -269,12 +294,30 @@ function mergePreferredLocalMinedTransaction(original: RainbowTransaction, fetch
   };
 }
 
-function readOriginTxHash(status: RelayStatusSnapshot): `0x${string}` | undefined {
-  return status.onchain?.origin.txHashes[0];
+// ============ Type Checks =================================================== //
+
+function isMinedTransaction(transaction: RainbowTransaction | null): transaction is MinedTransaction {
+  return (
+    transaction !== null &&
+    transaction.status !== TransactionStatus.pending &&
+    typeof transaction.blockNumber === 'number' &&
+    typeof transaction.confirmations === 'number' &&
+    typeof transaction.minedAt === 'number'
+  );
 }
 
-function bindManagedOriginTxHash(transaction: RainbowTransaction, txHash: `0x${string}` | undefined): RainbowTransaction {
-  if (!txHash || transaction.hash === txHash) return transaction;
+function isSettledStatus(status: TransactionStatus): status is SettledTransaction['status'] {
+  return status === TransactionStatus.confirmed || status === TransactionStatus.failed;
+}
 
-  return { ...transaction, hash: txHash };
+function isPendingTransaction(transaction: RainbowTransaction): transaction is PendingTransaction {
+  return transaction.status === TransactionStatus.pending;
+}
+
+function isMatchingSettledTransaction(
+  transaction: RainbowTransaction,
+  status: SettledTransaction['status'],
+  title: string
+): transaction is SettledTransaction {
+  return transaction.status === status && transaction.title === title;
 }
