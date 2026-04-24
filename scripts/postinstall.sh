@@ -86,7 +86,7 @@ fi
 
 if [ -n "$RAINBOW_SCRIPTS_APP_IOS_PREBUILD_HOOK" ]; then
   if [ -n "$CI" ]; then
-    bash -c "$RAINBOW_SCRIPTS_APP_IOS_PREBUILD_HOOK" > /dev/null 2>&1;
+    bash -c "$RAINBOW_SCRIPTS_APP_IOS_PREBUILD_HOOK" > /dev/null;
   else
     if bash -c "$RAINBOW_SCRIPTS_APP_IOS_PREBUILD_HOOK"; then
       echo "✅ executed ios prebuild hook"
@@ -98,7 +98,7 @@ fi
 
 if [ -n "$RAINBOW_SCRIPTS_APP_ANDROID_PREBUILD_HOOK" ]; then
   if [ -n "$CI" ]; then
-    bash -c "$RAINBOW_SCRIPTS_APP_ANDROID_PREBUILD_HOOK" > /dev/null 2>&1;
+    bash -c "$RAINBOW_SCRIPTS_APP_ANDROID_PREBUILD_HOOK" > /dev/null;
   else
     if bash -c "$RAINBOW_SCRIPTS_APP_ANDROID_PREBUILD_HOOK"; then
       echo "✅ executed android prebuild hook"

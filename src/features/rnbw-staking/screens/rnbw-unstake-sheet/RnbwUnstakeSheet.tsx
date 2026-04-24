@@ -9,7 +9,7 @@ import ButtonPressAnimation from '@/components/animations/ButtonPressAnimation';
 import { PanelSheet } from '@/components/PanelSheet/PanelSheet';
 import { RnbwCoinIcon } from '@/components/RnbwCoinIcon';
 import { Box, globalColors, Separator, Stack, Text, useForegroundColor } from '@/design-system';
-import { RnbwHoldToActivateButton } from '@/features/rnbw-membership/components/RnbwHoldToActivateButton';
+import { RnbwHoldToActivateButton } from '@/features/rnbw-membership/components/RnbwButton/RnbwHoldToActivateButton';
 import { RNBW_SYMBOL } from '@/features/rnbw-rewards/constants';
 import { UnstakePenaltySign } from '@/features/rnbw-staking/components/UnstakePenaltySign';
 import { LoadingSpinner } from '@/framework/ui/components/LoadingSpinner';

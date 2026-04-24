@@ -27,7 +27,11 @@ tags:
     when:
       platform: Android
     commands:
-      - assertVisible: '(Sign in|Choose an account)'
+      # Google may show a new "Sign in with ease" phone-lookup interstitial
+      # before the account picker — accept it as confirmation that the
+      # login flow opened. We're about to press back to cancel anyway
+      # since this test is for manual backup, not cloud backup.
+      - assertVisible: '(Sign in|Choose an account|Sign in with ease)'
       # On certain android versions this requires backing twice.
       - retry:
           maxRetries: 2

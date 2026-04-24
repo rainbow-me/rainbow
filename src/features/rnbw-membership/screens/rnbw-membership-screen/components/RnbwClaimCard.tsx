@@ -3,7 +3,7 @@ import { Image, StyleSheet } from 'react-native';
 
 import rnbwCoinImage from '@/assets/rnbw.png';
 import { Box, Text } from '@/design-system';
-import { RnbwThemedButton } from '@/features/rnbw-membership/components/RnbwThemedButton';
+import { RnbwButton } from '@/features/rnbw-membership/components/RnbwButton/RnbwButton';
 import { MembershipCard } from '@/features/rnbw-membership/screens/rnbw-membership-screen/components/MembershipCard';
 import { RNBW_SYMBOL } from '@/features/rnbw-rewards/constants';
 import * as i18n from '@/languages';
@@ -32,7 +32,7 @@ export const RnbwClaimCard = memo(function RnbwClaimCard({ tokenAmount, nativeCu
               {`${tokenAmount} ${RNBW_SYMBOL}`}
             </Text>
           </Box>
-          <RnbwThemedButton onPress={onPressClaim} label={i18n.t(i18n.l.button.claim)} containerStyle={{ paddingHorizontal: 16 }} />
+          <RnbwButton onPress={onPressClaim} label={i18n.t(i18n.l.button.claim)} containerStyle={{ paddingHorizontal: 16 }} />
         </Box>
       </Box>
     </MembershipCard>

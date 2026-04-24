@@ -9,7 +9,7 @@ import { RnbwCoinIcon } from '@/components/RnbwCoinIcon';
 import SheetHandleFixedToTop from '@/components/sheet/SheetHandleFixedToTop';
 import { Box, Text, useColorMode, useForegroundColor } from '@/design-system';
 import { ProgressMeter } from '@/features/rnbw-membership/components/ProgressMeter';
-import { RnbwThemedButton } from '@/features/rnbw-membership/components/RnbwThemedButton';
+import { RnbwButton } from '@/features/rnbw-membership/components/RnbwButton/RnbwButton';
 import { UnstakePenaltySign } from '@/features/rnbw-staking/components/UnstakePenaltySign';
 import { useStakingPositionStore } from '@/features/rnbw-staking/stores/rnbwStakingPositionStore';
 import { LoadingSpinner } from '@/framework/ui/components/LoadingSpinner';
@@ -83,7 +83,7 @@ export const RnbwStakingLearnScreen = memo(function RnbwStakingLearnScreen() {
               />
             </Box>
           </Box>
-          <RnbwThemedButton
+          <RnbwButton
             onPress={navigateToStakingScreen}
             label={i18n.t(i18n.l.rnbw_staking.learn_screen.enable_staking)}
             height={48}

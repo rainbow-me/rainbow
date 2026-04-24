@@ -4,16 +4,16 @@ import { PixelRatio, StyleSheet, View, type LayoutChangeEvent, type StyleProp, t
 import { Canvas, dist, Group, mixVector, Path, PathOp, point, Shadow, Skia, toDegrees } from '@shopify/react-native-skia';
 
 import { Box, useColorMode, type Space } from '@/design-system';
+import { getValueForColorMode } from '@/design-system/color/palettes';
+import { MEMBERSHIP_CARD_BACKGROUND_COLOR } from '@/features/rnbw-membership/membershipCardTheme';
 import { THICK_BORDER_WIDTH } from '@/styles/constants';
 
 import {
   MEMBERSHIP_CARD_BORDER_RADIUS,
   MEMBERSHIP_CARD_DARK_CUTOUT_BORDER,
-  MEMBERSHIP_CARD_DARK_FILL,
   MEMBERSHIP_CARD_DARK_INNER_SHADOW,
   MEMBERSHIP_CARD_LIGHT_CUTOUT_BORDER,
   MEMBERSHIP_CARD_LIGHT_DROP_SHADOW,
-  MEMBERSHIP_CARD_LIGHT_FILL,
 } from './membershipCardVisuals';
 
 const DEFAULT_NOTCH_HEIGHT = 56;
@@ -80,8 +80,9 @@ export const NotchedMembershipCard = memo(function NotchedMembershipCard({
   notchWidth,
   style,
 }: NotchedMembershipCardProps) {
-  const { isDarkMode } = useColorMode();
+  const { isDarkMode, colorMode } = useColorMode();
   const [cardHeight, setCardHeight] = useState(0);
+  const membershipCardBackgroundColor = getValueForColorMode(MEMBERSHIP_CARD_BACKGROUND_COLOR, colorMode);
   // Skia clips drawing to the canvas bounds, so the light-mode drop shadow needs extra
   // surface area based on its blur and offset to avoid getting cropped.
   const shadowOutsets = isDarkMode ? NO_SHADOW_OUTSETS : LIGHT_DROP_SHADOW_OUTSETS;
@@ -126,7 +127,7 @@ export const NotchedMembershipCard = memo(function NotchedMembershipCard({
             <Group antiAlias dither transform={[{ translateX: shadowOutsets.left }, { translateY: shadowOutsets.top }]}>
               {isDarkMode ? (
                 <>
-                  <Path path={notchedCardPath} color={MEMBERSHIP_CARD_DARK_FILL} />
+                  <Path path={notchedCardPath} color={membershipCardBackgroundColor} />
                   <Path path={notchedCardPath} style="stroke" strokeWidth={THICK_BORDER_WIDTH} color={MEMBERSHIP_CARD_DARK_CUTOUT_BORDER} />
                   <Path path={notchedCardPath}>
                     <Shadow
@@ -150,7 +151,7 @@ export const NotchedMembershipCard = memo(function NotchedMembershipCard({
                       shadowOnly
                     />
                   </Path>
-                  <Path path={notchedCardPath} color={MEMBERSHIP_CARD_LIGHT_FILL} />
+                  <Path path={notchedCardPath} color={membershipCardBackgroundColor} />
                   <Path
                     path={notchedCardPath}
                     style="stroke"

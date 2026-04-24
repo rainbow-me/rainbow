@@ -1,19 +1,17 @@
 import type { ReactNode } from 'react';
 import { StyleSheet } from 'react-native';
 
-import { LinearGradient } from 'expo-linear-gradient';
-
 import { GradientBorderView } from '@/components/gradient-border/GradientBorderView';
 import { Border, Box, useColorMode, type Space } from '@/design-system';
+import { getValueForColorMode } from '@/design-system/color/palettes';
 import { InnerShadow } from '@/features/polymarket/components/InnerShadow';
+import { MEMBERSHIP_CARD_BACKGROUND_COLOR } from '@/features/rnbw-membership/membershipCardTheme';
 
 import {
   MEMBERSHIP_CARD_BORDER_RADIUS,
-  MEMBERSHIP_CARD_DARK_FILL,
   MEMBERSHIP_CARD_DARK_INNER_SHADOW,
   MEMBERSHIP_CARD_DARK_TOP_HIGHLIGHT,
   MEMBERSHIP_CARD_LIGHT_BORDER_GRADIENT,
-  MEMBERSHIP_CARD_LIGHT_FILL,
   MEMBERSHIP_CARD_LIGHT_GRADIENT_END,
   MEMBERSHIP_CARD_LIGHT_GRADIENT_START,
 } from './membershipCardVisuals';
@@ -37,12 +35,13 @@ export function MembershipCard({
   paddingTop,
   paddingBottom,
 }: MembershipCardProps) {
-  const { isDarkMode } = useColorMode();
+  const { isDarkMode, colorMode } = useColorMode();
+  const backgroundColor = getValueForColorMode(MEMBERSHIP_CARD_BACKGROUND_COLOR, colorMode);
 
   if (isDarkMode) {
     return (
       <Box
-        backgroundColor={MEMBERSHIP_CARD_DARK_FILL}
+        backgroundColor={backgroundColor}
         borderRadius={borderRadius}
         padding={padding}
         paddingHorizontal={paddingHorizontal}
@@ -73,19 +72,13 @@ export function MembershipCard({
     >
       <Box
         borderRadius={borderRadius}
-        background={'surfaceSecondary'}
+        backgroundColor={backgroundColor}
         padding={padding}
         paddingHorizontal={paddingHorizontal}
         paddingVertical={paddingVertical}
         paddingTop={paddingTop}
         paddingBottom={paddingBottom}
       >
-        <LinearGradient
-          colors={[MEMBERSHIP_CARD_LIGHT_FILL, MEMBERSHIP_CARD_LIGHT_FILL]}
-          start={MEMBERSHIP_CARD_LIGHT_GRADIENT_START}
-          end={MEMBERSHIP_CARD_LIGHT_GRADIENT_END}
-          style={StyleSheet.absoluteFill}
-        />
         {children}
       </Box>
     </GradientBorderView>

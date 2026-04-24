@@ -62,7 +62,16 @@ patched by the postinstall script from `GOOGLE_SERVICE_API_KEY` in your `.env`.
 
 ### iOS (macOS only)
 
-1. Install Xcode from the Mac App Store.
+1. Install the Xcode version pinned in [`.xcode-version`](./.xcode-version).
+   Recommended: use the [`xcodes`](https://github.com/XcodesOrg/xcodes) CLI,
+   which reads `.xcode-version` automatically:
+   ```sh
+   brew install xcodesorg/made/xcodes
+   xcodes install
+   ```
+   Alternatively, download the pinned version from
+   [developer.apple.com/download](https://developer.apple.com/download/all/).
+   CI and Bitrise build against the same pin, so local parity matters.
 2. Install Watchman: `brew install watchman`
 3. Install the required bundles and Pods:
    ```

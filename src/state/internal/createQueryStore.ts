@@ -321,6 +321,10 @@ export function createQueryStore<
       const isPartialFunction = typeof partial === 'function';
       if (isPartialFunction || partial.enabled !== undefined) {
         let handleNewEnabled: (() => void) | undefined;
+        // @ts-expect-error — the outer setState's overloads enforce the
+        // correct partial/replace pairing at the caller boundary; inside
+        // the impl TS sees the union of both overloads and can't match
+        // either of zustand v5's narrowed setState overloads.
         originalSet(state => {
           const newPartial = isPartialFunction ? partial(state) : partial;
           const newEnabled = newPartial.enabled !== undefined ? newPartial.enabled : state.enabled;
@@ -329,6 +333,8 @@ export function createQueryStore<
         }, replace);
         handleNewEnabled?.();
       } else {
+        // @ts-expect-error — see the block above for why this forwarder
+        // call can't satisfy zustand v5's narrowed setState overloads.
         originalSet(partial, replace);
       }
     };

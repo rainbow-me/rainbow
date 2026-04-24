@@ -12,10 +12,12 @@ import { useHoldToActivate } from '@/components/buttons/useHoldToActivate';
 import { LedgerIcon } from '@/components/icons/svg/LedgerIcon';
 import { type TextProps } from '@/design-system';
 import { IS_ANDROID } from '@/env';
+import { RNBW_BUTTON_CONFIG } from '@/features/rnbw-membership/rnbwButtonTheme';
 import { LoadingSpinner } from '@/framework/ui/components/LoadingSpinner';
 import { useWalletsStore } from '@/state/wallets/walletsStore';
 
-import { RNBW_BUTTON_CONFIG, RnbwButtonSurface, RnbwButtonText } from './RnbwButtonSurface';
+import { RnbwButtonSurface } from './RnbwButtonSurface';
+import { RnbwButtonText } from './RnbwButtonText';
 
 type RnbwHoldToActivateButtonProps = {
   variant?: 'primary' | 'secondary';

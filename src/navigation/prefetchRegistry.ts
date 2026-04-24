@@ -1,5 +1,6 @@
 import { polymarketChartsActions } from '@/features/charts/polymarket/stores/polymarketStore';
 import { prefetchCandlestickData } from '@/features/charts/stores/candlestickStore';
+import { usePerpAnnotationsStore } from '@/features/perps/stores/perpAnnotationsStore';
 import { prefetchPolymarketEvent } from '@/features/polymarket/stores/polymarketEventStore';
 import { prefetchPolymarketFeeInfo } from '@/features/polymarket/stores/polymarketFeeInfoStore';
 import { usePolymarketOrderBookStore } from '@/features/polymarket/stores/polymarketOrderBookStore';
@@ -21,6 +22,7 @@ export const prefetchRegistry = deepFreeze<PrefetchRegistry>({
 
   [Routes.PERPS_DETAIL_SCREEN]: ({ market }) => {
     prefetchCandlestickData(market.symbol);
+    usePerpAnnotationsStore.getState().setSymbol(market.symbol);
   },
 
   [Routes.POLYMARKET_EVENT_SCREEN]: ({ eventId, event }) => {
