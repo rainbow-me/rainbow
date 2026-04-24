@@ -170,6 +170,10 @@ async function initializeApplication() {
   Sentry.setUser({ id: deviceId });
   analytics.init({ deviceId });
   analytics.identify({ installSource: DANGER_INSTALL_SOURCE });
+  // Paired probe event. Lets us distinguish "identify trait dropped by pipeline"
+  // from "whole session too short to flush" by comparing track delivery to
+  // user-property delivery in Amplitude. Remove after FEPLAT-67 wraps up.
+  analytics.track(analytics.event.debugIdentifyProbe, { probe: 'installSource', value: String(DANGER_INSTALL_SOURCE) });
 
   await Promise.all([
     initializeRemoteConfig(),

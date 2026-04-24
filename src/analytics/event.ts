@@ -76,6 +76,7 @@ export const event = {
   appStateChange: 'State change',
   analyticsTrackingDisabled: 'analytics_tracking.disabled',
   analyticsTrackingEnabled: 'analytics_tracking.enabled',
+  debugIdentifyProbe: 'debug.identify_probe',
   swapSubmitted: 'Submitted Swap',
   cardPressed: 'card.pressed',
   learnArticleOpened: 'learn_article.opened',
@@ -404,6 +405,10 @@ export type EventProperties = {
   };
   [event.analyticsTrackingDisabled]: undefined;
   [event.analyticsTrackingEnabled]: undefined;
+  [event.debugIdentifyProbe]: {
+    probe: 'installSource' | 'currency';
+    value: string;
+  };
   [event.swapSubmitted]: {
     usdValue: number;
     inputCurrencySymbol: string;
