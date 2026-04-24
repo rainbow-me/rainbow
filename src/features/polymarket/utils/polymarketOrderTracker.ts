@@ -1,7 +1,6 @@
 import { type OpenOrder } from '@polymarket/clob-client-v2';
 
 import { analytics } from '@/analytics';
-import { USD_FEE_PER_TOKEN } from '@/features/polymarket/constants';
 import { getPolymarketClobClient } from '@/features/polymarket/stores/derived/usePolymarketClients';
 import { type SuccessfulOrderResult } from '@/features/polymarket/utils/orders';
 import { divWorklet, mulWorklet } from '@/framework/core/safeMath';
@@ -21,6 +20,7 @@ type OrderTrackingContext = {
   outcome: string;
   tokenId: string;
   side: 'buy' | 'sell';
+  estimatedFeeAmountUsd?: number | string;
   bestPriceUsd: number | string;
   orderPriceUsd: number | string;
   spread?: number | string;
@@ -109,7 +109,7 @@ function getMatchedAmountsFromOrder(order: OpenOrder) {
 }
 
 function trackMatchedOrder(context: OrderTrackingContext, amounts: MatchedAmounts) {
-  const feeAmountUsd = mulWorklet(amounts.tokens, USD_FEE_PER_TOKEN);
+  const feeAmountUsd = context.estimatedFeeAmountUsd !== undefined ? String(context.estimatedFeeAmountUsd) : '0';
 
   analytics.track(analytics.event.predictionsPlaceOrder, {
     eventSlug: context.eventSlug,

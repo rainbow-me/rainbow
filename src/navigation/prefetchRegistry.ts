@@ -1,6 +1,7 @@
 import { polymarketChartsActions } from '@/features/charts/polymarket/stores/polymarketStore';
 import { prefetchCandlestickData } from '@/features/charts/stores/candlestickStore';
 import { prefetchPolymarketEvent } from '@/features/polymarket/stores/polymarketEventStore';
+import { prefetchPolymarketFeeInfo } from '@/features/polymarket/stores/polymarketFeeInfoStore';
 import { usePolymarketOrderBookStore } from '@/features/polymarket/stores/polymarketOrderBookStore';
 import Routes, { type Route } from '@/navigation/routesNames';
 import { type RootStackParamList } from '@/navigation/types';
@@ -39,10 +40,12 @@ export const prefetchRegistry = deepFreeze<PrefetchRegistry>({
   [Routes.POLYMARKET_NEW_POSITION_SHEET]: ({ market, outcomeIndex }) => {
     const tokenId = market.clobTokenIds[outcomeIndex];
     usePolymarketOrderBookStore.getState().setTokenId(tokenId);
+    void prefetchPolymarketFeeInfo(market.conditionId);
   },
 
   [Routes.POLYMARKET_SELL_POSITION_SHEET]: ({ position }) => {
     const tokenId = position.clobTokenIds[position.outcomes.indexOf(position.outcome)];
     usePolymarketOrderBookStore.getState().setTokenId(tokenId);
+    void prefetchPolymarketFeeInfo(position.conditionId);
   },
 });

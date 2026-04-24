@@ -2,9 +2,9 @@ import React, { memo } from 'react';
 import { StyleSheet, type StyleProp, type ViewStyle } from 'react-native';
 
 import chroma from 'chroma-js';
-import Animated, { FadeIn, FadeOut, LinearTransition } from 'react-native-reanimated';
+import Animated from 'react-native-reanimated';
 
-import { SPRING_CONFIGS } from '@/components/animations/animationConfigs';
+import { layoutAnimations } from '@/components/animations/animationConfigs';
 import { useBiometryIconString } from '@/components/buttons/BiometricButtonContent';
 import { GestureHandlerButton } from '@/components/buttons/GestureHandlerButton';
 import { HoldToActivateProgress } from '@/components/buttons/HoldToActivateProgress';
@@ -14,18 +14,8 @@ import { type TextProps } from '@/design-system';
 import { IS_ANDROID } from '@/env';
 import { LoadingSpinner } from '@/framework/ui/components/LoadingSpinner';
 import { useWalletsStore } from '@/state/wallets/walletsStore';
-import { time } from '@/utils/time';
 
 import { RNBW_BUTTON_CONFIG, RnbwButtonSurface, RnbwButtonText } from './RnbwButtonSurface';
-
-const LAYOUT_ANIMATION_CONFIG = SPRING_CONFIGS.snappierSpringConfig;
-const LAYOUT_ANIMATION = LinearTransition.springify()
-  .mass(LAYOUT_ANIMATION_CONFIG.mass)
-  .damping(LAYOUT_ANIMATION_CONFIG.damping)
-  .stiffness(LAYOUT_ANIMATION_CONFIG.stiffness);
-
-const SPINNER_ENTER = FadeIn.delay(time.ms(400)).duration(time.ms(150));
-const SPINNER_EXIT = FadeOut.duration(time.ms(150));
 
 type RnbwHoldToActivateButtonProps = {
   variant?: 'primary' | 'secondary';
@@ -82,11 +72,15 @@ export const RnbwHoldToActivateButton = memo(function RnbwHoldToActivateButton({
       <RnbwButtonSurface variant={variant} height={height}>
         <HoldToActivateProgress holdProgress={holdProgress} color={midpointBackgroundColor} />
         {isProcessing && (
-          <Animated.View entering={SPINNER_ENTER} exiting={SPINNER_EXIT} style={styles.spinnerContainer}>
+          <Animated.View
+            entering={layoutAnimations.buttonContent.entering}
+            exiting={layoutAnimations.buttonContent.exiting}
+            style={styles.spinnerContainer}
+          >
             <LoadingSpinner color={midpointTextColor} />
           </Animated.View>
         )}
-        <Animated.View layout={LAYOUT_ANIMATION} style={styles.labelContainer}>
+        <Animated.View layout={layoutAnimations.buttonContent.layout} style={styles.labelContainer}>
           {isHardwareWallet && showBiometryIcon && !isProcessing && <LedgerIcon color={RNBW_BUTTON_CONFIG.primary.text.colors[0]} />}
           <RnbwButtonText variant={variant} size={size} weight={weight}>
             {displayLabel}

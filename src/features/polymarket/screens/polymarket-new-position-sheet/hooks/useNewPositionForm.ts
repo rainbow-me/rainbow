@@ -1,6 +1,7 @@
-import { useMemo } from 'react';
+import { useEffect, useMemo } from 'react';
 
 import { usePolymarketBalanceStore } from '@/features/polymarket/stores/polymarketBalanceStore';
+import { prefetchPolymarketFeeInfo } from '@/features/polymarket/stores/polymarketFeeInfoStore';
 import { toPercentageWorklet } from '@/framework/core/safeMath';
 import { useStableValue } from '@/hooks/useStableValue';
 
@@ -9,16 +10,21 @@ import { createOrderFormStore } from '../stores/createOrderFormStore';
 import { useOrderValidation } from './useOrderValidation';
 
 type UseNewPositionFormParams = {
+  conditionId: string;
   tokenId: string;
 };
 
-export function useNewPositionForm({ tokenId }: UseNewPositionFormParams) {
+export function useNewPositionForm({ tokenId, conditionId }: UseNewPositionFormParams) {
   const liveAvailableBalance = usePolymarketBalanceStore(state => state.getBalance());
   const availableBalance = useStableValue(() => liveAvailableBalance);
 
+  useEffect(() => {
+    void prefetchPolymarketFeeInfo(conditionId);
+  }, [conditionId]);
+
   const { orderFormStore, executionStore } = useStableValue(() => {
     const orderFormStore = createOrderFormStore();
-    const executionStore = createOrderExecutionStore(orderFormStore, tokenId);
+    const executionStore = createOrderExecutionStore(orderFormStore, tokenId, conditionId);
     return { orderFormStore, executionStore };
   });
 

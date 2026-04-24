@@ -17,13 +17,13 @@ import { PolymarketOutcomeCard } from '@/features/polymarket/components/Polymark
 import { POLYMARKET_BACKGROUND_LIGHT } from '@/features/polymarket/constants';
 import { POLYMARKET_CLOB_API_ERRORS } from '@/features/polymarket/errors';
 import { useNewPositionForm } from '@/features/polymarket/screens/polymarket-new-position-sheet/hooks/useNewPositionForm';
-import { usePolymarketAccountValueSummary } from '@/features/polymarket/stores/derived/usePolymarketAccountValueSummary';
 import { usePolymarketClients } from '@/features/polymarket/stores/derived/usePolymarketClients';
+import { usePolymarketBalanceStore } from '@/features/polymarket/stores/polymarketBalanceStore';
 import { getOutcomeDescriptions } from '@/features/polymarket/utils/getOutcomeDescriptions';
 import { marketBuyToken } from '@/features/polymarket/utils/orders';
 import { trackPolymarketOrder } from '@/features/polymarket/utils/polymarketOrderTracker';
 import { waitForPositionSizeUpdate } from '@/features/polymarket/utils/refetchPolymarketStores';
-import { mulWorklet, subWorklet, toFixedWorklet, trimTrailingZeros } from '@/framework/core/safeMath';
+import { mulWorklet, toFixedWorklet, trimTrailingZeros } from '@/framework/core/safeMath';
 import { opacity } from '@/framework/ui/utils/opacity';
 import * as i18n from '@/languages';
 import { ensureError, logger, RainbowError } from '@/logger';
@@ -40,7 +40,7 @@ export const PolymarketNewPositionSheet = memo(function PolymarketNewPositionShe
   const { isDarkMode } = useColorMode();
   const safeAreaInsets = useSafeAreaInsets();
 
-  const hasBalance = usePolymarketAccountValueSummary(state => state.hasBalance);
+  const hasBalance = usePolymarketBalanceStore(state => Number(state.getBalance()) > 0);
   const [isProcessing, setIsProcessing] = useState(false);
   const [processingLabel, setProcessingLabel] = useState(i18n.t(i18n.l.predictions.new_position.placing_bet));
 
@@ -67,7 +67,7 @@ export const PolymarketNewPositionSheet = memo(function PolymarketNewPositionShe
     averagePrice,
     hasNoLiquidityAtMarketPrice,
     hasInsufficientLiquidity,
-  } = useNewPositionForm({ tokenId });
+  } = useNewPositionForm({ tokenId, conditionId: market.conditionId });
 
   const hasBlockedLiquidity = hasNoLiquidityAtMarketPrice || hasInsufficientLiquidity;
   const noLiquidityTitle = hasNoLiquidityAtMarketPrice
@@ -91,9 +91,8 @@ export const PolymarketNewPositionSheet = memo(function PolymarketNewPositionShe
     if (hasBlockedLiquidity) return;
     if (checkIfReadOnlyWallet(usePolymarketClients.getState().address)) return;
     setIsProcessing(true);
-    const amountToBuy = subWorklet(buyAmount, fee);
     try {
-      const orderResult = await marketBuyToken({ tokenId, amount: amountToBuy, price: worstPrice });
+      const orderResult = await marketBuyToken({ tokenId, amount: buyAmount, price: worstPrice, negRisk: market.negRisk });
       setProcessingLabel(i18n.t(i18n.l.predictions.new_position.confirming_order));
       trackPolymarketOrder({
         orderResult,
@@ -103,6 +102,7 @@ export const PolymarketNewPositionSheet = memo(function PolymarketNewPositionShe
           outcome,
           tokenId,
           side: 'buy',
+          estimatedFeeAmountUsd: fee,
           spread,
           bestPriceUsd: bestPrice,
           orderPriceUsd: worstPrice,
@@ -137,7 +137,7 @@ export const PolymarketNewPositionSheet = memo(function PolymarketNewPositionShe
         eventSlug: event.slug,
         marketSlug: market.slug,
         outcome,
-        orderAmountUsd: Number(amountToBuy),
+        orderAmountUsd: Number(buyAmount),
         feeAmountUsd: Number(fee),
         orderPriceUsd: Number(worstPrice),
         tokenId,
@@ -147,7 +147,20 @@ export const PolymarketNewPositionSheet = memo(function PolymarketNewPositionShe
     } finally {
       setIsProcessing(false);
     }
-  }, [bestPrice, buyAmount, event.slug, fee, market.slug, outcome, spread, tokenId, worstPrice, fromRoute, hasBlockedLiquidity]);
+  }, [
+    bestPrice,
+    buyAmount,
+    event.slug,
+    fee,
+    market.negRisk,
+    market.slug,
+    outcome,
+    spread,
+    tokenId,
+    worstPrice,
+    fromRoute,
+    hasBlockedLiquidity,
+  ]);
 
   const handleDepositFunds = useCallback(() => {
     Navigation.handleAction(Routes.POLYMARKET_DEPOSIT_SCREEN);

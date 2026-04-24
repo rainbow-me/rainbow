@@ -354,9 +354,16 @@ export function useDepositHandler({
         }
 
         if (config.onSubmit) {
-          config.onSubmit(wallet).catch(error => {
-            logger.error(new RainbowError('[useDepositHandler]: onSubmit error', error));
-          });
+          config
+            .onSubmit(wallet, {
+              confirmationChainId: assetChainId,
+              expectedRawTargetAmount: validQuote.buyAmountDisplayMinimum?.toString() ?? validQuote.buyAmount?.toString(),
+              hash: result.hash,
+              isConfirmed: result.isConfirmed,
+            })
+            .catch(error => {
+              logger.error(new RainbowError('[useDepositHandler]: onSubmit error', error));
+            });
         }
 
         return {

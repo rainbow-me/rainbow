@@ -717,6 +717,9 @@ type RouteParams = {
   [Routes.POLYMARKET_EXPLAIN_SHEET]: {
     onDismiss?: () => void;
   };
+  [Routes.POLYMARKET_CONVERT_COLLATERAL_SHEET]: {
+    onSuccess?: () => void;
+  };
   [Routes.RNBW_REWARDS_CLAIM_SHEET]: undefined;
   [Routes.RNBW_REWARDS_ESTIMATE_SHEET]: {
     estimatedAmount: string;

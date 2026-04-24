@@ -1,5 +1,5 @@
-import { MaxUint256 } from '@ethersproject/constants';
 import { OperationType, RelayerTransactionState, type SafeTransaction } from '@polymarket/builder-relayer-client';
+import { BigNumber } from 'ethers';
 import { parseUnits } from 'ethers/lib/utils';
 
 import { analytics } from '@/analytics';
@@ -15,7 +15,9 @@ import { POLYGON_USDC_ADDRESS, POLYGON_USDC_DECIMALS } from './constants';
 import { getPolymarketRelayClient } from './stores/derived/usePolymarketClients';
 import { usePolymarketProxyAddress } from './stores/derived/usePolymarketProxyAddress';
 import { usePolymarketBalanceStore } from './stores/polymarketBalanceStore';
+import { buildEnsureUsdcBalanceTransactions } from './utils/collateral';
 import { awaitPolygonConfirmation } from './utils/confirmation';
+import { buildErc20ApprovalTransaction } from './utils/erc20Approval';
 import { erc20Interface } from './utils/erc20Interface';
 import { ensureProxyWalletIsDeployed } from './utils/proxyWallet';
 import { refetchPolymarketBalance } from './utils/refetchPolymarketStores';
@@ -91,15 +93,17 @@ async function executePolymarketWithdrawal(params: WithdrawalExecutorParams): Pr
 async function executeSameChainWithdrawal(amount: string, recipient: string): Promise<WithdrawalExecutionResult> {
   try {
     const client = await getPolymarketRelayClient();
-    const data = erc20Interface.encodeFunctionData('transfer', [recipient, parseUnits(amount, POLYGON_USDC_DECIMALS)]);
-    const tx: SafeTransaction = {
-      data,
-      operation: OperationType.Call,
-      to: POLYGON_USDC_ADDRESS,
-      value: '0',
-    };
+    const proxyAddress = usePolymarketProxyAddress.getState();
+    if (!proxyAddress) {
+      return { error: 'No proxy address available', success: false };
+    }
 
-    const response = await client.execute([tx], 'Withdraw USDC to wallet');
+    const rawAmount = parseUnits(amount, POLYGON_USDC_DECIMALS);
+    const transactions: SafeTransaction[] = [
+      ...(await buildEnsureUsdcBalanceTransactions({ amount: rawAmount, proxyAddress })),
+      buildUsdcTransferTransaction({ amount: rawAmount, recipient }),
+    ];
+    const response = await client.execute(transactions, 'Withdraw USDC.e to wallet');
 
     if (response.state === RelayerTransactionState.STATE_FAILED || response.state === RelayerTransactionState.STATE_INVALID) {
       return { error: `Relayer rejected: ${response.state}`, success: false };
@@ -128,15 +132,16 @@ async function executeQuotedWithdrawal(quote: NonNullable<WithdrawalExecutorPara
 
   try {
     const client = await getPolymarketRelayClient();
-    const transactions: SafeTransaction[] = [];
+    const proxyAddress = usePolymarketProxyAddress.getState();
+    if (!proxyAddress) {
+      return { error: 'No proxy address available', success: false };
+    }
+
+    const sellAmount = BigNumber.from(quote.sellAmount);
+    const transactions: SafeTransaction[] = await buildEnsureUsdcBalanceTransactions({ amount: sellAmount, proxyAddress });
 
     if (quote.allowanceNeeded && quote.allowanceTarget) {
-      transactions.push({
-        data: erc20Interface.encodeFunctionData('approve', [quote.allowanceTarget, MaxUint256]),
-        operation: OperationType.Call,
-        to: POLYGON_USDC_ADDRESS,
-        value: '0',
-      });
+      transactions.push(buildErc20ApprovalTransaction({ spender: quote.allowanceTarget, tokenAddress: POLYGON_USDC_ADDRESS }));
     }
 
     transactions.push({
@@ -167,6 +172,15 @@ async function executeQuotedWithdrawal(quote: NonNullable<WithdrawalExecutorPara
 }
 
 // ============ Helpers ======================================================== //
+
+function buildUsdcTransferTransaction({ amount, recipient }: { amount: BigNumber; recipient: string }): SafeTransaction {
+  return {
+    data: erc20Interface.encodeFunctionData('transfer', [recipient, amount]),
+    operation: OperationType.Call,
+    to: POLYGON_USDC_ADDRESS,
+    value: '0',
+  };
+}
 
 function handleExecutorError(error: unknown, context: string): WithdrawalExecutionResult {
   const message = error instanceof Error ? error.message : 'Unknown error';

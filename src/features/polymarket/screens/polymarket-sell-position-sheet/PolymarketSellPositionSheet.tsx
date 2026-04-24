@@ -1,4 +1,4 @@
-import { memo, useCallback, useMemo, useState } from 'react';
+import { memo, useCallback, useEffect, useMemo, useState } from 'react';
 import { Alert, StyleSheet, View } from 'react-native';
 
 import { useRoute, type RouteProp } from '@react-navigation/native';
@@ -64,7 +64,10 @@ export const PolymarketSellPositionSheet = memo(function PolymarketSellPositionS
     ? ([opacity(accentColor, 0.22), opacity(accentColor, 0)] as const)
     : ([opacity(accentColor, 0), opacity(accentColor, 0.06)] as const);
 
-  const executionStore = useMemo(() => createSellExecutionStore(tokenId, sellAmountTokens), [tokenId, sellAmountTokens]);
+  const executionStore = useMemo(
+    () => createSellExecutionStore(tokenId, sellAmountTokens, position.conditionId),
+    [position.conditionId, sellAmountTokens, tokenId]
+  );
   const { worstPrice, bestPrice, expectedPayoutUsd, averagePrice, fee, spread, hasNoLiquidityAtMarketPrice, hasInsufficientLiquidity } =
     executionStore(state => state);
   const hasBlockedLiquidity = hasNoLiquidityAtMarketPrice || hasInsufficientLiquidity;
@@ -99,6 +102,8 @@ export const PolymarketSellPositionSheet = memo(function PolymarketSellPositionS
           outcome: position.outcome,
           tokenId: position.asset,
           side: 'sell',
+          estimatedFeeAmountUsd: fee,
+          spread,
           orderPriceUsd: worstPrice,
           bestPriceUsd: bestPrice,
         },
@@ -117,12 +122,13 @@ export const PolymarketSellPositionSheet = memo(function PolymarketSellPositionS
         tokenId: position.asset,
         side: 'sell',
         errorMessage: error.message,
+        feeAmountUsd: Number(fee),
         orderPriceUsd: Number(worstPrice),
       });
     } finally {
       setIsProcessing(false);
     }
-  }, [position, worstPrice, bestPrice, hasBlockedLiquidity]);
+  }, [bestPrice, fee, hasBlockedLiquidity, position, spread, worstPrice]);
 
   return (
     <PanelSheet innerBorderWidth={1} panelStyle={{ backgroundColor: isDarkMode ? globalColors.grey100 : POLYMARKET_BACKGROUND_LIGHT }}>

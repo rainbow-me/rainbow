@@ -3674,6 +3674,14 @@
           }
         }
       },
+      "wrap_collateral": {
+        "title": "Convert your balance from USDC to pUSD",
+        "subtitle": "Polymarket now uses pUSD. Convert your balance now to keep trading.",
+        "button": "Convert Now",
+        "loading": "Converting...",
+        "error_title": "Unable to Convert Balance",
+        "error_message": "Please try again."
+      },
       "navbar": {
         "title": "Predictions"
       },

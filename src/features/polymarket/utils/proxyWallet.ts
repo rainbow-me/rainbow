@@ -4,18 +4,18 @@ import { ethers, Wallet } from 'ethers';
 
 import {
   BUILDER_CONFIG,
-  POLYGON_USDC_ADDRESS,
   POLYMARKET_CTF_ADDRESS,
   POLYMARKET_CTF_EXCHANGE_ADDRESS,
   POLYMARKET_NEG_RISK_ADAPTER_ADDRESS,
   POLYMARKET_NEG_RISK_CTF_EXCHANGE_ADDRESS,
+  POLYMARKET_PUSD_ADDRESS,
   POLYMARKET_RELAYER_PROXY_URL,
 } from '@/features/polymarket/constants';
-import { getPolymarketRelayClient, usePolymarketClients } from '@/features/polymarket/stores/derived/usePolymarketClients';
-import { erc20Interface, erc1155Interface } from '@/features/polymarket/utils/erc20Interface';
+import { getPolymarketRelayClient } from '@/features/polymarket/stores/derived/usePolymarketClients';
+import { getMissingErc20ApprovalTransaction } from '@/features/polymarket/utils/erc20Approval';
+import { erc1155Interface } from '@/features/polymarket/utils/erc20Interface';
 import { getProvider } from '@/handlers/web3';
 import { logger, RainbowError } from '@/logger';
-import erc20ABI from '@/references/erc20-abi.json';
 import { ChainId } from '@rainbow-me/swaps';
 
 import { awaitPolygonConfirmation } from './confirmation';
@@ -26,8 +26,6 @@ import { awaitPolygonConfirmation } from './confirmation';
 
 const polygonProvider = getProvider({ chainId: ChainId.polygon });
 
-const usdcContract = new ethers.Contract(POLYGON_USDC_ADDRESS, erc20ABI, polygonProvider);
-
 const ctfContract = new ethers.Contract(
   POLYMARKET_CTF_ADDRESS,
   ['function isApprovedForAll(address account, address operator) view returns (bool)'],
@@ -35,10 +33,7 @@ const ctfContract = new ethers.Contract(
 );
 
 /**
- * Polymarket contracts that require token approvals for trading.
- *
- * Binary markets use Exchange.
- * Multi-outcome (neg-risk) markets use NegRiskExchange + NegRiskAdapter.
+ * Polymarket contracts that require broad trading approvals.
  */
 const APPROVAL_TARGETS = {
   Exchange: POLYMARKET_CTF_EXCHANGE_ADDRESS,
@@ -52,12 +47,7 @@ type ApprovalTarget = keyof typeof APPROVAL_TARGETS;
 // Approval Checks
 // ============================================================================
 
-const USDC_APPROVAL_THRESHOLD = ethers.utils.parseUnits('1000000000', 6); // 1B USDC
-
-async function hasUsdcApproval(owner: string, spender: string): Promise<boolean> {
-  const allowance = await usdcContract.allowance(owner, spender);
-  return allowance.gte(USDC_APPROVAL_THRESHOLD);
-}
+const PUSD_APPROVAL_THRESHOLD = ethers.utils.parseUnits('1000000000', 6); // 1B pUSD
 
 async function hasCtfApproval(owner: string, operator: string): Promise<boolean> {
   return ctfContract.isApprovedForAll(owner, operator);
@@ -66,15 +56,6 @@ async function hasCtfApproval(owner: string, operator: string): Promise<boolean>
 // ============================================================================
 // Transaction Builders
 // ============================================================================
-
-function buildUsdcApproval(spender: string): SafeTransaction {
-  return {
-    to: POLYGON_USDC_ADDRESS,
-    data: erc20Interface.encodeFunctionData('approve', [spender, ethers.constants.MaxUint256]),
-    value: '0',
-    operation: OperationType.Call,
-  };
-}
 
 function buildCtfApproval(operator: string): SafeTransaction {
   return {
@@ -89,7 +70,7 @@ function buildCtfApproval(operator: string): SafeTransaction {
 // Relay Execution
 // ============================================================================
 
-async function executeRelayTransaction(client: RelayClient, transactions: SafeTransaction[], description: string): Promise<void> {
+export async function executeRelayTransaction(client: RelayClient, transactions: SafeTransaction[], description: string): Promise<void> {
   const response = await client.execute(transactions, description);
 
   if (response.state === RelayerTransactionState.STATE_FAILED) {
@@ -115,23 +96,48 @@ async function executeRelayTransaction(client: RelayClient, transactions: SafeTr
 async function getMissingApprovalTransactions(proxyAddress: string): Promise<SafeTransaction[]> {
   const targets = Object.entries(APPROVAL_TARGETS) as [ApprovalTarget, string][];
 
-  const checks = await Promise.all(
-    targets.flatMap(([name, address]) => [
-      hasUsdcApproval(proxyAddress, address).then(approved => ({ type: 'usdc' as const, name, address, approved })),
-      hasCtfApproval(proxyAddress, address).then(approved => ({ type: 'ctf' as const, name, address, approved })),
-    ])
+  const ctfApprovalChecks = await Promise.all(
+    targets.map(([name, address]) => hasCtfApproval(proxyAddress, address).then(approved => ({ name, address, approved })))
+  );
+
+  const erc20ApprovalTransactions = await Promise.all(
+    targets.map(([name, address]) =>
+      getMissingErc20ApprovalTransaction({
+        amount: PUSD_APPROVAL_THRESHOLD,
+        owner: proxyAddress,
+        provider: polygonProvider,
+        spender: address,
+        tokenAddress: POLYMARKET_PUSD_ADDRESS,
+      }).then(transactions => ({ name, transactions }))
+    )
   );
 
   const transactions: SafeTransaction[] = [];
 
-  for (const { type, name, address, approved } of checks) {
+  for (const { name, transactions: approvalTransactions } of erc20ApprovalTransactions) {
+    if (approvalTransactions.length > 0) {
+      logger.debug(`[polymarket] Adding PUSD approval for ${name}`);
+      transactions.push(...approvalTransactions);
+    }
+  }
+
+  for (const { name, address, approved } of ctfApprovalChecks) {
     if (!approved) {
-      logger.debug(`[polymarket] Adding ${type.toUpperCase()} approval for ${name}`);
-      transactions.push(type === 'usdc' ? buildUsdcApproval(address) : buildCtfApproval(address));
+      logger.debug(`[polymarket] Adding CTF approval for ${name}`);
+      transactions.push(buildCtfApproval(address));
     }
   }
 
   return transactions;
+}
+
+export async function getMissingCtfOperatorApprovalTransactions(proxyAddress: string, operator: string): Promise<SafeTransaction[]> {
+  if (await hasCtfApproval(proxyAddress, operator)) {
+    return [];
+  }
+
+  logger.debug(`[polymarket] Adding CTF operator approval for ${operator}`);
+  return [buildCtfApproval(operator)];
 }
 
 async function ensureAllTradingApprovals(client: RelayClient, proxyAddress: string): Promise<void> {
@@ -150,7 +156,7 @@ async function ensureAllTradingApprovals(client: RelayClient, proxyAddress: stri
 // Deployment
 // ============================================================================
 
-async function deployProxyIfNeeded(client: RelayClient, proxyAddress: string): Promise<void> {
+export async function deployProxyIfNeeded(client: RelayClient, proxyAddress: string): Promise<void> {
   const isDeployed = await client.getDeployed(proxyAddress);
   if (isDeployed) {
     return;
@@ -178,25 +184,12 @@ async function deployProxyIfNeeded(client: RelayClient, proxyAddress: string): P
 // Public API
 // ============================================================================
 
-/**
- * Ensures the proxy wallet is deployed and all trading approvals are set.
- * Called after a deposit transaction is submitted.
- *
- * Accepts the signer from the deposit flow to avoid redundant authentication.
- */
-export async function ensureProxyWalletDeployedAndUsdcApproved(signer: Signer): Promise<void> {
+export function createPolymarketRelayClient(signer: Signer): RelayClient {
   if (!(signer instanceof Wallet)) {
     throw new RainbowError('[polymarket] Hardware wallets are not supported');
   }
 
-  const proxyAddress = usePolymarketClients.getState().proxyAddress;
-  if (!proxyAddress) {
-    throw new RainbowError('[polymarket] No proxy address available');
-  }
-
-  const client = new RelayClient(POLYMARKET_RELAYER_PROXY_URL, ChainId.polygon, signer, BUILDER_CONFIG);
-  await deployProxyIfNeeded(client, proxyAddress);
-  await ensureAllTradingApprovals(client, proxyAddress);
+  return new RelayClient(POLYMARKET_RELAYER_PROXY_URL, ChainId.polygon, signer, BUILDER_CONFIG);
 }
 
 /**
@@ -208,9 +201,10 @@ export async function ensureProxyWalletIsDeployed(proxyAddress: string): Promise
 }
 
 /**
- * Ensures all trading approvals are set for the proxy wallet.
+ * Ensures trading approvals are set for the proxy wallet.
  */
 export async function ensureTradingApprovals(proxyAddress: string): Promise<void> {
   const client = await getPolymarketRelayClient();
+  await deployProxyIfNeeded(client, proxyAddress);
   await ensureAllTradingApprovals(client, proxyAddress);
 }
