@@ -27,8 +27,6 @@ import { type Asset, type GetAssetsResponse, type UserAsset, type UserAssetsPara
 import { userAssetsStore } from './userAssets';
 import { userAssetsStoreManager } from './userAssetsStoreManager';
 
-const USER_ASSETS_TIMEOUT_DURATION = time.seconds(isStaging() ? 40 : 20);
-
 // ============ Fetch Utils ==================================================== //
 
 async function fetchTestnetUserAssets(
@@ -71,7 +69,7 @@ export async function fetchUserAssets(
         chainIds: chainIds.join(','),
         address: address,
       },
-      timeout: USER_ASSETS_TIMEOUT_DURATION,
+      timeout: getUserAssetsTimeoutDuration(),
     });
 
     if (res.data.errors?.length > 0) {
@@ -95,6 +93,10 @@ export async function fetchUserAssets(
     logger.error(new RainbowError('[🔴 userAssetsStore - fetchUserAssets 🔴]: Failed to fetch user assets', e));
   }
   return null;
+}
+
+function getUserAssetsTimeoutDuration() {
+  return time.seconds(isStaging() ? 40 : 20);
 }
 
 // ============ Asset Utils ==================================================== //

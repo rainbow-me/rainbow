@@ -58,9 +58,11 @@ export interface BackendNetworksState {
   getTokenLauncherSupportedChainIds: () => ChainId[];
   getInteractionsWithSupportedChainIds: () => ChainId[];
   getShouldDefaultToFastGasChainIds: () => ChainId[];
+  getSponsorshipEligibleChainIds: () => ChainId[];
 
   getChainGasUnits: (chainId?: ChainId) => BackendNetwork['gasUnits'];
   getChainDefaultRpc: (chainId: ChainId) => string;
+  isSponsorshipEligible: (chainId: ChainId) => boolean;
 }
 
 function createSelector<T>(selectorFn: (networks: BackendNetwork[], transformed: Chain[]) => T): () => T {
@@ -334,6 +336,20 @@ export const useBackendNetworksStore = createQueryStore<BackendNetworksResponse,
     getFlashbotsSupportedChainIds: createSelector(() => [ChainId.mainnet]),
 
     getShouldDefaultToFastGasChainIds: createSelector(() => [ChainId.mainnet, ChainId.polygon, ChainId.goerli]),
+
+    getSponsorshipEligibleChainIds: createSelector(networks => {
+      const chainIds: ChainId[] = [];
+      for (const network of networks) {
+        const id = toChainId(network.id);
+        if (id === ChainId.mainnet) continue;
+        chainIds.push(id);
+      }
+      return chainIds;
+    }),
+
+    isSponsorshipEligible: (chainId: ChainId) => {
+      return get().getSponsorshipEligibleChainIds().includes(chainId);
+    },
 
     getChainGasUnits: createParameterizedSelector(networks => (chainId?: ChainId) => {
       const chainsGasUnits = networks.reduce(
