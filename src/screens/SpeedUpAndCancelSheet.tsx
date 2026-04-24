@@ -12,7 +12,7 @@ import { useDispatch } from 'react-redux';
 
 import Divider from '@/components/Divider';
 import { type LegacyTransactionGasParamAmounts, type TransactionGasParamAmounts } from '@/entities/gas';
-import { GasFeeTypes, TransactionStatus, type GasFeeType } from '@/entities/transactions';
+import { canReplacePendingTransaction, GasFeeTypes, TransactionStatus, type GasFeeType } from '@/entities/transactions';
 import { removeRegistrationByName, saveCommitRegistrationParameters } from '@/features/ens/redux/registration';
 import styled from '@/framework/ui/styled-thing';
 import { opacity } from '@/framework/ui/utils/opacity';
@@ -148,6 +148,7 @@ export default function SpeedUpAndCancelSheet() {
   const [to, setTo] = useState<string | undefined>(tx?.to ?? undefined);
   const [value, setValue] = useState<string>();
   const isL2 = isL2Chain({ chainId: tx?.chainId });
+  const canReplaceTransaction = canReplacePendingTransaction({ accountAddress, transaction: tx });
   const hasTransactionNonce = tx?.nonce !== undefined && tx?.nonce !== null;
 
   const getNewTransactionGasParams = useCallback(() => {
@@ -448,8 +449,8 @@ export default function SpeedUpAndCancelSheet() {
     return defaultSpeeds;
   }, [isL2]);
 
-  const isDelegationSpeedUp = type === SPEED_UP && tx.delegation;
-  if (isDelegationSpeedUp) {
+  const shouldHideReplacementSheet = !canReplaceTransaction || (type === SPEED_UP && tx.delegation);
+  if (shouldHideReplacementSheet) {
     goBack();
     return null;
   }

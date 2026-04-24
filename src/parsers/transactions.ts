@@ -1,6 +1,5 @@
 import { type NativeCurrencyKey } from '@/entities/nativeCurrencyTypes';
 import {
-  PaginatedTransactionsApiResponse,
   TransactionDirection,
   TransactionStatus,
   TransactionTypeMap,
@@ -10,7 +9,7 @@ import {
   type TransactionWithChangesType,
   type TransactionWithoutChangesType,
 } from '@/entities/transactions';
-import { type NewTransaction, type RainbowTransactionFee } from '@/entities/transactions/transaction';
+import { buildTransactionTitle, type NewTransaction, type RainbowTransactionFee } from '@/entities/transactions/transaction';
 import { type Meta, type Transaction } from '@/features/positions/types/generated/transaction/transaction';
 import {
   convertAmountAndPriceToNativeDisplay,
@@ -150,7 +149,7 @@ export const convertNewTransactionToRainbowTransaction = (tx: NewTransaction): R
     asset,
     status: TransactionStatus.pending,
     data: tx.data,
-    title: `${tx.type}.${tx.status}`,
+    title: buildTransactionTitle(tx.type, tx.status),
     description: asset?.name,
     from: tx.from,
     changes: tx.changes,
@@ -199,13 +198,3 @@ export const isValidTransactionType = (type: string | undefined): type is Transa
   (TransactionTypeMap.withChanges.includes(type as TransactionWithChangesType) ||
     TransactionTypeMap.withoutChanges.includes(type as TransactionWithoutChangesType) ||
     type === 'sale');
-
-export const isValidTransactionStatus = (status: unknown): status is TransactionStatus =>
-  status === TransactionStatus.confirmed || status === TransactionStatus.failed || status === TransactionStatus.pending;
-
-/**
- * Builds a transaction `title` from a transaction `type` and `status`.
- */
-export function buildTransactionTitle(type: TransactionType, status: TransactionStatus): string {
-  return `${type}.${status}`;
-}

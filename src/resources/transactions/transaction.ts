@@ -14,7 +14,7 @@ import { parseTransaction } from '@/parsers/transactions';
 import { createQueryKey, queryClient, type QueryFunctionArgs, type QueryFunctionResult } from '@/react-query';
 import { getPlatformClient } from '@/resources/platform/client';
 import { userAssetsStoreManager } from '@/state/assets/userAssetsStoreManager';
-import { useBackendNetworksStore } from '@/state/backendNetworks/backendNetworks';
+import { backendNetworksActions } from '@/state/backendNetworks/backendNetworks';
 import { type ChainId } from '@/state/backendNetworks/types';
 import { useAccountAddress } from '@/state/wallets/walletsStore';
 
@@ -195,7 +195,7 @@ export function useBackendTransaction({ hash, chainId }: BackendTransactionArgs)
   const paginatedTransactionsKey = consolidatedTransactionsQueryKey({
     address: accountAddress,
     currency: nativeCurrency,
-    chainIds: useBackendNetworksStore.getState().getSupportedMainnetChainIds(),
+    chainIds: backendNetworksActions.getSupportedMainnetChainIds(),
   });
 
   const params: TransactionArgs = {

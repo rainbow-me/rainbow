@@ -3,51 +3,15 @@ import { useCallback } from 'react';
 import { analytics } from '@/analytics';
 import { event } from '@/analytics/event';
 import { useRainbowToastsStore } from '@/components/rainbow-toast/useRainbowToastsStore';
-import { TransactionStatus, type MinedTransaction, type RainbowTransaction } from '@/entities/transactions';
-import { logger, RainbowError } from '@/logger';
-import { buildTransactionTitle, isValidTransactionStatus } from '@/parsers/transactions';
+import { TransactionStatus, type RainbowTransaction } from '@/entities/transactions';
 import { queryClient } from '@/react-query';
-import type { SupportedCurrencyKey } from '@/references/supportedCurrencies';
 import { consolidatedTransactionsQueryKey } from '@/resources/transactions/consolidatedTransactions';
-import { fetchRawTransaction } from '@/resources/transactions/transaction';
 import { userAssetsStoreManager } from '@/state/assets/userAssetsStoreManager';
-import { useBackendNetworksStore } from '@/state/backendNetworks/backendNetworks';
-import { useMinedTransactionsStore } from '@/state/minedTransactions/minedTransactions';
+import { backendNetworksActions } from '@/state/backendNetworks/backendNetworks';
+import { useAssetUpdatesStore, type AssetUpdateTransaction } from '@/state/minedTransactions/minedTransactions';
 import { pendingTransactionsActions } from '@/state/pendingTransactions';
 
-async function fetchTransaction({
-  abortController,
-  address,
-  currency,
-  transaction,
-}: {
-  abortController: AbortController | null;
-  address: string;
-  currency: SupportedCurrencyKey;
-  transaction: RainbowTransaction;
-}): Promise<RainbowTransaction> {
-  try {
-    if (!transaction.chainId || !transaction.hash) {
-      throw new Error('Pending transaction missing chainId or hash');
-    }
-
-    const fetchedTransaction = await fetchRawTransaction({
-      abortController,
-      address,
-      chainId: transaction.chainId,
-      currency,
-      hash: transaction.hash,
-      originalType: transaction.type,
-    });
-
-    return applyTransactionUpdates(transaction, fetchedTransaction);
-  } catch (e) {
-    logger.error(new RainbowError('[fetchTransaction]: Failed to fetch transaction', e), {
-      transaction,
-    });
-    return transaction;
-  }
-}
+import { resolvePendingTransaction } from './pendingTransactionResolution';
 
 export const useWatchPendingTransactions = ({ address }: { address: string }) => {
   const nativeCurrency = userAssetsStoreManager(state => state.currency);
@@ -64,35 +28,46 @@ export const useWatchPendingTransactions = ({ address }: { address: string }) =>
       });
 
       const now = Math.floor(Date.now() / 1000);
-
-      const fetchedTransactions = await Promise.all(
-        pendingTransactions.map((transaction: RainbowTransaction) =>
-          fetchTransaction({ abortController, address, currency: nativeCurrency, transaction })
+      const resolutions = await Promise.all(
+        pendingTransactions.map(transaction =>
+          resolvePendingTransaction({
+            abortController,
+            address,
+            currency: nativeCurrency,
+            transaction,
+          })
         )
       );
 
       if (canceled) return;
 
-      const { newPendingTransactions, minedTransactions } = fetchedTransactions.reduce<{
+      const { newPendingTransactions, settledTransactions, transactionsToWatch } = resolutions.reduce<{
         newPendingTransactions: RainbowTransaction[];
-        minedTransactions: MinedTransaction[];
+        settledTransactions: RainbowTransaction[];
+        transactionsToWatch: AssetUpdateTransaction[];
       }>(
-        (acc, tx) => {
-          if (tx.status === TransactionStatus.pending) {
-            acc.newPendingTransactions.push(tx);
+        (acc, resolution) => {
+          if (resolution.kind === 'pending') {
+            acc.newPendingTransactions.push(resolution.transaction);
           } else {
-            acc.minedTransactions.push(tx as MinedTransaction);
-            analytics.track(event.pendingTransactionResolved, {
-              chainId: tx.chainId,
-              type: tx.type,
-              timeToResolve: tx.minedAt ? (now - tx.minedAt) * 1000 : undefined,
-            });
+            const transaction = resolution.transaction;
+            acc.settledTransactions.push(transaction);
+            if (transaction.status === TransactionStatus.confirmed) {
+              acc.transactionsToWatch.push(createAssetUpdateTransaction(transaction));
+              analytics.track(event.pendingTransactionResolved, {
+                chainId: transaction.chainId,
+                type: transaction.type,
+                timeToResolve: typeof transaction.minedAt === 'number' ? (now - transaction.minedAt) * 1000 : undefined,
+              });
+            }
           }
+
           return acc;
         },
         {
           newPendingTransactions: [],
-          minedTransactions: [],
+          settledTransactions: [],
+          transactionsToWatch: [],
         }
       );
 
@@ -101,16 +76,21 @@ export const useWatchPendingTransactions = ({ address }: { address: string }) =>
         pendingTransactions: newPendingTransactions,
       });
 
-      if (!minedTransactions.length) return;
+      const handleTransaction = useRainbowToastsStore.getState().handleTransaction;
+      settledTransactions.forEach(tx => handleTransaction(tx));
 
-      useMinedTransactionsStore.getState().addMinedTransactions({ address, transactions: minedTransactions });
-      minedTransactions.forEach(tx => useRainbowToastsStore.getState().handleTransaction(tx));
+      if (!transactionsToWatch.length) return;
+
+      useAssetUpdatesStore.getState().addWatchedTransactions({
+        address,
+        transactions: transactionsToWatch,
+      });
 
       await queryClient.refetchQueries({
         queryKey: consolidatedTransactionsQueryKey({
           address,
           currency: nativeCurrency,
-          chainIds: useBackendNetworksStore.getState().getSupportedChainIds(),
+          chainIds: backendNetworksActions.getSupportedMainnetChainIds(),
         }),
         type: 'all',
       });
@@ -121,46 +101,15 @@ export const useWatchPendingTransactions = ({ address }: { address: string }) =>
   return watchPendingTransactions;
 };
 
-/**
- * If pending, applies only the fields that change during a pending transaction's
- * lifecycle to the original transaction.
- *
- * If confirmed, prefers the fetched transaction over the original for certain
- * transaction types.
- *
- * This works around the lack of rich metadata in fetched pending transactions.
- */
-function applyTransactionUpdates(original: RainbowTransaction, fetched: RainbowTransaction | null): RainbowTransaction {
-  if (!fetched) return original;
-
-  const status = isValidTransactionStatus(fetched.status) ? fetched.status : original.status;
-  if (status === original.status) return original;
-
-  if (status === TransactionStatus.confirmed && !shouldPreferLocalTransaction(original.type)) {
-    return { ...original, ...fetched };
-  }
-
+function createAssetUpdateTransaction(
+  transaction: Pick<RainbowTransaction, 'asset' | 'chainId' | 'changes' | 'hash' | 'minedAt' | 'type'>
+): AssetUpdateTransaction {
   return {
-    ...original,
-    status,
-    title: buildTransactionTitle(original.type, status),
+    asset: transaction.asset,
+    chainId: transaction.chainId,
+    changes: transaction.changes,
+    hash: transaction.hash,
+    minedAt: typeof transaction.minedAt === 'number' ? transaction.minedAt : undefined,
+    type: transaction.type,
   };
-}
-
-/**
- * Prefers local transaction data for a subset of transaction types which
- * contain bad metadata in the confirmed fetched transaction.
- *
- * This primarily affects the labels displayed in the confirmation toast.
- */
-function shouldPreferLocalTransaction(originalType: RainbowTransaction['type']): boolean {
-  switch (originalType) {
-    case 'bridge':
-    case 'cancel':
-    case 'speed_up':
-    case 'swap':
-      return true;
-    default:
-      return false;
-  }
 }

@@ -1,19 +1,19 @@
 import { memo } from 'react';
 
 import { useTransactionWatcher } from '@/hooks/useTransactionWatcher';
-import { useWatchMinedTransactions } from '@/hooks/useWatchMinedTransactions';
-import { useMinedTransactionsStore, type MinedTransactionWithPolling } from '@/state/minedTransactions/minedTransactions';
+import { useWatchAssetUpdateTransactions } from '@/hooks/useWatchMinedTransactions';
+import { useAssetUpdatesStore, type WatchedAssetUpdateTransaction } from '@/state/minedTransactions/minedTransactions';
 import { useAccountAddress } from '@/state/wallets/walletsStore';
 
-const EMPTY_MINED_TRANSACTIONS: MinedTransactionWithPolling[] = [];
+const EMPTY_ASSET_UPDATE_TRANSACTION_WATCHES: WatchedAssetUpdateTransaction[] = [];
 
-export const MinedTransactionWatcher = memo(function MinedTransactionWatcher() {
+export const AssetUpdateTransactionWatcher = memo(function AssetUpdateTransactionWatcher() {
   const address = useAccountAddress();
-  const minedTransactionsWithPolling = useMinedTransactionsStore(state => state.minedTransactions[address] || EMPTY_MINED_TRANSACTIONS);
+  const watchedTransactions = useAssetUpdatesStore(state => state.watchedTransactions[address] || EMPTY_ASSET_UPDATE_TRANSACTION_WATCHES);
 
   useTransactionWatcher({
-    transactions: minedTransactionsWithPolling,
-    watchFunction: useWatchMinedTransactions({ address }),
+    transactions: watchedTransactions,
+    watchFunction: useWatchAssetUpdateTransactions({ address }),
   });
 
   return null;

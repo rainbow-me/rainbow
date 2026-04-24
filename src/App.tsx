@@ -24,6 +24,7 @@ import { OfflineToast } from '@/components/toasts';
 import { reactNativeDisableYellowBox, showNetworkRequests, showNetworkResponses } from '@/config/debug';
 import monitorNetwork from '@/debugging/network';
 import { DANGER_INSTALL_SOURCE, IS_DEV, IS_PROD, IS_TEST } from '@/env';
+import { configureDelegationSdk } from '@/features/delegation/configureClient';
 import RainbowContextWrapper from '@/helpers/RainbowContext';
 import { useApplicationSetup } from '@/hooks/useApplicationSetup';
 import { logger, RainbowError } from '@/logger';
@@ -35,14 +36,11 @@ import Routes from '@/navigation/Routes';
 import { NotificationsHandler } from '@/notifications/NotificationsHandler';
 import { persistOptions, PersistQueryClientProvider, queryClient } from '@/react-query';
 import store from '@/redux/store';
-import { getPlatformClient } from '@/resources/platform/client';
 import { initializeReservoirClient } from '@/resources/reservoir/client';
 import { loadSettingsData } from '@/state/settings/loadSettingsData';
 import { BackupsSync } from '@/state/sync/BackupsSync';
-import { useWalletsStore } from '@/state/wallets/walletsStore';
 import * as ls from '@/storage';
 import { MainThemeProvider } from '@/theme/ThemeContext';
-import { configure as configureDelegationClient } from '@rainbow-me/delegation';
 
 import { AbsolutePortalRoot } from './components/AbsolutePortal';
 import { TestDeeplinkHandler } from './components/TestDeeplinkHandler';
@@ -171,16 +169,7 @@ async function initializeApplication() {
   analytics.init({ deviceId });
   analytics.identify({ installSource: DANGER_INSTALL_SOURCE });
 
-  await Promise.all([
-    initializeRemoteConfig(),
-    migrate(),
-    loadSettingsData(),
-    configureDelegationClient({
-      platformClient: getPlatformClient(),
-      logger: logger.createServiceLogger(logger.DebugContext.delegation),
-      getCurrentAddress: $ => $(useWalletsStore, s => s.accountAddress),
-    }),
-  ]);
+  await Promise.all([initializeRemoteConfig(), migrate(), loadSettingsData(), configureDelegationSdk()]);
 
   /**
    * We previously relied on the existence of a deviceId on keychain to
