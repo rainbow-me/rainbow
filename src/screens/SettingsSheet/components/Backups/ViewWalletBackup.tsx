@@ -17,9 +17,9 @@ import { ContactAvatar } from '@/components/contacts';
 import ImageAvatar from '@/components/contacts/ImageAvatar';
 import { ContextCircleButton } from '@/components/context-menu';
 import ContextMenuButton from '@/components/native-context-menu/contextMenu';
-import { DELEGATION, getExperimentalFlag } from '@/config/experimentalHooks';
 import { Box, Stack } from '@/design-system';
 import { IS_IOS } from '@/env';
+import { useIsDelegationEnabled } from '@/features/delegation/featureFlags';
 import useENSAvatar from '@/features/ens/hooks/useENSAvatar';
 import { removeFirstEmojiFromString } from '@/helpers/emojiHandler';
 import walletBackupTypes from '@/helpers/walletBackupTypes';
@@ -28,7 +28,6 @@ import WalletTypes from '@/helpers/walletTypes';
 import * as i18n from '@/languages';
 import { logger, RainbowError } from '@/logger';
 import { executeFnIfCloudBackupAvailable } from '@/model/backup';
-import { getRemoteConfig } from '@/model/remoteConfig';
 import { type RainbowAccount } from '@/model/wallet';
 import { useNavigation } from '@/navigation/Navigation';
 import Routes from '@/navigation/routesNames';
@@ -139,7 +138,7 @@ const ViewWalletBackup = () => {
   const { navigate } = useNavigation();
   const [isToastActive, setToastActive] = useRecoilState(addressCopiedToastAtom);
 
-  const delegationEnabled = getRemoteConfig().delegation_enabled || getExperimentalFlag(DELEGATION);
+  const delegationEnabled = useIsDelegationEnabled();
 
   const backupWalletsToCloud = useCallback(async () => {
     executeFnIfCloudBackupAvailable({

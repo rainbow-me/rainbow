@@ -14,12 +14,150 @@ import { userAssetsStore } from '@/state/assets/userAssets';
 import { userAssetsStoreManager } from '@/state/assets/userAssetsStoreManager';
 import { filterZeroBalanceAssets, setUserAssets } from '@/state/assets/utils';
 import { useClaimablesStore } from '@/state/claimables/claimables';
-import { useMinedTransactionsStore, type MinedTransactionWithPolling } from '@/state/minedTransactions/minedTransactions';
+import {
+  useAssetUpdatesStore,
+  type AssetUpdateTransaction,
+  type WatchedAssetUpdateTransaction,
+} from '@/state/minedTransactions/minedTransactions';
 import { staleBalancesStore } from '@/state/staleBalances';
 import { getUniqueId } from '@/utils/ethereumUtils';
 import { time } from '@/utils/time';
 
 const ASSET_DETECTION_TIMEOUT = time.seconds(30);
+const EMPTY_ASSETS: Record<string, UserAsset> = {};
+
+/**
+ * Returns a watcher for balance changes in the assets affected by settled transactions.
+ */
+export const useWatchAssetUpdateTransactions = ({ address }: { address: string }) => {
+  const nativeCurrency = userAssetsStoreManager(state => state.currency);
+  const staleBalances = staleBalancesStore(state => state.staleBalances[address]);
+
+  const watchAssetUpdateTransactions = useCallback(
+    async (watchedTransactions: WatchedAssetUpdateTransaction[]) => {
+      if (!address) return;
+      try {
+        if (!watchedTransactions.length) return;
+
+        const initialUserAssets = userAssetsStore.getState().userAssets;
+        const now = Date.now();
+
+        const validTransactions = watchedTransactions
+          .filter(watch => {
+            const pollingDuration = now - watch.pollingStartedAt;
+            const isTimedOut = pollingDuration >= ASSET_DETECTION_TIMEOUT;
+
+            if (isTimedOut) {
+              if (hasMinedAt(watch.transaction)) {
+                analytics.track(event.minedTransactionAssetsTimedOut, {
+                  chainId: watch.transaction.chainId,
+                  type: watch.transaction.type,
+                });
+              }
+
+              logger.warn('[watchAssetUpdateTransactions]: Timed out waiting for asset updates for transaction', {
+                txHash: watch.transaction.hash,
+                pollingDuration,
+              });
+            }
+            return !isTimedOut;
+          })
+          .map(watch => watch.transaction);
+
+        if (!validTransactions.length) {
+          useAssetUpdatesStore.getState().clearWatchedTransactions(address);
+          await refetchOtherAssets({ address });
+          return;
+        }
+
+        const minedTransactions = validTransactions.filter(hasMinedAt);
+        const expectedUniqueIds = new Set<string>();
+        const transactionChainIds = new Set<number>();
+
+        validTransactions.forEach(transaction => {
+          transactionChainIds.add(transaction.chainId);
+
+          if (transaction.changes?.length) {
+            transaction.changes.forEach(change => {
+              if (!change?.asset) return;
+              expectedUniqueIds.add(getUniqueId(change.asset.address, change.asset.chainId));
+              transactionChainIds.add(change.asset.chainId);
+            });
+            return;
+          }
+
+          if (!transaction.asset) return;
+          expectedUniqueIds.add(getUniqueId(transaction.asset.address, transaction.asset.chainId));
+          transactionChainIds.add(transaction.asset.chainId);
+        });
+
+        const touchedChainIds = Array.from(transactionChainIds);
+        const chainIdsWithStaleBalances = [];
+        const allStaleBalanceTokenIds = [];
+
+        if (staleBalances) {
+          for (const chainId of touchedChainIds) {
+            const staleBalancesForChain = staleBalances[chainId];
+            if (staleBalancesForChain) {
+              chainIdsWithStaleBalances.push(chainId);
+              for (const staleBalance of Object.values(staleBalancesForChain)) {
+                allStaleBalanceTokenIds.push(`${staleBalance.address}_${chainId}`);
+              }
+            }
+          }
+        }
+
+        const chainIdsToFetch = Array.from(new Set([...touchedChainIds, ...chainIdsWithStaleBalances]));
+        const forcedTokens = [...expectedUniqueIds, ...allStaleBalanceTokenIds].map(tokenId => tokenId.split('_').join(':'));
+
+        const assetsResponse = await getPlatformClient().get<GetAssetsResponse>('/assets/GetAssetUpdates', {
+          params: {
+            currency: nativeCurrency,
+            chainIds: chainIdsToFetch.join(','),
+            address,
+            ...(forcedTokens.length ? { forcedTokens: forcedTokens.join(',') } : undefined),
+          },
+          timeout: time.seconds(20),
+        });
+
+        let someExpectedChangesSeen = false;
+        const newAssets = assetsResponse.data.result ?? EMPTY_ASSETS;
+
+        const allExpectedChangesSeen = [...expectedUniqueIds].every(legacyTokenId => {
+          const didChange = didUserAssetBalanceChange({ legacyTokenId, initialUserAssets, newAssets });
+          if (didChange) {
+            someExpectedChangesSeen = true;
+          }
+          return didChange;
+        });
+
+        if (someExpectedChangesSeen) {
+          updateUserAssets({ address, newAssets, chainIds: touchedChainIds });
+        }
+
+        if (!allExpectedChangesSeen) {
+          return;
+        }
+
+        useAssetUpdatesStore.getState().clearWatchedTransactions(address);
+        staleBalancesStore.getState().clearExpiredData(address);
+
+        if (minedTransactions.length) {
+          const oldestMinedTransactionTimestamp = Math.min(...minedTransactions.map(tx => tx.minedAt)) * 1000;
+          analytics.track(event.minedTransactionAssetsResolved, {
+            timeToResolve: now - oldestMinedTransactionTimestamp,
+          });
+        }
+        await refetchOtherAssets({ address });
+      } catch (e) {
+        logger.error(new RainbowError('[watchAssetUpdateTransactions]: Polling GetAssetUpdates failed', e));
+      }
+    },
+    [address, nativeCurrency, staleBalances]
+  );
+
+  return watchAssetUpdateTransactions;
+};
 
 async function refetchOtherAssets({ address }: { address: string }) {
   await Promise.all([
@@ -61,119 +199,6 @@ function didUserAssetBalanceChange({
   return initialAssetQuantity !== newAssetQuantity;
 }
 
-export const useWatchMinedTransactions = ({ address }: { address: string }) => {
-  const nativeCurrency = userAssetsStoreManager(state => state.currency);
-  const staleBalances = staleBalancesStore(state => state.staleBalances[address]);
-
-  const watchMinedTransactions = useCallback(
-    async (minedTransactionsWithPolling: MinedTransactionWithPolling[]) => {
-      if (!address) return;
-      try {
-        if (!minedTransactionsWithPolling.length) return;
-
-        const initialUserAssets = userAssetsStore.getState().userAssets;
-        const now = Date.now();
-
-        const validTransactions = minedTransactionsWithPolling
-          .filter(item => {
-            const pollingDuration = now - item.pollingStartedAt;
-            const isTimedOut = pollingDuration >= ASSET_DETECTION_TIMEOUT;
-            if (isTimedOut) {
-              analytics.track(event.minedTransactionAssetsTimedOut, {
-                chainId: item.transaction.chainId,
-                type: item.transaction.type,
-              });
-              logger.warn('[watchMinedTransactions]: Timed out waiting for asset updates for transaction', {
-                txHash: item.transaction.hash,
-                pollingDuration,
-              });
-            }
-            return !isTimedOut;
-          })
-          .map(item => item.transaction);
-
-        if (!validTransactions.length) {
-          useMinedTransactionsStore.getState().clearMinedTransactions(address);
-          await refetchOtherAssets({ address });
-          return;
-        }
-
-        const expectedUniqueIds = new Set<string>();
-        validTransactions.forEach(tx => {
-          if (tx.changes?.length) {
-            tx.changes.forEach(change => {
-              if (change?.asset) {
-                expectedUniqueIds.add(getUniqueId(change.asset.address, change.asset.chainId));
-              }
-            });
-          } else if (tx.asset) {
-            expectedUniqueIds.add(getUniqueId(tx.asset.address, tx.asset.chainId));
-          }
-        });
-
-        const oldestMinedTransactionTimestamp = Math.min(...validTransactions.map(tx => tx.minedAt)) * 1000;
-        const transactionChainIds = Array.from(new Set(validTransactions.map(tx => tx.chainId)));
-        const chainIdsWithStaleBalances = [];
-        const allStaleBalanceTokenIds = [];
-
-        if (staleBalances) {
-          for (const chainId of transactionChainIds) {
-            const staleBalancesForChain = staleBalances[chainId];
-            if (staleBalancesForChain) {
-              chainIdsWithStaleBalances.push(chainId);
-              for (const staleBalance of Object.values(staleBalancesForChain)) {
-                allStaleBalanceTokenIds.push(`${staleBalance.address}_${chainId}`);
-              }
-            }
-          }
-        }
-
-        const chainIdsToFetch = Array.from(new Set([...transactionChainIds, ...chainIdsWithStaleBalances]));
-        const forcedTokens = [...expectedUniqueIds, ...allStaleBalanceTokenIds].map(tokenId => tokenId.split('_').join(':'));
-
-        const assetsResponse = await getPlatformClient().get<GetAssetsResponse>('/assets/GetAssetUpdates', {
-          params: {
-            currency: nativeCurrency,
-            chainIds: chainIdsToFetch.join(','),
-            address,
-            ...(forcedTokens.length ? { forcedTokens: forcedTokens.join(',') } : {}),
-          },
-          timeout: time.seconds(20),
-        });
-
-        let someExpectedChangesSeen = false;
-        const newAssets = assetsResponse.data.result ?? {};
-        const allExpectedChangesSeen = [...expectedUniqueIds].every(legacyTokenId => {
-          const didChange = didUserAssetBalanceChange({ legacyTokenId, initialUserAssets, newAssets });
-          if (didChange) {
-            someExpectedChangesSeen = true;
-          }
-          return didChange;
-        });
-
-        // If we saw any expected changes, update the user assets still in the event that we ran into a race condition with the normal asset fetch interval
-        // This is a bit of a hack, as this function will continue being called until it times out, but we will be using a different endpoint in the future
-        // So this is fine for now
-        if (someExpectedChangesSeen) {
-          updateUserAssets({ address, newAssets, chainIds: transactionChainIds });
-        }
-
-        if (!allExpectedChangesSeen) {
-          return;
-        }
-
-        useMinedTransactionsStore.getState().clearMinedTransactions(address);
-        staleBalancesStore.getState().clearExpiredData(address);
-        analytics.track(event.minedTransactionAssetsResolved, {
-          timeToResolve: now - oldestMinedTransactionTimestamp,
-        });
-        await refetchOtherAssets({ address });
-      } catch (e) {
-        logger.error(new RainbowError('[watchMinedTransactions]: Polling GetAssetUpdates failed', e));
-      }
-    },
-    [address, nativeCurrency, staleBalances]
-  );
-
-  return watchMinedTransactions;
-};
+function hasMinedAt(transaction: AssetUpdateTransaction): transaction is AssetUpdateTransaction & { minedAt: number } {
+  return typeof transaction.minedAt === 'number';
+}

@@ -9,8 +9,8 @@ import Restart from 'react-native-restart';
 
 import { ImgixImage } from '@/components/images';
 import { defaultConfig, getExperimentalFlag, LOG_PUSH } from '@/config/experimentalHooks';
-import { IS_INTERNAL } from '@/env';
-import { deleteAllBackups } from '@/handlers/cloudBackup';
+import { IS_ANDROID, IS_INTERNAL } from '@/env';
+import { getDelegationContractAddress, isRainbowDelegated, isThirdPartyDelegated } from '@/features/delegation/status';
 import { WrappedAlert as Alert } from '@/helpers/alert';
 import { RainbowContext } from '@/helpers/RainbowContext';
 import { getPublicKeyOfTheSigningWalletAndCreateWalletIfNeeded } from '@/helpers/signingWallet';
@@ -33,9 +33,9 @@ import { useConnectedToAnvilStore } from '@/state/connectedToAnvil';
 import { analyzeUserAssets } from '@/state/debug/analyzeUserAssets';
 import { nonceActions } from '@/state/nonces';
 import { pendingTransactionsActions } from '@/state/pendingTransactions';
-import { clearWalletState, updateWallets, useWallets, useWalletsStore } from '@/state/wallets/walletsStore';
+import { clearWalletState, useWalletsStore } from '@/state/wallets/walletsStore';
 import { isAuthenticated } from '@/utils/authentication';
-import { DelegationStatus, getDelegations, resetCache as resetDelegationCache } from '@rainbow-me/delegation';
+import { delegation, type DelegationWithChainId } from '@rainbow-me/delegation';
 
 import Menu from './Menu';
 import MenuContainer from './MenuContainer';
@@ -44,7 +44,6 @@ import MenuItem from './MenuItem';
 const DevSection = () => {
   const { navigate } = useNavigation();
   const { config, setConfig } = useContext(RainbowContext) as any;
-  const wallets = useWallets();
   const setConnectedToAnvil = useConnectedToAnvilStore.getState().setConnectedToAnvil;
   const accountAddress = useWalletsStore(state => state.accountAddress);
 
@@ -80,31 +79,13 @@ const DevSection = () => {
   const checkAlert = useCallback(async () => {
     try {
       const request = await fetch('https://pro-api.coinmarketcap.com/v1/cryptocurrency/listings/latest');
-      if (android && request.status === 500) throw new Error('failed');
+      if (IS_ANDROID && request.status === 500) throw new Error('failed');
       await request.json();
       Alert.alert(i18n.t(i18n.l.developer_settings.status), i18n.t(i18n.l.developer_settings.not_applied));
     } catch (e) {
       Alert.alert(i18n.t(i18n.l.developer_settings.status), i18n.t(i18n.l.developer_settings.applied));
     }
   }, []);
-
-  const removeBackups = async () => {
-    const newWallets = { ...wallets };
-    Object.keys(newWallets).forEach(key => {
-      delete newWallets[key].backedUp;
-      delete newWallets[key].backupDate;
-      delete newWallets[key].backupFile;
-      delete newWallets[key].backupType;
-    });
-
-    await updateWallets(newWallets);
-
-    // Delete all backups (debugging)
-    await deleteAllBackups();
-
-    Alert.alert(i18n.t(i18n.l.developer_settings.backups_deleted_successfully));
-    Restart();
-  };
 
   const clearImageCache = async () => {
     try {
@@ -171,18 +152,6 @@ const DevSection = () => {
     setLoadingStates(prev => ({ ...prev, clearMmkvStorage: false }));
   };
 
-  const clearWallets = async () => {
-    const isAuth = await isAuthenticated();
-    if (isAuth) {
-      const shouldWipeKeychain = await confirmKeychainAlert();
-      if (shouldWipeKeychain) {
-        await clearWalletState({ resetKeychain: true });
-      }
-    }
-    // we need to navigate back to the welcome screen
-    navigate(Routes.WELCOME_SCREEN);
-  };
-
   const wipeKeychainWithAlert = async () => {
     const isAuth = await isAuthenticated();
     // we should require auth before wiping the keychain
@@ -222,13 +191,15 @@ const DevSection = () => {
 
   const triggerRevokeSheet = useCallback(
     async (revokeReason: RevokeReason) => {
-      const delegations = await getDelegations({ address: accountAddress });
-      const rainbowDelegations = delegations.filter(d => d.delegationStatus === DelegationStatus.RAINBOW_DELEGATED);
-      const thirdPartyDelegations = delegations.filter(d => d.delegationStatus === DelegationStatus.THIRD_PARTY_DELEGATED);
+      if (!accountAddress) return;
 
-      const mapToRevokes = (delegationList: typeof delegations) =>
+      const delegations = await delegation.active({ address: accountAddress });
+      const rainbowDelegations = delegations.filter(isRainbowDelegated);
+      const thirdPartyDelegations = delegations.filter(isThirdPartyDelegated);
+
+      const mapToRevokes = (delegationList: readonly DelegationWithChainId[]) =>
         delegationList.map(delegation => {
-          const contractAddress = delegation.revokeAddress || delegation.currentContract;
+          const contractAddress = getDelegationContractAddress(delegation);
           return contractAddress
             ? {
                 chainId: delegation.chainId,
@@ -483,12 +454,6 @@ const DevSection = () => {
             />
           </Menu>
           <Menu header={i18n.t(i18n.l.developer_settings.headers.delegation_settings)}>
-            <MenuItem
-              leftComponent={<MenuItem.TextIcon icon="💥" isEmoji />}
-              onPress={() => resetDelegationCache()}
-              size={52}
-              titleComponent={<MenuItem.Title text={i18n.t(i18n.l.developer_settings.delegation_settings.clear_store)} />}
-            />
             {Object.values(RevokeReason).map(reason => {
               const label = {
                 [RevokeReason.DISABLE_SMART_WALLET]: i18n.t(i18n.l.developer_settings.delegation_settings.simulate_disable_smart_wallet),
@@ -504,7 +469,7 @@ const DevSection = () => {
               return (
                 <MenuItem
                   key={reason}
-                  leftComponent={<MenuItem.TextIcon icon={(reason as string).startsWith('alert_') ? '⚠️' : '🔧'} isEmoji />}
+                  leftComponent={<MenuItem.TextIcon icon={reason.startsWith('alert_') ? '⚠️' : '🔧'} isEmoji />}
                   onPress={() => triggerRevokeSheet(reason)}
                   size={52}
                   titleComponent={<MenuItem.Title text={label} />}

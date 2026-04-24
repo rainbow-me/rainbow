@@ -5,7 +5,11 @@ import type { RainbowToast } from '@/components/rainbow-toast/types';
 import type { RainbowTransaction } from '@/entities/transactions';
 import { createRainbowStore } from '@/state/internal/createRainbowStore';
 
-const toToastId = (tx: RainbowTransaction): string => `${tx.nonce ? tx.nonce : tx.hash}-${tx.chainId || tx.asset?.chainId}`;
+const toToastId = (tx: RainbowTransaction): string => {
+  const identity = tx.relayExecutionId ?? (tx.nonce !== null && tx.nonce !== undefined ? String(tx.nonce) : tx.hash);
+
+  return `${identity}-${tx.chainId || tx.asset?.chainId}`;
+};
 
 export type ToastState = {
   isShowingTransactionDetails: boolean;

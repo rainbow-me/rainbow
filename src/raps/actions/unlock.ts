@@ -5,44 +5,30 @@ import { parseUnits } from '@ethersproject/units';
 import { erc20Abi, erc721Abi, type Address } from 'viem';
 
 import { type TransactionGasParams, type TransactionLegacyGasParams } from '@/__swaps__/types/gas';
-import { DELEGATION, getExperimentalFlag } from '@/config/experimental';
 import { TransactionStatus, type NewTransaction } from '@/entities/transactions';
 import { getProvider, toHex } from '@/handlers/web3';
 import { ensureError, logger, RainbowError } from '@/logger';
-import { getRemoteConfig } from '@/model/remoteConfig';
 import { ETH_ADDRESS } from '@/references/constants';
 import { gasUnits } from '@/references/gasUnits';
 import { useBackendNetworksStore } from '@/state/backendNetworks/backendNetworks';
 import { type ChainId } from '@/state/backendNetworks/types';
 import { addNewTransaction } from '@/state/pendingTransactions';
-import { supportsDelegation, type BatchCall } from '@rainbow-me/delegation';
+import { type Call } from '@rainbow-me/delegation';
 
 import { type ActionProps, type PrepareActionProps, type RapActionResult, type RapUnlockActionParameters } from '../references';
 import { toTransactionAsset } from '../transactionAsset';
 import { requireAddress, requireHex } from '../validation';
 import { overrideWithFastSpeedIfNeeded } from './../utils';
 
-/**
- * Determines the approval amount based on delegation support.
- * If the address supports delegation (EIP-7702), use finite approvals for better security.
- * Otherwise, use unlimited approvals (MaxUint256) for better UX.
- */
-const getApprovalAmount = async ({
-  address,
-  chainId,
-  amount,
-}: {
-  address: Address;
-  chainId: ChainId;
-  amount: string;
-}): Promise<{ approvalAmount: string; isUnlimited: boolean }> => {
-  const delegationEnabled = getRemoteConfig().delegation_enabled || getExperimentalFlag(DELEGATION);
-  const { supported: delegationSupported } = await supportsDelegation({ address, chainId });
-  if (delegationEnabled && delegationSupported) {
-    return { approvalAmount: amount, isUnlimited: false };
-  }
-  return { approvalAmount: MaxUint256.toString(), isUnlimited: true };
-};
+const UNLIMITED_APPROVAL_AMOUNT = MaxUint256.toString();
+
+function getApprovalAmount({ amount, useExactApproval }: { amount: string; useExactApproval: boolean }): {
+  approvalAmount: string;
+  isUnlimited: boolean;
+} {
+  if (useExactApproval) return { approvalAmount: amount, isUnlimited: false };
+  return { approvalAmount: UNLIMITED_APPROVAL_AMOUNT, isUnlimited: true };
+}
 
 export const getAssetRawAllowance = async ({
   owner,
@@ -143,15 +129,17 @@ export const populateApprove = async ({
   spender,
   chainId,
   amount,
+  useExactApproval = false,
 }: {
   owner: Address;
   tokenAddress: Address;
   spender: Address;
   chainId: ChainId;
   amount: string;
+  useExactApproval?: boolean;
 }): Promise<PopulatedTransaction | null> => {
   try {
-    const { approvalAmount } = await getApprovalAmount({ address: owner, chainId, amount });
+    const { approvalAmount } = getApprovalAmount({ amount, useExactApproval });
     const provider = getProvider({ chainId });
     const tokenContract = new Contract(tokenAddress, erc20Abi, provider);
     const approveTransaction = await tokenContract.populateTransaction.approve(spender, approvalAmount, {
@@ -166,22 +154,49 @@ export const populateApprove = async ({
   }
 };
 
-export const prepareUnlock = async ({ parameters }: PrepareActionProps<'unlock'>): Promise<{ call: BatchCall | null }> => {
-  const tokenAddress = requireAddress(parameters.assetToUnlock.address, 'unlock asset address');
+export async function prepareApprovalCall({
+  amount,
+  chainId,
+  owner,
+  spender,
+  tokenAddress,
+  useExactApproval = false,
+}: {
+  amount: string;
+  chainId: ChainId;
+  owner: Address;
+  spender: Address;
+  tokenAddress: Address;
+  useExactApproval?: boolean;
+}): Promise<Call | null> {
   const tx = await populateApprove({
-    owner: parameters.fromAddress,
+    owner,
     tokenAddress,
-    spender: parameters.contractAddress,
-    chainId: parameters.chainId,
-    amount: parameters.amount,
+    spender,
+    chainId,
+    amount,
+    useExactApproval,
   });
-  if (!tx?.data) return { call: null };
+
+  if (!tx?.data) return null;
   return {
-    call: {
-      to: tokenAddress,
-      value: toHex(tx?.value ?? 0),
-      data: requireHex(tx.data, 'unlock prepared tx.data'),
-    },
+    to: tokenAddress,
+    value: BigInt(tx.value?.toString() ?? '0'),
+    data: requireHex(tx.data, 'unlock prepared tx.data'),
+  };
+}
+
+export const prepareUnlock = async ({ parameters }: PrepareActionProps<'unlock'>): Promise<{ call: Call | null }> => {
+  const tokenAddress = requireAddress(parameters.assetToUnlock.address, 'unlock asset address');
+  return {
+    call: await prepareApprovalCall({
+      amount: parameters.amount,
+      chainId: parameters.chainId,
+      owner: parameters.fromAddress,
+      spender: parameters.contractAddress,
+      tokenAddress,
+      useExactApproval: true,
+    }),
   };
 };
 
@@ -342,11 +357,7 @@ export const unlock = async ({
 
   const nonce = typeof baseNonce === 'number' ? baseNonce + index : undefined;
 
-  const { approvalAmount, isUnlimited } = await getApprovalAmount({
-    address: parameters.fromAddress,
-    chainId,
-    amount: parameters.amount,
-  });
+  const { approvalAmount, isUnlimited } = getApprovalAmount({ amount: parameters.amount, useExactApproval: false });
 
   let approval;
   try {

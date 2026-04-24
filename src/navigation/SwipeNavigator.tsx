@@ -36,7 +36,7 @@ import { discoverOpenSearchFnRef, discoverScrollToTopFnRef } from '@/components/
 import { EasingGradient } from '@/components/easing-gradient/EasingGradient';
 import { useShowKingOfTheHill } from '@/components/king-of-the-hill/useShowKingOfTheHill';
 import { FlexItem } from '@/components/layout';
-import { MinedTransactionWatcher } from '@/components/mined-transaction-watcher/MinedTransactionWatcher';
+import { AssetUpdateTransactionWatcher } from '@/components/mined-transaction-watcher/MinedTransactionWatcher';
 import { PendingTransactionWatcher } from '@/components/pending-transaction-watcher/PendingTransactionWatcher';
 import { PANEL_COLOR_DARK } from '@/components/SmoothPager/ListPanel';
 import { ActivityTabIcon } from '@/components/tab-bar/ActivityTabIcon';
@@ -737,7 +737,7 @@ export function SwipeNavigator() {
       </BrowserTabBarContextProvider>
 
       <PendingTransactionWatcher />
-      <MinedTransactionWatcher />
+      <AssetUpdateTransactionWatcher />
     </FlexItem>
   );
 }

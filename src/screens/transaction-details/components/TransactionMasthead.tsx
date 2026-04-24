@@ -19,6 +19,7 @@ import { Bleed, Box, Columns, Cover, Row, Rows, Separator, Stack, Text, type Tex
 import { type ParsedAddressAsset } from '@/entities/tokens';
 import { type RainbowTransaction } from '@/entities/transactions';
 import { IS_ANDROID } from '@/env';
+import { getDelegationContractAddress, isRainbowDelegated } from '@/features/delegation/status';
 import { fetchENSAvatar } from '@/features/ens/hooks/useENSAvatar';
 import { fetchReverseRecord } from '@/features/ens/utils/handlers';
 import styled from '@/framework/ui/styled-thing';
@@ -45,7 +46,7 @@ import { formatAddressForDisplay } from '@/utils/abbreviations';
 import isLowerCaseMatch from '@/utils/isLowerCaseMatch';
 import { addressHashedColorIndex, addressHashedEmoji } from '@/utils/profileUtils';
 import { safeSum } from '@/utils/safeSum';
-import { DelegationStatus, useDelegations } from '@rainbow-me/delegation';
+import { useDelegations } from '@rainbow-me/delegation';
 
 const TransactionMastheadHeight = android ? 153 : 135;
 
@@ -387,8 +388,8 @@ export default function TransactionMasthead({ transaction }: { transaction: Rain
     if (transaction.type !== 'delegate' && transaction.type !== 'revoke_delegation') return undefined;
     return delegations?.find(d => d.chainId === transaction.chainId);
   }, [delegations, transaction.chainId, transaction.type]);
-  const delegationContract = delegation?.currentContract || delegation?.revokeAddress || transaction.to || undefined;
-  const isRainbowDelegation = delegation?.delegationStatus === DelegationStatus.RAINBOW_DELEGATED;
+  const delegationContract = getDelegationContractAddress(delegation) || transaction.to || undefined;
+  const isRainbowDelegation = isRainbowDelegated(delegation);
 
   const contractImage = transaction?.contract?.iconUrl;
   const contractName = transaction?.contract?.name;

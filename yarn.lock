@@ -6078,9 +6078,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@rainbow-me/delegation@npm:0.3.2":
-  version: 0.3.2
-  resolution: "@rainbow-me/delegation@npm:0.3.2"
+"@rainbow-me/delegation@file:./rainbow-me-delegation-0.3.3.tgz::locator=Rainbow%40workspace%3A.":
+  version: 0.3.3
+  resolution: "@rainbow-me/delegation@file:./rainbow-me-delegation-0.3.3.tgz#./rainbow-me-delegation-0.3.3.tgz::hash=7fa422&locator=Rainbow%40workspace%3A."
   peerDependencies:
     "@storesjs/stores": ^0.8.6
     ethers: ^5.7.0
@@ -6091,7 +6091,7 @@ __metadata:
       optional: true
     react:
       optional: true
-  checksum: 10c0/23e7de5f9b9e4553f8475ec315cb3eb63852bf193c2b07c5c736b38a31196802ca19713adea394465379422c222116de84ae4faaaef28f64e190b36e4b0f8b56
+  checksum: 10c0/0b89a2edf00d1256d87e0b25ba64762952ebe2b9173455113defc8b2f4762a534bd28a5e90df2b21fd9f4547742609686838ff632ba3148f3ac2fd8d25a21057
   languageName: node
   linkType: hard
 
@@ -9544,7 +9544,7 @@ __metadata:
     "@notifee/react-native": "npm:7.8.2"
     "@polymarket/builder-relayer-client": "npm:0.0.7"
     "@polymarket/clob-client-v2": "npm:1.0.0"
-    "@rainbow-me/delegation": "npm:0.3.2"
+    "@rainbow-me/delegation": "file:./rainbow-me-delegation-0.3.3.tgz"
     "@rainbow-me/provider": "npm:0.1.2"
     "@rainbow-me/react-native-animated-number": "npm:0.0.2"
     "@rainbow-me/swaps": "npm:0.41.0"

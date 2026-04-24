@@ -159,7 +159,7 @@ function derive<DerivedState>(
   const unsubscribes = new Set<UnsubscribeFn<true>>();
 
   // Lazily built proxy helpers
-  let rootProxyCache: WeakMap<StoreApi<unknown>, unknown> | undefined;
+  let rootProxyCache: WeakMap<BaseRainbowStore<unknown>, unknown> | undefined;
   let pathFinder: PathFinder | undefined;
 
   // Core state

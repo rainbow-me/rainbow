@@ -8,7 +8,7 @@ import { logger, RainbowError } from '@/logger';
 import { parseTransaction } from '@/parsers/transactions';
 import { createQueryKey, queryClient, type InfiniteQueryConfig, type QueryConfig, type QueryFunctionArgs } from '@/react-query';
 import { getPlatformClient } from '@/resources/platform/client';
-import { useBackendNetworksStore } from '@/state/backendNetworks/backendNetworks';
+import { backendNetworksActions } from '@/state/backendNetworks/backendNetworks';
 
 import { anvilChain, e2eAnvilConfirmedTransactions } from './transaction';
 
@@ -89,7 +89,7 @@ export async function consolidatedTransactionsQueryFunction({
       };
     }
 
-    const chainsIdByName = useBackendNetworksStore.getState().getChainsIdByName();
+    const chainsIdByName = backendNetworksActions.getChainsIdByName();
 
     const parsedTransactions = data.result.map((tx: Transaction) => {
       const chainId = chainsIdByName[tx.network];
@@ -148,21 +148,13 @@ export function useConsolidatedTransactions(
   { address, currency }: Pick<ConsolidatedTransactionsArgs, 'address' | 'currency'>,
   config: InfiniteQueryConfig<ConsolidatedTransactionsResult, Error, ConsolidatedTransactionsResult> = {}
 ) {
-  const mainnetChainIds = useBackendNetworksStore.getState().getSupportedMainnetChainIds();
-  let effectiveChainIds = mainnetChainIds;
-
-  if (IS_TEST) {
-    // Add Anvil's chain ID if it's not already there for testing purposes
-    if (!effectiveChainIds.includes(anvilChain.id)) {
-      effectiveChainIds = [anvilChain.id, ...effectiveChainIds];
-    }
-  }
+  const chainIds = backendNetworksActions.getSupportedMainnetChainIds();
 
   return useInfiniteQuery(
     consolidatedTransactionsQueryKey({
       address,
       currency,
-      chainIds: effectiveChainIds,
+      chainIds,
     }),
     consolidatedTransactionsQueryFunction,
     {
