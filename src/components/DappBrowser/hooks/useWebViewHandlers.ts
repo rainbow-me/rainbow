@@ -19,6 +19,7 @@ import { generateUniqueId } from '@/worklets/strings';
 
 import { useBrowserContext } from '../BrowserContext';
 import { useBrowserWorkletsContext } from '../BrowserWorkletsContext';
+import { addReferralToDappBrowserUrl } from '../dappReferrals';
 import { handleProviderRequestApp } from '../handleProviderRequest';
 import { type TabId } from '../types';
 import { isValidAppStoreUrl } from '../utils';
@@ -50,6 +51,7 @@ export function useWebViewHandlers({
   const { updateTabUrlWorklet } = useBrowserWorkletsContext();
 
   const currentMessengerRef = useRef<MessengerWithUrl | null>(null);
+  const dappReferralsAppliedRef = useRef(new Set<string>());
   const logoRef = useRef<string | null>(null);
 
   const getCurrentMessenger = useCallback(
@@ -138,6 +140,26 @@ export function useWebViewHandlers({
     [addRecent, backgroundColor, setLogo, setTitle, tabId, titleRef, getCurrentMessenger]
   );
 
+  const applyDappReferral = useCallback(
+    (url: string) => {
+      const dappHostname = getDappHostname(url);
+      if (!dappHostname || dappReferralsAppliedRef.current.has(dappHostname)) {
+        return false;
+      }
+
+      const referralUrl = addReferralToDappBrowserUrl(url);
+      if (referralUrl === url) {
+        return false;
+      }
+
+      dappReferralsAppliedRef.current.add(dappHostname);
+      useBrowserStore.getState().goToPage(referralUrl, tabId);
+      runOnUI(updateTabUrlWorklet)({ tabId, url: referralUrl });
+      return true;
+    },
+    [tabId, updateTabUrlWorklet]
+  );
+
   const handleShouldStartLoadWithRequest = useCallback(
     (request: ShouldStartLoadRequest) => {
       if (request.url.startsWith('rainbow://wc') || request.url.startsWith('https://rnbwappdotcom.app.link/')) {
@@ -145,9 +167,14 @@ export function useWebViewHandlers({
         activeTabRef.current?.reload();
         return false;
       }
+
+      if (request.isTopFrame && applyDappReferral(request.url)) {
+        return false;
+      }
+
       return true;
     },
-    [activeTabRef]
+    [activeTabRef, applyDappReferral]
   );
 
   const handleOnLoadProgress = useCallback(
