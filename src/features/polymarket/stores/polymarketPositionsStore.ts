@@ -147,8 +147,6 @@ async function fetchPolymarketMarkets({
         url.searchParams.set('closed', 'true');
       }
 
-      console.log('[fetchPolymarketMarkets] url', url.toString());
-
       const { data } = await rainbowFetch<RawPolymarketMarket[]>(url.toString(), {
         abortController,
         timeout: time.seconds(15),

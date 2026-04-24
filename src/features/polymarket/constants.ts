@@ -39,7 +39,9 @@ export const POLYMARKET_SIGNING_PROXY_URL = `${RAINBOW_POLYMARKET_PROXY_URL}/sig
 // TODO: Add feature flag to revert to clob.polymarket.com when migration is live.
 export const POLYMARKET_CLOB_URL = 'https://clob-v2.polymarket.com';
 export const POLYMARKET_GAMMA_API_URL = 'https://gamma-api.polymarket.com';
-export const POLYMARKET_DATA_API_URL = 'https://data-api.polymarket.com';
+// TODO: Add feature flag to revert to data-api.polymarket.com when migration is live.
+export const POLYMARKET_DATA_API_URL = 'https://data-api-preprod-int.polymarket.com/';
+
 export const POLYMARKET_SPORTS_WS_URL = 'wss://sports-api.polymarket.com/ws';
 
 export const POLYMARKET_BUILDER_CODE = '0xabce5abdc189cba6fb85edb9170e3e6e41607e946b06d112b7f87e2f2977020c';
