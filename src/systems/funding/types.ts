@@ -194,8 +194,13 @@ export type DepositGasConfig = {
    */
   estimateGasLimit?: (params: DepositGasHookParams) => Promise<string>;
   /**
-   * Optional sponsorship signal for UI display.
-   * When true, gas is shown as "estimated (struck-through) + Free".
+   * Synchronous sponsorship prediction for first-render UI state.
+   * Async resolution may still refine the final sponsorship outcome.
+   */
+  predictIsSponsored?: (params: DepositGasHookParams) => boolean;
+  /**
+   * Optional sponsorship resolver for authoritative UI state.
+   * Custom flows may also use this hook to prepare sponsor-paid execution in advance.
    */
   isSponsored?: (params: DepositGasHookParams) => Promise<boolean> | boolean;
 };
