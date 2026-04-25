@@ -1,4 +1,4 @@
-import { PixelRatio } from 'react-native';
+import { PixelRatio, type TextStyle } from 'react-native';
 
 import * as MeasureText from '@domir/react-native-measure-text';
 import TextSize from 'react-native-text-size';
@@ -15,6 +15,14 @@ const defaultTextStyles = {
 const DefaultMeasurementsState = {
   height: undefined,
   width: undefined,
+};
+
+export type MeasureTextStyle = {
+  fontFamily?: string;
+  fontSize?: number;
+  fontWeight?: Extract<TextStyle['fontWeight'], string>;
+  letterSpacing?: number;
+  allowFontScaling?: boolean;
 };
 
 export default async function measureText(text: any, textStyles = {}) {
@@ -36,8 +44,8 @@ export default async function measureText(text: any, textStyles = {}) {
 export function measureTextSync(
   text: string,
   // not all style props are supported by the react-native-measure-text library
-  textStyles: { fontSize?: number; fontFamily?: string; fontWeight?: string; letterSpacing?: number; allowFontScaling?: boolean } = {}
-) {
+  textStyles: MeasureTextStyle = {}
+): number {
   if (textStyles.allowFontScaling) {
     const fontScale = PixelRatio.getFontScale();
 
