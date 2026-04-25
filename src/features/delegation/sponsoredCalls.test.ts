@@ -26,6 +26,30 @@ describe('sponsoredCalls', () => {
     mockIsSponsorshipEligible.mockReturnValue(true);
   });
 
+  it('requires a delegation-capable wallet', () => {
+    mockCanUseDelegatedExecution.mockReturnValue(false);
+
+    expect(predictSponsoredCallsExecution({ address: ACCOUNT, chainId: ChainId.base })).toBe(false);
+
+    expect(mockIsSponsorshipEligible).not.toHaveBeenCalled();
+  });
+
+  it('requires sponsorship eligibility when the chain is known', () => {
+    mockIsSponsorshipEligible.mockReturnValue(false);
+
+    expect(predictSponsoredCallsExecution({ address: ACCOUNT, chainId: ChainId.mainnet })).toBe(false);
+  });
+
+  it('allows sponsorship prediction when the known chain is eligible', () => {
+    expect(predictSponsoredCallsExecution({ address: ACCOUNT, chainId: ChainId.base })).toBe(true);
+  });
+
+  it('allows explicit prediction before the chain is known', () => {
+    expect(predictSponsoredCallsExecution({ address: ACCOUNT, chainId: null })).toBe(true);
+
+    expect(mockIsSponsorshipEligible).not.toHaveBeenCalled();
+  });
+
   it('uses the provided sponsorship eligibility list when one is supplied', () => {
     expect(
       predictSponsoredCallsExecution({
