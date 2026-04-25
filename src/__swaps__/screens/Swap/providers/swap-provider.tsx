@@ -38,7 +38,7 @@ import { trackSwapEvent } from '@/__swaps__/utils/trackSwapEvent';
 import { analytics } from '@/analytics';
 import type { LegacyTransactionGasParamAmounts, TransactionGasParamAmounts } from '@/entities/gas';
 import { IS_IOS } from '@/env';
-import { useSponsoredSwapStore } from '@/features/delegation/sponsoredSwapStore';
+import { getPreparedSponsoredSwap } from '@/features/delegation/sponsoredSwapStore';
 import { supportsDelegatedExecution } from '@/features/delegation/willDelegate';
 import { divWorklet, equalWorklet, lessThanOrEqualToWorklet, mulWorklet, sumWorklet } from '@/framework/core/safeMath';
 import { LedgerSigner } from '@/handlers/LedgerSigner';
@@ -273,12 +273,7 @@ export const SwapProvider = ({ children }: SwapProviderProps) => {
       }
 
       const degenMode = swapsStore.getState().degenMode;
-      const preparedSwapPromise = connectedToAnvil
-        ? null
-        : useSponsoredSwapStore
-            .getState()
-            .getPreparedSwap()
-            .catch(() => null);
+      const preparedSwapPromise = connectedToAnvil ? null : getPreparedSponsoredSwap().catch(() => null);
 
       const wallet = await executeFn(loadWallet, {
         screen: Screens.SWAPS,
