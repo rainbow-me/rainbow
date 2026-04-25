@@ -15,6 +15,7 @@ import { IS_INTERNAL } from '@/env';
 import { getTransactionLaunchToken } from '@/helpers/transactions';
 import * as i18n from '@/languages';
 import { measureTextSync, type MeasureTextStyle } from '@/utils/measureText';
+import { shallowEqual } from '@/worklets/comparisons';
 
 type ToastContentProps = {
   title: React.ReactNode;
@@ -55,13 +56,6 @@ export const ToastContent = memo(function ToastContent({ toast }: { toast: Rainb
 
   return <BaseToastContent toast={toast} />;
 });
-
-export function areToastContentLayoutsEqual(a: ToastContentLayout | null, b: ToastContentLayout | null): boolean {
-  if (a === b) return true;
-  if (!a || !b) return false;
-
-  return a.bottomLabel === b.bottomLabel && a.iconWidth === b.iconWidth && a.subtitle === b.subtitle && a.title === b.title;
-}
 
 export function measureToastContentWidth(layout: ToastContentLayout): number {
   const textWidth = Math.min(
@@ -236,6 +230,12 @@ export function buildToastContentLayout(toast: RainbowToast): ToastContentLayout
     subtitle: launchToken?.name || toast.transaction.contract?.name || toast.transaction.description || '',
     title,
   };
+}
+
+export function areToastContentLayoutsEqual(a: ToastContentLayout | null, b: ToastContentLayout | null): boolean {
+  if (a === b) return true;
+  if (!a || !b) return false;
+  return shallowEqual(a, b);
 }
 
 function getSwapToastBottomLabel(toast: RainbowToast): string | undefined {

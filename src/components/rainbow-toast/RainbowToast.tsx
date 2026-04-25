@@ -59,7 +59,7 @@ import { useVerticalDismissPanGesture } from './useVerticalDismissPanGesture';
 
 export const RainbowToastDisplay = memo(function RainbowToastDisplay() {
   const rainbowToastsEnabled = useRainbowToastEnabled();
-  const language = useAccountSettings().language;
+  const { language } = useAccountSettings();
 
   if (!rainbowToastsEnabled) {
     return null;
@@ -85,7 +85,7 @@ function toastsWithAdjustedIndex(toasts: RainbowToast[]): [RainbowToast, number]
 function RainbowToastDisplayContent() {
   const isShowingTransactionDetails = useRainbowToastsStore(state => state.isShowingTransactionDetails);
   const toasts = useRainbowToasts();
-  const deviceHeight = useDimensions().height;
+  const { height: deviceHeight } = useDimensions();
 
   const stackWidth = useStoreSharedValue(useToastStackWidth, width => width);
   const showingTransactionDetails = useSharedValue(false);
@@ -167,14 +167,16 @@ const DISMISS_VELOCITY_THRESHOLD = 80;
 const useToastStackWidth = createDerivedStore(
   $ => {
     const layout = $(useRainbowToastsStore, selectTopToastContentLayout, areToastContentLayoutsEqual);
-    return layout ? measureToastContentWidth(layout) + TOAST_CONTENT_PADDING_LEFT + TOAST_CONTENT_PADDING_RIGHT : 0;
+    if (!layout) return 0;
+    return measureToastContentWidth(layout) + TOAST_CONTENT_PADDING_LEFT + TOAST_CONTENT_PADDING_RIGHT;
   },
   { lockDependencies: true }
 );
 
 function selectTopToastContentLayout(state: ToastState): ToastContentLayout | null {
   const topToast = getTopRainbowToast(state.toasts);
-  return topToast ? buildToastContentLayout(topToast) : null;
+  if (!topToast) return null;
+  return buildToastContentLayout(topToast);
 }
 
 type Props = {
@@ -185,28 +187,19 @@ type Props = {
 
 const RainbowToastItem = memo(function RainbowToast({ toast, stackWidth, index }: Props) {
   const insets = useSafeAreaInsets();
-  const id = toast.id;
+  const { isDarkMode } = useColorMode();
+  const { width: deviceWidth } = useDimensions();
 
+  const id = toast.id;
   const gap = index > 1 ? TOAST_GAP_FAR : TOAST_GAP_NEAR;
   const distance = index * gap + insets.top + TOAST_TOP_OFFSET;
-  const isDarkMode = useColorMode().isDarkMode;
-  const deviceWidth = useDimensions().width;
+  const startedHiddenBelow = index > 2;
+
+  const isPressed = useSharedValue(false);
+  const lastChangeX = useSharedValue(0);
   const opacity = useSharedValue(0);
   const translateX = useSharedValue(0);
-  const startedHiddenBelow = index > 2;
-  const translateY = useSharedValue(
-    (() => {
-      if (startedHiddenBelow) {
-        // if >3 (starting hidden), start from below
-        return distance + TOAST_INITIAL_OFFSET_BELOW;
-      } else {
-        return insets.top + TOAST_INITIAL_OFFSET_ABOVE;
-      }
-    })()
-  );
-
-  const lastChangeX = useSharedValue(0);
-  const isPressed = useSharedValue(false);
+  const translateY = useSharedValue(startedHiddenBelow ? distance + TOAST_INITIAL_OFFSET_BELOW : insets.top + TOAST_INITIAL_OFFSET_ABOVE);
 
   useEffect(() => {
     if (!startedHiddenBelow) {
