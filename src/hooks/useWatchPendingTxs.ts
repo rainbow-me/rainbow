@@ -4,7 +4,7 @@ import type { Address, Hash } from 'viem';
 
 import { analytics } from '@/analytics';
 import { event } from '@/analytics/event';
-import { useRainbowToastsStore } from '@/components/rainbow-toast/useRainbowToastsStore';
+import { rainbowToastsActions } from '@/components/rainbow-toast/useRainbowToastsStore';
 import {
   isAwaitingRelayTransactionHash,
   TransactionStatus,
@@ -129,8 +129,7 @@ export async function watchPendingTransactions({
   });
 
   if (settledTransitions.length) {
-    const handleTransaction = useRainbowToastsStore.getState().handleTransaction;
-    settledTransitions.forEach(transaction => handleTransaction(transaction));
+    settledTransitions.forEach(transaction => rainbowToastsActions.handleTransaction(transaction));
   }
 
   if (confirmedTransitions.length) {

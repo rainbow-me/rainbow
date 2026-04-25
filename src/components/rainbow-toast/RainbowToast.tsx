@@ -40,6 +40,7 @@ import { type RainbowToast } from '@/components/rainbow-toast/types';
 import { useRainbowToastEnabled } from '@/components/rainbow-toast/useRainbowToastEnabled';
 import {
   getTopRainbowToast,
+  rainbowToastsActions,
   useRainbowToasts,
   useRainbowToastsStore,
   type ToastState,
@@ -49,8 +50,9 @@ import { TransactionStatus } from '@/entities/transactions';
 import { IS_ANDROID, IS_IOS, IS_TEST } from '@/env';
 import useAccountSettings from '@/hooks/useAccountSettings';
 import useDimensions from '@/hooks/useDimensions';
+import { useListen } from '@/state/internal/hooks/useListen';
 import { useStoreSharedValue, type ReadOnlySharedValue } from '@/state/internal/hooks/useStoreSharedValue';
-import { useAccountAddress } from '@/state/wallets/walletsStore';
+import { useWalletsStore } from '@/state/wallets/walletsStore';
 
 import { RainbowToastExpandedDisplay } from './RainbowToastExpandedDisplay';
 import { useVerticalDismissPanGesture } from './useVerticalDismissPanGesture';
@@ -93,9 +95,7 @@ function RainbowToastDisplayContent() {
   }, [isShowingTransactionDetails, showingTransactionDetails]);
 
   const { dragY, panGesture, isDismissed } = useVerticalDismissPanGesture({
-    onDismiss: useCallback(() => {
-      useRainbowToastsStore.getState().removeAllToasts();
-    }, []),
+    onDismiss: rainbowToastsActions.removeAllToasts,
     height: deviceHeight,
     dismissSensitivity: 0.5,
     dismissTargetY: -100,
@@ -109,10 +109,7 @@ function RainbowToastDisplayContent() {
   });
 
   // Dismiss all toasts when changing account.
-  const address = useAccountAddress();
-  useEffect(() => {
-    useRainbowToastsStore.getState().removeAllToasts();
-  }, [address]);
+  useListen(useWalletsStore, s => s.accountAddress, rainbowToastsActions.removeAllToasts);
 
   // show all removing and 3 latest toasts
   const visibleToasts = useMemo(() => {
@@ -188,7 +185,6 @@ type Props = {
 
 const RainbowToastItem = memo(function RainbowToast({ toast, stackWidth, index }: Props) {
   const insets = useSafeAreaInsets();
-  const { finishRemoveToast, startRemoveToast, setShowExpandedToasts } = useRainbowToastsStore();
   const id = toast.id;
 
   const gap = index > 1 ? TOAST_GAP_FAR : TOAST_GAP_NEAR;
@@ -220,15 +216,14 @@ const RainbowToastItem = memo(function RainbowToast({ toast, stackWidth, index }
   }, [opacity, translateY, distance, startedHiddenBelow]);
 
   const finishRemoveToastCallback = useCallback(() => {
-    finishRemoveToast(id);
-  }, [id, finishRemoveToast]);
+    rainbowToastsActions.finishRemoveToast(id);
+  }, [id]);
 
   const swipeRemoveToastCallback = useCallback(() => {
-    startRemoveToast(id, 'swipe');
-  }, [id, startRemoveToast]);
+    rainbowToastsActions.startRemoveToast(id, 'swipe');
+  }, [id]);
 
   const hideToast = useCallback(() => {
-    'worklet';
     opacity.value = withSpring(0, springConfig, () => {
       runOnJS(finishRemoveToastCallback)();
     });
@@ -247,11 +242,9 @@ const RainbowToastItem = memo(function RainbowToast({ toast, stackWidth, index }
       .activeOffsetX([-10, 10])
       .failOffsetY([-10, 10])
       .onUpdate(event => {
-        'worklet';
         translateX.value = event.translationX;
       })
       .onEnd(event => {
-        'worklet';
         const velocityX = event.velocityX;
         lastChangeX.value = 0;
 
@@ -298,8 +291,8 @@ const RainbowToastItem = memo(function RainbowToast({ toast, stackWidth, index }
 
   const setShowExpandedTrue = useCallback(() => {
     isPressed.value = false;
-    setShowExpandedToasts(true);
-  }, [isPressed, setShowExpandedToasts]);
+    rainbowToastsActions.setShowExpandedToasts(true);
+  }, [isPressed]);
 
   const pressGesture = useMemo(() => {
     return Gesture.Tap()
