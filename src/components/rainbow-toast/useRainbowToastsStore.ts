@@ -1,5 +1,7 @@
 import { useMemo } from 'react';
 
+import { createStoreActions } from '@storesjs/stores';
+
 import { TOAST_HIDE_TIMEOUT_MS } from '@/components/rainbow-toast/constants';
 import type { RainbowToast } from '@/components/rainbow-toast/types';
 import type { RainbowTransaction } from '@/entities/transactions';
@@ -127,6 +129,8 @@ export const useRainbowToastsStore = createRainbowStore<ToastState>((set, get) =
     });
   },
 }));
+
+export const rainbowToastsActions = createStoreActions(useRainbowToastsStore);
 
 function getToastsStateForStartRemove(state: ToastState, toast: RainbowToast | undefined, via: 'swipe' | 'finish') {
   const toasts = { ...state.toasts };
