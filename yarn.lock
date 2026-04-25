@@ -9740,7 +9740,6 @@ __metadata:
     react-native-tab-view: "npm:3.5.2"
     react-native-tcp: "npm:3.3.2"
     react-native-text-input-mask: "npm:2.0.0"
-    react-native-text-size: "rainbow-me/react-native-text-size#15b21c9f88c6df0d1b5e0f2ba792fe59b5dc255a"
     react-native-tooltip: "rainbow-me/react-native-tooltip#db20e9521c5be9e151728ce402cd70fdb556bd97"
     react-native-tooltips: "rainbow-me/react-native-tooltips#fdafbc7ba33ee231229f5d3f58b29d0d1c55ddfa"
     react-native-turbo-haptics: "npm:1.0.9"
@@ -23363,15 +23362,6 @@ __metadata:
   version: 2.0.0
   resolution: "react-native-text-input-mask@npm:2.0.0"
   checksum: 10c0/ec13a01ea17b9e41ae9a7bfb6748d45d608d631ee35e92e9a7b7a6f3da69f774755cbd1ecf1a72e0d6cd66ba08e9969f8375202bb43d3f61ea2c0bf98731062a
-  languageName: node
-  linkType: hard
-
-"react-native-text-size@rainbow-me/react-native-text-size#15b21c9f88c6df0d1b5e0f2ba792fe59b5dc255a":
-  version: 4.0.0-rc.1
-  resolution: "react-native-text-size@https://github.com/rainbow-me/react-native-text-size.git#commit=15b21c9f88c6df0d1b5e0f2ba792fe59b5dc255a"
-  peerDependencies:
-    react-native: ">=0.59.0"
-  checksum: 10c0/bd8590558fc0495451a8d835bdb6f47ed14ac49d3060af78d6da871383ca5d35e9c98b0a239186d280df3e5310c1fa94557caf9e3141192739465da49d10368d
   languageName: node
   linkType: hard
 
