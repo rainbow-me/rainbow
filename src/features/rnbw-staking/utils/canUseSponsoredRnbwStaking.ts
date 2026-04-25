@@ -1,16 +1,13 @@
 import { type Address } from 'viem';
 
-import { isRainbowDelegatedForChain } from '@/features/delegation/utils/isRainbowDelegatedForChain';
-import { EthereumWalletType } from '@/helpers/walletTypes';
+import { predictSponsoredCallsExecution } from '@/features/delegation/sponsoredCalls';
+import { supportsDelegatedExecution } from '@/features/delegation/willDelegate';
 import { type ChainId } from '@/state/backendNetworks/types';
-import { getWalletWithAccount } from '@/state/wallets/walletsStore';
 
+/**
+ * Returns true when RNBW staking can request sponsor-paid managed execution.
+ */
 export async function canUseSponsoredRnbwStaking(address: Address, chainId: ChainId): Promise<boolean> {
-  const wallet = getWalletWithAccount(address);
-
-  if (wallet?.type === EthereumWalletType.bluetooth) {
-    return false;
-  }
-
-  return isRainbowDelegatedForChain(address, chainId);
+  if (!predictSponsoredCallsExecution({ address, chainId })) return false;
+  return supportsDelegatedExecution({ address, chainId });
 }
