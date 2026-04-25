@@ -2,10 +2,11 @@ import type { StaticJsonRpcProvider } from '@ethersproject/providers';
 import { type Address } from 'viem';
 
 import { isCrosschainQuote } from '@/__swaps__/utils/quotes';
+import { SPONSORED_CALLS_REQUIREMENTS } from '@/features/delegation/calls';
 import { getRemoteConfig } from '@/model/remoteConfig';
 import { backendNetworksActions } from '@/state/backendNetworks/backendNetworks';
 import { type ChainId } from '@/state/backendNetworks/types';
-import { type Call, type PreparedCallsExecution } from '@rainbow-me/delegation';
+import { type Call } from '@rainbow-me/delegation';
 import { type CrosschainQuote, type Quote } from '@rainbow-me/swaps';
 
 import { prepareCrosschainSwapCall } from './actions/crosschainSwap';
@@ -36,17 +37,7 @@ export function buildAtomicExecutionRequirements(chainId: ChainId): {
   const sponsoredSwapsEnabled = getRemoteConfig().sponsored_swaps_enabled;
   const shouldRequestSponsorship = sponsoredSwapsEnabled && backendNetworksActions.isSponsorshipEligible(chainId);
 
-  return {
-    atomic: 'required',
-    fees: shouldRequestSponsorship ? { payer: 'sponsor' } : undefined,
-  };
-}
-
-/**
- * Returns true when a prepared managed execution is sponsored.
- */
-export function isPreparedCallsExecutionSponsored(prepared: PreparedCallsExecution | null): boolean {
-  return prepared?.kind === 'calls.managed' && prepared.review.fees.payer === 'sponsor';
+  return shouldRequestSponsorship ? SPONSORED_CALLS_REQUIREMENTS : { atomic: 'required' };
 }
 
 /**

@@ -4,13 +4,12 @@ import { Wallet } from '@ethersproject/wallet';
 import type { LegacyTransactionGasParamAmounts, TransactionGasParamAmounts } from '@/entities/gas';
 import type { NewTransaction } from '@/entities/transactions';
 import { IS_TEST } from '@/env';
-import { trackManagedExecution } from '@/features/delegation/managedExecutionTracking';
+import { trackCallsExecution } from '@/features/delegation/callsExecutionTracking';
+import { resolveManagedExecutionFailure } from '@/features/delegation/managedExecutionFailure';
 import { getProvider } from '@/handlers/web3';
 import { ensureError, logger, RainbowError } from '@/logger';
 import { buildAtomicExecutionRequirements } from '@/raps/atomicSwapPreparation';
-import { resolveManagedExecutionFailure } from '@/raps/managedExecutionFailure';
 import { ChainId } from '@/state/backendNetworks/types';
-import { addNewTransaction } from '@/state/pendingTransactions';
 import { executeFn, Screens, TimeToSignOperation } from '@/state/performance/performance';
 import { swapsStore } from '@/state/swaps/swapsStore';
 import { execute, type Call, type ExecuteCallsResult, type ExecutionResult, type PreparedCallsExecution } from '@rainbow-me/delegation';
@@ -34,7 +33,6 @@ import type {
   RapSwapActionParameters,
   RapTypes,
 } from './references';
-import { extractReplayableCall } from './replay';
 import { createUnlockAndCrosschainSwapRap } from './unlockAndCrosschainSwap';
 import { createUnlockAndSwapRap } from './unlockAndSwap';
 import { requireAddress } from './validation';
@@ -248,14 +246,12 @@ export async function walletExecuteRap<T extends RapTypes>(
           }
 
           if (pendingTransaction) {
-            trackManagedExecution({
+            trackCallsExecution({
               address: fromAddress,
-              executionId: execution.executionId,
-              transaction: {
-                ...pendingTransaction,
-                batch: true,
-                delegation: false,
-              },
+              batch: true,
+              chainId,
+              execution,
+              transaction: pendingTransaction,
             });
           }
 
@@ -269,24 +265,12 @@ export async function walletExecuteRap<T extends RapTypes>(
         const transactionResult = requireSingleWalletAtomicExecution(execution);
 
         if (pendingTransaction) {
-          const atomicTransaction = transactionResult.transaction;
-          const replayableCall = extractReplayableCall(atomicTransaction, pendingTransaction);
-
-          addNewTransaction({
+          trackCallsExecution({
             address: fromAddress,
+            batch: true,
             chainId,
-            transaction: {
-              ...pendingTransaction,
-              ...replayableCall,
-              hash: transactionResult.hash,
-              batch: true,
-              delegation: transactionResult.type === 'eip7702',
-              gasPrice: undefined,
-              gasLimit: atomicTransaction.gas.toString(),
-              maxFeePerGas: atomicTransaction.maxFeePerGas,
-              maxPriorityFeePerGas: atomicTransaction.maxPriorityFeePerGas,
-              nonce: atomicTransaction.nonce,
-            },
+            execution: transactionResult,
+            transaction: pendingTransaction,
           });
         }
 
