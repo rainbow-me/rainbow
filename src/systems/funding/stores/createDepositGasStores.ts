@@ -101,6 +101,7 @@ export function createDepositGasStores(
       const normalizedAmount = $(useNormalizedAmount);
       const assetUniqueId = $(useDepositStore, selectAssetUniqueId);
       const quoteKey = $(useQuoteKey);
+
       const hasAmount = hasNonZeroAmount(normalizedAmount);
       const hasAsset = assetUniqueId !== null;
 
@@ -180,6 +181,7 @@ export function createDepositGasStores(
       const amount = $(useNormalizedAmount);
       const asset = $(useDepositStore, state => state.asset);
       const quote = $(useQuoteStore, state => state.getData());
+
       const params = buildGasHookParams({
         accountAddress,
         amount,
@@ -211,6 +213,7 @@ export function createDepositGasStores(
       const asset = $(useDepositStore, state => state.getAsset());
       const gasLimit = $(useGasLimitStore, state => state.getData());
       const gasSettings = $(useGasSettings);
+
       return computeMaxSwappableAmount(asset, gasSettings, gasLimit ?? undefined) || asset?.balance.amount;
     },
     { lockDependencies: true }
