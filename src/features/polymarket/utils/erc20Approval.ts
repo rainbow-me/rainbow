@@ -1,46 +1,43 @@
 import { type BigNumberish } from '@ethersproject/bignumber';
 import { OperationType, type SafeTransaction } from '@polymarket/builder-relayer-client';
-import { BigNumber, ethers } from 'ethers';
+import { maxUint256 } from 'viem';
 
-import { erc20Interface } from '@/features/polymarket/utils/erc20Interface';
-import erc20ABI from '@/references/erc20-abi.json';
+import { encodeErc20Approve } from '@/framework/core/evm/erc20Calldata';
+import { hasSufficientErc20Allowance, type EvmCallProvider } from '@/framework/data/evm/erc20Allowance';
 
-type Erc20ApprovalTransactionParams = {
+const DEFAULT_ERC20_APPROVAL_AMOUNT = maxUint256;
+
+export function buildErc20ApprovalTransaction({
+  amount = DEFAULT_ERC20_APPROVAL_AMOUNT,
+  spender,
+  tokenAddress,
+}: {
   amount?: BigNumberish;
   spender: string;
   tokenAddress: string;
-};
-
-type MissingErc20ApprovalTransactionParams = Erc20ApprovalTransactionParams & {
-  owner: string;
-  provider: ethers.providers.Provider;
-};
-
-export function buildErc20ApprovalTransaction({
-  amount = ethers.constants.MaxUint256,
-  spender,
-  tokenAddress,
-}: Erc20ApprovalTransactionParams): SafeTransaction {
+}): SafeTransaction {
   return {
     to: tokenAddress,
-    data: erc20Interface.encodeFunctionData('approve', [spender, amount]),
+    data: encodeErc20Approve({ amount, spender }),
     value: '0',
     operation: OperationType.Call,
   };
 }
 
 export async function getMissingErc20ApprovalTransaction({
-  amount = ethers.constants.MaxUint256,
+  amount = DEFAULT_ERC20_APPROVAL_AMOUNT,
   owner,
   provider,
   spender,
   tokenAddress,
-}: MissingErc20ApprovalTransactionParams): Promise<SafeTransaction[]> {
-  const tokenContract = new ethers.Contract(tokenAddress, erc20ABI, provider);
-  const allowance = (await tokenContract.allowance(owner, spender)) as BigNumber;
-  const requiredAmount = BigNumber.from(amount);
-
-  if (allowance.gte(requiredAmount)) {
+}: {
+  amount?: BigNumberish;
+  owner: string;
+  provider: EvmCallProvider;
+  spender: string;
+  tokenAddress: string;
+}): Promise<SafeTransaction[]> {
+  if (await hasSufficientErc20Allowance({ amount, owner, provider, spender, tokenAddress })) {
     return [];
   }
 

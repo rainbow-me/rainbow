@@ -2,21 +2,9 @@ import { AssetType, OrderType, Side } from '@polymarket/clob-client-v2';
 
 import { POLYMARKET_BUILDER_CODE } from '@/features/polymarket/constants';
 import { getPolymarketClobClient, usePolymarketClients } from '@/features/polymarket/stores/derived/usePolymarketClients';
-import { usePolymarketBalanceStore } from '@/features/polymarket/stores/polymarketBalanceStore';
-import { type PolymarketPosition } from '@/features/polymarket/types';
-import { wrapUsdcBalanceToPusd } from '@/features/polymarket/utils/collateral';
+import { type PolymarketPosition, type SuccessfulOrderResult } from '@/features/polymarket/types';
 import { ensureTradingApprovals } from '@/features/polymarket/utils/proxyWallet';
 import { RainbowError } from '@/logger';
-
-export type SuccessfulOrderResult = {
-  errorMsg: string;
-  orderID: string;
-  takingAmount: string;
-  makingAmount: string;
-  status: string;
-  transactionsHashes: string[];
-  success: boolean;
-};
 
 type ErrorOrderResult = {
   error: string;
@@ -24,64 +12,10 @@ type ErrorOrderResult = {
 };
 
 type OrderResult = SuccessfulOrderResult | ErrorOrderResult;
+type PolymarketClobClient = Awaited<ReturnType<typeof getPolymarketClobClient>>;
 
-async function refreshBalanceAllowanceForOrder({
-  client,
-  side,
-  tokenId,
-}: {
-  client: Awaited<ReturnType<typeof getPolymarketClobClient>>;
-  side: Side;
-  tokenId: string;
-}): Promise<void> {
-  const params =
-    side === Side.BUY ? { asset_type: AssetType.COLLATERAL as const } : { asset_type: AssetType.CONDITIONAL as const, token_id: tokenId };
-
-  await client.updateBalanceAllowance(params);
-}
-
-export async function marketBuyToken({
-  tokenId,
-  amount,
-  price,
-  negRisk,
-}: {
-  amount: string | number;
-  negRisk: boolean;
-  price: string | number;
-  tokenId: string;
-}): Promise<SuccessfulOrderResult> {
-  const proxyAddress = usePolymarketClients.getState().proxyAddress;
-  if (!proxyAddress) {
-    throw new RainbowError('[marketBuyToken] No Polymarket proxy address available');
-  }
-
-  const client = await getPolymarketClobClient();
-  await ensureTradingApprovals(proxyAddress);
-  await wrapUsdcBalanceToPusd(proxyAddress);
-  await refreshBalanceAllowanceForOrder({ client, side: Side.BUY, tokenId });
-  const spendCap = typeof amount === 'number' ? amount : Number(amount);
-  const userBalance = Number(usePolymarketBalanceStore.getState().getBalance());
-
-  const order = await client.createMarketOrder(
-    {
-      side: Side.BUY,
-      tokenID: tokenId,
-      amount: spendCap,
-      price: typeof price === 'number' ? price : Number(price),
-      userUSDCBalance: Math.min(userBalance, spendCap),
-      builderCode: POLYMARKET_BUILDER_CODE,
-    },
-    { negRisk }
-  );
-
-  const result = (await client.postOrder(order, OrderType.FOK)) as OrderResult;
-  if ('error' in result || ('errorMsg' in result && result.errorMsg !== '')) {
-    const error = 'error' in result ? result.error : result.errorMsg;
-    throw new RainbowError(error);
-  }
-
-  return result;
+async function refreshSellOrderBalanceAllowance({ client, tokenId }: { client: PolymarketClobClient; tokenId: string }): Promise<void> {
+  await client.updateBalanceAllowance({ asset_type: AssetType.CONDITIONAL, token_id: tokenId });
 }
 
 export function marketSellTotalPosition({
@@ -112,7 +46,7 @@ async function marketSellToken({
 
   const client = await getPolymarketClobClient();
   await ensureTradingApprovals(proxyAddress);
-  await refreshBalanceAllowanceForOrder({ client, side: Side.SELL, tokenId });
+  await refreshSellOrderBalanceAllowance({ client, tokenId });
   const order = await client.createMarketOrder(
     {
       side: Side.SELL,

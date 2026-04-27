@@ -3681,14 +3681,6 @@
           }
         }
       },
-      "wrap_collateral": {
-        "title": "Convert your balance from USDC to pUSD",
-        "subtitle": "Polymarket now uses pUSD. Convert your balance now to keep trading.",
-        "button": "Convert Now",
-        "loading": "Converting...",
-        "error_title": "Unable to Convert Balance",
-        "error_message": "Please try again."
-      },
       "navbar": {
         "title": "Predictions"
       },
@@ -3700,6 +3692,8 @@
         "spread": "Spread",
         "hold_to_place_bet": "Hold to Place Bet",
         "placing_bet": "Placing Bet...",
+        "approving_trading": "Approving Trading...",
+        "converting_collateral": "Converting Collateral...",
         "confirming_order": "Confirming Order...",
         "deposit_funds": "Deposit Funds",
         "average_price": "Average Price",
@@ -3710,7 +3704,11 @@
         "errors": {
           "not_enough_liquidity": "Not enough liquidity to place full order.",
           "please_lower_amount": "Please lower the amount and try again.",
-          "no_liquidity_at_price": "No liquidity at this price."
+          "no_liquidity_at_price": "No liquidity at this price.",
+          "trading_approval_failed_title": "Unable to Approve Trading",
+          "trading_approval_failed_message": "Please try again.",
+          "collateral_conversion_failed_title": "Unable to Convert Collateral",
+          "collateral_conversion_failed_message": "Please try again."
         }
       },
       "manage_position": {

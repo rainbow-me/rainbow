@@ -1,6 +1,6 @@
 import { type ClobToken } from '@polymarket/clob-client-v2';
 
-import { POLYMARKET_BUILDER_CODE, POLYMARKET_CLOB_PROXY_URL } from '@/features/polymarket/constants';
+import { POLYMARKET_BUILDER_CODE, POLYMARKET_CLOB_URL } from '@/features/polymarket/constants';
 import { polymarketClobDataClient } from '@/features/polymarket/polymarket-clob-data-client';
 import { EMPTY_POLYMARKET_FEE_INFO, type PolymarketFeeInfo } from '@/features/polymarket/utils/orderExecution';
 import { rainbowFetch } from '@/framework/data/http/rainbowFetch';
@@ -82,7 +82,7 @@ async function fetchPolymarketFeeInfo({ conditionId }: FetchParams, abortControl
 }
 
 async function fetchBuilderFees(abortController: AbortController | null): Promise<RawBuilderFeesResponse> {
-  const { data } = await rainbowFetch<string>(`${POLYMARKET_CLOB_PROXY_URL}/fees/builder-fees/${POLYMARKET_BUILDER_CODE}`, {
+  const { data } = await rainbowFetch<string>(`${POLYMARKET_CLOB_URL}/fees/builder-fees/${POLYMARKET_BUILDER_CODE}`, {
     abortController,
     timeout: time.seconds(15),
   });

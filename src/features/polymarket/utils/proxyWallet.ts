@@ -1,6 +1,7 @@
 import { type Signer } from '@ethersproject/abstract-signer';
 import { OperationType, RelayClient, RelayerTransactionState, type SafeTransaction } from '@polymarket/builder-relayer-client';
-import { ethers, Wallet } from 'ethers';
+import { Wallet } from 'ethers';
+import { decodeFunctionResult, encodeFunctionData, erc1155Abi, maxUint256, parseUnits, type Address, type Hex } from 'viem';
 
 import {
   BUILDER_CONFIG,
@@ -13,7 +14,6 @@ import {
 } from '@/features/polymarket/constants';
 import { getPolymarketRelayClient } from '@/features/polymarket/stores/derived/usePolymarketClients';
 import { getMissingErc20ApprovalTransaction } from '@/features/polymarket/utils/erc20Approval';
-import { erc1155Interface } from '@/features/polymarket/utils/erc20Interface';
 import { getProvider } from '@/handlers/web3';
 import { logger, RainbowError } from '@/logger';
 import { ChainId } from '@rainbow-me/swaps';
@@ -25,12 +25,6 @@ import { awaitPolygonConfirmation } from './confirmation';
 // ============================================================================
 
 const polygonProvider = getProvider({ chainId: ChainId.polygon });
-
-const ctfContract = new ethers.Contract(
-  POLYMARKET_CTF_ADDRESS,
-  ['function isApprovedForAll(address account, address operator) view returns (bool)'],
-  polygonProvider
-);
 
 /**
  * Polymarket contracts that require broad trading approvals.
@@ -47,10 +41,19 @@ type ApprovalTarget = keyof typeof APPROVAL_TARGETS;
 // Approval Checks
 // ============================================================================
 
-const PUSD_APPROVAL_THRESHOLD = ethers.utils.parseUnits('1000000000', 6); // 1B pUSD
-
 async function hasCtfApproval(owner: string, operator: string): Promise<boolean> {
-  return ctfContract.isApprovedForAll(owner, operator);
+  const data = encodeFunctionData({
+    abi: erc1155Abi,
+    functionName: 'isApprovedForAll',
+    args: [owner as Address, operator as Address],
+  });
+  const result = await polygonProvider.call({ to: POLYMARKET_CTF_ADDRESS, data });
+
+  return decodeFunctionResult({
+    abi: erc1155Abi,
+    functionName: 'isApprovedForAll',
+    data: result as Hex,
+  });
 }
 
 // ============================================================================
@@ -60,7 +63,11 @@ async function hasCtfApproval(owner: string, operator: string): Promise<boolean>
 function buildCtfApproval(operator: string): SafeTransaction {
   return {
     to: POLYMARKET_CTF_ADDRESS,
-    data: erc1155Interface.encodeFunctionData('setApprovalForAll', [operator, true]),
+    data: encodeFunctionData({
+      abi: erc1155Abi,
+      functionName: 'setApprovalForAll',
+      args: [operator as Address, true],
+    }),
     value: '0',
     operation: OperationType.Call,
   };
@@ -103,7 +110,7 @@ async function getMissingApprovalTransactions(proxyAddress: string): Promise<Saf
   const erc20ApprovalTransactions = await Promise.all(
     targets.map(([name, address]) =>
       getMissingErc20ApprovalTransaction({
-        amount: PUSD_APPROVAL_THRESHOLD,
+        amount: maxUint256,
         owner: proxyAddress,
         provider: polygonProvider,
         spender: address,

@@ -33,13 +33,12 @@ export function useNewPositionForm({ tokenId, conditionId }: UseNewPositionFormP
     spread,
     fee,
     tokensBought,
-    // TODO: Figure out why Polymarket minimum order sizes are wrong.
-    // minBuyAmountUsd,
+    minBuyAmountUsd: executionMinBuyAmountUsd,
     hasNoLiquidityAtMarketPrice,
     hasInsufficientLiquidity,
   } = executionStore(state => state);
 
-  const minBuyAmountUsd = '1';
+  const minBuyAmountUsd = executionMinBuyAmountUsd === '0' ? '1' : executionMinBuyAmountUsd;
 
   const { validation, isValid } = useOrderValidation({
     buyAmount,

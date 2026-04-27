@@ -5,6 +5,7 @@ import { ceilWorklet, divWorklet, isPositive, mulWorklet, subWorklet } from '@/f
 import {
   calculateFillFeesUsd,
   calculateTakerFeeUsd,
+  DEFAULT_MINIMUM_ORDER_SIZE_USD,
   EMPTY_POLYMARKET_FEE_INFO,
   getBestOrderBookPrice,
   simulateMarketFills,
@@ -71,7 +72,7 @@ export function calculateBuyOrderExecution({
           bestAskPrice: Number(bestAskPrice),
           feeInfo: effectiveFeeInfo,
         })
-      : effectiveFeeInfo.minimumOrderSize;
+      : DEFAULT_MINIMUM_ORDER_SIZE_USD;
 
   return {
     averagePrice: String(execution.averagePrice),
@@ -172,7 +173,7 @@ function findWorstAskPriceForNotional(asks: readonly PolymarketOrderBookLevel[],
 }
 
 function calculateMinimumBuySpendUsd({ bestAskPrice, feeInfo }: { bestAskPrice: number; feeInfo: PolymarketFeeInfo }): number {
-  const minimumNotionalUsd = feeInfo.minimumOrderSize;
+  const minimumNotionalUsd = DEFAULT_MINIMUM_ORDER_SIZE_USD;
   const minimumShares = minimumNotionalUsd / bestAskPrice;
 
   return (

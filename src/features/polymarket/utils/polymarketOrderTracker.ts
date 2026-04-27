@@ -2,7 +2,7 @@ import { type OpenOrder } from '@polymarket/clob-client-v2';
 
 import { analytics } from '@/analytics';
 import { getPolymarketClobClient } from '@/features/polymarket/stores/derived/usePolymarketClients';
-import { type SuccessfulOrderResult } from '@/features/polymarket/utils/orders';
+import { type SuccessfulOrderResult } from '@/features/polymarket/types';
 import { divWorklet, mulWorklet } from '@/framework/core/safeMath';
 import { ensureError } from '@/logger';
 import { delay } from '@/utils/delay';

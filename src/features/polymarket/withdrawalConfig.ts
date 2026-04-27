@@ -4,6 +4,7 @@ import { parseUnits } from 'ethers/lib/utils';
 
 import { analytics } from '@/analytics';
 import { USD_DECIMALS } from '@/features/perps/constants';
+import { encodeErc20Transfer } from '@/framework/core/evm/erc20Calldata';
 import { logger, RainbowError } from '@/logger';
 import { USDC_ADDRESS } from '@/references/constants';
 import { ChainId } from '@/state/backendNetworks/types';
@@ -18,7 +19,6 @@ import { usePolymarketBalanceStore } from './stores/polymarketBalanceStore';
 import { buildEnsureUsdcBalanceTransactions } from './utils/collateral';
 import { awaitPolygonConfirmation } from './utils/confirmation';
 import { buildErc20ApprovalTransaction } from './utils/erc20Approval';
-import { erc20Interface } from './utils/erc20Interface';
 import { ensureProxyWalletIsDeployed } from './utils/proxyWallet';
 import { refetchPolymarketBalance } from './utils/refetchPolymarketStores';
 
@@ -175,7 +175,7 @@ async function executeQuotedWithdrawal(quote: NonNullable<WithdrawalExecutorPara
 
 function buildUsdcTransferTransaction({ amount, recipient }: { amount: BigNumber; recipient: string }): SafeTransaction {
   return {
-    data: erc20Interface.encodeFunctionData('transfer', [recipient, amount]),
+    data: encodeErc20Transfer({ amount, to: recipient }),
     operation: OperationType.Call,
     to: POLYGON_USDC_ADDRESS,
     value: '0',

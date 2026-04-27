@@ -31,7 +31,6 @@ import { PolymarketDepositScreen } from '@/features/polymarket/funding/screens/P
 import { PolymarketWithdrawalScreen } from '@/features/polymarket/funding/screens/PolymarketWithdrawalScreen';
 import { PolymarketAccountScreen } from '@/features/polymarket/screens/polymarket-account-screen/PolymarketAccountScreen';
 import { PolymarketBrowseEventsScreen } from '@/features/polymarket/screens/polymarket-browse-events-screen/PolymarketBrowseEventsScreen';
-import { PolymarketConvertCollateralSheet } from '@/features/polymarket/screens/polymarket-convert-collateral-sheet/PolymarketConvertCollateralSheet';
 import { PolymarketEventScreen } from '@/features/polymarket/screens/polymarket-event-screen/PolymarketEventScreen';
 import { PolymarketExplainSheet } from '@/features/polymarket/screens/polymarket-learn-sheet/PolymarketExplainSheet';
 import { PolymarketMarketDescriptionSheet } from '@/features/polymarket/screens/polymarket-market-description-sheet/PolymarketMarketDescriptionSheet';
@@ -354,7 +353,6 @@ function NativeStackNavigator() {
       <NativeStack.Screen component={PolymarketNewPositionSheet} name={Routes.POLYMARKET_NEW_POSITION_SHEET} {...panelConfig} />
       <NativeStack.Screen component={PolymarketAccountScreen} name={Routes.POLYMARKET_ACCOUNT_SCREEN} {...expandedAssetSheetV2Config} />
       <NativeStack.Screen component={PolymarketNavigator} name={Routes.POLYMARKET_NAVIGATOR} {...perpsAccountStackConfig} />
-      <NativeStack.Screen component={PolymarketConvertCollateralSheet} name={Routes.POLYMARKET_CONVERT_COLLATERAL_SHEET} {...panelConfig} />
       <NativeStack.Screen component={PolymarketExplainSheet} name={Routes.POLYMARKET_EXPLAIN_SHEET} {...learnSheetConfig} />
       <NativeStack.Screen component={PolymarketSellPositionSheet} name={Routes.POLYMARKET_SELL_POSITION_SHEET} {...panelConfig} />
       <NativeStack.Screen component={RnbwAirdropScreen} name={Routes.RNBW_AIRDROP_SCREEN} {...expandedAssetSheetV2Config} />

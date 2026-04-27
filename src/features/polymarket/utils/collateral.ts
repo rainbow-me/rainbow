@@ -51,7 +51,7 @@ function buildUnwrapPusdToUsdcTransaction(recipient: string, amount: BigNumber):
 
 // ========== Collateral Checks ==========
 
-async function getUsdcBalance(proxyAddress: string): Promise<BigNumber> {
+export async function getPolymarketUsdcBalance(proxyAddress: string): Promise<BigNumber> {
   return (await usdcContract.balanceOf(proxyAddress)) as BigNumber;
 }
 
@@ -80,7 +80,7 @@ async function waitForWrappableUsdcBalance(proxyAddress: string, expectedRawTarg
   const startedAt = Date.now();
 
   while (Date.now() - startedAt < time.minutes(10)) {
-    const usdcBalance = await getUsdcBalance(proxyAddress);
+    const usdcBalance = await getPolymarketUsdcBalance(proxyAddress);
     const hasExpectedBalance = expectedBalance ? usdcBalance.gte(expectedBalance) : !usdcBalance.isZero();
 
     if (hasExpectedBalance) {
@@ -106,7 +106,7 @@ export async function buildUnwrapPusdToUsdcTransactions({
 }): Promise<SafeTransaction[]> {
   return [
     ...(await getMissingErc20ApprovalTransaction({
-      amount,
+      amount: amount.toString(),
       owner: proxyAddress,
       provider: polygonProvider,
       spender: POLYMARKET_COLLATERAL_OFFRAMP_ADDRESS,
@@ -123,7 +123,7 @@ export async function buildEnsureUsdcBalanceTransactions({
   amount: BigNumber;
   proxyAddress: string;
 }): Promise<SafeTransaction[]> {
-  const usdcBalance = await getUsdcBalance(proxyAddress);
+  const usdcBalance = await getPolymarketUsdcBalance(proxyAddress);
   if (usdcBalance.gte(amount)) return [];
 
   return buildUnwrapPusdToUsdcTransactions({
@@ -148,13 +148,12 @@ export async function handlePolymarketDepositSubmitted(signer: Signer, context: 
   await refetchPolymarketBalance();
 }
 
-export async function wrapUsdcBalanceToPusd(proxyAddress: string): Promise<void> {
-  const usdcBalance = await getUsdcBalance(proxyAddress);
-  if (usdcBalance.isZero()) return;
+export async function wrapUsdcAmountToPusd({ amount, proxyAddress }: { amount: BigNumber; proxyAddress: string }): Promise<void> {
+  if (amount.isZero()) return;
 
   const client = await getPolymarketRelayClient();
 
-  await wrapUsdcToPusd({ client, proxyAddress, amount: usdcBalance });
+  await wrapUsdcToPusd({ client, proxyAddress, amount });
   await refetchPolymarketBalance();
 }
 
@@ -169,7 +168,7 @@ async function wrapUsdcToPusd({
 }): Promise<void> {
   const transactions = [
     ...(await getMissingErc20ApprovalTransaction({
-      amount,
+      amount: amount,
       owner: proxyAddress,
       provider: polygonProvider,
       spender: POLYMARKET_COLLATERAL_ONRAMP_ADDRESS,

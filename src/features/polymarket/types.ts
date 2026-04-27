@@ -49,6 +49,16 @@ export type PolymarketPosition = RawPolymarketPosition & {
   teams?: PolymarketTeamInfo[];
 };
 
+export type SuccessfulOrderResult = {
+  errorMsg: string;
+  orderID: string;
+  takingAmount: string;
+  makingAmount: string;
+  status: string;
+  transactionsHashes: string[];
+  success: boolean;
+};
+
 export type PolymarketWalletListData = {
   balance: string;
   hasBalance: boolean;
