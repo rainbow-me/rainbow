@@ -87,7 +87,9 @@ class AppDelegate: ExpoAppDelegate, UNUserNotificationCenterDelegate {
 
   func userNotificationCenter(_ center: UNUserNotificationCenter, willPresent notification: UNNotification,
                               withCompletionHandler completionHandler: @escaping (UNNotificationPresentationOptions) -> Void) {
-    completionHandler([.sound, .badge, .list, .banner])
+    // Suppress system banner and sound when foregrounded; in-app toast handles user-visible feedback.
+    // .list + .badge keep the notification in Notification Center and update the app icon badge.
+    completionHandler([.list, .badge])
   }
 
   override func application(_ app: UIApplication, open url: URL,
