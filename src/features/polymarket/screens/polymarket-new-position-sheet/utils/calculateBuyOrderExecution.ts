@@ -97,25 +97,25 @@ function resolveBuyExecution({
     };
   }
 
-  const { feeAdjustedNotionalUsd, priceLimit } = resolveFeeAdjustedBuyNotional({
+  const { sdkAdjustedOrderNotionalUsd, priceLimit } = resolveSdkAdjustedBuyOrderNotional({
     asks,
     feeInfo,
     spendCapUsd: buyAmountUsd,
   });
 
-  const execution = simulateMarketFills({ levels: asks, targetAmount: feeAdjustedNotionalUsd, targetType: 'notionalUsd' });
-  const feeAmountUsd = calculateFillFeesUsd({ feeInfo, fills: execution.fills });
+  const execution = simulateMarketFills({ levels: asks, targetAmount: sdkAdjustedOrderNotionalUsd, targetType: 'notionalUsd' });
+  const estimatedMatchFeeAmountUsd = calculateFillFeesUsd({ feeInfo, fills: execution.fills });
 
   return {
     averagePrice: execution.totalShares > 0 ? execution.totalNotionalUsd / execution.totalShares : 0,
-    feeAmountUsd,
+    feeAmountUsd: estimatedMatchFeeAmountUsd,
     hasInsufficientLiquidity: execution.hasInsufficientLiquidity,
     priceLimit,
     tokensBought: execution.totalShares,
   };
 }
 
-function resolveFeeAdjustedBuyNotional({
+function resolveSdkAdjustedBuyOrderNotional({
   asks,
   feeInfo,
   spendCapUsd,
@@ -125,18 +125,18 @@ function resolveFeeAdjustedBuyNotional({
   spendCapUsd: number;
 }) {
   let priceLimit = findWorstAskPriceForNotional(asks, spendCapUsd);
-  let feeAdjustedNotionalUsd = calculateFeeAdjustedBuyNotionalUsd({
+  let sdkAdjustedOrderNotionalUsd = calculateSdkAdjustedBuyOrderNotionalUsd({
     feeInfo,
     priceLimit,
     spendCapUsd,
   });
 
-  // Fee-adjusted notional can land on a different order-book level than the
-  // original spend cap. Iterate until the resulting price limit stabilizes,
-  // with a small cap to keep this UI estimate bounded.
+  // The SDK adjusts buy market order notional when userUSDCBalance is provided
+  // so the submitted order has room for match-time taker fees. That adjusted
+  // notional can land on a different book level than the original spend cap.
   for (let i = 0; i < PRICE_LIMIT_STABILIZATION_ITERATION_LIMIT; i++) {
-    const nextPriceLimit = findWorstAskPriceForNotional(asks, feeAdjustedNotionalUsd);
-    const nextFeeAdjustedNotionalUsd = calculateFeeAdjustedBuyNotionalUsd({
+    const nextPriceLimit = findWorstAskPriceForNotional(asks, sdkAdjustedOrderNotionalUsd);
+    const nextSdkAdjustedOrderNotionalUsd = calculateSdkAdjustedBuyOrderNotionalUsd({
       feeInfo,
       priceLimit: nextPriceLimit,
       spendCapUsd,
@@ -144,16 +144,16 @@ function resolveFeeAdjustedBuyNotional({
 
     if (priceLimit === nextPriceLimit) {
       return {
-        feeAdjustedNotionalUsd: nextFeeAdjustedNotionalUsd,
+        sdkAdjustedOrderNotionalUsd: nextSdkAdjustedOrderNotionalUsd,
         priceLimit: nextPriceLimit,
       };
     }
 
     priceLimit = nextPriceLimit;
-    feeAdjustedNotionalUsd = nextFeeAdjustedNotionalUsd;
+    sdkAdjustedOrderNotionalUsd = nextSdkAdjustedOrderNotionalUsd;
   }
 
-  return { feeAdjustedNotionalUsd, priceLimit };
+  return { sdkAdjustedOrderNotionalUsd, priceLimit };
 }
 
 function findWorstAskPriceForNotional(asks: OrderBookLevel[], notionalUsd: number): number {
@@ -175,7 +175,7 @@ function calculateMinimumBuySpendUsd({ bestAskPrice, feeInfo }: { bestAskPrice: 
   );
 }
 
-function calculateFeeAdjustedBuyNotionalUsd({
+function calculateSdkAdjustedBuyOrderNotionalUsd({
   feeInfo,
   priceLimit,
   spendCapUsd,

@@ -19,9 +19,9 @@ import { usePolymarketClients } from '@/features/polymarket/stores/derived/usePo
 import { usePolymarketPositionsStore } from '@/features/polymarket/stores/polymarketPositionsStore';
 import { getPositionAccentColor } from '@/features/polymarket/utils/getMarketColor';
 import { getOutcomeDescriptions } from '@/features/polymarket/utils/getOutcomeDescriptions';
-import { marketSellTotalPosition } from '@/features/polymarket/utils/orders';
 import { trackPolymarketOrder } from '@/features/polymarket/utils/polymarketOrderTracker';
 import { waitForPositionSizeUpdate } from '@/features/polymarket/utils/refetchPolymarketStores';
+import { marketSellTotalPosition } from '@/features/polymarket/utils/sellPosition';
 import { mulWorklet, subWorklet, toFixedWorklet, trimTrailingZeros } from '@/framework/core/safeMath';
 import { opacity } from '@/framework/ui/utils/opacity';
 import * as i18n from '@/languages';

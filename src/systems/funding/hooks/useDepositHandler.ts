@@ -357,7 +357,7 @@ export function useDepositHandler({
           config
             .onSubmit(wallet, {
               confirmationChainId: assetChainId,
-              expectedRawTargetAmount: validQuote.buyAmountDisplayMinimum?.toString() ?? validQuote.buyAmount?.toString(),
+              expectedRawTargetAmount: validQuote.buyAmountDisplayMinimum?.toString() ?? validQuote.buyAmount?.toString() ?? '0',
               hash: result.hash,
               isConfirmed: result.isConfirmed,
             })

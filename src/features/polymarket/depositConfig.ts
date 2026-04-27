@@ -6,7 +6,7 @@ import { time } from '@/utils/time';
 
 import { POLYGON_USDC_ADDRESS, POLYGON_USDC_DECIMALS } from './constants';
 import { usePolymarketProxyAddress } from './stores/derived/usePolymarketProxyAddress';
-import { handlePolymarketDepositSubmitted } from './utils/collateral';
+import { handlePolymarketDepositSubmitted } from './utils/handlePolymarketDepositSubmitted';
 import { refetchPolymarketBalance } from './utils/refetchPolymarketStores';
 
 // ============ Polymarket Deposit Configuration =============================== //

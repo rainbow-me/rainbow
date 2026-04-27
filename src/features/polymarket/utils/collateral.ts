@@ -1,6 +1,5 @@
-import { type Signer } from '@ethersproject/abstract-signer';
 import { OperationType, type RelayClient, type SafeTransaction } from '@polymarket/builder-relayer-client';
-import { BigNumber, ethers } from 'ethers';
+import { ethers, type BigNumber } from 'ethers';
 
 import {
   POLYGON_USDC_ADDRESS,
@@ -8,16 +7,12 @@ import {
   POLYMARKET_COLLATERAL_ONRAMP_ADDRESS,
   POLYMARKET_PUSD_ADDRESS,
 } from '@/features/polymarket/constants';
-import { getPolymarketRelayClient, usePolymarketClients } from '@/features/polymarket/stores/derived/usePolymarketClients';
+import { getPolymarketRelayClient } from '@/features/polymarket/stores/derived/usePolymarketClients';
 import { getMissingErc20ApprovalTransaction } from '@/features/polymarket/utils/erc20Approval';
-import { createPolymarketRelayClient, deployProxyIfNeeded, executeRelayTransaction } from '@/features/polymarket/utils/proxyWallet';
+import { executeRelayTransaction } from '@/features/polymarket/utils/proxyWallet';
 import { refetchPolymarketBalance } from '@/features/polymarket/utils/refetchPolymarketStores';
 import { getProvider } from '@/handlers/web3';
-import { logger, RainbowError } from '@/logger';
 import erc20ABI from '@/references/erc20-abi.json';
-import { type DepositSubmitContext } from '@/systems/funding/types';
-import { delay } from '@/utils/delay';
-import { time } from '@/utils/time';
 import { ChainId } from '@rainbow-me/swaps';
 
 // ========== Contracts ==========
@@ -49,51 +44,11 @@ function buildUnwrapPusdToUsdcTransaction(recipient: string, amount: BigNumber):
   };
 }
 
-// ========== Collateral Checks ==========
+// ========== Public API ==========
 
 export async function getPolymarketUsdcBalance(proxyAddress: string): Promise<BigNumber> {
   return (await usdcContract.balanceOf(proxyAddress)) as BigNumber;
 }
-
-function parseExpectedRawTargetAmount(rawAmount: string | undefined): BigNumber | null {
-  if (!rawAmount || rawAmount === '0') return null;
-
-  try {
-    return BigNumber.from(rawAmount);
-  } catch {
-    return null;
-  }
-}
-
-async function waitForSubmittedDeposit({ confirmationChainId, hash, isConfirmed }: DepositSubmitContext): Promise<void> {
-  if (!hash || isConfirmed) return;
-
-  try {
-    await getProvider({ chainId: confirmationChainId }).waitForTransaction(hash, 1, time.minutes(3));
-  } catch (error) {
-    logger.warn('[polymarket] Deposit confirmation wait timed out before wrapping', { error, hash });
-  }
-}
-
-async function waitForWrappableUsdcBalance(proxyAddress: string, expectedRawTargetAmount?: string): Promise<BigNumber> {
-  const expectedBalance = parseExpectedRawTargetAmount(expectedRawTargetAmount);
-  const startedAt = Date.now();
-
-  while (Date.now() - startedAt < time.minutes(10)) {
-    const usdcBalance = await getPolymarketUsdcBalance(proxyAddress);
-    const hasExpectedBalance = expectedBalance ? usdcBalance.gte(expectedBalance) : !usdcBalance.isZero();
-
-    if (hasExpectedBalance) {
-      return usdcBalance;
-    }
-
-    await delay(time.seconds(3));
-  }
-
-  throw new RainbowError('[polymarket] Timed out waiting for USDC.e deposit to arrive');
-}
-
-// ========== Public API ==========
 
 export async function buildUnwrapPusdToUsdcTransactions({
   amount,
@@ -133,21 +88,6 @@ export async function buildEnsureUsdcBalanceTransactions({
   });
 }
 
-export async function handlePolymarketDepositSubmitted(signer: Signer, context: DepositSubmitContext): Promise<void> {
-  const proxyAddress = usePolymarketClients.getState().proxyAddress;
-  if (!proxyAddress) {
-    throw new RainbowError('[polymarket] No proxy address available');
-  }
-
-  const client = createPolymarketRelayClient(signer);
-  await deployProxyIfNeeded(client, proxyAddress);
-  await waitForSubmittedDeposit(context);
-
-  const usdcBalance = await waitForWrappableUsdcBalance(proxyAddress, context.expectedRawTargetAmount);
-  await wrapUsdcToPusd({ client, proxyAddress, amount: usdcBalance });
-  await refetchPolymarketBalance();
-}
-
 export async function wrapUsdcAmountToPusd({ amount, proxyAddress }: { amount: BigNumber; proxyAddress: string }): Promise<void> {
   if (amount.isZero()) return;
 
@@ -157,7 +97,7 @@ export async function wrapUsdcAmountToPusd({ amount, proxyAddress }: { amount: B
   await refetchPolymarketBalance();
 }
 
-async function wrapUsdcToPusd({
+export async function wrapUsdcToPusd({
   client,
   proxyAddress,
   amount,

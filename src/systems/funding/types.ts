@@ -43,7 +43,7 @@ export type DepositSubmitContext = {
   /** Chain used to submit the deposit transaction */
   confirmationChainId: ChainId;
   /** Minimum raw amount expected to arrive at the configured destination */
-  expectedRawTargetAmount?: string;
+  expectedRawTargetAmount: string;
   /** Submitted transaction hash, when available */
   hash?: string;
   /** Whether the submitted transaction was confirmed before returning */

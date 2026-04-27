@@ -12,50 +12,32 @@ type ErrorOrderResult = {
 };
 
 type OrderResult = SuccessfulOrderResult | ErrorOrderResult;
-type PolymarketClobClient = Awaited<ReturnType<typeof getPolymarketClobClient>>;
 
-async function refreshSellOrderBalanceAllowance({ client, tokenId }: { client: PolymarketClobClient; tokenId: string }): Promise<void> {
-  await client.updateBalanceAllowance({ asset_type: AssetType.CONDITIONAL, token_id: tokenId });
-}
-
-export function marketSellTotalPosition({
+export async function marketSellTotalPosition({
   position,
   price,
 }: {
   position: PolymarketPosition;
   price: string | number;
 }): Promise<SuccessfulOrderResult> {
-  return marketSellToken({ tokenId: position.asset, amount: position.size, price, negRisk: position.negativeRisk });
-}
-
-async function marketSellToken({
-  tokenId,
-  amount,
-  price,
-  negRisk,
-}: {
-  tokenId: string;
-  amount: string | number;
-  negRisk: boolean;
-  price: string | number;
-}): Promise<SuccessfulOrderResult> {
   const proxyAddress = usePolymarketClients.getState().proxyAddress;
   if (!proxyAddress) {
-    throw new RainbowError('[marketSellToken] No Polymarket proxy address available');
+    throw new RainbowError('[marketSellTotalPosition] No Polymarket proxy address available');
   }
 
   const client = await getPolymarketClobClient();
   await ensureTradingApprovals(proxyAddress);
-  await refreshSellOrderBalanceAllowance({ client, tokenId });
+  await client.updateBalanceAllowance({ asset_type: AssetType.CONDITIONAL, token_id: position.asset });
+
   const order = await client.createMarketOrder(
     {
       side: Side.SELL,
-      tokenID: tokenId,
-      amount: Number(amount),
+      tokenID: position.asset,
+      amount: Number(position.size),
       price: Number(price),
       builderCode: POLYMARKET_BUILDER_CODE,
     },
-    { negRisk }
+    { negRisk: position.negativeRisk }
   );
 
   const result = (await client.postOrder(order, OrderType.FOK)) as OrderResult;
