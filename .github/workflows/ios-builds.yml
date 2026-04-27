@@ -8,7 +8,7 @@ jobs:
   # Build iOS simulator app
   build-simulator:
     name: Simulator
-    runs-on: macos-15-xlarge
+    runs-on: macos-26-xlarge
     env:
       NODE_OPTIONS: '--max-old-space-size=6144'
     timeout-minutes: 45
@@ -103,7 +103,7 @@ jobs:
   # Build iOS device app
   build-device:
     name: Device
-    runs-on: macos-15-xlarge
+    runs-on: macos-26-xlarge
     env:
       NODE_OPTIONS: '--max-old-space-size=6144'
     timeout-minutes: 45

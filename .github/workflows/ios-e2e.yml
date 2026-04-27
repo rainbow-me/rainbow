@@ -20,7 +20,7 @@ jobs:
       github.event.issue.pull_request != null &&
       startsWith(github.event.comment.body, '/e2e') &&
       contains(fromJson('["OWNER","MEMBER","COLLABORATOR"]'), github.event.comment.author_association))
-    runs-on: macos-15-xlarge
+    runs-on: macos-26-xlarge
     concurrency:
       group: e2e-ios-${{ github.workflow }}-${{ github.ref }}
       cancel-in-progress: true
@@ -115,7 +115,7 @@ jobs:
   e2e-tests:
     name: E2E Tests (Shard ${{ matrix.shard-index }})
     needs: build
-    runs-on: macos-15-xlarge
+    runs-on: macos-26-xlarge
     strategy:
       fail-fast: false
       matrix:
@@ -167,8 +167,8 @@ jobs:
       - uses: futureware-tech/simulator-action@e89aa8f93d3aec35083ff49d2854d07f7186f7f5 # v5
         id: simulator
         with:
-          model: 'iPhone 16'
-          os_version: '18.5'
+          model: 'iPhone 17'
+          os_version: '26.4'
           wait_for_boot: true
           boot_timeout_seconds: 180
 
