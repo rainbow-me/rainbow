@@ -10,10 +10,7 @@ type RawBuilderFeesResponse = {
 
 type RawMarketInfo = {
   mos: number;
-  fd?: {
-    e?: number;
-    r?: number;
-  };
+  fd?: { e?: number; r?: number };
 };
 
 type FetchParams = {

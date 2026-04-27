@@ -1,7 +1,7 @@
 import { type Signer } from '@ethersproject/abstract-signer';
 import { OperationType, RelayClient, RelayerTransactionState, type SafeTransaction } from '@polymarket/builder-relayer-client';
 import { Wallet } from 'ethers';
-import { decodeFunctionResult, encodeFunctionData, erc1155Abi, isHex, maxUint256, type Address, type Hex } from 'viem';
+import { decodeFunctionResult, encodeFunctionData, erc1155Abi, maxUint256, type Address } from 'viem';
 
 import {
   BUILDER_CONFIG,
@@ -14,6 +14,7 @@ import {
 } from '@/features/polymarket/constants';
 import { getPolymarketRelayClient } from '@/features/polymarket/stores/derived/usePolymarketClients';
 import { getMissingErc20ApprovalTransaction } from '@/features/polymarket/utils/erc20Approval';
+import { requireHex } from '@/framework/core/evm/hex';
 import { getProvider } from '@/handlers/web3';
 import { logger, RainbowError } from '@/logger';
 import { ChainId } from '@rainbow-me/swaps';
@@ -50,7 +51,7 @@ async function hasCtfApproval(owner: Address, operator: Address): Promise<boolea
   return decodeFunctionResult({
     abi: erc1155Abi,
     functionName: 'isApprovedForAll',
-    data: requireHexResult(result),
+    data: requireHex(result, new RainbowError('[polymarket] Provider returned non-hex call data')),
   });
 }
 
@@ -212,9 +213,4 @@ export async function ensureTradingApprovals(proxyAddress: Address): Promise<voi
   const client = await getPolymarketRelayClient();
   await deployProxyIfNeeded(client, proxyAddress);
   await ensureAllTradingApprovals(client, proxyAddress);
-}
-
-function requireHexResult(result: string): Hex {
-  if (isHex(result)) return result;
-  throw new RainbowError('[polymarket] Provider returned non-hex call data');
 }
