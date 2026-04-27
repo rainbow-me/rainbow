@@ -2,11 +2,19 @@ import React, { useCallback, useMemo } from 'react';
 import { StyleSheet, type StyleProp, type TextStyle, type ViewStyle } from 'react-native';
 
 import { Gesture, GestureDetector } from 'react-native-gesture-handler';
-import Animated, { runOnJS, useAnimatedStyle, useSharedValue, withTiming } from 'react-native-reanimated';
+import Animated, {
+  FadeIn,
+  FadeOut,
+  LinearTransition,
+  runOnJS,
+  useAnimatedStyle,
+  useSharedValue,
+  withTiming,
+} from 'react-native-reanimated';
 import { triggerHaptics } from 'react-native-turbo-haptics';
 
 import { AnimatedSpinner } from '@/components/animations/AnimatedSpinner';
-import { layoutAnimations } from '@/components/animations/animationConfigs';
+import { SPRING_CONFIGS } from '@/components/animations/animationConfigs';
 import ShimmerAnimation from '@/components/animations/ShimmerAnimation';
 import { useBiometryIconString } from '@/components/buttons/BiometricButtonContent';
 import HoldToAuthorizeButtonIcon from '@/components/buttons/hold-to-authorize/HoldToAuthorizeButtonIcon';
@@ -23,6 +31,15 @@ const BUTTON_HEIGHT = 56;
 
 const BUTTON_SCALE_DURATION_IN_MS = time.ms(150);
 const LONG_PRESS_DURATION_IN_MS = time.ms(500);
+
+const LAYOUT_ANIMATION_CONFIG = SPRING_CONFIGS.snappierSpringConfig;
+const LAYOUT_ANIMATION = LinearTransition.springify()
+  .mass(LAYOUT_ANIMATION_CONFIG.mass as number)
+  .damping(LAYOUT_ANIMATION_CONFIG.damping as number)
+  .stiffness(LAYOUT_ANIMATION_CONFIG.stiffness as number);
+
+const SPINNER_ENTER_ANIMATION = FadeIn.delay(time.ms(400)).duration(time.ms(150));
+const SPINNER_EXIT_ANIMATION = FadeOut.duration(time.ms(150));
 
 type LabelProps = Omit<TextProps, 'children'> & {
   label: string;
@@ -157,7 +174,7 @@ export function HoldToActivateButton({
 
   return (
     <GestureDetector gesture={longPress}>
-      <Animated.View layout={layoutAnimations.buttonContent.layout} style={[style, scaleStyle]}>
+      <Animated.View layout={LAYOUT_ANIMATION} style={[style, scaleStyle]}>
         <Box
           justifyContent="center"
           alignItems="center"
@@ -172,15 +189,11 @@ export function HoldToActivateButton({
         >
           {!disabled && <HoldToAuthorizeButtonIcon sharedValue={longPressProgress} progressColor={progressColor} />}
           {isProcessing && (
-            <Animated.View
-              exiting={layoutAnimations.buttonContent.exiting}
-              entering={layoutAnimations.buttonContent.entering}
-              style={styles.spinnerContainer}
-            >
+            <Animated.View exiting={SPINNER_EXIT_ANIMATION} entering={SPINNER_ENTER_ANIMATION} style={styles.spinnerContainer}>
               <AnimatedSpinner isLoading size={25} color={progressColor} />
             </Animated.View>
           )}
-          <Animated.View layout={layoutAnimations.buttonContent.layout}>
+          <Animated.View layout={LAYOUT_ANIMATION}>
             <LabelWithBiometryIcon
               label={isProcessing ? processingLabel : label}
               showIcon={showBiometryIcon && !isProcessing}
