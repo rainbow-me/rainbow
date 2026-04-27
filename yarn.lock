@@ -9962,7 +9962,7 @@ __metadata:
     qrcode: "npm:1.4.4"
     qs: "npm:6.9.7"
     querystring-es3: "npm:0.2.1"
-    react: "npm:19.1.5"
+    react: "npm:19.1.4"
     react-fast-compare: "npm:3.2.2"
     react-flatten-children: "npm:1.1.2"
     react-freeze: "npm:1.0.4"
@@ -24408,10 +24408,10 @@ __metadata:
   languageName: node
   linkType: hard
 
-"react@npm:19.1.5":
-  version: 19.1.5
-  resolution: "react@npm:19.1.5"
-  checksum: 10c0/0c2351cc449294d20e120857515234c017288d0b15957550ed40ca8eb0aba19edda7682ebd3a1ce4e63eb53f5d2502d02e6be6fefe401574465e1f761bb56deb
+"react@npm:19.1.4":
+  version: 19.1.4
+  resolution: "react@npm:19.1.4"
+  checksum: 10c0/159257dbaf168facecc0a34825114e2b00624d315b7dca8468afcc790eadf5a49f90c0234be7492c7207239292e789e443ca419a83121898b82b0824454900f2
   languageName: node
   linkType: hard
 
