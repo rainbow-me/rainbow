@@ -1,10 +1,11 @@
+import { createQueryStore } from '@storesjs/stores';
+
 import { convertAmountAndPriceToNativeDisplay, convertAmountToNativeDisplayWorklet, greaterThan, multiply } from '@/helpers/utilities';
 import Routes, { type Route } from '@/navigation/routesNames';
 import { ETH_ADDRESS, WETH_ADDRESS } from '@/references/constants';
 import type { SupportedCurrencyKey } from '@/references/supportedCurrencies';
 import { getPlatformClient } from '@/resources/platform/client';
 import { userAssetsStoreManager } from '@/state/assets/userAssetsStoreManager';
-import { createQueryStore } from '@/state/internal/createQueryStore';
 import { fetchPolymarketPrices, isPolymarketToken } from '@/state/liveTokens/polymarketAdapter';
 import { useNavigationStore, type NavigationState } from '@/state/navigation/navigationStore';
 import { time } from '@/utils/time';

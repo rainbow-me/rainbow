@@ -1,5 +1,6 @@
+import { useListen } from '@storesjs/stores';
+
 import { useRoute } from '@/navigation/Navigation';
-import { useListen } from '@/state/internal/hooks/useListen';
 import { useNavigationStore } from '@/state/navigation/navigationStore';
 
 /**

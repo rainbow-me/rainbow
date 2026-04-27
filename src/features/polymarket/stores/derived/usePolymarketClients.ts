@@ -1,5 +1,6 @@
 import { RelayClient } from '@polymarket/builder-relayer-client';
 import { Chain, ClobClient } from '@polymarket/clob-client-v2';
+import { createDerivedStore } from '@storesjs/stores';
 import { type Wallet } from 'ethers';
 import { type Address } from 'viem';
 
@@ -9,7 +10,6 @@ import { createPolymarketWallet, getPolymarketWallet } from '@/features/polymark
 import { getProvider } from '@/handlers/web3';
 import { logger, RainbowError } from '@/logger';
 import { loadWallet } from '@/model/wallet';
-import { createDerivedStore } from '@/state/internal/createDerivedStore';
 import { useWalletsStore } from '@/state/wallets/walletsStore';
 import { ChainId } from '@rainbow-me/swaps';
 
@@ -38,7 +38,7 @@ export const usePolymarketClients = createDerivedStore<PolymarketClientsState>(
       proxyAddress: wallet?.address ?? null,
     };
   },
-  { keepAlive: true }
+  { lockDependencies: true, keepAlive: true }
 );
 
 // ============ Public Accessors ================================================ //

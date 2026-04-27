@@ -1,10 +1,11 @@
+import { createDerivedStore } from '@storesjs/stores';
+
 import { usePerpsNavigationStore } from '@/features/perps/screens/PerpsNavigator';
 import { useHyperliquidAccountStore } from '@/features/perps/stores/hyperliquidAccountStore';
 import { type PerpsPosition } from '@/features/perps/types';
 import { type VirtualNavigationStore } from '@/navigation/createVirtualNavigator';
 import Routes from '@/navigation/routesNames';
 import { type PerpsRoute } from '@/navigation/types';
-import { createDerivedStore } from '@/state/internal/createDerivedStore';
 
 export const useHasPositionCheck = createDerivedStore(
   $ => {
@@ -19,7 +20,7 @@ export const useHasPositionCheck = createDerivedStore(
     };
   },
 
-  { fastMode: true }
+  { lockDependencies: true }
 );
 
 function checkSearchScreenParams(state: VirtualNavigationStore<PerpsRoute>): boolean {

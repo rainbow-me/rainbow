@@ -1,8 +1,8 @@
+import { createBaseStore } from '@storesjs/stores';
 import { runOnJS } from 'react-native-reanimated';
 
 import { analytics } from '@/analytics';
 import { ensureError, logger } from '@/logger';
-import { createRainbowStore } from '@/state/internal/createRainbowStore';
 import { type OperationForScreen, type PerformanceLog, type Screen } from '@/state/performance/operations';
 import { getIsHardwareWallet } from '@/state/wallets/walletsStore';
 
@@ -22,7 +22,7 @@ interface PerformanceTrackingState {
   startTime: number;
 }
 
-export const performanceTracking = createRainbowStore<PerformanceTrackingState>(() => ({
+export const performanceTracking = createBaseStore<PerformanceTrackingState>(() => ({
   operationsElapsedTime: 0,
   startTime: 0,
 }));

@@ -1,12 +1,13 @@
+import { createBaseStore } from '@storesjs/stores';
+
 import { type ChainId } from '@/state/backendNetworks/types';
-import { createRainbowStore } from '@/state/internal/createRainbowStore';
 
 import { type GasSettings } from '../types/gas';
 
 export type { EIP1559GasSettings, GasSettings, LegacyGasSettings } from '../types/gas';
 
 export type CustomGasStoreState = { [c in ChainId]?: GasSettings };
-export const useCustomGasStore = createRainbowStore<CustomGasStoreState>(() => ({}));
+export const useCustomGasStore = createBaseStore<CustomGasStoreState>(() => ({}));
 
 export const useCustomGasSettings = (chainId: ChainId) => useCustomGasStore(s => s[chainId]);
 export const getCustomGasSettings = (chainId: ChainId) => useCustomGasStore.getState()[chainId];

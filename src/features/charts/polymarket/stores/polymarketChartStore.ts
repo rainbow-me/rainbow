@@ -1,10 +1,11 @@
+import { createQueryStore } from '@storesjs/stores';
+
 import { type ResponseByTheme } from '@/__swaps__/utils/swaps';
 import { POLYMARKET_SPORTS_MARKET_TYPE } from '@/features/polymarket/constants';
 import { usePolymarketEventStore } from '@/features/polymarket/stores/polymarketEventStore';
 import { getOutcomeTeamColor } from '@/features/polymarket/utils/getOutcomeTeam';
 import { isThreeWayMoneyline } from '@/features/polymarket/utils/marketClassification';
 import { isDrawMarket } from '@/features/polymarket/utils/sports';
-import { createQueryStore } from '@/state/internal/createQueryStore';
 import { time } from '@/utils/time';
 
 import { fetchPriceHistory } from '../api/clobClient';

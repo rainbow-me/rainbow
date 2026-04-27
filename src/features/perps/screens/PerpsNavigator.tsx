@@ -2,6 +2,7 @@ import { memo } from 'react';
 import { StyleSheet } from 'react-native';
 
 import { useRoute, type RouteProp } from '@react-navigation/native';
+import { useListen } from '@storesjs/stores';
 import { KeyboardProvider } from 'react-native-keyboard-controller';
 
 import { SPRING_CONFIGS } from '@/components/animations/animationConfigs';
@@ -20,7 +21,6 @@ import { useStableValue } from '@/hooks/useStableValue';
 import { createVirtualNavigator } from '@/navigation/createVirtualNavigator';
 import Routes from '@/navigation/routesNames';
 import { type PerpsRoute, type RootStackParamList } from '@/navigation/types';
-import { useListen } from '@/state/internal/hooks/useListen';
 
 const Navigator = createVirtualNavigator<PerpsRoute>({
   initialRoute: Routes.PERPS_ACCOUNT_SCREEN,

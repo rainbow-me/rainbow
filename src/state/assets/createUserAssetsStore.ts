@@ -1,3 +1,4 @@
+import { createQueryStore } from '@storesjs/stores';
 import { type Address } from 'viem';
 
 import { type ParsedSearchAsset, type UniqueId, type UserAssetFilter } from '@/__swaps__/types/assets';
@@ -6,7 +7,6 @@ import { convertAmountToNativeDisplayWorklet } from '@/helpers/utilities';
 import { useBackendNetworksStore } from '@/state/backendNetworks/backendNetworks';
 import { type ChainId } from '@/state/backendNetworks/types';
 import { useConnectedToAnvilStore } from '@/state/connectedToAnvil';
-import { createQueryStore } from '@/state/internal/createQueryStore';
 import { type LiveTokensData } from '@/state/liveTokens/liveTokensStore';
 import { getUniqueId } from '@/utils/ethereumUtils';
 import { time } from '@/utils/time';

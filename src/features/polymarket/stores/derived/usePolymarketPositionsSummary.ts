@@ -1,3 +1,5 @@
+import { createDerivedStore } from '@storesjs/stores';
+
 import { type TextColor } from '@/design-system/color/palettes';
 import { USD_DECIMALS } from '@/features/perps/constants';
 import { formatCurrency } from '@/features/perps/utils/formatCurrency';
@@ -5,7 +7,6 @@ import { usePolymarketPositions } from '@/features/polymarket/stores/derived/use
 import { getPositionTokenId } from '@/features/polymarket/utils/getPositionTokenId';
 import { toFixedWorklet, truncateToDecimals } from '@/framework/core/safeMath';
 import { abs, add, divide, greaterThan, isEqual, multiply, subtract } from '@/helpers/utilities';
-import { createDerivedStore } from '@/state/internal/createDerivedStore';
 import { useLiveTokensStore } from '@/state/liveTokens/liveTokensStore';
 import { shallowEqual } from '@/worklets/comparisons';
 
@@ -71,5 +72,5 @@ export const usePolymarketPositionsSummary = createDerivedStore<PolymarketPositi
       unrealizedPnlPercent: `${toFixedWorklet(abs(pnlPercent), 2)}%`,
     };
   },
-  { equalityFn: shallowEqual, fastMode: true }
+  { equalityFn: shallowEqual, lockDependencies: true }
 );

@@ -646,7 +646,7 @@ export default async function runMigrations() {
 
   /**
    *************** Migration v20 ******************
-   * Migrates dapp browser favorites store from createStore to createRainbowStore
+   * Migrates dapp browser favorites store from createStore to createBaseStore
    */
   const v20 = async () => {
     const initializeLegacyStore = () => {

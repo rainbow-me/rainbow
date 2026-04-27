@@ -1,10 +1,11 @@
+import { createQueryStore } from '@storesjs/stores';
+
 import { DEFAULT_SPORTS_LEAGUE_KEY, POLYMARKET_GAMMA_API_URL } from '@/features/polymarket/constants';
 import { type PolymarketEvent, type RawPolymarketEvent } from '@/features/polymarket/types/polymarket-event';
 import { getSportsEventsStartTimeRange } from '@/features/polymarket/utils/getSportsEventsDateRange';
 import { fetchTeamsForGameEvents } from '@/features/polymarket/utils/sports';
 import { processRawPolymarketEvent } from '@/features/polymarket/utils/transforms';
 import { rainbowFetch } from '@/framework/data/http/rainbowFetch';
-import { createQueryStore } from '@/state/internal/createQueryStore';
 import { time } from '@/utils/time';
 
 const VOLUME_MIN = '1000';

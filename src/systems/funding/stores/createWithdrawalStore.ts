@@ -1,6 +1,6 @@
+import { createBaseStore, type PersistConfig } from '@storesjs/stores';
+
 import { type ChainId } from '@/state/backendNetworks/types';
-import { createRainbowStore } from '@/state/internal/createRainbowStore';
-import { type RainbowPersistConfig } from '@/state/internal/types';
 import { time } from '@/utils/time';
 
 import { type BalanceQueryStore, type WithdrawalConfig, type WithdrawalStoreState, type WithdrawalStoreType } from '../types';
@@ -8,7 +8,7 @@ import { type BalanceQueryStore, type WithdrawalConfig, type WithdrawalStoreStat
 // ============ Store Factory ================================================== //
 
 export function createWithdrawalStore(config: WithdrawalConfig<BalanceQueryStore>): WithdrawalStoreType {
-  return createRainbowStore<WithdrawalStoreState>(
+  return createBaseStore<WithdrawalStoreState>(
     set => ({
       isSubmitting: false,
       selectedChainId: resolveDefaultChain(config),
@@ -32,7 +32,7 @@ export function createWithdrawalStore(config: WithdrawalConfig<BalanceQueryStore
 
 // ============ Helpers ======================================================== //
 
-function buildPersistConfig(config: WithdrawalConfig<BalanceQueryStore>): RainbowPersistConfig<WithdrawalStoreState> | undefined {
+function buildPersistConfig(config: WithdrawalConfig<BalanceQueryStore>): PersistConfig<WithdrawalStoreState> | undefined {
   if (!config.route?.to.persistSelectedChain) return undefined;
   return {
     partialize: state => ({ selectedChainId: state.selectedChainId }),

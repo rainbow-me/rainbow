@@ -1,12 +1,13 @@
+import { createBaseStore } from '@storesjs/stores';
+
 import { DEFAULT_CATEGORY_KEY } from '@/features/polymarket/constants';
-import { createRainbowStore } from '@/state/internal/createRainbowStore';
 
 type PolymarketCategoryStoreState = {
   tagId: string;
   setTagId: (tagId: string) => void;
 };
 
-export const usePolymarketCategoryStore = createRainbowStore<PolymarketCategoryStoreState>(
+export const usePolymarketCategoryStore = createBaseStore<PolymarketCategoryStoreState>(
   set => ({
     tagId: DEFAULT_CATEGORY_KEY,
     setTagId: (tagId: string) => set({ tagId }),

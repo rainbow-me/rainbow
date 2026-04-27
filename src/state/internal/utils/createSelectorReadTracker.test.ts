@@ -1,5 +1,5 @@
-import { createRainbowStore } from '../createRainbowStore';
-import { type RainbowStore } from '../types';
+import { createBaseStore, type Store } from '@storesjs/stores';
+
 import { createSelectorReadTracker } from './createSelectorReadTracker';
 
 type TestState = {
@@ -160,7 +160,7 @@ describe('createSelectorReadTracker', () => {
 
   it('tracks zero as a numeric key', () => {
     const reads = createSelectorReadTracker<number>();
-    const store = createRainbowStore<NumericTestState>(() => ({
+    const store = createBaseStore<NumericTestState>(() => ({
       subscribedKeys: [],
 
       read: key => {
@@ -184,10 +184,10 @@ describe('createSelectorReadTracker', () => {
   });
 });
 
-function createTestStore(): RainbowStore<TestState> {
+function createTestStore(): Store<TestState> {
   const reads = createSelectorReadTracker<string>();
 
-  const store = createRainbowStore<TestState>((set, get) => ({
+  const store = createBaseStore<TestState>((set, get) => ({
     subscribedKeys: [],
     version: 0,
 

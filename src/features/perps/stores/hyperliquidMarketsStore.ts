@@ -1,4 +1,5 @@
 import { type AllMidsResponse } from '@nktkas/hyperliquid/api/info';
+import { createBaseStore, createDerivedStore, createQueryStore, createStoreActions } from '@storesjs/stores';
 
 import { HYPERCORE_PSEUDO_CHAIN_ID } from '@/features/perps/constants';
 import { infoClient } from '@/features/perps/services/hyperliquid-info-client';
@@ -13,10 +14,6 @@ import { formatPerpAssetPrice } from '@/features/perps/utils/formatPerpsAssetPri
 import { calculatePerpPriceChange24h, getAllMarketsInfo } from '@/features/perps/utils/hyperliquid';
 import { normalizeDexSymbol } from '@/features/perps/utils/hyperliquidSymbols';
 import { getPlatformClient } from '@/resources/platform/client';
-import { createDerivedStore } from '@/state/internal/createDerivedStore';
-import { createQueryStore } from '@/state/internal/createQueryStore';
-import { createRainbowStore } from '@/state/internal/createRainbowStore';
-import { createStoreActions } from '@/state/internal/utils/createStoreActions';
 import { time } from '@/utils/time';
 
 type MidPricesBySymbol = Record<string, string>;
@@ -122,7 +119,7 @@ type SearchState = {
   setSearchQuery: (searchQuery: string) => void;
 };
 
-const useHyperliquidSearchStore = createRainbowStore<SearchState>(set => ({
+const useHyperliquidSearchStore = createBaseStore<SearchState>(set => ({
   searchQuery: '',
   setSearchQuery: searchQuery => set({ searchQuery }),
 }));
@@ -152,7 +149,7 @@ export const useSortedHyperliquidMarkets = createDerivedStore(
       })
       .filter(Boolean);
   },
-  { fastMode: true }
+  { lockDependencies: true }
 );
 
 export const useFilteredHyperliquidMarkets = createDerivedStore(
@@ -163,7 +160,7 @@ export const useFilteredHyperliquidMarkets = createDerivedStore(
     if (!searchQuery) return markets;
     return markets.filter(market => market.symbol.toLowerCase().includes(searchQuery));
   },
-  { fastMode: true }
+  { lockDependencies: true }
 );
 
 type TokensMetadataResponse = {

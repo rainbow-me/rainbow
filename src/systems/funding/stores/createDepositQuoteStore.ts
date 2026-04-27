@@ -1,3 +1,4 @@
+import { createQueryStore, type InferStoreState } from '@storesjs/stores';
 import { getAddress, type Address } from 'viem';
 
 import { stripNonDecimalNumbers } from '@/__swaps__/utils/swaps';
@@ -6,8 +7,6 @@ import { isNativeAsset } from '@/handlers/assets';
 import { convertAmountToRawAmount } from '@/helpers/utilities';
 import { userAssetsStoreManager } from '@/state/assets/userAssetsStoreManager';
 import { type ChainId } from '@/state/backendNetworks/types';
-import { createQueryStore } from '@/state/internal/createQueryStore';
-import { type InferStoreState } from '@/state/internal/types';
 import { useWalletsStore } from '@/state/wallets/walletsStore';
 import { time } from '@/utils/time';
 import {

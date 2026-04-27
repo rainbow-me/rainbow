@@ -1,6 +1,7 @@
 import { type ComponentType } from 'react';
 
 import { type Signer } from '@ethersproject/abstract-signer';
+import { type BaseStore, type DerivedStore, type QueryStore, type QueryStoreState, type Store, type StoreActions } from '@storesjs/stores';
 import { type DerivedValue, type SharedValue } from 'react-native-reanimated';
 import { type Address } from 'viem';
 
@@ -9,9 +10,6 @@ import type { GasSettings, LegacyTransactionGasParamAmounts, TransactionGasParam
 import { type GasSpeed } from '@/features/gas/types/gasSpeed';
 import { type NumberPadField } from '@/features/perps/components/NumberPad/NumberPadKey';
 import { type ChainId } from '@/state/backendNetworks/types';
-import { type QueryStore, type StoreState } from '@/state/internal/queryStore/types';
-import { type BaseRainbowStore, type DerivedStore, type RainbowStore } from '@/state/internal/types';
-import { type StoreActions } from '@/state/internal/utils/createStoreActions';
 import { type CrosschainQuote, type Quote, type Source } from '@rainbow-me/swaps';
 
 // ============ Shared Types =================================================== //
@@ -411,7 +409,7 @@ export type DepositStoreState = {
   setListChainId: (chainId: ChainId | undefined) => void;
 };
 
-export type DepositStoreType = RainbowStore<DepositStoreState>;
+export type DepositStoreType = Store<DepositStoreState>;
 
 // ============ Amount Store Types ============================================= //
 
@@ -424,7 +422,7 @@ export type AmountState = {
   setAmount: (amount: string) => void;
 };
 
-export type AmountStoreType = RainbowStore<AmountState>;
+export type AmountStoreType = Store<AmountState>;
 
 export type DepositQuoteStoreParams = {
   accountAddress: Address;
@@ -585,9 +583,9 @@ export type DepositContextType = {
  * Constraint for stores compatible with the withdrawal flow.
  * Must expose a `getBalance` method returning the available balance as a string.
  */
-export type BalanceQueryStore = BaseRainbowStore<{
+export type BalanceQueryStore = BaseStore<{
   getBalance: () => string;
-  getStatus: StoreState<unknown, Record<string, unknown>>['getStatus'];
+  getStatus: QueryStoreState<unknown, Record<string, unknown>>['getStatus'];
 }>;
 
 /**
@@ -869,7 +867,7 @@ export type WithdrawalStoreState = {
   setSelectedChainId: (chainId: ChainId) => void;
 };
 
-export type WithdrawalStoreType = RainbowStore<WithdrawalStoreState>;
+export type WithdrawalStoreType = Store<WithdrawalStoreState>;
 
 /**
  * Network info for a token on a specific chain.

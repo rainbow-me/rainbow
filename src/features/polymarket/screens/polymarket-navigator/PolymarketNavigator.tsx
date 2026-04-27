@@ -1,6 +1,8 @@
 import { memo } from 'react';
 import { StyleSheet } from 'react-native';
 
+import { useListen } from '@storesjs/stores';
+
 import { SPRING_CONFIGS } from '@/components/animations/animationConfigs';
 import { SmoothPager, usePagerNavigation } from '@/components/SmoothPager/SmoothPager';
 import { Box, useColorMode } from '@/design-system';
@@ -17,7 +19,6 @@ import { useStableValue } from '@/hooks/useStableValue';
 import { createVirtualNavigator } from '@/navigation/createVirtualNavigator';
 import Routes from '@/navigation/routesNames';
 import { type PolymarketRoute } from '@/navigation/types';
-import { useListen } from '@/state/internal/hooks/useListen';
 
 const Navigator = createVirtualNavigator<PolymarketRoute>({
   initialRoute: Routes.POLYMARKET_BROWSE_EVENTS_SCREEN,

@@ -1,3 +1,5 @@
+import { createBaseStore } from '@storesjs/stores';
+
 import { analytics } from '@/analytics';
 import {
   Timeframe as ArcTimeframe,
@@ -5,8 +7,6 @@ import {
   TrendingSort as ArcTrendingSort,
 } from '@/graphql/__generated__/arc';
 import { type ChainId } from '@/state/backendNetworks/types';
-
-import { createRainbowStore } from '../internal/createRainbowStore';
 
 export const categories = [ArcTrendingCategory.Trending, ArcTrendingCategory.New] as const;
 export type TrendingCategory = (typeof categories)[number];
@@ -33,7 +33,7 @@ type TrendingTokensState = {
   setSort: (sort: TrendingTokensState['sort']) => void;
 };
 
-export const useTrendingTokensStore = createRainbowStore<TrendingTokensState>(
+export const useTrendingTokensStore = createBaseStore<TrendingTokensState>(
   set => ({
     category: ArcTrendingCategory.Trending,
     chainId: undefined,

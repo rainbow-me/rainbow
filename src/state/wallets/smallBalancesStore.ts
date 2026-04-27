@@ -1,6 +1,6 @@
-import { createRainbowStore } from '../internal/createRainbowStore';
+import { createBaseStore } from '@storesjs/stores';
 
-const useSmallBalancesStore = createRainbowStore<{
+const useSmallBalancesStore = createBaseStore<{
   open: boolean;
   setOpen: (next: boolean) => void;
   toggle: () => void;

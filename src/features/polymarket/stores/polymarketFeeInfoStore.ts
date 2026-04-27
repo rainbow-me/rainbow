@@ -1,10 +1,10 @@
 import { type ClobToken } from '@polymarket/clob-client-v2';
+import { createQueryStore } from '@storesjs/stores';
 
 import { POLYMARKET_BUILDER_CODE, POLYMARKET_CLOB_URL } from '@/features/polymarket/constants';
 import { polymarketClobDataClient } from '@/features/polymarket/polymarket-clob-data-client';
 import { EMPTY_POLYMARKET_FEE_INFO, type PolymarketFeeInfo } from '@/features/polymarket/utils/fees';
 import { rainbowFetch } from '@/framework/data/http/rainbowFetch';
-import { createQueryStore } from '@/state/internal/createQueryStore';
 import { time } from '@/utils/time';
 
 type RawBuilderFeesResponse = {
