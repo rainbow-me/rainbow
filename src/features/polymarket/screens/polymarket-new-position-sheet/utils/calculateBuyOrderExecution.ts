@@ -165,7 +165,10 @@ function simulateBuyFills({
 }
 
 function findWorstAskPriceForNotional(asks: readonly PolymarketOrderBookLevel[], notionalUsd: number): number {
-  return simulateMarketFills({ levels: asks, targetAmount: notionalUsd, targetType: 'notionalUsd' }).worstPrice || Number(asks[0].price);
+  return (
+    simulateMarketFills({ levels: asks, targetAmount: notionalUsd, targetType: 'notionalUsd' }).worstPrice ||
+    Number(getBestOrderBookPrice(asks))
+  );
 }
 
 function calculateMinimumBuySpendUsd({ bestAskPrice, feeInfo }: { bestAskPrice: number; feeInfo: PolymarketFeeInfo }): number {

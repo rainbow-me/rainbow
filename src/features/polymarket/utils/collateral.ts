@@ -133,11 +133,6 @@ export async function buildEnsureUsdcBalanceTransactions({
   });
 }
 
-/**
- * Called after a USDC.e deposit transaction is submitted, then wraps the received USDC.e into pUSD.
- *
- * Accepts the signer from the deposit flow to avoid redundant authentication.
- */
 export async function handlePolymarketDepositSubmitted(signer: Signer, context: DepositSubmitContext): Promise<void> {
   const proxyAddress = usePolymarketClients.getState().proxyAddress;
   if (!proxyAddress) {
@@ -160,22 +155,6 @@ export async function wrapUsdcBalanceToPusd(proxyAddress: string): Promise<void>
   const client = await getPolymarketRelayClient();
 
   await wrapUsdcToPusd({ client, proxyAddress, amount: usdcBalance });
-  await refetchPolymarketBalance();
-}
-
-export async function unwrapPusdToUsdc({
-  amount,
-  proxyAddress,
-  recipient,
-}: {
-  amount: BigNumber;
-  proxyAddress: string;
-  recipient: string;
-}): Promise<void> {
-  const client = await getPolymarketRelayClient();
-
-  const transactions = await buildUnwrapPusdToUsdcTransactions({ amount, proxyAddress, recipient });
-  await executeRelayTransaction(client, transactions, 'unwrap pUSD to USDC.e');
   await refetchPolymarketBalance();
 }
 

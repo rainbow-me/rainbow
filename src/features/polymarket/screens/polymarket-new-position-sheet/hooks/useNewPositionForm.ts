@@ -1,7 +1,6 @@
-import { useEffect, useMemo } from 'react';
+import { useMemo } from 'react';
 
 import { usePolymarketBalanceStore } from '@/features/polymarket/stores/polymarketBalanceStore';
-import { prefetchPolymarketFeeInfo } from '@/features/polymarket/stores/polymarketFeeInfoStore';
 import { toPercentageWorklet } from '@/framework/core/safeMath';
 import { useStableValue } from '@/hooks/useStableValue';
 
@@ -17,10 +16,6 @@ type UseNewPositionFormParams = {
 export function useNewPositionForm({ tokenId, conditionId }: UseNewPositionFormParams) {
   const liveAvailableBalance = usePolymarketBalanceStore(state => state.getBalance());
   const availableBalance = useStableValue(() => liveAvailableBalance);
-
-  useEffect(() => {
-    void prefetchPolymarketFeeInfo(conditionId);
-  }, [conditionId]);
 
   const { orderFormStore, executionStore } = useStableValue(() => {
     const orderFormStore = createOrderFormStore();
