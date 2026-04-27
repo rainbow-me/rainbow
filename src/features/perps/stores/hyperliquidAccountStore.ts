@@ -1,4 +1,5 @@
 import { type OrderSuccessResponse } from '@nktkas/hyperliquid/api/exchange';
+import { createQueryStore, createStoreActions } from '@storesjs/stores';
 import { type Address } from 'viem';
 
 import { USD_DECIMALS } from '@/features/perps/constants';
@@ -9,8 +10,6 @@ import { refetchHyperliquidStores } from '@/features/perps/utils';
 import { truncateToDecimals } from '@/framework/core/safeMath';
 import { time } from '@/framework/core/utils/time';
 import { RainbowError } from '@/logger';
-import { createQueryStore } from '@/state/internal/createQueryStore';
-import { createStoreActions } from '@/state/internal/utils/createStoreActions';
 
 import { getHyperliquidAccountClient, getHyperliquidExchangeClient, useHyperliquidClients } from '../services';
 import { type PerpMarketWithMetadata, type PerpPositionSide, type PerpsPosition, type TriggerOrder } from '../types';

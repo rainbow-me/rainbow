@@ -1,3 +1,4 @@
+import { createQueryStore } from '@storesjs/stores';
 import { decodeFunctionResult, encodeFunctionData, type Address, type Hex } from 'viem';
 
 import { type NativeCurrencyKey } from '@/entities/nativeCurrencyTypes';
@@ -9,7 +10,6 @@ import { getPlatformClient } from '@/resources/platform/client';
 import { type PlatformResponse } from '@/resources/platform/types';
 import { userAssetsStoreManager } from '@/state/assets/userAssetsStoreManager';
 import { ChainId } from '@/state/backendNetworks/types';
-import { createQueryStore } from '@/state/internal/createQueryStore';
 import { useWalletsStore } from '@/state/wallets/walletsStore';
 
 import { STAKING_ABI, STAKING_CHAIN_ID, STAKING_CONTRACT_ADDRESS } from '../constants';

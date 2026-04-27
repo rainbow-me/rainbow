@@ -1,8 +1,8 @@
 import type { PerpAnnotationResponse } from '@nktkas/hyperliquid';
+import { createQueryStore } from '@storesjs/stores';
 
 import { infoClient } from '@/features/perps/services/hyperliquid-info-client';
 import { time } from '@/framework/core/utils/time';
-import { createQueryStore } from '@/state/internal/createQueryStore';
 
 type PerpAnnotationParams = {
   symbol: string;

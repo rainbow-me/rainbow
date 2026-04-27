@@ -1,6 +1,5 @@
+import { createBaseStore } from '@storesjs/stores';
 import { type Address } from 'viem';
-
-import { createRainbowStore } from '@/state/internal/createRainbowStore';
 
 import { type OpenCollectionsStoreType } from './types';
 
@@ -9,7 +8,7 @@ interface OpenCollectionsStoreManagerState {
   cachedStore: OpenCollectionsStoreType | null;
 }
 
-export const openCollectionsStoreManager = createRainbowStore<OpenCollectionsStoreManagerState>(
+export const openCollectionsStoreManager = createBaseStore<OpenCollectionsStoreManagerState>(
   () => ({
     address: null,
     cachedStore: null,

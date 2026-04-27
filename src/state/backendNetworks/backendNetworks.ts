@@ -1,3 +1,4 @@
+import { createQueryStore, createStoreActions } from '@storesjs/stores';
 import isEqual from 'react-fast-compare';
 import { type Chain } from 'viem/chains';
 
@@ -9,8 +10,6 @@ import { fetchBackendNetworks, type BackendNetworksResponse } from '@/resources/
 import { chainAnvil, chainAnvilOptimism, ChainId, type BackendNetwork, type BackendNetworkServices } from '@/state/backendNetworks/types';
 import { filterSupportedNetworks, transformBackendNetworksToChains } from '@/state/backendNetworks/utils';
 import { useConnectedToAnvilStore } from '@/state/connectedToAnvil';
-import { createQueryStore } from '@/state/internal/createQueryStore';
-import { createStoreActions } from '@/state/internal/utils/createStoreActions';
 import { colors as globalColors } from '@/styles';
 
 const INITIAL_BACKEND_NETWORKS = buildTimeNetworks.networks as BackendNetwork[];

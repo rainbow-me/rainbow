@@ -1,6 +1,7 @@
 import React, { memo, useCallback, useMemo } from 'react';
 import { useWindowDimensions } from 'react-native';
 
+import { useListen } from '@storesjs/stores';
 import Animated, {
   useAnimatedStyle,
   useDerivedValue,
@@ -27,7 +28,6 @@ import { getHyperliquidTokenId } from '@/features/perps/utils';
 import { useCleanup } from '@/hooks/useCleanup';
 import Routes from '@/navigation/routesNames';
 import { type AssetAccentColors, type ExpandedSheetAsset } from '@/screens/expandedAssetSheet/context/ExpandedAssetSheetContext';
-import { useListen } from '@/state/internal/hooks/useListen';
 import { useListenerRouteGuard } from '@/state/internal/hooks/useListenerRouteGuard';
 import { useStoreSharedValue } from '@/state/internal/hooks/useStoreSharedValue';
 import { type TokenData } from '@/state/liveTokens/liveTokensStore';

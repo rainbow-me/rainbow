@@ -1,11 +1,10 @@
 import { useMemo } from 'react';
 
-import { createStoreActions } from '@storesjs/stores';
+import { createBaseStore, createStoreActions } from '@storesjs/stores';
 
 import { TOAST_HIDE_TIMEOUT_MS } from '@/components/rainbow-toast/constants';
 import type { RainbowToast } from '@/components/rainbow-toast/types';
 import type { RainbowTransaction } from '@/entities/transactions';
-import { createRainbowStore } from '@/state/internal/createRainbowStore';
 
 function toToastId(tx: RainbowTransaction): string {
   const identity = tx.relayExecutionId ?? (tx.nonce !== null && tx.nonce !== undefined ? String(tx.nonce) : tx.hash);
@@ -26,7 +25,7 @@ export type ToastState = {
   pendingRemoveToastIds: string[];
 };
 
-export const useRainbowToastsStore = createRainbowStore<ToastState>((set, get) => ({
+export const useRainbowToastsStore = createBaseStore<ToastState>((set, get) => ({
   toasts: {},
   // Tracks toasts that are pending removal while the expanded state is opened.
   pendingRemoveToastIds: [],

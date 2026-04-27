@@ -1,12 +1,9 @@
 import { useCallback, type RefObject } from 'react';
 
+import { hasGetSnapshot, useListen, type BaseStore, type ListenHandle, type Selector, type UseListenOptions } from '@storesjs/stores';
 import { runOnUI, useSharedValue, type DerivedValue } from 'react-native-reanimated';
 
 import { useStableValue } from '@/hooks/useStableValue';
-import { hasGetSnapshot } from '@/state/internal/utils/storeUtils';
-
-import { type BaseRainbowStore, type Selector } from '../types';
-import { useListen, type ListenHandle, type UseListenOptions } from './useListen';
 
 // ============ Types ========================================================== //
 
@@ -69,25 +66,25 @@ type UseStoreSharedValueOptions<Selected, ReturnListenHandle extends true | unde
  * ```
  */
 export function useStoreSharedValue<S, Selected>(
-  store: BaseRainbowStore<S>,
+  store: BaseStore<S>,
   selector: Selector<S, Selected>,
   options?: UseStoreSharedValueOptions<Selected, undefined>
 ): ReadOnlySharedValue<Selected>;
 
 export function useStoreSharedValue<S, Selected>(
-  store: BaseRainbowStore<S>,
+  store: BaseStore<S>,
   selector: Selector<S, Selected>,
   options: UseStoreSharedValueOptions<Selected, true>
 ): ListenHandleTuple<Selected>;
 
 export function useStoreSharedValue<S, Selected>(
-  store: BaseRainbowStore<S>,
+  store: BaseStore<S>,
   selector: Selector<S, Selected>,
   equalityFn: UseListenOptions<Selected>['equalityFn']
 ): ReadOnlySharedValue<Selected>;
 
 export function useStoreSharedValue<S, Selected>(
-  store: BaseRainbowStore<S>,
+  store: BaseStore<S>,
   selector: Selector<S, Selected>,
   optionsOrEqualityFn?: UseStoreSharedValueOptions<Selected>
 ): ReadOnlySharedValue<Selected> | ListenHandleTuple<Selected> {
@@ -103,7 +100,7 @@ export function useStoreSharedValue<S, Selected>(
 // ============ Utilities ====================================================== //
 
 function buildInitialState<S, Selected>(
-  store: BaseRainbowStore<S>,
+  store: BaseStore<S>,
   selector: Selector<S, Selected>,
   optionsOrEqualityFn: UseStoreSharedValueOptions<Selected>
 ): {
@@ -114,6 +111,11 @@ function buildInitialState<S, Selected>(
   const returnListenHandle = (hasOptions && optionsOrEqualityFn?.returnListenHandle) || false;
   return {
     returnListenHandle,
-    selected: selector(hasGetSnapshot(store) ? store.getSnapshot() : store.getState()),
+    selected: selector(getStoreSnapshot(store)),
   };
+}
+
+function getStoreSnapshot<S>(store: BaseStore<S>): S {
+  if (hasGetSnapshot(store)) return store.getSnapshot();
+  return store.getState();
 }

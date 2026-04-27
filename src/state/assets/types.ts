@@ -1,16 +1,15 @@
+import { type OptionallyPersistedStore, type QueryStoreState } from '@storesjs/stores';
 import { type Address, type Prettify } from 'viem';
 
 import { type ParsedSearchAsset, type UniqueId, type UserAssetFilter } from '@/__swaps__/types/assets';
 import type { ParsedAddressAsset } from '@/entities/tokens';
 import type { SupportedCurrencyKey } from '@/references/supportedCurrencies';
 import { type ChainId } from '@/state/backendNetworks/types';
-import { type QueryStoreState } from '@/state/internal/queryStore/types';
-import { type OptionallyPersistedRainbowStore } from '@/state/internal/types';
 
 import { type LiveTokensData } from '../liveTokens/liveTokensStore';
 import { type UserAssetsStateToPersist } from './persistence';
 
-export type UserAssetsStoreType = OptionallyPersistedRainbowStore<
+export type UserAssetsStoreType = OptionallyPersistedStore<
   QueryStoreState<FetchedUserAssetsData, UserAssetsParams, UserAssetsState>,
   UserAssetsStateToPersist
 >;

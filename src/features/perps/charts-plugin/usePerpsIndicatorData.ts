@@ -1,8 +1,9 @@
+import { createDerivedStore } from '@storesjs/stores';
+
 import { useChartsStore } from '@/features/charts/stores/chartsStore';
 import { isHyperliquidToken } from '@/features/charts/utils';
 import { useHlOpenOrdersStore } from '@/features/perps/stores/hlOpenOrdersStore';
 import { useHyperliquidAccountStore } from '@/features/perps/stores/hyperliquidAccountStore';
-import { createDerivedStore } from '@/state/internal/createDerivedStore';
 import { shallowEqual } from '@/worklets/comparisons';
 
 import { PerpsIndicatorKey } from './PerpsIndicator';
@@ -66,5 +67,5 @@ export const usePerpsIndicatorData = createDerivedStore<PerpsIndicatorData | nul
     };
   },
 
-  { equalityFn: shallowEqual, fastMode: true }
+  { equalityFn: shallowEqual, lockDependencies: true }
 );

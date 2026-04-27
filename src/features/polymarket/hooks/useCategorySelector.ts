@@ -1,10 +1,8 @@
 import { useCallback, useEffect, useRef, type RefObject } from 'react';
 import { type LayoutChangeEvent, type ScrollView } from 'react-native';
 
+import { useListen, type BaseStore } from '@storesjs/stores';
 import { useSharedValue, type SharedValue } from 'react-native-reanimated';
-
-import { useListen } from '@/state/internal/hooks/useListen';
-import { type BaseRainbowStore } from '@/state/internal/types';
 
 type ItemLayout = { x: number; width: number };
 
@@ -17,7 +15,7 @@ type UseCategorySelectorParams<StoreState, Item, Key extends string> = {
   scrollViewRef: RefObject<ScrollView | null>;
   selectStoreKey: (state: StoreState) => Key;
   setStoreKey: (key: Key) => void;
-  store: BaseRainbowStore<StoreState>;
+  store: BaseStore<StoreState>;
 };
 
 type UseCategorySelectorResult<Item, Key extends string> = {

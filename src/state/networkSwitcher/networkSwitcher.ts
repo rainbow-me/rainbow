@@ -1,9 +1,9 @@
+import { createBaseStore } from '@storesjs/stores';
+
 import { analytics } from '@/analytics';
 import { logger } from '@/logger';
 import { ChainId } from '@/state/backendNetworks/types';
 import { useNonceStore } from '@/state/nonces';
-
-import { createRainbowStore } from '../internal/createRainbowStore';
 
 export const defaultPinnedNetworks = [ChainId.base, ChainId.mainnet, ChainId.optimism, ChainId.arbitrum, ChainId.polygon, ChainId.zora];
 
@@ -29,7 +29,7 @@ function getMostUsedChains() {
   }
 }
 
-export const networkSwitcherStore = createRainbowStore<{
+export const networkSwitcherStore = createBaseStore<{
   pinnedNetworks: ChainId[];
   searchQuery: string;
 }>(() => ({ pinnedNetworks: getMostUsedChains().slice(0, 5), searchQuery: '' }), {
@@ -50,7 +50,7 @@ export const networkSwitcherStore = createRainbowStore<{
   },
 });
 
-export const customizeNetworksBannerStore = createRainbowStore<{
+export const customizeNetworksBannerStore = createBaseStore<{
   dismissedAt: number; // timestamp
 }>(() => ({ dismissedAt: 0 }), {
   storageKey: 'CustomizeNetworksBanner',

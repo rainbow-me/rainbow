@@ -1,4 +1,4 @@
-import { createRainbowStore } from '../internal/createRainbowStore';
+import { createBaseStore } from '@storesjs/stores';
 
 const TIME_TO_WATCH = 600000;
 
@@ -23,7 +23,7 @@ export type StaleBalancesState = {
   staleBalances: Record<string, StaleBalancesByChainId>;
 };
 
-export const staleBalancesStore = createRainbowStore<StaleBalancesState>(
+export const staleBalancesStore = createBaseStore<StaleBalancesState>(
   (set, get) => ({
     addStaleBalance: ({ address, chainId, info }: { address: string; chainId: number; info: StaleBalanceInfo }) => {
       set(state => {

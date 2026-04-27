@@ -1,4 +1,5 @@
 import { type FrontendOpenOrdersResponse } from '@nktkas/hyperliquid/api/info';
+import { createQueryStore, createStoreActions } from '@storesjs/stores';
 import { type Address } from 'viem';
 
 import { infoClient } from '@/features/perps/services/hyperliquid-info-client';
@@ -7,8 +8,6 @@ import { type OrderSide } from '@/features/perps/types';
 import { convertSide } from '@/features/perps/utils';
 import { time } from '@/framework/core/utils/time';
 import { RainbowError } from '@/logger';
-import { createQueryStore } from '@/state/internal/createQueryStore';
-import { createStoreActions } from '@/state/internal/utils/createStoreActions';
 import { useWalletsStore } from '@/state/wallets/walletsStore';
 
 type FrontendOpenOrder = FrontendOpenOrdersResponse[number];

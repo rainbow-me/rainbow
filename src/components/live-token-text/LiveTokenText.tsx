@@ -1,11 +1,11 @@
 import React, { useCallback, useEffect, useRef, useState } from 'react';
 
+import { useListen } from '@storesjs/stores';
 import { useAnimatedReaction, useAnimatedStyle, useSharedValue, withDelay, withTiming, type SharedValue } from 'react-native-reanimated';
 
 import { AnimatedText, useForegroundColor, type TextProps } from '@/design-system';
 import usePrevious from '@/hooks/usePrevious';
 import { useRoute } from '@/navigation/Navigation';
-import { useListen } from '@/state/internal/hooks/useListen';
 import { addSubscribedToken, removeSubscribedToken, useLiveTokensStore, type TokenData } from '@/state/liveTokens/liveTokensStore';
 import { useTheme } from '@/theme/ThemeContext';
 import { toUnixTime } from '@/worklets/dates';

@@ -1,5 +1,6 @@
 import { useMemo } from 'react';
 
+import { createDerivedStore, createQueryStore } from '@storesjs/stores';
 import { isAddress, type Address } from 'viem';
 
 import { type NativeCurrencyKey } from '@/entities/nativeCurrencyTypes';
@@ -18,8 +19,6 @@ import { time } from '@/framework/core/utils/time';
 import { fetchExternalToken, type FormattedExternalAsset } from '@/resources/assets/externalAssetsQuery';
 import { userAssetsStoreManager } from '@/state/assets/userAssetsStoreManager';
 import { type ChainId } from '@/state/backendNetworks/types';
-import { createDerivedStore } from '@/state/internal/createDerivedStore';
-import { createQueryStore } from '@/state/internal/createQueryStore';
 import { shallowEqual } from '@/worklets/comparisons';
 
 // ============ Types ========================================================== //
@@ -69,7 +68,7 @@ const useTokensEnabled = createDerivedStore<boolean>(
   $ => {
     return hasTokenRefsOrPendingHydration($);
   },
-  { fastMode: true }
+  { lockDependencies: true }
 );
 
 export const useTokenRefsStore = createQueryStore<TokenAssetsByRef, TokenRefsParams>({

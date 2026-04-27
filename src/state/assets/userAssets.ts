@@ -1,8 +1,8 @@
+import { type EqualityFn, type Selector } from '@storesjs/stores';
 import { type Address } from 'viem';
 
 import { getAccountAddress, useAccountAddress } from '@/state/wallets/walletsStore';
 
-import { type EqualityFn, type Selector } from '../internal/types';
 import { createStoreFactoryUtils } from '../internal/utils/factoryUtils';
 import { createUserAssetsStore } from './createUserAssetsStore';
 import { type UserAssetsStateToPersist } from './persistence';

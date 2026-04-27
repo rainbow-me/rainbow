@@ -1,5 +1,6 @@
 import { getApp } from '@react-native-firebase/app';
 import { collection, getDocs, getFirestore, query, where, type FirebaseFirestoreTypes } from '@react-native-firebase/firestore';
+import { createQueryStore } from '@storesjs/stores';
 
 import { PLACEMENT_SOURCES, PLACEMENT_TYPES } from '@/features/placements/constants';
 import {
@@ -11,7 +12,6 @@ import {
 } from '@/features/placements/types';
 import { isNonEmptyString, oneOf } from '@/features/placements/utils/decoders';
 import { time } from '@/framework/core/utils/time';
-import { createQueryStore } from '@/state/internal/createQueryStore';
 
 // ============ Types ========================================================== //
 

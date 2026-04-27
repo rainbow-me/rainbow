@@ -1,9 +1,8 @@
+import { createBaseStore } from '@storesjs/stores';
 import { makeMutable, type SharedValue } from 'react-native-reanimated';
 
 import Routes, { type Route } from '@/navigation/routesNames';
 import { VIRTUAL_NAVIGATORS } from '@/navigation/virtualNavigators';
-
-import { createRainbowStore } from '../internal/createRainbowStore';
 
 export type NavigationState = {
   activeRoute: Route;
@@ -31,7 +30,7 @@ export type SwipeRoute = (typeof SWIPE_ROUTES)[number];
 
 const SWIPE_ROUTES_SET = new Set<Route>(SWIPE_ROUTES);
 
-export const useNavigationStore = createRainbowStore<NavigationState>((set, get) => ({
+export const useNavigationStore = createBaseStore<NavigationState>((set, get) => ({
   activeRoute: Routes.WALLET_SCREEN,
   activeSwipeRoute: Routes.WALLET_SCREEN,
   animatedActiveRoute: makeMutable<Route>(Routes.WALLET_SCREEN),

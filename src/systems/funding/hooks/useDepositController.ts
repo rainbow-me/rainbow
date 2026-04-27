@@ -1,5 +1,6 @@
 import { useCallback } from 'react';
 
+import { useListen } from '@storesjs/stores';
 import { runOnJS, runOnUI, useAnimatedReaction, useDerivedValue, useSharedValue, withSpring } from 'react-native-reanimated';
 import { useDebouncedCallback } from 'use-debounce';
 
@@ -19,7 +20,6 @@ import {
 import { time } from '@/framework/core/utils/time';
 import { handleSignificantDecimalsWorklet } from '@/helpers/utilities';
 import { useStableValue } from '@/hooks/useStableValue';
-import { useListen } from '@/state/internal/hooks/useListen';
 import { useStoreSharedValue } from '@/state/internal/hooks/useStoreSharedValue';
 import { useWalletsStore } from '@/state/wallets/walletsStore';
 import { sanitizeAmount } from '@/worklets/strings';

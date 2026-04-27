@@ -1,3 +1,5 @@
+import { createQueryStore } from '@storesjs/stores';
+
 import { POLYMARKET_GAMMA_API_URL } from '@/features/polymarket/constants';
 import { type PolymarketTeamInfo } from '@/features/polymarket/types';
 import { type PolymarketEvent, type PolymarketMarket, type RawPolymarketEvent } from '@/features/polymarket/types/polymarket-event';
@@ -6,7 +8,6 @@ import { processRawPolymarketEvent } from '@/features/polymarket/utils/transform
 import { time } from '@/framework/core/utils/time';
 import { rainbowFetch } from '@/framework/data/http/rainbowFetch';
 import { RainbowError } from '@/logger';
-import { createQueryStore } from '@/state/internal/createQueryStore';
 
 type FetchParams = { eventId: string | null };
 

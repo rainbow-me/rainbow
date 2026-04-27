@@ -1,13 +1,13 @@
 import { useCallback } from 'react';
 import { Alert } from 'react-native';
 
+import { type StoreActions } from '@storesjs/stores';
 import { type SharedValue } from 'react-native-reanimated';
 
 import { type AddressOrEth } from '@/__swaps__/types/assets';
 import { logger, RainbowError } from '@/logger';
 import Navigation from '@/navigation/Navigation';
 import { type ChainId } from '@/state/backendNetworks/types';
-import { type StoreActions } from '@/state/internal/utils/createStoreActions';
 import { useWalletsStore } from '@/state/wallets/walletsStore';
 import { sanitizeAmount } from '@/worklets/strings';
 

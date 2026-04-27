@@ -1,3 +1,5 @@
+import { createDerivedStore, type DerivedStore, type InferStoreState, type Selector } from '@storesjs/stores';
+
 import {
   calculateBuyOrderExecution,
   type BuyOrderExecution,
@@ -5,8 +7,6 @@ import {
 import { usePolymarketFeeInfoStore } from '@/features/polymarket/stores/polymarketFeeInfoStore';
 import { usePolymarketOrderBookStore, type OrderBook } from '@/features/polymarket/stores/polymarketOrderBookStore';
 import { type PolymarketFeeInfo } from '@/features/polymarket/utils/fees';
-import { createDerivedStore } from '@/state/internal/createDerivedStore';
-import { type DerivedStore, type InferStoreState, type Selector } from '@/state/internal/types';
 import { shallowEqual } from '@/worklets/comparisons';
 
 import { type OrderFormStore } from './createOrderFormStore';
@@ -25,7 +25,7 @@ export function createOrderExecutionStore(orderFormStore: OrderFormStore, tokenI
     },
     {
       equalityFn: shallowEqual,
-      fastMode: true,
+      lockDependencies: true,
     }
   );
 }

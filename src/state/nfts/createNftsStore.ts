@@ -1,3 +1,4 @@
+import { createQueryStore } from '@storesjs/stores';
 import { isEmpty } from 'lodash';
 import { type Address } from 'viem';
 
@@ -9,7 +10,6 @@ import { fetchHiddenTokens, getHidden } from '@/hooks/useFetchHiddenTokens';
 import { fetchShowcaseTokens, getShowcase } from '@/hooks/useFetchShowcaseTokens';
 import { logger, RainbowError } from '@/logger';
 import { parseUniqueAsset, parseUniqueId } from '@/resources/nfts/utils';
-import { createQueryStore } from '@/state/internal/createQueryStore';
 import { useNftsStore } from '@/state/nfts/nfts';
 import { useOpenCollectionsStore } from '@/state/nfts/openCollectionsStore';
 import {

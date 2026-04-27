@@ -1,7 +1,7 @@
+import { createBaseStore } from '@storesjs/stores';
+
 import { normalizeUrlForRecents } from '@/components/DappBrowser/utils';
 import { logger, RainbowError } from '@/logger';
-
-import { createRainbowStore } from '../internal/createRainbowStore';
 
 export interface Site {
   name: string;
@@ -20,7 +20,7 @@ export interface BrowserHistoryStore {
 
 const MAX_RECENT_SIZE = 1000;
 
-export const useBrowserHistoryStore = createRainbowStore<BrowserHistoryStore>(
+export const useBrowserHistoryStore = createBaseStore<BrowserHistoryStore>(
   (set, get) => ({
     recents: [],
 

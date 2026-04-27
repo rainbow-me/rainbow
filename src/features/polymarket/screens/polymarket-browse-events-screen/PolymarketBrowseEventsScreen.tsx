@@ -1,6 +1,7 @@
 import { memo } from 'react';
 import { StyleSheet, View, type NativeScrollEvent, type NativeSyntheticEvent } from 'react-native';
 
+import { useListen } from '@storesjs/stores';
 import { useSharedValue } from 'react-native-reanimated';
 
 import { ScrollHeaderFade } from '@/components/scroll-header-fade/ScrollHeaderFade';
@@ -14,7 +15,6 @@ import { LEAGUE_SELECTOR_HEIGHT } from '@/features/polymarket/screens/polymarket
 import { PolymarketSportsEventsScreen } from '@/features/polymarket/screens/polymarket-sports-events-screen/PolymarketSportsEventsScreen';
 import { polymarketEventsActions, usePolymarketEventsStore } from '@/features/polymarket/stores/polymarketEventsStore';
 import { usePolymarketCategoryStore } from '@/features/polymarket/stores/usePolymarketCategoryStore';
-import { useListen } from '@/state/internal/hooks/useListen';
 
 export const PolymarketBrowseEventsScreen = memo(function PolymarketBrowseEventsScreen() {
   return (

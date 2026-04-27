@@ -1,6 +1,7 @@
 import React, { memo, useCallback, useEffect, useMemo, useRef, type MutableRefObject } from 'react';
 import { Platform, ScrollView, StyleSheet, type NativeScrollEvent, type NativeSyntheticEvent } from 'react-native';
 
+import { useListen } from '@storesjs/stores';
 import Animated, { runOnJS, useAnimatedScrollHandler, useSharedValue, type SharedValue } from 'react-native-reanimated';
 
 import { SPRING_CONFIGS } from '@/components/animations/animationConfigs';
@@ -20,7 +21,6 @@ import { useDiscoverSurface } from '@/features/placements/surfaces/stores/discov
 import { type DiscoverTab } from '@/features/placements/surfaces/stores/discoverSurfaceTypes';
 import { type SurfaceId } from '@/features/placements/surfaces/types';
 import { useTabBarOffset } from '@/hooks/useTabBarOffset';
-import { useListen } from '@/state/internal/hooks/useListen';
 import { clamp } from '@/worklets/numbers';
 
 type DiscoverSectionsPagerProps = {

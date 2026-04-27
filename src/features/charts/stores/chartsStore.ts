@@ -1,9 +1,9 @@
+import { createBaseStore, createStoreActions } from '@storesjs/stores';
+
 import { CANDLESTICK_CHARTS } from '@/config/experimental';
 import useExperimentalFlag from '@/config/experimentalHooks';
 import { isHyperliquidToken } from '@/features/charts/utils';
 import { useRemoteConfig } from '@/model/remoteConfig';
-import { createRainbowStore } from '@/state/internal/createRainbowStore';
-import { createStoreActions } from '@/state/internal/utils/createStoreActions';
 import { type Exact } from '@/types/objects';
 
 import { CandleResolution, ChartType, LineChartTimePeriod, type HyperliquidSymbol, type Token } from '../types';
@@ -31,7 +31,7 @@ export type ChartsState = {
   togglePerpsIndicators: () => boolean;
 };
 
-export const useChartsStore = createRainbowStore<ChartsState>(
+export const useChartsStore = createBaseStore<ChartsState>(
   (set, get) => ({
     candleResolution: CandleResolution.H1,
     chartType: ChartType.Candlestick,

@@ -1,3 +1,5 @@
+import { createQueryStore } from '@storesjs/stores';
+
 import type { NativeCurrencyKey } from '@/entities/nativeCurrencyTypes';
 import { time } from '@/framework/core/utils/time';
 import { metadataClient } from '@/graphql';
@@ -8,7 +10,6 @@ import { ETH_ADDRESS } from '@/references/constants';
 import { userAssetsStoreManager } from '@/state/assets/userAssetsStoreManager';
 import { useBackendNetworksStore } from '@/state/backendNetworks/backendNetworks';
 import { type ChainId } from '@/state/backendNetworks/types';
-import { createQueryStore } from '@/state/internal/createQueryStore';
 
 import { type DepositStoreType } from '../types';
 

@@ -1,3 +1,5 @@
+import { createDerivedStore, createQueryStore } from '@storesjs/stores';
+
 import { POLYMARKET } from '@/config/experimental';
 import { useExperimentalConfigStore } from '@/config/experimentalConfigStore';
 import { IS_TEST } from '@/env';
@@ -10,8 +12,6 @@ import { processRawPolymarketEvent } from '@/features/polymarket/utils/transform
 import { time } from '@/framework/core/utils/time';
 import { rainbowFetch } from '@/framework/data/http/rainbowFetch';
 import { useRemoteConfigStore } from '@/model/remoteConfig';
-import { createDerivedStore } from '@/state/internal/createDerivedStore';
-import { createQueryStore } from '@/state/internal/createQueryStore';
 
 const VOLUME_MIN = '1000';
 
@@ -29,7 +29,7 @@ const usePolymarketSportsEventsEnabled = createDerivedStore<boolean>(
 
     return !IS_TEST && (remoteEnabled || localEnabled);
   },
-  { fastMode: true }
+  { lockDependencies: true }
 );
 
 export const usePolymarketSportsEventsStore = createQueryStore<PolymarketEvent[], never, PolymarketSportsEventsStoreState>(

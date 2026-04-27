@@ -1,10 +1,11 @@
+import { createDerivedStore } from '@storesjs/stores';
+
 import { type TextColor } from '@/design-system/color/palettes';
 import { USD_DECIMALS } from '@/features/perps/constants';
 import { type PerpsPosition } from '@/features/perps/types';
 import { formatCurrency } from '@/features/perps/utils/formatCurrency';
 import { toFixedWorklet, truncateToDecimals } from '@/framework/core/safeMath';
 import { abs, add, divide, greaterThan, isEqual, isZero, multiply, subtract } from '@/helpers/utilities';
-import { createDerivedStore } from '@/state/internal/createDerivedStore';
 
 import { PERPS_EMPTY_ACCOUNT_DATA, useHyperliquidAccountStore } from '../hyperliquidAccountStore';
 
@@ -75,5 +76,5 @@ export const usePerpsPositionsInfo = createDerivedStore<PerpsPositionsInfo>(
     };
   },
 
-  { fastMode: true }
+  { lockDependencies: true }
 );

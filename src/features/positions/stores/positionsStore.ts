@@ -1,3 +1,4 @@
+import { createQueryStore } from '@storesjs/stores';
 import { throttle } from 'lodash';
 
 import { analytics } from '@/analytics';
@@ -5,7 +6,6 @@ import { time } from '@/framework/core/utils/time';
 import { greaterThan, subtract } from '@/helpers/utilities';
 import { userAssetsStoreManager } from '@/state/assets/userAssetsStoreManager';
 import { useBackendNetworksStore } from '@/state/backendNetworks/backendNetworks';
-import { createQueryStore } from '@/state/internal/createQueryStore';
 
 import type { RainbowDeposit, RainbowPool, RainbowPosition, RainbowPositions } from '../types';
 import type { ListPositionsResponse } from '../types/generated/positions/positions';

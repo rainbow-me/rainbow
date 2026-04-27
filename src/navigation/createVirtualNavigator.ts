@@ -1,9 +1,9 @@
 import React from 'react';
 
+import { createBaseStore, createStoreActions } from '@storesjs/stores';
+
 import { UseRouteProvider, type RouteParams, type UseRouteHook } from '@/navigation/Navigation';
 import { type Route } from '@/navigation/routesNames';
-import { createRainbowStore } from '@/state/internal/createRainbowStore';
-import { createStoreActions } from '@/state/internal/utils/createStoreActions';
 import { setActiveRoute } from '@/state/navigation/navigationStore';
 import { shallowEqual } from '@/worklets/comparisons';
 
@@ -51,7 +51,7 @@ export function createVirtualNavigator<VirtualRoute extends Route>({
     params: {},
   };
 
-  const useNavigationStore = createRainbowStore<VirtualNavigationStore<VirtualRoute>>((set, get) => ({
+  const useNavigationStore = createBaseStore<VirtualNavigationStore<VirtualRoute>>((set, get) => ({
     activeRoute: initialState.activeRoute,
     history: initialState.history,
     params: initialState.params,

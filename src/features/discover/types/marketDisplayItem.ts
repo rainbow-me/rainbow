@@ -1,5 +1,6 @@
+import { type BaseStore } from '@storesjs/stores';
+
 import { type LineChartDataStore } from '@/features/charts/line/compact/types';
-import { type BaseRainbowStore } from '@/state/internal/types';
 import { type TokenData } from '@/state/liveTokens/types';
 
 export type MarketDisplayItem = {
@@ -7,7 +8,7 @@ export type MarketDisplayItem = {
   accentColor: string;
   chartColor: string;
   chartId: string;
-  chartStore: BaseRainbowStore<LineChartDataStore>;
+  chartStore: BaseStore<LineChartDataStore>;
   displayName: string;
   iconUrl: string | undefined;
   initialPrice: string;

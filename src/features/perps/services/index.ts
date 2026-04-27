@@ -1,4 +1,5 @@
-import { createDerivedStore } from '@/state/internal/createDerivedStore';
+import { createDerivedStore } from '@storesjs/stores';
+
 import { useWalletsStore } from '@/state/wallets/walletsStore';
 
 import { HyperliquidAccountClient } from './hyperliquid-account-client';
@@ -15,7 +16,7 @@ export const useHyperliquidClients = createDerivedStore(
       exchangeClient: new HyperliquidExchangeClient(accountClient, address),
     };
   },
-  { fastMode: true }
+  { lockDependencies: true }
 );
 
 export function getHyperliquidAccountClient(): HyperliquidAccountClient {
