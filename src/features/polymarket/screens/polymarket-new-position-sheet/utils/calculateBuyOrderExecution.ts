@@ -1,22 +1,15 @@
 import { adjustBuyAmountForFees } from '@polymarket/clob-client-v2';
 
-import { ceilWorklet, divWorklet, isPositive, mulWorklet, subWorklet } from '@/framework/core/safeMath';
-
+import { type OrderBook, type OrderBookLevel } from '@/features/polymarket/stores/polymarketOrderBookStore';
 import {
   calculateFillFeesUsd,
   calculateTakerFeeUsd,
   DEFAULT_MINIMUM_ORDER_SIZE_USD,
   EMPTY_POLYMARKET_FEE_INFO,
-  getBestOrderBookPrice,
-  simulateMarketFills,
   type PolymarketFeeInfo,
-  type PolymarketOrderBookLevel,
-} from '../../../utils/orderExecution';
-
-export type PolymarketOrderBookDepth = {
-  asks: readonly PolymarketOrderBookLevel[];
-  bids: readonly PolymarketOrderBookLevel[];
-};
+} from '@/features/polymarket/utils/fees';
+import { calculateOrderBookSpread, getBestOrderBookPrice, simulateMarketFills } from '@/features/polymarket/utils/orderBookFills';
+import { ceilWorklet, divWorklet, mulWorklet } from '@/framework/core/safeMath';
 
 export type BuyOrderExecution = {
   averagePrice: string;
@@ -30,7 +23,7 @@ export type BuyOrderExecution = {
   bestPrice: string;
 };
 
-const ITERATION_LIMIT = 4;
+const PRICE_LIMIT_STABILIZATION_ITERATION_LIMIT = 4;
 
 const EMPTY_EXECUTION: BuyOrderExecution = {
   averagePrice: '0',
@@ -50,15 +43,14 @@ export function calculateBuyOrderExecution({
   buyAmountUsd,
 }: {
   feeInfo?: PolymarketFeeInfo | null;
-  orderBook: PolymarketOrderBookDepth | null;
+  orderBook: OrderBook | null;
   buyAmountUsd: string;
 }): BuyOrderExecution {
   if (!orderBook) return EMPTY_EXECUTION;
 
   const effectiveFeeInfo = feeInfo ?? EMPTY_POLYMARKET_FEE_INFO;
+  const hasAskLiquidity = orderBook.asks.length > 0;
   const bestAskPrice = getBestOrderBookPrice(orderBook.asks);
-  const bestBidPrice = getBestOrderBookPrice(orderBook.bids);
-  const hasNoLiquidityAtMarketPrice = orderBook.asks.length === 0;
 
   const execution = resolveBuyExecution({
     asks: orderBook.asks,
@@ -66,13 +58,12 @@ export function calculateBuyOrderExecution({
     feeInfo: effectiveFeeInfo,
   });
 
-  const minimumBuySpendUsd =
-    orderBook.asks.length > 0
-      ? calculateMinimumBuySpendUsd({
-          bestAskPrice: Number(bestAskPrice),
-          feeInfo: effectiveFeeInfo,
-        })
-      : DEFAULT_MINIMUM_ORDER_SIZE_USD;
+  const minimumBuySpendUsd = hasAskLiquidity
+    ? calculateMinimumBuySpendUsd({
+        bestAskPrice: Number(bestAskPrice),
+        feeInfo: effectiveFeeInfo,
+      })
+    : DEFAULT_MINIMUM_ORDER_SIZE_USD;
 
   return {
     averagePrice: String(execution.averagePrice),
@@ -81,8 +72,8 @@ export function calculateBuyOrderExecution({
     fee: String(execution.feeAmountUsd),
     tokensBought: String(execution.tokensBought),
     hasInsufficientLiquidity: execution.hasInsufficientLiquidity,
-    hasNoLiquidityAtMarketPrice,
-    spread: orderBook.asks.length > 0 && orderBook.bids.length > 0 ? subWorklet(bestAskPrice, bestBidPrice) : '0',
+    hasNoLiquidityAtMarketPrice: !hasAskLiquidity,
+    spread: calculateOrderBookSpread({ asks: orderBook.asks, bids: orderBook.bids }),
     minBuyAmountUsd: roundUsdUpToCents(minimumBuySpendUsd),
   };
 }
@@ -92,11 +83,11 @@ function resolveBuyExecution({
   buyAmountUsd,
   feeInfo,
 }: {
-  asks: readonly PolymarketOrderBookLevel[];
+  asks: OrderBookLevel[];
   buyAmountUsd: number;
   feeInfo: PolymarketFeeInfo;
 }) {
-  if (!asks.length || !Number.isFinite(buyAmountUsd) || buyAmountUsd <= 0) {
+  if (!asks.length) {
     return {
       averagePrice: 0,
       feeAmountUsd: 0,
@@ -106,70 +97,67 @@ function resolveBuyExecution({
     };
   }
 
-  let priceLimit = findWorstAskPriceForNotional(asks, buyAmountUsd);
-  let feeAdjustedNotionalUsd = calculateFeeAdjustedBuyNotionalUsd({
+  const { feeAdjustedNotionalUsd, priceLimit } = resolveFeeAdjustedBuyNotional({
+    asks,
     feeInfo,
-    priceLimit,
     spendCapUsd: buyAmountUsd,
   });
 
-  for (let i = 0; i < ITERATION_LIMIT; i++) {
+  const execution = simulateMarketFills({ levels: asks, targetAmount: feeAdjustedNotionalUsd, targetType: 'notionalUsd' });
+  const feeAmountUsd = calculateFillFeesUsd({ feeInfo, fills: execution.fills });
+
+  return {
+    averagePrice: execution.totalShares > 0 ? execution.totalNotionalUsd / execution.totalShares : 0,
+    feeAmountUsd,
+    hasInsufficientLiquidity: execution.hasInsufficientLiquidity,
+    priceLimit,
+    tokensBought: execution.totalShares,
+  };
+}
+
+function resolveFeeAdjustedBuyNotional({
+  asks,
+  feeInfo,
+  spendCapUsd,
+}: {
+  asks: OrderBookLevel[];
+  feeInfo: PolymarketFeeInfo;
+  spendCapUsd: number;
+}) {
+  let priceLimit = findWorstAskPriceForNotional(asks, spendCapUsd);
+  let feeAdjustedNotionalUsd = calculateFeeAdjustedBuyNotionalUsd({
+    feeInfo,
+    priceLimit,
+    spendCapUsd,
+  });
+
+  // Fee-adjusted notional can land on a different order-book level than the
+  // original spend cap. Iterate until the resulting price limit stabilizes,
+  // with a small cap to keep this UI estimate bounded.
+  for (let i = 0; i < PRICE_LIMIT_STABILIZATION_ITERATION_LIMIT; i++) {
     const nextPriceLimit = findWorstAskPriceForNotional(asks, feeAdjustedNotionalUsd);
     const nextFeeAdjustedNotionalUsd = calculateFeeAdjustedBuyNotionalUsd({
       feeInfo,
       priceLimit: nextPriceLimit,
-      spendCapUsd: buyAmountUsd,
+      spendCapUsd,
     });
 
     if (priceLimit === nextPriceLimit) {
-      priceLimit = nextPriceLimit;
-      feeAdjustedNotionalUsd = nextFeeAdjustedNotionalUsd;
-      break;
+      return {
+        feeAdjustedNotionalUsd: nextFeeAdjustedNotionalUsd,
+        priceLimit: nextPriceLimit,
+      };
     }
 
     priceLimit = nextPriceLimit;
     feeAdjustedNotionalUsd = nextFeeAdjustedNotionalUsd;
   }
 
-  const execution = simulateBuyFills({
-    asks,
-    feeInfo,
-    notionalUsd: feeAdjustedNotionalUsd,
-  });
-
-  return {
-    averagePrice: execution.tokensBought > 0 ? execution.notionalSpentUsd / execution.tokensBought : 0,
-    feeAmountUsd: execution.feeAmountUsd,
-    hasInsufficientLiquidity: execution.hasInsufficientLiquidity,
-    priceLimit,
-    tokensBought: execution.tokensBought,
-  };
+  return { feeAdjustedNotionalUsd, priceLimit };
 }
 
-function simulateBuyFills({
-  asks,
-  feeInfo,
-  notionalUsd,
-}: {
-  asks: readonly PolymarketOrderBookLevel[];
-  feeInfo: PolymarketFeeInfo;
-  notionalUsd: number;
-}) {
-  const execution = simulateMarketFills({ levels: asks, targetAmount: notionalUsd, targetType: 'notionalUsd' });
-
-  return {
-    feeAmountUsd: calculateFillFeesUsd({ feeInfo, fills: execution.fills }),
-    hasInsufficientLiquidity: execution.hasInsufficientLiquidity,
-    notionalSpentUsd: execution.totalNotionalUsd,
-    tokensBought: execution.totalShares,
-  };
-}
-
-function findWorstAskPriceForNotional(asks: readonly PolymarketOrderBookLevel[], notionalUsd: number): number {
-  return (
-    simulateMarketFills({ levels: asks, targetAmount: notionalUsd, targetType: 'notionalUsd' }).worstPrice ||
-    Number(getBestOrderBookPrice(asks))
-  );
+function findWorstAskPriceForNotional(asks: OrderBookLevel[], notionalUsd: number): number {
+  return simulateMarketFills({ levels: asks, targetAmount: notionalUsd, targetType: 'notionalUsd' }).worstPrice;
 }
 
 function calculateMinimumBuySpendUsd({ bestAskPrice, feeInfo }: { bestAskPrice: number; feeInfo: PolymarketFeeInfo }): number {
@@ -196,7 +184,7 @@ function calculateFeeAdjustedBuyNotionalUsd({
   priceLimit: number;
   spendCapUsd: number;
 }): number {
-  if (!isPositive(String(priceLimit))) return 0;
+  if (priceLimit <= 0) return 0;
 
   return adjustBuyAmountForFees(
     spendCapUsd,
@@ -210,5 +198,5 @@ function calculateFeeAdjustedBuyNotionalUsd({
 
 function roundUsdUpToCents(value: number): string {
   if (value <= 0) return '0';
-  return String(divWorklet(ceilWorklet(mulWorklet(String(value), '100')), '100'));
+  return divWorklet(ceilWorklet(mulWorklet(value, '100')), '100');
 }

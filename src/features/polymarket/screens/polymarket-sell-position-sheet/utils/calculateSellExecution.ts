@@ -1,12 +1,7 @@
 import { type OrderBook } from '@/features/polymarket/stores/polymarketOrderBookStore';
-import {
-  calculateFillFeesUsd,
-  EMPTY_POLYMARKET_FEE_INFO,
-  getBestOrderBookPrice,
-  simulateMarketFills,
-  type PolymarketFeeInfo,
-} from '@/features/polymarket/utils/orderExecution';
-import { greaterThanWorklet, subWorklet } from '@/framework/core/safeMath';
+import { calculateFillFeesUsd, EMPTY_POLYMARKET_FEE_INFO, type PolymarketFeeInfo } from '@/features/polymarket/utils/fees';
+import { calculateOrderBookSpread, getBestOrderBookPrice, simulateMarketFills } from '@/features/polymarket/utils/orderBookFills';
+import { greaterThanWorklet } from '@/framework/core/safeMath';
 
 export type SellExecution = {
   averagePrice: string;
@@ -53,11 +48,9 @@ export function calculateSellExecution({
   const tokensSold = String(execution.totalShares);
   const averagePrice = execution.totalShares > 0 ? String(execution.totalNotionalUsd / execution.totalShares) : '0';
 
-  const bestAskPrice = getBestOrderBookPrice(orderBook.asks);
   const bestBidPrice = getBestOrderBookPrice(orderBook.bids);
   const hasNoLiquidityAtMarketPrice = !greaterThanWorklet(bestBidPrice, '0');
-  const spread =
-    greaterThanWorklet(bestAskPrice, '0') && greaterThanWorklet(bestBidPrice, '0') ? subWorklet(bestAskPrice, bestBidPrice) : '0';
+  const spread = calculateOrderBookSpread({ asks: orderBook.asks, bids: orderBook.bids });
 
   return {
     averagePrice,

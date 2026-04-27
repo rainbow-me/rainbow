@@ -1,6 +1,5 @@
 import { usePolymarketFeeInfoStore } from '@/features/polymarket/stores/polymarketFeeInfoStore';
 import { usePolymarketOrderBookStore, type OrderBook } from '@/features/polymarket/stores/polymarketOrderBookStore';
-import { isSamePolymarketFeeInfo } from '@/features/polymarket/utils/orderExecution';
 import { createDerivedStore } from '@/state/internal/createDerivedStore';
 import { type DerivedStore, type InferStoreState, type Selector } from '@/state/internal/types';
 import { shallowEqual } from '@/worklets/comparisons';
@@ -14,7 +13,7 @@ export function createSellExecutionStore(tokenId: string, sellAmountTokens: stri
   const feeInfoSelector = createFeeInfoSelector(conditionId);
   return createDerivedStore(
     $ => {
-      const feeInfo = $(usePolymarketFeeInfoStore, feeInfoSelector, isSamePolymarketFeeInfo);
+      const feeInfo = $(usePolymarketFeeInfoStore, feeInfoSelector);
       const orderBook = $(usePolymarketOrderBookStore, orderBookSelector, isSameOrderBook);
       return calculateSellExecution({ feeInfo, orderBook, sellAmountTokens });
     },
