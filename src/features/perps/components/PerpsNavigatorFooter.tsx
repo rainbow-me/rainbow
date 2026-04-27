@@ -11,7 +11,7 @@ import { AnimatedInput } from '@/components/AnimatedComponents/AnimatedInput';
 import ButtonPressAnimation from '@/components/animations/ButtonPressAnimation';
 import { HoldToActivateButton } from '@/components/hold-to-activate-button/HoldToActivateButton';
 import { DEFAULT_MOUNT_ANIMATIONS } from '@/components/utilities/MountWhenFocused';
-import { Border, Box, Text, TextShadow, useColorMode } from '@/design-system';
+import { Box, Text, TextShadow, useColorMode } from '@/design-system';
 import { typeHierarchy } from '@/design-system/typography/typeHierarchy';
 import { IS_ANDROID } from '@/env';
 import { HyperliquidButton } from '@/features/perps/components/HyperliquidButton';

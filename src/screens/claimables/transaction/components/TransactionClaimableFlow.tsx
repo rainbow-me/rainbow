@@ -4,7 +4,7 @@ import { Box } from '@/design-system';
 import * as i18n from '@/languages';
 import { useNavigation } from '@/navigation/Navigation';
 import { ClaimableType } from '@/resources/addys/claimables/types';
-import { useIsReadOnlyWallet, useWalletsStore } from '@/state/wallets/walletsStore';
+import { useIsReadOnlyWallet } from '@/state/wallets/walletsStore';
 import watchingAlert from '@/utils/watchingAlert';
 
 import { ClaimButton } from '../../shared/components/ClaimButton';

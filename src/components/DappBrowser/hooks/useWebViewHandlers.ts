@@ -4,7 +4,7 @@ import type React from 'react';
 import { runOnUI, withTiming, type SharedValue } from 'react-native-reanimated';
 import { type WebViewMessageEvent } from 'react-native-webview';
 import type WebView from 'react-native-webview';
-import { WebViewEvent, type ShouldStartLoadRequest, type WebViewNavigation } from 'react-native-webview/lib/WebViewTypes';
+import { type ShouldStartLoadRequest, type WebViewNavigation } from 'react-native-webview/lib/WebViewTypes';
 
 import { appMessenger, type Messenger } from '@/browserMessaging/AppMessenger';
 import { TIMING_CONFIGS } from '@/components/animations/animationConfigs';

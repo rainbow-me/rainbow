@@ -8,7 +8,7 @@ import { analytics } from '@/analytics';
 import ButtonPressAnimation from '@/components/animations/ButtonPressAnimation';
 import { ContactAvatar } from '@/components/contacts';
 import ImageAvatar from '@/components/contacts/ImageAvatar';
-import { Bleed, Box, Column, Columns, Inline, Stack, Text } from '@/design-system';
+import { Box, Column, Columns, Inline, Stack, Text } from '@/design-system';
 import { useNavigation } from '@/navigation/Navigation';
 import Routes from '@/navigation/routesNames';
 import { TOP_RANK_SYMBOLS } from '@/screens/rewards/constants';

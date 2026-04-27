@@ -5,7 +5,7 @@ import Animated, { useAnimatedStyle, useDerivedValue, withSpring } from 'react-n
 import { SwapWarningType } from '@/__swaps__/screens/Swap/hooks/useSwapWarning';
 import { useSwapContext } from '@/__swaps__/screens/Swap/providers/swap-provider';
 import { SPRING_CONFIGS } from '@/components/animations/animationConfigs';
-import { AnimatedText, Box, Inline } from '@/design-system';
+import { AnimatedText, Box } from '@/design-system';
 import { DEVICE_WIDTH } from '@/utils/deviceUtils';
 
 export const SwapWarning = () => {

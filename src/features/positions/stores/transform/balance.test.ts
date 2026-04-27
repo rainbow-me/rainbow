@@ -1,7 +1,7 @@
 import { transformPositions } from '.';
 import { FIXTURE_PARAMS } from '../../__fixtures__/ListPositions';
 import { createMockAsset } from '../../__fixtures__/mocks/assets';
-import { createMockPosition, createMockResponse, createMockStats } from '../../__fixtures__/mocks/positions';
+import { createMockPosition, createMockResponse } from '../../__fixtures__/mocks/positions';
 import { DetailType, PositionName } from '../../types/generated/positions/positions';
 import { usePositionsStore } from '../positionsStore';
 

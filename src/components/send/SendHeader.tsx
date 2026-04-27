@@ -19,7 +19,6 @@ import useDimensions from '@/hooks/useDimensions';
 import * as i18n from '@/languages';
 import { type RainbowAccount } from '@/model/wallet';
 import Routes from '@/navigation/routesNames';
-import { Contact } from '@/redux/contacts';
 import { padding } from '@/styles';
 import profileUtils from '@/utils/profileUtils';
 

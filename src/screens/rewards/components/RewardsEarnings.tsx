@@ -1,5 +1,5 @@
 import React, { useMemo } from 'react';
-import { Image, ImageBackground } from 'react-native';
+import { ImageBackground } from 'react-native';
 
 import { addDays, differenceInDays, differenceInHours, fromUnixTime, isPast } from 'date-fns';
 import { useSelector } from 'react-redux';

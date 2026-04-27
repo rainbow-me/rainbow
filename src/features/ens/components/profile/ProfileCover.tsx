@@ -7,7 +7,6 @@ import Animated from 'react-native-reanimated';
 import { ImgixImage } from '@/components/images';
 import { ImagePreviewOverlayTarget } from '@/components/images/ImagePreviewOverlay';
 import Skeleton from '@/components/skeleton/Skeleton';
-import { CardSize } from '@/components/unique-token/CardSize';
 import { Box, useForegroundColor } from '@/design-system';
 import useFadeImage from '@/hooks/useFadeImage';
 import { sharedCoolModalTopOffset } from '@/navigation/config';

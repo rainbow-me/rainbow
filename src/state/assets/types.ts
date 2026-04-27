@@ -1,6 +1,6 @@
 import { type Address } from 'viem';
 
-import { ParsedAssetsDictByChain, type ParsedSearchAsset, type UniqueId, type UserAssetFilter } from '@/__swaps__/types/assets';
+import { type ParsedSearchAsset, type UniqueId, type UserAssetFilter } from '@/__swaps__/types/assets';
 import type { ParsedAddressAsset } from '@/entities/tokens';
 import type { SupportedCurrencyKey } from '@/references/supportedCurrencies';
 import { type ChainId } from '@/state/backendNetworks/types';

@@ -24,7 +24,6 @@ import {
   formatNumber,
   multiply,
 } from '@/helpers/utilities';
-import useAccountSettings from '@/hooks/useAccountSettings';
 import { logger, RainbowError } from '@/logger';
 import { getRemoteConfig } from '@/model/remoteConfig';
 import { loadWallet } from '@/model/wallet';

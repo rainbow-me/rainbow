@@ -1,6 +1,6 @@
 import { useHlNewPositionStore } from '@/features/perps/stores/hlNewPositionStore';
 import { useHyperliquidAccountStore } from '@/features/perps/stores/hyperliquidAccountStore';
-import { buildOrderAmountValidation, OrderAmountValidation } from '@/features/perps/utils/buildOrderAmountValidation';
+import { buildOrderAmountValidation } from '@/features/perps/utils/buildOrderAmountValidation';
 import { createDerivedStore } from '@/state/internal/createDerivedStore';
 import { shallowEqual } from '@/worklets/comparisons';
 

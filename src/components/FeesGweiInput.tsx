@@ -5,7 +5,7 @@ import { triggerHaptics } from 'react-native-turbo-haptics';
 
 import ButtonPressAnimation from '@/components/animations/ButtonPressAnimation';
 import GweiInputPill from '@/components/GweiInputPill';
-import { Box, Inline, Text } from '@/design-system';
+import { Box, Text } from '@/design-system';
 import { IS_ANDROID } from '@/env';
 import { delay } from '@/helpers/utilities';
 import usePrevious from '@/hooks/usePrevious';

@@ -37,7 +37,7 @@ import AesEncryptor from '../handlers/aesEncryption';
 import WalletBackupTypes from '../helpers/walletBackupTypes';
 import { clearAllStorages } from './mmkv';
 import { getRemoteConfig } from './remoteConfig';
-import { createWallet, loadWallet, type AllRainbowWallets, type RainbowWallet } from './wallet';
+import { createWallet, type AllRainbowWallets, type RainbowWallet } from './wallet';
 
 const { DeviceUUID } = NativeModules;
 const encryptor = new AesEncryptor();
