@@ -87,7 +87,10 @@ class AppDelegate: ExpoAppDelegate, UNUserNotificationCenterDelegate {
 
   func userNotificationCenter(_ center: UNUserNotificationCenter, willPresent notification: UNNotification,
                               withCompletionHandler completionHandler: @escaping (UNNotificationPresentationOptions) -> Void) {
-    completionHandler([.sound, .badge, .list, .banner])
+    // Suppress all iOS-side presentation for the FCM remote when foregrounded.
+    // Rainbow's foreground notification UI is handled by notifee (see foregroundHandler.ts);
+    // letting iOS also present from the FCM payload would duplicate Notification Center entries.
+    completionHandler([])
   }
 
   override func application(_ app: UIApplication, open url: URL,
