@@ -635,12 +635,19 @@ export const useWalletsStore = createRainbowStore<WalletsState>(
     migrate: (persistedState, fromVersion) => {
       const state = persistedState as Partial<WalletsState>;
       if (fromVersion < 1) {
+        // Active address used by every downstream consumer (polymarket derive, displays,
+        // address comparisons). This is the primary field that triggers the boot crash when
+        // non-canonical because it gets fed into viem's strict EIP-55 encoder.
         if (state.accountAddress) {
           const normalized = normalizeAddress(state.accountAddress);
           if (normalized) {
             state.accountAddress = normalized;
           }
         }
+
+        // Wallets map; powers the wallet switcher, account list, and any Copy action sourced
+        // from a wallet card. Without this, switching to or copying from a non-canonical wallet
+        // surfaces the bad-case form even after the active address was healed.
         if (state.wallets) {
           for (const wallet of Object.values(state.wallets)) {
             for (const account of wallet.addresses || []) {
@@ -650,6 +657,30 @@ export const useWalletsStore = createRainbowStore<WalletsState>(
               }
             }
           }
+        }
+
+        // Independent snapshot of the active wallet. Some UI paths read directly from
+        // `state.selected.addresses` instead of looking up via `state.wallets[selected.id]`,
+        // so this needs to be canonicalized separately to avoid stle bad-case display.
+        if (state.selected) {
+          for (const account of state.selected.addresses || []) {
+            const normalized = normalizeAddress(account.address);
+            if (normalized) {
+              account.address = normalized;
+            }
+          }
+        }
+
+        // ENS name cache, keyed by address. Post-canonicalization, lookups happen with
+        // canonical-case addresses; if the keys here remain bad-case, those lookups silently
+        // miss and the user's ENS names disappear. Re-key the map under canonical addresses.
+        if (state.walletNames) {
+          const next: WalletNames = {};
+          for (const [address, ensName] of Object.entries(state.walletNames)) {
+            const normalized = normalizeAddress(address);
+            next[normalized ?? address] = ensName;
+          }
+          state.walletNames = next;
         }
       }
       return state;
