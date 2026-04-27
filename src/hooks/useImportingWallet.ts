@@ -242,7 +242,7 @@ export default function useImportingWallet({
         // Not strictly valid EIP-55 address (due to `isValidAddress` falling through above), but could still be just a
         // case mismatch (checksum fail). If so, show guiding message to user.
         setBusy(false);
-        Alert.alert(i18n.t(i18n.l.wallet.invalid_address), i18n.t(i18n.l.wallet.invalid_address_checksum));
+        Alert.alert(i18n.t(i18n.l.wallet.invalid_address_title), i18n.t(i18n.l.wallet.invalid_address_message));
       } else {
         try {
           const walletResult = await deriveAccountFromWalletInput(input);
