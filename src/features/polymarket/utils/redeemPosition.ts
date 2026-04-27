@@ -1,6 +1,6 @@
 import { Interface } from '@ethersproject/abi';
 import { OperationType, RelayerTransactionState, type RelayerTransaction, type SafeTransaction } from '@polymarket/builder-relayer-client';
-import { zeroHash } from 'viem';
+import { zeroHash, type Address } from 'viem';
 
 import { analytics } from '@/analytics';
 import { ensureError, RainbowError } from '@/logger';
@@ -18,28 +18,13 @@ const ctfInterface = new Interface([
   'function redeemPositions(address collateralToken, bytes32 parentCollectionId, bytes32 conditionId, uint256[] indexSets)',
 ]);
 
-const negRiskAdapterInterface = new Interface(['function redeemPositions(bytes32 conditionId, uint256[] amounts)']);
-
-function buildCtfRedeemTransaction(conditionId: string): SafeTransaction {
+function buildCtfRedeemTransaction(conditionId: string, adapterAddress: Address): SafeTransaction {
   return {
-    to: POLYMARKET_CTF_COLLATERAL_ADAPTER_ADDRESS,
+    to: adapterAddress,
     operation: OperationType.Call,
     data: ctfInterface.encodeFunctionData('redeemPositions', [POLYMARKET_PUSD_ADDRESS, zeroHash, conditionId, [1, 2]]),
     value: '0',
   };
-}
-
-function buildNegRiskRedeemTransaction(conditionId: string, amounts: [bigint, bigint]): SafeTransaction {
-  return {
-    to: POLYMARKET_NEG_RISK_CTF_COLLATERAL_ADAPTER_ADDRESS,
-    operation: OperationType.Call,
-    data: negRiskAdapterInterface.encodeFunctionData('redeemPositions', [conditionId, amounts]),
-    value: '0',
-  };
-}
-
-function getRedeemOperatorAddress(negativeRisk: boolean): string {
-  return negativeRisk ? POLYMARKET_NEG_RISK_CTF_COLLATERAL_ADAPTER_ADDRESS : POLYMARKET_CTF_COLLATERAL_ADAPTER_ADDRESS;
 }
 
 export async function redeemPosition(position: PolymarketPosition): Promise<RelayerTransaction | undefined> {
@@ -48,20 +33,12 @@ export async function redeemPosition(position: PolymarketPosition): Promise<Rela
     const client = await getPolymarketRelayClient();
     await deployProxyIfNeeded(client, position.proxyWallet);
 
-    let redeemTx: SafeTransaction;
+    const adapterAddress = position.negativeRisk
+      ? POLYMARKET_NEG_RISK_CTF_COLLATERAL_ADAPTER_ADDRESS
+      : POLYMARKET_CTF_COLLATERAL_ADAPTER_ADDRESS;
+    const redeemTx = buildCtfRedeemTransaction(position.conditionId, adapterAddress);
 
-    if (position.negativeRisk) {
-      const rawAmount = BigInt(Math.round(position.size * 1e6));
-      const amounts: [bigint, bigint] = position.outcomeIndex === 0 ? [rawAmount, BigInt(0)] : [BigInt(0), rawAmount];
-      redeemTx = buildNegRiskRedeemTransaction(position.conditionId, amounts);
-    } else {
-      redeemTx = buildCtfRedeemTransaction(position.conditionId);
-    }
-
-    const approvalTransactions = await getMissingCtfOperatorApprovalTransactions(
-      position.proxyWallet,
-      getRedeemOperatorAddress(position.negativeRisk)
-    );
+    const approvalTransactions = await getMissingCtfOperatorApprovalTransactions(position.proxyWallet, adapterAddress);
     const response = await client.execute([...approvalTransactions, redeemTx], 'Redeem position');
     /**
      * TODO: Patch the client to differentiate between failure and timeout
