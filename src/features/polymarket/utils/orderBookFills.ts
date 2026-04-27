@@ -48,8 +48,6 @@ export function simulateMarketFills({
     const price = Number(levels[i].price);
     const availableShares = Number(levels[i].size);
 
-    if (!Number.isFinite(price) || !Number.isFinite(availableShares) || price <= 0 || availableShares <= 0) continue;
-
     const availableTargetAmount = targetType === 'notionalUsd' ? price * availableShares : availableShares;
     const filledTargetAmount = Math.min(remainingAmount, availableTargetAmount);
     const shares = targetType === 'notionalUsd' ? filledTargetAmount / price : filledTargetAmount;
