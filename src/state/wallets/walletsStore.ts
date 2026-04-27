@@ -3,6 +3,7 @@ import { dequal } from 'dequal';
 import { toChecksumAddress } from 'ethereumjs-util';
 import { type Address } from 'viem';
 
+import { normalizeAddress } from '@/features/address/core/address';
 import { fetchENSAvatarWithRetry } from '@/features/ens/hooks/useENSAvatar';
 import { ensureValidHex, isValidHex } from '@/handlers/web3';
 import { removeFirstEmojiFromString, returnStringFirstEmoji } from '@/helpers/emojiHandler';
@@ -627,6 +628,32 @@ export const useWalletsStore = createRainbowStore<WalletsState>(
       wallets: state.wallets,
       walletNames: state.walletNames,
     }),
+    // v1: canonicalize EIP-55 addresses on rehydration. The watched-wallet import flow previously
+    // accepted addresses without enforcing EIP-55 checksum, so non-canonical entries could end up
+    // persisted (APP-3673). Normalize here so consumers always read canonical data.
+    version: 1,
+    migrate: (persistedState, fromVersion) => {
+      const state = persistedState as Partial<WalletsState>;
+      if (fromVersion < 1) {
+        if (state.accountAddress) {
+          const normalized = normalizeAddress(state.accountAddress);
+          if (normalized) {
+            state.accountAddress = normalized;
+          }
+        }
+        if (state.wallets) {
+          for (const wallet of Object.values(state.wallets)) {
+            for (const account of wallet.addresses || []) {
+              const normalized = normalizeAddress(account.address);
+              if (normalized) {
+                account.address = normalized;
+              }
+            }
+          }
+        }
+      }
+      return state;
+    },
     persistThrottleMs: time.seconds(1),
   }
 );
