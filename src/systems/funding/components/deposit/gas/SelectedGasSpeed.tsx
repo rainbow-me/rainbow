@@ -10,7 +10,7 @@ const SWAP_GAS_ICONS = gasUtils.SWAP_GAS_ICONS;
 
 export const SelectedGasSpeed = memo(function SelectedGasSpeed({ isPill }: { isPill?: boolean }) {
   const { gasStores, useDepositStore } = useDepositContext();
-  const isGasSponsored = gasStores.useIsGasSponsored(state => state);
+  const isGasSponsored = gasStores.useIsGasSponsored();
   const selectedGasSpeed = useDepositStore(state => state.getGasSpeed());
 
   return (
