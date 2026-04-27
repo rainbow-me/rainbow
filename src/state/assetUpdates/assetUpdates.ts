@@ -22,7 +22,7 @@ type AssetUpdatesStore = {
   watchedTransactions: Record<string, WatchedAssetUpdateTransaction[]>;
   addWatchedTransactions: (params: { address: Address; transactions: AssetUpdateTransaction[] }) => void;
   clearWatchedTransactions: (address: Address) => void;
-  removeWatchedTransactions: (params: { address: Address; hashes: string[] }) => void;
+  removeWatchedTransactions: (params: { address: Address; hashes: readonly string[] }) => void;
 };
 
 type TrackedAsset = {
@@ -95,7 +95,7 @@ export const useAssetUpdatesStore = createRainbowStore<AssetUpdatesStore>(set =>
       const current = state.watchedTransactions[address];
       if (!current?.length || !hashes.length) return state;
 
-      const hashesToRemove = new Set(hashes);
+      const hashesToRemove = new Set<string>(hashes);
       const nextTransactions = current.filter(watch => !hashesToRemove.has(watch.transaction.hash));
       if (nextTransactions.length === current.length) return state;
 

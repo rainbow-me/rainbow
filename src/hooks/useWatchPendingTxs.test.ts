@@ -3,7 +3,13 @@ import type { Address } from 'viem';
 
 import { useRainbowToastsStore } from '@/components/rainbow-toast/useRainbowToastsStore';
 import type { ParsedAddressAsset } from '@/entities/tokens';
-import { TransactionDirection, TransactionStatus, type PendingTransaction, type RainbowTransaction } from '@/entities/transactions';
+import {
+  TransactionDirection,
+  TransactionStatus,
+  type PendingTransaction,
+  type RainbowTransaction,
+  type SettledTransaction,
+} from '@/entities/transactions';
 import { queryClient } from '@/react-query';
 import { fetchRawTransaction } from '@/resources/transactions/transaction';
 import { useAssetUpdatesStore } from '@/state/assetUpdates/assetUpdates';
@@ -91,7 +97,6 @@ type ConfirmedManagedTransaction = Omit<PendingTransaction, 'status' | 'title'> 
 describe('watchPendingTransactions', () => {
   const mockResolveTrackedTransaction = jest.mocked(resolveTrackedTransaction);
   const mockFetchRawTransaction = jest.mocked(fetchRawTransaction);
-  type SettledResolution = Extract<Awaited<ReturnType<typeof resolveTrackedTransaction>>, { kind: 'settled' }>;
   let refetchQueriesSpy: jest.SpiedFunction<typeof queryClient.refetchQueries>;
 
   beforeEach(() => {
@@ -112,7 +117,7 @@ describe('watchPendingTransactions', () => {
   it('keeps unsettled overlays and retains newly settled overlays until history indexes them', async () => {
     const stillPendingTransaction = buildManagedPendingTransaction({ hash: 'execution-1', relayExecutionId: 'execution-1' });
     const confirmedPendingTransaction = buildManagedPendingTransaction({ hash: 'execution-2', relayExecutionId: 'execution-2' });
-    const confirmedTransaction: SettledResolution['transaction'] = {
+    const confirmedTransaction: SettledTransaction = {
       ...confirmedPendingTransaction,
       changes: [
         {
@@ -191,7 +196,7 @@ describe('watchPendingTransactions', () => {
   });
 
   it('drops settled overlays once history includes them', async () => {
-    const settledTransaction: SettledResolution['transaction'] = {
+    const settledTransaction: SettledTransaction = {
       ...buildManagedPendingTransaction({
         hash: '0x1111111111111111111111111111111111111111111111111111111111111111',
         relayExecutionId: 'execution-1',
@@ -274,7 +279,7 @@ describe('watchPendingTransactions', () => {
   });
 
   it('syncs managed destination history after a confirmed transition', async () => {
-    const settledTransaction: SettledResolution['transaction'] = {
+    const settledTransaction: SettledTransaction = {
       ...buildManagedPendingTransaction({
         hash: '0x1111111111111111111111111111111111111111111111111111111111111111',
         relayExecutionId: 'execution-1',
@@ -364,7 +369,7 @@ describe('watchPendingTransactions', () => {
 
   it('does not queue balance watching for failed transactions', async () => {
     const pendingTransaction = buildManagedPendingTransaction({ hash: 'execution-1', relayExecutionId: 'execution-1' });
-    const failedTransaction: SettledResolution['transaction'] = {
+    const failedTransaction: SettledTransaction = {
       ...pendingTransaction,
       status: TransactionStatus.failed,
       title: 'swap.failed',
@@ -395,7 +400,7 @@ describe('watchPendingTransactions', () => {
 
   it('updates the local overlay before managed history sync finishes', async () => {
     const originHash: `0x${string}` = '0x1111111111111111111111111111111111111111111111111111111111111111';
-    const confirmedTransaction: SettledResolution['transaction'] = {
+    const confirmedTransaction: SettledTransaction = {
       ...buildManagedPendingTransaction({ hash: originHash, relayExecutionId: 'execution-1' }),
       status: TransactionStatus.confirmed,
       title: 'swap.confirmed',
@@ -442,7 +447,7 @@ describe('watchPendingTransactions', () => {
 
   it('drops a confirmed managed overlay immediately when relay provides no onchain hash', async () => {
     const pendingTransaction = buildManagedPendingTransaction({ hash: 'execution-1', relayExecutionId: 'execution-1' });
-    const confirmedTransaction: SettledResolution['transaction'] = {
+    const confirmedTransaction: SettledTransaction = {
       ...pendingTransaction,
       status: TransactionStatus.confirmed,
       title: 'swap.confirmed',

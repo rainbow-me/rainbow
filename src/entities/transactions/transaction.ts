@@ -116,8 +116,13 @@ export interface RainbowTransaction {
   delegation?: boolean;
 }
 
-export type MinedTransaction = RainbowTransaction & {
+/** Transaction whose final execution status is known. */
+export type SettledTransaction = RainbowTransaction & {
   status: TransactionStatus.confirmed | TransactionStatus.failed;
+};
+
+/** Settled transaction with required indexed block metadata. */
+export type MinedTransaction = SettledTransaction & {
   blockNumber: number;
   minedAt: number;
   confirmations: number;
@@ -273,6 +278,13 @@ export type TransactionType = TransactionWithChangesType | TransactionWithoutCha
 
 export function isValidTransactionStatus(status: unknown): status is TransactionStatus {
   return status === TransactionStatus.confirmed || status === TransactionStatus.failed || status === TransactionStatus.pending;
+}
+
+/**
+ * Narrows a transaction to a pending transaction.
+ */
+export function isPendingTransaction(transaction: RainbowTransaction): transaction is PendingTransaction {
+  return transaction.status === TransactionStatus.pending;
 }
 
 /**
