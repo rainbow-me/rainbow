@@ -84,7 +84,7 @@ else
   echo "Please make sure the file exists and it's located in the root of the project"
 fi
 
-if [ -n "$RAINBOW_SCRIPTS_APP_IOS_PREBUILD_HOOK" ]; then
+if [ "$PLATFORM" == "Darwin" ] && [ -n "$RAINBOW_SCRIPTS_APP_IOS_PREBUILD_HOOK" ]; then
   if [ -n "$CI" ]; then
     bash -c "$RAINBOW_SCRIPTS_APP_IOS_PREBUILD_HOOK" > /dev/null;
   else
