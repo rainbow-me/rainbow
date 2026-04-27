@@ -1,6 +1,6 @@
 import { Interface } from '@ethersproject/abi';
 import { OperationType, RelayerTransactionState, type RelayerTransaction, type SafeTransaction } from '@polymarket/builder-relayer-client';
-import { zeroHash } from 'viem';
+import { zeroHash, type Address } from 'viem';
 
 import { analytics } from '@/analytics';
 import { ensureError, RainbowError } from '@/logger';
@@ -38,7 +38,7 @@ function buildNegRiskRedeemTransaction(conditionId: string, amounts: [bigint, bi
   };
 }
 
-function getRedeemOperatorAddress(negativeRisk: boolean): string {
+function getRedeemOperatorAddress(negativeRisk: boolean): Address {
   return negativeRisk ? POLYMARKET_NEG_RISK_CTF_COLLATERAL_ADAPTER_ADDRESS : POLYMARKET_CTF_COLLATERAL_ADAPTER_ADDRESS;
 }
 

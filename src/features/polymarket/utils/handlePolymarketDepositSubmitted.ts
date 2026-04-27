@@ -1,5 +1,6 @@
 import { type Signer } from '@ethersproject/abstract-signer';
 import { BigNumber } from 'ethers';
+import { type Address } from 'viem';
 
 import { usePolymarketClients } from '@/features/polymarket/stores/derived/usePolymarketClients';
 import { getPolymarketUsdcBalance, wrapUsdcToPusd } from '@/features/polymarket/utils/collateral';
@@ -21,7 +22,7 @@ async function waitForSubmittedDeposit({ confirmationChainId, hash, isConfirmed 
   }
 }
 
-async function waitForWrappableUsdcBalance(proxyAddress: string, expectedRawTargetAmount: string): Promise<BigNumber> {
+async function waitForWrappableUsdcBalance(proxyAddress: Address, expectedRawTargetAmount: string): Promise<BigNumber> {
   const expectedBalance = BigNumber.from(expectedRawTargetAmount);
   const startedAt = Date.now();
 

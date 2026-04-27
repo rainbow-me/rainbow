@@ -1,45 +1,9 @@
-import { type ClobToken } from '@polymarket/clob-client-v2';
-
 import { POLYMARKET_BUILDER_CODE, POLYMARKET_CLOB_URL } from '@/features/polymarket/constants';
-import { polymarketClobDataClient } from '@/features/polymarket/polymarket-clob-data-client';
 import { EMPTY_POLYMARKET_FEE_INFO, type PolymarketFeeInfo } from '@/features/polymarket/utils/fees';
 import { rainbowFetch } from '@/framework/data/http/rainbowFetch';
+import { RainbowError } from '@/logger';
 import { createQueryStore } from '@/state/internal/createQueryStore';
 import { time } from '@/utils/time';
-
-type RawBuilderFeesResponse = {
-  builder_maker_fee_rate_bps: number;
-  builder_taker_fee_rate_bps: number;
-};
-
-type FeeDetails = {
-  r?: number;
-  e?: number;
-  to?: boolean;
-};
-
-type MarketRewardsConfig = {
-  mi?: number;
-  ma?: number;
-  e?: boolean;
-  moas?: number;
-};
-
-type MarketDetails = {
-  r?: MarketRewardsConfig;
-  t: [ClobToken | null, ClobToken | null];
-  c: string;
-  mos: number;
-  mts: number;
-  ao?: boolean;
-  nr: boolean;
-  cbos?: boolean;
-  aot?: string | null;
-  ibce?: boolean;
-  fd?: FeeDetails;
-  mbf?: number;
-  tbf?: number;
-};
 
 type FetchParams = {
   conditionId: string | null;
@@ -66,25 +30,73 @@ export const usePolymarketFeeInfoStore = createQueryStore<PolymarketFeeInfo, Fet
 async function fetchPolymarketFeeInfo({ conditionId }: FetchParams, abortController: AbortController | null): Promise<PolymarketFeeInfo> {
   if (!conditionId) return EMPTY_POLYMARKET_FEE_INFO;
 
-  // TODO: We're casting because the SDK's type is not correct. Remove once the SDK is updated.
-  const marketInfoPromise = polymarketClobDataClient.getClobMarketInfo(conditionId) as Promise<MarketDetails>;
-  const builderFeesPromise = fetchBuilderFees(abortController);
+  const marketInfoPromise = fetchMarketInfo(conditionId, abortController);
+  const builderFeeRatePromise = fetchBuilderTakerFeeRate(abortController);
 
-  const [marketInfo, builderFees] = await Promise.all([marketInfoPromise, builderFeesPromise]);
-  const builderTakerFeeRateBps = builderFees.builder_taker_fee_rate_bps;
+  const [marketInfo, builderTakerFeeRate] = await Promise.all([marketInfoPromise, builderFeeRatePromise]);
 
   return {
-    builderTakerFeeRate: builderTakerFeeRateBps / 10_000,
-    minimumOrderSize: marketInfo.mos,
-    platformFeeExponent: marketInfo.fd?.e ?? EMPTY_POLYMARKET_FEE_INFO.platformFeeExponent,
-    platformFeeRate: marketInfo.fd?.r ?? EMPTY_POLYMARKET_FEE_INFO.platformFeeRate,
+    ...marketInfo,
+    builderTakerFeeRate,
   };
 }
 
-async function fetchBuilderFees(abortController: AbortController | null): Promise<RawBuilderFeesResponse> {
+async function fetchMarketInfo(
+  conditionId: string,
+  abortController: AbortController | null
+): Promise<Pick<PolymarketFeeInfo, 'minimumOrderSize' | 'platformFeeExponent' | 'platformFeeRate'>> {
+  const { data } = await rainbowFetch<unknown>(`${POLYMARKET_CLOB_URL}/clob-markets/${conditionId}`, {
+    abortController,
+    timeout: time.seconds(15),
+  });
+  const marketInfo = requireRecord(data, 'market info');
+  const feeDetails = readRecord(marketInfo, 'fd');
+
+  return {
+    minimumOrderSize: readNumber(marketInfo, 'mos') ?? EMPTY_POLYMARKET_FEE_INFO.minimumOrderSize,
+    platformFeeExponent: (feeDetails && readNumber(feeDetails, 'e')) ?? EMPTY_POLYMARKET_FEE_INFO.platformFeeExponent,
+    platformFeeRate: (feeDetails && readNumber(feeDetails, 'r')) ?? EMPTY_POLYMARKET_FEE_INFO.platformFeeRate,
+  };
+}
+
+async function fetchBuilderTakerFeeRate(abortController: AbortController | null): Promise<number> {
   const { data } = await rainbowFetch<string>(`${POLYMARKET_CLOB_URL}/fees/builder-fees/${POLYMARKET_BUILDER_CODE}`, {
     abortController,
     timeout: time.seconds(15),
   });
-  return JSON.parse(data) as RawBuilderFeesResponse;
+  const builderFees = requireRecord(parseJson(data, 'builder fees'), 'builder fees');
+  const builderTakerFeeRateBps = readNumber(builderFees, 'builder_taker_fee_rate_bps');
+
+  if (builderTakerFeeRateBps === null) {
+    throw new RainbowError('[polymarketFeeInfoStore] Missing builder taker fee rate');
+  }
+
+  return builderTakerFeeRateBps / 10_000;
+}
+
+function parseJson(data: string, context: string): unknown {
+  try {
+    return JSON.parse(data);
+  } catch (error) {
+    throw new RainbowError(`[polymarketFeeInfoStore] Invalid ${context} response`, error);
+  }
+}
+
+function requireRecord(value: unknown, context: string): Record<string, unknown> {
+  if (isRecord(value)) return value;
+  throw new RainbowError(`[polymarketFeeInfoStore] Invalid ${context} response`);
+}
+
+function readRecord(record: Record<string, unknown>, key: string): Record<string, unknown> | null {
+  const value = record[key];
+  return isRecord(value) ? value : null;
+}
+
+function readNumber(record: Record<string, unknown>, key: string): number | null {
+  const value = record[key];
+  return typeof value === 'number' ? value : null;
+}
+
+function isRecord(value: unknown): value is Record<string, unknown> {
+  return typeof value === 'object' && value !== null;
 }

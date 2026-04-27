@@ -1,4 +1,5 @@
-import { ethers, type BigNumber } from 'ethers';
+import { ethers } from 'ethers';
+import { type Address } from 'viem';
 
 import { USD_DECIMALS } from '@/features/perps/constants';
 import {
@@ -9,10 +10,10 @@ import {
 } from '@/features/polymarket/constants';
 import { usePolymarketClients } from '@/features/polymarket/stores/derived/usePolymarketClients';
 import { truncateToDecimals } from '@/framework/core/safeMath';
+import { getErc20Balance } from '@/framework/data/evm/erc20Read';
 import { getProvider } from '@/handlers/web3';
 import { add } from '@/helpers/utilities';
 import { RainbowError } from '@/logger';
-import erc20ABI from '@/references/erc20-abi.json';
 import { createQueryStore } from '@/state/internal/createQueryStore';
 import { time } from '@/utils/time';
 import { ChainId } from '@rainbow-me/swaps';
@@ -25,7 +26,7 @@ type PolymarketBalanceStoreActions = {
 };
 
 type PolymarketBalanceParams = {
-  address: string | null;
+  address: Address | null;
 };
 
 type FetchPolymarketBalanceResponse = {
@@ -64,13 +65,10 @@ async function fetchPolymarketBalance({ address }: PolymarketBalanceParams): Pro
   if (!address) throw new RainbowError('[PolymarketBalanceStore] Address is required');
 
   const provider = getProvider({ chainId: ChainId.polygon });
-  const usdcContract = new ethers.Contract(POLYGON_USDC_ADDRESS, erc20ABI, provider);
-  const pusdContract = new ethers.Contract(POLYMARKET_PUSD_ADDRESS, erc20ABI, provider);
-
-  const [rawUsdcBalance, rawPusdBalance] = (await Promise.all([usdcContract.balanceOf(address), pusdContract.balanceOf(address)])) as [
-    BigNumber,
-    BigNumber,
-  ];
+  const [rawUsdcBalance, rawPusdBalance] = await Promise.all([
+    getErc20Balance({ owner: address, provider, tokenAddress: POLYGON_USDC_ADDRESS }),
+    getErc20Balance({ owner: address, provider, tokenAddress: POLYMARKET_PUSD_ADDRESS }),
+  ]);
 
   const usdcBalance = ethers.utils.formatUnits(rawUsdcBalance, POLYGON_USDC_DECIMALS);
   const pusdBalance = ethers.utils.formatUnits(rawPusdBalance, POLYMARKET_PUSD_DECIMALS);
