@@ -1,9 +1,20 @@
 import { POLYMARKET_BUILDER_CODE, POLYMARKET_CLOB_URL } from '@/features/polymarket/constants';
 import { EMPTY_POLYMARKET_FEE_INFO, type PolymarketFeeInfo } from '@/features/polymarket/utils/fees';
 import { rainbowFetch } from '@/framework/data/http/rainbowFetch';
-import { RainbowError } from '@/logger';
 import { createQueryStore } from '@/state/internal/createQueryStore';
 import { time } from '@/utils/time';
+
+type RawBuilderFeesResponse = {
+  builder_taker_fee_rate_bps: number;
+};
+
+type RawMarketInfo = {
+  mos: number;
+  fd?: {
+    e?: number;
+    r?: number;
+  };
+};
 
 type FetchParams = {
   conditionId: string | null;
@@ -45,17 +56,15 @@ async function fetchMarketInfo(
   conditionId: string,
   abortController: AbortController | null
 ): Promise<Pick<PolymarketFeeInfo, 'minimumOrderSize' | 'platformFeeExponent' | 'platformFeeRate'>> {
-  const { data } = await rainbowFetch<unknown>(`${POLYMARKET_CLOB_URL}/clob-markets/${conditionId}`, {
+  const { data } = await rainbowFetch<RawMarketInfo>(`${POLYMARKET_CLOB_URL}/clob-markets/${conditionId}`, {
     abortController,
     timeout: time.seconds(15),
   });
-  const marketInfo = requireRecord(data, 'market info');
-  const feeDetails = readRecord(marketInfo, 'fd');
 
   return {
-    minimumOrderSize: readNumber(marketInfo, 'mos') ?? EMPTY_POLYMARKET_FEE_INFO.minimumOrderSize,
-    platformFeeExponent: (feeDetails && readNumber(feeDetails, 'e')) ?? EMPTY_POLYMARKET_FEE_INFO.platformFeeExponent,
-    platformFeeRate: (feeDetails && readNumber(feeDetails, 'r')) ?? EMPTY_POLYMARKET_FEE_INFO.platformFeeRate,
+    minimumOrderSize: data.mos,
+    platformFeeExponent: data.fd?.e ?? EMPTY_POLYMARKET_FEE_INFO.platformFeeExponent,
+    platformFeeRate: data.fd?.r ?? EMPTY_POLYMARKET_FEE_INFO.platformFeeRate,
   };
 }
 
@@ -64,39 +73,7 @@ async function fetchBuilderTakerFeeRate(abortController: AbortController | null)
     abortController,
     timeout: time.seconds(15),
   });
-  const builderFees = requireRecord(parseJson(data, 'builder fees'), 'builder fees');
-  const builderTakerFeeRateBps = readNumber(builderFees, 'builder_taker_fee_rate_bps');
+  const builderFees: RawBuilderFeesResponse = JSON.parse(data);
 
-  if (builderTakerFeeRateBps === null) {
-    throw new RainbowError('[polymarketFeeInfoStore] Missing builder taker fee rate');
-  }
-
-  return builderTakerFeeRateBps / 10_000;
-}
-
-function parseJson(data: string, context: string): unknown {
-  try {
-    return JSON.parse(data);
-  } catch (error) {
-    throw new RainbowError(`[polymarketFeeInfoStore] Invalid ${context} response`, error);
-  }
-}
-
-function requireRecord(value: unknown, context: string): Record<string, unknown> {
-  if (isRecord(value)) return value;
-  throw new RainbowError(`[polymarketFeeInfoStore] Invalid ${context} response`);
-}
-
-function readRecord(record: Record<string, unknown>, key: string): Record<string, unknown> | null {
-  const value = record[key];
-  return isRecord(value) ? value : null;
-}
-
-function readNumber(record: Record<string, unknown>, key: string): number | null {
-  const value = record[key];
-  return typeof value === 'number' ? value : null;
-}
-
-function isRecord(value: unknown): value is Record<string, unknown> {
-  return typeof value === 'object' && value !== null;
+  return builderFees.builder_taker_fee_rate_bps / 10_000;
 }
