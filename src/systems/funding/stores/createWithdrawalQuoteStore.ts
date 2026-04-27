@@ -1,3 +1,4 @@
+import { createDerivedStore, createQueryStore } from '@storesjs/stores';
 import { getAddress } from 'viem';
 
 import { stripNonDecimalNumbers } from '@/__swaps__/utils/swaps';
@@ -6,8 +7,6 @@ import { time } from '@/framework/core/utils/time';
 import { isNativeAsset } from '@/handlers/assets';
 import { convertAmountToRawAmount } from '@/helpers/utilities';
 import { userAssetsStoreManager } from '@/state/assets/userAssetsStoreManager';
-import { createDerivedStore } from '@/state/internal/createDerivedStore';
-import { createQueryStore } from '@/state/internal/createQueryStore';
 import { useWalletsStore } from '@/state/wallets/walletsStore';
 import { ETH_ADDRESS, Source, type CrosschainQuote, type Quote, type QuoteParams } from '@rainbow-me/swaps';
 
@@ -40,6 +39,8 @@ export function createWithdrawalQuoteStore<TBalanceStore extends BalanceQuerySto
     throw new Error('createWithdrawalQuoteStore requires route config');
   }
 
+  const balanceStore: BalanceQueryStore = config.balanceStore;
+
   const useResolvedBuyTokenAddress = createDerivedStore(
     $ => {
       const tokenData = $(useTokenStore, state => state.getData());
@@ -48,14 +49,14 @@ export function createWithdrawalQuoteStore<TBalanceStore extends BalanceQuerySto
       if (!address || !selectedChainId) return null;
       return isNativeAsset(address, selectedChainId) ? ETH_ADDRESS : getAddress(address);
     },
-    { fastMode: true }
+    { lockDependencies: true }
   );
 
   return createQueryStore<QuoteResult, WithdrawalQuoteStoreParams>({
     fetcher: createQuoteFetcher(route),
     params: {
       amount: $ => $(useAmountStore, state => state.amount),
-      balance: $ => $(config.balanceStore, state => state.getBalance()),
+      balance: $ => $(balanceStore, state => state.getBalance()),
       buyTokenAddress: $ => $(useResolvedBuyTokenAddress),
       destReceiver: $ => $(useWalletsStore).accountAddress,
       sourceAddress: $ => $(route.from.addressStore),

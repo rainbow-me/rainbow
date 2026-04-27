@@ -1,5 +1,4 @@
-import { createRainbowStore } from '@/state/internal/createRainbowStore';
-import { createStoreActions } from '@/state/internal/utils/createStoreActions';
+import { createBaseStore, createStoreActions } from '@storesjs/stores';
 
 export type DiscoverSection = string;
 
@@ -10,7 +9,7 @@ type DiscoverNavigationStore = {
   navigate: (section: DiscoverSection) => void;
 };
 
-export const useDiscoverNavigationStore = createRainbowStore<DiscoverNavigationStore>((set, get) => ({
+export const useDiscoverNavigationStore = createBaseStore<DiscoverNavigationStore>((set, get) => ({
   activeSection: 'for_you',
 
   getActiveSection: () => get().activeSection,

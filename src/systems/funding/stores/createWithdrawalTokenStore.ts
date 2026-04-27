@@ -1,3 +1,4 @@
+import { createQueryStore } from '@storesjs/stores';
 import { getAddress } from 'viem';
 
 import type { AddressOrEth } from '@/__swaps__/types/assets';
@@ -5,7 +6,6 @@ import { type ChainId } from '@/features/network/types/backendNetworks';
 import { time } from '@/framework/core/utils/time';
 import { metadataClient } from '@/graphql';
 import { type Token } from '@/graphql/__generated__/metadata';
-import { createQueryStore } from '@/state/internal/createQueryStore';
 
 import { type WithdrawalTokenData, type WithdrawalTokenStoreType } from '../types';
 

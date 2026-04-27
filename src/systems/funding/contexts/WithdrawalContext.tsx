@@ -1,8 +1,9 @@
 import React, { createContext, useContext, type ReactNode } from 'react';
 
+import { createStoreActions } from '@storesjs/stores';
+
 import { useCleanup } from '@/hooks/useCleanup';
 import { useStableValue } from '@/hooks/useStableValue';
-import { createStoreActions } from '@/state/internal/utils/createStoreActions';
 
 import { createAmountStore } from '../stores/createAmountStore';
 import { createWithdrawalQuoteStore } from '../stores/createWithdrawalQuoteStore';

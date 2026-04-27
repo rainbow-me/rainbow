@@ -2,6 +2,7 @@ import React, { memo, useCallback, useMemo } from 'react';
 import { Platform, StyleSheet, View } from 'react-native';
 
 import { Canvas, Picture, type SkPicture } from '@shopify/react-native-skia';
+import { useListen } from '@storesjs/stores';
 import { cloneDeep, merge } from 'lodash';
 import { Gesture, GestureDetector } from 'react-native-gesture-handler';
 import Animated, {
@@ -22,7 +23,6 @@ import { useWorkletClass } from '@/hooks/reanimated/useWorkletClass';
 import { useCleanup } from '@/hooks/useCleanup';
 import { useOnChange } from '@/hooks/useOnChange';
 import { useStableValue } from '@/hooks/useStableValue';
-import { useListen } from '@/state/internal/hooks/useListen';
 import { useListenerRouteGuard } from '@/state/internal/hooks/useListenerRouteGuard';
 import { type DeepPartial } from '@/types/objects';
 import { deepFreeze } from '@/utils/deepFreeze';

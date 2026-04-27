@@ -1,4 +1,5 @@
-import { type BaseRainbowStore } from '@/state/internal/types';
+import { type BaseStore } from '@storesjs/stores';
+
 import { type SharedOrDerivedValue } from '@/types/reanimated';
 
 /**
@@ -27,6 +28,6 @@ export type SparklineChartProps<S extends LineChartDataStore> = {
   color: string | SharedOrDerivedValue<string>;
   height: number;
   livePointer?: boolean;
-  store: BaseRainbowStore<S>;
+  store: BaseStore<S>;
   width: number;
 };

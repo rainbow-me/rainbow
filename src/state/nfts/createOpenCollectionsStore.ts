@@ -1,14 +1,14 @@
+import { createBaseStore } from '@storesjs/stores';
 import { isAddress, type Address } from 'viem';
 
 import { parseUniqueId } from '@/resources/nfts/utils';
-import { createRainbowStore } from '@/state/internal/createRainbowStore';
 
 import { type OpenCollectionsState, type OpenCollectionsStoreType } from './types';
 
 const MAX_OPEN_COLLECTIONS = 20;
 
 export const createOpenCollectionsStore = (address: Address | string): OpenCollectionsStoreType =>
-  createRainbowStore<OpenCollectionsState>(
+  createBaseStore<OpenCollectionsState>(
     (set, get) => ({
       openCollections: { showcase: true },
       insertionOrder: ['showcase'],

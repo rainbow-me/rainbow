@@ -1,9 +1,9 @@
 import { Alert } from 'react-native';
 
+import { createBaseStore, createStoreActions } from '@storesjs/stores';
+
 import { analytics } from '@/analytics';
 import { logger, RainbowError } from '@/logger';
-import { createRainbowStore } from '@/state/internal/createRainbowStore';
-import { createStoreActions } from '@/state/internal/utils/createStoreActions';
 
 import { cashOrderService } from '../services/cashOrderService';
 import { isTerminalOrderStatus, OrderFailureReason, OrderStatus, type BuyOrder, type BuyOrderSpec } from '../services/rampClient';
@@ -49,7 +49,7 @@ export function selectCashBuyPhase(state: Pick<CashBuyOrderState, 'spec' | 'orde
   return 'pending';
 }
 
-export const useCashBuyOrderStore = createRainbowStore<CashBuyOrderState>(
+export const useCashBuyOrderStore = createBaseStore<CashBuyOrderState>(
   (set, get) => {
     function applyTerminalOrder(order: BuyOrder): void {
       if (order.status === OrderStatus.Completed) {

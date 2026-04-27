@@ -1,13 +1,13 @@
 import {
-  type BaseRainbowStore,
+  type BaseStore,
   type InferStoreState,
-  type OptionallyPersistedRainbowStore,
-  type PersistedRainbowStore,
+  type OptionallyPersistedStore,
+  type PersistedStore,
   type SubscribeArgs,
   type UnsubscribeFn,
-} from '../types';
+} from '@storesjs/stores';
 
-type PortableSubscription<Store extends BaseRainbowStore<State>, State = InferStoreState<Store>> = {
+type PortableSubscription<Store extends BaseStore<State>, State = InferStoreState<Store>> = {
   args: SubscribeArgs<State>;
   unsubscribe: UnsubscribeFn;
 };
@@ -27,10 +27,7 @@ type PortableSubscription<Store extends BaseRainbowStore<State>, State = InferSt
  * - `portableSubscribe`: A function for subscribing to store changes. Use as the factory-capable store's `subscribe` method.
  * - `rebindSubscriptions`: Rebinds subscriptions on store change. Call this when the factory-capable store's underlying store is updated.
  */
-export function createStoreFactoryUtils<
-  Store extends OptionallyPersistedRainbowStore<InferStoreState<Store>, PersistedState>,
-  PersistedState,
->(
+export function createStoreFactoryUtils<Store extends OptionallyPersistedStore<InferStoreState<Store>, PersistedState>, PersistedState>(
   getStore: () => Store
 ): {
   persist: Store['persist'];
@@ -97,11 +94,9 @@ export function createStoreFactoryUtils<
   };
 }
 
-function buildPersistObject<
-  Store extends OptionallyPersistedRainbowStore<State, PersistedState>,
-  PersistedState,
-  State = InferStoreState<Store>,
->(getStore: () => Store): PersistedRainbowStore<State, PersistedState>['persist'] {
+function buildPersistObject<Store extends OptionallyPersistedStore<State, PersistedState>, PersistedState, State = InferStoreState<Store>>(
+  getStore: () => Store
+): PersistedStore<State, PersistedState>['persist'] {
   return {
     clearStorage: () => getStore().persist?.clearStorage(),
     getOptions: () => getStore().persist?.getOptions() ?? {},

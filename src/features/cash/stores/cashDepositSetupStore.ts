@@ -1,5 +1,6 @@
+import { createBaseStore } from '@storesjs/stores';
+
 import { type CashDepositSetupStatus } from '@/features/cash/stores/cashDepositSetupStatus';
-import { createRainbowStore } from '@/state/internal/createRainbowStore';
 
 type CashDepositSetupStore = {
   /**
@@ -13,7 +14,7 @@ type CashDepositSetupStore = {
 
 const DEFAULT_STATUS: CashDepositSetupStatus = 'needsIdentity';
 
-export const useCashDepositSetupStore = createRainbowStore<CashDepositSetupStore>(
+export const useCashDepositSetupStore = createBaseStore<CashDepositSetupStore>(
   set => ({
     cachedStatus: DEFAULT_STATUS,
     setStatus: status => set({ cachedStatus: status }),

@@ -1,6 +1,7 @@
+import { createDerivedStore } from '@storesjs/stores';
+
 import { useCurrencyConversionStore } from '@/features/currency/stores/currencyConversionStore';
 import { usePerpsPositionsInfo } from '@/features/perps/stores/derived/usePerpsPositionsInfo';
-import { createDerivedStore } from '@/state/internal/createDerivedStore';
 
 export const useHyperliquidBalance = createDerivedStore(
   $ => {
@@ -8,5 +9,5 @@ export const useHyperliquidBalance = createDerivedStore(
     const convertedBalance = $(useCurrencyConversionStore, state => state.convertToNativeCurrency(perpsBalanceUsd));
     return convertedBalance;
   },
-  { fastMode: true }
+  { lockDependencies: true }
 );

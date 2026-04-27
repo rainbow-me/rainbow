@@ -1,15 +1,13 @@
 import { useCallback, useEffect, useRef } from 'react';
 
+import { useListen, type Store, type StoreActions } from '@storesjs/stores';
 import { runOnJS, runOnUI, useAnimatedReaction, useSharedValue, withSpring } from 'react-native-reanimated';
 
 import { SPRING_CONFIGS } from '@/components/animations/animationConfigs';
 import { type NumberPadField } from '@/components/number-pad/NumberPadKey';
 import { SLIDER_MAX } from '@/features/perps/components/Slider/Slider';
 import { equalWorklet, greaterThanOrEqualToWorklet } from '@/framework/core/safeMath';
-import { useListen } from '@/state/internal/hooks/useListen';
 import { useStoreSharedValue } from '@/state/internal/hooks/useStoreSharedValue';
-import { type RainbowStore } from '@/state/internal/types';
-import { type StoreActions } from '@/state/internal/utils/createStoreActions';
 import { sanitizeAmount } from '@/worklets/strings';
 
 import { INITIAL_SLIDER_PROGRESS } from '../constants';
@@ -20,7 +18,7 @@ import { sliderProgressFromAmount, valueFromSliderProgress } from '../utils/slid
 
 type InputMethod = 'inputAmount';
 
-type BalanceStore = RainbowStore<{ getBalance: () => string }>;
+type BalanceStore = Store<{ getBalance: () => string }>;
 
 type WithdrawalControllerOptions = {
   amountActions?: StoreActions<AmountStoreType>;

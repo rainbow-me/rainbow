@@ -1,9 +1,9 @@
 import { useMemo } from 'react';
 
+import { createBaseStore } from '@storesjs/stores';
 import { type NotifyOnChangeProps } from '@tanstack/react-query';
 
 import { type ChainId } from '@/features/network/types/backendNetworks';
-import { createRainbowStore } from '@/state/internal/createRainbowStore';
 
 import { GasSpeed } from '../types/gasSpeed';
 import { getCachedGasSuggestions, useMeteorologySuggestions, type MeteorologyGasSuggestions } from '../utils/meteorology';
@@ -23,7 +23,7 @@ export type SwapsGasFeeParamsBySpeed =
   | (CustomGasType & GasSpeedsObject<LegacyGasSettings>)
   | (CustomGasType & GasSpeedsObject<EIP1559GasSettings>);
 
-const useSelectedGasSpeedStore = createRainbowStore<{ [c in ChainId]?: GasSpeed }>(() => ({}), {
+const useSelectedGasSpeedStore = createBaseStore<{ [c in ChainId]?: GasSpeed }>(() => ({}), {
   version: 0,
   storageKey: 'preferred gas speed',
 });

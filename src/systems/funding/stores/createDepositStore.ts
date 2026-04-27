@@ -1,10 +1,11 @@
+import { createBaseStore } from '@storesjs/stores';
+
 import { calculateGasFeeWorklet } from '@/__swaps__/screens/Swap/providers/SyncSwapStateAndSharedValues';
 import { type ExtendedAnimatedAssetWithColors } from '@/__swaps__/types/assets';
 import { type GasSettings } from '@/features/gas/types/gas';
 import { type GasSpeed } from '@/features/gas/types/gasSpeed';
 import { divWorklet, greaterThanWorklet, powWorklet, subWorklet } from '@/framework/core/safeMath';
 import { isNativeAsset } from '@/handlers/assets';
-import { createRainbowStore } from '@/state/internal/createRainbowStore';
 
 import { type DepositConfig, type DepositStoreState, type DepositStoreType } from '../types';
 
@@ -15,7 +16,7 @@ export function createDepositStore(
   initialAsset: ExtendedAnimatedAssetWithColors | null,
   initialGasSpeed: GasSpeed
 ): DepositStoreType {
-  return createRainbowStore<DepositStoreState>((set, get) => ({
+  return createBaseStore<DepositStoreState>((set, get) => ({
     asset: initialAsset,
     gasSpeed: initialGasSpeed,
     listChainId: undefined,

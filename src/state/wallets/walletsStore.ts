@@ -1,4 +1,5 @@
 import { captureMessage } from '@sentry/react-native';
+import { createBaseStore } from '@storesjs/stores';
 import { dequal } from 'dequal';
 import { toChecksumAddress } from 'ethereumjs-util';
 import { type Address } from 'viem';
@@ -38,8 +39,6 @@ import { useTheme } from '@/theme/ThemeContext';
 import isLowerCaseMatch from '@/utils/isLowerCaseMatch';
 import { addressHashedColorIndex, addressHashedEmoji, fetchReverseRecordWithRetry, isValidImagePath } from '@/utils/profileUtils';
 import { shallowEqual } from '@/worklets/comparisons';
-
-import { createRainbowStore } from '../internal/createRainbowStore';
 
 interface AccountProfileInfo {
   accountAddress: Address;
@@ -109,7 +108,7 @@ interface WalletsState {
 
 const INITIAL_ADDRESS = '' as Address;
 
-export const useWalletsStore = createRainbowStore<WalletsState>(
+export const useWalletsStore = createBaseStore<WalletsState>(
   (set, get) => ({
     getIsDamagedWallet: (walletId?: string) => {
       const { wallets, selected } = get();

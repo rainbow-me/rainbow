@@ -1,3 +1,4 @@
+import { createQueryStore, type CacheEntry } from '@storesjs/stores';
 import { qs } from 'url-parse';
 import { type Address } from 'viem';
 
@@ -12,8 +13,6 @@ import { parseClaimables } from '@/resources/addys/claimables/utils';
 import { getAddysHttpClient } from '@/resources/addys/client';
 import { type AddysConsolidatedError } from '@/resources/addys/types';
 import { userAssetsStoreManager } from '@/state/assets/userAssetsStoreManager';
-import { createQueryStore } from '@/state/internal/createQueryStore';
-import { type CacheEntry } from '@/state/internal/queryStore/types';
 import { useNavigationStore } from '@/state/navigation/navigationStore';
 
 type PaginationInfo = {

@@ -1,3 +1,5 @@
+import { createDerivedStore } from '@storesjs/stores';
+
 import { convertAmountToNativeDisplay } from '@/features/currency/utils/nativeDisplay';
 import { useHyperliquidBalance } from '@/features/perps/stores/derived/useHyperliquidBalance';
 import { usePolymarketAccountValueSummary } from '@/features/polymarket/stores/derived/usePolymarketAccountValueSummary';
@@ -6,7 +8,6 @@ import { add, greaterThan, multiply, subtract } from '@/helpers/utilities';
 import { useUserAssetsStore } from '@/state/assets/userAssets';
 import { userAssetsStoreManager } from '@/state/assets/userAssetsStoreManager';
 import { useClaimablesStore } from '@/state/claimables/claimables';
-import { createDerivedStore } from '@/state/internal/createDerivedStore';
 import { useLiveTokensStore } from '@/state/liveTokens/liveTokensStore';
 import { deepEqual } from '@/worklets/comparisons';
 
@@ -52,5 +53,5 @@ export const useLiveWalletBalance = createDerivedStore(
     return isLoading ? null : convertAmountToNativeDisplay(totalBalanceAmount, nativeCurrency);
   },
 
-  { debounce: 250, equalityFn: deepEqual, fastMode: true }
+  { debounce: 250, equalityFn: deepEqual, lockDependencies: true }
 );

@@ -159,7 +159,7 @@ export function createLineChartDataStore(
 
 // ============ Store Options ================================================== //
 
-type EnabledParam = ReactiveParam<boolean, LineChartDataParams, LineChartDataQueryState, FetchedLineChartData>;
+type EnabledParam = boolean | ReactiveParam<boolean, LineChartDataQueryState>;
 
 function buildOptions(options: LineChartDataStoreOptions | undefined): { enabled: EnabledParam; cacheTime: number; staleTime: number } {
   return {

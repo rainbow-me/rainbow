@@ -1,7 +1,8 @@
+import { createBaseStore } from '@storesjs/stores';
+
 import { type ExtendedAnimatedAssetWithColors } from '@/__swaps__/types/assets';
 import { type GasSettings } from '@/features/gas/types/gas';
 import { equalWorklet, trimTrailingZeros } from '@/framework/core/safeMath';
-import { createRainbowStore } from '@/state/internal/createRainbowStore';
 import { sanitizeAmount } from '@/worklets/strings';
 
 import { INITIAL_SLIDER_PROGRESS } from '../constants';
@@ -12,7 +13,7 @@ import { computeMaxSwappableAmount } from './createDepositStore';
 // ============ Amount Store Factory ========================================== //
 
 export function createAmountStore(initialAmount = '0'): AmountStoreType {
-  return createRainbowStore<AmountState>((set, get) => ({
+  return createBaseStore<AmountState>((set, get) => ({
     amount: initialAmount,
 
     isZero: () => equalWorklet(get().amount, '0'),

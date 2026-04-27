@@ -1,9 +1,9 @@
+import { createBaseStore, createStoreActions } from '@storesjs/stores';
+
 import { TransactionStatus, type RainbowTransaction } from '@/entities/transactions';
 import { useBackendNetworksStore } from '@/features/network/stores/backendNetworksStore';
 import { type ChainId, type Network } from '@/features/network/types/backendNetworks';
 import { getBatchedProvider } from '@/handlers/web3';
-import { createRainbowStore } from '@/state/internal/createRainbowStore';
-import { createStoreActions } from '@/state/internal/utils/createStoreActions';
 import { usePendingTransactionsStore } from '@/state/pendingTransactions';
 
 type NonceData = { currentNonce?: number; latestConfirmedNonce?: number };
@@ -22,7 +22,7 @@ export type CurrentNonceState<T extends Nonces | NoncesV0> = {
 
 const EMPTY_NONCES: Record<string, Nonces> = {};
 
-export const useNonceStore = createRainbowStore<CurrentNonceState<Nonces>>(
+export const useNonceStore = createBaseStore<CurrentNonceState<Nonces>>(
   (set, get) => ({
     nonces: EMPTY_NONCES,
 

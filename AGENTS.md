@@ -1,6 +1,6 @@
 # Rainbow
 
-React Native crypto wallet app (iOS & Android). Uses React Navigation, custom store creators for state/data, and ethers/viem for blockchain interactions.
+React Native crypto wallet app (iOS & Android). Uses React Navigation, `@storesjs/stores` store creators for state/data, and ethers/viem for blockchain interactions.
 
 ## Verification
 
@@ -16,13 +16,13 @@ React Native crypto wallet app (iOS & Android). Uses React Navigation, custom st
 
 ### State management
 
-Custom store creators built on Zustand, defined in `src/state/internal/`:
+State/data stores use `@storesjs/stores`:
 
-- **`createRainbowStore`** -- general-purpose store with optional MMKV persistence. Use for client state.
+- **`createBaseStore`** -- general-purpose store with optional synchronous MMKV persistence. Use for client state.
 - **`createQueryStore`** -- combines data fetching + state in one store. Reactive `$` params auto-refetch when dependencies change. Replaces the React Query + Zustand dual-store pattern. Use for server/async data.
 - **`createDerivedStore`** -- read-only store that composes other stores. Use for computed/aggregated state.
 
-Stores live in `src/state/` (one per domain) and in `src/features/*/data/stores/`. These in-repo creators are being replaced by the external [`stores`](https://github.com/christianbaroni/stores) package (same APIs: `createBaseStore`, `createQueryStore`, `createDerivedStore`). The migration is mostly an import swap.
+Stores live in `src/state/` (one per domain) and in `src/features/*/data/stores/`.
 
 Legacy systems still in use:
 

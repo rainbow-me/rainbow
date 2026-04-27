@@ -1,10 +1,10 @@
+import { createQueryStore } from '@storesjs/stores';
 import { TOKEN_SEARCH_URL } from 'react-native-dotenv';
 
 import { type SearchAsset } from '@/__swaps__/types/search';
 import { type ChainId } from '@/features/network/types/backendNetworks';
 import { time } from '@/framework/core/utils/time';
 import { RainbowFetchClient } from '@/framework/data/http/rainbowFetch';
-import { createQueryStore } from '@/state/internal/createQueryStore';
 import { useSwapsStore } from '@/state/swaps/swapsStore';
 
 import { parseTokenSearchResults } from './utils';

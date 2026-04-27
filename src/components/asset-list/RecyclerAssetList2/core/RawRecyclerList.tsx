@@ -1,6 +1,7 @@
 import React, { useCallback, useEffect, useMemo, useRef, type LegacyRef } from 'react';
 import { type LayoutChangeEvent } from 'react-native';
 
+import { useListen } from '@storesjs/stores';
 import { type SetterOrUpdater } from 'recoil';
 import { DataProvider, RecyclerListView } from 'recyclerlistview';
 import { useMemoOne } from 'use-memo-one';
@@ -20,7 +21,6 @@ import useCoinListEditOptions, { type BooleanMap } from '@/hooks/useCoinListEdit
 import usePrevious from '@/hooks/usePrevious';
 import { useRecyclerListViewScrollToTopContext } from '@/navigation/RecyclerListViewScrollToTopContext';
 import { useUserAssetsStore } from '@/state/assets/userAssets';
-import { useListen } from '@/state/internal/hooks/useListen';
 import { useTheme, type ThemeContextProps } from '@/theme/ThemeContext';
 import deviceUtils from '@/utils/deviceUtils';
 

@@ -1,5 +1,7 @@
 import { useMemo } from 'react';
 
+import { createDerivedStore, createQueryStore } from '@storesjs/stores';
+
 import { POLYMARKET } from '@/features/config/constants/experimental';
 import { useExperimentalConfigStore } from '@/features/config/stores/experimentalConfigStore';
 import { useRemoteConfigStore } from '@/features/config/stores/remoteConfig';
@@ -18,8 +20,6 @@ import { fetchPolymarketTeamMetadataForGameEvents } from '@/features/polymarket/
 import { type PolymarketEvent } from '@/features/polymarket/types/polymarket-event';
 import { processRawPolymarketEvent } from '@/features/polymarket/utils/transforms';
 import { time } from '@/framework/core/utils/time';
-import { createDerivedStore } from '@/state/internal/createDerivedStore';
-import { createQueryStore } from '@/state/internal/createQueryStore';
 import { shallowEqual } from '@/worklets/comparisons';
 
 // ============ Types ========================================================== //
@@ -54,7 +54,7 @@ const usePredictionsEnabled = createDerivedStore<boolean>(
 
     return polymarketEnabled || polymarketEnabledLocally;
   },
-  { fastMode: true }
+  { lockDependencies: true }
 );
 
 export const usePredictionEventsStore = createQueryStore<PredictionEventsData, PredictionEventsParams>({

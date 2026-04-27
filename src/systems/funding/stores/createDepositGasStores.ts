@@ -1,4 +1,4 @@
-import { createDerivedStore } from '@storesjs/stores';
+import { createDerivedStore, createQueryStore, type InferStoreState } from '@storesjs/stores';
 import { formatUnits, type Address } from 'viem';
 
 import { calculateGasFeeWorklet } from '@/__swaps__/screens/Swap/providers/SyncSwapStateAndSharedValues';
@@ -20,8 +20,6 @@ import { logger } from '@/logger';
 import { estimateUnlockAndCrosschainSwap } from '@/raps/actions/crosschainSwap';
 import { estimateUnlockAndSwap } from '@/raps/actions/swap';
 import { userAssetsStoreManager } from '@/state/assets/userAssetsStoreManager';
-import { createQueryStore } from '@/state/internal/createQueryStore';
-import { type InferStoreState } from '@/state/internal/types';
 import { useWalletsStore } from '@/state/wallets/walletsStore';
 import { shallowEqual } from '@/worklets/comparisons';
 

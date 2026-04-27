@@ -1,3 +1,4 @@
+import { createQueryStore } from '@storesjs/stores';
 import { type Address } from 'viem';
 
 import { type NativeCurrencyKey } from '@/features/currency/types';
@@ -6,7 +7,6 @@ import { truncateToDecimalsWithThreshold } from '@/helpers/utilities';
 import { getPlatformClient } from '@/resources/platform/client';
 import { type PlatformResponse } from '@/resources/platform/types';
 import { userAssetsStoreManager } from '@/state/assets/userAssetsStoreManager';
-import { createQueryStore } from '@/state/internal/createQueryStore';
 import { useWalletsStore } from '@/state/wallets/walletsStore';
 
 type AirdropBalanceStore = {

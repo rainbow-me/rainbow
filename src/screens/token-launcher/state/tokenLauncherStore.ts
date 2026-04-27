@@ -1,5 +1,6 @@
 import { Alert } from 'react-native';
 
+import { createBaseStore } from '@storesjs/stores';
 import { makeMutable, runOnUI, withTiming, type SharedValue } from 'react-native-reanimated';
 import { parseEther, type Account, type Chain, type PublicClient, type Transport, type WalletClient } from 'viem';
 
@@ -19,7 +20,6 @@ import * as i18n from '@/languages';
 import { logger, RainbowError } from '@/logger';
 import store from '@/redux/store';
 import { type ParsedAsset } from '@/resources/assets/types';
-import { createRainbowStore } from '@/state/internal/createRainbowStore';
 import { addNewTransaction } from '@/state/pendingTransactions';
 import { getUniqueId } from '@/utils/ethereumUtils';
 import { Protocol, TokenLauncherSDKError, type LaunchTokenResponse } from '@rainbow-me/token-launcher';
@@ -142,7 +142,7 @@ interface TokenLauncherStore {
 
 const INITIAL_STEP = NavigationSteps.INFO;
 
-export const useTokenLauncherStore = createRainbowStore<TokenLauncherStore>((set, get) => ({
+export const useTokenLauncherStore = createBaseStore<TokenLauncherStore>((set, get) => ({
   imageUri: '',
   imageUrl: '',
   name: '',

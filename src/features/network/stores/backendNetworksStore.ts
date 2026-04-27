@@ -1,3 +1,4 @@
+import { createQueryStore, createStoreActions } from '@storesjs/stores';
 import isEqual from 'react-fast-compare';
 import { type Chain } from 'viem/chains';
 
@@ -5,8 +6,6 @@ import { IS_TEST } from '@/env';
 import { GasSpeed } from '@/features/gas/types/gasSpeed';
 import { time } from '@/framework/core/utils/time';
 import { useConnectedToAnvilStore } from '@/state/connectedToAnvil';
-import { createQueryStore } from '@/state/internal/createQueryStore';
-import { createStoreActions } from '@/state/internal/utils/createStoreActions';
 import { colors as globalColors } from '@/styles';
 
 import { fetchBackendNetworks, type BackendNetworksResponse } from '../api/fetchBackendNetworks';

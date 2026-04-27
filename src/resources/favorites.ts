@@ -1,3 +1,4 @@
+import { createBaseStore } from '@storesjs/stores';
 import { useQuery } from '@tanstack/react-query';
 import { omit } from 'lodash';
 import isEqual from 'react-fast-compare';
@@ -13,7 +14,6 @@ import { time } from '@/framework/core/utils/time';
 import { logger, RainbowError } from '@/logger';
 import { createQueryKey, queryClient } from '@/react-query';
 import { DAI_ADDRESS, ETH_ADDRESS, SOCKS_ADDRESS, WBTC_ADDRESS, WETH_ADDRESS } from '@/references/constants';
-import { createRainbowStore } from '@/state/internal/createRainbowStore';
 import { getUniqueId } from '@/utils/ethereumUtils';
 import promiseUtils from '@/utils/promise';
 
@@ -29,7 +29,7 @@ interface FavoritesState {
   favorites: Record<UniqueId, RainbowToken> | undefined;
 }
 
-const useFavoritesStore = createRainbowStore<FavoritesState>(
+const useFavoritesStore = createBaseStore<FavoritesState>(
   () => ({
     favorites: initializeFavorites(),
   }),

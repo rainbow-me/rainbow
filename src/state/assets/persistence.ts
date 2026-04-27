@@ -1,3 +1,5 @@
+import { type StorageValue } from '@storesjs/stores';
+
 import { type ParsedSearchAsset, type UniqueId, type UserAssetFilter } from '@/__swaps__/types/assets';
 import { type ChainId } from '@/features/network/types/backendNetworks';
 import { logger, RainbowError } from '@/logger';
@@ -16,7 +18,7 @@ type PersistedUserAssetsState = Pick<UserAssetsStateToPersist, 'filter' | 'legac
   userAssets: Array<[UniqueId, ParsedSearchAsset]>; // Map
 };
 
-export function serializeUserAssetsState(state: UserAssetsStateToPersist, version?: number): string {
+export function serializeUserAssetsState({ state, version }: StorageValue<UserAssetsStateToPersist>): string {
   try {
     const transformedStateToPersist: PersistedUserAssetsState = {
       ...state,
@@ -32,9 +34,10 @@ export function serializeUserAssetsState(state: UserAssetsStateToPersist, versio
   }
 }
 
-export function deserializeUserAssetsState(serializedState: string): { state: UserAssetsStateToPersist; version: number } {
+export function deserializeUserAssetsState<SerializedState>(serializedState: SerializedState): StorageValue<UserAssetsStateToPersist> {
   let parsedState: { state: PersistedUserAssetsState; version: number };
   try {
+    if (typeof serializedState !== 'string') throw new Error(`Expected string serialized state`);
     parsedState = JSON.parse(serializedState);
   } catch (error) {
     logger.error(new RainbowError(`[userAssetsStore]: Failed to parse serialized state from user assets storage`), { error });

@@ -1,5 +1,4 @@
-import { createRainbowStore } from '@/state/internal/createRainbowStore';
-import { createStoreActions } from '@/state/internal/utils/createStoreActions';
+import { createBaseStore, createStoreActions } from '@storesjs/stores';
 
 export type PolymarketLiveGameUpdate = {
   gameId: number;
@@ -24,7 +23,7 @@ type PolymarketLiveGameStoreState = {
   removeGame: (gameId: number) => void;
 };
 
-export const usePolymarketLiveGameStore = createRainbowStore<PolymarketLiveGameStoreState>(set => ({
+export const usePolymarketLiveGameStore = createBaseStore<PolymarketLiveGameStoreState>(set => ({
   gamesById: {},
   connectionStatus: 'idle',
   updateGame: update =>
