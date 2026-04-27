@@ -1,11 +1,13 @@
 import {
   buildTransactionTitle,
   isAwaitingRelayTransactionHash,
+  isPendingTransaction,
   isValidTransactionStatus,
   TransactionStatus,
   type MinedTransaction,
   type PendingTransaction,
   type RainbowTransaction,
+  type SettledTransaction,
   type TransactionType,
 } from '@/entities/transactions';
 import { applyManagedExecutionStatus } from '@/features/delegation/managedExecutionStatus';
@@ -16,10 +18,6 @@ import { fetchRawTransaction } from '@/resources/transactions/transaction';
 import { RelayExecutionStatus, type RelayStatusSnapshot } from '@rainbow-me/delegation';
 
 // ============ Types ========================================================= //
-
-type SettledTransaction = RainbowTransaction & {
-  status: TransactionStatus.confirmed | TransactionStatus.failed;
-};
 
 type TrackedTransactionResolution =
   | { kind: 'pending'; relayStatus?: RelayStatusSnapshot; transaction: PendingTransaction }
@@ -308,10 +306,6 @@ function isMinedTransaction(transaction: RainbowTransaction | null): transaction
 
 function isSettledStatus(status: TransactionStatus): status is SettledTransaction['status'] {
   return status === TransactionStatus.confirmed || status === TransactionStatus.failed;
-}
-
-function isPendingTransaction(transaction: RainbowTransaction): transaction is PendingTransaction {
-  return transaction.status === TransactionStatus.pending;
 }
 
 function isMatchingSettledTransaction(

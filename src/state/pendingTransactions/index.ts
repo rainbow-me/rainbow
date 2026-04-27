@@ -1,5 +1,5 @@
 import { useRainbowToastsStore } from '@/components/rainbow-toast/useRainbowToastsStore';
-import { type NewTransaction, type PendingTransaction, type RainbowTransaction } from '@/entities/transactions';
+import { isPendingTransaction, type NewTransaction, type PendingTransaction, type RainbowTransaction } from '@/entities/transactions';
 import { convertNewTransactionToRainbowTransaction } from '@/parsers/transactions';
 import { type ChainId } from '@/state/backendNetworks/types';
 import { createRainbowStore } from '@/state/internal/createRainbowStore';
@@ -129,8 +129,4 @@ function findTransactionIndex(transactions: RainbowTransaction[], nextTransactio
   return transactions.findIndex(
     transaction => transaction.chainId === nextTransaction.chainId && transaction.nonce === nextTransaction.nonce
   );
-}
-
-function isPendingTransaction(transaction: RainbowTransaction): transaction is PendingTransaction {
-  return transaction.status === 'pending';
 }
