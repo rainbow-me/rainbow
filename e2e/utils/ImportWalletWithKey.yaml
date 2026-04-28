@@ -19,13 +19,9 @@ env:
       - tapOn: 'Open'
 - extendedWaitUntil:
     visible:
-      id: e2e-wallet-ready
+      id: wallet-screen
     timeout: 60000
 - extendedWaitUntil:
     visible:
-      id: wallet-screen
-    timeout: 30000
-- extendedWaitUntil:
-    visible:
-      id: receive-card
-    timeout: 30000
+      id: balance-coin-row-Ethereum
+    timeout: 60000

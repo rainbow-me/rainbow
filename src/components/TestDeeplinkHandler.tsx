@@ -84,7 +84,7 @@ export function TestDeeplinkHandler() {
 
   if (commandStatus === 'idle') return null;
 
-  return <View pointerEvents="none" style={styles.marker} testID={`e2e-${commandStatus}`} />;
+  return <View collapsable={false} pointerEvents="none" style={styles.marker} testID={`e2e-${commandStatus}`} />;
 }
 
 function getQueryValue(value: string | string[] | undefined): string | undefined {
@@ -93,11 +93,11 @@ function getQueryValue(value: string | string[] | undefined): string | undefined
 
 const styles = StyleSheet.create({
   marker: {
-    bottom: 0,
-    height: 1,
-    opacity: 0.01,
+    backgroundColor: 'rgba(0, 0, 0, 0.01)',
+    height: 2,
     position: 'absolute',
     right: 0,
-    width: 1,
+    top: 72,
+    width: 2,
   },
 });

@@ -103,10 +103,10 @@ export default function RainbowContextWrapper({ children }: PropsWithChildren) {
     <RainbowContext.Provider value={initialValue}>
       {children}
       {IS_TEST && e2eFundingStatus !== 'idle' && (
-        <View pointerEvents="none" style={styles.e2eMarker} testID={`e2e-anvil-${e2eFundingStatus}`} />
+        <View collapsable={false} pointerEvents="none" style={styles.e2eMarker} testID={`e2e-anvil-${e2eFundingStatus}`} />
       )}
       {IS_TEST && e2eAnvilStatus !== 'idle' && (
-        <View pointerEvents="none" style={styles.e2eMarker} testID={`e2e-anvil-${e2eAnvilStatus}`} />
+        <View collapsable={false} pointerEvents="none" style={styles.e2eMarker} testID={`e2e-anvil-${e2eAnvilStatus}`} />
       )}
       {showReloadButton && IS_DEV && <DevButton color={colors.red} initialDisplacement={200} />}
       {((showConnectToAnvilButton && IS_DEV) || IS_TEST) && (
@@ -130,11 +130,11 @@ export default function RainbowContextWrapper({ children }: PropsWithChildren) {
 
 const styles = StyleSheet.create({
   e2eMarker: {
-    bottom: 0,
-    height: 1,
-    opacity: 0.01,
+    backgroundColor: 'rgba(0, 0, 0, 0.01)',
+    height: 2,
     position: 'absolute',
     right: 0,
-    width: 1,
+    top: 72,
+    width: 2,
   },
 });
