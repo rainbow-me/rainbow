@@ -3026,6 +3026,8 @@
         "warning": "هذا هو برنامج ألفا.",
         "welcome": "مرحبًا بك في Rainbow"
       },
+      "invalid_address_title": "عنوان غير صالح",
+      "invalid_address_message": "تحقق مرة أخرى من حالة الأحرف ثم أعد المحاولة.",
       "invalid_ens_name": "هذا ليس اسم ENS صالحًا",
       "invalid_unstoppable_name": "هذا ليس اسم Unstoppable صالحًا",
       "label": "المحافظ",
@@ -3726,6 +3728,8 @@
         "spread": "الانتشار",
         "hold_to_place_bet": "اضغط للاستمرار في الرهان",
         "placing_bet": "جارٍ وضع الرهان...",
+        "approving_trading": "جارٍ الموافقة على التداول...",
+        "converting_collateral": "جارٍ تحويل الضمان...",
         "confirming_order": "جارٍ تأكيد الطلب...",
         "deposit_funds": "إيداع الأموال",
         "average_price": "السعر المتوسط",
@@ -3736,7 +3740,11 @@
         "errors": {
           "not_enough_liquidity": "لا يوجد سيولة كافية لتنفيذ الطلب بالكامل.",
           "please_lower_amount": "يرجى تقليل الكمية والمحاولة مرة أخرى.",
-          "no_liquidity_at_price": "لا توجد سيولة عند هذا السعر."
+          "no_liquidity_at_price": "لا توجد سيولة عند هذا السعر.",
+          "trading_approval_failed_title": "يتعذّر الموافقة على التداول",
+          "trading_approval_failed_message": "يرجى المحاولة مرة أخرى.",
+          "collateral_conversion_failed_title": "يتعذّر تحويل الضمان",
+          "collateral_conversion_failed_message": "يرجى المحاولة مرة أخرى."
         }
       },
       "manage_position": {
