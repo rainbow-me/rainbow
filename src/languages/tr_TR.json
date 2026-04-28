@@ -3026,8 +3026,8 @@
         "warning": "Bu bir alfa yazılımıdır.",
         "welcome": "Rainbow'a Hoş Geldiniz"
       },
-      "invalid_address_title": "Invalid address",
-      "invalid_address_message": "Double-check the casing and try again.",
+      "invalid_address_title": "Geçersiz adres",
+      "invalid_address_message": "Büyük/küçük harf kullanımını tekrar kontrol edip yeniden deneyin.",
       "invalid_ens_name": "Bu geçerli bir ENS adı değil",
       "invalid_unstoppable_name": "Bu geçerli bir Unstoppable adı değil",
       "label": "Cüzdanlar",
