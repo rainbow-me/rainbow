@@ -3026,6 +3026,8 @@
         "warning": "Bu bir alfa yazılımıdır.",
         "welcome": "Rainbow'a Hoş Geldiniz"
       },
+      "invalid_address_title": "Invalid address",
+      "invalid_address_message": "Double-check the casing and try again.",
       "invalid_ens_name": "Bu geçerli bir ENS adı değil",
       "invalid_unstoppable_name": "Bu geçerli bir Unstoppable adı değil",
       "label": "Cüzdanlar",
@@ -3726,6 +3728,8 @@
         "spread": "Spread",
         "hold_to_place_bet": "Bahis Yapmak İçin Basılı Tutun",
         "placing_bet": "Bahis Yapılıyor...",
+        "approving_trading": "Ticaret Onaylanıyor...",
+        "converting_collateral": "Teminat Dönüştürülüyor...",
         "confirming_order": "Sipariş Onaylanıyor...",
         "deposit_funds": "Fon Yatırma",
         "average_price": "Ortalama Fiyat",
@@ -3736,7 +3740,11 @@
         "errors": {
           "not_enough_liquidity": "Tam sipariş vermek için yeterli likidite yok.",
           "please_lower_amount": "Lütfen miktarı azaltın ve tekrar deneyin.",
-          "no_liquidity_at_price": "Bu fiyatta likidite yok."
+          "no_liquidity_at_price": "Bu fiyatta likidite yok.",
+          "trading_approval_failed_title": "Ticaret Onaylanamadı",
+          "trading_approval_failed_message": "Lütfen tekrar deneyin.",
+          "collateral_conversion_failed_title": "Teminat Dönüştürülemedi",
+          "collateral_conversion_failed_message": "Lütfen tekrar deneyin."
         }
       },
       "manage_position": {
