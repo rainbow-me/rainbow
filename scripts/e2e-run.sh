@@ -3,7 +3,7 @@
 set -euo pipefail
 source .env
 
-ARTIFACTS_FOLDER=e2e-artifacts
+ARTIFACTS_FOLDER="${ARTIFACTS_FOLDER:-e2e-artifacts}"
 FLOW="e2e/flows"
 ARGS=()
 SHARD_TOTAL=1
@@ -35,6 +35,28 @@ start_log_capture() {
     adb logcat -v time > "$log_dir/logcat.txt" &
     LOG_CAPTURE_PID=$!
   fi
+}
+
+wait_for_anvil() {
+  local rpc_url="${1:-http://127.0.0.1:8545}"
+  local max_attempts="${ANVIL_READY_ATTEMPTS:-30}"
+
+  for attempt in $(seq 1 "$max_attempts"); do
+    if response=$(curl --silent --show-error --fail --max-time 2 \
+      -H 'Content-Type: application/json' \
+      --data '{"jsonrpc":"2.0","id":1,"method":"eth_chainId","params":[]}' \
+      "$rpc_url" 2>/dev/null) && [[ "$response" == *'"result"'* ]]; then
+      echo "✅ Anvil ready at $rpc_url"
+      return 0
+    fi
+
+    echo "⏳ Waiting for Anvil ($attempt/$max_attempts)..."
+    sleep 1
+  done
+
+  echo "❌ Anvil did not become ready at $rpc_url" >&2
+  tail -n 100 "$ARTIFACTS_FOLDER/anvil/mainnet.log" >&2 || true
+  exit 1
 }
 
 # Stop recording function
@@ -185,7 +207,7 @@ if $NEEDS_ANVIL; then
   mkdir -p "$ARTIFACTS_FOLDER/anvil"
   ./scripts/anvil.sh --host 0.0.0.0 > "$ARTIFACTS_FOLDER/anvil/mainnet.log" 2>&1 &
   ANVIL_PID=$!
-  sleep 5
+  wait_for_anvil "http://127.0.0.1:8545"
 fi
 
 # Run tests with retries.

@@ -11,13 +11,9 @@ tags:
 - runFlow: ../../utils/Prepare.yaml
 - runFlow: ../../utils/ImportWalletWithKey.yaml
 
-# Send ETH to test wallet
-- tapOn:
-    id: fund-test-wallet-button
-
-# Connect to Anvil (test network)
-- tapOn:
-    id: dev-button-anvil
+# Send ETH to test wallet and connect to Anvil.
+- runFlow: ../../utils/FundTestWallet.yaml
+- runFlow: ../../utils/ConnectToAnvil.yaml
 
 # Open send sheet
 - retry:

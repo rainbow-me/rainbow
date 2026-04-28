@@ -1,0 +1,8 @@
+appId: ${APP_ID}
+---
+- tapOn:
+    id: dev-button-anvil
+- extendedWaitUntil:
+    visible:
+      id: e2e-anvil-connected
+    timeout: 10000

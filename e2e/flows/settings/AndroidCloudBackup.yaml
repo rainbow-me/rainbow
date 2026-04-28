@@ -64,7 +64,7 @@ tags:
       - tapOn: 'Delete All Google Drive Backups'
       - tapOn: 'Confirm and Delete Backups'
       - tapOn:
-          text: '1'
+          id: numpad-button-1
           repeat: 4
           delay: 1000
       # Skip the "Sign in with ease" phone-lookup interstitial if Google

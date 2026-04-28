@@ -11,13 +11,9 @@ tags:
 - runFlow: ../../utils/Prepare.yaml
 - runFlow: ../../utils/ImportWalletWithKey.yaml
 
-# Send ETH to test wallet
-- tapOn:
-    id: fund-test-wallet-button
-
-# Connect to Anvil (test network)
-- tapOn:
-    id: dev-button-anvil
+# Send ETH to test wallet and connect to Anvil.
+- runFlow: ../../utils/FundTestWallet.yaml
+- runFlow: ../../utils/ConnectToAnvil.yaml
 
 # Open send sheet
 - retry:
@@ -51,6 +47,10 @@ tags:
           from:
             id: wallet-screen
           direction: UP
+      - extendedWaitUntil:
+          visible:
+            id: 'wrapped-nft-Rainbow Pooly 16'
+          timeout: 15000
       - tapOn:
           id: 'wrapped-nft-Rainbow Pooly 16'
 
@@ -86,14 +86,18 @@ tags:
       - runFlow: ../../utils/MaybeInputPin.yaml
 
       # Check toast data
-      - assertVisible:
-          text: 'Sending'
-          childOf:
-            id: toast-.*
-      - assertVisible:
-          text: 'Rainbow Pooly 16'
-          childOf:
-            id: toast-.*
+      - extendedWaitUntil:
+          visible:
+            text: 'Sending'
+            childOf:
+              id: toast-.*
+          timeout: 15000
+      - extendedWaitUntil:
+          visible:
+            text: 'Rainbow Pooly 16'
+            childOf:
+              id: toast-.*
+          timeout: 15000
       # Open toast
       - tapOn:
           id: toast-.*

@@ -176,13 +176,26 @@ jobs:
         run: export MAESTRO_VERSION=2.0.10; curl -fsSL "https://get.maestro.mobile.dev" | bash
 
       - name: Install Anvil
+        id: install_anvil
+        continue-on-error: true
         uses: foundry-rs/foundry-toolchain@82dee4ba654bd2146511f85f0d013af94670c4de
         with:
           version: stable
 
+      - name: Retry Install Anvil
+        if: steps.install_anvil.outcome == 'failure'
+        uses: foundry-rs/foundry-toolchain@82dee4ba654bd2146511f85f0d013af94670c4de
+        with:
+          version: stable
+
+      - name: Verify Anvil
+        run: anvil --version
+
       - name: Download and Unpack APK artifact
+        env:
+          GITHUB_TOKEN: ${{ github.token }}
         run: |
-          curl -L -H "Authorization: token ${{ github.token }}" -o artifact.zip "https://api.github.com/repos/${{ github.repository }}/actions/artifacts/${{ needs.build.outputs.artifact-id }}/zip"
+          ./scripts/download-github-artifact.sh "${{ needs.build.outputs.artifact-id }}" artifact.zip
           unzip artifact.zip -d downloaded-artifacts
           ls -l downloaded-artifacts
           APK_PATH=$(find downloaded-artifacts -name "*.apk" -print -quit)
@@ -239,8 +252,10 @@ jobs:
       - name: Checkout repo
         uses: actions/checkout@08eba0b27e820071cde6df949e0beb9ba4906955
       - name: Download and Unpack APK artifact
+        env:
+          GITHUB_TOKEN: ${{ github.token }}
         run: |
-          curl -L -H "Authorization: token ${{ github.token }}" -o artifact.zip "https://api.github.com/repos/${{ github.repository }}/actions/artifacts/${{ needs.build.outputs.artifact-id }}/zip"
+          ./scripts/download-github-artifact.sh "${{ needs.build.outputs.artifact-id }}" artifact.zip
           unzip artifact.zip -d downloaded-artifacts
           ls -l downloaded-artifacts
           APK_PATH=$(find downloaded-artifacts -name "*.apk" -print -quit)

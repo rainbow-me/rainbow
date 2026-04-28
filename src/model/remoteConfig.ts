@@ -3,7 +3,7 @@ import { useEffect } from 'react';
 import remoteConfig, { type FirebaseRemoteConfigTypes } from '@react-native-firebase/remote-config';
 import { dequal } from 'dequal';
 
-import { IS_DEV, IS_STORE_INSTALL } from '@/env';
+import { IS_DEV, IS_STORE_INSTALL, IS_TEST } from '@/env';
 import { CURRENT_APP_VERSION } from '@/hooks/useAppVersion';
 import * as i18n from '@/languages';
 import { logger, RainbowError } from '@/logger';
@@ -303,6 +303,14 @@ export const useRemoteConfigStore = createQueryStore<RainbowConfig, never, Remot
 // ============ Public Methods ================================================= //
 
 export async function initializeRemoteConfig(): Promise<void> {
+  if (IS_TEST) {
+    useRemoteConfigStore.setState({
+      config: { ...DEFAULT_CONFIG },
+      lastFetchedVersion: REMOTE_CONFIG_VERSION,
+    });
+    return;
+  }
+
   const { fetch, lastFetchedVersion } = useRemoteConfigStore.getState();
   if (lastFetchedVersion !== REMOTE_CONFIG_VERSION) {
     await Promise.race([fetch(undefined, { force: true }), delay(time.seconds(3))]);
@@ -326,6 +334,8 @@ export function useRemoteConfig<const K extends readonly RemoteConfigKey[]>(...k
 
 export function useRemoteConfigUpdates(): void {
   useEffect(() => {
+    if (IS_TEST) return;
+
     const rc = remoteConfig();
     const unsubscribe = rc.onConfigUpdated(async (_, error) => {
       if (error) return;
@@ -343,6 +353,8 @@ const PARSERS = buildParsers(DEFAULT_CONFIG);
 let hasInitializedRemoteConfig = false;
 
 async function fetchRemoteConfig(): Promise<RainbowConfig> {
+  if (IS_TEST) return { ...DEFAULT_CONFIG };
+
   const rc = remoteConfig();
   const newConfig: RainbowConfig = { ...DEFAULT_CONFIG };
 
