@@ -103,10 +103,10 @@ tags:
     id: balance-coin-row-Wrapped Ether
 - extendedWaitUntil:
     visible:
-      id: swap
+      id: swap-action-button
     timeout: 30000
 - tapOn:
-    id: swap
+    id: swap-action-button
 - extendedWaitUntil:
     visible:
       id: swap-bottom-action-button
