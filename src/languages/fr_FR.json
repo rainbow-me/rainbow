@@ -3026,6 +3026,8 @@
         "warning": "C'est un logiciel alpha.",
         "welcome": "Bienvenue à Rainbow"
       },
+      "invalid_address_title": "Invalid address",
+      "invalid_address_message": "Double-check the casing and try again.",
       "invalid_ens_name": "Ce n'est pas un nom ENS valide",
       "invalid_unstoppable_name": "Ce n'est pas un nom Unstoppable valide",
       "label": "Portefeuilles",
@@ -3726,6 +3728,8 @@
         "spread": "Écart",
         "hold_to_place_bet": "Maintenir pour placer un pari",
         "placing_bet": "Placement de pari...",
+        "approving_trading": "Approbation du trading...",
+        "converting_collateral": "Conversion du collatéral...",
         "confirming_order": "Confirmation de commande...",
         "deposit_funds": "Déposer des fonds",
         "average_price": "Prix moyen",
@@ -3736,7 +3740,11 @@
         "errors": {
           "not_enough_liquidity": "Pas assez de liquidité pour passer la commande complète.",
           "please_lower_amount": "Veuillez réduire le montant et réessayer.",
-          "no_liquidity_at_price": "Pas de liquidité à ce prix."
+          "no_liquidity_at_price": "Pas de liquidité à ce prix.",
+          "trading_approval_failed_title": "Impossible d’approuver le trading",
+          "trading_approval_failed_message": "Veuillez réessayer.",
+          "collateral_conversion_failed_title": "Impossible de convertir le collatéral",
+          "collateral_conversion_failed_message": "Veuillez réessayer."
         }
       },
       "manage_position": {
