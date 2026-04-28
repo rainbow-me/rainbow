@@ -3026,6 +3026,8 @@
         "warning": "이것은 알파 소프트웨어입니다.",
         "welcome": "레인보우에 오신 것을 환영합니다"
       },
+      "invalid_address_title": "Invalid address",
+      "invalid_address_message": "Double-check the casing and try again.",
       "invalid_ens_name": "이것은 유효한 ENS 이름이 아닙니다",
       "invalid_unstoppable_name": "이것은 유효한 Unstoppable 이름이 아닙니다",
       "label": "지갑들",
@@ -3726,6 +3728,8 @@
         "spread": "스프레드",
         "hold_to_place_bet": "베팅하기 위해 계속 누르세요",
         "placing_bet": "베팅 중...",
+        "approving_trading": "거래 승인 중...",
+        "converting_collateral": "담보 전환 중...",
         "confirming_order": "주문 확인 중...",
         "deposit_funds": "자금 입금",
         "average_price": "평균 가격",
@@ -3736,7 +3740,11 @@
         "errors": {
           "not_enough_liquidity": "전체 주문을 하기에는 유동성이 부족합니다.",
           "please_lower_amount": "금액을 낮추고 다시 시도하세요.",
-          "no_liquidity_at_price": "이 가격에 유동성이 없습니다."
+          "no_liquidity_at_price": "이 가격에 유동성이 없습니다.",
+          "trading_approval_failed_title": "거래를 승인할 수 없음",
+          "trading_approval_failed_message": "다시 시도하세요.",
+          "collateral_conversion_failed_title": "담보를 전환할 수 없음",
+          "collateral_conversion_failed_message": "다시 시도하세요."
         }
       },
       "manage_position": {
