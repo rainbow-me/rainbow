@@ -3026,6 +3026,8 @@
         "warning": "这是 alpha 版软件。",
         "welcome": "欢迎来到 Rainbow"
       },
+      "invalid_address_title": "无效地址",
+      "invalid_address_message": "请仔细检查大小写，然后重试。",
       "invalid_ens_name": "这不是有效的 ENS 名称",
       "invalid_unstoppable_name": "这不是有效的 Unstoppable 名称",
       "label": "钱包",
@@ -3726,6 +3728,8 @@
         "spread": "差价",
         "hold_to_place_bet": "按住下注",
         "placing_bet": "下注中...",
+        "approving_trading": "正在批准交易...",
+        "converting_collateral": "正在转换抵押品...",
         "confirming_order": "订单确认中...",
         "deposit_funds": "存款资金",
         "average_price": "平均价格",
@@ -3736,7 +3740,11 @@
         "errors": {
           "not_enough_liquidity": "没有足够的流动性来完成整个订单。",
           "please_lower_amount": "请减少金额后再试。",
-          "no_liquidity_at_price": "此价格没有流动性。"
+          "no_liquidity_at_price": "此价格没有流动性。",
+          "trading_approval_failed_title": "无法批准交易",
+          "trading_approval_failed_message": "请再试一次。",
+          "collateral_conversion_failed_title": "无法转换抵押品",
+          "collateral_conversion_failed_message": "请再试一次。"
         }
       },
       "manage_position": {
