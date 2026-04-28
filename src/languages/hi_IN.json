@@ -3026,6 +3026,8 @@
         "warning": "यह अल्फा सॉफ्टवेयर है।",
         "welcome": "रेनबो में आपका स्वागत है"
       },
+      "invalid_address_title": "अमान्य पता",
+      "invalid_address_message": "अक्षरों का केसिंग दोबारा जाँचें और फिर से कोशिश करें।",
       "invalid_ens_name": "यह एक मान्य ENS नाम नहीं है",
       "invalid_unstoppable_name": "यह एक मान्य अनरोकबल नाम नहीं है",
       "label": "वॉलेट्स",
@@ -3726,6 +3728,8 @@
         "spread": "विस्तार",
         "hold_to_place_bet": "शर्त लगाने के लिए दबाकर रखें",
         "placing_bet": "शर्त लगाई जा रही है...",
+        "approving_trading": "ट्रेडिंग स्वीकृत की जा रही है...",
+        "converting_collateral": "कोलेटरल रूपांतरित किया जा रहा है...",
         "confirming_order": "ऑर्डर की पुष्टि हो रही है...",
         "deposit_funds": "फंड जमा करें",
         "average_price": "औसत मूल्य",
@@ -3736,7 +3740,11 @@
         "errors": {
           "not_enough_liquidity": "पूरी ऑर्डर के लिए पर्याप्त तरलता नहीं है।",
           "please_lower_amount": "कृपया राशि को कम करें और पुनः प्रयास करें।",
-          "no_liquidity_at_price": "इस मूल्य पर कोई तरलता नहीं है।"
+          "no_liquidity_at_price": "इस मूल्य पर कोई तरलता नहीं है।",
+          "trading_approval_failed_title": "ट्रेडिंग स्वीकृत नहीं हो सकी",
+          "trading_approval_failed_message": "कृपया पुनः प्रयास करें।",
+          "collateral_conversion_failed_title": "कोलेटरल रूपांतरित नहीं हो सका",
+          "collateral_conversion_failed_message": "कृपया पुनः प्रयास करें।"
         }
       },
       "manage_position": {
