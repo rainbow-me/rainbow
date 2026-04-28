@@ -9,11 +9,9 @@ import { getAppIcon } from '@/handlers/localstorage/globalSettings';
 import { logger, RainbowError } from '@/logger';
 import { onHandleStatusBar } from '@/navigation/onNavigationStateChange';
 
-import { PerformanceReports, PerformanceReportSegments, PerformanceTracking } from '../performance/tracking';
-
 const { RainbowSplashScreen } = NativeModules;
 
-let alreadyLoggedPerformance = false;
+let firstHide = true;
 let splashScreenHidden = false;
 
 export const isSplashScreenHidden = () => splashScreenHidden;
@@ -38,9 +36,8 @@ export const hideSplashScreen = async () => {
       });
     }
 
-    if (!alreadyLoggedPerformance) {
-      alreadyLoggedPerformance = true;
-      PerformanceTracking.logReportSegmentRelative(PerformanceReports.appStartup, PerformanceReportSegments.appStartup.hideSplashScreen);
+    if (firstHide) {
+      firstHide = false;
 
       // need to load setting straight from storage, redux isnt ready yet
       const appIcon = (await getAppIcon()) as AppIconKey;

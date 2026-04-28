@@ -372,8 +372,8 @@ function NativeStackNavigator() {
   );
 }
 
-const AppContainerWithAnalytics = React.forwardRef<NavigationContainerRef<RootStackParamList>, { onReady: () => void }>((props, ref) => (
-  <NavigationContainer onReady={props.onReady} onStateChange={onNavigationStateChange} ref={ref}>
+const AppContainerWithAnalytics = React.forwardRef<NavigationContainerRef<RootStackParamList>>((_props, ref) => (
+  <NavigationContainer onStateChange={onNavigationStateChange} ref={ref}>
     <NativeStackNavigator />
 
     {/* NOTE: Internally, these use some navigational checks */}
