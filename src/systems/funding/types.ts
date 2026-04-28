@@ -449,14 +449,8 @@ export type DepositQuoteStoreType = QueryStore<DepositQuoteResult, DepositQuoteS
 // ============ Gas Store Types ================================================ //
 
 export type DepositGasLimitParams = {
-  amount: string;
-  assetToSellUniqueId: string | null;
-  quoteKey: number | null;
-};
-
-export type DepositGasSponsorshipParams = {
-  accountAddress: Address;
-  amount: string;
+  accountAddress: Address | null;
+  amount: string | null;
   assetToSellUniqueId: string | null;
   quoteKey: number | null;
 };
@@ -474,9 +468,9 @@ export type DepositMeteorologyActions = {
 };
 
 export type DepositGasStoresType = {
+  reset: () => void;
   useEstimatedGasFee: DerivedStore<string | undefined>;
   useGasLimitStore: QueryStore<string, DepositGasLimitParams>;
-  useGasSponsorshipStore: QueryStore<boolean, DepositGasSponsorshipParams>;
   useIsGasSponsored: DerivedStore<boolean>;
   useGasSettings: DerivedStore<GasSettings | undefined>;
   useMaxSwappableAmount: DerivedStore<string | undefined>;
