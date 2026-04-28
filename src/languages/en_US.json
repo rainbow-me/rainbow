@@ -3008,6 +3008,8 @@
         "warning": "This is alpha software.",
         "welcome": "Welcome to Rainbow"
       },
+      "invalid_address_title": "Invalid address",
+      "invalid_address_message": "Double-check the casing and try again.",
       "invalid_ens_name": "This is not a valid ENS name",
       "invalid_unstoppable_name": "This is not a valid Unstoppable name",
       "label": "Wallets",
