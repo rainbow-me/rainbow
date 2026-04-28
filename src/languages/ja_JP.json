@@ -3026,8 +3026,8 @@
         "warning": "これはアルファ版のソフトウェアです。",
         "welcome": "Rainbowへようこそ"
       },
-      "invalid_address_title": "Invalid address",
-      "invalid_address_message": "Double-check the casing and try again.",
+      "invalid_address_title": "無効なアドレス",
+      "invalid_address_message": "大文字・小文字の区別を確認して、もう一度お試しください。",
       "invalid_ens_name": "有効なENS名ではありません",
       "invalid_unstoppable_name": "これは有効なアンストッパブルの名前ではありません",
       "label": "財布",
