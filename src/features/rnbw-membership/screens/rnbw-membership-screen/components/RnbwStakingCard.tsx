@@ -78,7 +78,7 @@ export const RnbwStakingCard = memo(function RnbwStakingCard({ width }: RnbwStak
           </Box>
           <Box gap={12}>
             {hasStakedPosition ? (
-              <Box flexDirection="row" gap={10}>
+              <Box flexDirection="row" gap={10} height={44}>
                 <MembershipTierButton
                   tier={currentTier}
                   onPress={navigateToUnstakeSheet}
