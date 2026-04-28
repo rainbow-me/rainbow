@@ -9544,7 +9544,7 @@ __metadata:
     "@notifee/react-native": "npm:7.8.2"
     "@polymarket/builder-relayer-client": "npm:0.0.7"
     "@polymarket/clob-client-v2": "npm:1.0.0"
-    "@rainbow-me/delegation": "file:./rainbow-me-delegation-0.3.3.tgz"
+    "@rainbow-me/delegation": "file:./rainbow-me-delegation-0.4.0.tgz"
     "@rainbow-me/provider": "npm:0.1.2"
     "@rainbow-me/react-native-animated-number": "npm:0.0.2"
     "@rainbow-me/swaps": "npm:0.41.0"
