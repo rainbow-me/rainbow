@@ -1,7 +1,6 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { InteractionManager, Keyboard, type TextInput } from 'react-native';
 
-import { keys } from 'lodash';
 import { useDispatch } from 'react-redux';
 
 import { analytics } from '@/analytics';
