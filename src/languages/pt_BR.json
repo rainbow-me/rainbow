@@ -3026,6 +3026,8 @@
         "warning": "Este é um software alfa.",
         "welcome": "Bem-vindo ao Rainbow"
       },
+      "invalid_address_title": "Endereço inválido",
+      "invalid_address_message": "Verifique novamente o uso de maiúsculas e minúsculas e tente de novo.",
       "invalid_ens_name": "Este não é um nome ENS válido",
       "invalid_unstoppable_name": "Esse não é um nome válido do Unstoppable",
       "label": "Carteiras",
@@ -3726,6 +3728,8 @@
         "spread": "Spread",
         "hold_to_place_bet": "Segure para Fazer Aposta",
         "placing_bet": "Fazendo Aposta...",
+        "approving_trading": "Aprovando a negociação...",
+        "converting_collateral": "Convertendo a garantia...",
         "confirming_order": "Confirmando Pedido...",
         "deposit_funds": "Deposite Fundos",
         "average_price": "Preço Médio",
@@ -3736,7 +3740,11 @@
         "errors": {
           "not_enough_liquidity": "Não há liquidez suficiente para realizar o pedido completo.",
           "please_lower_amount": "Por favor, reduza o valor e tente novamente.",
-          "no_liquidity_at_price": "Não há liquidez neste preço."
+          "no_liquidity_at_price": "Não há liquidez neste preço.",
+          "trading_approval_failed_title": "Não foi possível aprovar a negociação",
+          "trading_approval_failed_message": "Por favor, tente novamente.",
+          "collateral_conversion_failed_title": "Não foi possível converter a garantia",
+          "collateral_conversion_failed_message": "Por favor, tente novamente."
         }
       },
       "manage_position": {
