@@ -3026,8 +3026,8 @@
         "warning": "C'est un logiciel alpha.",
         "welcome": "Bienvenue à Rainbow"
       },
-      "invalid_address_title": "Invalid address",
-      "invalid_address_message": "Double-check the casing and try again.",
+      "invalid_address_title": "Adresse invalide",
+      "invalid_address_message": "Vérifiez à nouveau la casse et réessayez.",
       "invalid_ens_name": "Ce n'est pas un nom ENS valide",
       "invalid_unstoppable_name": "Ce n'est pas un nom Unstoppable valide",
       "label": "Portefeuilles",
