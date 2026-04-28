@@ -3026,6 +3026,8 @@
         "warning": "Ini adalah perangkat lunak alpha.",
         "welcome": "Selamat datang di Rainbow"
       },
+      "invalid_address_title": "Alamat tidak valid",
+      "invalid_address_message": "Periksa kembali kapitalisasi hurufnya dan coba lagi.",
       "invalid_ens_name": "Ini bukan nama ENS yang valid",
       "invalid_unstoppable_name": "Ini bukan nama Unstoppable yang valid",
       "label": "Dompet",
@@ -3726,6 +3728,8 @@
         "spread": "Penyebaran",
         "hold_to_place_bet": "Tahan untuk Pasang Taruhan",
         "placing_bet": "Memasang Taruhan...",
+        "approving_trading": "Menyetujui Perdagangan...",
+        "converting_collateral": "Mengonversi Jaminan...",
         "confirming_order": "Mengonfirmasi Pesanan...",
         "deposit_funds": "Deposit Dana",
         "average_price": "Harga Rata-rata",
@@ -3736,7 +3740,11 @@
         "errors": {
           "not_enough_liquidity": "Likuiditas tidak cukup untuk melakukan pemesanan penuh.",
           "please_lower_amount": "Silakan kurangi jumlahnya dan coba lagi.",
-          "no_liquidity_at_price": "Tidak ada likuiditas pada harga ini."
+          "no_liquidity_at_price": "Tidak ada likuiditas pada harga ini.",
+          "trading_approval_failed_title": "Tidak Dapat Menyetujui Perdagangan",
+          "trading_approval_failed_message": "Silakan coba lagi.",
+          "collateral_conversion_failed_title": "Tidak Dapat Mengonversi Jaminan",
+          "collateral_conversion_failed_message": "Silakan coba lagi."
         }
       },
       "manage_position": {
