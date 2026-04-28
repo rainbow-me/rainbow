@@ -4,6 +4,7 @@ import {
 } from '@/features/polymarket/screens/polymarket-new-position-sheet/utils/calculateBuyOrderExecution';
 import { usePolymarketFeeInfoStore } from '@/features/polymarket/stores/polymarketFeeInfoStore';
 import { usePolymarketOrderBookStore, type OrderBook } from '@/features/polymarket/stores/polymarketOrderBookStore';
+import { type PolymarketFeeInfo } from '@/features/polymarket/utils/fees';
 import { createDerivedStore } from '@/state/internal/createDerivedStore';
 import { type DerivedStore, type InferStoreState, type Selector } from '@/state/internal/types';
 import { shallowEqual } from '@/worklets/comparisons';
@@ -34,11 +35,11 @@ export function createOrderExecutionStore(orderFormStore: OrderFormStore, tokenI
 type FeeInfoQueryState = InferStoreState<typeof usePolymarketFeeInfoStore>;
 type OrderBookQueryState = InferStoreState<typeof usePolymarketOrderBookStore>;
 
-function createOrderBookSelector(tokenId: string): Selector<OrderBookQueryState, ReturnType<OrderBookQueryState['getData']>> {
+function createOrderBookSelector(tokenId: string): Selector<OrderBookQueryState, OrderBook | null> {
   return state => state.getData({ tokenId });
 }
 
-function createFeeInfoSelector(conditionId: string): Selector<FeeInfoQueryState, ReturnType<FeeInfoQueryState['getData']>> {
+function createFeeInfoSelector(conditionId: string): Selector<FeeInfoQueryState, PolymarketFeeInfo | null> {
   return state => state.getData({ conditionId });
 }
 

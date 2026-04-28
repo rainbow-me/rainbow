@@ -1,9 +1,9 @@
 import { type BigNumberish } from '@ethersproject/bignumber';
 import { OperationType, type SafeTransaction } from '@polymarket/builder-relayer-client';
-import { maxUint256 } from 'viem';
+import { maxUint256, type Address } from 'viem';
 
 import { encodeErc20Approve } from '@/framework/core/evm/erc20Calldata';
-import { hasSufficientErc20Allowance, type EvmCallProvider } from '@/framework/data/evm/erc20Allowance';
+import { hasSufficientErc20Allowance, type EvmCallProvider } from '@/framework/data/evm/erc20Read';
 
 const DEFAULT_ERC20_APPROVAL_AMOUNT = maxUint256;
 
@@ -13,8 +13,8 @@ export function buildErc20ApprovalTransaction({
   tokenAddress,
 }: {
   amount?: BigNumberish;
-  spender: string;
-  tokenAddress: string;
+  spender: Address;
+  tokenAddress: Address;
 }): SafeTransaction {
   return {
     to: tokenAddress,
@@ -32,10 +32,10 @@ export async function getMissingErc20ApprovalTransaction({
   tokenAddress,
 }: {
   amount?: BigNumberish;
-  owner: string;
+  owner: Address;
   provider: EvmCallProvider;
-  spender: string;
-  tokenAddress: string;
+  spender: Address;
+  tokenAddress: Address;
 }): Promise<SafeTransaction[]> {
   if (await hasSufficientErc20Allowance({ amount, owner, provider, spender, tokenAddress })) {
     return [];

@@ -1,7 +1,7 @@
 import { type Signer } from '@ethersproject/abstract-signer';
 import { OperationType, RelayClient, RelayerTransactionState, type SafeTransaction } from '@polymarket/builder-relayer-client';
 import { Wallet } from 'ethers';
-import { decodeFunctionResult, encodeFunctionData, erc1155Abi, maxUint256, parseUnits, type Address, type Hex } from 'viem';
+import { decodeFunctionResult, encodeFunctionData, erc1155Abi, maxUint256, type Address } from 'viem';
 
 import {
   BUILDER_CONFIG,
@@ -14,6 +14,7 @@ import {
 } from '@/features/polymarket/constants';
 import { getPolymarketRelayClient } from '@/features/polymarket/stores/derived/usePolymarketClients';
 import { getMissingErc20ApprovalTransaction } from '@/features/polymarket/utils/erc20Approval';
+import { requireHex } from '@/framework/core/evm/hex';
 import { getProvider } from '@/handlers/web3';
 import { logger, RainbowError } from '@/logger';
 import { ChainId } from '@rainbow-me/swaps';
@@ -30,29 +31,27 @@ const polygonProvider = getProvider({ chainId: ChainId.polygon });
  * Polymarket contracts that require broad trading approvals.
  */
 const APPROVAL_TARGETS = {
-  Exchange: POLYMARKET_CTF_EXCHANGE_ADDRESS,
-  NegRiskExchange: POLYMARKET_NEG_RISK_CTF_EXCHANGE_ADDRESS,
-  NegRiskAdapter: POLYMARKET_NEG_RISK_ADAPTER_ADDRESS,
-} as const;
-
-type ApprovalTarget = keyof typeof APPROVAL_TARGETS;
+  exchange: { label: 'Exchange', address: POLYMARKET_CTF_EXCHANGE_ADDRESS },
+  negRiskExchange: { label: 'NegRiskExchange', address: POLYMARKET_NEG_RISK_CTF_EXCHANGE_ADDRESS },
+  negRiskAdapter: { label: 'NegRiskAdapter', address: POLYMARKET_NEG_RISK_ADAPTER_ADDRESS },
+};
 
 // ============================================================================
 // Approval Checks
 // ============================================================================
 
-async function hasCtfApproval(owner: string, operator: string): Promise<boolean> {
+async function hasCtfApproval(owner: Address, operator: Address): Promise<boolean> {
   const data = encodeFunctionData({
     abi: erc1155Abi,
     functionName: 'isApprovedForAll',
-    args: [owner as Address, operator as Address],
+    args: [owner, operator],
   });
   const result = await polygonProvider.call({ to: POLYMARKET_CTF_ADDRESS, data });
 
   return decodeFunctionResult({
     abi: erc1155Abi,
     functionName: 'isApprovedForAll',
-    data: result as Hex,
+    data: requireHex(result, new RainbowError('[polymarket] Provider returned non-hex call data')),
   });
 }
 
@@ -60,13 +59,13 @@ async function hasCtfApproval(owner: string, operator: string): Promise<boolean>
 // Transaction Builders
 // ============================================================================
 
-function buildCtfApproval(operator: string): SafeTransaction {
+function buildCtfApproval(operator: Address): SafeTransaction {
   return {
     to: POLYMARKET_CTF_ADDRESS,
     data: encodeFunctionData({
       abi: erc1155Abi,
       functionName: 'setApprovalForAll',
-      args: [operator as Address, true],
+      args: [operator, true],
     }),
     value: '0',
     operation: OperationType.Call,
@@ -100,37 +99,37 @@ export async function executeRelayTransaction(client: RelayClient, transactions:
 /**
  * Checks all required approvals and returns transactions for any that are missing.
  */
-async function getMissingApprovalTransactions(proxyAddress: string): Promise<SafeTransaction[]> {
-  const targets = Object.entries(APPROVAL_TARGETS) as [ApprovalTarget, string][];
-
+async function getMissingApprovalTransactions(proxyAddress: Address): Promise<SafeTransaction[]> {
   const ctfApprovalChecks = await Promise.all(
-    targets.map(([name, address]) => hasCtfApproval(proxyAddress, address).then(approved => ({ name, address, approved })))
+    Object.values(APPROVAL_TARGETS).map(({ address, label }) =>
+      hasCtfApproval(proxyAddress, address).then(approved => ({ address, approved, label }))
+    )
   );
 
   const erc20ApprovalTransactions = await Promise.all(
-    targets.map(([name, address]) =>
+    Object.values(APPROVAL_TARGETS).map(({ address, label }) =>
       getMissingErc20ApprovalTransaction({
         amount: maxUint256,
         owner: proxyAddress,
         provider: polygonProvider,
         spender: address,
         tokenAddress: POLYMARKET_PUSD_ADDRESS,
-      }).then(transactions => ({ name, transactions }))
+      }).then(transactions => ({ label, transactions }))
     )
   );
 
   const transactions: SafeTransaction[] = [];
 
-  for (const { name, transactions: approvalTransactions } of erc20ApprovalTransactions) {
+  for (const { label, transactions: approvalTransactions } of erc20ApprovalTransactions) {
     if (approvalTransactions.length > 0) {
-      logger.debug(`[polymarket] Adding PUSD approval for ${name}`);
+      logger.debug(`[polymarket] Adding PUSD approval for ${label}`);
       transactions.push(...approvalTransactions);
     }
   }
 
-  for (const { name, address, approved } of ctfApprovalChecks) {
+  for (const { label, address, approved } of ctfApprovalChecks) {
     if (!approved) {
-      logger.debug(`[polymarket] Adding CTF approval for ${name}`);
+      logger.debug(`[polymarket] Adding CTF approval for ${label}`);
       transactions.push(buildCtfApproval(address));
     }
   }
@@ -138,7 +137,7 @@ async function getMissingApprovalTransactions(proxyAddress: string): Promise<Saf
   return transactions;
 }
 
-export async function getMissingCtfOperatorApprovalTransactions(proxyAddress: string, operator: string): Promise<SafeTransaction[]> {
+export async function getMissingCtfOperatorApprovalTransactions(proxyAddress: Address, operator: Address): Promise<SafeTransaction[]> {
   if (await hasCtfApproval(proxyAddress, operator)) {
     return [];
   }
@@ -147,7 +146,7 @@ export async function getMissingCtfOperatorApprovalTransactions(proxyAddress: st
   return [buildCtfApproval(operator)];
 }
 
-async function ensureAllTradingApprovals(client: RelayClient, proxyAddress: string): Promise<void> {
+async function ensureAllTradingApprovals(client: RelayClient, proxyAddress: Address): Promise<void> {
   const transactions = await getMissingApprovalTransactions(proxyAddress);
 
   if (transactions.length === 0) {
@@ -163,7 +162,7 @@ async function ensureAllTradingApprovals(client: RelayClient, proxyAddress: stri
 // Deployment
 // ============================================================================
 
-export async function deployProxyIfNeeded(client: RelayClient, proxyAddress: string): Promise<void> {
+export async function deployProxyIfNeeded(client: RelayClient, proxyAddress: Address): Promise<void> {
   const isDeployed = await client.getDeployed(proxyAddress);
   if (isDeployed) {
     return;
@@ -202,7 +201,7 @@ export function createPolymarketRelayClient(signer: Signer): RelayClient {
 /**
  * Ensures the proxy wallet is deployed.
  */
-export async function ensureProxyWalletIsDeployed(proxyAddress: string): Promise<void> {
+export async function ensureProxyWalletIsDeployed(proxyAddress: Address): Promise<void> {
   const client = await getPolymarketRelayClient();
   await deployProxyIfNeeded(client, proxyAddress);
 }
@@ -210,7 +209,7 @@ export async function ensureProxyWalletIsDeployed(proxyAddress: string): Promise
 /**
  * Ensures trading approvals are set for the proxy wallet.
  */
-export async function ensureTradingApprovals(proxyAddress: string): Promise<void> {
+export async function ensureTradingApprovals(proxyAddress: Address): Promise<void> {
   const client = await getPolymarketRelayClient();
   await deployProxyIfNeeded(client, proxyAddress);
   await ensureAllTradingApprovals(client, proxyAddress);

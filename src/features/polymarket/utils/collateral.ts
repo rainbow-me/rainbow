@@ -1,5 +1,6 @@
 import { OperationType, type RelayClient, type SafeTransaction } from '@polymarket/builder-relayer-client';
 import { ethers, type BigNumber } from 'ethers';
+import { type Address } from 'viem';
 
 import {
   POLYGON_USDC_ADDRESS,
@@ -11,14 +12,13 @@ import { getPolymarketRelayClient } from '@/features/polymarket/stores/derived/u
 import { getMissingErc20ApprovalTransaction } from '@/features/polymarket/utils/erc20Approval';
 import { executeRelayTransaction } from '@/features/polymarket/utils/proxyWallet';
 import { refetchPolymarketBalance } from '@/features/polymarket/utils/refetchPolymarketStores';
+import { getErc20Balance } from '@/framework/data/evm/erc20Read';
 import { getProvider } from '@/handlers/web3';
-import erc20ABI from '@/references/erc20-abi.json';
 import { ChainId } from '@rainbow-me/swaps';
 
 // ========== Contracts ==========
 
 const polygonProvider = getProvider({ chainId: ChainId.polygon });
-const usdcContract = new ethers.Contract(POLYGON_USDC_ADDRESS, erc20ABI, polygonProvider);
 const collateralRampInterface = new ethers.utils.Interface([
   'function wrap(address _asset, address _to, uint256 _amount)',
   'function unwrap(address _asset, address _to, uint256 _amount)',
@@ -26,7 +26,7 @@ const collateralRampInterface = new ethers.utils.Interface([
 
 // ========== Transaction Builders ==========
 
-function buildWrapUsdcToPusdTransaction(recipient: string, amount: BigNumber): SafeTransaction {
+function buildWrapUsdcToPusdTransaction(recipient: Address, amount: BigNumber): SafeTransaction {
   return {
     to: POLYMARKET_COLLATERAL_ONRAMP_ADDRESS,
     data: collateralRampInterface.encodeFunctionData('wrap', [POLYGON_USDC_ADDRESS, recipient, amount]),
@@ -35,7 +35,7 @@ function buildWrapUsdcToPusdTransaction(recipient: string, amount: BigNumber): S
   };
 }
 
-function buildUnwrapPusdToUsdcTransaction(recipient: string, amount: BigNumber): SafeTransaction {
+function buildUnwrapPusdToUsdcTransaction(recipient: Address, amount: BigNumber): SafeTransaction {
   return {
     to: POLYMARKET_COLLATERAL_OFFRAMP_ADDRESS,
     data: collateralRampInterface.encodeFunctionData('unwrap', [POLYGON_USDC_ADDRESS, recipient, amount]),
@@ -46,8 +46,8 @@ function buildUnwrapPusdToUsdcTransaction(recipient: string, amount: BigNumber):
 
 // ========== Public API ==========
 
-export async function getPolymarketUsdcBalance(proxyAddress: string): Promise<BigNumber> {
-  return (await usdcContract.balanceOf(proxyAddress)) as BigNumber;
+export async function getPolymarketUsdcBalance(proxyAddress: Address): Promise<BigNumber> {
+  return getErc20Balance({ owner: proxyAddress, provider: polygonProvider, tokenAddress: POLYGON_USDC_ADDRESS });
 }
 
 export async function buildUnwrapPusdToUsdcTransactions({
@@ -56,8 +56,8 @@ export async function buildUnwrapPusdToUsdcTransactions({
   recipient,
 }: {
   amount: BigNumber;
-  proxyAddress: string;
-  recipient: string;
+  proxyAddress: Address;
+  recipient: Address;
 }): Promise<SafeTransaction[]> {
   return [
     ...(await getMissingErc20ApprovalTransaction({
@@ -76,7 +76,7 @@ export async function buildEnsureUsdcBalanceTransactions({
   proxyAddress,
 }: {
   amount: BigNumber;
-  proxyAddress: string;
+  proxyAddress: Address;
 }): Promise<SafeTransaction[]> {
   const usdcBalance = await getPolymarketUsdcBalance(proxyAddress);
   if (usdcBalance.gte(amount)) return [];
@@ -88,7 +88,7 @@ export async function buildEnsureUsdcBalanceTransactions({
   });
 }
 
-export async function wrapUsdcAmountToPusd({ amount, proxyAddress }: { amount: BigNumber; proxyAddress: string }): Promise<void> {
+export async function wrapUsdcAmountToPusd({ amount, proxyAddress }: { amount: BigNumber; proxyAddress: Address }): Promise<void> {
   if (amount.isZero()) return;
 
   const client = await getPolymarketRelayClient();
@@ -103,7 +103,7 @@ export async function wrapUsdcToPusd({
   amount,
 }: {
   client: RelayClient;
-  proxyAddress: string;
+  proxyAddress: Address;
   amount: BigNumber;
 }): Promise<void> {
   const transactions = [

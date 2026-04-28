@@ -1,21 +1,14 @@
-import { AssetType, OrderType, Side } from '@polymarket/clob-client-v2';
+import { AssetType, OrderType, Side, type ClobClient } from '@polymarket/clob-client-v2';
+import { type Address } from 'viem';
 
 import { POLYMARKET_BUILDER_CODE } from '@/features/polymarket/constants';
 import { PolymarketBuyPositionError } from '@/features/polymarket/errors';
 import { getPolymarketClobClient, usePolymarketClients } from '@/features/polymarket/stores/derived/usePolymarketClients';
 import { usePolymarketBalanceStore } from '@/features/polymarket/stores/polymarketBalanceStore';
-import { type SuccessfulOrderResult } from '@/features/polymarket/types';
+import { type PolymarketOrderResult, type SuccessfulOrderResult } from '@/features/polymarket/types';
 import { getPolymarketUsdcBalance, wrapUsdcAmountToPusd } from '@/features/polymarket/utils/collateral';
 import { ensureTradingApprovals } from '@/features/polymarket/utils/proxyWallet';
 import { RainbowError } from '@/logger';
-
-type ErrorOrderResult = {
-  error: string;
-  status: number;
-};
-
-type OrderResult = SuccessfulOrderResult | ErrorOrderResult;
-type PolymarketClobClient = Awaited<ReturnType<typeof getPolymarketClobClient>>;
 
 export type PolymarketBuyPositionStep = 'preparing' | 'placing_order' | 'confirming_order';
 
@@ -30,12 +23,11 @@ type ExecutePolymarketBuyPositionParams = MarketBuyOrderParams & {
   onStep?: (step: PolymarketBuyPositionStep) => void;
 };
 
-async function convertPolymarketCollateralIfNeeded(proxyAddress: string): Promise<boolean> {
+async function convertPolymarketCollateralIfNeeded(proxyAddress: Address): Promise<void> {
   const usdcBalance = await getPolymarketUsdcBalance(proxyAddress);
-  if (usdcBalance.isZero()) return false;
+  if (usdcBalance.isZero()) return;
 
   await wrapUsdcAmountToPusd({ proxyAddress, amount: usdcBalance });
-  return true;
 }
 
 async function placePolymarketMarketBuyOrder({
@@ -44,11 +36,11 @@ async function placePolymarketMarketBuyOrder({
   amount,
   price,
   negRisk,
-}: MarketBuyOrderParams & { client: PolymarketClobClient }): Promise<SuccessfulOrderResult> {
+}: MarketBuyOrderParams & { client: ClobClient }): Promise<SuccessfulOrderResult> {
   const spendCap = typeof amount === 'number' ? amount : Number(amount);
   const userBalance = Number(usePolymarketBalanceStore.getState().getBalance());
 
-  const order = await client.createMarketOrder(
+  const result: PolymarketOrderResult = await client.createAndPostMarketOrder(
     {
       side: Side.BUY,
       tokenID: tokenId,
@@ -57,13 +49,12 @@ async function placePolymarketMarketBuyOrder({
       userUSDCBalance: Math.min(userBalance, spendCap),
       builderCode: POLYMARKET_BUILDER_CODE,
     },
-    { negRisk }
+    { negRisk },
+    OrderType.FOK
   );
 
-  const result = (await client.postOrder(order, OrderType.FOK)) as OrderResult;
-  if ('error' in result || ('errorMsg' in result && result.errorMsg !== '')) {
-    const error = 'error' in result ? result.error : result.errorMsg;
-    throw new RainbowError(error);
+  if ('error' in result || !result.success || result.errorMsg) {
+    throw new RainbowError('error' in result ? result.error : result.errorMsg || 'Order was not successful');
   }
 
   return result;
