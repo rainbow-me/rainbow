@@ -1,3 +1,6 @@
+import { type OrderResponse } from '@polymarket/clob-client-v2';
+import { type Address } from 'viem';
+
 import { type PolymarketMarket } from '@/features/polymarket/types/polymarket-event';
 import { type PolymarketTeamInfo } from '@/features/polymarket/types/team-info';
 
@@ -30,7 +33,8 @@ export type RawPolymarketPosition = {
   negativeRisk: boolean;
 };
 
-export type PolymarketPosition = RawPolymarketPosition & {
+export type PolymarketPosition = Omit<RawPolymarketPosition, 'proxyWallet'> & {
+  proxyWallet: Address;
   // These are returned in the response as stringified JSON arrays
   clobTokenIds: string[];
   outcomes: string[];
@@ -48,6 +52,18 @@ export type PolymarketPosition = RawPolymarketPosition & {
   marketHasUniqueImage: boolean;
   teams?: PolymarketTeamInfo[];
 };
+
+export type SuccessfulOrderResult = OrderResponse & {
+  success: true;
+};
+
+export type PolymarketOrderResult =
+  | SuccessfulOrderResult
+  | (OrderResponse & { success: false })
+  | {
+      error: string;
+      status: number;
+    };
 
 export type PolymarketWalletListData = {
   balance: string;

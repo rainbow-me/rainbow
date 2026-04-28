@@ -1,22 +1,25 @@
-import { MaxUint256 } from '@ethersproject/constants';
 import { OperationType, RelayerTransactionState, type SafeTransaction } from '@polymarket/builder-relayer-client';
+import { BigNumber } from 'ethers';
 import { parseUnits } from 'ethers/lib/utils';
+import { getAddress, type Address } from 'viem';
 
 import { analytics } from '@/analytics';
 import { USD_DECIMALS } from '@/features/perps/constants';
+import { encodeErc20Transfer } from '@/framework/core/evm/erc20Calldata';
 import { logger, RainbowError } from '@/logger';
 import { USDC_ADDRESS } from '@/references/constants';
 import { ChainId } from '@/state/backendNetworks/types';
 import { createWithdrawalConfig } from '@/systems/funding/config';
-import { type WithdrawalExecutionResult, type WithdrawalExecutorParams } from '@/systems/funding/types';
+import { type WithdrawalExecutionResult, type WithdrawalExecutorParams, type WithdrawalSwapQuote } from '@/systems/funding/types';
 import { time } from '@/utils/time';
 
 import { POLYGON_USDC_ADDRESS, POLYGON_USDC_DECIMALS } from './constants';
 import { getPolymarketRelayClient } from './stores/derived/usePolymarketClients';
 import { usePolymarketProxyAddress } from './stores/derived/usePolymarketProxyAddress';
 import { usePolymarketBalanceStore } from './stores/polymarketBalanceStore';
+import { buildEnsureUsdcBalanceTransactions } from './utils/collateral';
 import { awaitPolygonConfirmation } from './utils/confirmation';
-import { erc20Interface } from './utils/erc20Interface';
+import { buildErc20ApprovalTransaction } from './utils/erc20Approval';
 import { ensureProxyWalletIsDeployed } from './utils/proxyWallet';
 import { refetchPolymarketBalance } from './utils/refetchPolymarketStores';
 
@@ -88,18 +91,20 @@ async function executePolymarketWithdrawal(params: WithdrawalExecutorParams): Pr
 
 // ============ Same-Chain Withdrawal ========================================== //
 
-async function executeSameChainWithdrawal(amount: string, recipient: string): Promise<WithdrawalExecutionResult> {
+async function executeSameChainWithdrawal(amount: string, recipient: Address): Promise<WithdrawalExecutionResult> {
   try {
     const client = await getPolymarketRelayClient();
-    const data = erc20Interface.encodeFunctionData('transfer', [recipient, parseUnits(amount, POLYGON_USDC_DECIMALS)]);
-    const tx: SafeTransaction = {
-      data,
-      operation: OperationType.Call,
-      to: POLYGON_USDC_ADDRESS,
-      value: '0',
-    };
+    const proxyAddress = usePolymarketProxyAddress.getState();
+    if (!proxyAddress) {
+      return { error: 'No proxy address available', success: false };
+    }
 
-    const response = await client.execute([tx], 'Withdraw USDC to wallet');
+    const rawAmount = parseUnits(amount, POLYGON_USDC_DECIMALS);
+    const transactions: SafeTransaction[] = [
+      ...(await buildEnsureUsdcBalanceTransactions({ amount: rawAmount, proxyAddress })),
+      buildUsdcTransferTransaction({ amount: rawAmount, recipient }),
+    ];
+    const response = await client.execute(transactions, 'Withdraw USDC.e to wallet');
 
     if (response.state === RelayerTransactionState.STATE_FAILED || response.state === RelayerTransactionState.STATE_INVALID) {
       return { error: `Relayer rejected: ${response.state}`, success: false };
@@ -121,22 +126,24 @@ async function executeSameChainWithdrawal(amount: string, recipient: string): Pr
 
 // ============ Quoted Withdrawal ============================================== //
 
-async function executeQuotedWithdrawal(quote: NonNullable<WithdrawalExecutorParams['quote']>): Promise<WithdrawalExecutionResult> {
+async function executeQuotedWithdrawal(quote: WithdrawalSwapQuote): Promise<WithdrawalExecutionResult> {
   if (!quote.data || !quote.to) {
     return { error: 'No valid quote for quoted withdrawal', success: false };
   }
 
   try {
     const client = await getPolymarketRelayClient();
-    const transactions: SafeTransaction[] = [];
+    const proxyAddress = usePolymarketProxyAddress.getState();
+    if (!proxyAddress) {
+      return { error: 'No proxy address available', success: false };
+    }
 
-    if (quote.allowanceNeeded && quote.allowanceTarget) {
-      transactions.push({
-        data: erc20Interface.encodeFunctionData('approve', [quote.allowanceTarget, MaxUint256]),
-        operation: OperationType.Call,
-        to: POLYGON_USDC_ADDRESS,
-        value: '0',
-      });
+    const sellAmount = BigNumber.from(quote.sellAmount);
+    const transactions: SafeTransaction[] = await buildEnsureUsdcBalanceTransactions({ amount: sellAmount, proxyAddress });
+
+    const allowanceTarget = quote.allowanceNeeded && quote.allowanceTarget ? getAddress(quote.allowanceTarget) : null;
+    if (allowanceTarget) {
+      transactions.push(buildErc20ApprovalTransaction({ spender: allowanceTarget, tokenAddress: POLYGON_USDC_ADDRESS }));
     }
 
     transactions.push({
@@ -167,6 +174,15 @@ async function executeQuotedWithdrawal(quote: NonNullable<WithdrawalExecutorPara
 }
 
 // ============ Helpers ======================================================== //
+
+function buildUsdcTransferTransaction({ amount, recipient }: { amount: BigNumber; recipient: Address }): SafeTransaction {
+  return {
+    data: encodeErc20Transfer({ amount, to: recipient }),
+    operation: OperationType.Call,
+    to: POLYGON_USDC_ADDRESS,
+    value: '0',
+  };
+}
 
 function handleExecutorError(error: unknown, context: string): WithdrawalExecutionResult {
   const message = error instanceof Error ? error.message : 'Unknown error';

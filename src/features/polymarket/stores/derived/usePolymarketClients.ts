@@ -1,5 +1,5 @@
 import { RelayClient } from '@polymarket/builder-relayer-client';
-import { Chain, ClobClient } from '@polymarket/clob-client';
+import { Chain, ClobClient } from '@polymarket/clob-client-v2';
 import { type Wallet } from 'ethers';
 import { type Address } from 'viem';
 
@@ -135,19 +135,23 @@ async function createClobClientFromWallet(
   const wallet = await getWallet();
   if (!wallet) return null;
 
-  const credentials = await getOrCreateApiCredentials(new ClobClient(POLYMARKET_CLOB_PROXY_URL, Chain.POLYGON, wallet));
-
-  return new ClobClient(
-    POLYMARKET_CLOB_PROXY_URL,
-    Chain.POLYGON,
-    wallet,
-    credentials,
-    2,
-    proxyAddress ?? undefined,
-    undefined,
-    false,
-    BUILDER_CONFIG
+  const credentials = await getOrCreateApiCredentials(
+    new ClobClient({
+      host: POLYMARKET_CLOB_PROXY_URL,
+      chain: Chain.POLYGON,
+      signer: wallet,
+    })
   );
+
+  return new ClobClient({
+    host: POLYMARKET_CLOB_PROXY_URL,
+    chain: Chain.POLYGON,
+    signer: wallet,
+    creds: credentials,
+    signatureType: 2,
+    funderAddress: proxyAddress ?? undefined,
+    useServerTime: false,
+  });
 }
 
 async function getOrCreateApiCredentials(client: ClobClient) {

@@ -17,10 +17,9 @@ import { type PolymarketPosition } from '@/features/polymarket/types';
 import { formatPrice } from '@/features/polymarket/utils/formatPrice';
 import { getPositionAccentColor } from '@/features/polymarket/utils/getMarketColor';
 import { getPositionTokenId } from '@/features/polymarket/utils/getPositionTokenId';
+import { navigateToPolymarketEvent } from '@/features/polymarket/utils/navigateToPolymarket';
 import { mulWorklet, subWorklet } from '@/framework/core/safeMath';
 import { opacity } from '@/framework/ui/utils/opacity';
-import Navigation from '@/navigation/Navigation';
-import Routes from '@/navigation/routesNames';
 import { THICKER_BORDER_WIDTH } from '@/styles/constants';
 
 export const PolymarketPositionRow = memo(function PolymarketPositionRow({ position }: { position: PolymarketPosition }) {
@@ -51,7 +50,7 @@ export const PolymarketPositionRow = memo(function PolymarketPositionRow({ posit
   return (
     <ButtonPressAnimation
       onPress={() => {
-        Navigation.handleAction(Routes.POLYMARKET_EVENT_SCREEN, { eventId: position.eventId, event: position.market.events[0] });
+        navigateToPolymarketEvent({ eventId: position.eventId, event: position.market.events[0] });
       }}
       scaleTo={0.96}
     >
