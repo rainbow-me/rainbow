@@ -995,6 +995,8 @@
       "chonks_title": "You've unlocked\n The Chonkiest Icon",
       "mog_description": "Effortless cosmic world domination, mogging in colors.",
       "mog_title": "You've unlocked\n Rainbow Mogs",
+      "rnbw_description": "A shining evolution of the Rainbow icon, forged from 420oz of pure belief.",
+      "rnbw_title": "You've unlocked\n Golden $RNBW",
       "button": "Snag the icon"
     },
     "explain": {
@@ -3006,6 +3008,8 @@
         "warning": "This is alpha software.",
         "welcome": "Welcome to Rainbow"
       },
+      "invalid_address_title": "Invalid address",
+      "invalid_address_message": "Double-check the casing and try again.",
       "invalid_ens_name": "This is not a valid ENS name",
       "invalid_unstoppable_name": "This is not a valid Unstoppable name",
       "label": "Wallets",
@@ -3692,6 +3696,8 @@
         "spread": "Spread",
         "hold_to_place_bet": "Hold to Place Bet",
         "placing_bet": "Placing Bet...",
+        "approving_trading": "Approving Trading...",
+        "converting_collateral": "Converting Collateral...",
         "confirming_order": "Confirming Order...",
         "deposit_funds": "Deposit Funds",
         "average_price": "Average Price",
@@ -3702,7 +3708,11 @@
         "errors": {
           "not_enough_liquidity": "Not enough liquidity to place full order.",
           "please_lower_amount": "Please lower the amount and try again.",
-          "no_liquidity_at_price": "No liquidity at this price."
+          "no_liquidity_at_price": "No liquidity at this price.",
+          "trading_approval_failed_title": "Unable to Approve Trading",
+          "trading_approval_failed_message": "Please try again.",
+          "collateral_conversion_failed_title": "Unable to Convert Collateral",
+          "collateral_conversion_failed_message": "Please try again."
         }
       },
       "manage_position": {

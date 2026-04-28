@@ -9,16 +9,17 @@ import { createOrderFormStore } from '../stores/createOrderFormStore';
 import { useOrderValidation } from './useOrderValidation';
 
 type UseNewPositionFormParams = {
+  conditionId: string;
   tokenId: string;
 };
 
-export function useNewPositionForm({ tokenId }: UseNewPositionFormParams) {
+export function useNewPositionForm({ tokenId, conditionId }: UseNewPositionFormParams) {
   const liveAvailableBalance = usePolymarketBalanceStore(state => state.getBalance());
   const availableBalance = useStableValue(() => liveAvailableBalance);
 
   const { orderFormStore, executionStore } = useStableValue(() => {
     const orderFormStore = createOrderFormStore();
-    const executionStore = createOrderExecutionStore(orderFormStore, tokenId);
+    const executionStore = createOrderExecutionStore(orderFormStore, tokenId, conditionId);
     return { orderFormStore, executionStore };
   });
 
@@ -32,10 +33,12 @@ export function useNewPositionForm({ tokenId }: UseNewPositionFormParams) {
     spread,
     fee,
     tokensBought,
-    minBuyAmountUsd,
+    minBuyAmountUsd: executionMinBuyAmountUsd,
     hasNoLiquidityAtMarketPrice,
     hasInsufficientLiquidity,
   } = executionStore(state => state);
+
+  const minBuyAmountUsd = executionMinBuyAmountUsd === '0' ? '1' : executionMinBuyAmountUsd;
 
   const { validation, isValid } = useOrderValidation({
     buyAmount,

@@ -1,3 +1,5 @@
+import { getAddress } from 'viem';
+
 import { type ResponseByTheme } from '@/__swaps__/utils/swaps';
 import { useCurrencyConversionStore } from '@/features/perps/stores/currencyConversionStore';
 import { getLeague } from '@/features/polymarket/leagues';
@@ -59,6 +61,7 @@ export async function processRawPolymarketPosition(
 
   return {
     ...position,
+    proxyWallet: getAddress(position.proxyWallet),
     clobTokenIds: market.clobTokenIds ? JSON.parse(market.clobTokenIds) : [],
     outcomes: market.outcomes ? JSON.parse(market.outcomes) : [],
     outcomePrices: market.outcomePrices ? JSON.parse(market.outcomePrices) : [],

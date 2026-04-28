@@ -39,6 +39,17 @@ export type RefreshConfig = {
 
 // ============ Deposit Configuration ========================================== //
 
+export type DepositSubmitContext = {
+  /** Chain used to submit the deposit transaction */
+  confirmationChainId: ChainId;
+  /** Minimum raw amount expected to arrive at the configured destination */
+  expectedRawTargetAmount: string;
+  /** Submitted transaction hash, when available */
+  hash?: string;
+  /** Whether the submitted transaction was confirmed before returning */
+  isConfirmed?: boolean;
+};
+
 /**
  * Callback invoked immediately after transaction submission, before confirmation.
  * Runs fire-and-forget; errors are logged but do not block navigation.
@@ -46,7 +57,7 @@ export type RefreshConfig = {
  * Use for setup that must happen right away, such as deploying a proxy wallet
  * or pre-approving token spending.
  */
-export type OnDepositSubmit = (signer: Signer) => Promise<void>;
+export type OnDepositSubmit = (signer: Signer, context: DepositSubmitContext) => Promise<void>;
 
 export type DepositSuccessMetadata = {
   /** Amount deposited in source asset units */

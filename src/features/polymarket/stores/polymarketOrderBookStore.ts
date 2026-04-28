@@ -3,7 +3,7 @@ import { rainbowFetch } from '@/framework/data/http/rainbowFetch';
 import { createQueryStore } from '@/state/internal/createQueryStore';
 import { time } from '@/utils/time';
 
-export type Order = {
+export type OrderBookLevel = {
   price: string;
   size: string;
 };
@@ -13,8 +13,8 @@ export type OrderBook = {
   asset_id: string;
   timestamp: string;
   hash: string;
-  bids: Order[];
-  asks: Order[];
+  bids: OrderBookLevel[];
+  asks: OrderBookLevel[];
   min_order_size: string;
   tick_size: string;
   neg_risk: boolean;

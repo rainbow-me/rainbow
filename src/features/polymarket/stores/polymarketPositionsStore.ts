@@ -72,7 +72,7 @@ async function fetchPolymarketPositions(
   const openSlugs = new Set<string>();
   const closedSlugs = new Set<string>();
   for (const position of rawPositions) {
-    if (position.redeemable || position.mergeable) {
+    if (position.redeemable) {
       closedSlugs.add(position.slug);
     } else {
       openSlugs.add(position.slug);

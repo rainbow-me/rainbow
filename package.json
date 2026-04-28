@@ -1,6 +1,6 @@
 {
   "name": "Rainbow",
-  "version": "2.0.28-1",
+  "version": "2.0.29-1",
   "private": true,
   "browser": {
     "@tanstack/query-async-storage-persister": "@tanstack/query-async-storage-persister/build/esm/index",
@@ -180,7 +180,7 @@
     "@nktkas/hyperliquid": "0.32.2",
     "@notifee/react-native": "7.8.2",
     "@polymarket/builder-relayer-client": "0.0.7",
-    "@polymarket/clob-client": "4.22.8",
+    "@polymarket/clob-client-v2": "1.0.0",
     "@rainbow-me/delegation": "file:./rainbow-me-delegation-0.3.3.tgz",
     "@rainbow-me/provider": "0.1.2",
     "@rainbow-me/react-native-animated-number": "0.0.2",
