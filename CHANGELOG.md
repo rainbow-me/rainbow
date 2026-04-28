@@ -21,6 +21,16 @@ and this project adheres to [Semantic Versioning](http://semver.org/)
 
 ### Testing
 
+## [2.0.29](https://github.com/rainbow-me/rainbow/releases/tag/v2.0.29)
+
+### Changed
+
+- Bump iOS and Android to v2.0.29 (https://github.com/rainbow-me/rainbow/pull/7400)
+
+### Fixed
+
+- Correct polymarket data URL (https://github.com/rainbow-me/rainbow/pull/7399)
+
 ## [2.0.28](https://github.com/rainbow-me/rainbow/releases/tag/v2.0.28)
 
 ### Added
