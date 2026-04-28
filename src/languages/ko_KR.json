@@ -3026,8 +3026,8 @@
         "warning": "이것은 알파 소프트웨어입니다.",
         "welcome": "레인보우에 오신 것을 환영합니다"
       },
-      "invalid_address_title": "Invalid address",
-      "invalid_address_message": "Double-check the casing and try again.",
+      "invalid_address_title": "잘못된 주소",
+      "invalid_address_message": "대소문자를 다시 확인한 다음 다시 시도하세요.",
       "invalid_ens_name": "이것은 유효한 ENS 이름이 아닙니다",
       "invalid_unstoppable_name": "이것은 유효한 Unstoppable 이름이 아닙니다",
       "label": "지갑들",
