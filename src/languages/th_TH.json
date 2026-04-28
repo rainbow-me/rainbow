@@ -3026,6 +3026,8 @@
         "warning": "นี่เป็นซอฟต์แวร์แบบ alpha.",
         "welcome": "ยินดีต้อนรับสู่ Rainbow"
       },
+      "invalid_address_title": "ที่อยู่ไม่ถูกต้อง",
+      "invalid_address_message": "ตรวจสอบตัวพิมพ์เล็ก-ใหญ่ให้ถูกต้องแล้วลองอีกครั้ง",
       "invalid_ens_name": "นี่ไม่ใช่ชื่อ ENS ที่ถูกต้อง",
       "invalid_unstoppable_name": "นี่ไม่ใช่ชื่อ Unstoppable ที่ถูกต้อง",
       "label": "กระเป๋าเงิน",
@@ -3726,6 +3728,8 @@
         "spread": "สเปรด",
         "hold_to_place_bet": "กดค้างเพื่อวางเดิมพัน",
         "placing_bet": "กำลังวางเดิมพัน...",
+        "approving_trading": "กำลังอนุมัติการเทรด...",
+        "converting_collateral": "กำลังแปลงหลักประกัน...",
         "confirming_order": "กำลังยืนยันคำสั่ง...",
         "deposit_funds": "ฝากเงิน",
         "average_price": "ราคาเฉลี่ย",
@@ -3736,7 +3740,11 @@
         "errors": {
           "not_enough_liquidity": "ไม่มีสภาพคล่องเพียงพอในการสั่งซื้อตามจำนวนเต็ม.",
           "please_lower_amount": "กรุณาลดจำนวนเงินและลองอีกครั้ง.",
-          "no_liquidity_at_price": "ไม่มีสภาพคล่องในราคานี้."
+          "no_liquidity_at_price": "ไม่มีสภาพคล่องในราคานี้.",
+          "trading_approval_failed_title": "ไม่สามารถอนุมัติการเทรดได้",
+          "trading_approval_failed_message": "กรุณาลองอีกครั้ง.",
+          "collateral_conversion_failed_title": "ไม่สามารถแปลงหลักประกันได้",
+          "collateral_conversion_failed_message": "กรุณาลองอีกครั้ง."
         }
       },
       "manage_position": {
