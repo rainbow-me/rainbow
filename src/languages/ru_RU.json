@@ -3026,6 +3026,8 @@
         "warning": "Это альфа-версия программного обеспечения.",
         "welcome": "Добро пожаловать в Rainbow"
       },
+      "invalid_address_title": "Invalid address",
+      "invalid_address_message": "Double-check the casing and try again.",
       "invalid_ens_name": "Это недопустимое имя ENS",
       "invalid_unstoppable_name": "Это недопустимое имя Unstoppable",
       "label": "Кошельки",
@@ -3726,6 +3728,8 @@
         "spread": "Спред",
         "hold_to_place_bet": "Удерживайте, чтобы сделать ставку",
         "placing_bet": "Размещение ставки...",
+        "approving_trading": "Одобрение торговли...",
+        "converting_collateral": "Конвертация обеспечения...",
         "confirming_order": "Подтверждение заказа...",
         "deposit_funds": "Пополнить средства",
         "average_price": "Средняя цена",
@@ -3736,7 +3740,11 @@
         "errors": {
           "not_enough_liquidity": "Недостаточно ликвидности для размещения полного заказа.",
           "please_lower_amount": "Пожалуйста, уменьшите сумму и попробуйте снова.",
-          "no_liquidity_at_price": "Нет ликвидности по этой цене."
+          "no_liquidity_at_price": "Нет ликвидности по этой цене.",
+          "trading_approval_failed_title": "Не удалось одобрить торговлю",
+          "trading_approval_failed_message": "Попробуйте снова.",
+          "collateral_conversion_failed_title": "Не удалось конвертировать обеспечение",
+          "collateral_conversion_failed_message": "Попробуйте снова."
         }
       },
       "manage_position": {
