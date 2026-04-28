@@ -7353,9 +7353,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@shopify/flash-list@npm:1.8.2":
-  version: 1.8.2
-  resolution: "@shopify/flash-list@npm:1.8.2"
+"@shopify/flash-list@npm:1.8.3":
+  version: 1.8.3
+  resolution: "@shopify/flash-list@npm:1.8.3"
   dependencies:
     recyclerlistview: "npm:4.2.3"
     tslib: "npm:2.8.1"
@@ -7363,7 +7363,7 @@ __metadata:
     "@babel/runtime": "*"
     react: "*"
     react-native: "*"
-  checksum: 10c0/0d0cf5164b18899fddf0d56ca55a40bdce1ee1484a180e1d57ec3405a227a04201e47389aebd5a0cd89aaaab95e72c6b8c02a9f6e6182781d7f0770341f5aee5
+  checksum: 10c0/0900250ce45157d144e3fef4d1cd8c5dfb03495ecb66da1f512697a6834f4eee7bf0755a3772b3c131135784757e5b36566ed365ea0890d9c10ad872885ef650
   languageName: node
   linkType: hard
 
@@ -9574,7 +9574,7 @@ __metadata:
     "@rock-js/plugin-metro": "npm:0.9.2"
     "@rudderstack/rudder-sdk-react-native": "npm:2.0.0"
     "@sentry/react-native": "npm:7.13.0"
-    "@shopify/flash-list": "npm:1.8.2"
+    "@shopify/flash-list": "npm:1.8.3"
     "@shopify/react-native-performance": "npm:4.1.2"
     "@shopify/react-native-skia": "npm:2.4.7"
     "@storesjs/stores": "npm:0.8.7"
