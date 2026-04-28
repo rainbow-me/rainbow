@@ -18,7 +18,10 @@ function createGitHubUtils({ github, context, core }) {
     async createOrUpdateBranch(branch, sha) {
       try {
         await github.rest.git.updateRef({ ...repo, ref: `heads/${branch}`, sha, force: true });
-      } catch {
+      } catch (err) {
+        if (err.status !== 422) {
+          throw err;
+        }
         await github.rest.git.createRef({ ...repo, ref: `refs/heads/${branch}`, sha });
       }
     },
@@ -28,20 +31,45 @@ function createGitHubUtils({ github, context, core }) {
         await github.rest.git.deleteRef({ ...repo, ref: `heads/${branch}` });
         core.info(`Deleted branch ${branch}`);
         return true;
-      } catch {
-        return false;
+      } catch (err) {
+        if (err.status === 422) {
+          return false;
+        }
+        core.warning(`Failed to delete branch ${branch}: ${err.message}`);
+        throw err;
       }
     },
 
-    async createCheckRun({ name, headSha, status, conclusion, detailsUrl, title, summary }) {
+    async createCheckRun({ name, headSha, externalId, status, conclusion, detailsUrl, title, summary }) {
       await github.rest.checks.create({
         ...repo,
         name,
         head_sha: headSha,
+        ...(externalId && { external_id: externalId }),
         status,
         ...(conclusion && { conclusion }),
         ...(detailsUrl && { details_url: detailsUrl }),
         output: { title, summary },
+      });
+    },
+
+    async updateCheckRun({ checkRunId, status, conclusion, detailsUrl, title, summary }) {
+      await github.rest.checks.update({
+        ...repo,
+        check_run_id: checkRunId,
+        status,
+        ...(conclusion && { conclusion }),
+        ...(detailsUrl && { details_url: detailsUrl }),
+        output: { title, summary },
+      });
+    },
+
+    async listChecksForRef(headSha) {
+      return github.paginate(github.rest.checks.listForRef, {
+        ...repo,
+        ref: headSha,
+        filter: 'all',
+        per_page: 100,
       });
     },
 

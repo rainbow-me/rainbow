@@ -31,8 +31,18 @@ async function resetOnPush({ github, context, core }) {
   const utils = createGitHubUtils({ github, context, core });
   const prNumber = context.payload.pull_request.number;
   const newSha = context.payload.pull_request.head.sha;
+  const priorSha = context.payload.before;
 
   await utils.deleteBranch(externalBranch.for(prNumber));
+
+  // Only notify if there were approvals to invalidate, otherwise every push
+  // on an unauthorized PR generates a noisy "previous authorizations no
+  // longer apply" comment claiming a reset that never happened.
+  const priorApprovers = await getApproversForSha({ utils, prNumber, headSha: priorSha });
+  if (priorApprovers.size === 0) {
+    return;
+  }
+
   await utils.createComment(
     prNumber,
     `New commits pushed. Previous CI authorizations no longer apply. To re-authorize, review the changes and comment \`${authorizeCommand.format(newSha)}\`.`
@@ -67,12 +77,13 @@ async function handleAuthorization({ github, context, core }) {
     return;
   }
 
-  const approvalCount = await countApprovalsForSha({
-    utils,
-    prNumber,
-    headSha: pr.head.sha,
-    triggeringCommenter: commenter,
-  });
+  const approvers = await getApproversForSha({ utils, prNumber, headSha: pr.head.sha });
+  // listComments may not yet show the just-posted /authorize-ci comment due
+  // to eventual consistency. Add the triggering commenter explicitly since
+  // we already validated their command above.
+  approvers.add(commenter);
+
+  const approvalCount = approvers.size;
   const shortSha = approvedSha.substring(0, 7);
   if (approvalCount < REQUIRED_APPROVALS) {
     await utils.createComment(
@@ -123,22 +134,41 @@ async function relayStatus({ github, context, core }) {
     run_id: run.id,
   });
 
-  for (const job of jobs) {
-    const knownStatuses = ['completed', 'in_progress'];
-    const status = knownStatuses.includes(job.status) ? job.status : 'queued';
-    const conclusion = status === 'completed' ? job.conclusion || 'neutral' : undefined;
-    const title = status === 'completed' ? capitalize(conclusion) : status === 'in_progress' ? 'Running' : 'Queued';
-    const detailsUrl = job.html_url || run.html_url;
+  // workflow_run fires three times per run (requested, in_progress, completed),
+  // so each job would get up to 3 check runs without dedup. Use external_id
+  // keyed on (run.id, job.id) to upsert: a workflow re-run gets fresh check
+  // runs (new run.id), while progress updates within one run replace in place.
+  const existingChecks = await utils.listChecksForRef(headSha);
 
-    await utils.createCheckRun({
-      name: job.name,
-      headSha,
-      status,
-      conclusion,
-      detailsUrl,
-      title,
-      summary: `[View job](${detailsUrl})`,
-    });
+  // Per-job try/catch so one transient API failure (rate-limit, 5xx) doesn't
+  // skip the rest of the jobs in the run. Subsequent workflow_run events
+  // heal partial coverage via the external_id upsert above.
+  let failures = 0;
+  for (const job of jobs) {
+    try {
+      const externalId = relayCheckRun.externalIdFor(run.id, job.id);
+      const existing = existingChecks.find(c => c.external_id === externalId);
+
+      const knownStatuses = ['completed', 'in_progress'];
+      const status = knownStatuses.includes(job.status) ? job.status : 'queued';
+      const conclusion = status === 'completed' ? job.conclusion || 'neutral' : undefined;
+      const title = status === 'completed' ? capitalize(conclusion) : status === 'in_progress' ? 'Running' : 'Queued';
+      const detailsUrl = job.html_url || run.html_url;
+      const payload = { status, conclusion, detailsUrl, title, summary: `[View job](${detailsUrl})` };
+
+      if (existing) {
+        await utils.updateCheckRun({ checkRunId: existing.id, ...payload });
+      } else {
+        await utils.createCheckRun({ name: job.name, headSha, externalId, ...payload });
+      }
+    } catch (err) {
+      failures += 1;
+      utils.warn(`Failed to relay job "${job.name}" (id=${job.id}): ${err.message}`);
+    }
+  }
+
+  if (failures > 0) {
+    utils.fail(`Failed to relay ${failures} of ${jobs.length} jobs for workflow run ${run.id}`);
   }
 }
 
@@ -172,33 +202,32 @@ const externalBranch = {
   },
 };
 
+const relayCheckRun = {
+  externalIdFor(runId, jobId) {
+    return `external-ci-relay:${runId}:${jobId}`;
+  },
+};
+
 function capitalize(str) {
   return str.charAt(0).toUpperCase() + str.slice(1);
 }
 
-async function countApprovalsForSha({ utils, prNumber, headSha, triggeringCommenter }) {
+async function getApproversForSha({ utils, prNumber, headSha }) {
   const comments = await utils.listComments(prNumber);
 
-  // Count unique authorized users who approved the current HEAD SHA.
+  // Collect unique authorized users who approved the given SHA.
   // Each approval pins to a specific commit via `/authorize-ci <sha>`, so
   // new commits (new SHA) automatically invalidate all previous approvals.
   const approvers = new Set();
   for (const c of comments) {
-    const sha = authorizeCommand.parseSha(c.body);
-    if (sha !== headSha) {
+    if (authorizeCommand.parseSha(c.body) !== headSha) {
       continue;
     }
     if (AUTHORIZED_LOGINS.has(c.user.login)) {
       approvers.add(c.user.login);
     }
   }
-
-  // The triggering comment may not yet be visible in the list API due to
-  // eventual consistency. Include it explicitly since we already validated it.
-  approvers.add(triggeringCommenter);
-
-  utils.info(`Found ${approvers.size}/${REQUIRED_APPROVALS} approvals for ${headSha.substring(0, 7)}`);
-  return approvers.size;
+  return approvers;
 }
 
 module.exports = { postGuide, resetOnPush, handleAuthorization, cleanup, relayStatus };

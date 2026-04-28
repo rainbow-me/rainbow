@@ -5,6 +5,8 @@ const mockUtils = {
   deleteBranch: jest.fn(),
   createOrUpdateBranch: jest.fn(),
   createCheckRun: jest.fn(),
+  updateCheckRun: jest.fn(),
+  listChecksForRef: jest.fn(),
   isForkPR: jest.fn(),
   info: jest.fn(),
   warn: jest.fn(),
@@ -15,9 +17,12 @@ jest.mock('./github-utils', () => ({
   createGitHubUtils: () => mockUtils,
 }));
 
-const { handleAuthorization, relayStatus } = require('./external-ci');
+const { handleAuthorization, relayStatus, resetOnPush } = require('./external-ci');
 
-beforeEach(() => jest.clearAllMocks());
+beforeEach(() => {
+  jest.resetAllMocks();
+  mockUtils.listChecksForRef.mockResolvedValue([]);
+});
 
 describe('handleAuthorization', () => {
   const github = {};
@@ -128,6 +133,88 @@ describe('handleAuthorization', () => {
 
     expect(mockUtils.createComment).toHaveBeenCalledWith(expect.any(Number), expect.stringContaining('1/2'));
     expect(mockUtils.createOrUpdateBranch).not.toHaveBeenCalled();
+  });
+});
+
+describe('resetOnPush', () => {
+  const github = {};
+  const core = {};
+  const PRIOR_SHA = 'aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa';
+  const NEW_SHA = 'bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb';
+  const PRIOR_AUTHORIZE = `/authorize-ci ${PRIOR_SHA}`;
+
+  const setupSync = ({ prNumber = 1, before = PRIOR_SHA, after = NEW_SHA } = {}) => ({
+    context: {
+      payload: {
+        pull_request: { number: prNumber, head: { sha: after } },
+        before,
+      },
+      repo: { owner: 'rainbow-me', repo: 'rainbow' },
+    },
+  });
+
+  it('always deletes the internal branch', async () => {
+    const prNumber = 42;
+    const { context } = setupSync({ prNumber });
+    mockUtils.listComments.mockResolvedValue([]);
+
+    await resetOnPush({ github, context, core });
+
+    expect(mockUtils.deleteBranch).toHaveBeenCalledWith(`ci/external-pr/${prNumber}`);
+  });
+
+  it('does NOT post the reset comment when prior SHA had 0 approvals', async () => {
+    const { context } = setupSync();
+    mockUtils.listComments.mockResolvedValue([]);
+
+    await resetOnPush({ github, context, core });
+
+    expect(mockUtils.createComment).not.toHaveBeenCalled();
+  });
+
+  it('posts the reset comment when prior SHA had a single authorized approval', async () => {
+    const prNumber = 7;
+    const { context } = setupSync({ prNumber });
+    mockUtils.listComments.mockResolvedValue([{ user: { login: 'olerass' }, body: PRIOR_AUTHORIZE }]);
+
+    await resetOnPush({ github, context, core });
+
+    expect(mockUtils.createComment).toHaveBeenCalledWith(prNumber, expect.stringContaining('Previous CI authorizations no longer apply'));
+    expect(mockUtils.createComment).toHaveBeenCalledWith(prNumber, expect.stringContaining(NEW_SHA));
+  });
+
+  it('posts the reset comment when prior SHA had multiple authorized approvals', async () => {
+    const { context } = setupSync();
+    mockUtils.listComments.mockResolvedValue([
+      { user: { login: 'olerass' }, body: PRIOR_AUTHORIZE },
+      { user: { login: 'jinchung' }, body: PRIOR_AUTHORIZE },
+    ]);
+
+    await resetOnPush({ github, context, core });
+
+    expect(mockUtils.createComment).toHaveBeenCalledWith(
+      expect.any(Number),
+      expect.stringContaining('Previous CI authorizations no longer apply')
+    );
+  });
+
+  it('does NOT count approvals from non-authorized logins', async () => {
+    const { context } = setupSync();
+    mockUtils.listComments.mockResolvedValue([{ user: { login: 'random-user' }, body: PRIOR_AUTHORIZE }]);
+
+    await resetOnPush({ github, context, core });
+
+    expect(mockUtils.createComment).not.toHaveBeenCalled();
+  });
+
+  it('does NOT count approvals for a different SHA', async () => {
+    const { context } = setupSync();
+    const OTHER_SHA = 'cccccccccccccccccccccccccccccccccccccccc';
+    mockUtils.listComments.mockResolvedValue([{ user: { login: 'olerass' }, body: `/authorize-ci ${OTHER_SHA}` }]);
+
+    await resetOnPush({ github, context, core });
+
+    expect(mockUtils.createComment).not.toHaveBeenCalled();
   });
 });
 
@@ -293,5 +380,127 @@ describe('relayStatus', () => {
       expect.objectContaining({ name: 'test', conclusion: 'failure', title: 'Failure' })
     );
     expect(mockUtils.createCheckRun).toHaveBeenCalledWith(expect.objectContaining({ name: 'build', title: 'Running' }));
+  });
+
+  it('creates a check run with a stable external_id keyed on (run.id, job.id)', async () => {
+    const { github, context } = setupWorkflowRun({
+      runId: 555,
+      jobs: [{ id: 777, name: 'Simulator', status: 'in_progress', conclusion: null, html_url: 'https://github.com/job/1' }],
+    });
+
+    await relayStatus({ github, context, core });
+
+    expect(mockUtils.createCheckRun).toHaveBeenCalledWith(
+      expect.objectContaining({ name: 'Simulator', externalId: 'external-ci-relay:555:777' })
+    );
+  });
+
+  it('updates an existing check run when external_id matches', async () => {
+    const { github, context } = setupWorkflowRun({
+      runId: 555,
+      jobs: [{ id: 777, name: 'Simulator', status: 'completed', conclusion: 'success', html_url: 'https://github.com/job/1' }],
+    });
+    mockUtils.listChecksForRef.mockResolvedValue([{ id: 9001, external_id: 'external-ci-relay:555:777' }]);
+
+    await relayStatus({ github, context, core });
+
+    expect(mockUtils.updateCheckRun).toHaveBeenCalledWith(
+      expect.objectContaining({ checkRunId: 9001, status: 'completed', conclusion: 'success', title: 'Success' })
+    );
+    expect(mockUtils.createCheckRun).not.toHaveBeenCalled();
+  });
+
+  it('creates a fresh check run when run.id changes (workflow re-run)', async () => {
+    const { github, context } = setupWorkflowRun({
+      runId: 999, // new run.id, different from the existing check run
+      jobs: [{ id: 777, name: 'Simulator', status: 'in_progress', conclusion: null, html_url: 'https://github.com/job/1' }],
+    });
+    mockUtils.listChecksForRef.mockResolvedValue([
+      { id: 9001, external_id: 'external-ci-relay:555:777' }, // from a prior run
+    ]);
+
+    await relayStatus({ github, context, core });
+
+    expect(mockUtils.createCheckRun).toHaveBeenCalledWith(expect.objectContaining({ externalId: 'external-ci-relay:999:777' }));
+    expect(mockUtils.updateCheckRun).not.toHaveBeenCalled();
+  });
+
+  it('ignores existing check runs without a matching external_id', async () => {
+    const { github, context } = setupWorkflowRun({
+      runId: 100,
+      jobs: [{ id: 200, name: 'lint', status: 'completed', conclusion: 'success', html_url: 'https://github.com/job/1' }],
+    });
+    mockUtils.listChecksForRef.mockResolvedValue([
+      { id: 9001, external_id: 'unrelated-tool:42' },
+      { id: 9002, external_id: null },
+      { id: 9003 },
+    ]);
+
+    await relayStatus({ github, context, core });
+
+    expect(mockUtils.createCheckRun).toHaveBeenCalledTimes(1);
+    expect(mockUtils.updateCheckRun).not.toHaveBeenCalled();
+  });
+
+  it('continues relaying remaining jobs when one create rejects', async () => {
+    const { github, context } = setupWorkflowRun({
+      runId: 100,
+      jobs: [
+        { id: 1, name: 'lint', status: 'completed', conclusion: 'success', html_url: 'https://github.com/job/1' },
+        { id: 2, name: 'Simulator', status: 'completed', conclusion: 'success', html_url: 'https://github.com/job/2' },
+        { id: 3, name: 'Device', status: 'completed', conclusion: 'success', html_url: 'https://github.com/job/3' },
+      ],
+    });
+    mockUtils.createCheckRun.mockImplementation(({ name }) => {
+      if (name === 'Simulator') return Promise.reject(new Error('rate limit exceeded'));
+      return Promise.resolve();
+    });
+
+    await relayStatus({ github, context, core });
+
+    expect(mockUtils.createCheckRun).toHaveBeenCalledTimes(3);
+    expect(mockUtils.warn).toHaveBeenCalledWith(expect.stringContaining('Simulator'));
+    expect(mockUtils.warn).toHaveBeenCalledWith(expect.stringContaining('id=2'));
+    expect(mockUtils.warn).toHaveBeenCalledWith(expect.stringContaining('rate limit exceeded'));
+    expect(mockUtils.fail).toHaveBeenCalledWith(expect.stringContaining('Failed to relay 1 of 3 jobs'));
+  });
+
+  it('continues relaying remaining jobs when one update rejects', async () => {
+    const { github, context } = setupWorkflowRun({
+      runId: 100,
+      jobs: [
+        { id: 1, name: 'lint', status: 'completed', conclusion: 'success', html_url: 'https://github.com/job/1' },
+        { id: 2, name: 'Simulator', status: 'completed', conclusion: 'success', html_url: 'https://github.com/job/2' },
+      ],
+    });
+    mockUtils.listChecksForRef.mockResolvedValue([
+      { id: 9001, external_id: 'external-ci-relay:100:1' },
+      { id: 9002, external_id: 'external-ci-relay:100:2' },
+    ]);
+    mockUtils.updateCheckRun.mockImplementation(({ checkRunId }) => {
+      if (checkRunId === 9001) return Promise.reject(new Error('forbidden'));
+      return Promise.resolve();
+    });
+
+    await relayStatus({ github, context, core });
+
+    expect(mockUtils.updateCheckRun).toHaveBeenCalledTimes(2);
+    expect(mockUtils.warn).toHaveBeenCalledTimes(1);
+    expect(mockUtils.fail).toHaveBeenCalledWith(expect.stringContaining('Failed to relay 1 of 2 jobs'));
+  });
+
+  it('does not fail the workflow when every job relays successfully', async () => {
+    const { github, context } = setupWorkflowRun({
+      runId: 100,
+      jobs: [
+        { id: 1, name: 'lint', status: 'completed', conclusion: 'success', html_url: 'https://github.com/job/1' },
+        { id: 2, name: 'Simulator', status: 'completed', conclusion: 'success', html_url: 'https://github.com/job/2' },
+      ],
+    });
+
+    await relayStatus({ github, context, core });
+
+    expect(mockUtils.fail).not.toHaveBeenCalled();
+    expect(mockUtils.warn).not.toHaveBeenCalled();
   });
 });
