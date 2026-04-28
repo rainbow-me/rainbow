@@ -9636,6 +9636,7 @@ __metadata:
     emoji-regex: "npm:10.0.0"
     eslint: "npm:8.57.1"
     eslint-config-rainbow: "npm:4.3.0"
+    eslint-plugin-unused-imports: "npm:2.0.0"
     eslint-plugin-yml: "npm:1.18.0"
     eth-url-parser: "npm:1.0.4"
     ethereumjs-util: "npm:6.2.1"
@@ -14280,6 +14281,21 @@ __metadata:
   languageName: node
   linkType: hard
 
+"eslint-plugin-unused-imports@npm:2.0.0":
+  version: 2.0.0
+  resolution: "eslint-plugin-unused-imports@npm:2.0.0"
+  dependencies:
+    eslint-rule-composer: "npm:^0.3.0"
+  peerDependencies:
+    "@typescript-eslint/eslint-plugin": ^5.0.0
+    eslint: ^8.0.0
+  peerDependenciesMeta:
+    "@typescript-eslint/eslint-plugin":
+      optional: true
+  checksum: 10c0/016241cda51ccf953b1e04a50b8c18543d46bae08670573dca3cf0ea195be38964f66e9d179a1f4c50cfcad5b9b76e21c3142fde171587a42fc6824727b0ca3d
+  languageName: node
+  linkType: hard
+
 "eslint-plugin-yml@npm:1.18.0":
   version: 1.18.0
   resolution: "eslint-plugin-yml@npm:1.18.0"
@@ -14292,6 +14308,13 @@ __metadata:
   peerDependencies:
     eslint: ">=6.0.0"
   checksum: 10c0/ff6619bb488c98f3b6639c58f135f375bba6a4e4763cfeded461c6bbe654164678055981d1a27949568efc5ca9f3904e3abdda593b837cabb96f58948cc2d6be
+  languageName: node
+  linkType: hard
+
+"eslint-rule-composer@npm:^0.3.0":
+  version: 0.3.0
+  resolution: "eslint-rule-composer@npm:0.3.0"
+  checksum: 10c0/1f0c40d209e1503a955101a0dbba37e7fc67c8aaa47a5b9ae0b0fcbae7022c86e52b3df2b1b9ffd658e16cd80f31fff92e7222460a44d8251e61d49e0af79a07
   languageName: node
   linkType: hard
 

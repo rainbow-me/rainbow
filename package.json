@@ -415,6 +415,7 @@
     "emoji-datasource": "4.1.0",
     "eslint": "8.57.1",
     "eslint-config-rainbow": "4.3.0",
+    "eslint-plugin-unused-imports": "2.0.0",
     "eslint-plugin-yml": "1.18.0",
     "graphql": "15.3.0",
     "husky": "8.0.1",

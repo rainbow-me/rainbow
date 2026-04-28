@@ -2,7 +2,6 @@ import { type BigNumberish } from '@ethersproject/bignumber';
 import c from 'chroma-js';
 // DO NOT REMOVE THESE COMMENTED ENV VARS
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
-import { IS_APK_BUILD } from 'react-native-dotenv';
 import { type SharedValue } from 'react-native-reanimated';
 import { getAddress, type Address } from 'viem';
 

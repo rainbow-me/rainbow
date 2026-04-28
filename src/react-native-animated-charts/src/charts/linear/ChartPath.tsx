@@ -20,7 +20,7 @@ import { getYForX } from 'react-native-redash';
 import Svg, { Path, type PathProps } from 'react-native-svg';
 import { triggerHaptics } from 'react-native-turbo-haptics';
 // @ts-ignore this library is no longer maintained independently of the app, so this is fine
-import { IS_ANDROID, IS_IOS } from '@/env';
+import { IS_IOS } from '@/env';
 import { type ChartData, type PathData } from '../../helpers/ChartContext';
 import { requireOnWorklet, useWorkletValue } from '../../helpers/requireOnWorklet';
 import { useChartData } from '../../helpers/useChartData';

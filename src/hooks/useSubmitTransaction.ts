@@ -1,6 +1,5 @@
 import { useCallback, useState } from 'react';
 
-import { SCREEN_FOR_REQUEST_SOURCE } from '@/components/Transactions/constants';
 import { logger, RainbowError } from '@/logger';
 import { useNavigation } from '@/navigation/Navigation';
 import Routes from '@/navigation/routesNames';

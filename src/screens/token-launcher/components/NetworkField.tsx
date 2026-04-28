@@ -2,7 +2,7 @@ import React from 'react';
 
 import ButtonPressAnimation from '@/components/animations/ButtonPressAnimation';
 import { ChainImage } from '@/components/coin-icon/ChainImage';
-import { Bleed, Box, Inline, Text, TextIcon } from '@/design-system';
+import { Bleed, Box, Inline, Text } from '@/design-system';
 import * as i18n from '@/languages';
 import { useNavigation } from '@/navigation/Navigation';
 import Routes from '@/navigation/routesNames';

@@ -5,7 +5,7 @@ import { useColorMode, useForegroundColor } from '@/design-system';
 import { IS_ANDROID, IS_IOS } from '@/env';
 import styled from '@/framework/ui/styled-thing';
 import { opacity } from '@/framework/ui/utils/opacity';
-import { buildTextStyles, fonts } from '@/styles';
+import { buildTextStyles } from '@/styles';
 
 interface InputProps extends TextInputProps {
   style?: StyleProp<TextStyle>;

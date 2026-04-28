@@ -105,7 +105,7 @@ module.exports = {
   parserOptions: {
     project: ['./tsconfig.json'],
   },
-  plugins: ['yml'],
+  plugins: ['yml', 'unused-imports'],
   globals: globalVars,
 
   overrides: [
@@ -149,6 +149,7 @@ module.exports = {
   rules: {
     'no-duplicate-imports': 'off',
     'import/no-duplicates': 'error',
+    'unused-imports/no-unused-imports': 'error',
     '@typescript-eslint/consistent-type-imports': [
       'error',
       {

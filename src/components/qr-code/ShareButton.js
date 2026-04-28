@@ -7,7 +7,7 @@ import ShadowStack from '@/react-native-shadow-stack';
 
 import { useTheme } from '../../theme/ThemeContext';
 import ButtonPressAnimation from '../animations/ButtonPressAnimation';
-import { Centered, InnerBorder, Row } from '../layout';
+import { Centered, InnerBorder } from '../layout';
 import { Text } from '../text';
 
 const Label = styled(Text).attrs(({ theme: { colors } }) => ({

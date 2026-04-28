@@ -2,7 +2,6 @@ import React, { useCallback, useMemo } from 'react';
 
 import { triggerHaptics } from 'react-native-turbo-haptics';
 
-import ButtonPressAnimation from '@/components/animations/ButtonPressAnimation';
 import { DropdownMenu, type MenuConfig } from '@/components/DropdownMenu';
 import { Inline, Inset, Text } from '@/design-system';
 import { getMintsFilterLabel, MintsFilter, useMintsFilter } from '@/resources/mints';

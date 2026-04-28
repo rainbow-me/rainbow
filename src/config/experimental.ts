@@ -1,6 +1,6 @@
 import { createMMKV } from 'react-native-mmkv';
 
-import { IS_DEV, IS_INTERNAL, IS_TEST } from '@/env';
+import { IS_INTERNAL, IS_TEST } from '@/env';
 import { STORAGE_IDS } from '@/model/mmkv';
 
 /**

@@ -3,8 +3,6 @@ import { useCallback, useEffect, useState } from 'react';
 import { type Source } from 'react-native-fast-image';
 import { Easing, useAnimatedReaction, useAnimatedStyle, useSharedValue, withTiming } from 'react-native-reanimated';
 
-import { ImgixImage } from '@/components/images';
-
 export default function useFadeImage({ source, enabled = true }: { source?: Source; enabled?: boolean }) {
   const [isLoading, setIsLoading] = useState(false);
 

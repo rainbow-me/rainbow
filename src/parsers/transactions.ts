@@ -1,6 +1,5 @@
 import { type NativeCurrencyKey } from '@/entities/nativeCurrencyTypes';
 import {
-  PaginatedTransactionsApiResponse,
   TransactionDirection,
   TransactionStatus,
   TransactionTypeMap,

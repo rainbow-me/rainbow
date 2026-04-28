@@ -18,7 +18,7 @@ import { GasSpeedButton } from '@/components/gas';
 import { useRainbowToastEnabled } from '@/components/rainbow-toast/useRainbowToastEnabled';
 import { Bleed, Box, ColorModeProvider, Column, Columns, Inline, Inset, Separator, Stack, Text } from '@/design-system';
 import { TransactionStatus, type NewTransaction } from '@/entities/transactions';
-import { IS_ANDROID, IS_IOS } from '@/env';
+import { IS_IOS } from '@/env';
 import useENSAvatar from '@/features/ens/hooks/useENSAvatar';
 import { fetchReverseRecord } from '@/features/ens/utils/handlers';
 import styled from '@/framework/ui/styled-thing';
