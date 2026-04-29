@@ -1,6 +1,7 @@
 import { useCallback } from 'react';
 import { Alert, InteractionManager } from 'react-native';
 
+import { Logger } from '@ethersproject/logger';
 import { ethers } from 'ethers';
 import { type SharedValue } from 'react-native-reanimated';
 import { triggerHaptics } from 'react-native-turbo-haptics';
@@ -22,6 +23,7 @@ import { getNextNonce } from '@/state/nonces';
 import { executeFn, Screens, startTimeToSignTracking, TimeToSignOperation } from '@/state/performance/performance';
 import { useWalletsStore } from '@/state/wallets/walletsStore';
 import { isValidQuote } from '@/systems/funding/utils/quotes';
+import { isRecordLike } from '@/types/guards';
 import { getUniqueId } from '@/utils/ethereumUtils';
 import { time } from '@/utils/time';
 import watchingAlert from '@/utils/watchingAlert';
@@ -40,7 +42,6 @@ import {
   type DepositSuccessMetadata,
   type DepositToken,
 } from '../types';
-import { formatDepositExecutionError } from '../utils/depositExecutionError';
 import { executeRefreshSchedule, type RefreshConfig } from '../utils/scheduleRefreshes';
 
 // ============ Handler Hook ================================================== //
@@ -59,6 +60,8 @@ type DepositExecutionContext = {
   assetChainId: ChainId;
   assetSymbol: string;
 };
+
+type DepositExecutionErrorLabels = Pick<DepositConfig['labels'], 'insufficientGas' | 'unknownExecutionError'>;
 
 type DepositExecutionFailure = {
   error: string;
@@ -103,18 +106,16 @@ async function runDepositExecutionFlow({
     const result = await run();
 
     if (!result.success) {
-      const message = result.error === 'handled' ? result.error : formatDepositExecutionError(result.error, config.labels);
-
       config.trackFailure?.({
         amount,
         assetChainId,
         assetSymbol,
-        error: message,
+        error: result.error,
         stage: result.stage ?? 'execution',
       });
 
       if (result.error !== 'handled' && result.showAlert !== false) {
-        Alert.alert(config.labels.executionErrorTitle, message);
+        Alert.alert(config.labels.executionErrorTitle, result.error);
       }
       return;
     }
@@ -136,7 +137,7 @@ async function runDepositExecutionFlow({
       executionStrategy: result.executionStrategy,
     });
   } catch (error) {
-    const message = formatDepositExecutionError(error, config.labels);
+    const message = formatThrownDepositExecutionError(error, config.labels);
     logger.error(new RainbowError(`[useDepositHandler]: ${message}`, error), {
       data: { type: rapTypes.crosschainSwap },
     });
@@ -167,6 +168,16 @@ function dismissDepositFlow(depositRoute: Route): void {
       if (Navigation.getActiveRouteName() === depositRoute) Navigation.goBack();
     });
   }, time.ms(150));
+}
+
+function formatThrownDepositExecutionError(error: unknown, labels: DepositExecutionErrorLabels): string {
+  if (hasNestedErrorCode(error, Logger.errors.INSUFFICIENT_FUNDS)) return labels.insufficientGas;
+  return labels.unknownExecutionError;
+}
+
+function hasNestedErrorCode(error: unknown, code: string): boolean {
+  if (!isRecordLike(error)) return false;
+  return error.code === code || hasNestedErrorCode(error.error, code) || hasNestedErrorCode(error.cause, code);
 }
 
 export function useDepositHandler({
