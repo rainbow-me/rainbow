@@ -100,7 +100,7 @@ target 'Rainbow' do
       # Set `mac_catalyst_enabled` to `true` in order to apply patches
       # necessary for Mac Catalyst builds
       :mac_catalyst_enabled => false,
-      # :ccache_enabled => true
+      :ccache_enabled => true
     )
     # This is necessary for Xcode 14, because it signs resource bundles by default when building for devices.
     installer.target_installation_results.pod_target_installation_results.each do |pod_name, target_installation_result|
@@ -116,6 +116,32 @@ target 'Rainbow' do
       next unless xcconfig.include?('-weak_framework "FirebaseFirestoreInternal"')
 
       File.write(xcconfig_path, xcconfig.gsub(' -weak_framework "FirebaseFirestoreInternal"', ''))
+    end
+
+    # Use Xcode build variables so paths stay portable across machines.
+    # SRCROOT for Pods.xcodeproj is ios/Pods; for Rainbow.xcodeproj it's ios.
+    ccache_config_path = '$(HOME)/Library/Preferences/ccache/ccache.conf'
+    ccache_enabled_projects = ([installer.pods_project] + installer.aggregate_targets.map(&:user_project).compact).uniq
+    ccache_enabled_projects.each do |project|
+      scripts_dir = project.path.basename.to_s == 'Rainbow.xcodeproj' ? '$(SRCROOT)/scripts' : '$(SRCROOT)/../scripts'
+      ccache_clang = "#{scripts_dir}/ccache-clang.sh"
+      ccache_clangpp = "#{scripts_dir}/ccache-clang++.sh"
+      project.build_configurations.each do |config|
+        config.build_settings['CC'] = ccache_clang
+        config.build_settings['CCACHE_CONFIGPATH'] = ccache_config_path
+        config.build_settings['CLANG_ENABLE_EXPLICIT_MODULES'] = 'NO'
+        config.build_settings['CXX'] = ccache_clangpp
+        config.build_settings['LD'] = ccache_clang
+        config.build_settings['LDPLUSPLUS'] = ccache_clangpp
+      end
+
+      if project.path.basename.to_s == 'Rainbow.xcodeproj'
+        project.build_configurations.each do |config|
+          config.build_settings['REACT_NATIVE_PATH'] = '$(SRCROOT)/../node_modules/react-native'
+        end
+      end
+
+      project.save
     end
 
     # Xcode 26.4 fails to compile React Native's vendored fmt 11.0.2 in C++20 mode.
