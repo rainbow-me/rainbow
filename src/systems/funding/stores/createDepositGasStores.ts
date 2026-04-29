@@ -1,18 +1,17 @@
 import { createDerivedStore } from '@storesjs/stores';
 import { formatUnits, type Address } from 'viem';
 
-import { type GasSettings } from '@/__swaps__/screens/Swap/hooks/useCustomGas';
 import { safeBigInt } from '@/__swaps__/screens/Swap/hooks/useEstimatedGasFee';
 import { calculateGasFeeWorklet } from '@/__swaps__/screens/Swap/providers/SyncSwapStateAndSharedValues';
 import { GasSpeed } from '@/__swaps__/types/gas';
 import { isCrosschainQuote } from '@/__swaps__/utils/quotes';
 import { stripNonDecimalNumbers } from '@/__swaps__/utils/swaps';
-import { type MeteorologyLegacyResponse, type MeteorologyResponse } from '@/entities/gas';
+import { type GasSettings, type MeteorologyLegacyResponse, type MeteorologyResponse } from '@/entities/gas';
 import { type NativeCurrencyKey } from '@/entities/nativeCurrencyTypes';
 import { rainbowMeteorologyGetData } from '@/handlers/gasFees';
 import { convertAmountToNativeDisplayWorklet, formatNumber, multiply } from '@/helpers/utilities';
 import { logger } from '@/logger';
-import { gweiToWei, weiToGwei } from '@/parsers/gas';
+import { buildGasParams, gweiToWei, weiToGwei } from '@/parsers/gas';
 import { estimateUnlockAndCrosschainSwap } from '@/raps/actions/crosschainSwap';
 import { estimateUnlockAndSwap } from '@/raps/actions/swap';
 import { gasUnits } from '@/references/gasUnits';
@@ -99,6 +98,11 @@ export function createDepositGasStores(
     },
 
     (_, get) => ({
+      getGasParams: async () => {
+        const gasSuggestions = get().getData() ?? (await get().fetch(undefined, { throwOnError: true }));
+        const gasSettings = selectGasSettings(gasSuggestions ?? undefined, useDepositStore.getState().getGasSpeed());
+        return gasSettings ? buildGasParams(gasSettings) : null;
+      },
       getGasSuggestions: () => get().getData() ?? undefined,
     })
   );
