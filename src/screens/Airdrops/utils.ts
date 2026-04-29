@@ -82,11 +82,9 @@ export async function executeAirdropClaim({
     nonce,
     to,
     value: '0x0',
+    ...buildGasParams(gasSettings),
+    ...(gasSettings.isEIP1559 ? { type: 2 } : undefined),
   };
-
-  const gasParams = buildGasParams(gasSettings);
-  if ('maxFeePerGas' in gasParams) txPayload.type = 2;
-  Object.assign(txPayload, gasParams);
 
   const provider = getProvider({ chainId });
   let wallet: Wallet | LedgerSigner | null;
