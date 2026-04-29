@@ -29,7 +29,7 @@ jobs:
     runs-on: blacksmith-8vcpu-ubuntu-2404
     timeout-minutes: 30
     concurrency:
-      group: e2e-android-${{ github.workflow }}-${{ github.ref }}
+      group: e2e-android-${{ github.workflow }}-${{ github.event.pull_request.number || github.event.issue.number || github.ref }}
       cancel-in-progress: true
     outputs:
       artifact-id: ${{ steps.rock-remote-build-android.outputs.artifact-id }}
@@ -169,8 +169,8 @@ jobs:
     needs: build
     timeout-minutes: 30
     concurrency:
-      group: e2e-android-${{ github.workflow }}-${{ github.ref }}-shard-${{ matrix.shard-index }}
-      cancel-in-progress: false
+      group: e2e-android-${{ github.workflow }}-${{ github.event.pull_request.number || github.event.issue.number || github.ref }}-shard-${{ matrix.shard-index }}
+      cancel-in-progress: true
 
     env:
       SHARD_TOTAL: 4
@@ -260,7 +260,7 @@ jobs:
     needs: build
     timeout-minutes: 30
     concurrency:
-      group: e2e-android-${{ github.workflow }}-${{ github.ref }}-perf
+      group: e2e-android-${{ github.workflow }}-${{ github.event.pull_request.number || github.event.issue.number || github.ref }}-perf
       cancel-in-progress: true
 
     env:

@@ -24,7 +24,7 @@ jobs:
       contains(fromJson('["OWNER","MEMBER","COLLABORATOR"]'), github.event.comment.author_association))
     runs-on: macos-26-xlarge
     concurrency:
-      group: e2e-ios-${{ github.workflow }}-${{ github.ref }}
+      group: e2e-ios-${{ github.workflow }}-${{ github.event.pull_request.number || github.event.issue.number || github.ref }}
       cancel-in-progress: true
     timeout-minutes: 45
     outputs:
@@ -144,8 +144,8 @@ jobs:
       matrix:
         shard-index: [1, 2, 3, 4]
     concurrency:
-      group: e2e-ios-${{ github.workflow }}-${{ github.ref }}-shard-${{ matrix.shard-index }}
-      cancel-in-progress: false
+      group: e2e-ios-${{ github.workflow }}-${{ github.event.pull_request.number || github.event.issue.number || github.ref }}-shard-${{ matrix.shard-index }}
+      cancel-in-progress: true
     timeout-minutes: 30
     env:
       SHARD_TOTAL: 4

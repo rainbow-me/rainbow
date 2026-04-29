@@ -19,6 +19,74 @@ RECORDING_PID=""
 LOG_CAPTURE_PID=""
 ANVIL_START_COUNT=0
 
+# Weights approximate recent CI runtimes so slow flows are spread across shards.
+test_weight() {
+  local test_name
+  test_name=$(basename "${1%.*}")
+
+  case "$PLATFORM:$test_name" in
+    android:WrapTransaction) echo 121 ;;
+    android:WalletConnect | android:SendNft) echo 99 ;;
+    android:SendTransaction) echo 80 ;;
+    android:SwapTransaction | android:MaliciousDappTransactionWarning) echo 79 ;;
+    android:EditContact | android:WatchedWallet) echo 76 ;;
+    android:Discover) echo 71 ;;
+    android:ManualBackup | android:Settings) echo 66 ;;
+    android:CreateWallet | android:Home) echo 48 ;;
+    android:SecretPhraseWallet) echo 32 ;;
+    android:AndroidCloudBackup) echo 12 ;;
+
+    ios:WrapTransaction) echo 218 ;;
+    ios:SwapTransaction) echo 172 ;;
+    ios:EditContact) echo 138 ;;
+    ios:SendNft) echo 132 ;;
+    ios:ManualBackup) echo 121 ;;
+    ios:Discover | ios:SendTransaction) echo 111 ;;
+    ios:Settings) echo 106 ;;
+    ios:WatchedWallet) echo 98 ;;
+    ios:Home) echo 94 ;;
+    ios:SecretPhraseWallet | ios:WalletConnect) echo 88 ;;
+    ios:CreateWallet) echo 75 ;;
+    ios:MaliciousDappTransactionWarning) echo 61 ;;
+    ios:AndroidCloudBackup) echo 20 ;;
+
+    *) echo 60 ;;
+  esac
+}
+
+assign_shards_by_weight() {
+  local weighted_tests=()
+  local shard_weights=()
+  local shard
+
+  if [[ ${#ALL_TESTS[@]} -eq 0 ]]; then
+    return
+  fi
+
+  for ((shard = 0; shard < SHARD_TOTAL; shard++)); do
+    shard_weights[$shard]=0
+  done
+
+  for FILE in "${ALL_TESTS[@]}"; do
+    weighted_tests+=("$(printf '%05d\t%s' "$(test_weight "$FILE")" "$FILE")")
+  done
+
+  while IFS=$'\t' read -r WEIGHT FILE; do
+    WEIGHT=$((10#$WEIGHT))
+    local lightest_shard=0
+    for ((shard = 1; shard < SHARD_TOTAL; shard++)); do
+      if (( shard_weights[$shard] < shard_weights[$lightest_shard] )); then
+        lightest_shard=$shard
+      fi
+    done
+
+    shard_weights[$lightest_shard]=$((shard_weights[$lightest_shard] + WEIGHT))
+    if (( lightest_shard == SHARD_INDEX )); then
+      TEST_FILES+=("$FILE")
+    fi
+  done < <(printf '%s\n' "${weighted_tests[@]}" | sort -rn)
+}
+
 stop_log_capture() {
   if [ -n "${LOG_CAPTURE_PID:-}" ]; then
     echo "📋 Stopping adb logcat capture..."
@@ -234,11 +302,11 @@ if [[ -f "$FLOW" ]]; then
   TEST_FILES=("$FLOW")
 else
   ALL_TESTS=($(find "$FLOW" -name '*.yaml' | sort))
-  for i in "${!ALL_TESTS[@]}"; do
-    if (( i % SHARD_TOTAL == SHARD_INDEX )); then
-      TEST_FILES+=("${ALL_TESTS[$i]}")
-    fi
-  done
+  if [[ $SHARD_TOTAL -gt 1 ]]; then
+    assign_shards_by_weight
+  else
+    TEST_FILES=("${ALL_TESTS[@]}")
+  fi
 
   if [[ $SHARD_TOTAL -gt 1 ]]; then
     if [[ ${#TEST_FILES[@]} -eq 0 ]]; then

@@ -70,6 +70,16 @@ jobs:
           restore-keys: |
             ${{ runner.os }}-yarn-
 
+      - name: Cache lint results
+        uses: actions/cache@0057852bfaa89a56745cba8c7296529d2fc39830
+        with:
+          path: |
+            .cache/eslint
+            .cache/prettier
+          key: ${{ runner.os }}-${{ runner.arch }}-lint-${{ hashFiles('yarn.lock', 'package.json', '**/.eslintrc.js', '.eslintignore', '.prettierrc.js', '.prettierignore', 'tsconfig.json') }}-${{ github.sha }}
+          restore-keys: |
+            ${{ runner.os }}-${{ runner.arch }}-lint-${{ hashFiles('yarn.lock', 'package.json', '**/.eslintrc.js', '.eslintignore', '.prettierrc.js', '.prettierignore', 'tsconfig.json') }}-
+
       - name: Install dependencies
         env:
           SSH_AUTH_SOCK: /tmp/ssh_agent_sandbox.sock
@@ -78,9 +88,6 @@ jobs:
 
       - name: Audit CI
         run: yarn audit-ci --config audit-ci.jsonc
-
-      - name: Remove ESLint cache
-        run: rm -f .eslintcache
 
       - name: Lint
         run: yarn lint:ci

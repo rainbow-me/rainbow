@@ -53,6 +53,7 @@ android/app/src/main/java/me/rainbow/MainActivity.java-e
 # node.js
 #
 node_modules/
+.cache/
 npm-debug.log
 yarn-error.log
 .foundry-bin/
