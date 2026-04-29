@@ -18,40 +18,62 @@ MAX_ATTEMPTS=1
 RECORDING_PID=""
 LOG_CAPTURE_PID=""
 ANVIL_START_COUNT=0
+TIMINGS_DIR="${E2E_TIMINGS_DIR:-.cache/e2e-timings}"
+TIMINGS_WRITE_FILE=""
+DEFAULT_TEST_WEIGHT=60
 
-# Weights approximate recent CI runtimes so slow flows are spread across shards.
+learned_test_weight() {
+  local test_file=$1
+  local timing_files=()
+
+  while IFS= read -r timing_file; do
+    timing_files+=("$timing_file")
+  done < <(find "$TIMINGS_DIR" -name '*.tsv' -type f 2>/dev/null | sort)
+
+  if [[ ${#timing_files[@]} -eq 0 ]]; then
+    return
+  fi
+
+  awk -F $'\t' -v platform="$PLATFORM" -v test_file="$test_file" '
+    $1 == platform && $2 == test_file && $3 ~ /^[0-9]+$/ && $4 ~ /^[0-9]+$/ && $4 >= latest {
+      latest = $4
+      weight = $3
+    }
+    END {
+      if (weight != "") print weight
+    }
+  ' "${timing_files[@]}"
+}
+
 test_weight() {
-  local test_name
-  test_name=$(basename "${1%.*}")
+  local weight
+  weight=$(learned_test_weight "$1")
+  echo "${weight:-$DEFAULT_TEST_WEIGHT}"
+}
 
-  case "$PLATFORM:$test_name" in
-    android:WrapTransaction) echo 121 ;;
-    android:WalletConnect | android:SendNft) echo 99 ;;
-    android:SendTransaction) echo 80 ;;
-    android:SwapTransaction | android:MaliciousDappTransactionWarning) echo 79 ;;
-    android:EditContact | android:WatchedWallet) echo 76 ;;
-    android:Discover) echo 71 ;;
-    android:ManualBackup | android:Settings) echo 66 ;;
-    android:CreateWallet | android:Home) echo 48 ;;
-    android:SecretPhraseWallet) echo 32 ;;
-    android:AndroidCloudBackup) echo 12 ;;
+record_test_timing() {
+  local test_file=$1
+  local duration=$2
+  local previous_weight
+  local next_weight
 
-    ios:WrapTransaction) echo 218 ;;
-    ios:SwapTransaction) echo 172 ;;
-    ios:EditContact) echo 138 ;;
-    ios:SendNft) echo 132 ;;
-    ios:ManualBackup) echo 121 ;;
-    ios:Discover | ios:SendTransaction) echo 111 ;;
-    ios:Settings) echo 106 ;;
-    ios:WatchedWallet) echo 98 ;;
-    ios:Home) echo 94 ;;
-    ios:SecretPhraseWallet | ios:WalletConnect) echo 88 ;;
-    ios:CreateWallet) echo 75 ;;
-    ios:MaliciousDappTransactionWarning) echo 61 ;;
-    ios:AndroidCloudBackup) echo 20 ;;
+  if [[ -z "$TIMINGS_WRITE_FILE" ]]; then
+    return
+  fi
 
-    *) echo 60 ;;
-  esac
+  if (( duration < 1 )); then
+    duration=1
+  fi
+
+  previous_weight=$(learned_test_weight "$test_file")
+  if [[ -n "$previous_weight" ]]; then
+    next_weight=$(((previous_weight * 3 + duration + 2) / 4))
+  else
+    next_weight=$duration
+  fi
+
+  mkdir -p "$(dirname "$TIMINGS_WRITE_FILE")"
+  printf '%s\t%s\t%d\t%d\n' "$PLATFORM" "$test_file" "$next_weight" "$(date +%s)" >> "$TIMINGS_WRITE_FILE"
 }
 
 assign_shards_by_weight() {
@@ -68,7 +90,7 @@ assign_shards_by_weight() {
   done
 
   for FILE in "${ALL_TESTS[@]}"; do
-    weighted_tests+=("$(printf '%05d\t%s' "$(test_weight "$FILE")" "$FILE")")
+    weighted_tests+=("$(printf '%010d\t%s' "$(test_weight "$FILE")" "$FILE")")
   done
 
   while IFS=$'\t' read -r WEIGHT FILE; do
@@ -293,6 +315,12 @@ while [[ $# -gt 0 ]]; do
   shift
 done
 
+if [[ -n "$PLATFORM" ]]; then
+  TIMINGS_WRITE_FILE="${E2E_TIMINGS_WRITE_FILE:-$TIMINGS_DIR/shards/$PLATFORM/$((SHARD_INDEX + 1))/timings.tsv}"
+  mkdir -p "$(dirname "$TIMINGS_WRITE_FILE")"
+  touch "$TIMINGS_WRITE_FILE"
+fi
+
 # Cleanup previous artifacts.
 rm -rf "$ARTIFACTS_FOLDER"
 
@@ -326,6 +354,7 @@ for TEST_FILE in "${TEST_FILES[@]}"; do
 
   SUCCESS=false
   SHOULD_RECORD=false
+  TEST_STARTED_AT=$(date +%s)
   for ATTEMPT in $(seq 1 "$MAX_ATTEMPTS"); do
     echo "🔁 Attempt $ATTEMPT for $TEST_NAME"
 
@@ -396,6 +425,8 @@ for TEST_FILE in "${TEST_FILES[@]}"; do
     echo "❌ Failed after $MAX_ATTEMPTS attempt(s): $TEST_NAME"
     echo
     EXIT_CODE=1
+  else
+    record_test_timing "$TEST_FILE" "$(($(date +%s) - TEST_STARTED_AT))"
   fi
 done
 

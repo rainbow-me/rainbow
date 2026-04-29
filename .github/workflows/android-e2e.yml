@@ -208,6 +208,42 @@ jobs:
           GITHUB_TOKEN: ${{ github.token }}
         run: ./scripts/install-foundry-from-artifact.sh "${{ needs.build.outputs.foundry-artifact-id }}"
 
+      - name: Restore e2e timings for shard 1
+        continue-on-error: true
+        uses: actions/cache/restore@0057852bfaa89a56745cba8c7296529d2fc39830
+        with:
+          path: .cache/e2e-timings/shards/android/1
+          key: e2e-timings-android-1-${{ github.run_id }}-${{ github.run_attempt }}
+          restore-keys: |
+            e2e-timings-android-1-
+
+      - name: Restore e2e timings for shard 2
+        continue-on-error: true
+        uses: actions/cache/restore@0057852bfaa89a56745cba8c7296529d2fc39830
+        with:
+          path: .cache/e2e-timings/shards/android/2
+          key: e2e-timings-android-2-${{ github.run_id }}-${{ github.run_attempt }}
+          restore-keys: |
+            e2e-timings-android-2-
+
+      - name: Restore e2e timings for shard 3
+        continue-on-error: true
+        uses: actions/cache/restore@0057852bfaa89a56745cba8c7296529d2fc39830
+        with:
+          path: .cache/e2e-timings/shards/android/3
+          key: e2e-timings-android-3-${{ github.run_id }}-${{ github.run_attempt }}
+          restore-keys: |
+            e2e-timings-android-3-
+
+      - name: Restore e2e timings for shard 4
+        continue-on-error: true
+        uses: actions/cache/restore@0057852bfaa89a56745cba8c7296529d2fc39830
+        with:
+          path: .cache/e2e-timings/shards/android/4
+          key: e2e-timings-android-4-${{ github.run_id }}-${{ github.run_attempt }}
+          restore-keys: |
+            e2e-timings-android-4-
+
       - name: Download and Unpack APK artifact
         env:
           GITHUB_TOKEN: ${{ github.token }}
@@ -243,6 +279,14 @@ jobs:
           cores: ${{ env.ANDROID_EMULATOR_CORES }}
           ram-size: ${{ env.ANDROID_EMULATOR_RAM_SIZE }}
           script: ./scripts/e2e-android-ci.sh
+
+      - name: Save e2e timings
+        if: ${{ success() }}
+        continue-on-error: true
+        uses: actions/cache/save@0057852bfaa89a56745cba8c7296529d2fc39830
+        with:
+          path: .cache/e2e-timings/shards/android/${{ matrix.shard-index }}
+          key: e2e-timings-android-${{ matrix.shard-index }}-${{ github.run_id }}-${{ github.run_attempt }}
 
       - name: Upload artifacts
         if: ${{ always() }}
