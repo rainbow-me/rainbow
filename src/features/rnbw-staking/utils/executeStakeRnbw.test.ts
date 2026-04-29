@@ -1,7 +1,8 @@
 import type { Provider, TransactionReceipt, TransactionRequest, TransactionResponse } from '@ethersproject/abstract-provider';
 import { Signer } from '@ethersproject/abstract-signer';
 import { BigNumber } from '@ethersproject/bignumber';
-import type { Deferrable } from '@ethersproject/properties';
+import { hexlify } from '@ethersproject/bytes';
+import { resolveProperties, type Deferrable } from '@ethersproject/properties';
 import { StaticJsonRpcProvider } from '@ethersproject/providers';
 import { Wallet } from '@ethersproject/wallet';
 import { type Address } from 'viem';
@@ -15,9 +16,9 @@ import {
   RNBW_DECIMALS,
   RNBW_TOKEN_ADDRESS,
   RNBW_TOKEN_UNIQUE_ID,
+  STAKING_APPROVAL_GAS_LIMIT,
   STAKING_CHAIN_ID,
   STAKING_CONTRACT_ADDRESS,
-  STAKING_GAS_LIMIT,
 } from '../constants';
 import { executeStakeRnbw } from './executeStakeRnbw';
 
@@ -76,18 +77,22 @@ jest.mock('./stakeRnbwCalls', () => ({
   buildStakeRnbwExecutionPlan: (params: unknown) => mockBuildStakeRnbwExecutionPlan(params),
 }));
 
-const ACCOUNT = '0x3333333333333333333333333333333333333333' satisfies Address;
+const ACCOUNT: Address = '0x3333333333333333333333333333333333333333';
 const PRIVATE_KEY = '0x0123456789012345678901234567890123456789012345678901234567890123';
 const STAKE_AMOUNT_RAW = '1000000000000000000';
 const APPROVAL_TX_HASH = '0xbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb';
 const TX_HASH = '0xaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa';
 
+const APPROVAL_CALL: Call = { data: '0x095ea7b3', to: RNBW_TOKEN_ADDRESS, value: 0n };
+const STAKE_CALL: Call = { data: '0xa694fc3a', to: STAKING_CONTRACT_ADDRESS, value: 0n };
+const SPONSORED_REQUIREMENTS: CallsRequirements = { atomic: 'required', fees: { payer: 'sponsor' } };
+const SPONSORED_PLAN = { calls: [APPROVAL_CALL, STAKE_CALL], requirements: SPONSORED_REQUIREMENTS };
+
+const GAS_PARAMS = { maxFeePerGas: '6000000', maxPriorityFeePerGas: '1000000' };
+const ESTIMATED_STAKE_GAS_LIMIT = BigNumber.from(103_406);
+
 const provider = new StaticJsonRpcProvider('http://127.0.0.1:8545', STAKING_CHAIN_ID);
 const signer = new Wallet(PRIVATE_KEY, provider);
-const APPROVAL_CALL = { data: '0x095ea7b3', to: RNBW_TOKEN_ADDRESS, value: 0n } satisfies Call;
-const STAKE_CALL = { data: '0xa694fc3a', to: STAKING_CONTRACT_ADDRESS, value: 0n } satisfies Call;
-const SPONSORED_REQUIREMENTS = { atomic: 'required', fees: { payer: 'sponsor' } } satisfies CallsRequirements;
-const SPONSORED_PLAN = { calls: [APPROVAL_CALL, STAKE_CALL], requirements: SPONSORED_REQUIREMENTS };
 
 class TestHardwareSigner extends Signer {
   readonly provider: Provider;
@@ -165,24 +170,39 @@ function buildReceipt(transactionHash = TX_HASH): TransactionReceipt {
 }
 
 function buildTransactionResponse({
-  call = STAKE_CALL,
   hash = TX_HASH,
+  nonce = 1,
+  transaction,
 }: {
-  call?: Call;
   hash?: string;
-} = {}): TransactionResponse {
-  return {
+  nonce?: number;
+  transaction: Deferrable<TransactionRequest>;
+}): Promise<TransactionResponse> {
+  return resolveProperties(transaction).then(request => ({
     chainId: STAKING_CHAIN_ID,
     confirmations: 0,
-    data: call.data,
+    data: request.data ? hexlify(request.data) : '0x',
     from: ACCOUNT,
-    gasLimit: BigNumber.from(21_000),
+    gasLimit: BigNumber.from(request.gasLimit ?? 21_000),
+    gasPrice: BigNumber.from(1),
     hash,
-    nonce: 1,
-    to: call.to,
-    value: BigNumber.from(0),
+    maxFeePerGas: request.maxFeePerGas == null ? undefined : BigNumber.from(request.maxFeePerGas),
+    maxPriorityFeePerGas: request.maxPriorityFeePerGas == null ? undefined : BigNumber.from(request.maxPriorityFeePerGas),
+    nonce,
+    to: request.to,
+    value: BigNumber.from(request.value ?? 0),
     wait: () => Promise.resolve(buildReceipt(hash)),
-  };
+  }));
+}
+
+function mockSubmittedTransactions(signer: TestHardwareSigner, submissions: { hash: string; nonce: number }[]): void {
+  let index = 0;
+  signer.sendTransactionMock.mockImplementation(transaction => {
+    const submission = submissions[index];
+    if (!submission) throw new Error(`Unexpected staking transaction ${index + 1}`);
+    index += 1;
+    return buildTransactionResponse({ ...submission, transaction });
+  });
 }
 
 async function prepareCalls(plan: unknown): Promise<PreparedCallsExecution> {
@@ -210,8 +230,15 @@ async function waitForMockCalls(mock: { mock: { calls: unknown[][] } }, count: n
   if (mock.mock.calls.length < count) throw new Error(`Expected mock to be called ${count} times`);
 }
 
+async function submittedRequest(signer: TestHardwareSigner, transactionNumber: number): Promise<TransactionRequest> {
+  const call = signer.sendTransactionMock.mock.calls[transactionNumber - 1];
+  if (!call) throw new Error(`Missing staking transaction ${transactionNumber}`);
+  return resolveProperties(call[0]);
+}
+
 describe('executeStakeRnbw', () => {
   beforeEach(() => {
+    jest.restoreAllMocks();
     jest.clearAllMocks();
     mockBuildStakeRnbwCalls.mockResolvedValue([STAKE_CALL]);
     mockBuildStakeRnbwExecutionPlan.mockResolvedValue({ calls: [STAKE_CALL] });
@@ -251,6 +278,7 @@ describe('executeStakeRnbw', () => {
     const result = await executeStakeRnbw({
       address: ACCOUNT,
       asset: rnbwAsset,
+      gasParams: GAS_PARAMS,
       preparedCalls,
       provider,
       signer,
@@ -292,6 +320,7 @@ describe('executeStakeRnbw', () => {
     const result = await executeStakeRnbw({
       address: ACCOUNT,
       asset: rnbwAsset,
+      gasParams: GAS_PARAMS,
       preparedCalls,
       provider,
       signer,
@@ -360,6 +389,7 @@ describe('executeStakeRnbw', () => {
     const result = await executeStakeRnbw({
       address: ACCOUNT,
       asset: rnbwAsset,
+      gasParams: GAS_PARAMS,
       preparedCalls: null,
       provider,
       signer,
@@ -379,22 +409,28 @@ describe('executeStakeRnbw', () => {
     );
   });
 
-  it('waits for hardware-wallet approval before submitting the stake transaction', async () => {
+  it('uses selected gas params, estimates call gas, and waits for hardware-wallet approval before staking', async () => {
     const hardwareSigner = new TestHardwareSigner(provider);
     const approvalConfirmation = defer<TransactionReceipt>();
     const waitForTransaction = jest.spyOn(provider, 'waitForTransaction').mockImplementation(hash => {
       if (hash === APPROVAL_TX_HASH) return approvalConfirmation.promise;
       return Promise.resolve(buildReceipt(hash));
     });
+    jest
+      .spyOn(provider, 'estimateGas')
+      .mockRejectedValueOnce(new Error('approval estimate failed'))
+      .mockResolvedValueOnce(ESTIMATED_STAKE_GAS_LIMIT);
 
     mockBuildStakeRnbwCalls.mockResolvedValue([APPROVAL_CALL, STAKE_CALL]);
-    hardwareSigner.sendTransactionMock
-      .mockResolvedValueOnce(buildTransactionResponse({ call: APPROVAL_CALL, hash: APPROVAL_TX_HASH }))
-      .mockResolvedValueOnce(buildTransactionResponse({ call: STAKE_CALL, hash: TX_HASH }));
+    mockSubmittedTransactions(hardwareSigner, [
+      { hash: APPROVAL_TX_HASH, nonce: 1 },
+      { hash: TX_HASH, nonce: 2 },
+    ]);
 
     const execution = executeStakeRnbw({
       address: ACCOUNT,
       asset: rnbwAsset,
+      gasParams: GAS_PARAMS,
       preparedCalls: null,
       provider,
       signer: hardwareSigner,
@@ -404,7 +440,12 @@ describe('executeStakeRnbw', () => {
     await waitForMockCalls(waitForTransaction, 1);
 
     expect(hardwareSigner.sendTransactionMock).toHaveBeenCalledTimes(1);
-    expect(hardwareSigner.sendTransactionMock).toHaveBeenNthCalledWith(1, APPROVAL_CALL);
+    await expect(submittedRequest(hardwareSigner, 1)).resolves.toMatchObject({
+      to: RNBW_TOKEN_ADDRESS,
+      value: 0n,
+      gasLimit: STAKING_APPROVAL_GAS_LIMIT,
+      ...GAS_PARAMS,
+    });
     expect(waitForTransaction).toHaveBeenCalledWith(APPROVAL_TX_HASH, 1, time.minutes(2));
 
     approvalConfirmation.resolve(buildReceipt(APPROVAL_TX_HASH));
@@ -417,19 +458,53 @@ describe('executeStakeRnbw', () => {
       chainId: STAKING_CHAIN_ID,
       transaction: expect.objectContaining({
         hash: TX_HASH,
-        gasLimit: BigNumber.from(21_000),
-        nonce: 1,
+        gasLimit: ESTIMATED_STAKE_GAS_LIMIT,
+        nonce: 2,
         type: 'stake',
       }),
     });
-    expect(hardwareSigner.sendTransactionMock).toHaveBeenNthCalledWith(2, {
-      ...STAKE_CALL,
-      gasLimit: STAKING_GAS_LIMIT,
+    await expect(submittedRequest(hardwareSigner, 2)).resolves.toMatchObject({
+      to: STAKING_CONTRACT_ADDRESS,
+      value: 0n,
+      gasLimit: ESTIMATED_STAKE_GAS_LIMIT,
+      ...GAS_PARAMS,
     });
 
     await result.waitForConfirmation();
 
     expect(waitForTransaction).toHaveBeenCalledTimes(2);
     expect(waitForTransaction).toHaveBeenLastCalledWith(TX_HASH, 1, time.minutes(2));
+  });
+
+  it('submits one hardware-wallet stake transaction when approval is not required', async () => {
+    const hardwareSigner = new TestHardwareSigner(provider);
+    const waitForTransaction = jest.spyOn(provider, 'waitForTransaction').mockResolvedValue(buildReceipt(TX_HASH));
+    jest.spyOn(provider, 'estimateGas').mockResolvedValue(ESTIMATED_STAKE_GAS_LIMIT);
+
+    mockBuildStakeRnbwCalls.mockResolvedValue([STAKE_CALL]);
+    mockSubmittedTransactions(hardwareSigner, [{ hash: TX_HASH, nonce: 2 }]);
+
+    const execution = await executeStakeRnbw({
+      address: ACCOUNT,
+      asset: rnbwAsset,
+      gasParams: GAS_PARAMS,
+      preparedCalls: null,
+      provider,
+      signer: hardwareSigner,
+      stakeAmountRaw: STAKE_AMOUNT_RAW,
+    });
+
+    expect(hardwareSigner.sendTransactionMock).toHaveBeenCalledTimes(1);
+    await expect(submittedRequest(hardwareSigner, 1)).resolves.toMatchObject({
+      to: STAKING_CONTRACT_ADDRESS,
+      value: 0n,
+      gasLimit: ESTIMATED_STAKE_GAS_LIMIT,
+      ...GAS_PARAMS,
+    });
+    expect(waitForTransaction).not.toHaveBeenCalled();
+
+    await execution.waitForConfirmation();
+
+    expect(waitForTransaction).toHaveBeenCalledWith(TX_HASH, 1, time.minutes(2));
   });
 });
