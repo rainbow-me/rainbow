@@ -1,3 +1,5 @@
+import { LIGHTER_HOSTNAMES } from '@/features/lighter/constants';
+import { getLighterReferralUrl } from '@/features/lighter/utils/lighterReferralUrl';
 import { POLYMARKET_HOSTNAMES } from '@/features/polymarket/constants';
 import { getPolymarketReferralUrl } from '@/features/polymarket/utils/polymarketReferralUrl';
 import { getDappHostname } from '@/utils/connectedApps';
@@ -7,7 +9,10 @@ type DappReferral = {
   hostnames: ReadonlySet<string>;
 };
 
-const DAPP_REFERRALS: DappReferral[] = [{ hostnames: POLYMARKET_HOSTNAMES, getUrl: getPolymarketReferralUrl }];
+const DAPP_REFERRALS: DappReferral[] = [
+  { hostnames: POLYMARKET_HOSTNAMES, getUrl: getPolymarketReferralUrl },
+  { hostnames: LIGHTER_HOSTNAMES, getUrl: getLighterReferralUrl },
+];
 
 export function addReferralToDappBrowserUrl(url: string): string {
   const hostname = getDappHostname(url);
