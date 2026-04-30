@@ -6468,6 +6468,17 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@react-native-firebase/firestore@npm:23.8.8":
+  version: 23.8.8
+  resolution: "@react-native-firebase/firestore@npm:23.8.8"
+  dependencies:
+    react-native-url-polyfill: "npm:3.0.0"
+  peerDependencies:
+    "@react-native-firebase/app": 23.8.8
+  checksum: 10c0/f26cdb65652162c1790583e0b6256b0a6d936514e70b28cf611158716c4db61f8005008746a14edbe86105c0c15ba36afa6ad10cf5de242709a60ae26fa3ebf0
+  languageName: node
+  linkType: hard
+
 "@react-native-firebase/messaging@npm:23.8.8":
   version: 23.8.8
   resolution: "@react-native-firebase/messaging@npm:23.8.8"
@@ -9543,6 +9554,7 @@ __metadata:
     "@react-native-community/cli-platform-ios": "npm:18.0.0"
     "@react-native-community/netinfo": "npm:11.4.1"
     "@react-native-firebase/app": "npm:23.8.8"
+    "@react-native-firebase/firestore": "npm:23.8.8"
     "@react-native-firebase/messaging": "npm:23.8.8"
     "@react-native-firebase/remote-config": "npm:23.8.8"
     "@react-native-masked-view/masked-view": "npm:0.3.2"
@@ -23410,6 +23422,17 @@ __metadata:
   peerDependencies:
     react-native: "*"
   checksum: 10c0/a48e6978f5a2c9e225bb93cc5f9985a8ac0fe7d8122105bcd88ef8d8420a3b33a67ce5d2bda2b606bf5fa94af9f6d04efce354580b60900e7c967fd2ebdc42cf
+  languageName: node
+  linkType: hard
+
+"react-native-url-polyfill@npm:3.0.0":
+  version: 3.0.0
+  resolution: "react-native-url-polyfill@npm:3.0.0"
+  dependencies:
+    whatwg-url-without-unicode: "npm:8.0.0-3"
+  peerDependencies:
+    react-native: "*"
+  checksum: 10c0/a1e539c2a28dc48125ada8bf29f3536ee2c149e4a5e3d205858755783afafe7f871ce1de8b66cb1c4cc05e15e212c74c49e93ddde856cda63fcf660cf943522a
   languageName: node
   linkType: hard
 
