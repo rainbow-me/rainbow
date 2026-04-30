@@ -4,7 +4,7 @@ import { type LayoutChangeEvent } from 'react-native';
 import { useRoute, type RouteProp } from '@react-navigation/native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
-import { useRainbowToastsStore } from '@/components/rainbow-toast/useRainbowToastsStore';
+import { rainbowToastsActions } from '@/components/rainbow-toast/useRainbowToastsStore';
 import { SlackSheet } from '@/components/sheet';
 import { Toast, ToastPositionContainer } from '@/components/toasts';
 import { BackgroundProvider, Box } from '@/design-system';
@@ -33,9 +33,9 @@ export const TransactionDetails = () => {
   const { bottom } = useSafeAreaInsets();
 
   useEffect(() => {
-    useRainbowToastsStore.getState().setIsShowingTransactionDetails(true);
+    rainbowToastsActions.setIsShowingTransactionDetails(true);
     return () => {
-      useRainbowToastsStore.getState().setIsShowingTransactionDetails(false);
+      rainbowToastsActions.setIsShowingTransactionDetails(false);
     };
   }, []);
 

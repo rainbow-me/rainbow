@@ -209,6 +209,13 @@ export function SyncGasStateToSharedValues() {
       if (isSponsoredSwapSharedValue.value) {
         hasEnoughFundsForGas.value = true;
         gasFeeRange.value = null;
+
+        const inputAsset = internalSelectedInputAsset.value;
+        const inputAssetBalance = current.inputAsset.balance;
+        const maxSwappableNeedsReset =
+          inputAssetBalance && (!inputAsset?.maxSwappableAmount || !equalWorklet(inputAssetBalance, inputAsset.maxSwappableAmount));
+
+        if (maxSwappableNeedsReset) updateMaxSwappableAmount(inputAssetBalance);
         return;
       }
 

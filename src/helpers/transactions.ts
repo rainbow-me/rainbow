@@ -12,7 +12,7 @@ import {
   handleSignificantDecimals,
 } from '@/helpers/utilities';
 import * as i18n from '@/languages';
-import { useSuperTokenStore } from '@/screens/token-launcher/state/rainbowSuperTokenStore';
+import { useSuperTokenStore, type SuperToken } from '@/screens/token-launcher/state/rainbowSuperTokenStore';
 
 import { safeSum } from '../utils/safeSum';
 
@@ -153,11 +153,13 @@ export const activityValues = (transaction: RainbowTransaction, nativeCurrency: 
   return greaterThan(nativeBalance.amount, '0') ? [`${assetValue}`, assetNativeValue] : [assetNativeValue, `${valueSymbol}${assetValue}`];
 };
 
-export const useTransactionLaunchToken = (transaction: RainbowTransaction) => {
+export function getTransactionLaunchToken({ hash, type }: Pick<RainbowTransaction, 'hash' | 'type'>): SuperToken | undefined {
+  if (type !== 'launch') return undefined;
+  return useSuperTokenStore.getState().getSuperTokenByTransactionHash(hash);
+}
+
+export const useTransactionLaunchToken = ({ hash, type }: RainbowTransaction): SuperToken | undefined => {
   return useMemo(() => {
-    if (transaction?.type === 'launch') {
-      return useSuperTokenStore.getState().getSuperTokenByTransactionHash(transaction.hash);
-    }
-    return undefined;
-  }, [transaction.hash, transaction.type]);
+    return getTransactionLaunchToken({ hash, type });
+  }, [hash, type]);
 };

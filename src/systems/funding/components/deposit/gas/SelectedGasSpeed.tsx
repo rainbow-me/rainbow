@@ -9,7 +9,8 @@ import gasUtils from '@/utils/gas';
 const SWAP_GAS_ICONS = gasUtils.SWAP_GAS_ICONS;
 
 export const SelectedGasSpeed = memo(function SelectedGasSpeed({ isPill }: { isPill?: boolean }) {
-  const { useDepositStore } = useDepositContext();
+  const { gasStores, useDepositStore } = useDepositContext();
+  const isGasSponsored = gasStores.useIsGasSponsored();
   const selectedGasSpeed = useDepositStore(state => state.getGasSpeed());
 
   return (
@@ -29,7 +30,14 @@ export const SelectedGasSpeed = memo(function SelectedGasSpeed({ isPill }: { isP
           {i18n.t(i18n.l.gas.speeds[selectedGasSpeed])}
         </Text>
       </Inline>
-      <TextIcon color="labelSecondary" height={10} size="icon 13px" weight="bold" width={12}>
+      <TextIcon
+        color="labelSecondary"
+        height={10}
+        size="icon 13px"
+        textStyle={isGasSponsored ? { opacity: 0 } : undefined}
+        weight="bold"
+        width={12}
+      >
         􀆏
       </TextIcon>
     </Inline>

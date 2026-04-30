@@ -84,7 +84,7 @@ function SelectedGas({ isPill, sponsored }: { isPill?: boolean; sponsored?: bool
           {sponsored ? '􀁢' : SWAP_GAS_ICONS[selectedGasSpeed].icon}
         </TextIcon>
         <Text align={isPill ? 'center' : 'left'} color={sponsored ? 'labelTertiary' : 'label'} size="15pt" weight="heavy">
-          {sponsored ? 'Free' : i18n.t(i18n.l.gas.speeds[selectedGasSpeed])}
+          {sponsored ? i18n.t(i18n.l.swap.gas.gas_sponsored) : i18n.t(i18n.l.gas.speeds[selectedGasSpeed])}
         </Text>
       </Inline>
       <TextIcon

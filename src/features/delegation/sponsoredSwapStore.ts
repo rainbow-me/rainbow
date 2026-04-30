@@ -1,31 +1,24 @@
-import { createDerivedStore, createQueryStore } from '@storesjs/stores';
-import { createPublicClient, http, type PublicClient } from 'viem';
+import { createDerivedStore } from '@storesjs/stores';
 
 import { isCrosschainQuote, isQuote } from '@/__swaps__/utils/quotes';
+import { createDelegationPublicClient, isPreparedCallsExecutionSponsored } from '@/features/delegation/calls';
+import { createPreparedCallsStore } from '@/features/delegation/preparedCallsStore';
+import { predictSponsoredCallsExecution } from '@/features/delegation/sponsoredCalls';
 import { getProvider } from '@/handlers/web3';
 import { useRemoteConfigStore } from '@/model/remoteConfig';
-import { buildAtomicExecutionRequirements, isPreparedCallsExecutionSponsored, prepareAtomicSwapCalls } from '@/raps/atomicSwapPreparation';
-import { backendNetworksActions, useBackendNetworksStore } from '@/state/backendNetworks/backendNetworks';
+import { buildAtomicExecutionRequirements, prepareAtomicSwapCalls } from '@/raps/atomicSwapPreparation';
 import { useSwapsStore } from '@/state/swaps/swapsStore';
 import { getAccountAddress, useWalletsStore } from '@/state/wallets/walletsStore';
 import { time } from '@/utils/time';
 import { execute, type PreparedCallsExecution } from '@rainbow-me/delegation';
 import { type CrosschainQuote, type Quote, type QuoteError } from '@rainbow-me/swaps';
 
-import { canUseDelegatedExecution, supportsDelegatedExecution } from './willDelegate';
-
-// ============ Constants ====================================================== //
-
-const SPONSORED_SWAP_STALE_TIME_MS = time.seconds(12);
+import { supportsDelegatedExecution } from './willDelegate';
 
 // ============ Types ========================================================= //
 
 type SponsoredSwapParams = {
   quoteKey: number | null;
-};
-
-type SponsoredSwapActions = {
-  getPreparedSwap: () => Promise<PreparedCallsExecution | null>;
 };
 
 type CurrentSponsoredSwap = {
@@ -49,44 +42,32 @@ const useSponsoredSwapQuoteKey = createDerivedStore(
 
 // ============ Store ========================================================= //
 
-export const useSponsoredSwapStore = createQueryStore<PreparedCallsExecution | null, SponsoredSwapParams, SponsoredSwapActions>(
-  {
-    fetcher: fetchPreparedSponsoredSwap,
-    enabled: $ => $(useSponsoredSwapQuoteKey, quoteKey => quoteKey !== null),
-    params: {
-      quoteKey: $ => $(useSponsoredSwapQuoteKey),
-    },
-    cacheTime: time.minutes(1),
-    staleTime: SPONSORED_SWAP_STALE_TIME_MS,
+export const useSponsoredSwapStore = createPreparedCallsStore<PreparedCallsExecution, SponsoredSwapParams>(fetchPreparedSponsoredSwap, {
+  enabled: $ => $(useSponsoredSwapQuoteKey, quoteKey => quoteKey !== null),
+  params: {
+    quoteKey: $ => $(useSponsoredSwapQuoteKey),
   },
+  cacheTime: time.minutes(1),
+  staleTime: time.seconds(12),
+});
 
-  (_, get) => {
-    let consumedQuoteKey: number | null = null;
+export function getPreparedSponsoredSwap(): Promise<PreparedCallsExecution | null> {
+  const quoteKey = useSponsoredSwapQuoteKey.getState();
+  if (quoteKey === null) return Promise.resolve(null);
 
-    return {
-      getPreparedSwap: async () => {
-        const quoteKey = useSponsoredSwapQuoteKey.getState();
-        if (quoteKey === null) return null;
-
-        const shouldForceRefresh = consumedQuoteKey === quoteKey;
-        consumedQuoteKey = quoteKey;
-
-        return get().fetch({ quoteKey }, shouldForceRefresh ? { force: true } : undefined);
-      },
-    };
-  }
-);
+  return useSponsoredSwapStore.getState().getPreparedCalls({ quoteKey });
+}
 
 export const useIsSponsoredSwap = createDerivedStore<boolean>(
   $ => {
-    const canDelegate = $(useWalletsStore, s => canUseDelegatedExecution(s.accountAddress));
+    const accountAddress = $(useWalletsStore, s => s.accountAddress);
     const inputChainId = $(useSwapsStore, s => s.inputAsset?.chainId);
     const preparedSwap = $(useSponsoredSwapStore, s => s.getData());
     const sponsoredSwapsEnabled = $(useRemoteConfigStore, s => s.config.sponsored_swaps_enabled);
 
     if (!sponsoredSwapsEnabled) return false;
 
-    const canSponsor = canDelegate && (inputChainId === undefined || backendNetworksActions.isSponsorshipEligible(inputChainId));
+    const canSponsor = predictSponsoredCallsExecution({ address: accountAddress, chainId: inputChainId ?? null });
     if (!canSponsor || !preparedSwap) return canSponsor;
 
     return isPreparedCallsExecutionSponsored(preparedSwap);
@@ -113,7 +94,7 @@ async function fetchPreparedSponsoredSwap(): Promise<PreparedCallsExecution | nu
     quote: current.quote,
   });
 
-  const publicClient = createDelegationPublicClient(current);
+  const publicClient = createDelegationPublicClient(chainId);
 
   return execute.prepare.calls({
     account: address,
@@ -133,21 +114,6 @@ function readCurrentSwapQuote(): CurrentSponsoredSwap | null {
   if (!isValidSponsoredSwapQuote(quote, address)) return null;
 
   return { chainId: quote.chainId, quote };
-}
-
-function createDelegationPublicClient(current: CurrentSponsoredSwap): PublicClient {
-  const backendNetworks = useBackendNetworksStore.getState();
-  const chain = backendNetworks.getDefaultChains()[current.chainId];
-  const rpcUrl = backendNetworks.getChainDefaultRpc(current.chainId);
-
-  if (!chain) {
-    throw new Error(`Unsupported swap chain ${current.chainId}`);
-  }
-
-  return createPublicClient({
-    chain,
-    transport: http(rpcUrl),
-  });
 }
 
 function isValidSponsoredSwapQuote(

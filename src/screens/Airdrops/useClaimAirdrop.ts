@@ -3,10 +3,10 @@ import { useCallback, useMemo, useRef, type MutableRefObject } from 'react';
 import { runOnJS, useSharedValue, type SharedValue } from 'react-native-reanimated';
 import { triggerHaptics } from 'react-native-turbo-haptics';
 
-import { type GasSettings } from '@/__swaps__/screens/Swap/hooks/useCustomGas';
 import { useGasSettings } from '@/__swaps__/screens/Swap/hooks/useSelectedGas';
 import { GasSpeed } from '@/__swaps__/types/gas';
 import { type MeteorologyGasSuggestions } from '@/__swaps__/utils/meteorology';
+import { type GasSettings } from '@/entities/gas';
 import { logger, RainbowError } from '@/logger';
 import { type RainbowClaimable } from '@/resources/addys/claimables/types';
 import { userAssetsStoreManager } from '@/state/assets/userAssetsStoreManager';
