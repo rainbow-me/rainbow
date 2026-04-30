@@ -1,15 +1,17 @@
 import { useMemo } from 'react';
 
+import { createStoreActions } from '@storesjs/stores';
+
 import { TOAST_HIDE_TIMEOUT_MS } from '@/components/rainbow-toast/constants';
 import type { RainbowToast } from '@/components/rainbow-toast/types';
 import type { RainbowTransaction } from '@/entities/transactions';
 import { createRainbowStore } from '@/state/internal/createRainbowStore';
 
-const toToastId = (tx: RainbowTransaction): string => {
+function toToastId(tx: RainbowTransaction): string {
   const identity = tx.relayExecutionId ?? (tx.nonce !== null && tx.nonce !== undefined ? String(tx.nonce) : tx.hash);
 
   return `${identity}-${tx.chainId || tx.asset?.chainId}`;
-};
+}
 
 export type ToastState = {
   isShowingTransactionDetails: boolean;
@@ -128,6 +130,8 @@ export const useRainbowToastsStore = createRainbowStore<ToastState>((set, get) =
   },
 }));
 
+export const rainbowToastsActions = createStoreActions(useRainbowToastsStore);
+
 function getToastsStateForStartRemove(state: ToastState, toast: RainbowToast | undefined, via: 'swipe' | 'finish') {
   const toasts = { ...state.toasts };
 
@@ -141,6 +145,15 @@ function getToastsStateForStartRemove(state: ToastState, toast: RainbowToast | u
 export function useRainbowToasts() {
   const toasts = useRainbowToastsStore(state => state.toasts);
   return useMemo(() => {
-    return Object.values(toasts).sort((a, b) => b.updatedAt - a.updatedAt);
+    return sortToastsNewestFirst(Object.values(toasts));
   }, [toasts]);
+}
+
+export function getTopRainbowToast(toasts: Record<string, RainbowToast>): RainbowToast | undefined {
+  const sortedToasts = sortToastsNewestFirst(Object.values(toasts));
+  return sortedToasts.find(toast => !toast.isRemoving) ?? sortedToasts[0];
+}
+
+function sortToastsNewestFirst(toasts: readonly RainbowToast[]): RainbowToast[] {
+  return [...toasts].sort((a, b) => b.updatedAt - a.updatedAt);
 }

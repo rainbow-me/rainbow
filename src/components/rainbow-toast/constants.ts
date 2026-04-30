@@ -3,7 +3,8 @@ import { time } from '@/utils/time';
 
 export const TOAST_ICON_SIZE = 28;
 
-export const TOAST_MIN_WIDTH = 180;
+export const TOAST_CONTENT_PADDING_LEFT = 16;
+export const TOAST_CONTENT_PADDING_RIGHT = 20;
 
 export const SWAP_ICON_INTERSECT = TOAST_ICON_SIZE * 0.2;
 export const SWAP_ICON_WIDTH = TOAST_ICON_SIZE * 2 - SWAP_ICON_INTERSECT;

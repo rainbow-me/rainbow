@@ -32,7 +32,7 @@ import { parseGasParamsForTransaction } from '@/parsers/gas';
 import { updateGasFeeForSpeed } from '@/redux/gas';
 import ethUnits from '@/references/ethereum-units.json';
 import { ChainId } from '@/state/backendNetworks/types';
-import { updateTransaction } from '@/state/pendingTransactions';
+import { addNewTransaction } from '@/state/pendingTransactions';
 import { useAccountAddress, useIsHardwareWallet } from '@/state/wallets/walletsStore';
 import { position } from '@/styles';
 import { useTheme, type ThemeContextProps } from '@/theme/ThemeContext';
@@ -203,7 +203,7 @@ export default function SpeedUpAndCancelSheet() {
       }
       updatedTx.status = TransactionStatus.pending;
       updatedTx.type = 'cancel';
-      updateTransaction({
+      addNewTransaction({
         address: accountAddress,
         transaction: updatedTx,
         chainId: currentChainId,
@@ -283,7 +283,7 @@ export default function SpeedUpAndCancelSheet() {
       updatedTx.status = TransactionStatus.pending;
       updatedTx.type = 'speed_up';
 
-      updateTransaction({
+      addNewTransaction({
         address: accountAddress,
         transaction: updatedTx,
         chainId: currentChainId,

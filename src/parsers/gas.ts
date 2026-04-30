@@ -8,6 +8,7 @@ import {
   type GasFeeParamsBySpeed,
   type GasFeesBySpeed,
   type GasPricesAPIData,
+  type GasSettings,
   type LegacyGasFeeParams,
   type LegacyGasFeeParamsBySpeed,
   type LegacyGasFeesBySpeed,
@@ -329,6 +330,22 @@ export const parseGasParamAmounts = (
     maxPriorityFeePerGas: gasFeeParams.maxPriorityFeePerGas.amount,
   };
 };
+
+/**
+ * Builds raw transaction gas params from `GasSettings`.
+ *
+ * Returns either:
+ * - `{ maxFeePerGas, maxPriorityFeePerGas }` for EIP-1559 gas
+ * - `{ gasPrice }` for legacy gas
+ */
+export function buildGasParams(gasSettings: GasSettings): TransactionGasParamAmounts | LegacyTransactionGasParamAmounts {
+  if (!gasSettings.isEIP1559) return { gasPrice: gasSettings.gasPrice };
+
+  return {
+    maxFeePerGas: add(gasSettings.maxBaseFee, gasSettings.maxPriorityFee),
+    maxPriorityFeePerGas: gasSettings.maxPriorityFee,
+  };
+}
 
 export const gweiToWei = (gweiAmount: BigNumberish) => {
   const weiAmount = multiply(gweiAmount, ethUnits.gwei);
