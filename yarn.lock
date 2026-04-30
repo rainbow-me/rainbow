@@ -4001,19 +4001,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@gelatocloud/gasless@npm:0.0.12":
-  version: 0.0.12
-  resolution: "@gelatocloud/gasless@npm:0.0.12"
-  dependencies:
-    isomorphic-ws: "npm:^5.0.0"
-    ws: "npm:^8.19.0"
-    zod: "npm:4.1.13"
-  peerDependencies:
-    viem: ^2.0.0
-  checksum: 10c0/74c7f225915a6aca2bd4c054094af0d67b2ebb1d85c094faa4a5996ca9cfe98f8650c7d2c9bcfd067faebfb1f9586a1357daf5a7036b05c1e0ca956da4900430
-  languageName: node
-  linkType: hard
-
 "@gorhom/bottom-sheet@npm:5.2.8":
   version: 5.2.8
   resolution: "@gorhom/bottom-sheet@npm:5.2.8"
@@ -9530,7 +9517,6 @@ __metadata:
     "@ethersproject/transactions": "npm:5.8.0"
     "@ethersproject/units": "npm:5.8.0"
     "@ethersproject/wallet": "npm:5.8.0"
-    "@gelatocloud/gasless": "npm:0.0.12"
     "@gorhom/bottom-sheet": "npm:5.2.8"
     "@ianvs/prettier-plugin-sort-imports": "npm:4.7.1"
     "@json-rpc-tools/utils": "npm:1.7.6"
@@ -9741,7 +9727,6 @@ __metadata:
     react-native-tab-view: "npm:3.5.2"
     react-native-tcp: "npm:3.3.2"
     react-native-text-input-mask: "npm:2.0.0"
-    react-native-text-size: "rainbow-me/react-native-text-size#15b21c9f88c6df0d1b5e0f2ba792fe59b5dc255a"
     react-native-tooltip: "rainbow-me/react-native-tooltip#db20e9521c5be9e151728ce402cd70fdb556bd97"
     react-native-tooltips: "rainbow-me/react-native-tooltips#fdafbc7ba33ee231229f5d3f58b29d0d1c55ddfa"
     react-native-turbo-haptics: "npm:1.0.9"
@@ -17731,15 +17716,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"isomorphic-ws@npm:^5.0.0":
-  version: 5.0.0
-  resolution: "isomorphic-ws@npm:5.0.0"
-  peerDependencies:
-    ws: "*"
-  checksum: 10c0/a058ac8b5e6efe9e46252cb0bc67fd325005d7216451d1a51238bc62d7da8486f828ef017df54ddf742e0fffcbe4b1bcc2a66cc115b027ed0180334cd18df252
-  languageName: node
-  linkType: hard
-
 "isows@npm:1.0.7":
   version: 1.0.7
   resolution: "isows@npm:1.0.7"
@@ -23389,15 +23365,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"react-native-text-size@rainbow-me/react-native-text-size#15b21c9f88c6df0d1b5e0f2ba792fe59b5dc255a":
-  version: 4.0.0-rc.1
-  resolution: "react-native-text-size@https://github.com/rainbow-me/react-native-text-size.git#commit=15b21c9f88c6df0d1b5e0f2ba792fe59b5dc255a"
-  peerDependencies:
-    react-native: ">=0.59.0"
-  checksum: 10c0/bd8590558fc0495451a8d835bdb6f47ed14ac49d3060af78d6da871383ca5d35e9c98b0a239186d280df3e5310c1fa94557caf9e3141192739465da49d10368d
-  languageName: node
-  linkType: hard
-
 "react-native-tooltip@rainbow-me/react-native-tooltip#db20e9521c5be9e151728ce402cd70fdb556bd97":
   version: 5.2.2
   resolution: "react-native-tooltip@https://github.com/rainbow-me/react-native-tooltip.git#commit=db20e9521c5be9e151728ce402cd70fdb556bd97"
@@ -28026,21 +27993,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"ws@npm:^8.19.0":
-  version: 8.19.0
-  resolution: "ws@npm:8.19.0"
-  peerDependencies:
-    bufferutil: ^4.0.1
-    utf-8-validate: ">=5.0.2"
-  peerDependenciesMeta:
-    bufferutil:
-      optional: true
-    utf-8-validate:
-      optional: true
-  checksum: 10c0/4741d9b9bc3f9c791880882414f96e36b8b254e34d4b503279d6400d9a4b87a033834856dbdd94ee4b637944df17ea8afc4bce0ff4a1560d2166be8855da5b04
-  languageName: node
-  linkType: hard
-
 "xcode@npm:^3.0.1":
   version: 3.0.1
   resolution: "xcode@npm:3.0.1"
@@ -28305,13 +28257,6 @@ __metadata:
   version: 3.23.8
   resolution: "zod@npm:3.23.8"
   checksum: 10c0/8f14c87d6b1b53c944c25ce7a28616896319d95bc46a9660fe441adc0ed0a81253b02b5abdaeffedbeb23bdd25a0bf1c29d2c12dd919aef6447652dd295e3e69
-  languageName: node
-  linkType: hard
-
-"zod@npm:4.1.13":
-  version: 4.1.13
-  resolution: "zod@npm:4.1.13"
-  checksum: 10c0/d7e74e82dba81a91ffc3239cd85bc034abe193a28f7087a94ab258a3e48e9a7ca4141920cac979a0d781495b48fc547777394149f26be04c3dc642f58bbc3941
   languageName: node
   linkType: hard
 
