@@ -110,11 +110,9 @@ export function createDepositGasStores(
   const useHasGasHookParams = needsGasHookParams
     ? createDerivedStore(
         $ => {
-          const accountAddress = $(useWalletsStore, s => s.accountAddress);
-          const amount = $(useAmountStore, selectNormalizedAmount);
           const assetUniqueId = $(useDepositStore, selectAssetUniqueId);
-
-          return Boolean(accountAddress && assetUniqueId && hasNonZeroAmount(amount));
+          const hasAmount = $(useAmountStore, s => hasNonZeroAmount(selectNormalizedAmount(s)));
+          return Boolean(assetUniqueId && hasAmount);
         },
         { lockDependencies: true }
       )
@@ -131,6 +129,7 @@ export function createDepositGasStores(
     },
     cacheTime: time.minutes(1),
     keepPreviousData: true,
+    paramChangeThrottle: time.ms(100),
     staleTime: time.seconds(30),
   });
 
