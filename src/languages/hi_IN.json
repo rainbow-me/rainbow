@@ -1061,15 +1061,15 @@
       },
       "smart_wallet_activation": {
         "text": "इस लेन-देन में %{networkName} पर एक बार का Smart Wallet सक्रियण शामिल है। यह आपके वॉलेट को बैच किए गए लेन-देन और अन्य स्मार्ट अकाउंट सुविधाओं का समर्थन करने के लिए अपग्रेड करता है।\n\nसक्रियण शुल्क इस स्वैप के लिए नेटवर्क शुल्क में शामिल है।",
-        "title": "Smart Wallet सक्रियण"
+        "title": "स्मार्ट वॉलेट सक्रियण"
       },
       "max_base_fee": {
         "text": "यह अधिकतम मूल शुल्क है जिसे आप इस लेन-देन के लिए चुकाने के लिए तैयार हैं।\n\nअधिकतम मूल शुल्क को अधिक निर्धारित करना शुल्क बढ़ने पर आपके लेन-देन को अटकने से बचाता है।",
-        "title": "अधिकतम मूल शुल्क"
+        "title": "अधिकतम Base शुल्क"
       },
       "miner_tip": {
         "text": "खनकर्मी का टिप सीधे नेटवर्क पर आपके ट्रांजैक्शन की पुष्टि करने वाले खनकर्मी को जाता है।\n\nएक उच्च टिप आपके लेन-देन को त्वरित रूप से पुष्टि की अधिक संभावना बनाता है।",
-        "title": "खनकर्मी का टिप"
+        "title": "खननकर्ता का टिप"
       },
       "apechain": {
         "text": "ApeChain एक लेयर <b>3</b> नेटवर्क है जो Arbitrum Orbit और Ethereum के ऊपर चलता है।\n\nयह ApeCoin की उपयोगिता को बहुत बढ़ाता है, $APE द्वारा संचालित एक मजबूत और गतिशील अर्थव्यवस्था को बढ़ावा देता है।",
@@ -2401,6 +2401,7 @@
       "find_a_token_to_buy": "खरीदने के लिए टोकन खोजें",
       "search_your_tokens": "अपने टोकन खोजें",
       "error_executing_swap": "स्वैप निष्पादित करते समय त्रुटि",
+      "sponsorship_unavailable": "इस नेटवर्क पर मुफ़्त स्वैप अस्थायी रूप से उपलब्ध नहीं हैं। कृपया नेटवर्क शुल्क के साथ फिर से प्रयास करें।",
       "tokens_input": {
         "tokens": "Tokens",
         "sort": "Sort",
@@ -2422,7 +2423,8 @@
         "fast": "तेज",
         "network_fee": "नेटवर्क शुल्क",
         "normal": "साधारण",
-        "slow": "धीमा"
+        "slow": "धीमा",
+        "gas_sponsored": "मुफ्त"
       },
       "loading": "लोड हो रहा है...",
       "modal_types": {
@@ -2913,7 +2915,7 @@
         "disable_smart_wallet": "Smart Wallet अक्षम करें",
         "enabled_description": "आप तेज़ लेन-देन और कम नेटवर्क लागतों का लाभ नहीं उठा पाएंगे",
         "disabled_description": "अपडेट आपके अगले स्वैप पर लागू होंगे",
-        "will_delegate_callout": "Smart Wallet सक्रियण शामिल है",
+        "will_delegate_callout": "स्मार्ट वॉलेट सक्रियण शामिल है",
         "revoke_panel": {
           "disable_smart_wallet_title": "Smart Wallet अक्षम करें",
           "disable_smart_wallet_subtitle": "यह सभी सक्रिय डेलिगेशन को रद्द करेगा और Smart Wallet सुविधाओं को अक्षम करेगा।",
@@ -3934,10 +3936,6 @@
       }
     },
     "rnbw_staking": {
-      "wallet_access": {
-        "hardware_wallet_not_supported_title": "हार्डवेयर वॉलेट समर्थित नहीं है",
-        "hardware_wallet_not_supported_message": "RNBW स्टेकिंग अभी हार्डवेयर वॉलेट्स के लिए उपलब्ध नहीं है।"
-      },
       "deposit": {
         "confirm_button": "स्टेक करने के लिए होल्ड करें",
         "confirm_button_error": "स्टेक नहीं कर पा रहे हैं",
