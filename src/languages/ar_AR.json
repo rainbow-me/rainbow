@@ -1057,19 +1057,19 @@
       },
       "gas": {
         "text": "هذه هي \"رسوم الغاز\" التي يستخدمها بلوكشين %{networkName} للتحقق من صحة معاملتك بشكل آمن.\n\nتختلف هذه الرسوم حسب تعقيد معاملتك وحسب كثافة الشبكة!",
-        "title": "رسوم شبكة %{networkName}"
+        "title": "%{networkName} Network Fee"
       },
       "smart_wallet_activation": {
         "text": "تتضمن هذه المعاملة تفعيلًا لمرة واحدة للمحفظة الذكية على %{networkName}. يؤدي ذلك إلى ترقية محفظتك لدعم المعاملات المجمّعة وميزات أخرى للحسابات الذكية.\n\nيتم تضمين رسوم التفعيل ضمن رسوم الشبكة لعملية المبادلة هذه.",
-        "title": "تفعيل المحفظة الذكية"
+        "title": "Smart Wallet Activation"
       },
       "max_base_fee": {
         "text": "هذا هو الحد الأقصى لرسوم الأساس التي أنت مستعد لدفعها لهذه المعاملة.\n\nيمنع تحديد الحد الأقصى المرتفع للرسوم الأساسية عالق معاملتك في حالة ارتفاع الرسوم.",
-        "title": "الرسوم الأساسية القصوى"
+        "title": "Max Base Fee"
       },
       "miner_tip": {
         "text": "تذهب بلدية العامل مباشرة إلى العامل الذي يؤكد معاملتك على الشبكة.\n\nتجعل النصيحة الأعلى معاملتك أكثر احتمالية للتأكيد بسرعة.",
-        "title": "تلميح المعدن"
+        "title": "Miner Tip"
       },
       "apechain": {
         "text": "ApeChain هي شبكة طبقة <b>٣</b> تعمل فوق Arbitrum Orbit وEthereum.\n\nتعزز بشكل كبير فائدة ApeCoin، مما يتيح اقتصادًا قويًا وديناميكيًا مدفوعًا بـ $APE.",
@@ -2401,6 +2401,7 @@
       "find_a_token_to_buy": "البحث عن رمز للشراء",
       "search_your_tokens": "ابحث عن رموزك",
       "error_executing_swap": "خطأ في تنفيذ التبديل",
+      "sponsorship_unavailable": "Free swaps are temporarily unavailable on this network. Please try again with network fees.",
       "tokens_input": {
         "tokens": "رموز",
         "sort": "الترتيب",
@@ -2422,7 +2423,8 @@
         "fast": "سريع",
         "network_fee": "رسوم الشبكة",
         "normal": "عادي",
-        "slow": "بطيء"
+        "slow": "بطيء",
+        "gas_sponsored": "مجانا"
       },
       "loading": "جار التحميل...",
       "modal_types": {
@@ -2913,7 +2915,7 @@
         "disable_smart_wallet": "تعطيل المحفظة الذكية",
         "enabled_description": "ستفوتك المعاملات الأسرع وتكاليف الشبكة الأقل",
         "disabled_description": "ستسري التحديثات في عملية المبادلة التالية",
-        "will_delegate_callout": "يتضمن تفعيل المحفظة الذكية",
+        "will_delegate_callout": "Includes Smart Wallet activation",
         "revoke_panel": {
           "disable_smart_wallet_title": "تعطيل المحفظة الذكية",
           "disable_smart_wallet_subtitle": "سيؤدي هذا إلى إلغاء جميع التفويضات النشطة وتعطيل ميزات المحفظة الذكية.",
@@ -3934,10 +3936,6 @@
       }
     },
     "rnbw_staking": {
-      "wallet_access": {
-        "hardware_wallet_not_supported_title": "محفظة الأجهزة غير مدعومة",
-        "hardware_wallet_not_supported_message": "تخزين RNBW غير متاح لمحافظ الأجهزة في الوقت الحالي."
-      },
       "deposit": {
         "confirm_button": "اضغط مع الاستمرار للرهن",
         "confirm_button_error": "تعذّر الرهن",
