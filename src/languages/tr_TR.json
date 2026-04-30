@@ -1057,19 +1057,19 @@
       },
       "gas": {
         "text": "Bu, %{networkName} blockchain'in işlemi güvenle doğrulamak için kullandığı \"gaz ücreti\"dir.\n\nBu ücret, işleminizin karmaşıklığına ve ağın ne kadar meşgul olduğuna bağlı olarak değişir!",
-        "title": "%{networkName} Network Fee"
+        "title": "%{networkName} Ağ Ücreti"
       },
       "smart_wallet_activation": {
         "text": "Bu işlem, %{networkName} üzerinde tek seferlik bir Akıllı Cüzdan etkinleştirmesi içerir. Bu, cüzdanınızı toplu işlemleri ve diğer akıllı hesap özelliklerini destekleyecek şekilde yükseltir.\n\nEtkinleştirme ücreti, bu takas için ağ ücretine dahildir.",
-        "title": "Smart Wallet Activation"
+        "title": "Akıllı Cüzdan Etkinleştirme"
       },
       "max_base_fee": {
         "text": "Bu, bu işlem için ödemeye istekli olduğunuz maksimum taban ücrettir.\n\nDaha yüksek bir maksimum taban ücreti belirlenmesi, ücretlerin yükselmesi durumunda işleminizin takılıp kalmamasını sağlar.",
-        "title": "Max Base Fee"
+        "title": "Maksimum Base Ücreti"
       },
       "miner_tip": {
         "text": "Madenci bahşişi, işleminizi ağda doğrulayan madenciye doğrudan gider.\n\nDaha yüksek bir bahşiş, işleminizin daha hızlı onaylanmasını daha olası kılar.",
-        "title": "Miner Tip"
+        "title": "Madenci Bahşişi"
       },
       "apechain": {
         "text": "ApeChain, Arbitrum Orbit ve Ethereum'un üzerinde çalışan bir Katman 3 ağıdır. Bu ağ, ApeCoin'in faydasını önemli ölçüde artırarak $APE ile yönlendirilen güçlü ve dinamik bir ekonomi oluşturmaktadır.",
@@ -2401,7 +2401,7 @@
       "find_a_token_to_buy": "Satın Almak İçin Bir Token Bulun",
       "search_your_tokens": "Tokenlarınızı Arayın",
       "error_executing_swap": "Takas Yürütme Hatası",
-      "sponsorship_unavailable": "Free swaps are temporarily unavailable on this network. Please try again with network fees.",
+      "sponsorship_unavailable": "Ücretsiz takaslar bu ağda geçici olarak kullanılamıyor. Lütfen ağ ücretleriyle tekrar deneyin.",
       "tokens_input": {
         "tokens": "Tokenler",
         "sort": "Sırala",
@@ -2915,7 +2915,7 @@
         "disable_smart_wallet": "Akıllı Cüzdanı Devre Dışı Bırak",
         "enabled_description": "Daha hızlı işlemleri ve daha düşük ağ maliyetlerini kaçıracaksınız",
         "disabled_description": "Güncellemeler bir sonraki takasınızda geçerli olacak",
-        "will_delegate_callout": "Includes Smart Wallet activation",
+        "will_delegate_callout": "Akıllı Cüzdan etkinleştirmesini içerir",
         "revoke_panel": {
           "disable_smart_wallet_title": "Akıllı Cüzdanı Devre Dışı Bırak",
           "disable_smart_wallet_subtitle": "Bu, tüm etkin yetki devrilerini iptal edecek ve Akıllı Cüzdan özelliklerini devre dışı bırakacaktır.",
