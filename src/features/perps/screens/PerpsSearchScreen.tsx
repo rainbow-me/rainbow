@@ -22,6 +22,7 @@ import { time } from '@/utils/time';
 export const PerpsSearchScreen = memo(function PerpsSearchScreen() {
   const { isDarkMode } = useColorMode();
   const backgroundColor = isDarkMode ? PERPS_BACKGROUND_DARK : PERPS_BACKGROUND_LIGHT;
+  const hasMarkets = useFilteredHyperliquidMarkets(state => state.length > 0);
 
   useOnLeaveRoute(Keyboard.dismiss);
 
@@ -31,7 +32,7 @@ export const PerpsSearchScreen = memo(function PerpsSearchScreen() {
       <Box paddingTop="20px" paddingHorizontal="20px">
         <Separator color={'separatorTertiary'} direction="horizontal" thickness={THICK_BORDER_WIDTH} />
       </Box>
-      <DelayedMount delay={time.seconds(1)}>
+      <DelayedMount delay={time.seconds(1)} skipDelayedMount={hasMarkets}>
         <PerpMarketsList onPressMarket={onPressMarket} />
         <MarketSortOrderPicker />
       </DelayedMount>
