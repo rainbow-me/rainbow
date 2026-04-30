@@ -39,6 +39,7 @@ jobs:
       - name: Checkout repo
         uses: actions/checkout@08eba0b27e820071cde6df949e0beb9ba4906955
 
+      # `/perf` issue comments share the build job but do not run local Anvil tests.
       - name: Cache Foundry binaries
         if: github.event_name != 'issue_comment' || startsWith(github.event.comment.body, '/e2e')
         uses: actions/cache@0057852bfaa89a56745cba8c7296529d2fc39830

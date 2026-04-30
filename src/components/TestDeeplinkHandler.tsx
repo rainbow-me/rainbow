@@ -1,8 +1,9 @@
-import { useCallback, useEffect, useRef, useState } from 'react';
-import { Linking, StyleSheet, View } from 'react-native';
+import { useCallback, useEffect, useState } from 'react';
+import { Linking } from 'react-native';
 
 import URL from 'url-parse';
 
+import { E2EStatusMarker } from '@/components/E2EStatusMarker';
 import { savePIN } from '@/handlers/authentication';
 import { logger, RainbowError } from '@/logger';
 import Navigation from '@/navigation/Navigation';
@@ -15,7 +16,6 @@ type E2ECommandStatus = 'idle' | 'wallet-importing' | 'wallet-ready' | 'wallet-e
  * Handles E2E test commands. See e2e/README.md:31 for usage.
  */
 export function TestDeeplinkHandler() {
-  const handledUrls = useRef(new Set<string>());
   const [commandStatus, setCommandStatus] = useState<E2ECommandStatus>('idle');
 
   const handleUrl = useCallback(async (url: string | null) => {
@@ -26,9 +26,6 @@ export function TestDeeplinkHandler() {
       if (protocol !== 'rainbow:' || host !== 'e2e') {
         return;
       }
-
-      if (handledUrls.current.has(url)) return;
-      handledUrls.current.add(url);
 
       const action = pathname.split('/')[1];
 
@@ -82,22 +79,9 @@ export function TestDeeplinkHandler() {
     return listener.remove;
   }, [handleUrl]);
 
-  if (commandStatus === 'idle') return null;
-
-  return <View collapsable={false} pointerEvents="none" style={styles.marker} testID={`e2e-${commandStatus}`} />;
+  return <E2EStatusMarker id={commandStatus === 'idle' ? null : `e2e-${commandStatus}`} />;
 }
 
 function getQueryValue(value: string | string[] | undefined): string | undefined {
   return Array.isArray(value) ? value[0] : value;
 }
-
-const styles = StyleSheet.create({
-  marker: {
-    backgroundColor: 'rgba(0, 0, 0, 0.01)',
-    height: 2,
-    position: 'absolute',
-    right: 0,
-    top: 72,
-    width: 2,
-  },
-});

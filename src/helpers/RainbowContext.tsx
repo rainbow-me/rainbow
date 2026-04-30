@@ -1,11 +1,12 @@
 import React, { createContext, useCallback, useEffect, useMemo, useState, type PropsWithChildren } from 'react';
-import { Platform, StyleSheet, View } from 'react-native';
+import { Platform } from 'react-native';
 
 import { JsonRpcProvider } from '@ethersproject/providers';
 import { parseEther } from '@ethersproject/units';
 import { Wallet } from '@ethersproject/wallet';
 import { useSharedValue } from 'react-native-reanimated';
 
+import { E2EStatusMarker } from '@/components/E2EStatusMarker';
 import { IS_DEV, IS_TEST } from '@/env';
 import Emoji from '@/framework/ui/components/Emoji';
 import { logger, RainbowError } from '@/logger';
@@ -28,7 +29,7 @@ export const RainbowContext = createContext<RainbowContextType>({
   },
 });
 
-type E2EAnvilStatus = 'idle' | 'connected' | 'connect-error';
+type E2EAnvilStatus = 'idle' | 'connected' | 'disconnected' | 'connect-error';
 type E2EFundingStatus = 'idle' | 'funding' | 'funded' | 'funding-error';
 
 export default function RainbowContextWrapper({ children }: PropsWithChildren) {
@@ -63,9 +64,10 @@ export default function RainbowContextWrapper({ children }: PropsWithChildren) {
 
   const connectToAnvil = useCallback(async () => {
     try {
-      setConnectedToAnvil(true);
-      setE2EAnvilStatus('connected');
-      logger.debug('connected to anvil');
+      const nextConnected = !useConnectedToAnvilStore.getState().connectedToAnvil;
+      setConnectedToAnvil(nextConnected);
+      setE2EAnvilStatus(nextConnected ? 'connected' : 'disconnected');
+      logger.debug(nextConnected ? 'connected to anvil' : 'disconnected from anvil');
     } catch (e) {
       setConnectedToAnvil(false);
       setE2EAnvilStatus('connect-error');
@@ -102,12 +104,8 @@ export default function RainbowContextWrapper({ children }: PropsWithChildren) {
   return (
     <RainbowContext.Provider value={initialValue}>
       {children}
-      {IS_TEST && e2eFundingStatus !== 'idle' && (
-        <View collapsable={false} pointerEvents="none" style={styles.e2eMarker} testID={`e2e-anvil-${e2eFundingStatus}`} />
-      )}
-      {IS_TEST && e2eAnvilStatus !== 'idle' && (
-        <View collapsable={false} pointerEvents="none" style={styles.e2eMarker} testID={`e2e-anvil-${e2eAnvilStatus}`} />
-      )}
+      <E2EStatusMarker id={e2eFundingStatus === 'idle' ? null : `e2e-anvil-${e2eFundingStatus}`} />
+      <E2EStatusMarker id={e2eAnvilStatus === 'idle' ? null : `e2e-anvil-${e2eAnvilStatus}`} />
       {showReloadButton && IS_DEV && <DevButton color={colors.red} initialDisplacement={200} />}
       {((showConnectToAnvilButton && IS_DEV) || IS_TEST) && (
         <>
@@ -127,14 +125,3 @@ export default function RainbowContextWrapper({ children }: PropsWithChildren) {
     </RainbowContext.Provider>
   );
 }
-
-const styles = StyleSheet.create({
-  e2eMarker: {
-    backgroundColor: 'rgba(0, 0, 0, 0.01)',
-    height: 2,
-    position: 'absolute',
-    right: 0,
-    top: 72,
-    width: 2,
-  },
-});
