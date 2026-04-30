@@ -1,6 +1,7 @@
 import { parseUnits, type Address } from 'viem';
 
 import { createDelegationPublicClient } from '@/features/delegation/calls';
+import { canUseDelegatedExecution } from '@/features/delegation/willDelegate';
 import { isPositive } from '@/framework/core/safeMath';
 import { getProvider } from '@/handlers/web3';
 import { execute, type PreparedCallsExecution } from '@rainbow-me/delegation';
@@ -30,6 +31,8 @@ export type PreparedStakeRnbw = {
  */
 export async function prepareStakeRnbw({ accountAddress, amount }: StakeRnbwPreparationParams): Promise<PreparedStakeRnbw | null> {
   const stakeAmountRaw = parseUnits(amount, RNBW_DECIMALS).toString();
+  if (!canUseDelegatedExecution(accountAddress)) return null;
+
   const { claimFulfillsStake, walletStakeAmountRaw } = await resolveStakeClaimStrategy(stakeAmountRaw);
 
   if (claimFulfillsStake || !isPositive(walletStakeAmountRaw)) return null;

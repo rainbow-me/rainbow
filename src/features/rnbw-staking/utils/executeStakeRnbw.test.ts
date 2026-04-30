@@ -26,6 +26,7 @@ const mockExecuteCalls = jest.fn<Promise<unknown>, [unknown, unknown?]>();
 const mockPrepareCalls = jest.fn<Promise<unknown>, [unknown]>();
 const mockBuildStakeRnbwCalls = jest.fn<Promise<Call[]>, [unknown]>();
 const mockBuildStakeRnbwExecutionPlan = jest.fn<Promise<{ calls: Call[]; requirements?: CallsRequirements }>, [unknown]>();
+const mockCanUseDelegatedExecution = jest.fn<boolean, [Address]>();
 const mockResolveManagedExecutionFailure = jest.fn<Promise<string | null>, [unknown]>();
 const mockTrackCallsExecution = jest.fn<void, [unknown]>();
 const mockWaitForManagedExecutionConfirmation = jest.fn<Promise<void>, [string]>();
@@ -75,6 +76,10 @@ jest.mock('@/utils/ethereumUtils', () => ({
 jest.mock('./stakeRnbwCalls', () => ({
   buildStakeRnbwCalls: (params: unknown) => mockBuildStakeRnbwCalls(params),
   buildStakeRnbwExecutionPlan: (params: unknown) => mockBuildStakeRnbwExecutionPlan(params),
+}));
+
+jest.mock('@/features/delegation/willDelegate', () => ({
+  canUseDelegatedExecution: (address: Address) => mockCanUseDelegatedExecution(address),
 }));
 
 const ACCOUNT: Address = '0x3333333333333333333333333333333333333333';
@@ -242,6 +247,7 @@ describe('executeStakeRnbw', () => {
     jest.clearAllMocks();
     mockBuildStakeRnbwCalls.mockResolvedValue([STAKE_CALL]);
     mockBuildStakeRnbwExecutionPlan.mockResolvedValue({ calls: [STAKE_CALL] });
+    mockCanUseDelegatedExecution.mockReturnValue(true);
     mockResolveManagedExecutionFailure.mockResolvedValue(null);
     mockWaitForManagedExecutionConfirmation.mockResolvedValue();
   });
@@ -464,6 +470,74 @@ describe('executeStakeRnbw', () => {
       }),
     });
     await expect(submittedRequest(hardwareSigner, 2)).resolves.toMatchObject({
+      to: STAKING_CONTRACT_ADDRESS,
+      value: 0n,
+      gasLimit: ESTIMATED_STAKE_GAS_LIMIT,
+      ...GAS_PARAMS,
+    });
+
+    await result.waitForConfirmation();
+
+    expect(waitForTransaction).toHaveBeenCalledTimes(2);
+    expect(waitForTransaction).toHaveBeenLastCalledWith(TX_HASH, 1, time.minutes(2));
+  });
+
+  it('uses confirmed sequential approval before staking when software-wallet delegation is unavailable', async () => {
+    const approvalConfirmation = defer<TransactionReceipt>();
+    const waitForTransaction = jest.spyOn(provider, 'waitForTransaction').mockImplementation(hash => {
+      if (hash === APPROVAL_TX_HASH) return approvalConfirmation.promise;
+      return Promise.resolve(buildReceipt(hash));
+    });
+    const sendTransaction = jest
+      .spyOn(signer, 'sendTransaction')
+      .mockImplementationOnce(transaction => buildTransactionResponse({ hash: APPROVAL_TX_HASH, nonce: 1, transaction }))
+      .mockImplementationOnce(transaction => buildTransactionResponse({ hash: TX_HASH, nonce: 2, transaction }));
+
+    mockCanUseDelegatedExecution.mockReturnValue(false);
+    mockBuildStakeRnbwCalls.mockResolvedValue([APPROVAL_CALL, STAKE_CALL]);
+    jest
+      .spyOn(provider, 'estimateGas')
+      .mockRejectedValueOnce(new Error('approval estimate failed'))
+      .mockResolvedValueOnce(ESTIMATED_STAKE_GAS_LIMIT);
+
+    const execution = executeStakeRnbw({
+      address: ACCOUNT,
+      asset: rnbwAsset,
+      gasParams: GAS_PARAMS,
+      preparedCalls: null,
+      provider,
+      signer,
+      stakeAmountRaw: STAKE_AMOUNT_RAW,
+    });
+
+    await waitForMockCalls(waitForTransaction, 1);
+
+    expect(sendTransaction).toHaveBeenCalledTimes(1);
+    await expect(resolveProperties(sendTransaction.mock.calls[0][0])).resolves.toMatchObject({
+      to: RNBW_TOKEN_ADDRESS,
+      value: 0n,
+      gasLimit: STAKING_APPROVAL_GAS_LIMIT,
+      ...GAS_PARAMS,
+    });
+    expect(waitForTransaction).toHaveBeenCalledWith(APPROVAL_TX_HASH, 1, time.minutes(2));
+
+    approvalConfirmation.resolve(buildReceipt(APPROVAL_TX_HASH));
+    const result = await execution;
+
+    expect(mockExecuteCalls).not.toHaveBeenCalled();
+    expect(sendTransaction).toHaveBeenCalledTimes(2);
+    expect(result.executionMode).toBe('manual');
+    expect(mockAddNewTransaction).toHaveBeenCalledWith({
+      address: ACCOUNT,
+      chainId: STAKING_CHAIN_ID,
+      transaction: expect.objectContaining({
+        hash: TX_HASH,
+        gasLimit: ESTIMATED_STAKE_GAS_LIMIT,
+        nonce: 2,
+        type: 'stake',
+      }),
+    });
+    await expect(resolveProperties(sendTransaction.mock.calls[1][0])).resolves.toMatchObject({
       to: STAKING_CONTRACT_ADDRESS,
       value: 0n,
       gasLimit: ESTIMATED_STAKE_GAS_LIMIT,
