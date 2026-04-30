@@ -12,8 +12,10 @@ import {
   type RawPolymarketMarket,
   type RawPolymarketOptimizedEvent,
 } from '@/features/polymarket/types/polymarket-event';
+import { getImagePrimaryColor } from '@/features/polymarket/utils/getImageColors';
 import { getMarketColors } from '@/features/polymarket/utils/getMarketColor';
 import { resolvePolymarketCardColor } from '@/features/polymarket/utils/getPolymarketCardColor';
+import { getHighContrastColor } from '@/hooks/useAccountAccentColor';
 
 export function processRawPolymarketMarket(market: RawPolymarketMarket, eventColor: ResponseByTheme<string>): PolymarketMarket {
   return {
