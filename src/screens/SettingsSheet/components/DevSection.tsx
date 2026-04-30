@@ -1,4 +1,4 @@
-import React, { useCallback, useContext, useState } from 'react';
+import React, { useCallback, useState } from 'react';
 
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import Clipboard from '@react-native-clipboard/clipboard';
@@ -8,11 +8,11 @@ import { getAllInternetCredentials, resetInternetCredentials } from 'react-nativ
 import Restart from 'react-native-restart';
 
 import { ImgixImage } from '@/components/images';
+import { useExperimentalConfigStore } from '@/config/experimentalConfigStore';
 import { defaultConfig, getExperimentalFlag, LOG_PUSH } from '@/config/experimentalHooks';
 import { IS_ANDROID, IS_INTERNAL } from '@/env';
 import { getDelegationContractAddress, isRainbowDelegated, isThirdPartyDelegated } from '@/features/delegation/status';
 import { WrappedAlert as Alert } from '@/helpers/alert';
-import { RainbowContext } from '@/helpers/RainbowContext';
 import { getPublicKeyOfTheSigningWalletAndCreateWalletIfNeeded } from '@/helpers/signingWallet';
 import * as i18n from '@/languages';
 import { logger, RainbowError } from '@/logger';
@@ -43,7 +43,8 @@ import MenuItem from './MenuItem';
 
 const DevSection = () => {
   const { navigate } = useNavigation();
-  const { config, setConfig } = useContext(RainbowContext) as any;
+  const config = useExperimentalConfigStore(state => state.config);
+  const toggleFlag = useExperimentalConfigStore(state => state.toggleFlag);
   const setConnectedToAnvil = useConnectedToAnvilStore.getState().setConnectedToAnvil;
   const accountAddress = useWalletsStore(state => state.accountAddress);
 
@@ -55,13 +56,13 @@ const DevSection = () => {
 
   const onExperimentalKeyChange = useCallback(
     (value: any) => {
-      setConfig({ ...config, [value]: !config[value] });
+      toggleFlag(value);
       if ((defaultConfig as any)[value].needsRestart) {
         Navigation.handleAction(Routes.WALLET_SCREEN);
         setTimeout(Restart.Restart, 1000);
       }
     },
-    [config, setConfig]
+    [toggleFlag]
   );
 
   const connectToAnvil = useCallback(async () => {

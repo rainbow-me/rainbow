@@ -101,14 +101,14 @@ export const defaultConfigValues = Object.entries(defaultConfig).reduce(
   {} as Record<ExperimentalConfigKey, boolean>
 );
 
-const storageKey = 'config';
+export const EXPERIMENTAL_CONFIG_STORAGE_KEY = 'config';
 
-const storage = createMMKV({
+export const experimentalConfigStorage = createMMKV({
   id: STORAGE_IDS.EXPERIMENTAL_CONFIG,
 });
 
 export function getExperimentalFlag(key: ExperimentalConfigKey): boolean {
-  const config = storage.getString(storageKey);
+  const config = experimentalConfigStorage.getString(EXPERIMENTAL_CONFIG_STORAGE_KEY);
   if (typeof config !== 'string') {
     return defaultConfig[key].value;
   }
