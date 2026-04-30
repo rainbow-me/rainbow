@@ -1057,19 +1057,19 @@
       },
       "gas": {
         "text": "Il s'agit des \"frais de gaz\" utilisés par la blockchain %{networkName} pour valider votre transaction de manière sécurisée.\n\nCes frais varient en fonction de la complexité de votre transaction et de l'encombrement du réseau !",
-        "title": "%{networkName} Network Fee"
+        "title": "Frais de réseau %{networkName}"
       },
       "smart_wallet_activation": {
         "text": "Cette transaction inclut une activation unique du Smart Wallet sur %{networkName}. Cela met à niveau votre portefeuille pour prendre en charge les transactions groupées et d'autres fonctionnalités de compte intelligent.\n\nLes frais d'activation sont inclus dans les frais de réseau pour ce swap.",
-        "title": "Smart Wallet Activation"
+        "title": "Activation du Smart Wallet"
       },
       "max_base_fee": {
         "text": "Il s'agit du maximum de frais de base que vous êtes prêt à payer pour cette transaction.\n\nFixer des frais de base maximaux plus élevés empêche votre transaction de se bloquer si les frais augmentent.",
-        "title": "Max Base Fee"
+        "title": "Frais de base max"
       },
       "miner_tip": {
         "text": "Le pourboire aux mineurs va directement au mineur qui confirme votre transaction sur le réseau.\n\nUn pourboire plus élevé rend votre transaction plus susceptible d'être confirmée rapidement.",
-        "title": "Miner Tip"
+        "title": "Pourboire mineur"
       },
       "apechain": {
         "text": "ApeChain est un réseau de couche 3 qui fonctionne au-dessus d'Arbitrum Orbit et d'Ethereum.\n\nIl améliore considérablement l'utilité de l'ApeCoin, favorisant une économie robuste et dynamique alimentée par $APE.",
@@ -2401,7 +2401,7 @@
       "find_a_token_to_buy": "Trouvez un jeton à acheter",
       "search_your_tokens": "Recherchez vos jetons",
       "error_executing_swap": "Erreur lors de l'exécution de l'échange",
-      "sponsorship_unavailable": "Free swaps are temporarily unavailable on this network. Please try again with network fees.",
+      "sponsorship_unavailable": "Les swaps gratuits sont temporairement indisponibles sur ce réseau. Veuillez réessayer avec des frais de réseau.",
       "tokens_input": {
         "tokens": "Jetons",
         "sort": "Trier",
@@ -2915,7 +2915,7 @@
         "disable_smart_wallet": "Désactiver le Smart Wallet",
         "enabled_description": "Vous manquerez des transactions plus rapides et des coûts de réseau plus bas",
         "disabled_description": "Les mises à jour prendront effet lors de votre prochain swap",
-        "will_delegate_callout": "Includes Smart Wallet activation",
+        "will_delegate_callout": "Inclut l’activation du Smart Wallet",
         "revoke_panel": {
           "disable_smart_wallet_title": "Désactiver le Smart Wallet",
           "disable_smart_wallet_subtitle": "Cela révoquera toutes les délégations actives et désactivera les fonctionnalités du Smart Wallet.",
