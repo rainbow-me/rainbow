@@ -1057,19 +1057,19 @@
       },
       "gas": {
         "text": "Esta es la \"tarifa de gas\" utilizada por la blockchain de %{networkName} para validar de forma segura tu transacción.\n\nEsta tarifa varía dependiendo de la complejidad de tu transacción y de lo ocupada que esté la red.",
-        "title": "%{networkName} Network Fee"
+        "title": "Tarifa de red %{networkName}"
       },
       "smart_wallet_activation": {
         "text": "Esta transacción incluye una activación única de Smart Wallet en %{networkName}. Esto actualiza tu billetera para admitir transacciones en lote y otras funciones de cuenta inteligente.\n\nLa tarifa de activación está incluida en la tarifa de red de este swap.",
-        "title": "Smart Wallet Activation"
+        "title": "Activación de Smart Wallet"
       },
       "max_base_fee": {
         "text": "Esta es la tarifa base máxima que está dispuesto a pagar por esta transacción.\n\nEstablecer una tarifa base máxima más alta evita que su transacción quede atascada si las tarifas aumentan.",
-        "title": "Max Base Fee"
+        "title": "Tarifa Base Máxima"
       },
       "miner_tip": {
         "text": "La propina del minero va directamente al minero que confirma su transacción en la red.\n\nUna propina más alta hace que su transacción sea más probable que se confirme rápidamente.",
-        "title": "Miner Tip"
+        "title": "Propina al Minero"
       },
       "apechain": {
         "text": "ApeChain es una red de capa <b>3</b> que se ejecuta sobre Arbitrum Orbit y Ethereum.\n\nMejora significativamente la utilidad de ApeCoin, fomentando una economía robusta y dinámica impulsada por $APE.",
@@ -2401,7 +2401,7 @@
       "find_a_token_to_buy": "Encuentra un token para comprar",
       "search_your_tokens": "Busca tus tokens",
       "error_executing_swap": "Error ejecutando intercambio",
-      "sponsorship_unavailable": "Free swaps are temporarily unavailable on this network. Please try again with network fees.",
+      "sponsorship_unavailable": "Los swaps gratis no están disponibles temporalmente en esta red. Intenta de nuevo con tarifas de red.",
       "tokens_input": {
         "tokens": "Tokens",
         "sort": "Ordenar",
@@ -2915,7 +2915,7 @@
         "disable_smart_wallet": "Deshabilitar Smart Wallet",
         "enabled_description": "Te perderás transacciones más rápidas y menores costos de red",
         "disabled_description": "Las actualizaciones se aplicarán en tu próximo swap",
-        "will_delegate_callout": "Includes Smart Wallet activation",
+        "will_delegate_callout": "Incluye la activación de Smart Wallet",
         "revoke_panel": {
           "disable_smart_wallet_title": "Deshabilitar Smart Wallet",
           "disable_smart_wallet_subtitle": "Esto revocará todas las delegaciones activas y deshabilitará las funciones de Smart Wallet.",
