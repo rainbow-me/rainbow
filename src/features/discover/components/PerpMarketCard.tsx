@@ -9,9 +9,11 @@ import { Text, TextIcon, useColorMode } from '@/design-system';
 import { useCandlestickStore } from '@/features/charts/stores/candlestickStore';
 import { CandleResolution } from '@/features/charts/types';
 import { convertStoredPerpPriceChangeToPercent, formatCompactPerpPercentChange } from '@/features/discover/components/perpMarketFormatting';
+import { PerpMarketSparkline } from '@/features/discover/components/PerpMarketSparkline';
 import { DOWN_ARROW, UP_ARROW } from '@/features/perps/constants';
 import { useHyperliquidMarketsStore } from '@/features/perps/stores/hyperliquidMarketsStore';
 import { navigateToPerpDetailScreen } from '@/features/perps/utils';
+import { useDiscoverPerpsStore } from '@/features/placements/stores/discover/discoverPerpsStore';
 import { type PlacementItem, type PlacementItemAnalyticsMetadata } from '@/features/placements/types';
 import { opacity } from '@/framework/ui/utils/opacity';
 
@@ -23,22 +25,26 @@ type PerpMarketCardProps = {
 
 export type { PerpMarketCardProps };
 
+const SPARKLINE_WIDTH = 44;
+const SPARKLINE_HEIGHT = 34;
+
+const PERP_MARKET_CARD_WIDTH_WITH_CHART = 210;
+export const PERP_MARKET_CARD_SLOT_WIDTH_WITH_CHART = PERP_MARKET_CARD_WIDTH_WITH_CHART;
 export const PERP_MARKET_CARD_HEIGHT = 76;
 
-const PERP_MARKET_CARD_WIDTH_NO_CHART = 154;
 const PERP_MARKET_CARD_MAX_WIDTH = 280;
-const PERP_MARKET_NO_CHART_FIXED_WIDTH = 94;
-const PERP_MARKET_NO_CHART_TEXT_MIN_WIDTH = PERP_MARKET_CARD_WIDTH_NO_CHART - PERP_MARKET_NO_CHART_FIXED_WIDTH;
+const PERP_MARKET_CHART_FIXED_WIDTH = 138;
+const PERP_MARKET_CHART_TEXT_MIN_WIDTH = PERP_MARKET_CARD_WIDTH_WITH_CHART - PERP_MARKET_CHART_FIXED_WIDTH;
 const ESTIMATED_SYMBOL_CHARACTER_WIDTH = 11;
 const SYMBOL_TEXT_BUFFER = 8;
 
 export function computePerpCardWidth({ symbol }: { symbol?: string }): number {
   const estimatedTextWidth = symbol
     ? symbol.length * ESTIMATED_SYMBOL_CHARACTER_WIDTH + SYMBOL_TEXT_BUFFER
-    : PERP_MARKET_NO_CHART_TEXT_MIN_WIDTH;
-  const textWidth = Math.max(PERP_MARKET_NO_CHART_TEXT_MIN_WIDTH, estimatedTextWidth);
+    : PERP_MARKET_CHART_TEXT_MIN_WIDTH;
+  const textWidth = Math.max(PERP_MARKET_CHART_TEXT_MIN_WIDTH, estimatedTextWidth);
 
-  return Math.min(PERP_MARKET_CARD_MAX_WIDTH, Math.ceil(PERP_MARKET_NO_CHART_FIXED_WIDTH + textWidth));
+  return Math.min(PERP_MARKET_CARD_MAX_WIDTH, Math.ceil(PERP_MARKET_CHART_FIXED_WIDTH + textWidth));
 }
 
 const PRICE_CHANGE_COLORS = {
@@ -48,6 +54,7 @@ const PRICE_CHANGE_COLORS = {
 
 export const PerpMarketCard = memo(function PerpMarketCard({ item, onPressTracked, style }: PerpMarketCardProps) {
   const market = useHyperliquidMarketsStore(state => state.getMarket(item.ref.id));
+  const chart = useDiscoverPerpsStore(state => state.getChart(item.ref.id));
   const candlestickPercentChange = useCandlestickStore(state => {
     const price = state.prices[item.ref.id];
     return price?.candleResolution === CandleResolution.H1 ? price.percentChange : undefined;
@@ -71,7 +78,9 @@ export const PerpMarketCard = memo(function PerpMarketCard({ item, onPressTracke
 
   const accentColor = market.metadata?.colors?.color || market.metadata?.colors?.fallbackColor || '#3ECFAD';
   const percentChange =
-    candlestickPercentChange ?? convertStoredPerpPriceChangeToPercent(market.priceChange['1h'] || market.priceChange['24h']);
+    candlestickPercentChange ??
+    chart?.percentChange ??
+    convertStoredPerpPriceChangeToPercent(market.priceChange['1h'] || market.priceChange['24h']);
   const isPositive = percentChange >= 0;
   const changeColor = isPositive
     ? isDarkMode
@@ -129,6 +138,18 @@ export const PerpMarketCard = memo(function PerpMarketCard({ item, onPressTracke
                   </Text>
                 </View>
               </View>
+            </View>
+
+            <View style={styles.chartFrame}>
+              {chart ? (
+                <PerpMarketSparkline
+                  chartColor={changeColor}
+                  data={chart}
+                  height={SPARKLINE_HEIGHT}
+                  percentChange={percentChange}
+                  width={SPARKLINE_WIDTH}
+                />
+              ) : null}
             </View>
           </View>
 
@@ -208,10 +229,17 @@ const styles = StyleSheet.create({
     minHeight: 20,
     minWidth: 0,
   },
+  chartFrame: {
+    alignItems: 'center',
+    height: SPARKLINE_HEIGHT,
+    justifyContent: 'center',
+    width: SPARKLINE_WIDTH,
+  },
   contentRow: {
     alignItems: 'center',
     flexDirection: 'row',
-    gap: 10,
+    gap: 8,
+    justifyContent: 'space-between',
     width: '100%',
   },
   iconBorder: {

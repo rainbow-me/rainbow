@@ -14,6 +14,7 @@ import { MarketCarousel } from '@/features/discover/components/MarketCarousel';
 import {
   computePerpCardWidth,
   PERP_MARKET_CARD_HEIGHT,
+  PERP_MARKET_CARD_SLOT_WIDTH_WITH_CHART,
   PerpMarketCard,
   type PerpMarketCardProps,
 } from '@/features/discover/components/PerpMarketCard';
@@ -78,7 +79,7 @@ export default function DiscoverHome() {
                   placementId={PLACEMENT_IDS.PERPS}
                   placement={perpsPlacement}
                   itemHeight={PERP_MARKET_CARD_HEIGHT}
-                  itemWidth={computePerpCardWidth({})}
+                  itemWidth={PERP_MARKET_CARD_SLOT_WIDTH_WITH_CHART}
                   getItemWidth={getPerpCardWidth}
                   data={perpsPlacement?.items ?? []}
                   keyExtractor={keyExtractor}
