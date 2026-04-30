@@ -1057,19 +1057,19 @@
       },
       "gas": {
         "text": "これは、あなたの取引を安全に検証するために %{networkName} ブロックチェーンで使用される「ガス手数料」です。\n\nこの手数料は、あなたの取引の複雑さとネットワークの混雑具合により変動します！",
-        "title": "%{networkName} ネットワーク手数料"
+        "title": "%{networkName} Network Fee"
       },
       "smart_wallet_activation": {
         "text": "このトランザクションには、%{networkName}でのスマートウォレットの一度限りの有効化が含まれています。これにより、バッチトランザクションやその他のスマートアカウント機能に対応するようウォレットがアップグレードされます。\n\n有効化手数料は、このスワップのネットワーク手数料に含まれています。",
-        "title": "スマートウォレットの有効化"
+        "title": "Smart Wallet Activation"
       },
       "max_base_fee": {
         "text": "これは、このトランザクションのために支払いたい最大のベース手数料です。\n\nより高い最大ベース手数料を設定すると、手数料が上昇した場合にトランザクションが詰まるのを防ぎます。",
-        "title": "最大ベース手数料"
+        "title": "Max Base Fee"
       },
       "miner_tip": {
         "text": "マイナーチップは、ネットワーク上でトランザクションを確認するマイナーに直接支払われます。\n\nより高いチップを設定すると、トランザクションが迅速に確認される可能性が高くなります。",
-        "title": "マイナーチップ"
+        "title": "Miner Tip"
       },
       "apechain": {
         "text": "ApeChainはArbitrum OrbitとEthereumの上で動作するLayer <b>3</b>ネットワークです。\n\nそれはApeCoinの実用性を著しく向上させ、$APEによって駆動される強力かつ動的な経済を促進します。",
@@ -2401,6 +2401,7 @@
       "find_a_token_to_buy": "購入するトークンを探す",
       "search_your_tokens": "トークンを検索",
       "error_executing_swap": "スワップの実行エラー",
+      "sponsorship_unavailable": "Free swaps are temporarily unavailable on this network. Please try again with network fees.",
       "tokens_input": {
         "tokens": "トークン",
         "sort": "ソート",
@@ -2422,7 +2423,8 @@
         "fast": "高速",
         "network_fee": "ネットワーク手数料",
         "normal": "通常",
-        "slow": "低速"
+        "slow": "低速",
+        "gas_sponsored": "無料"
       },
       "loading": "読み込み中...",
       "modal_types": {
@@ -2913,7 +2915,7 @@
         "disable_smart_wallet": "スマートウォレットを無効化",
         "enabled_description": "より速いトランザクションや、より低いネットワークコストを利用できなくなります",
         "disabled_description": "更新は次回のスワップで反映されます",
-        "will_delegate_callout": "スマートウォレットの有効化が含まれます",
+        "will_delegate_callout": "Includes Smart Wallet activation",
         "revoke_panel": {
           "disable_smart_wallet_title": "スマートウォレットを無効化",
           "disable_smart_wallet_subtitle": "これにより、有効な委任がすべて取り消され、スマートウォレット機能が無効になります。",
@@ -3934,10 +3936,6 @@
       }
     },
     "rnbw_staking": {
-      "wallet_access": {
-        "hardware_wallet_not_supported_title": "ハードウェアウォレットはサポートされていません",
-        "hardware_wallet_not_supported_message": "現在、RNBWステーキングはハードウェアウォレットでは利用できません。"
-      },
       "deposit": {
         "confirm_button": "長押しでステーク",
         "confirm_button_error": "ステークできません",
