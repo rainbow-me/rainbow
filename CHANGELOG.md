@@ -21,6 +21,22 @@ and this project adheres to [Semantic Versioning](http://semver.org/)
 
 ### Testing
 
+## [2.0.30](https://github.com/rainbow-me/rainbow/releases/tag/v2.0.30)
+
+### Added
+
+- Integrate new delegation SDK for Sponsored Swaps (https://github.com/rainbow-me/rainbow/pull/7380)
+
+### Changed
+
+- Bump iOS and Android to v2.0.30 (https://github.com/rainbow-me/rainbow/pull/7401)
+- Disallow unused imports (https://github.com/rainbow-me/rainbow/pull/7392)
+- Update polymarket collateral contracts (https://github.com/rainbow-me/rainbow/pull/7410)
+
+### Fixed
+
+- Fix initial sponsorship prediction (https://github.com/rainbow-me/rainbow/pull/7412)
+
 ## [2.0.29](https://github.com/rainbow-me/rainbow/releases/tag/v2.0.29)
 
 ### Changed
