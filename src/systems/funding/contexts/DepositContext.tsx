@@ -77,9 +77,7 @@ export function DepositProvider({ children, config, initialAsset, initialGasSpee
   };
 
   useCleanup(() => {
-    stores.gasStores.useMeteorologyStore.getState().reset(true);
-    stores.gasStores.useGasLimitStore.getState().reset(true);
-    stores.gasStores.useGasSponsorshipStore.getState().reset(true);
+    stores.gasStores.reset();
     stores.useQuoteStore.getState().reset(true);
   });
 

@@ -4,7 +4,7 @@ import { analytics } from '@/analytics';
 import { ensureError, logger } from '@/logger';
 import { createRainbowStore } from '@/state/internal/createRainbowStore';
 import { type OperationForScreen, type PerformanceLog, type Screen } from '@/state/performance/operations';
-import { getSelectedWallet } from '@/state/wallets/walletsStore';
+import { getIsHardwareWallet } from '@/state/wallets/walletsStore';
 
 type AnyFunction = (...args: any[]) => any;
 
@@ -27,9 +27,8 @@ export const performanceTracking = createRainbowStore<PerformanceTrackingState>(
   startTime: 0,
 }));
 
-export function isEnabled() {
-  const isHardwareWallet = getSelectedWallet()?.deviceId;
-  return !isHardwareWallet;
+export function isEnabled(): boolean {
+  return !getIsHardwareWallet();
 }
 
 function logPerformance<S extends Screen>({

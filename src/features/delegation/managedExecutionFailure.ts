@@ -8,8 +8,11 @@ type ManagedExecutionFailureParams = {
   status: RelayExecutionStatus;
 };
 
-// ============ API =========================================================== //
+// ============ Failure Resolution ============================================ //
 
+/**
+ * Resolves a user-facing failure reason for terminal managed relay failures.
+ */
 export async function resolveManagedExecutionFailure({ executionId, status }: ManagedExecutionFailureParams): Promise<string | null> {
   if (!isManagedExecutionFailure(status)) return null;
 
@@ -21,6 +24,9 @@ export async function resolveManagedExecutionFailure({ executionId, status }: Ma
   }
 }
 
+/**
+ * Formats relay failure details without issuing an additional status request.
+ */
 export function formatManagedExecutionFailure(status: RelayStatusSnapshot): string {
   const message = fallbackManagedExecutionFailureMessage(status.status);
   if (status.errorMessage) return `${message}: ${status.errorMessage}`;
@@ -28,11 +34,14 @@ export function formatManagedExecutionFailure(status: RelayStatusSnapshot): stri
   return message;
 }
 
-// ============ Helpers ======================================================= //
-
-function isManagedExecutionFailure(status: RelayExecutionStatus): boolean {
+/**
+ * Returns true for terminal managed relay failure states.
+ */
+export function isManagedExecutionFailure(status: RelayExecutionStatus): boolean {
   return status === RelayExecutionStatus.Failed || status === RelayExecutionStatus.Reverted;
 }
+
+// ============ Helpers ======================================================= //
 
 function fallbackManagedExecutionFailureMessage(status: RelayExecutionStatus): string {
   return status === RelayExecutionStatus.Reverted ? 'Managed relay execution reverted' : 'Managed relay execution failed';

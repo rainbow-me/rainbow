@@ -73,5 +73,5 @@ export function useWillExecuteDelegation(address: Address, chainId: number): boo
 }
 
 function canUseDelegatedWallet(wallet: RainbowWallet | undefined): boolean {
-  return wallet !== undefined && !wallet.deviceId && wallet.type !== WalletTypes.readOnly;
+  return wallet !== undefined && wallet.type !== WalletTypes.bluetooth && wallet.type !== WalletTypes.readOnly;
 }

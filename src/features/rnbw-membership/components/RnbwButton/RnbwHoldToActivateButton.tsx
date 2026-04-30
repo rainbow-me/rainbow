@@ -31,6 +31,7 @@ const SPINNER_EXIT = FadeOut.duration(time.ms(150));
 
 type RnbwHoldToActivateButtonProps = {
   variant?: 'primary' | 'secondary';
+  animateLabelLayout?: boolean;
   label: string;
   processingLabel: string;
   onActivate: () => void;
@@ -46,6 +47,7 @@ type RnbwHoldToActivateButtonProps = {
 
 export const RnbwHoldToActivateButton = memo(function RnbwHoldToActivateButton({
   variant = 'primary',
+  animateLabelLayout = true,
   label,
   processingLabel,
   onActivate,
@@ -88,7 +90,7 @@ export const RnbwHoldToActivateButton = memo(function RnbwHoldToActivateButton({
             <LoadingSpinner color={midpointTextColor} />
           </Animated.View>
         )}
-        <Animated.View layout={LAYOUT_ANIMATION} style={styles.labelContainer}>
+        <Animated.View layout={animateLabelLayout ? LAYOUT_ANIMATION : undefined} style={styles.labelContainer}>
           {isHardwareWallet && showBiometryIcon && !isProcessing && <LedgerIcon color={RNBW_BUTTON_CONFIG.primary.text.colors[0]} />}
           <RnbwButtonText variant={variant} size={size} weight={weight}>
             {displayLabel}

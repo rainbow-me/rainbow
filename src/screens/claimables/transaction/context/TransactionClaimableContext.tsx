@@ -11,11 +11,9 @@ import { GasSpeed } from '@/__swaps__/types/gas';
 import { transformRainbowTokenToParsedSearchAsset } from '@/__swaps__/utils/assets';
 import { getDefaultSlippageWorklet } from '@/__swaps__/utils/swaps';
 import { analytics } from '@/analytics';
-import type { LegacyTransactionGasParamAmounts, TransactionGasParamAmounts } from '@/entities/gas';
 import { lessThanOrEqualToWorklet } from '@/framework/core/safeMath';
 import { getProvider } from '@/handlers/web3';
 import {
-  add,
   convertAmountToBalanceDisplay,
   convertAmountToNativeDisplay,
   convertAmountToNativeDisplayWorklet,
@@ -29,7 +27,7 @@ import { getRemoteConfig } from '@/model/remoteConfig';
 import { loadWallet } from '@/model/wallet';
 import Navigation from '@/navigation/Navigation';
 import Routes from '@/navigation/routesNames';
-import { weiToGwei } from '@/parsers/gas';
+import { buildGasParams, weiToGwei } from '@/parsers/gas';
 import { walletExecuteRap } from '@/raps/execute';
 import { queryClient } from '@/react-query';
 import { ClaimableType, type Claimable, type TransactionClaimable } from '@/resources/addys/claimables/types';
@@ -344,13 +342,7 @@ export function TransactionClaimableContextProvider({
         return;
       }
 
-      const gasParams: TransactionGasParamAmounts | LegacyTransactionGasParamAmounts = gasSettings.isEIP1559
-        ? {
-            maxFeePerGas: add(gasSettings.maxBaseFee, gasSettings.maxPriorityFee),
-            maxPriorityFeePerGas: gasSettings.maxPriorityFee,
-          }
-        : { gasPrice: gasSettings.gasPrice };
-
+      const gasParams = buildGasParams(gasSettings);
       const gasFeeParamsBySpeed = getGasSettingsBySpeed(claimable.chainId);
 
       const claimTxns: TransactionClaimableTxPayload[] = [];

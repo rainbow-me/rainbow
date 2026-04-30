@@ -1,23 +1,64 @@
 import type { Signer } from '@ethersproject/abstract-signer';
+import { Wallet } from '@ethersproject/wallet';
 import { encodeFunctionData, erc20Abi, formatUnits, parseUnits, type Address, type Hash } from 'viem';
 
 import { analytics } from '@/analytics';
+import type { LegacyTransactionGasParamAmounts, TransactionGasParamAmounts } from '@/entities/gas';
 import { useRewardsBalanceStore } from '@/features/rnbw-rewards/stores/rewardsBalanceStore';
 import { prepareRewardsClaim, submitRewardsClaim, type ClaimToDestination } from '@/features/rnbw-rewards/utils/claimRewards';
-import { equalWorklet, greaterThanOrEqualToWorklet, isPositive, subWorklet } from '@/framework/core/safeMath';
+import { greaterThanOrEqualToWorklet, isPositive, subWorklet } from '@/framework/core/safeMath';
 import { getProvider } from '@/handlers/web3';
 import { RainbowError } from '@/logger';
 import { loadWallet } from '@/model/wallet';
+import { type TransactionAssetSource } from '@/raps/transactionAsset';
 import { userAssetsStoreManager } from '@/state/assets/userAssetsStoreManager';
 
-import { MIN_CLAIM_TO_STAKING_RAW, RNBW_DECIMALS, RNBW_TOKEN_ADDRESS, STAKING_CHAIN_ID } from '../constants';
+import { RNBW_DECIMALS, RNBW_TOKEN_ADDRESS, STAKING_CHAIN_ID } from '../constants';
 import { useStakingPositionStore } from '../stores/rnbwStakingPositionStore';
-import { canUseSponsoredRnbwStaking } from './canUseSponsoredRnbwStaking';
+import { executeStakeRnbw, type StakeRnbwExecution } from './executeStakeRnbw';
 import { pollForStakingUpdate } from './pollForStakingUpdate';
-import { stakeRnbwManual } from './stakeRnbwManual';
-import { stakeRnbwSponsored } from './stakeRnbwSponsored';
+import { type PreparedStakeRnbw } from './prepareStakeRnbw';
+import { resolveStakeClaimStrategy } from './resolveStakeClaimStrategy';
 
-export async function stakeRnbw({ address, amount }: { address: Address; amount: string }) {
+type StakeRnbwResult =
+  | {
+      isConfirmed: true;
+      waitForConfirmation: undefined;
+    }
+  | {
+      isConfirmed: false;
+      waitForConfirmation: () => Promise<void>;
+    };
+
+type StakeSuccessMetadata = {
+  amount: string;
+  amountFromRewards: string;
+  amountFromWallet: string;
+  claimFulfillsStake: boolean;
+  claimToDestination: ClaimToDestination;
+  executionMode: 'sponsored' | 'manual' | 'claim_only';
+};
+
+/**
+ * Stakes RNBW from wallet balance and claimable rewards.
+ *
+ * Transaction execution resolves after accepted submission and returns the
+ * confirmation work for the deposit flow to run after dismissal. Claim-only
+ * staking resolves after the claim is reflected in staking data.
+ */
+export async function stakeRnbw({
+  address,
+  amount,
+  asset,
+  gasParams,
+  preparedStake: preparedStakePromise,
+}: {
+  address: Address;
+  amount: string;
+  asset: TransactionAssetSource;
+  gasParams: LegacyTransactionGasParamAmounts | TransactionGasParamAmounts;
+  preparedStake: Promise<PreparedStakeRnbw | null>;
+}): Promise<StakeRnbwResult> {
   let claimToDestination: ClaimToDestination | undefined;
   let claimFulfillsStake: boolean | undefined;
   let executionMode: 'sponsored' | 'manual' | 'claim_only' | undefined;
@@ -28,9 +69,8 @@ export async function stakeRnbw({ address, amount }: { address: Address; amount:
     if (!signer) {
       throw new Error('Failed to load wallet');
     }
-
     const stakeAmountRaw = parseUnits(amount, RNBW_DECIMALS).toString();
-    const claimStrategy = await resolveClaimStrategy(stakeAmountRaw);
+    const claimStrategy = await resolveStakeClaimStrategy(stakeAmountRaw);
     claimToDestination = claimStrategy.claimToDestination;
     claimFulfillsStake = claimStrategy.claimFulfillsStake;
     const { requiredWalletBalanceRaw, walletStakeAmountRaw } = claimStrategy;
@@ -55,16 +95,15 @@ export async function stakeRnbw({ address, amount }: { address: Address; amount:
       }
     }
 
-    const canUseSponsoredStaking = await canUseSponsoredRnbwStaking(address, STAKING_CHAIN_ID);
     const originalStakedRnbwShares = useStakingPositionStore.getState().getData()?.poolShares ?? '0';
 
     await claimRnbwRewards({ address, signer, claimToDestination });
 
     if (claimFulfillsStake) {
+      executionMode = 'claim_only';
       await pollForStakingUpdate(originalStakedRnbwShares);
 
-      analytics.track(analytics.event.rnbwStakingStake, {
-        chainId: STAKING_CHAIN_ID,
+      trackStakeSuccess({
         amount,
         amountFromWallet,
         amountFromRewards,
@@ -72,7 +111,8 @@ export async function stakeRnbw({ address, amount }: { address: Address; amount:
         claimToDestination,
         claimFulfillsStake,
       });
-      return;
+
+      return { isConfirmed: true, waitForConfirmation: undefined };
     }
 
     /**
@@ -82,33 +122,102 @@ export async function stakeRnbw({ address, amount }: { address: Address; amount:
     await useStakingPositionStore.getState().fetch(undefined, { force: true });
     const postClaimShares = useStakingPositionStore.getState().getData()?.poolShares ?? originalStakedRnbwShares;
 
-    executionMode = canUseSponsoredStaking ? 'sponsored' : 'manual';
-    canUseSponsoredStaking
-      ? await stakeRnbwSponsored({ address, provider, stakeAmountRaw: walletStakeAmountRaw, signer })
-      : await stakeRnbwManual({ address, provider, stakeAmountRaw: walletStakeAmountRaw, signer });
+    const resolvedPreparedStake = signer instanceof Wallet ? await preparedStakePromise : null;
+    const preparedCalls = resolvedPreparedStake?.walletStakeAmountRaw === walletStakeAmountRaw ? resolvedPreparedStake.preparedCalls : null;
+    const execution = await executeStakeRnbw({
+      address,
+      asset,
+      gasParams,
+      preparedCalls,
+      provider,
+      signer,
+      stakeAmountRaw: walletStakeAmountRaw,
+    });
+    executionMode = execution.executionMode;
 
-    await pollForStakingUpdate(postClaimShares);
-
-    analytics.track(analytics.event.rnbwStakingStake, {
-      chainId: STAKING_CHAIN_ID,
+    const successMetadata: StakeSuccessMetadata = {
       amount,
       amountFromWallet,
       amountFromRewards,
       executionMode,
       claimToDestination,
       claimFulfillsStake,
-    });
+    };
+
+    return {
+      isConfirmed: false,
+      waitForConfirmation: () =>
+        finalizeSubmittedStakeRnbw({
+          execution,
+          postClaimShares,
+          successMetadata,
+        }),
+    };
   } catch (error) {
-    analytics.track(analytics.event.rnbwStakingStakeFailed, {
-      chainId: STAKING_CHAIN_ID,
+    trackStakeFailure({
       amount,
       executionMode,
       claimToDestination,
       claimFulfillsStake,
-      errorMessage: error instanceof Error ? error.message : 'Unknown error',
+      error,
     });
     throw error;
   }
+}
+
+async function finalizeSubmittedStakeRnbw({
+  execution,
+  postClaimShares,
+  successMetadata,
+}: {
+  execution: StakeRnbwExecution;
+  postClaimShares: string;
+  successMetadata: StakeSuccessMetadata;
+}): Promise<void> {
+  try {
+    await execution.waitForConfirmation();
+    await pollForStakingUpdate(postClaimShares);
+    trackStakeSuccess(successMetadata);
+  } catch (error) {
+    trackStakeFailure({
+      amount: successMetadata.amount,
+      executionMode: successMetadata.executionMode,
+      claimToDestination: successMetadata.claimToDestination,
+      claimFulfillsStake: successMetadata.claimFulfillsStake,
+      error,
+    });
+    throw error;
+  }
+}
+
+function trackStakeSuccess(metadata: StakeSuccessMetadata): void {
+  analytics.track(analytics.event.rnbwStakingStake, {
+    chainId: STAKING_CHAIN_ID,
+    ...metadata,
+  });
+}
+
+function trackStakeFailure({
+  amount,
+  executionMode,
+  claimToDestination,
+  claimFulfillsStake,
+  error,
+}: {
+  amount: string;
+  executionMode?: StakeSuccessMetadata['executionMode'];
+  claimToDestination?: ClaimToDestination;
+  claimFulfillsStake?: boolean;
+  error: unknown;
+}): void {
+  analytics.track(analytics.event.rnbwStakingStakeFailed, {
+    chainId: STAKING_CHAIN_ID,
+    amount,
+    executionMode,
+    claimToDestination,
+    claimFulfillsStake,
+    errorMessage: error instanceof Error ? error.message : 'Unknown error',
+  });
 }
 
 async function claimRnbwRewards({
@@ -128,38 +237,4 @@ async function claimRnbwRewards({
   const currency = userAssetsStoreManager.getState().currency;
   const preparedClaim = await prepareRewardsClaim({ address, signer });
   await submitRewardsClaim({ preparedClaim, currency, claimToDestination });
-}
-
-async function resolveClaimStrategy(stakeAmountRaw: string): Promise<{
-  claimToDestination: ClaimToDestination;
-  requiredWalletBalanceRaw: string;
-  walletStakeAmountRaw: string;
-  claimFulfillsStake: boolean;
-}> {
-  await useRewardsBalanceStore.getState().fetch(undefined, { force: true });
-  const claimableRnbw = useRewardsBalanceStore.getState().getData()?.claimableRnbw ?? '0';
-  const hasClaimable = useRewardsBalanceStore.getState().hasClaimableRewards();
-  const canOffsetWithClaim = hasClaimable && greaterThanOrEqualToWorklet(stakeAmountRaw, claimableRnbw);
-  const claimToStaking = canOffsetWithClaim && greaterThanOrEqualToWorklet(claimableRnbw, MIN_CLAIM_TO_STAKING_RAW);
-
-  /**
-   * The claim always executes before the stake tx, so any claimable rewards — whether routed
-   * to staking or to the wallet — reduce the wallet balance the user needs up front.
-   */
-  const requiredWalletBalanceRaw = canOffsetWithClaim ? subWorklet(stakeAmountRaw, claimableRnbw) : stakeAmountRaw;
-
-  /**
-   * When claiming to staking, the claimed tokens go directly to the staking contract,
-   * so only the remainder needs to be staked from the wallet.
-   * When claiming to wallet, the full stake amount is pulled from the wallet (which
-   * now includes the claimed tokens).
-   */
-  const walletStakeAmountRaw = claimToStaking ? subWorklet(stakeAmountRaw, claimableRnbw) : stakeAmountRaw;
-
-  return {
-    claimToDestination: claimToStaking ? 'staking' : 'wallet',
-    requiredWalletBalanceRaw,
-    walletStakeAmountRaw,
-    claimFulfillsStake: claimToStaking && equalWorklet(stakeAmountRaw, claimableRnbw),
-  };
 }

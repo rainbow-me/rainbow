@@ -230,6 +230,7 @@ const DepositInput = ({ inputProgress }: { inputProgress: SharedValue<number> })
     setInputAmounts,
     useAmountStore,
   } = useDepositContext();
+
   const isSourceSelectable = config.source.mode === 'selectable';
 
   const handleSelectAsset = useCallback(
@@ -266,7 +267,7 @@ const DepositInput = ({ inputProgress }: { inputProgress: SharedValue<number> })
         });
       })();
     },
-    [depositActions, gasStores, setInputAmounts, useAmountStore]
+    [config.initialSliderProgress, depositActions, gasStores, setInputAmounts, useAmountStore]
   );
 
   const handleOpenTokenList = useCallback(() => {
