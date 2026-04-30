@@ -12,7 +12,7 @@ import { useDispatch } from 'react-redux';
 
 import Divider from '@/components/Divider';
 import { type LegacyTransactionGasParamAmounts, type TransactionGasParamAmounts } from '@/entities/gas';
-import { GasFeeTypes, TransactionStatus, type GasFeeType } from '@/entities/transactions';
+import { canReplacePendingTransaction, GasFeeTypes, TransactionStatus, type GasFeeType } from '@/entities/transactions';
 import { removeRegistrationByName, saveCommitRegistrationParameters } from '@/features/ens/redux/registration';
 import styled from '@/framework/ui/styled-thing';
 import { opacity } from '@/framework/ui/utils/opacity';
@@ -32,7 +32,7 @@ import { parseGasParamsForTransaction } from '@/parsers/gas';
 import { updateGasFeeForSpeed } from '@/redux/gas';
 import ethUnits from '@/references/ethereum-units.json';
 import { ChainId } from '@/state/backendNetworks/types';
-import { updateTransaction } from '@/state/pendingTransactions';
+import { addNewTransaction } from '@/state/pendingTransactions';
 import { useAccountAddress, useIsHardwareWallet } from '@/state/wallets/walletsStore';
 import { position } from '@/styles';
 import { useTheme, type ThemeContextProps } from '@/theme/ThemeContext';
@@ -148,6 +148,7 @@ export default function SpeedUpAndCancelSheet() {
   const [to, setTo] = useState<string | undefined>(tx?.to ?? undefined);
   const [value, setValue] = useState<string>();
   const isL2 = isL2Chain({ chainId: tx?.chainId });
+  const canReplaceTransaction = canReplacePendingTransaction({ accountAddress, transaction: tx });
   const hasTransactionNonce = tx?.nonce !== undefined && tx?.nonce !== null;
 
   const getNewTransactionGasParams = useCallback(() => {
@@ -202,7 +203,7 @@ export default function SpeedUpAndCancelSheet() {
       }
       updatedTx.status = TransactionStatus.pending;
       updatedTx.type = 'cancel';
-      updateTransaction({
+      addNewTransaction({
         address: accountAddress,
         transaction: updatedTx,
         chainId: currentChainId,
@@ -282,7 +283,7 @@ export default function SpeedUpAndCancelSheet() {
       updatedTx.status = TransactionStatus.pending;
       updatedTx.type = 'speed_up';
 
-      updateTransaction({
+      addNewTransaction({
         address: accountAddress,
         transaction: updatedTx,
         chainId: currentChainId,
@@ -448,8 +449,8 @@ export default function SpeedUpAndCancelSheet() {
     return defaultSpeeds;
   }, [isL2]);
 
-  const isDelegationSpeedUp = type === SPEED_UP && tx.delegation;
-  if (isDelegationSpeedUp) {
+  const shouldHideReplacementSheet = !canReplaceTransaction || (type === SPEED_UP && tx.delegation);
+  if (shouldHideReplacementSheet) {
     goBack();
     return null;
   }

@@ -1,6 +1,7 @@
-import React, { memo, useCallback, useEffect, useMemo, useRef, useState, type PropsWithChildren } from 'react';
-import { StyleSheet, View, type LayoutChangeEvent } from 'react-native';
+import React, { memo, useCallback, useEffect, useMemo } from 'react';
+import { StyleSheet, View } from 'react-native';
 
+import { createDerivedStore } from '@storesjs/stores';
 import { LinearGradient } from 'expo-linear-gradient';
 import { Gesture, GestureDetector } from 'react-native-gesture-handler';
 import Animated, {
@@ -19,25 +20,39 @@ import { SPRING_CONFIGS } from '@/components/animations/animationConfigs';
 import ShimmerAnimation from '@/components/animations/ShimmerAnimation';
 import { BlurGradient } from '@/components/blur/BlurGradient';
 import {
+  TOAST_CONTENT_PADDING_LEFT,
+  TOAST_CONTENT_PADDING_RIGHT,
   TOAST_GAP_FAR,
   TOAST_GAP_NEAR,
   TOAST_HEIGHT,
-  TOAST_ICON_SIZE,
   TOAST_INITIAL_OFFSET_ABOVE,
   TOAST_INITIAL_OFFSET_BELOW,
-  TOAST_MIN_WIDTH,
   TOAST_TOP_OFFSET,
 } from '@/components/rainbow-toast/constants';
-import { ToastContent } from '@/components/rainbow-toast/ToastContent';
+import {
+  areToastContentLayoutsEqual,
+  buildToastContentLayout,
+  measureToastContentWidth,
+  ToastContent,
+  type ToastContentLayout,
+} from '@/components/rainbow-toast/ToastContent';
 import { type RainbowToast } from '@/components/rainbow-toast/types';
 import { useRainbowToastEnabled } from '@/components/rainbow-toast/useRainbowToastEnabled';
-import { useRainbowToasts, useRainbowToastsStore } from '@/components/rainbow-toast/useRainbowToastsStore';
+import {
+  getTopRainbowToast,
+  rainbowToastsActions,
+  useRainbowToasts,
+  useRainbowToastsStore,
+  type ToastState,
+} from '@/components/rainbow-toast/useRainbowToastsStore';
 import { Box, useColorMode, useForegroundColor } from '@/design-system';
 import { TransactionStatus } from '@/entities/transactions';
 import { IS_ANDROID, IS_IOS, IS_TEST } from '@/env';
 import useAccountSettings from '@/hooks/useAccountSettings';
 import useDimensions from '@/hooks/useDimensions';
-import { useAccountAddress } from '@/state/wallets/walletsStore';
+import { useListen } from '@/state/internal/hooks/useListen';
+import { useStoreSharedValue, type ReadOnlySharedValue } from '@/state/internal/hooks/useStoreSharedValue';
+import { useWalletsStore } from '@/state/wallets/walletsStore';
 
 import { RainbowToastExpandedDisplay } from './RainbowToastExpandedDisplay';
 import { useVerticalDismissPanGesture } from './useVerticalDismissPanGesture';
@@ -70,9 +85,9 @@ function toastsWithAdjustedIndex(toasts: RainbowToast[]): [RainbowToast, number]
 function RainbowToastDisplayContent() {
   const isShowingTransactionDetails = useRainbowToastsStore(state => state.isShowingTransactionDetails);
   const toasts = useRainbowToasts();
-  const { removeAllToasts } = useRainbowToastsStore();
   const { height: deviceHeight } = useDimensions();
 
+  const stackWidth = useStoreSharedValue(useToastStackWidth, width => width);
   const showingTransactionDetails = useSharedValue(false);
 
   useEffect(() => {
@@ -80,9 +95,7 @@ function RainbowToastDisplayContent() {
   }, [isShowingTransactionDetails, showingTransactionDetails]);
 
   const { dragY, panGesture, isDismissed } = useVerticalDismissPanGesture({
-    onDismiss: useCallback(() => {
-      removeAllToasts();
-    }, [removeAllToasts]),
+    onDismiss: rainbowToastsActions.removeAllToasts,
     height: deviceHeight,
     dismissSensitivity: 0.5,
     dismissTargetY: -100,
@@ -96,10 +109,7 @@ function RainbowToastDisplayContent() {
   });
 
   // Dismiss all toasts when changing account.
-  const address = useAccountAddress();
-  useEffect(() => {
-    removeAllToasts();
-  }, [address, removeAllToasts]);
+  useListen(useWalletsStore, s => s.accountAddress, rainbowToastsActions.removeAllToasts);
 
   // show all removing and 3 latest toasts
   const visibleToasts = useMemo(() => {
@@ -120,23 +130,6 @@ function RainbowToastDisplayContent() {
     return [...removingToasts, ...toastsToShow];
   }, [toasts]);
 
-  const [widths, setWidths] = useState<Record<string, number>>({});
-
-  const minWidth = useMemo(() => {
-    return Object.values(widths).reduce((acc, cur) => Math.max(acc, cur), TOAST_MIN_WIDTH);
-  }, [widths]);
-
-  const setToastWidth = useCallback((id: string, value: number) => {
-    setWidths(prev => {
-      return prev[id] !== value
-        ? {
-            ...prev,
-            [id]: value,
-          }
-        : prev;
-    });
-  }, []);
-
   const content = (
     <Box position="absolute" top="0px" left="0px" right="0px" bottom="0px" pointerEvents="box-none">
       <RainbowToastExpandedDisplay />
@@ -144,7 +137,7 @@ function RainbowToastDisplayContent() {
       <GestureDetector gesture={panGesture}>
         <Animated.View pointerEvents="box-none" style={[StyleSheet.absoluteFillObject, hiddenAnimatedStyle]}>
           {toastsWithAdjustedIndex(visibleToasts).map(([toast, index]) => {
-            return <RainbowToastItem minWidth={minWidth} onWidth={setToastWidth} key={toast.id} toast={toast} index={index} />;
+            return <RainbowToastItem stackWidth={stackWidth} key={toast.id} toast={toast} index={index} />;
           })}
         </Animated.View>
       </GestureDetector>
@@ -171,51 +164,42 @@ const springConfig: WithSpringConfig = {
 const DISMISS_THRESHOLD_PERCENTAGE = 0.1;
 const DISMISS_VELOCITY_THRESHOLD = 80;
 
-type Props = PropsWithChildren<{
+const useToastStackWidth = createDerivedStore(
+  $ => {
+    const layout = $(useRainbowToastsStore, selectTopToastContentLayout, areToastContentLayoutsEqual);
+    if (!layout) return 0;
+    return measureToastContentWidth(layout) + TOAST_CONTENT_PADDING_LEFT + TOAST_CONTENT_PADDING_RIGHT;
+  },
+  { lockDependencies: true }
+);
+
+function selectTopToastContentLayout(state: ToastState): ToastContentLayout | null {
+  const topToast = getTopRainbowToast(state.toasts);
+  if (!topToast) return null;
+  return buildToastContentLayout(topToast);
+}
+
+type Props = {
   toast: RainbowToast;
-  minWidth?: number;
-  onWidth: (id: string, width: number) => void;
+  stackWidth: ReadOnlySharedValue<number>;
   index: number;
-}>;
+};
 
-const RainbowToastItem = memo(function RainbowToast({ toast, minWidth: minWidthProp, onWidth, index }: Props) {
+const RainbowToastItem = memo(function RainbowToast({ toast, stackWidth, index }: Props) {
   const insets = useSafeAreaInsets();
-  const { finishRemoveToast, startRemoveToast, setShowExpandedToasts } = useRainbowToastsStore();
-  const { id } = toast;
-
-  const gap = index > 1 ? TOAST_GAP_FAR : TOAST_GAP_NEAR;
-  const distance = index * gap + insets.top + TOAST_TOP_OFFSET;
   const { isDarkMode } = useColorMode();
   const { width: deviceWidth } = useDimensions();
+
+  const id = toast.id;
+  const gap = index > 1 ? TOAST_GAP_FAR : TOAST_GAP_NEAR;
+  const distance = index * gap + insets.top + TOAST_TOP_OFFSET;
+  const startedHiddenBelow = index > 2;
+
+  const isPressed = useSharedValue(false);
+  const lastChangeX = useSharedValue(0);
   const opacity = useSharedValue(0);
   const translateX = useSharedValue(0);
-  const startedHiddenBelow = index > 2;
-  const translateY = useSharedValue(
-    (() => {
-      if (startedHiddenBelow) {
-        // if >3 (starting hidden), start from below
-        return distance + TOAST_INITIAL_OFFSET_BELOW;
-      } else {
-        return insets.top + TOAST_INITIAL_OFFSET_ABOVE;
-      }
-    })()
-  );
-
-  const lastChangeX = useSharedValue(0);
-  const isPressed = useSharedValue(false);
-  const minWidth = useSharedValue(TOAST_MIN_WIDTH);
-
-  useEffect(() => {
-    if (typeof minWidthProp === 'number') {
-      minWidth.value = minWidthProp;
-    }
-  }, [minWidth, minWidthProp]);
-
-  useEffect(() => {
-    return () => {
-      onWidth(id, 0);
-    };
-  }, [onWidth, id]);
+  const translateY = useSharedValue(startedHiddenBelow ? distance + TOAST_INITIAL_OFFSET_BELOW : insets.top + TOAST_INITIAL_OFFSET_ABOVE);
 
   useEffect(() => {
     if (!startedHiddenBelow) {
@@ -224,20 +208,15 @@ const RainbowToastItem = memo(function RainbowToast({ toast, minWidth: minWidthP
     }
   }, [opacity, translateY, distance, startedHiddenBelow]);
 
-  const isRemoving = useRef(false);
-
   const finishRemoveToastCallback = useCallback(() => {
-    finishRemoveToast(id);
-  }, [id, finishRemoveToast]);
+    rainbowToastsActions.finishRemoveToast(id);
+  }, [id]);
 
   const swipeRemoveToastCallback = useCallback(() => {
-    isRemoving.current = true;
-    onWidth(id, 0);
-    startRemoveToast(id, 'swipe');
-  }, [onWidth, id, startRemoveToast]);
+    rainbowToastsActions.startRemoveToast(id, 'swipe');
+  }, [id]);
 
   const hideToast = useCallback(() => {
-    'worklet';
     opacity.value = withSpring(0, springConfig, () => {
       runOnJS(finishRemoveToastCallback)();
     });
@@ -256,11 +235,9 @@ const RainbowToastItem = memo(function RainbowToast({ toast, minWidth: minWidthP
       .activeOffsetX([-10, 10])
       .failOffsetY([-10, 10])
       .onUpdate(event => {
-        'worklet';
         translateX.value = event.translationX;
       })
       .onEnd(event => {
-        'worklet';
         const velocityX = event.velocityX;
         lastChangeX.value = 0;
 
@@ -307,8 +284,8 @@ const RainbowToastItem = memo(function RainbowToast({ toast, minWidth: minWidthP
 
   const setShowExpandedTrue = useCallback(() => {
     isPressed.value = false;
-    setShowExpandedToasts(true);
-  }, [isPressed, setShowExpandedToasts]);
+    rainbowToastsActions.setShowExpandedToasts(true);
+  }, [isPressed]);
 
   const pressGesture = useMemo(() => {
     return Gesture.Tap()
@@ -332,14 +309,14 @@ const RainbowToastItem = memo(function RainbowToast({ toast, minWidth: minWidthP
 
   const outerContainerStyle = useAnimatedStyle(() => {
     return {
-      minWidth: withSpring(minWidth.value, SPRING_CONFIGS.snappierSpringConfig),
+      width: withSpring(stackWidth.value, SPRING_CONFIGS.snappierSpringConfig),
       transform: [{ scale: withSpring(isPressed.value ? 0.95 : 1) }],
     };
   });
 
   const contentContainerStyle = useAnimatedStyle(() => {
     return {
-      minWidth: withSpring(minWidth.value, SPRING_CONFIGS.snappierSpringConfig),
+      width: withSpring(stackWidth.value, SPRING_CONFIGS.snappierSpringConfig),
     };
   });
 
@@ -354,15 +331,6 @@ const RainbowToastItem = memo(function RainbowToast({ toast, minWidth: minWidthP
 
   const shadowOpacity = interpolate(index, [0, 2], [0.45, 0.2], 'clamp');
   const borderDark = useForegroundColor('separatorSecondary');
-
-  const handleLayout = useCallback(
-    (e: LayoutChangeEvent) => {
-      if (!isRemoving.current) {
-        onWidth(toast.id, Math.round(e.nativeEvent.layout.width + TOAST_ICON_SIZE + 12));
-      }
-    },
-    [onWidth, toast.id]
-  );
 
   return (
     <Animated.View pointerEvents="box-none" style={[styles.outerGestureView, dragStyle, { zIndex: 3 - index }]}>
@@ -435,7 +403,7 @@ const RainbowToastItem = memo(function RainbowToast({ toast, minWidth: minWidthP
               <ShimmerAnimation color="rgba(255, 255, 255, 0)" gradientColor="rgba(255, 255, 255, 0.08)" animationDuration={2500} />
             )}
 
-            <Animated.View style={innerContainerStyle} onLayout={handleLayout}>
+            <Animated.View style={innerContainerStyle}>
               <ToastContent toast={toast} />
             </Animated.View>
           </Animated.View>
@@ -473,11 +441,12 @@ const styles = StyleSheet.create({
   },
   innerContent: {
     overflow: 'hidden',
-    paddingHorizontal: 20,
+    paddingLeft: TOAST_CONTENT_PADDING_LEFT,
+    paddingRight: TOAST_CONTENT_PADDING_RIGHT,
     paddingVertical: 8,
     flex: 1,
     width: '100%',
-    alignItems: 'center',
+    alignItems: 'flex-start',
     justifyContent: 'center',
     borderRadius: 100,
   },

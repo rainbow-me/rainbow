@@ -1057,19 +1057,19 @@
       },
       "gas": {
         "text": "This is the \"gas fee\" used by the %{networkName} blockchain to securely validate your transaction.\n\nThis fee varies depending on the complexity of your transaction and how busy the network is!",
-        "title": "%{networkName} network fee"
+        "title": "%{networkName} Network Fee"
       },
       "smart_wallet_activation": {
         "text": "This transaction includes a one-time Smart Wallet activation on %{networkName}. This upgrades your wallet to support batched transactions and other smart account features.\n\nThe activation fee is included in the network fee for this swap.",
-        "title": "Smart Wallet activation"
+        "title": "Smart Wallet Activation"
       },
       "max_base_fee": {
         "text": "This is the maximum base fee you’re willing to pay for this transaction.\n\nSetting a higher max base fee prevents your transaction from getting stuck if fees rise.",
-        "title": "Max base fee"
+        "title": "Max Base Fee"
       },
       "miner_tip": {
         "text": "The miner tip goes directly to the miner who confirms your transaction on the network.\n\nA higher tip makes your transaction more likely to be confirmed quickly.",
-        "title": "Miner tip"
+        "title": "Miner Tip"
       },
       "apechain": {
         "text": "ApeChain is a Layer 3 network that runs on top of Arbitrum Orbit and Ethereum.\n\nIt significantly enhances ApeCoin's utility, fostering a robust and dynamic economy driven by $APE.",
@@ -2383,6 +2383,7 @@
       "find_a_token_to_buy": "Find a token to buy",
       "search_your_tokens": "Search your tokens",
       "error_executing_swap": "Error executing swap",
+      "sponsorship_unavailable": "Free swaps are temporarily unavailable on this network. Please try again with network fees.",
       "tokens_input": {
         "tokens": "Tokens",
         "sort": "Sort",
@@ -2404,7 +2405,8 @@
         "fast": "Fast",
         "network_fee": "Network Fee",
         "normal": "Normal",
-        "slow": "Slow"
+        "slow": "Slow",
+        "gas_sponsored": "Free"
       },
       "loading": "Loading...",
       "modal_types": {
@@ -2895,7 +2897,7 @@
         "disable_smart_wallet": "Disable Smart Wallet",
         "enabled_description": "You'll miss out on faster transactions and lower network costs",
         "disabled_description": "Updates will take effect on your next swap",
-        "will_delegate_callout": "Includes smart wallet activation",
+        "will_delegate_callout": "Includes Smart Wallet activation",
         "revoke_panel": {
           "disable_smart_wallet_title": "Disable Smart Wallet",
           "disable_smart_wallet_subtitle": "This will revoke all active delegations and disable Smart Wallet features.",
@@ -3902,10 +3904,6 @@
       }
     },
     "rnbw_staking": {
-      "wallet_access": {
-        "hardware_wallet_not_supported_title": "Hardware Wallet Not Supported",
-        "hardware_wallet_not_supported_message": "RNBW staking is not available for hardware wallets right now."
-      },
       "deposit": {
         "confirm_button": "Hold to Stake",
         "confirm_button_error": "Unable to stake",

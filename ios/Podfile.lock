@@ -2739,8 +2739,6 @@ PODS:
     - React-Core
   - RNSVG (15.15.4):
     - React-Core
-  - RNTextSize (4.0.0-rc.1):
-    - React
   - RSCrashReporter (1.0.1)
   - Rudder (1.31.1):
     - MetricsReporter (= 2.0.0)
@@ -2960,7 +2958,6 @@ DEPENDENCIES:
   - RNShare (from `../node_modules/react-native-share`)
   - RNSound (from `../node_modules/react-native-sound`)
   - RNSVG (from `../node_modules/react-native-svg`)
-  - RNTextSize (from `../node_modules/react-native-text-size`)
   - Shimmer
   - SRSRadialGradient (from `../node_modules/react-native-radial-gradient/ios`)
   - swift-vibrant
@@ -3312,8 +3309,6 @@ EXTERNAL SOURCES:
     :path: "../node_modules/react-native-sound"
   RNSVG:
     :path: "../node_modules/react-native-svg"
-  RNTextSize:
-    :path: "../node_modules/react-native-text-size"
   SRSRadialGradient:
     :path: "../node_modules/react-native-radial-gradient/ios"
   TcpSockets:
@@ -3508,7 +3503,6 @@ SPEC CHECKSUMS:
   RNShare: e374836177ff2675dbc659f2e52a59bf6060d200
   RNSound: 314cc5226453ef4a3314a196c65e8a65e5106a7b
   RNSVG: c8ba193e7bea6983ebdf544a6ee7b0f706c64559
-  RNTextSize: c5e0593c898ad57ef5061464c154ab855da06047
   RSCrashReporter: 6b8376ac729b0289ebe0908553e5f56d8171f313
   Rudder: 352cb3417238fb84cc083826d9a5a7cc91efaa69
   RudderKit: f272f9872183946452ac94cd7bb2244a71e6ca8f

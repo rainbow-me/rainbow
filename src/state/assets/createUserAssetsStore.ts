@@ -8,7 +8,6 @@ import { type ChainId } from '@/state/backendNetworks/types';
 import { useConnectedToAnvilStore } from '@/state/connectedToAnvil';
 import { createQueryStore } from '@/state/internal/createQueryStore';
 import { type LiveTokensData } from '@/state/liveTokens/liveTokensStore';
-import { useSwapsStore } from '@/state/swaps/swapsStore';
 import { getUniqueId } from '@/utils/ethereumUtils';
 import { time } from '@/utils/time';
 import { toUnixTime } from '@/worklets/dates';
@@ -22,6 +21,7 @@ import {
   getDefaultCacheKeys,
   getFilteredUserAssetIds,
   parsedSearchAssetToParsedAddressAsset,
+  selectHighestValueAsset,
   setUserAssets,
 } from './utils';
 
@@ -78,23 +78,7 @@ export const createUserAssetsStore = (address: Address | string) =>
         return getFilteredUserAssetIds({ filter, rawSearchQuery, selectUserAssetIds, setSearchCache });
       },
 
-      getHighestValueNativeAsset: () => {
-        const preferredNetwork = useSwapsStore.getState().preferredNetwork;
-        const assets = get().userAssets;
-        let highestValueNativeAsset = null;
-
-        for (const [, asset] of assets) {
-          if (!asset.isNativeAsset) continue;
-
-          if (preferredNetwork && asset.chainId === preferredNetwork) {
-            return asset;
-          }
-          if (!highestValueNativeAsset || asset.balance > highestValueNativeAsset.balance) {
-            highestValueNativeAsset = asset;
-          }
-        }
-        return highestValueNativeAsset;
-      },
+      getHighestValueAsset: options => selectHighestValueAsset(get().userAssets.values(), options),
 
       getNativeAssetForChain: (chainId: ChainId) => {
         const nativeAsset = useBackendNetworksStore.getState().getChainsNativeAsset()[chainId];

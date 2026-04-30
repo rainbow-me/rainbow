@@ -1,20 +1,20 @@
 import { Platform } from 'react-native';
 
 import { useQuery } from '@tanstack/react-query';
-import { createPublicClient, http, type Hash, type PublicClient, type TransactionReceipt } from 'viem';
+import { createPublicClient, http, isHash, type PublicClient } from 'viem';
 import { foundry } from 'viem/chains';
 
 import { type NativeCurrencyKey } from '@/entities/nativeCurrencyTypes';
 import { TransactionStatus, type MinedTransaction, type RainbowTransaction, type TransactionType } from '@/entities/transactions';
 import { IS_TEST } from '@/env';
 import { type GetTransactionByHashResponse } from '@/features/positions/types/generated/transaction/transaction';
-import { type RainbowFetchError } from '@/framework/data/http/rainbowFetch';
-import { logger, RainbowError } from '@/logger';
+import { RainbowFetchError } from '@/framework/data/http/rainbowFetch';
+import { ensureError, logger, RainbowError } from '@/logger';
 import { parseTransaction } from '@/parsers/transactions';
 import { createQueryKey, queryClient, type QueryFunctionArgs, type QueryFunctionResult } from '@/react-query';
 import { getPlatformClient } from '@/resources/platform/client';
 import { userAssetsStoreManager } from '@/state/assets/userAssetsStoreManager';
-import { useBackendNetworksStore } from '@/state/backendNetworks/backendNetworks';
+import { backendNetworksActions } from '@/state/backendNetworks/backendNetworks';
 import { type ChainId } from '@/state/backendNetworks/types';
 import { useAccountAddress } from '@/state/wallets/walletsStore';
 
@@ -78,28 +78,23 @@ export const fetchRawTransaction = async ({
 }): Promise<RainbowTransaction | null> => {
   if (IS_TEST && localPublicClient && chainId === anvilChain.id) {
     try {
-      const client = localPublicClient as PublicClient;
-      const receipt: TransactionReceipt = await client.getTransactionReceipt({
-        hash: hash as Hash,
-      });
+      if (!isHash(hash)) throw new Error('Invalid transaction hash');
 
-      if (!receipt) {
-        return null;
-      }
+      const receipt = await localPublicClient.getTransactionReceipt({ hash });
+      if (!receipt) return null;
 
       const status = receipt.status === 'success' ? TransactionStatus.confirmed : TransactionStatus.failed;
-
-      // Use originalType if available, otherwise fallback to a generic type for title construction
-      const transactionTypeForTitle = originalType || 'contract_interaction';
+      const type = originalType || 'contract_interaction';
 
       let titleKey: string;
       if (status === TransactionStatus.confirmed) {
-        titleKey = `${transactionTypeForTitle}.confirmed`;
+        titleKey = `${type}.confirmed`;
       } else if (status === TransactionStatus.failed) {
-        titleKey = `${transactionTypeForTitle}.failed`;
+        titleKey = `${type}.failed`;
       } else {
-        titleKey = transactionTypeForTitle;
+        titleKey = type;
       }
+
       const minedTx: MinedTransaction = {
         hash: receipt.transactionHash,
         blockNumber: Number(receipt.blockNumber),
@@ -111,7 +106,7 @@ export const fetchRawTransaction = async ({
         confirmations: 1,
         gasUsed: receipt.gasUsed.toString(),
         title: titleKey,
-        type: (originalType || 'contract_interaction') as TransactionType,
+        type,
         network: anvilChain.network,
         address: address,
         value: '0',
@@ -129,12 +124,13 @@ export const fetchRawTransaction = async ({
       return minedTx;
     } catch (e) {
       logger.error(new RainbowError('[transaction][e2e]: Failed to fetch transaction from Anvil'), {
-        message: (e as Error)?.message,
+        message: ensureError(e).message,
         hash,
       });
       return null;
     }
   }
+
   try {
     const response = await getPlatformClient().get<GetTransactionByHashResponse>('/transactions/GetTransactionByHash', {
       params: {
@@ -154,7 +150,7 @@ export const fetchRawTransaction = async ({
   } catch (e) {
     // 404 means the backend hasn't indexed this transaction yet, which is expected
     // for recently submitted transactions. Silently return null so callers can retry.
-    if ((e as RainbowFetchError).response?.status === 404) {
+    if (e instanceof RainbowFetchError && e.response?.status === 404) {
       return null;
     }
     logger.error(new RainbowError('[transaction]: Failed to fetch transaction', e));
@@ -195,7 +191,7 @@ export function useBackendTransaction({ hash, chainId }: BackendTransactionArgs)
   const paginatedTransactionsKey = consolidatedTransactionsQueryKey({
     address: accountAddress,
     currency: nativeCurrency,
-    chainIds: useBackendNetworksStore.getState().getSupportedMainnetChainIds(),
+    chainIds: backendNetworksActions.getSupportedMainnetChainIds(),
   });
 
   const params: TransactionArgs = {
@@ -209,14 +205,14 @@ export function useBackendTransaction({ hash, chainId }: BackendTransactionArgs)
     enabled: !!hash && !!accountAddress && !!chainId,
     initialData: () => {
       const queryData = queryClient.getQueryData<PaginatedTransactions>(paginatedTransactionsKey);
-      const pages = queryData?.pages || [];
+      const pages = queryData?.pages;
+      if (!pages) return undefined;
+
       for (const page of pages) {
         const tx = page.transactions.find(tx => tx.hash === hash);
-        if (tx) {
-          return tx;
-        }
-        return {};
+        if (tx) return tx;
       }
+      return undefined;
     },
     initialDataUpdatedAt: () => queryClient.getQueryState(paginatedTransactionsKey)?.dataUpdatedAt,
   });

@@ -20,6 +20,7 @@ import { navbarHeight } from '@/components/navbar/Navbar';
 import { DecoyScrollView } from '@/components/sheet/DecoyScrollView';
 import { Box } from '@/design-system';
 import { IS_ANDROID } from '@/env';
+import { useSponsoredSwapStore } from '@/features/delegation/sponsoredSwapStore';
 import { useDelayedMount } from '@/hooks/useDelayedMount';
 import { userAssetsStore } from '@/state/assets/userAssets';
 import { userAssetsStoreManager } from '@/state/assets/userAssetsStoreManager';
@@ -97,11 +98,12 @@ export function SwapScreen() {
 const useCleanupOnUnmount = () => {
   useEffect(() => {
     return () => {
-      const highestValueEth = userAssetsStore.getState().getHighestValueNativeAsset();
+      const preferredChainId = useSwapsStore.getState().preferredNetwork;
+      const defaultInputAsset = userAssetsStore.getState().getHighestValueAsset({ nativeAsset: 'preferred', preferredChainId });
 
       useSwapsStore.setState(state => {
-        const didInputAssetChange = state.inputAsset?.uniqueId !== highestValueEth?.uniqueId;
-        const inputAsset = didInputAssetChange ? parseAssetAndExtend({ asset: highestValueEth }) : state.inputAsset;
+        const didInputAssetChange = state.inputAsset?.uniqueId !== defaultInputAsset?.uniqueId;
+        const inputAsset = didInputAssetChange ? parseAssetAndExtend({ asset: defaultInputAsset }) : state.inputAsset;
         return {
           inputAsset,
           isSwapsOpen: false,
@@ -117,6 +119,7 @@ const useCleanupOnUnmount = () => {
       userAssetsStore.setState(state =>
         state.filter === 'all' && !state.inputSearchQuery.length ? state : { filter: 'all', inputSearchQuery: '' }
       );
+      useSponsoredSwapStore.setState({ queryCache: {} });
 
       clearCustomGasSettings();
     };
@@ -129,13 +132,13 @@ const WalletAddressObserver = () => {
   const lastAccountAddress = useRef(accountAddress);
 
   const setNewInputAsset = useCallback(() => {
-    const { filter, getHighestValueNativeAsset, userAssets } = userAssetsStore.getState();
+    const { filter, getHighestValueAsset } = userAssetsStore.getState();
+    const preferredChainId = useSwapsStore.getState().preferredNetwork;
 
     if (filter !== 'all') userAssetsStore.setState({ filter: 'all' });
-    const hasAssets = userAssets.size > 0;
 
     setAsset({
-      asset: hasAssets ? getHighestValueNativeAsset() : null,
+      asset: getHighestValueAsset({ nativeAsset: 'preferred', preferredChainId }),
       didWalletChange: true,
       type: SwapAssetType.inputAsset,
     });

@@ -40,7 +40,6 @@ export const DEFI_POSITIONS_THRESHOLD_FILTER = 'DeFi Minimum Value Filter';
 export const RNBW_REWARDS = 'RNBW Rewards';
 export const RNBW_MEMBERSHIP = 'RNBW Membership';
 export const DELEGATION = '7702 Delegation';
-export const ATOMIC_SWAPS = 'Atomic Swaps';
 
 /**
  * A developer setting that pushes log lines to an array in-memory so that
@@ -72,7 +71,7 @@ const config = {
   [DEGEN_MODE]: { settings: true, value: false },
   [FEATURED_RESULTS]: { settings: true, value: false },
   [CLAIMABLES]: { settings: true, value: false },
-  [NFTS_ENABLED]: { settings: true, value: !!IS_TEST },
+  [NFTS_ENABLED]: { settings: true, value: IS_TEST },
   [TRENDING_TOKENS]: { settings: true, value: false },
   [PERFORMANCE_TOAST]: { settings: true, value: false },
   [RAINBOW_COIN_EFFECT]: { settings: true, value: false },
@@ -89,7 +88,6 @@ const config = {
   [RNBW_REWARDS]: { settings: true, value: false },
   [RNBW_MEMBERSHIP]: { settings: true, value: false },
   [DELEGATION]: { settings: true, value: false },
-  [ATOMIC_SWAPS]: { settings: true, value: false },
 } as const;
 
 /** This flag is not reactive. We use this in a static context. */

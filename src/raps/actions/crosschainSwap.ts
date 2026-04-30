@@ -13,7 +13,7 @@ import { type ChainId } from '@/state/backendNetworks/types';
 import { addNewTransaction } from '@/state/pendingTransactions';
 import { executeFn, Screens, TimeToSignOperation } from '@/state/performance/performance';
 import { swapsStore } from '@/state/swaps/swapsStore';
-import type { BatchCall } from '@rainbow-me/delegation';
+import { type Call } from '@rainbow-me/delegation';
 import { prepareFillCrosschainQuote, SwapType, type CrosschainQuote } from '@rainbow-me/swaps';
 
 import { type ActionProps, type PrepareActionProps, type RapActionResult, type RapSwapActionParameters } from '../references';
@@ -176,6 +176,7 @@ function buildCrosschainSwapTransaction(
     asset: parameters.assetToSell,
     chainName: chainsName[parameters.assetToSell.chainId],
   });
+  const isBridge = isBridging(updatedAssetToSell, assetToBuy);
 
   return {
     chainId: parameters.chainId,
@@ -200,7 +201,13 @@ function buildCrosschainSwapTransaction(
     nonce,
     network: chainsName[parameters.chainId],
     status: TransactionStatus.pending,
-    type: isBridging(updatedAssetToSell, assetToBuy) ? 'bridge' : 'swap',
+    type: isBridge ? 'bridge' : 'swap',
+    swap: {
+      type: SwapType.crossChain,
+      fromChainId: parameters.assetToSell.chainId,
+      toChainId: parameters.assetToBuy.chainId,
+      isBridge,
+    },
     ...gasParams,
   };
 }
@@ -209,17 +216,11 @@ export const prepareCrosschainSwap = async ({
   parameters,
   quote,
 }: PrepareActionProps<'crosschainSwap'>): Promise<{
-  call: BatchCall;
+  call: Call;
   transaction: Omit<NewTransaction, 'hash'>;
 }> => {
   const nonce = requireNonce(parameters.nonce, 'crosschainSwap parameters.nonce');
-  const tx = await prepareFillCrosschainQuote(quote, REFERRER);
-
-  const preparedCall = {
-    to: requireAddress(tx.to, 'crosschain prepared tx.to'),
-    value: toHex(tx.value ?? 0),
-    data: requireHex(tx.data, 'crosschain prepared tx.data'),
-  };
+  const preparedCall = await prepareCrosschainSwapCall({ quote });
   const transaction = {
     ...buildCrosschainSwapTransaction(parameters, parameters.gasParams, nonce),
     to: preparedCall.to,
@@ -232,6 +233,16 @@ export const prepareCrosschainSwap = async ({
     transaction,
   };
 };
+
+export async function prepareCrosschainSwapCall({ quote }: { quote: CrosschainQuote }): Promise<Call> {
+  const tx = await prepareFillCrosschainQuote(quote, REFERRER);
+
+  return {
+    to: requireAddress(tx.to, 'crosschain prepared tx.to'),
+    value: BigInt(tx.value?.toString() ?? '0'),
+    data: requireHex(tx.data, 'crosschain prepared tx.data'),
+  };
+}
 
 export const crosschainSwap = async ({
   wallet,

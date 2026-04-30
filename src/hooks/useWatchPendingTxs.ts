@@ -1,166 +1,379 @@
 import { useCallback } from 'react';
 
+import type { Address, Hash } from 'viem';
+
 import { analytics } from '@/analytics';
 import { event } from '@/analytics/event';
-import { useRainbowToastsStore } from '@/components/rainbow-toast/useRainbowToastsStore';
-import { TransactionStatus, type MinedTransaction, type RainbowTransaction } from '@/entities/transactions';
+import { rainbowToastsActions } from '@/components/rainbow-toast/useRainbowToastsStore';
+import {
+  isAwaitingRelayTransactionHash,
+  TransactionStatus,
+  type PendingTransaction,
+  type RainbowTransaction,
+  type SettledTransaction,
+} from '@/entities/transactions';
+import { areDestinationTxHashesEqual } from '@/features/delegation/managedExecutionStatus';
 import { logger, RainbowError } from '@/logger';
-import { buildTransactionTitle, isValidTransactionStatus } from '@/parsers/transactions';
 import { queryClient } from '@/react-query';
 import type { SupportedCurrencyKey } from '@/references/supportedCurrencies';
 import { consolidatedTransactionsQueryKey } from '@/resources/transactions/consolidatedTransactions';
-import { fetchRawTransaction } from '@/resources/transactions/transaction';
+import { fetchRawTransaction, type PaginatedTransactions } from '@/resources/transactions/transaction';
 import { userAssetsStoreManager } from '@/state/assets/userAssetsStoreManager';
-import { useBackendNetworksStore } from '@/state/backendNetworks/backendNetworks';
-import { useMinedTransactionsStore } from '@/state/minedTransactions/minedTransactions';
-import { pendingTransactionsActions } from '@/state/pendingTransactions';
+import { useAssetUpdatesStore } from '@/state/assetUpdates/assetUpdates';
+import { backendNetworksActions } from '@/state/backendNetworks/backendNetworks';
+import { type ChainId } from '@/state/backendNetworks/types';
+import { pendingTransactionsActions, usePendingTransactionsStore } from '@/state/pendingTransactions';
+import { type RelayStatusSnapshot } from '@rainbow-me/delegation';
 
-async function fetchTransaction({
+import { resolveTrackedTransaction } from './pendingTransactionResolution';
+
+// ============ Types ========================================================== //
+
+type WatchPendingTransactionsArgs = {
+  abortController: AbortController;
+  address: Address;
+  currency: SupportedCurrencyKey;
+  transactions: PendingTransaction[];
+};
+
+type TransactionHistoryPages = NonNullable<PaginatedTransactions['pages']>;
+
+type TransactionEntry = {
+  nextTransaction: RainbowTransaction;
+  relayStatus?: RelayStatusSnapshot;
+  settledTransition?: SettledTransaction;
+};
+
+type RelayTransactionLookupSource = {
+  chainId: ChainId;
+  txHashes: readonly Hash[];
+};
+
+// ============ API ============================================================ //
+
+/**
+ * Returns the pending-transaction watcher callback scoped to `address`.
+ */
+export const useWatchPendingTransactions = ({ address }: { address: Address }) => {
+  const currency = userAssetsStoreManager(state => state.currency);
+
+  return useCallback(
+    (transactions: PendingTransaction[], abortController: AbortController) =>
+      watchPendingTransactions({
+        abortController,
+        address,
+        currency,
+        transactions,
+      }),
+    [address, currency]
+  );
+};
+
+/**
+ * Resolves pending-transaction overlays, triggers side effects for newly
+ * settled transactions, and keeps hash-backed successful overlays visible until
+ * history catches up.
+ */
+export async function watchPendingTransactions({
+  abortController,
+  address,
+  currency,
+  transactions,
+}: WatchPendingTransactionsArgs): Promise<void> {
+  if (!transactions.length) return;
+
+  const currentTransactions = readStoredTransactions(address);
+  let canceled = abortController.signal.aborted;
+  abortController.signal.addEventListener('abort', () => {
+    canceled = true;
+  });
+
+  const now = Math.floor(Date.now() / 1000);
+  const entries = await Promise.all(
+    transactions.map(transaction =>
+      readTransactionEntry({
+        abortController,
+        address,
+        currency,
+        transaction,
+      })
+    )
+  );
+
+  if (canceled) return;
+
+  const relayStatuses: RelayStatusSnapshot[] = [];
+  const settledTransitions: SettledTransaction[] = [];
+  const confirmedTransitions: SettledTransaction[] = [];
+
+  for (const entry of entries) {
+    if (entry.relayStatus) relayStatuses.push(entry.relayStatus);
+
+    const settledTransition = entry.settledTransition;
+    if (!settledTransition) continue;
+
+    settledTransitions.push(settledTransition);
+    if (settledTransition.status === TransactionStatus.confirmed) confirmedTransitions.push(settledTransition);
+  }
+
+  const historyPages = readHistoryPages({ address, currency });
+  const visibleTransactions = buildVisibleTransactions({
+    currentTransactions,
+    entries,
+    historyPages,
+  });
+
+  pendingTransactionsActions.setPendingTransactions({
+    address,
+    pendingTransactions: visibleTransactions,
+  });
+
+  if (settledTransitions.length) {
+    settledTransitions.forEach(transaction => rainbowToastsActions.handleTransaction(transaction));
+  }
+
+  if (confirmedTransitions.length) {
+    useAssetUpdatesStore.getState().addWatchedTransactions({
+      address,
+      transactions: confirmedTransitions,
+    });
+
+    confirmedTransitions.forEach(transaction => {
+      analytics.track(event.pendingTransactionResolved, {
+        chainId: transaction.chainId,
+        type: transaction.type,
+        timeToResolve: typeof transaction.minedAt === 'number' ? (now - transaction.minedAt) * 1000 : undefined,
+      });
+    });
+  }
+
+  const hasIndexableConfirmation = confirmedTransitions.some(transaction => !isAwaitingRelayTransactionHash(transaction));
+  if (!hasIndexableConfirmation && !relayStatuses.length) return;
+
+  void syncConsolidatedHistory({
+    address,
+    currency,
+    hasIndexableConfirmation,
+    historyPages,
+    relayStatuses,
+  });
+}
+
+// ============ Resolution ===================================================== //
+
+async function readTransactionEntry({
   abortController,
   address,
   currency,
   transaction,
 }: {
-  abortController: AbortController | null;
-  address: string;
+  abortController: AbortController;
+  address: Address;
   currency: SupportedCurrencyKey;
-  transaction: RainbowTransaction;
-}): Promise<RainbowTransaction> {
-  try {
-    if (!transaction.chainId || !transaction.hash) {
-      throw new Error('Pending transaction missing chainId or hash');
-    }
+  transaction: PendingTransaction;
+}): Promise<TransactionEntry> {
+  const resolution = await resolveTrackedTransaction({
+    abortController,
+    address,
+    currency,
+    transaction,
+  });
 
-    const fetchedTransaction = await fetchRawTransaction({
-      abortController,
-      address,
-      chainId: transaction.chainId,
-      currency,
-      hash: transaction.hash,
-      originalType: transaction.type,
-    });
-
-    return applyTransactionUpdates(transaction, fetchedTransaction);
-  } catch (e) {
-    logger.error(new RainbowError('[fetchTransaction]: Failed to fetch transaction', e), {
-      transaction,
-    });
-    return transaction;
-  }
-}
-
-export const useWatchPendingTransactions = ({ address }: { address: string }) => {
-  const nativeCurrency = userAssetsStoreManager(state => state.currency);
-
-  const watchPendingTransactions = useCallback(
-    async (pendingTransactions: RainbowTransaction[], abortController: AbortController) => {
-      if (!pendingTransactions.length) return;
-
-      // This abort signal will be called if new transactions are received. In that
-      // case we need to cancel this fetch since it will now be stale.
-      let canceled = abortController.signal.aborted;
-      abortController.signal.addEventListener('abort', () => {
-        canceled = true;
-      });
-
-      const now = Math.floor(Date.now() / 1000);
-
-      const fetchedTransactions = await Promise.all(
-        pendingTransactions.map((transaction: RainbowTransaction) =>
-          fetchTransaction({ abortController, address, currency: nativeCurrency, transaction })
-        )
-      );
-
-      if (canceled) return;
-
-      const { newPendingTransactions, minedTransactions } = fetchedTransactions.reduce<{
-        newPendingTransactions: RainbowTransaction[];
-        minedTransactions: MinedTransaction[];
-      }>(
-        (acc, tx) => {
-          if (tx.status === TransactionStatus.pending) {
-            acc.newPendingTransactions.push(tx);
-          } else {
-            acc.minedTransactions.push(tx as MinedTransaction);
-            analytics.track(event.pendingTransactionResolved, {
-              chainId: tx.chainId,
-              type: tx.type,
-              timeToResolve: tx.minedAt ? (now - tx.minedAt) * 1000 : undefined,
-            });
-          }
-          return acc;
-        },
-        {
-          newPendingTransactions: [],
-          minedTransactions: [],
-        }
-      );
-
-      pendingTransactionsActions.setPendingTransactions({
-        address,
-        pendingTransactions: newPendingTransactions,
-      });
-
-      if (!minedTransactions.length) return;
-
-      useMinedTransactionsStore.getState().addMinedTransactions({ address, transactions: minedTransactions });
-      minedTransactions.forEach(tx => useRainbowToastsStore.getState().handleTransaction(tx));
-
-      await queryClient.refetchQueries({
-        queryKey: consolidatedTransactionsQueryKey({
-          address,
-          currency: nativeCurrency,
-          chainIds: useBackendNetworksStore.getState().getSupportedChainIds(),
-        }),
-        type: 'all',
-      });
-    },
-    [address, nativeCurrency]
-  );
-
-  return watchPendingTransactions;
-};
-
-/**
- * If pending, applies only the fields that change during a pending transaction's
- * lifecycle to the original transaction.
- *
- * If confirmed, prefers the fetched transaction over the original for certain
- * transaction types.
- *
- * This works around the lack of rich metadata in fetched pending transactions.
- */
-function applyTransactionUpdates(original: RainbowTransaction, fetched: RainbowTransaction | null): RainbowTransaction {
-  if (!fetched) return original;
-
-  const status = isValidTransactionStatus(fetched.status) ? fetched.status : original.status;
-  if (status === original.status) return original;
-
-  if (status === TransactionStatus.confirmed && !shouldPreferLocalTransaction(original.type)) {
-    return { ...original, ...fetched };
-  }
+  const relayStatus = resolution.relayStatus;
+  const trackedTransaction = resolution.transaction;
+  const settledTransition = resolution.kind === 'settled' ? resolution.transaction : undefined;
 
   return {
-    ...original,
-    status,
-    title: buildTransactionTitle(original.type, status),
+    nextTransaction: trackedTransaction,
+    relayStatus: relayStatus && didRelayOnchainEvidenceChange(transaction, trackedTransaction) ? relayStatus : undefined,
+    settledTransition,
   };
 }
 
-/**
- * Prefers local transaction data for a subset of transaction types which
- * contain bad metadata in the confirmed fetched transaction.
- *
- * This primarily affects the labels displayed in the confirmation toast.
- */
-function shouldPreferLocalTransaction(originalType: RainbowTransaction['type']): boolean {
-  switch (originalType) {
-    case 'bridge':
-    case 'cancel':
-    case 'speed_up':
-    case 'swap':
-      return true;
-    default:
-      return false;
+function didRelayOnchainEvidenceChange(previousTransaction: RainbowTransaction, nextTransaction: RainbowTransaction): boolean {
+  if (nextTransaction.hash !== previousTransaction.hash) {
+    return true;
   }
+  return !areDestinationTxHashesEqual(previousTransaction.relayDestinationTxHashes, nextTransaction.relayDestinationTxHashes);
+}
+
+// ============ History Sync =================================================== //
+
+async function syncConsolidatedHistory({
+  address,
+  currency,
+  hasIndexableConfirmation,
+  historyPages,
+  relayStatuses,
+}: {
+  address: Address;
+  currency: SupportedCurrencyKey;
+  hasIndexableConfirmation: boolean;
+  historyPages: TransactionHistoryPages;
+  relayStatuses: readonly RelayStatusSnapshot[];
+}): Promise<void> {
+  try {
+    const relayTransactionLookupCount = relayStatuses.length
+      ? await lookUpRelayTransactionsByHash({ address, currency, historyPages, relayStatuses })
+      : 0;
+
+    if (!hasIndexableConfirmation && relayTransactionLookupCount === 0) return;
+
+    await queryClient.refetchQueries({
+      queryKey: consolidatedTransactionsQueryKey({
+        address,
+        currency,
+        chainIds: backendNetworksActions.getSupportedMainnetChainIds(),
+      }),
+      type: 'all',
+    });
+
+    pruneIndexedTransactions({ address, currency });
+  } catch (error) {
+    logger.error(new RainbowError('[watchPendingTransactions]: Failed to sync indexed transaction history', error), {
+      address,
+      relayStatuses: relayStatuses.length,
+    });
+  }
+}
+
+/**
+ * Fetches relayed transactions through `/transactions/GetTransactionByHash`
+ * so the consolidated history backend indexes them immediately.
+ *
+ * Returns the number of newly fetched transactions.
+ */
+async function lookUpRelayTransactionsByHash({
+  address,
+  currency,
+  historyPages,
+  relayStatuses,
+}: {
+  address: Address;
+  currency: SupportedCurrencyKey;
+  historyPages: TransactionHistoryPages;
+  relayStatuses: readonly RelayStatusSnapshot[];
+}): Promise<number> {
+  const seen = new Set<string>();
+  const requests: Promise<RainbowTransaction | null>[] = [];
+
+  function queueRelayTransactionLookups(source: RelayTransactionLookupSource): void {
+    for (const hash of source.txHashes) {
+      const identity = `${source.chainId}:${hash.toLowerCase()}`;
+      if (seen.has(identity) || isTransactionInHistory({ historyPages, transaction: { chainId: source.chainId, hash } })) continue;
+
+      seen.add(identity);
+      requests.push(fetchRawTransaction({ address, currency, chainId: source.chainId, hash }));
+    }
+  }
+
+  for (const statusSnapshot of relayStatuses) {
+    const onchain = statusSnapshot.onchain;
+    if (!onchain) continue;
+    queueRelayTransactionLookups(onchain.origin);
+
+    if (onchain.type === 'crosschain') {
+      queueRelayTransactionLookups(onchain.destination);
+    }
+  }
+
+  if (!requests.length) return 0;
+
+  await Promise.allSettled(requests);
+  return requests.length;
+}
+
+// ============ Visibility ===================================================== //
+
+const EMPTY_PAGES: TransactionHistoryPages = [];
+const EMPTY_TRANSACTIONS: RainbowTransaction[] = [];
+
+function readStoredTransactions(address: Address): RainbowTransaction[] {
+  return usePendingTransactionsStore.getState().pendingTransactions[address] || EMPTY_TRANSACTIONS;
+}
+
+function readHistoryPages({ address, currency }: { address: Address; currency: SupportedCurrencyKey }): TransactionHistoryPages {
+  const queryData = queryClient.getQueryData<PaginatedTransactions>(
+    consolidatedTransactionsQueryKey({
+      address,
+      currency,
+      chainIds: backendNetworksActions.getSupportedMainnetChainIds(),
+    })
+  );
+
+  return queryData?.pages ?? EMPTY_PAGES;
+}
+
+function buildVisibleTransactions({
+  currentTransactions,
+  entries,
+  historyPages,
+}: {
+  currentTransactions: RainbowTransaction[];
+  entries: TransactionEntry[];
+  historyPages: TransactionHistoryPages;
+}): RainbowTransaction[] {
+  const visibleTransactions: RainbowTransaction[] = [];
+  let pendingEntryIndex = 0;
+
+  for (const transaction of currentTransactions) {
+    let nextTransaction = transaction;
+
+    if (transaction.status === TransactionStatus.pending) {
+      nextTransaction = entries[pendingEntryIndex]?.nextTransaction ?? transaction;
+      pendingEntryIndex += 1;
+    }
+
+    if (shouldRetainLocalTransactionOverlay({ historyPages, transaction: nextTransaction })) {
+      visibleTransactions.push(nextTransaction);
+    }
+  }
+
+  return visibleTransactions;
+}
+
+function pruneIndexedTransactions({ address, currency }: { address: Address; currency: SupportedCurrencyKey }): void {
+  const historyPages = readHistoryPages({ address, currency });
+  const currentTransactions = readStoredTransactions(address);
+  const visibleTransactions = currentTransactions.filter(transaction => shouldRetainLocalTransactionOverlay({ historyPages, transaction }));
+
+  pendingTransactionsActions.setPendingTransactions({
+    address,
+    pendingTransactions: visibleTransactions,
+  });
+}
+
+function shouldRetainLocalTransactionOverlay({
+  historyPages,
+  transaction,
+}: {
+  historyPages: TransactionHistoryPages;
+  transaction: RainbowTransaction;
+}): boolean {
+  if (transaction.status === TransactionStatus.pending) return true;
+  if (transaction.status === TransactionStatus.failed) return false;
+  if (isAwaitingRelayTransactionHash(transaction)) return false;
+  return !isTransactionInHistory({ historyPages, transaction });
+}
+
+function isTransactionInHistory({
+  historyPages,
+  transaction,
+}: {
+  historyPages: TransactionHistoryPages;
+  transaction: Pick<RainbowTransaction, 'chainId' | 'hash'>;
+}): boolean {
+  const targetHash = transaction.hash.toLowerCase();
+
+  for (const page of historyPages) {
+    if (
+      page.transactions.some(
+        indexedTransaction => indexedTransaction.chainId === transaction.chainId && indexedTransaction.hash.toLowerCase() === targetHash
+      )
+    ) {
+      return true;
+    }
+  }
+
+  return false;
 }

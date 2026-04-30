@@ -116,7 +116,7 @@ export const useWalletsStore = createRainbowStore<WalletsState>(
       return !!wallets[walletId ?? selected?.id ?? '']?.damaged;
     },
     getIsReadOnlyWallet: () => get().selected?.type === WalletTypes.readOnly,
-    getIsHardwareWallet: () => !!get().selected?.deviceId,
+    getIsHardwareWallet: () => get().selected?.type === WalletTypes.bluetooth,
 
     selected: null,
     setSelectedWallet(wallet, address) {

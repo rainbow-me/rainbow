@@ -1,4 +1,8 @@
+import { Interface } from '@ethersproject/abi';
 import { type Signer } from '@ethersproject/abstract-signer';
+import { keccak256 } from '@ethersproject/keccak256';
+import type { StaticJsonRpcProvider } from '@ethersproject/providers';
+import { toUtf8Bytes } from '@ethersproject/strings';
 
 import { type TransactionGasParams, type TransactionLegacyGasParams } from '@/__swaps__/types/gas';
 import { TransactionDirection, TransactionStatus, type NewTransaction } from '@/entities/transactions';
@@ -12,7 +16,7 @@ import { type ChainId } from '@/state/backendNetworks/types';
 import { addNewTransaction } from '@/state/pendingTransactions';
 import { executeFn, Screens, TimeToSignOperation } from '@/state/performance/performance';
 import { swapsStore } from '@/state/swaps/swapsStore';
-import type { BatchCall } from '@rainbow-me/delegation';
+import type { Call } from '@rainbow-me/delegation';
 import {
   getQuoteExecutionDetails,
   getTargetAddress,
@@ -42,6 +46,7 @@ import { getQuoteAllowanceTargetAddress, requireAddress, requireHex, requireNonc
 import { estimateApprove, populateApprove } from './unlock';
 
 const WRAP_GAS_PADDING = 1.002;
+const WRAPPED_NATIVE_ASSET_INTERFACE = new Interface(['function deposit() payable', 'function withdraw(uint256 amount)']);
 
 type SwapExecutionResult = ReplayableExecution;
 
@@ -305,19 +310,16 @@ function buildSwapTransaction(
 export const prepareSwap = async ({
   parameters,
   quote,
-  wallet,
 }: PrepareActionProps<'swap'>): Promise<{
-  call: BatchCall;
+  call: Call;
   transaction: Omit<NewTransaction, 'hash'>;
 }> => {
   const nonce = requireNonce(parameters.nonce, 'swap parameters.nonce');
-  const tx = await prepareFillQuote(quote, {}, wallet, false, quote.chainId, REFERRER);
-
-  const preparedCall = {
-    to: requireAddress(tx.to, 'swap prepared tx.to'),
-    value: toHex(tx.value ?? 0),
-    data: requireHex(tx.data, 'swap prepared tx.data'),
-  };
+  const provider = getProvider({ chainId: parameters.chainId });
+  const preparedCall = await prepareSwapCall({
+    provider,
+    quote,
+  });
   const transaction = {
     ...buildSwapTransaction(parameters, parameters.gasParams, nonce),
     to: preparedCall.to,
@@ -330,6 +332,66 @@ export const prepareSwap = async ({
     transaction,
   };
 };
+
+export async function prepareSwapCall({ provider, quote }: { provider: StaticJsonRpcProvider; quote: Quote }): Promise<Call> {
+  if (quote.swapType === SwapType.wrap || quote.swapType === SwapType.unwrap) {
+    return buildWrappedSwapCall(quote);
+  }
+
+  if (quote.fallback) {
+    return buildFallbackSwapCall(quote);
+  }
+
+  const tx = await populateSwap({ provider, quote });
+  if (!tx) {
+    throw new Error('Unable to prepare swap call');
+  }
+
+  const data = requireHex(tx.data, 'swap prepared tx.data');
+
+  return {
+    to: requireAddress(tx.to, 'swap prepared tx.to'),
+    value: BigInt(tx.value?.toString() ?? '0'),
+    data: appendReferrerCode(data, REFERRER),
+  };
+}
+
+function buildWrappedSwapCall(quote: Quote): Call {
+  const wrappedAssetAddress = getWrappedAssetAddress(quote);
+
+  if (quote.swapType === SwapType.wrap) {
+    return {
+      to: wrappedAssetAddress,
+      value: BigInt(quote.buyAmount.toString()),
+      data: requireHex(WRAPPED_NATIVE_ASSET_INTERFACE.encodeFunctionData('deposit'), 'wrap prepared tx.data'),
+    };
+  }
+
+  return {
+    to: wrappedAssetAddress,
+    value: 0n,
+    data: requireHex(
+      WRAPPED_NATIVE_ASSET_INTERFACE.encodeFunctionData('withdraw', [quote.sellAmount.toString()]),
+      'unwrap prepared tx.data'
+    ),
+  };
+}
+
+function buildFallbackSwapCall(quote: Quote): Call {
+  if (quote.value === undefined || quote.value === null) {
+    throw new Error('Quote must have a valid value');
+  }
+
+  return {
+    to: requireAddress(quote.to, 'swap prepared tx.to'),
+    value: BigInt(quote.value.toString()),
+    data: requireHex(quote.data, 'swap prepared tx.data'),
+  };
+}
+
+function appendReferrerCode(data: Call['data'], referrer: string): Call['data'] {
+  return requireHex(`${data}${keccak256(toUtf8Bytes(referrer)).slice(2, 10)}`, 'swap prepared tx.data');
+}
 
 export const swap = async ({
   currentRap,
