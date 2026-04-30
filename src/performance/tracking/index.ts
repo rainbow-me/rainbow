@@ -58,7 +58,7 @@ class PerformanceTracker {
   }
 
   logFromAppStartTime(metric: PerformanceEvent, params?: Params) {
-    const durationInMs = Date.now() - APP_START_TIME;
+    const durationInMs = performance.now() - APP_START_TIME;
     this.trackMetric(metric, durationInMs, params);
   }
 
@@ -101,10 +101,11 @@ class PerformanceTracker {
       logger.debug(`[PERFORMANCE]: Report ${reportName} already started`);
       return;
     }
-    // Reports need to be anchored to Date.now() rather than performance.now()
-    // to allow comparison across different contexts (native vs. JS)
+    // Anchor reports to `performance.now()` (monotonic) so they share the same clock
+    // domain as `APP_START_TIME` (`performance.rnStartupTiming.startTime`) and segment
+    // timings produced by `Timer` / `performance.mark`.
     this.reports.set(reportName, {
-      startTime: startTime ?? Date.now(),
+      startTime: startTime ?? performance.now(),
       segments: [],
     });
   }
@@ -146,7 +147,7 @@ class PerformanceTracker {
 
     report.segments.push({
       name: segmentName,
-      duration: Date.now() - report.startTime,
+      duration: performance.now() - report.startTime,
     });
   }
 
@@ -167,7 +168,7 @@ class PerformanceTracker {
     const report = this.getReport(reportName);
     if (!report) return;
 
-    const totalDuration = Date.now() - report.startTime;
+    const totalDuration = performance.now() - report.startTime;
     report.totalDuration = totalDuration;
 
     const segments = report.segments.reduce(

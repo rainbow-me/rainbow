@@ -41,6 +41,15 @@ export const hideSplashScreen = async () => {
     if (!alreadyLoggedPerformance) {
       alreadyLoggedPerformance = true;
       PerformanceTracking.logReportSegmentRelative(PerformanceReports.appStartup, PerformanceReportSegments.appStartup.hideSplashScreen);
+      // Splash hide is when the user first sees app content — use it as the TTI signal
+      // and finalise the appStartup report. Replaces the `<PerformanceProfiler>` /
+      // `<PerformanceMeasureView>` heuristic from `@shopify/react-native-performance`.
+      PerformanceTracking.logReportSegmentRelative(PerformanceReports.appStartup, PerformanceReportSegments.appStartup.tti);
+      PerformanceTracking.finishReportSegment(
+        PerformanceReports.appStartup,
+        PerformanceReportSegments.appStartup.initialScreenInteractiveRender
+      );
+      PerformanceTracking.finishReport(PerformanceReports.appStartup);
 
       // need to load setting straight from storage, redux isnt ready yet
       const appIcon = (await getAppIcon()) as AppIconKey;

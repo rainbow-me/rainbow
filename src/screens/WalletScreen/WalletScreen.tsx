@@ -1,7 +1,6 @@
 import React, { memo, useCallback, useMemo } from 'react';
 import { InteractionManager } from 'react-native';
 
-import { PerformanceMeasureView } from '@shopify/react-native-performance';
 import { debounce } from 'lodash';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useRecoilValue } from 'recoil';
@@ -68,7 +67,7 @@ function WalletScreen() {
   const insets = useSafeAreaInsets();
   const route = useRoute();
 
-  const { isLoadingUserAssets, briefSectionsData: walletBriefSectionsData } = useWalletSectionsData({ type: 'wallet' });
+  const { briefSectionsData: walletBriefSectionsData } = useWalletSectionsData({ type: 'wallet' });
 
   const { highContrastAccentColor } = useAccountAccentColor();
 
@@ -119,19 +118,17 @@ function WalletScreen() {
   );
 
   return (
-    <PerformanceMeasureView interactive={!isLoadingUserAssets} screenName="WalletScreen">
-      <Box as={Page} flex={1} testID="wallet-screen" onLayout={handleWalletScreenMount} style={listContainerStyle}>
-        <RecyclerAssetList2
-          accentColor={highContrastAccentColor}
-          onEndReached={useNftsStore.getState().fetchNextNftCollectionPage}
-          walletBriefSectionsData={walletBriefSectionsData}
-          onViewableItemsChanged={handleViewableItemsChanged}
-        />
-        <ToastComponent />
-        <UtilityComponents />
-        <WalletScreenEffects />
-      </Box>
-    </PerformanceMeasureView>
+    <Box as={Page} flex={1} testID="wallet-screen" onLayout={handleWalletScreenMount} style={listContainerStyle}>
+      <RecyclerAssetList2
+        accentColor={highContrastAccentColor}
+        onEndReached={useNftsStore.getState().fetchNextNftCollectionPage}
+        walletBriefSectionsData={walletBriefSectionsData}
+        onViewableItemsChanged={handleViewableItemsChanged}
+      />
+      <ToastComponent />
+      <UtilityComponents />
+      <WalletScreenEffects />
+    </Box>
   );
 }
 

@@ -6,7 +6,6 @@ import React
 import ReactAppDependencyProvider
 import React_RCTAppDelegate
 import Sentry
-import ReactNativePerformance
 import UserNotifications
 
 @main
@@ -21,7 +20,10 @@ class AppDelegate: ExpoAppDelegate, UNUserNotificationCenterDelegate {
   override func application(_ application: UIApplication,
                    didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey: Any]?) -> Bool {
 
-    ReactNativePerformance.onAppStarted()
+    // Populates `performance.rnStartupTiming.startTime` in JS via RN's StartupLogger
+    // (markStart fires ReactMarker::logMarkerDone(APP_STARTUP_START), which writes to
+    // a static singleton — no need to retain this logger).
+    RCTPerformanceLogger().markStart(for: .RCTPLAppStartup)
 
 #if RAINBOW_INTERNALS_ENABLED
     let internalsStatus = "enabled"

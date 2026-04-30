@@ -2,7 +2,6 @@ import React, { useCallback, useEffect, useRef } from 'react';
 import { Alert, StyleSheet, View } from 'react-native';
 
 import MaskedView from '@react-native-masked-view/masked-view';
-import { PerformanceMeasureView } from '@shopify/react-native-performance';
 import Animated, {
   cancelAnimation,
   Easing,
@@ -208,59 +207,50 @@ export function WelcomeScreen() {
   useHardwareBackOnFocus(() => true, !IS_ANDROID);
 
   return (
-    <PerformanceMeasureView interactive={true} screenName="WelcomeScreen">
-      <Box style={styles.container} testID="welcome-screen" backgroundColor={colors.white}>
-        <RainbowsBackground shouldAnimate={shouldAnimateRainbows} />
-        <Animated.View style={[contentStyle, styles.contentContainer]}>
-          {IS_ANDROID && IS_TEST ? (
-            <RainbowText colors={colors} />
-          ) : (
-            <MaskedView maskElement={<RainbowText colors={colors} />}>
-              <Animated.View style={[textStyle, styles.rainbowTextMask]} />
-            </MaskedView>
-          )}
+    <Box style={styles.container} testID="welcome-screen" backgroundColor={colors.white}>
+      <RainbowsBackground shouldAnimate={shouldAnimateRainbows} />
+      <Animated.View style={[contentStyle, styles.contentContainer]}>
+        {IS_ANDROID && IS_TEST ? (
+          <RainbowText colors={colors} />
+        ) : (
+          <MaskedView maskElement={<RainbowText colors={colors} />}>
+            <Animated.View style={[textStyle, styles.rainbowTextMask]} />
+          </MaskedView>
+        )}
 
-          <Animated.View style={buttonStyle}>
-            <WelcomeScreenRainbowButton
-              emoji="castle"
-              height={PRIMARY_BUTTON_HEIGHT}
-              onPress={onCreateWallet}
-              shadowStyle={createWalletButtonAnimatedShadowStyle}
-              style={createWalletButtonAnimatedStyle}
-              testID="new-wallet-button"
-              text={i18n.t(i18n.l.wallet.new.get_new_wallet)}
-              textColor={primaryButtonTextColor}
-            />
-          </Animated.View>
+        <Animated.View style={buttonStyle}>
           <WelcomeScreenRainbowButton
-            darkShadowStyle={styles.existingWalletShadow}
-            emoji="old_key"
-            height={56}
-            onPress={showRestoreSheet}
-            shadowStyle={styles.existingWalletShadow}
-            style={[styles.existingWallet, { backgroundColor: existingWalletBackground }]}
-            testID="already-have-wallet-button"
-            text={i18n.t(i18n.l.wallet.new.already_have_wallet)}
-            textColor={existingWalletTextColor}
+            emoji="castle"
+            height={PRIMARY_BUTTON_HEIGHT}
+            onPress={onCreateWallet}
+            shadowStyle={createWalletButtonAnimatedShadowStyle}
+            style={createWalletButtonAnimatedStyle}
+            testID="new-wallet-button"
+            text={i18n.t(i18n.l.wallet.new.get_new_wallet)}
+            textColor={primaryButtonTextColor}
           />
         </Animated.View>
-        <View style={[styles.termsOfUseContainer, { bottom: insets.bottom / 2 + 32, position: 'absolute' }]}>
-          <Text align="center" color={termsTextColor} lineHeight="loose" size="smedium" weight="semibold">
-            {i18n.t(i18n.l.wallet.new.terms)}
-            <Text
-              color={colors.paleBlue}
-              lineHeight="loose"
-              onPress={handlePressTerms}
-              size="smedium"
-              suppressHighlighting
-              weight="semibold"
-            >
-              {i18n.t(i18n.l.wallet.new.terms_link)}
-            </Text>
+        <WelcomeScreenRainbowButton
+          darkShadowStyle={styles.existingWalletShadow}
+          emoji="old_key"
+          height={56}
+          onPress={showRestoreSheet}
+          shadowStyle={styles.existingWalletShadow}
+          style={[styles.existingWallet, { backgroundColor: existingWalletBackground }]}
+          testID="already-have-wallet-button"
+          text={i18n.t(i18n.l.wallet.new.already_have_wallet)}
+          textColor={existingWalletTextColor}
+        />
+      </Animated.View>
+      <View style={[styles.termsOfUseContainer, { bottom: insets.bottom / 2 + 32, position: 'absolute' }]}>
+        <Text align="center" color={termsTextColor} lineHeight="loose" size="smedium" weight="semibold">
+          {i18n.t(i18n.l.wallet.new.terms)}
+          <Text color={colors.paleBlue} lineHeight="loose" onPress={handlePressTerms} size="smedium" suppressHighlighting weight="semibold">
+            {i18n.t(i18n.l.wallet.new.terms_link)}
           </Text>
-        </View>
-      </Box>
-    </PerformanceMeasureView>
+        </Text>
+      </View>
+    </Box>
   );
 }
 

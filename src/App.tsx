@@ -5,7 +5,6 @@ import { AppRegistry, Dimensions, LogBox, StyleSheet, View } from 'react-native'
 
 import { MobileWalletProtocolProvider } from '@coinbase/mobile-wallet-protocol-host';
 import * as Sentry from '@sentry/react-native';
-import { PerformanceProfiler } from '@shopify/react-native-performance';
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
 import { KeyboardProvider } from 'react-native-keyboard-controller';
 import { ReducedMotionConfig, ReduceMotion } from 'react-native-reanimated';
@@ -23,7 +22,7 @@ import { RainbowToastDisplay } from '@/components/rainbow-toast/RainbowToast';
 import { OfflineToast } from '@/components/toasts';
 import { reactNativeDisableYellowBox, showNetworkRequests, showNetworkResponses } from '@/config/debug';
 import monitorNetwork from '@/debugging/network';
-import { DANGER_INSTALL_SOURCE, IS_DEV, IS_PROD, IS_TEST } from '@/env';
+import { DANGER_INSTALL_SOURCE, IS_DEV, IS_TEST } from '@/env';
 import { configureDelegationSdk } from '@/features/delegation/configureClient';
 import RainbowContextWrapper from '@/helpers/RainbowContext';
 import { useApplicationSetup } from '@/hooks/useApplicationSetup';
@@ -116,32 +115,30 @@ function Root() {
   }, [setInitializing]);
 
   return initializing ? null : (
-    <PerformanceProfiler useRenderTimeouts={false} enabled={IS_PROD} onReportPrepared={onReportPrepared}>
-      {/* @ts-expect-error - Property 'children' does not exist on type 'IntrinsicAttributes & IntrinsicClassAttributes<Provider<AppStateUpdateAction | ChartsUpdateAction | ContactsAction | ... 13 more ... | WalletsAction>> & Readonly<...>' */}
-      <ReduxProvider store={store}>
-        <RecoilRoot>
-          <PersistQueryClientProvider client={queryClient} persistOptions={persistOptions}>
-            <MobileWalletProtocolProvider secureStorage={ls.mwp} sessionExpiryDays={7}>
-              <KeyboardProvider>
-                <SafeAreaProvider initialMetrics={initialWindowMetrics}>
-                  <MainThemeProvider>
-                    <GestureHandlerRootView style={sx.container}>
-                      <RainbowContextWrapper>
-                        <ErrorBoundary>
-                          <App />
-                          <RainbowToastDisplay />
-                          <ReducedMotionConfig mode={ReduceMotion.Never} />
-                        </ErrorBoundary>
-                      </RainbowContextWrapper>
-                    </GestureHandlerRootView>
-                  </MainThemeProvider>
-                </SafeAreaProvider>
-              </KeyboardProvider>
-            </MobileWalletProtocolProvider>
-          </PersistQueryClientProvider>
-        </RecoilRoot>
-      </ReduxProvider>
-    </PerformanceProfiler>
+    // @ts-expect-error - Property 'children' does not exist on type 'IntrinsicAttributes & IntrinsicClassAttributes<Provider<AppStateUpdateAction | ChartsUpdateAction | ContactsAction | ... 13 more ... | WalletsAction>> & Readonly<...>'
+    <ReduxProvider store={store}>
+      <RecoilRoot>
+        <PersistQueryClientProvider client={queryClient} persistOptions={persistOptions}>
+          <MobileWalletProtocolProvider secureStorage={ls.mwp} sessionExpiryDays={7}>
+            <KeyboardProvider>
+              <SafeAreaProvider initialMetrics={initialWindowMetrics}>
+                <MainThemeProvider>
+                  <GestureHandlerRootView style={sx.container}>
+                    <RainbowContextWrapper>
+                      <ErrorBoundary>
+                        <App />
+                        <RainbowToastDisplay />
+                        <ReducedMotionConfig mode={ReduceMotion.Never} />
+                      </ErrorBoundary>
+                    </RainbowContextWrapper>
+                  </GestureHandlerRootView>
+                </MainThemeProvider>
+              </SafeAreaProvider>
+            </KeyboardProvider>
+          </MobileWalletProtocolProvider>
+        </PersistQueryClientProvider>
+      </RecoilRoot>
+    </ReduxProvider>
   );
 }
 
@@ -149,16 +146,6 @@ function Root() {
 const RootWithSentry = Sentry.wrap(Root);
 
 AppRegistry.registerComponent('Rainbow', () => RootWithSentry);
-
-// The report param is not currently used as we have our own time tracking, but it is available at the time we want to finish the app startup report
-function onReportPrepared() {
-  PerformanceTracking.logReportSegmentRelative(PerformanceReports.appStartup, PerformanceReportSegments.appStartup.tti);
-  PerformanceTracking.finishReportSegment(
-    PerformanceReports.appStartup,
-    PerformanceReportSegments.appStartup.initialScreenInteractiveRender
-  );
-  PerformanceTracking.finishReport(PerformanceReports.appStartup);
-}
 
 async function initializeApplication() {
   PerformanceTracking.startReportSegment(PerformanceReports.appStartup, PerformanceReportSegments.appStartup.initRootComponent);

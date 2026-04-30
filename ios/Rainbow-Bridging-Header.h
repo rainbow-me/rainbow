@@ -5,6 +5,8 @@
 #import "React/RCTBridgeModule.h"
 #import <Expo/Expo.h>
 #import "React/RCTView.h"
+#import <React/RCTPLTag.h>
+#import <React/RCTPerformanceLogger.h>
 
 #import <SDWebImage/SDWebImage.h>
 

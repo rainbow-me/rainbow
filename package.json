@@ -203,7 +203,6 @@
     "@rudderstack/rudder-sdk-react-native": "2.0.0",
     "@sentry/react-native": "7.13.0",
     "@shopify/flash-list": "1.8.3",
-    "@shopify/react-native-performance": "4.1.2",
     "@shopify/react-native-skia": "2.4.7",
     "@storesjs/stores": "0.8.7",
     "@tanstack/react-query": "4.2.1",

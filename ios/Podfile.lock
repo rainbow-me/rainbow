@@ -2329,8 +2329,6 @@ PODS:
     - React
   - ReactNativeMeasureText (0.1.8):
     - ExpoModulesCore
-  - ReactNativePerformance (4.1.2):
-    - React-Core
   - rn-fetch-blob (0.12.0):
     - React-Core
   - RNBootSplash (6.3.7):
@@ -2447,7 +2445,7 @@ PODS:
     - ReactCommon/turbomodule/core
     - RNFBApp
     - Yoga
-  - RNFlashList (1.8.2):
+  - RNFlashList (1.8.3):
     - DoubleConversion
     - glog
     - hermes-engine
@@ -2932,7 +2930,6 @@ DEPENDENCIES:
   - ReactCommon/turbomodule/core (from `../node_modules/react-native/ReactCommon`)
   - ReactNativeDarkMode (from `../node_modules/react-native-dark-mode`)
   - "ReactNativeMeasureText (from `../node_modules/@domir/react-native-measure-text/ios`)"
-  - "ReactNativePerformance (from `../node_modules/@shopify/react-native-performance`)"
   - rn-fetch-blob (from `../node_modules/rn-fetch-blob`)
   - RNBootSplash (from `../node_modules/react-native-bootsplash`)
   - "RNCAsyncStorage (from `../node_modules/@react-native-async-storage/async-storage`)"
@@ -3257,8 +3254,6 @@ EXTERNAL SOURCES:
     :path: "../node_modules/react-native-dark-mode"
   ReactNativeMeasureText:
     :path: "../node_modules/@domir/react-native-measure-text/ios"
-  ReactNativePerformance:
-    :path: "../node_modules/@shopify/react-native-performance"
   rn-fetch-blob:
     :path: "../node_modules/rn-fetch-blob"
   RNBootSplash:
@@ -3438,7 +3433,7 @@ SPEC CHECKSUMS:
   react-native-screen-corner-radius: ebd0d3258fcc894571b41d25ee3db7569d375153
   react-native-skia: 3467bce4be38029a4af437022b88a45e68f4210e
   react-native-text-input-mask: b83b8b571cba4bf18fb9b7a0bb8319a14201db9e
-  react-native-udp: afd81d997ff141501da6ac680667fd8319545da1
+  react-native-udp: 33844c2b4a0430271e46cd069a6152cc4c482095
   react-native-version-number: 3d74b5224ca4e1032b1593937d86d3f3c94bf95c
   react-native-video: 9c4c3eae02d1582907c5262f90bf8194ec1b6683
   react-native-view-shot: 44e13d0424a6b0375eae31d89e161fc1153512e5
@@ -3477,7 +3472,6 @@ SPEC CHECKSUMS:
   ReactCommon: 1ab5451fc5da87c4cc4c3046e19a8054624ca763
   ReactNativeDarkMode: 24151d23f70a51eea4b8db0166e79d28b6f2ae57
   ReactNativeMeasureText: 715dcf137d43c76ce2ed8104212abffcc2af428e
-  ReactNativePerformance: fa4952a58739e1a1f6b90a4e9777657d463499a3
   rn-fetch-blob: 25612b6d6f6e980c6f17ed98ba2f58f5696a51ca
   RNBootSplash: 38a079811ede5f999aee49aa26808265cfc9263d
   RNCAsyncStorage: aa75595c1aefa18f868452091fa0c411a516ce11
@@ -3488,7 +3482,7 @@ SPEC CHECKSUMS:
   RNFBApp: 3a2f3094513f3bfaaea028023ffa03c03f65eefc
   RNFBMessaging: 22ba377d0f78fc1a1b4af2ff66212426eefbf8aa
   RNFBRemoteConfig: b2c5184867b12412de8cbe411c37a200b4477a0a
-  RNFlashList: bf81b67825dd3fca7c3a0624b9c93dd129f2c903
+  RNFlashList: 3138e6f563d72e5ae5f54214b6d0489a7985a6d8
   RNFS: 3557d4b8e51925b011e787094600d6e05dca414e
   RNGestureHandler: 8da72f20ac31d42e8672301ccf2127e05c45c959
   RNInputMask: 815461ebdf396beb62cf58916c35cf6930adb991
