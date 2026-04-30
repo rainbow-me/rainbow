@@ -62,6 +62,7 @@ export interface BackendNetworksState {
 
   getChainGasUnits: (chainId?: ChainId) => BackendNetwork['gasUnits'];
   getChainDefaultRpc: (chainId: ChainId) => string;
+  disableSponsorshipUntilNextFetch: (chainId: ChainId) => void;
   isSponsorshipEligible: (chainId: ChainId) => boolean;
 }
 
@@ -130,7 +131,7 @@ export const useBackendNetworksStore = createQueryStore<BackendNetworksResponse,
     staleTime: time.minutes(30),
   },
 
-  (_, get) => ({
+  (set, get) => ({
     backendChains: transformBackendNetworksToChains(filterSupportedNetworks(INITIAL_BACKEND_NETWORKS)),
     backendNetworks: filterSupportedNetworks(INITIAL_BACKEND_NETWORKS),
 
@@ -343,6 +344,21 @@ export const useBackendNetworksStore = createQueryStore<BackendNetworksResponse,
 
     isSponsorshipEligible: (chainId: ChainId) => {
       return get().getSponsorshipEligibleChainIds().includes(chainId);
+    },
+
+    disableSponsorshipUntilNextFetch: (chainId: ChainId) => {
+      set(state => {
+        const network = state.backendNetworks.find(network => toChainId(network.id) === chainId);
+        if (!network || !isSponsorshipEligibleNetwork(network)) return state;
+
+        return {
+          backendNetworks: state.backendNetworks.map(existingNetwork =>
+            existingNetwork === network
+              ? { ...network, enabledServices: { ...network.enabledServices, sponsorship: { enabled: false } } }
+              : existingNetwork
+          ),
+        };
+      });
     },
 
     getChainGasUnits: createParameterizedSelector(networks => (chainId?: ChainId) => {
