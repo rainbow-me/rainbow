@@ -1,11 +1,9 @@
 import { decodeFunctionResult, encodeFunctionData, type Address, type Hex } from 'viem';
 
-import { analytics } from '@/analytics';
 import { type NativeCurrencyKey } from '@/entities/nativeCurrencyTypes';
+import { rnbwMembershipAnalyticsActions } from '@/features/rnbw-membership/stores/rnbwMembershipAnalyticsStore';
 import type { Tier } from '@/features/rnbw-membership/types';
 import { getProvider } from '@/handlers/web3';
-import { convertRawAmountToDecimalFormat } from '@/helpers/utilities';
-import WalletTypes from '@/helpers/walletTypes';
 import { logger, RainbowError } from '@/logger';
 import { getPlatformClient } from '@/resources/platform/client';
 import { type PlatformResponse } from '@/resources/platform/types';
@@ -54,16 +52,14 @@ export const useStakingPositionStore = createQueryStore<StakingPositionData, Sta
   {
     fetcher: fetchStakingPosition,
     onFetched: ({ data, params }) => {
-      const fetchedAddress = params.address?.toLowerCase();
-
       requestIdleCallback(() => {
-        const { accountAddress, selected } = useWalletsStore.getState();
-        const currentAddress = accountAddress?.toLowerCase();
-        if (currentAddress !== fetchedAddress || selected?.type === WalletTypes.readOnly) return;
-
-        analytics.identify({
-          stakedRnbw: convertRawAmountToDecimalFormat(data.stakedRnbw, data.decimals),
-          rnbwMembershipTier: data.tier.level,
+        rnbwMembershipAnalyticsActions.recordPosition({
+          address: params.address,
+          position: {
+            stakedRnbwRaw: data.stakedRnbw,
+            tier: data.tier.level,
+          },
+          allTiers: data.allTiers,
         });
       });
     },
