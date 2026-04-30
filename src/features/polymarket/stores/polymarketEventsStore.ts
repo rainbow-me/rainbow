@@ -184,10 +184,6 @@ export const usePolymarketEventsStore = createQueryStore<PolymarketEventsPage, P
 
 export const polymarketEventsActions = createStoreActions(usePolymarketEventsStore);
 
-export function prefetchPolymarketEvents() {
-  usePolymarketEventsStore.getState().fetch();
-}
-
 async function fetchPolymarketEventsPage(
   { categoryKey, offset }: PolymarketEventsParams,
   abortController: AbortController | null
