@@ -1,8 +1,9 @@
-import React, { useCallback, useEffect, useMemo, useState, type ComponentProps } from 'react';
+import React, { useCallback, useMemo, type ComponentProps } from 'react';
 import { View } from 'react-native';
 
 import { LinearGradient } from 'expo-linear-gradient';
 
+import { textSizes, textWeights } from '@/design-system/typography/typography';
 import { IS_TEST } from '@/env';
 import styled from '@/framework/ui/styled-thing';
 import useDimensions from '@/hooks/useDimensions';
@@ -11,11 +12,11 @@ import { useNavigation } from '@/navigation/Navigation';
 import Routes from '@/navigation/routesNames';
 import { useUserAssetsStore } from '@/state/assets/userAssets';
 import { useAccountProfileInfo } from '@/state/wallets/walletsStore';
-import { fonts, position } from '@/styles';
+import { position } from '@/styles';
 import { useTheme } from '@/theme/ThemeContext';
 import abbreviations from '@/utils/abbreviations';
 import magicMemo from '@/utils/magicMemo';
-import measureText from '@/utils/measureText';
+import { measureTextSync } from '@/utils/measureText';
 
 import ButtonPressAnimation from '../animations/ButtonPressAnimation';
 import { Icon } from '../icons';
@@ -29,6 +30,8 @@ export const AssetListHeaderHeight = ListHeaderHeight;
 
 const dropdownArrowWidth = 30;
 const placeholderWidth = 120;
+const accountNameTextSize = textSizes['23px / 27px (Deprecated)'];
+const accountNameTextWeight = textWeights.heavy;
 
 const AccountName = styled(TruncatedText).attrs({
   align: 'left',
@@ -132,22 +135,19 @@ const AssetListHeader = ({ contextMenuOptions, isCoinListEdited, title, totalVal
     navigate(Routes.CHANGE_WALLET_SHEET);
   }, [navigate]);
 
-  const [textWidth, setTextWidth] = useState(0);
-
   const amountWidth = isLoadingUserAssets ? placeholderWidth + 16 : totalValue?.length * 15;
   const maxWidth = deviceWidth - dropdownArrowWidth - amountWidth - 32;
 
-  useEffect(() => {
-    async function measure() {
-      const { width } = await measureText(accountName, {
-        fontSize: fonts.size.big,
-        fontWeight: fonts.weight.heavy,
-        letterSpacing: fonts.letterSpacing.roundedMedium,
-      });
-      setTextWidth(width ?? 0);
-    }
-    measure();
-  }, [accountName]);
+  const textWidth = useMemo(
+    () =>
+      measureTextSync(accountName ?? '', {
+        fontFamily: accountNameTextWeight.fontFamily,
+        fontSize: accountNameTextSize.fontSize,
+        fontWeight: accountNameTextWeight.fontWeight,
+        letterSpacing: accountNameTextSize.letterSpacing,
+      }),
+    [accountName]
+  );
 
   const children = useMemo(() => {
     return (

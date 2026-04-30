@@ -43,6 +43,29 @@ export interface LegacyTransactionGasParamAmounts {
   gasPrice: string;
 }
 
+/**
+ * Selected gas settings for an EIP-1559 transaction before they are shaped for
+ * a transaction payload.
+ */
+export type EIP1559GasSettings = {
+  isEIP1559: true;
+  maxBaseFee: string;
+  maxPriorityFee: string;
+};
+
+/**
+ * Selected gas settings for a legacy gas-price transaction.
+ */
+export type LegacyGasSettings = {
+  isEIP1559: false;
+  gasPrice: string;
+};
+
+/**
+ * Selected gas settings before conversion to transaction gas params.
+ */
+export type GasSettings = EIP1559GasSettings | LegacyGasSettings;
+
 export interface GasFeeParams {
   maxBaseFee: GasFeeParam;
   maxPriorityFeePerGas: GasFeeParam;

@@ -8,11 +8,14 @@ import { isWideSwapIcon, SwapToastIcon } from '@/components/rainbow-toast/icons/
 import { type RainbowToast } from '@/components/rainbow-toast/types';
 import { useToastColors } from '@/components/rainbow-toast/useToastColors';
 import { Text } from '@/design-system';
+import { textSizes, textWeights } from '@/design-system/typography/typography';
 import { AssetType } from '@/entities/assetTypes';
 import { TransactionStatus } from '@/entities/transactions';
 import { IS_INTERNAL } from '@/env';
-import { useTransactionLaunchToken } from '@/helpers/transactions';
+import { getTransactionLaunchToken } from '@/helpers/transactions';
 import * as i18n from '@/languages';
+import { measureTextSync, type MeasureTextStyle } from '@/utils/measureText';
+import { shallowEqual } from '@/worklets/comparisons';
 
 type ToastContentProps = {
   title: React.ReactNode;
@@ -22,6 +25,26 @@ type ToastContentProps = {
   type?: 'error';
   bottomLabel?: React.ReactNode;
 };
+
+type SwapToastNetworkSymbols = {
+  inSymbol: string | undefined;
+  outSymbol: string | undefined;
+};
+
+export type ToastContentLayout = {
+  bottomLabel?: string;
+  iconWidth: number;
+  subtitle: string;
+  title: string;
+};
+
+const TOAST_CONTENT_GAP = 12;
+const TOAST_TEXT_MAX_WIDTH = 200;
+const SWAP_ARROW = '􀄫';
+
+const TITLE_TEXT_STYLE = buildMeasuredTextStyle('15pt', 'heavy');
+const SUBTITLE_TEXT_STYLE = buildMeasuredTextStyle('13pt', 'bold');
+const BOTTOM_LABEL_TEXT_STYLE = buildMeasuredTextStyle('11pt', 'bold');
 
 export const ToastContent = memo(function ToastContent({ toast }: { toast: RainbowToast }) {
   if (toast.transaction.type === 'swap') {
@@ -33,6 +56,19 @@ export const ToastContent = memo(function ToastContent({ toast }: { toast: Rainb
 
   return <BaseToastContent toast={toast} />;
 });
+
+export function measureToastContentWidth(layout: ToastContentLayout): number {
+  const textWidth = Math.min(
+    TOAST_TEXT_MAX_WIDTH,
+    Math.max(
+      measureTextSync(layout.title, TITLE_TEXT_STYLE),
+      measureTextSync(layout.subtitle, SUBTITLE_TEXT_STYLE),
+      layout.bottomLabel ? measureTextSync(layout.bottomLabel, BOTTOM_LABEL_TEXT_STYLE) : 0
+    )
+  );
+
+  return Math.ceil(layout.iconWidth + TOAST_CONTENT_GAP + textWidth);
+}
 
 // used by each toast type to display their inner contents
 function ToastContentDisplay({ icon, title, subtitle, type, iconWidth = TOAST_ICON_SIZE, bottomLabel }: ToastContentProps) {
@@ -93,18 +129,15 @@ function ToastContentDisplay({ icon, title, subtitle, type, iconWidth = TOAST_IC
 const styles = StyleSheet.create({
   container: {
     flexDirection: 'row',
-    gap: 16,
+    gap: TOAST_CONTENT_GAP,
     alignItems: 'center',
-    minWidth: 130,
   },
   iconContainer: {
-    marginLeft: -2,
     flexShrink: 0,
   },
   textContainer: {
     gap: 9,
-    minWidth: 100,
-    maxWidth: 200,
+    maxWidth: TOAST_TEXT_MAX_WIDTH,
   },
   arrowSeparator: {
     fontWeight: '200',
@@ -112,65 +145,53 @@ const styles = StyleSheet.create({
 });
 
 function SwapToastContent({ toast }: { toast: RainbowToast }) {
-  const title = getToastTitle(toast);
-  const subtitle = getSwapToastNetworkLabel(toast);
-  const { batch, delegation } = toast.transaction;
-  // Type 4 = new delegation + batch, Type 2 = already delegated + batch
-  const bottomLabel = IS_INTERNAL && batch ? (delegation ? 'Type 4' : 'Type 2') : undefined;
+  const layout = buildToastContentLayout(toast);
 
   return (
     <ToastContentDisplay
-      iconWidth={isWideSwapIcon(toast) ? SWAP_ICON_WIDTH : TOAST_ICON_SIZE}
+      iconWidth={layout.iconWidth}
       type={toast.transaction.status === TransactionStatus.failed ? 'error' : undefined}
       icon={<SwapToastIcon toast={toast} />}
-      title={title}
-      subtitle={subtitle}
-      bottomLabel={bottomLabel}
+      title={layout.title}
+      subtitle={getSwapToastNetworkLabel(toast)}
+      bottomLabel={layout.bottomLabel}
     />
   );
 }
 
-export const getSwapToastNetworkLabel = ({ transaction }: RainbowToast) => {
-  const outAsset = transaction.changes?.find(c => c?.direction === 'out')?.asset;
-  const inAsset = transaction.changes?.find(c => c?.direction === 'in')?.asset;
+export const getSwapToastNetworkLabel = (toast: RainbowToast): React.ReactElement => {
+  const symbols = getSwapToastNetworkSymbols(toast);
   // using RNText because it can inherit the color/size from ToastContentDisplay
   return (
     <RNText>
-      {outAsset?.symbol} <RNText style={styles.arrowSeparator}>􀄫</RNText> {inAsset?.symbol}
+      {symbols.outSymbol} <RNText style={styles.arrowSeparator}>{SWAP_ARROW}</RNText> {symbols.inSymbol}
     </RNText>
   );
 };
 
 function SendToastContent({ toast }: { toast: RainbowToast }) {
-  const { transaction } = toast;
-  const title = getToastTitle(toast);
-  const subtitle =
-    toast.transaction.asset?.type === AssetType.nft ? transaction.asset?.name : `${transaction.amount} ${transaction.asset?.symbol}`;
+  const layout = buildToastContentLayout(toast);
 
   return (
     <ToastContentDisplay
       key={toast.transaction.status}
       icon={<SendToastIcon toast={toast} />}
-      title={title}
-      subtitle={subtitle}
+      title={layout.title}
+      subtitle={layout.subtitle}
       type={toast.transaction.status === TransactionStatus.failed ? 'error' : undefined}
     />
   );
 }
 
 function BaseToastContent({ toast }: { toast: RainbowToast }) {
-  const { transaction } = toast;
-  const launchToken = useTransactionLaunchToken(transaction);
-  const icon = <BaseToastIcon toast={toast} />;
-  const title = getToastTitle(toast);
-  const subtitle = launchToken?.name || transaction.contract?.name || transaction.description;
+  const layout = buildToastContentLayout(toast);
 
   return (
     <ToastContentDisplay
-      icon={icon}
-      title={title}
-      subtitle={subtitle}
-      type={transaction.status === TransactionStatus.failed ? 'error' : undefined}
+      icon={<BaseToastIcon toast={toast} />}
+      title={layout.title}
+      subtitle={layout.subtitle}
+      type={toast.transaction.status === TransactionStatus.failed ? 'error' : undefined}
     />
   );
 }
@@ -179,3 +200,67 @@ export const getToastTitle = (toast: RainbowToast): string => {
   // @ts-expect-error - some of these are dot.notation and some are strings
   return i18n.t(i18n.l.transactions.type[toast.transaction.title]);
 };
+
+export function buildToastContentLayout(toast: RainbowToast): ToastContentLayout {
+  const title = getToastTitle(toast);
+
+  if (toast.transaction.type === 'swap') {
+    return {
+      bottomLabel: getSwapToastBottomLabel(toast),
+      iconWidth: isWideSwapIcon(toast) ? SWAP_ICON_WIDTH : TOAST_ICON_SIZE,
+      subtitle: getSwapToastNetworkLabelText(toast),
+      title,
+    };
+  }
+
+  if (toast.transaction.type === 'send') {
+    return {
+      iconWidth: TOAST_ICON_SIZE,
+      subtitle:
+        toast.transaction.asset?.type === AssetType.nft
+          ? toast.transaction.asset?.name || ''
+          : `${toast.transaction.amount} ${toast.transaction.asset?.symbol}`,
+      title,
+    };
+  }
+
+  const launchToken = getTransactionLaunchToken(toast.transaction);
+  return {
+    iconWidth: TOAST_ICON_SIZE,
+    subtitle: launchToken?.name || toast.transaction.contract?.name || toast.transaction.description || '',
+    title,
+  };
+}
+
+export function areToastContentLayoutsEqual(a: ToastContentLayout | null, b: ToastContentLayout | null): boolean {
+  if (a === b) return true;
+  if (!a || !b) return false;
+  return shallowEqual(a, b);
+}
+
+function getSwapToastBottomLabel(toast: RainbowToast): string | undefined {
+  const { batch, delegation } = toast.transaction;
+  return IS_INTERNAL && batch ? (delegation ? 'Type 4' : 'Type 2') : undefined;
+}
+
+function getSwapToastNetworkLabelText(toast: RainbowToast): string {
+  const symbols = getSwapToastNetworkSymbols(toast);
+  return `${symbols.outSymbol ?? ''} ${SWAP_ARROW} ${symbols.inSymbol ?? ''}`;
+}
+
+function getSwapToastNetworkSymbols(toast: RainbowToast): SwapToastNetworkSymbols {
+  return {
+    inSymbol: toast.transaction.changes?.find(c => c?.direction === 'in')?.asset.symbol,
+    outSymbol: toast.transaction.changes?.find(c => c?.direction === 'out')?.asset.symbol,
+  };
+}
+
+function buildMeasuredTextStyle(size: '11pt' | '13pt' | '15pt', weight: 'bold' | 'heavy'): MeasureTextStyle {
+  return {
+    allowFontScaling: false,
+    fontFamily: textWeights[weight].fontFamily,
+    fontSize: textSizes[size].fontSize,
+    fontWeight: textWeights[weight].fontWeight,
+    letterSpacing: textSizes[size].letterSpacing,
+  };
+}

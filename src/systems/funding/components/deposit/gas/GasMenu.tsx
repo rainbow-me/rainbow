@@ -19,7 +19,7 @@ const SWAP_GAS_ICONS = gasUtils.SWAP_GAS_ICONS;
 
 export function GasMenu({ children, onSelectGasSpeed }: { children: ReactNode; onSelectGasSpeed: (speed: GasSpeed) => void }) {
   const { gasStores } = useDepositContext();
-  const isGasSponsored = gasStores.useIsGasSponsored(state => state);
+  const isGasSponsored = gasStores.useIsGasSponsored();
   const metereologySuggestions = gasStores.useMeteorologyStore(state => state.getGasSuggestions());
   const menuOptions = useMemo(() => keys(metereologySuggestions), [metereologySuggestions]);
 
