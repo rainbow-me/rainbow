@@ -1057,19 +1057,19 @@
       },
       "gas": {
         "text": "นี่คือ \"ค่าใช้จ่ายของแก๊ส\" ที่บล็อกเชน %{networkName} ใช้ในการตรวจสอบธุรกรรมของคุณอย่างปลอดภัย\n\nค่าธรรมเนียมนี้จะเปลี่ยนแปลงขึ้นอยู่กับความซับซ้อนของธุรกรรมของคุณและความยุ่งยากของเครือข่าย!",
-        "title": "%{networkName} Network Fee"
+        "title": "ค่าธรรมเนียมเครือข่าย %{networkName}"
       },
       "smart_wallet_activation": {
         "text": "ธุรกรรมนี้มีการเปิดใช้งาน Smart Wallet แบบครั้งเดียวบน %{networkName} ซึ่งจะอัปเกรดกระเป๋าเงินของคุณให้รองรับธุรกรรมแบบแบตช์และฟีเจอร์อื่นๆ ของบัญชีอัจฉริยะ\n\nค่าธรรมเนียมการเปิดใช้งานรวมอยู่ในค่าธรรมเนียมเครือข่ายสำหรับการสว็อปนี้",
-        "title": "Smart Wallet Activation"
+        "title": "การเปิดใช้งาน Smart Wallet"
       },
       "max_base_fee": {
         "text": "นี่คือค่าฐานสูงสุดที่คุณยินดีจ่ายในธุรกรรมนี้\n\nการตั้งค่าฐานสูงสุดที่สูงขึ้นจะป้องกันไม่ให้ธุรกรรมของคุณติดถ้าค่าธรรมเนียมเพิ่มขึ้น.",
-        "title": "Max Base Fee"
+        "title": "ค่าธรรมเนียมฐานสูงสุด"
       },
       "miner_tip": {
         "text": "ค่าทิปของเหมืองไปโดยตรงถึงเหมืองที่ยืนยันธุรกรรมของคุณในเครือข่าย\n\nทิปที่สูงขึ้นทำให้ธุรกรรมของคุณมีโอกาสยืนยันได้เร็วขึ้น.",
-        "title": "Miner Tip"
+        "title": "ทิปผู้ขุด"
       },
       "apechain": {
         "text": "ApeChain เป็นเครือข่าย Layer 3 ที่ทำงานบน Arbitrum Orbit และ Ethereum\n\nมันเสริมสร้างการใช้ ApeCoin อย่างมีนัยสำคัญ ส่งเสริมเศรษฐกิจที่แข็งแกร่งและมีพลังซึ่งขับเคลื่อนโดย $APE",
@@ -2401,7 +2401,7 @@
       "find_a_token_to_buy": "ค้นหาโทเคนที่จะซื้อ",
       "search_your_tokens": "ค้นหาโทเค็นของคุณ",
       "error_executing_swap": "ข้อผิดพลาดในการดำเนินการแลกเปลี่ยน",
-      "sponsorship_unavailable": "Free swaps are temporarily unavailable on this network. Please try again with network fees.",
+      "sponsorship_unavailable": "การสวอปฟรีไม่สามารถใช้งานได้ชั่วคราวบนเครือข่ายนี้ โปรดลองอีกครั้งโดยชำระค่าธรรมเนียมเครือข่าย",
       "tokens_input": {
         "tokens": "โทเคน",
         "sort": "เรียงลำดับ",
@@ -2915,7 +2915,7 @@
         "disable_smart_wallet": "ปิดใช้งาน Smart Wallet",
         "enabled_description": "คุณจะพลาดธุรกรรมที่เร็วขึ้นและต้นทุนเครือข่ายที่ต่ำลง",
         "disabled_description": "การอัปเดตจะมีผลในการสว็อปครั้งถัดไปของคุณ",
-        "will_delegate_callout": "Includes Smart Wallet activation",
+        "will_delegate_callout": "รวมการเปิดใช้งาน Smart Wallet",
         "revoke_panel": {
           "disable_smart_wallet_title": "ปิดใช้งาน Smart Wallet",
           "disable_smart_wallet_subtitle": "การดำเนินการนี้จะเพิกถอนการมอบสิทธิ์ที่ใช้งานอยู่ทั้งหมด และปิดใช้งานฟีเจอร์ Smart Wallet",
