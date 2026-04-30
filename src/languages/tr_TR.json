@@ -1057,19 +1057,19 @@
       },
       "gas": {
         "text": "Bu, %{networkName} blockchain'in işlemi güvenle doğrulamak için kullandığı \"gaz ücreti\"dir.\n\nBu ücret, işleminizin karmaşıklığına ve ağın ne kadar meşgul olduğuna bağlı olarak değişir!",
-        "title": "%{networkName} ağ ücreti"
+        "title": "%{networkName} Network Fee"
       },
       "smart_wallet_activation": {
         "text": "Bu işlem, %{networkName} üzerinde tek seferlik bir Akıllı Cüzdan etkinleştirmesi içerir. Bu, cüzdanınızı toplu işlemleri ve diğer akıllı hesap özelliklerini destekleyecek şekilde yükseltir.\n\nEtkinleştirme ücreti, bu takas için ağ ücretine dahildir.",
-        "title": "Akıllı Cüzdan etkinleştirme"
+        "title": "Smart Wallet Activation"
       },
       "max_base_fee": {
         "text": "Bu, bu işlem için ödemeye istekli olduğunuz maksimum taban ücrettir.\n\nDaha yüksek bir maksimum taban ücreti belirlenmesi, ücretlerin yükselmesi durumunda işleminizin takılıp kalmamasını sağlar.",
-        "title": "Mak. taban ücreti"
+        "title": "Max Base Fee"
       },
       "miner_tip": {
         "text": "Madenci bahşişi, işleminizi ağda doğrulayan madenciye doğrudan gider.\n\nDaha yüksek bir bahşiş, işleminizin daha hızlı onaylanmasını daha olası kılar.",
-        "title": "Madenci bahşişi"
+        "title": "Miner Tip"
       },
       "apechain": {
         "text": "ApeChain, Arbitrum Orbit ve Ethereum'un üzerinde çalışan bir Katman 3 ağıdır. Bu ağ, ApeCoin'in faydasını önemli ölçüde artırarak $APE ile yönlendirilen güçlü ve dinamik bir ekonomi oluşturmaktadır.",
@@ -2401,6 +2401,7 @@
       "find_a_token_to_buy": "Satın Almak İçin Bir Token Bulun",
       "search_your_tokens": "Tokenlarınızı Arayın",
       "error_executing_swap": "Takas Yürütme Hatası",
+      "sponsorship_unavailable": "Free swaps are temporarily unavailable on this network. Please try again with network fees.",
       "tokens_input": {
         "tokens": "Tokenler",
         "sort": "Sırala",
@@ -2422,7 +2423,8 @@
         "fast": "Hızlı",
         "network_fee": "Ağ Ücreti",
         "normal": "Normal",
-        "slow": "Yavaş"
+        "slow": "Yavaş",
+        "gas_sponsored": "Ücretsiz"
       },
       "loading": "Yükleniyor...",
       "modal_types": {
@@ -2913,7 +2915,7 @@
         "disable_smart_wallet": "Akıllı Cüzdanı Devre Dışı Bırak",
         "enabled_description": "Daha hızlı işlemleri ve daha düşük ağ maliyetlerini kaçıracaksınız",
         "disabled_description": "Güncellemeler bir sonraki takasınızda geçerli olacak",
-        "will_delegate_callout": "Akıllı cüzdan etkinleştirmesi içerir",
+        "will_delegate_callout": "Includes Smart Wallet activation",
         "revoke_panel": {
           "disable_smart_wallet_title": "Akıllı Cüzdanı Devre Dışı Bırak",
           "disable_smart_wallet_subtitle": "Bu, tüm etkin yetki devrilerini iptal edecek ve Akıllı Cüzdan özelliklerini devre dışı bırakacaktır.",
@@ -3934,10 +3936,6 @@
       }
     },
     "rnbw_staking": {
-      "wallet_access": {
-        "hardware_wallet_not_supported_title": "Donanım Cüzdanı Desteklenmiyor",
-        "hardware_wallet_not_supported_message": "RNBW stake etme şu anda donanım cüzdanları için kullanılamıyor."
-      },
       "deposit": {
         "confirm_button": "Stake Etmek İçin Basılı Tutun",
         "confirm_button_error": "Stake edilemiyor",
