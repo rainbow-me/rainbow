@@ -31,6 +31,7 @@ import {
   useColorMode,
   useForegroundColor,
 } from '@/design-system';
+import { useIsSponsoredSwap } from '@/features/delegation/sponsoredSwapStore';
 import { useWillExecuteDelegation, willExecuteDelegation } from '@/features/delegation/willDelegate';
 import { opacity } from '@/framework/ui/utils/opacity';
 import { convertRawAmountToBalance, convertRawAmountToBalanceWorklet, handleSignificantDecimals, multiply } from '@/helpers/utilities';
@@ -250,11 +251,10 @@ export const SlippageRow = () => {
 };
 
 export function ReviewPanel() {
-  const { navigate } = useNavigation();
   const { isDarkMode } = useColorMode();
   const { configProgress, lastTypedInput, internalSelectedInputAsset, internalSelectedOutputAsset, quote } = useSwapContext();
+  const shouldShowGasRow = !useIsSponsoredSwap();
 
-  const labelTertiary = useForegroundColor('labelTertiary');
   const separator = useForegroundColor('separator');
 
   const chainLabels = backendNetworksActions.getChainsLabel();
@@ -287,19 +287,6 @@ export function ReviewPanel() {
 
     return unknown;
   });
-
-  const openGasExplainer = useCallback(async () => {
-    const chainsNativeAsset = backendNetworksActions.getChainsNativeAsset();
-    const chainId = swapsStore.getState().inputAsset?.chainId ?? ChainId.mainnet;
-    const nativeAsset = chainsNativeAsset[chainId];
-    const decision = await willExecuteDelegation({ address: getAccountAddress(), chainId });
-
-    navigate(Routes.EXPLAIN_SHEET, {
-      chainId,
-      type: decision.willDelegate ? 'smart_wallet_activation' : 'gas',
-      nativeAsset,
-    });
-  }, [navigate]);
 
   const styles = useAnimatedStyle(() => {
     return {
@@ -386,51 +373,77 @@ export function ReviewPanel() {
 
           <SlippageRow />
 
-          <Separator color={{ custom: opacity(separator, 0.03) }} thickness={THICK_BORDER_WIDTH} />
-
-          <Inline horizontalSpace="10px" alignVertical="center" alignHorizontal="justify" wrap={false}>
-            <ButtonPressAnimation onPress={openGasExplainer} scaleTo={0.925}>
-              <Stack space="10px">
-                <Inline alignVertical="center" horizontalSpace="6px" wrap={false}>
-                  <View style={sx.chainBadgeContainer}>
-                    <AnimatedChainImage showMainnetBadge assetType="input" size={16} />
-                  </View>
-                  <UnmountOnAnimatedReaction
-                    isMountedWorklet={() => {
-                      'worklet';
-                      // only mounted when review panel is visible
-                      return configProgress.value === NavigationSteps.SHOW_REVIEW;
-                    }}
-                    placeholder={
-                      <Inline horizontalSpace="4px">
-                        <EstimatedSwapGasFeeSlot text="Loading…" align="left" color="label" size="15pt" weight="heavy" />
-                        {null}
-                      </Inline>
-                    }
-                  >
-                    <Inline horizontalSpace="4px">
-                      <EstimatedGasFee />
-                      <EstimatedArrivalTime />
-                    </Inline>
-                  </UnmountOnAnimatedReaction>
-                </Inline>
-
-                <Inline wrap={false} alignHorizontal="left" alignVertical="center" horizontalSpace="4px">
-                  <GasLabel />
-                  <Text align="center" color={{ custom: opacity(labelTertiary, 0.24) }} size="icon 13px" weight="semibold">
-                    􀅴
-                  </Text>
-                </Inline>
-              </Stack>
-            </ButtonPressAnimation>
-
-            <Inline alignVertical="center" horizontalSpace="8px">
-              <ReviewGasButton />
-            </Inline>
-          </Inline>
+          {shouldShowGasRow && (
+            <>
+              <Separator color={{ custom: opacity(separator, 0.03) }} thickness={THICK_BORDER_WIDTH} />
+              <ReviewGasRow />
+            </>
+          )}
         </Box>
       </Stack>
     </Box>
+  );
+}
+
+function ReviewGasRow() {
+  const { navigate } = useNavigation();
+  const { configProgress } = useSwapContext();
+  const labelTertiary = useForegroundColor('labelTertiary');
+
+  const openGasExplainer = useCallback(async () => {
+    const chainsNativeAsset = backendNetworksActions.getChainsNativeAsset();
+    const chainId = swapsStore.getState().inputAsset?.chainId ?? ChainId.mainnet;
+    const nativeAsset = chainsNativeAsset[chainId];
+    const decision = await willExecuteDelegation({ address: getAccountAddress(), chainId });
+
+    navigate(Routes.EXPLAIN_SHEET, {
+      chainId,
+      type: decision.willDelegate ? 'smart_wallet_activation' : 'gas',
+      nativeAsset,
+    });
+  }, [navigate]);
+
+  return (
+    <Inline horizontalSpace="10px" alignVertical="center" alignHorizontal="justify" wrap={false}>
+      <ButtonPressAnimation onPress={openGasExplainer} scaleTo={0.925}>
+        <Stack space="10px">
+          <Inline alignVertical="center" horizontalSpace="6px" wrap={false}>
+            <View style={sx.chainBadgeContainer}>
+              <AnimatedChainImage showMainnetBadge assetType="input" size={16} />
+            </View>
+            <UnmountOnAnimatedReaction
+              isMountedWorklet={() => {
+                'worklet';
+                // only mounted when review panel is visible
+                return configProgress.value === NavigationSteps.SHOW_REVIEW;
+              }}
+              placeholder={
+                <Inline horizontalSpace="4px">
+                  <EstimatedSwapGasFeeSlot text="Loading…" align="left" color="label" size="15pt" weight="heavy" />
+                  {null}
+                </Inline>
+              }
+            >
+              <Inline horizontalSpace="4px">
+                <EstimatedGasFee />
+                <EstimatedArrivalTime />
+              </Inline>
+            </UnmountOnAnimatedReaction>
+          </Inline>
+
+          <Inline wrap={false} alignHorizontal="left" alignVertical="center" horizontalSpace="4px">
+            <GasLabel />
+            <Text align="center" color={{ custom: opacity(labelTertiary, 0.24) }} size="icon 13px" weight="semibold">
+              􀅴
+            </Text>
+          </Inline>
+        </Stack>
+      </ButtonPressAnimation>
+
+      <Inline alignVertical="center" horizontalSpace="8px">
+        <ReviewGasButton />
+      </Inline>
+    </Inline>
   );
 }
 

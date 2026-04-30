@@ -5,6 +5,7 @@ import { type Call, type CallsRequirements } from '@rainbow-me/delegation';
 import { STAKING_CHAIN_ID, STAKING_CONTRACT_ADDRESS } from '../constants';
 import { prepareStakeRnbw, type StakeRnbwPreparationParams } from './prepareStakeRnbw';
 
+const mockCanUseDelegatedExecution = jest.fn<boolean, [Address]>();
 const mockPrepareCalls = jest.fn<Promise<unknown>, [unknown]>();
 const mockBuildStakeRnbwExecutionPlan = jest.fn<Promise<{ calls: Call[]; requirements?: CallsRequirements }>, [unknown]>();
 const mockGetProvider = jest.fn();
@@ -20,6 +21,10 @@ jest.mock('@rainbow-me/delegation', () => ({
 
 jest.mock('@/handlers/web3', () => ({
   getProvider: () => mockGetProvider(),
+}));
+
+jest.mock('@/features/delegation/willDelegate', () => ({
+  canUseDelegatedExecution: (address: Address) => mockCanUseDelegatedExecution(address),
 }));
 
 jest.mock('@/state/backendNetworks/backendNetworks', () => ({
@@ -57,6 +62,7 @@ const SPONSORED_REQUIREMENTS = { atomic: 'required', fees: { payer: 'sponsor' } 
 describe('prepareStakeRnbw', () => {
   beforeEach(() => {
     jest.clearAllMocks();
+    mockCanUseDelegatedExecution.mockReturnValue(true);
     mockGetProvider.mockReturnValue(provider);
     mockBuildStakeRnbwExecutionPlan.mockResolvedValue({ calls: [STAKE_CALL], requirements: SPONSORED_REQUIREMENTS });
     mockResolveStakeClaimStrategy.mockResolvedValue({
@@ -119,6 +125,21 @@ describe('prepareStakeRnbw', () => {
       })
     ).resolves.toBeNull();
 
+    expect(mockBuildStakeRnbwExecutionPlan).not.toHaveBeenCalled();
+    expect(mockPrepareCalls).not.toHaveBeenCalled();
+  });
+
+  it('skips preparation when delegated execution is unavailable', async () => {
+    mockCanUseDelegatedExecution.mockReturnValue(false);
+
+    await expect(
+      prepareStakeRnbw({
+        accountAddress: ACCOUNT,
+        amount: '1',
+      })
+    ).resolves.toBeNull();
+
+    expect(mockResolveStakeClaimStrategy).not.toHaveBeenCalled();
     expect(mockBuildStakeRnbwExecutionPlan).not.toHaveBeenCalled();
     expect(mockPrepareCalls).not.toHaveBeenCalled();
   });

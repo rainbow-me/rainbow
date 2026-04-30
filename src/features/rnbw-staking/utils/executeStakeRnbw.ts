@@ -9,6 +9,7 @@ import { TransactionDirection, TransactionStatus, type NewTransaction } from '@/
 import { trackCallsExecution } from '@/features/delegation/callsExecutionTracking';
 import { resolveManagedExecutionFailure } from '@/features/delegation/managedExecutionFailure';
 import { waitForManagedExecutionConfirmation } from '@/features/delegation/waitForManagedExecution';
+import { canUseDelegatedExecution } from '@/features/delegation/willDelegate';
 import { RainbowError } from '@/logger';
 import { extractReplayableExecution } from '@/raps/replay';
 import { toTransactionAsset, type TransactionAssetSource } from '@/raps/transactionAsset';
@@ -63,7 +64,7 @@ export async function executeStakeRnbw({
   signer,
   stakeAmountRaw,
 }: ExecuteStakeRnbwParams): Promise<StakeRnbwExecution> {
-  if (!(signer instanceof Wallet)) {
+  if (!(signer instanceof Wallet) || !canUseDelegatedExecution(address)) {
     return executeSequentialStakeRnbw({ address, asset, gasParams, provider, signer, stakeAmountRaw });
   }
 

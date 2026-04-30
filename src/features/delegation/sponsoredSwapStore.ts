@@ -7,6 +7,7 @@ import { predictSponsoredCallsExecution } from '@/features/delegation/sponsoredC
 import { getProvider } from '@/handlers/web3';
 import { useRemoteConfigStore } from '@/model/remoteConfig';
 import { buildAtomicExecutionRequirements, prepareAtomicSwapCalls } from '@/raps/atomicSwapPreparation';
+import { useBackendNetworksStore } from '@/state/backendNetworks/backendNetworks';
 import { useSwapsStore } from '@/state/swaps/swapsStore';
 import { getAccountAddress, useWalletsStore } from '@/state/wallets/walletsStore';
 import { time } from '@/utils/time';
@@ -15,7 +16,7 @@ import { type CrosschainQuote, type Quote, type QuoteError } from '@rainbow-me/s
 
 import { supportsDelegatedExecution } from './willDelegate';
 
-// ============ Types ========================================================= //
+// ============ Types ========================================================== //
 
 type SponsoredSwapParams = {
   quoteKey: number | null;
@@ -26,21 +27,24 @@ type CurrentSponsoredSwap = {
   quote: Quote | CrosschainQuote;
 };
 
-// ============ Quote Key ===================================================== //
+// ============ Quote Key ====================================================== //
 
 const useSponsoredSwapQuoteKey = createDerivedStore(
   $ => {
     const accountAddress = $(useWalletsStore, s => s.accountAddress);
     const quote = $(useSwapsStore, s => s.quote);
+    const sponsorshipEligibleChainIds = $(useBackendNetworksStore, s => s.getSponsorshipEligibleChainIds());
+    const sponsoredSwapsEnabled = $(useRemoteConfigStore, s => s.config.sponsored_swaps_enabled);
 
     if (!isValidSponsoredSwapQuote(quote, accountAddress)) return null;
+    if (!sponsoredSwapsEnabled || !sponsorshipEligibleChainIds.includes(quote.chainId)) return null;
 
     return performance.now();
   },
   { lockDependencies: true }
 );
 
-// ============ Store ========================================================= //
+// ============ Stores ========================================================= //
 
 export const useSponsoredSwapStore = createPreparedCallsStore<PreparedCallsExecution, SponsoredSwapParams>(fetchPreparedSponsoredSwap, {
   enabled: $ => $(useSponsoredSwapQuoteKey, quoteKey => quoteKey !== null),
@@ -51,29 +55,33 @@ export const useSponsoredSwapStore = createPreparedCallsStore<PreparedCallsExecu
   staleTime: time.seconds(12),
 });
 
+export const useIsSponsoredSwap = createDerivedStore<boolean>(
+  $ => {
+    const address = $(useWalletsStore, s => s.accountAddress);
+    const chainId = $(useSwapsStore, s => s.inputAsset?.chainId ?? null);
+    const sponsorshipEligibleChainIds = $(useBackendNetworksStore, s => s.getSponsorshipEligibleChainIds());
+    const isPreparingSwap = $(useSponsoredSwapStore, s => s.getStatus('isInitialLoad'));
+    const preparedSwap = $(useSponsoredSwapStore, s => s.getData());
+    const sponsoredSwapsEnabled = $(useRemoteConfigStore, s => s.config.sponsored_swaps_enabled);
+
+    if (!sponsoredSwapsEnabled) return false;
+
+    const canSponsor = predictSponsoredCallsExecution({ address, chainId, sponsorshipEligibleChainIds });
+    if (!canSponsor || isPreparingSwap) return canSponsor;
+
+    return isPreparedCallsExecutionSponsored(preparedSwap);
+  },
+  { lockDependencies: true }
+);
+
+// ============ Public Helpers ================================================= //
+
 export function getPreparedSponsoredSwap(): Promise<PreparedCallsExecution | null> {
   const quoteKey = useSponsoredSwapQuoteKey.getState();
   if (quoteKey === null) return Promise.resolve(null);
 
   return useSponsoredSwapStore.getState().getPreparedCalls({ quoteKey });
 }
-
-export const useIsSponsoredSwap = createDerivedStore<boolean>(
-  $ => {
-    const accountAddress = $(useWalletsStore, s => s.accountAddress);
-    const inputChainId = $(useSwapsStore, s => s.inputAsset?.chainId);
-    const preparedSwap = $(useSponsoredSwapStore, s => s.getData());
-    const sponsoredSwapsEnabled = $(useRemoteConfigStore, s => s.config.sponsored_swaps_enabled);
-
-    if (!sponsoredSwapsEnabled) return false;
-
-    const canSponsor = predictSponsoredCallsExecution({ address: accountAddress, chainId: inputChainId ?? null });
-    if (!canSponsor || !preparedSwap) return canSponsor;
-
-    return isPreparedCallsExecutionSponsored(preparedSwap);
-  },
-  { lockDependencies: true }
-);
 
 // ============ Fetcher ======================================================== //
 
@@ -105,7 +113,7 @@ async function fetchPreparedSponsoredSwap(): Promise<PreparedCallsExecution | nu
   });
 }
 
-// ============ Local Helpers ================================================= //
+// ============ Local Helpers ================================================== //
 
 function readCurrentSwapQuote(): CurrentSponsoredSwap | null {
   const address = getAccountAddress();

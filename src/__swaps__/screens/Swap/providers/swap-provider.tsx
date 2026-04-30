@@ -37,6 +37,7 @@ import { clamp, getDefaultSlippageWorklet, parseAssetAndExtend, trimTrailingZero
 import { trackSwapEvent } from '@/__swaps__/utils/trackSwapEvent';
 import { analytics } from '@/analytics';
 import { IS_IOS } from '@/env';
+import { isInsufficientSponsorBalanceError } from '@/features/delegation/sponsoredCalls';
 import { getPreparedSponsoredSwap } from '@/features/delegation/sponsoredSwapStore';
 import { supportsDelegatedExecution } from '@/features/delegation/willDelegate';
 import { divWorklet, equalWorklet, lessThanOrEqualToWorklet, mulWorklet } from '@/framework/core/safeMath';
@@ -55,7 +56,7 @@ import { walletExecuteRap } from '@/raps/execute';
 import { type RapSwapActionParameters } from '@/raps/references';
 import { useUserAssetsStore } from '@/state/assets/userAssets';
 import { userAssetsStoreManager } from '@/state/assets/userAssetsStoreManager';
-import { useBackendNetworksStore } from '@/state/backendNetworks/backendNetworks';
+import { backendNetworksActions, useBackendNetworksStore } from '@/state/backendNetworks/backendNetworks';
 import { ChainId } from '@/state/backendNetworks/types';
 import { useConnectedToAnvilStore } from '@/state/connectedToAnvil';
 import { getNextNonce } from '@/state/nonces';
@@ -81,6 +82,7 @@ const selectToken = i18n.t(i18n.l.swap.actions.select_token);
 const insufficientFunds = i18n.t(i18n.l.swap.actions.insufficient_funds);
 const insufficient = i18n.t(i18n.l.swap.actions.insufficient);
 const quoteError = i18n.t(i18n.l.swap.actions.quote_error);
+const sponsorshipUnavailable = i18n.t(i18n.l.swap.sponsorship_unavailable);
 
 type ConfirmButtonProps = {
   label: string;
@@ -351,6 +353,13 @@ export const SwapProvider = ({ children }: SwapProviderProps) => {
 
         if (errorMessage !== 'handled') {
           logger.error(new RainbowError(`[getNonceAndPerformSwap]: Error executing swap: ${errorMessage}`));
+
+          if (isInsufficientSponsorBalanceError(errorMessage)) {
+            backendNetworksActions.disableSponsorshipUntilNextFetch(parameters.chainId);
+            Alert.alert(i18n.t(i18n.l.swap.error_executing_swap), sponsorshipUnavailable);
+            return;
+          }
+
           const extractedError = errorMessage.split('[')[0];
           Alert.alert(i18n.t(i18n.l.swap.error_executing_swap), extractedError);
           return;
