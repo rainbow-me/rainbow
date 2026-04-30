@@ -10,14 +10,22 @@ import { avoidScamsCard, backupsCard, cryptoAndWalletsCard } from '@/components/
 import { TrendingTokens } from '@/components/Discover/TrendingTokens';
 import { Box, Inline, Inset, Stack, Text } from '@/design-system';
 import { IS_TEST } from '@/env';
-import { CARD_HEIGHT, CARD_WIDTH, MarketCarousel } from '@/features/discover/components/MarketCarousel';
+import { MarketCarousel } from '@/features/discover/components/MarketCarousel';
+import {
+  computePerpCardWidth,
+  PERP_MARKET_CARD_HEIGHT,
+  PerpMarketCard,
+  type PerpMarketCardProps,
+} from '@/features/discover/components/PerpMarketCard';
 import { ENSCreateProfileCard } from '@/features/ens/components/ENSCreateProfileCard';
+import { useHyperliquidMarketsStore } from '@/features/perps/stores/hyperliquidMarketsStore';
+import { navigateToPerpsSearch } from '@/features/perps/utils/navigateToPerps';
 import { PLACEMENT_IDS } from '@/features/placements/constants';
 import {
   useDiscoverPlacementAvailability,
   useSyncDiscoverPlacementAvailabilityNetwork,
 } from '@/features/placements/stores/discover/discoverPlacementAvailabilityStore';
-import { usePlacementsStore } from '@/features/placements/stores/placementsStore';
+import { useDiscoverPlacements } from '@/features/placements/stores/discover/discoverPlacementsStore';
 import { type PlacementItem } from '@/features/placements/types';
 import walletTypes from '@/helpers/walletTypes';
 import * as i18n from '@/languages';
@@ -29,6 +37,15 @@ export const HORIZONTAL_PADDING = 20;
 
 const keyExtractor = (item: PlacementItem) => `${item.ref.source}:${item.ref.id}`;
 
+const renderPerpCard = (item: PlacementItem, { trackPress }: { trackPress: PerpMarketCardProps['onPressTracked'] }) => (
+  <PerpMarketCard item={item} onPressTracked={trackPress} />
+);
+
+const getPerpCardWidth = (item: PlacementItem) => {
+  const symbol = useHyperliquidMarketsStore.getState().getMarket(item.ref.id)?.baseSymbol ?? item.ref.id;
+  return computePerpCardWidth({ symbol });
+};
+
 export default function DiscoverHome() {
   const { mints_enabled, op_rewards_enabled, profiles_enabled, trending_tokens_enabled } = useRemoteConfig();
   const profilesEnabledLocalFlag = useExperimentalFlag(PROFILES);
@@ -39,15 +56,15 @@ export default function DiscoverHome() {
 
   const testNetwork = useSyncDiscoverPlacementAvailabilityNetwork();
   const availability = useDiscoverPlacementAvailability();
-  const isLoading = usePlacementsStore(state => state.status === 'loading' || state.status === 'idle');
+  const { placements, isLoading } = useDiscoverPlacements();
 
   const isProfilesEnabled = profilesEnabledLocalFlag && profiles_enabled;
   const wallets = useWallets();
   const hasHardwareWallets = Object.keys(wallets || {}).some(key => (wallets || {})[key].type === walletTypes.bluetooth);
 
-  const showPerpsPlacement = availability.perps && isLoading;
-  const showPredictionsPlacement = availability.predictions && isLoading;
-  const showPlacements = showPerpsPlacement || showPredictionsPlacement;
+  const perpsPlacement = placements.find(placement => placement.id === PLACEMENT_IDS.PERPS);
+  const showPerpsPlacement = availability.perps && (isLoading || Boolean(perpsPlacement?.items.length));
+  const showPlacements = showPerpsPlacement;
 
   return (
     <Inset top="12px" bottom={{ custom: 200 }} horizontal={{ custom: HORIZONTAL_PADDING }}>
@@ -59,25 +76,14 @@ export default function DiscoverHome() {
                 <MarketCarousel
                   title={i18n.t(i18n.l.discover.placements.perps_title)}
                   placementId={PLACEMENT_IDS.PERPS}
-                  data={[] as PlacementItem[]}
+                  placement={perpsPlacement}
+                  itemHeight={PERP_MARKET_CARD_HEIGHT}
+                  itemWidth={computePerpCardWidth({})}
+                  getItemWidth={getPerpCardWidth}
+                  data={perpsPlacement?.items ?? []}
                   keyExtractor={keyExtractor}
-                  itemHeight={CARD_HEIGHT}
-                  itemWidth={CARD_WIDTH}
-                  renderItem={(_item, _helpers) => <Box />}
-                  onSeeAll={() => undefined}
-                  loading={isLoading}
-                />
-              )}
-              {showPredictionsPlacement && (
-                <MarketCarousel
-                  title={i18n.t(i18n.l.discover.placements.predictions_title)}
-                  placementId={PLACEMENT_IDS.PREDICTIONS}
-                  data={[] as PlacementItem[]}
-                  keyExtractor={keyExtractor}
-                  itemHeight={CARD_HEIGHT}
-                  itemWidth={CARD_WIDTH}
-                  renderItem={(_item, _helpers) => <Box />}
-                  onSeeAll={() => undefined}
+                  renderItem={renderPerpCard}
+                  onSeeAll={navigateToPerpsSearch}
                   loading={isLoading}
                 />
               )}
