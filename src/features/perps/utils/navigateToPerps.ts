@@ -1,3 +1,4 @@
+import { PerpsNavigation } from '@/features/perps/screens/PerpsNavigator';
 import Navigation from '@/navigation/Navigation';
 import Routes from '@/navigation/routesNames';
 import { type RootStackParamList } from '@/navigation/types';
@@ -17,4 +18,9 @@ export function navigateToPerps(params?: RootStackParamList[typeof Routes.PERPS_
   } else {
     Navigation.handleAction(Routes.PERPS_NAVIGATOR, params);
   }
+}
+
+export function navigateToPerpsSearch() {
+  PerpsNavigation.navigate(Routes.PERPS_SEARCH_SCREEN, { type: 'search' });
+  navigateToPerps({ initialPerpsPage: Routes.PERPS_SEARCH_SCREEN });
 }
