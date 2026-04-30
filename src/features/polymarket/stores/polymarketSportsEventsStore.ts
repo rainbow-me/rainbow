@@ -49,21 +49,23 @@ async function fetchPolymarketSportsEvents(_: never, abortController: AbortContr
     timeout: time.seconds(30),
   });
 
-  const filteredEvents = events.filter(event => event.ended !== true && event.gameId != null);
+  const filteredEvents = events.filter(event => event.gameId != null);
 
   const teamsByTicker = await fetchTeamsForGameEvents(filteredEvents);
 
-  return await Promise.all(
-    filteredEvents.map(event => {
-      const teamMetadata = event.ticker ? teamsByTicker.get(event.ticker) : undefined;
-      if (teamMetadata?.homeTeamName) {
-        event.homeTeamName = teamMetadata.homeTeamName;
-      }
-      if (teamMetadata?.awayTeamName) {
-        event.awayTeamName = teamMetadata.awayTeamName;
-      }
+  return (
+    await Promise.all(
+      filteredEvents.map(event => {
+        const teamMetadata = event.ticker ? teamsByTicker.get(event.ticker) : undefined;
+        if (teamMetadata?.homeTeamName) {
+          event.homeTeamName = teamMetadata.homeTeamName;
+        }
+        if (teamMetadata?.awayTeamName) {
+          event.awayTeamName = teamMetadata.awayTeamName;
+        }
 
-      return processRawPolymarketEvent(event, teamMetadata?.teams);
-    })
-  );
+        return processRawPolymarketEvent(event, teamMetadata?.teams);
+      })
+    )
+  ).filter(event => !event.closed && event.ended !== true);
 }

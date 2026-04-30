@@ -12,9 +12,8 @@ import {
   type RawPolymarketMarket,
   type RawPolymarketOptimizedEvent,
 } from '@/features/polymarket/types/polymarket-event';
-import { getImagePrimaryColor } from '@/features/polymarket/utils/getImageColors';
 import { getMarketColors } from '@/features/polymarket/utils/getMarketColor';
-import { getHighContrastColor } from '@/hooks/useAccountAccentColor';
+import { resolvePolymarketCardColor } from '@/features/polymarket/utils/getPolymarketCardColor';
 
 export function processRawPolymarketMarket(market: RawPolymarketMarket, eventColor: ResponseByTheme<string>): PolymarketMarket {
   return {
@@ -35,9 +34,8 @@ export function processRawPolymarketMarket(market: RawPolymarketMarket, eventCol
 }
 
 export async function processRawPolymarketEvent(event: RawPolymarketEvent, teams?: PolymarketTeamInfo[]): Promise<PolymarketEvent> {
-  const rawColor = await getImagePrimaryColor(event.icon);
-  const color = { dark: getHighContrastColor(rawColor, true), light: getHighContrastColor(rawColor, false) };
   const sortedMarkets = sortMarkets(event.markets, event.sortBy);
+  const color = await resolvePolymarketCardColor({ event, sortedMarkets });
   const processedMarkets = sortedMarkets.map(market => processRawPolymarketMarket(market, color));
   const league = getLeague(event.slug);
   return {
