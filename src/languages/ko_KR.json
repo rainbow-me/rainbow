@@ -1057,19 +1057,19 @@
       },
       "gas": {
         "text": "이것은 %{networkName} 블록체인이 귀하의 거래를 안전하게 확인하는데 사용하는 \"가스 비용\"입니다.\n\n이 비용은 거래의 복잡성과 네트워크가 얼마나 바쁜지에 따라 달라집니다!",
-        "title": "%{networkName} Network Fee"
+        "title": "%{networkName} 네트워크 수수료"
       },
       "smart_wallet_activation": {
         "text": "이 거래에는 %{networkName}에서의 1회성 스마트 지갑 활성화가 포함됩니다. 이를 통해 지갑이 배치 거래 및 기타 스마트 계정 기능을 지원하도록 업그레이드됩니다.\n\n활성화 수수료는 이 스왑의 네트워크 수수료에 포함되어 있습니다.",
-        "title": "Smart Wallet Activation"
+        "title": "스마트 지갑 활성화"
       },
       "max_base_fee": {
         "text": "이것은 이 거래에 대해 지불할 의향이 있는 최대 기본 수수료입니다.\n\n더 높은 최대 기본 수수료를 설정하면 수수료가 상승해도 거래가 멈추지 않습니다.",
-        "title": "Max Base Fee"
+        "title": "최대 기본 수수료"
       },
       "miner_tip": {
         "text": "마이너 팁은 네트워크에서 귀하의 거래를 확인하는 마이너에게 직접 갑니다.\n\n더 높은 팁을 내면 거래가 더 빠르게 확정될 가능성이 높아집니다.",
-        "title": "Miner Tip"
+        "title": "광부 팁"
       },
       "apechain": {
         "text": "ApeChain은 Arbitrum Orbit와 Ethereum 위에서 운영되는 레이어 3 네트워크입니다.\n\n이것은 ApeCoin의 유용성을 크게 향상시키며, $APE에 의해 이끌어지는 강력하고 역동적인 경제를 촉진합니다.",
@@ -2401,7 +2401,7 @@
       "find_a_token_to_buy": "구매할 토큰 찾기",
       "search_your_tokens": "토큰 검색",
       "error_executing_swap": "스왑 실행 오류",
-      "sponsorship_unavailable": "Free swaps are temporarily unavailable on this network. Please try again with network fees.",
+      "sponsorship_unavailable": "무료 스왑은 현재 이 네트워크에서 일시적으로 사용할 수 없습니다. 네트워크 수수료로 다시 시도해 주세요.",
       "tokens_input": {
         "tokens": "토큰",
         "sort": "정렬",
@@ -2915,7 +2915,7 @@
         "disable_smart_wallet": "스마트 지갑 비활성화",
         "enabled_description": "더 빠른 거래와 더 낮은 네트워크 비용을 놓치게 됩니다",
         "disabled_description": "업데이트는 다음 스왑에서 적용됩니다",
-        "will_delegate_callout": "Includes Smart Wallet activation",
+        "will_delegate_callout": "스마트 지갑 활성화 포함",
         "revoke_panel": {
           "disable_smart_wallet_title": "스마트 지갑 비활성화",
           "disable_smart_wallet_subtitle": "이 작업은 모든 활성 위임을 철회하고 스마트 지갑 기능을 비활성화합니다.",
