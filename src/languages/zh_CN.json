@@ -1065,7 +1065,7 @@
       },
       "max_base_fee": {
         "text": "这是你愿意为这笔交易支付的最高基础费用。\n\n设置更高的最大基础费用可以在费用上升时防止你的交易被卡住。",
-        "title": "最大基础费用"
+        "title": "最大基础费"
       },
       "miner_tip": {
         "text": "矿工小费直接支付给在网络上确认你的交易的矿工。\n\n较高的小费使你的交易更有可能被快速确认。",
@@ -2401,6 +2401,7 @@
       "find_a_token_to_buy": "找一个要购买的代币",
       "search_your_tokens": "搜索你的代币",
       "error_executing_swap": "执行交换时出错",
+      "sponsorship_unavailable": "此网络上的免费兑换暂时不可用。请使用网络费重试。",
       "tokens_input": {
         "tokens": "代币",
         "sort": "排序",
@@ -2422,7 +2423,8 @@
         "fast": "快速",
         "network_fee": "网络费用",
         "normal": "正常",
-        "slow": "慢速"
+        "slow": "慢速",
+        "gas_sponsored": "免费"
       },
       "loading": "载入中...",
       "modal_types": {
@@ -3934,10 +3936,6 @@
       }
     },
     "rnbw_staking": {
-      "wallet_access": {
-        "hardware_wallet_not_supported_title": "不支持硬件钱包",
-        "hardware_wallet_not_supported_message": "目前硬件钱包暂不支持 RNBW 质押。"
-      },
       "deposit": {
         "confirm_button": "按住以质押",
         "confirm_button_error": "无法质押",
