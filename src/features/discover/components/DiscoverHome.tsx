@@ -1,4 +1,5 @@
 import React from 'react';
+import { StyleSheet } from 'react-native';
 
 import { FeaturedMintCard } from '@/components/cards/FeaturedMintCard';
 import { GasCard } from '@/components/cards/GasCard';
@@ -27,14 +28,27 @@ import {
   useSyncDiscoverPlacementAvailabilityNetwork,
 } from '@/features/placements/stores/discover/discoverPlacementAvailabilityStore';
 import { useDiscoverPlacements } from '@/features/placements/stores/discover/discoverPlacementsStore';
-import { type PlacementItem } from '@/features/placements/types';
+import { useDiscoverPredictionsStore } from '@/features/placements/stores/discover/discoverPredictionsStore';
+import { type PlacementItem, type PlacementItemAnalyticsMetadata } from '@/features/placements/types';
+import {
+  LoadingSkeleton,
+  PolymarketEventsListItem,
+  HEIGHT as PREDICTION_TILE_HEIGHT,
+} from '@/features/polymarket/components/polymarket-events-list/PolymarketEventsListItem';
+import { navigateToPolymarket } from '@/features/polymarket/utils/navigateToPolymarket';
 import walletTypes from '@/helpers/walletTypes';
 import * as i18n from '@/languages';
 import { useRemoteConfig } from '@/model/remoteConfig';
+import Navigation from '@/navigation/Navigation';
+import Routes from '@/navigation/routesNames';
 import { useWallets } from '@/state/wallets/walletsStore';
+import { DEVICE_WIDTH } from '@/utils/deviceUtils';
 import useExperimentalFlag, { HARDWARE_WALLETS, MINTS, OP_REWARDS, PROFILES, TRENDING_TOKENS } from '@rainbow-me/config/experimentalHooks';
 
 export const HORIZONTAL_PADDING = 20;
+
+const PREDICTION_TILE_GAP = 12;
+const PREDICTION_TILE_WIDTH = (DEVICE_WIDTH - PREDICTION_TILE_GAP * 3) / 2;
 
 const keyExtractor = (item: PlacementItem) => `${item.ref.source}:${item.ref.id}`;
 
@@ -45,6 +59,27 @@ const renderPerpCard = (item: PlacementItem, { trackPress }: { trackPress: PerpM
 const getPerpCardWidth = (item: PlacementItem) => {
   const symbol = useHyperliquidMarketsStore.getState().getMarket(item.ref.id)?.baseSymbol ?? item.ref.id;
   return computePerpCardWidth({ symbol });
+};
+
+const renderPredictionCard = (item: PlacementItem, { trackPress }: { trackPress: (metadata?: PlacementItemAnalyticsMetadata) => void }) => {
+  const event = useDiscoverPredictionsStore.getState().getEvent(item.ref.id);
+  if (!event) return <LoadingSkeleton />;
+
+  return (
+    <PolymarketEventsListItem
+      event={event}
+      onPress={() => {
+        trackPress({
+          marketId: event.id,
+          marketName: event.title,
+          marketSlug: event.slug,
+          marketSymbol: event.ticker,
+        });
+        Navigation.handleAction(Routes.POLYMARKET_EVENT_SCREEN, { event, eventId: event.id });
+      }}
+      style={styles.predictionTile}
+    />
+  );
 };
 
 export default function DiscoverHome() {
@@ -64,8 +99,10 @@ export default function DiscoverHome() {
   const hasHardwareWallets = Object.keys(wallets || {}).some(key => (wallets || {})[key].type === walletTypes.bluetooth);
 
   const perpsPlacement = placements.find(placement => placement.id === PLACEMENT_IDS.PERPS);
+  const predictionsPlacement = placements.find(placement => placement.id === PLACEMENT_IDS.PREDICTIONS);
   const showPerpsPlacement = availability.perps && (isLoading || Boolean(perpsPlacement?.items.length));
-  const showPlacements = showPerpsPlacement;
+  const showPredictionsPlacement = availability.predictions && (isLoading || Boolean(predictionsPlacement?.items.length));
+  const showPlacements = showPerpsPlacement || showPredictionsPlacement;
 
   return (
     <Inset top="12px" bottom={{ custom: 200 }} horizontal={{ custom: HORIZONTAL_PADDING }}>
@@ -85,6 +122,20 @@ export default function DiscoverHome() {
                   keyExtractor={keyExtractor}
                   renderItem={renderPerpCard}
                   onSeeAll={navigateToPerpsSearch}
+                  loading={isLoading}
+                />
+              )}
+              {showPredictionsPlacement && (
+                <MarketCarousel
+                  title={i18n.t(i18n.l.discover.placements.predictions_title)}
+                  placementId={PLACEMENT_IDS.PREDICTIONS}
+                  placement={predictionsPlacement}
+                  itemHeight={PREDICTION_TILE_HEIGHT}
+                  itemWidth={PREDICTION_TILE_WIDTH}
+                  data={predictionsPlacement?.items ?? []}
+                  keyExtractor={keyExtractor}
+                  renderItem={renderPredictionCard}
+                  onSeeAll={navigateToPolymarket}
                   loading={isLoading}
                 />
               )}
@@ -125,3 +176,9 @@ export default function DiscoverHome() {
     </Inset>
   );
 }
+
+const styles = StyleSheet.create({
+  predictionTile: {
+    width: PREDICTION_TILE_WIDTH,
+  },
+});
