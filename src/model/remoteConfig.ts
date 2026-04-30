@@ -97,6 +97,7 @@ export interface RainbowConfig extends Record<
   rnbw_membership_enabled: boolean;
   delegation_enabled: boolean;
   sponsored_swaps_enabled: boolean;
+  discover_placements_enabled: boolean;
 }
 
 const Bips = {
@@ -228,6 +229,7 @@ export const DEFAULT_CONFIG = {
   rnbw_membership_enabled: false,
   delegation_enabled: false,
   sponsored_swaps_enabled: true,
+  discover_placements_enabled: true,
 } as const satisfies Readonly<RainbowConfig>;
 
 type RemoteConfigKey = keyof typeof DEFAULT_CONFIG;
