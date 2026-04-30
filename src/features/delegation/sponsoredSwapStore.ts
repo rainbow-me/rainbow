@@ -60,15 +60,16 @@ export function getPreparedSponsoredSwap(): Promise<PreparedCallsExecution | nul
 
 export const useIsSponsoredSwap = createDerivedStore<boolean>(
   $ => {
-    const accountAddress = $(useWalletsStore, s => s.accountAddress);
-    const inputChainId = $(useSwapsStore, s => s.inputAsset?.chainId);
+    const address = $(useWalletsStore, s => s.accountAddress);
+    const chainId = $(useSwapsStore, s => s.inputAsset?.chainId ?? null);
+    const isPreparingSwap = $(useSponsoredSwapStore, s => s.getStatus('isInitialLoad'));
     const preparedSwap = $(useSponsoredSwapStore, s => s.getData());
     const sponsoredSwapsEnabled = $(useRemoteConfigStore, s => s.config.sponsored_swaps_enabled);
 
     if (!sponsoredSwapsEnabled) return false;
 
-    const canSponsor = predictSponsoredCallsExecution({ address: accountAddress, chainId: inputChainId ?? null });
-    if (!canSponsor || !preparedSwap) return canSponsor;
+    const canSponsor = predictSponsoredCallsExecution({ address, chainId });
+    if (!canSponsor || isPreparingSwap) return canSponsor;
 
     return isPreparedCallsExecutionSponsored(preparedSwap);
   },
