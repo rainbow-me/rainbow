@@ -1,18 +1,17 @@
 import { createDerivedStore } from '@storesjs/stores';
 import { formatUnits, type Address } from 'viem';
 
-import { type GasSettings } from '@/__swaps__/screens/Swap/hooks/useCustomGas';
 import { safeBigInt } from '@/__swaps__/screens/Swap/hooks/useEstimatedGasFee';
 import { calculateGasFeeWorklet } from '@/__swaps__/screens/Swap/providers/SyncSwapStateAndSharedValues';
 import { GasSpeed } from '@/__swaps__/types/gas';
 import { isCrosschainQuote } from '@/__swaps__/utils/quotes';
 import { stripNonDecimalNumbers } from '@/__swaps__/utils/swaps';
-import { type MeteorologyLegacyResponse, type MeteorologyResponse } from '@/entities/gas';
+import { type GasSettings, type MeteorologyLegacyResponse, type MeteorologyResponse } from '@/entities/gas';
 import { type NativeCurrencyKey } from '@/entities/nativeCurrencyTypes';
 import { rainbowMeteorologyGetData } from '@/handlers/gasFees';
 import { convertAmountToNativeDisplayWorklet, formatNumber, multiply } from '@/helpers/utilities';
 import { logger } from '@/logger';
-import { gweiToWei, weiToGwei } from '@/parsers/gas';
+import { buildGasParams, gweiToWei, weiToGwei } from '@/parsers/gas';
 import { estimateUnlockAndCrosschainSwap } from '@/raps/actions/crosschainSwap';
 import { estimateUnlockAndSwap } from '@/raps/actions/swap';
 import { gasUnits } from '@/references/gasUnits';
@@ -30,7 +29,6 @@ import {
   type DepositConfig,
   type DepositGasHookParams,
   type DepositGasLimitParams,
-  type DepositGasSponsorshipParams,
   type DepositGasStoresType,
   type DepositGasSuggestions,
   type DepositMeteorologyActions,
@@ -47,7 +45,16 @@ import { createExternalTokenStore, type FormattedExternalAsset } from './createE
 type GasLimit = string;
 type MeteorologyData = MeteorologyLegacyResponse | MeteorologyResponse;
 
+type GasSponsorshipQueryParams = {
+  accountAddress: Address | null;
+  amount: string;
+  assetToSellUniqueId: string | null;
+  quoteKey: number | null;
+};
+
 // ============ Gas Stores Factory ============================================ //
+
+const useNoGasSponsorship = createDerivedStore(() => false, { lockDependencies: true });
 
 export function createDepositGasStores(
   config: DepositConfig,
@@ -55,7 +62,10 @@ export function createDepositGasStores(
   useDepositStore: DepositStoreType,
   useQuoteStore: DepositQuoteStoreType
 ): DepositGasStoresType {
-  const hasCustomGasLimitEstimator = Boolean(config.gas?.estimateGasLimit);
+  const hasCustomGasLimit = Boolean(config.gas?.estimateGasLimit);
+  const hasGasSponsorshipResolver = Boolean(config.gas?.isSponsored);
+  const hasGasSponsorship = hasGasSponsorshipResolver || Boolean(config.gas?.predictIsSponsored);
+  const needsGasHookParams = hasCustomGasLimit || hasGasSponsorshipResolver;
 
   /**
    * Produces a numeric key each time the `quote` object identity
@@ -63,7 +73,7 @@ export function createDepositGasStores(
    */
   const useQuoteKey = createDerivedStore(
     $ => {
-      const quote = $(useQuoteStore, state => state.getData());
+      const quote = $(useQuoteStore, s => s.getData());
       if (!isValidQuote(quote)) return null;
       return performance.now();
     },
@@ -80,7 +90,7 @@ export function createDepositGasStores(
       fetcher: fetchMeteorologyData,
       transform: selectGasSuggestions,
       params: {
-        chainId: $ => $(useDepositStore, state => state.getAssetChainId()),
+        chainId: $ => $(useDepositStore, s => s.getAssetChainId()),
       },
       cacheTime: time.seconds(36),
       keepPreviousData: true,
@@ -88,45 +98,34 @@ export function createDepositGasStores(
     },
 
     (_, get) => ({
+      getGasParams: async () => {
+        const gasSuggestions = get().getData() ?? (await get().fetch(undefined, { throwOnError: true }));
+        const gasSettings = selectGasSettings(gasSuggestions ?? undefined, useDepositStore.getState().getGasSpeed());
+        return gasSettings ? buildGasParams(gasSettings) : null;
+      },
       getGasSuggestions: () => get().getData() ?? undefined,
     })
   );
 
-  const useNormalizedAmount = createDerivedStore($ => $(useAmountStore, state => normalizeAmount(state.amount)), {
-    lockDependencies: true,
-  });
+  const useHasGasHookParams = needsGasHookParams
+    ? createDerivedStore(
+        $ => {
+          const accountAddress = $(useWalletsStore, s => s.accountAddress);
+          const amount = $(useAmountStore, selectNormalizedAmount);
+          const assetUniqueId = $(useDepositStore, selectAssetUniqueId);
 
-  const useCanEstimateGasLimit = createDerivedStore(
-    $ => {
-      const normalizedAmount = $(useNormalizedAmount);
-      const assetUniqueId = $(useDepositStore, selectAssetUniqueId);
-      const quoteKey = $(useQuoteKey);
-
-      const hasAmount = hasNonZeroAmount(normalizedAmount);
-      const hasAsset = assetUniqueId !== null;
-
-      if (!hasAsset || !hasAmount) return false;
-      return hasCustomGasLimitEstimator || isValidQuoteKey(quoteKey);
-    },
-    { lockDependencies: true }
-  );
-
-  const useCanCheckGasSponsorship = createDerivedStore(
-    $ => {
-      const normalizedAmount = $(useNormalizedAmount);
-      const accountAddress = $(useWalletsStore, state => state.accountAddress);
-      const assetUniqueId = $(useDepositStore, selectAssetUniqueId);
-
-      return Boolean(config.gas?.isSponsored && accountAddress && assetUniqueId && hasNonZeroAmount(normalizedAmount));
-    },
-    { lockDependencies: true }
-  );
+          return Boolean(accountAddress && assetUniqueId && hasNonZeroAmount(amount));
+        },
+        { lockDependencies: true }
+      )
+    : null;
 
   const useGasLimitStore = createQueryStore<GasLimit, DepositGasLimitParams>({
-    fetcher: createGasLimitFetcher(config, useAmountStore, useDepositStore, useQuoteStore),
-    enabled: $ => $(useCanEstimateGasLimit),
+    fetcher: createGasLimitFetcher(config, useDepositStore, useQuoteStore),
+    enabled: hasCustomGasLimit && useHasGasHookParams ? $ => $(useHasGasHookParams) : $ => $(useQuoteKey, isValidQuoteKey),
     params: {
-      amount: $ => $(useNormalizedAmount),
+      accountAddress: hasCustomGasLimit ? $ => $(useWalletsStore, s => s.accountAddress) : null,
+      amount: hasCustomGasLimit ? $ => $(useAmountStore, selectNormalizedAmount) : null,
       assetToSellUniqueId: $ => $(useDepositStore, selectAssetUniqueId),
       quoteKey: $ => $(useQuoteKey),
     },
@@ -135,26 +134,29 @@ export function createDepositGasStores(
     staleTime: time.seconds(30),
   });
 
-  const useGasSponsorshipStore = createQueryStore<boolean, DepositGasSponsorshipParams>({
-    fetcher: createGasSponsorshipFetcher(config, useAmountStore, useDepositStore, useQuoteStore),
-    enabled: $ => $(useCanCheckGasSponsorship),
-    params: {
-      accountAddress: $ => $(useWalletsStore, state => state.accountAddress),
-      amount: $ => $(useNormalizedAmount),
-      assetToSellUniqueId: $ => $(useDepositStore, selectAssetUniqueId),
-      quoteKey: $ => $(useQuoteKey),
-    },
-    cacheTime: time.seconds(20),
-    keepPreviousData: true,
-    staleTime: time.seconds(20),
-  });
+  const useGasSponsorshipStore =
+    hasGasSponsorshipResolver && useHasGasHookParams
+      ? createQueryStore<boolean, GasSponsorshipQueryParams>({
+          fetcher: createGasSponsorshipFetcher(config, useDepositStore, useQuoteStore),
+          enabled: $ => $(useHasGasHookParams),
+          params: {
+            accountAddress: $ => $(useWalletsStore, s => s.accountAddress),
+            amount: $ => $(useAmountStore, selectNormalizedAmount),
+            assetToSellUniqueId: $ => $(useDepositStore, selectAssetUniqueId),
+            quoteKey: $ => $(useQuoteKey),
+          },
+          cacheTime: time.seconds(20),
+          keepPreviousData: true,
+          staleTime: time.seconds(20),
+        })
+      : null;
 
   const useNativeAssetStore = createExternalTokenStore(useDepositStore);
 
   const useGasSettings = createDerivedStore(
     $ => {
-      const meteorologyData = $(useMeteorologyStore, state => state.getData());
-      const selectedGasSpeed = $(useDepositStore, state => state.getGasSpeed());
+      const meteorologyData = $(useMeteorologyStore, s => s.getData());
+      const selectedGasSpeed = $(useDepositStore, s => s.getGasSpeed());
       if (!meteorologyData) return undefined;
       return selectGasSettings(meteorologyData, selectedGasSpeed);
     },
@@ -164,9 +166,9 @@ export function createDepositGasStores(
   const useEstimatedGasFee = createDerivedStore(
     $ => {
       const gasSettings = $(useGasSettings);
-      const gasLimit = $(useGasLimitStore, state => state.getData());
-      const currency = $(userAssetsStoreManager, state => state.currency);
-      const nativeNetworkAsset = $(useNativeAssetStore, state => state.getData());
+      const gasLimit = $(useGasLimitStore, s => s.getData());
+      const currency = $(userAssetsStoreManager, s => s.currency);
+      const nativeNetworkAsset = $(useNativeAssetStore, s => s.getData());
 
       if (!gasLimit || !gasSettings) return;
       return calculateGasFee(gasSettings, gasLimit, currency, nativeNetworkAsset);
@@ -174,44 +176,41 @@ export function createDepositGasStores(
     { lockDependencies: true }
   );
 
-  const useIsGasSponsored = createDerivedStore(
-    $ => {
-      const resolvedSponsorship = $(useGasSponsorshipStore, state => state.getData());
-      const accountAddress = $(useWalletsStore, state => state.accountAddress);
-      const amount = $(useNormalizedAmount);
-      const asset = $(useDepositStore, state => state.asset);
-      const quote = $(useQuoteStore, state => state.getData());
+  const useIsGasSponsored = hasGasSponsorship
+    ? createDerivedStore(
+        $ => {
+          const params = buildGasHookParams({
+            accountAddress: $(useWalletsStore, s => s.accountAddress),
+            amount: $(useAmountStore, selectNormalizedAmount),
+            asset: $(useDepositStore, s => s.asset),
+            config,
+            quote: $(useQuoteStore, s => s.getData()),
+          });
 
-      const params = buildGasHookParams({
-        accountAddress,
-        amount,
-        asset,
-        config,
-        quote,
-      });
+          const resolvedSponsorship = useGasSponsorshipStore ? $(useGasSponsorshipStore, s => s.getData()) : null;
+          if (resolvedSponsorship !== null) return resolvedSponsorship;
 
-      if (resolvedSponsorship !== null) return resolvedSponsorship;
+          const predictSponsorship = config.gas?.predictIsSponsored;
+          if (!predictSponsorship || !params) return false;
 
-      const predictSponsorship = config.gas?.predictIsSponsored;
-      if (!predictSponsorship || !params) return false;
-
-      try {
-        return Boolean(predictSponsorship(params));
-      } catch (error) {
-        logger.warn('[createDepositGasStores]: sponsorship prediction failed', {
-          error,
-          id: config.id,
-        });
-        return false;
-      }
-    },
-    { lockDependencies: true }
-  );
+          try {
+            return Boolean(predictSponsorship(params));
+          } catch (error) {
+            logger.warn('[createDepositGasStores]: sponsorship prediction failed', {
+              error,
+              id: config.id,
+            });
+            return false;
+          }
+        },
+        { lockDependencies: true }
+      )
+    : useNoGasSponsorship;
 
   const useMaxSwappableAmount = createDerivedStore(
     $ => {
-      const asset = $(useDepositStore, state => state.getAsset());
-      const gasLimit = $(useGasLimitStore, state => state.getData());
+      const asset = $(useDepositStore, s => s.getAsset());
+      const gasLimit = $(useGasLimitStore, s => s.getData());
       const gasSettings = $(useGasSettings);
 
       return computeMaxSwappableAmount(asset, gasSettings, gasLimit ?? undefined) || asset?.balance.amount;
@@ -220,10 +219,14 @@ export function createDepositGasStores(
   );
 
   return {
+    reset: () => {
+      useMeteorologyStore.getState().reset(true);
+      useGasLimitStore.getState().reset(true);
+      useGasSponsorshipStore?.getState().reset(true);
+    },
     useEstimatedGasFee,
     useGasLimitStore,
     useGasSettings,
-    useGasSponsorshipStore,
     useIsGasSponsored,
     useMaxSwappableAmount,
     useMeteorologyStore,
@@ -244,24 +247,26 @@ async function fetchMeteorologyData(
 
 function createGasLimitFetcher(
   config: DepositConfig,
-  useAmountStore: AmountStoreType,
   useDepositStore: DepositStoreType,
   useQuoteStore: DepositQuoteStoreType
 ): (params: DepositGasLimitParams) => Promise<GasLimit> {
-  return async function fetchGasLimit(): Promise<GasLimit> {
+  return async function fetchGasLimit(queryParams: DepositGasLimitParams): Promise<GasLimit> {
     const asset = useDepositStore.getState().asset;
     const quote = useQuoteStore.getState().getData();
     const chainId = useDepositStore.getState().getAssetChainId();
 
-    if (!asset) {
-      return getDefaultGasLimit(chainId);
-    }
+    if (!asset) return getDefaultGasLimit(chainId);
 
     if (config.gas?.estimateGasLimit) {
-      const params = getGasHookParams(config, useAmountStore, useDepositStore, useQuoteStore);
-      if (!params) {
-        return getDefaultGasLimit(chainId);
-      }
+      const params = buildGasHookParams({
+        accountAddress: queryParams.accountAddress ?? null,
+        amount: queryParams.amount ?? '0',
+        asset,
+        config,
+        quote,
+      });
+
+      if (!params) return getDefaultGasLimit(chainId);
 
       try {
         return await config.gas.estimateGasLimit(params);
@@ -274,35 +279,36 @@ function createGasLimitFetcher(
       }
     }
 
-    if (!isValidQuote(quote)) {
-      return getDefaultGasLimit(chainId);
-    }
+    if (!isValidQuote(quote)) return getDefaultGasLimit(chainId);
 
-    if (isCrosschainQuote(quote)) {
-      return estimateUnlockAndCrosschainSwap({
-        chainId,
-        quote,
-      });
-    }
-
-    return estimateUnlockAndSwap({
-      chainId,
-      quote,
-    });
+    return isCrosschainQuote(quote)
+      ? estimateUnlockAndCrosschainSwap({
+          chainId,
+          quote,
+        })
+      : estimateUnlockAndSwap({ chainId, quote });
   };
 }
 
+// ============ Gas Sponsorship =============================================== //
+
 function createGasSponsorshipFetcher(
   config: DepositConfig,
-  useAmountStore: AmountStoreType,
   useDepositStore: DepositStoreType,
   useQuoteStore: DepositQuoteStoreType
-): (params: DepositGasSponsorshipParams) => Promise<boolean> {
-  return async function fetchIsGasSponsored(): Promise<boolean> {
+): (params: GasSponsorshipQueryParams) => Promise<boolean> {
+  return async function fetchIsGasSponsored(queryParams: GasSponsorshipQueryParams): Promise<boolean> {
     const sponsorshipHook = config.gas?.isSponsored;
     if (!sponsorshipHook) return false;
 
-    const params = getGasHookParams(config, useAmountStore, useDepositStore, useQuoteStore);
+    const params = buildGasHookParams({
+      accountAddress: queryParams.accountAddress,
+      amount: queryParams.amount,
+      asset: useDepositStore.getState().asset,
+      config,
+      quote: useQuoteStore.getState().getData(),
+    });
+
     if (!params) return false;
 
     try {
@@ -315,25 +321,6 @@ function createGasSponsorshipFetcher(
       return false;
     }
   };
-}
-
-function getGasHookParams(
-  config: DepositConfig,
-  useAmountStore: AmountStoreType,
-  useDepositStore: DepositStoreType,
-  useQuoteStore: DepositQuoteStoreType
-): DepositGasHookParams | null {
-  const accountAddress = useWalletsStore.getState().accountAddress;
-  const amount = normalizeAmount(useAmountStore.getState().amount);
-  const asset = useDepositStore.getState().asset;
-
-  return buildGasHookParams({
-    accountAddress,
-    amount,
-    asset,
-    config,
-    quote: useQuoteStore.getState().getData(),
-  });
 }
 
 function buildGasHookParams({
@@ -370,12 +357,12 @@ function isValidQuoteKey(key: number | null): boolean {
   return key !== null;
 }
 
-function normalizeAmount(amount: string): string {
-  return stripNonDecimalNumbers(amount) || '0';
-}
-
 function hasNonZeroAmount(amount: string): boolean {
   return Number(amount) > 0;
+}
+
+function selectNormalizedAmount(state: InferStoreState<AmountStoreType>): string {
+  return stripNonDecimalNumbers(state.amount) || '0';
 }
 
 function selectAssetUniqueId(state: InferStoreState<DepositStoreType>): string | null {

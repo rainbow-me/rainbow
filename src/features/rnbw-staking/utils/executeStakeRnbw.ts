@@ -4,6 +4,7 @@ import type { StaticJsonRpcProvider } from '@ethersproject/providers';
 import { Wallet } from '@ethersproject/wallet';
 import { type Address } from 'viem';
 
+import type { LegacyTransactionGasParamAmounts, TransactionGasParamAmounts } from '@/entities/gas';
 import { TransactionDirection, TransactionStatus, type NewTransaction } from '@/entities/transactions';
 import { trackCallsExecution } from '@/features/delegation/callsExecutionTracking';
 import { resolveManagedExecutionFailure } from '@/features/delegation/managedExecutionFailure';
@@ -14,9 +15,15 @@ import { toTransactionAsset, type TransactionAssetSource } from '@/raps/transact
 import { backendNetworksActions } from '@/state/backendNetworks/backendNetworks';
 import { addNewTransaction } from '@/state/pendingTransactions';
 import { time } from '@/utils/time';
-import { execute, type ExecuteCallsResult, type PreparedCallsExecution } from '@rainbow-me/delegation';
+import { execute, type Call, type ExecuteCallsResult, type PreparedCallsExecution } from '@rainbow-me/delegation';
 
-import { STAKING_CHAIN_ID, STAKING_CONTRACT_ADDRESS, STAKING_GAS_LIMIT } from '../constants';
+import {
+  RNBW_TOKEN_ADDRESS,
+  STAKING_APPROVAL_GAS_LIMIT,
+  STAKING_CHAIN_ID,
+  STAKING_CONTRACT_ADDRESS,
+  STAKING_GAS_LIMIT,
+} from '../constants';
 import { buildStakeRnbwCalls, buildStakeRnbwExecutionPlan } from './stakeRnbwCalls';
 
 // ============ Types ========================================================= //
@@ -33,6 +40,7 @@ export type StakeRnbwExecution = {
 type ExecuteStakeRnbwParams = {
   address: Address;
   asset: TransactionAssetSource;
+  gasParams: LegacyTransactionGasParamAmounts | TransactionGasParamAmounts;
   preparedCalls: PreparedCallsExecution | null;
   provider: StaticJsonRpcProvider;
   signer: Signer;
@@ -49,13 +57,14 @@ type WalletStakeCallsExecution = Extract<ExecuteCallsResult, { kind: 'calls.wall
 export async function executeStakeRnbw({
   address,
   asset,
+  gasParams,
   preparedCalls,
   provider,
   signer,
   stakeAmountRaw,
 }: ExecuteStakeRnbwParams): Promise<StakeRnbwExecution> {
   if (!(signer instanceof Wallet)) {
-    return executeSequentialStakeRnbw({ address, asset, provider, signer, stakeAmountRaw });
+    return executeSequentialStakeRnbw({ address, asset, gasParams, provider, signer, stakeAmountRaw });
   }
 
   const execution = await executeSdkStakeRnbw({
@@ -143,12 +152,14 @@ async function executeSdkStakeRnbw({
 async function executeSequentialStakeRnbw({
   address,
   asset,
+  gasParams,
   provider,
   signer,
   stakeAmountRaw,
 }: {
   address: Address;
   asset: TransactionAssetSource;
+  gasParams: LegacyTransactionGasParamAmounts | TransactionGasParamAmounts;
   provider: StaticJsonRpcProvider;
   signer: Signer;
   stakeAmountRaw: string;
@@ -159,13 +170,14 @@ async function executeSequentialStakeRnbw({
 
   for (let index = 0; index < calls.length; index++) {
     const call = calls[index];
-    const isStakeCall = call.to === STAKING_CONTRACT_ADDRESS;
     const isFinalCall = index === calls.length - 1;
+    const gasLimit = await resolveStakeRnbwCallGasLimit({ address, call, provider });
     const transaction = await signer.sendTransaction({
+      ...gasParams,
       to: call.to,
       data: call.data,
       value: call.value ?? 0n,
-      ...(isStakeCall ? { gasLimit: STAKING_GAS_LIMIT } : {}),
+      gasLimit,
     });
 
     if (isFinalCall) {
@@ -261,4 +273,31 @@ async function waitForWalletTransactions({ provider, txHashes }: { provider: Sta
       throw new RainbowError(`[executeStakeRnbw]: wallet staking transaction failed (${hash})`);
     }
   }
+}
+
+async function resolveStakeRnbwCallGasLimit({
+  address,
+  call,
+  provider,
+}: {
+  address: Address;
+  call: Call;
+  provider: StaticJsonRpcProvider;
+}): Promise<TransactionResponse['gasLimit'] | number> {
+  try {
+    return await provider.estimateGas({
+      data: call.data,
+      from: address,
+      to: call.to,
+      value: call.value ?? 0n,
+    });
+  } catch {
+    return resolveStakeRnbwCallFallbackGasLimit(call.to);
+  }
+}
+
+function resolveStakeRnbwCallFallbackGasLimit(to: string): number {
+  if (to === RNBW_TOKEN_ADDRESS) return STAKING_APPROVAL_GAS_LIMIT;
+  if (to === STAKING_CONTRACT_ADDRESS) return STAKING_GAS_LIMIT;
+  throw new RainbowError(`[executeStakeRnbw]: unsupported staking call target (${to})`);
 }

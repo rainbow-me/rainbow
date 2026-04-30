@@ -2,21 +2,21 @@ import { type TransactionReceipt, type TransactionRequest } from '@ethersproject
 import { type Wallet } from '@ethersproject/wallet';
 import { formatUnits, type Address } from 'viem';
 
-import { type GasSettings } from '@/__swaps__/screens/Swap/hooks/useCustomGas';
 import { safeBigInt } from '@/__swaps__/screens/Swap/hooks/useEstimatedGasFee';
 import { calculateGasFeeWorklet } from '@/__swaps__/screens/Swap/providers/SyncSwapStateAndSharedValues';
 import { analytics } from '@/analytics';
+import { type GasSettings } from '@/entities/gas';
 import { type NativeCurrencyKey } from '@/entities/nativeCurrencyTypes';
 import { TransactionStatus, type NewTransaction } from '@/entities/transactions';
 import { lessThanOrEqualToWorklet } from '@/framework/core/safeMath';
 import { type LedgerSigner } from '@/handlers/LedgerSigner';
 import { getProvider, toHex } from '@/handlers/web3';
-import { add, convertAmountToNativeDisplayWorklet, formatNumber, multiply } from '@/helpers/utilities';
+import { convertAmountToNativeDisplayWorklet, formatNumber, multiply } from '@/helpers/utilities';
 import { logger, RainbowError } from '@/logger';
 import { loadWallet } from '@/model/wallet';
 import Navigation from '@/navigation/Navigation';
 import Routes from '@/navigation/routesNames';
-import { weiToGwei } from '@/parsers/gas';
+import { buildGasParams, weiToGwei } from '@/parsers/gas';
 import { type RainbowClaimable } from '@/resources/addys/claimables/types';
 import { isStaging } from '@/resources/addys/client';
 import { userAssetsStore } from '@/state/assets/userAssets';
@@ -82,15 +82,9 @@ export async function executeAirdropClaim({
     nonce,
     to,
     value: '0x0',
+    ...buildGasParams(gasSettings),
+    ...(gasSettings.isEIP1559 ? { type: 2 } : undefined),
   };
-
-  if (gasSettings.isEIP1559) {
-    txPayload.type = 2;
-    txPayload.maxFeePerGas = add(gasSettings.maxBaseFee, gasSettings.maxPriorityFee);
-    txPayload.maxPriorityFeePerGas = gasSettings.maxPriorityFee;
-  } else {
-    txPayload.gasPrice = toHex(gasSettings.gasPrice);
-  }
 
   const provider = getProvider({ chainId });
   let wallet: Wallet | LedgerSigner | null;

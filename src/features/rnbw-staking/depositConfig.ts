@@ -39,13 +39,13 @@ export function createRnbwStakingDepositConfig(
       },
     },
 
-    execute: async ({ accountAddress, amount, asset }) => {
+    execute: async ({ accountAddress, amount, asset, gasParams }) => {
       const preparedStake = stakePreparationStore
         .getState()
         .getPreparedCalls({ accountAddress, amount })
         .catch(() => null);
 
-      const result = await stakeRnbw({ address: accountAddress, amount, asset, preparedStake });
+      const result = await stakeRnbw({ address: accountAddress, amount, asset, gasParams, preparedStake });
 
       return {
         confirmationChainId: STAKING_CHAIN_ID,

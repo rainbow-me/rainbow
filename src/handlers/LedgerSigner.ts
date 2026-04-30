@@ -12,14 +12,35 @@ import type AppEth from '@ledgerhq/hw-app-eth';
 import { ledgerService } from '@ledgerhq/hw-app-eth';
 import { SignTypedDataVersion, TypedDataUtils } from '@metamask/eth-sig-util';
 
-import { logger, RainbowError } from '@/logger';
+import { ensureError, logger, RainbowError } from '@/logger';
 import Navigation from '@/navigation/Navigation';
 import Routes from '@/navigation/routesNames';
 import { getEthApp } from '@/utils/ledger';
+import { time } from '@/utils/time';
+
+type LedgerTransactionResolution = Awaited<ReturnType<typeof ledgerService.resolveTransaction>>;
+
+const LEDGER_TRANSACTION_RESOLUTION_TIMEOUT_MS = time.seconds(10);
+const LEDGER_TRANSACTION_RESOLUTION_CONFIG = {
+  erc20: true,
+  externalPlugins: true,
+  nft: true,
+};
 
 function waiter(duration: number): Promise<void> {
   return new Promise(resolve => {
     setTimeout(resolve, duration);
+  });
+}
+
+function withTimeout<T>(promise: Promise<T>, duration: number, message: string): Promise<T> {
+  let timeoutId: ReturnType<typeof setTimeout> | undefined;
+  const timeout = new Promise<never>((_, reject) => {
+    timeoutId = setTimeout(() => reject(new RainbowError(message)), duration);
+  });
+
+  return Promise.race([promise, timeout]).finally(() => {
+    if (timeoutId) clearTimeout(timeoutId);
   });
 }
 
@@ -44,6 +65,7 @@ function sigComponentToHex(value: string | Buffer | Uint8Array): string {
   return hexlify(value);
 }
 
+/** Ethers signer that routes signing requests through a paired Ledger device. */
 export class LedgerSigner extends Signer {
   readonly path: string | undefined;
   readonly privateKey: null | undefined;
@@ -155,6 +177,21 @@ export class LedgerSigner extends Signer {
     return joinSignature(sig);
   }
 
+  private async resolveTransaction(unsignedTx: string): Promise<LedgerTransactionResolution | null> {
+    try {
+      return await withTimeout(
+        this._retry(eth => ledgerService.resolveTransaction(unsignedTx, eth.loadConfig, LEDGER_TRANSACTION_RESOLUTION_CONFIG)),
+        LEDGER_TRANSACTION_RESOLUTION_TIMEOUT_MS,
+        'Ledger: transaction resolution timeout'
+      );
+    } catch (error) {
+      logger.warn('[LedgerSigner]: Transaction resolution failed, falling back to blind signing', {
+        message: ensureError(error).message,
+      });
+      return null;
+    }
+  }
+
   async signTransaction(transaction: TransactionRequest): Promise<string> {
     const tx = await resolveProperties(transaction);
     const baseTx: UnsignedTransaction = {
@@ -174,13 +211,7 @@ export class LedgerSigner extends Signer {
     };
     const unsignedTx = serialize(baseTx).substring(2);
 
-    const resolution = await this._retry(eth =>
-      ledgerService.resolveTransaction(unsignedTx, eth.loadConfig, {
-        erc20: true,
-        externalPlugins: true,
-        nft: true,
-      })
-    );
+    const resolution = await this.resolveTransaction(unsignedTx);
     const sig = await this._retry(eth => eth.signTransaction(this.path!, unsignedTx, resolution));
     return serialize(baseTx, {
       r: sigComponentToHex(sig.r),

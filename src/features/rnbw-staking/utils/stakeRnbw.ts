@@ -3,6 +3,7 @@ import { Wallet } from '@ethersproject/wallet';
 import { encodeFunctionData, erc20Abi, formatUnits, parseUnits, type Address, type Hash } from 'viem';
 
 import { analytics } from '@/analytics';
+import type { LegacyTransactionGasParamAmounts, TransactionGasParamAmounts } from '@/entities/gas';
 import { useRewardsBalanceStore } from '@/features/rnbw-rewards/stores/rewardsBalanceStore';
 import { prepareRewardsClaim, submitRewardsClaim, type ClaimToDestination } from '@/features/rnbw-rewards/utils/claimRewards';
 import { greaterThanOrEqualToWorklet, isPositive, subWorklet } from '@/framework/core/safeMath';
@@ -49,11 +50,13 @@ export async function stakeRnbw({
   address,
   amount,
   asset,
+  gasParams,
   preparedStake: preparedStakePromise,
 }: {
   address: Address;
   amount: string;
   asset: TransactionAssetSource;
+  gasParams: LegacyTransactionGasParamAmounts | TransactionGasParamAmounts;
   preparedStake: Promise<PreparedStakeRnbw | null>;
 }): Promise<StakeRnbwResult> {
   let claimToDestination: ClaimToDestination | undefined;
@@ -124,6 +127,7 @@ export async function stakeRnbw({
     const execution = await executeStakeRnbw({
       address,
       asset,
+      gasParams,
       preparedCalls,
       provider,
       signer,

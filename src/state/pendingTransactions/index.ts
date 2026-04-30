@@ -1,4 +1,4 @@
-import { useRainbowToastsStore } from '@/components/rainbow-toast/useRainbowToastsStore';
+import { rainbowToastsActions } from '@/components/rainbow-toast/useRainbowToastsStore';
 import { isPendingTransaction, type NewTransaction, type PendingTransaction, type RainbowTransaction } from '@/entities/transactions';
 import { convertNewTransactionToRainbowTransaction } from '@/parsers/transactions';
 import { type ChainId } from '@/state/backendNetworks/types';
@@ -45,7 +45,7 @@ export const usePendingTransactionsStore = createRainbowStore<PendingTransaction
         };
       });
 
-      useRainbowToastsStore.getState().handleTransaction(pendingTransaction);
+      rainbowToastsActions.handleTransaction(pendingTransaction);
     },
 
     clearPendingTransactions: () =>
