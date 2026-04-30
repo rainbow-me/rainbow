@@ -9970,7 +9970,7 @@ __metadata:
     react-native-action-sheet: "npm:2.2.0"
     react-native-actionsheet: "npm:2.4.2"
     react-native-aes-crypto: "rainbow-me/react-native-aes#65c49f7e70266615b2999eaa7db654d3fe4f2e3b"
-    react-native-animateable-text: "npm:0.16.0-beta.0"
+    react-native-animateable-text: "npm:0.17.1"
     react-native-ble-plx: "npm:3.4.0"
     react-native-blur-view: "christianbaroni/react-native-blur-view#2548117e37750f2c08ef0ec8c7e1c38e1294c9a8"
     react-native-bootsplash: "npm:6.3.7"
@@ -10003,7 +10003,7 @@ __metadata:
     react-native-quick-md5: "npm:3.0.9"
     react-native-radial-gradient: "rainbow-me/react-native-radial-gradient#b99ab59d27dba70364ef516bd5193c37657ba95c"
     react-native-randombytes: "npm:3.5.3"
-    react-native-reanimated: "npm:3.19.4"
+    react-native-reanimated: "npm:3.19.5"
     react-native-redash: "npm:16.3.0"
     react-native-restart: "npm:0.0.22"
     react-native-safe-area-context: "npm:5.7.0"
@@ -23493,9 +23493,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"react-native-animateable-text@npm:0.16.0-beta.0":
-  version: 0.16.0-beta.0
-  resolution: "react-native-animateable-text@npm:0.16.0-beta.0"
+"react-native-animateable-text@npm:0.17.1":
+  version: 0.17.1
+  resolution: "react-native-animateable-text@npm:0.17.1"
   dependencies:
     deprecated-react-native-prop-types: "npm:^2.3.0"
     nullthrows: "npm:^1.1.1"
@@ -23503,7 +23503,7 @@ __metadata:
     react: "*"
     react-native: ">=0.74.0"
     react-native-reanimated: ">=3"
-  checksum: 10c0/29399df6e3bd095358e0e57ae9a701274c9e6814ac9f2fa4999caa21b6933458b24c94cf4816bbbebacb25e0b150aadf75e85e90b4414f936f4fd631cb52c53d
+  checksum: 10c0/0ab756215d06281acc07ce7702075095888099fff58f02571c3dadf1228f8f7fd37d70c1a5129e9f63b36db62cec4adcc314b0a69215593df5d84bf7ee59f422
   languageName: node
   linkType: hard
 
@@ -23917,9 +23917,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"react-native-reanimated@npm:3.19.4":
-  version: 3.19.4
-  resolution: "react-native-reanimated@npm:3.19.4"
+"react-native-reanimated@npm:3.19.5":
+  version: 3.19.5
+  resolution: "react-native-reanimated@npm:3.19.5"
   dependencies:
     "@babel/plugin-transform-arrow-functions": "npm:^7.0.0-0"
     "@babel/plugin-transform-class-properties": "npm:^7.0.0-0"
@@ -23937,7 +23937,7 @@ __metadata:
     "@babel/core": ^7.0.0-0
     react: "*"
     react-native: "*"
-  checksum: 10c0/265946c8056812685874cfd502e340ffc289128b90b897f274068608b624a757045686c987403f4557c9bf92753864b205e895dbc8111c7fc995b0943c7c5879
+  checksum: 10c0/5da1e142b5c2fefc118a2c6b2bba224deffb98048399b350c22e3496d36ff348ca0d72f7a0b8478db069b1d10e56f42c070c03807fa7e384cf12d9f35c8fc6cf
   languageName: node
   linkType: hard
 
