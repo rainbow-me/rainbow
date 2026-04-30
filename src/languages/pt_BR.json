@@ -1057,19 +1057,19 @@
       },
       "gas": {
         "text": "Esta é a \"taxa de gás\" usada pela blockchain %{networkName} para validar com segurança sua transação.\n\nEssa taxa varia dependendo da complexidade da sua transação e da movimentação da rede!",
-        "title": "%{networkName} Network Fee"
+        "title": "Taxa de rede de %{networkName}"
       },
       "smart_wallet_activation": {
         "text": "Esta transação inclui uma ativação única da Smart Wallet em %{networkName}. Isso atualiza sua carteira para oferecer suporte a transações em lote e outros recursos de conta inteligente.\n\nA taxa de ativação está incluída na taxa de rede desta troca.",
-        "title": "Smart Wallet Activation"
+        "title": "Ativa\u0000e7\u0000e3o da Smart Wallet"
       },
       "max_base_fee": {
         "text": "Essa é a taxa máxima base que você está disposto a pagar por essa transação.\n\nConfigurar uma taxa máxima base mais alta impede que sua transação fique presa caso as taxas aumentem.",
-        "title": "Max Base Fee"
+        "title": "Taxa Base M\u0000e1xima"
       },
       "miner_tip": {
         "text": "A gorjeta para os mineradores vai diretamente para o minerador que confirma sua transação na rede.\n\nUma gorjeta maior torna sua transação mais provável de ser confirmada rapidamente.",
-        "title": "Miner Tip"
+        "title": "Gorjeta do Minerador"
       },
       "apechain": {
         "text": "ApeChain é uma rede Layer 3 que funciona em cima do Arbitrum Orbit e Ethereum.\n\nEla melhora significativamente a utilidade do ApeCoin, promovendo uma economia robusta e dinâmica impulsionada pelo $APE.",
@@ -2401,7 +2401,7 @@
       "find_a_token_to_buy": "Encontrar um token para comprar",
       "search_your_tokens": "Buscar seus tokens",
       "error_executing_swap": "Erro ao executar a troca",
-      "sponsorship_unavailable": "Free swaps are temporarily unavailable on this network. Please try again with network fees.",
+      "sponsorship_unavailable": "Swaps gratuitos est\u0000e3o temporariamente indispon\u0000edveis nesta rede. Tente novamente com taxas de rede.",
       "tokens_input": {
         "tokens": "Tokens",
         "sort": "Ordenar",
@@ -2915,7 +2915,7 @@
         "disable_smart_wallet": "Desativar Smart Wallet",
         "enabled_description": "Você vai perder transações mais rápidas e custos de rede menores",
         "disabled_description": "As atualizações entrarão em vigor na sua próxima troca",
-        "will_delegate_callout": "Includes Smart Wallet activation",
+        "will_delegate_callout": "Inclui ativa\u0000e7\u0000e3o da Smart Wallet",
         "revoke_panel": {
           "disable_smart_wallet_title": "Desativar Smart Wallet",
           "disable_smart_wallet_subtitle": "Isso revogará todas as delegações ativas e desativará os recursos da Smart Wallet.",
