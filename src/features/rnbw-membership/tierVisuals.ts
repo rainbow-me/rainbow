@@ -337,7 +337,9 @@ const TIER_THEMES: Record<TierId, TierTheme> = {
     background: background('#E6E6E6', '#CFCFCF'),
     labelGradient: themed(gradient(['#313131', '#888888'])),
     badge: SILVER_BADGE,
-    primaryButton: badgePrimaryButton(SILVER_BADGE),
+    primaryButton: badgePrimaryButton(SILVER_BADGE, {
+      shadows: themedShadows([DEFAULT_BADGE_SHADOW], shadow('#B2B2B2', { width: 0, height: 0 }, 0.3, 15)),
+    }),
     secondaryButton: secondaryButton(SILVER_BADGE, {
       fill: themed(
         gradient([opacity('#EFEFEF', 0.5), opacity('#CDCDCD', 0.5)]),
@@ -345,6 +347,7 @@ const TIER_THEMES: Record<TierId, TierTheme> = {
       ),
       border: themed(gradient([opacity('#959595', 0.15), opacity('#3B3B3B', 0.045)])),
       textColor: themed('#6A6A6A', '#CBCBCB'),
+      shadows: themedShadows(DEFAULT_BADGE_SHADOW),
     }),
     progress: {
       fill: themed(gradient(['#EFEFEF', '#A2A2A2'])),
@@ -374,7 +377,7 @@ const TIER_THEMES: Record<TierId, TierTheme> = {
     labelGradient: themed(gradient(['#424749', '#7CADB4'])),
     badge: DIAMOND_BADGE,
     primaryButton: badgePrimaryButton(DIAMOND_BADGE, {
-      shadows: themedShadows(DEFAULT_BADGE_SHADOW, shadow('#42D2EB', { width: 0, height: 0 }, 0.3, 30)),
+      shadows: themedShadows(DEFAULT_BADGE_SHADOW, shadow('#42D2EB', { width: 0, height: 0 }, 0.3, 15)),
     }),
     secondaryButton: secondaryButton(DIAMOND_BADGE, {
       fill: themed(
