@@ -10,7 +10,7 @@ import { createRainbowStore } from '@/state/internal/createRainbowStore';
 import {
   getCustomGasSettings,
   useCustomGasSettings,
-  type EIP1159GasSettings,
+  type EIP1559GasSettings,
   type GasSettings,
   type LegacyGasSettings,
 } from './useCustomGas';
@@ -21,7 +21,7 @@ type GasSpeedsObject<T> = { fast: T; normal: T; urgent: T };
 export type SwapsGasFeeParamsBySpeed =
   | CustomGasType
   | (CustomGasType & GasSpeedsObject<LegacyGasSettings>)
-  | (CustomGasType & GasSpeedsObject<EIP1159GasSettings>);
+  | (CustomGasType & GasSpeedsObject<EIP1559GasSettings>);
 
 const useSelectedGasSpeedStore = createRainbowStore<{ [c in ChainId]?: GasSpeed }>(() => ({}), {
   version: 0,

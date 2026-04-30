@@ -1,32 +1,49 @@
 import { BuilderConfig } from '@polymarket/builder-signing-sdk';
-import { PLATFORM_API_KEY } from 'react-native-dotenv';
+import { PLATFORM_API_KEY, PLATFORM_BASE_URL } from 'react-native-dotenv';
 import { type Address } from 'viem';
 
 import { getSolidColorEquivalent } from '@/worklets/colors';
 
-export const RAINBOW_POLYMARKET_FEE_ADDRESS: Address = '0x757758506d6a4F8a433F8BECaFd52545f9Cb050a';
-
 export const POLYGON_USDC_ADDRESS: Address = '0x2791Bca1f2de4661ED88A30C99A7a9449Aa84174';
 export const POLYGON_USDC_DECIMALS = 6;
 
-export const USD_FEE_PER_TOKEN = '0.01';
-
+// Core trading contracts
 export const POLYMARKET_CTF_ADDRESS: Address = '0x4D97DCd97eC945f40cF65F87097ACe5EA0476045';
+export const POLYMARKET_CTF_EXCHANGE_ADDRESS: Address = '0xE111180000d2663C0091e4f400237545B87B996B';
+export const POLYMARKET_NEG_RISK_CTF_EXCHANGE_ADDRESS: Address = '0xe2222d279d744050d28e00520010520000310F59';
 export const POLYMARKET_NEG_RISK_ADAPTER_ADDRESS: Address = '0xd91E80cF2E7be2e162c6513ceD06f1dD0dA35296';
 
-// Exchange contracts that execute trades - these need USDC and CTF approvals
-export const POLYMARKET_EXCHANGE_ADDRESS: Address = '0x4bFb41d5B3570DeFd03C39a9A4D8dE6Bd8B8982E';
-export const POLYMARKET_NEG_RISK_EXCHANGE_ADDRESS: Address = '0xC5d563A36AE78145C45a50134d48A1215220f80a';
+// Collateral contracts
+export const POLYMARKET_PUSD_ADDRESS: Address = '0xC011a7E12a19f7B1f670d46F03B03f3342E82DFB';
+export const POLYMARKET_PUSD_DECIMALS = 6;
+export const POLYMARKET_PUSD_IMPLEMENTATION_ADDRESS: Address = '0x6bBCef9f7ef3B6C592c99e0f206a0DE94Ad0925f';
+export const POLYMARKET_COLLATERAL_ONRAMP_ADDRESS: Address = '0x93070a847efEf7F70739046A929D47a521F5B8ee';
+export const POLYMARKET_COLLATERAL_OFFRAMP_ADDRESS: Address = '0x2957922Eb93258b93368531d39fAcCA3B4dC5854';
+export const POLYMARKET_PERMISSIONED_RAMP_ADDRESS: Address = '0xebC2459Ec962869ca4c0bd1E06368272732BCb08';
+export const POLYMARKET_CTF_COLLATERAL_ADAPTER_ADDRESS: Address = '0xAdA100Db00Ca00073811820692005400218FcE1f';
+export const POLYMARKET_NEG_RISK_CTF_COLLATERAL_ADAPTER_ADDRESS: Address = '0xadA2005600Dec949baf300f4C6120000bDB6eAab';
 
-const RAINBOW_POLYMARKET_PROXY_URL = 'https://platform.p.rainbow.me/v1/polymarket';
+// Wallet factory contracts
+export const POLYMARKET_GNOSIS_SAFE_FACTORY_ADDRESS: Address = '0xaacfeea03eb1561c4e67d661e40682bd20e3541b';
+export const POLYMARKET_PROXY_FACTORY_ADDRESS: Address = '0xaB45c5A4B0c941a2F231C04C3f49182e1A254052';
+
+// Resolution contracts
+export const POLYMARKET_UMA_ADAPTER_ADDRESS: Address = '0x6A9D222616C90FcA5754cd1333cFD9b7fb6a4F74';
+export const POLYMARKET_UMA_OPTIMISTIC_ORACLE_ADDRESS: Address = '0xCB1822859cEF82Cd2Eb4E6276C7916e692995130';
+
+const RAINBOW_POLYMARKET_PROXY_URL = `${PLATFORM_BASE_URL}/v1/polymarket`;
 
 export const POLYMARKET_CLOB_PROXY_URL = `${RAINBOW_POLYMARKET_PROXY_URL}/clob`;
 export const POLYMARKET_RELAYER_PROXY_URL = `${RAINBOW_POLYMARKET_PROXY_URL}/relayer`;
 export const POLYMARKET_SIGNING_PROXY_URL = `${RAINBOW_POLYMARKET_PROXY_URL}/sign`;
+
 export const POLYMARKET_CLOB_URL = 'https://clob.polymarket.com';
 export const POLYMARKET_GAMMA_API_URL = 'https://gamma-api.polymarket.com';
 export const POLYMARKET_DATA_API_URL = 'https://data-api.polymarket.com';
+
 export const POLYMARKET_SPORTS_WS_URL = 'wss://sports-api.polymarket.com/ws';
+
+export const POLYMARKET_BUILDER_CODE = '0xabce5abdc189cba6fb85edb9170e3e6e41607e946b06d112b7f87e2f2977020c';
 
 export const BUILDER_CONFIG = new BuilderConfig({
   remoteBuilderConfig: { url: POLYMARKET_SIGNING_PROXY_URL, token: PLATFORM_API_KEY },

@@ -1,4 +1,4 @@
-import React, { useCallback, useMemo } from 'react';
+import React, { useCallback } from 'react';
 
 import useExperimentalFlag, { NFTS_ENABLED } from '@/config/experimentalHooks';
 import { Box, type BoxProps } from '@/design-system';

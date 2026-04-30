@@ -3,6 +3,7 @@ import { InteractionManager } from 'react-native';
 import * as env from '@/env';
 import { logger, RainbowError } from '@/logger';
 import { deleteImgixMMKVCache } from '@/migrations/migrations/deleteImgixMMKVCache';
+import { healEip55KeychainAddresses } from '@/migrations/migrations/healEip55KeychainAddresses';
 import { migrateNotificationSettingsToV2 } from '@/migrations/migrations/migrateNotificationSettingsToV2';
 import { migrateNotificationSettingsToV3 } from '@/migrations/migrations/migrateNotificationSettingsToV3';
 import { prepareDefaultNotificationGroupSettingsState } from '@/migrations/migrations/prepareDefaultNotificationGroupSettingsState';
@@ -44,6 +45,7 @@ const migrations: Migration[] = [
   migrateFavoritesV2(),
   migrateFavoritesV3(),
   migrateNotificationSettingsToV3(),
+  healEip55KeychainAddresses(),
 ];
 
 /**

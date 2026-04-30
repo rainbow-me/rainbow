@@ -26,7 +26,6 @@ import { addBuffer } from '@/helpers/utilities';
 import { logger, RainbowError } from '@/logger';
 import {
   defaultGasParamsFormat,
-  gweiToWei,
   parseGasFeeParam,
   parseGasFees,
   parseGasFeesBySpeed,

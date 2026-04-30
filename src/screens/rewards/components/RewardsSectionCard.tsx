@@ -2,7 +2,7 @@ import React, { type PropsWithChildren } from 'react';
 import { View } from 'react-native';
 
 import { Box, globalColors, useBackgroundColor, type Space } from '@/design-system';
-import { IS_ANDROID, IS_IOS } from '@/env';
+import { IS_IOS } from '@/env';
 import { useTheme } from '@/theme/ThemeContext';
 
 type Props = {

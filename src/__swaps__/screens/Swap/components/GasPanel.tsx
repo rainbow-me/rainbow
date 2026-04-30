@@ -1,7 +1,7 @@
-import React, { useCallback, useEffect, useMemo, useState, type PropsWithChildren, type ReactNode } from 'react';
+import React, { useCallback, useMemo, type PropsWithChildren, type ReactNode } from 'react';
 import { type LayoutChangeEvent } from 'react-native';
 
-import Animated, { runOnJS, useAnimatedReaction, useAnimatedStyle, useSharedValue, withDelay, withSpring } from 'react-native-reanimated';
+import Animated, { runOnJS, useAnimatedReaction, useAnimatedStyle, withDelay, withSpring } from 'react-native-reanimated';
 
 import { ACTION_BUTTON_HEIGHT } from '@/__swaps__/screens/Swap/constants';
 import { NavigationSteps, useSwapContext } from '@/__swaps__/screens/Swap/providers/swap-provider';

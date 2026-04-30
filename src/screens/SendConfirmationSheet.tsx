@@ -43,7 +43,7 @@ import { useInteractionsCount } from '@/resources/addys/interactions';
 import { userAssetsStoreManager } from '@/state/assets/userAssetsStoreManager';
 import { useBackendNetworksStore } from '@/state/backendNetworks/backendNetworks';
 import { type ChainId } from '@/state/backendNetworks/types';
-import { Screens, startTimeToSignTracking } from '@/state/performance/performance';
+import { startTimeToSignTracking } from '@/state/performance/performance';
 import { useAccountAddress, useWalletsStore } from '@/state/wallets/walletsStore';
 import { position } from '@/styles';
 import { useTheme } from '@/theme/ThemeContext';

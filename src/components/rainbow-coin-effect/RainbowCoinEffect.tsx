@@ -1,7 +1,7 @@
 import React, { memo, useCallback, useMemo } from 'react';
 import { StyleSheet } from 'react-native';
 
-import { BlendColor, Blur, Canvas, Circle, Fill, Image, Paint, Shadow, SweepGradient, useImage } from '@shopify/react-native-skia';
+import { BlendColor, Blur, Canvas, Circle, Image, Paint, Shadow, SweepGradient, useImage } from '@shopify/react-native-skia';
 import Animated, {
   interpolate,
   runOnUI,

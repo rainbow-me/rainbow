@@ -8,7 +8,7 @@ jobs:
   # Build iOS simulator app
   build-simulator:
     name: Simulator
-    runs-on: macos-15-xlarge
+    runs-on: macos-26-xlarge
     env:
       NODE_OPTIONS: '--max-old-space-size=6144'
     timeout-minutes: 45
@@ -28,7 +28,10 @@ jobs:
           node-version-file: '.node-version'
 
       - name: Set Xcode version
-        run: sudo xcode-select --switch /Applications/Xcode_16.4.app
+        run: |
+          XCODE_VERSION=$(cat .xcode-version)
+          sudo xcode-select --switch /Applications/Xcode_${XCODE_VERSION}.app
+          xcodebuild -version
 
       - name: Setup env key
         uses: ./.github/actions/ssh/
@@ -100,7 +103,7 @@ jobs:
   # Build iOS device app
   build-device:
     name: Device
-    runs-on: macos-15-xlarge
+    runs-on: macos-26-xlarge
     env:
       NODE_OPTIONS: '--max-old-space-size=6144'
     timeout-minutes: 45
@@ -120,7 +123,10 @@ jobs:
           node-version-file: '.node-version'
 
       - name: Set Xcode version
-        run: sudo xcode-select --switch /Applications/Xcode_16.4.app
+        run: |
+          XCODE_VERSION=$(cat .xcode-version)
+          sudo xcode-select --switch /Applications/Xcode_${XCODE_VERSION}.app
+          xcodebuild -version
 
       - name: Setup env key
         uses: ./.github/actions/ssh/

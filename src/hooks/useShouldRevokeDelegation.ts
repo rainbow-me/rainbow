@@ -1,15 +1,15 @@
 import { useEffect } from 'react';
 
-import { DELEGATION, getExperimentalFlag } from '@/config/experimentalHooks';
+import { useIsDelegationEnabled } from '@/features/delegation/featureFlags';
 import { EthereumWalletType } from '@/helpers/walletTypes';
-import { getRemoteConfig } from '@/model/remoteConfig';
 import Navigation from '@/navigation/Navigation';
 import Routes from '@/navigation/routesNames';
 import { RevokeReason } from '@/screens/delegation/RevokeDelegationPanel';
 import { useWalletsStore } from '@/state/wallets/walletsStore';
-import { shouldRevokeDelegation } from '@rainbow-me/delegation';
+import { delegation } from '@rainbow-me/delegation';
 
 export function useShouldRevokeDelegation() {
+  const delegationEnabled = useIsDelegationEnabled();
   const { accountAddress, walletType } = useWalletsStore(state => ({
     accountAddress: state.accountAddress,
     walletType: state.selected?.type,
@@ -19,11 +19,10 @@ export function useShouldRevokeDelegation() {
     // Hardware wallets are not supported for delegation
     if (!accountAddress || walletType === EthereumWalletType.readOnly || walletType === EthereumWalletType.bluetooth) return;
 
-    const delegationEnabled = getRemoteConfig().delegation_enabled || getExperimentalFlag(DELEGATION);
     if (!delegationEnabled) return;
 
     const check = async () => {
-      const result = await shouldRevokeDelegation({ address: accountAddress });
+      const result = await delegation.shouldRevoke({ address: accountAddress });
 
       if (result.shouldRevoke && result.revokes.length > 0) {
         Navigation.handleAction(Routes.REVOKE_DELEGATION_PANEL, {
@@ -39,5 +38,5 @@ export function useShouldRevokeDelegation() {
     };
 
     check();
-  }, [accountAddress, walletType]);
+  }, [accountAddress, delegationEnabled, walletType]);
 }

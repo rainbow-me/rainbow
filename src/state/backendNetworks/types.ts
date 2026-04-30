@@ -167,6 +167,9 @@ export interface BackendNetworkServices {
   nftProxy: {
     enabled: boolean;
   };
+  sponsorship?: {
+    enabled: boolean;
+  };
   launcher: {
     v1: {
       enabled: boolean;

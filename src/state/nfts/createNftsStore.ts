@@ -2,7 +2,6 @@ import { isEmpty } from 'lodash';
 import { type Address } from 'viem';
 
 import type { UniqueAsset } from '@/entities/uniqueAssets';
-import { IS_DEV } from '@/env';
 import { arcClient } from '@/graphql';
 import { updateWebHidden, updateWebShowcase } from '@/helpers/webData';
 import { getHidden } from '@/hooks/useFetchHiddenTokens';

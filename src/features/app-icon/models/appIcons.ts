@@ -14,6 +14,7 @@ import AppIconPoolboy from '@/assets/appIconPoolboy.png';
 import AppIconPooly from '@/assets/appIconPooly.png';
 import AppIconRainDoge from '@/assets/appIconRainDoge.png';
 import AppIconRedacted from '@/assets/appIconRedacted.png';
+import AppIconRnbw from '@/assets/appIconRnbw.png';
 import AppIconSmol from '@/assets/appIconSmol.png';
 import AppIconZora from '@/assets/appIconZora.png';
 import AppIconZorb from '@/assets/appIconZorb.png';
@@ -54,6 +55,7 @@ const REDACTED_NFT_ADDRESS: EthereumAddress = '0x8C3f001A893f3B561dBCaa80f075ecc
 const BAGGY_NFT_ADDRESS: EthereumAddress = '0x6FaC772b0d65E475CE22288c066a1B4ea06c4223';
 const CHONKS_NFT_ADDRESS: EthereumAddress = '0xA19d830dA98892343FE650E77ED8a1bABf4DEAcB';
 const MOG_NFT_ADDRESS: EthereumAddress = '0xf460cB40243B7562D9393383A0C6301e4C542D1b';
+const RNBW_NFT_ADDRESS: EthereumAddress = '0x94515a42bA976435d2D4fD9CF3BF0B36e9EDcCE8';
 
 export interface AppIcon {
   accentColor: string;
@@ -82,7 +84,8 @@ export type UnlockableAppIconKey =
   | 'redacted'
   | 'baggy'
   | 'chonks'
-  | 'mog';
+  | 'mog'
+  | 'rnbw';
 
 export type AppIconKey = FreeAppIconKey | UnlockableAppIconKey;
 
@@ -198,6 +201,12 @@ export const unlockableAppIcons: Record<UnlockableAppIconKey, UnlockableAppIcon>
     displayName: 'Rainbow Mogs',
     image: AppIconMog,
     unlockingNFTs: { [Network.base]: [MOG_NFT_ADDRESS] },
+  },
+  rnbw: {
+    accentColor: '#BF8909',
+    displayName: 'Golden $RNBW',
+    image: AppIconRnbw,
+    unlockingNFTs: { [Network.base]: [RNBW_NFT_ADDRESS] },
   },
 
   // This is an example of how to add a new test app icon with an ERC-1155 NFT

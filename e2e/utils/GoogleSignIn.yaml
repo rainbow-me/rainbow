@@ -1,5 +1,15 @@
 appId: ${APP_ID}
 ---
+# Google sometimes shows a new "Sign in with ease" phone-lookup
+# interstitial before the account picker. Skip it if present so the
+# flow lands on Sign in / Choose an account. `when.visible` makes this
+# a no-op if Google removes or reorders the screen later.
+- runFlow:
+    when:
+      visible: 'Sign in with ease'
+    commands:
+      - tapOn: 'SKIP'
+
 - assertVisible: '(Sign in|Choose an account)'
 
 - runScript:

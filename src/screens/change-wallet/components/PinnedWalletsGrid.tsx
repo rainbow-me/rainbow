@@ -11,15 +11,15 @@ import { JiggleAnimation } from '@/components/animations/JiggleAnimation';
 import { Draggable, DraggableGrid, type DraggableGridProps, type UniqueIdentifier } from '@/components/drag-and-drop';
 import { DropdownMenu, type MenuItem } from '@/components/DropdownMenu';
 import { PANEL_WIDTH } from '@/components/SmoothPager/ListPanel';
-import { DELEGATION, getExperimentalFlag } from '@/config/experimentalHooks';
 import { Box, HitSlop, Inline, Stack, Text, TextIcon } from '@/design-system';
 import { IS_INTERNAL, IS_IOS } from '@/env';
+import { useIsDelegationEnabled } from '@/features/delegation/featureFlags';
+import { isRainbowDelegated as hasRainbowDelegation, isThirdPartyDelegated as hasThirdPartyDelegation } from '@/features/delegation/status';
 import { removeFirstEmojiFromString } from '@/helpers/emojiHandler';
-import { getRemoteConfig } from '@/model/remoteConfig';
 import { usePinnedWalletsStore } from '@/state/wallets/pinnedWalletsStore';
 import { useTheme } from '@/theme/ThemeContext';
 import { address } from '@/utils/abbreviations';
-import { DelegationStatus, useDelegationDisabled, useDelegations } from '@rainbow-me/delegation';
+import { useDelegationDisabled, useDelegations } from '@rainbow-me/delegation';
 
 import { AddressMenuAction, PANEL_INSET_HORIZONTAL, type AddressItem, type AddressMenuActionData } from '../ChangeWalletSheet';
 import { AddressAvatar } from './AddressAvatar';
@@ -41,8 +41,8 @@ type PinnedWalletsGridProps = {
 function DelegationBadge({ accountAddress }: { accountAddress: string }) {
   const delegations = useDelegations(accountAddress as Address);
   const isDisabled = useDelegationDisabled(accountAddress as Address);
-  const isDelegated = delegations?.some(d => d.delegationStatus === DelegationStatus.RAINBOW_DELEGATED) ?? false;
-  const isThirdPartyDelegated = delegations?.some(d => d.delegationStatus === DelegationStatus.THIRD_PARTY_DELEGATED) ?? false;
+  const isDelegated = delegations?.some(hasRainbowDelegation) ?? false;
+  const isThirdPartyDelegated = delegations?.some(hasThirdPartyDelegation) ?? false;
 
   return (
     <Text color={isDisabled ? 'red' : isDelegated ? 'green' : isThirdPartyDelegated ? 'labelTertiary' : 'labelQuaternary'} size="icon 10px">
@@ -53,7 +53,7 @@ function DelegationBadge({ accountAddress }: { accountAddress: string }) {
 
 export function PinnedWalletsGrid({ walletItems, onPress, editMode, menuItems, onPressMenuItem }: PinnedWalletsGridProps) {
   const { colors, isDarkMode } = useTheme();
-  const delegationEnabled = getRemoteConfig().delegation_enabled || getExperimentalFlag(DELEGATION);
+  const delegationEnabled = useIsDelegationEnabled();
 
   const removePinnedAddress = usePinnedWalletsStore(state => state.removePinnedAddress);
   const setPinnedAddresses = usePinnedWalletsStore(state => state.setPinnedAddresses);

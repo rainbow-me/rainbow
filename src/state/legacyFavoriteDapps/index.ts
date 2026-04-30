@@ -1,5 +1,3 @@
-import create from 'zustand';
-
 import { standardizeUrl } from '../browser/favoriteDappsStore';
 import { createStore } from '../internal/createStore';
 
@@ -48,5 +46,3 @@ export const legacyFavoriteDappsStore = createStore<LegacyFavoriteDappsStore>(
     },
   }
 );
-
-export const useLegacyFavoriteDappsStore = create(legacyFavoriteDappsStore);

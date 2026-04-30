@@ -7,6 +7,7 @@ import android.webkit.WebView
 import com.facebook.react.ReactActivity
 import com.facebook.react.ReactActivityDelegate
 import com.facebook.react.modules.network.OkHttpClientProvider
+import com.swmansion.rnscreens.fragment.restoration.RNScreensFragmentFactory
 import com.zoontek.rnbootsplash.RNBootSplash
 import io.branch.rnbranch.RNBranchModule
 import me.rainbow.NativeModules.Internals.CustomNetworkModule
@@ -18,7 +19,8 @@ class MainActivity : ReactActivity() {
         if (!isE2ETest) {
             RNBootSplash.init(this, R.style.BootTheme) // Initialize the splash screen
         }
-        super.onCreate(null) // Pass null here as required by react-native-screens
+        supportFragmentManager.fragmentFactory = RNScreensFragmentFactory()
+        super.onCreate(savedInstanceState)
         OkHttpClientProvider.setOkHttpClientFactory(CustomNetworkModule())
         WebView.setWebContentsDebuggingEnabled(false)
     }

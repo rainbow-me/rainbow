@@ -88,6 +88,9 @@ const BACKEND_NETWORKS_QUERY = `
         nftProxy {
           enabled
         }
+        sponsorship {
+          enabled
+        }
         launcher {
           v1 {
             enabled

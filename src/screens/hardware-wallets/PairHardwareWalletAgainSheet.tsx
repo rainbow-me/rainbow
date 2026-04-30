@@ -1,7 +1,6 @@
 import React, { useCallback } from 'react';
 import { ImageBackground } from 'react-native';
 
-import { Source } from 'react-native-fast-image';
 import { useMMKVBoolean } from 'react-native-mmkv';
 import Animated, { useAnimatedStyle, useDerivedValue, withDelay, withRepeat, withSequence, withTiming } from 'react-native-reanimated';
 import { useRecoilState, useSetRecoilState } from 'recoil';
@@ -9,7 +8,6 @@ import { useRecoilState, useSetRecoilState } from 'recoil';
 import gridDotsDark from '@/assets/dot-grid-dark.png';
 import gridDotsLight from '@/assets/dot-grid-light.png';
 import ledgerNano from '@/assets/ledger-nano.png';
-import { ImgixImage } from '@/components/images';
 import { Box, Inline, Inset, Stack, Text } from '@/design-system';
 import { IS_IOS } from '@/env';
 import * as i18n from '@/languages';

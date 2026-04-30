@@ -4,9 +4,9 @@ import { type Signer } from '@ethersproject/abstract-signer';
 import { type DerivedValue, type SharedValue } from 'react-native-reanimated';
 import { type Address } from 'viem';
 
-import { type GasSettings } from '@/__swaps__/screens/Swap/hooks/useCustomGas';
 import { type AddressOrEth, type ExtendedAnimatedAssetWithColors } from '@/__swaps__/types/assets';
 import { type GasSpeed } from '@/__swaps__/types/gas';
+import type { GasSettings, LegacyTransactionGasParamAmounts, TransactionGasParamAmounts } from '@/entities/gas';
 import { type NumberPadField } from '@/features/perps/components/NumberPad/NumberPadKey';
 import { type ChainId } from '@/state/backendNetworks/types';
 import { type QueryStore, type StoreState } from '@/state/internal/queryStore/types';
@@ -39,6 +39,22 @@ export type RefreshConfig = {
 
 // ============ Deposit Configuration ========================================== //
 
+export type DepositSubmitContext = {
+  /** Chain used to submit the deposit transaction */
+  confirmationChainId: ChainId;
+  /** Minimum raw amount expected to arrive at the configured destination */
+  expectedRawTargetAmount: string;
+  /** Submitted transaction hash, when available */
+  hash?: string;
+  /** Whether the submitted transaction was confirmed before returning */
+  isConfirmed?: boolean;
+};
+
+/**
+ * Raw gas fee parameters passed to transaction execution after deposit gas settings are selected.
+ */
+export type DepositGasParams = LegacyTransactionGasParamAmounts | TransactionGasParamAmounts;
+
 /**
  * Callback invoked immediately after transaction submission, before confirmation.
  * Runs fire-and-forget; errors are logged but do not block navigation.
@@ -46,7 +62,7 @@ export type RefreshConfig = {
  * Use for setup that must happen right away, such as deploying a proxy wallet
  * or pre-approving token spending.
  */
-export type OnDepositSubmit = (signer: Signer) => Promise<void>;
+export type OnDepositSubmit = (signer: Signer, context: DepositSubmitContext) => Promise<void>;
 
 export type DepositSuccessMetadata = {
   /** Amount deposited in source asset units */
@@ -117,6 +133,8 @@ export type DepositExecutionBaseParams = {
   amount: string;
   /** Selected source asset */
   asset: ExtendedAnimatedAssetWithColors;
+  /** Gas fee params matching the selected deposit gas speed */
+  gasParams: DepositGasParams;
   /** Current recipient from config (if any) */
   recipient: Address | null;
   /** Current quote data (may be null/unavailable) */
@@ -174,7 +192,7 @@ export type DepositExecuteResult = DepositExecuteFailure | DepositExecuteSuccess
  */
 export type DepositExecutor = (params: DepositExecuteParams) => Promise<DepositExecuteResult>;
 
-export type DepositGasHookParams = DepositExecutionBaseParams;
+export type DepositGasHookParams = Omit<DepositExecutionBaseParams, 'gasParams'>;
 
 export type DepositGasConfig = {
   /**
@@ -183,8 +201,13 @@ export type DepositGasConfig = {
    */
   estimateGasLimit?: (params: DepositGasHookParams) => Promise<string>;
   /**
-   * Optional sponsorship signal for UI display.
-   * When true, gas is shown as "estimated (struck-through) + Free".
+   * Synchronous sponsorship prediction for first-render UI state.
+   * Async resolution may still refine the final sponsorship outcome.
+   */
+  predictIsSponsored?: (params: DepositGasHookParams) => boolean;
+  /**
+   * Optional sponsorship resolver for authoritative UI state.
+   * Custom flows may also use this hook to prepare sponsor-paid execution in advance.
    */
   isSponsored?: (params: DepositGasHookParams) => Promise<boolean> | boolean;
 };
@@ -433,14 +456,8 @@ export type DepositQuoteStoreType = QueryStore<DepositQuoteResult, DepositQuoteS
 // ============ Gas Store Types ================================================ //
 
 export type DepositGasLimitParams = {
-  amount: string;
-  assetToSellUniqueId: string | null;
-  quoteKey: number | null;
-};
-
-export type DepositGasSponsorshipParams = {
-  accountAddress: Address;
-  amount: string;
+  accountAddress: Address | null;
+  amount: string | null;
   assetToSellUniqueId: string | null;
   quoteKey: number | null;
 };
@@ -454,13 +471,15 @@ export type DepositGasSuggestions = {
 };
 
 export type DepositMeteorologyActions = {
+  /** Returns gas params for the selected deposit speed, fetching meteorology first when needed. */
+  getGasParams: () => Promise<DepositGasParams | null>;
   getGasSuggestions: () => DepositGasSuggestions | undefined;
 };
 
 export type DepositGasStoresType = {
+  reset: () => void;
   useEstimatedGasFee: DerivedStore<string | undefined>;
   useGasLimitStore: QueryStore<string, DepositGasLimitParams>;
-  useGasSponsorshipStore: QueryStore<boolean, DepositGasSponsorshipParams>;
   useIsGasSponsored: DerivedStore<boolean>;
   useGasSettings: DerivedStore<GasSettings | undefined>;
   useMaxSwappableAmount: DerivedStore<string | undefined>;

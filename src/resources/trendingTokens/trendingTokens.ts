@@ -7,15 +7,7 @@ import { type AddressOrEth, type UniqueId } from '@/__swaps__/types/assets';
 import type { NativeCurrencyKey } from '@/entities/nativeCurrencyTypes';
 import { RainbowFetchClient } from '@/framework/data/http/rainbowFetch';
 import { arcClient } from '@/graphql';
-import {
-  TrendingSort as ArcTrendingSort,
-  Timeframe,
-  type Bridging,
-  type Colors,
-  type Market,
-  type SortDirection,
-  type TrendingData,
-} from '@/graphql/__generated__/arc';
+import { Timeframe, type Bridging, type Colors, type Market, type SortDirection, type TrendingData } from '@/graphql/__generated__/arc';
 import { logger, RainbowError } from '@/logger';
 import { createQueryKey, type QueryConfigWithSelect } from '@/react-query';
 import store from '@/redux/store';

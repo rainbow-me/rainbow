@@ -6,7 +6,6 @@ import Animated, { runOnJS, useAnimatedStyle, withSpring } from 'react-native-re
 
 import { SPRING_CONFIGS } from '@/components/animations/animationConfigs';
 import { useColorMode } from '@/design-system';
-import { IS_IOS } from '@/env';
 import { useSharedValueState } from '@/hooks/reanimated/useSharedValueState';
 import { useSyncSharedValue } from '@/hooks/reanimated/useSyncSharedValue';
 import useKeyboardHeight from '@/hooks/useKeyboardHeight';

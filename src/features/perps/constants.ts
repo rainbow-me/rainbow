@@ -5,7 +5,7 @@ import { type ParsedAsset } from '@/__swaps__/types/assets';
 import { type SearchAsset } from '@/__swaps__/types/search';
 import { SPRING_CONFIGS } from '@/components/animations/animationConfigs';
 import { NativeCurrencyKeys, type NativeCurrencyKey } from '@/entities/nativeCurrencyTypes';
-import { MarketSortOrder, type HlBuilderSettings } from '@/features/perps/types';
+import { type HlBuilderSettings } from '@/features/perps/types';
 import { supportedCurrencies as supportedNativeCurrencies } from '@/references/supportedCurrencies';
 import { ChainId } from '@/state/backendNetworks/types';
 import { DEVICE_WIDTH } from '@/utils/deviceUtils';

@@ -16,6 +16,6 @@ export default {
   },
   remoteCacheProvider: 'github-actions',
   fingerprint: {
-    extraSources: ['is_testing'],
+    extraSources: ['is_testing', '.xcode-version'],
   },
 };

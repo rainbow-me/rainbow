@@ -684,6 +684,7 @@ type RouteParams = {
     market: PerpMarket;
     position: PerpsPosition;
   };
+  [Routes.PERPS_ABOUT_SHEET]: undefined;
   [Routes.PERPS_TRADE_DETAILS_SHEET]: {
     trade: HlTrade;
   };

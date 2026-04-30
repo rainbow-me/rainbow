@@ -32,7 +32,6 @@ import Routes from '@/navigation/routesNames';
 import { WalletNotificationRelationship } from '@/notifications/settings/constants';
 import { initializeNotificationSettingsForAddresses } from '@/notifications/settings/initialization';
 import type { AddressWithRelationship } from '@/notifications/settings/types';
-import { Network } from '@/state/backendNetworks/types';
 import { executeFn, type ExecuteFnParams, type Screen } from '@/state/performance/performance';
 import { getIsDamagedWallet, getWalletWithAccount, setWalletDamaged } from '@/state/wallets/walletsStore';
 import ethereumUtils from '@/utils/ethereumUtils';
