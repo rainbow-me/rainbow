@@ -486,7 +486,7 @@ const DevSection = () => {
                 <MenuItem
                   key={key}
                   onPress={() => onExperimentalKeyChange(key)}
-                  rightComponent={!!config[key] && <MenuItem.StatusIcon status="selected" />}
+                  rightComponent={!!config[key as keyof typeof config] && <MenuItem.StatusIcon status="selected" />}
                   size={52}
                   titleComponent={<MenuItem.Title text={key} />}
                 />
