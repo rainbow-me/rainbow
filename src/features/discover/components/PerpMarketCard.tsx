@@ -11,10 +11,12 @@ import { getValueForColorMode } from '@/design-system/color/palettes';
 import { textSizes, textWeights } from '@/design-system/typography/typography';
 import { useCandlestickStore } from '@/features/charts/stores/candlestickStore';
 import { CandleResolution } from '@/features/charts/types';
+import { PerpMarketSparkline } from '@/features/discover/components/PerpMarketSparkline';
 import { HyperliquidTokenIcon } from '@/features/perps/components/HyperliquidTokenIcon';
 import { DOWN_ARROW, HYPERLIQUID_COLORS, UP_ARROW } from '@/features/perps/constants';
 import { useHyperliquidMarketsStore } from '@/features/perps/stores/hyperliquidMarketsStore';
 import { convertStoredPerpPriceChangeToPercent, formatCompactPerpPercentChange, navigateToPerpDetailScreen } from '@/features/perps/utils';
+import { useDiscoverPerpsStore } from '@/features/placements/stores/discover/discoverPerpsStore';
 import { type Placement, type PlacementItem } from '@/features/placements/types';
 import { opacity } from '@/framework/ui/utils/opacity';
 import { THICK_BORDER_WIDTH } from '@/styles/constants';
@@ -28,10 +30,15 @@ type PerpMarketCardProps = {
 
 export type { PerpMarketCardProps };
 
+const SPARKLINE_WIDTH = 44;
+const SPARKLINE_HEIGHT = 34;
+
+const PERP_MARKET_CARD_WIDTH_WITH_CHART = 210;
+export const PERP_MARKET_CARD_SLOT_WIDTH_WITH_CHART = PERP_MARKET_CARD_WIDTH_WITH_CHART;
 export const PERP_MARKET_CARD_HEIGHT = 76;
 
 const PERP_MARKET_CARD_MAX_WIDTH = 280;
-const PERP_MARKET_NO_CHART_FIXED_WIDTH = 98;
+const PERP_MARKET_CHART_FIXED_WIDTH = 138;
 const PERCENT_ARROW_BLOCK_WIDTH = 14; // arrow icon width + arrow→text gap
 
 const SYMBOL_TEXT_STYLE = {
@@ -49,13 +56,13 @@ const PERCENT_TEXT_STYLE = {
 } as const;
 
 const PERCENT_MAX_WIDTH = Math.ceil(measureTextSync('99.9%', PERCENT_TEXT_STYLE)) + PERCENT_ARROW_BLOCK_WIDTH;
-const PERP_MARKET_NO_CHART_TEXT_MIN_WIDTH = PERCENT_MAX_WIDTH;
+const PERP_MARKET_CHART_TEXT_MIN_WIDTH = PERCENT_MAX_WIDTH;
 
 export function computePerpCardWidth({ symbol }: { symbol?: string }): number {
   const symbolWidth = symbol ? Math.ceil(measureTextSync(symbol, SYMBOL_TEXT_STYLE)) : 0;
-  const textWidth = Math.max(PERP_MARKET_NO_CHART_TEXT_MIN_WIDTH, symbolWidth);
+  const textWidth = Math.max(PERP_MARKET_CHART_TEXT_MIN_WIDTH, symbolWidth);
 
-  return Math.min(PERP_MARKET_CARD_MAX_WIDTH, PERP_MARKET_NO_CHART_FIXED_WIDTH + textWidth);
+  return Math.min(PERP_MARKET_CARD_MAX_WIDTH, PERP_MARKET_CHART_FIXED_WIDTH + textWidth);
 }
 
 const CARD_BACKGROUND_COLOR = { light: 'rgba(255,255,255,0.92)', dark: '#171B20' } as const;
@@ -65,6 +72,7 @@ const BADGE_TEXT_COLOR = { light: '#FFFFFF', dark: 'rgba(0,0,0,0.8)' } as const;
 
 export const PerpMarketCard = memo(function PerpMarketCard({ item, placement, style }: PerpMarketCardProps) {
   const market = useHyperliquidMarketsStore(state => state.getMarket(item.ref.id));
+  const chart = useDiscoverPerpsStore(state => state.getChart(item.ref.id));
   const candlestickPercentChange = useCandlestickStore(state => {
     const price = state.prices[item.ref.id];
     return price?.candleResolution === CandleResolution.H1 ? price.percentChange : undefined;
@@ -76,7 +84,9 @@ export const PerpMarketCard = memo(function PerpMarketCard({ item, placement, st
   const onPress = useCallback(() => {
     if (!market) return;
     const percentChange =
-      candlestickPercentChange ?? convertStoredPerpPriceChangeToPercent(market.priceChange['1h'] ?? market.priceChange['24h']);
+      candlestickPercentChange ??
+      chart?.percentChange ??
+      convertStoredPerpPriceChangeToPercent(market.priceChange['1h'] ?? market.priceChange['24h']);
     const perpsPayload = {
       provider: 'hyperliquid' as const,
       market: market.symbol,
@@ -108,13 +118,15 @@ export const PerpMarketCard = memo(function PerpMarketCard({ item, placement, st
       ...perpsPayload,
     });
     navigateToPerpDetailScreen(market.symbol);
-  }, [candlestickPercentChange, item, market, placement]);
+  }, [candlestickPercentChange, chart, item, market, placement]);
 
   if (!market) return null;
 
   const accentColor = market.metadata?.colors?.color || market.metadata?.colors?.fallbackColor || HYPERLIQUID_COLORS.green;
   const percentChange =
-    candlestickPercentChange ?? convertStoredPerpPriceChangeToPercent(market.priceChange['1h'] ?? market.priceChange['24h']);
+    candlestickPercentChange ??
+    chart?.percentChange ??
+    convertStoredPerpPriceChangeToPercent(market.priceChange['1h'] ?? market.priceChange['24h']);
   const isPositive = percentChange >= 0;
   const changeColor = isPositive ? positiveChangeColor : negativeChangeColor;
   const cardBackgroundColor = getValueForColorMode(CARD_BACKGROUND_COLOR, colorMode);
@@ -179,6 +191,18 @@ export const PerpMarketCard = memo(function PerpMarketCard({ item, placement, st
                   </Text>
                 </View>
               </View>
+            </View>
+
+            <View style={styles.chartFrame}>
+              {chart ? (
+                <PerpMarketSparkline
+                  chartColor={changeColor}
+                  data={chart}
+                  height={SPARKLINE_HEIGHT}
+                  percentChange={percentChange}
+                  width={SPARKLINE_WIDTH}
+                />
+              ) : null}
             </View>
           </View>
         </Box>
@@ -248,10 +272,23 @@ const styles = StyleSheet.create({
     gap: 2,
     minHeight: 20,
   },
+  chartFrame: {
+    alignItems: 'center',
+    height: SPARKLINE_HEIGHT,
+    justifyContent: 'center',
+    width: SPARKLINE_WIDTH,
+  },
   contentRow: {
     alignItems: 'center',
     flexDirection: 'row',
+<<<<<<< HEAD
     gap: 16,
+||||||| parent of 5097894fe (feat(discover-v2): add PerpMarketSparkline)
+    gap: 10,
+=======
+    gap: 8,
+    justifyContent: 'space-between',
+>>>>>>> 5097894fe (feat(discover-v2): add PerpMarketSparkline)
     width: '100%',
   },
   iconBorderShadow: {
