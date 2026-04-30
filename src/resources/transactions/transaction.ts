@@ -148,9 +148,10 @@ export const fetchRawTransaction = async ({
 
     return parsed;
   } catch (e) {
-    // 404 means the backend hasn't indexed this transaction yet, which is expected
-    // for recently submitted transactions. Silently return null so callers can retry.
-    if (e instanceof RainbowFetchError && e.response?.status === 404) {
+    // 4xx responses are not actionable client-side: 404 means the backend hasn't indexed
+    // the transaction yet, and other 4xx (e.g. 403 WAF blocks) repeat once per second
+    // because the pending-tx watcher polls forever. Return null silently to avoid flooding Sentry.
+    if (e instanceof RainbowFetchError && e.response && e.response.status >= 400 && e.response.status < 500) {
       return null;
     }
     logger.error(new RainbowError('[transaction]: Failed to fetch transaction', e));
