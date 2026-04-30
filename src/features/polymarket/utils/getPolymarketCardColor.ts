@@ -10,6 +10,7 @@ const MIN_CARD_COLOR_SATURATION = 0.16;
 const MIN_CARD_COLOR_LUMINANCE = 0.12;
 const MAX_CARD_COLOR_LUMINANCE = 0.92;
 const MIN_CARD_COLOR_ALPHA = 0.05;
+const IMAGE_COLOR_TIMEOUT_MS = 600;
 
 type ResolvePolymarketCardColorParams = {
   event: RawPolymarketEvent;
@@ -27,7 +28,10 @@ export async function resolvePolymarketCardColor({
 
   const marketImageUrl = firstActiveMarket?.icon || firstActiveMarket?.image;
   const eventImageUrl = event.icon || event.image;
-  const [marketImageColor, eventImageColor] = await Promise.all([getImageColorTheme(marketImageUrl), getImageColorTheme(eventImageUrl)]);
+  const [marketImageColor, eventImageColor] =
+    marketImageUrl === eventImageUrl
+      ? await getSharedImageColorThemes(marketImageUrl)
+      : await Promise.all([getImageColorTheme(marketImageUrl), getImageColorTheme(eventImageUrl)]);
 
   if (marketImageColor) return marketImageColor;
   if (eventImageColor) return eventImageColor;
@@ -35,10 +39,30 @@ export async function resolvePolymarketCardColor({
   return getColorBySeed(firstActiveMarket?.conditionId ?? event.id);
 }
 
+async function getSharedImageColorThemes(
+  imageUrl: string | undefined
+): Promise<[ResponseByTheme<string> | null, ResponseByTheme<string> | null]> {
+  const imageColor = await getImageColorTheme(imageUrl);
+  return [imageColor, imageColor];
+}
+
 async function getImageColorTheme(imageUrl: string | undefined): Promise<ResponseByTheme<string> | null> {
   if (!imageUrl) return null;
-  const color = await getImagePrimaryColor(imageUrl);
+  const color = await withTimeout(getImagePrimaryColor(imageUrl), IMAGE_COLOR_TIMEOUT_MS);
   return isCardAccentColor(color) ? getHighContrastColorTheme(color) : null;
+}
+
+async function withTimeout<T>(promise: Promise<T>, timeoutMs: number): Promise<T | null> {
+  let timeoutId: ReturnType<typeof setTimeout> | undefined;
+  const timeout = new Promise<null>(resolve => {
+    timeoutId = setTimeout(() => resolve(null), timeoutMs);
+  });
+
+  return await Promise.race([promise, timeout])
+    .catch(() => null)
+    .finally(() => {
+      if (timeoutId) clearTimeout(timeoutId);
+    });
 }
 
 function getPrimarySeriesColor(seriesColor: string | undefined): string | null {
