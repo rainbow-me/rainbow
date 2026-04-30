@@ -60,14 +60,14 @@ export const useIsSponsoredSwap = createDerivedStore<boolean>(
     const address = $(useWalletsStore, s => s.accountAddress);
     const chainId = $(useSwapsStore, s => s.inputAsset?.chainId ?? null);
     const sponsorshipEligibleChainIds = $(useBackendNetworksStore, s => s.getSponsorshipEligibleChainIds());
-    const isPreparingSwap = $(useSponsoredSwapStore, s => s.getStatus('isInitialLoad'));
+    const hasPreparedSwap = $(useSponsoredSwapStore, s => s.getStatus('isSuccess') || s.getStatus('isError'));
     const preparedSwap = $(useSponsoredSwapStore, s => s.getData());
     const sponsoredSwapsEnabled = $(useRemoteConfigStore, s => s.config.sponsored_swaps_enabled);
 
     if (!sponsoredSwapsEnabled) return false;
 
     const canSponsor = predictSponsoredCallsExecution({ address, chainId, sponsorshipEligibleChainIds });
-    if (!canSponsor || isPreparingSwap) return canSponsor;
+    if (!canSponsor || !hasPreparedSwap) return canSponsor;
 
     return isPreparedCallsExecutionSponsored(preparedSwap);
   },
