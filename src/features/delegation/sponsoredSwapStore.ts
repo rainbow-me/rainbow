@@ -60,7 +60,7 @@ export const useIsSponsoredSwap = createDerivedStore<boolean>(
     const address = $(useWalletsStore, s => s.accountAddress);
     const chainId = $(useSwapsStore, s => s.inputAsset?.chainId ?? null);
     const sponsorshipEligibleChainIds = $(useBackendNetworksStore, s => s.getSponsorshipEligibleChainIds());
-    const hasPreparedSwap = $(useSponsoredSwapStore, s => s.getStatus('isSuccess') || s.getStatus('isError'));
+    const hasPreparedSwap = $(useSponsoredSwapStore, s => !s.isDataExpired());
     const preparedSwap = $(useSponsoredSwapStore, s => s.getData());
     const sponsoredSwapsEnabled = $(useRemoteConfigStore, s => s.config.sponsored_swaps_enabled);
 
