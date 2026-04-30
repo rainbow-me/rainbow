@@ -58,9 +58,11 @@ export interface BackendNetworksState {
   getTokenLauncherSupportedChainIds: () => ChainId[];
   getInteractionsWithSupportedChainIds: () => ChainId[];
   getShouldDefaultToFastGasChainIds: () => ChainId[];
+  getSponsorshipEligibleChainIds: () => ChainId[];
 
   getChainGasUnits: (chainId?: ChainId) => BackendNetwork['gasUnits'];
   getChainDefaultRpc: (chainId: ChainId) => string;
+  isSponsorshipEligible: (chainId: ChainId) => boolean;
 }
 
 function createSelector<T>(selectorFn: (networks: BackendNetwork[], transformed: Chain[]) => T): () => T {
@@ -335,6 +337,14 @@ export const useBackendNetworksStore = createQueryStore<BackendNetworksResponse,
 
     getShouldDefaultToFastGasChainIds: createSelector(() => [ChainId.mainnet, ChainId.polygon, ChainId.goerli]),
 
+    getSponsorshipEligibleChainIds: createSelector(networks =>
+      networks.filter(isSponsorshipEligibleNetwork).map(network => toChainId(network.id))
+    ),
+
+    isSponsorshipEligible: (chainId: ChainId) => {
+      return get().getSponsorshipEligibleChainIds().includes(chainId);
+    },
+
     getChainGasUnits: createParameterizedSelector(networks => (chainId?: ChainId) => {
       const chainsGasUnits = networks.reduce(
         (acc, backendNetwork: BackendNetwork) => {
@@ -376,6 +386,18 @@ export const backendNetworksActions = createStoreActions(useBackendNetworksStore
 
 function toChainId(id: string): ChainId {
   return parseInt(id, 10);
+}
+
+function isSponsorshipEligibleNetwork(network: BackendNetwork): boolean {
+  const backendData = network.enabledServices.sponsorship;
+  if (backendData) return backendData.enabled;
+
+  switch (toChainId(network.id)) {
+    case ChainId.mainnet:
+      return false;
+    default:
+      return true;
+  }
 }
 
 function getDefaultGasSpeeds(chainId: ChainId): GasSpeed[] {

@@ -1,19 +1,17 @@
 import { useCallback } from 'react';
-import { Alert } from 'react-native';
+import { Alert, InteractionManager } from 'react-native';
 
+import { Logger } from '@ethersproject/logger';
 import { ethers } from 'ethers';
 import { type SharedValue } from 'react-native-reanimated';
 import { triggerHaptics } from 'react-native-turbo-haptics';
 
-import { type GasSettings } from '@/__swaps__/screens/Swap/hooks/useCustomGas';
 import { type ParsedAsset } from '@/__swaps__/types/assets';
 import { crosschainQuoteTargetsRecipient, isCrosschainQuote } from '@/__swaps__/utils/quotes';
-import type { LegacyTransactionGasParamAmounts, TransactionGasParamAmounts } from '@/entities/gas';
-import { sumWorklet } from '@/framework/core/safeMath';
 import { estimateGasWithPadding, getProvider, toHex } from '@/handlers/web3';
 import { logger, RainbowError } from '@/logger';
 import { loadWallet } from '@/model/wallet';
-import Navigation from '@/navigation/Navigation';
+import Navigation, { useRoute, type Route } from '@/navigation/Navigation';
 import Routes from '@/navigation/routesNames';
 import { walletExecuteRap } from '@/raps/execute';
 import { rapTypes, type RapSwapActionParameters } from '@/raps/references';
@@ -25,6 +23,7 @@ import { getNextNonce } from '@/state/nonces';
 import { executeFn, Screens, startTimeToSignTracking, TimeToSignOperation } from '@/state/performance/performance';
 import { useWalletsStore } from '@/state/wallets/walletsStore';
 import { isValidQuote } from '@/systems/funding/utils/quotes';
+import { isRecordLike } from '@/types/guards';
 import { getUniqueId } from '@/utils/ethereumUtils';
 import { time } from '@/utils/time';
 import watchingAlert from '@/utils/watchingAlert';
@@ -35,6 +34,7 @@ import {
   type AmountStoreType,
   type DepositConfig,
   type DepositFailureMetadata,
+  type DepositGasParams,
   type DepositGasStoresType,
   type DepositMeteorologyActions,
   type DepositQuoteStoreType,
@@ -61,6 +61,8 @@ type DepositExecutionContext = {
   assetSymbol: string;
 };
 
+type DepositExecutionErrorLabels = Pick<DepositConfig['labels'], 'insufficientGas' | 'unknownExecutionError'>;
+
 type DepositExecutionFailure = {
   error: string;
   showAlert?: boolean;
@@ -83,6 +85,7 @@ type RunDepositExecutionFlowParams = DepositExecutionContext & {
   config: DepositConfig;
   isSubmitting: SharedValue<boolean>;
   run: () => Promise<DepositExecutionFlowResult>;
+  depositRoute: Route;
   showAlertOnThrownError?: boolean;
 };
 
@@ -93,6 +96,7 @@ async function runDepositExecutionFlow({
   config,
   isSubmitting,
   run,
+  depositRoute,
   showAlertOnThrownError = false,
 }: RunDepositExecutionFlowParams): Promise<void> {
   isSubmitting.value = true;
@@ -124,11 +128,7 @@ async function runDepositExecutionFlow({
       waitForConfirmation: result.waitForConfirmation,
     });
 
-    executeFn(Navigation.goBack, {
-      isEndOfFlow: true,
-      operation: TimeToSignOperation.SheetDismissal,
-      screen: Screens.PERPS_DEPOSIT,
-    })();
+    dismissDepositFlow(depositRoute);
 
     config.trackSuccess?.({
       amount,
@@ -137,7 +137,7 @@ async function runDepositExecutionFlow({
       executionStrategy: result.executionStrategy,
     });
   } catch (error) {
-    const message = error instanceof Error ? error.message : config.labels.unknownExecutionError;
+    const message = formatThrownDepositExecutionError(error, config.labels);
     logger.error(new RainbowError(`[useDepositHandler]: ${message}`, error), {
       data: { type: rapTypes.crosschainSwap },
     });
@@ -156,6 +156,30 @@ async function runDepositExecutionFlow({
   }
 }
 
+function dismissDepositFlow(depositRoute: Route): void {
+  executeFn(Navigation.goBack, {
+    isEndOfFlow: true,
+    operation: TimeToSignOperation.SheetDismissal,
+    screen: Screens.FUNDING_DEPOSIT,
+  })();
+
+  setTimeout(() => {
+    InteractionManager.runAfterInteractions(() => {
+      if (Navigation.getActiveRouteName() === depositRoute) Navigation.goBack();
+    });
+  }, time.ms(150));
+}
+
+function formatThrownDepositExecutionError(error: unknown, labels: DepositExecutionErrorLabels): string {
+  if (hasNestedErrorCode(error, Logger.errors.INSUFFICIENT_FUNDS)) return labels.insufficientGas;
+  return labels.unknownExecutionError;
+}
+
+function hasNestedErrorCode(error: unknown, code: string): boolean {
+  if (!isRecordLike(error)) return false;
+  return error.code === code || hasNestedErrorCode(error.error, code) || hasNestedErrorCode(error.cause, code);
+}
+
 export function useDepositHandler({
   config,
   depositActions,
@@ -164,6 +188,8 @@ export function useDepositHandler({
   quoteActions,
   useAmountStore,
 }: DepositHandlerParams): () => Promise<void> {
+  const depositRoute = useRoute().name;
+
   return useCallback(async () => {
     const asset = depositActions.getAsset();
     const quote = quoteActions.getData();
@@ -222,12 +248,24 @@ export function useDepositHandler({
           assetSymbol,
           config,
           isSubmitting,
+          depositRoute,
           run: async () => {
+            let gasParams: DepositGasParams | null;
+            try {
+              gasParams = await gasStores.useMeteorologyStore.getState().getGasParams();
+            } catch (error) {
+              logger.warn('[useDepositHandler]: custom deposit gas params unavailable', { error });
+              gasParams = null;
+            }
+
+            if (!gasParams) return { error: config.labels.quoteError, stage: 'validation', success: false };
+
             const result = await executeCallback({
               accountAddress,
               amount,
               asset,
               assetChainId,
+              gasParams,
               quote,
               recipient,
             });
@@ -265,12 +303,24 @@ export function useDepositHandler({
       return;
     }
 
-    const gasFeeParamsBySpeed = gasStores.useMeteorologyStore.getState().getGasSuggestions();
-    const gasSettings = gasStores.useGasSettings.getState();
-    if (!isValidQuote(quote) || !gasFeeParamsBySpeed || !gasSettings) {
+    if (!isValidQuote(quote)) {
       return;
     }
     const validQuote = quote;
+
+    const gasState = gasStores.useMeteorologyStore.getState();
+    let gasParams: DepositGasParams | null;
+    try {
+      gasParams = await gasState.getGasParams();
+    } catch (error) {
+      logger.warn('[useDepositHandler]: deposit gas params unavailable', { error });
+      return;
+    }
+
+    const gasFeeParamsBySpeed = gasState.getGasSuggestions();
+    if (!gasFeeParamsBySpeed || !gasParams) {
+      return;
+    }
 
     const targetAsset = buildTargetParsedAsset(config.to.token, config.to.chainId);
 
@@ -296,18 +346,19 @@ export function useDepositHandler({
       assetSymbol,
       config,
       isSubmitting,
+      depositRoute,
       run: async () => {
         const provider = getProvider({ chainId: assetChainId });
 
         const wallet = await executeFn(loadWallet, {
           operation: TimeToSignOperation.KeychainRead,
-          screen: Screens.PERPS_DEPOSIT,
+          screen: Screens.FUNDING_DEPOSIT,
         })({
           address: validQuote.from,
           provider,
           timeTracking: {
             operation: TimeToSignOperation.Authentication,
-            screen: Screens.PERPS_DEPOSIT,
+            screen: Screens.FUNDING_DEPOSIT,
           },
         });
 
@@ -321,7 +372,6 @@ export function useDepositHandler({
           };
         }
 
-        const gasParams = buildGasParams(gasSettings);
         const nonce = await getNextNonce({ address: validQuote.from, chainId: assetChainId });
         const strategy = determineStrategy(config, validQuote, validQuote.from);
 
@@ -375,7 +425,7 @@ export function useDepositHandler({
         };
       },
     });
-  }, [config, depositActions, gasStores, isSubmitting, quoteActions, useAmountStore]);
+  }, [config, depositActions, depositRoute, gasStores, isSubmitting, quoteActions, useAmountStore]);
 }
 
 // ============ Execution Types =============================================== //
@@ -383,7 +433,7 @@ export function useDepositHandler({
 type ExecutionParams = {
   assetChainId: ChainId;
   gasFeeParamsBySpeed: NonNullable<ReturnType<DepositMeteorologyActions['getGasSuggestions']>>;
-  gasParams: LegacyTransactionGasParamAmounts | TransactionGasParamAmounts;
+  gasParams: DepositGasParams;
   nonce: number;
   parameters: Omit<
     RapSwapActionParameters<rapTypes.crosschainSwap | rapTypes.swap>,
@@ -398,17 +448,6 @@ type ExecutionResult =
 
 // ============ Transaction Execution ========================================= //
 
-function buildGasParams(gasSettings: GasSettings): LegacyTransactionGasParamAmounts | TransactionGasParamAmounts {
-  if (gasSettings.isEIP1559) {
-    return {
-      maxFeePerGas: sumWorklet(gasSettings.maxBaseFee, gasSettings.maxPriorityFee),
-      maxPriorityFeePerGas: gasSettings.maxPriorityFee,
-    };
-  }
-
-  return { gasPrice: gasSettings.gasPrice };
-}
-
 async function executeTransaction(strategy: ExecutionStrategy, params: ExecutionParams): Promise<ExecutionResult> {
   switch (strategy.type) {
     case 'directTransfer':
@@ -421,7 +460,7 @@ async function executeTransaction(strategy: ExecutionStrategy, params: Execution
 async function executeSwap(params: ExecutionParams, rapType: 'crosschainSwap' | 'swap'): Promise<ExecutionResult> {
   const { errorMessage, hash } = await executeFn(walletExecuteRap, {
     operation: TimeToSignOperation.SignTransaction,
-    screen: Screens.PERPS_DEPOSIT,
+    screen: Screens.FUNDING_DEPOSIT,
   })(params.wallet, rapType === 'crosschainSwap' ? rapTypes.crosschainSwap : rapTypes.swap, {
     ...params.parameters,
     chainId: params.assetChainId,

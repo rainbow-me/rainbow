@@ -108,14 +108,21 @@ export interface RainbowTransaction {
   explorerUrl?: string;
   /** Relay execution id when the transaction originated from managed relay execution. */
   relayExecutionId?: string;
+  /** Destination-chain hashes the relay has reported for a managed crosschain execution. */
+  relayDestinationTxHashes?: readonly Hash[];
   /** True when transaction uses batched execution (atomic swaps) - applies to both type 2 and type 4 */
   batch?: boolean;
   /** True when transaction includes a new EIP-7702 delegation (type 4 only) */
   delegation?: boolean;
 }
 
-export type MinedTransaction = RainbowTransaction & {
+/** Transaction whose final execution status is known. */
+export type SettledTransaction = RainbowTransaction & {
   status: TransactionStatus.confirmed | TransactionStatus.failed;
+};
+
+/** Settled transaction with required indexed block metadata. */
+export type MinedTransaction = SettledTransaction & {
   blockNumber: number;
   minedAt: number;
   confirmations: number;
@@ -274,6 +281,13 @@ export function isValidTransactionStatus(status: unknown): status is Transaction
 }
 
 /**
+ * Narrows a transaction to a pending transaction.
+ */
+export function isPendingTransaction(transaction: RainbowTransaction): transaction is PendingTransaction {
+  return transaction.status === TransactionStatus.pending;
+}
+
+/**
  * Builds a transaction `title` from a transaction `type` and `status`.
  */
 export function buildTransactionTitle(type: TransactionType, status: TransactionStatus): string {
@@ -306,12 +320,8 @@ export function canReplacePendingTransaction({
  * Returns true while a managed relay execution is still waiting for
  * its first onchain transaction hash.
  */
-export function isAwaitingRelayTransactionHash(transaction: Pick<RainbowTransaction, 'hash' | 'relayExecutionId' | 'status'>): boolean {
-  return (
-    transaction.status === TransactionStatus.pending &&
-    typeof transaction.relayExecutionId === 'string' &&
-    transaction.hash === transaction.relayExecutionId
-  );
+export function isAwaitingRelayTransactionHash(transaction: Pick<RainbowTransaction, 'hash' | 'relayExecutionId'>): boolean {
+  return typeof transaction.relayExecutionId === 'string' && transaction.hash === transaction.relayExecutionId;
 }
 
 export type TransactionApiResponse = {

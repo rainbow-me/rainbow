@@ -1,9 +1,8 @@
 import { type SectionListData } from 'react-native';
 
 import { format } from 'date-fns';
-import { capitalize, groupBy, isEmpty } from 'lodash';
+import { capitalize, groupBy } from 'lodash';
 
-import { type NativeCurrencyKey } from '@/entities/nativeCurrencyTypes';
 import { TransactionStatus, type RainbowTransaction } from '@/entities/transactions';
 import * as i18n from '@/languages';
 import { type Contact } from '@/redux/contacts';
@@ -23,96 +22,95 @@ export type TransactionSectionsResult = {
   sections: SectionListData<RainbowTransactionWithContact, TransactionSection>[];
 };
 
-// bad news
-const groupTransactionByDate = ({ status, minedAt }: { status: TransactionStatus; minedAt: string }) => {
-  if (status === TransactionStatus.pending) {
-    return i18n.t(i18n.l.transactions.pending_title);
-  }
+const EMPTY_TRANSACTION_SECTIONS: TransactionSectionsResult = Object.freeze({ sections: [] });
 
-  const ts = parseInt(minedAt, 10) * 1000;
+function pendingSectionTitle(): string {
+  return i18n.t(i18n.l.transactions.pending_title);
+}
 
-  if (ts > todayTimestamp) return i18n.t(i18n.l.time.today_caps);
-  if (ts > yesterdayTimestamp) return i18n.t(i18n.l.time.yesterday_caps);
-  if (ts > thisMonthTimestamp) return i18n.t(i18n.l.time.this_month_caps);
+function droppedSectionTitle(): string {
+  return i18n.t(i18n.l.transactions.dropped_title);
+}
+
+function readTransactionSectionTitle(transaction: Pick<RainbowTransaction, 'minedAt' | 'status' | 'timestamp'>): string {
+  if (transaction.status === TransactionStatus.pending) return pendingSectionTitle();
+
+  const timestampMs = readTransactionTimestampMs(transaction);
+  if (timestampMs === null) return droppedSectionTitle();
+
+  if (timestampMs > todayTimestamp) return i18n.t(i18n.l.time.today_caps);
+  if (timestampMs > yesterdayTimestamp) return i18n.t(i18n.l.time.yesterday_caps);
+  if (timestampMs > thisMonthTimestamp) return i18n.t(i18n.l.time.this_month_caps);
+
   try {
     return capitalize(
-      format(ts, `MMMM${ts > thisYearTimestamp ? '' : ' yyyy'}`, {
+      format(timestampMs, `MMMM${timestampMs > thisYearTimestamp ? '' : ' yyyy'}`, {
         locale: i18n.getDateFnsLocale(),
       })
     );
-  } catch (e) {
-    return i18n.t(i18n.l.transactions.dropped_title);
+  } catch {
+    return droppedSectionTitle();
   }
-};
+}
 
-const addContactInfo =
-  (contacts: { [address: string]: Contact }) =>
-  (
-    txn: RainbowTransaction
-  ): RainbowTransaction & {
-    contact: Contact | null;
-  } => {
-    const { from, to, status, type } = txn;
-    const isSent = type === 'send' && status === TransactionStatus.confirmed;
-    const contactAddress = (isSent ? to : from) || '';
-    const contact = contacts?.[contactAddress?.toLowerCase()] ?? null;
-    return {
-      ...txn,
-      contact,
-    };
+function readTransactionTimestampMs(transaction: Pick<RainbowTransaction, 'minedAt' | 'timestamp'>): number | null {
+  if (typeof transaction.minedAt === 'number') return transaction.minedAt * 1000;
+  if (typeof transaction.timestamp === 'number') return transaction.timestamp;
+  return null;
+}
+
+function addContact(contacts: { [address: string]: Contact }, transaction: RainbowTransaction): RainbowTransactionWithContact {
+  const { from, status, to, type } = transaction;
+  const isSent = type === 'send' && status === TransactionStatus.confirmed;
+  const contactAddress = (isSent ? to : from) || '';
+
+  return {
+    ...transaction,
+    contact: contacts[contactAddress.toLowerCase()] ?? null,
   };
+}
+
+function buildSectionTransaction(transaction: RainbowTransactionWithContact): RainbowTransactionWithContact {
+  return {
+    ...transaction,
+    from: transaction.from || '',
+    to: transaction.to || '',
+  };
+}
+
+function movePendingSectionFirst(
+  sections: SectionListData<RainbowTransactionWithContact, TransactionSection>[]
+): SectionListData<RainbowTransactionWithContact, TransactionSection>[] {
+  const pendingIndex = sections.findIndex(section => section.title === pendingSectionTitle());
+  if (pendingIndex <= 0) return sections;
+
+  const nextSections = [...sections];
+  const [pendingSection] = nextSections.splice(pendingIndex, 1);
+  nextSections.unshift(pendingSection);
+  return nextSections;
+}
 
 export const buildTransactionsSections = ({
-  accountAddress,
   contacts,
   transactions,
 }: {
-  accountAddress: string;
   contacts: { [address: string]: Contact };
   transactions: RainbowTransaction[];
-  nativeCurrency: NativeCurrencyKey;
 }): TransactionSectionsResult => {
-  if (!transactions) {
-    return { sections: [] };
-  }
+  if (!transactions.length) return EMPTY_TRANSACTION_SECTIONS;
 
-  let sectionedTransactions: TransactionSection[] = [];
-
-  const transactionsWithContacts = transactions?.map(addContactInfo(contacts));
-
-  if (!isEmpty(transactionsWithContacts)) {
-    const transactionsByDate = groupBy(transactionsWithContacts, groupTransactionByDate);
-
-    const test = Object.keys(transactionsByDate);
-    const filter = test.filter(key => key !== 'Dropped');
-    const sectioned: TransactionSection[] = filter.map((section: string) => {
-      const sectionData: RainbowTransactionWithContact[] = transactionsByDate[section].map(txn => {
-        const typeTxn = txn as RainbowTransactionWithContact;
-        const res = {
-          ...typeTxn,
-          to: typeTxn.to || '',
-          from: typeTxn.from || '',
-          accountAddress,
-        };
-
-        return res;
-      });
-
-      return {
-        data: sectionData,
-        title: section,
-      };
-    });
-    sectionedTransactions = sectioned;
-
-    const pendingSectionIndex = sectionedTransactions.findIndex(({ title }) => title === 'Pending');
-    if (pendingSectionIndex > 0) {
-      const pendingSection = sectionedTransactions.splice(pendingSectionIndex, 1);
-      sectionedTransactions.unshift(pendingSection[0]);
-    }
-  }
+  const transactionsBySection = groupBy(
+    transactions.map(transaction => addContact(contacts, transaction)),
+    readTransactionSectionTitle
+  );
+  const sections = Object.entries(transactionsBySection)
+    .filter(([title]) => title !== droppedSectionTitle())
+    .map(([title, sectionTransactions]) => ({
+      data: sectionTransactions.map(buildSectionTransaction),
+      title,
+    }));
 
   return {
-    sections: sectionedTransactions as SectionListData<RainbowTransactionWithContact, TransactionSection>[],
+    sections: movePendingSectionFirst(sections),
   };
 };

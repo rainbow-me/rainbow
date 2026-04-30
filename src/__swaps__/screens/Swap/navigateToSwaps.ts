@@ -159,9 +159,12 @@ function isExtendedAssetWithColors(
 export function getInputAsset(
   asset: ExtendedAnimatedAssetWithColors | ParsedSearchAsset | null | undefined
 ): ExtendedAnimatedAssetWithColors | null {
-  if (!asset) return parseAssetAndExtend({ asset: useUserAssetsStore.getState().getHighestValueNativeAsset() });
-  if (isExtendedAssetWithColors(asset)) return asset;
-  return parseAssetAndExtend({ asset, insertUserAssetBalance: true });
+  if (!asset) {
+    const preferredChainId = useSwapsStore.getState().preferredNetwork;
+    const defaultAsset = useUserAssetsStore.getState().getHighestValueAsset({ nativeAsset: 'preferred', preferredChainId });
+    return parseAssetAndExtend({ asset: defaultAsset });
+  }
+  return isExtendedAssetWithColors(asset) ? asset : parseAssetAndExtend({ asset, insertUserAssetBalance: true });
 }
 
 function getOutputAsset(

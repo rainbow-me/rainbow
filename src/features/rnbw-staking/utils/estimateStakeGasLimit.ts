@@ -1,13 +1,17 @@
 import { encodeFunctionData, erc20Abi, parseUnits, type Address } from 'viem';
 
 import { getProvider } from '@/handlers/web3';
-import { gasUnits } from '@/references/gasUnits';
 
-import { RNBW_DECIMALS, RNBW_TOKEN_ADDRESS, STAKING_ABI, STAKING_CHAIN_ID, STAKING_CONTRACT_ADDRESS } from '../constants';
+import {
+  RNBW_DECIMALS,
+  RNBW_TOKEN_ADDRESS,
+  STAKING_ABI,
+  STAKING_APPROVAL_GAS_LIMIT,
+  STAKING_CHAIN_ID,
+  STAKING_CONTRACT_ADDRESS,
+  STAKING_GAS_LIMIT,
+} from '../constants';
 import { checkIfStakingNeedsApproval } from './checkIfStakingNeedsApproval';
-
-const FALLBACK_STAKE_GAS_LIMIT = 200_000n;
-const FALLBACK_APPROVAL_GAS_LIMIT = BigInt(gasUnits.basic_approval);
 
 export async function estimateStakeGasLimit({ accountAddress, amount }: { accountAddress: Address; amount: string }): Promise<string> {
   const provider = getProvider({ chainId: STAKING_CHAIN_ID });
@@ -18,13 +22,13 @@ export async function estimateStakeGasLimit({ accountAddress, amount }: { accoun
     stakeAmountRaw: stakeAmount.toString(),
   });
 
-  let totalGasLimit = FALLBACK_STAKE_GAS_LIMIT;
+  let totalGasLimit = BigInt(STAKING_GAS_LIMIT);
   const stakeData = encodeFunctionData({ abi: STAKING_ABI, functionName: 'stake', args: [stakeAmount] });
   try {
     const estimatedStakeGasLimit = await provider.estimateGas({ data: stakeData, from: accountAddress, to: STAKING_CONTRACT_ADDRESS });
     totalGasLimit = estimatedStakeGasLimit.toBigInt();
   } catch {
-    totalGasLimit = FALLBACK_STAKE_GAS_LIMIT;
+    totalGasLimit = BigInt(STAKING_GAS_LIMIT);
   }
 
   if (!needsApproval) return totalGasLimit.toString();
@@ -43,6 +47,6 @@ export async function estimateStakeGasLimit({ accountAddress, amount }: { accoun
     });
     return (totalGasLimit + estimatedApproveGasLimit.toBigInt()).toString();
   } catch {
-    return (totalGasLimit + FALLBACK_APPROVAL_GAS_LIMIT).toString();
+    return (totalGasLimit + BigInt(STAKING_APPROVAL_GAS_LIMIT)).toString();
   }
 }

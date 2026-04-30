@@ -1,4 +1,4 @@
-import { type RainbowTransaction } from '@/entities/transactions';
+import { TransactionStatus, type RainbowTransaction } from '@/entities/transactions';
 import { getBatchedProvider } from '@/handlers/web3';
 import { useBackendNetworksStore } from '@/state/backendNetworks/backendNetworks';
 import { type ChainId, type Network } from '@/state/backendNetworks/types';
@@ -69,10 +69,14 @@ export async function getNextNonce({ address, chainId }: { address: string; chai
   if (numPendingLocalTx === numPendingPublicTx) return pendingTxCountFromPublicRpc; // nothing in private mempool, proceed normally
   if (numPendingLocalTx === 0 && numPendingPublicTx > 0) return latestTxCountFromPublicRpc; // catch up with public
 
-  const { pendingTransactions: storePendingTransactions } = usePendingTransactionsStore.getState();
-  const pendingTransactions: RainbowTransaction[] = storePendingTransactions[address]?.filter(txn => txn.chainId === chainId) || [];
+  const storePendingTransactions = usePendingTransactionsStore.getState().pendingTransactions;
+  const pendingTransactions: RainbowTransaction[] | undefined = storePendingTransactions[address]?.filter(
+    txn => txn.chainId === chainId && txn.status === TransactionStatus.pending
+  );
 
   let nextNonce = localNonce + 1;
+  if (!pendingTransactions?.length) return nextNonce;
+
   for (const pendingTx of pendingTransactions) {
     if (!pendingTx.nonce || pendingTx.nonce < pendingTxCountFromPublicRpc) {
       continue;
@@ -94,5 +98,6 @@ export async function getNextNonce({ address, chainId }: { address: string; chai
       }
     }
   }
+
   return nextNonce;
 }

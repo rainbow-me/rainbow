@@ -17,7 +17,6 @@ import { useEstimatedTime } from '@/__swaps__/utils/meteorology';
 import { SPRING_CONFIGS } from '@/components/animations/animationConfigs';
 import ButtonPressAnimation from '@/components/animations/ButtonPressAnimation';
 import { GestureHandlerButton } from '@/components/buttons/GestureHandlerButton';
-import { ATOMIC_SWAPS, getExperimentalFlag } from '@/config/experimentalHooks';
 import {
   AnimatedText,
   Bleed,
@@ -32,17 +31,16 @@ import {
   useColorMode,
   useForegroundColor,
 } from '@/design-system';
+import { useWillExecuteDelegation, willExecuteDelegation } from '@/features/delegation/willDelegate';
 import { opacity } from '@/framework/ui/utils/opacity';
 import { convertRawAmountToBalance, convertRawAmountToBalanceWorklet, handleSignificantDecimals, multiply } from '@/helpers/utilities';
-import { useWillExecuteDelegation } from '@/hooks/useWillExecuteDelegation';
 import * as i18n from '@/languages';
-import { getRemoteConfig } from '@/model/remoteConfig';
 import { useNavigation } from '@/navigation/Navigation';
 import Routes from '@/navigation/routesNames';
-import { useBackendNetworksStore } from '@/state/backendNetworks/backendNetworks';
+import { backendNetworksActions } from '@/state/backendNetworks/backendNetworks';
 import { ChainId } from '@/state/backendNetworks/types';
 import { swapsStore, useSwapsStore } from '@/state/swaps/swapsStore';
-import { useAccountAddress } from '@/state/wallets/walletsStore';
+import { getAccountAddress, useAccountAddress } from '@/state/wallets/walletsStore';
 import { THICK_BORDER_WIDTH } from '@/styles/constants';
 import { type CrosschainQuote, type Quote, type QuoteError } from '@rainbow-me/swaps';
 
@@ -255,15 +253,11 @@ export function ReviewPanel() {
   const { navigate } = useNavigation();
   const { isDarkMode } = useColorMode();
   const { configProgress, lastTypedInput, internalSelectedInputAsset, internalSelectedOutputAsset, quote } = useSwapContext();
-  const chainLabels = useBackendNetworksStore(state => state.getChainsLabel());
-  const accountAddress = useAccountAddress();
-  const inputChainId = useSwapsStore(state => state.inputAsset?.chainId ?? ChainId.mainnet);
-  const atomicSwapsEnabled = getExperimentalFlag(ATOMIC_SWAPS) || getRemoteConfig().atomic_swaps_enabled;
-  const willDelegate = useWillExecuteDelegation(accountAddress, inputChainId) && atomicSwapsEnabled;
 
   const labelTertiary = useForegroundColor('labelTertiary');
   const separator = useForegroundColor('separator');
 
+  const chainLabels = backendNetworksActions.getChainsLabel();
   const unknown = i18n.t(i18n.l.swap.unknown);
 
   const chainName = useDerivedValue(() => chainLabels[internalSelectedInputAsset.value?.chainId ?? ChainId.mainnet]);
@@ -295,15 +289,17 @@ export function ReviewPanel() {
   });
 
   const openGasExplainer = useCallback(async () => {
-    const chainsNativeAsset = useBackendNetworksStore.getState().getChainsNativeAsset();
+    const chainsNativeAsset = backendNetworksActions.getChainsNativeAsset();
     const chainId = swapsStore.getState().inputAsset?.chainId ?? ChainId.mainnet;
     const nativeAsset = chainsNativeAsset[chainId];
+    const decision = await willExecuteDelegation({ address: getAccountAddress(), chainId });
+
     navigate(Routes.EXPLAIN_SHEET, {
       chainId,
-      type: willDelegate ? 'smart_wallet_activation' : 'gas',
+      type: decision.willDelegate ? 'smart_wallet_activation' : 'gas',
       nativeAsset,
     });
-  }, [navigate, willDelegate]);
+  }, [navigate]);
 
   const styles = useAnimatedStyle(() => {
     return {
@@ -420,9 +416,7 @@ export function ReviewPanel() {
                 </Inline>
 
                 <Inline wrap={false} alignHorizontal="left" alignVertical="center" horizontalSpace="4px">
-                  <Text color="labelTertiary" size="13pt" weight="bold">
-                    {willDelegate ? SMART_WALLET_ACTIVATION_FEE_LABEL : ESTIMATED_NETWORK_FEE_LABEL}
-                  </Text>
+                  <GasLabel />
                   <Text align="center" color={{ custom: opacity(labelTertiary, 0.24) }} size="icon 13px" weight="semibold">
                     􀅴
                   </Text>
@@ -437,6 +431,18 @@ export function ReviewPanel() {
         </Box>
       </Stack>
     </Box>
+  );
+}
+
+function GasLabel() {
+  const accountAddress = useAccountAddress();
+  const inputChainId = useSwapsStore(s => s.inputAsset?.chainId ?? ChainId.mainnet);
+  const willDelegate = useWillExecuteDelegation(accountAddress, inputChainId);
+
+  return (
+    <Text color="labelTertiary" size="13pt" weight="bold">
+      {willDelegate ? SMART_WALLET_ACTIVATION_FEE_LABEL : ESTIMATED_NETWORK_FEE_LABEL}
+    </Text>
   );
 }
 

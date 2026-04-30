@@ -1,5 +1,5 @@
-import { useRainbowToastsStore } from '@/components/rainbow-toast/useRainbowToastsStore';
-import { type NewTransaction, type RainbowTransaction } from '@/entities/transactions';
+import { rainbowToastsActions } from '@/components/rainbow-toast/useRainbowToastsStore';
+import { isPendingTransaction, type NewTransaction, type PendingTransaction, type RainbowTransaction } from '@/entities/transactions';
 import { convertNewTransactionToRainbowTransaction } from '@/parsers/transactions';
 import { type ChainId } from '@/state/backendNetworks/types';
 import { createRainbowStore } from '@/state/internal/createRainbowStore';
@@ -11,21 +11,23 @@ export type PendingTransactionsState = {
   pendingTransactions: Partial<Record<string, RainbowTransaction[]>>;
   addPendingTransaction: ({ address, pendingTransaction }: { address: string; pendingTransaction: RainbowTransaction }) => void;
   clearPendingTransactions: () => void;
-  getPendingTransactionsInReverseOrder: (address: string) => RainbowTransaction[];
+  getPendingTransactions: (address: string) => PendingTransaction[];
+  getTransactionsInReverseOrder: (address: string) => RainbowTransaction[];
   setPendingTransactions: ({ address, pendingTransactions }: { address: string; pendingTransactions: RainbowTransaction[] }) => void;
 };
 
-const EMPTY_PENDING_TRANSACTIONS: Record<string, RainbowTransaction[]> = {};
+const EMPTY_PENDING_TRANSACTIONS_BY_ADDRESS: Record<string, RainbowTransaction[]> = {};
 const EMPTY_TRANSACTIONS: RainbowTransaction[] = [];
+const EMPTY_PENDING_TRANSACTIONS: PendingTransaction[] = [];
 
 export const usePendingTransactionsStore = createRainbowStore<PendingTransactionsState>(
   (set, get) => ({
-    pendingTransactions: EMPTY_PENDING_TRANSACTIONS,
+    pendingTransactions: EMPTY_PENDING_TRANSACTIONS_BY_ADDRESS,
 
     addPendingTransaction: ({ address, pendingTransaction }) => {
       set(state => {
         const existingTransactions = state.pendingTransactions[address] || [];
-        const existingIndex = findPendingTransactionIndex(existingTransactions, pendingTransaction);
+        const existingIndex = findTransactionIndex(existingTransactions, pendingTransaction);
 
         let updatedTransactions: RainbowTransaction[];
         if (existingIndex >= 0) {
@@ -43,18 +45,25 @@ export const usePendingTransactionsStore = createRainbowStore<PendingTransaction
         };
       });
 
-      useRainbowToastsStore.getState().handleTransaction(pendingTransaction);
+      rainbowToastsActions.handleTransaction(pendingTransaction);
     },
 
     clearPendingTransactions: () =>
       set({
-        pendingTransactions: EMPTY_PENDING_TRANSACTIONS,
+        pendingTransactions: EMPTY_PENDING_TRANSACTIONS_BY_ADDRESS,
       }),
 
-    getPendingTransactionsInReverseOrder: address => {
-      const pendingTransactionsForAddress = get().pendingTransactions[address];
-      if (!pendingTransactionsForAddress) return EMPTY_TRANSACTIONS;
-      return [...pendingTransactionsForAddress].reverse();
+    getPendingTransactions: address => {
+      const transactionsForAddress = get().pendingTransactions[address];
+      if (!transactionsForAddress) return EMPTY_PENDING_TRANSACTIONS;
+
+      return transactionsForAddress.filter(isPendingTransaction);
+    },
+
+    getTransactionsInReverseOrder: address => {
+      const transactionsForAddress = get().pendingTransactions[address];
+      if (!transactionsForAddress) return EMPTY_TRANSACTIONS;
+      return [...transactionsForAddress].reverse();
     },
 
     setPendingTransactions: ({ address, pendingTransactions }) =>
@@ -76,7 +85,14 @@ export const usePendingTransactionsStore = createRainbowStore<PendingTransaction
 
 export const pendingTransactionsActions = createStoreActions(usePendingTransactionsStore);
 
-export const addNewTransaction = ({
+/**
+ * Create or replace a pending transaction.
+ *
+ * Handles both wallet transactions and managed relay executions,
+ * and skips nonce advancement if a `relayExecutionId` exists in
+ * the provided `transaction`.
+ */
+export function addNewTransaction({
   address,
   chainId,
   transaction,
@@ -84,14 +100,16 @@ export const addNewTransaction = ({
   address: string;
   chainId: ChainId;
   transaction: NewTransaction;
-}) => {
+}): void {
   const parsedTransaction = convertNewTransactionToRainbowTransaction(transaction);
   pendingTransactionsActions.addPendingTransaction({ address, pendingTransaction: parsedTransaction });
 
-  if (transaction.relayExecutionId) return;
+  const requiresNonceHandling = !transaction.relayExecutionId;
+  if (!requiresNonceHandling) return;
 
   const localNonceData = nonceActions.getNonce({ address, chainId });
   const localNonce = localNonceData?.currentNonce || -1;
+
   if (transaction.nonce > localNonce) {
     nonceActions.setNonce({
       address,
@@ -99,25 +117,9 @@ export const addNewTransaction = ({
       currentNonce: transaction.nonce,
     });
   }
-};
+}
 
-export const updateTransaction = ({
-  address,
-  chainId,
-  transaction,
-}: {
-  address: string;
-  chainId: ChainId;
-  transaction: NewTransaction;
-}) => {
-  addNewTransaction({
-    address,
-    chainId,
-    transaction,
-  });
-};
-
-function findPendingTransactionIndex(transactions: RainbowTransaction[], nextTransaction: RainbowTransaction): number {
+function findTransactionIndex(transactions: RainbowTransaction[], nextTransaction: RainbowTransaction): number {
   if (nextTransaction.relayExecutionId) {
     return transactions.findIndex(
       transaction => transaction.chainId === nextTransaction.chainId && transaction.relayExecutionId === nextTransaction.relayExecutionId

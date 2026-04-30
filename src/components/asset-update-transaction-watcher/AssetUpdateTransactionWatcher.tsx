@@ -1,8 +1,8 @@
 import { memo } from 'react';
 
 import { useTransactionWatcher } from '@/hooks/useTransactionWatcher';
-import { useWatchAssetUpdateTransactions } from '@/hooks/useWatchMinedTransactions';
-import { useAssetUpdatesStore, type WatchedAssetUpdateTransaction } from '@/state/minedTransactions/minedTransactions';
+import { useWatchAssetUpdates } from '@/hooks/useWatchAssetUpdates';
+import { useAssetUpdatesStore, type WatchedAssetUpdateTransaction } from '@/state/assetUpdates/assetUpdates';
 import { useAccountAddress } from '@/state/wallets/walletsStore';
 
 const EMPTY_ASSET_UPDATE_TRANSACTION_WATCHES: WatchedAssetUpdateTransaction[] = [];
@@ -13,7 +13,7 @@ export const AssetUpdateTransactionWatcher = memo(function AssetUpdateTransactio
 
   useTransactionWatcher({
     transactions: watchedTransactions,
-    watchFunction: useWatchAssetUpdateTransactions({ address }),
+    watchFunction: useWatchAssetUpdates({ address }),
   });
 
   return null;

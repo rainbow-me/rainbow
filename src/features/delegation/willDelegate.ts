@@ -23,7 +23,7 @@ const WILL_NOT_DELEGATE: WillExecuteDelegationResult = Object.freeze({
  * Returns true when Rainbow can execute delegation-backed flows for `address`.
  */
 export function canUseDelegatedExecution(address: Address): boolean {
-  if (!isDelegationEnabled()) return false;
+  if (!isDelegationEnabled() || !delegation.isEnabled(address)) return false;
 
   return canUseDelegatedWallet(getWalletWithAccount(address));
 }
@@ -73,5 +73,5 @@ export function useWillExecuteDelegation(address: Address, chainId: number): boo
 }
 
 function canUseDelegatedWallet(wallet: RainbowWallet | undefined): boolean {
-  return wallet !== undefined && !wallet.deviceId && wallet.type !== WalletTypes.readOnly;
+  return wallet !== undefined && wallet.type !== WalletTypes.bluetooth && wallet.type !== WalletTypes.readOnly;
 }
