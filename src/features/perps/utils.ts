@@ -10,6 +10,7 @@ import { toFixedWorklet } from '@/framework/core/safeMath';
 import { ensureError } from '@/logger';
 import Navigation from '@/navigation/Navigation';
 import Routes from '@/navigation/routesNames';
+import { device } from '@/storage';
 
 export function getHyperliquidTokenId(symbol?: string): string {
   if (!symbol) return '';
@@ -36,9 +37,22 @@ export function navigateToNewPositionScreen(market: PerpMarket) {
 export function navigateToPerpDetailScreen(symbol: string) {
   const market = hyperliquidMarketsActions.getMarket(symbol);
   if (market) {
-    Navigation.handleAction(Routes.PERPS_DETAIL_SCREEN, {
-      market,
-    });
+    const openMarketDetail = () =>
+      Navigation.handleAction(Routes.PERPS_DETAIL_SCREEN, {
+        market,
+      });
+
+    const hasSeenExplainSheet = device.get(['hasSeenPerpsExplainSheet']);
+    if (!hasSeenExplainSheet) {
+      Navigation.handleAction(Routes.PERPS_EXPLAIN_SHEET, {
+        onDismiss: () => {
+          device.set(['hasSeenPerpsExplainSheet'], true);
+          openMarketDetail();
+        },
+      });
+    } else {
+      openMarketDetail();
+    }
   }
 }
 

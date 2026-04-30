@@ -1,5 +1,5 @@
 import React, { useMemo } from 'react';
-import { InteractionManager, View } from 'react-native';
+import { View } from 'react-native';
 
 import { useNavigation } from '@react-navigation/native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
@@ -52,12 +52,14 @@ export function SheetFooter({ backgroundColor, market }: SheetFooterProps) {
     }
     return {
       onPress: () => {
-        navigation.goBack();
-        setTimeout(() => {
-          InteractionManager.runAfterInteractions(() => {
-            navigateToNewPositionScreen(market);
+        navigateToNewPositionScreen(market);
+        if (isPerpsNavigatorBehindCurrentRoute()) {
+          navigation.goBack();
+        } else {
+          Navigation.replace(Routes.PERPS_NAVIGATOR, {
+            initialPerpsPage: Routes.PERPS_NEW_POSITION_SCREEN,
           });
-        }, 150);
+        }
       },
       text: i18n.t(i18n.l.perps.actions.open_position),
     };
@@ -114,4 +116,11 @@ export function SheetFooter({ backgroundColor, market }: SheetFooterProps) {
       </Box>
     </Box>
   );
+}
+
+function isPerpsNavigatorBehindCurrentRoute(): boolean {
+  const state = Navigation.getState();
+  if (!state) return false;
+  const currentIndex = state.index ?? state.routes.length - 1;
+  return state.routes[currentIndex - 1]?.name === Routes.PERPS_NAVIGATOR;
 }
