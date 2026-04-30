@@ -38,7 +38,6 @@ export const useRnbwMembershipAnalyticsStore = createBaseStore<RnbwMembershipAna
 
       if (!highestPosition) return;
 
-      console.log('highestPosition', highestPosition);
       analytics.identify({
         stakedRnbw: convertRawAmountToDecimalFormat(highestPosition.stakedRnbwRaw, RNBW_DECIMALS),
         rnbwMembershipTier: highestPosition.tier,
