@@ -20,6 +20,7 @@ const TOP_INSET = Math.max(safeAreaInsetValues.top, 20);
 
 export const REVIEW_SHEET_ROW_HEIGHT = 10;
 export const REVIEW_SHEET_ROW_GAP = 24;
+export const REVIEW_SHEET_SPONSORED_GAS_OFFSET = 68;
 export const REVIEW_SHEET_HEIGHT = 412;
 export const SETTINGS_SHEET_HEIGHT = 299;
 export const SETTINGS_SHEET_ROW_GAP = 28;
