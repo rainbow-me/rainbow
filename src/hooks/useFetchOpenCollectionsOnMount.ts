@@ -29,10 +29,11 @@ export default function useFetchOpenCollectionsOnMount() {
 
     const collections = Object.keys(openCollections).filter(collectionId => shouldFetchCollections(collectionId, openCollections));
 
-    const { fetchNftCollection } = useNftsStore.getState(address);
+    const { fetchNftCollection, getNftCollection } = useNftsStore.getState(address);
     const promises = collections.map(collectionId => {
       const normalizedCollectionId = collectionId.toLowerCase();
-      return fetchNftCollection(normalizedCollectionId);
+      const expectedCount = Number(getNftCollection(normalizedCollectionId)?.totalCount || 0) || undefined;
+      return fetchNftCollection(normalizedCollectionId, { expectedCount });
     });
 
     promiseUtils.PromiseAllWithFails(promises);

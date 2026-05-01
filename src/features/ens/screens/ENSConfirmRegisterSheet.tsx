@@ -156,7 +156,7 @@ export default function ENSConfirmRegisterSheet() {
 
       // revalidate nft data for ens collection
       const ensCollectionId = `${Network.mainnet}_${ENS_NFT_CONTRACT_ADDRESS}`;
-      useNftsStore.getState().fetchNftCollection(ensCollectionId, true);
+      useNftsStore.getState().fetchNftCollection(ensCollectionId, { force: true });
       useNftsStore.getState().fetch({ limit: PAGE_SIZE }, { staleTime: time.seconds(5) });
 
       setTimeout(() => {
