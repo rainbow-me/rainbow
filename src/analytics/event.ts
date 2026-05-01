@@ -234,6 +234,12 @@ export const event = {
   walletCreateFailed: 'wallet_create.failed',
   walletInitializationFailed: 'wallet_initialization.failed',
 
+  // performance — emitted from sentry.ts's beforeSendTransaction handler when
+  // Sentry's auto-instrumented app-start transaction lands. Same Amplitude event
+  // name we shipped before the in-house tracker was removed; values now come from
+  // Sentry's native app-start capture rather than our own timer module.
+  performanceReport: 'performance.report',
+
   // discover screen
   timeSpentOnDiscoverScreen: 'Time spent on the Discover screen',
 
@@ -962,6 +968,15 @@ export type EventProperties = {
   [event.walletInitializationFailed]: {
     error: string;
     walletStatus: string;
+  };
+
+  // performance
+  [event.performanceReport]: {
+    reportName: string;
+    durationInMs: number;
+    segments: Record<string, number>;
+    performanceTrackingVersion: number;
+    data: { startType: 'cold' | 'warm' | 'unknown' };
   };
 
   // discover screen

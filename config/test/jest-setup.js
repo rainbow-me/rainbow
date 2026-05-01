@@ -31,6 +31,7 @@ jest.mock('@sentry/react-native', () => ({
     setupOnce: () => undefined,
     registerNavigationContainer: () => undefined,
   }),
+  appStartIntegration: () => ({ name: 'AppStart', setupOnce: () => undefined }),
 }));
 
 jest.mock('react-native-keychain', () => ({
