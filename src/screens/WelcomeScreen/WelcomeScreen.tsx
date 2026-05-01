@@ -2,6 +2,7 @@ import React, { useCallback, useEffect, useRef } from 'react';
 import { Alert, StyleSheet, View } from 'react-native';
 
 import MaskedView from '@react-native-masked-view/masked-view';
+import { TimeToFullDisplay } from '@sentry/react-native';
 import Animated, {
   cancelAnimation,
   Easing,
@@ -208,6 +209,8 @@ export function WelcomeScreen() {
 
   return (
     <Box style={styles.container} testID="welcome-screen" backgroundColor={colors.white}>
+      {/* Welcome screen is interactive as soon as it renders — no async data load to wait on. */}
+      <TimeToFullDisplay record />
       <RainbowsBackground shouldAnimate={shouldAnimateRainbows} />
       <Animated.View style={[contentStyle, styles.contentContainer]}>
         {IS_ANDROID && IS_TEST ? (
