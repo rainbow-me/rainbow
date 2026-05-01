@@ -1,10 +1,17 @@
 // eslint-disable-next-line import/no-extraneous-dependencies
+const path = require('path');
 // @ts-ignore — types ship only via `exports` field, which moduleResolution:"node" ignores.
 const exclusionList = require('metro-config/private/defaults/exclusionList').default;
 // @ts-ignore — types ship in dist/ but only via `exports` field, which moduleResolution:"node" ignores. Resolvable after migrating to moduleResolution:"bundler".
 const { mergeConfig, getDefaultConfig } = require('@react-native/metro-config');
 const { withSentryConfig } = require('@sentry/react-native/metro');
 const { wrapWithReanimatedMetroConfig } = require('react-native-reanimated/metro-config');
+
+// `require.resolve('@reservoir0x/reservoir-sdk/dist/index.js')` fails on
+// Node 22+ because the package's `exports` field doesn't expose subpaths
+// (or even `./package.json`) — ERR_PACKAGE_PATH_NOT_EXPORTED. Resolve from
+// the workspace root instead, which is the same directory as this config.
+const RESERVOIR_SDK_CJS = path.join(__dirname, 'node_modules/@reservoir0x/reservoir-sdk/dist/index.js');
 // Block list is a function that takes an array of regexes and combines
 // them with the default exclusion list to return a single regex.
 const blockList = exclusionList([
@@ -52,10 +59,7 @@ const rainbowConfig = {
       // undefined → app crashes on launch from `initializeReservoirClient`).
       // Force-resolve to the CJS file (its `main` field) which works.
       if (moduleName === '@reservoir0x/reservoir-sdk') {
-        return {
-          filePath: require.resolve('@reservoir0x/reservoir-sdk/dist/index.js'),
-          type: 'sourceFile',
-        };
+        return { filePath: RESERVOIR_SDK_CJS, type: 'sourceFile' };
       }
 
       try {
