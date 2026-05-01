@@ -20,10 +20,15 @@ LOG_CAPTURE_PID=""
 ANVIL_START_COUNT=0
 TIMINGS_DIR="${E2E_TIMINGS_DIR:-.cache/e2e-timings}"
 TIMINGS_WRITE_FILE=""
+TIMINGS_ARTIFACT_FILE=""
 DEFAULT_TEST_WEIGHT=60
+TIMING_WEIGHT_FIELD=3
+TIMING_PASS_WEIGHT_FIELD=5
+TIMING_RETRY_WEIGHT_FIELD=6
 
-learned_test_weight() {
+latest_timing_field() {
   local test_file=$1
+  local field=$2
   local timing_files=()
 
   while IFS= read -r timing_file; do
@@ -34,51 +39,97 @@ learned_test_weight() {
     return
   fi
 
-  awk -F $'\t' -v platform="$PLATFORM" -v test_file="$test_file" '
+  awk -F $'\t' -v platform="$PLATFORM" -v test_file="$test_file" -v field="$field" '
     $1 == platform && $2 == test_file && $3 ~ /^[0-9]+$/ && $4 ~ /^[0-9]+$/ && $4 >= latest {
       latest = $4
-      weight = $3
+      value = $field
     }
     END {
-      if (weight != "") print weight
+      if (value ~ /^[0-9]+$/) print value
     }
   ' "${timing_files[@]}"
 }
 
-test_weight() {
+resolve_test_weight() {
   local weight
-  weight=$(learned_test_weight "$1")
+  weight=$(latest_timing_field "$1" "$TIMING_WEIGHT_FIELD")
   echo "${weight:-$DEFAULT_TEST_WEIGHT}"
+}
+
+smooth_timing() {
+  local previous=$1
+  local observed=$2
+
+  if [[ -n "$previous" ]]; then
+    echo $(((previous * 3 + observed + 2) / 4))
+  else
+    echo "$observed"
+  fi
 }
 
 record_test_timing() {
   local test_file=$1
-  local duration=$2
-  local previous_weight
+  local total_duration=$2
+  local pass_duration=$3
+  local attempts=$4
+  local previous_pass_weight
+  local previous_retry_weight
+  local retry_duration
+  local bounded_retry_duration
+  local next_pass_weight
+  local next_retry_weight
   local next_weight
+  local timing_row
 
   if [[ -z "$TIMINGS_WRITE_FILE" ]]; then
     return
   fi
 
-  if (( duration < 1 )); then
-    duration=1
+  if (( total_duration < 1 )); then
+    total_duration=1
   fi
 
-  previous_weight=$(learned_test_weight "$test_file")
-  if [[ -n "$previous_weight" ]]; then
-    next_weight=$(((previous_weight * 3 + duration + 2) / 4))
-  else
-    next_weight=$duration
+  if (( pass_duration < 1 )); then
+    pass_duration=1
   fi
+
+  previous_pass_weight=$(latest_timing_field "$test_file" "$TIMING_PASS_WEIGHT_FIELD")
+  previous_retry_weight=$(latest_timing_field "$test_file" "$TIMING_RETRY_WEIGHT_FIELD")
+
+  if [[ -z "$previous_retry_weight" ]]; then
+    previous_retry_weight=0
+  fi
+
+  if (( attempts > 1 )); then
+    retry_duration=$((total_duration - pass_duration))
+  else
+    retry_duration=0
+  fi
+
+  bounded_retry_duration=$retry_duration
+  # A retry is real cost signal, but one failure should not become stable base duration.
+  if (( bounded_retry_duration > pass_duration )); then
+    bounded_retry_duration=$pass_duration
+  fi
+
+  next_pass_weight=$(smooth_timing "$previous_pass_weight" "$pass_duration")
+  next_retry_weight=$(smooth_timing "$previous_retry_weight" "$bounded_retry_duration")
+  next_weight=$((next_pass_weight + next_retry_weight))
+  timing_row=$(printf '%s\t%s\t%d\t%d\t%d\t%d\t%d\t%d\t%d' "$PLATFORM" "$test_file" "$next_weight" "$(date +%s)" "$next_pass_weight" "$next_retry_weight" "$pass_duration" "$total_duration" "$attempts")
 
   mkdir -p "$(dirname "$TIMINGS_WRITE_FILE")"
-  printf '%s\t%s\t%d\t%d\n' "$PLATFORM" "$test_file" "$next_weight" "$(date +%s)" >> "$TIMINGS_WRITE_FILE"
+  printf '%s\n' "$timing_row" >> "$TIMINGS_WRITE_FILE"
+
+  if [[ -n "$TIMINGS_ARTIFACT_FILE" ]]; then
+    mkdir -p "$(dirname "$TIMINGS_ARTIFACT_FILE")"
+    printf '%s\n' "$timing_row" >> "$TIMINGS_ARTIFACT_FILE"
+  fi
 }
 
 assign_shards_by_weight() {
   local weighted_tests=()
   local shard_weights=()
+  local shard_tests=()
   local shard
 
   if [[ ${#ALL_TESTS[@]} -eq 0 ]]; then
@@ -87,10 +138,11 @@ assign_shards_by_weight() {
 
   for ((shard = 0; shard < SHARD_TOTAL; shard++)); do
     shard_weights[$shard]=0
+    shard_tests[$shard]=""
   done
 
   for FILE in "${ALL_TESTS[@]}"; do
-    weighted_tests+=("$(printf '%010d\t%s' "$(test_weight "$FILE")" "$FILE")")
+    weighted_tests+=("$(printf '%010d\t%s' "$(resolve_test_weight "$FILE")" "$FILE")")
   done
 
   while IFS=$'\t' read -r WEIGHT FILE; do
@@ -103,10 +155,29 @@ assign_shards_by_weight() {
     done
 
     shard_weights[$lightest_shard]=$((shard_weights[$lightest_shard] + WEIGHT))
+    shard_tests[$lightest_shard]+="$WEIGHT"$'\t'"$FILE"$'\n'
     if (( lightest_shard == SHARD_INDEX )); then
       TEST_FILES+=("$FILE")
     fi
   done < <(printf '%s\n' "${weighted_tests[@]}" | sort -rn)
+
+  if [[ -n "$PLATFORM" ]]; then
+    local plan_file="$ARTIFACTS_FOLDER/sharding/plan.tsv"
+    mkdir -p "$(dirname "$plan_file")"
+    : > "$plan_file"
+
+    echo "🧮 E2E shard weight plan:"
+    for ((shard = 0; shard < SHARD_TOTAL; shard++)); do
+      echo " - shard $((shard + 1))/$SHARD_TOTAL: ${shard_weights[$shard]}s predicted"
+      while IFS=$'\t' read -r WEIGHT FILE; do
+        if [[ -z "${WEIGHT:-}" || -z "${FILE:-}" ]]; then
+          continue
+        fi
+        echo "   - ${WEIGHT}s $FILE"
+        printf '%s\t%d\t%d\t%d\t%s\n' "$PLATFORM" "$((shard + 1))" "$SHARD_TOTAL" "$WEIGHT" "$FILE" >> "$plan_file"
+      done <<< "${shard_tests[$shard]}"
+    done
+  fi
 }
 
 stop_log_capture() {
@@ -317,6 +388,7 @@ done
 
 if [[ -n "$PLATFORM" ]]; then
   TIMINGS_WRITE_FILE="${E2E_TIMINGS_WRITE_FILE:-$TIMINGS_DIR/shards/$PLATFORM/$((SHARD_INDEX + 1))/timings.tsv}"
+  TIMINGS_ARTIFACT_FILE="$ARTIFACTS_FOLDER/sharding/timings.tsv"
   mkdir -p "$(dirname "$TIMINGS_WRITE_FILE")"
   touch "$TIMINGS_WRITE_FILE"
 fi
@@ -354,6 +426,8 @@ for TEST_FILE in "${TEST_FILES[@]}"; do
 
   SUCCESS=false
   SHOULD_RECORD=false
+  PASSED_ATTEMPT=0
+  PASSED_ATTEMPT_DURATION=0
   TEST_STARTED_AT=$(date +%s)
   for ATTEMPT in $(seq 1 "$MAX_ATTEMPTS"); do
     echo "🔁 Attempt $ATTEMPT for $TEST_NAME"
@@ -388,6 +462,8 @@ for TEST_FILE in "${TEST_FILES[@]}"; do
       END_TIME=$(date +%s)
       DURATION=$((END_TIME - START_TIME))
       SUCCESS=true
+      PASSED_ATTEMPT=$ATTEMPT
+      PASSED_ATTEMPT_DURATION=$DURATION
       echo "✅ Passed: $TEST_NAME (${DURATION}s, $ATTEMPT attempt(s))"
       echo
 
@@ -426,7 +502,7 @@ for TEST_FILE in "${TEST_FILES[@]}"; do
     echo
     EXIT_CODE=1
   else
-    record_test_timing "$TEST_FILE" "$(($(date +%s) - TEST_STARTED_AT))"
+    record_test_timing "$TEST_FILE" "$(($(date +%s) - TEST_STARTED_AT))" "$PASSED_ATTEMPT_DURATION" "$PASSED_ATTEMPT"
   fi
 done
 
