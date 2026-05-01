@@ -3,14 +3,10 @@ import { SENTRY_ENDPOINT, SENTRY_ENVIRONMENT } from 'react-native-dotenv';
 import VersionNumber from 'react-native-version-number';
 
 import { analytics } from '@/analytics';
-import { event } from '@/analytics/event';
+import { event, PERFORMANCE_TRACKING_VERSION } from '@/analytics/event';
 import { IS_DEV, IS_TEST, IS_TEST_FLIGHT } from '@/env';
 import { RainbowFetchError } from '@/framework/data/http/rainbowFetch';
 import { logger, RainbowError } from '@/logger';
-
-// Bumped whenever the source of perf data changes (lib → in-house → Sentry).
-// Lets Amplitude queries split old vs new data series on app upgrades.
-const PERFORMANCE_TRACKING_VERSION = 4;
 
 /**
  * React Navigation integration. Drives Sentry's app-start + TTID tracking:

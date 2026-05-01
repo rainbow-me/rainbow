@@ -27,6 +27,13 @@ import { type CrosschainQuote, type Quote, type QuoteError } from '@rainbow-me/s
 import { type AnyPerformanceLog, type Screen } from '../state/performance/operations';
 
 /**
+ * Bumped whenever the source of perf data changes (lib → in-house → Sentry).
+ * Lets Amplitude queries split old vs new data series on app upgrades.
+ * Currently sourced from Sentry's app-start instrumentation.
+ */
+export const PERFORMANCE_TRACKING_VERSION = 4;
+
+/**
  * All events, used by `analytics.track()`
  */
 export const event = {
@@ -234,11 +241,15 @@ export const event = {
   walletCreateFailed: 'wallet_create.failed',
   walletInitializationFailed: 'wallet_initialization.failed',
 
-  // performance — emitted from sentry.ts's beforeSendTransaction handler when
-  // Sentry's auto-instrumented app-start transaction lands. Same Amplitude event
-  // name we shipped before the in-house tracker was removed; values now come from
-  // Sentry's native app-start capture rather than our own timer module.
+  // performance
+  // - performanceReport: emitted from sentry.ts's beforeSendTransaction handler
+  //   when Sentry's auto-instrumented app-start transaction lands. Values come
+  //   from Sentry's native app-start capture.
+  // - performanceInitializeWallet: emitted from initializeWallet's success path,
+  //   wrapped in a Sentry.startSpan('wallet.initialize') so the timing is also
+  //   visible as a span in Sentry traces.
   performanceReport: 'performance.report',
+  performanceInitializeWallet: 'Performance Wallet Initialize Time',
 
   // discover screen
   timeSpentOnDiscoverScreen: 'Time spent on the Discover screen',
@@ -977,6 +988,11 @@ export type EventProperties = {
     segments: Record<string, number>;
     performanceTrackingVersion: number;
     data: { startType: 'cold' | 'warm' | 'unknown' };
+  };
+  [event.performanceInitializeWallet]: {
+    walletStatus: string;
+    durationInMs: number;
+    performanceTrackingVersion: number;
   };
 
   // discover screen

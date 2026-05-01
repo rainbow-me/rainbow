@@ -3,7 +3,7 @@ import { isNil } from 'lodash';
 import { type Address } from 'viem';
 
 import { analytics } from '@/analytics';
-import { event } from '@/analytics/event';
+import { event, PERFORMANCE_TRACKING_VERSION } from '@/analytics/event';
 import { getWalletContext } from '@/analytics/getWalletContext';
 import { getOrCreateDeviceId } from '@/analytics/utils';
 import { WrappedAlert as Alert } from '@/helpers/alert';
@@ -64,7 +64,13 @@ export const initializeWallet = async (props: InitializeWalletParams = {}) => {
     userPin,
   } = props;
 
+  // Sentry span gives us trace visibility; we keep our own monotonic timer for
+  // the Amplitude event below since `Sentry.startSpan`'s callback duration
+  // isn't readily reachable from JS without the wrapper API.
+  const initWalletSpan = Sentry.startInactiveSpan({ name: 'initializeWallet', op: 'wallet.initialize' });
+  const initStartMs = performance.now();
   let walletStatus: WalletStatus = 'unknown';
+  let succeeded = false;
   try {
     logger.debug('[initializeWallet]: Start wallet setup');
 
@@ -168,6 +174,7 @@ export const initializeWallet = async (props: InitializeWalletParams = {}) => {
     setWalletReady();
     logger.debug('[initializeWallet]: 💰 Wallet initialized');
 
+    succeeded = true;
     return walletAddress;
   } catch (e) {
     const error = ensureError(e);
@@ -200,5 +207,17 @@ export const initializeWallet = async (props: InitializeWalletParams = {}) => {
     Alert.alert(i18n.t(i18n.l.wallet.something_went_wrong_importing));
     setWalletReady();
     return null;
+  } finally {
+    // Only fire on completed success — early-return cancellations and the catch
+    // branch leave `succeeded` false so they don't pollute the metric. Same
+    // semantic as the prior `finishMeasuring` / `clearMeasure` split.
+    if (succeeded) {
+      analytics.track(event.performanceInitializeWallet, {
+        walletStatus,
+        durationInMs: performance.now() - initStartMs,
+        performanceTrackingVersion: PERFORMANCE_TRACKING_VERSION,
+      });
+    }
+    initWalletSpan?.end();
   }
 };
