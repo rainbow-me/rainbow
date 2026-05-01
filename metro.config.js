@@ -45,6 +45,19 @@ const rainbowConfig = {
   resolver: {
     blockList,
     resolveRequest: (context, moduleName, platform) => {
+      // RN 0.81's Metro respects package.json `exports`, which routes static
+      // `import` statements to the `.import` condition. `@reservoir0x/reservoir-sdk`
+      // ships a Parcel-bundled `.mjs` there whose mangled named exports come
+      // through as `undefined` once Hermes loads the bundle (`createClient` is
+      // undefined → app crashes on launch from `initializeReservoirClient`).
+      // Force-resolve to the CJS file (its `main` field) which works.
+      if (moduleName === '@reservoir0x/reservoir-sdk') {
+        return {
+          filePath: require.resolve('@reservoir0x/reservoir-sdk/dist/index.js'),
+          type: 'sourceFile',
+        };
+      }
+
       try {
         return context.resolveRequest(context, moduleName, platform);
       } catch (error) {
