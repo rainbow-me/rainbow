@@ -234,10 +234,6 @@ export const event = {
   walletCreateFailed: 'wallet_create.failed',
   walletInitializationFailed: 'wallet_initialization.failed',
 
-  // performance
-  performanceReport: 'performance.report',
-  performanceInitializeWallet: 'Performance Wallet Initialize Time',
-
   // discover screen
   timeSpentOnDiscoverScreen: 'Time spent on the Discover screen',
 
@@ -966,20 +962,6 @@ export type EventProperties = {
   [event.walletInitializationFailed]: {
     error: string;
     walletStatus: string;
-  };
-
-  // performance
-  [event.performanceInitializeWallet]: {
-    walletStatus: string;
-    durationInMs: number;
-    performanceTrackingVersion: number;
-  };
-  [event.performanceReport]: {
-    reportName: string;
-    segments: Record<string, number>;
-    durationInMs: number;
-    performanceTrackingVersion: number;
-    data: Record<string, unknown>;
   };
 
   // discover screen

@@ -22,7 +22,6 @@ import me.rainbow.NativeModules.RNTextAnimatorPackage.RNTextAnimatorPackage
 import me.rainbow.NativeModules.RNZoomableButton.RNZoomableButtonPackage
 import me.rainbow.NativeModules.NavbarHeight.NavbarHeightPackage
 import me.rainbow.NativeModules.AppInstallInfo.AppInstallInfoPackage
-import com.shopify.reactnativeperformance.ReactNativePerformance;
 
 class MainApplication : Application(), ReactApplication {
     override val reactNativeHost: ReactNativeHost = ReactNativeHostWrapper(this, object : DefaultReactNativeHost(this) {
@@ -53,7 +52,6 @@ class MainApplication : Application(), ReactApplication {
     })
 
     override fun onCreate() {
-        ReactNativePerformance.onAppStarted();
         super.onCreate()
         appContext = this
         SoLoader.init(this, OpenSourceMergedSoMapping)

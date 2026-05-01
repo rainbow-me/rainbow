@@ -18,7 +18,6 @@ import { time } from '@/utils/time';
 import { ensureValidHex } from '../../handlers/web3';
 import runMigrations from '../../model/migrations';
 import { createWallet, walletInit, type InitializeWalletParams } from '../../model/wallet';
-import { PerformanceTracking } from '../../performance/tracking';
 import { settingsLoadNetwork } from '../../redux/settings';
 import { loadSettingsData } from '../settings/loadSettingsData';
 
@@ -67,7 +66,6 @@ export const initializeWallet = async (props: InitializeWalletParams = {}) => {
 
   let walletStatus: WalletStatus = 'unknown';
   try {
-    PerformanceTracking.startMeasuring(event.performanceInitializeWallet);
     logger.debug('[initializeWallet]: Start wallet setup');
 
     if (shouldCreateFirstWallet) await createWallet();
@@ -170,10 +168,6 @@ export const initializeWallet = async (props: InitializeWalletParams = {}) => {
     setWalletReady();
     logger.debug('[initializeWallet]: 💰 Wallet initialized');
 
-    PerformanceTracking.finishMeasuring(event.performanceInitializeWallet, {
-      walletStatus,
-    });
-
     return walletAddress;
   } catch (e) {
     const error = ensureError(e);
@@ -183,7 +177,6 @@ export const initializeWallet = async (props: InitializeWalletParams = {}) => {
       return null;
     }
 
-    PerformanceTracking.clearMeasure(event.performanceInitializeWallet);
     logger.error(new RainbowError('[initializeWallet]: Error while initializing wallet', error), {
       walletStatus,
     });

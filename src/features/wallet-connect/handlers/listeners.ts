@@ -5,7 +5,6 @@ import { IS_DEV } from '@/env';
 import { events } from '@/handlers/appEvents';
 import { logger, RainbowError } from '@/logger';
 import { getFCMToken } from '@/notifications/tokens';
-import { PerformanceReports, PerformanceReportSegments, PerformanceTracking } from '@/performance/tracking';
 
 import { getWalletKitClient } from '../services/client';
 import { setSyncWalletKitClient } from '../services/syncClient';
@@ -13,9 +12,7 @@ import { onSessionProposal } from './onSessionProposal';
 import { onSessionRequest } from './onSessionRequest';
 
 export async function initListeners() {
-  PerformanceTracking.startReportSegment(PerformanceReports.appStartup, PerformanceReportSegments.appStartup.initWalletConnect);
   const client = await getWalletKitClient();
-  PerformanceTracking.finishReportSegment(PerformanceReports.appStartup, PerformanceReportSegments.appStartup.initWalletConnect);
 
   setSyncWalletKitClient(client);
 

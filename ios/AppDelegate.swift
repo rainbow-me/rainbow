@@ -6,7 +6,6 @@ import React
 import ReactAppDependencyProvider
 import React_RCTAppDelegate
 import Sentry
-import ReactNativePerformance
 import UserNotifications
 
 @main
@@ -20,8 +19,6 @@ class AppDelegate: ExpoAppDelegate, UNUserNotificationCenterDelegate {
 
   override func application(_ application: UIApplication,
                    didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey: Any]?) -> Bool {
-
-    ReactNativePerformance.onAppStarted()
 
 #if RAINBOW_INTERNALS_ENABLED
     let internalsStatus = "enabled"

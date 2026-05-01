@@ -9,11 +9,10 @@ import { getAppIcon } from '@/handlers/localstorage/globalSettings';
 import { logger, RainbowError } from '@/logger';
 import { onHandleStatusBar } from '@/navigation/onNavigationStateChange';
 
-import { PerformanceReports, PerformanceReportSegments, PerformanceTracking } from '../performance/tracking';
-
 const { RainbowSplashScreen } = NativeModules;
 
-let alreadyLoggedPerformance = false;
+// Tracks whether the once-only first-hide block has run (poolboy easter-egg sound).
+let firstHide = false;
 let splashScreenHidden = false;
 
 export const isSplashScreenHidden = () => splashScreenHidden;
@@ -38,10 +37,8 @@ export const hideSplashScreen = async () => {
       });
     }
 
-    if (!alreadyLoggedPerformance) {
-      alreadyLoggedPerformance = true;
-      PerformanceTracking.logReportSegmentRelative(PerformanceReports.appStartup, PerformanceReportSegments.appStartup.hideSplashScreen);
-
+    if (!firstHide) {
+      firstHide = true;
       // need to load setting straight from storage, redux isnt ready yet
       const appIcon = (await getAppIcon()) as AppIconKey;
       if (appIcon === 'poolboy') {

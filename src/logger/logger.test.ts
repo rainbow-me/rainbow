@@ -11,6 +11,7 @@ jest.mock('@sentry/react-native', () => ({
   captureException: jest.fn(),
   captureMessage: jest.fn(),
   httpClientIntegration: jest.fn(),
+  reactNavigationIntegration: jest.fn(() => ({ registerNavigationContainer: jest.fn() })),
   Severity: {
     Debug: 'debug',
     Info: 'info',

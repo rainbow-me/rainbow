@@ -25,6 +25,12 @@ jest.mock('@rudderstack/rudder-sdk-react-native', () => ({
 
 jest.mock('@sentry/react-native', () => ({
   captureException: () => null,
+  httpClientIntegration: () => ({ name: 'HttpClient', setupOnce: () => undefined }),
+  reactNavigationIntegration: () => ({
+    name: 'ReactNavigation',
+    setupOnce: () => undefined,
+    registerNavigationContainer: () => undefined,
+  }),
 }));
 
 jest.mock('react-native-keychain', () => ({

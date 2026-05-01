@@ -2,9 +2,19 @@ import * as Sentry from '@sentry/react-native';
 import { SENTRY_ENDPOINT, SENTRY_ENVIRONMENT } from 'react-native-dotenv';
 import VersionNumber from 'react-native-version-number';
 
-import { IS_TEST, IS_TEST_FLIGHT } from '@/env';
+import { IS_DEV, IS_TEST, IS_TEST_FLIGHT } from '@/env';
 import { RainbowFetchError } from '@/framework/data/http/rainbowFetch';
 import { logger, RainbowError } from '@/logger';
+
+/**
+ * React Navigation integration. Drives Sentry's app-start + TTID tracking:
+ * - app-start cold/warm comes from native hooks once `enableAutoPerformanceTracing` is on.
+ * - TTID per screen needs the navigation ref registered via `registerNavigationContainer`,
+ *   wired from the `NavigationContainer.onReady` callback.
+ */
+export const sentryNavigationIntegration = Sentry.reactNavigationIntegration({
+  enableTimeToInitialDisplay: true,
+});
 
 // Sentry tests each regex against these candidate strings:
 //   1. event.message
@@ -61,13 +71,18 @@ export const defaultOptions: Sentry.ReactNativeOptions = {
 
   dsn: SENTRY_ENDPOINT,
   enableAppHangTracking: false,
-  enableAutoPerformanceTracing: false,
+  // Auto perf tracing enables native app-start (cold/warm), native frames tracking,
+  // and the React Navigation transaction lifecycle the integration above hooks into.
+  enableAutoPerformanceTracing: true,
   enableAutoSessionTracking: false,
   environment: IS_TEST_FLIGHT ? 'Testflight' : SENTRY_ENVIRONMENT,
   ignoreErrors: IGNORED_ERRORS,
-  integrations: [Sentry.httpClientIntegration()], // http client integration will help us see payload / response from errored out requests to better understand the issue
+  integrations: [Sentry.httpClientIntegration(), sentryNavigationIntegration],
   maxBreadcrumbs: 10,
-  tracesSampleRate: 0,
+  // Sample every transaction in dev/staging so the prototype is easy to inspect.
+  // Tune down for prod once we know what we want to keep — full sampling on a wallet
+  // app's traffic is expensive on the Sentry side.
+  tracesSampleRate: IS_DEV || SENTRY_ENVIRONMENT === 'Staging' ? 1.0 : 0.1,
 };
 
 export function initSentry() {
