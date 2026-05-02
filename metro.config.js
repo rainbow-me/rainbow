@@ -7,6 +7,26 @@ const { mergeConfig, getDefaultConfig } = require('@react-native/metro-config');
 const { withSentryConfig } = require('@sentry/react-native/metro');
 const { wrapWithReanimatedMetroConfig } = require('react-native-reanimated/metro-config');
 
+// RN 0.81's Metro routes static `import` statements to packages' `import`
+// condition (the .mjs entry). For packages that ship Parcel-mangled ESM
+// there, named exports come through as `undefined` once Hermes loads the
+// release bundle and the app crashes on launch. Force these to their CJS
+// `main` entry, which works.
+//
+// Detection: app crashes on launch with `Cannot read property '<name>' of
+// undefined` (or `Cannot read property 'prototype' of undefined` if a class
+// inheritance falls through). Add the package here when found.
+const FORCE_CJS_PACKAGES = {
+  '@reservoir0x/reservoir-sdk': path.join(__dirname, 'node_modules/@reservoir0x/reservoir-sdk/dist/index.js'),
+  // `viem` and `viem/chains` are required transitively by @reservoir0x/reservoir-sdk's
+  // CJS file. viem's `_esm/*` is a barrel of named re-exports; some sub-files use
+  // `class X extends BaseError` patterns whose ESM-imported parent resolves to
+  // `undefined` in the Hermes release bundle, producing
+  // `Cannot read property 'prototype' of undefined` on first reservoir use.
+  'viem': path.join(__dirname, 'node_modules/viem/_cjs/index.js'),
+  'viem/chains': path.join(__dirname, 'node_modules/viem/_cjs/chains/index.js'),
+};
+
 // Block list is a function that takes an array of regexes and combines
 // them with the default exclusion list to return a single regex.
 const blockList = exclusionList([
@@ -46,17 +66,12 @@ if (process.env.CI) {
 const rainbowConfig = {
   resolver: {
     blockList,
-    // RN 0.81's Metro defaults `unstable_enablePackageExports` to true, which
-    // routes static `import` statements to packages' `import` condition. Many
-    // npm libs ship ESM there (often Parcel-mangled, e.g. @reservoir0x/reservoir-sdk,
-    // and any transitive `class X extends Y` deps); when bundled for Hermes,
-    // their named exports come through as `undefined` and the app crashes on
-    // launch (`Cannot read property 'createClient' of undefined`,
-    // `Cannot read property 'prototype' of undefined`). Disabling package exports
-    // makes Metro fall back to the `main` field (CJS), matching what RN 0.79
-    // effectively did and what packages historically test against.
-    unstable_enablePackageExports: false,
     resolveRequest: (context, moduleName, platform) => {
+      const cjsOverride = FORCE_CJS_PACKAGES[moduleName];
+      if (cjsOverride) {
+        return { filePath: cjsOverride, type: 'sourceFile' };
+      }
+
       try {
         return context.resolveRequest(context, moduleName, platform);
       } catch (error) {
