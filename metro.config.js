@@ -7,11 +7,6 @@ const { mergeConfig, getDefaultConfig } = require('@react-native/metro-config');
 const { withSentryConfig } = require('@sentry/react-native/metro');
 const { wrapWithReanimatedMetroConfig } = require('react-native-reanimated/metro-config');
 
-// `require.resolve('@reservoir0x/reservoir-sdk/dist/index.js')` fails on
-// Node 22+ because the package's `exports` field doesn't expose subpaths
-// (or even `./package.json`) — ERR_PACKAGE_PATH_NOT_EXPORTED. Resolve from
-// the workspace root instead, which is the same directory as this config.
-const RESERVOIR_SDK_CJS = path.join(__dirname, 'node_modules/@reservoir0x/reservoir-sdk/dist/index.js');
 // Block list is a function that takes an array of regexes and combines
 // them with the default exclusion list to return a single regex.
 const blockList = exclusionList([
@@ -51,17 +46,17 @@ if (process.env.CI) {
 const rainbowConfig = {
   resolver: {
     blockList,
+    // RN 0.81's Metro defaults `unstable_enablePackageExports` to true, which
+    // routes static `import` statements to packages' `import` condition. Many
+    // npm libs ship ESM there (often Parcel-mangled, e.g. @reservoir0x/reservoir-sdk,
+    // and any transitive `class X extends Y` deps); when bundled for Hermes,
+    // their named exports come through as `undefined` and the app crashes on
+    // launch (`Cannot read property 'createClient' of undefined`,
+    // `Cannot read property 'prototype' of undefined`). Disabling package exports
+    // makes Metro fall back to the `main` field (CJS), matching what RN 0.79
+    // effectively did and what packages historically test against.
+    unstable_enablePackageExports: false,
     resolveRequest: (context, moduleName, platform) => {
-      // RN 0.81's Metro respects package.json `exports`, which routes static
-      // `import` statements to the `.import` condition. `@reservoir0x/reservoir-sdk`
-      // ships a Parcel-bundled `.mjs` there whose mangled named exports come
-      // through as `undefined` once Hermes loads the bundle (`createClient` is
-      // undefined → app crashes on launch from `initializeReservoirClient`).
-      // Force-resolve to the CJS file (its `main` field) which works.
-      if (moduleName === '@reservoir0x/reservoir-sdk') {
-        return { filePath: RESERVOIR_SDK_CJS, type: 'sourceFile' };
-      }
-
       try {
         return context.resolveRequest(context, moduleName, platform);
       } catch (error) {
