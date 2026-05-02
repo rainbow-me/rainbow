@@ -7,24 +7,22 @@ const { mergeConfig, getDefaultConfig } = require('@react-native/metro-config');
 const { withSentryConfig } = require('@sentry/react-native/metro');
 const { wrapWithReanimatedMetroConfig } = require('react-native-reanimated/metro-config');
 
-// RN 0.81's Metro routes static `import` statements to packages' `import`
-// condition (the .mjs / `_esm/*` entry). For some packages, the ESM build
-// re-exports named values through patterns (Parcel-mangled barrels, or
-// `class X extends Errors.BaseError`) whose imported bindings come through
-// as `undefined` once Hermes loads the release bundle, producing crashes
-// like `Cannot read property '<name>' of undefined` or
-// `Cannot read property 'prototype' of undefined` on launch.
+// RN 0.81's Metro applies package.json `exports` conditions per-package, but
+// it does not advertise `browser` on native platforms (only on `web`) and
+// always picks `import` over `default` for ESM-style imports. Several
+// packages publish their browser-safe build behind one of those conditions:
 //
-// Workaround: for the affected packages, force resolution through the
-// `default` condition (CJS) instead of the `import` condition.
+//  - `axios` gates `dist/browser/axios.cjs` behind the `browser` condition;
+//    without it Metro picks `dist/node/axios.cjs`, which `require()`s Node
+//    builtins (`http`, `https`, `url`, `stream`, `zlib`) and crashes on
+//    launch the moment reservoir-sdk's top-level `axios.create()` runs.
+//  - `@reservoir0x/reservoir-sdk` ships a Parcel-mangled `dist/index.mjs`
+//    whose named exports come through as `undefined` under Hermes.
 //
-//  - Single-file overrides: explicit module → file map (top-level imports
-//    that don't fit the `_esm`/`_cjs` mirror layout, like reservoir-sdk).
-//  - Mirror-layout packages: `viem`, `ox`, `abitype` all ship parallel
-//    `_esm/` and `_cjs/` (or `dist/esm/` and `dist/cjs/`) directories.
-//    Route every subpath of these packages to the CJS mirror.
+// For these packages we route to a known-good CJS entry directly.
 const FORCE_CJS_PACKAGES = {
   '@reservoir0x/reservoir-sdk': path.join(__dirname, 'node_modules/@reservoir0x/reservoir-sdk/dist/index.js'),
+  'axios': path.join(__dirname, 'node_modules/axios/dist/browser/axios.cjs'),
 };
 
 // Packages that ship ESM under `_esm/*` and CJS under `_cjs/*` (or analogous
