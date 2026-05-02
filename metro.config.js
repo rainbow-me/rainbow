@@ -8,24 +8,75 @@ const { withSentryConfig } = require('@sentry/react-native/metro');
 const { wrapWithReanimatedMetroConfig } = require('react-native-reanimated/metro-config');
 
 // RN 0.81's Metro routes static `import` statements to packages' `import`
-// condition (the .mjs entry). For packages that ship Parcel-mangled ESM
-// there, named exports come through as `undefined` once Hermes loads the
-// release bundle and the app crashes on launch. Force these to their CJS
-// `main` entry, which works.
+// condition (the .mjs / `_esm/*` entry). For some packages, the ESM build
+// re-exports named values through patterns (Parcel-mangled barrels, or
+// `class X extends Errors.BaseError`) whose imported bindings come through
+// as `undefined` once Hermes loads the release bundle, producing crashes
+// like `Cannot read property '<name>' of undefined` or
+// `Cannot read property 'prototype' of undefined` on launch.
 //
-// Detection: app crashes on launch with `Cannot read property '<name>' of
-// undefined` (or `Cannot read property 'prototype' of undefined` if a class
-// inheritance falls through). Add the package here when found.
+// Workaround: for the affected packages, force resolution through the
+// `default` condition (CJS) instead of the `import` condition.
+//
+//  - Single-file overrides: explicit module → file map (top-level imports
+//    that don't fit the `_esm`/`_cjs` mirror layout, like reservoir-sdk).
+//  - Mirror-layout packages: `viem`, `ox`, `abitype` all ship parallel
+//    `_esm/` and `_cjs/` (or `dist/esm/` and `dist/cjs/`) directories.
+//    Route every subpath of these packages to the CJS mirror.
 const FORCE_CJS_PACKAGES = {
   '@reservoir0x/reservoir-sdk': path.join(__dirname, 'node_modules/@reservoir0x/reservoir-sdk/dist/index.js'),
-  // `viem` and `viem/chains` are required transitively by @reservoir0x/reservoir-sdk's
-  // CJS file. viem's `_esm/*` is a barrel of named re-exports; some sub-files use
-  // `class X extends BaseError` patterns whose ESM-imported parent resolves to
-  // `undefined` in the Hermes release bundle, producing
-  // `Cannot read property 'prototype' of undefined` on first reservoir use.
-  'viem': path.join(__dirname, 'node_modules/viem/_cjs/index.js'),
-  'viem/chains': path.join(__dirname, 'node_modules/viem/_cjs/chains/index.js'),
 };
+
+// Packages that ship ESM under `_esm/*` and CJS under `_cjs/*` (or analogous
+// directories). For any subpath request to these packages, we redirect to the
+// package's CJS entry via its package.json `default` condition.
+const FORCE_CJS_PACKAGE_PREFIXES = ['viem', 'ox', 'abitype'];
+
+const cjsResolutionCache = new Map();
+
+function resolveToCjs(moduleName) {
+  if (cjsResolutionCache.has(moduleName)) return cjsResolutionCache.get(moduleName);
+
+  const parts = moduleName.split('/');
+  const pkgName = moduleName.startsWith('@') ? parts.slice(0, 2).join('/') : parts[0];
+  const subpath = moduleName.startsWith('@')
+    ? parts.length > 2
+      ? './' + parts.slice(2).join('/')
+      : '.'
+    : parts.length > 1
+      ? './' + parts.slice(1).join('/')
+      : '.';
+
+  let pkgJsonPath;
+  try {
+    pkgJsonPath = require.resolve(`${pkgName}/package.json`);
+  } catch {
+    cjsResolutionCache.set(moduleName, null);
+    return null;
+  }
+  const pkg = require(pkgJsonPath);
+
+  // Walk pkg.exports[subpath], take the `default` condition, fall back to `require`.
+  const entry = pkg.exports?.[subpath];
+  let target = null;
+  if (entry && typeof entry === 'object' && !Array.isArray(entry)) {
+    target = entry.default ?? entry.require ?? null;
+    if (target && typeof target === 'object') target = target.default ?? target.require ?? null;
+  } else if (typeof entry === 'string') {
+    target = entry;
+  }
+  if (!target && subpath === '.' && typeof pkg.main === 'string') target = pkg.main;
+  if (!target) {
+    cjsResolutionCache.set(moduleName, null);
+    return null;
+  }
+  // Bypass Node 22+ strict `exports` enforcement by joining against the
+  // package's resolved root directory rather than `require.resolve`-ing a
+  // subpath that may not be listed in `exports`.
+  const filePath = path.resolve(path.dirname(pkgJsonPath), target);
+  cjsResolutionCache.set(moduleName, filePath);
+  return filePath;
+}
 
 // Block list is a function that takes an array of regexes and combines
 // them with the default exclusion list to return a single regex.
@@ -70,6 +121,14 @@ const rainbowConfig = {
       const cjsOverride = FORCE_CJS_PACKAGES[moduleName];
       if (cjsOverride) {
         return { filePath: cjsOverride, type: 'sourceFile' };
+      }
+
+      const pkgName = moduleName.startsWith('@') ? moduleName.split('/').slice(0, 2).join('/') : moduleName.split('/')[0];
+      if (FORCE_CJS_PACKAGE_PREFIXES.includes(pkgName)) {
+        const cjsPath = resolveToCjs(moduleName);
+        if (cjsPath) {
+          return { filePath: cjsPath, type: 'sourceFile' };
+        }
       }
 
       try {
