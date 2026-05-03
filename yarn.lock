@@ -9642,6 +9642,7 @@ __metadata:
     ethereumjs-wallet: "npm:1.0.1"
     events: "npm:3.3.0"
     expo: "npm:53.0.20"
+    expo-file-system: "npm:18.1.11"
     expo-image-manipulator: "npm:13.1.7"
     expo-image-picker: "npm:17.0.0-canary-20250713-8f814f8"
     expo-linear-gradient: "npm:14.1.5"
@@ -14938,7 +14939,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"expo-file-system@npm:~18.1.11":
+"expo-file-system@npm:18.1.11, expo-file-system@npm:~18.1.11":
   version: 18.1.11
   resolution: "expo-file-system@npm:18.1.11"
   peerDependencies:

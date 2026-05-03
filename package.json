@@ -244,6 +244,7 @@
     "ethereumjs-wallet": "1.0.1",
     "events": "3.3.0",
     "expo": "53.0.20",
+    "expo-file-system": "18.1.11",
     "expo-image-manipulator": "13.1.7",
     "expo-image-picker": "17.0.0-canary-20250713-8f814f8",
     "expo-linear-gradient": "14.1.5",
