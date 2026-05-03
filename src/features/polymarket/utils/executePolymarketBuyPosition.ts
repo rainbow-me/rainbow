@@ -3,10 +3,11 @@ import { type Address } from 'viem';
 
 import { POLYMARKET_BUILDER_CODE } from '@/features/polymarket/constants';
 import { PolymarketBuyPositionError } from '@/features/polymarket/errors';
-import { getPolymarketClobClient, usePolymarketClients } from '@/features/polymarket/stores/derived/usePolymarketClients';
+import { getPolymarketClobClient } from '@/features/polymarket/stores/derived/usePolymarketClients';
 import { usePolymarketBalanceStore } from '@/features/polymarket/stores/polymarketBalanceStore';
 import { type PolymarketOrderResult, type SuccessfulOrderResult } from '@/features/polymarket/types';
 import { getPolymarketUsdcBalance, wrapUsdcAmountToPusd } from '@/features/polymarket/utils/collateral';
+import { getPolymarketWallet } from '@/features/polymarket/utils/polymarketWallet';
 import { ensureTradingApprovals } from '@/features/polymarket/utils/proxyWallet';
 import { RainbowError } from '@/logger';
 
@@ -67,17 +68,13 @@ export async function executePolymarketBuyPosition({
   negRisk,
   onStep,
 }: ExecutePolymarketBuyPositionParams): Promise<SuccessfulOrderResult> {
-  const proxyAddress = usePolymarketClients.getState().proxyAddress;
-  if (!proxyAddress) {
-    throw new RainbowError('[executePolymarketBuyPosition] No Polymarket proxy address available');
-  }
-
   onStep?.('preparing');
 
+  const { address: proxyAddress } = await getPolymarketWallet();
   const client = await getPolymarketClobClient();
 
   try {
-    await ensureTradingApprovals(proxyAddress);
+    await ensureTradingApprovals();
   } catch (error) {
     throw new PolymarketBuyPositionError(error, 'trading_approval_failed');
   }

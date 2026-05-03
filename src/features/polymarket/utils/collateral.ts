@@ -1,4 +1,4 @@
-import { OperationType, type RelayClient, type SafeTransaction } from '@polymarket/builder-relayer-client';
+import { OperationType, type SafeTransaction } from '@polymarket/builder-relayer-client';
 import { ethers, type BigNumber } from 'ethers';
 import { type Address } from 'viem';
 
@@ -8,7 +8,6 @@ import {
   POLYMARKET_COLLATERAL_ONRAMP_ADDRESS,
   POLYMARKET_PUSD_ADDRESS,
 } from '@/features/polymarket/constants';
-import { getPolymarketRelayClient } from '@/features/polymarket/stores/derived/usePolymarketClients';
 import { getMissingErc20ApprovalTransaction } from '@/features/polymarket/utils/erc20Approval';
 import { executeRelayTransaction } from '@/features/polymarket/utils/proxyWallet';
 import { refetchPolymarketBalance } from '@/features/polymarket/utils/refetchPolymarketStores';
@@ -91,21 +90,11 @@ export async function buildEnsureUsdcBalanceTransactions({
 export async function wrapUsdcAmountToPusd({ amount, proxyAddress }: { amount: BigNumber; proxyAddress: Address }): Promise<void> {
   if (amount.isZero()) return;
 
-  const client = await getPolymarketRelayClient();
-
-  await wrapUsdcToPusd({ client, proxyAddress, amount });
+  await wrapUsdcToPusd({ proxyAddress, amount });
   await refetchPolymarketBalance();
 }
 
-export async function wrapUsdcToPusd({
-  client,
-  proxyAddress,
-  amount,
-}: {
-  client: RelayClient;
-  proxyAddress: Address;
-  amount: BigNumber;
-}): Promise<void> {
+export async function wrapUsdcToPusd({ proxyAddress, amount }: { proxyAddress: Address; amount: BigNumber }): Promise<void> {
   const transactions = [
     ...(await getMissingErc20ApprovalTransaction({
       amount: amount,
@@ -117,5 +106,5 @@ export async function wrapUsdcToPusd({
     buildWrapUsdcToPusdTransaction(proxyAddress, amount),
   ];
 
-  await executeRelayTransaction(client, transactions, 'wrap USDC.e to pUSD');
+  await executeRelayTransaction(transactions, 'wrap USDC.e to pUSD');
 }

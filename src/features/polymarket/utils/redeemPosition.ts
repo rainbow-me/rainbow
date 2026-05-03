@@ -1,18 +1,17 @@
 import { Interface } from '@ethersproject/abi';
-import { OperationType, RelayerTransactionState, type RelayerTransaction, type SafeTransaction } from '@polymarket/builder-relayer-client';
+import { OperationType, type RelayerTransaction, type SafeTransaction } from '@polymarket/builder-relayer-client';
 import { zeroHash, type Address } from 'viem';
 
 import { analytics } from '@/analytics';
-import { ensureError, RainbowError } from '@/logger';
+import { ensureError } from '@/logger';
 
 import {
   POLYMARKET_CTF_COLLATERAL_ADAPTER_ADDRESS,
   POLYMARKET_NEG_RISK_CTF_COLLATERAL_ADAPTER_ADDRESS,
   POLYMARKET_PUSD_ADDRESS,
 } from '../constants';
-import { getPolymarketRelayClient } from '../stores/derived/usePolymarketClients';
 import { type PolymarketPosition } from '../types';
-import { deployProxyIfNeeded, getMissingCtfOperatorApprovalTransactions } from './proxyWallet';
+import { getMissingCtfOperatorApprovalTransactions, submitTradingWalletTransaction, waitForRelayerTransaction } from './proxyWallet';
 
 const ctfInterface = new Interface([
   'function redeemPositions(address collateralToken, bytes32 parentCollectionId, bytes32 conditionId, uint256[] indexSets)',
@@ -30,29 +29,18 @@ function buildCtfRedeemTransaction(conditionId: string, adapterAddress: Address)
 export async function redeemPosition(position: PolymarketPosition): Promise<RelayerTransaction | undefined> {
   let tx: RelayerTransaction | undefined;
   try {
-    const client = await getPolymarketRelayClient();
-    await deployProxyIfNeeded(client, position.proxyWallet);
-
     const adapterAddress = position.negativeRisk
       ? POLYMARKET_NEG_RISK_CTF_COLLATERAL_ADAPTER_ADDRESS
       : POLYMARKET_CTF_COLLATERAL_ADAPTER_ADDRESS;
     const redeemTx = buildCtfRedeemTransaction(position.conditionId, adapterAddress);
 
-    const approvalTransactions = await getMissingCtfOperatorApprovalTransactions(position.proxyWallet, adapterAddress);
-    const response = await client.execute([...approvalTransactions, redeemTx], 'Redeem position');
-    /**
-     * TODO: Patch the client to differentiate between failure and timeout
-     */
-    tx = await client.pollUntilState(
-      response.transactionID,
-      [RelayerTransactionState.STATE_CONFIRMED],
-      RelayerTransactionState.STATE_FAILED,
-      100
-    );
-
-    if (!tx) {
-      throw new RainbowError('[redeemPosition] Failed to redeem position');
-    }
+    const approvalTransactions = await getMissingCtfOperatorApprovalTransactions(adapterAddress);
+    const description = 'Redeem position';
+    const response = await submitTradingWalletTransaction({
+      transactions: [...approvalTransactions, redeemTx],
+      description,
+    });
+    tx = await waitForRelayerTransaction(response, description);
 
     trackRedeemPosition({ position, tx });
 

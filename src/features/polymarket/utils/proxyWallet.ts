@@ -1,19 +1,23 @@
-import { type Signer } from '@ethersproject/abstract-signer';
-import { OperationType, RelayClient, RelayerTransactionState, type SafeTransaction } from '@polymarket/builder-relayer-client';
-import { Wallet } from 'ethers';
+import {
+  OperationType,
+  RelayerTransactionState,
+  type RelayClient,
+  type RelayerTransaction,
+  type RelayerTransactionResponse,
+  type SafeTransaction,
+} from '@polymarket/builder-relayer-client';
 import { decodeFunctionResult, encodeFunctionData, erc1155Abi, maxUint256, type Address } from 'viem';
 
 import {
-  BUILDER_CONFIG,
   POLYMARKET_CTF_ADDRESS,
   POLYMARKET_CTF_EXCHANGE_ADDRESS,
   POLYMARKET_NEG_RISK_ADAPTER_ADDRESS,
   POLYMARKET_NEG_RISK_CTF_EXCHANGE_ADDRESS,
   POLYMARKET_PUSD_ADDRESS,
-  POLYMARKET_RELAYER_PROXY_URL,
 } from '@/features/polymarket/constants';
 import { getPolymarketRelayClient } from '@/features/polymarket/stores/derived/usePolymarketClients';
 import { getMissingErc20ApprovalTransaction } from '@/features/polymarket/utils/erc20Approval';
+import { getPolymarketWallet, type PolymarketWallet } from '@/features/polymarket/utils/polymarketWallet';
 import { requireHex } from '@/framework/core/evm/hex';
 import { getProvider } from '@/handlers/web3';
 import { logger, RainbowError } from '@/logger';
@@ -76,19 +80,122 @@ function buildCtfApproval(operator: Address): SafeTransaction {
 // Relay Execution
 // ============================================================================
 
-export async function executeRelayTransaction(client: RelayClient, transactions: SafeTransaction[], description: string): Promise<void> {
-  const response = await client.execute(transactions, description);
+export async function submitTradingWalletTransaction({
+  transactions,
+  description,
+}: {
+  transactions: SafeTransaction[];
+  description: string;
+}): Promise<RelayerTransactionResponse> {
+  console.log('[polymarket][relay] submitTradingWalletTransaction:start', {
+    description,
+    txCount: transactions.length,
+    transactions: transactions.map(t => ({ to: t.to, value: t.value, operation: t.operation, dataLength: t.data?.length })),
+  });
+  const wallet = await getPolymarketWallet();
+  console.log('[polymarket][relay] got wallet', { address: wallet.address });
+  const client = await getPolymarketRelayClient();
+  console.log('[polymarket][relay] got relay client');
+  await ensureWalletDeployed(client, wallet);
+  try {
+    const response = await wallet.executeBatch({ client, transactions, description });
+    console.log('[polymarket][relay] executeBatch:done', {
+      description,
+      state: response.state,
+      transactionHash: response.transactionHash,
+    });
+    return response;
+  } catch (error) {
+    console.log('[polymarket][relay] executeBatch:error', {
+      description,
+      error,
+      message: error instanceof Error ? error.message : String(error),
+      stack: error instanceof Error ? error.stack : undefined,
+      // Surface common HTTP error shapes (axios/fetch wrappers)
+      status: (error as { status?: unknown; response?: { status?: unknown } } | null)?.status,
+      responseStatus: (error as { response?: { status?: unknown } } | null)?.response?.status,
+      responseData: (error as { response?: { data?: unknown } } | null)?.response?.data,
+    });
+    throw error;
+  }
+}
 
+export async function ensureTradingWalletDeployed(): Promise<Address> {
+  const wallet = await getPolymarketWallet();
+  const client = await getPolymarketRelayClient();
+  await ensureWalletDeployed(client, wallet);
+  return wallet.address;
+}
+
+async function ensureWalletDeployed(client: RelayClient, wallet: PolymarketWallet): Promise<void> {
+  const isDeployed = await wallet.isDeployed(client);
+  console.log('[polymarket][relay] ensureWalletDeployed:isDeployed', { isDeployed, address: wallet.address });
+  if (isDeployed) return;
+
+  logger.debug('[polymarket] Deploying trading wallet');
+  console.log('[polymarket][relay] deploying wallet');
+  try {
+    const response = await wallet.deploy(client);
+    console.log('[polymarket][relay] deploy:response', { state: response.state, transactionHash: response.transactionHash });
+    await waitForRelayerTransaction(response, 'wallet deployment');
+    logger.debug('[polymarket] Trading wallet deployed');
+    console.log('[polymarket][relay] wallet deployed');
+  } catch (error) {
+    console.log('[polymarket][relay] deploy:error', {
+      error,
+      message: error instanceof Error ? error.message : String(error),
+      status: (error as { status?: unknown; response?: { status?: unknown } } | null)?.status,
+      responseStatus: (error as { response?: { status?: unknown } } | null)?.response?.status,
+      responseData: (error as { response?: { data?: unknown } } | null)?.response?.data,
+    });
+    throw error;
+  }
+}
+
+export async function waitForRelayerTransaction(response: RelayerTransactionResponse, description: string): Promise<RelayerTransaction> {
+  assertRelayerTransactionAccepted(response, description);
+
+  if (response.transactionHash) {
+    await awaitPolygonConfirmation(response.transactionHash);
+    const [transaction] = await response.getTransaction();
+    if (!transaction) {
+      throw new RainbowError(`[polymarket] ${description} confirmed but relayer returned no transaction`);
+    }
+    return transaction;
+  }
+
+  const transaction = await response.wait();
+  if (!transaction) {
+    throw new RainbowError(`[polymarket] ${description} did not confirm`);
+  }
+
+  if (transaction.state === RelayerTransactionState.STATE_FAILED) {
+    throw new RainbowError(`[polymarket] ${description} failed`);
+  }
+
+  if (transaction.state === RelayerTransactionState.STATE_INVALID) {
+    throw new RainbowError(`[polymarket] ${description} rejected as invalid`);
+  }
+
+  if (transaction.transactionHash) {
+    await awaitPolygonConfirmation(transaction.transactionHash);
+  }
+
+  return transaction;
+}
+
+export async function executeRelayTransaction(transactions: SafeTransaction[], description: string): Promise<void> {
+  const response = await submitTradingWalletTransaction({ transactions, description });
+  await waitForRelayerTransaction(response, description);
+}
+
+function assertRelayerTransactionAccepted(response: RelayerTransactionResponse, description: string): void {
   if (response.state === RelayerTransactionState.STATE_FAILED) {
     throw new RainbowError(`[polymarket] ${description} failed`);
   }
 
   if (response.state === RelayerTransactionState.STATE_INVALID) {
     throw new RainbowError(`[polymarket] ${description} rejected as invalid`);
-  }
-
-  if (response.transactionHash) {
-    await awaitPolygonConfirmation(response.transactionHash);
   }
 }
 
@@ -99,10 +206,10 @@ export async function executeRelayTransaction(client: RelayClient, transactions:
 /**
  * Checks all required approvals and returns transactions for any that are missing.
  */
-async function getMissingApprovalTransactions(proxyAddress: Address): Promise<SafeTransaction[]> {
+async function getMissingApprovalTransactions(walletAddress: Address): Promise<SafeTransaction[]> {
   const ctfApprovalChecks = await Promise.all(
     Object.values(APPROVAL_TARGETS).map(({ address, label }) =>
-      hasCtfApproval(proxyAddress, address).then(approved => ({ address, approved, label }))
+      hasCtfApproval(walletAddress, address).then(approved => ({ address, approved, label }))
     )
   );
 
@@ -110,7 +217,7 @@ async function getMissingApprovalTransactions(proxyAddress: Address): Promise<Sa
     Object.values(APPROVAL_TARGETS).map(({ address, label }) =>
       getMissingErc20ApprovalTransaction({
         amount: maxUint256,
-        owner: proxyAddress,
+        owner: walletAddress,
         provider: polygonProvider,
         spender: address,
         tokenAddress: POLYMARKET_PUSD_ADDRESS,
@@ -120,16 +227,14 @@ async function getMissingApprovalTransactions(proxyAddress: Address): Promise<Sa
 
   const transactions: SafeTransaction[] = [];
 
-  for (const { label, transactions: approvalTransactions } of erc20ApprovalTransactions) {
+  for (const { transactions: approvalTransactions } of erc20ApprovalTransactions) {
     if (approvalTransactions.length > 0) {
-      logger.debug(`[polymarket] Adding PUSD approval for ${label}`);
       transactions.push(...approvalTransactions);
     }
   }
 
-  for (const { label, address, approved } of ctfApprovalChecks) {
+  for (const { address, approved } of ctfApprovalChecks) {
     if (!approved) {
-      logger.debug(`[polymarket] Adding CTF approval for ${label}`);
       transactions.push(buildCtfApproval(address));
     }
   }
@@ -137,8 +242,9 @@ async function getMissingApprovalTransactions(proxyAddress: Address): Promise<Sa
   return transactions;
 }
 
-export async function getMissingCtfOperatorApprovalTransactions(proxyAddress: Address, operator: Address): Promise<SafeTransaction[]> {
-  if (await hasCtfApproval(proxyAddress, operator)) {
+export async function getMissingCtfOperatorApprovalTransactions(operator: Address): Promise<SafeTransaction[]> {
+  const wallet = await getPolymarketWallet();
+  if (await hasCtfApproval(wallet.address, operator)) {
     return [];
   }
 
@@ -146,71 +252,21 @@ export async function getMissingCtfOperatorApprovalTransactions(proxyAddress: Ad
   return [buildCtfApproval(operator)];
 }
 
-async function ensureAllTradingApprovals(client: RelayClient, proxyAddress: Address): Promise<void> {
-  const transactions = await getMissingApprovalTransactions(proxyAddress);
-
-  if (transactions.length === 0) {
-    return;
-  }
-
-  logger.debug(`[polymarket] Setting ${transactions.length} approval(s)`);
-  await executeRelayTransaction(client, transactions, 'trading approvals');
-  logger.debug('[polymarket] Approvals set successfully');
-}
-
-// ============================================================================
-// Deployment
-// ============================================================================
-
-export async function deployProxyIfNeeded(client: RelayClient, proxyAddress: Address): Promise<void> {
-  const isDeployed = await client.getDeployed(proxyAddress);
-  if (isDeployed) {
-    return;
-  }
-
-  logger.debug('[polymarket] Deploying proxy wallet');
-  const response = await client.deploy();
-
-  if (response.state === RelayerTransactionState.STATE_FAILED) {
-    throw new RainbowError('[polymarket] Proxy deployment failed');
-  }
-
-  if (response.state === RelayerTransactionState.STATE_INVALID) {
-    throw new RainbowError('[polymarket] Proxy deployment rejected as invalid');
-  }
-
-  if (response.transactionHash) {
-    await awaitPolygonConfirmation(response.transactionHash);
-  }
-
-  logger.debug('[polymarket] Proxy wallet deployed');
-}
-
 // ============================================================================
 // Public API
 // ============================================================================
 
-export function createPolymarketRelayClient(signer: Signer): RelayClient {
-  if (!(signer instanceof Wallet)) {
-    throw new RainbowError('[polymarket] Hardware wallets are not supported');
-  }
-
-  return new RelayClient(POLYMARKET_RELAYER_PROXY_URL, ChainId.polygon, signer, BUILDER_CONFIG);
-}
-
 /**
- * Ensures the proxy wallet is deployed.
+ * Ensures the active Polymarket trading wallet is deployed and has the
+ * approvals it needs to trade.
  */
-export async function ensureProxyWalletIsDeployed(proxyAddress: Address): Promise<void> {
-  const client = await getPolymarketRelayClient();
-  await deployProxyIfNeeded(client, proxyAddress);
-}
+export async function ensureTradingApprovals(): Promise<void> {
+  const walletAddress = await ensureTradingWalletDeployed();
+  const transactions = await getMissingApprovalTransactions(walletAddress);
 
-/**
- * Ensures trading approvals are set for the proxy wallet.
- */
-export async function ensureTradingApprovals(proxyAddress: Address): Promise<void> {
-  const client = await getPolymarketRelayClient();
-  await deployProxyIfNeeded(client, proxyAddress);
-  await ensureAllTradingApprovals(client, proxyAddress);
+  if (transactions.length === 0) return;
+
+  logger.debug(`[polymarket] Setting ${transactions.length} approval(s)`);
+  await executeRelayTransaction(transactions, 'trading approvals');
+  logger.debug('[polymarket] Approvals set successfully');
 }

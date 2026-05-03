@@ -14,13 +14,11 @@ import { type WithdrawalExecutionResult, type WithdrawalExecutorParams, type Wit
 import { time } from '@/utils/time';
 
 import { POLYGON_USDC_ADDRESS, POLYGON_USDC_DECIMALS } from './constants';
-import { getPolymarketRelayClient } from './stores/derived/usePolymarketClients';
 import { usePolymarketProxyAddress } from './stores/derived/usePolymarketProxyAddress';
 import { usePolymarketBalanceStore } from './stores/polymarketBalanceStore';
 import { buildEnsureUsdcBalanceTransactions } from './utils/collateral';
-import { awaitPolygonConfirmation } from './utils/confirmation';
 import { buildErc20ApprovalTransaction } from './utils/erc20Approval';
-import { ensureProxyWalletIsDeployed } from './utils/proxyWallet';
+import { ensureTradingWalletDeployed, submitTradingWalletTransaction, waitForRelayerTransaction } from './utils/proxyWallet';
 import { refetchPolymarketBalance } from './utils/refetchPolymarketStores';
 
 // ============ Config ========================================================= //
@@ -66,11 +64,7 @@ export const POLYMARKET_WITHDRAWAL_CONFIG = createWithdrawalConfig({
 // ============ Prerequisite =================================================== //
 
 async function ensureProxyReady(): Promise<void> {
-  const proxyAddress = usePolymarketProxyAddress.getState();
-  if (!proxyAddress) {
-    throw new Error('No proxy address available');
-  }
-  await ensureProxyWalletIsDeployed(proxyAddress);
+  await ensureTradingWalletDeployed();
 }
 
 // ============ Executor ======================================================= //
@@ -93,31 +87,24 @@ async function executePolymarketWithdrawal(params: WithdrawalExecutorParams): Pr
 
 async function executeSameChainWithdrawal(amount: string, recipient: Address): Promise<WithdrawalExecutionResult> {
   try {
-    const client = await getPolymarketRelayClient();
-    const proxyAddress = usePolymarketProxyAddress.getState();
-    if (!proxyAddress) {
-      return { error: 'No proxy address available', success: false };
-    }
+    const proxyAddress = await ensureTradingWalletDeployed();
 
     const rawAmount = parseUnits(amount, POLYGON_USDC_DECIMALS);
     const transactions: SafeTransaction[] = [
       ...(await buildEnsureUsdcBalanceTransactions({ amount: rawAmount, proxyAddress })),
       buildUsdcTransferTransaction({ amount: rawAmount, recipient }),
     ];
-    const response = await client.execute(transactions, 'Withdraw USDC.e to wallet');
+    const response = await submitTradingWalletTransaction({ transactions, description: 'Withdraw USDC.e to wallet' });
 
     if (response.state === RelayerTransactionState.STATE_FAILED || response.state === RelayerTransactionState.STATE_INVALID) {
       return { error: `Relayer rejected: ${response.state}`, success: false };
     }
 
-    const hash = response.transactionHash;
-    if (!hash) {
-      return { error: 'Relayer did not return transaction hash', success: false };
-    }
-
     return {
       success: true,
-      waitForConfirmation: () => awaitPolygonConfirmation(hash),
+      waitForConfirmation: async () => {
+        await waitForRelayerTransaction(response, 'Withdraw USDC.e to wallet');
+      },
     };
   } catch (error) {
     return handleExecutorError(error, 'same-chain');
@@ -132,11 +119,7 @@ async function executeQuotedWithdrawal(quote: WithdrawalSwapQuote): Promise<With
   }
 
   try {
-    const client = await getPolymarketRelayClient();
-    const proxyAddress = usePolymarketProxyAddress.getState();
-    if (!proxyAddress) {
-      return { error: 'No proxy address available', success: false };
-    }
+    const proxyAddress = await ensureTradingWalletDeployed();
 
     const sellAmount = BigNumber.from(quote.sellAmount);
     const transactions: SafeTransaction[] = await buildEnsureUsdcBalanceTransactions({ amount: sellAmount, proxyAddress });
@@ -153,20 +136,17 @@ async function executeQuotedWithdrawal(quote: WithdrawalSwapQuote): Promise<With
       value: quote.value?.toString() ?? '0',
     });
 
-    const response = await client.execute(transactions, 'Withdrawal via swaps');
+    const response = await submitTradingWalletTransaction({ transactions, description: 'Withdrawal via swaps' });
 
     if (response.state === RelayerTransactionState.STATE_FAILED || response.state === RelayerTransactionState.STATE_INVALID) {
       return { error: `Relayer rejected: ${response.state}`, success: false };
     }
 
-    const hash = response.transactionHash;
-    if (!hash) {
-      return { error: 'Relayer did not return transaction hash', success: false };
-    }
-
     return {
       success: true,
-      waitForConfirmation: () => awaitPolygonConfirmation(hash),
+      waitForConfirmation: async () => {
+        await waitForRelayerTransaction(response, 'Withdrawal via swaps');
+      },
     };
   } catch (error) {
     return handleExecutorError(error, 'quoted');
