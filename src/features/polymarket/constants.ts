@@ -42,6 +42,9 @@ export const POLYMARKET_GAMMA_API_URL = 'https://gamma-api.polymarket.com';
 export const POLYMARKET_DATA_API_URL = 'https://data-api.polymarket.com';
 
 export const POLYMARKET_SPORTS_WS_URL = 'wss://sports-api.polymarket.com/ws';
+export const POLYMARKET_HOSTNAMES: ReadonlySet<string> = new Set(['polymarket.com', 'www.polymarket.com']);
+export const POLYMARKET_REFERRAL_PARAM = 'r';
+export const POLYMARKET_REFERRAL_CODE = 'referrals';
 
 export const POLYMARKET_BUILDER_CODE = '0xabce5abdc189cba6fb85edb9170e3e6e41607e946b06d112b7f87e2f2977020c';
 

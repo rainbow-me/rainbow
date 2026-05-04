@@ -19,6 +19,7 @@ import { useBrowserStore } from '@/state/browser/browserStore';
 import { useNavigationStore } from '@/state/navigation/navigationStore';
 
 import { RAINBOW_HOME } from './constants';
+import { addReferralToDappBrowserUrl } from './dappReferrals';
 import { EXTRA_WEBVIEW_HEIGHT } from './Dimensions';
 import { useGestureManager } from './hooks/useGestureManager';
 import {
@@ -160,9 +161,10 @@ export const BrowserContextProvider = ({ children }: { children: React.ReactNode
   }, [activeTabRef]);
 
   const goToUrl = useCallback(
-    (url: string, tabId?: string) => {
+    (originalUrl: string, tabId?: string) => {
       const { url: activeTabUrl } = activeTabInfo.value;
       const tabIdToUse = tabId || activeTabId.value;
+      const url = addReferralToDappBrowserUrl(originalUrl);
 
       if (normalizeUrlWorklet(url) === normalizeUrlWorklet(activeTabUrl)) {
         refreshPage();
