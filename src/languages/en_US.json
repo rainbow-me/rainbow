@@ -1591,6 +1591,8 @@
         "hold_to_close": "Hold to Close"
       },
       "explain_sheet": {
+        "next": "Next",
+        "got_it": "Got it",
         "title": "Perps",
         "steps": {
           "step_1": {
