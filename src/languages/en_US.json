@@ -3228,7 +3228,16 @@
     "new": "New",
     "market_data": {
       "vol": "VOL",
-      "mcap": "MCAP"
+      "mcap": "MCAP",
+      "transactions": "Transactions",
+      "volume": "Volume",
+      "makers": "Makers",
+      "buys": "Buys",
+      "sells": "Sells",
+      "bought": "Bought",
+      "sold": "Sold",
+      "buyers": "Buyers",
+      "sellers": "Sellers"
     },
     "king_of_hill": {
       "title": "Launchpad",
