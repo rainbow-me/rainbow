@@ -519,11 +519,6 @@
       "to_header": "To",
       "watching": "Watching"
     },
-    "deeplinks": {
-      "couldnt_recognize_url": "Uh oh! We couldn’t recognize this URL!",
-      "tried_to_use_android": "Tried to use Android bundle",
-      "tried_to_use_ios": "Tried to use iOS bundle"
-    },
     "developer_settings": {
       "alert": "Alert",
       "analyze_env_variables": "Analyze ENV Variables",
@@ -1246,13 +1241,6 @@
         "text": "When sending an ENS name to someone else and making them the new ENS name owner, you may want to configure it for them in advance and save them a future transaction. Rainbow allows you to clear any profile information currently set for the name, configure the ENS name to point to the recipient's address and make the recipient address the manager of the name."
       }
     },
-    "fedora": {
-      "cannot_verify_bundle": "Cannot verify the bundle! This might be a scam. Installation blocked.",
-      "error": "ERROR",
-      "fedora": "Fedora",
-      "this_will_override_bundle": "This will override your bundle. Be careful. Are you a Rainbow employee?",
-      "wait": "wait"
-    },
     "fields": {
       "address": {
         "long_placeholder": "Name, ENS, or address",
@@ -1299,57 +1287,6 @@
       "edit_miner_tip": "Edit Miner Tip"
     },
     "homepage": {
-      "back": "Back to rainbow.me",
-      "coming_soon": "Coming soon.",
-      "connect_ledger": {
-        "button": "Connect to Ledger",
-        "description": "Connect and sign with your ",
-        "link_text": "Ledger hardware wallet",
-        "link_title": "Buy a Ledger hardware wallet"
-      },
-      "connect_metamask": {
-        "button": "Connect to MetaMask",
-        "description": "Connect to the ",
-        "link_text": "MetaMask browser wallet",
-        "link_title": "MetaMask browser wallet"
-      },
-      "connect_trezor": {
-        "button": "Connect to Trezor",
-        "description": "Connect and sign with your ",
-        "link_text": "Trezor hardware wallet",
-        "link_title": "Buy a Trezor hardware wallet"
-      },
-      "connect_trustwallet": {
-        "button": "Connect to Trust Wallet",
-        "description_part_one": "Use the ",
-        "description_part_three": " app to connect.",
-        "description_part_two": " Ethereum ",
-        "link_text_browser": "dapp browser",
-        "link_text_wallet": "Trust Wallet",
-        "link_title_browser": "Discover Trust DApp Browser",
-        "link_title_wallet": "Discover Trust Wallet"
-      },
-      "connect_walletconnect": {
-        "button": "Use WalletConnect",
-        "button_mobile": "Connect with WalletConnect",
-        "description": "Scan a QR code to link your mobile wallet ",
-        "description_mobile": "Connect to any wallet that supports ",
-        "link_text": "using WalletConnect",
-        "link_text_mobile": "WalletConnect",
-        "link_title": "Use WalletConnect",
-        "link_title_mobile": "Connect with WalletConnect"
-      },
-      "reassurance": {
-        "access_link": "No access to your funds",
-        "assessment": "Results of our security assessment",
-        "security": "We work incredibly hard to make sure your funds are safe. This tool never touches your private keys, so that greatly reduces the surface area for attack. If you are familiar with programming, you can check out our code on GitHub.",
-        "security_title": "How secure is Manager?",
-        "source": "View our source code",
-        "text_mobile": "You need to use an Ethereum Wallet to access Balance Manager to view, send and exchange your Ether and Ethereum-based tokens.",
-        "tracking_link": "We do not track you",
-        "work": "This is a web-based tool to help you manage the funds in your wallet. It does this by connecting to your wallet through its Application Programming Interface (API). Here are some important points about how we designed Balance Manager:",
-        "work_title": "How does Manager work?"
-      },
       "discover_web3": "Discover Web3"
     },
     "image_picker": {
@@ -1357,18 +1294,6 @@
       "confirm": "Enable library access",
       "message": "This allows Rainbow to use your photos from your library",
       "title": "Rainbow would like to access your photos"
-    },
-    "input": {
-      "asset_amount": "Amount",
-      "donation_address": "Balance Manager Address",
-      "email": "Email",
-      "email_placeholder": "your@email.com",
-      "input_placeholder": "Type here",
-      "input_text": "Input",
-      "password": "Password",
-      "password_placeholder": "••••••••••",
-      "private_key": "Private Key",
-      "recipient_address": "Recipient Address"
     },
     "list": {
       "share": {
@@ -1381,29 +1306,6 @@
       "creating_wallet": "Creating wallet...",
       "importing_wallet": "Importing...",
       "restoring": "Restoring..."
-    },
-    "message": {
-      "click_to_copy_to_clipboard": "Click to copy to clipboard",
-      "coming_soon": "Coming soon...",
-      "exchange_not_available": "We are no longer supporting Shapeshift due to their new KYC requirements. We are working on support for different exchange providers.",
-      "failed_ledger_connection": "Failed to connect to Ledger, please check your device",
-      "failed_request": "Failed request, please refresh",
-      "failed_trezor_connection": "Failed to connect to Trezor, please check your device",
-      "failed_trezor_popup_blocked": "Please allow popups on Balance to use your Trezor",
-      "learn_more": "Learn more",
-      "no_interactions": "No interactions found for this account",
-      "no_transactions": "No transactions found for this account",
-      "no_unique_tokens": "No unique tokens found for this account",
-      "opensea_footer": " is a marketplace for unique (or 'non-fungible') tokens. People trade on the marketplace and that gives them value. You can pawn your tokens to get money. All of this runs on Ethereum. ",
-      "opensea_header": "How does this work under the hood?",
-      "page_not_found": "404 Page Not Found",
-      "please_connect_ledger": "Please connect and unlock Ledger then select Ethereum",
-      "please_connect_trezor": "Please connect your Trezor and follow the instructions",
-      "power_by": "Powered by",
-      "walletconnect_not_unlocked": "Please connect using WalletConnect",
-      "web3_not_available": "Please install the MetaMask Chrome extension",
-      "web3_not_unlocked": "Please unlock your MetaMask wallet",
-      "web3_unknown_network": "Unknown network, please switch to another one"
     },
     "mints": {
       "mints_sheet": {
@@ -1824,11 +1726,6 @@
         "try_again": "Try Again"
       }
     },
-    "pools": {
-      "deposit": "Deposit",
-      "pools_title": "Pools",
-      "withdraw": "Withdraw"
-    },
     "profiles": {
       "actions": {
         "edit_profile": "Edit profile",
@@ -2123,31 +2020,6 @@
     "profile": {
       "title": "Activity"
     },
-    "savings": {
-      "deposit": "Deposit",
-      "deposit_from_wallet": "Deposit from Wallet",
-      "earned_lifetime_interest": "Earned %{lifetimeAccruedInterest}",
-      "earnings": {
-        "100_year": "100-Year",
-        "10_year": "10-Year",
-        "20_year": "20-Year",
-        "50_year": "50-Year",
-        "5_year": "5-Year",
-        "est": "Est.",
-        "label": "Earnings",
-        "monthly": "Monthly",
-        "yearly": "Yearly"
-      },
-      "get_prefix": "Get",
-      "label": "Savings",
-      "on_your_dollars_suffix": "on your dollars",
-      "percentage": "%{percentage}%",
-      "percentage_apy": "%{percentage}% APY",
-      "with_digital_dollars_line_1": "With digital dollars like Dai, saving",
-      "with_digital_dollars_line_2": "earns you more than ever before",
-      "withdraw": "Withdraw",
-      "zero_currency": "$0.00"
-    },
     "send_feedback": {
       "copy_email": "Copy email address",
       "email_error": {
@@ -2338,13 +2210,6 @@
           }
         }
       }
-    },
-    "subscribe_form": {
-      "email_already_subscribed": "Sorry, you've already signed up with this email",
-      "generic_error": "Oops, something went wrong",
-      "sending": "Sending...",
-      "successful": "Check your email",
-      "too_many_signup_request": "Too many signup requests, please try again later"
     },
     "swap": {
       "actions": {
@@ -3355,10 +3220,6 @@
           "months_ago": "months ago"
         }
       }
-    },
-    "warning": {
-      "user_is_offline": "Connection offline, please check your internet connection",
-      "user_is_online": "Connected! You're back online"
     },
     "dapp_browser": {
       "address_bar": {
