@@ -3158,7 +3158,8 @@
       "placeholders": {
         "ticker": "$NAME",
         "enter_coin_name": "Enter coin name",
-        "describe_your_coin": "Describe your coin"
+        "describe_your_coin": "Describe your coin",
+        "custom_amount": "Custom amount"
       },
       "buttons": {
         "hold_to_create": "Hold to Create",
