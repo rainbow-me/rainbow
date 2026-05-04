@@ -73,9 +73,6 @@
       "weekly_limit_reached": "Weekly limit reached",
       "yearly_limit_reached": "Yearly limit reached"
     },
-    "assets": {
-      "unkown_token": "Unknown Token"
-    },
     "avatar_builder": {
       "emoji_categories": {
         "activities": "Activities",
@@ -496,9 +493,6 @@
         "on": "on",
         "reset": "Reset"
       }
-    },
-    "cloud": {
-      "backup_success": "Your wallet has been backed up successfully!"
     },
     "contacts": {
       "contact_row": {
@@ -1486,24 +1480,6 @@
           "title": "Error selling NFT",
           "message": "Please contact Rainbow support for assistance."
         }
-      }
-    },
-    "notification": {
-      "error": {
-        "failed_get_account_tx": "Failed to get Account transactions",
-        "failed_get_gas_prices": "Failed to get Ethereum Gas prices",
-        "failed_get_tx_fee": "Failed to estimate Transaction fee",
-        "failed_scanning_qr_code": "Failed to scan QR code, please try again",
-        "generic_error": "Something went wrong, please try again",
-        "insufficient_balance": "Insufficient balance in this account",
-        "insufficient_for_fees": "Insufficient balance to cover transaction fees",
-        "invalid_address": "Address is invalid, please check again",
-        "invalid_address_scanned": "Invalid Address Scanned, please try again",
-        "invalid_private_key_scanned": "Invalid Private Key Scanned, please try again",
-        "no_accounts_found": "No Ethereum Accounts Found"
-      },
-      "info": {
-        "address_copied_to_clipboard": "Address copied to clipboard"
       }
     },
     "perps": {
@@ -2711,16 +2687,12 @@
         "ooops": "Ooops!",
         "this_action_not_supported": "This action is currently not supported :("
       },
-      "assets": {
-        "no_price": "Small Balances"
-      },
       "authenticate": {
         "please": "Please authenticate"
       },
       "back_ups": {
         "wallet_count": "%{numAccounts} wallet",
         "wallet_count_gt_one": "%{numAccounts} wallets",
-        "and_more_wallets": "And %{moreWalletCount} more wallets",
         "create_new_wallet": "Create a New Wallet",
         "create_new_wallet_description": "Create a new wallet using this Secret Phrase",
         "backed_up": "Backed up",
@@ -2783,11 +2755,9 @@
           "gas_fee": "to revoke on %{chainName}"
         }
       },
-      "balance_title": "Balance",
       "buy": "Buy",
       "change_wallet": {
         "loading_balance": "Loading Balance...",
-        "balance_eth": "%{balanceEth} ETH",
         "watching": "Watching",
         "ledger": "Ledger",
         "delegated": "Delegated",
@@ -2842,47 +2812,22 @@
         "loading": "Loading...",
         "app_state_diagnostics_title": "App State",
         "app_state_diagnostics_description": "Allows you to take a snapshot of the application state so that you can share it with our support team.",
-        "wallet_diagnostics_title": "Wallet",
         "sheet_title": "Diagnostics",
         "pin_auth_title": "PIN Authentication",
         "you_need_to_authenticate_with_your_pin": "You need to authenticate with your PIN in order to access your Wallet secrets",
         "share_application_state": "Share application state dump",
-        "wallet_details_title": "Wallet details",
-        "wallet_details_description": "Below are the details of all wallets added to Rainbow."
+        "wallet_details_title": "Wallet details"
       },
       "error_displaying_address": "Error displaying address",
-      "feedback": {
-        "cancel": "No thanks",
-        "choice": "Would you like to manually copy our feedback email address to your clipboard?",
-        "copy_email_address": "Copy email address",
-        "email_subject": "📱 Rainbow Beta Feedback",
-        "error": "Error launching email client",
-        "send": "Send Feedback"
-      },
       "import_failed_invalid_private_key": "Import failed due to an invalid private key. Please try again.",
-      "intro": {
-        "create_wallet": "Create a Wallet",
-        "instructions": "Please do not store more in your wallet than you are willing to lose.",
-        "warning": "This is alpha software.",
-        "welcome": "Welcome to Rainbow"
-      },
       "invalid_address_title": "Invalid address",
       "invalid_address_message": "Double-check the casing and try again.",
       "invalid_ens_name": "This is not a valid ENS name",
       "invalid_unstoppable_name": "This is not a valid Unstoppable name",
-      "label": "Wallets",
-      "loading": {
-        "error": "There has been an error loading the wallet. Please kill the app and retry.",
-        "message": "Loading"
-      },
       "message_signing": {
-        "failed_signing": "Failed to sign message",
-        "message": "Message",
-        "request": "Message Signing Request",
-        "sign": "Sign Message"
+        "request": "Message Signing Request"
       },
       "my_account_address": "My account address:",
-      "network_title": "Network",
       "new": {
         "choose_wallet_group": {
           "title": "Choose Wallet Group",
@@ -2976,21 +2921,14 @@
         "camera_access_needed": "Enabling this allows you to scan QR codes so you can connect to dApps and discover wallets.",
         "enable_camera_access": "Enable camera access",
         "error_mounting_camera": "Error mounting camera",
-        "find_a_code": "Find a code to scan",
-        "qr_1_app_connected": "1 Connected App",
-        "qr_multiple_apps_connected": "%{appsConnectedCount} Connected Apps",
         "scan_to_connect": "Scan to Connect",
         "scan_to_pay_or_connect": "Camera access needed",
-        "simulator_mode": "Simulator Mode",
         "sorry_could_not_be_recognized": "Sorry, this QR code could not be recognized.",
         "unrecognized_qr_code_title": "Unrecognized QR Code"
       },
       "settings": {
         "copy_address": "Copy address",
-        "copy_address_capitalized": "Copy Address",
-        "copy_seed_phrase": "Copy Secret Phrase",
-        "hide_seed_phrase": "Hide Secret Phrase",
-        "show_seed_phrase": "Show Secret Phrase"
+        "copy_address_capitalized": "Copy Address"
       },
       "something_went_wrong_importing": "Something went wrong while importing. Please try again!",
       "sorry_cannot_add_ens": "Sorry, we cannot add this ENS name at this time. Please try again later!",
@@ -3042,30 +2980,7 @@
         "previous_send": "%{number} previous send",
         "previous_sends": "%{number} previous sends"
       },
-      "wallet_connect": {
-        "error": "Error initializing with WalletConnect",
-        "failed_to_disconnect": "Failed to disconnect all WalletConnect sessions",
-        "failed_to_send_request_status": "Failed to send request status to WalletConnect.",
-        "missing_fcm": "Unable to initialize WalletConnect: missing push notification token. Please try again.",
-        "walletconnect_session_has_expired_while_trying_to_send": "WalletConnect session has expired while trying to send request status. Please reconnect."
-      },
       "wallet_title": "Wallet"
-    },
-    "support": {
-      "error_alert": {
-        "copy_email_address": "Copy email address",
-        "no_thanks": "No thanks",
-        "message": "Would you like to manually copy our support email address to your clipboard?",
-        "title": "Error launching email client",
-        "subject": "Rainbow Support"
-      },
-      "wallet_alert": {
-        "message_support": "Message Support",
-        "close": "Close",
-        "learn_more": "Learn More",
-        "message": "If you've recently swapped phones, you may need to reimport your wallets. For all other help, please reach out to support! \n\nWe'll get back to you soon!",
-        "title": "An error occurred"
-      }
     },
     "walletconnect": {
       "connecting": "Connecting",
@@ -3477,7 +3392,6 @@
         "unsupported_network": "Token launching is not supported on this network"
       }
     },
-    "done": "Done",
     "copy": "Copy",
     "paste": "Paste",
     "new": "New",
