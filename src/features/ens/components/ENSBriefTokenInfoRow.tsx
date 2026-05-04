@@ -58,7 +58,15 @@ export default function ENSBriefTokenInfoRow({
   return (
     <Columns space="10px">
       {/* @ts-expect-error JavaScript component */}
-      <TokenInfoItem color={colors.whiteLabel} isENS isNft loading={!registrationDate} size="larger" title="Registered on" weight="heavy">
+      <TokenInfoItem
+        color={colors.whiteLabel}
+        isENS
+        isNft
+        loading={!registrationDate}
+        size="larger"
+        title={i18n.t(i18n.l.ens.registered_on)}
+        weight="heavy"
+      >
         {registrationDate ? format(new Date(registrationDate * 1000), 'MMM d, yyyy') : ''}
       </TokenInfoItem>
       {/* @ts-expect-error JavaScript component */}

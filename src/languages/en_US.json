@@ -645,6 +645,9 @@
         "unswappableTokenSection": "􀘰 No trade routes"
       }
     },
+    "ens": {
+      "registered_on": "Registered on"
+    },
     "expanded_state": {
       "asset": {
         "about_asset": "About %{assetName}",
