@@ -358,7 +358,8 @@
       "unhide": "Показать",
       "unpin": "Открепить",
       "view": "Просмотреть",
-      "hidden": "Скрытый"
+      "hidden": "Скрытый",
+      "claim": "Получить"
     },
     "cards": {
       "ens_create_profile": {
@@ -994,6 +995,8 @@
       "chonks_title": "Вы разблокировали\n Самую Чонкую Иконку",
       "mog_description": "Легкое космическое покорение мира, выделение цветов.",
       "mog_title": "Вы разблокировали\nRainbow Mogs",
+      "rnbw_description": "Сияющая эволюция значка Rainbow, выкованная из 420 унций чистой веры.",
+      "rnbw_title": "Вы разблокировали\n Золотой $RNBW",
       "button": "Разблокировать значок"
     },
     "explain": {
@@ -1667,7 +1670,12 @@
         "confirm_button_error_text": "Ошибка котировки",
         "quote_error": "􀇿 Нет доступной цитаты",
         "insufficient_balance": "􀫲 Недостаточно средств",
-        "insufficient_gas": "Недостаточно газа"
+        "insufficient_gas": "Недостаточно газа",
+        "gas_sponsored": "Бесплатно",
+        "invalid_route_recipient_error": "Маршрут моста не нацелен на ваш аккаунт. Пожалуйста, попробуйте снова.",
+        "missing_recipient_error": "Отсутствует адрес получателя",
+        "no_wallet_connected": "Кошелёк не подключён",
+        "unknown_execution_error": "Неизвестная ошибка при обработке депозита"
       },
       "withdraw": {
         "title": "Вывести",
@@ -1688,15 +1696,17 @@
       "positions": {
         "entry": "ВХОД",
         "mark_price": "МАРКЕТИНГОВАЯ ЦЕНА",
+        "mark_price_full": "Маркетинговая цена",
         "open_positions": "Открытые позиции",
         "no_open_positions": "Нет открытых позиций",
         "position_value": "Стоимость позиции",
-        "mark_price_full": "Маркетинговая цена",
         "entry_price": "Цена входа",
         "funding": "Финансирование",
         "liquidation_price": "Цена ликвидации",
         "total": "Всего",
-        "learn_more_about_perps": "Узнайте больше о Perps"
+        "learn_more_about_perps": "Узнайте больше о Perps",
+        "open": "Открыть",
+        "close": "Закрыть"
       },
       "new_position": {
         "hold_to_long": "Удерживать, чтобы открыть длинную",
@@ -1717,6 +1727,13 @@
         "minimum": "Минимум",
         "minimum_amount_is": "Минимальная сумма составляет",
         "no_balance": "Нет Баланса"
+      },
+      "about": {
+        "title": "О компании",
+        "read_more": "Читать далее",
+        "volume_24h": "Торговый объем за 24 часа",
+        "open_interest": "Открытый интерес",
+        "funding": "Финансирование"
       },
       "history": {
         "title": "История",
@@ -2384,6 +2401,7 @@
       "find_a_token_to_buy": "Найдите токен для покупки",
       "search_your_tokens": "Поиск ваших токенов",
       "error_executing_swap": "Ошибка при выполнении обмена",
+      "sponsorship_unavailable": "Бесплатные свопы временно недоступны в этой сети. Пожалуйста, попробуйте еще раз с сетевыми комиссиями.",
       "tokens_input": {
         "tokens": "Токены",
         "sort": "Сортировать",
@@ -2405,7 +2423,8 @@
         "fast": "Быстро",
         "network_fee": "Сетевая комиссия",
         "normal": "Обычный",
-        "slow": "Медленно"
+        "slow": "Медленно",
+        "gas_sponsored": "Бесплатно"
       },
       "loading": "Загрузка...",
       "modal_types": {
@@ -3009,6 +3028,8 @@
         "warning": "Это альфа-версия программного обеспечения.",
         "welcome": "Добро пожаловать в Rainbow"
       },
+      "invalid_address_title": "Неверный адрес",
+      "invalid_address_message": "Проверьте регистр символов и попробуйте снова.",
       "invalid_ens_name": "Это недопустимое имя ENS",
       "invalid_unstoppable_name": "Это недопустимое имя Unstoppable",
       "label": "Кошельки",
@@ -3613,19 +3634,15 @@
       },
       "errors": {
         "header": "Ошибка при запуске токена",
-        "api_request_failed": "Ошибка запроса API",
-        "api_response_invalid": "Некорректный ответ API",
         "contract_interaction_failed": "Ошибка взаимодействия с контрактом",
         "gas_estimation_failed": "Ошибка оценки газа",
         "insufficient_funds": "Недостаточно средств",
-        "submission_details_missing": "Отсутствуют данные о подаче",
-        "transaction_rejected": "Транзакция отклонена",
-        "transaction_failed": "Ошибка транзакции",
-        "transaction_simulation_failed": "Ошибка моделирования транзакции",
         "unknown_error": "Неизвестная ошибка",
+        "transaction_failed": "Ошибка транзакции",
         "wallet_connection_error": "Ошибка подключения кошелька",
         "invalid_params": "Неверные параметры",
-        "missing_required_param": "Отсутствуют обязательные параметры"
+        "missing_required_param": "Отсутствуют обязательные параметры",
+        "unsupported_network": "Запуск токенов не поддерживается в этой сети"
       }
     },
     "done": "Готово",
@@ -3667,18 +3684,6 @@
               "В",
               " полночь (00:00 UTC), ",
               "лидирующий токен становится ежедневным победителем."
-            ]
-          },
-          "step_3": {
-            "title": "Выигрывайте награды",
-            "subtitle_parts": [
-              "Покупатели текущего короля получают",
-              " 2x баллы."
-            ],
-            "subtitle_two_parts": [
-              "Создатели",
-              " зарабатывают баллы ",
-              "когда коронованы."
             ]
           }
         }
@@ -3725,6 +3730,8 @@
         "spread": "Спред",
         "hold_to_place_bet": "Удерживайте, чтобы сделать ставку",
         "placing_bet": "Размещение ставки...",
+        "approving_trading": "Одобрение торговли...",
+        "converting_collateral": "Конвертация обеспечения...",
         "confirming_order": "Подтверждение заказа...",
         "deposit_funds": "Пополнить средства",
         "average_price": "Средняя цена",
@@ -3735,7 +3742,11 @@
         "errors": {
           "not_enough_liquidity": "Недостаточно ликвидности для размещения полного заказа.",
           "please_lower_amount": "Пожалуйста, уменьшите сумму и попробуйте снова.",
-          "no_liquidity_at_price": "Нет ликвидности по этой цене."
+          "no_liquidity_at_price": "Нет ликвидности по этой цене.",
+          "trading_approval_failed_title": "Не удалось одобрить торговлю",
+          "trading_approval_failed_message": "Попробуйте снова.",
+          "collateral_conversion_failed_title": "Не удалось конвертировать обеспечение",
+          "collateral_conversion_failed_message": "Попробуйте снова."
         }
       },
       "manage_position": {
@@ -3847,6 +3858,7 @@
         "subtitle": "Познакомьтесь с $RNBW — проверьте своё право на участие прямо сейчас."
       },
       "claim": {
+        "claim_title": "Получить $RNBW",
         "available_to_claim": "Доступно для получения",
         "your_airdrop": "Ваш аирдроп",
         "your_airdrop_description": "Спасибо, что пользуетесь Rainbow. Ваш аирдроп рассчитывается на основе вашей предыдущей активности.",
@@ -3886,6 +3898,80 @@
         "oh_i_see": "Ага, понятно..."
       },
       "longer_than_usual": "Получение занимает больше времени, чем обычно. Это может занять до одной минуты."
+    },
+    "rnbw_membership": {
+      "claim_card": {
+        "airdrop": "Аирдроп",
+        "rewards": "Награды"
+      },
+      "shared": {
+        "tier_label": "Уровень %{tierName}",
+        "loyalty_progress": "Прогресс лояльности",
+        "fee_cashback": "Кэшбэк комиссий"
+      },
+      "membership_tier_card": {
+        "stake_to_next_tier": "Стейкать до следующего уровня"
+      },
+      "membership_tiers_sheet": {
+        "stake_to_unlock": "Стейкать, чтобы разблокировать"
+      },
+      "staking_card": {
+        "stake": "Стейкать",
+        "enable_staking": "Включить стейкинг",
+        "buy_rnbw": "Купить RNBW",
+        "unstake": "Отменить стейкинг",
+        "available_to_stake": "доступно для стейкинга",
+        "available_to_add": "доступно для добавления",
+        "minimum_stake_amount_required": "Чтобы застейкать, нужно как минимум %{minStakeAmount} RNBW"
+      },
+      "staking_earnings_card": {
+        "lifetime_earnings": "Заработок за всё время",
+        "exit_fee_rewards": "Награды из комиссии за выход"
+      },
+      "unstake_penalty_recovery_card": {
+        "break_even_reached": "Точка безубыточности достигнута!",
+        "earned_prefix": "Вы заработали ",
+        "earned_middle": " из пула. Осталось всего ",
+        "earned_suffix": " до чистой прибыли."
+      }
+    },
+    "rnbw_staking": {
+      "deposit": {
+        "confirm_button": "Удерживайте для стейкинга",
+        "confirm_button_error": "Не удалось застейкать",
+        "confirm_button_loading": "Стейкинг...",
+        "confirm_button_over_balance": "Недостаточно RNBW",
+        "confirm_button_zero_amount": "Введите сумму",
+        "execution_error_title": "Ошибка стейкинга",
+        "insufficient_gas": "Недостаточно газа",
+        "quote_error": "Не удалось подготовить стейкинг",
+        "receive": "Награды будут получаться автоматически",
+        "title": "Стейкать $RNBW",
+        "minimum_amount": "Минимум 1 RNBW"
+      },
+      "learn_screen": {
+        "introducing": "ПРЕДСТАВЛЯЕМ",
+        "title": "Ставка",
+        "description": "Застейкайте RNBW, чтобы разблокировать уровни статуса и эксклюзивные преимущества участников.",
+        "fee_cashback": "Кэшбэк комиссий",
+        "fee_cashback_subtitle": "Получайте до 100% комиссий в виде застейканных RNBW.",
+        "exit_fee_title": "Комиссия за выход %{exitFeePercentage}%",
+        "exit_fee_subtitle": "Вы можете анстейкать в любое время. Просто оплатите комиссию за выход %{exitFeePercentage}%, которая распределяется между другими стейкерами.",
+        "stay_in_to_earn_more": "Оставайтесь, чтобы зарабатывать больше",
+        "stay_in_to_earn_more_subtitle": "Когда кто-то анстейкает свои RNBW, комиссии за выход возвращаются тем, кто всё ещё в пуле.",
+        "enable_staking": "Включить стейкинг"
+      },
+      "unstake_sheet": {
+        "exit_fee": "Комиссия за выход",
+        "warning_description": "При анстейкинге с вашего текущего застейканного баланса будет удержана комиссия %{exitFeePercentage}%.",
+        "unstake_failed_title": "Отмена ставки не удалась",
+        "unstake_failed_message": "Произошла ошибка при выводе ваших RNBW из стейкинга. Пожалуйста, попробуйте снова.",
+        "unstake_title": "Отменить стейкинг $%{symbol}",
+        "receive": "Получить",
+        "total_return": "Итоговый доход",
+        "hold_to_unstake": "Удерживайте, чтобы вывести из стейкинга",
+        "unstaking": "Вывод из стейкинга..."
+      }
     },
     "wallet_error_sheet": {
       "title": "Восстановите ваш кошелек",

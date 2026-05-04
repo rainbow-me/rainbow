@@ -358,7 +358,8 @@
       "unhide": "Mostrar",
       "unpin": "Desafixar",
       "view": "Visualizar",
-      "hidden": "Oculto"
+      "hidden": "Oculto",
+      "claim": "Reivindicar"
     },
     "cards": {
       "ens_create_profile": {
@@ -994,6 +995,8 @@
       "chonks_title": "Você desbloqueou\n o Ícone Mais Chonky",
       "mog_description": "Dominação cósmica do mundo sem esforço, mogando em cores.",
       "mog_title": "Você desbloqueou\nRainbow Mogs",
+      "rnbw_description": "Uma evolução brilhante do ícone do Rainbow, forjada a partir de 420 oz de pura crença.",
+      "rnbw_title": "Você desbloqueou\n $RNBW Dourado",
       "button": "Desbloqueie o ícone"
     },
     "explain": {
@@ -1667,7 +1670,12 @@
         "confirm_button_error_text": "Erro na Cotação",
         "quote_error": "􀇿 Nenhuma cotação disponível",
         "insufficient_balance": "􀫲 Fundos insuficientes",
-        "insufficient_gas": "Gasolina insuficiente"
+        "insufficient_gas": "Gasolina insuficiente",
+        "gas_sponsored": "Grátis",
+        "invalid_route_recipient_error": "A rota da bridge n\u0003o est\u0003a mirando na sua conta. Tente novamente.",
+        "missing_recipient_error": "Faltando endere\u0007o do destinat\u0003rio",
+        "no_wallet_connected": "Nenhuma carteira conectada",
+        "unknown_execution_error": "Erro desconhecido ao processar o dep\u0003sito"
       },
       "withdraw": {
         "title": "Retirar",
@@ -1688,15 +1696,17 @@
       "positions": {
         "entry": "ENTRADA",
         "mark_price": "PREÇO DE MARCAÇÃO",
+        "mark_price_full": "Preço de Marcação",
         "open_positions": "Posições Abertas",
         "no_open_positions": "Nenhuma Posição Aberta",
         "position_value": "Valor da Posição",
-        "mark_price_full": "Preço de Marcação",
         "entry_price": "Preço de Entrada",
         "funding": "Financiamento",
         "liquidation_price": "Preço de Liquidação",
         "total": "Total",
-        "learn_more_about_perps": "Saiba mais sobre Perps"
+        "learn_more_about_perps": "Saiba mais sobre Perps",
+        "open": "Abrir",
+        "close": "Fechar"
       },
       "new_position": {
         "hold_to_long": "Segurar para Longo",
@@ -1717,6 +1727,13 @@
         "minimum": "Mínimo",
         "minimum_amount_is": "A quantidade mínima é",
         "no_balance": "Sem Saldo"
+      },
+      "about": {
+        "title": "Sobre",
+        "read_more": "Leia mais",
+        "volume_24h": "Volume 24h",
+        "open_interest": "Juros em aberto",
+        "funding": "Financiamento"
       },
       "history": {
         "title": "Histórico",
@@ -2384,6 +2401,7 @@
       "find_a_token_to_buy": "Encontrar um token para comprar",
       "search_your_tokens": "Buscar seus tokens",
       "error_executing_swap": "Erro ao executar a troca",
+      "sponsorship_unavailable": "Swaps gratuitos est\u0000e3o temporariamente indispon\u0000edveis nesta rede. Tente novamente com taxas de rede.",
       "tokens_input": {
         "tokens": "Tokens",
         "sort": "Ordenar",
@@ -2405,7 +2423,8 @@
         "fast": "Rápido",
         "network_fee": "Taxa da Rede",
         "normal": "Normal",
-        "slow": "Lento"
+        "slow": "Lento",
+        "gas_sponsored": "Grátis"
       },
       "loading": "Carregando...",
       "modal_types": {
@@ -3009,6 +3028,8 @@
         "warning": "Este é um software alfa.",
         "welcome": "Bem-vindo ao Rainbow"
       },
+      "invalid_address_title": "Endereço inválido",
+      "invalid_address_message": "Verifique novamente o uso de maiúsculas e minúsculas e tente de novo.",
       "invalid_ens_name": "Este não é um nome ENS válido",
       "invalid_unstoppable_name": "Esse não é um nome válido do Unstoppable",
       "label": "Carteiras",
@@ -3613,19 +3634,15 @@
       },
       "errors": {
         "header": "Erro ao lançar o token",
-        "api_request_failed": "Solicitação de API falhou",
-        "api_response_invalid": "Resposta de API inválida",
         "contract_interaction_failed": "Interação de contrato falhou",
         "gas_estimation_failed": "Falha na estimativa de gás",
         "insufficient_funds": "Fundos insuficientes",
-        "submission_details_missing": "Detalhes da submissão faltando",
-        "transaction_rejected": "Transação rejeitada",
-        "transaction_failed": "Falha na transação",
-        "transaction_simulation_failed": "Simulação de transação falhou",
         "unknown_error": "Erro Desconhecido",
+        "transaction_failed": "Falha na transação",
         "wallet_connection_error": "Erro de conexão da carteira",
         "invalid_params": "Parâmetros inválidos",
-        "missing_required_param": "Parâmetros obrigatórios ausentes"
+        "missing_required_param": "Parâmetros obrigatórios ausentes",
+        "unsupported_network": "O lançamento de tokens não é compatível com esta rede"
       }
     },
     "done": "Concluído",
@@ -3667,18 +3684,6 @@
               "Às",
               " meia-noite (0:00 UTC), ",
               "o token líder é coroado o vencedor diário."
-            ]
-          },
-          "step_3": {
-            "title": "Vencer Recompensas",
-            "subtitle_parts": [
-              "Compradores do Rei atual ganham",
-              " 2x pontos."
-            ],
-            "subtitle_two_parts": [
-              "Criadores",
-              " ganham pontos ",
-              "quando são coroados."
             ]
           }
         }
@@ -3725,6 +3730,8 @@
         "spread": "Spread",
         "hold_to_place_bet": "Segure para Fazer Aposta",
         "placing_bet": "Fazendo Aposta...",
+        "approving_trading": "Aprovando a negociação...",
+        "converting_collateral": "Convertendo a garantia...",
         "confirming_order": "Confirmando Pedido...",
         "deposit_funds": "Deposite Fundos",
         "average_price": "Preço Médio",
@@ -3735,7 +3742,11 @@
         "errors": {
           "not_enough_liquidity": "Não há liquidez suficiente para realizar o pedido completo.",
           "please_lower_amount": "Por favor, reduza o valor e tente novamente.",
-          "no_liquidity_at_price": "Não há liquidez neste preço."
+          "no_liquidity_at_price": "Não há liquidez neste preço.",
+          "trading_approval_failed_title": "Não foi possível aprovar a negociação",
+          "trading_approval_failed_message": "Por favor, tente novamente.",
+          "collateral_conversion_failed_title": "Não foi possível converter a garantia",
+          "collateral_conversion_failed_message": "Por favor, tente novamente."
         }
       },
       "manage_position": {
@@ -3847,6 +3858,7 @@
         "subtitle": "Diga olá para $RNBW, verifique sua qualificação agora."
       },
       "claim": {
+        "claim_title": "Reivindicar $RNBW",
         "available_to_claim": "Disponível para Reivindicação",
         "your_airdrop": "Seu Airdrop",
         "your_airdrop_description": "Obrigado por usar a Rainbow. Seu airdrop é calculado com base na sua atividade anterior.",
@@ -3886,6 +3898,80 @@
         "oh_i_see": "Ah, entendi..."
       },
       "longer_than_usual": "A reivindicação está demorando mais do que o normal. Pode levar até um minuto."
+    },
+    "rnbw_membership": {
+      "claim_card": {
+        "airdrop": "Distribuição",
+        "rewards": "Recompensas"
+      },
+      "shared": {
+        "tier_label": "N\u0003vel %{tierName}",
+        "loyalty_progress": "Progresso de fidelidade",
+        "fee_cashback": "Cashback de taxas"
+      },
+      "membership_tier_card": {
+        "stake_to_next_tier": "Fazer stake para o pr\u0003ximo n\u0003vel"
+      },
+      "membership_tiers_sheet": {
+        "stake_to_unlock": "Fazer stake para desbloquear"
+      },
+      "staking_card": {
+        "stake": "Fazer stake",
+        "enable_staking": "Ativar staking",
+        "buy_rnbw": "Comprar RNBW",
+        "unstake": "Desapostar",
+        "available_to_stake": "disponível para apostar",
+        "available_to_add": "disponível para adicionar",
+        "minimum_stake_amount_required": "Você precisa de pelo menos %{minStakeAmount} RNBW para fazer staking"
+      },
+      "staking_earnings_card": {
+        "lifetime_earnings": "Ganhos vitalícios",
+        "exit_fee_rewards": "Recompensas da taxa de saída"
+      },
+      "unstake_penalty_recovery_card": {
+        "break_even_reached": "Ponto de equilíbrio atingido!",
+        "earned_prefix": "Você ganhou ",
+        "earned_middle": " do pool. Só ",
+        "earned_suffix": " a mais para chegar ao lucro puro."
+      }
+    },
+    "rnbw_staking": {
+      "deposit": {
+        "confirm_button": "Segure para Apostar",
+        "confirm_button_error": "Não foi possível apostar",
+        "confirm_button_loading": "Apostando...",
+        "confirm_button_over_balance": "RNBW insuficiente",
+        "confirm_button_zero_amount": "Insira um valor",
+        "execution_error_title": "Erro ao Apostar",
+        "insufficient_gas": "Gas insuficiente",
+        "quote_error": "Não foi possível preparar a aposta",
+        "receive": "As recompensas serão reivindicadas automaticamente",
+        "title": "Apostar $RNBW",
+        "minimum_amount": "Mínimo de 1 RNBW"
+      },
+      "learn_screen": {
+        "introducing": "APRESENTANDO",
+        "title": "Apostando",
+        "description": "Faça staking de RNBW para desbloquear níveis de status e benefícios exclusivos para membros.",
+        "fee_cashback": "Cashback de taxas",
+        "fee_cashback_subtitle": "Receba até 100% das taxas como RNBW em staking.",
+        "exit_fee_title": "Taxa de Saída de %{exitFeePercentage}%",
+        "exit_fee_subtitle": "Você pode fazer unstake a qualquer momento. Basta pagar uma taxa de saída de %{exitFeePercentage}% que é distribuída a outros stakers.",
+        "stay_in_to_earn_more": "Fique para ganhar mais",
+        "stay_in_to_earn_more_subtitle": "Quando alguém faz unstake do seu RNBW, as taxas de saída voltam para quem ainda está no pool.",
+        "enable_staking": "Ativar staking"
+      },
+      "unstake_sheet": {
+        "exit_fee": "Taxa de Saída",
+        "warning_description": "Fazer unstake cobrará uma taxa de %{exitFeePercentage}% sobre o seu saldo atualmente em staking.",
+        "unstake_failed_title": "Desaposta falhou",
+        "unstake_failed_message": "Ocorreu um erro ao desapostar seu RNBW. Tente novamente.",
+        "unstake_title": "Desapostar $%{symbol}",
+        "receive": "Receber",
+        "total_return": "Retorno Total",
+        "hold_to_unstake": "Segure para Desapostar",
+        "unstaking": "Desapostando..."
+      }
     },
     "wallet_error_sheet": {
       "title": "Restaurar sua carteira",

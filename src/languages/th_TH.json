@@ -358,7 +358,8 @@
       "unhide": "เลือกไม่ซ่อน",
       "unpin": "ยกเลิกการยึด",
       "view": "ดู",
-      "hidden": "ซ่อน"
+      "hidden": "ซ่อน",
+      "claim": "เคลม"
     },
     "cards": {
       "ens_create_profile": {
@@ -994,6 +995,8 @@
       "chonks_title": "คุณได้ปลดล็อก\nไอคอนที่ Chonky ที่สุด",
       "mog_description": "การครอบงําจักรวาลอย่างไร้ขีดจํากัดในสีสันอันตระการตา",
       "mog_title": "คุณได้ปลดล็อก\nRainbow Mogs",
+      "rnbw_description": "วิวัฒนาการที่ส่องประกายของไอคอน Rainbow หลอมขึ้นจากความเชื่อบริสุทธิ์ 420oz",
+      "rnbw_title": "คุณได้ปลดล็อก\n Golden $RNBW",
       "button": "ปลดล็อคไอคอน"
     },
     "explain": {
@@ -1667,7 +1670,12 @@
         "confirm_button_error_text": "ข้อผิดพลาดของราคาที่เสนอ",
         "quote_error": "􀇿 ไม่มีใบเสนอราคา",
         "insufficient_balance": "􀫲 เงินทุนไม่เพียงพอ",
-        "insufficient_gas": "แก๊สไม่เพียงพอ"
+        "insufficient_gas": "แก๊สไม่เพียงพอ",
+        "gas_sponsored": "ฟรี",
+        "invalid_route_recipient_error": "เส้นทางบริดจ์ไม่ได้กำหนดเป้าหมายไปยังบัญชีของคุณ โปรดลองอีกครั้ง",
+        "missing_recipient_error": "ขาดที่อยู่ผู้รับ",
+        "no_wallet_connected": "ไม่มีวอลเล็ตที่เชื่อมต่ออยู่",
+        "unknown_execution_error": "เกิดข้อผิดพลาดที่ไม่ทราบระหว่างประมวลผลการฝาก"
       },
       "withdraw": {
         "title": "ถอน",
@@ -1688,15 +1696,17 @@
       "positions": {
         "entry": "เข้า",
         "mark_price": "ราคามาร์ก",
+        "mark_price_full": "ราคามาร์ก",
         "open_positions": "ตำแหน่งที่เปิดอยู่",
         "no_open_positions": "ไม่มีตำแหน่งที่เปิดอยู่",
         "position_value": "ค่าตำแหน่ง",
-        "mark_price_full": "ราคามาร์ก",
         "entry_price": "ราคาเข้า",
         "funding": "การจัดหาเงิน",
         "liquidation_price": "ราคาการชำระหนี้",
         "total": "ทั้งหมด",
-        "learn_more_about_perps": "เรียนรู้เกี่ยวกับ Perps เพิ่มเติม"
+        "learn_more_about_perps": "เรียนรู้เกี่ยวกับ Perps เพิ่มเติม",
+        "open": "เปิด",
+        "close": "ปิด"
       },
       "new_position": {
         "hold_to_long": "กดค้างเพื่อยาว",
@@ -1717,6 +1727,13 @@
         "minimum": "ขั้นต่ำ",
         "minimum_amount_is": "จำนวนขั้นต่ำคือ",
         "no_balance": "ไม่มีคงเหลือ"
+      },
+      "about": {
+        "title": "เกี่ยวกับ",
+        "read_more": "อ่านเพิ่มเติม",
+        "volume_24h": "ปริมาณ 24 ชั่วโมง",
+        "open_interest": "สถานะสัญญาคงค้าง",
+        "funding": "การจัดหาเงิน"
       },
       "history": {
         "title": "ประวัติ",
@@ -2384,6 +2401,7 @@
       "find_a_token_to_buy": "ค้นหาโทเคนที่จะซื้อ",
       "search_your_tokens": "ค้นหาโทเค็นของคุณ",
       "error_executing_swap": "ข้อผิดพลาดในการดำเนินการแลกเปลี่ยน",
+      "sponsorship_unavailable": "การสวอปฟรีไม่สามารถใช้งานได้ชั่วคราวบนเครือข่ายนี้ โปรดลองอีกครั้งโดยชำระค่าธรรมเนียมเครือข่าย",
       "tokens_input": {
         "tokens": "โทเคน",
         "sort": "เรียงลำดับ",
@@ -2405,7 +2423,8 @@
         "fast": "รวดเร็ว",
         "network_fee": "ค่าธรรมเนียมเครือข่าย",
         "normal": "ปกติ",
-        "slow": "ช้า"
+        "slow": "ช้า",
+        "gas_sponsored": "ฟรี"
       },
       "loading": "กำลังโหลด...",
       "modal_types": {
@@ -3009,6 +3028,8 @@
         "warning": "นี่เป็นซอฟต์แวร์แบบ alpha.",
         "welcome": "ยินดีต้อนรับสู่ Rainbow"
       },
+      "invalid_address_title": "ที่อยู่ไม่ถูกต้อง",
+      "invalid_address_message": "ตรวจสอบตัวพิมพ์เล็ก-ใหญ่ให้ถูกต้องแล้วลองอีกครั้ง",
       "invalid_ens_name": "นี่ไม่ใช่ชื่อ ENS ที่ถูกต้อง",
       "invalid_unstoppable_name": "นี่ไม่ใช่ชื่อ Unstoppable ที่ถูกต้อง",
       "label": "กระเป๋าเงิน",
@@ -3613,19 +3634,15 @@
       },
       "errors": {
         "header": "ข้อผิดพลาดในการเปิดตัวโทเค็น",
-        "api_request_failed": "คำขอ API ล้มเหลว",
-        "api_response_invalid": "การตอบกลับ API ไม่ถูกต้อง",
         "contract_interaction_failed": "การโต้ตอบสัญญาล้มเหลว",
         "gas_estimation_failed": "การประมาณการค่าแก๊สล้มเหลว",
         "insufficient_funds": "เงินทุนไม่เพียงพอ",
-        "submission_details_missing": "รายละเอียดการส่งล้มเหลว",
-        "transaction_rejected": "การทำธุรกรรมถูกปฏิเสธ",
-        "transaction_failed": "การทำธุรกรรมล้มเหลว",
-        "transaction_simulation_failed": "การจำลองการทำธุรกรรมล้มเหลว",
         "unknown_error": "ข้อผิดพลาดที่ไม่รู้จัก",
+        "transaction_failed": "การทำธุรกรรมล้มเหลว",
         "wallet_connection_error": "ข้อผิดพลาดในการเชื่อมต่อกระเป๋า",
         "invalid_params": "พารามิเตอร์ไม่ถูกต้อง",
-        "missing_required_param": "ขาดพารามิเตอร์ที่จำเป็น"
+        "missing_required_param": "ขาดพารามิเตอร์ที่จำเป็น",
+        "unsupported_network": "เครือข่ายนี้ไม่รองรับการเปิดตัวโทเค็น"
       }
     },
     "done": "เสร็จสิ้น",
@@ -3667,18 +3684,6 @@
               "ที่",
               "เที่ยงคืน (12:00 น. UTC), ",
               "โทเค็นชั้นนำจะได้รับการสวมมงกุฎเป็นผู้ชนะประจำวัน"
-            ]
-          },
-          "step_3": {
-            "title": "รับรางวัล",
-            "subtitle_parts": [
-              "ผู้ซื้อที่เป็นราชาปัจจุบันจะได้รับ",
-              "2x จุด."
-            ],
-            "subtitle_two_parts": [
-              "ผู้สร้าง",
-              "รับคะแนน",
-              "เมื่อครอบครองบัลลังก์"
             ]
           }
         }
@@ -3725,6 +3730,8 @@
         "spread": "สเปรด",
         "hold_to_place_bet": "กดค้างเพื่อวางเดิมพัน",
         "placing_bet": "กำลังวางเดิมพัน...",
+        "approving_trading": "กำลังอนุมัติการเทรด...",
+        "converting_collateral": "กำลังแปลงหลักประกัน...",
         "confirming_order": "กำลังยืนยันคำสั่ง...",
         "deposit_funds": "ฝากเงิน",
         "average_price": "ราคาเฉลี่ย",
@@ -3735,7 +3742,11 @@
         "errors": {
           "not_enough_liquidity": "ไม่มีสภาพคล่องเพียงพอในการสั่งซื้อตามจำนวนเต็ม.",
           "please_lower_amount": "กรุณาลดจำนวนเงินและลองอีกครั้ง.",
-          "no_liquidity_at_price": "ไม่มีสภาพคล่องในราคานี้."
+          "no_liquidity_at_price": "ไม่มีสภาพคล่องในราคานี้.",
+          "trading_approval_failed_title": "ไม่สามารถอนุมัติการเทรดได้",
+          "trading_approval_failed_message": "กรุณาลองอีกครั้ง.",
+          "collateral_conversion_failed_title": "ไม่สามารถแปลงหลักประกันได้",
+          "collateral_conversion_failed_message": "กรุณาลองอีกครั้ง."
         }
       },
       "manage_position": {
@@ -3847,6 +3858,7 @@
         "subtitle": "ขอต้อนรับ $RNBW ตรวจสอบสิทธิ์ของคุณตอนนี้"
       },
       "claim": {
+        "claim_title": "รับ $RNBW",
         "available_to_claim": "พร้อมสำหรับการรับ",
         "your_airdrop": "Airdrop ของคุณ",
         "your_airdrop_description": "ขอบคุณที่ใช้ Rainbow Airdrop ของคุณถูกคำนวณจากกิจกรรมก่อนหน้าของคุณ",
@@ -3886,6 +3898,80 @@
         "oh_i_see": "อ๋อ เข้าใจแล้ว..."
       },
       "longer_than_usual": "การขอรับใช้เวลานานกว่าปกติ อาจใช้เวลาสูงสุดหนึ่งนาที"
+    },
+    "rnbw_membership": {
+      "claim_card": {
+        "airdrop": "Airdrop",
+        "rewards": "รางวัล"
+      },
+      "shared": {
+        "tier_label": "ระดับ %{tierName}",
+        "loyalty_progress": "ความคืบหน้าความภักดี",
+        "fee_cashback": "เงินคืนค่าธรรมเนียม"
+      },
+      "membership_tier_card": {
+        "stake_to_next_tier": "สเตกเพื่อไปยังระดับถัดไป"
+      },
+      "membership_tiers_sheet": {
+        "stake_to_unlock": "สเตกเพื่อปลดล็อก"
+      },
+      "staking_card": {
+        "stake": "สเตก",
+        "enable_staking": "เปิดใช้งานการสเตก",
+        "buy_rnbw": "ซื้อ RNBW",
+        "unstake": "ถอนสเตก",
+        "available_to_stake": "พร้อมสำหรับการสเตก",
+        "available_to_add": "พร้อมสำหรับการเพิ่ม",
+        "minimum_stake_amount_required": "คุณต้องมีอย่างน้อย %{minStakeAmount} RNBW เพื่อทำการสเตก"
+      },
+      "staking_earnings_card": {
+        "lifetime_earnings": "รายได้ตลอดอายุการใช้งาน",
+        "exit_fee_rewards": "รางวัลค่าธรรมเนียมการออก"
+      },
+      "unstake_penalty_recovery_card": {
+        "break_even_reached": "ถึงจุดคุ้มทุนแล้ว!",
+        "earned_prefix": "คุณได้รับ ",
+        "earned_middle": " จากพูล แค่อีก ",
+        "earned_suffix": " เพื่อไปถึงกำไรล้วนๆ"
+      }
+    },
+    "rnbw_staking": {
+      "deposit": {
+        "confirm_button": "กดค้างเพื่อสเตก",
+        "confirm_button_error": "ไม่สามารถสเตกได้",
+        "confirm_button_loading": "กำลังสเตก...",
+        "confirm_button_over_balance": "RNBW ไม่เพียงพอ",
+        "confirm_button_zero_amount": "ป้อนจำนวน",
+        "execution_error_title": "เกิดข้อผิดพลาดในการสเตก",
+        "insufficient_gas": "แก๊สไม่เพียงพอ",
+        "quote_error": "ไม่สามารถเตรียมการสเตกได้",
+        "receive": "รางวัลจะถูกรับโดยอัตโนมัติ",
+        "title": "สเตก $RNBW",
+        "minimum_amount": "ขั้นต่ำ 1 RNBW"
+      },
+      "learn_screen": {
+        "introducing": "เราขอแนะนำ",
+        "title": "กำลังวางเดิมทุน",
+        "description": "สเตก RNBW เพื่อปลดล็อกระดับสถานะและสิทธิประโยชน์สำหรับสมาชิกสุดพิเศษ",
+        "fee_cashback": "เงินคืนค่าธรรมเนียม",
+        "fee_cashback_subtitle": "รับคืนค่าธรรมเนียมสูงสุด 100% เป็น RNBW ที่สเตกไว้",
+        "exit_fee_title": "ค่าธรรมเนียมออก %{exitFeePercentage}%",
+        "exit_fee_subtitle": "คุณสามารถยกเลิกการสเตกได้ทุกเมื่อ เพียงจ่ายค่าธรรมเนียมการออก %{exitFeePercentage}% ซึ่งจะถูกแจกจ่ายให้กับผู้สเตกรายอื่น",
+        "stay_in_to_earn_more": "อยู่ต่อเพื่อรับมากขึ้น",
+        "stay_in_to_earn_more_subtitle": "เมื่อมีคนยกเลิกการสเตก RNBW ของตน ค่าธรรมเนียมการออกจะกลับไปให้กับผู้ที่ยังอยู่ในพูล",
+        "enable_staking": "เปิดใช้งานการสเตก"
+      },
+      "unstake_sheet": {
+        "exit_fee": "ค่าธรรมเนียมออก",
+        "warning_description": "การยกเลิกการสเตกจะเรียกเก็บค่าธรรมเนียม %{exitFeePercentage}% จากยอดที่คุณสเตกอยู่ในปัจจุบัน",
+        "unstake_failed_title": "การถอนสินทรัพย์ล้มเหลว",
+        "unstake_failed_message": "เกิดข้อผิดพลาดขณะถอนสเตก RNBW ของคุณ โปรดลองอีกครั้ง",
+        "unstake_title": "ถอนสเตก $%{symbol}",
+        "receive": "รับ",
+        "total_return": "ผลตอบแทนรวม",
+        "hold_to_unstake": "กดค้างเพื่อถอนสเตก",
+        "unstaking": "กำลังถอนสเตก..."
+      }
     },
     "wallet_error_sheet": {
       "title": "กู้คืนกระเป๋าเงินของคุณ",
