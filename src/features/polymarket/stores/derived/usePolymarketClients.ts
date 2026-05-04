@@ -4,13 +4,8 @@ import { type Wallet } from 'ethers';
 import { type Address } from 'viem';
 
 import { BUILDER_CONFIG, POLYMARKET_CLOB_PROXY_URL, POLYMARKET_RELAYER_PROXY_URL } from '@/features/polymarket/constants';
-import { usePolymarketWalletStore } from '@/features/polymarket/stores/polymarketWalletStore';
-import {
-  createPolymarketWallet,
-  getPolymarketWallet,
-  resolveWalletKindFor,
-  type PolymarketWallet,
-} from '@/features/polymarket/utils/polymarketWallet';
+import { usePolymarketWalletKindStore } from '@/features/polymarket/stores/polymarketWalletKindStore';
+import { createPolymarketWallet, getPolymarketWallet, type PolymarketWallet } from '@/features/polymarket/utils/polymarketWallet';
 import { getProvider } from '@/handlers/web3';
 import { logger, RainbowError } from '@/logger';
 import { loadWallet } from '@/model/wallet';
@@ -32,13 +27,7 @@ type PolymarketClientsState = {
 export const usePolymarketClients = createDerivedStore<PolymarketClientsState>(
   $ => {
     const address = $(useWalletsStore).accountAddress;
-    const walletKind = $(usePolymarketWalletStore, s => s.walletKindsByOwner[address.toLowerCase()]);
-    // TODO: side effect in a derived store is anti-pattern.
-    if (address && !walletKind) {
-      resolveWalletKindFor(address).catch(e => {
-        logger.error(new RainbowError('[PolymarketClients] Failed to resolve wallet kind', e));
-      });
-    }
+    const walletKind = $(usePolymarketWalletKindStore, s => s.getData());
     const wallet = address && walletKind ? createPolymarketWallet(address, walletKind) : null;
     const getWallet = createLazyWallet(address);
 

@@ -39,9 +39,18 @@ export const POLYMARKET_CLOB_PROXY_URL = `${RAINBOW_POLYMARKET_PROXY_URL}/clob`;
 export const POLYMARKET_RELAYER_PROXY_URL = `${RAINBOW_POLYMARKET_PROXY_URL}/relayer`;
 export const POLYMARKET_SIGNING_PROXY_URL = `${RAINBOW_POLYMARKET_PROXY_URL}/sign`;
 
-export const POLYMARKET_CLOB_URL = 'https://clob.polymarket.com';
-export const POLYMARKET_GAMMA_API_URL = 'https://gamma-api.polymarket.com';
-export const POLYMARKET_DATA_API_URL = 'https://data-api.polymarket.com';
+export const POLYMARKET_CLOB_URL_PREPROD = 'https://clob-preprod-int-v2.polymarket.com';
+export const POLYMARKET_CLOB_URL_PROD = 'https://clob.polymarket.com';
+
+export const POLYMARKET_DATA_API_URL_PREPROD = 'https://data-api-preprod-int.polymarket.com';
+export const POLYMARKET_DATA_API_URL_PROD = 'https://data-api.polymarket.com';
+
+export const POLYMARKET_GAMMA_API_URL_PREPROD = 'https://gamma-api-preprod-int.polymarket.com';
+export const POLYMARKET_GAMMA_API_URL_PROD = 'https://gamma-api.polymarket.com';
+
+export const POLYMARKET_GAMMA_API_URL = POLYMARKET_GAMMA_API_URL_PROD;
+export const POLYMARKET_DATA_API_URL = POLYMARKET_DATA_API_URL_PROD;
+export const POLYMARKET_CLOB_URL = POLYMARKET_CLOB_URL_PROD;
 
 export const POLYMARKET_SPORTS_WS_URL = 'wss://sports-api.polymarket.com/ws';
 

@@ -18,6 +18,7 @@ import {
 import { getPolymarketRelayClient } from '@/features/polymarket/stores/derived/usePolymarketClients';
 import { getMissingErc20ApprovalTransaction } from '@/features/polymarket/utils/erc20Approval';
 import { getPolymarketWallet, type PolymarketWallet } from '@/features/polymarket/utils/polymarketWallet';
+import { syncClobCollateralBalance } from '@/features/polymarket/utils/syncClobCollateralBalance';
 import { requireHex } from '@/framework/core/evm/hex';
 import { getProvider } from '@/handlers/web3';
 import { logger, RainbowError } from '@/logger';
@@ -269,4 +270,6 @@ export async function ensureTradingApprovals(): Promise<void> {
   logger.debug(`[polymarket] Setting ${transactions.length} approval(s)`);
   await executeRelayTransaction(transactions, 'trading approvals');
   logger.debug('[polymarket] Approvals set successfully');
+
+  await syncClobCollateralBalance();
 }

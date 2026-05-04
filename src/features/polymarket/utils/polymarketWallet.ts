@@ -1,8 +1,8 @@
 import {
   deriveDepositWallet,
-  RelayClient,
   TransactionType,
   type DepositWalletCall,
+  type RelayClient,
   type RelayerTransactionResponse,
   type SafeTransaction,
 } from '@polymarket/builder-relayer-client';
@@ -10,16 +10,13 @@ import { SignatureTypeV2 } from '@polymarket/clob-client-v2';
 import { type Address } from 'viem';
 
 import {
-  BUILDER_CONFIG,
   POLYMARKET_DEPOSIT_WALLET_FACTORY_ADDRESS,
   POLYMARKET_DEPOSIT_WALLET_IMPLEMENTATION_ADDRESS,
-  POLYMARKET_RELAYER_PROXY_URL,
 } from '@/features/polymarket/constants';
-import { usePolymarketWalletStore, type PolymarketWalletKind } from '@/features/polymarket/stores/polymarketWalletStore';
+import { usePolymarketWalletKindStore, type PolymarketWalletKind } from '@/features/polymarket/stores/polymarketWalletKindStore';
 import { deriveSafeWalletAddress } from '@/features/polymarket/utils/deriveSafeWalletAddress';
 import { RainbowError } from '@/logger';
 import { useWalletsStore } from '@/state/wallets/walletsStore';
-import { ChainId } from '@rainbow-me/swaps';
 
 const DEPOSIT_WALLET_BATCH_DEADLINE_SECONDS = 240;
 
@@ -39,19 +36,10 @@ export async function getPolymarketWallet(): Promise<PolymarketWallet> {
   const address = useWalletsStore.getState().accountAddress;
   if (!address) throw new RainbowError('[Polymarket] No active account address');
 
-  const cachedKind = usePolymarketWalletStore.getState().getWalletKind(address);
-  if (cachedKind) return createPolymarketWallet(address, cachedKind);
+  const kind = usePolymarketWalletKindStore.getState().getData() ?? (await usePolymarketWalletKindStore.getState().fetch());
+  if (!kind) throw new RainbowError('[Polymarket] Failed to resolve wallet kind');
 
-  const resolvedKind = await resolveWalletKindFor(address);
-  return createPolymarketWallet(address, resolvedKind);
-}
-
-export async function resolveWalletKindFor(owner: Address): Promise<PolymarketWalletKind> {
-  const client = new RelayClient(POLYMARKET_RELAYER_PROXY_URL, ChainId.polygon, undefined, BUILDER_CONFIG);
-  const safeIsDeployed = await client.getDeployed(deriveSafeWalletAddress(owner));
-  const kind: PolymarketWalletKind = safeIsDeployed ? 'safe' : 'depositWallet';
-  usePolymarketWalletStore.getState().setWalletKind(owner, kind);
-  return kind;
+  return createPolymarketWallet(address, kind);
 }
 
 function createSafeWallet(owner: Address): PolymarketWallet {

@@ -5,6 +5,7 @@ import { type Address } from 'viem';
 import { getPolymarketUsdcBalance, wrapUsdcToPusd } from '@/features/polymarket/utils/collateral';
 import { ensureTradingWalletDeployed } from '@/features/polymarket/utils/proxyWallet';
 import { refetchPolymarketBalance } from '@/features/polymarket/utils/refetchPolymarketStores';
+import { syncClobCollateralBalance } from '@/features/polymarket/utils/syncClobCollateralBalance';
 import { getProvider } from '@/handlers/web3';
 import { logger, RainbowError } from '@/logger';
 import { type DepositSubmitContext } from '@/systems/funding/types';
@@ -54,6 +55,6 @@ export async function handlePolymarketDepositSubmitted(_: Signer, context: Depos
   const usdcBalance = await waitForWrappableUsdcBalance(proxyAddress, context.expectedRawTargetAmount);
 
   await wrapUsdcToPusd({ proxyAddress, amount: usdcBalance });
-
+  await syncClobCollateralBalance();
   await refetchPolymarketBalance();
 }
