@@ -358,7 +358,8 @@
       "unhide": "الغاء الاخفاء",
       "unpin": "إلغاء التثبيت",
       "view": "عرض",
-      "hidden": "مخفي"
+      "hidden": "مخفي",
+      "claim": "المطالبة"
     },
     "cards": {
       "ens_create_profile": {
@@ -994,6 +995,8 @@
       "chonks_title": "لقد قمت بإلغاء القفل\n أيقونة الChonkiest",
       "mog_description": "السيطرة الكونية بكل سهولة، التفوق بالألوان.",
       "mog_title": "لقد قمت بفتح\nRainbow Mogs",
+      "rnbw_description": "تطورٌ لامع لأيقونة Rainbow، صيغ من 420 أونصة من الإيمان الخالص.",
+      "rnbw_title": "لقد قمت بإلغاء قفل\n$RNBW الذهبي",
       "button": "Snag the icon"
     },
     "explain": {
@@ -1667,7 +1670,12 @@
         "confirm_button_error_text": "خطأ في عرض السعر",
         "quote_error": "􀇿 لا يوجد اقتباس متاح",
         "insufficient_balance": "􀫲 أموال غير كافية",
-        "insufficient_gas": "غاز غير كافٍ"
+        "insufficient_gas": "غاز غير كافٍ",
+        "gas_sponsored": "مجانا",
+        "invalid_route_recipient_error": "مسار الجسر لا يستهدف حسابك. يُرجى إعادة المحاولة.",
+        "missing_recipient_error": "عنوان المستلم مفقود",
+        "no_wallet_connected": "لا توجد محفظة متصلة",
+        "unknown_execution_error": "حدث خطأ غير معروف أثناء معالجة الإيداع"
       },
       "withdraw": {
         "title": "سحب",
@@ -1688,15 +1696,17 @@
       "positions": {
         "entry": "دخول",
         "mark_price": "سعر العلامة",
+        "mark_price_full": "سعر العلامة",
         "open_positions": "المواقع المفتوحة",
         "no_open_positions": "لا توجد مواقع مفتوحة",
         "position_value": "قيمة الموقع",
-        "mark_price_full": "سعر العلامة",
         "entry_price": "سعر الدخول",
         "funding": "التمويل",
         "liquidation_price": "سعر التصفية",
         "total": "المجموع",
-        "learn_more_about_perps": "تعرف أكثر على بيربز"
+        "learn_more_about_perps": "تعرف أكثر على بيربز",
+        "open": "افتح",
+        "close": "إغلاق"
       },
       "new_position": {
         "hold_to_long": "استمر للطول",
@@ -1717,6 +1727,13 @@
         "minimum": "الأقل",
         "minimum_amount_is": "الحد الأدنى هو",
         "no_balance": "لا يوجد رصيد"
+      },
+      "about": {
+        "title": "حول",
+        "read_more": "اقرأ المزيد",
+        "volume_24h": "الحجم في 24 ساعة",
+        "open_interest": "الفائدة المفتوحة",
+        "funding": "التمويل"
       },
       "history": {
         "title": "التاريخ",
@@ -2384,6 +2401,7 @@
       "find_a_token_to_buy": "البحث عن رمز للشراء",
       "search_your_tokens": "ابحث عن رموزك",
       "error_executing_swap": "خطأ في تنفيذ التبديل",
+      "sponsorship_unavailable": "عمليات المبادلة المجانية غير متاحة مؤقتًا على هذه الشبكة. يُرجى المحاولة مرة أخرى مع رسوم الشبكة.",
       "tokens_input": {
         "tokens": "رموز",
         "sort": "الترتيب",
@@ -2405,7 +2423,8 @@
         "fast": "سريع",
         "network_fee": "رسوم الشبكة",
         "normal": "عادي",
-        "slow": "بطيء"
+        "slow": "بطيء",
+        "gas_sponsored": "مجانا"
       },
       "loading": "جار التحميل...",
       "modal_types": {
@@ -3009,6 +3028,8 @@
         "warning": "هذا هو برنامج ألفا.",
         "welcome": "مرحبًا بك في Rainbow"
       },
+      "invalid_address_title": "عنوان غير صالح",
+      "invalid_address_message": "تحقق مرة أخرى من حالة الأحرف ثم أعد المحاولة.",
       "invalid_ens_name": "هذا ليس اسم ENS صالحًا",
       "invalid_unstoppable_name": "هذا ليس اسم Unstoppable صالحًا",
       "label": "المحافظ",
@@ -3613,19 +3634,15 @@
       },
       "errors": {
         "header": "خطأ في إطلاق الرمز",
-        "api_request_failed": "فشل طلب API",
-        "api_response_invalid": "استجابة API غير صالحة",
         "contract_interaction_failed": "فشل التفاعل مع العقد",
         "gas_estimation_failed": "فشل تقدير الغاز",
         "insufficient_funds": "أموال غير كافية",
-        "submission_details_missing": "تفاصيل الإرسال مفقودة",
-        "transaction_rejected": "تم رفض المعاملة",
-        "transaction_failed": "فشلت المعاملة",
-        "transaction_simulation_failed": "فشلت محاكاة المعاملة",
         "unknown_error": "خطأ غير معروف",
+        "transaction_failed": "فشلت المعاملة",
         "wallet_connection_error": "خطأ في اتصال المحفظة",
         "invalid_params": "معلمات غير صالحة",
-        "missing_required_param": "المعلمات المطلوبة مفقودة"
+        "missing_required_param": "المعلمات المطلوبة مفقودة",
+        "unsupported_network": "إطلاق التوكن غير مدعوم على هذه الشبكة"
       }
     },
     "done": "تم",
@@ -3713,6 +3730,8 @@
         "spread": "الانتشار",
         "hold_to_place_bet": "اضغط للاستمرار في الرهان",
         "placing_bet": "جارٍ وضع الرهان...",
+        "approving_trading": "جارٍ الموافقة على التداول...",
+        "converting_collateral": "جارٍ تحويل الضمان...",
         "confirming_order": "جارٍ تأكيد الطلب...",
         "deposit_funds": "إيداع الأموال",
         "average_price": "السعر المتوسط",
@@ -3723,7 +3742,11 @@
         "errors": {
           "not_enough_liquidity": "لا يوجد سيولة كافية لتنفيذ الطلب بالكامل.",
           "please_lower_amount": "يرجى تقليل الكمية والمحاولة مرة أخرى.",
-          "no_liquidity_at_price": "لا توجد سيولة عند هذا السعر."
+          "no_liquidity_at_price": "لا توجد سيولة عند هذا السعر.",
+          "trading_approval_failed_title": "يتعذّر الموافقة على التداول",
+          "trading_approval_failed_message": "يرجى المحاولة مرة أخرى.",
+          "collateral_conversion_failed_title": "يتعذّر تحويل الضمان",
+          "collateral_conversion_failed_message": "يرجى المحاولة مرة أخرى."
         }
       },
       "manage_position": {
@@ -3835,6 +3858,7 @@
         "subtitle": "قل مرحبًا لـ $RNBW، تحقّق من أهليتك الآن."
       },
       "claim": {
+        "claim_title": "مطالبة $RNBW",
         "available_to_claim": "متاح للمطالبة",
         "your_airdrop": "الإسقاط الجوي الخاص بك",
         "your_airdrop_description": "شكرًا لاستخدامك Rainbow. يتم احتساب الإسقاط الجوي الخاص بك بناءً على نشاطك السابق.",
@@ -3874,6 +3898,80 @@
         "oh_i_see": "أوه، فهمت..."
       },
       "longer_than_usual": "تستغرق المطالبة وقتًا أطول من المعتاد. قد يستغرق ذلك ما يصل إلى دقيقة واحدة."
+    },
+    "rnbw_membership": {
+      "claim_card": {
+        "airdrop": "إسقاط جوي",
+        "rewards": "المكافآت"
+      },
+      "shared": {
+        "tier_label": "فئة %{tierName}",
+        "loyalty_progress": "تقدّم الولاء",
+        "fee_cashback": "استرداد رسوم نقدًا"
+      },
+      "membership_tier_card": {
+        "stake_to_next_tier": "قم بالرهن للوصول إلى الفئة التالية"
+      },
+      "membership_tiers_sheet": {
+        "stake_to_unlock": "قم بالرهن لفتح القفل"
+      },
+      "staking_card": {
+        "stake": "رهن",
+        "enable_staking": "تفعيل الرهن",
+        "buy_rnbw": "شراء RNBW",
+        "unstake": "إلغاء الرهن",
+        "available_to_stake": "متاح للرهن",
+        "available_to_add": "متاح للإضافة",
+        "minimum_stake_amount_required": "تحتاج إلى ما لا يقل عن %{minStakeAmount} RNBW للتخزين"
+      },
+      "staking_earnings_card": {
+        "lifetime_earnings": "الأرباح مدى الحياة",
+        "exit_fee_rewards": "مكافآت رسوم الخروج"
+      },
+      "unstake_penalty_recovery_card": {
+        "break_even_reached": "تم الوصول إلى نقطة التعادل!",
+        "earned_prefix": "لقد ربحت ",
+        "earned_middle": " من المُجمَّع. فقط ",
+        "earned_suffix": " أخرى للوصول إلى ربحٍ صافٍ."
+      }
+    },
+    "rnbw_staking": {
+      "deposit": {
+        "confirm_button": "اضغط مع الاستمرار للرهن",
+        "confirm_button_error": "تعذّر الرهن",
+        "confirm_button_loading": "جاري الرهن...",
+        "confirm_button_over_balance": "رصيد RNBW غير كافٍ",
+        "confirm_button_zero_amount": "أدخل المبلغ",
+        "execution_error_title": "خطأ في الرهن",
+        "insufficient_gas": "الغاز غير كافٍ",
+        "quote_error": "تعذّر تحضير الرهن",
+        "receive": "ستتم المطالبة بالمكافآت تلقائيًا",
+        "title": "ارهن $RNBW",
+        "minimum_amount": "الحد الأدنى 1 RNBW"
+      },
+      "learn_screen": {
+        "introducing": "مقدمة",
+        "title": "جاري الرهن",
+        "description": "قم بتخزين RNBW لفتح مستويات الحالة ومزايا الأعضاء الحصرية.",
+        "fee_cashback": "استرداد رسوم نقدًا",
+        "fee_cashback_subtitle": "احصل على ما يصل إلى 100% من الرسوم على شكل RNBW مُخزَّن.",
+        "exit_fee_title": "رسوم خروج %{exitFeePercentage}%",
+        "exit_fee_subtitle": "يمكنك إلغاء التخزين في أي وقت. ما عليك سوى دفع رسوم خروج بنسبة %{exitFeePercentage}% تُوزَّع على المخزِّنين الآخرين.",
+        "stay_in_to_earn_more": "ابقَ لتكسب أكثر",
+        "stay_in_to_earn_more_subtitle": "عندما يُلغي شخص ما تخزين RNBW الخاص به، تعود رسوم الخروج إلى الذين ما زالوا في المجمّع.",
+        "enable_staking": "تفعيل الرهن"
+      },
+      "unstake_sheet": {
+        "exit_fee": "رسوم الخروج",
+        "warning_description": "سيتم فرض رسوم بنسبة %{exitFeePercentage}% على رصيدك المُخزَّن حاليًا عند إلغاء التخزين.",
+        "unstake_failed_title": "فشل الاسترداد",
+        "unstake_failed_message": "حدث خطأ أثناء إلغاء رهن RNBW الخاص بك. يُرجى المحاولة مرة أخرى.",
+        "unstake_title": "إلغاء رهن $%{symbol}",
+        "receive": "استلم",
+        "total_return": "إجمالي العائد",
+        "hold_to_unstake": "اضغط مع الاستمرار لإلغاء الرهن",
+        "unstaking": "جارٍ إلغاء الرهن..."
+      }
     },
     "wallet_error_sheet": {
       "title": "استعادة محفظتك",
