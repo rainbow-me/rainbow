@@ -358,7 +358,8 @@
       "unhide": "取消隐藏",
       "unpin": "取消置顶",
       "view": "查看",
-      "hidden": "隐藏"
+      "hidden": "隐藏",
+      "claim": "领取"
     },
     "cards": {
       "ens_create_profile": {
@@ -994,6 +995,8 @@
       "chonks_title": "您已解锁\n 最巨大的图标",
       "mog_description": "轻松地征服宇宙，以缤纷的色彩令人惊艳。",
       "mog_title": "您已解锁\nRainbow Mogs",
+      "rnbw_description": "Rainbow 图标的闪耀进化，由 420 盎司纯粹信念锻造而成。",
+      "rnbw_title": "你已解锁\n金色 $RNBW",
       "button": "解锁图标"
     },
     "explain": {
@@ -1667,7 +1670,12 @@
         "confirm_button_error_text": "报价错误",
         "quote_error": "􀇿 没有报价可用",
         "insufficient_balance": "􀫲 资金不足",
-        "insufficient_gas": "Gas不足"
+        "insufficient_gas": "Gas不足",
+        "gas_sponsored": "免费",
+        "invalid_route_recipient_error": "跨链桥路线未指向你的账户。请重试。",
+        "missing_recipient_error": "缺少收件人地址",
+        "no_wallet_connected": "未连接钱包",
+        "unknown_execution_error": "处理存入时发生未知错误"
       },
       "withdraw": {
         "title": "提款",
@@ -1688,15 +1696,17 @@
       "positions": {
         "entry": "入口",
         "mark_price": "标价",
+        "mark_price_full": "标记价格",
         "open_positions": "持仓",
         "no_open_positions": "没有未平仓位",
         "position_value": "仓位价值",
-        "mark_price_full": "标记价格",
         "entry_price": "入场价",
         "funding": "资金",
         "liquidation_price": "清算价格",
         "total": "总计",
-        "learn_more_about_perps": "了解更多关于Perps的信息"
+        "learn_more_about_perps": "了解更多关于Perps的信息",
+        "open": "打开",
+        "close": "关闭"
       },
       "new_position": {
         "hold_to_long": "长按以做多",
@@ -1717,6 +1727,13 @@
         "minimum": "最低",
         "minimum_amount_is": "最低金额是",
         "no_balance": "无余额"
+      },
+      "about": {
+        "title": "关于",
+        "read_more": "阅读更多",
+        "volume_24h": "24小时交易量",
+        "open_interest": "未平仓量",
+        "funding": "资金"
       },
       "history": {
         "title": "历史记录",
@@ -2384,6 +2401,7 @@
       "find_a_token_to_buy": "找一个要购买的代币",
       "search_your_tokens": "搜索你的代币",
       "error_executing_swap": "执行交换时出错",
+      "sponsorship_unavailable": "此网络上的免费兑换暂时不可用。请使用网络费重试。",
       "tokens_input": {
         "tokens": "代币",
         "sort": "排序",
@@ -2405,7 +2423,8 @@
         "fast": "快速",
         "network_fee": "网络费用",
         "normal": "正常",
-        "slow": "慢速"
+        "slow": "慢速",
+        "gas_sponsored": "免费"
       },
       "loading": "载入中...",
       "modal_types": {
@@ -3009,6 +3028,8 @@
         "warning": "这是 alpha 版软件。",
         "welcome": "欢迎来到 Rainbow"
       },
+      "invalid_address_title": "无效地址",
+      "invalid_address_message": "请仔细检查大小写，然后重试。",
       "invalid_ens_name": "这不是有效的 ENS 名称",
       "invalid_unstoppable_name": "这不是有效的 Unstoppable 名称",
       "label": "钱包",
@@ -3613,19 +3634,15 @@
       },
       "errors": {
         "header": "发行代币失败",
-        "api_request_failed": "API请求失败",
-        "api_response_invalid": "API响应无效",
         "contract_interaction_failed": "合约互动失败",
         "gas_estimation_failed": "燃气估算失败",
         "insufficient_funds": "资金不足",
-        "submission_details_missing": "缺少提交详情",
-        "transaction_rejected": "交易被拒绝",
-        "transaction_failed": "交易失败",
-        "transaction_simulation_failed": "交易模拟失败",
         "unknown_error": "未知错误",
+        "transaction_failed": "交易失败",
         "wallet_connection_error": "钱包连接错误",
         "invalid_params": "参数无效",
-        "missing_required_param": "缺少必需的参数"
+        "missing_required_param": "缺少必需的参数",
+        "unsupported_network": "此网络不支持代币发行"
       }
     },
     "done": "完成",
@@ -3713,6 +3730,8 @@
         "spread": "差价",
         "hold_to_place_bet": "按住下注",
         "placing_bet": "下注中...",
+        "approving_trading": "正在批准交易...",
+        "converting_collateral": "正在转换抵押品...",
         "confirming_order": "订单确认中...",
         "deposit_funds": "存款资金",
         "average_price": "平均价格",
@@ -3723,7 +3742,11 @@
         "errors": {
           "not_enough_liquidity": "没有足够的流动性来完成整个订单。",
           "please_lower_amount": "请减少金额后再试。",
-          "no_liquidity_at_price": "此价格没有流动性。"
+          "no_liquidity_at_price": "此价格没有流动性。",
+          "trading_approval_failed_title": "无法批准交易",
+          "trading_approval_failed_message": "请再试一次。",
+          "collateral_conversion_failed_title": "无法转换抵押品",
+          "collateral_conversion_failed_message": "请再试一次。"
         }
       },
       "manage_position": {
@@ -3835,6 +3858,7 @@
         "subtitle": "向您介绍 $RNBW，立即查看您的资格。"
       },
       "claim": {
+        "claim_title": "领取 $RNBW",
         "available_to_claim": "可领取",
         "your_airdrop": "您的空投",
         "your_airdrop_description": "感谢您使用 Rainbow。您的空投将根据您此前的活动来计算。",
@@ -3874,6 +3898,80 @@
         "oh_i_see": "哦，我明白了..."
       },
       "longer_than_usual": "领取所需时间比平时更长。可能最多需要一分钟。"
+    },
+    "rnbw_membership": {
+      "claim_card": {
+        "airdrop": "空投",
+        "rewards": "奖励"
+      },
+      "shared": {
+        "tier_label": "%{tierName} 等级",
+        "loyalty_progress": "忠诚度进度",
+        "fee_cashback": "手续费返现"
+      },
+      "membership_tier_card": {
+        "stake_to_next_tier": "质押以升至下一等级"
+      },
+      "membership_tiers_sheet": {
+        "stake_to_unlock": "质押以解锁"
+      },
+      "staking_card": {
+        "stake": "质押",
+        "enable_staking": "启用质押",
+        "buy_rnbw": "购买 RNBW",
+        "unstake": "撤销质押",
+        "available_to_stake": "可用于质押",
+        "available_to_add": "可添加",
+        "minimum_stake_amount_required": "你至少需要质押 %{minStakeAmount} RNBW"
+      },
+      "staking_earnings_card": {
+        "lifetime_earnings": "累计收益",
+        "exit_fee_rewards": "退出手续费奖励"
+      },
+      "unstake_penalty_recovery_card": {
+        "break_even_reached": "已达到盈亏平衡！",
+        "earned_prefix": "你赚到了 ",
+        "earned_middle": "来自资金池。只差 ",
+        "earned_suffix": " 即可达到纯利润。"
+      }
+    },
+    "rnbw_staking": {
+      "deposit": {
+        "confirm_button": "按住以质押",
+        "confirm_button_error": "无法质押",
+        "confirm_button_loading": "质押中...",
+        "confirm_button_over_balance": "RNBW 不足",
+        "confirm_button_zero_amount": "输入金额",
+        "execution_error_title": "质押出错",
+        "insufficient_gas": "Gas 不足",
+        "quote_error": "无法准备质押",
+        "receive": "奖励将自动领取",
+        "title": "质押 $RNBW",
+        "minimum_amount": "最低 1 RNBW"
+      },
+      "learn_screen": {
+        "introducing": "介绍",
+        "title": "质押中",
+        "description": "质押 RNBW 以解锁状态等级和专属会员权益。",
+        "fee_cashback": "手续费返现",
+        "fee_cashback_subtitle": "以已质押的 RNBW 形式返还最高 100% 的手续费。",
+        "exit_fee_title": "%{exitFeePercentage}% 退出费",
+        "exit_fee_subtitle": "你可以随时解除质押。只需支付 %{exitFeePercentage}% 的退出手续费，该费用将分配给其他质押者。",
+        "stay_in_to_earn_more": "继续质押，赚得更多",
+        "stay_in_to_earn_more_subtitle": "当有人解除质押其 RNBW 时，退出手续费会返还给仍在池中的人。",
+        "enable_staking": "启用质押"
+      },
+      "unstake_sheet": {
+        "exit_fee": "退出费",
+        "warning_description": "解除质押将对你当前已质押的余额收取 %{exitFeePercentage}% 的手续费。",
+        "unstake_failed_title": "撤销质押失败",
+        "unstake_failed_message": "撤销质押你的 RNBW 时发生错误。请重试。",
+        "unstake_title": "撤销质押 $%{symbol}",
+        "receive": "接收",
+        "total_return": "总回报",
+        "hold_to_unstake": "按住以撤销质押",
+        "unstaking": "撤销质押中..."
+      }
     },
     "wallet_error_sheet": {
       "title": "恢复你的钱包",
