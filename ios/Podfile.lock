@@ -2447,7 +2447,7 @@ PODS:
     - ReactCommon/turbomodule/core
     - RNFBApp
     - Yoga
-  - RNFlashList (1.8.2):
+  - RNFlashList (1.8.3):
     - DoubleConversion
     - glog
     - hermes-engine
@@ -3488,7 +3488,7 @@ SPEC CHECKSUMS:
   RNFBApp: 3a2f3094513f3bfaaea028023ffa03c03f65eefc
   RNFBMessaging: 22ba377d0f78fc1a1b4af2ff66212426eefbf8aa
   RNFBRemoteConfig: b2c5184867b12412de8cbe411c37a200b4477a0a
-  RNFlashList: bf81b67825dd3fca7c3a0624b9c93dd129f2c903
+  RNFlashList: 3138e6f563d72e5ae5f54214b6d0489a7985a6d8
   RNFS: 3557d4b8e51925b011e787094600d6e05dca414e
   RNGestureHandler: 8da72f20ac31d42e8672301ccf2127e05c45c959
   RNInputMask: 815461ebdf396beb62cf58916c35cf6930adb991
