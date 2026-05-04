@@ -21,6 +21,22 @@ and this project adheres to [Semantic Versioning](http://semver.org/)
 
 ### Testing
 
+## [2.0.31](https://github.com/rainbow-me/rainbow/releases/tag/v2.0.31)
+
+### Added
+
+- Add Polymarket relayer migration (https://github.com/rainbow-me/rainbow/commit/5587138ff85923219d7c721e71e3b4d49bd40e18)
+
+### Changed
+
+- Bump iOS and Android to v2.0.31 (https://github.com/rainbow-me/rainbow/pull/7413)
+- Bump @shopify/flash-list from 1.8.2 to 1.8.3 (https://github.com/rainbow-me/rainbow/pull/7396)
+
+### Fixed
+
+- Patch @coinbase/mobile-wallet-protocol-host for forward-compat with RN 0.81 on Android (https://github.com/rainbow-me/rainbow/pull/7397)
+- Fix sponsored gas UI flicker (https://github.com/rainbow-me/rainbow/pull/7423)
+
 ## [2.0.30](https://github.com/rainbow-me/rainbow/releases/tag/v2.0.30)
 
 ### Added
