@@ -123,7 +123,7 @@ export default function NFTBriefTokenInfoRow({ asset }: { asset: UniqueAsset }) 
         onPress={toggleFloorDisplayCurrency}
         showInfoButton
         size="big"
-        title="Floor price"
+        title={i18n.t(i18n.l.expanded_state.nft_brief_token_info.floor_price)}
         weight={floorPrice === NONE ? 'bold' : 'heavy'}
       >
         {showFloorInNative || nativeCurrency === nativeAsset?.symbol || floorPrice === NONE || floorPrice === null

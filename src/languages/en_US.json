@@ -788,6 +788,7 @@
       },
       "nft_brief_token_info": {
         "for_sale": "For sale",
+        "floor_price": "Floor price",
         "last_sale": "Last sale price"
       },
       "swap": {
