@@ -1,7 +1,7 @@
+import { deleteAsync, documentDirectory, writeAsStringAsync } from 'expo-file-system';
 import { sortBy } from 'lodash';
 // @ts-expect-error ts-migrate(7016) FIXME: Could not find a declaration file for module 'reac... Remove this comment to see the full error message
 import RNCloudFs from 'react-native-cloud-fs';
-import RNFS from 'react-native-fs';
 
 import { IS_ANDROID, IS_IOS } from '@/env';
 import { logger, RainbowError } from '@/logger';
@@ -94,10 +94,13 @@ export async function encryptAndSaveDataToCloud(data: Record<string, unknown>, p
     const backupFilename = IS_ANDROID ? normalizeAndroidBackupFilename(filename) : filename;
 
     // Store it on the FS first
-    const path = `${RNFS.DocumentDirectoryPath}/${backupFilename}`;
+    const fileUri = `${documentDirectory!}${backupFilename}`;
+    // RNCloudFs's `sourcePath.path` expects a POSIX path, while expo-file-system
+    // wants a `file://` URI. Strip the scheme for the cloud copy.
+    const fsPath = fileUri.replace(/^file:\/\//, '');
     // @ts-expect-error ts-migrate(2345) FIXME: Argument of type 'string | undefined' is not assig... Remove this comment to see the full error message
-    await RNFS.writeFile(path, encryptedData, 'utf8');
-    const sourceUri = { path };
+    await writeAsStringAsync(fileUri, encryptedData);
+    const sourceUri = { path: fsPath };
     const destinationPath = `${REMOTE_BACKUP_WALLET_DIR}/${backupFilename}`;
     const mimeType = 'application/json';
     // Only available to our app
@@ -130,7 +133,7 @@ export async function encryptAndSaveDataToCloud(data: Record<string, unknown>, p
       throw error;
     }
 
-    await RNFS.unlink(path);
+    await deleteAsync(fileUri, { idempotent: true });
     return filename;
   } catch (e: any) {
     logger.error(new RainbowError('[cloudBackup]: Error during encryptAndSaveDataToCloud'), {

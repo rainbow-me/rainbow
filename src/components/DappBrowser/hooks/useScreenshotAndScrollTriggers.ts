@@ -38,9 +38,9 @@ export function useScreenshotAndScrollTriggers() {
 
   const saveScreenshotToFileSystem = useCallback(
     async (tempUri: string, tabId: string, timestamp: number, url: string) => {
-      const screenshotWithRNFSPath = await saveScreenshot(tempUri, tabId, timestamp, url);
-      if (!screenshotWithRNFSPath) return;
-      runOnUI(setScreenshotDataWorklet)(screenshotWithRNFSPath);
+      const screenshotWithFullPath = await saveScreenshot(tempUri, tabId, timestamp, url);
+      if (!screenshotWithFullPath) return;
+      runOnUI(setScreenshotDataWorklet)(screenshotWithFullPath);
     },
     [setScreenshotDataWorklet]
   );
