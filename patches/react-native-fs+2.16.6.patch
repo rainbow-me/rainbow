@@ -1,11 +1,13 @@
---- node_modules/react-native-fs/android/src/main/java/com/rnfs/RNFSManager.java	2026-05-02 03:41:34
-+++ node_modules/react-native-fs/android/src/main/java/com/rnfs/RNFSManager.java	2026-05-02 03:41:34
-@@ -960,7 +960,7 @@
+diff --git a/node_modules/react-native-fs/android/src/main/java/com/rnfs/RNFSManager.java b/node_modules/react-native-fs/android/src/main/java/com/rnfs/RNFSManager.java
+index 0000000..0000001 100644
+--- a/node_modules/react-native-fs/android/src/main/java/com/rnfs/RNFSManager.java
++++ b/node_modules/react-native-fs/android/src/main/java/com/rnfs/RNFSManager.java
+@@ -960,7 +960,7 @@ public class RNFSManager extends ReactContextBaseJavaModule {
        return;
      }
- 
+
 -    promise.reject(null, ex.getMessage());
 +    promise.reject("ERROR", ex.getMessage(), ex);
    }
- 
+
    private void rejectFileNotFound(Promise promise, String filepath) {
