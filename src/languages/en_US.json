@@ -2149,7 +2149,8 @@
         "network_fee": "Network Fee",
         "normal": "Normal",
         "slow": "Slow",
-        "gas_sponsored": "Free"
+        "gas_sponsored": "Free",
+        "loading": "Loading…"
       },
       "loading": "Loading...",
       "modal_types": {

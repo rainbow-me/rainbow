@@ -419,7 +419,7 @@ function ReviewGasRow() {
               }}
               placeholder={
                 <Inline horizontalSpace="4px">
-                  <EstimatedSwapGasFeeSlot text="Loading…" align="left" color="label" size="15pt" weight="heavy" />
+                  <EstimatedSwapGasFeeSlot text={i18n.t(i18n.l.swap.gas.loading)} align="left" color="label" size="15pt" weight="heavy" />
                   {null}
                 </Inline>
               }
