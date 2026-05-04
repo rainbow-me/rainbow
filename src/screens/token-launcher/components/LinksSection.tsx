@@ -208,7 +208,7 @@ export function LinksSection() {
   const addMoreLinks = Object.keys(LINK_SETTINGS).filter(linkType => linkType !== 'website') as LinkType[];
 
   return (
-    <CollapsableField title="Links">
+    <CollapsableField title={i18n.t(i18n.l.token_launcher.titles.links)}>
       <Box gap={8}>
         {links.map((link, index) => (
           <Animated.View key={`${link.type}`} layout={COLLAPSABLE_FIELD_ANIMATION}>

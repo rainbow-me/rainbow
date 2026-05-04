@@ -3152,7 +3152,8 @@
         "required_info": "REQUIRED INFO",
         "about": "ABOUT",
         "token_allocation_breakdown": "Token Allocation Breakdown",
-        "mcap": "MCAP"
+        "mcap": "MCAP",
+        "links": "Links"
       },
       "placeholders": {
         "ticker": "$NAME",
