@@ -9,6 +9,7 @@ import { SecretDisplayError } from '@/components/secret-display/SecretDisplayErr
 import { SecretDisplayStates, type SecretDisplayStatesType } from '@/components/secret-display/states';
 import { Bleed, Box, Inline, Inset, Stack, Text } from '@/design-system';
 import { IS_ANDROID } from '@/env';
+import { backupsStore } from '@/features/backup/stores/backupsStore';
 import WalletBackupTypes from '@/helpers/walletBackupTypes';
 import WalletTypes, { type EthereumWalletType } from '@/helpers/walletTypes';
 import useDimensions from '@/hooks/useDimensions';
@@ -20,7 +21,6 @@ import { sharedCoolModalTopOffset } from '@/navigation/config';
 import { useNavigation } from '@/navigation/Navigation';
 import Routes from '@/navigation/routesNames';
 import { type RootStackParamList } from '@/navigation/types';
-import { backupsStore } from '@/state/backups/backups';
 import { useSelectedWallet, useWallets } from '@/state/wallets/walletsStore';
 import { useTheme } from '@/theme/ThemeContext';
 

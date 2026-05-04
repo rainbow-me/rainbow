@@ -30,7 +30,6 @@ const allowedBarrelFiles = [
   'src/components/asset-list/index.ts',
   'src/components/asset-list/RecyclerAssetList/index.tsx',
   'src/components/asset-list/RecyclerAssetList2/index.tsx',
-  'src/components/backup/index.ts',
   'src/components/buttons/hold-to-authorize/index.ts',
   'src/components/buttons/rainbow-button/index.ts',
   'src/components/cards/NFTOffersCard/index.tsx',

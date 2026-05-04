@@ -8,12 +8,12 @@ import ActivityIndicator from '@/components/ActivityIndicator';
 import { ImgixImage } from '@/components/images';
 import { Page } from '@/components/layout';
 import Spinner from '@/components/Spinner';
+import { Text as RNText } from '@/components/text';
 import { Box, Stack } from '@/design-system';
 import { IS_ANDROID } from '@/env';
 import styled from '@/framework/ui/styled-thing';
 import useDimensions from '@/hooks/useDimensions';
 import * as i18n from '@/languages';
-import { parseTimestampFromFilename, type BackupFile } from '@/model/backup';
 import { sharedCoolModalTopOffset } from '@/navigation/config';
 import { useNavigation } from '@/navigation/Navigation';
 import Routes from '@/navigation/routesNames';
@@ -21,11 +21,11 @@ import Menu from '@/screens/SettingsSheet/components/Menu';
 import MenuContainer from '@/screens/SettingsSheet/components/MenuContainer';
 import MenuItem from '@/screens/SettingsSheet/components/MenuItem';
 import { dateFormatter, titleForBackupState } from '@/screens/SettingsSheet/utils';
-import { backupsStore, CloudBackupState, LoadingStates } from '@/state/backups/backups';
 import { margin, padding } from '@/styles';
 import { useTheme } from '@/theme/ThemeContext';
 
-import { Text as RNText } from '../text';
+import { parseTimestampFromFilename, type BackupFile } from '../backup';
+import { backupsStore, CloudBackupState, LoadingStates } from '../stores/backupsStore';
 
 const Title = styled(RNText).attrs({
   align: 'left',

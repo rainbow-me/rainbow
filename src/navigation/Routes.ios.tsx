@@ -11,6 +11,7 @@ import { useShowKingOfTheHill } from '@/components/king-of-the-hill/useShowKingO
 import WalletErrorSheet from '@/components/wallet-error/WalletErrorSheet';
 import useExperimentalFlag, { PROFILES } from '@/config/experimentalHooks';
 import AppIconUnlockSheet from '@/features/app-icon/screens/AppIconUnlockSheet';
+import BackupSheet from '@/features/backup/components/BackupSheet';
 import RegisterENSNavigator from '@/features/ens/navigation/RegisterENSNavigator';
 import ENSAdditionalRecordsSheet from '@/features/ens/screens/ENSAdditionalRecordsSheet';
 import ENSConfirmRegisterSheet from '@/features/ens/screens/ENSConfirmRegisterSheet';
@@ -72,7 +73,6 @@ import { RewardsSheet } from '@/screens/rewards/RewardsSheet';
 import { TokenLauncherScreen } from '@/screens/token-launcher/TokenLauncherScreen';
 import { TransactionDetails } from '@/screens/transaction-details/TransactionDetails';
 
-import BackupSheet from '../components/backup/BackupSheet';
 import { AddCashSheet } from '../screens/AddCash';
 import AvatarBuilder from '../screens/AvatarBuilder';
 import ChangeWalletSheet from '../screens/change-wallet/ChangeWalletSheet';

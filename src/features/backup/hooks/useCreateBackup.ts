@@ -8,12 +8,13 @@ import { maybeAuthenticateWithPIN } from '@/handlers/authentication';
 import walletBackupStepTypes from '@/helpers/walletBackupStepTypes';
 import useWalletCloudBackup from '@/hooks/useWalletCloudBackup';
 import * as i18n from '@/languages';
-import { backupAllWalletsToCloud, getLocalBackupPassword, saveLocalBackupPassword } from '@/model/backup';
 import Navigation from '@/navigation/Navigation';
 import Routes from '@/navigation/routesNames';
-import { backupsStore, CloudBackupState } from '@/state/backups/backups';
 import { useWallets } from '@/state/wallets/walletsStore';
 import { cloudPlatform } from '@/utils/platform';
+
+import { backupAllWalletsToCloud, getLocalBackupPassword, saveLocalBackupPassword } from '../backup';
+import { backupsStore, CloudBackupState } from '../stores/backupsStore';
 
 type UseCreateBackupProps = {
   walletId?: string;

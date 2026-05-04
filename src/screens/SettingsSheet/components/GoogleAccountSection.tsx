@@ -1,11 +1,11 @@
 import React, { useEffect, useState } from 'react';
 
 import ImageAvatar from '@/components/contacts/ImageAvatar';
+import { backupsStore } from '@/features/backup/stores/backupsStore';
 import { showActionSheetWithOptions } from '@/framework/ui/utils/actionsheet';
 import { getGoogleAccountUserData, logoutFromGoogleDrive, type GoogleDriveUserData } from '@/handlers/cloudBackup';
 import * as i18n from '@/languages';
 import { logger, RainbowError } from '@/logger';
-import { backupsStore } from '@/state/backups/backups';
 
 import Menu from './Menu';
 import MenuItem from './MenuItem';

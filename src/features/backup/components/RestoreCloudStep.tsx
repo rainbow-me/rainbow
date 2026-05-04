@@ -6,6 +6,11 @@ import { isEmpty } from 'lodash';
 import { type Source } from 'react-native-fast-image';
 
 import WalletAndBackup from '@/assets/WalletsAndBackup.png';
+import { RainbowButton } from '@/components/buttons';
+import RainbowButtonTypes from '@/components/buttons/rainbow-button/RainbowButtonTypes';
+import { PasswordField } from '@/components/fields';
+import { ImgixImage } from '@/components/images';
+import { Text } from '@/components/text';
 import { Box, Inset, Stack } from '@/design-system';
 import { IS_ANDROID } from '@/env';
 import styled from '@/framework/ui/styled-thing';
@@ -16,13 +21,11 @@ import { WalletLoadingStates } from '@/helpers/walletLoadingStates';
 import useDimensions from '@/hooks/useDimensions';
 import * as i18n from '@/languages';
 import { logger } from '@/logger';
-import { getLocalBackupPassword, restoreCloudBackup, RestoreCloudBackupResultStates, saveLocalBackupPassword } from '@/model/backup';
 import { sharedCoolModalTopOffset } from '@/navigation/config';
 import Navigation, { useNavigation } from '@/navigation/Navigation';
 import { navigateAfterOnboarding } from '@/navigation/onboardingNavigation';
 import Routes from '@/navigation/routesNames';
 import { type RootStackParamList } from '@/navigation/types';
-import { backupsStore } from '@/state/backups/backups';
 import { walletLoadingStore } from '@/state/walletLoading/walletLoading';
 import { updateWalletsBackedUpState } from '@/state/wallets/updateWalletsBackedUpState';
 import { loadWallets } from '@/state/wallets/walletsStore';
@@ -30,11 +33,8 @@ import { padding } from '@/styles';
 import { useTheme, type ThemeContextProps } from '@/theme/ThemeContext';
 import { cloudPlatform } from '@/utils/platform';
 
-import { RainbowButton } from '../buttons';
-import RainbowButtonTypes from '../buttons/rainbow-button/RainbowButtonTypes';
-import { PasswordField } from '../fields';
-import { ImgixImage } from '../images';
-import { Text } from '../text';
+import { getLocalBackupPassword, restoreCloudBackup, RestoreCloudBackupResultStates, saveLocalBackupPassword } from '../backup';
+import { backupsStore } from '../stores/backupsStore';
 
 type ComponentProps = {
   theme: ThemeContextProps;

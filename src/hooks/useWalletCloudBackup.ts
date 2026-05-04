@@ -4,17 +4,17 @@ import { values } from 'lodash';
 
 import { analytics } from '@/analytics';
 import { IS_ANDROID } from '@/env';
+import { addWalletToCloudBackup, backupWalletToCloud } from '@/features/backup/backup';
+import { backupsStore } from '@/features/backup/stores/backupsStore';
 import { maybeAuthenticateWithPIN } from '@/handlers/authentication';
 import { CLOUD_BACKUP_ERRORS, getGoogleAccountUserData, isCloudBackupAvailable, login } from '@/handlers/cloudBackup';
 import { WrappedAlert as Alert } from '@/helpers/alert';
 import WalletBackupTypes from '@/helpers/walletBackupTypes';
 import * as i18n from '@/languages';
 import { logger, RainbowError } from '@/logger';
-import { backupsStore } from '@/state/backups/backups';
 import { setWalletBackedUp, useWallets } from '@/state/wallets/walletsStore';
 import { openInBrowser } from '@/utils/openInBrowser';
 
-import { addWalletToCloudBackup, backupWalletToCloud } from '../model/backup';
 import { cloudPlatform } from '../utils/platform';
 
 export function getUserError(e: Error) {
