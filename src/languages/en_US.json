@@ -1,27 +1,9 @@
 {
   "translation": {
     "account": {
-      "hide": "Hide",
-      "label_24h": "24h",
-      "label_asset": "Asset",
-      "label_price": "Price",
-      "label_quantity": "Quantity",
-      "label_status": "Status",
-      "label_total": "Total",
-      "low_market_value": "with low market value",
-      "no_market_value": "with no market value",
-      "show": "Show",
-      "show_all": "Show all",
-      "show_less": "Show less",
       "tab_tokens": "Tokens",
-      "tab_balances_empty_state": "Balance",
-      "tab_balances_tooltip": "Ethereum and Token Balances",
       "tab_claimables": "Claimables",
       "tab_collectibles": "Collectibles",
-      "tab_interactions": "Interactions",
-      "tab_interactions_tooltip": "Smart Contract Interactions",
-      "tab_investments": "Pools",
-      "tab_savings": "Savings",
       "tab_showcase": "Showcase",
       "tab_perps": "Perps",
       "tab_polymarket": "Predictions",
@@ -99,13 +81,6 @@
         "damaged_wallet": "Unable to backup wallet. Missing keychain data."
       },
       "wrong_pin": "The PIN code you entered was incorrect and we can't make a backup. Please try again with the correct code.",
-      "already_backed_up": {
-        "backed_up": "Backed up",
-        "backed_up_manually": "Backed up manually",
-        "backed_up_message": "Your wallet is backed up",
-        "imported": "Imported",
-        "imported_message": "Your wallet was imported"
-      },
       "wallet_group_title_plural": "Wallet Group %{walletGroupNumber}",
       "wallet_group_title_singular": "Wallet Group",
       "private_key_plural": "Private Key %{privateKeyNumber}",
@@ -212,8 +187,6 @@
         "create_new_secret_phrase": "Create a New Secret Phrase"
       },
       "needs_backup": {
-        "back_up_your_wallet": "Back up your wallet",
-        "dont_risk": "Don't risk your money! Back up your wallet so you can recover it if you lose this device.",
         "not_backed_up": "Not backed up"
       },
       "restore_cloud": {
@@ -1328,7 +1301,6 @@
       "filter": { "all": "All", "free": "Free", "paid": "Paid" }
     },
     "modal": {
-      "approve_tx": "Approve transaction on %{walletType}",
       "back_up": {
         "alerts": {
           "cloud_not_enabled": {
@@ -1338,29 +1310,12 @@
             "show_me": "Yes, Show me"
           }
         },
-        "default": {
-          "button": {
-            "cloud": "Back up your wallet",
-            "cloud_platform": "Back up to %{cloudPlatformName}",
-            "manual": "Back up manually"
-          },
-          "description": "Don't lose your wallet! Save an encrypted copy to %{cloudPlatformName}",
-          "title": "How would you like to back up your wallet?"
-        },
         "existing": {
           "button": {
             "later": "Maybe later",
             "now": "Back up now"
           },
           "description": "You have wallets that have not been backed up yet. Back them up in case you lose this device.",
-          "title": "Would you like to back up?"
-        },
-        "imported": {
-          "button": {
-            "back_up": "Back up to %{cloudPlatformName}",
-            "no_thanks": "No thanks"
-          },
-          "description": "Don't lose your wallet! Save an encrypted copy to %{cloudPlatformName}.",
           "title": "Would you like to back up?"
         }
       },
@@ -2623,25 +2578,9 @@
         "view_on": "View on %{blockExplorerName}"
       },
       "add_cash": {
-        "card_notice": "Works with most debit cards",
         "interstitial": {
           "other_amount": "Other amount"
-        },
-        "need_help_button_email_subject": "support",
-        "need_help_button_label": "Get Support",
-        "on_the_way_line_1": "Your %{currencySymbol} is on the way",
-        "on_the_way_line_2": "and will arrive shortly",
-        "purchase_failed_order_id": "Order ID: %{orderId}",
-        "purchase_failed_subtitle": "You were not charged.",
-        "purchase_failed_support_subject": "Purchase Failed",
-        "purchase_failed_support_subject_with_order_id": "Purchase Failed - Order %{orderId}",
-        "purchase_failed_title": "Sorry, your purchase failed.",
-        "purchasing_dai_requires_eth_message": "Before you can purchase DAI you must have some ETH in your wallet!",
-        "purchasing_dai_requires_eth_title": "You don't have any ETH!",
-        "running_checks": "Running checks...",
-        "success_message": "It's here 🥳",
-        "watching_mode_confirm_message": "The wallet you have open is read-only, so you can’t control what’s inside. Are you sure you want to add cash to %{truncatedAddress}?",
-        "watching_mode_confirm_title": "You’re in Watching Mode"
+        }
       },
       "add_cash_v2": {
         "sheet_title": "Choose a payment option to buy crypto",
