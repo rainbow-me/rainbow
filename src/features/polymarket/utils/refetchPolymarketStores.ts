@@ -15,7 +15,7 @@ export async function refetchPolymarketStores(): Promise<void> {
   ]);
 }
 
-const MAX_ATTEMPTS = 10;
+const MAX_ATTEMPTS = 30;
 const DELAY = time.seconds(1);
 
 export async function waitForPositionSizeUpdate(tokenId: string): Promise<void> {
