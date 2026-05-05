@@ -3447,9 +3447,7 @@
       "filters": {
         "categories": {
           "TRENDING": "Популярное",
-          "RAINBOW": "Rainbow",
-          "NEW": "Новый",
-          "FARCASTER": "Farcaster"
+          "NEW": "Новый"
         },
         "sort": {
           "RECOMMENDED": {
