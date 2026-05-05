@@ -1296,7 +1296,9 @@
       "alert_title_lower_miner_tip_needed": "¡Propina de minero alta!",
       "proceed_anyway": "Continuar de todas formas",
       "edit_max_bass_fee": "Editar límite base máximo",
-      "edit_miner_tip": "Editar propina de minero"
+      "edit_miner_tip": "Editar propina de minero",
+      "gas_sponsored": "Gratis",
+      "estimated_fee": "Tarifa Estimada"
     },
     "homepage": {
       "back": "Volver a rainbow.me",
@@ -2410,12 +2412,10 @@
         "custom": "Personalizado",
         "edit_price": "Editar Precio del Gas",
         "enter_price": "Ingresar Precio del Gas",
-        "estimated_fee": "Tarifa Estimada",
         "fast": "Rápido",
         "network_fee": "Tarifa de Red",
         "normal": "Normal",
-        "slow": "Lento",
-        "gas_sponsored": "Gratis"
+        "slow": "Lento"
       },
       "loading": "Cargando...",
       "modal_types": {

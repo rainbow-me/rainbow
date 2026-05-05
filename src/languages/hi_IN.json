@@ -1296,7 +1296,9 @@
       "alert_title_lower_miner_tip_needed": "उच्च खननकर्ता टिप!",
       "proceed_anyway": "फिर भी आगे बढ़ें",
       "edit_max_bass_fee": "अधिकतम आधार शुल्क संपादित करें",
-      "edit_miner_tip": "खननकर्ता टिप संपादित करें"
+      "edit_miner_tip": "खननकर्ता टिप संपादित करें",
+      "gas_sponsored": "मुफ्त",
+      "estimated_fee": "अनुमानित शुल्क"
     },
     "homepage": {
       "back": "rainbow.me की ओर वापस जाएं",
@@ -2410,12 +2412,10 @@
         "custom": "कस्टम",
         "edit_price": "गैस मूल्य संपादित करें",
         "enter_price": "गैस मूल्य दर्ज करें",
-        "estimated_fee": "अनुमानित शुल्क",
         "fast": "तेज",
         "network_fee": "नेटवर्क शुल्क",
         "normal": "साधारण",
-        "slow": "धीमा",
-        "gas_sponsored": "मुफ्त"
+        "slow": "धीमा"
       },
       "loading": "लोड हो रहा है...",
       "modal_types": {

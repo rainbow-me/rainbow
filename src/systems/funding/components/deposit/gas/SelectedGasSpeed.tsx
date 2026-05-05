@@ -6,7 +6,7 @@ import gasUtils from '@/features/gas/utils/gas';
 import * as i18n from '@/languages';
 import { useDepositContext } from '@/systems/funding/contexts/DepositContext';
 
-const SWAP_GAS_ICONS = gasUtils.SWAP_GAS_ICONS;
+const GAS_ICONS = gasUtils.GAS_ICONS;
 
 export const SelectedGasSpeed = memo(function SelectedGasSpeed({ isPill }: { isPill?: boolean }) {
   const { gasStores, useDepositStore } = useDepositContext();
@@ -17,14 +17,14 @@ export const SelectedGasSpeed = memo(function SelectedGasSpeed({ isPill }: { isP
     <Inline alignVertical="center" space={{ custom: 5 }}>
       <Inline alignVertical="center" space="4px">
         <TextIcon
-          color={SWAP_GAS_ICONS[selectedGasSpeed].color}
+          color={GAS_ICONS[selectedGasSpeed].color}
           height={10}
           size="icon 13px"
           textStyle={{ top: IS_ANDROID ? 1 : 0 + (selectedGasSpeed === 'fast' ? 0.5 : 0) }}
           width={isPill ? 14 : 18}
           weight="bold"
         >
-          {SWAP_GAS_ICONS[selectedGasSpeed].icon}
+          {GAS_ICONS[selectedGasSpeed].icon}
         </TextIcon>
         <Text align={isPill ? 'center' : 'left'} color="label" size="15pt" weight="heavy">
           {i18n.t(i18n.l.gas.speeds[selectedGasSpeed])}

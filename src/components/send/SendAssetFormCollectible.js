@@ -10,7 +10,7 @@ import { padding, position } from '@/styles';
 
 import OpacityToggler from '../animations/OpacityToggler';
 import { UniqueTokenExpandedStateContent } from '../expanded-state/unique-token';
-import { Column } from '../layout';
+import { Column, Row } from '../layout';
 
 const defaultImageDimensions = { height: 512, width: 512 };
 
@@ -21,6 +21,17 @@ const ButtonWrapper = styled(Column).attrs({
   marginBottom: 21,
   width: '100%',
   ...(ios ? { zIndex: 3 } : { elevation: 3 }),
+});
+
+const FooterRow = styled(Row).attrs({
+  align: 'center',
+})({
+  columnGap: 14,
+  width: '100%',
+});
+
+const ButtonSlot = styled.View({
+  flex: 1,
 });
 
 const Footer = styled(Column).attrs({ justify: 'end' })({
@@ -107,8 +118,10 @@ export default function SendAssetFormCollectible({ asset, buttonRenderer, txSpee
       </NFTWrapper>
       <Footer>
         <ButtonWrapper isTallPhone={isTallPhone}>
-          {buttonRenderer}
-          {txSpeedRenderer}
+          <FooterRow>
+            {txSpeedRenderer}
+            <ButtonSlot>{buttonRenderer}</ButtonSlot>
+          </FooterRow>
         </ButtonWrapper>
         {!IS_ANDROID && (
           <GradientToggler isVisible={!isGradientVisible}>

@@ -1296,7 +1296,9 @@
       "alert_title_lower_miner_tip_needed": "Yüksek madenci bahşişi!",
       "proceed_anyway": "Yine de Devam Et",
       "edit_max_bass_fee": "Max Taban Ücretini Düzenle",
-      "edit_miner_tip": "Madenci Bahşişini Düzenle"
+      "edit_miner_tip": "Madenci Bahşişini Düzenle",
+      "gas_sponsored": "Ücretsiz",
+      "estimated_fee": "Tahmini ücret"
     },
     "homepage": {
       "back": "Rainbow.me'ye geri dön",
@@ -2410,12 +2412,10 @@
         "custom": "Özel",
         "edit_price": "Gaz Fiyatını Düzenle",
         "enter_price": "Gaz Fiyatını Girin",
-        "estimated_fee": "Tahmini ücret",
         "fast": "Hızlı",
         "network_fee": "Ağ Ücreti",
         "normal": "Normal",
-        "slow": "Yavaş",
-        "gas_sponsored": "Ücretsiz"
+        "slow": "Yavaş"
       },
       "loading": "Yükleniyor...",
       "modal_types": {

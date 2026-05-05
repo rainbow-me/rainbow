@@ -1296,7 +1296,9 @@
       "alert_title_lower_miner_tip_needed": "Высокие вознаграждения майнерам!",
       "proceed_anyway": "Продолжить",
       "edit_max_bass_fee": "Изменить максимальное основное вознаграждение",
-      "edit_miner_tip": "Изменить вознаграждение майнерам"
+      "edit_miner_tip": "Изменить вознаграждение майнерам",
+      "gas_sponsored": "Бесплатно",
+      "estimated_fee": "Примерная комиссия"
     },
     "homepage": {
       "back": "Вернуться на rainbow.me",
@@ -2410,12 +2412,10 @@
         "custom": "Пользовательский",
         "edit_price": "Изменить цену газа",
         "enter_price": "Введите цену газа",
-        "estimated_fee": "Примерная комиссия",
         "fast": "Быстро",
         "network_fee": "Сетевая комиссия",
         "normal": "Обычный",
-        "slow": "Медленно",
-        "gas_sponsored": "Бесплатно"
+        "slow": "Медленно"
       },
       "loading": "Загрузка...",
       "modal_types": {

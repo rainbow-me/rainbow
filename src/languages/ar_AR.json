@@ -1296,7 +1296,9 @@
       "alert_title_lower_miner_tip_needed": "التلميح المعدني مرتفع!",
       "proceed_anyway": "المتابعة على أي حال",
       "edit_max_bass_fee": "تعديل الرسوم الأساسية القصوى",
-      "edit_miner_tip": "تعديل تلميح المعدن"
+      "edit_miner_tip": "تعديل تلميح المعدن",
+      "gas_sponsored": "مجانا",
+      "estimated_fee": "الرسوم المقدرة"
     },
     "homepage": {
       "back": "العودة إلى rainbow.me",
@@ -2410,12 +2412,10 @@
         "custom": "مخصص",
         "edit_price": "تعديل سعر الغاز",
         "enter_price": "أدخل سعر الغاز",
-        "estimated_fee": "الرسوم المقدرة",
         "fast": "سريع",
         "network_fee": "رسوم الشبكة",
         "normal": "عادي",
-        "slow": "بطيء",
-        "gas_sponsored": "مجانا"
+        "slow": "بطيء"
       },
       "loading": "جار التحميل...",
       "modal_types": {

@@ -26,7 +26,7 @@ import { NavigationSteps, useSwapContext } from '../providers/swap-provider';
 import { EstimatedSwapGasFee, EstimatedSwapGasFeeSlot } from './EstimatedSwapGasFee';
 import { UnmountOnAnimatedReaction } from './UnmountOnAnimatedReaction';
 
-const { SWAP_GAS_ICONS } = gasUtils;
+const { GAS_ICONS } = gasUtils;
 const GAS_BUTTON_HIT_SLOP = 16;
 
 function UnmountWhenGasButtonIsNotInScreen({ placeholder, children }: PropsWithChildren<{ placeholder: ReactNode }>) {
@@ -72,17 +72,17 @@ function SelectedGas({ isPill, sponsored }: { isPill?: boolean; sponsored?: bool
     <Inline alignVertical="center" space={{ custom: 5 }}>
       <Inline alignVertical="center" space="4px">
         <TextIcon
-          color={sponsored && buyTokenColor ? { custom: buyTokenColor } : SWAP_GAS_ICONS[selectedGasSpeed].color}
+          color={sponsored && buyTokenColor ? { custom: buyTokenColor } : GAS_ICONS[selectedGasSpeed].color}
           height={10}
           size="icon 13px"
           textStyle={{ top: IS_ANDROID ? 1 : 0 + (selectedGasSpeed === 'fast' ? 0.5 : 0) }}
           width={isPill ? 14 : 18}
           weight={sponsored ? 'heavy' : 'bold'}
         >
-          {sponsored ? '􀁢' : SWAP_GAS_ICONS[selectedGasSpeed].icon}
+          {sponsored ? '􀁢' : GAS_ICONS[selectedGasSpeed].icon}
         </TextIcon>
         <Text align={isPill ? 'center' : 'left'} color={sponsored ? 'labelTertiary' : 'label'} size="15pt" weight="heavy">
-          {sponsored ? i18n.t(i18n.l.swap.gas.gas_sponsored) : i18n.t(i18n.l.gas.speeds[selectedGasSpeed])}
+          {sponsored ? i18n.t(i18n.l.gas.gas_sponsored) : i18n.t(i18n.l.gas.speeds[selectedGasSpeed])}
         </Text>
       </Inline>
       <TextIcon
@@ -178,7 +178,7 @@ const GasMenu = ({
         actionKey: gasOption,
         actionTitle: i18n.t(i18n.l.gas.speeds[gasOption]),
         discoverabilityTitle: subtitle,
-        icon: { iconType: 'SYSTEM', iconValue: SWAP_GAS_ICONS[gasOption].symbolName },
+        icon: { iconType: 'SYSTEM', iconValue: GAS_ICONS[gasOption].symbolName },
       };
     });
     return { menuItems, menuTitle: '' };

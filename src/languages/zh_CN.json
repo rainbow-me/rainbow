@@ -1296,7 +1296,9 @@
       "alert_title_lower_miner_tip_needed": "矿工小费高！",
       "proceed_anyway": "无论如何进行",
       "edit_max_bass_fee": "编辑最大基础费用",
-      "edit_miner_tip": "编辑矿工小费"
+      "edit_miner_tip": "编辑矿工小费",
+      "gas_sponsored": "免费",
+      "estimated_fee": "预计费用"
     },
     "homepage": {
       "back": "返回rainbow.me",
@@ -2410,12 +2412,10 @@
         "custom": "自定义",
         "edit_price": "编辑气价",
         "enter_price": "输入气价",
-        "estimated_fee": "预计费用",
         "fast": "快速",
         "network_fee": "网络费用",
         "normal": "正常",
-        "slow": "慢速",
-        "gas_sponsored": "免费"
+        "slow": "慢速"
       },
       "loading": "载入中...",
       "modal_types": {

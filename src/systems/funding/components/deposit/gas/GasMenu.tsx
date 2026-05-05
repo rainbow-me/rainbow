@@ -15,7 +15,7 @@ import * as i18n from '@/languages';
 import { useDepositContext } from '@/systems/funding/contexts/DepositContext';
 
 const GAS_BUTTON_HIT_SLOP = 16;
-const SWAP_GAS_ICONS = gasUtils.SWAP_GAS_ICONS;
+const GAS_ICONS = gasUtils.GAS_ICONS;
 
 export function GasMenu({ children, onSelectGasSpeed }: { children: ReactNode; onSelectGasSpeed: (speed: GasSpeed) => void }) {
   const { gasStores } = useDepositContext();
@@ -53,7 +53,7 @@ export function GasMenu({ children, onSelectGasSpeed }: { children: ReactNode; o
         actionKey: gasOption,
         actionTitle: i18n.t(i18n.l.gas.speeds[gasOption]),
         discoverabilityTitle: subtitle,
-        icon: { iconType: 'SYSTEM', iconValue: SWAP_GAS_ICONS[gasOption].symbolName },
+        icon: { iconType: 'SYSTEM', iconValue: GAS_ICONS[gasOption].symbolName },
       };
     });
     return { menuItems, menuTitle: '' };

@@ -1229,7 +1229,9 @@
       "alert_title_lower_miner_tip_needed": "High miner tip!",
       "proceed_anyway": "Proceed Anyway",
       "edit_max_bass_fee": "Edit Max Base Fee",
-      "edit_miner_tip": "Edit Miner Tip"
+      "edit_miner_tip": "Edit Miner Tip",
+      "gas_sponsored": "Free",
+      "estimated_fee": "Estimated fee"
     },
     "homepage": {
       "discover_web3": "Discover Web3"
@@ -2142,12 +2144,10 @@
       "gas": {
         "edit_price": "Edit Gas Price",
         "enter_price": "Enter Gas Price",
-        "estimated_fee": "Estimated fee",
         "fast": "Fast",
         "network_fee": "Network Fee",
         "normal": "Normal",
         "slow": "Slow",
-        "gas_sponsored": "Free",
         "loading": "Loading…"
       },
       "loading": "Loading...",

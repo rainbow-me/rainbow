@@ -1296,7 +1296,9 @@
       "alert_title_lower_miner_tip_needed": "เคล็ดคุณภาพขุดเหมืองสูง!",
       "proceed_anyway": "ดำเนินการต่อ",
       "edit_max_bass_fee": "แก้ไขฐานค่าธรรมเนียมสูงสุด",
-      "edit_miner_tip": "แก้ไขเคล็ดคุณภาพขุดเหมือง"
+      "edit_miner_tip": "แก้ไขเคล็ดคุณภาพขุดเหมือง",
+      "gas_sponsored": "ฟรี",
+      "estimated_fee": "ค่าธรรมเนียมที่คาดว่าจะได้"
     },
     "homepage": {
       "back": "กลับไปที่ rainbow.me",
@@ -2410,12 +2412,10 @@
         "custom": "กำหนดเอง",
         "edit_price": "แก้ไขราคาแก๊ส",
         "enter_price": "กรอกราคาแก๊ส",
-        "estimated_fee": "ค่าธรรมเนียมที่คาดว่าจะได้",
         "fast": "รวดเร็ว",
         "network_fee": "ค่าธรรมเนียมเครือข่าย",
         "normal": "ปกติ",
-        "slow": "ช้า",
-        "gas_sponsored": "ฟรี"
+        "slow": "ช้า"
       },
       "loading": "กำลังโหลด...",
       "modal_types": {

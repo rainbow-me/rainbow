@@ -1296,7 +1296,9 @@
       "alert_title_lower_miner_tip_needed": "Miner tip tinggi!",
       "proceed_anyway": "Lanjutkan Saja",
       "edit_max_bass_fee": "Edit Max Base Fee",
-      "edit_miner_tip": "Edit Miner Tip"
+      "edit_miner_tip": "Edit Miner Tip",
+      "gas_sponsored": "Gratis",
+      "estimated_fee": "Perkiraan biaya"
     },
     "homepage": {
       "back": "Kembali ke rainbow.me",
@@ -2410,12 +2412,10 @@
         "custom": "Kustom",
         "edit_price": "Edit Harga Gas",
         "enter_price": "Masukkan Harga Gas",
-        "estimated_fee": "Perkiraan biaya",
         "fast": "Cepat",
         "network_fee": "Biaya Jaringan",
         "normal": "Normal",
-        "slow": "Lambat",
-        "gas_sponsored": "Gratis"
+        "slow": "Lambat"
       },
       "loading": "Memuat...",
       "modal_types": {

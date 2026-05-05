@@ -1296,7 +1296,9 @@
       "alert_title_lower_miner_tip_needed": "大きなマイナーチップです!",
       "proceed_anyway": "続ける",
       "edit_max_bass_fee": "最大基本料金を編集",
-      "edit_miner_tip": "マイナーチップを編集"
+      "edit_miner_tip": "マイナーチップを編集",
+      "gas_sponsored": "無料",
+      "estimated_fee": "推定手数料"
     },
     "homepage": {
       "back": "rainbow.meに戻る",
@@ -2410,12 +2412,10 @@
         "custom": "カスタム",
         "edit_price": "ガス価格を編集",
         "enter_price": "ガス価格を入力してください",
-        "estimated_fee": "推定手数料",
         "fast": "高速",
         "network_fee": "ネットワーク手数料",
         "normal": "通常",
-        "slow": "低速",
-        "gas_sponsored": "無料"
+        "slow": "低速"
       },
       "loading": "読み込み中...",
       "modal_types": {

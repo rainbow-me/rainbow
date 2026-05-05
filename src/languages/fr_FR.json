@@ -1296,7 +1296,9 @@
       "alert_title_lower_miner_tip_needed": "Élevé pourboire aux mineurs !",
       "proceed_anyway": "Continuer quand même",
       "edit_max_bass_fee": "Modifier Max Base Fee",
-      "edit_miner_tip": "Modifier le pourboire aux mineurs"
+      "edit_miner_tip": "Modifier le pourboire aux mineurs",
+      "gas_sponsored": "Gratuit",
+      "estimated_fee": "Frais estimé"
     },
     "homepage": {
       "back": "Retour à rainbow.me",
@@ -2410,12 +2412,10 @@
         "custom": "Personnalisé",
         "edit_price": "Modifier le Prix de l'Essence",
         "enter_price": "Entrez le Prix de l'Essence",
-        "estimated_fee": "Frais estimé",
         "fast": "Rapide",
         "network_fee": "Frais de réseau",
         "normal": "Normal",
-        "slow": "Lent",
-        "gas_sponsored": "Gratuit"
+        "slow": "Lent"
       },
       "loading": "Chargement...",
       "modal_types": {

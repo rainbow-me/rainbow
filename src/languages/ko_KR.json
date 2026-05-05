@@ -1296,7 +1296,9 @@
       "alert_title_lower_miner_tip_needed": "마이너 팁이 높습니다!",
       "proceed_anyway": "그래도 진행",
       "edit_max_bass_fee": "최대 기본 수수료 편집",
-      "edit_miner_tip": "마이너 팁 편집"
+      "edit_miner_tip": "마이너 팁 편집",
+      "gas_sponsored": "무료",
+      "estimated_fee": "예상 수수료"
     },
     "homepage": {
       "back": "rainbow.me로 돌아가기",
@@ -2410,12 +2412,10 @@
         "custom": "사용자 정의",
         "edit_price": "가스 가격 수정",
         "enter_price": "가스 가격 입력",
-        "estimated_fee": "예상 수수료",
         "fast": "빠름",
         "network_fee": "네트워크 수수료",
         "normal": "보통",
-        "slow": "느림",
-        "gas_sponsored": "무료"
+        "slow": "느림"
       },
       "loading": "로딩 중...",
       "modal_types": {

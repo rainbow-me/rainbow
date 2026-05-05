@@ -1,6 +1,5 @@
 import { type TextColor } from '@/design-system/color/palettes';
 import type { NativeCurrencyKey } from '@/entities/nativeCurrencyTypes';
-import { IS_IOS } from '@/env';
 import { convertAmountToNativeDisplay } from '@/helpers/utilities';
 import * as i18n from '@/languages';
 import { colors } from '@/styles';
@@ -20,20 +19,11 @@ const NO_TREND = 'notrend';
 const GasSpeedOrder = [NORMAL, FAST, URGENT, CUSTOM];
 const GasTrends = { FALLING, NO_TREND, RISING, STABLE, SURGING };
 
-const GAS_ICONS: {
-  [key in (typeof GasSpeedOrder)[number]]: string;
-} = {
-  [CUSTOM]: 'gear',
-  [FAST]: 'rocket',
-  [NORMAL]: 'stopwatch',
-  [URGENT]: 'policeCarLight',
-};
-
-interface SwapGasIcons {
+interface GasIcons {
   [key: string]: { color: TextColor; icon: string; symbolName: string };
 }
 
-const SWAP_GAS_ICONS: SwapGasIcons = {
+const GAS_ICONS: GasIcons = {
   [CUSTOM]: {
     color: 'labelSecondary',
     icon: '􀣌',
@@ -54,15 +44,6 @@ const SWAP_GAS_ICONS: SwapGasIcons = {
     icon: '􀋦',
     symbolName: 'bolt',
   },
-};
-
-const GAS_EMOJIS: {
-  [key in (typeof GasSpeedOrder)[number]]: string;
-} = {
-  [CUSTOM]: '⚙️',
-  [FAST]: '🚀',
-  [NORMAL]: IS_IOS ? '⏱' : '🕘',
-  [URGENT]: '🚨',
 };
 
 // i18n
@@ -111,13 +92,11 @@ export default {
   FAST,
   getGasLabel,
   getGasFallback,
-  GAS_EMOJIS,
   GAS_ICONS,
   GAS_TRENDS,
   GasSpeedOrder,
   GasTrends,
   NORMAL,
   SLOW,
-  SWAP_GAS_ICONS,
   URGENT,
 };

@@ -10,12 +10,10 @@ import { Easing } from 'react-native-reanimated';
 
 import ButtonPressAnimation from '@/components/animations/ButtonPressAnimation';
 import { ChainImage } from '@/components/coin-icon/ChainImage';
-import { ContextMenu } from '@/components/context-menu';
 import { Centered, Column, Row } from '@/components/layout';
-import ContextMenuButton from '@/components/native-context-menu/contextMenu';
+import { type MenuConfig } from '@/components/native-context-menu/contextMenu';
 import { Text } from '@/components/text';
 import type { ParsedAddressAsset } from '@/entities/tokens';
-import { IS_ANDROID } from '@/env';
 import styled from '@/framework/ui/styled-thing';
 import { opacity } from '@/framework/ui/utils/opacity';
 import { isL2Chain } from '@/handlers/web3';
@@ -36,8 +34,9 @@ import useGas from '../hooks/useGas';
 import { type GasSpeed } from '../types/gasSpeed';
 import gasUtils from '../utils/gas';
 import GasSpeedLabelPager from './GasSpeedLabelPager';
+import { GasSpeedMenu } from './GasSpeedMenu';
 
-const { GAS_EMOJIS, GAS_ICONS, GasSpeedOrder, CUSTOM, URGENT, NORMAL, FAST, getGasLabel } = gasUtils;
+const { GasSpeedOrder, GAS_ICONS, CUSTOM, NORMAL, getGasLabel } = gasUtils;
 
 type WithThemeProps = {
   borderColor: string;
@@ -46,6 +45,7 @@ type WithThemeProps = {
   marginBottom: number;
   marginTop: number;
   horizontalPadding: number;
+  inlineFeeDisplay?: boolean;
 };
 
 const CustomGasButton = styled(ButtonPressAnimation).attrs({
@@ -102,13 +102,14 @@ const NativeCoinIconWrapper = styled(Column).attrs({})({
 });
 
 const Container = styled(Column).attrs({
-  alignItems: 'center',
   hapticType: 'impactHeavy',
   justifyContent: 'center',
-})(({ marginBottom, marginTop, horizontalPadding }: WithThemeProps) => ({
+})(({ marginBottom, marginTop, horizontalPadding, inlineFeeDisplay }: WithThemeProps) => ({
+  alignItems: inlineFeeDisplay ? 'flex-start' : 'center',
   ...margin.object(marginTop, 0, marginBottom),
   ...padding.object(0, horizontalPadding),
-  width: '100%',
+  minWidth: inlineFeeDisplay ? 78 : undefined,
+  width: inlineFeeDisplay ? undefined : '100%',
 }));
 
 const Label = styled(Text).attrs(({ size }: { size: string }) => ({
@@ -143,6 +144,100 @@ const shouldRoundGasDisplay = (chainId: ChainId) => {
   }
 };
 
+type InlineGasControlProps = {
+  formatGasPrice: (animatedValue: string) => number | string;
+  gasIsNotReady: boolean;
+  gasOptionsAvailable: boolean;
+  menuConfig: MenuConfig;
+  onPressActionSheet: (buttonIndex: number) => void;
+  onPressMenuItem: (event: { nativeEvent: { actionKey: GasSpeed } }) => void;
+  price: string | null;
+  rawColorForAsset: string;
+  renderGasPriceText: (animatedNumber: number) => React.ReactNode;
+  selectedGasFeeOption: string;
+  showGasOptions: boolean;
+  speedOptions: string[];
+  theme: string;
+};
+
+const InlineGasControl = ({
+  formatGasPrice,
+  gasIsNotReady,
+  gasOptionsAvailable,
+  menuConfig,
+  onPressActionSheet,
+  onPressMenuItem,
+  price,
+  rawColorForAsset,
+  renderGasPriceText,
+  selectedGasFeeOption,
+  showGasOptions,
+  speedOptions,
+  theme,
+}: InlineGasControlProps) => {
+  const { colors } = useTheme();
+  const label = getGasLabel(selectedGasFeeOption);
+  const iconConfig = GAS_ICONS[selectedGasFeeOption];
+  const speedIcon = iconConfig?.icon;
+  const mutedColor = theme === 'dark' ? opacity(darkModeThemeColors.blueGreyDark, 0.6) : opacity(colors.blueGreyDark, 0.6);
+  const colorByTextColor: Record<string, string> = {
+    red: colors.red,
+    blue: colors.appleBlue,
+    yellow: colors.yellowFavorite,
+    labelSecondary: mutedColor,
+  };
+  const iconColorMap: Record<string, string> = Object.fromEntries(
+    Object.entries(GAS_ICONS).map(([speed, { color }]) => [speed, colorByTextColor[color] ?? mutedColor])
+  );
+  const speedIconColor = iconColorMap[selectedGasFeeOption] || mutedColor;
+  const content = (
+    <Column align="start">
+      <Row align="center">
+        {speedIcon && (
+          <Text color={speedIconColor} lineHeight="normal" size="lmedium" style={{ marginRight: 4 }} weight="heavy">
+            {speedIcon}
+          </Text>
+        )}
+        <Text
+          color={theme === 'dark' ? colors.whiteLabel : opacity(colors.blueGreyDark, 0.8)}
+          lineHeight="normal"
+          size="lmedium"
+          weight="heavy"
+        >
+          {label}
+        </Text>
+        {gasOptionsAvailable && !gasIsNotReady && (
+          <Text
+            align="center"
+            color={theme === 'dark' ? opacity(darkModeThemeColors.blueGreyDark, 0.6) : opacity(colors.blueGreyDark, 0.45)}
+            lineHeight="normal"
+            size="smedium"
+            weight="bold"
+          >
+            {' 􀆏'}
+          </Text>
+        )}
+      </Row>
+      <Row align="center" style={{ marginTop: 6 }}>
+        <Text color={mutedColor} lineHeight="normal" size="smedium" style={{ marginRight: 4 }} weight="heavy">
+          􀵟
+        </Text>
+        <AnimateNumber formatter={formatGasPrice} interval={6} renderContent={renderGasPriceText} steps={6} timing="linear" value={price} />
+      </Row>
+    </Column>
+  );
+
+  if (showGasOptions || !gasOptionsAvailable || gasIsNotReady) return content;
+
+  return (
+    <GasSpeedMenu menuConfig={menuConfig} onPressActionSheet={onPressActionSheet} onPressMenuItem={onPressMenuItem} options={speedOptions}>
+      <ButtonPressAnimation scaleTo={0.9} testID="gas-speed-pager">
+        {content}
+      </ButtonPressAnimation>
+    </GasSpeedMenu>
+  );
+};
+
 type GasSpeedButtonProps = {
   asset?: Partial<ParsedAddressAsset>;
   chainId: ChainId;
@@ -157,6 +252,7 @@ type GasSpeedButtonProps = {
   showGasOptions?: boolean;
   validateGasParams?: React.RefObject<(callback?: () => void) => void>;
   loading?: boolean;
+  inlineFeeDisplay?: boolean;
 };
 
 const GasSpeedButton = ({
@@ -173,6 +269,7 @@ const GasSpeedButton = ({
   showGasOptions = false,
   validateGasParams = undefined,
   loading = false,
+  inlineFeeDisplay = false,
 }: GasSpeedButtonProps) => {
   const { colors } = useTheme();
   const { navigate, goBack } = useNavigation();
@@ -254,16 +351,22 @@ const GasSpeedButton = ({
       const priceText = animatedNumber === 0 || loading ? i18n.t(i18n.l.swap.loading) : animatedNumber;
       return (
         <Text
-          color={theme === 'dark' ? colors.whiteLabel : opacity(colors.blueGreyDark, 0.8)}
+          color={
+            inlineFeeDisplay
+              ? opacity(theme === 'dark' ? colors.whiteLabel : colors.blueGreyDark, 0.6)
+              : theme === 'dark'
+                ? colors.whiteLabel
+                : opacity(colors.blueGreyDark, 0.8)
+          }
           lineHeight="normal"
-          size="lmedium"
-          weight="heavy"
+          size={inlineFeeDisplay ? 'smedium' : 'lmedium'}
+          weight={inlineFeeDisplay ? 'bold' : 'heavy'}
         >
           {priceText}
         </Text>
       );
     },
-    [loading, theme, colors]
+    [colors, price, theme]
   );
 
   // I'M SHITTY CODE BUT GOT THINGS DONE REFACTOR ME ASAP
@@ -321,29 +424,18 @@ const GasSpeedButton = ({
     [handlePressSpeedOption]
   );
 
-  const handlePressActionSheet = useCallback(
-    (buttonIndex: number) => {
-      switch (buttonIndex) {
-        case 0:
-          handlePressSpeedOption(NORMAL);
-          break;
-        case 1:
-          handlePressSpeedOption(FAST);
-          break;
-        case 2:
-          handlePressSpeedOption(URGENT);
-          break;
-        case 3:
-          handlePressSpeedOption(CUSTOM);
-      }
-    },
-    [handlePressSpeedOption]
-  );
-
   const speedOptions = useMemo(() => {
     if (speeds) return speeds;
     return useBackendNetworksStore.getState().getChainsGasSpeeds()[chainId];
   }, [chainId, speeds]);
+
+  const handlePressActionSheet = useCallback(
+    (buttonIndex: number) => {
+      if (buttonIndex < 0) return;
+      handlePressSpeedOption(speedOptions[buttonIndex]);
+    },
+    [handlePressSpeedOption, speedOptions]
+  );
 
   const menuConfig = useMemo(() => {
     const menuOptions = speedOptions?.map(gasOption => {
@@ -361,11 +453,11 @@ const GasSpeedButton = ({
             : `${toFixedDecimals(estimatedGwei, isL2 ? 4 : 0)}–${toFixedDecimals(totalGwei, isL2 ? 4 : 0)} Gwei`;
       return {
         actionKey: gasOption,
-        actionTitle: (android ? `${GAS_EMOJIS[gasOption]}  ` : '') + getGasLabel(gasOption),
+        actionTitle: getGasLabel(gasOption),
         discoverabilityTitle: gweiDisplay,
         icon: {
-          iconType: 'ASSET',
-          iconValue: GAS_ICONS[gasOption],
+          iconType: 'SYSTEM',
+          iconValue: GAS_ICONS[gasOption]?.symbolName,
         },
       };
     });
@@ -402,35 +494,15 @@ const GasSpeedButton = ({
       />
     );
     if (!gasOptionsAvailable || gasIsNotReady) return pager;
-
-    if (IS_ANDROID) {
-      return (
-        <ContextMenu
-          activeOpacity={0}
-          enableContextMenu
-          isAnchoredToRight
-          isMenuPrimaryAction
-          onPressActionSheet={handlePressActionSheet}
-          options={speedOptions}
-          useActionSheetFallback={false}
-          wrapNativeComponent={false}
-        >
-          <Centered>{pager}</Centered>
-        </ContextMenu>
-      );
-    }
-
     return (
-      <ContextMenuButton
-        enableContextMenu
-        isAnchoredToRight
-        isMenuPrimaryAction
+      <GasSpeedMenu
         menuConfig={menuConfig}
+        onPressActionSheet={handlePressActionSheet}
         onPressMenuItem={handlePressMenuItem}
-        useActionSheetFallback={false}
+        options={speedOptions}
       >
         {pager}
-      </ContextMenuButton>
+      </GasSpeedMenu>
     );
   }, [
     colors,
@@ -439,10 +511,10 @@ const GasSpeedButton = ({
     handlePressActionSheet,
     handlePressMenuItem,
     menuConfig,
-    speedOptions,
     rawColorForAsset,
     selectedGasFeeOption,
     showGasOptions,
+    speedOptions,
     theme,
   ]);
 
@@ -467,96 +539,120 @@ const GasSpeedButton = ({
   }, [openCustomGasSheet, prevShouldOpenCustomGasSheet, shouldOpenCustomGasSheet.shouldOpen]);
 
   return (
-    <Container horizontalPadding={horizontalPadding} marginBottom={marginBottom} marginTop={marginTop} testID={testID}>
-      <Row justify="space-between">
-        <ButtonPressAnimation onPress={openGasHelper} scaleTo={0.9} testID="estimated-fee-label" disallowInterruption={false}>
-          <Row>
-            <NativeCoinIconWrapper>
-              <AnimatePresence>
-                {!!chainId && (
-                  <MotiView
-                    animate={{ opacity: 1 }}
-                    from={{ opacity: 0 }}
-                    // @ts-expect-error - MotiTransitionProp is not assignable to TransitionConfig
-                    transition={{
-                      duration: 300,
-                      easing: Easing.bezier(0.2, 0, 0, 1),
-                      type: 'timing',
-                    }}
-                  >
-                    <ChainImage chainId={chainId} position="relative" size={16} />
-                  </MotiView>
-                )}
-              </AnimatePresence>
-            </NativeCoinIconWrapper>
-            <TextContainer>
-              <Text>
-                <AnimateNumber
-                  formatter={formatGasPrice}
-                  interval={6}
-                  renderContent={renderGasPriceText}
-                  steps={6}
-                  timing="linear"
-                  value={price}
-                />
-                <Text letterSpacing="one" size="lmedium" weight="heavy">
-                  {' '}
+    <Container
+      horizontalPadding={horizontalPadding}
+      inlineFeeDisplay={inlineFeeDisplay}
+      marginBottom={marginBottom}
+      marginTop={marginTop}
+      testID={testID}
+    >
+      {inlineFeeDisplay ? (
+        <InlineGasControl
+          formatGasPrice={formatGasPrice}
+          gasIsNotReady={gasIsNotReady}
+          gasOptionsAvailable={gasOptionsAvailable}
+          menuConfig={menuConfig}
+          onPressActionSheet={handlePressActionSheet}
+          onPressMenuItem={handlePressMenuItem}
+          price={price}
+          rawColorForAsset={rawColorForAsset}
+          renderGasPriceText={renderGasPriceText}
+          selectedGasFeeOption={selectedGasFeeOption}
+          showGasOptions={showGasOptions}
+          speedOptions={speedOptions}
+          theme={theme}
+        />
+      ) : (
+        <Row justify="space-between">
+          <ButtonPressAnimation onPress={openGasHelper} scaleTo={0.9} testID="estimated-fee-label" disallowInterruption={false}>
+            <Row>
+              <NativeCoinIconWrapper>
+                <AnimatePresence>
+                  {!!chainId && (
+                    <MotiView
+                      animate={{ opacity: 1 }}
+                      from={{ opacity: 0 }}
+                      // @ts-expect-error - MotiTransitionProp is not assignable to TransitionConfig
+                      transition={{
+                        duration: 300,
+                        easing: Easing.bezier(0.2, 0, 0, 1),
+                        type: 'timing',
+                      }}
+                    >
+                      <ChainImage chainId={chainId} position="relative" size={16} />
+                    </MotiView>
+                  )}
+                </AnimatePresence>
+              </NativeCoinIconWrapper>
+              <TextContainer>
+                <Text>
+                  <AnimateNumber
+                    formatter={formatGasPrice}
+                    interval={6}
+                    renderContent={renderGasPriceText}
+                    steps={6}
+                    timing="linear"
+                    value={price}
+                  />
+                  <Text letterSpacing="one" size="lmedium" weight="heavy">
+                    {' '}
+                  </Text>
+                  <TransactionTimeLabel formatter={formatTransactionTime} theme={theme} />
                 </Text>
-                <TransactionTimeLabel formatter={formatTransactionTime} theme={theme} />
-              </Text>
-            </TextContainer>
-          </Row>
-          <Row justify="space-between">
-            <Label
-              color={theme === 'dark' ? opacity(darkModeThemeColors.blueGreyDark, 0.6) : opacity(colors.blueGreyDark, 0.6)}
-              size="smedium"
-              weight="bold"
-            >
-              {i18n.t(i18n.l.swap.gas.estimated_fee)}{' '}
+              </TextContainer>
+            </Row>
+            <Row justify="space-between">
               <Label
-                color={theme === 'dark' ? opacity(darkModeThemeColors.blueGreyDark, 0.25) : opacity(colors.blueGreyDark, 0.25)}
+                color={theme === 'dark' ? opacity(darkModeThemeColors.blueGreyDark, 0.6) : opacity(colors.blueGreyDark, 0.6)}
                 size="smedium"
                 weight="bold"
               >
-                􀅵
-              </Label>
-            </Label>
-          </Row>
-        </ButtonPressAnimation>
-        <Centered>
-          <GasSpeedPagerCentered testID="gas-speed-pager">{renderGasSpeedPager}</GasSpeedPagerCentered>
-
-          <Centered>
-            {isLegacyGasNetwork ? (
-              <ChainBadgeContainer>
-                <ChainImage chainId={chainId} position="relative" size={16} />
-              </ChainBadgeContainer>
-            ) : showGasOptions ? (
-              <CustomGasButton
-                borderColor={makeColorMoreChill(rawColorForAsset || colors.appleBlue, colors.shadowBlack)}
-                onPress={onDonePress}
-                testID="gas-speed-done-button"
-              >
-                <DoneCustomGas
-                  color={
-                    theme !== 'light' ? colors.whiteLabel : makeColorMoreChill(rawColorForAsset || colors.appleBlue, colors.shadowBlack)
-                  }
+                {i18n.t(i18n.l.gas.estimated_fee)}{' '}
+                <Label
+                  color={theme === 'dark' ? opacity(darkModeThemeColors.blueGreyDark, 0.25) : opacity(colors.blueGreyDark, 0.25)}
+                  size="smedium"
+                  weight="bold"
                 >
-                  {i18n.t(i18n.l.button.done)}
-                </DoneCustomGas>
-              </CustomGasButton>
-            ) : (
-              <CustomGasButton
-                borderColor={theme === 'dark' ? opacity(darkModeThemeColors.blueGreyDark, 0.12) : opacity(colors.blueGreyDark, 0.06)}
-                onPress={openCustomOptions}
-                testID="gas-speed-custom"
-              >
-                <Symbol color={theme === 'dark' ? colors.whiteLabel : opacity(colors.blueGreyDark, 0.8)}>􀌆</Symbol>
-              </CustomGasButton>
-            )}
+                  􀅵
+                </Label>
+              </Label>
+            </Row>
+          </ButtonPressAnimation>
+          <Centered>
+            <GasSpeedPagerCentered testID="gas-speed-pager">{renderGasSpeedPager}</GasSpeedPagerCentered>
+
+            <Centered>
+              {isLegacyGasNetwork ? (
+                <ChainBadgeContainer>
+                  <ChainImage chainId={chainId} position="relative" size={16} />
+                </ChainBadgeContainer>
+              ) : showGasOptions ? (
+                <CustomGasButton
+                  borderColor={makeColorMoreChill(rawColorForAsset || colors.appleBlue, colors.shadowBlack)}
+                  onPress={onDonePress}
+                  testID="gas-speed-done-button"
+                >
+                  <DoneCustomGas
+                    color={
+                      theme !== 'light' ? colors.whiteLabel : makeColorMoreChill(rawColorForAsset || colors.appleBlue, colors.shadowBlack)
+                    }
+                  >
+                    {i18n.t(i18n.l.button.done)}
+                  </DoneCustomGas>
+                </CustomGasButton>
+              ) : (
+                <CustomGasButton
+                  borderColor={theme === 'dark' ? opacity(darkModeThemeColors.blueGreyDark, 0.12) : opacity(colors.blueGreyDark, 0.06)}
+                  onPress={openCustomOptions}
+                  testID="gas-speed-custom"
+                >
+                  <Symbol color={theme === 'dark' ? colors.whiteLabel : opacity(colors.blueGreyDark, 0.8)}>􀌆</Symbol>
+                </CustomGasButton>
+              )}
+            </Centered>
           </Centered>
-        </Centered>
-      </Row>
+        </Row>
+      )}
     </Container>
   );
 };

@@ -1042,6 +1042,7 @@ export default function SendSheet() {
                 onPress={showConfirmationSheet}
                 scaleTo={buttonDisabled ? 1.025 : 0.9}
                 size="big"
+                style={{ width: '100%' }}
                 testID="send-sheet-confirm"
                 weight="heavy"
               />
@@ -1062,7 +1063,9 @@ export default function SendSheet() {
                 fallbackColor={colorForAsset}
                 chainId={currentChainId}
                 horizontalPadding={0}
-                marginBottom={17}
+                inlineFeeDisplay
+                marginBottom={0}
+                marginTop={0}
                 theme={isDarkMode ? 'dark' : 'light'}
               />
             }

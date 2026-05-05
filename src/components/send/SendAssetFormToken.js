@@ -9,15 +9,26 @@ import { useTheme } from '@/theme/ThemeContext';
 import { NAVIGATION_BAR_HEIGHT } from '@/utils/deviceUtils';
 import { removeLeadingZeros } from '@/utils/formatters';
 
-import { Column } from '../layout';
+import { Column, Row } from '../layout';
 import SendAssetFormField from './SendAssetFormField';
 
 const FooterContainer = styled(Column).attrs({
   justify: 'end',
-  marginBottom: NAVIGATION_BAR_HEIGHT,
+  marginBottom: IS_ANDROID ? NAVIGATION_BAR_HEIGHT + 16 : 0,
 })({
   width: '100%',
   zIndex: 3,
+});
+
+const FooterRow = styled(Row).attrs({
+  align: 'center',
+})({
+  columnGap: 14,
+  width: '100%',
+});
+
+const ButtonSlot = styled.View({
+  flex: 1,
 });
 
 const FormContainer = styled(Column).attrs({
@@ -88,8 +99,10 @@ export default function SendAssetFormToken({
         />
       </FormContainer>
       <FooterContainer>
-        {buttonRenderer}
-        {txSpeedRenderer}
+        <FooterRow>
+          {txSpeedRenderer}
+          <ButtonSlot>{buttonRenderer}</ButtonSlot>
+        </FooterRow>
       </FooterContainer>
     </Fragment>
   );

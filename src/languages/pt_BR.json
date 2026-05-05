@@ -1296,7 +1296,9 @@
       "alert_title_lower_miner_tip_needed": "Gorjeta do minerador alta!",
       "proceed_anyway": "Continuar mesmo assim",
       "edit_max_bass_fee": "Editar Taxa Máxima de Base",
-      "edit_miner_tip": "Editar Gorjeta do Minerador"
+      "edit_miner_tip": "Editar Gorjeta do Minerador",
+      "gas_sponsored": "Grátis",
+      "estimated_fee": "Taxa Estimada"
     },
     "homepage": {
       "back": "Voltar para rainbow.me",
@@ -2410,12 +2412,10 @@
         "custom": "Personalizado",
         "edit_price": "Editar Preço do Gás",
         "enter_price": "Digite o Preço do Gás",
-        "estimated_fee": "Taxa Estimada",
         "fast": "Rápido",
         "network_fee": "Taxa da Rede",
         "normal": "Normal",
-        "slow": "Lento",
-        "gas_sponsored": "Grátis"
+        "slow": "Lento"
       },
       "loading": "Carregando...",
       "modal_types": {
