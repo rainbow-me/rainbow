@@ -1,27 +1,9 @@
 {
   "translation": {
     "account": {
-      "hide": "Ocultar",
-      "label_24h": "24h",
-      "label_asset": "Ativo",
-      "label_price": "Preço",
-      "label_quantity": "Quantidade",
-      "label_status": "Status",
-      "label_total": "Total",
-      "low_market_value": "com baixo valor de mercado",
-      "no_market_value": "sem valor de mercado",
-      "show": "Mostrar",
-      "show_all": "Mostrar tudo",
-      "show_less": "Mostrar menos",
       "tab_tokens": "Tokens",
-      "tab_balances_empty_state": "Saldo",
-      "tab_balances_tooltip": "Saldos de Ethereum e Token",
       "tab_claimables": "Reivindicáveis",
       "tab_collectibles": "Colecionáveis",
-      "tab_interactions": "Interações",
-      "tab_interactions_tooltip": "Interações de Contrato Inteligente",
-      "tab_investments": "Pools",
-      "tab_savings": "Poupanças",
       "tab_showcase": "Vitrine",
       "tab_perps": "Perps",
       "tab_polymarket": "Previsões",
@@ -50,9 +32,7 @@
     "activity_list": {
       "title": "Atividade",
       "empty_state": {
-        "default_label": "Nenhuma transação ainda",
-        "recycler_label": "Nenhuma transação ainda",
-        "testnet_label": "Seu histórico de transações de testnet começa agora!"
+        "default_label": "Nenhuma transação ainda"
       }
     },
     "add_funds": {
@@ -60,8 +40,6 @@
         "or_send_eth": "ou envie ETH para sua carteira",
         "send_from_another_source": "Envie do Coinbase ou de outra exchange ou peça a um amigo!"
       },
-      "limit_left_this_week": "$%{remainingLimit} restantes nesta semana",
-      "limit_left_this_year": "$%{remainingLimit} restantes este ano",
       "test_eth": {
         "add_from_faucet": "Adicionar do faucet",
         "or_send_test_eth": "ou envie test ETH para sua carteira",
@@ -69,12 +47,7 @@
         "send_test_eth_from_another_source": "Envie test ETH de outra carteira %{testnetName} ou peça a um amigo!"
       },
       "to_get_started_android": "Para começar, compre algum ETH",
-      "to_get_started_ios": "Para começar, compre algum ETH com o Apple Pay",
-      "weekly_limit_reached": "Limite semanal atingido",
-      "yearly_limit_reached": "Limite anual atingido"
-    },
-    "assets": {
-      "unkown_token": "Token desconhecido"
+      "to_get_started_ios": "Para começar, compre algum ETH com o Apple Pay"
     },
     "avatar_builder": {
       "emoji_categories": {
@@ -102,13 +75,6 @@
         "damaged_wallet": "Incapaz de fazer backup da carteira. Dados do keychain ausentes."
       },
       "wrong_pin": "O código PIN que você digitou está incorreto e não podemos fazer backup. Por favor, tente novamente com o código correto.",
-      "already_backed_up": {
-        "backed_up": "Foi feito backup",
-        "backed_up_manually": "Backup manual feito",
-        "backed_up_message": "Sua carteira está protegida",
-        "imported": "Importado",
-        "imported_message": "Sua carteira foi importada"
-      },
       "wallet_group_title_plural": "Grupo da Carteira %{walletGroupNumber}",
       "wallet_group_title_singular": "Grupo de Carteiras",
       "private_key_plural": "Chave Privada %{privateKeyNumber}",
@@ -215,8 +181,6 @@
         "create_new_secret_phrase": "Crie uma Nova Frase Secreta"
       },
       "needs_backup": {
-        "back_up_your_wallet": "Faça backup da sua carteira",
-        "dont_risk": "Não arrisque seu dinheiro! Faça backup da sua carteira para poder recuperá-la se perder este dispositivo.",
         "not_backed_up": "Não foi feito backup"
       },
       "restore_cloud": {
@@ -486,24 +450,15 @@
         "creator_lp_fees": "Taxas do Criador LP",
         "rainbow_token_launcher": "Rainbow Token Launcher",
         "claim_amount": "Reivindicar %{amount}",
-        "done": "Concluído",
-        "try_again": "Tente Novamente",
         "tokens_on_the_way": "Tokens a caminho!",
         "a_token": "um token",
-        "a_network": "uma rede",
         "swap_failed": "Troca Falhou",
         "receive": "Receber",
         "on": "ligado",
         "reset": "Redefinir"
       }
     },
-    "cloud": {
-      "backup_success": "Sua carteira foi salva com sucesso!"
-    },
     "contacts": {
-      "contact_row": {
-        "balance_eth": "%{balanceEth} ETH"
-      },
       "contacts_title": "Contatos",
       "input_placeholder": "Nome",
       "my_wallets": "Minhas carteiras",
@@ -511,26 +466,18 @@
         "add": "Adicionar Contato",
         "cancel": "Cancelar",
         "delete": "Excluir Contato",
-        "edit": "Editar Contato",
-        "view": "Visualizar Perfil"
+        "edit": "Editar Contato"
       },
       "send_header": "Enviar",
       "suggestions": "Sugestões",
       "to_header": "Para",
       "watching": "Observando"
     },
-    "deeplinks": {
-      "couldnt_recognize_url": "Ops! Não conseguimos reconhecer esta URL!",
-      "tried_to_use_android": "Tentou usar o pacote Android",
-      "tried_to_use_ios": "Tentou usar o pacote do iOS"
-    },
     "developer_settings": {
       "alert": "Alerta",
-      "analyze_env_variables": "Analisar Variáveis de Ambiente",
       "analyze_react_query": "Analisar Consulta React",
       "analyze_user_assets_query": "Analisar Consulta de Ativos do Usuário",
       "applied": "APLICADO",
-      "backups_deleted_successfully": "Backups excluídos com sucesso",
       "clear_async_storage": "Limpar AsyncStorage",
       "clear_pending_txs": "Limpar transações pendentes",
       "clear_image_cache": "Limpar cache de imagens",
@@ -569,7 +516,6 @@
         "delegation_settings": "Configurações de Delegação"
       },
       "delegation_settings": {
-        "clear_store": "Limpar armazenamento de delegação",
         "simulate_disable_smart_wallet": "Simular desativação da Smart Wallet",
         "simulate_disable_single_network": "Simular desativação de rede única",
         "simulate_disable_third_party": "Simular desativação de terceiros",
@@ -580,11 +526,6 @@
       }
     },
     "discover": {
-      "pulse": {
-        "pulse_description": "Todos os principais tokens DeFi em um só lugar",
-        "today_suffix": "hoje",
-        "trading_at_prefix": "Negociação em"
-      },
       "search": {
         "search_ethereum": "Pesquisar em todo o Ethereum",
         "search_ethereum_short": "Pesquisar Ethereum",
@@ -627,9 +568,6 @@
     },
     "exchange": {
       "coin_row": {
-        "expires_in": "Expira em %{minutes}m",
-        "from_divider": "de",
-        "to_divider": "para",
         "token": "Token",
         "view_on": "Visualizar em %{blockExplorerName}",
         "view_on_etherscan": "Visualizar no Etherscan",
@@ -706,6 +644,9 @@
         "verifiedTokenSection": "􀇻 Verificado",
         "unswappableTokenSection": "􀘰 Nenhuma rota comercial"
       }
+    },
+    "ens": {
+      "registered_on": "Registrado em"
     },
     "expanded_state": {
       "asset": {
@@ -847,6 +788,7 @@
       },
       "nft_brief_token_info": {
         "for_sale": "À venda",
+        "floor_price": "Preço mínimo",
         "last_sale": "Preço da última venda"
       },
       "swap": {
@@ -1246,13 +1188,6 @@
         "text": "Ao enviar um nome ENS para outra pessoa e torná-la o novo proprietário do nome ENS, você pode querer configurá-lo antecipadamente para economizar uma transação futura para eles. O Rainbow permite que você limpe qualquer informação de perfil atualmente definida para o nome, configure o nome ENS para apontar para o endereço do destinatário e tornar o endereço do destinatário o administrador do nome."
       }
     },
-    "fedora": {
-      "cannot_verify_bundle": "Não é possível verificar o pacote! Isso pode ser uma farsa. Instalação bloqueada.",
-      "error": "ERRO",
-      "fedora": "Fedora",
-      "this_will_override_bundle": "Isso substituirá o seu pacote. Tenha cuidado. Você é um funcionário da Rainbow?",
-      "wait": "aguarde"
-    },
     "fields": {
       "address": {
         "long_placeholder": "Nome, ENS ou endereço",
@@ -1281,7 +1216,6 @@
       "miner_tip": "Gorjeta para o minerador",
       "gas_price": "Preço do Gás",
       "max_transaction_fee": "Taxa máxima da transação",
-      "warning_separator": "·",
       "lower_than_suggested": "Baixa · pode ficar preso",
       "higher_than_suggested": "Alta · pagando demais",
       "likely_to_fail": "Baixa · provavelmente falhará",
@@ -1292,64 +1226,12 @@
       "alert_message_lower": "Verifique se você digitou a quantidade correta - provavelmente está pagando mais do que precisa!",
       "alert_title_higher_max_base_fee_needed": "Taxa máxima de base baixa - a transação pode ficar presa!",
       "alert_title_higher_miner_tip_needed": "Gorjeta do minerador baixa - a transação pode ficar presa!",
-      "alert_title_lower_max_base_fee_needed": "Taxa máxima de base alta!",
       "alert_title_lower_miner_tip_needed": "Gorjeta do minerador alta!",
       "proceed_anyway": "Continuar mesmo assim",
       "edit_max_bass_fee": "Editar Taxa Máxima de Base",
       "edit_miner_tip": "Editar Gorjeta do Minerador"
     },
     "homepage": {
-      "back": "Voltar para rainbow.me",
-      "coming_soon": "Em breve.",
-      "connect_ledger": {
-        "button": "Conectar ao Ledger",
-        "description": "Conectar e assinar com o seu ",
-        "link_text": "carteira de hardware Ledger",
-        "link_title": "Comprar uma carteira de hardware Ledger"
-      },
-      "connect_metamask": {
-        "button": "Conectar ao MetaMask",
-        "description": "Conectar a ",
-        "link_text": "carteira de navegador MetaMask",
-        "link_title": "carteira de navegador MetaMask"
-      },
-      "connect_trezor": {
-        "button": "Conectar ao Trezor",
-        "description": "Conectar e assinar com o seu ",
-        "link_text": "carteira de hardware Trezor",
-        "link_title": "Comprar uma carteira de hardware Trezor"
-      },
-      "connect_trustwallet": {
-        "button": "Conectar ao Trust Wallet",
-        "description_part_one": "Use o ",
-        "description_part_three": " aplicativo para conectar.",
-        "description_part_two": " Ethereum ",
-        "link_text_browser": "navegador de dapps",
-        "link_text_wallet": "Trust Wallet",
-        "link_title_browser": "Descubra o Navegador de DApps Trust",
-        "link_title_wallet": "Descubra a Trust Wallet"
-      },
-      "connect_walletconnect": {
-        "button": "Usar WalletConnect",
-        "button_mobile": "Conectar com WalletConnect",
-        "description": "Escanear um código QR para vincular sua carteira móvel ",
-        "description_mobile": "Conectar a qualquer carteira que suporte ",
-        "link_text": "usando o WalletConnect",
-        "link_text_mobile": "WalletConnect",
-        "link_title": "Usar WalletConnect",
-        "link_title_mobile": "Conectar com WalletConnect"
-      },
-      "reassurance": {
-        "access_link": "Sem acesso aos seus fundos",
-        "assessment": "Resultados da nossa avaliação de segurança",
-        "security": "Trabalhamos arduamente para garantir que seus fundos estejam seguros. Essa ferramenta nunca acessa suas chaves privadas, o que reduz enormemente a área de ataque. Se você estiver familiarizado com programação, pode verificar nosso código no GitHub.",
-        "security_title": "Quão seguro é o Balance Manager?",
-        "source": "Veja nosso código-fonte",
-        "text_mobile": "Você precisa usar uma carteira Ethereum para acessar o Balance Manager para visualizar, enviar e trocar seus Ether e tokens baseados em Ethereum.",
-        "tracking_link": "Nós não rastreamos você",
-        "work": "Esta é uma ferramenta baseada na web para ajudá-lo a gerenciar os fundos em sua carteira. Ela faz isso conectando-se à sua carteira por meio de sua Interface de Programação de Aplicativos (API). Aqui estão alguns pontos importantes sobre como projetamos o Balance Manager:",
-        "work_title": "Como o Gerenciador funciona?"
-      },
       "discover_web3": "Descubra o Web3"
     },
     "image_picker": {
@@ -1357,18 +1239,6 @@
       "confirm": "Ativar acesso à biblioteca",
       "message": "Isso permite que o Rainbow use suas fotos da sua biblioteca",
       "title": "O Rainbow gostaria de acessar suas fotos"
-    },
-    "input": {
-      "asset_amount": "Quantidade",
-      "donation_address": "Endereço do Gerenciador de Saldo",
-      "email": "E-mail",
-      "email_placeholder": "seu@email.com",
-      "input_placeholder": "Digite aqui",
-      "input_text": "Entrada",
-      "password": "Senha",
-      "password_placeholder": "••••••••••",
-      "private_key": "Chave Privada",
-      "recipient_address": "Endereço do destinatário"
     },
     "list": {
       "share": {
@@ -1381,29 +1251,6 @@
       "creating_wallet": "Criando carteira...",
       "importing_wallet": "Importando...",
       "restoring": "Restaurando..."
-    },
-    "message": {
-      "click_to_copy_to_clipboard": "Clique para copiar para a área de transferência",
-      "coming_soon": "Em breve...",
-      "exchange_not_available": "Não estamos mais dando suporte à Shapeshift devido aos seus novos requisitos KYC. Estamos trabalhando no suporte a provedores de câmbio diferentes.",
-      "failed_ledger_connection": "Falha ao conectar-se ao Ledger, por favor verifique o seu dispositivo",
-      "failed_request": "Solicitação falhou, por favor atualize",
-      "failed_trezor_connection": "Falha ao conectar-se ao Trezor, por favor verifique o seu dispositivo",
-      "failed_trezor_popup_blocked": "Permita pop-ups no Balance para usar seu Trezor",
-      "learn_more": "Saiba mais",
-      "no_interactions": "Nenhuma interação encontrada para esta conta",
-      "no_transactions": "Nenhuma transação encontrada para esta conta",
-      "no_unique_tokens": "Nenhum token único encontrado para esta conta",
-      "opensea_footer": " é um mercado para tokens únicos (ou 'não fungíveis'). As pessoas negociam no mercado e isso lhes dá valor. Você pode penhorar seus tokens para obter dinheiro. Tudo isso roda na rede Ethereum. ",
-      "opensea_header": "Como isso funciona por baixo dos panos?",
-      "page_not_found": "404 Página não encontrada",
-      "please_connect_ledger": "Por favor, conecte e desbloqueie o Ledger e em seguida selecione Ethereum",
-      "please_connect_trezor": "Por favor, conecte seu Trezor e siga as instruções",
-      "power_by": "Desenvolvido por",
-      "walletconnect_not_unlocked": "Por favor, conecte-se usando o WalletConnect",
-      "web3_not_available": "Por favor, instale a extensão MetaMask para Chrome",
-      "web3_not_unlocked": "Por favor, desbloqueie sua carteira MetaMask",
-      "web3_unknown_network": "Rede desconhecida, por favor mude para outra"
     },
     "mints": {
       "mints_sheet": {
@@ -1438,7 +1285,6 @@
       }
     },
     "modal": {
-      "approve_tx": "Aprovar transação em %{walletType}",
       "back_up": {
         "alerts": {
           "cloud_not_enabled": {
@@ -1448,29 +1294,12 @@
             "show_me": "Sim, Mostrar-me"
           }
         },
-        "default": {
-          "button": {
-            "cloud": "Faça backup da sua carteira",
-            "cloud_platform": "Faça backup para %{cloudPlatformName}",
-            "manual": "Faça backup manualmente"
-          },
-          "description": "Não perca sua carteira! Salve uma cópia criptografada em %{cloudPlatformName}",
-          "title": "Como você gostaria de fazer o backup da sua carteira?"
-        },
         "existing": {
           "button": {
             "later": "Talvez depois",
             "now": "Fazer backup agora"
           },
           "description": "Você possui carteiras que ainda não foram feitas backup. Faça backup delas caso você perca este dispositivo.",
-          "title": "Você gostaria de fazer backup?"
-        },
-        "imported": {
-          "button": {
-            "back_up": "Faça backup para %{cloudPlatformName}",
-            "no_thanks": "Não, obrigado"
-          },
-          "description": "Não perca sua carteira! Salve uma cópia criptografada em %{cloudPlatformName}.",
           "title": "Você gostaria de fazer backup?"
         }
       },
@@ -1516,7 +1345,6 @@
       "hold_to_mint": "Segurar Para Cunhar",
       "minting": "Criando...",
       "minted": "Criado",
-      "mint_unavailable": "Cunhagem Indisponível",
       "mint_on_mintdotfun": "􀮶 Cunhar em mint.fun",
       "error_minting": "Erro Criando",
       "mint_price": "Preço da Cunhagem",
@@ -1528,8 +1356,6 @@
       "description": "Descrição",
       "total_minted": "Total Cunhado",
       "first_event": "Primeiro Evento",
-      "last_event": "Último Evento",
-      "max_supply": "Fornecimento Máximo",
       "contract": "Contrato",
       "network": "Rede",
       "could_not_find_collection": "Não foi possível encontrar a coleção",
@@ -1593,24 +1419,6 @@
           "title": "Erro ao vender NFT",
           "message": "Por favor, contate o suporte do Rainbow para assistência."
         }
-      }
-    },
-    "notification": {
-      "error": {
-        "failed_get_account_tx": "Falha ao obter transações da Conta",
-        "failed_get_gas_prices": "Falha ao obter preços de Gas do Ethereum",
-        "failed_get_tx_fee": "Falha ao estimar taxa de transação",
-        "failed_scanning_qr_code": "Falha ao escanear o código QR, por favor tente novamente",
-        "generic_error": "Algo deu errado, por favor tente novamente",
-        "insufficient_balance": "Saldo insuficiente nesta conta",
-        "insufficient_for_fees": "Saldo insuficiente para cobrir taxas de transação",
-        "invalid_address": "Endereço inválido, por favor verifique novamente",
-        "invalid_address_scanned": "Endereço Inválido Escaneado, por favor tente novamente",
-        "invalid_private_key_scanned": "Chave Privada Inválida Escaneada, por favor tente novamente",
-        "no_accounts_found": "Nenhuma Conta Ethereum Encontrada"
-      },
-      "info": {
-        "address_copied_to_clipboard": "Endereço copiado para a área de transferência"
       }
     },
     "perps": {
@@ -1842,11 +1650,6 @@
         "try_again": "Tente Novamente"
       }
     },
-    "pools": {
-      "deposit": "Depósito",
-      "pools_title": "Pools",
-      "withdraw": "Retirar"
-    },
     "profiles": {
       "actions": {
         "edit_profile": "Editar perfil",
@@ -2040,16 +1843,7 @@
           "title": "Personalizável",
           "description": "Enviar, receber, vender, criar, trocar e muito mais. Escolha o que deseja."
         },
-        "header": "Notificações",
-        "subheader": "APRESENTANDO"
-      }
-    },
-    "review": {
-      "alert": {
-        "are_you_enjoying_rainbow": "Você está gostando do Rainbow? 🥰",
-        "leave_a_review": "Deixe uma avaliação na App Store!",
-        "no": "Não",
-        "yes": "Sim"
+        "header": "Notificações"
       }
     },
     "poaps": {
@@ -2061,8 +1855,7 @@
       "error": "Erro Criando",
       "error_messages": {
         "limit_exceeded": "Esse POAP já está totalmente criado!",
-        "event_expired": "Esse POAP já está expirado!",
-        "unknown": "Erro Desconhecido"
+        "event_expired": "Esse POAP já está expirado!"
       }
     },
     "rewards": {
@@ -2090,11 +1883,8 @@
       "rainbow_users_claimed": "Usuários Rainbow receberam %{amount}",
       "refreshes_in_with_days": "Atualiza em %{days} dias %{hours} horas",
       "refreshes_in_without_days": "Atualiza em %{hours} horas",
-      "percent": "%{percent}% de recompensa",
       "error_title": "Algo deu errado",
       "error_text": "Verifique sua conexão com a internet e verifique novamente mais tarde.",
-      "ended_title": "Programa encerrado",
-      "ended_text": "Fique ligado para o que temos guardado para você!",
       "info": {
         "title": "Ganhe OP para trocas e pontes",
         "description": "Receba dinheiro de volta trocando ou fazendo ponte para o Optimism. Recompensas distribuídas mensalmente."
@@ -2140,31 +1930,6 @@
     },
     "profile": {
       "title": "Atividade"
-    },
-    "savings": {
-      "deposit": "Depósito",
-      "deposit_from_wallet": "Depósito da Carteira",
-      "earned_lifetime_interest": "Ganho %{lifetimeAccruedInterest}",
-      "earnings": {
-        "100_year": "100 Anos",
-        "10_year": "10 Anos",
-        "20_year": "20 Anos",
-        "50_year": "50 Anos",
-        "5_year": "5 Anos",
-        "est": "Estimado",
-        "label": "Ganhos",
-        "monthly": "Mensal",
-        "yearly": "Anual"
-      },
-      "get_prefix": "Obter",
-      "label": "Poupanças",
-      "on_your_dollars_suffix": "em seus dólares",
-      "percentage": "%{percentage}%",
-      "percentage_apy": "%{percentage}% APY",
-      "with_digital_dollars_line_1": "Com dólares digitais como Dai, poupar",
-      "with_digital_dollars_line_2": "renda mais do que nunca",
-      "withdraw": "Retirar",
-      "zero_currency": "R$0,00"
     },
     "send_feedback": {
       "copy_email": "Copiar endereço de e-mail",
@@ -2248,7 +2013,6 @@
       "app_icon": "Ícone do Aplicativo",
       "developer": "Configurações de Desenvolvedor",
       "done": "Concluído",
-      "feedback_and_reports": "Feedback e Relatos de Erros",
       "follow_us_on_twitter": "Siga-nos no X",
       "hey_friend_message": "👋️ Olá amigo! Você deveria baixar o Rainbow, é minha carteira Ethereum favorita 🌈️🌈️🌈️🌈️🌈️🌈️🌈️🌈️🌈️🌈️",
       "label": "Configurações",
@@ -2258,7 +2022,6 @@
       "notifications": "Notificações",
       "notifications_section": {
         "my_wallets": "Minhas Carteiras",
-        "points": "Pontos",
         "watched_wallets": "Carteiras Monitoradas",
         "allow_notifications": "Permitir Notificações",
         "sent": "Enviado",
@@ -2357,19 +2120,11 @@
         }
       }
     },
-    "subscribe_form": {
-      "email_already_subscribed": "Desculpe, você já se inscreveu com este e-mail",
-      "generic_error": "Ops, algo deu errado",
-      "sending": "Enviando...",
-      "successful": "Verifique seu e-mail",
-      "too_many_signup_request": "Muitas solicitações de inscrição, por favor, tente novamente mais tarde"
-    },
     "swap": {
       "actions": {
         "hold_to_swap": "Segure para Trocar",
         "hold_to_bridge": "Segure para Transferir",
         "earning_rewards": "Ganhar Recompensas",
-        "save": "Salvar",
         "enter_amount": "Insira um valor",
         "review": "Revisão",
         "fetching_prices": "Buscando",
@@ -2379,10 +2134,6 @@
         "insufficient": "Insuficiente",
         "quote_error": "Erro na Cotação"
       },
-      "aggregators": {
-        "rainbow": "Rainbow"
-      },
-      "bridging": "Conectando",
       "swapping": "Trocando",
       "max": "Máx",
       "select": "Selecionar",
@@ -2407,7 +2158,6 @@
       },
       "choose_token": "Escolher Token",
       "gas": {
-        "custom": "Personalizado",
         "edit_price": "Editar Preço do Gás",
         "enter_price": "Digite o Preço do Gás",
         "estimated_fee": "Taxa Estimada",
@@ -2415,7 +2165,8 @@
         "network_fee": "Taxa da Rede",
         "normal": "Normal",
         "slow": "Lento",
-        "gas_sponsored": "Grátis"
+        "gas_sponsored": "Grátis",
+        "loading": "Carregando…"
       },
       "loading": "Carregando...",
       "modal_types": {
@@ -2663,7 +2414,6 @@
           "plural": "dias",
           "singular": "dia"
         },
-        "micro": "d",
         "short": {
           "plural": "dias",
           "singular": "dia"
@@ -2674,21 +2424,9 @@
           "plural": "horas",
           "singular": "hora"
         },
-        "micro": "h",
         "short": {
           "plural": "hrs",
           "singular": "hr"
-        }
-      },
-      "milliseconds": {
-        "long": {
-          "plural": "milissegundos",
-          "singular": "milissegundo"
-        },
-        "micro": "ms",
-        "short": {
-          "plural": "ms",
-          "singular": "ms"
         }
       },
       "minutes": {
@@ -2696,19 +2434,16 @@
           "plural": "minutos",
           "singular": "minuto"
         },
-        "micro": "m",
         "short": {
           "plural": "mins",
           "singular": "min"
         }
       },
-      "now": "Agora",
       "seconds": {
         "long": {
           "plural": "segundos",
           "singular": "segundo"
         },
-        "micro": "s",
         "short": {
           "plural": "secs",
           "singular": "sec"
@@ -2800,25 +2535,9 @@
         "view_on": "Visualizar em %{blockExplorerName}"
       },
       "add_cash": {
-        "card_notice": "Funciona com a maioria dos cartões de débito",
         "interstitial": {
           "other_amount": "Outro valor"
-        },
-        "need_help_button_email_subject": "suporte",
-        "need_help_button_label": "Obter Suporte",
-        "on_the_way_line_1": "Seu %{currencySymbol} está a caminho",
-        "on_the_way_line_2": "e chegará em breve",
-        "purchase_failed_order_id": "ID do Pedido: %{orderId}",
-        "purchase_failed_subtitle": "Você não foi cobrado.",
-        "purchase_failed_support_subject": "Falha na Compra",
-        "purchase_failed_support_subject_with_order_id": "Falha na compra - Pedido %{orderId}",
-        "purchase_failed_title": "Desculpe, sua compra falhou.",
-        "purchasing_dai_requires_eth_message": "Antes de comprar DAI, você precisa ter ETH na sua carteira!",
-        "purchasing_dai_requires_eth_title": "Você não tem nenhum ETH!",
-        "running_checks": "Executando verificações...",
-        "success_message": "Está aqui 🥳",
-        "watching_mode_confirm_message": "A carteira que você possui está em modo somente leitura, portanto, você não pode controlar o que há dentro. Tem certeza de que deseja adicionar dinheiro a %{truncatedAddress}?",
-        "watching_mode_confirm_title": "Você está no Modo de Observação"
+        }
       },
       "add_cash_v2": {
         "sheet_title": "Escolha uma opção de pagamento para comprar cripto",
@@ -2864,16 +2583,12 @@
         "ooops": "Ops!",
         "this_action_not_supported": "Esta ação não é suportada no momento :("
       },
-      "assets": {
-        "no_price": "Saldos Pequenos"
-      },
       "authenticate": {
         "please": "Faça a autenticação"
       },
       "back_ups": {
         "wallet_count": "%{numAccounts} carteira",
         "wallet_count_gt_one": "%{numAccounts} carteiras",
-        "and_more_wallets": "E %{moreWalletCount} mais carteiras",
         "create_new_wallet": "Criar uma nova carteira",
         "create_new_wallet_description": "Criar uma nova carteira usando esta Frase Secreta",
         "backed_up": "Foi feito backup",
@@ -2936,11 +2651,9 @@
           "gas_fee": "para revogar na %{chainName}"
         }
       },
-      "balance_title": "Saldo",
       "buy": "Comprar",
       "change_wallet": {
         "loading_balance": "Carregando saldo...",
-        "balance_eth": "%{balanceEth} ETH",
         "watching": "Observando",
         "ledger": "Ledger",
         "delegated": "Delegado",
@@ -2995,47 +2708,22 @@
         "loading": "Carregando...",
         "app_state_diagnostics_title": "Estado do Aplicativo",
         "app_state_diagnostics_description": "Permite que você tire uma captura do estado do aplicativo para compartilhá-lo com nossa equipe de suporte.",
-        "wallet_diagnostics_title": "Carteira",
         "sheet_title": "Diagnósticos",
         "pin_auth_title": "Autenticação por PIN",
         "you_need_to_authenticate_with_your_pin": "Você precisa autenticar com seu PIN para acessar as informações secretas da sua carteira.",
         "share_application_state": "Compartilhar despejo do estado do aplicativo",
-        "wallet_details_title": "Detalhes da Carteira",
-        "wallet_details_description": "Abaixo estão os detalhes de todas as carteiras adicionadas ao Rainbow."
+        "wallet_details_title": "Detalhes da Carteira"
       },
       "error_displaying_address": "Erro ao exibir endereço",
-      "feedback": {
-        "cancel": "Não, obrigado",
-        "choice": "Você gostaria de copiar manualmente o endereço de e-mail de feedback para a área de transferência?",
-        "copy_email_address": "Copiar endereço de e-mail",
-        "email_subject": "📱 Feedback do Beta do Rainbow",
-        "error": "Erro ao abrir o cliente de e-mail",
-        "send": "Enviar Feedback"
-      },
       "import_failed_invalid_private_key": "A importação falhou devido a uma chave privada inválida. Por favor, tente novamente.",
-      "intro": {
-        "create_wallet": "Criar uma Carteira",
-        "instructions": "Por favor, não armazene mais na sua carteira do que está disposto a perder.",
-        "warning": "Este é um software alfa.",
-        "welcome": "Bem-vindo ao Rainbow"
-      },
       "invalid_address_title": "Endereço inválido",
       "invalid_address_message": "Verifique novamente o uso de maiúsculas e minúsculas e tente de novo.",
       "invalid_ens_name": "Este não é um nome ENS válido",
       "invalid_unstoppable_name": "Esse não é um nome válido do Unstoppable",
-      "label": "Carteiras",
-      "loading": {
-        "error": "Houve um erro ao carregar a carteira. Por favor, feche o aplicativo e tente novamente.",
-        "message": "Carregando"
-      },
       "message_signing": {
-        "failed_signing": "Falha ao assinar a mensagem",
-        "message": "Mensagem",
-        "request": "Requisição de Assinatura de Mensagem",
-        "sign": "Assinar Mensagem"
+        "request": "Requisição de Assinatura de Mensagem"
       },
       "my_account_address": "Meu endereço da conta:",
-      "network_title": "Rede",
       "new": {
         "choose_wallet_group": {
           "title": "Escolha o Grupo da Carteira",
@@ -3049,10 +2737,7 @@
           "options": {
             "cloud": {
               "description_restore_sheet": "Se você fez backup anteriormente no %{cloudPlatform}, toque aqui para restaurá-lo.",
-              "description_with_latest_backup_date": "Último backup %{fromNow} às %{time}",
-              "title": "Restaurar de %{platform}",
-              "no_backups": "Nenhum backup encontrado",
-              "no_google_backups": "Não foi possível encontrar nenhum backup no Google Drive. Verifique se você está conectado na conta correta."
+              "title": "Restaurar de %{platform}"
             },
             "create_new": {
               "description": "Criar uma nova carteira de uma das suas frases de segurança",
@@ -3070,14 +2755,6 @@
               "description": "Observar um nome ENS ou um endereço público",
               "title": "Observar carteira"
             }
-          },
-          "first_wallet": {
-            "description": "Importe sua própria carteira ou acompanhe a de outra pessoa",
-            "title": "Adicione sua primeira carteira"
-          },
-          "additional_wallet": {
-            "description": "Crie uma nova carteira ou adicione uma existente",
-            "title": "Adicionar outra carteira"
           }
         },
         "import_or_watch_wallet_sheet": {
@@ -3086,17 +2763,11 @@
           "import": {
             "title": "Restaurar uma carteira",
             "description": "Restaurar com uma frase de recuperação ou chave privada do Rainbow ou de outra carteira de criptomoeda",
-            "placeholder": "Digite uma frase de recuperação ou chave privada",
-            "button": "Importar"
+            "placeholder": "Digite uma frase de recuperação ou chave privada"
           },
           "watch": {
             "title": "Acompanhe um endereço",
-            "placeholder": "Digite um endereço Ethereum ou nome ENS",
-            "button": "Acompanhar"
-          },
-          "watch_or_import": {
-            "title": "Adicione uma carteira",
-            "placeholder": "Digite uma frase secreta, chave privada, endereço Ethereum ou nome ENS"
+            "placeholder": "Digite um endereço Ethereum ou nome ENS"
           }
         },
         "alert": {
@@ -3105,7 +2776,6 @@
         },
         "already_have_wallet": "Eu já tenho um",
         "create_wallet": "Criar Carteira",
-        "enter_seeds_placeholder": "Frase secreta, chave privada, endereço Ethereum ou nome ENS",
         "get_new_wallet": "Obter uma nova carteira",
         "import_wallet": "Importar Carteira",
         "name_wallet": "Nomear sua carteira",
@@ -3129,21 +2799,14 @@
         "camera_access_needed": "Acesso à câmera necessário para escanear!",
         "enable_camera_access": "Habilitar acesso à câmera",
         "error_mounting_camera": "Erro ao montar a câmera",
-        "find_a_code": "Encontre um código para escanear",
-        "qr_1_app_connected": "1 aplicativo conectado",
-        "qr_multiple_apps_connected": "%{appsConnectedCount} Aplicativos Conectados",
         "scan_to_connect": "Escanear para conectar",
         "scan_to_pay_or_connect": "Escanear para pagar ou conectar",
-        "simulator_mode": "Modo Simulador",
         "sorry_could_not_be_recognized": "Desculpe, este código QR não pôde ser reconhecido.",
         "unrecognized_qr_code_title": "Código QR não reconhecido"
       },
       "settings": {
         "copy_address": "Copiar endereço",
-        "copy_address_capitalized": "Copiar Endereço",
-        "copy_seed_phrase": "Copiar frase secreta",
-        "hide_seed_phrase": "Ocultar frase secreta",
-        "show_seed_phrase": "Mostrar frase secreta"
+        "copy_address_capitalized": "Copiar Endereço"
       },
       "something_went_wrong_importing": "Algo deu errado ao importar. Por favor, tente novamente!",
       "sorry_cannot_add_ens": "Desculpe, não é possível adicionar este nome ENS neste momento. Por favor, tente novamente mais tarde!",
@@ -3195,30 +2858,7 @@
         "previous_send": "%{number} envio anterior",
         "previous_sends": "%{number} envios anteriores"
       },
-      "wallet_connect": {
-        "error": "Erro ao inicializar com WalletConnect",
-        "failed_to_disconnect": "Falha ao desconectar todas as sessões do WalletConnect",
-        "failed_to_send_request_status": "Falha ao enviar status da solicitação para o WalletConnect.",
-        "missing_fcm": "Não é possível inicializar o WalletConnect: falta o token de notificação por push. Por favor, tente novamente.",
-        "walletconnect_session_has_expired_while_trying_to_send": "A sessão do WalletConnect expirou ao tentar enviar o status da solicitação. Por favor, reconecte."
-      },
       "wallet_title": "Carteira"
-    },
-    "support": {
-      "error_alert": {
-        "copy_email_address": "Copiar endereço de e-mail",
-        "no_thanks": "Não, obrigado",
-        "message": "Gostaria de copiar manualmente nosso endereço de email de suporte para a sua área de transferência?",
-        "title": "Erro ao abrir o cliente de e-mail",
-        "subject": "Suporte Rainbow"
-      },
-      "wallet_alert": {
-        "message_support": "Mensagem de Suporte",
-        "close": "Fechar",
-        "learn_more": "Saiba Mais",
-        "message": "Para ajuda, por favor contate o suporte! \nNós retornaremos em breve!",
-        "title": "Ocorreu um erro"
-      }
     },
     "walletconnect": {
       "connecting": "Conectando",
@@ -3374,10 +3014,6 @@
         }
       }
     },
-    "warning": {
-      "user_is_offline": "Conexão offline, por favor verifique sua conexão com a internet",
-      "user_is_online": "Conectado! Você está online novamente"
-    },
     "dapp_browser": {
       "address_bar": {
         "input_placeholder": "Pesquisar ou digitar site"
@@ -3392,8 +3028,7 @@
         "undo_favorite": "Desfazer",
         "connect": "Conectar",
         "swap": "Trocar",
-        "bridge": "Ponte",
-        "more": "Mais"
+        "bridge": "Ponte"
       },
       "error": {
         "title": "Algo deu errado",
@@ -3487,12 +3122,6 @@
       "search": "Pesquisar"
     },
     "token_launcher": {
-      "airdrop": {
-        "address_or_ens": "Endereço ou ENS",
-        "suggested_users": "USUÁRIOS SUGERIDOS",
-        "airdrop_lists": "LISTAS DE AIRDROP",
-        "max_recipients_reached": "Máximo de %{maxRecipientCount} destinatários atingido"
-      },
       "image_upload_error": {
         "title": "Desculpe, houve um erro ao carregar sua imagem.",
         "subtitle": "Por favor, tente novamente."
@@ -3506,9 +3135,6 @@
         "title": "Pré-comprar tokens"
       },
       "review": {
-        "token_allocation": "Alocação de Token",
-        "your_share": "Sua parcela",
-        "airdropping": "Realizando Airdrop",
         "about": "Sobre",
         "total_cost": "Custo total",
         "initial_price": "Preço inicial",
@@ -3532,34 +3158,30 @@
         "must_be_greater_than_0": "Deve ser maior que 0",
         "amount_is_greater_than_balance": "Quantidade é maior que o saldo",
         "amount_is_greater_than_max_prebuy_amount": "Excede o valor máximo de pré-compra de %{maxPrebuyAmount} %{chainNativeAssetSymbol}",
-        "amount_is_less_than_min_prebuy_amount": "Deve exceder o valor mínimo de pré-compra de %{minPrebuyAmount} %{chainNativeAssetSymbol}",
         "amount_too_small": "Quantia muito pequena! Tente um pouco mais!"
       },
       "titles": {
-        "total_supply": "Oferta total",
         "ticker": "Símbolo",
         "name": "Nome",
         "network": "Rede",
         "description": "Descrição",
-        "airdrop": "Airdrop para amigos",
         "required_info": "INFORMAÇÃO OBRIGATÓRIA",
         "about": "SOBRE",
-        "token_allocation": "ALOCACÃO DE TOKEN",
         "token_allocation_breakdown": "Resumo da Alocação de Token",
-        "mcap": "MCAP"
+        "mcap": "MCAP",
+        "links": "Links"
       },
       "placeholders": {
         "ticker": "$NAME",
         "enter_coin_name": "Digite o nome da moeda",
-        "describe_your_coin": "Descreva sua moeda"
+        "describe_your_coin": "Descreva sua moeda",
+        "custom_amount": "Valor personalizado"
       },
       "buttons": {
         "hold_to_create": "Mantenha para Criar",
         "creating": "Criando...",
         "share_link": "Compartilhar Link",
-        "token_allocation_info": "Mais Informações",
-        "got_it": "Entendi",
-        "cancel": "Cancelar"
+        "got_it": "Entendi"
       },
       "header": {
         "new_coin": "Nova Moeda",
@@ -3591,27 +3213,12 @@
       },
       "discard_and_exit": "Descartar e Sair",
       "airdrops_sheet": {
-        "claim_button_text": "Reivindicar",
         "empty_state_title": "Ainda Sem Airdrops",
         "title": "Solicitar Moedas do Rainbow"
-      },
-      "cards": {
-        "airdrops": {
-          "subtitle_loading": "CARREGANDO",
-          "subtitle_has_airdrops": "DISPONÍVEL PARA SOLICITAR",
-          "subtitle_no_airdrops": "AINDA SEM AIRDROPS",
-          "title": "Distribuições",
-          "title_singular": "Distribuição"
-        },
-        "launch": {
-          "line_one": "Lançar\n",
-          "line_two": "sua Moeda"
-        }
       },
       "claim_airdrop_sheet": {
         "by": "por",
         "claiming": "Reivindicando",
-        "created_by": "Criado por %{name}",
         "gifted_to": "Presenteado para",
         "hold_to_claim": "Pressione para Solicitar",
         "hold_to_retry": "Pressione para Tentar Novamente",
@@ -3634,19 +3241,25 @@
         "unsupported_network": "O lançamento de tokens não é compatível com esta rede"
       }
     },
-    "done": "Concluído",
     "copy": "Copiar",
     "paste": "Colar",
     "new": "Novo",
     "market_data": {
       "vol": "VOL",
-      "price": "PREÇO",
-      "mcap": "MCAP"
+      "mcap": "MCAP",
+      "transactions": "Transações",
+      "volume": "Volume",
+      "makers": "Makers",
+      "buys": "Compras",
+      "sells": "Vendas",
+      "bought": "Comprado",
+      "sold": "Vendido",
+      "buyers": "Buyers",
+      "sellers": "Sellers"
     },
     "king_of_hill": {
       "title": "Plataforma de Lançamento",
       "launch": "Lançar",
-      "current_king": "REI ATUAL",
       "last_winner": "Último vencedor",
       "no_previous_winner": "Nenhum vencedor anterior",
       "round_ends_in": "A rodada termina em",
@@ -3750,7 +3363,6 @@
       },
       "cash_out": {
         "title": "Retirada de Aposta",
-        "current_price": "Preço Atual",
         "average_price": "Preço Médio",
         "profit_loss": "Lucro / Perda",
         "receive": "Receber",
@@ -3778,7 +3390,6 @@
         "show_resolved": "Mostrar Resolvidos",
         "open_positions": "Posições Abertas",
         "market_resolved": "MERCADO RESOLVIDO",
-        "volume_suffix": "VOL",
         "show_less": "Mostrar Menos",
         "show_more": "Mostrar Mais",
         "resolved": "Resolvido"
@@ -3848,13 +3459,11 @@
       },
       "claim": {
         "claim_title": "Reivindicar $RNBW",
-        "available_to_claim": "Disponível para Reivindicação",
         "your_airdrop": "Seu Airdrop",
         "your_airdrop_description": "Obrigado por usar a Rainbow. Seu airdrop é calculado com base na sua atividade anterior.",
         "claim_failed_title": "Erro ao reivindicar recompensas",
         "claim_failed_message": "Por favor, tente novamente.",
-        "claim_later": "Reivindicar depois",
-        "almost_there": "Quase lá..."
+        "claim_later": "Reivindicar depois"
       },
       "airdrop_claim_finished": {
         "airdrop_claimed": "Airdrop reivindicado",
@@ -3879,7 +3488,6 @@
       },
       "loading_labels": {
         "checking_historical_activity": "Verificando atividade histórica...",
-        "checking_eligibility": "Verificando qualificação...",
         "claiming_rewards": "Reivindicando recompensas...",
         "submitting_transaction": "Enviando transação...",
         "claiming_airdrop": "Reivindicando airdrop...",
@@ -3907,11 +3515,13 @@
       "staking_card": {
         "stake": "Fazer stake",
         "enable_staking": "Ativar staking",
-        "buy_rnbw": "Comprar RNBW",
+        "buy": "Comprar",
         "unstake": "Desapostar",
         "available_to_stake": "disponível para apostar",
         "available_to_add": "disponível para adicionar",
-        "minimum_stake_amount_required": "Você precisa de pelo menos %{minStakeAmount} RNBW para fazer staking"
+        "to_add_to_stake": "to add to stake",
+        "to_stake": "to stake",
+        "buy_more": "Buy more"
       },
       "staking_earnings_card": {
         "lifetime_earnings": "Ganhos vitalícios",
