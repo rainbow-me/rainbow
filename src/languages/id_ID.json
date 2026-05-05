@@ -358,7 +358,8 @@
       "unhide": "Batal Sembunyikan",
       "unpin": "Lepaskan Pin",
       "view": "Lihat",
-      "hidden": "Tersembunyi"
+      "hidden": "Tersembunyi",
+      "claim": "Klaim"
     },
     "cards": {
       "ens_create_profile": {
@@ -470,7 +471,6 @@
         "quote_error": "Kesalahan Kutipan",
         "no_route_found": "Tidak ada rute yang ditemukan",
         "fetching_quote": "Mengambil Kutipan...",
-        "rainbow_eth_rewards": "Rainbow ETH Rewards",
         "merkl_claimable": "%{dappName} Benteng",
         "merkl_claimable_description": "%{assetSymbols} Strategi",
         "select_a_network": "Pilih Jaringan",
@@ -994,6 +994,8 @@
       "chonks_title": "Anda telah membuka\n Ikon Chonkiest",
       "mog_description": "Dominasi dunia kosmik yang mudah, berpakaian dalam warna.",
       "mog_title": "Anda telah membuka\nRainbow Mogs",
+      "rnbw_description": "Evolusi berkilau dari ikon Rainbow, ditempa dari 420oz keyakinan murni.",
+      "rnbw_title": "Anda telah membuka\n $RNBW Emas",
       "button": "Ambil ikon"
     },
     "explain": {
@@ -1667,7 +1669,12 @@
         "confirm_button_error_text": "Kesalahan Kutipan",
         "quote_error": "􀇿 Tidak ada penawaran yang tersedia",
         "insufficient_balance": "􀫲 Dana Tidak Cukup",
-        "insufficient_gas": "Gas Tidak Cukup"
+        "insufficient_gas": "Gas Tidak Cukup",
+        "gas_sponsored": "Gratis",
+        "invalid_route_recipient_error": "Rute bridge tidak mengarah ke akun Anda. Silakan coba lagi.",
+        "missing_recipient_error": "Alamat penerima tidak ada",
+        "no_wallet_connected": "Tidak ada wallet yang terhubung",
+        "unknown_execution_error": "Terjadi kesalahan tidak diketahui saat memproses deposit"
       },
       "withdraw": {
         "title": "Tarik",
@@ -1688,15 +1695,17 @@
       "positions": {
         "entry": "ENTRI",
         "mark_price": "HARGA PASAR",
+        "mark_price_full": "Harga Pasar",
         "open_positions": "Posisi Terbuka",
         "no_open_positions": "Tidak Ada Posisi Terbuka",
         "position_value": "Nilai Posisi",
-        "mark_price_full": "Harga Pasar",
         "entry_price": "Harga Entri",
         "funding": "Pendanaan",
         "liquidation_price": "Harga Likuidasi",
         "total": "Total",
-        "learn_more_about_perps": "Pelajari lebih lanjut tentang Perps"
+        "learn_more_about_perps": "Pelajari lebih lanjut tentang Perps",
+        "open": "Buka",
+        "close": "Tutup"
       },
       "new_position": {
         "hold_to_long": "Tahan untuk Panjang",
@@ -1717,6 +1726,13 @@
         "minimum": "Minimal",
         "minimum_amount_is": "Jumlah minimum adalah",
         "no_balance": "Tidak Ada Saldo"
+      },
+      "about": {
+        "title": "Tentang",
+        "read_more": "Baca lebih lanjut",
+        "volume_24h": "Volume 24h",
+        "open_interest": "Minat Terbuka",
+        "funding": "Pendanaan"
       },
       "history": {
         "title": "Riwayat",
@@ -1823,15 +1839,7 @@
     },
     "points": {
       "points": {
-        "choose_claim_network": "Pilih Jaringan Klaim",
-        "claim_rewards": "Klaim Hadiah",
-        "try_again": "Coba Lagi",
-        "claim_on_network": "Klaim di %{network}",
-        "claiming_on_network": "Mengklaim di %{network}",
-        "claimed_on_network": "Sudah Diklaim di %{network}",
-        "bridge_error": "Keberhasilan Sebagian",
-        "error_claiming": "Klaim Gagal",
-        "bridge_error_explainer": "Hadiah Anda berhasil diklaim di Optimism, tetapi transfer ke %{network} gagal. Jika Anda mau, Anda bisa menjembatani hadiah Anda secara manual menggunakan fitur Swap."
+        "try_again": "Coba Lagi"
       }
     },
     "pools": {
@@ -2384,6 +2392,7 @@
       "find_a_token_to_buy": "Cari token untuk beli",
       "search_your_tokens": "Cari token Anda",
       "error_executing_swap": "Kesalahan saat melakukan swap",
+      "sponsorship_unavailable": "Swap gratis untuk sementara tidak tersedia di jaringan ini. Silakan coba lagi dengan biaya jaringan.",
       "tokens_input": {
         "tokens": "Token",
         "sort": "Urutkan",
@@ -2405,7 +2414,8 @@
         "fast": "Cepat",
         "network_fee": "Biaya Jaringan",
         "normal": "Normal",
-        "slow": "Lambat"
+        "slow": "Lambat",
+        "gas_sponsored": "Gratis"
       },
       "loading": "Memuat...",
       "modal_types": {
@@ -3009,6 +3019,8 @@
         "warning": "Ini adalah perangkat lunak alpha.",
         "welcome": "Selamat datang di Rainbow"
       },
+      "invalid_address_title": "Alamat tidak valid",
+      "invalid_address_message": "Periksa kembali kapitalisasi hurufnya dan coba lagi.",
       "invalid_ens_name": "Ini bukan nama ENS yang valid",
       "invalid_unstoppable_name": "Ini bukan nama Unstoppable yang valid",
       "label": "Dompet",
@@ -3613,19 +3625,15 @@
       },
       "errors": {
         "header": "Kesalahan meluncurkan token",
-        "api_request_failed": "Permintaan API gagal",
-        "api_response_invalid": "Respons API tidak valid",
         "contract_interaction_failed": "Interaksi kontrak gagal",
         "gas_estimation_failed": "Estimasi gas gagal",
         "insufficient_funds": "Dana Tidak Cukup",
-        "submission_details_missing": "Detail pengajuan hilang",
-        "transaction_rejected": "Transaksi ditolak",
-        "transaction_failed": "Transaksi gagal",
-        "transaction_simulation_failed": "Simulasi transaksi gagal",
         "unknown_error": "Kesalahan Tidak Diketahui",
+        "transaction_failed": "Transaksi gagal",
         "wallet_connection_error": "Kesalahan koneksi dompet",
         "invalid_params": "Parameter tidak valid",
-        "missing_required_param": "Parameter wajib hilang"
+        "missing_required_param": "Parameter wajib hilang",
+        "unsupported_network": "Peluncuran token tidak didukung di jaringan ini"
       }
     },
     "done": "Selesai",
@@ -3667,18 +3675,6 @@
               "Pada",
               " tengah malam (12:00 AM UTC), ",
               "token terdepan dinobatkan sebagai pemenang harian."
-            ]
-          },
-          "step_3": {
-            "title": "Menangkan Hadiah",
-            "subtitle_parts": [
-              "Pembeli Raja saat ini mendapatkan",
-              " 2x poin."
-            ],
-            "subtitle_two_parts": [
-              "Pencipta",
-              " mendapatkan poin ",
-              "ketika dinobatkan."
             ]
           }
         }
@@ -3725,6 +3721,8 @@
         "spread": "Penyebaran",
         "hold_to_place_bet": "Tahan untuk Pasang Taruhan",
         "placing_bet": "Memasang Taruhan...",
+        "approving_trading": "Menyetujui Perdagangan...",
+        "converting_collateral": "Mengonversi Jaminan...",
         "confirming_order": "Mengonfirmasi Pesanan...",
         "deposit_funds": "Deposit Dana",
         "average_price": "Harga Rata-rata",
@@ -3735,7 +3733,11 @@
         "errors": {
           "not_enough_liquidity": "Likuiditas tidak cukup untuk melakukan pemesanan penuh.",
           "please_lower_amount": "Silakan kurangi jumlahnya dan coba lagi.",
-          "no_liquidity_at_price": "Tidak ada likuiditas pada harga ini."
+          "no_liquidity_at_price": "Tidak ada likuiditas pada harga ini.",
+          "trading_approval_failed_title": "Tidak Dapat Menyetujui Perdagangan",
+          "trading_approval_failed_message": "Silakan coba lagi.",
+          "collateral_conversion_failed_title": "Tidak Dapat Mengonversi Jaminan",
+          "collateral_conversion_failed_message": "Silakan coba lagi."
         }
       },
       "manage_position": {
@@ -3847,6 +3849,7 @@
         "subtitle": "Sapa $RNBW, periksa kelayakanmu sekarang."
       },
       "claim": {
+        "claim_title": "Klaim $RNBW",
         "available_to_claim": "Tersedia untuk Diklaim",
         "your_airdrop": "Airdrop Kamu",
         "your_airdrop_description": "Terima kasih telah menggunakan Rainbow. Airdrop kamu dihitung berdasarkan aktivitas kamu sebelumnya.",
@@ -3886,6 +3889,80 @@
         "oh_i_see": "Oh begitu..."
       },
       "longer_than_usual": "Proses klaim memakan waktu lebih lama dari biasanya. Ini bisa memakan waktu hingga satu menit."
+    },
+    "rnbw_membership": {
+      "claim_card": {
+        "airdrop": "Airdrop",
+        "rewards": "Hadiah"
+      },
+      "shared": {
+        "tier_label": "Tingkat %{tierName}",
+        "loyalty_progress": "Progres Loyalti",
+        "fee_cashback": "Cashback Biaya"
+      },
+      "membership_tier_card": {
+        "stake_to_next_tier": "Stake untuk naik ke tingkat berikutnya"
+      },
+      "membership_tiers_sheet": {
+        "stake_to_unlock": "Stake untuk membuka"
+      },
+      "staking_card": {
+        "stake": "Stake",
+        "enable_staking": "Aktifkan staking",
+        "buy_rnbw": "Beli RNBW",
+        "unstake": "Unstake",
+        "available_to_stake": "tersedia untuk stake",
+        "available_to_add": "tersedia untuk ditambahkan",
+        "minimum_stake_amount_required": "Anda memerlukan setidaknya %{minStakeAmount} RNBW untuk staking"
+      },
+      "staking_earnings_card": {
+        "lifetime_earnings": "Pendapatan Seumur Hidup",
+        "exit_fee_rewards": "Hadiah Biaya Keluar"
+      },
+      "unstake_penalty_recovery_card": {
+        "break_even_reached": "Titik impas tercapai!",
+        "earned_prefix": "Anda telah menghasilkan ",
+        "earned_middle": " dari pool. Tinggal ",
+        "earned_suffix": " lagi untuk mencapai keuntungan murni."
+      }
+    },
+    "rnbw_staking": {
+      "deposit": {
+        "confirm_button": "Tahan untuk Stake",
+        "confirm_button_error": "Tidak dapat melakukan stake",
+        "confirm_button_loading": "Staking...",
+        "confirm_button_over_balance": "RNBW Tidak Cukup",
+        "confirm_button_zero_amount": "Masukkan jumlah",
+        "execution_error_title": "Kesalahan Staking",
+        "insufficient_gas": "Gas tidak cukup",
+        "quote_error": "Tidak dapat menyiapkan stake",
+        "receive": "Hadiah akan diklaim secara otomatis",
+        "title": "Stake $RNBW",
+        "minimum_amount": "Minimal 1 RNBW"
+      },
+      "learn_screen": {
+        "introducing": "MEMPERKENALKAN",
+        "title": "Menyimpan",
+        "description": "Staking RNBW untuk membuka tingkatan status dan manfaat anggota eksklusif.",
+        "fee_cashback": "Cashback Biaya",
+        "fee_cashback_subtitle": "Terima hingga 100% biaya sebagai RNBW yang di-stake.",
+        "exit_fee_title": "Biaya Keluar %{exitFeePercentage}%",
+        "exit_fee_subtitle": "Anda dapat melakukan unstake kapan saja. Cukup bayar biaya keluar %{exitFeePercentage}% yang didistribusikan kepada staker lainnya.",
+        "stay_in_to_earn_more": "Tetap staking untuk mendapatkan lebih banyak",
+        "stay_in_to_earn_more_subtitle": "Saat seseorang melakukan unstake RNBW mereka, biaya keluar akan kembali kepada mereka yang masih berada di pool.",
+        "enable_staking": "Aktifkan staking"
+      },
+      "unstake_sheet": {
+        "exit_fee": "Biaya Keluar",
+        "warning_description": "Unstake akan membebankan biaya %{exitFeePercentage}% pada saldo yang saat ini Anda stake.",
+        "unstake_failed_title": "Penghapusan Simpanan Gagal",
+        "unstake_failed_message": "Terjadi kesalahan saat melakukan unstake RNBW Anda. Silakan coba lagi.",
+        "unstake_title": "Unstake $%{symbol}",
+        "receive": "Terima",
+        "total_return": "Total Pengembalian",
+        "hold_to_unstake": "Tahan untuk Unstake",
+        "unstaking": "Unstaking..."
+      }
     },
     "wallet_error_sheet": {
       "title": "Pulihkan dompet Anda",

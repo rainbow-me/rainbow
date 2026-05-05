@@ -14,13 +14,11 @@ import { executeFn, Screens, TimeToSignOperation } from '@/state/performance/per
 import { swapsStore } from '@/state/swaps/swapsStore';
 import { execute, type Call, type ExecuteCallsResult, type ExecutionResult, type PreparedCallsExecution } from '@rainbow-me/delegation';
 
-import { claim, swap, unlock } from './actions';
-import { claimBridge } from './actions/claimBridge';
+import { swap, unlock } from './actions';
 import { claimClaimable } from './actions/claimClaimable';
 import { crosschainSwap, prepareCrosschainSwap } from './actions/crosschainSwap';
 import { prepareSwap } from './actions/swap';
 import { prepareUnlock } from './actions/unlock';
-import { createClaimAndBridgeRap } from './claimAndBridge';
 import { createClaimClaimableRap } from './claimClaimable';
 import type {
   ActionProps,
@@ -50,8 +48,6 @@ type Executors = {
 
 const executors: Executors = {
   action: {
-    claim,
-    claimBridge,
     claimClaimable,
     crosschainSwap,
     swap,
@@ -63,7 +59,6 @@ const executors: Executors = {
     unlock: prepareUnlock,
   },
   rapFactory: {
-    claimBridge: createClaimAndBridgeRap,
     claimClaimable: createClaimClaimableRap,
     crosschainSwap: createUnlockAndCrosschainSwapRap,
     swap: createUnlockAndSwapRap,
@@ -99,7 +94,7 @@ async function executeAction<T extends RapActionTypes>({
   baseNonce?: number;
   rapName: string;
   gasParams: TransactionGasParamAmounts | LegacyTransactionGasParamAmounts;
-  gasFeeParamsBySpeed: RapSwapActionParameters<Exclude<T, 'unlock' | 'claim'>>['gasFeeParamsBySpeed'];
+  gasFeeParamsBySpeed: ActionProps<T>['gasFeeParamsBySpeed'];
 }): Promise<RapActionResponse> {
   const { type, parameters } = action;
   try {
@@ -146,7 +141,7 @@ function getNodeAckDelay(chainId: ChainId): number {
   }
 }
 
-const PERF_TRACKING_EXEMPTIONS: RapTypes[] = ['claimBridge', 'claimClaimable'];
+const PERF_TRACKING_EXEMPTIONS: RapTypes[] = ['claimClaimable'];
 
 export async function walletExecuteRap<T extends RapTypes>(
   wallet: Signer,
@@ -154,7 +149,7 @@ export async function walletExecuteRap<T extends RapTypes>(
   parameters: RapSwapActionParameters<T>,
   options?: WalletExecuteRapOptions
 ): Promise<{ errorMessage: string | null; hash: string | null; nonce: number | undefined }> {
-  // NOTE: We don't care to track claimBridge raps
+  // NOTE: We don't care to track claimable raps
   const rap = PERF_TRACKING_EXEMPTIONS.includes(type)
     ? await createSwapRapByType(type, parameters)
     : await executeFn(createSwapRapByType, {
