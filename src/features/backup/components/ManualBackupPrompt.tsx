@@ -1,49 +1,44 @@
 import React, { useCallback } from 'react';
 
-import { format } from 'date-fns';
 import { type Source } from 'react-native-fast-image';
 
-import WalletsAndBackupIcon from '@/assets/WalletsAndBackup.png';
+import ManuallyBackedUpIcon from '@/assets/ManuallyBackedUp.png';
+import ButtonPressAnimation from '@/components/animations/ButtonPressAnimation';
+import { ImgixImage } from '@/components/images';
 import { Bleed, Box, Inline, Inset, Separator, Stack, Text } from '@/design-system';
+import walletBackupTypes from '@/helpers/walletBackupTypes';
+import walletTypes from '@/helpers/walletTypes';
 import * as i18n from '@/languages';
-import { executeFnIfCloudBackupAvailable } from '@/model/backup';
 import { useNavigation } from '@/navigation/Navigation';
 import Routes from '@/navigation/routesNames';
-import { backupsStore } from '@/state/backups/backups';
 import { useSelectedWallet } from '@/state/wallets/walletsStore';
-import { cloudPlatform } from '@/utils/platform';
-
-import ButtonPressAnimation from '../animations/ButtonPressAnimation';
-import { ImgixImage } from '../images';
-import { useCreateBackup } from './useCreateBackup';
 
 const imageSize = 72;
 
-export default function CloudBackupPrompt() {
+export default function ManualBackupPrompt() {
   const { navigate, goBack } = useNavigation();
-  const mostRecentBackup = backupsStore(state => state.mostRecentBackup);
   const selectedWallet = useSelectedWallet();
-  const createBackup = useCreateBackup();
 
-  const onCloudBackup = useCallback(() => {
-    if (!selectedWallet) return;
+  const onManualBackup = async () => {
+    if (!selectedWallet) {
+      return;
+    }
+    const title =
+      selectedWallet?.imported && selectedWallet.type === walletTypes.privateKey
+        ? (selectedWallet.addresses || [])[0].label
+        : selectedWallet.name;
 
-    // pop the bottom sheet, and navigate to the backup section inside settings sheet
     goBack();
     navigate(Routes.SETTINGS_SHEET, {
-      screen: Routes.SETTINGS_SECTION_BACKUP,
-      initial: false,
+      screen: Routes.SECRET_WARNING,
+      params: {
+        isBackingUp: true,
+        title,
+        backupType: walletBackupTypes.manual,
+        walletId: selectedWallet.id,
+      },
     });
-
-    executeFnIfCloudBackupAvailable({
-      fn: () =>
-        createBackup({
-          walletId: selectedWallet.id,
-          addToCurrentBackup: true,
-        }),
-      logout: true,
-    });
-  }, [createBackup, goBack, navigate, selectedWallet]);
+  };
 
   const onMaybeLater = useCallback(() => goBack(), [goBack]);
 
@@ -59,12 +54,12 @@ export default function CloudBackupPrompt() {
             marginRight={{ custom: -12 }}
             marginTop={{ custom: 0 }}
             marginBottom={{ custom: 8 }}
-            source={WalletsAndBackupIcon as Source}
+            source={ManuallyBackedUpIcon as Source}
             width={{ custom: imageSize }}
             size={imageSize}
           />
           <Text align="center" size="26pt" weight="bold" color="label">
-            {i18n.t(i18n.l.back_up.cloud.add_wallet_to_cloud_backups)}
+            {i18n.t(i18n.l.back_up.manual.backup_manually_now)}
           </Text>
         </Stack>
       </Inset>
@@ -73,15 +68,12 @@ export default function CloudBackupPrompt() {
         <Separator color="separatorSecondary" thickness={1} />
       </Bleed>
 
-      <ButtonPressAnimation scaleTo={0.95} onPress={onCloudBackup}>
+      <ButtonPressAnimation scaleTo={0.95} onPress={onManualBackup}>
         <Box alignItems="center" justifyContent="center" paddingTop={'24px'} paddingBottom={'24px'}>
           <Box alignItems="center" justifyContent="center" width="full">
             <Inline alignHorizontal="justify" alignVertical="center" wrap={false}>
               <Text color={'action (Deprecated)'} size="20pt" weight="bold">
-                􀎽{' '}
-                {i18n.t(i18n.l.back_up.cloud.back_to_cloud_platform_now, {
-                  cloudPlatform,
-                })}
+                {i18n.t(i18n.l.back_up.manual.back_up_now)}
               </Text>
             </Inline>
           </Box>
@@ -97,7 +89,7 @@ export default function CloudBackupPrompt() {
           <Box alignItems="center" justifyContent="center" width="full">
             <Inline alignHorizontal="justify" alignVertical="center" wrap={false}>
               <Text color={'labelSecondary'} size="20pt" weight="bold">
-                {i18n.t(i18n.l.back_up.cloud.mayber_later)}
+                {i18n.t(i18n.l.back_up.manual.already_backed_up)}
               </Text>
             </Inline>
           </Box>
@@ -107,20 +99,6 @@ export default function CloudBackupPrompt() {
       <Bleed horizontal="24px">
         <Separator color="separatorSecondary" thickness={1} />
       </Bleed>
-
-      {mostRecentBackup && (
-        <Box alignItems="center" justifyContent="center" paddingTop={'24px'} paddingBottom={'24px'}>
-          <Box alignItems="center" justifyContent="center" width="full">
-            <Inline alignHorizontal="justify" alignVertical="center" wrap={false}>
-              <Text color={'labelTertiary'} size="15pt" weight="medium">
-                {i18n.t(i18n.l.back_up.cloud.latest_backup, {
-                  date: format(new Date(mostRecentBackup.lastModified), "M/d/yy 'at' h:mm a"),
-                })}
-              </Text>
-            </Inline>
-          </Box>
-        </Box>
-      )}
     </Inset>
   );
 }

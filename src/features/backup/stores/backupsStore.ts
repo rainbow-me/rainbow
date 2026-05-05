@@ -4,10 +4,10 @@ import { IS_ANDROID } from '@/env';
 import { fetchAllBackups, getGoogleAccountUserData, isCloudBackupAvailable, syncCloud } from '@/handlers/cloudBackup';
 import walletBackupTypes from '@/helpers/walletBackupTypes';
 import { logger, RainbowError } from '@/logger';
-import { type BackupFile, type CloudBackups } from '@/model/backup';
-import { getMostRecentCloudBackup, hasManuallyBackedUpWallet } from '@/screens/SettingsSheet/utils';
+import { createRainbowStore } from '@/state/internal/createRainbowStore';
+import { getWallets } from '@/state/wallets/walletsStore';
 
-import { createRainbowStore } from '../internal/createRainbowStore';
+import { parseTimestampFromFilename, type BackupFile, type CloudBackups } from '../backup';
 
 const mutex = new Mutex();
 
@@ -65,6 +65,36 @@ interface BackupsStore {
 }
 
 const returnEarlyIfLockedStates = [CloudBackupState.Syncing, CloudBackupState.Fetching];
+
+const hasManuallyBackedUpWallet = () => {
+  const wallets = getWallets();
+  if (!wallets) return false;
+  return Object.values(wallets).some(wallet => wallet.backupType === walletBackupTypes.manual);
+};
+
+const getMostRecentCloudBackup = (backups: BackupFile[]) => {
+  const cloudBackups = backups.sort((a, b) => {
+    return parseTimestampFromFilename(b.name) - parseTimestampFromFilename(a.name);
+  });
+
+  return cloudBackups.reduce<BackupFile>((prev, current) => {
+    if (!current) {
+      return prev;
+    }
+
+    if (!prev) {
+      return current;
+    }
+
+    const prevTimestamp = new Date(prev.lastModified).getTime();
+    const currentTimestamp = new Date(current.lastModified).getTime();
+    if (currentTimestamp > prevTimestamp) {
+      return current;
+    }
+
+    return prev;
+  }, cloudBackups[0]);
+};
 
 export const backupsStore = createRainbowStore<BackupsStore>(
   (set, get) => ({

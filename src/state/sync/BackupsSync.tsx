@@ -1,6 +1,6 @@
 import { memo, useEffect } from 'react';
 
-import { backupsStore } from '@/state/backups/backups';
+import { backupsStore } from '@/features/backup/stores/backupsStore';
 
 const BackupsSyncComponent = () => {
   useEffect(() => {

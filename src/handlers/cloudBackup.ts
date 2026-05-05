@@ -4,8 +4,8 @@ import RNCloudFs from 'react-native-cloud-fs';
 import RNFS from 'react-native-fs';
 
 import { IS_ANDROID, IS_IOS } from '@/env';
+import { type BackupFile, type CloudBackups } from '@/features/backup/backup';
 import { logger, RainbowError } from '@/logger';
-import { type BackupFile, type CloudBackups } from '@/model/backup';
 
 import AesEncryptor from '../handlers/aesEncryption';
 

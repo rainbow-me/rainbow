@@ -5,23 +5,23 @@ import { type Source } from 'react-native-fast-image';
 import Caret from '@/assets/family-dropdown-arrow.png';
 import ManuallyBackedUpIcon from '@/assets/ManuallyBackedUp.png';
 import WalletsAndBackupIcon from '@/assets/WalletsAndBackup.png';
-import { useCreateBackup } from '@/components/backup/useCreateBackup';
+import ButtonPressAnimation from '@/components/animations/ButtonPressAnimation';
+import { ImgixImage } from '@/components/images';
 import { Bleed, Box, Inline, Inset, Separator, Stack, Text } from '@/design-system';
 import { type TextColor } from '@/design-system/color/palettes';
 import { type CustomColor } from '@/design-system/color/useForegroundColor';
 import walletBackupTypes from '@/helpers/walletBackupTypes';
 import WalletTypes from '@/helpers/walletTypes';
 import * as i18n from '@/languages';
-import { executeFnIfCloudBackupAvailable } from '@/model/backup';
 import { useNavigation } from '@/navigation/Navigation';
 import Routes from '@/navigation/routesNames';
-import { backupsStore, CloudBackupState } from '@/state/backups/backups';
 import { useSelectedWallet } from '@/state/wallets/walletsStore';
 import { useTheme } from '@/theme/ThemeContext';
 import { cloudPlatform } from '@/utils/platform';
 
-import ButtonPressAnimation from '../animations/ButtonPressAnimation';
-import { ImgixImage } from '../images';
+import { executeFnIfCloudBackupAvailable } from '../backup';
+import { useCreateBackup } from '../hooks/useCreateBackup';
+import { backupsStore, CloudBackupState } from '../stores/backupsStore';
 
 const imageSize = 72;
 

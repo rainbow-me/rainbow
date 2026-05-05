@@ -3,6 +3,7 @@ import { useCallback, useEffect, useState } from 'react';
 import { useDispatch } from 'react-redux';
 
 import { IS_ANDROID } from '@/env';
+import { backupsStore, CloudBackupState } from '@/features/backup/stores/backupsStore';
 import { showActionSheetWithOptions } from '@/framework/ui/utils/actionsheet';
 import { maybeAuthenticateWithPIN } from '@/handlers/authentication';
 import {
@@ -16,7 +17,6 @@ import { WrappedAlert as Alert } from '@/helpers/alert';
 import * as keychain from '@/keychain';
 import * as i18n from '@/languages';
 import { logger, RainbowError } from '@/logger';
-import { backupsStore, CloudBackupState } from '@/state/backups/backups';
 import { clearAllWalletsBackupStatus } from '@/state/wallets/walletsStore';
 
 import { cloudPlatform } from '../utils/platform';

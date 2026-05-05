@@ -2,18 +2,19 @@ import React, { useCallback, useEffect } from 'react';
 
 import { useRoute, type RouteProp } from '@react-navigation/native';
 
-import BackupWalletPrompt from '@/components/backup/BackupWalletPrompt';
-import ManualBackupPrompt from '@/components/backup/ManualBackupPrompt';
 import { SimpleSheet } from '@/components/sheet/SimpleSheet';
 import { BackgroundProvider } from '@/design-system';
 import WalletBackupStepTypes from '@/helpers/walletBackupStepTypes';
 import { getHeightForStep } from '@/navigation/config';
 import type Routes from '@/navigation/routesNames';
 import { type RootStackParamList } from '@/navigation/types';
-import { backupsStore } from '@/state/backups/backups';
 
-import { BackupCloudStep, RestoreCloudStep } from '.';
+import { backupsStore } from '../stores/backupsStore';
+import BackupCloudStep from './BackupCloudStep';
+import BackupWalletPrompt from './BackupWalletPrompt';
 import CloudBackupPrompt from './CloudBackupPrompt';
+import ManualBackupPrompt from './ManualBackupPrompt';
+import RestoreCloudStep from './RestoreCloudStep';
 
 export default function BackupSheet() {
   const { params: { step = WalletBackupStepTypes.backup_prompt } = {} } =

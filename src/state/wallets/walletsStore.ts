@@ -4,6 +4,7 @@ import { toChecksumAddress } from 'ethereumjs-util';
 import { type Address } from 'viem';
 
 import { normalizeAddress } from '@/features/address/core/address';
+import { parseTimestampFromBackupFile } from '@/features/backup/backup';
 import { fetchENSAvatarWithRetry } from '@/features/ens/hooks/useENSAvatar';
 import { ensureValidHex, isValidHex } from '@/handlers/web3';
 import { removeFirstEmojiFromString, returnStringFirstEmoji } from '@/helpers/emojiHandler';
@@ -11,7 +12,6 @@ import { getConsistentArray } from '@/helpers/getConsistentArray';
 import WalletTypes from '@/helpers/walletTypes';
 import * as kc from '@/keychain';
 import { ensureError, logger, RainbowError } from '@/logger';
-import { parseTimestampFromBackupFile } from '@/model/backup';
 import { PreferenceActionType, setPreference } from '@/model/preferences';
 import {
   checkWalletsDamagedState,

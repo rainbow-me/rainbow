@@ -2,13 +2,13 @@ import { format } from 'date-fns';
 import { isEmpty } from 'lodash';
 
 import { IS_ANDROID, IS_IOS } from '@/env';
+import { type CloudBackups } from '@/features/backup/backup';
+import { backupsStore, CloudBackupState } from '@/features/backup/stores/backupsStore';
 import { normalizeAndroidBackupFilename } from '@/handlers/cloudBackup';
 import WalletBackupTypes from '@/helpers/walletBackupTypes';
 import WalletTypes from '@/helpers/walletTypes';
 import * as i18n from '@/languages';
-import { parseTimestampFromFilename, type BackupFile, type CloudBackups } from '@/model/backup';
 import { type RainbowWallet } from '@/model/wallet';
-import { backupsStore, CloudBackupState } from '@/state/backups/backups';
 import { getWallets } from '@/state/wallets/walletsStore';
 import { cloudPlatform } from '@/utils/platform';
 
@@ -16,12 +16,6 @@ type WalletBackupStatus = {
   allBackedUp: boolean;
   areBackedUp: boolean;
   canBeBackedUp: boolean;
-};
-
-export const hasManuallyBackedUpWallet = () => {
-  const wallets = getWallets();
-  if (!wallets) return false;
-  return Object.values(wallets).some(wallet => wallet.backupType === WalletBackupTypes.manual);
 };
 
 export const checkLocalWalletsForBackupStatus = (backups: CloudBackups): WalletBackupStatus => {
@@ -65,30 +59,6 @@ export const checkLocalWalletsForBackupStatus = (backups: CloudBackups): WalletB
     },
     { allBackedUp: true, areBackedUp: true, canBeBackedUp: false }
   );
-};
-
-export const getMostRecentCloudBackup = (backups: BackupFile[]) => {
-  const cloudBackups = backups.sort((a, b) => {
-    return parseTimestampFromFilename(b.name) - parseTimestampFromFilename(a.name);
-  });
-
-  return cloudBackups.reduce<BackupFile>((prev, current) => {
-    if (!current) {
-      return prev;
-    }
-
-    if (!prev) {
-      return current;
-    }
-
-    const prevTimestamp = new Date(prev.lastModified).getTime();
-    const currentTimestamp = new Date(current.lastModified).getTime();
-    if (currentTimestamp > prevTimestamp) {
-      return current;
-    }
-
-    return prev;
-  }, cloudBackups[0]);
 };
 
 export const titleForBackupState: Partial<Record<CloudBackupState, string>> = {

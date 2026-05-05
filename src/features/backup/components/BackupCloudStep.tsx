@@ -6,7 +6,10 @@ import { type Source } from 'react-native-fast-image';
 
 import { analytics } from '@/analytics';
 import WalletAndBackup from '@/assets/WalletsAndBackup.png';
+import { RainbowButton } from '@/components/buttons';
+import RainbowButtonTypes from '@/components/buttons/rainbow-button/RainbowButtonTypes';
 import { PasswordField } from '@/components/fields';
+import { ImgixImage } from '@/components/images';
 import { Text } from '@/components/text';
 import { Box, Inset, Stack } from '@/design-system';
 import styled from '@/framework/ui/styled-thing';
@@ -23,10 +26,7 @@ import { padding } from '@/styles';
 import { useTheme } from '@/theme/ThemeContext';
 import { cloudPlatform } from '@/utils/platform';
 
-import { RainbowButton } from '../buttons';
-import RainbowButtonTypes from '../buttons/rainbow-button/RainbowButtonTypes';
-import { ImgixImage } from '../images';
-import { usePasswordValidation } from './usePasswordValidation';
+import { usePasswordValidation } from '../hooks/usePasswordValidation';
 
 type NativeEvent = {
   nativeEvent: {
