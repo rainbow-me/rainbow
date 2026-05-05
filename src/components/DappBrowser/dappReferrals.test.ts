@@ -21,4 +21,12 @@ describe('dappReferrals', () => {
   it('returns the original URL when a browser referral already exists', () => {
     expect(addReferralToDappBrowserUrl('https://www.polymarket.com/?r=existing')).toBe('https://www.polymarket.com/?r=existing');
   });
+
+  it('returns the Lighter referral URL when a browser referral applies', () => {
+    expect(addReferralToDappBrowserUrl('https://app.lighter.xyz/trade')).toBe('https://app.lighter.xyz/trade?referral=7228476M');
+  });
+
+  it('returns the original URL when a Lighter referral already exists', () => {
+    expect(addReferralToDappBrowserUrl('https://app.lighter.xyz/?referral=existing')).toBe('https://app.lighter.xyz/?referral=existing');
+  });
 });
