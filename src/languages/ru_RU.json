@@ -646,7 +646,7 @@
       }
     },
     "ens": {
-      "registered_on": "Registered on"
+      "registered_on": "Зарегистрирован"
     },
     "expanded_state": {
       "asset": {
@@ -3169,13 +3169,13 @@
         "about": "О ПРОЕКТЕ",
         "token_allocation_breakdown": "Разбивка распределения токенов",
         "mcap": "MCAP",
-        "links": "Links"
+        "links": "Ссылки"
       },
       "placeholders": {
         "ticker": "$NAME",
         "enter_coin_name": "Введите название монеты",
         "describe_your_coin": "Опишите свою монету",
-        "custom_amount": "Custom amount"
+        "custom_amount": "Произвольная сумма"
       },
       "buttons": {
         "hold_to_create": "Удерживайте для создания",
@@ -3249,13 +3249,13 @@
       "mcap": "MCAP",
       "transactions": "Транзакции",
       "volume": "Объем",
-      "makers": "Makers",
+      "makers": "Маркет-мейкеры",
       "buys": "Покупки",
       "sells": "Продажи",
       "bought": "Куплено",
       "sold": "Проданные",
-      "buyers": "Buyers",
-      "sellers": "Sellers"
+      "buyers": "Покупатели",
+      "sellers": "Продавцы"
     },
     "king_of_hill": {
       "title": "Платформа запуска",
@@ -3519,9 +3519,9 @@
         "unstake": "Отменить стейкинг",
         "available_to_stake": "доступно для стейкинга",
         "available_to_add": "доступно для добавления",
-        "to_add_to_stake": "to add to stake",
-        "to_stake": "to stake",
-        "buy_more": "Buy more"
+        "to_add_to_stake": "чтобы добавить в стейк",
+        "to_stake": "чтобы застейкать",
+        "buy_more": "Купить ещё"
       },
       "staking_earnings_card": {
         "lifetime_earnings": "Заработок за всё время",
