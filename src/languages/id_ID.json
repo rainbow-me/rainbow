@@ -3249,13 +3249,13 @@
       "mcap": "MCAP",
       "transactions": "Transaksi",
       "volume": "Volume",
-      "makers": "Makers",
+      "makers": "Pembuat",
       "buys": "Beli",
       "sells": "Jual",
       "bought": "Dibeli",
       "sold": "Dijual",
-      "buyers": "Buyers",
-      "sellers": "Sellers"
+      "buyers": "Pembeli",
+      "sellers": "Penjual"
     },
     "king_of_hill": {
       "title": "Peluncuran",
@@ -3519,9 +3519,9 @@
         "unstake": "Unstake",
         "available_to_stake": "tersedia untuk stake",
         "available_to_add": "tersedia untuk ditambahkan",
-        "to_add_to_stake": "to add to stake",
-        "to_stake": "to stake",
-        "buy_more": "Buy more"
+        "to_add_to_stake": "untuk menambahkan ke staking",
+        "to_stake": "untuk staking",
+        "buy_more": "Beli lagi"
       },
       "staking_earnings_card": {
         "lifetime_earnings": "Pendapatan Seumur Hidup",
