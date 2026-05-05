@@ -646,7 +646,7 @@
       }
     },
     "ens": {
-      "registered_on": "Registered on"
+      "registered_on": "Kayıt tarihi"
     },
     "expanded_state": {
       "asset": {
@@ -3169,13 +3169,13 @@
         "about": "HAKKINDA",
         "token_allocation_breakdown": "Token Tahsisi Dağılımı",
         "mcap": "MCAP",
-        "links": "Links"
+        "links": "Bağlantılar"
       },
       "placeholders": {
         "ticker": "$NAME",
         "enter_coin_name": "Coin ismi girin",
         "describe_your_coin": "Coininizi tanımlayın",
-        "custom_amount": "Custom amount"
+        "custom_amount": "Özel tutar"
       },
       "buttons": {
         "hold_to_create": "Oluşturmak İçin Basılı Tutun",
@@ -3249,13 +3249,13 @@
       "mcap": "MCAP",
       "transactions": "İşlemler",
       "volume": "Hacim",
-      "makers": "Makers",
+      "makers": "Piyasa yapıcılar",
       "buys": "Alımlar",
       "sells": "Satışlar",
       "bought": "Satın alındı",
       "sold": "Satıldı",
-      "buyers": "Buyers",
-      "sellers": "Sellers"
+      "buyers": "Alıcılar",
+      "sellers": "Satıcılar"
     },
     "king_of_hill": {
       "title": "Başlatma Platformu",
@@ -3519,9 +3519,9 @@
         "unstake": "Stake'i Çöz",
         "available_to_stake": "stake edilebilir",
         "available_to_add": "eklemek için kullanılabilir",
-        "to_add_to_stake": "to add to stake",
-        "to_stake": "to stake",
-        "buy_more": "Buy more"
+        "to_add_to_stake": "stake’e eklemek için",
+        "to_stake": "stake etmek için",
+        "buy_more": "Daha fazla satın al"
       },
       "staking_earnings_card": {
         "lifetime_earnings": "Ömür Boyu Kazançlar",
