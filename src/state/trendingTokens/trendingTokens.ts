@@ -9,7 +9,7 @@ import { type ChainId } from '@/state/backendNetworks/types';
 import { createRainbowStore } from '../internal/createRainbowStore';
 
 export const categories = [ArcTrendingCategory.Trending, ArcTrendingCategory.New] as const;
-export type TrendingCategory = (typeof categories)[number] | 'Rainbow' | ArcTrendingCategory.Farcaster;
+export type TrendingCategory = (typeof categories)[number];
 export const sortFilters = [
   ArcTrendingSort.Recommended,
   ArcTrendingSort.Volume,
