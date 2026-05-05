@@ -3249,13 +3249,13 @@
       "mcap": "มูลค่าตลาด",
       "transactions": "การทำธุรกรรม",
       "volume": "ปริมาณ",
-      "makers": "Makers",
+      "makers": "ผู้สร้าง",
       "buys": "การซื้อ",
       "sells": "ขาย",
       "bought": "ซื้อแล้ว",
       "sold": "ขายแล้ว",
-      "buyers": "Buyers",
-      "sellers": "Sellers"
+      "buyers": "ผู้ซื้อ",
+      "sellers": "ผู้ขาย"
     },
     "king_of_hill": {
       "title": "เปิดตัว",
@@ -3519,9 +3519,9 @@
         "unstake": "ถอนสเตก",
         "available_to_stake": "พร้อมสำหรับการสเตก",
         "available_to_add": "พร้อมสำหรับการเพิ่ม",
-        "to_add_to_stake": "to add to stake",
-        "to_stake": "to stake",
-        "buy_more": "Buy more"
+        "to_add_to_stake": "เพื่อเพิ่มเข้าไปในสเตค",
+        "to_stake": "เพื่อสเตค",
+        "buy_more": "ซื้อเพิ่ม"
       },
       "staking_earnings_card": {
         "lifetime_earnings": "รายได้ตลอดอายุการใช้งาน",
