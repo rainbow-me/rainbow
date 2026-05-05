@@ -3249,13 +3249,13 @@
       "mcap": "MCAP",
       "transactions": "Transacciones",
       "volume": "Volumen",
-      "makers": "Makers",
+      "makers": "Creadores",
       "buys": "Compras",
       "sells": "Ventas",
       "bought": "Comprado",
       "sold": "Vendido",
-      "buyers": "Buyers",
-      "sellers": "Sellers"
+      "buyers": "Compradores",
+      "sellers": "Vendedores"
     },
     "king_of_hill": {
       "title": "Plataforma de lanzamiento",
@@ -3519,9 +3519,9 @@
         "unstake": "Retirar del stake",
         "available_to_stake": "disponible para hacer stake",
         "available_to_add": "disponible para agregar",
-        "to_add_to_stake": "to add to stake",
-        "to_stake": "to stake",
-        "buy_more": "Buy more"
+        "to_add_to_stake": "para agregar al staking",
+        "to_stake": "para hacer staking",
+        "buy_more": "Comprar más"
       },
       "staking_earnings_card": {
         "lifetime_earnings": "Ganancias de por vida",
