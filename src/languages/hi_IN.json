@@ -3249,13 +3249,13 @@
       "mcap": "एमसीएपी",
       "transactions": "लेन-देन",
       "volume": "वॉल्यूम",
-      "makers": "Makers",
+      "makers": "मेकर",
       "buys": "खरीद",
       "sells": "बेच",
       "bought": "खरीदा",
       "sold": "बेच दिया",
-      "buyers": "Buyers",
-      "sellers": "Sellers"
+      "buyers": "खरीदार",
+      "sellers": "विक्रेता"
     },
     "king_of_hill": {
       "title": "लॉन्चपैड",
@@ -3519,9 +3519,9 @@
         "unstake": "अनस्टेक करें",
         "available_to_stake": "स्टेक करने के लिए उपलब्ध",
         "available_to_add": "जोड़ने के लिए उपलब्ध",
-        "to_add_to_stake": "to add to stake",
-        "to_stake": "to stake",
-        "buy_more": "Buy more"
+        "to_add_to_stake": "स्टेक में जोड़ने के लिए",
+        "to_stake": "स्टेक करने के लिए",
+        "buy_more": "और खरीदें"
       },
       "staking_earnings_card": {
         "lifetime_earnings": "जीवनकाल की कमाई",
