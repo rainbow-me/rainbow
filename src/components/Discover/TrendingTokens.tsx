@@ -767,21 +767,12 @@ export function TrendingTokens() {
             selectedChainId={selectedChainId}
           />
           <CategoryFilterButton
-            category={categories[2]}
+            category={categories[1]}
             label={i18n.t(t.filters.categories.NEW)}
             icon="􀋃"
             iconColor={{ default: isDarkMode ? globalColors.yellow60 : '#FFBB00', selected: '#F5A200' }}
             highlightedBackgroundColor={'#FFEAC2'}
             iconWidth={18}
-            selectedChainId={selectedChainId}
-          />
-          <CategoryFilterButton
-            category={categories[3]}
-            label={i18n.t(t.filters.categories.FARCASTER)}
-            icon="􀌥"
-            iconColor={'#5F5AFA'}
-            highlightedBackgroundColor={'#B9B7F7'}
-            iconWidth={20}
             selectedChainId={selectedChainId}
           />
         </Animated.ScrollView>
