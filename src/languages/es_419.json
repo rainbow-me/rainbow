@@ -3447,9 +3447,7 @@
       "filters": {
         "categories": {
           "TRENDING": "Tendencia",
-          "RAINBOW": "Rainbow",
-          "NEW": "Nuevo",
-          "FARCASTER": "Farcaster"
+          "NEW": "Nuevo"
         },
         "sort": {
           "RECOMMENDED": {
