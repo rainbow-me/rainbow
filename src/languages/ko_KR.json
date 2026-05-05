@@ -646,7 +646,7 @@
       }
     },
     "ens": {
-      "registered_on": "Registered on"
+      "registered_on": "등록 일자"
     },
     "expanded_state": {
       "asset": {
@@ -3169,13 +3169,13 @@
         "about": "정보",
         "token_allocation_breakdown": "토큰 할당 분해",
         "mcap": "시가 총액",
-        "links": "Links"
+        "links": "링크"
       },
       "placeholders": {
         "ticker": "$NAME",
         "enter_coin_name": "코인 이름 입력",
         "describe_your_coin": "코인 설명",
-        "custom_amount": "Custom amount"
+        "custom_amount": "사용자 지정 금액"
       },
       "buttons": {
         "hold_to_create": "생성을 위해 유지",
@@ -3249,13 +3249,13 @@
       "mcap": "시가 총액",
       "transactions": "거래",
       "volume": "거래량",
-      "makers": "Makers",
+      "makers": "메이커",
       "buys": "구매",
       "sells": "판매",
       "bought": "구매함",
       "sold": "판매한",
-      "buyers": "Buyers",
-      "sellers": "Sellers"
+      "buyers": "구매자",
+      "sellers": "판매자"
     },
     "king_of_hill": {
       "title": "런칭패드",
@@ -3519,9 +3519,9 @@
         "unstake": "언스테이킹",
         "available_to_stake": "스테이킹 가능",
         "available_to_add": "추가 가능",
-        "to_add_to_stake": "to add to stake",
-        "to_stake": "to stake",
-        "buy_more": "Buy more"
+        "to_add_to_stake": "스테이킹에 추가하려면",
+        "to_stake": "스테이킹하려면",
+        "buy_more": "더 구매하기"
       },
       "staking_earnings_card": {
         "lifetime_earnings": "누적 수익",
