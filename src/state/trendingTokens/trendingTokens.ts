@@ -8,7 +8,7 @@ import { type ChainId } from '@/state/backendNetworks/types';
 
 import { createRainbowStore } from '../internal/createRainbowStore';
 
-export const categories = [ArcTrendingCategory.Trending, 'Rainbow', ArcTrendingCategory.New, ArcTrendingCategory.Farcaster] as const;
+export const categories = [ArcTrendingCategory.Trending, ArcTrendingCategory.New] as const;
 export type TrendingCategory = (typeof categories)[number];
 export const sortFilters = [
   ArcTrendingSort.Recommended,
@@ -22,7 +22,7 @@ export const timeFilters = [ArcTimeframe.H12, ArcTimeframe.H24, ArcTimeframe.D3,
 export type TrendingTimeframe = (typeof timeFilters)[number];
 
 type TrendingTokensState = {
-  category: (typeof categories)[number];
+  category: TrendingCategory;
   chainId: undefined | ChainId;
   timeframe: (typeof timeFilters)[number];
   sort: (typeof sortFilters)[number];

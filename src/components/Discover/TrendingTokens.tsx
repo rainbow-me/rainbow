@@ -188,7 +188,6 @@ function CategoryFilterButton({
   iconColor,
   label,
   highlightedBackgroundColor,
-  selectedChainId,
 }: {
   category: TrendingCategory;
   icon: string | JSX.Element;
@@ -196,12 +195,10 @@ function CategoryFilterButton({
   highlightedBackgroundColor: string;
   iconWidth?: number;
   label: string;
-  selectedChainId: SharedValue<ChainId | undefined>;
 }) {
   const { isDarkMode } = useColorMode();
   const fillTertiary = useBackgroundColor('fillTertiary');
   const separatorSecondary = useForegroundColor('separatorSecondary');
-  const tokenLauncherNetworks = useBackendNetworksStore(state => state.getTokenLauncherSupportedChainIds());
 
   const selected = useTrendingTokensStore(state => state.category === category);
 
@@ -214,14 +211,7 @@ function CategoryFilterButton({
 
   const selectCategory = useCallback(() => {
     useTrendingTokensStore.getState().setCategory(category);
-    if (category === 'Rainbow') {
-      const { chainId } = useTrendingTokensStore.getState();
-      if (chainId && !tokenLauncherNetworks.includes(chainId)) {
-        useTrendingTokensStore.getState().setChainId(undefined);
-        selectedChainId.value = undefined;
-      }
-    }
-  }, [category, tokenLauncherNetworks, selectedChainId]);
+  }, [category]);
 
   return (
     <ButtonPressAnimation scaleTo={0.92} onPress={selectCategory}>
@@ -570,17 +560,10 @@ function NoResults() {
 }
 
 function NetworkFilter({ selectedChainId }: { selectedChainId: SharedValue<ChainId | undefined> }) {
-  const { chainId, category } = useTrendingTokensStore(
-    state => ({
-      chainId: state.chainId,
-      category: state.category,
-    }),
-    shallowEqual
-  );
+  const chainId = useTrendingTokensStore(state => state.chainId);
 
   const chainColor = useBackendNetworksStore(state => state.getColorsForChainId(chainId || ChainId.mainnet, false));
   const setChainId = useTrendingTokensStore(state => state.setChainId);
-  const tokenLauncherNetworks = useBackendNetworksStore(state => state.getTokenLauncherSupportedChainIds());
 
   const { icon, label, lightenedNetworkColor } = useMemo(() => {
     if (!chainId) return { icon: '􀤆', label: i18n.t(t.all), lightenedNetworkColor: undefined };
@@ -607,9 +590,8 @@ function NetworkFilter({ selectedChainId }: { selectedChainId: SharedValue<Chain
     Navigation.handleAction(Routes.NETWORK_SELECTOR, {
       selected: selectedChainId.value ?? chainId,
       setSelected,
-      allowedNetworks: category === 'Rainbow' ? tokenLauncherNetworks : undefined,
     });
-  }, [category, chainId, selectedChainId, setSelected, tokenLauncherNetworks]);
+  }, [chainId, selectedChainId, setSelected]);
 
   return (
     <FilterButton
@@ -733,9 +715,11 @@ function TrendingTokenData() {
 }
 
 function RainbowFeatureFlagListener() {
-  // If the rainbow list was selected and the flag is disabled, set the category to the "Trending" category
+  // If the persisted category was removed, set the category to "Trending".
   useEffect(() => {
-    if (useTrendingTokensStore.getState().category === 'Rainbow') {
+    const { category } = useTrendingTokensStore.getState();
+    const isStalePersistedCategory = !categories.some(availableCategory => availableCategory === category);
+    if (isStalePersistedCategory) {
       useTrendingTokensStore.getState().setCategory(categories[0]);
     }
   }, []);
@@ -764,25 +748,14 @@ export function TrendingTokens() {
             icon="􀙭"
             iconColor={'#D0281C'}
             highlightedBackgroundColor={'#E6A39E'}
-            selectedChainId={selectedChainId}
           />
           <CategoryFilterButton
-            category={categories[2]}
+            category={categories[1]}
             label={i18n.t(t.filters.categories.NEW)}
             icon="􀋃"
             iconColor={{ default: isDarkMode ? globalColors.yellow60 : '#FFBB00', selected: '#F5A200' }}
             highlightedBackgroundColor={'#FFEAC2'}
             iconWidth={18}
-            selectedChainId={selectedChainId}
-          />
-          <CategoryFilterButton
-            category={categories[3]}
-            label={i18n.t(t.filters.categories.FARCASTER)}
-            icon="􀌥"
-            iconColor={'#5F5AFA'}
-            highlightedBackgroundColor={'#B9B7F7'}
-            iconWidth={20}
-            selectedChainId={selectedChainId}
           />
         </Animated.ScrollView>
 
