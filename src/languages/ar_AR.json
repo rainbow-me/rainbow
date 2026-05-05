@@ -3249,13 +3249,13 @@
       "mcap": "رأس المال السوقي",
       "transactions": "المعاملات",
       "volume": "الحجم",
-      "makers": "Makers",
+      "makers": "صُنّاع السوق",
       "buys": "عمليات الشراء",
       "sells": "عمليات البيع",
       "bought": "تم الشراء",
       "sold": "تم البيع",
-      "buyers": "Buyers",
-      "sellers": "Sellers"
+      "buyers": "المشترون",
+      "sellers": "البائعون"
     },
     "king_of_hill": {
       "title": "منصة الإطلاق",
@@ -3519,9 +3519,9 @@
         "unstake": "إلغاء الرهن",
         "available_to_stake": "متاح للرهن",
         "available_to_add": "متاح للإضافة",
-        "to_add_to_stake": "to add to stake",
-        "to_stake": "to stake",
-        "buy_more": "Buy more"
+        "to_add_to_stake": "لإضافة المزيد إلى الرهن",
+        "to_stake": "للرهن",
+        "buy_more": "اشترِ المزيد"
       },
       "staking_earnings_card": {
         "lifetime_earnings": "الأرباح مدى الحياة",
