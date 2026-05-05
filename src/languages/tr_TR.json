@@ -358,7 +358,8 @@
       "unhide": "Gizlemeyi Kaldır",
       "unpin": "Kaldır",
       "view": "Görüntüle",
-      "hidden": "Gizli"
+      "hidden": "Gizli",
+      "claim": "Talep Et"
     },
     "cards": {
       "ens_create_profile": {
@@ -470,7 +471,6 @@
         "quote_error": "Teklif Hatası",
         "no_route_found": "Rota bulunamadı",
         "fetching_quote": "Teklif Alınıyor...",
-        "rainbow_eth_rewards": "Rainbow ETH Ödülleri",
         "merkl_claimable": "%{dappName} Kasası",
         "merkl_claimable_description": "%{assetSymbols} Stratejisi",
         "select_a_network": "Bir Ağ Seçin",
@@ -994,6 +994,8 @@
       "chonks_title": "En Chonky Simgeyi\n Açtınız",
       "mog_description": "Renklerde kolay kozmik dünya hakimiyeti.",
       "mog_title": "Kazandınız\n Rainbow Mogs",
+      "rnbw_description": "420oz saf inançtan dövülmüş, Rainbow simgesinin parıldayan bir evrimi.",
+      "rnbw_title": "Kazandınız\n Altın $RNBW",
       "button": "Simgeyi Yakala"
     },
     "explain": {
@@ -1667,7 +1669,12 @@
         "confirm_button_error_text": "Teklif Hatası",
         "quote_error": "􀇿 Alıntı bulunamadı",
         "insufficient_balance": "􀫲 Yetersiz Bakiye",
-        "insufficient_gas": "Yetersiz Gaz"
+        "insufficient_gas": "Yetersiz Gaz",
+        "gas_sponsored": "Ücretsiz",
+        "invalid_route_recipient_error": "Köprü rotası hesabınızı hedeflemiyor. Lütfen tekrar deneyin.",
+        "missing_recipient_error": "Eksik alıcı adresi",
+        "no_wallet_connected": "Bağlı cüzdan yok",
+        "unknown_execution_error": "Yatırma işlemi işlenirken bilinmeyen bir hata oluştu"
       },
       "withdraw": {
         "title": "Çekme",
@@ -1688,15 +1695,17 @@
       "positions": {
         "entry": "GİRİŞ",
         "mark_price": "FİYAT İŞARETİ",
+        "mark_price_full": "Fiyat İşareti",
         "open_positions": "Açık Pozisyonlar",
         "no_open_positions": "Açık Pozisyon Yok",
         "position_value": "Pozisyon Değeri",
-        "mark_price_full": "Fiyat İşareti",
         "entry_price": "Giriş Fiyatı",
         "funding": "Fonlama",
         "liquidation_price": "Tasfiye Fiyatı",
         "total": "Toplam",
-        "learn_more_about_perps": "Perps hakkında daha fazla bilgi edinin"
+        "learn_more_about_perps": "Perps hakkında daha fazla bilgi edinin",
+        "open": "Aç",
+        "close": "Kapat"
       },
       "new_position": {
         "hold_to_long": "Uzun Tut",
@@ -1717,6 +1726,13 @@
         "minimum": "Asgari",
         "minimum_amount_is": "Asgari miktar",
         "no_balance": "Bakiye Yok"
+      },
+      "about": {
+        "title": "Hakkında",
+        "read_more": "Daha fazla oku",
+        "volume_24h": "24s hacim",
+        "open_interest": "Açık Pozisyon",
+        "funding": "Fonlama"
       },
       "history": {
         "title": "Geçmiş",
@@ -1823,15 +1839,7 @@
     },
     "points": {
       "points": {
-        "choose_claim_network": "Talep Ağı Seçin",
-        "claim_rewards": "Ödülleri Talep Et",
-        "try_again": "Tekrar Deneyin",
-        "claim_on_network": "%{network} ağına talep et",
-        "claiming_on_network": "Talep ediliyor %{network} ağına",
-        "claimed_on_network": "%{network} ağına talep edildi",
-        "bridge_error": "Kısmi Başarı",
-        "error_claiming": "Talep Başarısız",
-        "bridge_error_explainer": "Ödülleriniz Optimism üzerinde başarıyla alındı, ancak %{network} ağına transfer başarısız oldu. İsterseniz, Swap özelliğini kullanarak ödüllerinizi manuel olarak aktarabilirsiniz."
+        "try_again": "Tekrar Deneyin"
       }
     },
     "pools": {
@@ -2384,6 +2392,7 @@
       "find_a_token_to_buy": "Satın Almak İçin Bir Token Bulun",
       "search_your_tokens": "Tokenlarınızı Arayın",
       "error_executing_swap": "Takas Yürütme Hatası",
+      "sponsorship_unavailable": "Ücretsiz takaslar bu ağda geçici olarak kullanılamıyor. Lütfen ağ ücretleriyle tekrar deneyin.",
       "tokens_input": {
         "tokens": "Tokenler",
         "sort": "Sırala",
@@ -2405,7 +2414,8 @@
         "fast": "Hızlı",
         "network_fee": "Ağ Ücreti",
         "normal": "Normal",
-        "slow": "Yavaş"
+        "slow": "Yavaş",
+        "gas_sponsored": "Ücretsiz"
       },
       "loading": "Yükleniyor...",
       "modal_types": {
@@ -3009,6 +3019,8 @@
         "warning": "Bu bir alfa yazılımıdır.",
         "welcome": "Rainbow'a Hoş Geldiniz"
       },
+      "invalid_address_title": "Geçersiz adres",
+      "invalid_address_message": "Büyük/küçük harf kullanımını tekrar kontrol edip yeniden deneyin.",
       "invalid_ens_name": "Bu geçerli bir ENS adı değil",
       "invalid_unstoppable_name": "Bu geçerli bir Unstoppable adı değil",
       "label": "Cüzdanlar",
@@ -3613,19 +3625,15 @@
       },
       "errors": {
         "header": "Token başlatılırken hata",
-        "api_request_failed": "API isteği başarısız oldu",
-        "api_response_invalid": "API yanıtı geçersiz",
         "contract_interaction_failed": "Sözleşme etkileşimi başarısız oldu",
         "gas_estimation_failed": "Gas tahmini başarısız oldu",
         "insufficient_funds": "Yetersiz bakiye",
-        "submission_details_missing": "Gönderim ayrıntıları eksik",
-        "transaction_rejected": "İşlem reddedildi",
-        "transaction_failed": "İşlem başarısız oldu",
-        "transaction_simulation_failed": "İşlem simülasyonu başarısız oldu",
         "unknown_error": "Bilinmeyen hata",
+        "transaction_failed": "İşlem başarısız oldu",
         "wallet_connection_error": "Cüzdan bağlantı hatası",
         "invalid_params": "Geçersiz parametreler",
-        "missing_required_param": "Gerekli parametreler eksik"
+        "missing_required_param": "Gerekli parametreler eksik",
+        "unsupported_network": "Bu ağda token lansmanı desteklenmiyor"
       }
     },
     "done": "Tamamlandı",
@@ -3667,18 +3675,6 @@
               "Saat",
               " gece yarısı (12:00 AM UTC), ",
               "lider jeton günlük kazanan ilan edilir."
-            ]
-          },
-          "step_3": {
-            "title": "Ödül Kazan",
-            "subtitle_parts": [
-              "Şu anki kralın alıcıları",
-              " 2x puan alır."
-            ],
-            "subtitle_two_parts": [
-              "Yaratıcılar",
-              " puan kazanır ",
-              "taçlandırıldığında."
             ]
           }
         }
@@ -3725,6 +3721,8 @@
         "spread": "Spread",
         "hold_to_place_bet": "Bahis Yapmak İçin Basılı Tutun",
         "placing_bet": "Bahis Yapılıyor...",
+        "approving_trading": "Ticaret Onaylanıyor...",
+        "converting_collateral": "Teminat Dönüştürülüyor...",
         "confirming_order": "Sipariş Onaylanıyor...",
         "deposit_funds": "Fon Yatırma",
         "average_price": "Ortalama Fiyat",
@@ -3735,7 +3733,11 @@
         "errors": {
           "not_enough_liquidity": "Tam sipariş vermek için yeterli likidite yok.",
           "please_lower_amount": "Lütfen miktarı azaltın ve tekrar deneyin.",
-          "no_liquidity_at_price": "Bu fiyatta likidite yok."
+          "no_liquidity_at_price": "Bu fiyatta likidite yok.",
+          "trading_approval_failed_title": "Ticaret Onaylanamadı",
+          "trading_approval_failed_message": "Lütfen tekrar deneyin.",
+          "collateral_conversion_failed_title": "Teminat Dönüştürülemedi",
+          "collateral_conversion_failed_message": "Lütfen tekrar deneyin."
         }
       },
       "manage_position": {
@@ -3847,6 +3849,7 @@
         "subtitle": "$RNBW ile tanışın, uygunluğunuzu şimdi kontrol edin."
       },
       "claim": {
+        "claim_title": "$RNBW Talep Et",
         "available_to_claim": "Talep Edilebilir",
         "your_airdrop": "Airdrop'unuz",
         "your_airdrop_description": "Rainbow kullandığınız için teşekkürler. Airdrop'unuz önceki etkinliğinize göre hesaplanır.",
@@ -3886,6 +3889,80 @@
         "oh_i_see": "Anlıyorum..."
       },
       "longer_than_usual": "Talep etme işlemi normalden uzun sürüyor. Bir dakikaya kadar sürebilir."
+    },
+    "rnbw_membership": {
+      "claim_card": {
+        "airdrop": "Airdrop",
+        "rewards": "Ödüller"
+      },
+      "shared": {
+        "tier_label": "%{tierName} Seviyesi",
+        "loyalty_progress": "Sadakat İlerlemesi",
+        "fee_cashback": "Ücret Geri Ödemesi"
+      },
+      "membership_tier_card": {
+        "stake_to_next_tier": "Bir sonraki seviyeye geçmek için stake et"
+      },
+      "membership_tiers_sheet": {
+        "stake_to_unlock": "Kilidi açmak için stake et"
+      },
+      "staking_card": {
+        "stake": "Stake et",
+        "enable_staking": "Staking'i Etkinleştir",
+        "buy_rnbw": "RNBW Satın Al",
+        "unstake": "Stake'i Çöz",
+        "available_to_stake": "stake edilebilir",
+        "available_to_add": "eklemek için kullanılabilir",
+        "minimum_stake_amount_required": "Stake etmek için en az %{minStakeAmount} RNBW gerekir"
+      },
+      "staking_earnings_card": {
+        "lifetime_earnings": "Ömür Boyu Kazançlar",
+        "exit_fee_rewards": "Çıkış Ücreti Ödülleri"
+      },
+      "unstake_penalty_recovery_card": {
+        "break_even_reached": "Başabaş noktasına ulaşıldı!",
+        "earned_prefix": "Kazandınız ",
+        "earned_middle": " havuzdan. Sadece ",
+        "earned_suffix": " daha kaldı, net kâra ulaşmak için."
+      }
+    },
+    "rnbw_staking": {
+      "deposit": {
+        "confirm_button": "Stake Etmek İçin Basılı Tutun",
+        "confirm_button_error": "Stake edilemiyor",
+        "confirm_button_loading": "Stake ediliyor...",
+        "confirm_button_over_balance": "Yetersiz RNBW",
+        "confirm_button_zero_amount": "Miktar girin",
+        "execution_error_title": "Stake Hatası",
+        "insufficient_gas": "Yetersiz gas",
+        "quote_error": "Stake hazırlanamıyor",
+        "receive": "Ödüller otomatik olarak talep edilecek",
+        "title": "$RNBW Stake Et",
+        "minimum_amount": "Minimum 1 RNBW"
+      },
+      "learn_screen": {
+        "introducing": "TANITIM",
+        "title": "Bahis",
+        "description": "Statü seviyelerinin ve özel üye avantajlarının kilidini açmak için RNBW stake edin.",
+        "fee_cashback": "Ücret Geri Ödemesi",
+        "fee_cashback_subtitle": "Ücretlerin %100’üne kadarını stake edilmiş RNBW olarak alın.",
+        "exit_fee_title": "%{exitFeePercentage}% Çıkış Ücreti",
+        "exit_fee_subtitle": "İstediğiniz zaman unstake edebilirsiniz. Diğer staker’lara dağıtılan %{exitFeePercentage}% çıkış ücretini ödemeniz yeterli.",
+        "stay_in_to_earn_more": "Daha fazla kazanmak için havuzda kalın",
+        "stay_in_to_earn_more_subtitle": "Birisi RNBW’sini unstake ettiğinde, çıkış ücretleri havuzda kalmaya devam edenlere geri gider.",
+        "enable_staking": "Staking'i Etkinleştir"
+      },
+      "unstake_sheet": {
+        "exit_fee": "Çıkış Ücreti",
+        "warning_description": "Unstake etmek, şu anda stake edilmiş bakiyenizden %{exitFeePercentage}% ücret alır.",
+        "unstake_failed_title": "Bahisi Çekme Başarısız",
+        "unstake_failed_message": "RNBW'nizin stake'ini çözerken bir hata oluştu. Lütfen tekrar deneyin.",
+        "unstake_title": "$%{symbol} Stake'ini Çöz",
+        "receive": "Al",
+        "total_return": "Toplam Getiri",
+        "hold_to_unstake": "Stake'i Çözmek İçin Basılı Tutun",
+        "unstaking": "Stake çözülüyor..."
+      }
     },
     "wallet_error_sheet": {
       "title": "Cüzdanınızı geri yükleyin",

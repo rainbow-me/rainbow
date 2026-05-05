@@ -27,6 +27,7 @@ import {
   TAB_VIEW_BACKGROUND_COLOR_DARK,
   TAB_VIEW_BACKGROUND_COLOR_LIGHT,
 } from './constants';
+import { addReferralToDappBrowserUrl } from './dappReferrals';
 import { useBrowserScrollView } from './hooks/useBrowserScrollView';
 import { useScreenshotAndScrollTriggers } from './hooks/useScreenshotAndScrollTriggers';
 import { ProgressBar } from './ProgressBar';
@@ -74,7 +75,7 @@ const NewTabTrigger = () => {
   const { newTabWorklet } = useBrowserWorkletsContext();
 
   const route = useRoute<RouteProp<RootStackParamList, typeof Routes.DAPP_BROWSER_SCREEN>>();
-  const newTabUrl = route.params?.url;
+  const newTabUrl = route.params?.url ? addReferralToDappBrowserUrl(route.params.url) : undefined;
 
   useAnimatedReaction(
     () => newTabUrl,
