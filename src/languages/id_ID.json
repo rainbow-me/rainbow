@@ -3447,9 +3447,7 @@
       "filters": {
         "categories": {
           "TRENDING": "Tren",
-          "RAINBOW": "Biaya Rainbow",
-          "NEW": "Baru",
-          "FARCASTER": "Farcaster"
+          "NEW": "Baru"
         },
         "sort": {
           "RECOMMENDED": {
