@@ -27,12 +27,14 @@ export const TierBadge = memo(function TierBadge({
   tier,
   height = 42,
   borderWidth = 2,
+  paddingHorizontal = 16,
   fontSize = '22pt',
   weight = 'heavy',
 }: {
   tier: TierType;
   height?: number;
   borderWidth?: number;
+  paddingHorizontal?: number;
   fontSize?: TextSize;
   weight?: TextWeight;
 }) {
@@ -87,7 +89,7 @@ export const TierBadge = memo(function TierBadge({
         start={borderStart}
         end={borderEnd}
         borderWidth={borderWidth}
-        style={[styles.tierBadge, { height, borderRadius }]}
+        style={[styles.tierBadge, { height, borderRadius, paddingHorizontal }]}
       >
         <InnerShadow color={opacity(globalColors.white100, 0.1)} blur={1} dx={0} dy={3} borderRadius={borderRadius} />
         {resolvedOverlay ? (
@@ -129,11 +131,8 @@ const styles = StyleSheet.create({
     alignSelf: 'center',
   },
   tierBadge: {
-    height: 42,
-    paddingHorizontal: 16,
     justifyContent: 'center',
     alignItems: 'center',
-    borderRadius: 21,
     overflow: 'hidden',
   },
 });

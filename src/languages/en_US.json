@@ -3483,11 +3483,13 @@
       "staking_card": {
         "stake": "Stake",
         "enable_staking": "Enable Staking",
-        "buy_rnbw": "Buy RNBW",
+        "buy": "Buy",
         "unstake": "Unstake",
         "available_to_stake": "available to stake",
         "available_to_add": "available to add",
-        "minimum_stake_amount_required": "You need at least %{minStakeAmount} RNBW to stake"
+        "to_add_to_stake": "to add to stake",
+        "to_stake": "to stake",
+        "buy_more": "Buy more"
       },
       "staking_earnings_card": {
         "lifetime_earnings": "Lifetime Earnings",

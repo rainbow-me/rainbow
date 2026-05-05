@@ -9,7 +9,6 @@ import { TierBadge } from '@/features/rnbw-membership/components/TierBadge';
 import { useMembershipTierInfo } from '@/features/rnbw-membership/stores/derived/useMembershipTierInfo';
 import { navigateToBuyRnbw } from '@/features/rnbw-membership/utils/navigateToBuyRnbw';
 import { RNBW_SYMBOL } from '@/features/rnbw-rewards/constants';
-import { MIN_STAKE_AMOUNT } from '@/features/rnbw-staking/constants';
 import { useRnbwStakingBalance } from '@/features/rnbw-staking/stores/derived/useRnbwStakingBalance';
 import { useStakingPositionStore } from '@/features/rnbw-staking/stores/rnbwStakingPositionStore';
 import { blockRnbwStakingAccessIfNeeded } from '@/features/rnbw-staking/utils/blockStakingAccessIfNeeded';
@@ -52,7 +51,7 @@ export const RnbwStakingCard = memo(function RnbwStakingCard({ width }: RnbwStak
       notchOverlay={
         <ButtonPressAnimation onPress={navigateToMembershipTiersSheet}>
           <View onLayout={handleTierBadgeLayout}>
-            <TierBadge tier={currentTier} height={36} fontSize="17pt" borderWidth={THICK_BORDER_WIDTH} />
+            <TierBadge tier={currentTier} height={36} fontSize="17pt" borderWidth={THICK_BORDER_WIDTH} paddingHorizontal={14} />
           </View>
         </ButtonPressAnimation>
       }
@@ -90,7 +89,7 @@ export const RnbwStakingCard = memo(function RnbwStakingCard({ width }: RnbwStak
                   tier={currentTier}
                   onPress={hasMinimumStakeAmount ? navigateToStakingScreen : navigateToBuyRnbw}
                   style={styles.flexButton}
-                  label={hasMinimumStakeAmount ? i18n.t(i18n.l.button.add) : i18n.t(i18n.l.rnbw_membership.staking_card.buy_rnbw)}
+                  label={hasMinimumStakeAmount ? i18n.t(i18n.l.button.add) : i18n.t(i18n.l.rnbw_membership.staking_card.buy)}
                 />
               </Box>
             ) : (
@@ -100,7 +99,7 @@ export const RnbwStakingCard = memo(function RnbwStakingCard({ width }: RnbwStak
                 label={
                   hasMinimumStakeAmount
                     ? i18n.t(i18n.l.rnbw_membership.staking_card.enable_staking)
-                    : i18n.t(i18n.l.rnbw_membership.staking_card.buy_rnbw)
+                    : i18n.t(i18n.l.rnbw_membership.staking_card.buy)
                 }
               />
             )}
@@ -119,9 +118,20 @@ export const RnbwStakingCard = memo(function RnbwStakingCard({ width }: RnbwStak
                 </Text>
               </Box>
             ) : (
-              <Text size="15pt" weight="semibold" color="labelQuaternary" align="center">
-                {i18n.t(i18n.l.rnbw_membership.staking_card.minimum_stake_amount_required, { minStakeAmount: MIN_STAKE_AMOUNT })}
-              </Text>
+              <Box flexDirection="row" alignItems="center" justifyContent="center" gap={4}>
+                <Text size="15pt" weight="semibold" color="labelQuaternary" align="center">
+                  {i18n.t(i18n.l.rnbw_membership.staking_card.buy_more)}
+                </Text>
+                <RnbwCoinIcon size={18} />
+                <Text size="15pt" weight="bold" color="labelSecondary" align="center">
+                  {RNBW_SYMBOL}
+                </Text>
+                <Text size="15pt" weight="semibold" color="labelQuaternary" align="center">
+                  {i18n.t(
+                    hasStakedPosition ? i18n.l.rnbw_membership.staking_card.to_add_to_stake : i18n.l.rnbw_membership.staking_card.to_stake
+                  )}
+                </Text>
+              </Box>
             )}
           </Box>
         </Box>

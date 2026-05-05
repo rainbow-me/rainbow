@@ -1,7 +1,7 @@
 import { memo, useCallback, useState } from 'react';
-import { RefreshControl, StyleSheet } from 'react-native';
+import { RefreshControl, View } from 'react-native';
 
-import Animated, { useSharedValue } from 'react-native-reanimated';
+import Animated, { useAnimatedStyle, useSharedValue } from 'react-native-reanimated';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 import { AccountImage } from '@/components/AccountImage';
@@ -38,15 +38,20 @@ export const RnbwMembershipScreen = memo(function RnbwMembershipScreen() {
   const bottomInset = TAB_BAR_HEIGHT + 16;
   const stakingCardWidth = screenWidth - MEMBERSHIP_SCREEN_HORIZONTAL_PADDING * 2;
 
+  const scrollViewAnimatedStyle = useAnimatedStyle(() => ({
+    flex: 1,
+    overflow: scrollOffset.value > 0 ? 'hidden' : 'visible',
+  }));
+
   return (
-    <Box backgroundColor={backgroundColor} style={styles.flex} testID="rnbw-membership-screen" paddingTop={{ custom: safeAreaInsets.top }}>
+    <View style={{ flex: 1, backgroundColor, paddingTop: safeAreaInsets.top }} testID="rnbw-membership-screen">
       <ScrollHeaderFade color={backgroundColor} height={32} scrollOffset={scrollOffset} topInset={safeAreaInsets.top} />
       <Animated.ScrollView
         refreshControl={<RefreshControlWrapper />}
         contentContainerStyle={{
           paddingBottom: IS_ANDROID ? bottomInset : 0,
         }}
-        style={styles.scrollView}
+        style={scrollViewAnimatedStyle}
         onScroll={onScroll}
         contentInset={{
           bottom: bottomInset,
@@ -61,7 +66,7 @@ export const RnbwMembershipScreen = memo(function RnbwMembershipScreen() {
           <RnbwAirdropClaimCard />
         </Box>
       </Animated.ScrollView>
-    </Box>
+    </View>
   );
 });
 
@@ -90,13 +95,3 @@ function RefreshControlWrapper(props: Omit<React.ComponentProps<typeof RefreshCo
     />
   );
 }
-
-const styles = StyleSheet.create({
-  flex: {
-    flex: 1,
-  },
-  scrollView: {
-    flex: 1,
-    overflow: 'hidden',
-  },
-});
