@@ -1,104 +1,8 @@
-diff --git a/node_modules/@polymarket/clob-client-v2/dist/index.js b/node_modules/@polymarket/clob-client-v2/dist/index.js
---- a/node_modules/@polymarket/clob-client-v2/dist/index.js
-+++ b/node_modules/@polymarket/clob-client-v2/dist/index.js
-@@ -179,7 +179,8 @@ var buildClobEip712Signature = async (signer, chainId, timestamp, nonce, address
- };
- 
- // src/signing/hmac.ts
--import crypto from "crypto";
-+import { hmac } from "@noble/hashes/hmac";
-+import { sha256 } from "@noble/hashes/sha2";
- function replaceAll(s, search, replace) {
-   return s.split(search).join(replace);
- }
-@@ -189,8 +190,8 @@ var buildPolyHmacSignature = (secret, timestamp, method, requestPath, body) => {
-     message += body;
-   }
-   const base64Secret = Buffer.from(secret, "base64");
--  const hmac = crypto.createHmac("sha256", base64Secret);
--  const sig = hmac.update(message).digest("base64");
-+  const digest = hmac(sha256, base64Secret, Buffer.from(message, "utf8"));
-+  const sig = Buffer.from(digest).toString("base64");
-   const sigUrlSafe = replaceAll(replaceAll(sig, "+", "-"), "/", "_");
-   return sigUrlSafe;
- };
-@@ -240,24 +241,10 @@ var createL2Headers = async (signer, creds, l2HeaderArgs, timestamp) => {
- 
- // src/http-helpers/index.ts
- import axios from "axios";
--import { isBrowser } from "browser-or-node";
- var GET = "GET";
- var POST = "POST";
- var DELETE = "DELETE";
--var overloadHeaders = (method, headers = {}) => {
--  if (isBrowser) {
--    return;
--  }
--  headers["User-Agent"] = `@polymarket/clob-client`;
--  headers.Accept = "*/*";
--  headers.Connection = "keep-alive";
--  headers["Content-Type"] = "application/json";
--  if (method === GET) {
--    headers["Accept-Encoding"] = "gzip";
--  }
--};
- var request = async (endpoint, method, headers, data, params) => {
--  overloadHeaders(method, headers);
-   return await axios({ method, url: endpoint, headers, data, params });
- };
- var sleep = (ms) => new Promise((res) => setTimeout(res, ms));
-@@ -974,7 +961,7 @@ function isV2Order(order) {
- }
- 
- // src/utilities.ts
--import { createHash } from "crypto";
-+import { sha1 } from "@noble/hashes/sha1";
- var roundNormal = (num, decimals) => {
-   if (decimalPlaces(num) <= decimals) {
-     return num;
-@@ -1005,7 +992,7 @@ var decimalPlaces = (num) => {
- };
- var generateOrderBookSummaryHash = (orderbook) => {
-   orderbook.hash = "";
--  const hash = createHash("sha1").update(JSON.stringify(orderbook)).digest("hex");
-+  const hash = Buffer.from(sha1(Buffer.from(JSON.stringify(orderbook), "utf8"))).toString("hex");
-   orderbook.hash = hash;
-   return hash;
- };
-@@ -1449,7 +1436,6 @@ var ClobClient = class {
-       if (!token) continue;
-       const tokenId = token.t;
-       this.tokenConditionMap[tokenId] = conditionID;
--      this.tickSizes[tokenId] = result.mts.toString();
-       this.negRisk[tokenId] = result.nr ?? false;
-       this.feeInfos[tokenId] = {
-         rate: result.fd?.r ?? 0,
-@@ -1469,18 +1455,14 @@ var ClobClient = class {
-     });
-   }
-   async getTickSize(tokenID) {
--    if (tokenID in this.tickSizes) {
--      return this.tickSizes[tokenID];
--    }
-     if (tokenID in this.tokenConditionMap) {
--      await this.getClobMarketInfo(this.tokenConditionMap[tokenID]);
--      return this.tickSizes[tokenID];
-+      const result = await this.getClobMarketInfo(this.tokenConditionMap[tokenID]);
-+      return result.mts.toString();
-     }
-     const result = await this.get(`${this.host}${GET_TICK_SIZE}`, {
-       params: { token_id: tokenID }
-     });
--    this.tickSizes[tokenID] = result.minimum_tick_size.toString();
--    return this.tickSizes[tokenID];
-+    return result.minimum_tick_size.toString();
-   }
-   async getNegRisk(tokenID) {
-     if (tokenID in this.negRisk) {
 diff --git a/node_modules/@polymarket/clob-client-v2/dist/index.cjs b/node_modules/@polymarket/clob-client-v2/dist/index.cjs
+index 6032b5c..38648b2 100644
 --- a/node_modules/@polymarket/clob-client-v2/dist/index.cjs
 +++ b/node_modules/@polymarket/clob-client-v2/dist/index.cjs
-@@ -235,7 +235,8 @@ var buildClobEip712Signature = async (signer, chainId, timestamp, nonce, address
+@@ -257,7 +257,8 @@ var buildClobEip712Signature = async (signer, chainId, timestamp, nonce, address
  };
  
  // src/signing/hmac.ts
@@ -108,7 +12,7 @@ diff --git a/node_modules/@polymarket/clob-client-v2/dist/index.cjs b/node_modul
  function replaceAll(s, search, replace) {
    return s.split(search).join(replace);
  }
-@@ -245,8 +246,8 @@ var buildPolyHmacSignature = (secret, timestamp, method, requestPath, body) => {
+@@ -267,8 +268,8 @@ var buildPolyHmacSignature = (secret, timestamp, method, requestPath, body) => {
      message += body;
    }
    const base64Secret = Buffer.from(secret, "base64");
@@ -119,7 +23,7 @@ diff --git a/node_modules/@polymarket/clob-client-v2/dist/index.cjs b/node_modul
    const sigUrlSafe = replaceAll(replaceAll(sig, "+", "-"), "/", "_");
    return sigUrlSafe;
  };
-@@ -296,24 +297,10 @@ var createL2Headers = async (signer, creds, l2HeaderArgs, timestamp) => {
+@@ -318,24 +319,10 @@ var createL2Headers = async (signer, creds, l2HeaderArgs, timestamp) => {
  
  // src/http-helpers/index.ts
  var import_axios = __toESM(require("axios"), 1);
@@ -144,7 +48,7 @@ diff --git a/node_modules/@polymarket/clob-client-v2/dist/index.cjs b/node_modul
    return await (0, import_axios.default)({ method, url: endpoint, headers, data, params });
  };
  var sleep = (ms) => new Promise((res) => setTimeout(res, ms));
-@@ -1030,7 +1017,7 @@ function isV2Order(order) {
+@@ -1052,7 +1039,7 @@ function isV2Order(order) {
  }
  
  // src/utilities.ts
@@ -153,7 +57,7 @@ diff --git a/node_modules/@polymarket/clob-client-v2/dist/index.cjs b/node_modul
  var roundNormal = (num, decimals) => {
    if (decimalPlaces(num) <= decimals) {
      return num;
-@@ -1061,7 +1048,7 @@ var decimalPlaces = (num) => {
+@@ -1083,7 +1070,7 @@ var decimalPlaces = (num) => {
  };
  var generateOrderBookSummaryHash = (orderbook) => {
    orderbook.hash = "";
@@ -162,7 +66,7 @@ diff --git a/node_modules/@polymarket/clob-client-v2/dist/index.cjs b/node_modul
    orderbook.hash = hash;
    return hash;
  };
-@@ -1505,7 +1492,6 @@ var ClobClient = class {
+@@ -1522,7 +1509,6 @@ var ClobClient = class {
        if (!token) continue;
        const tokenId = token.t;
        this.tokenConditionMap[tokenId] = conditionID;
@@ -170,7 +74,105 @@ diff --git a/node_modules/@polymarket/clob-client-v2/dist/index.cjs b/node_modul
        this.negRisk[tokenId] = result.nr ?? false;
        this.feeInfos[tokenId] = {
          rate: result.fd?.r ?? 0,
-@@ -1525,18 +1511,14 @@ var ClobClient = class {
+@@ -1542,18 +1528,14 @@ var ClobClient = class {
+     });
+   }
+   async getTickSize(tokenID) {
+-    if (tokenID in this.tickSizes) {
+-      return this.tickSizes[tokenID];
+-    }
+     if (tokenID in this.tokenConditionMap) {
+-      await this.getClobMarketInfo(this.tokenConditionMap[tokenID]);
+-      return this.tickSizes[tokenID];
++      const result = await this.getClobMarketInfo(this.tokenConditionMap[tokenID]);
++      return result.mts.toString();
+     }
+     const result = await this.get(`${this.host}${GET_TICK_SIZE}`, {
+       params: { token_id: tokenID }
+     });
+-    this.tickSizes[tokenID] = result.minimum_tick_size.toString();
+-    return this.tickSizes[tokenID];
++    return result.minimum_tick_size.toString();
+   }
+   async getNegRisk(tokenID) {
+     if (tokenID in this.negRisk) {
+diff --git a/node_modules/@polymarket/clob-client-v2/dist/index.js b/node_modules/@polymarket/clob-client-v2/dist/index.js
+index cb0ae39..b43e796 100644
+--- a/node_modules/@polymarket/clob-client-v2/dist/index.js
++++ b/node_modules/@polymarket/clob-client-v2/dist/index.js
+@@ -201,7 +201,8 @@ var buildClobEip712Signature = async (signer, chainId, timestamp, nonce, address
+ };
+ 
+ // src/signing/hmac.ts
+-import crypto from "crypto";
++import { hmac } from "@noble/hashes/hmac";
++import { sha256 } from "@noble/hashes/sha2";
+ function replaceAll(s, search, replace) {
+   return s.split(search).join(replace);
+ }
+@@ -211,8 +212,8 @@ var buildPolyHmacSignature = (secret, timestamp, method, requestPath, body) => {
+     message += body;
+   }
+   const base64Secret = Buffer.from(secret, "base64");
+-  const hmac = crypto.createHmac("sha256", base64Secret);
+-  const sig = hmac.update(message).digest("base64");
++  const digest = hmac(sha256, base64Secret, Buffer.from(message, "utf8"));
++  const sig = Buffer.from(digest).toString("base64");
+   const sigUrlSafe = replaceAll(replaceAll(sig, "+", "-"), "/", "_");
+   return sigUrlSafe;
+ };
+@@ -262,24 +263,10 @@ var createL2Headers = async (signer, creds, l2HeaderArgs, timestamp) => {
+ 
+ // src/http-helpers/index.ts
+ import axios from "axios";
+-import { isBrowser } from "browser-or-node";
+ var GET = "GET";
+ var POST = "POST";
+ var DELETE = "DELETE";
+-var overloadHeaders = (method, headers = {}) => {
+-  if (isBrowser) {
+-    return;
+-  }
+-  headers["User-Agent"] = `@polymarket/clob-client`;
+-  headers.Accept = "*/*";
+-  headers.Connection = "keep-alive";
+-  headers["Content-Type"] = "application/json";
+-  if (method === GET) {
+-    headers["Accept-Encoding"] = "gzip";
+-  }
+-};
+ var request = async (endpoint, method, headers, data, params) => {
+-  overloadHeaders(method, headers);
+   return await axios({ method, url: endpoint, headers, data, params });
+ };
+ var sleep = (ms) => new Promise((res) => setTimeout(res, ms));
+@@ -996,7 +983,7 @@ function isV2Order(order) {
+ }
+ 
+ // src/utilities.ts
+-import { createHash } from "crypto";
++import { sha1 } from "@noble/hashes/sha1";
+ var roundNormal = (num, decimals) => {
+   if (decimalPlaces(num) <= decimals) {
+     return num;
+@@ -1027,7 +1014,7 @@ var decimalPlaces = (num) => {
+ };
+ var generateOrderBookSummaryHash = (orderbook) => {
+   orderbook.hash = "";
+-  const hash = createHash("sha1").update(JSON.stringify(orderbook)).digest("hex");
++  const hash = Buffer.from(sha1(Buffer.from(JSON.stringify(orderbook), "utf8"))).toString("hex");
+   orderbook.hash = hash;
+   return hash;
+ };
+@@ -1466,7 +1453,6 @@ var ClobClient = class {
+       if (!token) continue;
+       const tokenId = token.t;
+       this.tokenConditionMap[tokenId] = conditionID;
+-      this.tickSizes[tokenId] = result.mts.toString();
+       this.negRisk[tokenId] = result.nr ?? false;
+       this.feeInfos[tokenId] = {
+         rate: result.fd?.r ?? 0,
+@@ -1486,18 +1472,14 @@ var ClobClient = class {
      });
    }
    async getTickSize(tokenID) {
