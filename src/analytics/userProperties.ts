@@ -1,6 +1,7 @@
 import type { NativeCurrencyKey } from '@/entities/nativeCurrencyTypes';
 import type { InstallSource } from '@/env';
 import { type CandleResolution, type ChartType } from '@/features/charts/types';
+import type { TierId } from '@/features/rnbw-membership/types';
 import { type Language } from '@/languages';
 import { type ChainId } from '@/state/backendNetworks/types';
 
@@ -103,4 +104,8 @@ export interface UserProperties {
   branchCampaign?: string;
   branchReferrer?: string;
   branchReferringLink?: string;
+
+  // rnbw staking
+  stakedRnbw?: string;
+  rnbwMembershipTier?: TierId;
 }

@@ -743,6 +743,19 @@ export const getWalletAddresses = (wallets: AllRainbowWallets | null) => {
   );
 };
 
+export function getOwnedNormalizedWalletAddresses(): string[] {
+  const wallets = useWalletsStore.getState().wallets;
+
+  if (!wallets) return [];
+
+  return getConsistentArray(
+    Object.values(wallets).flatMap(wallet => {
+      if (wallet.type === WalletTypes.readOnly) return [];
+      return (wallet.addresses ?? []).filter(account => account.visible).map(account => account.address.toLowerCase());
+    })
+  );
+}
+
 export const useAccountAddress = () => useWalletsStore(state => state.accountAddress);
 export const useSelectedWallet = () => useWalletsStore(state => state.selected);
 export const useIsReadOnlyWallet = () => useWalletsStore(state => state.getIsReadOnlyWallet());
