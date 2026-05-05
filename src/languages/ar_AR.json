@@ -3447,9 +3447,7 @@
       "filters": {
         "categories": {
           "TRENDING": "الشائع",
-          "RAINBOW": "رينبو",
-          "NEW": "جديد",
-          "FARCASTER": "فاركاستر"
+          "NEW": "جديد"
         },
         "sort": {
           "RECOMMENDED": {
