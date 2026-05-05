@@ -470,7 +470,6 @@
         "quote_error": "خطأ في عرض السعر",
         "no_route_found": "لم يتم العثور على مسار",
         "fetching_quote": "جارٍ جلب العرض...",
-        "rainbow_eth_rewards": "مكافآت Rainbow ETH",
         "merkl_claimable": "خزنة %{dappName}",
         "merkl_claimable_description": "استراتيجية %{assetSymbols}",
         "select_a_network": "حدد شبكة",
@@ -1823,15 +1822,7 @@
     },
     "points": {
       "points": {
-        "choose_claim_network": "اختر شبكة المطالبة",
-        "claim_rewards": "المطالبة بالمكافآت",
-        "try_again": "حاول مرة أخرى",
-        "claim_on_network": "المطالبة على %{network}",
-        "claiming_on_network": "المطالبة على %{network}",
-        "claimed_on_network": "تمت المطالبة على %{network}",
-        "bridge_error": "نجاح جزئي",
-        "error_claiming": "فشل المطالبة",
-        "bridge_error_explainer": "تم بنجاح المطالبة بمكافآتك على Optimism، ولكن فشل النقل إلى %{network}. إذا كنت ترغب، يمكنك جسر مكافآتك يدويًا باستخدام ميزة التبديل."
+        "try_again": "حاول مرة أخرى"
       }
     },
     "pools": {

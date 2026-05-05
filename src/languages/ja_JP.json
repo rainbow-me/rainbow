@@ -470,7 +470,6 @@
         "quote_error": "見積りエラー",
         "no_route_found": "ルートが見つかりません",
         "fetching_quote": "見積もりを取得中...",
-        "rainbow_eth_rewards": "Rainbow ETH報酬",
         "merkl_claimable": "%{dappName} Vault",
         "merkl_claimable_description": "%{assetSymbols} 戦略",
         "select_a_network": "ネットワークを選択",
@@ -1823,15 +1822,7 @@
     },
     "points": {
       "points": {
-        "choose_claim_network": "請求ネットワークを選択",
-        "claim_rewards": "報酬を請求",
-        "try_again": "再試行",
-        "claim_on_network": "%{network}で請求",
-        "claiming_on_network": "%{network}で請求中",
-        "claimed_on_network": "%{network}で請求済み",
-        "bridge_error": "部分的な成功",
-        "error_claiming": "主張失敗",
-        "bridge_error_explainer": "報酬はOptimismで正常に受け取られましたが、%{network}への転送に失敗しました。必要に応じて、Swap機能を使用して手動で報酬をブリッジすることができます。"
+        "try_again": "再試行"
       }
     },
     "pools": {

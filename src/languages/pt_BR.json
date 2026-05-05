@@ -470,7 +470,6 @@
         "quote_error": "Erro na Cotação",
         "no_route_found": "Nenhuma Rota Encontrada",
         "fetching_quote": "Buscando Cotação...",
-        "rainbow_eth_rewards": "Recompensas Rainbow ETH",
         "merkl_claimable": "%{dappName} Cofre",
         "merkl_claimable_description": "Estratégia %{assetSymbols}",
         "select_a_network": "Selecione uma Rede",
@@ -1823,15 +1822,7 @@
     },
     "points": {
       "points": {
-        "choose_claim_network": "Escolha a Rede para Reivindicação",
-        "claim_rewards": "Reivindicar Recompensas",
-        "try_again": "Tente Novamente",
-        "claim_on_network": "Reivindicar na %{network}",
-        "claiming_on_network": "Reivindicando na %{network}",
-        "claimed_on_network": "Reivindicado na %{network}",
-        "bridge_error": "Sucesso Parcial",
-        "error_claiming": "Reivindicação falhou",
-        "bridge_error_explainer": "Suas recompensas foram reivindicadas com sucesso na Optimism, mas a transferência para %{network} falhou. Se desejar, você pode transferir suas recompensas manualmente usando o recurso Swap."
+        "try_again": "Tente Novamente"
       }
     },
     "pools": {

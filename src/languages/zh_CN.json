@@ -470,7 +470,6 @@
         "quote_error": "报价错误",
         "no_route_found": "找不到路由",
         "fetching_quote": "正在获取报价...",
-        "rainbow_eth_rewards": "彩虹 ETH 奖励",
         "merkl_claimable": "%{dappName} 金库",
         "merkl_claimable_description": "%{assetSymbols} 策略",
         "select_a_network": "选择一个网络",
@@ -1823,15 +1822,7 @@
     },
     "points": {
       "points": {
-        "choose_claim_network": "选择领取网络",
-        "claim_rewards": "领取奖励",
-        "try_again": "再试一次",
-        "claim_on_network": "在%{network}上领取",
-        "claiming_on_network": "正在%{network}上领取",
-        "claimed_on_network": "已在%{network}上领取",
-        "bridge_error": "部分成功",
-        "error_claiming": "认领失败",
-        "bridge_error_explainer": "您的奖励已成功在 Optimism 上领取，但转移到 %{network} 失败。如果您愿意，可以使用交换功能手动桥接您的奖励。"
+        "try_again": "再试一次"
       }
     },
     "pools": {

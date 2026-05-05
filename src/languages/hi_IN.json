@@ -470,7 +470,6 @@
         "quote_error": "कोट त्रुटि",
         "no_route_found": "कोई मार्ग नहीं मिला",
         "fetching_quote": "कोट प्राप्त कर रहे हैं...",
-        "rainbow_eth_rewards": "रेनबो ETH रिवार्ड्स",
         "merkl_claimable": "%{dappName} वाल्ट",
         "merkl_claimable_description": "%{assetSymbols} रणनीति",
         "select_a_network": "एक नेटवर्क चुनें",
@@ -1823,15 +1822,7 @@
     },
     "points": {
       "points": {
-        "choose_claim_network": "दावा नेटवर्क चुनें",
-        "claim_rewards": "पुरस्कार दावा करें",
-        "try_again": "फिर से प्रयास करें",
-        "claim_on_network": "%{network} पर दावा करें",
-        "claiming_on_network": "%{network} पर दावा हो रहा है",
-        "claimed_on_network": "%{network} पर दावा किया गया",
-        "bridge_error": "आंशिक सफलता",
-        "error_claiming": "दावा विफल",
-        "bridge_error_explainer": "आपके पुरस्कारों को सफलतापूर्वक Optimism पर दावा किया गया है, लेकिन %{network} पर स्थानांतरण विफल हो गया। यदि आप चाहें, तो आप स्वैप फीचर का उपयोग करके अपने पुरस्कारों को मैन्युअल रूप से पुल कर सकते हैं।"
+        "try_again": "फिर से प्रयास करें"
       }
     },
     "pools": {

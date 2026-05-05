@@ -109,7 +109,6 @@ const Routes = {
   VIEW_WALLET_DELEGATIONS: 'ViewWalletDelegations',
   DAPP_BROWSER_CONTROL_PANEL: 'DappBrowserControlPanel',
   NETWORK_SELECTOR: 'NetworkSelector',
-  CLAIM_REWARDS_PANEL: 'ClaimRewardsPanel',
   REVOKE_DELEGATION_PANEL: 'RevokeDelegationPanel',
   TOKEN_LAUNCHER_SCREEN: 'TokenLauncherScreen',
   KING_OF_THE_HILL_EXPLAIN_SHEET: 'KingOfTheHillExplainSheet',

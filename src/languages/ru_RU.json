@@ -470,7 +470,6 @@
         "quote_error": "Ошибка котировки",
         "no_route_found": "Маршрут не найден",
         "fetching_quote": "Получение котировки...",
-        "rainbow_eth_rewards": "Зарабатывайте ETH награды",
         "merkl_claimable": "Хранилище %{dappName}",
         "merkl_claimable_description": "Стратегия %{assetSymbols}",
         "select_a_network": "Выберите сеть",
@@ -1823,15 +1822,7 @@
     },
     "points": {
       "points": {
-        "choose_claim_network": "Выбрать сеть для получения",
-        "claim_rewards": "Получение наград",
-        "try_again": "Попробуйте снова",
-        "claim_on_network": "Получить в сети %{network}",
-        "claiming_on_network": "Получение в сети %{network}",
-        "claimed_on_network": "Получено в сети %{network}",
-        "bridge_error": "Частичный успех",
-        "error_claiming": "Получение не удалось",
-        "bridge_error_explainer": "Ваши награды были успешно получены на Optimism, но перевод на %{network} не удался. Если хотите, вы можете вручную перевести ваши награды, используя функцию обмена."
+        "try_again": "Попробуйте снова"
       }
     },
     "pools": {

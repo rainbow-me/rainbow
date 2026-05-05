@@ -55,7 +55,6 @@ import { AirdropsSheet } from '@/screens/Airdrops/AirdropsSheet';
 import { ClaimAirdropSheet } from '@/screens/Airdrops/ClaimAirdropSheet';
 import CheckIdentifierScreen from '@/screens/CheckIdentifierScreen';
 import { ClaimClaimablePanel } from '@/screens/claimables/ClaimPanel';
-import { ClaimRewardsPanel } from '@/screens/claimables/ClaimRewardsPanel';
 import { RevokeDelegationPanel } from '@/screens/delegation/RevokeDelegationPanel';
 import { ExpandedAssetSheet as ExpandedAssetSheetV2 } from '@/screens/expandedAssetSheet/ExpandedAssetSheet';
 import { KingOfTheHillExplainSheet } from '@/screens/king-of-the-hill/KingOfTheHillExplainSheet';
@@ -312,7 +311,6 @@ function NativeStackNavigator() {
       <NativeStack.Screen component={AppIconUnlockSheet} name={Routes.APP_ICON_UNLOCK_SHEET} {...appIconUnlockSheetConfig} />
       <NativeStack.Screen component={NetworkSelector} name={Routes.NETWORK_SELECTOR} {...panelConfig} />
       <NativeStack.Screen component={ControlPanel} name={Routes.DAPP_BROWSER_CONTROL_PANEL} {...panelConfig} />
-      <NativeStack.Screen component={ClaimRewardsPanel} name={Routes.CLAIM_REWARDS_PANEL} {...panelConfig} />
       <NativeStack.Screen component={ClaimClaimablePanel} name={Routes.CLAIM_CLAIMABLE_PANEL} {...panelConfig} />
       <NativeStack.Screen component={RevokeDelegationPanel} name={Routes.REVOKE_DELEGATION_PANEL} {...panelConfig} />
       <NativeStack.Screen component={SwapScreen} name={Routes.SWAP} {...swapConfig} />

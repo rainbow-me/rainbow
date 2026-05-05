@@ -470,7 +470,6 @@
         "quote_error": "Teklif Hatası",
         "no_route_found": "Rota bulunamadı",
         "fetching_quote": "Teklif Alınıyor...",
-        "rainbow_eth_rewards": "Rainbow ETH Ödülleri",
         "merkl_claimable": "%{dappName} Kasası",
         "merkl_claimable_description": "%{assetSymbols} Stratejisi",
         "select_a_network": "Bir Ağ Seçin",
@@ -1823,15 +1822,7 @@
     },
     "points": {
       "points": {
-        "choose_claim_network": "Talep Ağı Seçin",
-        "claim_rewards": "Ödülleri Talep Et",
-        "try_again": "Tekrar Deneyin",
-        "claim_on_network": "%{network} ağına talep et",
-        "claiming_on_network": "Talep ediliyor %{network} ağına",
-        "claimed_on_network": "%{network} ağına talep edildi",
-        "bridge_error": "Kısmi Başarı",
-        "error_claiming": "Talep Başarısız",
-        "bridge_error_explainer": "Ödülleriniz Optimism üzerinde başarıyla alındı, ancak %{network} ağına transfer başarısız oldu. İsterseniz, Swap özelliğini kullanarak ödüllerinizi manuel olarak aktarabilirsiniz."
+        "try_again": "Tekrar Deneyin"
       }
     },
     "pools": {
