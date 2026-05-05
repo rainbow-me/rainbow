@@ -3447,9 +3447,7 @@
       "filters": {
         "categories": {
           "TRENDING": "趋势",
-          "RAINBOW": "Rainbow",
-          "NEW": "新的",
-          "FARCASTER": "Farcaster"
+          "NEW": "新的"
         },
         "sort": {
           "RECOMMENDED": {
