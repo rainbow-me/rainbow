@@ -10,7 +10,7 @@ import { Icon } from '@/components/icons';
 import { Box, globalColors, Inline, Stack, Text, TextIcon, useColorMode, useForegroundColor } from '@/design-system';
 import { type TextWeight } from '@/design-system/components/Text/Text';
 import { type TextSize } from '@/design-system/typography/typeHierarchy';
-import { IS_INTERNAL } from '@/env';
+import { IS_STORE_INSTALL } from '@/env';
 import { useIsDelegationEnabled } from '@/features/delegation/featureFlags';
 import { isRainbowDelegated as hasRainbowDelegation, isThirdPartyDelegated as hasThirdPartyDelegation } from '@/features/delegation/status';
 import { opacity } from '@/framework/ui/utils/opacity';
@@ -208,7 +208,7 @@ export function AddressRow({ data, editMode, onPress, menuItems, onPressMenuItem
                 )}
               </>
             )}
-            {IS_INTERNAL && delegationEnabled && !isReadOnly && !editMode && (
+            {!IS_STORE_INSTALL && delegationEnabled && !isReadOnly && !editMode && (
               <Box
                 paddingHorizontal="8px"
                 paddingVertical="6px"

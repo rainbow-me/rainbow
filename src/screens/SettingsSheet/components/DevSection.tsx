@@ -9,7 +9,7 @@ import Restart from 'react-native-restart';
 
 import { ImgixImage } from '@/components/images';
 import { defaultConfig, getExperimentalFlag, LOG_PUSH } from '@/config/experimentalHooks';
-import { IS_ANDROID, IS_INTERNAL } from '@/env';
+import { IS_ANDROID, IS_STORE_INSTALL } from '@/env';
 import { getDelegationContractAddress, isRainbowDelegated, isThirdPartyDelegated } from '@/features/delegation/status';
 import { WrappedAlert as Alert } from '@/helpers/alert';
 import { RainbowContext } from '@/helpers/RainbowContext';
@@ -236,7 +236,7 @@ const DevSection = () => {
 
   return (
     <MenuContainer testID="developer-settings-sheet">
-      <Menu header={IS_INTERNAL ? i18n.t(i18n.l.developer_settings.headers.normie_settings) : ''}>
+      <Menu header={!IS_STORE_INSTALL ? i18n.t(i18n.l.developer_settings.headers.normie_settings) : ''}>
         {/* <MenuItem
           disabled
           leftComponent={<MenuItem.TextIcon icon="🕹️" isEmoji />}
@@ -284,7 +284,7 @@ const DevSection = () => {
           titleComponent={<MenuItem.Title text="Wipe App + Restart" />}
         />
       </Menu>
-      {IS_INTERNAL && (
+      {!IS_STORE_INSTALL && (
         <>
           <Menu header={i18n.t(i18n.l.developer_settings.headers.rainbow_developer_settings)}>
             <MenuItem

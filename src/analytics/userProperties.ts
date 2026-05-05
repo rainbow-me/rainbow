@@ -1,8 +1,9 @@
 import type { NativeCurrencyKey } from '@/entities/nativeCurrencyTypes';
-import type { InstallSource } from '@/env';
 import { type CandleResolution, type ChartType } from '@/features/charts/types';
 import { type Language } from '@/languages';
 import { type ChainId } from '@/state/backendNetworks/types';
+
+type InstallSource = 'store' | 'internal' | 'dev';
 
 // have to put this here or redux gets important and tests break
 type PushNotificationPermissionStatus = 'enabled' | 'disabled' | 'never asked';

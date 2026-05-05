@@ -6,7 +6,7 @@ import { parseEther, type Account, type Chain, type PublicClient, type Transport
 import { analytics } from '@/analytics';
 import { TIMING_CONFIGS } from '@/components/animations/animationConfigs';
 import { TransactionStatus, type NewTransaction } from '@/entities/transactions/transaction';
-import { IS_INTERNAL } from '@/env';
+import { IS_STORE_INSTALL } from '@/env';
 import { trimTrailingZeros, truncateToDecimals } from '@/framework/core/safeMath';
 import { formatCurrency } from '@/helpers/strings';
 import { abbreviateNumber, convertAmountToNativeDisplay, convertNumberToString } from '@/helpers/utilities';
@@ -37,7 +37,7 @@ import { type Link, type LinkType } from '../types';
 import { useSuperTokenStore } from './rainbowSuperTokenStore';
 
 // TODO: Remove this — temporary option for testing
-const REQUIRE_TOKEN_LOGO = !IS_INTERNAL;
+const REQUIRE_TOKEN_LOGO = IS_STORE_INSTALL;
 
 export const enum NavigationSteps {
   INFO = 0,

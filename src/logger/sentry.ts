@@ -1,10 +1,17 @@
 import * as Sentry from '@sentry/react-native';
-import { SENTRY_ENDPOINT, SENTRY_ENVIRONMENT } from 'react-native-dotenv';
+import { SENTRY_ENDPOINT } from 'react-native-dotenv';
 import VersionNumber from 'react-native-version-number';
 
-import { IS_TEST, IS_TEST_FLIGHT } from '@/env';
+import { IS_DEV, IS_STORE_INSTALL, IS_TEST } from '@/env';
 import { RainbowFetchError } from '@/framework/data/http/rainbowFetch';
 import { logger, RainbowError } from '@/logger';
+
+// Sentry init bails out in dev/test today (see initSentry below), so the
+// 'development' branch is dormant — but the derivation matches the build state
+// honestly so a future SENTRY_DEV opt-in can flip the init guard without
+// touching this mapping.
+type Environment = 'production' | 'internal' | 'development';
+const ENVIRONMENT: Environment = IS_DEV ? 'development' : IS_STORE_INSTALL ? 'production' : 'internal';
 
 // Sentry tests each regex against these candidate strings:
 //   1. event.message
@@ -63,7 +70,7 @@ export const defaultOptions: Sentry.ReactNativeOptions = {
   enableAppHangTracking: false,
   enableAutoPerformanceTracing: false,
   enableAutoSessionTracking: false,
-  environment: IS_TEST_FLIGHT ? 'Testflight' : SENTRY_ENVIRONMENT,
+  environment: ENVIRONMENT,
   ignoreErrors: IGNORED_ERRORS,
   integrations: [Sentry.httpClientIntegration()], // http client integration will help us see payload / response from errored out requests to better understand the issue
   maxBreadcrumbs: 10,
@@ -71,8 +78,8 @@ export const defaultOptions: Sentry.ReactNativeOptions = {
 };
 
 export function initSentry() {
-  if (IS_TEST) {
-    logger.debug(`[sentry]: disabled for test environment`);
+  if (IS_TEST || IS_DEV) {
+    logger.debug(`[sentry]: disabled for ${IS_TEST ? 'test' : 'dev'} build`);
     return;
   }
   try {

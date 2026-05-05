@@ -12,7 +12,7 @@ import { Draggable, DraggableGrid, type DraggableGridProps, type UniqueIdentifie
 import { DropdownMenu, type MenuItem } from '@/components/DropdownMenu';
 import { PANEL_WIDTH } from '@/components/SmoothPager/ListPanel';
 import { Box, HitSlop, Inline, Stack, Text, TextIcon } from '@/design-system';
-import { IS_INTERNAL, IS_IOS } from '@/env';
+import { IS_IOS, IS_STORE_INSTALL } from '@/env';
 import { useIsDelegationEnabled } from '@/features/delegation/featureFlags';
 import { isRainbowDelegated as hasRainbowDelegation, isThirdPartyDelegated as hasThirdPartyDelegation } from '@/features/delegation/status';
 import { removeFirstEmojiFromString } from '@/helpers/emojiHandler';
@@ -226,7 +226,9 @@ export function PinnedWalletsGrid({ walletItems, onPress, editMode, menuItems, o
                       </Text>
                     ) : null}
 
-                    {IS_INTERNAL && delegationEnabled && !account.isReadOnly ? <DelegationBadge accountAddress={account.address} /> : null}
+                    {!IS_STORE_INSTALL && delegationEnabled && !account.isReadOnly ? (
+                      <DelegationBadge accountAddress={account.address} />
+                    ) : null}
 
                     <Text numberOfLines={1} ellipsizeMode="middle" color="label" size="13pt" weight="bold">
                       {walletName}

@@ -2,7 +2,7 @@ import { hydrate } from '@tanstack/react-query';
 import { createMMKV } from 'react-native-mmkv';
 
 import { showLogSheet, type LogEntry } from '@/components/debugging/LogSheet';
-import { IS_DEV, IS_INTERNAL } from '@/env';
+import { IS_DEV, IS_STORE_INSTALL } from '@/env';
 import { getDateFormatter } from '@/helpers/intl';
 import { logger, RainbowError } from '@/logger';
 import { persistOptions, queryClient } from '@/react-query';
@@ -42,7 +42,7 @@ interface CachedQuery {
  * @returns A promise that resolves after the cache is cleared.
  */
 export async function clearReactQueryCache({
-  analyzeAfterClearing = IS_INTERNAL,
+  analyzeAfterClearing = !IS_STORE_INSTALL,
   onComplete,
   preserveFavorites = true,
 }: {
@@ -179,7 +179,7 @@ interface QueryInfo {
  * @returns A formatted report array or undefined if not displayed.
  */
 export function analyzeReactQueryStore({
-  displayReport = IS_INTERNAL,
+  displayReport = !IS_STORE_INSTALL,
   logExtendedBreakdown = true,
   logQueryDataShape: logQueryDataShapeParam = false,
   transformReport = report => report,
@@ -189,7 +189,7 @@ export function analyzeReactQueryStore({
   logQueryDataShape?: boolean;
   transformReport?: (report: LogEntry[]) => LogEntry[];
 } = {}): ReturnType<typeof formatReport> | undefined {
-  if (!IS_INTERNAL) return;
+  if (IS_STORE_INSTALL) return;
 
   devLog('\n[React Query Store Analysis]');
   const report: Report | null = displayReport ? { title: { title: '🔦  React Query Analysis', message: '' } } : null;
