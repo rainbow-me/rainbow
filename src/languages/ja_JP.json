@@ -3447,9 +3447,7 @@
       "filters": {
         "categories": {
           "TRENDING": "トレンド",
-          "RAINBOW": "Rainbow",
-          "NEW": "新しい",
-          "FARCASTER": "Farcaster"
+          "NEW": "新しい"
         },
         "sort": {
           "RECOMMENDED": {
