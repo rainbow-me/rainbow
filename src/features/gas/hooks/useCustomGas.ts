@@ -1,8 +1,9 @@
-import { type GasSettings } from '@/entities/gas';
 import { type ChainId } from '@/state/backendNetworks/types';
 import { createRainbowStore } from '@/state/internal/createRainbowStore';
 
-export type { EIP1559GasSettings, GasSettings, LegacyGasSettings } from '@/entities/gas';
+import { type GasSettings } from '../types/gas';
+
+export type { EIP1559GasSettings, GasSettings, LegacyGasSettings } from '../types/gas';
 
 export type CustomGasStoreState = { [c in ChainId]?: GasSettings };
 export const useCustomGasStore = createRainbowStore<CustomGasStoreState>(() => ({}));

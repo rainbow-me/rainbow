@@ -4,13 +4,13 @@ import { keccak256 } from '@ethersproject/keccak256';
 import type { StaticJsonRpcProvider } from '@ethersproject/providers';
 import { toUtf8Bytes } from '@ethersproject/strings';
 
-import { type TransactionGasParams, type TransactionLegacyGasParams } from '@/__swaps__/types/gas';
 import { TransactionDirection, TransactionStatus, type NewTransaction } from '@/entities/transactions';
+import { type TransactionGasParams, type TransactionLegacyGasParams } from '@/features/gas/types/gasSpeed';
+import { gasUnits } from '@/features/gas/utils/gasUnits';
 import { estimateGasWithPadding, getProvider, toHex } from '@/handlers/web3';
 import { add } from '@/helpers/utilities';
 import { ensureError, logger, RainbowError } from '@/logger';
 import { REFERRER } from '@/references/constants';
-import { gasUnits } from '@/references/gasUnits';
 import { useBackendNetworksStore } from '@/state/backendNetworks/backendNetworks';
 import { type ChainId } from '@/state/backendNetworks/types';
 import { addNewTransaction } from '@/state/pendingTransactions';

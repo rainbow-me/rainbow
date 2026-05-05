@@ -1,6 +1,22 @@
 import BigNumber from 'bignumber.js';
 import zipObject from 'lodash/zipObject';
 
+import { type NativeCurrencyKey } from '@/entities/nativeCurrencyTypes';
+import { toHex } from '@/handlers/web3';
+import { getMinimalTimeUnitStringForMs } from '@/helpers/time';
+import {
+  add,
+  convertRawAmountToBalance,
+  convertRawAmountToNativeDisplay,
+  divide,
+  greaterThan,
+  lessThan,
+  multiply,
+  toFixedDecimals,
+} from '@/helpers/utilities';
+import ethUnits from '@/references/ethereum-units.json';
+import timeUnits from '@/references/time-units.json';
+
 import {
   type BlocksToConfirmation,
   type GasFeeParam,
@@ -19,23 +35,8 @@ import {
   type Numberish,
   type SelectedGasFee,
   type TransactionGasParamAmounts,
-} from '@/entities/gas';
-import { type NativeCurrencyKey } from '@/entities/nativeCurrencyTypes';
-import { toHex } from '@/handlers/web3';
-import { getMinimalTimeUnitStringForMs } from '@/helpers/time';
-import {
-  add,
-  convertRawAmountToBalance,
-  convertRawAmountToNativeDisplay,
-  divide,
-  greaterThan,
-  lessThan,
-  multiply,
-  toFixedDecimals,
-} from '@/helpers/utilities';
-import ethUnits from '@/references/ethereum-units.json';
-import timeUnits from '@/references/time-units.json';
-import gasUtils from '@/utils/gas';
+} from '../types/gas';
+import gasUtils from './gas';
 
 type BigNumberish = number | string | BigNumber;
 

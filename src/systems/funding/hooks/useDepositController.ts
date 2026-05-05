@@ -40,7 +40,7 @@ import { resolveInitialDepositAsset } from '../utils/sourceAsset';
 
 type ComputeMaxSwappableFn = (
   asset: ExtendedAnimatedAssetWithColors | null,
-  gasSettings: import('@/__swaps__/screens/Swap/hooks/useCustomGas').GasSettings | undefined,
+  gasSettings: import('@/features/gas/hooks/useCustomGas').GasSettings | undefined,
   gasLimit: string | undefined
 ) => string | undefined;
 

@@ -7,10 +7,10 @@ import * as DeviceInfo from 'react-native-device-info';
 import { useRecoilState, useRecoilValue } from 'recoil';
 
 import { HoldToAuthorizeButton } from '@/components/buttons';
-import { GasSpeedButton } from '@/components/gas';
 import { ImgixImage } from '@/components/images';
 import { SheetActionButtonRow, SlackSheet } from '@/components/sheet';
 import { AccentColorProvider, Box, Heading, Inset, Row, Rows, Stack, Text } from '@/design-system';
+import GasSpeedButton from '@/features/gas/components/GasSpeedButton';
 import useDimensions from '@/hooks/useDimensions';
 import { usePersistentDominantColorFromImage } from '@/hooks/usePersistentDominantColorFromImage';
 import * as i18n from '@/languages';

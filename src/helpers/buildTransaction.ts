@@ -2,10 +2,10 @@ import { type StaticJsonRpcProvider, type TransactionRequest } from '@ethersproj
 import { isNil } from 'lodash';
 import { hexToNumber } from 'viem';
 
-import type { SelectedGasFee } from '@/entities/gas';
+import type { SelectedGasFee } from '@/features/gas/types/gas';
+import { parseGasParamsForTransaction } from '@/features/gas/utils/parseGas';
 import { estimateGasWithPadding, toHex } from '@/handlers/web3';
 import { logger, RainbowError } from '@/logger';
-import { parseGasParamsForTransaction } from '@/parsers/gas';
 import { type ChainId } from '@/state/backendNetworks/types';
 import { getNextNonce } from '@/state/nonces';
 

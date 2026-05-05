@@ -3,7 +3,6 @@ import { InteractionManager, Keyboard, KeyboardAvoidingView } from 'react-native
 
 import { useIsFocused, useRoute, type RouteProp } from '@react-navigation/native';
 
-import { useChainSupportsPriorityFee } from '@/__swaps__/utils/meteorology';
 import { Alert } from '@/components/alerts';
 import ButtonPressAnimation from '@/components/animations/ButtonPressAnimation';
 import FeesGweiInput from '@/components/FeesGweiInput';
@@ -11,19 +10,21 @@ import { Box, Inline, Inset, Row, Rows, Text } from '@/design-system';
 import { IS_ANDROID, IS_TEST } from '@/env';
 import { opacity } from '@/framework/ui/utils/opacity';
 import { isL2Chain } from '@/handlers/web3';
-import { calculateMinerTipAddDifference, calculateMinerTipSubstDifference } from '@/helpers/gas';
 import { add, greaterThan, isZero, lessThan, multiply, toFixedDecimals } from '@/helpers/utilities';
-import useFeesPanelInputRefs from '@/hooks/useFeesPanelInputRefs';
-import useGas from '@/hooks/useGas';
 import usePrevious from '@/hooks/usePrevious';
 import useTimeout from '@/hooks/useTimeout';
 import * as i18n from '@/languages';
 import { useNavigation } from '@/navigation/Navigation';
 import Routes from '@/navigation/routesNames';
 import { gasTrendToTrendType, type CurrentBaseFeeTypeKey, type ExplainSheetRouteParams, type RootStackParamList } from '@/navigation/types';
-import { gweiToWei, parseGasFeeParam } from '@/parsers/gas';
 import { useTheme } from '@/theme/ThemeContext';
-import gasUtils from '@/utils/gas';
+
+import useFeesPanelInputRefs from '../hooks/useFeesPanelInputRefs';
+import useGas from '../hooks/useGas';
+import gasUtils from '../utils/gas';
+import { calculateMinerTipAddDifference, calculateMinerTipSubstDifference } from '../utils/gasHelpers';
+import { useChainSupportsPriorityFee } from '../utils/meteorology';
+import { gweiToWei, parseGasFeeParam } from '../utils/parseGas';
 
 const MAX_TEXT_WIDTH = 210;
 const { CUSTOM, GAS_TRENDS, NORMAL, URGENT } = gasUtils;

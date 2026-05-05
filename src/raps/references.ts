@@ -1,14 +1,14 @@
 import { type Signer } from '@ethersproject/abstract-signer';
 import { type Address } from 'viem';
 
-import { type SwapsGasFeeParamsBySpeed } from '@/__swaps__/screens/Swap/hooks/useSelectedGas';
 import { type ParsedAsset } from '@/__swaps__/types/assets';
+import { type SwapsGasFeeParamsBySpeed } from '@/features/gas/hooks/useSelectedGas';
 import type {
   GasFeeParamsBySpeed,
   LegacyGasFeeParamsBySpeed,
   LegacyTransactionGasParamAmounts,
   TransactionGasParamAmounts,
-} from '@/entities/gas';
+} from '@/features/gas/types/gas';
 import { type TransactionClaimableTxPayload } from '@/screens/claimables/transaction/types';
 import { type CrosschainQuote, type Quote } from '@rainbow-me/swaps';
 

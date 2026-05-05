@@ -9,7 +9,6 @@ import { type Address } from 'viem';
 
 import { type SwapsParams } from '@/__swaps__/screens/Swap/navigateToSwaps';
 import { type UserAssetFilter } from '@/__swaps__/types/assets';
-import { type GasTrend } from '@/__swaps__/utils/meteorology';
 import { type CardType } from '@/components/cards/GenericCard';
 import { type LearnCardKey, type LearnCategory } from '@/components/cards/utils/types';
 import { type ActiveTabRef } from '@/components/DappBrowser/types';
@@ -21,6 +20,7 @@ import { type UnlockableAppIconKey } from '@/features/app-icon/models/appIcons';
 import { type BackupFile, type CloudBackups } from '@/features/backup/backup';
 import { type ENSProfile } from '@/features/ens/types/profile';
 import { type REGISTRATION_MODES } from '@/features/ens/utils/helpers';
+import { type GasTrend } from '@/features/gas/utils/meteorology';
 import { type HlTrade, type PerpMarket, type PerpsPosition, type TriggerOrderSource, type TriggerOrderType } from '@/features/perps/types';
 import { type PolymarketPosition } from '@/features/polymarket/types';
 import { type PolymarketEvent, type PolymarketMarket, type PolymarketMarketEvent } from '@/features/polymarket/types/polymarket-event';

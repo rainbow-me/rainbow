@@ -1,7 +1,7 @@
 import { parseAbi, type Address } from 'viem';
 
+import { gasUnits } from '@/features/gas/utils/gasUnits';
 import { convertRawAmountToDecimalFormat } from '@/helpers/utilities';
-import { gasUnits } from '@/references/gasUnits';
 import { ChainId } from '@/state/backendNetworks/types';
 import { getUniqueId } from '@/utils/ethereumUtils';
 

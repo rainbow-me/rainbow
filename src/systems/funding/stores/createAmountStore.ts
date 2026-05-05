@@ -1,5 +1,5 @@
 import { type ExtendedAnimatedAssetWithColors } from '@/__swaps__/types/assets';
-import { type GasSettings } from '@/entities/gas';
+import { type GasSettings } from '@/features/gas/types/gas';
 import { equalWorklet, trimTrailingZeros } from '@/framework/core/safeMath';
 import { createRainbowStore } from '@/state/internal/createRainbowStore';
 import { sanitizeAmount } from '@/worklets/strings';

@@ -2,8 +2,8 @@ import { useEffect, useState } from 'react';
 
 import BigNumber from 'bignumber.js';
 
-import type { SelectedGasFee } from '@/entities/gas';
 import type { ParsedAddressAsset } from '@/entities/tokens';
+import type { SelectedGasFee } from '@/features/gas/types/gas';
 import { fromWei, greaterThanOrEqualTo } from '@/helpers/utilities';
 import { type ChainId } from '@/state/backendNetworks/types';
 

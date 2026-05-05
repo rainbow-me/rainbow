@@ -7,6 +7,7 @@ import { atom } from 'recoil';
 
 import { type InlineFieldProps } from '@/components/inputs/InlineField';
 import type { EthereumAddress } from '@/entities/wallet';
+import { gweiToWei } from '@/features/gas/utils/parseGas';
 import { getProvider, toHex } from '@/handlers/web3';
 import {
   add,
@@ -18,7 +19,6 @@ import {
   multiply,
 } from '@/helpers/utilities';
 import * as i18n from '@/languages';
-import { gweiToWei } from '@/parsers/gas';
 import { ChainId } from '@/state/backendNetworks/types';
 import { colors } from '@/styles';
 import { encodeContenthash, isValidContenthash } from '@/utils/contenthash';

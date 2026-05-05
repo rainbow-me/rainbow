@@ -1,8 +1,8 @@
 import isEqual from 'react-fast-compare';
 import { type Chain } from 'viem/chains';
 
-import { GasSpeed } from '@/__swaps__/types/gas';
 import { IS_TEST } from '@/env';
+import { GasSpeed } from '@/features/gas/types/gasSpeed';
 import buildTimeNetworks from '@/references/networks.json';
 import { fetchBackendNetworks, type BackendNetworksResponse } from '@/resources/metadata/backendNetworks';
 import { chainAnvil, chainAnvilOptimism, ChainId, type BackendNetwork, type BackendNetworkServices } from '@/state/backendNetworks/types';

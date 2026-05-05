@@ -5,14 +5,15 @@ import { type StaticJsonRpcProvider } from '@ethersproject/providers';
 import { isEmpty } from 'lodash';
 import { hexToNumber, isHex } from 'viem';
 
-import type { GasFeeParamsBySpeed } from '@/entities/gas';
 import { estimateGas, toHex } from '@/handlers/web3';
 import { convertHexToString, omitFlatten } from '@/helpers/utilities';
-import type useGas from '@/hooks/useGas';
 import { logger, RainbowError } from '@/logger';
 import { useBackendNetworksStore } from '@/state/backendNetworks/backendNetworks';
 import { type ChainId } from '@/state/backendNetworks/types';
 import ethereumUtils from '@/utils/ethereumUtils';
+
+import type { GasFeeParamsBySpeed } from '../types/gas';
+import type useGas from './useGas';
 
 type CalculateGasLimitProps = {
   isMessageRequest: boolean;

@@ -21,6 +21,7 @@ import { DecoyScrollView } from '@/components/sheet/DecoyScrollView';
 import { Box } from '@/design-system';
 import { IS_ANDROID } from '@/env';
 import { useSponsoredSwapStore } from '@/features/delegation/sponsoredSwapStore';
+import { clearCustomGasSettings } from '@/features/gas/hooks/useCustomGas';
 import { useDelayedMount } from '@/hooks/useDelayedMount';
 import { userAssetsStore } from '@/state/assets/userAssets';
 import { userAssetsStoreManager } from '@/state/assets/userAssetsStoreManager';
@@ -31,7 +32,6 @@ import safeAreaInsetValues from '@/utils/safeAreaInsetValues';
 import { NavigateToSwapSettingsTrigger } from './components/NavigateToSwapSettingsTrigger';
 import { ReviewButton } from './components/ReviewButton';
 import { SwapWarning } from './components/SwapWarning';
-import { clearCustomGasSettings } from './hooks/useCustomGas';
 import { SwapProvider, useSwapContext } from './providers/swap-provider';
 import { useSwapsSearchStore } from './resources/search/searchV2';
 

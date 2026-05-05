@@ -1,8 +1,8 @@
 import { isL2Chain } from '@/handlers/web3';
 import { type ChainId } from '@/state/backendNetworks/types';
-import gasUtils from '@/utils/gas';
+import { memoFn } from '@/utils/memoFn';
 
-import { memoFn } from '../utils/memoFn';
+import gasUtils from './gas';
 
 const { GasTrends } = gasUtils;
 const { FALLING, NO_TREND, RISING, STABLE, SURGING } = GasTrends;

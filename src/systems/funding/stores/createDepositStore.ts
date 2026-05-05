@@ -1,7 +1,7 @@
 import { calculateGasFeeWorklet } from '@/__swaps__/screens/Swap/providers/SyncSwapStateAndSharedValues';
 import { type ExtendedAnimatedAssetWithColors } from '@/__swaps__/types/assets';
-import { type GasSpeed } from '@/__swaps__/types/gas';
-import { type GasSettings } from '@/entities/gas';
+import { type GasSettings } from '@/features/gas/types/gas';
+import { type GasSpeed } from '@/features/gas/types/gasSpeed';
 import { divWorklet, greaterThanWorklet, powWorklet, subWorklet } from '@/framework/core/safeMath';
 import { isNativeAsset } from '@/handlers/assets';
 import { createRainbowStore } from '@/state/internal/createRainbowStore';

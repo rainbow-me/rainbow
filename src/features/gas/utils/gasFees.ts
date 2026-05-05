@@ -1,11 +1,12 @@
 import { METADATA_BASE_URL } from 'react-native-dotenv';
 
-import { mockMeteorologyData } from '@/e2e-mocks/meteorology';
 import { IS_TEST } from '@/env';
 import { RainbowFetchClient } from '@/framework/data/http/rainbowFetch';
 import { useBackendNetworksStore } from '@/state/backendNetworks/backendNetworks';
 import { type ChainId } from '@/state/backendNetworks/types';
 import { useConnectedToAnvilStore } from '@/state/connectedToAnvil';
+
+import { mockMeteorologyData } from './meteorologyMock';
 
 let rainbowMeteorologyApi: RainbowFetchClient | undefined;
 

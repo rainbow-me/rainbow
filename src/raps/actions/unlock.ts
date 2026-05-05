@@ -4,12 +4,12 @@ import { Contract, type PopulatedTransaction } from '@ethersproject/contracts';
 import { parseUnits } from '@ethersproject/units';
 import { erc20Abi, erc721Abi, type Address } from 'viem';
 
-import { type TransactionGasParams, type TransactionLegacyGasParams } from '@/__swaps__/types/gas';
 import { TransactionStatus, type NewTransaction } from '@/entities/transactions';
+import { type TransactionGasParams, type TransactionLegacyGasParams } from '@/features/gas/types/gasSpeed';
+import { gasUnits } from '@/features/gas/utils/gasUnits';
 import { getProvider, toHex } from '@/handlers/web3';
 import { ensureError, logger, RainbowError } from '@/logger';
 import { ETH_ADDRESS } from '@/references/constants';
-import { gasUnits } from '@/references/gasUnits';
 import { useBackendNetworksStore } from '@/state/backendNetworks/backendNetworks';
 import { type ChainId } from '@/state/backendNetworks/types';
 import { addNewTransaction } from '@/state/pendingTransactions';

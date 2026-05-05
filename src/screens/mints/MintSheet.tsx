@@ -14,13 +14,14 @@ import ButtonPressAnimation from '@/components/animations/ButtonPressAnimation';
 import { HoldToAuthorizeButton } from '@/components/buttons';
 import { ChainImage } from '@/components/coin-icon/ChainImage';
 import { ContactAvatar } from '@/components/contacts';
-import { GasSpeedButton } from '@/components/gas';
 import { useRainbowToastEnabled } from '@/components/rainbow-toast/useRainbowToastEnabled';
 import { Bleed, Box, ColorModeProvider, Column, Columns, Inline, Inset, Separator, Stack, Text } from '@/design-system';
 import { TransactionStatus, type NewTransaction } from '@/entities/transactions';
 import { IS_IOS } from '@/env';
 import useENSAvatar from '@/features/ens/hooks/useENSAvatar';
 import { fetchReverseRecord } from '@/features/ens/utils/handlers';
+import GasSpeedButton from '@/features/gas/components/GasSpeedButton';
+import useGas from '@/features/gas/hooks/useGas';
 import styled from '@/framework/ui/styled-thing';
 import { metadataPOSTClient } from '@/graphql';
 import { type ReservoirCollection } from '@/graphql/__generated__/arcDev';
@@ -37,7 +38,6 @@ import {
   multiply,
 } from '@/helpers/utilities';
 import useDimensions from '@/hooks/useDimensions';
-import useGas from '@/hooks/useGas';
 import usePersistentAspectRatio from '@/hooks/usePersistentAspectRatio';
 import { usePersistentDominantColorFromImage } from '@/hooks/usePersistentDominantColorFromImage';
 import * as i18n from '@/languages';
