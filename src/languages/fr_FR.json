@@ -646,7 +646,7 @@
       }
     },
     "ens": {
-      "registered_on": "Registered on"
+      "registered_on": "Enregistré le"
     },
     "expanded_state": {
       "asset": {
@@ -3169,13 +3169,13 @@
         "about": "À PROPOS",
         "token_allocation_breakdown": "Répartition de l'Allocation de Jetons",
         "mcap": "CAPITALISATION",
-        "links": "Links"
+        "links": "Liens"
       },
       "placeholders": {
         "ticker": "$NAME",
         "enter_coin_name": "Entrez le nom de la pièce",
         "describe_your_coin": "Décrivez votre pièce",
-        "custom_amount": "Custom amount"
+        "custom_amount": "Montant personnalisé"
       },
       "buttons": {
         "hold_to_create": "Tenir pour Créer",
@@ -3249,13 +3249,13 @@
       "mcap": "CAPITALISATION",
       "transactions": "Transactions",
       "volume": "Volume",
-      "makers": "Makers",
+      "makers": "Teneurs de marché",
       "buys": "Achats",
       "sells": "Ventes",
       "bought": "Acheté",
       "sold": "Vendu",
-      "buyers": "Buyers",
-      "sellers": "Sellers"
+      "buyers": "Acheteurs",
+      "sellers": "Vendeurs"
     },
     "king_of_hill": {
       "title": "Plateforme de lancement",
@@ -3519,9 +3519,9 @@
         "unstake": "Retirer de la mise",
         "available_to_stake": "disponible à staker",
         "available_to_add": "disponible à ajouter",
-        "to_add_to_stake": "to add to stake",
-        "to_stake": "to stake",
-        "buy_more": "Buy more"
+        "to_add_to_stake": "à ajouter au staking",
+        "to_stake": "à staker",
+        "buy_more": "Acheter plus"
       },
       "staking_earnings_card": {
         "lifetime_earnings": "Gains à vie",
