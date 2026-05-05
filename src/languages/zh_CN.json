@@ -3249,13 +3249,13 @@
       "mcap": "市值",
       "transactions": "交易",
       "volume": "交易量",
-      "makers": "Makers",
+      "makers": "做市商",
       "buys": "购买",
       "sells": "卖出",
       "bought": "已购买",
       "sold": "已出售",
-      "buyers": "Buyers",
-      "sellers": "Sellers"
+      "buyers": "买方",
+      "sellers": "卖方"
     },
     "king_of_hill": {
       "title": "发射台",
@@ -3519,9 +3519,9 @@
         "unstake": "撤销质押",
         "available_to_stake": "可用于质押",
         "available_to_add": "可添加",
-        "to_add_to_stake": "to add to stake",
-        "to_stake": "to stake",
-        "buy_more": "Buy more"
+        "to_add_to_stake": "用于追加质押",
+        "to_stake": "用于质押",
+        "buy_more": "购买更多"
       },
       "staking_earnings_card": {
         "lifetime_earnings": "累计收益",
