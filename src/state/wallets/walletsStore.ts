@@ -743,7 +743,7 @@ export const getWalletAddresses = (wallets: AllRainbowWallets | null) => {
   );
 };
 
-export function getOwnedWalletAddresses(): string[] {
+export function getOwnedNormalizedWalletAddresses(): string[] {
   const wallets = useWalletsStore.getState().wallets;
 
   if (!wallets) return [];
