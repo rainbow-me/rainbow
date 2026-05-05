@@ -3892,7 +3892,6 @@
         "available_to_add": "available to add",
         "to_add_to_stake": "to add to stake",
         "to_stake": "to stake",
-        "minimum_stake_amount_required": "You need at least %{minStakeAmount} RNBW to stake",
         "buy_more": "Buy more"
       },
       "staking_earnings_card": {
