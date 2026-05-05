@@ -65,7 +65,6 @@ function createDepositWallet(owner: Address): PolymarketWallet {
     signatureType: SignatureTypeV2.POLY_1271,
     isDeployed: client => client.getDeployed(address, TransactionType.WALLET),
     deploy: client => {
-      console.log('deploying deposit wallet', address);
       return client.deployDepositWallet();
     },
     executeBatch: ({ client, transactions }) =>

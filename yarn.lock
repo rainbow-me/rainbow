@@ -5512,9 +5512,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@polymarket/clob-client-v2@npm:1.0.3-canary.0":
-  version: 1.0.3-canary.0
-  resolution: "@polymarket/clob-client-v2@npm:1.0.3-canary.0"
+"@polymarket/clob-client-v2@npm:1.0.3":
+  version: 1.0.3
+  resolution: "@polymarket/clob-client-v2@npm:1.0.3"
   dependencies:
     "@ethersproject/providers": "npm:^5.8.0"
     "@ethersproject/wallet": "npm:^5.8.0"
@@ -5522,7 +5522,7 @@ __metadata:
     browser-or-node: "npm:^3.0.0"
     tslib: "npm:^2.8.1"
     viem: "npm:^2.46.3"
-  checksum: 10c0/438e3190a971dd11d6f3a93bd2fc4ff307f8e213f25967382ae1e5503b80158f238d5b9f4a884b193ef6efb70d31d890908fa49c5bd39b5247013535d7e2a924
+  checksum: 10c0/70a44337e5ed8bde22f3731b20d80ff80889822b966d83d378e7204c9d22044e99e66f74ba6e573bd20cf40693fc83e6b435e8f8adb3b8da43f689e65e67808d
   languageName: node
   linkType: hard
 
@@ -9530,7 +9530,7 @@ __metadata:
     "@notifee/react-native": "npm:7.8.2"
     "@polymarket/builder-relayer-client": "npm:0.0.9"
     "@polymarket/builder-signing-sdk": "npm:0.0.8"
-    "@polymarket/clob-client-v2": "npm:1.0.3-canary.0"
+    "@polymarket/clob-client-v2": "npm:1.0.3"
     "@rainbow-me/delegation": "file:./rainbow-me-delegation-0.4.0.tgz"
     "@rainbow-me/provider": "npm:0.1.2"
     "@rainbow-me/react-native-animated-number": "npm:0.0.2"

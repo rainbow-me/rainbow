@@ -88,37 +88,10 @@ export async function submitTradingWalletTransaction({
   transactions: SafeTransaction[];
   description: string;
 }): Promise<RelayerTransactionResponse> {
-  console.log('[polymarket][relay] submitTradingWalletTransaction:start', {
-    description,
-    txCount: transactions.length,
-    transactions: transactions.map(t => ({ to: t.to, value: t.value, operation: t.operation, dataLength: t.data?.length })),
-  });
   const wallet = await getPolymarketWallet();
-  console.log('[polymarket][relay] got wallet', { address: wallet.address });
   const client = await getPolymarketRelayClient();
-  console.log('[polymarket][relay] got relay client');
   await ensureWalletDeployed(client, wallet);
-  try {
-    const response = await wallet.executeBatch({ client, transactions, description });
-    console.log('[polymarket][relay] executeBatch:done', {
-      description,
-      state: response.state,
-      transactionHash: response.transactionHash,
-    });
-    return response;
-  } catch (error) {
-    console.log('[polymarket][relay] executeBatch:error', {
-      description,
-      error,
-      message: error instanceof Error ? error.message : String(error),
-      stack: error instanceof Error ? error.stack : undefined,
-      // Surface common HTTP error shapes (axios/fetch wrappers)
-      status: (error as { status?: unknown; response?: { status?: unknown } } | null)?.status,
-      responseStatus: (error as { response?: { status?: unknown } } | null)?.response?.status,
-      responseData: (error as { response?: { data?: unknown } } | null)?.response?.data,
-    });
-    throw error;
-  }
+  return await wallet.executeBatch({ client, transactions, description });
 }
 
 export async function ensureTradingWalletDeployed(): Promise<Address> {
@@ -130,27 +103,10 @@ export async function ensureTradingWalletDeployed(): Promise<Address> {
 
 async function ensureWalletDeployed(client: RelayClient, wallet: PolymarketWallet): Promise<void> {
   const isDeployed = await wallet.isDeployed(client);
-  console.log('[polymarket][relay] ensureWalletDeployed:isDeployed', { isDeployed, address: wallet.address });
   if (isDeployed) return;
 
-  logger.debug('[polymarket] Deploying trading wallet');
-  console.log('[polymarket][relay] deploying wallet');
-  try {
-    const response = await wallet.deploy(client);
-    console.log('[polymarket][relay] deploy:response', { state: response.state, transactionHash: response.transactionHash });
-    await waitForRelayerTransaction(response, 'wallet deployment');
-    logger.debug('[polymarket] Trading wallet deployed');
-    console.log('[polymarket][relay] wallet deployed');
-  } catch (error) {
-    console.log('[polymarket][relay] deploy:error', {
-      error,
-      message: error instanceof Error ? error.message : String(error),
-      status: (error as { status?: unknown; response?: { status?: unknown } } | null)?.status,
-      responseStatus: (error as { response?: { status?: unknown } } | null)?.response?.status,
-      responseData: (error as { response?: { data?: unknown } } | null)?.response?.data,
-    });
-    throw error;
-  }
+  const response = await wallet.deploy(client);
+  await waitForRelayerTransaction(response, 'wallet deployment');
 }
 
 export async function waitForRelayerTransaction(response: RelayerTransactionResponse, description: string): Promise<RelayerTransaction> {
