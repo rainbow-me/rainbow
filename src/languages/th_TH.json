@@ -3447,9 +3447,7 @@
       "filters": {
         "categories": {
           "TRENDING": "เทรนด์",
-          "RAINBOW": "ค่าธรรมเนียม Rainbow",
-          "NEW": "ใหม่",
-          "FARCASTER": "ฟาร์คาสเตอร์"
+          "NEW": "ใหม่"
         },
         "sort": {
           "RECOMMENDED": {
