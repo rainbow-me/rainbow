@@ -2116,8 +2116,6 @@
         "insufficient": "Insufficient",
         "quote_error": "Quote Error"
       },
-      "aggregators": {
-      },
       "swapping": "Swapping",
       "max": "Max",
       "select": "Select",
