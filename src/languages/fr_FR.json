@@ -471,7 +471,6 @@
         "quote_error": "Erreur de Devis",
         "no_route_found": "Aucun itinéraire trouvé",
         "fetching_quote": "Récupération du devis...",
-        "rainbow_eth_rewards": "Récompenses ETH de Rainbow",
         "merkl_claimable": "Coffre %{dappName}",
         "merkl_claimable_description": "Stratégie %{assetSymbols}",
         "select_a_network": "Sélectionnez un réseau",
@@ -1840,15 +1839,7 @@
     },
     "points": {
       "points": {
-        "choose_claim_network": "Choisir Réseau de Réclamation",
-        "claim_rewards": "Réclamer des Récompenses",
-        "try_again": "Réessayer",
-        "claim_on_network": "Réclamer sur %{network}",
-        "claiming_on_network": "Réclamation sur %{network}",
-        "claimed_on_network": "Réclamé sur %{network}",
-        "bridge_error": "Succès Partiel",
-        "error_claiming": "Échec de réclamation",
-        "bridge_error_explainer": "Vos récompenses ont été revendiquées avec succès sur Optimism, mais le transfert vers %{network} a échoué. Si vous le souhaitez, vous pouvez transférer vos récompenses manuellement en utilisant la fonction Swap."
+        "try_again": "Réessayer"
       }
     },
     "pools": {

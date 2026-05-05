@@ -471,7 +471,6 @@
         "quote_error": "ข้อผิดพลาดของราคาที่เสนอ",
         "no_route_found": "ไม่พบเส้นทาง",
         "fetching_quote": "กำลังดึงข้อมูลราคาเสนอ...",
-        "rainbow_eth_rewards": "รับรางวัล ETH",
         "merkl_claimable": "%{dappName} Vault",
         "merkl_claimable_description": "%{assetSymbols} กลยุทธ์",
         "select_a_network": "เลือกเครือข่าย",
@@ -1840,15 +1839,7 @@
     },
     "points": {
       "points": {
-        "choose_claim_network": "เลือกเครือข่ายการรับ",
-        "claim_rewards": "รับรางวัล",
-        "try_again": "ลองใหม่",
-        "claim_on_network": "รับบน %{network}",
-        "claiming_on_network": "กำลังรับบน %{network}",
-        "claimed_on_network": "รับแล้วบน %{network}",
-        "bridge_error": "สำเร็จบางส่วน",
-        "error_claiming": "การเรียกร้องล้มเหลว",
-        "bridge_error_explainer": "ของรางวัลของคุณถูกเรียกไปเรียบร้อยบน Optimism อย่างไรก็ตาม การโอนไปยัง %{network} ล้มเหลว หากคุณต้องการ คุณสามารถบริดจ์ของรางวัลด้วยตนเองโดยใช้ฟีเจอร์แลกเปลี่ยน"
+        "try_again": "ลองใหม่"
       }
     },
     "pools": {

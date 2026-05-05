@@ -3,25 +3,14 @@ import { type Address } from 'viem';
 
 import { analytics } from '@/analytics';
 import type { NativeCurrencyKey } from '@/entities/nativeCurrencyTypes';
-import { metadataPOSTClient } from '@/graphql';
-import {
-  add,
-  convertAmountAndPriceToNativeDisplay,
-  convertAmountToNativeDisplay,
-  convertRawAmountToBalance,
-  greaterThan,
-  isZero,
-} from '@/helpers/utilities';
-import * as i18n from '@/languages';
+import { add, convertAmountToNativeDisplay, greaterThan } from '@/helpers/utilities';
 import { logger, RainbowError } from '@/logger';
 import { useBackendNetworksStore } from '@/state/backendNetworks/backendNetworks';
-import { ChainId } from '@/state/backendNetworks/types';
 import { type ClaimablesStore } from '@/state/claimables/claimables';
-import { getNativeAssetForNetwork } from '@/utils/ethereumUtils';
 import { time } from '@/utils/time';
 
 import { getAddysHttpClient } from '../client';
-import { ClaimableType, type Claimable, type ConsolidatedClaimablesResponse } from './types';
+import { type Claimable, type ConsolidatedClaimablesResponse } from './types';
 import { parseClaimables } from './utils';
 
 export type ClaimablesArgs = {
@@ -46,16 +35,13 @@ export async function getClaimables({ address, currency, abortController }: Clai
 
     const claimablesUrl = `/${useBackendNetworksStore.getState().getSupportedChainIds().join(',')}/${address}/claimables`;
 
-    const [points, claimables] = await Promise.all([
-      metadataPOSTClient.getPointsDataForWallet({ address }),
-      getAddysHttpClient().get<ConsolidatedClaimablesResponse>(claimablesUrl, {
-        params: {
-          currency: currency.toLowerCase(),
-        },
-        signal: abortController?.signal,
-        timeout: 20000,
-      }),
-    ]);
+    const claimables = await getAddysHttpClient().get<ConsolidatedClaimablesResponse>(claimablesUrl, {
+      params: {
+        currency: currency.toLowerCase(),
+      },
+      signal: abortController?.signal,
+      timeout: 20000,
+    });
 
     if (claimables.data.metadata.status !== 'ok') {
       logger.error(new RainbowError('[getClaimables]: Failed to fetch claimables (API error)'), {
@@ -69,50 +55,6 @@ export async function getClaimables({ address, currency, abortController }: Clai
     const sortedClaimables = parseClaimables(claimables.data.payload.claimables, currency).sort((a, b) =>
       greaterThan(a.totalCurrencyValue.amount || '0', b.totalCurrencyValue.amount || '0') ? -1 : 1
     );
-
-    if (points?.points?.user?.rewards?.claimable) {
-      const ethNativeAsset = await getNativeAssetForNetwork({ chainId: ChainId.mainnet });
-      if (ethNativeAsset) {
-        const claimableETH = convertRawAmountToBalance(points?.points?.user?.rewards?.claimable || '0', {
-          decimals: 18,
-          symbol: 'ETH',
-        });
-        const { amount, display } = convertAmountAndPriceToNativeDisplay(claimableETH.amount, ethNativeAsset.price?.value || 0, currency);
-        if (!isZero(amount)) {
-          const ethRewardsClaimable: Claimable = {
-            assets: [
-              {
-                amount: {
-                  amount: claimableETH.amount,
-                  display: claimableETH.display,
-                },
-                asset: ethNativeAsset,
-                usd_value: Number(amount),
-                value: points?.points?.user?.rewards?.claimable || '0',
-              },
-            ],
-            totalCurrencyValue: {
-              amount,
-              display,
-            },
-            uniqueId: 'rainbow-eth-rewards',
-
-            // NOTE: None of this below is used, but is required to satisfy the Claimable type
-            actionType: 'sponsored',
-            asset: ethNativeAsset,
-            action: {
-              url: 'https://rainbow.me',
-              method: 'GET',
-            },
-            chainId: ChainId.mainnet,
-            name: i18n.t(i18n.l.claimables.panel.rainbow_eth_rewards),
-            iconUrl: 'https://rainbow.me/favicon.ico',
-            type: ClaimableType.RainbowEthRewards,
-          };
-          sortedClaimables.unshift(ethRewardsClaimable);
-        }
-      }
-    }
 
     throttledClaimablesAnalytics(sortedClaimables);
 

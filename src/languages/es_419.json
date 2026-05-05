@@ -471,7 +471,6 @@
         "quote_error": "Error en la cotización",
         "no_route_found": "No se encontró ruta",
         "fetching_quote": "Buscando cotización...",
-        "rainbow_eth_rewards": "Recompensas ETH de Rainbow",
         "merkl_claimable": "Bóveda de %{dappName}",
         "merkl_claimable_description": "Estrategia de %{assetSymbols}",
         "select_a_network": "Seleccione una red",
@@ -1840,15 +1839,7 @@
     },
     "points": {
       "points": {
-        "choose_claim_network": "Elegir Red de Reclamo",
-        "claim_rewards": "Reclamar Recompensas",
-        "try_again": "Intenta de Nuevo",
-        "claim_on_network": "Reclamar en %{network}",
-        "claiming_on_network": "Reclamando en %{network}",
-        "claimed_on_network": "Reclamado en %{network}",
-        "bridge_error": "Éxito parcial",
-        "error_claiming": "Reclamo fallido",
-        "bridge_error_explainer": "Tus recompensas fueron reclamadas con éxito en Optimism, pero la transferencia a %{network} falló. Si lo deseas, puedes enviar tus recompensas manualmente usando la función de Swap."
+        "try_again": "Intenta de Nuevo"
       }
     },
     "pools": {

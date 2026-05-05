@@ -471,7 +471,6 @@
         "quote_error": "Kesalahan Kutipan",
         "no_route_found": "Tidak ada rute yang ditemukan",
         "fetching_quote": "Mengambil Kutipan...",
-        "rainbow_eth_rewards": "Rainbow ETH Rewards",
         "merkl_claimable": "%{dappName} Benteng",
         "merkl_claimable_description": "%{assetSymbols} Strategi",
         "select_a_network": "Pilih Jaringan",
@@ -1840,15 +1839,7 @@
     },
     "points": {
       "points": {
-        "choose_claim_network": "Pilih Jaringan Klaim",
-        "claim_rewards": "Klaim Hadiah",
-        "try_again": "Coba Lagi",
-        "claim_on_network": "Klaim di %{network}",
-        "claiming_on_network": "Mengklaim di %{network}",
-        "claimed_on_network": "Sudah Diklaim di %{network}",
-        "bridge_error": "Keberhasilan Sebagian",
-        "error_claiming": "Klaim Gagal",
-        "bridge_error_explainer": "Hadiah Anda berhasil diklaim di Optimism, tetapi transfer ke %{network} gagal. Jika Anda mau, Anda bisa menjembatani hadiah Anda secara manual menggunakan fitur Swap."
+        "try_again": "Coba Lagi"
       }
     },
     "pools": {
