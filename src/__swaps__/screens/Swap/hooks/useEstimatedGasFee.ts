@@ -1,56 +1,11 @@
-import { useMemo } from 'react';
-
-import { formatUnits } from 'viem';
-
-import { convertAmountToNativeDisplayWorklet, formatNumber, multiply } from '@/helpers/utilities';
-import { weiToGwei } from '@/parsers/gas';
-import { userAssetsStoreManager } from '@/state/assets/userAssetsStoreManager';
+import { type GasSettings } from '@/features/gas/hooks/useCustomGas';
+import { useEstimatedGasFee } from '@/features/gas/hooks/useEstimatedGasFee';
+import { useSelectedGas } from '@/features/gas/hooks/useSelectedGas';
 import { ChainId } from '@/state/backendNetworks/types';
 import { useSwapsStore } from '@/state/swaps/swapsStore';
-import { useNativeAsset } from '@/utils/ethereumUtils';
 
-import { calculateGasFeeWorklet, useSyncedSwapQuoteStore } from '../providers/SyncSwapStateAndSharedValues';
-import { type GasSettings } from './useCustomGas';
-import { useSelectedGas } from './useSelectedGas';
+import { useSyncedSwapQuoteStore } from '../providers/SyncSwapStateAndSharedValues';
 import { useSwapEstimatedGasLimit } from './useSwapEstimatedGasLimit';
-
-export function safeBigInt(value: string) {
-  try {
-    return BigInt(value);
-  } catch {
-    return 0n;
-  }
-}
-
-export function useEstimatedGasFee({
-  chainId,
-  gasLimit,
-  gasSettings,
-}: {
-  chainId: ChainId;
-  gasLimit: string | undefined;
-  gasSettings: GasSettings | undefined;
-}) {
-  const nativeNetworkAsset = useNativeAsset({ chainId });
-  const nativeCurrency = userAssetsStoreManager(state => state.currency);
-
-  return useMemo(() => {
-    if (!gasLimit || !gasSettings || !nativeNetworkAsset?.price) return;
-
-    const gasFee = calculateGasFeeWorklet(gasSettings, gasLimit);
-    if (isNaN(Number(gasFee))) {
-      return;
-    }
-
-    const networkAssetPrice = nativeNetworkAsset.price.value?.toString();
-    if (!networkAssetPrice) return `${formatNumber(weiToGwei(gasFee))} Gwei`;
-
-    const feeFormatted = formatUnits(safeBigInt(gasFee), nativeNetworkAsset.decimals).toString();
-    const feeInUserCurrency = multiply(networkAssetPrice, feeFormatted);
-
-    return convertAmountToNativeDisplayWorklet(feeInUserCurrency, nativeCurrency, true);
-  }, [gasLimit, gasSettings, nativeCurrency, nativeNetworkAsset?.decimals, nativeNetworkAsset?.price]);
-}
 
 export function useSwapEstimatedGasFee(overrideGasSettings?: GasSettings) {
   const preferredNetwork = useSwapsStore(s => s.preferredNetwork);

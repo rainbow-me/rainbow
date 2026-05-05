@@ -1,11 +1,11 @@
 import { type Signer } from '@ethersproject/abstract-signer';
 import { Wallet } from '@ethersproject/wallet';
 
-import type { LegacyTransactionGasParamAmounts, TransactionGasParamAmounts } from '@/entities/gas';
 import type { NewTransaction } from '@/entities/transactions';
 import { IS_TEST } from '@/env';
 import { trackCallsExecution } from '@/features/delegation/callsExecutionTracking';
 import { resolveManagedExecutionFailure } from '@/features/delegation/managedExecutionFailure';
+import type { LegacyTransactionGasParamAmounts, TransactionGasParamAmounts } from '@/features/gas/types/gas';
 import { getProvider } from '@/handlers/web3';
 import { ensureError, logger, RainbowError } from '@/logger';
 import { buildAtomicExecutionRequirements } from '@/raps/atomicSwapPreparation';

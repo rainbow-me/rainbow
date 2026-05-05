@@ -2,6 +2,7 @@ import React, { createElement } from 'react';
 
 import { useRoute, type RouteProp } from '@react-navigation/native';
 
+import CustomGasState from '@/features/gas/components/CustomGasState';
 import styled from '@/framework/ui/styled-thing';
 import useDimensions from '@/hooks/useDimensions';
 import { useNavigation } from '@/navigation/Navigation';
@@ -9,7 +10,7 @@ import type Routes from '@/navigation/routesNames';
 import { type RootStackParamList } from '@/navigation/types';
 import { position } from '@/styles';
 
-import { CustomGasState, UniqueTokenExpandedState } from '../components/expanded-state';
+import { UniqueTokenExpandedState } from '../components/expanded-state';
 import { Centered } from '../components/layout';
 import TouchableBackdrop from '../components/TouchableBackdrop';
 

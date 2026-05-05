@@ -2,9 +2,9 @@ import React, { memo } from 'react';
 
 import { Inline, Text, TextIcon } from '@/design-system';
 import { IS_ANDROID } from '@/env';
+import gasUtils from '@/features/gas/utils/gas';
 import * as i18n from '@/languages';
 import { useDepositContext } from '@/systems/funding/contexts/DepositContext';
-import gasUtils from '@/utils/gas';
 
 const SWAP_GAS_ICONS = gasUtils.SWAP_GAS_ICONS;
 

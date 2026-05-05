@@ -1,5 +1,4 @@
 import { type ExtendedAnimatedAssetWithColors, type ParsedSearchAsset } from '@/__swaps__/types/assets';
-import { type GasSpeed } from '@/__swaps__/types/gas';
 import { type InputKeys, type InputMethods } from '@/__swaps__/types/swap';
 import { getInputValuesForSliderPositionWorklet } from '@/__swaps__/utils/flipAssets';
 import {
@@ -10,6 +9,8 @@ import {
   trimTrailingZeros,
 } from '@/__swaps__/utils/swaps';
 import { enableActionsOnReadOnlyWallet } from '@/config/debug';
+import { setSelectedGasSpeed } from '@/features/gas/hooks/useSelectedGas';
+import { type GasSpeed } from '@/features/gas/types/gasSpeed';
 import { divWorklet, mulWorklet, toFixedWorklet } from '@/framework/core/safeMath';
 import { getRemoteConfig } from '@/model/remoteConfig';
 import Navigation from '@/navigation/Navigation';
@@ -23,7 +24,6 @@ import { getIsReadOnlyWallet } from '@/state/wallets/walletsStore';
 import watchingAlert from '@/utils/watchingAlert';
 
 import { INITIAL_SLIDER_POSITION, SLIDER_WIDTH } from './constants';
-import { setSelectedGasSpeed } from './hooks/useSelectedGas';
 
 // ============ navigateToSwaps ================================================ //
 

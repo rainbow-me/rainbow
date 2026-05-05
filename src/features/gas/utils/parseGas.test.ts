@@ -1,4 +1,4 @@
-import { buildGasParams } from './gas';
+import { buildGasParams } from './parseGas';
 
 jest.mock('@/handlers/web3', () => ({
   toHex: (value: string) => `0x${BigInt(value).toString(16)}`,

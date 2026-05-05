@@ -2,11 +2,11 @@ import { useMemo } from 'react';
 
 import { type NotifyOnChangeProps } from '@tanstack/react-query';
 
-import { GasSpeed } from '@/__swaps__/types/gas';
-import { getCachedGasSuggestions, useMeteorologySuggestions, type MeteorologyGasSuggestions } from '@/__swaps__/utils/meteorology';
 import { type ChainId } from '@/state/backendNetworks/types';
 import { createRainbowStore } from '@/state/internal/createRainbowStore';
 
+import { GasSpeed } from '../types/gasSpeed';
+import { getCachedGasSuggestions, useMeteorologySuggestions, type MeteorologyGasSuggestions } from '../utils/meteorology';
 import {
   getCustomGasSettings,
   useCustomGasSettings,

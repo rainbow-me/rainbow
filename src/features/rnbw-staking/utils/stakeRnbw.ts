@@ -3,7 +3,7 @@ import { Wallet } from '@ethersproject/wallet';
 import { encodeFunctionData, erc20Abi, formatUnits, parseUnits, type Address, type Hash } from 'viem';
 
 import { analytics } from '@/analytics';
-import type { LegacyTransactionGasParamAmounts, TransactionGasParamAmounts } from '@/entities/gas';
+import type { LegacyTransactionGasParamAmounts, TransactionGasParamAmounts } from '@/features/gas/types/gas';
 import { useRewardsBalanceStore } from '@/features/rnbw-rewards/stores/rewardsBalanceStore';
 import { prepareRewardsClaim, submitRewardsClaim, type ClaimToDestination } from '@/features/rnbw-rewards/utils/claimRewards';
 import { greaterThanOrEqualToWorklet, isPositive, subWorklet } from '@/framework/core/safeMath';

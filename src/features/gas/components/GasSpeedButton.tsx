@@ -8,9 +8,12 @@ import makeColorMoreChill from 'make-color-more-chill';
 import { AnimatePresence, MotiView } from 'moti';
 import { Easing } from 'react-native-reanimated';
 
-import { type GasSpeed } from '@/__swaps__/types/gas';
+import ButtonPressAnimation from '@/components/animations/ButtonPressAnimation';
 import { ChainImage } from '@/components/coin-icon/ChainImage';
+import { ContextMenu } from '@/components/context-menu';
+import { Centered, Column, Row } from '@/components/layout';
 import ContextMenuButton from '@/components/native-context-menu/contextMenu';
+import { Text } from '@/components/text';
 import type { ParsedAddressAsset } from '@/entities/tokens';
 import { IS_ANDROID } from '@/env';
 import styled from '@/framework/ui/styled-thing';
@@ -18,7 +21,6 @@ import { opacity } from '@/framework/ui/utils/opacity';
 import { isL2Chain } from '@/handlers/web3';
 import { add, convertAmountToNativeDisplayWorklet, greaterThan, toFixedDecimals } from '@/helpers/utilities';
 import useColorForAsset from '@/hooks/useColorForAsset';
-import useGas from '@/hooks/useGas';
 import usePrevious from '@/hooks/usePrevious';
 import * as i18n from '@/languages';
 import { useNavigation } from '@/navigation/Navigation';
@@ -27,15 +29,13 @@ import { userAssetsStoreManager } from '@/state/assets/userAssetsStoreManager';
 import { useBackendNetworksStore } from '@/state/backendNetworks/backendNetworks';
 import { ChainId } from '@/state/backendNetworks/types';
 import { fonts, fontWithWidth, margin, padding } from '@/styles';
+import { darkModeThemeColors } from '@/styles/colors';
 import { useTheme, type ThemeContextProps } from '@/theme/ThemeContext';
-import gasUtils from '@/utils/gas';
 
-import { GasSpeedLabelPager } from '.';
-import { darkModeThemeColors } from '../../styles/colors';
-import ButtonPressAnimation from '../animations/ButtonPressAnimation';
-import { ContextMenu } from '../context-menu';
-import { Centered, Column, Row } from '../layout';
-import { Text } from '../text';
+import useGas from '../hooks/useGas';
+import { type GasSpeed } from '../types/gasSpeed';
+import gasUtils from '../utils/gas';
+import GasSpeedLabelPager from './GasSpeedLabelPager';
 
 const { GAS_EMOJIS, GAS_ICONS, GasSpeedOrder, CUSTOM, URGENT, NORMAL, FAST, getGasLabel } = gasUtils;
 

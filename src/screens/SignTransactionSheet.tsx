@@ -14,7 +14,6 @@ import { analytics } from '@/analytics';
 import { ChainImage } from '@/components/coin-icon/ChainImage';
 import { ContactAvatar } from '@/components/contacts';
 import ImageAvatar from '@/components/contacts/ImageAvatar';
-import { GasSpeedButton } from '@/components/gas';
 import { SheetActionButton } from '@/components/sheet';
 import {
   EXPANDED_CARD_BOTTOM_INSET,
@@ -32,6 +31,9 @@ import { Bleed, Box, Columns, globalColors, Inline, Inset, Stack, Text, useBackg
 import { type ParsedAddressAsset } from '@/entities/tokens';
 import { TransactionStatus, type NewTransaction } from '@/entities/transactions';
 import { IS_IOS } from '@/env';
+import GasSpeedButton from '@/features/gas/components/GasSpeedButton';
+import { useCalculateGasLimit } from '@/features/gas/hooks/useCalculateGasLimit';
+import useGas from '@/features/gas/hooks/useGas';
 import { type RequestData } from '@/features/wallet-connect/types';
 import { opacity } from '@/framework/ui/utils/opacity';
 import { TransactionScanResultType } from '@/graphql/__generated__/metadataPOST';
@@ -39,9 +41,7 @@ import { maybeSignUri } from '@/handlers/imgix';
 import { getProvider } from '@/handlers/web3';
 import { buildTransaction } from '@/helpers/buildTransaction';
 import { delay } from '@/helpers/utilities';
-import { useCalculateGasLimit } from '@/hooks/useCalculateGasLimit';
 import { useConfirmTransaction } from '@/hooks/useConfirmTransaction';
-import useGas from '@/hooks/useGas';
 import { useHasEnoughBalance } from '@/hooks/useHasEnoughBalance';
 import { useNonceForDisplay } from '@/hooks/useNonceForDisplay';
 import { useTransactionSubmission } from '@/hooks/useSubmitTransaction';

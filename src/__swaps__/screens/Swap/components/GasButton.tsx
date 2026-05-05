@@ -3,8 +3,6 @@ import { StyleSheet } from 'react-native';
 
 import Animated, { runOnUI, useAnimatedStyle } from 'react-native-reanimated';
 
-import { GasSpeed } from '@/__swaps__/types/gas';
-import { getCachedCurrentBaseFee, useMeteorologySuggestions } from '@/__swaps__/utils/meteorology';
 import { getColorValueForThemeWorklet } from '@/__swaps__/utils/swaps';
 import ButtonPressAnimation from '@/components/animations/ButtonPressAnimation';
 import { GestureHandlerButton } from '@/components/buttons/GestureHandlerButton';
@@ -14,16 +12,18 @@ import ContextMenuButton from '@/components/native-context-menu/contextMenu';
 import { Box, Inline, Text, TextIcon, useColorMode, useForegroundColor } from '@/design-system';
 import { IS_ANDROID } from '@/env';
 import { useIsSponsoredSwap } from '@/features/delegation/sponsoredSwapStore';
+import { useCustomGasSettings, type GasSettings } from '@/features/gas/hooks/useCustomGas';
+import { setSelectedGasSpeed, useSelectedGasSpeed } from '@/features/gas/hooks/useSelectedGas';
+import { GasSpeed } from '@/features/gas/types/gasSpeed';
+import gasUtils from '@/features/gas/utils/gas';
+import { getCachedCurrentBaseFee, useMeteorologySuggestions } from '@/features/gas/utils/meteorology';
+import { weiToGwei } from '@/features/gas/utils/parseGas';
 import { add, formatNumber } from '@/helpers/utilities';
 import * as i18n from '@/languages';
-import { weiToGwei } from '@/parsers/gas';
 import { ChainId } from '@/state/backendNetworks/types';
 import { swapsStore } from '@/state/swaps/swapsStore';
 import { THICK_BORDER_WIDTH } from '@/styles/constants';
-import gasUtils from '@/utils/gas';
 
-import { useCustomGasSettings, type GasSettings } from '../hooks/useCustomGas';
-import { setSelectedGasSpeed, useSelectedGasSpeed } from '../hooks/useSelectedGas';
 import { NavigationSteps, useSwapContext } from '../providers/swap-provider';
 import { EstimatedSwapGasFee, EstimatedSwapGasFeeSlot } from './EstimatedSwapGasFee';
 import { UnmountOnAnimatedReaction } from './UnmountOnAnimatedReaction';

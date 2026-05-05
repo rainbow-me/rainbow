@@ -22,6 +22,8 @@ import {
   estimateENSSetRecordsGasLimit,
   formatRecordsForTransaction,
 } from '@/features/ens/utils/handlers';
+import GasSpeedButton from '@/features/gas/components/GasSpeedButton';
+import useGas from '@/features/gas/hooks/useGas';
 import styled from '@/framework/ui/styled-thing';
 import { opacity } from '@/framework/ui/utils/opacity';
 import svgToPngIfNeeded from '@/handlers/svgs';
@@ -32,7 +34,6 @@ import { isENSAddressFormat, isValidDomainFormat } from '@/helpers/validators';
 import useColorForAsset from '@/hooks/useColorForAsset';
 import useContacts from '@/hooks/useContacts';
 import useDimensions from '@/hooks/useDimensions';
-import useGas from '@/hooks/useGas';
 import useUserAccounts from '@/hooks/useUserAccounts';
 import * as i18n from '@/languages';
 import { ensureError, logger, RainbowError } from '@/logger';
@@ -57,7 +58,6 @@ import ContactRowInfoButton from '../components/ContactRowInfoButton';
 import { ContactAvatar } from '../components/contacts';
 import ImageAvatar from '../components/contacts/ImageAvatar';
 import CheckboxField from '../components/fields/CheckboxField';
-import { GasSpeedButton } from '../components/gas';
 import L2Disclaimer from '../components/L2Disclaimer';
 import { Centered, Column, Row } from '../components/layout';
 import Pill from '../components/Pill';

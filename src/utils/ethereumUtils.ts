@@ -12,11 +12,11 @@ import { cloneDeep, isEmpty, isString, replace } from 'lodash';
 import { ETHERSCAN_API_KEY } from 'react-native-dotenv';
 
 import { type AddressOrEth } from '@/__swaps__/types/assets';
-import { type GasFee, type LegacySelectedGasFee, type SelectedGasFee } from '@/entities/gas';
 import { type ParsedAddressAsset } from '@/entities/tokens';
 import { type NewTransaction, type RainbowTransaction } from '@/entities/transactions';
 import { type EthereumAddress } from '@/entities/wallet';
 import { IS_IOS } from '@/env';
+import { type GasFee, type LegacySelectedGasFee, type SelectedGasFee } from '@/features/gas/types/gas';
 import { getOnchainAssetBalance } from '@/handlers/assets';
 import { getProvider, isTestnetChain, toHex } from '@/handlers/web3';
 import { WrappedAlert as Alert } from '@/helpers/alert';

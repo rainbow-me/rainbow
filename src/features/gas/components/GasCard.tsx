@@ -13,13 +13,13 @@ import Animated, {
   type EasingFunction,
 } from 'react-native-reanimated';
 
+import { GenericCard, SQUARE_CARD_SIZE } from '@/components/cards/GenericCard';
 import { AccentColorProvider, Box, globalColors, Stack, Text } from '@/design-system';
 import { add } from '@/helpers/utilities';
-import useGas from '@/hooks/useGas';
 import * as i18n from '@/languages';
-import gasUtils from '@/utils/gas';
 
-import { GenericCard, SQUARE_CARD_SIZE } from './GenericCard';
+import useGas from '../hooks/useGas';
+import gasUtils from '../utils/gas';
 
 type AnimationConfigOptions = {
   duration: number;

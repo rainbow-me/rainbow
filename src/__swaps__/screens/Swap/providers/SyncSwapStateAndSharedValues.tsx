@@ -8,6 +8,8 @@ import { create } from 'zustand';
 import { type ExtendedAnimatedAssetWithColors } from '@/__swaps__/types/assets';
 import { analytics } from '@/analytics';
 import { useIsSponsoredSwap } from '@/features/delegation/sponsoredSwapStore';
+import { type GasSettings } from '@/features/gas/hooks/useCustomGas';
+import { useSelectedGas } from '@/features/gas/hooks/useSelectedGas';
 import {
   divWorklet,
   equalWorklet,
@@ -32,8 +34,6 @@ import { getUniqueId } from '@/utils/ethereumUtils';
 import { deepEqual } from '@/worklets/comparisons';
 import { type CrosschainQuote, type Quote, type QuoteError } from '@rainbow-me/swaps';
 
-import { type GasSettings } from '../hooks/useCustomGas';
-import { useSelectedGas } from '../hooks/useSelectedGas';
 import { useSwapEstimatedGasLimit } from '../hooks/useSwapEstimatedGasLimit';
 import { getSwapsNavigationParams } from '../navigateToSwaps';
 import { useSwapContext } from './swap-provider';

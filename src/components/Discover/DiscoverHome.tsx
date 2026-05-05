@@ -1,7 +1,6 @@
 import React from 'react';
 
 import { FeaturedMintCard } from '@/components/cards/FeaturedMintCard';
-import { GasCard } from '@/components/cards/GasCard';
 import { LearnCard } from '@/components/cards/LearnCard';
 import { LedgerCard } from '@/components/cards/LedgerCard';
 import { MintsCard } from '@/components/cards/MintsCard/MintsCard';
@@ -13,6 +12,7 @@ import { FeaturedResultStack } from '@/components/FeaturedResult/FeaturedResultS
 import { Box, Inline, Inset, Stack } from '@/design-system';
 import { IS_TEST } from '@/env';
 import { ENSCreateProfileCard } from '@/features/ens/components/ENSCreateProfileCard';
+import { GasCard } from '@/features/gas/components/GasCard';
 import { navigateToPolymarket } from '@/features/polymarket/utils/navigateToPolymarket';
 import { isTestnetChain } from '@/handlers/web3';
 import walletTypes from '@/helpers/walletTypes';

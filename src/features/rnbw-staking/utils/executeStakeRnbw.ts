@@ -4,12 +4,12 @@ import type { StaticJsonRpcProvider } from '@ethersproject/providers';
 import { Wallet } from '@ethersproject/wallet';
 import { type Address } from 'viem';
 
-import type { LegacyTransactionGasParamAmounts, TransactionGasParamAmounts } from '@/entities/gas';
 import { TransactionDirection, TransactionStatus, type NewTransaction } from '@/entities/transactions';
 import { trackCallsExecution } from '@/features/delegation/callsExecutionTracking';
 import { resolveManagedExecutionFailure } from '@/features/delegation/managedExecutionFailure';
 import { waitForManagedExecutionConfirmation } from '@/features/delegation/waitForManagedExecution';
 import { canUseDelegatedExecution } from '@/features/delegation/willDelegate';
+import type { LegacyTransactionGasParamAmounts, TransactionGasParamAmounts } from '@/features/gas/types/gas';
 import { RainbowError } from '@/logger';
 import { extractReplayableExecution } from '@/raps/replay';
 import { toTransactionAsset, type TransactionAssetSource } from '@/raps/transactionAsset';

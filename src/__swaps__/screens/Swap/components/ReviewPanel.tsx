@@ -13,7 +13,6 @@ import Animated, {
 
 import { AnimatedChainImage } from '@/__swaps__/screens/Swap/components/AnimatedChainImage';
 import { ReviewGasButton } from '@/__swaps__/screens/Swap/components/GasButton';
-import { useEstimatedTime } from '@/__swaps__/utils/meteorology';
 import { SPRING_CONFIGS } from '@/components/animations/animationConfigs';
 import ButtonPressAnimation from '@/components/animations/ButtonPressAnimation';
 import { GestureHandlerButton } from '@/components/buttons/GestureHandlerButton';
@@ -33,6 +32,8 @@ import {
 } from '@/design-system';
 import { useIsSponsoredSwap } from '@/features/delegation/sponsoredSwapStore';
 import { useWillExecuteDelegation, willExecuteDelegation } from '@/features/delegation/willDelegate';
+import { useSelectedGasSpeed } from '@/features/gas/hooks/useSelectedGas';
+import { useEstimatedTime } from '@/features/gas/utils/meteorology';
 import { opacity } from '@/framework/ui/utils/opacity';
 import { convertRawAmountToBalance, convertRawAmountToBalanceWorklet, handleSignificantDecimals, multiply } from '@/helpers/utilities';
 import * as i18n from '@/languages';
@@ -46,7 +47,6 @@ import { THICK_BORDER_WIDTH } from '@/styles/constants';
 import { type CrosschainQuote, type Quote, type QuoteError } from '@rainbow-me/swaps';
 
 import { REVIEW_SHEET_ROW_HEIGHT } from '../constants';
-import { useSelectedGasSpeed } from '../hooks/useSelectedGas';
 import { NavigationSteps, useSwapContext } from '../providers/swap-provider';
 import { EstimatedSwapGasFee, EstimatedSwapGasFeeSlot } from './EstimatedSwapGasFee';
 import { UnmountOnAnimatedReaction } from './UnmountOnAnimatedReaction';

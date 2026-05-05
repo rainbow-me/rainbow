@@ -2,12 +2,13 @@ import { type TransactionReceipt, type TransactionRequest } from '@ethersproject
 import { type Wallet } from '@ethersproject/wallet';
 import { formatUnits, type Address } from 'viem';
 
-import { safeBigInt } from '@/__swaps__/screens/Swap/hooks/useEstimatedGasFee';
 import { calculateGasFeeWorklet } from '@/__swaps__/screens/Swap/providers/SyncSwapStateAndSharedValues';
 import { analytics } from '@/analytics';
-import { type GasSettings } from '@/entities/gas';
 import { type NativeCurrencyKey } from '@/entities/nativeCurrencyTypes';
 import { TransactionStatus, type NewTransaction } from '@/entities/transactions';
+import { safeBigInt } from '@/features/gas/hooks/useEstimatedGasFee';
+import { type GasSettings } from '@/features/gas/types/gas';
+import { buildGasParams, weiToGwei } from '@/features/gas/utils/parseGas';
 import { lessThanOrEqualToWorklet } from '@/framework/core/safeMath';
 import { type LedgerSigner } from '@/handlers/LedgerSigner';
 import { getProvider, toHex } from '@/handlers/web3';
@@ -16,7 +17,6 @@ import { logger, RainbowError } from '@/logger';
 import { loadWallet } from '@/model/wallet';
 import Navigation from '@/navigation/Navigation';
 import Routes from '@/navigation/routesNames';
-import { buildGasParams, weiToGwei } from '@/parsers/gas';
 import { type RainbowClaimable } from '@/resources/addys/claimables/types';
 import { isStaging } from '@/resources/addys/client';
 import { userAssetsStore } from '@/state/assets/userAssets';

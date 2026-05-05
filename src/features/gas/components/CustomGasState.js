@@ -4,22 +4,22 @@ import { useIsFocused, useRoute } from '@react-navigation/native';
 
 import Divider from '@/components/Divider';
 import { ExchangeHeader } from '@/components/ExchangeHeader';
-import FeesPanel from '@/components/FeesPanel';
-import FeesPanelTabs from '@/components/FeesPanelTabs';
-import { GasSpeedButton } from '@/components/gas';
+import { FloatingPanel } from '@/components/floating-panels';
 import { Column } from '@/components/layout';
 import { SlackSheet } from '@/components/sheet';
 import styled from '@/framework/ui/styled-thing';
-import { getTrendKey } from '@/helpers/gas';
 import { KeyboardType } from '@/helpers/keyboardTypes';
 import useColorForAsset from '@/hooks/useColorForAsset';
-import useGas from '@/hooks/useGas';
 import useKeyboardHeight from '@/hooks/useKeyboardHeight';
 import { useNavigation } from '@/navigation/Navigation';
 import { margin } from '@/styles';
 import deviceUtils from '@/utils/deviceUtils';
 
-import { FloatingPanel } from '../floating-panels';
+import useGas from '../hooks/useGas';
+import { getTrendKey } from '../utils/gasHelpers';
+import FeesPanel from './FeesPanel';
+import FeesPanelTabs from './FeesPanelTabs';
+import GasSpeedButton from './GasSpeedButton';
 
 const FOOTER_HEIGHT = 79;
 const CONTENT_HEIGHT = 342;

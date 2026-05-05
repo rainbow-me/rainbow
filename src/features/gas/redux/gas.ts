@@ -3,6 +3,16 @@ import type BigNumber from 'bignumber.js';
 import { isEmpty } from 'lodash';
 
 import { analytics } from '@/analytics';
+import type { NativeCurrencyKey } from '@/entities/nativeCurrencyTypes';
+import { getProvider } from '@/handlers/web3';
+import { addBuffer } from '@/helpers/utilities';
+import { logger, RainbowError } from '@/logger';
+import { type AppDispatch, type AppGetState } from '@/redux/store';
+import ethUnits from '@/references/ethereum-units.json';
+import { useBackendNetworksStore } from '@/state/backendNetworks/backendNetworks';
+import { ChainId } from '@/state/backendNetworks/types';
+import ethereumUtils from '@/utils/ethereumUtils';
+
 import type {
   BlocksToConfirmation,
   CurrentBlockParams,
@@ -18,12 +28,9 @@ import type {
   MeteorologyLegacyResponse,
   MeteorologyResponse,
   SelectedGasFee,
-} from '@/entities/gas';
-import type { NativeCurrencyKey } from '@/entities/nativeCurrencyTypes';
-import { rainbowMeteorologyGetData } from '@/handlers/gasFees';
-import { getProvider } from '@/handlers/web3';
-import { addBuffer } from '@/helpers/utilities';
-import { logger, RainbowError } from '@/logger';
+} from '../types/gas';
+import gasUtils from '../utils/gas';
+import { rainbowMeteorologyGetData } from '../utils/gasFees';
 import {
   defaultGasParamsFormat,
   parseGasFeeParam,
@@ -33,14 +40,7 @@ import {
   parseLegacyGasFeesBySpeed,
   parseRainbowMeteorologyData,
   weiToGwei,
-} from '@/parsers/gas';
-import ethUnits from '@/references/ethereum-units.json';
-import { useBackendNetworksStore } from '@/state/backendNetworks/backendNetworks';
-import { ChainId } from '@/state/backendNetworks/types';
-import ethereumUtils from '@/utils/ethereumUtils';
-import gasUtils from '@/utils/gas';
-
-import { type AppDispatch, type AppGetState } from './store';
+} from '../utils/parseGas';
 
 const { CUSTOM, NORMAL, URGENT } = gasUtils;
 

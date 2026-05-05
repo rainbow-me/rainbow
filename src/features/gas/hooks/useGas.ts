@@ -4,27 +4,11 @@ import { useQueries } from '@tanstack/react-query';
 import { useDispatch, useSelector } from 'react-redux';
 
 import { analytics } from '@/analytics';
-import type {
-  CurrentBlockParams,
-  GasFee,
-  GasFeeParams,
-  GasFeeParamsBySpeed,
-  GasFeesBySpeed,
-  LegacyGasFee,
-  LegacyGasFeeParams,
-  SelectedGasFee,
-} from '@/entities/gas';
 import type { ParsedAddressAsset } from '@/entities/tokens';
 import { fromWei, greaterThan, greaterThanOrEqualTo } from '@/helpers/utilities';
+import usePrevious from '@/hooks/usePrevious';
 import { useRoute } from '@/navigation/Navigation';
-import {
-  gasPricesStartPolling,
-  gasPricesStopPolling,
-  gasUpdateDefaultGasLimit,
-  gasUpdateGasFeeOption,
-  gasUpdateToCustomGasFee,
-  gasUpdateTxFee,
-} from '@/redux/gas';
+import { type AppState } from '@/redux/store';
 import { ETH_ADDRESS } from '@/references/constants';
 import {
   EXTERNAL_TOKEN_CACHE_TIME,
@@ -38,8 +22,24 @@ import { ChainId } from '@/state/backendNetworks/types';
 import ethereumUtils from '@/utils/ethereumUtils';
 import isLowerCaseMatch from '@/utils/isLowerCaseMatch';
 
-import { type AppState } from '../redux/store';
-import usePrevious from './usePrevious';
+import {
+  gasPricesStartPolling,
+  gasPricesStopPolling,
+  gasUpdateDefaultGasLimit,
+  gasUpdateGasFeeOption,
+  gasUpdateToCustomGasFee,
+  gasUpdateTxFee,
+} from '../redux/gas';
+import type {
+  CurrentBlockParams,
+  GasFee,
+  GasFeeParams,
+  GasFeeParamsBySpeed,
+  GasFeesBySpeed,
+  LegacyGasFee,
+  LegacyGasFeeParams,
+  SelectedGasFee,
+} from '../types/gas';
 
 const checkSufficientGas = (txFee: LegacyGasFee | GasFee, chainId: ChainId, nativeAsset?: ParsedAddressAsset) => {
   const isLegacyGasNetwork = !(txFee as GasFee)?.maxFee;

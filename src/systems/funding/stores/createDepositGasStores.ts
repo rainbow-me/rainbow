@@ -1,21 +1,21 @@
 import { createDerivedStore } from '@storesjs/stores';
 import { formatUnits, type Address } from 'viem';
 
-import { safeBigInt } from '@/__swaps__/screens/Swap/hooks/useEstimatedGasFee';
 import { calculateGasFeeWorklet } from '@/__swaps__/screens/Swap/providers/SyncSwapStateAndSharedValues';
-import { GasSpeed } from '@/__swaps__/types/gas';
 import { isCrosschainQuote } from '@/__swaps__/utils/quotes';
 import { stripNonDecimalNumbers } from '@/__swaps__/utils/swaps';
-import { type GasSettings, type MeteorologyLegacyResponse, type MeteorologyResponse } from '@/entities/gas';
 import { type NativeCurrencyKey } from '@/entities/nativeCurrencyTypes';
-import { rainbowMeteorologyGetData } from '@/handlers/gasFees';
+import { safeBigInt } from '@/features/gas/hooks/useEstimatedGasFee';
+import { type GasSettings, type MeteorologyLegacyResponse, type MeteorologyResponse } from '@/features/gas/types/gas';
+import { GasSpeed } from '@/features/gas/types/gasSpeed';
+import { rainbowMeteorologyGetData } from '@/features/gas/utils/gasFees';
+import { gasUnits } from '@/features/gas/utils/gasUnits';
+import { isLegacyMeteorologyFeeData } from '@/features/gas/utils/meteorologyClassification';
+import { buildGasParams, gweiToWei, weiToGwei } from '@/features/gas/utils/parseGas';
 import { convertAmountToNativeDisplayWorklet, formatNumber, multiply } from '@/helpers/utilities';
 import { logger } from '@/logger';
-import { buildGasParams, gweiToWei, weiToGwei } from '@/parsers/gas';
 import { estimateUnlockAndCrosschainSwap } from '@/raps/actions/crosschainSwap';
 import { estimateUnlockAndSwap } from '@/raps/actions/swap';
-import { gasUnits } from '@/references/gasUnits';
-import { isLegacyMeteorologyFeeData } from '@/resources/meteorology/classification';
 import { userAssetsStoreManager } from '@/state/assets/userAssetsStoreManager';
 import { ChainId } from '@/state/backendNetworks/types';
 import { createQueryStore } from '@/state/internal/createQueryStore';

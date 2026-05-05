@@ -6,10 +6,11 @@ import ButtonPressAnimation from '@/components/animations/ButtonPressAnimation';
 import { AccentColorProvider, Box, Inline, Inset, Text } from '@/design-system';
 import { IS_ANDROID } from '@/env';
 import { opacity } from '@/framework/ui/utils/opacity';
-import useGas from '@/hooks/useGas';
 import { colors } from '@/styles';
 import { useTheme } from '@/theme/ThemeContext';
-import gasUtils from '@/utils/gas';
+
+import useGas from '../hooks/useGas';
+import gasUtils from '../utils/gas';
 
 const { CUSTOM, URGENT, GasSpeedOrder } = gasUtils;
 

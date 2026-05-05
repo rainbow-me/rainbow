@@ -40,6 +40,9 @@ import { IS_IOS } from '@/env';
 import { isInsufficientSponsorBalanceError } from '@/features/delegation/sponsoredCalls';
 import { getPreparedSponsoredSwap } from '@/features/delegation/sponsoredSwapStore';
 import { supportsDelegatedExecution } from '@/features/delegation/willDelegate';
+import { clearCustomGasSettings } from '@/features/gas/hooks/useCustomGas';
+import { getGasSettingsBySpeed, getSelectedGas } from '@/features/gas/hooks/useSelectedGas';
+import { buildGasParams } from '@/features/gas/utils/parseGas';
 import { divWorklet, equalWorklet, lessThanOrEqualToWorklet, mulWorklet } from '@/framework/core/safeMath';
 import { LedgerSigner } from '@/handlers/LedgerSigner';
 import { getProvider } from '@/handlers/web3';
@@ -51,7 +54,6 @@ import { getRemoteConfig } from '@/model/remoteConfig';
 import { loadWallet } from '@/model/wallet';
 import Navigation from '@/navigation/Navigation';
 import Routes from '@/navigation/routesNames';
-import { buildGasParams } from '@/parsers/gas';
 import { walletExecuteRap } from '@/raps/execute';
 import { type RapSwapActionParameters } from '@/raps/references';
 import { useUserAssetsStore } from '@/state/assets/userAssets';
@@ -64,8 +66,6 @@ import { executeFn, Screens, startTimeToSignTracking, TimeToSignOperation } from
 import { swapsStore } from '@/state/swaps/swapsStore';
 import { SwapType, type CrosschainQuote, type Quote, type QuoteError } from '@rainbow-me/swaps';
 
-import { clearCustomGasSettings } from '../hooks/useCustomGas';
-import { getGasSettingsBySpeed, getSelectedGas } from '../hooks/useSelectedGas';
 import { useSwapOutputQuotesDisabled } from '../hooks/useSwapOutputQuotesDisabled';
 import { getSwapsNavigationParams } from '../navigateToSwaps';
 import { SyncSwapRewardsEstimate } from './SyncSwapRewardsEstimate';

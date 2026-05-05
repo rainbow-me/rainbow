@@ -1,4 +1,4 @@
-import { type MeteorologyLegacyResponse, type MeteorologyResponse } from '@/entities/gas';
+import { type MeteorologyLegacyResponse, type MeteorologyResponse } from '../types/gas';
 
 type MeteorologyData = MeteorologyLegacyResponse | MeteorologyResponse;
 

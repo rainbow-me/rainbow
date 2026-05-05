@@ -12,7 +12,6 @@ import Animated, {
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 import { type ParsedSearchAsset } from '@/__swaps__/types/assets';
-import { GasSpeed } from '@/__swaps__/types/gas';
 import { clamp, getColorValueForThemeWorklet, parseAssetAndExtend } from '@/__swaps__/utils/swaps';
 import { AccountImage } from '@/components/AccountImage';
 import { TIMING_CONFIGS } from '@/components/animations/animationConfigs';
@@ -21,6 +20,7 @@ import Page from '@/components/layout/Page';
 import { Navbar } from '@/components/navbar/Navbar';
 import { DecoyScrollView } from '@/components/sheet/DecoyScrollView';
 import { Box, useColorMode, useForegroundColor } from '@/design-system';
+import { GasSpeed } from '@/features/gas/types/gasSpeed';
 import { NumberPad } from '@/features/perps/components/NumberPad/NumberPad';
 import { SheetHandle } from '@/features/perps/components/SheetHandle';
 import { SLIDER_MAX, type SliderColors } from '@/features/perps/components/Slider/Slider';
