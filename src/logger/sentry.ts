@@ -75,7 +75,7 @@ export const defaultOptions: Sentry.ReactNativeOptions = {
 
 export function initSentry() {
   if (IS_TEST || __DEV__) {
-    logger.debug(`[sentry]: disabled for ${IS_TEST ? 'test' : 'metro dev'} session`);
+    logger.debug(`[sentry]: disabled for ${IS_TEST ? 'test' : 'dev'} session`);
     return;
   }
   try {
