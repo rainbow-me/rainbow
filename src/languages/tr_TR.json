@@ -3447,9 +3447,7 @@
       "filters": {
         "categories": {
           "TRENDING": "Gündemde",
-          "RAINBOW": "Rainbow",
-          "NEW": "Yeni",
-          "FARCASTER": "Farcaster"
+          "NEW": "Yeni"
         },
         "sort": {
           "RECOMMENDED": {
