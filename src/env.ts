@@ -29,6 +29,9 @@ export const RPC_PROXY_API_KEY = RPC_PROXY_API_KEY_PROD;
  * Whether the app was installed from App Store / Play Store (real prod app) or not (TestFlight, internal, local builds etc.).
  */
 export const IS_STORE_INSTALL = (() => {
+  if (IS_DEV) {
+    return false;
+  }
   try {
     const result = NativeModules.AppInstallInfo.isStoreInstall();
     if (typeof result === 'boolean') {
