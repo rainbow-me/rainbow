@@ -1,27 +1,9 @@
 {
   "translation": {
     "account": {
-      "hide": "Скрыть",
-      "label_24h": "24ч",
-      "label_asset": "Актив",
-      "label_price": "Цена",
-      "label_quantity": "Количество",
-      "label_status": "Статус",
-      "label_total": "Всего",
-      "low_market_value": "с низкой рыночной стоимостью",
-      "no_market_value": "без рыночной стоимости",
-      "show": "Показать",
-      "show_all": "Показать все",
-      "show_less": "Показать меньше",
       "tab_tokens": "Токены",
-      "tab_balances_empty_state": "Баланс",
-      "tab_balances_tooltip": "Балансы Ethereum и токенов",
       "tab_claimables": "Доступные к получению",
       "tab_collectibles": "Коллекционные предметы",
-      "tab_interactions": "Взаимодействия",
-      "tab_interactions_tooltip": "Взаимодействия с смарт-контрактами",
-      "tab_investments": "Пулы",
-      "tab_savings": "Сбережения",
       "tab_showcase": "Витрина",
       "tab_perps": "Perps",
       "tab_polymarket": "Прогнозы",
@@ -50,9 +32,7 @@
     "activity_list": {
       "title": "Активность",
       "empty_state": {
-        "default_label": "Пока нет транзакций",
-        "recycler_label": "Пока нет транзакций",
-        "testnet_label": "Ваша история транзакций на тестовой сети начинается сейчас!"
+        "default_label": "Пока нет транзакций"
       }
     },
     "add_funds": {
@@ -60,8 +40,6 @@
         "or_send_eth": "или отправьте ETH на свой кошелек",
         "send_from_another_source": "Отправьте с Coinbase или другой биржи - или попросите друга!"
       },
-      "limit_left_this_week": "Осталось $%{remainingLimit} на этой неделе",
-      "limit_left_this_year": "Осталось $%{remainingLimit} в этом году",
       "test_eth": {
         "add_from_faucet": "Добавить с faucet",
         "or_send_test_eth": "или отправьте тестовые ETH на свой кошелек",
@@ -69,12 +47,7 @@
         "send_test_eth_from_another_source": "Отправьте тестовые ETH с другого %{testnetName} кошелька - или попросите друга!"
       },
       "to_get_started_android": "Чтобы начать, купите немного ETH",
-      "to_get_started_ios": "Чтобы начать, купите немного ETH с Apple Pay",
-      "weekly_limit_reached": "Недельный лимит достигнут",
-      "yearly_limit_reached": "Аватары"
-    },
-    "assets": {
-      "unkown_token": "Неизвестный токен"
+      "to_get_started_ios": "Чтобы начать, купите немного ETH с Apple Pay"
     },
     "avatar_builder": {
       "emoji_categories": {
@@ -102,13 +75,6 @@
         "damaged_wallet": "Не удается создать резервную копию кошелька. Отсутствуют данные связки ключей."
       },
       "wrong_pin": "Вы ввели неверный ПИН-код, и мы не можем сделать резервную копию. Пожалуйста, попробуйте снова с правильным кодом.",
-      "already_backed_up": {
-        "backed_up": "Резервная копия создана",
-        "backed_up_manually": "Резервная копия создана вручную",
-        "backed_up_message": "Ваш кошелек резервируется",
-        "imported": "Импортировано",
-        "imported_message": "Ваш кошелек был импортирован"
-      },
       "wallet_group_title_plural": "Группа кошельков %{walletGroupNumber}",
       "wallet_group_title_singular": "Группа кошельков",
       "private_key_plural": "Закрытый ключ %{privateKeyNumber}",
@@ -215,8 +181,6 @@
         "create_new_secret_phrase": "Создать новую фразу восстановления"
       },
       "needs_backup": {
-        "back_up_your_wallet": "Сделайте резервную копию своего кошелька",
-        "dont_risk": "Не рискуйте своими деньгами! Сделайте резервную копию своего кошелька, чтобы восстановить его в случае потери этого устройства.",
         "not_backed_up": "Не сделано резервное копирование"
       },
       "restore_cloud": {
@@ -486,24 +450,15 @@
         "creator_lp_fees": "Создательские LP сборы",
         "rainbow_token_launcher": "Запуск токена Rainbow",
         "claim_amount": "Получить %{amount}",
-        "done": "Готово",
-        "try_again": "Попробуйте снова",
         "tokens_on_the_way": "Токены в пути!",
         "a_token": "токен",
-        "a_network": "сеть",
         "swap_failed": "Замена не удалась",
         "receive": "Получить",
         "on": "на",
         "reset": "Сбросить"
       }
     },
-    "cloud": {
-      "backup_success": "Ваш кошелек успешно создан резервная копия!"
-    },
     "contacts": {
-      "contact_row": {
-        "balance_eth": "%{balanceEth} ETH"
-      },
       "contacts_title": "Контакты",
       "input_placeholder": "Имя",
       "my_wallets": "Мои кошельки",
@@ -511,26 +466,18 @@
         "add": "Добавить контакт",
         "cancel": "Отменить",
         "delete": "Удалить контакт",
-        "edit": "Изменить контакт",
-        "view": "Просмотреть профиль"
+        "edit": "Изменить контакт"
       },
       "send_header": "Отправить",
       "suggestions": "Предложения",
       "to_header": "Кому",
       "watching": "Наблюдение"
     },
-    "deeplinks": {
-      "couldnt_recognize_url": "Ой! Мы не смогли распознать этот URL!",
-      "tried_to_use_android": "Попытались использовать пакет для Android",
-      "tried_to_use_ios": "Попытались использовать пакет для iOS"
-    },
     "developer_settings": {
       "alert": "Внимание",
-      "analyze_env_variables": "Анализировать переменные ENV",
       "analyze_react_query": "Анализировать запросы React",
       "analyze_user_assets_query": "Анализировать запрос активов пользователя",
       "applied": "ПРИМЕНЕНО",
-      "backups_deleted_successfully": "Резервные копии успешно удалены",
       "clear_async_storage": "Очистить AsyncStorage",
       "clear_pending_txs": "Очистить ожидающие транзакции",
       "clear_image_cache": "Очистить кэш изображений",
@@ -569,7 +516,6 @@
         "delegation_settings": "Настройки делегирования"
       },
       "delegation_settings": {
-        "clear_store": "Очистить хранилище делегирования",
         "simulate_disable_smart_wallet": "Симулировать отключение Smart Wallet",
         "simulate_disable_single_network": "Симулировать отключение одной сети",
         "simulate_disable_third_party": "Симулировать отключение стороннего сервиса",
@@ -580,11 +526,6 @@
       }
     },
     "discover": {
-      "pulse": {
-        "pulse_description": "Все основные токены DeFi в одном месте",
-        "today_suffix": "сегодня",
-        "trading_at_prefix": "Торговля на"
-      },
       "search": {
         "search_ethereum": "Искать все Ethereum",
         "search_ethereum_short": "Искать Ethereum",
@@ -627,9 +568,6 @@
     },
     "exchange": {
       "coin_row": {
-        "expires_in": "Истекает через %{minutes}мин",
-        "from_divider": "отправитель",
-        "to_divider": "кому",
         "token": "Токен",
         "view_on": "Посмотреть на %{blockExplorerName}",
         "view_on_etherscan": "Посмотреть на Etherscan",
@@ -706,6 +644,9 @@
         "verifiedTokenSection": "􀇻 Проверенные",
         "unswappableTokenSection": "􀘰 Нет торговых маршрутов"
       }
+    },
+    "ens": {
+      "registered_on": "Registered on"
     },
     "expanded_state": {
       "asset": {
@@ -847,6 +788,7 @@
       },
       "nft_brief_token_info": {
         "for_sale": "На продажу",
+        "floor_price": "Минимальная цена",
         "last_sale": "Цена последней продажи"
       },
       "swap": {
@@ -1246,13 +1188,6 @@
         "text": "При отправке имени ENS другому человеку и назначении его новым владельцем имени ENS, вы можете заранее настроить его для них и сэкономить им будущее транзакцию. Rainbow позволяет очистить любую информацию профиля, установленную для имени, настроить ENS имя так, чтобы указать на адрес получателя и сделать адрес получателя менеджером имени."
       }
     },
-    "fedora": {
-      "cannot_verify_bundle": "Невозможно проверить пакет! Возможно, это мошенничество. Установка заблокирована.",
-      "error": "ОШИБКА",
-      "fedora": "Федора",
-      "this_will_override_bundle": "Это переопределит ваш набор. Будьте осторожны. Вы являетесь сотрудником Rainbow?",
-      "wait": "подождите"
-    },
     "fields": {
       "address": {
         "long_placeholder": "Имя, ENS или адрес",
@@ -1281,7 +1216,6 @@
       "miner_tip": "Чаевые для майнера",
       "gas_price": "Цена газа",
       "max_transaction_fee": "Максимальная комиссия за транзакцию",
-      "warning_separator": "·",
       "lower_than_suggested": "Низкая · может застрять",
       "higher_than_suggested": "Высокая · переплата",
       "likely_to_fail": "Низкая · вероятность сбоя",
@@ -1292,64 +1226,12 @@
       "alert_message_lower": "Дважды проверьте, что вы ввели правильную сумму - вы, скорее всего, платите больше, чем нужно!",
       "alert_title_higher_max_base_fee_needed": "Низкое максимальное основное вознаграждение - транзакция может застрять!",
       "alert_title_higher_miner_tip_needed": "Низкие вознаграждения майнерам - транзакция может застрять!",
-      "alert_title_lower_max_base_fee_needed": "Высокое максимальное основное вознаграждение!",
       "alert_title_lower_miner_tip_needed": "Высокие вознаграждения майнерам!",
       "proceed_anyway": "Продолжить",
       "edit_max_bass_fee": "Изменить максимальное основное вознаграждение",
       "edit_miner_tip": "Изменить вознаграждение майнерам"
     },
     "homepage": {
-      "back": "Вернуться на rainbow.me",
-      "coming_soon": "Скоро будет.",
-      "connect_ledger": {
-        "button": "Подключить Ledger",
-        "description": "Подключайтесь и подписывайтесь с помощью вашего ",
-        "link_text": "аппаратного кошелька Ledger",
-        "link_title": "Купить аппаратный кошелек Ledger"
-      },
-      "connect_metamask": {
-        "button": "Подключить MetaMask",
-        "description": "Подключайтесь к ",
-        "link_text": "браузерному кошельку MetaMask",
-        "link_title": "браузерному кошельку MetaMask"
-      },
-      "connect_trezor": {
-        "button": "Подключить Trezor",
-        "description": "Подключайтесь и подписывайтесь с помощью вашего ",
-        "link_text": "аппаратному кошельку Trezor",
-        "link_title": "Купить аппаратный кошелек Trezor"
-      },
-      "connect_trustwallet": {
-        "button": "Подключить Trust Wallet",
-        "description_part_one": "Используйте ",
-        "description_part_three": " приложение для подключения.",
-        "description_part_two": " Ethereum ",
-        "link_text_browser": "браузер dapp",
-        "link_text_wallet": "Trust Wallet",
-        "link_title_browser": "Откройте Trust DApp Browser",
-        "link_title_wallet": "Откройте Trust Wallet"
-      },
-      "connect_walletconnect": {
-        "button": "Использовать WalletConnect",
-        "button_mobile": "Подключитесь с WalletConnect",
-        "description": "Отсканируйте QR-код для связи с мобильным кошельком ",
-        "description_mobile": "Подключитесь к любому кошельку, который поддерживает ",
-        "link_text": "с помощью WalletConnect",
-        "link_text_mobile": "WalletConnect",
-        "link_title": "Использовать WalletConnect",
-        "link_title_mobile": "Подключитесь с WalletConnect"
-      },
-      "reassurance": {
-        "access_link": "Нет доступа к вашим средствам",
-        "assessment": "Результаты нашей оценки безопасности",
-        "security": "Мы работаем надежно, чтобы защитить ваши средства. Этот инструмент никогда не имеет доступа к вашим приватным ключам, что значительно уменьшает возможные точки атак. Если вы знакомы с программированием, вы можете проверить наш код на GitHub.",
-        "security_title": "Насколько безопасен Менеджер?",
-        "source": "Просмотреть исходный код",
-        "text_mobile": "Для доступа к Balance Manager и просмотра, отправки и обмена вашим Эфиром и токенами, основанными на Ethereum, вам нужно использовать Ethereum Wallet.",
-        "tracking_link": "Мы не отслеживаем вас",
-        "work": "Это веб-инструмент для управления средствами на вашем кошельке. Он делает это, подключаясь к вашему кошельку через его интерфейс программирования приложений (API). Вот несколько важных моментов о том, как мы разработали менеджер баланса:",
-        "work_title": "Как работает менеджер?"
-      },
       "discover_web3": "Откройте Web3"
     },
     "image_picker": {
@@ -1357,18 +1239,6 @@
       "confirm": "Разрешить доступ к библиотеке",
       "message": "Таким образом, Rainbow может использовать ваши фотографии из вашей библиотеки",
       "title": "Rainbow хотел бы получить доступ к вашим фотографиям"
-    },
-    "input": {
-      "asset_amount": "Сумма",
-      "donation_address": "Адрес менеджера баланса",
-      "email": "Электронная почта",
-      "email_placeholder": "your@email.com",
-      "input_placeholder": "Введите здесь",
-      "input_text": "Ввод",
-      "password": "Пароль",
-      "password_placeholder": "••••••••••",
-      "private_key": "Приватный ключ",
-      "recipient_address": "Адрес получателя"
     },
     "list": {
       "share": {
@@ -1381,29 +1251,6 @@
       "creating_wallet": "Создать кошелек...",
       "importing_wallet": "Импортировать...",
       "restoring": "Восстановление..."
-    },
-    "message": {
-      "click_to_copy_to_clipboard": "Нажмите, чтобы скопировать в буфер обмена",
-      "coming_soon": "Скоро...",
-      "exchange_not_available": "Мы больше не поддерживаем Shapeshift из-за их новых требований KYC. Мы работаем над поддержкой других поставщиков обмена.",
-      "failed_ledger_connection": "Не удалось подключиться к Ledger, пожалуйста, проверьте ваше устройство",
-      "failed_request": "Не удалось выполнить запрос, пожалуйста, обновите страницу",
-      "failed_trezor_connection": "Не удалось подключиться к Trezor, пожалуйста, проверьте ваше устройство",
-      "failed_trezor_popup_blocked": "Пожалуйста, разрешите всплывающие окна на Balance, чтобы использовать ваш Trezor",
-      "learn_more": "Узнать больше",
-      "no_interactions": "Для этой учетной записи не найдено взаимодействий",
-      "no_transactions": "Для этой учетной записи не найдено транзакций",
-      "no_unique_tokens": "Для этой учетной записи не найдены уникальные токены",
-      "opensea_footer": " это маркетплейс для уникальных (или 'нефункциональных') токенов. Люди торгуют на маркетплейсе и это дает им ценность. Вы можете заложить свои токены, чтобы получить деньги. Все это работает на Ethereum. ",
-      "opensea_header": "Как это работает внутри?",
-      "page_not_found": "Ошибка 404 Страница не найдена",
-      "please_connect_ledger": "Пожалуйста, подключите и разблокируйте Ledger, затем выберите Ethereum",
-      "please_connect_trezor": "Пожалуйста, подключите ваш Trezor и следуйте инструкциям",
-      "power_by": "Работает на",
-      "walletconnect_not_unlocked": "Пожалуйста, подключитесь с помощью WalletConnect",
-      "web3_not_available": "Пожалуйста, установите расширение MetaMask для Chrome",
-      "web3_not_unlocked": "Пожалуйста, разблокируйте ваш кошелек MetaMask",
-      "web3_unknown_network": "Неизвестная сеть, пожалуйста, переключитесь на другую"
     },
     "mints": {
       "mints_sheet": {
@@ -1438,7 +1285,6 @@
       }
     },
     "modal": {
-      "approve_tx": "Подтвердите транзакцию на %{walletType}",
       "back_up": {
         "alerts": {
           "cloud_not_enabled": {
@@ -1448,29 +1294,12 @@
             "show_me": "Да, покажите мне"
           }
         },
-        "default": {
-          "button": {
-            "cloud": "Сделайте резервную копию своего кошелька",
-            "cloud_platform": "Создайте резервную копию %{cloudPlatformName}",
-            "manual": "Сделайте резервную копию вручную"
-          },
-          "description": "Не потеряйте свой кошелек! Сохраните зашифрованную копию в %{cloudPlatformName}",
-          "title": "Как вы хотите создать резервную копию вашего кошелька?"
-        },
         "existing": {
           "button": {
             "later": "Возможно позже",
             "now": "Сделать резервную копию сейчас"
           },
           "description": "У вас есть кошельки, которые еще не были резервно скопированы. Сделайте резервную копию, чтобы не потерять нужные данные, если утратите это устройство.",
-          "title": "Вы хотите сделать резервную копию?"
-        },
-        "imported": {
-          "button": {
-            "back_up": "Создайте резервную копию %{cloudPlatformName}",
-            "no_thanks": "Нет, спасибо"
-          },
-          "description": "Не потеряйте свой кошелек! Сохраните зашифрованную копию в %{cloudPlatformName}.",
           "title": "Вы хотите сделать резервную копию?"
         }
       },
@@ -1516,7 +1345,6 @@
       "hold_to_mint": "Удерживайте для создания",
       "minting": "Запуск...",
       "minted": "Монетизированные",
-      "mint_unavailable": "Недоступное создание",
       "mint_on_mintdotfun": "􀮶",
       "error_minting": "Ошибка при запуске",
       "mint_price": "Стоимость создания",
@@ -1528,8 +1356,6 @@
       "description": "Описание",
       "total_minted": "Всего создано",
       "first_event": "Первое событие",
-      "last_event": "Последнее событие",
-      "max_supply": "Максимальное предложение",
       "contract": "Контракт",
       "network": "Сеть",
       "could_not_find_collection": "Не удалось найти коллекцию",
@@ -1593,24 +1419,6 @@
           "title": "Ошибка при продаже NFT",
           "message": "Пожалуйста, обратитесь в службу поддержки Rainbow за помощью."
         }
-      }
-    },
-    "notification": {
-      "error": {
-        "failed_get_account_tx": "Не удалось получить транзакции учетной записи",
-        "failed_get_gas_prices": "Не удалось получить цены на газ на Ethereum",
-        "failed_get_tx_fee": "Не удалось оценить комиссию за транзакцию",
-        "failed_scanning_qr_code": "Не удалось отсканировать QR-код, пожалуйста, попробуйте еще раз",
-        "generic_error": "Что-то пошло не так, пожалуйста, попробуйте еще раз",
-        "insufficient_balance": "Недостаточный баланс на этом счете",
-        "insufficient_for_fees": "Недостаточный баланс для оплаты комиссий",
-        "invalid_address": "Адрес недействителен, пожалуйста, проверьте еще раз",
-        "invalid_address_scanned": "Отсканирован недействительный адрес, пожалуйста, попробуйте еще раз",
-        "invalid_private_key_scanned": "Отсканирован недействительный приватный ключ, пожалуйста, попробуйте еще раз",
-        "no_accounts_found": "Не найдены Ethereum-аккаунты"
-      },
-      "info": {
-        "address_copied_to_clipboard": "Адрес скопирован в буфер обмена"
       }
     },
     "perps": {
@@ -1842,11 +1650,6 @@
         "try_again": "Попробуйте снова"
       }
     },
-    "pools": {
-      "deposit": "Депозит",
-      "pools_title": "Пулы",
-      "withdraw": "Вывести"
-    },
     "profiles": {
       "actions": {
         "edit_profile": "Редактировать профиль",
@@ -2040,16 +1843,7 @@
           "title": "Настройка",
           "description": "Отправляет, получает, продает, выпускает, меняет и другое. Выберите то, что вам нужно."
         },
-        "header": "Оповещения",
-        "subheader": "ПРЕДСТАВЛЯЕМ"
-      }
-    },
-    "review": {
-      "alert": {
-        "are_you_enjoying_rainbow": "Вам нравится Радуга? 🥰",
-        "leave_a_review": "Оставьте отзыв в App Store!",
-        "no": "Нет",
-        "yes": "Да"
+        "header": "Оповещения"
       }
     },
     "poaps": {
@@ -2061,8 +1855,7 @@
       "error": "Ошибка при запуске",
       "error_messages": {
         "limit_exceeded": "Этот POAP полностью запущен!",
-        "event_expired": "Срок действия этого выпуска POAP истек!",
-        "unknown": "Неизвестная ошибка"
+        "event_expired": "Срок действия этого выпуска POAP истек!"
       }
     },
     "rewards": {
@@ -2090,11 +1883,8 @@
       "rainbow_users_claimed": "Пользователи Rainbow получили %{amount}",
       "refreshes_in_with_days": "Обновление через %{days} дней %{hours} часов",
       "refreshes_in_without_days": "Обновление через %{hours} часов",
-      "percent": "%{percent}% награды",
       "error_title": "Что-то пошло не так",
       "error_text": "Пожалуйста, проверьте ваше интернет-соединение и вернитесь позже.",
-      "ended_title": "Программа завершена",
-      "ended_text": "Оставайтесь на связи, чтобы узнать, что мы для вас приготовили в следующий раз!",
       "info": {
         "title": "Заработайте OP за обмен и перемостку",
         "description": "Получайте обратно наличные, обмениваясь на Optimism или делая bridge. Награды выдаются ежемесячно."
@@ -2140,31 +1930,6 @@
     },
     "profile": {
       "title": "Активность"
-    },
-    "savings": {
-      "deposit": "Депозит",
-      "deposit_from_wallet": "Пополнить из кошелька",
-      "earned_lifetime_interest": "Заработано %{lifetimeAccruedInterest}",
-      "earnings": {
-        "100_year": "100-летний",
-        "10_year": "10-летний",
-        "20_year": "20-летний",
-        "50_year": "50-летний",
-        "5_year": "5-летний",
-        "est": "Прибл.",
-        "label": "Доход",
-        "monthly": "Ежемесячно",
-        "yearly": "Ежегодно"
-      },
-      "get_prefix": "Получить",
-      "label": "Сбережения",
-      "on_your_dollars_suffix": "на ваши доллары",
-      "percentage": "%{percentage}%",
-      "percentage_apy": "%{percentage}% APY",
-      "with_digital_dollars_line_1": "С помощью цифровых долларов, таких как Dai, сбережения",
-      "with_digital_dollars_line_2": "приносят больше дохода, чем когда-либо прежде",
-      "withdraw": "Вывести",
-      "zero_currency": "$0.00"
     },
     "send_feedback": {
       "copy_email": "Скопировать адрес электронной почты",
@@ -2248,7 +2013,6 @@
       "app_icon": "Иконка приложения",
       "developer": "Настройки разработчика",
       "done": "Готово",
-      "feedback_and_reports": "Отзывы и сообщения об ошибках",
       "follow_us_on_twitter": "Подпишитесь на нас в X",
       "hey_friend_message": "👋️ Привет, друг! Тебе следует скачать Rainbow, это мой любимый кошелек Ethereum 🌈️🌈️🌈️🌈️🌈️🌈️🌈️🌈️🌈️🌈️",
       "label": "Настройки",
@@ -2258,7 +2022,6 @@
       "notifications": "Оповещения",
       "notifications_section": {
         "my_wallets": "Мои кошельки",
-        "points": "Очки",
         "watched_wallets": "Просматриваемые кошельки",
         "allow_notifications": "Разрешить уведомления",
         "sent": "Отправлено",
@@ -2357,19 +2120,11 @@
         }
       }
     },
-    "subscribe_form": {
-      "email_already_subscribed": "Извините, вы уже подписались с этим адресом электронной почты",
-      "generic_error": "Упс, что-то пошло не так",
-      "sending": "Отправка...",
-      "successful": "Проверьте свою почту",
-      "too_many_signup_request": "Слишком много запросов на регистрацию, пожалуйста, попробуйте позже"
-    },
     "swap": {
       "actions": {
         "hold_to_swap": "Удерживайте для обмена",
         "hold_to_bridge": "Удерживайте для моста",
         "earning_rewards": "Получение наград",
-        "save": "Сохранить",
         "enter_amount": "Введите сумму",
         "review": "Просмотр",
         "fetching_prices": "Получение данных",
@@ -2379,10 +2134,6 @@
         "insufficient": "Недостаточно",
         "quote_error": "Ошибка котировки"
       },
-      "aggregators": {
-        "rainbow": "Rainbow"
-      },
-      "bridging": "Перевод",
       "swapping": "Смена",
       "max": "Макс.",
       "select": "Выбрать",
@@ -2407,7 +2158,6 @@
       },
       "choose_token": "Выбрать токен",
       "gas": {
-        "custom": "Пользовательский",
         "edit_price": "Изменить цену газа",
         "enter_price": "Введите цену газа",
         "estimated_fee": "Примерная комиссия",
@@ -2415,7 +2165,8 @@
         "network_fee": "Сетевая комиссия",
         "normal": "Обычный",
         "slow": "Медленно",
-        "gas_sponsored": "Бесплатно"
+        "gas_sponsored": "Бесплатно",
+        "loading": "Загрузка…"
       },
       "loading": "Загрузка...",
       "modal_types": {
@@ -2663,7 +2414,6 @@
           "plural": "дни",
           "singular": "день"
         },
-        "micro": "д",
         "short": {
           "plural": "дни",
           "singular": "день"
@@ -2674,21 +2424,9 @@
           "plural": "часы",
           "singular": "час"
         },
-        "micro": "ч",
         "short": {
           "plural": "часов",
           "singular": "час"
-        }
-      },
-      "milliseconds": {
-        "long": {
-          "plural": "миллисекунды",
-          "singular": "миллисекунда"
-        },
-        "micro": "мс",
-        "short": {
-          "plural": "мс",
-          "singular": "мс"
         }
       },
       "minutes": {
@@ -2696,19 +2434,16 @@
           "plural": "минуты",
           "singular": "минута"
         },
-        "micro": "м",
         "short": {
           "plural": "мин",
           "singular": "мин"
         }
       },
-      "now": "Сейчас",
       "seconds": {
         "long": {
           "plural": "секунды",
           "singular": "секунда"
         },
-        "micro": "с",
         "short": {
           "plural": "сек",
           "singular": "сек"
@@ -2800,25 +2535,9 @@
         "view_on": "Посмотреть на %{blockExplorerName}"
       },
       "add_cash": {
-        "card_notice": "Работает с большинством дебетовых карт",
         "interstitial": {
           "other_amount": "Другая сумма"
-        },
-        "need_help_button_email_subject": "поддержки",
-        "need_help_button_label": "Получить помощь",
-        "on_the_way_line_1": "Ваш %{currencySymbol} в пути",
-        "on_the_way_line_2": "и скоро прибудет",
-        "purchase_failed_order_id": "Идентификатор заказа: %{orderId}",
-        "purchase_failed_subtitle": "Вы не были обложены платой.",
-        "purchase_failed_support_subject": "Покупка не удалась",
-        "purchase_failed_support_subject_with_order_id": "Ошибка покупки - Заказ %{orderId}",
-        "purchase_failed_title": "Извините, ваша покупка не удалась.",
-        "purchasing_dai_requires_eth_message": "Прежде чем вы сможете купить DAI, у вас должно быть немного ETH в кошельке!",
-        "purchasing_dai_requires_eth_title": "У вас нет ETH!",
-        "running_checks": "Выполняются проверки...",
-        "success_message": "Он здесь 🥳",
-        "watching_mode_confirm_message": "Открытый у вас кошелек доступен только для чтения, поэтому вы не можете управлять содержимым. Вы уверены, что хотите добавить деньги на кошелек %{truncatedAddress}?",
-        "watching_mode_confirm_title": "Вы находитесь в режиме просмотра"
+        }
       },
       "add_cash_v2": {
         "sheet_title": "Выберите способ оплаты для покупки криптовалюты",
@@ -2864,16 +2583,12 @@
         "ooops": "Упс!",
         "this_action_not_supported": "Это действие в настоящее время не поддерживается :("
       },
-      "assets": {
-        "no_price": "Маленький баланс"
-      },
       "authenticate": {
         "please": "Пожалуйста, аутентифицируйтесь"
       },
       "back_ups": {
         "wallet_count": "%{numAccounts} кошелек",
         "wallet_count_gt_one": "%{numAccounts} кошельков",
-        "and_more_wallets": "И еще %{moreWalletCount} кошельков",
         "create_new_wallet": "Создать новый кошелек",
         "create_new_wallet_description": "Создайте новый кошелек, используя эту секретную фразу",
         "backed_up": "Резервная копия создана",
@@ -2936,11 +2651,9 @@
           "gas_fee": "для отзыва в сети %{chainName}"
         }
       },
-      "balance_title": "Баланс",
       "buy": "Купить",
       "change_wallet": {
         "loading_balance": "Загрузка баланса...",
-        "balance_eth": "%{balanceEth} ETH",
         "watching": "Наблюдение",
         "ledger": "Ledger",
         "delegated": "Делегировано",
@@ -2995,47 +2708,22 @@
         "loading": "Загрузка...",
         "app_state_diagnostics_title": "Состояние приложения",
         "app_state_diagnostics_description": "Позволяет сделать снимок состояния приложения, чтобы вы могли поделиться им с нашей службой поддержки.",
-        "wallet_diagnostics_title": "Кошелек",
         "sheet_title": "Диагностика",
         "pin_auth_title": "PIN-аутентификация",
         "you_need_to_authenticate_with_your_pin": "Для доступа к секретам вашего кошелька вам необходимо аутентифицироваться с помощью PIN-кода.",
         "share_application_state": "Поделиться дампом состояния приложения",
-        "wallet_details_title": "Детали кошелька",
-        "wallet_details_description": "Ниже приведены подробности всех кошельков, добавленных в Rainbow."
+        "wallet_details_title": "Детали кошелька"
       },
       "error_displaying_address": "Ошибка отображения адреса",
-      "feedback": {
-        "cancel": "Нет, спасибо",
-        "choice": "Вы хотите скопировать наш адрес электронной почты в буфер обмена вручную?",
-        "copy_email_address": "Скопировать адрес электронной почты",
-        "email_subject": "📱 Обратная связь о бета-версии Rainbow",
-        "error": "Ошибка при запуске почтового клиента",
-        "send": "Отправить обратную связь"
-      },
       "import_failed_invalid_private_key": "Импорт не удался из-за недопустимого приватного ключа. Пожалуйста, попробуйте еще раз.",
-      "intro": {
-        "create_wallet": "Создать кошелек",
-        "instructions": "Пожалуйста, не храните в своем кошельке больше, чем готовы потерять.",
-        "warning": "Это альфа-версия программного обеспечения.",
-        "welcome": "Добро пожаловать в Rainbow"
-      },
       "invalid_address_title": "Неверный адрес",
       "invalid_address_message": "Проверьте регистр символов и попробуйте снова.",
       "invalid_ens_name": "Это недопустимое имя ENS",
       "invalid_unstoppable_name": "Это недопустимое имя Unstoppable",
-      "label": "Кошельки",
-      "loading": {
-        "error": "Произошла ошибка при загрузке кошелька. Пожалуйста, закройте приложение и повторите попытку.",
-        "message": "Загрузка"
-      },
       "message_signing": {
-        "failed_signing": "Не удалось подписать сообщение",
-        "message": "Сообщение",
-        "request": "Запрос на подпись сообщения",
-        "sign": "Подписать сообщение"
+        "request": "Запрос на подпись сообщения"
       },
       "my_account_address": "Адрес моего аккаунта:",
-      "network_title": "Сеть",
       "new": {
         "choose_wallet_group": {
           "title": "Выберите группу кошельков",
@@ -3049,10 +2737,7 @@
           "options": {
             "cloud": {
               "description_restore_sheet": "Если вы ранее делали резервное копирование на %{cloudPlatform}, нажмите здесь, чтобы восстановить его.",
-              "description_with_latest_backup_date": "Последняя резервная копия %{fromNow} в %{time}",
-              "title": "Восстановить из %{platform}",
-              "no_backups": "Резервные копии не найдены",
-              "no_google_backups": "Мы не смогли найти резервную копию в Google Drive. Убедитесь, что вы вошли в правильный аккаунт."
+              "title": "Восстановить из %{platform}"
             },
             "create_new": {
               "description": "Создать новый кошелек на одной из ваших фраз для восстановления",
@@ -3070,14 +2755,6 @@
               "description": "Следить за именем ENS или публичным адресом",
               "title": "Следить за кошельком"
             }
-          },
-          "first_wallet": {
-            "description": "Импортируйте ваш собственный кошелек или наблюдайте за чужим",
-            "title": "Добавьте ваш первый кошелек"
-          },
-          "additional_wallet": {
-            "description": "Создайте новый кошелек или добавьте существующий",
-            "title": "Добавить еще один кошелек"
           }
         },
         "import_or_watch_wallet_sheet": {
@@ -3086,17 +2763,11 @@
           "import": {
             "title": "Восстановите кошелек",
             "description": "Восстановите с помощью фразы восстановления или закрытого ключа из Rainbow или другого крипто-кошелька",
-            "placeholder": "Введите фразу восстановления или закрытый ключ",
-            "button": "Импорт"
+            "placeholder": "Введите фразу восстановления или закрытый ключ"
           },
           "watch": {
             "title": "Наблюдайте за адресом",
-            "placeholder": "Введите адрес Ethereum или имя ENS",
-            "button": "Следить"
-          },
-          "watch_or_import": {
-            "title": "Добавьте кошелек",
-            "placeholder": "Введите секретную фразу, закрытый ключ, адрес Ethereum или имя ENS"
+            "placeholder": "Введите адрес Ethereum или имя ENS"
           }
         },
         "alert": {
@@ -3105,7 +2776,6 @@
         },
         "already_have_wallet": "У меня уже есть один",
         "create_wallet": "Создать кошелек",
-        "enter_seeds_placeholder": "Секретная фраза, приватный ключ, адрес Ethereum или имя ENS",
         "get_new_wallet": "Получить новый кошелек",
         "import_wallet": "Импортировать кошелек",
         "name_wallet": "Наименовать ваш кошелек",
@@ -3129,21 +2799,14 @@
         "camera_access_needed": "Требуется доступ к камере для сканирования!",
         "enable_camera_access": "Разрешить доступ к камере",
         "error_mounting_camera": "Ошибка монтирования камеры",
-        "find_a_code": "Найти код для сканирования",
-        "qr_1_app_connected": "1 подключенное приложение",
-        "qr_multiple_apps_connected": "%{appsConnectedCount} Подключенных приложений",
         "scan_to_connect": "Сканировать для подключения",
         "scan_to_pay_or_connect": "Сканировать для оплаты или подключения",
-        "simulator_mode": "Режим симулятора",
         "sorry_could_not_be_recognized": "Извините, этот QR-код не может быть распознан.",
         "unrecognized_qr_code_title": "Нераспознаваемый QR-код"
       },
       "settings": {
         "copy_address": "Копировать адрес",
-        "copy_address_capitalized": "Скопировать адрес",
-        "copy_seed_phrase": "Копировать секретную фразу",
-        "hide_seed_phrase": "Скрыть секретную фразу",
-        "show_seed_phrase": "Показать секретную фразу"
+        "copy_address_capitalized": "Скопировать адрес"
       },
       "something_went_wrong_importing": "Что-то пошло не так при импорте. Пожалуйста, попробуйте еще раз!",
       "sorry_cannot_add_ens": "Извините, мы не можем добавить это имя ENS в настоящее время. Пожалуйста, попробуйте позже!",
@@ -3195,30 +2858,7 @@
         "previous_send": "%{number} предыдущая отправка",
         "previous_sends": "%{number} предыдущих отправок"
       },
-      "wallet_connect": {
-        "error": "Ошибка инициализации с помощью WalletConnect",
-        "failed_to_disconnect": "Не удалось отключить все сеансы WalletConnect",
-        "failed_to_send_request_status": "Не удалось отправить статус запроса на WalletConnect.",
-        "missing_fcm": "Не удалось инициализировать WalletConnect: отсутствует токен уведомления о рассылке. Пожалуйста, повторите попытку.",
-        "walletconnect_session_has_expired_while_trying_to_send": "Cеанс WalletConnect истек при попытке отправить статус запроса. Пожалуйста, переподключитесь."
-      },
       "wallet_title": "Кошелек"
-    },
-    "support": {
-      "error_alert": {
-        "copy_email_address": "Скопировать адрес электронной почты",
-        "no_thanks": "Нет, спасибо",
-        "message": "Хотите вручную скопировать наш адрес электронной почты в буфер обмена?",
-        "title": "Ошибка при запуске почтового клиента",
-        "subject": "Поддержка Rainbow"
-      },
-      "wallet_alert": {
-        "message_support": "Поддержка сообщений",
-        "close": "Закрыть",
-        "learn_more": "Учиться больше",
-        "message": "Если вам нужна помощь, пожалуйста, обратитесь в службу поддержки! \nМы скоро с вами свяжемся!",
-        "title": "Произошла ошибка"
-      }
     },
     "walletconnect": {
       "connecting": "Подключение",
@@ -3374,10 +3014,6 @@
         }
       }
     },
-    "warning": {
-      "user_is_offline": "Соединение отключено. Пожалуйста, проверьте подключение к Интернету",
-      "user_is_online": "Подключено! Вы снова в сети"
-    },
     "dapp_browser": {
       "address_bar": {
         "input_placeholder": "Поиск или введите адрес сайта"
@@ -3392,8 +3028,7 @@
         "undo_favorite": "Отменить",
         "connect": "Подключиться",
         "swap": "Обменять",
-        "bridge": "Мост",
-        "more": "Больше"
+        "bridge": "Мост"
       },
       "error": {
         "title": "Что-то пошло не так",
@@ -3487,12 +3122,6 @@
       "search": "Поиск"
     },
     "token_launcher": {
-      "airdrop": {
-        "address_or_ens": "Адрес или ENS",
-        "suggested_users": "ПРЕДЛАГАЕМЫЕ ПОЛЬЗОВАТЕЛИ",
-        "airdrop_lists": "СПИСКИ AIRDROP",
-        "max_recipients_reached": "Достигнуто максимум %{maxRecipientCount} получателей"
-      },
       "image_upload_error": {
         "title": "Извините, произошла ошибка при загрузке вашего изображения.",
         "subtitle": "Попробуйте снова."
@@ -3506,9 +3135,6 @@
         "title": "Предпокупка токенов"
       },
       "review": {
-        "token_allocation": "Распределение токенов",
-        "your_share": "Ваша доля",
-        "airdropping": "Аирдроп",
         "about": "О компании",
         "total_cost": "Общая стоимость",
         "initial_price": "Начальная цена",
@@ -3532,34 +3158,30 @@
         "must_be_greater_than_0": "Должно быть больше 0",
         "amount_is_greater_than_balance": "Сумма превышает баланс",
         "amount_is_greater_than_max_prebuy_amount": "Превышает максимальную сумму предварительной покупки в %{maxPrebuyAmount} %{chainNativeAssetSymbol}",
-        "amount_is_less_than_min_prebuy_amount": "Должно быть больше минимума предварительной покупки в %{minPrebuyAmount} %{chainNativeAssetSymbol}",
         "amount_too_small": "Слишком малая сумма! Попробуйте немного больше!"
       },
       "titles": {
-        "total_supply": "Общее предложение",
         "ticker": "Тикер",
         "name": "Имя",
         "network": "Сеть",
         "description": "Описание",
-        "airdrop": "Аирдроп друзьям",
         "required_info": "ТРЕБУЕМАЯ ИНФОРМАЦИЯ",
         "about": "О ПРОЕКТЕ",
-        "token_allocation": "РАСПРЕДЕЛЕНИЕ ТОКЕНОВ",
         "token_allocation_breakdown": "Разбивка распределения токенов",
-        "mcap": "MCAP"
+        "mcap": "MCAP",
+        "links": "Links"
       },
       "placeholders": {
         "ticker": "$NAME",
         "enter_coin_name": "Введите название монеты",
-        "describe_your_coin": "Опишите свою монету"
+        "describe_your_coin": "Опишите свою монету",
+        "custom_amount": "Custom amount"
       },
       "buttons": {
         "hold_to_create": "Удерживайте для создания",
         "creating": "Создание...",
         "share_link": "Поделиться ссылкой",
-        "token_allocation_info": "Больше информации",
-        "got_it": "Понятно",
-        "cancel": "Отменить"
+        "got_it": "Понятно"
       },
       "header": {
         "new_coin": "Новая монета",
@@ -3591,27 +3213,12 @@
       },
       "discard_and_exit": "Отменить и выйти",
       "airdrops_sheet": {
-        "claim_button_text": "Получить",
         "empty_state_title": "Аирдропов пока нет",
         "title": "Получить Rainbow Coins"
-      },
-      "cards": {
-        "airdrops": {
-          "subtitle_loading": "ЗАГРУЗКА",
-          "subtitle_has_airdrops": "ДОСТУПНО ДЛЯ ПОЛУЧЕНИЯ",
-          "subtitle_no_airdrops": "АИРДРОПОВ ПОКА НЕТ",
-          "title": "Аирдропы",
-          "title_singular": "Аирдроп"
-        },
-        "launch": {
-          "line_one": "Запустить\n",
-          "line_two": "вашу монету"
-        }
       },
       "claim_airdrop_sheet": {
         "by": "от",
         "claiming": "Получение",
-        "created_by": "Создано %{name}",
         "gifted_to": "Подарено",
         "hold_to_claim": "Удерживайте, чтобы получить",
         "hold_to_retry": "Удерживайте, чтобы повторить",
@@ -3634,19 +3241,25 @@
         "unsupported_network": "Запуск токенов не поддерживается в этой сети"
       }
     },
-    "done": "Готово",
     "copy": "Копировать",
     "paste": "Вставить",
     "new": "Новый",
     "market_data": {
       "vol": "ОБЪЕМ",
-      "price": "ЦЕНА",
-      "mcap": "MCAP"
+      "mcap": "MCAP",
+      "transactions": "Транзакции",
+      "volume": "Объем",
+      "makers": "Makers",
+      "buys": "Покупки",
+      "sells": "Продажи",
+      "bought": "Куплено",
+      "sold": "Проданные",
+      "buyers": "Buyers",
+      "sellers": "Sellers"
     },
     "king_of_hill": {
       "title": "Платформа запуска",
       "launch": "Запустить",
-      "current_king": "ТЕКУЩИЙ КОРОЛЬ",
       "last_winner": "Последний победитель",
       "no_previous_winner": "Нет предыдущего победителя",
       "round_ends_in": "Раунд заканчивается через",
@@ -3750,7 +3363,6 @@
       },
       "cash_out": {
         "title": "Вывести ставку",
-        "current_price": "Текущая цена",
         "average_price": "Средняя цена",
         "profit_loss": "Прибыль / Убыток",
         "receive": "Получить",
@@ -3778,7 +3390,6 @@
         "show_resolved": "Показать решенные",
         "open_positions": "Открытые позиции",
         "market_resolved": "РЫНОК РЕШЕН",
-        "volume_suffix": "ОБЪЕМ",
         "show_less": "Показать меньше",
         "show_more": "Показать больше",
         "resolved": "Решено"
@@ -3848,13 +3459,11 @@
       },
       "claim": {
         "claim_title": "Получить $RNBW",
-        "available_to_claim": "Доступно для получения",
         "your_airdrop": "Ваш аирдроп",
         "your_airdrop_description": "Спасибо, что пользуетесь Rainbow. Ваш аирдроп рассчитывается на основе вашей предыдущей активности.",
         "claim_failed_title": "Ошибка при получении наград",
         "claim_failed_message": "Попробуйте снова.",
-        "claim_later": "Получить позже",
-        "almost_there": "Почти готово..."
+        "claim_later": "Получить позже"
       },
       "airdrop_claim_finished": {
         "airdrop_claimed": "Аирдроп получен",
@@ -3879,7 +3488,6 @@
       },
       "loading_labels": {
         "checking_historical_activity": "Проверяем историческую активность...",
-        "checking_eligibility": "Проверяем право на участие...",
         "claiming_rewards": "Получение наград...",
         "submitting_transaction": "Отправка транзакции...",
         "claiming_airdrop": "Получение аирдропа...",
@@ -3907,11 +3515,13 @@
       "staking_card": {
         "stake": "Стейкать",
         "enable_staking": "Включить стейкинг",
-        "buy_rnbw": "Купить RNBW",
+        "buy": "Купить",
         "unstake": "Отменить стейкинг",
         "available_to_stake": "доступно для стейкинга",
         "available_to_add": "доступно для добавления",
-        "minimum_stake_amount_required": "Чтобы застейкать, нужно как минимум %{minStakeAmount} RNBW"
+        "to_add_to_stake": "to add to stake",
+        "to_stake": "to stake",
+        "buy_more": "Buy more"
       },
       "staking_earnings_card": {
         "lifetime_earnings": "Заработок за всё время",
