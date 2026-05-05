@@ -3447,9 +3447,7 @@
       "filters": {
         "categories": {
           "TRENDING": "ट्रेंडिंग",
-          "RAINBOW": "रेनबो",
-          "NEW": "नया",
-          "FARCASTER": "फ़ारकास्टर"
+          "NEW": "नया"
         },
         "sort": {
           "RECOMMENDED": {
