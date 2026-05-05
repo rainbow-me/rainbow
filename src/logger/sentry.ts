@@ -6,10 +6,6 @@ import { IS_DEV, IS_STORE_INSTALL, IS_TEST } from '@/env';
 import { RainbowFetchError } from '@/framework/data/http/rainbowFetch';
 import { logger, RainbowError } from '@/logger';
 
-// Sentry init bails out in dev/test today (see initSentry below), so the
-// 'development' branch is dormant — but the derivation matches the build state
-// honestly so a future SENTRY_DEV opt-in can flip the init guard without
-// touching this mapping.
 type Environment = 'production' | 'internal' | 'development';
 const ENVIRONMENT: Environment = IS_DEV ? 'development' : IS_STORE_INSTALL ? 'production' : 'internal';
 
@@ -78,8 +74,8 @@ export const defaultOptions: Sentry.ReactNativeOptions = {
 };
 
 export function initSentry() {
-  if (IS_TEST || IS_DEV) {
-    logger.debug(`[sentry]: disabled for ${IS_TEST ? 'test' : 'dev'} build`);
+  if (IS_TEST || __DEV__) {
+    logger.debug(`[sentry]: disabled for ${IS_TEST ? 'test' : 'metro dev'} session`);
     return;
   }
   try {
