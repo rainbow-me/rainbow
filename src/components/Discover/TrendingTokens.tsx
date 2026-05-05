@@ -733,9 +733,11 @@ function TrendingTokenData() {
 }
 
 function RainbowFeatureFlagListener() {
-  // If the rainbow list was selected and the flag is disabled, set the category to the "Trending" category
+  // If the persisted category was removed, set the category to "Trending".
   useEffect(() => {
-    if (useTrendingTokensStore.getState().category === 'Rainbow') {
+    const { category } = useTrendingTokensStore.getState();
+    const isStalePersistedCategory = !categories.some(availableCategory => availableCategory === category);
+    if (isStalePersistedCategory) {
       useTrendingTokensStore.getState().setCategory(categories[0]);
     }
   }, []);
