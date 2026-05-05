@@ -4,7 +4,7 @@ import { analytics } from '@/analytics';
 import type { Tier, TierId } from '@/features/rnbw-membership/types';
 import { RNBW_DECIMALS } from '@/features/rnbw-staking/constants';
 import { convertRawAmountToDecimalFormat, greaterThan } from '@/helpers/utilities';
-import { getOwnedWalletAddresses } from '@/state/wallets/walletsStore';
+import { getOwnedNormalizedWalletAddresses } from '@/state/wallets/walletsStore';
 
 type RnbwMembershipAnalyticsPosition = {
   stakedRnbwRaw: string;
@@ -23,7 +23,7 @@ export const useRnbwMembershipAnalyticsStore = createBaseStore<RnbwMembershipAna
     positionsByAddress: {},
     recordPosition: ({ address, position, allTiers }) => {
       const normalizedAddress = address.toLowerCase();
-      const ownedWalletAddresses = getOwnedWalletAddresses();
+      const ownedWalletAddresses = getOwnedNormalizedWalletAddresses();
       if (!ownedWalletAddresses.includes(normalizedAddress)) return;
 
       set(state => ({
