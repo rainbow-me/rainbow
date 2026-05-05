@@ -74,6 +74,7 @@ export const defaultOptions: Sentry.ReactNativeOptions = {
 };
 
 export function initSentry() {
+  // Use __DEV__ over IS_DEV as we only want to disable this on actual Metro dev builds, not when ENABLE_DEV_MODE is set
   if (IS_TEST || __DEV__) {
     logger.debug(`[sentry]: disabled for ${IS_TEST ? 'test' : 'dev'} session`);
     return;
