@@ -1,3 +1,17 @@
+# PATCH CONTEXT
+# Why: RN 0.81 changed the return type of
+#   getExportedCustomDirectEventTypeConstants from MutableMap to
+#   Map. Without this patch PerformanceMarker fails to compile on
+#   Android because the override signature no longer matches the
+#   supertype. (A second hunk patches BlankAreaEvent for an
+#   unrelated RN 0.74 change and predates this PR.)
+# Upstream Issue: none — @shopify/react-native-performance is
+#   deprecated by Shopify, no plans for RN 0.81 support.
+# Linear Issue: FEPLAT-94
+# Remove when: library replaced. PoCs in rainbow-me/rainbow#7424
+#   (RN built-in performance.rnStartupTiming) and #7426 (Sentry
+#   auto-instrumentation).
+
 diff --git a/node_modules/@shopify/react-native-performance/android/src/main/kotlin/com/shopify/reactnativeperformance/PerformanceMarker.kt b/node_modules/@shopify/react-native-performance/android/src/main/kotlin/com/shopify/reactnativeperformance/PerformanceMarker.kt
 index 19b8fb4..9096d34 100644
 --- a/node_modules/@shopify/react-native-performance/android/src/main/kotlin/com/shopify/reactnativeperformance/PerformanceMarker.kt

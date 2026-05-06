@@ -1,3 +1,14 @@
+# PATCH CONTEXT
+# Why: Renders gradients in Display-P3 instead of Device RGB on
+#   iOS, matching the app-wide P3 color space set in AppDelegate
+#   via defaultColorSpace() -> .displayP3. Without this gradients
+#   color-mismatch the rest of the UI on P3 devices.
+# Upstream Issue: none filed yet — proposing P3 by default or via
+#   a `colorSpace` prop on <LinearGradient>.
+# Linear Issue: FEPLAT-96
+# Remove when: expo-linear-gradient ships P3 either by default or
+#   via a prop (and call sites are updated if applicable).
+
 diff --git a/node_modules/expo-linear-gradient/ios/LinearGradientLayer.swift b/node_modules/expo-linear-gradient/ios/LinearGradientLayer.swift
 index 1234567..abcdefg 100644
 --- a/node_modules/expo-linear-gradient/ios/LinearGradientLayer.swift
