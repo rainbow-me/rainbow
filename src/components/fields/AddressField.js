@@ -24,6 +24,12 @@ const AddressInput = styled(Input).attrs({
   weight: 'bold',
 })({
   flexGrow: 1,
+  // RN 0.81 regression: on Android, a populated TextInput with bold + size 18
+  // ignores `includeFontPadding: false` and reports a measured height of ~40px,
+  // versus ~28px for the placeholder-only state. The row jumps as the user
+  // starts typing. Pin the height to the RN 0.79 measurement (~28px ≈
+  // 18px font + ~10px Android ascender/caret padding) so both states match.
+  height: Platform.OS === 'android' ? 28 : undefined,
   marginTop: 1,
   zIndex: 1,
 });
