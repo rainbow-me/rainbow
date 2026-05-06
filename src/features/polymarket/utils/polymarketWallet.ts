@@ -18,7 +18,8 @@ import { deriveSafeWalletAddress } from '@/features/polymarket/utils/deriveSafeW
 import { RainbowError } from '@/logger';
 import { useWalletsStore } from '@/state/wallets/walletsStore';
 
-const DEPOSIT_WALLET_BATCH_DEADLINE_SECONDS = 240;
+// This is a magic number from the Polymarket team. <= 600 causes problems with the relayer.
+const DEPOSIT_WALLET_BATCH_DEADLINE_SECONDS = 900;
 
 export type PolymarketWallet = {
   address: Address;

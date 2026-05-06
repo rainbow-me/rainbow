@@ -28,7 +28,9 @@ export const POLYMARKET_WITHDRAWAL_CONFIG = createWithdrawalConfig({
   amountDecimals: USD_DECIMALS,
   balanceStore: usePolymarketBalanceStore,
   executor: executePolymarketWithdrawal,
-  prerequisite: ensureProxyReady,
+  prerequisite: async () => {
+    await ensureTradingWalletDeployed();
+  },
 
   route: {
     from: {
@@ -60,12 +62,6 @@ export const POLYMARKET_WITHDRAWAL_CONFIG = createWithdrawalConfig({
   trackFailure: metadata => analytics.track(analytics.event.predictionsWithdrawalFailed, metadata),
   trackSuccess: metadata => analytics.track(analytics.event.predictionsWithdrawal, metadata),
 });
-
-// ============ Prerequisite =================================================== //
-
-async function ensureProxyReady(): Promise<void> {
-  await ensureTradingWalletDeployed();
-}
 
 // ============ Executor ======================================================= //
 

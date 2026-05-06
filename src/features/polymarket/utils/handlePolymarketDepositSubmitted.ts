@@ -1,8 +1,8 @@
 import { type Signer } from '@ethersproject/abstract-signer';
-import { BigNumber } from 'ethers';
+import type { BigNumber } from 'ethers';
 import { type Address } from 'viem';
 
-import { getPolymarketUsdcBalance, wrapUsdcToPusd } from '@/features/polymarket/utils/collateral';
+import { getPolygonUsdcBalance, wrapUsdcToPusd } from '@/features/polymarket/utils/collateral';
 import { ensureTradingWalletDeployed } from '@/features/polymarket/utils/proxyWallet';
 import { refetchPolymarketBalance } from '@/features/polymarket/utils/refetchPolymarketStores';
 import { syncClobCollateralBalance } from '@/features/polymarket/utils/syncClobCollateralBalance';
@@ -24,15 +24,13 @@ async function waitForSubmittedDeposit({ confirmationChainId, hash, isConfirmed 
   }
 }
 
-async function waitForWrappableUsdcBalance(proxyAddress: Address, expectedRawTargetAmount: string): Promise<BigNumber> {
-  const expectedBalance = BigNumber.from(expectedRawTargetAmount);
+async function waitForUsdcBalanceIncrease(address: Address, baselineBalance: BigNumber): Promise<BigNumber> {
   const startedAt = Date.now();
 
   while (Date.now() - startedAt < time.minutes(1)) {
-    const usdcBalance = await getPolymarketUsdcBalance(proxyAddress);
-    const hasExpectedBalance = expectedBalance ? usdcBalance.gte(expectedBalance) : !usdcBalance.isZero();
+    const usdcBalance = await getPolygonUsdcBalance(address);
 
-    if (hasExpectedBalance) {
+    if (usdcBalance.gt(baselineBalance)) {
       return usdcBalance;
     }
 
@@ -44,6 +42,7 @@ async function waitForWrappableUsdcBalance(proxyAddress: Address, expectedRawTar
 
 export async function handlePolymarketDepositSubmitted(_: Signer, context: DepositSubmitContext): Promise<void> {
   const proxyAddress = await ensureTradingWalletDeployed();
+  const baselineBalance = await getPolygonUsdcBalance(proxyAddress);
 
   await waitForSubmittedDeposit(context);
 
@@ -52,9 +51,9 @@ export async function handlePolymarketDepositSubmitted(_: Signer, context: Depos
     return;
   }
 
-  const usdcBalance = await waitForWrappableUsdcBalance(proxyAddress, context.expectedRawTargetAmount);
+  const usdcBalance = await waitForUsdcBalanceIncrease(proxyAddress, baselineBalance);
 
   await wrapUsdcToPusd({ proxyAddress, amount: usdcBalance });
-  await syncClobCollateralBalance();
-  await refetchPolymarketBalance();
+
+  await Promise.all([syncClobCollateralBalance(), refetchPolymarketBalance()]);
 }

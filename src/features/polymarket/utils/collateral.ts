@@ -45,8 +45,8 @@ function buildUnwrapPusdToUsdcTransaction(recipient: Address, amount: BigNumber)
 
 // ========== Public API ==========
 
-export async function getPolymarketUsdcBalance(proxyAddress: Address): Promise<BigNumber> {
-  return getErc20Balance({ owner: proxyAddress, provider: polygonProvider, tokenAddress: POLYGON_USDC_ADDRESS });
+export async function getPolygonUsdcBalance(address: Address): Promise<BigNumber> {
+  return getErc20Balance({ owner: address, provider: polygonProvider, tokenAddress: POLYGON_USDC_ADDRESS });
 }
 
 export async function buildUnwrapPusdToUsdcTransactions({
@@ -77,7 +77,7 @@ export async function buildEnsureUsdcBalanceTransactions({
   amount: BigNumber;
   proxyAddress: Address;
 }): Promise<SafeTransaction[]> {
-  const usdcBalance = await getPolymarketUsdcBalance(proxyAddress);
+  const usdcBalance = await getPolygonUsdcBalance(proxyAddress);
   if (usdcBalance.gte(amount)) return [];
 
   return buildUnwrapPusdToUsdcTransactions({
