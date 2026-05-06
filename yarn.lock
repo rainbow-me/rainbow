@@ -5485,9 +5485,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@polymarket/builder-relayer-client@npm:0.0.7":
-  version: 0.0.7
-  resolution: "@polymarket/builder-relayer-client@npm:0.0.7"
+"@polymarket/builder-relayer-client@npm:0.0.9":
+  version: 0.0.9
+  resolution: "@polymarket/builder-relayer-client@npm:0.0.9"
   dependencies:
     "@polymarket/builder-abstract-signer": "npm:0.0.1"
     "@polymarket/builder-signing-sdk": "npm:^0.0.8"
@@ -5497,11 +5497,11 @@ __metadata:
     tsx: "npm:^4.20.3"
     typescript: "npm:^5.8.3"
     viem: "npm:^2.31.4"
-  checksum: 10c0/ea99f6c15551b0353a30985a060c22b3c6ec854af74951dd8edd93422413e455302be33677104b6affc197d1ff95a442709febb14ec9a4312f48fb19ba751d91
+  checksum: 10c0/69ed6f32c5ae8dd6ff568a29a77174fcb2f60ca78b6cf950f729429aa3def28a10335b0cc28ad31f19429843fa3fe463f7bb441281bbd7f2798bede1f402d1f0
   languageName: node
   linkType: hard
 
-"@polymarket/builder-signing-sdk@npm:^0.0.8":
+"@polymarket/builder-signing-sdk@npm:0.0.8, @polymarket/builder-signing-sdk@npm:^0.0.8":
   version: 0.0.8
   resolution: "@polymarket/builder-signing-sdk@npm:0.0.8"
   dependencies:
@@ -5512,9 +5512,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@polymarket/clob-client-v2@npm:1.0.0":
-  version: 1.0.0
-  resolution: "@polymarket/clob-client-v2@npm:1.0.0"
+"@polymarket/clob-client-v2@npm:1.0.3":
+  version: 1.0.3
+  resolution: "@polymarket/clob-client-v2@npm:1.0.3"
   dependencies:
     "@ethersproject/providers": "npm:^5.8.0"
     "@ethersproject/wallet": "npm:^5.8.0"
@@ -5522,7 +5522,7 @@ __metadata:
     browser-or-node: "npm:^3.0.0"
     tslib: "npm:^2.8.1"
     viem: "npm:^2.46.3"
-  checksum: 10c0/8dc51a3f3821537b19f35a0e536177a4414813b849b8e192d66cedbbb7071b726af51d3091e8603f41f0accaf0fb3e503c2ddc4f3f9f5df56e53d2812e3d2843
+  checksum: 10c0/70a44337e5ed8bde22f3731b20d80ff80889822b966d83d378e7204c9d22044e99e66f74ba6e573bd20cf40693fc83e6b435e8f8adb3b8da43f689e65e67808d
   languageName: node
   linkType: hard
 
@@ -9528,8 +9528,9 @@ __metadata:
     "@metamask/eth-sig-util": "npm:7.0.2"
     "@nktkas/hyperliquid": "npm:0.32.2"
     "@notifee/react-native": "npm:7.8.2"
-    "@polymarket/builder-relayer-client": "npm:0.0.7"
-    "@polymarket/clob-client-v2": "npm:1.0.0"
+    "@polymarket/builder-relayer-client": "npm:0.0.9"
+    "@polymarket/builder-signing-sdk": "npm:0.0.8"
+    "@polymarket/clob-client-v2": "npm:1.0.3"
     "@rainbow-me/delegation": "file:./rainbow-me-delegation-0.4.0.tgz"
     "@rainbow-me/provider": "npm:0.1.2"
     "@rainbow-me/react-native-animated-number": "npm:0.0.2"

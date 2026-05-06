@@ -49,6 +49,7 @@ export const usePolymarketBalanceStore = createQueryStore<
   {
     cacheTime: time.days(2),
     fetcher: fetchPolymarketBalance,
+    enabled: $ => $(usePolymarketClients, state => state.proxyAddress !== null),
     params: { address: $ => $(usePolymarketClients).proxyAddress },
     staleTime: time.seconds(10),
   },

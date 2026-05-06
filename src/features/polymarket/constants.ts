@@ -24,6 +24,8 @@ export const POLYMARKET_CTF_COLLATERAL_ADAPTER_ADDRESS: Address = '0xAdA100Db00C
 export const POLYMARKET_NEG_RISK_CTF_COLLATERAL_ADAPTER_ADDRESS: Address = '0xadA2005600Dec949baf300f4C6120000bDB6eAab';
 
 // Wallet factory contracts
+export const POLYMARKET_DEPOSIT_WALLET_FACTORY_ADDRESS: Address = '0x00000000000Fb5C9ADea0298D729A0CB3823Cc07';
+export const POLYMARKET_DEPOSIT_WALLET_IMPLEMENTATION_ADDRESS: Address = '0x58CA52ebe0DadfdF531Cde7062e76746de4Db1eB';
 export const POLYMARKET_GNOSIS_SAFE_FACTORY_ADDRESS: Address = '0xaacfeea03eb1561c4e67d661e40682bd20e3541b';
 export const POLYMARKET_PROXY_FACTORY_ADDRESS: Address = '0xaB45c5A4B0c941a2F231C04C3f49182e1A254052';
 
@@ -37,9 +39,18 @@ export const POLYMARKET_CLOB_PROXY_URL = `${RAINBOW_POLYMARKET_PROXY_URL}/clob`;
 export const POLYMARKET_RELAYER_PROXY_URL = `${RAINBOW_POLYMARKET_PROXY_URL}/relayer`;
 export const POLYMARKET_SIGNING_PROXY_URL = `${RAINBOW_POLYMARKET_PROXY_URL}/sign`;
 
-export const POLYMARKET_CLOB_URL = 'https://clob.polymarket.com';
-export const POLYMARKET_GAMMA_API_URL = 'https://gamma-api.polymarket.com';
-export const POLYMARKET_DATA_API_URL = 'https://data-api.polymarket.com';
+// const POLYMARKET_CLOB_URL_PREPROD = 'https://clob-preprod-int-v2.polymarket.com';
+const POLYMARKET_CLOB_URL_PROD = 'https://clob.polymarket.com';
+
+//  const POLYMARKET_DATA_API_URL_PREPROD = 'https://data-api-preprod-int.polymarket.com';
+const POLYMARKET_DATA_API_URL_PROD = 'https://data-api.polymarket.com';
+
+//  const POLYMARKET_GAMMA_API_URL_PREPROD = 'https://gamma-api-preprod-int.polymarket.com';
+const POLYMARKET_GAMMA_API_URL_PROD = 'https://gamma-api.polymarket.com';
+
+export const POLYMARKET_GAMMA_API_URL = POLYMARKET_GAMMA_API_URL_PROD;
+export const POLYMARKET_DATA_API_URL = POLYMARKET_DATA_API_URL_PROD;
+export const POLYMARKET_CLOB_URL = POLYMARKET_CLOB_URL_PROD;
 
 export const POLYMARKET_SPORTS_WS_URL = 'wss://sports-api.polymarket.com/ws';
 export const POLYMARKET_HOSTNAMES: ReadonlySet<string> = new Set(['polymarket.com', 'www.polymarket.com']);

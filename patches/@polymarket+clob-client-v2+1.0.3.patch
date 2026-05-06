@@ -1,0 +1,118 @@
+diff --git a/node_modules/@polymarket/clob-client-v2/dist/index.cjs b/node_modules/@polymarket/clob-client-v2/dist/index.cjs
+index 6032b5c..0335c95 100644
+--- a/node_modules/@polymarket/clob-client-v2/dist/index.cjs
++++ b/node_modules/@polymarket/clob-client-v2/dist/index.cjs
+@@ -318,24 +318,10 @@ var createL2Headers = async (signer, creds, l2HeaderArgs, timestamp) => {
+ 
+ // src/http-helpers/index.ts
+ var import_axios = __toESM(require("axios"), 1);
+-var import_browser_or_node = require("browser-or-node");
+ var GET = "GET";
+ var POST = "POST";
+ var DELETE = "DELETE";
+-var overloadHeaders = (method, headers = {}) => {
+-  if (import_browser_or_node.isBrowser) {
+-    return;
+-  }
+-  headers["User-Agent"] = `@polymarket/clob-client`;
+-  headers.Accept = "*/*";
+-  headers.Connection = "keep-alive";
+-  headers["Content-Type"] = "application/json";
+-  if (method === GET) {
+-    headers["Accept-Encoding"] = "gzip";
+-  }
+-};
+ var request = async (endpoint, method, headers, data, params) => {
+-  overloadHeaders(method, headers);
+   return await (0, import_axios.default)({ method, url: endpoint, headers, data, params });
+ };
+ var sleep = (ms) => new Promise((res) => setTimeout(res, ms));
+@@ -1522,7 +1508,6 @@ var ClobClient = class {
+       if (!token) continue;
+       const tokenId = token.t;
+       this.tokenConditionMap[tokenId] = conditionID;
+-      this.tickSizes[tokenId] = result.mts.toString();
+       this.negRisk[tokenId] = result.nr ?? false;
+       this.feeInfos[tokenId] = {
+         rate: result.fd?.r ?? 0,
+@@ -1542,18 +1527,14 @@ var ClobClient = class {
+     });
+   }
+   async getTickSize(tokenID) {
+-    if (tokenID in this.tickSizes) {
+-      return this.tickSizes[tokenID];
+-    }
+     if (tokenID in this.tokenConditionMap) {
+-      await this.getClobMarketInfo(this.tokenConditionMap[tokenID]);
+-      return this.tickSizes[tokenID];
++      const result = await this.getClobMarketInfo(this.tokenConditionMap[tokenID]);
++      return result.mts.toString();
+     }
+     const result = await this.get(`${this.host}${GET_TICK_SIZE}`, {
+       params: { token_id: tokenID }
+     });
+-    this.tickSizes[tokenID] = result.minimum_tick_size.toString();
+-    return this.tickSizes[tokenID];
++    return result.minimum_tick_size.toString();
+   }
+   async getNegRisk(tokenID) {
+     if (tokenID in this.negRisk) {
+diff --git a/node_modules/@polymarket/clob-client-v2/dist/index.js b/node_modules/@polymarket/clob-client-v2/dist/index.js
+index cb0ae39..b34acd9 100644
+--- a/node_modules/@polymarket/clob-client-v2/dist/index.js
++++ b/node_modules/@polymarket/clob-client-v2/dist/index.js
+@@ -262,24 +262,10 @@ var createL2Headers = async (signer, creds, l2HeaderArgs, timestamp) => {
+ 
+ // src/http-helpers/index.ts
+ import axios from "axios";
+-import { isBrowser } from "browser-or-node";
+ var GET = "GET";
+ var POST = "POST";
+ var DELETE = "DELETE";
+-var overloadHeaders = (method, headers = {}) => {
+-  if (isBrowser) {
+-    return;
+-  }
+-  headers["User-Agent"] = `@polymarket/clob-client`;
+-  headers.Accept = "*/*";
+-  headers.Connection = "keep-alive";
+-  headers["Content-Type"] = "application/json";
+-  if (method === GET) {
+-    headers["Accept-Encoding"] = "gzip";
+-  }
+-};
+ var request = async (endpoint, method, headers, data, params) => {
+-  overloadHeaders(method, headers);
+   return await axios({ method, url: endpoint, headers, data, params });
+ };
+ var sleep = (ms) => new Promise((res) => setTimeout(res, ms));
+@@ -1466,7 +1452,6 @@ var ClobClient = class {
+       if (!token) continue;
+       const tokenId = token.t;
+       this.tokenConditionMap[tokenId] = conditionID;
+-      this.tickSizes[tokenId] = result.mts.toString();
+       this.negRisk[tokenId] = result.nr ?? false;
+       this.feeInfos[tokenId] = {
+         rate: result.fd?.r ?? 0,
+@@ -1486,18 +1471,14 @@ var ClobClient = class {
+     });
+   }
+   async getTickSize(tokenID) {
+-    if (tokenID in this.tickSizes) {
+-      return this.tickSizes[tokenID];
+-    }
+     if (tokenID in this.tokenConditionMap) {
+-      await this.getClobMarketInfo(this.tokenConditionMap[tokenID]);
+-      return this.tickSizes[tokenID];
++      const result = await this.getClobMarketInfo(this.tokenConditionMap[tokenID]);
++      return result.mts.toString();
+     }
+     const result = await this.get(`${this.host}${GET_TICK_SIZE}`, {
+       params: { token_id: tokenID }
+     });
+-    this.tickSizes[tokenID] = result.minimum_tick_size.toString();
+-    return this.tickSizes[tokenID];
++    return result.minimum_tick_size.toString();
+   }
+   async getNegRisk(tokenID) {
+     if (tokenID in this.negRisk) {
