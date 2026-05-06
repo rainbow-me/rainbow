@@ -1,11 +1,11 @@
 import { RelayClient } from '@polymarket/builder-relayer-client';
-import { Chain, ClobClient, SignatureTypeV2 } from '@polymarket/clob-client-v2';
+import { Chain, ClobClient } from '@polymarket/clob-client-v2';
 import { type Wallet } from 'ethers';
 import { type Address } from 'viem';
 
 import { BUILDER_CONFIG, POLYMARKET_CLOB_PROXY_URL, POLYMARKET_RELAYER_PROXY_URL } from '@/features/polymarket/constants';
 import { usePolymarketWalletKindStore } from '@/features/polymarket/stores/polymarketWalletKindStore';
-import { createPolymarketWallet, getPolymarketWallet, type PolymarketWallet } from '@/features/polymarket/utils/polymarketWallet';
+import { createPolymarketWallet, getPolymarketWallet } from '@/features/polymarket/utils/polymarketWallet';
 import { getProvider } from '@/handlers/web3';
 import { logger, RainbowError } from '@/logger';
 import { loadWallet } from '@/model/wallet';
@@ -33,7 +33,7 @@ export const usePolymarketClients = createDerivedStore<PolymarketClientsState>(
 
     return {
       address,
-      getClobClient: createLazyClobClient(getWallet, wallet),
+      getClobClient: createLazyClobClient(getWallet),
       getRelayClient: createLazyRelayClient(getWallet),
       proxyAddress: wallet?.address ?? null,
     };
@@ -50,7 +50,6 @@ export async function getPolymarketRelayClient(): Promise<RelayClient> {
 }
 
 export async function getPolymarketClobClient(): Promise<ClobClient> {
-  await getPolymarketWallet();
   const client = await usePolymarketClients.getState().getClobClient();
   if (!client) throw new RainbowError('[Polymarket] Failed to get CLOB client');
   return client;
@@ -118,15 +117,12 @@ async function createRelayClientFromWallet(getWallet: () => Promise<Wallet | nul
 
 // ============ Lazy CLOB Client ================================================ //
 
-function createLazyClobClient(
-  getWallet: () => Promise<Wallet | null>,
-  polymarketWallet: PolymarketWallet | null
-): () => Promise<ClobClient | null> {
+function createLazyClobClient(getWallet: () => Promise<Wallet | null>): () => Promise<ClobClient | null> {
   let clientPromise: Promise<ClobClient | null> | null = null;
 
   return async () => {
     if (!clientPromise) {
-      clientPromise = createClobClientFromWallet(getWallet, polymarketWallet).catch(error => {
+      clientPromise = createClobClientFromWallet(getWallet).catch(error => {
         clientPromise = null;
         throw error;
       });
@@ -135,12 +131,11 @@ function createLazyClobClient(
   };
 }
 
-async function createClobClientFromWallet(
-  getWallet: () => Promise<Wallet | null>,
-  polymarketWallet: PolymarketWallet | null
-): Promise<ClobClient | null> {
+async function createClobClientFromWallet(getWallet: () => Promise<Wallet | null>): Promise<ClobClient | null> {
   const wallet = await getWallet();
   if (!wallet) return null;
+
+  const polymarketWallet = await getPolymarketWallet();
 
   const credentials = await getOrCreateApiCredentials(
     new ClobClient({
@@ -155,8 +150,8 @@ async function createClobClientFromWallet(
     chain: Chain.POLYGON,
     signer: wallet,
     creds: credentials,
-    signatureType: polymarketWallet?.signatureType ?? SignatureTypeV2.POLY_GNOSIS_SAFE,
-    funderAddress: polymarketWallet?.address,
+    signatureType: polymarketWallet.signatureType,
+    funderAddress: polymarketWallet.address,
     useServerTime: false,
   });
 }

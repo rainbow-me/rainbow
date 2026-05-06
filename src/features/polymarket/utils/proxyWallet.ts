@@ -163,10 +163,10 @@ function assertRelayerTransactionAccepted(response: RelayerTransactionResponse, 
 /**
  * Checks all required approvals and returns transactions for any that are missing.
  */
-async function getMissingApprovalTransactions(walletAddress: Address): Promise<SafeTransaction[]> {
+async function getMissingApprovalTransactions(polymarketWalletAddress: Address): Promise<SafeTransaction[]> {
   const ctfApprovalChecks = await Promise.all(
     Object.values(APPROVAL_TARGETS).map(({ address, label }) =>
-      hasCtfApproval(walletAddress, address).then(approved => ({ address, approved, label }))
+      hasCtfApproval(polymarketWalletAddress, address).then(approved => ({ address, approved, label }))
     )
   );
 
@@ -174,7 +174,7 @@ async function getMissingApprovalTransactions(walletAddress: Address): Promise<S
     Object.values(APPROVAL_TARGETS).map(({ address, label }) =>
       getMissingErc20ApprovalTransaction({
         amount: maxUint256,
-        owner: walletAddress,
+        owner: polymarketWalletAddress,
         provider: polygonProvider,
         spender: address,
         tokenAddress: POLYMARKET_PUSD_ADDRESS,
@@ -218,8 +218,8 @@ export async function getMissingCtfOperatorApprovalTransactions(operator: Addres
  * approvals it needs to trade.
  */
 export async function ensureTradingApprovals(): Promise<void> {
-  const walletAddress = await ensureTradingWalletDeployed();
-  const transactions = await getMissingApprovalTransactions(walletAddress);
+  const polymarketWalletAddress = await ensureTradingWalletDeployed();
+  const transactions = await getMissingApprovalTransactions(polymarketWalletAddress);
 
   if (transactions.length === 0) return;
 

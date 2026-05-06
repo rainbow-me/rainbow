@@ -17,16 +17,18 @@ export const usePolymarketWalletKindStore = createQueryStore<PolymarketWalletKin
   {
     cacheTime: time.weeks(1),
     enabled: $ => $(useWalletsStore, s => !!s.accountAddress),
-    fetcher: fetchPolymarketWalletKind,
+    fetcher: createWalletKindFetcher(),
     params: { owner: $ => $(useWalletsStore, s => s.accountAddress ?? null) },
     staleTime: Infinity,
   },
   { storageKey: 'polymarketWalletKindStore' }
 );
 
-async function fetchPolymarketWalletKind({ owner }: Params): Promise<PolymarketWalletKind> {
-  if (!owner) throw new RainbowError('[PolymarketWalletKindStore] owner is required');
-  const client = new RelayClient(POLYMARKET_RELAYER_PROXY_URL, ChainId.polygon, undefined, BUILDER_CONFIG);
-  const safeIsDeployed = await client.getDeployed(deriveSafeWalletAddress(owner));
-  return safeIsDeployed ? 'safe' : 'depositWallet';
+function createWalletKindFetcher() {
+  const relayClient = new RelayClient(POLYMARKET_RELAYER_PROXY_URL, ChainId.polygon, undefined, BUILDER_CONFIG);
+  return async ({ owner }: Params): Promise<PolymarketWalletKind> => {
+    if (!owner) throw new RainbowError('[PolymarketWalletKindStore] owner is required');
+    const safeIsDeployed = await relayClient.getDeployed(deriveSafeWalletAddress(owner));
+    return safeIsDeployed ? 'safe' : 'depositWallet';
+  };
 }
