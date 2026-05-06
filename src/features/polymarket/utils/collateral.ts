@@ -9,8 +9,8 @@ import {
   POLYMARKET_PUSD_ADDRESS,
 } from '@/features/polymarket/constants';
 import { getMissingErc20ApprovalTransaction } from '@/features/polymarket/utils/erc20Approval';
-import { executeRelayTransaction } from '@/features/polymarket/utils/proxyWallet';
 import { refetchPolymarketBalance } from '@/features/polymarket/utils/refetchPolymarketStores';
+import { executeRelayTransaction } from '@/features/polymarket/utils/relayExecution';
 import { getErc20Balance } from '@/framework/data/evm/erc20Read';
 import { getProvider } from '@/handlers/web3';
 import { ChainId } from '@rainbow-me/swaps';

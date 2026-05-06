@@ -11,7 +11,8 @@ import {
   POLYMARKET_PUSD_ADDRESS,
 } from '../constants';
 import { type PolymarketPosition } from '../types';
-import { getMissingCtfOperatorApprovalTransactions, submitTradingWalletTransaction, waitForRelayerTransaction } from './proxyWallet';
+import { submitTradingWalletTransaction, waitForRelayerTransaction } from './relayExecution';
+import { getMissingCtfOperatorApprovalTransactions } from './tradingApprovals';
 
 const ctfInterface = new Interface([
   'function redeemPositions(address collateralToken, bytes32 parentCollectionId, bytes32 conditionId, uint256[] indexSets)',

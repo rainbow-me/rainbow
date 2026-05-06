@@ -3,8 +3,8 @@ import type { BigNumber } from 'ethers';
 import { type Address } from 'viem';
 
 import { getPolygonUsdcBalance, wrapUsdcToPusd } from '@/features/polymarket/utils/collateral';
-import { ensureTradingWalletDeployed } from '@/features/polymarket/utils/proxyWallet';
 import { refetchPolymarketBalance } from '@/features/polymarket/utils/refetchPolymarketStores';
+import { ensureTradingWalletDeployed } from '@/features/polymarket/utils/relayExecution';
 import { syncClobCollateralBalance } from '@/features/polymarket/utils/syncClobCollateralBalance';
 import { getProvider } from '@/handlers/web3';
 import { logger, RainbowError } from '@/logger';

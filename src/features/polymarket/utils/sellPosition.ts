@@ -3,7 +3,7 @@ import { AssetType, OrderType, Side } from '@polymarket/clob-client-v2';
 import { POLYMARKET_BUILDER_CODE } from '@/features/polymarket/constants';
 import { getPolymarketClobClient } from '@/features/polymarket/stores/derived/usePolymarketClients';
 import { type PolymarketOrderResult, type PolymarketPosition, type SuccessfulOrderResult } from '@/features/polymarket/types';
-import { ensureTradingApprovals } from '@/features/polymarket/utils/proxyWallet';
+import { ensureTradingApprovals } from '@/features/polymarket/utils/tradingApprovals';
 import { RainbowError } from '@/logger';
 
 export async function marketSellTotalPosition({

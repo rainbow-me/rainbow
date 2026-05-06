@@ -8,7 +8,7 @@ import { usePolymarketBalanceStore } from '@/features/polymarket/stores/polymark
 import { type PolymarketOrderResult, type SuccessfulOrderResult } from '@/features/polymarket/types';
 import { getPolygonUsdcBalance, wrapUsdcAmountToPusd } from '@/features/polymarket/utils/collateral';
 import { getPolymarketWallet } from '@/features/polymarket/utils/polymarketWallet';
-import { ensureTradingApprovals } from '@/features/polymarket/utils/proxyWallet';
+import { ensureTradingApprovals } from '@/features/polymarket/utils/tradingApprovals';
 import { RainbowError } from '@/logger';
 
 export type PolymarketBuyPositionStep = 'preparing' | 'placing_order' | 'confirming_order';

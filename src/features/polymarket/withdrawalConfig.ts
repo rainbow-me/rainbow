@@ -18,8 +18,8 @@ import { usePolymarketProxyAddress } from './stores/derived/usePolymarketProxyAd
 import { usePolymarketBalanceStore } from './stores/polymarketBalanceStore';
 import { buildEnsureUsdcBalanceTransactions } from './utils/collateral';
 import { buildErc20ApprovalTransaction } from './utils/erc20Approval';
-import { ensureTradingWalletDeployed, submitTradingWalletTransaction, waitForRelayerTransaction } from './utils/proxyWallet';
 import { refetchPolymarketBalance } from './utils/refetchPolymarketStores';
+import { ensureTradingWalletDeployed, submitTradingWalletTransaction, waitForRelayerTransaction } from './utils/relayExecution';
 
 // ============ Config ========================================================= //
 
