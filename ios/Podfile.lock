@@ -2078,7 +2078,7 @@ PODS:
     - SocketRocket
   - react-native-aes-crypto (2.0.2):
     - React-Core
-  - react-native-animateable-text (0.16.0-beta.0):
+  - react-native-animateable-text (0.17.1):
     - boost
     - DoubleConversion
     - fast_float
@@ -3153,7 +3153,7 @@ PODS:
     - RNFBApp
     - SocketRocket
     - Yoga
-  - RNFlashList (1.8.2):
+  - RNFlashList (1.8.3):
     - boost
     - DoubleConversion
     - fast_float
@@ -3249,7 +3249,7 @@ PODS:
     - React
   - RNPermissions (3.10.1):
     - React-Core
-  - RNReanimated (3.19.4):
+  - RNReanimated (3.19.5):
     - boost
     - DoubleConversion
     - fast_float
@@ -3276,11 +3276,11 @@ PODS:
     - ReactCodegen
     - ReactCommon/turbomodule/bridging
     - ReactCommon/turbomodule/core
-    - RNReanimated/reanimated (= 3.19.4)
-    - RNReanimated/worklets (= 3.19.4)
+    - RNReanimated/reanimated (= 3.19.5)
+    - RNReanimated/worklets (= 3.19.5)
     - SocketRocket
     - Yoga
-  - RNReanimated/reanimated (3.19.4):
+  - RNReanimated/reanimated (3.19.5):
     - boost
     - DoubleConversion
     - fast_float
@@ -3307,10 +3307,10 @@ PODS:
     - ReactCodegen
     - ReactCommon/turbomodule/bridging
     - ReactCommon/turbomodule/core
-    - RNReanimated/reanimated/apple (= 3.19.4)
+    - RNReanimated/reanimated/apple (= 3.19.5)
     - SocketRocket
     - Yoga
-  - RNReanimated/reanimated/apple (3.19.4):
+  - RNReanimated/reanimated/apple (3.19.5):
     - boost
     - DoubleConversion
     - fast_float
@@ -3339,7 +3339,7 @@ PODS:
     - ReactCommon/turbomodule/core
     - SocketRocket
     - Yoga
-  - RNReanimated/worklets (3.19.4):
+  - RNReanimated/worklets (3.19.5):
     - boost
     - DoubleConversion
     - fast_float
@@ -3366,10 +3366,10 @@ PODS:
     - ReactCodegen
     - ReactCommon/turbomodule/bridging
     - ReactCommon/turbomodule/core
-    - RNReanimated/worklets/apple (= 3.19.4)
+    - RNReanimated/worklets/apple (= 3.19.5)
     - SocketRocket
     - Yoga
-  - RNReanimated/worklets/apple (3.19.4):
+  - RNReanimated/worklets/apple (3.19.5):
     - boost
     - DoubleConversion
     - fast_float
@@ -3495,10 +3495,7 @@ PODS:
     - React-Core
   - RNSVG (15.15.4):
     - React-Core
-  - RSCrashReporter (1.0.1)
-  - Rudder (1.31.1):
-    - MetricsReporter (= 2.0.0)
-  - RudderKit (1.4.0)
+  - Rudder (1.32.0)
   - SDWebImage (5.18.12):
     - SDWebImage/Core (= 5.18.12)
   - SDWebImage/Core (5.18.12)
@@ -4176,7 +4173,7 @@ SPEC CHECKSUMS:
   React-Mapbuffer: 8f8bba0802f49d7926602c5c276f2a2083a5ac55
   React-microtasksnativemodule: 1e4d3178ba5d5000b351b902c603fb0c9d60649e
   react-native-aes-crypto: 598b531c1dcdec9830e0475459c53e13e01fcbf0
-  react-native-animateable-text: 1b0450f7630e49a2724f95896aa66774f88b9f91
+  react-native-animateable-text: 2e73290cbec383f54d1ac9e315420051faa600f0
   react-native-ble-plx: 1eb4d7d16ce0e99e8a9699e52b62ef1ef24e7094
   react-native-blur-view: 86fcc6a9caa695842978afb15553b3b673137e5b
   react-native-branch: 46dc8cb067af50455db675370c3cd63425f85bea
@@ -4248,7 +4245,7 @@ SPEC CHECKSUMS:
   RNFBApp: a82d90b5d0bdf193b5ea570323df8ad2729c1326
   RNFBMessaging: 901865c02898f9b6cb259163e24f04164814b2d4
   RNFBRemoteConfig: 4c959414303ae5fe2d4f7dd3b284f99358cbfc3b
-  RNFlashList: c2307cba013ac3dc4fbf744b56cbc1000e065dcd
+  RNFlashList: 3ff55e40f74f7cd92cb5bc7486390b8c5c9648b6
   RNFS: 3557d4b8e51925b011e787094600d6e05dca414e
   RNGestureHandler: 8f419c0cb781bcb722f7118e7c177a313278fa5c
   RNInputMask: 815461ebdf396beb62cf58916c35cf6930adb991
@@ -4256,16 +4253,14 @@ SPEC CHECKSUMS:
   RNNotifee: 8768d065bf1e2f9f8f347b4bd79147431c7eacd6
   RNOS: 5589ece6158813d4a9b7e098c8cbd35162f63fae
   RNPermissions: bd0d9ca7969ff7b999aa605ee2e5919c12522bfe
-  RNReanimated: 9282065c1fb748d2d1945ba46d6592c2cf4e5cc8
+  RNReanimated: a0d1d8b8d8d38f504c7acc2e6019061eed29186d
   RNRudderSdk: cea1f6a95ceab29ceaf75bdadccba5f78121a4ce
   RNScreens: 35525ebfe219c8709da0d26aebbc9a5e02e1077b
   RNSentry: 70dd4ad2d37e8a37df18c1d324093c30e8801726
   RNShare: 2df11ee286754d74a9d7ca249350418cac4a20bb
   RNSound: 314cc5226453ef4a3314a196c65e8a65e5106a7b
-  RNSVG: c8ba193e7bea6983ebdf544a6ee7b0f706c64559
-  RSCrashReporter: 6b8376ac729b0289ebe0908553e5f56d8171f313
-  Rudder: 352cb3417238fb84cc083826d9a5a7cc91efaa69
-  RudderKit: f272f9872183946452ac94cd7bb2244a71e6ca8f
+  RNSVG: 0c9ef13eab498a85510c1ec82fb0010f07ff33e6
+  Rudder: fcd39cc69aeb05880a789b6ffdaf4ea93f6448a2
   SDWebImage: 2d6d229046fea284d62e36bfb8ebe8287dfc5b10
   SDWebImageWebPCoder: e38c0a70396191361d60c092933e22c20d5b1380
   Sentry: d587a8fe91ca13503ecd69a1905f3e8a0fcf61be

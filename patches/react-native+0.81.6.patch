@@ -1,3 +1,15 @@
+# PATCH CONTEXT
+# Why: Forces continuous (squircle) corners on RCTView via
+#   `layer.cornerCurve = kCACornerCurveContinuous` so legacy-arch
+#   views match iOS-system rounded-rectangle styling. Default RN
+#   renderer on the legacy ObjC path draws circular-arc corners.
+# Upstream Issue: none filed yet — requires upstreaming a
+#   `borderCurve` style prop on the legacy renderer (Fabric
+#   already exposes it).
+# Linear Issue: FEPLAT-97
+# Remove when: RN exposes `borderCurve` on the legacy renderer, or
+#   we migrate to the new architecture (Fabric).
+
 diff --git a/node_modules/react-native/React/Views/RCTView.m b/node_modules/react-native/React/Views/RCTView.m
 index 0a2fa36..21a5099 100644
 --- a/node_modules/react-native/React/Views/RCTView.m
