@@ -2,15 +2,17 @@
 # Why: react-native-animateable-text@0.17.1 fixed `AnimateableTextProps`
 #   in src/TextProps.tsx (drops `Omit<…, "children">`) but the published
 #   .d.ts files in lib/typescript/ were not regenerated and still carry
-#   the old `Omit<TextProps, "children">` shape. TypeScript consumes the
-#   .d.ts, so without this patch `<AnimatedText>{children}</AnimatedText>`
-#   fails type check (TS2322 "Property 'children' does not exist…"). The
-#   patch updates the published .d.ts files to match the source.
+#   the old `Omit<TextProps, "children">` shape — including the package
+#   `types` entrypoint at lib/typescript/src/index.d.ts. Without this
+#   patch `<AnimatedText>{children}</AnimatedText>` fails type check
+#   with TS2322 "Property 'children' does not exist…". Patch updates
+#   all three published .d.ts files (index, TextProps, web) to match
+#   the source.
 # Upstream Issue: none filed — the maintainer just needs to run a fresh
 #   `prepare` to republish the .d.ts files. Easy upstream PR.
 # Linear Issue: FEPLAT-98
 # Remove when: react-native-animateable-text ships a release where
-#   lib/typescript/src/TextProps.d.ts and AnimateableText.web.d.ts
+#   lib/typescript/src/{index,TextProps,AnimateableText.web}.d.ts
 #   match the source (no `Omit<…, "children">`).
 
 diff --git a/node_modules/react-native-animateable-text/lib/typescript/src/AnimateableText.web.d.ts b/node_modules/react-native-animateable-text/lib/typescript/src/AnimateableText.web.d.ts
@@ -35,5 +37,15 @@ index 0000000..0000001 100644
 -export type AnimateableTextProps = Omit<NativeTextProps, "children"> & {
 +export type AnimateableTextProps = NativeTextProps & {
      forwardedRef?: Ref<IText>;
+     text?: string;
+     onStartShouldSetResponder?: () => boolean;
+diff --git a/node_modules/react-native-animateable-text/lib/typescript/src/index.d.ts b/node_modules/react-native-animateable-text/lib/typescript/src/index.d.ts
+index 0000000..0000001 100644
+--- a/node_modules/react-native-animateable-text/lib/typescript/src/index.d.ts
++++ b/node_modules/react-native-animateable-text/lib/typescript/src/index.d.ts
+@@ -1,4 +1,4 @@
+-declare const AnimateableText: import("react").FunctionComponent<import("react-native-reanimated").AnimateProps<Omit<import("react-native").TextProps, "children"> & {
++declare const AnimateableText: import("react").FunctionComponent<import("react-native-reanimated").AnimateProps<import("react-native").TextProps & {
+     forwardedRef?: import("react").Ref<import("react-native").Text>;
      text?: string;
      onStartShouldSetResponder?: () => boolean;
