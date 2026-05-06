@@ -23,24 +23,6 @@
 				<key>UIPrerenderedIcon</key>
 				<false/>
 			</dict>
-			<key>baggy</key>
-			<dict>
-				<key>CFBundleIconFiles</key>
-				<array>
-					<string>baggy</string>
-				</array>
-				<key>UIPrerenderedIcon</key>
-				<false/>
-			</dict>
-			<key>chonks</key>
-			<dict>
-				<key>CFBundleIconFiles</key>
-				<array>
-					<string>chonks</string>
-				</array>
-				<key>UIPrerenderedIcon</key>
-				<false/>
-			</dict>
 			<key>farcaster</key>
 			<dict>
 				<key>CFBundleIconFiles</key>
@@ -64,15 +46,6 @@
 				<key>CFBundleIconFiles</key>
 				<array>
 					<string>golddoge</string>
-				</array>
-				<key>UIPrerenderedIcon</key>
-				<false/>
-			</dict>
-			<key>mog</key>
-			<dict>
-				<key>CFBundleIconFiles</key>
-				<array>
-					<string>mog</string>
 				</array>
 				<key>UIPrerenderedIcon</key>
 				<false/>
@@ -127,15 +100,6 @@
 				<key>CFBundleIconFiles</key>
 				<array>
 					<string>raindoge</string>
-				</array>
-				<key>UIPrerenderedIcon</key>
-				<false/>
-			</dict>
-			<key>redacted</key>
-			<dict>
-				<key>CFBundleIconFiles</key>
-				<array>
-					<string>redacted</string>
 				</array>
 				<key>UIPrerenderedIcon</key>
 				<false/>
