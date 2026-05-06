@@ -266,7 +266,7 @@ async function fetchAirdrops(
 
   if (data.metadata.status !== 'ok') {
     logger.error(new RainbowError('[fetchTokenLauncherAirdrops]: Failed to fetch airdrop claimables (API error)'), {
-      message: data.metadata.errors,
+      errorMessages: data.metadata.errors?.map(error => error.errors.map(e => `${e.chain_id}: ${e.error}`).join(', ')).join(', '),
     });
     abortController?.abort();
     return EMPTY_RETURN_DATA;
