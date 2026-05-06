@@ -6,12 +6,10 @@ import Animated, { runOnUI, useAnimatedStyle } from 'react-native-reanimated';
 import { getColorValueForThemeWorklet } from '@/__swaps__/utils/swaps';
 import ButtonPressAnimation from '@/components/animations/ButtonPressAnimation';
 import { GestureHandlerButton } from '@/components/buttons/GestureHandlerButton';
-import { ContextMenu } from '@/components/context-menu';
-import { Centered } from '@/components/layout';
-import ContextMenuButton from '@/components/native-context-menu/contextMenu';
 import { Box, Inline, Text, TextIcon, useColorMode, useForegroundColor } from '@/design-system';
 import { IS_ANDROID } from '@/env';
 import { useIsSponsoredSwap } from '@/features/delegation/sponsoredSwapStore';
+import { GasSpeedMenu } from '@/features/gas/components/GasSpeedMenu';
 import { useCustomGasSettings, type GasSettings } from '@/features/gas/hooks/useCustomGas';
 import { setSelectedGasSpeed, useSelectedGasSpeed } from '@/features/gas/hooks/useSelectedGas';
 import { GasSpeed } from '@/features/gas/types/gasSpeed';
@@ -195,34 +193,20 @@ const GasMenu = ({
       style={{ margin: IS_ANDROID ? 0 : -GAS_BUTTON_HIT_SLOP, pointerEvents: disabled ? 'none' : 'auto' }}
       testID="gas-speed-pager"
     >
-      {IS_ANDROID ? (
-        <ContextMenu
-          activeOpacity={0}
-          enableContextMenu
-          isAnchoredToRight
-          isMenuPrimaryAction
-          onPressActionSheet={handlePressActionSheet}
-          options={menuOptions}
-          useActionSheetFallback={false}
-          wrapNativeComponent={false}
+      <GasSpeedMenu
+        menuConfig={menuConfig}
+        onPressActionSheet={handlePressActionSheet}
+        onPressMenuItem={handlePressMenuItem}
+        options={menuOptions}
+      >
+        <ButtonPressAnimation
+          scaleTo={0.825}
+          style={IS_ANDROID ? undefined : { padding: GAS_BUTTON_HIT_SLOP }}
+          testID={IS_ANDROID ? undefined : 'gas-speed-pager-button'}
         >
-          <Centered>
-            <ButtonPressAnimation scaleTo={0.825}>{children}</ButtonPressAnimation>
-          </Centered>
-        </ContextMenu>
-      ) : (
-        <ContextMenuButton
-          enableContextMenu
-          isMenuPrimaryAction
-          menuConfig={menuConfig}
-          onPressMenuItem={handlePressMenuItem}
-          useActionSheetFallback={false}
-        >
-          <ButtonPressAnimation scaleTo={0.825} style={{ padding: GAS_BUTTON_HIT_SLOP }} testID="gas-speed-pager-button">
-            {children}
-          </ButtonPressAnimation>
-        </ContextMenuButton>
-      )}
+          {children}
+        </ButtonPressAnimation>
+      </GasSpeedMenu>
     </Box>
   );
 };
