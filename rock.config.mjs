@@ -16,9 +16,6 @@ export default {
   },
   remoteCacheProvider: 'github-actions',
   fingerprint: {
-    // Files outside native dirs that still affect the produced .app (mostly the
-    // JS bundle baked in via `rock bundle`). Without these, JS-only changes
-    // hit a stale cached .app and never make it into CI builds.
-    extraSources: ['is_testing', '.xcode-version', 'metro.config.js', 'metro.transform.js', 'babel.config.js'],
+    extraSources: ['is_testing', '.xcode-version'],
   },
 };
