@@ -31,6 +31,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/)
 
 - Bump iOS and Android to v2.0.31 (https://github.com/rainbow-me/rainbow/pull/7413)
 - Bump @shopify/flash-list from 1.8.2 to 1.8.3 (https://github.com/rainbow-me/rainbow/pull/7396)
+- Remove claimUserRewards mutation (https://github.com/rainbow-me/rainbow/commit/daf838b4927f8ac4b500c1f9138e8cac12491809)
 
 ### Fixed
 
