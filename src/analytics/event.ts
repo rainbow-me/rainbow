@@ -146,6 +146,7 @@ export const event = {
   positionsOpenedSheet: 'Opened position Sheet',
   positionsOpenedExternalDapp: 'Viewed external dapp',
   positionsOpenedAsset: 'Opened asset from position',
+  positionsError: 'positions.error',
 
   mintsPressedFeaturedMintCard: 'Pressed featured mint card',
   mintsPressedCollectionCell: 'Pressed collection cell in mints card',
@@ -678,6 +679,10 @@ export type EventProperties = {
     positionsValue: string;
     positionsCurrency: string;
   };
+  [event.positionsError]:
+    | { kind: 'price_not_found'; tokenAddress: string; chainId: number }
+    | { kind: 'skipped_portfolio_item'; itemName: string; protocol: string }
+    | { kind: 'unknown'; errorMessage: string };
   [event.mintsPressedFeaturedMintCard]: {
     contractAddress: string;
     chainId: number;
