@@ -212,7 +212,7 @@ async function fetchPolymarketEventsPage(
     timeout: time.seconds(30),
   });
 
-  const filteredEvents = events.filter(event => event.ended !== true);
+  const filteredEvents = events.filter(event => !event.closed && event.ended !== true);
   const processedEvents = await Promise.all(filteredEvents.map(event => processRawPolymarketEvent(event)));
 
   return {
