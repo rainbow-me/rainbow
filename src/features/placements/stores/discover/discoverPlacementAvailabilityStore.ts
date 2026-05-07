@@ -1,6 +1,6 @@
 import { defaultConfig, POLYMARKET } from '@/config/experimental';
 import { useExperimentalConfigStore } from '@/config/experimentalConfigStore';
-import { IS_INTERNAL, IS_TEST } from '@/env';
+import { IS_STORE_INSTALL, IS_TEST } from '@/env';
 import { PLACEMENT_IDS } from '@/features/placements/constants';
 import { useRemoteConfigStore } from '@/model/remoteConfig';
 import { createDerivedStore } from '@/state/internal/createDerivedStore';
@@ -22,9 +22,8 @@ export const useDiscoverPlacementAvailability = createDerivedStore<DiscoverPlace
       },
       shallowEqual
     );
-    const polymarketLocal = $(
-      useExperimentalConfigStore,
-      state => IS_INTERNAL && (state.config[POLYMARKET] ?? defaultConfig[POLYMARKET].value)
+    const polymarketLocal = $(useExperimentalConfigStore, state =>
+      IS_STORE_INSTALL ? defaultConfig[POLYMARKET].value : (state.config[POLYMARKET] ?? defaultConfig[POLYMARKET].value)
     );
 
     const placements = discover_placements_enabled && !IS_TEST;
