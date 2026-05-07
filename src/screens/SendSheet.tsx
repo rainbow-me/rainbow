@@ -191,7 +191,7 @@ export default function SendSheet() {
 
   const recipientOverride = params?.address;
   const nativeAmountOverride = params?.nativeAmount;
-  const appliedNativeAmountOverrideKey = useRef<string | undefined>();
+  const appliedNativeAmountOverrideKey = useRef<string | undefined>(undefined);
   const [recipient, setRecipient] = useState('');
   const [nickname, setNickname] = useState('');
   const [selected, setSelected] = useState<ParsedAddressAsset | UniqueAsset | undefined>();
