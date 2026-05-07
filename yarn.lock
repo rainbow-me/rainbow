@@ -9686,7 +9686,7 @@ __metadata:
     react-native-ble-plx: "npm:3.4.0"
     react-native-blur-view: "christianbaroni/react-native-blur-view#2548117e37750f2c08ef0ec8c7e1c38e1294c9a8"
     react-native-bootsplash: "npm:6.3.7"
-    react-native-branch: "npm:5.3.1"
+    react-native-branch: "npm:6.9.0"
     react-native-change-icon: "npm:5.0.0"
     react-native-cloud-fs: "rainbow-me/react-native-cloud-fs#d73f055c441566e5a57eebd621da8df3cf2499bb"
     react-native-crypto: "npm:2.2.0"
@@ -22833,12 +22833,12 @@ __metadata:
   languageName: node
   linkType: hard
 
-"react-native-branch@npm:5.3.1":
-  version: 5.3.1
-  resolution: "react-native-branch@npm:5.3.1"
+"react-native-branch@npm:6.9.0":
+  version: 6.9.0
+  resolution: "react-native-branch@npm:6.9.0"
   peerDependencies:
     react-native: ">= 0.60"
-  checksum: 10c0/34a5af2a060213413d082d2756e7aa8486a7eabedb6c413814f6e5edad4835d97abb386b93672ae1101b9a1ce7cb6afce374409e88e51f5f96b0768c31cd555d
+  checksum: 10c0/39eb32e110152a0ebd7e7caf380d914a8af73cf15bf92ac2315006d5a731d42e39e992cf4353ee4f4eb4e224cc6441b20f6e05a4d5d13f67962728142fa14c5d
   languageName: node
   linkType: hard
 

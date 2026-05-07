@@ -17,6 +17,7 @@
 		152A3A6C2D0BD28E00E70431 /* redacted@3x.png in Resources */ = {isa = PBXBuildFile; fileRef = 152A3A6A2D0BD28E00E70431 /* redacted@3x.png */; };
 		15C398812880EDFF006033AC /* og@3x.png in Resources */ = {isa = PBXBuildFile; fileRef = 15C3987D2880EDFF006033AC /* og@3x.png */; };
 		15C398832880EDFF006033AC /* og@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 15C3987F2880EDFF006033AC /* og@2x.png */; };
+		AA6F5D812FBC000100D2A001 /* branch.json in Resources */ = {isa = PBXBuildFile; fileRef = AA6F5D802FBC000100D2A001 /* branch.json */; };
 		15CF49BC2889AF7C005F92C9 /* optimism@3x.png in Resources */ = {isa = PBXBuildFile; fileRef = 15CF49BA2889AF7C005F92C9 /* optimism@3x.png */; };
 		15CF49BD2889AF7C005F92C9 /* optimism@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 15CF49BB2889AF7C005F92C9 /* optimism@2x.png */; };
 		15CF49C02889AFAD005F92C9 /* pixel@3x.png in Resources */ = {isa = PBXBuildFile; fileRef = 15CF49BE2889AFAD005F92C9 /* pixel@3x.png */; };
@@ -300,6 +301,7 @@
 		AA8C459B2EA172B0003F131A /* chonks@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "chonks@2x.png"; sourceTree = "<group>"; };
 		AA8C459C2EA172B0003F131A /* chonks@3x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "chonks@3x.png"; sourceTree = "<group>"; };
 		AAA0EF342BF5A4AD00A19A53 /* PrivacyInfo.xcprivacy */ = {isa = PBXFileReference; lastKnownFileType = text.xml; path = PrivacyInfo.xcprivacy; sourceTree = "<group>"; };
+		AA6F5D802FBC000100D2A001 /* branch.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = branch.json; sourceTree = "<group>"; };
 		AAA1F33C2F99909400294EED /* rnbw@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "rnbw@2x.png"; sourceTree = "<group>"; };
 		AAA1F33D2F99909400294EED /* rnbw@3x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "rnbw@3x.png"; sourceTree = "<group>"; };
 		AAE999CC2E41DD390072AFD5 /* RainbowSplashScreen.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RainbowSplashScreen.swift; sourceTree = "<group>"; };
@@ -474,6 +476,7 @@
 				152643462B9AD97E004AC9AA /* InjectedJSBundle.js */,
 				008F07F21AC5B25A0029DE68 /* main.jsbundle */,
 				AAA0EF342BF5A4AD00A19A53 /* PrivacyInfo.xcprivacy */,
+				AA6F5D802FBC000100D2A001 /* branch.json */,
 				13B07FB61A68108700A75B9A /* Info.plist */,
 				13B07FB11A68108700A75B9A /* LaunchScreen.xib */,
 				3CBE29CB2381E43800BE05AC /* Rainbow-Bridging-Header.h */,
@@ -1015,6 +1018,7 @@ Upload Debug Symbols to Sentry */,
 				152643472B9AD97E004AC9AA /* InjectedJSBundle.js in Resources */,
 				B54C1D1029358946007560D9 /* golddoge@3x.png in Resources */,
 				AA0B1CBD2B00C5E100EAF77D /* SF-Mono-Bold.otf in Resources */,
+				AA6F5D812FBC000100D2A001 /* branch.json in Resources */,
 				24979E8920F84250007EB0DA /* GoogleService-Info.plist in Resources */,
 				B54C1D162935A54F007560D9 /* zora@3x.png in Resources */,
 				152A3A6B2D0BD28E00E70431 /* redacted@2x.png in Resources */,
@@ -1280,6 +1284,7 @@ Upload Debug Symbols to Sentry */ = {
 				"${PODS_CONFIGURATION_BUILD_DIR}/PromisesObjC/FBLPromises_Privacy.bundle",
 				"${PODS_CONFIGURATION_BUILD_DIR}/nanopb/nanopb_Privacy.bundle",
 				"${PODS_CONFIGURATION_BUILD_DIR}/FirebaseMessaging/FirebaseMessaging_Privacy.bundle",
+				"${PODS_CONFIGURATION_BUILD_DIR}/BranchSDK/BranchSDK.bundle",
 				"${PODS_CONFIGURATION_BUILD_DIR}/EXConstants/EXConstants.bundle",
 				"${PODS_CONFIGURATION_BUILD_DIR}/EXConstants/ExpoConstants_privacy.bundle",
 				"${PODS_CONFIGURATION_BUILD_DIR}/ExpoFileSystem/ExpoFileSystem_privacy.bundle",
@@ -1310,6 +1315,7 @@ Upload Debug Symbols to Sentry */ = {
 				"${TARGET_BUILD_DIR}/${UNLOCALIZED_RESOURCES_FOLDER_PATH}/FBLPromises_Privacy.bundle",
 				"${TARGET_BUILD_DIR}/${UNLOCALIZED_RESOURCES_FOLDER_PATH}/nanopb_Privacy.bundle",
 				"${TARGET_BUILD_DIR}/${UNLOCALIZED_RESOURCES_FOLDER_PATH}/FirebaseMessaging_Privacy.bundle",
+				"${TARGET_BUILD_DIR}/${UNLOCALIZED_RESOURCES_FOLDER_PATH}/BranchSDK.bundle",
 				"${TARGET_BUILD_DIR}/${UNLOCALIZED_RESOURCES_FOLDER_PATH}/EXConstants.bundle",
 				"${TARGET_BUILD_DIR}/${UNLOCALIZED_RESOURCES_FOLDER_PATH}/ExpoConstants_privacy.bundle",
 				"${TARGET_BUILD_DIR}/${UNLOCALIZED_RESOURCES_FOLDER_PATH}/ExpoFileSystem_privacy.bundle",

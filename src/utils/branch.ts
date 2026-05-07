@@ -1,112 +1,31 @@
 // @ts-expect-error ts-migrate(2305) FIXME: Could not find a declaration file for module 'pako... Remove this comment to see the full error message
 import pako from 'pako';
 import qs from 'qs';
-import branch from 'react-native-branch';
+import branch, { type BranchSubscriptionEvent } from 'react-native-branch';
 
 import { analytics } from '@/analytics';
 import { IS_TEST } from '@/env';
 import { logger, RainbowError } from '@/logger';
 import * as ls from '@/storage';
 
-const isEmpty = <T extends object>(obj: T | undefined): obj is undefined => !obj || Object.keys(obj).length === 0;
+const isEmpty = (obj: BranchSubscriptionEvent['params']): obj is undefined => !obj || Object.keys(obj).length === 0;
 
 export const branchListener = async (handleOpenLinkingURL: (url: string) => void) => {
   logger.debug(`[branchListener]: setting up listener`, {}, logger.DebugContext.deeplinks);
 
-  /*
-   * This is run every time the app is opened, whether from a cold start of from the background.
-   */
-  const unsubscribe = branch.subscribe(({ error, params, uri }) => {
-    if (error) {
-      switch (error) {
-        case 'Trouble reaching the Branch servers, please try again shortly.':
-          break;
-        default:
-          logger.error(new RainbowError(`[branchListener]: error when handling event`), {
-            error,
-          });
-      }
-    }
+  const handleOpenComplete = ({ error, params, uri }: BranchSubscriptionEvent) => {
+    handleBranchError(error);
+    handleBranchParams({ params, uri, handleOpenLinkingURL });
+  };
 
-    logger.debug(`[branchListener]: handling event`, { params, uri }, logger.DebugContext.deeplinks);
-
-    if (isEmpty(params) && uri) {
-      logger.debug(`[branchListener]: no params but we have a URI`, {}, logger.DebugContext.deeplinks);
-      handleOpenLinkingURL(uri);
-    } else if (isEmpty(params)) {
-      // We got absolutely nothing to work with.
-      logger.warn(`[branchListener]: received no params or URI when handling event`, {
-        params,
-        uri,
-      });
-    } else if (params['+non_branch_link']) {
-      const nonBranchUrl = params['+non_branch_link'];
-
-      logger.debug(`[branchListener]: handling non-Branch link`, {}, logger.DebugContext.deeplinks);
-
-      if (typeof nonBranchUrl === 'string') {
-        if (nonBranchUrl?.startsWith('rainbow://open')) {
-          logger.debug(`[branchListener]: aggressive Safari redirect mode`, {}, logger.DebugContext.deeplinks);
-
-          /**
-           * This happens when the user hits the Branch-hosted fallback page in
-           * their browser.
-           *
-           * When they click the button to open Rainbow, Branch
-           * uses a native deeplink to refocus the app. This deeplink has a
-           * base64 encoded parameter that contains the original universal link.
-           *
-           *    Example: rainbow://open?_branch_referrer=A&link_click_id=B
-           *
-           * We decode that here and then handle it normally.
-           */
-          let url = nonBranchUrl;
-
-          try {
-            url = decodeBranchUrl(nonBranchUrl);
-          } finally {
-            handleOpenLinkingURL(url);
-          }
-        } else {
-          logger.debug(`[branchListener]: non-Branch link handled directly`, {}, logger.DebugContext.deeplinks);
-
-          /**
-           * This can happen when the user clicks on a deeplink and we pass its handling on to Branch.
-           *
-           *   Example: WC connections on Android, looks like `wc:...`
-           */
-          handleOpenLinkingURL(nonBranchUrl);
-        }
-      }
-    } else if (!params['+clicked_branch_link']) {
-      /*
-       * Happens on a cold start and when the app is refocused from the
-       * background because Branch re-runs `subscribe()` each time.
-       *
-       * No link was opened, so we don't typically need to do anything.
-       */
-      logger.debug(`[branchListener]: handling event where no link was opened`, {}, logger.DebugContext.deeplinks);
-
-      if (IS_TEST && !!uri) {
-        handleOpenLinkingURL(uri);
-      }
-    } else if (params.uri && typeof params.uri === 'string') {
-      /**
-       * Sometimes `params.uri` differs from `uri`, and in these cases we
-       * should use `params.uri`. This happens about 8k times per week, so it's
-       * very expected.
-       */
-      logger.debug(`[branchListener]: using preferred URI value from params`, {
-        params,
-        uri,
-      });
-
-      handleOpenLinkingURL(params.uri);
-    } else if (uri) {
-      logger.debug(`[branchListener]: handling event default case`, {}, logger.DebugContext.deeplinks);
-
-      handleOpenLinkingURL(uri);
-    }
+  const unsubscribe = branch.subscribe({
+    onOpenStart: ({ cachedInitialEvent, uri }) => {
+      logger.debug(`[branchListener]: opening Branch link`, { cachedInitialEvent, uri }, logger.DebugContext.deeplinks);
+    },
+    /*
+     * This is run every time the app is opened, whether from a cold start or from the background.
+     */
+    onOpenComplete: handleOpenComplete,
   });
 
   // getFirstReferringParams must be called after branch.subscribe()
@@ -135,6 +54,120 @@ export const branchListener = async (handleOpenLinkingURL: (url: string) => void
   return unsubscribe;
 };
 
+const handleBranchError = (error: BranchSubscriptionEvent['error']) => {
+  if (!error) return;
+
+  switch (error) {
+    case 'Trouble reaching the Branch servers, please try again shortly.':
+      break;
+    default:
+      logger.error(new RainbowError(`[branchListener]: error when handling event`), {
+        error,
+      });
+  }
+};
+
+const handleBranchParams = ({
+  params,
+  uri,
+  handleOpenLinkingURL,
+}: Pick<BranchSubscriptionEvent, 'params' | 'uri'> & {
+  handleOpenLinkingURL: (url: string) => void;
+}) => {
+  logger.debug(`[branchListener]: handling event`, { params, uri }, logger.DebugContext.deeplinks);
+
+  if (isEmpty(params) && uri) {
+    logger.debug(`[branchListener]: no params but we have a URI`, {}, logger.DebugContext.deeplinks);
+    handleOpenLinkingURL(uri);
+  } else if (isEmpty(params)) {
+    // We got absolutely nothing to work with.
+    logger.warn(`[branchListener]: received no params or URI when handling event`, {
+      params,
+      uri,
+    });
+  } else if (params['+non_branch_link']) {
+    handleNonBranchLink({
+      nonBranchUrl: params['+non_branch_link'],
+      handleOpenLinkingURL,
+    });
+  } else if (!params['+clicked_branch_link']) {
+    /*
+     * Happens on a cold start and when the app is refocused from the
+     * background because Branch re-runs `subscribe()` each time.
+     *
+     * No link was opened, so we don't typically need to do anything.
+     */
+    logger.debug(`[branchListener]: handling event where no link was opened`, {}, logger.DebugContext.deeplinks);
+
+    if (IS_TEST && !!uri) {
+      handleOpenLinkingURL(uri);
+    }
+  } else if (params.uri && typeof params.uri === 'string') {
+    /**
+     * Sometimes `params.uri` differs from `uri`, and in these cases we
+     * should use `params.uri`. This happens about 8k times per week, so it's
+     * very expected.
+     */
+    logger.debug(`[branchListener]: using preferred URI value from params`, {
+      params,
+      uri,
+    });
+
+    handleOpenLinkingURL(params.uri);
+  } else if (uri) {
+    logger.debug(`[branchListener]: handling event default case`, {}, logger.DebugContext.deeplinks);
+
+    handleOpenLinkingURL(uri);
+  }
+};
+
+const handleNonBranchLink = ({
+  nonBranchUrl,
+  handleOpenLinkingURL,
+}: {
+  nonBranchUrl: unknown;
+  handleOpenLinkingURL: (url: string) => void;
+}) => {
+  logger.debug(`[branchListener]: handling non-Branch link`, {}, logger.DebugContext.deeplinks);
+
+  if (typeof nonBranchUrl !== 'string') return;
+
+  if (nonBranchUrl.startsWith('rainbow://open')) {
+    logger.debug(`[branchListener]: aggressive Safari redirect mode`, {}, logger.DebugContext.deeplinks);
+
+    /**
+     * This happens when the user hits the Branch-hosted fallback page in
+     * their browser.
+     *
+     * When they click the button to open Rainbow, Branch
+     * uses a native deeplink to refocus the app. This deeplink has a
+     * base64 encoded parameter that contains the original universal link.
+     *
+     *    Example: rainbow://open?_branch_referrer=A&link_click_id=B
+     *
+     * We decode that here and then handle it normally.
+     */
+    let url = nonBranchUrl;
+
+    try {
+      url = decodeBranchUrl(nonBranchUrl);
+    } finally {
+      handleOpenLinkingURL(url);
+    }
+
+    return;
+  }
+
+  logger.debug(`[branchListener]: non-Branch link handled directly`, {}, logger.DebugContext.deeplinks);
+
+  /**
+   * This can happen when the user clicks on a deeplink and we pass its handling on to Branch.
+   *
+   *   Example: WC connections on Android, looks like `wc:...`
+   */
+  handleOpenLinkingURL(nonBranchUrl);
+};
+
 /**
  * Sometimes branch deeplinks have the following form:
  * rainbow://open?_branch_referrer=a&link_click_id=b
@@ -149,7 +182,9 @@ export const branchListener = async (handleOpenLinkingURL: (url: string) => void
 const decodeBranchUrl = (source: string) => {
   const query = source.split('?')[1];
   const queryParam = qs.parse(query)['_branch_referrer'];
-  const base64Url = decodeURIComponent(queryParam as string);
+  if (typeof queryParam !== 'string') return source;
+
+  const base64Url = decodeURIComponent(queryParam);
   const ascii = Buffer.from(base64Url, 'base64');
 
   const originalUniversalUrl = pako.inflate(ascii, { to: 'string' });
@@ -157,5 +192,5 @@ const decodeBranchUrl = (source: string) => {
   // If universal link had shape https://rnbwpapp.com/something?uri=...
   // we want to open that uri instead.
   const uriParam = qs.parse(originalUniversalUrl.split('?')[1]).uri;
-  return uriParam || originalUniversalUrl;
+  return typeof uriParam === 'string' ? uriParam : originalUniversalUrl;
 };

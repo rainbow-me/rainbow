@@ -1,6 +1,6 @@
 PODS:
   - boost (1.84.0)
-  - Branch (1.40.2)
+  - BranchSDK (3.13.3)
   - CocoaAsyncSocket (7.6.5)
   - CoinbaseWalletSDK/Client (1.1.2)
   - CoinbaseWalletSDK/Host (1.1.2):
@@ -1722,8 +1722,8 @@ PODS:
     - ReactCommon/turbomodule/bridging
     - ReactCommon/turbomodule/core
     - Yoga
-  - react-native-branch (5.3.1):
-    - Branch (= 1.40.2)
+  - react-native-branch (6.9.0):
+    - BranchSDK (= 3.13.3)
     - React-Core
   - react-native-cameraroll (7.10.0):
     - DoubleConversion
@@ -2970,7 +2970,7 @@ DEPENDENCIES:
 
 SPEC REPOS:
   https://github.com/CocoaPods/Specs.git:
-    - Branch
+    - BranchSDK
     - CocoaAsyncSocket
     - CoinbaseWalletSDK
     - Firebase
@@ -3329,7 +3329,7 @@ CHECKOUT OPTIONS:
 
 SPEC CHECKSUMS:
   boost: 7e761d76ca2ce687f7cc98e698152abd03a18f90
-  Branch: d99436c6f3d5b2529ba948d273e47e732830f207
+  BranchSDK: 19a6e97115350db916a57823c7f6ed96d1e70e46
   CocoaAsyncSocket: 065fd1e645c7abab64f7a6a2007a48038fdc6a99
   CoinbaseWalletSDK: f8cef9d72e86d6ac4782e4d0054baf9302cf05bb
   DoubleConversion: cb417026b2400c8f53ae97020b2be961b59470cb
@@ -3418,7 +3418,7 @@ SPEC CHECKSUMS:
   react-native-animateable-text: 601c0df62a50bf2d603e4c6800e7db4ab9c581eb
   react-native-ble-plx: b29d777cab9d3a6c0f03bce86b414c864a71725d
   react-native-blur-view: fae19bca8ac76a4ca6a8a6f101cf37c8ec1ad4f5
-  react-native-branch: 46dc8cb067af50455db675370c3cd63425f85bea
+  react-native-branch: a4913fbefeb50b8081f3cf8869ab281308e67a94
   react-native-cameraroll: 870e36cfbf3a3d1de81dec3244c59a906e5787bb
   react-native-change-icon: 02e9605be069426ecfb3c29bbf1f3bd6fdba8804
   react-native-cloud-fs: 0646046c613edacda3902576805cee7c61813801
