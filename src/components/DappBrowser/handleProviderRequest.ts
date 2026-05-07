@@ -134,7 +134,7 @@ const messengerProviderRequestFn = async (messenger: Messenger, request: Provide
       : null;
 
   if (request.method === 'eth_requestAccounts') {
-    const dappData = await getDappMetadata({ url: getDappHost(request.meta?.sender.url) });
+    const dappData = await getDappMetadata({ url: request.meta?.sender.url || '' });
     // eslint-disable-next-line @typescript-eslint/ban-ts-comment
     // @ts-ignore - chainId is not defined in the type
     const chainId = request.params?.[0]?.chainId ? BigNumber.from(request.params?.[0]?.chainId).toNumber() : undefined;
@@ -157,7 +157,7 @@ const messengerProviderRequestFn = async (messenger: Messenger, request: Provide
     });
     return response;
   } else {
-    const dappData = await getDappMetadata({ url: getDappHost(request.meta?.sender.url) });
+    const dappData = await getDappMetadata({ url: request.meta?.sender.url || '' });
 
     const response = await handleDappBrowserRequest({
       dappName: dappData?.appName || request.meta?.sender.title || request.meta?.sender.url || '',
