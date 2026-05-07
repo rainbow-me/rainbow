@@ -104,6 +104,6 @@ tags:
       - assertVisible: 'Sending'
       - assertVisible: '.*Tx Hash*.'
       - assertVisible:
-          id: 'view-details'
+          id: 'view-details-action-button'
       - swipe:
           direction: DOWN
