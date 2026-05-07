@@ -54,4 +54,12 @@ export interface ButtonPressAnimationProps
   disallowInterruption?: boolean;
   /** @platform android */
   radiusAndroid?: number;
+  /**
+   * Defaults to true: the button claims the gesture as soon as a finger touches it,
+   * which locks any parent (swipe-tab navigator, horizontal scroller) out for the rest
+   * of the touch. Set false to let those parent gestures still claim a horizontal pan
+   * that begins on the button.
+   * @platform android
+   */
+  shouldActivateOnStart?: boolean;
 }
