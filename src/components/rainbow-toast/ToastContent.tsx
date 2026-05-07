@@ -8,13 +8,12 @@ import { isWideSwapIcon, SwapToastIcon } from '@/components/rainbow-toast/icons/
 import { type RainbowToast } from '@/components/rainbow-toast/types';
 import { useToastColors } from '@/components/rainbow-toast/useToastColors';
 import { Text } from '@/design-system';
-import { textSizes, textWeights } from '@/design-system/typography/typography';
 import { AssetType } from '@/entities/assetTypes';
 import { TransactionStatus } from '@/entities/transactions';
 import { IS_STORE_INSTALL } from '@/env';
 import { getTransactionLaunchToken } from '@/helpers/transactions';
 import * as i18n from '@/languages';
-import { measureTextSync, type MeasureTextStyle } from '@/utils/measureText';
+import { measureTextSync, type MeasureTextProps } from '@/utils/measureText';
 import { shallowEqual } from '@/worklets/comparisons';
 
 type ToastContentProps = {
@@ -42,9 +41,9 @@ const TOAST_CONTENT_GAP = 12;
 const TOAST_TEXT_MAX_WIDTH = 200;
 const SWAP_ARROW = '􀄫';
 
-const TITLE_TEXT_STYLE = buildMeasuredTextStyle('15pt', 'heavy');
-const SUBTITLE_TEXT_STYLE = buildMeasuredTextStyle('13pt', 'bold');
-const BOTTOM_LABEL_TEXT_STYLE = buildMeasuredTextStyle('11pt', 'bold');
+const TITLE_TEXT_STYLE: MeasureTextProps = { size: '15pt', weight: 'heavy' };
+const SUBTITLE_TEXT_STYLE: MeasureTextProps = { size: '13pt', weight: 'bold' };
+const BOTTOM_LABEL_TEXT_STYLE: MeasureTextProps = { size: '11pt', weight: 'bold' };
 
 export const ToastContent = memo(function ToastContent({ toast }: { toast: RainbowToast }) {
   if (toast.transaction.type === 'swap') {
@@ -252,15 +251,5 @@ function getSwapToastNetworkSymbols(toast: RainbowToast): SwapToastNetworkSymbol
   return {
     inSymbol: toast.transaction.changes?.find(c => c?.direction === 'in')?.asset.symbol,
     outSymbol: toast.transaction.changes?.find(c => c?.direction === 'out')?.asset.symbol,
-  };
-}
-
-function buildMeasuredTextStyle(size: '11pt' | '13pt' | '15pt', weight: 'bold' | 'heavy'): MeasureTextStyle {
-  return {
-    allowFontScaling: false,
-    fontFamily: textWeights[weight].fontFamily,
-    fontSize: textSizes[size].fontSize,
-    fontWeight: textWeights[weight].fontWeight,
-    letterSpacing: textSizes[size].letterSpacing,
   };
 }
