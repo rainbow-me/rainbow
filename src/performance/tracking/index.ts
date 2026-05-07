@@ -1,8 +1,6 @@
-import { SENTRY_ENVIRONMENT } from 'react-native-dotenv';
-
 import { analytics } from '@/analytics';
 import { event, type EventProperties } from '@/analytics/event';
-import { IS_DEV, IS_TEST } from '@/env';
+import { IS_PROD, IS_TEST } from '@/env';
 import { logger } from '@/logger';
 import { Timer } from '@/performance/timer';
 
@@ -47,7 +45,7 @@ interface Report {
 type Params = Record<string, unknown>;
 
 class PerformanceTracker {
-  analyticsTrackingEnabled = !IS_TEST && !IS_DEV && SENTRY_ENVIRONMENT !== 'LocalRelease';
+  analyticsTrackingEnabled = IS_PROD;
   // Toggle if you want console logs
   debug = false;
   timer = new Timer();

@@ -11,7 +11,7 @@ import { Text } from '@/design-system';
 import { textSizes, textWeights } from '@/design-system/typography/typography';
 import { AssetType } from '@/entities/assetTypes';
 import { TransactionStatus } from '@/entities/transactions';
-import { IS_INTERNAL } from '@/env';
+import { IS_STORE_INSTALL } from '@/env';
 import { getTransactionLaunchToken } from '@/helpers/transactions';
 import * as i18n from '@/languages';
 import { measureTextSync, type MeasureTextStyle } from '@/utils/measureText';
@@ -240,7 +240,7 @@ export function areToastContentLayoutsEqual(a: ToastContentLayout | null, b: Toa
 
 function getSwapToastBottomLabel(toast: RainbowToast): string | undefined {
   const { batch, delegation } = toast.transaction;
-  return IS_INTERNAL && batch ? (delegation ? 'Type 4' : 'Type 2') : undefined;
+  return !IS_STORE_INSTALL && batch ? (delegation ? 'Type 4' : 'Type 2') : undefined;
 }
 
 function getSwapToastNetworkLabelText(toast: RainbowToast): string {

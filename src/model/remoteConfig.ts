@@ -3,7 +3,7 @@ import { useEffect } from 'react';
 import remoteConfig, { type FirebaseRemoteConfigTypes } from '@react-native-firebase/remote-config';
 import { dequal } from 'dequal';
 
-import { IS_DEV, IS_INTERNAL } from '@/env';
+import { IS_DEV, IS_STORE_INSTALL } from '@/env';
 import { CURRENT_APP_VERSION } from '@/hooks/useAppVersion';
 import * as i18n from '@/languages';
 import { logger, RainbowError } from '@/logger';
@@ -219,8 +219,8 @@ export const DEFAULT_CONFIG = {
   king_of_the_hill2_enabled: false,
   king_of_the_hill_enabled: false,
   prince_of_the_hill_enabled: false,
-  candlestick_charts_enabled: IS_INTERNAL,
-  rainbow_toasts_enabled: IS_INTERNAL,
+  candlestick_charts_enabled: !IS_STORE_INSTALL,
+  rainbow_toasts_enabled: !IS_STORE_INSTALL,
   perps_enabled: false,
   polymarket_enabled: false,
   dev_section_enabled: IS_DEV,

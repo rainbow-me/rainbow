@@ -2,7 +2,7 @@ import React, { useCallback, useState } from 'react';
 import { Pressable } from 'react-native';
 
 import { Text } from '@/design-system';
-import { DANGER_INSTALL_SOURCE, IS_ANDROID, IS_IOS } from '@/env';
+import { IS_ANDROID, IS_DEV, IS_IOS, IS_STORE_INSTALL } from '@/env';
 import styled from '@/framework/ui/styled-thing';
 import useAppVersion from '@/hooks/useAppVersion';
 import useTimeout from '@/hooks/useTimeout';
@@ -40,7 +40,7 @@ export function AppVersionStamp() {
   return (
     <StyledButton testID="app-version-stamp" hitSlop={10} onPress={handleVersionPress}>
       <Text color="secondary30 (Deprecated)" size="14px / 19px (Deprecated)" weight="bold">
-        {`${appVersion} · ${DANGER_INSTALL_SOURCE}`}
+        {`${appVersion} · ${IS_DEV ? 'dev' : IS_STORE_INSTALL ? 'store' : 'internal'}`}
       </Text>
     </StyledButton>
   );
