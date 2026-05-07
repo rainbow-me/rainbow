@@ -3,7 +3,7 @@ import { View } from 'react-native';
 
 import { ImgixImage } from '@/components/images';
 import { type ImgixImageProps } from '@/components/images/ImgixImage';
-import { Text, useForegroundColor } from '@/design-system';
+import { globalColors, Text, useForegroundColor } from '@/design-system';
 import { hyperliquidMarketsActions, useHyperliquidMarketsStore } from '@/features/perps/stores/hyperliquidMarketsStore';
 import { extractBaseSymbol } from '@/features/perps/utils/hyperliquidSymbols';
 
@@ -17,6 +17,7 @@ export const HyperliquidTokenIcon = memo(function HyperliquidTokenIcon({ size, s
   const iconUrl = useHyperliquidMarketsStore(state => state.getCoinIcon(symbol));
   const color = useMemo(() => (iconUrl ? undefined : hyperliquidMarketsActions.getColor(symbol)), [iconUrl, symbol]);
   const baseSymbol = useMemo(() => extractBaseSymbol(symbol), [symbol]);
+  const iconBackgroundColor = useMemo(() => getIconBackgroundColor(baseSymbol), [baseSymbol]);
 
   const containerStyle = useMemo(() => {
     return {
@@ -40,7 +41,7 @@ export const HyperliquidTokenIcon = memo(function HyperliquidTokenIcon({ size, s
   }
 
   return (
-    <View style={containerStyle}>
+    <View style={[containerStyle, iconBackgroundColor ? { backgroundColor: iconBackgroundColor } : null]}>
       <ImgixImage
         enableFasterImage
         size={size}
@@ -50,3 +51,8 @@ export const HyperliquidTokenIcon = memo(function HyperliquidTokenIcon({ size, s
     </View>
   );
 });
+
+function getIconBackgroundColor(baseSymbol: string): string | undefined {
+  // The MEGA hosted icon is a dark transparent asset, so it needs the missing light disc on dark Perps surfaces.
+  return baseSymbol === 'MEGA' ? globalColors.white100 : undefined;
+}
