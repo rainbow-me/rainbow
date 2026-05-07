@@ -47,10 +47,12 @@ const LAST_TRADE_PRICE_THRESHOLDS = [0.05, 0.01];
 export const PolymarketEventsListItem = memo(function PolymarketEventsListItem({
   event,
   onPress,
+  shouldActivateOnStart,
   style,
 }: {
   event: PolymarketEvent;
   onPress?: () => void;
+  shouldActivateOnStart?: boolean;
   style?: StyleProp<ViewStyle>;
 }) {
   const { isDarkMode } = useColorMode();
@@ -109,7 +111,11 @@ export const PolymarketEventsListItem = memo(function PolymarketEventsListItem({
 
   return (
     <View style={style}>
-      <ButtonPressAnimation onPress={onPress ?? (() => navigateToEvent(event))} scaleTo={0.96}>
+      <ButtonPressAnimation
+        onPress={onPress ?? (() => navigateToEvent(event))}
+        scaleTo={0.96}
+        shouldActivateOnStart={shouldActivateOnStart}
+      >
         <GradientBorderView
           borderGradientColors={colors.cardBorderGradient}
           borderRadius={26}
