@@ -1,3 +1,5 @@
+import { useEffect, useState } from 'react';
+
 import { type Address } from 'viem';
 
 import WalletTypes from '@/helpers/walletTypes';
@@ -65,11 +67,36 @@ export function useWillExecuteDelegation(address: Address, chainId: number): boo
   const delegationEnabled = useIsDelegationEnabled();
   const wallet = useWalletsStore(s => s.getWalletWithAccount(address));
   const sdkWillDelegate = useWillDelegate(address, chainId);
+  const [freshWillDelegate, setFreshWillDelegate] = useState(false);
 
   const canUseDelegation = delegationEnabled && canUseDelegatedWallet(wallet);
+
+  useEffect(() => {
+    let isCurrent = true;
+    setFreshWillDelegate(false);
+
+    if (!canUseDelegation || !sdkWillDelegate) {
+      return () => {
+        isCurrent = false;
+      };
+    }
+
+    willExecuteDelegation({ address, chainId, requireFreshStatus: true })
+      .then(decision => {
+        if (isCurrent) setFreshWillDelegate(decision.willDelegate);
+      })
+      .catch(() => {
+        if (isCurrent) setFreshWillDelegate(false);
+      });
+
+    return () => {
+      isCurrent = false;
+    };
+  }, [address, canUseDelegation, chainId, sdkWillDelegate]);
+
   if (!canUseDelegation) return false;
 
-  return sdkWillDelegate;
+  return sdkWillDelegate && freshWillDelegate;
 }
 
 function canUseDelegatedWallet(wallet: RainbowWallet | undefined): boolean {

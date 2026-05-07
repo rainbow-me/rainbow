@@ -1,7 +1,7 @@
 import { EthereumWalletType } from '@/helpers/walletTypes';
 import { delegation } from '@rainbow-me/delegation';
 
-import { canUseDelegatedExecution, supportsDelegatedExecution } from './willDelegate';
+import { canUseDelegatedExecution, supportsDelegatedExecution, willExecuteDelegation } from './willDelegate';
 
 const mockGetWalletWithAccount = jest.fn();
 const mockIsDelegationEnabled = jest.fn();
@@ -56,5 +56,19 @@ describe('delegation wallet gating', () => {
 
     await expect(supportsDelegatedExecution({ address: ADDRESS, chainId: CHAIN_ID })).resolves.toBe(true);
     expect(delegation.isSupported).toHaveBeenCalledWith({ address: ADDRESS, chainId: CHAIN_ID });
+  });
+
+  it('checks fresh delegation intent before showing activation UI', async () => {
+    setWallet(EthereumWalletType.privateKey);
+    jest.mocked(delegation.willDelegate).mockResolvedValue({
+      delegation: null,
+      willDelegate: false,
+    });
+
+    await expect(willExecuteDelegation({ address: ADDRESS, chainId: CHAIN_ID, requireFreshStatus: true })).resolves.toEqual({
+      delegation: null,
+      willDelegate: false,
+    });
+    expect(delegation.willDelegate).toHaveBeenCalledWith({ address: ADDRESS, chainId: CHAIN_ID, requireFreshStatus: true });
   });
 });

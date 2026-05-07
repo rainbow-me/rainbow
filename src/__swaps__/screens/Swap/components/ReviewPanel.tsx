@@ -394,7 +394,7 @@ function ReviewGasRow() {
     const chainsNativeAsset = backendNetworksActions.getChainsNativeAsset();
     const chainId = swapsStore.getState().inputAsset?.chainId ?? ChainId.mainnet;
     const nativeAsset = chainsNativeAsset[chainId];
-    const decision = await willExecuteDelegation({ address: getAccountAddress(), chainId });
+    const decision = await willExecuteDelegation({ address: getAccountAddress(), chainId, requireFreshStatus: true });
 
     navigate(Routes.EXPLAIN_SHEET, {
       chainId,

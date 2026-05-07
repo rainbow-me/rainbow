@@ -3,6 +3,7 @@ import { getPlatformClient } from '@/resources/platform/client';
 import { useWalletsStore } from '@/state/wallets/walletsStore';
 import { configure as configureDelegationClient } from '@rainbow-me/delegation';
 
+import { createDelegationPublicClient } from './calls';
 import { relayService } from './relayService';
 
 // ============ Delegation Client ============================================== //
@@ -17,6 +18,7 @@ export function configureDelegationSdk(): void {
     platformClient: getPlatformClient(),
     logger: logger.createServiceLogger(logger.DebugContext.delegation),
     getCurrentAddress: $ => $(useWalletsStore, s => s.accountAddress),
+    readAccountCode: ({ address, chainId }) => createDelegationPublicClient(chainId).getCode({ address }),
     relayService,
   });
 }
