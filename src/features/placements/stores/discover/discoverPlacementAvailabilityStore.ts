@@ -3,6 +3,7 @@ import { useEffect } from 'react';
 import { defaultConfig, POLYMARKET } from '@/config/experimental';
 import { useExperimentalConfigStore } from '@/config/experimentalConfigStore';
 import { IS_INTERNAL, IS_TEST } from '@/env';
+import { PLACEMENT_IDS } from '@/features/placements/constants';
 import { isTestnetChain } from '@/handlers/web3';
 import useAccountSettings from '@/hooks/useAccountSettings';
 import { useRemoteConfigStore } from '@/model/remoteConfig';
@@ -11,8 +12,8 @@ import { createRainbowStore } from '@/state/internal/createRainbowStore';
 import { shallowEqual } from '@/worklets/comparisons';
 
 export type DiscoverPlacementAvailability = {
-  perps: boolean;
-  predictions: boolean;
+  [PLACEMENT_IDS.DISCOVER_PERPS_CAROUSEL]: boolean;
+  [PLACEMENT_IDS.DISCOVER_PREDICTIONS_CAROUSEL]: boolean;
   enabled: boolean;
 };
 
@@ -87,5 +88,9 @@ export function computeDiscoverPlacementAvailability({
   const perps = placements && perpsEnabled;
   const predictions = placements && (polymarketEnabled || polymarketLocal);
 
-  return { enabled: perps || predictions, perps, predictions };
+  return {
+    enabled: perps || predictions,
+    [PLACEMENT_IDS.DISCOVER_PERPS_CAROUSEL]: perps,
+    [PLACEMENT_IDS.DISCOVER_PREDICTIONS_CAROUSEL]: predictions,
+  };
 }
