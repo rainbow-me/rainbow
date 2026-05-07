@@ -16,6 +16,7 @@ import { ensureError, logger, RainbowError } from '@/logger';
 import Navigation from '@/navigation/Navigation';
 import Routes from '@/navigation/routesNames';
 import { getEthApp } from '@/utils/ledger';
+import { withTimeout } from '@/utils/promise';
 import { time } from '@/utils/time';
 
 type LedgerTransactionResolution = Awaited<ReturnType<typeof ledgerService.resolveTransaction>>;
@@ -30,17 +31,6 @@ const LEDGER_TRANSACTION_RESOLUTION_CONFIG = {
 function waiter(duration: number): Promise<void> {
   return new Promise(resolve => {
     setTimeout(resolve, duration);
-  });
-}
-
-function withTimeout<T>(promise: Promise<T>, duration: number, message: string): Promise<T> {
-  let timeoutId: ReturnType<typeof setTimeout> | undefined;
-  const timeout = new Promise<never>((_, reject) => {
-    timeoutId = setTimeout(() => reject(new RainbowError(message)), duration);
-  });
-
-  return Promise.race([promise, timeout]).finally(() => {
-    if (timeoutId) clearTimeout(timeoutId);
   });
 }
 
