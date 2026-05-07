@@ -1,7 +1,4 @@
-import { createMMKV } from 'react-native-mmkv';
-
 import { IS_STORE_INSTALL, IS_TEST } from '@/env';
-import { STORAGE_IDS } from '@/model/mmkv';
 
 /**
  * This file contains flags for enabling features which are still in development.
@@ -100,18 +97,3 @@ export const defaultConfigValues = Object.entries(defaultConfig).reduce(
   },
   {} as Record<ExperimentalConfigKey, boolean>
 );
-
-const storageKey = 'config';
-
-const storage = createMMKV({
-  id: STORAGE_IDS.EXPERIMENTAL_CONFIG,
-});
-
-export function getExperimentalFlag(key: ExperimentalConfigKey): boolean {
-  const config = storage.getString(storageKey);
-  if (typeof config !== 'string') {
-    return defaultConfig[key].value;
-  }
-  const parsedConfig: Record<ExperimentalConfigKey, boolean> = JSON.parse(config);
-  return parsedConfig[key] ?? defaultConfig[key].value;
-}
