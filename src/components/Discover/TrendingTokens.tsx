@@ -1,5 +1,5 @@
 import { useCallback, useEffect, useMemo, type JSX, type ReactNode } from 'react';
-import { FlatList, Platform, View } from 'react-native';
+import { View } from 'react-native';
 
 import { LinearGradient } from 'expo-linear-gradient';
 import Animated, { useSharedValue, type SharedValue } from 'react-native-reanimated';
@@ -13,6 +13,7 @@ import Skeleton, { FakeAvatar, FakeText } from '@/components/skeleton/Skeleton';
 import { globalColors, IconContainer, Text, TextIcon, useBackgroundColor, useColorMode } from '@/design-system';
 import { useForegroundColor } from '@/design-system/color/useForegroundColor';
 import { type NativeCurrencyKey } from '@/entities/nativeCurrencyTypes';
+import { IS_IOS } from '@/env';
 import { opacity } from '@/framework/ui/utils/opacity';
 import { SortDirection, Timeframe, TrendingSort } from '@/graphql/__generated__/arc';
 import { formatCurrency, formatNumber } from '@/helpers/strings';
@@ -90,7 +91,7 @@ function FilterButton({
           <TextIcon
             color={{ custom: iconColor || defaultIconColor }}
             size="icon 13px"
-            textStyle={Platform.OS === 'ios' ? undefined : { marginTop: -2 }}
+            textStyle={IS_IOS ? undefined : { marginTop: -2 }}
             weight="heavy"
             width={16}
           >
@@ -231,7 +232,7 @@ function CategoryFilterButton({
           <TextIcon
             color={{ custom: typeof iconColor === 'string' ? iconColor : selected ? iconColor.selected : iconColor.default }}
             size="icon 13px"
-            textStyle={{ marginTop: Platform.OS === 'ios' ? -3.5 : -2 }}
+            textStyle={{ marginTop: IS_IOS ? -3.5 : -2 }}
             weight="heavy"
             width={iconWidth}
           >
@@ -421,7 +422,7 @@ function TrendingTokenRow({ token, currency }: { token: TrendingToken; currency:
             <View style={{ gap: 12 }}>
               <View
                 style={{
-                  alignItems: Platform.OS === 'ios' ? 'baseline' : 'flex-end',
+                  alignItems: IS_IOS ? 'baseline' : 'flex-end',
                   flexDirection: 'row',
                   gap: 6,
                   height: 12,
@@ -445,7 +446,7 @@ function TrendingTokenRow({ token, currency }: { token: TrendingToken; currency:
                   ellipsizeMode="middle"
                   size="11pt"
                   style={{
-                    bottom: Platform.OS === 'ios' ? 0 : -0.2,
+                    bottom: IS_IOS ? 0 : -0.2,
                     maxWidth: symbolWidth,
                   }}
                   weight="bold"
@@ -667,7 +668,7 @@ function SortFilter() {
           <TextIcon
             color={{ custom: iconColor }}
             size="icon 13px"
-            textStyle={Platform.OS === 'ios' ? undefined : { marginTop: -2 }}
+            textStyle={IS_IOS ? undefined : { marginTop: -2 }}
             weight="heavy"
             width={20}
           >
@@ -693,23 +694,20 @@ function TrendingTokensLoader() {
 
 function TrendingTokenData() {
   const nativeCurrency = userAssetsStoreManager(state => state.currency);
-  const { data: trendingTokens, isLoading } = useTrendingTokensData();
-
-  const renderItem = useCallback(
-    ({ item }: { item: TrendingToken }) => <TrendingTokenRow token={item} currency={nativeCurrency} />,
-    [nativeCurrency]
-  );
+  const { data: tokens, isLoading } = useTrendingTokensData();
 
   if (isLoading) return <TrendingTokensLoader />;
 
   return (
-    <FlatList
-      style={{ marginHorizontal: -20, marginVertical: -12, paddingBottom: 8 }}
-      contentContainerStyle={{ gap: 28, paddingHorizontal: 20, paddingVertical: 12 }}
-      ListEmptyComponent={<NoResults />}
-      data={trendingTokens}
-      renderItem={renderItem}
-    />
+    <View style={{ marginHorizontal: -20, marginVertical: -12, paddingBottom: 8 }}>
+      <View style={{ gap: 28, paddingHorizontal: 20, paddingVertical: 12 }}>
+        {tokens?.length ? (
+          tokens.map(token => <TrendingTokenRow key={token.uniqueId} token={token} currency={nativeCurrency} />)
+        ) : (
+          <NoResults />
+        )}
+      </View>
+    </View>
   );
 }
 
@@ -733,7 +731,7 @@ export function TrendingTokens() {
   const selectedChainId = useSharedValue<ChainId | undefined>(undefined);
 
   return (
-    <View style={{ gap: 28 }}>
+    <View style={{ gap: 24 }}>
       <View style={{ gap: 12, justifyContent: 'center' }}>
         <Animated.ScrollView
           showsHorizontalScrollIndicator={false}
