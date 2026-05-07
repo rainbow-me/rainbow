@@ -399,11 +399,17 @@ function openNftInBlockExplorer({ contractAddress, tokenId, chainId }: { contrac
   openInBrowser(`${explorer}/token/${contractAddress}?a=${tokenId}`);
 }
 
-function openTransactionInBlockExplorer({ hash, chainId }: { hash: string; chainId: ChainId }) {
-  const normalizedHash = hash.replace(/-.*/g, '');
-  if (!isString(hash)) return;
+function getTransactionBlockExplorerUrl({ hash, chainId }: { hash: string; chainId: ChainId }): string | undefined {
+  if (!isString(hash)) return undefined;
   const explorer = useBackendNetworksStore.getState().getDefaultChains()[chainId]?.blockExplorers?.default?.url;
-  openInBrowser(`${explorer}/tx/${normalizedHash}`);
+  if (!explorer) return undefined;
+  const normalizedHash = hash.replace(/-.*/g, '');
+  return `${explorer}/tx/${normalizedHash}`;
+}
+
+function openTransactionInBlockExplorer({ hash, chainId }: { hash: string; chainId: ChainId }) {
+  const url = getTransactionBlockExplorerUrl({ hash, chainId });
+  if (url) openInBrowser(url);
 }
 
 async function parseEthereumUrl(data: string) {
@@ -531,6 +537,7 @@ export default {
   getNativeAssetForNetwork,
   getNetworkNativeAsset,
   getPriceOfNativeAssetForNetwork,
+  getTransactionBlockExplorerUrl,
   getUniqueId,
   hasPreviousTransactions,
   isEthAddress,

@@ -5,7 +5,7 @@ import { useRoute, type RouteProp } from '@react-navigation/native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 import { rainbowToastsActions } from '@/components/rainbow-toast/useRainbowToastsStore';
-import { SlackSheet } from '@/components/sheet';
+import { SheetHandleFixedToTopHeight, SlackSheet } from '@/components/sheet';
 import { Toast, ToastPositionContainer } from '@/components/toasts';
 import { BackgroundProvider, Box } from '@/design-system';
 import { IS_ANDROID } from '@/env';
@@ -30,7 +30,7 @@ export const TransactionDetails = () => {
   const [statusIconHidden, setStatusIconHidden] = useState(false);
   const { presentedToast, presentToastFor } = useTransactionDetailsToasts();
   const { height: deviceHeight } = useDimensions();
-  const { bottom } = useSafeAreaInsets();
+  const insets = useSafeAreaInsets();
 
   useEffect(() => {
     rainbowToastsActions.setIsShowingTransactionDetails(true);
@@ -46,9 +46,9 @@ export const TransactionDetails = () => {
     (event: LayoutChangeEvent) => {
       const contentHeight = event.nativeEvent.layout.height;
       if (contentHeight > deviceHeight) setStatusIconHidden(true);
-      setSheetHeight(contentHeight + (IS_ANDROID ? bottom : 0));
+      setSheetHeight(contentHeight + SheetHandleFixedToTopHeight);
     },
-    [bottom, deviceHeight]
+    [deviceHeight]
   );
 
   const presentAddressToast = useCallback(() => {
@@ -57,6 +57,10 @@ export const TransactionDetails = () => {
 
   const presentHashToast = useCallback(() => {
     presentToastFor('hash');
+  }, [presentToastFor]);
+
+  const presentLinkToast = useCallback(() => {
+    presentToastFor('link');
   }, [presentToastFor]);
 
   return (
@@ -69,11 +73,15 @@ export const TransactionDetails = () => {
           deferredHeight={IS_ANDROID}
           showsVerticalScrollIndicator={false}
         >
-          <Box paddingHorizontal="20px" paddingBottom="20px" onLayout={onSheetContentLayout}>
+          <Box paddingHorizontal="20px" onLayout={onSheetContentLayout} paddingBottom={{ custom: insets.bottom }}>
             <TransactionDetailsStatusActionsAndTimestampSection hideIcon={statusIconHidden} transaction={transaction} />
             <TransactionDetailsFromToSection transaction={transaction} presentToast={presentAddressToast} />
             <TransactionDetailsValueAndFeeSection transaction={transaction} />
-            <TransactionDetailsHashAndActionsSection transaction={transaction} presentToast={presentHashToast} />
+            <TransactionDetailsHashAndActionsSection
+              transaction={transaction}
+              presentHashToast={presentHashToast}
+              presentLinkToast={presentLinkToast}
+            />
           </Box>
           <ToastPositionContainer>
             <Toast
@@ -82,6 +90,7 @@ export const TransactionDetails = () => {
               testID="address-copied-toast"
             />
             <Toast isVisible={presentedToast === 'hash'} text={i18n.t(i18n.l.transaction_details.hash_copied)} testID="hash-copied-toast" />
+            <Toast isVisible={presentedToast === 'link'} text={i18n.t(i18n.l.transaction_details.link_copied)} testID="link-copied-toast" />
           </ToastPositionContainer>
         </SlackSheet>
       )}
