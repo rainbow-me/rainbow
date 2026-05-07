@@ -6,7 +6,6 @@ import { IMGIX_DOMAIN as domain, IMGIX_TOKEN as secureURLToken } from 'react-nat
 import { type Source } from 'react-native-fast-image';
 import parse from 'url-parse';
 
-import { isCloudinaryStorageIconLink, signCloudinaryIconUrl } from '@/handlers/cloudinary';
 import { logger, RainbowError } from '@/logger';
 
 export const shouldCreateImgixClient = (): ImgixClient | null => {
@@ -53,19 +52,6 @@ const shouldSignUri = (externalImageUri: string, options?: ImgOptions): string |
 
     if (options?.fm) {
       updatedOptions.fm = options.fm;
-    }
-
-    // Firstly, we check if the url is a Cloudinary link.
-    // Then, obviously, we use Cloudinary to transform the size and format.
-    if (isCloudinaryStorageIconLink(externalImageUri)) {
-      const signedExternalImageUri = signCloudinaryIconUrl(externalImageUri, {
-        format: updatedOptions.fm,
-        height: updatedOptions.h,
-        width: updatedOptions.w,
-      });
-      const signature = `${externalImageUri}-${options?.w}-${options?.fm}`;
-      staticSignatureLRU.set(signature, signedExternalImageUri);
-      return signedExternalImageUri;
     }
 
     // We'll only attempt to sign if there's an available client. A client
