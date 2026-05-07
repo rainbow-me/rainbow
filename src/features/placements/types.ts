@@ -1,3 +1,7 @@
+import { type PLACEMENT_SCREENS } from '@/features/placements/constants';
+
+export type PlacementScreen = (typeof PLACEMENT_SCREENS)[keyof typeof PLACEMENT_SCREENS];
+
 export type PlacementSource = 'hyperliquid' | 'polymarket';
 
 export type PlacementItemRef = {
@@ -20,7 +24,7 @@ export type PlacementItemAnalyticsMetadata = {
 
 export type Placement = {
   id: string;
-  screen: string;
+  screen: PlacementScreen;
   enabled: boolean;
   order: number;
   items: PlacementItem[];
