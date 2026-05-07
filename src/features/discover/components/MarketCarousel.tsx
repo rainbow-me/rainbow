@@ -1,54 +1,57 @@
 import React, { useCallback, useMemo, type ReactElement } from 'react';
-import { StyleSheet, View, type FlatListProps } from 'react-native';
+import { StyleSheet, View } from 'react-native';
 
-import { FlatList } from 'react-native-gesture-handler';
-import { useDebouncedCallback } from 'use-debounce';
+import Animated from 'react-native-reanimated';
 
+import { analytics } from '@/analytics';
+import { event } from '@/analytics/event';
 import ButtonPressAnimation from '@/components/animations/ButtonPressAnimation';
 import ShimmerAnimation from '@/components/animations/ShimmerAnimation';
 import { Box, Text, TextIcon, useBackgroundColor, useColorMode } from '@/design-system';
-import { type PlacementItem } from '@/features/placements/types';
+import { type Placement, type PlacementItem, type PlacementItemAnalyticsMetadata } from '@/features/placements/types';
 import { opacity } from '@/framework/ui/utils/opacity';
 import * as i18n from '@/languages';
 import { DEVICE_WIDTH } from '@/utils/deviceUtils';
-import { time } from '@/utils/time';
 
 const CAROUSEL_HORIZONTAL_PADDING = 20;
 const CARD_GAP = 8;
 const PEEK_WIDTH = 32;
 const SKELETON_COUNT = 5;
-const SCROLL_DEBOUNCE_MS = time.seconds(30);
+
 export const CARD_WIDTH = DEVICE_WIDTH - CAROUSEL_HORIZONTAL_PADDING * 2 - PEEK_WIDTH;
 export const CARD_HEIGHT = 100;
 
-type MarketCarouselProps<T extends PlacementItem> = Pick<FlatListProps<T>, 'data'> & {
+type TrackPlacementCardPress = (metadata?: PlacementItemAnalyticsMetadata) => void;
+
+type MarketCarouselProps<T extends PlacementItem> = {
+  data: T[];
   itemHeight?: number;
   itemWidth?: number;
   getItemWidth?: (item: T) => number;
+  keyExtractor: (item: T) => string;
   loading?: boolean;
-  onPressSeeAll: () => void;
-  onScrollSettle: () => void;
-  renderItem: (item: T) => ReactElement;
+  onSeeAll: () => void;
+  placement?: Placement;
+  placementId: Placement['id'];
+  renderItem: (item: T, trackPress: TrackPlacementCardPress) => ReactElement | null;
   title: string;
 };
-
-function keyExtractor<T extends PlacementItem>(item: T): string {
-  return `${item.ref.source}:${item.ref.id}`;
-}
 
 export function MarketCarousel<T extends PlacementItem>({
   data,
   getItemWidth,
   itemHeight = CARD_HEIGHT,
   itemWidth = CARD_WIDTH,
+  keyExtractor,
   loading,
-  onPressSeeAll,
-  onScrollSettle,
+  onSeeAll,
+  placement,
+  placementId,
   renderItem,
   title,
 }: MarketCarouselProps<T>) {
-  const items = useMemo<readonly T[]>(() => (data ? Array.from(data) : []), [data]);
-  const itemWidths = useMemo(() => items.map(item => getItemWidth?.(item) ?? itemWidth), [items, getItemWidth, itemWidth]);
+  const placementScreen = placement?.screen;
+  const itemWidths = useMemo(() => data.map(item => getItemWidth?.(item) ?? itemWidth), [data, getItemWidth, itemWidth]);
   const snapToOffsets = useMemo(() => {
     if (!getItemWidth) return undefined;
 
@@ -60,16 +63,34 @@ export function MarketCarousel<T extends PlacementItem>({
     });
   }, [getItemWidth, itemWidths]);
 
-  const renderFlatListItem = useCallback(
-    ({ item, index }: { item: T; index: number }) => (
-      <View style={{ height: itemHeight, overflow: 'visible', width: itemWidths[index] ?? itemWidth }}>{renderItem(item)}</View>
-    ),
-    [itemHeight, itemWidth, itemWidths, renderItem]
+  const renderCarouselItem = useCallback(
+    ({ item, index }: { item: T; index: number }) => {
+      const trackPress: TrackPlacementCardPress = metadata =>
+        trackPlacementCardPress({
+          item,
+          metadata,
+          placementId,
+          placementScreen,
+          title,
+        });
+
+      return <View style={{ width: itemWidths[index] ?? itemWidth }}>{renderItem(item, trackPress)}</View>;
+    },
+    [itemWidth, itemWidths, placementId, placementScreen, renderItem, title]
   );
 
-  const handleScrollSettle = useDebouncedCallback(onScrollSettle, SCROLL_DEBOUNCE_MS, { leading: false, trailing: true });
+  const handleSeeAllPress = useCallback(() => {
+    onSeeAll();
+    requestIdleCallback(() =>
+      analytics.track(event.discoverPlacementSeeAllPressed, {
+        placementId,
+        placementScreen,
+        placementTitle: title,
+      })
+    );
+  }, [onSeeAll, placementId, placementScreen, title]);
 
-  if (!loading && items.length === 0) return null;
+  if (!loading && data.length === 0) return null;
 
   return (
     <Box gap={12}>
@@ -78,7 +99,7 @@ export function MarketCarousel<T extends PlacementItem>({
           {title}
         </Text>
 
-        <ButtonPressAnimation onPress={onPressSeeAll} scaleTo={0.9}>
+        <ButtonPressAnimation onPress={handleSeeAllPress} scaleTo={0.9}>
           <Box flexDirection="row" alignItems="center" gap={4} paddingVertical="8px">
             <Text size="15pt" weight="heavy" color="labelQuaternary">
               {i18n.t(i18n.l.discover.placements.see_all)}
@@ -97,10 +118,9 @@ export function MarketCarousel<T extends PlacementItem>({
           ))}
         </View>
       ) : (
-        <FlatList
-          data={items}
+        <Animated.FlatList
+          data={data}
           horizontal
-          disallowInterruption
           showsHorizontalScrollIndicator={false}
           contentContainerStyle={styles.contentContainer}
           style={styles.flatList}
@@ -108,14 +128,58 @@ export function MarketCarousel<T extends PlacementItem>({
           snapToInterval={snapToOffsets ? undefined : itemWidth + CARD_GAP}
           snapToOffsets={snapToOffsets}
           snapToAlignment="start"
-          renderItem={renderFlatListItem}
+          renderItem={renderCarouselItem}
+          ItemSeparatorComponent={ItemSeparator}
           keyExtractor={keyExtractor}
-          onScrollEndDrag={handleScrollSettle}
-          onMomentumScrollEnd={handleScrollSettle}
+          initialNumToRender={6}
+          windowSize={8}
         />
       )}
     </Box>
   );
+}
+
+function trackPlacementCardPress({
+  item,
+  metadata,
+  placementId,
+  placementScreen,
+  title,
+}: {
+  item: PlacementItem;
+  metadata: PlacementItemAnalyticsMetadata | undefined;
+  placementId: Placement['id'];
+  placementScreen: Placement['screen'] | undefined;
+  title: string;
+}) {
+  analytics.track(event.discoverPlacementCardPressed, {
+    placementId,
+    placementScreen,
+    placementTitle: title,
+    itemOrder: item.order,
+    marketId: metadata?.marketId ?? item.ref.id,
+    marketName: metadata?.marketName ?? readPlacementItemName(item),
+    marketSlug: metadata?.marketSlug ?? readPlacementItemStringMetadata(item, 'slug'),
+    marketSymbol: metadata?.marketSymbol ?? readPlacementItemStringMetadata(item, 'symbol'),
+    marketType: item.ref.source,
+  });
+}
+
+function readPlacementItemName(item: PlacementItem): string | undefined {
+  return (
+    readPlacementItemStringMetadata(item, 'name') ??
+    readPlacementItemStringMetadata(item, 'title') ??
+    readPlacementItemStringMetadata(item, 'symbol')
+  );
+}
+
+function readPlacementItemStringMetadata(item: PlacementItem, key: string): string | undefined {
+  const value = item.metadata?.[key];
+  return typeof value === 'string' && value.length > 0 ? value : undefined;
+}
+
+function ItemSeparator() {
+  return <View style={styles.separator} />;
 }
 
 function CarouselSkeleton({ itemHeight, itemWidth }: { itemHeight: number; itemWidth: number }) {
@@ -134,7 +198,6 @@ function CarouselSkeleton({ itemHeight, itemWidth }: { itemHeight: number; itemW
 
 const styles = StyleSheet.create({
   contentContainer: {
-    gap: CARD_GAP,
     paddingHorizontal: CAROUSEL_HORIZONTAL_PADDING,
   },
   flatList: {
@@ -149,5 +212,8 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     gap: CARD_GAP,
     paddingHorizontal: 0,
+  },
+  separator: {
+    width: CARD_GAP,
   },
 });
