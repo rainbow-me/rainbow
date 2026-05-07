@@ -7,9 +7,8 @@ import { type FiatProviderName } from '@/entities/f2c';
 import { type UnlockableAppIconKey } from '@/features/app-icon/models/appIcons';
 import { type CandleResolution, type ChartType } from '@/features/charts/types';
 import { type ENSRapActionType } from '@/features/ens/raps/common';
-import { type HyperliquidTokenMetadata, type PerpMarket, type PerpPositionSide, type TriggerOrderType } from '@/features/perps/types';
-import { type Placement, type PlacementItem } from '@/features/placements/types';
-import { type PolymarketEvent, type PolymarketMarket } from '@/features/polymarket/types/polymarket-event';
+import { type PerpPositionSide, type TriggerOrderType } from '@/features/perps/types';
+import { type Placement, type PlacementItem, type PlacementItemAnalyticsMetadata } from '@/features/placements/types';
 import { type EthereumWalletType } from '@/helpers/walletTypes';
 import { type WalletLibraryType } from '@/model/wallet';
 import { type PairHardwareWalletNavigatorParams } from '@/navigation/types';
@@ -243,10 +242,8 @@ export const event = {
 
   // discover screen
   timeSpentOnDiscoverScreen: 'Time spent on the Discover screen',
-  discoverFeaturedCarouselCardPressed: 'discover.featured_carousel.card_pressed',
-  discoverFeaturedCarouselSeeAllPressed: 'discover.featured_carousel.see_all_pressed',
-  discoverFeaturedCarouselScrolled: 'discover.featured_carousel.scrolled',
-  placementInteraction: 'placement.interaction',
+  discoverPlacementCardPressed: 'discover.placement_card_pressed',
+  discoverPlacementSeeAllPressed: 'discover.placement_see_all_pressed',
 
   // ens
   ensInitiatedRegistration: 'Initiated ENS registration',
@@ -997,50 +994,21 @@ export type EventProperties = {
   [event.timeSpentOnDiscoverScreen]: {
     durationInMs: number;
   };
-  [event.discoverFeaturedCarouselCardPressed]: {
+  [event.discoverPlacementCardPressed]: {
     placementId: Placement['id'];
-    type: 'perps' | 'predictions';
-    order: PlacementItem['order'];
-  } & (
-    | {
-        provider: 'hyperliquid';
-        market: PerpMarket['symbol'];
-        baseSymbol: PerpMarket['baseSymbol'];
-        name?: HyperliquidTokenMetadata['name'];
-      }
-    | {
-        provider: 'polymarket';
-        eventSlug: PolymarketEvent['slug'];
-        eventId: PolymarketEvent['id'];
-        eventTitle: PolymarketEvent['title'];
-        eventTicker: PolymarketEvent['ticker'];
-        eventCategory: PolymarketEvent['category'];
-        eventSubcategory: PolymarketEvent['subcategory'];
-        eventGameStatus: PolymarketEvent['gameStatus'];
-        eventHomeTeamName: PolymarketEvent['homeTeamName'];
-        eventAwayTeamName: PolymarketEvent['awayTeamName'];
-        marketId?: PolymarketMarket['id'];
-        marketSlug?: PolymarketMarket['slug'];
-        marketQuestion?: PolymarketMarket['question'];
-        marketType?: PolymarketMarket['marketType'];
-      }
-  );
-  [event.discoverFeaturedCarouselSeeAllPressed]: {
+    placementScreen?: Placement['screen'];
+    placementTitle: string;
+    itemOrder: PlacementItem['order'];
+    marketId: string;
+    marketName?: PlacementItemAnalyticsMetadata['marketName'];
+    marketSlug?: PlacementItemAnalyticsMetadata['marketSlug'];
+    marketSymbol?: PlacementItemAnalyticsMetadata['marketSymbol'];
+    marketType: PlacementItem['ref']['source'];
+  };
+  [event.discoverPlacementSeeAllPressed]: {
     placementId: Placement['id'];
-    type: 'perps' | 'predictions';
-  } & ({ provider: 'hyperliquid' } | { provider: 'polymarket' });
-  [event.discoverFeaturedCarouselScrolled]: {
-    placementId: Placement['id'];
-    type: 'perps' | 'predictions';
-  } & ({ provider: 'hyperliquid' } | { provider: 'polymarket' });
-  [event.placementInteraction]: {
-    id: Placement['id'];
-    screen: Placement['screen'];
-    order: Placement['order'];
-    version: Placement['version'];
-    itemRefSource?: PlacementItem['ref']['source'];
-    itemRefId?: PlacementItem['ref']['id'];
-    itemOrder?: PlacementItem['order'];
+    placementScreen?: Placement['screen'];
+    placementTitle: string;
   };
 
   [event.ensInitiatedRegistration]: { category: string };

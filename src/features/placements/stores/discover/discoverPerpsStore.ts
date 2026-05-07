@@ -3,10 +3,10 @@ import {
   type HyperliquidSparklineFetchData,
   type PerpSparklineData,
 } from '@/features/perps/stores/hyperliquidSparklineStore';
-import { PLACEMENT_IDS } from '@/features/placements/constants';
-import { useDiscoverPlacementsStore } from '@/features/placements/stores/discover/discoverPlacementsStore';
-import { type Placement } from '@/features/placements/types';
-import { logger, RainbowError } from '@/logger';
+import {
+  useDiscoverPerpsPlacement,
+  type DiscoverPerpMarketItem,
+} from '@/features/placements/stores/discover/discoverPerpsPlacementStore';
 import { createDerivedStore } from '@/state/internal/createDerivedStore';
 import { createQueryStore } from '@/state/internal/createQueryStore';
 import { time } from '@/utils/time';
@@ -26,11 +26,11 @@ type Params = { symbolsKey: string };
 
 const useDiscoverPerpsRequestStore = createDerivedStore<DiscoverPerpsRequest>(
   $ => {
-    const perps = $(useDiscoverPlacementsStore, state => state.availability[PLACEMENT_IDS.DISCOVER_PERPS_CAROUSEL]);
-    const symbols = perps ? $(useDiscoverPlacementsStore, state => readPerpSymbols(state[PLACEMENT_IDS.DISCOVER_PERPS_CAROUSEL])) : [];
+    const items = $(useDiscoverPerpsPlacement, state => state.items);
+    const symbols = readPerpSymbols(items);
 
     return {
-      enabled: perps && symbols.length > 0,
+      enabled: symbols.length > 0,
       symbolsKey: symbols.join(','),
     };
   },
@@ -55,18 +55,9 @@ export const useDiscoverPerpsStore = createQueryStore<HyperliquidSparklineFetchD
 );
 
 async function fetchDiscoverPerps(params: Params): Promise<HyperliquidSparklineFetchData> {
-  const data = await useHyperliquidSparklineStore.getState().fetch(params);
-  if (!data) {
-    const error = new RainbowError('[discoverPerpsStore]: sparkline fetch returned null');
-    logger.error(error);
-    throw error;
-  }
-  return data;
+  return (await useHyperliquidSparklineStore.getState().fetch(params)) ?? { chartsBySymbol: {} };
 }
 
-function readPerpSymbols(placement: Placement | undefined): string[] {
-  if (!placement) return [];
-  return Array.from(
-    new Set(placement.items.filter(item => item.ref.source === 'hyperliquid' && item.ref.id).map(item => item.ref.id))
-  ).sort();
+function readPerpSymbols(items: readonly DiscoverPerpMarketItem[]): string[] {
+  return Array.from(new Set(items.map(item => item.market.symbol))).sort();
 }
