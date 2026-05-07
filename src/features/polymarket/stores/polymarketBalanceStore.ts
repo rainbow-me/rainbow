@@ -59,7 +59,9 @@ export const usePolymarketBalanceStore = createQueryStore<
     getPusdBalance: () => get().getData()?.pusdBalance ?? EMPTY_BALANCES.pusdBalance,
     getUsdcBalance: () => get().getData()?.usdcBalance ?? EMPTY_BALANCES.usdcBalance,
     isBalanceZero: () => Number(get().getData()?.balance ?? EMPTY_BALANCES.balance) === 0,
-  })
+  }),
+
+  { storageKey: 'polymarketBalanceStore' }
 );
 
 async function fetchPolymarketBalance({ address }: PolymarketBalanceParams): Promise<FetchPolymarketBalanceResponse> {
