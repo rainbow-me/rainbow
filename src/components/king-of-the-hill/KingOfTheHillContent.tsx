@@ -19,6 +19,7 @@ import { logger, RainbowError } from '@/logger';
 import { useMainListScrollToTop } from '@/navigation/MainListContext';
 import { useKingOfTheHillStore } from '@/state/kingOfTheHill/kingOfTheHillStore';
 
+import { getVisibleKingOfTheHillRankings } from './getVisibleKingOfTheHillRankings';
 import { KingOfTheHillHeader } from './KingOfTheHillHeader';
 import { LaunchButton } from './LaunchButton';
 import { LeaderboardItem } from './LeaderboardItem';
@@ -93,17 +94,14 @@ export const KingOfTheHillContent = memo(function KingOfTheHillContent({
 
     const rankings = kingOfTheHillLeaderBoard?.rankings || [];
 
-    const rankedItems = rankings
-      // start from 2nd place (first is in header)
-      .slice(1)
-      .map(item => {
-        return {
-          type: 'item',
-          ranking: item.rank,
-          token: item.token,
-          windowTradingVolume: item.windowTradingVolume,
-        } satisfies ListItem;
-      });
+    const rankedItems = getVisibleKingOfTheHillRankings(rankings).map(item => {
+      return {
+        type: 'item',
+        ranking: item.rank,
+        token: item.token,
+        windowTradingVolume: item.windowTradingVolume,
+      } satisfies ListItem;
+    });
 
     return [
       {
