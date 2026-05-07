@@ -3,7 +3,7 @@ import { type SeverityLevel } from '@sentry/types';
 import format from 'date-fns/format';
 import { LOG_DEBUG, LOG_LEVEL } from 'react-native-dotenv';
 
-import { getExperimentalFlag, LOG_PUSH } from '@/config/experimental';
+import { getExperimentalFlag, LOG_PUSH } from '@/config/experimentalHooks';
 import * as env from '@/env';
 import { DebugContext } from '@/logger/debugContext';
 import { push } from '@/logger/logDump';

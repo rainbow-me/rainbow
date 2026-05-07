@@ -1,9 +1,7 @@
-import { type useContext } from 'react';
-
 import { LayoutProvider, type Dimension, type Layout, type LayoutManager } from 'recyclerlistview';
 
+import { type ExperimentalConfigState } from '@/config/experimentalConfigStore';
 import { NFTS_ENABLED } from '@/config/experimentalHooks';
-import { type RainbowContextType } from '@/helpers/RainbowContext';
 import { type RainbowConfig } from '@/model/remoteConfig';
 import deviceUtils from '@/utils/deviceUtils';
 
@@ -57,7 +55,7 @@ const getLayoutProvider = ({
 }: {
   briefSectionsData: CellTypes[];
   isCoinListEdited: boolean;
-  experimentalConfig: ReturnType<typeof useContext<RainbowContextType>>['config'];
+  experimentalConfig: ExperimentalConfigState['config'];
   remoteConfig: RainbowConfig;
 }) => {
   const nftsEnabled = remoteConfig.nfts_enabled || experimentalConfig[NFTS_ENABLED];
