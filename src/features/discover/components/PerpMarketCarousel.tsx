@@ -41,7 +41,7 @@ function getPlacementItemKey(item: DiscoverPerpMarketItem): string {
 }
 
 function getPerpMarketItemWidth(item: DiscoverPerpMarketItem): number {
-  return computePerpCardWidth({ symbol: item.market.baseSymbol });
+  return computePerpCardWidth(item.market);
 }
 
 function renderPerpCard(item: DiscoverPerpMarketItem, trackPress: (metadata?: PlacementItemAnalyticsMetadata) => void): ReactElement {

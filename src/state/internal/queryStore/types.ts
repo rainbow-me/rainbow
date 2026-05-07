@@ -196,7 +196,7 @@ interface QueryCapableStore<
   reset: (resetStoreState?: boolean) => void;
 }
 
-export type QueryStoreStateCreator<Q, U> = StateCreator<Q, [], [['zustand/subscribeWithSelector', never]], U>;
+export type QueryStoreStateCreator<Q, U> = StateCreator<Q, [['zustand/subscribeWithSelector', never]], [], U>;
 
 /**
  * The private state managed by the query store, omitted from the store's public interface.

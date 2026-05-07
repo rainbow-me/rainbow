@@ -165,8 +165,10 @@ function attachListener<Store extends BaseRainbowStore<S>, Selected, S = InferSt
   listenerRef.current.resubscribe = (options: ResubscribeOptions = DEFAULT_RESUBSCRIBE_OPTIONS) =>
     attachListener(store, listenerRef, options);
 
+  const selector = Object.assign((state: S) => listenerRef.current.selector(state), listenerRef.current.selector);
+
   const unsubscribe = store.subscribe(
-    state => listenerRef.current.selector(state),
+    selector,
     (curr, prev) =>
       listenerRef.current.react(curr, prev, () => {
         unsubscribe();
