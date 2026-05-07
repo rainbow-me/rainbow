@@ -1,7 +1,6 @@
 import { makeMutable, type SharedValue } from 'react-native-reanimated';
 
-import { type Route } from '@/navigation/Navigation';
-import Routes from '@/navigation/routesNames';
+import Routes, { type Route } from '@/navigation/routesNames';
 import { VIRTUAL_NAVIGATORS } from '@/navigation/virtualNavigators';
 
 import { createRainbowStore } from '../internal/createRainbowStore';
@@ -13,6 +12,7 @@ export type NavigationState = {
   animatedActiveSwipeRoute: SharedValue<SwipeRoute>;
   isWalletScreenMounted: boolean;
   isRouteActive: (route: Route) => boolean;
+  isSwipeRouteActive: (route: SwipeRoute) => boolean;
   setActiveRoute: (route: Route) => void;
 };
 
@@ -26,13 +26,10 @@ const SWIPE_ROUTES = [
   Routes.RNBW_REWARDS_SCREEN,
 ] as const;
 
-type SwipeRoute = (typeof SWIPE_ROUTES)[number];
+/** Root screen route controlled by the swipe navigator. */
+export type SwipeRoute = (typeof SWIPE_ROUTES)[number];
 
-const SWIPE_ROUTES_SET = new Set<SwipeRoute>(SWIPE_ROUTES);
-
-export function isSwipeRoute(route: Route | SwipeRoute): route is SwipeRoute {
-  return SWIPE_ROUTES_SET.has(route as SwipeRoute);
-}
+const SWIPE_ROUTES_SET = new Set<Route>(SWIPE_ROUTES);
 
 export const useNavigationStore = createRainbowStore<NavigationState>((set, get) => ({
   activeRoute: Routes.WALLET_SCREEN,
@@ -42,6 +39,8 @@ export const useNavigationStore = createRainbowStore<NavigationState>((set, get)
   isWalletScreenMounted: false,
 
   isRouteActive: route => route === get().activeRoute,
+
+  isSwipeRouteActive: route => route === get().activeSwipeRoute,
 
   setActiveRoute: route =>
     set(state => {
@@ -60,4 +59,11 @@ export const useNavigationStore = createRainbowStore<NavigationState>((set, get)
     }),
 }));
 
-export const { isRouteActive, setActiveRoute } = useNavigationStore.getState();
+/**
+ * Returns whether a route belongs to the swipe navigator.
+ */
+export function isSwipeRoute(route: Route): route is SwipeRoute {
+  return SWIPE_ROUTES_SET.has(route);
+}
+
+export const { isRouteActive, isSwipeRouteActive, setActiveRoute } = useNavigationStore.getState();

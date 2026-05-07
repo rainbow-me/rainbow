@@ -1,5 +1,10 @@
 import { HYPERCORE_PSEUDO_CHAIN_ID } from '@/features/perps/constants';
-import { MarketSortOrder, type HyperliquidTokenMetadata, type PerpMarketWithMetadata } from '@/features/perps/types';
+import {
+  MarketSortOrder,
+  type HyperliquidTokenMetadata,
+  type PerpMarketsBySymbol,
+  type PerpMarketWithMetadata,
+} from '@/features/perps/types';
 import { formatPerpAssetPrice } from '@/features/perps/utils/formatPerpsAssetPrice';
 import { getAllMarketsInfo } from '@/features/perps/utils/hyperliquid';
 import { getPlatformClient } from '@/resources/platform/client';
@@ -8,8 +13,6 @@ import { createQueryStore } from '@/state/internal/createQueryStore';
 import { createRainbowStore } from '@/state/internal/createRainbowStore';
 import { createStoreActions } from '@/state/internal/utils/createStoreActions';
 import { time } from '@/utils/time';
-
-type PerpMarketsBySymbol = Partial<Record<string, PerpMarketWithMetadata>>;
 
 type HyperliquidMarketsFetchData = {
   markets: PerpMarketsBySymbol;
@@ -68,7 +71,7 @@ export const useHyperliquidMarketsStore = createQueryStore<HyperliquidMarketsFet
       sortOrder: state.sortOrder,
     }),
     storageKey: 'hyperliquidMarketsStore',
-    version: 1,
+    version: 2,
   }
 );
 

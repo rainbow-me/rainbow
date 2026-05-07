@@ -29,3 +29,10 @@ export function toLineChartTimespan(lineChartTimePeriod: LineChartTimePeriod): L
 export function toHyperliquidInterval(resolution: CandleResolution): HyperliquidInterval {
   return CANDLE_RESOLUTION_TO_HYPERLIQUID_INTERVAL[resolution];
 }
+
+/**
+ * Converts a millisecond epoch timestamp to epoch seconds.
+ */
+export function msToSeconds(ms: number): number {
+  return ms * 0.001;
+}

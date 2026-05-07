@@ -1,6 +1,6 @@
 import { IS_TEST } from '@/env';
 import { useHyperliquidMarketsStore } from '@/features/perps/stores/hyperliquidMarketsStore';
-import { type PerpMarketWithMetadata } from '@/features/perps/types';
+import { type PerpMarketsBySymbol, type PerpMarketWithMetadata } from '@/features/perps/types';
 import { PLACEMENT_IDS } from '@/features/placements/constants';
 import { usePlacementsStore } from '@/features/placements/stores/placementsStore';
 import { type Placement, type PlacementItem } from '@/features/placements/types';
@@ -16,8 +16,6 @@ import { shallowEqual } from '@/worklets/comparisons';
 export type DiscoverPerpMarketItem = PlacementItem & {
   market: PerpMarketWithMetadata;
 };
-
-type PerpMarketsBySymbol = Partial<Record<string, PerpMarketWithMetadata>>;
 
 type DiscoverPerpsPlacementState = {
   isLoading: boolean;

@@ -31,27 +31,22 @@ export type UseListenerRouteGuardOptions = {
    */
   enabled?: boolean;
   /**
-   * Whether to fire the callback immediately on mount. Note that if `true`,
-   * the `react` callback will be called on mount regardless of whether the
-   * selected value has changed.
-   * @default false
-   */
-  fireImmediately?: boolean;
-  /**
    * The route that must be active for the listener to run.
    * @default useRoute().name
    */
   route?: Route;
 };
 
-type RequiredInternalOptions = Required<Omit<UseListenerRouteGuardOptions, 'additionalRoutes' | 'route'>>;
+type RequiredInternalOptions = Required<Omit<UseListenerRouteGuardOptions, 'additionalRoutes' | 'route'>> & {
+  fireImmediately: true;
+};
 
 // ============ useListenerRouteGuard ========================================== //
 
 const DEFAULT_OPTIONS = Object.freeze({
   debugMode: false,
   enabled: true,
-  fireImmediately: false,
+  fireImmediately: true,
 }) satisfies RequiredInternalOptions;
 
 /**
@@ -113,11 +108,11 @@ export function useListenerRouteGuard<T>(
 
 export function useListenerRouteGuard<T>(
   listenHandleOrTuple: RefObject<Readonly<ListenHandle>> | ListenHandleTuple<T>,
-  { additionalRoutes, debugMode, enabled, fireImmediately, route }: UseListenerRouteGuardOptions = DEFAULT_OPTIONS
+  { additionalRoutes, debugMode, enabled, route }: UseListenerRouteGuardOptions = DEFAULT_OPTIONS
 ): void | ReadOnlySharedValue<T> {
   const currentRoute = useRoute().name;
   const config = useStableValue(() => createRouteGuardConfig(listenHandleOrTuple, route ?? currentRoute, additionalRoutes, debugMode));
-  const adjustedOptions = useMemo(() => stripDebugMode({ enabled, fireImmediately }), [enabled, fireImmediately]);
+  const adjustedOptions = useMemo(() => (enabled === undefined ? DEFAULT_OPTIONS : { ...DEFAULT_OPTIONS, enabled }), [enabled]);
 
   useListen(useNavigationStore, config.selector, config.suspensionHandler, adjustedOptions);
 
@@ -174,16 +169,5 @@ function createSuspensionHandler(listenHandle: RefObject<Readonly<ListenHandle>>
       if (debugMode) console.log(`[🤺 useListenerRouteGuard 🤺] Suspending: '${route}' became inactive`);
       listenHandle.current.unsubscribe();
     }
-  };
-}
-
-function stripDebugMode({
-  enabled,
-  fireImmediately,
-}: Pick<UseListenerRouteGuardOptions, 'enabled' | 'fireImmediately'>): RequiredInternalOptions {
-  return {
-    debugMode: false,
-    enabled: enabled ?? DEFAULT_OPTIONS.enabled,
-    fireImmediately: fireImmediately ?? DEFAULT_OPTIONS.fireImmediately,
   };
 }
