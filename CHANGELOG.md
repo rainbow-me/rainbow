@@ -21,6 +21,29 @@ and this project adheres to [Semantic Versioning](http://semver.org/)
 
 ### Testing
 
+## [2.0.32](https://github.com/rainbow-me/rainbow/releases/tag/v2.0.32)
+
+### Added
+
+- Set Polymarket referrer inside dapp browser (https://github.com/rainbow-me/rainbow/pull/7388)
+- Set Lighter referrer inside dapp browser (https://github.com/rainbow-me/rainbow/pull/7408)
+- Add user property analytics for RNBW tier info (https://github.com/rainbow-me/rainbow/pull/7365)
+- Implement Polymarket relayer migration (https://github.com/rainbow-me/rainbow/pull/7427)
+
+### Changed
+
+- Correct podfile.lock (https://github.com/rainbow-me/rainbow/pull/7431)
+- Update translations from Crowdin (https://github.com/rainbow-me/rainbow/pull/7429)
+- Remove claimUserRewards mutation (https://github.com/rainbow-me/rainbow/commit/daf838b4927f8ac4b500c1f9138e8cac12491809)
+- Bump iOS and Android to v2.0.32 (https://github.com/rainbow-me/rainbow/pull/7432)
+- Hide Farcaster tab from Trending in Discover (https://github.com/rainbow-me/rainbow/pull/7414)
+- Remove dead translations and improve i18n coverage (https://github.com/rainbow-me/rainbow/pull/7434)
+- Clean up staking card UI (https://github.com/rainbow-me/rainbow/pull/7425)
+- Consolidate backup code into features/backup domain module (https://github.com/rainbow-me/rainbow/pull/7430)
+- Consolidate gas code into new features/gas directory (https://github.com/rainbow-me/rainbow/pull/7435)
+- Move gas speed menu as a shared component (https://github.com/rainbow-me/rainbow/pull/7439)
+- Bump versionCode on Android (https://github.com/rainbow-me/rainbow/pull/7440)
+
 ## [2.0.31](https://github.com/rainbow-me/rainbow/releases/tag/v2.0.31)
 
 ### Added
