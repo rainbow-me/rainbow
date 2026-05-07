@@ -1,52 +1,64 @@
 import { getApp } from '@react-native-firebase/app';
 import { collection, getDocs, getFirestore, orderBy, query, where } from '@react-native-firebase/firestore';
 
-import { type Placement, type PlacementItem } from '@/features/placements/types';
+import { PLACEMENT_SCREENS } from '@/features/placements/constants';
+import { type Placement, type PlacementItem, type PlacementScreen } from '@/features/placements/types';
 import { logger, RainbowError } from '@/logger';
 import { createQueryStore } from '@/state/internal/createQueryStore';
 import { time } from '@/utils/time';
 
-async function fetchPlacements(): Promise<Placement[]> {
-  try {
-    const db = getFirestore(getApp());
-    const placementsRef = collection(db, 'placements');
-    const q = query(placementsRef, where('enabled', '==', true), orderBy('order'));
+type FirestoreDocSnapshot = { id: string; data: () => Record<string, unknown> };
 
-    const snap = await getDocs(q);
+const VALID_SCREENS = new Set<string>(Object.values(PLACEMENT_SCREENS));
 
-    return snap.docs
-      .map((d: { id: string; data: () => Record<string, unknown> }) => ({ id: d.id, ...d.data() }) as Placement)
-      .map((p: Placement) => ({
-        ...p,
-        items: (p.items ?? []).sort((a: PlacementItem, b: PlacementItem) => a.order - b.order),
-      }));
-  } catch (e) {
-    logger.error(new RainbowError('[placementsStore]: Failed to fetch placements', e as Error), { error: e });
-    throw e;
+function parsePlacementDoc(doc: FirestoreDocSnapshot): Placement | null {
+  const data = doc.data() as Omit<Placement, 'id'>;
+  if (!Array.isArray(data.items)) {
+    logger.error(new RainbowError(`[placementsStore]: malformed placement ${doc.id} — items not an array`));
+    return null;
   }
+  if (!VALID_SCREENS.has(data.screen)) {
+    logger.error(new RainbowError(`[placementsStore]: malformed placement ${doc.id} — unknown screen "${data.screen}"`));
+    return null;
+  }
+  return {
+    ...data,
+    id: doc.id,
+    screen: data.screen as PlacementScreen,
+    items: [...data.items].sort((a: PlacementItem, b: PlacementItem) => a.order - b.order),
+  };
+}
+
+async function fetchPlacements(): Promise<Record<string, Placement>> {
+  const db = getFirestore(getApp());
+  const placementsRef = collection(db, 'placements');
+  const q = query(placementsRef, where('enabled', '==', true), orderBy('order'));
+  const snap = await getDocs(q);
+
+  return snap.docs.reduce<Record<string, Placement>>((acc: Record<string, Placement>, doc: FirestoreDocSnapshot) => {
+    const placement = parsePlacementDoc(doc);
+    if (placement) acc[placement.id] = placement;
+    return acc;
+  }, {});
 }
 
 type PlacementsState = {
-  placements: Placement[];
+  placementsById: Record<string, Placement>;
   getPlacement: (id: string) => Placement | undefined;
 };
 
-const PLACEMENTS_STALE_TIME = time.hours(1);
-const PLACEMENTS_CACHE_TIME = time.days(2);
-
-export const usePlacementsStore = createQueryStore<Placement[], never, PlacementsState>(
+export const usePlacementsStore = createQueryStore<Record<string, Placement>, never, PlacementsState>(
   {
     fetcher: fetchPlacements,
-    setData: ({ data, set }) => set({ placements: data }),
-    staleTime: PLACEMENTS_STALE_TIME,
-    cacheTime: PLACEMENTS_CACHE_TIME,
+    setData: ({ data, set }) => set({ placementsById: data }),
+    staleTime: time.hours(1),
+    cacheTime: time.days(2),
   },
   (_set, get) => ({
-    placements: [],
-    getPlacement: (id: string) => get().placements.find(p => p.id === id),
+    placementsById: {},
+    getPlacement: (id: string) => get().placementsById[id],
   }),
   {
-    partialize: state => ({ placements: state.placements }),
     storageKey: 'placements',
     version: 1,
   }
