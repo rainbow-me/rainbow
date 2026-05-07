@@ -93,7 +93,7 @@ export const PerpMarketCard = memo(function PerpMarketCard({ item, onPressTracke
   const arrow = isPositive ? UP_ARROW : DOWN_ARROW;
 
   return (
-    <ButtonPressAnimation onPress={onPress} scaleTo={0.96} style={[{ width: cardWidth }, style]}>
+    <ButtonPressAnimation onPress={onPress} scaleTo={0.96} shouldActivateOnStart={false} style={[{ width: cardWidth }, style]}>
       <View style={[styles.cardShadow, isDarkMode ? styles.cardShadowDark : styles.cardShadowLight]}>
         <View style={[styles.card, { backgroundColor: cardBackgroundColor, borderColor }]}>
           <LinearGradient
