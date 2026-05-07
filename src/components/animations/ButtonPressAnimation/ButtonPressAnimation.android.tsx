@@ -77,6 +77,7 @@ const ScaleButton = forwardRef(function ScaleButton(
     onPress,
     overflowMargin,
     scaleTo,
+    shouldActivateOnStart,
     wrapperStyle,
     testID,
   }: ButtonElementPropsWithDefaults,
@@ -150,6 +151,7 @@ const ScaleButton = forwardRef(function ScaleButton(
           rippleColor={transparentColor}
           onHandlerStateChange={handleEvent}
           onGestureEvent={handleEvent}
+          shouldActivateOnStart={shouldActivateOnStart}
         >
           <View style={sx.transparentBackground}>
             <View style={{ padding: overflowMargin }}>
@@ -170,6 +172,7 @@ const SimpleScaleButton = forwardRef(function SimpleScaleButton(
     minLongPressDuration,
     onLongPress,
     onLongPressEnded,
+    shouldActivateOnStart,
     shouldLongPressHoldPress,
     isLongPress,
     hapticType,
@@ -208,6 +211,7 @@ const SimpleScaleButton = forwardRef(function SimpleScaleButton(
       onPress={onNativePress}
       scaleTo={scaleTo}
       rippleColor={transparentColor}
+      shouldActivateOnStart={shouldActivateOnStart}
       shouldLongPressHoldPress={shouldLongPressHoldPress}
       style={[sx.overflow, wrapperStyle]}
       testID={testID}
@@ -248,6 +252,7 @@ export default forwardRef(function ButtonPressAnimation(
     hapticType = 'selection',
     enableHapticFeedback = true,
     disallowInterruption = false,
+    shouldActivateOnStart,
   }: ButtonElementProps,
   ref
 ) {
@@ -277,6 +282,7 @@ export default forwardRef(function ButtonPressAnimation(
       onPress={onPress}
       overflowMargin={overflowMargin}
       scaleTo={scaleTo}
+      shouldActivateOnStart={shouldActivateOnStart}
       shouldLongPressHoldPress={shouldLongPressHoldPress}
       skipTopMargin={skipTopMargin}
       testID={testID}
