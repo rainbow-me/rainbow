@@ -152,7 +152,7 @@ export const PerpMarketCard = memo(function PerpMarketCard({ item, placement, st
                 style={[styles.iconBorderShadow, { shadowColor: accentColor }]}
                 width={50}
               >
-                <HyperliquidTokenIcon size={42} symbol={market.baseSymbol} />
+                <HyperliquidTokenIcon size={42} symbol={market.symbol} />
               </Box>
 
               <View style={styles.textColumn}>
