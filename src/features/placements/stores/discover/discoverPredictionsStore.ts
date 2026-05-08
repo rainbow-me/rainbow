@@ -2,14 +2,16 @@ import { PLACEMENT_IDS } from '@/features/placements/constants';
 import { useDiscoverPlacementAvailability } from '@/features/placements/stores/discover/discoverPlacementAvailabilityStore';
 import { usePlacementsStore } from '@/features/placements/stores/placementsStore';
 import { type Placement } from '@/features/placements/types';
-import { usePolymarketEventStore } from '@/features/polymarket/stores/polymarketEventStore';
-import { type PolymarketEvent } from '@/features/polymarket/types/polymarket-event';
+import { POLYMARKET_GAMMA_API_URL } from '@/features/polymarket/constants';
+import { type PolymarketEvent, type RawPolymarketEvent } from '@/features/polymarket/types/polymarket-event';
+import { processRawPolymarketEvent } from '@/features/polymarket/utils/transforms';
+import { rainbowFetch } from '@/framework/data/http/rainbowFetch';
 import { createDerivedStore } from '@/state/internal/createDerivedStore';
 import { createQueryStore } from '@/state/internal/createQueryStore';
 import { time } from '@/utils/time';
 import { shallowEqual } from '@/worklets/comparisons';
 
-export type DiscoverPredictionsFetchData = {
+type DiscoverPredictionsFetchData = {
   eventIds: string[];
   eventsById: Record<string, PolymarketEvent>;
 };
@@ -26,9 +28,6 @@ type DiscoverPredictionsRequest = {
   enabled: boolean;
   eventIdsKey: string;
 };
-
-type DiscoverPredictionEventEntry = readonly [eventId: string, event: PolymarketEvent | null];
-type DiscoverPredictionResolvedEventEntry = readonly [eventId: string, event: PolymarketEvent];
 
 function selectPolymarketEventIdsFromPlacement(placement: Placement | undefined): string[] {
   if (!placement) return [];
@@ -75,18 +74,29 @@ export const useDiscoverPredictionsStore = createQueryStore<
   })
 );
 
-async function fetchDiscoverPredictions({ eventIdsKey }: DiscoverPredictionsParams): Promise<DiscoverPredictionsFetchData> {
+async function fetchPolymarketEventsBatch(eventIds: string[], abortController: AbortController | null): Promise<RawPolymarketEvent[]> {
+  const url = new URL(`${POLYMARKET_GAMMA_API_URL}/events`);
+  for (const id of eventIds) url.searchParams.append('id', id);
+  const { data } = await rainbowFetch<RawPolymarketEvent[]>(url.toString(), {
+    abortController,
+    method: 'GET',
+    timeout: time.seconds(30),
+  });
+  return data ?? [];
+}
+
+async function fetchDiscoverPredictions(
+  { eventIdsKey }: DiscoverPredictionsParams,
+  abortController: AbortController | null
+): Promise<DiscoverPredictionsFetchData> {
   const eventIds = eventIdsKey ? eventIdsKey.split(',') : [];
-  const polymarketEventStore = usePolymarketEventStore.getState();
+  if (eventIds.length === 0) return { eventIds, eventsById: {} };
 
-  const entries = await Promise.all(
-    eventIds.map(async eventId => {
-      const event = await polymarketEventStore.fetch({ eventId }, { skipStoreUpdates: 'withCache' });
-      return [eventId, event] as DiscoverPredictionEventEntry;
-    })
-  );
-
-  const eventsById = Object.fromEntries(entries.filter((entry): entry is DiscoverPredictionResolvedEventEntry => entry[1] !== null));
-
+  const raws = await fetchPolymarketEventsBatch(eventIds, abortController);
+  const events = await Promise.all(raws.map(raw => processRawPolymarketEvent(raw)));
+  const eventsById: Record<string, PolymarketEvent> = {};
+  for (const event of events) {
+    if (event) eventsById[event.id] = event;
+  }
   return { eventIds, eventsById };
 }
