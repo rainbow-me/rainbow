@@ -13,7 +13,7 @@ import { PerpsMarketCarousel } from '@/features/discover/components/PerpsMarketC
 import { PredictionsMarketCarousel } from '@/features/discover/components/PredictionsMarketCarousel';
 import { ENSCreateProfileCard } from '@/features/ens/components/ENSCreateProfileCard';
 import { PLACEMENT_IDS } from '@/features/placements/constants';
-import { useDiscoverPlacementAvailability } from '@/features/placements/stores/discover/discoverPlacementAvailabilityStore';
+import { useDiscoverPlacementsStore } from '@/features/placements/stores/discover/discoverPlacementsStore';
 import walletTypes from '@/helpers/walletTypes';
 import * as i18n from '@/languages';
 import { useRemoteConfig } from '@/model/remoteConfig';
@@ -31,7 +31,7 @@ export default function DiscoverHome() {
   const opRewardsLocalFlag = useExperimentalFlag(OP_REWARDS);
   const trendingTokensEnabled = (useExperimentalFlag(TRENDING_TOKENS) || trending_tokens_enabled) && !IS_TEST;
 
-  const availability = useDiscoverPlacementAvailability();
+  const availability = useDiscoverPlacementsStore(state => state.availability);
 
   const isProfilesEnabled = profilesEnabledLocalFlag && profiles_enabled;
   const wallets = useWallets();

@@ -14,12 +14,11 @@ export function PredictionsMarketCarousel() {
   const placement = usePlacementsStore<Placement | undefined>(state => state.getPlacement(PLACEMENT_ID));
   const placementsLoading = usePlacementsStore(state => state.status === 'loading' || state.status === 'idle');
 
-  // Items get filled in #7420 once Polymarket events dependency lands.
-  const items = placement?.items ?? [];
+  // Hide until #7420 wires up the Polymarket events store and the items filter has dependent data to satisfy.
+  const items: Placement['items'] = [];
+  if (items.length === 0) return null;
+
   const isLoading = placementsLoading;
-
-  if (!isLoading && items.length === 0) return null;
-
   return (
     <MarketCarousel
       placement={placement}

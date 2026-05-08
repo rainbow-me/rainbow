@@ -9,7 +9,7 @@ import { event } from '@/analytics/event';
 import ButtonPressAnimation from '@/components/animations/ButtonPressAnimation';
 import ShimmerAnimation from '@/components/animations/ShimmerAnimation';
 import { Box, Text, TextIcon, useBackgroundColor, useColorMode } from '@/design-system';
-import { type Placement, type PlacementItem } from '@/features/placements/types';
+import { type PlacementId, type PlacementItem, type PlacementProvider } from '@/features/placements/types';
 import { opacity } from '@/framework/ui/utils/opacity';
 import * as i18n from '@/languages';
 import { DEVICE_WIDTH } from '@/utils/deviceUtils';
@@ -24,7 +24,6 @@ export const CARD_WIDTH = DEVICE_WIDTH - CAROUSEL_HORIZONTAL_PADDING * 2 - PEEK_
 export const CARD_HEIGHT = 100;
 
 type FeaturedCarouselType = 'perps' | 'predictions';
-type FeaturedCarouselProvider = 'hyperliquid' | 'polymarket';
 
 type MarketCarouselProps<T extends PlacementItem> = Pick<FlatListProps<T>, 'data'> & {
   itemHeight?: number;
@@ -32,9 +31,8 @@ type MarketCarouselProps<T extends PlacementItem> = Pick<FlatListProps<T>, 'data
   getItemWidth?: (item: T) => number;
   loading?: boolean;
   onPressSeeAll: () => void;
-  placement?: Placement;
-  placementId: Placement['id'];
-  provider: FeaturedCarouselProvider;
+  placementId: PlacementId;
+  provider: PlacementProvider;
   type: FeaturedCarouselType;
   renderItem: (item: T) => ReactElement;
   title: string;
