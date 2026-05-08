@@ -1,6 +1,7 @@
 import React, { useCallback, useMemo, type ReactElement } from 'react';
-import { FlatList, StyleSheet, View, type FlatListProps } from 'react-native';
+import { StyleSheet, View, type FlatListProps } from 'react-native';
 
+import { FlatList } from 'react-native-gesture-handler';
 import { useDebouncedCallback } from 'use-debounce';
 
 import { analytics } from '@/analytics';
@@ -128,6 +129,7 @@ export function MarketCarousel<T extends PlacementItem>({
         <FlatList
           data={items}
           horizontal
+          disallowInterruption
           showsHorizontalScrollIndicator={false}
           contentContainerStyle={styles.contentContainer}
           style={styles.flatList}
