@@ -6,15 +6,16 @@ import { LinearGradient } from 'expo-linear-gradient';
 import ButtonPressAnimation from '@/components/animations/ButtonPressAnimation';
 import ImgixImage from '@/components/images/ImgixImage';
 import { Text, TextIcon, useColorMode } from '@/design-system';
+import { textSizes, textWeights } from '@/design-system/typography/typography';
 import { useCandlestickStore } from '@/features/charts/stores/candlestickStore';
 import { CandleResolution } from '@/features/charts/types';
-import { convertStoredPerpPriceChangeToPercent, formatCompactPerpPercentChange } from '@/features/discover/components/perpMarketFormatting';
 import { DOWN_ARROW, UP_ARROW } from '@/features/perps/constants';
 import { useHyperliquidMarketsStore } from '@/features/perps/stores/hyperliquidMarketsStore';
-import { navigateToPerpDetailScreen } from '@/features/perps/utils';
+import { convertStoredPerpPriceChangeToPercent, formatCompactPerpPercentChange, navigateToPerpDetailScreen } from '@/features/perps/utils';
 import { type PlacementItem, type PlacementItemAnalyticsMetadata } from '@/features/placements/types';
 import { opacity } from '@/framework/ui/utils/opacity';
 import { getHighContrastColor } from '@/hooks/useAccountAccentColor';
+import { measureTextSync } from '@/utils/measureText';
 import { getHighContrastTextColorWorklet } from '@/worklets/colors';
 
 type PerpMarketCardProps = {
@@ -31,14 +32,18 @@ const PERP_MARKET_CARD_WIDTH_NO_CHART = 154;
 const PERP_MARKET_CARD_MAX_WIDTH = 280;
 const PERP_MARKET_NO_CHART_FIXED_WIDTH = 94;
 const PERP_MARKET_NO_CHART_TEXT_MIN_WIDTH = PERP_MARKET_CARD_WIDTH_NO_CHART - PERP_MARKET_NO_CHART_FIXED_WIDTH;
-const ESTIMATED_SYMBOL_CHARACTER_WIDTH = 11;
 const SYMBOL_TEXT_BUFFER = 8;
 
+const SYMBOL_TEXT_STYLE = {
+  fontFamily: textWeights.bold.fontFamily,
+  fontSize: textSizes['17pt'].fontSize,
+  fontWeight: textWeights.bold.fontWeight,
+  letterSpacing: textSizes['17pt'].letterSpacing,
+} as const;
+
 export function computePerpCardWidth({ percentChangeText, symbol }: { percentChangeText?: string; symbol?: string }): number {
-  const estimatedTextWidth = symbol
-    ? symbol.length * ESTIMATED_SYMBOL_CHARACTER_WIDTH + SYMBOL_TEXT_BUFFER
-    : PERP_MARKET_NO_CHART_TEXT_MIN_WIDTH;
-  const textWidth = Math.max(PERP_MARKET_NO_CHART_TEXT_MIN_WIDTH, estimatedTextWidth);
+  const measuredTextWidth = symbol ? measureTextSync(symbol, SYMBOL_TEXT_STYLE) + SYMBOL_TEXT_BUFFER : PERP_MARKET_NO_CHART_TEXT_MIN_WIDTH;
+  const textWidth = Math.max(PERP_MARKET_NO_CHART_TEXT_MIN_WIDTH, measuredTextWidth);
 
   return Math.min(PERP_MARKET_CARD_MAX_WIDTH, Math.ceil(PERP_MARKET_NO_CHART_FIXED_WIDTH + textWidth));
 }
