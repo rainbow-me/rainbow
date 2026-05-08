@@ -1,4 +1,4 @@
-import React, { useCallback } from 'react';
+import React, { memo, useCallback } from 'react';
 import { StyleSheet, View } from 'react-native';
 
 import { Canvas, Picture } from '@shopify/react-native-skia';
@@ -13,12 +13,12 @@ import { useListen } from '@/state/internal/hooks/useListen';
 import { type BaseRainbowStore } from '@/state/internal/types';
 import { createBlankPicture } from '@/worklets/skia';
 
-import { CompactLineChartRenderer, LINE_CHART_PREVIEW_HORIZONTAL_OVERDRAW } from './CompactLineChartRenderer';
-import { type LineChartPreviewData, type LineChartPreviewSource } from './types';
+import { COMPACT_LINE_CHART_HORIZONTAL_OVERDRAW, CompactLineChartRenderer } from '../compact/CompactLineChartRenderer';
+import { type CompactLineChartData, type LineChartDataStore } from '../compact/types';
 
 // ============ Types ========================================================== //
 
-type LineChartPreviewProps<S extends LineChartPreviewSource> = {
+type SparklineChartProps<S extends LineChartDataStore> = {
   chartId: string;
   color: string;
   height: number;
@@ -26,13 +26,22 @@ type LineChartPreviewProps<S extends LineChartPreviewSource> = {
   width: number;
 };
 
-// ============ Component ====================================================== //
+// ============ Chart Component ================================================ //
 
 /**
- * Compact line chart preview for dense card and list surfaces.
+ * Compact line chart for dense card and list surfaces.
+ *
+ * Compatible with any store that implements {@link LineChartDataStore},
+ * e.g. data stores created with `createLineChartDataStore(...)`.
  */
-export function LineChartPreview<S extends LineChartPreviewSource>({ chartId, color, height, store, width }: LineChartPreviewProps<S>) {
-  const renderWidth = width + LINE_CHART_PREVIEW_HORIZONTAL_OVERDRAW * 2;
+export const SparklineChart = memo(function SparklineChart<S extends LineChartDataStore>({
+  chartId,
+  color,
+  height,
+  store,
+  width,
+}: SparklineChartProps<S>) {
+  const renderWidth = width + COMPACT_LINE_CHART_HORIZONTAL_OVERDRAW * 2;
   const initialPicture = useStableValue(() => createBlankPicture(renderWidth, height));
 
   const chartPicture = useSharedValue(initialPicture);
@@ -53,8 +62,8 @@ export function LineChartPreview<S extends LineChartPreviewSource>({ chartId, co
   });
 
   const drawChart = useCallback(
-    (nextData: LineChartPreviewData | undefined, nextColor: string) => {
-      runOnUI((data: LineChartPreviewData | undefined, lineColor: string) => {
+    (nextData: CompactLineChartData | undefined, nextColor: string) => {
+      runOnUI((data: CompactLineChartData | undefined, lineColor: string) => {
         const hasData = data !== undefined;
         const shouldAnimateIn = hasData && !hasRenderedData.value;
 
@@ -71,7 +80,7 @@ export function LineChartPreview<S extends LineChartPreviewSource>({ chartId, co
   useListen(
     store,
     s => s.getChartData(chartId),
-    nextData => drawChart(nextData, color),
+    data => drawChart(data, color),
     { fireImmediately: true }
   );
 
@@ -85,7 +94,7 @@ export function LineChartPreview<S extends LineChartPreviewSource>({ chartId, co
       renderer.value?.dispose?.();
       renderer.value = undefined;
     })();
-  }, [initialPicture, renderer]);
+  });
 
   return (
     <View style={[styles.frame, { height, width }]}>
@@ -94,7 +103,7 @@ export function LineChartPreview<S extends LineChartPreviewSource>({ chartId, co
           styles.canvasContainer,
           {
             height,
-            left: -LINE_CHART_PREVIEW_HORIZONTAL_OVERDRAW,
+            left: -COMPACT_LINE_CHART_HORIZONTAL_OVERDRAW,
             width: renderWidth,
           },
           animatedStyle,
@@ -106,7 +115,7 @@ export function LineChartPreview<S extends LineChartPreviewSource>({ chartId, co
       </Animated.View>
     </View>
   );
-}
+});
 
 // ============ Styles ========================================================= //
 

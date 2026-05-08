@@ -8,7 +8,7 @@ import { textSizes, textWeights } from '@/design-system/typography/typography';
 // ============ Types ========================================================== //
 
 /**
- * Design-system text style used for native width measurement.
+ * Design system text styles used for native width measurement.
  */
 export type MeasureTextProps = Required<Pick<TextProps, 'size' | 'weight'>>;
 

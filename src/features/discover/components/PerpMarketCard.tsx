@@ -1,4 +1,4 @@
-import React, { memo, useCallback } from 'react';
+import React, { memo, useCallback, useMemo } from 'react';
 import { StyleSheet, View, type StyleProp, type ViewStyle } from 'react-native';
 
 import { LinearGradient } from 'expo-linear-gradient';
@@ -7,17 +7,18 @@ import ButtonPressAnimation from '@/components/animations/ButtonPressAnimation';
 import ImgixImage from '@/components/images/ImgixImage';
 import { Text, TextIcon, useColorMode } from '@/design-system';
 import { Border } from '@/design-system/components/Border/Border';
-import { LINE_CHART_PREVIEW_HORIZONTAL_OVERDRAW } from '@/features/charts/line/preview/CompactLineChartRenderer';
-import { LineChartPreview } from '@/features/charts/line/preview/LineChartPreview';
+import { COMPACT_LINE_CHART_HORIZONTAL_OVERDRAW } from '@/features/charts/line/compact/CompactLineChartRenderer';
+import { SparklineChart } from '@/features/charts/line/components/SparklineChart';
 import { convertStoredPerpPriceChangeToPercent, formatCompactPerpPercentChange } from '@/features/discover/components/perpMarketFormatting';
 import { DOWN_ARROW, HYPERLIQUID_COLORS, UP_ARROW } from '@/features/perps/constants';
-import { useHyperliquidChartPreviewsStore } from '@/features/perps/stores/hyperliquidChartPreviewsStore';
+import { useHyperliquidLineChartsStore } from '@/features/perps/stores/hyperliquidLineChartsStore';
 import { type PerpMarketWithMetadata } from '@/features/perps/types';
 import { navigateToPerpDetailScreen } from '@/features/perps/utils';
 import { type PlacementItemAnalyticsMetadata } from '@/features/placements/types';
 import { opacity } from '@/framework/ui/utils/opacity';
 import { THICK_BORDER_WIDTH } from '@/styles/constants';
 import { measureTextSync, type MeasureTextProps } from '@/utils/measureText';
+import { getHighContrastTextColorWorklet } from '@/worklets/colors';
 
 // ============ Types ========================================================== //
 
@@ -34,7 +35,6 @@ type CardColors = {
   backgroundColor: string;
   badgeBorderColor: string;
   badgeShadowOpacity: number;
-  badgeTextColor: string;
   borderColor: string;
   gradientOpacity: number;
 };
@@ -60,7 +60,7 @@ const CARD_WIDTH_BASE =
   ICON_SIZE +
   CARD_LAYOUT.gap * 2 +
   CHART_LAYOUT.width +
-  LINE_CHART_PREVIEW_HORIZONTAL_OVERDRAW * 2;
+  COMPACT_LINE_CHART_HORIZONTAL_OVERDRAW * 2;
 
 const PERP_MARKET_CARD_TEXT_MIN_WIDTH = PERP_MARKET_CARD_SLOT_WIDTH_WITH_CHART - CARD_WIDTH_BASE;
 
@@ -89,7 +89,6 @@ const CARD_COLORS = {
     backgroundColor: '#171B20',
     badgeBorderColor: 'rgba(255,255,255,0.16)',
     badgeShadowOpacity: 0.5,
-    badgeTextColor: 'rgba(0,0,0,0.8)',
     borderColor: 'rgba(255,255,255,0.08)',
     gradientOpacity: 0.26,
   },
@@ -97,7 +96,6 @@ const CARD_COLORS = {
     backgroundColor: 'rgba(255,255,255,0.92)',
     badgeBorderColor: 'rgba(0,0,0,0.07)',
     badgeShadowOpacity: 0.25,
-    badgeTextColor: '#FFFFFF',
     borderColor: 'rgba(255,255,255,0.8)',
     gradientOpacity: 0.06,
   },
@@ -118,10 +116,10 @@ export const PerpMarketCard = memo(function PerpMarketCard({ market, onPressTrac
     });
   }, [market, onPressTracked]);
 
-  const { accentColor, cardColors, iconUrl, priceChange } = buildPerpMarketCardDisplay({
-    isDarkMode,
-    market,
-  });
+  const { accentColor, badgeTextColor, cardColors, iconUrl, priceChange } = useMemo(
+    () => buildPerpMarketCardDisplay(isDarkMode, market),
+    [isDarkMode, market]
+  );
 
   return (
     <ButtonPressAnimation onPress={onPress} scaleTo={0.96} style={[styles.pressable, style]}>
@@ -184,11 +182,11 @@ export const PerpMarketCard = memo(function PerpMarketCard({ market, onPressTrac
               </View>
             </View>
 
-            <LineChartPreview
+            <SparklineChart
               chartId={symbol}
               color={priceChange.color}
               height={CHART_LAYOUT.height}
-              store={useHyperliquidChartPreviewsStore}
+              store={useHyperliquidLineChartsStore}
               width={CHART_LAYOUT.width}
             />
           </View>
@@ -203,7 +201,7 @@ export const PerpMarketCard = memo(function PerpMarketCard({ market, onPressTrac
               },
             ]}
           >
-            <Text align="center" size="11pt" weight="heavy" color={{ custom: cardColors.badgeTextColor }}>
+            <Text align="center" size="11pt" weight="heavy" color={{ custom: badgeTextColor }}>
               {`${market.maxLeverage}x`}
             </Text>
             <Border
@@ -227,14 +225,16 @@ export const PerpMarketCard = memo(function PerpMarketCard({ market, onPressTrac
 
 // ============ Display Helpers =============================================== //
 
-function buildPerpMarketCardDisplay({ isDarkMode, market }: { isDarkMode: boolean; market: PerpMarketWithMetadata }) {
+function buildPerpMarketCardDisplay(isDarkMode: boolean, market: PerpMarketWithMetadata) {
   const accentColor = market.metadata?.colors?.color || market.metadata?.colors?.fallbackColor || HYPERLIQUID_COLORS.green;
+  const badgeTextColor = getHighContrastTextColorWorklet(accentColor, 4);
   const colorMode: CardColorMode = isDarkMode ? 'dark' : 'light';
   const percent = convertStoredPerpPriceChangeToPercent(market.priceChange['24h']);
   const direction: PriceChangeDirection = percent >= 0 ? 'positive' : 'negative';
 
   return {
     accentColor,
+    badgeTextColor,
     cardColors: CARD_COLORS[colorMode],
     iconUrl: market.metadata?.iconUrl,
     priceChange: {
@@ -320,8 +320,6 @@ const styles = StyleSheet.create({
   },
   iconFill: {
     alignItems: 'center',
-    backgroundColor: '#292D32',
-    borderRadius: 22,
     flex: 1,
     justifyContent: 'center',
     overflow: 'hidden',
