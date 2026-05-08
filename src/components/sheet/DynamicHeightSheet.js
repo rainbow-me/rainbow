@@ -1,12 +1,11 @@
 import React, { forwardRef, Fragment, useContext, useEffect, useImperativeHandle, useMemo, useRef } from 'react';
-import { Pressable, StyleSheet, TouchableWithoutFeedback } from 'react-native';
+import { Platform, Pressable, StyleSheet, TouchableWithoutFeedback } from 'react-native';
 
 import { BottomSheetScrollView } from '@gorhom/bottom-sheet';
 import { BottomSheetContext } from '@gorhom/bottom-sheet/src/contexts/external';
 import Animated, { useAnimatedScrollHandler, useSharedValue } from 'react-native-reanimated';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
-import { IS_ANDROID } from '@/env';
 import styled from '@/framework/ui/styled-thing';
 import useDimensions from '@/hooks/useDimensions';
 import { useNavigation } from '@/navigation/Navigation';
@@ -142,9 +141,8 @@ export default forwardRef(function SlackSheet(
 
   return (
     <Fragment>
-      {IS_ANDROID ? <Pressable onPress={goBack} style={[StyleSheet.absoluteFillObject]} /> : null}
+      {Platform.OS === 'android' ? <Pressable onPress={goBack} style={[StyleSheet.absoluteFillObject]} /> : null}
       <TouchableBackdrop onPress={goBack} />
-
       <Container
         additionalTopPadding={additionalTopPadding}
         backgroundColor={bg}
@@ -157,7 +155,7 @@ export default forwardRef(function SlackSheet(
         testID={testID}
         {...props}
       >
-        {IS_ANDROID && (
+        {Platform.OS === 'android' && (
           <AndroidBackground as={TouchableWithoutFeedback} backgroundColor={bg}>
             <AndroidBackground backgroundColor={bg} />
           </AndroidBackground>
@@ -181,7 +179,7 @@ export default forwardRef(function SlackSheet(
             scrollIndicatorInsets={scrollIndicatorInsets}
             showsHorizontalScrollIndicator={showsHorizontalScrollIndicator}
             showsVerticalScrollIndicator={showsVerticalScrollIndicator}
-            {...(isInsideBottomSheet && IS_ANDROID
+            {...(isInsideBottomSheet && Platform.OS === 'android'
               ? {
                   onScrollWorklet: scrollHandler,
                 }

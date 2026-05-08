@@ -1,8 +1,8 @@
 import React, { useCallback, useMemo, useState } from 'react';
+import { Platform } from 'react-native';
 
 import { LinearGradient } from 'expo-linear-gradient';
 
-import { IS_ANDROID } from '@/env';
 import styled from '@/framework/ui/styled-thing';
 import useDimensions from '@/hooks/useDimensions';
 import useImageMetadata from '@/hooks/useImageMetadata';
@@ -110,7 +110,7 @@ export default function SendAssetFormCollectible({ asset, buttonRenderer, txSpee
           {buttonRenderer}
           {txSpeedRenderer}
         </ButtonWrapper>
-        {!IS_ANDROID && (
+        {Platform.OS !== 'android' && (
           <GradientToggler isVisible={!isGradientVisible}>
             <Gradient isTallPhone={isTallPhone} />
           </GradientToggler>

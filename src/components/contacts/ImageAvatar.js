@@ -1,8 +1,8 @@
 import React, { useMemo } from 'react';
+import { Platform } from 'react-native';
 
 import { ImgixImage } from '@/components/images';
 import { useColorMode } from '@/design-system';
-import { IS_ANDROID } from '@/env';
 import styled from '@/framework/ui/styled-thing';
 import { useAccountAccentColor } from '@/hooks/useAccountAccentColor';
 import ShadowStack from '@/react-native-shadow-stack';
@@ -69,17 +69,18 @@ const sizeConfigs = (accentColor, colors, isDarkMode) => ({
   },
   smedium: {
     dimensions: 36,
-    shadow: [[0, 4, IS_ANDROID ? 5 : 12, colors.shadow, 0.4]],
+    shadow: [[0, 4, Platform.OS === 'android' ? 5 : 12, colors.shadow, 0.4]],
     textSize: 'large',
   },
   rewards: {
     dimensions: 36,
-    shadow: IS_ANDROID
-      ? [[0, 4, 5, colors.shadow, 0.16]]
-      : [
-          [0, 4, 12, colors.shadow, 0.16],
-          [0, 2, 6, colors.shadow, 0.02],
-        ],
+    shadow:
+      Platform.OS === 'android'
+        ? [[0, 4, 5, colors.shadow, 0.16]]
+        : [
+            [0, 4, 12, colors.shadow, 0.16],
+            [0, 2, 6, colors.shadow, 0.02],
+          ],
     textSize: 'large',
   },
   smedium_shadowless: {
