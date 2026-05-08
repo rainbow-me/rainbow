@@ -30,7 +30,7 @@ export function PerpMarketCarousel() {
       data={items}
       keyExtractor={getPlacementItemKey}
       renderItem={renderPerpCard}
-      onSeeAll={navigateToPerpsSearch}
+      onPressSeeAll={navigateToPerpsSearch}
       loading={isLoading}
     />
   );
