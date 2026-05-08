@@ -1,5 +1,5 @@
 import React, { useCallback, useMemo, type ReactElement } from 'react';
-import { FlatList, StyleSheet, View } from 'react-native';
+import { FlatList, StyleSheet, View, type FlatListProps } from 'react-native';
 
 import { useDebouncedCallback } from 'use-debounce';
 
@@ -25,8 +25,7 @@ export const CARD_HEIGHT = 100;
 type FeaturedCarouselType = 'perps' | 'predictions';
 type FeaturedCarouselProvider = 'hyperliquid' | 'polymarket';
 
-type MarketCarouselProps<T extends PlacementItem> = {
-  data: T[];
+type MarketCarouselProps<T extends PlacementItem> = Pick<FlatListProps<T>, 'data'> & {
   itemHeight?: number;
   itemWidth?: number;
   getItemWidth?: (item: T) => number;
@@ -57,7 +56,8 @@ export function MarketCarousel<T extends PlacementItem>({
   renderItem,
   title,
 }: MarketCarouselProps<T>) {
-  const itemWidths = useMemo(() => data.map(item => getItemWidth?.(item) ?? itemWidth), [data, getItemWidth, itemWidth]);
+  const items = useMemo<readonly T[]>(() => (data ? Array.from(data) : []), [data]);
+  const itemWidths = useMemo(() => items.map(item => getItemWidth?.(item) ?? itemWidth), [items, getItemWidth, itemWidth]);
   const snapToOffsets = useMemo(() => {
     if (!getItemWidth) return undefined;
 
@@ -95,7 +95,7 @@ export function MarketCarousel<T extends PlacementItem>({
     { leading: false, trailing: true }
   );
 
-  if (!loading && data.length === 0) return null;
+  if (!loading && items.length === 0) return null;
 
   return (
     <Box gap={12}>
@@ -124,7 +124,7 @@ export function MarketCarousel<T extends PlacementItem>({
         </View>
       ) : (
         <FlatList
-          data={data}
+          data={items}
           horizontal
           showsHorizontalScrollIndicator={false}
           contentContainerStyle={styles.contentContainer}
