@@ -4,8 +4,8 @@ import { type Address } from 'viem';
 import type { UniqueAsset } from '@/entities/uniqueAssets';
 import { arcClient } from '@/graphql';
 import { updateWebHidden, updateWebShowcase } from '@/helpers/webData';
-import { getHidden } from '@/hooks/useFetchHiddenTokens';
-import { getShowcase } from '@/hooks/useFetchShowcaseTokens';
+import { fetchHiddenTokens, getHidden } from '@/hooks/useFetchHiddenTokens';
+import { fetchShowcaseTokens, getShowcase } from '@/hooks/useFetchShowcaseTokens';
 import { logger, RainbowError } from '@/logger';
 import { parseUniqueAsset, parseUniqueId } from '@/resources/nfts/utils';
 import { createQueryStore } from '@/state/internal/createQueryStore';
@@ -53,9 +53,13 @@ const fetchMultipleCollectionNfts = async (collectionId: string, walletAddress: 
   let tokensForCategory: string[] = [];
 
   if (collectionId === 'showcase') {
-    tokensForCategory = (await getShowcase(walletAddress, isMigration)) || [];
+    tokensForCategory = isMigration
+      ? (await getShowcase(walletAddress, true)) || []
+      : (await fetchShowcaseTokens({ address: walletAddress })) || [];
   } else if (collectionId === 'hidden') {
-    tokensForCategory = (await getHidden(walletAddress, isMigration)) || [];
+    tokensForCategory = isMigration
+      ? (await getHidden(walletAddress, true)) || []
+      : (await fetchHiddenTokens({ address: walletAddress })) || [];
   }
 
   if (isMigration) {
@@ -110,10 +114,10 @@ const fetchMultipleCollectionNfts = async (collectionId: string, walletAddress: 
     const isReadOnlyWallet = getIsReadOnlyWallet();
     if (!isReadOnlyWallet) {
       if (collectionId === 'showcase') {
-        await updateWebShowcase(walletAddress, tokensForCategory, true);
+        await updateWebShowcase(walletAddress, tokensForCategory);
         useOpenCollectionsStore.getState(walletAddress).setCollectionOpen('showcase', true);
       } else if (collectionId === 'hidden') {
-        await updateWebHidden(walletAddress, tokensForCategory, true);
+        await updateWebHidden(walletAddress, tokensForCategory);
       }
     }
   }

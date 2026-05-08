@@ -2,6 +2,7 @@ import { useQuery } from '@tanstack/react-query';
 
 import { EthereumWalletType } from '@/helpers/walletTypes';
 import { getPreference } from '@/model/preferences';
+import { queryClient } from '@/react-query';
 import { useNftsStore } from '@/state/nfts/nfts';
 import { isDataComplete } from '@/state/nfts/utils';
 import { getWalletWithAccount } from '@/state/wallets/walletsStore';
@@ -53,6 +54,13 @@ export async function getHidden(address: string, isMigration = false) {
   }
 
   return STABLE_ARRAY;
+}
+
+export async function fetchHiddenTokens({ address }: { address: string }) {
+  return queryClient.fetchQuery({
+    queryKey: hiddenTokensQueryKey({ address }),
+    queryFn: () => getHidden(address),
+  });
 }
 
 export default function useFetchHiddenTokens({ address }: { address: string }) {
