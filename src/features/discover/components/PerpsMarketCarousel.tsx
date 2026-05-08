@@ -4,6 +4,7 @@ import { useHyperliquidMarketsStore } from '@/features/perps/stores/hyperliquidM
 import { convertStoredPerpPriceChangeToPercent, formatCompactPerpPercentChange } from '@/features/perps/utils';
 import { navigateToPerpsSearch } from '@/features/perps/utils/navigateToPerps';
 import { PLACEMENT_IDS } from '@/features/placements/constants';
+import { useDiscoverPerpsStore } from '@/features/placements/stores/discover/discoverPerpsStore';
 import { usePlacementsStore } from '@/features/placements/stores/placementsStore';
 import { type Placement, type PlacementItem } from '@/features/placements/types';
 import * as i18n from '@/languages';
@@ -20,6 +21,7 @@ export function PerpsMarketCarousel() {
     return items.length === 0 && (state.status === 'loading' || state.status === 'idle');
   });
   const markets = useHyperliquidMarketsStore(state => state.markets);
+  const chartsBySymbol = useDiscoverPerpsStore(state => state.chartsBySymbol);
   const marketsLoading = useHyperliquidMarketsStore(state => {
     const hasMarkets = Object.keys(state.markets).length > 0;
     return !hasMarkets && (state.status === 'loading' || state.status === 'idle');
@@ -33,16 +35,16 @@ export function PerpsMarketCarousel() {
   const getPerpCardWidth = useCallback(
     (item: PlacementItem): number => {
       const market = markets[item.ref.id];
-      const percentChange = market
-        ? convertStoredPerpPriceChangeToPercent(market.priceChange['1h'] ?? market.priceChange['24h'])
-        : undefined;
+      const percentChange =
+        chartsBySymbol[item.ref.id]?.percentChange ??
+        (market ? convertStoredPerpPriceChangeToPercent(market.priceChange['1h'] ?? market.priceChange['24h']) : undefined);
 
       return computePerpCardWidth({
         percentChangeText: percentChange === undefined ? undefined : formatCompactPerpPercentChange(percentChange),
         symbol: market?.baseSymbol ?? item.ref.id,
       });
     },
-    [markets]
+    [chartsBySymbol, markets]
   );
 
   if (!isLoading && items.length === 0) return null;

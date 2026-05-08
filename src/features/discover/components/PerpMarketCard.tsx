@@ -32,15 +32,15 @@ type PerpMarketCardProps = {
 
 export type { PerpMarketCardProps };
 
-const SPARKLINE_WIDTH = 44;
-const SPARKLINE_HEIGHT = 34;
+const SPARKLINE_WIDTH = 46;
+const SPARKLINE_HEIGHT = 52;
 
 const PERP_MARKET_CARD_WIDTH_WITH_CHART = 210;
 export const PERP_MARKET_CARD_SLOT_WIDTH_WITH_CHART = PERP_MARKET_CARD_WIDTH_WITH_CHART;
 export const PERP_MARKET_CARD_HEIGHT = 76;
 
 const PERP_MARKET_CARD_MAX_WIDTH = 280;
-const PERP_MARKET_CHART_FIXED_WIDTH = 138;
+const PERP_MARKET_CHART_FIXED_WIDTH = 150;
 const PERCENT_ARROW_BLOCK_WIDTH = 14; // arrow icon width + arrow→text gap
 
 const SYMBOL_TEXT_STYLE = {
@@ -287,8 +287,7 @@ const styles = StyleSheet.create({
   contentRow: {
     alignItems: 'center',
     flexDirection: 'row',
-    gap: 8,
-    justifyContent: 'space-between',
+    gap: 16,
     width: '100%',
   },
   iconBorderShadow: {
