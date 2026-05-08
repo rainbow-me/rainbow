@@ -6,11 +6,11 @@ import { hlTradesStoreActions } from '@/features/perps/stores/hlTradesStore';
 import { hyperliquidAccountActions } from '@/features/perps/stores/hyperliquidAccountStore';
 import { hyperliquidMarketsActions } from '@/features/perps/stores/hyperliquidMarketsStore';
 import { PerpPositionSide, type OrderSide, type PerpMarket } from '@/features/perps/types';
+import { maybeNavigateToPerpsExplainSheet } from '@/features/perps/utils/navigateToPerps';
 import { toFixedWorklet } from '@/framework/core/safeMath';
 import { ensureError } from '@/logger';
 import Navigation from '@/navigation/Navigation';
 import Routes from '@/navigation/routesNames';
-import { device } from '@/storage';
 
 export function getHyperliquidTokenId(symbol?: string): string {
   if (!symbol) return '';
@@ -44,24 +44,8 @@ export function navigateToNewPositionScreen(market: PerpMarket) {
 
 export function navigateToPerpDetailScreen(symbol: string) {
   const market = hyperliquidMarketsActions.getMarket(symbol);
-  if (market) {
-    const openMarketDetail = () =>
-      Navigation.handleAction(Routes.PERPS_DETAIL_SCREEN, {
-        market,
-      });
-
-    const hasSeenExplainSheet = device.get(['hasSeenPerpsExplainSheet']);
-    if (!hasSeenExplainSheet) {
-      Navigation.handleAction(Routes.PERPS_EXPLAIN_SHEET, {
-        onDismiss: () => {
-          device.set(['hasSeenPerpsExplainSheet'], true);
-          openMarketDetail();
-        },
-      });
-    } else {
-      openMarketDetail();
-    }
-  }
+  if (!market) return;
+  maybeNavigateToPerpsExplainSheet(() => Navigation.handleAction(Routes.PERPS_DETAIL_SCREEN, { market }));
 }
 
 export function convertSide(side: 'B' | 'A'): OrderSide {
