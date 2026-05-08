@@ -7,6 +7,7 @@ import { PLACEMENT_IDS } from '@/features/placements/constants';
 import { useDiscoverPlacementAvailability } from '@/features/placements/stores/discover/discoverPlacementAvailabilityStore';
 import { usePlacementsStore } from '@/features/placements/stores/placementsStore';
 import { type Placement } from '@/features/placements/types';
+import { logger, RainbowError } from '@/logger';
 import { createDerivedStore } from '@/state/internal/createDerivedStore';
 import { createQueryStore } from '@/state/internal/createQueryStore';
 import { time } from '@/utils/time';
@@ -26,8 +27,9 @@ type Params = { symbolsKey: string };
 
 const useDiscoverPerpsRequestStore = createDerivedStore<DiscoverPerpsRequest>(
   $ => {
-    const { perps } = $(useDiscoverPlacementAvailability);
-    const symbols = perps ? $(usePlacementsStore, state => readPerpSymbols(state.getPlacement(PLACEMENT_IDS.PERPS))) : [];
+    const availability = $(useDiscoverPlacementAvailability);
+    const perps = availability[PLACEMENT_IDS.DISCOVER_PERPS_CAROUSEL];
+    const symbols = perps ? $(usePlacementsStore, state => readPerpSymbols(state.getPlacement(PLACEMENT_IDS.DISCOVER_PERPS_CAROUSEL))) : [];
 
     return {
       enabled: perps && symbols.length > 0,
@@ -55,7 +57,13 @@ export const useDiscoverPerpsStore = createQueryStore<HyperliquidSparklineFetchD
 );
 
 async function fetchDiscoverPerps(params: Params): Promise<HyperliquidSparklineFetchData> {
-  return (await useHyperliquidSparklineStore.getState().fetch(params)) ?? { chartsBySymbol: {} };
+  const data = await useHyperliquidSparklineStore.getState().fetch(params);
+  if (!data) {
+    const error = new RainbowError('[discoverPerpsStore]: sparkline fetch returned null');
+    logger.error(error);
+    throw error;
+  }
+  return data;
 }
 
 function readPerpSymbols(placement: Placement | undefined): string[] {
