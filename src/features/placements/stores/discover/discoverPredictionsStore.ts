@@ -2,18 +2,16 @@ import { PLACEMENT_IDS } from '@/features/placements/constants';
 import { useDiscoverPlacementAvailability } from '@/features/placements/stores/discover/discoverPlacementAvailabilityStore';
 import { usePlacementsStore } from '@/features/placements/stores/placementsStore';
 import { type Placement } from '@/features/placements/types';
-import { POLYMARKET_GAMMA_API_URL } from '@/features/polymarket/constants';
-import { type PolymarketEvent, type RawPolymarketEvent } from '@/features/polymarket/types/polymarket-event';
+import { fetchPolymarketEventsByIds } from '@/features/polymarket/stores/polymarketEventsStore';
+import { type PolymarketEvent } from '@/features/polymarket/types/polymarket-event';
 import { processRawPolymarketEvent } from '@/features/polymarket/utils/transforms';
-import { rainbowFetch } from '@/framework/data/http/rainbowFetch';
 import { createDerivedStore } from '@/state/internal/createDerivedStore';
 import { createQueryStore } from '@/state/internal/createQueryStore';
 import { time } from '@/utils/time';
 import { shallowEqual } from '@/worklets/comparisons';
 
 type DiscoverPredictionsFetchData = {
-  eventIds: string[];
-  eventsById: Record<string, PolymarketEvent>;
+  events: PolymarketEvent[];
 };
 
 type DiscoverPredictionsParams = {
@@ -70,33 +68,22 @@ export const useDiscoverPredictionsStore = createQueryStore<
     cacheTime: time.minutes(10),
   },
   (_set, get) => ({
-    getEvent: (eventId: string) => get().getData()?.eventsById[eventId],
+    getEvent: (eventId: string) =>
+      get()
+        .getData()
+        ?.events.find(e => e.id === eventId),
   })
 );
-
-async function fetchPolymarketEventsBatch(eventIds: string[], abortController: AbortController | null): Promise<RawPolymarketEvent[]> {
-  const url = new URL(`${POLYMARKET_GAMMA_API_URL}/events`);
-  for (const id of eventIds) url.searchParams.append('id', id);
-  const { data } = await rainbowFetch<RawPolymarketEvent[]>(url.toString(), {
-    abortController,
-    method: 'GET',
-    timeout: time.seconds(30),
-  });
-  return data ?? [];
-}
 
 async function fetchDiscoverPredictions(
   { eventIdsKey }: DiscoverPredictionsParams,
   abortController: AbortController | null
 ): Promise<DiscoverPredictionsFetchData> {
   const eventIds = eventIdsKey ? eventIdsKey.split(',') : [];
-  if (eventIds.length === 0) return { eventIds, eventsById: {} };
+  if (eventIds.length === 0) return { events: [] };
 
-  const raws = await fetchPolymarketEventsBatch(eventIds, abortController);
-  const events = await Promise.all(raws.map(raw => processRawPolymarketEvent(raw)));
-  const eventsById: Record<string, PolymarketEvent> = {};
-  for (const event of events) {
-    if (event) eventsById[event.id] = event;
-  }
-  return { eventIds, eventsById };
+  const raws = await fetchPolymarketEventsByIds(eventIds, abortController);
+  const processed = await Promise.all(raws.map(raw => processRawPolymarketEvent(raw)));
+  const events = processed.filter((e): e is PolymarketEvent => e !== undefined);
+  return { events };
 }
