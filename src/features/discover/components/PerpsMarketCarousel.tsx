@@ -1,6 +1,6 @@
 import React, { useMemo } from 'react';
 
-import { useHyperliquidMarketsStore } from '@/features/perps/stores/hyperliquidMarketsStore';
+import { hyperliquidMarketsActions, useHyperliquidMarketsStore } from '@/features/perps/stores/hyperliquidMarketsStore';
 import { navigateToPerpsSearch } from '@/features/perps/utils/navigateToPerps';
 import { PLACEMENT_IDS } from '@/features/placements/constants';
 import { usePlacementsStore } from '@/features/placements/stores/placementsStore';
@@ -13,7 +13,7 @@ import { computePerpCardWidth, PERP_MARKET_CARD_HEIGHT, PerpMarketCard } from '.
 const PLACEMENT_ID = PLACEMENT_IDS.DISCOVER_PERPS_CAROUSEL;
 
 function getPerpCardWidth(item: PlacementItem): number {
-  const symbol = useHyperliquidMarketsStore.getState().getMarket(item.ref.id)?.baseSymbol ?? item.ref.id;
+  const symbol = hyperliquidMarketsActions.getMarket(item.ref.id)?.baseSymbol ?? item.ref.id;
   return computePerpCardWidth({ symbol });
 }
 
