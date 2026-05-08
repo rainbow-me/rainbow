@@ -205,8 +205,7 @@ export const PerpMarketCard = memo(function PerpMarketCard({ item, placement, st
 const styles = StyleSheet.create({
   badge: {
     minHeight: 22,
-    paddingHorizontal: 5,
-    paddingVertical: 5,
+    padding: 5,
     shadowOffset: { width: 0, height: 2 },
     shadowRadius: 10,
   },
