@@ -14,12 +14,11 @@ export function PerpsMarketCarousel() {
   const placement = usePlacementsStore<Placement | undefined>(state => state.getPlacement(PLACEMENT_ID));
   const placementsLoading = usePlacementsStore(state => state.status === 'loading' || state.status === 'idle');
 
-  // Items get filled in #7418 once HyperliquidMarkets dependency lands.
-  const items = placement?.items ?? [];
+  // Hide until #7418 wires up the HyperliquidMarkets store + card renderer; the data-availability check has no real source to satisfy on this branch.
+  const items: Placement['items'] = [];
+  if (items.length === 0) return null;
+
   const isLoading = placementsLoading;
-
-  if (!isLoading && items.length === 0) return null;
-
   return (
     <MarketCarousel
       placement={placement}
