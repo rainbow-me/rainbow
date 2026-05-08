@@ -19,7 +19,7 @@ import * as i18n from '@/languages';
 import { MarketCarousel } from './MarketCarousel';
 
 const PLACEMENT_ID = PLACEMENT_IDS.DISCOVER_PREDICTIONS_CAROUSEL;
-const PREDICTION_TILE_WIDTH = 280;
+const PREDICTION_TILE_WIDTH = 178;
 const EMPTY_EVENTS: PolymarketEvent[] = [];
 
 function trackPredictionPress({ eventData, item, placement }: { eventData: PolymarketEvent; item: PlacementItem; placement: Placement }) {
