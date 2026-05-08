@@ -5,7 +5,7 @@ import { BlurView } from 'react-native-blur-view';
 
 import { Text, useColorMode } from '@/design-system';
 import { opacity } from '@/framework/ui/utils/opacity';
-import useHiddenTokens from '@/hooks/useHiddenTokens';
+import { useHiddenTokens } from '@/hooks/useProfileTokens';
 import { logger } from '@/logger';
 import { type Colors } from '@/styles';
 import isLowerCaseMatch from '@/utils/isLowerCaseMatch';
