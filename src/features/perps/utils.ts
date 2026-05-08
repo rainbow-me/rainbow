@@ -29,6 +29,14 @@ export function formatPriceChange(priceChange: string) {
   return `${toFixedWorklet(Number(priceChange) * 10_000, 2)}%`;
 }
 
+export function convertStoredPerpPriceChangeToPercent(priceChange: string): number {
+  return Number(priceChange) * 10_000;
+}
+
+export function formatCompactPerpPercentChange(percentChange: number): string {
+  return `${Math.abs(percentChange).toFixed(2)}%`;
+}
+
 export function navigateToNewPositionScreen(market: PerpMarket) {
   void useHlNewPositionStore.getState().setMarket(market);
   PerpsNavigation.navigate(Routes.PERPS_NEW_POSITION_SCREEN);
