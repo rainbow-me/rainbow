@@ -115,6 +115,7 @@ export const PolymarketEventsListItem = memo(function PolymarketEventsListItem({
         onPress={onPress ?? (() => navigateToEvent(event))}
         scaleTo={0.96}
         shouldActivateOnStart={shouldActivateOnStart}
+        style={styles.flex}
       >
         <GradientBorderView
           borderGradientColors={colors.cardBorderGradient}
@@ -280,6 +281,7 @@ const styles = StyleSheet.create({
     opacity: 0.14,
   },
   overflowHidden: {
+    flex: 1,
     overflow: 'hidden',
   },
   row: {
