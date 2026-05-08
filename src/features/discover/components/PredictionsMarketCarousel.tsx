@@ -13,6 +13,7 @@ import {
 import { type PolymarketEvent } from '@/features/polymarket/types/polymarket-event';
 import { navigateToPolymarket, navigateToPolymarketEvent } from '@/features/polymarket/utils/navigateToPolymarket';
 import * as i18n from '@/languages';
+import { shallowEqual } from '@/worklets/comparisons';
 
 import { MarketCarousel } from './MarketCarousel';
 
@@ -22,11 +23,10 @@ const EMPTY_EVENTS: PolymarketEvent[] = [];
 
 export function PredictionsMarketCarousel() {
   const placement = usePlacementsStore(state => state.getPlacement(PLACEMENT_ID));
-  const placementsLoading = usePlacementsStore(state => {
-    const items = state.getPlacement(PLACEMENT_ID)?.items ?? [];
-    return items.length === 0 && state.getStatus('isInitialLoad');
-  });
+  const placementItems = usePlacementsStore(state => state.getItemsBySource(PLACEMENT_ID, 'polymarket'), shallowEqual);
+  const placementsLoading = usePlacementsStore(state => state.getStatus('isInitialLoad')) && placementItems.length === 0;
   const events = useDiscoverPredictionsStore(state => state.getData()?.events ?? EMPTY_EVENTS);
+
   const predictionsLoading = useDiscoverPredictionsStore(state => {
     const eventsLength = state.getData()?.events.length ?? 0;
     return eventsLength === 0 && state.getStatus('isInitialLoad');
@@ -38,10 +38,7 @@ export function PredictionsMarketCarousel() {
     return map;
   }, [events]);
 
-  const items = useMemo(
-    () => placement?.items.filter(item => item.ref.source === 'polymarket' && eventsById.has(item.ref.id)) ?? [],
-    [eventsById, placement]
-  );
+  const items = useMemo(() => placementItems.filter(item => eventsById.has(item.ref.id)), [eventsById, placementItems]);
   const isLoading = placementsLoading || predictionsLoading;
 
   const renderItem = useCallback(

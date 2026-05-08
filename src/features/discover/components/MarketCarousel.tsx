@@ -10,7 +10,7 @@ import ButtonPressAnimation from '@/components/animations/ButtonPressAnimation';
 import ShimmerAnimation from '@/components/animations/ShimmerAnimation';
 import { Box, Text, TextIcon, useBackgroundColor, useColorMode } from '@/design-system';
 import { trackPlacementInteraction } from '@/features/placements/engagement/trackInteraction';
-import { type Placement, type PlacementItem, type PlacementItemAnalyticsMetadata } from '@/features/placements/types';
+import { type Placement, type PlacementId, type PlacementItem, type PlacementItemAnalyticsMetadata } from '@/features/placements/types';
 import { opacity } from '@/framework/ui/utils/opacity';
 import * as i18n from '@/languages';
 import { DEVICE_WIDTH } from '@/utils/deviceUtils';
@@ -37,7 +37,7 @@ type MarketCarouselProps<T extends PlacementItem> = {
   loading?: boolean;
   onSeeAll: () => void;
   placement?: Placement;
-  placementId: Placement['id'];
+  placementId: PlacementId;
   renderItem: (item: T, trackPress: TrackPlacementCardPress) => ReactElement | null;
   title: string;
 };
@@ -167,7 +167,7 @@ function trackPlacementCardPress({
 }: {
   item: PlacementItem;
   metadata: PlacementItemAnalyticsMetadata | undefined;
-  placementId: Placement['id'];
+  placementId: PlacementId;
   placementScreen: Placement['screen'] | undefined;
   title: string;
 }) {

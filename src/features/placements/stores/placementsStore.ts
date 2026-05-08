@@ -1,59 +1,113 @@
 import { getApp } from '@react-native-firebase/app';
 import { collection, getDocs, getFirestore, orderBy, query, where, type FirebaseFirestoreTypes } from '@react-native-firebase/firestore';
 
-import { type Placement } from '@/features/placements/types';
+import { PLACEMENT_IDS } from '@/features/placements/constants';
+import { type Placement, type PlacementId, type PlacementItem, type PlacementSource } from '@/features/placements/types';
+import { getConsistentArray } from '@/helpers/getConsistentArray';
 import { createQueryStore } from '@/state/internal/createQueryStore';
 import { time } from '@/utils/time';
 
 // ============ Types ========================================================== //
 
-type PlacementDocument = Omit<Placement, 'id'>;
-
-type PlacementsState = {
-  placements: Placement[];
-  getPlacement: (id: Placement['id']) => Placement | undefined;
+export type PlacementsState = {
+  placementsById: PlacementsById;
+  getPlacement: (id: PlacementId) => Placement | undefined;
+  getItemsBySource: <Source extends PlacementSource>(id: PlacementId, source: Source) => PlacementItem<Source>[];
+  getStableRefIds: (id: PlacementId, source: PlacementSource) => string[];
 };
+
+type PlacementDocument = Omit<Placement, 'id'>;
+type PlacementsById = Partial<Record<PlacementId, Placement>>;
+
+// ============ Constants ====================================================== //
+
+const EMPTY_PLACEMENT_ITEMS: PlacementItem[] = [];
+const PLACEMENT_ID_SET = new Set<string>(Object.values(PLACEMENT_IDS));
 
 // ============ Query Store ==================================================== //
 
-const PLACEMENTS_STALE_TIME = time.hours(1);
-const PLACEMENTS_CACHE_TIME = time.days(2);
-
-export const usePlacementsStore = createQueryStore<Placement[], never, PlacementsState>(
+export const usePlacementsStore = createQueryStore<PlacementsById, never, PlacementsState>(
   {
     fetcher: fetchPlacements,
-    setData: ({ data, set }) => set({ placements: data }),
-    staleTime: PLACEMENTS_STALE_TIME,
-    cacheTime: PLACEMENTS_CACHE_TIME,
+    setData: ({ data, set }) => set({ placementsById: data }),
+    staleTime: time.hours(1),
+    cacheTime: time.days(2),
   },
+
   (_, get) => ({
-    placements: [],
-    getPlacement: id => get().placements.find(placement => placement.id === id),
+    placementsById: {},
+
+    getPlacement: id => get().placementsById[id],
+
+    getItemsBySource: (id, source) => {
+      const placement = get().placementsById[id];
+      return filterBySource(getItems(placement), source);
+    },
+
+    getStableRefIds: (id, source) => {
+      const placement = get().placementsById[id];
+      return buildStableRefIds(getItems(placement), source);
+    },
   }),
-  {
-    partialize: state => ({ placements: state.placements }),
-    storageKey: 'placements',
-    version: 1,
-  }
+
+  { storageKey: 'placementsStore' }
 );
 
 // ============ Fetcher ======================================================== //
 
-async function fetchPlacements(): Promise<Placement[]> {
+async function fetchPlacements(): Promise<PlacementsById> {
   const db = getFirestore(getApp());
   const placementsRef = collection(db, 'placements');
   const q = query(placementsRef, where('enabled', '==', true), orderBy('order'));
+
   const snap: FirebaseFirestoreTypes.QuerySnapshot<PlacementDocument> = await getDocs<
     PlacementDocument,
     FirebaseFirestoreTypes.DocumentData
   >(q);
 
-  return snap.docs.map(doc => {
-    const placement = { id: doc.id, ...doc.data() };
+  return buildPlacementsById(snap.docs);
+}
 
-    return {
-      ...placement,
-      items: [...placement.items].sort((a, b) => a.order - b.order),
-    };
-  });
+// ============ Utilities ====================================================== //
+
+function buildPlacementsById(placements: FirebaseFirestoreTypes.QueryDocumentSnapshot<PlacementDocument>[]): PlacementsById {
+  const placementsById: PlacementsById = {};
+
+  for (const doc of placements) {
+    if (!isPlacementId(doc.id)) continue;
+    const placement = buildPlacement(doc.id, doc.data());
+    placementsById[placement.id] = placement;
+  }
+
+  return placementsById;
+}
+
+function buildPlacement(id: PlacementId, placement: PlacementDocument): Placement {
+  return {
+    id,
+    ...placement,
+    items: [...placement.items].sort((a, b) => a.order - b.order),
+  };
+}
+
+function getItems(placement: Placement | undefined): PlacementItem[] {
+  return placement?.items ?? EMPTY_PLACEMENT_ITEMS;
+}
+
+function filterBySource<Source extends PlacementSource>(items: PlacementItem[], source: Source): PlacementItem<Source>[] {
+  return items.filter(item => isPlacementItemSource(item, source));
+}
+
+function buildStableRefIds(items: PlacementItem[], source: PlacementSource): string[] {
+  return getConsistentArray(filterBySource(items, source).map(item => item.ref.id));
+}
+
+// ============ Type Guards ==================================================== //
+
+function isPlacementId(id: string): id is PlacementId {
+  return PLACEMENT_ID_SET.has(id);
+}
+
+function isPlacementItemSource<Source extends PlacementSource>(item: PlacementItem, source: Source): item is PlacementItem<Source> {
+  return item.ref.source === source;
 }

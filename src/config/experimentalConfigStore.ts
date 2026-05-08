@@ -1,9 +1,5 @@
-import format from 'date-fns/format';
-
-import { defaultConfig, defaultConfigValues, LOG_PUSH, type ExperimentalConfigKey } from '@/config/experimental';
-import { IS_PROD, IS_STORE_INSTALL } from '@/env';
-import { consoleTransport, logger, LogLevel } from '@/logger';
-import { push } from '@/logger/logDump';
+import { defaultConfig, defaultConfigValues, type ExperimentalConfigKey } from '@/config/experimental';
+import { IS_STORE_INSTALL } from '@/env';
 import { createRainbowStore } from '@/state/internal/createRainbowStore';
 
 export type ExperimentalConfigState = {
@@ -31,18 +27,4 @@ export const useExperimentalConfigStore = createRainbowStore<ExperimentalConfigS
 
 export function getExperimentalFlag(key: ExperimentalConfigKey): boolean {
   return useExperimentalConfigStore.getState().getFlag(key);
-}
-
-/**
- * A developer setting that pushes log lines to an array in-memory so that
- * they can be "dumped" or copied out of the app and analyzed.
- */
-if (getExperimentalFlag(LOG_PUSH)) {
-  logger.addTransport((level, message, metadata) => {
-    push({ timestamp: format(new Date(), 'HH:mm:ss'), level, message, metadata });
-  });
-  if (IS_PROD) {
-    logger.addTransport(consoleTransport);
-    logger.level = LogLevel.Debug;
-  }
 }
