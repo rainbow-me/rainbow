@@ -9,6 +9,7 @@ import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 import hillImage from '@/assets/hill.png';
 import ShimmerAnimation from '@/components/animations/ShimmerAnimation';
+import { KingOfTheHillPastWinners } from '@/components/king-of-the-hill/KingOfTheHillPastWinners';
 import { RainbowImage } from '@/components/RainbowImage';
 import { useBackgroundColor, useColorMode } from '@/design-system';
 import { type KingOfTheHill, type KingOfTheHillRankingElem } from '@/graphql/__generated__/metadata';
@@ -16,10 +17,9 @@ import { formatCurrency } from '@/helpers/strings';
 import { abbreviateNumber } from '@/helpers/utilities';
 import { logger, RainbowError } from '@/logger';
 import { useMainListScrollToTop } from '@/navigation/MainListContext';
+import { useKingOfTheHillStore } from '@/state/kingOfTheHill/kingOfTheHillStore';
 
-import { useKingOfTheHillStore } from '../stores/kingOfTheHillStore';
 import { KingOfTheHillHeader } from './KingOfTheHillHeader';
-import { KingOfTheHillPastWinners } from './KingOfTheHillPastWinners';
 import { LaunchButton } from './LaunchButton';
 import { LeaderboardItem } from './LeaderboardItem';
 
