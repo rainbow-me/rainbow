@@ -223,3 +223,18 @@ function mergeEventsById(existingEvents: PolymarketEvent[], nextEvents: Polymark
   const uniqueNextEvents = nextEvents.filter(event => !existingIds.has(event.id));
   return existingEvents.concat(uniqueNextEvents);
 }
+
+export async function fetchPolymarketEventsByIds(
+  eventIds: string[],
+  abortController: AbortController | null
+): Promise<RawPolymarketEvent[]> {
+  if (eventIds.length === 0) return [];
+  const url = new URL(`${POLYMARKET_GAMMA_API_URL}/events`);
+  for (const id of eventIds) url.searchParams.append('id', id);
+  const { data } = await rainbowFetch<RawPolymarketEvent[]>(url.toString(), {
+    abortController,
+    method: 'GET',
+    timeout: time.seconds(30),
+  });
+  return data ?? [];
+}
