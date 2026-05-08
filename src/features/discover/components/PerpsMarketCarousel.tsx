@@ -19,9 +19,15 @@ function getPerpCardWidth(item: PlacementItem): number {
 
 export function PerpsMarketCarousel() {
   const placement = usePlacementsStore<Placement | undefined>(state => state.getPlacement(PLACEMENT_ID));
-  const placementsLoading = usePlacementsStore(state => state.status === 'loading' || state.status === 'idle');
+  const placementsLoading = usePlacementsStore(state => {
+    const items = state.getPlacement(PLACEMENT_ID)?.items ?? [];
+    return items.length === 0 && (state.status === 'loading' || state.status === 'idle');
+  });
   const markets = useHyperliquidMarketsStore(state => state.markets);
-  const marketsLoading = useHyperliquidMarketsStore(state => state.status === 'loading' || state.status === 'idle');
+  const marketsLoading = useHyperliquidMarketsStore(state => {
+    const hasMarkets = Object.keys(state.markets).length > 0;
+    return !hasMarkets && (state.status === 'loading' || state.status === 'idle');
+  });
 
   const items = useMemo(
     () => placement?.items.filter(item => item.ref.source === 'hyperliquid' && markets[item.ref.id] !== undefined) ?? [],
