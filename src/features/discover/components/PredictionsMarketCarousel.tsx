@@ -20,7 +20,7 @@ import { MarketCarousel } from './MarketCarousel';
 
 const PLACEMENT_ID = PLACEMENT_IDS.DISCOVER_PREDICTIONS_CAROUSEL;
 const PREDICTION_TILE_WIDTH = 280;
-const EMPTY_EVENTS_BY_ID: Record<string, PolymarketEvent> = {};
+const EMPTY_EVENTS: PolymarketEvent[] = [];
 
 function trackPredictionPress({ eventData, item, placement }: { eventData: PolymarketEvent; item: PlacementItem; placement: Placement }) {
   const market: PolymarketMarket | undefined = eventData.markets[0];
@@ -82,19 +82,25 @@ function trackPredictionPress({ eventData, item, placement }: { eventData: Polym
 export function PredictionsMarketCarousel() {
   const placement = usePlacementsStore<Placement | undefined>(state => state.getPlacement(PLACEMENT_ID));
   const placementsLoading = usePlacementsStore(state => state.status === 'loading' || state.status === 'idle');
-  const eventsByIdState = useDiscoverPredictionsStore(state => state.getData()?.eventsById ?? EMPTY_EVENTS_BY_ID);
+  const events = useDiscoverPredictionsStore(state => state.getData()?.events ?? EMPTY_EVENTS);
   const predictionsLoading = useDiscoverPredictionsStore(state => state.status === 'loading' || state.status === 'idle');
 
+  const eventsById = useMemo(() => {
+    const map = new Map<string, PolymarketEvent>();
+    for (const event of events) map.set(event.id, event);
+    return map;
+  }, [events]);
+
   const items = useMemo(
-    () => placement?.items.filter(item => item.ref.source === 'polymarket' && eventsByIdState[item.ref.id] !== undefined) ?? [],
-    [placement, eventsByIdState]
+    () => placement?.items.filter(item => item.ref.source === 'polymarket' && eventsById.has(item.ref.id)) ?? [],
+    [placement, eventsById]
   );
   const isLoading = placementsLoading || predictionsLoading;
 
   if (!isLoading && items.length === 0) return null;
 
   const renderItem = (item: PlacementItem) => {
-    const eventData = eventsByIdState[item.ref.id];
+    const eventData = eventsById.get(item.ref.id);
     if (!eventData) return <LoadingSkeleton />;
     if (!placement) return <LoadingSkeleton />;
     return (
