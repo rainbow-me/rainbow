@@ -18,8 +18,7 @@ import { type PolymarketPosition, type PolymarketWalletListData } from '@/featur
 import { usePositionsStore } from '@/features/positions/stores/positionsStore';
 import { useRnbwFeatureCard } from '@/features/rnbw-rewards/hooks/useRnbwFeatureCard';
 import { buildBriefWalletSectionsSelector, type WalletSectionsState } from '@/helpers/buildWalletSections';
-import useHiddenTokens from '@/hooks/useHiddenTokens';
-import useShowcaseTokens from '@/hooks/useShowcaseTokens';
+import { useHiddenTokens, useShowcaseTokens } from '@/hooks/useProfileTokens';
 import { useRemoteConfig } from '@/model/remoteConfig';
 import { useUserAssetsStore } from '@/state/assets/userAssets';
 import { useClaimablesStore } from '@/state/claimables/claimables';

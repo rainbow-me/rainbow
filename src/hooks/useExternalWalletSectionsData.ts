@@ -1,8 +1,7 @@
 import { useMemo } from 'react';
 
 import { legacyBuildBriefUniqueTokenList } from '@/helpers/assets';
-import useHiddenTokens from '@/hooks/useHiddenTokens';
-import useShowcaseTokens from '@/hooks/useShowcaseTokens';
+import { useHiddenTokens, useShowcaseTokens } from '@/hooks/useProfileTokens';
 import { useLegacyNFTs } from '@/resources/nfts';
 
 import { type AssetListType } from '../components/asset-list/RecyclerAssetList2';

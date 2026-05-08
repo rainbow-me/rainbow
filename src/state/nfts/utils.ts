@@ -3,8 +3,7 @@ import { type Address } from 'viem';
 import type { UniqueAsset } from '@/entities/uniqueAssets';
 import { ENS_NFT_CONTRACT_ADDRESS } from '@/features/ens/references';
 import { isENSAddressFormat } from '@/helpers/validators';
-import { getHidden, hiddenTokensQueryKey } from '@/hooks/useFetchHiddenTokens';
-import { getShowcase, showcaseTokensQueryKey } from '@/hooks/useFetchShowcaseTokens';
+import { fetchHiddenTokens, fetchShowcaseTokens, hiddenTokensQueryKey, showcaseTokensQueryKey } from '@/hooks/useFetchProfileTokens';
 import { queryClient } from '@/react-query';
 import { fetchNFTData, nftsQueryKey, type NFTData } from '@/resources/nfts';
 import { parseUniqueId } from '@/resources/nfts/utils';
@@ -125,7 +124,10 @@ export async function getHiddenAndShowcaseCollectionIds(
   category?: 'showcase' | 'hidden'
 ): Promise<{ collectionIds: Set<string> } | { showcaseCollectionIds: Set<string>; hiddenCollectionIds: Set<string> }> {
   if (category) {
-    const tokens = category === 'showcase' ? await getShowcase(address) : await getHidden(address);
+    const tokens =
+      category === 'showcase'
+        ? await fetchShowcaseTokens({ address: address.toString() })
+        : await fetchHiddenTokens({ address: address.toString() });
 
     return {
       collectionIds: new Set(
@@ -137,7 +139,10 @@ export async function getHiddenAndShowcaseCollectionIds(
     };
   }
 
-  const [showcaseTokens, hiddenTokens] = await Promise.all([getShowcase(address), getHidden(address)]);
+  const [showcaseTokens, hiddenTokens] = await Promise.all([
+    fetchShowcaseTokens({ address: address.toString() }),
+    fetchHiddenTokens({ address: address.toString() }),
+  ]);
 
   return {
     showcaseCollectionIds: new Set(

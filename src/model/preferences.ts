@@ -127,29 +127,27 @@ export async function setPreference<K extends keyof Omit<PreferencesDataMap, 'ad
   }
 }
 
+/**
+ * Returns the preference value, or `null` when the API responds with `success: false`
+ * (e.g., no preferences exist for this address). Throws on transport errors so callers
+ * can distinguish "API said no" from "request didn't reach the API" — React Query retries
+ * the latter, and mutations roll back instead of overwriting cached state with `init`.
+ */
 export async function getPreference<K extends keyof PreferencesDataMap>(
   key: K,
   address: EthereumAddress
 ): Promise<PreferencesDataMap[K] | null | undefined> {
-  try {
-    const { data } = await preferencesAPI.get<PreferencesResponse<K>>(`${PREFS_ENDPOINT}/${key}`, {
-      params: { address },
-    });
-    logger.debug(`[preferences]: ☁️  RESPONSE`, {
-      reason: data?.reason,
-      success: data?.success,
-    });
+  const { data } = await preferencesAPI.get<PreferencesResponse<K>>(`${PREFS_ENDPOINT}/${key}`, {
+    params: { address },
+  });
+  logger.debug(`[preferences]: ☁️  RESPONSE`, {
+    reason: data?.reason,
+    success: data?.success,
+  });
 
-    if (!data?.success) {
-      return null;
-    }
-
-    return data.data;
-  } catch (e) {
-    logger.warn(`[preferences]: Preferences API failed to get preference`, {
-      preferenceKey: key,
-      error: e,
-    });
+  if (!data?.success) {
     return null;
   }
+
+  return data.data;
 }

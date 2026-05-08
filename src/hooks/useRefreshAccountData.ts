@@ -7,8 +7,7 @@ import { hyperliquidAccountActions } from '@/features/perps/stores/hyperliquidAc
 import { usePolymarketBalanceStore } from '@/features/polymarket/stores/polymarketBalanceStore';
 import { usePolymarketPositionsStore } from '@/features/polymarket/stores/polymarketPositionsStore';
 import { usePositionsStore } from '@/features/positions/stores/positionsStore';
-import { hiddenTokensQueryKey } from '@/hooks/useFetchHiddenTokens';
-import { showcaseTokensQueryKey } from '@/hooks/useFetchShowcaseTokens';
+import { hiddenTokensQueryKey, showcaseTokensQueryKey } from '@/hooks/useFetchProfileTokens';
 import { logger, RainbowError } from '@/logger';
 import { createQueryKey, queryClient } from '@/react-query';
 import { useUserAssetsStore } from '@/state/assets/userAssets';
