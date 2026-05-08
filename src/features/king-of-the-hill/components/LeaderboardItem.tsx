@@ -13,7 +13,7 @@ import Navigation from '@/navigation/Navigation';
 import Routes from '@/navigation/routesNames';
 import { DEVICE_WIDTH } from '@/utils/deviceUtils';
 
-import { formatPriceChange, getPriceChangeColor } from './utils';
+import { formatPriceChange, getPriceChangeColor } from '../utils/priceChange';
 
 type LeaderboardItemProps = {
   token: Token;
