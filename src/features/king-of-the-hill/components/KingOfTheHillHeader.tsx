@@ -10,7 +10,6 @@ import crownImage from '@/assets/crown.png';
 import ButtonPressAnimation from '@/components/animations/ButtonPressAnimation';
 import { ChainImage } from '@/components/coin-icon/ChainImage';
 import { ShinyCoinIcon } from '@/components/coin-icon/ShinyCoinIcon';
-import { CHEVRON_RIGHT_SYMBOL } from '@/components/king-of-the-hill/constants';
 import { RainbowImage } from '@/components/RainbowImage';
 import { Box, Separator, Text } from '@/design-system';
 import { type KingOfTheHill } from '@/graphql/__generated__/metadata';
@@ -25,9 +24,10 @@ import { fetchAndSetEnsData } from '@/screens/Airdrops/ClaimAirdropSheet';
 import { formatAddressForDisplay } from '@/utils/abbreviations';
 import { time } from '@/utils/time';
 
+import { CHEVRON_RIGHT_SYMBOL } from '../constants';
+import { formatPriceChange, getPriceChangeColor } from '../utils/priceChange';
 import { HeaderButton } from './HeaderButton';
 import { RainbowGlow } from './RainbowGlow';
-import { formatPriceChange, getPriceChangeColor } from './utils';
 
 type HeaderProps = {
   kingOfTheHill?: KingOfTheHill | null;

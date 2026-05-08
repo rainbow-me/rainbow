@@ -1,8 +1,9 @@
 import React from 'react';
 import { View } from 'react-native';
 
-import { CHEVRON_RIGHT_SYMBOL } from '@/components/king-of-the-hill/constants';
 import { Box, Inline, Text } from '@/design-system';
+
+import { CHEVRON_RIGHT_SYMBOL } from '../constants';
 
 // Note: this is disabled at the moment pending backend data update
 

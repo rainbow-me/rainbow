@@ -7,7 +7,6 @@ import { useSharedValue } from 'react-native-reanimated';
 import ButtonPressAnimation from '@/components/animations/ButtonPressAnimation';
 import { ContactAvatar } from '@/components/contacts';
 import ImageAvatar from '@/components/contacts/ImageAvatar';
-import { KingOfTheHillContent } from '@/components/king-of-the-hill/KingOfTheHillContent';
 import { Navbar } from '@/components/navbar/Navbar';
 import { Text, useColorMode } from '@/design-system';
 import { abbreviateNumber } from '@/helpers/utilities';
@@ -16,10 +15,12 @@ import * as i18n from '@/languages';
 import Navigation from '@/navigation/Navigation';
 import Routes from '@/navigation/routesNames';
 import { useAirdropsStore } from '@/state/claimables/airdropsStore';
-import { useKingOfTheHillStore } from '@/state/kingOfTheHill/kingOfTheHillStore';
 import { useNavigationStore } from '@/state/navigation/navigationStore';
 import { useAccountProfileInfo } from '@/state/wallets/walletsStore';
 import { THICK_BORDER_WIDTH } from '@/styles/constants';
+
+import { KingOfTheHillContent } from '../components/KingOfTheHillContent';
+import { useKingOfTheHillStore } from '../stores/kingOfTheHillStore';
 
 export const KingOfTheHillScreen = () => {
   const { isDarkMode } = useColorMode();
