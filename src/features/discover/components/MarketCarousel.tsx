@@ -70,8 +70,10 @@ export function MarketCarousel<T extends PlacementItem>({
   }, [getItemWidth, itemWidths]);
 
   const renderFlatListItem = useCallback(
-    ({ item, index }: { item: T; index: number }) => <View style={{ width: itemWidths[index] ?? itemWidth }}>{renderItem(item)}</View>,
-    [itemWidth, itemWidths, renderItem]
+    ({ item, index }: { item: T; index: number }) => (
+      <View style={{ height: itemHeight, overflow: 'visible', width: itemWidths[index] ?? itemWidth }}>{renderItem(item)}</View>
+    ),
+    [itemHeight, itemWidth, itemWidths, renderItem]
   );
 
   const handleSeeAllPress = useCallback(() => {
