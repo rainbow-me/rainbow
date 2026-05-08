@@ -1,5 +1,5 @@
 import { memo, useCallback, useMemo } from 'react';
-import { StyleSheet, type GestureResponderEvent } from 'react-native';
+import { Platform, StyleSheet, type GestureResponderEvent } from 'react-native';
 
 import ConditionalWrap from 'conditional-wrap';
 import { LinearGradient } from 'expo-linear-gradient';
@@ -10,7 +10,6 @@ import { GradientBorderView } from '@/components/gradient-border/GradientBorderV
 import ImgixImage from '@/components/images/ImgixImage';
 import { LiveTokenText, useLiveTokenValue } from '@/components/live-token-text/LiveTokenText';
 import { Bleed, Box, Separator, Text, useColorMode } from '@/design-system';
-import { IS_IOS } from '@/env';
 import { formatCurrency } from '@/features/perps/utils/formatCurrency';
 import { CheckOrXBadge } from '@/features/polymarket/components/CheckOrXBadge';
 import { InnerShadow } from '@/features/polymarket/components/InnerShadow';
@@ -119,9 +118,9 @@ export const PolymarketPositionCard = memo(function PolymarketPositionCard({
   }, [livePositionValue, position.initialValue]);
 
   return (
-    <ConditionalWrap condition={!IS_IOS} wrap={children => <Box style={styles.container}>{children}</Box>}>
+    <ConditionalWrap condition={Platform.OS !== 'ios'} wrap={children => <Box style={styles.container}>{children}</Box>}>
       <>
-        {!IS_IOS && showActionButton && (
+        {Platform.OS !== 'ios' && showActionButton && (
           <Box style={styles.actionButtonOverlay}>
             <ButtonPressAnimation onPress={onPressActionButton} scaleTo={0.975} exclusive>
               <Box
@@ -282,7 +281,7 @@ export const PolymarketPositionCard = memo(function PolymarketPositionCard({
                   </Box>
                 </Box>
                 {showActionButton &&
-                  (IS_IOS ? (
+                  (Platform.OS === 'ios' ? (
                     <ButtonPressAnimation onPress={onPressActionButton} scaleTo={0.975} exclusive>
                       <Box
                         width="full"

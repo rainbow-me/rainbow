@@ -1,9 +1,8 @@
 import { useCallback, useLayoutEffect } from 'react';
-import { type LayoutRectangle, type ViewProps } from 'react-native';
+import { Platform, type LayoutRectangle, type ViewProps } from 'react-native';
 
 import { runOnUI, useAnimatedReaction, useSharedValue } from 'react-native-reanimated';
 
-import { IS_IOS } from '@/env';
 import { useLayoutWorklet } from '@/hooks/reanimated/useLayoutWorklet';
 
 import { useDndContext } from '../DndContext';
@@ -91,7 +90,7 @@ export const useDroppable = ({ id, data = {}, disabled = false }: UseDroppableOp
 
   // Standard onLayout event for Android — also required to trigger 'topLayout' event on iOS
   const onLayout: ViewProps['onLayout'] = useCallback(() => {
-    if (IS_IOS) return;
+    if (Platform.OS === 'ios') return;
 
     assert(containerRef.current);
     node.current?.measureLayout(containerRef.current, (x, y, width, height) => {

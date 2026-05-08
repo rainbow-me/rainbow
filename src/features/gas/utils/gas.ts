@@ -1,6 +1,7 @@
+import { Platform } from 'react-native';
+
 import { type TextColor } from '@/design-system/color/palettes';
 import type { NativeCurrencyKey } from '@/entities/nativeCurrencyTypes';
-import { IS_IOS } from '@/env';
 import { convertAmountToNativeDisplay } from '@/helpers/utilities';
 import * as i18n from '@/languages';
 import { colors } from '@/styles';
@@ -61,7 +62,7 @@ const GAS_EMOJIS: {
 } = {
   [CUSTOM]: '⚙️',
   [FAST]: '🚀',
-  [NORMAL]: IS_IOS ? '⏱' : '🕘',
+  [NORMAL]: Platform.OS === 'ios' ? '⏱' : '🕘',
   [URGENT]: '🚨',
 };
 

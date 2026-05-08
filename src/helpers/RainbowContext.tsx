@@ -1,4 +1,5 @@
 import React, { createContext, useCallback, useEffect, useMemo, useState, type PropsWithChildren } from 'react';
+import { Platform } from 'react-native';
 
 import { JsonRpcProvider } from '@ethersproject/providers';
 import { parseEther } from '@ethersproject/units';
@@ -7,7 +8,7 @@ import { createMMKV } from 'react-native-mmkv';
 import { useSharedValue } from 'react-native-reanimated';
 
 import { defaultConfigValues, type defaultConfig } from '@/config/experimental';
-import { IS_ANDROID, IS_DEV, IS_TEST } from '@/env';
+import { IS_DEV, IS_TEST } from '@/env';
 import Emoji from '@/framework/ui/components/Emoji';
 import { logger, RainbowError } from '@/logger';
 import { STORAGE_IDS } from '@/model/mmkv';
@@ -98,7 +99,7 @@ export default function RainbowContextWrapper({ children }: PropsWithChildren) {
 
   const fundTestWallet = useCallback(async () => {
     if (!IS_TEST) return;
-    const RPC_URL = IS_ANDROID ? 'http://10.0.2.2:8545' : 'http://127.0.0.1:8545';
+    const RPC_URL = Platform.OS === 'android' ? 'http://10.0.2.2:8545' : 'http://127.0.0.1:8545';
     try {
       const provider = new JsonRpcProvider(RPC_URL);
       const wallet = new Wallet('0xac0974bec39a17e36ba4a6b4d238ff944bacb478cbed5efcae784d7bf4f2ff80', provider);

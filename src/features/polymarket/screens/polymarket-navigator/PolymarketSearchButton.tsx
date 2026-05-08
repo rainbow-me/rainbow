@@ -1,12 +1,11 @@
 import React, { memo } from 'react';
-import { StyleSheet, View } from 'react-native';
+import { Platform, StyleSheet, View } from 'react-native';
 
 import { LinearGradient } from 'expo-linear-gradient';
 import { BlurView } from 'react-native-blur-view';
 
 import ButtonPressAnimation from '@/components/animations/ButtonPressAnimation';
 import { Box, globalColors, TextIcon, useColorMode } from '@/design-system';
-import { IS_IOS } from '@/env';
 import { InnerShadow } from '@/features/polymarket/components/InnerShadow';
 import { POLYMARKET_BACKGROUND_LIGHT } from '@/features/polymarket/constants';
 import { PolymarketNavigation } from '@/features/polymarket/screens/polymarket-navigator/PolymarketNavigator';
@@ -41,7 +40,7 @@ export const PolymarketSearchButton = memo(function PolymarketSearchButton() {
           />
           {isDarkMode && (
             <>
-              {IS_IOS ? (
+              {Platform.OS === 'ios' ? (
                 <BlurView blurIntensity={24} blurStyle={'dark'} style={StyleSheet.absoluteFill} />
               ) : (
                 <View style={[StyleSheet.absoluteFill, { backgroundColor: '#190F1C' }]} />

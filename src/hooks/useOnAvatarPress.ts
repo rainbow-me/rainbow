@@ -1,4 +1,5 @@
 import { useCallback } from 'react';
+import { Platform } from 'react-native';
 
 import { type ImagePickerAsset } from 'expo-image-picker';
 
@@ -6,7 +7,6 @@ import { analytics } from '@/analytics';
 import { type MenuConfig } from '@/components/native-context-menu/contextMenu';
 import { enableActionsOnReadOnlyWallet } from '@/config/debug';
 import useExperimentalFlag, { PROFILES } from '@/config/experimentalHooks';
-import { IS_IOS } from '@/env';
 import useENSAvatar, { prefetchENSAvatar } from '@/features/ens/hooks/useENSAvatar';
 import { prefetchENSCover } from '@/features/ens/hooks/useENSCover';
 import useENSOwner from '@/features/ens/hooks/useENSOwner';
@@ -141,7 +141,7 @@ export default ({ screenType = 'transaction' }: UseOnAvatarPressProps = {}) => {
             if (accountImage) {
               onAvatarRemovePhoto();
             } else {
-              IS_IOS ? onAvatarPickEmoji() : setNextEmoji();
+              Platform.OS === 'ios' ? onAvatarPickEmoji() : setNextEmoji();
             }
           }
         } else {
@@ -152,7 +152,7 @@ export default ({ screenType = 'transaction' }: UseOnAvatarPressProps = {}) => {
             if (accountImage) {
               onAvatarRemovePhoto();
             } else {
-              IS_IOS ? onAvatarPickEmoji() : setNextEmoji();
+              Platform.OS === 'ios' ? onAvatarPickEmoji() : setNextEmoji();
             }
           }
         }
@@ -163,7 +163,7 @@ export default ({ screenType = 'transaction' }: UseOnAvatarPressProps = {}) => {
             if (accountImage) {
               onAvatarRemovePhoto();
             } else {
-              IS_IOS ? onAvatarPickEmoji() : setNextEmoji();
+              Platform.OS === 'ios' ? onAvatarPickEmoji() : setNextEmoji();
             }
           }
         } else {
@@ -173,7 +173,7 @@ export default ({ screenType = 'transaction' }: UseOnAvatarPressProps = {}) => {
             if (accountImage) {
               onAvatarRemovePhoto();
             } else {
-              IS_IOS ? onAvatarPickEmoji() : setNextEmoji();
+              Platform.OS === 'ios' ? onAvatarPickEmoji() : setNextEmoji();
             }
           }
         }

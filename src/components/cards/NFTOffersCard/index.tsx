@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { ScrollView } from 'react-native';
+import { Platform, ScrollView } from 'react-native';
 
 import { FlashList } from '@shopify/flash-list';
 import Animated, { useAnimatedStyle, useSharedValue, withTiming } from 'react-native-reanimated';
@@ -24,7 +24,6 @@ import {
   useColorMode,
   useForegroundColor,
 } from '@/design-system';
-import { IS_ANDROID } from '@/env';
 import { type NftOffer } from '@/graphql/__generated__/arc';
 import { convertAmountToNativeDisplay } from '@/helpers/utilities';
 import useDimensions from '@/hooks/useDimensions';
@@ -42,7 +41,7 @@ const CARD_HEIGHT = 250;
 const OFFER_CELL_HEIGHT = NFT_IMAGE_SIZE + 60;
 const OFFER_CELL_WIDTH = NFT_IMAGE_SIZE + CELL_HORIZONTAL_PADDING * 2;
 
-const LoadingSpinner = IS_ANDROID ? Spinner : ActivityIndicator;
+const LoadingSpinner = Platform.OS === 'android' ? Spinner : ActivityIndicator;
 
 export const NFTOffersCard = () => {
   const borderColor = useForegroundColor('separator');

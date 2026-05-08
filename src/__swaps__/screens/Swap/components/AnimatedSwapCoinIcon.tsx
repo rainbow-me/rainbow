@@ -1,5 +1,5 @@
 import React, { memo } from 'react';
-import { StyleSheet, View, type ViewStyle } from 'react-native';
+import { Platform, StyleSheet, View, type ViewStyle } from 'react-native';
 
 import Animated, { useAnimatedProps, useAnimatedStyle, useDerivedValue, useSharedValue, withTiming } from 'react-native-reanimated';
 
@@ -7,7 +7,6 @@ import { getColorValueForThemeWorklet } from '@/__swaps__/utils/swaps';
 import { AnimatedFasterImage } from '@/components/AnimatedComponents/AnimatedFasterImage';
 import { DEFAULT_FASTER_IMAGE_CONFIG } from '@/components/images/ImgixImage';
 import { Box, globalColors, useColorMode } from '@/design-system';
-import { IS_ANDROID, IS_IOS } from '@/env';
 import { borders } from '@/styles';
 import { useTheme } from '@/theme/ThemeContext';
 import { PIXEL_RATIO } from '@/utils/deviceUtils';
@@ -43,7 +42,7 @@ export const AnimatedSwapCoinIcon = memo(function AnimatedSwapCoinIcon({
     return {
       source: {
         ...DEFAULT_FASTER_IMAGE_CONFIG,
-        borderRadius: IS_ANDROID ? (size / 2) * PIXEL_RATIO : undefined,
+        borderRadius: Platform.OS === 'android' ? (size / 2) * PIXEL_RATIO : undefined,
         url: coinIconUrl.value,
       },
     };
@@ -106,7 +105,7 @@ export const AnimatedSwapCoinIcon = memo(function AnimatedSwapCoinIcon({
             style={[
               sx.coinIcon,
               {
-                borderRadius: IS_IOS ? size / 2 : undefined,
+                borderRadius: Platform.OS === 'ios' ? size / 2 : undefined,
                 height: size,
                 width: size,
               },
@@ -124,7 +123,6 @@ export const AnimatedSwapCoinIcon = memo(function AnimatedSwapCoinIcon({
           style={[animatedEmptyStateStyles, coinIconFallbackStyle(size)]}
         />
       </Animated.View>
-
       {showBadge && <AnimatedChainImage assetType={assetType} size={chainSize} />}
     </View>
   );

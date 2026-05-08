@@ -1,4 +1,5 @@
 import { useEffect, useRef } from 'react';
+import { Platform } from 'react-native';
 
 import {
   addDiagnosticLogListener,
@@ -7,7 +8,7 @@ import {
   useMobileWalletProtocolHost,
 } from '@coinbase/mobile-wallet-protocol-host';
 
-import { IS_ANDROID, IS_DEV } from '@/env';
+import { IS_DEV } from '@/env';
 import { logger, RainbowError } from '@/logger';
 import { handleMobileWalletProtocolRequest } from '@/utils/requestNavigationHandlers';
 
@@ -78,7 +79,7 @@ export const MobileWalletProtocolListener = () => {
   }, []);
 
   useEffect(() => {
-    if (IS_ANDROID) {
+    if (Platform.OS === 'android') {
       (async function handleAndroidIntent() {
         const intentUrl = await getAndroidIntentUrl();
         if (intentUrl) {

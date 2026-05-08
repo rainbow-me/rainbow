@@ -1,11 +1,11 @@
 import React, { useCallback, useMemo, type ReactNode } from 'react';
+import { Platform } from 'react-native';
 
 import ButtonPressAnimation from '@/components/animations/ButtonPressAnimation';
 import { ContextMenu } from '@/components/context-menu';
 import { Centered } from '@/components/layout';
 import ContextMenuButton from '@/components/native-context-menu/contextMenu';
 import { Box } from '@/design-system';
-import { IS_ANDROID } from '@/env';
 import { type GasSettings } from '@/features/gas/hooks/useCustomGas';
 import { type GasSpeed } from '@/features/gas/types/gasSpeed';
 import gasUtils from '@/features/gas/utils/gas';
@@ -63,11 +63,11 @@ export function GasMenu({ children, onSelectGasSpeed }: { children: ReactNode; o
     <Box
       alignItems="center"
       justifyContent="center"
-      style={{ margin: IS_ANDROID ? 0 : -GAS_BUTTON_HIT_SLOP }}
+      style={{ margin: Platform.OS === 'android' ? 0 : -GAS_BUTTON_HIT_SLOP }}
       testID="gas-speed-pager"
       pointerEvents={isGasSponsored ? 'none' : 'auto'}
     >
-      {IS_ANDROID ? (
+      {Platform.OS === 'android' ? (
         <ContextMenu
           activeOpacity={0}
           isAnchoredToRight

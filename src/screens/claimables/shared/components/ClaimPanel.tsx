@@ -1,8 +1,8 @@
 import React from 'react';
+import { Platform } from 'react-native';
 
 import { controlPanelStyles, Panel, TapToDismiss } from '@/components/SmoothPager/ListPanel';
 import { Box } from '@/design-system';
-import { IS_IOS } from '@/env';
 import safeAreaInsetValues from '@/utils/safeAreaInsetValues';
 
 import { type ClaimStatus } from '../../shared/types';
@@ -26,7 +26,7 @@ export function ClaimPanel({
       <Box
         style={[
           controlPanelStyles.panelContainer,
-          { bottom: Math.max(safeAreaInsetValues.bottom + 5, IS_IOS ? 8 : 30), alignItems: 'center', width: '100%' },
+          { bottom: Math.max(safeAreaInsetValues.bottom + 5, Platform.OS === 'ios' ? 8 : 30), alignItems: 'center', width: '100%' },
         ]}
       >
         <Panel>

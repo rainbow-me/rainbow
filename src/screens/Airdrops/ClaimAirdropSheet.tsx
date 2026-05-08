@@ -1,5 +1,5 @@
 import React, { memo, useCallback, useEffect, useMemo, useState } from 'react';
-import { StyleSheet, View } from 'react-native';
+import { Platform, StyleSheet, View } from 'react-native';
 
 import { useRoute, type RouteProp } from '@react-navigation/native';
 import { Blur, Canvas, Circle, Fill, Group, Image, Paint, point, Shadow, useImage } from '@shopify/react-native-skia';
@@ -37,7 +37,6 @@ import {
 } from '@/design-system';
 import { foregroundColors } from '@/design-system/color/palettes';
 import { getColorForTheme } from '@/design-system/color/useForegroundColor';
-import { IS_IOS } from '@/env';
 import { fetchENSAvatar } from '@/features/ens/hooks/useENSAvatar';
 import { fetchReverseRecord } from '@/features/ens/utils/handlers';
 import { opacity } from '@/framework/ui/utils/opacity';
@@ -652,7 +651,7 @@ const styles = StyleSheet.create({
     borderRadius: 8,
     height: 16,
     justifyContent: 'center',
-    marginTop: IS_IOS ? undefined : -3,
+    marginTop: Platform.OS === 'ios' ? undefined : -3,
     overflow: 'hidden',
     position: 'relative',
     width: 16,

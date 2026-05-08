@@ -1,5 +1,5 @@
 import React, { useCallback, useMemo, useRef } from 'react';
-import { StyleSheet, View } from 'react-native';
+import { Platform, StyleSheet, View } from 'react-native';
 
 import { Gesture, GestureDetector, type TapGesture } from 'react-native-gesture-handler';
 import Animated, {
@@ -24,7 +24,6 @@ import { clamp, getColorValueForThemeWorklet } from '@/__swaps__/utils/swaps';
 import { SPRING_CONFIGS, TIMING_CONFIGS } from '@/components/animations/animationConfigs';
 import { GestureHandlerButton } from '@/components/buttons';
 import { AnimatedText, Bleed, Box, Column, Columns, globalColors, Inline, useColorMode, useForegroundColor } from '@/design-system';
-import { IS_IOS } from '@/env';
 import { greaterThanWorklet } from '@/framework/core/safeMath';
 import { opacity } from '@/framework/ui/utils/opacity';
 import * as i18n from '@/languages';
@@ -174,12 +173,12 @@ export const SwapSlider = ({
         // On Android, for some reason waiting until onActive to set SwapInputController.isQuoteStale.value = 1 causes
         // the outputAmount text color to break. It's preferable to set it in onActive, so we're setting it in onStart
         // for Android only. It's possible that migrating this handler to the RNGH v2 API will remove the need for this.
-        if (!IS_IOS) isQuoteStale.value = 1;
+        if (Platform.OS !== 'ios') isQuoteStale.value = 1;
       })
       .onUpdate(event => {
         const hasSwappableBalance = hasBalance.value;
 
-        if (IS_IOS && sliderXPosition.value > 0 && isQuoteStale.value !== 1 && hasSwappableBalance) {
+        if (Platform.OS === 'ios' && sliderXPosition.value > 0 && isQuoteStale.value !== 1 && hasSwappableBalance) {
           isQuoteStale.value = 1;
         }
 
@@ -363,28 +362,30 @@ export const SwapSlider = ({
         ),
         SPRING_CONFIGS.springConfig
       ),
-      borderWidth: IS_IOS
-        ? interpolate(
-            xPercentage.value,
-            [0, (THICK_BORDER_WIDTH * 2) / width, (THICK_BORDER_WIDTH * 4) / width, 1],
-            [0, 0, THICK_BORDER_WIDTH, THICK_BORDER_WIDTH],
-            'clamp'
-          )
-        : 0,
+      borderWidth:
+        Platform.OS === 'ios'
+          ? interpolate(
+              xPercentage.value,
+              [0, (THICK_BORDER_WIDTH * 2) / width, (THICK_BORDER_WIDTH * 4) / width, 1],
+              [0, 0, THICK_BORDER_WIDTH, THICK_BORDER_WIDTH],
+              'clamp'
+            )
+          : 0,
       width: `${uiXPercentage.value * 100}%`,
     };
   });
 
   const rightBarContainerStyle = useAnimatedStyle(() => {
     return {
-      borderWidth: IS_IOS
-        ? interpolate(
-            xPercentage.value,
-            [0, 1 - (THICK_BORDER_WIDTH * 4) / width, 1 - (THICK_BORDER_WIDTH * 2) / width, 1],
-            [THICK_BORDER_WIDTH, THICK_BORDER_WIDTH, 0, 0],
-            'clamp'
-          )
-        : 0,
+      borderWidth:
+        Platform.OS === 'ios'
+          ? interpolate(
+              xPercentage.value,
+              [0, 1 - (THICK_BORDER_WIDTH * 4) / width, 1 - (THICK_BORDER_WIDTH * 2) / width, 1],
+              [THICK_BORDER_WIDTH, THICK_BORDER_WIDTH, 0, 0],
+              'clamp'
+            )
+          : 0,
       backgroundColor: colors.value.inactiveColorRight,
       width: `${(1 - uiXPercentage.value - SCRUBBER_WIDTH / width) * 100}%`,
     };

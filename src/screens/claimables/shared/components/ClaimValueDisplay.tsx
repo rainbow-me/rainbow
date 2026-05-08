@@ -1,10 +1,9 @@
 import React from 'react';
-import { View } from 'react-native';
+import { Platform, View } from 'react-native';
 
 import ShimmerAnimation from '@/components/animations/ShimmerAnimation';
 import RainbowCoinIcon from '@/components/coin-icon/RainbowCoinIcon';
 import { Bleed, Box, globalColors, Text, TextShadow, useColorMode } from '@/design-system';
-import { IS_IOS } from '@/env';
 
 export function ClaimValueDisplay({
   label,
@@ -25,7 +24,7 @@ export function ClaimValueDisplay({
         <Box alignItems="center" flexDirection="row" gap={8} justifyContent="center">
           <View
             style={
-              IS_IOS && isDarkMode
+              Platform.OS === 'ios' && isDarkMode
                 ? {
                     shadowColor: globalColors.grey100,
                     shadowOpacity: 0.2,

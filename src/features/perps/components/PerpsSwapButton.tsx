@@ -1,4 +1,4 @@
-import { StyleSheet, View, type ViewStyle } from 'react-native';
+import { Platform, StyleSheet, View, type ViewStyle } from 'react-native';
 
 import chroma from 'chroma-js';
 import { LinearGradient } from 'expo-linear-gradient';
@@ -17,7 +17,6 @@ import { SPRING_CONFIGS, TIMING_CONFIGS } from '@/components/animations/animatio
 import { GestureHandlerButton } from '@/components/buttons/GestureHandlerButton';
 import { Box, Cover, useColorMode, useForegroundColor } from '@/design-system';
 import { AnimatedText, type SharedOrDerivedValueText } from '@/design-system/components/Text/AnimatedText';
-import { IS_IOS } from '@/env';
 import { usePerpsAccentColorContext } from '@/features/perps/context/PerpsAccentColorContext';
 import { opacity } from '@/framework/ui/utils/opacity';
 
@@ -46,7 +45,7 @@ const HoldProgress = ({ holdProgress, color }: { holdProgress: SharedValue<numbe
           {
             backgroundColor: brightenedColor,
             height: '100%',
-            ...(IS_IOS
+            ...(Platform.OS === 'ios'
               ? {
                   shadowColor: brightenedColor,
                   shadowOffset: {

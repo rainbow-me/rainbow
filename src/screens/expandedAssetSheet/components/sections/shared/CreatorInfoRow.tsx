@@ -1,5 +1,5 @@
 import React, { memo, useEffect } from 'react';
-import { StyleSheet, View } from 'react-native';
+import { Platform, StyleSheet, View } from 'react-native';
 
 import Animated, {
   FadeIn,
@@ -18,7 +18,6 @@ import { pulsingConfig, sliderConfig } from '@/__swaps__/screens/Swap/constants'
 import { AnimatedImage } from '@/components/AnimatedComponents/AnimatedImage';
 import { TIMING_CONFIGS } from '@/components/animations/animationConfigs';
 import { AnimatedText, Bleed, Box, Text, TextIcon, TextShadow, useBackgroundColor } from '@/design-system';
-import { IS_IOS } from '@/env';
 import { opacity } from '@/framework/ui/utils/opacity';
 import { useStableValue } from '@/hooks/useStableValue';
 import { fetchAndSetEnsData } from '@/screens/Airdrops/ClaimAirdropSheet';
@@ -116,7 +115,7 @@ const styles = StyleSheet.create({
     borderRadius: 8,
     height: 16,
     justifyContent: 'center',
-    marginTop: IS_IOS ? undefined : -3,
+    marginTop: Platform.OS === 'ios' ? undefined : -3,
     overflow: 'hidden',
     position: 'relative',
     width: 16,

@@ -1,5 +1,5 @@
 import React, { memo, useEffect } from 'react';
-import { StyleSheet } from 'react-native';
+import { Platform, StyleSheet } from 'react-native';
 
 import { useRoute, type RouteProp } from '@react-navigation/native';
 import { GestureDetector } from 'react-native-gesture-handler';
@@ -7,7 +7,6 @@ import Animated, { interpolateColor, runOnJS, useAnimatedReaction, useAnimatedSt
 
 import { Page } from '@/components/layout';
 import { Box, globalColors, useColorMode } from '@/design-system';
-import { IS_ANDROID } from '@/env';
 import { useSyncSharedValue } from '@/hooks/reanimated/useSyncSharedValue';
 import { setParams } from '@/navigation/Navigation';
 import type Routes from '@/navigation/routesNames';
@@ -211,7 +210,7 @@ const styles = StyleSheet.create({
   },
   tabViewBackground: {
     height: '100%',
-    paddingTop: IS_ANDROID ? 30 : 0,
+    paddingTop: Platform.OS === 'android' ? 30 : 0,
     position: 'absolute',
     width: '100%',
   },

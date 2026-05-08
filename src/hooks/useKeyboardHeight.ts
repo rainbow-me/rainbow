@@ -1,11 +1,10 @@
 import { useCallback, useEffect, useRef } from 'react';
-import { Keyboard, type EmitterSubscription, type KeyboardEventListener } from 'react-native';
+import { Keyboard, Platform, type EmitterSubscription, type KeyboardEventListener } from 'react-native';
 
 import { useRoute, type RouteProp } from '@react-navigation/native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useDispatch, useSelector } from 'react-redux';
 
-import { IS_ANDROID } from '@/env';
 import KeyboardTypes from '@/helpers/keyboardTypes';
 import { type Route } from '@/navigation/routesNames';
 import { type RootStackParamList } from '@/navigation/types';
@@ -27,7 +26,7 @@ export default function useKeyboardHeight(options: UseKeyboardHeightOptions = {}
   const listenerRef = useRef<EmitterSubscription>(undefined);
   const insets = useSafeAreaInsets();
   // Android keyboard height doesn't include the bottom inset.
-  const extraHeight = IS_ANDROID ? insets.bottom : 0;
+  const extraHeight = Platform.OS === 'android' ? insets.bottom : 0;
 
   const dispatch = useDispatch();
 

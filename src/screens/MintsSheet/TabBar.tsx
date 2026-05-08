@@ -1,12 +1,11 @@
 import React from 'react';
-import { View } from 'react-native';
+import { Platform, View } from 'react-native';
 
 import { LinearGradient } from 'expo-linear-gradient';
 import { BlurView } from 'react-native-blur-view';
 
 import ButtonPressAnimation from '@/components/animations/ButtonPressAnimation';
 import { AccentColorProvider, Box, Cover, globalColors, Inline, Text } from '@/design-system';
-import { IS_IOS } from '@/env';
 import { getMintsFilterLabel, MintsFilter, useMintsFilter } from '@/resources/mints';
 import { useTheme } from '@/theme/ThemeContext';
 
@@ -21,7 +20,7 @@ function FilterButton({ filter }: { filter: MintsFilter }) {
     <AccentColorProvider color={highlightedBackgroundColor}>
       <View
         style={
-          IS_IOS
+          Platform.OS === 'ios'
             ? {
                 shadowColor: globalColors.grey100,
                 shadowOffset: { width: 0, height: 2 },
@@ -33,7 +32,7 @@ function FilterButton({ filter }: { filter: MintsFilter }) {
       >
         <View
           style={{
-            ...(IS_IOS
+            ...(Platform.OS === 'ios'
               ? {
                   shadowOffset: { width: 0, height: 4 },
                   shadowRadius: 6,
@@ -76,7 +75,7 @@ export function TabBar() {
         shadowColor: globalColors.grey100,
         shadowOffset: { width: 0, height: 15 },
         shadowRadius: 22.5,
-        shadowOpacity: IS_IOS ? (isDarkMode ? 0.8 : 0.3) : 1,
+        shadowOpacity: Platform.OS === 'ios' ? (isDarkMode ? 0.8 : 0.3) : 1,
         elevation: 24,
         alignSelf: 'center',
       }}

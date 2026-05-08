@@ -1,10 +1,12 @@
+import { Platform } from 'react-native';
+
 import rudderClient from '@rudderstack/rudder-sdk-react-native';
 import * as DeviceInfo from 'react-native-device-info';
 import { REACT_NATIVE_RUDDERSTACK_WRITE_KEY, RUDDERSTACK_DATA_PLANE_URL } from 'react-native-dotenv';
 
 import { event, type EventProperties } from '@/analytics/event';
 import { type UserProperties } from '@/analytics/userProperties';
-import { IS_ANDROID, IS_TEST } from '@/env';
+import { IS_TEST } from '@/env';
 import { logger, RainbowError } from '@/logger';
 import type Routes from '@/navigation/routesNames';
 import { device } from '@/storage';
@@ -44,7 +46,7 @@ export class Analytics {
       return;
     }
 
-    if (IS_ANDROID) {
+    if (Platform.OS === 'android') {
       this.deviceBrand = DeviceInfo.getBrand();
       this.deviceManufacturer = DeviceInfo.getManufacturerSync();
       this.deviceModel = DeviceInfo.getModel();
@@ -130,7 +132,7 @@ export class Analytics {
       walletType: this.walletType,
     };
 
-    if (IS_ANDROID) {
+    if (Platform.OS === 'android') {
       metadata.device_brand = this.deviceBrand;
       metadata.device_manufacturer = this.deviceManufacturer;
       metadata.device_model = this.deviceModel;

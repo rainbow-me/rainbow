@@ -1,10 +1,9 @@
 import React from 'react';
-import { StyleSheet, Text, View } from 'react-native';
+import { Platform, StyleSheet, Text, View } from 'react-native';
 
 import { BlurView } from 'react-native-blur-view';
 import Animated, { useAnimatedStyle, type SharedValue } from 'react-native-reanimated';
 
-import { IS_IOS } from '@/env';
 import { opacity } from '@/framework/ui/utils/opacity';
 import { fonts } from '@/styles';
 import { useTheme } from '@/theme/ThemeContext';
@@ -30,7 +29,7 @@ const EmojisStickyListItem = ({ index, scrollPosition, headerData }: Props) => {
   return (
     <View style={sx.sectionStickyHeaderWrap}>
       <Animated.View style={animatedStyle}>
-        {IS_IOS ? (
+        {Platform.OS === 'ios' ? (
           <View
             style={[
               sx.sectionStickyBlur,

@@ -1,9 +1,9 @@
 import React, { useMemo, type ReactElement } from 'react';
-import { View, type StyleProp, type ViewStyle } from 'react-native';
+import { Platform, View, type StyleProp, type ViewStyle } from 'react-native';
 
 import ConditionalWrap from 'conditional-wrap';
 
-import { IS_ANDROID, IS_TEST } from '@/env';
+import { IS_TEST } from '@/env';
 import { opacity } from '@/framework/ui/utils/opacity';
 
 import { useColorMode } from '../../color/ColorMode';
@@ -60,7 +60,7 @@ export const TextShadow = ({
       }),
     [blur, color, disabled, enableInLightMode, inferredTextColor, isAnimatedText, isDarkMode, shadowOpacity, x, y]
   );
-  if (IS_TEST || (IS_ANDROID && !enableOnAndroid)) {
+  if (IS_TEST || (Platform.OS === 'android' && !enableOnAndroid)) {
     // Make sure to apply containerStyle if we have one.
     return (
       <ConditionalWrap condition={!!containerStyle} wrap={children => <View style={containerStyle}>{children}</View>}>

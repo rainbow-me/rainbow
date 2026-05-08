@@ -1,10 +1,9 @@
-import { Linking } from 'react-native';
+import { Linking, Platform } from 'react-native';
 
 import Clipboard from '@react-native-clipboard/clipboard';
 import { capitalize } from 'lodash';
 import * as DeviceInfo from 'react-native-device-info';
 
-import { IS_IOS } from '@/env';
 import * as i18n from '@/languages';
 import { getWalletAddresses, getWallets } from '@/state/wallets/walletsStore';
 import { device } from '@/storage';
@@ -13,7 +12,7 @@ import { Alert } from '../components/alerts';
 import useAppVersion from './useAppVersion';
 
 const FeedbackEmailAddress = 'support@rainbow.me';
-const platform = IS_IOS ? 'iOS' : 'Android';
+const platform = Platform.OS === 'ios' ? 'iOS' : 'Android';
 const categorySubjectMap: Record<SupportCategory, string> = {
   getting_started: 'Getting Started',
   backup_recovery: 'Backup & Recovery',
@@ -61,7 +60,7 @@ const FeedbackErrorAlert = () =>
   });
 
 function buildDebugInfo(appVersion: string): string {
-  const deviceModel = IS_IOS ? DeviceInfo.getModel() : `${capitalize(DeviceInfo.getBrand())} ${DeviceInfo.getModel()}`;
+  const deviceModel = Platform.OS === 'ios' ? DeviceInfo.getModel() : `${capitalize(DeviceInfo.getBrand())} ${DeviceInfo.getModel()}`;
   const osVersion = DeviceInfo.getSystemVersion();
   const deviceId = device.get(['id']) ?? 'unknown';
   const walletAddresses = getWalletAddresses(getWallets());

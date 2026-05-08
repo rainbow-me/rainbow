@@ -1,5 +1,5 @@
 import React, { memo } from 'react';
-import { StyleSheet, type StyleProp, type ViewStyle } from 'react-native';
+import { Platform, StyleSheet, type StyleProp, type ViewStyle } from 'react-native';
 
 import chroma from 'chroma-js';
 import Animated, { FadeIn, FadeOut, LinearTransition } from 'react-native-reanimated';
@@ -11,7 +11,6 @@ import { HoldToActivateProgress } from '@/components/buttons/HoldToActivateProgr
 import { useHoldToActivate } from '@/components/buttons/useHoldToActivate';
 import { LedgerIcon } from '@/components/icons/svg/LedgerIcon';
 import { type TextProps } from '@/design-system';
-import { IS_ANDROID } from '@/env';
 import { RNBW_BUTTON_CONFIG } from '@/features/rnbw-membership/rnbwButtonTheme';
 import { LoadingSpinner } from '@/framework/ui/components/LoadingSpinner';
 import { useWalletsStore } from '@/state/wallets/walletsStore';
@@ -61,7 +60,10 @@ export const RnbwHoldToActivateButton = memo(function RnbwHoldToActivateButton({
   testID,
 }: RnbwHoldToActivateButtonProps) {
   const isHardwareWallet = useWalletsStore(state => state.getIsHardwareWallet());
-  const biometryIcon = useBiometryIconString({ showIcon: !IS_ANDROID && showBiometryIcon && !isProcessing, isHardwareWallet });
+  const biometryIcon = useBiometryIconString({
+    showIcon: Platform.OS !== 'android' && showBiometryIcon && !isProcessing,
+    isHardwareWallet,
+  });
 
   const { holdProgress, gestureHandlerProps } = useHoldToActivate({
     onActivate,

@@ -1,12 +1,11 @@
 import React, { memo, useMemo, type ReactNode } from 'react';
-import { StyleSheet, type StyleProp, type ViewStyle } from 'react-native';
+import { Platform, StyleSheet, type StyleProp, type ViewStyle } from 'react-native';
 
 import { BlurView } from 'react-native-blur-view';
 import Animated, { Easing, type AnimatedStyle } from 'react-native-reanimated';
 
 import { EasingGradient } from '@/components/easing-gradient/EasingGradient';
 import { useColorMode } from '@/design-system';
-import { IS_IOS } from '@/env';
 
 type FadeTo = 'top' | 'bottom' | 'left' | 'right';
 type GradientPoints = [from: { x: number; y: number }, to: { x: number; y: number }];
@@ -45,7 +44,7 @@ export const BlurGradient = memo(function BlurGradient({
   fadeTo = 'top',
   feather = 8,
   gradientBuffer = 0,
-  gradientOpacity = IS_IOS ? { dark: 0.96, light: 0.92 } : { dark: 1, light: 1 },
+  gradientOpacity = Platform.OS === 'ios' ? { dark: 0.96, light: 0.92 } : { dark: 1, light: 1 },
   gradientPoints: gradientPointsProp,
   height,
   intensity = 8,
@@ -67,7 +66,7 @@ export const BlurGradient = memo(function BlurGradient({
 
   return (
     <Animated.View style={[styles.blurHeaderWrapper, style, { height, width }]}>
-      {IS_IOS ? (
+      {Platform.OS === 'ios' ? (
         <BlurView
           blurIntensity={intensity}
           blurStyle="variable"
@@ -79,7 +78,6 @@ export const BlurGradient = memo(function BlurGradient({
       ) : (
         androidBlurFallback
       )}
-
       {color === 'transparent' ? null : (
         <EasingGradient
           easing={Easing.inOut(Easing.quad)}

@@ -1,5 +1,5 @@
 import React, { useCallback, useEffect, useRef } from 'react';
-import { InteractionManager, StyleSheet } from 'react-native';
+import { InteractionManager, Platform, StyleSheet } from 'react-native';
 
 import Animated, { runOnJS, useAnimatedStyle, useDerivedValue, withTiming } from 'react-native-reanimated';
 
@@ -13,7 +13,6 @@ import { AnimatedSpinner } from '@/components/animations/AnimatedSpinner';
 import { TIMING_CONFIGS } from '@/components/animations/animationConfigs';
 import { GestureHandlerButton } from '@/components/buttons/GestureHandlerButton';
 import { Bleed, Box, globalColors, IconContainer, Text, useColorMode } from '@/design-system';
-import { IS_ANDROID, IS_IOS } from '@/env';
 import { opacity } from '@/framework/ui/utils/opacity';
 import { ChainId } from '@/state/backendNetworks/types';
 import { useSwapsStore } from '@/state/swaps/swapsStore';
@@ -172,14 +171,14 @@ export const FlipButton = () => {
                 AnimatedSwapStyles.flipButtonFetchingStyle,
                 styles.flipButton,
                 {
-                  backgroundColor: IS_ANDROID ? (isDarkMode ? globalColors.blueGrey100 : globalColors.white100) : undefined,
+                  backgroundColor: Platform.OS === 'android' ? (isDarkMode ? globalColors.blueGrey100 : globalColors.white100) : undefined,
                   borderColor: isDarkMode ? SEPARATOR_COLOR : opacity(globalColors.white100, 0.5),
                 },
               ]}
             />
             <IconContainer size={24} opacity={isDarkMode ? 0.6 : 0.8}>
               <Box alignItems="center" justifyContent="center">
-                <Bleed bottom={{ custom: IS_IOS ? 0.5 : 4 }}>
+                <Bleed bottom={{ custom: Platform.OS === 'ios' ? 0.5 : 4 }}>
                   <Text align="center" color="labelTertiary" size="icon 13px" weight="heavy">
                     􀆈
                   </Text>

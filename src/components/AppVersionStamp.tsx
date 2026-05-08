@@ -1,8 +1,8 @@
 import React, { useCallback, useState } from 'react';
-import { Pressable } from 'react-native';
+import { Platform, Pressable } from 'react-native';
 
 import { Text } from '@/design-system';
-import { IS_ANDROID, IS_DEV, IS_IOS, IS_STORE_INSTALL } from '@/env';
+import { IS_DEV, IS_STORE_INSTALL } from '@/env';
 import styled from '@/framework/ui/styled-thing';
 import useAppVersion from '@/hooks/useAppVersion';
 import useTimeout from '@/hooks/useTimeout';
@@ -12,8 +12,8 @@ import Routes from '@/navigation/routesNames';
 const DEBUG_TAP_COUNT = 15;
 
 const StyledButton = styled(Pressable)({
-  paddingTop: IS_IOS ? 32 : 16,
-  paddingBottom: IS_ANDROID ? 32 : 0,
+  paddingTop: Platform.OS === 'ios' ? 32 : 16,
+  paddingBottom: Platform.OS === 'android' ? 32 : 0,
   paddingHorizontal: 40,
   alignItems: 'center',
 });

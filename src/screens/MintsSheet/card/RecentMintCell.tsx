@@ -1,10 +1,9 @@
 import React, { useEffect, useState } from 'react';
-import { View } from 'react-native';
+import { Platform, View } from 'react-native';
 
 import { ImgixImage } from '@/components/images';
 import { Box, Cover, Text } from '@/design-system';
 import { globalColors } from '@/design-system/color/palettes';
-import { IS_IOS } from '@/env';
 import { type MintedNft } from '@/graphql/__generated__/arc';
 import { useTheme } from '@/theme/ThemeContext';
 import deviceUtils from '@/utils/deviceUtils';
@@ -46,7 +45,7 @@ export function RecentMintCell({ recentMint }: { recentMint: MintedNft }) {
         <Cover>
           <View
             style={
-              IS_IOS
+              Platform.OS === 'ios'
                 ? {
                     shadowColor: globalColors.grey100,
                     shadowOffset: { width: 0, height: 2 },
@@ -58,7 +57,7 @@ export function RecentMintCell({ recentMint }: { recentMint: MintedNft }) {
           >
             <View
               style={
-                IS_IOS
+                Platform.OS === 'ios'
                   ? {
                       shadowColor: globalColors.grey100,
                       shadowOffset: { width: 0, height: 6 },

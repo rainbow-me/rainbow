@@ -1,20 +1,19 @@
 import React from 'react';
-import { requireNativeComponent, StyleSheet, View } from 'react-native';
+import { Platform, requireNativeComponent, StyleSheet, View } from 'react-native';
 
 import { LoadingOverlay } from '@/components/modal/LoadingOverlay';
-import { IS_IOS } from '@/env';
 import { useActiveRoute } from '@/hooks/useActiveRoute';
 import { sheetVerticalOffset } from '@/navigation/effects';
 import Routes from '@/navigation/routesNames';
 import { walletLoadingStore } from '@/state/walletLoading/walletLoading';
 
-const NativePortal = IS_IOS ? requireNativeComponent('WindowPortal') : View;
-const Wrapper = IS_IOS ? ({ children }: { children: React.ReactNode }) => children : View;
+const NativePortal = Platform.OS === 'ios' ? requireNativeComponent('WindowPortal') : View;
+const Wrapper = Platform.OS === 'ios' ? ({ children }: { children: React.ReactNode }) => children : View;
 
 export function Portal() {
   const activeRoute = useActiveRoute();
   const loadingState = walletLoadingStore(state => state.loadingState);
-  const shouldHide = !loadingState || (activeRoute === Routes.PIN_AUTHENTICATION_SCREEN && !IS_IOS);
+  const shouldHide = !loadingState || (activeRoute === Routes.PIN_AUTHENTICATION_SCREEN && Platform.OS !== 'ios');
 
   if (shouldHide) return null;
 
@@ -26,7 +25,7 @@ export function Portal() {
         pointerEvents: 'none',
       }}
     >
-      <NativePortal {...(IS_IOS ? { blockTouches: true } : {})} pointerEvents="none" style={StyleSheet.absoluteFillObject}>
+      <NativePortal {...(Platform.OS === 'ios' ? { blockTouches: true } : {})} pointerEvents="none" style={StyleSheet.absoluteFillObject}>
         <LoadingOverlay paddingTop={sheetVerticalOffset} title={loadingState} />
       </NativePortal>
     </Wrapper>

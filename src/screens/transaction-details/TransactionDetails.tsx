@@ -1,5 +1,5 @@
 import React, { useCallback, useEffect, useState } from 'react';
-import { type LayoutChangeEvent } from 'react-native';
+import { Platform, type LayoutChangeEvent } from 'react-native';
 
 import { useRoute, type RouteProp } from '@react-navigation/native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
@@ -8,7 +8,6 @@ import { rainbowToastsActions } from '@/components/rainbow-toast/useRainbowToast
 import { SlackSheet } from '@/components/sheet';
 import { Toast, ToastPositionContainer } from '@/components/toasts';
 import { BackgroundProvider, Box } from '@/design-system';
-import { IS_ANDROID } from '@/env';
 import useDimensions from '@/hooks/useDimensions';
 import * as i18n from '@/languages';
 import { useNavigation } from '@/navigation/Navigation';
@@ -46,7 +45,7 @@ export const TransactionDetails = () => {
     (event: LayoutChangeEvent) => {
       const contentHeight = event.nativeEvent.layout.height;
       if (contentHeight > deviceHeight) setStatusIconHidden(true);
-      setSheetHeight(contentHeight + (IS_ANDROID ? bottom : 0));
+      setSheetHeight(contentHeight + (Platform.OS === 'android' ? bottom : 0));
     },
     [bottom, deviceHeight]
   );
@@ -65,8 +64,8 @@ export const TransactionDetails = () => {
         <SlackSheet
           contentHeight={sheetHeight}
           backgroundColor={backgroundColor}
-          height={IS_ANDROID ? sheetHeight : '100%'}
-          deferredHeight={IS_ANDROID}
+          height={Platform.OS === 'android' ? sheetHeight : '100%'}
+          deferredHeight={Platform.OS === 'android'}
           showsVerticalScrollIndicator={false}
         >
           <Box paddingHorizontal="20px" paddingBottom="20px" onLayout={onSheetContentLayout}>

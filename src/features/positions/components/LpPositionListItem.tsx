@@ -1,10 +1,10 @@
 import React, { useMemo } from 'react';
+import { Platform } from 'react-native';
 
 import ButtonPressAnimation from '@/components/animations/ButtonPressAnimation';
 import RainbowCoinIcon from '@/components/coin-icon/RainbowCoinIcon';
 import { TwoCoinsIcon } from '@/components/coin-icon/TwoCoinsIcon';
 import { Box, Column, Columns, Inline, Stack, Text, useForegroundColor } from '@/design-system';
-import { IS_IOS } from '@/env';
 import { type LpAllocation, type RainbowUnderlyingAsset, type RangeStatus } from '@/features/positions/types';
 import * as i18n from '@/languages';
 import { useBackendNetworksStore } from '@/state/backendNetworks/backendNetworks';
@@ -138,7 +138,7 @@ export const LpPositionListItem = React.memo(function LpPositionListItem({
                     backgroundColor={rangeStatus === 'in_range' || rangeStatus === 'full_range' ? colors.green : colors.red}
                     shadowColor={rangeStatus === 'in_range' || rangeStatus === 'full_range' ? colors.green : colors.red}
                     elevation={2}
-                    shadowOpacity={IS_IOS ? 0.2 : 1}
+                    shadowOpacity={Platform.OS === 'ios' ? 0.2 : 1}
                     shadowRadius={6}
                     style={{
                       shadowOffset: { width: 0, height: 2 },

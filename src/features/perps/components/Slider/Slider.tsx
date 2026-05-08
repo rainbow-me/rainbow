@@ -1,5 +1,5 @@
 import React, { useMemo } from 'react';
-import { StyleSheet, View, type ViewStyle } from 'react-native';
+import { Platform, StyleSheet, View, type ViewStyle } from 'react-native';
 
 import { Gesture, GestureDetector } from 'react-native-gesture-handler';
 import Animated, {
@@ -19,7 +19,6 @@ import { triggerHaptics } from 'react-native-turbo-haptics';
 import { SCRUBBER_WIDTH } from '@/__swaps__/screens/Swap/constants';
 import { SPRING_CONFIGS } from '@/components/animations/animationConfigs';
 import { Box, globalColors, useColorMode, useForegroundColor } from '@/design-system';
-import { IS_IOS } from '@/env';
 import { opacity } from '@/framework/ui/utils/opacity';
 import { THICK_BORDER_WIDTH } from '@/styles/constants';
 
@@ -365,28 +364,30 @@ export const Slider: React.FC<SliderProps> = ({
         interpolateColor(sliderPressProgress.value, [collapsedPercentage, 1], [colors.value.inactiveLeft, colors.value.activeLeft]),
         SPRING_CONFIGS.springConfig
       ),
-      borderWidth: IS_IOS
-        ? interpolate(
-            percentageValue.value,
-            [0, (THICK_BORDER_WIDTH * 2) / width, (THICK_BORDER_WIDTH * 4) / width, 1],
-            [0, 0, THICK_BORDER_WIDTH, THICK_BORDER_WIDTH],
-            'clamp'
-          )
-        : 0,
+      borderWidth:
+        Platform.OS === 'ios'
+          ? interpolate(
+              percentageValue.value,
+              [0, (THICK_BORDER_WIDTH * 2) / width, (THICK_BORDER_WIDTH * 4) / width, 1],
+              [0, 0, THICK_BORDER_WIDTH, THICK_BORDER_WIDTH],
+              'clamp'
+            )
+          : 0,
       width: `${uiXPercentage.value * 100}%`,
     };
   });
 
   const rightBarContainerStyle = useAnimatedStyle(() => {
     return {
-      borderWidth: IS_IOS
-        ? interpolate(
-            percentageValue.value,
-            [0, 1 - (THICK_BORDER_WIDTH * 4) / width, 1 - (THICK_BORDER_WIDTH * 2) / width, 1],
-            [THICK_BORDER_WIDTH, THICK_BORDER_WIDTH, 0, 0],
-            'clamp'
-          )
-        : 0,
+      borderWidth:
+        Platform.OS === 'ios'
+          ? interpolate(
+              percentageValue.value,
+              [0, 1 - (THICK_BORDER_WIDTH * 4) / width, 1 - (THICK_BORDER_WIDTH * 2) / width, 1],
+              [THICK_BORDER_WIDTH, THICK_BORDER_WIDTH, 0, 0],
+              'clamp'
+            )
+          : 0,
       backgroundColor: colors.value.inactiveRight,
       width: `${(1 - uiXPercentage.value - SCRUBBER_WIDTH / width) * 100}%`,
     };
@@ -427,7 +428,7 @@ export const Slider: React.FC<SliderProps> = ({
             style={[
               styles.sliderBox,
               rightBarContainerStyle,
-              IS_IOS ? { borderColor: isDarkMode ? 'rgba(245, 248, 255, 0.015)' : 'rgba(26, 28, 31, 0.005)' } : undefined,
+              Platform.OS === 'ios' ? { borderColor: isDarkMode ? 'rgba(245, 248, 255, 0.015)' : 'rgba(26, 28, 31, 0.005)' } : undefined,
             ]}
           />
         </Animated.View>

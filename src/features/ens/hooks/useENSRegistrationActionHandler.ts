@@ -1,4 +1,5 @@
 import { useCallback, useEffect, useRef } from 'react';
+import { Platform } from 'react-native';
 
 import { type StaticJsonRpcProvider } from '@ethersproject/providers';
 import { type ImagePickerAsset } from 'expo-image-picker';
@@ -7,7 +8,6 @@ import { useRecoilValue } from 'recoil';
 import { type Hex } from 'viem';
 
 import { type PendingTransaction } from '@/entities/transactions';
-import { IS_IOS } from '@/env';
 import { uploadImage } from '@/handlers/pinata';
 import { getProvider } from '@/handlers/web3';
 import usePendingTransactions from '@/hooks/usePendingTransactions';
@@ -176,7 +176,7 @@ const useENSRegistrationActionHandler: UseENSRegistrationActionHandler = ({ step
 
       const tx = getPendingTransactionByHash(commitTransactionHash || '');
       if (commitTransactionHash && tx) {
-        if (IS_IOS) {
+        if (Platform.OS === 'ios') {
           navigate(Routes.SPEED_UP_AND_CANCEL_SHEET, {
             accentColor,
             tx: tx as PendingTransaction,

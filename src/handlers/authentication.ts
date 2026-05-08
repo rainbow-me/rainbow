@@ -1,6 +1,7 @@
+import { Platform } from 'react-native';
+
 import { RAINBOW_MASTER_KEY } from 'react-native-dotenv';
 
-import { IS_ANDROID } from '@/env';
 import * as kc from '@/keychain';
 import { logger, RainbowError } from '@/logger';
 import Routes from '@/navigation/routesNames';
@@ -113,7 +114,7 @@ export async function authenticateWithPIN(): Promise<string | undefined> {
 }
 
 export async function shouldAuthenticateWithPIN(): Promise<boolean> {
-  if (!IS_ANDROID) {
+  if (Platform.OS !== 'android') {
     return false;
   }
 

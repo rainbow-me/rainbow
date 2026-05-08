@@ -1,5 +1,7 @@
 import path from 'path';
 
+import { Platform } from 'react-native';
+
 import { captureException } from '@sentry/react-native';
 import { findKey, isEmpty, isNumber, keys } from 'lodash';
 import uniq from 'lodash/uniq';
@@ -10,7 +12,6 @@ import { createMMKV } from 'react-native-mmkv';
 import { type UniqueId } from '@/__swaps__/types/assets';
 import type { RainbowToken } from '@/entities/tokens';
 import type { EthereumAddress } from '@/entities/wallet';
-import { IS_IOS } from '@/env';
 import { unlockableAppIcons, type UnlockableAppIconKey } from '@/features/app-icon/models/appIcons';
 import { unlockableAppIconStorage } from '@/features/app-icon/utils/unlockableAppIconCheck';
 import { getAssets, getHiddenCoins, getPinnedCoins, saveHiddenCoins, savePinnedCoins } from '@/handlers/localstorage/accountLocal';
@@ -842,7 +843,7 @@ export default async function runMigrations() {
       return;
     }
 
-    if (IS_IOS) {
+    if (Platform.OS === 'ios') {
       for (const wallet of Object.values(wallets)) {
         if (!wallet.encryptionType) {
           // On iOS only keychain is supported.

@@ -1,9 +1,8 @@
 import React, { useCallback, useMemo } from 'react';
-import { Keyboard, Share } from 'react-native';
+import { Keyboard, Platform, Share } from 'react-native';
 
 import { showDeleteContactActionSheet } from '@/components/contacts';
 import ContextMenuButton from '@/components/native-context-menu/contextMenu';
-import { IS_ANDROID, IS_IOS } from '@/env';
 import useClipboard from '@/hooks/useClipboard';
 import useContacts from '@/hooks/useContacts';
 import useWatchWallet from '@/hooks/useWatchWallet';
@@ -135,23 +134,23 @@ export default function MoreButton({ address, ensName }: { address?: string; ens
           nickname: contact!.nickname,
           removeContact: onRemoveContact,
         });
-        IS_ANDROID && Keyboard.dismiss();
+        Platform.OS === 'android' && Keyboard.dismiss();
       }
       if (actionKey === ACTIONS.SHARE) {
         const walletDisplay = ensName || address;
         const shareLink = `${RAINBOW_PROFILES_BASE_URL}/${walletDisplay}`;
-        Share.share(IS_ANDROID ? { message: shareLink } : { url: shareLink });
+        Share.share(Platform.OS === 'android' ? { message: shareLink } : { url: shareLink });
       }
     },
     [address, contact, ensName, isSelectedWallet, navigate, onRemoveContact, setClipboard]
   );
 
-  const menuConfig = useMemo(() => ({ menuItems, ...(IS_IOS && { menuTitle: '' }) }), [menuItems]);
+  const menuConfig = useMemo(() => ({ menuItems, ...(Platform.OS === 'ios' && { menuTitle: '' }) }), [menuItems]);
   return (
     <ContextMenuButton
       enableContextMenu
       menuConfig={menuConfig}
-      {...(IS_ANDROID ? { handlePressMenuItem } : {})}
+      {...(Platform.OS === 'android' ? { handlePressMenuItem } : {})}
       isMenuPrimaryAction
       onPressMenuItem={handlePressMenuItem}
       useActionSheetFallback={false}

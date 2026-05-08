@@ -1,5 +1,5 @@
 import React, { useCallback, useEffect, useRef, useState } from 'react';
-import { StyleSheet } from 'react-native';
+import { Platform, StyleSheet } from 'react-native';
 
 import Animated from 'react-native-reanimated';
 import { ScreenCornerRadius } from 'react-native-screen-corner-radius';
@@ -19,7 +19,6 @@ import { Page } from '@/components/layout';
 import { navbarHeight } from '@/components/navbar/Navbar';
 import { DecoyScrollView } from '@/components/sheet/DecoyScrollView';
 import { Box } from '@/design-system';
-import { IS_ANDROID } from '@/env';
 import { useSponsoredSwapStore } from '@/features/delegation/sponsoredSwapStore';
 import { clearCustomGasSettings } from '@/features/gas/hooks/useCustomGas';
 import { useDelayedMount } from '@/hooks/useDelayedMount';
@@ -206,10 +205,10 @@ const ExchangeRateBubbleAndWarning = () => {
 
 export const styles = StyleSheet.create({
   rootViewBackground: {
-    borderTopLeftRadius: IS_ANDROID ? 20 : ScreenCornerRadius,
-    borderTopRightRadius: IS_ANDROID ? 20 : ScreenCornerRadius,
-    borderBottomLeftRadius: IS_ANDROID ? 0 : ScreenCornerRadius,
-    borderBottomRightRadius: IS_ANDROID ? 0 : ScreenCornerRadius,
+    borderTopLeftRadius: Platform.OS === 'android' ? 20 : ScreenCornerRadius,
+    borderTopRightRadius: Platform.OS === 'android' ? 20 : ScreenCornerRadius,
+    borderBottomLeftRadius: Platform.OS === 'android' ? 0 : ScreenCornerRadius,
+    borderBottomRightRadius: Platform.OS === 'android' ? 0 : ScreenCornerRadius,
     flex: 1,
     overflow: 'hidden',
   },

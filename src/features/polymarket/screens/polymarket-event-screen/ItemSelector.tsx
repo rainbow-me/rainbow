@@ -1,5 +1,5 @@
 import React, { memo, useCallback, useEffect, useMemo, useRef } from 'react';
-import { ScrollView, StyleSheet, View, type ScrollViewProps, type StyleProp, type ViewStyle } from 'react-native';
+import { Platform, ScrollView, StyleSheet, View, type ScrollViewProps, type StyleProp, type ViewStyle } from 'react-native';
 
 import Animated, {
   runOnJS,
@@ -15,7 +15,6 @@ import { easing, SPRING_CONFIGS } from '@/components/animations/animationConfigs
 import { GestureHandlerButton } from '@/components/buttons/GestureHandlerButton';
 import { EasingGradient } from '@/components/easing-gradient/EasingGradient';
 import { AnimatedText, Box, useColorMode, useForegroundColor } from '@/design-system';
-import { IS_IOS } from '@/env';
 import { opacity } from '@/framework/ui/utils/opacity';
 
 // ============ Constants ====================================================== //
@@ -280,7 +279,7 @@ const DefaultItemContent = memo(function DefaultItemContent({
   const textStyle = useAnimatedStyle(() => {
     const isSelected = selectedIndex.value === index;
     const textColor = isSelected ? accentColor : labelQuaternary;
-    if (!IS_IOS) return { color: textColor };
+    if (Platform.OS !== 'ios') return { color: textColor };
     return {
       color: textColor,
       fontWeight: isSelected ? '800' : '700',
@@ -431,10 +430,10 @@ function getScrollViewProps({
   pillWidth: number;
   paddingHorizontal: number;
 }): Pick<ScrollViewProps, 'contentContainerStyle' | 'maintainVisibleContentPosition' | 'style'> {
-  const contentWidth = IS_IOS ? undefined : valueCount * pillWidth + pillGap * (valueCount - 1) + paddingHorizontal * 2;
+  const contentWidth = Platform.OS === 'ios' ? undefined : valueCount * pillWidth + pillGap * (valueCount - 1) + paddingHorizontal * 2;
   return {
     contentContainerStyle: [styles.contentContainer, { width: contentWidth, gap: pillGap, paddingHorizontal }],
-    maintainVisibleContentPosition: IS_IOS ? undefined : { minIndexForVisible: 0 },
+    maintainVisibleContentPosition: Platform.OS === 'ios' ? undefined : { minIndexForVisible: 0 },
     style: styles.scrollView,
   };
 }

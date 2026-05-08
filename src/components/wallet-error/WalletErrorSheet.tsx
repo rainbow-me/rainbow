@@ -1,5 +1,5 @@
 import React from 'react';
-import { InteractionManager } from 'react-native';
+import { InteractionManager, Platform } from 'react-native';
 
 import FastImage from 'react-native-fast-image';
 
@@ -7,7 +7,6 @@ import restoreWalletIcon from '@/assets/restoreWalletIcon.png';
 import ButtonPressAnimation from '@/components/animations/ButtonPressAnimation';
 import { SimpleSheet } from '@/components/sheet/SimpleSheet';
 import { BackgroundProvider, Box, Separator, Text } from '@/design-system';
-import { IS_IOS } from '@/env';
 import useBiometryType from '@/hooks/useBiometryType';
 import * as i18n from '@/languages';
 import { useNavigation } from '@/navigation/Navigation';
@@ -22,7 +21,7 @@ export default function WalletErrorSheet() {
   const navigation = useNavigation();
   const biometryType = useBiometryType();
   const { cause, resolution } = (() => {
-    if (IS_IOS) {
+    if (Platform.OS === 'ios') {
       if (biometryType === 'none') {
         return { cause: 'passcode_disabled', resolution: 'enable_passcode' } as const;
       } else {

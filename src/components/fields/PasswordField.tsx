@@ -1,8 +1,7 @@
 import React, { forwardRef, useCallback, type Ref } from 'react';
-import { View, type TextInput, type TextInputProps } from 'react-native';
+import { Platform, View, type TextInput, type TextInputProps } from 'react-native';
 
 import { Box } from '@/design-system';
-import { IS_ANDROID, IS_IOS } from '@/env';
 import styled from '@/framework/ui/styled-thing';
 import { opacity } from '@/framework/ui/utils/opacity';
 import { cloudBackupPasswordMinLength } from '@/handlers/cloudBackup';
@@ -57,7 +56,7 @@ const PasswordInput = styled(Input).attrs(({ theme: { colors } }: any) => ({
 });
 
 // Use styled-components attrs for dynamic props to ensure they are memoized
-const ShadowContainer = styled(IS_IOS ? ShadowStack : View).attrs(({ theme: { colors, isDarkMode }, deviceWidth }: any) => {
+const ShadowContainer = styled(Platform.OS === 'ios' ? ShadowStack : View).attrs(({ theme: { colors, isDarkMode }, deviceWidth }: any) => {
   return {
     backgroundColor: isDarkMode ? colors.offWhite : colors.white,
     borderRadius: 16,
@@ -66,7 +65,7 @@ const ShadowContainer = styled(IS_IOS ? ShadowStack : View).attrs(({ theme: { co
       [0, 5, 15, colors.shadow, 0.06],
       [0, 10, 30, colors.shadow, 0.12],
     ],
-    width: IS_ANDROID ? deviceWidth - 48 : '100%',
+    width: Platform.OS === 'android' ? deviceWidth - 48 : '100%',
     elevation: 15,
   };
 })({});

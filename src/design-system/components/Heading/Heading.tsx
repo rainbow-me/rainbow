@@ -1,9 +1,9 @@
 import React, { forwardRef, useEffect, useMemo, type ElementRef, type ReactNode } from 'react';
-import { Text as NativeText } from 'react-native';
+import { Text as NativeText, Platform } from 'react-native';
 
 import { SILENCE_EMOJI_WARNINGS } from 'react-native-dotenv';
 
-import { IS_DEV, IS_IOS } from '@/env';
+import { IS_DEV } from '@/env';
 
 import { type TextColor } from '../../color/palettes';
 import { type CustomColor } from '../../color/useForegroundColor';
@@ -55,7 +55,7 @@ export const Heading = forwardRef<ElementRef<typeof NativeText>, HeadingProps>(f
 
   return (
     <NativeText allowFontScaling={false} numberOfLines={numberOfLines} ref={ref} style={headingStyle} testID={testID}>
-      {IS_IOS && containsEmojiProp && nodeIsString(children) ? renderStringWithEmoji(children) : children}
+      {Platform.OS === 'ios' && containsEmojiProp && nodeIsString(children) ? renderStringWithEmoji(children) : children}
       {lineHeightFixNode}
     </NativeText>
   );

@@ -1,5 +1,5 @@
 import React, { memo, useCallback } from 'react';
-import { StyleSheet, View } from 'react-native';
+import { Platform, StyleSheet, View } from 'react-native';
 
 import { LinearGradient } from 'expo-linear-gradient';
 import { BlurView } from 'react-native-blur-view';
@@ -16,7 +16,6 @@ import Animated, {
 import { SPRING_CONFIGS } from '@/components/animations/animationConfigs';
 import { GestureHandlerButton } from '@/components/buttons/GestureHandlerButton';
 import { AnimatedText, Box, useColorMode, useForegroundColor } from '@/design-system';
-import { IS_IOS } from '@/env';
 import { InnerShadow } from '@/features/polymarket/components/InnerShadow';
 import { POLYMARKET_BACKGROUND_LIGHT } from '@/features/polymarket/constants';
 import { usePolymarketContext } from '@/features/polymarket/screens/polymarket-navigator/PolymarketContext';
@@ -115,7 +114,7 @@ export const PolymarketTabSelector = memo(function PolymarketTabSelector() {
             end={{ x: 0, y: 1 }}
           />
         )}
-        {IS_IOS ? (
+        {Platform.OS === 'ios' ? (
           <BlurView blurIntensity={24} blurStyle={isDarkMode ? 'dark' : 'light'} style={StyleSheet.absoluteFill} />
         ) : (
           <View style={[StyleSheet.absoluteFill, { backgroundColor: isDarkMode ? '#190F1C' : POLYMARKET_BACKGROUND_LIGHT }]} />

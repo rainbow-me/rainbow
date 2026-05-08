@@ -1,4 +1,4 @@
-import { IS_IOS } from '@/env';
+import { Platform } from 'react-native';
 
 const Routes = {
   ADD_CASH_SCREEN_NAVIGATOR: 'AddCashSheetNavigator',
@@ -179,7 +179,7 @@ export const NATIVE_ROUTES = new Set<Route>([
   Routes.RECEIVE_MODAL,
   Routes.SETTINGS_SHEET,
   Routes.SWAP,
-  ...(IS_IOS ? [Routes.SEND_SHEET_NAVIGATOR, Routes.ADD_CASH_SCREEN_NAVIGATOR] : []),
+  ...(Platform.OS === 'ios' ? [Routes.SEND_SHEET_NAVIGATOR, Routes.ADD_CASH_SCREEN_NAVIGATOR] : []),
 ]);
 
 const RoutesWithPlatformDifferences = {

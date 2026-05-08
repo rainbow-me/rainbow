@@ -1,5 +1,5 @@
 import React, { memo, useMemo } from 'react';
-import { StyleSheet, View } from 'react-native';
+import { Platform, StyleSheet, View } from 'react-native';
 
 import { LinearGradient } from 'expo-linear-gradient';
 import Animated, { useAnimatedStyle, useDerivedValue, withTiming, type DerivedValue, type SharedValue } from 'react-native-reanimated';
@@ -8,7 +8,6 @@ import { getColorValueForThemeWorklet, type ResponseByTheme } from '@/__swaps__/
 import { easing, TIMING_CONFIGS } from '@/components/animations/animationConfigs';
 import { EasingGradient } from '@/components/easing-gradient/EasingGradient';
 import { AnimatedText, Text, TextShadow, useColorMode } from '@/design-system';
-import { IS_IOS } from '@/env';
 import { opacity } from '@/framework/ui/utils/opacity';
 import { type StoreState } from '@/state/internal/queryStore/types';
 import { type BaseRainbowStore } from '@/state/internal/types';
@@ -179,7 +178,7 @@ const LegendItem = memo(function LegendItem({
     () => [
       styles.legendDot,
       { backgroundColor: getColorValueForThemeWorklet(color, isDarkMode) },
-      IS_IOS && isDarkMode && { shadowColor: getColorValueForThemeWorklet(color, isDarkMode) },
+      Platform.OS === 'ios' && isDarkMode && { shadowColor: getColorValueForThemeWorklet(color, isDarkMode) },
     ],
     [color, isDarkMode]
   );
@@ -293,7 +292,7 @@ const OutcomeBubble = memo(function OutcomeBubble({
         style={[
           styles.bubbleBackground,
           bubbleBackgroundStyle,
-          { borderWidth: IS_IOS ? (isDarkMode ? BUBBLE.borderWidth : THICKER_BORDER_WIDTH) : 0 },
+          { borderWidth: Platform.OS === 'ios' ? (isDarkMode ? BUBBLE.borderWidth : THICKER_BORDER_WIDTH) : 0 },
         ]}
       />
       <LinearGradient

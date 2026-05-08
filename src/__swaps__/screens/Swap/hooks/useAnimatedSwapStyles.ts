@@ -1,3 +1,5 @@
+import { Platform } from 'react-native';
+
 import {
   interpolate,
   useAnimatedStyle,
@@ -28,7 +30,6 @@ import { TOKEN_SEARCH_FOCUSED_INPUT_HEIGHT } from '@/components/token-search/con
 import { getTokenSearchButtonWrapperStyle } from '@/components/token-search/styles';
 import { useColorMode } from '@/design-system';
 import { foregroundColors } from '@/design-system/color/palettes';
-import { IS_ANDROID } from '@/env';
 import { useIsSponsoredSwap } from '@/features/delegation/sponsoredSwapStore';
 import { opacity } from '@/framework/ui/utils/opacity';
 import { useStoreSharedValue } from '@/state/internal/hooks/useStoreSharedValue';
@@ -243,7 +244,7 @@ export function useAnimatedSwapStyles({
   });
 
   const flipButtonFetchingStyle = useAnimatedStyle(() => {
-    if (IS_ANDROID) return { borderWidth: 0 };
+    if (Platform.OS === 'android') return { borderWidth: 0 };
     return {
       borderWidth: isFetching.value ? withTiming(2, { duration: 300 }) : withTiming(THICK_BORDER_WIDTH, spinnerExitConfig),
     };

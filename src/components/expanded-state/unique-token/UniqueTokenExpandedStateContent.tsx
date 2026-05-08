@@ -1,10 +1,9 @@
 import React from 'react';
-import { ActivityIndicator, StyleSheet, View } from 'react-native';
+import { ActivityIndicator, Platform, StyleSheet, View } from 'react-native';
 
 import { type DerivedValue, type SharedValue } from 'react-native-reanimated';
 
 import type { UniqueAsset } from '@/entities/uniqueAssets';
-import { IS_IOS } from '@/env';
 import styled from '@/framework/ui/styled-thing';
 import useAnimationType from '@/hooks/useAnimationType';
 import usePersistentAspectRatio from '@/hooks/usePersistentAspectRatio';
@@ -73,7 +72,7 @@ const UniqueTokenExpandedStateContent = ({
       animationProgress={animationProgress}
       aspectRatio={aspectRatioWithFallback}
       borderRadius={borderRadius}
-      disableAnimations={disablePreview || (IS_IOS ? animationType === 'video' : supportsAnythingExceptImageAnd3d)}
+      disableAnimations={disablePreview || (Platform.OS === 'ios' ? animationType === 'video' : supportsAnythingExceptImageAnd3d)}
       horizontalPadding={horizontalPadding}
       onZoomIn={onContentFocus}
       onZoomOut={onContentBlur}

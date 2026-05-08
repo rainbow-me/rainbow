@@ -1,6 +1,7 @@
+import { Platform } from 'react-native';
+
 import { SystemBars } from 'react-native-edge-to-edge';
 
-import { IS_ANDROID } from '@/env';
 import { Themes, type ThemesType } from '@/theme/ThemeContext';
 
 import { getGlobal, saveGlobal } from './common';
@@ -17,7 +18,7 @@ export const getTheme = (): Promise<ThemesType> => getGlobal(THEME, 'system');
  * @desc save theme
  */
 export const saveTheme = (theme: ThemesType, isSystemDarkMode: boolean) => {
-  if (IS_ANDROID) {
+  if (Platform.OS === 'android') {
     const themeToUse = theme === Themes.SYSTEM ? (isSystemDarkMode ? Themes.DARK : Themes.LIGHT) : theme;
     SystemBars.setStyle(themeToUse === Themes.DARK ? 'light' : 'dark');
   }

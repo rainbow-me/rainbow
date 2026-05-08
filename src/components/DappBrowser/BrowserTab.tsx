@@ -1,5 +1,5 @@
 import React, { memo, useEffect, useRef, useState, type MutableRefObject } from 'react';
-import { StyleSheet } from 'react-native';
+import { Platform, StyleSheet } from 'react-native';
 
 import { Freeze } from 'react-freeze';
 import Animated, { FadeIn, useAnimatedProps, type AnimatedStyle, type DerivedValue, type SharedValue } from 'react-native-reanimated';
@@ -8,7 +8,7 @@ import { type WebViewProps } from 'react-native-webview';
 import type WebView from 'react-native-webview';
 
 import { globalColors, useColorMode } from '@/design-system';
-import { IS_DEV, IS_IOS } from '@/env';
+import { IS_DEV } from '@/env';
 import { useBrowserStore, type BrowserState } from '@/state/browser/browserStore';
 import { type BrowserHistoryStore } from '@/state/browserHistory';
 import { DEVICE_WIDTH } from '@/utils/deviceUtils';
@@ -42,7 +42,7 @@ export const BrowserTab = memo(function BrowserTab({ addRecent, setLogo, setTitl
 
   return (
     <WebViewShadows tabId={tabId} zIndexAnimatedStyle={zIndexAnimatedStyle}>
-      <Animated.View style={[styles.webViewContainer, animatedWebViewStyle, IS_IOS ? {} : zIndexAnimatedStyle]}>
+      <Animated.View style={[styles.webViewContainer, animatedWebViewStyle, Platform.OS === 'ios' ? {} : zIndexAnimatedStyle]}>
         <ViewShot options={TAB_SCREENSHOT_FILE_FORMAT} ref={viewShotRef}>
           <Animated.View
             collapsable={false}
@@ -60,7 +60,7 @@ export const BrowserTab = memo(function BrowserTab({ addRecent, setLogo, setTitl
           </Animated.View>
         </ViewShot>
         <TabScreenshotContainer tabId={tabId} />
-        {IS_IOS && <WebViewBorder tabId={tabId} />}
+        {Platform.OS === 'ios' && <WebViewBorder tabId={tabId} />}
         <CloseTabButton tabId={tabId} />
       </Animated.View>
     </WebViewShadows>
@@ -245,20 +245,20 @@ const TabWebViewComponent = (props: WebViewProps, ref: React.Ref<WebView>) => {
       automaticallyAdjustContentInsets
       automaticallyAdjustsScrollIndicatorInsets={false}
       contentInset={{ bottom: 0, left: 0, right: 0, top: 0 }}
-      decelerationRate={IS_IOS ? 'normal' : undefined}
+      decelerationRate={Platform.OS === 'ios' ? 'normal' : undefined}
       fraudulentWebsiteWarningEnabled
       injectedJavaScript={SCRIPTS_TO_INJECT}
       mediaPlaybackRequiresUserAction
-      onScroll={IS_IOS ? onScrollWebView : undefined}
-      onTouchEnd={IS_IOS ? onTouchEnd : undefined}
-      onTouchMove={IS_IOS ? onTouchMove : undefined}
-      onTouchStart={IS_IOS ? onTouchStart : undefined}
+      onScroll={Platform.OS === 'ios' ? onScrollWebView : undefined}
+      onTouchEnd={Platform.OS === 'ios' ? onTouchEnd : undefined}
+      onTouchMove={Platform.OS === 'ios' ? onTouchMove : undefined}
+      onTouchStart={Platform.OS === 'ios' ? onTouchStart : undefined}
       originWhitelist={['*']}
       ref={ref}
       renderError={() => <ErrorPage />}
       renderLoading={() => <></>}
       style={styles.webView}
-      userAgent={USER_AGENT[IS_IOS ? 'IOS' : 'ANDROID']}
+      userAgent={USER_AGENT[Platform.OS === 'ios' ? 'IOS' : 'ANDROID']}
       webviewDebuggingEnabled={IS_DEV}
     />
   );
@@ -268,7 +268,7 @@ const TabWebView = memo(React.forwardRef(TabWebViewComponent));
 
 const styles = StyleSheet.create({
   screenshotContainer: {
-    height: IS_IOS ? WEBVIEW_HEIGHT + EXTRA_WEBVIEW_HEIGHT : WEBVIEW_HEIGHT,
+    height: Platform.OS === 'ios' ? WEBVIEW_HEIGHT + EXTRA_WEBVIEW_HEIGHT : WEBVIEW_HEIGHT,
     left: 0,
     position: 'absolute',
     right: 0,
@@ -277,7 +277,7 @@ const styles = StyleSheet.create({
     zIndex: 20000,
   },
   viewShotContainer: {
-    height: IS_IOS ? WEBVIEW_HEIGHT + EXTRA_WEBVIEW_HEIGHT : WEBVIEW_HEIGHT,
+    height: Platform.OS === 'ios' ? WEBVIEW_HEIGHT + EXTRA_WEBVIEW_HEIGHT : WEBVIEW_HEIGHT,
     width: DEVICE_WIDTH,
   },
   webViewContainer: {

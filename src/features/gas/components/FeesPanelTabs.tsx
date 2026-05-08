@@ -1,10 +1,10 @@
 import React from 'react';
+import { Platform } from 'react-native';
 
 import { isEmpty } from 'lodash';
 
 import ButtonPressAnimation from '@/components/animations/ButtonPressAnimation';
 import { AccentColorProvider, Box, Inline, Inset, Text } from '@/design-system';
-import { IS_ANDROID } from '@/env';
 import { opacity } from '@/framework/ui/utils/opacity';
 import { colors } from '@/styles';
 import { useTheme } from '@/theme/ThemeContext';
@@ -58,7 +58,7 @@ const TabPill = ({ speed, isSelected, handleOnPressTabPill, color, testID }: Tab
             elevation: 5,
           }}
         >
-          <Inset vertical={{ custom: IS_ANDROID ? 8 : 9 }}>
+          <Inset vertical={{ custom: Platform.OS === 'android' ? 8 : 9 }}>
             <Text
               size="16px / 22px (Deprecated)"
               color={{

@@ -1,5 +1,5 @@
 import React, { useCallback, useEffect, useState } from 'react';
-import { View } from 'react-native';
+import { Platform, View } from 'react-native';
 
 import { analytics } from '@/analytics';
 import ButtonPressAnimation from '@/components/animations/ButtonPressAnimation';
@@ -7,7 +7,6 @@ import RainbowCoinIcon from '@/components/coin-icon/RainbowCoinIcon';
 import { ImgixImage } from '@/components/images';
 import { AccentColorProvider, Bleed, Box, Cover, Inline, Inset, Text } from '@/design-system';
 import { globalColors } from '@/design-system/color/palettes';
-import { IS_IOS } from '@/env';
 import { type MintableCollection } from '@/graphql/__generated__/arc';
 import { convertRawAmountToRoundedDecimal } from '@/helpers/utilities';
 import * as i18n from '@/languages';
@@ -89,7 +88,7 @@ export function CollectionCell({ collection }: { collection: MintableCollection 
             >
               <View
                 style={
-                  IS_IOS
+                  Platform.OS === 'ios'
                     ? {
                         shadowColor: globalColors.grey100,
                         shadowOffset: { width: 0, height: 6 },

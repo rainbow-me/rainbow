@@ -1,5 +1,5 @@
 import React, { useCallback, useMemo, useRef } from 'react';
-import { InteractionManager } from 'react-native';
+import { InteractionManager, Platform } from 'react-native';
 
 import Clipboard from '@react-native-clipboard/clipboard';
 import { useRoute, type RouteProp } from '@react-navigation/native';
@@ -17,7 +17,6 @@ import ImageAvatar from '@/components/contacts/ImageAvatar';
 import { ContextCircleButton } from '@/components/context-menu';
 import ContextMenuButton from '@/components/native-context-menu/contextMenu';
 import { Box, Stack } from '@/design-system';
-import { IS_IOS } from '@/env';
 import { executeFnIfCloudBackupAvailable } from '@/features/backup/backup';
 import { useCreateBackup } from '@/features/backup/hooks/useCreateBackup';
 import { backupsStore } from '@/features/backup/stores/backupsStore';
@@ -98,7 +97,7 @@ type ContextMenuWrapperProps = {
 };
 
 const ContextMenuWrapper = ({ children, account, menuConfig, onPressMenuItem }: ContextMenuWrapperProps) => {
-  return IS_IOS ? (
+  return Platform.OS === 'ios' ? (
     <ContextMenuButton menuConfig={menuConfig} onPressMenuItem={e => onPressMenuItem({ ...e, account })}>
       {children}
     </ContextMenuButton>

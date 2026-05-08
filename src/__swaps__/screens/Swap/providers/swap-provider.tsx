@@ -1,6 +1,6 @@
 // @refresh
 import React, { createContext, useCallback, useContext, useEffect, useRef, useState, type ReactNode } from 'react';
-import { InteractionManager, NativeModules, type StyleProp, type TextInput, type TextStyle } from 'react-native';
+import { InteractionManager, NativeModules, Platform, type StyleProp, type TextInput, type TextStyle } from 'react-native';
 
 import {
   runOnJS,
@@ -36,7 +36,6 @@ import { getInputValuesForSliderPositionWorklet, updateInputValuesAfterFlip } fr
 import { clamp, getDefaultSlippageWorklet, parseAssetAndExtend, trimTrailingZeros } from '@/__swaps__/utils/swaps';
 import { trackSwapEvent } from '@/__swaps__/utils/trackSwapEvent';
 import { analytics } from '@/analytics';
-import { IS_IOS } from '@/env';
 import { isInsufficientSponsorBalanceError } from '@/features/delegation/sponsoredCalls';
 import { getPreparedSponsoredSwap } from '@/features/delegation/sponsoredSwapStore';
 import { supportsDelegatedExecution } from '@/features/delegation/willDelegate';
@@ -261,7 +260,7 @@ export const SwapProvider = ({ children }: SwapProviderProps) => {
     parameters: Omit<RapSwapActionParameters<typeof type>, 'gasParams' | 'gasFeeParamsBySpeed' | 'selectedGasFee'>;
   }) => {
     try {
-      const NotificationManager = IS_IOS ? NativeModules.NotificationManager : null;
+      const NotificationManager = Platform.OS === 'ios' ? NativeModules.NotificationManager : null;
       NotificationManager?.postNotification('rapInProgress');
 
       const provider = getProvider({ chainId: parameters.chainId });

@@ -1,5 +1,5 @@
 import React, { useCallback, useEffect, useState, type ReactNode } from 'react';
-import { InteractionManager } from 'react-native';
+import { InteractionManager, Platform } from 'react-native';
 
 import { useRoute, type RouteProp } from '@react-navigation/native';
 import { type Source } from 'react-native-fast-image';
@@ -8,7 +8,6 @@ import ManuallyBackedUpIcon from '@/assets/ManuallyBackedUp.png';
 import { SecretDisplayError } from '@/components/secret-display/SecretDisplayError';
 import { SecretDisplayStates, type SecretDisplayStatesType } from '@/components/secret-display/states';
 import { Bleed, Box, Inline, Inset, Stack, Text } from '@/design-system';
-import { IS_ANDROID } from '@/env';
 import { backupsStore } from '@/features/backup/stores/backupsStore';
 import WalletBackupTypes from '@/helpers/walletBackupTypes';
 import WalletTypes, { type EthereumWalletType } from '@/helpers/walletTypes';
@@ -33,7 +32,7 @@ import SecretDisplayCard from './SecretDisplayCard';
 
 const MIN_HEIGHT = 740;
 
-const LoadingSpinner = IS_ANDROID ? Spinner : ActivityIndicator;
+const LoadingSpinner = Platform.OS === 'android' ? Spinner : ActivityIndicator;
 
 type WrapperProps = {
   children?: ReactNode;

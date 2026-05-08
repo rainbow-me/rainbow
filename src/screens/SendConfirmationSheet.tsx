@@ -1,5 +1,5 @@
 import React, { Fragment, useCallback, useEffect, useMemo, useState } from 'react';
-import { Keyboard } from 'react-native';
+import { Keyboard, Platform } from 'react-native';
 
 import { AddressZero } from '@ethersproject/constants';
 import { useRoute, type RouteProp } from '@react-navigation/native';
@@ -12,7 +12,6 @@ import Divider from '@/components/Divider';
 import useExperimentalFlag, { PROFILES } from '@/config/experimentalHooks';
 import { Box, Heading, Inset, Stack, Text, useBackgroundColor, useColorMode } from '@/design-system';
 import { AssetType } from '@/entities/assetTypes';
-import { IS_ANDROID, IS_IOS } from '@/env';
 import ENSCircleIcon from '@/features/ens/components/ENSCircleIcon';
 import useENSAvatar from '@/features/ens/hooks/useENSAvatar';
 import { type ENSProfile } from '@/features/ens/types/profile';
@@ -199,7 +198,7 @@ export const SendConfirmationSheet = () => {
   const shimmerColor = opacity(fillSecondary, isDarkMode ? 0.025 : 0.06);
 
   useEffect(() => {
-    IS_ANDROID && Keyboard.dismiss();
+    Platform.OS === 'android' && Keyboard.dismiss();
   }, []);
 
   const {
@@ -469,8 +468,8 @@ export const SendConfirmationSheet = () => {
 
   return (
     <Container deviceHeight={deviceHeight} height={contentHeight}>
-      {IS_IOS && <TouchableBackdrop onPress={goBack} />}
-      <SlackSheet additionalTopPadding={IS_ANDROID} contentHeight={contentHeight} scrollEnabled={false}>
+      {Platform.OS === 'ios' && <TouchableBackdrop onPress={goBack} />}
+      <SlackSheet additionalTopPadding={Platform.OS === 'android'} contentHeight={contentHeight} scrollEnabled={false}>
         <SheetTitle>{i18n.t(i18n.l.wallet.transaction.sending_title)}</SheetTitle>
         <Column>
           <Column padding={24}>

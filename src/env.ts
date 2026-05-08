@@ -3,16 +3,6 @@ import ReactNative, { NativeModules } from 'react-native';
 import { ENABLE_DEV_MODE, IS_TESTING, RPC_PROXY_API_KEY_PROD, RPC_PROXY_BASE_URL_PROD } from 'react-native-dotenv';
 
 /**
- * @deprecated use IS_ANDROID
- */
-export const android = ReactNative.Platform.OS === 'android';
-export const IS_ANDROID = android;
-/**
- * @deprecated use IS_IOS
- */
-export const ios = ReactNative.Platform.OS === 'ios';
-export const IS_IOS = ios;
-/**
  * @deprecated use IS_WEB
  */
 export const web = ReactNative.Platform.OS === 'web';

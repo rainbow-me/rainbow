@@ -1,7 +1,6 @@
 import React from 'react';
-import { View, type ViewProps } from 'react-native';
+import { Platform, View, type ViewProps } from 'react-native';
 
-import { IS_ANDROID } from '@/env';
 import styled from '@/framework/ui/styled-thing';
 import { opacity } from '@/framework/ui/utils/opacity';
 import { type Colors } from '@/styles';
@@ -10,7 +9,7 @@ import { useTheme } from '@/theme/ThemeContext';
 export const SHEET_HANDLE_HEIGHT = 5;
 
 const defaultColor = (colors: Colors, showBlur: boolean): string =>
-  IS_ANDROID
+  Platform.OS === 'android'
     ? showBlur
       ? opacity(colors.blueGreyDark, 0.3)
       : colors.blueGreyDark30

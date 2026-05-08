@@ -1,5 +1,5 @@
 import React, { useCallback, useMemo } from 'react';
-import { Alert, Text as NativeText, StyleSheet } from 'react-native';
+import { Alert, Text as NativeText, Platform, StyleSheet } from 'react-native';
 
 import { useRoute, type RouteProp } from '@react-navigation/native';
 import { LinearGradient } from 'expo-linear-gradient';
@@ -11,7 +11,7 @@ import { GradientBorderView } from '@/components/gradient-border/GradientBorderV
 import ContextMenuButton from '@/components/native-context-menu/contextMenu';
 import { Box, Separator, Stack, Text, useForegroundColor } from '@/design-system';
 import { fonts } from '@/design-system/typography/typography';
-import { IS_DEV, IS_IOS } from '@/env';
+import { IS_DEV } from '@/env';
 import {
   hasActiveDelegation,
   isRainbowDelegated as hasRainbowDelegation,
@@ -424,7 +424,7 @@ export const ViewWalletDelegations = () => {
                 <Menu>
                   {rainbowDelegations.map((network, index) => {
                     const NetworkContextMenuWrapper = ({ children }: { children: React.ReactNode }) => {
-                      return IS_IOS ? (
+                      return Platform.OS === 'ios' ? (
                         <ContextMenuButton
                           menuConfig={activeNetworkMenuConfig}
                           onPressMenuItem={e => onPressNetworkMenuItem({ ...e, chainId: network.chainId })}
@@ -498,7 +498,7 @@ export const ViewWalletDelegations = () => {
                 <Menu>
                   {thirdPartyDelegations.map((network, index) => {
                     const NetworkContextMenuWrapper = ({ children }: { children: React.ReactNode }) => {
-                      return IS_IOS ? (
+                      return Platform.OS === 'ios' ? (
                         <ContextMenuButton
                           menuConfig={inactiveNetworkMenuConfig}
                           onPressMenuItem={e => onPressNetworkMenuItem({ ...e, chainId: network.chainId })}

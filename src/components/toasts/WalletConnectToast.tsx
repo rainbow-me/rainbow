@@ -1,11 +1,10 @@
 import React from 'react';
-import { StyleSheet, View } from 'react-native';
+import { Platform, StyleSheet, View } from 'react-native';
 
 import { toast } from 'sonner-native';
 
 import { globalColors } from '@/design-system';
 import { typeHierarchy } from '@/design-system/typography/typeHierarchy';
-import { IS_IOS } from '@/env';
 import { opacity } from '@/framework/ui/utils/opacity';
 import * as i18n from '@/languages';
 import { fontWithWidth } from '@/styles';
@@ -111,11 +110,11 @@ const conditionalStyles = StyleSheet.create({
 const styles = StyleSheet.create({
   toastContainerDark: {
     ...conditionalStyles.toastContainer,
-    ...(IS_IOS ? conditionalStyles.toastContainerShadowDark : {}),
+    ...(Platform.OS === 'ios' ? conditionalStyles.toastContainerShadowDark : {}),
   },
   toastContainerLight: {
     ...conditionalStyles.toastContainer,
-    ...(IS_IOS ? conditionalStyles.toastContainerShadowLight : {}),
+    ...(Platform.OS === 'ios' ? conditionalStyles.toastContainerShadowLight : {}),
   },
   toastContent: {
     alignItems: 'center',
@@ -125,12 +124,12 @@ const styles = StyleSheet.create({
   },
   toastDark: {
     ...conditionalStyles.toast,
-    ...(IS_IOS ? conditionalStyles.toastBorderDark : {}),
+    ...(Platform.OS === 'ios' ? conditionalStyles.toastBorderDark : {}),
   },
   toastLight: conditionalStyles.toast,
   title: {
     ...conditionalStyles.title,
-    ...(IS_IOS ? conditionalStyles.titleShadow : {}),
+    ...(Platform.OS === 'ios' ? conditionalStyles.titleShadow : {}),
   },
   zeroDimensions: {
     height: 0,

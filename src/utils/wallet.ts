@@ -1,10 +1,9 @@
-import { NativeModules } from 'react-native';
+import { NativeModules, Platform } from 'react-native';
 
 import { Wallet } from '@ethersproject/wallet';
 import { mnemonicToSeed } from 'bip39';
 import { hdkey } from 'ethereumjs-wallet';
 
-import { IS_IOS } from '@/env';
 import { addHexPrefix, ensureChecksumAddress } from '@/handlers/web3';
 import WalletTypes from '@/helpers/walletTypes';
 import {
@@ -48,7 +47,7 @@ export const deriveAccountFromBluetoothHardwareWallet = async (deviceId: string,
 
 export const deriveAccountFromMnemonic = async (mnemonic: string, index = 0): Promise<EthereumWalletFromSeed> => {
   let seed;
-  if (IS_IOS) {
+  if (Platform.OS === 'ios') {
     seed = await mnemonicToSeed(mnemonic);
   } else {
     const res = await RNBip39.mnemonicToSeed({ mnemonic, passphrase: null });

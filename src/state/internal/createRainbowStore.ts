@@ -1,8 +1,10 @@
+import { Platform } from 'react-native';
+
 import { debounce } from 'lodash';
 import { persist, subscribeWithSelector, type PersistOptions, type PersistStorage } from 'zustand/middleware';
 import { createWithEqualityFn } from 'zustand/traditional';
 
-import { IS_IOS, IS_TEST } from '@/env';
+import { IS_TEST } from '@/env';
 import { logger, RainbowError } from '@/logger';
 import { time } from '@/utils/time';
 
@@ -81,7 +83,7 @@ function buildPersistOptions<S, PersistedState extends Partial<S>>(
   return persistConfig;
 }
 
-const DEFAULT_PERSIST_THROTTLE_MS = IS_TEST ? 0 : IS_IOS ? time.seconds(3) : time.seconds(5);
+const DEFAULT_PERSIST_THROTTLE_MS = IS_TEST ? 0 : Platform.OS === 'ios' ? time.seconds(3) : time.seconds(5);
 
 /**
  * Creates a persist storage object for the Rainbow store.

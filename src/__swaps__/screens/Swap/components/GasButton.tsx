@@ -1,5 +1,5 @@
 import React, { useCallback, useMemo, type PropsWithChildren, type ReactNode } from 'react';
-import { StyleSheet } from 'react-native';
+import { Platform, StyleSheet } from 'react-native';
 
 import Animated, { runOnUI, useAnimatedStyle } from 'react-native-reanimated';
 
@@ -7,7 +7,6 @@ import { getColorValueForThemeWorklet } from '@/__swaps__/utils/swaps';
 import ButtonPressAnimation from '@/components/animations/ButtonPressAnimation';
 import { GestureHandlerButton } from '@/components/buttons/GestureHandlerButton';
 import { Box, Inline, Text, TextIcon, useColorMode, useForegroundColor } from '@/design-system';
-import { IS_ANDROID } from '@/env';
 import { useIsSponsoredSwap } from '@/features/delegation/sponsoredSwapStore';
 import { GasSpeedMenu } from '@/features/gas/components/GasSpeedMenu';
 import { useCustomGasSettings, type GasSettings } from '@/features/gas/hooks/useCustomGas';
@@ -75,7 +74,7 @@ function SelectedGas({ isPill, sponsored }: { isPill?: boolean; sponsored?: bool
           color={sponsored && buyTokenColor ? { custom: buyTokenColor } : SWAP_GAS_ICONS[selectedGasSpeed].color}
           height={10}
           size="icon 13px"
-          textStyle={{ top: IS_ANDROID ? 1 : 0 + (selectedGasSpeed === 'fast' ? 0.5 : 0) }}
+          textStyle={{ top: Platform.OS === 'android' ? 1 : 0 + (selectedGasSpeed === 'fast' ? 0.5 : 0) }}
           width={isPill ? 14 : 18}
           weight={sponsored ? 'heavy' : 'bold'}
         >
@@ -190,7 +189,7 @@ const GasMenu = ({
     <Box
       alignItems="center"
       justifyContent="center"
-      style={{ margin: IS_ANDROID ? 0 : -GAS_BUTTON_HIT_SLOP, pointerEvents: disabled ? 'none' : 'auto' }}
+      style={{ margin: Platform.OS === 'android' ? 0 : -GAS_BUTTON_HIT_SLOP, pointerEvents: disabled ? 'none' : 'auto' }}
       testID="gas-speed-pager"
     >
       <GasSpeedMenu
@@ -201,8 +200,8 @@ const GasMenu = ({
       >
         <ButtonPressAnimation
           scaleTo={0.825}
-          style={IS_ANDROID ? undefined : { padding: GAS_BUTTON_HIT_SLOP }}
-          testID={IS_ANDROID ? undefined : 'gas-speed-pager-button'}
+          style={Platform.OS === 'android' ? undefined : { padding: GAS_BUTTON_HIT_SLOP }}
+          testID={Platform.OS === 'android' ? undefined : 'gas-speed-pager-button'}
         >
           {children}
         </ButtonPressAnimation>
