@@ -4,8 +4,7 @@ import {
   type PerpSparklineData,
 } from '@/features/perps/stores/hyperliquidSparklineStore';
 import { PLACEMENT_IDS } from '@/features/placements/constants';
-import { useDiscoverPlacementAvailability } from '@/features/placements/stores/discover/discoverPlacementAvailabilityStore';
-import { usePlacementsStore } from '@/features/placements/stores/placementsStore';
+import { useDiscoverPlacementsStore } from '@/features/placements/stores/discover/discoverPlacementsStore';
 import { type Placement } from '@/features/placements/types';
 import { logger, RainbowError } from '@/logger';
 import { createDerivedStore } from '@/state/internal/createDerivedStore';
@@ -27,9 +26,8 @@ type Params = { symbolsKey: string };
 
 const useDiscoverPerpsRequestStore = createDerivedStore<DiscoverPerpsRequest>(
   $ => {
-    const availability = $(useDiscoverPlacementAvailability);
-    const perps = availability[PLACEMENT_IDS.DISCOVER_PERPS_CAROUSEL];
-    const symbols = perps ? $(usePlacementsStore, state => readPerpSymbols(state.getPlacement(PLACEMENT_IDS.DISCOVER_PERPS_CAROUSEL))) : [];
+    const perps = $(useDiscoverPlacementsStore, state => state.availability[PLACEMENT_IDS.DISCOVER_PERPS_CAROUSEL]);
+    const symbols = perps ? $(useDiscoverPlacementsStore, state => readPerpSymbols(state[PLACEMENT_IDS.DISCOVER_PERPS_CAROUSEL])) : [];
 
     return {
       enabled: perps && symbols.length > 0,
