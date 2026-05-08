@@ -30,11 +30,9 @@ export type { PerpMarketCardProps };
 
 export const PERP_MARKET_CARD_HEIGHT = 76;
 
-const PERP_MARKET_CARD_WIDTH_NO_CHART = 154;
 const PERP_MARKET_CARD_MAX_WIDTH = 280;
-const PERP_MARKET_NO_CHART_FIXED_WIDTH = 94;
-const PERP_MARKET_NO_CHART_TEXT_MIN_WIDTH = PERP_MARKET_CARD_WIDTH_NO_CHART - PERP_MARKET_NO_CHART_FIXED_WIDTH;
-const SYMBOL_TEXT_BUFFER = 8;
+const PERP_MARKET_NO_CHART_FIXED_WIDTH = 98;
+const PERCENT_ARROW_BLOCK_WIDTH = 14; // arrow icon width + arrow→text gap
 
 const SYMBOL_TEXT_STYLE = {
   fontFamily: textWeights.bold.fontFamily,
@@ -43,11 +41,21 @@ const SYMBOL_TEXT_STYLE = {
   letterSpacing: textSizes['17pt'].letterSpacing,
 } as const;
 
-export function computePerpCardWidth({ symbol }: { symbol?: string }): number {
-  const measuredTextWidth = symbol ? measureTextSync(symbol, SYMBOL_TEXT_STYLE) + SYMBOL_TEXT_BUFFER : PERP_MARKET_NO_CHART_TEXT_MIN_WIDTH;
-  const textWidth = Math.max(PERP_MARKET_NO_CHART_TEXT_MIN_WIDTH, measuredTextWidth);
+const PERCENT_TEXT_STYLE = {
+  fontFamily: textWeights.bold.fontFamily,
+  fontSize: textSizes['15pt'].fontSize,
+  fontWeight: textWeights.bold.fontWeight,
+  letterSpacing: textSizes['15pt'].letterSpacing,
+} as const;
 
-  return Math.min(PERP_MARKET_CARD_MAX_WIDTH, Math.ceil(PERP_MARKET_NO_CHART_FIXED_WIDTH + textWidth));
+const PERCENT_MAX_WIDTH = Math.ceil(measureTextSync('99.9%', PERCENT_TEXT_STYLE)) + PERCENT_ARROW_BLOCK_WIDTH;
+const PERP_MARKET_NO_CHART_TEXT_MIN_WIDTH = PERCENT_MAX_WIDTH;
+
+export function computePerpCardWidth({ symbol }: { symbol?: string }): number {
+  const symbolWidth = symbol ? Math.ceil(measureTextSync(symbol, SYMBOL_TEXT_STYLE)) : 0;
+  const textWidth = Math.max(PERP_MARKET_NO_CHART_TEXT_MIN_WIDTH, symbolWidth);
+
+  return Math.min(PERP_MARKET_CARD_MAX_WIDTH, PERP_MARKET_NO_CHART_FIXED_WIDTH + textWidth);
 }
 
 const CARD_BACKGROUND_COLOR = { light: 'rgba(255,255,255,0.92)', dark: '#171B20' } as const;
@@ -127,7 +135,9 @@ export const PerpMarketCard = memo(function PerpMarketCard({ item, placement, st
           borderWidth={THICK_BORDER_WIDTH}
           height={PERP_MARKET_CARD_HEIGHT}
           justifyContent="center"
-          padding="12px"
+          paddingLeft="12px"
+          paddingRight="16px"
+          paddingVertical="12px"
           style={styles.cardOverflow}
           width="full"
         >
@@ -241,7 +251,7 @@ const styles = StyleSheet.create({
   contentRow: {
     alignItems: 'center',
     flexDirection: 'row',
-    gap: 10,
+    gap: 16,
     width: '100%',
   },
   iconBorderShadow: {
@@ -251,8 +261,8 @@ const styles = StyleSheet.create({
   },
   leftContent: {
     alignItems: 'center',
+    flex: 1,
     flexDirection: 'row',
-    flexShrink: 1,
     gap: 10,
   },
   percentText: {
