@@ -1,52 +1,59 @@
 import React, { useCallback, useMemo, type ReactElement } from 'react';
-import { StyleSheet, View } from 'react-native';
+import { FlatList, StyleSheet, View } from 'react-native';
 
-import Animated from 'react-native-reanimated';
+import { useDebouncedCallback } from 'use-debounce';
 
 import { analytics } from '@/analytics';
 import { event } from '@/analytics/event';
 import ButtonPressAnimation from '@/components/animations/ButtonPressAnimation';
 import ShimmerAnimation from '@/components/animations/ShimmerAnimation';
 import { Box, Text, TextIcon, useBackgroundColor, useColorMode } from '@/design-system';
-import { type Placement, type PlacementItem, type PlacementItemAnalyticsMetadata } from '@/features/placements/types';
+import { type Placement, type PlacementItem } from '@/features/placements/types';
 import { opacity } from '@/framework/ui/utils/opacity';
 import * as i18n from '@/languages';
 import { DEVICE_WIDTH } from '@/utils/deviceUtils';
+import { time } from '@/utils/time';
 
 const CAROUSEL_HORIZONTAL_PADDING = 20;
 const CARD_GAP = 8;
 const PEEK_WIDTH = 32;
 const SKELETON_COUNT = 5;
+const SCROLL_DEBOUNCE_MS = time.seconds(30);
 export const CARD_WIDTH = DEVICE_WIDTH - CAROUSEL_HORIZONTAL_PADDING * 2 - PEEK_WIDTH;
 export const CARD_HEIGHT = 100;
+
+type FeaturedCarouselType = 'perps' | 'predictions';
+type FeaturedCarouselProvider = 'hyperliquid' | 'polymarket';
 
 type MarketCarouselProps<T extends PlacementItem> = {
   data: T[];
   itemHeight?: number;
   itemWidth?: number;
   getItemWidth?: (item: T) => number;
-  keyExtractor: (item: T) => string;
   loading?: boolean;
-  onSeeAll: () => void;
+  onPressSeeAll: () => void;
   placement?: Placement;
   placementId: Placement['id'];
-  // Renderer receives `trackPress` and must invoke it from its inner press
-  // handler so every placement gets the same Discover card press analytics
-  // event without each renderer wiring its own analytics call.
-  renderItem: (item: T, helpers: { trackPress: (metadata?: PlacementItemAnalyticsMetadata) => void }) => ReactElement;
+  provider: FeaturedCarouselProvider;
+  type: FeaturedCarouselType;
+  renderItem: (item: T) => ReactElement;
   title: string;
 };
+
+function keyExtractor<T extends PlacementItem>(item: T): string {
+  return `${item.ref.source}:${item.ref.id}`;
+}
 
 export function MarketCarousel<T extends PlacementItem>({
   data,
   getItemWidth,
   itemHeight = CARD_HEIGHT,
   itemWidth = CARD_WIDTH,
-  keyExtractor,
   loading,
-  onSeeAll,
-  placement,
+  onPressSeeAll,
   placementId,
+  provider,
+  type,
   renderItem,
   title,
 }: MarketCarouselProps<T>) {
@@ -63,38 +70,30 @@ export function MarketCarousel<T extends PlacementItem>({
   }, [getItemWidth, itemWidths]);
 
   const renderFlatListItem = useCallback(
-    ({ item, index }: { item: T; index: number }) => {
-      const trackPress = (metadata?: PlacementItemAnalyticsMetadata) => {
-        const marketId = metadata?.marketId ?? item.ref.id;
-        const marketName = metadata?.marketName ?? readPlacementItemName(item);
-        const marketSymbol = metadata?.marketSymbol ?? readPlacementItemStringMetadata(item, 'symbol');
-        const marketSlug = metadata?.marketSlug ?? readPlacementItemStringMetadata(item, 'slug');
-
-        analytics.track(event.discoverPlacementCardPressed, {
-          placementId,
-          placementScreen: placement?.screen,
-          placementTitle: title,
-          itemOrder: item.order,
-          marketId,
-          marketName,
-          marketSlug,
-          marketSymbol,
-          marketType: item.ref.source,
-        });
-      };
-      return <View style={{ width: itemWidths[index] ?? itemWidth }}>{renderItem(item, { trackPress })}</View>;
-    },
-    [itemWidth, itemWidths, placement, placementId, renderItem, title]
+    ({ item, index }: { item: T; index: number }) => <View style={{ width: itemWidths[index] ?? itemWidth }}>{renderItem(item)}</View>,
+    [itemWidth, itemWidths, renderItem]
   );
 
   const handleSeeAllPress = useCallback(() => {
-    analytics.track(event.discoverPlacementSeeAllPressed, {
+    analytics.track(event.discoverFeaturedCarouselSeeAllPressed, {
       placementId,
-      placementScreen: placement?.screen,
-      placementTitle: title,
+      type,
+      provider,
     });
-    onSeeAll();
-  }, [onSeeAll, placement, placementId, title]);
+    onPressSeeAll();
+  }, [onPressSeeAll, placementId, provider, type]);
+
+  const handleScrollSettle = useDebouncedCallback(
+    () => {
+      analytics.track(event.discoverFeaturedCarouselScrolled, {
+        placementId,
+        type,
+        provider,
+      });
+    },
+    SCROLL_DEBOUNCE_MS,
+    { leading: false, trailing: true }
+  );
 
   if (!loading && data.length === 0) return null;
 
@@ -124,7 +123,7 @@ export function MarketCarousel<T extends PlacementItem>({
           ))}
         </View>
       ) : (
-        <Animated.FlatList
+        <FlatList
           data={data}
           horizontal
           showsHorizontalScrollIndicator={false}
@@ -135,29 +134,12 @@ export function MarketCarousel<T extends PlacementItem>({
           snapToOffsets={snapToOffsets}
           snapToAlignment="start"
           renderItem={renderFlatListItem}
-          ItemSeparatorComponent={ItemSeparator}
           keyExtractor={keyExtractor}
+          onMomentumScrollEnd={handleScrollSettle}
         />
       )}
     </Box>
   );
-}
-
-function readPlacementItemName(item: PlacementItem): string | undefined {
-  return (
-    readPlacementItemStringMetadata(item, 'name') ??
-    readPlacementItemStringMetadata(item, 'title') ??
-    readPlacementItemStringMetadata(item, 'symbol')
-  );
-}
-
-function readPlacementItemStringMetadata(item: PlacementItem, key: string): string | undefined {
-  const value = item.metadata?.[key];
-  return typeof value === 'string' && value.length > 0 ? value : undefined;
-}
-
-function ItemSeparator() {
-  return <View style={styles.separator} />;
 }
 
 function CarouselSkeleton({ itemHeight, itemWidth }: { itemHeight: number; itemWidth: number }) {
@@ -176,6 +158,7 @@ function CarouselSkeleton({ itemHeight, itemWidth }: { itemHeight: number; itemW
 
 const styles = StyleSheet.create({
   contentContainer: {
+    gap: CARD_GAP,
     paddingHorizontal: CAROUSEL_HORIZONTAL_PADDING,
   },
   flatList: {
@@ -190,8 +173,5 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     gap: CARD_GAP,
     paddingHorizontal: 0,
-  },
-  separator: {
-    width: CARD_GAP,
   },
 });
