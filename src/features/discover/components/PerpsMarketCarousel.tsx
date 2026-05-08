@@ -4,7 +4,7 @@ import { useHyperliquidMarketsStore } from '@/features/perps/stores/hyperliquidM
 import { convertStoredPerpPriceChangeToPercent, formatCompactPerpPercentChange } from '@/features/perps/utils';
 import { navigateToPerpsSearch } from '@/features/perps/utils/navigateToPerps';
 import { PLACEMENT_IDS } from '@/features/placements/constants';
-import { usePlacementsStore } from '@/features/placements/stores/placementsStore';
+import { useDiscoverPlacementsStore } from '@/features/placements/stores/discover/discoverPlacementsStore';
 import { type Placement, type PlacementItem } from '@/features/placements/types';
 import * as i18n from '@/languages';
 
@@ -14,10 +14,16 @@ import { computePerpCardWidth, PERP_MARKET_CARD_HEIGHT, PerpMarketCard } from '.
 const PLACEMENT_ID = PLACEMENT_IDS.DISCOVER_PERPS_CAROUSEL;
 
 export function PerpsMarketCarousel() {
-  const placement = usePlacementsStore<Placement | undefined>(state => state.getPlacement(PLACEMENT_ID));
-  const placementsLoading = usePlacementsStore(state => state.status === 'loading' || state.status === 'idle');
+  const placement = useDiscoverPlacementsStore<Placement | undefined>(state => state[PLACEMENT_ID]);
+  const placementsLoading = useDiscoverPlacementsStore(state => {
+    const items = state[PLACEMENT_ID]?.items ?? [];
+    return items.length === 0 && state.isInitialLoad;
+  });
   const markets = useHyperliquidMarketsStore(state => state.markets);
-  const marketsLoading = useHyperliquidMarketsStore(state => state.status === 'loading' || state.status === 'idle');
+  const marketsLoading = useHyperliquidMarketsStore(state => {
+    const hasMarkets = Object.keys(state.markets).length > 0;
+    return !hasMarkets && (state.status === 'loading' || state.status === 'idle');
+  });
 
   const items = useMemo(
     () => placement?.items.filter(item => item.ref.source === 'hyperliquid' && markets[item.ref.id] !== undefined) ?? [],
@@ -51,7 +57,6 @@ export function PerpsMarketCarousel() {
       itemWidth={computePerpCardWidth({})}
       loading={isLoading}
       onPressSeeAll={navigateToPerpsSearch}
-      placement={placement}
       placementId={PLACEMENT_ID}
       provider="hyperliquid"
       renderItem={renderItem}
