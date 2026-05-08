@@ -12,8 +12,8 @@ import {
 } from '@shopify/react-native-skia';
 import { convertToRGBA, type SharedValue } from 'react-native-reanimated';
 
+import { type CompactLineChartData } from '@/features/charts/line/compact/types';
 import { buildSmoothedPath, LineSmoothing } from '@/features/charts/line/LineSmoothingAlgorithms';
-import { type LineChartPreviewData } from '@/features/charts/line/preview/types';
 
 // ============ Types ========================================================== //
 
@@ -30,7 +30,7 @@ type CompactLineChartRendererConfig = {
 const LINE_WIDTH = 2.25;
 
 /** Extra space reserved for stroke caps to prevent clipping. */
-export const LINE_CHART_PREVIEW_HORIZONTAL_OVERDRAW = LINE_WIDTH;
+export const COMPACT_LINE_CHART_HORIZONTAL_OVERDRAW = LINE_WIDTH;
 
 const GRADIENT_FILL_TOP_ALPHA = 0.35;
 const FLAT_PRICE_PADDING_FACTOR = 0.02;
@@ -65,7 +65,7 @@ export class CompactLineChartRenderer {
     this.contentWidth = contentWidth;
     this.height = height;
     this.pictureRecorder = Skia.PictureRecorder();
-    this.surfaceWidth = contentWidth + LINE_CHART_PREVIEW_HORIZONTAL_OVERDRAW * 2;
+    this.surfaceWidth = contentWidth + COMPACT_LINE_CHART_HORIZONTAL_OVERDRAW * 2;
 
     this.strokePath = Skia.Path.Make();
     this.fillPath = Skia.Path.Make();
@@ -84,7 +84,7 @@ export class CompactLineChartRenderer {
     this.fillPaint.setStyle(PaintStyle.Fill);
   }
 
-  public setData(data: LineChartPreviewData | undefined, lineColor: string): void {
+  public setData(data: CompactLineChartData | undefined, lineColor: string): void {
     const pointCount = data ? Math.min(data.prices.length, data.timestamps.length) : 0;
     if (!data || pointCount < 2) {
       this.setBlankPicture();
@@ -177,7 +177,7 @@ export class CompactLineChartRenderer {
     }
   }
 
-  private buildTargetPoints(data: LineChartPreviewData, count: number): Float32Array {
+  private buildTargetPoints(data: CompactLineChartData, count: number): Float32Array {
     const startTs = data.timestamps[0];
     const endTs = data.timestamps[count - 1];
     const timeRange = endTs - startTs || 1;
@@ -188,7 +188,7 @@ export class CompactLineChartRenderer {
 
     for (let i = 0; i < count; i++) {
       const idx = i * 2;
-      points[idx] = LINE_CHART_PREVIEW_HORIZONTAL_OVERDRAW + ((data.timestamps[i] - startTs) / timeRange) * this.contentWidth;
+      points[idx] = COMPACT_LINE_CHART_HORIZONTAL_OVERDRAW + ((data.timestamps[i] - startTs) / timeRange) * this.contentWidth;
       points[idx + 1] = LINE_WIDTH + plotHeight - ((data.prices[i] - minPrice) / priceRange) * plotHeight;
     }
 

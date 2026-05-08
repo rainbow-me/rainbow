@@ -1,34 +1,35 @@
-import { createLineChartPreviewStore, type LineChartPreviewFetchResult } from '@/features/charts/line/preview/createLineChartPreviewStore';
-import { type LineChartPreviewData } from '@/features/charts/line/preview/types';
+import { type CompactLineChartData } from '@/features/charts/line/compact/types';
+import { createLineChartDataStore, type FetchedLineChartData } from '@/features/charts/stores/factories/createLineChartDataStore';
 import { CandleResolution, type HyperliquidCandle } from '@/features/charts/types';
 import { msToSeconds, toHyperliquidInterval } from '@/features/charts/utils';
 import { infoClient } from '@/features/perps/services/hyperliquid-info-client';
-import { type PerpMarketWithMetadata } from '@/features/perps/types';
+import { hyperliquidMarketsActions } from '@/features/perps/stores/hyperliquidMarketsStore';
+import type { PerpMarketWithMetadata } from '@/features/perps/types';
 import Routes from '@/navigation/routesNames';
 import { time } from '@/utils/time';
-
-import { hyperliquidMarketsActions } from './hyperliquidMarketsStore';
 
 // ============ Store ========================================================== //
 
 /**
- * Fetches 24h line-chart previews for requested Hyperliquid markets.
+ * Fetches current-day line chart previews for requested Hyperliquid markets.
  */
-export const useHyperliquidChartPreviewsStore = createLineChartPreviewStore(fetchHyperliquidChartPreviews, {
-  activeOnSwipeRoute: Routes.DISCOVER_SCREEN,
+export const useHyperliquidLineChartsStore = createLineChartDataStore(fetchHyperliquidLineCharts, {
+  activeOnRoute: Routes.DISCOVER_SCREEN,
 });
 
 // ============ Core Fetch Functions =========================================== //
 
-async function fetchHyperliquidChartPreviews(
+async function fetchHyperliquidLineCharts(
   symbols: readonly string[],
   abortController: AbortController | null
-): Promise<LineChartPreviewFetchResult> {
-  const chartsById: LineChartPreviewFetchResult = {};
+): Promise<FetchedLineChartData> {
   const markets = hyperliquidMarketsActions.getMarkets();
-  const chartFetches = symbols.map(symbol => fetchHyperliquidChartPreview(symbol, markets[symbol], abortController));
+  const chartFetches = symbols.map(symbol => fetchHyperliquidChartData(symbol, markets[symbol], abortController));
+
+  void hyperliquidMarketsActions.fetch(undefined, { staleTime: time.seconds(20) });
   const results = await Promise.allSettled(chartFetches);
 
+  const chartsById: FetchedLineChartData = {};
   let didResolve = false;
   let firstError: unknown;
 
@@ -48,11 +49,11 @@ async function fetchHyperliquidChartPreviews(
   return chartsById;
 }
 
-async function fetchHyperliquidChartPreview(
+async function fetchHyperliquidChartData(
   symbol: string,
   market: PerpMarketWithMetadata | undefined,
   abortController: AbortController | null
-): Promise<LineChartPreviewData | null> {
+): Promise<CompactLineChartData | null> {
   if (!market) return null;
 
   const endTime = Date.now();
@@ -69,34 +70,23 @@ async function fetchHyperliquidChartPreview(
 
   if (!candles.length) return null;
 
-  return buildPreviewChartData(candles, market, startTime, endTime);
+  return buildLineChartData(candles, startTime, endTime);
 }
 
 // ============ Fetch Helpers ================================================== //
 
-function buildPreviewChartData(
-  rawCandles: readonly HyperliquidCandle[],
-  market: PerpMarketWithMetadata,
-  startTime: number,
-  endTime: number
-): LineChartPreviewData {
+function buildLineChartData(rawCandles: readonly HyperliquidCandle[], startTime: number, endTime: number): CompactLineChartData | null {
   const orderedCandles = [...rawCandles].sort((a, b) => a.T - b.T);
   const candles = orderedCandles.filter(candle => candle.T > startTime && candle.T < endTime);
 
-  const pointCount = candles.length + 2;
+  const pointCount = candles.length;
   const prices = new Float32Array(pointCount);
   const timestamps = new Uint32Array(pointCount);
 
   for (let i = 0; i < candles.length; i++) {
-    prices[i + 1] = Number(candles[i].c);
-    timestamps[i + 1] = msToSeconds(candles[i].T);
+    prices[i] = Number(candles[i].c);
+    timestamps[i] = msToSeconds(candles[i].T);
   }
-
-  prices[0] = Number(market.previousDayPrice);
-  prices[pointCount - 1] = Number(market.price);
-
-  timestamps[0] = msToSeconds(startTime);
-  timestamps[pointCount - 1] = msToSeconds(endTime);
 
   return { prices, timestamps };
 }

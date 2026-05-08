@@ -1,7 +1,5 @@
 import React, { useCallback, useMemo, type ReactElement } from 'react';
-import { StyleSheet, View } from 'react-native';
-
-import Animated from 'react-native-reanimated';
+import { FlatList, StyleSheet, View } from 'react-native';
 
 import { analytics } from '@/analytics';
 import { event } from '@/analytics/event';
@@ -118,7 +116,7 @@ export function MarketCarousel<T extends PlacementItem>({
           ))}
         </View>
       ) : (
-        <Animated.FlatList
+        <FlatList
           data={data}
           horizontal
           showsHorizontalScrollIndicator={false}
