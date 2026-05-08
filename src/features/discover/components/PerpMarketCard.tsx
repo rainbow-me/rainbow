@@ -3,22 +3,26 @@ import { StyleSheet, View, type StyleProp, type ViewStyle } from 'react-native';
 
 import { LinearGradient } from 'expo-linear-gradient';
 
+import { analytics } from '@/analytics';
+import { event } from '@/analytics/event';
 import ButtonPressAnimation from '@/components/animations/ButtonPressAnimation';
-import ImgixImage from '@/components/images/ImgixImage';
-import { Text, TextIcon, useColorMode } from '@/design-system';
+import { Box, Text, TextIcon, useColorMode } from '@/design-system';
+import { getValueForColorMode } from '@/design-system/color/palettes';
 import { textSizes, textWeights } from '@/design-system/typography/typography';
 import { useCandlestickStore } from '@/features/charts/stores/candlestickStore';
 import { CandleResolution } from '@/features/charts/types';
-import { DOWN_ARROW, UP_ARROW } from '@/features/perps/constants';
+import { HyperliquidTokenIcon } from '@/features/perps/components/HyperliquidTokenIcon';
+import { DOWN_ARROW, HYPERLIQUID_COLORS, UP_ARROW } from '@/features/perps/constants';
 import { useHyperliquidMarketsStore } from '@/features/perps/stores/hyperliquidMarketsStore';
 import { convertStoredPerpPriceChangeToPercent, formatCompactPerpPercentChange, navigateToPerpDetailScreen } from '@/features/perps/utils';
-import { type PlacementItem, type PlacementItemAnalyticsMetadata } from '@/features/placements/types';
+import { type Placement, type PlacementItem } from '@/features/placements/types';
 import { opacity } from '@/framework/ui/utils/opacity';
+import { THICK_BORDER_WIDTH } from '@/styles/constants';
 import { measureTextSync } from '@/utils/measureText';
 
 type PerpMarketCardProps = {
   item: PlacementItem;
-  onPressTracked?: (metadata?: PlacementItemAnalyticsMetadata) => void;
+  placement: Placement;
   style?: StyleProp<ViewStyle>;
 };
 
@@ -51,53 +55,85 @@ const PRICE_CHANGE_COLORS = {
   negative: { light: '#FA423C', dark: '#FF584D' },
 } as const;
 
-export const PerpMarketCard = memo(function PerpMarketCard({ item, onPressTracked, style }: PerpMarketCardProps) {
+const CARD_BACKGROUND_COLOR = { light: 'rgba(255,255,255,0.92)', dark: '#171B20' } as const;
+const CARD_BORDER_COLOR = { light: 'rgba(255,255,255,0.8)', dark: 'rgba(255,255,255,0.08)' } as const;
+const BADGE_BORDER_COLOR = { light: 'rgba(0,0,0,0.07)', dark: 'rgba(255,255,255,0.24)' } as const;
+const BADGE_TEXT_COLOR = { light: '#FFFFFF', dark: 'rgba(0,0,0,0.8)' } as const;
+
+export const PerpMarketCard = memo(function PerpMarketCard({ item, placement, style }: PerpMarketCardProps) {
   const market = useHyperliquidMarketsStore(state => state.getMarket(item.ref.id));
   const candlestickPercentChange = useCandlestickStore(state => {
     const price = state.prices[item.ref.id];
     return price?.candleResolution === CandleResolution.H1 ? price.percentChange : undefined;
   });
-  const { isDarkMode } = useColorMode();
+  const { colorMode, isDarkMode } = useColorMode();
 
   const onPress = useCallback(() => {
-    if (market) navigateToPerpDetailScreen(market.symbol);
-    onPressTracked?.(
-      market
-        ? {
-            marketId: market.symbol,
-            marketName: market.metadata?.name ?? market.baseSymbol,
-            marketSymbol: market.baseSymbol,
-          }
-        : undefined
-    );
-  }, [market, onPressTracked]);
+    if (!market) return;
+    const percentChange =
+      candlestickPercentChange ?? convertStoredPerpPriceChangeToPercent(market.priceChange['1h'] ?? market.priceChange['24h']);
+    const perpsPayload = {
+      provider: 'hyperliquid' as const,
+      market: market.symbol,
+      baseSymbol: market.baseSymbol,
+      price: market.price,
+      priceChange1h: market.priceChange['1h'],
+      priceChange24h: market.priceChange['24h'],
+      volume24h: market.volume['24h'],
+      maxLeverage: market.maxLeverage,
+      name: market.metadata?.name,
+      percentChange,
+    };
+    analytics.track(event.placementInteraction, {
+      id: placement.id,
+      screen: placement.screen,
+      order: placement.order,
+      version: placement.version,
+      updatedAt: placement.updatedAt,
+      itemRefSource: item.ref.source,
+      itemRefId: item.ref.id,
+      itemOrder: item.order,
+      type: 'perps',
+      ...perpsPayload,
+    });
+    analytics.track(event.discoverFeaturedCarouselCardPressed, {
+      placementId: placement.id,
+      type: 'perps',
+      order: item.order,
+      ...perpsPayload,
+    });
+    navigateToPerpDetailScreen(market.symbol);
+  }, [candlestickPercentChange, item, market, placement]);
 
   if (!market) return null;
 
-  const accentColor = market.metadata?.colors?.color || market.metadata?.colors?.fallbackColor || '#3ECFAD';
+  const accentColor = market.metadata?.colors?.color || market.metadata?.colors?.fallbackColor || HYPERLIQUID_COLORS.green;
   const percentChange =
-    candlestickPercentChange ?? convertStoredPerpPriceChangeToPercent(market.priceChange['1h'] || market.priceChange['24h']);
+    candlestickPercentChange ?? convertStoredPerpPriceChangeToPercent(market.priceChange['1h'] ?? market.priceChange['24h']);
   const isPositive = percentChange >= 0;
-  const changeColor = isPositive
-    ? isDarkMode
-      ? PRICE_CHANGE_COLORS.positive.dark
-      : PRICE_CHANGE_COLORS.positive.light
-    : isDarkMode
-      ? PRICE_CHANGE_COLORS.negative.dark
-      : PRICE_CHANGE_COLORS.negative.light;
-  const cardBackgroundColor = isDarkMode ? '#171B20' : 'rgba(255,255,255,0.92)';
-  const borderColor = isDarkMode ? 'rgba(255,255,255,0.08)' : 'rgba(255,255,255,0.8)';
-  const badgeBorderColor = isDarkMode ? 'rgba(255,255,255,0.24)' : 'rgba(0,0,0,0.07)';
-  const badgeTextColor = isDarkMode ? 'rgba(0,0,0,0.8)' : '#FFFFFF';
+  const changeColor = getValueForColorMode(isPositive ? PRICE_CHANGE_COLORS.positive : PRICE_CHANGE_COLORS.negative, colorMode);
+  const cardBackgroundColor = getValueForColorMode(CARD_BACKGROUND_COLOR, colorMode);
+  const borderColor = getValueForColorMode(CARD_BORDER_COLOR, colorMode);
+  const badgeBorderColor = getValueForColorMode(BADGE_BORDER_COLOR, colorMode);
+  const badgeTextColor = getValueForColorMode(BADGE_TEXT_COLOR, colorMode);
   const gradientStartColor = opacity(accentColor, isDarkMode ? 0.26 : 0.06);
   const cardWidth = computePerpCardWidth({ symbol: market.baseSymbol });
-  const iconUrl = useHyperliquidMarketsStore.getState().getCoinIcon(market.baseSymbol) ?? market.metadata?.iconUrl;
   const arrow = isPositive ? UP_ARROW : DOWN_ARROW;
 
   return (
     <ButtonPressAnimation onPress={onPress} scaleTo={0.96} shouldActivateOnStart={false} style={[{ width: cardWidth }, style]}>
       <View style={[styles.cardShadow, isDarkMode ? styles.cardShadowDark : styles.cardShadowLight]}>
-        <View style={[styles.card, { backgroundColor: cardBackgroundColor, borderColor }]}>
+        <Box
+          backgroundColor={cardBackgroundColor}
+          borderColor={{ custom: borderColor }}
+          borderRadius={24}
+          borderWidth={THICK_BORDER_WIDTH}
+          height={PERP_MARKET_CARD_HEIGHT}
+          justifyContent="center"
+          padding="12px"
+          style={styles.cardOverflow}
+          width="full"
+        >
           <LinearGradient
             colors={[gradientStartColor, opacity(accentColor, 0)]}
             end={{ x: 1, y: 1 }}
@@ -108,17 +144,19 @@ export const PerpMarketCard = memo(function PerpMarketCard({ item, onPressTracke
 
           <View style={styles.contentRow}>
             <View style={styles.leftContent}>
-              <View style={[styles.iconBorder, { borderColor: accentColor, shadowColor: accentColor }]}>
-                <View style={styles.iconFill}>
-                  {iconUrl ? (
-                    <ImgixImage enableFasterImage source={{ uri: iconUrl }} style={styles.iconImage} />
-                  ) : (
-                    <Text align="center" size="15pt" weight="heavy" color={{ custom: accentColor }}>
-                      {market.baseSymbol.slice(0, 1)}
-                    </Text>
-                  )}
-                </View>
-              </View>
+              <Box
+                alignItems="center"
+                borderColor={{ custom: accentColor }}
+                borderRadius={25}
+                borderWidth={THICK_BORDER_WIDTH * 2}
+                height={50}
+                justifyContent="center"
+                padding="2px"
+                style={[styles.iconBorderShadow, { shadowColor: accentColor }]}
+                width={50}
+              >
+                <HyperliquidTokenIcon size={42} symbol={market.baseSymbol} />
+              </Box>
 
               <View style={styles.textColumn}>
                 <Text size="17pt" weight="bold" color="label" numberOfLines={1} style={styles.symbolText}>
@@ -136,24 +174,28 @@ export const PerpMarketCard = memo(function PerpMarketCard({ item, onPressTracke
               </View>
             </View>
           </View>
+        </Box>
 
-          <View style={styles.badgePositioner}>
-            <View
-              style={[
-                styles.badge,
-                {
-                  backgroundColor: accentColor,
-                  borderColor: badgeBorderColor,
-                  shadowColor: isDarkMode ? '#000000' : accentColor,
-                  shadowOpacity: isDarkMode ? 0.14 : 0.25,
-                },
-              ]}
-            >
-              <Text align="center" size="11pt" weight="heavy" color={{ custom: badgeTextColor }}>
-                {`${market.maxLeverage}x`}
-              </Text>
-            </View>
-          </View>
+        <View style={styles.badgePositioner}>
+          <Box
+            alignItems="center"
+            borderColor={{ custom: badgeBorderColor }}
+            borderRadius={8}
+            borderWidth={THICK_BORDER_WIDTH}
+            justifyContent="center"
+            style={[
+              styles.badge,
+              {
+                backgroundColor: accentColor,
+                shadowColor: isDarkMode ? '#000000' : accentColor,
+                shadowOpacity: isDarkMode ? 0.14 : 0.25,
+              },
+            ]}
+          >
+            <Text align="center" size="11pt" weight="heavy" color={{ custom: badgeTextColor }}>
+              {`${market.maxLeverage}x`}
+            </Text>
+          </Box>
         </View>
       </View>
     </ButtonPressAnimation>
@@ -162,10 +204,6 @@ export const PerpMarketCard = memo(function PerpMarketCard({ item, onPressTracke
 
 const styles = StyleSheet.create({
   badge: {
-    alignItems: 'center',
-    borderRadius: 8,
-    borderWidth: 1.33,
-    justifyContent: 'center',
     minHeight: 22,
     paddingHorizontal: 5,
     paddingVertical: 5,
@@ -177,16 +215,8 @@ const styles = StyleSheet.create({
     position: 'absolute',
     top: 8,
   },
-  card: {
-    borderRadius: 24,
-    borderWidth: 1.33,
-    height: PERP_MARKET_CARD_HEIGHT,
-    justifyContent: 'center',
+  cardOverflow: {
     overflow: 'hidden',
-    paddingLeft: 12,
-    paddingRight: 12,
-    paddingVertical: 12,
-    width: '100%',
   },
   cardShadow: {
     borderRadius: 24,
@@ -211,7 +241,6 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     gap: 2,
     minHeight: 20,
-    minWidth: 0,
   },
   contentRow: {
     alignItems: 'center',
@@ -219,38 +248,16 @@ const styles = StyleSheet.create({
     gap: 10,
     width: '100%',
   },
-  iconBorder: {
-    alignItems: 'center',
-    borderRadius: 25,
-    borderWidth: 2.66,
-    height: 50,
-    justifyContent: 'center',
-    padding: 2,
+  iconBorderShadow: {
     shadowOffset: { width: 0, height: 0 },
     shadowOpacity: 0.2,
     shadowRadius: 12,
-    width: 50,
-  },
-  iconFill: {
-    alignItems: 'center',
-    backgroundColor: '#292D32',
-    borderRadius: 22,
-    flex: 1,
-    justifyContent: 'center',
-    overflow: 'hidden',
-    width: '100%',
-  },
-  iconImage: {
-    borderRadius: 20,
-    height: '100%',
-    width: '100%',
   },
   leftContent: {
     alignItems: 'center',
     flexDirection: 'row',
     flexShrink: 1,
     gap: 10,
-    minWidth: 0,
   },
   percentText: {
     flexShrink: 1,
@@ -262,7 +269,6 @@ const styles = StyleSheet.create({
     flexShrink: 1,
     gap: 6,
     justifyContent: 'center',
-    minWidth: 0,
     paddingVertical: 1,
   },
 });
