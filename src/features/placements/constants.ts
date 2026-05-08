@@ -6,7 +6,3 @@ export const PLACEMENT_IDS = {
   DISCOVER_PERPS_CAROUSEL: 'discover_featured_perps_carousel',
   DISCOVER_PREDICTIONS_CAROUSEL: 'discover_featured_predictions_carousel',
 } as const;
-
-export const PLACEMENT_IDS_BY_SCREEN = {
-  [PLACEMENT_SCREENS.DISCOVER]: [PLACEMENT_IDS.DISCOVER_PERPS_CAROUSEL, PLACEMENT_IDS.DISCOVER_PREDICTIONS_CAROUSEL],
-} as const;

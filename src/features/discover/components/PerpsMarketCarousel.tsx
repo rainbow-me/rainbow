@@ -47,7 +47,6 @@ export function PerpsMarketCarousel() {
       itemWidth={computePerpCardWidth({})}
       loading={isLoading}
       onPressSeeAll={navigateToPerpsSearch}
-      placement={placement}
       placementId={PLACEMENT_ID}
       provider="hyperliquid"
       renderItem={renderItem}

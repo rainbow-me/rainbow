@@ -129,7 +129,6 @@ export function PredictionsMarketCarousel() {
       itemWidth={PREDICTION_TILE_WIDTH}
       loading={isLoading}
       onPressSeeAll={navigateToPolymarket}
-      placement={placement}
       placementId={PLACEMENT_ID}
       provider="polymarket"
       renderItem={renderItem}

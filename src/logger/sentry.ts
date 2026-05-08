@@ -8,6 +8,7 @@ import { logger, RainbowError } from '@/logger';
 
 type Environment = 'production' | 'internal' | 'development';
 const ENVIRONMENT: Environment = IS_DEV ? 'development' : IS_STORE_INSTALL ? 'production' : 'internal';
+const IS_METRO_DEV = typeof __DEV__ === 'boolean' && __DEV__;
 
 // Sentry tests each regex against these candidate strings:
 //   1. event.message
@@ -74,8 +75,7 @@ export const defaultOptions: Sentry.ReactNativeOptions = {
 };
 
 export function initSentry() {
-  // Use __DEV__ over IS_DEV as we only want to disable this on actual Metro dev builds, not when ENABLE_DEV_MODE is set
-  if (IS_TEST || __DEV__) {
+  if (IS_TEST || IS_METRO_DEV) {
     logger.debug(`[sentry]: disabled for ${IS_TEST ? 'test' : 'dev'} session`);
     return;
   }

@@ -14,11 +14,11 @@ const VALID_SCREENS = new Set<string>(Object.values(PLACEMENT_SCREENS));
 function parsePlacementDoc(doc: FirestoreDocSnapshot): Placement | null {
   const data = doc.data() as Omit<Placement, 'id'>;
   if (!Array.isArray(data.items)) {
-    logger.error(new RainbowError(`[placementsStore]: malformed placement ${doc.id} — items not an array`));
+    logger.error(new RainbowError(`[placementsStore]: malformed placement ${doc.id} - items not an array`));
     return null;
   }
   if (!VALID_SCREENS.has(data.screen)) {
-    logger.error(new RainbowError(`[placementsStore]: malformed placement ${doc.id} — unknown screen "${data.screen}"`));
+    logger.error(new RainbowError(`[placementsStore]: malformed placement ${doc.id} - unknown screen "${data.screen}"`));
     return null;
   }
   return {

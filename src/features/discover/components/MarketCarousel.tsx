@@ -32,7 +32,6 @@ type MarketCarouselProps<T extends PlacementItem> = Pick<FlatListProps<T>, 'data
   getItemWidth?: (item: T) => number;
   loading?: boolean;
   onPressSeeAll: () => void;
-  placement?: Placement;
   placementId: Placement['id'];
   provider: FeaturedCarouselProvider;
   type: FeaturedCarouselType;

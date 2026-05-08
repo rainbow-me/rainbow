@@ -30,31 +30,27 @@ function getHighContrastColorTheme(color: string): ResponseByTheme<string> {
   };
 }
 
-/**
- * Resolves the accent color for an event-level card (e.g. Discover predictions
- * carousel cards). Pulls color from the event's own imagery rather than per-
- * market data; falls back to a deterministic seeded color when the image fails
- * the HSL gates or the fetch times out.
- */
 export async function resolvePolymarketCardColor({
   event,
 }: {
   event: PolymarketEvent | RawPolymarketEvent;
 }): Promise<ResponseByTheme<string>> {
+  const fallbackColor = getColorBySeed(event.id);
   const eventImageUrl = event.image || event.icon;
-  if (eventImageUrl) {
-    try {
-      const eventImageColor = await withTimeout(
-        getImagePrimaryColor(eventImageUrl),
-        IMAGE_COLOR_TIMEOUT_MS,
-        '[resolvePolymarketCardColor]: getImagePrimaryColor timed out'
-      );
-      if (eventImageColor && isCardAccentColor(eventImageColor)) {
-        return getHighContrastColorTheme(eventImageColor);
-      }
-    } catch {
-      // fall through to seed fallback
+  if (!eventImageUrl) return fallbackColor;
+
+  try {
+    const eventImageColor = await withTimeout(
+      getImagePrimaryColor(eventImageUrl),
+      IMAGE_COLOR_TIMEOUT_MS,
+      '[resolvePolymarketCardColor]: getImagePrimaryColor timed out'
+    );
+    if (eventImageColor && isCardAccentColor(eventImageColor)) {
+      return getHighContrastColorTheme(eventImageColor);
     }
+  } catch {
+    return fallbackColor;
   }
-  return getColorBySeed(event.id);
+
+  return fallbackColor;
 }

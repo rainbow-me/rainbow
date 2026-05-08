@@ -39,7 +39,7 @@ export const PERP_MARKET_CARD_HEIGHT = 76;
 
 const PERP_MARKET_CARD_MAX_WIDTH = 280;
 const PERP_MARKET_CHART_FIXED_WIDTH = 150;
-const PERCENT_ARROW_BLOCK_WIDTH = 14; // arrow icon width + arrow→text gap
+const PERCENT_ARROW_BLOCK_WIDTH = 14;
 
 const SYMBOL_TEXT_STYLE = {
   fontFamily: textWeights.bold.fontFamily,
