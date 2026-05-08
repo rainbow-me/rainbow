@@ -70,7 +70,7 @@ export function PredictionsMarketCarousel() {
       itemWidth={PREDICTION_TILE_WIDTH}
       keyExtractor={getPlacementItemKey}
       loading={isLoading}
-      onSeeAll={navigateToPolymarket}
+      onPressSeeAll={navigateToPolymarket}
       placement={placement}
       placementId={PLACEMENT_ID}
       renderItem={renderItem}

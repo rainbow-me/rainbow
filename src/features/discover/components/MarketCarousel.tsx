@@ -35,7 +35,7 @@ type MarketCarouselProps<T extends PlacementItem> = {
   getItemWidth?: (item: T) => number;
   keyExtractor: (item: T) => string;
   loading?: boolean;
-  onSeeAll: () => void;
+  onPressSeeAll: () => void;
   placement?: Placement;
   placementId: PlacementId;
   renderItem: (item: T, trackPress: TrackPlacementCardPress) => ReactElement | null;
@@ -49,7 +49,7 @@ export function MarketCarousel<T extends PlacementItem>({
   itemWidth = CARD_WIDTH,
   keyExtractor,
   loading,
-  onSeeAll,
+  onPressSeeAll,
   placement,
   placementId,
   renderItem,
@@ -89,7 +89,7 @@ export function MarketCarousel<T extends PlacementItem>({
   );
 
   const handleSeeAllPress = useCallback(() => {
-    onSeeAll();
+    onPressSeeAll();
     requestIdleCallback(() =>
       analytics.track(event.discoverPlacementSeeAllPressed, {
         placementId,
@@ -97,7 +97,7 @@ export function MarketCarousel<T extends PlacementItem>({
         placementTitle: title,
       })
     );
-  }, [onSeeAll, placementId, placementScreen, title]);
+  }, [onPressSeeAll, placementId, placementScreen, title]);
 
   const onScrollSettle = useDebouncedCallback(
     () => {
