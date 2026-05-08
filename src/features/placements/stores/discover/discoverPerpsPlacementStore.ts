@@ -4,7 +4,7 @@ import { type PerpMarketsBySymbol, type PerpMarketWithMetadata } from '@/feature
 import { PLACEMENT_IDS } from '@/features/placements/constants';
 import { usePlacementsStore } from '@/features/placements/stores/placementsStore';
 import { type Placement, type PlacementItem } from '@/features/placements/types';
-import { useRemoteConfigStore } from '@/model/remoteConfig';
+import { useRemoteConfigStore, type RemoteConfigState } from '@/model/remoteConfig';
 import { createDerivedStore } from '@/state/internal/createDerivedStore';
 import { shallowEqual } from '@/worklets/comparisons';
 
@@ -13,7 +13,7 @@ import { shallowEqual } from '@/worklets/comparisons';
 /**
  * Discover placement item paired with its resolved perp market.
  */
-export type DiscoverPerpMarketItem = PlacementItem & {
+export type DiscoverPerpMarketItem = PlacementItem<'hyperliquid'> & {
   market: PerpMarketWithMetadata;
 };
 
@@ -40,19 +40,20 @@ const EMPTY_DISCOVER_PERPS_PLACEMENT_STATE: DiscoverPerpsPlacementState = {
  */
 export const useDiscoverPerpsPlacement = createDerivedStore<DiscoverPerpsPlacementState>(
   $ => {
-    const enabled = $(useRemoteConfigStore, s => s.config.discover_placements_enabled && s.config.perps_enabled) && !IS_TEST;
+    const enabled = $(useRemoteConfigStore, shouldEnablePerpsPlacements) && !IS_TEST;
     const placementsLoading = $(usePlacementsStore, s => s.getStatus('isInitialLoad'));
     const marketsLoading = $(useHyperliquidMarketsStore, s => s.getStatus('isInitialLoad'));
     const markets = $(useHyperliquidMarketsStore, s => s.markets);
-    const placementData = $(usePlacementsStore, s => s.getPlacement(PLACEMENT_IDS.DISCOVER_PERPS_CAROUSEL));
+    const placement = $(usePlacementsStore, s => s.getPlacement(PLACEMENT_IDS.DISCOVER_PERPS_CAROUSEL));
+    const placementItems = $(usePlacementsStore, s => s.getItemsBySource(PLACEMENT_IDS.DISCOVER_PERPS_CAROUSEL, 'hyperliquid'));
 
     if (!enabled) return EMPTY_DISCOVER_PERPS_PLACEMENT_STATE;
 
-    const items = buildDiscoverPerpsMarketItems(placementData, markets);
-    const isLoading = placementsLoading || (marketsLoading && placementData !== undefined && items.length === 0);
-    const placement = items.length ? placementData : undefined;
+    const items = buildDiscoverPerpsMarketItems(placementItems, markets);
+    const isLoading = placementsLoading || (marketsLoading && placement !== undefined && items.length === 0);
+    const resolvedPlacement = items.length ? placement : undefined;
 
-    return { isLoading, items, placement };
+    return { isLoading, items, placement: resolvedPlacement };
   },
 
   { equalityFn: isDiscoverPerpsPlacementStateEqual, fastMode: true }
@@ -60,13 +61,16 @@ export const useDiscoverPerpsPlacement = createDerivedStore<DiscoverPerpsPlaceme
 
 // ============ Utilities ====================================================== //
 
-function buildDiscoverPerpsMarketItems(placement: Placement | undefined, markets: PerpMarketsBySymbol): DiscoverPerpMarketItem[] {
-  if (!placement) return EMPTY_DISCOVER_PERP_MARKET_ITEMS;
+function shouldEnablePerpsPlacements(state: RemoteConfigState): boolean {
+  return state.getRemoteConfigKey('discover_placements_enabled') && state.getRemoteConfigKey('perps_enabled');
+}
 
+function buildDiscoverPerpsMarketItems(
+  placementItems: PlacementItem<'hyperliquid'>[],
+  markets: PerpMarketsBySymbol
+): DiscoverPerpMarketItem[] {
   const items: DiscoverPerpMarketItem[] = [];
-  for (const item of placement.items) {
-    if (item.ref.source !== 'hyperliquid') continue;
-
+  for (const item of placementItems) {
     const market = markets[item.ref.id];
     if (market) items.push({ ...item, market });
   }
