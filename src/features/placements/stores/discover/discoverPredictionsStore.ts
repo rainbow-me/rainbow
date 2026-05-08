@@ -39,9 +39,12 @@ function selectPolymarketEventIdsFromPlacement(placement: Placement | undefined)
 
 const useDiscoverPredictionsRequest = createDerivedStore<DiscoverPredictionsRequest>(
   $ => {
-    const { predictions } = $(useDiscoverPlacementAvailability);
+    const availability = $(useDiscoverPlacementAvailability);
+    const predictions = availability[PLACEMENT_IDS.DISCOVER_PREDICTIONS_CAROUSEL];
     const eventIds = predictions
-      ? $(usePlacementsStore, state => selectPolymarketEventIdsFromPlacement(state.getPlacement(PLACEMENT_IDS.PREDICTIONS)))
+      ? $(usePlacementsStore, state =>
+          selectPolymarketEventIdsFromPlacement(state.getPlacement(PLACEMENT_IDS.DISCOVER_PREDICTIONS_CAROUSEL))
+        )
       : [];
 
     return {
