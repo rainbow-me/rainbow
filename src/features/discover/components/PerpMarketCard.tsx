@@ -6,7 +6,7 @@ import { LinearGradient } from 'expo-linear-gradient';
 import { analytics } from '@/analytics';
 import { event } from '@/analytics/event';
 import ButtonPressAnimation from '@/components/animations/ButtonPressAnimation';
-import { Box, Text, TextIcon, useColorMode } from '@/design-system';
+import { Box, Text, TextIcon, useColorMode, useForegroundColor } from '@/design-system';
 import { getValueForColorMode } from '@/design-system/color/palettes';
 import { textSizes, textWeights } from '@/design-system/typography/typography';
 import { useCandlestickStore } from '@/features/charts/stores/candlestickStore';
@@ -50,11 +50,6 @@ export function computePerpCardWidth({ symbol }: { symbol?: string }): number {
   return Math.min(PERP_MARKET_CARD_MAX_WIDTH, Math.ceil(PERP_MARKET_NO_CHART_FIXED_WIDTH + textWidth));
 }
 
-const PRICE_CHANGE_COLORS = {
-  positive: { light: '#1DB847', dark: '#3ECF5B' },
-  negative: { light: '#FA423C', dark: '#FF584D' },
-} as const;
-
 const CARD_BACKGROUND_COLOR = { light: 'rgba(255,255,255,0.92)', dark: '#171B20' } as const;
 const CARD_BORDER_COLOR = { light: 'rgba(255,255,255,0.8)', dark: 'rgba(255,255,255,0.08)' } as const;
 const BADGE_BORDER_COLOR = { light: 'rgba(0,0,0,0.07)', dark: 'rgba(255,255,255,0.24)' } as const;
@@ -67,6 +62,8 @@ export const PerpMarketCard = memo(function PerpMarketCard({ item, placement, st
     return price?.candleResolution === CandleResolution.H1 ? price.percentChange : undefined;
   });
   const { colorMode, isDarkMode } = useColorMode();
+  const positiveChangeColor = useForegroundColor('green');
+  const negativeChangeColor = useForegroundColor('red');
 
   const onPress = useCallback(() => {
     if (!market) return;
@@ -111,7 +108,7 @@ export const PerpMarketCard = memo(function PerpMarketCard({ item, placement, st
   const percentChange =
     candlestickPercentChange ?? convertStoredPerpPriceChangeToPercent(market.priceChange['1h'] ?? market.priceChange['24h']);
   const isPositive = percentChange >= 0;
-  const changeColor = getValueForColorMode(isPositive ? PRICE_CHANGE_COLORS.positive : PRICE_CHANGE_COLORS.negative, colorMode);
+  const changeColor = isPositive ? positiveChangeColor : negativeChangeColor;
   const cardBackgroundColor = getValueForColorMode(CARD_BACKGROUND_COLOR, colorMode);
   const borderColor = getValueForColorMode(CARD_BORDER_COLOR, colorMode);
   const badgeBorderColor = getValueForColorMode(BADGE_BORDER_COLOR, colorMode);
