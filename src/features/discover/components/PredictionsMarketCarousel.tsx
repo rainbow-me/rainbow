@@ -81,9 +81,15 @@ function trackPredictionPress({ eventData, item, placement }: { eventData: Polym
 
 export function PredictionsMarketCarousel() {
   const placement = usePlacementsStore<Placement | undefined>(state => state.getPlacement(PLACEMENT_ID));
-  const placementsLoading = usePlacementsStore(state => state.status === 'loading' || state.status === 'idle');
+  const placementsLoading = usePlacementsStore(state => {
+    const items = state.getPlacement(PLACEMENT_ID)?.items ?? [];
+    return items.length === 0 && (state.status === 'loading' || state.status === 'idle');
+  });
   const events = useDiscoverPredictionsStore(state => state.getData()?.events ?? EMPTY_EVENTS);
-  const predictionsLoading = useDiscoverPredictionsStore(state => state.status === 'loading' || state.status === 'idle');
+  const predictionsLoading = useDiscoverPredictionsStore(state => {
+    const eventsLength = state.getData()?.events.length ?? 0;
+    return eventsLength === 0 && (state.status === 'loading' || state.status === 'idle');
+  });
 
   const eventsById = useMemo(() => {
     const map = new Map<string, PolymarketEvent>();
