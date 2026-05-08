@@ -4,8 +4,8 @@ import { StyleSheet } from 'react-native';
 import { analytics } from '@/analytics';
 import { event } from '@/analytics/event';
 import { PLACEMENT_IDS } from '@/features/placements/constants';
+import { useDiscoverPlacementsStore } from '@/features/placements/stores/discover/discoverPlacementsStore';
 import { useDiscoverPredictionsStore } from '@/features/placements/stores/discover/discoverPredictionsStore';
-import { usePlacementsStore } from '@/features/placements/stores/placementsStore';
 import { type Placement, type PlacementItem } from '@/features/placements/types';
 import {
   LoadingSkeleton,
@@ -80,10 +80,16 @@ function trackPredictionPress({ eventData, item, placement }: { eventData: Polym
 }
 
 export function PredictionsMarketCarousel() {
-  const placement = usePlacementsStore<Placement | undefined>(state => state.getPlacement(PLACEMENT_ID));
-  const placementsLoading = usePlacementsStore(state => state.status === 'loading' || state.status === 'idle');
+  const placement = useDiscoverPlacementsStore<Placement | undefined>(state => state[PLACEMENT_ID]);
+  const placementsLoading = useDiscoverPlacementsStore(state => {
+    const items = state[PLACEMENT_ID]?.items ?? [];
+    return items.length === 0 && state.isInitialLoad;
+  });
   const events = useDiscoverPredictionsStore(state => state.getData()?.events ?? EMPTY_EVENTS);
-  const predictionsLoading = useDiscoverPredictionsStore(state => state.status === 'loading' || state.status === 'idle');
+  const predictionsLoading = useDiscoverPredictionsStore(state => {
+    const eventsLength = state.getData()?.events.length ?? 0;
+    return eventsLength === 0 && (state.status === 'loading' || state.status === 'idle');
+  });
 
   const eventsById = useMemo(() => {
     const map = new Map<string, PolymarketEvent>();
@@ -123,7 +129,6 @@ export function PredictionsMarketCarousel() {
       itemWidth={PREDICTION_TILE_WIDTH}
       loading={isLoading}
       onPressSeeAll={navigateToPolymarket}
-      placement={placement}
       placementId={PLACEMENT_ID}
       provider="polymarket"
       renderItem={renderItem}

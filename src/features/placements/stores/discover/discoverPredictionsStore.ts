@@ -1,6 +1,5 @@
 import { PLACEMENT_IDS } from '@/features/placements/constants';
-import { useDiscoverPlacementAvailability } from '@/features/placements/stores/discover/discoverPlacementAvailabilityStore';
-import { usePlacementsStore } from '@/features/placements/stores/placementsStore';
+import { useDiscoverPlacementsStore } from '@/features/placements/stores/discover/discoverPlacementsStore';
 import { type Placement } from '@/features/placements/types';
 import { fetchPolymarketEventsByIds } from '@/features/polymarket/stores/polymarketEventsStore';
 import { type PolymarketEvent } from '@/features/polymarket/types/polymarket-event';
@@ -36,12 +35,9 @@ function selectPolymarketEventIdsFromPlacement(placement: Placement | undefined)
 
 const useDiscoverPredictionsRequest = createDerivedStore<DiscoverPredictionsRequest>(
   $ => {
-    const availability = $(useDiscoverPlacementAvailability);
-    const predictions = availability[PLACEMENT_IDS.DISCOVER_PREDICTIONS_CAROUSEL];
+    const predictions = $(useDiscoverPlacementsStore, state => state.availability[PLACEMENT_IDS.DISCOVER_PREDICTIONS_CAROUSEL]);
     const eventIds = predictions
-      ? $(usePlacementsStore, state =>
-          selectPolymarketEventIdsFromPlacement(state.getPlacement(PLACEMENT_IDS.DISCOVER_PREDICTIONS_CAROUSEL))
-        )
+      ? $(useDiscoverPlacementsStore, state => selectPolymarketEventIdsFromPlacement(state[PLACEMENT_IDS.DISCOVER_PREDICTIONS_CAROUSEL]))
       : [];
 
     return {
