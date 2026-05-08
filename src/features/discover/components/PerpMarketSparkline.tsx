@@ -127,6 +127,7 @@ class PerpSparklineRenderer {
     this.fillPath.dispose();
     this.strokePaint.dispose();
     this.fillPaint.dispose();
+    this.pictureRecorder.dispose();
 
     const currentPicture = this.chartPicture.value;
     if (currentPicture !== this.blankPicture) {
