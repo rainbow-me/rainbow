@@ -60,13 +60,15 @@ async function fetchHyperliquidSparkline(symbol: string, abortController: AbortC
   if (candles.length < 2) return null;
 
   return {
-    percentChange: calculateLatestCandlePercentChange(candles),
+    percentChange: calculateRangePercentChange(candles),
     prices: candles.map(candle => candle.c),
     timestamps: candles.map(candle => Math.round(candle.t)),
   };
 }
 
-function calculateLatestCandlePercentChange(candles: { c: number; o: number }[]): number {
-  const currentCandle = candles[candles.length - 1];
-  return currentCandle?.o ? ((currentCandle.c - currentCandle.o) / currentCandle.o) * 100 : 0;
+function calculateRangePercentChange(candles: { c: number }[]): number {
+  const first = candles[0];
+  const last = candles[candles.length - 1];
+  if (!first?.c) return 0;
+  return ((last.c - first.c) / first.c) * 100;
 }
