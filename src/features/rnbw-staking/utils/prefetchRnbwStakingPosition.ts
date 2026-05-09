@@ -1,4 +1,4 @@
-import { getExperimentalFlag, RNBW_MEMBERSHIP } from '@/config/experimental';
+import { getExperimentalFlag, RNBW_MEMBERSHIP } from '@/config/experimentalHooks';
 import { getRemoteConfig } from '@/model/remoteConfig';
 
 import { useStakingPositionStore } from '../stores/rnbwStakingPositionStore';

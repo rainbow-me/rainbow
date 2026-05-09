@@ -3,10 +3,8 @@ import { type SeverityLevel } from '@sentry/types';
 import format from 'date-fns/format';
 import { LOG_DEBUG, LOG_LEVEL } from 'react-native-dotenv';
 
-import { getExperimentalFlag, LOG_PUSH } from '@/config/experimental';
 import * as env from '@/env';
 import { DebugContext } from '@/logger/debugContext';
-import { push } from '@/logger/logDump';
 
 export enum LogLevel {
   Debug = 'debug',
@@ -93,12 +91,6 @@ function withColor([x, y]: [number, number]) {
 }
 
 /**
- * A developer setting that pushes log lines to an array in-memory so that
- * they can be "dumped" or copied out of the app and analyzed.
- */
-const LOG_PUSH_ENABLED = getExperimentalFlag(LOG_PUSH);
-
-/**
  * Used in dev mode to nicely log to the console
  */
 export const consoleTransport: Transport = (level, message, metadata) => {
@@ -114,15 +106,6 @@ export const consoleTransport: Transport = (level, message, metadata) => {
   }[level];
   // needed for stacktrace formatting
   const log = level === LogLevel.Error ? console.error : console.log;
-
-  if (LOG_PUSH_ENABLED) {
-    push({
-      timestamp,
-      level,
-      message,
-      metadata,
-    });
-  }
 
   log(`${timestamp} ${withColor(color)(`[${level.toUpperCase()}]`)} ${message.toString()}${extra}`);
 };
@@ -329,9 +312,4 @@ if (env.IS_DEV) {
   // logger.addTransport(sentryTransport);
 } else if (env.IS_PROD) {
   logger.addTransport(sentryTransport);
-
-  if (LOG_PUSH_ENABLED) {
-    logger.addTransport(consoleTransport);
-    logger.level = LogLevel.Debug;
-  }
 }
