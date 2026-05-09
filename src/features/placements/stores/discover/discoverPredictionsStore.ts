@@ -3,6 +3,7 @@ import { useExperimentalConfigStore } from '@/config/experimentalConfigStore';
 import { IS_TEST } from '@/env';
 import { PLACEMENT_IDS } from '@/features/placements/constants';
 import { usePlacementsStore, type PlacementsState } from '@/features/placements/stores/placementsStore';
+import { type PlacementItem } from '@/features/placements/types';
 import { fetchPolymarketEventsByIds } from '@/features/polymarket/stores/polymarketEventsStore';
 import { type PolymarketEvent } from '@/features/polymarket/types/polymarket-event';
 import { processRawPolymarketEvent } from '@/features/polymarket/utils/transforms';
@@ -10,14 +11,25 @@ import { useRemoteConfigStore } from '@/model/remoteConfig';
 import { createDerivedStore } from '@/state/internal/createDerivedStore';
 import { createQueryStore } from '@/state/internal/createQueryStore';
 import { time } from '@/utils/time';
+import { shallowEqual } from '@/worklets/comparisons';
 
-type DiscoverPredictionsData = {
-  events: PolymarketEvent[];
+// ============ Types ========================================================== //
+
+export type PredictionItem = PlacementItem<'polymarket'> & {
+  event: PolymarketEvent;
 };
 
 type DiscoverPredictionsParams = {
   eventIds: string[];
 };
+
+type EventsById = Record<string, PolymarketEvent>;
+
+// ============ Constants ====================================================== //
+
+const EMPTY_ITEMS: PredictionItem[] = [];
+
+// ============ Stores ========================================================= //
 
 const useDiscoverPredictionsEnabled = createDerivedStore<boolean>(
   $ => {
@@ -33,7 +45,7 @@ const useDiscoverPredictionsEnabled = createDerivedStore<boolean>(
   { fastMode: true }
 );
 
-export const useDiscoverPredictionsStore = createQueryStore<DiscoverPredictionsData, DiscoverPredictionsParams>({
+const useDiscoverPredictionsStore = createQueryStore<PolymarketEvent[], DiscoverPredictionsParams>({
   fetcher: fetchDiscoverPredictions,
   enabled: $ => $(useDiscoverPredictionsEnabled),
   params: {
@@ -44,21 +56,64 @@ export const useDiscoverPredictionsStore = createQueryStore<DiscoverPredictionsD
   cacheTime: time.minutes(10),
 });
 
+export const useDiscoverPredictions = createDerivedStore(
+  $ => {
+    const placementItems = $(usePlacementsStore, selectPredictionsPlacementItems, shallowEqual);
+    const events = $(useDiscoverPredictionsStore, s => s.getData());
+    const placementsLoading = $(usePlacementsStore, s => s.getStatus('isInitialLoad'));
+    const eventsLoading = $(useDiscoverPredictionsStore, s => s.enabled && s.getStatus('isInitialLoad'));
+
+    const parsedEvents = events ? parsePredictionItems(placementItems, events) : undefined;
+    const isLoading = !events && (placementsLoading || eventsLoading);
+
+    return {
+      isLoading,
+      items: parsedEvents ?? EMPTY_ITEMS,
+    };
+  },
+  { equalityFn: shallowEqual, fastMode: true }
+);
+
+// ============ Fetcher ======================================================== //
+
 async function fetchDiscoverPredictions(
   { eventIds }: DiscoverPredictionsParams,
   abortController: AbortController | null
-): Promise<DiscoverPredictionsData> {
+): Promise<PolymarketEvent[]> {
   const rawEvents = await fetchPolymarketEventsByIds(eventIds, abortController);
-  const processedEvents = await Promise.all(rawEvents.map(event => processRawPolymarketEvent(event)));
-  const events = processedEvents.filter((event): event is PolymarketEvent => event !== undefined);
+  return Promise.all(rawEvents.map(event => processRawPolymarketEvent(event)));
+}
 
-  return { events };
+// ============ Selectors ====================================================== //
+
+function selectPredictionsPlacementItems(state: PlacementsState): PlacementItem<'polymarket'>[] {
+  return state.getItemsBySource(PLACEMENT_IDS.PREDICTIONS, 'polymarket');
 }
 
 function selectPredictionsEventIds(state: PlacementsState): string[] {
-  return state.getStableRefIds(PLACEMENT_IDS.PREDICTIONS, 'polymarket');
+  return state.getRefIds(PLACEMENT_IDS.PREDICTIONS, 'polymarket');
 }
 
 function hasPredictionsEventIds(state: PlacementsState): boolean {
-  return selectPredictionsEventIds(state).length > 0;
+  return state.hasRefIds(PLACEMENT_IDS.PREDICTIONS, 'polymarket');
+}
+
+// ============ Utilities ====================================================== //
+
+function parsePredictionItems(placementItems: PlacementItem<'polymarket'>[], events: PolymarketEvent[]): PredictionItem[] {
+  const eventsById = indexEvents(events);
+  const items: PredictionItem[] = [];
+
+  for (const item of placementItems) {
+    const event = eventsById[item.ref.id];
+    if (event) items.push({ ...item, event });
+  }
+
+  return items.length ? items : EMPTY_ITEMS;
+}
+
+function indexEvents(events: PolymarketEvent[]): EventsById {
+  const eventsById: EventsById = {};
+  for (const event of events) eventsById[event.id] = event;
+  return eventsById;
 }

@@ -13,7 +13,8 @@ export type PlacementsState = {
   placementsById: PlacementsById;
   getPlacement: (id: PlacementId) => Placement | undefined;
   getItemsBySource: <Source extends PlacementSource>(id: PlacementId, source: Source) => PlacementItem<Source>[];
-  getStableRefIds: (id: PlacementId, source: PlacementSource) => string[];
+  getRefIds: (id: PlacementId, source: PlacementSource) => string[];
+  hasRefIds: (id: PlacementId, source: PlacementSource) => boolean;
 };
 
 type PlacementDocument = Omit<Placement, 'id'>;
@@ -44,9 +45,14 @@ export const usePlacementsStore = createQueryStore<PlacementsById, never, Placem
       return filterBySource(getItems(placement), source);
     },
 
-    getStableRefIds: (id, source) => {
+    getRefIds: (id, source) => {
       const placement = get().placementsById[id];
       return buildStableRefIds(getItems(placement), source);
+    },
+
+    hasRefIds: (id, source) => {
+      const placement = get().placementsById[id];
+      return getItems(placement).some(item => isPlacementItemSource(item, source));
     },
   }),
 

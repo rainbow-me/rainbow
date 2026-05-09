@@ -56,9 +56,10 @@ export function MarketCarousel<T extends PlacementItem>({
   title,
 }: MarketCarouselProps<T>) {
   const placementScreen = placement?.screen;
-  const itemWidths = useMemo(() => data.map(item => getItemWidth?.(item) ?? itemWidth), [data, getItemWidth, itemWidth]);
+  const itemWidths = useMemo(() => (getItemWidth ? data.map(item => getItemWidth(item)) : undefined), [data, getItemWidth]);
+
   const snapToOffsets = useMemo(() => {
-    if (!getItemWidth) return undefined;
+    if (!itemWidths) return undefined;
 
     let offset = 0;
     return itemWidths.map(width => {
@@ -66,7 +67,7 @@ export function MarketCarousel<T extends PlacementItem>({
       offset += width + CARD_GAP;
       return currentOffset;
     });
-  }, [getItemWidth, itemWidths]);
+  }, [itemWidths]);
 
   const renderCarouselItem = useCallback(
     ({ item, index }: { item: T; index: number }) => {
@@ -80,7 +81,7 @@ export function MarketCarousel<T extends PlacementItem>({
         });
 
       return (
-        <View style={{ height: itemHeight, overflow: 'visible', width: itemWidths[index] ?? itemWidth }}>
+        <View style={{ height: itemHeight, overflow: 'visible', width: itemWidths?.[index] ?? itemWidth }}>
           {renderItem(item, trackPress)}
         </View>
       );
