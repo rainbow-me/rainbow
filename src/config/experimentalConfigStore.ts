@@ -8,25 +8,29 @@ import { createRainbowStore } from '@/state/internal/createRainbowStore';
 
 export type ExperimentalConfigState = {
   config: Record<ExperimentalConfigKey, boolean>;
-  setConfig: (config: Record<ExperimentalConfigKey, boolean>) => void;
+  getFlag: (key: ExperimentalConfigKey) => boolean;
   toggleFlag: (key: ExperimentalConfigKey) => void;
 };
 
 export const useExperimentalConfigStore = createRainbowStore<ExperimentalConfigState>(
   (set, get) => ({
     config: defaultConfigValues,
-    setConfig: config => set({ config }),
+
+    getFlag: key => {
+      if (IS_STORE_INSTALL) return defaultConfig[key].value;
+      return get().config[key] ?? defaultConfig[key].value;
+    },
+
     toggleFlag: key => {
-      const current = get().config;
-      set({ config: { ...current, [key]: !current[key] } });
+      set(state => ({ config: { ...state.config, [key]: !state.config[key] } }));
     },
   }),
+
   { storageKey: 'experimentalConfig' }
 );
 
 export function getExperimentalFlag(key: ExperimentalConfigKey): boolean {
-  if (IS_STORE_INSTALL) return defaultConfig[key].value;
-  return useExperimentalConfigStore.getState().config[key] ?? defaultConfig[key].value;
+  return useExperimentalConfigStore.getState().getFlag(key);
 }
 
 /**

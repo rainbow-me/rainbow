@@ -9,5 +9,3 @@ const useExperimentalFlag = (name: ExperimentalConfigKey) =>
 export const useExperimentalConfig = () => useExperimentalConfigStore(state => (IS_STORE_INSTALL ? defaultConfigValues : state.config));
 
 export default useExperimentalFlag;
-
-export * from './experimental';

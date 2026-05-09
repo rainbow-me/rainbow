@@ -9,7 +9,8 @@ import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import URL from 'url-parse';
 
 import { analytics } from '@/analytics';
-import useExperimentalFlag, { PROFILES } from '@/config/experimentalHooks';
+import { PROFILES } from '@/config/experimental';
+import useExperimentalFlag from '@/config/experimentalHooks';
 import {
   AccentColorProvider,
   Bleed,

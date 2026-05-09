@@ -15,7 +15,8 @@ import { triggerHaptics } from 'react-native-turbo-haptics';
 
 import { NavigationSteps, useSwapContext } from '@/__swaps__/screens/Swap/providers/swap-provider';
 import { SPRING_CONFIGS } from '@/components/animations/animationConfigs';
-import useExperimentalFlag, { RNBW_REWARDS } from '@/config/experimentalHooks';
+import { RNBW_REWARDS } from '@/config/experimental';
+import useExperimentalFlag from '@/config/experimentalHooks';
 import { Box, globalColors, Separator, useColorMode } from '@/design-system';
 import { SmartWalletActivationCallout } from '@/features/delegation/components/SmartWalletActivationCallout';
 import { opacity } from '@/framework/ui/utils/opacity';

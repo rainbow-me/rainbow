@@ -4,7 +4,8 @@ import { InteractionManager, Keyboard, Platform, type TextInput } from 'react-na
 import { useDispatch } from 'react-redux';
 
 import { analytics } from '@/analytics';
-import useExperimentalFlag, { PROFILES } from '@/config/experimentalHooks';
+import { PROFILES } from '@/config/experimental';
+import useExperimentalFlag from '@/config/experimentalHooks';
 import { IS_TEST } from '@/env';
 import { isValidAddress, looksLikeAddress } from '@/features/address/core/address';
 import { backupsStore } from '@/features/backup/stores/backupsStore';

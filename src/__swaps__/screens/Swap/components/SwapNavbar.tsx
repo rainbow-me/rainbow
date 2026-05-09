@@ -9,7 +9,8 @@ import { GestureHandlerButton } from '@/components/buttons/GestureHandlerButton'
 import { ContactAvatar } from '@/components/contacts';
 import ImageAvatar from '@/components/contacts/ImageAvatar';
 import { Navbar } from '@/components/navbar/Navbar';
-import useExperimentalFlag, { DEGEN_MODE } from '@/config/experimentalHooks';
+import { DEGEN_MODE } from '@/config/experimental';
+import useExperimentalFlag from '@/config/experimentalHooks';
 import {
   AnimatedText,
   Bleed,

@@ -3,7 +3,8 @@ import React, { useContext, useMemo } from 'react';
 import { useRoute, type RouteProp } from '@react-navigation/native';
 
 import Skeleton from '@/components/skeleton/Skeleton';
-import useExperimentalFlag, { PROFILES } from '@/config/experimentalHooks';
+import { PROFILES } from '@/config/experimental';
+import useExperimentalFlag from '@/config/experimentalHooks';
 import { Bleed, Box, Column, Columns, Heading, Inset, Separator, Stack } from '@/design-system';
 import type Routes from '@/navigation/routesNames';
 import { type RootStackParamList } from '@/navigation/types';

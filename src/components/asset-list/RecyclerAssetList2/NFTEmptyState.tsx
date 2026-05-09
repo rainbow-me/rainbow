@@ -5,7 +5,8 @@ import Animated from 'react-native-reanimated';
 
 import { analytics } from '@/analytics';
 import { GestureHandlerButton } from '@/components/buttons/GestureHandlerButton';
-import useExperimentalFlag, { MINTS, NFTS_ENABLED } from '@/config/experimentalHooks';
+import { MINTS, NFTS_ENABLED } from '@/config/experimental';
+import useExperimentalFlag from '@/config/experimentalHooks';
 import { Box, Stack, Text, useColorMode } from '@/design-system';
 import { convertRawAmountToRoundedDecimal } from '@/helpers/utilities';
 import * as i18n from '@/languages';

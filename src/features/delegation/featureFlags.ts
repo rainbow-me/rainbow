@@ -1,5 +1,6 @@
+import { DELEGATION } from '@/config/experimental';
 import { getExperimentalFlag } from '@/config/experimentalConfigStore';
-import useExperimentalFlag, { DELEGATION } from '@/config/experimentalHooks';
+import useExperimentalFlag from '@/config/experimentalHooks';
 import { getRemoteConfig, useRemoteConfig } from '@/model/remoteConfig';
 
 // ============ Delegation Flags ============================================== //

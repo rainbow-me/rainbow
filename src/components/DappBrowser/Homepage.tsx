@@ -12,7 +12,8 @@ import ButtonPressAnimation from '@/components/animations/ButtonPressAnimation';
 import { FeaturedResultStack, type FeaturedResultStackProps } from '@/components/FeaturedResult/FeaturedResultStack';
 import { ImgixImage } from '@/components/images';
 import ContextMenuButton from '@/components/native-context-menu/contextMenu';
-import useExperimentalFlag, { FEATURED_RESULTS } from '@/config/experimentalHooks';
+import { FEATURED_RESULTS } from '@/config/experimental';
+import useExperimentalFlag from '@/config/experimentalHooks';
 import {
   Bleed,
   Border,

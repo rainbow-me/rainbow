@@ -1,6 +1,7 @@
 import React, { useCallback } from 'react';
 
-import useExperimentalFlag, { NFTS_ENABLED } from '@/config/experimentalHooks';
+import { NFTS_ENABLED } from '@/config/experimental';
+import useExperimentalFlag from '@/config/experimentalHooks';
 import { Box, type BoxProps } from '@/design-system';
 import type { UniqueAsset } from '@/entities/uniqueAssets';
 import { useRemoteConfig } from '@/model/remoteConfig';

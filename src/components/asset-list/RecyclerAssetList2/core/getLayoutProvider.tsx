@@ -1,7 +1,7 @@
 import { LayoutProvider, type Dimension, type Layout, type LayoutManager } from 'recyclerlistview';
 
+import { NFTS_ENABLED } from '@/config/experimental';
 import { type ExperimentalConfigState } from '@/config/experimentalConfigStore';
-import { NFTS_ENABLED } from '@/config/experimentalHooks';
 import { type RainbowConfig } from '@/model/remoteConfig';
 import deviceUtils from '@/utils/deviceUtils';
 

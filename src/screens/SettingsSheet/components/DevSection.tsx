@@ -9,8 +9,8 @@ import { getAllInternetCredentials, resetInternetCredentials } from 'react-nativ
 import Restart from 'react-native-restart';
 
 import { ImgixImage } from '@/components/images';
+import { defaultConfig, defaultConfigValues, LOG_PUSH, type ExperimentalConfigKey } from '@/config/experimental';
 import { getExperimentalFlag, useExperimentalConfigStore } from '@/config/experimentalConfigStore';
-import { defaultConfig, defaultConfigValues, LOG_PUSH, type ExperimentalConfigKey } from '@/config/experimentalHooks';
 import { IS_STORE_INSTALL } from '@/env';
 import { getDelegationContractAddress, isRainbowDelegated, isThirdPartyDelegated } from '@/features/delegation/status';
 import { WrappedAlert as Alert } from '@/helpers/alert';
@@ -360,7 +360,7 @@ const DevSection = () => {
             /> */}
             <MenuItem
               leftComponent={<MenuItem.TextIcon icon="🤷" isEmoji />}
-              onPress={() => useExperimentalConfigStore.getState().setConfig(defaultConfigValues)}
+              onPress={() => useExperimentalConfigStore.setState({ config: defaultConfigValues })}
               size={52}
               titleComponent={<MenuItem.Title text={i18n.t(i18n.l.developer_settings.reset_experimental_config)} />}
             />
