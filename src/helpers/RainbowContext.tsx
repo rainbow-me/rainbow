@@ -4,14 +4,11 @@ import { Platform } from 'react-native';
 import { JsonRpcProvider } from '@ethersproject/providers';
 import { parseEther } from '@ethersproject/units';
 import { Wallet } from '@ethersproject/wallet';
-import { createMMKV } from 'react-native-mmkv';
 import { useSharedValue } from 'react-native-reanimated';
 
-import { defaultConfigValues, type defaultConfig } from '@/config/experimental';
 import { IS_DEV, IS_TEST } from '@/env';
 import Emoji from '@/framework/ui/components/Emoji';
 import { logger, RainbowError } from '@/logger';
-import { STORAGE_IDS } from '@/model/mmkv';
 import Navigation from '@/navigation/Navigation';
 import { getFavorites } from '@/resources/favorites';
 import { useConnectedToAnvilStore } from '@/state/connectedToAnvil';
@@ -22,25 +19,13 @@ import { showConnectToAnvilButton, showReloadButton, showSwitchModeButton } from
 import { useTheme } from '../theme/ThemeContext';
 
 export type RainbowContextType = {
-  config: Record<keyof typeof defaultConfig, boolean> | Record<string, never>;
-  setConfig: (newConfig: Record<string, boolean>) => void;
   setGlobalState: (newState: Record<string, unknown>) => void;
 };
 
 export const RainbowContext = createContext<RainbowContextType>({
-  config: {},
-  setConfig: () => {
-    return;
-  },
   setGlobalState: () => {
     return;
   },
-});
-
-const storageKey = 'config';
-
-const storage = createMMKV({
-  id: STORAGE_IDS.EXPERIMENTAL_CONFIG,
 });
 
 export default function RainbowContextWrapper({ children }: PropsWithChildren) {
@@ -48,22 +33,12 @@ export default function RainbowContextWrapper({ children }: PropsWithChildren) {
   // on unmounting all shared values.
   useSharedValue(0);
   const setConnectedToAnvil = useConnectedToAnvilStore(state => state.setConnectedToAnvil);
-  const [config, setConfig] = useState<Record<string, boolean>>(defaultConfigValues);
   const [globalState, updateGlobalState] = useState({});
 
   useEffect(() => {
     if (IS_TEST) {
       getFavorites();
     }
-    const configFromStorage = storage.getString(storageKey);
-    if (configFromStorage) {
-      setConfig(config => ({ ...config, ...JSON.parse(configFromStorage) }));
-    }
-  }, []);
-
-  const setConfigWithStorage = useCallback((newConfig: Record<string, boolean>) => {
-    storage.set(storageKey, JSON.stringify(newConfig));
-    setConfig(newConfig);
   }, []);
 
   const setGlobalState = useCallback(
@@ -74,11 +49,9 @@ export default function RainbowContextWrapper({ children }: PropsWithChildren) {
   const initialValue = useMemo(
     () => ({
       ...globalState,
-      config,
-      setConfig: setConfigWithStorage,
       setGlobalState,
     }),
-    [config, globalState, setConfigWithStorage, setGlobalState]
+    [globalState, setGlobalState]
   );
 
   const { isDarkMode, setTheme, colors } = useTheme();
