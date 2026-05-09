@@ -12,11 +12,15 @@ import {
 import { type PolymarketEvent } from '@/features/polymarket/types/polymarket-event';
 import { navigateToPolymarket, navigateToPolymarketEvent } from '@/features/polymarket/utils/navigateToPolymarket';
 import * as i18n from '@/languages';
+import { DEVICE_WIDTH } from '@/utils/deviceUtils';
 
 import { MarketCarousel } from './MarketCarousel';
 
 const PLACEMENT_ID = PLACEMENT_IDS.PREDICTIONS;
-const PREDICTION_TILE_WIDTH = 178;
+
+const ITEM_GAP = 8;
+const HORIZONTAL_PADDING = 20;
+const PREDICTION_TILE_WIDTH = (DEVICE_WIDTH - HORIZONTAL_PADDING * 2 - ITEM_GAP) / 2;
 
 export function PredictionsMarketCarousel() {
   const { isLoading, items } = useDiscoverPredictions();
