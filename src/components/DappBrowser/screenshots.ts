@@ -1,4 +1,4 @@
-import RNFS from 'react-native-fs';
+import { copyAsync, deleteAsync, documentDirectory, readDirectoryAsync } from 'expo-file-system';
 import { createMMKV } from 'react-native-mmkv';
 
 import { logger, RainbowError } from '@/logger';
@@ -38,7 +38,7 @@ export function findTabScreenshot(id: string, url?: string): ScreenshotType | nu
     const mostRecentScreenshot = matchingScreenshots.reduce((a, b) => (a.timestamp > b.timestamp ? a : b));
     return {
       ...mostRecentScreenshot,
-      uri: `${RNFS.DocumentDirectoryPath}/${mostRecentScreenshot.uri}`,
+      uri: `${documentDirectory}${mostRecentScreenshot.uri}`,
     };
   }
 
@@ -72,17 +72,18 @@ export async function saveScreenshot(tempUri: string, tabId: string, timestamp: 
   const fileName = buildFilePath(timestamp);
 
   screenshotOperationLock.pending = screenshotOperationLock.pending.then(async () => {
+    const destinationUri = `${documentDirectory}${fileName}`;
     try {
-      await RNFS.copyFile(tempUri, `${RNFS.DocumentDirectoryPath}/${fileName}`);
+      await copyAsync({ from: tempUri, to: destinationUri });
       const newScreenshot: ScreenshotType = { id: tabId, timestamp, uri: fileName, url };
 
       const screenshots = getStoredScreenshots();
       screenshots.push(newScreenshot);
       tabScreenshotStorage.set(MMKV_KEY, JSON.stringify(screenshots));
 
-      return { ...newScreenshot, uri: `${RNFS.DocumentDirectoryPath}/${fileName}` };
+      return { ...newScreenshot, uri: destinationUri };
     } catch (error) {
-      await RNFS.unlink(`${RNFS.DocumentDirectoryPath}/${fileName}`).catch(() => {
+      await deleteAsync(destinationUri, { idempotent: true }).catch(() => {
         return;
       });
       logger.error(new RainbowError('[DappBrowser]: Error saving tab screenshot', error), { tabId, url });
@@ -139,7 +140,7 @@ async function pruneScreenshots(tabsData: Map<TabId, TabData>): Promise<void> {
     });
 
     if (screenshotsToDelete.length) {
-      const filesToDelete = screenshotsToDelete.map(s => `${RNFS.DocumentDirectoryPath}/${s.uri}`);
+      const filesToDelete = screenshotsToDelete.map(s => `${documentDirectory}${s.uri}`);
       await deleteFilesInBatches(filesToDelete);
     }
 
@@ -160,17 +161,17 @@ async function pruneOrphanedScreenshots(): Promise<void> {
 
     if (now - lastCleanup < DEEP_PRUNE_INTERVAL) return;
 
-    const screenshotFiles = await getScreenshotFiles();
+    const screenshotFileNames = await getScreenshotFiles();
     const trackedScreenshots = getStoredScreenshots();
     const trackedFileNames = new Set(trackedScreenshots.map(s => s.uri));
-    const orphanedFiles = screenshotFiles.filter(file => !trackedFileNames.has(file.name));
+    const orphanedFileNames = screenshotFileNames.filter(name => !trackedFileNames.has(name));
 
-    if (!orphanedFiles.length) {
+    if (!orphanedFileNames.length) {
       tabScreenshotStorage.set(MMKV_LAST_FULL_CLEANUP_KEY, now);
       return;
     }
 
-    await deleteFilesInBatches(orphanedFiles.map(f => f.path));
+    await deleteFilesInBatches(orphanedFileNames.map(name => `${documentDirectory}${name}`));
     tabScreenshotStorage.set(MMKV_LAST_FULL_CLEANUP_KEY, now);
   } catch (error) {
     logger.error(new RainbowError('[DappBrowser]: Orphaned screenshot cleanup failed', error));
@@ -186,16 +187,16 @@ function buildFilePath(timestamp: number): string {
   return `${FILE_PREFIX}${timestamp}-${random}${FILE_EXTENSION}`;
 }
 
-async function getScreenshotFiles(): Promise<RNFS.ReadDirItem[]> {
-  const files = await RNFS.readDir(RNFS.DocumentDirectoryPath);
-  return files.filter(file => file.name.startsWith(FILE_PREFIX));
+async function getScreenshotFiles(): Promise<string[]> {
+  const fileNames = await readDirectoryAsync(documentDirectory!);
+  return fileNames.filter(name => name.startsWith(FILE_PREFIX));
 }
 
 async function deleteFilesInBatches(filePaths: string[]): Promise<void> {
   for (let i = 0; i < filePaths.length; i += PRUNE_BATCH_SIZE) {
     const batch = filePaths.slice(i, i + PRUNE_BATCH_SIZE);
     const deletePromises = batch.map(filePath =>
-      RNFS.unlink(filePath).catch(error => {
+      deleteAsync(filePath, { idempotent: true }).catch(error => {
         logger.error(new RainbowError('[DappBrowser]: Error deleting screenshot file', error), {
           filePath,
         });

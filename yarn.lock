@@ -9630,6 +9630,7 @@ __metadata:
     ethereumjs-wallet: "npm:1.0.1"
     events: "npm:3.3.0"
     expo: "npm:53.0.20"
+    expo-file-system: "npm:18.1.11"
     expo-image-manipulator: "npm:13.1.7"
     expo-image-picker: "npm:17.0.0-canary-20250713-8f814f8"
     expo-linear-gradient: "npm:14.1.5"
@@ -9695,7 +9696,6 @@ __metadata:
     react-native-dotenv: "npm:2.4.2"
     react-native-edge-to-edge: "npm:1.6.2"
     react-native-fast-image: "npm:8.5.11"
-    react-native-fs: "npm:2.16.6"
     react-native-gesture-handler: "npm:2.31.1"
     react-native-get-random-values: "npm:1.5.0"
     react-native-image-colors: "npm:2.5.1"
@@ -10916,7 +10916,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"base-64@npm:0.1.0, base-64@npm:^0.1.0":
+"base-64@npm:0.1.0":
   version: 0.1.0
   resolution: "base-64@npm:0.1.0"
   checksum: 10c0/fe0dcf076e823f04db7ee9b02495be08a91c445fbc6db03cb9913be9680e2fcc0af8b74459041fe08ad16800b1f65a549501d8f08696a8a6d32880789b7de69d
@@ -14947,7 +14947,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"expo-file-system@npm:~18.1.11":
+"expo-file-system@npm:18.1.11, expo-file-system@npm:~18.1.11":
   version: 18.1.11
   resolution: "expo-file-system@npm:18.1.11"
   peerDependencies:
@@ -22957,19 +22957,6 @@ __metadata:
   dependencies:
     prop-types: "npm:^15.5.10"
   checksum: 10c0/04d1cb35f2acacda593c80f2d9845f7dc0ed5e0e1fb62043ba5351f914162dcd92f1ae98e80ebf9752f6b4131b1634f6a9ac90e9c649f30b5591f3187d99811f
-  languageName: node
-  linkType: hard
-
-"react-native-fs@npm:2.16.6":
-  version: 2.16.6
-  resolution: "react-native-fs@npm:2.16.6"
-  dependencies:
-    base-64: "npm:^0.1.0"
-    utf8: "npm:^3.0.0"
-  peerDependencies:
-    react-native: ^0.59.5
-    react-native-windows: ^0.57.2
-  checksum: 10c0/223a8810583f2a6316e7533a7f0b85143ebffb3f75b7dbc3a222b35d03175d7c081e61024547bdb91c201af778a5c45b058c34c6770fa007d3afc6ae17f669e1
   languageName: node
   linkType: hard
 

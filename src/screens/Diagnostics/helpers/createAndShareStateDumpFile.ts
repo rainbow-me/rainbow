@@ -1,7 +1,6 @@
-import RNFS from 'react-native-fs';
+import { deleteAsync, documentDirectory, writeAsStringAsync } from 'expo-file-system';
 import RNShare from 'react-native-share';
 
-import { IS_ANDROID } from '@/env';
 import { getAllActiveSessions } from '@/features/wallet-connect/services/sessions';
 import { logger, RainbowError } from '@/logger';
 import store from '@/redux/store';
@@ -56,22 +55,21 @@ export async function createAndShareStateDumpFile() {
   };
   const stringifiedState = JSON.stringify(state, cyclicReplacer());
 
-  const documentsFilePath = `${RNFS.DocumentDirectoryPath}/${APP_STATE_DUMP_FILE_NAME}`;
+  // `documentDirectory` is `null` only on web (this code is native-only); the
+  // value is a `file://` URI ending in `/`.
+  const documentsFileUri = `${documentDirectory!}${APP_STATE_DUMP_FILE_NAME}`;
   try {
-    // first remove the old file in case the immediate removal failed
-    const fileExists = await RNFS.exists(documentsFilePath);
-    if (fileExists) {
-      await RNFS.unlink(documentsFilePath);
-    }
-    await RNFS.writeFile(documentsFilePath, stringifiedState, 'utf8');
-    if (IS_ANDROID) {
-      await RNFS.writeFile(`${RNFS.DownloadDirectoryPath}/app_state_dump_${Date.now()}.json`, stringifiedState, 'utf8');
-    }
+    // first remove the old file in case the immediate removal failed; `idempotent`
+    // makes this a no-op when the file is already gone
+    await deleteAsync(documentsFileUri, { idempotent: true });
+    await writeAsStringAsync(documentsFileUri, stringifiedState);
+    // The share sheet (Save to Files / Drive / etc.) is the cross-platform
+    // way to hand the dump off the device.
     await RNShare.open({
-      url: `file://${documentsFilePath}`,
+      url: documentsFileUri,
     });
     // clean up the file since we don't need it anymore
-    await RNFS.unlink(documentsFilePath);
+    await deleteAsync(documentsFileUri, { idempotent: true });
   } catch (error) {
     logger.error(new RainbowError('[createAndShareStateDumpFile]: Saving app state dump data failed'));
   }

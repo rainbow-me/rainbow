@@ -1,10 +1,8 @@
-import path from 'path';
-
 import { captureException } from '@sentry/react-native';
+import { cacheDirectory, deleteAsync } from 'expo-file-system';
 import { findKey, isEmpty, isNumber, keys } from 'lodash';
 import uniq from 'lodash/uniq';
 import FastImage from 'react-native-fast-image';
-import RNFS from 'react-native-fs';
 import { createMMKV } from 'react-native-mmkv';
 
 import { type UniqueId } from '@/__swaps__/types/assets';
@@ -565,11 +563,12 @@ export default async function runMigrations() {
    */
   const v16 = async () => {
     try {
-      RNFS.unlink(path.join(RNFS.CachesDirectoryPath, `${RB_TOKEN_LIST_CACHE}.json`)).catch(() => {
+      // `cacheDirectory` ends with a trailing `/`, so concatenation is enough.
+      deleteAsync(`${cacheDirectory!}${RB_TOKEN_LIST_CACHE}.json`, { idempotent: true }).catch(() => {
         // we don't care if it fails
       });
 
-      RNFS.unlink(path.join(RNFS.CachesDirectoryPath, `${RB_TOKEN_LIST_ETAG}.json`)).catch(() => {
+      deleteAsync(`${cacheDirectory!}${RB_TOKEN_LIST_ETAG}.json`, { idempotent: true }).catch(() => {
         // we don't care if it fails
       });
     } catch (error: any) {
