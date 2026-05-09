@@ -3,7 +3,8 @@ import { Platform, StyleSheet, View } from 'react-native';
 
 import { toast } from 'sonner-native';
 
-import { getExperimentalFlag, PERFORMANCE_TOAST } from '@/config/experimentalHooks';
+import { getExperimentalFlag } from '@/config/experimentalConfigStore';
+import { PERFORMANCE_TOAST } from '@/config/experimentalHooks';
 import { globalColors } from '@/design-system';
 import { typeHierarchy } from '@/design-system/typography/typeHierarchy';
 import { IS_TEST } from '@/env';

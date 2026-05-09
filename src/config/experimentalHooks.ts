@@ -10,6 +10,4 @@ export const useExperimentalConfig = () => useExperimentalConfigStore(state => (
 
 export default useExperimentalFlag;
 
-export { getExperimentalFlag } from './experimentalConfigStore';
-
 export * from './experimental';

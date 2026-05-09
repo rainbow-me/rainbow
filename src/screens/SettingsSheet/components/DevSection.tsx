@@ -9,8 +9,8 @@ import { getAllInternetCredentials, resetInternetCredentials } from 'react-nativ
 import Restart from 'react-native-restart';
 
 import { ImgixImage } from '@/components/images';
-import { useExperimentalConfigStore } from '@/config/experimentalConfigStore';
-import { defaultConfig, defaultConfigValues, getExperimentalFlag, LOG_PUSH, type ExperimentalConfigKey } from '@/config/experimentalHooks';
+import { getExperimentalFlag, useExperimentalConfigStore } from '@/config/experimentalConfigStore';
+import { defaultConfig, defaultConfigValues, LOG_PUSH, type ExperimentalConfigKey } from '@/config/experimentalHooks';
 import { IS_STORE_INSTALL } from '@/env';
 import { getDelegationContractAddress, isRainbowDelegated, isThirdPartyDelegated } from '@/features/delegation/status';
 import { WrappedAlert as Alert } from '@/helpers/alert';

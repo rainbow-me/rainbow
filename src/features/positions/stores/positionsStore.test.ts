@@ -8,6 +8,9 @@ import { usePositionsStore } from './positionsStore';
 
 jest.mock('@/resources/platform/client');
 jest.mock('@/config/experimentalHooks', () => ({}));
+jest.mock('@/config/experimentalConfigStore', () => ({
+  getExperimentalFlag: jest.fn(() => false),
+}));
 jest.mock('@/state/backendNetworks/backendNetworks', () => ({
   useBackendNetworksStore: {
     getState: () => ({

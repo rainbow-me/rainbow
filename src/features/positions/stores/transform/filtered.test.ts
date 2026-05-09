@@ -19,9 +19,8 @@ import { usePositionsStore } from '../positionsStore';
  */
 
 // Mock config to avoid React Native gesture handler imports
-jest.mock('@/config/experimentalHooks', () => ({
+jest.mock('@/config/experimentalConfigStore', () => ({
   getExperimentalFlag: jest.fn(() => false),
-  DEFI_POSITIONS_THRESHOLD_FILTER: 'defi_positions_threshold_filter',
 }));
 
 jest.mock('@/state/backendNetworks/backendNetworks', () => ({

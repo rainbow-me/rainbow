@@ -2,9 +2,8 @@ import { createMockDeposit, createMockPortfolioItem, createMockRainbowPosition }
 import { DetailType, PositionName } from '../../types/generated/positions/positions';
 import { shouldFilterPortfolioItem, shouldFilterPosition } from './filter';
 
-jest.mock('@/config/experimentalHooks', () => ({
+jest.mock('@/config/experimentalConfigStore', () => ({
   getExperimentalFlag: jest.fn(() => true),
-  DEFI_POSITIONS_THRESHOLD_FILTER: 'defi_positions_threshold_filter',
 }));
 
 describe('Position Filters', () => {

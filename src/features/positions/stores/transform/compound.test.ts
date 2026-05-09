@@ -5,9 +5,8 @@ import { createMockPosition, createMockResponse, createMockStats } from '../../_
 import { DetailType, PositionName } from '../../types/generated/positions/positions';
 
 // Mock config to avoid React Native gesture handler imports
-jest.mock('@/config/experimentalHooks', () => ({
+jest.mock('@/config/experimentalConfigStore', () => ({
   getExperimentalFlag: jest.fn(() => false),
-  DEFI_POSITIONS_THRESHOLD_FILTER: 'defi_positions_threshold_filter',
 }));
 
 describe('Compound Protocol', () => {
