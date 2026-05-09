@@ -16,7 +16,7 @@ import { type PerpMarketWithMetadata } from '@/features/perps/types';
 import { navigateToPerpDetailScreen } from '@/features/perps/utils';
 import { type PlacementItemAnalyticsMetadata } from '@/features/placements/types';
 import { opacity } from '@/framework/ui/utils/opacity';
-import { THICK_BORDER_WIDTH } from '@/styles/constants';
+import { THICK_BORDER_WIDTH, THICKER_BORDER_WIDTH } from '@/styles/constants';
 import { measureTextSync, type MeasureTextProps } from '@/utils/measureText';
 import { getHighContrastTextColorWorklet } from '@/worklets/colors';
 
@@ -50,7 +50,7 @@ const UP_DOWN_ARROW_WIDTH = 12;
 const PRICE_CHANGE_ROW_GAP = 3;
 
 const CHART_LAYOUT = { height: 34, width: 44 };
-const CARD_LAYOUT = { borderRadius: 24, borderWidth: THICK_BORDER_WIDTH, gap: 10, maxWidth: 280, paddingLeft: 12, paddingRight: 16 };
+const CARD_LAYOUT = { borderRadius: 24, borderWidth: THICKER_BORDER_WIDTH, gap: 10, maxWidth: 280, paddingLeft: 12, paddingRight: 16 };
 const PRICE_CHANGE_TEXT_STYLE = { size: '15pt', weight: 'bold' } satisfies MeasureTextProps;
 const SYMBOL_TEXT_STYLE = { size: '17pt', weight: 'bold' } satisfies MeasureTextProps;
 

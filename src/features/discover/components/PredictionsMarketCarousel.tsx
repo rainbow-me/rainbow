@@ -1,67 +1,41 @@
-import React, { useCallback, useMemo, type ReactElement } from 'react';
+import React, { useCallback, type ReactElement } from 'react';
 import { StyleSheet } from 'react-native';
 
 import { PLACEMENT_IDS } from '@/features/placements/constants';
-import { useDiscoverPredictionsStore } from '@/features/placements/stores/discover/discoverPredictionsStore';
+import { useDiscoverPredictions, type PredictionItem } from '@/features/placements/stores/discover/discoverPredictionsStore';
 import { usePlacementsStore } from '@/features/placements/stores/placementsStore';
-import { type PlacementItem, type PlacementItemAnalyticsMetadata } from '@/features/placements/types';
+import { type PlacementItemAnalyticsMetadata } from '@/features/placements/types';
 import {
-  LoadingSkeleton,
   HEIGHT as POLYMARKET_EVENTS_LIST_ITEM_HEIGHT,
   PolymarketEventsListItem,
 } from '@/features/polymarket/components/polymarket-events-list/PolymarketEventsListItem';
 import { type PolymarketEvent } from '@/features/polymarket/types/polymarket-event';
 import { navigateToPolymarket, navigateToPolymarketEvent } from '@/features/polymarket/utils/navigateToPolymarket';
 import * as i18n from '@/languages';
-import { shallowEqual } from '@/worklets/comparisons';
 
 import { MarketCarousel } from './MarketCarousel';
 
 const PLACEMENT_ID = PLACEMENT_IDS.DISCOVER_PREDICTIONS_CAROUSEL;
 const PREDICTION_TILE_WIDTH = 178;
-const EMPTY_EVENTS: PolymarketEvent[] = [];
 
 export function PredictionsMarketCarousel() {
-  const placement = usePlacementsStore(state => state.getPlacement(PLACEMENT_ID));
-  const placementItems = usePlacementsStore(state => state.getItemsBySource(PLACEMENT_ID, 'polymarket'), shallowEqual);
-  const placementsLoading = usePlacementsStore(state => state.getStatus('isInitialLoad')) && placementItems.length === 0;
-  const events = useDiscoverPredictionsStore(state => state.getData()?.events ?? EMPTY_EVENTS);
+  const { isLoading, items } = useDiscoverPredictions();
+  const placement = usePlacementsStore(s => s.getPlacement(PLACEMENT_ID));
 
-  const predictionsLoading = useDiscoverPredictionsStore(state => {
-    const eventsLength = state.getData()?.events.length ?? 0;
-    return eventsLength === 0 && state.getStatus('isInitialLoad');
-  });
-
-  const eventsById = useMemo(() => {
-    const map = new Map<string, PolymarketEvent>();
-    for (const event of events) map.set(event.id, event);
-    return map;
-  }, [events]);
-
-  const items = useMemo(() => placementItems.filter(item => eventsById.has(item.ref.id)), [eventsById, placementItems]);
-  const isLoading = placementsLoading || predictionsLoading;
-
-  const renderItem = useCallback(
-    (item: PlacementItem, trackPress: (metadata?: PlacementItemAnalyticsMetadata) => void): ReactElement => {
-      const eventData = eventsById.get(item.ref.id);
-      if (!eventData) return <LoadingSkeleton />;
-
-      return (
-        <PolymarketEventsListItem
-          event={eventData}
-          onPress={() => {
-            trackPress(readPredictionAnalyticsMetadata(eventData));
-            navigateToPolymarketEvent({ event: eventData, eventId: eventData.id });
-          }}
-          shouldActivateOnStart={false}
-          style={styles.predictionTile}
-        />
-      );
-    },
-    [eventsById]
-  );
-
-  if (!isLoading && items.length === 0) return null;
+  const renderItem = useCallback((item: PredictionItem, trackPress: (metadata?: PlacementItemAnalyticsMetadata) => void): ReactElement => {
+    const event = item.event;
+    return (
+      <PolymarketEventsListItem
+        event={event}
+        onPress={() => {
+          trackPress(readPredictionAnalyticsMetadata(event));
+          navigateToPolymarketEvent({ event, eventId: event.id });
+        }}
+        shouldActivateOnStart={false}
+        style={styles.predictionTile}
+      />
+    );
+  }, []);
 
   return (
     <MarketCarousel
@@ -79,7 +53,7 @@ export function PredictionsMarketCarousel() {
   );
 }
 
-function getPlacementItemKey(item: PlacementItem): string {
+function getPlacementItemKey(item: PredictionItem): string {
   return `${item.ref.source}:${item.ref.id}`;
 }
 
