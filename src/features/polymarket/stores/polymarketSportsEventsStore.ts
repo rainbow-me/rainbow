@@ -49,7 +49,7 @@ async function fetchPolymarketSportsEvents(_: never, abortController: AbortContr
     timeout: time.seconds(30),
   });
 
-  const filteredEvents = events.filter(event => !event.closed && event.ended !== true && event.gameId != null);
+  const filteredEvents = events.filter(event => event.ended !== true && event.gameId != null);
 
   const teamsByTicker = await fetchTeamsForGameEvents(filteredEvents);
 
