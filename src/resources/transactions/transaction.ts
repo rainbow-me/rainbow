@@ -61,6 +61,12 @@ export type BackendTransactionArgs = {
   enabled: boolean;
 };
 
+// 4xx responses where the client cannot meaningfully react. Silenced so the pending-tx
+// watcher's 1Hz polling doesn't flood Sentry while a persistent server-side condition
+// (auth, WAF, rate limit, not-yet-indexed) clears. 400 / 422 and other client-bug codes
+// are deliberately omitted: those signal malformed requests we want to see.
+const SILENCED_FETCH_STATUSES = new Set([401, 403, 404, 408, 429]);
+
 export const fetchRawTransaction = async ({
   abortController,
   address,
@@ -148,10 +154,7 @@ export const fetchRawTransaction = async ({
 
     return parsed;
   } catch (e) {
-    // 4xx responses are not actionable client-side: 404 means the backend hasn't indexed
-    // the transaction yet, and other 4xx (e.g. 403 WAF blocks) repeat once per second
-    // because the pending-tx watcher polls forever. Return null silently to avoid flooding Sentry.
-    if (e instanceof RainbowFetchError && e.response && e.response.status >= 400 && e.response.status < 500) {
+    if (e instanceof RainbowFetchError && e.response && SILENCED_FETCH_STATUSES.has(e.response.status)) {
       return null;
     }
     logger.error(new RainbowError('[transaction]: Failed to fetch transaction', e));
