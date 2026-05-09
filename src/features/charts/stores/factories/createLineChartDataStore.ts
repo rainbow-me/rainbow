@@ -46,6 +46,9 @@ type LineChartDataQueryState = QueryStoreState<FetchedLineChartData, LineChartDa
 const CACHE_TIME = time.minutes(2);
 const STALE_TIME = time.seconds(30);
 
+/** Sentinel value that indicates read tracking is inactive. */
+const TRACKING_INACTIVE = Symbol();
+
 // ============ Store Factory ================================================== //
 
 /**
@@ -56,7 +59,7 @@ export function createLineChartDataStore(
   options?: LineChartDataStoreOptions
 ): QueryStore<FetchedLineChartData, LineChartDataParams, LineChartDataStoreState> {
   const subscriptionCounts = new Map<ChartId, number>();
-  let collectedChartReads: ChartReads | null = null;
+  let collectedChartReads: ChartReads | typeof TRACKING_INACTIVE = TRACKING_INACTIVE;
 
   const store = createQueryStore<FetchedLineChartData, LineChartDataParams, LineChartDataStoreState>(
     {
@@ -95,9 +98,9 @@ export function createLineChartDataStore(
   }
 
   function trackChartRead(id: ChartId): void {
-    if (collectedChartReads === null) return;
+    if (collectedChartReads === TRACKING_INACTIVE) return;
 
-    if (collectedChartReads === undefined) {
+    if (collectedChartReads === null) {
       collectedChartReads = id;
     } else if (typeof collectedChartReads === 'string') {
       if (collectedChartReads !== id) collectedChartReads = [collectedChartReads, id];
@@ -148,7 +151,7 @@ export function createLineChartDataStore(
 
     return {
       select(state: LineChartDataQueryState): Selected {
-        collectedChartReads = undefined;
+        collectedChartReads = null;
 
         try {
           const selected = selector(state);
@@ -158,14 +161,14 @@ export function createLineChartDataStore(
 
           return selected;
         } finally {
-          collectedChartReads = null;
+          collectedChartReads = TRACKING_INACTIVE;
         }
       },
 
       release(): void {
         const previousChartReads = chartReads;
-        chartReads = undefined;
-        updateObservedCharts(previousChartReads, undefined);
+        chartReads = null;
+        updateObservedCharts(previousChartReads, null);
       },
     };
   }
@@ -302,7 +305,7 @@ function areNumberArraysEqual(current: ArrayLike<number>, next: ArrayLike<number
 
 // ============ Chart Reads ==================================================== //
 
-type ChartReads = ChartId | ChartId[] | undefined;
+type ChartReads = ChartId | ChartId[] | null;
 
 function applyChartReadDiff(
   chartReads: ChartReads,
