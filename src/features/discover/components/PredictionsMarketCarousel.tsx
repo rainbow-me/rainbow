@@ -3,11 +3,11 @@ import { StyleSheet } from 'react-native';
 
 import { PLACEMENT_IDS } from '@/features/placements/constants';
 import { useDiscoverPredictions, type PredictionItem } from '@/features/placements/stores/discover/discoverPredictionsStore';
-import { usePlacementsStore } from '@/features/placements/stores/placementsStore';
 import { type PlacementItemAnalyticsMetadata } from '@/features/placements/types';
 import {
   HEIGHT as POLYMARKET_EVENTS_LIST_ITEM_HEIGHT,
   PolymarketEventsListItem,
+  PREDICTION_CARD_BORDER_RADIUS,
 } from '@/features/polymarket/components/polymarket-events-list/PolymarketEventsListItem';
 import { type PolymarketEvent } from '@/features/polymarket/types/polymarket-event';
 import { navigateToPolymarket, navigateToPolymarketEvent } from '@/features/polymarket/utils/navigateToPolymarket';
@@ -23,8 +23,7 @@ const HORIZONTAL_PADDING = 20;
 const PREDICTION_TILE_WIDTH = (DEVICE_WIDTH - HORIZONTAL_PADDING * 2 - ITEM_GAP) / 2;
 
 export function PredictionsMarketCarousel() {
-  const { isLoading, items } = useDiscoverPredictions();
-  const placement = usePlacementsStore(s => s.getPlacement(PLACEMENT_ID));
+  const { isLoading, items, placement } = useDiscoverPredictions();
 
   const renderItem = useCallback((item: PredictionItem, trackPress: (metadata?: PlacementItemAnalyticsMetadata) => void): ReactElement => {
     const event = item.event;
@@ -52,6 +51,7 @@ export function PredictionsMarketCarousel() {
       placement={placement}
       placementId={PLACEMENT_ID}
       renderItem={renderItem}
+      skeletonBorderRadius={PREDICTION_CARD_BORDER_RADIUS}
       title={i18n.t(i18n.l.discover.placements.predictions_title)}
     />
   );

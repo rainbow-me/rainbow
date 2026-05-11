@@ -25,6 +25,7 @@ import { deepFreeze } from '@/utils/deepFreeze';
 import { createOpacityPalette } from '@/worklets/colors';
 
 export const HEIGHT = 224;
+export const PREDICTION_CARD_BORDER_RADIUS = 26;
 
 const GRADIENT_CONFIGS = {
   card: {
@@ -119,7 +120,7 @@ export const PolymarketEventsListItem = memo(function PolymarketEventsListItem({
       >
         <GradientBorderView
           borderGradientColors={colors.cardBorderGradient}
-          borderRadius={26}
+          borderRadius={PREDICTION_CARD_BORDER_RADIUS}
           borderWidth={2}
           end={GRADIENT_CONFIGS.card.end}
           start={GRADIENT_CONFIGS.card.start}
@@ -297,7 +298,7 @@ const styles = StyleSheet.create({
     paddingRight: 16,
   },
   skeleton: {
-    borderRadius: 26,
+    borderRadius: PREDICTION_CARD_BORDER_RADIUS,
     height: HEIGHT,
     overflow: 'hidden',
   },

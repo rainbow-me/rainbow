@@ -59,7 +59,6 @@ import { RnbwRewardsScreen } from '@/features/rnbw-rewards/screens/rnbw-rewards-
 import { opacity } from '@/framework/ui/utils/opacity';
 import { useAccountAccentColor } from '@/hooks/useAccountAccentColor';
 import useAccountSettings from '@/hooks/useAccountSettings';
-import useCoinListEdited from '@/hooks/useCoinListEdited';
 import useDimensions from '@/hooks/useDimensions';
 import { useRemoteConfig } from '@/model/remoteConfig';
 import { BASE_TAB_BAR_HEIGHT } from '@/navigation/constants';
@@ -67,7 +66,7 @@ import {
   RecyclerListViewScrollToTopProvider,
   useRecyclerListViewScrollToTopContext,
 } from '@/navigation/RecyclerListViewScrollToTopContext';
-import DiscoverScreen from '@/screens/DiscoverScreen';
+import { DiscoverScreen } from '@/screens/DiscoverScreen';
 import WalletScreen from '@/screens/WalletScreen/WalletScreen';
 import { useBrowserStore } from '@/state/browser/browserStore';
 import { useStoreSharedValue } from '@/state/internal/hooks/useStoreSharedValue';
@@ -634,7 +633,6 @@ const TabBarContainer = ({ descriptors, jumpTo, navigation, state }: MaterialTop
 };
 
 function SwipeNavigatorScreens() {
-  const { isCoinListEdited } = useCoinListEdited();
   const enableLazyTabs = useExperimentalFlag(LAZY_TABS);
   const lazy = useNavigationStore(state => enableLazyTabs || !state.isWalletScreenMounted);
 
@@ -653,16 +651,15 @@ function SwipeNavigatorScreens() {
 
   const getScreenOptions = useCallback(
     (props: { route: RouteProp<ParamListBase, string> }): MaterialTopTabNavigationOptions => {
-      const isOnBrowserTab = props.route.name === Routes.DAPP_BROWSER_SCREEN;
       return {
         animationEnabled: false,
         // Make tabs always lazy for tests to reduce view hierarchy size.
         lazy: lazy || IS_TEST,
         lazyPlaceholder: () => <LazyPlaceholder route={props.route.name} />,
-        swipeEnabled: (!isOnBrowserTab && !isCoinListEdited) || IS_TEST,
+        swipeEnabled: false,
       };
     },
-    [isCoinListEdited, lazy]
+    [lazy]
   );
 
   const key = useMemo(() => {

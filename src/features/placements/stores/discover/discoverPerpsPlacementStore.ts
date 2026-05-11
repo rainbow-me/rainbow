@@ -2,7 +2,7 @@ import { IS_TEST } from '@/env';
 import { useHyperliquidMarketsStore } from '@/features/perps/stores/hyperliquidMarketsStore';
 import { type PerpMarketsBySymbol, type PerpMarketWithMetadata } from '@/features/perps/types';
 import { PLACEMENT_IDS } from '@/features/placements/constants';
-import { usePlacementsStore } from '@/features/placements/stores/placementsStore';
+import { usePlacementsStore, type PlacementsState } from '@/features/placements/stores/placementsStore';
 import { type Placement, type PlacementItem } from '@/features/placements/types';
 import { useRemoteConfigStore, type RemoteConfigState } from '@/model/remoteConfig';
 import { createDerivedStore } from '@/state/internal/createDerivedStore';
@@ -45,7 +45,7 @@ export const useDiscoverPerpsPlacement = createDerivedStore<DiscoverPerpsPlaceme
     const marketsLoading = $(useHyperliquidMarketsStore, s => s.getStatus('isInitialLoad'));
     const markets = $(useHyperliquidMarketsStore, s => s.markets);
     const placement = $(usePlacementsStore, s => s.getPlacement(PLACEMENT_IDS.DISCOVER_PERPS_CAROUSEL));
-    const placementItems = $(usePlacementsStore, s => s.getItemsBySource(PLACEMENT_IDS.DISCOVER_PERPS_CAROUSEL, 'hyperliquid'));
+    const placementItems = $(usePlacementsStore, selectPerpsPlacementItems, shallowEqual);
 
     if (!enabled) return EMPTY_DISCOVER_PERPS_PLACEMENT_STATE;
 
@@ -59,11 +59,17 @@ export const useDiscoverPerpsPlacement = createDerivedStore<DiscoverPerpsPlaceme
   { equalityFn: isDiscoverPerpsPlacementStateEqual, fastMode: true }
 );
 
-// ============ Utilities ====================================================== //
+// ============ Selectors ====================================================== //
+
+function selectPerpsPlacementItems(state: PlacementsState): PlacementItem<'hyperliquid'>[] {
+  return state.getItemsBySource(PLACEMENT_IDS.DISCOVER_PERPS_CAROUSEL, 'hyperliquid');
+}
 
 function shouldEnablePerpsPlacements(state: RemoteConfigState): boolean {
   return state.getRemoteConfigKey('discover_placements_enabled') && state.getRemoteConfigKey('perps_enabled');
 }
+
+// ============ Utilities ====================================================== //
 
 function buildDiscoverPerpsMarketItems(
   placementItems: PlacementItem<'hyperliquid'>[],
