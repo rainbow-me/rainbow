@@ -58,6 +58,7 @@ const useDiscoverPredictionsStore = createQueryStore<PolymarketEvent[], Discover
 
 export const useDiscoverPredictions = createDerivedStore(
   $ => {
+    const placement = $(usePlacementsStore, s => s.getPlacement(PLACEMENT_IDS.PREDICTIONS));
     const placementItems = $(usePlacementsStore, selectPredictionsPlacementItems, shallowEqual);
     const events = $(useDiscoverPredictionsStore, s => s.getData());
     const placementsLoading = $(usePlacementsStore, s => s.getStatus('isInitialLoad'));
@@ -65,10 +66,12 @@ export const useDiscoverPredictions = createDerivedStore(
 
     const parsedEvents = events ? parsePredictionItems(placementItems, events) : undefined;
     const isLoading = !events && (placementsLoading || eventsLoading);
+    const resolvedPlacement = parsedEvents?.length ? placement : undefined;
 
     return {
       isLoading,
       items: parsedEvents ?? EMPTY_ITEMS,
+      placement: resolvedPlacement,
     };
   },
   { equalityFn: shallowEqual, fastMode: true }

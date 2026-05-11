@@ -3,6 +3,7 @@ import React, { type ReactElement } from 'react';
 import { MarketCarousel } from '@/features/discover/components/MarketCarousel';
 import {
   computePerpCardWidth,
+  PERP_MARKET_CARD_BORDER_RADIUS,
   PERP_MARKET_CARD_HEIGHT,
   PERP_MARKET_CARD_SLOT_WIDTH_WITH_CHART,
   PerpMarketCard,
@@ -29,8 +30,9 @@ export function PerpMarketCarousel() {
       getItemWidth={getPerpMarketItemWidth}
       data={items}
       keyExtractor={getPlacementItemKey}
-      renderItem={renderPerpCard}
       onPressSeeAll={navigateToPerpsSearch}
+      renderItem={renderPerpCard}
+      skeletonBorderRadius={PERP_MARKET_CARD_BORDER_RADIUS}
       loading={isLoading}
     />
   );

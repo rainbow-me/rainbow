@@ -39,6 +39,7 @@ type MarketCarouselProps<T extends PlacementItem> = {
   placement?: Placement;
   placementId: PlacementId;
   renderItem: (item: T, trackPress: TrackPlacementCardPress) => ReactElement | null;
+  skeletonBorderRadius?: number;
   title: string;
 };
 
@@ -53,6 +54,7 @@ export function MarketCarousel<T extends PlacementItem>({
   placement,
   placementId,
   renderItem,
+  skeletonBorderRadius = 24,
   title,
 }: MarketCarouselProps<T>) {
   const placementScreen = placement?.screen;
@@ -133,7 +135,7 @@ export function MarketCarousel<T extends PlacementItem>({
       {loading ? (
         <View style={styles.skeletonRow}>
           {Array.from({ length: SKELETON_COUNT }).map((_, index) => (
-            <CarouselSkeleton key={index} itemHeight={itemHeight} itemWidth={itemWidth} />
+            <CarouselSkeleton key={index} borderRadius={skeletonBorderRadius} itemHeight={itemHeight} itemWidth={itemWidth} />
           ))}
         </View>
       ) : (
@@ -198,7 +200,7 @@ function readPlacementItemStringMetadata(item: PlacementItem, key: string): stri
   return typeof value === 'string' && value.length > 0 ? value : undefined;
 }
 
-function CarouselSkeleton({ itemHeight, itemWidth }: { itemHeight: number; itemWidth: number }) {
+function CarouselSkeleton({ borderRadius, itemHeight, itemWidth }: { borderRadius: number; itemHeight: number; itemWidth: number }) {
   const { isDarkMode } = useColorMode();
   const fillQuaternary = useBackgroundColor('fillQuaternary');
   const fillSecondary = useBackgroundColor('fillSecondary');
@@ -206,7 +208,7 @@ function CarouselSkeleton({ itemHeight, itemWidth }: { itemHeight: number; itemW
   const skeletonColor = isDarkMode ? fillQuaternary : fillSecondary;
 
   return (
-    <View style={[styles.skeleton, { backgroundColor: skeletonColor, height: itemHeight, width: itemWidth }]}>
+    <View style={[styles.skeleton, { backgroundColor: skeletonColor, borderRadius, height: itemHeight, width: itemWidth }]}>
       <ShimmerAnimation color={shimmerColor} gradientColor={shimmerColor} />
     </View>
   );
@@ -222,7 +224,6 @@ const styles = StyleSheet.create({
     overflow: 'visible',
   },
   skeleton: {
-    borderRadius: 32,
     overflow: 'hidden',
   },
   skeletonRow: {

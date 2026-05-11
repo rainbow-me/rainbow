@@ -22,54 +22,38 @@ type DiscoverScreenContextType = {
 
 const DiscoverScreenContext = createContext<DiscoverScreenContextType | null>(null);
 
-const DiscoverScreenProvider = ({ children }: { children: React.ReactNode }) => {
-  const isSearching = useDiscoverSearchQueryStore(state => state.isSearching);
-
+export const DiscoverScreenProvider = ({ children }: { children: React.ReactNode }) => {
   const searchInputRef = useRef<TextInput>(null);
-
   const scrollViewRef = useRef<Animated.ScrollView>(null);
   const sectionListRef = useRef<SectionList>(null);
 
   const scrollToTop = useCallback(() => {
     try {
-      if (isSearching) {
-        sectionListRef.current?.scrollToLocation({
-          itemIndex: 0,
-          sectionIndex: 0,
-          animated: true,
-        });
+      if (isSearching()) {
+        sectionListRef.current?.scrollToLocation({ animated: true, itemIndex: 0, sectionIndex: 0 });
       } else {
-        scrollViewRef.current?.scrollTo({
-          y: 0,
-          animated: true,
-        });
+        scrollViewRef.current?.scrollTo({ animated: true, y: 0 });
       }
     } catch (ex) {
       // Scrolling to top may fail if the list is empty.
     }
-
     return null;
-  }, [isSearching]);
+  }, []);
 
   const onTapSearch = useCallback(() => {
-    if (isSearching) {
+    if (isSearching()) {
       scrollToTop();
       searchInputRef.current?.focus();
     } else {
       useDiscoverSearchQueryStore.setState({ isSearching: true });
-      analytics.track(analytics.event.discoverTapSearch, {
-        category: 'discover',
-      });
+      analytics.track(analytics.event.discoverTapSearch, { category: 'discover' });
     }
-  }, [isSearching, scrollToTop]);
-
-  useEffect(() => {
-    discoverScrollToTopFnRef = scrollToTop;
   }, [scrollToTop]);
 
   useEffect(() => {
+    discoverScrollToTopFnRef = scrollToTop;
     discoverOpenSearchFnRef = onTapSearch;
-  }, [onTapSearch]);
+  }, [onTapSearch, scrollToTop]);
 
   const cancelSearch = useCallback(() => {
     searchInputRef.current?.blur();
@@ -94,8 +78,6 @@ const DiscoverScreenProvider = ({ children }: { children: React.ReactNode }) => 
   );
 };
 
-export default DiscoverScreenProvider;
-
 export const useDiscoverScreenContext = () => {
   const context = React.useContext(DiscoverScreenContext);
   if (!context) {
@@ -103,3 +85,7 @@ export const useDiscoverScreenContext = () => {
   }
   return context;
 };
+
+function isSearching(): boolean {
+  return useDiscoverSearchQueryStore.getState().isSearching;
+}
