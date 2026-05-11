@@ -9,6 +9,7 @@ import '@walletconnect/react-native-compat';
 import { initSentry } from '@/logger/sentry';
 import { APP_START_TIME } from '@/performance/start-time';
 import { PerformanceReports, PerformanceReportSegments, PerformanceTracking } from '@/performance/tracking';
+import { initStores } from '@/state/internal/initStores';
 
 // TODO: Migrate to modular API and remove this stopgap (FEPLAT-80)
 // Silence RNFB v23 namespaced-API deprecation warnings.
@@ -19,6 +20,8 @@ PerformanceTracking.logReportSegmentRelative(PerformanceReports.appStartup, Perf
 PerformanceTracking.startReportSegment(PerformanceReports.appStartup, PerformanceReportSegments.appStartup.loadMainModule);
 
 initSentry();
+initStores();
+
 /*
 We need to use require calls in order to stop babel from moving imports
 to the top of the file above all other calls. We want Performance tracking

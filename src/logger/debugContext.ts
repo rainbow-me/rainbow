@@ -17,4 +17,5 @@ export const DebugContext = {
   keychain: 'keychain',
   deeplinks: 'deeplinks',
   delegation: 'delegation',
+  stores: 'stores',
 } as const;
