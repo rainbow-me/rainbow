@@ -26,8 +26,6 @@ export function CheckmarkAnimation() {
         {
           scale: withSpring(1, {
             damping: 12,
-            restDisplacementThreshold: 0.001,
-            restSpeedThreshold: 0.001,
             stiffness: 260,
           }),
         },
@@ -53,8 +51,6 @@ export function CheckmarkAnimation() {
             250,
             withSpring(`0deg`, {
               damping: 10,
-              restDisplacementThreshold: 0.001,
-              restSpeedThreshold: 0.001,
               stiffness: 280,
             })
           ),
@@ -64,8 +60,6 @@ export function CheckmarkAnimation() {
             250,
             withSpring(1, {
               damping: 12,
-              restDisplacementThreshold: 0.001,
-              restSpeedThreshold: 0.001,
               stiffness: 280,
             })
           ),

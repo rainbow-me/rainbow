@@ -9,7 +9,10 @@ import com.facebook.react.PackageList
 import com.facebook.react.ReactApplication
 import com.facebook.react.ReactNativeApplicationEntryPoint.loadReactNative
 import com.facebook.react.ReactNativeHost
+import com.facebook.react.ReactHost
 import com.facebook.react.ReactPackage
+import com.facebook.react.common.ReleaseLevel
+import com.facebook.react.defaults.DefaultNewArchitectureEntryPoint
 import com.facebook.react.defaults.DefaultReactNativeHost
 import io.branch.rnbranch.RNBranchModule
 import me.rainbow.NativeModules.Haptics.RNHapticsPackage
@@ -50,10 +53,14 @@ class MainApplication : Application(), ReactApplication {
             get() = BuildConfig.IS_HERMES_ENABLED
     })
 
+    override val reactHost: ReactHost
+        get() = ReactNativeHostWrapper.createReactHost(applicationContext, reactNativeHost)
+
     override fun onCreate() {
         ReactNativePerformance.onAppStarted();
         super.onCreate()
         appContext = this
+        DefaultNewArchitectureEntryPoint.releaseLevel = ReleaseLevel.EXPERIMENTAL
         loadReactNative(this)
         // Branch logging for debugging
         RNBranchModule.enableLogging()
