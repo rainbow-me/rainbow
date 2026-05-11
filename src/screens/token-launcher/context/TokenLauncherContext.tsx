@@ -1,7 +1,7 @@
 import React, { createContext, useContext, useEffect, useMemo, useRef } from 'react';
-import { type ScrollView } from 'react-native';
 
 import { useAnimatedImageValue, useImage, type SkImage } from '@shopify/react-native-skia';
+import { type KeyboardAwareScrollViewRef } from 'react-native-keyboard-controller';
 import { type SharedValue } from 'react-native-reanimated';
 
 import { useColorMode } from '@/design-system';
@@ -24,7 +24,7 @@ type TokenLauncherContextType = {
   tokenBackgroundImage: SkImage | null;
   tokenImage: SkImage | null | SharedValue<SkImage | null>;
   chainNativeAsset: BackendNetwork['nativeAsset'];
-  infoInputScrollRef: React.RefObject<ScrollView | null>;
+  infoInputScrollRef: React.RefObject<KeyboardAwareScrollViewRef | null>;
   infoInputScrollY: React.MutableRefObject<number>;
   accentColors: {
     opacity100: string;
@@ -63,7 +63,7 @@ export function TokenLauncherContextProvider({ children }: { children: React.Rea
   const chainId = useTokenLauncherStore(state => state.chainId);
   const chainNativeAsset = useBackendNetworksStore(state => state.getChainsNativeAsset()[chainId]);
   const launchedTokenAddress = useTokenLauncherStore(state => state.launchedTokenAddress);
-  const infoInputScrollRef = useRef<ScrollView>(null);
+  const infoInputScrollRef = useRef<KeyboardAwareScrollViewRef>(null);
   const infoInputScrollY = useRef(0);
 
   // Handle automatically pinning token when it is created

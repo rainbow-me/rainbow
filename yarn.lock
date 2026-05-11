@@ -10002,7 +10002,7 @@ __metadata:
     react-native-image-colors: "npm:2.5.1"
     react-native-indicators: "npm:0.17.0"
     react-native-ios-context-menu: "npm:1.15.3"
-    react-native-keyboard-controller: "npm:1.19.1"
+    react-native-keyboard-controller: "npm:1.21.7"
     react-native-keychain: "npm:10.0.0"
     react-native-level-fs: "npm:3.0.1"
     react-native-markdown-display: "npm:7.0.0-alpha.2"
@@ -23704,16 +23704,16 @@ __metadata:
   languageName: node
   linkType: hard
 
-"react-native-keyboard-controller@npm:1.19.1":
-  version: 1.19.1
-  resolution: "react-native-keyboard-controller@npm:1.19.1"
+"react-native-keyboard-controller@npm:1.21.7":
+  version: 1.21.7
+  resolution: "react-native-keyboard-controller@npm:1.21.7"
   dependencies:
     react-native-is-edge-to-edge: "npm:^1.2.1"
   peerDependencies:
     react: "*"
     react-native: "*"
     react-native-reanimated: ">=3.0.0"
-  checksum: 10c0/c0335c0bd4afdba7990106547cbb56acbb74d1b2b1b8ed19c35fff75fa6ba6e274e8fa96314353a384cd2a49b1c848014bb4ad0d55beec30e94cb4333bc35ba5
+  checksum: 10c0/47c1e8692538cb97a2933012367f6f17dc8d42d1d0c66fdb35de586709eb08b35e04f1f3c3390d495cbe10f1fc9d2c332a67efa7cd6d729bd74abb8292c0b3cd
   languageName: node
   linkType: hard
 
