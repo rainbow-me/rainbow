@@ -4,12 +4,10 @@ import { StyleSheet, View, type FlatListProps } from 'react-native';
 import { FlatList } from 'react-native-gesture-handler';
 import { useDebouncedCallback } from 'use-debounce';
 
-import { analytics } from '@/analytics';
-import { event } from '@/analytics/event';
 import ButtonPressAnimation from '@/components/animations/ButtonPressAnimation';
 import ShimmerAnimation from '@/components/animations/ShimmerAnimation';
 import { Box, Text, TextIcon, useBackgroundColor, useColorMode } from '@/design-system';
-import { type PlacementId, type PlacementItem, type PlacementProvider } from '@/features/placements/types';
+import { type PlacementItem } from '@/features/placements/types';
 import { opacity } from '@/framework/ui/utils/opacity';
 import * as i18n from '@/languages';
 import { DEVICE_WIDTH } from '@/utils/deviceUtils';
@@ -23,17 +21,13 @@ const SCROLL_DEBOUNCE_MS = time.seconds(30);
 export const CARD_WIDTH = DEVICE_WIDTH - CAROUSEL_HORIZONTAL_PADDING * 2 - PEEK_WIDTH;
 export const CARD_HEIGHT = 100;
 
-type FeaturedCarouselType = 'perps' | 'predictions';
-
 type MarketCarouselProps<T extends PlacementItem> = Pick<FlatListProps<T>, 'data'> & {
   itemHeight?: number;
   itemWidth?: number;
   getItemWidth?: (item: T) => number;
   loading?: boolean;
   onPressSeeAll: () => void;
-  placementId: PlacementId;
-  provider: PlacementProvider;
-  type: FeaturedCarouselType;
+  onScrollSettle: () => void;
   renderItem: (item: T) => ReactElement;
   title: string;
 };
@@ -49,9 +43,7 @@ export function MarketCarousel<T extends PlacementItem>({
   itemWidth = CARD_WIDTH,
   loading,
   onPressSeeAll,
-  placementId,
-  provider,
-  type,
+  onScrollSettle,
   renderItem,
   title,
 }: MarketCarouselProps<T>) {
@@ -75,26 +67,7 @@ export function MarketCarousel<T extends PlacementItem>({
     [itemHeight, itemWidth, itemWidths, renderItem]
   );
 
-  const handleSeeAllPress = useCallback(() => {
-    analytics.track(event.discoverFeaturedCarouselSeeAllPressed, {
-      placementId,
-      type,
-      provider,
-    });
-    onPressSeeAll();
-  }, [onPressSeeAll, placementId, provider, type]);
-
-  const handleScrollSettle = useDebouncedCallback(
-    () => {
-      analytics.track(event.discoverFeaturedCarouselScrolled, {
-        placementId,
-        type,
-        provider,
-      });
-    },
-    SCROLL_DEBOUNCE_MS,
-    { leading: false, trailing: true }
-  );
+  const handleScrollSettle = useDebouncedCallback(onScrollSettle, SCROLL_DEBOUNCE_MS, { leading: false, trailing: true });
 
   if (!loading && items.length === 0) return null;
 
@@ -105,7 +78,7 @@ export function MarketCarousel<T extends PlacementItem>({
           {title}
         </Text>
 
-        <ButtonPressAnimation onPress={handleSeeAllPress} scaleTo={0.9}>
+        <ButtonPressAnimation onPress={onPressSeeAll} scaleTo={0.9}>
           <Box flexDirection="row" alignItems="center" gap={4} paddingVertical="8px">
             <Text size="15pt" weight="heavy" color="labelQuaternary">
               {i18n.t(i18n.l.discover.placements.see_all)}
@@ -137,6 +110,7 @@ export function MarketCarousel<T extends PlacementItem>({
           snapToAlignment="start"
           renderItem={renderFlatListItem}
           keyExtractor={keyExtractor}
+          onScrollEndDrag={handleScrollSettle}
           onMomentumScrollEnd={handleScrollSettle}
         />
       )}
