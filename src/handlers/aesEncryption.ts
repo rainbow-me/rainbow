@@ -1,4 +1,4 @@
-import { NativeModules } from 'react-native';
+import { NativeModules, Platform } from 'react-native';
 
 const AesEncryption = NativeModules.Aes;
 
@@ -13,7 +13,7 @@ export default class AesEncryptor {
   }
 
   generateKey = (password: any, salt: any) =>
-    android ? AesEncryption.pbkdf2(password, salt, 5000, 256) : AesEncryption.pbkdf2(password, salt);
+    Platform.OS === 'android' ? AesEncryption.pbkdf2(password, salt, 5000, 256) : AesEncryption.pbkdf2(password, salt);
 
   keyFromPassword = (password: any, salt: any) => this.generateKey(password, salt);
 

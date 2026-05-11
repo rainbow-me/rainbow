@@ -58,7 +58,7 @@ const CustomGasButton = styled(ButtonPressAnimation).attrs({
   borderColor: ({ borderColor, color, theme: { colors } }: WithThemeProps) => borderColor || color || colors.appleBlue,
   borderRadius: 19,
   borderWidth: 2,
-  ...padding.object(android ? 2 : 3, 0),
+  ...padding.object(Platform.OS === 'android' ? 2 : 3, 0),
 });
 
 const Symbol = styled(Text).attrs({
@@ -68,7 +68,7 @@ const Symbol = styled(Text).attrs({
   size: 'lmedium',
   weight: 'heavy',
 })({
-  ...padding.object(android ? 1 : 0, 6, 0, 7),
+  ...padding.object(Platform.OS === 'android' ? 1 : 0, 6, 0, 7),
 });
 
 const DoneCustomGas = styled(Text).attrs({
@@ -237,7 +237,7 @@ const GasSpeedButton = ({
 
   const openCustomOptions = useCallback(
     (focusTo: string) => {
-      if (ios) {
+      if (Platform.OS === 'ios') {
         setShouldOpenCustomGasSheet({ focusTo, shouldOpen: true });
       } else {
         openCustomGasSheet();
@@ -269,7 +269,7 @@ const GasSpeedButton = ({
   const handlePressSpeedOption = useCallback(
     (selectedSpeed: string) => {
       if (selectedSpeed === CUSTOM) {
-        if (ios) {
+        if (Platform.OS === 'ios') {
           InteractionManager.runAfterInteractions(() => {
             setShouldOpenCustomGasSheet({
               focusTo: null,
@@ -360,7 +360,7 @@ const GasSpeedButton = ({
             : `${toFixedDecimals(estimatedGwei, isL2 ? 4 : 0)}–${toFixedDecimals(totalGwei, isL2 ? 4 : 0)} Gwei`;
       return {
         actionKey: gasOption,
-        actionTitle: (android ? `${GAS_EMOJIS[gasOption]}  ` : '') + getGasLabel(gasOption),
+        actionTitle: (Platform.OS === 'android' ? `${GAS_EMOJIS[gasOption]}  ` : '') + getGasLabel(gasOption),
         discoverabilityTitle: gweiDisplay,
         icon: {
           iconType: 'ASSET',

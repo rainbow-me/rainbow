@@ -1,5 +1,5 @@
 import { useMemo, type MutableRefObject } from 'react';
-import { LayoutAnimation, type LayoutAnimationConfig } from 'react-native';
+import { LayoutAnimation, Platform, type LayoutAnimationConfig } from 'react-native';
 
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { BaseItemAnimator } from 'recyclerlistview';
@@ -23,7 +23,7 @@ const springAnimation: LayoutAnimationConfig = {
   duration: 200,
   update: {
     initialVelocity: 0,
-    springDamping: ios ? 1 : 3,
+    springDamping: Platform.OS === 'ios' ? 1 : 3,
     type: LayoutAnimation.Types.spring,
   },
 };

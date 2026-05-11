@@ -48,7 +48,7 @@ import { addressHashedColorIndex, addressHashedEmoji } from '@/utils/profileUtil
 import { safeSum } from '@/utils/safeSum';
 import { useDelegations } from '@rainbow-me/delegation';
 
-const TransactionMastheadHeight = android ? 153 : 135;
+const TransactionMastheadHeight = Platform.OS === 'android' ? 153 : 135;
 
 const Container = styled(Box).attrs({
   direction: 'column',
@@ -59,7 +59,7 @@ const Container = styled(Box).attrs({
   height: TransactionMastheadHeight,
   overflow: 'hidden',
   zIndex: 0,
-  ...(android ? { paddingTop: 4 } : {}),
+  ...(Platform.OS === 'android' ? { paddingTop: 4 } : {}),
   justifyContent: 'center',
   alitnItems: 'center',
 });

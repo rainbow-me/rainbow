@@ -1,5 +1,5 @@
 import React, { useMemo } from 'react';
-import { StyleSheet, View } from 'react-native';
+import { Platform, StyleSheet, View } from 'react-native';
 
 import { type Source } from 'react-native-fast-image';
 
@@ -21,7 +21,7 @@ type Props = {
   style?: any;
 };
 
-const shadowsFactory = (colors: ThemeContextProps['colors']) => [[0, 3, android ? 5 : 9, colors.shadow, 0.1]];
+const shadowsFactory = (colors: ThemeContextProps['colors']) => [[0, 3, Platform.OS === 'android' ? 5 : 9, colors.shadow, 0.1]];
 
 const sx = StyleSheet.create({
   trophy: {

@@ -4,14 +4,6 @@ declare module '*.jpeg';
 declare module '*.jpg';
 
 /**
- * @deprecated use `IS_ANDROID` from `@/env`
- */
-declare let android: boolean;
-/**
- * @deprecated use `IS_IOS` from `@/env`
- */
-declare let ios: boolean;
-/**
  * @deprecated use `IS_WEB` from `@/env`
  */
 declare let web: boolean;

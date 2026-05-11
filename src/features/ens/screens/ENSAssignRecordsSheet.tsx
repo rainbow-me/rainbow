@@ -136,7 +136,7 @@ export default function ENSAssignRecordsSheet() {
 
   const handleFocus = useCallback(() => {
     if (!hasSeenExplainSheet) {
-      android && Keyboard.dismiss();
+      Platform.OS === 'android' && Keyboard.dismiss();
       navigate(Routes.EXPLAIN_SHEET, {
         type: 'ensOnChainDataWarning',
       });
@@ -154,7 +154,7 @@ export default function ENSAssignRecordsSheet() {
           paddingBottom: bottomActionHeight + ExtraBottomPadding,
         }}
         flexGrow={1}
-        scrollEnabled={android}
+        scrollEnabled={Platform.OS === 'android'}
         testID={`ens-${REGISTRATION_MODES.EDIT.toLowerCase()}-records-sheet`}
       >
         <Stack space="19px (Deprecated)">
@@ -260,7 +260,7 @@ export function ENSAssignRecordsBottomActions({
   }, [accountENS, mode, name, navigate, submit, values.avatar]);
 
   const navigateToAdditionalRecords = useCallback(() => {
-    android && Keyboard.dismiss();
+    Platform.OS === 'android' && Keyboard.dismiss();
     navigate(Routes.ENS_ADDITIONAL_RECORDS_SHEET);
   }, [navigate]);
 
@@ -304,7 +304,7 @@ export function ENSAssignRecordsBottomActions({
       >
         <AccentColorProvider color={accentColor}>
           <Box paddingBottom={{ custom: insets.bottom }} style={{ height: bottomActionHeight }}>
-            {ios ? <Shadow /> : null}
+            {Platform.OS === 'ios' ? <Shadow /> : null}
             <Rows>
               <Row>
                 <Inset horizontal="19px (Deprecated)" top={isSmallPhone ? '19px (Deprecated)' : '30px (Deprecated)'}>
@@ -371,8 +371,8 @@ function HideKeyboardButton({ color }: { color: string }) {
     const handleShowKeyboard = () => (show.value = true);
     const handleHideKeyboard = () => (show.value = false);
 
-    const showListener = android ? 'keyboardDidShow' : 'keyboardWillShow';
-    const hideListener = android ? 'keyboardDidHide' : 'keyboardWillHide';
+    const showListener = Platform.OS === 'android' ? 'keyboardDidShow' : 'keyboardWillShow';
+    const hideListener = Platform.OS === 'android' ? 'keyboardDidHide' : 'keyboardWillHide';
 
     keyboardShowListener.current = Keyboard.addListener(showListener, handleShowKeyboard);
     keyboardHideListener.current = Keyboard.addListener(hideListener, handleHideKeyboard);
@@ -394,7 +394,7 @@ function HideKeyboardButton({ color }: { color: string }) {
         <AccentColorProvider color={color}>
           <Box background="accent" borderRadius={15} height={{ custom: 30 }} shadow="15px light (Deprecated)" width={{ custom: 30 }}>
             <Cover alignHorizontal="center" alignVertical="center">
-              <Box paddingTop={android ? '4px' : '2px'}>
+              <Box paddingTop={Platform.OS === 'android' ? '4px' : '2px'}>
                 <Text align="center" color="primary (Deprecated)" size="14px / 19px (Deprecated)" weight="heavy">
                   􀆈
                 </Text>

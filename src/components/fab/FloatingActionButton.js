@@ -1,4 +1,5 @@
 import React, { useCallback, useMemo } from 'react';
+import { Platform } from 'react-native';
 
 import styled from '@/framework/ui/styled-thing';
 import { opacity } from '@/framework/ui/utils/opacity';
@@ -28,7 +29,7 @@ const Content = styled(Centered)({
   backgroundColor: ({ backgroundColor }) => backgroundColor,
 });
 
-const Wrapper = android ? ScaleButtonZoomableAndroid : ButtonPressAnimation;
+const Wrapper = Platform.OS === 'android' ? ScaleButtonZoomableAndroid : ButtonPressAnimation;
 
 const FloatingActionButton = ({
   backgroundColor,
@@ -61,7 +62,7 @@ const FloatingActionButton = ({
 
   return (
     <Wrapper
-      disabled={disabled || android}
+      disabled={disabled || Platform.OS === 'android'}
       hapticType="impactLight"
       onPress={handlePress}
       onPressIn={handlePressIn}
@@ -77,7 +78,7 @@ const FloatingActionButton = ({
         shadows={isDarkMode ? DarkModeShadow : shadows}
       >
         <ButtonPressAnimation
-          disabled={disabled || ios}
+          disabled={disabled || Platform.OS === 'ios'}
           onPress={handlePress}
           reanimatedButton
           style={{

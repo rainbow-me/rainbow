@@ -19,7 +19,7 @@ import { type BottomSheetNavigationOptions } from './bottom-sheet/types';
 const statusBarHeight = safeAreaInsetValues.top;
 export const sheetVerticalOffset = statusBarHeight;
 
-export const AVATAR_CIRCLE_TOP_MARGIN = android ? 10 : 4;
+export const AVATAR_CIRCLE_TOP_MARGIN = Platform.OS === 'android' ? 10 : 4;
 
 const backgroundInterpolator = ({ current: { progress: current }, layouts: { screen } }: any) => {
   const cardOpacity = current.interpolate({

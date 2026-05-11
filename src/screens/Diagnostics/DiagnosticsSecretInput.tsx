@@ -1,5 +1,5 @@
 import React, { useCallback } from 'react';
-import { TextInput } from 'react-native';
+import { Platform, TextInput } from 'react-native';
 
 import Clipboard from '@react-native-clipboard/clipboard';
 import { triggerHaptics } from 'react-native-turbo-haptics';
@@ -48,7 +48,7 @@ export const DiagnosticsSecretInput = ({ value, color }: { value: string; color:
         <Row
           backgroundColor={colors.appleBlue}
           borderRadius={15}
-          style={{ paddingHorizontal: android ? 10 : 15, paddingVertical: 10 }}
+          style={{ paddingHorizontal: Platform.OS === 'android' ? 10 : 15, paddingVertical: 10 }}
           width="100%"
         >
           <Text align="center" color={colors.whiteLabel} weight="bold">

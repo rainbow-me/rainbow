@@ -1,5 +1,5 @@
 import React from 'react';
-import { StyleSheet, View, type ViewProps, type ViewStyle } from 'react-native';
+import { Platform, StyleSheet, View, type ViewProps, type ViewStyle } from 'react-native';
 
 import { AndroidShadow } from './AndroidShadow';
 import { IOSShadow } from './IOSShadow';
@@ -97,13 +97,15 @@ export const ApplyShadow = ({ backgroundColor, children: child, shadows }: Apply
 
   return (
     <View style={parentStyles}>
-      {(ios || web) && <IOSShadow backgroundColor={backgroundColor} shadows={iosShadows} style={[childStyles, { overflow: 'visible' }]} />}
-      {android && (
+      {(Platform.OS === 'ios' || web) && (
+        <IOSShadow backgroundColor={backgroundColor} shadows={iosShadows} style={[childStyles, { overflow: 'visible' }]} />
+      )}
+      {Platform.OS === 'android' && (
         <AndroidShadow backgroundColor={backgroundColor} shadow={shadows.android} style={[childStyles, { overflow: 'visible' }]} />
       )}
 
       {React.cloneElement(child, {
-        style: [{ flex: 1 }, childStyles, android ? androidChildStyles : undefined],
+        style: [{ flex: 1 }, childStyles, Platform.OS === 'android' ? androidChildStyles : undefined],
       })}
     </View>
   );

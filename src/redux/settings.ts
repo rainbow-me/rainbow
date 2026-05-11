@@ -1,3 +1,5 @@
+import { Platform } from 'react-native';
+
 import { changeIcon } from 'react-native-change-icon';
 import { type Dispatch } from 'redux';
 import { type ThunkDispatch } from 'redux-thunk';
@@ -181,7 +183,7 @@ export const settingsChangeAppIcon = (appIcon: string) => (dispatch: Dispatch<Se
     }
   };
 
-  if (android) {
+  if (Platform.OS === 'android') {
     Alert.alert(i18n.t(i18n.l.settings.icon_change.title), i18n.t(i18n.l.settings.icon_change.warning), [
       {
         onPress: () => {},

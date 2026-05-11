@@ -1,5 +1,5 @@
 import React, { useCallback, useRef } from 'react';
-import { View } from 'react-native';
+import { Platform, View } from 'react-native';
 
 import Divider from '@/components/Divider';
 import styled from '@/framework/ui/styled-thing';
@@ -25,7 +25,7 @@ const ProfileAddressText = styled(TruncatedAddress).attrs(({ theme: { colors } }
   truncationLength: 4,
   weight: 'bold',
 }))({
-  ...margin.object(android ? 0 : 6, 0, android ? 0 : 5),
+  ...margin.object(Platform.OS === 'android' ? 0 : 6, 0, Platform.OS === 'android' ? 0 : 5),
   width: '100%',
 });
 
@@ -97,7 +97,7 @@ const ProfileModal = ({
 
   return (
     <Container>
-      <Centered direction="column" paddingBottom={android ? 15 : 30} testID="wallet-info-modal" width="100%">
+      <Centered direction="column" paddingBottom={Platform.OS === 'android' ? 15 : 30} testID="wallet-info-modal" width="100%">
         {toggleAvatar &&
           (imageAvatar ? (
             <AvatarCircle
@@ -151,7 +151,7 @@ const ProfileModal = ({
             letterSpacing="roundedMedium"
             testID="wallet-info-cancel-button"
             weight="medium"
-            {...(android && { lineHeight: 21 })}
+            {...(Platform.OS === 'android' && { lineHeight: 21 })}
           >
             {i18n.t(i18n.l.button.cancel)}
           </ProfileButtonText>

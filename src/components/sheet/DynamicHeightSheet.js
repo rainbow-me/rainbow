@@ -119,7 +119,7 @@ export default forwardRef(function SlackSheet(
   // In discover sheet we need to set it additionally
   useEffect(
     () => {
-      discoverSheet && ios && sheet.current.setNativeProps({ scrollIndicatorInsets });
+      discoverSheet && Platform.OS === 'ios' && sheet.current.setNativeProps({ scrollIndicatorInsets });
     },
     // eslint-disable-next-line react-hooks/exhaustive-deps
     []

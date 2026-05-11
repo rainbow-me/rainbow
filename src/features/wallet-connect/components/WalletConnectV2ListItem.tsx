@@ -1,4 +1,5 @@
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
+import { Platform } from 'react-native';
 
 import { type SessionTypes } from '@walletconnect/types';
 import RadialGradient from 'react-native-radial-gradient';
@@ -163,7 +164,7 @@ export function WalletConnectV2ListItem({ session, reload }: { session: SessionT
             showLargeShadow={false}
             size={VENDOR_LOGO_ICON_SIZE}
           />
-          <ColumnWithMargins flex={1} margin={android ? -4 : 5} style={columnStyle}>
+          <ColumnWithMargins flex={1} margin={Platform.OS === 'android' ? -4 : 5} style={columnStyle}>
             <Row width="95%">
               <TruncatedText size="lmedium" weight="heavy">
                 {dappName || i18n.t(i18n.l.walletconnect.unknown_application)}

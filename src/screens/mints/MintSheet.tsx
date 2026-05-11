@@ -96,7 +96,7 @@ const BlurWrapper = styled(View).attrs({
   overflow: 'hidden',
   position: 'absolute',
   width: ({ width }: BlurWrapperProps) => width,
-  ...(android ? { borderTopLeftRadius: 30, borderTopRightRadius: 30 } : {}),
+  ...(Platform.OS === 'android' ? { borderTopLeftRadius: 30, borderTopRightRadius: 30 } : {}),
 });
 
 interface MintSheetProps {
@@ -528,7 +528,7 @@ const MintSheet = () => {
 
   return (
     <>
-      {ios && (
+      {Platform.OS === 'ios' && (
         <BlurWrapper height={deviceHeight} width={deviceWidth}>
           <BackgroundImage>
             <ImgixImage
@@ -542,7 +542,9 @@ const MintSheet = () => {
         </BlurWrapper>
       )}
       <SlackSheet
-        backgroundColor={isDarkMode ? `rgba(22, 22, 22, ${ios ? 0.4 : 1})` : `rgba(26, 26, 26, ${ios ? 0.4 : 1})`}
+        backgroundColor={
+          isDarkMode ? `rgba(22, 22, 22, ${Platform.OS === 'ios' ? 0.4 : 1})` : `rgba(26, 26, 26, ${Platform.OS === 'ios' ? 0.4 : 1})`
+        }
         {...(Platform.OS === 'ios' ? { height: '100%' } : {})}
         ref={sheetRef}
         scrollEnabled

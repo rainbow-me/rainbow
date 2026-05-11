@@ -1,4 +1,5 @@
 import React, { createContext, useEffect, useMemo } from 'react';
+import { Platform } from 'react-native';
 
 import { useRoute, type RouteProp } from '@react-navigation/native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
@@ -102,7 +103,7 @@ export default function ProfileSheet() {
 function AndroidWrapper({ children }: { children: React.ReactElement }) {
   const safeAreaInsets = useSafeAreaInsets();
 
-  return android ? (
+  return Platform.OS === 'android' ? (
     <Box borderTopRadius={30} style={{ overflow: 'hidden' }} top={{ custom: safeAreaInsets.top }}>
       {children}
     </Box>

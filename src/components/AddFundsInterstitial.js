@@ -1,5 +1,5 @@
 import React, { Fragment, useCallback } from 'react';
-import { View } from 'react-native';
+import { Platform, View } from 'react-native';
 
 import { useRoute } from '@react-navigation/native';
 import { captureMessage } from '@sentry/react-native';
@@ -105,12 +105,12 @@ const Subtitle = styled(Title).attrs(({ theme: { colors } }) => ({
 
 const AmountText = styled(Text).attrs(({ children }) => ({
   align: 'center',
-  children: android ? `  ${children.join('')}  ` : children,
+  children: Platform.OS === 'android' ? `  ${children.join('')}  ` : children,
   letterSpacing: 'roundedTightest',
   size: 'bigger',
   weight: 'heavy',
 }))(({ color }) => ({
-  ...(android ? padding.object(15, 4.5) : padding.object(24, 15, 25)),
+  ...(Platform.OS === 'android' ? padding.object(15, 4.5) : padding.object(24, 15, 25)),
   alignSelf: 'center',
   textShadowColor: color,
   textShadowOffset: { height: 0, width: 0 },
@@ -125,12 +125,12 @@ const AmountButtonWrapper = styled(Row).attrs({
   marginLeft: isVeryNarrowPhone ? 5 : 7.5,
   marginRight: isVeryNarrowPhone ? 5 : 7.5,
 })({
-  ...(android && { width: isVeryNarrowPhone ? 95 : 100 }),
+  ...(Platform.OS === 'android' && { width: isVeryNarrowPhone ? 95 : 100 }),
 });
 
-const InnerBPA = android ? ButtonPressAnimation : ({ children }) => children;
+const InnerBPA = Platform.OS === 'android' ? ButtonPressAnimation : ({ children }) => children;
 
-const Wrapper = android ? ScaleButtonZoomableAndroid : AmountBPA;
+const Wrapper = Platform.OS === 'android' ? ScaleButtonZoomableAndroid : AmountBPA;
 
 const AmountButton = ({ amount, backgroundColor, color, onPress }) => {
   const handlePress = useCallback(() => onPress?.(amount), [amount, onPress]);
@@ -148,13 +148,13 @@ const AmountButton = ({ amount, backgroundColor, color, onPress }) => {
 
   return (
     <AmountButtonWrapper>
-      <Wrapper disabled={android} onPress={handlePress}>
+      <Wrapper disabled={Platform.OS === 'android'} onPress={handlePress}>
         <ShadowStack
           {...position.coverAsObject}
           backgroundColor={backgroundColor}
           borderRadius={25}
           shadows={shadows?.[backgroundColor] || []}
-          {...(android && {
+          {...(Platform.OS === 'android' && {
             height: 80,
             width: isVeryNarrowPhone ? 95 : 100,
           })}
@@ -219,7 +219,9 @@ const AddFundsInterstitial = ({ network }) => {
     <Container isSmallPhone={isSmallPhone}>
       {network === Network.mainnet ? (
         <Fragment>
-          <Title>{ios ? i18n.t(i18n.l.add_funds.to_get_started_ios) : i18n.t(i18n.l.add_funds.to_get_started_android)}</Title>
+          <Title>
+            {Platform.OS === 'ios' ? i18n.t(i18n.l.add_funds.to_get_started_ios) : i18n.t(i18n.l.add_funds.to_get_started_android)}
+          </Title>
           <Row justify="space-between" marginVertical={30}>
             <AmountButton amount={100} backgroundColor={colors.swapPurple} color={colors.neonSkyblue} onPress={handlePressAmount} />
             <AmountButton amount={200} backgroundColor={colors.swapPurple} color={colors.neonSkyblue} onPress={handlePressAmount} />

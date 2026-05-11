@@ -89,7 +89,7 @@ export default function useMagicAutofocus(
   // ✨️ Make the magic happen
   useFocusEffect(
     useCallback(() => {
-      if (android && !shouldFocusOnNavigateOnAndroid) {
+      if (Platform.OS === 'android' && !shouldFocusOnNavigateOnAndroid) {
         return;
       }
 

@@ -1,5 +1,5 @@
 import React from 'react';
-import { ScrollView } from 'react-native';
+import { Platform, ScrollView } from 'react-native';
 
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
@@ -18,18 +18,18 @@ const MenuContainer = ({ scrollviewRef, children, testID, Footer, space = '36px'
 
   return (
     // ios scroll fix
-    <Inset bottom={{ custom: safeAreaInsets.bottom }} top={ios ? '12px' : undefined}>
+    <Inset bottom={{ custom: safeAreaInsets.bottom }} top={Platform.OS === 'ios' ? '12px' : undefined}>
       <ScrollView
         ref={scrollviewRef}
         scrollEventThrottle={32}
         // ios scroll fix
-        {...(ios && { style: { overflow: 'visible' } })}
+        {...(Platform.OS === 'ios' && { style: { overflow: 'visible' } })}
         testID={testID}
       >
         <Box
           paddingHorizontal="19px (Deprecated)"
           // fix clipped shadows on android
-          {...(android && {
+          {...(Platform.OS === 'android' && {
             paddingBottom: { custom: 22 },
             paddingTop: { custom: 7 },
           })}

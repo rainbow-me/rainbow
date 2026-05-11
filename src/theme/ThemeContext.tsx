@@ -1,5 +1,5 @@
 import React, { createContext, useContext, useEffect, useMemo, useState, type PropsWithChildren } from 'react';
-import { Appearance, LayoutAnimation, useColorScheme } from 'react-native';
+import { Appearance, LayoutAnimation, Platform, useColorScheme } from 'react-native';
 
 import { useDarkMode } from 'react-native-dark-mode';
 import { ThemeProvider } from 'styled-components';
@@ -54,7 +54,7 @@ export const MainThemeProvider = (props: PropsWithChildren) => {
   // looks like one works on Android and another one on iOS. good.
   const isSystemDarkModeIOS = useDarkMode();
   const isSystemDarkModeAndroid = useColorScheme() === 'dark';
-  const isSystemDarkMode = ios ? isSystemDarkModeIOS : isSystemDarkModeAndroid;
+  const isSystemDarkMode = Platform.OS === 'ios' ? isSystemDarkModeIOS : isSystemDarkModeAndroid;
 
   const colorSchemeSystemAdjusted = colorScheme === Themes.SYSTEM ? (isSystemDarkMode ? 'dark' : 'light') : colorScheme;
 

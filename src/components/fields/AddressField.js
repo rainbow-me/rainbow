@@ -1,4 +1,5 @@
 import React, { useCallback, useEffect, useState } from 'react';
+import { Platform } from 'react-native';
 
 import styled from '@/framework/ui/styled-thing';
 import { opacity } from '@/framework/ui/utils/opacity';
@@ -15,7 +16,7 @@ import { Row } from '../layout';
 const AddressInput = styled(Input).attrs({
   autoCapitalize: 'none',
   autoCorrect: false,
-  keyboardType: android ? 'visible-password' : 'default',
+  keyboardType: Platform.OS === 'android' ? 'visible-password' : 'default',
   maxLength: addressUtils.maxLength,
   selectTextOnFocus: true,
   size: 'large',
@@ -71,7 +72,9 @@ const AddressField = ({ address, autoFocus, editable, name, isValid, onChangeTex
         testID={testID}
         value={formatValue(inputValue)}
         placeholder={
-          android || isTinyPhone ? i18n.t(i18n.l.fields.address.short_placeholder) : i18n.t(i18n.l.fields.address.long_placeholder)
+          Platform.OS === 'android' || isTinyPhone
+            ? i18n.t(i18n.l.fields.address.short_placeholder)
+            : i18n.t(i18n.l.fields.address.long_placeholder)
         }
         placeholderTextColor={opacity(colors.blueGreyDark, 0.3)}
       />

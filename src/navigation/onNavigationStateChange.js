@@ -1,4 +1,4 @@
-import { NativeModules } from 'react-native';
+import { NativeModules, Platform } from 'react-native';
 
 import { SystemBars } from 'react-native-edge-to-edge';
 
@@ -34,7 +34,7 @@ export function onHandleStatusBar(currentState, prevState) {
       if (isRoutesLengthDecrease && isFromWalletScreen && routeName === Routes.EXPANDED_ASSET_SHEET) {
         SystemBars.setStyle({ statusBar: 'dark' });
         break;
-      } else if (!android && isFromWalletScreen && memRouteName !== Routes.WALLET_SCREEN) {
+      } else if (Platform.OS !== 'android' && isFromWalletScreen && memRouteName !== Routes.WALLET_SCREEN) {
         SystemBars.setStyle({ statusBar: 'light' });
         break;
       }
@@ -105,7 +105,7 @@ export function onNavigationStateChange(currentState) {
   const prevState = memState;
   memState = currentState;
 
-  if (android) {
+  if (Platform.OS === 'android') {
     NativeModules.MenuViewModule.dismiss();
     setTimeout(NativeModules.MenuViewModule.dismiss, 400);
   }

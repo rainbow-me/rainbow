@@ -1,4 +1,5 @@
 import React from 'react';
+import { Platform } from 'react-native';
 
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
@@ -14,7 +15,7 @@ const Container = styled(Centered).attrs(({ fixedToTop }) => ({
   direction: 'column',
   justify: fixedToTop ? 'start' : 'center',
 }))({
-  marginTop: ({ insetTop }) => (android ? insetTop : 0),
+  marginTop: ({ insetTop }) => (Platform.OS === 'android' ? insetTop : 0),
   padding: ({ containerPadding }) => containerPadding,
   ...position.sizeAsObject('100%'),
   shadowColor: ({ shadowColor }) => shadowColor,
@@ -39,12 +40,12 @@ export default function Modal({ containerPadding = 15, fixedToTop, height, onClo
 
   return (
     <Container containerPadding={containerPadding} fixedToTop={fixedToTop} insetTop={insetTop} shadowColor={colors.shadowBlack}>
-      {ios && <TouchableBackdrop onPress={onCloseModal} />}
+      {Platform.OS === 'ios' && <TouchableBackdrop onPress={onCloseModal} />}
       <Content
         {...props}
         backgroundColor={colors.white}
         fixedToTop={fixedToTop}
-        height={(fullScreenOnAndroid && android ? '100%' : height) || deviceHeight - 220}
+        height={(fullScreenOnAndroid && Platform.OS === 'android' ? '100%' : height) || deviceHeight - 220}
         radius={radius}
       />
     </Container>

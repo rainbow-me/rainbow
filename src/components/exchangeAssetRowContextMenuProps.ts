@@ -1,4 +1,4 @@
-import { type NativeSyntheticEvent } from 'react-native';
+import { Platform, type NativeSyntheticEvent } from 'react-native';
 
 import { startCase } from 'lodash';
 import { triggerHaptics } from 'react-native-turbo-haptics';
@@ -20,7 +20,7 @@ const buildBlockExplorerAction = (chainId: ChainId) => {
     actionTitle: blockExplorerText,
     icon: {
       iconType: 'SYSTEM',
-      iconValue: ios ? 'link' : null,
+      iconValue: Platform.OS === 'ios' ? 'link' : null,
     },
   };
 };
@@ -36,7 +36,7 @@ const CoinRowActions = {
     actionTitle: i18n.t(i18n.l.wallet.action.copy_contract_address),
     icon: {
       iconType: 'SYSTEM',
-      iconValue: ios ? 'doc.on.doc' : null,
+      iconValue: Platform.OS === 'ios' ? 'doc.on.doc' : null,
     },
   },
 };
@@ -96,7 +96,7 @@ export default function contextMenuProps(item: any, onCopySwapDetailsText: (addr
   };
   return {
     menuConfig,
-    ...(android ? { isAnchoredToRight: true, onPress: onPressAndroid } : {}),
+    ...(Platform.OS === 'android' ? { isAnchoredToRight: true, onPress: onPressAndroid } : {}),
     onPressMenuItem: handlePressMenuItem,
   };
 }

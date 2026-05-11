@@ -1,5 +1,5 @@
 import React from 'react';
-import { StyleSheet, View } from 'react-native';
+import { Platform, StyleSheet, View } from 'react-native';
 
 import { opacity } from '@/framework/ui/utils/opacity';
 import { useTheme } from '@/theme/ThemeContext';
@@ -13,7 +13,7 @@ const SendEmptyState = () => {
 
   const icon = <Icon color={opacity(colors.blueGreyDark, 0.06)} height={88} name="send" style={sx.icon} width={91} />;
 
-  if (android) {
+  if (Platform.OS === 'android') {
     return <View style={sx.androidContainer}>{icon}</View>;
   }
 
@@ -29,7 +29,7 @@ export default SendEmptyState;
 const sx = StyleSheet.create({
   androidContainer: { alignItems: 'center', flex: 1 },
   icon: {
-    marginBottom: ios ? 0 : 150,
-    marginTop: ios ? 0 : 150,
+    marginBottom: Platform.OS === 'ios' ? 0 : 150,
+    marginTop: Platform.OS === 'ios' ? 0 : 150,
   },
 });

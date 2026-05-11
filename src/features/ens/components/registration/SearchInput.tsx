@@ -1,5 +1,5 @@
 import React, { useMemo, useRef } from 'react';
-import { type TextInput, type TextInputProps } from 'react-native';
+import { Platform, type TextInput, type TextInputProps } from 'react-native';
 
 import MaskedView from '@react-native-masked-view/masked-view';
 
@@ -94,7 +94,7 @@ const SearchInput = ({ isLoading, onChangeText, value, variant = 'rainbow', sele
             </Column>
             <Input
               autoCorrect={false}
-              keyboardType={android ? 'visible-password' : 'default'}
+              keyboardType={Platform.OS === 'android' ? 'visible-password' : 'default'}
               onChangeText={onChangeText}
               onFocus={handleFocus}
               ref={inputRef}
@@ -104,7 +104,7 @@ const SearchInput = ({ isLoading, onChangeText, value, variant = 'rainbow', sele
                 () => ({
                   ...headingStyle,
                   height,
-                  top: ios ? 1.5 : 0,
+                  top: Platform.OS === 'ios' ? 1.5 : 0,
                 }),
                 [headingStyle]
               )}

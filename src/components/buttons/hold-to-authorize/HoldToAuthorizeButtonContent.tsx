@@ -1,5 +1,5 @@
 import React, { Fragment, useCallback, useEffect, useState, type PropsWithChildren } from 'react';
-import { Keyboard } from 'react-native';
+import { Keyboard, Platform } from 'react-native';
 
 import {
   State as GestureHandlerState,
@@ -238,8 +238,8 @@ function HoldToAuthorizeButtonContent2({
             <Content backgroundColor={bgColor} height={height} smallButton={smallButton} tinyButton={tinyButton}>
               {children ?? (
                 <Fragment>
-                  {!android && !disabled && <HoldToAuthorizeButtonIcon sharedValue={longPressProgress} />}
-                  {(loading || (android && isAuthorizing)) && <LoadingSpinner />}
+                  {Platform.OS !== 'android' && !disabled && <HoldToAuthorizeButtonIcon sharedValue={longPressProgress} />}
+                  {(loading || (Platform.OS === 'android' && isAuthorizing)) && <LoadingSpinner />}
                   <Label
                     label={buttonLabel}
                     showIcon={showBiometryIcon && !isAuthorizing}

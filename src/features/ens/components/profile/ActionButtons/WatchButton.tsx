@@ -1,4 +1,5 @@
 import React, { useCallback, useMemo, useState } from 'react';
+import { Platform } from 'react-native';
 
 import ConditionalWrap from 'conditional-wrap';
 import { ContextMenuButton, type MenuConfig } from 'react-native-ios-context-menu';
@@ -47,7 +48,7 @@ export default function WatchButton({ address, ensName, avatarUrl }: { address?:
         <ContextMenuButton
           enableContextMenu
           menuConfig={menuConfig}
-          {...(android ? { onPress: handlePressWatch } : {})}
+          {...(Platform.OS === 'android' ? { onPress: handlePressWatch } : {})}
           isMenuPrimaryAction
           onPressMenuItem={handlePressWatch}
           useActionSheetFallback={false}

@@ -1,4 +1,5 @@
 import React, { useCallback } from 'react';
+import { Platform } from 'react-native';
 
 import { Switch } from 'react-native-gesture-handler';
 
@@ -62,7 +63,7 @@ const RegisterContent = ({
                 testID="ens-reverse-record-switch"
                 thumbColor={colors.white}
                 trackColor={{
-                  false: android ? colors.lightGrey : colors.white,
+                  false: Platform.OS === 'android' ? colors.lightGrey : colors.white,
                   true: accentColor,
                 }}
                 value={sendReverseRecord}

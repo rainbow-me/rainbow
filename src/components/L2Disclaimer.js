@@ -1,4 +1,5 @@
 import React from 'react';
+import { Platform } from 'react-native';
 
 import RadialGradient from 'react-native-radial-gradient';
 
@@ -40,7 +41,11 @@ const L2Disclaimer = ({
   return (
     <>
       <ButtonPressAnimation marginBottom={marginBottom} onPress={onPress} scaleTo={0.95}>
-        <Row borderRadius={16} marginHorizontal={marginHorizontal} style={padding.object(android ? 6 : 10, 10, android ? 6 : 10, 10)}>
+        <Row
+          borderRadius={16}
+          marginHorizontal={marginHorizontal}
+          style={padding.object(Platform.OS === 'android' ? 6 : 10, 10, Platform.OS === 'android' ? 6 : 10, 10)}
+        >
           <RadialGradient {...radialGradientProps} borderRadius={16} radius={600} />
           <Column justify="center">
             <ChainImage chainId={chainId} position="relative" size={20} />

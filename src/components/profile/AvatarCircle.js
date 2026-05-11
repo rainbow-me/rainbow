@@ -1,4 +1,5 @@
 import React, { useMemo } from 'react';
+import { Platform } from 'react-native';
 
 import ContextMenu from '@/components/native-context-menu/contextMenu';
 import styled from '@/framework/ui/styled-thing';
@@ -19,8 +20,8 @@ const AvatarCircleSize = 60;
 
 const AvatarCircleView = styled(Flex)({
   ...position.sizeAsObject(AvatarCircleSize),
-  alignItems: ios ? 'flex-start' : 'center',
-  justifyContent: ios ? 'flex-start' : 'center',
+  alignItems: Platform.OS === 'ios' ? 'flex-start' : 'center',
+  justifyContent: Platform.OS === 'ios' ? 'flex-start' : 'center',
   marginBottom: 16,
 });
 
@@ -28,12 +29,12 @@ const FirstLetter = styled(Text).attrs(({ theme: { colors } }) => ({
   align: 'center',
   color: colors.whiteLabel,
   letterSpacing: 2,
-  size: ios ? 38 : 30,
+  size: Platform.OS === 'ios' ? 38 : 30,
   weight: 'semibold',
-  ...(ios && { lineHeight: 60 }),
+  ...(Platform.OS === 'ios' && { lineHeight: 60 }),
 }))({
-  ...(android && { left: -1 }),
-  ...(ios && { width: 62 }),
+  ...(Platform.OS === 'android' && { left: -1 }),
+  ...(Platform.OS === 'ios' && { width: 62 }),
 });
 
 export default function AvatarCircle({
@@ -100,7 +101,7 @@ export default function AvatarCircle({
           borderRadius={AvatarCircleSize}
           marginBottom={12}
           shadows={shadows[overlayStyles ? 'overlay' : 'default']}
-          {...(android && {
+          {...(Platform.OS === 'android' && {
             height: 60,
             width: 60,
           })}

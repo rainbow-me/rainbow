@@ -8,8 +8,6 @@ import magicMemo from '@/utils/magicMemo';
 import { useTheme } from './src/theme/ThemeContext';
 
 export default {
-  android: Platform.OS === 'android',
-  ios: Platform.OS === 'ios',
   IS_DEV: (typeof __DEV__ === 'boolean' && __DEV__) || !!Number(ENABLE_DEV_MODE),
   magicMemo,
   useCallback,

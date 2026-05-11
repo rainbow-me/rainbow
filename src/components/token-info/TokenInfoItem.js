@@ -1,5 +1,5 @@
 import React from 'react';
-import { View } from 'react-native';
+import { Platform, View } from 'react-native';
 
 import ConditionalWrap from 'conditional-wrap';
 
@@ -71,7 +71,7 @@ export default function TokenInfoItem({
       <ColumnWithMargins
         flex={asset ? 1 : 0}
         justify={align === 'left' ? 'start' : 'end'}
-        margin={android ? (isNft ? -3 : -6) : isNft ? 6 : 3}
+        margin={Platform.OS === 'android' ? (isNft ? -3 : -6) : isNft ? 6 : 3}
         {...props}
       >
         <ButtonPressAnimation disabled={!showInfoButton} onPress={showInfoButton && onInfoPress} scaleTo={0.88}>

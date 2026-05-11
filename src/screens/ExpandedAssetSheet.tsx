@@ -1,4 +1,5 @@
 import React, { createElement } from 'react';
+import { Platform } from 'react-native';
 
 import { useRoute, type RouteProp } from '@react-navigation/native';
 
@@ -39,7 +40,7 @@ export default function ExpandedAssetSheet(props: any) {
 
   return (
     <Container deviceHeight={deviceHeight} height={params.longFormHeight}>
-      {ios && <TouchableBackdrop onPress={goBack} />}
+      {Platform.OS === 'ios' && <TouchableBackdrop onPress={goBack} />}
 
       {createElement(ScreenTypes[params.type], {
         ...params,

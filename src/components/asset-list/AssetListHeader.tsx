@@ -1,5 +1,5 @@
 import React, { useCallback, useMemo, type ComponentProps } from 'react';
-import { View } from 'react-native';
+import { Platform, View } from 'react-native';
 
 import { LinearGradient } from 'expo-linear-gradient';
 
@@ -41,8 +41,8 @@ const AccountName = styled(TruncatedText).attrs({
   truncationLength: 4,
   weight: 'heavy',
 })({
-  height: android ? 35 : 30,
-  marginBottom: android ? 8 : 0,
+  height: Platform.OS === 'android' ? 35 : 30,
+  marginBottom: Platform.OS === 'android' ? 8 : 0,
   marginTop: 2,
   maxWidth: ({ maxWidth }: { maxWidth: number }) => maxWidth,
   paddingRight: 6,
@@ -51,7 +51,7 @@ const AccountName = styled(TruncatedText).attrs({
 const DropdownArrow = styled(Centered)({
   borderRadius: 15,
   height: dropdownArrowWidth,
-  marginTop: android ? 9 : 2,
+  marginTop: Platform.OS === 'android' ? 9 : 2,
   width: dropdownArrowWidth,
 });
 

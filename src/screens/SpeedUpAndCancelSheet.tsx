@@ -1,5 +1,5 @@
 import React, { Fragment, useCallback, useEffect, useMemo, useRef, useState, type ComponentProps } from 'react';
-import { ActivityIndicator, View } from 'react-native';
+import { ActivityIndicator, Platform, View } from 'react-native';
 
 import { type BigNumberish } from '@ethersproject/bignumber';
 import { type BytesLike } from '@ethersproject/bytes';
@@ -81,10 +81,12 @@ const ExtendedSheetBackground = styled(View)({
   width: '100%',
 });
 
-const LoadingSpinner = styled(android ? Spinner : ActivityIndicator).attrs(({ theme: { colors } }: WithThemeContextProps) => ({
-  color: opacity(colors.blueGreyDark, 0.3),
-  size: 'large',
-}))({});
+const LoadingSpinner = styled(Platform.OS === 'android' ? Spinner : ActivityIndicator).attrs(
+  ({ theme: { colors } }: WithThemeContextProps) => ({
+    color: opacity(colors.blueGreyDark, 0.3),
+    size: 'large',
+  })
+)({});
 
 const AnimatedContainer = Animated.createAnimatedComponent(Container);
 const AnimatedSheet = Animated.createAnimatedComponent<ComponentProps<typeof CenteredSheet>>(CenteredSheet);
@@ -435,9 +437,10 @@ export default function SpeedUpAndCancelSheet() {
     offset.value = withSpring(0, springConfig);
   }, [offset]);
 
-  const sheetHeight = ios ? (type === CANCEL_TX ? 491 : 442) + safeAreaInsetValues.bottom : 850 + safeAreaInsetValues.bottom;
+  const sheetHeight =
+    Platform.OS === 'ios' ? (type === CANCEL_TX ? 491 : 442) + safeAreaInsetValues.bottom : 850 + safeAreaInsetValues.bottom;
 
-  const marginTop = android ? deviceHeight - sheetHeight + (type === CANCEL_TX ? 290 : 340) : null;
+  const marginTop = Platform.OS === 'android' ? deviceHeight - sheetHeight + (type === CANCEL_TX ? 290 : 340) : null;
 
   const { colors, isDarkMode } = useTheme();
 
@@ -465,7 +468,7 @@ export default function SpeedUpAndCancelSheet() {
             borderRadius={39}
             direction="column"
             marginTop={marginTop}
-            paddingBottom={android ? 30 : 0}
+            paddingBottom={Platform.OS === 'android' ? 30 : 0}
           >
             <SheetHandleFixedToTop showBlur={false} />
             <Centered direction="column">
@@ -492,8 +495,8 @@ export default function SpeedUpAndCancelSheet() {
                     <Divider color={colors.rowDividerExtraLight} inset={[0, 143.5]} />
                   </Centered>
                   {type === CANCEL_TX && (
-                    <Column marginBottom={android && 15}>
-                      <SheetActionButtonRow ignorePaddingBottom ignorePaddingTop={ios}>
+                    <Column marginBottom={Platform.OS === 'android' && 15}>
+                      <SheetActionButtonRow ignorePaddingBottom ignorePaddingTop={Platform.OS === 'ios'}>
                         <SheetActionButton
                           color={colors.red}
                           disabled={!hasTransactionNonce}
@@ -516,7 +519,7 @@ export default function SpeedUpAndCancelSheet() {
                     </Column>
                   )}
                   {type === SPEED_UP && (
-                    <SheetActionButtonRow ignorePaddingBottom={ios} ignorePaddingTop={ios}>
+                    <SheetActionButtonRow ignorePaddingBottom={Platform.OS === 'ios'} ignorePaddingTop={Platform.OS === 'ios'}>
                       <SheetActionButton
                         color={colors.white}
                         label={i18n.t(i18n.l.button.cancel)}

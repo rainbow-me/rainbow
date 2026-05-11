@@ -1,5 +1,5 @@
 import React, { createContext, useCallback, useContext, useEffect, useMemo, useRef, useState } from 'react';
-import { InteractionManager, Pressable, StyleSheet, View, type LayoutChangeEvent, type PressableProps } from 'react-native';
+import { InteractionManager, Platform, Pressable, StyleSheet, View, type LayoutChangeEvent, type PressableProps } from 'react-native';
 
 import { uniqueId } from 'lodash';
 import { BlurView } from 'react-native-blur-view';
@@ -242,7 +242,7 @@ function ImagePreview({ backgroundOverlay, index, id, opacity: givenOpacity, yPo
             </Box>
           ) : (
             <Box as={Animated.View} style={[overlayStyle, StyleSheet.absoluteFillObject]}>
-              {ios && (
+              {Platform.OS === 'ios' && (
                 <Box
                   as={View}
                   height={{
@@ -268,7 +268,10 @@ function ImagePreview({ backgroundOverlay, index, id, opacity: givenOpacity, yPo
                   custom: hideStatusBar ? deviceHeight : deviceHeight - safeAreaInsetValues.top,
                 }}
                 style={{
-                  backgroundColor: colorMode === 'dark' ? `rgba(22, 22, 22, ${ios ? 0.8 : 1})` : `rgba(26, 26, 26, ${ios ? 0.8 : 1})`,
+                  backgroundColor:
+                    colorMode === 'dark'
+                      ? `rgba(22, 22, 22, ${Platform.OS === 'ios' ? 0.8 : 1})`
+                      : `rgba(26, 26, 26, ${Platform.OS === 'ios' ? 0.8 : 1})`,
                 }}
                 width="full"
               />
@@ -454,7 +457,7 @@ export function ImagePreviewOverlayTarget({
             });
           }
         },
-        android ? 500 : 0
+        Platform.OS === 'android' ? 500 : 0
       );
     },
     [aspectRatio, setWidth, setXOffset, setYOffset, topOffset, yPosition?.value]
