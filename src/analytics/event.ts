@@ -244,6 +244,7 @@ export const event = {
   timeSpentOnDiscoverScreen: 'Time spent on the Discover screen',
   discoverPlacementCardPressed: 'discover.placement_card_pressed',
   discoverPlacementSeeAllPressed: 'discover.placement_see_all_pressed',
+  placementInteraction: 'placement.interaction',
 
   // ens
   ensInitiatedRegistration: 'Initiated ENS registration',
@@ -1009,6 +1010,15 @@ export type EventProperties = {
     placementId: Placement['id'];
     placementScreen?: Placement['screen'];
     placementTitle: string;
+  };
+  [event.placementInteraction]: {
+    id: Placement['id'];
+    screen: Placement['screen'];
+    order: Placement['order'];
+    version: Placement['version'];
+    itemRefSource?: PlacementItem['ref']['source'];
+    itemRefId?: PlacementItem['ref']['id'];
+    itemOrder?: PlacementItem['order'];
   };
 
   [event.ensInitiatedRegistration]: { category: string };
