@@ -1,5 +1,5 @@
 import React from 'react';
-import { requireNativeComponent, StyleSheet, View } from 'react-native';
+import { StyleSheet, View } from 'react-native';
 
 import { LoadingOverlay } from '@/components/modal/LoadingOverlay';
 import { IS_IOS } from '@/env';
@@ -8,7 +8,9 @@ import { sheetVerticalOffset } from '@/navigation/effects';
 import Routes from '@/navigation/routesNames';
 import { walletLoadingStore } from '@/state/walletLoading/walletLoading';
 
-const NativePortal = IS_IOS ? requireNativeComponent('WindowPortal') : View;
+import NativeWindowPortal from './specs/NativeWindowPortal';
+
+const NativePortal = IS_IOS ? NativeWindowPortal : View;
 const Wrapper = IS_IOS ? ({ children }: { children: React.ReactNode }) => children : View;
 
 export function Portal() {

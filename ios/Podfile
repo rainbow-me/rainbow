@@ -65,7 +65,6 @@ target 'Rainbow' do
   use_react_native!(
     privacy_file_aggregation_enabled: false,
     :path => config[:reactNativePath],
-    :new_arch_enabled => false,
     # An absolute path to your application root.
     :app_path => "#{Pod::Config.instance.installation_root}/.."
   )

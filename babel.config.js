@@ -28,7 +28,7 @@ module.exports = function (api) {
     'date-fns',
     'graphql-tag',
     ['lodash', { id: ['lodash', 'recompact'] }],
-    'react-native-reanimated/plugin',
+    'react-native-worklets/plugin',
   ];
 
   // We don't want dotenv transform for unit tests.
@@ -47,7 +47,7 @@ module.exports = function (api) {
   return {
     env: {
       development: {
-        plugins: [...plugins, ['transform-remove-console', { exclude: ['disableYellowBox', 'error', 'info', 'log'] }]],
+        plugins,
         presets: presets,
       },
       production: {
