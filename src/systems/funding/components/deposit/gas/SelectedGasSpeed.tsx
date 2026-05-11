@@ -1,15 +1,16 @@
 import React, { memo } from 'react';
+import { Platform } from 'react-native';
 
 import { Inline, Text, TextIcon } from '@/design-system';
-import { IS_ANDROID } from '@/env';
+import gasUtils from '@/features/gas/utils/gas';
 import * as i18n from '@/languages';
 import { useDepositContext } from '@/systems/funding/contexts/DepositContext';
-import gasUtils from '@/utils/gas';
 
 const SWAP_GAS_ICONS = gasUtils.SWAP_GAS_ICONS;
 
 export const SelectedGasSpeed = memo(function SelectedGasSpeed({ isPill }: { isPill?: boolean }) {
-  const { useDepositStore } = useDepositContext();
+  const { gasStores, useDepositStore } = useDepositContext();
+  const isGasSponsored = gasStores.useIsGasSponsored();
   const selectedGasSpeed = useDepositStore(state => state.getGasSpeed());
 
   return (
@@ -19,7 +20,7 @@ export const SelectedGasSpeed = memo(function SelectedGasSpeed({ isPill }: { isP
           color={SWAP_GAS_ICONS[selectedGasSpeed].color}
           height={10}
           size="icon 13px"
-          textStyle={{ top: IS_ANDROID ? 1 : 0 + (selectedGasSpeed === 'fast' ? 0.5 : 0) }}
+          textStyle={{ top: Platform.OS === 'android' ? 1 : 0 + (selectedGasSpeed === 'fast' ? 0.5 : 0) }}
           width={isPill ? 14 : 18}
           weight="bold"
         >
@@ -29,7 +30,14 @@ export const SelectedGasSpeed = memo(function SelectedGasSpeed({ isPill }: { isP
           {i18n.t(i18n.l.gas.speeds[selectedGasSpeed])}
         </Text>
       </Inline>
-      <TextIcon color="labelSecondary" height={10} size="icon 13px" weight="bold" width={12}>
+      <TextIcon
+        color="labelSecondary"
+        height={10}
+        size="icon 13px"
+        textStyle={isGasSponsored ? { opacity: 0 } : undefined}
+        weight="bold"
+        width={12}
+      >
         􀆏
       </TextIcon>
     </Inline>

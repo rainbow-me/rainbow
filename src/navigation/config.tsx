@@ -1,5 +1,5 @@
 import React from 'react';
-import { Keyboard } from 'react-native';
+import { Keyboard, Platform } from 'react-native';
 
 import { type RouteProp } from '@react-navigation/native';
 import { type StackNavigationOptions } from '@react-navigation/stack';
@@ -9,7 +9,6 @@ import { SheetHandleFixedToTopHeight } from '@/components/sheet';
 import { Text } from '@/components/text';
 import { getWalletErrorSheetHeight } from '@/components/wallet-error/WalletErrorSheet';
 import { Box } from '@/design-system';
-import { IS_ANDROID } from '@/env';
 import { getENSAdditionalRecordsSheetHeight } from '@/features/ens/screens/ENSAdditionalRecordsSheet';
 import { ENSConfirmRegisterSheetHeight } from '@/features/ens/screens/ENSConfirmRegisterSheet';
 import { getPositionSheetHeight } from '@/features/positions/screens/PositionSheet';
@@ -115,9 +114,10 @@ const buildCoolModalConfig = (params: CoolModalConfigParams): CoolModalConfigOpt
 });
 
 export const backupSheetSizes = {
-  long: IS_ANDROID
-    ? deviceUtils.dimensions.height - safeAreaInsetValues.top
-    : deviceUtils.dimensions.height + safeAreaInsetValues.bottom + sharedCoolModalTopOffset + SheetHandleFixedToTopHeight,
+  long:
+    Platform.OS === 'android'
+      ? deviceUtils.dimensions.height - safeAreaInsetValues.top
+      : deviceUtils.dimensions.height + safeAreaInsetValues.bottom + sharedCoolModalTopOffset + SheetHandleFixedToTopHeight,
   medium: 550,
   short: 424,
   check_identifier: 414,
@@ -801,7 +801,7 @@ const SettingsTitle = ({ children }: React.PropsWithChildren) => {
   const { colors } = useTheme();
 
   return (
-    <Box paddingTop={IS_ANDROID ? '8px' : undefined}>
+    <Box paddingTop={Platform.OS === 'android' ? '8px' : undefined}>
       <Text align="center" color={colors.dark} letterSpacing="roundedMedium" size="large" weight="heavy">
         {children}
       </Text>

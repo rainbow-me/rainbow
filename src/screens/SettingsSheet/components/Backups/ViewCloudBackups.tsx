@@ -5,14 +5,14 @@ import { Page } from '@/components/layout';
 import Spinner from '@/components/Spinner';
 import { Text as RNText } from '@/components/text';
 import { Box } from '@/design-system';
+import { parseTimestampFromFilename, type BackupFile } from '@/features/backup/backup';
+import { backupsStore, CloudBackupState, LoadingStates } from '@/features/backup/stores/backupsStore';
 import styled from '@/framework/ui/styled-thing';
 import walletBackupStepTypes from '@/helpers/walletBackupStepTypes';
 import * as i18n from '@/languages';
-import { parseTimestampFromFilename, type BackupFile } from '@/model/backup';
 import { useNavigation } from '@/navigation/Navigation';
 import Routes from '@/navigation/routesNames';
 import { dateFormatter, titleForBackupState } from '@/screens/SettingsSheet/utils';
-import { backupsStore, CloudBackupState, LoadingStates } from '@/state/backups/backups';
 import { useTheme, type ThemeContextProps } from '@/theme/ThemeContext';
 
 import Menu from '../Menu';

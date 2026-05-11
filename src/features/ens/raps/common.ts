@@ -1,5 +1,5 @@
-import type { GasFeeParamsBySpeed, LegacyGasFeeParamsBySpeed, LegacySelectedGasFee, SelectedGasFee } from '@/entities/gas';
 import type { EthereumAddress } from '@/entities/wallet';
+import type { GasFeeParamsBySpeed, LegacyGasFeeParamsBySpeed, LegacySelectedGasFee, SelectedGasFee } from '@/features/gas/types/gas';
 import { logger } from '@/logger';
 
 import type { Records } from '../types/registration';

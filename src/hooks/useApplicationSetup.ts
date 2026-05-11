@@ -1,11 +1,11 @@
 import { useEffect, useState, type Dispatch, type SetStateAction } from 'react';
 import { InteractionManager } from 'react-native';
 
+import { checkIdentifierOnLaunch } from '@/features/backup/backup';
 import {
   initListeners as initWalletConnectListeners,
   initWalletConnectPushNotifications,
 } from '@/features/wallet-connect/handlers/listeners';
-import { checkIdentifierOnLaunch } from '@/model/backup';
 import { loadAddress } from '@/model/wallet';
 import { type InitialRoute } from '@/navigation/initialRoute';
 import Routes from '@/navigation/routesNames';

@@ -1,5 +1,5 @@
 import React, { useCallback, useMemo, useRef } from 'react';
-import { InteractionManager } from 'react-native';
+import { InteractionManager, Platform } from 'react-native';
 
 import Clipboard from '@react-native-clipboard/clipboard';
 import { useRoute, type RouteProp } from '@react-navigation/native';
@@ -12,14 +12,15 @@ import CloudBackedUpIcon from '@/assets/BackedUpCloud.png';
 import BackupWarningIcon from '@/assets/BackupWarning.png';
 import CloudBackupWarningIcon from '@/assets/CloudBackupWarning.png';
 import ManuallyBackedUpIcon from '@/assets/ManuallyBackedUp.png';
-import { useCreateBackup } from '@/components/backup/useCreateBackup';
 import { ContactAvatar } from '@/components/contacts';
 import ImageAvatar from '@/components/contacts/ImageAvatar';
 import { ContextCircleButton } from '@/components/context-menu';
 import ContextMenuButton from '@/components/native-context-menu/contextMenu';
-import { DELEGATION, getExperimentalFlag } from '@/config/experimentalHooks';
 import { Box, Stack } from '@/design-system';
-import { IS_IOS } from '@/env';
+import { executeFnIfCloudBackupAvailable } from '@/features/backup/backup';
+import { useCreateBackup } from '@/features/backup/hooks/useCreateBackup';
+import { backupsStore } from '@/features/backup/stores/backupsStore';
+import { useIsDelegationEnabled } from '@/features/delegation/featureFlags';
 import useENSAvatar from '@/features/ens/hooks/useENSAvatar';
 import { removeFirstEmojiFromString } from '@/helpers/emojiHandler';
 import walletBackupTypes from '@/helpers/walletBackupTypes';
@@ -27,13 +28,10 @@ import { WalletLoadingStates } from '@/helpers/walletLoadingStates';
 import WalletTypes from '@/helpers/walletTypes';
 import * as i18n from '@/languages';
 import { logger, RainbowError } from '@/logger';
-import { executeFnIfCloudBackupAvailable } from '@/model/backup';
-import { getRemoteConfig } from '@/model/remoteConfig';
 import { type RainbowAccount } from '@/model/wallet';
 import { useNavigation } from '@/navigation/Navigation';
 import Routes from '@/navigation/routesNames';
 import { addressCopiedToastAtom } from '@/recoil/addressCopiedToastAtom';
-import { backupsStore } from '@/state/backups/backups';
 import { walletLoadingStore } from '@/state/walletLoading/walletLoading';
 import { createAccountInExistingWallet, formatAccountLabel, getIsDamagedWallet, useWallet } from '@/state/wallets/walletsStore';
 import abbreviations from '@/utils/abbreviations';
@@ -99,7 +97,7 @@ type ContextMenuWrapperProps = {
 };
 
 const ContextMenuWrapper = ({ children, account, menuConfig, onPressMenuItem }: ContextMenuWrapperProps) => {
-  return IS_IOS ? (
+  return Platform.OS === 'ios' ? (
     <ContextMenuButton menuConfig={menuConfig} onPressMenuItem={e => onPressMenuItem({ ...e, account })}>
       {children}
     </ContextMenuButton>
@@ -139,7 +137,7 @@ const ViewWalletBackup = () => {
   const { navigate } = useNavigation();
   const [isToastActive, setToastActive] = useRecoilState(addressCopiedToastAtom);
 
-  const delegationEnabled = getRemoteConfig().delegation_enabled || getExperimentalFlag(DELEGATION);
+  const delegationEnabled = useIsDelegationEnabled();
 
   const backupWalletsToCloud = useCallback(async () => {
     executeFnIfCloudBackupAvailable({

@@ -1,5 +1,5 @@
 import React from 'react';
-import { Animated, View } from 'react-native';
+import { Animated, Platform, View } from 'react-native';
 
 import { type StackNavigationOptions, type TransitionPreset } from '@react-navigation/stack';
 import { initialWindowMetrics } from 'react-native-safe-area-context';
@@ -7,7 +7,6 @@ import { initialWindowMetrics } from 'react-native-safe-area-context';
 import { EmojiAvatar, ProfileAvatarSize } from '@/components/asset-list/RecyclerAssetList2/profile-header/ProfileAvatarRow';
 import { HeaderHeightWithStatusBar } from '@/components/header';
 import AvatarCircle from '@/components/profile/AvatarCircle';
-import { IS_ANDROID } from '@/env';
 import { HARDWARE_WALLET_TX_NAVIGATOR_SHEET_HEIGHT } from '@/navigation/HardwareWalletTxNavigator';
 import Routes from '@/navigation/routesNames';
 import { lightModeThemeColors } from '@/styles';
@@ -426,7 +425,7 @@ export const walletconnectBottomSheetPreset: BottomSheetNavigationOptions = {
 export const swapSheetPreset: BottomSheetNavigationOptions = {
   backdropColor: 'black',
   backdropOpacity: 0.9,
-  enableContentPanningGesture: IS_ANDROID,
+  enableContentPanningGesture: Platform.OS === 'android',
   backdropPressBehavior: 'none',
   height: '100%',
 };

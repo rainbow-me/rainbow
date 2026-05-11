@@ -7,18 +7,21 @@ import { createStackNavigator } from '@react-navigation/stack';
 import { SwapScreen } from '@/__swaps__/screens/Swap/Swap';
 import { ControlPanel } from '@/components/DappBrowser/control-panel/ControlPanel';
 import { LogSheet } from '@/components/debugging/LogSheet';
-import { useShowKingOfTheHill } from '@/components/king-of-the-hill/useShowKingOfTheHill';
 import WalletErrorSheet from '@/components/wallet-error/WalletErrorSheet';
 import useExperimentalFlag, { PROFILES } from '@/config/experimentalHooks';
 import AppIconUnlockSheet from '@/features/app-icon/screens/AppIconUnlockSheet';
+import BackupSheet from '@/features/backup/components/BackupSheet';
 import RegisterENSNavigator from '@/features/ens/navigation/RegisterENSNavigator';
 import ENSAdditionalRecordsSheet from '@/features/ens/screens/ENSAdditionalRecordsSheet';
 import ENSConfirmRegisterSheet from '@/features/ens/screens/ENSConfirmRegisterSheet';
 import SelectENSSheet from '@/features/ens/screens/SelectENSSheet';
+import { useShowKingOfTheHill } from '@/features/king-of-the-hill/hooks/useShowKingOfTheHill';
+import { KingOfTheHillExplainSheet } from '@/features/king-of-the-hill/screens/KingOfTheHillExplainSheet';
 import { NotificationPermissionScreen } from '@/features/notifications/screens/NotificationPermissionScreen';
 import { ClosePositionBottomSheet } from '@/features/perps/screens/ClosePositionBottomSheet';
 import { CreateTriggerOrderBottomSheet } from '@/features/perps/screens/CreateTriggerOrderBottomSheet';
 import { PerpsDetailScreen } from '@/features/perps/screens/perp-detail-screen/PerpDetailScreen';
+import { PerpsAboutSheet } from '@/features/perps/screens/perps-about-sheet/PerpsAboutSheet';
 import { PerpsAddToPositionSheet } from '@/features/perps/screens/perps-add-to-position-sheet/PerpsAddToPositionSheet';
 import { PerpsDepositScreen } from '@/features/perps/screens/perps-deposit-withdraw-screen/PerpsDepositScreen';
 import { PerpsWithdrawalScreen } from '@/features/perps/screens/perps-deposit-withdraw-screen/PerpsWithdrawalScreen';
@@ -54,10 +57,8 @@ import { AirdropsSheet } from '@/screens/Airdrops/AirdropsSheet';
 import { ClaimAirdropSheet } from '@/screens/Airdrops/ClaimAirdropSheet';
 import CheckIdentifierScreen from '@/screens/CheckIdentifierScreen';
 import { ClaimClaimablePanel } from '@/screens/claimables/ClaimPanel';
-import { ClaimRewardsPanel } from '@/screens/claimables/ClaimRewardsPanel';
 import { RevokeDelegationPanel } from '@/screens/delegation/RevokeDelegationPanel';
 import { ExpandedAssetSheet as ExpandedAssetSheetV2 } from '@/screens/expandedAssetSheet/ExpandedAssetSheet';
-import { KingOfTheHillExplainSheet } from '@/screens/king-of-the-hill/KingOfTheHillExplainSheet';
 import LearnWebViewScreen from '@/screens/LearnWebViewScreen';
 import MintSheet from '@/screens/mints/MintSheet';
 import PoapSheet from '@/screens/mints/PoapSheet';
@@ -71,7 +72,6 @@ import { RewardsSheet } from '@/screens/rewards/RewardsSheet';
 import { TokenLauncherScreen } from '@/screens/token-launcher/TokenLauncherScreen';
 import { TransactionDetails } from '@/screens/transaction-details/TransactionDetails';
 
-import BackupSheet from '../components/backup/BackupSheet';
 import { AddCashSheet } from '../screens/AddCash';
 import AvatarBuilder from '../screens/AvatarBuilder';
 import ChangeWalletSheet from '../screens/change-wallet/ChangeWalletSheet';
@@ -311,7 +311,6 @@ function NativeStackNavigator() {
       <NativeStack.Screen component={AppIconUnlockSheet} name={Routes.APP_ICON_UNLOCK_SHEET} {...appIconUnlockSheetConfig} />
       <NativeStack.Screen component={NetworkSelector} name={Routes.NETWORK_SELECTOR} {...panelConfig} />
       <NativeStack.Screen component={ControlPanel} name={Routes.DAPP_BROWSER_CONTROL_PANEL} {...panelConfig} />
-      <NativeStack.Screen component={ClaimRewardsPanel} name={Routes.CLAIM_REWARDS_PANEL} {...panelConfig} />
       <NativeStack.Screen component={ClaimClaimablePanel} name={Routes.CLAIM_CLAIMABLE_PANEL} {...panelConfig} />
       <NativeStack.Screen component={RevokeDelegationPanel} name={Routes.REVOKE_DELEGATION_PANEL} {...panelConfig} />
       <NativeStack.Screen component={SwapScreen} name={Routes.SWAP} {...swapConfig} />
@@ -336,6 +335,7 @@ function NativeStackNavigator() {
       <NativeStack.Screen component={PerpsAddToPositionSheet} name={Routes.PERPS_ADD_TO_POSITION_SHEET} {...panelConfig} />
       <NativeStack.Screen component={KingOfTheHillExplainSheet} name={Routes.KING_OF_THE_HILL_EXPLAIN_SHEET} {...learnSheetConfig} />
       <NativeStack.Screen component={PerpsExplainSheet} name={Routes.PERPS_EXPLAIN_SHEET} {...perpsExplainSheetConfig} />
+      <NativeStack.Screen component={PerpsAboutSheet} name={Routes.PERPS_ABOUT_SHEET} {...panelConfig} />
       <NativeStack.Screen
         component={PerpsTradeDetailsSheet}
         name={Routes.PERPS_TRADE_DETAILS_SHEET}

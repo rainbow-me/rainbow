@@ -1,5 +1,5 @@
 import React, { useCallback, useMemo } from 'react';
-import { StyleSheet, type StyleProp, type TextStyle, type ViewStyle } from 'react-native';
+import { Platform, StyleSheet, type StyleProp, type TextStyle, type ViewStyle } from 'react-native';
 
 import { Gesture, GestureDetector } from 'react-native-gesture-handler';
 import Animated, {
@@ -21,7 +21,6 @@ import HoldToAuthorizeButtonIcon from '@/components/buttons/hold-to-authorize/Ho
 import { LedgerIcon } from '@/components/icons/svg/LedgerIcon';
 import { Box, Text, useColorMode, type BoxProps, type TextProps } from '@/design-system';
 import { getColorForTheme } from '@/design-system/color/useForegroundColor';
-import { IS_ANDROID } from '@/env';
 import { useWalletsStore } from '@/state/wallets/walletsStore';
 import { colors } from '@/styles';
 import { useTheme } from '@/theme/ThemeContext';
@@ -49,7 +48,7 @@ type LabelProps = Omit<TextProps, 'children'> & {
 
 function LabelWithBiometryIcon({ label, showIcon = true, testID, color, size, weight, ...textProps }: LabelProps) {
   const isHardwareWallet = useWalletsStore(state => state.getIsHardwareWallet());
-  const biometryIcon = useBiometryIconString({ showIcon: !IS_ANDROID && showIcon, isHardwareWallet });
+  const biometryIcon = useBiometryIconString({ showIcon: Platform.OS !== 'android' && showIcon, isHardwareWallet });
   const { colorMode } = useColorMode();
   const { colors } = useTheme();
 

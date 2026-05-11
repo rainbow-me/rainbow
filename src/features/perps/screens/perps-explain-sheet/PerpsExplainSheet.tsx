@@ -186,8 +186,8 @@ export function PerpsExplainSheet() {
               </AnimatedText>
             </HyperliquidButton>
           )}
-          nextButtonLabel="Next"
-          completeButtonLabel="Got it"
+          nextButtonLabel={i18n.t(translations.next)}
+          completeButtonLabel={i18n.t(translations.got_it)}
           showSunrays={false}
         />
       </PerpsAccentColorContextProvider>

@@ -4,16 +4,15 @@ import { useRoute, type RouteProp } from '@react-navigation/native';
 import { createStackNavigator } from '@react-navigation/stack';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
-import ChooseBackupStep from '@/components/backup/ChooseBackupStep';
 import { SimpleSheet } from '@/components/sheet/SimpleSheet';
 import { BackgroundProvider } from '@/design-system';
+import ChooseBackupStep from '@/features/backup/components/ChooseBackupStep';
+import RestoreCloudStep from '@/features/backup/components/RestoreCloudStep';
 import useDimensions from '@/hooks/useDimensions';
 import { settingsOptions } from '@/navigation/config';
 import Routes from '@/navigation/routesNames';
 import { type RootStackParamList } from '@/navigation/types';
 import { useTheme } from '@/theme/ThemeContext';
-
-import RestoreCloudStep from '../components/backup/RestoreCloudStep';
 
 const NativeStack = createStackNavigator();
 

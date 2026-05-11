@@ -76,6 +76,7 @@ export const event = {
   appStateChange: 'State change',
   analyticsTrackingDisabled: 'analytics_tracking.disabled',
   analyticsTrackingEnabled: 'analytics_tracking.enabled',
+  debugIdentifyProbe: 'debug.identify_probe',
   swapSubmitted: 'Submitted Swap',
   cardPressed: 'card.pressed',
   learnArticleOpened: 'learn_article.opened',
@@ -145,6 +146,7 @@ export const event = {
   positionsOpenedSheet: 'Opened position Sheet',
   positionsOpenedExternalDapp: 'Viewed external dapp',
   positionsOpenedAsset: 'Opened asset from position',
+  positionsError: 'positions.error',
 
   mintsPressedFeaturedMintCard: 'Pressed featured mint card',
   mintsPressedCollectionCell: 'Pressed collection cell in mints card',
@@ -317,8 +319,6 @@ export const event = {
   // predictions
   predictionsPlaceOrder: 'predictions.place_order',
   predictionsPlaceOrderFailed: 'predictions.place_order.failed',
-  predictionsCollectTradeFee: 'predictions.collect_trade_fee',
-  predictionsCollectTradeFeeFailed: 'predictions.collect_trade_fee.failed',
   predictionsRedeemPosition: 'predictions.redeem_position',
   predictionsRedeemPositionFailed: 'predictions.redeem_position.failed',
   predictionsDeposit: 'predictions.deposit',
@@ -404,6 +404,10 @@ export type EventProperties = {
   };
   [event.analyticsTrackingDisabled]: undefined;
   [event.analyticsTrackingEnabled]: undefined;
+  [event.debugIdentifyProbe]: {
+    probe: 'installSource' | 'currency';
+    value: string;
+  };
   [event.swapSubmitted]: {
     usdValue: number;
     inputCurrencySymbol: string;
@@ -675,6 +679,10 @@ export type EventProperties = {
     positionsValue: string;
     positionsCurrency: string;
   };
+  [event.positionsError]:
+    | { kind: 'price_not_found'; tokenAddress: string; chainId: number }
+    | { kind: 'skipped_portfolio_item'; itemName: string; protocol: string }
+    | { kind: 'unknown'; errorMessage: string };
   [event.mintsPressedFeaturedMintCard]: {
     contractAddress: string;
     chainId: number;
@@ -1281,18 +1289,6 @@ export type EventProperties = {
     orderPriceUsd?: number;
     feeAmountUsd?: number;
     orderAmountUsd?: number;
-    errorMessage: string;
-  };
-  [event.predictionsCollectTradeFee]: {
-    feeAmountUsd: number;
-    gasCostUsd: number;
-    netFeeAmountUsd: number;
-  };
-  [event.predictionsCollectTradeFeeFailed]: {
-    tokenAmount: number;
-    feeAmountUsd: number;
-    taskId: string | undefined;
-    safeAddress: string;
     errorMessage: string;
   };
   [event.predictionsRedeemPosition]: {

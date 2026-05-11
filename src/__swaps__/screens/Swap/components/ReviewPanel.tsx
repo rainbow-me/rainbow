@@ -13,11 +13,9 @@ import Animated, {
 
 import { AnimatedChainImage } from '@/__swaps__/screens/Swap/components/AnimatedChainImage';
 import { ReviewGasButton } from '@/__swaps__/screens/Swap/components/GasButton';
-import { useEstimatedTime } from '@/__swaps__/utils/meteorology';
 import { SPRING_CONFIGS } from '@/components/animations/animationConfigs';
 import ButtonPressAnimation from '@/components/animations/ButtonPressAnimation';
 import { GestureHandlerButton } from '@/components/buttons/GestureHandlerButton';
-import { ATOMIC_SWAPS, getExperimentalFlag } from '@/config/experimentalHooks';
 import {
   AnimatedText,
   Bleed,
@@ -32,22 +30,23 @@ import {
   useColorMode,
   useForegroundColor,
 } from '@/design-system';
+import { useIsSponsoredSwap } from '@/features/delegation/sponsoredSwapStore';
+import { useWillExecuteDelegation, willExecuteDelegation } from '@/features/delegation/willDelegate';
+import { useSelectedGasSpeed } from '@/features/gas/hooks/useSelectedGas';
+import { useEstimatedTime } from '@/features/gas/utils/meteorology';
 import { opacity } from '@/framework/ui/utils/opacity';
 import { convertRawAmountToBalance, convertRawAmountToBalanceWorklet, handleSignificantDecimals, multiply } from '@/helpers/utilities';
-import { useWillExecuteDelegation } from '@/hooks/useWillExecuteDelegation';
 import * as i18n from '@/languages';
-import { getRemoteConfig } from '@/model/remoteConfig';
 import { useNavigation } from '@/navigation/Navigation';
 import Routes from '@/navigation/routesNames';
-import { useBackendNetworksStore } from '@/state/backendNetworks/backendNetworks';
+import { backendNetworksActions } from '@/state/backendNetworks/backendNetworks';
 import { ChainId } from '@/state/backendNetworks/types';
 import { swapsStore, useSwapsStore } from '@/state/swaps/swapsStore';
-import { useAccountAddress } from '@/state/wallets/walletsStore';
+import { getAccountAddress, useAccountAddress } from '@/state/wallets/walletsStore';
 import { THICK_BORDER_WIDTH } from '@/styles/constants';
 import { type CrosschainQuote, type Quote, type QuoteError } from '@rainbow-me/swaps';
 
 import { REVIEW_SHEET_ROW_HEIGHT } from '../constants';
-import { useSelectedGasSpeed } from '../hooks/useSelectedGas';
 import { NavigationSteps, useSwapContext } from '../providers/swap-provider';
 import { EstimatedSwapGasFee, EstimatedSwapGasFeeSlot } from './EstimatedSwapGasFee';
 import { UnmountOnAnimatedReaction } from './UnmountOnAnimatedReaction';
@@ -252,18 +251,13 @@ export const SlippageRow = () => {
 };
 
 export function ReviewPanel() {
-  const { navigate } = useNavigation();
   const { isDarkMode } = useColorMode();
   const { configProgress, lastTypedInput, internalSelectedInputAsset, internalSelectedOutputAsset, quote } = useSwapContext();
-  const chainLabels = useBackendNetworksStore(state => state.getChainsLabel());
-  const accountAddress = useAccountAddress();
-  const inputChainId = useSwapsStore(state => state.inputAsset?.chainId ?? ChainId.mainnet);
-  const atomicSwapsEnabled = getExperimentalFlag(ATOMIC_SWAPS) || getRemoteConfig().atomic_swaps_enabled;
-  const willDelegate = useWillExecuteDelegation(accountAddress, inputChainId) && atomicSwapsEnabled;
+  const shouldShowGasRow = !useIsSponsoredSwap();
 
-  const labelTertiary = useForegroundColor('labelTertiary');
   const separator = useForegroundColor('separator');
 
+  const chainLabels = backendNetworksActions.getChainsLabel();
   const unknown = i18n.t(i18n.l.swap.unknown);
 
   const chainName = useDerivedValue(() => chainLabels[internalSelectedInputAsset.value?.chainId ?? ChainId.mainnet]);
@@ -293,17 +287,6 @@ export function ReviewPanel() {
 
     return unknown;
   });
-
-  const openGasExplainer = useCallback(async () => {
-    const chainsNativeAsset = useBackendNetworksStore.getState().getChainsNativeAsset();
-    const chainId = swapsStore.getState().inputAsset?.chainId ?? ChainId.mainnet;
-    const nativeAsset = chainsNativeAsset[chainId];
-    navigate(Routes.EXPLAIN_SHEET, {
-      chainId,
-      type: willDelegate ? 'smart_wallet_activation' : 'gas',
-      nativeAsset,
-    });
-  }, [navigate, willDelegate]);
 
   const styles = useAnimatedStyle(() => {
     return {
@@ -390,53 +373,89 @@ export function ReviewPanel() {
 
           <SlippageRow />
 
-          <Separator color={{ custom: opacity(separator, 0.03) }} thickness={THICK_BORDER_WIDTH} />
-
-          <Inline horizontalSpace="10px" alignVertical="center" alignHorizontal="justify" wrap={false}>
-            <ButtonPressAnimation onPress={openGasExplainer} scaleTo={0.925}>
-              <Stack space="10px">
-                <Inline alignVertical="center" horizontalSpace="6px" wrap={false}>
-                  <View style={sx.chainBadgeContainer}>
-                    <AnimatedChainImage showMainnetBadge assetType="input" size={16} />
-                  </View>
-                  <UnmountOnAnimatedReaction
-                    isMountedWorklet={() => {
-                      'worklet';
-                      // only mounted when review panel is visible
-                      return configProgress.value === NavigationSteps.SHOW_REVIEW;
-                    }}
-                    placeholder={
-                      <Inline horizontalSpace="4px">
-                        <EstimatedSwapGasFeeSlot text="Loading…" align="left" color="label" size="15pt" weight="heavy" />
-                        {null}
-                      </Inline>
-                    }
-                  >
-                    <Inline horizontalSpace="4px">
-                      <EstimatedGasFee />
-                      <EstimatedArrivalTime />
-                    </Inline>
-                  </UnmountOnAnimatedReaction>
-                </Inline>
-
-                <Inline wrap={false} alignHorizontal="left" alignVertical="center" horizontalSpace="4px">
-                  <Text color="labelTertiary" size="13pt" weight="bold">
-                    {willDelegate ? SMART_WALLET_ACTIVATION_FEE_LABEL : ESTIMATED_NETWORK_FEE_LABEL}
-                  </Text>
-                  <Text align="center" color={{ custom: opacity(labelTertiary, 0.24) }} size="icon 13px" weight="semibold">
-                    􀅴
-                  </Text>
-                </Inline>
-              </Stack>
-            </ButtonPressAnimation>
-
-            <Inline alignVertical="center" horizontalSpace="8px">
-              <ReviewGasButton />
-            </Inline>
-          </Inline>
+          {shouldShowGasRow && (
+            <>
+              <Separator color={{ custom: opacity(separator, 0.03) }} thickness={THICK_BORDER_WIDTH} />
+              <ReviewGasRow />
+            </>
+          )}
         </Box>
       </Stack>
     </Box>
+  );
+}
+
+function ReviewGasRow() {
+  const { navigate } = useNavigation();
+  const { configProgress } = useSwapContext();
+  const labelTertiary = useForegroundColor('labelTertiary');
+
+  const openGasExplainer = useCallback(async () => {
+    const chainsNativeAsset = backendNetworksActions.getChainsNativeAsset();
+    const chainId = swapsStore.getState().inputAsset?.chainId ?? ChainId.mainnet;
+    const nativeAsset = chainsNativeAsset[chainId];
+    const decision = await willExecuteDelegation({ address: getAccountAddress(), chainId });
+
+    navigate(Routes.EXPLAIN_SHEET, {
+      chainId,
+      type: decision.willDelegate ? 'smart_wallet_activation' : 'gas',
+      nativeAsset,
+    });
+  }, [navigate]);
+
+  return (
+    <Inline horizontalSpace="10px" alignVertical="center" alignHorizontal="justify" wrap={false}>
+      <ButtonPressAnimation onPress={openGasExplainer} scaleTo={0.925}>
+        <Stack space="10px">
+          <Inline alignVertical="center" horizontalSpace="6px" wrap={false}>
+            <View style={sx.chainBadgeContainer}>
+              <AnimatedChainImage showMainnetBadge assetType="input" size={16} />
+            </View>
+            <UnmountOnAnimatedReaction
+              isMountedWorklet={() => {
+                'worklet';
+                // only mounted when review panel is visible
+                return configProgress.value === NavigationSteps.SHOW_REVIEW;
+              }}
+              placeholder={
+                <Inline horizontalSpace="4px">
+                  <EstimatedSwapGasFeeSlot text={i18n.t(i18n.l.swap.gas.loading)} align="left" color="label" size="15pt" weight="heavy" />
+                  {null}
+                </Inline>
+              }
+            >
+              <Inline horizontalSpace="4px">
+                <EstimatedGasFee />
+                <EstimatedArrivalTime />
+              </Inline>
+            </UnmountOnAnimatedReaction>
+          </Inline>
+
+          <Inline wrap={false} alignHorizontal="left" alignVertical="center" horizontalSpace="4px">
+            <GasLabel />
+            <Text align="center" color={{ custom: opacity(labelTertiary, 0.24) }} size="icon 13px" weight="semibold">
+              􀅴
+            </Text>
+          </Inline>
+        </Stack>
+      </ButtonPressAnimation>
+
+      <Inline alignVertical="center" horizontalSpace="8px">
+        <ReviewGasButton />
+      </Inline>
+    </Inline>
+  );
+}
+
+function GasLabel() {
+  const accountAddress = useAccountAddress();
+  const inputChainId = useSwapsStore(s => s.inputAsset?.chainId ?? ChainId.mainnet);
+  const willDelegate = useWillExecuteDelegation(accountAddress, inputChainId);
+
+  return (
+    <Text color="labelTertiary" size="13pt" weight="bold">
+      {willDelegate ? SMART_WALLET_ACTIVATION_FEE_LABEL : ESTIMATED_NETWORK_FEE_LABEL}
+    </Text>
   );
 }
 

@@ -1,7 +1,8 @@
+import { Platform } from 'react-native';
+
 import RNFS from 'react-native-fs';
 import RNShare from 'react-native-share';
 
-import { IS_ANDROID } from '@/env';
 import { getAllActiveSessions } from '@/features/wallet-connect/services/sessions';
 import { logger, RainbowError } from '@/logger';
 import store from '@/redux/store';
@@ -64,7 +65,7 @@ export async function createAndShareStateDumpFile() {
       await RNFS.unlink(documentsFilePath);
     }
     await RNFS.writeFile(documentsFilePath, stringifiedState, 'utf8');
-    if (IS_ANDROID) {
+    if (Platform.OS === 'android') {
       await RNFS.writeFile(`${RNFS.DownloadDirectoryPath}/app_state_dump_${Date.now()}.json`, stringifiedState, 'utf8');
     }
     await RNShare.open({

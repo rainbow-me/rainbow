@@ -1,6 +1,7 @@
+import { Platform } from 'react-native';
+
 import type { WalletKitTypes } from '@reown/walletkit';
 
-import { IS_ANDROID } from '@/env';
 import { DAppStatus } from '@/graphql/__generated__/metadata';
 import { getProvider } from '@/handlers/web3';
 import WalletTypes from '@/helpers/walletTypes';
@@ -134,6 +135,6 @@ export async function onSessionAuthenticate(event: WalletKitTypes.SessionAuthent
         requesterMeta: event.params.requester.metadata,
         verifiedData: event?.verifyContext.verified,
       }),
-    { sheetHeight: IS_ANDROID ? 560 : 520 + (isScam ? 40 : 0) }
+    { sheetHeight: Platform.OS === 'android' ? 560 : 520 + (isScam ? 40 : 0) }
   );
 }

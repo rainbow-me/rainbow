@@ -1,4 +1,4 @@
-import { IS_IOS } from '@/env';
+import { Platform } from 'react-native';
 
 const Routes = {
   ADD_CASH_SCREEN_NAVIGATOR: 'AddCashSheetNavigator',
@@ -109,7 +109,6 @@ const Routes = {
   VIEW_WALLET_DELEGATIONS: 'ViewWalletDelegations',
   DAPP_BROWSER_CONTROL_PANEL: 'DappBrowserControlPanel',
   NETWORK_SELECTOR: 'NetworkSelector',
-  CLAIM_REWARDS_PANEL: 'ClaimRewardsPanel',
   REVOKE_DELEGATION_PANEL: 'RevokeDelegationPanel',
   TOKEN_LAUNCHER_SCREEN: 'TokenLauncherScreen',
   KING_OF_THE_HILL_EXPLAIN_SHEET: 'KingOfTheHillExplainSheet',
@@ -126,6 +125,7 @@ const Routes = {
   PERPS_ADD_TO_POSITION_SHEET: 'PerpsAddToPositionSheet',
   PERPS_EXPLAIN_SHEET: 'PerpsExplainSheet',
   PERPS_TRADE_HISTORY_SCREEN: 'PerpsTradeHistoryScreen',
+  PERPS_ABOUT_SHEET: 'PerpsAboutSheet',
   PERPS_TRADE_DETAILS_SHEET: 'PerpsTradeDetailsSheet',
   POLYMARKET_EVENT_SCREEN: 'PolymarketEventScreen',
   POLYMARKET_MANAGE_POSITION_SHEET: 'PolymarketManagePositionSheet',
@@ -179,7 +179,7 @@ export const NATIVE_ROUTES = new Set<Route>([
   Routes.RECEIVE_MODAL,
   Routes.SETTINGS_SHEET,
   Routes.SWAP,
-  ...(IS_IOS ? [Routes.SEND_SHEET_NAVIGATOR, Routes.ADD_CASH_SCREEN_NAVIGATOR] : []),
+  ...(Platform.OS === 'ios' ? [Routes.SEND_SHEET_NAVIGATOR, Routes.ADD_CASH_SCREEN_NAVIGATOR] : []),
 ]);
 
 const RoutesWithPlatformDifferences = {

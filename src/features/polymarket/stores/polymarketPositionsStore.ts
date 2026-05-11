@@ -30,6 +30,7 @@ export const usePolymarketPositionsStore = createQueryStore<
   PolymarketPositionsStoreActions
 >(
   {
+    enabled: $ => $(usePolymarketClients, state => state.proxyAddress !== null),
     fetcher: fetchPolymarketPositions,
     params: { address: $ => $(usePolymarketClients).proxyAddress },
     staleTime: time.seconds(30),
@@ -72,7 +73,7 @@ async function fetchPolymarketPositions(
   const openSlugs = new Set<string>();
   const closedSlugs = new Set<string>();
   for (const position of rawPositions) {
-    if (position.redeemable || position.mergeable) {
+    if (position.redeemable) {
       closedSlugs.add(position.slug);
     } else {
       openSlugs.add(position.slug);

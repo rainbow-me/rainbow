@@ -1,20 +1,20 @@
 import { useCallback } from 'react';
+import { Platform } from 'react-native';
 
 import { values } from 'lodash';
 
 import { analytics } from '@/analytics';
-import { IS_ANDROID } from '@/env';
+import { addWalletToCloudBackup, backupWalletToCloud } from '@/features/backup/backup';
+import { backupsStore } from '@/features/backup/stores/backupsStore';
 import { maybeAuthenticateWithPIN } from '@/handlers/authentication';
 import { CLOUD_BACKUP_ERRORS, getGoogleAccountUserData, isCloudBackupAvailable, login } from '@/handlers/cloudBackup';
 import { WrappedAlert as Alert } from '@/helpers/alert';
 import WalletBackupTypes from '@/helpers/walletBackupTypes';
 import * as i18n from '@/languages';
 import { logger, RainbowError } from '@/logger';
-import { backupsStore } from '@/state/backups/backups';
 import { setWalletBackedUp, useWallets } from '@/state/wallets/walletsStore';
 import { openInBrowser } from '@/utils/openInBrowser';
 
-import { addWalletToCloudBackup, backupWalletToCloud } from '../model/backup';
 import { cloudPlatform } from '../utils/platform';
 
 export function getUserError(e: Error) {
@@ -58,7 +58,7 @@ export default function useWalletCloudBackup() {
       walletId: string;
       addToCurrentBackup: boolean;
     }): Promise<boolean> => {
-      if (IS_ANDROID) {
+      if (Platform.OS === 'android') {
         try {
           await login();
           const userData = await getGoogleAccountUserData();

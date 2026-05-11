@@ -1,6 +1,7 @@
 import { decodeFunctionResult, encodeFunctionData, type Address, type Hex } from 'viem';
 
 import { type NativeCurrencyKey } from '@/entities/nativeCurrencyTypes';
+import { rnbwMembershipAnalyticsActions } from '@/features/rnbw-membership/stores/rnbwMembershipAnalyticsStore';
 import type { Tier } from '@/features/rnbw-membership/types';
 import { getProvider } from '@/handlers/web3';
 import { logger, RainbowError } from '@/logger';
@@ -50,6 +51,18 @@ type StakingPositionStore = {
 export const useStakingPositionStore = createQueryStore<StakingPositionData, StakingPositionParams, StakingPositionStore>(
   {
     fetcher: fetchStakingPosition,
+    onFetched: ({ data, params }) => {
+      requestIdleCallback(() => {
+        rnbwMembershipAnalyticsActions.recordPosition({
+          address: params.address,
+          position: {
+            stakedRnbwRaw: data.stakedRnbw,
+            tier: data.tier.level,
+          },
+          allTiers: data.allTiers,
+        });
+      });
+    },
     params: {
       currency: $ => $(userAssetsStoreManager).currency,
       address: $ => $(useWalletsStore).accountAddress,

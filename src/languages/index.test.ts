@@ -4,11 +4,11 @@ import * as i18n from '@/languages';
 
 describe('@/languages', () => {
   test('translate with keypath', () => {
-    expect(i18n.t(i18n.l.account.hide)).toEqual('Hide');
+    expect(i18n.t(i18n.l.account.tab_tokens)).toEqual('Tokens');
   });
 
   test('translate with string for backwards compat', () => {
-    expect(i18n.t('account.hide')).toEqual('Hide');
+    expect(i18n.t('account.tab_tokens')).toEqual('Tokens');
   });
 
   test('falls back with undefined values', () => {

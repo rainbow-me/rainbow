@@ -1,8 +1,8 @@
 import isEqual from 'react-fast-compare';
 import { type Chain } from 'viem/chains';
 
-import { GasSpeed } from '@/__swaps__/types/gas';
 import { IS_TEST } from '@/env';
+import { GasSpeed } from '@/features/gas/types/gasSpeed';
 import buildTimeNetworks from '@/references/networks.json';
 import { fetchBackendNetworks, type BackendNetworksResponse } from '@/resources/metadata/backendNetworks';
 import { chainAnvil, chainAnvilOptimism, ChainId, type BackendNetwork, type BackendNetworkServices } from '@/state/backendNetworks/types';
@@ -58,9 +58,12 @@ export interface BackendNetworksState {
   getTokenLauncherSupportedChainIds: () => ChainId[];
   getInteractionsWithSupportedChainIds: () => ChainId[];
   getShouldDefaultToFastGasChainIds: () => ChainId[];
+  getSponsorshipEligibleChainIds: () => ChainId[];
 
   getChainGasUnits: (chainId?: ChainId) => BackendNetwork['gasUnits'];
   getChainDefaultRpc: (chainId: ChainId) => string;
+  disableSponsorshipUntilNextFetch: (chainId: ChainId) => void;
+  isSponsorshipEligible: (chainId: ChainId) => boolean;
 }
 
 function createSelector<T>(selectorFn: (networks: BackendNetwork[], transformed: Chain[]) => T): () => T {
@@ -128,7 +131,7 @@ export const useBackendNetworksStore = createQueryStore<BackendNetworksResponse,
     staleTime: time.minutes(30),
   },
 
-  (_, get) => ({
+  (set, get) => ({
     backendChains: transformBackendNetworksToChains(filterSupportedNetworks(INITIAL_BACKEND_NETWORKS)),
     backendNetworks: filterSupportedNetworks(INITIAL_BACKEND_NETWORKS),
 
@@ -335,6 +338,29 @@ export const useBackendNetworksStore = createQueryStore<BackendNetworksResponse,
 
     getShouldDefaultToFastGasChainIds: createSelector(() => [ChainId.mainnet, ChainId.polygon, ChainId.goerli]),
 
+    getSponsorshipEligibleChainIds: createSelector(networks =>
+      networks.filter(isSponsorshipEligibleNetwork).map(network => toChainId(network.id))
+    ),
+
+    isSponsorshipEligible: (chainId: ChainId) => {
+      return get().getSponsorshipEligibleChainIds().includes(chainId);
+    },
+
+    disableSponsorshipUntilNextFetch: (chainId: ChainId) => {
+      set(state => {
+        const network = state.backendNetworks.find(network => toChainId(network.id) === chainId);
+        if (!network || !isSponsorshipEligibleNetwork(network)) return state;
+
+        return {
+          backendNetworks: state.backendNetworks.map(existingNetwork =>
+            existingNetwork === network
+              ? { ...network, enabledServices: { ...network.enabledServices, sponsorship: { enabled: false } } }
+              : existingNetwork
+          ),
+        };
+      });
+    },
+
     getChainGasUnits: createParameterizedSelector(networks => (chainId?: ChainId) => {
       const chainsGasUnits = networks.reduce(
         (acc, backendNetwork: BackendNetwork) => {
@@ -376,6 +402,18 @@ export const backendNetworksActions = createStoreActions(useBackendNetworksStore
 
 function toChainId(id: string): ChainId {
   return parseInt(id, 10);
+}
+
+function isSponsorshipEligibleNetwork(network: BackendNetwork): boolean {
+  const backendData = network.enabledServices.sponsorship;
+  if (backendData) return backendData.enabled;
+
+  switch (toChainId(network.id)) {
+    case ChainId.mainnet:
+      return false;
+    default:
+      return true;
+  }
 }
 
 function getDefaultGasSpeeds(chainId: ChainId): GasSpeed[] {

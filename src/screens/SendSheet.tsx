@@ -1,5 +1,5 @@
 import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
-import { InteractionManager, Keyboard, View, type TextInput } from 'react-native';
+import { InteractionManager, Keyboard, Platform, View, type TextInput } from 'react-native';
 
 import { type StaticJsonRpcProvider } from '@ethersproject/providers';
 import { Wallet } from '@ethersproject/wallet';
@@ -18,13 +18,15 @@ import { AssetType } from '@/entities/assetTypes';
 import { type ParsedAddressAsset } from '@/entities/tokens';
 import { TransactionStatus, type NewTransaction } from '@/entities/transactions';
 import { type UniqueAsset } from '@/entities/uniqueAssets';
-import { IS_ANDROID, IS_IOS } from '@/env';
 import { prefetchENSAvatar } from '@/features/ens/hooks/useENSAvatar';
 import { prefetchENSCover } from '@/features/ens/hooks/useENSCover';
 import useENSProfile from '@/features/ens/hooks/useENSProfile';
 import useENSRegistrationActionHandler from '@/features/ens/hooks/useENSRegistrationActionHandler';
 import { debouncedFetchSuggestions } from '@/features/ens/utils/handlers';
 import { REGISTRATION_STEPS } from '@/features/ens/utils/helpers';
+import GasSpeedButton from '@/features/gas/components/GasSpeedButton';
+import useGas from '@/features/gas/hooks/useGas';
+import { parseGasParamsForTransaction } from '@/features/gas/utils/parseGas';
 import styled from '@/framework/ui/styled-thing';
 import { isNativeAsset } from '@/handlers/assets';
 import {
@@ -44,7 +46,6 @@ import useAccountSettings from '@/hooks/useAccountSettings';
 import useCoinListEditOptions from '@/hooks/useCoinListEditOptions';
 import useColorForAsset from '@/hooks/useColorForAsset';
 import useContacts from '@/hooks/useContacts';
-import useGas from '@/hooks/useGas';
 import useMaxInputBalance from '@/hooks/useMaxInputBalance';
 import { usePersistentDominantColorFromImage } from '@/hooks/usePersistentDominantColorFromImage';
 import usePrevious from '@/hooks/usePrevious';
@@ -58,7 +59,6 @@ import { setHardwareTXError } from '@/navigation/HardwareWalletTxNavigator';
 import { useNavigation } from '@/navigation/Navigation';
 import Routes from '@/navigation/routesNames';
 import { type RootStackParamList } from '@/navigation/types';
-import { parseGasParamsForTransaction } from '@/parsers/gas';
 import { type Contact } from '@/redux/contacts';
 import { rainbowTokenList } from '@/references/rainbow-token-list';
 import { interactionsCountQueryKey } from '@/resources/addys/interactions';
@@ -79,13 +79,12 @@ import isLowerCaseMatch from '@/utils/isLowerCaseMatch';
 import safeAreaInsetValues from '@/utils/safeAreaInsetValues';
 import { time } from '@/utils/time';
 
-import { GasSpeedButton } from '../components/gas';
 import { Column } from '../components/layout';
 import { SendAssetForm, SendAssetList, SendContactList, SendHeader } from '../components/send';
 import { SheetActionButton } from '../components/sheet';
 import { getDefaultCheckboxes } from './SendConfirmationSheet';
 
-const sheetHeight = deviceUtils.dimensions.height - (IS_ANDROID ? 30 : 10);
+const sheetHeight = deviceUtils.dimensions.height - (Platform.OS === 'android' ? 30 : 10);
 
 type ComponentPropsWithTheme = {
   theme: ThemeContextProps;
@@ -94,7 +93,7 @@ type ComponentPropsWithTheme = {
 const Container = styled(View)({
   backgroundColor: ({ theme: { colors } }: ComponentPropsWithTheme) => colors.transparent,
   flex: 1,
-  paddingTop: IS_IOS ? 0 : safeAreaInsetValues.top,
+  paddingTop: Platform.OS === 'ios' ? 0 : safeAreaInsetValues.top,
   width: '100%',
 });
 
@@ -102,7 +101,7 @@ const SheetContainer = styled(Column).attrs({
   align: 'center',
   flex: 1,
 })({
-  ...borders.buildRadiusAsObject('top', IS_IOS ? 0 : 16),
+  ...borders.buildRadiusAsObject('top', Platform.OS === 'ios' ? 0 : 16),
   backgroundColor: ({ theme: { colors } }: ComponentPropsWithTheme) => colors.white,
   height: sheetHeight,
   width: '100%',

@@ -1,3 +1,5 @@
+import { Platform } from 'react-native';
+
 import {
   convertToRGBA,
   interpolate,
@@ -12,7 +14,6 @@ import {
 
 import { SPRING_CONFIGS, TIMING_CONFIGS } from '@/components/animations/animationConfigs';
 import { globalColors, useColorMode } from '@/design-system';
-import { IS_ANDROID } from '@/env';
 import { useStableValue } from '@/hooks/useStableValue';
 import { useBrowserStore } from '@/state/browser/browserStore';
 
@@ -135,7 +136,7 @@ export function useAnimatedTab({ tabId }: { tabId: string }) {
 
     const backgroundColor = isOnHomepage ? homepageBackgroundColor : safeBackgroundColor.value;
 
-    if (IS_ANDROID) return { backgroundColor };
+    if (Platform.OS === 'android') return { backgroundColor };
 
     const { isFullSizeTab } = getTabInfo({
       animatedActiveTabIndex: animatedActiveTabIndex.value,

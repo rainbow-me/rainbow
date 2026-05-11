@@ -1,5 +1,5 @@
 import React, { memo, useCallback, useEffect, useMemo, useState } from 'react';
-import { Alert, StyleSheet, type NativeSyntheticEvent, type TextInput, type TextInputChangeEventData } from 'react-native';
+import { Alert, Platform, StyleSheet, type NativeSyntheticEvent, type TextInput, type TextInputChangeEventData } from 'react-native';
 
 import { LinearGradient } from 'expo-linear-gradient';
 import { KeyboardStickyView } from 'react-native-keyboard-controller';
@@ -11,9 +11,8 @@ import { AnimatedInput } from '@/components/AnimatedComponents/AnimatedInput';
 import ButtonPressAnimation from '@/components/animations/ButtonPressAnimation';
 import { HoldToActivateButton } from '@/components/hold-to-activate-button/HoldToActivateButton';
 import { DEFAULT_MOUNT_ANIMATIONS } from '@/components/utilities/MountWhenFocused';
-import { Border, Box, Text, TextShadow, useColorMode } from '@/design-system';
+import { Box, Text, TextShadow, useColorMode } from '@/design-system';
 import { typeHierarchy } from '@/design-system/typography/typeHierarchy';
-import { IS_ANDROID } from '@/env';
 import { HyperliquidButton } from '@/features/perps/components/HyperliquidButton';
 import { usePerpsAccentColorContext } from '@/features/perps/context/PerpsAccentColorContext';
 import { PerpsNavigation, usePerpsNavigationStore } from '@/features/perps/screens/PerpsNavigator';
@@ -339,7 +338,7 @@ export const PerpsNavigatorFooter = memo(function PerpsNavigatorFooter() {
   return (
     <>
       {/* Required to block touches from passing through on Android */}
-      {IS_ANDROID && <Box position="absolute" bottom="0px" left="0px" right="0px" width="full" height={footerHeight} />}
+      {Platform.OS === 'android' && <Box position="absolute" bottom="0px" left="0px" right="0px" width="full" height={footerHeight} />}
       <KeyboardStickyView offset={{ opened: safeAreaInsets.bottom + MAGIC_KEYBOARD_OFFSET_NUDGE - PADDING }} enabled={enableStickyKeyboard}>
         <Box
           position="absolute"

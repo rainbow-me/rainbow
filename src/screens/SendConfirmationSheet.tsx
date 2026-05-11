@@ -1,5 +1,5 @@
 import React, { Fragment, useCallback, useEffect, useMemo, useState } from 'react';
-import { Keyboard } from 'react-native';
+import { Keyboard, Platform } from 'react-native';
 
 import { AddressZero } from '@ethersproject/constants';
 import { useRoute, type RouteProp } from '@react-navigation/native';
@@ -12,7 +12,6 @@ import Divider from '@/components/Divider';
 import useExperimentalFlag, { PROFILES } from '@/config/experimentalHooks';
 import { Box, Heading, Inset, Stack, Text, useBackgroundColor, useColorMode } from '@/design-system';
 import { AssetType } from '@/entities/assetTypes';
-import { IS_ANDROID, IS_IOS } from '@/env';
 import ENSCircleIcon from '@/features/ens/components/ENSCircleIcon';
 import useENSAvatar from '@/features/ens/hooks/useENSAvatar';
 import { type ENSProfile } from '@/features/ens/types/profile';
@@ -22,6 +21,8 @@ import {
   estimateENSSetRecordsGasLimit,
   formatRecordsForTransaction,
 } from '@/features/ens/utils/handlers';
+import GasSpeedButton from '@/features/gas/components/GasSpeedButton';
+import useGas from '@/features/gas/hooks/useGas';
 import styled from '@/framework/ui/styled-thing';
 import { opacity } from '@/framework/ui/utils/opacity';
 import svgToPngIfNeeded from '@/handlers/svgs';
@@ -32,7 +33,6 @@ import { isENSAddressFormat, isValidDomainFormat } from '@/helpers/validators';
 import useColorForAsset from '@/hooks/useColorForAsset';
 import useContacts from '@/hooks/useContacts';
 import useDimensions from '@/hooks/useDimensions';
-import useGas from '@/hooks/useGas';
 import useUserAccounts from '@/hooks/useUserAccounts';
 import * as i18n from '@/languages';
 import { ensureError, logger, RainbowError } from '@/logger';
@@ -43,7 +43,7 @@ import { useInteractionsCount } from '@/resources/addys/interactions';
 import { userAssetsStoreManager } from '@/state/assets/userAssetsStoreManager';
 import { useBackendNetworksStore } from '@/state/backendNetworks/backendNetworks';
 import { type ChainId } from '@/state/backendNetworks/types';
-import { Screens, startTimeToSignTracking } from '@/state/performance/performance';
+import { startTimeToSignTracking } from '@/state/performance/performance';
 import { useAccountAddress, useWalletsStore } from '@/state/wallets/walletsStore';
 import { position } from '@/styles';
 import { useTheme } from '@/theme/ThemeContext';
@@ -57,7 +57,6 @@ import ContactRowInfoButton from '../components/ContactRowInfoButton';
 import { ContactAvatar } from '../components/contacts';
 import ImageAvatar from '../components/contacts/ImageAvatar';
 import CheckboxField from '../components/fields/CheckboxField';
-import { GasSpeedButton } from '../components/gas';
 import L2Disclaimer from '../components/L2Disclaimer';
 import { Centered, Column, Row } from '../components/layout';
 import Pill from '../components/Pill';
@@ -199,7 +198,7 @@ export const SendConfirmationSheet = () => {
   const shimmerColor = opacity(fillSecondary, isDarkMode ? 0.025 : 0.06);
 
   useEffect(() => {
-    IS_ANDROID && Keyboard.dismiss();
+    Platform.OS === 'android' && Keyboard.dismiss();
   }, []);
 
   const {
@@ -469,8 +468,8 @@ export const SendConfirmationSheet = () => {
 
   return (
     <Container deviceHeight={deviceHeight} height={contentHeight}>
-      {IS_IOS && <TouchableBackdrop onPress={goBack} />}
-      <SlackSheet additionalTopPadding={IS_ANDROID} contentHeight={contentHeight} scrollEnabled={false}>
+      {Platform.OS === 'ios' && <TouchableBackdrop onPress={goBack} />}
+      <SlackSheet additionalTopPadding={Platform.OS === 'android'} contentHeight={contentHeight} scrollEnabled={false}>
         <SheetTitle>{i18n.t(i18n.l.wallet.transaction.sending_title)}</SheetTitle>
         <Column>
           <Column padding={24}>

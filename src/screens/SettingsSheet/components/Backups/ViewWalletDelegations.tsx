@@ -1,5 +1,5 @@
 import React, { useCallback, useMemo } from 'react';
-import { Alert, Text as NativeText, StyleSheet } from 'react-native';
+import { Alert, Text as NativeText, Platform, StyleSheet } from 'react-native';
 
 import { useRoute, type RouteProp } from '@react-navigation/native';
 import { LinearGradient } from 'expo-linear-gradient';
@@ -11,7 +11,12 @@ import { GradientBorderView } from '@/components/gradient-border/GradientBorderV
 import ContextMenuButton from '@/components/native-context-menu/contextMenu';
 import { Box, Separator, Stack, Text, useForegroundColor } from '@/design-system';
 import { fonts } from '@/design-system/typography/typography';
-import { IS_DEV, IS_IOS } from '@/env';
+import { IS_DEV } from '@/env';
+import {
+  hasActiveDelegation,
+  isRainbowDelegated as hasRainbowDelegation,
+  isThirdPartyDelegated as hasThirdPartyDelegation,
+} from '@/features/delegation/status';
 import * as i18n from '@/languages';
 import { navigate } from '@/navigation/Navigation';
 import Routes from '@/navigation/routesNames';
@@ -21,15 +26,7 @@ import { type ChainId } from '@/state/backendNetworks/types';
 import { useTheme } from '@/theme/ThemeContext';
 import { formatAddressForDisplay } from '@/utils/abbreviations';
 import * as ethereumUtils from '@/utils/ethereumUtils';
-import {
-  DelegationStatus,
-  disableDelegation,
-  enableDelegation,
-  useDelegationDisabled,
-  useDelegations,
-  willDelegate,
-  type DelegationWithChainId,
-} from '@rainbow-me/delegation';
+import { delegation, useDelegationDisabled, useDelegations, type DelegationWithChainId } from '@rainbow-me/delegation';
 
 import Menu from '../Menu';
 import MenuContainer from '../MenuContainer';
@@ -122,10 +119,8 @@ function getChainName(chainId: ChainId): string {
   return backendNetworksActions.getChainsLabel()[chainId] || `Chain ${chainId}`;
 }
 
-function isDelegated(status: DelegationStatus): boolean {
-  if (status === DelegationStatus.RAINBOW_DELEGATED) return true;
-  if (status === DelegationStatus.THIRD_PARTY_DELEGATED) return true;
-  return false;
+function isDelegated(status: DelegationWithChainId['delegationStatus']): boolean {
+  return hasActiveDelegation(status);
 }
 
 export const ViewWalletDelegations = () => {
@@ -137,8 +132,8 @@ export const ViewWalletDelegations = () => {
 
   const { rainbowDelegations, thirdPartyDelegations } = useMemo(
     () => ({
-      rainbowDelegations: delegations.filter(d => d.delegationStatus === DelegationStatus.RAINBOW_DELEGATED),
-      thirdPartyDelegations: delegations.filter(d => d.delegationStatus === DelegationStatus.THIRD_PARTY_DELEGATED),
+      rainbowDelegations: delegations.filter(hasRainbowDelegation),
+      thirdPartyDelegations: delegations.filter(hasThirdPartyDelegation),
     }),
     [delegations]
   );
@@ -174,7 +169,7 @@ export const ViewWalletDelegations = () => {
 
   const handleToggleSmartWallet = useCallback(() => {
     if (isSmartWalletDisabled) {
-      enableDelegation(address);
+      delegation.enable(address);
       return;
     }
 
@@ -184,7 +179,7 @@ export const ViewWalletDelegations = () => {
     }));
 
     if (delegationsToRevoke.length === 0) {
-      disableDelegation(address);
+      delegation.disable(address);
       return;
     }
 
@@ -196,12 +191,12 @@ export const ViewWalletDelegations = () => {
         revokeReason: RevokeReason.DISABLE_SMART_WALLET,
         onSuccess: () => {
           // Set delegation preference to disabled after successful revocation
-          disableDelegation(address);
+          delegation.disable(address);
         },
       });
     } else {
       // No active delegations to revoke, just disable the preference
-      disableDelegation(address);
+      delegation.disable(address);
     }
   }, [address, isSmartWalletDisabled, rainbowDelegations]);
 
@@ -290,10 +285,7 @@ export const ViewWalletDelegations = () => {
         case NetworkMenuAction.RevokeDelegation: {
           // Determine the correct reason based on delegation status
           const delegation = delegations.find(d => d.chainId === chainId);
-          const revokeReason =
-            delegation?.delegationStatus === DelegationStatus.THIRD_PARTY_DELEGATED
-              ? RevokeReason.DISABLE_THIRD_PARTY
-              : RevokeReason.DISABLE_SINGLE_NETWORK;
+          const revokeReason = hasThirdPartyDelegation(delegation) ? RevokeReason.DISABLE_THIRD_PARTY : RevokeReason.DISABLE_SINGLE_NETWORK;
           handleRevokeDelegation(chainId, revokeReason);
           break;
         }
@@ -303,7 +295,8 @@ export const ViewWalletDelegations = () => {
 
         // -- Dev Settings
         case NetworkMenuAction.RefreshData:
-          willDelegate({ address, chainId, requireFreshStatus: true })
+          delegation
+            .willDelegate({ address, chainId, requireFreshStatus: true })
             .then(data => {
               Alert.alert(`Refreshed Data for ${getChainName(chainId)}`, JSON.stringify(data, null, 2));
             })
@@ -431,7 +424,7 @@ export const ViewWalletDelegations = () => {
                 <Menu>
                   {rainbowDelegations.map((network, index) => {
                     const NetworkContextMenuWrapper = ({ children }: { children: React.ReactNode }) => {
-                      return IS_IOS ? (
+                      return Platform.OS === 'ios' ? (
                         <ContextMenuButton
                           menuConfig={activeNetworkMenuConfig}
                           onPressMenuItem={e => onPressNetworkMenuItem({ ...e, chainId: network.chainId })}
@@ -505,7 +498,7 @@ export const ViewWalletDelegations = () => {
                 <Menu>
                   {thirdPartyDelegations.map((network, index) => {
                     const NetworkContextMenuWrapper = ({ children }: { children: React.ReactNode }) => {
-                      return IS_IOS ? (
+                      return Platform.OS === 'ios' ? (
                         <ContextMenuButton
                           menuConfig={inactiveNetworkMenuConfig}
                           onPressMenuItem={e => onPressNetworkMenuItem({ ...e, chainId: network.chainId })}

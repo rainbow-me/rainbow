@@ -29,7 +29,6 @@ declare module 'react-native-dotenv' {
   export const IS_APK_BUILD: 'true' | 'false';
   export const ENABLE_DEV_MODE: '0' | '1';
   export const SENTRY_ENDPOINT: string;
-  export const SENTRY_ENVIRONMENT: string;
   export const ADDYS_API_KEY: string;
   export const ETHEREUM_MAINNET_RPC_DEV: string;
   export const IMGIX_DOMAIN: string;
@@ -79,4 +78,7 @@ declare module 'react-native-dotenv' {
   export const PLATFORM_BASE_URL: string;
   export const PLATFORM_API_KEY: string;
   export const GELATO_API_KEY: string;
+  export const RAINBOW_RELAY_URL: string;
+  export const RAINBOW_RELAY_API_KEY: string;
+  export const RAINBOW_RELAY_QUOTE_SIGNER: string;
 }

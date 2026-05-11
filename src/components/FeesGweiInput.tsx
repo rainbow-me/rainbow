@@ -1,12 +1,11 @@
 import React, { useCallback, useEffect, useRef, useState } from 'react';
-import { type TextInput } from 'react-native';
+import { Platform, type TextInput } from 'react-native';
 
 import { triggerHaptics } from 'react-native-turbo-haptics';
 
 import ButtonPressAnimation from '@/components/animations/ButtonPressAnimation';
 import GweiInputPill from '@/components/GweiInputPill';
-import { Box, Inline, Text } from '@/design-system';
-import { IS_ANDROID } from '@/env';
+import { Box, Text } from '@/design-system';
 import { delay } from '@/helpers/utilities';
 import usePrevious from '@/hooks/usePrevious';
 import { colors } from '@/styles';
@@ -53,7 +52,7 @@ const GweiStepButton = ({ buttonColor, onLongPress, onLongPressEnded, onPress, t
       useLateHaptic={false}
       padding="4px"
       margin="-4px"
-      marginTop={IS_ANDROID ? '-2px' : undefined}
+      marginTop={Platform.OS === 'android' ? '-2px' : undefined}
     >
       <Text size="icon 16px" color={{ custom: buttonColor || colors.appleBlue }} weight="heavy">
         {type === 'plus' ? '􀁍' : '􀁏'}

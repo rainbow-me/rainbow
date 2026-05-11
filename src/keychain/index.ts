@@ -1,3 +1,5 @@
+import { Platform } from 'react-native';
+
 import DeviceInfo from 'react-native-device-info';
 import {
   ACCESS_CONTROL,
@@ -20,7 +22,7 @@ import {
 } from 'react-native-keychain';
 import { createMMKV } from 'react-native-mmkv';
 
-import { IS_ANDROID, IS_DEV, IS_IOS } from '@/env';
+import { IS_DEV } from '@/env';
 import AesEncryptor from '@/handlers/aesEncryption';
 import { authenticateWithPIN, authenticateWithPINAndCreateIfNeeded, shouldAuthenticateWithPIN } from '@/handlers/authentication';
 import { logger, RainbowError } from '@/logger';
@@ -95,7 +97,7 @@ export async function get(key: string, options: KeychainOptions<GetOptions> = {}
            * `RAINBOW_MASTER_KEY`, and are saved as "public" values. We don't
            * want to decrypt those here.
            */
-          if (IS_ANDROID && result.password.includes('cipher') && !EXEMPT_ENCRYPTED_KEYS.includes(key)) {
+          if (Platform.OS === 'android' && result.password.includes('cipher') && !EXEMPT_ENCRYPTED_KEYS.includes(key)) {
             logger.debug(`[keychain]: decrypting private data on Android`, {}, logger.DebugContext.keychain);
 
             const pin = options.androidEncryptionPin || (await authenticateWithPIN());
@@ -381,7 +383,7 @@ export async function setSharedWebCredentials(username: string, password: string
 export async function getPrivateAccessControlOptions(): Promise<SetOptions> {
   logger.debug(`[keychain]: getPrivateAccessControlOptions`, {}, logger.DebugContext.keychain);
 
-  const isSimulator = IS_DEV && IS_IOS && (await DeviceInfo.isEmulator());
+  const isSimulator = IS_DEV && Platform.OS === 'ios' && (await DeviceInfo.isEmulator());
 
   if (isSimulator) return {};
 

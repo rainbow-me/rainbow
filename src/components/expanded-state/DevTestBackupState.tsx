@@ -6,10 +6,10 @@ import { resetInternetCredentials } from 'react-native-keychain';
 
 import CopyTooltip from '@/components/copy-tooltip';
 import { Box, Text } from '@/design-system';
+import { createBackup, restoreBackup } from '@/features/backup/backup';
 import { WalletLoadingStates } from '@/helpers/walletLoadingStates';
 import { clear } from '@/keychain';
 import { logger, RainbowError } from '@/logger';
-import { createBackup, restoreBackup } from '@/model/backup';
 import { clearAllStorages } from '@/model/mmkv';
 import Navigation from '@/navigation/Navigation';
 import Routes from '@/navigation/routesNames';

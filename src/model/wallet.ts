@@ -1,3 +1,5 @@
+import { Platform } from 'react-native';
+
 import { type TransactionRequest } from '@ethersproject/abstract-provider';
 import { type Signer } from '@ethersproject/abstract-signer';
 import { arrayify } from '@ethersproject/bytes';
@@ -14,7 +16,6 @@ import { type GetOptions, type SetOptions } from 'react-native-keychain';
 
 import { analytics } from '@/analytics';
 import type { EthereumAddress } from '@/entities/wallet';
-import { IS_IOS } from '@/env';
 import { maybeAuthenticateWithPIN, maybeAuthenticateWithPINAndCreateIfNeeded } from '@/handlers/authentication';
 import { LedgerSigner } from '@/handlers/LedgerSigner';
 import { addHexPrefix, isHexString, isHexStringIgnorePrefix, isValidBluetoothDeviceId, isValidMnemonic } from '@/handlers/web3';
@@ -32,7 +33,6 @@ import Routes from '@/navigation/routesNames';
 import { WalletNotificationRelationship } from '@/notifications/settings/constants';
 import { initializeNotificationSettingsForAddresses } from '@/notifications/settings/initialization';
 import type { AddressWithRelationship } from '@/notifications/settings/types';
-import { Network } from '@/state/backendNetworks/types';
 import { executeFn, type ExecuteFnParams, type Screen } from '@/state/performance/performance';
 import { getIsDamagedWallet, getWalletWithAccount, setWalletDamaged } from '@/state/wallets/walletsStore';
 import ethereumUtils from '@/utils/ethereumUtils';
@@ -1462,7 +1462,7 @@ export const checkWalletsDamagedState = async (wallets: AllRainbowWallets): Prom
   }
 
   // Try to detect cases where wallets will be unusable and might need to be re-imported
-  if (IS_IOS) {
+  if (Platform.OS === 'ios') {
     // Passcode is disabled - the keychain data will be inaccessible until the user re-enables it.
     const isPasscodeAuthAvailable = await kc.isPasscodeAuthAvailable();
     if (!isPasscodeAuthAvailable) {

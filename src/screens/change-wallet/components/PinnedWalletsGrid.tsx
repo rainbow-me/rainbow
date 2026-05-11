@@ -1,5 +1,5 @@
 import React, { useCallback, useMemo } from 'react';
-import { StyleSheet } from 'react-native';
+import { Platform, StyleSheet } from 'react-native';
 
 import ConditionalWrap from 'conditional-wrap';
 import { BlurView } from 'react-native-blur-view';
@@ -11,15 +11,15 @@ import { JiggleAnimation } from '@/components/animations/JiggleAnimation';
 import { Draggable, DraggableGrid, type DraggableGridProps, type UniqueIdentifier } from '@/components/drag-and-drop';
 import { DropdownMenu, type MenuItem } from '@/components/DropdownMenu';
 import { PANEL_WIDTH } from '@/components/SmoothPager/ListPanel';
-import { DELEGATION, getExperimentalFlag } from '@/config/experimentalHooks';
 import { Box, HitSlop, Inline, Stack, Text, TextIcon } from '@/design-system';
-import { IS_INTERNAL, IS_IOS } from '@/env';
+import { IS_STORE_INSTALL } from '@/env';
+import { useIsDelegationEnabled } from '@/features/delegation/featureFlags';
+import { isRainbowDelegated as hasRainbowDelegation, isThirdPartyDelegated as hasThirdPartyDelegation } from '@/features/delegation/status';
 import { removeFirstEmojiFromString } from '@/helpers/emojiHandler';
-import { getRemoteConfig } from '@/model/remoteConfig';
 import { usePinnedWalletsStore } from '@/state/wallets/pinnedWalletsStore';
 import { useTheme } from '@/theme/ThemeContext';
 import { address } from '@/utils/abbreviations';
-import { DelegationStatus, useDelegationDisabled, useDelegations } from '@rainbow-me/delegation';
+import { useDelegationDisabled, useDelegations } from '@rainbow-me/delegation';
 
 import { AddressMenuAction, PANEL_INSET_HORIZONTAL, type AddressItem, type AddressMenuActionData } from '../ChangeWalletSheet';
 import { AddressAvatar } from './AddressAvatar';
@@ -41,8 +41,8 @@ type PinnedWalletsGridProps = {
 function DelegationBadge({ accountAddress }: { accountAddress: string }) {
   const delegations = useDelegations(accountAddress as Address);
   const isDisabled = useDelegationDisabled(accountAddress as Address);
-  const isDelegated = delegations?.some(d => d.delegationStatus === DelegationStatus.RAINBOW_DELEGATED) ?? false;
-  const isThirdPartyDelegated = delegations?.some(d => d.delegationStatus === DelegationStatus.THIRD_PARTY_DELEGATED) ?? false;
+  const isDelegated = delegations?.some(hasRainbowDelegation) ?? false;
+  const isThirdPartyDelegated = delegations?.some(hasThirdPartyDelegation) ?? false;
 
   return (
     <Text color={isDisabled ? 'red' : isDelegated ? 'green' : isThirdPartyDelegated ? 'labelTertiary' : 'labelQuaternary'} size="icon 10px">
@@ -53,7 +53,7 @@ function DelegationBadge({ accountAddress }: { accountAddress: string }) {
 
 export function PinnedWalletsGrid({ walletItems, onPress, editMode, menuItems, onPressMenuItem }: PinnedWalletsGridProps) {
   const { colors, isDarkMode } = useTheme();
-  const delegationEnabled = getRemoteConfig().delegation_enabled || getExperimentalFlag(DELEGATION);
+  const delegationEnabled = useIsDelegationEnabled();
 
   const removePinnedAddress = usePinnedWalletsStore(state => state.removePinnedAddress);
   const setPinnedAddresses = usePinnedWalletsStore(state => state.setPinnedAddresses);
@@ -193,11 +193,11 @@ export function PinnedWalletsGrid({ walletItems, onPress, editMode, menuItems, o
                                 height={{ custom: UNPIN_BADGE_SIZE }}
                                 justifyContent="center"
                                 alignItems="center"
-                                backgroundColor={IS_IOS ? 'transparent' : colors.darkGrey}
+                                backgroundColor={Platform.OS === 'ios' ? 'transparent' : colors.darkGrey}
                                 borderRadius={UNPIN_BADGE_SIZE / 2}
                                 style={{ overflow: 'hidden' }}
                               >
-                                {IS_IOS && (
+                                {Platform.OS === 'ios' && (
                                   <BlurView
                                     blurStyle={isDarkMode ? 'materialDark' : 'materialLight'}
                                     style={[StyleSheet.absoluteFill, { borderRadius: UNPIN_BADGE_SIZE / 2, overflow: 'hidden' }]}
@@ -226,7 +226,9 @@ export function PinnedWalletsGrid({ walletItems, onPress, editMode, menuItems, o
                       </Text>
                     ) : null}
 
-                    {IS_INTERNAL && delegationEnabled && !account.isReadOnly ? <DelegationBadge accountAddress={account.address} /> : null}
+                    {!IS_STORE_INSTALL && delegationEnabled && !account.isReadOnly ? (
+                      <DelegationBadge accountAddress={account.address} />
+                    ) : null}
 
                     <Text numberOfLines={1} ellipsizeMode="middle" color="label" size="13pt" weight="bold">
                       {walletName}

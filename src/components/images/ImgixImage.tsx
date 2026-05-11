@@ -1,10 +1,8 @@
 import * as React from 'react';
-import { PixelRatio, StyleSheet } from 'react-native';
+import { PixelRatio, Platform, StyleSheet } from 'react-native';
 
 import { FasterImageView, type ImageOptions } from '@candlefinance/faster-image';
 import FastImage, { type FastImageProps, type Source } from 'react-native-fast-image';
-
-import { IS_IOS } from '@/env';
 
 import { maybeSignSource } from '../../handlers/imgix';
 
@@ -47,7 +45,9 @@ const ImgixImage = React.memo(function ImgixImage(props: ImgixImageProps) {
       return {
         ...DEFAULT_FASTER_IMAGE_CONFIG,
         borderRadius:
-          !fasterImageStyle?.borderRadius || IS_IOS ? fasterImageStyle?.borderRadius : fasterImageStyle.borderRadius * PIXEL_RATIO,
+          !fasterImageStyle?.borderRadius || Platform.OS === 'ios'
+            ? fasterImageStyle?.borderRadius
+            : fasterImageStyle.borderRadius * PIXEL_RATIO,
         resizeMode: props.resizeMode && props.resizeMode !== 'stretch' ? props.resizeMode : DEFAULT_FASTER_IMAGE_CONFIG.resizeMode,
         ...props.fasterImageConfig,
         url: signedUrl,

@@ -1,4 +1,5 @@
 import React from 'react';
+import { Platform } from 'react-native';
 
 import { FlashList } from '@shopify/flash-list';
 
@@ -21,7 +22,6 @@ import {
   Text,
   useColorMode,
 } from '@/design-system';
-import { IS_ANDROID, IS_IOS } from '@/env';
 import useDimensions from '@/hooks/useDimensions';
 import * as i18n from '@/languages';
 import { useNavigation } from '@/navigation/Navigation';
@@ -33,7 +33,7 @@ import { useAccountProfileInfo } from '@/state/wallets/walletsStore';
 import { Card } from './card/Card';
 import { TabBar } from './TabBar';
 
-const LoadingSpinner = IS_ANDROID ? Spinner : ActivityIndicator;
+const LoadingSpinner = Platform.OS === 'android' ? Spinner : ActivityIndicator;
 
 export function MintsSheet() {
   const { accountAddress, accountImage, accountColorHex, accountSymbol } = useAccountProfileInfo();
@@ -57,13 +57,13 @@ export function MintsSheet() {
       <BackgroundProvider color="surfaceSecondaryElevated">
         {({ backgroundColor }) => (
           <SimpleSheet backgroundColor={backgroundColor as string}>
-            <Inset top="20px" bottom={{ custom: IS_IOS ? 110 : 150 }}>
+            <Inset top="20px" bottom={{ custom: Platform.OS === 'ios' ? 110 : 150 }}>
               <Inset horizontal="20px">
                 <Stack space="10px">
                   <Columns alignVertical="center">
                     <Column width="content">
                       <AccentColorProvider color={accountColorHex ?? globalColors.grey100}>
-                        <ButtonPressAnimation onPress={() => navigate(Routes.CHANGE_WALLET_SHEET)} disabled={IS_ANDROID}>
+                        <ButtonPressAnimation onPress={() => navigate(Routes.CHANGE_WALLET_SHEET)} disabled={Platform.OS === 'android'}>
                           {accountImage ? (
                             <Box
                               as={ImgixImage}

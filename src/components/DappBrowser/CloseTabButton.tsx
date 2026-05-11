@@ -1,11 +1,10 @@
 import React from 'react';
-import { StyleSheet } from 'react-native';
+import { Platform, StyleSheet } from 'react-native';
 
 import { BlurView } from 'react-native-blur-view';
 import Animated, { interpolate, useAnimatedStyle, withTiming } from 'react-native-reanimated';
 
 import { Box, TextIcon, useColorMode } from '@/design-system';
-import { IS_IOS } from '@/env';
 import deviceUtils from '@/utils/deviceUtils';
 
 import { TIMING_CONFIGS } from '../animations/animationConfigs';
@@ -110,7 +109,7 @@ export const CloseTabButton = ({ tabId }: { tabId: TabId }) => {
   return (
     <Animated.View style={[styles.containerStyle, containerStyle]}>
       <Box as={Animated.View} position="absolute" style={singleTabStyle}>
-        {IS_IOS ? (
+        {Platform.OS === 'ios' ? (
           <Animated.View style={[styles.closeButtonStyle, closeButtonStyle, { borderRadius: SCALE_ADJUSTED_X_BUTTON_SIZE_SINGLE_TAB / 2 }]}>
             <BlurView
               blurStyle={isDarkMode ? 'chromeMaterialDark' : 'materialLight'}
@@ -144,7 +143,7 @@ export const CloseTabButton = ({ tabId }: { tabId: TabId }) => {
         )}
       </Box>
       <Box as={Animated.View} position="absolute" style={multipleTabsStyle}>
-        {IS_IOS ? (
+        {Platform.OS === 'ios' ? (
           <Animated.View style={[styles.closeButtonStyle, closeButtonStyle, { borderRadius: SCALE_ADJUSTED_X_BUTTON_SIZE / 2 }]}>
             <BlurView
               blurStyle={isDarkMode ? 'materialDark' : 'materialLight'}

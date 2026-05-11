@@ -1,10 +1,8 @@
 import React, { useCallback, useEffect, useMemo, useRef } from 'react';
-import { Keyboard, View, type ViewStyle } from 'react-native';
+import { Keyboard, Platform, View, type ViewStyle } from 'react-native';
 
 import BottomSheet, { BottomSheetBackdrop, type BottomSheetBackdropProps } from '@gorhom/bottom-sheet';
 import { useSharedValue } from 'react-native-reanimated';
-
-import { IS_ANDROID } from '@/env';
 
 import { isKeyboardOpen } from '../../../helpers';
 import { CONTAINER_HEIGHT, DEFAULT_BACKDROP_COLOR, DEFAULT_BACKDROP_OPACITY, DEFAULT_HEIGHT } from '../constants';
@@ -29,7 +27,7 @@ const BottomSheetRoute = ({ routeKey, descriptor: { options, render, navigation 
     backdropOpacity = DEFAULT_BACKDROP_OPACITY,
     backdropPressBehavior = 'close',
     height = DEFAULT_HEIGHT,
-    offsetY = IS_ANDROID ? 20 : 3,
+    offsetY = Platform.OS === 'android' ? 20 : 3,
   } = options || {};
 
   const ref = useRef<BottomSheet>(null);
@@ -114,7 +112,7 @@ const BottomSheetRoute = ({ routeKey, descriptor: { options, render, navigation 
   useEffect(() => {
     if (removing === true && ref.current) {
       // close keyboard before closing the modal
-      if (isKeyboardOpen() && IS_ANDROID) {
+      if (isKeyboardOpen() && Platform.OS === 'android') {
         Keyboard.dismiss();
 
         ref.current.close();

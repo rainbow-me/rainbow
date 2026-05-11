@@ -3,7 +3,7 @@ import { memo } from 'react';
 import GradientText from '@/components/text/GradientText';
 import { useColorMode, type TextProps } from '@/design-system';
 import { getValueForColorMode } from '@/design-system/color/palettes';
-import { getTierVisuals } from '@/features/rnbw-membership/constants';
+import { getTierLabelTheme } from '@/features/rnbw-membership/tierVisuals';
 import type { Tier } from '@/features/rnbw-membership/types';
 
 const GRADIENT_START = { x: 0, y: 0 };
@@ -14,7 +14,7 @@ export const TierThemedLabel = memo(function TierThemedLabel({ tier, children }:
 
   if (isDarkMode) return children;
 
-  const { textGradient } = getTierVisuals(tier.level);
+  const { gradient: textGradient } = getTierLabelTheme(tier.level);
   const {
     colors: textGradientColors,
     locations: textGradientLocations,

@@ -4,7 +4,7 @@ import { groupBy } from 'lodash';
 import qs from 'qs';
 import { TOKEN_SEARCH_URL } from 'react-native-dotenv';
 
-import { TokenSearchThreshold, type SearchAsset, type TokenSearchAssetKey } from '@/__swaps__/types/search';
+import { type SearchAsset, type TokenSearchAssetKey } from '@/__swaps__/types/search';
 import { RainbowFetchClient } from '@/framework/data/http/rainbowFetch';
 import { getProvider } from '@/handlers/web3';
 import { logger, RainbowError } from '@/logger';

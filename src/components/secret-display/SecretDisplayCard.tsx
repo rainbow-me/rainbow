@@ -1,8 +1,8 @@
 import React from 'react';
+import { Platform } from 'react-native';
 
 import { SeedWordGrid } from '@/components/secret-display/SeedWordGrid';
 import { Box, Inset } from '@/design-system';
-import { IS_ANDROID } from '@/env';
 import WalletTypes, { EthereumWalletType } from '@/helpers/walletTypes';
 import * as i18n from '@/languages';
 
@@ -38,7 +38,7 @@ export function SecretDisplayCard({ seed, type = EthereumWalletType.seed }: Secr
             <Box alignItems="center" height="full" justifyContent="center">
               {seed && type === WalletTypes.mnemonic && <SeedWordGrid seed={seed} />}
               {seed && type === WalletTypes.privateKey && (
-                <Text align="center" weight="semibold" lineHeight="looser" size={IS_ANDROID ? 'smedium' : 'lmedium'}>
+                <Text align="center" weight="semibold" lineHeight="looser" size={Platform.OS === 'android' ? 'smedium' : 'lmedium'}>
                   {seed}
                 </Text>
               )}

@@ -1,5 +1,5 @@
 import React, { memo, useCallback, useRef, type RefObject } from 'react';
-import { StyleSheet, View, type ScrollView } from 'react-native';
+import { Platform, StyleSheet, View, type ScrollView } from 'react-native';
 
 import Animated, {
   runOnJS,
@@ -13,7 +13,6 @@ import Animated, {
 import { SPRING_CONFIGS } from '@/components/animations/animationConfigs';
 import { GestureHandlerButton } from '@/components/buttons/GestureHandlerButton';
 import { globalColors, useColorMode } from '@/design-system';
-import { IS_IOS } from '@/env';
 import { opacity } from '@/framework/ui/utils/opacity';
 import { useStableValue } from '@/hooks/useStableValue';
 import { DEVICE_WIDTH } from '@/utils/deviceUtils';
@@ -235,7 +234,7 @@ function toggleChartTypeAndScroll(scrollViewRef: RefObject<ScrollView | null>, s
   const isLineChart = newChartType === ChartType.Line;
   selectedIndex.value = newSelectedIndex;
 
-  if (IS_IOS && isLineChart) return;
+  if (Platform.OS === 'ios' && isLineChart) return;
 
   const scrollTo = () =>
     scrollViewRef.current?.setNativeProps({
@@ -245,7 +244,7 @@ function toggleChartTypeAndScroll(scrollViewRef: RefObject<ScrollView | null>, s
       },
     });
 
-  if (IS_IOS || isLineChart) scrollTo();
+  if (Platform.OS === 'ios' || isLineChart) scrollTo();
   else requestAnimationFrame(scrollTo);
 }
 
@@ -262,7 +261,7 @@ const styles = StyleSheet.create({
   candleBody: {
     borderCurve: 'continuous',
     borderRadius: 1.8,
-    borderWidth: IS_IOS ? 1 : 0,
+    borderWidth: Platform.OS === 'ios' ? 1 : 0,
     overflow: 'hidden',
     position: 'relative',
     width: 5,

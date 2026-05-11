@@ -2,13 +2,13 @@ import { type Signer } from '@ethersproject/abstract-signer';
 import { Logger } from '@ethersproject/logger';
 
 import { analytics } from '@/analytics';
-import { type TransactionGasParamAmounts } from '@/entities/gas';
 import { TransactionStatus, type NewTransaction } from '@/entities/transactions';
 import { IS_TEST } from '@/env';
+import { type TransactionGasParamAmounts } from '@/features/gas/types/gas';
+import { parseGasParamAmounts } from '@/features/gas/utils/parseGas';
 import { toHex } from '@/handlers/web3';
 import * as i18n from '@/languages';
 import { logger, RainbowError } from '@/logger';
-import { parseGasParamAmounts } from '@/parsers/gas';
 import store from '@/redux/store';
 import { ChainId, Network } from '@/state/backendNetworks/types';
 import { addNewTransaction } from '@/state/pendingTransactions';

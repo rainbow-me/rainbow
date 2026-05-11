@@ -3,7 +3,7 @@ import { useEffect } from 'react';
 import remoteConfig, { type FirebaseRemoteConfigTypes } from '@react-native-firebase/remote-config';
 import { dequal } from 'dequal';
 
-import { IS_DEV, IS_INTERNAL } from '@/env';
+import { IS_DEV, IS_STORE_INSTALL } from '@/env';
 import { CURRENT_APP_VERSION } from '@/hooks/useAppVersion';
 import * as i18n from '@/languages';
 import { logger, RainbowError } from '@/logger';
@@ -96,7 +96,7 @@ export interface RainbowConfig extends Record<
   rnbw_rewards_enabled: boolean;
   rnbw_membership_enabled: boolean;
   delegation_enabled: boolean;
-  atomic_swaps_enabled: boolean;
+  sponsored_swaps_enabled: boolean;
 }
 
 const Bips = {
@@ -219,15 +219,15 @@ export const DEFAULT_CONFIG = {
   king_of_the_hill2_enabled: false,
   king_of_the_hill_enabled: false,
   prince_of_the_hill_enabled: false,
-  candlestick_charts_enabled: IS_INTERNAL,
-  rainbow_toasts_enabled: IS_INTERNAL,
+  candlestick_charts_enabled: !IS_STORE_INSTALL,
+  rainbow_toasts_enabled: !IS_STORE_INSTALL,
   perps_enabled: false,
   polymarket_enabled: false,
   dev_section_enabled: IS_DEV,
   rnbw_rewards_enabled: false,
   rnbw_membership_enabled: false,
   delegation_enabled: false,
-  atomic_swaps_enabled: false,
+  sponsored_swaps_enabled: true,
 } as const satisfies Readonly<RainbowConfig>;
 
 type RemoteConfigKey = keyof typeof DEFAULT_CONFIG;

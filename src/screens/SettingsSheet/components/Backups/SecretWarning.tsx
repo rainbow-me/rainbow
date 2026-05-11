@@ -1,11 +1,11 @@
 import React, { useCallback } from 'react';
+import { Platform } from 'react-native';
 
 import { useRoute, type RouteProp } from '@react-navigation/native';
 
 import { SheetActionButton } from '@/components/sheet';
 import { Bleed, Box, Column, Columns, Inset, Stack, Text } from '@/design-system';
 import { type TextColor } from '@/design-system/color/palettes';
-import { IS_ANDROID } from '@/env';
 import WalletTypes from '@/helpers/walletTypes';
 import useDimensions from '@/hooks/useDimensions';
 import * as i18n from '@/languages';
@@ -102,7 +102,7 @@ const SecretWarningPage = () => {
             {items.map(item => (
               <Columns key={item.icon} space={{ custom: 13 }}>
                 <Column width={{ custom: 50 }}>
-                  <Box paddingTop={IS_ANDROID ? '6px' : undefined}>
+                  <Box paddingTop={Platform.OS === 'android' ? '6px' : undefined}>
                     <Text align="center" color={item.color} size="20pt" weight="bold">
                       {item.icon}
                     </Text>
@@ -120,11 +120,10 @@ const SecretWarningPage = () => {
           </Stack>
         </Stack>
       </Inset>
-
       <Box
         testID={'show-secret-button'}
         position="absolute"
-        bottom={{ custom: IS_ANDROID ? 40 : 20 }}
+        bottom={{ custom: Platform.OS === 'android' ? 40 : 20 }}
         alignItems="center"
         style={{ paddingHorizontal: 24 }}
       >

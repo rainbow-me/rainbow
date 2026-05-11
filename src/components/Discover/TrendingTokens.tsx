@@ -1,5 +1,5 @@
 import { useCallback, useEffect, useMemo, type JSX, type ReactNode } from 'react';
-import { FlatList, View } from 'react-native';
+import { FlatList, Platform, View } from 'react-native';
 
 import { LinearGradient } from 'expo-linear-gradient';
 import Animated, { useSharedValue, type SharedValue } from 'react-native-reanimated';
@@ -13,7 +13,6 @@ import Skeleton, { FakeAvatar, FakeText } from '@/components/skeleton/Skeleton';
 import { globalColors, IconContainer, Text, TextIcon, useBackgroundColor, useColorMode } from '@/design-system';
 import { useForegroundColor } from '@/design-system/color/useForegroundColor';
 import { type NativeCurrencyKey } from '@/entities/nativeCurrencyTypes';
-import { IS_IOS } from '@/env';
 import { opacity } from '@/framework/ui/utils/opacity';
 import { SortDirection, Timeframe, TrendingSort } from '@/graphql/__generated__/arc';
 import { formatCurrency, formatNumber } from '@/helpers/strings';
@@ -91,7 +90,7 @@ function FilterButton({
           <TextIcon
             color={{ custom: iconColor || defaultIconColor }}
             size="icon 13px"
-            textStyle={IS_IOS ? undefined : { marginTop: -2 }}
+            textStyle={Platform.OS === 'ios' ? undefined : { marginTop: -2 }}
             weight="heavy"
             width={16}
           >
@@ -188,7 +187,6 @@ function CategoryFilterButton({
   iconColor,
   label,
   highlightedBackgroundColor,
-  selectedChainId,
 }: {
   category: TrendingCategory;
   icon: string | JSX.Element;
@@ -196,12 +194,10 @@ function CategoryFilterButton({
   highlightedBackgroundColor: string;
   iconWidth?: number;
   label: string;
-  selectedChainId: SharedValue<ChainId | undefined>;
 }) {
   const { isDarkMode } = useColorMode();
   const fillTertiary = useBackgroundColor('fillTertiary');
   const separatorSecondary = useForegroundColor('separatorSecondary');
-  const tokenLauncherNetworks = useBackendNetworksStore(state => state.getTokenLauncherSupportedChainIds());
 
   const selected = useTrendingTokensStore(state => state.category === category);
 
@@ -214,14 +210,7 @@ function CategoryFilterButton({
 
   const selectCategory = useCallback(() => {
     useTrendingTokensStore.getState().setCategory(category);
-    if (category === 'Rainbow') {
-      const { chainId } = useTrendingTokensStore.getState();
-      if (chainId && !tokenLauncherNetworks.includes(chainId)) {
-        useTrendingTokensStore.getState().setChainId(undefined);
-        selectedChainId.value = undefined;
-      }
-    }
-  }, [category, tokenLauncherNetworks, selectedChainId]);
+  }, [category]);
 
   return (
     <ButtonPressAnimation scaleTo={0.92} onPress={selectCategory}>
@@ -242,7 +231,7 @@ function CategoryFilterButton({
           <TextIcon
             color={{ custom: typeof iconColor === 'string' ? iconColor : selected ? iconColor.selected : iconColor.default }}
             size="icon 13px"
-            textStyle={{ marginTop: IS_IOS ? -3.5 : -2 }}
+            textStyle={{ marginTop: Platform.OS === 'ios' ? -3.5 : -2 }}
             weight="heavy"
             width={iconWidth}
           >
@@ -432,7 +421,7 @@ function TrendingTokenRow({ token, currency }: { token: TrendingToken; currency:
             <View style={{ gap: 12 }}>
               <View
                 style={{
-                  alignItems: IS_IOS ? 'baseline' : 'flex-end',
+                  alignItems: Platform.OS === 'ios' ? 'baseline' : 'flex-end',
                   flexDirection: 'row',
                   gap: 6,
                   height: 12,
@@ -456,7 +445,7 @@ function TrendingTokenRow({ token, currency }: { token: TrendingToken; currency:
                   ellipsizeMode="middle"
                   size="11pt"
                   style={{
-                    bottom: IS_IOS ? 0 : -0.2,
+                    bottom: Platform.OS === 'ios' ? 0 : -0.2,
                     maxWidth: symbolWidth,
                   }}
                   weight="bold"
@@ -570,17 +559,10 @@ function NoResults() {
 }
 
 function NetworkFilter({ selectedChainId }: { selectedChainId: SharedValue<ChainId | undefined> }) {
-  const { chainId, category } = useTrendingTokensStore(
-    state => ({
-      chainId: state.chainId,
-      category: state.category,
-    }),
-    shallowEqual
-  );
+  const chainId = useTrendingTokensStore(state => state.chainId);
 
   const chainColor = useBackendNetworksStore(state => state.getColorsForChainId(chainId || ChainId.mainnet, false));
   const setChainId = useTrendingTokensStore(state => state.setChainId);
-  const tokenLauncherNetworks = useBackendNetworksStore(state => state.getTokenLauncherSupportedChainIds());
 
   const { icon, label, lightenedNetworkColor } = useMemo(() => {
     if (!chainId) return { icon: '􀤆', label: i18n.t(t.all), lightenedNetworkColor: undefined };
@@ -607,9 +589,8 @@ function NetworkFilter({ selectedChainId }: { selectedChainId: SharedValue<Chain
     Navigation.handleAction(Routes.NETWORK_SELECTOR, {
       selected: selectedChainId.value ?? chainId,
       setSelected,
-      allowedNetworks: category === 'Rainbow' ? tokenLauncherNetworks : undefined,
     });
-  }, [category, chainId, selectedChainId, setSelected, tokenLauncherNetworks]);
+  }, [chainId, selectedChainId, setSelected]);
 
   return (
     <FilterButton
@@ -686,7 +667,7 @@ function SortFilter() {
           <TextIcon
             color={{ custom: iconColor }}
             size="icon 13px"
-            textStyle={IS_IOS ? undefined : { marginTop: -2 }}
+            textStyle={Platform.OS === 'ios' ? undefined : { marginTop: -2 }}
             weight="heavy"
             width={20}
           >
@@ -733,9 +714,11 @@ function TrendingTokenData() {
 }
 
 function RainbowFeatureFlagListener() {
-  // If the rainbow list was selected and the flag is disabled, set the category to the "Trending" category
+  // If the persisted category was removed, set the category to "Trending".
   useEffect(() => {
-    if (useTrendingTokensStore.getState().category === 'Rainbow') {
+    const { category } = useTrendingTokensStore.getState();
+    const isStalePersistedCategory = !categories.some(availableCategory => availableCategory === category);
+    if (isStalePersistedCategory) {
       useTrendingTokensStore.getState().setCategory(categories[0]);
     }
   }, []);
@@ -764,25 +747,14 @@ export function TrendingTokens() {
             icon="􀙭"
             iconColor={'#D0281C'}
             highlightedBackgroundColor={'#E6A39E'}
-            selectedChainId={selectedChainId}
           />
           <CategoryFilterButton
-            category={categories[2]}
+            category={categories[1]}
             label={i18n.t(t.filters.categories.NEW)}
             icon="􀋃"
             iconColor={{ default: isDarkMode ? globalColors.yellow60 : '#FFBB00', selected: '#F5A200' }}
             highlightedBackgroundColor={'#FFEAC2'}
             iconWidth={18}
-            selectedChainId={selectedChainId}
-          />
-          <CategoryFilterButton
-            category={categories[3]}
-            label={i18n.t(t.filters.categories.FARCASTER)}
-            icon="􀌥"
-            iconColor={'#5F5AFA'}
-            highlightedBackgroundColor={'#B9B7F7'}
-            iconWidth={20}
-            selectedChainId={selectedChainId}
           />
         </Animated.ScrollView>
 

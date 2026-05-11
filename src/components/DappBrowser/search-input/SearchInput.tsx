@@ -1,5 +1,5 @@
 import React, { memo, useCallback, useMemo } from 'react';
-import { StyleSheet, View, type NativeSyntheticEvent, type TextInput, type TextInputChangeEventData } from 'react-native';
+import { Platform, StyleSheet, View, type NativeSyntheticEvent, type TextInput, type TextInputChangeEventData } from 'react-native';
 
 import MaskedView from '@react-native-masked-view/masked-view';
 import { BlurView } from 'react-native-blur-view';
@@ -24,7 +24,6 @@ import { SPRING_CONFIGS, TIMING_CONFIGS } from '@/components/animations/animatio
 import { GestureHandlerButton } from '@/components/buttons/GestureHandlerButton';
 import ContextMenuButton from '@/components/native-context-menu/contextMenu';
 import { AnimatedText, globalColors, useColorMode, useForegroundColor } from '@/design-system';
-import { IS_IOS } from '@/env';
 import { showActionSheetWithOptions } from '@/framework/ui/utils/actionsheet';
 import { opacity } from '@/framework/ui/utils/opacity';
 import { useStableValue } from '@/hooks/useStableValue';
@@ -202,7 +201,7 @@ const ThreeDotMenu = function ThreeDotMenu({ formattedUrlValue }: { formattedUrl
 
   return (
     <>
-      {IS_IOS ? (
+      {Platform.OS === 'ios' ? (
         <View style={styles.searchBarContextMenuContainer}>
           <ContextMenuButton menuConfig={menuConfig} onPressMenuItem={onPressMenuItem} style={styles.searchBarContextMenu}>
             <ToolbarIcon
@@ -363,7 +362,7 @@ const AddressBar = memo(function AddressBar({
   const separatorSecondary = useForegroundColor('separatorSecondary');
   const buttonColorIOS = isDarkMode ? fillSecondary : opacity(globalColors.white100, 0.9);
   const buttonColorAndroid = isDarkMode ? globalColors.blueGrey100 : globalColors.white100;
-  const buttonColor = IS_IOS ? buttonColorIOS : buttonColorAndroid;
+  const buttonColor = Platform.OS === 'ios' ? buttonColorIOS : buttonColorAndroid;
 
   const animatedButtonWrapperStyle = useAnimatedStyle(() => ({
     pointerEvents: _WORKLET && isFocused.value ? 'none' : 'auto',
@@ -444,13 +443,13 @@ const AddressBar = memo(function AddressBar({
               {formattedUrlValue}
             </AnimatedText>
           </Animated.View>
-          {IS_IOS && <BlurView blurIntensity={20} blurStyle={isDarkMode ? 'dark' : 'light'} style={styles.blurViewStyle} />}
+          {Platform.OS === 'ios' && <BlurView blurIntensity={20} blurStyle={isDarkMode ? 'dark' : 'light'} style={styles.blurViewStyle} />}
           <Animated.View
             style={[
               {
                 backgroundColor: buttonColor,
                 borderColor: separatorSecondary,
-                borderWidth: IS_IOS && isDarkMode ? THICK_BORDER_WIDTH : 0,
+                borderWidth: Platform.OS === 'ios' && isDarkMode ? THICK_BORDER_WIDTH : 0,
               },
               styles.inputBorderStyle,
               pointerEventsStyle,

@@ -1,6 +1,6 @@
 // @refresh
 import React, { createContext, useCallback, useContext, useEffect, useRef, useState, type ReactNode } from 'react';
-import { InteractionManager, NativeModules, type StyleProp, type TextInput, type TextStyle } from 'react-native';
+import { InteractionManager, NativeModules, Platform, type StyleProp, type TextInput, type TextStyle } from 'react-native';
 
 import {
   runOnJS,
@@ -36,10 +36,13 @@ import { getInputValuesForSliderPositionWorklet, updateInputValuesAfterFlip } fr
 import { clamp, getDefaultSlippageWorklet, parseAssetAndExtend, trimTrailingZeros } from '@/__swaps__/utils/swaps';
 import { trackSwapEvent } from '@/__swaps__/utils/trackSwapEvent';
 import { analytics } from '@/analytics';
-import { ATOMIC_SWAPS, getExperimentalFlag } from '@/config/experimentalHooks';
-import type { LegacyTransactionGasParamAmounts, TransactionGasParamAmounts } from '@/entities/gas';
-import { IS_IOS } from '@/env';
-import { divWorklet, equalWorklet, lessThanOrEqualToWorklet, mulWorklet, sumWorklet } from '@/framework/core/safeMath';
+import { isInsufficientSponsorBalanceError } from '@/features/delegation/sponsoredCalls';
+import { getPreparedSponsoredSwap } from '@/features/delegation/sponsoredSwapStore';
+import { supportsDelegatedExecution } from '@/features/delegation/willDelegate';
+import { clearCustomGasSettings } from '@/features/gas/hooks/useCustomGas';
+import { getGasSettingsBySpeed, getSelectedGas } from '@/features/gas/hooks/useSelectedGas';
+import { buildGasParams } from '@/features/gas/utils/parseGas';
+import { divWorklet, equalWorklet, lessThanOrEqualToWorklet, mulWorklet } from '@/framework/core/safeMath';
 import { LedgerSigner } from '@/handlers/LedgerSigner';
 import { getProvider } from '@/handlers/web3';
 import { WrappedAlert as Alert } from '@/helpers/alert';
@@ -54,7 +57,7 @@ import { walletExecuteRap } from '@/raps/execute';
 import { type RapSwapActionParameters } from '@/raps/references';
 import { useUserAssetsStore } from '@/state/assets/userAssets';
 import { userAssetsStoreManager } from '@/state/assets/userAssetsStoreManager';
-import { useBackendNetworksStore } from '@/state/backendNetworks/backendNetworks';
+import { backendNetworksActions, useBackendNetworksStore } from '@/state/backendNetworks/backendNetworks';
 import { ChainId } from '@/state/backendNetworks/types';
 import { useConnectedToAnvilStore } from '@/state/connectedToAnvil';
 import { getNextNonce } from '@/state/nonces';
@@ -62,8 +65,6 @@ import { executeFn, Screens, startTimeToSignTracking, TimeToSignOperation } from
 import { swapsStore } from '@/state/swaps/swapsStore';
 import { SwapType, type CrosschainQuote, type Quote, type QuoteError } from '@rainbow-me/swaps';
 
-import { clearCustomGasSettings } from '../hooks/useCustomGas';
-import { getGasSettingsBySpeed, getSelectedGas } from '../hooks/useSelectedGas';
 import { useSwapOutputQuotesDisabled } from '../hooks/useSwapOutputQuotesDisabled';
 import { getSwapsNavigationParams } from '../navigateToSwaps';
 import { SyncSwapRewardsEstimate } from './SyncSwapRewardsEstimate';
@@ -80,6 +81,7 @@ const selectToken = i18n.t(i18n.l.swap.actions.select_token);
 const insufficientFunds = i18n.t(i18n.l.swap.actions.insufficient_funds);
 const insufficient = i18n.t(i18n.l.swap.actions.insufficient);
 const quoteError = i18n.t(i18n.l.swap.actions.quote_error);
+const sponsorshipUnavailable = i18n.t(i18n.l.swap.sponsorship_unavailable);
 
 type ConfirmButtonProps = {
   label: string;
@@ -258,7 +260,7 @@ export const SwapProvider = ({ children }: SwapProviderProps) => {
     parameters: Omit<RapSwapActionParameters<typeof type>, 'gasParams' | 'gasFeeParamsBySpeed' | 'selectedGasFee'>;
   }) => {
     try {
-      const NotificationManager = IS_IOS ? NativeModules.NotificationManager : null;
+      const NotificationManager = Platform.OS === 'ios' ? NativeModules.NotificationManager : null;
       NotificationManager?.postNotification('rapInProgress');
 
       const provider = getProvider({ chainId: parameters.chainId });
@@ -272,6 +274,7 @@ export const SwapProvider = ({ children }: SwapProviderProps) => {
       }
 
       const degenMode = swapsStore.getState().degenMode;
+      const preparedSwapPromise = connectedToAnvil ? null : getPreparedSponsoredSwap().catch(() => null);
 
       const wallet = await executeFn(loadWallet, {
         screen: Screens.SWAPS,
@@ -286,7 +289,6 @@ export const SwapProvider = ({ children }: SwapProviderProps) => {
           metadata: { degenMode },
         },
       });
-      const isHardwareWallet = wallet instanceof LedgerSigner;
 
       if (!wallet) {
         isSwapping.value = false;
@@ -295,16 +297,7 @@ export const SwapProvider = ({ children }: SwapProviderProps) => {
       }
 
       const gasFeeParamsBySpeed = getGasSettingsBySpeed(parameters.chainId);
-      let gasParams: TransactionGasParamAmounts | LegacyTransactionGasParamAmounts;
-
-      if (selectedGas.isEIP1559) {
-        gasParams = {
-          maxFeePerGas: sumWorklet(selectedGas.maxBaseFee, selectedGas.maxPriorityFee),
-          maxPriorityFeePerGas: selectedGas.maxPriorityFee,
-        };
-      } else {
-        gasParams = { gasPrice: selectedGas.gasPrice };
-      }
+      const gasParams = buildGasParams(selectedGas);
 
       const chainId = connectedToAnvil ? ChainId.anvil : parameters.chainId;
       const nonce = await executeFn(getNextNonce, {
@@ -313,24 +306,36 @@ export const SwapProvider = ({ children }: SwapProviderProps) => {
         metadata: { degenMode, chainId },
       })({ address: parameters.quote.from, chainId });
 
-      // Flag if atomic swaps are enabled and supported by the wallet
-      // Upon execution, we do the same for delegation specifically
-      const atomicSwapsEnabled = getRemoteConfig().atomic_swaps_enabled || getExperimentalFlag(ATOMIC_SWAPS);
+      const canExecuteDelegatedSwap =
+        !connectedToAnvil &&
+        (await supportsDelegatedExecution({
+          address: parameters.quote.from,
+          chainId: parameters.chainId,
+        }));
+
+      const preparedCalls = canExecuteDelegatedSwap ? await preparedSwapPromise : null;
 
       const { errorMessage } = await executeFn(walletExecuteRap, {
         screen: Screens.SWAPS,
         operation: TimeToSignOperation.SignTransaction,
         metadata: { degenMode },
-      })(wallet, type, {
-        ...parameters,
-        nonce,
-        chainId,
-        gasParams,
-        gasFeeParamsBySpeed,
-        atomic: atomicSwapsEnabled && !isHardwareWallet,
-      });
+      })(
+        wallet,
+        type,
+        {
+          ...parameters,
+          nonce,
+          chainId,
+          gasParams,
+          gasFeeParamsBySpeed,
+          atomic: canExecuteDelegatedSwap,
+        },
+        { preparedCalls }
+      );
 
       isSwapping.value = false;
+
+      const isHardwareWallet = wallet instanceof LedgerSigner;
 
       if (errorMessage) {
         runOnUI(() => {
@@ -347,6 +352,13 @@ export const SwapProvider = ({ children }: SwapProviderProps) => {
 
         if (errorMessage !== 'handled') {
           logger.error(new RainbowError(`[getNonceAndPerformSwap]: Error executing swap: ${errorMessage}`));
+
+          if (isInsufficientSponsorBalanceError(errorMessage)) {
+            backendNetworksActions.disableSponsorshipUntilNextFetch(parameters.chainId);
+            Alert.alert(i18n.t(i18n.l.swap.error_executing_swap), sponsorshipUnavailable);
+            return;
+          }
+
           const extractedError = errorMessage.split('[')[0];
           Alert.alert(i18n.t(i18n.l.swap.error_executing_swap), extractedError);
           return;
@@ -440,6 +452,7 @@ export const SwapProvider = ({ children }: SwapProviderProps) => {
 
     runOnJS(getNonceAndPerformSwap)({ type, parameters });
   };
+
   const swapInfo = useDerivedValue(() => {
     const areAllInputsZero =
       equalWorklet(inputValues.value.inputAmount, '0') &&

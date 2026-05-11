@@ -4,7 +4,7 @@ import { Alert, Image, StyleSheet, View } from 'react-native';
 import rnbwCoinImage from '@/assets/rnbw.png';
 import { PanelSheet } from '@/components/PanelSheet/PanelSheet';
 import { Box, Stack, Text } from '@/design-system';
-import { RnbwHoldToActivateButton } from '@/features/rnbw-membership/components/RnbwHoldToActivateButton';
+import { RnbwHoldToActivateButton } from '@/features/rnbw-membership/components/RnbwButton/RnbwHoldToActivateButton';
 import { RNBW_SYMBOL } from '@/features/rnbw-rewards/constants';
 import { useRewardsBalanceStore } from '@/features/rnbw-rewards/stores/rewardsBalanceStore';
 import { prepareRewardsClaim, submitRewardsClaim } from '@/features/rnbw-rewards/utils/claimRewards';

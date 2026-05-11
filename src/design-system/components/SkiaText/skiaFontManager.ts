@@ -1,4 +1,5 @@
 import { useEffect, useState, type Dispatch, type RefObject, type SetStateAction } from 'react';
+import { Platform } from 'react-native';
 
 import {
   FontWeight,
@@ -9,11 +10,11 @@ import {
   type SkParagraphBuilder,
   type SkTypefaceFontProvider,
 } from '@shopify/react-native-skia';
-import { Platform } from '@shopify/react-native-skia/src/Platform';
+import { Platform as SkiaPlatform } from '@shopify/react-native-skia/src/Platform';
 
 import { type TextAlign } from '@/components/text/types';
 import { type TextWeight } from '@/design-system/components/Text/Text';
-import { IS_DEV, IS_IOS } from '@/env';
+import { IS_DEV } from '@/env';
 import { useCleanup } from '@/hooks/useCleanup';
 import { useLazyRef } from '@/hooks/useLazyRef';
 
@@ -53,13 +54,13 @@ export function useSkiaFontManager(align: TextAlign, weight: TextWeight, additio
   const [manager, setManager] = useState<FontManager>(() => getInitialFontManager(align));
 
   const fontInfoRef = useLazyRef<FontInfo>(() => ({
-    prevWeights: IS_IOS ? new Set(Array.isArray(additionalWeights) ? [weight, ...additionalWeights] : [weight]) : new Set(),
+    prevWeights: Platform.OS === 'ios' ? new Set(Array.isArray(additionalWeights) ? [weight, ...additionalWeights] : [weight]) : new Set(),
     textAlign: align,
   }));
 
   // ============ [iOS] Handle align prop changes ============================== //
   useEffect(() => {
-    if (!IS_IOS || align === fontInfoRef.current.textAlign) return;
+    if (Platform.OS !== 'ios' || align === fontInfoRef.current.textAlign) return;
     setManager(prev => ({ fontManager: prev.fontManager, paragraphBuilder: getParagraphBuilder(align) }));
     releaseParagraphBuilder(fontInfoRef);
     fontInfoRef.current.textAlign = align;
@@ -68,7 +69,7 @@ export function useSkiaFontManager(align: TextAlign, weight: TextWeight, additio
   // ============ [Android] Handle align and weight prop changes =============== //
   useEffect(
     () => {
-      if (IS_IOS || !isAndroidFontManager(manager)) return;
+      if (Platform.OS === 'ios' || !isAndroidFontManager(manager)) return;
       handleAndroidFontChanges({ additionalWeights, align, fontInfoRef, manager, setManager, weight });
     },
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -164,7 +165,7 @@ function getInitialFontManager(textAlign: TextAlign): FontManager {
   if (!getGlobalFontManager()) setGlobalFontManager(Skia.FontMgr.System());
   return {
     fontManager: getGlobalFontManager(),
-    paragraphBuilder: IS_IOS ? getParagraphBuilder(textAlign) : null,
+    paragraphBuilder: Platform.OS === 'ios' ? getParagraphBuilder(textAlign) : null,
   };
 }
 
@@ -172,7 +173,7 @@ function getInitialFontManager(textAlign: TextAlign): FontManager {
  * Returns the current global font manager.
  */
 function getGlobalFontManager(): SkFontMgr | SkTypefaceFontProvider {
-  if (!_fontManager) _fontManager = IS_IOS ? Skia.FontMgr.System() : Skia.TypefaceFontProvider.Make();
+  if (!_fontManager) _fontManager = Platform.OS === 'ios' ? Skia.FontMgr.System() : Skia.TypefaceFontProvider.Make();
   return _fontManager;
 }
 
@@ -237,7 +238,7 @@ function getTypeface(fontManager: SkTypefaceFontProvider, weight: TextWeight): P
   if (existing) return existing.promise;
 
   // Create a new promise for loading the typeface
-  const loadPromise = Skia.Data.fromURI(Platform.resolveAsset(FONT_LOADERS[weight]?.()))
+  const loadPromise = Skia.Data.fromURI(SkiaPlatform.resolveAsset(FONT_LOADERS[weight]?.()))
     .then(data => {
       const typeface = Skia.Typeface.MakeFreeTypeFaceFromData(data);
       if (!typeface) return;
@@ -276,7 +277,7 @@ function getParagraphBuilder(textAlign: TextAlign): SkParagraphBuilder {
  * @param fontInfoRef - The font info ref to release the paragraph builder for
  */
 function releaseParagraphBuilder(fontInfoRef: RefObject<FontInfo>): void {
-  if (!IS_IOS) return;
+  if (Platform.OS !== 'ios') return;
   const existing = getParagraphBuilders().get(fontInfoRef.current.textAlign);
   if (existing) {
     existing.refCount -= 1;

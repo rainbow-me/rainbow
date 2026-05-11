@@ -1,6 +1,6 @@
-import { getSvgPath } from 'figma-squircle';
+import { Platform } from 'react-native';
 
-import { IS_IOS } from '@/env';
+import { getSvgPath } from 'figma-squircle';
 
 /**
  * Creates a squircle (superellipse) path - a smooth blend between a square and circle.
@@ -17,7 +17,7 @@ import { IS_IOS } from '@/env';
  */
 export function getSquirclePath({
   borderRadius,
-  cornerSmoothing = IS_IOS ? 0.6 : 0,
+  cornerSmoothing = Platform.OS === 'ios' ? 0.6 : 0,
   height,
   width,
 }: {

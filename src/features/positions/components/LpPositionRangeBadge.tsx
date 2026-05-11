@@ -1,10 +1,9 @@
 import React from 'react';
-import { StyleSheet } from 'react-native';
+import { Platform, StyleSheet } from 'react-native';
 
 import { LinearGradient } from 'expo-linear-gradient';
 
 import { Box } from '@/design-system';
-import { IS_IOS } from '@/env';
 
 const ASSET_SPACE = 2;
 const WIDTH = 32;
@@ -66,7 +65,7 @@ export const LpPositionRangeBadge = ({ assets }: LpPositionRangeBadgeProps) => {
             height={'full'}
             width={{ custom: width }}
             shadowColor={asset.color}
-            shadowOpacity={IS_IOS ? 0.2 : 1}
+            shadowOpacity={Platform.OS === 'ios' ? 0.2 : 1}
             shadowRadius={9}
             elevation={3}
             style={{

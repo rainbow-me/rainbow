@@ -9,7 +9,7 @@ import React, {
   type MutableRefObject,
   type ReactElement,
 } from 'react';
-import { InteractionManager, Keyboard, SectionList, StyleSheet, type SectionListData } from 'react-native';
+import { InteractionManager, Keyboard, Platform, SectionList, StyleSheet, type SectionListData } from 'react-native';
 
 import { useIsFocused } from '@react-navigation/native';
 import ConditionalWrap from 'conditional-wrap';
@@ -23,7 +23,6 @@ import { GradientText } from '@/components/text';
 import { CopyToast, ToastPositionContainer } from '@/components/toasts';
 import { Box, globalColors, Text, useColorMode } from '@/design-system';
 import type { SwappableAsset } from '@/entities/tokens';
-import { IS_ANDROID, IS_IOS } from '@/env';
 import useAccountSettings from '@/hooks/useAccountSettings';
 import useAndroidScrollViewGestureHandler from '@/hooks/useAndroidScrollViewGestureHandler';
 import usePrevious from '@/hooks/usePrevious';
@@ -232,7 +231,7 @@ const ExchangeAssetList: ForwardRefRenderFunction<SectionList, ExchangeAssetList
               const newValue = !prev?.[address];
               toggleFavorite(address);
               if (newValue) {
-                IS_IOS && onNewEmoji();
+                Platform.OS === 'ios' && onNewEmoji();
                 triggerHaptics('notificationSuccess');
               } else {
                 triggerHaptics('selection');
@@ -278,7 +277,7 @@ const ExchangeAssetList: ForwardRefRenderFunction<SectionList, ExchangeAssetList
           keyboardShouldPersistTaps="always"
           keyboardDismissMode={keyboardDismissMode}
           onLayout={onLayout}
-          onScroll={IS_ANDROID ? onScroll : undefined}
+          onScroll={Platform.OS === 'android' ? onScroll : undefined}
           ref={sectionListRef}
           renderItem={isExchangeList ? renderExchangeItem : renderItem}
           renderSectionHeader={renderSectionHeader}
@@ -288,7 +287,6 @@ const ExchangeAssetList: ForwardRefRenderFunction<SectionList, ExchangeAssetList
           scrollIndicatorInsets={scrollIndicatorInsets}
         />
       </Box>
-
       <ToastPositionContainer>
         <CopyToast copiedText={copiedText} copyCount={copyCount} />
       </ToastPositionContainer>

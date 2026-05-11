@@ -1,6 +1,6 @@
 import React, { Fragment } from 'react';
+import { Platform } from 'react-native';
 
-import { IS_ANDROID } from '@/env';
 import styled from '@/framework/ui/styled-thing';
 import { opacity } from '@/framework/ui/utils/opacity';
 import useDimensions from '@/hooks/useDimensions';
@@ -25,7 +25,7 @@ const FormContainer = styled(Column).attrs({
   justify: 'center',
 })({
   flex: 1,
-  minHeight: ({ isSmallPhone, isTinyPhone }) => (isTinyPhone ? 104 : IS_ANDROID || isSmallPhone ? 134 : 167),
+  minHeight: ({ isSmallPhone, isTinyPhone }) => (isTinyPhone ? 104 : Platform.OS === 'android' || isSmallPhone ? 134 : 167),
   width: '100%',
 });
 

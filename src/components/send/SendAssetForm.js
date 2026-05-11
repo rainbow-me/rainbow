@@ -4,7 +4,6 @@ import { Platform } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
 import { KeyboardAwareScrollView } from 'react-native-keyboard-controller';
 
-import { IS_IOS } from '@/env';
 import styled from '@/framework/ui/styled-thing';
 import { assetIsUniqueAsset } from '@/handlers/web3';
 import useDimensions from '@/hooks/useDimensions';
@@ -30,7 +29,7 @@ const AssetRowShadow = colors => [
 // iOS 26 has keyboard behavior changes that require extra space
 // Footer height calculation: button (~56px) + tx speed selector (~90px) + spacing (~104px) = ~250px
 const IOS_26_FOOTER_HEIGHT = 250;
-const isIOS26OrHigher = IS_IOS && parseFloat(String(Platform.Version)) >= 26;
+const isIOS26OrHigher = Platform.OS === 'ios' && parseFloat(String(Platform.Version)) >= 26;
 
 const AssetRowGradient = styled(LinearGradient).attrs(({ theme: { colors } }) => ({
   colors: colors.gradients.offWhite,
@@ -45,7 +44,7 @@ const Container = styled(Column)({
 });
 
 const FormContainer = styled(Column).attrs(
-  IS_IOS
+  Platform.OS === 'ios'
     ? {
         align: 'end',
         justify: 'space-between',
@@ -99,7 +98,7 @@ export default function SendAssetForm({
     <KeyboardAwareScrollView
       contentContainerStyle={{ flexGrow: 1 }}
       keyboardShouldPersistTaps="always"
-      extraKeyboardSpace={isIOS26OrHigher ? IOS_26_FOOTER_HEIGHT : IS_IOS ? 0 : -NAVIGATION_BAR_HEIGHT}
+      extraKeyboardSpace={isIOS26OrHigher ? IOS_26_FOOTER_HEIGHT : Platform.OS === 'ios' ? 0 : -NAVIGATION_BAR_HEIGHT}
     >
       <Container>
         <ButtonPressAnimation onPress={onResetAssetSelection} overflowMargin={30} scaleTo={0.925}>

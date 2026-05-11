@@ -1866,7 +1866,7 @@ PODS:
     - React
   - react-native-restart (0.0.22):
     - React-Core
-  - react-native-safe-area-context (5.4.0):
+  - react-native-safe-area-context (5.7.0):
     - React-Core
   - react-native-screen-corner-radius (0.2.3):
     - React
@@ -2447,7 +2447,7 @@ PODS:
     - ReactCommon/turbomodule/core
     - RNFBApp
     - Yoga
-  - RNFlashList (1.8.2):
+  - RNFlashList (1.8.3):
     - DoubleConversion
     - glog
     - hermes-engine
@@ -2658,7 +2658,7 @@ PODS:
   - RNRudderSdk (2.0.0):
     - React
     - Rudder (< 2.0.0, >= 1.31.0)
-  - RNScreens (4.10.0):
+  - RNScreens (4.16.0):
     - DoubleConversion
     - glog
     - hermes-engine
@@ -2739,8 +2739,6 @@ PODS:
     - React-Core
   - RNSVG (15.15.4):
     - React-Core
-  - RNTextSize (4.0.0-rc.1):
-    - React
   - RSCrashReporter (1.0.1)
   - Rudder (1.31.1):
     - MetricsReporter (= 2.0.0)
@@ -2960,7 +2958,6 @@ DEPENDENCIES:
   - RNShare (from `../node_modules/react-native-share`)
   - RNSound (from `../node_modules/react-native-sound`)
   - RNSVG (from `../node_modules/react-native-svg`)
-  - RNTextSize (from `../node_modules/react-native-text-size`)
   - Shimmer
   - SRSRadialGradient (from `../node_modules/react-native-radial-gradient/ios`)
   - swift-vibrant
@@ -3312,8 +3309,6 @@ EXTERNAL SOURCES:
     :path: "../node_modules/react-native-sound"
   RNSVG:
     :path: "../node_modules/react-native-svg"
-  RNTextSize:
-    :path: "../node_modules/react-native-text-size"
   SRSRadialGradient:
     :path: "../node_modules/react-native-radial-gradient/ios"
   TcpSockets:
@@ -3439,11 +3434,11 @@ SPEC CHECKSUMS:
   react-native-quick-md5: b648df1c4f23f4cc9df48c97f60c254dda2ae0b9
   react-native-randombytes: 4a00fba06ca0d80a7c02a6b73cfe58ffa4a093a0
   react-native-restart: f6f591aeb40194c41b9b5013901f00e6cf7d0f29
-  react-native-safe-area-context: 9d72abf6d8473da73033b597090a80b709c0b2f1
+  react-native-safe-area-context: e89848fc12d32ccca63d0d7d16dd96918d07c730
   react-native-screen-corner-radius: ebd0d3258fcc894571b41d25ee3db7569d375153
   react-native-skia: 3467bce4be38029a4af437022b88a45e68f4210e
   react-native-text-input-mask: b83b8b571cba4bf18fb9b7a0bb8319a14201db9e
-  react-native-udp: 33844c2b4a0430271e46cd069a6152cc4c482095
+  react-native-udp: afd81d997ff141501da6ac680667fd8319545da1
   react-native-version-number: 3d74b5224ca4e1032b1593937d86d3f3c94bf95c
   react-native-video: 9c4c3eae02d1582907c5262f90bf8194ec1b6683
   react-native-view-shot: 44e13d0424a6b0375eae31d89e161fc1153512e5
@@ -3493,7 +3488,7 @@ SPEC CHECKSUMS:
   RNFBApp: 3a2f3094513f3bfaaea028023ffa03c03f65eefc
   RNFBMessaging: 22ba377d0f78fc1a1b4af2ff66212426eefbf8aa
   RNFBRemoteConfig: b2c5184867b12412de8cbe411c37a200b4477a0a
-  RNFlashList: bf81b67825dd3fca7c3a0624b9c93dd129f2c903
+  RNFlashList: 3138e6f563d72e5ae5f54214b6d0489a7985a6d8
   RNFS: 3557d4b8e51925b011e787094600d6e05dca414e
   RNGestureHandler: 8da72f20ac31d42e8672301ccf2127e05c45c959
   RNInputMask: 815461ebdf396beb62cf58916c35cf6930adb991
@@ -3503,12 +3498,11 @@ SPEC CHECKSUMS:
   RNPermissions: bd0d9ca7969ff7b999aa605ee2e5919c12522bfe
   RNReanimated: 3e727b205ad6d3d48f9f5b07887ebefb4b20e9a4
   RNRudderSdk: cea1f6a95ceab29ceaf75bdadccba5f78121a4ce
-  RNScreens: 586139d98cad59cc4c56443b9bd5c8b9b0b6da0e
+  RNScreens: 0cba9551497bcf6ceaa75878c08f5cb9a2fac6a4
   RNSentry: 5903eefdcd6446708f27c2a7035f019b59d54a9a
   RNShare: e374836177ff2675dbc659f2e52a59bf6060d200
   RNSound: 314cc5226453ef4a3314a196c65e8a65e5106a7b
   RNSVG: c8ba193e7bea6983ebdf544a6ee7b0f706c64559
-  RNTextSize: c5e0593c898ad57ef5061464c154ab855da06047
   RSCrashReporter: 6b8376ac729b0289ebe0908553e5f56d8171f313
   Rudder: 352cb3417238fb84cc083826d9a5a7cc91efaa69
   RudderKit: f272f9872183946452ac94cd7bb2244a71e6ca8f

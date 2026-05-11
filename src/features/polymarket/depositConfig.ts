@@ -4,9 +4,9 @@ import { ChainId } from '@/state/backendNetworks/types';
 import { createDepositConfig } from '@/systems/funding/config';
 import { time } from '@/utils/time';
 
-import { POLYGON_USDC_ADDRESS } from './constants';
+import { POLYGON_USDC_ADDRESS, POLYGON_USDC_DECIMALS } from './constants';
 import { usePolymarketProxyAddress } from './stores/derived/usePolymarketProxyAddress';
-import { ensureProxyWalletDeployedAndUsdcApproved } from './utils/proxyWallet';
+import { handlePolymarketDepositSubmitted } from './utils/handlePolymarketDepositSubmitted';
 import { refetchPolymarketBalance } from './utils/refetchPolymarketStores';
 
 // ============ Polymarket Deposit Configuration =============================== //
@@ -14,7 +14,7 @@ import { refetchPolymarketBalance } from './utils/refetchPolymarketStores';
 export const POLYMARKET_DEPOSIT_CONFIG = createDepositConfig({
   id: 'polymarketDeposit',
   directTransferEnabled: true,
-  onSubmit: ensureProxyWalletDeployedAndUsdcApproved,
+  onSubmit: handlePolymarketDepositSubmitted,
 
   quote: {
     feeBps: 0,
@@ -25,7 +25,7 @@ export const POLYMARKET_DEPOSIT_CONFIG = createDepositConfig({
     chainId: ChainId.polygon,
     token: {
       address: POLYGON_USDC_ADDRESS,
-      decimals: 6,
+      decimals: POLYGON_USDC_DECIMALS,
       symbol: 'USDC',
       displaySymbol: 'USDC',
       iconUrl: USDC_ICON_URL,

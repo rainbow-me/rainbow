@@ -1,4 +1,4 @@
-import React, { useCallback, useMemo, useRef, useState } from 'react';
+import React, { useCallback, useMemo, useState } from 'react';
 import { type TextInputProps } from 'react-native';
 
 import { Bleed, Column, Columns, Inline, Inset, Text, useTextStyle, type TextProps } from '@/design-system';

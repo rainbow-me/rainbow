@@ -1,18 +1,17 @@
 import React, { memo, useEffect, useMemo, useState } from 'react';
-import { Animated as RNAnimated } from 'react-native';
+import { Platform, Animated as RNAnimated } from 'react-native';
 
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 import { analytics } from '@/analytics';
 import { AnimatedSpinner } from '@/components/animations/AnimatedSpinner';
 import { DropdownMenu, type MenuItem } from '@/components/DropdownMenu';
-import { useShowKingOfTheHill } from '@/components/king-of-the-hill/useShowKingOfTheHill';
 import { Navbar, navbarHeight } from '@/components/navbar/Navbar';
 import { NAVBAR_ICON_SIZE, NavBarTextIconFrame } from '@/components/navbar/NavbarTextIcon';
 import { Box, Cover, Text } from '@/design-system';
 import { type TextSize } from '@/design-system/typography/typeHierarchy';
 import { type UniqueAsset } from '@/entities/uniqueAssets';
-import { IS_ANDROID } from '@/env';
+import { useShowKingOfTheHill } from '@/features/king-of-the-hill/hooks/useShowKingOfTheHill';
 import { useAccountAccentColor } from '@/hooks/useAccountAccentColor';
 import useAccountSettings from '@/hooks/useAccountSettings';
 import usePendingTransactions from '@/hooks/usePendingTransactions';
@@ -118,7 +117,7 @@ const NavbarOverlay = React.memo(function NavbarOverlay({ accentColor, position 
   const { language } = useAccountSettings();
   const menuItems = buildMenuItems(language);
 
-  const yOffset = IS_ANDROID ? navbarHeight : insets.top;
+  const yOffset = Platform.OS === 'android' ? navbarHeight : insets.top;
 
   useEffect(() => {
     const listener = position.addListener(({ value }) => {
@@ -220,7 +219,6 @@ const NavbarOverlay = React.memo(function NavbarOverlay({ accentColor, position 
           />
         </Box>
       </Box>
-
       <Box
         style={{
           top: navbarHeight + insets.top,
@@ -262,7 +260,7 @@ const NavbarOverlay = React.memo(function NavbarOverlay({ accentColor, position 
               height={{ custom: navbarHeight }}
               justifyContent="center"
               pointerEvents={isHeaderInteractive ? 'auto' : 'none'}
-              style={[walletNameStyle, { alignSelf: 'center', bottom: IS_ANDROID ? 8 : 2 }]}
+              style={[walletNameStyle, { alignSelf: 'center', bottom: Platform.OS === 'android' ? 8 : 2 }]}
             >
               <ProfileNameRow variant="header" />
             </Box>

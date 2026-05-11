@@ -1,10 +1,10 @@
 import React, { useCallback } from 'react';
+import { Platform } from 'react-native';
 
 import { useRoute, type RouteProp } from '@react-navigation/native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import styled from 'styled-components';
 
-import { IS_ANDROID } from '@/env';
 import { opacity } from '@/framework/ui/utils/opacity';
 import useDimensions from '@/hooks/useDimensions';
 import * as i18n from '@/languages';
@@ -20,7 +20,7 @@ import { SheetActionButton, SheetTitle, SlackSheet } from '../components/sheet';
 import { Emoji, Text } from '../components/text';
 import { useNavigation } from '../navigation/Navigation';
 
-export const ExternalLinkWarningSheetHeight = 380 + (IS_ANDROID ? 20 : 0);
+export const ExternalLinkWarningSheetHeight = 380 + (Platform.OS === 'android' ? 20 : 0);
 
 const Container = styled(Centered).attrs({ direction: 'column' })(({ deviceHeight, height }) => ({
   ...position.coverAsObject,

@@ -1,5 +1,5 @@
 import React, { useCallback, useMemo, useRef } from 'react';
-import { type ScrollView } from 'react-native';
+import { Platform, type ScrollView } from 'react-native';
 
 import { useRoute } from '@react-navigation/native';
 import { format } from 'date-fns';
@@ -8,12 +8,14 @@ import CloudBackedUpIcon from '@/assets/BackedUpCloud.png';
 import CloudBackupWarningIcon from '@/assets/CloudBackupWarning.png';
 import WalletsAndBackupIcon from '@/assets/WalletsAndBackup.png';
 import { AbsolutePortalRoot } from '@/components/AbsolutePortal';
-import { useCreateBackup } from '@/components/backup/useCreateBackup';
 import { backupsCard } from '@/components/cards/utils/constants';
 import { ContactAvatar } from '@/components/contacts';
 import ImageAvatar from '@/components/contacts/ImageAvatar';
 import { Box, Inline, Stack, Text } from '@/design-system';
-import { IS_ANDROID, IS_DEV } from '@/env';
+import { IS_DEV } from '@/env';
+import { executeFnIfCloudBackupAvailable } from '@/features/backup/backup';
+import { useCreateBackup } from '@/features/backup/hooks/useCreateBackup';
+import { backupsStore, CloudBackupState } from '@/features/backup/stores/backupsStore';
 import useENSAvatar from '@/features/ens/hooks/useENSAvatar';
 import { removeFirstEmojiFromString } from '@/helpers/emojiHandler';
 import walletBackupStepTypes from '@/helpers/walletBackupStepTypes';
@@ -24,11 +26,9 @@ import useManageCloudBackups from '@/hooks/useManageCloudBackups';
 import { useStableValue } from '@/hooks/useStableValue';
 import * as i18n from '@/languages';
 import { logger, RainbowError } from '@/logger';
-import { executeFnIfCloudBackupAvailable } from '@/model/backup';
 import { createWallet, type RainbowAccount } from '@/model/wallet';
 import Navigation, { useNavigation } from '@/navigation/Navigation';
 import Routes from '@/navigation/routesNames';
-import { backupsStore, CloudBackupState } from '@/state/backups/backups';
 import { walletLoadingStore } from '@/state/walletLoading/walletLoading';
 import { initializeWallet } from '@/state/wallets/initializeWallet';
 import { formatAccountLabel, loadWallets, useWallets } from '@/state/wallets/walletsStore';
@@ -136,7 +136,7 @@ export const WalletsAndBackup = () => {
       fn: async () => {
         // NOTE: For Android we could be coming from a not-logged-in state, so we
         // need to check if we have any wallets to back up first.
-        if (IS_ANDROID) {
+        if (Platform.OS === 'android') {
           const currentBackups = backupsStore.getState().backups;
           if (checkLocalWalletsForBackupStatus(currentBackups).allBackedUp) {
             return;

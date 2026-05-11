@@ -1,11 +1,11 @@
 import React, { useCallback } from 'react';
+import { Platform } from 'react-native';
 
 import { useFocusEffect } from '@react-navigation/native';
 import Animated from 'react-native-reanimated';
 import { Camera, useCameraDevice, type CodeScanner } from 'react-native-vision-camera';
 
 import { Box, Cover, Row, Rows } from '@/design-system';
-import { IS_ANDROID } from '@/env';
 import * as i18n from '@/languages';
 import deviceUtils, { NAVIGATION_BAR_HEIGHT } from '@/utils/deviceUtils';
 
@@ -63,7 +63,7 @@ export const QRCodeScanner: React.FC<QRCodeScannerProps> = ({ flashEnabled, isAc
             </Row>
             <Row height="content">
               <Box alignItems="center">
-                <CameraMaskSvg width={deviceWidth} height={deviceWidth - (IS_ANDROID ? 19 : 20)} />
+                <CameraMaskSvg width={deviceWidth} height={deviceWidth - (Platform.OS === 'android' ? 19 : 20)} />
               </Box>
               <Cover alignHorizontal="left">
                 <Box height="full" width={{ custom: 10 }} style={{ backgroundColor: 'black', opacity: 0.9 }} />

@@ -5,10 +5,10 @@ import { format } from 'date-fns';
 
 import { getColorValueForThemeWorklet } from '@/__swaps__/utils/swaps';
 import ButtonPressAnimation from '@/components/animations/ButtonPressAnimation';
-import { EasingGradient } from '@/components/easing-gradient/EasingGradient';
 import { Box, globalColors, Text, TextIcon, TextShadow, useColorMode } from '@/design-system';
 import { CATEGORIES } from '@/features/polymarket/constants';
 import { type PolymarketEvent, type PolymarketMarketEvent } from '@/features/polymarket/types/polymarket-event';
+import { ExpandableDescriptionCard } from '@/framework/ui/components/ExpandableDescriptionCard';
 import { opacity } from '@/framework/ui/utils/opacity';
 import * as i18n from '@/languages';
 import Navigation from '@/navigation/Navigation';
@@ -54,48 +54,22 @@ const Description = memo(function Description({
   const backgroundColor = isDarkMode
     ? getSolidColorEquivalent({ background: screenBackgroundColor, foreground: '#F5F8FF', opacity: 0.04 })
     : getSolidColorEquivalent({ background: screenBackgroundColor, foreground: '#09111F', opacity: 0.02 });
+  const borderColor = opacity(isDarkMode ? '#F5F8FF' : '#09111F', 0.02);
 
   return (
-    <ButtonPressAnimation
+    <ExpandableDescriptionCard
+      backgroundColor={backgroundColor}
+      borderColor={borderColor}
+      borderWidth={isDarkMode ? 2 : THICK_BORDER_WIDTH}
+      ctaColor="label"
+      ctaIcon="􀆊"
+      ctaLabel={i18n.t(i18n.l.predictions.event.show_rules)}
+      description={description}
       onPress={() => {
         Navigation.handleAction(Routes.POLYMARKET_MARKET_DESCRIPTION_SHEET, { description });
       }}
       scaleTo={0.95}
-    >
-      <Box
-        width="full"
-        backgroundColor={backgroundColor}
-        borderRadius={26}
-        padding={'20px'}
-        borderWidth={isDarkMode ? 2 : THICK_BORDER_WIDTH}
-        borderColor={{ custom: opacity(isDarkMode ? '#F5F8FF' : '#09111F', 0.02) }}
-      >
-        <Text color="labelTertiary" size="17pt / 150%" weight="medium" numberOfLines={3}>
-          {description}
-        </Text>
-        <Box height={26} position="absolute" bottom={{ custom: 12 }} right={{ custom: 14 }} zIndex={1}>
-          <Box flexDirection="row" alignItems="center" justifyContent="center">
-            <EasingGradient
-              startPosition={'left'}
-              endPosition={'right'}
-              endColor={backgroundColor}
-              startColor={backgroundColor}
-              endOpacity={1}
-              startOpacity={0}
-              style={{ height: 26, width: 100 }}
-            />
-            <Box flexDirection="row" alignItems="center" gap={4} backgroundColor={backgroundColor}>
-              <Text color="label" size="15pt" weight="bold">
-                {i18n.t(i18n.l.predictions.event.show_rules)}
-              </Text>
-              <TextIcon size="icon 12px" weight="heavy" color="label">
-                {'􀆊'}
-              </TextIcon>
-            </Box>
-          </Box>
-        </Box>
-      </Box>
-    </ButtonPressAnimation>
+    />
   );
 });
 

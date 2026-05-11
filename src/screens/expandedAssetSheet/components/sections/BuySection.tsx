@@ -9,7 +9,7 @@ import ButtonPressAnimation from '@/components/animations/ButtonPressAnimation';
 import RainbowCoinIcon from '@/components/coin-icon/RainbowCoinIcon';
 import { EasingGradient } from '@/components/easing-gradient/EasingGradient';
 import { Bleed, Box, IconContainer, Stack, Text, TextShadow } from '@/design-system';
-import { IS_INTERNAL } from '@/env';
+import { IS_STORE_INSTALL } from '@/env';
 import { isL2Chain } from '@/handlers/web3';
 import { convertAmountToNativeDisplay, convertStringToNumber, roundToSignificant1or5 } from '@/helpers/utilities';
 import useAccountAsset from '@/hooks/useAccountAsset';
@@ -27,7 +27,7 @@ import { SheetSeparator } from '../shared/Separator';
 const GRADIENT_FADE_WIDTH = 24;
 const DEFAULT_PERCENTAGES_OF_BALANCE = [0.05, 0.1, 0.25, 0.5, 0.75];
 // Ideally this would be different for different currencies, but that would need to be set in the remote config
-const DEFAULT_MAINNET_MINIMUM_NATIVE_CURRENCY_AMOUNT = IS_INTERNAL ? 1 : 10;
+const DEFAULT_MAINNET_MINIMUM_NATIVE_CURRENCY_AMOUNT = IS_STORE_INSTALL ? 10 : 1;
 const DEFAULT_L2_MINIMUM_NATIVE_CURRENCY_AMOUNT = 1;
 
 const BUTTON_INSET_HORIZONTAL = 24;

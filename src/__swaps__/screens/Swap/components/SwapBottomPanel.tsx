@@ -12,21 +12,19 @@ import Animated, {
   withTiming,
 } from 'react-native-reanimated';
 import { triggerHaptics } from 'react-native-turbo-haptics';
-import { type Address } from 'viem';
 
 import { NavigationSteps, useSwapContext } from '@/__swaps__/screens/Swap/providers/swap-provider';
 import { SPRING_CONFIGS } from '@/components/animations/animationConfigs';
-import useExperimentalFlag, { ATOMIC_SWAPS, getExperimentalFlag, RNBW_REWARDS } from '@/config/experimentalHooks';
-import { Box, globalColors, Separator, Text, useColorMode } from '@/design-system';
+import useExperimentalFlag, { RNBW_REWARDS } from '@/config/experimentalHooks';
+import { Box, globalColors, Separator, useColorMode } from '@/design-system';
+import { SmartWalletActivationCallout } from '@/features/delegation/components/SmartWalletActivationCallout';
 import { opacity } from '@/framework/ui/utils/opacity';
 import { convertRawAmountToDecimalFormat, truncateToDecimalsWithThreshold } from '@/helpers/utilities';
-import { useWillExecuteDelegation } from '@/hooks/useWillExecuteDelegation';
 import * as i18n from '@/languages';
 import { logger, RainbowError } from '@/logger';
-import { getRemoteConfig, useRemoteConfig } from '@/model/remoteConfig';
+import { useRemoteConfig } from '@/model/remoteConfig';
 import { useNavigation } from '@/navigation/Navigation';
 import Routes from '@/navigation/routesNames';
-import { type ChainId } from '@/state/backendNetworks/types';
 import { useSwapsStore } from '@/state/swaps/swapsStore';
 import { getIsHardwareWallet, useAccountAddress } from '@/state/wallets/walletsStore';
 import { LIGHT_SEPARATOR_COLOR, SEPARATOR_COLOR, THICK_BORDER_WIDTH } from '@/styles/constants';
@@ -210,22 +208,8 @@ const DelegationCallout = memo(function DelegationCallout() {
   const chainId = useSwapsStore(s => s.inputAsset?.chainId);
   if (!chainId) return null;
 
-  return <WillDelegate address={address} chainId={chainId} />;
+  return <SmartWalletActivationCallout address={address} chainId={chainId} style={styles.smartWalletActivationCallout} />;
 });
-
-function WillDelegate(params: { address: Address; chainId: ChainId }) {
-  const atomicSwapsEnabled = getExperimentalFlag(ATOMIC_SWAPS) || getRemoteConfig().atomic_swaps_enabled;
-  const willDelegate = useWillExecuteDelegation(params.address, params.chainId) && atomicSwapsEnabled;
-  if (!willDelegate) return null;
-
-  return (
-    <Box style={styles.willDelegateCallout}>
-      <Text align="center" color="labelQuinary" size="11pt" weight="heavy">
-        {i18n.t(i18n.l.wallet.delegations.will_delegate_callout)}
-      </Text>
-    </Box>
-  );
-}
 
 export const styles = StyleSheet.create({
   reviewViewBackground: {
@@ -249,10 +233,8 @@ export const styles = StyleSheet.create({
     position: 'absolute',
     zIndex: 15,
   },
-  willDelegateCallout: {
-    alignItems: 'center',
+  smartWalletActivationCallout: {
     bottom: -24,
-    justifyContent: 'center',
     position: 'absolute',
     width: '100%',
   },

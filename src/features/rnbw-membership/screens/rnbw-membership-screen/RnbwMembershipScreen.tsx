@@ -1,25 +1,20 @@
 import { memo, useCallback, useState } from 'react';
-import { RefreshControl, StyleSheet } from 'react-native';
+import { Platform, RefreshControl, View } from 'react-native';
 
-import Animated, { useSharedValue } from 'react-native-reanimated';
+import Animated, { useAnimatedStyle, useSharedValue } from 'react-native-reanimated';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 import { AccountImage } from '@/components/AccountImage';
-import ButtonPressAnimation from '@/components/animations/ButtonPressAnimation';
-import { Navbar, navbarHeight } from '@/components/navbar/Navbar';
+import { Navbar } from '@/components/navbar/Navbar';
 import { ScrollHeaderFade } from '@/components/scroll-header-fade/ScrollHeaderFade';
 import { useScrollFadeHandler } from '@/components/scroll-header-fade/useScrollFadeHandler';
 import { Box, useColorMode } from '@/design-system';
 import { getValueForColorMode } from '@/design-system/color/palettes';
-import { IS_ANDROID } from '@/env';
-import { TierBadge } from '@/features/rnbw-membership/components/TierBadge';
 import { MEMBERSHIP_SCREEN_BACKGROUND_COLOR } from '@/features/rnbw-membership/constants';
-import { useMembershipTierInfo } from '@/features/rnbw-membership/stores/derived/useMembershipTierInfo';
 import { useAirdropBalanceStore } from '@/features/rnbw-rewards/stores/airdropBalanceStore';
 import { useRewardsBalanceStore } from '@/features/rnbw-rewards/stores/rewardsBalanceStore';
 import { useStakingPositionStore } from '@/features/rnbw-staking/stores/rnbwStakingPositionStore';
-import Navigation from '@/navigation/Navigation';
-import Routes from '@/navigation/routesNames';
+import useDimensions from '@/hooks/useDimensions';
 import { TAB_BAR_HEIGHT } from '@/navigation/SwipeNavigator';
 import { delay } from '@/utils/delay';
 import { time } from '@/utils/time';
@@ -30,36 +25,47 @@ import { RnbwRewardsClaimCard } from './components/RnbwRewardsClaimCard';
 import { RnbwStakingCard } from './components/RnbwStakingCard';
 import { RnbwStakingEarningsCard } from './components/RnbwStakingEarningsCard';
 
+const MEMBERSHIP_SCREEN_HORIZONTAL_PADDING = 20;
+
 export const RnbwMembershipScreen = memo(function RnbwMembershipScreen() {
   const { colorMode } = useColorMode();
   const safeAreaInsets = useSafeAreaInsets();
+  const { width: screenWidth } = useDimensions();
   const backgroundColor = getValueForColorMode(MEMBERSHIP_SCREEN_BACKGROUND_COLOR, colorMode);
   const scrollOffset = useSharedValue(0);
   const onScroll = useScrollFadeHandler(scrollOffset);
   const bottomInset = TAB_BAR_HEIGHT + 16;
+  const stakingCardWidth = screenWidth - MEMBERSHIP_SCREEN_HORIZONTAL_PADDING * 2;
+
+  const scrollViewAnimatedStyle = useAnimatedStyle(() => ({
+    flex: 1,
+    overflow: scrollOffset.value > 0 ? 'hidden' : 'visible',
+  }));
 
   return (
-    <Box backgroundColor={backgroundColor} style={styles.flex} testID="rnbw-membership-screen">
-      <Navbar hasStatusBarInset titleComponent={<CurrentTierBadge />} leftComponent={<AccountImage />} />
-      <ScrollHeaderFade color={backgroundColor} height={32} scrollOffset={scrollOffset} topInset={safeAreaInsets.top + navbarHeight} />
+    <View style={{ flex: 1, backgroundColor, paddingTop: safeAreaInsets.top }} testID="rnbw-membership-screen">
+      <ScrollHeaderFade color={backgroundColor} height={32} scrollOffset={scrollOffset} topInset={safeAreaInsets.top} />
       <Animated.ScrollView
         refreshControl={<RefreshControlWrapper />}
-        contentContainerStyle={[styles.scrollViewContentContainer, { paddingBottom: IS_ANDROID ? bottomInset : 0 }]}
-        style={styles.flex}
+        contentContainerStyle={{
+          paddingBottom: Platform.OS === 'android' ? bottomInset : 0,
+        }}
+        style={scrollViewAnimatedStyle}
         onScroll={onScroll}
         contentInset={{
           bottom: bottomInset,
         }}
       >
-        <Box gap={16}>
-          <RnbwStakingCard />
+        <Navbar leftComponent={<AccountImage />} />
+        <Box gap={16} paddingHorizontal={{ custom: MEMBERSHIP_SCREEN_HORIZONTAL_PADDING }}>
+          <RnbwStakingCard width={stakingCardWidth} />
           <RnbwStakingEarningsCard />
           <MembershipTierCard />
           <RnbwRewardsClaimCard />
           <RnbwAirdropClaimCard />
         </Box>
       </Animated.ScrollView>
-    </Box>
+    </View>
   );
 });
 
@@ -88,26 +94,3 @@ function RefreshControlWrapper(props: Omit<React.ComponentProps<typeof RefreshCo
     />
   );
 }
-
-function CurrentTierBadge() {
-  const { currentTier } = useMembershipTierInfo();
-
-  return (
-    <ButtonPressAnimation onPress={navigateToMembershipTiersSheet}>
-      <TierBadge tier={currentTier} height={32} fontSize="17pt" />
-    </ButtonPressAnimation>
-  );
-}
-
-function navigateToMembershipTiersSheet() {
-  Navigation.handleAction(Routes.RNBW_MEMBERSHIP_TIERS_SHEET);
-}
-
-const styles = StyleSheet.create({
-  flex: {
-    flex: 1,
-  },
-  scrollViewContentContainer: {
-    paddingHorizontal: 20,
-  },
-});

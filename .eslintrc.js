@@ -30,7 +30,6 @@ const allowedBarrelFiles = [
   'src/components/asset-list/index.ts',
   'src/components/asset-list/RecyclerAssetList/index.tsx',
   'src/components/asset-list/RecyclerAssetList2/index.tsx',
-  'src/components/backup/index.ts',
   'src/components/buttons/hold-to-authorize/index.ts',
   'src/components/buttons/rainbow-button/index.ts',
   'src/components/cards/NFTOffersCard/index.tsx',
@@ -105,7 +104,7 @@ module.exports = {
   parserOptions: {
     project: ['./tsconfig.json'],
   },
-  plugins: ['yml'],
+  plugins: ['yml', 'unused-imports'],
   globals: globalVars,
 
   overrides: [
@@ -149,6 +148,7 @@ module.exports = {
   rules: {
     'no-duplicate-imports': 'off',
     'import/no-duplicates': 'error',
+    'unused-imports/no-unused-imports': 'error',
     '@typescript-eslint/consistent-type-imports': [
       'error',
       {
@@ -173,6 +173,15 @@ module.exports = {
             message: 'You probably want to use @/navigation instead, to ensure that all of our customizations are applied.',
           },
         ],
+      },
+    ],
+    'no-restricted-syntax': [
+      'error',
+      {
+        // Import `Platform` directly from 'react-native' so platform shaking can constant-fold `Platform.OS`
+        // checks at build time. Re-imports from wrapper modules break the optimization (https://docs.expo.dev/guides/tree-shaking/#platform-shaking).
+        selector: "ImportDeclaration[source.value!='react-native'] > ImportSpecifier[imported.name='Platform'][local.name='Platform']",
+        message: "Import `Platform` directly from 'react-native'. Re-importing from a wrapper breaks platform shaking optimization.",
       },
     ],
     'jest/expect-expect': 'off',

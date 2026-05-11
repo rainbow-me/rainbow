@@ -243,7 +243,7 @@ export function PrebuySection() {
             ref={inputRef}
             title={chainNativeAssetSymbol}
             labelPosition="right"
-            placeholder="Custom amount"
+            placeholder={i18n.t(i18n.l.token_launcher.placeholders.custom_amount)}
             inputMode="decimal"
             onInputChange={onInputChange}
             validationWorklet={validationWorklet}

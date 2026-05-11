@@ -18,8 +18,8 @@ import * as i18n from '@/languages';
 
 import { TierBadge } from '../../components/TierBadge';
 import { TierThemedLabel } from '../../components/TierThemedLabel';
-import { getTierVisuals } from '../../constants';
 import { useMembershipTierInfo } from '../../stores/derived/useMembershipTierInfo';
+import { getTierBackgroundTheme } from '../../tierVisuals';
 import type { Tier as TierType } from '../../types';
 
 const AnimatedLinearGradient = Animated.createAnimatedComponent(LinearGradient);
@@ -38,7 +38,7 @@ export const RnbwMembershipTiersSheet = memo(function RnbwMembershipTiersSheet()
         {allTiers.map((tier, index) => (
           <TierGradientLayer
             key={tier.level}
-            colors={getValueForColorMode(getTierVisuals(tier.level).backgroundGradient, colorMode).colors}
+            colors={getValueForColorMode(getTierBackgroundTheme(tier.level).gradient, colorMode).colors}
             index={index}
             pageIndex={currentPageIndex}
           />

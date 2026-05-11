@@ -1,5 +1,5 @@
 import React, { useCallback, useRef } from 'react';
-import { StyleSheet, type NativeScrollEvent, type NativeSyntheticEvent } from 'react-native';
+import { Platform, StyleSheet, type NativeScrollEvent, type NativeSyntheticEvent } from 'react-native';
 
 import { KeyboardAwareScrollView } from 'react-native-keyboard-controller';
 import Animated from 'react-native-reanimated';
@@ -7,7 +7,6 @@ import Animated from 'react-native-reanimated';
 import { Icon } from '@/components/icons';
 import { Bleed, Box, Separator, Text } from '@/design-system';
 import { getColorForTheme } from '@/design-system/color/useForegroundColor';
-import { IS_ANDROID } from '@/env';
 import { opacity } from '@/framework/ui/utils/opacity';
 import * as i18n from '@/languages';
 import { PrebuySection } from '@/screens/token-launcher/components/PrebuySection';
@@ -120,7 +119,7 @@ export function InfoInputStep() {
       ref={infoInputScrollRef}
       onScroll={onScroll}
       scrollEventThrottle={64}
-      bottomOffset={FOOTER_HEIGHT + (IS_ANDROID ? 56 : 36)}
+      bottomOffset={FOOTER_HEIGHT + (Platform.OS === 'android' ? 56 : 36)}
       contentContainerStyle={styles.contentContainerStyle}
       extraKeyboardSpace={FOOTER_HEIGHT}
       keyboardDismissMode="interactive"

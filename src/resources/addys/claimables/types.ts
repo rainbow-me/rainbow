@@ -48,7 +48,6 @@ export enum ClaimableType {
   HypersubV2 = 'hypersub-v2',
   Clanker = 'clanker',
   Rainbow = 'rainbow',
-  RainbowEthRewards = 'rainbow-eth-rewards',
   RainbowSuperTokenCreatorFees = 'rainbow-super-token-creator-fees',
 
   // test claims

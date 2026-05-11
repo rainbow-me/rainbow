@@ -2,7 +2,7 @@ import { type ParsedAsset as SwapParsedAsset } from '@/__swaps__/types/assets';
 import { type TokenColors } from '@/graphql/__generated__/metadata';
 import { type ParsedAsset as TransactionParsedAsset } from '@/resources/assets/types';
 
-type TransactionAssetSource = (SwapParsedAsset | TransactionParsedAsset) & { nativePrice?: number };
+export type TransactionAssetSource = (SwapParsedAsset | TransactionParsedAsset) & { nativePrice?: number };
 
 function toTransactionColors(colors: TransactionAssetSource['colors']): TokenColors | undefined {
   if (!colors?.primary) return undefined;

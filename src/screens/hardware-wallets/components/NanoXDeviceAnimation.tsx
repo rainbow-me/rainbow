@@ -1,7 +1,7 @@
 import React, { useEffect } from 'react';
 import { StyleSheet, type StyleProp, type ViewStyle } from 'react-native';
 
-import { BackdropBlur, Canvas, Circle, Group, mix, Paint, Rect } from '@shopify/react-native-skia';
+import { BackdropBlur, Canvas, Circle, Group, mix, Rect } from '@shopify/react-native-skia';
 import { type Source } from 'react-native-fast-image';
 import Animated, {
   Easing,

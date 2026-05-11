@@ -1,5 +1,5 @@
 import React, { memo, useCallback, useEffect, useMemo, useState } from 'react';
-import { ScrollView, StyleSheet, TouchableWithoutFeedback, View } from 'react-native';
+import { Platform, ScrollView, StyleSheet, TouchableWithoutFeedback, View } from 'react-native';
 
 import { useRoute, type RouteProp } from '@react-navigation/native';
 import chroma from 'chroma-js';
@@ -36,7 +36,6 @@ import {
   useForegroundColor,
 } from '@/design-system';
 import { type TextColor } from '@/design-system/color/palettes';
-import { IS_ANDROID, IS_IOS } from '@/env';
 import { opacity } from '@/framework/ui/utils/opacity';
 import { removeFirstEmojiFromString, returnStringFirstEmoji } from '@/helpers/emojiHandler';
 import { greaterThan } from '@/helpers/utilities';
@@ -517,7 +516,7 @@ const HomePanelLogo = memo(function HomePanelLogo() {
       width={{ custom: 44 }}
       height={{ custom: 44 }}
       background="fillTertiary"
-      style={{ borderRadius: IS_ANDROID ? 30 : 12 }}
+      style={{ borderRadius: Platform.OS === 'android' ? 30 : 12 }}
     />
   );
 });
@@ -680,7 +679,7 @@ const ListHeader = memo(function ListHeader({
       <Box style={controlPanelStyles.listHeaderContent}>
         <ButtonPressAnimation
           // eslint-disable-next-line react/jsx-props-no-spreading
-          {...(IS_ANDROID && { wrapperStyle: controlPanelStyles.listHeaderButtonWrapper })}
+          {...(Platform.OS === 'android' && { wrapperStyle: controlPanelStyles.listHeaderButtonWrapper })}
           onPress={goBack}
           scaleTo={0.8}
           style={controlPanelStyles.listHeaderButtonWrapper}
@@ -751,10 +750,10 @@ const ControlPanelMenuItem = memo(function ControlPanelMenuItem({
       // eslint-disable-next-line no-nested-ternary
       backgroundColor: selected ? (isDarkMode ? globalColors.white10 : '#F7F7F9') : 'transparent',
       borderColor: selected ? borderColor : 'transparent',
-      borderWidth: !selected || IS_ANDROID ? 0 : THICK_BORDER_WIDTH,
-      paddingLeft: !selected || IS_ANDROID ? 10 : 10 - THICK_BORDER_WIDTH,
-      paddingRight: !selected || IS_ANDROID ? 14 : 14 - THICK_BORDER_WIDTH,
-      paddingVertical: !selected || IS_ANDROID ? 10 : 10 - THICK_BORDER_WIDTH,
+      borderWidth: !selected || Platform.OS === 'android' ? 0 : THICK_BORDER_WIDTH,
+      paddingLeft: !selected || Platform.OS === 'android' ? 10 : 10 - THICK_BORDER_WIDTH,
+      paddingRight: !selected || Platform.OS === 'android' ? 14 : 14 - THICK_BORDER_WIDTH,
+      paddingVertical: !selected || Platform.OS === 'android' ? 10 : 10 - THICK_BORDER_WIDTH,
     };
   });
 
@@ -976,7 +975,7 @@ const ConnectButton = memo(function ControlPanelButton({
   const buttonBackground = useAnimatedStyle(() => {
     return {
       backgroundColor: opacity(buttonColor.value, isDarkMode ? 0.16 : 0.9),
-      borderColor: IS_IOS ? opacity(buttonColor.value, isDarkMode ? 0.08 : 0.3) : undefined,
+      borderColor: Platform.OS === 'ios' ? opacity(buttonColor.value, isDarkMode ? 0.08 : 0.3) : undefined,
     };
   });
   const buttonIconStyle = useAnimatedStyle(() => {
@@ -1009,7 +1008,7 @@ const ConnectButton = memo(function ControlPanelButton({
         style={[controlPanelStyles.buttonContainer]}
         testID="connect-button"
       >
-        <Box paddingHorizontal={IS_IOS ? '16px' : undefined} paddingVertical={IS_IOS ? '10px' : undefined}>
+        <Box paddingHorizontal={Platform.OS === 'ios' ? '16px' : undefined} paddingVertical={Platform.OS === 'ios' ? '10px' : undefined}>
           <Stack alignHorizontal="center" space="10px">
             <Box as={Animated.View} style={[controlPanelStyles.button, controlPanelStyles.connectButton, buttonBackground]}>
               <Bleed space="16px">
@@ -1048,7 +1047,7 @@ function Panel({ children, height }: { children?: React.ReactNode; height?: numb
       ]}
     >
       {children}
-      {IS_IOS && isDarkMode && (
+      {Platform.OS === 'ios' && isDarkMode && (
         <Box style={controlPanelStyles.panelBorderContainer}>
           <Box style={[controlPanelStyles.panelBorder, { borderColor: separatorSecondary }]} />
         </Box>
@@ -1070,7 +1069,7 @@ const controlPanelStyles = StyleSheet.create({
     justifyContent: 'center',
   },
   connectButton: {
-    borderWidth: IS_IOS ? THICK_BORDER_WIDTH : 0,
+    borderWidth: Platform.OS === 'ios' ? THICK_BORDER_WIDTH : 0,
   },
   connectButtonContainer: {
     alignItems: 'center',
@@ -1163,20 +1162,20 @@ const controlPanelStyles = StyleSheet.create({
     alignItems: 'center',
     borderCurve: 'continuous',
     borderRadius: 30,
-    borderWidth: IS_ANDROID ? 0 : THICK_BORDER_WIDTH,
+    borderWidth: Platform.OS === 'android' ? 0 : THICK_BORDER_WIDTH,
     height: 60,
     justifyContent: 'center',
     overflow: 'hidden',
-    paddingLeft: IS_ANDROID ? 12 : 12 - THICK_BORDER_WIDTH,
-    paddingRight: IS_ANDROID ? 16 : 16 - THICK_BORDER_WIDTH,
-    paddingVertical: IS_ANDROID ? 12 : 12 - THICK_BORDER_WIDTH,
+    paddingLeft: Platform.OS === 'android' ? 12 : 12 - THICK_BORDER_WIDTH,
+    paddingRight: Platform.OS === 'android' ? 16 : 16 - THICK_BORDER_WIDTH,
+    paddingVertical: Platform.OS === 'android' ? 12 : 12 - THICK_BORDER_WIDTH,
     width: '100%',
   },
   menuItemSelected: {
-    borderWidth: IS_ANDROID ? 0 : THICK_BORDER_WIDTH,
-    paddingLeft: IS_ANDROID ? 10 : 10 - THICK_BORDER_WIDTH,
-    paddingRight: IS_ANDROID ? 14 : 14 - THICK_BORDER_WIDTH,
-    paddingVertical: IS_ANDROID ? 10 : 10 - THICK_BORDER_WIDTH,
+    borderWidth: Platform.OS === 'android' ? 0 : THICK_BORDER_WIDTH,
+    paddingLeft: Platform.OS === 'android' ? 10 : 10 - THICK_BORDER_WIDTH,
+    paddingRight: Platform.OS === 'android' ? 14 : 14 - THICK_BORDER_WIDTH,
+    paddingVertical: Platform.OS === 'android' ? 10 : 10 - THICK_BORDER_WIDTH,
   },
   menuItemSelectedDark: {
     backgroundColor: globalColors.white10,
@@ -1185,7 +1184,7 @@ const controlPanelStyles = StyleSheet.create({
     backgroundColor: '#F7F7F9',
   },
   panelContainer: {
-    bottom: Math.max(safeAreaInsetValues.bottom + 5, IS_IOS ? 8 : 30),
+    bottom: Math.max(safeAreaInsetValues.bottom + 5, Platform.OS === 'ios' ? 8 : 30),
     pointerEvents: 'box-none',
     position: 'absolute',
     zIndex: 30000,

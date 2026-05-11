@@ -1,5 +1,5 @@
 import React, { useCallback, useEffect, useRef, useState } from 'react';
-import { StyleSheet } from 'react-native';
+import { Platform, StyleSheet } from 'react-native';
 
 import Animated from 'react-native-reanimated';
 import { ScreenCornerRadius } from 'react-native-screen-corner-radius';
@@ -19,7 +19,8 @@ import { Page } from '@/components/layout';
 import { navbarHeight } from '@/components/navbar/Navbar';
 import { DecoyScrollView } from '@/components/sheet/DecoyScrollView';
 import { Box } from '@/design-system';
-import { IS_ANDROID } from '@/env';
+import { useSponsoredSwapStore } from '@/features/delegation/sponsoredSwapStore';
+import { clearCustomGasSettings } from '@/features/gas/hooks/useCustomGas';
 import { useDelayedMount } from '@/hooks/useDelayedMount';
 import { userAssetsStore } from '@/state/assets/userAssets';
 import { userAssetsStoreManager } from '@/state/assets/userAssetsStoreManager';
@@ -30,7 +31,6 @@ import safeAreaInsetValues from '@/utils/safeAreaInsetValues';
 import { NavigateToSwapSettingsTrigger } from './components/NavigateToSwapSettingsTrigger';
 import { ReviewButton } from './components/ReviewButton';
 import { SwapWarning } from './components/SwapWarning';
-import { clearCustomGasSettings } from './hooks/useCustomGas';
 import { SwapProvider, useSwapContext } from './providers/swap-provider';
 import { useSwapsSearchStore } from './resources/search/searchV2';
 
@@ -97,11 +97,12 @@ export function SwapScreen() {
 const useCleanupOnUnmount = () => {
   useEffect(() => {
     return () => {
-      const highestValueEth = userAssetsStore.getState().getHighestValueNativeAsset();
+      const preferredChainId = useSwapsStore.getState().preferredNetwork;
+      const defaultInputAsset = userAssetsStore.getState().getHighestValueAsset({ nativeAsset: 'preferred', preferredChainId });
 
       useSwapsStore.setState(state => {
-        const didInputAssetChange = state.inputAsset?.uniqueId !== highestValueEth?.uniqueId;
-        const inputAsset = didInputAssetChange ? parseAssetAndExtend({ asset: highestValueEth }) : state.inputAsset;
+        const didInputAssetChange = state.inputAsset?.uniqueId !== defaultInputAsset?.uniqueId;
+        const inputAsset = didInputAssetChange ? parseAssetAndExtend({ asset: defaultInputAsset }) : state.inputAsset;
         return {
           inputAsset,
           isSwapsOpen: false,
@@ -117,6 +118,7 @@ const useCleanupOnUnmount = () => {
       userAssetsStore.setState(state =>
         state.filter === 'all' && !state.inputSearchQuery.length ? state : { filter: 'all', inputSearchQuery: '' }
       );
+      useSponsoredSwapStore.setState({ queryCache: {} });
 
       clearCustomGasSettings();
     };
@@ -129,13 +131,13 @@ const WalletAddressObserver = () => {
   const lastAccountAddress = useRef(accountAddress);
 
   const setNewInputAsset = useCallback(() => {
-    const { filter, getHighestValueNativeAsset, userAssets } = userAssetsStore.getState();
+    const { filter, getHighestValueAsset } = userAssetsStore.getState();
+    const preferredChainId = useSwapsStore.getState().preferredNetwork;
 
     if (filter !== 'all') userAssetsStore.setState({ filter: 'all' });
-    const hasAssets = userAssets.size > 0;
 
     setAsset({
-      asset: hasAssets ? getHighestValueNativeAsset() : null,
+      asset: getHighestValueAsset({ nativeAsset: 'preferred', preferredChainId }),
       didWalletChange: true,
       type: SwapAssetType.inputAsset,
     });
@@ -203,10 +205,10 @@ const ExchangeRateBubbleAndWarning = () => {
 
 export const styles = StyleSheet.create({
   rootViewBackground: {
-    borderTopLeftRadius: IS_ANDROID ? 20 : ScreenCornerRadius,
-    borderTopRightRadius: IS_ANDROID ? 20 : ScreenCornerRadius,
-    borderBottomLeftRadius: IS_ANDROID ? 0 : ScreenCornerRadius,
-    borderBottomRightRadius: IS_ANDROID ? 0 : ScreenCornerRadius,
+    borderTopLeftRadius: Platform.OS === 'android' ? 20 : ScreenCornerRadius,
+    borderTopRightRadius: Platform.OS === 'android' ? 20 : ScreenCornerRadius,
+    borderBottomLeftRadius: Platform.OS === 'android' ? 0 : ScreenCornerRadius,
+    borderBottomRightRadius: Platform.OS === 'android' ? 0 : ScreenCornerRadius,
     flex: 1,
     overflow: 'hidden',
   },

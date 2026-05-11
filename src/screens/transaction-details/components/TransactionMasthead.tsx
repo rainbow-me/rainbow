@@ -1,6 +1,7 @@
 // @refresh reset
 
 import React, { useEffect, useMemo, useState } from 'react';
+import { Platform } from 'react-native';
 
 import Animated, { Easing, interpolate, useAnimatedStyle, useSharedValue, withTiming } from 'react-native-reanimated';
 import { useTiming } from 'react-native-redash';
@@ -18,7 +19,7 @@ import RowWithMargins from '@/components/layout/RowWithMargins';
 import { Bleed, Box, Columns, Cover, Row, Rows, Separator, Stack, Text, type TextProps } from '@/design-system';
 import { type ParsedAddressAsset } from '@/entities/tokens';
 import { type RainbowTransaction } from '@/entities/transactions';
-import { IS_ANDROID } from '@/env';
+import { getDelegationContractAddress, isRainbowDelegated } from '@/features/delegation/status';
 import { fetchENSAvatar } from '@/features/ens/hooks/useENSAvatar';
 import { fetchReverseRecord } from '@/features/ens/utils/handlers';
 import styled from '@/framework/ui/styled-thing';
@@ -45,7 +46,7 @@ import { formatAddressForDisplay } from '@/utils/abbreviations';
 import isLowerCaseMatch from '@/utils/isLowerCaseMatch';
 import { addressHashedColorIndex, addressHashedEmoji } from '@/utils/profileUtils';
 import { safeSum } from '@/utils/safeSum';
-import { DelegationStatus, useDelegations } from '@rainbow-me/delegation';
+import { useDelegations } from '@rainbow-me/delegation';
 
 const TransactionMastheadHeight = android ? 153 : 135;
 
@@ -173,7 +174,6 @@ function CurrencyTile({
   return (
     <Container>
       <Gradient color={colorToUse} />
-
       <Rows alignHorizontal="center" alignVertical="center" space="10px">
         <Row height="content">
           <Box>
@@ -217,7 +217,12 @@ function CurrencyTile({
           <Box width="full">
             <Rows space={'10px'}>
               <Row height="content">
-                <Box alignItems="center" justifyContent="center" marginTop={IS_ANDROID ? '-6px' : { custom: 0 }} width="full">
+                <Box
+                  alignItems="center"
+                  justifyContent="center"
+                  marginTop={Platform.OS === 'android' ? '-6px' : { custom: 0 }}
+                  width="full"
+                >
                   <AnimatedText
                     size="16px / 22px (Deprecated)"
                     color="label"
@@ -229,7 +234,12 @@ function CurrencyTile({
                 </Box>
               </Row>
               <Row height="content">
-                <Box alignItems="center" justifyContent="center" marginTop={IS_ANDROID ? '-6px' : { custom: 0 }} width="full">
+                <Box
+                  alignItems="center"
+                  justifyContent="center"
+                  marginTop={Platform.OS === 'android' ? '-6px' : { custom: 0 }}
+                  width="full"
+                >
                   <AnimatedText
                     size="14px / 19px (Deprecated)"
                     color="labelSecondary"
@@ -387,8 +397,8 @@ export default function TransactionMasthead({ transaction }: { transaction: Rain
     if (transaction.type !== 'delegate' && transaction.type !== 'revoke_delegation') return undefined;
     return delegations?.find(d => d.chainId === transaction.chainId);
   }, [delegations, transaction.chainId, transaction.type]);
-  const delegationContract = delegation?.currentContract || delegation?.revokeAddress || transaction.to || undefined;
-  const isRainbowDelegation = delegation?.delegationStatus === DelegationStatus.RAINBOW_DELEGATED;
+  const delegationContract = getDelegationContractAddress(delegation) || transaction.to || undefined;
+  const isRainbowDelegation = isRainbowDelegated(delegation);
 
   const contractImage = transaction?.contract?.iconUrl;
   const contractName = transaction?.contract?.name;

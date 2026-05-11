@@ -1,5 +1,5 @@
 import React, { Fragment, useMemo } from 'react';
-import { StyleSheet, TouchableWithoutFeedback } from 'react-native';
+import { TouchableWithoutFeedback } from 'react-native';
 
 import Divider from '@/components/Divider';
 import type { UniqueAsset } from '@/entities/uniqueAssets';

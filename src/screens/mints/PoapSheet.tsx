@@ -1,5 +1,5 @@
 import React, { useCallback, useEffect, useRef, useState } from 'react';
-import { View } from 'react-native';
+import { Platform, View } from 'react-native';
 
 import { useFocusEffect, useRoute, type RouteProp } from '@react-navigation/native';
 import { format } from 'date-fns';
@@ -11,7 +11,6 @@ import ButtonPressAnimation from '@/components/animations/ButtonPressAnimation';
 import Spinner from '@/components/Spinner';
 import { Box, ColorModeProvider, Row, Rows, Stack, Text } from '@/design-system';
 import type { UniqueAsset } from '@/entities/uniqueAssets';
-import { IS_ANDROID, IS_IOS } from '@/env';
 import styled from '@/framework/ui/styled-thing';
 import { arcClient } from '@/graphql';
 import { maybeSignUri } from '@/handlers/imgix';
@@ -60,7 +59,7 @@ const BlurWrapper = styled(View).attrs({
   overflow: 'hidden',
   position: 'absolute',
   width: ({ width }: BlurWrapperProps) => width,
-  ...(IS_ANDROID ? { borderTopLeftRadius: 30, borderTopRightRadius: 30 } : {}),
+  ...(Platform.OS === 'android' ? { borderTopLeftRadius: 30, borderTopRightRadius: 30 } : {}),
 });
 
 type PoapClaimStatus = 'none' | 'claiming' | 'claimed' | 'error';
@@ -213,7 +212,7 @@ const PoapSheet = () => {
 
   return (
     <>
-      {IS_IOS && (
+      {Platform.OS === 'ios' && (
         <BlurWrapper height={deviceHeight} width={deviceWidth}>
           <BackgroundImage>
             <ImgixImage
@@ -227,7 +226,9 @@ const PoapSheet = () => {
         </BlurWrapper>
       )}
       <SlackSheet
-        backgroundColor={isDarkMode ? `rgba(22, 22, 22, ${IS_IOS ? 0.4 : 1})` : `rgba(26, 26, 26, ${IS_IOS ? 0.4 : 1})`}
+        backgroundColor={
+          isDarkMode ? `rgba(22, 22, 22, ${Platform.OS === 'ios' ? 0.4 : 1})` : `rgba(26, 26, 26, ${Platform.OS === 'ios' ? 0.4 : 1})`
+        }
         height={'100%'}
         ref={sheetRef}
         scrollEnabled
@@ -238,7 +239,7 @@ const PoapSheet = () => {
           <Box
             width="full"
             height={{
-              custom: deviceHeight - (IS_IOS ? 100 : 50) - (errorCode ? 24 : 0),
+              custom: deviceHeight - (Platform.OS === 'ios' ? 100 : 50) - (errorCode ? 24 : 0),
             }}
             justifyContent="center"
             alignItems="center"

@@ -1,5 +1,5 @@
 import React, { memo, useEffect } from 'react';
-import { Keyboard } from 'react-native';
+import { Keyboard, Platform } from 'react-native';
 
 import { useIsFocused } from '@react-navigation/native';
 import Animated, { useAnimatedScrollHandler, useSharedValue } from 'react-native-reanimated';
@@ -14,7 +14,6 @@ import DiscoverScreenProvider, { useDiscoverScreenContext } from '@/components/D
 import { DiscoverSearchBar } from '@/components/Discover/DiscoverSearchBar';
 import { Navbar } from '@/components/navbar/Navbar';
 import { Box, globalColors, TextIcon, useColorMode } from '@/design-system';
-import { IS_IOS } from '@/env';
 import * as i18n from '@/languages';
 import Navigation from '@/navigation/Navigation';
 import Routes from '@/navigation/routesNames';
@@ -87,14 +86,13 @@ const Content = () => {
         automaticallyAdjustsScrollIndicatorInsets={false}
         onScroll={scrollHandler}
         scrollEnabled={!isSearching}
-        refreshControl={IS_IOS ? <PullToRefresh /> : undefined}
+        refreshControl={Platform.OS === 'ios' ? <PullToRefresh /> : undefined}
         removeClippedSubviews
         scrollIndicatorInsets={{ bottom: safeAreaInsetValues.bottom + 167 }}
         testID="discover-sheet"
       >
         <DiscoverScreenContent />
       </Box>
-
       <KeyboardDismissHandler />
     </Box>
   );

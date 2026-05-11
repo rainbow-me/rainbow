@@ -1,13 +1,13 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
-import { InteractionManager, Keyboard, type TextInput } from 'react-native';
+import { InteractionManager, Keyboard, Platform, type TextInput } from 'react-native';
 
-import { isValidAddress } from 'ethereumjs-util';
-import { keys } from 'lodash';
 import { useDispatch } from 'react-redux';
 
 import { analytics } from '@/analytics';
 import useExperimentalFlag, { PROFILES } from '@/config/experimentalHooks';
-import { IS_ANDROID, IS_TEST } from '@/env';
+import { IS_TEST } from '@/env';
+import { isValidAddress, looksLikeAddress } from '@/features/address/core/address';
+import { backupsStore } from '@/features/backup/stores/backupsStore';
 import { fetchENSAvatar } from '@/features/ens/hooks/useENSAvatar';
 import { fetchReverseRecord } from '@/features/ens/utils/handlers';
 import { getProvider, isValidBluetoothDeviceId, resolveUnstoppableDomain } from '@/handlers/web3';
@@ -23,7 +23,6 @@ import { navigateAfterOnboarding } from '@/navigation/onboardingNavigation';
 import Routes from '@/navigation/routesNames';
 import { type ImportFlowContext } from '@/navigation/types';
 import { ChainId } from '@/state/backendNetworks/types';
-import { backupsStore } from '@/state/backups/backups';
 import { walletLoadingStore } from '@/state/walletLoading/walletLoading';
 import { useAccountAddress, useWallets } from '@/state/wallets/walletsStore';
 import { sanitizeSeedPhrase } from '@/utils/formatters';
@@ -91,7 +90,7 @@ export default function useImportingWallet({
         });
 
       if (showImportModal) {
-        if (IS_ANDROID) {
+        if (Platform.OS === 'android') {
           Keyboard.dismiss();
         }
 
@@ -209,7 +208,7 @@ export default function useImportingWallet({
         }
       } else if (isValidAddress(input)) {
         let finalAvatarUrl: string | null | undefined = avatarUrl;
-        let ens = input;
+        let ens: string = input;
         try {
           ens = await fetchReverseRecord(input);
           if (ens && ens !== input) {
@@ -238,6 +237,11 @@ export default function useImportingWallet({
         }
 
         startImportProfile(name || '', forceColor, input, finalAvatarUrl);
+      } else if (looksLikeAddress(input)) {
+        // Not strictly valid EIP-55 address (due to `isValidAddress` falling through above), but could still be just a
+        // case mismatch (checksum fail). If so, show guiding message to user.
+        setBusy(false);
+        Alert.alert(i18n.t(i18n.l.wallet.invalid_address_title), i18n.t(i18n.l.wallet.invalid_address_message));
       } else {
         try {
           const walletResult = await deriveAccountFromWalletInput(input);

@@ -1,8 +1,7 @@
 import React, { type PropsWithChildren } from 'react';
-import { View } from 'react-native';
+import { Platform, View } from 'react-native';
 
 import { Box, globalColors, useBackgroundColor, type Space } from '@/design-system';
-import { IS_ANDROID, IS_IOS } from '@/env';
 import { useTheme } from '@/theme/ThemeContext';
 
 type Props = {
@@ -18,7 +17,7 @@ export function RewardsSectionCard({ children, paddingVertical = '20px', padding
   return (
     <View
       style={
-        IS_IOS
+        Platform.OS === 'ios'
           ? {
               shadowColor: globalColors.grey100,
               shadowOffset: { width: 0, height: 2 },
@@ -30,7 +29,7 @@ export function RewardsSectionCard({ children, paddingVertical = '20px', padding
     >
       <View
         style={
-          IS_IOS
+          Platform.OS === 'ios'
             ? {
                 shadowColor: globalColors.grey100,
                 shadowOffset: { width: 0, height: 4 },

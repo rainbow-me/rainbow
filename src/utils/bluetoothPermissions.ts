@@ -1,4 +1,4 @@
-import { Alert, Linking } from 'react-native';
+import { Alert, Linking, Platform } from 'react-native';
 
 import {
   checkMultiple as checkForMultiplePermissions,
@@ -9,7 +9,6 @@ import {
   type AndroidPermission,
 } from 'react-native-permissions';
 
-import { IS_IOS } from '@/env';
 import * as i18n from '@/languages';
 import { logger } from '@/logger';
 
@@ -20,7 +19,7 @@ export const showBluetoothPoweredOffAlert = async () => {
   await Alert.alert(i18n.t(i18n.l.bluetooth.powered_off_alert.title), i18n.t(i18n.l.bluetooth.powered_off_alert.message), [
     {
       onPress: () => {
-        IS_IOS ? Linking.openURL('App-Prefs:Bluetooth') : Linking.sendIntent('android.settings.BLUETOOTH_SETTINGS');
+        Platform.OS === 'ios' ? Linking.openURL('App-Prefs:Bluetooth') : Linking.sendIntent('android.settings.BLUETOOTH_SETTINGS');
       },
       text: i18n.t(i18n.l.bluetooth.powered_off_alert.open_settings),
     },

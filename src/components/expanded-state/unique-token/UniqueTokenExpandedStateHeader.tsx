@@ -1,5 +1,5 @@
 import React, { useCallback, useMemo } from 'react';
-import { View } from 'react-native';
+import { Platform, View } from 'react-native';
 
 import { startCase } from 'lodash';
 import URL from 'url-parse';
@@ -9,7 +9,6 @@ import { ImgixImage } from '@/components/images';
 import ContextMenuButton from '@/components/native-context-menu/contextMenu';
 import { Bleed, Column, Columns, Heading, Inline, Inset, Stack, Text, type Space } from '@/design-system';
 import type { UniqueAsset } from '@/entities/uniqueAssets';
-import { IS_ANDROID, IS_IOS } from '@/env';
 import styled from '@/framework/ui/styled-thing';
 import { showActionSheetWithOptions } from '@/framework/ui/utils/actionsheet';
 import { buildUniqueTokenName } from '@/helpers/assets';
@@ -53,6 +52,7 @@ const getAssetActions = ({ chainId }: { chainId: ChainId }) =>
         iconValue: 'square.on.square',
       },
     },
+
     [AssetActionsEnum.download]: {
       actionKey: AssetActionsEnum.download,
       actionTitle: i18n.t(i18n.l.expanded_state.unique_expanded.save_to_photos),
@@ -61,6 +61,7 @@ const getAssetActions = ({ chainId }: { chainId: ChainId }) =>
         iconValue: 'photo.on.rectangle.angled',
       },
     },
+
     [AssetActionsEnum.etherscan]: {
       actionKey: AssetActionsEnum.etherscan,
       actionTitle: i18n.t(i18n.l.expanded_state.unique_expanded.view_on_block_explorer, {
@@ -71,6 +72,7 @@ const getAssetActions = ({ chainId }: { chainId: ChainId }) =>
         iconValue: 'link',
       },
     },
+
     [AssetActionsEnum.rainbowWeb]: {
       actionKey: AssetActionsEnum.rainbowWeb,
       actionTitle: i18n.t(i18n.l.expanded_state.unique_expanded.view_on_web),
@@ -79,6 +81,7 @@ const getAssetActions = ({ chainId }: { chainId: ChainId }) =>
         iconValue: 'safari.fill',
       },
     },
+
     [AssetActionsEnum.hide]: {
       actionKey: AssetActionsEnum.hide,
       actionTitle: i18n.t(i18n.l.expanded_state.unique_expanded.hide),
@@ -87,6 +90,7 @@ const getAssetActions = ({ chainId }: { chainId: ChainId }) =>
         iconValue: 'eye',
       },
     },
+
     [AssetActionsEnum.opensea]: {
       actionKey: AssetActionsEnum.opensea,
       actionTitle: 'OpenSea',
@@ -95,6 +99,7 @@ const getAssetActions = ({ chainId }: { chainId: ChainId }) =>
         iconValue: 'opensea',
       },
     },
+
     [AssetActionsEnum.refresh]: {
       actionKey: AssetActionsEnum.refresh,
       actionTitle: i18n.t(i18n.l.expanded_state.unique_expanded.refresh),
@@ -103,6 +108,7 @@ const getAssetActions = ({ chainId }: { chainId: ChainId }) =>
         iconValue: 'arrow.clockwise',
       },
     },
+
     [AssetActionsEnum.report]: {
       actionKey: AssetActionsEnum.report,
       actionTitle: i18n.t(i18n.l.expanded_state.unique_expanded.report),
@@ -111,6 +117,7 @@ const getAssetActions = ({ chainId }: { chainId: ChainId }) =>
         iconValue: 'exclamationmark.triangle',
       },
     },
+
     [AssetActionsEnum.looksrare]: {
       actionKey: AssetActionsEnum.looksrare,
       actionTitle: 'LooksRare',
@@ -452,7 +459,7 @@ const UniqueTokenExpandedStateHeader = ({
         <Column width="content">
           <Bleed space={overflowMenuHitSlop}>
             {/* NOTE: Necessary since other context menu overflows off screen on android */}
-            {IS_ANDROID && (
+            {Platform.OS === 'android' && (
               <ContextCircleButton
                 testID="unique-token-expanded-state-context-menu-button"
                 options={assetMenuOptions}
@@ -474,7 +481,7 @@ const UniqueTokenExpandedStateHeader = ({
                 </ButtonPressAnimation>
               </ContextCircleButton>
             )}
-            {IS_IOS && (
+            {Platform.OS === 'ios' && (
               <ContextMenuButton
                 menuConfig={assetMenuConfig}
                 isMenuPrimaryAction
@@ -498,7 +505,7 @@ const UniqueTokenExpandedStateHeader = ({
         <Bleed space={familyNameHitSlop}>
           <ContextMenuButton
             menuConfig={familyMenuConfig}
-            {...(IS_ANDROID ? { onPress: onPressAndroidFamily, isAnchoredToRight: true } : {})}
+            {...(Platform.OS === 'android' ? { onPress: onPressAndroidFamily, isAnchoredToRight: true } : {})}
             isMenuPrimaryAction
             onPressMenuItem={handlePressFamilyMenuItem}
             useActionSheetFallback={false}

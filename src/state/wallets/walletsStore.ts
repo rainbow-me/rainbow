@@ -3,6 +3,8 @@ import { dequal } from 'dequal';
 import { toChecksumAddress } from 'ethereumjs-util';
 import { type Address } from 'viem';
 
+import { normalizeAddress } from '@/features/address/core/address';
+import { parseTimestampFromBackupFile } from '@/features/backup/backup';
 import { fetchENSAvatarWithRetry } from '@/features/ens/hooks/useENSAvatar';
 import { ensureValidHex, isValidHex } from '@/handlers/web3';
 import { removeFirstEmojiFromString, returnStringFirstEmoji } from '@/helpers/emojiHandler';
@@ -10,7 +12,6 @@ import { getConsistentArray } from '@/helpers/getConsistentArray';
 import WalletTypes from '@/helpers/walletTypes';
 import * as kc from '@/keychain';
 import { ensureError, logger, RainbowError } from '@/logger';
-import { parseTimestampFromBackupFile } from '@/model/backup';
 import { PreferenceActionType, setPreference } from '@/model/preferences';
 import {
   checkWalletsDamagedState,
@@ -115,7 +116,7 @@ export const useWalletsStore = createRainbowStore<WalletsState>(
       return !!wallets[walletId ?? selected?.id ?? '']?.damaged;
     },
     getIsReadOnlyWallet: () => get().selected?.type === WalletTypes.readOnly,
-    getIsHardwareWallet: () => !!get().selected?.deviceId,
+    getIsHardwareWallet: () => get().selected?.type === WalletTypes.bluetooth,
 
     selected: null,
     setSelectedWallet(wallet, address) {
@@ -627,6 +628,63 @@ export const useWalletsStore = createRainbowStore<WalletsState>(
       wallets: state.wallets,
       walletNames: state.walletNames,
     }),
+    // v1: canonicalize EIP-55 addresses on rehydration. The watched-wallet import flow previously
+    // accepted addresses without enforcing EIP-55 checksum, so non-canonical entries could end up
+    // persisted (APP-3673). Normalize here so consumers always read canonical data.
+    version: 1,
+    migrate: (persistedState, fromVersion) => {
+      const state = persistedState as Partial<WalletsState>;
+      if (fromVersion < 1) {
+        // Active address used by every downstream consumer (polymarket derive, displays,
+        // address comparisons). This is the primary field that triggers the boot crash when
+        // non-canonical because it gets fed into viem's strict EIP-55 encoder.
+        if (state.accountAddress) {
+          const normalized = normalizeAddress(state.accountAddress);
+          if (normalized) {
+            state.accountAddress = normalized;
+          }
+        }
+
+        // Wallets map; powers the wallet switcher, account list, and any Copy action sourced
+        // from a wallet card. Without this, switching to or copying from a non-canonical wallet
+        // surfaces the bad-case form even after the active address was healed.
+        if (state.wallets) {
+          for (const wallet of Object.values(state.wallets)) {
+            for (const account of wallet.addresses || []) {
+              const normalized = normalizeAddress(account.address);
+              if (normalized) {
+                account.address = normalized;
+              }
+            }
+          }
+        }
+
+        // Independent snapshot of the active wallet. Some UI paths read directly from
+        // `state.selected.addresses` instead of looking up via `state.wallets[selected.id]`,
+        // so this needs to be canonicalized separately to avoid stle bad-case display.
+        if (state.selected) {
+          for (const account of state.selected.addresses || []) {
+            const normalized = normalizeAddress(account.address);
+            if (normalized) {
+              account.address = normalized;
+            }
+          }
+        }
+
+        // ENS name cache, keyed by address. Post-canonicalization, lookups happen with
+        // canonical-case addresses; if the keys here remain bad-case, those lookups silently
+        // miss and the user's ENS names disappear. Re-key the map under canonical addresses.
+        if (state.walletNames) {
+          const next: WalletNames = {};
+          for (const [address, ensName] of Object.entries(state.walletNames)) {
+            const normalized = normalizeAddress(address);
+            next[normalized ?? address] = ensName;
+          }
+          state.walletNames = next;
+        }
+      }
+      return state;
+    },
     persistThrottleMs: time.seconds(1),
   }
 );
@@ -684,6 +742,19 @@ export const getWalletAddresses = (wallets: AllRainbowWallets | null) => {
     Object.values(wallets || {}).flatMap(wallet => (wallet.addresses || []).map(account => account.address as Address))
   );
 };
+
+export function getOwnedNormalizedWalletAddresses(): string[] {
+  const wallets = useWalletsStore.getState().wallets;
+
+  if (!wallets) return [];
+
+  return getConsistentArray(
+    Object.values(wallets).flatMap(wallet => {
+      if (wallet.type === WalletTypes.readOnly) return [];
+      return (wallet.addresses ?? []).filter(account => account.visible).map(account => account.address.toLowerCase());
+    })
+  );
+}
 
 export const useAccountAddress = () => useWalletsStore(state => state.accountAddress);
 export const useSelectedWallet = () => useWalletsStore(state => state.selected);

@@ -50,6 +50,8 @@
 		AA6228F324272F510078BDAA /* SF-Pro-Rounded-Semibold.otf in Resources */ = {isa = PBXBuildFile; fileRef = AA6228EA24272B200078BDAA /* SF-Pro-Rounded-Semibold.otf */; };
 		AA8C459D2EA172B0003F131A /* chonks@3x.png in Resources */ = {isa = PBXBuildFile; fileRef = AA8C459C2EA172B0003F131A /* chonks@3x.png */; };
 		AA8C459E2EA172B0003F131A /* chonks@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = AA8C459B2EA172B0003F131A /* chonks@2x.png */; };
+		AAA1F33E2F99909400294EED /* rnbw@3x.png in Resources */ = {isa = PBXBuildFile; fileRef = AAA1F33D2F99909400294EED /* rnbw@3x.png */; };
+		AAA1F33F2F99909400294EED /* rnbw@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = AAA1F33C2F99909400294EED /* rnbw@2x.png */; };
 		AAE999CD2E41DD390072AFD5 /* RainbowSplashScreen.swift in Sources */ = {isa = PBXBuildFile; fileRef = AAE999CC2E41DD390072AFD5 /* RainbowSplashScreen.swift */; };
 		AAE999D12E41E4670072AFD5 /* RainbowSplashScreen.m in Sources */ = {isa = PBXBuildFile; fileRef = AAE999D02E41E4670072AFD5 /* RainbowSplashScreen.m */; };
 		AAF6A4FD2ECE43960024606A /* mog@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = AAF6A4FB2ECE43960024606A /* mog@2x.png */; };
@@ -298,6 +300,8 @@
 		AA8C459B2EA172B0003F131A /* chonks@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "chonks@2x.png"; sourceTree = "<group>"; };
 		AA8C459C2EA172B0003F131A /* chonks@3x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "chonks@3x.png"; sourceTree = "<group>"; };
 		AAA0EF342BF5A4AD00A19A53 /* PrivacyInfo.xcprivacy */ = {isa = PBXFileReference; lastKnownFileType = text.xml; path = PrivacyInfo.xcprivacy; sourceTree = "<group>"; };
+		AAA1F33C2F99909400294EED /* rnbw@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "rnbw@2x.png"; sourceTree = "<group>"; };
+		AAA1F33D2F99909400294EED /* rnbw@3x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "rnbw@3x.png"; sourceTree = "<group>"; };
 		AAE999CC2E41DD390072AFD5 /* RainbowSplashScreen.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RainbowSplashScreen.swift; sourceTree = "<group>"; };
 		AAE999D02E41E4670072AFD5 /* RainbowSplashScreen.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = RainbowSplashScreen.m; sourceTree = "<group>"; };
 		AAF6A4FB2ECE43960024606A /* mog@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "mog@2x.png"; sourceTree = "<group>"; };
@@ -522,6 +526,8 @@
 				AA8C459C2EA172B0003F131A /* chonks@3x.png */,
 				AAF6A4FB2ECE43960024606A /* mog@2x.png */,
 				AAF6A4FC2ECE43960024606A /* mog@3x.png */,
+				AAA1F33C2F99909400294EED /* rnbw@2x.png */,
+				AAA1F33D2F99909400294EED /* rnbw@3x.png */,
 			);
 			path = AppIcons;
 			sourceTree = "<group>";
@@ -1037,6 +1043,8 @@ Upload Debug Symbols to Sentry */,
 				AA6228F124272F510078BDAA /* SF-Pro-Rounded-Medium.otf in Resources */,
 				AA8C459D2EA172B0003F131A /* chonks@3x.png in Resources */,
 				AA8C459E2EA172B0003F131A /* chonks@2x.png in Resources */,
+				AAA1F33E2F99909400294EED /* rnbw@3x.png in Resources */,
+				AAA1F33F2F99909400294EED /* rnbw@2x.png in Resources */,
 				B50C9AEB2A9D18DC00EB0019 /* adworld@3x.png in Resources */,
 				B5C070C62A4A387400D854BA /* zorb@3x.png in Resources */,
 				15C398812880EDFF006033AC /* og@3x.png in Resources */,
@@ -1911,7 +1919,7 @@ Upload Debug Symbols to Sentry */ = {
 					"$(PROJECT_DIR)",
 				);
 				LLVM_LTO = YES;
-				MARKETING_VERSION = 2.0.27;
+				MARKETING_VERSION = 2.0.33;
 				OTHER_CFLAGS = "$(inherited)";
 				OTHER_LDFLAGS = (
 					"$(inherited)",
@@ -1978,7 +1986,7 @@ Upload Debug Symbols to Sentry */ = {
 					"$(PROJECT_DIR)",
 				);
 				LLVM_LTO = YES;
-				MARKETING_VERSION = 2.0.27;
+				MARKETING_VERSION = 2.0.33;
 				OTHER_CFLAGS = "$(inherited)";
 				OTHER_LDFLAGS = (
 					"$(inherited)",
@@ -2097,7 +2105,7 @@ Upload Debug Symbols to Sentry */ = {
 					"$(PROJECT_DIR)",
 				);
 				LLVM_LTO = YES;
-				MARKETING_VERSION = 2.0.27;
+				MARKETING_VERSION = 2.0.33;
 				OTHER_CFLAGS = "$(inherited)";
 				OTHER_LDFLAGS = (
 					"$(inherited)",
@@ -2215,7 +2223,7 @@ Upload Debug Symbols to Sentry */ = {
 					"$(PROJECT_DIR)",
 				);
 				LLVM_LTO = YES;
-				MARKETING_VERSION = 2.0.27;
+				MARKETING_VERSION = 2.0.33;
 				OTHER_CFLAGS = "$(inherited)";
 				OTHER_LDFLAGS = (
 					"$(inherited)",

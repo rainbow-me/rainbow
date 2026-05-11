@@ -1,5 +1,5 @@
 import React, { memo, useCallback, useMemo, useRef, useState, type MutableRefObject } from 'react';
-import { InteractionManager, StyleSheet, View } from 'react-native';
+import { InteractionManager, Platform, StyleSheet, View } from 'react-native';
 
 import MaskedView from '@react-native-masked-view/masked-view';
 import { createMaterialTopTabNavigator, type MaterialTopTabNavigationEventMap } from '@react-navigation/material-top-tabs';
@@ -28,15 +28,14 @@ import { initialWindowMetrics } from 'react-native-safe-area-context';
 
 import { SPRING_CONFIGS, TIMING_CONFIGS } from '@/components/animations/animationConfigs';
 import ButtonPressAnimation from '@/components/animations/ButtonPressAnimation';
+import { AssetUpdateTransactionWatcher } from '@/components/asset-update-transaction-watcher/AssetUpdateTransactionWatcher';
 import { BlurGradient } from '@/components/blur/BlurGradient';
 import { BrowserTabBarContextProvider, useBrowserTabBarContext } from '@/components/DappBrowser/BrowserContext';
 import { BROWSER_BACKGROUND_COLOR_DARK, BROWSER_BACKGROUND_COLOR_LIGHT } from '@/components/DappBrowser/constants';
 import { DappBrowser } from '@/components/DappBrowser/DappBrowser';
 import { discoverOpenSearchFnRef, discoverScrollToTopFnRef } from '@/components/Discover/DiscoverScreenContext';
 import { EasingGradient } from '@/components/easing-gradient/EasingGradient';
-import { useShowKingOfTheHill } from '@/components/king-of-the-hill/useShowKingOfTheHill';
 import { FlexItem } from '@/components/layout';
-import { MinedTransactionWatcher } from '@/components/mined-transaction-watcher/MinedTransactionWatcher';
 import { PendingTransactionWatcher } from '@/components/pending-transaction-watcher/PendingTransactionWatcher';
 import { PANEL_COLOR_DARK } from '@/components/SmoothPager/ListPanel';
 import { ActivityTabIcon } from '@/components/tab-bar/ActivityTabIcon';
@@ -52,7 +51,9 @@ import { TabBarIcon } from '@/components/tab-bar/TabBarIcon';
 import { DAPP_BROWSER, LAZY_TABS, RNBW_MEMBERSHIP, RNBW_REWARDS } from '@/config/experimental';
 import useExperimentalFlag from '@/config/experimentalHooks';
 import { Box, ColorModeProvider, Column, Columns, globalColors, useColorMode } from '@/design-system';
-import { IS_IOS, IS_TEST } from '@/env';
+import { IS_TEST } from '@/env';
+import { useShowKingOfTheHill } from '@/features/king-of-the-hill/hooks/useShowKingOfTheHill';
+import { KingOfTheHillScreen } from '@/features/king-of-the-hill/screens/KingOfTheHillScreen';
 import { RnbwMembershipScreen } from '@/features/rnbw-membership/screens/rnbw-membership-screen/RnbwMembershipScreen';
 import { RnbwRewardsScreen } from '@/features/rnbw-rewards/screens/rnbw-rewards-screen/RnbwRewardsScreen';
 import { opacity } from '@/framework/ui/utils/opacity';
@@ -67,7 +68,6 @@ import {
   useRecyclerListViewScrollToTopContext,
 } from '@/navigation/RecyclerListViewScrollToTopContext';
 import DiscoverScreen from '@/screens/DiscoverScreen';
-import { KingOfTheHillScreen } from '@/screens/KingOfTheHill';
 import WalletScreen from '@/screens/WalletScreen/WalletScreen';
 import { useBrowserStore } from '@/state/browser/browserStore';
 import { useStoreSharedValue } from '@/state/internal/hooks/useStoreSharedValue';
@@ -352,7 +352,6 @@ const TabBar = memo(function TabBar({ activeIndex, descriptorsRef, getIsFocused,
           <Animated.View style={[styles.tabBarBackgroundFade, gradientBackgroundStyle]} />
         </MaskedView>
       </Animated.View>
-
       <Animated.View style={[{ shadowColor: globalColors.grey100, shadowOffset: { width: 0, height: 12 }, shadowRadius: 18 }, shadowStyle]}>
         <Box
           as={Animated.View}
@@ -366,7 +365,7 @@ const TabBar = memo(function TabBar({ activeIndex, descriptorsRef, getIsFocused,
           style={[hideForBrowserTabViewStyle, { alignSelf: 'center' }]}
         >
           <Box height={{ custom: BASE_TAB_BAR_HEIGHT }} width="full">
-            {IS_IOS ? (
+            {Platform.OS === 'ios' ? (
               <>
                 <BlurGradient
                   gradientPoints={[
@@ -522,7 +521,7 @@ export const BrowserTabIconWrapper = memo(function BrowserTabIconWrapper({
       testID={`tab-bar-icon-${route.name}`}
     >
       <ConditionalWrap
-        condition={IS_IOS || !showBrowserButtons}
+        condition={Platform.OS === 'ios' || !showBrowserButtons}
         wrap={children => (
           <ButtonPressAnimation
             disallowInterruption
@@ -737,7 +736,7 @@ export function SwipeNavigator() {
       </BrowserTabBarContextProvider>
 
       <PendingTransactionWatcher />
-      <MinedTransactionWatcher />
+      <AssetUpdateTransactionWatcher />
     </FlexItem>
   );
 }

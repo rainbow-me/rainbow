@@ -1,6 +1,6 @@
 import React from 'react';
+import { Platform } from 'react-native';
 
-import { IS_ANDROID } from '@/env';
 import styled from '@/framework/ui/styled-thing';
 import { BiometryTypes } from '@/helpers';
 import useBiometryType from '@/hooks/useBiometryType';
@@ -47,12 +47,12 @@ export function useBiometryIconString({ showIcon, isHardwareWallet }) {
 
 export default function BiometricButtonContent({ label, showIcon = true, testID, ...props }) {
   const isHardwareWallet = useIsHardwareWallet();
-  const biometryIcon = useBiometryIconString({ showIcon: !IS_ANDROID && showIcon, isHardwareWallet });
+  const biometryIcon = useBiometryIconString({ showIcon: Platform.OS !== 'android' && showIcon, isHardwareWallet });
   const { colors } = useTheme();
   return (
     <>
       {isHardwareWallet && showIcon && <LedgerIcon color={props?.color || colors.appleBlue} marginRight={8} />}
-      <Label testID={testID || label} {...props} {...(IS_ANDROID && { lineHeight: 23 })}>
+      <Label testID={testID || label} {...props} {...(Platform.OS === 'android' && { lineHeight: 23 })}>
         {`${biometryIcon}${label}`}
       </Label>
     </>

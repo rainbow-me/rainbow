@@ -1,5 +1,5 @@
 import React, { useCallback, useRef } from 'react';
-import { Keyboard } from 'react-native';
+import { Keyboard, Platform } from 'react-native';
 
 import Clipboard from '@react-native-clipboard/clipboard';
 import { useFocusEffect, useRoute, type RouteProp } from '@react-navigation/native';
@@ -9,7 +9,6 @@ import { Input } from '@/components/inputs';
 import { LoadingOverlay } from '@/components/modal/LoadingOverlay';
 import { SheetHandleFixedToTopHeight } from '@/components/sheet';
 import { AccentColorProvider, Box, globalColors, Inset, Stack, Text, useForegroundColor, useTextStyle } from '@/design-system';
-import { IS_ANDROID } from '@/env';
 import { opacity } from '@/framework/ui/utils/opacity';
 import useImportingWallet from '@/hooks/useImportingWallet';
 import useKeyboardHeight from '@/hooks/useKeyboardHeight';
@@ -90,7 +89,7 @@ export const ImportOrWatchWalletSheet = () => {
             textContentType="none"
             enablesReturnKeyAutomatically
             onBlur={refocusOnce}
-            keyboardType={IS_ANDROID ? 'visible-password' : 'default'}
+            keyboardType={Platform.OS === 'android' ? 'visible-password' : 'default'}
             onChangeText={handleSetSeedPhrase}
             multiline
             numberOfLines={3}

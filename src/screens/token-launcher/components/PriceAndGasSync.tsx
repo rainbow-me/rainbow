@@ -2,10 +2,10 @@ import { memo, useEffect, useMemo } from 'react';
 
 import { formatUnits } from 'viem';
 
-import { safeBigInt } from '@/__swaps__/screens/Swap/hooks/useEstimatedGasFee';
-import { useGasSettings } from '@/__swaps__/screens/Swap/hooks/useSelectedGas';
 import { calculateGasFeeWorklet } from '@/__swaps__/screens/Swap/providers/SyncSwapStateAndSharedValues';
-import { GasSpeed } from '@/__swaps__/types/gas';
+import { safeBigInt } from '@/features/gas/hooks/useEstimatedGasFee';
+import { useGasSettings } from '@/features/gas/hooks/useSelectedGas';
+import { GasSpeed } from '@/features/gas/types/gasSpeed';
 import { lessThanOrEqualToWorklet } from '@/framework/core/safeMath';
 import { useExternalToken } from '@/resources/assets/externalAssetsQuery';
 import { useUserAssetsStore } from '@/state/assets/userAssets';

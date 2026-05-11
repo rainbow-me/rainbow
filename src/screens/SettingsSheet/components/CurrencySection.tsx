@@ -6,7 +6,6 @@ import { reloadTimelines } from 'react-native-widgetkit';
 import { analytics } from '@/analytics';
 import RainbowCoinIcon from '@/components/coin-icon/RainbowCoinIcon';
 import type { NativeCurrencyKey } from '@/entities/nativeCurrencyTypes';
-import { IS_IOS } from '@/env';
 import { resolveCurrencyFlagEmoji } from '@/framework/core/emoji/currencyFlagEmoji';
 import useAccountSettings from '@/hooks/useAccountSettings';
 import * as i18n from '@/languages';
@@ -35,7 +34,7 @@ const CurrencySection = () => {
       userAssetsStoreManager.setState({ currency });
       settingsChangeNativeCurrency(currency);
       // reload widget timelines only if on ios version 14 or above
-      if (IS_IOS && parseInt(Platform.Version as string) >= 14) {
+      if (Platform.OS === 'ios' && parseInt(Platform.Version as string) >= 14) {
         reloadTimelines('PriceWidget');
       }
       analytics.track(analytics.event.changedNativeCurrency, { currency });

@@ -1,4 +1,5 @@
 import React, { useCallback } from 'react';
+import { Platform } from 'react-native';
 
 import { useRoute, type RouteProp } from '@react-navigation/native';
 import { capitalize } from 'lodash';
@@ -11,7 +12,6 @@ import RequestVendorLogoIcon from '@/components/coin-icon/RequestVendorLogoIcon'
 import { SimpleSheet } from '@/components/sheet/SimpleSheet';
 import { BackgroundProvider, Box, globalColors, Inline, Separator, Stack, Text, useColorMode } from '@/design-system';
 import { NativeCurrencyKeys } from '@/entities/nativeCurrencyTypes';
-import { IS_IOS } from '@/env';
 import type { PositionAsset, RainbowPosition } from '@/features/positions/types';
 import { opacity } from '@/framework/ui/utils/opacity';
 import useDimensions from '@/hooks/useDimensions';
@@ -101,7 +101,7 @@ export const PositionSheet: React.FC = () => {
     [nativeCurrency, position.protocol, position.totals.total.amount, position.type]
   );
 
-  const customHeight = IS_IOS ? undefined : Math.min(getPositionSheetHeight({ position }), height - insets.top);
+  const customHeight = Platform.OS === 'ios' ? undefined : Math.min(getPositionSheetHeight({ position }), height - insets.top);
 
   return (
     <BackgroundProvider color="surfaceSecondary">

@@ -4,18 +4,17 @@ import { useMutation } from '@tanstack/react-query';
 import { triggerHaptics } from 'react-native-turbo-haptics';
 import { formatUnits, getAddress } from 'viem';
 
-import { safeBigInt } from '@/__swaps__/screens/Swap/hooks/useEstimatedGasFee';
-import { getGasSettingsBySpeed, useGasSettings } from '@/__swaps__/screens/Swap/hooks/useSelectedGas';
 import { calculateGasFeeWorklet } from '@/__swaps__/screens/Swap/providers/SyncSwapStateAndSharedValues';
-import { GasSpeed } from '@/__swaps__/types/gas';
 import { transformRainbowTokenToParsedSearchAsset } from '@/__swaps__/utils/assets';
 import { getDefaultSlippageWorklet } from '@/__swaps__/utils/swaps';
 import { analytics } from '@/analytics';
-import type { LegacyTransactionGasParamAmounts, TransactionGasParamAmounts } from '@/entities/gas';
+import { safeBigInt } from '@/features/gas/hooks/useEstimatedGasFee';
+import { getGasSettingsBySpeed, useGasSettings } from '@/features/gas/hooks/useSelectedGas';
+import { GasSpeed } from '@/features/gas/types/gasSpeed';
+import { buildGasParams, weiToGwei } from '@/features/gas/utils/parseGas';
 import { lessThanOrEqualToWorklet } from '@/framework/core/safeMath';
 import { getProvider } from '@/handlers/web3';
 import {
-  add,
   convertAmountToBalanceDisplay,
   convertAmountToNativeDisplay,
   convertAmountToNativeDisplayWorklet,
@@ -24,13 +23,11 @@ import {
   formatNumber,
   multiply,
 } from '@/helpers/utilities';
-import useAccountSettings from '@/hooks/useAccountSettings';
 import { logger, RainbowError } from '@/logger';
 import { getRemoteConfig } from '@/model/remoteConfig';
 import { loadWallet } from '@/model/wallet';
 import Navigation from '@/navigation/Navigation';
 import Routes from '@/navigation/routesNames';
-import { weiToGwei } from '@/parsers/gas';
 import { walletExecuteRap } from '@/raps/execute';
 import { queryClient } from '@/react-query';
 import { ClaimableType, type Claimable, type TransactionClaimable } from '@/resources/addys/claimables/types';
@@ -345,13 +342,7 @@ export function TransactionClaimableContextProvider({
         return;
       }
 
-      const gasParams: TransactionGasParamAmounts | LegacyTransactionGasParamAmounts = gasSettings.isEIP1559
-        ? {
-            maxFeePerGas: add(gasSettings.maxBaseFee, gasSettings.maxPriorityFee),
-            maxPriorityFeePerGas: gasSettings.maxPriorityFee,
-          }
-        : { gasPrice: gasSettings.gasPrice };
-
+      const gasParams = buildGasParams(gasSettings);
       const gasFeeParamsBySpeed = getGasSettingsBySpeed(claimable.chainId);
 
       const claimTxns: TransactionClaimableTxPayload[] = [];

@@ -1,4 +1,5 @@
 import React from 'react';
+import { Platform } from 'react-native';
 
 import Animated, {
   Easing,
@@ -20,7 +21,6 @@ import { stripNonDecimalNumbers } from '@/__swaps__/utils/swaps';
 import { TIMING_CONFIGS } from '@/components/animations/animationConfigs';
 import { GestureHandlerButton } from '@/components/buttons/GestureHandlerButton';
 import { Bleed, Box, Columns, HitSlop, Separator, Text, useColorMode, useForegroundColor } from '@/design-system';
-import { IS_IOS } from '@/env';
 import { equalWorklet } from '@/framework/core/safeMath';
 import { opacity } from '@/framework/ui/utils/opacity';
 import { supportedCurrencies as supportedNativeCurrencies } from '@/references/supportedCurrencies';
@@ -367,7 +367,7 @@ const NumberPadKey = ({
             !transparent && {
               borderColor: isDarkMode ? separatorTertiary : 'transparent',
               borderCurve: 'continuous',
-              borderWidth: IS_IOS ? THICK_BORDER_WIDTH : 0,
+              borderWidth: Platform.OS === 'ios' ? THICK_BORDER_WIDTH : 0,
               shadowColor: isDarkMode ? 'transparent' : colors.dark,
               shadowOffset: {
                 width: 0,

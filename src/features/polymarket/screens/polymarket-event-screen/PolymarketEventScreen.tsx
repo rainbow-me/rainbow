@@ -1,4 +1,5 @@
 import React, { memo, useMemo } from 'react';
+import { Platform } from 'react-native';
 
 import { useRoute, type RouteProp } from '@react-navigation/native';
 import { useSharedValue } from 'react-native-reanimated';
@@ -9,7 +10,6 @@ import { EasingGradient } from '@/components/easing-gradient/EasingGradient';
 import ImgixImage from '@/components/images/ImgixImage';
 import SlackSheet from '@/components/sheet/SlackSheet';
 import { Bleed, Box, globalColors, Separator, Text, useColorMode, useForegroundColor } from '@/design-system';
-import { IS_ANDROID, IS_IOS } from '@/env';
 import { type ActiveInteractionData } from '@/features/charts/polymarket/classes/PolymarketChartManager';
 import { PolymarketChart } from '@/features/charts/polymarket/components/PolymarketChart';
 import { PolymarketChartHeader } from '@/features/charts/polymarket/components/PolymarketChartHeader';
@@ -161,7 +161,7 @@ export const PolymarketEventScreen = memo(function PolymarketEventScreen() {
       <SlackSheet
         backgroundColor={screenBackgroundColor}
         // eslint-disable-next-line react/jsx-props-no-spreading
-        {...(IS_IOS ? { height: '100%' } : {})}
+        {...(Platform.OS === 'ios' ? { height: '100%' } : {})}
         scrollEnabled
         removeTopPadding
         hideHandle
@@ -197,7 +197,7 @@ export const PolymarketEventScreen = memo(function PolymarketEventScreen() {
         </Box>
       </SlackSheet>
       <Box position="absolute" top="0px" left="0px" right="0px" width="full" pointerEvents="none">
-        <Box backgroundColor={screenBackgroundColor} height={safeAreaInsets.top + (IS_ANDROID ? 24 : 12)} width="full">
+        <Box backgroundColor={screenBackgroundColor} height={safeAreaInsets.top + (Platform.OS === 'android' ? 24 : 12)} width="full">
           <Box
             height={{ custom: 5 }}
             width={{ custom: 36 }}

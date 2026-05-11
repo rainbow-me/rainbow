@@ -1,5 +1,5 @@
 import React, { useCallback, useEffect, useRef } from 'react';
-import { Alert, StyleSheet, View } from 'react-native';
+import { Alert, Platform, StyleSheet, View } from 'react-native';
 
 import MaskedView from '@react-native-masked-view/masked-view';
 import { PerformanceMeasureView } from '@shopify/react-native-performance';
@@ -20,7 +20,7 @@ import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 import { analytics } from '@/analytics';
 import { Box } from '@/design-system';
-import { IS_ANDROID, IS_IOS, IS_TEST } from '@/env';
+import { IS_TEST } from '@/env';
 import { opacity } from '@/framework/ui/utils/opacity';
 import { WalletLoadingStates } from '@/helpers/walletLoadingStates';
 import { useHardwareBackOnFocus } from '@/hooks/useHardwareBack';
@@ -43,9 +43,9 @@ import { Text } from '../../components/text';
 const RAINBOW_TEXT_HEIGHT = 32;
 const RAINBOW_TEXT_WIDTH = 125;
 const ANIMATION_COLORS = ['rgb(255,73,74)', 'rgb(255,170,0)', 'rgb(0,163,217)', 'rgb(0,163,217)', 'rgb(115,92,255)', 'rgb(255,73,74)'];
-const PRIMARY_BUTTON_HEIGHT = IS_IOS ? 54 : 60;
-const PRIMARY_BUTTON_WIDTH = IS_IOS ? 230 : 236;
-const PRIMARY_BUTTON_BORDER_WIDTH = IS_IOS ? 0 : 3;
+const PRIMARY_BUTTON_HEIGHT = Platform.OS === 'ios' ? 54 : 60;
+const PRIMARY_BUTTON_WIDTH = Platform.OS === 'ios' ? 230 : 236;
+const PRIMARY_BUTTON_BORDER_WIDTH = Platform.OS === 'ios' ? 0 : 3;
 
 export function WelcomeScreen() {
   const insets = useSafeAreaInsets();
@@ -205,14 +205,14 @@ export function WelcomeScreen() {
     });
   }, [navigate]);
 
-  useHardwareBackOnFocus(() => true, !IS_ANDROID);
+  useHardwareBackOnFocus(() => true, Platform.OS !== 'android');
 
   return (
     <PerformanceMeasureView interactive={true} screenName="WelcomeScreen">
       <Box style={styles.container} testID="welcome-screen" backgroundColor={colors.white}>
         <RainbowsBackground shouldAnimate={shouldAnimateRainbows} />
         <Animated.View style={[contentStyle, styles.contentContainer]}>
-          {IS_ANDROID && IS_TEST ? (
+          {Platform.OS === 'android' && IS_TEST ? (
             <RainbowText colors={colors} />
           ) : (
             <MaskedView maskElement={<RainbowText colors={colors} />}>

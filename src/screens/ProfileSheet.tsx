@@ -1,5 +1,4 @@
 import React, { createContext, useEffect, useMemo } from 'react';
-import { Dimensions } from 'react-native';
 
 import { useRoute, type RouteProp } from '@react-navigation/native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';

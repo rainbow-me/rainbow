@@ -1,6 +1,6 @@
 import React, { useCallback } from 'react';
+import { Platform } from 'react-native';
 
-import { IS_IOS } from '@/env';
 import { useNavigation } from '@/navigation/Navigation';
 import Routes from '@/navigation/routesNames';
 
@@ -9,7 +9,7 @@ import ActionButton from './ActionButton';
 export default function SendButton({ ensName }: { ensName?: string }) {
   const { navigate } = useNavigation();
   const handlePressSend = useCallback(async () => {
-    if (IS_IOS) {
+    if (Platform.OS === 'ios') {
       navigate(Routes.SEND_FLOW, {
         screen: Routes.SEND_SHEET,
         params: {

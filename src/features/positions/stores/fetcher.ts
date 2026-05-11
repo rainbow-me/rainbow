@@ -6,6 +6,7 @@ import { getPlatformClient } from '@/resources/platform/client';
 import { time } from '@/utils/time';
 
 import type { ListPositionsResponse } from '../types/generated/positions/positions';
+import { trackPositionsResponseErrors } from './trackPositionsResponseErrors';
 
 // ============ Constants ====================================================== //
 
@@ -51,10 +52,7 @@ export async function fetchPositions(params: PositionsParams, abortController: A
     }
 
     if (response.data.errors && response.data.errors.length > 0) {
-      logger.warn('[Positions] Partial errors in response', {
-        request: response.data.metadata,
-        errors: response.data.errors,
-      });
+      trackPositionsResponseErrors(response.data.errors);
     }
 
     return response.data;

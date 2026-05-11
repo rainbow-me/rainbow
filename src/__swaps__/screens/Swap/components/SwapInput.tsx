@@ -1,5 +1,5 @@
 import React, { type ReactNode } from 'react';
-import { StyleSheet } from 'react-native';
+import { Platform, StyleSheet } from 'react-native';
 
 import Animated, { type SharedValue } from 'react-native-reanimated';
 
@@ -8,7 +8,6 @@ import { useSwapInputStyles } from '@/__swaps__/screens/Swap/hooks/useSwapInputS
 import { type ExtendedAnimatedAssetWithColors } from '@/__swaps__/types/assets';
 import { TOKEN_SEARCH_INPUT_HORIZONTAL_PADDING } from '@/components/token-search/constants';
 import { Box } from '@/design-system';
-import { IS_IOS } from '@/env';
 import { THICK_BORDER_WIDTH } from '@/styles/constants';
 
 export const SwapInput = ({
@@ -49,7 +48,7 @@ export const styles = StyleSheet.create({
   staticInputStyles: {
     borderCurve: 'continuous',
     borderRadius: 30,
-    borderWidth: IS_IOS ? THICK_BORDER_WIDTH : 0,
+    borderWidth: Platform.OS === 'ios' ? THICK_BORDER_WIDTH : 0,
     overflow: 'hidden',
     padding: TOKEN_SEARCH_INPUT_HORIZONTAL_PADDING,
     width: BASE_INPUT_WIDTH,

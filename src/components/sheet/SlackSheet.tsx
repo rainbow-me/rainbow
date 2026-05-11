@@ -1,6 +1,7 @@
 /* eslint-disable no-nested-ternary */
 import React, { forwardRef, Fragment, useContext, useEffect, useImperativeHandle, useMemo, useRef } from 'react';
 import {
+  Platform,
   Pressable,
   StyleSheet,
   TouchableWithoutFeedback,
@@ -17,7 +18,6 @@ import { ScrollView } from 'react-native-gesture-handler';
 import Animated, { useAnimatedScrollHandler, useSharedValue, type SharedValue } from 'react-native-reanimated';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
-import { IS_ANDROID, IS_IOS } from '@/env';
 import styled from '@/framework/ui/styled-thing';
 import useDimensions from '@/hooks/useDimensions';
 import { useNavigation } from '@/navigation/Navigation';
@@ -50,7 +50,7 @@ interface ContainerProps {
 const Container = styled(Centered).attrs({
   direction: 'column',
 })(({ backgroundColor, additionalTopPadding, contentHeight, deferredHeight, deviceHeight, topBorderRadius }: ContainerProps) => ({
-  ...(deferredHeight || IS_IOS
+  ...(deferredHeight || Platform.OS === 'ios'
     ? {}
     : {
         top:
@@ -60,7 +60,7 @@ const Container = styled(Centered).attrs({
               ? deviceHeight - contentHeight
               : 0,
       }),
-  ...(IS_ANDROID ? { borderTopLeftRadius: topBorderRadius ?? 30, borderTopRightRadius: topBorderRadius ?? 30 } : {}),
+  ...(Platform.OS === 'android' ? { borderTopLeftRadius: topBorderRadius ?? 30, borderTopRightRadius: topBorderRadius ?? 30 } : {}),
   backgroundColor: backgroundColor,
   bottom: 0,
   left: 0,
@@ -191,7 +191,7 @@ export default forwardRef<unknown, SlackSheetProps>(function SlackSheet(
   // In discover sheet we need to set it additionally
   useEffect(
     () => {
-      discoverSheet && IS_IOS && sheet.current?.setNativeProps({ scrollIndicatorInsets });
+      discoverSheet && Platform.OS === 'ios' && sheet.current?.setNativeProps({ scrollIndicatorInsets });
     },
     // eslint-disable-next-line react-hooks/exhaustive-deps
     []
@@ -213,7 +213,7 @@ export default forwardRef<unknown, SlackSheetProps>(function SlackSheet(
 
   return (
     <Fragment>
-      {IS_ANDROID ? <Pressable onPress={goBack} style={[StyleSheet.absoluteFillObject]} /> : null}
+      {Platform.OS === 'android' ? <Pressable onPress={goBack} style={[StyleSheet.absoluteFillObject]} /> : null}
       <Container
         additionalTopPadding={additionalTopPadding}
         backgroundColor={bg}
@@ -224,7 +224,7 @@ export default forwardRef<unknown, SlackSheetProps>(function SlackSheet(
         topBorderRadius={borderRadius}
         {...props}
       >
-        {IS_ANDROID && (
+        {Platform.OS === 'android' && (
           <AndroidBackground as={TouchableWithoutFeedback} backgroundColor={bg}>
             <AndroidBackground backgroundColor={bg} />
           </AndroidBackground>
@@ -237,7 +237,7 @@ export default forwardRef<unknown, SlackSheetProps>(function SlackSheet(
               isInsideBottomSheet
                 ? BottomSheetScrollView
                 : // Android requires RNGH ScrollView while iOS requires the RN one for the dismiss gesture to work.
-                  IS_ANDROID
+                  Platform.OS === 'android'
                   ? AnimatedRNGHScrollView
                   : Animated.ScrollView
             }
@@ -254,7 +254,7 @@ export default forwardRef<unknown, SlackSheetProps>(function SlackSheet(
             scrollIndicatorInsets={scrollIndicatorInsets}
             showsHorizontalScrollIndicator={showsHorizontalScrollIndicator}
             showsVerticalScrollIndicator={showsVerticalScrollIndicator}
-            {...(isInsideBottomSheet && IS_ANDROID
+            {...(isInsideBottomSheet && Platform.OS === 'android'
               ? {
                   onScrollWorklet: scrollHandler,
                 }

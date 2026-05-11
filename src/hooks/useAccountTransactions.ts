@@ -1,25 +1,23 @@
 import { useMemo } from 'react';
 
 import { type RainbowTransaction } from '@/entities/transactions';
-import { useNavigation } from '@/navigation/Navigation';
 import { useConsolidatedTransactions } from '@/resources/transactions/consolidatedTransactions';
 import { userAssetsStoreManager } from '@/state/assets/userAssetsStoreManager';
 import { usePendingTransactionsStore } from '@/state/pendingTransactions';
 import { useAccountAddress } from '@/state/wallets/walletsStore';
-import { useTheme } from '@/theme/ThemeContext';
 
 import { buildTransactionsSections } from '../helpers/buildTransactionsSectionsSelector';
 import useContacts from './useContacts';
 
 export const NOE_PAGE = 30;
 
+const EMPTY_TRANSACTIONS: RainbowTransaction[] = [];
+
 export default function useAccountTransactions() {
   const nativeCurrency = userAssetsStoreManager(state => state.currency);
   const accountAddress = useAccountAddress();
 
-  const pendingTransactionsMostRecentFirst = usePendingTransactionsStore(state =>
-    state.getPendingTransactionsInReverseOrder(accountAddress)
-  );
+  const transactionOverlaysMostRecentFirst = usePendingTransactionsStore(state => state.getTransactionsInReverseOrder(accountAddress));
 
   const { data, isLoading, fetchNextPage, hasNextPage } = useConsolidatedTransactions({
     address: accountAddress,
@@ -27,47 +25,29 @@ export default function useAccountTransactions() {
   });
 
   const pages = data?.pages;
+  const backendTransactions: RainbowTransaction[] = useMemo(() => pages?.flatMap(page => page.transactions) || EMPTY_TRANSACTIONS, [pages]);
 
-  const transactions: RainbowTransaction[] = useMemo(() => pages?.flatMap(p => p.transactions) || [], [pages]);
-
-  const allTransactions = useMemo(
+  const transactions = useMemo(
     () =>
-      pendingTransactionsMostRecentFirst
-        .filter(pendingTx => !transactions.some(tx => tx.hash === pendingTx.hash && tx.chainId === pendingTx.chainId))
-        .concat(transactions),
-    [pendingTransactionsMostRecentFirst, transactions]
+      transactionOverlaysMostRecentFirst
+        .filter(overlayTx => !backendTransactions.some(tx => tx.hash === overlayTx.hash && tx.chainId === overlayTx.chainId))
+        .concat(backendTransactions),
+    [backendTransactions, transactionOverlaysMostRecentFirst]
   );
 
-  const slicedTransaction = useMemo(() => allTransactions, [allTransactions]);
-
   const { contacts } = useContacts();
-  const theme = useTheme();
-  const { navigate } = useNavigation();
 
-  const accountState = {
-    accountAddress,
+  const { sections } = buildTransactionsSections({
     contacts,
-    navigate,
-    theme,
-    transactions: slicedTransaction,
-    nativeCurrency,
-  };
-
-  const { sections } = buildTransactionsSections(accountState);
-
-  const remainingItemsLabel = useMemo(() => {
-    if (!hasNextPage) {
-      return null;
-    }
-    return `Show ${NOE_PAGE} more transactions...`;
-  }, [hasNextPage]);
+    transactions,
+  });
 
   return {
     isLoadingTransactions: isLoading,
     nextPage: fetchNextPage,
-    remainingItemsLabel,
+    remainingItemsLabel: hasNextPage ? `Show ${NOE_PAGE} more transactions...` : null,
     sections,
-    transactions: ios ? allTransactions : slicedTransaction,
-    transactionsCount: slicedTransaction.length,
+    transactions,
+    transactionsCount: transactions.length,
   };
 }

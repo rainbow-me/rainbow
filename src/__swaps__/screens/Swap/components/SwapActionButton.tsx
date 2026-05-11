@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { StyleSheet, View, type StyleProp, type TextStyle, type ViewStyle } from 'react-native';
+import { Platform, StyleSheet, View, type StyleProp, type TextStyle, type ViewStyle } from 'react-native';
 
 import chroma from 'chroma-js';
 import Animated, {
@@ -19,7 +19,6 @@ import { TIMING_CONFIGS } from '@/components/animations/animationConfigs';
 import { GestureHandlerButton, type GestureHandlerButtonProps } from '@/components/buttons/GestureHandlerButton';
 import { AnimatedText, Box, Column, Columns, Cover, globalColors, Stack, useColorMode, useForegroundColor } from '@/design-system';
 import { type SharedOrDerivedValueText } from '@/design-system/components/Text/AnimatedText';
-import { IS_IOS } from '@/env';
 import { type DepositContextType } from '@/systems/funding/types';
 
 import { useSwapContext } from '../providers/swap-provider';
@@ -267,7 +266,7 @@ const HoldProgress = ({ holdProgress }: { holdProgress: SharedValue<number> }) =
           {
             backgroundColor: brightenedColor,
             height: '100%',
-            ...(IS_IOS
+            ...(Platform.OS === 'ios'
               ? {
                   shadowColor: brightenedColor,
                   shadowOffset: {

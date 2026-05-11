@@ -2,8 +2,8 @@ import React from 'react';
 
 import { type DerivedValue } from 'react-native-reanimated';
 
-import { type GasSpeed } from '@/__swaps__/types/gas';
 import { Box } from '@/design-system';
+import { type GasSpeed } from '@/features/gas/types/gasSpeed';
 
 import { EstimatedGasFee } from './EstimatedGasFee';
 import { GasMenu } from './GasMenu';

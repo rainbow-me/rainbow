@@ -1,8 +1,9 @@
+import { Platform } from 'react-native';
+
 import { Easing } from 'react-native-reanimated';
 
 import { buildTestSafeConfig } from '@/components/animations/animationConfigs';
 import { NAVBAR_HEIGHT_WITH_PADDING } from '@/components/navbar/constants';
-import { IS_ANDROID, IS_IOS } from '@/env';
 import { THICK_BORDER_WIDTH } from '@/styles/constants';
 import deviceUtils, { DEVICE_HEIGHT, NAVIGATION_BAR_HEIGHT } from '@/utils/deviceUtils';
 import { getDefaultKeyboardHeight } from '@/utils/keyboardHeight';
@@ -20,12 +21,13 @@ const TOP_INSET = Math.max(safeAreaInsetValues.top, 20);
 
 export const REVIEW_SHEET_ROW_HEIGHT = 10;
 export const REVIEW_SHEET_ROW_GAP = 24;
+export const REVIEW_SHEET_SPONSORED_GAS_OFFSET = 68;
 export const REVIEW_SHEET_HEIGHT = 412;
 export const SETTINGS_SHEET_HEIGHT = 299;
 export const SETTINGS_SHEET_ROW_GAP = 28;
 export const ACTION_BUTTON_HEIGHT = 45;
 export const GAS_SHEET_HEIGHT = 274;
-export const BOTTOM_ACTION_BAR_HEIGHT = IS_ANDROID ? 48 + 32 + safeAreaInsetValues.bottom : 114;
+export const BOTTOM_ACTION_BAR_HEIGHT = Platform.OS === 'android' ? 48 + 32 + safeAreaInsetValues.bottom : 114;
 export const BASE_INPUT_HEIGHT = 104;
 export const BASE_INPUT_WIDTH = deviceUtils.dimensions.width - 24;
 export const EXPANDED_REVIEW_SECTION = 408;
@@ -35,7 +37,7 @@ export const EXPANDED_INPUT_HEIGHT =
   NAVBAR_HEIGHT_WITH_PADDING -
   BASE_INPUT_HEIGHT -
   SPACE_BETWEEN_SWAP_BUBBLES -
-  Math.max(IS_IOS ? safeAreaInsetValues.bottom : NAVIGATION_BAR_HEIGHT, SPACE_BETWEEN_SWAP_BUBBLES);
+  Math.max(Platform.OS === 'ios' ? safeAreaInsetValues.bottom : NAVIGATION_BAR_HEIGHT, SPACE_BETWEEN_SWAP_BUBBLES);
 export const INPUT_INNER_WIDTH = BASE_INPUT_WIDTH - THICK_BORDER_WIDTH * 2;
 
 export const SLIDER_HEIGHT = 16;

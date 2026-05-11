@@ -1,4 +1,5 @@
 import React, { memo, useCallback, useMemo } from 'react';
+import { Platform } from 'react-native';
 
 import { capitalize, uniqBy } from 'lodash';
 import startCase from 'lodash/startCase';
@@ -9,7 +10,6 @@ import RainbowCoinIcon from '@/components/coin-icon/RainbowCoinIcon';
 import RequestVendorLogoIcon from '@/components/coin-icon/RequestVendorLogoIcon';
 import { Box, Column, Columns, globalColors, Inline, Stack, Text } from '@/design-system';
 import { NativeCurrencyKeys } from '@/entities/nativeCurrencyTypes';
-import { IS_ANDROID } from '@/env';
 import { type PositionAsset, type RainbowPosition } from '@/features/positions/types';
 import { opacity } from '@/framework/ui/utils/opacity';
 import { useNavigation } from '@/navigation/Navigation';
@@ -104,7 +104,7 @@ export const PositionCard = memo(function PositionCard({ position }: PositionCar
         onPress={onPressHandler}
         color={opacity(positionColor, 0.04)}
         borderColor={opacity(positionColor, 0.02)}
-        ignoreShadow={IS_ANDROID && isDarkMode}
+        ignoreShadow={Platform.OS === 'android' && isDarkMode}
         padding={'16px'}
       >
         <Stack space="16px">
@@ -119,7 +119,7 @@ export const PositionCard = memo(function PositionCard({ position }: PositionCar
                   size={32}
                   borderRadius={10}
                   imageUrl={position.dapp.icon_url}
-                  noShadow={IS_ANDROID}
+                  noShadow={Platform.OS === 'android'}
                 />
               </Column>
               <Column width="content">

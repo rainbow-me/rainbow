@@ -1,5 +1,5 @@
 import React from 'react';
-import { Pressable, StyleSheet } from 'react-native';
+import { Platform, Pressable, StyleSheet } from 'react-native';
 
 import Animated, { useDerivedValue } from 'react-native-reanimated';
 
@@ -22,7 +22,6 @@ import {
   useColorMode,
   useForegroundColor,
 } from '@/design-system';
-import { IS_ANDROID, IS_IOS } from '@/env';
 import { opacity } from '@/framework/ui/utils/opacity';
 import * as i18n from '@/languages';
 import { useRemoteConfig } from '@/model/remoteConfig';
@@ -113,7 +112,7 @@ export function SwapNavbar() {
       top={{ custom: 0 }}
       width="full"
     >
-      {IS_ANDROID ? <Pressable onPress={goBack} style={[StyleSheet.absoluteFillObject]} /> : null}
+      {Platform.OS === 'android' ? <Pressable onPress={goBack} style={[StyleSheet.absoluteFillObject]} /> : null}
       <Box
         borderRadius={5}
         height={{ custom: 5 }}
@@ -140,7 +139,7 @@ export function SwapNavbar() {
         }
         rightComponent={<SwapSettings />}
         titleComponent={
-          <Inset bottom={{ custom: IS_IOS ? 5.5 : 14 }}>
+          <Inset bottom={{ custom: Platform.OS === 'ios' ? 5.5 : 14 }}>
             <AnimatedText align="center" color="label" size="20pt" weight="heavy">
               {swapOrBridgeLabel}
             </AnimatedText>

@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { StyleSheet } from 'react-native';
+import { Platform, StyleSheet } from 'react-native';
 
 import Clipboard from '@react-native-clipboard/clipboard';
 import MaskedView from '@react-native-masked-view/masked-view';
@@ -19,7 +19,6 @@ import { useSwapContext } from '@/__swaps__/screens/Swap/providers/swap-provider
 import { GestureHandlerButton } from '@/components/buttons/GestureHandlerButton';
 import { TOKEN_SEARCH_INPUT_HORIZONTAL_PADDING } from '@/components/token-search/constants';
 import { AnimatedText, Box, Column, Columns, Stack, useColorMode } from '@/design-system';
-import { IS_ANDROID, IS_IOS } from '@/env';
 import * as i18n from '@/languages';
 import Navigation from '@/navigation/Navigation';
 import Routes from '@/navigation/routesNames';
@@ -216,7 +215,7 @@ export const styles = StyleSheet.create({
   inputTextMask: { alignItems: 'center', flexDirection: 'row', height: 36, pointerEvents: 'box-only' },
   rootViewBackground: {
     backgroundColor: 'transparent',
-    borderRadius: IS_ANDROID ? 20 : ScreenCornerRadius,
+    borderRadius: Platform.OS === 'android' ? 20 : ScreenCornerRadius,
     flex: 1,
     overflow: 'hidden',
   },
@@ -228,7 +227,7 @@ export const styles = StyleSheet.create({
   staticInputStyles: {
     borderCurve: 'continuous',
     borderRadius: 30,
-    borderWidth: IS_IOS ? THICK_BORDER_WIDTH : 0,
+    borderWidth: Platform.OS === 'ios' ? THICK_BORDER_WIDTH : 0,
     overflow: 'hidden',
     padding: TOKEN_SEARCH_INPUT_HORIZONTAL_PADDING,
     width: BASE_INPUT_WIDTH,

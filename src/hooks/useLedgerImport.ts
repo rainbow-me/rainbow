@@ -1,11 +1,10 @@
 import { useCallback, useEffect, useRef } from 'react';
+import { Platform } from 'react-native';
 
 import { type Subscription } from '@ledgerhq/hw-transport';
 import TransportBLE from '@ledgerhq/react-native-hw-transport-ble';
 
-import { IS_ANDROID, IS_IOS } from '@/env';
 import { logger, RainbowError } from '@/logger';
-import { DebugContext } from '@/logger/debugContext';
 import { checkAndRequestAndroidBluetooth, showBluetoothPermissionsAlert, showBluetoothPoweredOffAlert } from '@/utils/bluetoothPermissions';
 import { ledgerErrorHandler, type LEDGER_ERROR_CODES } from '@/utils/ledger';
 
@@ -70,7 +69,7 @@ export function useLedgerImport({
           // App is not authorized to use Bluetooth
           if (e.type === 'Unauthorized') {
             logger.debug('[useLedgerImport]: Bluetooth Unauthorized', {});
-            if (IS_IOS) {
+            if (Platform.OS === 'ios') {
               await showBluetoothPermissionsAlert();
               return;
             } else {
@@ -134,7 +133,7 @@ export function useLedgerImport({
     const asyncFn = async () => {
       logger.debug('[useLedgerImport]: init device polling', {});
 
-      const isBluetoothEnabled = IS_ANDROID ? await checkAndRequestAndroidBluetooth() : true;
+      const isBluetoothEnabled = Platform.OS === 'android' ? await checkAndRequestAndroidBluetooth() : true;
       logger.debug('[useLedgerImport]: bluetooth enabled? ', { isBluetoothEnabled });
 
       if (isBluetoothEnabled) {

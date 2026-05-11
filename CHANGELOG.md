@@ -21,6 +21,157 @@ and this project adheres to [Semantic Versioning](http://semver.org/)
 
 ### Testing
 
+## [2.0.32](https://github.com/rainbow-me/rainbow/releases/tag/v2.0.32)
+
+### Added
+
+- Set Polymarket referrer inside dapp browser (https://github.com/rainbow-me/rainbow/pull/7388)
+- Set Lighter referrer inside dapp browser (https://github.com/rainbow-me/rainbow/pull/7408)
+- Add user property analytics for RNBW tier info (https://github.com/rainbow-me/rainbow/pull/7365)
+- Implement Polymarket relayer migration (https://github.com/rainbow-me/rainbow/pull/7427)
+
+### Changed
+
+- Correct podfile.lock (https://github.com/rainbow-me/rainbow/pull/7431)
+- Update translations from Crowdin (https://github.com/rainbow-me/rainbow/pull/7429)
+- Remove claimUserRewards mutation (https://github.com/rainbow-me/rainbow/commit/daf838b4927f8ac4b500c1f9138e8cac12491809)
+- Bump iOS and Android to v2.0.32 (https://github.com/rainbow-me/rainbow/pull/7432)
+- Hide Farcaster tab from Trending in Discover (https://github.com/rainbow-me/rainbow/pull/7414)
+- Remove dead translations and improve i18n coverage (https://github.com/rainbow-me/rainbow/pull/7434)
+- Clean up staking card UI (https://github.com/rainbow-me/rainbow/pull/7425)
+- Consolidate backup code into features/backup domain module (https://github.com/rainbow-me/rainbow/pull/7430)
+- Consolidate gas code into new features/gas directory (https://github.com/rainbow-me/rainbow/pull/7435)
+- Move gas speed menu as a shared component (https://github.com/rainbow-me/rainbow/pull/7439)
+- Bump versionCode on Android (https://github.com/rainbow-me/rainbow/pull/7440)
+
+## [2.0.31](https://github.com/rainbow-me/rainbow/releases/tag/v2.0.31)
+
+### Added
+
+- Add Polymarket relayer migration (https://github.com/rainbow-me/rainbow/commit/5587138ff85923219d7c721e71e3b4d49bd40e18)
+
+### Changed
+
+- Bump iOS and Android to v2.0.31 (https://github.com/rainbow-me/rainbow/pull/7413)
+- Bump @shopify/flash-list from 1.8.2 to 1.8.3 (https://github.com/rainbow-me/rainbow/pull/7396)
+- Remove claimUserRewards mutation (https://github.com/rainbow-me/rainbow/commit/daf838b4927f8ac4b500c1f9138e8cac12491809)
+
+### Fixed
+
+- Patch @coinbase/mobile-wallet-protocol-host for forward-compat with RN 0.81 on Android (https://github.com/rainbow-me/rainbow/pull/7397)
+- Fix sponsored gas UI flicker (https://github.com/rainbow-me/rainbow/pull/7423)
+
+## [2.0.30](https://github.com/rainbow-me/rainbow/releases/tag/v2.0.30)
+
+### Added
+
+- Integrate new delegation SDK for Sponsored Swaps (https://github.com/rainbow-me/rainbow/pull/7380)
+
+### Changed
+
+- Bump iOS and Android to v2.0.30 (https://github.com/rainbow-me/rainbow/pull/7401)
+- Disallow unused imports (https://github.com/rainbow-me/rainbow/pull/7392)
+- Update polymarket collateral contracts (https://github.com/rainbow-me/rainbow/pull/7410)
+
+### Fixed
+
+- Fix initial sponsorship prediction (https://github.com/rainbow-me/rainbow/pull/7412)
+
+## [2.0.29](https://github.com/rainbow-me/rainbow/releases/tag/v2.0.29)
+
+### Changed
+
+- Bump iOS and Android to v2.0.29 (https://github.com/rainbow-me/rainbow/pull/7400)
+
+### Fixed
+
+- Correct polymarket data URL (https://github.com/rainbow-me/rainbow/pull/7399)
+
+## [2.0.28](https://github.com/rainbow-me/rainbow/releases/tag/v2.0.28)
+
+### Added
+
+- Account for tier in rewards estimate (https://github.com/rainbow-me/rainbow/pull/7360)
+- Stake card top cutout + tier badge design (https://github.com/rainbow-me/rainbow/pull/7347)
+- Tier themed buttons (https://github.com/rainbow-me/rainbow/pull/7351)
+- Staking card design tweaks (https://github.com/rainbow-me/rainbow/pull/7356)
+- Black tier theming (https://github.com/rainbow-me/rainbow/pull/7361)
+- Staking earnings decimal formatting design (https://github.com/rainbow-me/rainbow/pull/7358)
+- Add name + description + about section to Perps Markets (https://github.com/rainbow-me/rainbow/pull/7354)
+- Add RNBW app icon (https://github.com/rainbow-me/rainbow/pull/7379)
+- Build against iOS 26 SDK / Xcode 26.3 (https://github.com/rainbow-me/rainbow/pull/7374)
+- Polymarket v2 migration (https://github.com/rainbow-me/rainbow/pull/7389)
+
+### Changed
+
+- Auto-order imports via Prettier (https://github.com/rainbow-me/rainbow/pull/7311)
+- Bump react-native-video 6.15.0 → 6.19.1 (https://github.com/rainbow-me/rainbow/pull/7322)
+- Bump eslint 8.22.0 → 8.57.1 (https://github.com/rainbow-me/rainbow/pull/7318)
+- Bump react-native-svg 15.11.2 → 15.15.4 (https://github.com/rainbow-me/rainbow/pull/7324)
+- Bump react-native-change-icon 4.0.0 → 5.0.0 (https://github.com/rainbow-me/rainbow/pull/7321)
+- Bump react-native-quick-md5 3.0.6 → 3.0.9 (https://github.com/rainbow-me/rainbow/pull/7325)
+- Bump @sentry/react-native 6.15.1 → 7.13.0 (https://github.com/rainbow-me/rainbow/pull/7320)
+- Migrate react-native-haptic-feedback to react-native-turbo-haptics (https://github.com/rainbow-me/rainbow/pull/7326)
+- Add .clang-format for C++/ObjC code formatting (https://github.com/rainbow-me/rainbow/pull/7340)
+- Add --active-arch-only to android run script (https://github.com/rainbow-me/rainbow/pull/7339)
+- Bump iOS and Android to v2.0.25 (https://github.com/rainbow-me/rainbow/pull/7346)
+- Capture adb logcat during e2e test retries (https://github.com/rainbow-me/rainbow/pull/7341)
+- Bump iOS and Android to v2.0.26 (https://github.com/rainbow-me/rainbow/pull/7349)
+- Bump iOS and Android to v2.0.27 (https://github.com/rainbow-me/rainbow/pull/7352)
+- Update react-native-gesture-handler to 2.31.1 (https://github.com/rainbow-me/rainbow/pull/7330)
+- Bump react-native-ble-plx 3.2.1 → 3.4.0 (https://github.com/rainbow-me/rainbow/pull/7323)
+- Bump @react-native-firebase/\* 20.1.0 → 23.8.8 (https://github.com/rainbow-me/rainbow/pull/7319)
+- Retire native module whitelisting (https://github.com/rainbow-me/rainbow/pull/7357)
+- Pin @ledgerhq/logs to a single version (https://github.com/rainbow-me/rainbow/pull/7355)
+- Use webview fork directly instead of patch-package (https://github.com/rainbow-me/rainbow/pull/7314)
+- Update @nktkas/hyperliquid lib (https://github.com/rainbow-me/rainbow/pull/7353)
+- Skip 'Sign in with ease' optionally in Google login for e2e tests (https://github.com/rainbow-me/rainbow/pull/7371)
+- Centralize Xcode version pin in .xcode-version (https://github.com/rainbow-me/rainbow/pull/7372)
+- Bump zustand 4.5.5 → 5.0.10 (https://github.com/rainbow-me/rainbow/pull/7370)
+- Bump react-native-screens 4.10.0 → 4.16.0 (https://github.com/rainbow-me/rainbow/pull/7368)
+- Polymarket rules component extraction (https://github.com/rainbow-me/rainbow/pull/7369)
+- Include .xcode-version in rock build fingerprint (https://github.com/rainbow-me/rainbow/pull/7376)
+- Drop custom simulator boot-wait loop for iOS e2e (https://github.com/rainbow-me/rainbow/pull/7375)
+- Bump react-native-safe-area-context 5.4.0 → 5.7.0 (https://github.com/rainbow-me/rainbow/pull/7367)
+- Bump iOS and Android to v2.0.28 (https://github.com/rainbow-me/rainbow/pull/7386)
+- Instrument identify calls to diagnose missing traits (https://github.com/rainbow-me/rainbow/pull/7385)
+- Skip iOS prebuild hook in postinstall on non-Darwin (https://github.com/rainbow-me/rainbow/pull/7393)
+
+### Fixed
+
+- Align market fetching to new polymarket API (https://github.com/rainbow-me/rainbow/pull/7328)
+- Remove incorrect @ReactMethod in NavbarHeightModule (https://github.com/rainbow-me/rainbow/pull/7317)
+- Use Animated.View for RainbowToast inner content container (https://github.com/rainbow-me/rainbow/pull/7336)
+- Inline time utility worklet calculations (https://github.com/rainbow-me/rainbow/pull/7335)
+- Remove dead TransactionDetailsAddressRow and fix ContextMenu import in ENSIntroSheet (https://github.com/rainbow-me/rainbow/pull/7338)
+- Rename SlackSheet internal borderRadius prop to avoid ViewStyle collision (https://github.com/rainbow-me/rainbow/pull/7334)
+- Use TAB_BAR_HEIGHT for Android browser search bottom bar position (https://github.com/rainbow-me/rainbow/pull/7345)
+- Replace dispatchCommand with runOnJS for browser search input focus (https://github.com/rainbow-me/rainbow/pull/7337)
+- Round zIndex value in useAnimatedTab for Fabric compatibility (https://github.com/rainbow-me/rainbow/pull/7332)
+- Guard decelerationRate string values to iOS only (https://github.com/rainbow-me/rainbow/pull/7333)
+- Restore decelerationRate="normal" on BrowserTab for iOS (https://github.com/rainbow-me/rainbow/pull/7363)
+- Remove corner radius on perps share image (https://github.com/rainbow-me/rainbow/pull/7359)
+- Use direct reanimated type imports instead of namespace access (https://github.com/rainbow-me/rainbow/pull/7331)
+- Surface prebuild hook errors in CI logs (https://github.com/rainbow-me/rainbow/pull/7373)
+- Duplicate foreground notification on iOS (https://github.com/rainbow-me/rainbow/pull/7391)
+- Enforce EIP-55 on import and heal non-canonical persisted state (https://github.com/rainbow-me/rainbow/pull/7390)
+- Staking card height on Android (https://github.com/rainbow-me/rainbow/pull/7395)
+
+## [2.0.27](https://github.com/rainbow-me/rainbow/releases/tag/v2.0.27)
+
+### Added
+
+- Add RNBW app icon (https://github.com/rainbow-me/rainbow/pull/7379)
+
+### Changed
+
+- chore: retire native module whitelisting (https://github.com/rainbow-me/rainbow/pull/7357)
+- Bump iOS and Android to v2.0.27 (https://github.com/rainbow-me/rainbow/pull/7352)
+
+### Fixed
+
+- Pinned the webview fork to a specific commit SHA for deterministic installs, replacing a branch-based reference (https://github.com/rainbow-me/rainbow/pull/7314)
+
 ## [2.0.26](https://github.com/rainbow-me/rainbow/releases/tag/v2.0.26)
 
 ### Added

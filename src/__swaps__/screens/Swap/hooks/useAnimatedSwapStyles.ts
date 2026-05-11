@@ -1,3 +1,5 @@
+import { Platform } from 'react-native';
+
 import {
   interpolate,
   useAnimatedStyle,
@@ -15,6 +17,7 @@ import {
   REVIEW_SHEET_HEIGHT,
   REVIEW_SHEET_ROW_GAP,
   REVIEW_SHEET_ROW_HEIGHT,
+  REVIEW_SHEET_SPONSORED_GAS_OFFSET,
   SETTINGS_SHEET_HEIGHT,
   SETTINGS_SHEET_ROW_GAP,
 } from '@/__swaps__/screens/Swap/constants';
@@ -27,8 +30,9 @@ import { TOKEN_SEARCH_FOCUSED_INPUT_HEIGHT } from '@/components/token-search/con
 import { getTokenSearchButtonWrapperStyle } from '@/components/token-search/styles';
 import { useColorMode } from '@/design-system';
 import { foregroundColors } from '@/design-system/color/palettes';
-import { IS_ANDROID } from '@/env';
+import { useIsSponsoredSwap } from '@/features/delegation/sponsoredSwapStore';
 import { opacity } from '@/framework/ui/utils/opacity';
+import { useStoreSharedValue } from '@/state/internal/hooks/useStoreSharedValue';
 import { THICK_BORDER_WIDTH } from '@/styles/constants';
 import safeAreaInsetValues from '@/utils/safeAreaInsetValues';
 
@@ -60,6 +64,7 @@ export function useAnimatedSwapStyles({
   swapInfo: DerivedValue<{ areAllInputsZero: boolean; areBothAssetsSet: boolean; isBridging: boolean }>;
 }) {
   const { isDarkMode } = useColorMode();
+  const isSponsoredSwap = useStoreSharedValue(useIsSponsoredSwap, s => s);
 
   const flipButtonStyle = useAnimatedStyle(() => {
     return {
@@ -201,6 +206,7 @@ export function useAnimatedSwapStyles({
 
     if (isReviewing) {
       heightForCurrentSheet -= REVIEW_SHEET_ROW_HEIGHT + REVIEW_SHEET_ROW_GAP;
+      if (isSponsoredSwap.value) heightForCurrentSheet -= REVIEW_SHEET_SPONSORED_GAS_OFFSET;
     } else if (degenMode.value && isSettingsOpen && swapInfo.value.areBothAssetsSet) {
       heightForCurrentSheet += REVIEW_SHEET_ROW_HEIGHT + SETTINGS_SHEET_ROW_GAP * 2 + THICK_BORDER_WIDTH;
     }
@@ -238,7 +244,7 @@ export function useAnimatedSwapStyles({
   });
 
   const flipButtonFetchingStyle = useAnimatedStyle(() => {
-    if (IS_ANDROID) return { borderWidth: 0 };
+    if (Platform.OS === 'android') return { borderWidth: 0 };
     return {
       borderWidth: isFetching.value ? withTiming(2, { duration: 300 }) : withTiming(THICK_BORDER_WIDTH, spinnerExitConfig),
     };

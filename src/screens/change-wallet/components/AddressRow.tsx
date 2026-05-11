@@ -7,22 +7,22 @@ import type { Address } from 'viem';
 import ButtonPressAnimation from '@/components/animations/ButtonPressAnimation';
 import { DropdownMenu, type MenuItem } from '@/components/DropdownMenu';
 import { Icon } from '@/components/icons';
-import { DELEGATION, getExperimentalFlag } from '@/config/experimentalHooks';
 import { Box, globalColors, Inline, Stack, Text, TextIcon, useColorMode, useForegroundColor } from '@/design-system';
 import { type TextWeight } from '@/design-system/components/Text/Text';
 import { type TextSize } from '@/design-system/typography/typeHierarchy';
-import { IS_INTERNAL } from '@/env';
+import { IS_STORE_INSTALL } from '@/env';
+import { useIsDelegationEnabled } from '@/features/delegation/featureFlags';
+import { isRainbowDelegated as hasRainbowDelegation, isThirdPartyDelegated as hasThirdPartyDelegation } from '@/features/delegation/status';
 import { opacity } from '@/framework/ui/utils/opacity';
 import { removeFirstEmojiFromString } from '@/helpers/emojiHandler';
 import * as i18n from '@/languages';
-import { getRemoteConfig } from '@/model/remoteConfig';
 import { AddressMenuAction, type AddressItem } from '@/screens/change-wallet/ChangeWalletSheet';
 import { AddressAvatar } from '@/screens/change-wallet/components/AddressAvatar';
 import { SelectedAddressBadge } from '@/screens/change-wallet/components/SelectedAddressBadge';
 import { usePinnedWalletsStore } from '@/state/wallets/pinnedWalletsStore';
 import { useTheme } from '@/theme/ThemeContext';
 import { address as abbreviateAddress } from '@/utils/abbreviations';
-import { DelegationStatus, useDelegationDisabled, useDelegations } from '@rainbow-me/delegation';
+import { useDelegationDisabled, useDelegations } from '@rainbow-me/delegation';
 
 const ROW_HEIGHT_WITH_PADDING = 64;
 const BUTTON_SIZE = 28;
@@ -83,12 +83,11 @@ interface AddressRowProps {
 export function AddressRow({ data, editMode, onPress, menuItems, onPressMenuItem }: AddressRowProps) {
   const { address, color, emoji, balance, isSelected, isReadOnly, isLedger, label, image } = data;
 
-  const delegationEnabled = getRemoteConfig().delegation_enabled || getExperimentalFlag(DELEGATION);
-
+  const delegationEnabled = useIsDelegationEnabled();
   const delegations = useDelegations(address as Address);
   const isDelegationDisabled = useDelegationDisabled(address as Address);
-  const isDelegated = delegations?.some(d => d.delegationStatus === DelegationStatus.RAINBOW_DELEGATED) ?? false;
-  const isThirdPartyDelegated = delegations?.some(d => d.delegationStatus === DelegationStatus.THIRD_PARTY_DELEGATED) ?? false;
+  const isDelegated = delegations?.some(hasRainbowDelegation) ?? false;
+  const isThirdPartyDelegated = delegations?.some(hasThirdPartyDelegation) ?? false;
 
   const walletName = useMemo(() => {
     return removeFirstEmojiFromString(label) || abbreviateAddress(address, 4, 6);
@@ -209,7 +208,7 @@ export function AddressRow({ data, editMode, onPress, menuItems, onPressMenuItem
                 )}
               </>
             )}
-            {IS_INTERNAL && delegationEnabled && !isReadOnly && !editMode && (
+            {!IS_STORE_INSTALL && delegationEnabled && !isReadOnly && !editMode && (
               <Box
                 paddingHorizontal="8px"
                 paddingVertical="6px"

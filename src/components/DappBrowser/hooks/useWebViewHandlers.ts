@@ -1,14 +1,14 @@
 import { useCallback, useRef, type MutableRefObject } from 'react';
 import type React from 'react';
+import { Platform } from 'react-native';
 
 import { runOnUI, withTiming, type SharedValue } from 'react-native-reanimated';
 import { type WebViewMessageEvent } from 'react-native-webview';
 import type WebView from 'react-native-webview';
-import { WebViewEvent, type ShouldStartLoadRequest, type WebViewNavigation } from 'react-native-webview/lib/WebViewTypes';
+import { type ShouldStartLoadRequest, type WebViewNavigation } from 'react-native-webview/lib/WebViewTypes';
 
 import { appMessenger, type Messenger } from '@/browserMessaging/AppMessenger';
 import { TIMING_CONFIGS } from '@/components/animations/animationConfigs';
-import { IS_IOS } from '@/env';
 import Navigation from '@/navigation/Navigation';
 import Routes from '@/navigation/routesNames';
 import { useBrowserStore, type BrowserState } from '@/state/browser/browserStore';
@@ -19,6 +19,7 @@ import { generateUniqueId } from '@/worklets/strings';
 
 import { useBrowserContext } from '../BrowserContext';
 import { useBrowserWorkletsContext } from '../BrowserWorkletsContext';
+import { addReferralToDappBrowserUrl } from '../dappReferrals';
 import { handleProviderRequestApp } from '../handleProviderRequest';
 import { type TabId } from '../types';
 import { isValidAppStoreUrl } from '../utils';
@@ -50,6 +51,7 @@ export function useWebViewHandlers({
   const { updateTabUrlWorklet } = useBrowserWorkletsContext();
 
   const currentMessengerRef = useRef<MessengerWithUrl | null>(null);
+  const dappReferralsAppliedRef = useRef(new Set<string>());
   const logoRef = useRef<string | null>(null);
 
   const getCurrentMessenger = useCallback(
@@ -73,7 +75,7 @@ export function useWebViewHandlers({
         const parsedData = typeof data === 'string' ? JSON.parse(data) : data;
         if (!parsedData || (!parsedData.topic && !parsedData.payload)) return;
 
-        if (IS_IOS && parsedData.topic === 'injectedUnderPageBackgroundColor') {
+        if (Platform.OS === 'ios' && parsedData.topic === 'injectedUnderPageBackgroundColor') {
           const { underPageBackgroundColor } = parsedData.payload;
 
           if (underPageBackgroundColor && typeof underPageBackgroundColor === 'string') {
@@ -82,7 +84,7 @@ export function useWebViewHandlers({
         } else if (parsedData.topic === 'websiteMetadata') {
           const { bgColor, logoUrl, pageTitle } = parsedData.payload;
 
-          if (!IS_IOS && bgColor && typeof bgColor === 'string') {
+          if (Platform.OS !== 'ios' && bgColor && typeof bgColor === 'string') {
             backgroundColor.value = bgColor;
           }
 
@@ -138,6 +140,26 @@ export function useWebViewHandlers({
     [addRecent, backgroundColor, setLogo, setTitle, tabId, titleRef, getCurrentMessenger]
   );
 
+  const applyDappReferral = useCallback(
+    (url: string) => {
+      const dappHostname = getDappHostname(url);
+      if (!dappHostname || dappReferralsAppliedRef.current.has(dappHostname)) {
+        return false;
+      }
+
+      const referralUrl = addReferralToDappBrowserUrl(url);
+      if (referralUrl === url) {
+        return false;
+      }
+
+      dappReferralsAppliedRef.current.add(dappHostname);
+      useBrowserStore.getState().goToPage(referralUrl, tabId);
+      runOnUI(updateTabUrlWorklet)({ tabId, url: referralUrl });
+      return true;
+    },
+    [tabId, updateTabUrlWorklet]
+  );
+
   const handleShouldStartLoadWithRequest = useCallback(
     (request: ShouldStartLoadRequest) => {
       if (request.url.startsWith('rainbow://wc') || request.url.startsWith('https://rnbwappdotcom.app.link/')) {
@@ -145,9 +167,14 @@ export function useWebViewHandlers({
         activeTabRef.current?.reload();
         return false;
       }
+
+      if (request.isTopFrame && applyDappReferral(request.url)) {
+        return false;
+      }
+
       return true;
     },
-    [activeTabRef]
+    [activeTabRef, applyDappReferral]
   );
 
   const handleOnLoadProgress = useCallback(

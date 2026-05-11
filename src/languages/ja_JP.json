@@ -358,7 +358,8 @@
       "unhide": "表示する",
       "unpin": "固定を解除する",
       "view": "表示",
-      "hidden": "非表示"
+      "hidden": "非表示",
+      "claim": "請求"
     },
     "cards": {
       "ens_create_profile": {
@@ -470,7 +471,6 @@
         "quote_error": "見積りエラー",
         "no_route_found": "ルートが見つかりません",
         "fetching_quote": "見積もりを取得中...",
-        "rainbow_eth_rewards": "Rainbow ETH報酬",
         "merkl_claimable": "%{dappName} Vault",
         "merkl_claimable_description": "%{assetSymbols} 戦略",
         "select_a_network": "ネットワークを選択",
@@ -994,6 +994,8 @@
       "chonks_title": "チョンキエスト アイコンをアンロックしました。",
       "mog_description": "簡単に宇宙を支配し、色でモッグします。",
       "mog_title": "アンロック\nRainbow Mogs",
+      "rnbw_description": "420ozの純粋な信念から鍛造された、Rainbowアイコンの輝かしい進化。",
+      "rnbw_title": "ロック解除しました\n ゴールデン $RNBW",
       "button": "アイコンをキャッチ"
     },
     "explain": {
@@ -1667,7 +1669,12 @@
         "confirm_button_error_text": "見積りエラー",
         "quote_error": "􀇿 見積もりは利用できません",
         "insufficient_balance": "􀫲 資金が不足しています",
-        "insufficient_gas": "ガスが不足しています"
+        "insufficient_gas": "ガスが不足しています",
+        "gas_sponsored": "無料",
+        "invalid_route_recipient_error": "ブリッジのルートがあなたのアカウント宛てではありません。もう一度お試しください。",
+        "missing_recipient_error": "受取人のアドレスがありません",
+        "no_wallet_connected": "ウォレットが接続されていません",
+        "unknown_execution_error": "入金の処理中に不明なエラーが発生しました"
       },
       "withdraw": {
         "title": "引き出す",
@@ -1688,15 +1695,17 @@
       "positions": {
         "entry": "エントリー",
         "mark_price": "マーケット価格",
+        "mark_price_full": "マーケット価格",
         "open_positions": "オープンポジション",
         "no_open_positions": "オープンポジションなし",
         "position_value": "ポジションバリュー",
-        "mark_price_full": "マーケット価格",
         "entry_price": "エントリー価格",
         "funding": "資金調達",
         "liquidation_price": "清算価格",
         "total": "合計",
-        "learn_more_about_perps": "Perpsについてもっと学びましょう"
+        "learn_more_about_perps": "Perpsについてもっと学びましょう",
+        "open": "オープン",
+        "close": "閉じる"
       },
       "new_position": {
         "hold_to_long": "ロングするにはホールド",
@@ -1717,6 +1726,13 @@
         "minimum": "最小",
         "minimum_amount_is": "最小金額は",
         "no_balance": "残高なし"
+      },
+      "about": {
+        "title": "概要",
+        "read_more": "続きを読む",
+        "volume_24h": "24時間のボリューム",
+        "open_interest": "建玉",
+        "funding": "資金調達"
       },
       "history": {
         "title": "履歴",
@@ -1823,15 +1839,7 @@
     },
     "points": {
       "points": {
-        "choose_claim_network": "請求ネットワークを選択",
-        "claim_rewards": "報酬を請求",
-        "try_again": "再試行",
-        "claim_on_network": "%{network}で請求",
-        "claiming_on_network": "%{network}で請求中",
-        "claimed_on_network": "%{network}で請求済み",
-        "bridge_error": "部分的な成功",
-        "error_claiming": "主張失敗",
-        "bridge_error_explainer": "報酬はOptimismで正常に受け取られましたが、%{network}への転送に失敗しました。必要に応じて、Swap機能を使用して手動で報酬をブリッジすることができます。"
+        "try_again": "再試行"
       }
     },
     "pools": {
@@ -2384,6 +2392,7 @@
       "find_a_token_to_buy": "購入するトークンを探す",
       "search_your_tokens": "トークンを検索",
       "error_executing_swap": "スワップの実行エラー",
+      "sponsorship_unavailable": "無料スワップは現在このネットワークでは一時的にご利用いただけません。ネットワーク手数料を付けてもう一度お試しください。",
       "tokens_input": {
         "tokens": "トークン",
         "sort": "ソート",
@@ -2405,7 +2414,8 @@
         "fast": "高速",
         "network_fee": "ネットワーク手数料",
         "normal": "通常",
-        "slow": "低速"
+        "slow": "低速",
+        "gas_sponsored": "無料"
       },
       "loading": "読み込み中...",
       "modal_types": {
@@ -3009,6 +3019,8 @@
         "warning": "これはアルファ版のソフトウェアです。",
         "welcome": "Rainbowへようこそ"
       },
+      "invalid_address_title": "無効なアドレス",
+      "invalid_address_message": "大文字・小文字の区別を確認して、もう一度お試しください。",
       "invalid_ens_name": "有効なENS名ではありません",
       "invalid_unstoppable_name": "これは有効なアンストッパブルの名前ではありません",
       "label": "財布",
@@ -3613,19 +3625,15 @@
       },
       "errors": {
         "header": "トークンの発行エラー",
-        "api_request_failed": "APIリクエストが失敗しました",
-        "api_response_invalid": "API応答が無効です",
         "contract_interaction_failed": "契約相互作用が失敗しました",
         "gas_estimation_failed": "ガス見積もりが失敗しました",
         "insufficient_funds": "資金が不足しています",
-        "submission_details_missing": "提出の詳細が不足しています",
-        "transaction_rejected": "トランザクションが拒否されました",
-        "transaction_failed": "トランザクションが失敗しました",
-        "transaction_simulation_failed": "トランザクションシミュレーションが失敗しました",
         "unknown_error": "不明なエラー",
+        "transaction_failed": "トランザクションが失敗しました",
         "wallet_connection_error": "ウォレット接続エラー",
         "invalid_params": "無効なパラメータ",
-        "missing_required_param": "必要なパラメータが不足しています"
+        "missing_required_param": "必要なパラメータが不足しています",
+        "unsupported_network": "このネットワークではトークンのローンチはサポートされていません"
       }
     },
     "done": "完了",
@@ -3667,18 +3675,6 @@
               "午前零時（UTC）、",
               "深夜 (午前0:00 UTC)",
               "リーディングトークンが日ごとの勝者として戴冠します。"
-            ]
-          },
-          "step_3": {
-            "title": "リワードを得る",
-            "subtitle_parts": [
-              "現在のキングの購入者は",
-              " 2倍ポイントをもらえます。"
-            ],
-            "subtitle_two_parts": [
-              "クリエイター",
-              " ポイントを獲得 ",
-              "戴冠時に。"
             ]
           }
         }
@@ -3725,6 +3721,8 @@
         "spread": "スプレッド",
         "hold_to_place_bet": "賭けを行うために保持",
         "placing_bet": "賭けを行っています...",
+        "approving_trading": "取引を承認しています…",
+        "converting_collateral": "担保を変換しています…",
         "confirming_order": "注文確認中...",
         "deposit_funds": "資金の預け入れ",
         "average_price": "平均価格",
@@ -3735,7 +3733,11 @@
         "errors": {
           "not_enough_liquidity": "十分な流動性がないため、注文を完全に実行できません。",
           "please_lower_amount": "金額を下げてもう一度お試しください。",
-          "no_liquidity_at_price": "この価格では流動性がありません。"
+          "no_liquidity_at_price": "この価格では流動性がありません。",
+          "trading_approval_failed_title": "取引を承認できません",
+          "trading_approval_failed_message": "もう一度やり直してください。",
+          "collateral_conversion_failed_title": "担保を変換できません",
+          "collateral_conversion_failed_message": "もう一度やり直してください。"
         }
       },
       "manage_position": {
@@ -3847,6 +3849,7 @@
         "subtitle": "$RNBWへようこそ。今すぐ対象状況を確認してください。"
       },
       "claim": {
+        "claim_title": "$RNBWを請求",
         "available_to_claim": "請求可能",
         "your_airdrop": "あなたのエアドロップ",
         "your_airdrop_description": "Rainbowをご利用いただきありがとうございます。エアドロップは、これまでのアクティビティに基づいて算出されます。",
@@ -3886,6 +3889,80 @@
         "oh_i_see": "なるほど..."
       },
       "longer_than_usual": "請求に通常より時間がかかっています。最大1分かかる場合があります。"
+    },
+    "rnbw_membership": {
+      "claim_card": {
+        "airdrop": "エアドロップ",
+        "rewards": "報酬"
+      },
+      "shared": {
+        "tier_label": "%{tierName} ティア",
+        "loyalty_progress": "ロイヤルティの進捗",
+        "fee_cashback": "手数料キャッシュバック"
+      },
+      "membership_tier_card": {
+        "stake_to_next_tier": "次のティアへステーク"
+      },
+      "membership_tiers_sheet": {
+        "stake_to_unlock": "ステークしてアンロック"
+      },
+      "staking_card": {
+        "stake": "ステーク",
+        "enable_staking": "ステーキングを有効にする",
+        "buy_rnbw": "RNBWを購入",
+        "unstake": "アンステーク",
+        "available_to_stake": "ステーク可能",
+        "available_to_add": "追加可能",
+        "minimum_stake_amount_required": "ステークするには最低%{minStakeAmount} RNBWが必要です"
+      },
+      "staking_earnings_card": {
+        "lifetime_earnings": "累計収益",
+        "exit_fee_rewards": "退出手数料報酬"
+      },
+      "unstake_penalty_recovery_card": {
+        "break_even_reached": "損益分岐点に到達！",
+        "earned_prefix": "あなたは稼ぎました ",
+        "earned_middle": " をプールから獲得。あと ",
+        "earned_suffix": " で純利益になります。"
+      }
+    },
+    "rnbw_staking": {
+      "deposit": {
+        "confirm_button": "長押しでステーク",
+        "confirm_button_error": "ステークできません",
+        "confirm_button_loading": "ステーキング...",
+        "confirm_button_over_balance": "RNBWが不足しています",
+        "confirm_button_zero_amount": "金額を入力してください",
+        "execution_error_title": "ステーキングエラー",
+        "insufficient_gas": "ガスが不足しています",
+        "quote_error": "ステークの準備ができません",
+        "receive": "報酬は自動的に請求されます",
+        "title": "$RNBWをステーク",
+        "minimum_amount": "最小 1 RNBW"
+      },
+      "learn_screen": {
+        "introducing": "紹介",
+        "title": "ステーキング",
+        "description": "RNBWをステークして、ステータスティアと会員限定特典をアンロックしましょう。",
+        "fee_cashback": "手数料キャッシュバック",
+        "fee_cashback_subtitle": "手数料の最大100%をステーク済みRNBWとして受け取れます。",
+        "exit_fee_title": "%{exitFeePercentage}% 退出手数料",
+        "exit_fee_subtitle": "いつでもアンステークできます。%{exitFeePercentage}%の退出手数料を支払うだけで、その手数料は他のステーカーに分配されます。",
+        "stay_in_to_earn_more": "続けるほど、より多く稼げます",
+        "stay_in_to_earn_more_subtitle": "誰かがRNBWをアンステークすると、退出手数料はプールに残っている人に戻ります。",
+        "enable_staking": "ステーキングを有効にする"
+      },
+      "unstake_sheet": {
+        "exit_fee": "退出手数料",
+        "warning_description": "アンステークすると、現在ステーク中の残高に対して%{exitFeePercentage}%の手数料がかかります。",
+        "unstake_failed_title": "アンステイク失敗",
+        "unstake_failed_message": "RNBWのアンステーク中にエラーが発生しました。もう一度お試しください。",
+        "unstake_title": "$%{symbol}をアンステーク",
+        "receive": "受け取る",
+        "total_return": "総リターン",
+        "hold_to_unstake": "長押しでアンステーク",
+        "unstaking": "アンステーキング..."
+      }
     },
     "wallet_error_sheet": {
       "title": "ウォレットを復元する",

@@ -9,7 +9,6 @@ import { type Address } from 'viem';
 
 import { type SwapsParams } from '@/__swaps__/screens/Swap/navigateToSwaps';
 import { type UserAssetFilter } from '@/__swaps__/types/assets';
-import { type GasTrend } from '@/__swaps__/utils/meteorology';
 import { type CardType } from '@/components/cards/GenericCard';
 import { type LearnCardKey, type LearnCategory } from '@/components/cards/utils/types';
 import { type ActiveTabRef } from '@/components/DappBrowser/types';
@@ -18,8 +17,10 @@ import { type ParsedAddressAsset } from '@/entities/tokens';
 import { type PendingTransaction, type RainbowTransaction } from '@/entities/transactions';
 import { type UniqueAsset } from '@/entities/uniqueAssets';
 import { type UnlockableAppIconKey } from '@/features/app-icon/models/appIcons';
+import { type BackupFile, type CloudBackups } from '@/features/backup/backup';
 import { type ENSProfile } from '@/features/ens/types/profile';
 import { type REGISTRATION_MODES } from '@/features/ens/utils/helpers';
+import { type GasTrend } from '@/features/gas/utils/meteorology';
 import { type HlTrade, type PerpMarket, type PerpsPosition, type TriggerOrderSource, type TriggerOrderType } from '@/features/perps/types';
 import { type PolymarketPosition } from '@/features/polymarket/types';
 import { type PolymarketEvent, type PolymarketMarket, type PolymarketMarketEvent } from '@/features/polymarket/types/polymarket-event';
@@ -35,7 +36,6 @@ import type walletBackupStepTypes from '@/helpers/walletBackupStepTypes';
 import type WalletBackupTypes from '@/helpers/walletBackupTypes';
 import { type WalletConnectApprovalSheetType } from '@/helpers/walletConnectApprovalSheetTypes';
 import { type ChartTime } from '@/hooks/charts/useChartInfo';
-import { type BackupFile, type CloudBackups } from '@/model/backup';
 import { type RainbowWallet } from '@/model/wallet';
 import { type Route } from '@/navigation/routesNames';
 import type Routes from '@/navigation/routesNames';
@@ -684,6 +684,7 @@ type RouteParams = {
     market: PerpMarket;
     position: PerpsPosition;
   };
+  [Routes.PERPS_ABOUT_SHEET]: undefined;
   [Routes.PERPS_TRADE_DETAILS_SHEET]: {
     trade: HlTrade;
   };

@@ -14,6 +14,7 @@ import { GestureHandlerButton } from '@/components/buttons/GestureHandlerButton'
 import { AnimatedText, Box, Inline, Stack, Text, useForegroundColor } from '@/design-system';
 import { getNumberFormatter } from '@/helpers/intl';
 import { abbreviateNumberWorklet } from '@/helpers/utilities';
+import * as i18n from '@/languages';
 import { useTokenMarketStats, type MarketStats, type TimeFrames } from '@/resources/metadata/tokenStats';
 import { useExpandedAssetSheetContext } from '@/screens/expandedAssetSheet/context/ExpandedAssetSheetContext';
 import { colors } from '@/styles';
@@ -307,24 +308,31 @@ const MarketStatsCardContent = memo(function MarketStatsCardContent({ marketData
         <Inline space="16px" wrap={false} separator={<Box width={1} height={'full'} backgroundColor={accentColors.opacity6} />}>
           {/* Left Hand Side */}
           <Stack space={'16px'}>
-            <LeftSideItem title="Transactions" value={transactions} />
-            <LeftSideItem title="Volume" value={volume} />
-            <LeftSideItem title="Makers" value={makers} />
+            <LeftSideItem title={i18n.t(i18n.l.market_data.transactions)} value={transactions} />
+            <LeftSideItem title={i18n.t(i18n.l.market_data.volume)} value={volume} />
+            <LeftSideItem title={i18n.t(i18n.l.market_data.makers)} value={makers} />
           </Stack>
           {/* Right Hand Side */}
           <Box style={{ flex: 1 }} gap={16}>
-            <RatioBarItem leftTitle="Buys" rightTitle="Sells" leftValue={buys} rightValue={sells} leftLabel={buys} rightLabel={sells} />
             <RatioBarItem
-              leftTitle="Bought"
-              rightTitle="Sold"
+              leftTitle={i18n.t(i18n.l.market_data.buys)}
+              rightTitle={i18n.t(i18n.l.market_data.sells)}
+              leftValue={buys}
+              rightValue={sells}
+              leftLabel={buys}
+              rightLabel={sells}
+            />
+            <RatioBarItem
+              leftTitle={i18n.t(i18n.l.market_data.bought)}
+              rightTitle={i18n.t(i18n.l.market_data.sold)}
               leftValue={buyVolume}
               rightValue={sellVolume}
               leftLabel={buyVolumeFormatted}
               rightLabel={sellVolumeFormatted}
             />
             <RatioBarItem
-              leftTitle="Buyers"
-              rightTitle="Sellers"
+              leftTitle={i18n.t(i18n.l.market_data.buyers)}
+              rightTitle={i18n.t(i18n.l.market_data.sellers)}
               leftValue={buyers}
               rightValue={sellers}
               leftLabel={buyers}

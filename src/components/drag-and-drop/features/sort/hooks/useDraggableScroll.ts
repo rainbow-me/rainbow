@@ -4,7 +4,7 @@ import { scrollTo, useAnimatedReaction, type AnimatedRef, type SharedValue } fro
 import type Animated from 'react-native-reanimated';
 
 import { useDndContext } from '@/components/drag-and-drop/DndContext';
-import { applyOffset, doesOverlapOnAxis, getFlexLayoutPosition } from '@/components/drag-and-drop/utils';
+import { applyOffset, doesOverlapOnAxis } from '@/components/drag-and-drop/utils';
 
 import { useDraggableSort, type UseDraggableSortOptions } from './useDraggableSort';
 

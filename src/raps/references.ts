@@ -1,16 +1,15 @@
 import { type Signer } from '@ethersproject/abstract-signer';
 import { type Address } from 'viem';
 
-import { type SwapsGasFeeParamsBySpeed } from '@/__swaps__/screens/Swap/hooks/useSelectedGas';
 import { type ParsedAsset } from '@/__swaps__/types/assets';
+import { type SwapsGasFeeParamsBySpeed } from '@/features/gas/hooks/useSelectedGas';
 import type {
   GasFeeParamsBySpeed,
   LegacyGasFeeParamsBySpeed,
   LegacyTransactionGasParamAmounts,
   TransactionGasParamAmounts,
-} from '@/entities/gas';
+} from '@/features/gas/types/gas';
 import { type TransactionClaimableTxPayload } from '@/screens/claimables/transaction/types';
-import { type ChainId } from '@/state/backendNetworks/types';
 import { type CrosschainQuote, type Quote } from '@rainbow-me/swaps';
 
 export enum SwapModalField {
@@ -45,18 +44,16 @@ export type SwapMetadata = {
 export type QuoteTypeMap = {
   swap: Quote;
   crosschainSwap: CrosschainQuote;
-  claimBridge: undefined;
   claimClaimable: Quote | CrosschainQuote;
 };
 
 type AdditionalParamsMap = {
   swap: undefined;
   crosschainSwap: undefined;
-  claimBridge: undefined;
   claimClaimable: { claimTxns: TransactionClaimableTxPayload[] };
 };
 
-export interface RapSwapActionParameters<T extends 'swap' | 'crosschainSwap' | 'claimBridge' | 'claimClaimable'> {
+export interface RapSwapActionParameters<T extends 'swap' | 'crosschainSwap' | 'claimClaimable'> {
   amount?: string | null;
   sellAmount: string;
   buyAmount?: string;
@@ -84,24 +81,11 @@ export interface RapUnlockActionParameters {
   amount: string;
 }
 
-export interface RapClaimActionParameters {
-  address?: Address;
-  assetToSell: ParsedAsset;
-  sellAmount: string;
-  assetToBuy: ParsedAsset;
-  meta?: SwapMetadata;
-  chainId: ChainId;
-  toChainId?: ChainId;
-  quote: undefined;
-  gasParams: TransactionGasParamAmounts | LegacyTransactionGasParamAmounts;
-}
-
 export type RapClaimClaimableActionParameters = { claimTx: TransactionClaimableTxPayload; asset: ParsedAsset };
 
 export type RapActionParameters =
   | RapSwapActionParameters<'swap'>
   | RapSwapActionParameters<'crosschainSwap'>
-  | RapClaimActionParameters
   | RapUnlockActionParameters
   | RapClaimClaimableActionParameters;
 
@@ -113,8 +97,6 @@ export type RapActionParameterMap = {
   swap: RapSwapActionParameters<'swap'>;
   crosschainSwap: RapSwapActionParameters<'crosschainSwap'>;
   unlock: RapUnlockActionParameters;
-  claim: RapClaimActionParameters;
-  claimBridge: RapClaimActionParameters;
   claimClaimable: RapClaimClaimableActionParameters;
 };
 
@@ -125,15 +107,13 @@ export interface RapAction<T extends RapActionTypes> {
 }
 
 export interface Rap {
-  actions: RapAction<'swap' | 'crosschainSwap' | 'unlock' | 'claim' | 'claimBridge' | 'claimClaimable'>[];
+  actions: RapAction<'swap' | 'crosschainSwap' | 'unlock' | 'claimClaimable'>[];
 }
 
 export enum rapActions {
   swap = 'swap',
   crosschainSwap = 'crosschainSwap',
   unlock = 'unlock',
-  claim = 'claim',
-  claimBridge = 'claimBridge',
   claimClaimable = 'claimClaimable',
 }
 
@@ -142,7 +122,6 @@ export type RapActionTypes = keyof typeof rapActions;
 export enum rapTypes {
   swap = 'swap',
   crosschainSwap = 'crosschainSwap',
-  claimBridge = 'claimBridge',
   claimClaimable = 'claimClaimable',
 }
 
@@ -173,8 +152,6 @@ type PrepareActionQuoteMap = {
   swap: Quote;
   crosschainSwap: CrosschainQuote;
   unlock: Quote | CrosschainQuote;
-  claim: Quote | CrosschainQuote;
-  claimBridge: Quote | CrosschainQuote;
   claimClaimable: Quote | CrosschainQuote;
 };
 
@@ -185,6 +162,6 @@ export interface PrepareActionProps<T extends RapActionTypes> {
 }
 
 export interface WalletExecuteRapProps {
-  rapActionParameters: RapSwapActionParameters<'swap' | 'crosschainSwap' | 'claimBridge' | 'claimClaimable'>;
+  rapActionParameters: RapSwapActionParameters<'swap' | 'crosschainSwap' | 'claimClaimable'>;
   type: RapTypes;
 }

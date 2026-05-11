@@ -1,5 +1,5 @@
 import React, { memo, useCallback, useEffect, useMemo, useRef } from 'react';
-import { StyleSheet, View, type NativeSyntheticEvent, type TextInput, type TextInputChangeEventData } from 'react-native';
+import { Platform, StyleSheet, View, type NativeSyntheticEvent, type TextInput, type TextInputChangeEventData } from 'react-native';
 
 import { LinearGradient } from 'expo-linear-gradient';
 import { BlurView } from 'react-native-blur-view';
@@ -9,7 +9,6 @@ import { AnimatedInput } from '@/components/AnimatedComponents/AnimatedInput';
 import ButtonPressAnimation from '@/components/animations/ButtonPressAnimation';
 import { Box, globalColors, Text, useColorMode } from '@/design-system';
 import { typeHierarchy } from '@/design-system/typography/typeHierarchy';
-import { IS_IOS } from '@/env';
 import { POLYMARKET_BACKGROUND_LIGHT } from '@/features/polymarket/constants';
 import { PolymarketNavigation } from '@/features/polymarket/screens/polymarket-navigator/PolymarketNavigator';
 import { polymarketEventSearchActions } from '@/features/polymarket/stores/polymarketEventSearchStore';
@@ -98,7 +97,6 @@ export const PolymarketSearchFooter = memo(function PolymarketSearchFooter() {
           </Text>
         </Box>
       </ButtonPressAnimation>
-
       <View style={styles.flex}>
         <Box
           height={SEARCH_BAR_HEIGHT}
@@ -111,7 +109,7 @@ export const PolymarketSearchFooter = memo(function PolymarketSearchFooter() {
         >
           {isDarkMode && (
             <>
-              {IS_IOS ? (
+              {Platform.OS === 'ios' ? (
                 <>
                   <BlurView blurIntensity={24} blurStyle={'dark'} style={StyleSheet.absoluteFill} />
                   <LinearGradient
