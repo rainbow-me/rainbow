@@ -10,9 +10,6 @@ import { BackgroundProvider } from '@/design-system';
 import useDimensions from '@/hooks/useDimensions';
 import Routes from '@/navigation/routesNames';
 import { NanoXDeviceAnimation } from '@/screens/hardware-wallets/components/NanoXDeviceAnimation';
-import { PairHardwareWalletIntroSheet } from '@/screens/hardware-wallets/PairHardwareWalletIntroSheet';
-import { PairHardwareWalletSearchSheet } from '@/screens/hardware-wallets/PairHardwareWalletSearchSheet';
-import { PairHardwareWalletSigningSheet } from '@/screens/hardware-wallets/PairHardwareWalletSigningSheet';
 
 import { type RootStackParamList } from './types';
 
@@ -68,7 +65,7 @@ export function PairHardwareWalletNavigator() {
             tabBar={() => null}
           >
             <Swipe.Screen
-              component={PairHardwareWalletIntroSheet}
+              getComponent={() => require('@/screens/hardware-wallets/PairHardwareWalletIntroSheet').PairHardwareWalletIntroSheet}
               name={Routes.PAIR_HARDWARE_WALLET_INTRO_SHEET}
               listeners={{
                 focus: () => {
@@ -77,7 +74,7 @@ export function PairHardwareWalletNavigator() {
               }}
             />
             <Swipe.Screen
-              component={PairHardwareWalletSearchSheet}
+              getComponent={() => require('@/screens/hardware-wallets/PairHardwareWalletSearchSheet').PairHardwareWalletSearchSheet}
               name={Routes.PAIR_HARDWARE_WALLET_SEARCH_SHEET}
               listeners={{
                 focus: () => {
@@ -86,7 +83,7 @@ export function PairHardwareWalletNavigator() {
               }}
             />
             <Swipe.Screen
-              component={PairHardwareWalletSigningSheet}
+              getComponent={() => require('@/screens/hardware-wallets/PairHardwareWalletSigningSheet').PairHardwareWalletSigningSheet}
               initialParams={{ flowContext }}
               name={Routes.PAIR_HARDWARE_WALLET_SIGNING_SHEET}
               listeners={{
