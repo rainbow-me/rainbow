@@ -92,14 +92,12 @@ export function MarketCarousel<T extends PlacementItem>({
   );
 
   const handleSeeAllPress = useCallback(() => {
+    analytics.track(event.discoverPlacementSeeAllPressed, {
+      placementId,
+      placementScreen,
+      placementTitle: title,
+    });
     onPressSeeAll();
-    requestIdleCallback(() =>
-      analytics.track(event.discoverPlacementSeeAllPressed, {
-        placementId,
-        placementScreen,
-        placementTitle: title,
-      })
-    );
   }, [onPressSeeAll, placementId, placementScreen, title]);
 
   const onScrollSettle = useDebouncedCallback(
