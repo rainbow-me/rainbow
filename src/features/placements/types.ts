@@ -5,7 +5,6 @@ export type PlacementId = (typeof PLACEMENT_IDS)[keyof typeof PLACEMENT_IDS];
 export type PlacementScreen = (typeof PLACEMENT_SCREENS)[keyof typeof PLACEMENT_SCREENS];
 
 export type PlacementSource = 'hyperliquid' | 'polymarket';
-export type PlacementProvider = PlacementSource;
 
 export type PlacementItemRef<Source extends PlacementSource = PlacementSource> = {
   source: Source;
