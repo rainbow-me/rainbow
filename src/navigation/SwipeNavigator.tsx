@@ -32,7 +32,6 @@ import { AssetUpdateTransactionWatcher } from '@/components/asset-update-transac
 import { BlurGradient } from '@/components/blur/BlurGradient';
 import { BrowserTabBarContextProvider, useBrowserTabBarContext } from '@/components/DappBrowser/BrowserContext';
 import { BROWSER_BACKGROUND_COLOR_DARK, BROWSER_BACKGROUND_COLOR_LIGHT } from '@/components/DappBrowser/constants';
-import { DappBrowser } from '@/components/DappBrowser/DappBrowser';
 import { discoverOpenSearchFnRef, discoverScrollToTopFnRef } from '@/components/Discover/DiscoverScreenContext';
 import { EasingGradient } from '@/components/easing-gradient/EasingGradient';
 import { FlexItem } from '@/components/layout';
@@ -53,9 +52,6 @@ import useExperimentalFlag from '@/config/experimentalHooks';
 import { Box, ColorModeProvider, Column, Columns, globalColors, useColorMode } from '@/design-system';
 import { IS_TEST } from '@/env';
 import { useShowKingOfTheHill } from '@/features/king-of-the-hill/hooks/useShowKingOfTheHill';
-import { KingOfTheHillScreen } from '@/features/king-of-the-hill/screens/KingOfTheHillScreen';
-import { RnbwMembershipScreen } from '@/features/rnbw-membership/screens/rnbw-membership-screen/RnbwMembershipScreen';
-import { RnbwRewardsScreen } from '@/features/rnbw-rewards/screens/rnbw-rewards-screen/RnbwRewardsScreen';
 import { opacity } from '@/framework/ui/utils/opacity';
 import { useAccountAccentColor } from '@/hooks/useAccountAccentColor';
 import useAccountSettings from '@/hooks/useAccountSettings';
@@ -67,8 +63,6 @@ import {
   RecyclerListViewScrollToTopProvider,
   useRecyclerListViewScrollToTopContext,
 } from '@/navigation/RecyclerListViewScrollToTopContext';
-import DiscoverScreen from '@/screens/DiscoverScreen';
-import WalletScreen from '@/screens/WalletScreen/WalletScreen';
 import { useBrowserStore } from '@/state/browser/browserStore';
 import { useStoreSharedValue } from '@/state/internal/hooks/useStoreSharedValue';
 import { setActiveRoute, useNavigationStore } from '@/state/navigation/navigationStore';
@@ -76,7 +70,6 @@ import { darkModeThemeColors, lightModeThemeColors } from '@/styles/colors';
 import { THICK_BORDER_WIDTH } from '@/styles/constants';
 import deviceUtils, { DEVICE_HEIGHT, DEVICE_WIDTH } from '@/utils/deviceUtils';
 
-import ProfileScreen from '../screens/ProfileScreen';
 import { MainListProvider, useMainList } from './MainListContext';
 import Routes, { type Route } from './routesNames';
 
@@ -693,27 +686,31 @@ function SwipeNavigatorScreens() {
       tabBarPosition="bottom"
     >
       <Swipe.Screen
-        getComponent={() => WalletScreen}
+        getComponent={() => require('@/screens/WalletScreen/WalletScreen').default}
         name={Routes.WALLET_SCREEN}
         options={{ title: TAB_BAR_ICONS[Routes.WALLET_SCREEN] }}
       />
       <Swipe.Screen
-        getComponent={() => DiscoverScreen}
+        getComponent={() => require('@/screens/DiscoverScreen').default}
         name={Routes.DISCOVER_SCREEN}
         options={{ title: TAB_BAR_ICONS[Routes.DISCOVER_SCREEN] }}
       />
       {showDappBrowserTab && (
-        <Swipe.Screen getComponent={() => DappBrowser} name={Routes.DAPP_BROWSER_SCREEN} options={{ title: 'tabDappBrowser' }} />
+        <Swipe.Screen
+          getComponent={() => require('@/components/DappBrowser/DappBrowser').DappBrowser}
+          name={Routes.DAPP_BROWSER_SCREEN}
+          options={{ title: 'tabDappBrowser' }}
+        />
       )}
       {showKingOfTheHillTab ? (
         <Swipe.Screen
-          getComponent={() => KingOfTheHillScreen}
+          getComponent={() => require('@/features/king-of-the-hill/screens/KingOfTheHillScreen').KingOfTheHillScreen}
           name={Routes.KING_OF_THE_HILL}
           options={{ title: TAB_BAR_ICONS[Routes.KING_OF_THE_HILL] }}
         />
       ) : (
         <Swipe.Screen
-          getComponent={() => ProfileScreen}
+          getComponent={() => require('../screens/ProfileScreen').default}
           name={Routes.PROFILE_SCREEN}
           options={{ title: TAB_BAR_ICONS[Routes.PROFILE_SCREEN] }}
         />
@@ -721,13 +718,15 @@ function SwipeNavigatorScreens() {
       {showRnbwRewardsOrMembershipTab &&
         (showRnbwMembership ? (
           <Swipe.Screen
-            getComponent={() => RnbwMembershipScreen}
+            getComponent={() =>
+              require('@/features/rnbw-membership/screens/rnbw-membership-screen/RnbwMembershipScreen').RnbwMembershipScreen
+            }
             name={Routes.RNBW_MEMBERSHIP_SCREEN}
             options={{ title: TAB_BAR_ICONS[Routes.RNBW_MEMBERSHIP_SCREEN] }}
           />
         ) : (
           <Swipe.Screen
-            getComponent={() => RnbwRewardsScreen}
+            getComponent={() => require('@/features/rnbw-rewards/screens/rnbw-rewards-screen/RnbwRewardsScreen').RnbwRewardsScreen}
             name={Routes.RNBW_REWARDS_SCREEN}
             options={{ title: TAB_BAR_ICONS[Routes.RNBW_REWARDS_SCREEN] }}
           />

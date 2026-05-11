@@ -17,9 +17,7 @@ import deviceUtils from '@/utils/deviceUtils';
 import { avatarMetadataAtom } from '../components/registration/RegistrationAvatar';
 import useENSRegistration from '../hooks/useENSRegistration';
 import useENSRegistrationForm from '../hooks/useENSRegistrationForm';
-import ENSAssignRecordsSheet, { ENSAssignRecordsBottomActions } from '../screens/ENSAssignRecordsSheet';
-import ENSIntroSheet from '../screens/ENSIntroSheet';
-import ENSSearchSheet from '../screens/ENSSearchSheet';
+import { ENSAssignRecordsBottomActions } from '../screens/ENSAssignRecordsSheet';
 import { accentColorAtom, REGISTRATION_MODES } from '../utils/helpers';
 
 const Swipe = createMaterialTopTabNavigator();
@@ -132,7 +130,7 @@ export default function RegisterENSNavigator() {
             screenOptions={{ swipeEnabled: false }}
           >
             <Swipe.Screen
-              getComponent={() => ENSIntroSheet}
+              getComponent={() => require('../screens/ENSIntroSheet').default}
               initialParams={{
                 contentHeight,
                 onSearchForNewName: () => setIsSearchEnabled(true),
@@ -147,7 +145,7 @@ export default function RegisterENSNavigator() {
             />
             {isSearchEnabled && (
               <Swipe.Screen
-                getComponent={() => ENSSearchSheet}
+                getComponent={() => require('../screens/ENSSearchSheet').default}
                 listeners={{
                   focus: () => setCurrentRouteName(Routes.ENS_SEARCH_SHEET),
                 }}
@@ -155,7 +153,7 @@ export default function RegisterENSNavigator() {
               />
             )}
             <Swipe.Screen
-              getComponent={() => ENSAssignRecordsSheet}
+              getComponent={() => require('../screens/ENSAssignRecordsSheet').default}
               initialParams={{
                 autoFocusKey: params?.autoFocusKey,
                 mode: params?.mode,

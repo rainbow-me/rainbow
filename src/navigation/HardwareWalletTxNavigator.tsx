@@ -12,8 +12,6 @@ import { useLedgerConnect } from '@/hooks/useLedgerConnect';
 import { logger } from '@/logger';
 import { useNavigation } from '@/navigation/Navigation';
 import Routes from '@/navigation/routesNames';
-import { PairHardwareWalletAgainSheet } from '@/screens/hardware-wallets/PairHardwareWalletAgainSheet';
-import { PairHardwareWalletErrorSheet } from '@/screens/hardware-wallets/PairHardwareWalletErrorSheet';
 import { useSelectedWallet } from '@/state/wallets/walletsStore';
 import { LEDGER_ERROR_CODES } from '@/utils/ledger';
 
@@ -119,8 +117,14 @@ export const HardwareWalletTxNavigator = () => {
             sceneContainerStyle={{ backgroundColor: backgroundColor }}
             tabBar={() => null}
           >
-            <Swipe.Screen getComponent={() => PairHardwareWalletAgainSheet} name={Routes.PAIR_HARDWARE_WALLET_AGAIN_SHEET} />
-            <Swipe.Screen getComponent={() => PairHardwareWalletErrorSheet} name={Routes.PAIR_HARDWARE_WALLET_ERROR_SHEET} />
+            <Swipe.Screen
+              getComponent={() => require('@/screens/hardware-wallets/PairHardwareWalletAgainSheet').PairHardwareWalletAgainSheet}
+              name={Routes.PAIR_HARDWARE_WALLET_AGAIN_SHEET}
+            />
+            <Swipe.Screen
+              getComponent={() => require('@/screens/hardware-wallets/PairHardwareWalletErrorSheet').PairHardwareWalletErrorSheet}
+              name={Routes.PAIR_HARDWARE_WALLET_ERROR_SHEET}
+            />
           </Swipe.Navigator>
         </SimpleSheet>
       )}

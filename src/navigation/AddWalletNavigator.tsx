@@ -6,9 +6,6 @@ import { useRoute, type RouteProp } from '@react-navigation/native';
 import { SimpleSheet } from '@/components/sheet/SimpleSheet';
 import { BackgroundProvider } from '@/design-system';
 import Routes from '@/navigation/routesNames';
-import { AddWalletSheet } from '@/screens/AddWalletSheet';
-import { ChooseWalletGroup } from '@/screens/ChooseWalletGroup';
-import { ImportOrWatchWalletSheet } from '@/screens/ImportOrWatchWalletSheet';
 import { setActiveRoute } from '@/state/navigation/navigationStore';
 import deviceUtils from '@/utils/deviceUtils';
 
@@ -34,7 +31,7 @@ export const AddWalletNavigator = () => {
             tabBar={() => null}
           >
             <Swipe.Screen
-              getComponent={() => AddWalletSheet}
+              getComponent={() => require('@/screens/AddWalletSheet').AddWalletSheet}
               initialParams={{ flowContext, isFirstWallet }}
               name={Routes.ADD_WALLET_SHEET}
               listeners={{
@@ -45,7 +42,7 @@ export const AddWalletNavigator = () => {
               }}
             />
             <Swipe.Screen
-              getComponent={() => ChooseWalletGroup}
+              getComponent={() => require('@/screens/ChooseWalletGroup').ChooseWalletGroup}
               initialParams={{ isFirstWallet }}
               name={Routes.CHOOSE_WALLET_GROUP}
               listeners={{
@@ -56,7 +53,7 @@ export const AddWalletNavigator = () => {
               }}
             />
             <Swipe.Screen
-              getComponent={() => ImportOrWatchWalletSheet}
+              getComponent={() => require('@/screens/ImportOrWatchWalletSheet').ImportOrWatchWalletSheet}
               initialParams={{ flowContext, type }}
               name={Routes.IMPORT_OR_WATCH_WALLET_SHEET}
               listeners={{
