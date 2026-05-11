@@ -15,6 +15,7 @@ import { HyperliquidTokenIcon } from '@/features/perps/components/HyperliquidTok
 import { DOWN_ARROW, HYPERLIQUID_COLORS, UP_ARROW } from '@/features/perps/constants';
 import { useHyperliquidMarketsStore } from '@/features/perps/stores/hyperliquidMarketsStore';
 import { convertStoredPerpPriceChangeToPercent, formatCompactPerpPercentChange, navigateToPerpDetailScreen } from '@/features/perps/utils';
+import { trackPlacementInteraction } from '@/features/placements/engagement/trackInteraction';
 import { type Placement, type PlacementItem } from '@/features/placements/types';
 import { opacity } from '@/framework/ui/utils/opacity';
 import { getHighContrastColor } from '@/hooks/useAccountAccentColor';
@@ -79,40 +80,18 @@ export const PerpMarketCard = memo(function PerpMarketCard({ item, placement, st
 
   const onPress = useCallback(() => {
     if (!market) return;
-    const percentChange =
-      candlestickPercentChange ?? convertStoredPerpPriceChangeToPercent(market.priceChange['1h'] ?? market.priceChange['24h']);
-    const perpsPayload = {
-      provider: 'hyperliquid' as const,
-      market: market.symbol,
-      baseSymbol: market.baseSymbol,
-      price: market.price,
-      priceChange1h: market.priceChange['1h'],
-      priceChange24h: market.priceChange['24h'],
-      volume24h: market.volume['24h'],
-      maxLeverage: market.maxLeverage,
-      name: market.metadata?.name,
-      percentChange,
-    };
-    analytics.track(event.placementInteraction, {
-      id: placement.id,
-      screen: placement.screen,
-      order: placement.order,
-      version: placement.version,
-      updatedAt: placement.updatedAt,
-      itemRefSource: item.ref.source,
-      itemRefId: item.ref.id,
-      itemOrder: item.order,
-      type: 'perps',
-      ...perpsPayload,
-    });
+    trackPlacementInteraction({ item, placement });
     analytics.track(event.discoverFeaturedCarouselCardPressed, {
       placementId: placement.id,
       type: 'perps',
       order: item.order,
-      ...perpsPayload,
+      provider: 'hyperliquid',
+      market: market.symbol,
+      baseSymbol: market.baseSymbol,
+      name: market.metadata?.name,
     });
     navigateToPerpDetailScreen(market.symbol);
-  }, [candlestickPercentChange, item, market, placement]);
+  }, [item, market, placement]);
 
   if (!market) return null;
 

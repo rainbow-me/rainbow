@@ -1,9 +1,12 @@
 import React, { useCallback, useMemo } from 'react';
 
+import { analytics } from '@/analytics';
+import { event } from '@/analytics/event';
 import { useHyperliquidMarketsStore } from '@/features/perps/stores/hyperliquidMarketsStore';
 import { convertStoredPerpPriceChangeToPercent, formatCompactPerpPercentChange } from '@/features/perps/utils';
 import { navigateToPerpsSearch } from '@/features/perps/utils/navigateToPerps';
 import { PLACEMENT_IDS } from '@/features/placements/constants';
+import { trackPlacementInteraction } from '@/features/placements/engagement/trackInteraction';
 import { useDiscoverPlacementsStore } from '@/features/placements/stores/discover/discoverPlacementsStore';
 import { type Placement, type PlacementItem } from '@/features/placements/types';
 import * as i18n from '@/languages';
@@ -44,6 +47,23 @@ export function PerpsMarketCarousel() {
     },
     [markets]
   );
+  const handlePressSeeAll = useCallback(() => {
+    if (placement) trackPlacementInteraction({ placement });
+    analytics.track(event.discoverFeaturedCarouselSeeAllPressed, {
+      placementId: PLACEMENT_ID,
+      type: 'perps',
+      provider: 'hyperliquid',
+    });
+    navigateToPerpsSearch();
+  }, [placement]);
+  const handleScrollSettle = useCallback(() => {
+    if (placement) trackPlacementInteraction({ placement });
+    analytics.track(event.discoverFeaturedCarouselScrolled, {
+      placementId: PLACEMENT_ID,
+      type: 'perps',
+      provider: 'hyperliquid',
+    });
+  }, [placement]);
 
   if (!isLoading && items.length === 0) return null;
 
@@ -56,12 +76,10 @@ export function PerpsMarketCarousel() {
       itemHeight={PERP_MARKET_CARD_HEIGHT}
       itemWidth={computePerpCardWidth({})}
       loading={isLoading}
-      onPressSeeAll={navigateToPerpsSearch}
-      placementId={PLACEMENT_ID}
-      provider="hyperliquid"
+      onPressSeeAll={handlePressSeeAll}
+      onScrollSettle={handleScrollSettle}
       renderItem={renderItem}
       title={i18n.t(i18n.l.discover.placements.perps_title)}
-      type="perps"
     />
   );
 }
