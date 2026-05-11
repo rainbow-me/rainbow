@@ -1,5 +1,5 @@
 import React, { Fragment, useCallback, useEffect, useMemo, useState } from 'react';
-import { ActivityIndicator, Keyboard, type TextInput } from 'react-native';
+import { ActivityIndicator, Keyboard, Platform, type TextInput } from 'react-native';
 
 import { isHexString } from '@ethersproject/bytes';
 import isEmpty from 'lodash/isEmpty';
@@ -55,9 +55,11 @@ const AddressFieldLabel = styled(Label).attrs({
   opacity: 1,
 });
 
-const LoadingSpinner = styled(android ? Spinner : ActivityIndicator).attrs(({ theme: { colors } }: ComponentPropsWithTheme) => ({
-  color: opacity(colors.blueGreyDark, 0.3),
-}))({
+const LoadingSpinner = styled(Platform.OS === 'android' ? Spinner : ActivityIndicator).attrs(
+  ({ theme: { colors } }: ComponentPropsWithTheme) => ({
+    color: opacity(colors.blueGreyDark, 0.3),
+  })
+)({
   marginRight: 2,
 });
 
@@ -156,7 +158,7 @@ export default function SendHeader({
       }
     }
 
-    android && Keyboard.dismiss();
+    Platform.OS === 'android' && Keyboard.dismiss();
     navigate(Routes.MODAL_SCREEN, {
       additionalPadding: true,
       address: hexAddress,

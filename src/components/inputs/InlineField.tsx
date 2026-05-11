@@ -1,5 +1,5 @@
 import React, { useCallback, useMemo, useState } from 'react';
-import { type TextInputProps } from 'react-native';
+import { Platform, type TextInputProps } from 'react-native';
 
 import { Bleed, Column, Columns, Inline, Inset, Text, useTextStyle, type TextProps } from '@/design-system';
 import { WrappedAlert as Alert } from '@/helpers/alert';
@@ -77,15 +77,15 @@ export default function InlineField({
       marginBottom: 0,
       marginTop: 0,
       minHeight: inputHeight + paddingVertical * 2,
-      paddingBottom: inputProps?.multiline ? (ios ? 15 : 10) : 0,
-      paddingTop: inputProps?.multiline ? (ios ? 15 : 10) : 0,
-      width: startsWith ? (ios ? 0.55 * width : 0.56 * width) : ios ? 0.6 * width : 0.61 * width,
+      paddingBottom: inputProps?.multiline ? (Platform.OS === 'ios' ? 15 : 10) : 0,
+      paddingTop: inputProps?.multiline ? (Platform.OS === 'ios' ? 15 : 10) : 0,
+      width: startsWith ? (Platform.OS === 'ios' ? 0.55 * width : 0.56 * width) : Platform.OS === 'ios' ? 0.6 * width : 0.61 * width,
     }),
     [textStyle, inputHeight, inputProps?.multiline, startsWith, width]
   );
 
   let keyboardType = inputProps?.keyboardType;
-  if (android) {
+  if (Platform.OS === 'android') {
     keyboardType = shouldFormatText ? 'default' : 'visible-password';
   }
 
@@ -114,7 +114,7 @@ export default function InlineField({
       <Column>
         <Inline alignVertical="center" space="2px" wrap={false}>
           {startsWith && (
-            <Inset top={ios ? '2px' : '1px (Deprecated)'}>
+            <Inset top={Platform.OS === 'ios' ? '2px' : '1px (Deprecated)'}>
               <Text color="secondary30 (Deprecated)" size="16px / 22px (Deprecated)" weight="heavy">
                 {startsWith}
               </Text>
@@ -126,7 +126,7 @@ export default function InlineField({
             autoFocus={autoFocus}
             defaultValue={defaultValue}
             onChangeText={onChangeText}
-            onContentSizeChange={android && inputProps?.multiline ? handleContentSizeChange : undefined}
+            onContentSizeChange={Platform.OS === 'android' && inputProps?.multiline ? handleContentSizeChange : undefined}
             onEndEditing={onEndEditing}
             onFocus={onFocus}
             placeholder={placeholder}

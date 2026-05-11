@@ -1,5 +1,5 @@
 import React from 'react';
-import { type ImageSourcePropType } from 'react-native';
+import { Platform, type ImageSourcePropType } from 'react-native';
 
 import { type Source } from 'react-native-fast-image';
 
@@ -101,7 +101,7 @@ const StatusIcon = ({ status }: StatusIconProps) => {
         width: 0,
       }}
       elevation={12}
-      shadowOpacity={ios ? 0.4 : 1}
+      shadowOpacity={Platform.OS === 'ios' ? 0.4 : 1}
       shadowRadius={6}
     />
   );

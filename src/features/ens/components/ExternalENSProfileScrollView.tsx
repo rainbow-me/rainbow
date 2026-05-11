@@ -1,5 +1,5 @@
 import React, { useCallback, useContext, useEffect, useImperativeHandle, useState, type RefObject } from 'react';
-import { Animated as RNAnimated, type ScrollViewProps, type ViewStyle } from 'react-native';
+import { Platform, Animated as RNAnimated, type ScrollViewProps, type ViewStyle } from 'react-native';
 
 import { BottomSheetScrollView } from '@gorhom/bottom-sheet';
 import { BottomSheetContext } from '@gorhom/bottom-sheet/src/contexts/external';
@@ -35,11 +35,11 @@ const ExternalENSProfileScrollViewWithRefFactory = (type: string) =>
 
     const { scrollViewRef } = useContext(StickyHeaderContext)!;
 
-    const [scrollEnabled, setScrollEnabled] = useState(ios);
+    const [scrollEnabled, setScrollEnabled] = useState(Platform.OS === 'ios');
     useEffect(() => {
       // For Android, delay scroll until sheet has been mounted (to avoid
       // ImagePreviewOverlay mounting issues).
-      if (android) {
+      if (Platform.OS === 'android') {
         setTimeout(() => setScrollEnabled(true), 500);
       }
     });
@@ -91,7 +91,7 @@ const ExternalENSProfileScrollViewWithRefFactory = (type: string) =>
               onScroll: event,
             })}
       >
-        <ImagePreviewOverlay enableZoom={ios && enableZoomableImages} yPosition={yPosition}>
+        <ImagePreviewOverlay enableZoom={Platform.OS === 'ios' && enableZoomableImages} yPosition={yPosition}>
           {type === 'ens-profile' && <ProfileSheetHeader />}
           {props.children}
         </ImagePreviewOverlay>

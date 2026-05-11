@@ -1,6 +1,6 @@
 /* eslint-disable react/jsx-props-no-spreading */
 import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
-import { ActivityIndicator, InteractionManager } from 'react-native';
+import { ActivityIndicator, InteractionManager, Platform } from 'react-native';
 
 import { useRoute, type RouteProp } from '@react-navigation/native';
 import { noop } from 'lodash';
@@ -41,9 +41,9 @@ type WithThemeProps = {
   theme: ThemeContextProps;
 };
 
-const LoadingSpinner = styled(android ? Spinner : ActivityIndicator).attrs(({ theme: { colors } }: WithThemeProps) => ({
+const LoadingSpinner = styled(Platform.OS === 'android' ? Spinner : ActivityIndicator).attrs(({ theme: { colors } }: WithThemeProps) => ({
   color: opacity(colors.blueGreyDark, 0.3),
-  size: android ? 40 : 'large',
+  size: Platform.OS === 'android' ? 40 : 'large',
 }))({});
 
 const DappLogo = styled(RequestVendorLogoIcon).attrs(({ theme: { colors } }: WithThemeProps) => ({
@@ -431,7 +431,7 @@ export function WalletConnectApprovalSheet() {
               />
             </Box>
           )}
-          <SheetActionButtonRow paddingBottom={android ? 20 : 30}>
+          <SheetActionButtonRow paddingBottom={Platform.OS === 'android' ? 20 : 30}>
             <SheetActionButton
               color={colors.white}
               label={i18n.t(i18n.l.button.cancel)}

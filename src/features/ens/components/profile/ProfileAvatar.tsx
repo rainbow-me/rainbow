@@ -1,5 +1,5 @@
 import React from 'react';
-import { Text as NativeText } from 'react-native';
+import { Text as NativeText, Platform } from 'react-native';
 
 import Animated from 'react-native-reanimated';
 
@@ -11,7 +11,7 @@ import { BackgroundProvider, Box, Cover } from '@/design-system';
 import useFadeImage from '@/hooks/useFadeImage';
 import { sharedCoolModalTopOffset } from '@/navigation/config';
 
-const imagePreviewOverlayTopOffset = ios ? 68 + sharedCoolModalTopOffset : 107;
+const imagePreviewOverlayTopOffset = Platform.OS === 'ios' ? 68 + sharedCoolModalTopOffset : 107;
 const size = 70;
 
 export default function ProfileAvatar({

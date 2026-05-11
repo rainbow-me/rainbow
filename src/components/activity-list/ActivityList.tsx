@@ -1,5 +1,5 @@
 import React, { memo, useCallback, useEffect, useMemo, useRef, useState } from 'react';
-import { StyleSheet, View, type NativeScrollEvent, type NativeSyntheticEvent } from 'react-native';
+import { Platform, StyleSheet, View, type NativeScrollEvent, type NativeSyntheticEvent } from 'react-native';
 
 import { LegendList, type LegendListRef } from '@legendapp/list';
 import { type SharedValue } from 'react-native-reanimated';
@@ -39,7 +39,7 @@ const sx = StyleSheet.create({
 
 const keyExtractor = (data: ListItems) => data.key;
 
-const LoadingSpinner = android ? Spinner : ActivityIndicator;
+const LoadingSpinner = Platform.OS === 'android' ? Spinner : ActivityIndicator;
 
 const FooterWrapper = styled(ButtonPressAnimation)({
   alignItems: 'center',

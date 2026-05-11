@@ -1,5 +1,5 @@
 import React, { useEffect } from 'react';
-import { StyleSheet } from 'react-native';
+import { Platform, StyleSheet } from 'react-native';
 
 import { WebView } from 'react-native-webview';
 
@@ -14,7 +14,7 @@ const Container = styled(FlexItem)({
 
 const StyledWebView = styled(WebView)({
   backgroundColor: ({ theme: { colors } }) => colors.transparent,
-  marginTop: android ? 30 : 50,
+  marginTop: Platform.OS === 'android' ? 30 : 50,
 });
 
 const formatColor = color => (color && typeof color === 'string' ? color.replace('#', '') : null);
@@ -66,7 +66,7 @@ export default function AudioPlayer({ fontColor, imageColor, uri }) {
       () => {
         setReady(true);
       },
-      ios ? 500 : 800
+      Platform.OS === 'ios' ? 500 : 800
     );
   }, []);
 

@@ -1,4 +1,5 @@
 import React, { useCallback } from 'react';
+import { Platform } from 'react-native';
 
 import ActivityIndicator from '@/components/ActivityIndicator';
 import { Page } from '@/components/layout';
@@ -25,7 +26,7 @@ type LoadingTextProps = {
 
 const LoadingText = styled(RNText).attrs(({ theme: { colors } }: LoadingTextProps) => ({
   color: colors.blueGreyDark,
-  lineHeight: ios ? 'none' : 24,
+  lineHeight: Platform.OS === 'ios' ? 'none' : 24,
   size: 'large',
   weight: 'semibold',
 }))({
@@ -148,7 +149,7 @@ const ViewCloudBackups = () => {
   if (isLoading) {
     return (
       <Box color={colors.transparent} alignItems="center" justifyContent="center" flex={1} as={Page}>
-        {android ? <Spinner color={colors.blueGreyDark} /> : <ActivityIndicator color={colors.blueGreyDark} />}
+        {Platform.OS === 'android' ? <Spinner color={colors.blueGreyDark} /> : <ActivityIndicator color={colors.blueGreyDark} />}
         <LoadingText>{titleForBackupState[status]}</LoadingText>
       </Box>
     );

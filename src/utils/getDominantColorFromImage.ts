@@ -1,3 +1,5 @@
+import { Platform } from 'react-native';
+
 import c from 'chroma-js';
 import makeColorMoreChill from 'make-color-more-chill';
 import Palette, { type IPalette } from 'react-native-palette-full';
@@ -12,7 +14,7 @@ export default async function getDominantColorFromImage(imageUrl: string, colorT
   }
 
   // react-native-palette keys for Android are not the same as iOS so we fix here
-  if (android) {
+  if (Platform.OS === 'android') {
     // @ts-expect-error ts-migrate(2740) FIXME: Type '{}' is missing the following properties from... Remove this comment to see the full error message
     colors = Object.keys(colors).reduce((acc, key) => {
       // @ts-expect-error ts-migrate(7053) FIXME: Element implicitly has an 'any' type because expre... Remove this comment to see the full error message

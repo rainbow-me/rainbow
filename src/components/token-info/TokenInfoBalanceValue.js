@@ -1,5 +1,5 @@
 import React from 'react';
-import { View } from 'react-native';
+import { Platform, View } from 'react-native';
 
 import styled from '@/framework/ui/styled-thing';
 import useColorForAsset from '@/hooks/useColorForAsset';
@@ -9,7 +9,7 @@ import RainbowCoinIcon from '../coin-icon/RainbowCoinIcon';
 import { RowWithMargins } from '../layout';
 import TokenInfoValue from './TokenInfoValue';
 
-const InfoValue = styled(TokenInfoValue)(android ? { height: 37.7 } : {});
+const InfoValue = styled(TokenInfoValue)(Platform.OS === 'android' ? { height: 37.7 } : {});
 
 const TokenInfoBalanceValue = ({ align, asset, ...props }) => {
   const { balance, value } = asset;

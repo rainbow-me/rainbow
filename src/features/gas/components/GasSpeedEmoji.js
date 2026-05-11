@@ -1,4 +1,5 @@
 import React from 'react';
+import { Platform } from 'react-native';
 
 import { Emoji } from '@/components/text';
 import styled from '@/framework/ui/styled-thing';
@@ -11,27 +12,27 @@ const EmojiForGasSpeedType = {
   [gasUtils.URGENT]: {
     emoji: 'police_car_light',
     // 🚨
-    top: android ? -2 : -0.5,
+    top: Platform.OS === 'android' ? -2 : -0.5,
   },
   [gasUtils.FAST]: {
     emoji: 'rocket',
     // 🚀️
-    top: android ? -1.25 : -1.25,
+    top: Platform.OS === 'android' ? -1.25 : -1.25,
   },
   [gasUtils.NORMAL]: {
-    emoji: ios ? 'stopwatch' : 'nine_o_clock',
+    emoji: Platform.OS === 'ios' ? 'stopwatch' : 'nine_o_clock',
     // ⏱️ 🕘
-    top: android ? 0 : -1.25,
+    top: Platform.OS === 'android' ? 0 : -1.25,
   },
   [gasUtils.SLOW]: {
     emoji: 'snail',
     // 🐌️
-    top: android ? 0 : -1,
+    top: Platform.OS === 'android' ? 0 : -1,
   },
   [gasUtils.CUSTOM]: {
     emoji: 'gear',
     // ⚙️
-    top: android ? -0.5 : -0.5,
+    top: Platform.OS === 'android' ? -0.5 : -0.5,
   },
 };
 

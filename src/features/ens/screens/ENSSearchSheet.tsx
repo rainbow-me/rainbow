@@ -1,5 +1,5 @@
 import React, { useCallback, useMemo, useState } from 'react';
-import { Keyboard } from 'react-native';
+import { Keyboard, Platform } from 'react-native';
 
 import { useFocusEffect } from '@react-navigation/native';
 import { type Source } from 'react-native-fast-image';
@@ -29,7 +29,7 @@ import { normalizeENS } from '../utils/records';
 export default function ENSSearchSheet() {
   const { navigate } = useNavigation();
 
-  const topPadding = android ? 29 : 19;
+  const topPadding = Platform.OS === 'android' ? 29 : 19;
 
   const { startRegistration, name } = useENSRegistration();
   const { finishRegistration } = useENSPendingRegistrations();

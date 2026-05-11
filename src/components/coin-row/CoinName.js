@@ -1,3 +1,5 @@
+import { Platform } from 'react-native';
+
 import styled from '@/framework/ui/styled-thing';
 
 import { TruncatedText } from '../text';
@@ -9,7 +11,7 @@ const CoinName = styled(TruncatedText).attrs(({ color, size, theme: { colors } }
   size: size || 'lmedium',
   weight: 'semibold',
 }))({
-  marginTop: android ? 1.5 : 0,
+  marginTop: Platform.OS === 'android' ? 1.5 : 0,
   paddingRight: ({ paddingRight = 19 }) => paddingRight,
 });
 

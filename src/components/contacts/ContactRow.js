@@ -1,5 +1,5 @@
 import React, { Fragment, useEffect, useMemo, useState } from 'react';
-import { StyleSheet } from 'react-native';
+import { Platform, StyleSheet } from 'react-native';
 
 import useENSAvatar from '@/features/ens/hooks/useENSAvatar';
 import { fetchReverseRecord } from '@/features/ens/utils/handlers';
@@ -50,7 +50,7 @@ const ContactName = styled(TruncatedText).attrs(({ lite }) => ({
   size: 'lmedium',
   weight: lite ? 'regular' : 'medium',
 }))({
-  height: ios ? 22 : 26,
+  height: Platform.OS === 'ios' ? 22 : 26,
   width: ({ deviceWidth }) => deviceWidth - 90,
 });
 
@@ -61,7 +61,7 @@ const css = {
 
 const sx = StyleSheet.create({
   bottomRowText: {
-    marginTop: ios ? 0 : -4.5,
+    marginTop: Platform.OS === 'ios' ? 0 : -4.5,
   },
 });
 
@@ -133,7 +133,7 @@ const ContactRow = ({ address, color, nickname, symmetricalMargins, ...props }, 
         ) : (
           <ContactAvatar color={bgColor} marginRight={10} size="medium" value={emojiAvatar} />
         )}
-        <Column justify={ios ? 'space-between' : 'center'}>
+        <Column justify={Platform.OS === 'ios' ? 'space-between' : 'center'}>
           {accountType === 'accounts' || accountType === 'watching' ? (
             <Fragment>
               {cleanedUpLabel || ens ? (

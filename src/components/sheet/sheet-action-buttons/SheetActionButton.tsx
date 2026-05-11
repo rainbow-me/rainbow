@@ -1,5 +1,5 @@
 import React, { useMemo, type PropsWithChildren } from 'react';
-import { type StyleProp, type ViewStyle } from 'react-native';
+import { Platform, type StyleProp, type ViewStyle } from 'react-native';
 
 import { LinearGradient } from 'expo-linear-gradient';
 
@@ -134,7 +134,7 @@ const SheetActionButton: React.FC<SheetActionButtonProps> = ({
         height: typeof size === 'number' ? size : size === 'big' ? 52 : 46,
         width: isSquare ? (typeof size === 'number' ? size : size === 'big' ? 52 : 46) : undefined,
       }}
-      elevation={android ? elevation : null}
+      elevation={Platform.OS === 'android' ? elevation : null}
       isCharts={isCharts}
       isSquare={isSquare}
       onPress={disabled ? () => undefined : onPress}

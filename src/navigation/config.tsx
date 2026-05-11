@@ -89,7 +89,7 @@ const buildCoolModalConfig = (params: CoolModalConfigParams): CoolModalConfigOpt
   blocksBackgroundTouches: true,
   cornerRadius:
     params.cornerRadius === 'device'
-      ? android
+      ? Platform.OS === 'android'
         ? 30
         : 0.666 // 0.666 gets the screen corner radius internally
       : params.cornerRadius === 0
@@ -719,7 +719,7 @@ export const walletErrorSheetConfig: PartialNavigatorConfigOptions = {
 
 export const stackNavigationConfig = {
   headerMode: 'none',
-  keyboardHandlingEnabled: ios,
+  keyboardHandlingEnabled: Platform.OS === 'ios',
   mode: 'modal',
 };
 
@@ -733,7 +733,7 @@ export const closeKeyboardOnClose = {
   listeners: {
     // @ts-ignore
     transitionEnd: ({ data: { closing } }) => {
-      closing && android && Keyboard.dismiss();
+      closing && Platform.OS === 'android' && Keyboard.dismiss();
     },
   },
 };
@@ -764,7 +764,7 @@ const BackArrow = styled(Icon).attrs({
 })({
   marginLeft: 15,
   marginRight: 5,
-  marginTop: android ? 12 : 0.5,
+  marginTop: Platform.OS === 'android' ? 12 : 0.5,
 });
 
 const BackImage = () => <BackArrow />;
@@ -782,7 +782,7 @@ const headerConfigOptions = {
   headerRightContainerStyle: {
     paddingRight: 4,
   },
-  ...(android && {
+  ...(Platform.OS === 'android' && {
     headerRightContainerStyle: {
       paddingTop: 6,
     },

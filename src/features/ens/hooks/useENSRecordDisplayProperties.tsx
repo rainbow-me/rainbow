@@ -1,4 +1,5 @@
 import React, { useCallback, useMemo, type PropsWithChildren } from 'react';
+import { Platform } from 'react-native';
 
 import { upperFirst } from 'lodash';
 import URL from 'url-parse';
@@ -100,7 +101,7 @@ export default function useENSRecordDisplayProperties({
 
   const value = useMemo(() => {
     if (isUrlRecord && displayUrl) {
-      return android ? ` 􀤆 ${displayUrl} ` : `􀤆 ${displayUrl}`;
+      return Platform.OS === 'android' ? ` 􀤆 ${displayUrl} ` : `􀤆 ${displayUrl}`;
     }
     if (isUrlValue && displayUrlUsername) {
       return displayUrlUsername;
@@ -193,7 +194,7 @@ export default function useENSRecordDisplayProperties({
       <ContextMenuButton
         enableContextMenu
         menuConfig={{ menuItems, menuTitle: '' }}
-        {...(android ? { handlePressMenuItem } : {})}
+        {...(Platform.OS === 'android' ? { handlePressMenuItem } : {})}
         isMenuPrimaryAction
         onPressMenuItem={handlePressMenuItem}
         style={{ flexGrow: isImageValue ? 1 : 0, flexShrink: 1 }}

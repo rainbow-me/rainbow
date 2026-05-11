@@ -1,4 +1,6 @@
 /* eslint-disable @typescript-eslint/no-non-null-assertion */
+import { Platform } from 'react-native';
+
 import notifee, { AndroidStyle, type Notification } from '@notifee/react-native';
 
 import { logger, RainbowError } from '@/logger';
@@ -6,7 +8,7 @@ import { ANDROID_DEFAULT_CHANNEL_ID, ANDROID_GROUP_ID } from '@/notifications/co
 import { type FixedRemoteMessage } from '@/notifications/types';
 
 export function handleShowingForegroundNotification(remoteMessage: FixedRemoteMessage) {
-  const image = ios ? remoteMessage.data?.fcm_options?.image : remoteMessage.notification?.android?.imageUrl;
+  const image = Platform.OS === 'ios' ? remoteMessage.data?.fcm_options?.image : remoteMessage.notification?.android?.imageUrl;
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const { fcm_options, ...data } = remoteMessage.data;
   const notification: Notification = {

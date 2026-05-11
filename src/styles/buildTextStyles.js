@@ -1,3 +1,5 @@
+import { Platform } from 'react-native';
+
 import { isNil } from 'lodash';
 
 import { css } from '@/framework/ui/styled-thing';
@@ -49,7 +51,7 @@ function selectBestFontFitWorklet(weight) {
 }
 
 function familyFontWithAndroidWidth(weight, family) {
-  return `${fonts.family[family]}${android ? `-${selectBestFontFit(weight)}` : ''}`;
+  return `${fonts.family[family]}${Platform.OS === 'android' ? `-${selectBestFontFit(weight)}` : ''}`;
 }
 
 export function fontWithWidth(weight, family = 'SFProRounded') {
@@ -57,13 +59,13 @@ export function fontWithWidth(weight, family = 'SFProRounded') {
     fontFamily: familyFontWithAndroidWidth(weight, family),
     // https://github.com/facebook/react-native/issues/18820
     // https://www.youtube.com/watch?v=87rhZTumujw
-    ...(ios ? { fontWeight: weight } : { fontWeight: 'normal' }),
+    ...(Platform.OS === 'ios' ? { fontWeight: weight } : { fontWeight: 'normal' }),
   };
 }
 
 function familyFontWithAndroidWidthWorklet(weight, family) {
   'worklet';
-  return `${fonts.family[family]}${android ? `-${selectBestFontFitWorklet(weight)}` : ''}`;
+  return `${fonts.family[family]}${Platform.OS === 'android' ? `-${selectBestFontFitWorklet(weight)}` : ''}`;
 }
 
 export function fontWithWidthWorklet(weight, family = 'SFProRounded') {
@@ -72,7 +74,7 @@ export function fontWithWidthWorklet(weight, family = 'SFProRounded') {
     fontFamily: familyFontWithAndroidWidthWorklet(weight, family),
     // https://github.com/facebook/react-native/issues/18820
     // https://www.youtube.com/watch?v=87rhZTumujw
-    ...(ios ? { fontWeight: weight } : { fontWeight: 'normal' }),
+    ...(Platform.OS === 'ios' ? { fontWeight: weight } : { fontWeight: 'normal' }),
   };
 }
 
@@ -90,7 +92,8 @@ const buildTextStyles = css`
   font-size:  ${({ size = 'medium' }) => (typeof size === 'number' ? size : (fonts?.size?.[size] ?? size))};
 
   /* Font Weight */
-  ${({ isEmoji, weight = 'regular' }) => (isEmoji || isNil(weight) || android ? '' : `font-weight: ${fonts?.weight?.[weight] ?? weight};`)}
+  ${({ isEmoji, weight = 'regular' }) =>
+    isEmoji || isNil(weight) || Platform.OS === 'android' ? '' : `font-weight: ${fonts?.weight?.[weight] ?? weight};`}
 
   /* Letter Spacing */
   ${({ letterSpacing = 'rounded' }) =>
@@ -98,7 +101,7 @@ const buildTextStyles = css`
 
   /* Line Height */
   ${({ isEmoji, lineHeight }) =>
-    isNil(lineHeight) || (isEmoji && android) ? '' : `line-height: ${fonts?.lineHeight?.[lineHeight] ?? lineHeight};`}
+    isNil(lineHeight) || (isEmoji && Platform.OS === 'android') ? '' : `line-height: ${fonts?.lineHeight?.[lineHeight] ?? lineHeight};`}
 
   /* Opacity */
   ${({ opacity }) => (isNil(opacity) ? '' : `opacity: ${opacity};`)}
@@ -112,7 +115,7 @@ const buildTextStyles = css`
   /* Uppercase */
   ${({ uppercase }) => (uppercase ? 'text-transform: uppercase;' : '')}
 
-  ${android ? 'include-font-padding: false;\ntext-align-vertical: center;' : ''}
+  ${Platform.OS === 'android' ? 'include-font-padding: false;\ntext-align-vertical: center;' : ''}
 `;
 
 buildTextStyles.object = ({
@@ -139,7 +142,7 @@ buildTextStyles.object = ({
     styles.fontFamily = familyFontWithAndroidWidth(weight, family, mono);
   }
 
-  if (!(isEmoji || isNil(weight) || android)) {
+  if (!(isEmoji || isNil(weight) || Platform.OS === 'android')) {
     if (typeof weight === 'undefined') {
       weight = 'regular';
     }
@@ -151,7 +154,7 @@ buildTextStyles.object = ({
     styles.letterSpacing = fonts.letterSpacing[letterSpacing] ?? letterSpacing;
   }
 
-  if (!(isNil(lineHeight) || (isEmoji && android))) {
+  if (!(isNil(lineHeight) || (isEmoji && Platform.OS === 'android'))) {
     styles.lineHeight = fonts.lineHeight[lineHeight] ?? lineHeight;
   }
 
@@ -171,7 +174,7 @@ buildTextStyles.object = ({
     styles.textTransform = 'uppercase';
   }
 
-  if (android) {
+  if (Platform.OS === 'android') {
     styles.includeFontPadding = false;
     styles.textAlignVertical = 'center';
   }

@@ -164,7 +164,7 @@ export function FeaturedMintCard() {
                       style={{
                         height: '100%',
                         width: '100%',
-                        backgroundColor: `rgba(22, 22, 22, ${ios ? 0.5 : 0.8})`,
+                        backgroundColor: `rgba(22, 22, 22, ${Platform.OS === 'ios' ? 0.5 : 0.8})`,
                       }}
                     />
                   </Cover>

@@ -1,5 +1,5 @@
 import { useCallback, useRef } from 'react';
-import { type NativeScrollEvent, type NativeSyntheticEvent } from 'react-native';
+import { Platform, type NativeScrollEvent, type NativeSyntheticEvent } from 'react-native';
 
 import { type NavigationProp } from '@react-navigation/native';
 
@@ -20,7 +20,7 @@ export default function useAndroidScrollViewGestureHandler({
   const gestureEnabled = useRef(true);
   const onScroll = useCallback(
     ({ nativeEvent }: NativeSyntheticEvent<NativeScrollEvent>) => {
-      if (!android) return;
+      if (Platform.OS !== 'android') return;
       if (nativeEvent.contentOffset.y <= 0 && !gestureEnabled.current) {
         navigation.setOptions({ gestureEnabled: true });
         gestureEnabled.current = true;

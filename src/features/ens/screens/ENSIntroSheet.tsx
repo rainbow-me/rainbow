@@ -32,7 +32,7 @@ enum AnotherENSEnum {
   my_ens = 'my_ens',
 }
 
-const topPadding = android ? 29 : 19;
+const topPadding = Platform.OS === 'android' ? 29 : 19;
 
 const minHeight = 740;
 
@@ -238,7 +238,7 @@ export default function ENSIntroSheet() {
                   {isFetched && (
                     <>
                       {controlledDomains?.length === 0 ? (
-                        <Inset bottom={android ? '10px' : undefined}>
+                        <Inset bottom={Platform.OS === 'android' ? '10px' : undefined}>
                           <SheetActionButton
                             color={colors.appleBlue}
                             label={'􀠎 ' + i18n.t(i18n.l.profiles.intro.find_your_name)}
@@ -319,7 +319,7 @@ function InfoRow({ icon, title, description }: { icon: string; title: string; de
         <MaskedView
           maskElement={
             <Box
-              {...(android && {
+              {...(Platform.OS === 'android' && {
                 paddingTop: '6px',
               })}
             >

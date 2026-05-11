@@ -1,4 +1,5 @@
 import React, { useCallback, useMemo, useRef } from 'react';
+import { Platform } from 'react-native';
 
 import { useFocusEffect } from '@react-navigation/native';
 import { useMutation } from '@tanstack/react-query';
@@ -188,7 +189,7 @@ export default function useSelectImageMenu({
           menuItems: menuItems.map(item => items[item]) as any,
           menuTitle: '',
         }}
-        {...(android ? { onPress: handleAndroidPress } : {})}
+        {...(Platform.OS === 'android' ? { onPress: handleAndroidPress } : {})}
         isMenuPrimaryAction
         onPressMenuItem={handlePressMenuItem}
         testID={`use-select-image-${testID}`}

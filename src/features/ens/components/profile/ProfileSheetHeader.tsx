@@ -1,4 +1,5 @@
 import React, { useContext, useMemo } from 'react';
+import { Platform } from 'react-native';
 
 import { useRoute, type RouteProp } from '@react-navigation/native';
 
@@ -84,7 +85,7 @@ export default function ProfileSheetHeader({
   const emoji = useMemo(() => (profileAddress ? addressHashedEmoji(profileAddress) : ''), [profileAddress]);
 
   return (
-    <Box background="body (Deprecated)" {...(ios && { onLayout: (e: any) => setTimeout(() => layout(e), 500) })}>
+    <Box background="body (Deprecated)" {...(Platform.OS === 'ios' && { onLayout: (e: any) => setTimeout(() => layout(e), 500) })}>
       <Stack space={{ custom: 18 }}>
         <ProfileCover
           coverUrl={cover?.imageUrl}

@@ -53,7 +53,7 @@ export async function getGoogleAccountUserData(checkPermissions = false): Promis
 
 // This is used for dev purposes only!
 export async function deleteAllBackups() {
-  if (android) {
+  if (Platform.OS === 'android') {
     await RNCloudFs.loginIfNeeded();
   }
   const backups = await RNCloudFs.listFiles({
@@ -68,7 +68,7 @@ export async function deleteAllBackups() {
 }
 
 export async function fetchAllBackups(): Promise<CloudBackups> {
-  if (android) {
+  if (Platform.OS === 'android') {
     await RNCloudFs.loginIfNeeded();
   }
 
@@ -150,7 +150,7 @@ function getGoogleDriveDocument(id: any) {
 }
 
 export function syncCloud() {
-  if (ios) {
+  if (Platform.OS === 'ios') {
     return RNCloudFs.syncCloud();
   }
   return true;
@@ -193,7 +193,7 @@ export async function getDataFromCloud(backupPassword: any, filename: string | n
     const sortedBackups = sortBy(backups.files, 'lastModified').reverse();
     document = sortedBackups[0];
   }
-  const encryptedData = ios ? await getICloudDocument(filename) : await getGoogleDriveDocument(document.id);
+  const encryptedData = Platform.OS === 'ios' ? await getICloudDocument(filename) : await getGoogleDriveDocument(document.id);
 
   if (encryptedData) {
     logger.debug(`[cloudBackup]: Got cloud document ${filename}`);
@@ -220,7 +220,7 @@ export function isCloudBackupPasswordValid(password: any) {
 }
 
 export function isCloudBackupAvailable() {
-  if (ios) {
+  if (Platform.OS === 'ios') {
     return RNCloudFs.isAvailable();
   }
   return true;

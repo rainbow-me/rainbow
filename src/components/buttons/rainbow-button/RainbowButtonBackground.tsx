@@ -1,6 +1,6 @@
 /* eslint-disable no-nested-ternary */
 import React from 'react';
-import { View } from 'react-native';
+import { Platform, View } from 'react-native';
 
 import MaskedView from '@react-native-masked-view/masked-view';
 import RadialGradient from 'react-native-radial-gradient';
@@ -114,14 +114,15 @@ const OuterGradient = styled(RainbowButtonGradient).attrs(({ disabled, type, gra
   zIndex: -1,
 }));
 
-const WrapperView = android
-  ? styled(View)({
-      height: ({ height }: any) => height,
-      overflow: 'hidden',
-      position: 'absolute',
-      width: ({ width }: any) => width,
-    })
-  : ({ children }: any) => children;
+const WrapperView =
+  Platform.OS === 'android'
+    ? styled(View)({
+        height: ({ height }: any) => height,
+        overflow: 'hidden',
+        position: 'absolute',
+        width: ({ width }: any) => width,
+      })
+    : ({ children }: any) => children;
 
 type RainbowButtonBackgroundProps = {
   disabled: boolean;

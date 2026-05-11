@@ -1,5 +1,5 @@
 import React, { useCallback, useEffect, useMemo, useRef, useState, type PropsWithChildren } from 'react';
-import { Dimensions, StyleSheet, View, type ViewStyle } from 'react-native';
+import { Dimensions, Platform, StyleSheet, View, type ViewStyle } from 'react-native';
 
 import {
   State as GestureHandlerState,
@@ -49,7 +49,13 @@ type Props = {
   columns: number;
 };
 
-export const EmojiSelector = ({ columns = 7, showSectionTitles = true, showTabs = ios, onEmojiSelected, ...other }: Props) => {
+export const EmojiSelector = ({
+  columns = 7,
+  showSectionTitles = true,
+  showTabs = Platform.OS === 'ios',
+  onEmojiSelected,
+  ...other
+}: Props) => {
   const { colors } = useTheme();
   const [allEmojiList, setAllEmojiList] = useState<AllEmojiEntry[]>([]);
   const [isReady, setIsReady] = useState(false);
@@ -147,7 +153,7 @@ export const EmojiSelector = ({ columns = 7, showSectionTitles = true, showTabs 
   };
 
   const handleScroll = (event: ScrollEvent, offsetX: number, offsetY: number) => {
-    if (ios && !blockCategories.current) {
+    if (Platform.OS === 'ios' && !blockCategories.current) {
       const nextSection = allEmojiList[(currentIndex.current + 1) * 2] as AllEmojiContentEntry;
 
       const currentSection = allEmojiList[currentIndex.current * 2] as AllEmojiContentEntry;
@@ -207,7 +213,7 @@ export const EmojiSelector = ({ columns = 7, showSectionTitles = true, showTabs 
           overlayStyle.bottom = -3000;
         }
 
-        return ios ? (
+        return Platform.OS === 'ios' ? (
           <View
             style={[
               sx.header,

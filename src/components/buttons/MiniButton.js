@@ -1,5 +1,5 @@
 import React from 'react';
-import { View } from 'react-native';
+import { Platform, View } from 'react-native';
 
 import styled from '@/framework/ui/styled-thing';
 import ShadowStack from '@/react-native-shadow-stack';
@@ -56,7 +56,7 @@ export default function MiniButton({
 
   const content = (
     <Content
-      backgroundColor={android ? (disabled ? colors.lightGrey : backgroundColor || colors.appleBlue) : 'none'}
+      backgroundColor={Platform.OS === 'android' ? (disabled ? colors.lightGrey : backgroundColor || colors.appleBlue) : 'none'}
       disablePadding={disablePadding}
       hasLeadingIcon={hasLeadingIcon}
       height={height ? height : small ? 27 : 30}
@@ -66,7 +66,7 @@ export default function MiniButton({
           align="center"
           color={color || colors.whiteLabel}
           letterSpacing={letterSpacing}
-          lineHeight={android ? 19 : null}
+          lineHeight={Platform.OS === 'android' ? 19 : null}
           weight={weight || 'bold'}
         >
           {children}
@@ -89,7 +89,7 @@ export default function MiniButton({
       <View style={{ borderRadius }}>
         <ShadowStack
           {...position.coverAsObject}
-          backgroundColor={android ? 'none' : disabled ? colors.lightGrey : backgroundColor || colors.appleBlue}
+          backgroundColor={Platform.OS === 'android' ? 'none' : disabled ? colors.lightGrey : backgroundColor || colors.appleBlue}
           borderRadius={borderRadius}
           height={height}
           shadows={hideShadow ? shadows.none : disabled ? shadows.disabled : shadows.default}

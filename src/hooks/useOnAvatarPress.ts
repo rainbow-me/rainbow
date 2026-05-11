@@ -202,27 +202,27 @@ export default ({ screenType = 'transaction' }: UseOnAvatarPressProps = {}) => {
         !isZeroETH && {
           actionKey: 'editProfile',
           actionTitle: i18n.t(i18n.l.profiles.profile_avatar.edit_profile),
-          ...(ios && { icon: { iconType: 'SYSTEM', iconValue: 'pencil.circle' } }),
+          ...(Platform.OS === 'ios' && { icon: { iconType: 'SYSTEM', iconValue: 'pencil.circle' } }),
         },
       isENSProfile && {
         actionKey: 'viewProfile',
         actionTitle: i18n.t(i18n.l.profiles.profile_avatar.view_profile),
-        ...(ios && { icon: { iconType: 'SYSTEM', iconValue: 'person.crop.circle' } }),
+        ...(Platform.OS === 'ios' && { icon: { iconType: 'SYSTEM', iconValue: 'person.crop.circle' } }),
       },
       !isENSProfile &&
         !isReadOnly &&
         !isZeroETH && {
           actionKey: 'createProfile',
           actionTitle: i18n.t(i18n.l.profiles.profile_avatar.create_profile),
-          ...(ios && { icon: { iconType: 'SYSTEM', iconValue: 'person.crop.circle' } }),
+          ...(Platform.OS === 'ios' && { icon: { iconType: 'SYSTEM', iconValue: 'person.crop.circle' } }),
         },
       {
         actionKey: 'chooseFromLibrary',
         actionTitle: i18n.t(i18n.l.profiles.profile_avatar.choose_from_library),
-        ...(ios && { icon: { iconType: 'SYSTEM', iconValue: 'photo.on.rectangle.angled' } }),
+        ...(Platform.OS === 'ios' && { icon: { iconType: 'SYSTEM', iconValue: 'photo.on.rectangle.angled' } }),
       },
       !accountImage
-        ? ios
+        ? Platform.OS === 'ios'
           ? {
               actionKey: 'pickEmoji',
               actionTitle: i18n.t(i18n.l.profiles.profile_avatar.pick_emoji),
@@ -244,7 +244,7 @@ export default ({ screenType = 'transaction' }: UseOnAvatarPressProps = {}) => {
 
   const avatarActionSheetOptions = avatarContextMenuConfig.menuItems
     .map(item => item && item.actionTitle)
-    .concat(ios ? ['Cancel'] : [])
+    .concat(Platform.OS === 'ios' ? ['Cancel'] : [])
     .filter(Boolean) as string[];
 
   const onAvatarPressProfile = useCallback(() => {

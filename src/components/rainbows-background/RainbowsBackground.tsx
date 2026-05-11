@@ -1,5 +1,5 @@
 import React from 'react';
-import { Dimensions } from 'react-native';
+import { Dimensions, Platform } from 'react-native';
 
 import { type SharedValue } from 'react-native-reanimated';
 
@@ -18,7 +18,7 @@ const rainbows = [
     id: 'grey',
     rotate: 150,
     scale: 0.5066666667,
-    source: ios ? { uri: 'greyneon' } : RainbowGreyNeon,
+    source: Platform.OS === 'ios' ? { uri: 'greyneon' } : RainbowGreyNeon,
     x: -116,
     y: -202,
   },
@@ -27,7 +27,7 @@ const rainbows = [
     id: 'neon',
     rotate: 394.75,
     scale: 0.3333333333,
-    source: ios ? { uri: 'neon' } : RainbowNeon,
+    source: Platform.OS === 'ios' ? { uri: 'neon' } : RainbowNeon,
     x: 149,
     y: deviceHeight < 725 ? 380 * (deviceHeight / 725) : 380,
   },
@@ -36,7 +36,7 @@ const rainbows = [
     id: 'pixel',
     rotate: 360,
     scale: 0.6666666667,
-    source: ios ? { uri: 'pixel' } : RainbowPixel,
+    source: Platform.OS === 'ios' ? { uri: 'pixel' } : RainbowPixel,
     x: 173,
     y: deviceHeight < 800 ? -263 * (deviceHeight / 800) : -263,
   },
@@ -45,7 +45,7 @@ const rainbows = [
     id: 'light',
     rotate: -33,
     scale: 0.2826666667,
-    source: ios ? { uri: 'light' } : RainbowLight,
+    source: Platform.OS === 'ios' ? { uri: 'light' } : RainbowLight,
     x: -172,
     y: 180,
   },
@@ -54,7 +54,7 @@ const rainbows = [
     id: 'liquid',
     rotate: 75,
     scale: deviceHeight < 800 ? 0.42248 * (deviceHeight / 800) : 0.42248,
-    source: ios ? { uri: 'liquid' } : RainbowLiquid,
+    source: Platform.OS === 'ios' ? { uri: 'liquid' } : RainbowLiquid,
     x: 40,
     y: deviceHeight < 800 ? 215 * (deviceHeight / 800) : 215,
   },

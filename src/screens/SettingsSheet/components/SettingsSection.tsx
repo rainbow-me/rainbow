@@ -1,5 +1,5 @@
 import React, { useCallback, useMemo } from 'react';
-import { Share } from 'react-native';
+import { Platform, Share } from 'react-native';
 
 import { ContextMenuButton, type MenuActionConfig } from 'react-native-ios-context-menu';
 
@@ -76,7 +76,7 @@ const SettingsSection = ({
   const { isDarkMode, setTheme, colorScheme } = useTheme();
 
   const onPressReview = useCallback(async () => {
-    if (ios) {
+    if (Platform.OS === 'ios') {
       onCloseModal();
     }
     handleReviewPromptAction(ReviewPromptAction.UserPrompt);
@@ -216,7 +216,7 @@ const SettingsSection = ({
         />
         <ContextMenuButton
           menuConfig={themeMenuConfig}
-          {...(android ? { onPress: onPressThemeAndroidActions } : {})}
+          {...(Platform.OS === 'android' ? { onPress: onPressThemeAndroidActions } : {})}
           isMenuPrimaryAction
           // @ts-ignore
           menuAlignmentOverride="right"
@@ -308,7 +308,7 @@ const SettingsSection = ({
         />
         {dev_section_enabled && (
           <MenuItem
-            leftComponent={<MenuItem.TextIcon icon={ios ? '🚧' : '🐞'} isEmoji />}
+            leftComponent={<MenuItem.TextIcon icon={Platform.OS === 'ios' ? '🚧' : '🐞'} isEmoji />}
             onPress={onPressDev}
             size={52}
             testID="developer-section"

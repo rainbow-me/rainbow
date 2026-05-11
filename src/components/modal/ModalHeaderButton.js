@@ -16,7 +16,7 @@ const BackArrow = styled(Icon).attrs(({ theme: { colors } }) => ({
   name: 'caret',
 }))({
   height: 16,
-  marginTop: android ? 6 : 0,
+  marginTop: Platform.OS === 'android' ? 6 : 0,
 });
 
 const Container = styled(Row).attrs(({ side }) => ({
@@ -45,7 +45,7 @@ const Text = styled(UnstyledText).attrs(({ theme: { colors } }) => ({
 const ModalHeaderButton = ({ label, onPress, side }) => (
   <Container
     {...(Platform.OS === 'android' ? { borderColor: 'transparent' } : {})}
-    as={ios ? BorderlessButton : Button}
+    as={Platform.OS === 'ios' ? BorderlessButton : Button}
     onPress={onPress}
     side={side}
   >

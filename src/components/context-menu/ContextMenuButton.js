@@ -1,4 +1,5 @@
 import React from 'react';
+import { Platform } from 'react-native';
 
 import { ContextMenuButton as IOSContextMenuButton } from 'react-native-ios-context-menu';
 
@@ -9,7 +10,7 @@ export default function ContextMenuButton({ children, hitSlop = 0, menuItems, me
     <IOSContextMenuButton
       activeOpacity={0}
       isMenuPrimaryAction
-      {...(android ? { onPress: onPressAndroid } : {})}
+      {...(Platform.OS === 'android' ? { onPress: onPressAndroid } : {})}
       menuConfig={{
         menuItems,
         menuTitle,

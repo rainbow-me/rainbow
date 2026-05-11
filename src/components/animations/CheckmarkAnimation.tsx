@@ -1,4 +1,5 @@
 import React from 'react';
+import { Platform } from 'react-native';
 
 import RadialGradient from 'react-native-radial-gradient';
 import Animated, {
@@ -128,7 +129,7 @@ export function CheckmarkAnimation() {
           <RadialGradient
             center={[60, 60]}
             colors={
-              android ? colors.gradients.checkmarkAnimation : ['rgba(31,194,74,0.00)', 'rgba(31,194,74,0.03)']
+              Platform.OS === 'android' ? colors.gradients.checkmarkAnimation : ['rgba(31,194,74,0.00)', 'rgba(31,194,74,0.03)']
               // https://github.com/surajitsarkar19/react-native-radial-gradient/issues/9
             }
             stops={[1, 0.5]}
@@ -153,7 +154,7 @@ export function CheckmarkAnimation() {
           <RadialGradient
             center={[60, 60]}
             colors={
-              android ? colors.gradients.checkmarkAnimation : ['rgba(31,194,74,0.00)', 'rgba(31,194,74,0.06)']
+              Platform.OS === 'android' ? colors.gradients.checkmarkAnimation : ['rgba(31,194,74,0.00)', 'rgba(31,194,74,0.06)']
               // https://github.com/surajitsarkar19/react-native-radial-gradient/issues/9
             }
             stops={[1, 0.5]}

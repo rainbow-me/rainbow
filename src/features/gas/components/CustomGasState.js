@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from 'react';
+import { Platform } from 'react-native';
 
 import { useIsFocused, useRoute } from '@react-navigation/native';
 
@@ -28,7 +29,7 @@ function useAndroidDisableGesturesOnFocus() {
   const { params } = useRoute();
   const isFocused = useIsFocused();
   useEffect(() => {
-    android && params?.toggleGestureEnabled?.(!isFocused);
+    Platform.OS === 'android' && params?.toggleGestureEnabled?.(!isFocused);
   }, [isFocused, params]);
 }
 

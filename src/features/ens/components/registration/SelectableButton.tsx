@@ -1,4 +1,5 @@
 import React, { type ReactNode } from 'react';
+import { Platform } from 'react-native';
 
 import ButtonPressAnimation from '@/components/animations/ButtonPressAnimation';
 import { AccentColorProvider, Box, Text, useForegroundColor } from '@/design-system';
@@ -36,7 +37,7 @@ export default function SelectableButton({ children, onSelect, isSelected, testI
           style={{
             borderColor: borderColor,
             borderWidth: 2,
-            paddingBottom: android ? 2 : 0,
+            paddingBottom: Platform.OS === 'android' ? 2 : 0,
           }}
         >
           <Text align="center" color="accent" size="16px / 22px (Deprecated)" weight="heavy">

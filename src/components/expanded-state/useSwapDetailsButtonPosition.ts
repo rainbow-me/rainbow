@@ -1,5 +1,5 @@
 import { useCallback, useMemo, useRef, useState } from 'react';
-import { type LayoutChangeEvent } from 'react-native';
+import { Platform, type LayoutChangeEvent } from 'react-native';
 
 import { useAnimatedStyle, useSharedValue, withSpring } from 'react-native-reanimated';
 
@@ -28,7 +28,7 @@ export default ({ contentHeight }: { contentHeight: number }) => {
 
   const wrapperStyle = useMemo(
     () =>
-      ios && [
+      Platform.OS === 'ios' && [
         buttonWrapperStyle,
         buttonPosition && {
           position: 'absolute',

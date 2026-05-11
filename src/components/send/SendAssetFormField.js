@@ -1,4 +1,5 @@
 import React, { useCallback } from 'react';
+import { Platform } from 'react-native';
 
 import RadialGradient from 'react-native-radial-gradient';
 
@@ -31,7 +32,7 @@ const GradientBackground = styled(RadialGradient).attrs(({ colorForAsset, theme:
   width: ({ width }) => width - 38,
 });
 
-const Wrapper = styled(android ? Row : ButtonPressAnimation).attrs({
+const Wrapper = styled(Platform.OS === 'android' ? Row : ButtonPressAnimation).attrs({
   scaleTo: 1.05,
 })({
   borderRadius: 29.5,
@@ -41,7 +42,7 @@ const Wrapper = styled(android ? Row : ButtonPressAnimation).attrs({
   paddingHorizontal: ({ isSmallPhone, isTinyPhone }) => (isTinyPhone ? 12 : isSmallPhone ? 15 : 19),
   paddingTop: ({ isSmallPhone, isTinyPhone }) => (isTinyPhone ? 6 : isSmallPhone ? 7 : 10),
   position: 'relative',
-  width: ({ width }) => (android ? width - 38 : '100%'),
+  width: ({ width }) => (Platform.OS === 'android' ? width - 38 : '100%'),
 });
 
 const SendAssetFormField = (
@@ -76,15 +77,15 @@ const SendAssetFormField = (
 
   return (
     <Wrapper
-      isSmallPhone={android || isSmallPhone}
+      isSmallPhone={Platform.OS === 'android' || isSmallPhone}
       isTinyPhone={isTinyPhone}
-      onPress={() => !android && ref?.current.focus()}
+      onPress={() => Platform.OS !== 'android' && ref?.current.focus()}
       width={width}
       accessible={false}
     >
       <GradientBackground
         colorForAsset={colorForAsset || colors.dark}
-        isSmallPhone={android || isSmallPhone}
+        isSmallPhone={Platform.OS === 'android' || isSmallPhone}
         isTinyPhone={isTinyPhone}
         width={width}
       />
@@ -109,8 +110,8 @@ const SendAssetFormField = (
           align="right"
           color={colorForAsset || colors.dark}
           letterSpacing="roundedTight"
-          lineHeight={android ? (isTinyPhone ? 27 : android || isSmallPhone ? 31 : 38) : null}
-          size={isTinyPhone ? 'big' : android || isSmallPhone ? 'bigger' : 'h3'}
+          lineHeight={Platform.OS === 'android' ? (isTinyPhone ? 27 : Platform.OS === 'android' || isSmallPhone ? 31 : 38) : null}
+          size={isTinyPhone ? 'big' : Platform.OS === 'android' || isSmallPhone ? 'bigger' : 'h3'}
           weight="medium"
         >
           {label.length > labelMaxLength ? label.substring(0, labelMaxLength) : label}

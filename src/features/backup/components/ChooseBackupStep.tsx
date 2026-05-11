@@ -37,7 +37,7 @@ const Title = styled(RNText).attrs({
 
 const LoadingText = styled(RNText).attrs(({ theme: { colors } }: any) => ({
   color: colors.blueGreyDark,
-  lineHeight: ios ? 'none' : 24,
+  lineHeight: Platform.OS === 'ios' ? 'none' : 24,
   size: 'large',
   weight: 'semibold',
 }))({
@@ -218,7 +218,7 @@ export function ChooseBackupStep() {
 
           {isLoading && (
             <Box width="full" height="full" color={colors.transparent} alignItems="center" justifyContent="center" flex={1} as={Page}>
-              {android ? <Spinner color={colors.blueGreyDark} /> : <ActivityIndicator color={colors.blueGreyDark} />}
+              {Platform.OS === 'android' ? <Spinner color={colors.blueGreyDark} /> : <ActivityIndicator color={colors.blueGreyDark} />}
               <LoadingText>{titleForBackupState[status]}</LoadingText>
             </Box>
           )}

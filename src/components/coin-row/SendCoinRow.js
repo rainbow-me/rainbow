@@ -1,5 +1,5 @@
 import React from 'react';
-import { TouchableWithoutFeedback } from 'react-native';
+import { Platform, TouchableWithoutFeedback } from 'react-native';
 
 import { LinearGradient } from 'expo-linear-gradient';
 
@@ -22,7 +22,7 @@ const isTinyPhone = deviceUtils.dimensions.height <= 568;
 const selectedHeight = isTinyPhone ? 50 : isSmallPhone ? 64 : 70;
 
 const containerStyles = {
-  paddingTop: android ? 9 : 19,
+  paddingTop: Platform.OS === 'android' ? 9 : 19,
 };
 
 const NativeAmountBubble = styled(LinearGradient).attrs(({ theme: { colors } }) => ({
