@@ -7,8 +7,8 @@ import { convertStoredPerpPriceChangeToPercent, formatCompactPerpPercentChange }
 import { navigateToPerpsSearch } from '@/features/perps/utils/navigateToPerps';
 import { PLACEMENT_IDS } from '@/features/placements/constants';
 import { trackPlacementInteraction } from '@/features/placements/engagement/trackInteraction';
-import { useDiscoverPlacementsStore } from '@/features/placements/stores/discover/discoverPlacementsStore';
 import { useDiscoverPerpsStore } from '@/features/placements/stores/discover/discoverPerpsStore';
+import { useDiscoverPlacementsStore } from '@/features/placements/stores/discover/discoverPlacementsStore';
 import { type Placement, type PlacementItem } from '@/features/placements/types';
 import * as i18n from '@/languages';
 
