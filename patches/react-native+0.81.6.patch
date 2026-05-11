@@ -1,5 +1,6 @@
 # PATCH CONTEXT
-# Why: Preserves Paper's existing scalar continuous corners and uses UIKit 26
+# Why: Preserves continuous corners across both React Native view implementations.
+#   Paper keeps its existing scalar behavior and uses UIKit 26
 #   native geometry when unequal radii require it. A persistent childless UIView
 #   draws the native border with the same corner configuration as the host.
 #   Its lifetime follows UIKit's irreversible per-corner backend, keeping geometry
@@ -8,11 +9,14 @@
 #   follow the host, including native activation during additive resize animations.
 #   UIKit/React retain their layout timing. No Swift dependency, bitmap renderer,
 #   or approximated corner geometry is added; earlier iOS retains the scalar path.
+#   Fabric resolves its default BorderCurve as Continuous so views without an
+#   explicit borderCurve prop match the same iOS-system rounded-rectangle styling.
 # Upstream Issue: none filed yet. Paper's unequal-radius raster paths use circular
 #   arcs; UIKit 26 native inner-border coverage differs with rendered subviews.
+#   Fabric exposes borderCurve but defaults it to Circular.
 # Linear Issue: FEPLAT-97
-# Remove when: upstream Paper supports continuous unequal corners, or
-#   on migration to Fabric after verifying the equivalent rendering paths.
+# Remove when: upstream supports the required behavior on each retained renderer,
+#   or the design system owns the equivalent borderCurve behavior explicitly.
 
 diff --git a/node_modules/react-native/React/Views/RCTView.m b/node_modules/react-native/React/Views/RCTView.m
 --- a/node_modules/react-native/React/Views/RCTView.m
@@ -179,4 +183,16 @@ diff --git a/node_modules/react-native/React/Views/RCTView.m b/node_modules/reac
 -  layer.cornerRadius = cornerRadius;
 +  [self updateNativeCornerRadii:clippingRadii];
    layer.mask = mask;
+ }
+diff --git a/node_modules/react-native/ReactCommon/react/renderer/components/view/BaseViewProps.cpp b/node_modules/react-native/ReactCommon/react/renderer/components/view/BaseViewProps.cpp
+--- a/node_modules/react-native/ReactCommon/react/renderer/components/view/BaseViewProps.cpp
++++ b/node_modules/react-native/ReactCommon/react/renderer/components/view/BaseViewProps.cpp
+@@ -542,7 +542,7 @@
+       .borderColors = borderColors.resolve(isRTL, {}),
+       .borderWidths = borderWidths.resolve(isRTL, 0),
+       .borderRadii = ensureNoOverlap(radii, layoutMetrics.frame.size),
+-      .borderCurves = borderCurves.resolve(isRTL, BorderCurve::Circular),
++      .borderCurves = borderCurves.resolve(isRTL, BorderCurve::Continuous),
+       .borderStyles = borderStyles.resolve(isRTL, BorderStyle::Solid),
+   };
  }
