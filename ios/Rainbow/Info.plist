@@ -23,24 +23,6 @@
 				<key>UIPrerenderedIcon</key>
 				<false/>
 			</dict>
-			<key>baggy</key>
-			<dict>
-				<key>CFBundleIconFiles</key>
-				<array>
-					<string>baggy</string>
-				</array>
-				<key>UIPrerenderedIcon</key>
-				<false/>
-			</dict>
-			<key>chonks</key>
-			<dict>
-				<key>CFBundleIconFiles</key>
-				<array>
-					<string>chonks</string>
-				</array>
-				<key>UIPrerenderedIcon</key>
-				<false/>
-			</dict>
 			<key>farcaster</key>
 			<dict>
 				<key>CFBundleIconFiles</key>
@@ -122,15 +104,6 @@
 				<key>UIPrerenderedIcon</key>
 				<false/>
 			</dict>
-			<key>redacted</key>
-			<dict>
-				<key>CFBundleIconFiles</key>
-				<array>
-					<string>redacted</string>
-				</array>
-				<key>UIPrerenderedIcon</key>
-				<false/>
-			</dict>
 			<key>smol</key>
 			<dict>
 				<key>CFBundleIconFiles</key>
@@ -190,6 +163,15 @@
 				<key>CFBundleIconFiles</key>
 				<array>
 					<string>mog</string>
+				</array>
+				<key>UIPrerenderedIcon</key>
+				<false/>
+			</dict>
+			<key>rnbw</key>
+			<dict>
+				<key>CFBundleIconFiles</key>
+				<array>
+					<string>rnbw</string>
 				</array>
 				<key>UIPrerenderedIcon</key>
 				<false/>
