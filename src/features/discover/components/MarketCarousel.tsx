@@ -21,6 +21,7 @@ const CARD_GAP = 8;
 const PEEK_WIDTH = 32;
 const SKELETON_COUNT = 5;
 const SCROLL_DEBOUNCE_MS = time.seconds(30);
+const SCROLL_DEBOUNCE_OPTIONS = Object.freeze({ leading: false, trailing: true });
 
 export const CARD_WIDTH = DEVICE_WIDTH - CAROUSEL_HORIZONTAL_PADDING * 2 - PEEK_WIDTH;
 export const CARD_HEIGHT = 100;
@@ -78,7 +79,11 @@ export function MarketCarousel<T extends PlacementItem>({
           title,
         });
 
-      return <View style={{ height: itemHeight, overflow: 'visible', width: itemWidths[index] ?? itemWidth }}>{renderItem(item, trackPress)}</View>;
+      return (
+        <View style={{ height: itemHeight, overflow: 'visible', width: itemWidths[index] ?? itemWidth }}>
+          {renderItem(item, trackPress)}
+        </View>
+      );
     },
     [itemHeight, itemWidth, itemWidths, placementId, placementScreen, renderItem, title]
   );
@@ -93,12 +98,14 @@ export function MarketCarousel<T extends PlacementItem>({
       })
     );
   }, [onSeeAll, placementId, placementScreen, title]);
-  const handleScrollSettle = useDebouncedCallback(
+
+  const onScrollSettle = useDebouncedCallback(
     () => {
-      if (placement) trackPlacementInteraction({ placement });
+      if (!placement) return;
+      trackPlacementInteraction({ interactionType: 'carousel_scroll', placement });
     },
     SCROLL_DEBOUNCE_MS,
-    { leading: false, trailing: true }
+    SCROLL_DEBOUNCE_OPTIONS
   );
 
   if (!loading && data.length === 0) return null;
@@ -142,8 +149,7 @@ export function MarketCarousel<T extends PlacementItem>({
           snapToAlignment="start"
           renderItem={renderCarouselItem}
           keyExtractor={keyExtractor}
-          onScrollEndDrag={handleScrollSettle}
-          onMomentumScrollEnd={handleScrollSettle}
+          onMomentumScrollEnd={onScrollSettle}
           initialNumToRender={6}
           windowSize={8}
         />

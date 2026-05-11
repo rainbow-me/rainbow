@@ -1,10 +1,21 @@
 import { analytics } from '@/analytics';
-import { event } from '@/analytics/event';
+import { event, type EventProperties } from '@/analytics/event';
 import { type Placement, type PlacementItem } from '@/features/placements/types';
 
-export function trackPlacementInteraction({ item, placement }: { item?: PlacementItem; placement: Placement }) {
+type PlacementInteractionType = EventProperties[typeof event.placementInteraction]['interactionType'];
+
+export function trackPlacementInteraction({
+  interactionType,
+  item,
+  placement,
+}: {
+  interactionType: PlacementInteractionType;
+  item?: PlacementItem;
+  placement: Placement;
+}): void {
   analytics.track(event.placementInteraction, {
     id: placement.id,
+    interactionType,
     screen: placement.screen,
     order: placement.order,
     version: placement.version,
