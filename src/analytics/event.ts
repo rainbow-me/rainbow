@@ -1013,6 +1013,7 @@ export type EventProperties = {
   };
   [event.placementInteraction]: {
     id: Placement['id'];
+    interactionType: 'carousel_scroll';
     screen: Placement['screen'];
     order: Placement['order'];
     version: Placement['version'];
