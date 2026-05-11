@@ -16,7 +16,8 @@ import walletTypes from '@/helpers/walletTypes';
 import * as i18n from '@/languages';
 import { useRemoteConfig } from '@/model/remoteConfig';
 import { useWalletsStore } from '@/state/wallets/walletsStore';
-import useExperimentalFlag, { HARDWARE_WALLETS, MINTS, OP_REWARDS, PROFILES, TRENDING_TOKENS } from '@rainbow-me/config/experimentalHooks';
+import { HARDWARE_WALLETS, MINTS, OP_REWARDS, PROFILES, TRENDING_TOKENS } from '@rainbow-me/config/experimental';
+import useExperimentalFlag from '@rainbow-me/config/experimentalHooks';
 
 export function DiscoverHome() {
   return (

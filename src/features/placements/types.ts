@@ -18,6 +18,13 @@ export type PlacementItem = {
   metadata?: Record<string, unknown>;
 };
 
+export type PlacementItemAnalyticsMetadata = {
+  marketId?: string;
+  marketName?: string;
+  marketSlug?: string;
+  marketSymbol?: string;
+};
+
 export type Placement = {
   id: PlacementId;
   screen: PlacementScreen;
