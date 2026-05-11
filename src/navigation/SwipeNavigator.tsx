@@ -35,7 +35,6 @@ import { BROWSER_BACKGROUND_COLOR_DARK, BROWSER_BACKGROUND_COLOR_LIGHT } from '@
 import { DappBrowser } from '@/components/DappBrowser/DappBrowser';
 import { discoverOpenSearchFnRef, discoverScrollToTopFnRef } from '@/components/Discover/DiscoverScreenContext';
 import { EasingGradient } from '@/components/easing-gradient/EasingGradient';
-import { useShowKingOfTheHill } from '@/components/king-of-the-hill/useShowKingOfTheHill';
 import { FlexItem } from '@/components/layout';
 import { PendingTransactionWatcher } from '@/components/pending-transaction-watcher/PendingTransactionWatcher';
 import { PANEL_COLOR_DARK } from '@/components/SmoothPager/ListPanel';
@@ -53,6 +52,8 @@ import { DAPP_BROWSER, LAZY_TABS, RNBW_MEMBERSHIP, RNBW_REWARDS } from '@/config
 import useExperimentalFlag from '@/config/experimentalHooks';
 import { Box, ColorModeProvider, Column, Columns, globalColors, useColorMode } from '@/design-system';
 import { IS_TEST } from '@/env';
+import { useShowKingOfTheHill } from '@/features/king-of-the-hill/hooks/useShowKingOfTheHill';
+import { KingOfTheHillScreen } from '@/features/king-of-the-hill/screens/KingOfTheHillScreen';
 import { RnbwMembershipScreen } from '@/features/rnbw-membership/screens/rnbw-membership-screen/RnbwMembershipScreen';
 import { RnbwRewardsScreen } from '@/features/rnbw-rewards/screens/rnbw-rewards-screen/RnbwRewardsScreen';
 import { opacity } from '@/framework/ui/utils/opacity';
@@ -67,7 +68,6 @@ import {
   useRecyclerListViewScrollToTopContext,
 } from '@/navigation/RecyclerListViewScrollToTopContext';
 import DiscoverScreen from '@/screens/DiscoverScreen';
-import { KingOfTheHillScreen } from '@/screens/KingOfTheHill';
 import WalletScreen from '@/screens/WalletScreen/WalletScreen';
 import { useBrowserStore } from '@/state/browser/browserStore';
 import { useStoreSharedValue } from '@/state/internal/hooks/useStoreSharedValue';
