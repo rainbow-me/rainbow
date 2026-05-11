@@ -1,6 +1,6 @@
 import { useEffect } from 'react';
+import { Platform } from 'react-native';
 
-import { IS_ANDROID } from '@/env';
 import { useNavigation } from '@/navigation/Navigation';
 import type Routes from '@/navigation/routesNames';
 import { useRemoveFirst } from '@/navigation/useRemoveFirst';
@@ -14,7 +14,7 @@ export const useRemoveScreen = (screenName: RouteName) => {
   useEffect(() => {
     // This is the fix for Android wallet creation problem.
     // We need to remove the welcome screen from the stack.
-    if (!IS_ANDROID) {
+    if (Platform.OS !== 'android') {
       return;
     }
     const isScreen = dangerouslyGetParent()?.getState().routes[0].name === screenName;

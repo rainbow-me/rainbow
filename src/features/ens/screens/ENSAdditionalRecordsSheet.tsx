@@ -1,12 +1,11 @@
 import React, { useMemo } from 'react';
-import { useWindowDimensions } from 'react-native';
+import { Platform, useWindowDimensions } from 'react-native';
 
 import { useRoute, type RouteProp } from '@react-navigation/native';
 import { useRecoilState } from 'recoil';
 
 import { SlackSheet } from '@/components/sheet';
 import { AccentColorProvider, Box, Inline } from '@/design-system';
-import { IS_ANDROID } from '@/env';
 import type Routes from '@/navigation/routesNames';
 import { type RootStackParamList } from '@/navigation/types';
 import deviceUtils from '@/utils/deviceUtils';
@@ -41,7 +40,7 @@ export default function ENSAdditionalRecordsSheet() {
   const androidTop = deviceHeight - boxStyle.height - recordLineHeight;
 
   return (
-    <SlackSheet additionalTopPadding height="100%" scrollEnabled={false} style={IS_ANDROID ? { top: androidTop } : {}}>
+    <SlackSheet additionalTopPadding height="100%" scrollEnabled={false} style={Platform.OS === 'android' ? { top: androidTop } : {}}>
       <AccentColorProvider color={accentColor}>
         <Box
           background="body (Deprecated)"

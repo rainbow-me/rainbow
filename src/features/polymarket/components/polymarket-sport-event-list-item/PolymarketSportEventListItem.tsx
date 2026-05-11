@@ -1,5 +1,5 @@
 import { memo, useCallback, useMemo } from 'react';
-import { StyleSheet, View, type StyleProp, type ViewStyle } from 'react-native';
+import { Platform, StyleSheet, View, type StyleProp, type ViewStyle } from 'react-native';
 
 import ConditionalWrap from 'conditional-wrap';
 
@@ -7,7 +7,6 @@ import ButtonPressAnimation from '@/components/animations/ButtonPressAnimation';
 import ShimmerAnimation from '@/components/animations/ShimmerAnimation';
 import { LiveTokenText } from '@/components/live-token-text/LiveTokenText';
 import { Text, TextShadow, useBackgroundColor, useColorMode, useForegroundColor } from '@/design-system';
-import { IS_ANDROID, IS_IOS } from '@/env';
 import { TeamLogo } from '@/features/polymarket/components/TeamLogo';
 import { usePolymarketLiveGame } from '@/features/polymarket/hooks/usePolymarketLiveGame';
 import { type PolymarketEvent, type PolymarketMarket } from '@/features/polymarket/types/polymarket-event';
@@ -122,9 +121,9 @@ export const PolymarketSportEventListItem = memo(function PolymarketSportEventLi
   );
 
   return (
-    <ConditionalWrap condition={IS_ANDROID} wrap={children => <View style={[styles.container, style]}>{children}</View>}>
+    <ConditionalWrap condition={Platform.OS === 'android'} wrap={children => <View style={[styles.container, style]}>{children}</View>}>
       <>
-        {IS_ANDROID && (
+        {Platform.OS === 'android' && (
           <View style={styles.betCellsOverlay}>
             <View style={styles.betsColumn}>
               <View style={styles.betRow}>
@@ -152,7 +151,7 @@ export const PolymarketSportEventListItem = memo(function PolymarketSportEventLi
             </View>
           </View>
         )}
-        <ButtonPressAnimation onPress={() => navigateToEvent(event)} scaleTo={0.98} style={IS_IOS ? style : undefined}>
+        <ButtonPressAnimation onPress={() => navigateToEvent(event)} scaleTo={0.98} style={Platform.OS === 'ios' ? style : undefined}>
           <View style={[styles.card, { backgroundColor: cardBackground, borderColor }]}>
             <View style={styles.header}>
               <Text align="left" color="label" size="13pt" weight="heavy" numberOfLines={2}>
@@ -210,7 +209,7 @@ export const PolymarketSportEventListItem = memo(function PolymarketSportEventLi
                     </View>
                   </View>
                 ) : null}
-                {IS_IOS ? (
+                {Platform.OS === 'ios' ? (
                   <View style={styles.betsColumn}>
                     <View style={styles.betRow}>
                       {awayBets.spread && (

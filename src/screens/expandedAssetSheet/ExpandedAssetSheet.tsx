@@ -1,4 +1,5 @@
 import React from 'react';
+import { Platform } from 'react-native';
 
 import { useRoute, type RouteProp } from '@react-navigation/native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
@@ -6,7 +7,6 @@ import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { EasingGradient } from '@/components/easing-gradient/EasingGradient';
 import { SlackSheet } from '@/components/sheet';
 import { Box, useColorMode } from '@/design-system';
-import { IS_ANDROID, IS_IOS } from '@/env';
 import type Routes from '@/navigation/routesNames';
 import { type RootStackParamList } from '@/navigation/types';
 
@@ -27,7 +27,7 @@ function ExpandedAssetSheetContent() {
       <SlackSheet
         backgroundColor={accentColors.background}
         // eslint-disable-next-line react/jsx-props-no-spreading
-        {...(IS_IOS ? { height: '100%' } : {})}
+        {...(Platform.OS === 'ios' ? { height: '100%' } : {})}
         scrollEnabled
         removeTopPadding
         hideHandle
@@ -41,7 +41,7 @@ function ExpandedAssetSheetContent() {
         <SheetContent accentColor={accentColors.color} />
       </SlackSheet>
       <Box position="absolute" top="0px" left="0px" right="0px" width="full" pointerEvents="none">
-        <Box backgroundColor={accentColors.background} height={safeAreaInsets.top + (IS_ANDROID ? 24 : 12)} width="full">
+        <Box backgroundColor={accentColors.background} height={safeAreaInsets.top + (Platform.OS === 'android' ? 24 : 12)} width="full">
           <Box
             height={{ custom: 5 }}
             width={{ custom: 36 }}

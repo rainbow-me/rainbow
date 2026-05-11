@@ -1,8 +1,8 @@
 import { useCallback } from 'react';
+import { Platform } from 'react-native';
 
 import { dispatchCommand, runOnJS, runOnUI, useAnimatedReaction } from 'react-native-reanimated';
 
-import { IS_IOS } from '@/env';
 import { logger, RainbowError } from '@/logger';
 
 import { useBrowserContext } from '../BrowserContext';
@@ -89,7 +89,7 @@ export function useScreenshotAndScrollTriggers() {
 
       const didBeginSwitchingTabs = current.tabSwitchGestureX !== 0 && previous.tabSwitchGestureX === 0;
       const didFinishSwitchingTabs =
-        IS_IOS &&
+        Platform.OS === 'ios' &&
         current.tabSwitchGestureX === 0 &&
         previous.tabSwitchGestureX !== 0 &&
         !tabViewVisible.value &&

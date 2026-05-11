@@ -1,8 +1,9 @@
+import { Platform } from 'react-native';
+
 import { formatJsonRpcError, formatJsonRpcResult } from '@json-rpc-tools/utils';
 import type { SignClientTypes } from '@walletconnect/types';
 
 import { analytics } from '@/analytics';
-import { IS_IOS } from '@/env';
 import { maybeSignUri } from '@/handlers/imgix';
 import WalletTypes from '@/helpers/walletTypes';
 import * as i18n from '@/languages';
@@ -184,7 +185,7 @@ export async function onSessionRequest(event: SignClientTypes.EventArguments['se
         address,
         chainId,
         onComplete(type: WalletconnectResultType) {
-          if (IS_IOS) {
+          if (Platform.OS === 'ios') {
             Navigation.handleAction(Routes.WALLET_CONNECT_REDIRECT_SHEET, {
               type,
             });

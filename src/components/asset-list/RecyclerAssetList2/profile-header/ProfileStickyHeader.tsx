@@ -1,14 +1,14 @@
 import * as React from 'react';
+import { Platform } from 'react-native';
 
 import { navbarHeight } from '@/components/navbar/Navbar';
 import { Box } from '@/design-system';
-import { IS_IOS } from '@/env';
 import { useTheme } from '@/theme/ThemeContext';
 
 import { StickyHeader } from '../core/StickyHeaders';
 
 export const ProfileStickyHeaderHeight = 52;
-const visiblePosition = IS_IOS ? navbarHeight : navbarHeight + 80;
+const visiblePosition = Platform.OS === 'ios' ? navbarHeight : navbarHeight + 80;
 
 export const ProfileStickyHeader = React.memo(function ProfileStickyHeader() {
   const { colors } = useTheme();

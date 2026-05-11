@@ -1,3 +1,5 @@
+import { Platform } from 'react-native';
+
 import { AssetListHeaderHeight } from '@/components/asset-list/AssetListHeader';
 import { AssetListItemSkeletonHeight } from '@/components/asset-list/AssetListItemSkeleton';
 import { POLYMARKET_FEATURE_CARD_HEIGHT } from '@/components/asset-list/RecyclerAssetList2/cards/PolymarketFeatureCard';
@@ -19,7 +21,6 @@ import { CoinDividerContainerHeight } from '@/components/coin-divider';
 import { CoinRowHeight } from '@/components/coin-row';
 import { TokenFamilyHeaderHeight } from '@/components/token-family';
 import { CardSize, UniqueTokenCardMargin } from '@/components/unique-token/CardSize';
-import { IS_IOS } from '@/env';
 import deviceUtils from '@/utils/deviceUtils';
 
 type Dim = {
@@ -44,7 +45,7 @@ const ViewDimensions: Record<CellType, Dim> = {
   [CellType.PROFILE_ACTION_BUTTONS_ROW_SPACE_AFTER]: { height: 24 },
   [CellType.PROFILE_AVATAR_ROW]: { height: ProfileAvatarRowHeight },
   [CellType.PROFILE_AVATAR_ROW_SPACE_BEFORE]: {
-    height: IS_IOS ? ProfileAvatarRowTopInset : ProfileAvatarRowTopInset * 2,
+    height: Platform.OS === 'ios' ? ProfileAvatarRowTopInset : ProfileAvatarRowTopInset * 2,
   },
   [CellType.PROFILE_AVATAR_ROW_SPACE_AFTER]: { height: 15 },
   [CellType.PROFILE_NAME_ROW]: { height: ProfileNameRowHeight },

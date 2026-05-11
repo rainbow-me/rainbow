@@ -1,9 +1,9 @@
 import React, { useCallback } from 'react';
+import { Platform } from 'react-native';
 
 import { Text } from '@/design-system';
 import type { ParsedAddressAsset, RainbowToken } from '@/entities/tokens';
 import type { UniqueAsset } from '@/entities/uniqueAssets';
-import { IS_IOS } from '@/env';
 import useNavigationForNonReadOnlyWallets from '@/hooks/useNavigationForNonReadOnlyWallets';
 import * as i18n from '@/languages';
 import Routes from '@/navigation/routesNames';
@@ -20,7 +20,7 @@ function SendActionButton({ asset, color: givenColor, textColor, ...props }: Sen
   const navigate = useNavigationForNonReadOnlyWallets();
 
   const handlePress = useCallback(() => {
-    if (IS_IOS) {
+    if (Platform.OS === 'ios') {
       navigate(Routes.SEND_FLOW, { screen: Routes.SEND_SHEET, params: { asset } });
     } else {
       navigate(Routes.SEND_FLOW, { asset });

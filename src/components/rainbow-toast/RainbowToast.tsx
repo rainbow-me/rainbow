@@ -1,5 +1,5 @@
 import React, { memo, useCallback, useEffect, useMemo } from 'react';
-import { StyleSheet, View } from 'react-native';
+import { Platform, StyleSheet, View } from 'react-native';
 
 import { createDerivedStore } from '@storesjs/stores';
 import { LinearGradient } from 'expo-linear-gradient';
@@ -47,7 +47,7 @@ import {
 } from '@/components/rainbow-toast/useRainbowToastsStore';
 import { Box, useColorMode, useForegroundColor } from '@/design-system';
 import { TransactionStatus } from '@/entities/transactions';
-import { IS_ANDROID, IS_IOS, IS_TEST } from '@/env';
+import { IS_TEST } from '@/env';
 import useAccountSettings from '@/hooks/useAccountSettings';
 import useDimensions from '@/hooks/useDimensions';
 import { useListen } from '@/state/internal/hooks/useListen';
@@ -145,7 +145,7 @@ function RainbowToastDisplayContent() {
   );
 
   // FullWindowOverlay blocks all views for maestro.
-  if (IS_IOS && !IS_TEST) {
+  if (Platform.OS === 'ios' && !IS_TEST) {
     return <FullWindowOverlay>{content}</FullWindowOverlay>;
   }
 
@@ -353,14 +353,14 @@ const RainbowToastItem = memo(function RainbowToast({ toast, stackWidth, index }
             style={[
               styles.background,
               {
-                borderColor: isDarkMode ? borderDark : IS_ANDROID ? 'rgba(150,150,150,0.5)' : 'rgba(255, 255, 255, 0.72)',
+                borderColor: isDarkMode ? borderDark : Platform.OS === 'android' ? 'rgba(150,150,150,0.5)' : 'rgba(255, 255, 255, 0.72)',
               },
             ]}
           />
 
           {/* separate inner view because overflow hidden + shadow breaks */}
           <Animated.View style={[contentContainerStyle, styles.innerContent]}>
-            {IS_IOS ? (
+            {Platform.OS === 'ios' ? (
               <>
                 <BlurGradient
                   gradientPoints={[

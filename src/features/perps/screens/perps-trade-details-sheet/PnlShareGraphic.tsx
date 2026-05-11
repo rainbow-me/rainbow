@@ -3,6 +3,7 @@ import {
   Image,
   ImageBackground,
   PixelRatio,
+  Platform,
   StyleSheet,
   Text,
   View,
@@ -20,7 +21,6 @@ import rainbowTextLogo from '@/assets/rainbowTextLogo.png';
 import { PANEL_WIDTH } from '@/components/PanelSheet/PanelSheet';
 import { Box, globalColors } from '@/design-system';
 import { fonts } from '@/design-system/typography/typography';
-import { IS_ANDROID } from '@/env';
 import { PERPS_COLORS } from '@/features/perps/constants';
 import { useHyperliquidMarketsStore } from '@/features/perps/stores/hyperliquidMarketsStore';
 import { type HlTrade } from '@/features/perps/types';
@@ -62,7 +62,7 @@ const SHARE_CARD_GAP = 8;
 const SHARE_CARD_SNAP_INTERVAL = SHARE_CARD_WIDTH + SHARE_CARD_GAP;
 const SHARE_CAROUSEL_WIDTH = SHARE_CARD_WIDTH + SHARE_CARD_SIDE_PEEK * 2;
 const SHARE_CARD_BORDER_RADIUS = 20;
-const ANDROID_TEXT_FIX = IS_ANDROID ? ({ includeFontPadding: false, textAlignVertical: 'center' } as const) : {};
+const ANDROID_TEXT_FIX = Platform.OS === 'android' ? ({ includeFontPadding: false, textAlignVertical: 'center' } as const) : {};
 const SF_BOLD = { ...fonts.SFProRounded.bold, ...ANDROID_TEXT_FIX };
 const SF_BLACK = { ...fonts.SFProRounded.black, ...ANDROID_TEXT_FIX };
 

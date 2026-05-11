@@ -1,6 +1,6 @@
 /* eslint-disable no-nested-ternary */
 import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
-import { InteractionManager, Keyboard, View } from 'react-native';
+import { InteractionManager, Keyboard, Platform, View } from 'react-native';
 
 import AnimateNumber from '@bankify/react-native-animate-number';
 import { isEmpty, isNaN, isNil, noop } from 'lodash';
@@ -15,7 +15,6 @@ import { Centered, Column, Row } from '@/components/layout';
 import ContextMenuButton from '@/components/native-context-menu/contextMenu';
 import { Text } from '@/components/text';
 import type { ParsedAddressAsset } from '@/entities/tokens';
-import { IS_ANDROID } from '@/env';
 import styled from '@/framework/ui/styled-thing';
 import { opacity } from '@/framework/ui/utils/opacity';
 import { isL2Chain } from '@/handlers/web3';
@@ -403,7 +402,7 @@ const GasSpeedButton = ({
     );
     if (!gasOptionsAvailable || gasIsNotReady) return pager;
 
-    if (IS_ANDROID) {
+    if (Platform.OS === 'android') {
       return (
         <ContextMenu
           activeOpacity={0}

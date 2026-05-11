@@ -1,4 +1,5 @@
 import React, { memo } from 'react';
+import { Platform } from 'react-native';
 
 import {
   useAnimatedReaction,
@@ -13,12 +14,11 @@ import {
 import { AnimatedNumber } from '@/components/animated-number/AnimatedNumber';
 import { TIMING_CONFIGS } from '@/components/animations/animationConfigs';
 import { AnimatedText, Box, useColorMode, useForegroundColor } from '@/design-system';
-import { IS_ANDROID } from '@/env';
 import { greaterThanWorklet, lessThanWorklet, toFixedWorklet } from '@/framework/core/safeMath';
 import { opacity } from '@/framework/ui/utils/opacity';
 import { useTheme } from '@/theme/ThemeContext';
 
-const UP_ARROW = IS_ANDROID ? '' : '↑';
+const UP_ARROW = Platform.OS === 'android' ? '' : '↑';
 
 type ChartPercentChangeLabelProps = {
   backgroundColor: string;

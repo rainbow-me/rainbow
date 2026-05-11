@@ -1,5 +1,6 @@
 import { useCallback, useRef, type MutableRefObject } from 'react';
 import type React from 'react';
+import { Platform } from 'react-native';
 
 import { runOnUI, withTiming, type SharedValue } from 'react-native-reanimated';
 import { type WebViewMessageEvent } from 'react-native-webview';
@@ -8,7 +9,6 @@ import { type ShouldStartLoadRequest, type WebViewNavigation } from 'react-nativ
 
 import { appMessenger, type Messenger } from '@/browserMessaging/AppMessenger';
 import { TIMING_CONFIGS } from '@/components/animations/animationConfigs';
-import { IS_IOS } from '@/env';
 import Navigation from '@/navigation/Navigation';
 import Routes from '@/navigation/routesNames';
 import { useBrowserStore, type BrowserState } from '@/state/browser/browserStore';
@@ -75,7 +75,7 @@ export function useWebViewHandlers({
         const parsedData = typeof data === 'string' ? JSON.parse(data) : data;
         if (!parsedData || (!parsedData.topic && !parsedData.payload)) return;
 
-        if (IS_IOS && parsedData.topic === 'injectedUnderPageBackgroundColor') {
+        if (Platform.OS === 'ios' && parsedData.topic === 'injectedUnderPageBackgroundColor') {
           const { underPageBackgroundColor } = parsedData.payload;
 
           if (underPageBackgroundColor && typeof underPageBackgroundColor === 'string') {
@@ -84,7 +84,7 @@ export function useWebViewHandlers({
         } else if (parsedData.topic === 'websiteMetadata') {
           const { bgColor, logoUrl, pageTitle } = parsedData.payload;
 
-          if (!IS_IOS && bgColor && typeof bgColor === 'string') {
+          if (Platform.OS !== 'ios' && bgColor && typeof bgColor === 'string') {
             backgroundColor.value = bgColor;
           }
 

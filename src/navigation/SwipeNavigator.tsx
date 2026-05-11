@@ -1,5 +1,5 @@
 import React, { memo, useCallback, useMemo, useRef, useState, type MutableRefObject } from 'react';
-import { InteractionManager, StyleSheet, View } from 'react-native';
+import { InteractionManager, Platform, StyleSheet, View } from 'react-native';
 
 import MaskedView from '@react-native-masked-view/masked-view';
 import { createMaterialTopTabNavigator, type MaterialTopTabNavigationEventMap } from '@react-navigation/material-top-tabs';
@@ -52,7 +52,7 @@ import { TabBarIcon } from '@/components/tab-bar/TabBarIcon';
 import { DAPP_BROWSER, LAZY_TABS, RNBW_MEMBERSHIP, RNBW_REWARDS } from '@/config/experimental';
 import useExperimentalFlag from '@/config/experimentalHooks';
 import { Box, ColorModeProvider, Column, Columns, globalColors, useColorMode } from '@/design-system';
-import { IS_IOS, IS_TEST } from '@/env';
+import { IS_TEST } from '@/env';
 import { RnbwMembershipScreen } from '@/features/rnbw-membership/screens/rnbw-membership-screen/RnbwMembershipScreen';
 import { RnbwRewardsScreen } from '@/features/rnbw-rewards/screens/rnbw-rewards-screen/RnbwRewardsScreen';
 import { opacity } from '@/framework/ui/utils/opacity';
@@ -352,7 +352,6 @@ const TabBar = memo(function TabBar({ activeIndex, descriptorsRef, getIsFocused,
           <Animated.View style={[styles.tabBarBackgroundFade, gradientBackgroundStyle]} />
         </MaskedView>
       </Animated.View>
-
       <Animated.View style={[{ shadowColor: globalColors.grey100, shadowOffset: { width: 0, height: 12 }, shadowRadius: 18 }, shadowStyle]}>
         <Box
           as={Animated.View}
@@ -366,7 +365,7 @@ const TabBar = memo(function TabBar({ activeIndex, descriptorsRef, getIsFocused,
           style={[hideForBrowserTabViewStyle, { alignSelf: 'center' }]}
         >
           <Box height={{ custom: BASE_TAB_BAR_HEIGHT }} width="full">
-            {IS_IOS ? (
+            {Platform.OS === 'ios' ? (
               <>
                 <BlurGradient
                   gradientPoints={[
@@ -522,7 +521,7 @@ export const BrowserTabIconWrapper = memo(function BrowserTabIconWrapper({
       testID={`tab-bar-icon-${route.name}`}
     >
       <ConditionalWrap
-        condition={IS_IOS || !showBrowserButtons}
+        condition={Platform.OS === 'ios' || !showBrowserButtons}
         wrap={children => (
           <ButtonPressAnimation
             disallowInterruption

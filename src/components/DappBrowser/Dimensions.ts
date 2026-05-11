@@ -1,4 +1,5 @@
-import { IS_IOS } from '@/env';
+import { Platform } from 'react-native';
+
 import { BASE_TAB_BAR_HEIGHT } from '@/navigation/constants';
 import { TAB_BAR_HEIGHT } from '@/navigation/SwipeNavigator';
 import { DEVICE_HEIGHT, DEVICE_WIDTH } from '@/utils/deviceUtils';
@@ -9,10 +10,11 @@ export const SEARCH_BAR_BORDER_RADIUS = 18;
 export const SEARCH_BAR_HEIGHT = 48;
 export const SEARCH_BAR_WIDTH = DEVICE_WIDTH - 72 * 2;
 
-const ADJUSTED_DEVICE_HEIGHT = IS_IOS ? DEVICE_HEIGHT : DEVICE_HEIGHT - safeAreaInsetValues.bottom;
+const ADJUSTED_DEVICE_HEIGHT = Platform.OS === 'ios' ? DEVICE_HEIGHT : DEVICE_HEIGHT - safeAreaInsetValues.bottom;
 
 export const TOP_INSET = Math.max(safeAreaInsetValues.top, 20);
-export const WEBVIEW_HEIGHT = ADJUSTED_DEVICE_HEIGHT - TOP_INSET - (IS_IOS ? TAB_BAR_HEIGHT : BASE_TAB_BAR_HEIGHT) - BOTTOM_BAR_HEIGHT;
+export const WEBVIEW_HEIGHT =
+  ADJUSTED_DEVICE_HEIGHT - TOP_INSET - (Platform.OS === 'ios' ? TAB_BAR_HEIGHT : BASE_TAB_BAR_HEIGHT) - BOTTOM_BAR_HEIGHT;
 export const EXTRA_WEBVIEW_HEIGHT = 62;
 export const COLLAPSED_WEBVIEW_ASPECT_RATIO = 4 / 3;
 export const COLLAPSED_WEBVIEW_HEIGHT_UNSCALED = Math.min(WEBVIEW_HEIGHT, DEVICE_WIDTH * COLLAPSED_WEBVIEW_ASPECT_RATIO);

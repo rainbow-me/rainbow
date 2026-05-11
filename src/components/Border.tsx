@@ -1,8 +1,8 @@
 import React from 'react';
+import { Platform } from 'react-native';
 
 import { Cover, useColorMode, useForegroundColor } from '@/design-system';
 import { type ForegroundColor } from '@/design-system/color/palettes';
-import { IS_IOS } from '@/env';
 
 export const Border = ({
   borderColor = 'separatorTertiary',
@@ -23,7 +23,7 @@ export const Border = ({
 
   return (
     (isDarkMode || enableInLightMode) &&
-    (IS_IOS || enableOnAndroid) && (
+    (Platform.OS === 'ios' || enableOnAndroid) && (
       <Cover
         style={{
           borderColor: color,

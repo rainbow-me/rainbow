@@ -1,11 +1,10 @@
 import React from 'react';
-import { StyleSheet, View } from 'react-native';
+import { Platform, StyleSheet, View } from 'react-native';
 
 import Animated, { useAnimatedStyle, type AnimatedStyle } from 'react-native-reanimated';
 
 import { clamp } from '@/__swaps__/utils/swaps';
 import { globalColors, useColorMode } from '@/design-system';
-import { IS_IOS } from '@/env';
 
 import { useBrowserContext } from './BrowserContext';
 import { RAINBOW_HOME } from './constants';
@@ -27,7 +26,7 @@ export const BrowserButtonShadows = ({
 }) => {
   const { isDarkMode } = useColorMode();
 
-  if (!IS_IOS || (isDarkMode && hideDarkModeShadows)) return <>{children}</>;
+  if (Platform.OS !== 'ios' || (isDarkMode && hideDarkModeShadows)) return <>{children}</>;
 
   return (
     <View
@@ -125,7 +124,7 @@ export const WebViewShadows = ({
     };
   });
 
-  if (!IS_IOS) return <>{children}</>;
+  if (Platform.OS !== 'ios') return <>{children}</>;
 
   return (
     <Animated.View style={[styles.boxNone, isDarkMode ? {} : styles.outerWebViewShadow, outerShadowOpacityOverride, zIndexAnimatedStyle]}>

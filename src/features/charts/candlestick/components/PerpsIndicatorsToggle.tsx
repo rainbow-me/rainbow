@@ -1,5 +1,5 @@
 import { memo, useCallback } from 'react';
-import { StyleSheet, View } from 'react-native';
+import { Platform, StyleSheet, View } from 'react-native';
 
 import Animated, { useAnimatedStyle, useSharedValue, withSpring, type SharedValue } from 'react-native-reanimated';
 
@@ -7,7 +7,6 @@ import { AnimatedTextIcon } from '@/components/AnimatedComponents/AnimatedTextIc
 import { SPRING_CONFIGS } from '@/components/animations/animationConfigs';
 import { GestureHandlerButton } from '@/components/buttons/GestureHandlerButton';
 import { Border, Box, globalColors, useColorMode, useForegroundColor } from '@/design-system';
-import { IS_IOS } from '@/env';
 import { chartsActions, useChartsStore, useChartType } from '@/features/charts/stores/chartsStore';
 import { ChartType } from '@/features/charts/types';
 import { useHasPositionCheck } from '@/features/perps/stores/derived/useHasPositionCheck';
@@ -101,7 +100,7 @@ const PerpsIndicatorsToggle = memo(function PerpsIndicatorsToggle({
           pointerEvents="none"
           style={[
             styles.switchSelectedHighlight,
-            IS_IOS && !isDarkMode ? styles.switchShadowLight : undefined,
+            Platform.OS === 'ios' && !isDarkMode ? styles.switchShadowLight : undefined,
             {
               backgroundColor: isDarkMode ? mixedBackgroundColor : globalColors.white100,
             },

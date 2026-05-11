@@ -1,5 +1,5 @@
 import React, { memo, type ComponentType, type ReactElement, type ReactNode } from 'react';
-import { StyleSheet, View } from 'react-native';
+import { Platform, StyleSheet, View } from 'react-native';
 
 import Animated, {
   useAnimatedStyle,
@@ -15,7 +15,6 @@ import { SPRING_CONFIGS, TIMING_CONFIGS } from '@/components/animations/animatio
 import { AnimatedText, Box, Text, TextShadow, useColorMode, type AnimatedTextProps, type BoxProps, type TextProps } from '@/design-system';
 import { foregroundColors, globalColors } from '@/design-system/color/palettes';
 import type { NativeCurrencyKey } from '@/entities/nativeCurrencyTypes';
-import { IS_IOS } from '@/env';
 import { opacity } from '@/framework/ui/utils/opacity';
 import { formatAssetPrice } from '@/helpers/formatAssetPrice';
 import { abbreviateNumberWorklet } from '@/helpers/utilities';
@@ -583,7 +582,7 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     justifyContent: 'space-between',
     gap: 10,
-    marginTop: IS_IOS ? -6 : 0,
+    marginTop: Platform.OS === 'ios' ? -6 : 0,
     paddingHorizontal: 24,
     position: 'relative',
     width: '100%',

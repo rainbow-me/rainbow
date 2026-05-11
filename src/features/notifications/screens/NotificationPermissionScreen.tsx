@@ -1,5 +1,5 @@
 import React, { useCallback } from 'react';
-import { Image, ImageBackground, StyleSheet, View } from 'react-native';
+import { Image, ImageBackground, Platform, StyleSheet, View } from 'react-native';
 
 import MaskedView from '@react-native-masked-view/masked-view';
 import { useNavigation } from '@react-navigation/native';
@@ -14,7 +14,6 @@ import mockNotificationsIOS from '@/assets/mockNotificationsIOS.png';
 import backgroundImage from '@/assets/notificationsPromoSheetBackground.png';
 import ButtonPressAnimation from '@/components/animations/ButtonPressAnimation';
 import { Bleed, Box, ColorModeProvider, Column, Columns, Stack, Text } from '@/design-system';
-import { IS_ANDROID, IS_IOS } from '@/env';
 import { useHardwareBackOnFocus } from '@/hooks/useHardwareBack';
 import * as i18n from '@/languages';
 import Navigation from '@/navigation/Navigation';
@@ -46,7 +45,7 @@ export function NotificationPermissionScreen() {
     },
   ];
 
-  const headerImage = IS_IOS ? mockNotificationsIOS : mockNotificationsAndroid;
+  const headerImage = Platform.OS === 'ios' ? mockNotificationsIOS : mockNotificationsAndroid;
 
   const navigateToWallet = useCallback(() => {
     goBack();
@@ -58,7 +57,7 @@ export function NotificationPermissionScreen() {
     navigateToWallet();
   }, [navigateToWallet]);
 
-  useHardwareBackOnFocus(() => true, !IS_ANDROID);
+  useHardwareBackOnFocus(() => true, Platform.OS !== 'android');
 
   const handleEnable = useCallback(async () => {
     try {
@@ -126,7 +125,7 @@ const ValuePropItem = ({ title, description, icon }: { title: string; descriptio
       <Column width="content">
         <MaskedView
           maskElement={
-            <Box paddingTop={IS_ANDROID ? '6px' : undefined}>
+            <Box paddingTop={Platform.OS === 'android' ? '6px' : undefined}>
               <Text align="center" color="accent" size="30pt" weight="bold">
                 {icon}
               </Text>
@@ -162,7 +161,7 @@ const ValuePropItem = ({ title, description, icon }: { title: string; descriptio
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    ...(IS_ANDROID && {
+    ...(Platform.OS === 'android' && {
       borderTopLeftRadius: 40,
       borderTopRightRadius: 40,
       overflow: 'hidden',

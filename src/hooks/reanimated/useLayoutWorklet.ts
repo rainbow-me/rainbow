@@ -1,7 +1,7 @@
+import { Platform } from 'react-native';
+
 import { useEvent } from 'react-native-reanimated';
 import { type WorkletFunction } from 'react-native-reanimated/lib/typescript/commonTypes';
-
-import { IS_IOS } from '@/env';
 
 interface Layout {
   x: number;
@@ -10,7 +10,7 @@ interface Layout {
   height: number;
 }
 
-const SHOULD_REBUILD = IS_IOS ? undefined : false;
+const SHOULD_REBUILD = Platform.OS === 'ios' ? undefined : false;
 
 /**
  * ### `📐 useLayoutWorklet 📐`

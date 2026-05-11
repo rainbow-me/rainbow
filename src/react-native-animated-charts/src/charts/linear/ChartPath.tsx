@@ -1,5 +1,5 @@
 import React, { useCallback, useEffect, useMemo } from 'react';
-import { View } from 'react-native';
+import { View, Platform } from 'react-native';
 import { Gesture, GestureDetector, type LongPressGestureHandlerProperties } from 'react-native-gesture-handler';
 import Animated, {
   FadeIn,
@@ -19,8 +19,6 @@ import Animated, {
 import { getYForX } from 'react-native-redash';
 import Svg, { Path, type PathProps } from 'react-native-svg';
 import { triggerHaptics } from 'react-native-turbo-haptics';
-// @ts-ignore this library is no longer maintained independently of the app, so this is fine
-import { IS_IOS } from '@/env';
 import { type ChartData, type PathData } from '../../helpers/ChartContext';
 import { requireOnWorklet, useWorkletValue } from '../../helpers/requireOnWorklet';
 import { useChartData } from '../../helpers/useChartData';
@@ -189,7 +187,7 @@ const ChartPathInner = React.memo(
 
           progress.value = 0;
 
-          progress.value = withDelay(IS_IOS ? 0 : 100, withTiming(1, timingAnimationConfig || timingAnimationDefaultConfig));
+          progress.value = withDelay(Platform.OS === 'ios' ? 0 : 100, withTiming(1, timingAnimationConfig || timingAnimationDefaultConfig));
         } else {
           interpolatorWorklet().value = undefined;
           progress.value = 1;

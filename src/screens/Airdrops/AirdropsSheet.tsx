@@ -1,5 +1,5 @@
 import React, { memo, useCallback, useEffect, useState } from 'react';
-import { RefreshControl, ScrollView, StyleSheet, View, type ScrollViewProps } from 'react-native';
+import { Platform, RefreshControl, ScrollView, StyleSheet, View, type ScrollViewProps } from 'react-native';
 
 import { BottomSheetScrollView } from '@gorhom/bottom-sheet';
 import { LegendList } from '@legendapp/list';
@@ -25,7 +25,6 @@ import {
   type TextProps,
 } from '@/design-system';
 import { getColorForTheme } from '@/design-system/color/useForegroundColor';
-import { IS_IOS } from '@/env';
 import { opacity } from '@/framework/ui/utils/opacity';
 import * as i18n from '@/languages';
 import { useNavigation } from '@/navigation/Navigation';
@@ -104,7 +103,12 @@ const CloseButton = () => {
           hitSlop={16}
           width={CLOSE_BUTTON_SIZE}
         >
-          <Text color="labelSecondary" size="icon 14px" style={IS_IOS ? undefined : styles.closeButtonIconOffset} weight="black">
+          <Text
+            color="labelSecondary"
+            size="icon 14px"
+            style={Platform.OS === 'ios' ? undefined : styles.closeButtonIconOffset}
+            weight="black"
+          >
             􀆄
           </Text>
         </IconContainer>
@@ -180,7 +184,7 @@ function keyExtractor(item: RainbowClaimable): string {
 }
 
 const ListScrollView = ({ children, ...props }: ScrollViewProps) => {
-  return IS_IOS ? (
+  return Platform.OS === 'ios' ? (
     // eslint-disable-next-line react/jsx-props-no-spreading
     <ScrollView refreshControl={<PullToRefresh />} {...props}>
       {children}

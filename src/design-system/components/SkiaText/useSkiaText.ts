@@ -1,4 +1,5 @@
 import { useCallback } from 'react';
+import { Platform } from 'react-native';
 
 import {
   Skia,
@@ -19,7 +20,6 @@ import { getColorForTheme } from '@/design-system/color/useForegroundColor';
 import { type SharedOrDerivedValueText } from '@/design-system/components/Text/AnimatedText';
 import { type TextWeight } from '@/design-system/components/Text/Text';
 import { typeHierarchy, type TextSize } from '@/design-system/typography/typeHierarchy';
-import { IS_IOS } from '@/env';
 import { opacity } from '@/framework/ui/utils/opacity';
 import { type SharedOrDerivedValue } from '@/types/reanimated';
 
@@ -94,7 +94,7 @@ export function useSkiaText({
   // On Android, weight changes trigger the creation of a new paragraphBuilder, and we want to wait
   // until the new paragraphBuilder is created before rebuilding the paragraph. So to avoid a flash
   // of the incorrect weight if the new weight isn't yet loaded, we omit the dependency on weight.
-  const weightDep = IS_IOS ? weight : undefined;
+  const weightDep = Platform.OS === 'ios' ? weight : undefined;
 
   const buildParagraph = useCallback(
     (segments: TextSegment | TextSegment[]) => {
@@ -206,9 +206,9 @@ function getTextStyle({
         : colorOverride
       : ((defaultColor && 'value' in defaultColor ? defaultColor.value : defaultColor) ??
         Skia.Color(typeof color === 'string' ? color : color.value)),
-    fontFamilies: IS_IOS ? SF_PRO_ROUNDED_IOS : [`SFProRounded-${weightOverride ?? weight}`],
+    fontFamilies: Platform.OS === 'ios' ? SF_PRO_ROUNDED_IOS : [`SFProRounded-${weightOverride ?? weight}`],
     fontSize: fontInfo.fontSize,
-    fontStyle: IS_IOS ? { weight: getSkiaFontWeight(weightOverride ?? weight) } : EMPTY_FONT_STYLE,
+    fontStyle: Platform.OS === 'ios' ? { weight: getSkiaFontWeight(weightOverride ?? weight) } : EMPTY_FONT_STYLE,
     fontFeatures: tabularNumbers ? TABULAR_NUMBERS : EMPTY_FONT_FEATURES,
     halfLeading,
     heightMultiplier: (lineHeight ? lineHeight : fontInfo.lineHeight) / fontInfo.fontSize,

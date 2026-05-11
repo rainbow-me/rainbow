@@ -1,5 +1,5 @@
 import React, { useCallback, useMemo } from 'react';
-import { StyleSheet } from 'react-native';
+import { Platform, StyleSheet } from 'react-native';
 
 import { Canvas, Group, Image, rect, rrect, Shadow, Box as SkBox } from '@shopify/react-native-skia';
 import * as ImagePicker from 'expo-image-picker';
@@ -8,7 +8,6 @@ import Svg, { Circle } from 'react-native-svg';
 
 import ButtonPressAnimation from '@/components/animations/ButtonPressAnimation';
 import { Box, Text, TextIcon, TextShadow } from '@/design-system';
-import { IS_IOS } from '@/env';
 import * as i18n from '@/languages';
 
 import { ERROR_RED } from '../constants';
@@ -87,7 +86,7 @@ export function TokenLogo({ size = SIZE, disabled = false }: { size?: number; di
             <Box borderRadius={size / 2} style={StyleSheet.absoluteFill}>
               <Box width={'full'} height={'full'} justifyContent={'center'} alignItems={'center'}>
                 <Box
-                  backgroundColor={IS_IOS ? accentColors.opacity6 : accentColors.opacity10}
+                  backgroundColor={Platform.OS === 'ios' ? accentColors.opacity6 : accentColors.opacity10}
                   borderRadius={size / 2}
                   height={size - 14}
                   position="absolute"
@@ -132,7 +131,6 @@ export function TokenLogo({ size = SIZE, disabled = false }: { size?: number; di
           </Box>
         )}
       </ButtonPressAnimation>
-
       {error && (
         <Box gap={8} paddingTop={'12px'}>
           <Text align="center" size="13pt" color={{ custom: ERROR_RED }} weight="medium">

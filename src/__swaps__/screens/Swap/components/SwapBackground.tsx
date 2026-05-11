@@ -1,5 +1,5 @@
 import React from 'react';
-import { StyleSheet, View } from 'react-native';
+import { Platform, StyleSheet, View } from 'react-native';
 
 import { Canvas, LinearGradient, Rect, vec } from '@shopify/react-native-skia';
 import { useDerivedValue, withTiming } from 'react-native-reanimated';
@@ -8,7 +8,7 @@ import { useSwapContext } from '@/__swaps__/screens/Swap/providers/swap-provider
 import { getColorValueForThemeWorklet, getTintedBackgroundColor } from '@/__swaps__/utils/swaps';
 import { TIMING_CONFIGS } from '@/components/animations/animationConfigs';
 import { useColorMode } from '@/design-system';
-import { IS_ANDROID, IS_TEST } from '@/env';
+import { IS_TEST } from '@/env';
 import { useStableValue } from '@/hooks/useStableValue';
 import { useSwapsStore } from '@/state/swaps/swapsStore';
 import { DEVICE_HEIGHT, DEVICE_WIDTH } from '@/utils/deviceUtils';
@@ -55,7 +55,7 @@ export const SwapBackground = () => {
 
   return (
     <Canvas style={[styles.background, { backgroundColor: initialColors.top }]}>
-      <Rect antiAlias dither height={DEVICE_HEIGHT + (IS_ANDROID ? 24 : 0)} width={DEVICE_WIDTH} x={0} y={0}>
+      <Rect antiAlias dither height={DEVICE_HEIGHT + (Platform.OS === 'android' ? 24 : 0)} width={DEVICE_WIDTH} x={0} y={0}>
         <LinearGradient colors={gradientColors} end={vec(DEVICE_WIDTH / 2, DEVICE_HEIGHT)} start={vec(DEVICE_WIDTH / 2, 0)} />
       </Rect>
     </Canvas>
@@ -64,9 +64,9 @@ export const SwapBackground = () => {
 
 const styles = StyleSheet.create({
   background: {
-    borderRadius: IS_ANDROID ? 20 : 0,
+    borderRadius: Platform.OS === 'android' ? 20 : 0,
     flex: 1,
-    height: DEVICE_HEIGHT + (IS_ANDROID ? 24 : 0),
+    height: DEVICE_HEIGHT + (Platform.OS === 'android' ? 24 : 0),
     position: 'absolute',
     width: DEVICE_WIDTH,
     zIndex: -10,

@@ -1,5 +1,5 @@
 import React from 'react';
-import { View } from 'react-native';
+import { Platform, View } from 'react-native';
 
 import { useSharedValue } from 'react-native-reanimated';
 
@@ -7,7 +7,6 @@ import ButtonPressAnimation from '@/components/animations/ButtonPressAnimation';
 import { ContactAvatar } from '@/components/contacts';
 import ImageAvatar from '@/components/contacts/ImageAvatar';
 import { Navbar } from '@/components/navbar/Navbar';
-import { IS_ANDROID } from '@/env';
 import * as i18n from '@/languages';
 import Navigation from '@/navigation/Navigation';
 import Routes from '@/navigation/routesNames';
@@ -27,7 +26,7 @@ export function ActivitySheetScreen() {
         backgroundColor: colors.white,
         flex: 1,
         // android border radius
-        ...(IS_ANDROID && {
+        ...(Platform.OS === 'android' && {
           borderTopRightRadius: 40,
           borderTopLeftRadius: 40,
           overflow: 'hidden',
@@ -50,7 +49,6 @@ export function ActivitySheetScreen() {
           </ButtonPressAnimation>
         }
       />
-
       <View style={{ flex: 1 }}>
         <ActivityList key={accountAddress} scrollY={scrollY} paddingTopForNavBar />
       </View>

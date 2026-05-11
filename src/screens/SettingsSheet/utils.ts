@@ -1,7 +1,8 @@
+import { Platform } from 'react-native';
+
 import { format } from 'date-fns';
 import { isEmpty } from 'lodash';
 
-import { IS_ANDROID, IS_IOS } from '@/env';
 import { type CloudBackups } from '@/features/backup/backup';
 import { backupsStore, CloudBackupState } from '@/features/backup/stores/backupsStore';
 import { normalizeAndroidBackupFilename } from '@/handlers/cloudBackup';
@@ -29,7 +30,7 @@ export const checkLocalWalletsForBackupStatus = (backups: CloudBackups): WalletB
   }
 
   // FOR ANDROID, we need to check if the current google account also has the backup file
-  if (IS_ANDROID) {
+  if (Platform.OS === 'android') {
     return Object.values(wallets).reduce<WalletBackupStatus>(
       (acc, wallet) => {
         const isBackupEligible = wallet.type !== WalletTypes.readOnly && wallet.type !== WalletTypes.bluetooth;
@@ -74,7 +75,7 @@ export const titleForBackupState: Partial<Record<CloudBackupState, string>> = {
 };
 
 export const isWalletBackedUpForCurrentAccount = ({ backupType, backedUp, backupFile }: Partial<RainbowWallet>) => {
-  if (IS_IOS || backupType === WalletBackupTypes.manual) {
+  if (Platform.OS === 'ios' || backupType === WalletBackupTypes.manual) {
     return backedUp;
   }
 

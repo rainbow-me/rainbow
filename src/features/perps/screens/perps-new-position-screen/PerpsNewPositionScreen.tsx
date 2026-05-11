@@ -1,11 +1,10 @@
 import React, { memo } from 'react';
-import { Keyboard, ScrollView } from 'react-native';
+import { Keyboard, Platform, ScrollView } from 'react-native';
 
 import Animated, { useSharedValue } from 'react-native-reanimated';
 
 import { AmountInputCard } from '@/components/amount-input-card/AmountInputCard';
 import { Box, Separator, Stack, useColorMode } from '@/design-system';
-import { IS_ANDROID } from '@/env';
 import { HeaderFade } from '@/features/perps/components/HeaderFade';
 import { FOOTER_HEIGHT_WITH_SAFE_AREA, LAYOUT_ANIMATION, PERPS_BACKGROUND_DARK, PERPS_BACKGROUND_LIGHT } from '@/features/perps/constants';
 import { usePerpsAccentColorContext } from '@/features/perps/context/PerpsAccentColorContext';
@@ -48,7 +47,7 @@ export const PerpsNewPositionScreen = memo(function PerpsNewPositionScreen() {
             paddingHorizontal: 20,
             overflow: 'visible',
             paddingTop: POSITION_SIDE_SELECTOR_HEIGHT_WITH_PADDING,
-            paddingBottom: IS_ANDROID ? FOOTER_HEIGHT_WITH_SAFE_AREA : 0,
+            paddingBottom: Platform.OS === 'android' ? FOOTER_HEIGHT_WITH_SAFE_AREA : 0,
           }}
         >
           <Box paddingTop={'24px'}>

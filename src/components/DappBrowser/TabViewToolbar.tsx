@@ -1,4 +1,5 @@
 import React from 'react';
+import { Platform } from 'react-native';
 
 import { BlurView } from 'react-native-blur-view';
 import Animated, { interpolate, useAnimatedStyle } from 'react-native-reanimated';
@@ -10,7 +11,6 @@ import { Bleed, Box, globalColors, Text, useColorMode, useForegroundColor, type 
 import { type TextColor } from '@/design-system/color/palettes';
 import { type TextWeight } from '@/design-system/components/Text/Text';
 import { type TextSize } from '@/design-system/typography/typeHierarchy';
-import { IS_IOS } from '@/env';
 import { opacity } from '@/framework/ui/utils/opacity';
 import * as i18n from '@/languages';
 import { TAB_BAR_HEIGHT } from '@/navigation/SwipeNavigator';
@@ -116,7 +116,7 @@ const BaseButton = ({
 
   const buttonColorIOS = isDarkMode ? fillSecondary : opacity(globalColors.white100, 0.9);
   const buttonColorAndroid = isDarkMode ? globalColors.blueGrey100 : globalColors.white100;
-  const buttonColor = IS_IOS ? buttonColorIOS : buttonColorAndroid;
+  const buttonColor = Platform.OS === 'ios' ? buttonColorIOS : buttonColorAndroid;
 
   return (
     <BrowserButtonShadows lightShadows={lightShadows}>
@@ -144,7 +144,7 @@ const BaseButton = ({
                 {icon}
               </Text>
             )}
-            {IS_IOS && (
+            {Platform.OS === 'ios' && (
               <BlurView
                 blurIntensity={20}
                 blurStyle={isDarkMode ? 'dark' : 'light'}
@@ -167,7 +167,7 @@ const BaseButton = ({
                   borderColor: separatorSecondary,
                   borderCurve: 'continuous',
                   borderRadius: 22,
-                  borderWidth: IS_IOS && isDarkMode ? THICK_BORDER_WIDTH : 0,
+                  borderWidth: Platform.OS === 'ios' && isDarkMode ? THICK_BORDER_WIDTH : 0,
                   overflow: 'hidden',
                   zIndex: -1,
                 },

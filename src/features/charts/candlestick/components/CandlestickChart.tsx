@@ -1,5 +1,5 @@
 import React, { memo, useCallback, useMemo, useRef } from 'react';
-import { StyleSheet, View } from 'react-native';
+import { Platform, StyleSheet, View } from 'react-native';
 
 import {
   BlendMode,
@@ -44,7 +44,7 @@ import { globalColors, Text, TextIcon, useColorMode, useForegroundColor } from '
 import { getColorForTheme } from '@/design-system/color/useForegroundColor';
 import { useSkiaText, type TextSegment } from '@/design-system/components/SkiaText/useSkiaText';
 import { NativeCurrencyKeys, type NativeCurrencyKey } from '@/entities/nativeCurrencyTypes';
-import { IS_DEV, IS_IOS } from '@/env';
+import { IS_DEV } from '@/env';
 import { areCandlesEqual, formatCandlestickPrice } from '@/features/charts/candlestick/utils';
 import { candlestickActions, fetchHistoricalCandles, useCandlestickStore } from '@/features/charts/stores/candlestickStore';
 import { useChartsStore } from '@/features/charts/stores/chartsStore';
@@ -1875,7 +1875,7 @@ function useCandlestickChart({
   }, [backgroundColor, chartManager, isDarkMode, providedConfig]);
 
   useOnChange(() => {
-    if (IS_IOS) return;
+    if (Platform.OS === 'ios') return;
     // Android loads Skia fonts asynchronously, so we need to
     // propagate buildParagraph updates to the chart class.
     runOnUI(() => chartManager.value?.setBuildParagraph?.(buildParagraph))();

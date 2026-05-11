@@ -1,12 +1,13 @@
+import { Platform } from 'react-native';
+
 import type { Address } from 'viem';
 import * as chain from 'viem/chains';
 
 import type { AddressOrEth } from '@/__swaps__/types/assets';
-import { IS_ANDROID } from '@/env';
 
 const ANVIL_CHAIN_ID = 1337;
 const ANVIL_OP_CHAIN_ID = 1338;
-const ANVIL_RPC_URL = IS_ANDROID ? 'http://10.0.2.2:8545' : 'http://127.0.0.1:8545';
+const ANVIL_RPC_URL = Platform.OS === 'android' ? 'http://10.0.2.2:8545' : 'http://127.0.0.1:8545';
 
 export enum Network {
   apechain = 'apechain',

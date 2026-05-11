@@ -1,4 +1,5 @@
 import React, { Fragment, type PropsWithChildren } from 'react';
+import { Platform } from 'react-native';
 
 import { type UserCredentials } from 'react-native-keychain';
 
@@ -8,13 +9,12 @@ import { Column } from '@/components/layout';
 import { SheetActionButton } from '@/components/sheet';
 import Spinner from '@/components/Spinner';
 import { Box, Stack, Text } from '@/design-system';
-import { IS_ANDROID } from '@/env';
 import { opacity } from '@/framework/ui/utils/opacity';
 import * as i18n from '@/languages';
 import { DiagnosticsItemRow } from '@/screens/Diagnostics/DiagnosticsItemRow';
 import { useTheme } from '@/theme/ThemeContext';
 
-const LoadingSpinner = IS_ANDROID ? Spinner : ActivityIndicator;
+const LoadingSpinner = Platform.OS === 'android' ? Spinner : ActivityIndicator;
 
 type Props = PropsWithChildren<{
   keys: UserCredentials[] | undefined;
@@ -92,7 +92,7 @@ export function DiagnosticsContent({
         />
       </Box>
       {/* PIN Auth to reveal secrets on Android */}
-      {IS_ANDROID && keys && pinRequired && !userPin && (
+      {Platform.OS === 'android' && keys && pinRequired && !userPin && (
         <>
           <Box paddingBottom="16px">
             <Stack space="10px">
@@ -159,7 +159,7 @@ export function DiagnosticsContent({
         </Fragment>
       )}
       {keys && (
-        <Box paddingBottom={IS_ANDROID ? '44px' : '16px'}>
+        <Box paddingBottom={Platform.OS === 'android' ? '44px' : '16px'}>
           <SheetActionButton
             color={opacity(colors.appleBlue, 0.06)}
             isTransparent

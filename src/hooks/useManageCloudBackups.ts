@@ -1,8 +1,8 @@
 import { useCallback, useEffect, useState } from 'react';
+import { Platform } from 'react-native';
 
 import { useDispatch } from 'react-redux';
 
-import { IS_ANDROID } from '@/env';
 import { backupsStore, CloudBackupState } from '@/features/backup/stores/backupsStore';
 import { showActionSheetWithOptions } from '@/framework/ui/utils/actionsheet';
 import { maybeAuthenticateWithPIN } from '@/handlers/authentication';
@@ -40,12 +40,12 @@ export default function useManageCloudBackups() {
   const manageCloudBackups = useCallback(() => {
     const buttons = [
       i18n.t(i18n.l.settings.delete_backups, { cloudPlatform }),
-      IS_ANDROID ? i18n.t(i18n.l.settings.backup_switch_google_account) : undefined,
+      Platform.OS === 'android' ? i18n.t(i18n.l.settings.backup_switch_google_account) : undefined,
       i18n.t(i18n.l.button.cancel),
     ].filter(Boolean);
 
     const getTitleForPlatform = () => {
-      if (IS_ANDROID && accountDetails?.email) {
+      if (Platform.OS === 'android' && accountDetails?.email) {
         return i18n.t(i18n.l.settings.manage_backups, {
           cloudPlatformOrEmail: accountDetails.email,
         });
@@ -84,8 +84,8 @@ export default function useManageCloudBackups() {
 
     showActionSheetWithOptions(
       {
-        cancelButtonIndex: IS_ANDROID ? 2 : 1,
-        destructiveButtonIndex: IS_ANDROID ? 0 : 1,
+        cancelButtonIndex: Platform.OS === 'android' ? 2 : 1,
+        destructiveButtonIndex: Platform.OS === 'android' ? 0 : 1,
         options: buttons,
         title: getTitleForPlatform(),
       },
@@ -111,7 +111,7 @@ export default function useManageCloudBackups() {
                   // Prompt for authentication before allowing them to delete backups
                   await keychain.getAllKeys();
 
-                  if (IS_ANDROID) {
+                  if (Platform.OS === 'android') {
                     logoutFromGoogleDrive();
                     setAccountDetails(undefined);
                   }
@@ -131,7 +131,7 @@ export default function useManageCloudBackups() {
           );
         }
 
-        if (buttonIndex === 1 && IS_ANDROID) {
+        if (buttonIndex === 1 && Platform.OS === 'android') {
           logoutFromGoogleDrive();
           setAccountDetails(undefined);
           loginToGoogleDrive();

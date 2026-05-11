@@ -1,5 +1,14 @@
 import React, { memo, useCallback, useMemo } from 'react';
-import { ScrollView, StyleSheet, TouchableWithoutFeedback, View, type ScrollViewProps, type StyleProp, type ViewStyle } from 'react-native';
+import {
+  Platform,
+  ScrollView,
+  StyleSheet,
+  TouchableWithoutFeedback,
+  View,
+  type ScrollViewProps,
+  type StyleProp,
+  type ViewStyle,
+} from 'react-native';
 
 import Animated, { useAnimatedStyle, type AnimatedStyle, type SharedValue } from 'react-native-reanimated';
 
@@ -18,7 +27,6 @@ import {
   useForegroundColor,
 } from '@/design-system';
 import { type TextColor } from '@/design-system/color/palettes';
-import { IS_ANDROID, IS_IOS } from '@/env';
 import { opacity } from '@/framework/ui/utils/opacity';
 import { returnStringFirstEmoji } from '@/helpers/emojiHandler';
 import { useAccountAccentColor } from '@/hooks/useAccountAccentColor';
@@ -45,7 +53,7 @@ const PANEL_INSET = 8;
 export const PANEL_WIDTH = DEVICE_WIDTH - PANEL_INSET * 2;
 export const PANEL_COLOR_DARK = globalColors.white10;
 export const PANEL_COLOR_LIGHT = '#F7F7F9';
-export const PANEL_BOTTOM_OFFSET = Math.max(safeAreaInsetValues.bottom + 5, IS_IOS ? 8 : 30);
+export const PANEL_BOTTOM_OFFSET = Math.max(safeAreaInsetValues.bottom + 5, Platform.OS === 'ios' ? 8 : 30);
 
 const PANEL_BORDER_RADIUS = 42;
 const LIST_SCROLL_INDICATOR_BOTTOM_INSET = { bottom: PANEL_BORDER_RADIUS };
@@ -220,10 +228,10 @@ export const ControlPanelMenuItem = memo(function ControlPanelMenuItem({
       // eslint-disable-next-line no-nested-ternary
       backgroundColor: selected ? (isDarkMode ? globalColors.white10 : '#F7F7F9') : 'transparent',
       borderColor: selected ? borderColor : 'transparent',
-      borderWidth: !selected || IS_ANDROID ? 0 : THICK_BORDER_WIDTH,
-      paddingLeft: !selected || IS_ANDROID ? 10 : 10 - THICK_BORDER_WIDTH,
-      paddingRight: !selected || IS_ANDROID ? 14 : 14 - THICK_BORDER_WIDTH,
-      paddingVertical: !selected || IS_ANDROID ? 10 : 10 - THICK_BORDER_WIDTH,
+      borderWidth: !selected || Platform.OS === 'android' ? 0 : THICK_BORDER_WIDTH,
+      paddingLeft: !selected || Platform.OS === 'android' ? 10 : 10 - THICK_BORDER_WIDTH,
+      paddingRight: !selected || Platform.OS === 'android' ? 14 : 14 - THICK_BORDER_WIDTH,
+      paddingVertical: !selected || Platform.OS === 'android' ? 10 : 10 - THICK_BORDER_WIDTH,
     };
   });
 
@@ -442,20 +450,20 @@ export const controlPanelStyles = StyleSheet.create({
     alignItems: 'center',
     borderCurve: 'continuous',
     borderRadius: 30,
-    borderWidth: IS_ANDROID ? 0 : THICK_BORDER_WIDTH,
+    borderWidth: Platform.OS === 'android' ? 0 : THICK_BORDER_WIDTH,
     height: 60,
     justifyContent: 'center',
     overflow: 'hidden',
-    paddingLeft: IS_ANDROID ? 12 : 12 - THICK_BORDER_WIDTH,
-    paddingRight: IS_ANDROID ? 16 : 16 - THICK_BORDER_WIDTH,
-    paddingVertical: IS_ANDROID ? 12 : 12 - THICK_BORDER_WIDTH,
+    paddingLeft: Platform.OS === 'android' ? 12 : 12 - THICK_BORDER_WIDTH,
+    paddingRight: Platform.OS === 'android' ? 16 : 16 - THICK_BORDER_WIDTH,
+    paddingVertical: Platform.OS === 'android' ? 12 : 12 - THICK_BORDER_WIDTH,
     width: '100%',
   },
   menuItemSelected: {
-    borderWidth: IS_ANDROID ? 0 : THICK_BORDER_WIDTH,
-    paddingLeft: IS_ANDROID ? 10 : 10 - THICK_BORDER_WIDTH,
-    paddingRight: IS_ANDROID ? 14 : 14 - THICK_BORDER_WIDTH,
-    paddingVertical: IS_ANDROID ? 10 : 10 - THICK_BORDER_WIDTH,
+    borderWidth: Platform.OS === 'android' ? 0 : THICK_BORDER_WIDTH,
+    paddingLeft: Platform.OS === 'android' ? 10 : 10 - THICK_BORDER_WIDTH,
+    paddingRight: Platform.OS === 'android' ? 14 : 14 - THICK_BORDER_WIDTH,
+    paddingVertical: Platform.OS === 'android' ? 10 : 10 - THICK_BORDER_WIDTH,
   },
   menuItemSelectedDark: {
     backgroundColor: globalColors.white10,

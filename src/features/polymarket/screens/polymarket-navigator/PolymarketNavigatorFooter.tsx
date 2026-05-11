@@ -1,5 +1,5 @@
 import React, { memo } from 'react';
-import { StyleSheet, View } from 'react-native';
+import { Platform, StyleSheet, View } from 'react-native';
 
 import { KeyboardStickyView } from 'react-native-keyboard-controller';
 import Animated from 'react-native-reanimated';
@@ -9,7 +9,6 @@ import { easing } from '@/components/animations/animationConfigs';
 import { EasingGradient } from '@/components/easing-gradient/EasingGradient';
 import { DEFAULT_MOUNT_ANIMATIONS } from '@/components/utilities/MountWhenFocused';
 import { Box, globalColors, useColorMode } from '@/design-system';
-import { IS_ANDROID } from '@/env';
 import { NAVIGATOR_FOOTER_HEIGHT } from '@/features/polymarket/constants';
 import { usePolymarketNavigationStore } from '@/features/polymarket/screens/polymarket-navigator/PolymarketNavigator';
 import { PolymarketSearchButton } from '@/features/polymarket/screens/polymarket-navigator/PolymarketSearchButton';
@@ -40,7 +39,7 @@ export const PolymarketNavigatorFooter = function PolymarketNavigatorFooter() {
   return (
     <>
       {/* Required to block touches from passing through on Android */}
-      {IS_ANDROID && (
+      {Platform.OS === 'android' && (
         <Box
           position="absolute"
           bottom="0px"

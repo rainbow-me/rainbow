@@ -1,5 +1,5 @@
 import React, { useCallback, useEffect, useRef, useState } from 'react';
-import { InteractionManager, type TextInput } from 'react-native';
+import { InteractionManager, Platform, type TextInput } from 'react-native';
 
 import { useRoute, type RouteProp } from '@react-navigation/native';
 import { isEmpty } from 'lodash';
@@ -12,7 +12,6 @@ import { PasswordField } from '@/components/fields';
 import { ImgixImage } from '@/components/images';
 import { Text } from '@/components/text';
 import { Box, Inset, Stack } from '@/design-system';
-import { IS_ANDROID } from '@/env';
 import styled from '@/framework/ui/styled-thing';
 import { opacity } from '@/framework/ui/utils/opacity';
 import { isCloudBackupPasswordValid, normalizeAndroidBackupFilename } from '@/handlers/cloudBackup';
@@ -149,7 +148,7 @@ export default function RestoreCloudStep() {
         }
 
         InteractionManager.runAfterInteractions(async () => {
-          if (IS_ANDROID && filename) {
+          if (Platform.OS === 'android' && filename) {
             filename = normalizeAndroidBackupFilename(filename);
           }
 

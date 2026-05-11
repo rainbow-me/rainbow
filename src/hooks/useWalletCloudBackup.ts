@@ -1,9 +1,9 @@
 import { useCallback } from 'react';
+import { Platform } from 'react-native';
 
 import { values } from 'lodash';
 
 import { analytics } from '@/analytics';
-import { IS_ANDROID } from '@/env';
 import { addWalletToCloudBackup, backupWalletToCloud } from '@/features/backup/backup';
 import { backupsStore } from '@/features/backup/stores/backupsStore';
 import { maybeAuthenticateWithPIN } from '@/handlers/authentication';
@@ -58,7 +58,7 @@ export default function useWalletCloudBackup() {
       walletId: string;
       addToCurrentBackup: boolean;
     }): Promise<boolean> => {
-      if (IS_ANDROID) {
+      if (Platform.OS === 'android') {
         try {
           await login();
           const userData = await getGoogleAccountUserData();

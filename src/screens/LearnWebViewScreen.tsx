@@ -1,5 +1,5 @@
 import React, { useCallback, useEffect, useRef, useState } from 'react';
-import { Share, View } from 'react-native';
+import { Platform, Share, View } from 'react-native';
 
 import { useRoute, type RouteProp } from '@react-navigation/native';
 import { WebView } from 'react-native-webview';
@@ -11,7 +11,6 @@ import { SlackSheet } from '@/components/sheet';
 import Spinner from '@/components/Spinner';
 import { Box, Text, useBackgroundColor } from '@/design-system';
 import { globalColors } from '@/design-system/color/palettes';
-import { IS_ANDROID } from '@/env';
 import useDimensions from '@/hooks/useDimensions';
 import * as i18n from '@/languages';
 import { sharedCoolModalTopOffset } from '@/navigation/config';
@@ -82,7 +81,7 @@ export default function LearnWebViewScreen() {
 
   const contentHeight = deviceHeight - (!isSmallPhone ? sharedCoolModalTopOffset : 0);
 
-  const LoadingSpinner = IS_ANDROID ? Spinner : ActivityIndicator;
+  const LoadingSpinner = Platform.OS === 'android' ? Spinner : ActivityIndicator;
 
   const surfacePrimaryElevated = useBackgroundColor('surfacePrimaryElevated');
 

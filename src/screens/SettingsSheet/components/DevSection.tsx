@@ -1,4 +1,5 @@
 import React, { useCallback, useContext, useState } from 'react';
+import { Platform } from 'react-native';
 
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import Clipboard from '@react-native-clipboard/clipboard';
@@ -9,7 +10,7 @@ import Restart from 'react-native-restart';
 
 import { ImgixImage } from '@/components/images';
 import { defaultConfig, getExperimentalFlag, LOG_PUSH } from '@/config/experimentalHooks';
-import { IS_ANDROID, IS_STORE_INSTALL } from '@/env';
+import { IS_STORE_INSTALL } from '@/env';
 import { getDelegationContractAddress, isRainbowDelegated, isThirdPartyDelegated } from '@/features/delegation/status';
 import { WrappedAlert as Alert } from '@/helpers/alert';
 import { RainbowContext } from '@/helpers/RainbowContext';
@@ -79,7 +80,7 @@ const DevSection = () => {
   const checkAlert = useCallback(async () => {
     try {
       const request = await fetch('https://pro-api.coinmarketcap.com/v1/cryptocurrency/listings/latest');
-      if (IS_ANDROID && request.status === 500) throw new Error('failed');
+      if (Platform.OS === 'android' && request.status === 500) throw new Error('failed');
       await request.json();
       Alert.alert(i18n.t(i18n.l.developer_settings.status), i18n.t(i18n.l.developer_settings.not_applied));
     } catch (e) {

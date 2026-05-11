@@ -1,3 +1,5 @@
+import { Platform } from 'react-native';
+
 import type { WalletKitTypes } from '@reown/walletkit';
 import { getSdkError } from '@walletconnect/utils';
 import { uniq } from 'lodash';
@@ -5,7 +7,6 @@ import { uniq } from 'lodash';
 import { analytics } from '@/analytics';
 import Alert from '@/components/alerts/Alert';
 import { hideWalletConnectToast } from '@/components/toasts/WalletConnectToast';
-import { IS_IOS } from '@/env';
 import { events } from '@/handlers/appEvents';
 import { maybeSignUri } from '@/handlers/imgix';
 import * as i18n from '@/languages';
@@ -160,7 +161,7 @@ export async function onSessionProposal(proposal: WalletKitTypes.SessionProposal
               });
 
               maybeGoBackAndClearHasPendingRedirect();
-              if (IS_IOS) {
+              if (Platform.OS === 'ios') {
                 Navigation.handleAction(Routes.WALLET_CONNECT_REDIRECT_SHEET, {
                   type: 'connect',
                 });

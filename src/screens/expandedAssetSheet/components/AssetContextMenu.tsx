@@ -1,12 +1,11 @@
 import React, { useEffect, useMemo } from 'react';
-import { Share } from 'react-native';
+import { Platform, Share } from 'react-native';
 
 import Clipboard from '@react-native-clipboard/clipboard';
 
 import { DropdownMenu, type MenuConfig, type MenuItem } from '@/components/DropdownMenu';
 import { SheetActionButton } from '@/components/sheet';
 import { Box, TextIcon } from '@/design-system';
-import { IS_ANDROID } from '@/env';
 import { buildTokenDeeplink } from '@/handlers/deeplinks';
 import EditAction from '@/helpers/EditAction';
 import useCoinListEditOptions, { useCoinListFinishEditingOptions } from '@/hooks/useCoinListEditOptions';
@@ -145,7 +144,7 @@ export function AssetContextMenu() {
             contractAddress: asset.address,
           });
         Share.share(
-          IS_ANDROID
+          Platform.OS === 'android'
             ? {
                 message: url,
               }
@@ -174,9 +173,9 @@ export function AssetContextMenu() {
   };
 
   return (
-    <Box style={{ margin: IS_ANDROID ? 0 : -HIT_SLOP }}>
+    <Box style={{ margin: Platform.OS === 'android' ? 0 : -HIT_SLOP }}>
       <DropdownMenu<ContextMenuAction> menuConfig={menuConfig} onPressMenuItem={handlePressMenuItem}>
-        <Box style={{ margin: IS_ANDROID ? 0 : HIT_SLOP }}>
+        <Box style={{ margin: Platform.OS === 'android' ? 0 : HIT_SLOP }}>
           <SheetActionButton color={accentColors.opacity100} newShadows isSquare size={48}>
             <TextIcon color="label" containerSize={48} size="icon 20px" weight="heavy">
               􀍠

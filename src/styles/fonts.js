@@ -1,10 +1,10 @@
-import { IS_IOS } from '@/env';
+import { Platform } from 'react-native';
 
 const font = {};
 
 font.family = {
-  SFProRounded: IS_IOS ? 'SF Pro Rounded' : 'SF-Pro-Rounded',
-  SFMono: IS_IOS ? 'SF Mono' : 'SF-Mono-Bold',
+  SFProRounded: Platform.OS === 'ios' ? 'SF Pro Rounded' : 'SF-Pro-Rounded',
+  SFMono: Platform.OS === 'ios' ? 'SF Mono' : 'SF-Mono-Bold',
 };
 
 font.letterSpacing = {

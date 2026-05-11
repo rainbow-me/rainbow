@@ -1,4 +1,5 @@
 import React, { useCallback } from 'react';
+import { Platform } from 'react-native';
 
 import { type Source } from 'react-native-fast-image';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
@@ -10,7 +11,6 @@ import { Page } from '@/components/layout';
 import Spinner from '@/components/Spinner';
 import { Text as RNText } from '@/components/text';
 import { Box, Stack } from '@/design-system';
-import { IS_ANDROID } from '@/env';
 import styled from '@/framework/ui/styled-thing';
 import useDimensions from '@/hooks/useDimensions';
 import * as i18n from '@/languages';
@@ -74,7 +74,7 @@ export function ChooseBackupStep() {
     [navigate]
   );
 
-  const height = IS_ANDROID ? deviceHeight - top : deviceHeight - sharedCoolModalTopOffset - 48;
+  const height = Platform.OS === 'android' ? deviceHeight - top : deviceHeight - sharedCoolModalTopOffset - 48;
   return (
     <Box height={{ custom: height }}>
       <MenuContainer>

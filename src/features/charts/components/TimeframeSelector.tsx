@@ -1,5 +1,5 @@
 import React, { memo, useCallback, useMemo, useRef, type RefObject } from 'react';
-import { ScrollView, StyleSheet, View, type ScrollViewProps } from 'react-native';
+import { Platform, ScrollView, StyleSheet, View, type ScrollViewProps } from 'react-native';
 
 import Animated, {
   runOnJS,
@@ -16,7 +16,6 @@ import { easing, SPRING_CONFIGS } from '@/components/animations/animationConfigs
 import { GestureHandlerButton } from '@/components/buttons/GestureHandlerButton';
 import { EasingGradient } from '@/components/easing-gradient/EasingGradient';
 import { AnimatedText, globalColors, useColorMode, useForegroundColor } from '@/design-system';
-import { IS_IOS } from '@/env';
 import { opacity } from '@/framework/ui/utils/opacity';
 import { useStableValue } from '@/hooks/useStableValue';
 import { DEVICE_WIDTH } from '@/utils/deviceUtils';
@@ -108,7 +107,7 @@ export const TimeframeSelector = memo(function TimeframeSelector({
   return (
     <View style={styles.container}>
       <ScrollView
-        centerContent={!IS_IOS || chartType === ChartType.Line || hideChartTypeToggle}
+        centerContent={Platform.OS !== 'ios' || chartType === ChartType.Line || hideChartTypeToggle}
         contentContainerStyle={scrollViewProps.contentContainerStyle}
         contentOffset={initialState.contentOffset}
         horizontal
@@ -126,7 +125,6 @@ export const TimeframeSelector = memo(function TimeframeSelector({
           <LineChartButtons color={color} onPress={onPress} selectedIndex={selectedIndex} />
         )}
       </ScrollView>
-
       <EasingGradient
         easing={easing.in.sin}
         endColor={backgroundColor}
@@ -136,7 +134,6 @@ export const TimeframeSelector = memo(function TimeframeSelector({
         steps={8}
         style={styles.leftFade}
       />
-
       <EasingGradient
         easing={easing.in.sin}
         endColor={backgroundColor}
@@ -147,7 +144,6 @@ export const TimeframeSelector = memo(function TimeframeSelector({
         steps={8}
         style={hideChartTypeToggle ? [styles.rightFade, styles.symmetricalRightFade] : styles.rightFade}
       />
-
       {hideChartTypeToggle ? null : (
         <ChartTypeToggle
           backgroundColor={backgroundColor}
@@ -196,7 +192,7 @@ const TimeframeButton = ({ candleResolution, color, index, label, lineChartTimeP
   const textStyle = useAnimatedStyle(() => {
     const isSelected = selectedIndex.value === index;
     const textColor = isSelected ? color : labelQuaternary;
-    if (!IS_IOS) return { color: textColor };
+    if (Platform.OS !== 'ios') return { color: textColor };
     return {
       color: textColor,
       fontWeight: isSelected ? '800' : '700',
@@ -413,7 +409,7 @@ function getScrollViewProps(
       : hideChartTypeToggle
         ? [styles.contentContainer, styles.hideChartToggleOverride]
         : styles.contentContainer,
-    maintainVisibleContentPosition: IS_IOS ? undefined : { minIndexForVisible: 0 },
+    maintainVisibleContentPosition: Platform.OS === 'ios' ? undefined : { minIndexForVisible: 0 },
     style: styles.scrollView,
   };
 }
@@ -424,7 +420,7 @@ function toggleChartTypeAndScroll(scrollViewRef: RefObject<ScrollView | null>, s
   const isLineChart = newChartType === ChartType.Line;
   selectedIndex.value = newSelectedIndex;
 
-  if (IS_IOS && isLineChart) return;
+  if (Platform.OS === 'ios' && isLineChart) return;
 
   const scrollTo = () =>
     scrollViewRef.current?.setNativeProps({
@@ -434,7 +430,7 @@ function toggleChartTypeAndScroll(scrollViewRef: RefObject<ScrollView | null>, s
       },
     });
 
-  if (IS_IOS || isLineChart) scrollTo();
+  if (Platform.OS === 'ios' || isLineChart) scrollTo();
   else requestAnimationFrame(scrollTo);
 }
 
@@ -451,7 +447,7 @@ const styles = StyleSheet.create({
   candleBody: {
     borderCurve: 'continuous',
     borderRadius: 1.8,
-    borderWidth: IS_IOS ? 1 : 0,
+    borderWidth: Platform.OS === 'ios' ? 1 : 0,
     overflow: 'hidden',
     position: 'relative',
     width: 5,
@@ -506,11 +502,11 @@ const styles = StyleSheet.create({
     paddingRight: RIGHT_INSET,
     paddingVertical: 12,
     position: 'relative',
-    width: IS_IOS ? undefined : CANDLESTICK_CONTENT_WIDTH + BASE_HORIZONTAL_INSET + RIGHT_INSET,
+    width: Platform.OS === 'ios' ? undefined : CANDLESTICK_CONTENT_WIDTH + BASE_HORIZONTAL_INSET + RIGHT_INSET,
   },
   hideChartToggleOverride: {
     paddingRight: BASE_HORIZONTAL_INSET,
-    width: IS_IOS ? undefined : CANDLESTICK_CONTENT_WIDTH + BASE_HORIZONTAL_INSET * 2,
+    width: Platform.OS === 'ios' ? undefined : CANDLESTICK_CONTENT_WIDTH + BASE_HORIZONTAL_INSET * 2,
   },
   leftFade: {
     height: '100%',

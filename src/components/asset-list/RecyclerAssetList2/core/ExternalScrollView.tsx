@@ -1,12 +1,11 @@
 import React, { useContext, useImperativeHandle } from 'react';
-import { Animated as RNAnimated, type ScrollViewProps, type ViewStyle } from 'react-native';
+import { Platform, Animated as RNAnimated, type ScrollViewProps, type ViewStyle } from 'react-native';
 
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { type ScrollViewDefaultProps } from 'recyclerlistview/dist/reactnative/core/scrollcomponent/BaseScrollView';
 import type BaseScrollView from 'recyclerlistview/dist/reactnative/core/scrollcomponent/BaseScrollView';
 import { useMemoOne } from 'use-memo-one';
 
-import { IS_ANDROID } from '@/env';
 import safeAreaInsetValues from '@/utils/safeAreaInsetValues';
 
 import { useRecyclerAssetListPosition } from './Contexts';
@@ -43,7 +42,11 @@ const ExternalScrollViewWithRef = React.forwardRef<BaseScrollView, ScrollViewDef
     return (
       <RNAnimated.ScrollView
         {...(rest as ScrollViewProps)}
-        contentContainerStyle={[extraPadding, rest.contentContainerStyle, { paddingTop: IS_ANDROID ? insets.top - 24 : insets.top }]}
+        contentContainerStyle={[
+          extraPadding,
+          rest.contentContainerStyle,
+          { paddingTop: Platform.OS === 'android' ? insets.top - 24 : insets.top },
+        ]}
         onScroll={event}
         // @ts-expect-error possibly undefined
         ref={scrollViewRef}

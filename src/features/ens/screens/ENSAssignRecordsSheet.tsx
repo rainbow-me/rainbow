@@ -1,5 +1,5 @@
 import React, { useCallback, useContext, useEffect, useMemo, useRef, useState } from 'react';
-import { Keyboard, ScrollView, type EmitterSubscription, type LayoutChangeEvent } from 'react-native';
+import { Keyboard, Platform, ScrollView, type EmitterSubscription, type LayoutChangeEvent } from 'react-native';
 
 import { BottomSheetScrollView } from '@gorhom/bottom-sheet';
 import { BottomSheetContext } from '@gorhom/bottom-sheet/src/contexts/external';
@@ -13,7 +13,6 @@ import ButtonPressAnimation from '@/components/animations/ButtonPressAnimation';
 import TintButton from '@/components/buttons/TintButton';
 import { SheetActionButton, SheetActionButtonRow } from '@/components/sheet';
 import { AccentColorProvider, Bleed, Box, Cover, Heading, Inline, Inset, Row, Rows, Stack, Text } from '@/design-system';
-import { IS_ANDROID } from '@/env';
 import useDimensions from '@/hooks/useDimensions';
 import useKeyboardHeight from '@/hooks/useKeyboardHeight';
 import { delayNext } from '@/hooks/useMagicAutofocus';
@@ -319,7 +318,7 @@ export function ENSAssignRecordsBottomActions({
               </Row>
               <Row height="content">
                 <SheetActionButtonRow
-                  {...(IS_ANDROID
+                  {...(Platform.OS === 'android'
                     ? {
                         ignorePaddingBottom: true,
                         paddingBottom: 8,

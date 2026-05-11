@@ -1,5 +1,5 @@
 import React, { useCallback, useEffect, useRef, useState } from 'react';
-import { View } from 'react-native';
+import { Platform, View } from 'react-native';
 
 import { BigNumber } from '@ethersproject/bignumber';
 import { useRoute, type RouteProp } from '@react-navigation/native';
@@ -29,7 +29,6 @@ import {
   useForegroundColor,
 } from '@/design-system';
 import { TransactionDirection, TransactionStatus, type NewTransaction } from '@/entities/transactions';
-import { IS_ANDROID } from '@/env';
 import GasSpeedButton from '@/features/gas/components/GasSpeedButton';
 import useGas from '@/features/gas/hooks/useGas';
 import { metadataPOSTClient } from '@/graphql';
@@ -600,7 +599,7 @@ export function NFTSingleOfferSheet() {
                         borderRadius={16}
                         size={16}
                         // shadow is way off on android idk why
-                        shadow={IS_ANDROID ? undefined : '30px accent'}
+                        shadow={Platform.OS === 'android' ? undefined : '30px accent'}
                       />
                       <Text color="labelSecondary" align="right" size="17pt" weight="medium">
                         {offer.marketplace.name}

@@ -1,5 +1,5 @@
 import { memo, useCallback, useEffect, useMemo, useRef, useState, type PropsWithChildren } from 'react';
-import { Pressable, ScrollView, StyleSheet, View, type TextInput } from 'react-native';
+import { Platform, Pressable, ScrollView, StyleSheet, View, type TextInput } from 'react-native';
 
 import MaskedView from '@react-native-masked-view/masked-view';
 import { useRoute, type RouteProp } from '@react-navigation/native';
@@ -50,7 +50,6 @@ import {
   useColorMode,
 } from '@/design-system';
 import { useForegroundColor } from '@/design-system/color/useForegroundColor';
-import { IS_IOS } from '@/env';
 import { opacity } from '@/framework/ui/utils/opacity';
 import * as i18n from '@/languages';
 import Navigation, { useNavigation } from '@/navigation/Navigation';
@@ -101,7 +100,7 @@ const SEPARATOR_HEIGHT = 68;
 const SEPARATOR_HEIGHT_NETWORK_CHIP = 18;
 const SHEET_WIDTH = deviceUtils.dimensions.width - 16;
 const ALL_NETWORKS_BADGE_SIZE = 16;
-const PANEL_BOTTOM_OFFSET = Math.max(safeAreaInsetValues.bottom + 5, IS_IOS ? 8 : 30);
+const PANEL_BOTTOM_OFFSET = Math.max(safeAreaInsetValues.bottom + 5, Platform.OS === 'ios' ? 8 : 30);
 const MAX_NETWORK_LIST_HEIGHT = MAX_HEIGHT - HEADER_HEIGHT;
 const SEARCH_BAR_CLEARANCE = SEARCH_BAR_HEIGHT + SHEET_INNER_PADDING + 18;
 
@@ -1170,7 +1169,7 @@ const sx = StyleSheet.create({
     paddingHorizontal: 10 - THICK_BORDER_WIDTH,
     position: 'absolute',
     right: 4,
-    top: IS_IOS ? 0 : -14,
+    top: Platform.OS === 'ios' ? 0 : -14,
   },
   emptyUnpinnedPlaceholder: {
     alignItems: 'center',

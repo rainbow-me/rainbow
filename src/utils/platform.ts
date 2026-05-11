@@ -1,4 +1,4 @@
-import { IS_IOS } from '@/env';
+import { Platform } from 'react-native';
 
-export const cloudPlatform = IS_IOS ? 'iCloud' : 'Google Drive';
-export const cloudPlatformAccountName = IS_IOS ? 'Apple iCloud' : 'Google';
+export const cloudPlatform = Platform.OS === 'ios' ? 'iCloud' : 'Google Drive';
+export const cloudPlatformAccountName = Platform.OS === 'ios' ? 'Apple iCloud' : 'Google';

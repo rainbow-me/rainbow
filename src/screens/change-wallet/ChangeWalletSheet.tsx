@@ -1,5 +1,5 @@
 import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
-import { Alert, InteractionManager, type LayoutChangeEvent } from 'react-native';
+import { Alert, InteractionManager, Platform, type LayoutChangeEvent } from 'react-native';
 
 import Clipboard from '@react-native-clipboard/clipboard';
 import { useRoute, type RouteProp } from '@react-navigation/native';
@@ -17,7 +17,6 @@ import { FeatureHintTooltip, type TooltipRef } from '@/components/tooltips/Featu
 import useExperimentalFlag, { NOTIFICATIONS } from '@/config/experimentalHooks';
 import { Box, globalColors, HitSlop, Inline, Text } from '@/design-system';
 import type { EthereumAddress } from '@/entities/wallet';
-import { IS_ANDROID, IS_IOS } from '@/env';
 import { showActionSheetWithOptions } from '@/framework/ui/utils/actionsheet';
 import { opacity } from '@/framework/ui/utils/opacity';
 import { removeWalletData } from '@/handlers/localstorage/removeWallet';
@@ -52,7 +51,7 @@ import { DEVICE_HEIGHT } from '@/utils/deviceUtils';
 import doesWalletsContainAddress from '@/utils/doesWalletsContainAddress';
 import safeAreaInsetValues from '@/utils/safeAreaInsetValues';
 
-const PANEL_BOTTOM_OFFSET = Math.max(safeAreaInsetValues.bottom + 5, IS_IOS ? 8 : 30);
+const PANEL_BOTTOM_OFFSET = Math.max(safeAreaInsetValues.bottom + 5, Platform.OS === 'ios' ? 8 : 30);
 
 export const PANEL_INSET_HORIZONTAL = 20;
 export const MAX_PANEL_HEIGHT = Math.min(690, DEVICE_HEIGHT - 100);
@@ -112,7 +111,7 @@ export default function ChangeWalletSheet() {
   const featureHintTooltipRef = useRef<TooltipRef>(null);
 
   const [editMode, setEditMode] = useState(false);
-  const [isLayoutMeasured, setIsLayoutMeasured] = useState(IS_IOS);
+  const [isLayoutMeasured, setIsLayoutMeasured] = useState(Platform.OS === 'ios');
 
   const setPinnedAddresses = usePinnedWalletsStore(state => state.setPinnedAddresses);
 
@@ -546,7 +545,7 @@ export default function ChangeWalletSheet() {
 
   const handleLayout = useCallback(
     (event: LayoutChangeEvent) => {
-      if (!IS_ANDROID) return;
+      if (Platform.OS !== 'android') return;
       const { height } = event.nativeEvent.layout;
 
       // @ts-expect-error Bottom sheet options is not typed

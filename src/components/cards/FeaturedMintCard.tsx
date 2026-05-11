@@ -1,5 +1,5 @@
 import React, { useCallback, useEffect, useState } from 'react';
-import { View } from 'react-native';
+import { Platform, View } from 'react-native';
 
 import { BlurView } from 'react-native-blur-view';
 
@@ -18,7 +18,6 @@ import {
   useColorMode,
   useForegroundColor,
 } from '@/design-system';
-import { IS_IOS } from '@/env';
 import styled from '@/framework/ui/styled-thing';
 import { abbreviateNumber, convertRawAmountToRoundedDecimal } from '@/helpers/utilities';
 import useDimensions from '@/hooks/useDimensions';
@@ -88,7 +87,7 @@ export function FeaturedMintCard() {
       <AccentColorProvider color={accentColor ?? labelSecondary}>
         <View
           style={
-            IS_IOS
+            Platform.OS === 'ios'
               ? {
                   shadowColor: globalColors.grey100,
                   shadowOffset: { width: 0, height: 2 },
@@ -100,7 +99,7 @@ export function FeaturedMintCard() {
         >
           <View
             style={
-              IS_IOS
+              Platform.OS === 'ios'
                 ? {
                     shadowColor: globalColors.grey100,
                     shadowOffset: { width: 0, height: 6 },
@@ -125,7 +124,7 @@ export function FeaturedMintCard() {
             >
               <Cover>
                 <BlurWrapper>
-                  {!!imageUrl && IS_IOS && (
+                  {!!imageUrl && Platform.OS === 'ios' && (
                     <Cover>
                       <ImgixImage
                         resizeMode="cover"
@@ -141,7 +140,7 @@ export function FeaturedMintCard() {
                     </Cover>
                   )}
                   <Cover>
-                    {IS_IOS ? (
+                    {Platform.OS === 'ios' ? (
                       <BlurView
                         blurIntensity={100}
                         blurStyle="light"
@@ -236,7 +235,7 @@ export function FeaturedMintCard() {
                     {!!imageUrl && (
                       <View
                         style={
-                          IS_IOS
+                          Platform.OS === 'ios'
                             ? {
                                 shadowColor: globalColors.grey100,
                                 shadowOffset: { width: 0, height: 2 },
@@ -248,7 +247,7 @@ export function FeaturedMintCard() {
                       >
                         <View
                           style={
-                            IS_IOS
+                            Platform.OS === 'ios'
                               ? {
                                   shadowColor: isDarkMode || !accentColor ? globalColors.grey100 : accentColor,
                                   shadowOffset: { width: 0, height: 4 },
