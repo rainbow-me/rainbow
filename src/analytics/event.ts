@@ -1006,48 +1006,23 @@ export type EventProperties = {
         provider: 'hyperliquid';
         market: PerpMarket['symbol'];
         baseSymbol: PerpMarket['baseSymbol'];
-        price: PerpMarket['price'];
-        priceChange1h: PerpMarket['priceChange']['1h'];
-        priceChange24h: PerpMarket['priceChange']['24h'];
-        volume24h: PerpMarket['volume']['24h'];
-        maxLeverage: PerpMarket['maxLeverage'];
         name?: HyperliquidTokenMetadata['name'];
-        percentChange?: number;
       }
     | {
         provider: 'polymarket';
-        eventId: PolymarketEvent['id'];
         eventSlug: PolymarketEvent['slug'];
+        eventId: PolymarketEvent['id'];
         eventTitle: PolymarketEvent['title'];
         eventTicker: PolymarketEvent['ticker'];
         eventCategory: PolymarketEvent['category'];
         eventSubcategory: PolymarketEvent['subcategory'];
-        eventNegRisk: PolymarketEvent['negRisk'];
-        eventActive: PolymarketEvent['active'];
-        eventClosed: PolymarketEvent['closed'];
-        eventEnded?: PolymarketEvent['ended'];
-        eventLive: PolymarketEvent['live'];
-        eventStartDate: PolymarketEvent['startDate'];
-        eventEndDate: PolymarketEvent['endDate'];
-        eventDate: PolymarketEvent['eventDate'];
-        eventGameId?: PolymarketEvent['gameId'];
-        eventHomeTeamName?: PolymarketEvent['homeTeamName'];
-        eventAwayTeamName?: PolymarketEvent['awayTeamName'];
         eventGameStatus: PolymarketEvent['gameStatus'];
-        eventVolume: PolymarketEvent['volume'];
-        eventLiquidity: PolymarketEvent['liquidity'];
-        eventOpenInterest: PolymarketEvent['openInterest'];
-        marketId: PolymarketMarket['id'];
-        marketSlug: PolymarketMarket['slug'];
-        marketQuestion: PolymarketMarket['question'];
-        marketConditionId: PolymarketMarket['conditionId'];
-        marketType: PolymarketMarket['marketType'];
-        marketActive: PolymarketMarket['active'];
-        marketClosed: PolymarketMarket['closed'];
-        marketVolume: PolymarketMarket['volume'];
-        marketLiquidity: PolymarketMarket['liquidity'];
-        marketStartDate: PolymarketMarket['startDate'];
-        marketEndDate: PolymarketMarket['endDate'];
+        eventHomeTeamName: PolymarketEvent['homeTeamName'];
+        eventAwayTeamName: PolymarketEvent['awayTeamName'];
+        marketId?: PolymarketMarket['id'];
+        marketSlug?: PolymarketMarket['slug'];
+        marketQuestion?: PolymarketMarket['question'];
+        marketType?: PolymarketMarket['marketType'];
       }
   );
   [event.discoverFeaturedCarouselSeeAllPressed]: {
@@ -1063,60 +1038,10 @@ export type EventProperties = {
     screen: Placement['screen'];
     order: Placement['order'];
     version: Placement['version'];
-    updatedAt: Placement['updatedAt'];
-    itemRefSource: PlacementItem['ref']['source'];
-    itemRefId: PlacementItem['ref']['id'];
-    itemOrder: PlacementItem['order'];
-    type: 'perps' | 'predictions';
-  } & (
-    | {
-        provider: 'hyperliquid';
-        market: PerpMarket['symbol'];
-        baseSymbol: PerpMarket['baseSymbol'];
-        price: PerpMarket['price'];
-        priceChange1h: PerpMarket['priceChange']['1h'];
-        priceChange24h: PerpMarket['priceChange']['24h'];
-        volume24h: PerpMarket['volume']['24h'];
-        maxLeverage: PerpMarket['maxLeverage'];
-        name?: HyperliquidTokenMetadata['name'];
-        percentChange?: number;
-      }
-    | {
-        provider: 'polymarket';
-        eventId: PolymarketEvent['id'];
-        eventSlug: PolymarketEvent['slug'];
-        eventTitle: PolymarketEvent['title'];
-        eventTicker: PolymarketEvent['ticker'];
-        eventCategory: PolymarketEvent['category'];
-        eventSubcategory: PolymarketEvent['subcategory'];
-        eventNegRisk: PolymarketEvent['negRisk'];
-        eventActive: PolymarketEvent['active'];
-        eventClosed: PolymarketEvent['closed'];
-        eventEnded?: PolymarketEvent['ended'];
-        eventLive: PolymarketEvent['live'];
-        eventStartDate: PolymarketEvent['startDate'];
-        eventEndDate: PolymarketEvent['endDate'];
-        eventDate: PolymarketEvent['eventDate'];
-        eventGameId?: PolymarketEvent['gameId'];
-        eventHomeTeamName?: PolymarketEvent['homeTeamName'];
-        eventAwayTeamName?: PolymarketEvent['awayTeamName'];
-        eventGameStatus: PolymarketEvent['gameStatus'];
-        eventVolume: PolymarketEvent['volume'];
-        eventLiquidity: PolymarketEvent['liquidity'];
-        eventOpenInterest: PolymarketEvent['openInterest'];
-        marketId: PolymarketMarket['id'];
-        marketSlug: PolymarketMarket['slug'];
-        marketQuestion: PolymarketMarket['question'];
-        marketConditionId: PolymarketMarket['conditionId'];
-        marketType: PolymarketMarket['marketType'];
-        marketActive: PolymarketMarket['active'];
-        marketClosed: PolymarketMarket['closed'];
-        marketVolume: PolymarketMarket['volume'];
-        marketLiquidity: PolymarketMarket['liquidity'];
-        marketStartDate: PolymarketMarket['startDate'];
-        marketEndDate: PolymarketMarket['endDate'];
-      }
-  );
+    itemRefSource?: PlacementItem['ref']['source'];
+    itemRefId?: PlacementItem['ref']['id'];
+    itemOrder?: PlacementItem['order'];
+  };
 
   [event.ensInitiatedRegistration]: { category: string };
   [event.ensEditedRecords]: { category: string };
