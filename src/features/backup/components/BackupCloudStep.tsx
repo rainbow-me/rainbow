@@ -3,6 +3,7 @@ import { type TextInput } from 'react-native';
 
 import { useRoute, type RouteProp } from '@react-navigation/native';
 import { type Source } from 'react-native-fast-image';
+import { KeyboardAvoidingView } from 'react-native-keyboard-controller';
 
 import { analytics } from '@/analytics';
 import WalletAndBackup from '@/assets/WalletsAndBackup.png';
@@ -102,107 +103,111 @@ export function BackupCloudStep() {
 
   return (
     <Box height={{ custom: deviceHeight - sharedCoolModalTopOffset - 48 }}>
-      <Inset horizontal={'24px'}>
-        <Stack alignHorizontal="left" space="8px">
-          <Masthead>
-            <Box
-              as={ImgixImage}
-              borderRadius={72 / 2}
-              height={{ custom: 72 }}
-              marginLeft={{ custom: -12 }}
-              marginRight={{ custom: -12 }}
-              marginTop={{ custom: 8 }}
-              marginBottom={{ custom: -24 }}
-              source={WalletAndBackup as Source}
-              width={{ custom: 72 }}
-              size={72}
-            />
-            <Stack space="12px">
-              <Title>{i18n.t(i18n.l.back_up.cloud.password.choose_a_password)}</Title>
-              <DescriptionText>
-                {i18n.t(i18n.l.back_up.cloud.password.a_password_youll_remember_part_one)}
-                &nbsp;
-                <ImportantText>{i18n.t(i18n.l.back_up.cloud.password.not)}</ImportantText>
-                &nbsp;
-                {i18n.t(i18n.l.back_up.cloud.password.a_password_youll_remember_part_two)}
-              </DescriptionText>
-            </Stack>
-          </Masthead>
-          <Box gap={12}>
-            <PasswordField
-              key="password"
-              isInvalid={password !== '' && password.length < cloudBackupPasswordMinLength && !passwordRef.current?.isFocused()}
-              isValid={isCloudBackupPasswordValid(password)}
-              onChange={onPasswordChange}
-              onFocus={(target: any) => onTextInputFocus(target)}
-              onSubmitEditing={onPasswordSubmit}
-              password={password}
-              placeholder={i18n.t(i18n.l.back_up.cloud.password.backup_password)}
-              ref={passwordRef}
-              returnKeyType="next"
-              textContentType="newPassword"
-              testID="password-input"
-            />
-            {isCloudBackupPasswordValid(password) && (
+      <KeyboardAvoidingView behavior="padding" style={keyboardAvoidingViewStyle}>
+        <Inset horizontal={'24px'}>
+          <Stack alignHorizontal="left" space="8px">
+            <Masthead>
+              <Box
+                as={ImgixImage}
+                borderRadius={72 / 2}
+                height={{ custom: 72 }}
+                marginLeft={{ custom: -12 }}
+                marginRight={{ custom: -12 }}
+                marginTop={{ custom: 8 }}
+                marginBottom={{ custom: -24 }}
+                source={WalletAndBackup as Source}
+                width={{ custom: 72 }}
+                size={72}
+              />
+              <Stack space="12px">
+                <Title>{i18n.t(i18n.l.back_up.cloud.password.choose_a_password)}</Title>
+                <DescriptionText>
+                  {i18n.t(i18n.l.back_up.cloud.password.a_password_youll_remember_part_one)}
+                  &nbsp;
+                  <ImportantText>{i18n.t(i18n.l.back_up.cloud.password.not)}</ImportantText>
+                  &nbsp;
+                  {i18n.t(i18n.l.back_up.cloud.password.a_password_youll_remember_part_two)}
+                </DescriptionText>
+              </Stack>
+            </Masthead>
+            <Box gap={12}>
               <PasswordField
-                key="confirm-password"
-                editable={isCloudBackupPasswordValid(password)}
-                isInvalid={
-                  isCloudBackupPasswordValid(confirmPassword) && confirmPassword.length >= password.length && confirmPassword !== password
-                }
-                isValid={validPassword}
-                onChange={onConfirmPasswordChange}
-                onFocus={(target: any) => onTextInputFocus(target, true)}
-                onSubmitEditing={() => onSuccessAndNavigateBack(password)}
-                password={confirmPassword}
-                placeholder={i18n.t(i18n.l.back_up.cloud.password.confirm_placeholder)}
-                ref={confirmPasswordRef}
-                testID="confirm-password-input"
+                key="password"
+                isInvalid={password !== '' && password.length < cloudBackupPasswordMinLength && !passwordRef.current?.isFocused()}
+                isValid={isCloudBackupPasswordValid(password)}
+                onChange={onPasswordChange}
+                onFocus={(target: any) => onTextInputFocus(target)}
+                onSubmitEditing={onPasswordSubmit}
+                password={password}
+                placeholder={i18n.t(i18n.l.back_up.cloud.password.backup_password)}
+                ref={passwordRef}
+                returnKeyType="next"
+                textContentType="newPassword"
+                testID="password-input"
+              />
+              {isCloudBackupPasswordValid(password) && (
+                <PasswordField
+                  key="confirm-password"
+                  editable={isCloudBackupPasswordValid(password)}
+                  isInvalid={
+                    isCloudBackupPasswordValid(confirmPassword) && confirmPassword.length >= password.length && confirmPassword !== password
+                  }
+                  isValid={validPassword}
+                  onChange={onConfirmPasswordChange}
+                  onFocus={(target: any) => onTextInputFocus(target, true)}
+                  onSubmitEditing={() => onSuccessAndNavigateBack(password)}
+                  password={confirmPassword}
+                  placeholder={i18n.t(i18n.l.back_up.cloud.password.confirm_placeholder)}
+                  ref={confirmPasswordRef}
+                  testID="confirm-password-input"
+                />
+              )}
+
+              <DescriptionText color={labelColor}>{label}</DescriptionText>
+            </Box>
+          </Stack>
+
+          <Box paddingTop="16px" justifyContent="flex-end">
+            {validPassword && (
+              <RainbowButton
+                height={46}
+                width={deviceWidth - 48}
+                disabled={!validPassword}
+                type={RainbowButtonTypes.backup}
+                label={`􀎽 ${i18n.t(i18n.l.back_up.cloud.back_up_to_platform, {
+                  cloudPlatformName: cloudPlatform,
+                })}`}
+                onPress={() => onSuccessAndNavigateBack(password)}
+                testID="backup-button"
               />
             )}
 
-            <DescriptionText color={labelColor}>{label}</DescriptionText>
+            {!validPassword && (
+              <Box
+                borderRadius={99}
+                alignItems="center"
+                justifyContent="center"
+                style={{ borderWidth: 1, borderColor: isDarkMode ? 'rgba(245, 248, 255, 0.04)' : 'rgba(9, 17, 31, 0.04)' }}
+                height={{ custom: 46 }}
+                width="full"
+              >
+                <ButtonText>
+                  {`􀎽 ${i18n.t(i18n.l.back_up.cloud.back_up_to_platform, {
+                    cloudPlatformName: cloudPlatform,
+                  })}`}
+                </ButtonText>
+              </Box>
+            )}
           </Box>
-        </Stack>
-
-        <Box paddingTop="16px" justifyContent="flex-end">
-          {validPassword && (
-            <RainbowButton
-              height={46}
-              width={deviceWidth - 48}
-              disabled={!validPassword}
-              type={RainbowButtonTypes.backup}
-              label={`􀎽 ${i18n.t(i18n.l.back_up.cloud.back_up_to_platform, {
-                cloudPlatformName: cloudPlatform,
-              })}`}
-              onPress={() => onSuccessAndNavigateBack(password)}
-              testID="backup-button"
-            />
-          )}
-
-          {!validPassword && (
-            <Box
-              borderRadius={99}
-              alignItems="center"
-              justifyContent="center"
-              style={{ borderWidth: 1, borderColor: isDarkMode ? 'rgba(245, 248, 255, 0.04)' : 'rgba(9, 17, 31, 0.04)' }}
-              height={{ custom: 46 }}
-              width="full"
-            >
-              <ButtonText>
-                {`􀎽 ${i18n.t(i18n.l.back_up.cloud.back_up_to_platform, {
-                  cloudPlatformName: cloudPlatform,
-                })}`}
-              </ButtonText>
-            </Box>
-          )}
-        </Box>
-      </Inset>
+        </Inset>
+      </KeyboardAvoidingView>
     </Box>
   );
 }
 
 export default BackupCloudStep;
+
+const keyboardAvoidingViewStyle = { flex: 1 } as const;
 
 const DescriptionText = styled(Text).attrs(({ theme: { colors }, color }: any) => ({
   align: 'left',
