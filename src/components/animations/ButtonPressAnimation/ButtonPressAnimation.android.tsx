@@ -15,7 +15,7 @@ import { triggerHaptics } from 'react-native-turbo-haptics';
 
 import useLongPressEvents from '@/hooks/useLongPressEvents';
 
-import { normalizeTransformOrigin } from './NativeButton';
+import { normalizeTransformOrigin } from './normalizeTransformOrigin';
 import { ScaleButtonContext } from './ScaleButtonZoomable';
 import { type ButtonPressAnimationProps } from './types';
 

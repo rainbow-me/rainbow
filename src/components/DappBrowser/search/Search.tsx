@@ -3,6 +3,7 @@ import { StyleSheet, View } from 'react-native';
 
 import { Gesture, GestureDetector } from 'react-native-gesture-handler';
 import Animated, { runOnJS, useAnimatedStyle, withSpring } from 'react-native-reanimated';
+import { scheduleOnRN } from 'react-native-worklets';
 
 import { SPRING_CONFIGS } from '@/components/animations/animationConfigs';
 import { useColorMode } from '@/design-system';
@@ -127,7 +128,7 @@ export const Search = () => {
     'worklet';
     isFocused.value = true;
     searchViewProgress.value = withSpring(100, SPRING_CONFIGS.snappierSpringConfig);
-    runOnJS(focusInput)();
+    scheduleOnRN(focusInput);
   }, [focusInput, isFocused, searchViewProgress]);
 
   const onBlurWorklet = useCallback(() => {

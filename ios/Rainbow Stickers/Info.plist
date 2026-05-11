@@ -28,6 +28,6 @@
 		<string>StickerBrowserViewController</string>
 	</dict>
 	<key>RCTNewArchEnabled</key>
-	<false/>
+	<true/>
 </dict>
 </plist>
