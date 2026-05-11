@@ -1,6 +1,5 @@
 import React from 'react';
 
-import { PLACEMENT_IDS } from '@/features/placements/constants';
 import { usePlacementsStore } from '@/features/placements/stores/placementsStore';
 import { type Placement } from '@/features/placements/types';
 import { navigateToPolymarket } from '@/features/polymarket/utils/navigateToPolymarket';
@@ -8,10 +7,7 @@ import * as i18n from '@/languages';
 
 import { MarketCarousel } from './MarketCarousel';
 
-const PLACEMENT_ID = PLACEMENT_IDS.DISCOVER_PREDICTIONS_CAROUSEL;
-
 export function PredictionsMarketCarousel() {
-  const placement = usePlacementsStore<Placement | undefined>(state => state.getPlacement(PLACEMENT_ID));
   const placementsLoading = usePlacementsStore(state => state.status === 'loading' || state.status === 'idle');
 
   // Hide until #7420 wires up the Polymarket events store and the items filter has dependent data to satisfy.
@@ -21,13 +17,10 @@ export function PredictionsMarketCarousel() {
   const isLoading = placementsLoading;
   return (
     <MarketCarousel
-      placement={placement}
-      placementId={PLACEMENT_ID}
-      type="predictions"
-      provider="polymarket"
       title={i18n.t(i18n.l.discover.placements.predictions_title)}
       data={items}
       loading={isLoading}
+      onScrollSettle={() => {}}
       renderItem={() => null as never}
       onPressSeeAll={navigateToPolymarket}
     />
