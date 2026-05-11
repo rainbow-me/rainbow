@@ -5,7 +5,6 @@ import { type Address, type Hex } from 'viem';
 import { getOppositePositionSide } from '@/features/perps/utils';
 import { formatOrderPrice } from '@/features/perps/utils/formatOrderPrice';
 import { generateCloid } from '@/features/perps/utils/hyperliquidCloid';
-import { isBuilderDexAssetId } from '@/features/perps/utils/hyperliquidSymbols';
 import {
   buildMarketOrder,
   buildMarketTriggerOrder,
@@ -104,7 +103,7 @@ export class HyperliquidExchangeClient {
     if (!exchangeClient) return undefined;
 
     // Must be enabled before updating leverage
-    await this.ensureDexAbstractionEnabled(assetId);
+    await this.ensureUnifiedAccountMode();
 
     await Promise.all([
       // TODO: This step could be skipped if we have already traded this asset in the session
@@ -177,7 +176,7 @@ export class HyperliquidExchangeClient {
     const exchangeClient = await this.getExchangeClient();
     if (!exchangeClient) return undefined;
 
-    await Promise.all([this.ensureDexAbstractionEnabled(assetId), this.ensureApprovedBuilderFee(), this.ensureReferralCodeSet()]);
+    await Promise.all([this.ensureUnifiedAccountMode(), this.ensureApprovedBuilderFee(), this.ensureReferralCodeSet()]);
 
     const marketType = getMarketType(assetId);
     const formattedTriggerPrice = formatOrderPrice({ price: triggerPrice, sizeDecimals, marketType });
@@ -232,7 +231,7 @@ export class HyperliquidExchangeClient {
     const exchangeClient = await this.getExchangeClient();
     if (!exchangeClient) return undefined;
 
-    await Promise.all([this.ensureDexAbstractionEnabled(assetId), this.ensureApprovedBuilderFee(), this.ensureReferralCodeSet()]);
+    await Promise.all([this.ensureUnifiedAccountMode(), this.ensureApprovedBuilderFee(), this.ensureReferralCodeSet()]);
 
     const result = await exchangeClient.order({
       orders: [closeOrder],
@@ -283,19 +282,18 @@ export class HyperliquidExchangeClient {
     });
   }
 
-  async ensureDexAbstractionEnabled(assetId: number): Promise<hl.UserDexAbstractionSuccessResponse | undefined> {
-    if (!isBuilderDexAssetId(assetId)) return;
+  async ensureUnifiedAccountMode(): Promise<hl.UserSetAbstractionSuccessResponse | undefined> {
     if (checkIfReadOnlyWallet(this.userAddress)) return;
 
-    const isEnabled = await this.accountClient.isDexAbstractionEnabled();
-    if (isEnabled) return;
+    const mode = await this.accountClient.getAbstractionMode();
+    if (mode === 'unifiedAccount') return;
 
     const exchangeClient = await this.getExchangeClient();
     if (!exchangeClient) return;
 
-    return await exchangeClient.userDexAbstraction({
+    return await exchangeClient.userSetAbstraction({
       user: this.userAddress,
-      enabled: true,
+      abstraction: 'unifiedAccount',
     });
   }
 }
