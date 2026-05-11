@@ -41,6 +41,8 @@
     <key>NSExtensionPrincipalClass</key>
     <string>$(PRODUCT_MODULE_NAME).ActionViewController</string>
   </dict>
+  <key>RCTNewArchEnabled</key>
+  <true/>
 </dict>
 </plist>
 
