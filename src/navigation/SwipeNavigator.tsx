@@ -692,30 +692,42 @@ function SwipeNavigatorScreens() {
       tabBar={TabBarContainer}
       tabBarPosition="bottom"
     >
-      <Swipe.Screen component={WalletScreen} name={Routes.WALLET_SCREEN} options={{ title: TAB_BAR_ICONS[Routes.WALLET_SCREEN] }} />
-      <Swipe.Screen component={DiscoverScreen} name={Routes.DISCOVER_SCREEN} options={{ title: TAB_BAR_ICONS[Routes.DISCOVER_SCREEN] }} />
+      <Swipe.Screen
+        getComponent={() => WalletScreen}
+        name={Routes.WALLET_SCREEN}
+        options={{ title: TAB_BAR_ICONS[Routes.WALLET_SCREEN] }}
+      />
+      <Swipe.Screen
+        getComponent={() => DiscoverScreen}
+        name={Routes.DISCOVER_SCREEN}
+        options={{ title: TAB_BAR_ICONS[Routes.DISCOVER_SCREEN] }}
+      />
       {showDappBrowserTab && (
-        <Swipe.Screen component={DappBrowser} name={Routes.DAPP_BROWSER_SCREEN} options={{ title: 'tabDappBrowser' }} />
+        <Swipe.Screen getComponent={() => DappBrowser} name={Routes.DAPP_BROWSER_SCREEN} options={{ title: 'tabDappBrowser' }} />
       )}
       {showKingOfTheHillTab ? (
         <Swipe.Screen
-          component={KingOfTheHillScreen}
+          getComponent={() => KingOfTheHillScreen}
           name={Routes.KING_OF_THE_HILL}
           options={{ title: TAB_BAR_ICONS[Routes.KING_OF_THE_HILL] }}
         />
       ) : (
-        <Swipe.Screen component={ProfileScreen} name={Routes.PROFILE_SCREEN} options={{ title: TAB_BAR_ICONS[Routes.PROFILE_SCREEN] }} />
+        <Swipe.Screen
+          getComponent={() => ProfileScreen}
+          name={Routes.PROFILE_SCREEN}
+          options={{ title: TAB_BAR_ICONS[Routes.PROFILE_SCREEN] }}
+        />
       )}
       {showRnbwRewardsOrMembershipTab &&
         (showRnbwMembership ? (
           <Swipe.Screen
-            component={RnbwMembershipScreen}
+            getComponent={() => RnbwMembershipScreen}
             name={Routes.RNBW_MEMBERSHIP_SCREEN}
             options={{ title: TAB_BAR_ICONS[Routes.RNBW_MEMBERSHIP_SCREEN] }}
           />
         ) : (
           <Swipe.Screen
-            component={RnbwRewardsScreen}
+            getComponent={() => RnbwRewardsScreen}
             name={Routes.RNBW_REWARDS_SCREEN}
             options={{ title: TAB_BAR_ICONS[Routes.RNBW_REWARDS_SCREEN] }}
           />

@@ -119,8 +119,8 @@ export const HardwareWalletTxNavigator = () => {
             sceneContainerStyle={{ backgroundColor: backgroundColor }}
             tabBar={() => null}
           >
-            <Swipe.Screen component={PairHardwareWalletAgainSheet} name={Routes.PAIR_HARDWARE_WALLET_AGAIN_SHEET} />
-            <Swipe.Screen component={PairHardwareWalletErrorSheet} name={Routes.PAIR_HARDWARE_WALLET_ERROR_SHEET} />
+            <Swipe.Screen getComponent={() => PairHardwareWalletAgainSheet} name={Routes.PAIR_HARDWARE_WALLET_AGAIN_SHEET} />
+            <Swipe.Screen getComponent={() => PairHardwareWalletErrorSheet} name={Routes.PAIR_HARDWARE_WALLET_ERROR_SHEET} />
           </Swipe.Navigator>
         </SimpleSheet>
       )}

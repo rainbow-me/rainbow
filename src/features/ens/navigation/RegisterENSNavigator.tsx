@@ -132,7 +132,7 @@ export default function RegisterENSNavigator() {
             screenOptions={{ swipeEnabled: false }}
           >
             <Swipe.Screen
-              component={ENSIntroSheet}
+              getComponent={() => ENSIntroSheet}
               initialParams={{
                 contentHeight,
                 onSearchForNewName: () => setIsSearchEnabled(true),
@@ -147,7 +147,7 @@ export default function RegisterENSNavigator() {
             />
             {isSearchEnabled && (
               <Swipe.Screen
-                component={ENSSearchSheet}
+                getComponent={() => ENSSearchSheet}
                 listeners={{
                   focus: () => setCurrentRouteName(Routes.ENS_SEARCH_SHEET),
                 }}
@@ -155,7 +155,7 @@ export default function RegisterENSNavigator() {
               />
             )}
             <Swipe.Screen
-              component={ENSAssignRecordsSheet}
+              getComponent={() => ENSAssignRecordsSheet}
               initialParams={{
                 autoFocusKey: params?.autoFocusKey,
                 mode: params?.mode,

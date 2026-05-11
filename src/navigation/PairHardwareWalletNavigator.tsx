@@ -68,7 +68,7 @@ export function PairHardwareWalletNavigator() {
             tabBar={() => null}
           >
             <Swipe.Screen
-              component={PairHardwareWalletIntroSheet}
+              getComponent={() => PairHardwareWalletIntroSheet}
               name={Routes.PAIR_HARDWARE_WALLET_INTRO_SHEET}
               listeners={{
                 focus: () => {
@@ -77,7 +77,7 @@ export function PairHardwareWalletNavigator() {
               }}
             />
             <Swipe.Screen
-              component={PairHardwareWalletSearchSheet}
+              getComponent={() => PairHardwareWalletSearchSheet}
               name={Routes.PAIR_HARDWARE_WALLET_SEARCH_SHEET}
               listeners={{
                 focus: () => {
@@ -86,7 +86,7 @@ export function PairHardwareWalletNavigator() {
               }}
             />
             <Swipe.Screen
-              component={PairHardwareWalletSigningSheet}
+              getComponent={() => PairHardwareWalletSigningSheet}
               initialParams={{ flowContext }}
               name={Routes.PAIR_HARDWARE_WALLET_SIGNING_SHEET}
               listeners={{

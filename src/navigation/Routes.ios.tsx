@@ -158,8 +158,8 @@ const NativeStack = createNativeStackCoolModalNavigator();
 function SendFlowNavigator() {
   return (
     <Stack.Navigator {...stackNavigationConfig} initialRouteName={Routes.SEND_SHEET}>
-      <Stack.Screen component={ModalScreen} name={Routes.MODAL_SCREEN} options={overlayExpandedPreset} />
-      <Stack.Screen component={SendSheet} name={Routes.SEND_SHEET} options={sheetPreset} />
+      <Stack.Screen getComponent={() => ModalScreen} name={Routes.MODAL_SCREEN} options={overlayExpandedPreset} />
+      <Stack.Screen getComponent={() => SendSheet} name={Routes.SEND_SHEET} options={sheetPreset} />
     </Stack.Navigator>
   );
 }
@@ -169,11 +169,15 @@ function MainNavigator() {
 
   return (
     <Stack.Navigator initialRouteName={initialRoute} {...stackNavigationConfig} screenOptions={defaultScreenStackOptions}>
-      <Stack.Screen component={SwipeNavigator} name={Routes.SWIPE_LAYOUT} />
-      <Stack.Screen component={WelcomeScreen} name={Routes.WELCOME_SCREEN} options={{ animationEnabled: false, gestureEnabled: false }} />
-      <Stack.Screen component={AvatarBuilder} name={Routes.AVATAR_BUILDER} options={emojiPreset} />
-      <Stack.Screen component={AvatarBuilder} name={Routes.AVATAR_BUILDER_WALLET} options={emojiPresetWallet} />
-      <Stack.Screen component={AddCashSheet} name={Routes.ADD_CASH_SHEET} options={addCashSheet} />
+      <Stack.Screen getComponent={() => SwipeNavigator} name={Routes.SWIPE_LAYOUT} />
+      <Stack.Screen
+        getComponent={() => WelcomeScreen}
+        name={Routes.WELCOME_SCREEN}
+        options={{ animationEnabled: false, gestureEnabled: false }}
+      />
+      <Stack.Screen getComponent={() => AvatarBuilder} name={Routes.AVATAR_BUILDER} options={emojiPreset} />
+      <Stack.Screen getComponent={() => AvatarBuilder} name={Routes.AVATAR_BUILDER_WALLET} options={emojiPresetWallet} />
+      <Stack.Screen getComponent={() => AddCashSheet} name={Routes.ADD_CASH_SHEET} options={addCashSheet} />
     </Stack.Navigator>
   );
 }
@@ -181,7 +185,7 @@ function MainNavigator() {
 function MainStack() {
   return (
     <Stack.Navigator initialRouteName={Routes.MAIN_NAVIGATOR_WRAPPER} {...stackNavigationConfig} screenOptions={defaultScreenStackOptions}>
-      <Stack.Screen component={MainNavigator} name={Routes.MAIN_NAVIGATOR_WRAPPER} />
+      <Stack.Screen getComponent={() => MainNavigator} name={Routes.MAIN_NAVIGATOR_WRAPPER} />
     </Stack.Navigator>
   );
 }
@@ -192,26 +196,30 @@ function NativeStackNavigator() {
 
   return (
     <NativeStack.Navigator {...nativeStackConfig}>
-      <NativeStack.Screen component={MainStack} name={Routes.STACK} />
+      <NativeStack.Screen getComponent={() => MainStack} name={Routes.STACK} />
       <NativeStack.Screen
-        component={NotificationPermissionScreen}
+        getComponent={() => NotificationPermissionScreen}
         name={Routes.NOTIFICATION_PERMISSION_SCREEN}
         {...notificationPermissionSheetConfig}
       />
-      <NativeStack.Screen component={LearnWebViewScreen} name={Routes.LEARN_WEB_VIEW_SCREEN} {...learnWebViewScreenConfig} />
-      <NativeStack.Screen component={ReceiveModal} name={Routes.RECEIVE_MODAL} {...recieveModalSheetConfig} />
-      <NativeStack.Screen component={SettingsSheet} name={Routes.SETTINGS_SHEET} {...settingsSheetConfig} />
-      <NativeStack.Screen component={ExpandedAssetSheet} name={Routes.EXPANDED_ASSET_SHEET} {...expandedAssetSheetConfigWithLimit} />
-      <NativeStack.Screen component={PoapSheet} name={Routes.POAP_SHEET} {...expandedAssetSheetConfigWithLimit} />
-      <NativeStack.Screen component={MintSheet} name={Routes.MINT_SHEET} {...expandedAssetSheetConfigWithLimit} />
-      <NativeStack.Screen component={PositionSheet} name={Routes.POSITION_SHEET} {...positionSheetConfig} />
+      <NativeStack.Screen getComponent={() => LearnWebViewScreen} name={Routes.LEARN_WEB_VIEW_SCREEN} {...learnWebViewScreenConfig} />
+      <NativeStack.Screen getComponent={() => ReceiveModal} name={Routes.RECEIVE_MODAL} {...recieveModalSheetConfig} />
+      <NativeStack.Screen getComponent={() => SettingsSheet} name={Routes.SETTINGS_SHEET} {...settingsSheetConfig} />
       <NativeStack.Screen
-        component={SelectUniqueTokenSheet}
+        getComponent={() => ExpandedAssetSheet}
+        name={Routes.EXPANDED_ASSET_SHEET}
+        {...expandedAssetSheetConfigWithLimit}
+      />
+      <NativeStack.Screen getComponent={() => PoapSheet} name={Routes.POAP_SHEET} {...expandedAssetSheetConfigWithLimit} />
+      <NativeStack.Screen getComponent={() => MintSheet} name={Routes.MINT_SHEET} {...expandedAssetSheetConfigWithLimit} />
+      <NativeStack.Screen getComponent={() => PositionSheet} name={Routes.POSITION_SHEET} {...positionSheetConfig} />
+      <NativeStack.Screen
+        getComponent={() => SelectUniqueTokenSheet}
         name={Routes.SELECT_UNIQUE_TOKEN_SHEET}
         {...expandedAssetSheetConfigWithLimit}
       />
       <NativeStack.Screen
-        component={SpeedUpAndCancelSheet}
+        getComponent={() => SpeedUpAndCancelSheet}
         name={Routes.SPEED_UP_AND_CANCEL_SHEET}
         options={{
           allowsDragToDismiss: true,
@@ -222,17 +230,17 @@ function NativeStackNavigator() {
           topOffset: 0,
         }}
       />
-      <Stack.Screen component={SendConfirmationSheet} name={Routes.SEND_CONFIRMATION_SHEET} {...sendConfirmationSheetConfig} />
-      <NativeStack.Screen component={ExplainSheet} name={Routes.EXPLAIN_SHEET} {...explainSheetConfig} />
+      <Stack.Screen getComponent={() => SendConfirmationSheet} name={Routes.SEND_CONFIRMATION_SHEET} {...sendConfirmationSheetConfig} />
+      <NativeStack.Screen getComponent={() => ExplainSheet} name={Routes.EXPLAIN_SHEET} {...explainSheetConfig} />
       <NativeStack.Screen
-        component={ExternalLinkWarningSheet}
+        getComponent={() => ExternalLinkWarningSheet}
         name={Routes.EXTERNAL_LINK_WARNING_SHEET}
         {...externalLinkWarningSheetConfig}
       />
-      <NativeStack.Screen component={WalletDiagnosticsSheet} name={Routes.DIAGNOSTICS_SHEET} {...walletDiagnosticsSheetConfig} />
-      <NativeStack.Screen component={ChangeWalletSheet} name={Routes.CHANGE_WALLET_SHEET} {...panelConfig} />
+      <NativeStack.Screen getComponent={() => WalletDiagnosticsSheet} name={Routes.DIAGNOSTICS_SHEET} {...walletDiagnosticsSheetConfig} />
+      <NativeStack.Screen getComponent={() => ChangeWalletSheet} name={Routes.CHANGE_WALLET_SHEET} {...panelConfig} />
       <NativeStack.Screen
-        component={ConnectedDappsSheet}
+        getComponent={() => ConnectedDappsSheet}
         name={Routes.CONNECTED_DAPPS}
         options={{
           allowsDragToDismiss: true,
@@ -242,10 +250,14 @@ function NativeStackNavigator() {
           transitionDuration: 0.25,
         }}
       />
-      <NativeStack.Screen component={CheckIdentifierScreen} name={Routes.CHECK_IDENTIFIER_SCREEN} {...checkIdentifierSheetConfig} />
-      <NativeStack.Screen component={BackupSheet} name={Routes.BACKUP_SHEET} {...backupSheetConfig} />
       <NativeStack.Screen
-        component={ModalScreen}
+        getComponent={() => CheckIdentifierScreen}
+        name={Routes.CHECK_IDENTIFIER_SCREEN}
+        {...checkIdentifierSheetConfig}
+      />
+      <NativeStack.Screen getComponent={() => BackupSheet} name={Routes.BACKUP_SHEET} {...backupSheetConfig} />
+      <NativeStack.Screen
+        getComponent={() => ModalScreen}
         name={Routes.MODAL_SCREEN}
         options={{
           customStack: true,
@@ -254,40 +266,46 @@ function NativeStackNavigator() {
           topOffset: 0,
         }}
       />
-      <NativeStack.Screen component={RestoreSheet} name={Routes.RESTORE_SHEET} {...restoreSheetConfig} />
-      <NativeStack.Screen component={SignTransactionSheet} name={Routes.CONFIRM_REQUEST} {...signTransactionSheetConfig} />
-      <NativeStack.Screen component={ExpandedAssetSheet} name={Routes.CUSTOM_GAS_SHEET} {...customGasSheetConfig} />
-      <NativeStack.Screen component={QRScannerScreen} name={Routes.QR_SCANNER_SCREEN} {...qrScannerConfig} />
+      <NativeStack.Screen getComponent={() => RestoreSheet} name={Routes.RESTORE_SHEET} {...restoreSheetConfig} />
+      <NativeStack.Screen getComponent={() => SignTransactionSheet} name={Routes.CONFIRM_REQUEST} {...signTransactionSheetConfig} />
+      <NativeStack.Screen getComponent={() => ExpandedAssetSheet} name={Routes.CUSTOM_GAS_SHEET} {...customGasSheetConfig} />
+      <NativeStack.Screen getComponent={() => QRScannerScreen} name={Routes.QR_SCANNER_SCREEN} {...qrScannerConfig} />
       <NativeStack.Screen
-        component={PairHardwareWalletNavigator}
+        getComponent={() => PairHardwareWalletNavigator}
         name={Routes.PAIR_HARDWARE_WALLET_NAVIGATOR}
         {...pairHardwareWalletNavigatorConfig}
       />
       <NativeStack.Screen
-        component={HardwareWalletTxNavigator}
+        getComponent={() => HardwareWalletTxNavigator}
         name={Routes.HARDWARE_WALLET_TX_NAVIGATOR}
         {...hardwareWalletTxNavigatorConfig}
       />
-      <NativeStack.Screen component={AddWalletNavigator} name={Routes.ADD_WALLET_NAVIGATOR} {...addWalletNavigatorConfig} />
-      <NativeStack.Screen component={Portal} name={Routes.PORTAL} {...portalSheetConfig} />
-      {showKingOfTheHillTab && <NativeStack.Screen component={ActivitySheetScreen} name={Routes.PROFILE_SCREEN} {...activitySheetConfig} />}
+      <NativeStack.Screen getComponent={() => AddWalletNavigator} name={Routes.ADD_WALLET_NAVIGATOR} {...addWalletNavigatorConfig} />
+      <NativeStack.Screen getComponent={() => Portal} name={Routes.PORTAL} {...portalSheetConfig} />
+      {showKingOfTheHillTab && (
+        <NativeStack.Screen getComponent={() => ActivitySheetScreen} name={Routes.PROFILE_SCREEN} {...activitySheetConfig} />
+      )}
       {profilesEnabled && (
         <>
-          <NativeStack.Screen component={RegisterENSNavigator} name={Routes.REGISTER_ENS_NAVIGATOR} {...registerENSNavigatorConfig} />
           <NativeStack.Screen
-            component={ENSConfirmRegisterSheet}
+            getComponent={() => RegisterENSNavigator}
+            name={Routes.REGISTER_ENS_NAVIGATOR}
+            {...registerENSNavigatorConfig}
+          />
+          <NativeStack.Screen
+            getComponent={() => ENSConfirmRegisterSheet}
             name={Routes.ENS_CONFIRM_REGISTER_SHEET}
             {...ensConfirmRegisterSheetConfig}
           />
           <NativeStack.Screen
-            component={ENSAdditionalRecordsSheet}
+            getComponent={() => ENSAdditionalRecordsSheet}
             name={Routes.ENS_ADDITIONAL_RECORDS_SHEET}
             {...ensAdditionalRecordsSheetConfig}
           />
-          <NativeStack.Screen component={ProfileSheet} name={Routes.PROFILE_SHEET} {...profileConfig} />
-          <NativeStack.Screen component={ProfileSheet} name={Routes.PROFILE_PREVIEW_SHEET} {...profilePreviewConfig} />
+          <NativeStack.Screen getComponent={() => ProfileSheet} name={Routes.PROFILE_SHEET} {...profileConfig} />
+          <NativeStack.Screen getComponent={() => ProfileSheet} name={Routes.PROFILE_PREVIEW_SHEET} {...profilePreviewConfig} />
           <NativeStack.Screen
-            component={SelectENSSheet}
+            getComponent={() => SelectENSSheet}
             name={Routes.SELECT_ENS_SHEET}
             options={{
               allowsDragToDismiss: true,
@@ -299,73 +317,121 @@ function NativeStackNavigator() {
           />
         </>
       )}
-      <NativeStack.Screen component={SendFlowNavigator} name={Routes.SEND_SHEET_NAVIGATOR} />
-      <NativeStack.Screen component={NoNeedWCSheet} name={Routes.NO_NEED_WC_SHEET} {...basicSheetConfig} />
-      <NativeStack.Screen component={WalletConnectApprovalSheet} name={Routes.WALLET_CONNECT_APPROVAL_SHEET} {...basicSheetConfig} />
-      <NativeStack.Screen component={WalletConnectRedirectSheet} name={Routes.WALLET_CONNECT_REDIRECT_SHEET} {...basicSheetConfig} />
-      <NativeStack.Screen name={Routes.TRANSACTION_DETAILS} component={TransactionDetails} {...transactionDetailsConfig} />
-      <NativeStack.Screen name={Routes.OP_REWARDS_SHEET} component={RewardsSheet} {...opRewardsSheetConfig} />
-      <NativeStack.Screen name={Routes.NFT_OFFERS_SHEET} component={NFTOffersSheet} {...nftOffersSheetConfig} />
-      <NativeStack.Screen name={Routes.NFT_SINGLE_OFFER_SHEET} component={NFTSingleOfferSheet} {...nftSingleOfferSheetConfig} />
-      <NativeStack.Screen name={Routes.MINTS_SHEET} component={MintsSheet} {...mintsSheetConfig} />
-      <NativeStack.Screen component={AppIconUnlockSheet} name={Routes.APP_ICON_UNLOCK_SHEET} {...appIconUnlockSheetConfig} />
-      <NativeStack.Screen component={NetworkSelector} name={Routes.NETWORK_SELECTOR} {...panelConfig} />
-      <NativeStack.Screen component={ControlPanel} name={Routes.DAPP_BROWSER_CONTROL_PANEL} {...panelConfig} />
-      <NativeStack.Screen component={ClaimClaimablePanel} name={Routes.CLAIM_CLAIMABLE_PANEL} {...panelConfig} />
-      <NativeStack.Screen component={RevokeDelegationPanel} name={Routes.REVOKE_DELEGATION_PANEL} {...panelConfig} />
-      <NativeStack.Screen component={SwapScreen} name={Routes.SWAP} {...swapConfig} />
-      <NativeStack.Screen component={PerpsDepositScreen} name={Routes.PERPS_DEPOSIT_SCREEN} {...perpsDepositWithdrawalConfig} />
-      <NativeStack.Screen component={PolymarketDepositScreen} name={Routes.POLYMARKET_DEPOSIT_SCREEN} {...perpsDepositWithdrawalConfig} />
-      <NativeStack.Screen component={PerpsDetailScreen} name={Routes.PERPS_DETAIL_SCREEN} {...expandedAssetSheetV2Config} />
-      <NativeStack.Screen component={PerpsWithdrawalScreen} name={Routes.PERPS_WITHDRAWAL_SCREEN} {...perpsDepositWithdrawalConfig} />
+      <NativeStack.Screen getComponent={() => SendFlowNavigator} name={Routes.SEND_SHEET_NAVIGATOR} />
+      <NativeStack.Screen getComponent={() => NoNeedWCSheet} name={Routes.NO_NEED_WC_SHEET} {...basicSheetConfig} />
       <NativeStack.Screen
-        component={PolymarketWithdrawalScreen}
+        getComponent={() => WalletConnectApprovalSheet}
+        name={Routes.WALLET_CONNECT_APPROVAL_SHEET}
+        {...basicSheetConfig}
+      />
+      <NativeStack.Screen
+        getComponent={() => WalletConnectRedirectSheet}
+        name={Routes.WALLET_CONNECT_REDIRECT_SHEET}
+        {...basicSheetConfig}
+      />
+      <NativeStack.Screen name={Routes.TRANSACTION_DETAILS} getComponent={() => TransactionDetails} {...transactionDetailsConfig} />
+      <NativeStack.Screen name={Routes.OP_REWARDS_SHEET} getComponent={() => RewardsSheet} {...opRewardsSheetConfig} />
+      <NativeStack.Screen name={Routes.NFT_OFFERS_SHEET} getComponent={() => NFTOffersSheet} {...nftOffersSheetConfig} />
+      <NativeStack.Screen name={Routes.NFT_SINGLE_OFFER_SHEET} getComponent={() => NFTSingleOfferSheet} {...nftSingleOfferSheetConfig} />
+      <NativeStack.Screen name={Routes.MINTS_SHEET} getComponent={() => MintsSheet} {...mintsSheetConfig} />
+      <NativeStack.Screen getComponent={() => AppIconUnlockSheet} name={Routes.APP_ICON_UNLOCK_SHEET} {...appIconUnlockSheetConfig} />
+      <NativeStack.Screen getComponent={() => NetworkSelector} name={Routes.NETWORK_SELECTOR} {...panelConfig} />
+      <NativeStack.Screen getComponent={() => ControlPanel} name={Routes.DAPP_BROWSER_CONTROL_PANEL} {...panelConfig} />
+      <NativeStack.Screen getComponent={() => ClaimClaimablePanel} name={Routes.CLAIM_CLAIMABLE_PANEL} {...panelConfig} />
+      <NativeStack.Screen getComponent={() => RevokeDelegationPanel} name={Routes.REVOKE_DELEGATION_PANEL} {...panelConfig} />
+      <NativeStack.Screen getComponent={() => SwapScreen} name={Routes.SWAP} {...swapConfig} />
+      <NativeStack.Screen getComponent={() => PerpsDepositScreen} name={Routes.PERPS_DEPOSIT_SCREEN} {...perpsDepositWithdrawalConfig} />
+      <NativeStack.Screen
+        getComponent={() => PolymarketDepositScreen}
+        name={Routes.POLYMARKET_DEPOSIT_SCREEN}
+        {...perpsDepositWithdrawalConfig}
+      />
+      <NativeStack.Screen getComponent={() => PerpsDetailScreen} name={Routes.PERPS_DETAIL_SCREEN} {...expandedAssetSheetV2Config} />
+      <NativeStack.Screen
+        getComponent={() => PerpsWithdrawalScreen}
+        name={Routes.PERPS_WITHDRAWAL_SCREEN}
+        {...perpsDepositWithdrawalConfig}
+      />
+      <NativeStack.Screen
+        getComponent={() => PolymarketWithdrawalScreen}
         name={Routes.POLYMARKET_WITHDRAWAL_SCREEN}
         {...perpsDepositWithdrawalConfig}
       />
-      <NativeStack.Screen component={ExpandedAssetSheetV2} name={Routes.EXPANDED_ASSET_SHEET_V2} {...expandedAssetSheetV2Config} />
-      <NativeStack.Screen component={AirdropsSheet} name={Routes.AIRDROPS_SHEET} {...airdropsSheetConfig} />
-      <NativeStack.Screen component={ClaimAirdropSheet} name={Routes.CLAIM_AIRDROP_SHEET} {...claimAirdropSheetConfig} />
-      <NativeStack.Screen component={LogSheet} name={Routes.LOG_SHEET} {...panelConfig} />
-      <NativeStack.Screen component={TokenLauncherScreen} name={Routes.TOKEN_LAUNCHER_SCREEN} {...tokenLauncherConfig} />
-      <NativeStack.Screen component={PerpsNavigator} name={Routes.PERPS_NAVIGATOR} {...perpsAccountStackConfig} />
-      <NativeStack.Screen component={PerpsTradeHistoryScreen} name={Routes.PERPS_TRADE_HISTORY_SCREEN} {...perpsAccountStackConfig} />
-      <NativeStack.Screen component={CreateTriggerOrderBottomSheet} name={Routes.CREATE_TRIGGER_ORDER_BOTTOM_SHEET} {...panelConfig} />
-      <NativeStack.Screen component={ClosePositionBottomSheet} name={Routes.CLOSE_POSITION_BOTTOM_SHEET} {...panelConfig} />
-      <NativeStack.Screen component={PerpsAddToPositionSheet} name={Routes.PERPS_ADD_TO_POSITION_SHEET} {...panelConfig} />
-      <NativeStack.Screen component={KingOfTheHillExplainSheet} name={Routes.KING_OF_THE_HILL_EXPLAIN_SHEET} {...learnSheetConfig} />
-      <NativeStack.Screen component={PerpsExplainSheet} name={Routes.PERPS_EXPLAIN_SHEET} {...perpsExplainSheetConfig} />
-      <NativeStack.Screen component={PerpsAboutSheet} name={Routes.PERPS_ABOUT_SHEET} {...panelConfig} />
+      <NativeStack.Screen getComponent={() => ExpandedAssetSheetV2} name={Routes.EXPANDED_ASSET_SHEET_V2} {...expandedAssetSheetV2Config} />
+      <NativeStack.Screen getComponent={() => AirdropsSheet} name={Routes.AIRDROPS_SHEET} {...airdropsSheetConfig} />
+      <NativeStack.Screen getComponent={() => ClaimAirdropSheet} name={Routes.CLAIM_AIRDROP_SHEET} {...claimAirdropSheetConfig} />
+      <NativeStack.Screen getComponent={() => LogSheet} name={Routes.LOG_SHEET} {...panelConfig} />
+      <NativeStack.Screen getComponent={() => TokenLauncherScreen} name={Routes.TOKEN_LAUNCHER_SCREEN} {...tokenLauncherConfig} />
+      <NativeStack.Screen getComponent={() => PerpsNavigator} name={Routes.PERPS_NAVIGATOR} {...perpsAccountStackConfig} />
       <NativeStack.Screen
-        component={PerpsTradeDetailsSheet}
+        getComponent={() => PerpsTradeHistoryScreen}
+        name={Routes.PERPS_TRADE_HISTORY_SCREEN}
+        {...perpsAccountStackConfig}
+      />
+      <NativeStack.Screen
+        getComponent={() => CreateTriggerOrderBottomSheet}
+        name={Routes.CREATE_TRIGGER_ORDER_BOTTOM_SHEET}
+        {...panelConfig}
+      />
+      <NativeStack.Screen getComponent={() => ClosePositionBottomSheet} name={Routes.CLOSE_POSITION_BOTTOM_SHEET} {...panelConfig} />
+      <NativeStack.Screen getComponent={() => PerpsAddToPositionSheet} name={Routes.PERPS_ADD_TO_POSITION_SHEET} {...panelConfig} />
+      <NativeStack.Screen
+        getComponent={() => KingOfTheHillExplainSheet}
+        name={Routes.KING_OF_THE_HILL_EXPLAIN_SHEET}
+        {...learnSheetConfig}
+      />
+      <NativeStack.Screen getComponent={() => PerpsExplainSheet} name={Routes.PERPS_EXPLAIN_SHEET} {...perpsExplainSheetConfig} />
+      <NativeStack.Screen getComponent={() => PerpsAboutSheet} name={Routes.PERPS_ABOUT_SHEET} {...panelConfig} />
+      <NativeStack.Screen
+        getComponent={() => PerpsTradeDetailsSheet}
         name={Routes.PERPS_TRADE_DETAILS_SHEET}
         options={({ route }) => ({
           ...panelConfig.options({ route }),
           interactWithScrollView: false,
         })}
       />
-      <NativeStack.Screen component={PolymarketEventScreen} name={Routes.POLYMARKET_EVENT_SCREEN} {...expandedAssetSheetV2Config} />
-      <NativeStack.Screen component={PolymarketRedeemPositionSheet} name={Routes.POLYMARKET_MANAGE_POSITION_SHEET} {...panelConfig} />
-      <NativeStack.Screen component={PolymarketMarketSheet} name={Routes.POLYMARKET_MARKET_SHEET} {...panelConfig} />
-      <NativeStack.Screen component={PolymarketMarketDescriptionSheet} name={Routes.POLYMARKET_MARKET_DESCRIPTION_SHEET} {...panelConfig} />
-      <NativeStack.Screen component={PolymarketNewPositionSheet} name={Routes.POLYMARKET_NEW_POSITION_SHEET} {...panelConfig} />
-      <NativeStack.Screen component={PolymarketAccountScreen} name={Routes.POLYMARKET_ACCOUNT_SCREEN} {...expandedAssetSheetV2Config} />
-      <NativeStack.Screen component={PolymarketNavigator} name={Routes.POLYMARKET_NAVIGATOR} {...perpsAccountStackConfig} />
-      <NativeStack.Screen component={PolymarketExplainSheet} name={Routes.POLYMARKET_EXPLAIN_SHEET} {...learnSheetConfig} />
-      <NativeStack.Screen component={PolymarketSellPositionSheet} name={Routes.POLYMARKET_SELL_POSITION_SHEET} {...panelConfig} />
-      <NativeStack.Screen component={RnbwAirdropScreen} name={Routes.RNBW_AIRDROP_SCREEN} {...expandedAssetSheetV2Config} />
-      <NativeStack.Screen component={RnbwRewardsClaimSheet} name={Routes.RNBW_REWARDS_CLAIM_SHEET} {...panelConfig} />
-      <NativeStack.Screen component={RnbwRewardsEstimateSheet} name={Routes.RNBW_REWARDS_ESTIMATE_SHEET} {...panelConfig} />
-      <NativeStack.Screen component={RnbwStakingLearnScreen} name={Routes.RNBW_STAKING_LEARN_SCREEN} {...expandedAssetSheetV2Config} />
-      <NativeStack.Screen component={RnbwStakingScreen} name={Routes.RNBW_STAKING_SCREEN} {...expandedAssetSheetV2Config} />
-      <NativeStack.Screen component={RnbwUnstakeSheet} name={Routes.RNBW_UNSTAKE_SHEET} {...panelConfig} />
       <NativeStack.Screen
-        component={PolymarketBrowseEventsScreen}
+        getComponent={() => PolymarketEventScreen}
+        name={Routes.POLYMARKET_EVENT_SCREEN}
+        {...expandedAssetSheetV2Config}
+      />
+      <NativeStack.Screen
+        getComponent={() => PolymarketRedeemPositionSheet}
+        name={Routes.POLYMARKET_MANAGE_POSITION_SHEET}
+        {...panelConfig}
+      />
+      <NativeStack.Screen getComponent={() => PolymarketMarketSheet} name={Routes.POLYMARKET_MARKET_SHEET} {...panelConfig} />
+      <NativeStack.Screen
+        getComponent={() => PolymarketMarketDescriptionSheet}
+        name={Routes.POLYMARKET_MARKET_DESCRIPTION_SHEET}
+        {...panelConfig}
+      />
+      <NativeStack.Screen getComponent={() => PolymarketNewPositionSheet} name={Routes.POLYMARKET_NEW_POSITION_SHEET} {...panelConfig} />
+      <NativeStack.Screen
+        getComponent={() => PolymarketAccountScreen}
+        name={Routes.POLYMARKET_ACCOUNT_SCREEN}
+        {...expandedAssetSheetV2Config}
+      />
+      <NativeStack.Screen getComponent={() => PolymarketNavigator} name={Routes.POLYMARKET_NAVIGATOR} {...perpsAccountStackConfig} />
+      <NativeStack.Screen getComponent={() => PolymarketExplainSheet} name={Routes.POLYMARKET_EXPLAIN_SHEET} {...learnSheetConfig} />
+      <NativeStack.Screen getComponent={() => PolymarketSellPositionSheet} name={Routes.POLYMARKET_SELL_POSITION_SHEET} {...panelConfig} />
+      <NativeStack.Screen getComponent={() => RnbwAirdropScreen} name={Routes.RNBW_AIRDROP_SCREEN} {...expandedAssetSheetV2Config} />
+      <NativeStack.Screen getComponent={() => RnbwRewardsClaimSheet} name={Routes.RNBW_REWARDS_CLAIM_SHEET} {...panelConfig} />
+      <NativeStack.Screen getComponent={() => RnbwRewardsEstimateSheet} name={Routes.RNBW_REWARDS_ESTIMATE_SHEET} {...panelConfig} />
+      <NativeStack.Screen
+        getComponent={() => RnbwStakingLearnScreen}
+        name={Routes.RNBW_STAKING_LEARN_SCREEN}
+        {...expandedAssetSheetV2Config}
+      />
+      <NativeStack.Screen getComponent={() => RnbwStakingScreen} name={Routes.RNBW_STAKING_SCREEN} {...expandedAssetSheetV2Config} />
+      <NativeStack.Screen getComponent={() => RnbwUnstakeSheet} name={Routes.RNBW_UNSTAKE_SHEET} {...panelConfig} />
+      <NativeStack.Screen
+        getComponent={() => PolymarketBrowseEventsScreen}
         name={Routes.POLYMARKET_BROWSE_EVENTS_SCREEN}
         {...expandedAssetSheetV2Config}
       />
-      <NativeStack.Screen component={WalletErrorSheet} name={Routes.WALLET_ERROR_SHEET} {...walletErrorSheetConfig} />
-      <NativeStack.Screen component={RnbwMembershipTiersSheet} name={Routes.RNBW_MEMBERSHIP_TIERS_SHEET} {...learnSheetConfig} />
+      <NativeStack.Screen getComponent={() => WalletErrorSheet} name={Routes.WALLET_ERROR_SHEET} {...walletErrorSheetConfig} />
+      <NativeStack.Screen getComponent={() => RnbwMembershipTiersSheet} name={Routes.RNBW_MEMBERSHIP_TIERS_SHEET} {...learnSheetConfig} />
     </NativeStack.Navigator>
   );
 }

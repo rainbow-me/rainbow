@@ -34,7 +34,7 @@ export const AddWalletNavigator = () => {
             tabBar={() => null}
           >
             <Swipe.Screen
-              component={AddWalletSheet}
+              getComponent={() => AddWalletSheet}
               initialParams={{ flowContext, isFirstWallet }}
               name={Routes.ADD_WALLET_SHEET}
               listeners={{
@@ -45,7 +45,7 @@ export const AddWalletNavigator = () => {
               }}
             />
             <Swipe.Screen
-              component={ChooseWalletGroup}
+              getComponent={() => ChooseWalletGroup}
               initialParams={{ isFirstWallet }}
               name={Routes.CHOOSE_WALLET_GROUP}
               listeners={{
@@ -56,7 +56,7 @@ export const AddWalletNavigator = () => {
               }}
             />
             <Swipe.Screen
-              component={ImportOrWatchWalletSheet}
+              getComponent={() => ImportOrWatchWalletSheet}
               initialParams={{ flowContext, type }}
               name={Routes.IMPORT_OR_WATCH_WALLET_SHEET}
               listeners={{

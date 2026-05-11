@@ -138,27 +138,35 @@ function MainNavigator() {
   const initialRoute = useContext(InitialRouteContext) as unknown as string;
   return (
     <Stack.Navigator initialRouteName={initialRoute} {...stackNavigationConfig} screenOptions={defaultScreenStackOptions}>
-      <Stack.Screen component={SwipeNavigator} name={Routes.SWIPE_LAYOUT} options={expandedPreset} />
-      <Stack.Screen component={AvatarBuilder} name={Routes.AVATAR_BUILDER} options={emojiPreset} />
-      <Stack.Screen component={ConnectedDappsSheet} name={Routes.CONNECTED_DAPPS} options={expandedPreset} />
-      <Stack.Screen component={Portal} name={Routes.PORTAL} options={expandedPreset} />
-      <Stack.Screen component={PositionSheet} name={Routes.POSITION_SHEET} options={expandedPreset} />
+      <Stack.Screen getComponent={() => SwipeNavigator} name={Routes.SWIPE_LAYOUT} options={expandedPreset} />
+      <Stack.Screen getComponent={() => AvatarBuilder} name={Routes.AVATAR_BUILDER} options={emojiPreset} />
+      <Stack.Screen getComponent={() => ConnectedDappsSheet} name={Routes.CONNECTED_DAPPS} options={expandedPreset} />
+      <Stack.Screen getComponent={() => Portal} name={Routes.PORTAL} options={expandedPreset} />
+      <Stack.Screen getComponent={() => PositionSheet} name={Routes.POSITION_SHEET} options={expandedPreset} />
       <Stack.Screen
-        component={SpeedUpAndCancelSheet}
+        getComponent={() => SpeedUpAndCancelSheet}
         name={Routes.SPEED_UP_AND_CANCEL_SHEET}
         options={{
           ...exchangePreset,
           cardStyleInterpolator: speedUpAndCancelStyleInterpolator,
         }}
       />
-      <Stack.Screen component={ReceiveModal} name={Routes.RECEIVE_MODAL} options={androidRecievePreset} />
+      <Stack.Screen getComponent={() => ReceiveModal} name={Routes.RECEIVE_MODAL} options={androidRecievePreset} />
 
-      <Stack.Screen component={WalletConnectRedirectSheet} name={Routes.WALLET_CONNECT_REDIRECT_SHEET} options={wcPromptPreset} />
-      <Stack.Screen component={AddCashSheet} name={Routes.ADD_CASH_SHEET} options={addCashSheet} />
-      <Stack.Screen component={RestoreSheet} name={Routes.RESTORE_SHEET} options={bottomSheetPreset} />
-      <Stack.Screen component={WelcomeScreen} name={Routes.WELCOME_SCREEN} options={{ animationEnabled: false, gestureEnabled: false }} />
-      <Stack.Screen component={ShowSecretView} name="ShowSecretView" options={bottomSheetPreset} />
-      <Stack.Screen component={WalletConnectApprovalSheet} name={Routes.WALLET_CONNECT_APPROVAL_SHEET} options={bottomSheetPreset} />
+      <Stack.Screen getComponent={() => WalletConnectRedirectSheet} name={Routes.WALLET_CONNECT_REDIRECT_SHEET} options={wcPromptPreset} />
+      <Stack.Screen getComponent={() => AddCashSheet} name={Routes.ADD_CASH_SHEET} options={addCashSheet} />
+      <Stack.Screen getComponent={() => RestoreSheet} name={Routes.RESTORE_SHEET} options={bottomSheetPreset} />
+      <Stack.Screen
+        getComponent={() => WelcomeScreen}
+        name={Routes.WELCOME_SCREEN}
+        options={{ animationEnabled: false, gestureEnabled: false }}
+      />
+      <Stack.Screen getComponent={() => ShowSecretView} name="ShowSecretView" options={bottomSheetPreset} />
+      <Stack.Screen
+        getComponent={() => WalletConnectApprovalSheet}
+        name={Routes.WALLET_CONNECT_APPROVAL_SHEET}
+        options={bottomSheetPreset}
+      />
     </Stack.Navigator>
   );
 }
@@ -167,7 +175,7 @@ function MainNavigator() {
 function MainOuterNavigator() {
   return (
     <OuterStack.Navigator initialRouteName={Routes.MAIN_NAVIGATOR} {...stackNavigationConfig} screenOptions={defaultScreenStackOptions}>
-      <OuterStack.Screen component={MainNavigator} name={Routes.MAIN_NAVIGATOR} />
+      <OuterStack.Screen getComponent={() => MainNavigator} name={Routes.MAIN_NAVIGATOR} />
     </OuterStack.Navigator>
   );
 }
@@ -178,9 +186,9 @@ function BSNavigator() {
 
   return (
     <BSStack.Navigator>
-      <BSStack.Screen component={MainOuterNavigator} name={Routes.MAIN_NAVIGATOR_WRAPPER} />
+      <BSStack.Screen getComponent={() => MainOuterNavigator} name={Routes.MAIN_NAVIGATOR_WRAPPER} />
       <BSStack.Screen
-        component={NotificationPermissionScreen}
+        getComponent={() => NotificationPermissionScreen}
         name={Routes.NOTIFICATION_PERMISSION_SCREEN}
         options={{
           ...bottomSheetPreset,
@@ -192,27 +200,27 @@ function BSNavigator() {
           height: '100%',
         }}
       />
-      <BSStack.Screen component={LearnWebViewScreen} name={Routes.LEARN_WEB_VIEW_SCREEN} {...learnWebViewScreenConfig} />
-      <BSStack.Screen component={ExpandedAssetSheet} name={Routes.EXPANDED_ASSET_SHEET} />
-      <BSStack.Screen component={PoapSheet} name={Routes.POAP_SHEET} />
-      <BSStack.Screen component={MintSheet} name={Routes.MINT_SHEET} />
-      <BSStack.Screen component={QRScannerScreen} name={Routes.QR_SCANNER_SCREEN} />
-      <BSStack.Screen component={AddWalletNavigator} name={Routes.ADD_WALLET_NAVIGATOR} options={addWalletNavigatorPreset} />
+      <BSStack.Screen getComponent={() => LearnWebViewScreen} name={Routes.LEARN_WEB_VIEW_SCREEN} {...learnWebViewScreenConfig} />
+      <BSStack.Screen getComponent={() => ExpandedAssetSheet} name={Routes.EXPANDED_ASSET_SHEET} />
+      <BSStack.Screen getComponent={() => PoapSheet} name={Routes.POAP_SHEET} />
+      <BSStack.Screen getComponent={() => MintSheet} name={Routes.MINT_SHEET} />
+      <BSStack.Screen getComponent={() => QRScannerScreen} name={Routes.QR_SCANNER_SCREEN} />
+      <BSStack.Screen getComponent={() => AddWalletNavigator} name={Routes.ADD_WALLET_NAVIGATOR} options={addWalletNavigatorPreset} />
       <BSStack.Screen
-        component={PairHardwareWalletNavigator}
+        getComponent={() => PairHardwareWalletNavigator}
         name={Routes.PAIR_HARDWARE_WALLET_NAVIGATOR}
         options={{
           backdropOpacity: 1,
         }}
       />
       <BSStack.Screen
-        component={HardwareWalletTxNavigator}
+        getComponent={() => HardwareWalletTxNavigator}
         name={Routes.HARDWARE_WALLET_TX_NAVIGATOR}
         options={hardwareWalletTxNavigatorPreset}
       />
       {showKingOfTheHillTab && (
         <BSStack.Screen
-          component={ActivitySheetScreen}
+          getComponent={() => ActivitySheetScreen}
           name={Routes.PROFILE_SCREEN}
           options={{
             ...bottomSheetPreset,
@@ -222,33 +230,33 @@ function BSNavigator() {
       )}
       {profilesEnabled && (
         <>
-          <BSStack.Screen component={ENSConfirmRegisterSheet} name={Routes.ENS_CONFIRM_REGISTER_SHEET} />
-          <BSStack.Screen component={RegisterENSNavigator} name={Routes.REGISTER_ENS_NAVIGATOR} />
-          <BSStack.Screen component={ENSAdditionalRecordsSheet} name={Routes.ENS_ADDITIONAL_RECORDS_SHEET} />
-          <BSStack.Screen component={SelectENSSheet} name={Routes.SELECT_ENS_SHEET} />
-          <BSStack.Screen component={ProfileSheet} name={Routes.PROFILE_SHEET} />
-          <BSStack.Screen component={ProfileSheet} name={Routes.PROFILE_PREVIEW_SHEET} />
+          <BSStack.Screen getComponent={() => ENSConfirmRegisterSheet} name={Routes.ENS_CONFIRM_REGISTER_SHEET} />
+          <BSStack.Screen getComponent={() => RegisterENSNavigator} name={Routes.REGISTER_ENS_NAVIGATOR} />
+          <BSStack.Screen getComponent={() => ENSAdditionalRecordsSheet} name={Routes.ENS_ADDITIONAL_RECORDS_SHEET} />
+          <BSStack.Screen getComponent={() => SelectENSSheet} name={Routes.SELECT_ENS_SHEET} />
+          <BSStack.Screen getComponent={() => ProfileSheet} name={Routes.PROFILE_SHEET} />
+          <BSStack.Screen getComponent={() => ProfileSheet} name={Routes.PROFILE_PREVIEW_SHEET} />
           <BSStack.Screen
-            component={SelectUniqueTokenSheet}
+            getComponent={() => SelectUniqueTokenSheet}
             name={Routes.SELECT_UNIQUE_TOKEN_SHEET}
             options={{ ...bottomSheetPreset, height: '95%' }}
           />
-          <BSStack.Screen component={SpeedUpAndCancelSheet} name={Routes.SPEED_UP_AND_CANCEL_BOTTOM_SHEET} />
+          <BSStack.Screen getComponent={() => SpeedUpAndCancelSheet} name={Routes.SPEED_UP_AND_CANCEL_BOTTOM_SHEET} />
         </>
       )}
-      <BSStack.Screen component={ExplainSheet} name={Routes.EXPLAIN_SHEET} options={bottomSheetPreset} />
-      <BSStack.Screen component={ExternalLinkWarningSheet} name={Routes.EXTERNAL_LINK_WARNING_SHEET} options={bottomSheetPreset} />
-      <BSStack.Screen component={ModalScreen} {...closeKeyboardOnClose} name={Routes.MODAL_SCREEN} />
-      <BSStack.Screen component={SendConfirmationSheet} name={Routes.SEND_CONFIRMATION_SHEET} options={sheetPreset} />
+      <BSStack.Screen getComponent={() => ExplainSheet} name={Routes.EXPLAIN_SHEET} options={bottomSheetPreset} />
+      <BSStack.Screen getComponent={() => ExternalLinkWarningSheet} name={Routes.EXTERNAL_LINK_WARNING_SHEET} options={bottomSheetPreset} />
+      <BSStack.Screen getComponent={() => ModalScreen} {...closeKeyboardOnClose} name={Routes.MODAL_SCREEN} />
+      <BSStack.Screen getComponent={() => SendConfirmationSheet} name={Routes.SEND_CONFIRMATION_SHEET} options={sheetPreset} />
       <BSStack.Screen
-        component={ExpandedAssetSheet}
+        getComponent={() => ExpandedAssetSheet}
         name={Routes.CUSTOM_GAS_SHEET}
         options={{
           backdropOpacity: 1,
         }}
       />
       <BSStack.Screen
-        component={BackupSheet}
+        getComponent={() => BackupSheet}
         name={Routes.BACKUP_SHEET}
         options={route => {
           const { params: { step } = {} as any } = route.route;
@@ -263,64 +271,68 @@ function BSNavigator() {
           return { ...bottomSheetPreset, height: heightForStep };
         }}
       />
-      <BSStack.Screen component={WalletDiagnosticsSheet} name={Routes.DIAGNOSTICS_SHEET} options={{ ...bottomSheetPreset }} />
-      <BSStack.Screen component={SettingsSheet} name={Routes.SETTINGS_SHEET} options={bottomSheetPreset} />
+      <BSStack.Screen getComponent={() => WalletDiagnosticsSheet} name={Routes.DIAGNOSTICS_SHEET} options={{ ...bottomSheetPreset }} />
+      <BSStack.Screen getComponent={() => SettingsSheet} name={Routes.SETTINGS_SHEET} options={bottomSheetPreset} />
       <BSStack.Screen
         name={Routes.TRANSACTION_DETAILS}
-        component={TransactionDetails}
+        getComponent={() => TransactionDetails}
         // @ts-ignore
         options={{ ...bottomSheetPreset, scrollEnabled: false }}
       />
-      <BSStack.Screen name={Routes.OP_REWARDS_SHEET} component={RewardsSheet} options={{ ...bottomSheetPreset }} />
-      <BSStack.Screen name={Routes.NFT_OFFERS_SHEET} component={NFTOffersSheet} options={{ ...bottomSheetPreset }} />
-      <BSStack.Screen name={Routes.NFT_SINGLE_OFFER_SHEET} component={NFTSingleOfferSheet} options={nftSingleOfferSheetPreset} />
-      <BSStack.Screen name={Routes.MINTS_SHEET} component={MintsSheet} />
-      <BSStack.Screen component={SignTransactionSheet} name={Routes.CONFIRM_REQUEST} options={walletconnectBottomSheetPreset} />
-      <BSStack.Screen component={AppIconUnlockSheet} name={Routes.APP_ICON_UNLOCK_SHEET} options={appIconUnlockSheetPreset} />
-      <BSStack.Screen component={ControlPanel} name={Routes.DAPP_BROWSER_CONTROL_PANEL} />
-      <BSStack.Screen component={NetworkSelector} name={Routes.NETWORK_SELECTOR} />
-      <BSStack.Screen component={ClaimClaimablePanel} name={Routes.CLAIM_CLAIMABLE_PANEL} />
-      <BSStack.Screen component={RevokeDelegationPanel} name={Routes.REVOKE_DELEGATION_PANEL} />
-      <BSStack.Screen component={ChangeWalletSheet} name={Routes.CHANGE_WALLET_SHEET} options={{ ...bottomSheetPreset }} />
-      <BSStack.Screen component={SwapScreen} name={Routes.SWAP} options={swapSheetPreset} />
-      <BSStack.Screen component={PerpsDepositScreen} name={Routes.PERPS_DEPOSIT_SCREEN} {...swapSheetPreset} />
-      <BSStack.Screen component={PolymarketDepositScreen} name={Routes.POLYMARKET_DEPOSIT_SCREEN} {...swapSheetPreset} />
-      <BSStack.Screen component={PerpsWithdrawalScreen} name={Routes.PERPS_WITHDRAWAL_SCREEN} {...swapSheetPreset} />
-      <BSStack.Screen component={PolymarketWithdrawalScreen} name={Routes.POLYMARKET_WITHDRAWAL_SCREEN} {...swapSheetPreset} />
-      <BSStack.Screen component={SendSheet} name={Routes.SEND_SHEET_NAVIGATOR} options={expandedPresetWithSmallGestureResponseDistance} />
-      <BSStack.Screen component={ExpandedAssetSheetV2} name={Routes.EXPANDED_ASSET_SHEET_V2} />
-      <BSStack.Screen component={PerpsDetailScreen} name={Routes.PERPS_DETAIL_SCREEN} />
-      <BSStack.Screen component={AirdropsSheet} name={Routes.AIRDROPS_SHEET} />
-      <BSStack.Screen component={ClaimAirdropSheet} name={Routes.CLAIM_AIRDROP_SHEET} />
-      <BSStack.Screen component={LogSheet} name={Routes.LOG_SHEET} />
-      <BSStack.Screen component={TokenLauncherScreen} name={Routes.TOKEN_LAUNCHER_SCREEN} options={tokenLauncherSheetPreset} />
-      <BSStack.Screen component={PerpsNavigator} name={Routes.PERPS_NAVIGATOR} />
-      <BSStack.Screen component={PerpsTradeHistoryScreen} name={Routes.PERPS_TRADE_HISTORY_SCREEN} />
-      <BSStack.Screen component={CreateTriggerOrderBottomSheet} name={Routes.CREATE_TRIGGER_ORDER_BOTTOM_SHEET} />
-      <BSStack.Screen component={ClosePositionBottomSheet} name={Routes.CLOSE_POSITION_BOTTOM_SHEET} />
-      <BSStack.Screen component={KingOfTheHillExplainSheet} name={Routes.KING_OF_THE_HILL_EXPLAIN_SHEET} />
-      <BSStack.Screen component={PerpsExplainSheet} name={Routes.PERPS_EXPLAIN_SHEET} />
-      <BSStack.Screen component={PerpsAddToPositionSheet} name={Routes.PERPS_ADD_TO_POSITION_SHEET} />
-      <BSStack.Screen component={PerpsAboutSheet} name={Routes.PERPS_ABOUT_SHEET} />
-      <BSStack.Screen component={PerpsTradeDetailsSheet} name={Routes.PERPS_TRADE_DETAILS_SHEET} />
-      <BSStack.Screen component={PolymarketEventScreen} name={Routes.POLYMARKET_EVENT_SCREEN} />
-      <BSStack.Screen component={PolymarketRedeemPositionSheet} name={Routes.POLYMARKET_MANAGE_POSITION_SHEET} />
-      <BSStack.Screen component={PolymarketMarketSheet} name={Routes.POLYMARKET_MARKET_SHEET} />
-      <BSStack.Screen component={PolymarketMarketDescriptionSheet} name={Routes.POLYMARKET_MARKET_DESCRIPTION_SHEET} />
-      <BSStack.Screen component={PolymarketNewPositionSheet} name={Routes.POLYMARKET_NEW_POSITION_SHEET} />
-      <BSStack.Screen component={PolymarketAccountScreen} name={Routes.POLYMARKET_ACCOUNT_SCREEN} />
-      <BSStack.Screen component={PolymarketNavigator} name={Routes.POLYMARKET_NAVIGATOR} />
-      <BSStack.Screen component={PolymarketExplainSheet} name={Routes.POLYMARKET_EXPLAIN_SHEET} />
-      <BSStack.Screen component={PolymarketBrowseEventsScreen} name={Routes.POLYMARKET_BROWSE_EVENTS_SCREEN} />
-      <BSStack.Screen component={PolymarketSellPositionSheet} name={Routes.POLYMARKET_SELL_POSITION_SHEET} />
-      <BSStack.Screen component={RnbwAirdropScreen} name={Routes.RNBW_AIRDROP_SCREEN} />
-      <BSStack.Screen component={RnbwRewardsClaimSheet} name={Routes.RNBW_REWARDS_CLAIM_SHEET} />
-      <BSStack.Screen component={RnbwRewardsEstimateSheet} name={Routes.RNBW_REWARDS_ESTIMATE_SHEET} />
-      <BSStack.Screen component={RnbwStakingLearnScreen} name={Routes.RNBW_STAKING_LEARN_SCREEN} />
-      <BSStack.Screen component={RnbwStakingScreen} name={Routes.RNBW_STAKING_SCREEN} />
-      <BSStack.Screen component={RnbwUnstakeSheet} name={Routes.RNBW_UNSTAKE_SHEET} />
-      <BSStack.Screen component={WalletErrorSheet} name={Routes.WALLET_ERROR_SHEET} />
-      <BSStack.Screen component={RnbwMembershipTiersSheet} name={Routes.RNBW_MEMBERSHIP_TIERS_SHEET} />
+      <BSStack.Screen name={Routes.OP_REWARDS_SHEET} getComponent={() => RewardsSheet} options={{ ...bottomSheetPreset }} />
+      <BSStack.Screen name={Routes.NFT_OFFERS_SHEET} getComponent={() => NFTOffersSheet} options={{ ...bottomSheetPreset }} />
+      <BSStack.Screen name={Routes.NFT_SINGLE_OFFER_SHEET} getComponent={() => NFTSingleOfferSheet} options={nftSingleOfferSheetPreset} />
+      <BSStack.Screen name={Routes.MINTS_SHEET} getComponent={() => MintsSheet} />
+      <BSStack.Screen getComponent={() => SignTransactionSheet} name={Routes.CONFIRM_REQUEST} options={walletconnectBottomSheetPreset} />
+      <BSStack.Screen getComponent={() => AppIconUnlockSheet} name={Routes.APP_ICON_UNLOCK_SHEET} options={appIconUnlockSheetPreset} />
+      <BSStack.Screen getComponent={() => ControlPanel} name={Routes.DAPP_BROWSER_CONTROL_PANEL} />
+      <BSStack.Screen getComponent={() => NetworkSelector} name={Routes.NETWORK_SELECTOR} />
+      <BSStack.Screen getComponent={() => ClaimClaimablePanel} name={Routes.CLAIM_CLAIMABLE_PANEL} />
+      <BSStack.Screen getComponent={() => RevokeDelegationPanel} name={Routes.REVOKE_DELEGATION_PANEL} />
+      <BSStack.Screen getComponent={() => ChangeWalletSheet} name={Routes.CHANGE_WALLET_SHEET} options={{ ...bottomSheetPreset }} />
+      <BSStack.Screen getComponent={() => SwapScreen} name={Routes.SWAP} options={swapSheetPreset} />
+      <BSStack.Screen getComponent={() => PerpsDepositScreen} name={Routes.PERPS_DEPOSIT_SCREEN} {...swapSheetPreset} />
+      <BSStack.Screen getComponent={() => PolymarketDepositScreen} name={Routes.POLYMARKET_DEPOSIT_SCREEN} {...swapSheetPreset} />
+      <BSStack.Screen getComponent={() => PerpsWithdrawalScreen} name={Routes.PERPS_WITHDRAWAL_SCREEN} {...swapSheetPreset} />
+      <BSStack.Screen getComponent={() => PolymarketWithdrawalScreen} name={Routes.POLYMARKET_WITHDRAWAL_SCREEN} {...swapSheetPreset} />
+      <BSStack.Screen
+        getComponent={() => SendSheet}
+        name={Routes.SEND_SHEET_NAVIGATOR}
+        options={expandedPresetWithSmallGestureResponseDistance}
+      />
+      <BSStack.Screen getComponent={() => ExpandedAssetSheetV2} name={Routes.EXPANDED_ASSET_SHEET_V2} />
+      <BSStack.Screen getComponent={() => PerpsDetailScreen} name={Routes.PERPS_DETAIL_SCREEN} />
+      <BSStack.Screen getComponent={() => AirdropsSheet} name={Routes.AIRDROPS_SHEET} />
+      <BSStack.Screen getComponent={() => ClaimAirdropSheet} name={Routes.CLAIM_AIRDROP_SHEET} />
+      <BSStack.Screen getComponent={() => LogSheet} name={Routes.LOG_SHEET} />
+      <BSStack.Screen getComponent={() => TokenLauncherScreen} name={Routes.TOKEN_LAUNCHER_SCREEN} options={tokenLauncherSheetPreset} />
+      <BSStack.Screen getComponent={() => PerpsNavigator} name={Routes.PERPS_NAVIGATOR} />
+      <BSStack.Screen getComponent={() => PerpsTradeHistoryScreen} name={Routes.PERPS_TRADE_HISTORY_SCREEN} />
+      <BSStack.Screen getComponent={() => CreateTriggerOrderBottomSheet} name={Routes.CREATE_TRIGGER_ORDER_BOTTOM_SHEET} />
+      <BSStack.Screen getComponent={() => ClosePositionBottomSheet} name={Routes.CLOSE_POSITION_BOTTOM_SHEET} />
+      <BSStack.Screen getComponent={() => KingOfTheHillExplainSheet} name={Routes.KING_OF_THE_HILL_EXPLAIN_SHEET} />
+      <BSStack.Screen getComponent={() => PerpsExplainSheet} name={Routes.PERPS_EXPLAIN_SHEET} />
+      <BSStack.Screen getComponent={() => PerpsAddToPositionSheet} name={Routes.PERPS_ADD_TO_POSITION_SHEET} />
+      <BSStack.Screen getComponent={() => PerpsAboutSheet} name={Routes.PERPS_ABOUT_SHEET} />
+      <BSStack.Screen getComponent={() => PerpsTradeDetailsSheet} name={Routes.PERPS_TRADE_DETAILS_SHEET} />
+      <BSStack.Screen getComponent={() => PolymarketEventScreen} name={Routes.POLYMARKET_EVENT_SCREEN} />
+      <BSStack.Screen getComponent={() => PolymarketRedeemPositionSheet} name={Routes.POLYMARKET_MANAGE_POSITION_SHEET} />
+      <BSStack.Screen getComponent={() => PolymarketMarketSheet} name={Routes.POLYMARKET_MARKET_SHEET} />
+      <BSStack.Screen getComponent={() => PolymarketMarketDescriptionSheet} name={Routes.POLYMARKET_MARKET_DESCRIPTION_SHEET} />
+      <BSStack.Screen getComponent={() => PolymarketNewPositionSheet} name={Routes.POLYMARKET_NEW_POSITION_SHEET} />
+      <BSStack.Screen getComponent={() => PolymarketAccountScreen} name={Routes.POLYMARKET_ACCOUNT_SCREEN} />
+      <BSStack.Screen getComponent={() => PolymarketNavigator} name={Routes.POLYMARKET_NAVIGATOR} />
+      <BSStack.Screen getComponent={() => PolymarketExplainSheet} name={Routes.POLYMARKET_EXPLAIN_SHEET} />
+      <BSStack.Screen getComponent={() => PolymarketBrowseEventsScreen} name={Routes.POLYMARKET_BROWSE_EVENTS_SCREEN} />
+      <BSStack.Screen getComponent={() => PolymarketSellPositionSheet} name={Routes.POLYMARKET_SELL_POSITION_SHEET} />
+      <BSStack.Screen getComponent={() => RnbwAirdropScreen} name={Routes.RNBW_AIRDROP_SCREEN} />
+      <BSStack.Screen getComponent={() => RnbwRewardsClaimSheet} name={Routes.RNBW_REWARDS_CLAIM_SHEET} />
+      <BSStack.Screen getComponent={() => RnbwRewardsEstimateSheet} name={Routes.RNBW_REWARDS_ESTIMATE_SHEET} />
+      <BSStack.Screen getComponent={() => RnbwStakingLearnScreen} name={Routes.RNBW_STAKING_LEARN_SCREEN} />
+      <BSStack.Screen getComponent={() => RnbwStakingScreen} name={Routes.RNBW_STAKING_SCREEN} />
+      <BSStack.Screen getComponent={() => RnbwUnstakeSheet} name={Routes.RNBW_UNSTAKE_SHEET} />
+      <BSStack.Screen getComponent={() => WalletErrorSheet} name={Routes.WALLET_ERROR_SHEET} />
+      <BSStack.Screen getComponent={() => RnbwMembershipTiersSheet} name={Routes.RNBW_MEMBERSHIP_TIERS_SHEET} />
     </BSStack.Navigator>
   );
 }
@@ -332,9 +344,9 @@ function AuthNavigator() {
       initialRouteName={Routes.MAIN_NATIVE_BOTTOM_SHEET_NAVIGATOR}
       screenOptions={defaultScreenStackOptions}
     >
-      <AuthStack.Screen component={BSNavigator} name={Routes.MAIN_NATIVE_BOTTOM_SHEET_NAVIGATOR} />
+      <AuthStack.Screen getComponent={() => BSNavigator} name={Routes.MAIN_NATIVE_BOTTOM_SHEET_NAVIGATOR} />
       <AuthStack.Screen
-        component={PinAuthenticationScreen}
+        getComponent={() => PinAuthenticationScreen}
         name={Routes.PIN_AUTHENTICATION_SCREEN}
         options={{ ...sheetPreset, gestureEnabled: false }}
       />
