@@ -1,9 +1,10 @@
-import React, { useMemo } from 'react';
+import React, { useCallback, useMemo } from 'react';
 import { StyleSheet } from 'react-native';
 
 import { analytics } from '@/analytics';
 import { event } from '@/analytics/event';
 import { PLACEMENT_IDS } from '@/features/placements/constants';
+import { trackPlacementInteraction } from '@/features/placements/engagement/trackInteraction';
 import { useDiscoverPlacementsStore } from '@/features/placements/stores/discover/discoverPlacementsStore';
 import { useDiscoverPredictionsStore } from '@/features/placements/stores/discover/discoverPredictionsStore';
 import { type Placement, type PlacementItem } from '@/features/placements/types';
@@ -12,7 +13,7 @@ import {
   HEIGHT as POLYMARKET_EVENTS_LIST_ITEM_HEIGHT,
   PolymarketEventsListItem,
 } from '@/features/polymarket/components/polymarket-events-list/PolymarketEventsListItem';
-import { type PolymarketEvent, type PolymarketMarket } from '@/features/polymarket/types/polymarket-event';
+import { type PolymarketEvent } from '@/features/polymarket/types/polymarket-event';
 import { navigateToPolymarket, navigateToPolymarketEvent } from '@/features/polymarket/utils/navigateToPolymarket';
 import * as i18n from '@/languages';
 
@@ -23,59 +24,26 @@ const PREDICTION_TILE_WIDTH = 178;
 const EMPTY_EVENTS: PolymarketEvent[] = [];
 
 function trackPredictionPress({ eventData, item, placement }: { eventData: PolymarketEvent; item: PlacementItem; placement: Placement }) {
-  const market: PolymarketMarket | undefined = eventData.markets[0];
-  const polymarketPayload = {
-    provider: 'polymarket' as const,
-    eventId: eventData.id,
-    eventSlug: eventData.slug,
-    eventTitle: eventData.title,
-    eventTicker: eventData.ticker,
-    eventCategory: eventData.category,
-    eventSubcategory: eventData.subcategory,
-    eventNegRisk: eventData.negRisk,
-    eventActive: eventData.active,
-    eventClosed: eventData.closed,
-    eventEnded: eventData.ended,
-    eventLive: eventData.live,
-    eventStartDate: eventData.startDate,
-    eventEndDate: eventData.endDate,
-    eventDate: eventData.eventDate,
-    eventGameId: eventData.gameId,
-    eventHomeTeamName: eventData.homeTeamName,
-    eventAwayTeamName: eventData.awayTeamName,
-    eventGameStatus: eventData.gameStatus,
-    eventVolume: eventData.volume,
-    eventLiquidity: eventData.liquidity,
-    eventOpenInterest: eventData.openInterest,
-    marketId: market?.id ?? '',
-    marketSlug: market?.slug ?? '',
-    marketQuestion: market?.question ?? '',
-    marketConditionId: market?.conditionId ?? '',
-    marketType: market?.marketType ?? eventData.markets[0]?.marketType,
-    marketActive: market?.active ?? false,
-    marketClosed: market?.closed ?? false,
-    marketVolume: market?.volume ?? '0',
-    marketLiquidity: market?.liquidity ?? '0',
-    marketStartDate: market?.startDate ?? '',
-    marketEndDate: market?.endDate ?? '',
-  };
-  analytics.track(event.placementInteraction, {
-    id: placement.id,
-    screen: placement.screen,
-    order: placement.order,
-    version: placement.version,
-    updatedAt: placement.updatedAt,
-    itemRefSource: item.ref.source,
-    itemRefId: item.ref.id,
-    itemOrder: item.order,
-    type: 'predictions',
-    ...polymarketPayload,
-  });
+  const market = eventData.markets[0];
+  trackPlacementInteraction({ item, placement });
   analytics.track(event.discoverFeaturedCarouselCardPressed, {
     placementId: placement.id,
     type: 'predictions',
     order: item.order,
-    ...polymarketPayload,
+    provider: 'polymarket',
+    eventSlug: eventData.slug,
+    eventId: eventData.id,
+    eventTitle: eventData.title,
+    eventTicker: eventData.ticker,
+    eventCategory: eventData.category,
+    eventSubcategory: eventData.subcategory,
+    eventGameStatus: eventData.gameStatus,
+    eventHomeTeamName: eventData.homeTeamName,
+    eventAwayTeamName: eventData.awayTeamName,
+    marketId: market?.id,
+    marketSlug: market?.slug,
+    marketQuestion: market?.question,
+    marketType: market?.marketType,
   });
 }
 
@@ -102,6 +70,23 @@ export function PredictionsMarketCarousel() {
     [placement, eventsById]
   );
   const isLoading = placementsLoading || predictionsLoading;
+  const handlePressSeeAll = useCallback(() => {
+    if (placement) trackPlacementInteraction({ placement });
+    analytics.track(event.discoverFeaturedCarouselSeeAllPressed, {
+      placementId: PLACEMENT_ID,
+      type: 'predictions',
+      provider: 'polymarket',
+    });
+    navigateToPolymarket();
+  }, [placement]);
+  const handleScrollSettle = useCallback(() => {
+    if (placement) trackPlacementInteraction({ placement });
+    analytics.track(event.discoverFeaturedCarouselScrolled, {
+      placementId: PLACEMENT_ID,
+      type: 'predictions',
+      provider: 'polymarket',
+    });
+  }, [placement]);
 
   if (!isLoading && items.length === 0) return null;
 
@@ -128,12 +113,10 @@ export function PredictionsMarketCarousel() {
       itemHeight={POLYMARKET_EVENTS_LIST_ITEM_HEIGHT}
       itemWidth={PREDICTION_TILE_WIDTH}
       loading={isLoading}
-      onPressSeeAll={navigateToPolymarket}
-      placementId={PLACEMENT_ID}
-      provider="polymarket"
+      onPressSeeAll={handlePressSeeAll}
+      onScrollSettle={handleScrollSettle}
       renderItem={renderItem}
       title={i18n.t(i18n.l.discover.placements.predictions_title)}
-      type="predictions"
     />
   );
 }
