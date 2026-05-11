@@ -155,8 +155,6 @@ const springConfig: WithSpringConfig = {
   damping: 14,
   mass: 1,
   overshootClamping: false,
-  restDisplacementThreshold: 0.001,
-  restSpeedThreshold: 0.001,
   stiffness: 121.6,
 };
 
@@ -252,8 +250,6 @@ const RainbowToastItem = memo(function RainbowToast({ toast, stackWidth, index }
             {
               damping: 35,
               stiffness: 150,
-              // avoid it bouncing a lot at the "end" so it removes on time
-              restDisplacementThreshold: 0.5,
             },
             finished => {
               if (finished) {
