@@ -71,7 +71,7 @@ export const usePerpsPositionsInfo = createDerivedStore<PerpsPositionsInfo>(
       textColor: textColor satisfies TextColor,
       unrealizedPnl: formatCurrency(abs(totalPositionsPnl)),
       unrealizedPnlPercent: `${toFixedWorklet(abs(unrealizedPnlPercent), 2)}%`,
-      value: add(balance, totalPositionsEquity),
+      value: accountData.value,
     };
   },
 
