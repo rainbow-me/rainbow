@@ -218,12 +218,24 @@ export const PerpMarketCard = memo(function PerpMarketCard({ market, onPressTrac
  */
 export function computePerpCardWidth(market: PerpMarketWithMetadata): number {
   const percentChange = convertStoredPerpPriceChangeToPercent(market.priceChange['24h']);
-  const priceChangeWidth =
-    UP_DOWN_ARROW_WIDTH + PRICE_CHANGE_ROW_GAP + measureTextSync(formatCompactPerpPercentChange(percentChange), PRICE_CHANGE_TEXT_STYLE);
-
+  const priceChangeWidth = UP_DOWN_ARROW_WIDTH + PRICE_CHANGE_ROW_GAP + getStablePercentChangeWidth(percentChange);
   const textWidth = Math.max(PERP_MARKET_CARD_TEXT_MIN_WIDTH, measureTextSync(market.baseSymbol, SYMBOL_TEXT_STYLE), priceChangeWidth);
 
   return Math.min(CARD_LAYOUT.maxWidth, Math.ceil(CARD_WIDTH_BASE + textWidth));
+}
+
+const TEXT_STATS = {
+  decimalWidth: measureTextSync('.', PRICE_CHANGE_TEXT_STYLE),
+  maxDigitWidth: measureTextSync('8', PRICE_CHANGE_TEXT_STYLE),
+  percentageSymbolWidth: measureTextSync('%', PRICE_CHANGE_TEXT_STYLE),
+};
+
+function getStablePercentChangeWidth(percentChange: number): number {
+  const leftOfDecimalDigits = Math.floor(Math.abs(percentChange)).toString().length;
+  const leftDigitsWidth = leftOfDecimalDigits * TEXT_STATS.maxDigitWidth;
+  const rightDigitsWidth = TEXT_STATS.maxDigitWidth * 2;
+
+  return leftDigitsWidth + TEXT_STATS.decimalWidth + rightDigitsWidth + TEXT_STATS.percentageSymbolWidth;
 }
 
 function buildPerpMarketCardDisplay(isDarkMode: boolean, market: PerpMarketWithMetadata) {
