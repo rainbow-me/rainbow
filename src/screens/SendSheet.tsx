@@ -17,6 +17,7 @@ import { AssetType } from '@/entities/assetTypes';
 import { type ParsedAddressAsset } from '@/entities/tokens';
 import { TransactionStatus, type NewTransaction } from '@/entities/transactions';
 import { type UniqueAsset } from '@/entities/uniqueAssets';
+import { isInsufficientSponsorBalanceError } from '@/features/delegation/sponsoredCalls';
 import { buildSendCall, executeSponsoredSend } from '@/features/delegation/sponsoredSend';
 import { buildSendCallFromSendDetails, executeSponsoredSendIfAvailable } from '@/features/delegation/sponsoredSendExecution';
 import { useSponsoredSendPreparation } from '@/features/delegation/ui/hooks/useSponsoredSendPreparation';
@@ -55,7 +56,7 @@ import useSendableUniqueTokens from '@/hooks/useSendableUniqueTokens';
 import useSendSheetInputRefs from '@/hooks/useSendSheetInputRefs';
 import useUserAccounts from '@/hooks/useUserAccounts';
 import * as i18n from '@/languages';
-import { logger, RainbowError } from '@/logger';
+import { ensureError, logger, RainbowError } from '@/logger';
 import { loadWallet, sendTransaction } from '@/model/wallet';
 import { setHardwareTXError } from '@/navigation/HardwareWalletTxNavigator';
 import { useNavigation } from '@/navigation/Navigation';
@@ -64,7 +65,7 @@ import { type RootStackParamList } from '@/navigation/types';
 import { type Contact } from '@/redux/contacts';
 import { rainbowTokenList } from '@/references/rainbow-token-list';
 import { useUserAssetsStore } from '@/state/assets/userAssets';
-import { useBackendNetworksStore } from '@/state/backendNetworks/backendNetworks';
+import { backendNetworksActions, useBackendNetworksStore } from '@/state/backendNetworks/backendNetworks';
 import { ChainId } from '@/state/backendNetworks/types';
 import { PAGE_SIZE } from '@/state/nfts/createNftsStore';
 import { useNftsStore } from '@/state/nfts/nfts';
@@ -204,6 +205,7 @@ export default function SendSheet() {
 
   const [debouncedInput] = useDebounce(currentInput, 500);
   const [debouncedRecipient] = useDebounce(recipient, 500);
+  const [debouncedAssetAmount] = useDebounce(amountDetails.assetAmount, 500);
 
   const [isValidAddress, setIsValidAddress] = useState(!!recipientOverride);
   const [currentProvider, setCurrentProvider] = useState<StaticJsonRpcProvider | undefined>(getProvider({ chainId: ChainId.mainnet }));
@@ -220,20 +222,23 @@ export default function SendSheet() {
   const isENS = selected?.type === AssetType.ens;
   const {
     canUseSponsoredSend,
+    hasResolvedSponsoredSend,
     isPreparingSponsoredSend,
     isSponsoredSend,
     preparedCalls: sponsoredSendPreparedCalls,
+    shouldShowSponsoredSendGas,
   } = useSponsoredSendPreparation({
     accountAddress,
     amount: amountDetails.assetAmount,
     chainId: currentChainId,
+    debouncedAmount: debouncedAssetAmount,
     isENS,
     isValidAddress,
     provider: currentProvider,
     selected,
     toAddress,
   });
-  const { maxInputBalance, updateMaxInputBalance } = useMaxInputBalance({ ignoreGasFee: isSponsoredSend });
+  const { maxInputBalance, updateMaxInputBalance } = useMaxInputBalance({ ignoreGasFee: shouldShowSponsoredSendGas });
 
   let colorForAsset = useColorForAsset(selected, undefined, false, true);
   const uniqueAssetColor = usePersistentDominantColorFromImage(isUniqueAsset ? selected?.images.lowResUrl : null) ?? colors.appleBlue;
@@ -310,7 +315,7 @@ export default function SendSheet() {
         isSufficientBalance,
       };
     });
-  }, [isSponsoredSend, isUniqueAsset, selected, updateMaxInputBalance]);
+  }, [isUniqueAsset, selected, shouldShowSponsoredSendGas, updateMaxInputBalance]);
 
   // Update all fields passed via params if needed
   useEffect(() => {
@@ -602,7 +607,6 @@ export default function SendSheet() {
           }
         }
 
-        if (!selectedGasFee) return false;
         const gasLimitToUse = updatedGasLimit && !lessThan(updatedGasLimit, gasLimit) ? updatedGasLimit : gasLimit;
         const gasParams = parseGasParamsForTransaction(selectedGasFee);
         Object.assign(txDetails, {
@@ -712,6 +716,13 @@ export default function SendSheet() {
         }
       } catch (error) {
         submitSuccess = false;
+        const message = ensureError(error).message;
+        if (isInsufficientSponsorBalanceError(message)) {
+          backendNetworksActions.disableSponsorshipUntilNextFetch(currentChainId);
+          Alert.alert(i18n.t(i18n.l.wallet.transaction.alert.failed_transaction), i18n.t(i18n.l.swap.sponsorship_unavailable));
+          return false;
+        }
+
         logger.error(new RainbowError(`[SendSheet]: onSubmit error`), {
           txDetails,
           error,
@@ -826,6 +837,7 @@ export default function SendSheet() {
     return getSendSubmitButtonState({
       assetAmount: amountDetails.assetAmount,
       canUseSponsoredSend,
+      hasResolvedSponsoredSend,
       isENS,
       isENSProfileLoaded: ensProfile.isSuccess,
       isGasFeeReady,
@@ -835,11 +847,13 @@ export default function SendSheet() {
       isSufficientGas,
       isValidGas,
       nativeAssetSymbol: useBackendNetworksStore.getState().getChainsNativeAsset()[currentChainId || ChainId.mainnet]?.symbol,
+      sponsoredAmountIsStale: debouncedAssetAmount !== amountDetails.assetAmount,
     });
   }, [
     amountDetails.assetAmount,
     amountDetails.isSufficientBalance,
     canUseSponsoredSend,
+    debouncedAssetAmount,
     isENS,
     ensProfile.isSuccess,
     gasFeeParamsBySpeed,
@@ -847,6 +861,7 @@ export default function SendSheet() {
     toAddress,
     currentChainId,
     l1GasFeeOptimism,
+    hasResolvedSponsoredSend,
     isPreparingSponsoredSend,
     isSponsoredSend,
     isSufficientGas,
@@ -989,7 +1004,7 @@ export default function SendSheet() {
     if (
       selected &&
       !!accountAddress &&
-      !isSponsoredSend &&
+      !shouldShowSponsoredSendGas &&
       Number(amountDetails.assetAmount) > 0 &&
       assetChainId === currentChainId &&
       currentProviderChainId === currentChainId &&
@@ -1024,10 +1039,10 @@ export default function SendSheet() {
     accountAddress,
     amountDetails.assetAmount,
     currentProvider,
-    isSponsoredSend,
     isValidAddress,
     recipient,
     selected,
+    shouldShowSponsoredSendGas,
     toAddress,
     updateTxFee,
     updateTxFeeForOptimism,
@@ -1133,6 +1148,7 @@ export default function SendSheet() {
                 onPress={showConfirmationSheet}
                 scaleTo={buttonDisabled ? 1.025 : 0.9}
                 size="big"
+                style={{ width: '100%' }}
                 testID="send-sheet-confirm"
                 weight="heavy"
               />
@@ -1148,7 +1164,7 @@ export default function SendSheet() {
             sendMaxBalance={() => setMaxEnabled(true)}
             setLastFocusedInputHandle={setLastFocusedInputHandle}
             txSpeedRenderer={
-              isSponsoredSend ? (
+              shouldShowSponsoredSendGas ? (
                 <View style={{ height: 18 }} />
               ) : (
                 <GasSpeedButton

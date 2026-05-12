@@ -58,6 +58,7 @@ describe('getSendSubmitButtonState', () => {
   const defaultParams = {
     assetAmount: '1',
     canUseSponsoredSend: false,
+    hasResolvedSponsoredSend: true,
     isENS: false,
     isENSProfileLoaded: true,
     isGasFeeReady: true,
@@ -67,6 +68,7 @@ describe('getSendSubmitButtonState', () => {
     isSufficientGas: true,
     isValidGas: true,
     nativeAssetSymbol: 'ETH',
+    sponsoredAmountIsStale: false,
   };
 
   it('waits for sponsored-send preparation before review', () => {
@@ -74,7 +76,7 @@ describe('getSendSubmitButtonState', () => {
       getSendSubmitButtonState({
         ...defaultParams,
         canUseSponsoredSend: true,
-        isPreparingSponsoredSend: true,
+        hasResolvedSponsoredSend: false,
       })
     ).toEqual({
       buttonDisabled: true,

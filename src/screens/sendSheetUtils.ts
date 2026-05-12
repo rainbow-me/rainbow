@@ -21,6 +21,7 @@ type BuildBaseSendTransactionDetailsParams = {
 type GetSendSubmitButtonStateParams = {
   assetAmount: string;
   canUseSponsoredSend: boolean;
+  hasResolvedSponsoredSend: boolean;
   isENSProfileLoaded: boolean;
   isENS: boolean;
   isGasFeeReady: boolean;
@@ -30,6 +31,7 @@ type GetSendSubmitButtonStateParams = {
   isSufficientGas: boolean;
   isValidGas: boolean;
   nativeAssetSymbol: string | undefined;
+  sponsoredAmountIsStale: boolean;
 };
 
 type GetSendSubmitEligibilityParams = {
@@ -90,6 +92,7 @@ export function getSendSubmitEligibility({
 export function getSendSubmitButtonState({
   assetAmount,
   canUseSponsoredSend,
+  hasResolvedSponsoredSend,
   isENS,
   isENSProfileLoaded,
   isGasFeeReady,
@@ -99,12 +102,14 @@ export function getSendSubmitButtonState({
   isSufficientGas,
   isValidGas,
   nativeAssetSymbol,
+  sponsoredAmountIsStale,
 }: GetSendSubmitButtonStateParams) {
   const isZeroAssetAmount = Number(assetAmount) <= 0;
   const hasSufficientGasForSend = isSponsoredSend || isSufficientGas;
   const hasValidGasForSend = isSponsoredSend || isValidGas;
   const isWaitingForGas = !isSponsoredSend && !isGasFeeReady;
-  const isWaitingForSponsoredSend = canUseSponsoredSend && isPreparingSponsoredSend;
+  const isWaitingForSponsoredSend =
+    canUseSponsoredSend && !isZeroAssetAmount && (isPreparingSponsoredSend || sponsoredAmountIsStale || !hasResolvedSponsoredSend);
 
   if (isZeroAssetAmount) {
     return {
