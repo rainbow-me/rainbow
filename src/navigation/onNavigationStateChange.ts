@@ -13,8 +13,7 @@ import Navigation, { type Route, type RouteParams } from './Navigation';
 import Routes from './routesNames';
 
 let memState: NavigationState | undefined;
-let memRouteName: Route | null;
-let memPrevRouteName: Route | null;
+let memRouteName: Route | undefined;
 
 export function onHandleStatusBar(currentState?: NavigationState, prevState?: NavigationState) {
   // Skip updating the system bars while the splash screen is visible
@@ -100,7 +99,7 @@ export function onHandleStatusBar(currentState?: NavigationState, prevState?: Na
   }
 }
 
-export function onNavigationStateChange(currentState: NavigationState | undefined) {
+export function onNavigationStateChange(currentState?: NavigationState) {
   const routeName = Navigation.getActiveRouteName();
 
   const prevState = memState;
@@ -117,13 +116,15 @@ export function onNavigationStateChange(currentState: NavigationState | undefine
 
   onHandleStatusBar(currentState, prevState);
 
-  memPrevRouteName = memRouteName;
-  memRouteName = routeName;
+  const prevRouteName = memRouteName;
+  if (routeName) {
+    memRouteName = routeName;
+  }
 
-  if (routeName && routeName !== memPrevRouteName) {
+  if (routeName && routeName !== prevRouteName) {
     const paramsToTrack = getScreenTrackingParams(routeName);
 
-    logger.info(`From ${memPrevRouteName} to ${routeName}`, { type: 'navigation', ...paramsToTrack });
+    logger.info(`From ${prevRouteName} to ${routeName}`, { type: 'navigation', ...paramsToTrack });
     return analytics.screen(routeName, paramsToTrack);
   }
 }
