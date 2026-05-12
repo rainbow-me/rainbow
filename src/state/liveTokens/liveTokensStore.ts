@@ -67,7 +67,7 @@ export interface TokenData {
 }
 
 export interface LiveTokensData {
-  [tokenId: string]: TokenData;
+  [tokenId: string]: TokenData | undefined;
 }
 
 type LiveTokensResponse = {

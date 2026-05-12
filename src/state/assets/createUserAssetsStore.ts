@@ -181,7 +181,7 @@ export const createUserAssetsStore = (address: Address | string) =>
       updateTokens: (tokens: LiveTokensData) => {
         set(state => {
           for (const [tokenId, token] of Object.entries(tokens)) {
-            if (token.reliability.status !== 'PRICE_RELIABILITY_STATUS_TRUSTED') continue;
+            if (!token || token.reliability.status !== 'PRICE_RELIABILITY_STATUS_TRUSTED') continue;
 
             const asset = state.userAssets.get(tokenId);
             const currency = userAssetsStoreManager.getState().currency;

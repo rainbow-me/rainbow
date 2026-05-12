@@ -216,14 +216,13 @@ const PerpsNewPositionScreenFooter = memo(function PerpsNewPositionScreenFooter(
     const perpsBalance = Number(useHyperliquidAccountStore.getState().getValue());
 
     try {
-      const livePrice = useLiveTokensStore.getState().tokens[getHyperliquidTokenId(market.symbol)].midPrice;
+      const livePrice = useLiveTokensStore.getState().tokens[getHyperliquidTokenId(market.symbol)]?.midPrice;
       const entryPrice = livePrice ?? market.price;
       const newPosition = await hyperliquidAccountActions.createIsolatedMarginPosition({
         symbol: market.symbol,
         side: positionSide,
         leverage,
         marginAmount: amount,
-        // There is not case in which the live price should actually be null at this point
         price: entryPrice,
         triggerOrders,
       });

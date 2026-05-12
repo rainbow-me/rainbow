@@ -25,6 +25,7 @@ export const useLiveWalletBalance = createDerivedStore(
     let valueDifference = '0';
     if (liveTokens) {
       for (const [tokenId, token] of Object.entries(liveTokens)) {
+        if (!token) continue;
         const userAsset = userAssets.get(tokenId);
         const canUseLivePrice = token.reliability.status === 'PRICE_RELIABILITY_STATUS_TRUSTED';
 

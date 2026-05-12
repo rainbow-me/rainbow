@@ -42,7 +42,7 @@ export function useLiveTokenSharedValue({
   }, [initialValue, liveValue, prevTokenId, tokenId, routeName]);
 
   const updateToken = useCallback(
-    (token: TokenData) => {
+    (token: TokenData | undefined) => {
       if (!token) return;
 
       const newValue = selector(token);
@@ -97,7 +97,7 @@ export function useLiveTokenValue({
   }, [initialValue, prevTokenId, tokenId, routeName]);
 
   const updateToken = useCallback(
-    (token: TokenData) => {
+    (token: TokenData | undefined) => {
       if (!token) return;
 
       const newValue = selector(token);
