@@ -85,7 +85,7 @@ jobs:
       - name: Install dependencies
         env:
           SSH_AUTH_SOCK: /tmp/ssh_agent_sandbox.sock
-        run: yarn install && yarn setup
+        run: yarn install --immutable && yarn setup
 
       - name: Rock Build - iOS simulator
         id: rock-build-simulator
@@ -186,7 +186,7 @@ jobs:
       - name: Install dependencies
         env:
           SSH_AUTH_SOCK: /tmp/ssh_agent_sandbox.sock
-        run: yarn install && yarn setup
+        run: yarn install --immutable && yarn setup
 
       - name: Set up Ruby
         uses: ruby/setup-ruby@09a7688d3b55cf0e976497ff046b70949eeaccfd
