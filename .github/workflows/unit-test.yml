@@ -74,10 +74,7 @@ jobs:
         env:
           SSH_AUTH_SOCK: /tmp/ssh_agent_sandbox.sock
         run: |
-          yarn install && yarn setup
-
-      - name: Check for frozen lockfile
-        run: ./scripts/check-lockfile.sh
+          yarn install --immutable && yarn setup
 
       - name: Audit CI
         run: yarn audit-ci --config audit-ci.jsonc

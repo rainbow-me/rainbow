@@ -75,7 +75,6 @@
     "anvil": "sh ./scripts/anvil.sh",
     "bundle-inpage": "yarn webpack --config src/browser/webpack.config.js && cp InjectedJSBundle.js android/app/src/main/res/raw/injected_js_bundle.js",
     "check:cycles": "./scripts/check-cycles.sh 0",
-    "check-lockfile": "./scripts/check-lockfile.sh",
     "check-translations": "./scripts/check-translations.sh ./src './src/languages/*.json' lang.t",
     "clean:android": "yarn uninstall:android && rm -rf android/build && yarn gradle clean && rm -rf ~/.gradle/caches",
     "clean:ios": "rm -rf ios/build && cd ios && bundle exec pod deintegrate",
