@@ -11,6 +11,8 @@ import { time } from '@/utils/time';
 export const hiddenTokensQueryKey = ({ address }: { address: string }) => ['hidden-tokens', address];
 
 const STABLE_ARRAY: string[] = [];
+const STALE_TIME = time.minutes(10);
+const CACHE_TIME = time.infinity;
 
 export async function getHidden(address: string, isMigration = false) {
   if (!address) return STABLE_ARRAY;
@@ -60,13 +62,15 @@ export async function fetchHiddenTokens({ address }: { address: string }) {
   return queryClient.fetchQuery({
     queryKey: hiddenTokensQueryKey({ address }),
     queryFn: () => getHidden(address),
+    cacheTime: CACHE_TIME,
+    staleTime: STALE_TIME,
   });
 }
 
 export default function useFetchHiddenTokens({ address }: { address: string }) {
   return useQuery(hiddenTokensQueryKey({ address }), () => getHidden(address), {
     enabled: Boolean(address),
-    cacheTime: time.infinity,
-    staleTime: time.minutes(10),
+    cacheTime: CACHE_TIME,
+    staleTime: STALE_TIME,
   });
 }
