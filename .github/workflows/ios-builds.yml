@@ -7,14 +7,28 @@ on:
   workflow_dispatch:
 
 jobs:
+  optimize_ci:
+    name: Graphite CI Optimizer
+    runs-on: ubuntu-latest
+    outputs:
+      skip: ${{ steps.check_skip.outputs.skip }}
+    steps:
+      - name: Optimize CI
+        id: check_skip
+        if: github.event_name == 'pull_request'
+        uses: withgraphite/graphite-ci-action@ee395f3a78254c006d11339669c6cabddf196f72
+        with:
+          graphite_token: ${{ secrets.GRAPHITE_CI_OPTIMIZER_TOKEN }}
+
   # Build iOS simulator app
   build-simulator:
     name: Simulator
+    needs: optimize_ci
     runs-on: macos-26-xlarge
     env:
       NODE_OPTIONS: '--max-old-space-size=6144'
     timeout-minutes: 45
-    if: github.event.pull_request.draft == false && github.event.pull_request.merged == false
+    if: needs.optimize_ci.outputs.skip != 'true' && github.event.pull_request.draft == false && github.event.pull_request.merged == false
     concurrency:
       group: ${{ github.workflow }}-simulator-${{ github.ref }}
       cancel-in-progress: true
@@ -105,11 +119,12 @@ jobs:
   # Build iOS device app
   build-device:
     name: Device
+    needs: optimize_ci
     runs-on: macos-26-xlarge
     env:
       NODE_OPTIONS: '--max-old-space-size=6144'
     timeout-minutes: 45
-    if: github.event.pull_request.draft == false && github.event.pull_request.merged == false
+    if: needs.optimize_ci.outputs.skip != 'true' && github.event.pull_request.draft == false && github.event.pull_request.merged == false
     concurrency:
       group: ${{ github.workflow }}-device-${{ github.ref }}
       cancel-in-progress: true
