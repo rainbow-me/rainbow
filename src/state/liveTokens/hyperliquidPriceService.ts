@@ -1,5 +1,5 @@
-import { HYPERLIQUID_TOKEN_ID_SUFFIX } from '@/features/perps/constants';
 import { hyperliquidMarketsActions } from '@/features/perps/stores/hyperliquidMarketsStore';
+import { getHyperliquidTokenId } from '@/features/perps/utils';
 import { logger, RainbowError } from '@/logger';
 
 import { transformHyperliquidMarketToTokenData } from './hyperliquidAdapter';
@@ -19,7 +19,7 @@ export async function fetchHyperliquidPrices(symbols: string[]): Promise<Record<
     for (const symbol of symbols) {
       const market = markets[symbol];
       if (!market) continue;
-      result[buildHyperliquidTokenId(symbol)] = transformHyperliquidMarketToTokenData(market, updateTime);
+      result[getHyperliquidTokenId(symbol)] = transformHyperliquidMarketToTokenData(market, updateTime);
     }
 
     return result;
@@ -27,8 +27,4 @@ export async function fetchHyperliquidPrices(symbols: string[]): Promise<Record<
     logger.error(new RainbowError('[fetchHyperliquidPrices] Failed to fetch Hyperliquid prices:', error));
     return {};
   }
-}
-
-function buildHyperliquidTokenId(symbol: string): string {
-  return `${symbol}:${HYPERLIQUID_TOKEN_ID_SUFFIX}`;
 }
