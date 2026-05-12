@@ -218,7 +218,6 @@ export default function SendSheet() {
 
   const isUniqueAsset = assetIsUniqueAsset(selected);
   const isENS = selected?.type === AssetType.ens;
-  const isNativeSponsoredSendCandidate = Boolean(selected && !isUniqueAsset && !isENS && isNativeAsset(selected.address, currentChainId));
   const {
     canUseSponsoredSend,
     isPreparingSponsoredSend,
@@ -229,7 +228,6 @@ export default function SendSheet() {
     amount: amountDetails.assetAmount,
     chainId: currentChainId,
     isENS,
-    isNativeSponsoredSendCandidate,
     isValidAddress,
     provider: currentProvider,
     selected,

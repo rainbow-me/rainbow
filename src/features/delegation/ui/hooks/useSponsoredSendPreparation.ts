@@ -19,7 +19,6 @@ type UseSponsoredSendPreparationParams = {
   amount: string;
   chainId: ChainId;
   isENS: boolean;
-  isNativeSponsoredSendCandidate: boolean;
   isValidAddress: boolean;
   provider: StaticJsonRpcProvider | undefined;
   selected: ParsedAddressAsset | UniqueAsset | undefined;
@@ -49,7 +48,6 @@ export function useSponsoredSendPreparation({
   amount,
   chainId,
   isENS,
-  isNativeSponsoredSendCandidate,
   isValidAddress,
   provider,
   selected,
@@ -65,7 +63,6 @@ export function useSponsoredSendPreparation({
       !provider ||
       !selected ||
       isENS ||
-      !isNativeSponsoredSendCandidate ||
       !isValidAddress ||
       !toAddress ||
       Number(amount) <= 0
@@ -82,7 +79,6 @@ export function useSponsoredSendPreparation({
     amount,
     chainId,
     isENS,
-    isNativeSponsoredSendCandidate,
     isValidAddress,
     provider,
     selected,
