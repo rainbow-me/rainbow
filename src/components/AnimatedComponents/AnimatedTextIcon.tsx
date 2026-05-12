@@ -1,15 +1,20 @@
 import React from 'react';
 
+import { type DerivedValue, type SharedValue } from 'react-native-reanimated';
+
 import { AnimatedText, Bleed, Box } from '@/design-system';
 import { type TextColor } from '@/design-system/color/palettes';
 import { type CustomColor } from '@/design-system/color/useForegroundColor';
-import { type AnimatedTextChildProps, type AnimatedTextProps } from '@/design-system/components/Text/AnimatedText';
+import {
+  type AnimatedTextChildProps,
+  type AnimatedTextProps,
+  type AnimatedTextSelectorProps,
+} from '@/design-system/components/Text/AnimatedText';
 import { type TextWeight } from '@/design-system/components/Text/Text';
 import { type TextSize } from '@/design-system/typography/typeHierarchy';
 
-export type AnimatedTextIconProps = {
+type AnimatedTextIconFrameProps = {
   align?: 'center' | 'left' | 'right';
-  children: AnimatedTextChildProps['children'];
   color?: TextColor | CustomColor;
   containerSize?: number;
   height?: number;
@@ -21,7 +26,14 @@ export type AnimatedTextIconProps = {
   width?: number;
 };
 
-export const AnimatedTextIcon = ({
+/** Props for an animated SF-symbol text icon. */
+export type AnimatedTextIconProps<T extends SharedValue | DerivedValue = SharedValue | DerivedValue> = AnimatedTextIconFrameProps &
+  (AnimatedTextChildProps | AnimatedTextSelectorProps<T>);
+
+/**
+ * Renders icon-sized animated text using the same frame as text icons.
+ */
+export function AnimatedTextIcon<T extends SharedValue | DerivedValue = SharedValue | DerivedValue>({
   align = 'center',
   children,
   color,
@@ -30,10 +42,11 @@ export const AnimatedTextIcon = ({
   hitSlop,
   opacity,
   size,
+  selector,
   textStyle,
   weight,
   width,
-}: AnimatedTextIconProps) => {
+}: AnimatedTextIconProps<T>) {
   // Prevent wide icons from being clipped
   const extraHorizontalSpace = 8;
 
@@ -52,10 +65,16 @@ export const AnimatedTextIcon = ({
         style={{ opacity }}
         width={{ custom: (width || containerSize) + extraHorizontalSpace * 2 }}
       >
-        <AnimatedText align={align} color={color} size={size} style={textStyle} weight={weight}>
-          {children}
-        </AnimatedText>
+        {selector ? (
+          <AnimatedText align={align} color={color} selector={selector} size={size} style={textStyle} weight={weight}>
+            {children}
+          </AnimatedText>
+        ) : (
+          <AnimatedText align={align} color={color} size={size} style={textStyle} weight={weight}>
+            {children}
+          </AnimatedText>
+        )}
       </Box>
     </Bleed>
   );
-};
+}

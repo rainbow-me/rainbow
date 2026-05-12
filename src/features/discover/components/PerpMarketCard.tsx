@@ -2,19 +2,29 @@ import React, { memo, useCallback, useMemo } from 'react';
 import { StyleSheet, View, type StyleProp, type ViewStyle } from 'react-native';
 
 import { LinearGradient } from 'expo-linear-gradient';
+import { useAnimatedStyle, type SharedValue } from 'react-native-reanimated';
 
+import { AnimatedTextIcon } from '@/components/AnimatedComponents/AnimatedTextIcon';
 import ButtonPressAnimation from '@/components/animations/ButtonPressAnimation';
 import ImgixImage from '@/components/images/ImgixImage';
-import { Text, TextIcon, useColorMode } from '@/design-system';
+import { useLiveTokenSharedValue } from '@/components/live-token-text/LiveTokenText';
+import { AnimatedText, Text, useColorMode } from '@/design-system';
+import { getValueForColorMode, type ColorMode, type ContextualColorValue } from '@/design-system/color/palettes';
 import { Border } from '@/design-system/components/Border/Border';
 import { COMPACT_LINE_CHART_HORIZONTAL_OVERDRAW } from '@/features/charts/line/compact/CompactLineChartRenderer';
 import { SparklineChart } from '@/features/charts/line/components/SparklineChart';
 import { DOWN_ARROW, HYPERLIQUID_COLORS, UP_ARROW } from '@/features/perps/constants';
 import { useHyperliquidLineChartsStore } from '@/features/perps/stores/hyperliquidLineChartsStore';
 import { type PerpMarketWithMetadata } from '@/features/perps/types';
-import { convertStoredPerpPriceChangeToPercent, formatCompactPerpPercentChange, navigateToPerpDetailScreen } from '@/features/perps/utils';
+import {
+  convertStoredPerpPriceChangeToPercent,
+  formatCompactPerpPercentChange,
+  getHyperliquidTokenId,
+  navigateToPerpDetailScreen,
+} from '@/features/perps/utils';
 import { type PlacementItemAnalyticsMetadata } from '@/features/placements/types';
 import { opacity } from '@/framework/ui/utils/opacity';
+import { type TokenData } from '@/state/liveTokens/liveTokensStore';
 import { THICK_BORDER_WIDTH, THICKER_BORDER_WIDTH } from '@/styles/constants';
 import { measureTextSync, type MeasureTextProps } from '@/utils/measureText';
 import { getHighContrastTextColorWorklet } from '@/worklets/colors';
@@ -27,8 +37,7 @@ export type PerpMarketCardProps = {
   style?: StyleProp<ViewStyle>;
 };
 
-type PriceChangeDirection = 'negative' | 'positive';
-type CardColorMode = 'dark' | 'light';
+type PriceChangeColors = Readonly<{ negative: string; positive: string }>;
 
 type CardColors = {
   backgroundColor: string;
@@ -36,6 +45,12 @@ type CardColors = {
   badgeShadowOpacity: number;
   borderColor: string;
   gradientOpacity: number;
+};
+
+type PerpMarketPriceChangeProps = {
+  initialPriceChange: string;
+  priceChangeColors: PriceChangeColors;
+  symbol: string;
 };
 
 // ============ Layout ========================================================= //
@@ -67,10 +82,10 @@ const PERP_MARKET_CARD_TEXT_MIN_WIDTH = PERP_MARKET_CARD_SLOT_WIDTH_WITH_CHART -
 
 // ============ Colors ========================================================= //
 
-const PRICE_CHANGE_COLORS: Record<PriceChangeDirection, Record<CardColorMode, string>> = {
-  positive: { light: '#1DB847', dark: '#3ECF5B' },
-  negative: { light: '#FA423C', dark: '#FF584D' },
-};
+const PRICE_CHANGE_COLORS = {
+  dark: { positive: '#3ECF5B', negative: '#FF584D' },
+  light: { positive: '#1DB847', negative: '#FA423C' },
+} satisfies ContextualColorValue<PriceChangeColors>;
 
 const CARD_COLORS = {
   dark: {
@@ -87,27 +102,29 @@ const CARD_COLORS = {
     borderColor: 'rgba(255,255,255,0.8)',
     gradientOpacity: 0.06,
   },
-} satisfies Record<CardColorMode, CardColors>;
+} satisfies ContextualColorValue<CardColors>;
 
 // ============ Component ====================================================== //
 
 export const PerpMarketCard = memo(function PerpMarketCard({ market, onPressTracked, style }: PerpMarketCardProps) {
-  const { isDarkMode } = useColorMode();
+  const { colorMode, isDarkMode } = useColorMode();
   const symbol = market.symbol;
 
   const onPress = useCallback(() => {
-    navigateToPerpDetailScreen(market.symbol);
+    navigateToPerpDetailScreen(symbol);
     onPressTracked?.({
-      marketId: market.symbol,
+      marketId: symbol,
       marketName: market.metadata?.name ?? market.baseSymbol,
       marketSymbol: market.baseSymbol,
     });
-  }, [market, onPressTracked]);
+  }, [market.baseSymbol, market.metadata?.name, onPressTracked, symbol]);
 
-  const { accentColor, badgeTextColor, cardColors, iconUrl, priceChange } = useMemo(
-    () => buildPerpMarketCardDisplay(isDarkMode, market),
-    [isDarkMode, market]
+  const { accentColor, badgeTextColor, cardColors, chartColor, iconUrl, priceChangeColors } = useMemo(
+    () => buildPerpMarketCardDisplay(market, colorMode),
+    [colorMode, market]
   );
+
+  const initialPriceChange = market.priceChange['24h'];
 
   return (
     <ButtonPressAnimation onPress={onPress} scaleTo={0.96} style={[styles.pressable, style]}>
@@ -147,32 +164,14 @@ export const PerpMarketCard = memo(function PerpMarketCard({ market, onPressTrac
                 </Text>
 
                 <View style={styles.changeRow}>
-                  <TextIcon
-                    color={{ custom: priceChange.color }}
-                    containerSize={UP_DOWN_ARROW_WIDTH}
-                    height={8}
-                    size="icon 12px"
-                    weight="heavy"
-                    width={UP_DOWN_ARROW_WIDTH}
-                  >
-                    {priceChange.arrow}
-                  </TextIcon>
-                  <Text
-                    size={PRICE_CHANGE_TEXT_STYLE.size}
-                    weight={PRICE_CHANGE_TEXT_STYLE.weight}
-                    color={{ custom: priceChange.color }}
-                    numberOfLines={1}
-                    style={styles.percentText}
-                  >
-                    {formatCompactPerpPercentChange(priceChange.percent)}
-                  </Text>
+                  <PerpMarketPriceChange initialPriceChange={initialPriceChange} priceChangeColors={priceChangeColors} symbol={symbol} />
                 </View>
               </View>
             </View>
 
             <SparklineChart
               chartId={symbol}
-              color={priceChange.color}
+              color={chartColor}
               height={CHART_LAYOUT.height}
               store={useHyperliquidLineChartsStore}
               width={CHART_LAYOUT.width}
@@ -211,6 +210,58 @@ export const PerpMarketCard = memo(function PerpMarketCard({ market, onPressTrac
   );
 });
 
+function selectPriceChangeText(priceChange: SharedValue<string>): string {
+  'worklet';
+  return formatCompactPerpPercentChange(convertStoredPerpPriceChangeToPercent(priceChange.value));
+}
+
+function selectPriceChangeArrow(priceChange: SharedValue<string>): string {
+  'worklet';
+  return Number(priceChange.value) >= 0 ? UP_ARROW : DOWN_ARROW;
+}
+
+const PerpMarketPriceChange = memo(function PerpMarketPriceChange({
+  initialPriceChange,
+  priceChangeColors,
+  symbol,
+}: PerpMarketPriceChangeProps) {
+  const livePriceChange = useLiveTokenSharedValue({
+    initialValue: initialPriceChange,
+    selector: selectLivePriceChange24h,
+    tokenId: getHyperliquidTokenId(symbol),
+  });
+
+  const priceChangeStyle = useAnimatedStyle(() => ({
+    color: Number(livePriceChange.value) >= 0 ? priceChangeColors.positive : priceChangeColors.negative,
+  }));
+
+  return (
+    <>
+      <AnimatedTextIcon
+        containerSize={UP_DOWN_ARROW_WIDTH}
+        height={8}
+        selector={selectPriceChangeArrow}
+        size="icon 12px"
+        textStyle={priceChangeStyle}
+        weight="heavy"
+        width={UP_DOWN_ARROW_WIDTH}
+      >
+        {livePriceChange}
+      </AnimatedTextIcon>
+
+      <AnimatedText
+        size={PRICE_CHANGE_TEXT_STYLE.size}
+        weight={PRICE_CHANGE_TEXT_STYLE.weight}
+        numberOfLines={1}
+        selector={selectPriceChangeText}
+        style={priceChangeStyle}
+      >
+        {livePriceChange}
+      </AnimatedText>
+    </>
+  );
+});
+
 // ============ Display Helpers =============================================== //
 
 /**
@@ -238,24 +289,24 @@ function getStablePercentChangeWidth(percentChange: number): number {
   return leftDigitsWidth + TEXT_STATS.decimalWidth + rightDigitsWidth + TEXT_STATS.percentageSymbolWidth;
 }
 
-function buildPerpMarketCardDisplay(isDarkMode: boolean, market: PerpMarketWithMetadata) {
+function buildPerpMarketCardDisplay(market: PerpMarketWithMetadata, colorMode: ColorMode) {
   const accentColor = market.metadata?.colors?.color || market.metadata?.colors?.fallbackColor || HYPERLIQUID_COLORS.green;
   const badgeTextColor = getHighContrastTextColorWorklet(accentColor, 4);
-  const colorMode: CardColorMode = isDarkMode ? 'dark' : 'light';
-  const percent = convertStoredPerpPriceChangeToPercent(market.priceChange['24h']);
-  const direction: PriceChangeDirection = percent >= 0 ? 'positive' : 'negative';
+  const cardColors = getValueForColorMode(CARD_COLORS, colorMode);
+  const priceChangeColors = getValueForColorMode(PRICE_CHANGE_COLORS, colorMode);
 
   return {
     accentColor,
     badgeTextColor,
-    cardColors: CARD_COLORS[colorMode],
+    cardColors,
+    chartColor: Number(market.priceChange['24h']) >= 0 ? priceChangeColors.positive : priceChangeColors.negative,
     iconUrl: market.metadata?.iconUrl,
-    priceChange: {
-      arrow: direction === 'positive' ? UP_ARROW : DOWN_ARROW,
-      color: PRICE_CHANGE_COLORS[direction][colorMode],
-      percent,
-    },
+    priceChangeColors,
   };
+}
+
+function selectLivePriceChange24h(state: TokenData): string {
+  return state.change.change24hPct;
 }
 
 // ============ Styles ========================================================= //
@@ -349,9 +400,6 @@ const styles = StyleSheet.create({
     flexShrink: 1,
     gap: CARD_LAYOUT.gap,
     minWidth: 0,
-  },
-  percentText: {
-    flexShrink: 1,
   },
   pressable: {
     width: '100%',

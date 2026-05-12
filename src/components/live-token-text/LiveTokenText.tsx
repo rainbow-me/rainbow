@@ -32,14 +32,13 @@ export function useLiveTokenSharedValue({
   // prevValue and liveValue will always be equal, but there is a cost to reading shared values
   const prevValue = useRef(initialValue);
 
-  // Reset values when tokenId changes, unsubscribe from previous token
+  // Reset values when tokenId changes.
   useEffect(() => {
     if (prevTokenId && prevTokenId !== tokenId) {
       liveValue.value = initialValue;
       prevValue.current = initialValue;
-      removeSubscribedToken({ route: routeName, tokenId: prevTokenId });
     }
-  }, [initialValue, liveValue, prevTokenId, tokenId, routeName]);
+  }, [initialValue, liveValue, prevTokenId, tokenId]);
 
   const updateToken = useCallback(
     (token: TokenData | undefined) => {
@@ -88,13 +87,13 @@ export function useLiveTokenValue({
   // prevLiveValue and liveValue will always be equal, but state is async
   const prevLiveValue = useRef(initialValue);
 
-  // Reset values when tokenId changes, unsubscribe from previous token
+  // Reset values when tokenId changes.
   useEffect(() => {
     if (prevTokenId && prevTokenId !== tokenId) {
       setLiveValue(initialValue);
       prevLiveValue.current = initialValue;
     }
-  }, [initialValue, prevTokenId, tokenId, routeName]);
+  }, [initialValue, prevTokenId, tokenId]);
 
   const updateToken = useCallback(
     (token: TokenData | undefined) => {
