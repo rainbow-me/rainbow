@@ -15,6 +15,8 @@ import { time } from '@/utils/time';
  */
 export const useHyperliquidLineChartsStore = createLineChartDataStore(fetchHyperliquidLineCharts, {
   activeOnRoute: Routes.DISCOVER_SCREEN,
+  cacheTime: time.minutes(5),
+  staleTime: time.minutes(2),
 });
 
 // ============ Core Fetch Functions =========================================== //
@@ -26,7 +28,6 @@ async function fetchHyperliquidLineCharts(
   const markets = hyperliquidMarketsActions.getMarkets();
   const chartFetches = symbols.map(symbol => fetchHyperliquidChartData(symbol, markets[symbol], abortController));
 
-  void hyperliquidMarketsActions.fetch(undefined, { staleTime: time.seconds(20) });
   const results = await Promise.allSettled(chartFetches);
 
   const chartsById: FetchedLineChartData = {};
