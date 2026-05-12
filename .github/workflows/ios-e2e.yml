@@ -140,7 +140,7 @@ jobs:
         shard-index: [1, 2, 3, 4]
     concurrency:
       group: e2e-ios-${{ github.workflow }}-${{ github.ref }}-shard-${{ matrix.shard-index }}
-      cancel-in-progress: false
+      cancel-in-progress: ${{ github.event_name == 'pull_request' }}
     timeout-minutes: 30
     env:
       SHARD_TOTAL: 4

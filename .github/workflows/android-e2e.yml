@@ -160,7 +160,7 @@ jobs:
     timeout-minutes: 30
     concurrency:
       group: e2e-android-${{ github.workflow }}-${{ github.ref }}-shard-${{ matrix.shard-index }}
-      cancel-in-progress: false
+      cancel-in-progress: ${{ github.event_name == 'pull_request' }}
 
     env:
       SHARD_TOTAL: 4
