@@ -8,6 +8,11 @@ on:
     branches: [develop]
   issue_comment:
     types: [created]
+
+permissions:
+  contents: read
+  actions: read
+
 env:
   NODE_OPTIONS: '--max-old-space-size=6144'
 

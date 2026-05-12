@@ -6,6 +6,11 @@ on:
       - '**/graphite-base/**'
   workflow_dispatch:
 
+permissions:
+  contents: read
+  actions: read
+  issues: write
+
 jobs:
   optimize_ci:
     name: Graphite CI Optimizer

@@ -10,6 +10,11 @@ on:
   issue_comment:
     types: [created]
 
+permissions:
+  contents: read
+  actions: read
+  issues: write
+
 env:
   PR_NUMBER: ${{ github.event.pull_request.number || github.event.issue.number }}
 
