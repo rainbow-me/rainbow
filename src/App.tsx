@@ -25,6 +25,7 @@ import { reactNativeDisableYellowBox, showNetworkRequests, showNetworkResponses 
 import monitorNetwork from '@/debugging/network';
 import { IS_DEV, IS_PROD, IS_STORE_INSTALL, IS_TEST } from '@/env';
 import { configureDelegationSdk } from '@/features/delegation/configureClient';
+import { TestDeeplinkHandler } from '@/features/e2e/ui/TestDeeplinkHandler';
 import RainbowContextWrapper from '@/helpers/RainbowContext';
 import { useApplicationSetup } from '@/hooks/useApplicationSetup';
 import { logger, RainbowError } from '@/logger';
@@ -43,7 +44,6 @@ import * as ls from '@/storage';
 import { MainThemeProvider } from '@/theme/ThemeContext';
 
 import { AbsolutePortalRoot } from './components/AbsolutePortal';
-import { TestDeeplinkHandler } from './components/TestDeeplinkHandler';
 import { PerformanceReports, PerformanceReportSegments, PerformanceTracking } from './performance/tracking';
 
 if (IS_DEV) {
@@ -81,10 +81,10 @@ function AppComponent() {
         )}
         <OfflineToast />
         <Toaster />
+        {IS_TEST && <TestDeeplinkHandler />}
       </View>
       <NotificationsHandler />
       <DeeplinkHandler initialRoute={initialRoute} />
-      {IS_TEST && <TestDeeplinkHandler />}
       <BackupsSync />
       <AbsolutePortalRoot />
     </>

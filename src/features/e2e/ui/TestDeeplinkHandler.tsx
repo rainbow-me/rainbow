@@ -1,4 +1,4 @@
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
 import { Linking } from 'react-native';
 
 import URL from 'url-parse';
@@ -9,10 +9,18 @@ import Navigation from '@/navigation/Navigation';
 import Routes from '@/navigation/routesNames';
 import { initializeWallet } from '@/state/wallets/initializeWallet';
 
+import { createWebViewTests, runSandboxTests, type SandboxTestResult, type WebViewTests } from '../core/sandboxSecurityTest';
+import { SandboxSecurityResults } from './SandboxSecurityResults';
+import { SandboxWebViewTest } from './SandboxWebViewTest';
+
 /**
  * Handles E2E test commands. See e2e/README.md:31 for usage.
  */
 export function TestDeeplinkHandler() {
+  const [results, setResults] = useState<SandboxTestResult[] | null>(null);
+  const [webViewTests, setWebViewTests] = useState<WebViewTests | undefined>();
+  const [webViewDone, setWebViewDone] = useState(false);
+
   useEffect(() => {
     const listener = Linking.addListener('url', async ({ url }) => {
       const { protocol, host, pathname, query } = new URL(url, true);
@@ -34,6 +42,17 @@ export function TestDeeplinkHandler() {
             screen: Routes.WALLET_SCREEN,
           });
           break;
+        case 'sandbox-test': {
+          const wvTests = createWebViewTests();
+          setWebViewTests(wvTests);
+          Promise.all([wvTests.initialLoad.promise, wvTests.jsNavigation.promise]).then(wvResults => {
+            setResults(prev => (prev ? [...prev, ...wvResults] : wvResults));
+            setWebViewDone(true);
+          });
+          const syncResults = await runSandboxTests();
+          setResults(syncResults);
+          break;
+        }
         default:
           logger.debug(`[TestDeeplinkHandler]: unknown path`, { url });
           break;
@@ -42,6 +61,16 @@ export function TestDeeplinkHandler() {
     return listener.remove;
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
+
+  if (results) {
+    return (
+      <>
+        <SandboxSecurityResults results={results} allDone={webViewDone} />
+        {/* eslint-disable-next-line react/jsx-props-no-spreading */}
+        {webViewTests && <SandboxWebViewTest {...webViewTests} />}
+      </>
+    );
+  }
 
   return null;
 }

@@ -1,0 +1,28 @@
+appId: ${APP_ID}
+tags:
+  - security
+  - sandbox
+  - parallel
+---
+- launchApp:
+    clearState: true
+    clearKeychain: true
+    arguments:
+      isE2ETest: true
+- runFlow: ../../utils/Prepare.yaml
+- extendedWaitUntil:
+    visible:
+      id: welcome-screen
+    timeout: 60000
+- openLink: rainbow://e2e/sandbox-test
+- runFlow:
+    when:
+      visible: 'Open in .*'
+      platform: iOS
+    commands:
+      - tapOn: 'Open'
+- extendedWaitUntil:
+    visible:
+      id: sandbox-test-results
+    timeout: 15000
+- assertVisible: 'SANDBOX_TEST_PASSED'
