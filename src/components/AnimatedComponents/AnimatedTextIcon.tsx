@@ -26,13 +26,9 @@ type AnimatedTextIconFrameProps = {
   width?: number;
 };
 
-/** Props for an animated SF-symbol text icon. */
 export type AnimatedTextIconProps<T extends SharedValue | DerivedValue = SharedValue | DerivedValue> = AnimatedTextIconFrameProps &
   (AnimatedTextChildProps | AnimatedTextSelectorProps<T>);
 
-/**
- * Renders icon-sized animated text using the same frame as text icons.
- */
 export function AnimatedTextIcon<T extends SharedValue | DerivedValue = SharedValue | DerivedValue>({
   align = 'center',
   children,

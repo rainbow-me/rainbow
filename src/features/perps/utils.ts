@@ -34,16 +34,14 @@ export function formatPriceChange(priceChange: string) {
  */
 export function convertStoredPerpPriceChangeToPercent(priceChange: string): number {
   'worklet';
-
   return Number(priceChange) * 10_000;
 }
 
 /**
- * Formats a perp price-change percent for compact card surfaces.
+ * Formats a compact percentage change string for display.
  */
 export function formatCompactPerpPercentChange(percentChange: number): string {
   'worklet';
-
   const numericValue = Math.abs(percentChange);
   if (!Number.isFinite(numericValue)) return '0.00%';
   return `${numericValue.toFixed(2)}%`;
