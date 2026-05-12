@@ -15,8 +15,6 @@ import { time } from '@/utils/time';
  */
 export const useHyperliquidLineChartsStore = createLineChartDataStore(fetchHyperliquidLineCharts, {
   activeOnRoute: Routes.DISCOVER_SCREEN,
-  cacheTime: time.minutes(5),
-  staleTime: time.minutes(2),
 });
 
 // ============ Core Fetch Functions =========================================== //
