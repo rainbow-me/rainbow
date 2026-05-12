@@ -55,7 +55,7 @@ export const POLYMARKET_CLOB_URL = POLYMARKET_CLOB_URL_PROD;
 export const POLYMARKET_SPORTS_WS_URL = 'wss://sports-api.polymarket.com/ws';
 export const POLYMARKET_HOSTNAMES: ReadonlySet<string> = new Set(['polymarket.com', 'www.polymarket.com']);
 export const POLYMARKET_REFERRAL_PARAM = 'r';
-export const POLYMARKET_REFERRAL_CODE = 'referrals';
+export const POLYMARKET_REFERRAL_CODE = 'rnbw';
 
 export const POLYMARKET_BUILDER_CODE = '0xabce5abdc189cba6fb85edb9170e3e6e41607e946b06d112b7f87e2f2977020c';
 
