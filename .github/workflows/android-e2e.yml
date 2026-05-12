@@ -3,6 +3,8 @@ name: Android
 on:
   pull_request:
     types: [opened, synchronize, reopened, ready_for_review]
+    branches-ignore:
+      - '**/graphite-base/**'
   push:
     branches: [develop]
   issue_comment:

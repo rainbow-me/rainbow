@@ -2,6 +2,8 @@ name: iOS Builds
 on:
   pull_request:
     types: [opened, synchronize, reopened, ready_for_review]
+    branches-ignore:
+      - '**/graphite-base/**'
   workflow_dispatch:
 
 jobs:

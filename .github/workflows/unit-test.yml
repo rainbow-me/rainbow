@@ -1,6 +1,9 @@
 name: Unit tests
 
-on: [pull_request]
+on:
+  pull_request:
+    branches-ignore:
+      - '**/graphite-base/**'
 jobs:
   lint-and-unit-test:
     runs-on: blacksmith-2vcpu-ubuntu-2204
