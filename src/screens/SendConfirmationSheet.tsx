@@ -202,7 +202,7 @@ export const SendConfirmationSheet = () => {
   }, []);
 
   const {
-    params: { amountDetails, asset, callback, ensProfile, isL2, isUniqueAsset, chainId, to, toAddress },
+    params: { amountDetails, asset, callback, ensProfile, isL2, isSponsored = false, isUniqueAsset, chainId, to, toAddress },
   } = useRoute<RouteProp<RootStackParamList, typeof Routes.SEND_CONFIRMATION_SHEET>>();
 
   const { userAccounts, watchedAccounts } = useUserAccounts();
@@ -357,9 +357,10 @@ export const SendConfirmationSheet = () => {
   }, [setParams, shouldShowChecks]);
 
   const canSubmit =
-    isSufficientGas && isValidGas && (!shouldShowChecks || checkboxes.filter(check => check.checked === false).length === 0);
+    (isSponsored || (isSufficientGas && isValidGas)) &&
+    (!shouldShowChecks || checkboxes.filter(check => check.checked === false).length === 0);
 
-  const insufficientEth = isSufficientGas === false && isValidGas;
+  const insufficientEth = !isSponsored && isSufficientGas === false && isValidGas;
 
   const handleSubmit = useCallback(async () => {
     if (!canSubmit) return;
