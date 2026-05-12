@@ -1,10 +1,9 @@
 import React, { type FunctionComponent, type PropsWithChildren } from 'react';
-import { type ViewProps } from 'react-native';
+import { Platform, type ViewProps } from 'react-native';
 
 import Animated, { useAnimatedStyle, withTiming, type AnimatedProps } from 'react-native-reanimated';
 
 import { TIMING_CONFIGS } from '@/components/animations/animationConfigs';
-import { IS_IOS } from '@/env';
 
 import { useDraggable, type DraggableConstraints, type UseDroppableOptions } from '../hooks';
 import type { AnimatedStyleWorklet } from '../types';
@@ -103,7 +102,7 @@ export const Draggable: FunctionComponent<PropsWithChildren<DraggableProps>> = (
     <Animated.View
       onLayout={onLayout}
       // @ts-expect-error onLayoutWorklet prop is arbitrarily named, we just need to pass setNodeLayout via some prop
-      onLayoutWorklet={IS_IOS ? onLayoutWorklet : undefined}
+      onLayoutWorklet={Platform.OS === 'ios' ? onLayoutWorklet : undefined}
       ref={setNodeRef}
       style={[style, animatedStyle]}
       // eslint-disable-next-line react/jsx-props-no-spreading

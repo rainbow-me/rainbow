@@ -1,5 +1,5 @@
 import React, { useMemo } from 'react';
-import { StyleSheet, Text, TouchableOpacity, View } from 'react-native';
+import { Platform, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 
 import { TouchableOpacity as GHTouchableOpacity } from 'react-native-gesture-handler';
 
@@ -52,7 +52,7 @@ const EmojiContent = ({ data, columns, onEmojiSelect, cellSize, fontSize }: Prop
                 width: cellSize,
               },
             };
-            return ios ? (
+            return Platform.OS === 'ios' ? (
               <TouchableOpacity activeOpacity={0.5} {...touchableProps}>
                 <Text
                   style={{

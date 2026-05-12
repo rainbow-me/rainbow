@@ -1,5 +1,5 @@
 import React, { Fragment, useCallback, useState } from 'react';
-import { InteractionManager } from 'react-native';
+import { InteractionManager, Platform } from 'react-native';
 
 import TextInputMask from 'react-native-text-input-mask';
 
@@ -24,7 +24,7 @@ const Input = styled(TextInputMask).attrs({
 })(props => ({
   flex: 1,
   ...buildTextStyles.object(props),
-  ...(android ? { fontWeight: 'normal' } : {}),
+  ...(Platform.OS === 'android' ? { fontWeight: 'normal' } : {}),
 }));
 
 const ExchangeInput = (

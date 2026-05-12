@@ -1,6 +1,7 @@
 // @refresh reset
 
 import React, { useEffect, useMemo, useState } from 'react';
+import { Platform } from 'react-native';
 
 import Animated, { Easing, interpolate, useAnimatedStyle, useSharedValue, withTiming } from 'react-native-reanimated';
 import { useTiming } from 'react-native-redash';
@@ -18,7 +19,6 @@ import RowWithMargins from '@/components/layout/RowWithMargins';
 import { Bleed, Box, Columns, Cover, Row, Rows, Separator, Stack, Text, type TextProps } from '@/design-system';
 import { type ParsedAddressAsset } from '@/entities/tokens';
 import { type RainbowTransaction } from '@/entities/transactions';
-import { IS_ANDROID } from '@/env';
 import { getDelegationContractAddress, isRainbowDelegated } from '@/features/delegation/status';
 import { fetchENSAvatar } from '@/features/ens/hooks/useENSAvatar';
 import { fetchReverseRecord } from '@/features/ens/utils/handlers';
@@ -48,7 +48,7 @@ import { addressHashedColorIndex, addressHashedEmoji } from '@/utils/profileUtil
 import { safeSum } from '@/utils/safeSum';
 import { useDelegations } from '@rainbow-me/delegation';
 
-const TransactionMastheadHeight = android ? 153 : 135;
+const TransactionMastheadHeight = Platform.OS === 'android' ? 153 : 135;
 
 const Container = styled(Box).attrs({
   direction: 'column',
@@ -59,7 +59,7 @@ const Container = styled(Box).attrs({
   height: TransactionMastheadHeight,
   overflow: 'hidden',
   zIndex: 0,
-  ...(android ? { paddingTop: 4 } : {}),
+  ...(Platform.OS === 'android' ? { paddingTop: 4 } : {}),
   justifyContent: 'center',
   alitnItems: 'center',
 });
@@ -174,7 +174,6 @@ function CurrencyTile({
   return (
     <Container>
       <Gradient color={colorToUse} />
-
       <Rows alignHorizontal="center" alignVertical="center" space="10px">
         <Row height="content">
           <Box>
@@ -218,7 +217,12 @@ function CurrencyTile({
           <Box width="full">
             <Rows space={'10px'}>
               <Row height="content">
-                <Box alignItems="center" justifyContent="center" marginTop={IS_ANDROID ? '-6px' : { custom: 0 }} width="full">
+                <Box
+                  alignItems="center"
+                  justifyContent="center"
+                  marginTop={Platform.OS === 'android' ? '-6px' : { custom: 0 }}
+                  width="full"
+                >
                   <AnimatedText
                     size="16px / 22px (Deprecated)"
                     color="label"
@@ -230,7 +234,12 @@ function CurrencyTile({
                 </Box>
               </Row>
               <Row height="content">
-                <Box alignItems="center" justifyContent="center" marginTop={IS_ANDROID ? '-6px' : { custom: 0 }} width="full">
+                <Box
+                  alignItems="center"
+                  justifyContent="center"
+                  marginTop={Platform.OS === 'android' ? '-6px' : { custom: 0 }}
+                  width="full"
+                >
                   <AnimatedText
                     size="14px / 19px (Deprecated)"
                     color="labelSecondary"

@@ -1,11 +1,11 @@
-import { Alert, ToastAndroid, type AlertButton, type AlertOptions } from 'react-native';
+import { Alert, Platform, ToastAndroid, type AlertButton, type AlertOptions } from 'react-native';
 
 import { IS_TEST } from '@/env';
 
 const WrappedAlert = {
   ...Alert,
   alert: (title: string, message?: string, buttons?: AlertButton[], options?: AlertOptions) => {
-    if (android && !buttons && !options && IS_TEST) {
+    if (Platform.OS === 'android' && !buttons && !options && IS_TEST) {
       const text = message ? `${title}\n${message}` : title;
       ToastAndroid.show(text, ToastAndroid.SHORT);
     } else {

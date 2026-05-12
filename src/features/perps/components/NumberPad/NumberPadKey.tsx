@@ -1,3 +1,5 @@
+import { Platform } from 'react-native';
+
 import Animated, {
   Easing,
   interpolateColor,
@@ -14,7 +16,6 @@ import { triggerHaptics } from 'react-native-turbo-haptics';
 import { TIMING_CONFIGS } from '@/components/animations/animationConfigs';
 import { GestureHandlerButton } from '@/components/buttons/GestureHandlerButton';
 import { HitSlop, Text, useColorMode, useForegroundColor } from '@/design-system';
-import { IS_IOS } from '@/env';
 import { colors } from '@/styles';
 import { THICK_BORDER_WIDTH } from '@/styles/constants';
 
@@ -145,7 +146,7 @@ export const NumberPadKey = <K extends string>({
             !transparent && {
               borderColor: isDarkMode ? separatorTertiary : 'transparent',
               borderCurve: 'continuous',
-              borderWidth: IS_IOS ? THICK_BORDER_WIDTH : 0,
+              borderWidth: Platform.OS === 'ios' ? THICK_BORDER_WIDTH : 0,
               shadowColor: isDarkMode ? 'transparent' : colors.dark,
               shadowOffset: {
                 width: 0,

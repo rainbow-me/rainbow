@@ -1,4 +1,4 @@
-import { IS_IOS } from '@/env';
+import { Platform } from 'react-native';
 
 export const freezeWebsite = `(function() {
     // Pause media elements
@@ -57,7 +57,7 @@ export const unfreezeWebsite = `(function() {
 const getWebsiteMetadata = `
   requestAnimationFrame(() => {
     ${
-      IS_IOS
+      Platform.OS === 'ios'
         ? `
     function getActualBackgroundColor() {
       return undefined;

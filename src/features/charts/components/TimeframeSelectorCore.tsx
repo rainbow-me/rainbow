@@ -1,5 +1,5 @@
 import React, { memo, useMemo, type ReactNode, type RefObject } from 'react';
-import { ScrollView, StyleSheet, View, type StyleProp, type ViewStyle } from 'react-native';
+import { Platform, ScrollView, StyleSheet, View, type StyleProp, type ViewStyle } from 'react-native';
 
 import Animated, { useAnimatedStyle, useDerivedValue, withSpring, type DerivedValue, type SharedValue } from 'react-native-reanimated';
 
@@ -7,7 +7,6 @@ import { easing, SPRING_CONFIGS } from '@/components/animations/animationConfigs
 import { GestureHandlerButton } from '@/components/buttons/GestureHandlerButton';
 import { EasingGradient } from '@/components/easing-gradient/EasingGradient';
 import { AnimatedText, useColorMode, useForegroundColor } from '@/design-system';
-import { IS_IOS } from '@/env';
 import { opacity } from '@/framework/ui/utils/opacity';
 import { DEVICE_WIDTH } from '@/utils/deviceUtils';
 
@@ -78,11 +77,11 @@ export const TimeframeSelectorCore = memo(function TimeframeSelectorCore({
   return (
     <View style={styles.container}>
       <ScrollView
-        centerContent={!IS_IOS || layout === 'fill' || !rightAccessory}
+        centerContent={Platform.OS !== 'ios' || layout === 'fill' || !rightAccessory}
         contentContainerStyle={contentContainerStyle}
         contentOffset={initialContentOffset}
         horizontal
-        maintainVisibleContentPosition={IS_IOS ? undefined : { minIndexForVisible: 0 }}
+        maintainVisibleContentPosition={Platform.OS === 'ios' ? undefined : { minIndexForVisible: 0 }}
         ref={scrollViewRef}
         scrollEnabled={scrollEnabled}
         showsHorizontalScrollIndicator={false}
@@ -102,7 +101,6 @@ export const TimeframeSelectorCore = memo(function TimeframeSelectorCore({
           />
         ))}
       </ScrollView>
-
       {scrollEnabled ? (
         <>
           <EasingGradient
@@ -126,7 +124,6 @@ export const TimeframeSelectorCore = memo(function TimeframeSelectorCore({
           />
         </>
       ) : null}
-
       {rightAccessory}
     </View>
   );
@@ -185,7 +182,7 @@ const TimeframeButton = ({
   const textStyle = useAnimatedStyle(() => {
     const isSelected = selectedIndex.value === index;
     const textColor = isSelected ? color : labelQuaternary;
-    if (!IS_IOS) return { color: textColor };
+    if (Platform.OS !== 'ios') return { color: textColor };
     return {
       color: textColor,
       fontWeight: isSelected ? '800' : '700',
@@ -223,7 +220,7 @@ function getContentContainerStyle(layout: 'fill' | 'scrollable', optionsCount: n
     styles.contentContainer,
     {
       paddingRight: rightInset,
-      width: IS_IOS ? undefined : totalWidth,
+      width: Platform.OS === 'ios' ? undefined : totalWidth,
     },
   ];
 }

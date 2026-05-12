@@ -1,5 +1,5 @@
 import React, { useCallback, useEffect, useState } from 'react';
-import { View } from 'react-native';
+import { Platform, View } from 'react-native';
 
 import ConditionalWrap from 'conditional-wrap';
 import { type ImagePickerAsset } from 'expo-image-picker';
@@ -140,10 +140,10 @@ const RegistrationCover = ({
       <ButtonPressAnimation onPress={!hasSeenExplainSheet ? onShowExplainSheet : enableNFTs ? undefined : handleSelectImage} scaleTo={1}>
         <Box
           alignItems="center"
-          as={ios ? RadialGradient : View}
+          as={Platform.OS === 'ios' ? RadialGradient : View}
           height="126px"
           justifyContent="center"
-          {...(ios
+          {...(Platform.OS === 'ios'
             ? {
                 colors: [accentColor + '10', accentColor + '33'],
                 stops: [0.6, 0],

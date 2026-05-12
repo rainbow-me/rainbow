@@ -1,9 +1,8 @@
-import { InteractionManager } from 'react-native';
+import { InteractionManager, Platform } from 'react-native';
 
 import { parseUri } from '@walletconnect/utils';
 import Minimizer from 'react-native-minimizer';
 
-import { IS_IOS } from '@/env';
 import { logger } from '@/logger';
 
 import { getWalletKitClient } from './client';
@@ -38,7 +37,7 @@ export function maybeGoBackAndClearHasPendingRedirect({ delay = 0 }: { delay?: n
       setTimeout(() => {
         setHasPendingDeeplinkPendingRedirect(false);
 
-        if (!IS_IOS) {
+        if (Platform.OS !== 'ios') {
           Minimizer.goBack();
         }
       }, delay);

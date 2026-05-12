@@ -1,5 +1,5 @@
 import React from 'react';
-import { ScrollView } from 'react-native';
+import { Platform, ScrollView } from 'react-native';
 
 import chroma from 'chroma-js';
 import { LinearGradient } from 'expo-linear-gradient';
@@ -11,7 +11,6 @@ import { Ramp as RampLogo } from '@/components/icons/svg/Ramp';
 import { Stripe as StripeLogo } from '@/components/icons/svg/Stripe';
 import { Bleed, Box, Inline, Text, useBackgroundColor } from '@/design-system';
 import { FiatProviderName } from '@/entities/f2c';
-import { IS_IOS } from '@/env';
 import * as i18n from '@/languages';
 import { CalloutType, PaymentMethod, type ProviderConfig } from '@/screens/AddCash/types';
 import { convertAPINetworkToInternalChainIds } from '@/screens/AddCash/utils';
@@ -116,7 +115,7 @@ export function ProviderCard({ config }: { config: ProviderConfig }) {
       paddingHorizontal="20px"
       borderRadius={20}
       shadow="12px"
-      style={{ flex: IS_IOS ? 0 : undefined }}
+      style={{ flex: Platform.OS === 'ios' ? 0 : undefined }}
     >
       <Inline alignVertical="center">
         <Box
@@ -135,13 +134,11 @@ export function ProviderCard({ config }: { config: ProviderConfig }) {
           </Text>
         </Box>
       </Inline>
-
       <Box paddingTop="8px" paddingBottom="20px">
         <Text size="17pt" weight="semibold" color="labelSecondary">
           {config.content.description}
         </Text>
       </Box>
-
       <Bleed horizontal="20px">
         <LinearGradient
           colors={[backgroundColor, backgroundColorAlpha]}

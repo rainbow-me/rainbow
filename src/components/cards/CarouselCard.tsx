@@ -1,6 +1,6 @@
 /* eslint-disable no-nested-ternary */
 import React, { useEffect, useRef, useState } from 'react';
-import { ScrollView, View } from 'react-native';
+import { Platform, ScrollView, View } from 'react-native';
 
 import { FlashList, type ListRenderItem } from '@shopify/flash-list';
 
@@ -8,12 +8,11 @@ import ActivityIndicator from '@/components/ActivityIndicator';
 import ButtonPressAnimation from '@/components/animations/ButtonPressAnimation';
 import Spinner from '@/components/Spinner';
 import { Bleed, Box, Column, Columns, Stack, Text, useColorMode, useForegroundColor } from '@/design-system';
-import { IS_ANDROID } from '@/env';
 import useDimensions from '@/hooks/useDimensions';
 
 const HORIZONTAL_PADDING = 20;
 
-const LoadingSpinner = IS_ANDROID ? Spinner : ActivityIndicator;
+const LoadingSpinner = Platform.OS === 'android' ? Spinner : ActivityIndicator;
 
 function EmptyComponent({ emptyMessage }: { emptyMessage?: string }) {
   return (

@@ -175,6 +175,15 @@ module.exports = {
         ],
       },
     ],
+    'no-restricted-syntax': [
+      'error',
+      {
+        // Import `Platform` directly from 'react-native' so platform shaking can constant-fold `Platform.OS`
+        // checks at build time. Re-imports from wrapper modules break the optimization (https://docs.expo.dev/guides/tree-shaking/#platform-shaking).
+        selector: "ImportDeclaration[source.value!='react-native'] > ImportSpecifier[imported.name='Platform'][local.name='Platform']",
+        message: "Import `Platform` directly from 'react-native'. Re-importing from a wrapper breaks platform shaking optimization.",
+      },
+    ],
     'jest/expect-expect': 'off',
     'jest/no-disabled-tests': 'off',
     'no-await-in-loop': 'off',

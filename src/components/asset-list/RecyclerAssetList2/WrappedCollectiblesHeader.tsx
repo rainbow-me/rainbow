@@ -1,6 +1,7 @@
 import React from 'react';
 
-import useExperimentalFlag, { NFTS_ENABLED } from '@/config/experimentalHooks';
+import { NFTS_ENABLED } from '@/config/experimental';
+import useExperimentalFlag from '@/config/experimentalHooks';
 import { Box, Inline, Text } from '@/design-system';
 import * as i18n from '@/languages';
 // import { ListHeaderMenu } from '@/components/list/ListHeaderMenu';

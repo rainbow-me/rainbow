@@ -1,5 +1,5 @@
 import React, { useCallback, useMemo, useRef } from 'react';
-import { SectionList } from 'react-native';
+import { Platform, SectionList } from 'react-native';
 
 import { toChecksumAddress } from 'ethereumjs-util';
 import { LinearGradient } from 'expo-linear-gradient';
@@ -44,7 +44,7 @@ const SectionTitle = styled(Text).attrs({
 })({
   color: ({ theme: { colors } }) => opacity(colors.blueGreyDark, 0.6),
   marginLeft: 19,
-  marginTop: android ? 6 : 12,
+  marginTop: Platform.OS === 'android' ? 6 : 12,
 });
 
 const SectionWrapper = styled(LinearGradient).attrs(({ theme: { colors } }) => ({
@@ -218,7 +218,7 @@ export default function SendContactList({
       >
         <InvalidPasteToast />
       </ToastPositionContainer>
-      {ios && <KeyboardArea keyboardHeight={keyboardHeight} />}
+      {Platform.OS === 'ios' && <KeyboardArea keyboardHeight={keyboardHeight} />}
     </FlyInAnimation>
   );
 }

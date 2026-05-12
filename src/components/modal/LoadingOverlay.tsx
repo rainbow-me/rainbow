@@ -1,11 +1,10 @@
 import React from 'react';
-import { StyleSheet, type StyleProp, type ViewStyle } from 'react-native';
+import { Platform, StyleSheet, type StyleProp, type ViewStyle } from 'react-native';
 
 import { BlurView } from 'react-native-blur-view';
 import Animated, { FadeIn, FadeOut } from 'react-native-reanimated';
 
 import { Box, globalColors, Text } from '@/design-system';
-import { IS_ANDROID, IS_IOS } from '@/env';
 import { opacity } from '@/framework/ui/utils/opacity';
 import neverRerender from '@/utils/neverRerender';
 
@@ -22,11 +21,11 @@ type LoadingOverlayProps = {
 
 const LoadingOverlayComponent = ({ title, paddingTop = 0, style }: LoadingOverlayProps) => {
   const { colors, isDarkMode } = useTheme();
-  const overlayBackgroundColor = IS_ANDROID ? colors.white : opacity(colors.blueGreyDark, 0.15);
+  const overlayBackgroundColor = Platform.OS === 'android' ? colors.white : opacity(colors.blueGreyDark, 0.15);
 
   return (
     <Box alignItems="center" justifyContent="center" style={[styles.container, { paddingTop }, style]}>
-      {IS_IOS ? <TouchableBackdrop disabled /> : null}
+      {Platform.OS === 'ios' ? <TouchableBackdrop disabled /> : null}
       <Animated.View
         entering={FadeIn}
         exiting={FadeOut}
@@ -44,14 +43,16 @@ const LoadingOverlayComponent = ({ title, paddingTop = 0, style }: LoadingOverla
         style={{ backgroundColor: overlayBackgroundColor }}
       >
         <Box alignItems="center" flexDirection="row" justifyContent="center" zIndex={2}>
-          {IS_ANDROID ? <Spinner color={colors.blueGreyDark} /> : <ActivityIndicator />}
+          {Platform.OS === 'android' ? <Spinner color={colors.blueGreyDark} /> : <ActivityIndicator />}
           {title ? (
             <Text color={{ custom: colors.blueGreyDark }} size="20pt" style={styles.title} weight="semibold">
               {title}
             </Text>
           ) : null}
         </Box>
-        {IS_IOS ? <BlurView blurIntensity={40} blurStyle={isDarkMode ? 'dark' : 'light'} style={styles.overlayBlur} /> : null}
+        {Platform.OS === 'ios' ? (
+          <BlurView blurIntensity={40} blurStyle={isDarkMode ? 'dark' : 'light'} style={styles.overlayBlur} />
+        ) : null}
       </Box>
     </Box>
   );

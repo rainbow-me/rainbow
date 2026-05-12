@@ -1,5 +1,5 @@
 import React, { memo, useMemo, type ComponentProps } from 'react';
-import { StyleSheet, TouchableWithoutFeedback, View, type StyleProp, type ViewStyle } from 'react-native';
+import { Platform, StyleSheet, TouchableWithoutFeedback, View, type StyleProp, type ViewStyle } from 'react-native';
 
 import ConditionalWrap from 'conditional-wrap';
 import { KeyboardStickyView } from 'react-native-keyboard-controller';
@@ -7,7 +7,6 @@ import Animated, { type AnimatedStyle } from 'react-native-reanimated';
 
 import { SheetHandleFixedToTop } from '@/components/sheet';
 import { Box, globalColors, useColorMode, useForegroundColor } from '@/design-system';
-import { IS_IOS } from '@/env';
 import { opacity } from '@/framework/ui/utils/opacity';
 import { useNavigation } from '@/navigation/Navigation';
 import { THICK_BORDER_WIDTH } from '@/styles/constants';
@@ -26,7 +25,7 @@ export const TapToDismiss = memo(function TapToDismiss() {
 
 export const PANEL_BACKGROUND_DARK = '#191A1C';
 export const PANEL_BACKGROUND_LIGHT = globalColors.white100;
-export const PANEL_BOTTOM_OFFSET = Math.max(safeAreaInsetValues.bottom + 5, IS_IOS ? 8 : 30);
+export const PANEL_BOTTOM_OFFSET = Math.max(safeAreaInsetValues.bottom + 5, Platform.OS === 'ios' ? 8 : 30);
 export const PANEL_INSET = 8;
 export const PANEL_WIDTH = DEVICE_WIDTH - PANEL_INSET * 2;
 

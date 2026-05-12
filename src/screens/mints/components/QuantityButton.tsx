@@ -1,4 +1,5 @@
 import React, { useCallback, useEffect, useRef, useState } from 'react';
+import { Platform } from 'react-native';
 
 import { triggerHaptics } from 'react-native-turbo-haptics';
 
@@ -133,12 +134,12 @@ export function QuantityButton({ value, plusAction, minusAction, buttonColor, di
     if (!prevTrigger && trigger) {
       if (actionType === PLUS_ACTION_TYPE) {
         plusAction();
-        if (!android) {
+        if (Platform.OS !== 'android') {
           triggerHaptics('selection');
         }
       } else if (actionType === MINUS_ACTION_TYPE) {
         minusAction();
-        if (!android) {
+        if (Platform.OS !== 'android') {
           triggerHaptics('selection');
         }
       }

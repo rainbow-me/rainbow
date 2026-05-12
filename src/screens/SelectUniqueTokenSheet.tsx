@@ -1,4 +1,5 @@
 import React, { useCallback, useContext, useEffect } from 'react';
+import { Platform } from 'react-native';
 
 import { useNavigation, useRoute, type RouteProp } from '@react-navigation/native';
 
@@ -37,8 +38,8 @@ export default function SelectUniqueTokenSheet() {
     <Box
       background="body (Deprecated)"
       height="full"
-      paddingTop={android ? undefined : '34px (Deprecated)'}
-      {...(android && { borderTopRadius: 30 })}
+      paddingTop={Platform.OS === 'android' ? undefined : '34px (Deprecated)'}
+      {...(Platform.OS === 'android' && { borderTopRadius: 30 })}
     >
       <Box alignItems="center" justifyContent="center" paddingVertical="10px">
         <SheetHandle />

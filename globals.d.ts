@@ -4,14 +4,6 @@ declare module '*.jpeg';
 declare module '*.jpg';
 
 /**
- * @deprecated use `IS_ANDROID` from `@/env`
- */
-declare let android: boolean;
-/**
- * @deprecated use `IS_IOS` from `@/env`
- */
-declare let ios: boolean;
-/**
  * @deprecated use `IS_WEB` from `@/env`
  */
 declare let web: boolean;
@@ -29,7 +21,6 @@ declare module 'react-native-dotenv' {
   export const IS_APK_BUILD: 'true' | 'false';
   export const ENABLE_DEV_MODE: '0' | '1';
   export const SENTRY_ENDPOINT: string;
-  export const SENTRY_ENVIRONMENT: string;
   export const ADDYS_API_KEY: string;
   export const ETHEREUM_MAINNET_RPC_DEV: string;
   export const IMGIX_DOMAIN: string;

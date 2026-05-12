@@ -1,7 +1,4 @@
-import { createMMKV } from 'react-native-mmkv';
-
-import { IS_INTERNAL, IS_TEST } from '@/env';
-import { STORAGE_IDS } from '@/model/mmkv';
+import { IS_STORE_INSTALL, IS_TEST } from '@/env';
 
 /**
  * This file contains flags for enabling features which are still in development.
@@ -78,7 +75,7 @@ const config = {
   [RAINBOW_TRENDING_TOKENS_LIST]: { settings: true, value: false },
   [PRINCE_OF_THE_HILL]: { settings: true, value: false },
   [LAZY_TABS]: { needsRestart: true, settings: true, value: false },
-  [CANDLESTICK_CHARTS]: { settings: true, value: IS_INTERNAL || false },
+  [CANDLESTICK_CHARTS]: { settings: true, value: !IS_STORE_INSTALL },
   [CANDLESTICK_DATA_MONITOR]: { settings: true, value: false },
   [KING_OF_THE_HILL_TAB]: { settings: true, value: false },
   [RAINBOW_TOASTS]: { settings: true, value: false },
@@ -100,18 +97,3 @@ export const defaultConfigValues = Object.entries(defaultConfig).reduce(
   },
   {} as Record<ExperimentalConfigKey, boolean>
 );
-
-const storageKey = 'config';
-
-const storage = createMMKV({
-  id: STORAGE_IDS.EXPERIMENTAL_CONFIG,
-});
-
-export function getExperimentalFlag(key: ExperimentalConfigKey): boolean {
-  const config = storage.getString(storageKey);
-  if (typeof config !== 'string') {
-    return defaultConfig[key].value;
-  }
-  const parsedConfig: Record<ExperimentalConfigKey, boolean> = JSON.parse(config);
-  return parsedConfig[key] ?? defaultConfig[key].value;
-}

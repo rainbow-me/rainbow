@@ -1,9 +1,9 @@
 import React, { useMemo } from 'react';
+import { Platform } from 'react-native';
 
 import { toUpper } from 'lodash';
 
 import { useColorMode } from '@/design-system';
-import { IS_ANDROID } from '@/env';
 import ShadowStack from '@/react-native-shadow-stack';
 import { borders } from '@/styles';
 import { getFirstGrapheme } from '@/utils/formatters';
@@ -22,7 +22,7 @@ const buildShadows = (color, size, darkMode, colors) => {
   } else if (size === 'smaller' || size === 'smallest') {
     return [[0, 4, 12, darkMode ? darkModeThemeColors.shadow : darkModeThemeColors.avatarBackgrounds[color] || color, 0.3]];
   } else if (size === 'lmedium' || size === 'medium' || size === 'smedium') {
-    return [[0, 4, IS_ANDROID ? 5 : 12, darkMode ? colors.shadow : colors.avatarBackgrounds[color] || color, 0.4]];
+    return [[0, 4, Platform.OS === 'android' ? 5 : 12, darkMode ? colors.shadow : colors.avatarBackgrounds[color] || color, 0.4]];
   } else if (size === 'signing') {
     return [
       [0, 4, 12, darkMode ? colors.shadow : colors.avatarBackgrounds[color] || color, darkMode ? 0.16 : 0.2],
@@ -89,12 +89,13 @@ const sizeConfigs = colors => ({
   },
   rewards: {
     dimensions: 36,
-    shadow: IS_ANDROID
-      ? [[0, 4, 5, colors.shadow, 0.16]]
-      : [
-          [0, 4, 12, colors.shadow, 0.16],
-          [0, 2, 6, colors.shadow, 0.02],
-        ],
+    shadow:
+      Platform.OS === 'android'
+        ? [[0, 4, 5, colors.shadow, 0.16]]
+        : [
+            [0, 4, 12, colors.shadow, 0.16],
+            [0, 2, 6, colors.shadow, 0.02],
+          ],
     textSize: 'large',
   },
   smallest: {

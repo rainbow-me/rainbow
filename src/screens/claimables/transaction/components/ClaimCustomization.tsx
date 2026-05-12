@@ -1,4 +1,5 @@
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
+import { Platform } from 'react-native';
 
 import { triggerHaptics } from 'react-native-turbo-haptics';
 
@@ -7,7 +8,6 @@ import { type SearchAsset } from '@/__swaps__/types/search';
 import { NetworkSelectorButton } from '@/components/buttons/NetworkSelectorButton';
 import { type MenuItem } from '@/components/DropdownMenu';
 import { Box, Text, useColorMode } from '@/design-system';
-import { IS_ANDROID } from '@/env';
 import * as i18n from '@/languages';
 import { ETH_SYMBOL, USDC_ADDRESS } from '@/references/constants';
 import { useUserAssetsStore } from '@/state/assets/userAssets';
@@ -183,7 +183,7 @@ export function ClaimCustomization() {
       ...availableTokens,
     ];
 
-    if (IS_ANDROID) {
+    if (Platform.OS === 'android') {
       availableTokens = availableTokens.reverse();
     }
 

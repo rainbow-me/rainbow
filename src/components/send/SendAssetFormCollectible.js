@@ -1,8 +1,8 @@
 import React, { useCallback, useMemo, useState } from 'react';
+import { Platform } from 'react-native';
 
 import { LinearGradient } from 'expo-linear-gradient';
 
-import { IS_ANDROID } from '@/env';
 import styled from '@/framework/ui/styled-thing';
 import useDimensions from '@/hooks/useDimensions';
 import useImageMetadata from '@/hooks/useImageMetadata';
@@ -20,7 +20,7 @@ const ButtonWrapper = styled(Column).attrs({
   ...padding.object(0, 19, 15),
   marginBottom: 21,
   width: '100%',
-  ...(ios ? { zIndex: 3 } : { elevation: 3 }),
+  ...(Platform.OS === 'ios' ? { zIndex: 3 } : { elevation: 3 }),
 });
 
 const Footer = styled(Column).attrs({ justify: 'end' })({
@@ -110,7 +110,7 @@ export default function SendAssetFormCollectible({ asset, buttonRenderer, txSpee
           {buttonRenderer}
           {txSpeedRenderer}
         </ButtonWrapper>
-        {!IS_ANDROID && (
+        {Platform.OS !== 'android' && (
           <GradientToggler isVisible={!isGradientVisible}>
             <Gradient isTallPhone={isTallPhone} />
           </GradientToggler>

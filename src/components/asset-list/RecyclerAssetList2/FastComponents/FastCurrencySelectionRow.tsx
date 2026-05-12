@@ -1,5 +1,5 @@
 import React from 'react';
-import { Text as RNText, StyleSheet, View } from 'react-native';
+import { Platform, Text as RNText, StyleSheet, View } from 'react-native';
 
 import isEqual from 'react-fast-compare';
 import RadialGradient from 'react-native-radial-gradient';
@@ -7,7 +7,7 @@ import RadialGradient from 'react-native-radial-gradient';
 import RainbowCoinIcon from '@/components/coin-icon/RainbowCoinIcon';
 import ContextMenuButton from '@/components/native-context-menu/contextMenu';
 import { Text, TextIcon } from '@/design-system';
-import { IS_ANDROID, IS_IOS, IS_TEST } from '@/env';
+import { IS_TEST } from '@/env';
 import { opacity } from '@/framework/ui/utils/opacity';
 import { isNativeAsset } from '@/handlers/assets';
 import { ChainId } from '@/state/backendNetworks/types';
@@ -160,7 +160,7 @@ export default React.memo(function FastCurrencySelectionRow({
         <View style={sx.fav}>
           {isInfoButtonVisible && <Info contextMenuProps={contextMenuProps} showFavoriteButton={canShowFavoriteButton} theme={theme} />}
           {canShowFavoriteButton &&
-            (IS_IOS ? (
+            (Platform.OS === 'ios' ? (
               <FloatingEmojis
                 centerVertically
                 disableHorizontalMovement
@@ -235,7 +235,7 @@ const sx = StyleSheet.create({
     overflow: 'hidden',
   },
   infoIcon: {
-    paddingTop: IS_ANDROID ? 2 : 1,
+    paddingTop: Platform.OS === 'android' ? 2 : 1,
     paddingLeft: StyleSheet.hairlineWidth * 2,
   },
   info: {
@@ -251,7 +251,7 @@ const sx = StyleSheet.create({
   name: {
     fontSize: getFontSize(fonts.size.lmedium),
     letterSpacing: 0.5,
-    lineHeight: IS_IOS ? 16 : 17,
+    lineHeight: Platform.OS === 'ios' ? 16 : 17,
     ...fontWithWidth(fonts.weight.semibold),
   },
   nameWithBalances: {
@@ -276,13 +276,13 @@ const sx = StyleSheet.create({
     color: colors.yellowFavorite,
   },
   starIcon: {
-    paddingTop: IS_IOS ? 1 : 3,
+    paddingTop: Platform.OS === 'ios' ? 1 : 3,
     paddingLeft: StyleSheet.hairlineWidth * 2,
   },
   symbol: {
     fontSize: getFontSize(fonts.size.smedium),
     letterSpacing: 0.5,
-    lineHeight: IS_IOS ? 13.5 : 16,
+    lineHeight: Platform.OS === 'ios' ? 13.5 : 16,
     paddingTop: 5.5,
     ...fontWithWidth(fonts.weight.medium),
   },

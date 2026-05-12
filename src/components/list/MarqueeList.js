@@ -1,4 +1,5 @@
 import React, { useCallback, useRef } from 'react';
+import { Platform } from 'react-native';
 
 import { useFocusEffect } from '@react-navigation/native';
 import { Gesture, GestureDetector } from 'react-native-gesture-handler';
@@ -56,20 +57,20 @@ const SwipeableList = ({ components, height, speed, testID }) => {
   const panGesture = Gesture.Pan()
     .activeOffsetX([-6, 10])
     .onBegin(() => {
-      if (android) {
+      if (Platform.OS === 'android') {
         cancelAnimation(transX);
         cancelAnimation(swiping);
       }
     })
     .onStart(() => {
       panStart.value = transX.value;
-      if (android) runOnJS(startPan)();
+      if (Platform.OS === 'android') runOnJS(startPan)();
     })
     .onUpdate(event => {
       transX.value = panStart.value + event.translationX;
     })
     .onEnd(event => {
-      if (android) runOnJS(endPan)();
+      if (Platform.OS === 'android') runOnJS(endPan)();
       transX.value = withDecay({
         deceleration: DECCELERATION,
         velocity: event.velocityX,
@@ -78,7 +79,7 @@ const SwipeableList = ({ components, height, speed, testID }) => {
     })
     .onFinalize((_, success) => {
       if (!success) {
-        if (android) runOnJS(endPan)();
+        if (Platform.OS === 'android') runOnJS(endPan)();
         swiping.value = withSpeed({ targetSpeed: speed });
       }
     });
@@ -99,7 +100,7 @@ const SwipeableList = ({ components, height, speed, testID }) => {
   const tapGesture = Gesture.Tap()
     .cancelsTouchesInView(false)
     .onBegin(() => {
-      if (ios) {
+      if (Platform.OS === 'ios') {
         cancelAnimation(transX);
         cancelAnimation(swiping);
       }
@@ -108,7 +109,7 @@ const SwipeableList = ({ components, height, speed, testID }) => {
       swiping.value = withSpeed({ targetSpeed: speed });
     })
     .onFinalize((_, success) => {
-      if (!success && ios) {
+      if (!success && Platform.OS === 'ios') {
         swiping.value = withSpeed({ targetSpeed: speed });
       }
     });
@@ -116,7 +117,7 @@ const SwipeableList = ({ components, height, speed, testID }) => {
   const longPressGesture = Gesture.LongPress()
     .maxDistance(100000)
     .onEnd(() => {
-      if (android) swiping.value = withSpeed({ targetSpeed: speed });
+      if (Platform.OS === 'android') swiping.value = withSpeed({ targetSpeed: speed });
     });
 
   const translate = useDerivedValue(() => swiping.value + transX.value, []);
@@ -139,7 +140,7 @@ const SwipeableList = ({ components, height, speed, testID }) => {
             transX={translate}
           >
             {components.map(({ view }) =>
-              ios
+              Platform.OS === 'ios'
                 ? view({
                     testID: null,
                   })
@@ -151,7 +152,7 @@ const SwipeableList = ({ components, height, speed, testID }) => {
           </SingleElement>
           <SingleElement offset={offset} sumWidth={offset} transX={translate}>
             {components.map(({ view }) =>
-              ios
+              Platform.OS === 'ios'
                 ? view({
                     testID: testID,
                   })
@@ -172,16 +173,17 @@ const MarqueeList = ({ height, items = /** @type {any[]} */ ([]), renderItem, sp
     <>
       <SwipeableList
         components={items.map((item, index) => ({
-          view: ios
-            ? () => renderItem({ index, item, testID: item.testID })
-            : ({ onPressCancel, onPressStart }) =>
-                renderItem({
-                  index,
-                  item,
-                  onPressCancel,
-                  onPressStart,
-                  testID: item.testID,
-                }),
+          view:
+            Platform.OS === 'ios'
+              ? () => renderItem({ index, item, testID: item.testID })
+              : ({ onPressCancel, onPressStart }) =>
+                  renderItem({
+                    index,
+                    item,
+                    onPressCancel,
+                    onPressStart,
+                    testID: item.testID,
+                  }),
         }))}
         height={height}
         speed={speed}

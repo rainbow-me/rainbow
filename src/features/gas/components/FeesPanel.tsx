@@ -1,5 +1,5 @@
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
-import { InteractionManager, Keyboard, KeyboardAvoidingView } from 'react-native';
+import { InteractionManager, Keyboard, KeyboardAvoidingView, Platform } from 'react-native';
 
 import { useIsFocused, useRoute, type RouteProp } from '@react-navigation/native';
 
@@ -7,7 +7,7 @@ import { Alert } from '@/components/alerts';
 import ButtonPressAnimation from '@/components/animations/ButtonPressAnimation';
 import FeesGweiInput from '@/components/FeesGweiInput';
 import { Box, Inline, Inset, Row, Rows, Text } from '@/design-system';
-import { IS_ANDROID, IS_TEST } from '@/env';
+import { IS_TEST } from '@/env';
 import { opacity } from '@/framework/ui/utils/opacity';
 import { isL2Chain } from '@/handlers/web3';
 import { add, greaterThan, isZero, lessThan, multiply, toFixedDecimals } from '@/helpers/utilities';
@@ -173,7 +173,7 @@ export default function FeesPanel({ currentGasTrend, colorForAsset, setCanGoBack
                 {text}
               </Text>
             </Text>
-            <Box marginBottom={IS_ANDROID ? '-4px' : undefined}></Box>
+            <Box marginBottom={Platform.OS === 'android' ? '-4px' : undefined}></Box>
           </Inline>
         </Box>
       );

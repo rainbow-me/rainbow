@@ -1,10 +1,10 @@
 import React, { useCallback, useState } from 'react';
+import { Platform } from 'react-native';
 
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 import { SimpleSheet } from '@/components/sheet/SimpleSheet';
 import { Box } from '@/design-system';
-import { IS_ANDROID, IS_IOS } from '@/env';
 import styled from '@/framework/ui/styled-thing';
 import { toChecksumAddress } from '@/handlers/web3';
 import useDimensions from '@/hooks/useDimensions';
@@ -21,7 +21,7 @@ import ShareButton from '../components/qr-code/ShareButton';
 import { Text, TruncatedAddress } from '../components/text';
 import { CopyToast, ToastPositionContainer } from '../components/toasts';
 
-const QRCodeSize = IS_IOS ? 250 : Math.min(230, deviceUtils.dimensions.width - 20);
+const QRCodeSize = Platform.OS === 'ios' ? 250 : Math.min(230, deviceUtils.dimensions.width - 20);
 
 const AddressText = styled(TruncatedAddress).attrs(({ theme: { colors } }) => ({
   align: 'center',
@@ -71,7 +71,7 @@ export default function ReceiveModal() {
       testID="receive-modal"
       backgroundColor={'rgba(0,0,0,0.85)'}
       useAdditionalTopPadding
-      customHeight={IS_ANDROID ? deviceHeight - top : deviceHeight - sharedCoolModalTopOffset}
+      customHeight={Platform.OS === 'android' ? deviceHeight - top : deviceHeight - sharedCoolModalTopOffset}
       scrollEnabled={false}
     >
       <Box alignItems="center" justifyContent="center" height="full" width="full">

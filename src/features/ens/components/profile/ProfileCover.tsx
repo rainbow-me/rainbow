@@ -1,5 +1,5 @@
 import React from 'react';
-import { View } from 'react-native';
+import { Platform, View } from 'react-native';
 
 import RadialGradient from 'react-native-radial-gradient';
 import Animated from 'react-native-reanimated';
@@ -11,7 +11,7 @@ import { Box, useForegroundColor } from '@/design-system';
 import useFadeImage from '@/hooks/useFadeImage';
 import { sharedCoolModalTopOffset } from '@/navigation/config';
 
-const imagePreviewOverlayTopOffset = ios ? 68 + sharedCoolModalTopOffset : 107;
+const imagePreviewOverlayTopOffset = Platform.OS === 'ios' ? 68 + sharedCoolModalTopOffset : 107;
 
 export default function ProfileCover({
   coverUrl,
@@ -32,7 +32,7 @@ export default function ProfileCover({
   });
 
   const showSkeleton = isLoading || !isFetched;
-  const showRadialGradient = ios && !coverUrl && isFetched && !isLoading;
+  const showRadialGradient = Platform.OS === 'ios' && !coverUrl && isFetched && !isLoading;
 
   return (
     <>

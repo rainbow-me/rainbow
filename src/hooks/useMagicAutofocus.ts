@@ -1,10 +1,9 @@
 import type React from 'react';
 import { useCallback, useEffect, useRef } from 'react';
-import { InteractionManager, TextInput } from 'react-native';
+import { InteractionManager, Platform, TextInput } from 'react-native';
 
 import { useFocusEffect, useIsFocused } from '@react-navigation/native';
 
-import { IS_ANDROID } from '@/env';
 import { setListener } from '@/navigation/nativeStackHelpers';
 
 import useInteraction from './useInteraction';
@@ -90,7 +89,7 @@ export default function useMagicAutofocus(
   // ✨️ Make the magic happen
   useFocusEffect(
     useCallback(() => {
-      if (android && !shouldFocusOnNavigateOnAndroid) {
+      if (Platform.OS === 'android' && !shouldFocusOnNavigateOnAndroid) {
         return;
       }
 
@@ -106,7 +105,7 @@ export default function useMagicAutofocus(
             delay = false;
           }, 400);
         });
-      } else if (IS_ANDROID) {
+      } else if (Platform.OS === 'android') {
         // We need to do this in order to assure that the input gets focused
         // when using fallback stacks.
         InteractionManager.runAfterInteractions(fallbackRefocusLastInput);

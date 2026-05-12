@@ -1,5 +1,5 @@
 import React, { useCallback, useMemo } from 'react';
-import { InteractionManager, View } from 'react-native';
+import { InteractionManager, Platform, View } from 'react-native';
 
 import MaskedView from '@react-native-masked-view/masked-view';
 import { useRoute, type RouteProp } from '@react-navigation/native';
@@ -11,7 +11,7 @@ import { ContextMenu } from '@/components/context-menu';
 import ContextMenuButton from '@/components/native-context-menu/contextMenu';
 import { SheetActionButton } from '@/components/sheet';
 import { Bleed, Box, Column, Columns, Heading, Inset, Row, Rows, Separator, Stack, Text } from '@/design-system';
-import { IS_ANDROID, IS_TEST } from '@/env';
+import { IS_TEST } from '@/env';
 import useDimensions from '@/hooks/useDimensions';
 import * as i18n from '@/languages';
 import { useNavigation } from '@/navigation/Navigation';
@@ -32,7 +32,7 @@ enum AnotherENSEnum {
   my_ens = 'my_ens',
 }
 
-const topPadding = android ? 29 : 19;
+const topPadding = Platform.OS === 'android' ? 29 : 19;
 
 const minHeight = 740;
 
@@ -93,7 +93,7 @@ const ContextMenuRenderer = ({ children, handleSelectExistingName, handleNavigat
     [handleNavigateToSearch, handleSelectExistingName]
   );
 
-  if (IS_ANDROID) {
+  if (Platform.OS === 'android') {
     return (
       <ContextMenu
         activeOpacity={0}
@@ -238,7 +238,7 @@ export default function ENSIntroSheet() {
                   {isFetched && (
                     <>
                       {controlledDomains?.length === 0 ? (
-                        <Inset bottom={android ? '10px' : undefined}>
+                        <Inset bottom={Platform.OS === 'android' ? '10px' : undefined}>
                           <SheetActionButton
                             color={colors.appleBlue}
                             label={'􀠎 ' + i18n.t(i18n.l.profiles.intro.find_your_name)}
@@ -319,7 +319,7 @@ function InfoRow({ icon, title, description }: { icon: string; title: string; de
         <MaskedView
           maskElement={
             <Box
-              {...(android && {
+              {...(Platform.OS === 'android' && {
                 paddingTop: '6px',
               })}
             >

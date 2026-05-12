@@ -1,5 +1,5 @@
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
-import { type GestureResponderEvent } from 'react-native';
+import { Platform, type GestureResponderEvent } from 'react-native';
 
 import { useRoute } from '@react-navigation/native';
 
@@ -7,7 +7,6 @@ import { analytics } from '@/analytics';
 import { ChainImage } from '@/components/coin-icon/ChainImage';
 import { ExtremeLabels } from '@/components/value-chart/ExtremeLabels';
 import { AccentColorProvider, Bleed, Box, Inline, Stack, Text } from '@/design-system';
-import { IS_IOS } from '@/env';
 import { opacity } from '@/framework/ui/utils/opacity';
 import useChartThrottledPoints from '@/hooks/charts/useChartThrottledPoints';
 import { useAccountAccentColor } from '@/hooks/useAccountAccentColor';
@@ -140,7 +139,7 @@ export const EthCard = () => {
   const { f2c_enabled: addCashEnabled } = useRemoteConfig();
 
   return (
-    <GenericCard onPress={IS_IOS ? handleAssetPress : handlePressBuy} type={cardType} testID="eth-card">
+    <GenericCard onPress={Platform.OS === 'ios' ? handleAssetPress : handlePressBuy} type={cardType} testID="eth-card">
       <Stack space={{ custom: 41 }}>
         <Stack space="12px">
           <Bleed top="4px">

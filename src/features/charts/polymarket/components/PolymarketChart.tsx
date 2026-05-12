@@ -1,5 +1,5 @@
 import React, { memo, useCallback, useMemo } from 'react';
-import { StyleSheet, View } from 'react-native';
+import { Platform, StyleSheet, View } from 'react-native';
 
 import { Canvas, Picture, type SkPicture } from '@shopify/react-native-skia';
 import { cloneDeep, merge } from 'lodash';
@@ -17,7 +17,6 @@ import { AnimatedSpinner } from '@/components/animations/AnimatedSpinner';
 import { SPRING_CONFIGS } from '@/components/animations/animationConfigs';
 import { globalColors, useColorMode, useForegroundColor } from '@/design-system';
 import { useSkiaText } from '@/design-system/components/SkiaText/useSkiaText';
-import { IS_IOS } from '@/env';
 import { opacity } from '@/framework/ui/utils/opacity';
 import { useWorkletClass } from '@/hooks/reanimated/useWorkletClass';
 import { useCleanup } from '@/hooks/useCleanup';
@@ -239,7 +238,7 @@ export const PolymarketChart = memo(function PolymarketChart({
   }, [backgroundColor, chartManager, isDarkMode]);
 
   useOnChange(() => {
-    if (IS_IOS) return;
+    if (Platform.OS === 'ios') return;
     runOnUI(() => chartManager.value?.setBuildParagraph?.(buildParagraph))();
   }, [buildParagraph, chartManager]);
 

@@ -1,5 +1,5 @@
 import React, { memo, useCallback, useMemo } from 'react';
-import { StyleSheet, type TextInput } from 'react-native';
+import { Platform, StyleSheet, type TextInput } from 'react-native';
 
 import ConditionalWrap from 'conditional-wrap';
 import { BlurView } from 'react-native-blur-view';
@@ -9,7 +9,6 @@ import { triggerHaptics } from 'react-native-turbo-haptics';
 import { GestureHandlerButton } from '@/components/buttons/GestureHandlerButton';
 import ContextMenuButton from '@/components/native-context-menu/contextMenu';
 import { AnimatedText, Bleed, Box, globalColors, useColorMode, useForegroundColor } from '@/design-system';
-import { IS_IOS } from '@/env';
 import { showActionSheetWithOptions } from '@/framework/ui/utils/actionsheet';
 import { opacity } from '@/framework/ui/utils/opacity';
 import { useSharedValueState } from '@/hooks/reanimated/useSharedValueState';
@@ -53,7 +52,7 @@ export const TabButton = React.memo(function TabButton({
 
   const buttonColorIOS = isDarkMode ? fillSecondary : opacity(globalColors.white100, 0.9);
   const buttonColorAndroid = isDarkMode ? globalColors.blueGrey100 : globalColors.white100;
-  const buttonColor = IS_IOS ? buttonColorIOS : buttonColorAndroid;
+  const buttonColor = Platform.OS === 'ios' ? buttonColorIOS : buttonColorAndroid;
   const label = useForegroundColor('label');
   const labelSecondary = useForegroundColor('labelSecondary');
 
@@ -183,11 +182,11 @@ export const TabButton = React.memo(function TabButton({
     <BrowserButtonShadows borderRadius={TAB_BUTTON_SIZE / 2} hideDarkModeShadows>
       <Bleed space="8px">
         <ConditionalWrap
-          condition={IS_IOS}
+          condition={Platform.OS === 'ios'}
           wrap={children => (
             <ContextMenuButton
-              enableContextMenu={IS_IOS ? !isFocusedState : undefined}
-              isMenuPrimaryAction={IS_IOS ? isFocusedState : undefined}
+              enableContextMenu={Platform.OS === 'ios' ? !isFocusedState : undefined}
+              isMenuPrimaryAction={Platform.OS === 'ios' ? isFocusedState : undefined}
               menuConfig={longPressMenuConfig}
               onPressMenuItem={onPressMenuItem}
             >
@@ -196,7 +195,7 @@ export const TabButton = React.memo(function TabButton({
           )}
         >
           <GestureHandlerButton
-            onLongPressJS={IS_IOS || isFocusedState ? undefined : onLongPressAndroid}
+            onLongPressJS={Platform.OS === 'ios' || isFocusedState ? undefined : onLongPressAndroid}
             onPressWorklet={onPressWorklet}
             style={{ padding: 8 }}
           >
@@ -224,14 +223,14 @@ const BlurLayer = memo(function BlurLayer({ buttonColor }: { buttonColor: string
 
   return (
     <>
-      {IS_IOS && <BlurView blurIntensity={20} blurStyle={isDarkMode ? 'dark' : 'light'} style={styles.blurLayer} />}
+      {Platform.OS === 'ios' && <BlurView blurIntensity={20} blurStyle={isDarkMode ? 'dark' : 'light'} style={styles.blurLayer} />}
       <Box
         style={[
           styles.blurTint,
           {
             backgroundColor: buttonColor,
             borderColor: separatorSecondary,
-            borderWidth: IS_IOS && isDarkMode ? THICK_BORDER_WIDTH : 0,
+            borderWidth: Platform.OS === 'ios' && isDarkMode ? THICK_BORDER_WIDTH : 0,
           },
         ]}
       />

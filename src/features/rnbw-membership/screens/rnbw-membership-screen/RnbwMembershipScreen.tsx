@@ -1,5 +1,5 @@
 import { memo, useCallback, useState } from 'react';
-import { RefreshControl, View } from 'react-native';
+import { Platform, RefreshControl, View } from 'react-native';
 
 import Animated, { useAnimatedStyle, useSharedValue } from 'react-native-reanimated';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
@@ -10,7 +10,6 @@ import { ScrollHeaderFade } from '@/components/scroll-header-fade/ScrollHeaderFa
 import { useScrollFadeHandler } from '@/components/scroll-header-fade/useScrollFadeHandler';
 import { Box, useColorMode } from '@/design-system';
 import { getValueForColorMode } from '@/design-system/color/palettes';
-import { IS_ANDROID } from '@/env';
 import { MEMBERSHIP_SCREEN_BACKGROUND_COLOR } from '@/features/rnbw-membership/constants';
 import { useAirdropBalanceStore } from '@/features/rnbw-rewards/stores/airdropBalanceStore';
 import { useRewardsBalanceStore } from '@/features/rnbw-rewards/stores/rewardsBalanceStore';
@@ -49,7 +48,7 @@ export const RnbwMembershipScreen = memo(function RnbwMembershipScreen() {
       <Animated.ScrollView
         refreshControl={<RefreshControlWrapper />}
         contentContainerStyle={{
-          paddingBottom: IS_ANDROID ? bottomInset : 0,
+          paddingBottom: Platform.OS === 'android' ? bottomInset : 0,
         }}
         style={scrollViewAnimatedStyle}
         onScroll={onScroll}

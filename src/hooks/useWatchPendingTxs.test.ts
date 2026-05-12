@@ -30,6 +30,9 @@ jest.mock('@/resources/transactions/transaction', () => ({
 }));
 
 jest.mock('@/config/experimentalHooks', () => ({}));
+jest.mock('@/config/experimentalConfigStore', () => ({
+  getExperimentalFlag: jest.fn(() => false),
+}));
 
 jest.mock('@/redux/store', () => ({
   __esModule: true,

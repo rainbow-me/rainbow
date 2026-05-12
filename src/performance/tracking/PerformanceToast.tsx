@@ -1,12 +1,13 @@
 import React from 'react';
-import { StyleSheet, View } from 'react-native';
+import { Platform, StyleSheet, View } from 'react-native';
 
 import { toast } from 'sonner-native';
 
-import { getExperimentalFlag, PERFORMANCE_TOAST } from '@/config/experimentalHooks';
+import { PERFORMANCE_TOAST } from '@/config/experimental';
+import { getExperimentalFlag } from '@/config/experimentalConfigStore';
 import { globalColors } from '@/design-system';
 import { typeHierarchy } from '@/design-system/typography/typeHierarchy';
-import { IS_IOS, IS_TEST } from '@/env';
+import { IS_TEST } from '@/env';
 import { opacity } from '@/framework/ui/utils/opacity';
 import { getNumberFormatter } from '@/helpers/intl';
 import { fontWithWidth } from '@/styles';
@@ -86,11 +87,11 @@ export async function showPerformanceToast(results: Record<string, number>) {
   const styles = StyleSheet.create({
     toastContainerDark: {
       ...conditionalStyles.toastContainer,
-      ...(IS_IOS ? conditionalStyles.toastContainerShadowDark : {}),
+      ...(Platform.OS === 'ios' ? conditionalStyles.toastContainerShadowDark : {}),
     },
     toastContainerLight: {
       ...conditionalStyles.toastContainer,
-      ...(IS_IOS ? conditionalStyles.toastContainerShadowLight : {}),
+      ...(Platform.OS === 'ios' ? conditionalStyles.toastContainerShadowLight : {}),
     },
     toastContent: {
       alignItems: 'center',
@@ -100,12 +101,12 @@ export async function showPerformanceToast(results: Record<string, number>) {
     },
     toastDark: {
       ...conditionalStyles.toast,
-      ...(IS_IOS ? conditionalStyles.toastBorderDark : {}),
+      ...(Platform.OS === 'ios' ? conditionalStyles.toastBorderDark : {}),
     },
     toastLight: conditionalStyles.toast,
     title: {
       ...conditionalStyles.title,
-      ...(IS_IOS ? conditionalStyles.titleShadow : {}),
+      ...(Platform.OS === 'ios' ? conditionalStyles.titleShadow : {}),
     },
     zeroDimensions: {
       height: 0,

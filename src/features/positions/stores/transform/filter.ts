@@ -1,4 +1,5 @@
-import { DEFI_POSITIONS_THRESHOLD_FILTER, getExperimentalFlag } from '@/config/experimentalHooks';
+import { DEFI_POSITIONS_THRESHOLD_FILTER } from '@/config/experimental';
+import { getExperimentalFlag } from '@/config/experimentalConfigStore';
 
 import { type RainbowPosition } from '../../types';
 import { DetailType, PositionName, type PortfolioItem, type PositionToken } from '../../types/generated/positions/positions';

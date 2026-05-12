@@ -1,4 +1,5 @@
 import { useCallback, useEffect, useMemo } from 'react';
+import { Platform } from 'react-native';
 
 import { Gesture } from 'react-native-gesture-handler';
 import {
@@ -13,7 +14,6 @@ import {
 import { triggerHaptics } from 'react-native-turbo-haptics';
 
 import { SPRING_CONFIGS } from '@/components/animations/animationConfigs';
-import { IS_ANDROID, IS_IOS } from '@/env';
 import { useStableValue } from '@/hooks/useStableValue';
 import { useBrowserStore } from '@/state/browser/browserStore';
 import { DEVICE_HEIGHT, DEVICE_WIDTH } from '@/utils/deviceUtils';
@@ -59,7 +59,7 @@ export function useBrowserScrollView() {
   const scrollViewHeight = useDerivedValue(() => {
     const numberOfTabs = _WORKLET ? currentlyOpenTabIds.value.length : initialNumberOfTabs;
     const height = Math.max(
-      Math.ceil(numberOfTabs / 2) * TAB_VIEW_ROW_HEIGHT + safeAreaInsetValues.bottom + 165 + 28 + (IS_ANDROID ? 35 : 0),
+      Math.ceil(numberOfTabs / 2) * TAB_VIEW_ROW_HEIGHT + safeAreaInsetValues.bottom + 165 + 28 + (Platform.OS === 'android' ? 35 : 0),
       DEVICE_HEIGHT
     );
     return withSpring(height, SPRING_CONFIGS.slowSpring);
@@ -187,7 +187,7 @@ export function useBrowserScrollView() {
 
             // Handle iOS scroll bounce
             if (gestureManagerState.value === 'pending') {
-              if (IS_IOS) {
+              if (Platform.OS === 'ios') {
                 if (scrollViewOffset.value < 0) {
                   // Snap back to top
                   dispatchCommand(scrollViewRef, 'scrollTo', [0, 0, true]);

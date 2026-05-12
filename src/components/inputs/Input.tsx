@@ -1,8 +1,7 @@
 import React, { type ForwardedRef } from 'react';
-import { TextInput as TextInputPrimitive, type StyleProp, type TextInputProps, type TextStyle } from 'react-native';
+import { Platform, TextInput as TextInputPrimitive, type StyleProp, type TextInputProps, type TextStyle } from 'react-native';
 
 import { useColorMode, useForegroundColor } from '@/design-system';
-import { IS_ANDROID, IS_IOS } from '@/env';
 import styled from '@/framework/ui/styled-thing';
 import { opacity } from '@/framework/ui/utils/opacity';
 import { buildTextStyles } from '@/styles';
@@ -37,7 +36,7 @@ const Input = (
   const labelQuaternary = useForegroundColor('labelQuaternary');
 
   const blue = isDarkMode ? '#0A84FF' : '#007AFF';
-  const defaultSelectionColor = IS_IOS ? blue : opacity(blue, 0.2);
+  const defaultSelectionColor = Platform.OS === 'ios' ? blue : opacity(blue, 0.2);
 
   return (
     <TextInput
@@ -51,7 +50,7 @@ const Input = (
       ref={ref}
       selectionColor={selectionColor || defaultSelectionColor}
       spellCheck={spellCheck}
-      style={[IS_ANDROID && { padding: 0, includeFontPadding: false }, style]}
+      style={[Platform.OS === 'android' && { padding: 0, includeFontPadding: false }, style]}
       testID={testID}
       textContentType={textContentType}
     />

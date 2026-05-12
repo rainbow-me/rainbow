@@ -1,5 +1,5 @@
 import { useCallback, useEffect, useMemo, type JSX, type ReactNode } from 'react';
-import { FlatList, View } from 'react-native';
+import { FlatList, Platform, View } from 'react-native';
 
 import { LinearGradient } from 'expo-linear-gradient';
 import Animated, { useSharedValue, type SharedValue } from 'react-native-reanimated';
@@ -13,7 +13,6 @@ import Skeleton, { FakeAvatar, FakeText } from '@/components/skeleton/Skeleton';
 import { globalColors, IconContainer, Text, TextIcon, useBackgroundColor, useColorMode } from '@/design-system';
 import { useForegroundColor } from '@/design-system/color/useForegroundColor';
 import { type NativeCurrencyKey } from '@/entities/nativeCurrencyTypes';
-import { IS_IOS } from '@/env';
 import { opacity } from '@/framework/ui/utils/opacity';
 import { SortDirection, Timeframe, TrendingSort } from '@/graphql/__generated__/arc';
 import { formatCurrency, formatNumber } from '@/helpers/strings';
@@ -91,7 +90,7 @@ function FilterButton({
           <TextIcon
             color={{ custom: iconColor || defaultIconColor }}
             size="icon 13px"
-            textStyle={IS_IOS ? undefined : { marginTop: -2 }}
+            textStyle={Platform.OS === 'ios' ? undefined : { marginTop: -2 }}
             weight="heavy"
             width={16}
           >
@@ -232,7 +231,7 @@ function CategoryFilterButton({
           <TextIcon
             color={{ custom: typeof iconColor === 'string' ? iconColor : selected ? iconColor.selected : iconColor.default }}
             size="icon 13px"
-            textStyle={{ marginTop: IS_IOS ? -3.5 : -2 }}
+            textStyle={{ marginTop: Platform.OS === 'ios' ? -3.5 : -2 }}
             weight="heavy"
             width={iconWidth}
           >
@@ -422,7 +421,7 @@ function TrendingTokenRow({ token, currency }: { token: TrendingToken; currency:
             <View style={{ gap: 12 }}>
               <View
                 style={{
-                  alignItems: IS_IOS ? 'baseline' : 'flex-end',
+                  alignItems: Platform.OS === 'ios' ? 'baseline' : 'flex-end',
                   flexDirection: 'row',
                   gap: 6,
                   height: 12,
@@ -446,7 +445,7 @@ function TrendingTokenRow({ token, currency }: { token: TrendingToken; currency:
                   ellipsizeMode="middle"
                   size="11pt"
                   style={{
-                    bottom: IS_IOS ? 0 : -0.2,
+                    bottom: Platform.OS === 'ios' ? 0 : -0.2,
                     maxWidth: symbolWidth,
                   }}
                   weight="bold"
@@ -668,7 +667,7 @@ function SortFilter() {
           <TextIcon
             color={{ custom: iconColor }}
             size="icon 13px"
-            textStyle={IS_IOS ? undefined : { marginTop: -2 }}
+            textStyle={Platform.OS === 'ios' ? undefined : { marginTop: -2 }}
             weight="heavy"
             width={20}
           >

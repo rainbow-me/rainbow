@@ -1,5 +1,5 @@
 import React, { useCallback } from 'react';
-import { type TextInput } from 'react-native';
+import { Platform, type TextInput } from 'react-native';
 
 import { LinearGradient } from 'expo-linear-gradient';
 // @ts-expect-error - no declaration file
@@ -7,7 +7,7 @@ import TextInputMask from 'react-native-text-input-mask';
 
 import ButtonPressAnimation from '@/components/animations/ButtonPressAnimation';
 import { Box, Inline, Inset, Text } from '@/design-system';
-import { IS_ANDROID, IS_TEST } from '@/env';
+import { IS_TEST } from '@/env';
 import styled from '@/framework/ui/styled-thing';
 import { opacity } from '@/framework/ui/utils/opacity';
 import { buildTextStyles, padding } from '@/styles';
@@ -33,7 +33,7 @@ const GweiNumberInput = styled(TextInputMask).attrs(
     keyboardType: 'decimal-pad',
     // On android using letterSpacing causes wrong text input width
     // which causes numbers to be cut off a little bit.
-    letterSpacing: IS_ANDROID ? null : 'rounded',
+    letterSpacing: Platform.OS === 'android' ? null : 'rounded',
     size: 'lmedium',
     textAlign: 'left',
     timing: 'linear',
@@ -47,7 +47,7 @@ const GweiNumberInput = styled(TextInputMask).attrs(
   props => ({
     // @ts-expect-error
     ...buildTextStyles.object(props),
-    ...(IS_ANDROID ? padding.object(0, 0, 0, 0) : {}),
+    ...(Platform.OS === 'android' ? padding.object(0, 0, 0, 0) : {}),
   })
 );
 

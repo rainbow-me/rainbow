@@ -1,5 +1,5 @@
 import React, { useCallback, useMemo, useRef, useState, type ReactNode } from 'react';
-import { InteractionManager, Share, View } from 'react-native';
+import { InteractionManager, Platform, Share, View } from 'react-native';
 
 import { useFocusEffect } from '@react-navigation/native';
 import c from 'chroma-js';
@@ -9,7 +9,8 @@ import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import URL from 'url-parse';
 
 import { analytics } from '@/analytics';
-import useExperimentalFlag, { PROFILES } from '@/config/experimentalHooks';
+import { PROFILES } from '@/config/experimental';
+import useExperimentalFlag from '@/config/experimentalHooks';
 import {
   AccentColorProvider,
   Bleed,
@@ -30,7 +31,6 @@ import {
 } from '@/design-system';
 import { AssetType } from '@/entities/assetTypes';
 import type { UniqueAsset } from '@/entities/uniqueAssets';
-import { IS_ANDROID, IS_IOS } from '@/env';
 import ENSBriefTokenInfoRow from '@/features/ens/components/ENSBriefTokenInfoRow';
 import ConfigurationSection from '@/features/ens/components/expanded-state/ConfigurationSection';
 import ProfileInfoSection from '@/features/ens/components/expanded-state/ProfileInfoSection';
@@ -99,7 +99,7 @@ const BlurWrapper = styled(View).attrs({
   overflow: 'hidden',
   position: 'absolute',
   width: ({ width }: BlurWrapperProps) => width,
-  ...(IS_ANDROID ? { borderTopLeftRadius: 30, borderTopRightRadius: 30 } : {}),
+  ...(Platform.OS === 'android' ? { borderTopLeftRadius: 30, borderTopRightRadius: 30 } : {}),
 });
 
 const Spacer = styled(View)({
@@ -179,7 +179,7 @@ const Section = ({
               <Heading
                 containsEmoji
                 color="primary (Deprecated)"
-                size={IS_IOS ? '23px / 27px (Deprecated)' : '20px / 22px (Deprecated)'}
+                size={Platform.OS === 'ios' ? '23px / 27px (Deprecated)' : '20px / 22px (Deprecated)'}
                 weight="heavy"
               >
                 {titleEmoji}
@@ -359,7 +359,7 @@ const UniqueTokenExpandedState = ({ asset, external }: UniqueTokenExpandedStateP
     }
 
     Share.share({
-      message: IS_ANDROID ? shareUrl : undefined,
+      message: Platform.OS === 'android' ? shareUrl : undefined,
       title: `Share ${buildUniqueTokenName({
         collectionName: asset.collectionName ?? '',
         tokenId: asset.tokenId,
@@ -417,7 +417,7 @@ const UniqueTokenExpandedState = ({ asset, external }: UniqueTokenExpandedStateP
 
   return (
     <>
-      {IS_IOS && (
+      {Platform.OS === 'ios' && (
         <BlurWrapper height={deviceHeight} width={deviceWidth}>
           <BackgroundImage>
             <UniqueTokenImage
@@ -434,10 +434,12 @@ const UniqueTokenExpandedState = ({ asset, external }: UniqueTokenExpandedStateP
         </BlurWrapper>
       )}
       <SlackSheet
-        backgroundColor={isDarkMode ? `rgba(22, 22, 22, ${IS_IOS ? 0.4 : 1})` : `rgba(26, 26, 26, ${IS_IOS ? 0.4 : 1})`}
+        backgroundColor={
+          isDarkMode ? `rgba(22, 22, 22, ${Platform.OS === 'ios' ? 0.4 : 1})` : `rgba(26, 26, 26, ${Platform.OS === 'ios' ? 0.4 : 1})`
+        }
         bottomInset={42}
         hideHandle
-        {...(IS_IOS ? { height: '100%' } : { additionalTopPadding: true, contentHeight: deviceHeight })}
+        {...(Platform.OS === 'ios' ? { height: '100%' } : { additionalTopPadding: true, contentHeight: deviceHeight })}
         ref={sheetRef}
         scrollEnabled
         showsVerticalScrollIndicator={!contentFocused}
@@ -446,7 +448,7 @@ const UniqueTokenExpandedState = ({ asset, external }: UniqueTokenExpandedStateP
       >
         <ColorModeProvider value="darkTinted">
           <AccentColorProvider color={imageColor}>
-            <ImagePreviewOverlay enableZoom={IS_IOS} opacity={ensCoverOpacity} yPosition={yPosition}>
+            <ImagePreviewOverlay enableZoom={Platform.OS === 'ios'} opacity={ensCoverOpacity} yPosition={yPosition}>
               <Inset bottom={sectionSpace} top={{ custom: topInset }}>
                 <Stack alignHorizontal="center">
                   <Animated.View style={sheetHandleStyle}>
@@ -559,8 +561,8 @@ const UniqueTokenExpandedState = ({ asset, external }: UniqueTokenExpandedStateP
                     <Stack separator={<Separator color="divider20 (Deprecated)" />} space={sectionSpace}>
                       {isNFT || isENS ? (
                         <Bleed // Manually crop surrounding space until TokenInfoItem uses design system components
-                          bottom={IS_ANDROID ? '15px (Deprecated)' : '6px'}
-                          top={IS_ANDROID ? '10px' : '4px'}
+                          bottom={Platform.OS === 'android' ? '15px (Deprecated)' : '6px'}
+                          top={Platform.OS === 'android' ? '10px' : '4px'}
                         >
                           {isENS && (
                             <ENSBriefTokenInfoRow
@@ -649,7 +651,7 @@ const UniqueTokenExpandedState = ({ asset, external }: UniqueTokenExpandedStateP
                             <Markdown>{asset.collectionDescription}</Markdown>
                             {asset.collectionUrl ? (
                               <Bleed // Manually crop surrounding space until Link uses design system components
-                                bottom={IS_ANDROID ? '15px (Deprecated)' : undefined}
+                                bottom={Platform.OS === 'android' ? '15px (Deprecated)' : undefined}
                                 top="15px (Deprecated)"
                               >
                                 {/* @ts-expect-error emoji prop is optional but inferred as required from untyped JS */}

@@ -1,4 +1,5 @@
-import { IS_IOS } from '@/env';
+import { Platform } from 'react-native';
+
 import { DEVICE_HEIGHT as SCREEN_HEIGHT } from '@/utils/deviceUtils';
 import safeAreaInsetValues from '@/utils/safeAreaInsetValues';
 
@@ -18,7 +19,7 @@ export function calculateScrollPositionToCenterTab(index: number, numberOfOpenTa
   'worklet';
 
   const scrollViewHeight =
-    Math.ceil(numberOfOpenTabs / 2) * TAB_VIEW_ROW_HEIGHT + safeAreaInsetValues.bottom + 165 + 28 + (IS_IOS ? 0 : 35);
+    Math.ceil(numberOfOpenTabs / 2) * TAB_VIEW_ROW_HEIGHT + safeAreaInsetValues.bottom + 165 + 28 + (Platform.OS === 'ios' ? 0 : 35);
 
   if (scrollViewHeight <= SCREEN_HEIGHT) {
     // No need to scroll if all tabs fit on the screen

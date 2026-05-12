@@ -1,11 +1,11 @@
 // @ts-nocheck
 import React, { type PropsWithChildren } from 'react';
+import { Platform } from 'react-native';
 
 import ConditionalWrap from 'conditional-wrap';
 import { LinearGradient } from 'expo-linear-gradient';
 
 import { AccentColorProvider, Box, type Space } from '@/design-system';
-import { IS_IOS } from '@/env';
 import deviceUtils from '@/utils/deviceUtils';
 
 import ButtonPressAnimation from '../animations/ButtonPressAnimation';
@@ -86,7 +86,7 @@ export const GenericCard = ({
           shadow: color ? '18px accent' : '18px',
         })}
         style={{
-          flex: IS_IOS ? 0 : undefined,
+          flex: Platform.OS === 'ios' ? 0 : undefined,
           borderColor: borderColor ?? undefined,
           borderWidth: borderColor ? 1 : undefined,
         }}

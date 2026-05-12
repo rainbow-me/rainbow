@@ -1,5 +1,5 @@
 import React, { useCallback, useEffect, useRef, useState } from 'react';
-import { Keyboard } from 'react-native';
+import { Keyboard, Platform } from 'react-native';
 
 import { useRoute } from '@react-navigation/native';
 import { triggerHaptics } from 'react-native-turbo-haptics';
@@ -128,7 +128,7 @@ const PinAuthenticationScreen = () => {
 
   const handleNumpadPress = useCallback(
     newValue => {
-      android && triggerHaptics('selection');
+      Platform.OS === 'android' && triggerHaptics('selection');
       setValue(prevValue => {
         let nextValue = prevValue;
         if (nextValue === null) {

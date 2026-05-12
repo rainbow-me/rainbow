@@ -1,5 +1,5 @@
 import React, { memo } from 'react';
-import { Image, StyleSheet, View, type GestureResponderEvent } from 'react-native';
+import { Image, Platform, StyleSheet, View, type GestureResponderEvent } from 'react-native';
 
 import { Blur, Canvas, LinearGradient, RoundedRect } from '@shopify/react-native-skia';
 import { BlurView } from 'react-native-blur-view';
@@ -10,7 +10,6 @@ import ButtonPressAnimation from '@/components/animations/ButtonPressAnimation';
 import { RNBW_MEMBERSHIP } from '@/config/experimental';
 import useExperimentalFlag from '@/config/experimentalHooks';
 import { Box, globalColors, Inline, Text, TextIcon, useColorMode } from '@/design-system';
-import { IS_IOS } from '@/env';
 import { useRnbwFeatureCard } from '@/features/rnbw-rewards/hooks/useRnbwFeatureCard';
 import { opacity } from '@/framework/ui/utils/opacity';
 import * as i18n from '@/languages';
@@ -73,9 +72,9 @@ export const RnbwFeatureCard = memo(function RnbwFeatureCard() {
             </Box>
           </Box>
         </View>
-        {IS_IOS && <DismissButton />}
+        {Platform.OS === 'ios' && <DismissButton />}
       </ButtonPressAnimation>
-      {!IS_IOS && <DismissButton />}
+      {Platform.OS !== 'ios' && <DismissButton />}
     </View>
   );
 });

@@ -1,5 +1,5 @@
 import React, { useCallback } from 'react';
-import { StyleSheet, View } from 'react-native';
+import { Platform, StyleSheet, View } from 'react-native';
 
 import ShadowItem from './ShadowItem';
 
@@ -30,13 +30,13 @@ const ShadowStack = React.forwardRef(
         {...props}
         backgroundColor="transparent"
         borderRadius={borderRadius}
-        height={ios ? height : height || 0}
+        height={Platform.OS === 'ios' ? height : height || 0}
         ref={ref}
         style={style}
         width={width}
         zIndex={1}
       >
-        {ios && shadows?.map(renderItem)}
+        {Platform.OS === 'ios' && shadows?.map(renderItem)}
         <View
           {...props}
           borderRadius={borderRadius}

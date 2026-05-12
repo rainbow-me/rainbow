@@ -1,4 +1,4 @@
-import { NativeModules } from 'react-native';
+import { NativeModules, Platform } from 'react-native';
 
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { captureException } from '@sentry/react-native';
@@ -6,7 +6,7 @@ import { endsWith } from 'lodash';
 
 import { analytics } from '@/analytics';
 import { Alert as NativeAlert } from '@/components/alerts';
-import { IS_ANDROID, IS_DEV } from '@/env';
+import { IS_DEV } from '@/env';
 import AesEncryptor from '@/handlers/aesEncryption';
 import { authenticateWithPIN, decryptPIN, maybeAuthenticateWithPINAndCreateIfNeeded } from '@/handlers/authentication';
 import {
@@ -104,7 +104,7 @@ type MaybePromise<T> = T | Promise<T>;
 export const executeFnIfCloudBackupAvailable = async <T>({ fn, logout = false }: { fn: () => MaybePromise<T>; logout?: boolean }) => {
   backupsStore.getState().setStatus(CloudBackupState.InProgress);
 
-  if (IS_ANDROID) {
+  if (Platform.OS === 'android') {
     try {
       if (logout) {
         await logoutFromGoogleDrive();
@@ -358,7 +358,7 @@ export async function addWalletToCloudBackup({
 export async function decryptAllPinEncryptedSecretsIfNeeded(secrets: Record<string, string>, maybeUserPIN?: string) {
   const processedSecrets = { ...secrets };
   // We need to decrypt PIN code encrypted secrets before backup
-  if (IS_ANDROID) {
+  if (Platform.OS === 'android') {
     let userPIN = maybeUserPIN;
     // We only prompt for PIN if it is currently needed, but it is possible
     // that secrets were previously encrypted with PIN, so we also need
@@ -574,7 +574,7 @@ async function decryptSecretFromBackupPin({ secret, backupPIN }: { secret?: stri
 // Attempts to save the password to decrypt the backup from the iCloud keychain
 export async function saveBackupPassword(password: BackupPassword): Promise<void> {
   try {
-    if (!IS_ANDROID) {
+    if (Platform.OS !== 'android') {
       await kc.setSharedWebCredentials('Backup Password', password);
       analytics.track(analytics.event.backupSavedPassword);
     }
@@ -601,7 +601,7 @@ export async function saveLocalBackupPassword(password: string) {
 
 // Attempts to fetch the password to decrypt the backup from the iCloud keychain
 export async function fetchBackupPassword(): Promise<null | BackupPassword> {
-  if (IS_ANDROID) {
+  if (Platform.OS === 'android') {
     return null;
   }
 
@@ -618,7 +618,7 @@ export async function fetchBackupPassword(): Promise<null | BackupPassword> {
 }
 
 export async function getDeviceUUID(): Promise<string | null> {
-  if (IS_ANDROID) {
+  if (Platform.OS === 'android') {
     return null;
   }
 
@@ -660,7 +660,7 @@ const FailureAlert = () =>
  */
 export async function checkIdentifierOnLaunch() {
   // Unable to really persist things on Android, so let's just exit early...
-  if (IS_ANDROID) return;
+  if (Platform.OS === 'android') return;
 
   const { idfa_check_enabled } = getRemoteConfig();
   if (!idfa_check_enabled || IS_DEV) {

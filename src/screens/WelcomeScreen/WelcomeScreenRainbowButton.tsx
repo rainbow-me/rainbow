@@ -1,5 +1,5 @@
 import React from 'react';
-import { type StyleProp, type ViewStyle } from 'react-native';
+import { Platform, type StyleProp, type ViewStyle } from 'react-native';
 
 import Reanimated from 'react-native-reanimated';
 
@@ -51,7 +51,7 @@ const Shadow = styled(Reanimated.View)(({ theme: { colors, isDarkMode } }: { the
   height: 60,
   position: 'absolute',
   width: 236,
-  ...(ios
+  ...(Platform.OS === 'ios'
     ? {
         left: -3,
         top: -3,
@@ -83,7 +83,7 @@ export const WelcomeScreenRainbowButton = ({
 }: Props) => {
   return (
     <ButtonPressAnimation onPress={onPress} radiusAndroid={height / 2} scaleTo={0.9} {...props}>
-      {ios && <DarkShadow style={darkShadowStyle} />}
+      {Platform.OS === 'ios' && <DarkShadow style={darkShadowStyle} />}
       <Shadow style={shadowStyle} />
       <ButtonContainer height={height} style={style}>
         <ButtonContent>

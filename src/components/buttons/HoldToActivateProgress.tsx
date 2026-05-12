@@ -1,10 +1,10 @@
 import { memo } from 'react';
+import { Platform } from 'react-native';
 
 import chroma from 'chroma-js';
 import Animated, { interpolate, useAnimatedStyle, type SharedValue } from 'react-native-reanimated';
 
 import { Cover, useColorMode } from '@/design-system';
-import { IS_IOS } from '@/env';
 
 type HoldToActivateProgressProps = {
   holdProgress: SharedValue<number>;
@@ -32,7 +32,7 @@ export const HoldToActivateProgress = memo(function HoldToActivateProgress({ hol
           {
             backgroundColor: brightenedColor,
             height: '100%',
-            ...(IS_IOS
+            ...(Platform.OS === 'ios'
               ? {
                   shadowColor: brightenedColor,
                   shadowOffset: { width: 12, height: 0 },

@@ -24,39 +24,39 @@ const capsize = (options: Parameters<typeof precomputeValues>[0]) => {
 export const fonts = {
   SFProRounded: {
     regular: {
-      fontFamily: ios ? 'SF Pro Rounded' : 'SF-Pro-Rounded-Regular',
-      fontWeight: ios ? fontWeights.regular : 'normal',
+      fontFamily: Platform.OS === 'ios' ? 'SF Pro Rounded' : 'SF-Pro-Rounded-Regular',
+      fontWeight: Platform.OS === 'ios' ? fontWeights.regular : 'normal',
     },
     medium: {
-      fontFamily: ios ? 'SF Pro Rounded' : 'SF-Pro-Rounded-Medium',
-      fontWeight: ios ? fontWeights.medium : 'normal',
+      fontFamily: Platform.OS === 'ios' ? 'SF Pro Rounded' : 'SF-Pro-Rounded-Medium',
+      fontWeight: Platform.OS === 'ios' ? fontWeights.medium : 'normal',
     },
     semibold: {
-      fontFamily: ios ? 'SF Pro Rounded' : 'SF-Pro-Rounded-Semibold',
-      fontWeight: ios ? fontWeights.semibold : 'normal',
+      fontFamily: Platform.OS === 'ios' ? 'SF Pro Rounded' : 'SF-Pro-Rounded-Semibold',
+      fontWeight: Platform.OS === 'ios' ? fontWeights.semibold : 'normal',
     },
     bold: {
-      fontFamily: ios ? 'SF Pro Rounded' : 'SF-Pro-Rounded-Bold',
-      fontWeight: ios ? fontWeights.bold : 'normal',
+      fontFamily: Platform.OS === 'ios' ? 'SF Pro Rounded' : 'SF-Pro-Rounded-Bold',
+      fontWeight: Platform.OS === 'ios' ? fontWeights.bold : 'normal',
     },
     heavy: {
-      fontFamily: ios ? 'SF Pro Rounded' : 'SF-Pro-Rounded-Heavy',
-      fontWeight: ios ? fontWeights.heavy : 'normal',
+      fontFamily: Platform.OS === 'ios' ? 'SF Pro Rounded' : 'SF-Pro-Rounded-Heavy',
+      fontWeight: Platform.OS === 'ios' ? fontWeights.heavy : 'normal',
     },
     black: {
-      fontFamily: ios ? 'SF Pro Rounded' : 'SF-Pro-Rounded-Black',
-      fontWeight: ios ? fontWeights.black : 'normal',
+      fontFamily: Platform.OS === 'ios' ? 'SF Pro Rounded' : 'SF-Pro-Rounded-Black',
+      fontWeight: Platform.OS === 'ios' ? fontWeights.black : 'normal',
     },
   },
 
   SFMono: {
     regular: {
-      fontFamily: ios ? 'SF Mono' : 'SF-Mono-Regular',
-      fontWeight: ios ? fontWeights.regular : 'normal',
+      fontFamily: Platform.OS === 'ios' ? 'SF Mono' : 'SF-Mono-Regular',
+      fontWeight: Platform.OS === 'ios' ? fontWeights.regular : 'normal',
     },
     medium: {
-      fontFamily: ios ? 'SF Mono' : 'SF-Mono-Medium',
-      fontWeight: ios ? fontWeights.medium : 'normal',
+      fontFamily: Platform.OS === 'ios' ? 'SF Mono' : 'SF-Mono-Medium',
+      fontWeight: Platform.OS === 'ios' ? fontWeights.medium : 'normal',
     },
   },
 } as const;
@@ -97,7 +97,7 @@ const createTextSize = ({
     }),
   } as const;
 
-  const marginCorrectionForPlatform = marginCorrection[ios ? 'ios' : 'android'];
+  const marginCorrectionForPlatform = marginCorrection[Platform.OS === 'ios' ? 'ios' : 'android'];
 
   if (Platform.OS === 'web') {
     return styles;

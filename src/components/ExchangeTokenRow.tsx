@@ -1,5 +1,5 @@
 import React from 'react';
-import { View } from 'react-native';
+import { Platform, View } from 'react-native';
 
 import isEqual from 'react-fast-compare';
 
@@ -9,7 +9,6 @@ import RainbowCoinIcon from '@/components/coin-icon/RainbowCoinIcon';
 import { FloatingEmojis } from '@/components/floating-emojis';
 import { Box, Column, Columns, Inline, Stack, Text } from '@/design-system';
 import type { ParsedAddressAsset } from '@/entities/tokens';
-import { IS_IOS } from '@/env';
 import { isNativeAsset } from '@/handlers/assets';
 import useAsset from '@/hooks/useAsset';
 import { ChainId } from '@/state/backendNetworks/types';
@@ -100,7 +99,7 @@ export default React.memo(function ExchangeTokenRow({
             <Inline alignVertical="center" space="12px">
               {isInfoButtonVisible && <Info contextMenuProps={contextMenuProps} showFavoriteButton={showFavoriteButton} theme={theme} />}
               {showFavoriteButton &&
-                (IS_IOS ? (
+                (Platform.OS === 'ios' ? (
                   <FloatingEmojis
                     centerVertically
                     disableHorizontalMovement

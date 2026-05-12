@@ -1,5 +1,5 @@
 import React, { useCallback, useMemo } from 'react';
-import { StyleSheet } from 'react-native';
+import { Platform, StyleSheet } from 'react-native';
 
 import ConditionalWrap from 'conditional-wrap';
 import { BlurView } from 'react-native-blur-view';
@@ -12,7 +12,7 @@ import { Draggable, DraggableGrid, type DraggableGridProps, type UniqueIdentifie
 import { DropdownMenu, type MenuItem } from '@/components/DropdownMenu';
 import { PANEL_WIDTH } from '@/components/SmoothPager/ListPanel';
 import { Box, HitSlop, Inline, Stack, Text, TextIcon } from '@/design-system';
-import { IS_INTERNAL, IS_IOS } from '@/env';
+import { IS_STORE_INSTALL } from '@/env';
 import { useIsDelegationEnabled } from '@/features/delegation/featureFlags';
 import { isRainbowDelegated as hasRainbowDelegation, isThirdPartyDelegated as hasThirdPartyDelegation } from '@/features/delegation/status';
 import { removeFirstEmojiFromString } from '@/helpers/emojiHandler';
@@ -193,11 +193,11 @@ export function PinnedWalletsGrid({ walletItems, onPress, editMode, menuItems, o
                                 height={{ custom: UNPIN_BADGE_SIZE }}
                                 justifyContent="center"
                                 alignItems="center"
-                                backgroundColor={IS_IOS ? 'transparent' : colors.darkGrey}
+                                backgroundColor={Platform.OS === 'ios' ? 'transparent' : colors.darkGrey}
                                 borderRadius={UNPIN_BADGE_SIZE / 2}
                                 style={{ overflow: 'hidden' }}
                               >
-                                {IS_IOS && (
+                                {Platform.OS === 'ios' && (
                                   <BlurView
                                     blurStyle={isDarkMode ? 'materialDark' : 'materialLight'}
                                     style={[StyleSheet.absoluteFill, { borderRadius: UNPIN_BADGE_SIZE / 2, overflow: 'hidden' }]}
@@ -226,7 +226,9 @@ export function PinnedWalletsGrid({ walletItems, onPress, editMode, menuItems, o
                       </Text>
                     ) : null}
 
-                    {IS_INTERNAL && delegationEnabled && !account.isReadOnly ? <DelegationBadge accountAddress={account.address} /> : null}
+                    {!IS_STORE_INSTALL && delegationEnabled && !account.isReadOnly ? (
+                      <DelegationBadge accountAddress={account.address} />
+                    ) : null}
 
                     <Text numberOfLines={1} ellipsizeMode="middle" color="label" size="13pt" weight="bold">
                       {walletName}

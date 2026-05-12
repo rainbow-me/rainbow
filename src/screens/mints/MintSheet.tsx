@@ -1,5 +1,5 @@
 import React, { useCallback, useEffect, useMemo, useReducer, useRef, useState } from 'react';
-import { View } from 'react-native';
+import { Platform, View } from 'react-native';
 
 import { useFocusEffect, useRoute, type RouteProp } from '@react-navigation/native';
 import { getClient, type Execute } from '@reservoir0x/reservoir-sdk';
@@ -17,7 +17,6 @@ import { ContactAvatar } from '@/components/contacts';
 import { useRainbowToastEnabled } from '@/components/rainbow-toast/useRainbowToastEnabled';
 import { Bleed, Box, ColorModeProvider, Column, Columns, Inline, Inset, Separator, Stack, Text } from '@/design-system';
 import { TransactionStatus, type NewTransaction } from '@/entities/transactions';
-import { IS_IOS } from '@/env';
 import useENSAvatar from '@/features/ens/hooks/useENSAvatar';
 import { fetchReverseRecord } from '@/features/ens/utils/handlers';
 import GasSpeedButton from '@/features/gas/components/GasSpeedButton';
@@ -97,7 +96,7 @@ const BlurWrapper = styled(View).attrs({
   overflow: 'hidden',
   position: 'absolute',
   width: ({ width }: BlurWrapperProps) => width,
-  ...(android ? { borderTopLeftRadius: 30, borderTopRightRadius: 30 } : {}),
+  ...(Platform.OS === 'android' ? { borderTopLeftRadius: 30, borderTopRightRadius: 30 } : {}),
 });
 
 interface MintSheetProps {
@@ -529,7 +528,7 @@ const MintSheet = () => {
 
   return (
     <>
-      {ios && (
+      {Platform.OS === 'ios' && (
         <BlurWrapper height={deviceHeight} width={deviceWidth}>
           <BackgroundImage>
             <ImgixImage
@@ -543,8 +542,10 @@ const MintSheet = () => {
         </BlurWrapper>
       )}
       <SlackSheet
-        backgroundColor={isDarkMode ? `rgba(22, 22, 22, ${ios ? 0.4 : 1})` : `rgba(26, 26, 26, ${ios ? 0.4 : 1})`}
-        {...(IS_IOS ? { height: '100%' } : {})}
+        backgroundColor={
+          isDarkMode ? `rgba(22, 22, 22, ${Platform.OS === 'ios' ? 0.4 : 1})` : `rgba(26, 26, 26, ${Platform.OS === 'ios' ? 0.4 : 1})`
+        }
+        {...(Platform.OS === 'ios' ? { height: '100%' } : {})}
         ref={sheetRef}
         scrollEnabled
         additionalTopPadding

@@ -1,5 +1,5 @@
 import React, { useCallback, useState } from 'react';
-import { Alert, Keyboard, Share } from 'react-native';
+import { Alert, Keyboard, Platform, Share } from 'react-native';
 
 import Animated, { Extrapolation, FadeOut, interpolate, useAnimatedStyle, useSharedValue, withTiming } from 'react-native-reanimated';
 import { createPublicClient, createWalletClient, http, isHex } from 'viem';
@@ -12,7 +12,6 @@ import RainbowCoinIcon from '@/components/coin-icon/RainbowCoinIcon';
 import { HoldToActivateButton } from '@/components/hold-to-activate-button/HoldToActivateButton';
 import { Box, Inline, Text } from '@/design-system';
 import { getColorForTheme } from '@/design-system/color/useForegroundColor';
-import { IS_ANDROID } from '@/env';
 import { buildTokenDeeplink } from '@/handlers/deeplinks';
 import { BiometryTypes } from '@/helpers';
 import useBiometryType from '@/hooks/useBiometryType';
@@ -51,7 +50,7 @@ function HoldToCreateButton() {
 
   const isLongPressAvailableForBiometryType =
     biometryType === BiometryTypes.FaceID || biometryType === BiometryTypes.Face || biometryType === BiometryTypes.none;
-  const showBiometryIcon = !IS_ANDROID && isLongPressAvailableForBiometryType && !isHardwareWallet;
+  const showBiometryIcon = Platform.OS !== 'android' && isLongPressAvailableForBiometryType && !isHardwareWallet;
 
   const handleLongPress = useCallback(async () => {
     setIsProcessing(true);
@@ -202,7 +201,7 @@ function ShareButton() {
           contractAddress: launchedTokenAddress,
         });
         await Share.share(
-          IS_ANDROID
+          Platform.OS === 'android'
             ? {
                 message: url,
               }

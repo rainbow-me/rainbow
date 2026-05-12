@@ -1,5 +1,5 @@
 import React, { useEffect, useMemo } from 'react';
-import { Dimensions, StyleSheet, type StyleProp, type ViewStyle } from 'react-native';
+import { Dimensions, Platform, StyleSheet, type StyleProp, type ViewStyle } from 'react-native';
 
 import { KeyboardAvoidingView, KeyboardStickyView } from 'react-native-keyboard-controller';
 import Animated, { Extrapolation, FadeIn, FadeOut, interpolate, useAnimatedStyle, withTiming } from 'react-native-reanimated';
@@ -7,7 +7,6 @@ import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 import { PANEL_COLOR_DARK } from '@/components/SmoothPager/ListPanel';
 import { Border, Box, ColorModeProvider, globalColors } from '@/design-system';
-import { IS_ANDROID } from '@/env';
 import { THICK_BORDER_WIDTH } from '@/styles/constants';
 
 import { CreatingStep } from './components/CreatingStep';
@@ -54,7 +53,7 @@ function TokenLauncherScreenContent() {
   const step = useTokenLauncherStore(state => state.step);
 
   const footerHeight = FOOTER_HEIGHT + (step === NavigationSteps.SUCCESS ? 42 : 0);
-  const contentContainerHeight = screenHeight - footerHeight - (IS_ANDROID ? 0 : safeAreaTop + safeAreaBottom);
+  const contentContainerHeight = screenHeight - footerHeight - (Platform.OS === 'android' ? 0 : safeAreaTop + safeAreaBottom);
 
   useEffect(() => {
     return () => {
@@ -64,7 +63,10 @@ function TokenLauncherScreenContent() {
 
   const isReviewStepVisible = useMemo(() => step === NavigationSteps.REVIEW || step === NavigationSteps.INFO, [step]);
 
-  const stickyFooterKeyboardOffset = useMemo(() => ({ closed: 0, opened: IS_ANDROID ? 0 : safeAreaBottom }), [safeAreaBottom]);
+  const stickyFooterKeyboardOffset = useMemo(
+    () => ({ closed: 0, opened: Platform.OS === 'android' ? 0 : safeAreaBottom }),
+    [safeAreaBottom]
+  );
 
   const infoStepAnimatedStyle = useAnimatedStyle(() => ({
     transform: [
@@ -92,7 +94,7 @@ function TokenLauncherScreenContent() {
     ],
   }));
 
-  const keyboardVerticalOffset = IS_ANDROID ? FOOTER_HEIGHT + safeAreaBottom : FOOTER_HEIGHT;
+  const keyboardVerticalOffset = Platform.OS === 'android' ? FOOTER_HEIGHT + safeAreaBottom : FOOTER_HEIGHT;
 
   const animatedBorderStyle = useAnimatedStyle(() => ({
     opacity: interpolate(stepAnimatedSharedValue.value, [NavigationSteps.INFO, NavigationSteps.REVIEW], [1, 0], 'clamp'),
@@ -210,7 +212,7 @@ function getTokenLauncherStyles({
     borderEffectsStyle: [StyleSheet.absoluteFill, { pointerEvents: 'none', zIndex: 3 }],
     borderStyle: [StyleSheet.absoluteFill, { pointerEvents: 'none', zIndex: 100 }, animatedBorderStyle],
     containerStyle: {
-      backgroundColor: IS_ANDROID ? globalColors.grey100 : undefined,
+      backgroundColor: Platform.OS === 'android' ? globalColors.grey100 : undefined,
       flex: 1,
       height: screenHeight,
       paddingBottom: safeAreaBottom,

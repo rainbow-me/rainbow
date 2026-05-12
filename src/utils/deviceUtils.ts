@@ -2,12 +2,10 @@ import { Dimensions, NativeModules, PixelRatio, Platform } from 'react-native';
 
 import { initialWindowMetrics } from 'react-native-safe-area-context';
 
-import { IS_ANDROID, IS_IOS } from '@/env';
-
 const scale = Dimensions.get('screen').scale;
 const { height, width } = Dimensions.get('window');
 
-export const NAVIGATION_BAR_HEIGHT = IS_ANDROID ? NativeModules.NavbarHeight.getNavigationBarHeight() / scale : 0;
+export const NAVIGATION_BAR_HEIGHT = Platform.OS === 'android' ? NativeModules.NavbarHeight.getNavigationBarHeight() / scale : 0;
 
 const deviceUtils = (function () {
   const iPhone15ProHeight = 852,
@@ -17,7 +15,7 @@ const deviceUtils = (function () {
     iPhoneXWidth = 375,
     veryNarrowPhoneThreshold = 340;
 
-  const isIOS14 = IS_IOS && parseFloat(Platform.Version as string) >= 14;
+  const isIOS14 = Platform.OS === 'ios' && parseFloat(Platform.Version as string) >= 14;
   const isAndroid12 = Platform.OS === 'android' && parseFloat(Platform.constants.Release as string) >= 12;
 
   return {
@@ -42,7 +40,7 @@ const deviceUtils = (function () {
 })();
 
 export function isUsingButtonNavigation() {
-  if (!IS_ANDROID) return false;
+  if (Platform.OS !== 'android') return false;
   return NAVIGATION_BAR_HEIGHT > 40;
 }
 

@@ -1,5 +1,5 @@
 import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
-import { InteractionManager, Keyboard, View, type TextInput } from 'react-native';
+import { InteractionManager, Keyboard, Platform, View, type TextInput } from 'react-native';
 
 import { type StaticJsonRpcProvider } from '@ethersproject/providers';
 import { Wallet } from '@ethersproject/wallet';
@@ -13,12 +13,12 @@ import { analytics } from '@/analytics';
 import { NoResults } from '@/components/list';
 import { NoResultsType } from '@/components/list/NoResults';
 import { useRainbowToastEnabled } from '@/components/rainbow-toast/useRainbowToastEnabled';
-import useExperimentalFlag, { PROFILES } from '@/config/experimentalHooks';
+import { PROFILES } from '@/config/experimental';
+import useExperimentalFlag from '@/config/experimentalHooks';
 import { AssetType } from '@/entities/assetTypes';
 import { type ParsedAddressAsset } from '@/entities/tokens';
 import { TransactionStatus, type NewTransaction } from '@/entities/transactions';
 import { type UniqueAsset } from '@/entities/uniqueAssets';
-import { IS_ANDROID, IS_IOS } from '@/env';
 import { prefetchENSAvatar } from '@/features/ens/hooks/useENSAvatar';
 import { prefetchENSCover } from '@/features/ens/hooks/useENSCover';
 import useENSProfile from '@/features/ens/hooks/useENSProfile';
@@ -85,7 +85,7 @@ import { SendAssetForm, SendAssetList, SendContactList, SendHeader } from '../co
 import { SheetActionButton } from '../components/sheet';
 import { getDefaultCheckboxes } from './SendConfirmationSheet';
 
-const sheetHeight = deviceUtils.dimensions.height - (IS_ANDROID ? 30 : 10);
+const sheetHeight = deviceUtils.dimensions.height - (Platform.OS === 'android' ? 30 : 10);
 
 type ComponentPropsWithTheme = {
   theme: ThemeContextProps;
@@ -94,7 +94,7 @@ type ComponentPropsWithTheme = {
 const Container = styled(View)({
   backgroundColor: ({ theme: { colors } }: ComponentPropsWithTheme) => colors.transparent,
   flex: 1,
-  paddingTop: IS_IOS ? 0 : safeAreaInsetValues.top,
+  paddingTop: Platform.OS === 'ios' ? 0 : safeAreaInsetValues.top,
   width: '100%',
 });
 
@@ -102,7 +102,7 @@ const SheetContainer = styled(Column).attrs({
   align: 'center',
   flex: 1,
 })({
-  ...borders.buildRadiusAsObject('top', IS_IOS ? 0 : 16),
+  ...borders.buildRadiusAsObject('top', Platform.OS === 'ios' ? 0 : 16),
   backgroundColor: ({ theme: { colors } }: ComponentPropsWithTheme) => colors.white,
   height: sheetHeight,
   width: '100%',

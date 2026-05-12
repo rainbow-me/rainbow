@@ -1,9 +1,10 @@
+import { Platform } from 'react-native';
+
 import { sortBy } from 'lodash';
 // @ts-expect-error ts-migrate(7016) FIXME: Could not find a declaration file for module 'reac... Remove this comment to see the full error message
 import RNCloudFs from 'react-native-cloud-fs';
 import RNFS from 'react-native-fs';
 
-import { IS_ANDROID, IS_IOS } from '@/env';
 import { type BackupFile, type CloudBackups } from '@/features/backup/backup';
 import { logger, RainbowError } from '@/logger';
 
@@ -33,7 +34,7 @@ export function normalizeAndroidBackupFilename(filename: string) {
 }
 
 export async function logoutFromGoogleDrive() {
-  IS_ANDROID && RNCloudFs.logout();
+  Platform.OS === 'android' && RNCloudFs.logout();
 }
 
 export type GoogleDriveUserData = {
@@ -43,7 +44,7 @@ export type GoogleDriveUserData = {
 };
 
 export async function getGoogleAccountUserData(checkPermissions = false): Promise<GoogleDriveUserData | undefined> {
-  if (!IS_ANDROID) {
+  if (Platform.OS !== 'android') {
     return;
   }
   const options = { checkPermissions };
@@ -52,7 +53,7 @@ export async function getGoogleAccountUserData(checkPermissions = false): Promis
 
 // This is used for dev purposes only!
 export async function deleteAllBackups() {
-  if (android) {
+  if (Platform.OS === 'android') {
     await RNCloudFs.loginIfNeeded();
   }
   const backups = await RNCloudFs.listFiles({
@@ -67,7 +68,7 @@ export async function deleteAllBackups() {
 }
 
 export async function fetchAllBackups(): Promise<CloudBackups> {
-  if (android) {
+  if (Platform.OS === 'android') {
     await RNCloudFs.loginIfNeeded();
   }
 
@@ -91,7 +92,7 @@ export async function encryptAndSaveDataToCloud(data: Record<string, unknown>, p
      * the filename is returned with the path used for Google Drive storage.
      * That is with REMOTE_BACKUP_WALLET_DIR included.
      */
-    const backupFilename = IS_ANDROID ? normalizeAndroidBackupFilename(filename) : filename;
+    const backupFilename = Platform.OS === 'android' ? normalizeAndroidBackupFilename(filename) : filename;
 
     // Store it on the FS first
     const path = `${RNFS.DocumentDirectoryPath}/${backupFilename}`;
@@ -102,7 +103,7 @@ export async function encryptAndSaveDataToCloud(data: Record<string, unknown>, p
     const mimeType = 'application/json';
     // Only available to our app
     const scope = 'hidden';
-    if (IS_ANDROID) {
+    if (Platform.OS === 'android') {
       await RNCloudFs.loginIfNeeded();
     }
     const result = await RNCloudFs.copyToCloud({
@@ -114,7 +115,7 @@ export async function encryptAndSaveDataToCloud(data: Record<string, unknown>, p
     });
     // Now we need to verify the file has been stored in the cloud
     const exists = await RNCloudFs.fileExists(
-      IS_IOS
+      Platform.OS === 'ios'
         ? {
             scope,
             targetPath: destinationPath,
@@ -149,14 +150,14 @@ function getGoogleDriveDocument(id: any) {
 }
 
 export function syncCloud() {
-  if (ios) {
+  if (Platform.OS === 'ios') {
     return RNCloudFs.syncCloud();
   }
   return true;
 }
 
 export async function getDataFromCloud(backupPassword: any, filename: string | null = null) {
-  if (IS_ANDROID) {
+  if (Platform.OS === 'android') {
     await RNCloudFs.loginIfNeeded();
   }
 
@@ -172,7 +173,7 @@ export async function getDataFromCloud(backupPassword: any, filename: string | n
 
   let document;
   if (filename) {
-    if (IS_IOS) {
+    if (Platform.OS === 'ios') {
       // .icloud are files that were not yet synced
       document = backups.files.find((file: any) => file.name === filename || file.name === `.${filename}.icloud`);
     } else {
@@ -192,7 +193,7 @@ export async function getDataFromCloud(backupPassword: any, filename: string | n
     const sortedBackups = sortBy(backups.files, 'lastModified').reverse();
     document = sortedBackups[0];
   }
-  const encryptedData = ios ? await getICloudDocument(filename) : await getGoogleDriveDocument(document.id);
+  const encryptedData = Platform.OS === 'ios' ? await getICloudDocument(filename) : await getGoogleDriveDocument(document.id);
 
   if (encryptedData) {
     logger.debug(`[cloudBackup]: Got cloud document ${filename}`);
@@ -219,14 +220,14 @@ export function isCloudBackupPasswordValid(password: any) {
 }
 
 export function isCloudBackupAvailable() {
-  if (ios) {
+  if (Platform.OS === 'ios') {
     return RNCloudFs.isAvailable();
   }
   return true;
 }
 
 export async function login() {
-  if (IS_ANDROID) {
+  if (Platform.OS === 'android') {
     return RNCloudFs.loginIfNeeded();
   }
 

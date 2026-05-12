@@ -1,11 +1,12 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
-import { InteractionManager, Keyboard, type TextInput } from 'react-native';
+import { InteractionManager, Keyboard, Platform, type TextInput } from 'react-native';
 
 import { useDispatch } from 'react-redux';
 
 import { analytics } from '@/analytics';
-import useExperimentalFlag, { PROFILES } from '@/config/experimentalHooks';
-import { IS_ANDROID, IS_TEST } from '@/env';
+import { PROFILES } from '@/config/experimental';
+import useExperimentalFlag from '@/config/experimentalHooks';
+import { IS_TEST } from '@/env';
 import { isValidAddress, looksLikeAddress } from '@/features/address/core/address';
 import { backupsStore } from '@/features/backup/stores/backupsStore';
 import { fetchENSAvatar } from '@/features/ens/hooks/useENSAvatar';
@@ -90,7 +91,7 @@ export default function useImportingWallet({
         });
 
       if (showImportModal) {
-        if (IS_ANDROID) {
+        if (Platform.OS === 'android') {
           Keyboard.dismiss();
         }
 

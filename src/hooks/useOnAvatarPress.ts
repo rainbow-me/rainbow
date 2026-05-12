@@ -1,12 +1,13 @@
 import { useCallback } from 'react';
+import { Platform } from 'react-native';
 
 import { type ImagePickerAsset } from 'expo-image-picker';
 
 import { analytics } from '@/analytics';
 import { type MenuConfig } from '@/components/native-context-menu/contextMenu';
 import { enableActionsOnReadOnlyWallet } from '@/config/debug';
-import useExperimentalFlag, { PROFILES } from '@/config/experimentalHooks';
-import { IS_IOS } from '@/env';
+import { PROFILES } from '@/config/experimental';
+import useExperimentalFlag from '@/config/experimentalHooks';
 import useENSAvatar, { prefetchENSAvatar } from '@/features/ens/hooks/useENSAvatar';
 import { prefetchENSCover } from '@/features/ens/hooks/useENSCover';
 import useENSOwner from '@/features/ens/hooks/useENSOwner';
@@ -141,7 +142,7 @@ export default ({ screenType = 'transaction' }: UseOnAvatarPressProps = {}) => {
             if (accountImage) {
               onAvatarRemovePhoto();
             } else {
-              IS_IOS ? onAvatarPickEmoji() : setNextEmoji();
+              Platform.OS === 'ios' ? onAvatarPickEmoji() : setNextEmoji();
             }
           }
         } else {
@@ -152,7 +153,7 @@ export default ({ screenType = 'transaction' }: UseOnAvatarPressProps = {}) => {
             if (accountImage) {
               onAvatarRemovePhoto();
             } else {
-              IS_IOS ? onAvatarPickEmoji() : setNextEmoji();
+              Platform.OS === 'ios' ? onAvatarPickEmoji() : setNextEmoji();
             }
           }
         }
@@ -163,7 +164,7 @@ export default ({ screenType = 'transaction' }: UseOnAvatarPressProps = {}) => {
             if (accountImage) {
               onAvatarRemovePhoto();
             } else {
-              IS_IOS ? onAvatarPickEmoji() : setNextEmoji();
+              Platform.OS === 'ios' ? onAvatarPickEmoji() : setNextEmoji();
             }
           }
         } else {
@@ -173,7 +174,7 @@ export default ({ screenType = 'transaction' }: UseOnAvatarPressProps = {}) => {
             if (accountImage) {
               onAvatarRemovePhoto();
             } else {
-              IS_IOS ? onAvatarPickEmoji() : setNextEmoji();
+              Platform.OS === 'ios' ? onAvatarPickEmoji() : setNextEmoji();
             }
           }
         }
@@ -202,27 +203,27 @@ export default ({ screenType = 'transaction' }: UseOnAvatarPressProps = {}) => {
         !isZeroETH && {
           actionKey: 'editProfile',
           actionTitle: i18n.t(i18n.l.profiles.profile_avatar.edit_profile),
-          ...(ios && { icon: { iconType: 'SYSTEM', iconValue: 'pencil.circle' } }),
+          ...(Platform.OS === 'ios' && { icon: { iconType: 'SYSTEM', iconValue: 'pencil.circle' } }),
         },
       isENSProfile && {
         actionKey: 'viewProfile',
         actionTitle: i18n.t(i18n.l.profiles.profile_avatar.view_profile),
-        ...(ios && { icon: { iconType: 'SYSTEM', iconValue: 'person.crop.circle' } }),
+        ...(Platform.OS === 'ios' && { icon: { iconType: 'SYSTEM', iconValue: 'person.crop.circle' } }),
       },
       !isENSProfile &&
         !isReadOnly &&
         !isZeroETH && {
           actionKey: 'createProfile',
           actionTitle: i18n.t(i18n.l.profiles.profile_avatar.create_profile),
-          ...(ios && { icon: { iconType: 'SYSTEM', iconValue: 'person.crop.circle' } }),
+          ...(Platform.OS === 'ios' && { icon: { iconType: 'SYSTEM', iconValue: 'person.crop.circle' } }),
         },
       {
         actionKey: 'chooseFromLibrary',
         actionTitle: i18n.t(i18n.l.profiles.profile_avatar.choose_from_library),
-        ...(ios && { icon: { iconType: 'SYSTEM', iconValue: 'photo.on.rectangle.angled' } }),
+        ...(Platform.OS === 'ios' && { icon: { iconType: 'SYSTEM', iconValue: 'photo.on.rectangle.angled' } }),
       },
       !accountImage
-        ? ios
+        ? Platform.OS === 'ios'
           ? {
               actionKey: 'pickEmoji',
               actionTitle: i18n.t(i18n.l.profiles.profile_avatar.pick_emoji),
@@ -244,7 +245,7 @@ export default ({ screenType = 'transaction' }: UseOnAvatarPressProps = {}) => {
 
   const avatarActionSheetOptions = avatarContextMenuConfig.menuItems
     .map(item => item && item.actionTitle)
-    .concat(ios ? ['Cancel'] : [])
+    .concat(Platform.OS === 'ios' ? ['Cancel'] : [])
     .filter(Boolean) as string[];
 
   const onAvatarPressProfile = useCallback(() => {

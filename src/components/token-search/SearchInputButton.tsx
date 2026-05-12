@@ -1,5 +1,5 @@
 import React, { useCallback } from 'react';
-import { type TextInput } from 'react-native';
+import { Platform, type TextInput } from 'react-native';
 
 import Clipboard from '@react-native-clipboard/clipboard';
 import Animated, {
@@ -15,7 +15,6 @@ import { triggerHaptics } from 'react-native-turbo-haptics';
 import { TIMING_CONFIGS } from '@/components/animations/animationConfigs';
 import { GestureHandlerButton } from '@/components/buttons/GestureHandlerButton';
 import { AnimatedText, Box } from '@/design-system';
-import { IS_ANDROID } from '@/env';
 import useClipboard from '@/hooks/useClipboard';
 import * as i18n from '@/languages';
 import { THICK_BORDER_WIDTH } from '@/styles/constants';
@@ -78,7 +77,7 @@ export const SearchInputButton = ({
   }, [pastedSearchInputValue, onPasteSearchQuery]);
 
   const buttonInfo = useDerivedValue(() => {
-    const clipboardDataAvailable = hasClipboardData || IS_ANDROID;
+    const clipboardDataAvailable = hasClipboardData || Platform.OS === 'android';
 
     const isPasteDisabled = enablePaste && !isAssetSelected.value && isTokenListFocused.value && !clipboardDataAvailable;
     const isVisible = isSearchFocused.value || showButtonWhenNoAsset || isAssetSelected.value;

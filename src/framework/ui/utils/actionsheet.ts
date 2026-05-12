@@ -1,8 +1,6 @@
-import { ActionSheetIOS, type ActionSheetIOSOptions } from 'react-native';
+import { ActionSheetIOS, Platform, type ActionSheetIOSOptions } from 'react-native';
 
 import ActionSheet from 'react-native-action-sheet';
-
-import { IS_IOS } from '@/env';
 
 /**
  * @desc Safely convert options to strings.
@@ -29,7 +27,7 @@ export async function showActionSheetWithOptions(
 ) {
   const sheetOptions = safeOptions(options);
 
-  if (IS_IOS) {
+  if (Platform.OS === 'ios') {
     ActionSheetIOS.showActionSheetWithOptions(
       {
         options: sheetOptions,

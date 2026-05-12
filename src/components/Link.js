@@ -1,4 +1,5 @@
 import React, { useCallback } from 'react';
+import { Platform } from 'react-native';
 
 import styled from '@/framework/ui/styled-thing';
 import formatURLForDisplay from '@/utils/formatURLForDisplay';
@@ -15,7 +16,7 @@ const Container = styled(RowWithMargins).attrs({
   align: 'center',
   margin: 5,
 })({
-  ...(android ? { paddingVertical: 10 } : { paddingTop: 14 }),
+  ...(Platform.OS === 'android' ? { paddingVertical: 10 } : { paddingTop: 14 }),
 });
 
 const Link = ({

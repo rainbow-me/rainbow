@@ -5,7 +5,8 @@ import { useRecoilValue } from 'recoil';
 
 import { analytics } from '@/analytics';
 import { nftOffersSortAtom } from '@/components/nft-offers/SortMenu';
-import useExperimentalFlag, { NFT_OFFERS } from '@/config/experimentalHooks';
+import { NFT_OFFERS } from '@/config/experimental';
+import useExperimentalFlag from '@/config/experimentalHooks';
 import { arcClient } from '@/graphql';
 import { SortCriterion, type GetNftOffersQuery, type NftOffer } from '@/graphql/__generated__/arc';
 import { createQueryKey, queryClient, type QueryFunctionArgs, type QueryFunctionResult } from '@/react-query';

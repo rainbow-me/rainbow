@@ -1,5 +1,5 @@
 import React, { Fragment, useCallback, useEffect, useMemo, useState } from 'react';
-import { ActivityIndicator, Keyboard, type TextInput } from 'react-native';
+import { ActivityIndicator, Keyboard, Platform, type TextInput } from 'react-native';
 
 import { isHexString } from '@ethersproject/bytes';
 import isEmpty from 'lodash/isEmpty';
@@ -7,7 +7,8 @@ import isEmpty from 'lodash/isEmpty';
 import ButtonPressAnimation from '@/components/animations/ButtonPressAnimation';
 import Divider from '@/components/Divider';
 import Spinner from '@/components/Spinner';
-import useExperimentalFlag, { PROFILES } from '@/config/experimentalHooks';
+import { PROFILES } from '@/config/experimental';
+import useExperimentalFlag from '@/config/experimentalHooks';
 import styled from '@/framework/ui/styled-thing';
 import { showActionSheetWithOptions } from '@/framework/ui/utils/actionsheet';
 import { opacity } from '@/framework/ui/utils/opacity';
@@ -55,9 +56,11 @@ const AddressFieldLabel = styled(Label).attrs({
   opacity: 1,
 });
 
-const LoadingSpinner = styled(android ? Spinner : ActivityIndicator).attrs(({ theme: { colors } }: ComponentPropsWithTheme) => ({
-  color: opacity(colors.blueGreyDark, 0.3),
-}))({
+const LoadingSpinner = styled(Platform.OS === 'android' ? Spinner : ActivityIndicator).attrs(
+  ({ theme: { colors } }: ComponentPropsWithTheme) => ({
+    color: opacity(colors.blueGreyDark, 0.3),
+  })
+)({
   marginRight: 2,
 });
 
@@ -156,7 +159,7 @@ export default function SendHeader({
       }
     }
 
-    android && Keyboard.dismiss();
+    Platform.OS === 'android' && Keyboard.dismiss();
     navigate(Routes.MODAL_SCREEN, {
       additionalPadding: true,
       address: hexAddress,

@@ -1,4 +1,5 @@
 import React, { useCallback } from 'react';
+import { Platform } from 'react-native';
 
 import { type Source } from 'react-native-fast-image';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
@@ -10,7 +11,6 @@ import { Page } from '@/components/layout';
 import Spinner from '@/components/Spinner';
 import { Text as RNText } from '@/components/text';
 import { Box, Stack } from '@/design-system';
-import { IS_ANDROID } from '@/env';
 import styled from '@/framework/ui/styled-thing';
 import useDimensions from '@/hooks/useDimensions';
 import * as i18n from '@/languages';
@@ -37,7 +37,7 @@ const Title = styled(RNText).attrs({
 
 const LoadingText = styled(RNText).attrs(({ theme: { colors } }: any) => ({
   color: colors.blueGreyDark,
-  lineHeight: ios ? 'none' : 24,
+  lineHeight: Platform.OS === 'ios' ? 'none' : 24,
   size: 'large',
   weight: 'semibold',
 }))({
@@ -74,7 +74,7 @@ export function ChooseBackupStep() {
     [navigate]
   );
 
-  const height = IS_ANDROID ? deviceHeight - top : deviceHeight - sharedCoolModalTopOffset - 48;
+  const height = Platform.OS === 'android' ? deviceHeight - top : deviceHeight - sharedCoolModalTopOffset - 48;
   return (
     <Box height={{ custom: height }}>
       <MenuContainer>
@@ -218,7 +218,7 @@ export function ChooseBackupStep() {
 
           {isLoading && (
             <Box width="full" height="full" color={colors.transparent} alignItems="center" justifyContent="center" flex={1} as={Page}>
-              {android ? <Spinner color={colors.blueGreyDark} /> : <ActivityIndicator color={colors.blueGreyDark} />}
+              {Platform.OS === 'android' ? <Spinner color={colors.blueGreyDark} /> : <ActivityIndicator color={colors.blueGreyDark} />}
               <LoadingText>{titleForBackupState[status]}</LoadingText>
             </Box>
           )}

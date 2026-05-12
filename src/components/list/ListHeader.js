@@ -1,5 +1,5 @@
 import React, { Fragment } from 'react';
-import { Share } from 'react-native';
+import { Platform, Share } from 'react-native';
 
 import Divider from '@/components/Divider';
 import styled from '@/framework/ui/styled-thing';
@@ -102,7 +102,7 @@ export default function ListHeader({ children, contextMenuOptions, isCoinListEdi
          The divider shows up as a white line in dark mode (android)
          so we won't render it till we figure it out why
         */
-        showDivider && !(android && isDarkMode) && <Divider color={colors.rowDividerLight} />
+        showDivider && !(Platform.OS === 'android' && isDarkMode) && <Divider color={colors.rowDividerLight} />
       }
       <StickyBackgroundBlocker deviceDimensions={deviceDimensions} isEditMode={isCoinListEdited} />
     </Fragment>

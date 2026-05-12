@@ -1,6 +1,7 @@
+import { Platform } from 'react-native';
+
 import { Mutex } from 'async-mutex';
 
-import { IS_ANDROID } from '@/env';
 import { fetchAllBackups, getGoogleAccountUserData, isCloudBackupAvailable, syncCloud } from '@/handlers/cloudBackup';
 import walletBackupTypes from '@/helpers/walletBackupTypes';
 import { logger, RainbowError } from '@/logger';
@@ -142,7 +143,7 @@ export const backupsStore = createRainbowStore<BackupsStore>(
             };
           }
 
-          if (IS_ANDROID) {
+          if (Platform.OS === 'android') {
             const gdata = await getGoogleAccountUserData(true);
             if (!gdata) {
               logger.debug('[backupsStore]: Google account is not available');

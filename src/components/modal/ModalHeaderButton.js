@@ -1,8 +1,8 @@
 import React from 'react';
+import { Platform } from 'react-native';
 
 import { BorderlessButton } from 'react-native-gesture-handler';
 
-import { IS_ANDROID } from '@/env';
 import styled from '@/framework/ui/styled-thing';
 
 import { Button } from '../buttons';
@@ -16,7 +16,7 @@ const BackArrow = styled(Icon).attrs(({ theme: { colors } }) => ({
   name: 'caret',
 }))({
   height: 16,
-  marginTop: android ? 6 : 0,
+  marginTop: Platform.OS === 'android' ? 6 : 0,
 });
 
 const Container = styled(Row).attrs(({ side }) => ({
@@ -43,7 +43,12 @@ const Text = styled(UnstyledText).attrs(({ theme: { colors } }) => ({
 });
 
 const ModalHeaderButton = ({ label, onPress, side }) => (
-  <Container {...(IS_ANDROID ? { borderColor: 'transparent' } : {})} as={ios ? BorderlessButton : Button} onPress={onPress} side={side}>
+  <Container
+    {...(Platform.OS === 'android' ? { borderColor: 'transparent' } : {})}
+    as={Platform.OS === 'ios' ? BorderlessButton : Button}
+    onPress={onPress}
+    side={side}
+  >
     <Row>
       {side === 'left' && <BackArrow />}
       <Text side={side}>{label}</Text>

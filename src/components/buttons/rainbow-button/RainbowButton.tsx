@@ -1,5 +1,5 @@
 import React from 'react';
-import { View } from 'react-native';
+import { Platform, View } from 'react-native';
 
 import MaskedView from '@react-native-masked-view/masked-view';
 
@@ -85,7 +85,7 @@ const Shadow = styled(ShadowView)(({ height, strokeWidth, isDarkMode, disabled, 
   backgroundColor: colors.white,
   borderRadius: height / 2 + strokeWidth,
   height,
-  opacity: isDarkMode && disabled ? 0 : android ? 1 : 0.2,
+  opacity: isDarkMode && disabled ? 0 : Platform.OS === 'android' ? 1 : 0.2,
   position: 'absolute',
   width,
 }));

@@ -1,5 +1,5 @@
 import React, { useCallback, useMemo, useRef } from 'react';
-import { type ScrollView } from 'react-native';
+import { Platform, type ScrollView } from 'react-native';
 
 import { useRoute } from '@react-navigation/native';
 import { format } from 'date-fns';
@@ -12,7 +12,7 @@ import { backupsCard } from '@/components/cards/utils/constants';
 import { ContactAvatar } from '@/components/contacts';
 import ImageAvatar from '@/components/contacts/ImageAvatar';
 import { Box, Inline, Stack, Text } from '@/design-system';
-import { IS_ANDROID, IS_DEV } from '@/env';
+import { IS_DEV } from '@/env';
 import { executeFnIfCloudBackupAvailable } from '@/features/backup/backup';
 import { useCreateBackup } from '@/features/backup/hooks/useCreateBackup';
 import { backupsStore, CloudBackupState } from '@/features/backup/stores/backupsStore';
@@ -136,7 +136,7 @@ export const WalletsAndBackup = () => {
       fn: async () => {
         // NOTE: For Android we could be coming from a not-logged-in state, so we
         // need to check if we have any wallets to back up first.
-        if (IS_ANDROID) {
+        if (Platform.OS === 'android') {
           const currentBackups = backupsStore.getState().backups;
           if (checkLocalWalletsForBackupStatus(currentBackups).allBackedUp) {
             return;

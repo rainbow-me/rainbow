@@ -22,7 +22,7 @@ import { useRemoteConfig } from '@/model/remoteConfig';
 import Navigation from '@/navigation/Navigation';
 import Routes from '@/navigation/routesNames';
 import { useWallets } from '@/state/wallets/walletsStore';
-import useExperimentalFlag, {
+import {
   FEATURED_RESULTS,
   HARDWARE_WALLETS,
   MINTS,
@@ -30,7 +30,8 @@ import useExperimentalFlag, {
   POLYMARKET,
   PROFILES,
   TRENDING_TOKENS,
-} from '@rainbow-me/config/experimentalHooks';
+} from '@rainbow-me/config/experimental';
+import useExperimentalFlag from '@rainbow-me/config/experimentalHooks';
 
 import { DiscoverFeaturedResultsCard } from './DiscoverFeaturedResultsCard';
 import { DiscoverSeparator } from './DiscoverSeparator';

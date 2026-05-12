@@ -1,4 +1,5 @@
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
+import { Platform } from 'react-native';
 
 import ExchangeInput from '@/components/ExchangeInput';
 import styled from '@/framework/ui/styled-thing';
@@ -16,8 +17,8 @@ const BubbleInput = styled(ExchangeInput).attrs(({ isSmallPhone, isTinyPhone, th
   size: isTinyPhone ? 'big' : isSmallPhone ? 'bigger' : 'h3',
   weight: 'semibold',
 }))(({ isTinyPhone }) => ({
-  ...(android ? (isTinyPhone ? { height: 40 } : { height: 46 }) : {}),
-  ...(android ? { paddingBottom: 0, paddingTop: 0 } : {}),
+  ...(Platform.OS === 'android' ? (isTinyPhone ? { height: 40 } : { height: 46 }) : {}),
+  ...(Platform.OS === 'android' ? { paddingBottom: 0, paddingTop: 0 } : {}),
   marginRight: 10,
 }));
 
@@ -106,7 +107,7 @@ const BubbleField = (
           autoFocus={autoFocus}
           color={colorForAsset}
           isDarkMode={isDarkMode}
-          isSmallPhone={android || isSmallPhone}
+          isSmallPhone={Platform.OS === 'android' || isSmallPhone}
           isTinyPhone={isTinyPhone}
           keyboardType={keyboardType}
           mask={mask}

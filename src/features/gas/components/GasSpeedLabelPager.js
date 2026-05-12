@@ -1,4 +1,5 @@
 import React from 'react';
+import { Platform } from 'react-native';
 
 import { upperFirst } from 'lodash';
 
@@ -16,7 +17,7 @@ const SpeedButton = styled(ButtonPressAnimation).attrs({
   hapticType: 'impactHeavy',
   height: 30,
 })({
-  ...padding.object(2.5, 4, android ? 2.5 : 3.5, 5),
+  ...padding.object(2.5, 4, Platform.OS === 'android' ? 2.5 : 3.5, 5),
   borderColor: ({ color, theme: { colors } }) => color ?? colors.appleBlue,
   borderRadius: 19,
   borderWidth: 2,
@@ -25,7 +26,7 @@ const SpeedButton = styled(ButtonPressAnimation).attrs({
 const Symbol = styled(Text).attrs({
   align: 'center',
   lineHeight: 'normal',
-  size: android ? 'bmedium' : 'lmedium',
+  size: Platform.OS === 'android' ? 'bmedium' : 'lmedium',
   weight: 'heavy',
 })(margin.object(0));
 

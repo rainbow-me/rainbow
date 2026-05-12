@@ -1,5 +1,5 @@
 import React from 'react';
-import { View } from 'react-native';
+import { Platform, View } from 'react-native';
 
 import { startCase } from 'lodash';
 import { ContextMenuButton } from 'react-native-ios-context-menu';
@@ -150,7 +150,7 @@ const ContactRowInfoButton = ({ children, item, chainId, scaleTo }) => {
       <ContextMenuButton
         activeOpacity={0}
         menuConfig={menuConfig}
-        {...(android ? { onPress: onPressAndroid } : {})}
+        {...(Platform.OS === 'android' ? { onPress: onPressAndroid } : {})}
         isMenuPrimaryAction
         onPressMenuItem={handlePressMenuItem}
         useActionSheetFallback={false}

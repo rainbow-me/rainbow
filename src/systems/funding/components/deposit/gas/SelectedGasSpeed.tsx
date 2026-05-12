@@ -1,7 +1,7 @@
 import React, { memo } from 'react';
+import { Platform } from 'react-native';
 
 import { Inline, Text, TextIcon } from '@/design-system';
-import { IS_ANDROID } from '@/env';
 import gasUtils from '@/features/gas/utils/gas';
 import * as i18n from '@/languages';
 import { useDepositContext } from '@/systems/funding/contexts/DepositContext';
@@ -20,7 +20,7 @@ export const SelectedGasSpeed = memo(function SelectedGasSpeed({ isPill }: { isP
           color={SWAP_GAS_ICONS[selectedGasSpeed].color}
           height={10}
           size="icon 13px"
-          textStyle={{ top: IS_ANDROID ? 1 : 0 + (selectedGasSpeed === 'fast' ? 0.5 : 0) }}
+          textStyle={{ top: Platform.OS === 'android' ? 1 : 0 + (selectedGasSpeed === 'fast' ? 0.5 : 0) }}
           width={isPill ? 14 : 18}
           weight="bold"
         >

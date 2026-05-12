@@ -1,9 +1,8 @@
 import { FIXTURE_LIST_POSITIONS_SUCCESS, FIXTURE_PARAMS } from '../__fixtures__/ListPositions';
 import { fetchPositions } from './fetcher';
 
-jest.mock('@/config/experimentalHooks', () => ({
+jest.mock('@/config/experimentalConfigStore', () => ({
   getExperimentalFlag: jest.fn(() => false),
-  DEFI_POSITIONS_THRESHOLD_FILTER: 'defiPositionsThresholdFilter',
 }));
 jest.mock('./fetcher', () => ({
   fetchPositions: jest.fn(),

@@ -1,4 +1,5 @@
 import React, { Fragment, useCallback, useState } from 'react';
+import { Platform } from 'react-native';
 
 import { Switch } from 'react-native-gesture-handler';
 
@@ -107,9 +108,9 @@ export default function InfoRow({
           <Inline space="4px">
             <Text color="secondary60 (Deprecated)" size="16px / 22px (Deprecated)" weight="bold">
               {label}
-              {android && <Fragment> {explainer}</Fragment>}
+              {Platform.OS === 'android' && <Fragment> {explainer}</Fragment>}
             </Text>
-            {ios && explainer}
+            {Platform.OS === 'ios' && explainer}
           </Inline>
         </Inset>
       </Box>
@@ -131,7 +132,7 @@ export default function InfoRow({
             padding={isSwitch ? undefined : isMultiline ? ('15px (Deprecated)' as const) : ('10px' as const)}
             style={{
               backgroundColor: isSwitch ? 'transparent' : useAccentColor ? accentColor + '10' : 'rgba(255, 255, 255, 0.08)',
-              maxWidth: android ? 250 : undefined,
+              maxWidth: Platform.OS === 'android' ? 250 : undefined,
               opacity: show ? 1 : 0,
             }}
           >
@@ -158,7 +159,7 @@ export default function InfoRow({
                   onValueChange={onSwitchChange}
                   testID="ens-reverse-record-switch"
                   trackColor={{
-                    false: android ? colors.lightGrey : colors.white,
+                    false: Platform.OS === 'android' ? colors.lightGrey : colors.white,
                     true: accentColor,
                   }}
                   value={switchValue}
@@ -195,7 +196,12 @@ function ImageValue({ ensName, url, value }: { ensName?: string; url?: string; v
 
   if (!url) return null;
   return (
-    <ImagePreviewOverlayTarget aspectRatioType="cover" enableZoomOnPress={ios && enableZoomOnPress} imageUrl={url} onPress={onPress}>
+    <ImagePreviewOverlayTarget
+      aspectRatioType="cover"
+      enableZoomOnPress={Platform.OS === 'ios' && enableZoomOnPress}
+      imageUrl={url}
+      onPress={onPress}
+    >
       <Box as={ImgixImage} height="full" source={{ uri: url }} size={CardSize} />
     </ImagePreviewOverlayTarget>
   );

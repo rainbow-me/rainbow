@@ -1,4 +1,5 @@
-import React, { useCallback, useContext, useState } from 'react';
+import React, { useCallback, useState } from 'react';
+import { Platform } from 'react-native';
 
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import Clipboard from '@react-native-clipboard/clipboard';
@@ -8,11 +9,11 @@ import { getAllInternetCredentials, resetInternetCredentials } from 'react-nativ
 import Restart from 'react-native-restart';
 
 import { ImgixImage } from '@/components/images';
-import { defaultConfig, getExperimentalFlag, LOG_PUSH } from '@/config/experimentalHooks';
-import { IS_ANDROID, IS_INTERNAL } from '@/env';
+import { defaultConfig, defaultConfigValues, LOG_PUSH, type ExperimentalConfigKey } from '@/config/experimental';
+import { getExperimentalFlag, useExperimentalConfigStore } from '@/config/experimentalConfigStore';
+import { IS_STORE_INSTALL } from '@/env';
 import { getDelegationContractAddress, isRainbowDelegated, isThirdPartyDelegated } from '@/features/delegation/status';
 import { WrappedAlert as Alert } from '@/helpers/alert';
-import { RainbowContext } from '@/helpers/RainbowContext';
 import { getPublicKeyOfTheSigningWalletAndCreateWalletIfNeeded } from '@/helpers/signingWallet';
 import * as i18n from '@/languages';
 import { logger, RainbowError } from '@/logger';
@@ -43,7 +44,7 @@ import MenuItem from './MenuItem';
 
 const DevSection = () => {
   const { navigate } = useNavigation();
-  const { config, setConfig } = useContext(RainbowContext) as any;
+  const config = useExperimentalConfigStore(state => state.config);
   const setConnectedToAnvil = useConnectedToAnvilStore.getState().setConnectedToAnvil;
   const accountAddress = useWalletsStore(state => state.accountAddress);
 
@@ -53,16 +54,13 @@ const DevSection = () => {
     clearMmkvStorage: false,
   });
 
-  const onExperimentalKeyChange = useCallback(
-    (value: any) => {
-      setConfig({ ...config, [value]: !config[value] });
-      if ((defaultConfig as any)[value].needsRestart) {
-        Navigation.handleAction(Routes.WALLET_SCREEN);
-        setTimeout(Restart.Restart, 1000);
-      }
-    },
-    [config, setConfig]
-  );
+  const onExperimentalKeyChange = useCallback((value: ExperimentalConfigKey) => {
+    useExperimentalConfigStore.getState().toggleFlag(value);
+    if (defaultConfig[value].needsRestart) {
+      Navigation.handleAction(Routes.WALLET_SCREEN);
+      setTimeout(Restart.Restart, 1000);
+    }
+  }, []);
 
   const connectToAnvil = useCallback(async () => {
     try {
@@ -79,7 +77,7 @@ const DevSection = () => {
   const checkAlert = useCallback(async () => {
     try {
       const request = await fetch('https://pro-api.coinmarketcap.com/v1/cryptocurrency/listings/latest');
-      if (IS_ANDROID && request.status === 500) throw new Error('failed');
+      if (Platform.OS === 'android' && request.status === 500) throw new Error('failed');
       await request.json();
       Alert.alert(i18n.t(i18n.l.developer_settings.status), i18n.t(i18n.l.developer_settings.not_applied));
     } catch (e) {
@@ -236,7 +234,7 @@ const DevSection = () => {
 
   return (
     <MenuContainer testID="developer-settings-sheet">
-      <Menu header={IS_INTERNAL ? i18n.t(i18n.l.developer_settings.headers.normie_settings) : ''}>
+      <Menu header={!IS_STORE_INSTALL ? i18n.t(i18n.l.developer_settings.headers.normie_settings) : ''}>
         {/* <MenuItem
           disabled
           leftComponent={<MenuItem.TextIcon icon="🕹️" isEmoji />}
@@ -284,7 +282,7 @@ const DevSection = () => {
           titleComponent={<MenuItem.Title text="Wipe App + Restart" />}
         />
       </Menu>
-      {IS_INTERNAL && (
+      {!IS_STORE_INSTALL && (
         <>
           <Menu header={i18n.t(i18n.l.developer_settings.headers.rainbow_developer_settings)}>
             <MenuItem
@@ -362,7 +360,7 @@ const DevSection = () => {
             /> */}
             <MenuItem
               leftComponent={<MenuItem.TextIcon icon="🤷" isEmoji />}
-              onPress={() => AsyncStorage.removeItem('experimentalConfig')}
+              onPress={() => useExperimentalConfigStore.setState({ config: defaultConfigValues })}
               size={52}
               titleComponent={<MenuItem.Title text={i18n.t(i18n.l.developer_settings.reset_experimental_config)} />}
             />
@@ -478,9 +476,9 @@ const DevSection = () => {
             })}
           </Menu>
           <Menu header={i18n.t(i18n.l.developer_settings.headers.feature_flags)}>
-            {Object.keys(config)
+            {(Object.keys(config) as ExperimentalConfigKey[])
               .sort()
-              .filter(key => (defaultConfig as any)[key]?.settings)
+              .filter(key => defaultConfig[key]?.settings)
               .map(key => (
                 <MenuItem
                   key={key}

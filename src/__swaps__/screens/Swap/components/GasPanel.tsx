@@ -1,5 +1,5 @@
 import React, { useCallback, useMemo, type PropsWithChildren, type ReactNode } from 'react';
-import { type LayoutChangeEvent } from 'react-native';
+import { Platform, type LayoutChangeEvent } from 'react-native';
 
 import Animated, { runOnJS, useAnimatedReaction, useAnimatedStyle, withDelay, withSpring } from 'react-native-reanimated';
 
@@ -8,7 +8,6 @@ import { NavigationSteps, useSwapContext } from '@/__swaps__/screens/Swap/provid
 import { SPRING_CONFIGS } from '@/components/animations/animationConfigs';
 import ButtonPressAnimation from '@/components/animations/ButtonPressAnimation';
 import { Bleed, Box, globalColors, Inline, Separator, Stack, Text, useColorMode, useForegroundColor } from '@/design-system';
-import { IS_ANDROID } from '@/env';
 import { getCustomGasSettings, setCustomGasSettings, useCustomGasStore, type GasSettings } from '@/features/gas/hooks/useCustomGas';
 import { getSelectedGas, setSelectedGasSpeed, useSelectedGasSpeed } from '@/features/gas/hooks/useSelectedGas';
 import { GasSpeed } from '@/features/gas/types/gasSpeed';
@@ -69,7 +68,7 @@ function PressableLabel({ onPress, children }: PropsWithChildren<{ onPress: Void
             􀅴
           </Text>
         </Text>
-        <Box marginBottom={IS_ANDROID ? '-4px' : undefined}></Box>
+        <Box marginBottom={Platform.OS === 'android' ? '-4px' : undefined}></Box>
       </Inline>
     </Box>
   );

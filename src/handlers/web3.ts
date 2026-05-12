@@ -1,3 +1,5 @@
+import { Platform } from 'react-native';
+
 import { getAddress } from '@ethersproject/address';
 import { BigNumber, type BigNumberish } from '@ethersproject/bignumber';
 import { isHexString as isEthersHexString } from '@ethersproject/bytes';
@@ -13,7 +15,7 @@ import { AssetType } from '@/entities/assetTypes';
 import { type ParsedAddressAsset } from '@/entities/tokens';
 import { type NewTransaction } from '@/entities/transactions';
 import { type UniqueAsset } from '@/entities/uniqueAssets';
-import { IS_IOS, RPC_PROXY_API_KEY, RPC_PROXY_BASE_URL } from '@/env';
+import { RPC_PROXY_API_KEY, RPC_PROXY_BASE_URL } from '@/env';
 import { NftTokenType } from '@/graphql/__generated__/arc';
 import { isNativeAsset } from '@/handlers/assets';
 import {
@@ -240,7 +242,7 @@ export const isValidMnemonic = (value: string): boolean => ethersIsValidMnemonic
  * @return Whether or not the string was a valid bluetooth device id
  */
 export const isValidBluetoothDeviceId = (value: string): boolean => {
-  return IS_IOS
+  return Platform.OS === 'ios'
     ? value.length === 36 && isHexStringIgnorePrefix(value.replaceAll('-', ''))
     : value.length === 17 && isHexStringIgnorePrefix(value.replaceAll(':', ''));
 };

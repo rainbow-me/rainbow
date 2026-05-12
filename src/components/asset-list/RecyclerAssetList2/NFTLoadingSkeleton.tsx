@@ -1,7 +1,8 @@
 import React from 'react';
 import { StyleSheet, View } from 'react-native';
 
-import useExperimentalFlag, { NFTS_ENABLED } from '@/config/experimentalHooks';
+import { NFTS_ENABLED } from '@/config/experimental';
+import useExperimentalFlag from '@/config/experimentalHooks';
 import { useForegroundColor } from '@/design-system';
 import { opacity } from '@/framework/ui/utils/opacity';
 import { useRemoteConfig } from '@/model/remoteConfig';

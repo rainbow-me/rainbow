@@ -1,5 +1,5 @@
 import React, { useCallback, useImperativeHandle, useRef } from 'react';
-import { Animated } from 'react-native';
+import { Animated, Platform } from 'react-native';
 
 import Swipeable from 'react-native-gesture-handler/Swipeable';
 
@@ -18,7 +18,7 @@ import showDeleteContactActionSheet from './showDeleteContactActionSheet';
 
 const AnimatedCentered = Animated.createAnimatedComponent(Centered);
 
-const styles = [margin.object(0, 10, android ? 0 : 3, 10), position.sizeAsObject(35)];
+const styles = [margin.object(0, 10, Platform.OS === 'android' ? 0 : 3, 10), position.sizeAsObject(35)];
 
 const RightAction = ({ onPress, progress, text, type, x }) => {
   const isEdit = type === 'edit';

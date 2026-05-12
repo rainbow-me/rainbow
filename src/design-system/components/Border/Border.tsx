@@ -1,9 +1,9 @@
 import React, { memo } from 'react';
+import { Platform } from 'react-native';
 
 import { Cover, useColorMode, useForegroundColor } from '@/design-system';
 import { type ForegroundColor } from '@/design-system/color/palettes';
 import { type CustomColor } from '@/design-system/color/useForegroundColor';
-import { IS_IOS } from '@/env';
 
 export type BorderProps = {
   borderBottomLeftRadius?: number;
@@ -57,7 +57,7 @@ export const Border = memo(function Border({
 
   const color = useForegroundColor(borderColor);
 
-  return (isDarkMode || enableInLightMode) && (IS_IOS || enableOnAndroid) ? (
+  return (isDarkMode || enableInLightMode) && (Platform.OS === 'ios' || enableOnAndroid) ? (
     <Cover
       style={{
         borderBottomLeftRadius: borderBottomLeftRadius ?? borderBottomRadius ?? borderLeftRadius ?? borderRadius,

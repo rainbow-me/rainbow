@@ -1,5 +1,5 @@
 import React, { memo, useCallback, useLayoutEffect, useMemo, useRef, useState } from 'react';
-import { ScrollView, StyleSheet, View } from 'react-native';
+import { Platform, ScrollView, StyleSheet, View } from 'react-native';
 
 import { LinearGradient } from 'expo-linear-gradient';
 import { uniqBy } from 'lodash';
@@ -12,7 +12,8 @@ import ButtonPressAnimation from '@/components/animations/ButtonPressAnimation';
 import { FeaturedResultStack, type FeaturedResultStackProps } from '@/components/FeaturedResult/FeaturedResultStack';
 import { ImgixImage } from '@/components/images';
 import ContextMenuButton from '@/components/native-context-menu/contextMenu';
-import useExperimentalFlag, { FEATURED_RESULTS } from '@/config/experimentalHooks';
+import { FEATURED_RESULTS } from '@/config/experimental';
+import useExperimentalFlag from '@/config/experimentalHooks';
 import {
   Bleed,
   Border,
@@ -27,7 +28,7 @@ import {
   useBackgroundColor,
   useColorMode,
 } from '@/design-system';
-import { IS_ANDROID, IS_IOS, IS_TEST } from '@/env';
+import { IS_TEST } from '@/env';
 import { opacity } from '@/framework/ui/utils/opacity';
 import { type DApp } from '@/graphql/__generated__/metadata';
 import * as i18n from '@/languages';
@@ -54,8 +55,8 @@ const SCROLL_INDICATOR_INSETS = { bottom: 20, top: 36 };
 const LOGOS_PER_ROW = 4;
 const LOGO_SIZE = 64;
 const RAW_LOGO_PADDING = (DEVICE_WIDTH - LOGOS_PER_ROW * LOGO_SIZE - HORIZONTAL_PAGE_INSET * 2) / (LOGOS_PER_ROW - 1);
-const LOGO_PADDING = IS_IOS ? RAW_LOGO_PADDING : Math.floor(RAW_LOGO_PADDING);
-const LOGO_BORDER_RADIUS = IS_ANDROID ? 32 : 16;
+const LOGO_PADDING = Platform.OS === 'ios' ? RAW_LOGO_PADDING : Math.floor(RAW_LOGO_PADDING);
+const LOGO_BORDER_RADIUS = Platform.OS === 'android' ? 32 : 16;
 const LOGO_LABEL_SPILLOVER = 12;
 
 const NUM_CARDS = 2;
@@ -65,7 +66,7 @@ const CARD_HEIGHT = 137;
 const CARD_LOGO_SIZE = 48;
 const RAW_CARD_WIDTH = (DEVICE_WIDTH - HORIZONTAL_PAGE_INSET * 2 - (NUM_CARDS - 1) * CARD_PADDING) / NUM_CARDS;
 
-export const CARD_WIDTH = IS_IOS ? RAW_CARD_WIDTH : Math.floor(RAW_CARD_WIDTH);
+export const CARD_WIDTH = Platform.OS === 'ios' ? RAW_CARD_WIDTH : Math.floor(RAW_CARD_WIDTH);
 
 export const Homepage = ({ tabId }: { tabId: string }) => {
   const { extraWebViewHeight, goToUrl } = useBrowserContext();
@@ -130,7 +131,7 @@ const Trending = ({ goToUrl }: { goToUrl: (url: string) => void }) => {
       <Bleed space="24px">
         <ScrollView
           horizontal
-          decelerationRate={IS_IOS ? 'fast' : undefined}
+          decelerationRate={Platform.OS === 'ios' ? 'fast' : undefined}
           disableIntervalMomentum
           showsHorizontalScrollIndicator={false}
           snapToOffsets={data.dApps.map((_, index) => index * (CARD_WIDTH + CARD_PADDING))}
@@ -432,7 +433,7 @@ const Card = memo(function Card({
                 color="labelSecondary"
                 containerSize={24}
                 size="icon 13px"
-                textStyle={{ opacity: isDarkMode || IS_ANDROID ? 1 : 0.9 }}
+                textStyle={{ opacity: isDarkMode || Platform.OS === 'android' ? 1 : 0.9 }}
                 weight="heavy"
               >
                 􀍠
@@ -455,7 +456,7 @@ const CardBackground = memo(function CardBackgroundOverlay({
   return imageUrl ? (
     <View shouldRasterizeIOS style={styles.cardBackgroundContainer}>
       <ImgixImage enableFasterImage size={CARD_WIDTH} source={{ uri: imageUrl }} style={styles.cardBackgroundImage} />
-      {IS_IOS ? (
+      {Platform.OS === 'ios' ? (
         <>
           <BlurView
             blurIntensity={isDarkMode ? 36 : 64}
@@ -533,14 +534,13 @@ const Logo = memo(function Logo({ onPress, site }: { onPress: (site: FavoritedSi
             width={{ custom: LOGO_SIZE }}
           />
         )}
-
         <Box
           background={site.image ? undefined : 'fillTertiary'}
           borderRadius={LOGO_BORDER_RADIUS}
           height={{ custom: LOGO_SIZE }}
           position={site.image ? 'absolute' : undefined}
           style={[
-            IS_IOS
+            Platform.OS === 'ios'
               ? {
                   borderColor: isDarkMode ? opacity(globalColors.white100, 0.04) : opacity(globalColors.grey100, 0.02),
                   borderWidth: THICK_BORDER_WIDTH,
@@ -553,7 +553,6 @@ const Logo = memo(function Logo({ onPress, site }: { onPress: (site: FavoritedSi
           ]}
           width={{ custom: LOGO_SIZE }}
         />
-
         {!site.image && (
           <Box alignItems="center" height="full" position="absolute" width="full">
             <TextIcon color="labelQuaternary" containerSize={LOGO_SIZE} opacity={isDarkMode ? 0.4 : 0.6} size="icon 28px" weight="black">
@@ -585,7 +584,7 @@ const Logo = memo(function Logo({ onPress, site }: { onPress: (site: FavoritedSi
 
 export const PlaceholderLogo = memo(function PlaceholderLogo() {
   const { isDarkMode } = useColorMode();
-  const borderRadius = IS_ANDROID ? LOGO_BORDER_RADIUS / 2 : LOGO_BORDER_RADIUS;
+  const borderRadius = Platform.OS === 'android' ? LOGO_BORDER_RADIUS / 2 : LOGO_BORDER_RADIUS;
 
   return (
     <View style={{ opacity: isDarkMode ? 0.6 : 0.5, width: LOGO_SIZE }}>

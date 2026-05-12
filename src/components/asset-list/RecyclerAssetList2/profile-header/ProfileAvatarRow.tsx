@@ -1,5 +1,5 @@
 import * as React from 'react';
-import { Text as NativeText, Animated as RNAnimated } from 'react-native';
+import { Text as NativeText, Platform, Animated as RNAnimated } from 'react-native';
 
 import Animated, { Easing, useAnimatedStyle, useDerivedValue, withSpring, withTiming } from 'react-native-reanimated';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
@@ -204,7 +204,7 @@ export const EmojiAvatar = React.memo(function EmojiAvatar({ size }: { size: num
       <Box background="accent" borderRadius={size / 2} height={{ custom: size }} width={{ custom: size }}>
         <Cover alignHorizontal="center" alignVertical="center">
           <Box>
-            <NativeText style={{ fontSize: ios ? 48 : 36, color: 'white' }}>
+            <NativeText style={{ fontSize: Platform.OS === 'ios' ? 48 : 36, color: 'white' }}>
               {typeof accountSymbol === 'string' && getFirstGrapheme(accountSymbol.toUpperCase())}
             </NativeText>
           </Box>

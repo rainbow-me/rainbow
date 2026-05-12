@@ -1,4 +1,5 @@
 import React from 'react';
+import { Platform } from 'react-native';
 
 import { upperCase, upperFirst } from 'lodash';
 import PropTypes from 'prop-types';
@@ -175,7 +176,7 @@ const Tag = ({
       <ContextMenuButton
         activeOpacity={0}
         menuConfig={menuConfig}
-        {...(android ? { onPress: onPressAndroid } : {})}
+        {...(Platform.OS === 'android' ? { onPress: onPressAndroid } : {})}
         enableContextMenu
         isMenuPrimaryAction
         onPressMenuItem={handlePressMenuItem}
