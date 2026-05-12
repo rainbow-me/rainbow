@@ -5,7 +5,8 @@ import { format, formatDistanceStrict } from 'date-fns';
 
 import ButtonPressAnimation from '@/components/animations/ButtonPressAnimation';
 import { TokenInfoItem, TokenInfoValue } from '@/components/token-info';
-import useExperimentalFlag, { PROFILES } from '@/config/experimentalHooks';
+import { PROFILES } from '@/config/experimental';
+import useExperimentalFlag from '@/config/experimentalHooks';
 import { Column, Columns, Inset } from '@/design-system';
 import * as i18n from '@/languages';
 import { useNavigation } from '@/navigation/Navigation';

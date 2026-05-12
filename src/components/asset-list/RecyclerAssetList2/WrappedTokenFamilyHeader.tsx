@@ -1,6 +1,7 @@
 import React from 'react';
 
-import useExperimentalFlag, { NFTS_ENABLED } from '@/config/experimentalHooks';
+import { NFTS_ENABLED } from '@/config/experimental';
+import useExperimentalFlag from '@/config/experimentalHooks';
 import useLatestCallback from '@/hooks/useLatestCallback';
 import { useRemoteConfig } from '@/model/remoteConfig';
 import { useNftsStore } from '@/state/nfts/nfts';

@@ -5,7 +5,8 @@ import { createMMKV } from 'react-native-mmkv';
 import { atom, useRecoilState } from 'recoil';
 
 import { analytics } from '@/analytics';
-import useExperimentalFlag, { MINTS } from '@/config/experimentalHooks';
+import { MINTS } from '@/config/experimental';
+import useExperimentalFlag from '@/config/experimentalHooks';
 import { IS_TEST } from '@/env';
 import { arcClient } from '@/graphql';
 import { type GetMintableCollectionsQuery } from '@/graphql/__generated__/arc';

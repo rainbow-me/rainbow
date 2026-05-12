@@ -4,6 +4,7 @@ import * as env from '@/env';
 import { logger, RainbowError } from '@/logger';
 import { deleteImgixMMKVCache } from '@/migrations/migrations/deleteImgixMMKVCache';
 import { healEip55KeychainAddresses } from '@/migrations/migrations/healEip55KeychainAddresses';
+import { migrateExperimentalFlags } from '@/migrations/migrations/migrateExperimentalFlags';
 import { migrateNotificationSettingsToV2 } from '@/migrations/migrations/migrateNotificationSettingsToV2';
 import { migrateNotificationSettingsToV3 } from '@/migrations/migrations/migrateNotificationSettingsToV3';
 import { prepareDefaultNotificationGroupSettingsState } from '@/migrations/migrations/prepareDefaultNotificationGroupSettingsState';
@@ -46,6 +47,7 @@ const migrations: Migration[] = [
   migrateFavoritesV3(),
   migrateNotificationSettingsToV3(),
   healEip55KeychainAddresses(),
+  migrateExperimentalFlags(),
 ];
 
 /**

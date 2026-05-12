@@ -37,6 +37,9 @@ jest.mock('@/resources/platform/client', () => ({
 }));
 
 jest.mock('@/config/experimentalHooks', () => ({}));
+jest.mock('@/config/experimentalConfigStore', () => ({
+  getExperimentalFlag: jest.fn(() => false),
+}));
 
 jest.mock('@/resources/nfts', () => ({
   invalidateAddressNftsQueries: jest.fn(),

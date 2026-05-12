@@ -22,6 +22,7 @@ export enum MigrationName {
   removeDuplicateRecentSwaps = 'migration_removeDuplicateRecentSwaps',
   migrateNotificationSettingsToVersion3 = 'migration_migrateNotificationSettingsToVersion3',
   healEip55KeychainAddresses = 'migration_healEip55KeychainAddresses',
+  migrateExperimentalFlags = 'migration_migrateExperimentalFlags',
 }
 
 export type Migration = {

@@ -17,9 +17,8 @@ import { createMockAsset } from '../../__fixtures__/mocks/assets';
 import { createSimpleDapp } from '../../__fixtures__/mocks/positions';
 import { DetailType, PositionName, type ListPositionsResponse, type PortfolioItem } from '../../types/generated/positions/positions';
 
-jest.mock('@/config/experimentalHooks', () => ({
+jest.mock('@/config/experimentalConfigStore', () => ({
   getExperimentalFlag: jest.fn(() => true),
-  DEFI_POSITIONS_THRESHOLD_FILTER: 'defi_positions_threshold_filter',
 }));
 
 // ============ Helpers ===================================================== //
