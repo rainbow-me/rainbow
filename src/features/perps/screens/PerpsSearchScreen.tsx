@@ -14,15 +14,20 @@ import { type PerpMarket } from '@/features/perps/types';
 import { navigateToNewPositionScreen, navigateToPerpDetailScreen } from '@/features/perps/utils';
 import { opacity } from '@/framework/ui/utils/opacity';
 import { useOnLeaveRoute } from '@/hooks/useOnLeaveRoute';
+import { useStableValue } from '@/hooks/useStableValue';
 import * as i18n from '@/languages';
+import { useRoute } from '@/navigation/Navigation';
 import Routes from '@/navigation/routesNames';
+import type { PerpsRoute } from '@/navigation/types';
 import { THICK_BORDER_WIDTH, THICKER_BORDER_WIDTH } from '@/styles/constants';
 import { time } from '@/utils/time';
 
 export const PerpsSearchScreen = memo(function PerpsSearchScreen() {
   const { isDarkMode } = useColorMode();
+  const { name: route } = useRoute<PerpsRoute>();
+
+  const skipDelayedMount = useStableValue(() => PerpsNavigation.isRouteActive(route));
   const backgroundColor = isDarkMode ? PERPS_BACKGROUND_DARK : PERPS_BACKGROUND_LIGHT;
-  const hasMarkets = useFilteredHyperliquidMarkets(state => state.length > 0);
 
   useOnLeaveRoute(Keyboard.dismiss);
 
@@ -32,7 +37,7 @@ export const PerpsSearchScreen = memo(function PerpsSearchScreen() {
       <Box paddingTop="20px" paddingHorizontal="20px">
         <Separator color={'separatorTertiary'} direction="horizontal" thickness={THICK_BORDER_WIDTH} />
       </Box>
-      <DelayedMount delay={time.seconds(1)} skipDelayedMount={hasMarkets}>
+      <DelayedMount delay={time.seconds(1)} skipDelayedMount={skipDelayedMount}>
         <PerpMarketsList onPressMarket={onPressMarket} />
         <MarketSortOrderPicker />
       </DelayedMount>
