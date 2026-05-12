@@ -28,24 +28,12 @@ export const initWebData = async (
   ]);
 };
 
-export const updateWebHidden = async (address: string, assetIds: string[], forceInit = false) => {
-  const response = await getPreference('hidden', address);
-  if (forceInit || !response || !response.hidden.ids.length) {
-    await setPreference(PreferenceActionType.init, 'hidden', address, assetIds);
-    return;
-  }
-
-  setPreference(PreferenceActionType.update, 'hidden', address, assetIds);
+export const updateWebHidden = async (address: string, assetIds: string[]) => {
+  await setPreference(PreferenceActionType.init, 'hidden', address, assetIds);
 };
 
-export const updateWebShowcase = async (address: string, assetIds: string[], forceInit = false) => {
-  const response = await getPreference('showcase', address);
-  if (forceInit || !response || !response.showcase.ids.length) {
-    await setPreference(PreferenceActionType.init, 'showcase', address, assetIds);
-    return;
-  }
-
-  setPreference(PreferenceActionType.update, 'showcase', address, assetIds);
+export const updateWebShowcase = async (address: string, assetIds: string[]) => {
+  await setPreference(PreferenceActionType.init, 'showcase', address, assetIds);
 };
 
 export const wipeWebData = async (address: string) => {
