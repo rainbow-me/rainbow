@@ -1,5 +1,6 @@
 import { NativeModules, Platform } from 'react-native';
 
+import { type NavigationState } from '@react-navigation/native';
 import { SystemBars } from 'react-native-edge-to-edge';
 
 import { analytics } from '@/analytics';
@@ -8,14 +9,14 @@ import { logger } from '@/logger';
 import { isSwipeRoute, setActiveRoute } from '@/state/navigation/navigationStore';
 import currentColors from '@/theme/currentColors';
 
-import Navigation from './Navigation';
+import Navigation, { type Route, type RouteParams } from './Navigation';
 import Routes from './routesNames';
 
-let memState;
-let memRouteName;
-let memPrevRouteName;
+let memState: NavigationState | undefined;
+let memRouteName: Route | null;
+let memPrevRouteName: Route | null;
 
-export function onHandleStatusBar(currentState, prevState) {
+export function onHandleStatusBar(currentState?: NavigationState, prevState?: NavigationState) {
   // Skip updating the system bars while the splash screen is visible
   // this will be called again once splash screen is hidden.
   if (!isSplashScreenHidden()) return;
@@ -25,9 +26,10 @@ export function onHandleStatusBar(currentState, prevState) {
     SystemBars.setStyle('light');
     return;
   }
-  const isFromWalletScreen = Navigation.getActiveRoute()?.params?.isFromWalletScreen;
+  const activeRouteParams = Navigation.getActiveRoute()?.params;
+  const isFromWalletScreen = !!(activeRouteParams && 'isFromWalletScreen' in activeRouteParams && activeRouteParams.isFromWalletScreen);
 
-  const isRoutesLengthDecrease = prevState?.routes.length > currentState?.routes.length;
+  const isRoutesLengthDecrease = !!prevState && !!currentState && prevState.routes.length > currentState.routes.length;
   switch (routeName) {
     case Routes.EXPANDED_ASSET_SHEET: {
       // handles the status bar when opening nested modals
@@ -50,7 +52,6 @@ export function onHandleStatusBar(currentState, prevState) {
     case Routes.DISCOVER_SCREEN:
     case Routes.DAPP_BROWSER_SCREEN:
     case Routes.WELCOME_SCREEN:
-    case Routes.SWAP_NAVIGATOR:
     case Routes.PIN_AUTHENTICATION_SCREEN:
     case Routes.SWAP:
     case Routes.PERPS_ACCOUNT_SCREEN:
@@ -99,7 +100,7 @@ export function onHandleStatusBar(currentState, prevState) {
   }
 }
 
-export function onNavigationStateChange(currentState) {
+export function onNavigationStateChange(currentState: NavigationState | undefined) {
   const routeName = Navigation.getActiveRouteName();
 
   const prevState = memState;
@@ -110,7 +111,7 @@ export function onNavigationStateChange(currentState) {
     setTimeout(NativeModules.MenuViewModule.dismiss, 400);
   }
 
-  if (isSwipeRoute(routeName)) {
+  if (routeName && isSwipeRoute(routeName)) {
     setActiveRoute(routeName);
   }
 
@@ -119,7 +120,7 @@ export function onNavigationStateChange(currentState) {
   memPrevRouteName = memRouteName;
   memRouteName = routeName;
 
-  if (routeName !== memPrevRouteName) {
+  if (routeName && routeName !== memPrevRouteName) {
     const paramsToTrack = getScreenTrackingParams(routeName);
 
     logger.info(`From ${memPrevRouteName} to ${routeName}`, { type: 'navigation', ...paramsToTrack });
@@ -127,31 +128,40 @@ export function onNavigationStateChange(currentState) {
   }
 }
 
+function getActiveRouteParams<RouteName extends Route>(routeName: RouteName): RouteParams<RouteName> | undefined {
+  const route = Navigation.getActiveRoute();
+  return route?.name === routeName ? (route.params as RouteParams<RouteName>) : undefined;
+}
+
 /**
  * Builds the params to attach to the "Loaded A Screen" analytics event for the
  * given route, derived from that route's navigation params.
  */
-function getScreenTrackingParams(routeName) {
+function getScreenTrackingParams(routeName: Route): Record<string, unknown> | undefined {
   switch (routeName) {
     case Routes.EXPANDED_ASSET_SHEET: {
-      const { asset } = Navigation.getActiveRoute().params;
+      const asset = getActiveRouteParams(Routes.EXPANDED_ASSET_SHEET)?.asset;
+      if (!asset) return undefined;
+      const isFungible = 'address' in asset;
       return {
-        assetContractAddress: asset.address || asset?.asset_contract?.address,
+        assetContractAddress: isFungible ? asset.address || asset.asset_contract?.address : undefined,
         assetName: asset.name,
-        assetSymbol: asset.symbol || asset?.asset_contract?.symbol,
+        assetSymbol: isFungible ? asset.symbol || asset.asset_contract?.symbol : undefined,
         network: asset.network,
       };
     }
     case Routes.EXPANDED_ASSET_SHEET_V2: {
-      const { asset, address, chainId } = Navigation.getActiveRoute().params;
+      const params = getActiveRouteParams(Routes.EXPANDED_ASSET_SHEET_V2);
+      if (!params) return undefined;
+      const { asset, address, chainId } = params;
       return {
         assetContractAddress: address,
-        assetName: asset?.name,
-        assetSymbol: asset?.symbol,
+        assetName: asset.name,
+        assetSymbol: asset.symbol,
         chainId,
       };
     }
     default:
-      return null;
+      return undefined;
   }
 }
