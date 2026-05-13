@@ -532,6 +532,14 @@
         "search": "Pesquisar",
         "discover": "Descobrir"
       },
+      "sections": {
+        "tokens": "Tokens"
+      },
+      "placements": {
+        "perps_title": "Perps",
+        "predictions_title": "Previsões",
+        "see_all": "Ver tudo"
+      },
       "strategies": {
         "strategies_title": "Estratégias",
         "yearn_finance_description": "Estratégias inteligentes de rendimento da yearn.finance"
