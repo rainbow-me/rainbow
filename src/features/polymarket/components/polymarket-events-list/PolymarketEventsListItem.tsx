@@ -117,6 +117,7 @@ export const PolymarketEventsListItem = memo(function PolymarketEventsListItem({
         scaleTo={0.96}
         shouldActivateOnStart={shouldActivateOnStart}
         style={styles.flex}
+        wrapperStyle={styles.flex}
       >
         <GradientBorderView
           borderGradientColors={colors.cardBorderGradient}
