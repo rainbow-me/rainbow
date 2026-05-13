@@ -3,15 +3,13 @@ import { addReferralToDappBrowserUrl } from '@/components/DappBrowser/dappReferr
 // Unfortunately @/features/polymarket/constants has some imports, so we need to mock it
 jest.mock('@/features/polymarket/constants', () => ({
   POLYMARKET_HOSTNAMES: new Set(['polymarket.com', 'www.polymarket.com']),
-  POLYMARKET_REFERRAL_CODE: 'referrals',
+  POLYMARKET_REFERRAL_CODE: 'rnbw',
   POLYMARKET_REFERRAL_PARAM: 'r',
 }));
 
 describe('dappReferrals', () => {
   it('returns the referral URL when a browser referral applies', () => {
-    expect(addReferralToDappBrowserUrl('https://polymarket.com/event/some-market')).toBe(
-      'https://polymarket.com/event/some-market?r=referrals'
-    );
+    expect(addReferralToDappBrowserUrl('https://polymarket.com/event/some-market')).toBe('https://polymarket.com/event/some-market?r=rnbw');
   });
 
   it('returns the original URL when no browser referral applies', () => {
