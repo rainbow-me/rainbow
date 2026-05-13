@@ -17,10 +17,11 @@ env:
       platform: iOS
     commands:
       - tapOn: 'Open'
-- assertVisible:
-    id: wallet-screen
-# Wait for wallet to fully load by checking amount
 - extendedWaitUntil:
     visible:
-      text: .*\$[\d,]+\.\d{2}.*
-    timeout: 30000
+      id: wallet-screen
+    timeout: 60000
+- extendedWaitUntil:
+    visible:
+      id: balance-coin-row-Ethereum
+    timeout: 60000

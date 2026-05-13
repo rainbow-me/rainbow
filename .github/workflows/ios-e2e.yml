@@ -8,6 +8,8 @@ on:
     types: [created]
 env:
   NODE_OPTIONS: '--max-old-space-size=6144'
+  FOUNDRY_VERSION: v1.5.1
+  FOUNDRY_BIN_DIR: .foundry-bin
 
 jobs:
   # iOS build job
@@ -27,9 +29,30 @@ jobs:
     timeout-minutes: 45
     outputs:
       artifact-id: ${{ steps.rock-remote-build-ios.outputs.artifact-id }}
+      foundry-artifact-id: ${{ steps.upload-foundry.outputs.artifact-id }}
     steps:
       - name: Checkout repo
         uses: actions/checkout@08eba0b27e820071cde6df949e0beb9ba4906955
+
+      - name: Cache Foundry binaries
+        uses: actions/cache@0057852bfaa89a56745cba8c7296529d2fc39830
+        with:
+          path: ${{ env.FOUNDRY_BIN_DIR }}
+          key: foundry-${{ runner.os }}-${{ runner.arch }}-${{ env.FOUNDRY_VERSION }}
+
+      - name: Install Foundry
+        run: ./scripts/install-foundry.sh
+
+      - name: Pack Foundry binaries
+        run: tar -czf foundry-bin.tar.gz -C "${FOUNDRY_BIN_DIR}" .
+
+      - name: Upload Foundry binaries
+        id: upload-foundry
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: foundry-${{ runner.os }}-${{ runner.arch }}-${{ env.FOUNDRY_VERSION }}-${{ github.run_id }}
+          path: foundry-bin.tar.gz
+          if-no-files-found: error
 
       - name: Setup Node.js
         uses: actions/setup-node@6044e13b5dc448c55e2357c09f80417699197238 # v6.2.0
@@ -149,14 +172,16 @@ jobs:
       - name: Install Maestro
         run: export MAESTRO_VERSION=2.0.10; curl -fsSL "https://get.maestro.mobile.dev" | bash
 
-      - name: Install Anvil
-        uses: foundry-rs/foundry-toolchain@82dee4ba654bd2146511f85f0d013af94670c4de
-        with:
-          version: stable
+      - name: Install Foundry from build artifact
+        env:
+          GITHUB_TOKEN: ${{ github.token }}
+        run: ./scripts/install-foundry-from-artifact.sh "${{ needs.build.outputs.foundry-artifact-id }}"
 
       - name: Download and Unpack IPA artifact
+        env:
+          GITHUB_TOKEN: ${{ github.token }}
         run: |
-          curl -L -H "Authorization: token ${{ github.token }}" -o artifact.zip "https://api.github.com/repos/${{ github.repository }}/actions/artifacts/${{ needs.build.outputs.artifact-id }}/zip"
+          ./scripts/download-github-artifact.sh "${{ needs.build.outputs.artifact-id }}" artifact.zip
           unzip artifact.zip -d downloaded-artifacts
           ls -l downloaded-artifacts
           APP_ARCHIVE_PATH=$(find downloaded-artifacts -name "*.tar.gz" -print -quit)

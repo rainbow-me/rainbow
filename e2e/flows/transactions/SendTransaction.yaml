@@ -11,13 +11,9 @@ tags:
 - runFlow: ../../utils/Prepare.yaml
 - runFlow: ../../utils/ImportWalletWithKey.yaml
 
-# Send ETH to test wallet
-- tapOn:
-    id: fund-test-wallet-button
-
-# Connect to Anvil (test network)
-- tapOn:
-    id: dev-button-anvil
+# Send ETH to test wallet and connect to Anvil.
+- runFlow: ../../utils/FundTestWallet.yaml
+- runFlow: ../../utils/ConnectToAnvil.yaml
 
 # Open send sheet
 - retry:
@@ -76,14 +72,18 @@ tags:
       - runFlow: ../../utils/MaybeInputPin.yaml
 
       # Check toast data
-      - assertVisible:
-          text: 'Sending'
-          childOf:
-            id: toast-.*
-      - assertVisible:
-          text: '0.01 ETH'
-          childOf:
-            id: toast-.*
+      - extendedWaitUntil:
+          visible:
+            text: 'Sending'
+            childOf:
+              id: toast-.*
+          timeout: 15000
+      - extendedWaitUntil:
+          visible:
+            text: '0.01 ETH'
+            childOf:
+              id: toast-.*
+          timeout: 15000
       # Open toast
       - tapOn:
           id: toast-.*

@@ -6,6 +6,7 @@ import { parseEther } from '@ethersproject/units';
 import { Wallet } from '@ethersproject/wallet';
 import { useSharedValue } from 'react-native-reanimated';
 
+import { E2EStatusMarker } from '@/components/E2EStatusMarker';
 import { IS_DEV, IS_TEST } from '@/env';
 import Emoji from '@/framework/ui/components/Emoji';
 import { logger, RainbowError } from '@/logger';
@@ -28,11 +29,16 @@ export const RainbowContext = createContext<RainbowContextType>({
   },
 });
 
+type E2EAnvilStatus = 'idle' | 'connected' | 'disconnected' | 'connect-error';
+type E2EFundingStatus = 'idle' | 'funding' | 'funded' | 'funding-error';
+
 export default function RainbowContextWrapper({ children }: PropsWithChildren) {
   // This value is hold here to prevent JS VM from shutting down
   // on unmounting all shared values.
   useSharedValue(0);
   const setConnectedToAnvil = useConnectedToAnvilStore(state => state.setConnectedToAnvil);
+  const [e2eAnvilStatus, setE2EAnvilStatus] = useState<E2EAnvilStatus>('idle');
+  const [e2eFundingStatus, setE2EFundingStatus] = useState<E2EFundingStatus>('idle');
   const [globalState, updateGlobalState] = useState({});
 
   useEffect(() => {
@@ -58,11 +64,13 @@ export default function RainbowContextWrapper({ children }: PropsWithChildren) {
 
   const connectToAnvil = useCallback(async () => {
     try {
-      const currentValue = useConnectedToAnvilStore.getState().connectedToAnvil;
-      setConnectedToAnvil(!currentValue);
-      logger.debug('connected to anvil');
+      const nextConnected = !useConnectedToAnvilStore.getState().connectedToAnvil;
+      setConnectedToAnvil(nextConnected);
+      setE2EAnvilStatus(nextConnected ? 'connected' : 'disconnected');
+      logger.debug(nextConnected ? 'connected to anvil' : 'disconnected from anvil');
     } catch (e) {
       setConnectedToAnvil(false);
+      setE2EAnvilStatus('connect-error');
       logger.error(new RainbowError('error connecting to anvil'), {
         message: e instanceof Error ? e.message : String(e),
       });
@@ -74,14 +82,19 @@ export default function RainbowContextWrapper({ children }: PropsWithChildren) {
     if (!IS_TEST) return;
     const RPC_URL = Platform.OS === 'android' ? 'http://10.0.2.2:8545' : 'http://127.0.0.1:8545';
     try {
+      setE2EFundingStatus('funding');
       const provider = new JsonRpcProvider(RPC_URL);
+      await provider.getNetwork();
       const wallet = new Wallet('0xac0974bec39a17e36ba4a6b4d238ff944bacb478cbed5efcae784d7bf4f2ff80', provider);
       const testWalletAddress = '0x4d14289265eb7c166cF111A76B6D742e3b85dF85';
-      await wallet.sendTransaction({
+      const transaction = await wallet.sendTransaction({
         to: testWalletAddress,
         value: parseEther('20'),
       });
+      await transaction.wait(1);
+      setE2EFundingStatus('funded');
     } catch (e) {
+      setE2EFundingStatus('funding-error');
       logger.error(new RainbowError('error funding test wallet'), {
         message: e instanceof Error ? e.message : String(e),
       });
@@ -91,6 +104,8 @@ export default function RainbowContextWrapper({ children }: PropsWithChildren) {
   return (
     <RainbowContext.Provider value={initialValue}>
       {children}
+      <E2EStatusMarker id={e2eFundingStatus === 'idle' ? null : `e2e-anvil-${e2eFundingStatus}`} />
+      <E2EStatusMarker id={e2eAnvilStatus === 'idle' ? null : `e2e-anvil-${e2eAnvilStatus}`} />
       {showReloadButton && IS_DEV && <DevButton color={colors.red} initialDisplacement={200} />}
       {((showConnectToAnvilButton && IS_DEV) || IS_TEST) && (
         <>

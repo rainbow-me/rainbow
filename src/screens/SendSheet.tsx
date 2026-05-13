@@ -694,7 +694,7 @@ export default function SendSheet() {
         // if the user sent an NFT, we need to revalidate the NFT data
         if (isUniqueAsset) {
           const collectionId = `${selected.network}_${selected.contractAddress}`;
-          useNftsStore.getState(accountAddress).fetchNftCollection(collectionId, true);
+          useNftsStore.getState(accountAddress).fetchNftCollection(collectionId, { force: true });
           useNftsStore.getState(accountAddress).fetch({ limit: PAGE_SIZE }, { staleTime: time.seconds(5) });
         }
         executeFn(goBackAndNavigate, {

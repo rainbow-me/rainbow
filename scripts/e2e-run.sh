@@ -3,7 +3,9 @@
 set -euo pipefail
 source .env
 
-ARTIFACTS_FOLDER=e2e-artifacts
+ARTIFACTS_FOLDER="${ARTIFACTS_FOLDER:-e2e-artifacts}"
+ANVIL_FORK_BLOCK_NUMBER="${ANVIL_FORK_BLOCK_NUMBER:-24333000}"
+ANVIL_RPC_URL="http://127.0.0.1:8545"
 FLOW="e2e/flows"
 ARGS=()
 SHARD_TOTAL=1
@@ -15,6 +17,7 @@ RECORD_ON_FAILURE=false
 MAX_ATTEMPTS=1
 RECORDING_PID=""
 LOG_CAPTURE_PID=""
+ANVIL_START_COUNT=0
 
 stop_log_capture() {
   if [ -n "${LOG_CAPTURE_PID:-}" ]; then
@@ -35,6 +38,90 @@ start_log_capture() {
     adb logcat -v time > "$log_dir/logcat.txt" &
     LOG_CAPTURE_PID=$!
   fi
+}
+
+wait_for_anvil() {
+  local rpc_url="${1:-$ANVIL_RPC_URL}"
+  local max_attempts="${ANVIL_READY_ATTEMPTS:-30}"
+
+  for attempt in $(seq 1 "$max_attempts"); do
+    if response=$(curl --silent --show-error --fail --max-time 2 \
+      -H 'Content-Type: application/json' \
+      --data '{"jsonrpc":"2.0","id":1,"method":"eth_chainId","params":[]}' \
+      "$rpc_url" 2>/dev/null) && [[ "$response" == *'"result"'* ]]; then
+      echo "✅ Anvil ready at $rpc_url"
+      return 0
+    fi
+
+    echo "⏳ Waiting for Anvil ($attempt/$max_attempts)..."
+    sleep 1
+  done
+
+  echo "❌ Anvil did not become ready at $rpc_url" >&2
+  tail -n 100 "$ARTIFACTS_FOLDER/anvil/mainnet.log" >&2 || true
+  exit 1
+}
+
+test_needs_anvil() {
+  [[ "$1" == *"/transactions/"* ]]
+}
+
+stop_anvil() {
+  if [ -n "${ANVIL_PID:-}" ]; then
+    echo "🛑 Killing Anvil (PID: $ANVIL_PID)"
+    kill "$ANVIL_PID" 2>/dev/null || true
+    wait "$ANVIL_PID" 2>/dev/null || true
+    ANVIL_PID=""
+  fi
+}
+
+start_anvil() {
+  echo "🔌 Starting Anvil..."
+
+  local existing_pid
+  existing_pid=$(lsof -t -i:8545 -c anvil 2>/dev/null || true)
+  if [ -n "$existing_pid" ]; then kill "$existing_pid" 2>/dev/null || true; fi
+  sleep 1
+
+  mkdir -p "$ARTIFACTS_FOLDER/anvil"
+  ANVIL_START_COUNT=$((ANVIL_START_COUNT + 1))
+  printf '\n===== Anvil start %s at %s =====\n' "$ANVIL_START_COUNT" "$(date -u '+%Y-%m-%dT%H:%M:%SZ')" >> "$ARTIFACTS_FOLDER/anvil/mainnet.log"
+  ANVIL_FORK_BLOCK_NUMBER="$ANVIL_FORK_BLOCK_NUMBER" ./scripts/anvil.sh --host 0.0.0.0 >> "$ARTIFACTS_FOLDER/anvil/mainnet.log" 2>&1 &
+  ANVIL_PID=$!
+  wait_for_anvil "$ANVIL_RPC_URL"
+}
+
+reset_anvil() {
+  local payload
+  payload=$(printf '{"jsonrpc":"2.0","id":1,"method":"anvil_reset","params":[{"forking":{"jsonRpcUrl":"%s","blockNumber":%s}}]}' "$ETHEREUM_MAINNET_RPC_DEV" "$ANVIL_FORK_BLOCK_NUMBER")
+
+  for attempt in 1 2 3; do
+    if response=$(curl --silent --show-error --fail --max-time 10 \
+      -H 'Content-Type: application/json' \
+      --data "$payload" \
+      "$ANVIL_RPC_URL" 2>/dev/null) && [[ "$response" == *'"result"'* && "$response" != *'"error"'* ]]; then
+      echo "✅ Anvil reset to fork block $ANVIL_FORK_BLOCK_NUMBER"
+      return 0
+    fi
+
+    echo "⏳ Resetting Anvil ($attempt/3)..."
+    sleep 0.2
+  done
+
+  return 1
+}
+
+prepare_anvil_for_attempt() {
+  if [ -z "${ANVIL_PID:-}" ]; then
+    start_anvil
+    return
+  fi
+
+  if reset_anvil; then return; fi
+
+  echo "⚠️ Anvil reset failed. Restarting Anvil..."
+  stop_anvil
+  start_anvil
 }
 
 # Stop recording function
@@ -93,10 +180,7 @@ cleanup() {
     RECORDING_PID=""
   fi
   stop_log_capture
-  if [ -n "${ANVIL_PID:-}" ]; then
-    echo "🛑 Killing Anvil (PID: $ANVIL_PID)"
-    kill "$ANVIL_PID" 2>/dev/null || true
-  fi
+  stop_anvil
 }
 
 handle_interrupt() {
@@ -166,28 +250,6 @@ else
   fi
 fi
 
-# Start Anvil only if any test path includes "transaction".
-NEEDS_ANVIL=false
-for FILE in "${TEST_FILES[@]}"; do
-  if [[ "$FILE" == *"/transactions/"* ]]; then
-    NEEDS_ANVIL=true
-    break
-  fi
-done
-
-if $NEEDS_ANVIL; then
-  echo "🔌 Transaction test detected. Starting Anvil..."
-
-  ANVIL_PID=$(lsof -t -i:8545 -c anvil 2>/dev/null || true)
-  if [ -n "$ANVIL_PID" ]; then kill "$ANVIL_PID" 2>/dev/null || true; fi
-  sleep 1
-
-  mkdir -p "$ARTIFACTS_FOLDER/anvil"
-  ./scripts/anvil.sh --host 0.0.0.0 > "$ARTIFACTS_FOLDER/anvil/mainnet.log" 2>&1 &
-  ANVIL_PID=$!
-  sleep 5
-fi
-
 # Run tests with retries.
 EXIT_CODE=0
 for TEST_FILE in "${TEST_FILES[@]}"; do
@@ -201,6 +263,10 @@ for TEST_FILE in "${TEST_FILES[@]}"; do
 
     START_TIME=$(date +%s)
     DEBUG_OUTPUT="$ARTIFACTS_FOLDER/maestro/⏱️-$TEST_NAME-$ATTEMPT"
+
+    if test_needs_anvil "$TEST_FILE"; then
+      prepare_anvil_for_attempt
+    fi
 
     # Start recording for attempts after first failure
     if [ "$SHOULD_RECORD" = "true" ]; then

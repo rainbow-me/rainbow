@@ -55,6 +55,7 @@ android/app/src/main/java/me/rainbow/MainActivity.java-e
 node_modules/
 npm-debug.log
 yarn-error.log
+.foundry-bin/
 
 # Keystore
 *.keystore
