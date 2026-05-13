@@ -7,6 +7,7 @@ import { convertStoredPerpPriceChangeToPercent, formatCompactPerpPercentChange }
 import { navigateToPerpsSearch } from '@/features/perps/utils/navigateToPerps';
 import { PLACEMENT_IDS } from '@/features/placements/constants';
 import { trackPlacementInteraction } from '@/features/placements/engagement/trackInteraction';
+import { useDiscoverPerpsStore } from '@/features/placements/stores/discover/discoverPerpsStore';
 import { useDiscoverPlacementsStore } from '@/features/placements/stores/discover/discoverPlacementsStore';
 import { type Placement, type PlacementItem } from '@/features/placements/types';
 import * as i18n from '@/languages';
@@ -23,6 +24,7 @@ export function PerpsMarketCarousel() {
     return items.length === 0 && state.isInitialLoad;
   });
   const markets = useHyperliquidMarketsStore(state => state.markets);
+  const chartsBySymbol = useDiscoverPerpsStore(state => state.chartsBySymbol);
   const marketsLoading = useHyperliquidMarketsStore(state => {
     const hasMarkets = Object.keys(state.markets).length > 0;
     return !hasMarkets && (state.status === 'loading' || state.status === 'idle');
@@ -36,16 +38,16 @@ export function PerpsMarketCarousel() {
   const getPerpCardWidth = useCallback(
     (item: PlacementItem): number => {
       const market = markets[item.ref.id];
-      const percentChange = market
-        ? convertStoredPerpPriceChangeToPercent(market.priceChange['1h'] ?? market.priceChange['24h'])
-        : undefined;
+      const percentChange =
+        chartsBySymbol[item.ref.id]?.percentChange ??
+        (market ? convertStoredPerpPriceChangeToPercent(market.priceChange['1h'] ?? market.priceChange['24h']) : undefined);
 
       return computePerpCardWidth({
         percentChangeText: percentChange === undefined ? undefined : formatCompactPerpPercentChange(percentChange),
         symbol: market?.baseSymbol ?? item.ref.id,
       });
     },
-    [markets]
+    [chartsBySymbol, markets]
   );
   const handlePressSeeAll = useCallback(() => {
     if (placement) trackPlacementInteraction({ placement });
