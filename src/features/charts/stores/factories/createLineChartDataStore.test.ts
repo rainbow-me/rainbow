@@ -1,5 +1,6 @@
 import Routes, { type Route } from '@/navigation/routesNames';
 import { useNavigationStore, type SwipeRoute } from '@/state/navigation/navigationStore';
+import { time } from '@/utils/time';
 
 import { type CompactLineChartData } from '../../line/compact/types';
 import { createLineChartDataStore, type FetchedLineChartData } from './createLineChartDataStore';
@@ -95,6 +96,29 @@ describe('createLineChartDataStore', () => {
       await store.getState().fetch({ chartIds: ['BTC', 'ETH'] }, { force: true });
       expect(fetchLineChartData.mock.calls[1]?.[0]).toEqual(['ETH']);
       expect(store.getState().isStale()).toBe(false);
+    } finally {
+      store.getState().reset(true);
+      jest.restoreAllMocks();
+    }
+  });
+
+  it('uses configured stale time when filtering chart ids to fetch', async () => {
+    let now = 1_000_000;
+    jest.spyOn(Date, 'now').mockImplementation(() => now);
+
+    const fetchLineChartData = jest.fn(fetchChartData);
+    const store = createLineChartDataStore(fetchLineChartData, { staleTime: time.minutes(7) });
+
+    try {
+      await store.getState().fetch({ chartIds: ['BTC'] }, { force: true });
+
+      now += time.minutes(5);
+      await store.getState().fetch({ chartIds: ['BTC', 'ETH'] }, { force: true });
+      expect(fetchLineChartData.mock.calls[1]?.[0]).toEqual(['ETH']);
+
+      now += time.minutes(3);
+      await store.getState().fetch({ chartIds: ['BTC', 'ETH'] }, { force: true });
+      expect(fetchLineChartData.mock.calls[2]?.[0]).toEqual(['BTC']);
     } finally {
       store.getState().reset(true);
       jest.restoreAllMocks();

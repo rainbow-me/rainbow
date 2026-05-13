@@ -47,7 +47,7 @@ function processMarketsForDex({
       const price = midPrice ?? markPrice;
       const previousDayPrice = assetPricingInfo.prevDayPx;
 
-      const priceChange24h = divide(subtract(price, previousDayPrice), multiply(previousDayPrice, 100));
+      const priceChange24h = calculatePerpPriceChange24h(price, previousDayPrice);
 
       return {
         id: assetId,
@@ -74,6 +74,9 @@ function processMarketsForDex({
     .filter(Boolean);
 }
 
+/**
+ * Fetches the full Hyperliquid market snapshot for every supported dex.
+ */
 export async function getAllMarketsInfo(): Promise<PerpMarket[]> {
   const dexIds = hyperliquidDexActions.getDexIds();
   const converter = await getSymbolConverter();
@@ -85,4 +88,11 @@ export async function getAllMarketsInfo(): Promise<PerpMarket[]> {
   });
 
   return allMarkets.flat();
+}
+
+/**
+ * Calculates the stored Hyperliquid 24h price-change fraction from current and previous-day prices.
+ */
+export function calculatePerpPriceChange24h(price: string, previousDayPrice: string): string {
+  return divide(subtract(price, previousDayPrice), multiply(previousDayPrice, 100));
 }

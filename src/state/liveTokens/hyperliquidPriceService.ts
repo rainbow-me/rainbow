@@ -1,21 +1,26 @@
+import { hyperliquidMarketsActions } from '@/features/perps/stores/hyperliquidMarketsStore';
 import { getHyperliquidTokenId } from '@/features/perps/utils';
-import { getAllMarketsInfo } from '@/features/perps/utils/hyperliquid';
 import { logger, RainbowError } from '@/logger';
 
 import { transformHyperliquidMarketToTokenData } from './hyperliquidAdapter';
 import { type TokenData } from './liveTokensStore';
 
+/**
+ * Fetches live Hyperliquid prices through the market store's `allMids` refresh.
+ */
 export async function fetchHyperliquidPrices(symbols: string[]): Promise<Record<string, TokenData>> {
   try {
-    const allMarketsInfo = await getAllMarketsInfo();
+    const markets = await hyperliquidMarketsActions.fetchPrices(symbols);
+    if (!markets) return {};
+
+    const updateTime = new Date().toISOString();
     const result: Record<string, TokenData> = {};
 
-    allMarketsInfo.forEach(market => {
-      if (market && symbols.includes(market.symbol)) {
-        const tokenId = getHyperliquidTokenId(market.symbol);
-        result[tokenId] = transformHyperliquidMarketToTokenData(market);
-      }
-    });
+    for (const symbol of symbols) {
+      const market = markets[symbol];
+      if (!market) continue;
+      result[getHyperliquidTokenId(symbol)] = transformHyperliquidMarketToTokenData(market, updateTime);
+    }
 
     return result;
   } catch (error) {

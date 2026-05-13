@@ -1,4 +1,8 @@
+import { type AllMidsResponse } from '@nktkas/hyperliquid/api/info';
+
 import { HYPERCORE_PSEUDO_CHAIN_ID } from '@/features/perps/constants';
+import { infoClient } from '@/features/perps/services/hyperliquid-info-client';
+import { hyperliquidDexActions } from '@/features/perps/stores/hyperliquidDexStore';
 import {
   MarketSortOrder,
   type HyperliquidTokenMetadata,
@@ -6,13 +10,29 @@ import {
   type PerpMarketWithMetadata,
 } from '@/features/perps/types';
 import { formatPerpAssetPrice } from '@/features/perps/utils/formatPerpsAssetPrice';
-import { getAllMarketsInfo } from '@/features/perps/utils/hyperliquid';
+import { calculatePerpPriceChange24h, getAllMarketsInfo } from '@/features/perps/utils/hyperliquid';
+import { normalizeDexSymbol } from '@/features/perps/utils/hyperliquidSymbols';
 import { getPlatformClient } from '@/resources/platform/client';
 import { createDerivedStore } from '@/state/internal/createDerivedStore';
 import { createQueryStore } from '@/state/internal/createQueryStore';
 import { createRainbowStore } from '@/state/internal/createRainbowStore';
 import { createStoreActions } from '@/state/internal/utils/createStoreActions';
 import { time } from '@/utils/time';
+
+type MidPricesBySymbol = Record<string, string>;
+type DexMidPrices = { dex: string; mids: AllMidsResponse };
+type PriceRequest = { dexIds: string[]; symbols: readonly string[] | undefined };
+
+type MarketPriceUpdate = {
+  midPrice: string;
+  priceChange24h: string;
+  symbol: string;
+};
+
+type MarketPriceUpdates = {
+  priceUpdates: MarketPriceUpdate[] | undefined;
+  pricedMarkets: PerpMarketsBySymbol;
+};
 
 type HyperliquidMarketsFetchData = {
   markets: PerpMarketsBySymbol;
@@ -24,6 +44,9 @@ type HyperliquidMarketsStoreState = {
 };
 
 type HyperliquidMarketsStoreActions = {
+  fetchPrices: (symbols?: readonly string[]) => Promise<PerpMarketsBySymbol | null>;
+  /** Price mutator used to lazily propagate live token price updates. */
+  mutatePrices: (midPrices: MidPricesBySymbol, symbols?: readonly string[]) => PerpMarketsBySymbol | null;
   setSortOrder: (sortOrder: MarketSortOrder) => void;
   getCoinIcon: (symbol: string) => string | undefined;
   getColor: (symbol: string) => string | undefined;
@@ -47,6 +70,14 @@ export const useHyperliquidMarketsStore = createQueryStore<HyperliquidMarketsFet
 
     setSortOrder: (sortOrder: MarketSortOrder) => set({ sortOrder }),
 
+    fetchPrices: async symbols => {
+      const request = buildPriceRequest(get().markets, symbols);
+      if (!request) return null;
+
+      const midPrices = await fetchMidPrices(request.dexIds);
+      return get().mutatePrices(midPrices, request.symbols);
+    },
+
     getCoinIcon: (symbol: string) => get().markets[symbol]?.metadata?.iconUrl,
 
     getColor: (symbol: string) => {
@@ -63,13 +94,24 @@ export const useHyperliquidMarketsStore = createQueryStore<HyperliquidMarketsFet
     getMarkets: () => get().markets,
 
     getMarket: (symbol: string) => get().markets[symbol],
+
+    mutatePrices: (midPrices, symbols) => {
+      const updates = getMarketPriceUpdates(get().markets, midPrices, symbols);
+      if (!updates) return null;
+
+      const priceUpdates = updates.priceUpdates;
+      if (priceUpdates) {
+        set(state => {
+          mutateMarketPrices(state.markets, priceUpdates);
+          return state;
+        });
+      }
+      return updates.pricedMarkets;
+    },
   }),
 
   {
-    partialize: state => ({
-      markets: state.markets,
-      sortOrder: state.sortOrder,
-    }),
+    partialize: state => ({ markets: state.markets, sortOrder: state.sortOrder }),
     storageKey: 'hyperliquidMarketsStore',
     version: 2,
   }
@@ -149,14 +191,91 @@ async function fetchHyperliquidMarkets(): Promise<HyperliquidMarketsFetchData> {
     markets: allMarketsInfo.reduce<PerpMarketsBySymbol>((acc, asset) => {
       if (asset) {
         const metadata = tokensMetadata[buildHypercoreTokenId(asset.symbol)];
-        acc[asset.symbol] = {
-          ...asset,
-          metadata,
-        };
+        acc[asset.symbol] = { ...asset, metadata };
       }
       return acc;
     }, {}),
   };
+}
+
+async function fetchMidPrices(dexIds: readonly string[]): Promise<MidPricesBySymbol> {
+  const responses = await Promise.all(dexIds.map(fetchDexMidPrices));
+  const midPrices: MidPricesBySymbol = {};
+
+  for (const response of responses) {
+    for (const [symbol, midPrice] of Object.entries(response.mids)) {
+      midPrices[normalizeDexSymbol(symbol, response.dex)] = midPrice;
+    }
+  }
+  return midPrices;
+}
+
+async function fetchDexMidPrices(dex: string): Promise<DexMidPrices> {
+  return {
+    dex,
+    mids: await infoClient.allMids({ dex }),
+  };
+}
+
+function buildPriceRequest(markets: PerpMarketsBySymbol, symbols: readonly string[] | undefined): PriceRequest | null {
+  const requestedSymbols = symbols?.length ? symbols : undefined;
+  const dexIds = getDexIdsForPriceFetch(markets, requestedSymbols);
+  return dexIds.length ? { dexIds, symbols: requestedSymbols } : null;
+}
+
+function getDexIdsForPriceFetch(markets: PerpMarketsBySymbol, symbols: readonly string[] | undefined): string[] {
+  if (!symbols?.length) return hyperliquidDexActions.getDexIds();
+
+  const dexIds: string[] = [];
+  for (const symbol of symbols) {
+    const dex = markets[symbol]?.dex;
+    if (dex !== undefined && !dexIds.includes(dex)) dexIds.push(dex);
+  }
+
+  return dexIds;
+}
+
+function getMarketPriceUpdates(
+  markets: PerpMarketsBySymbol,
+  midPrices: MidPricesBySymbol,
+  symbols: readonly string[] | undefined
+): MarketPriceUpdates | null {
+  const symbolsToPrice = symbols ?? Object.keys(midPrices);
+  let priceUpdates: MarketPriceUpdate[] | undefined;
+  let pricedMarkets: PerpMarketsBySymbol | undefined;
+
+  for (const symbol of symbolsToPrice) {
+    const market = markets[symbol];
+    const midPrice = midPrices[symbol];
+    if (!market || midPrice === undefined) continue;
+
+    const priceChange24h = calculatePerpPriceChange24h(midPrice, market.previousDayPrice);
+    (pricedMarkets ??= {})[symbol] = market;
+
+    if (isMarketPriceCurrent(market, midPrice, priceChange24h)) continue;
+    (priceUpdates ??= []).push({ midPrice, priceChange24h, symbol });
+  }
+
+  return pricedMarkets ? { priceUpdates, pricedMarkets } : null;
+}
+
+function isMarketPriceCurrent(market: PerpMarketWithMetadata, midPrice: string, priceChange24h: string): boolean {
+  return market.price === midPrice && market.midPrice === midPrice && market.priceChange['24h'] === priceChange24h;
+}
+
+/**
+ * Intentionally mutates market prices to lazily update price
+ * after live token prices are fetched.
+ */
+function mutateMarketPrices(markets: PerpMarketsBySymbol, updates: readonly MarketPriceUpdate[]): void {
+  for (const token of updates) {
+    const market = markets[token.symbol];
+    if (!market) continue;
+
+    market.price = token.midPrice;
+    market.midPrice = token.midPrice;
+    market.priceChange['24h'] = token.priceChange24h;
+  }
 }
 
 function buildHypercoreTokenId(symbol: string): string {

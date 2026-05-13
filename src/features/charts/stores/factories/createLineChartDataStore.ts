@@ -31,11 +31,16 @@ export type FetchedLineChartData = Partial<Record<ChartId, CompactLineChartData 
 export type LineChartDataFetcher = (chartIds: readonly ChartId[], abortController: AbortController | null) => Promise<FetchedLineChartData>;
 
 /**
- * Restricts store fetching to an active navigation scope.
+ * Controls where the store fetches and how long chart entries remain fresh.
  */
-export type LineChartDataStoreOptions =
+export type LineChartDataStoreOptions = {
+  cacheTime?: number;
+  staleTime?: number;
+} & (
   | { activeOnRoute: Route; activeOnSwipeRoute?: never }
-  | { activeOnRoute?: never; activeOnSwipeRoute: SwipeRoute };
+  | { activeOnRoute?: never; activeOnSwipeRoute: SwipeRoute }
+  | { activeOnRoute?: never; activeOnSwipeRoute?: never }
+);
 
 type LineChartDataParams = { chartIds: ChartId[] };
 type LineChartDataStoreState = LineChartDataStore & { subscribedChartIds: ChartId[] };
@@ -43,8 +48,8 @@ type LineChartDataQueryState = QueryStoreState<FetchedLineChartData, LineChartDa
 
 // ============ Constants ====================================================== //
 
-const CACHE_TIME = time.minutes(2);
-const STALE_TIME = time.seconds(30);
+const DEFAULT_CACHE_TIME = time.minutes(5);
+const DEFAULT_STALE_TIME = time.minutes(2);
 
 // ============ Store Factory ================================================== //
 
@@ -56,17 +61,16 @@ export function createLineChartDataStore(
   options?: LineChartDataStoreOptions
 ): QueryStore<FetchedLineChartData, LineChartDataParams, LineChartDataStoreState> {
   const chartReadTracker = createSelectorReadTracker<ChartId>();
+  const { enabled, cacheTime, staleTime } = buildOptions(options);
 
   const store = createQueryStore<FetchedLineChartData, LineChartDataParams, LineChartDataStoreState>(
     {
       fetcher: fetchStaleLineChartData,
-      setData: setLineChartData,
-      enabled: buildEnabledSetting(options),
-      params: {
-        chartIds: ($, store) => $(store, s => s.subscribedChartIds),
-      },
-      staleTime: STALE_TIME,
-      cacheTime: CACHE_TIME,
+      setData: params => setLineChartData(params, cacheTime),
+      enabled,
+      params: { chartIds: ($, store) => $(store, s => s.subscribedChartIds) },
+      staleTime,
+      cacheTime,
       keepPreviousData: true,
       paramChangeThrottle: time.seconds(1),
     },
@@ -87,7 +91,7 @@ export function createLineChartDataStore(
     { chartIds }: LineChartDataParams,
     abortController: AbortController | null
   ): Promise<FetchedLineChartData> {
-    const staleChartIds = selectStaleChartIds(store.getState(), chartIds);
+    const staleChartIds = selectStaleChartIds(store.getState(), chartIds, staleTime);
     if (!staleChartIds.length) return emptyFetchResult;
 
     return fetchLineChartData(staleChartIds, abortController);
@@ -99,11 +103,11 @@ export function createLineChartDataStore(
     store.setState(state => {
       if (!subscribedChartIds.length) return { subscribedChartIds };
 
-      const staleCutoff = Date.now() - STALE_TIME;
+      const staleCutoff = Date.now() - staleTime;
       const nextQueryKey = getQueryKey({ chartIds: subscribedChartIds });
       const queryCache = { ...state.queryCache };
 
-      queryCache[nextQueryKey] = buildCacheEntry(null, getOldestChartFetchTime(subscribedChartIds, queryCache, staleCutoff));
+      queryCache[nextQueryKey] = buildCacheEntry(null, getOldestChartFetchTime(subscribedChartIds, queryCache, staleCutoff), cacheTime);
 
       return { queryCache, subscribedChartIds };
     });
@@ -112,30 +116,38 @@ export function createLineChartDataStore(
   return chartReadTracker.install(store, updateSubscribedChartIds);
 }
 
-// ============ Enabled Setting ================================================ //
+// ============ Store Options ================================================== //
 
-function buildEnabledSetting(
-  options: LineChartDataStoreOptions | undefined
-): ReactiveParam<boolean, LineChartDataParams, LineChartDataQueryState, FetchedLineChartData> {
-  if (!options) return true;
+type EnabledParam = ReactiveParam<boolean, LineChartDataParams, LineChartDataQueryState, FetchedLineChartData>;
 
-  if (options.activeOnRoute !== undefined) {
+function buildOptions(options: LineChartDataStoreOptions | undefined): { enabled: EnabledParam; cacheTime: number; staleTime: number } {
+  return {
+    enabled: buildEnabledSetting(options),
+    cacheTime: options?.cacheTime ?? DEFAULT_CACHE_TIME,
+    staleTime: options?.staleTime ?? DEFAULT_STALE_TIME,
+  };
+}
+
+function buildEnabledSetting(options: LineChartDataStoreOptions | undefined): EnabledParam {
+  if (options?.activeOnRoute !== undefined) {
     const { activeOnRoute } = options;
     return $ => $(useNavigationStore, state => state.isRouteActive(activeOnRoute));
   }
 
-  const { activeOnSwipeRoute } = options;
-  return $ => $(useNavigationStore, state => state.isSwipeRouteActive(activeOnSwipeRoute));
+  if (options?.activeOnSwipeRoute !== undefined) {
+    const { activeOnSwipeRoute } = options;
+    return $ => $(useNavigationStore, state => state.isSwipeRouteActive(activeOnSwipeRoute));
+  }
+
+  return true;
 }
 
 // ============ Data Setter ==================================================== //
 
-function setLineChartData({
-  data,
-  params,
-  queryKey,
-  set,
-}: SetDataParams<FetchedLineChartData, LineChartDataParams, LineChartDataStoreState>): void {
+function setLineChartData(
+  { data, params, queryKey, set }: SetDataParams<FetchedLineChartData, LineChartDataParams, LineChartDataStoreState>,
+  cacheTime: number
+): void {
   set(state => {
     const lastFetchedAt = Date.now();
     const queryCache = { ...state.queryCache };
@@ -147,10 +159,10 @@ function setLineChartData({
       const chartKey = getChartQueryKey(id);
       const currentData = queryCache[chartKey]?.data?.[id];
       const chartData = currentData && nextData && isLineChartDataEqual(currentData, nextData) ? currentData : nextData;
-      queryCache[chartKey] = buildCacheEntry({ [id]: chartData }, lastFetchedAt);
+      queryCache[chartKey] = buildCacheEntry({ [id]: chartData }, lastFetchedAt, cacheTime);
     }
 
-    queryCache[queryKey] = buildCacheEntry(null, getOldestChartFetchTime(params.chartIds, queryCache, lastFetchedAt));
+    queryCache[queryKey] = buildCacheEntry(null, getOldestChartFetchTime(params.chartIds, queryCache, lastFetchedAt), cacheTime);
 
     return { queryCache };
   });
@@ -158,9 +170,9 @@ function setLineChartData({
 
 // ============ Selectors ====================================================== //
 
-function selectStaleChartIds(state: LineChartDataQueryState, chartIds: readonly ChartId[]): ChartId[] {
+function selectStaleChartIds(state: LineChartDataQueryState, chartIds: readonly ChartId[], staleTime: number): ChartId[] {
   const now = Date.now();
-  return chartIds.filter(id => isChartStale(state.queryCache[getChartQueryKey(id)], now));
+  return chartIds.filter(id => isChartStale(state.queryCache[getChartQueryKey(id)], now, staleTime));
 }
 
 function selectChartData(queryCache: LineChartDataQueryState['queryCache'], id: ChartId): CompactLineChartData | undefined {
@@ -173,12 +185,12 @@ function getChartQueryKey(id: ChartId): string {
   return getQueryKey({ chartId: id });
 }
 
-function buildCacheEntry(data: FetchedLineChartData | null, lastFetchedAt: number): CacheEntry<FetchedLineChartData> {
-  return { cacheTime: CACHE_TIME, data, errorInfo: null, lastFetchedAt };
+function buildCacheEntry(data: FetchedLineChartData | null, lastFetchedAt: number, cacheTime: number): CacheEntry<FetchedLineChartData> {
+  return { cacheTime, data, errorInfo: null, lastFetchedAt };
 }
 
-function isChartStale(cacheEntry: CacheEntry<FetchedLineChartData> | undefined, now: number): boolean {
-  return !cacheEntry?.lastFetchedAt || now - cacheEntry.lastFetchedAt >= STALE_TIME;
+function isChartStale(cacheEntry: CacheEntry<FetchedLineChartData> | undefined, now: number, staleTime: number): boolean {
+  return !cacheEntry?.lastFetchedAt || now - cacheEntry.lastFetchedAt >= staleTime;
 }
 
 function getOldestChartFetchTime(
