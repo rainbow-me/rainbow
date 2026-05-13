@@ -1,7 +1,8 @@
 import { getApp } from '@react-native-firebase/app';
 import { collection, getDocs, getFirestore, orderBy, query, where, type FirebaseFirestoreTypes } from '@react-native-firebase/firestore';
 
-import { type Placement } from '@/features/placements/types';
+import { PLACEMENT_IDS } from '@/features/placements/constants';
+import { type Placement, type PlacementId } from '@/features/placements/types';
 import { createQueryStore } from '@/state/internal/createQueryStore';
 import { time } from '@/utils/time';
 
@@ -18,6 +19,7 @@ type PlacementsState = {
 
 const PLACEMENTS_STALE_TIME = time.hours(1);
 const PLACEMENTS_CACHE_TIME = time.days(2);
+const PLACEMENT_ID_SET = new Set<string>(Object.values(PLACEMENT_IDS));
 
 export const usePlacementsStore = createQueryStore<Placement[], never, PlacementsState>(
   {
@@ -48,7 +50,9 @@ async function fetchPlacements(): Promise<Placement[]> {
     FirebaseFirestoreTypes.DocumentData
   >(q);
 
-  return snap.docs.map(doc => {
+  return snap.docs.flatMap(doc => {
+    if (!isPlacementId(doc.id)) return [];
+
     const placement = { id: doc.id, ...doc.data() };
 
     return {
@@ -56,4 +60,8 @@ async function fetchPlacements(): Promise<Placement[]> {
       items: [...placement.items].sort((a, b) => a.order - b.order),
     };
   });
+}
+
+function isPlacementId(id: string): id is PlacementId {
+  return PLACEMENT_ID_SET.has(id);
 }
