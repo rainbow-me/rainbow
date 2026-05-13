@@ -487,7 +487,6 @@
       "clear_react_query_cache": "React Sorgusu Önbelleğini Temizle",
       "connect_to_anvil": "Anvil'e Bağlan",
       "copy_fcm_token": "FCM Jetonunu Kopyala",
-      "copy_log_lines": "Günlük Satırlarını Kopyala",
       "copy_signing_wallet_address": "İmza Cüzdanı Adresini Kopyala",
       "disconnect_to_anvil": "Anvil'den Bağlantıyı Kes",
       "crash_app_render_error": "Uygulamayı Çöker (Render Hatası)",
