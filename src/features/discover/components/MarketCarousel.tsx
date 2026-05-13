@@ -10,7 +10,7 @@ import ButtonPressAnimation from '@/components/animations/ButtonPressAnimation';
 import ShimmerAnimation from '@/components/animations/ShimmerAnimation';
 import { Box, Text, TextIcon, useBackgroundColor, useColorMode } from '@/design-system';
 import { trackPlacementInteraction } from '@/features/placements/engagement/trackInteraction';
-import { type Placement, type PlacementItem, type PlacementItemAnalyticsMetadata } from '@/features/placements/types';
+import { type Placement, type PlacementId, type PlacementItem, type PlacementItemAnalyticsMetadata } from '@/features/placements/types';
 import { opacity } from '@/framework/ui/utils/opacity';
 import * as i18n from '@/languages';
 import { DEVICE_WIDTH } from '@/utils/deviceUtils';
@@ -35,10 +35,11 @@ type MarketCarouselProps<T extends PlacementItem> = {
   getItemWidth?: (item: T) => number;
   keyExtractor: (item: T) => string;
   loading?: boolean;
-  onSeeAll: () => void;
+  onPressSeeAll: () => void;
   placement?: Placement;
-  placementId: Placement['id'];
+  placementId: PlacementId;
   renderItem: (item: T, trackPress: TrackPlacementCardPress) => ReactElement | null;
+  skeletonBorderRadius?: number;
   title: string;
 };
 
@@ -49,16 +50,18 @@ export function MarketCarousel<T extends PlacementItem>({
   itemWidth = CARD_WIDTH,
   keyExtractor,
   loading,
-  onSeeAll,
+  onPressSeeAll,
   placement,
   placementId,
   renderItem,
+  skeletonBorderRadius = 24,
   title,
 }: MarketCarouselProps<T>) {
   const placementScreen = placement?.screen;
-  const itemWidths = useMemo(() => data.map(item => getItemWidth?.(item) ?? itemWidth), [data, getItemWidth, itemWidth]);
+  const itemWidths = useMemo(() => (getItemWidth ? data.map(item => getItemWidth(item)) : undefined), [data, getItemWidth]);
+
   const snapToOffsets = useMemo(() => {
-    if (!getItemWidth) return undefined;
+    if (!itemWidths) return undefined;
 
     let offset = 0;
     return itemWidths.map(width => {
@@ -66,7 +69,7 @@ export function MarketCarousel<T extends PlacementItem>({
       offset += width + CARD_GAP;
       return currentOffset;
     });
-  }, [getItemWidth, itemWidths]);
+  }, [itemWidths]);
 
   const renderCarouselItem = useCallback(
     ({ item, index }: { item: T; index: number }) => {
@@ -80,7 +83,7 @@ export function MarketCarousel<T extends PlacementItem>({
         });
 
       return (
-        <View style={{ height: itemHeight, overflow: 'visible', width: itemWidths[index] ?? itemWidth }}>
+        <View style={{ height: itemHeight, overflow: 'visible', width: itemWidths?.[index] ?? itemWidth }}>
           {renderItem(item, trackPress)}
         </View>
       );
@@ -89,15 +92,13 @@ export function MarketCarousel<T extends PlacementItem>({
   );
 
   const handleSeeAllPress = useCallback(() => {
-    onSeeAll();
-    requestIdleCallback(() =>
-      analytics.track(event.discoverPlacementSeeAllPressed, {
-        placementId,
-        placementScreen,
-        placementTitle: title,
-      })
-    );
-  }, [onSeeAll, placementId, placementScreen, title]);
+    analytics.track(event.discoverPlacementSeeAllPressed, {
+      placementId,
+      placementScreen,
+      placementTitle: title,
+    });
+    onPressSeeAll();
+  }, [onPressSeeAll, placementId, placementScreen, title]);
 
   const onScrollSettle = useDebouncedCallback(
     () => {
@@ -132,7 +133,7 @@ export function MarketCarousel<T extends PlacementItem>({
       {loading ? (
         <View style={styles.skeletonRow}>
           {Array.from({ length: SKELETON_COUNT }).map((_, index) => (
-            <CarouselSkeleton key={index} itemHeight={itemHeight} itemWidth={itemWidth} />
+            <CarouselSkeleton key={index} borderRadius={skeletonBorderRadius} itemHeight={itemHeight} itemWidth={itemWidth} />
           ))}
         </View>
       ) : (
@@ -167,7 +168,7 @@ function trackPlacementCardPress({
 }: {
   item: PlacementItem;
   metadata: PlacementItemAnalyticsMetadata | undefined;
-  placementId: Placement['id'];
+  placementId: PlacementId;
   placementScreen: Placement['screen'] | undefined;
   title: string;
 }) {
@@ -197,7 +198,7 @@ function readPlacementItemStringMetadata(item: PlacementItem, key: string): stri
   return typeof value === 'string' && value.length > 0 ? value : undefined;
 }
 
-function CarouselSkeleton({ itemHeight, itemWidth }: { itemHeight: number; itemWidth: number }) {
+function CarouselSkeleton({ borderRadius, itemHeight, itemWidth }: { borderRadius: number; itemHeight: number; itemWidth: number }) {
   const { isDarkMode } = useColorMode();
   const fillQuaternary = useBackgroundColor('fillQuaternary');
   const fillSecondary = useBackgroundColor('fillSecondary');
@@ -205,7 +206,7 @@ function CarouselSkeleton({ itemHeight, itemWidth }: { itemHeight: number; itemW
   const skeletonColor = isDarkMode ? fillQuaternary : fillSecondary;
 
   return (
-    <View style={[styles.skeleton, { backgroundColor: skeletonColor, height: itemHeight, width: itemWidth }]}>
+    <View style={[styles.skeleton, { backgroundColor: skeletonColor, borderRadius, height: itemHeight, width: itemWidth }]}>
       <ShimmerAnimation color={shimmerColor} gradientColor={shimmerColor} />
     </View>
   );
@@ -221,7 +222,6 @@ const styles = StyleSheet.create({
     overflow: 'visible',
   },
   skeleton: {
-    borderRadius: 32,
     overflow: 'hidden',
   },
   skeletonRow: {

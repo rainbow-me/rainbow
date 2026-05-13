@@ -2,7 +2,7 @@ import React, { memo, useEffect } from 'react';
 import { Keyboard, Platform } from 'react-native';
 
 import { useIsFocused } from '@react-navigation/native';
-import Animated, { useAnimatedScrollHandler, useSharedValue } from 'react-native-reanimated';
+import Animated, { useSharedValue } from 'react-native-reanimated';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 import { useDiscoverSearchQueryStore } from '@/__swaps__/screens/Swap/resources/search/searchV2';
@@ -10,9 +10,11 @@ import ButtonPressAnimation from '@/components/animations/ButtonPressAnimation';
 import { ContactAvatar } from '@/components/contacts';
 import ImageAvatar from '@/components/contacts/ImageAvatar';
 import { DiscoverScreenContent } from '@/components/Discover/DiscoverScreenContent';
-import DiscoverScreenProvider, { useDiscoverScreenContext } from '@/components/Discover/DiscoverScreenContext';
+import { DiscoverScreenProvider, useDiscoverScreenContext } from '@/components/Discover/DiscoverScreenContext';
 import { DiscoverSearchBar } from '@/components/Discover/DiscoverSearchBar';
-import { Navbar } from '@/components/navbar/Navbar';
+import { Navbar, navbarHeight } from '@/components/navbar/Navbar';
+import { ScrollHeaderFade } from '@/components/scroll-header-fade/ScrollHeaderFade';
+import { useScrollFadeHandler } from '@/components/scroll-header-fade/useScrollFadeHandler';
 import { Box, globalColors, TextIcon, useColorMode } from '@/design-system';
 import * as i18n from '@/languages';
 import Navigation from '@/navigation/Navigation';
@@ -23,30 +25,33 @@ import safeAreaInsetValues from '@/utils/safeAreaInsetValues';
 
 import { PullToRefresh } from './Airdrops/AirdropsSheet';
 
+export const DiscoverScreen = () => {
+  return (
+    <DiscoverScreenProvider>
+      <Content />
+    </DiscoverScreenProvider>
+  );
+};
+
 const Content = () => {
   const { isDarkMode } = useColorMode();
   const { top: topInset } = useSafeAreaInsets();
   const { accountSymbol, accountColor, accountImage } = useAccountProfileInfo();
-
   const { scrollViewRef, onTapSearch } = useDiscoverScreenContext();
   const isSearching = useDiscoverSearchQueryStore(state => state.isSearching);
-  const scrollY = useSharedValue(0);
 
-  const onChangeWallet = React.useCallback(() => {
-    Navigation.handleAction(Routes.CHANGE_WALLET_SHEET);
-  }, []);
+  const backgroundColor = isDarkMode ? globalColors.grey100 : '#FBFCFD';
+  const headerFadeTopInset = topInset + navbarHeight;
+  const scrollOffset = useSharedValue(0);
 
-  const scrollHandler = useAnimatedScrollHandler({
-    onScroll: event => {
-      scrollY.value = event.contentOffset.y;
-    },
-  });
+  const onScroll = useScrollFadeHandler(scrollOffset);
 
   return (
-    <Box height="full" style={{ flex: 1, backgroundColor: isDarkMode ? globalColors.grey100 : '#FBFCFD' }}>
+    <Box height="full" style={{ flex: 1, backgroundColor }}>
       <Box paddingTop={{ custom: topInset }}>
-        {isSearching && <DiscoverSearchBar />}
-        {!isSearching && (
+        {isSearching ? (
+          <DiscoverSearchBar />
+        ) : (
           <Navbar
             leftComponent={
               <ButtonPressAnimation onPress={onChangeWallet} scaleTo={0.8} overflowMargin={50}>
@@ -75,24 +80,28 @@ const Content = () => {
                 </Box>
               </ButtonPressAnimation>
             }
-            testID={'discover-header'}
+            testID="discover-header"
             title={i18n.t(i18n.l.discover.search.discover)}
           />
         )}
       </Box>
+
       <Box
-        ref={scrollViewRef}
         as={Animated.ScrollView}
         automaticallyAdjustsScrollIndicatorInsets={false}
-        onScroll={scrollHandler}
-        scrollEnabled={!isSearching}
+        onScroll={onScroll}
+        ref={scrollViewRef}
         refreshControl={Platform.OS === 'ios' ? <PullToRefresh /> : undefined}
         removeClippedSubviews
-        scrollIndicatorInsets={{ bottom: safeAreaInsetValues.bottom + 167 }}
+        scrollEnabled={!isSearching}
+        scrollIndicatorInsets={{ bottom: safeAreaInsetValues.bottom + 167, top: 16 }}
         testID="discover-sheet"
       >
         <DiscoverScreenContent />
       </Box>
+
+      {!isSearching ? <ScrollHeaderFade color={backgroundColor} scrollOffset={scrollOffset} topInset={headerFadeTopInset} /> : null}
+
       <KeyboardDismissHandler />
     </Box>
   );
@@ -103,18 +112,13 @@ const KeyboardDismissHandler = memo(function KeyboardDismissHandler() {
   const isSearching = useDiscoverSearchQueryStore(state => state.isSearching);
 
   useEffect(() => {
-    if (!isFocused && isSearching) {
-      Keyboard.dismiss();
-    }
+    const shouldDismiss = !isFocused && isSearching;
+    if (shouldDismiss) Keyboard.dismiss();
   }, [isFocused, isSearching]);
 
   return null;
 });
 
-export default function DiscoverScreen() {
-  return (
-    <DiscoverScreenProvider>
-      <Content />
-    </DiscoverScreenProvider>
-  );
+function onChangeWallet(): void {
+  Navigation.handleAction(Routes.CHANGE_WALLET_SHEET);
 }

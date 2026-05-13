@@ -16,7 +16,7 @@ import { type PerpMarketWithMetadata } from '@/features/perps/types';
 import { navigateToPerpDetailScreen } from '@/features/perps/utils';
 import { type PlacementItemAnalyticsMetadata } from '@/features/placements/types';
 import { opacity } from '@/framework/ui/utils/opacity';
-import { THICK_BORDER_WIDTH } from '@/styles/constants';
+import { THICK_BORDER_WIDTH, THICKER_BORDER_WIDTH } from '@/styles/constants';
 import { measureTextSync, type MeasureTextProps } from '@/utils/measureText';
 import { getHighContrastTextColorWorklet } from '@/worklets/colors';
 
@@ -50,9 +50,11 @@ const UP_DOWN_ARROW_WIDTH = 12;
 const PRICE_CHANGE_ROW_GAP = 3;
 
 const CHART_LAYOUT = { height: 34, width: 44 };
-const CARD_LAYOUT = { borderRadius: 24, borderWidth: THICK_BORDER_WIDTH, gap: 10, maxWidth: 280, paddingLeft: 12, paddingRight: 16 };
+const CARD_LAYOUT = { borderRadius: 24, borderWidth: THICKER_BORDER_WIDTH, gap: 10, maxWidth: 280, paddingLeft: 12, paddingRight: 16 };
 const PRICE_CHANGE_TEXT_STYLE = { size: '15pt', weight: 'bold' } satisfies MeasureTextProps;
 const SYMBOL_TEXT_STYLE = { size: '17pt', weight: 'bold' } satisfies MeasureTextProps;
+
+export const PERP_MARKET_CARD_BORDER_RADIUS = CARD_LAYOUT.borderRadius;
 
 const CARD_WIDTH_BASE =
   CARD_LAYOUT.paddingLeft +
@@ -63,19 +65,6 @@ const CARD_WIDTH_BASE =
   COMPACT_LINE_CHART_HORIZONTAL_OVERDRAW * 2;
 
 const PERP_MARKET_CARD_TEXT_MIN_WIDTH = PERP_MARKET_CARD_SLOT_WIDTH_WITH_CHART - CARD_WIDTH_BASE;
-
-/**
- * Returns the carousel slot width for rendered perp card text.
- */
-export function computePerpCardWidth(market: PerpMarketWithMetadata): number {
-  const percentChange = convertStoredPerpPriceChangeToPercent(market.priceChange['24h']);
-  const priceChangeWidth =
-    UP_DOWN_ARROW_WIDTH + PRICE_CHANGE_ROW_GAP + measureTextSync(formatCompactPerpPercentChange(percentChange), PRICE_CHANGE_TEXT_STYLE);
-
-  const textWidth = Math.max(PERP_MARKET_CARD_TEXT_MIN_WIDTH, measureTextSync(market.baseSymbol, SYMBOL_TEXT_STYLE), priceChangeWidth);
-
-  return Math.min(CARD_LAYOUT.maxWidth, Math.ceil(CARD_WIDTH_BASE + textWidth));
-}
 
 // ============ Colors ========================================================= //
 
@@ -224,6 +213,19 @@ export const PerpMarketCard = memo(function PerpMarketCard({ market, onPressTrac
 });
 
 // ============ Display Helpers =============================================== //
+
+/**
+ * Returns the carousel slot width for rendered perp card text.
+ */
+export function computePerpCardWidth(market: PerpMarketWithMetadata): number {
+  const percentChange = convertStoredPerpPriceChangeToPercent(market.priceChange['24h']);
+  const priceChangeWidth =
+    UP_DOWN_ARROW_WIDTH + PRICE_CHANGE_ROW_GAP + measureTextSync(formatCompactPerpPercentChange(percentChange), PRICE_CHANGE_TEXT_STYLE);
+
+  const textWidth = Math.max(PERP_MARKET_CARD_TEXT_MIN_WIDTH, measureTextSync(market.baseSymbol, SYMBOL_TEXT_STYLE), priceChangeWidth);
+
+  return Math.min(CARD_LAYOUT.maxWidth, Math.ceil(CARD_WIDTH_BASE + textWidth));
+}
 
 function buildPerpMarketCardDisplay(isDarkMode: boolean, market: PerpMarketWithMetadata) {
   const accentColor = market.metadata?.colors?.color || market.metadata?.colors?.fallbackColor || HYPERLIQUID_COLORS.green;

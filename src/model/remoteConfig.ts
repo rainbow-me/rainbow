@@ -263,11 +263,11 @@ function getFirebaseDefaults(): FirebaseConfigDefaults {
 
 // ============ Remote Config Store ============================================ //
 
-interface RemoteConfigState {
+export type RemoteConfigState = {
   config: RainbowConfig;
   lastFetchedVersion: number;
   getRemoteConfigKey: <K extends RemoteConfigKey>(key: K) => RainbowConfig[K];
-}
+};
 
 export const useRemoteConfigStore = createQueryStore<RainbowConfig, never, RemoteConfigState>(
   {

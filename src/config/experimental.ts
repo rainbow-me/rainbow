@@ -38,12 +38,6 @@ export const RNBW_REWARDS = 'RNBW Rewards';
 export const RNBW_MEMBERSHIP = 'RNBW Membership';
 export const DELEGATION = '7702 Delegation';
 
-/**
- * A developer setting that pushes log lines to an array in-memory so that
- * they can be "dumped" or copied out of the app and analyzed.
- */
-export const LOG_PUSH = 'Enable Log Push';
-
 export type ExperimentalValue = {
   settings: boolean;
   value: boolean;
@@ -60,7 +54,6 @@ const config = {
   [PROFILES]: { settings: true, value: true },
   [REVIEW_ANDROID]: { settings: false, value: false },
   [OP_REWARDS]: { settings: true, value: false },
-  [LOG_PUSH]: { settings: true, value: false },
   [DEFI_POSITIONS]: { settings: true, value: true },
   [NFT_OFFERS]: { settings: true, value: true },
   [MINTS]: { settings: true, value: false },

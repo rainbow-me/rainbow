@@ -9,15 +9,14 @@ import { getAllInternetCredentials, resetInternetCredentials } from 'react-nativ
 import Restart from 'react-native-restart';
 
 import { ImgixImage } from '@/components/images';
-import { defaultConfig, defaultConfigValues, LOG_PUSH, type ExperimentalConfigKey } from '@/config/experimental';
-import { getExperimentalFlag, useExperimentalConfigStore } from '@/config/experimentalConfigStore';
+import { defaultConfig, defaultConfigValues, type ExperimentalConfigKey } from '@/config/experimental';
+import { useExperimentalConfigStore } from '@/config/experimentalConfigStore';
 import { IS_STORE_INSTALL } from '@/env';
 import { getDelegationContractAddress, isRainbowDelegated, isThirdPartyDelegated } from '@/features/delegation/status';
 import { WrappedAlert as Alert } from '@/helpers/alert';
 import { getPublicKeyOfTheSigningWalletAndCreateWalletIfNeeded } from '@/helpers/signingWallet';
 import * as i18n from '@/languages';
 import { logger, RainbowError } from '@/logger';
-import { serialize } from '@/logger/logDump';
 import { wipeKeychain } from '@/model/keychain';
 import { clearAllStorages } from '@/model/mmkv';
 import Navigation, { useNavigation } from '@/navigation/Navigation';
@@ -421,18 +420,6 @@ const DevSection = () => {
               size={52}
               titleComponent={<MenuItem.Title text={i18n.t(i18n.l.developer_settings.copy_fcm_token)} />}
             />
-            {getExperimentalFlag(LOG_PUSH) && (
-              <MenuItem
-                leftComponent={<MenuItem.TextIcon icon="📋" isEmoji />}
-                onPress={async () => {
-                  const logs = serialize();
-                  Clipboard.setString(logs);
-                  Alert.alert(`Copied`);
-                }}
-                size={52}
-                titleComponent={<MenuItem.Title text={i18n.t(i18n.l.developer_settings.copy_log_lines)} />}
-              />
-            )}
             <MenuItem
               leftComponent={<MenuItem.TextIcon icon="📲" isEmoji />}
               onPress={async () => {
