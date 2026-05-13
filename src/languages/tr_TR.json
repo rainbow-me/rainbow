@@ -532,6 +532,14 @@
         "search": "Ara",
         "discover": "Keşfet"
       },
+      "sections": {
+        "tokens": "Tokenler"
+      },
+      "placements": {
+        "perps_title": "Vadeli İşlemler",
+        "predictions_title": "Tahminler",
+        "see_all": "Tümünü gör"
+      },
       "strategies": {
         "strategies_title": "Stratejiler",
         "yearn_finance_description": "yearn.finance'den akıllı getiri stratejileri"
