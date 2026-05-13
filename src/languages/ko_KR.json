@@ -487,7 +487,6 @@
       "clear_react_query_cache": "React 쿼리 캐시 지우기",
       "connect_to_anvil": "Anvil에 연결",
       "copy_fcm_token": "FCM 토큰 복사",
-      "copy_log_lines": "로그 라인 복사",
       "copy_signing_wallet_address": "서명 지갑 주소 복사",
       "disconnect_to_anvil": "Anvil 연결 해제",
       "crash_app_render_error": "앱 충돌(렌더링 오류)",
