@@ -532,6 +532,14 @@
         "search": "खोज",
         "discover": "खोज"
       },
+      "sections": {
+        "tokens": "Tokens"
+      },
+      "placements": {
+        "perps_title": "परप्स",
+        "predictions_title": "पेशगोई",
+        "see_all": "सभी देखें"
+      },
       "strategies": {
         "strategies_title": "रणनीतियाँ",
         "yearn_finance_description": "स्मार्ट यील्ड रणनीतियाँ yearn.finance से"
