@@ -487,7 +487,6 @@
       "clear_react_query_cache": "Borrar Caché de React Query",
       "connect_to_anvil": "Conectar a Anvil",
       "copy_fcm_token": "Copiar Token FCM",
-      "copy_log_lines": "Copiar Líneas de Registro",
       "copy_signing_wallet_address": "Copiar Dirección de Firma de Billetera",
       "disconnect_to_anvil": "Desconectar de Anvil",
       "crash_app_render_error": "Fallar App (Error de Renderizado)",
