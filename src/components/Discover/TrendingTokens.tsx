@@ -1,5 +1,5 @@
 import { useCallback, useEffect, useMemo, type JSX, type ReactNode } from 'react';
-import { FlatList, Platform, View } from 'react-native';
+import { Platform, View } from 'react-native';
 
 import { LinearGradient } from 'expo-linear-gradient';
 import Animated, { useSharedValue, type SharedValue } from 'react-native-reanimated';
@@ -693,23 +693,20 @@ function TrendingTokensLoader() {
 
 function TrendingTokenData() {
   const nativeCurrency = userAssetsStoreManager(state => state.currency);
-  const { data: trendingTokens, isLoading } = useTrendingTokensData();
-
-  const renderItem = useCallback(
-    ({ item }: { item: TrendingToken }) => <TrendingTokenRow token={item} currency={nativeCurrency} />,
-    [nativeCurrency]
-  );
+  const { data: tokens, isLoading } = useTrendingTokensData();
 
   if (isLoading) return <TrendingTokensLoader />;
 
   return (
-    <FlatList
-      style={{ marginHorizontal: -20, marginVertical: -12, paddingBottom: 8 }}
-      contentContainerStyle={{ gap: 28, paddingHorizontal: 20, paddingVertical: 12 }}
-      ListEmptyComponent={<NoResults />}
-      data={trendingTokens}
-      renderItem={renderItem}
-    />
+    <View style={{ marginHorizontal: -20, marginVertical: -12, paddingBottom: 8 }}>
+      <View style={{ gap: 28, paddingHorizontal: 20, paddingVertical: 12 }}>
+        {tokens?.length ? (
+          tokens.map(token => <TrendingTokenRow key={token.uniqueId} token={token} currency={nativeCurrency} />)
+        ) : (
+          <NoResults />
+        )}
+      </View>
+    </View>
   );
 }
 
@@ -733,7 +730,7 @@ export function TrendingTokens() {
   const selectedChainId = useSharedValue<ChainId | undefined>(undefined);
 
   return (
-    <View style={{ gap: 28 }}>
+    <View style={{ gap: 24 }}>
       <View style={{ gap: 12, justifyContent: 'center' }}>
         <Animated.ScrollView
           showsHorizontalScrollIndicator={false}

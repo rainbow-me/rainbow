@@ -518,16 +518,9 @@ export const AnimatedNumber = React.memo(function AnimatedNumber({
     }
     return new Array(10)
       .fill(0)
-      .map((_, i) =>
-        measureTextSync(i.toString(), {
-          fontSize: baseTextStyle.fontSize,
-          fontFamily: baseTextStyle.fontFamily,
-          fontWeight: baseTextStyle.fontWeight,
-          letterSpacing: baseTextStyle.letterSpacing,
-        })
-      )
+      .map((_, i) => measureTextSync(i.toString(), { size: textProps.size, weight: textProps.weight ?? 'regular' }))
       .filter(width => width !== undefined);
-  }, [baseTextStyle, textProps.tabularNumbers]);
+  }, [textProps.size, textProps.tabularNumbers, textProps.weight]);
 
   const edgeGradientSizes = useMemo(() => {
     return {

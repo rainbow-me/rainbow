@@ -53,6 +53,7 @@ function processMarketsForDex({
         id: assetId,
         price,
         midPrice,
+        previousDayPrice,
         priceChange: {
           '1h': '',
           '24h': priceChange24h,

@@ -1,4 +1,4 @@
-import { type CandleSnapshotRequest } from '@nktkas/hyperliquid/api/info';
+import { type CandleSnapshotRequest, type CandleSnapshotResponse } from '@nktkas/hyperliquid/api/info';
 
 import { type ChainId } from '@/state/backendNetworks/types';
 
@@ -44,3 +44,4 @@ export enum LineChartTimespan {
 // ============ Hyperliquid ==================================================== //
 
 export type HyperliquidInterval = CandleSnapshotRequest['req']['interval'];
+export type HyperliquidCandle = CandleSnapshotResponse[number];

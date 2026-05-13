@@ -1,238 +1,286 @@
-import React, { memo, useCallback } from 'react';
+import React, { memo, useCallback, useMemo } from 'react';
 import { StyleSheet, View, type StyleProp, type ViewStyle } from 'react-native';
 
 import { LinearGradient } from 'expo-linear-gradient';
 
-import { analytics } from '@/analytics';
-import { event } from '@/analytics/event';
 import ButtonPressAnimation from '@/components/animations/ButtonPressAnimation';
-import { Box, Text, TextIcon, useColorMode, useForegroundColor } from '@/design-system';
-import { getValueForColorMode } from '@/design-system/color/palettes';
-import { textSizes, textWeights } from '@/design-system/typography/typography';
-import { useCandlestickStore } from '@/features/charts/stores/candlestickStore';
-import { CandleResolution } from '@/features/charts/types';
-import { PerpMarketSparkline } from '@/features/discover/components/PerpMarketSparkline';
-import { HyperliquidTokenIcon } from '@/features/perps/components/HyperliquidTokenIcon';
+import ImgixImage from '@/components/images/ImgixImage';
+import { Text, TextIcon, useColorMode } from '@/design-system';
+import { Border } from '@/design-system/components/Border/Border';
+import { COMPACT_LINE_CHART_HORIZONTAL_OVERDRAW } from '@/features/charts/line/compact/CompactLineChartRenderer';
+import { SparklineChart } from '@/features/charts/line/components/SparklineChart';
+import { convertStoredPerpPriceChangeToPercent, formatCompactPerpPercentChange } from '@/features/discover/components/perpMarketFormatting';
 import { DOWN_ARROW, HYPERLIQUID_COLORS, UP_ARROW } from '@/features/perps/constants';
-import { useHyperliquidMarketsStore } from '@/features/perps/stores/hyperliquidMarketsStore';
-import { convertStoredPerpPriceChangeToPercent, formatCompactPerpPercentChange, navigateToPerpDetailScreen } from '@/features/perps/utils';
-import { trackPlacementInteraction } from '@/features/placements/engagement/trackInteraction';
-import { useDiscoverPerpsStore } from '@/features/placements/stores/discover/discoverPerpsStore';
-import { type Placement, type PlacementItem } from '@/features/placements/types';
+import { useHyperliquidLineChartsStore } from '@/features/perps/stores/hyperliquidLineChartsStore';
+import { type PerpMarketWithMetadata } from '@/features/perps/types';
+import { navigateToPerpDetailScreen } from '@/features/perps/utils';
+import { type PlacementItemAnalyticsMetadata } from '@/features/placements/types';
 import { opacity } from '@/framework/ui/utils/opacity';
-import { getHighContrastColor } from '@/hooks/useAccountAccentColor';
 import { THICK_BORDER_WIDTH } from '@/styles/constants';
-import { measureTextSync } from '@/utils/measureText';
+import { measureTextSync, type MeasureTextProps } from '@/utils/measureText';
 import { getHighContrastTextColorWorklet } from '@/worklets/colors';
 
-type PerpMarketCardProps = {
-  item: PlacementItem;
-  placement: Placement;
+// ============ Types ========================================================== //
+
+export type PerpMarketCardProps = {
+  market: PerpMarketWithMetadata;
+  onPressTracked?: (metadata?: PlacementItemAnalyticsMetadata) => void;
   style?: StyleProp<ViewStyle>;
 };
 
-export type { PerpMarketCardProps };
+type PriceChangeDirection = 'negative' | 'positive';
+type CardColorMode = 'dark' | 'light';
 
-const SPARKLINE_WIDTH = 46;
-const SPARKLINE_HEIGHT = 52;
+type CardColors = {
+  backgroundColor: string;
+  badgeBorderColor: string;
+  badgeShadowOpacity: number;
+  borderColor: string;
+  gradientOpacity: number;
+};
 
-const PERP_MARKET_CARD_WIDTH_WITH_CHART = 210;
-export const PERP_MARKET_CARD_SLOT_WIDTH_WITH_CHART = PERP_MARKET_CARD_WIDTH_WITH_CHART;
+// ============ Layout ========================================================= //
+
 export const PERP_MARKET_CARD_HEIGHT = 76;
+export const PERP_MARKET_CARD_SLOT_WIDTH_WITH_CHART = 210;
 
-const PERP_MARKET_CARD_MAX_WIDTH = 280;
-const PERP_MARKET_CHART_FIXED_WIDTH = 150;
-const PERCENT_ARROW_BLOCK_WIDTH = 14;
+const ICON_SIZE = 50;
+const LEVERAGE_BADGE_BORDER_RADIUS = 8;
+const UP_DOWN_ARROW_WIDTH = 12;
+const PRICE_CHANGE_ROW_GAP = 3;
 
-const SYMBOL_TEXT_STYLE = {
-  fontFamily: textWeights.bold.fontFamily,
-  fontSize: textSizes['17pt'].fontSize,
-  fontWeight: textWeights.bold.fontWeight,
-  letterSpacing: textSizes['17pt'].letterSpacing,
-} as const;
+const CHART_LAYOUT = { height: 34, width: 44 };
+const CARD_LAYOUT = { borderRadius: 24, borderWidth: THICK_BORDER_WIDTH, gap: 10, maxWidth: 280, paddingLeft: 12, paddingRight: 16 };
+const PRICE_CHANGE_TEXT_STYLE = { size: '15pt', weight: 'bold' } satisfies MeasureTextProps;
+const SYMBOL_TEXT_STYLE = { size: '17pt', weight: 'bold' } satisfies MeasureTextProps;
 
-const PERCENT_TEXT_STYLE = {
-  fontFamily: textWeights.bold.fontFamily,
-  fontSize: textSizes['15pt'].fontSize,
-  fontWeight: textWeights.bold.fontWeight,
-  letterSpacing: textSizes['15pt'].letterSpacing,
-} as const;
+const CARD_WIDTH_BASE =
+  CARD_LAYOUT.paddingLeft +
+  CARD_LAYOUT.paddingRight +
+  ICON_SIZE +
+  CARD_LAYOUT.gap * 2 +
+  CHART_LAYOUT.width +
+  COMPACT_LINE_CHART_HORIZONTAL_OVERDRAW * 2;
 
-const PERCENT_MIN_WIDTH = Math.ceil(measureTextSync('99.99%', PERCENT_TEXT_STYLE)) + PERCENT_ARROW_BLOCK_WIDTH;
-const PERP_MARKET_CHART_TEXT_MIN_WIDTH = PERCENT_MIN_WIDTH;
+const PERP_MARKET_CARD_TEXT_MIN_WIDTH = PERP_MARKET_CARD_SLOT_WIDTH_WITH_CHART - CARD_WIDTH_BASE;
 
-export function computePerpCardWidth({ percentChangeText, symbol }: { percentChangeText?: string; symbol?: string }): number {
-  const symbolWidth = symbol ? Math.ceil(measureTextSync(symbol, SYMBOL_TEXT_STYLE)) : 0;
-  const percentWidth = percentChangeText
-    ? Math.ceil(measureTextSync(percentChangeText, PERCENT_TEXT_STYLE)) + PERCENT_ARROW_BLOCK_WIDTH
-    : 0;
-  const textWidth = Math.max(PERP_MARKET_CHART_TEXT_MIN_WIDTH, percentWidth, symbolWidth);
+/**
+ * Returns the carousel slot width for rendered perp card text.
+ */
+export function computePerpCardWidth(market: PerpMarketWithMetadata): number {
+  const percentChange = convertStoredPerpPriceChangeToPercent(market.priceChange['24h']);
+  const priceChangeWidth =
+    UP_DOWN_ARROW_WIDTH + PRICE_CHANGE_ROW_GAP + measureTextSync(formatCompactPerpPercentChange(percentChange), PRICE_CHANGE_TEXT_STYLE);
 
-  return Math.min(PERP_MARKET_CARD_MAX_WIDTH, PERP_MARKET_CHART_FIXED_WIDTH + textWidth);
+  const textWidth = Math.max(PERP_MARKET_CARD_TEXT_MIN_WIDTH, measureTextSync(market.baseSymbol, SYMBOL_TEXT_STYLE), priceChangeWidth);
+
+  return Math.min(CARD_LAYOUT.maxWidth, Math.ceil(CARD_WIDTH_BASE + textWidth));
 }
 
-const CARD_BACKGROUND_COLOR = { light: 'rgba(255,255,255,0.92)', dark: '#171B20' } as const;
-const CARD_BORDER_COLOR = { light: 'rgba(255,255,255,0.8)', dark: 'rgba(255,255,255,0.08)' } as const;
-const BADGE_BORDER_COLOR = { light: 'rgba(0,0,0,0.07)', dark: 'rgba(255,255,255,0.24)' } as const;
+// ============ Colors ========================================================= //
 
-export const PerpMarketCard = memo(function PerpMarketCard({ item, placement, style }: PerpMarketCardProps) {
-  const market = useHyperliquidMarketsStore(state => state.getMarket(item.ref.id));
-  const chart = useDiscoverPerpsStore(state => state.getChart(item.ref.id));
-  const candlestickPercentChange = useCandlestickStore(state => {
-    const price = state.prices[item.ref.id];
-    return price?.candleResolution === CandleResolution.H1 ? price.percentChange : undefined;
-  });
-  const { colorMode, isDarkMode } = useColorMode();
-  const positiveChangeColor = useForegroundColor('green');
-  const negativeChangeColor = useForegroundColor('red');
+const PRICE_CHANGE_COLORS: Record<PriceChangeDirection, Record<CardColorMode, string>> = {
+  positive: { light: '#1DB847', dark: '#3ECF5B' },
+  negative: { light: '#FA423C', dark: '#FF584D' },
+};
+
+const CARD_COLORS = {
+  dark: {
+    backgroundColor: '#171B20',
+    badgeBorderColor: 'rgba(255,255,255,0.16)',
+    badgeShadowOpacity: 0.5,
+    borderColor: 'rgba(255,255,255,0.08)',
+    gradientOpacity: 0.26,
+  },
+  light: {
+    backgroundColor: 'rgba(255,255,255,0.92)',
+    badgeBorderColor: 'rgba(0,0,0,0.07)',
+    badgeShadowOpacity: 0.25,
+    borderColor: 'rgba(255,255,255,0.8)',
+    gradientOpacity: 0.06,
+  },
+} satisfies Record<CardColorMode, CardColors>;
+
+// ============ Component ====================================================== //
+
+export const PerpMarketCard = memo(function PerpMarketCard({ market, onPressTracked, style }: PerpMarketCardProps) {
+  const { isDarkMode } = useColorMode();
+  const symbol = market.symbol;
 
   const onPress = useCallback(() => {
-    if (!market) return;
-    trackPlacementInteraction({ item, placement });
-    analytics.track(event.discoverFeaturedCarouselCardPressed, {
-      placementId: placement.id,
-      type: 'perps',
-      order: item.order,
-      provider: 'hyperliquid',
-      market: market.symbol,
-      baseSymbol: market.baseSymbol,
-      name: market.metadata?.name,
-    });
     navigateToPerpDetailScreen(market.symbol);
-  }, [item, market, placement]);
+    onPressTracked?.({
+      marketId: market.symbol,
+      marketName: market.metadata?.name ?? market.baseSymbol,
+      marketSymbol: market.baseSymbol,
+    });
+  }, [market, onPressTracked]);
 
-  if (!market) return null;
-
-  const rawAccentColor = market.metadata?.colors?.color || market.metadata?.colors?.fallbackColor || HYPERLIQUID_COLORS.green;
-  const accentColor = getHighContrastColor(rawAccentColor, isDarkMode);
-  const percentChange =
-    candlestickPercentChange ??
-    chart?.percentChange ??
-    convertStoredPerpPriceChangeToPercent(market.priceChange['1h'] ?? market.priceChange['24h']);
-  const isPositive = percentChange >= 0;
-  const changeColor = isPositive ? positiveChangeColor : negativeChangeColor;
-  const cardBackgroundColor = getValueForColorMode(CARD_BACKGROUND_COLOR, colorMode);
-  const borderColor = getValueForColorMode(CARD_BORDER_COLOR, colorMode);
-  const badgeBorderColor = getValueForColorMode(BADGE_BORDER_COLOR, colorMode);
-  const badgeTextColor = getHighContrastTextColorWorklet(accentColor, 3, isDarkMode);
-  const gradientStartColor = opacity(accentColor, isDarkMode ? 0.26 : 0.06);
-  const percentChangeText = formatCompactPerpPercentChange(percentChange);
-  const cardWidth = computePerpCardWidth({ percentChangeText, symbol: market.baseSymbol });
-  const arrow = isPositive ? UP_ARROW : DOWN_ARROW;
+  const { accentColor, badgeTextColor, cardColors, iconUrl, priceChange } = useMemo(
+    () => buildPerpMarketCardDisplay(isDarkMode, market),
+    [isDarkMode, market]
+  );
 
   return (
-    <ButtonPressAnimation onPress={onPress} scaleTo={0.96} shouldActivateOnStart={false} style={[{ width: cardWidth }, style]}>
+    <ButtonPressAnimation onPress={onPress} scaleTo={0.96} style={[styles.pressable, style]}>
       <View style={[styles.cardShadow, isDarkMode ? styles.cardShadowDark : styles.cardShadowLight]}>
-        <Box
-          backgroundColor={cardBackgroundColor}
-          borderColor={{ custom: borderColor }}
-          borderRadius={24}
-          borderWidth={THICK_BORDER_WIDTH}
-          height={PERP_MARKET_CARD_HEIGHT}
-          justifyContent="center"
-          paddingLeft="12px"
-          paddingRight="16px"
-          paddingVertical="12px"
-          style={styles.cardOverflow}
-          width="full"
-        >
+        <View style={[styles.card, { backgroundColor: cardColors.backgroundColor }]}>
           <LinearGradient
-            colors={[gradientStartColor, opacity(accentColor, 0)]}
+            colors={[opacity(accentColor, cardColors.gradientOpacity), opacity(accentColor, 0)]}
             end={{ x: 1, y: 1 }}
             pointerEvents="none"
             start={{ x: 0, y: 0 }}
-            style={StyleSheet.absoluteFill}
+            style={styles.cardGradient}
           />
 
           <View style={styles.contentRow}>
             <View style={styles.leftContent}>
-              <Box
-                alignItems="center"
-                borderColor={{ custom: accentColor }}
-                borderRadius={25}
-                borderWidth={THICK_BORDER_WIDTH * 2}
-                height={50}
-                justifyContent="center"
-                padding="2px"
-                style={[styles.iconBorderShadow, { shadowColor: accentColor }]}
-                width={50}
-              >
-                <HyperliquidTokenIcon size={42} symbol={market.symbol} />
-              </Box>
+              <View style={[styles.iconContainer, { borderColor: accentColor, shadowColor: accentColor }]}>
+                <View style={styles.iconFill}>
+                  {iconUrl ? (
+                    <ImgixImage enableFasterImage size={styles.iconImage.height} source={{ uri: iconUrl }} style={styles.iconImage} />
+                  ) : (
+                    <Text align="center" size="15pt" weight="heavy" color={{ custom: accentColor }}>
+                      {market.baseSymbol.slice(0, 1)}
+                    </Text>
+                  )}
+                </View>
+              </View>
 
               <View style={styles.textColumn}>
-                <Text size="17pt" weight="bold" color="label" numberOfLines={1} style={styles.symbolText}>
+                <Text
+                  size={SYMBOL_TEXT_STYLE.size}
+                  weight={SYMBOL_TEXT_STYLE.weight}
+                  color="label"
+                  numberOfLines={1}
+                  style={styles.symbolText}
+                >
                   {market.baseSymbol}
                 </Text>
 
                 <View style={styles.changeRow}>
-                  <TextIcon color={{ custom: changeColor }} containerSize={12} height={20} size="icon 13px" weight="heavy" width={12}>
-                    {arrow}
+                  <TextIcon
+                    color={{ custom: priceChange.color }}
+                    containerSize={UP_DOWN_ARROW_WIDTH}
+                    height={8}
+                    size="icon 12px"
+                    weight="heavy"
+                    width={UP_DOWN_ARROW_WIDTH}
+                  >
+                    {priceChange.arrow}
                   </TextIcon>
-                  <Text size="15pt" weight="bold" color={{ custom: changeColor }} numberOfLines={1} style={styles.percentText}>
-                    {percentChangeText}
+                  <Text
+                    size={PRICE_CHANGE_TEXT_STYLE.size}
+                    weight={PRICE_CHANGE_TEXT_STYLE.weight}
+                    color={{ custom: priceChange.color }}
+                    numberOfLines={1}
+                    style={styles.percentText}
+                  >
+                    {formatCompactPerpPercentChange(priceChange.percent)}
                   </Text>
                 </View>
               </View>
             </View>
 
-            <View style={styles.chartFrame}>
-              {chart ? (
-                <PerpMarketSparkline
-                  chartColor={changeColor}
-                  data={chart}
-                  height={SPARKLINE_HEIGHT}
-                  percentChange={percentChange}
-                  width={SPARKLINE_WIDTH}
-                />
-              ) : null}
-            </View>
+            <SparklineChart
+              chartId={symbol}
+              color={priceChange.color}
+              height={CHART_LAYOUT.height}
+              store={useHyperliquidLineChartsStore}
+              width={CHART_LAYOUT.width}
+            />
           </View>
-        </Box>
 
-        <View style={styles.badgePositioner}>
-          <Box
-            alignItems="center"
-            borderColor={{ custom: badgeBorderColor }}
-            borderRadius={8}
-            borderWidth={THICK_BORDER_WIDTH}
-            justifyContent="center"
+          <View
             style={[
               styles.badge,
               {
                 backgroundColor: accentColor,
                 shadowColor: isDarkMode ? '#000000' : accentColor,
-                shadowOpacity: isDarkMode ? 0.14 : 0.25,
+                shadowOpacity: cardColors.badgeShadowOpacity,
               },
             ]}
           >
             <Text align="center" size="11pt" weight="heavy" color={{ custom: badgeTextColor }}>
               {`${market.maxLeverage}x`}
             </Text>
-          </Box>
+            <Border
+              borderColor={{ custom: cardColors.badgeBorderColor }}
+              borderRadius={LEVERAGE_BADGE_BORDER_RADIUS}
+              borderWidth={THICK_BORDER_WIDTH}
+            />
+          </View>
+
+          <Border
+            borderColor={{ custom: cardColors.borderColor }}
+            borderRadius={CARD_LAYOUT.borderRadius}
+            borderWidth={CARD_LAYOUT.borderWidth}
+            enableInLightMode
+          />
         </View>
       </View>
     </ButtonPressAnimation>
   );
 });
 
+// ============ Display Helpers =============================================== //
+
+function buildPerpMarketCardDisplay(isDarkMode: boolean, market: PerpMarketWithMetadata) {
+  const accentColor = market.metadata?.colors?.color || market.metadata?.colors?.fallbackColor || HYPERLIQUID_COLORS.green;
+  const badgeTextColor = getHighContrastTextColorWorklet(accentColor, 4);
+  const colorMode: CardColorMode = isDarkMode ? 'dark' : 'light';
+  const percent = convertStoredPerpPriceChangeToPercent(market.priceChange['24h']);
+  const direction: PriceChangeDirection = percent >= 0 ? 'positive' : 'negative';
+
+  return {
+    accentColor,
+    badgeTextColor,
+    cardColors: CARD_COLORS[colorMode],
+    iconUrl: market.metadata?.iconUrl,
+    priceChange: {
+      arrow: direction === 'positive' ? UP_ARROW : DOWN_ARROW,
+      color: PRICE_CHANGE_COLORS[direction][colorMode],
+      percent,
+    },
+  };
+}
+
+// ============ Styles ========================================================= //
+
 const styles = StyleSheet.create({
   badge: {
-    minHeight: 22,
-    padding: 5,
-    shadowOffset: { width: 0, height: 2 },
-    shadowRadius: 10,
-  },
-  badgePositioner: {
-    left: 8.67,
+    alignItems: 'center',
+    borderCurve: 'continuous',
+    borderRadius: LEVERAGE_BADGE_BORDER_RADIUS,
+    justifyContent: 'center',
+    left: 9,
+    paddingHorizontal: 5,
+    paddingVertical: 5,
     position: 'absolute',
-    top: 8,
+    shadowOffset: { width: 0, height: 2 },
+    shadowRadius: 4.5,
+    top: 9,
   },
-  cardOverflow: {
+  card: {
+    borderCurve: 'continuous',
+    borderRadius: CARD_LAYOUT.borderRadius,
+    height: PERP_MARKET_CARD_HEIGHT,
+    justifyContent: 'center',
+    overflow: 'hidden',
+    paddingLeft: CARD_LAYOUT.paddingLeft,
+    paddingRight: CARD_LAYOUT.paddingRight,
+    paddingVertical: 12,
+    width: '100%',
+  },
+  cardGradient: {
+    ...StyleSheet.absoluteFillObject,
+    borderCurve: 'continuous',
+    borderRadius: CARD_LAYOUT.borderRadius,
     overflow: 'hidden',
   },
   cardShadow: {
-    borderRadius: 24,
+    borderCurve: 'continuous',
+    borderRadius: CARD_LAYOUT.borderRadius,
     height: PERP_MARKET_CARD_HEIGHT,
     width: '100%',
   },
@@ -252,42 +300,56 @@ const styles = StyleSheet.create({
   changeRow: {
     alignItems: 'center',
     flexDirection: 'row',
-    gap: 2,
-    minHeight: 20,
-  },
-  chartFrame: {
-    alignItems: 'center',
-    height: SPARKLINE_HEIGHT,
-    justifyContent: 'center',
-    width: SPARKLINE_WIDTH,
+    gap: PRICE_CHANGE_ROW_GAP,
   },
   contentRow: {
     alignItems: 'center',
     flexDirection: 'row',
-    gap: 16,
+    gap: CARD_LAYOUT.gap,
+    justifyContent: 'space-between',
     width: '100%',
   },
-  iconBorderShadow: {
-    shadowOffset: { width: 0, height: 0 },
-    shadowOpacity: 0.2,
-    shadowRadius: 12,
+  iconContainer: {
+    alignItems: 'center',
+    borderRadius: 25,
+    borderWidth: 8 / 3,
+    height: ICON_SIZE,
+    justifyContent: 'center',
+    padding: 2,
+    width: ICON_SIZE,
+  },
+  iconFill: {
+    alignItems: 'center',
+    flex: 1,
+    justifyContent: 'center',
+    overflow: 'hidden',
+    width: '100%',
+  },
+  iconImage: {
+    borderRadius: 20,
+    height: 40,
+    width: 40,
   },
   leftContent: {
     alignItems: 'center',
-    flex: 1,
     flexDirection: 'row',
-    gap: 10,
+    flexShrink: 1,
+    gap: CARD_LAYOUT.gap,
+    minWidth: 0,
   },
   percentText: {
-    flexShrink: 0,
+    flexShrink: 1,
+  },
+  pressable: {
+    width: '100%',
   },
   symbolText: {
     flexShrink: 1,
   },
   textColumn: {
     flexShrink: 1,
-    gap: 6,
+    gap: 10,
     justifyContent: 'center',
-    paddingVertical: 1,
+    paddingVertical: 4,
   },
 });

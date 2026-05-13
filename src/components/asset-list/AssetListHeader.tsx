@@ -3,7 +3,6 @@ import { Platform, View } from 'react-native';
 
 import { LinearGradient } from 'expo-linear-gradient';
 
-import { textSizes, textWeights } from '@/design-system/typography/typography';
 import { IS_TEST } from '@/env';
 import styled from '@/framework/ui/styled-thing';
 import useDimensions from '@/hooks/useDimensions';
@@ -16,7 +15,7 @@ import { position } from '@/styles';
 import { useTheme } from '@/theme/ThemeContext';
 import abbreviations from '@/utils/abbreviations';
 import magicMemo from '@/utils/magicMemo';
-import { measureTextSync } from '@/utils/measureText';
+import { measureTextSync, type MeasureTextProps } from '@/utils/measureText';
 
 import ButtonPressAnimation from '../animations/ButtonPressAnimation';
 import { Icon } from '../icons';
@@ -30,8 +29,7 @@ export const AssetListHeaderHeight = ListHeaderHeight;
 
 const dropdownArrowWidth = 30;
 const placeholderWidth = 120;
-const accountNameTextSize = textSizes['23px / 27px (Deprecated)'];
-const accountNameTextWeight = textWeights.heavy;
+const accountNameTextStyle = { size: '23px / 27px (Deprecated)', weight: 'heavy' } satisfies MeasureTextProps;
 
 const AccountName = styled(TruncatedText).attrs({
   align: 'left',
@@ -138,16 +136,7 @@ const AssetListHeader = ({ contextMenuOptions, isCoinListEdited, title, totalVal
   const amountWidth = isLoadingUserAssets ? placeholderWidth + 16 : totalValue?.length * 15;
   const maxWidth = deviceWidth - dropdownArrowWidth - amountWidth - 32;
 
-  const textWidth = useMemo(
-    () =>
-      measureTextSync(accountName ?? '', {
-        fontFamily: accountNameTextWeight.fontFamily,
-        fontSize: accountNameTextSize.fontSize,
-        fontWeight: accountNameTextWeight.fontWeight,
-        letterSpacing: accountNameTextSize.letterSpacing,
-      }),
-    [accountName]
-  );
+  const textWidth = useMemo(() => measureTextSync(accountName ?? '', accountNameTextStyle), [accountName]);
 
   const children = useMemo(() => {
     return (

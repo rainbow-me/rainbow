@@ -23,6 +23,7 @@ export type PerpMarket = {
   baseSymbol: string;
   price: string;
   midPrice: string | null;
+  previousDayPrice: string;
   priceChange: {
     '1h': string;
     '24h': string;
@@ -54,6 +55,8 @@ export type HyperliquidTokenMetadata = {
 export type PerpMarketWithMetadata = PerpMarket & {
   metadata?: HyperliquidTokenMetadata;
 };
+
+export type PerpMarketsBySymbol = Partial<Record<string, PerpMarketWithMetadata>>;
 
 export type PerpsPosition = {
   symbol: string;

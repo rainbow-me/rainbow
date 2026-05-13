@@ -1,14 +1,12 @@
-import { HttpTransport, InfoClient, type CandleSnapshotResponse } from '@nktkas/hyperliquid';
+import { HttpTransport, InfoClient } from '@nktkas/hyperliquid';
 
 import { INITIAL_BAR_COUNT } from '@/features/charts/constants';
-import { type CandleResolution, type HyperliquidSymbol } from '@/features/charts/types';
-import { toHyperliquidInterval } from '@/features/charts/utils';
+import { type CandleResolution, type HyperliquidCandle, type HyperliquidSymbol } from '@/features/charts/types';
+import { msToSeconds, toHyperliquidInterval } from '@/features/charts/utils';
 import { time } from '@/utils/time';
 
 import { type Bar, type CandlestickResponse } from '../types';
 import { getResolutionMinutes } from '../utils';
-
-type Candle = CandleSnapshotResponse[number];
 
 export type HyperliquidChartParams = {
   /**
@@ -71,7 +69,7 @@ export async function fetchHyperliquidChart(
 /**
  * Converts a Hyperliquid `Candle` array to `Bar` format.
  */
-function convertCandlesToBars(candles: Candle[], maxBars: number): Bar[] {
+function convertCandlesToBars(candles: HyperliquidCandle[], maxBars: number): Bar[] {
   const length = candles.length;
   if (!length) return [];
 
@@ -92,8 +90,4 @@ function convertCandlesToBars(candles: Candle[], maxBars: number): Bar[] {
   }
 
   return bars;
-}
-
-function msToSeconds(ms: number): number {
-  return ms * 0.001;
 }
