@@ -532,6 +532,14 @@
         "search": "검색",
         "discover": "발견하다"
       },
+      "sections": {
+        "tokens": "토큰"
+      },
+      "placements": {
+        "perps_title": "Perps",
+        "predictions_title": "예측",
+        "see_all": "모두 보기"
+      },
       "strategies": {
         "strategies_title": "전략들",
         "yearn_finance_description": "yearn.finance로부터의 스마트 수익 전략"
