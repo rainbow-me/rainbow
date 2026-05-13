@@ -43,6 +43,7 @@ if (process.env.CI) {
 const rainbowConfig = {
   resolver: {
     blacklistRE,
+    useWatchman: process.env.RAINBOW_METRO_USE_WATCHMAN !== 'false',
     resolveRequest: (context, moduleName, platform) => {
       try {
         return context.resolveRequest(context, moduleName, platform);
