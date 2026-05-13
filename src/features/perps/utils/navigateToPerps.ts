@@ -1,20 +1,30 @@
+import { PerpsNavigation } from '@/features/perps/screens/PerpsNavigator';
 import Navigation from '@/navigation/Navigation';
 import Routes from '@/navigation/routesNames';
 import { type RootStackParamList } from '@/navigation/types';
 import { device } from '@/storage';
 
-export function navigateToPerps(params?: RootStackParamList[typeof Routes.PERPS_NAVIGATOR]) {
-  // TODO: Not sure this is the best place to store this
-  const hasSeenExplainSheet = device.get(['hasSeenPerpsExplainSheet']);
+export const HAS_SEEN_PERPS_EXPLAIN_KEY = 'hasSeenPerpsExplainSheet';
 
-  if (!hasSeenExplainSheet) {
-    Navigation.handleAction(Routes.PERPS_EXPLAIN_SHEET, {
-      onDismiss: () => {
-        device.set(['hasSeenPerpsExplainSheet'], true);
-        Navigation.handleAction(Routes.PERPS_NAVIGATOR, params);
-      },
-    });
-  } else {
-    Navigation.handleAction(Routes.PERPS_NAVIGATOR, params);
+export function maybeNavigateToPerpsExplainSheet(navigationAction: () => void): void {
+  const hasSeenExplainSheet = device.get([HAS_SEEN_PERPS_EXPLAIN_KEY]);
+  if (hasSeenExplainSheet) {
+    navigationAction();
+    return;
   }
+  Navigation.handleAction(Routes.PERPS_EXPLAIN_SHEET, {
+    onDismiss: () => {
+      device.set([HAS_SEEN_PERPS_EXPLAIN_KEY], true);
+      navigationAction();
+    },
+  });
+}
+
+export function navigateToPerps(params?: RootStackParamList[typeof Routes.PERPS_NAVIGATOR]) {
+  maybeNavigateToPerpsExplainSheet(() => Navigation.handleAction(Routes.PERPS_NAVIGATOR, params));
+}
+
+export function navigateToPerpsSearch() {
+  PerpsNavigation.navigate(Routes.PERPS_SEARCH_SCREEN, { type: 'search' });
+  navigateToPerps({ initialPerpsPage: Routes.PERPS_SEARCH_SCREEN });
 }

@@ -6,6 +6,7 @@ import { hlTradesStoreActions } from '@/features/perps/stores/hlTradesStore';
 import { hyperliquidAccountActions } from '@/features/perps/stores/hyperliquidAccountStore';
 import { hyperliquidMarketsActions } from '@/features/perps/stores/hyperliquidMarketsStore';
 import { PerpPositionSide, type OrderSide, type PerpMarket } from '@/features/perps/types';
+import { maybeNavigateToPerpsExplainSheet } from '@/features/perps/utils/navigateToPerps';
 import { toFixedWorklet } from '@/framework/core/safeMath';
 import { ensureError } from '@/logger';
 import Navigation from '@/navigation/Navigation';
@@ -28,6 +29,14 @@ export function formatPriceChange(priceChange: string) {
   return `${toFixedWorklet(Number(priceChange) * 10_000, 2)}%`;
 }
 
+export function convertStoredPerpPriceChangeToPercent(priceChange: string): number {
+  return Number(priceChange) * 10_000;
+}
+
+export function formatCompactPerpPercentChange(percentChange: number): string {
+  return `${Math.abs(percentChange).toFixed(2)}%`;
+}
+
 export function navigateToNewPositionScreen(market: PerpMarket) {
   void useHlNewPositionStore.getState().setMarket(market);
   PerpsNavigation.navigate(Routes.PERPS_NEW_POSITION_SCREEN);
@@ -35,11 +44,8 @@ export function navigateToNewPositionScreen(market: PerpMarket) {
 
 export function navigateToPerpDetailScreen(symbol: string) {
   const market = hyperliquidMarketsActions.getMarket(symbol);
-  if (market) {
-    Navigation.handleAction(Routes.PERPS_DETAIL_SCREEN, {
-      market,
-    });
-  }
+  if (!market) return;
+  maybeNavigateToPerpsExplainSheet(() => Navigation.handleAction(Routes.PERPS_DETAIL_SCREEN, { market }));
 }
 
 export function convertSide(side: 'B' | 'A'): OrderSide {
