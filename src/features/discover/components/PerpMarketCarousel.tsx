@@ -22,7 +22,7 @@ export function PerpMarketCarousel() {
   return (
     <MarketCarousel
       title={i18n.t(i18n.l.discover.placements.perps_title)}
-      placementId={PLACEMENT_IDS.PERPS}
+      placementId={PLACEMENT_IDS.DISCOVER_PERPS_CAROUSEL}
       placement={placement}
       itemHeight={PERP_MARKET_CARD_HEIGHT}
       itemWidth={PERP_MARKET_CARD_SLOT_WIDTH_WITH_CHART}

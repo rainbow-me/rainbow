@@ -44,7 +44,7 @@ export const useDiscoverPerpsPlacement = createDerivedStore<DiscoverPerpsPlaceme
     const placementsLoading = $(usePlacementsStore, s => s.getStatus('isInitialLoad'));
     const marketsLoading = $(useHyperliquidMarketsStore, s => s.getStatus('isInitialLoad'));
     const markets = $(useHyperliquidMarketsStore, s => s.markets);
-    const placementData = $(usePlacementsStore, s => s.getPlacement(PLACEMENT_IDS.PERPS));
+    const placementData = $(usePlacementsStore, s => s.getPlacement(PLACEMENT_IDS.DISCOVER_PERPS_CAROUSEL));
 
     if (!enabled) return EMPTY_DISCOVER_PERPS_PLACEMENT_STATE;
 

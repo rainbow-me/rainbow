@@ -45,7 +45,7 @@ const useDiscoverPredictionsRequest = createDerivedStore<DiscoverPredictionsRequ
     );
     const enabled = discover_placements_enabled && (polymarket_enabled || polymarketLocal) && !IS_TEST;
     const placementEventIds = $(usePlacementsStore, state =>
-      selectPolymarketEventIdsFromPlacement(state.getPlacement(PLACEMENT_IDS.PREDICTIONS))
+      selectPolymarketEventIdsFromPlacement(state.getPlacement(PLACEMENT_IDS.DISCOVER_PREDICTIONS_CAROUSEL))
     );
     const eventIds = enabled ? placementEventIds : [];
 

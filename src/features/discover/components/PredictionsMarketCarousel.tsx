@@ -16,7 +16,7 @@ import * as i18n from '@/languages';
 
 import { MarketCarousel } from './MarketCarousel';
 
-const PLACEMENT_ID = PLACEMENT_IDS.PREDICTIONS;
+const PLACEMENT_ID = PLACEMENT_IDS.DISCOVER_PREDICTIONS_CAROUSEL;
 const PREDICTION_TILE_WIDTH = 178;
 const EMPTY_EVENTS: PolymarketEvent[] = [];
 
