@@ -12,18 +12,18 @@ tags:
 - runFlow: ../../utils/ImportWalletWithKey.yaml
 
 # Check various screens exist and can be navigated to
-- swipe:
-    direction: LEFT
-- assertVisible:
-    id: discover-header
 - runScript:
     file: ../../utils/coordinates.js
+- tapOn:
+    point: ${output.tabCoordinates.discoverTab}
+- assertVisible:
+    id: discover-header
 - tapOn:
     point: ${output.tabCoordinates.activityTab}
 - assertVisible:
     id: profile-screen
-- swipe:
-    direction: LEFT
+- tapOn:
+    point: ${output.tabCoordinates.rewardsTab}
 - assertVisible:
     id: rnbw-membership-screen
 - tapOn:
