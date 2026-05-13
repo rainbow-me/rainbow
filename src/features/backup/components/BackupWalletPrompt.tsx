@@ -26,7 +26,6 @@ import { backupsStore, CloudBackupState } from '../stores/backupsStore';
 const imageSize = 72;
 
 export default function BackupSheetSectionNoProvider() {
-  const { colors } = useTheme();
   const { navigate, goBack } = useNavigation();
   const selectedWallet = useSelectedWallet();
   const createBackup = useCreateBackup();
@@ -108,104 +107,94 @@ export default function BackupSheetSectionNoProvider() {
         <Separator color="separatorSecondary" thickness={1} />
       </Bleed>
 
-      <ButtonPressAnimation disabled={isCloudBackupDisabled} scaleTo={0.95} onPress={onCloudBackup}>
-        <Box alignItems="flex-start" justifyContent="flex-start" paddingTop={'24px'} paddingBottom={'36px'} gap={8}>
-          <Box justifyContent="center" width="full">
-            <Inline alignHorizontal="justify" alignVertical="center" wrap={false}>
-              <Box flexShrink={1}>
-                <Inline alignVertical="center" wrap={false}>
-                  <Box flexShrink={1}>
-                    <Stack width="full" space="12px">
-                      <Box
-                        as={ImgixImage}
-                        borderRadius={imageSize / 2}
-                        height={{ custom: imageSize }}
-                        marginLeft={{ custom: -12 }}
-                        marginRight={{ custom: -12 }}
-                        marginTop={{ custom: 0 }}
-                        marginBottom={{ custom: -8 }}
-                        source={WalletsAndBackupIcon}
-                        width={{ custom: imageSize }}
-                        size={imageSize}
-                      />
-                      <Text color={color} size="18px / 27px (Deprecated)" weight="heavy" numberOfLines={1}>
-                        {text}
-                      </Text>
-                      <Text color={'labelSecondary'} size="14px / 19px (Deprecated)" weight="medium">
-                        <Text color={'action (Deprecated)'} size="14px / 19px (Deprecated)" weight="bold">
-                          {i18n.t(i18n.l.back_up.cloud.recommended_for_beginners)}
-                        </Text>{' '}
-                        {i18n.t(i18n.l.back_up.cloud.choose_backup_cloud_description, {
-                          cloudPlatform,
-                        })}
-                      </Text>
-                    </Stack>
-                  </Box>
-                </Inline>
-              </Box>
-              <Box paddingLeft="8px">
-                <Box
-                  as={ImgixImage}
-                  height={{ custom: 16 }}
-                  source={Caret as Source}
-                  tintColor={colors.dark}
-                  width={{ custom: 7 }}
-                  size={30}
-                />
-              </Box>
-            </Inline>
-          </Box>
-        </Box>
-      </ButtonPressAnimation>
+      <BackupOptionRow
+        icon={WalletsAndBackupIcon}
+        header={text}
+        headerColor={color}
+        onPress={onCloudBackup}
+        disabled={isCloudBackupDisabled}
+      >
+        <Text color={'action (Deprecated)'} size="14px / 19px (Deprecated)" weight="bold">
+          {i18n.t(i18n.l.back_up.cloud.recommended_for_beginners)}
+        </Text>{' '}
+        {i18n.t(i18n.l.back_up.cloud.choose_backup_cloud_description, {
+          cloudPlatform,
+        })}
+      </BackupOptionRow>
 
       <Bleed horizontal="24px">
         <Separator color="separatorSecondary" thickness={1} />
       </Bleed>
 
-      <ButtonPressAnimation scaleTo={0.95} onPress={onManualBackup}>
-        <Box alignItems="flex-start" justifyContent="flex-start" paddingTop={'24px'} gap={8}>
-          <Box justifyContent="center" width="full">
-            <Inline alignHorizontal="justify" alignVertical="center" wrap={false}>
-              <Box flexShrink={1}>
-                <Inline alignVertical="center" wrap={false}>
-                  <Box flexShrink={1}>
-                    <Stack width="full" space="12px">
-                      <Box
-                        as={ImgixImage}
-                        borderRadius={imageSize / 2}
-                        height={{ custom: imageSize }}
-                        marginLeft={{ custom: -12 }}
-                        marginRight={{ custom: -12 }}
-                        marginTop={{ custom: 0 }}
-                        marginBottom={{ custom: -8 }}
-                        source={ManuallyBackedUpIcon as Source}
-                        width={{ custom: imageSize }}
-                        size={imageSize}
-                      />
-                      <Text color={'primary (Deprecated)'} size="18px / 27px (Deprecated)" weight="heavy" numberOfLines={1}>
-                        {i18n.t(i18n.l.back_up.cloud.manual_backup)}
-                      </Text>
-                      <Text color={'labelSecondary'} size="14px / 19px (Deprecated)" weight="medium">
-                        {i18n.t(i18n.l.back_up.cloud.choose_backup_manual_description)}
-                      </Text>
-                    </Stack>
-                  </Box>
-                </Inline>
-              </Box>
-              <Box paddingLeft="8px">
-                <Box
-                  as={ImgixImage}
-                  height={{ custom: 16 }}
-                  source={Caret as Source}
-                  tintColor={colors.dark}
-                  width={{ custom: 7 }}
-                  size={30}
-                />
-              </Box>
-            </Inline>
-          </Box>
-        </Box>
-      </ButtonPressAnimation>
+      <BackupOptionRow icon={ManuallyBackedUpIcon} header={i18n.t(i18n.l.back_up.cloud.manual_backup)} onPress={onManualBackup}>
+        {i18n.t(i18n.l.back_up.cloud.choose_backup_manual_description)}
+      </BackupOptionRow>
     </Inset>
+  );
+}
+
+type BackupOptionRowProps = {
+  icon: Source | number;
+  header: string;
+  onPress: () => void;
+  headerColor?: TextColor | CustomColor;
+  disabled?: boolean;
+  children: React.ReactNode;
+};
+function BackupOptionRow({
+  icon,
+  header,
+  headerColor = 'primary (Deprecated)',
+  onPress,
+  disabled = false,
+  children,
+}: BackupOptionRowProps) {
+  const { colors } = useTheme();
+
+  return (
+    <ButtonPressAnimation disabled={disabled} scaleTo={0.95} onPress={onPress}>
+      <Box alignItems="flex-start" justifyContent="flex-start" paddingTop={'24px'} paddingBottom={'36px'} gap={8}>
+        <Box justifyContent="center" width="full">
+          <Inline alignHorizontal="justify" alignVertical="center" wrap={false}>
+            <Box flexShrink={1}>
+              <Inline alignVertical="center" wrap={false}>
+                <Box flexShrink={1}>
+                  <Stack width="full" space="12px">
+                    <Box
+                      as={ImgixImage}
+                      borderRadius={imageSize / 2}
+                      height={{ custom: imageSize }}
+                      marginLeft={{ custom: -12 }}
+                      marginRight={{ custom: -12 }}
+                      marginTop={{ custom: 0 }}
+                      marginBottom={{ custom: -8 }}
+                      source={icon}
+                      width={{ custom: imageSize }}
+                      size={imageSize}
+                    />
+                    <Text color={headerColor} size="18px / 27px (Deprecated)" weight="heavy" numberOfLines={1}>
+                      {header}
+                    </Text>
+                    <Text color={'labelSecondary'} size="14px / 19px (Deprecated)" weight="medium">
+                      {children}
+                    </Text>
+                  </Stack>
+                </Box>
+              </Inline>
+            </Box>
+            <Box paddingLeft="8px">
+              <Box
+                as={ImgixImage}
+                height={{ custom: 16 }}
+                source={Caret as Source}
+                tintColor={colors.dark}
+                width={{ custom: 7 }}
+                size={30}
+              />
+            </Box>
+          </Inline>
+        </Box>
+      </Box>
+    </ButtonPressAnimation>
   );
 }
