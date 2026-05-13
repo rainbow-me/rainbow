@@ -50,6 +50,7 @@ import { RnbwRewardsEstimateSheet } from '@/features/rnbw-rewards/screens/rnbw-r
 import { RnbwStakingLearnScreen } from '@/features/rnbw-staking/screens/rnbw-staking-learn-screen/RnbwStakingLearnScreen';
 import { RnbwStakingScreen } from '@/features/rnbw-staking/screens/rnbw-staking-screen/RnbwStakingScreen';
 import { RnbwUnstakeSheet } from '@/features/rnbw-staking/screens/rnbw-unstake-sheet/RnbwUnstakeSheet';
+import SendSheet from '@/features/send/screens/SendSheet';
 import ConnectedDappsSheet from '@/features/wallet-connect/screens/ConnectedDappsSheet';
 import createNativeStackCoolModalNavigator from '@/react-native-cool-modals/createNativeStackNavigator';
 import { Portal as CMPortal } from '@/react-native-cool-modals/Portal';
@@ -87,7 +88,6 @@ import ReceiveModal from '../screens/ReceiveModal';
 import { RestoreSheet } from '../screens/RestoreSheet';
 import SelectUniqueTokenSheet from '../screens/SelectUniqueTokenSheet';
 import { SendConfirmationSheet } from '../screens/SendConfirmationSheet';
-import SendSheet from '../screens/SendSheet';
 import { SettingsSheet } from '../screens/SettingsSheet/SettingsSheet';
 import { SignTransactionSheet } from '../screens/SignTransactionSheet';
 import SpeedUpAndCancelSheet from '../screens/SpeedUpAndCancelSheet';
