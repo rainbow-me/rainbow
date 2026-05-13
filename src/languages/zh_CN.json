@@ -532,6 +532,14 @@
         "search": "搜索",
         "discover": "发现"
       },
+      "sections": {
+        "tokens": "代币"
+      },
+      "placements": {
+        "perps_title": "Perps",
+        "predictions_title": "预测",
+        "see_all": "查看全部"
+      },
       "strategies": {
         "strategies_title": "策略",
         "yearn_finance_description": "来自yearn.finance的智能收益策略"
