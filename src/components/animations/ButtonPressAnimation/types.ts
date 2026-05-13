@@ -54,4 +54,6 @@ export interface ButtonPressAnimationProps
   disallowInterruption?: boolean;
   /** @platform android */
   radiusAndroid?: number;
+  /** @platform android */
+  shouldActivateOnStart?: boolean;
 }

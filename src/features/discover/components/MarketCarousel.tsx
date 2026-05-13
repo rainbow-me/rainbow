@@ -1,0 +1,153 @@
+import React, { useCallback, useMemo, type ReactElement } from 'react';
+import { StyleSheet, View, type FlatListProps } from 'react-native';
+
+import { FlatList } from 'react-native-gesture-handler';
+import { useDebouncedCallback } from 'use-debounce';
+
+import ButtonPressAnimation from '@/components/animations/ButtonPressAnimation';
+import ShimmerAnimation from '@/components/animations/ShimmerAnimation';
+import { Box, Text, TextIcon, useBackgroundColor, useColorMode } from '@/design-system';
+import { type PlacementItem } from '@/features/placements/types';
+import { opacity } from '@/framework/ui/utils/opacity';
+import * as i18n from '@/languages';
+import { DEVICE_WIDTH } from '@/utils/deviceUtils';
+import { time } from '@/utils/time';
+
+const CAROUSEL_HORIZONTAL_PADDING = 20;
+const CARD_GAP = 8;
+const PEEK_WIDTH = 32;
+const SKELETON_COUNT = 5;
+const SCROLL_DEBOUNCE_MS = time.seconds(30);
+export const CARD_WIDTH = DEVICE_WIDTH - CAROUSEL_HORIZONTAL_PADDING * 2 - PEEK_WIDTH;
+export const CARD_HEIGHT = 100;
+
+type MarketCarouselProps<T extends PlacementItem> = Pick<FlatListProps<T>, 'data'> & {
+  itemHeight?: number;
+  itemWidth?: number;
+  getItemWidth?: (item: T) => number;
+  loading?: boolean;
+  onPressSeeAll: () => void;
+  onScrollSettle: () => void;
+  renderItem: (item: T) => ReactElement;
+  title: string;
+};
+
+function keyExtractor<T extends PlacementItem>(item: T): string {
+  return `${item.ref.source}:${item.ref.id}`;
+}
+
+export function MarketCarousel<T extends PlacementItem>({
+  data,
+  getItemWidth,
+  itemHeight = CARD_HEIGHT,
+  itemWidth = CARD_WIDTH,
+  loading,
+  onPressSeeAll,
+  onScrollSettle,
+  renderItem,
+  title,
+}: MarketCarouselProps<T>) {
+  const items = useMemo<readonly T[]>(() => (data ? Array.from(data) : []), [data]);
+  const itemWidths = useMemo(() => items.map(item => getItemWidth?.(item) ?? itemWidth), [items, getItemWidth, itemWidth]);
+  const snapToOffsets = useMemo(() => {
+    if (!getItemWidth) return undefined;
+
+    let offset = 0;
+    return itemWidths.map(width => {
+      const currentOffset = offset;
+      offset += width + CARD_GAP;
+      return currentOffset;
+    });
+  }, [getItemWidth, itemWidths]);
+
+  const renderFlatListItem = useCallback(
+    ({ item, index }: { item: T; index: number }) => (
+      <View style={{ height: itemHeight, overflow: 'visible', width: itemWidths[index] ?? itemWidth }}>{renderItem(item)}</View>
+    ),
+    [itemHeight, itemWidth, itemWidths, renderItem]
+  );
+
+  const handleScrollSettle = useDebouncedCallback(onScrollSettle, SCROLL_DEBOUNCE_MS, { leading: false, trailing: true });
+
+  if (!loading && items.length === 0) return null;
+
+  return (
+    <Box gap={12}>
+      <Box flexDirection="row" alignItems="center" justifyContent="space-between" paddingHorizontal="4px">
+        <Text size="22pt" weight="heavy" color="label">
+          {title}
+        </Text>
+
+        <ButtonPressAnimation onPress={onPressSeeAll} scaleTo={0.9}>
+          <Box flexDirection="row" alignItems="center" gap={4} paddingVertical="8px">
+            <Text size="15pt" weight="heavy" color="labelQuaternary">
+              {i18n.t(i18n.l.discover.placements.see_all)}
+            </Text>
+            <TextIcon size="icon 11px" weight="heavy" color="labelQuaternary">
+              {'􀄯'}
+            </TextIcon>
+          </Box>
+        </ButtonPressAnimation>
+      </Box>
+
+      {loading ? (
+        <View style={styles.skeletonRow}>
+          {Array.from({ length: SKELETON_COUNT }).map((_, index) => (
+            <CarouselSkeleton key={index} itemHeight={itemHeight} itemWidth={itemWidth} />
+          ))}
+        </View>
+      ) : (
+        <FlatList
+          data={items}
+          horizontal
+          disallowInterruption
+          showsHorizontalScrollIndicator={false}
+          contentContainerStyle={styles.contentContainer}
+          style={styles.flatList}
+          decelerationRate="fast"
+          snapToInterval={snapToOffsets ? undefined : itemWidth + CARD_GAP}
+          snapToOffsets={snapToOffsets}
+          snapToAlignment="start"
+          renderItem={renderFlatListItem}
+          keyExtractor={keyExtractor}
+          onScrollEndDrag={handleScrollSettle}
+          onMomentumScrollEnd={handleScrollSettle}
+        />
+      )}
+    </Box>
+  );
+}
+
+function CarouselSkeleton({ itemHeight, itemWidth }: { itemHeight: number; itemWidth: number }) {
+  const { isDarkMode } = useColorMode();
+  const fillQuaternary = useBackgroundColor('fillQuaternary');
+  const fillSecondary = useBackgroundColor('fillSecondary');
+  const shimmerColor = opacity(fillSecondary, 0.1);
+  const skeletonColor = isDarkMode ? fillQuaternary : fillSecondary;
+
+  return (
+    <View style={[styles.skeleton, { backgroundColor: skeletonColor, height: itemHeight, width: itemWidth }]}>
+      <ShimmerAnimation color={shimmerColor} gradientColor={shimmerColor} />
+    </View>
+  );
+}
+
+const styles = StyleSheet.create({
+  contentContainer: {
+    gap: CARD_GAP,
+    paddingHorizontal: CAROUSEL_HORIZONTAL_PADDING,
+  },
+  flatList: {
+    marginHorizontal: -CAROUSEL_HORIZONTAL_PADDING,
+    overflow: 'visible',
+  },
+  skeleton: {
+    borderRadius: 32,
+    overflow: 'hidden',
+  },
+  skeletonRow: {
+    flexDirection: 'row',
+    gap: CARD_GAP,
+    paddingHorizontal: 0,
+  },
+});
