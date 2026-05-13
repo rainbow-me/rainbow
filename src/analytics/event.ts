@@ -1138,8 +1138,11 @@ export type EventProperties = {
   [event.sentTransaction]: {
     assetName: string;
     network: string;
+    chainId: ChainId;
+    isSponsored: boolean;
     isRecepientENS: boolean;
     isHardwareWallet: boolean;
+    submitSuccessful: boolean;
   };
   [event.tappedDoneEditingWallet]: {
     wallet_label: string;
