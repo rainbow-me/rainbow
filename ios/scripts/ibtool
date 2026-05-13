@@ -1,0 +1,44 @@
+#!/usr/bin/env bash
+set -euo pipefail
+
+real_ibtool="$(xcrun --find ibtool)"
+
+args=("$@")
+storyboard_index=-1
+compilation_directory_index=-1
+
+for index in "${!args[@]}"; do
+  case "${args[$index]}" in
+    *.storyboard)
+      if [[ $storyboard_index -eq -1 ]]; then
+        storyboard_index=$index
+      fi
+      ;;
+    --compilation-directory)
+      compilation_directory_index=$index
+      ;;
+  esac
+done
+
+if [[ $storyboard_index -ge 0 && $compilation_directory_index -gt $storyboard_index ]]; then
+  reordered=()
+
+  for index in "${!args[@]}"; do
+    if [[ $index -eq $compilation_directory_index || $index -eq $((compilation_directory_index + 1)) ]]; then
+      continue
+    fi
+
+    if [[ $index -eq $storyboard_index ]]; then
+      reordered+=("${args[$compilation_directory_index]}")
+      if [[ $((compilation_directory_index + 1)) -lt ${#args[@]} ]]; then
+        reordered+=("${args[$((compilation_directory_index + 1))]}")
+      fi
+    fi
+
+    reordered+=("${args[$index]}")
+  done
+
+  exec "$real_ibtool" "${reordered[@]}"
+fi
+
+exec "$real_ibtool" "$@"
