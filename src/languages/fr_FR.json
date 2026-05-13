@@ -532,6 +532,14 @@
         "search": "Recherche",
         "discover": "Découvrir"
       },
+      "sections": {
+        "tokens": "Jetons"
+      },
+      "placements": {
+        "perps_title": "Perps",
+        "predictions_title": "Prédictions",
+        "see_all": "Voir tout"
+      },
       "strategies": {
         "strategies_title": "Stratégies",
         "yearn_finance_description": "Stratégies de rendement intelligent de yearn.finance"
