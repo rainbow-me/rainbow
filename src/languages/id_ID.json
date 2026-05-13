@@ -532,6 +532,14 @@
         "search": "Cari",
         "discover": "Temukan"
       },
+      "sections": {
+        "tokens": "Token"
+      },
+      "placements": {
+        "perps_title": "Perps",
+        "predictions_title": "Prediksi",
+        "see_all": "Lihat semua"
+      },
       "strategies": {
         "strategies_title": "Strategi",
         "yearn_finance_description": "Strategi hasil cerdas dari yearn.finance"
