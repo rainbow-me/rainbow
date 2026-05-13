@@ -532,6 +532,14 @@
         "search": "Поиск",
         "discover": "Открыть"
       },
+      "sections": {
+        "tokens": "Токены"
+      },
+      "placements": {
+        "perps_title": "Perps",
+        "predictions_title": "Прогнозы",
+        "see_all": "Смотреть все"
+      },
       "strategies": {
         "strategies_title": "Стратегии",
         "yearn_finance_description": "Умные стратегии доходности от yearn.finance"
