@@ -487,7 +487,6 @@
       "clear_react_query_cache": "React Queryキャッシュをクリア",
       "connect_to_anvil": "Anvilに接続する",
       "copy_fcm_token": "FCMトークンをコピー",
-      "copy_log_lines": "ログラインをコピー",
       "copy_signing_wallet_address": "署名ウォレットアドレスをコピー",
       "disconnect_to_anvil": "Anvilから切断",
       "crash_app_render_error": "アプリクラッシュ（レンダーエラー）",
