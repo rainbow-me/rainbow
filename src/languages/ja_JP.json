@@ -532,6 +532,14 @@
         "search": "検索する",
         "discover": "発見する"
       },
+      "sections": {
+        "tokens": "トークン"
+      },
+      "placements": {
+        "perps_title": "\"Perps\"",
+        "predictions_title": "予測",
+        "see_all": "すべて表示"
+      },
       "strategies": {
         "strategies_title": "ストラテジー",
         "yearn_finance_description": "yearn.financeからのスマートイールドストラテジー"
