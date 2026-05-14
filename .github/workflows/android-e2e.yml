@@ -286,12 +286,12 @@ jobs:
 
   notify-failure:
     name: Notify Slack on failure
-    needs: [build, e2e-tests, perf-tests]
+    needs: [build, e2e-tests]
     if: |
       always() &&
       github.event_name == 'push' &&
       github.ref == 'refs/heads/develop' &&
-      (needs.build.result == 'failure' || needs.e2e-tests.result == 'failure' || needs.perf-tests.result == 'failure')
+      (needs.build.result == 'failure' || needs.e2e-tests.result == 'failure')
     runs-on: ubuntu-latest
     steps:
       - name: Checkout repo
