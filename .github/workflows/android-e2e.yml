@@ -1,29 +1,25 @@
 name: Android
 
 on:
-  pull_request:
-    types: [opened, synchronize, reopened, ready_for_review]
   push:
     branches: [develop]
-  issue_comment:
-    types: [created]
+  pull_request:
+    types: [opened, synchronize, reopened, ready_for_review, labeled]
 
 env:
-  PR_NUMBER: ${{ github.event.pull_request.number || github.event.issue.number }}
+  PR_NUMBER: ${{ github.event.pull_request.number }}
 
 jobs:
   build:
     name: Test Build
     if: |
-      (github.event_name == 'pull_request' && github.event.pull_request.draft == false) ||
       github.event_name == 'push' ||
-      (github.event_name == 'issue_comment' &&
-      github.event.issue.pull_request != null &&
-      (
-        startsWith(github.event.comment.body, '/e2e') ||
-        startsWith(github.event.comment.body, '/perf')
-      ) &&
-      contains(fromJson('["OWNER","MEMBER","COLLABORATOR"]'), github.event.comment.author_association))
+      (github.event_name == 'pull_request' &&
+       github.event.action != 'labeled' &&
+       github.event.pull_request.draft == false) ||
+      (github.event_name == 'pull_request' &&
+       github.event.action == 'labeled' &&
+       github.event.label.name == 'e2e')
     runs-on: blacksmith-8vcpu-ubuntu-2404
     timeout-minutes: 30
     concurrency:
@@ -131,8 +127,10 @@ jobs:
   e2e-tests:
     name: E2E Tests (Shard ${{ matrix.shard-index }})
     if: |
-      github.event_name != 'issue_comment' ||
-      startsWith(github.event.comment.body, '/e2e')
+      github.event_name == 'push' ||
+      (github.event_name == 'pull_request' &&
+       contains(github.event.pull_request.labels.*.name, 'e2e') &&
+       (github.event.action != 'labeled' || github.event.label.name == 'e2e'))
     strategy:
       fail-fast: false
       matrix:
@@ -224,8 +222,8 @@ jobs:
   perf-tests:
     name: Perf Tests
     if: |
-      github.event_name != 'issue_comment' ||
-      startsWith(github.event.comment.body, '/perf')
+      github.event_name == 'push' ||
+      (github.event_name == 'pull_request' && github.event.action != 'labeled')
     runs-on: blacksmith-2vcpu-ubuntu-2404
     needs: build
     timeout-minutes: 30
@@ -285,3 +283,23 @@ jobs:
         with:
           name: perf-results-${{ env.PR_NUMBER || github.ref_name }}
           path: ${{ env.ARTIFACTS_FOLDER }}/perf
+
+  notify-failure:
+    name: Notify Slack on failure
+    needs: [build, e2e-tests]
+    if: |
+      always() &&
+      github.event_name == 'push' &&
+      github.ref == 'refs/heads/develop' &&
+      (needs.build.result == 'failure' || needs.e2e-tests.result == 'failure')
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repo
+        uses: actions/checkout@08eba0b27e820071cde6df949e0beb9ba4906955
+
+      - name: Notify Slack
+        uses: ./.github/actions/slack-notify-failure
+        with:
+          slack-token: ${{ secrets.SLACK_BOT_TOKEN }}
+          channel-id: ${{ vars.SLACK_CHANNEL_ID_FRONTEND_ALERTS }}
+          run-url: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}
