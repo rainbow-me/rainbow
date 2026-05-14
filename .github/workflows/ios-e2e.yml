@@ -1,11 +1,9 @@
-name: iOS
+name: iOS E2E
 on:
-  pull_request:
-    types: [opened, synchronize, reopened, ready_for_review]
   push:
     branches: [develop]
-  issue_comment:
-    types: [created]
+  pull_request:
+    types: [labeled, synchronize, reopened]
 env:
   NODE_OPTIONS: '--max-old-space-size=6144'
 
@@ -14,12 +12,10 @@ jobs:
   build:
     name: Test Build
     if: |
-      (github.event_name == 'pull_request' && github.event.pull_request.draft == false) ||
       github.event_name == 'push' ||
-      (github.event_name == 'issue_comment' &&
-      github.event.issue.pull_request != null &&
-      startsWith(github.event.comment.body, '/e2e') &&
-      contains(fromJson('["OWNER","MEMBER","COLLABORATOR"]'), github.event.comment.author_association))
+      (github.event_name == 'pull_request' &&
+       contains(github.event.pull_request.labels.*.name, 'e2e') &&
+       (github.event.action != 'labeled' || github.event.label.name == 'e2e'))
     runs-on: macos-26-xlarge
     concurrency:
       group: e2e-ios-${{ github.workflow }}-${{ github.ref }}
@@ -183,3 +179,23 @@ jobs:
         with:
           name: artifacts-${{ matrix.shard-index }}
           path: ${{ env.ARTIFACTS_FOLDER }}
+
+  notify-failure:
+    name: Notify Slack on failure
+    needs: [build, e2e-tests]
+    if: |
+      always() &&
+      github.event_name == 'push' &&
+      github.ref == 'refs/heads/develop' &&
+      (needs.build.result == 'failure' || needs.e2e-tests.result == 'failure')
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repo
+        uses: actions/checkout@08eba0b27e820071cde6df949e0beb9ba4906955
+
+      - name: Notify Slack
+        uses: ./.github/actions/slack-notify-failure
+        with:
+          slack-token: ${{ secrets.SLACK_BOT_TOKEN }}
+          channel-id: ${{ vars.SLACK_CHANNEL_ID_FRONTEND_ALERTS }}
+          run-url: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}
