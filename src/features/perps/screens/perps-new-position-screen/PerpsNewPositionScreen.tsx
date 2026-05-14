@@ -1,5 +1,5 @@
 import React, { memo } from 'react';
-import { Keyboard, Platform, ScrollView } from 'react-native';
+import { Keyboard, ScrollView } from 'react-native';
 
 import Animated, { useSharedValue } from 'react-native-reanimated';
 
@@ -42,13 +42,13 @@ export const PerpsNewPositionScreen = memo(function PerpsNewPositionScreen() {
       <Box style={{ flex: 1, position: 'relative', overflow: 'visible' }}>
         <ScrollView
           showsVerticalScrollIndicator={false}
-          contentInset={{ bottom: FOOTER_HEIGHT_WITH_SAFE_AREA }}
           contentContainerStyle={{
             paddingHorizontal: 20,
             overflow: 'visible',
             paddingTop: POSITION_SIDE_SELECTOR_HEIGHT_WITH_PADDING,
-            paddingBottom: Platform.OS === 'android' ? FOOTER_HEIGHT_WITH_SAFE_AREA : 0,
+            paddingBottom: FOOTER_HEIGHT_WITH_SAFE_AREA,
           }}
+          scrollIndicatorInsets={{ bottom: FOOTER_HEIGHT_WITH_SAFE_AREA }}
         >
           <Box paddingTop={'24px'}>
             <Stack
