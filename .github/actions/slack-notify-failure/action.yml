@@ -1,0 +1,99 @@
+name: 'Slack notify on CI failure'
+description: 'Posts a Slack notification about a failing workflow run'
+
+inputs:
+  slack-token:
+    description: 'Slack bot token (xoxb-...). Needs chat:write and chat:write.public scopes.'
+    required: true
+  channel-id:
+    description: 'Slack channel ID (e.g. C01ABC2DEF3) to post to.'
+    required: true
+  run-url:
+    description: 'URL of the workflow run to notify about, e.g. https://github.com/owner/repo/actions/runs/12345'
+    required: true
+
+runs:
+  using: 'composite'
+  steps:
+    - name: Build Slack payload
+      id: build
+      uses: actions/github-script@3a2844b7e9c422d3c10d287c895573f7108da1b3 # v9.0.0
+      env:
+        RUN_URL: ${{ inputs.run-url }}
+        CHANNEL_ID: ${{ inputs.channel-id }}
+      with:
+        script: |
+          const fs = require('fs');
+          const path = require('path');
+
+          const runUrl = process.env.RUN_URL;
+          const channelId = process.env.CHANNEL_ID;
+
+          const match = runUrl.match(/^https:\/\/github\.com\/([^/]+)\/([^/]+)\/actions\/runs\/(\d+)/);
+          if (!match) {
+            core.setFailed(`Invalid run-url format: ${runUrl}`);
+            return;
+          }
+          const [, owner, repo, runId] = match;
+
+          const { data: run } = await github.rest.actions.getWorkflowRun({
+            owner, repo, run_id: Number(runId),
+          });
+          const { data: commit } = await github.rest.repos.getCommit({
+            owner, repo, ref: run.head_sha,
+          });
+
+          let associatedPr = null;
+          try {
+            const { data: pulls } = await github.rest.repos.listPullRequestsAssociatedWithCommit({
+              owner, repo, commit_sha: run.head_sha,
+            });
+            associatedPr = pulls[0] ?? null;
+          } catch (e) {
+            core.warning(`Could not fetch associated PRs: ${e.message}`);
+          }
+
+          const authorUsername = commit.author?.login ?? '';
+          const shortSha = run.head_sha.slice(0, 7);
+          const commitUrl = `https://github.com/${owner}/${repo}/commit/${run.head_sha}`;
+          const commitTitle = commit.commit.message.split('\n')[0].replace(/\s*\(#\d+\)\s*$/, '');
+          const prSuffix = associatedPr ? ` (<${associatedPr.html_url}|#${associatedPr.number}>)` : '';
+          const commitLine = `[<${commitUrl}|${shortSha}>] ${commitTitle}${prSuffix}`;
+
+          let assignment;
+          if (!authorUsername) {
+            assignment = 'Author could not be identified. Frontend platform — please triage.';
+          } else {
+            const handlesPath = path.join(process.env.GITHUB_WORKSPACE, '.github', 'slack-handles.json');
+            let slackId = '';
+            if (fs.existsSync(handlesPath)) {
+              const handles = JSON.parse(fs.readFileSync(handlesPath, 'utf8'));
+              slackId = handles[authorUsername] ?? '';
+            }
+            const mention = slackId ? `<@${slackId}>` : `@${authorUsername}`;
+            assignment = `${mention} — you are assigned to triage this failure.`;
+          }
+
+          const payload = {
+            channel: channelId,
+            text: `:rotating_light: ${run.name} failed on ${run.head_branch}`,
+            blocks: [
+              { type: 'section', text: { type: 'mrkdwn', text: `:rotating_light: *${run.name}* failed on \`${run.head_branch}\`` } },
+              { type: 'section', text: { type: 'mrkdwn', text: commitLine } },
+              { type: 'section', text: { type: 'mrkdwn', text: assignment } },
+              { type: 'actions', elements: [
+                { type: 'button', text: { type: 'plain_text', text: 'View run' }, url: runUrl },
+              ] },
+            ],
+          };
+
+          const payloadPath = path.join(process.env.RUNNER_TEMP, 'slack-payload.json');
+          fs.writeFileSync(payloadPath, JSON.stringify(payload));
+          core.setOutput('payload-path', payloadPath);
+
+    - name: Post to Slack
+      uses: slackapi/slack-github-action@45a88b9581bfab2566dc881e2cd66d334e621e2c # v3.0.3
+      with:
+        method: chat.postMessage
+        token: ${{ inputs.slack-token }}
+        payload-file-path: ${{ steps.build.outputs.payload-path }}
