@@ -29,41 +29,59 @@ runs:
           const runUrl = process.env.RUN_URL;
           const channelId = process.env.CHANNEL_ID;
 
-          const match = runUrl.match(/^https:\/\/github\.com\/([^/]+)\/([^/]+)\/actions\/runs\/(\d+)/);
-          if (!match) {
+          const parsed = parseRunUrl(runUrl);
+          if (!parsed) {
             core.setFailed(`Invalid run-url format: ${runUrl}`);
             return;
           }
-          const [, owner, repo, runId] = match;
+          const { owner, repo, runId } = parsed;
 
           const { data: run } = await github.rest.actions.getWorkflowRun({
-            owner, repo, run_id: Number(runId),
+            owner, repo, run_id: runId,
           });
           const { data: commit } = await github.rest.repos.getCommit({
             owner, repo, ref: run.head_sha,
           });
+          const associatedPr = await fetchAssociatedPr(owner, repo, run.head_sha);
 
-          let associatedPr = null;
-          try {
-            const { data: pulls } = await github.rest.repos.listPullRequestsAssociatedWithCommit({
-              owner, repo, commit_sha: run.head_sha,
-            });
-            associatedPr = pulls[0] ?? null;
-          } catch (e) {
-            core.warning(`Could not fetch associated PRs: ${e.message}`);
+          const commitLine = formatCommitLine({ owner, repo, sha: run.head_sha, commit, associatedPr });
+          const assignment = formatAssignmentLine(commit.author?.login ?? '');
+          const payload = buildPayload({ channelId, run, commitLine, assignment, runUrl });
+
+          const payloadPath = path.join(process.env.RUNNER_TEMP, 'slack-payload.json');
+          fs.writeFileSync(payloadPath, JSON.stringify(payload));
+          core.setOutput('payload-path', payloadPath);
+
+          function parseRunUrl(url) {
+            const match = url.match(/^https:\/\/github\.com\/([^/]+)\/([^/]+)\/actions\/runs\/(\d+)/);
+            if (!match) return null;
+            const [, owner, repo, runId] = match;
+            return { owner, repo, runId: Number(runId) };
           }
 
-          const authorUsername = commit.author?.login ?? '';
-          const shortSha = run.head_sha.slice(0, 7);
-          const commitUrl = `https://github.com/${owner}/${repo}/commit/${run.head_sha}`;
-          const commitTitle = commit.commit.message.split('\n')[0].replace(/\s*\(#\d+\)\s*$/, '');
-          const prSuffix = associatedPr ? ` (<${associatedPr.html_url}|#${associatedPr.number}>)` : '';
-          const commitLine = `[<${commitUrl}|${shortSha}>] ${commitTitle}${prSuffix}`;
+          async function fetchAssociatedPr(owner, repo, sha) {
+            try {
+              const { data: pulls } = await github.rest.repos.listPullRequestsAssociatedWithCommit({
+                owner, repo, commit_sha: sha,
+              });
+              return pulls[0];
+            } catch (e) {
+              core.warning(`Could not fetch associated PRs: ${e.message}`);
+            }
+          }
 
-          let assignment;
-          if (!authorUsername) {
-            assignment = 'Author could not be identified. Frontend platform — please triage.';
-          } else {
+          function formatCommitLine({ owner, repo, sha, commit, associatedPr }) {
+            const shortSha = sha.slice(0, 7);
+            const commitUrl = `https://github.com/${owner}/${repo}/commit/${sha}`;
+            const title = commit.commit.message.split('\n')[0].replace(/\s*\(#\d+\)\s*$/, '');
+            const prSuffix = associatedPr ? ` (<${associatedPr.html_url}|#${associatedPr.number}>)` : '';
+            return `[<${commitUrl}|${shortSha}>] ${title}${prSuffix}`;
+          }
+
+          function formatAssignmentLine(authorUsername) {
+            if (!authorUsername) {
+              return 'Author could not be identified. Frontend platform — please triage.';
+            }
             const handlesPath = path.join(process.env.GITHUB_WORKSPACE, '.github', 'slack-handles.json');
             let slackId = '';
             if (fs.existsSync(handlesPath)) {
@@ -71,25 +89,23 @@ runs:
               slackId = handles[authorUsername] ?? '';
             }
             const mention = slackId ? `<@${slackId}>` : `@${authorUsername}`;
-            assignment = `${mention} — you are assigned to triage this failure.`;
+            return `${mention} — you are assigned to triage this failure.`;
           }
 
-          const payload = {
-            channel: channelId,
-            text: `:rotating_light: ${run.name} failed on ${run.head_branch}`,
-            blocks: [
-              { type: 'section', text: { type: 'mrkdwn', text: `:rotating_light: *${run.name}* failed on \`${run.head_branch}\`` } },
-              { type: 'section', text: { type: 'mrkdwn', text: commitLine } },
-              { type: 'section', text: { type: 'mrkdwn', text: assignment } },
-              { type: 'actions', elements: [
-                { type: 'button', text: { type: 'plain_text', text: 'View run' }, url: runUrl },
-              ] },
-            ],
-          };
-
-          const payloadPath = path.join(process.env.RUNNER_TEMP, 'slack-payload.json');
-          fs.writeFileSync(payloadPath, JSON.stringify(payload));
-          core.setOutput('payload-path', payloadPath);
+          function buildPayload({ channelId, run, commitLine, assignment, runUrl }) {
+            return {
+              channel: channelId,
+              text: `:rotating_light: ${run.name} failed on ${run.head_branch}`,
+              blocks: [
+                { type: 'section', text: { type: 'mrkdwn', text: `:rotating_light: *${run.name}* failed on \`${run.head_branch}\`` } },
+                { type: 'section', text: { type: 'mrkdwn', text: commitLine } },
+                { type: 'section', text: { type: 'mrkdwn', text: assignment } },
+                { type: 'actions', elements: [
+                  { type: 'button', text: { type: 'plain_text', text: 'View run' }, url: runUrl },
+                ] },
+              ],
+            };
+          }
 
     - name: Post to Slack
       uses: slackapi/slack-github-action@45a88b9581bfab2566dc881e2cd66d334e621e2c # v3.0.3
