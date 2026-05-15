@@ -1,0 +1,72 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "placements-v1",
+  "title": "Placement v1",
+  "description": "A Firestore document from the placements collection (default DB, rainbow-me project). Schema version 1.",
+  "type": "object",
+  "required": ["id", "screen", "enabled", "order", "version", "updatedAt", "items"],
+  "additionalProperties": false,
+  "properties": {
+    "id": {
+      "type": "string",
+      "description": "Mirrors the Firestore document ID"
+    },
+    "screen": {
+      "type": "string",
+      "description": "Which screen this placement appears on",
+      "examples": ["discover"]
+    },
+    "enabled": {
+      "type": "boolean",
+      "description": "Whether this placement is active; only true documents are queried"
+    },
+    "order": {
+      "type": "integer",
+      "minimum": 0,
+      "description": "Sort order among placements on the same screen"
+    },
+    "version": {
+      "type": "integer",
+      "const": 1,
+      "description": "Schema version; must be 1 for v1 documents"
+    },
+    "updatedAt": {
+      "type": "string",
+      "format": "date-time",
+      "description": "ISO 8601 timestamp stored as a string (not a Firestore Timestamp)"
+    },
+    "items": {
+      "type": "array",
+      "description": "Ordered list of items in this placement; pre-sorted by item.order",
+      "items": {
+        "type": "object",
+        "required": ["order", "ref"],
+        "additionalProperties": false,
+        "properties": {
+          "order": {
+            "type": "integer",
+            "minimum": 0,
+            "description": "0-indexed position within the placement"
+          },
+          "ref": {
+            "type": "object",
+            "required": ["source", "id"],
+            "additionalProperties": false,
+            "properties": {
+              "source": {
+                "type": "string",
+                "description": "Data source for this item",
+                "examples": ["hyperliquid", "polymarket"]
+              },
+              "id": {
+                "type": "string",
+                "description": "Source-specific identifier; Hyperliquid synthetic assets are prefixed with 'xyz:'",
+                "examples": ["BTC", "xyz:NVDA", "30615"]
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+}

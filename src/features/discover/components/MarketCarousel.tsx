@@ -9,7 +9,7 @@ import { event } from '@/analytics/event';
 import ButtonPressAnimation from '@/components/animations/ButtonPressAnimation';
 import ShimmerAnimation from '@/components/animations/ShimmerAnimation';
 import { Box, Text, TextIcon, useBackgroundColor, useColorMode } from '@/design-system';
-import { trackPlacementInteraction } from '@/features/placements/engagement/trackInteraction';
+import { PLACEMENT_SURFACES } from '@/features/placements/constants';
 import { type Placement, type PlacementId, type PlacementItem, type PlacementItemAnalyticsMetadata } from '@/features/placements/types';
 import { opacity } from '@/framework/ui/utils/opacity';
 import * as i18n from '@/languages';
@@ -57,7 +57,7 @@ export function MarketCarousel<T extends PlacementItem>({
   skeletonBorderRadius = 24,
   title,
 }: MarketCarouselProps<T>) {
-  const placementScreen = placement?.screen;
+  const placementScreen = placement?.surfaces.includes(PLACEMENT_SURFACES.DISCOVER) ? PLACEMENT_SURFACES.DISCOVER : placement?.surfaces[0];
   const itemWidths = useMemo(() => (getItemWidth ? data.map(item => getItemWidth(item)) : undefined), [data, getItemWidth]);
 
   const snapToOffsets = useMemo(() => {
@@ -169,7 +169,7 @@ function trackPlacementCardPress({
   item: PlacementItem;
   metadata: PlacementItemAnalyticsMetadata | undefined;
   placementId: PlacementId;
-  placementScreen: Placement['screen'] | undefined;
+  placementScreen: Placement['surfaces'][number] | undefined;
   title: string;
 }) {
   analytics.track(event.discoverPlacementCardPressed, {
@@ -178,24 +178,22 @@ function trackPlacementCardPress({
     placementTitle: title,
     itemOrder: item.order,
     marketId: metadata?.marketId ?? item.ref.id,
-    marketName: metadata?.marketName ?? readPlacementItemName(item),
-    marketSlug: metadata?.marketSlug ?? readPlacementItemStringMetadata(item, 'slug'),
-    marketSymbol: metadata?.marketSymbol ?? readPlacementItemStringMetadata(item, 'symbol'),
+    marketName: metadata?.marketName,
+    marketSlug: metadata?.marketSlug,
+    marketSymbol: metadata?.marketSymbol,
     marketType: item.ref.source,
   });
 }
 
-function readPlacementItemName(item: PlacementItem): string | undefined {
-  return (
-    readPlacementItemStringMetadata(item, 'name') ??
-    readPlacementItemStringMetadata(item, 'title') ??
-    readPlacementItemStringMetadata(item, 'symbol')
-  );
-}
+function trackPlacementInteraction({ interactionType, placement }: { interactionType: 'carousel_scroll'; placement: Placement }) {
+  const screen = placement.surfaces.includes(PLACEMENT_SURFACES.DISCOVER) ? PLACEMENT_SURFACES.DISCOVER : placement.surfaces[0];
 
-function readPlacementItemStringMetadata(item: PlacementItem, key: string): string | undefined {
-  const value = item.metadata?.[key];
-  return typeof value === 'string' && value.length > 0 ? value : undefined;
+  analytics.track(event.placementInteraction, {
+    id: placement.id,
+    interactionType,
+    screen,
+    version: placement.version,
+  });
 }
 
 function CarouselSkeleton({ borderRadius, itemHeight, itemWidth }: { borderRadius: number; itemHeight: number; itemWidth: number }) {

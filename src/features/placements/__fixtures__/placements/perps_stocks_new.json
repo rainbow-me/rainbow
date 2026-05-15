@@ -1,0 +1,12 @@
+{
+  "id": "perps_stocks_new",
+  "surfaces": ["discover"],
+  "enabled": true,
+  "version": 2,
+  "updatedAt": "2026-05-15T15:59:08.940Z",
+  "items": [
+    { "order": 0, "ref": { "source": "hyperliquid", "type": "perp", "id": "xyz:SKHX" } },
+    { "order": 1, "ref": { "source": "hyperliquid", "type": "perp", "id": "xyz:CRWV" } },
+    { "order": 2, "ref": { "source": "hyperliquid", "type": "perp", "id": "xyz:RKLB" } }
+  ]
+}

@@ -1,0 +1,11 @@
+{
+  "id": "perps_commodities",
+  "surfaces": ["discover"],
+  "enabled": true,
+  "version": 2,
+  "updatedAt": "2026-05-15T15:59:08.920Z",
+  "items": [
+    { "order": 0, "ref": { "source": "hyperliquid", "type": "perp", "id": "xyz:CL" } },
+    { "order": 1, "ref": { "source": "hyperliquid", "type": "perp", "id": "PAXG" } }
+  ]
+}

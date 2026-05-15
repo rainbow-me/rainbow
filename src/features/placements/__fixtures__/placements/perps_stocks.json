@@ -1,0 +1,17 @@
+{
+  "id": "perps_stocks",
+  "surfaces": ["discover"],
+  "enabled": true,
+  "version": 2,
+  "updatedAt": "2026-05-15T15:59:08.930Z",
+  "items": [
+    { "order": 0, "ref": { "source": "hyperliquid", "type": "perp", "id": "xyz:NVDA" } },
+    { "order": 1, "ref": { "source": "hyperliquid", "type": "perp", "id": "xyz:COIN" } },
+    { "order": 2, "ref": { "source": "hyperliquid", "type": "perp", "id": "xyz:MSTR" } },
+    { "order": 3, "ref": { "source": "hyperliquid", "type": "perp", "id": "xyz:TSM" } },
+    { "order": 4, "ref": { "source": "hyperliquid", "type": "perp", "id": "xyz:RKLB" } },
+    { "order": 5, "ref": { "source": "hyperliquid", "type": "perp", "id": "xyz:CBRS" } },
+    { "order": 6, "ref": { "source": "hyperliquid", "type": "perp", "id": "xyz:SKHX" } },
+    { "order": 7, "ref": { "source": "hyperliquid", "type": "perp", "id": "xyz:CRWV" } }
+  ]
+}
