@@ -9,26 +9,37 @@ import {
   PerpMarketCardSkeleton,
 } from '@/features/discover/components/perpMarketCards/PerpMarketCard';
 import { navigateToPerpsSearch } from '@/features/perps/utils/navigateToPerps';
-import { PLACEMENT_IDS } from '@/features/placements/constants';
-import { usePerpsPlacementStore, type PerpMarketPlacementItem } from '@/features/placements/stores/derived/perpsPlacementStore';
-import * as i18n from '@/languages';
+import { type PerpMarketPlacementItem } from '@/features/placements/stores/derived/perpsPlacementStore';
+import { type PlacementStoreResult } from '@/features/placements/stores/factories/createPlacementStore';
+import { type PlacementId } from '@/features/placements/types';
 
-export function PerpMarketsCarousel() {
-  const { isLoading, items, placement } = usePerpsPlacementStore();
+type PerpMarketsCarouselProps = PlacementStoreResult<PerpMarketPlacementItem> & {
+  placementId: PlacementId;
+  title: string;
+  onPressSeeAll?: () => void;
+};
 
+export function PerpMarketsCarousel({
+  isLoading,
+  items,
+  placement,
+  placementId,
+  title,
+  onPressSeeAll = navigateToPerpsSearch,
+}: PerpMarketsCarouselProps) {
   return (
     <MarketCarousel
-      title={i18n.t(i18n.l.discover.placements.perps_title)}
-      placementId={PLACEMENT_IDS.PERPS}
-      placement={placement}
+      data={items}
+      getItemWidth={getPerpMarketItemWidth}
       itemHeight={PERP_MARKET_CARD_HEIGHT}
       itemWidth={PERP_MARKET_CARD_SLOT_WIDTH_WITH_CHART}
-      getItemWidth={getPerpMarketItemWidth}
-      data={items}
-      onPressSeeAll={navigateToPerpsSearch}
+      loading={isLoading}
+      onPressSeeAll={onPressSeeAll}
+      placement={placement}
+      placementId={placementId}
       renderItem={renderPerpCard}
       renderSkeleton={PerpMarketCardSkeleton}
-      loading={isLoading}
+      title={title}
     />
   );
 }

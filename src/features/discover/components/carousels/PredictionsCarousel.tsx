@@ -4,9 +4,9 @@ import { StyleSheet } from 'react-native';
 import { CarouselCardSkeleton } from '@/features/discover/components/carousel/CarouselCardSkeleton';
 import { MarketCarousel } from '@/features/discover/components/carousel/MarketCarousel';
 import { usePlacementCardTrackPress } from '@/features/discover/components/carousel/placementCardContext';
-import { PLACEMENT_IDS } from '@/features/placements/constants';
-import { usePredictionsPlacementStore, type PredictionPlacementItem } from '@/features/placements/stores/derived/predictionsPlacementStore';
-import { type PlacementItemAnalyticsMetadata } from '@/features/placements/types';
+import { type PredictionPlacementItem } from '@/features/placements/stores/derived/predictionsPlacementStore';
+import { type PlacementStoreResult } from '@/features/placements/stores/factories/createPlacementStore';
+import { type PlacementId, type PlacementItemAnalyticsMetadata } from '@/features/placements/types';
 import {
   HEIGHT as POLYMARKET_EVENTS_LIST_ITEM_HEIGHT,
   PolymarketEventsListItem,
@@ -14,28 +14,38 @@ import {
 } from '@/features/polymarket/components/polymarket-events-list/PolymarketEventsListItem';
 import { type PolymarketEvent } from '@/features/polymarket/types/polymarket-event';
 import { navigateToPolymarket, navigateToPolymarketEvent } from '@/features/polymarket/utils/navigateToPolymarket';
-import * as i18n from '@/languages';
 import { DEVICE_WIDTH } from '@/utils/deviceUtils';
 
 const ITEM_GAP = 8;
 const HORIZONTAL_PADDING = 20;
 const PREDICTION_TILE_WIDTH = (DEVICE_WIDTH - HORIZONTAL_PADDING * 2 - ITEM_GAP) / 2;
 
-export function PredictionsCarousel() {
-  const { isLoading, items, placement } = usePredictionsPlacementStore();
+type PredictionsCarouselProps = PlacementStoreResult<PredictionPlacementItem> & {
+  placementId: PlacementId;
+  title: string;
+  onPressSeeAll?: () => void;
+};
 
+export function PredictionsCarousel({
+  isLoading,
+  items,
+  placement,
+  placementId,
+  title,
+  onPressSeeAll = navigateToPolymarket,
+}: PredictionsCarouselProps) {
   return (
     <MarketCarousel
       data={items}
       itemHeight={POLYMARKET_EVENTS_LIST_ITEM_HEIGHT}
       itemWidth={PREDICTION_TILE_WIDTH}
       loading={isLoading}
-      onPressSeeAll={navigateToPolymarket}
+      onPressSeeAll={onPressSeeAll}
       placement={placement}
-      placementId={PLACEMENT_IDS.PREDICTIONS}
+      placementId={placementId}
       renderItem={renderPredictionTile}
       renderSkeleton={renderPredictionSkeleton}
-      title={i18n.t(i18n.l.discover.placements.predictions_title)}
+      title={title}
     />
   );
 }

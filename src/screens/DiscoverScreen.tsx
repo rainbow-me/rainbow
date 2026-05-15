@@ -1,5 +1,5 @@
-import React, { memo, useEffect, type ReactElement } from 'react';
-import { Keyboard, Platform, type RefreshControlProps } from 'react-native';
+import React, { memo, useEffect } from 'react';
+import { Keyboard } from 'react-native';
 
 import { useIsFocused } from '@react-navigation/native';
 import { useSharedValue } from 'react-native-reanimated';
@@ -14,8 +14,6 @@ import { Box, useColorMode } from '@/design-system';
 import { getValueForColorMode } from '@/design-system/color/palettes';
 import { DISCOVER_HEADER_HEIGHT, DiscoverHeader } from '@/features/discover/components/DiscoverHeader';
 import { DISCOVER_SCREEN_BACKGROUND_COLOR } from '@/features/discover/constants';
-
-import { PullToRefresh } from './Airdrops/AirdropsSheet';
 
 export const DiscoverScreen = () => {
   return (
@@ -39,7 +37,7 @@ const Content = () => {
       <Box paddingTop={{ custom: topInset }}>{isSearching ? <DiscoverSearchBar /> : <DiscoverHeader />}</Box>
 
       <Box style={{ flex: 1 }} testID="discover-sheet">
-        <DiscoverScreenContent renderRefreshControl={Platform.OS === 'ios' ? renderPullToRefresh : undefined} scrollOffset={scrollOffset} />
+        <DiscoverScreenContent scrollOffset={scrollOffset} />
       </Box>
 
       {!isSearching ? <ScrollHeaderFade color={backgroundColor} scrollOffset={scrollOffset} topInset={headerFadeTopInset} /> : null}
@@ -60,7 +58,3 @@ const KeyboardDismissHandler = memo(function KeyboardDismissHandler() {
 
   return null;
 });
-
-function renderPullToRefresh(): ReactElement<RefreshControlProps> {
-  return <PullToRefresh />;
-}

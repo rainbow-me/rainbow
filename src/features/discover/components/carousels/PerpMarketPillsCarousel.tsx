@@ -8,15 +8,26 @@ import {
   PerpMarketPillSkeleton,
 } from '@/features/discover/components/perpMarketCards/PerpMarketPill';
 import { navigateToPerps } from '@/features/perps/utils/navigateToPerps';
-import { PLACEMENT_IDS } from '@/features/placements/constants';
-import { usePerpsPlacementStore, type PerpMarketPlacementItem } from '@/features/placements/stores/derived/perpsPlacementStore';
-import * as i18n from '@/languages';
+import { type PerpMarketPlacementItem } from '@/features/placements/stores/derived/perpsPlacementStore';
+import { type PlacementStoreResult } from '@/features/placements/stores/factories/createPlacementStore';
+import { type PlacementId } from '@/features/placements/types';
 
 const PERP_MARKET_PILL_INITIAL_SLOT_WIDTH = 220;
 
-export function PerpMarketPillsCarousel() {
-  const { isLoading, items, placement } = usePerpsPlacementStore();
+type PerpMarketPillsCarouselProps = PlacementStoreResult<PerpMarketPlacementItem> & {
+  placementId: PlacementId;
+  title: string;
+  onPressSeeAll?: () => void;
+};
 
+export function PerpMarketPillsCarousel({
+  isLoading,
+  items,
+  placement,
+  placementId,
+  title,
+  onPressSeeAll = navigateToPerps,
+}: PerpMarketPillsCarouselProps) {
   return (
     <MarketCarousel
       data={items}
@@ -24,12 +35,12 @@ export function PerpMarketPillsCarousel() {
       itemHeight={PERP_MARKET_PILL_HEIGHT}
       itemWidth={PERP_MARKET_PILL_INITIAL_SLOT_WIDTH}
       loading={isLoading}
-      onPressSeeAll={navigateToPerps}
+      onPressSeeAll={onPressSeeAll}
       placement={placement}
-      placementId={PLACEMENT_IDS.PERPS}
+      placementId={placementId}
       renderItem={renderPerpPill}
       renderSkeleton={PerpMarketPillSkeleton}
-      title={i18n.t(i18n.l.discover.placements.perps_title)}
+      title={title}
     />
   );
 }

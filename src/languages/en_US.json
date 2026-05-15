@@ -538,7 +538,8 @@
         "perps_title": "Perps",
         "predictions_title": "Predictions",
         "indices_title": "Indices",
-        "commodities_title": "Commodities"
+        "commodities_title": "Commodities",
+        "majors_title": "Majors"
       },
       "strategies": {
         "strategies_title": "Strategies",
