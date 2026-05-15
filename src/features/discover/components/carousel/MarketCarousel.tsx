@@ -1,4 +1,4 @@
-import React, { useCallback, useMemo, type ReactElement } from 'react';
+import React, { Fragment, useCallback, useMemo, type ReactNode } from 'react';
 import { StyleSheet, View } from 'react-native';
 
 import { FlatList } from 'react-native-gesture-handler';
@@ -6,58 +6,48 @@ import { useDebouncedCallback } from 'use-debounce';
 
 import { analytics } from '@/analytics';
 import { event } from '@/analytics/event';
-import ButtonPressAnimation from '@/components/animations/ButtonPressAnimation';
-import ShimmerAnimation from '@/components/animations/ShimmerAnimation';
-import { Box, Text, TextIcon, useBackgroundColor, useColorMode } from '@/design-system';
+import { Box } from '@/design-system';
+import { CarouselHeader } from '@/features/discover/components/carousel/CarouselHeader';
+import { PlacementCardProvider, type TrackPlacementCardPress } from '@/features/discover/components/carousel/placementCardContext';
+import { SCREEN_HORIZONTAL_PADDING } from '@/features/discover/constants';
 import { PLACEMENT_SURFACES } from '@/features/placements/constants';
 import { type Placement, type PlacementId, type PlacementItem, type PlacementItemAnalyticsMetadata } from '@/features/placements/types';
-import { opacity } from '@/framework/ui/utils/opacity';
-import * as i18n from '@/languages';
-import { DEVICE_WIDTH } from '@/utils/deviceUtils';
 import { time } from '@/utils/time';
 
-const CAROUSEL_HORIZONTAL_PADDING = 20;
 const CARD_GAP = 8;
-const PEEK_WIDTH = 32;
 const SKELETON_COUNT = 5;
 const SCROLL_DEBOUNCE_MS = time.seconds(30);
 const SCROLL_DEBOUNCE_OPTIONS = Object.freeze({ leading: false, trailing: true });
 
-export const CARD_WIDTH = DEVICE_WIDTH - CAROUSEL_HORIZONTAL_PADDING * 2 - PEEK_WIDTH;
-export const CARD_HEIGHT = 100;
-
-type TrackPlacementCardPress = (metadata?: PlacementItemAnalyticsMetadata) => void;
-
 type MarketCarouselProps<T extends PlacementItem> = {
   data: T[];
-  itemHeight?: number;
-  itemWidth?: number;
   getItemWidth?: (item: T) => number;
-  keyExtractor: (item: T) => string;
+  itemHeight: number;
+  itemWidth: number;
   loading?: boolean;
-  onPressSeeAll: () => void;
-  placement?: Placement;
+  onPressSeeAll?: () => void;
+  placement: Placement | undefined;
   placementId: PlacementId;
-  renderItem: (item: T, trackPress: TrackPlacementCardPress) => ReactElement | null;
-  skeletonBorderRadius?: number;
+  renderItem: (item: T) => ReactNode;
+  renderSkeleton: () => ReactNode;
   title: string;
 };
 
 export function MarketCarousel<T extends PlacementItem>({
   data,
   getItemWidth,
-  itemHeight = CARD_HEIGHT,
-  itemWidth = CARD_WIDTH,
-  keyExtractor,
+  itemHeight,
+  itemWidth,
   loading,
   onPressSeeAll,
   placement,
   placementId,
   renderItem,
-  skeletonBorderRadius = 24,
+  renderSkeleton,
   title,
 }: MarketCarouselProps<T>) {
   const placementScreen = placement?.surfaces.includes(PLACEMENT_SURFACES.DISCOVER) ? PLACEMENT_SURFACES.DISCOVER : placement?.surfaces[0];
+
   const itemWidths = useMemo(() => (getItemWidth ? data.map(item => getItemWidth(item)) : undefined), [data, getItemWidth]);
 
   const snapToOffsets = useMemo(() => {
@@ -84,7 +74,7 @@ export function MarketCarousel<T extends PlacementItem>({
 
       return (
         <View style={{ height: itemHeight, overflow: 'visible', width: itemWidths?.[index] ?? itemWidth }}>
-          {renderItem(item, trackPress)}
+          <PlacementCardProvider value={trackPress}>{renderItem(item)}</PlacementCardProvider>
         </View>
       );
     },
@@ -97,7 +87,7 @@ export function MarketCarousel<T extends PlacementItem>({
       placementScreen,
       placementTitle: title,
     });
-    onPressSeeAll();
+    onPressSeeAll?.();
   }, [onPressSeeAll, placementId, placementScreen, title]);
 
   const onScrollSettle = useDebouncedCallback(
@@ -112,28 +102,13 @@ export function MarketCarousel<T extends PlacementItem>({
   if (!loading && data.length === 0) return null;
 
   return (
-    <Box gap={12}>
-      <Box flexDirection="row" alignItems="center" justifyContent="space-between" paddingHorizontal="4px">
-        <Text size="22pt" weight="heavy" color="label">
-          {title}
-        </Text>
-
-        <ButtonPressAnimation onPress={handleSeeAllPress} scaleTo={0.9}>
-          <Box flexDirection="row" alignItems="center" gap={4} paddingVertical="8px">
-            <Text size="15pt" weight="heavy" color="labelQuaternary">
-              {i18n.t(i18n.l.discover.placements.see_all)}
-            </Text>
-            <TextIcon size="icon 11px" weight="heavy" color="labelQuaternary">
-              {'􀄯'}
-            </TextIcon>
-          </Box>
-        </ButtonPressAnimation>
-      </Box>
+    <Box gap={20}>
+      <CarouselHeader title={title} onPress={onPressSeeAll ? handleSeeAllPress : undefined} />
 
       {loading ? (
         <View style={styles.skeletonRow}>
-          {Array.from({ length: SKELETON_COUNT }).map((_, index) => (
-            <CarouselSkeleton key={index} borderRadius={skeletonBorderRadius} itemHeight={itemHeight} itemWidth={itemWidth} />
+          {Array.from({ length: SKELETON_COUNT }, (_, index) => (
+            <Fragment key={index}>{renderSkeleton()}</Fragment>
           ))}
         </View>
       ) : (
@@ -143,13 +118,12 @@ export function MarketCarousel<T extends PlacementItem>({
           disallowInterruption
           showsHorizontalScrollIndicator={false}
           contentContainerStyle={styles.contentContainer}
-          style={styles.flatList}
           decelerationRate="fast"
           snapToInterval={snapToOffsets ? undefined : itemWidth + CARD_GAP}
           snapToOffsets={snapToOffsets}
           snapToAlignment="start"
           renderItem={renderCarouselItem}
-          keyExtractor={keyExtractor}
+          keyExtractor={defaultPlacementItemKey}
           onMomentumScrollEnd={onScrollSettle}
           initialNumToRender={6}
           windowSize={8}
@@ -157,6 +131,10 @@ export function MarketCarousel<T extends PlacementItem>({
       )}
     </Box>
   );
+}
+
+function defaultPlacementItemKey(item: PlacementItem): string {
+  return `${item.ref.source}:${item.ref.id}`;
 }
 
 function trackPlacementCardPress({
@@ -196,35 +174,14 @@ function trackPlacementInteraction({ interactionType, placement }: { interaction
   });
 }
 
-function CarouselSkeleton({ borderRadius, itemHeight, itemWidth }: { borderRadius: number; itemHeight: number; itemWidth: number }) {
-  const { isDarkMode } = useColorMode();
-  const fillQuaternary = useBackgroundColor('fillQuaternary');
-  const fillSecondary = useBackgroundColor('fillSecondary');
-  const shimmerColor = opacity(fillSecondary, 0.1);
-  const skeletonColor = isDarkMode ? fillQuaternary : fillSecondary;
-
-  return (
-    <View style={[styles.skeleton, { backgroundColor: skeletonColor, borderRadius, height: itemHeight, width: itemWidth }]}>
-      <ShimmerAnimation color={shimmerColor} gradientColor={shimmerColor} />
-    </View>
-  );
-}
-
 const styles = StyleSheet.create({
   contentContainer: {
     gap: CARD_GAP,
-    paddingHorizontal: CAROUSEL_HORIZONTAL_PADDING,
-  },
-  flatList: {
-    marginHorizontal: -CAROUSEL_HORIZONTAL_PADDING,
-    overflow: 'visible',
-  },
-  skeleton: {
-    overflow: 'hidden',
+    paddingHorizontal: SCREEN_HORIZONTAL_PADDING,
   },
   skeletonRow: {
     flexDirection: 'row',
     gap: CARD_GAP,
-    paddingHorizontal: 0,
+    paddingHorizontal: SCREEN_HORIZONTAL_PADDING,
   },
 });

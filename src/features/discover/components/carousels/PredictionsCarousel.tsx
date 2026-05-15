@@ -1,6 +1,9 @@
-import React, { useCallback, type ReactElement } from 'react';
+import React, { useCallback } from 'react';
 import { StyleSheet } from 'react-native';
 
+import { CarouselCardSkeleton } from '@/features/discover/components/carousel/CarouselCardSkeleton';
+import { MarketCarousel } from '@/features/discover/components/carousel/MarketCarousel';
+import { usePlacementCardTrackPress } from '@/features/discover/components/carousel/placementCardContext';
 import { PLACEMENT_IDS } from '@/features/placements/constants';
 import { usePredictionsPlacementStore, type PredictionPlacementItem } from '@/features/placements/stores/derived/predictionsPlacementStore';
 import { type PlacementItemAnalyticsMetadata } from '@/features/placements/types';
@@ -14,54 +17,52 @@ import { navigateToPolymarket, navigateToPolymarketEvent } from '@/features/poly
 import * as i18n from '@/languages';
 import { DEVICE_WIDTH } from '@/utils/deviceUtils';
 
-import { MarketCarousel } from './MarketCarousel';
-
-const PLACEMENT_ID = PLACEMENT_IDS.PREDICTIONS;
-
 const ITEM_GAP = 8;
 const HORIZONTAL_PADDING = 20;
 const PREDICTION_TILE_WIDTH = (DEVICE_WIDTH - HORIZONTAL_PADDING * 2 - ITEM_GAP) / 2;
 
-export function PredictionsMarketCarousel() {
+export function PredictionsCarousel() {
   const { isLoading, items, placement } = usePredictionsPlacementStore();
-
-  const renderItem = useCallback(
-    (item: PredictionPlacementItem, trackPress: (metadata?: PlacementItemAnalyticsMetadata) => void): ReactElement => {
-      const event = item.event;
-      return (
-        <PolymarketEventsListItem
-          event={event}
-          onPress={() => {
-            trackPress(readPredictionAnalyticsMetadata(event));
-            navigateToPolymarketEvent({ event, eventId: event.id });
-          }}
-          shouldActivateOnStart={false}
-          style={styles.predictionTile}
-        />
-      );
-    },
-    []
-  );
 
   return (
     <MarketCarousel
       data={items}
       itemHeight={POLYMARKET_EVENTS_LIST_ITEM_HEIGHT}
       itemWidth={PREDICTION_TILE_WIDTH}
-      keyExtractor={getPlacementItemKey}
       loading={isLoading}
       onPressSeeAll={navigateToPolymarket}
       placement={placement}
-      placementId={PLACEMENT_ID}
-      renderItem={renderItem}
-      skeletonBorderRadius={PREDICTION_CARD_BORDER_RADIUS}
+      placementId={PLACEMENT_IDS.PREDICTIONS}
+      renderItem={renderPredictionTile}
+      renderSkeleton={renderPredictionSkeleton}
       title={i18n.t(i18n.l.discover.placements.predictions_title)}
     />
   );
 }
 
-function getPlacementItemKey(item: PredictionPlacementItem): string {
-  return `${item.ref.source}:${item.ref.id}`;
+function renderPredictionTile(item: PredictionPlacementItem) {
+  return <PredictionTile event={item.event} />;
+}
+
+function renderPredictionSkeleton() {
+  return (
+    <CarouselCardSkeleton
+      borderRadius={PREDICTION_CARD_BORDER_RADIUS}
+      height={POLYMARKET_EVENTS_LIST_ITEM_HEIGHT}
+      width={PREDICTION_TILE_WIDTH}
+    />
+  );
+}
+
+function PredictionTile({ event }: { event: PolymarketEvent }) {
+  const trackPress = usePlacementCardTrackPress();
+
+  const onPress = useCallback(() => {
+    trackPress?.(readPredictionAnalyticsMetadata(event));
+    navigateToPolymarketEvent({ event, eventId: event.id });
+  }, [event, trackPress]);
+
+  return <PolymarketEventsListItem event={event} onPress={onPress} shouldActivateOnStart={false} style={styles.predictionTile} />;
 }
 
 function readPredictionAnalyticsMetadata(eventData: PolymarketEvent): PlacementItemAnalyticsMetadata {

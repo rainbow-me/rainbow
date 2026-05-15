@@ -9,8 +9,8 @@ import { avoidScamsCard, backupsCard } from '@/components/cards/utils/constants'
 import { TrendingTokens } from '@/components/Discover/TrendingTokens';
 import { Box, Inline, Inset, Stack, Text } from '@/design-system';
 import { IS_TEST } from '@/env';
-import { PerpMarketCarousel } from '@/features/discover/components/PerpMarketCarousel';
-import { PredictionsMarketCarousel } from '@/features/discover/components/PredictionsMarketCarousel';
+import { PerpMarketsCarousel } from '@/features/discover/components/carousels/PerpMarketsCarousel';
+import { PredictionsCarousel } from '@/features/discover/components/carousels/PredictionsCarousel';
 import { ENSCreateProfileCard } from '@/features/ens/components/ENSCreateProfileCard';
 import walletTypes from '@/helpers/walletTypes';
 import * as i18n from '@/languages';
@@ -23,8 +23,8 @@ export function DiscoverHome() {
   return (
     <Inset top="12px" bottom={{ custom: 200 }} horizontal={{ custom: 20 }}>
       <Box gap={32}>
-        <PerpMarketCarousel />
-        <PredictionsMarketCarousel />
+        <PerpMarketsCarousel />
+        <PredictionsCarousel />
         <TrendingTokensSection />
         <Box gap={20}>
           <MintsSection />

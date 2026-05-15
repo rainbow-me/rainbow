@@ -13,7 +13,10 @@ import { getValueForColorMode, type ColorMode, type ContextualColorValue } from 
 import { Border } from '@/design-system/components/Border/Border';
 import { COMPACT_LINE_CHART_HORIZONTAL_OVERDRAW } from '@/features/charts/line/compact/CompactLineChartRenderer';
 import { SparklineChart } from '@/features/charts/line/components/SparklineChart';
-import { DOWN_ARROW, HYPERLIQUID_COLORS, UP_ARROW } from '@/features/perps/constants';
+import { CarouselCardSkeleton } from '@/features/discover/components/carousel/CarouselCardSkeleton';
+import { usePlacementCardTrackPress } from '@/features/discover/components/carousel/placementCardContext';
+import { buildPerpMarketBaseDisplay, type PriceChangeColors } from '@/features/discover/components/perpMarketCards/perpMarketCardChrome';
+import { DOWN_ARROW, UP_ARROW } from '@/features/perps/constants';
 import { useHyperliquidLineChartsStore } from '@/features/perps/stores/hyperliquidLineChartsStore';
 import { type PerpMarketWithMetadata } from '@/features/perps/types';
 import {
@@ -22,7 +25,6 @@ import {
   getHyperliquidTokenId,
   navigateToPerpDetailScreen,
 } from '@/features/perps/utils';
-import { type PlacementItemAnalyticsMetadata } from '@/features/placements/types';
 import { opacity } from '@/framework/ui/utils/opacity';
 import { type TokenData } from '@/state/liveTokens/liveTokensStore';
 import { THICK_BORDER_WIDTH, THICKER_BORDER_WIDTH } from '@/styles/constants';
@@ -33,11 +35,8 @@ import { getHighContrastTextColorWorklet } from '@/worklets/colors';
 
 export type PerpMarketCardProps = {
   market: PerpMarketWithMetadata;
-  onPressTracked?: (metadata?: PlacementItemAnalyticsMetadata) => void;
   style?: StyleProp<ViewStyle>;
 };
-
-type PriceChangeColors = Readonly<{ negative: string; positive: string }>;
 
 type CardColors = {
   backgroundColor: string;
@@ -68,8 +67,6 @@ const CARD_LAYOUT = { borderRadius: 24, borderWidth: THICKER_BORDER_WIDTH, gap: 
 const PRICE_CHANGE_TEXT_STYLE = { size: '15pt', weight: 'bold' } satisfies MeasureTextProps;
 const SYMBOL_TEXT_STYLE = { size: '17pt', weight: 'bold' } satisfies MeasureTextProps;
 
-export const PERP_MARKET_CARD_BORDER_RADIUS = CARD_LAYOUT.borderRadius;
-
 const CARD_WIDTH_BASE =
   CARD_LAYOUT.paddingLeft +
   CARD_LAYOUT.paddingRight +
@@ -81,11 +78,6 @@ const CARD_WIDTH_BASE =
 const PERP_MARKET_CARD_TEXT_MIN_WIDTH = PERP_MARKET_CARD_SLOT_WIDTH_WITH_CHART - CARD_WIDTH_BASE;
 
 // ============ Colors ========================================================= //
-
-const PRICE_CHANGE_COLORS = {
-  dark: { positive: '#3ECF5B', negative: '#FF584D' },
-  light: { positive: '#1DB847', negative: '#FA423C' },
-} satisfies ContextualColorValue<PriceChangeColors>;
 
 const CARD_COLORS = {
   dark: {
@@ -106,18 +98,19 @@ const CARD_COLORS = {
 
 // ============ Component ====================================================== //
 
-export const PerpMarketCard = memo(function PerpMarketCard({ market, onPressTracked, style }: PerpMarketCardProps) {
+export const PerpMarketCard = memo(function PerpMarketCard({ market, style }: PerpMarketCardProps) {
   const { colorMode, isDarkMode } = useColorMode();
   const symbol = market.symbol;
+  const trackPress = usePlacementCardTrackPress();
 
   const onPress = useCallback(() => {
     navigateToPerpDetailScreen(symbol);
-    onPressTracked?.({
+    trackPress?.({
       marketId: symbol,
       marketName: market.metadata?.name ?? market.baseSymbol,
       marketSymbol: market.baseSymbol,
     });
-  }, [market.baseSymbol, market.metadata?.name, onPressTracked, symbol]);
+  }, [market.baseSymbol, market.metadata?.name, trackPress, symbol]);
 
   const { accentColor, badgeTextColor, cardColors, chartColor, iconUrl, priceChangeColors } = useMemo(
     () => buildPerpMarketCardDisplay(market, colorMode),
@@ -262,6 +255,18 @@ const PerpMarketPriceChange = memo(function PerpMarketPriceChange({
   );
 });
 
+// ============ Skeleton ======================================================= //
+
+export function PerpMarketCardSkeleton() {
+  return (
+    <CarouselCardSkeleton
+      borderRadius={CARD_LAYOUT.borderRadius}
+      height={PERP_MARKET_CARD_HEIGHT}
+      width={PERP_MARKET_CARD_SLOT_WIDTH_WITH_CHART}
+    />
+  );
+}
+
 // ============ Display Helpers =============================================== //
 
 /**
@@ -290,17 +295,13 @@ function getStablePercentChangeWidth(percentChange: number): number {
 }
 
 function buildPerpMarketCardDisplay(market: PerpMarketWithMetadata, colorMode: ColorMode) {
-  const accentColor = market.metadata?.colors?.color || market.metadata?.colors?.fallbackColor || HYPERLIQUID_COLORS.green;
-  const badgeTextColor = getHighContrastTextColorWorklet(accentColor, 4);
-  const cardColors = getValueForColorMode(CARD_COLORS, colorMode);
-  const priceChangeColors = getValueForColorMode(PRICE_CHANGE_COLORS, colorMode);
-
+  const { accentColor, iconUrl, priceChangeColors } = buildPerpMarketBaseDisplay(market, colorMode);
   return {
     accentColor,
-    badgeTextColor,
-    cardColors,
+    badgeTextColor: getHighContrastTextColorWorklet(accentColor, 4),
+    cardColors: getValueForColorMode(CARD_COLORS, colorMode),
     chartColor: Number(market.priceChange['24h']) >= 0 ? priceChangeColors.positive : priceChangeColors.negative,
-    iconUrl: market.metadata?.iconUrl,
+    iconUrl,
     priceChangeColors,
   };
 }
