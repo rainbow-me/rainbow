@@ -1,0 +1,21 @@
+{
+  "id": "perps",
+  "surfaces": ["discover"],
+  "enabled": true,
+  "version": 2,
+  "updatedAt": "2026-05-15T15:59:08.862Z",
+  "items": [
+    { "order": 0, "ref": { "source": "hyperliquid", "type": "perp", "id": "BTC" } },
+    { "order": 1, "ref": { "source": "hyperliquid", "type": "perp", "id": "ETH" } },
+    { "order": 2, "ref": { "source": "hyperliquid", "type": "perp", "id": "SOL" } },
+    { "order": 3, "ref": { "source": "hyperliquid", "type": "perp", "id": "HYPE" } },
+    { "order": 4, "ref": { "source": "hyperliquid", "type": "perp", "id": "XRP" } },
+    { "order": 5, "ref": { "source": "hyperliquid", "type": "perp", "id": "DOGE" } },
+    { "order": 6, "ref": { "source": "hyperliquid", "type": "perp", "id": "LINK" } },
+    { "order": 7, "ref": { "source": "hyperliquid", "type": "perp", "id": "SUI" } },
+    { "order": 8, "ref": { "source": "hyperliquid", "type": "perp", "id": "AVAX" } },
+    { "order": 9, "ref": { "source": "hyperliquid", "type": "perp", "id": "ONDO" } },
+    { "order": 10, "ref": { "source": "hyperliquid", "type": "perp", "id": "AAVE" } },
+    { "order": 11, "ref": { "source": "hyperliquid", "type": "perp", "id": "TAO" } }
+  ]
+}

@@ -1,0 +1,143 @@
+{
+  "id": "predictions_sports",
+  "surfaces": ["discover"],
+  "enabled": true,
+  "version": 2,
+  "updatedAt": "2026-05-15T15:59:08.980Z",
+  "categories": [
+    {
+      "order": 0,
+      "category": "sport_nba",
+      "enabled": true
+    },
+    {
+      "order": 1,
+      "category": "sport_nhl",
+      "enabled": false
+    },
+    {
+      "order": 2,
+      "category": "sport_mlb",
+      "enabled": false
+    }
+  ],
+  "items": [
+    {
+      "order": 0,
+      "ref": {
+        "source": "polymarket",
+        "type": "prediction",
+        "category": "sport_nba",
+        "id": "27830"
+      }
+    },
+    {
+      "order": 1,
+      "ref": {
+        "source": "polymarket",
+        "type": "prediction",
+        "category": "sport_nba",
+        "id": "32754"
+      }
+    },
+    {
+      "order": 2,
+      "ref": {
+        "source": "polymarket",
+        "type": "prediction",
+        "category": "sport_nba",
+        "id": "448560"
+      }
+    },
+    {
+      "order": 3,
+      "ref": {
+        "source": "polymarket",
+        "type": "prediction",
+        "category": "sport_nba",
+        "id": "438546"
+      }
+    },
+    {
+      "order": 4,
+      "ref": {
+        "source": "polymarket",
+        "type": "prediction",
+        "category": "sport_nba",
+        "id": "32756"
+      }
+    },
+    {
+      "order": 5,
+      "ref": {
+        "source": "polymarket",
+        "type": "prediction",
+        "category": "sport_nba",
+        "id": "32755"
+      }
+    },
+    {
+      "order": 6,
+      "ref": {
+        "source": "polymarket",
+        "type": "prediction",
+        "category": "sport_nhl",
+        "id": "27829"
+      }
+    },
+    {
+      "order": 7,
+      "ref": {
+        "source": "polymarket",
+        "type": "prediction",
+        "category": "sport_nhl",
+        "id": "448272"
+      }
+    },
+    {
+      "order": 8,
+      "ref": {
+        "source": "polymarket",
+        "type": "prediction",
+        "category": "sport_nhl",
+        "id": "441234"
+      }
+    },
+    {
+      "order": 9,
+      "ref": {
+        "source": "polymarket",
+        "type": "prediction",
+        "category": "sport_nhl",
+        "id": "57123"
+      }
+    },
+    {
+      "order": 10,
+      "ref": {
+        "source": "polymarket",
+        "type": "prediction",
+        "category": "sport_mlb",
+        "id": "179312"
+      }
+    },
+    {
+      "order": 11,
+      "ref": {
+        "source": "polymarket",
+        "type": "prediction",
+        "category": "sport_mlb",
+        "id": "466755"
+      }
+    },
+    {
+      "order": 12,
+      "ref": {
+        "source": "polymarket",
+        "type": "prediction",
+        "category": "sport_mlb",
+        "id": "466769"
+      }
+    }
+  ]
+}

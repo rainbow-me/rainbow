@@ -8,7 +8,6 @@ import { type UnlockableAppIconKey } from '@/features/app-icon/models/appIcons';
 import { type CandleResolution, type ChartType } from '@/features/charts/types';
 import { type ENSRapActionType } from '@/features/ens/raps/common';
 import { type PerpPositionSide, type TriggerOrderType } from '@/features/perps/types';
-import { type Placement, type PlacementItem, type PlacementItemAnalyticsMetadata } from '@/features/placements/types';
 import { type EthereumWalletType } from '@/helpers/walletTypes';
 import { type WalletLibraryType } from '@/model/wallet';
 import { type PairHardwareWalletNavigatorParams } from '@/navigation/types';
@@ -996,30 +995,29 @@ export type EventProperties = {
     durationInMs: number;
   };
   [event.discoverPlacementCardPressed]: {
-    placementId: Placement['id'];
-    placementScreen?: Placement['screen'];
+    placementId: string;
+    placementScreen?: string;
     placementTitle: string;
-    itemOrder: PlacementItem['order'];
+    itemOrder: number;
     marketId: string;
-    marketName?: PlacementItemAnalyticsMetadata['marketName'];
-    marketSlug?: PlacementItemAnalyticsMetadata['marketSlug'];
-    marketSymbol?: PlacementItemAnalyticsMetadata['marketSymbol'];
-    marketType: PlacementItem['ref']['source'];
+    marketName?: string;
+    marketSlug?: string;
+    marketSymbol?: string;
+    marketType: string;
   };
   [event.discoverPlacementSeeAllPressed]: {
-    placementId: Placement['id'];
-    placementScreen?: Placement['screen'];
+    placementId: string;
+    placementScreen?: string;
     placementTitle: string;
   };
   [event.placementInteraction]: {
-    id: Placement['id'];
+    id: string;
     interactionType: 'carousel_scroll';
-    screen: Placement['screen'];
-    order: Placement['order'];
-    version: Placement['version'];
-    itemRefSource?: PlacementItem['ref']['source'];
-    itemRefId?: PlacementItem['ref']['id'];
-    itemOrder?: PlacementItem['order'];
+    screen?: string;
+    version: number;
+    itemRefSource?: string;
+    itemRefId?: string;
+    itemOrder?: number;
   };
 
   [event.ensInitiatedRegistration]: { category: string };

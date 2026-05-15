@@ -1,0 +1,57 @@
+{
+  "id": "predictions_crypto",
+  "surfaces": ["discover"],
+  "enabled": true,
+  "version": 2,
+  "updatedAt": "2026-05-15T15:59:08.970Z",
+  "items": [
+    {
+      "order": 0,
+      "ref": {
+        "source": "polymarket",
+        "type": "prediction",
+        "id": "36173"
+      }
+    },
+    {
+      "order": 1,
+      "ref": {
+        "source": "polymarket",
+        "type": "prediction",
+        "id": "438065"
+      }
+    },
+    {
+      "order": 2,
+      "ref": {
+        "source": "polymarket",
+        "type": "prediction",
+        "id": "462397"
+      }
+    },
+    {
+      "order": 3,
+      "ref": {
+        "source": "polymarket",
+        "type": "prediction",
+        "id": "438066"
+      }
+    },
+    {
+      "order": 4,
+      "ref": {
+        "source": "polymarket",
+        "type": "prediction",
+        "id": "16167"
+      }
+    },
+    {
+      "order": 5,
+      "ref": {
+        "source": "polymarket",
+        "type": "prediction",
+        "id": "472488"
+      }
+    }
+  ]
+}

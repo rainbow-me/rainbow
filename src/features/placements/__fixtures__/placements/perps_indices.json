@@ -1,0 +1,12 @@
+{
+  "id": "perps_indices",
+  "surfaces": ["discover"],
+  "enabled": true,
+  "version": 2,
+  "updatedAt": "2026-05-15T15:59:08.910Z",
+  "items": [
+    { "order": 0, "ref": { "source": "hyperliquid", "type": "perp", "id": "xyz:SP500" } },
+    { "order": 1, "ref": { "source": "hyperliquid", "type": "perp", "id": "SPX" } },
+    { "order": 2, "ref": { "source": "hyperliquid", "type": "perp", "id": "NFTI" } }
+  ]
+}

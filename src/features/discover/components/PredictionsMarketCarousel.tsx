@@ -2,7 +2,7 @@ import React, { useCallback, type ReactElement } from 'react';
 import { StyleSheet } from 'react-native';
 
 import { PLACEMENT_IDS } from '@/features/placements/constants';
-import { useDiscoverPredictions, type PredictionItem } from '@/features/placements/stores/discover/discoverPredictionsStore';
+import { usePredictionsPlacementStore, type PredictionPlacementItem } from '@/features/placements/stores/derived/predictionsPlacementStore';
 import { type PlacementItemAnalyticsMetadata } from '@/features/placements/types';
 import {
   HEIGHT as POLYMARKET_EVENTS_LIST_ITEM_HEIGHT,
@@ -16,29 +16,32 @@ import { DEVICE_WIDTH } from '@/utils/deviceUtils';
 
 import { MarketCarousel } from './MarketCarousel';
 
-const PLACEMENT_ID = PLACEMENT_IDS.DISCOVER_PREDICTIONS_CAROUSEL;
+const PLACEMENT_ID = PLACEMENT_IDS.PREDICTIONS;
 
 const ITEM_GAP = 8;
 const HORIZONTAL_PADDING = 20;
 const PREDICTION_TILE_WIDTH = (DEVICE_WIDTH - HORIZONTAL_PADDING * 2 - ITEM_GAP) / 2;
 
 export function PredictionsMarketCarousel() {
-  const { isLoading, items, placement } = useDiscoverPredictions();
+  const { isLoading, items, placement } = usePredictionsPlacementStore();
 
-  const renderItem = useCallback((item: PredictionItem, trackPress: (metadata?: PlacementItemAnalyticsMetadata) => void): ReactElement => {
-    const event = item.event;
-    return (
-      <PolymarketEventsListItem
-        event={event}
-        onPress={() => {
-          trackPress(readPredictionAnalyticsMetadata(event));
-          navigateToPolymarketEvent({ event, eventId: event.id });
-        }}
-        shouldActivateOnStart={false}
-        style={styles.predictionTile}
-      />
-    );
-  }, []);
+  const renderItem = useCallback(
+    (item: PredictionPlacementItem, trackPress: (metadata?: PlacementItemAnalyticsMetadata) => void): ReactElement => {
+      const event = item.event;
+      return (
+        <PolymarketEventsListItem
+          event={event}
+          onPress={() => {
+            trackPress(readPredictionAnalyticsMetadata(event));
+            navigateToPolymarketEvent({ event, eventId: event.id });
+          }}
+          shouldActivateOnStart={false}
+          style={styles.predictionTile}
+        />
+      );
+    },
+    []
+  );
 
   return (
     <MarketCarousel
@@ -57,7 +60,7 @@ export function PredictionsMarketCarousel() {
   );
 }
 
-function getPlacementItemKey(item: PredictionItem): string {
+function getPlacementItemKey(item: PredictionPlacementItem): string {
   return `${item.ref.source}:${item.ref.id}`;
 }
 
