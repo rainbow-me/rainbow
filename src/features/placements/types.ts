@@ -1,20 +1,47 @@
-import { type PLACEMENT_IDS, type PLACEMENT_SCREENS } from '@/features/placements/constants';
+import { type PLACEMENT_IDS, type PLACEMENT_SURFACES } from '@/features/placements/constants';
 
 export type PlacementId = (typeof PLACEMENT_IDS)[keyof typeof PLACEMENT_IDS];
 
-export type PlacementScreen = (typeof PLACEMENT_SCREENS)[keyof typeof PLACEMENT_SCREENS];
+export type PlacementSurface = (typeof PLACEMENT_SURFACES)[keyof typeof PLACEMENT_SURFACES];
 
-export type PlacementSource = 'hyperliquid' | 'polymarket';
+export type PlacementSource = 'hyperliquid' | 'polymarket' | 'rainbow';
 
-export type PlacementItemRef<Source extends PlacementSource = PlacementSource> = {
-  source: Source;
-  id: string;
+export type PlacementType = 'perp' | 'prediction' | 'token';
+
+export type PlacementTypeForSource<Source extends PlacementSource> = Source extends 'hyperliquid'
+  ? 'perp'
+  : Source extends 'polymarket'
+    ? 'prediction'
+    : Source extends 'rainbow'
+      ? 'token'
+      : never;
+
+type PlacementItemRefBySource = {
+  [Source in PlacementSource]: {
+    source: Source;
+    type: PlacementTypeForSource<Source>;
+    category?: string;
+    id: string;
+  };
 };
 
-export type PlacementItem<Source extends PlacementSource = PlacementSource> = {
-  ref: PlacementItemRef<Source>;
+export type PlacementItemRef<Source extends PlacementSource = PlacementSource> = PlacementItemRefBySource[Source];
+
+export type PlacementItemBySource = {
+  [Source in PlacementSource]: {
+    order: number;
+    startsAt?: string;
+    endsAt?: string;
+    ref: PlacementItemRef<Source>;
+  };
+};
+
+export type PlacementItem<Source extends PlacementSource = PlacementSource> = PlacementItemBySource[Source];
+
+export type PlacementCategory = {
   order: number;
-  metadata?: Record<string, unknown>;
+  category: string;
+  enabled: boolean;
 };
 
 export type PlacementItemAnalyticsMetadata = {
@@ -26,10 +53,12 @@ export type PlacementItemAnalyticsMetadata = {
 
 export type Placement = {
   id: PlacementId;
-  screen: PlacementScreen;
+  surfaces: PlacementSurface[];
   enabled: boolean;
-  order: number;
+  version: 2;
   items: PlacementItem[];
-  version: number;
+  categories?: PlacementCategory[];
+  effectiveFrom?: string;
+  effectiveUntil?: string;
   updatedAt: string;
 };

@@ -1,0 +1,99 @@
+{
+  "id": "predictions_sports_week",
+  "surfaces": ["discover"],
+  "enabled": true,
+  "version": 2,
+  "updatedAt": "2026-05-12T04:00:00.000Z",
+  "effectiveFrom": "2026-05-12T04:00:00Z",
+  "effectiveUntil": "2026-05-19T04:00:00Z",
+  "items": [
+    {
+      "order": 0,
+      "startsAt": "2026-05-13T23:30:00Z",
+      "endsAt": "2026-05-14T02:00:00Z",
+      "ref": {
+        "source": "polymarket",
+        "type": "prediction",
+        "category": "sport_nba",
+        "id": "472500"
+      }
+    },
+    {
+      "order": 1,
+      "startsAt": "2026-05-14T01:00:00Z",
+      "endsAt": "2026-05-14T03:30:00Z",
+      "ref": {
+        "source": "polymarket",
+        "type": "prediction",
+        "category": "sport_nba",
+        "id": "472492"
+      }
+    },
+    {
+      "order": 2,
+      "startsAt": "2026-05-15T23:30:00Z",
+      "endsAt": "2026-05-16T02:00:00Z",
+      "ref": {
+        "source": "polymarket",
+        "type": "prediction",
+        "category": "sport_nba",
+        "id": "465162"
+      }
+    },
+    {
+      "order": 3,
+      "startsAt": "2026-05-15T01:00:00Z",
+      "endsAt": "2026-05-15T03:30:00Z",
+      "ref": {
+        "source": "polymarket",
+        "type": "prediction",
+        "category": "sport_nba",
+        "id": "465143"
+      }
+    },
+    {
+      "order": 4,
+      "startsAt": "2026-05-15T23:00:00Z",
+      "endsAt": "2026-05-16T02:00:00Z",
+      "ref": {
+        "source": "polymarket",
+        "type": "prediction",
+        "category": "sport_nhl",
+        "id": "481365"
+      }
+    },
+    {
+      "order": 5,
+      "startsAt": "2026-05-13T23:10:00Z",
+      "endsAt": "2026-05-14T02:30:00Z",
+      "ref": {
+        "source": "polymarket",
+        "type": "prediction",
+        "category": "sport_mlb",
+        "id": "466752"
+      }
+    },
+    {
+      "order": 6,
+      "startsAt": "2026-05-14T23:10:00Z",
+      "endsAt": "2026-05-15T02:30:00Z",
+      "ref": {
+        "source": "polymarket",
+        "type": "prediction",
+        "category": "sport_mlb",
+        "id": "466748"
+      }
+    },
+    {
+      "order": 7,
+      "startsAt": "2026-05-16T20:00:00Z",
+      "endsAt": "2026-05-16T22:00:00Z",
+      "ref": {
+        "source": "polymarket",
+        "type": "prediction",
+        "category": "sport_mlb",
+        "id": "466739"
+      }
+    }
+  ]
+}

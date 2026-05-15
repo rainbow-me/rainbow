@@ -1,0 +1,194 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "placements-v2",
+  "title": "Placement v2",
+  "description": "A Firestore document from the placements collection (default DB, rainbow-me project). Schema version 2.",
+  "type": "object",
+  "required": ["id", "surfaces", "enabled", "version", "updatedAt", "items"],
+  "additionalProperties": false,
+  "properties": {
+    "id": {
+      "type": "string",
+      "description": "Mirrors the Firestore document ID",
+      "enum": [
+        "perps",
+        "predictions",
+        "tokens",
+        "predictions_sports_today",
+        "predictions_sports_week",
+        "predictions_sports",
+        "perps_indices",
+        "perps_commodities",
+        "perps_stocks",
+        "predictions_tradfi",
+        "perps_stocks_new",
+        "perps_crypto_majors",
+        "predictions_crypto"
+      ]
+    },
+    "surfaces": {
+      "type": "array",
+      "description": "Which surfaces this placement appears on; replaces v1 'screen' field",
+      "items": {
+        "type": "string",
+        "enum": ["discover"]
+      },
+      "minItems": 1
+    },
+    "enabled": {
+      "type": "boolean",
+      "description": "Kill-switch; only true documents are queried"
+    },
+    "version": {
+      "type": "integer",
+      "const": 2,
+      "description": "Schema version; must be 2 for v2 documents"
+    },
+    "updatedAt": {
+      "type": "string",
+      "format": "date-time",
+      "description": "ISO 8601 timestamp stored as a string (not a Firestore Timestamp)"
+    },
+    "effectiveFrom": {
+      "type": "string",
+      "format": "date-time",
+      "description": "ISO 8601 timestamp; when the placement's content window opens"
+    },
+    "effectiveUntil": {
+      "type": "string",
+      "format": "date-time",
+      "description": "ISO 8601 timestamp; when the placement's content window closes"
+    },
+    "categories": {
+      "type": "array",
+      "description": "Sport/topical categories with order and enabled flag; only used on predictions_sports",
+      "items": {
+        "$ref": "#/definitions/category"
+      }
+    },
+    "items": {
+      "type": "array",
+      "description": "Ordered list of items; pre-sorted by item.order",
+      "items": {
+        "$ref": "#/definitions/item"
+      }
+    }
+  },
+  "definitions": {
+    "category": {
+      "type": "object",
+      "required": ["order", "category", "enabled"],
+      "additionalProperties": false,
+      "properties": {
+        "order": {
+          "type": "integer",
+          "minimum": 0,
+          "description": "Sort order among categories"
+        },
+        "category": {
+          "type": "string",
+          "description": "Globally-namespaced category string; sport_* prefix reserved for sports",
+          "pattern": "^[a-z]+_[a-z0-9]+$",
+          "examples": ["sport_nba", "sport_nhl", "sport_mlb"]
+        },
+        "enabled": {
+          "type": "boolean",
+          "description": "Whether this category is active"
+        }
+      }
+    },
+    "item": {
+      "type": "object",
+      "required": ["order", "ref"],
+      "additionalProperties": false,
+      "properties": {
+        "order": {
+          "type": "integer",
+          "minimum": 0,
+          "description": "0-indexed position; unique across all items in the document"
+        },
+        "startsAt": {
+          "type": "string",
+          "format": "date-time",
+          "description": "ISO 8601 timestamp; per-item start time (e.g., game tip-off)"
+        },
+        "endsAt": {
+          "type": "string",
+          "format": "date-time",
+          "description": "ISO 8601 timestamp; per-item end time"
+        },
+        "ref": {
+          "$ref": "#/definitions/ref"
+        }
+      }
+    },
+    "ref": {
+      "type": "object",
+      "required": ["source", "type", "id"],
+      "additionalProperties": false,
+      "allOf": [
+        {
+          "if": {
+            "properties": {
+              "source": { "const": "hyperliquid" }
+            },
+            "required": ["source"]
+          },
+          "then": {
+            "properties": {
+              "type": { "const": "perp" }
+            }
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "source": { "const": "polymarket" }
+            },
+            "required": ["source"]
+          },
+          "then": {
+            "properties": {
+              "type": { "const": "prediction" }
+            }
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "source": { "const": "rainbow" }
+            },
+            "required": ["source"]
+          },
+          "then": {
+            "properties": {
+              "type": { "const": "token" }
+            }
+          }
+        }
+      ],
+      "properties": {
+        "source": {
+          "type": "string",
+          "description": "Data source for this item",
+          "enum": ["hyperliquid", "polymarket", "rainbow"]
+        },
+        "type": {
+          "type": "string",
+          "description": "Item type; drives renderer and resolver dispatch",
+          "enum": ["perp", "prediction", "token"]
+        },
+        "category": {
+          "type": "string",
+          "description": "Namespaced category linking items to a category entry; e.g., sport_nba",
+          "pattern": "^[a-z]+_[a-z0-9]+$"
+        },
+        "id": {
+          "type": "string",
+          "description": "Source-specific identifier. Hyperliquid crypto: symbol (BTC, ETH). Hyperliquid synthetic: xyz: prefix (xyz:NVDA, xyz:SP500). Polymarket: numeric event ID. Rainbow: address:chainId.",
+          "minLength": 1
+        }
+      }
+    }
+  }
+}

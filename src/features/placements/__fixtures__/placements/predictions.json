@@ -1,0 +1,89 @@
+{
+  "id": "predictions",
+  "surfaces": ["discover"],
+  "enabled": true,
+  "version": 2,
+  "updatedAt": "2026-05-15T15:59:08.886Z",
+  "items": [
+    {
+      "order": 0,
+      "ref": {
+        "source": "polymarket",
+        "type": "prediction",
+        "id": "30615"
+      }
+    },
+    {
+      "order": 1,
+      "ref": {
+        "source": "polymarket",
+        "type": "prediction",
+        "id": "36173"
+      }
+    },
+    {
+      "order": 2,
+      "ref": {
+        "source": "polymarket",
+        "type": "prediction",
+        "id": "101772"
+      }
+    },
+    {
+      "order": 3,
+      "ref": {
+        "source": "polymarket",
+        "type": "prediction",
+        "id": "27830"
+      }
+    },
+    {
+      "order": 4,
+      "ref": {
+        "source": "polymarket",
+        "type": "prediction",
+        "id": "31552"
+      }
+    },
+    {
+      "order": 5,
+      "ref": {
+        "source": "polymarket",
+        "type": "prediction",
+        "id": "100371"
+      }
+    },
+    {
+      "order": 6,
+      "ref": {
+        "source": "polymarket",
+        "type": "prediction",
+        "id": "98369"
+      }
+    },
+    {
+      "order": 7,
+      "ref": {
+        "source": "polymarket",
+        "type": "prediction",
+        "id": "475063"
+      }
+    },
+    {
+      "order": 8,
+      "ref": {
+        "source": "polymarket",
+        "type": "prediction",
+        "id": "51456"
+      }
+    },
+    {
+      "order": 9,
+      "ref": {
+        "source": "polymarket",
+        "type": "prediction",
+        "id": "30829"
+      }
+    }
+  ]
+}

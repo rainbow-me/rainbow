@@ -10,7 +10,7 @@ import {
 } from '@/features/discover/components/PerpMarketCard';
 import { navigateToPerpsSearch } from '@/features/perps/utils/navigateToPerps';
 import { PLACEMENT_IDS } from '@/features/placements/constants';
-import { useDiscoverPerpsPlacement, type DiscoverPerpMarketItem } from '@/features/placements/stores/discover/discoverPerpsPlacementStore';
+import { usePerpsPlacementStore, type PerpMarketPlacementItem } from '@/features/placements/stores/derived/perpsPlacementStore';
 import { type PlacementItemAnalyticsMetadata } from '@/features/placements/types';
 import * as i18n from '@/languages';
 
@@ -18,12 +18,12 @@ import * as i18n from '@/languages';
  * Renders the Discover perps placement as compact market cards.
  */
 export function PerpMarketCarousel() {
-  const { isLoading, items, placement } = useDiscoverPerpsPlacement();
+  const { isLoading, items, placement } = usePerpsPlacementStore();
 
   return (
     <MarketCarousel
       title={i18n.t(i18n.l.discover.placements.perps_title)}
-      placementId={PLACEMENT_IDS.DISCOVER_PERPS_CAROUSEL}
+      placementId={PLACEMENT_IDS.PERPS}
       placement={placement}
       itemHeight={PERP_MARKET_CARD_HEIGHT}
       itemWidth={PERP_MARKET_CARD_SLOT_WIDTH_WITH_CHART}
@@ -38,14 +38,14 @@ export function PerpMarketCarousel() {
   );
 }
 
-function getPlacementItemKey(item: DiscoverPerpMarketItem): string {
+function getPlacementItemKey(item: PerpMarketPlacementItem): string {
   return `${item.ref.source}:${item.ref.id}`;
 }
 
-function getPerpMarketItemWidth(item: DiscoverPerpMarketItem): number {
+function getPerpMarketItemWidth(item: PerpMarketPlacementItem): number {
   return computePerpCardWidth(item.market);
 }
 
-function renderPerpCard(item: DiscoverPerpMarketItem, trackPress: (metadata?: PlacementItemAnalyticsMetadata) => void): ReactElement {
+function renderPerpCard(item: PerpMarketPlacementItem, trackPress: (metadata?: PlacementItemAnalyticsMetadata) => void): ReactElement {
   return <PerpMarketCard market={item.market} onPressTracked={trackPress} />;
 }
