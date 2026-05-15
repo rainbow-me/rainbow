@@ -21,6 +21,47 @@ and this project adheres to [Semantic Versioning](http://semver.org/)
 
 ### Testing
 
+## [2.0.33](https://github.com/rainbow-me/rainbow/releases/tag/v2.0.33)
+
+### Added
+
+- Redesigned Sentry environments (https://github.com/rainbow-me/rainbow/pull/7437)
+- Ensure new @storesjs/stores stores use the Rainbow logger (https://github.com/rainbow-me/rainbow/pull/7466)
+- Add placements content configuration API (https://github.com/rainbow-me/rainbow/pull/7416)
+- Migrate users to unified account type (https://github.com/rainbow-me/rainbow/pull/7462)
+- Scaffold featured markets carousel placements (https://github.com/rainbow-me/rainbow/pull/7417)
+- Add featured perps markets carousel (https://github.com/rainbow-me/rainbow/pull/7418)
+- Add H1 sparklines to Perps cards (https://github.com/rainbow-me/rainbow/pull/7419)
+- Add Predictions placement carousel (https://github.com/rainbow-me/rainbow/pull/7420)
+- Make sparkline charts generic, add line chart data store factory (https://github.com/rainbow-me/rainbow/pull/7456)
+- Add line chart store factory tests (https://github.com/rainbow-me/rainbow/pull/7467)
+
+### Changed
+
+- Bump iOS and Android to v2.0.33 (https://github.com/rainbow-me/rainbow/pull/7447)
+- Move partial error logging from Sentry to analytics (https://github.com/rainbow-me/rainbow/pull/7448)
+- Remove leftover install-state.gz from deleted DS docs (https://github.com/rainbow-me/rainbow/pull/7442)
+- Consolidate KOTH into features/king-of-the-hill module (https://github.com/rainbow-me/rainbow/commit/cf2b9aa1d283d46d43581bfb623759ae5a209927)
+- Revert consolidation of KOTH into features/king-of-the-hill module (https://github.com/rainbow-me/rainbow/commit/853006841ef87e254bd063079201875d3a9c1110)
+- Drop IS_IOS/IS_ANDROID for direct Platform.OS imports (https://github.com/rainbow-me/rainbow/pull/7450)
+- Consolidate KOTH into features/king-of-the-hill module (https://github.com/rainbow-me/rainbow/pull/7451)
+- Drop ios/android globals for direct Platform.OS imports (https://github.com/rainbow-me/rainbow/pull/7460)
+- Move experimental config flags into createStore (https://github.com/rainbow-me/rainbow/pull/7415)
+- Use --immutable installs over custom lockfile check (https://github.com/rainbow-me/rainbow/pull/7470)
+- Derive card colors from event image (https://github.com/rainbow-me/rainbow/pull/7455)
+- Clean up store implementations, placements store types (https://github.com/rainbow-me/rainbow/pull/7457)
+- Avoid Hyperliquid rate limits, use live prices for perp cards (https://github.com/rainbow-me/rainbow/pull/7479)
+- Extract reusable BackupOptionRow from prompt sheet (https://github.com/rainbow-me/rainbow/pull/7469)
+- Update polymarket referral code (https://github.com/rainbow-me/rainbow/pull/7480)
+
+### Fixed
+
+- Fix error logging for token launcher airdrop fetching (https://github.com/rainbow-me/rainbow/pull/7444)
+- Stop logging all 4xx errors when fetching transaction (https://github.com/rainbow-me/rainbow/pull/7422)
+- Fix overfetching of preferences (https://github.com/rainbow-me/rainbow/pull/7453)
+- Fix market price fallback (https://github.com/rainbow-me/rainbow/pull/7477)
+- Fix for Discover v2 UI layout regressions (https://github.com/rainbow-me/rainbow/pull/7492)
+
 ## [2.0.32](https://github.com/rainbow-me/rainbow/releases/tag/v2.0.32)
 
 ### Added
