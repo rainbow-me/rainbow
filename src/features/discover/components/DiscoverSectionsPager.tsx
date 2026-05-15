@@ -8,10 +8,10 @@ import { useDiscoverScreenContext } from '@/components/Discover/DiscoverScreenCo
 import { DEFAULT_SCROLL_FADE_DISTANCE } from '@/components/scroll-header-fade/ScrollHeaderFade';
 import { SmoothPager, usePagerNavigation } from '@/components/SmoothPager/SmoothPager';
 import { Box } from '@/design-system';
-import { CryptoSection } from '@/features/discover/components/sections/CryptoSection';
-import { ForYouSection } from '@/features/discover/components/sections/ForYouSection';
-import { MarketsSection } from '@/features/discover/components/sections/MarketsSection';
-import { SportsSection } from '@/features/discover/components/sections/SportsSection';
+import { CryptoPage } from '@/features/discover/components/pages/CryptoPage';
+import { ForYouPage } from '@/features/discover/components/pages/ForYouPage';
+import { MarketsPage } from '@/features/discover/components/pages/MarketsPage';
+import { SportsSection } from '@/features/discover/components/pages/SportsPage';
 import {
   DISCOVER_SECTION_ORDER,
   DiscoverSectionNavigation,
@@ -111,7 +111,8 @@ const DiscoverSectionScrollView = memo(function DiscoverSectionScrollView({
   sectionScrollOffsets: SharedValue<SectionScrollOffsets>;
 }) {
   const { registerSectionScrollView } = useDiscoverScreenContext();
-  const bottomInset = useTabBarOffset();
+  const tabBarOffset = useTabBarOffset();
+  const bottomInset = tabBarOffset + 12;
 
   const setScrollViewRef = useCallback(
     (scrollView: Animated.ScrollView | null) => {
@@ -157,11 +158,11 @@ const DiscoverSectionScrollView = memo(function DiscoverSectionScrollView({
 const DiscoverSectionContent = memo(function DiscoverSectionContent({ section }: { section: DiscoverSection }) {
   switch (section) {
     case 'forYou':
-      return <ForYouSection />;
+      return <ForYouPage />;
     case 'crypto':
-      return <CryptoSection />;
+      return <CryptoPage />;
     case 'markets':
-      return <MarketsSection />;
+      return <MarketsPage />;
     case 'sports':
       return <SportsSection />;
   }

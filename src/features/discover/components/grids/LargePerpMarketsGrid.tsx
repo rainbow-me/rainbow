@@ -1,9 +1,8 @@
-import React from 'react';
+import React, { useCallback } from 'react';
 
-import { MarketCarousel } from '@/features/discover/components/carousel/MarketCarousel';
+import { MarketGrid } from '@/features/discover/components/grid/MarketGrid';
 import {
   LARGE_PERP_MARKET_CARD_HEIGHT,
-  LARGE_PERP_MARKET_CARD_WIDTH,
   LargePerpMarketCard,
   LargePerpMarketCardSkeleton,
 } from '@/features/discover/components/perpMarketCards/LargePerpMarketCard';
@@ -11,36 +10,31 @@ import { type PerpMarketPlacementItem } from '@/features/placements/stores/deriv
 import { type PlacementStoreResult } from '@/features/placements/stores/factories/createPlacementStore';
 import { type PlacementId } from '@/features/placements/types';
 
-type LargePerpMarketsCarouselProps = PlacementStoreResult<PerpMarketPlacementItem> & {
+type LargePerpMarketsGridProps = PlacementStoreResult<PerpMarketPlacementItem> & {
   placementId: PlacementId;
   title: string;
   onPressSeeAll?: () => void;
 };
 
-export function LargePerpMarketsCarousel({
-  isLoading,
-  items,
-  placement,
-  placementId,
-  title,
-  onPressSeeAll,
-}: LargePerpMarketsCarouselProps) {
+export function LargePerpMarketsGrid({ isLoading, items, placement, placementId, title, onPressSeeAll }: LargePerpMarketsGridProps) {
+  const renderItem = useCallback(
+    (item: PerpMarketPlacementItem, cellWidth: number) => <LargePerpMarketCard market={item.market} width={cellWidth} />,
+    []
+  );
+
+  const renderSkeleton = useCallback((cellWidth: number) => <LargePerpMarketCardSkeleton width={cellWidth} />, []);
+
   return (
-    <MarketCarousel
+    <MarketGrid
       data={items}
       itemHeight={LARGE_PERP_MARKET_CARD_HEIGHT}
-      itemWidth={LARGE_PERP_MARKET_CARD_WIDTH}
       loading={isLoading}
       onPressSeeAll={onPressSeeAll}
       placement={placement}
       placementId={placementId}
-      renderItem={renderLargePerpCard}
-      renderSkeleton={LargePerpMarketCardSkeleton}
+      renderItem={renderItem}
+      renderSkeleton={renderSkeleton}
       title={title}
     />
   );
-}
-
-function renderLargePerpCard(item: PerpMarketPlacementItem) {
-  return <LargePerpMarketCard market={item.market} />;
 }

@@ -4,14 +4,18 @@ import { StyleSheet, View } from 'react-native';
 import { FlatList } from 'react-native-gesture-handler';
 import { useDebouncedCallback } from 'use-debounce';
 
-import { analytics } from '@/analytics';
-import { event } from '@/analytics/event';
 import { Box } from '@/design-system';
 import { CarouselHeader } from '@/features/discover/components/carousel/CarouselHeader';
 import { PlacementCardProvider, type TrackPlacementCardPress } from '@/features/discover/components/carousel/placementCardContext';
+import {
+  defaultPlacementItemKey,
+  getPlacementScreen,
+  trackPlacementCardPress,
+  trackPlacementInteraction,
+  trackPlacementSeeAllPress,
+} from '@/features/discover/components/placementTracking';
 import { SCREEN_HORIZONTAL_PADDING } from '@/features/discover/constants';
-import { PLACEMENT_SURFACES } from '@/features/placements/constants';
-import { type Placement, type PlacementId, type PlacementItem, type PlacementItemAnalyticsMetadata } from '@/features/placements/types';
+import { type Placement, type PlacementId, type PlacementItem } from '@/features/placements/types';
 import { time } from '@/utils/time';
 
 const CARD_GAP = 8;
@@ -46,7 +50,7 @@ export function MarketCarousel<T extends PlacementItem>({
   renderSkeleton,
   title,
 }: MarketCarouselProps<T>) {
-  const placementScreen = placement?.surfaces.includes(PLACEMENT_SURFACES.DISCOVER) ? PLACEMENT_SURFACES.DISCOVER : placement?.surfaces[0];
+  const placementScreen = getPlacementScreen(placement);
 
   const itemWidths = useMemo(() => (getItemWidth ? data.map(item => getItemWidth(item)) : undefined), [data, getItemWidth]);
 
@@ -82,11 +86,7 @@ export function MarketCarousel<T extends PlacementItem>({
   );
 
   const handleSeeAllPress = useCallback(() => {
-    analytics.track(event.discoverPlacementSeeAllPressed, {
-      placementId,
-      placementScreen,
-      placementTitle: title,
-    });
+    trackPlacementSeeAllPress({ placementId, placementScreen, title });
     onPressSeeAll?.();
   }, [onPressSeeAll, placementId, placementScreen, title]);
 
@@ -131,47 +131,6 @@ export function MarketCarousel<T extends PlacementItem>({
       )}
     </Box>
   );
-}
-
-function defaultPlacementItemKey(item: PlacementItem): string {
-  return `${item.ref.source}:${item.ref.id}`;
-}
-
-function trackPlacementCardPress({
-  item,
-  metadata,
-  placementId,
-  placementScreen,
-  title,
-}: {
-  item: PlacementItem;
-  metadata: PlacementItemAnalyticsMetadata | undefined;
-  placementId: PlacementId;
-  placementScreen: Placement['surfaces'][number] | undefined;
-  title: string;
-}) {
-  analytics.track(event.discoverPlacementCardPressed, {
-    placementId,
-    placementScreen,
-    placementTitle: title,
-    itemOrder: item.order,
-    marketId: metadata?.marketId ?? item.ref.id,
-    marketName: metadata?.marketName,
-    marketSlug: metadata?.marketSlug,
-    marketSymbol: metadata?.marketSymbol,
-    marketType: item.ref.source,
-  });
-}
-
-function trackPlacementInteraction({ interactionType, placement }: { interactionType: 'carousel_scroll'; placement: Placement }) {
-  const screen = placement.surfaces.includes(PLACEMENT_SURFACES.DISCOVER) ? PLACEMENT_SURFACES.DISCOVER : placement.surfaces[0];
-
-  analytics.track(event.placementInteraction, {
-    id: placement.id,
-    interactionType,
-    screen,
-    version: placement.version,
-  });
 }
 
 const styles = StyleSheet.create({

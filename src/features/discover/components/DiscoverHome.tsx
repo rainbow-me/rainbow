@@ -12,6 +12,9 @@ import { IS_TEST } from '@/env';
 import { PerpMarketsCarousel } from '@/features/discover/components/carousels/PerpMarketsCarousel';
 import { PredictionsCarousel } from '@/features/discover/components/carousels/PredictionsCarousel';
 import { ENSCreateProfileCard } from '@/features/ens/components/ENSCreateProfileCard';
+import { PLACEMENT_IDS } from '@/features/placements/constants';
+import { usePerpsPlacementStore } from '@/features/placements/stores/derived/perpsPlacementStore';
+import { usePredictionsPlacementStore } from '@/features/placements/stores/derived/predictionsPlacementStore';
 import walletTypes from '@/helpers/walletTypes';
 import * as i18n from '@/languages';
 import { useRemoteConfig } from '@/model/remoteConfig';
@@ -20,11 +23,18 @@ import { HARDWARE_WALLETS, MINTS, OP_REWARDS, PROFILES, TRENDING_TOKENS } from '
 import useExperimentalFlag from '@rainbow-me/config/experimentalHooks';
 
 export function DiscoverHome() {
+  const perps = usePerpsPlacementStore();
+  const predictions = usePredictionsPlacementStore();
+
   return (
     <Inset top="12px" bottom={{ custom: 200 }} horizontal={{ custom: 20 }}>
       <Box gap={32}>
-        <PerpMarketsCarousel />
-        <PredictionsCarousel />
+        <PerpMarketsCarousel {...perps} placementId={PLACEMENT_IDS.PERPS} title={i18n.t(i18n.l.discover.placements.perps_title)} />
+        <PredictionsCarousel
+          {...predictions}
+          placementId={PLACEMENT_IDS.PREDICTIONS}
+          title={i18n.t(i18n.l.discover.placements.predictions_title)}
+        />
         <TrendingTokensSection />
         <Box gap={20}>
           <MintsSection />

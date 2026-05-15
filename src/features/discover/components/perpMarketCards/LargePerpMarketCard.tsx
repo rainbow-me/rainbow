@@ -28,6 +28,7 @@ import { getHighContrastTextColorWorklet } from '@/worklets/colors';
 type LargePerpMarketCardProps = {
   market: PerpMarketWithMetadata;
   style?: StyleProp<ViewStyle>;
+  width?: number;
 };
 
 type CardColors = {
@@ -63,8 +64,6 @@ const TEXT_GAP = 12;
 const SYMBOL_TEXT_STYLE = { size: '17pt', weight: 'bold' } as const;
 const MARK_PRICE_TEXT_STYLE = { size: '15pt', weight: 'bold' } as const;
 
-const CHART_WIDTH = LARGE_PERP_MARKET_CARD_WIDTH - CARD_LAYOUT.paddingHorizontal * 2;
-
 // ============ Colors ========================================================= //
 
 const CARD_COLORS = {
@@ -86,7 +85,11 @@ const CARD_COLORS = {
 
 // ============ Component ====================================================== //
 
-export const LargePerpMarketCard = memo(function LargePerpMarketCard({ market, style }: LargePerpMarketCardProps) {
+export const LargePerpMarketCard = memo(function LargePerpMarketCard({
+  market,
+  style,
+  width = LARGE_PERP_MARKET_CARD_WIDTH,
+}: LargePerpMarketCardProps) {
   const { colorMode, isDarkMode } = useColorMode();
   const symbol = market.symbol;
   const initialPrice = market.midPrice ?? market.price;
@@ -99,8 +102,10 @@ export const LargePerpMarketCard = memo(function LargePerpMarketCard({ market, s
     [colorMode, market]
   );
 
+  const chartWidth = width - CARD_LAYOUT.paddingHorizontal * 2;
+
   return (
-    <ButtonPressAnimation onPress={onPress} scaleTo={0.96} style={[styles.pressable, style]}>
+    <ButtonPressAnimation onPress={onPress} scaleTo={0.96} style={[styles.pressable, { width }, style]}>
       <View style={[styles.cardShadow, isDarkMode ? styles.cardShadowDark : styles.cardShadowLight]}>
         <View style={[styles.card, { backgroundColor: cardColors.backgroundColor }]}>
           <LinearGradient
@@ -140,13 +145,13 @@ export const LargePerpMarketCard = memo(function LargePerpMarketCard({ market, s
             </View>
           </View>
 
-          <View pointerEvents="none" style={styles.chartContainer}>
+          <View pointerEvents="none" style={[styles.chartContainer, { width: chartWidth }]}>
             <SparklineChart
               chartId={symbol}
               color={chartColor}
               height={CHART_HEIGHT}
               store={useHyperliquidLineChartsStore}
-              width={CHART_WIDTH}
+              width={chartWidth}
             />
           </View>
 
@@ -181,14 +186,8 @@ export const LargePerpMarketCard = memo(function LargePerpMarketCard({ market, s
 
 // ============ Skeleton ======================================================= //
 
-export function LargePerpMarketCardSkeleton() {
-  return (
-    <CarouselCardSkeleton
-      borderRadius={CARD_LAYOUT.borderRadius}
-      height={LARGE_PERP_MARKET_CARD_HEIGHT}
-      width={LARGE_PERP_MARKET_CARD_WIDTH}
-    />
-  );
+export function LargePerpMarketCardSkeleton({ width = LARGE_PERP_MARKET_CARD_WIDTH }: { width?: number } = {}) {
+  return <CarouselCardSkeleton borderRadius={CARD_LAYOUT.borderRadius} height={LARGE_PERP_MARKET_CARD_HEIGHT} width={width} />;
 }
 
 // ============ Display Helpers =============================================== //
@@ -246,7 +245,6 @@ const styles = StyleSheet.create({
   chartContainer: {
     height: CHART_HEIGHT,
     marginTop: CHART_MARGIN_TOP,
-    width: CHART_WIDTH,
   },
   pressable: {
     width: LARGE_PERP_MARKET_CARD_WIDTH,
