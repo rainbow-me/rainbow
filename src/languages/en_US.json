@@ -537,7 +537,8 @@
       "placements": {
         "perps_title": "Perps",
         "predictions_title": "Predictions",
-        "see_all": "See all"
+        "indices_title": "Indices",
+        "commodities_title": "Commodities"
       },
       "strategies": {
         "strategies_title": "Strategies",
