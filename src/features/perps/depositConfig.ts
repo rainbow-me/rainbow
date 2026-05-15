@@ -1,3 +1,5 @@
+import { predictSponsoredCallsExecution } from '@/features/delegation/sponsoredCalls';
+import { getRemoteConfig } from '@/model/remoteConfig';
 import { createDepositConfig } from '@/systems/funding/config';
 import { time } from '@/utils/time';
 
@@ -24,6 +26,15 @@ export const PERPS_DEPOSIT_CONFIG = createDepositConfig({
       displaySymbol: 'USDC',
       iconUrl: USDC_ICON_URL,
     },
+  },
+
+  gas: {
+    predictIsSponsored: ({ accountAddress, asset }) =>
+      getRemoteConfig().sponsored_perps_deposits_enabled &&
+      predictSponsoredCallsExecution({
+        address: accountAddress,
+        chainId: asset.chainId,
+      }),
   },
 
   refresh: {

@@ -13,7 +13,13 @@ import { createDepositGasStores } from '../stores/createDepositGasStores';
 import { createDepositQuoteStore } from '../stores/createDepositQuoteStore';
 import { computeMaxSwappableAmount, createDepositStore } from '../stores/createDepositStore';
 import { createAmountToReceiveStore } from '../stores/derived/createAmountToReceiveStore';
-import { type DepositConfig, type DepositContextType, type FundingScreenTheme } from '../types';
+import {
+  type DepositConfig,
+  type DepositContextType,
+  type DepositRuntimeExtensions,
+  type DepositRuntimeStores,
+  type FundingScreenTheme,
+} from '../types';
 
 // ============ Context ======================================================= //
 
@@ -26,21 +32,34 @@ type DepositProviderProps = {
   config: DepositConfig;
   initialAsset: ExtendedAnimatedAssetWithColors | null;
   initialGasSpeed: GasSpeed;
+  runtimeExtensions?: DepositRuntimeExtensions;
   theme: FundingScreenTheme;
 };
 
-export function DepositProvider({ children, config, initialAsset, initialGasSpeed, theme }: DepositProviderProps): React.ReactElement {
+export function DepositProvider({
+  children,
+  config,
+  initialAsset,
+  initialGasSpeed,
+  runtimeExtensions,
+  theme,
+}: DepositProviderProps): React.ReactElement {
   const stores = useStableValue(() => {
     const useAmountStore = createDepositAmountStore(initialAsset, config.initialSliderProgress);
     const useDepositStore = createDepositStore(config, initialAsset, initialGasSpeed);
     const useQuoteStore = createDepositQuoteStore(config, useAmountStore, useDepositStore);
-    const gasStores = createDepositGasStores(config, useAmountStore, useDepositStore, useQuoteStore);
-    const useAmountToReceive = createAmountToReceiveStore(useAmountStore, useQuoteStore, config.to.token.displaySymbol);
+    const { cleanup: cleanupSponsoredExecution, config: runtimeConfig } = createRuntimeSponsoredExecutionConfig(config, runtimeExtensions, {
+      useQuoteStore,
+    });
+    const gasStores = createDepositGasStores(runtimeConfig, useAmountStore, useDepositStore, useQuoteStore);
+    const useAmountToReceive = createAmountToReceiveStore(useAmountStore, useQuoteStore, runtimeConfig.to.token.displaySymbol);
 
     const depositActions = createStoreActions(useAmountStore, createStoreActions(useDepositStore));
     const quoteActions = createStoreActions(useQuoteStore);
 
     return {
+      cleanupSponsoredExecution,
+      config: runtimeConfig,
       depositActions,
       gasStores,
       quoteActions,
@@ -52,7 +71,7 @@ export function DepositProvider({ children, config, initialAsset, initialGasSpee
   });
 
   const controller = useDepositController(
-    config,
+    stores.config,
     computeMaxSwappableAmount,
     stores.gasStores,
     stores.useAmountStore,
@@ -60,7 +79,7 @@ export function DepositProvider({ children, config, initialAsset, initialGasSpee
   );
 
   const handleDeposit = useDepositHandler({
-    config,
+    config: stores.config,
     depositActions: stores.depositActions,
     gasStores: stores.gasStores,
     isSubmitting: controller.isSubmitting,
@@ -69,9 +88,15 @@ export function DepositProvider({ children, config, initialAsset, initialGasSpee
   });
 
   const contextValue: DepositContextType = {
-    ...stores,
+    depositActions: stores.depositActions,
+    gasStores: stores.gasStores,
+    quoteActions: stores.quoteActions,
+    useAmountStore: stores.useAmountStore,
+    useAmountToReceive: stores.useAmountToReceive,
+    useDepositStore: stores.useDepositStore,
+    useQuoteStore: stores.useQuoteStore,
     ...controller,
-    config,
+    config: stores.config,
     handleDeposit,
     theme,
   };
@@ -79,9 +104,28 @@ export function DepositProvider({ children, config, initialAsset, initialGasSpee
   useCleanup(() => {
     stores.gasStores.reset();
     stores.useQuoteStore.getState().reset(true);
+    stores.cleanupSponsoredExecution?.();
   });
 
   return <DepositContext.Provider value={contextValue}>{children}</DepositContext.Provider>;
+}
+
+function createRuntimeSponsoredExecutionConfig(
+  config: DepositConfig,
+  runtimeExtensions: DepositRuntimeExtensions | undefined,
+  stores: DepositRuntimeStores
+): { cleanup?: () => void; config: DepositConfig } {
+  const sponsoredExecution = runtimeExtensions?.createSponsoredExecution?.(stores);
+  if (!sponsoredExecution) return { config };
+
+  return {
+    cleanup: sponsoredExecution.cleanup,
+    config: {
+      ...config,
+      gas: sponsoredExecution.gas ? { ...config.gas, ...sponsoredExecution.gas } : config.gas,
+      sponsoredExecution: sponsoredExecution.sponsoredExecution,
+    },
+  };
 }
 
 // ============ Hook ========================================================== //

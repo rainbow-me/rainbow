@@ -98,6 +98,7 @@ export interface RainbowConfig extends Record<
   delegation_enabled: boolean;
   sponsored_sends_enabled: boolean;
   sponsored_swaps_enabled: boolean;
+  sponsored_perps_deposits_enabled: boolean;
   discover_placements_enabled: boolean;
 }
 
@@ -231,6 +232,7 @@ export const DEFAULT_CONFIG = {
   delegation_enabled: false,
   sponsored_sends_enabled: true,
   sponsored_swaps_enabled: true,
+  sponsored_perps_deposits_enabled: true,
   discover_placements_enabled: true,
 } as const satisfies Readonly<RainbowConfig>;
 

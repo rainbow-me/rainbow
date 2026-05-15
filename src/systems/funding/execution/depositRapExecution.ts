@@ -2,6 +2,7 @@ import { type Signer } from '@ethersproject/abstract-signer';
 import { ethers } from 'ethers';
 
 import { type ParsedAsset } from '@/__swaps__/types/assets';
+import { isInsufficientSponsorBalanceError } from '@/features/delegation/sponsoredCalls';
 import { estimateGasWithPadding, getProvider, toHex } from '@/handlers/web3';
 import { logger, RainbowError } from '@/logger';
 import { walletExecuteRap } from '@/raps/execute';
@@ -11,12 +12,15 @@ import { useBackendNetworksStore } from '@/state/backendNetworks/backendNetworks
 import { type ChainId } from '@/state/backendNetworks/types';
 import { executeFn, Screens, TimeToSignOperation } from '@/state/performance/performance';
 import { getUniqueId } from '@/utils/ethereumUtils';
+import { type PreparedCallsExecution } from '@rainbow-me/delegation';
 import { type CrosschainQuote, type Quote } from '@rainbow-me/swaps';
 
 import {
   type DepositConfig,
   type DepositGasParams,
   type DepositMeteorologyActions,
+  type DepositSponsorshipFailureReason,
+  type DepositSponsorshipOutcome,
   type DepositSuccessMetadata,
   type DepositToken,
 } from '../types';
@@ -35,6 +39,7 @@ type ExecutionParams = {
     RapSwapActionParameters<rapTypes.crosschainSwap | rapTypes.swap>,
     'gasFeeParamsBySpeed' | 'gasParams' | 'selectedGasFee'
   >;
+  preparedCalls: PreparedCallsExecution | null;
   wallet: Signer;
 };
 
@@ -45,16 +50,23 @@ export type ExecuteDepositRapParams = {
   gasFeeParamsBySpeed: GasFeeParamsBySpeed;
   gasParams: DepositGasParams;
   nonce: number;
+  preparedCalls: PreparedCallsExecution | null;
   quote: Quote | CrosschainQuote;
   wallet: Signer;
 };
 
 export type ExecuteDepositRapResult =
-  | { error: string; success: false }
+  | {
+      error: string;
+      sponsorshipAttempted: boolean;
+      sponsorshipFailureReason?: DepositSponsorshipFailureReason;
+      success: false;
+    }
   | {
       executionStrategy: Exclude<DepositSuccessMetadata['executionStrategy'], 'custom'>;
-      hash: string;
+      hash?: string;
       isConfirmed: boolean;
+      sponsorship: DepositSponsorshipOutcome;
       success: true;
     };
 
@@ -67,6 +79,7 @@ export async function executeDepositRap({
   gasFeeParamsBySpeed,
   gasParams,
   nonce,
+  preparedCalls,
   quote,
   wallet,
 }: ExecuteDepositRapParams): Promise<ExecuteDepositRapResult> {
@@ -90,6 +103,7 @@ export async function executeDepositRap({
     gasParams,
     nonce,
     parameters,
+    preparedCalls,
     wallet,
   });
 
@@ -99,6 +113,7 @@ export async function executeDepositRap({
     executionStrategy: strategy.type === 'directTransfer' ? 'directTransfer' : strategy.rapType,
     hash: result.hash,
     isConfirmed: result.isConfirmed,
+    sponsorship: result.sponsorship,
     success: true,
   };
 }
@@ -106,8 +121,21 @@ export async function executeDepositRap({
 // ============ Transaction Execution ========================================= //
 
 type ExecutionResult =
-  | { error: string; hash?: undefined; isConfirmed?: undefined; success: false }
-  | { error?: undefined; hash: string; isConfirmed: boolean; success: true };
+  | {
+      error: string;
+      hash?: undefined;
+      isConfirmed?: undefined;
+      sponsorshipAttempted: boolean;
+      sponsorshipFailureReason?: DepositSponsorshipFailureReason;
+      success: false;
+    }
+  | {
+      error?: undefined;
+      hash?: string;
+      isConfirmed: boolean;
+      sponsorship: DepositSponsorshipOutcome;
+      success: true;
+    };
 
 async function executeTransaction(strategy: ExecutionStrategy, params: ExecutionParams): Promise<ExecutionResult> {
   switch (strategy.type) {
@@ -119,26 +147,57 @@ async function executeTransaction(strategy: ExecutionStrategy, params: Execution
 }
 
 async function executeSwap(params: ExecutionParams, rapType: 'crosschainSwap' | 'swap'): Promise<ExecutionResult> {
+  const shouldTryAtomic = !!params.preparedCalls;
   const { errorMessage, hash } = await executeFn(walletExecuteRap, {
     operation: TimeToSignOperation.SignTransaction,
     screen: Screens.FUNDING_DEPOSIT,
-  })(params.wallet, rapType === 'crosschainSwap' ? rapTypes.crosschainSwap : rapTypes.swap, {
-    ...params.parameters,
-    chainId: params.assetChainId,
-    gasFeeParamsBySpeed: params.gasFeeParamsBySpeed,
-    gasParams: params.gasParams,
-    nonce: params.nonce,
-  });
-
-  if (errorMessage || !hash) {
-    if (errorMessage && errorMessage !== 'handled') {
-      const extractedError = errorMessage.split('[')[0];
-      return { error: extractedError, success: false };
+  })(
+    params.wallet,
+    rapType === 'crosschainSwap' ? rapTypes.crosschainSwap : rapTypes.swap,
+    {
+      ...params.parameters,
+      atomic: shouldTryAtomic,
+      chainId: params.assetChainId,
+      gasFeeParamsBySpeed: params.gasFeeParamsBySpeed,
+      gasParams: params.gasParams,
+      nonce: params.nonce,
+    },
+    {
+      preparedCalls: params.preparedCalls,
     }
-    return { error: errorMessage ?? 'No transaction hash returned', success: false };
+  );
+
+  if (errorMessage) {
+    const sponsorshipFailureReason = shouldTryAtomic ? classifySponsorshipFailure(errorMessage) : undefined;
+    if (errorMessage !== 'handled') {
+      const extractedError = errorMessage.split('[')[0];
+      return {
+        error: extractedError,
+        sponsorshipAttempted: shouldTryAtomic,
+        sponsorshipFailureReason,
+        success: false,
+      };
+    }
+    return {
+      error: errorMessage,
+      sponsorshipAttempted: shouldTryAtomic,
+      sponsorshipFailureReason,
+      success: false,
+    };
   }
 
-  return { hash, isConfirmed: false, success: true };
+  // Managed relay execution succeeds without an onchain hash; treat that as the
+  // sponsor-paid outcome. Any wallet-broadcast hash (sequential or single-wallet
+  // atomic) is wallet-paid.
+  if (shouldTryAtomic && !hash) return { isConfirmed: false, sponsorship: 'sponsored', success: true };
+
+  if (hash) return { hash, isConfirmed: false, sponsorship: 'walletPaid', success: true };
+
+  return {
+    error: 'No transaction hash returned',
+    sponsorshipAttempted: false,
+    success: false,
+  };
 }
 
 async function executeDirectTransfer(params: ExecutionParams, recipient: string): Promise<ExecutionResult> {
@@ -166,11 +225,23 @@ async function executeDirectTransfer(params: ExecutionParams, recipient: string)
       nonce: params.nonce,
     });
 
-    return { hash: tx.hash, isConfirmed: false, success: true };
+    return { hash: tx.hash, isConfirmed: false, sponsorship: 'walletPaid', success: true };
   } catch (error) {
     logger.error(new RainbowError('[depositRapExecution]: directTransfer failed', error));
-    return { error: 'Transfer failed. Please try again.', success: false };
+    return {
+      error: 'Transfer failed. Please try again.',
+      sponsorshipAttempted: false,
+      success: false,
+    };
   }
+}
+
+function classifySponsorshipFailure(errorMessage: string): DepositSponsorshipFailureReason {
+  if (isInsufficientSponsorBalanceError(errorMessage)) return 'insufficientSponsorBalance';
+  if (errorMessage.includes('Managed relay execution failed') || errorMessage.includes('Managed relay execution reverted')) {
+    return 'sponsoredRelayExecutionFailed';
+  }
+  return 'unknownSponsorshipFailure';
 }
 
 // ============ Asset Building ================================================ //
