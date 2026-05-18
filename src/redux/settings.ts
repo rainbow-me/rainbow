@@ -165,6 +165,7 @@ export const settingsChangeTestnetsEnabled =
       type: SETTINGS_UPDATE_TESTNET_PREF_SUCCESS,
     });
     saveTestnetsEnabled(testnetsEnabled);
+    analytics.identify({ enabledTestnets: testnetsEnabled });
   };
 
 export const settingsChangeAppIcon = (appIcon: string) => (dispatch: Dispatch<SettingsStateUpdateAppIconSuccessAction>) => {
