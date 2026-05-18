@@ -4,7 +4,7 @@ on:
   push:
     branches: [develop]
   pull_request:
-    types: [opened, synchronize, reopened, ready_for_review, labeled]
+    types: [labeled, synchronize, reopened]
 
 env:
   PR_NUMBER: ${{ github.event.pull_request.number }}
@@ -15,11 +15,8 @@ jobs:
     if: |
       github.event_name == 'push' ||
       (github.event_name == 'pull_request' &&
-       github.event.action != 'labeled' &&
-       github.event.pull_request.draft == false) ||
-      (github.event_name == 'pull_request' &&
-       github.event.action == 'labeled' &&
-       github.event.label.name == 'e2e')
+       contains(github.event.pull_request.labels.*.name, 'e2e') &&
+       (github.event.action != 'labeled' || github.event.label.name == 'e2e'))
     runs-on: blacksmith-8vcpu-ubuntu-2404
     timeout-minutes: 30
     concurrency:
@@ -221,9 +218,11 @@ jobs:
 
   perf-tests:
     name: Perf Tests
-    if: |
-      github.event_name == 'push' ||
-      (github.event_name == 'pull_request' && github.event.action != 'labeled')
+    # Disabled pending a measurement strategy rethink. Single-run variance on
+    # Device Farm exceeds typical PR-scoped signal, and no consumer currently
+    # reads the develop perf JSON either. To be replaced by a scheduled
+    # sampling approach with baseline storage and distribution comparison.
+    if: false
     runs-on: blacksmith-2vcpu-ubuntu-2404
     needs: build
     timeout-minutes: 30
