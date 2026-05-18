@@ -19,13 +19,13 @@ import { useSelectedWallet } from '@/state/wallets/walletsStore';
 import { useTheme } from '@/theme/ThemeContext';
 import { cloudPlatform } from '@/utils/platform';
 
-import { executeFnIfCloudBackupAvailable } from '../backup';
-import { useCreateBackup } from '../hooks/useCreateBackup';
-import { backupsStore, CloudBackupState } from '../stores/backupsStore';
+import { executeFnIfCloudBackupAvailable } from '../../backup';
+import { useCreateBackup } from '../../hooks/useCreateBackup';
+import { backupsStore, CloudBackupState } from '../../stores/backupsStore';
 
 const imageSize = 72;
 
-export default function BackupSheetSectionNoProvider() {
+export function BackupWalletPrompt() {
   const { navigate, goBack } = useNavigation();
   const selectedWallet = useSelectedWallet();
   const createBackup = useCreateBackup();
