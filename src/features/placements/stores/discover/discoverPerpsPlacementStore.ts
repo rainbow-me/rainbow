@@ -34,7 +34,14 @@ const EMPTY_DISCOVER_PERPS_PLACEMENT_STATE: DiscoverPerpsPlacementState = {
   placement: undefined,
 };
 
+const LOADING_DISCOVER_PERPS_PLACEMENT_STATE: DiscoverPerpsPlacementState = {
+  isLoading: true,
+  items: EMPTY_DISCOVER_PERP_MARKET_ITEMS,
+  placement: undefined,
+};
+
 let lastPerpsPlacementDiagnosticKey: string | null = null;
+let lastResolvedPerpsPlacementState: DiscoverPerpsPlacementState | null = null;
 
 // ============ Derived Store ================================================== //
 
@@ -43,7 +50,8 @@ let lastPerpsPlacementDiagnosticKey: string | null = null;
  */
 export const useDiscoverPerpsPlacement = createDerivedStore<DiscoverPerpsPlacementState>(
   $ => {
-    const enabled = $(useRemoteConfigStore, shouldEnablePerpsPlacements) && !IS_TEST;
+    const remoteConfigEnabled = $(useRemoteConfigStore, shouldEnablePerpsPlacements);
+    const remoteConfigLoading = $(useRemoteConfigStore, s => s.getStatus('isInitialLoad'));
     const placementsLoading = $(usePlacementsStore, s => s.getStatus('isInitialLoad'));
     const marketsError = $(useHyperliquidMarketsStore, s => s.getStatus('isError'));
     const marketsReady = $(useHyperliquidMarketsStore, s => s.getStatus('isSuccess'));
@@ -51,7 +59,12 @@ export const useDiscoverPerpsPlacement = createDerivedStore<DiscoverPerpsPlaceme
     const placement = $(usePlacementsStore, s => s.getPlacement(PLACEMENT_IDS.DISCOVER_PERPS_CAROUSEL));
     const placementItems = $(usePlacementsStore, selectPerpsPlacementItems, shallowEqual);
 
-    if (!enabled) return EMPTY_DISCOVER_PERPS_PLACEMENT_STATE;
+    if (IS_TEST) return EMPTY_DISCOVER_PERPS_PLACEMENT_STATE;
+
+    if (!remoteConfigEnabled) {
+      if (remoteConfigLoading) return lastResolvedPerpsPlacementState ?? LOADING_DISCOVER_PERPS_PLACEMENT_STATE;
+      return EMPTY_DISCOVER_PERPS_PLACEMENT_STATE;
+    }
 
     const items = buildDiscoverPerpsMarketItems(placementItems, markets);
     const isLoading = placementsLoading || (placement !== undefined && items.length === 0 && !marketsReady && !marketsError);
@@ -80,7 +93,9 @@ export const useDiscoverPerpsPlacement = createDerivedStore<DiscoverPerpsPlaceme
       }
     }
 
-    return { isLoading, items, placement: resolvedPlacement };
+    const state = { isLoading, items, placement: resolvedPlacement };
+    if (items.length > 0) lastResolvedPerpsPlacementState = state;
+    return state;
   },
 
   { equalityFn: isDiscoverPerpsPlacementStateEqual, fastMode: true }
