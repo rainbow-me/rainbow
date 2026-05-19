@@ -10,8 +10,8 @@ import type Routes from '@/navigation/routesNames';
 import { type RootStackParamList } from '@/navigation/types';
 
 import { backupsStore } from '../stores/backupsStore';
+import { BackupWalletPrompt } from './backup-wallet-prompt/BackupWalletPrompt';
 import BackupCloudStep from './BackupCloudStep';
-import BackupWalletPrompt from './BackupWalletPrompt';
 import CloudBackupPrompt from './CloudBackupPrompt';
 import ManualBackupPrompt from './ManualBackupPrompt';
 import RestoreCloudStep from './RestoreCloudStep';
