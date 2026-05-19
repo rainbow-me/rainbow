@@ -23,14 +23,28 @@ type PlacementsById = Partial<Record<PlacementId, Placement>>;
 // ============ Constants ====================================================== //
 
 const EMPTY_PLACEMENT_ITEMS: PlacementItem[] = [];
-const PLACEMENT_ID_SET = new Set<string>(Object.values(PLACEMENT_IDS));
+const PLACEMENT_ID_LIST = Object.values(PLACEMENT_IDS);
+const PLACEMENT_ID_SET = new Set<string>(PLACEMENT_ID_LIST);
 
 // ============ Query Store ==================================================== //
 
 export const usePlacementsStore = createQueryStore<PlacementsById, never, PlacementsState>(
   {
     fetcher: fetchPlacements,
-    setData: ({ data, set }) => set({ placementsById: data }),
+    setData: ({ data, set }) =>
+      set(state => {
+        let placementsById = data;
+
+        for (const id of PLACEMENT_ID_LIST) {
+          const cachedPlacement = state.placementsById[id];
+          if (placementsById[id] !== undefined || cachedPlacement === undefined) continue;
+
+          if (placementsById === data) placementsById = { ...data };
+          placementsById[id] = cachedPlacement;
+        }
+
+        return { placementsById };
+      }),
     staleTime: time.hours(1),
     cacheTime: time.days(2),
   },
