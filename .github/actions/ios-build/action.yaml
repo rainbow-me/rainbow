@@ -181,6 +181,13 @@ runs:
       env:
         APPLE_BUILD_CERTIFICATE_PASSWORD: ${{ inputs.apple-build-certificate-password }}
       run: |
+        # The provisioning-profile lookup is a `find | grep -v ... | head -1`
+        # pipeline. `find` exits non-zero when one of the two profile dirs is
+        # missing, and `grep -v` can do the same once everything filters out,
+        # even when the surviving path is correct. Disable pipefail so the
+        # overall pipeline reflects `head`'s exit, not transient upstream ones.
+        set +o pipefail
+
         # Export certificate + private key (identity) to a PKCS#12 file
         KEYCHAIN="$HOME/Library/Keychains/login.keychain-db"
         P12_OUT="/tmp/cert.p12"
