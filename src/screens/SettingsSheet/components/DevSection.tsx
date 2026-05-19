@@ -273,13 +273,6 @@ const DevSection = () => {
           testID="reset-keychain-section"
           titleComponent={<MenuItem.Title text={i18n.t(i18n.l.developer_settings.keychain.menu_title)} />}
         />
-        <MenuItem
-          leftComponent={<MenuItem.TextIcon icon="🧨" isEmoji />}
-          onPress={wipeAppAndRestart}
-          size={52}
-          testID="wipe-app-and-restart-section"
-          titleComponent={<MenuItem.Title text="Wipe App + Restart" />}
-        />
       </Menu>
       {!IS_STORE_INSTALL && (
         <>
@@ -289,6 +282,13 @@ const DevSection = () => {
               onPress={() => Restart.Restart()}
               size={52}
               titleComponent={<MenuItem.Title text={i18n.t(i18n.l.developer_settings.restart_app)} />}
+            />
+            <MenuItem
+              leftComponent={<MenuItem.TextIcon icon="🧨" isEmoji />}
+              onPress={wipeAppAndRestart}
+              size={52}
+              testID="wipe-app-and-restart-section"
+              titleComponent={<MenuItem.Title text="Wipe App + Restart" />}
             />
             {/* TEMP: Removal for public TF */}
             {/* <MenuItem
