@@ -223,10 +223,10 @@ runs:
       env:
         SENTRY_AUTH_TOKEN: ${{ inputs.sentry-auth-token }}
       with:
-        scheme: ${{ inputs.scheme }}
+        scheme: Rainbow
         destination: ${{ inputs.destination }}
         github-token: ${{ inputs.github-token }}
-        configuration: ${{ inputs.configuration }}
+        configuration: Release
         comment-bot: false
         re-sign: true
         certificate-base64: ${{ inputs.destination == 'device' && steps.code-signing.outputs.CERT_BASE64 || '' }}
