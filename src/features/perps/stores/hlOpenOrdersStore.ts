@@ -1,6 +1,7 @@
 import { type FrontendOpenOrdersResponse } from '@nktkas/hyperliquid/api/info';
 import { type Address } from 'viem';
 
+import { isValidAddress } from '@/features/address/core/address';
 import { infoClient } from '@/features/perps/services/hyperliquid-info-client';
 import { hyperliquidDexActions } from '@/features/perps/stores/hyperliquidDexStore';
 import { type OrderSide } from '@/features/perps/types';
@@ -88,6 +89,7 @@ export const useHlOpenOrdersStore = createQueryStore<FetchHlOpenOrdersResponse, 
   {
     fetcher: fetchHlOpenOrders,
     cacheTime: time.days(1),
+    enabled: $ => $(useWalletsStore, state => isValidAddress(state.accountAddress)),
     params: {
       address: $ => $(useWalletsStore).accountAddress,
     },
