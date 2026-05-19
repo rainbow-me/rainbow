@@ -22,90 +22,24 @@ jobs:
       cancel-in-progress: true
     timeout-minutes: 45
     outputs:
-      artifact-id: ${{ steps.rock-remote-build-ios.outputs.artifact-id }}
+      artifact-id: ${{ steps.build.outputs.artifact-id }}
     steps:
       - name: Checkout repo
         uses: actions/checkout@08eba0b27e820071cde6df949e0beb9ba4906955
 
-      - name: Setup Node.js
-        uses: actions/setup-node@6044e13b5dc448c55e2357c09f80417699197238 # v6.2.0
+      - name: Build
+        id: build
+        uses: ./.github/actions/ios-build
         with:
-          node-version-file: '.node-version'
-
-      - name: Set Xcode version
-        run: |
-          XCODE_VERSION=$(cat .xcode-version)
-          sudo xcode-select --switch /Applications/Xcode_${XCODE_VERSION}.app
-          xcodebuild -version
-
-      - name: Setup env key
-        uses: ./.github/actions/ssh/
-        with:
-          name: env
-          key: ${{ secrets.DEPLOY_PKEY_DOTENV_REPO }}
-
-      - name: Setup scripts key
-        uses: ./.github/actions/ssh/
-        with:
-          name: scripts
-          key: ${{ secrets.DEPLOY_PKEY_SCRIPTS_REPO }}
-
-      - name: Setup sandbox key
-        uses: ./.github/actions/ssh/
-        with:
-          name: sandbox
-          key: ${{ secrets.DEPLOY_PKEY_SANDBOX_REPO }}
-
-      - name: Setup env
-        env:
-          SSH_AUTH_SOCK: /tmp/ssh_agent_env.sock
-        run: |
-          git clone git@github.com:rainbow-me/rainbow-env.git
-          mv rainbow-env/dotenv .env
-          rm -rf rainbow-env
-          sed -i'' -e "s/IS_TESTING=false/IS_TESTING=true/" .env && rm -f .env-e
-          sed -i'' -e "s/ENABLE_DEV_MODE=1/ENABLE_DEV_MODE=0/" .env && rm -f .env-e
-          echo "1" > is_testing
-      - name: Setup scripts
-        env:
-          CI_SCRIPTS: ${{ secrets.CI_SCRIPTS }}
-          SSH_AUTH_SOCK: /tmp/ssh_agent_scripts.sock
-        run: |
-          eval $CI_SCRIPTS
-
-      - name: Get Yarn cache directory path
-        id: yarn-cache-dir-path
-        run: echo "dir=$(yarn config get cacheFolder)" >> $GITHUB_OUTPUT
-
-      - name: Cache Yarn dependencies
-        uses: actions/cache@0057852bfaa89a56745cba8c7296529d2fc39830
-        with:
-          path: |
-            ${{ steps.yarn-cache-dir-path.outputs.dir }}
-            .yarn/cache
-            .yarn/install-state.gz
-            !.eslintcache
-          key: yarn-${{ runner.os }}-${{ hashFiles('yarn.lock') }}
-          restore-keys: |
-            ${{ runner.os }}-yarn-
-
-      - name: Install dependencies
-        env:
-          SSH_AUTH_SOCK: /tmp/ssh_agent_sandbox.sock
-        run: yarn install --immutable && yarn setup
-
-      - name: Rock Remote Build - iOS simulator
-        id: rock-remote-build-ios
-        uses: callstackincubator/ios@0bfe6ed5c14bdf3fb88a638d5a19b440e59e845f
-        env:
-          SENTRY_AUTH_TOKEN: ${{ secrets.SENTRY_AUTH_TOKEN }}
-        with:
-          scheme: Rainbow
           destination: simulator
+          is-testing: 'true'
+          enable-dev-mode: '0'
+          sentry-auth-token: ${{ secrets.SENTRY_AUTH_TOKEN }}
           github-token: ${{ secrets.GITHUB_TOKEN }}
-          configuration: Release
-          comment-bot: false
-          re-sign: true
+          deploy-pkey-dotenv: ${{ secrets.DEPLOY_PKEY_DOTENV_REPO }}
+          deploy-pkey-scripts: ${{ secrets.DEPLOY_PKEY_SCRIPTS_REPO }}
+          deploy-pkey-sandbox: ${{ secrets.DEPLOY_PKEY_SANDBOX_REPO }}
+          ci-scripts: ${{ secrets.CI_SCRIPTS }}
 
   # iOS e2e tests job
   e2e-tests:
