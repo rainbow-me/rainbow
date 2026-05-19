@@ -44,3 +44,10 @@ Key non-obvious directories:
 - **No barrel exports** -- import directly from source files, not `index.ts`. Barrels defeat tree-shaking, hide circular deps, and trigger cascading module loading. ESLint-enforced with a limited allowlist.
 - **Type-only imports** -- use the `type` annotation for type-only imports (ESLint-enforced).
 - **TypeScript over JavaScript** -- write all new files in `.ts`/`.tsx`. Remaining JS files are checked against an error baseline (`yarn lint:js-types`) -- don't regress it.
+
+## Cursor Cloud specific instructions
+
+- **GraphQL codegen** is required before `yarn lint:ts` passes. Run: `cd src/graphql && yarn install && yarn codegen`. The ENS schema will fail without `GRAPH_ENS_API_KEY`; generate without it by creating a temporary codegen config that excludes the `ens` entry, or provide a stub `src/graphql/__generated__/ens.ts` (the directory is gitignored). The other schemas (arc, arcDev, metadata, metadataPOST) generate fine without special keys.
+- **Networks JSON** is required for typecheck. Run: `METADATA_BASE_URL=https://metadata.p.rainbow.me yarn fetch:networks` (the `.env` file usually provides `METADATA_BASE_URL`, but it may be absent in cloud).
+- This is a **React Native** app; iOS/Android builds require Xcode and Android SDK which are unavailable in cloud. Cloud agents can run `yarn lint`, `yarn lint:ts`, `yarn lint:js`, `yarn test`, and `yarn check:cycles`.
+- Pre-commit hook runs `lint-staged` via Husky.
