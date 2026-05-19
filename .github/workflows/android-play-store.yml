@@ -73,7 +73,7 @@ jobs:
           if grep -q '^IS_TESTING=true$' .env; then echo "::error::.env has IS_TESTING=true"; exit 1; fi
           if grep -q '^ENABLE_DEV_MODE=1$' .env; then echo "::error::.env has ENABLE_DEV_MODE=1"; exit 1; fi
 
-      - name: Decode and sanity-check upload keystore
+      - name: Decode and verify upload keystore
         env:
           KEYSTORE_BASE64: ${{ secrets.ANDROID_PROD_KEYSTORE_BASE64 }}
           KEYSTORE_PASSWORD: ${{ secrets.ANDROID_PROD_KEYSTORE_PASSWORD }}
@@ -81,13 +81,44 @@ jobs:
         run: |
           set -euo pipefail
           echo "$KEYSTORE_BASE64" | base64 -d > "$RUNNER_TEMP/rainbow.keystore"
-          # Surfaces clear errors (bad file / wrong password / missing alias) before
-          # Gradle's cryptic signing failures. Not a security check; the real cert
-          # verification is via Play Console rejecting non-upload-key uploads.
+
+          # Sanity check: clear errors (bad file / wrong password / missing alias)
+          # before Gradle's cryptic signing failures.
           keytool -list \
             -keystore "$RUNNER_TEMP/rainbow.keystore" \
             -storepass "$KEYSTORE_PASSWORD" \
             -alias "$KEY_ALIAS" > /dev/null
+
+          # Verify the keystore holds the Rainbow upload cert. Source of truth is
+          # the UPLOAD_CERT_SHA256 const in AppInstallInfoModule.kt — the same
+          # fingerprint the app uses at runtime to classify internal builds, so
+          # CI and runtime can't drift. Not a security boundary (Play Console
+          # rejects non-upload-key uploads); this just fails fast on accidental
+          # keystore swaps / typos / un-coordinated rotations.
+          KT_FILE="android/app/src/main/java/me/rainbow/NativeModules/AppInstallInfo/AppInstallInfoModule.kt"
+          expected_raw=$(grep -E '^[[:space:]]*private const val UPLOAD_CERT_SHA256[[:space:]]*=' "$KT_FILE" | sed -E 's/.*"([0-9A-Fa-f:]+)".*/\1/' | head -1 || true)
+          if [ -z "${expected_raw:-}" ]; then
+            echo "::error file=$KT_FILE::Could not extract UPLOAD_CERT_SHA256 from $KT_FILE. The Android Play Store build workflow reads the expected upload cert fingerprint from this const."
+            exit 1
+          fi
+          expected_sha=$(printf '%s' "$expected_raw" | tr -d ':' | tr '[:lower:]' '[:upper:]')
+
+          actual_sha=$(
+            keytool -exportcert \
+              -keystore "$RUNNER_TEMP/rainbow.keystore" \
+              -storepass "$KEYSTORE_PASSWORD" \
+              -alias "$KEY_ALIAS" 2>/dev/null \
+            | sha256sum \
+            | awk '{print toupper($1)}'
+          )
+
+          if [ "$actual_sha" != "$expected_sha" ]; then
+            echo "::error::Upload keystore certificate fingerprint mismatch."
+            echo "::error::  expected (from $KT_FILE): $expected_sha"
+            echo "::error::  actual   (from keystore):  $actual_sha"
+            echo "::error::Either the wrong keystore is configured for the release-android env, or the upload key was rotated without updating AppInstallInfoModule.kt."
+            exit 1
+          fi
 
       - name: Run CI scripts
         env:
