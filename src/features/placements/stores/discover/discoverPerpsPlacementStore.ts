@@ -45,7 +45,7 @@ export const useDiscoverPerpsPlacement = createDerivedStore<DiscoverPerpsPlaceme
   $ => {
     const enabled = $(useRemoteConfigStore, shouldEnablePerpsPlacements) && !IS_TEST;
     const placementsLoading = $(usePlacementsStore, s => s.getStatus('isInitialLoad'));
-    const marketsLoading = $(useHyperliquidMarketsStore, s => s.getStatus('isInitialLoad'));
+    const marketsError = $(useHyperliquidMarketsStore, s => s.getStatus('isError'));
     const marketsReady = $(useHyperliquidMarketsStore, s => s.getStatus('isSuccess'));
     const markets = $(useHyperliquidMarketsStore, s => s.markets);
     const placement = $(usePlacementsStore, s => s.getPlacement(PLACEMENT_IDS.DISCOVER_PERPS_CAROUSEL));
@@ -54,7 +54,7 @@ export const useDiscoverPerpsPlacement = createDerivedStore<DiscoverPerpsPlaceme
     if (!enabled) return EMPTY_DISCOVER_PERPS_PLACEMENT_STATE;
 
     const items = buildDiscoverPerpsMarketItems(placementItems, markets);
-    const isLoading = placementsLoading || (marketsLoading && placement !== undefined && items.length === 0);
+    const isLoading = placementsLoading || (placement !== undefined && items.length === 0 && !marketsReady && !marketsError);
     const resolvedPlacement = items.length ? placement : undefined;
 
     if (marketsReady && !isLoading && placement && placementItems.length > 0 && items.length === 0) {
