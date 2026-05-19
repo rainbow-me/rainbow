@@ -1,0 +1,244 @@
+name: Build iOS
+
+inputs:
+  destination:
+    description: 'simulator or device'
+    required: true
+  is-testing:
+    description: When 'true', rewrites .env IS_TESTING=true and writes '1' to the is_testing file
+    required: false
+    default: 'false'
+  enable-dev-mode:
+    description: When non-empty, rewrites .env ENABLE_DEV_MODE to this value (e.g. '0'). Empty leaves .env untouched.
+    required: false
+    default: ''
+
+  sentry-auth-token:
+    description: Sentry auth token used for source-map uploads
+    required: true
+  github-token:
+    description: GitHub token used to upload the build artifact
+    required: true
+  deploy-pkey-dotenv:
+    description: SSH key for the rainbow-env repo (.env source)
+    required: true
+  deploy-pkey-scripts:
+    description: SSH key for the CI scripts repo
+    required: true
+  deploy-pkey-sandbox:
+    description: SSH key used by yarn install for sandbox-protected deps
+    required: true
+  ci-scripts:
+    description: Shell snippet evaluated to set up CI scripts
+    required: true
+
+  deploy-pkey-codesigning:
+    description: SSH key for the code-signing repo. Required when destination is 'device'.
+    required: false
+    default: ''
+  fastlane-user:
+    description: Apple ID used by fastlane match. Required when destination is 'device'.
+    required: false
+    default: ''
+  fastlane-password:
+    description: App-specific password for the fastlane Apple ID. Required when destination is 'device'.
+    required: false
+    default: ''
+  match-password:
+    description: Encryption passphrase for the match certificate repo. Required when destination is 'device'.
+    required: false
+    default: ''
+  apple-build-certificate-password:
+    description: Password protecting the exported P12 build certificate. Required when destination is 'device'.
+    required: false
+    default: ''
+  apple-keychain-password:
+    description: Password for the temporary signing keychain. Required when destination is 'device'.
+    required: false
+    default: ''
+
+outputs:
+  artifact-id:
+    description: ID of the uploaded build artifact
+    value: ${{ steps.build.outputs.artifact-id }}
+  artifact-url:
+    description: URL of the uploaded build artifact
+    value: ${{ steps.build.outputs.artifact-url }}
+
+runs:
+  using: composite
+  steps:
+    - name: Setup Node.js
+      uses: actions/setup-node@6044e13b5dc448c55e2357c09f80417699197238 # v6.2.0
+      with:
+        node-version-file: '.node-version'
+
+    - name: Set Xcode version
+      shell: bash
+      run: |
+        XCODE_VERSION=$(cat .xcode-version)
+        sudo xcode-select --switch /Applications/Xcode_${XCODE_VERSION}.app
+        xcodebuild -version
+
+    - name: Setup env key
+      uses: ./.github/actions/ssh/
+      with:
+        name: env
+        key: ${{ inputs.deploy-pkey-dotenv }}
+
+    - name: Setup scripts key
+      uses: ./.github/actions/ssh/
+      with:
+        name: scripts
+        key: ${{ inputs.deploy-pkey-scripts }}
+
+    - name: Setup sandbox key
+      uses: ./.github/actions/ssh/
+      with:
+        name: sandbox
+        key: ${{ inputs.deploy-pkey-sandbox }}
+
+    - name: Setup code signing key
+      if: inputs.destination == 'device'
+      uses: ./.github/actions/ssh/
+      with:
+        name: codesigning
+        key: ${{ inputs.deploy-pkey-codesigning }}
+
+    - name: Setup env
+      shell: bash
+      env:
+        SSH_AUTH_SOCK: /tmp/ssh_agent_env.sock
+        IS_TESTING: ${{ inputs.is-testing }}
+        ENABLE_DEV_MODE: ${{ inputs.enable-dev-mode }}
+      run: |
+        git clone git@github.com:rainbow-me/rainbow-env.git
+        mv rainbow-env/dotenv .env
+        rm -rf rainbow-env
+        if [ "$IS_TESTING" = "true" ]; then
+          sed -i'' -e "s/IS_TESTING=false/IS_TESTING=true/" .env && rm -f .env-e
+          echo "1" > is_testing
+        else
+          echo "0" > is_testing
+        fi
+        if [ -n "$ENABLE_DEV_MODE" ]; then
+          sed -i'' -e "s/ENABLE_DEV_MODE=1/ENABLE_DEV_MODE=$ENABLE_DEV_MODE/" .env && rm -f .env-e
+        fi
+
+    - name: Setup scripts
+      shell: bash
+      env:
+        CI_SCRIPTS: ${{ inputs.ci-scripts }}
+        SSH_AUTH_SOCK: /tmp/ssh_agent_scripts.sock
+      run: |
+        eval $CI_SCRIPTS
+
+    - name: Get Yarn cache directory path
+      id: yarn-cache-dir-path
+      shell: bash
+      run: echo "dir=$(yarn config get cacheFolder)" >> $GITHUB_OUTPUT
+
+    - name: Cache Yarn dependencies
+      uses: actions/cache@0057852bfaa89a56745cba8c7296529d2fc39830
+      with:
+        path: |
+          ${{ steps.yarn-cache-dir-path.outputs.dir }}
+          .yarn/cache
+          .yarn/install-state.gz
+          !.eslintcache
+        key: yarn-${{ runner.os }}-${{ hashFiles('yarn.lock') }}
+        restore-keys: |
+          ${{ runner.os }}-yarn-
+
+    - name: Install dependencies
+      shell: bash
+      env:
+        SSH_AUTH_SOCK: /tmp/ssh_agent_sandbox.sock
+      run: yarn install --immutable && yarn setup
+
+    - name: Set up Ruby
+      if: inputs.destination == 'device'
+      uses: ruby/setup-ruby@09a7688d3b55cf0e976497ff046b70949eeaccfd
+      with:
+        bundler-cache: true
+
+    - name: Setup code signing with match
+      if: inputs.destination == 'device'
+      shell: bash
+      env:
+        FASTLANE_USER: ${{ inputs.fastlane-user }}
+        FASTLANE_PASSWORD: ${{ inputs.fastlane-password }}
+        MATCH_PASSWORD: ${{ inputs.match-password }}
+        SSH_AUTH_SOCK: /tmp/ssh_agent_codesigning.sock
+      run: |
+        cd ios
+        bundle exec fastlane match adhoc --app_identifier me.rainbow,me.rainbow.PriceWidget,me.rainbow.SelectTokenIntent,me.rainbow.ImageNotification,me.rainbow.OpenInRainbow,me.rainbow.ShareWithRainbow --git_url git@github.com:rainbow-me/rainbow-code-signing.git --readonly
+
+    - name: Export certificates and provisioning profiles
+      if: inputs.destination == 'device'
+      id: code-signing
+      shell: bash
+      env:
+        APPLE_BUILD_CERTIFICATE_PASSWORD: ${{ inputs.apple-build-certificate-password }}
+      run: |
+        # The provisioning-profile lookup is a `find | grep -v ... | head -1`
+        # pipeline. `find` exits non-zero when one of the two profile dirs is
+        # missing, and `grep -v` can do the same once everything filters out,
+        # even when the surviving path is correct. Disable pipefail so the
+        # overall pipeline reflects `head`'s exit, not transient upstream ones.
+        set +o pipefail
+
+        # Export certificate + private key (identity) to a PKCS#12 file
+        KEYCHAIN="$HOME/Library/Keychains/login.keychain-db"
+        P12_OUT="/tmp/cert.p12"
+
+        # Export all identities in the keychain as a single PKCS#12 (works fine for CI)
+        # Note: -t must be 'identities' for pkcs12 with private keys.
+        security export -k "$KEYCHAIN" -t identities -f pkcs12 -P "$APPLE_BUILD_CERTIFICATE_PASSWORD" -o "$P12_OUT"
+
+        # Base64 encode for the action input
+        base64 -i "$P12_OUT" > /tmp/cert_b64.txt
+        CERT_BASE64=$(cat /tmp/cert_b64.txt)
+        echo "CERT_BASE64=$CERT_BASE64" >> $GITHUB_OUTPUT
+        echo "::add-mask::$CERT_BASE64"
+
+        # Find and export the provisioning profile
+        PP_PATH=$(find ~/Library/Developer/Xcode/UserData/Provisioning\ Profiles ~/Library/MobileDevice/Provisioning\ Profiles -name "*.mobileprovision" -exec grep -l "me.rainbow" {} \; 2>/dev/null | grep -v PriceWidget | grep -v Intent | grep -v Notification | grep -v OpenIn | grep -v ShareWith | head -1)
+
+        base64 -i "$PP_PATH" > /tmp/pp_b64.txt
+        PROFILE_BASE64=$(cat /tmp/pp_b64.txt)
+        echo "PROFILE_BASE64=$PROFILE_BASE64" >> $GITHUB_OUTPUT
+        echo "::add-mask::$PROFILE_BASE64"
+
+        PROFILE_NAME=$(security cms -D -i "$PP_PATH" | plutil -extract Name raw -)
+        echo "PROFILE_NAME=$PROFILE_NAME" >> $GITHUB_OUTPUT
+        echo "::add-mask::$PROFILE_NAME"
+
+        PROFILE_UUID=$(security cms -D -i "$PP_PATH" | plutil -extract UUID raw -)
+        echo "PROFILE_UUID=$PROFILE_UUID" >> $GITHUB_OUTPUT
+        echo "::add-mask::$PROFILE_UUID"
+
+    - name: Update provisioning profiles to AdHoc
+      if: inputs.destination == 'device'
+      shell: bash
+      run: |
+        sed -i '' 's/match AppStore/match AdHoc/g' ios/Rainbow.xcodeproj/project.pbxproj
+
+    - name: Build
+      id: build
+      uses: callstackincubator/ios@0bfe6ed5c14bdf3fb88a638d5a19b440e59e845f
+      env:
+        SENTRY_AUTH_TOKEN: ${{ inputs.sentry-auth-token }}
+      with:
+        scheme: Rainbow
+        destination: ${{ inputs.destination }}
+        github-token: ${{ inputs.github-token }}
+        configuration: Release
+        comment-bot: false
+        re-sign: true
+        certificate-base64: ${{ inputs.destination == 'device' && steps.code-signing.outputs.CERT_BASE64 || '' }}
+        certificate-password: ${{ inputs.destination == 'device' && inputs.apple-build-certificate-password || '' }}
+        provisioning-profile-base64: ${{ inputs.destination == 'device' && steps.code-signing.outputs.PROFILE_BASE64 || '' }}
+        provisioning-profile-name: ${{ inputs.destination == 'device' && steps.code-signing.outputs.PROFILE_NAME || '' }}
+        keychain-password: ${{ inputs.destination == 'device' && inputs.apple-keychain-password || '' }}
+        rock-build-extra-params: ${{ inputs.destination == 'device' && '--export-options-plist ExportOptions.adhoc.plist' || '' }}
