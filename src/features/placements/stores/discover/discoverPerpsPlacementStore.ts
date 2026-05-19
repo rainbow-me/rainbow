@@ -4,6 +4,7 @@ import { type PerpMarketsBySymbol, type PerpMarketWithMetadata } from '@/feature
 import { PLACEMENT_IDS } from '@/features/placements/constants';
 import { usePlacementsStore, type PlacementsState } from '@/features/placements/stores/placementsStore';
 import { type Placement, type PlacementItem } from '@/features/placements/types';
+import { logger } from '@/logger';
 import { useRemoteConfigStore, type RemoteConfigState } from '@/model/remoteConfig';
 import { createDerivedStore } from '@/state/internal/createDerivedStore';
 import { shallowEqual } from '@/worklets/comparisons';
@@ -33,6 +34,8 @@ const EMPTY_DISCOVER_PERPS_PLACEMENT_STATE: DiscoverPerpsPlacementState = {
   placement: undefined,
 };
 
+let lastPerpsPlacementDiagnosticKey: string | null = null;
+
 // ============ Derived Store ================================================== //
 
 /**
@@ -43,6 +46,7 @@ export const useDiscoverPerpsPlacement = createDerivedStore<DiscoverPerpsPlaceme
     const enabled = $(useRemoteConfigStore, shouldEnablePerpsPlacements) && !IS_TEST;
     const placementsLoading = $(usePlacementsStore, s => s.getStatus('isInitialLoad'));
     const marketsLoading = $(useHyperliquidMarketsStore, s => s.getStatus('isInitialLoad'));
+    const marketsReady = $(useHyperliquidMarketsStore, s => s.getStatus('isSuccess'));
     const markets = $(useHyperliquidMarketsStore, s => s.markets);
     const placement = $(usePlacementsStore, s => s.getPlacement(PLACEMENT_IDS.DISCOVER_PERPS_CAROUSEL));
     const placementItems = $(usePlacementsStore, selectPerpsPlacementItems, shallowEqual);
@@ -52,6 +56,29 @@ export const useDiscoverPerpsPlacement = createDerivedStore<DiscoverPerpsPlaceme
     const items = buildDiscoverPerpsMarketItems(placementItems, markets);
     const isLoading = placementsLoading || (marketsLoading && placement !== undefined && items.length === 0);
     const resolvedPlacement = items.length ? placement : undefined;
+
+    if (marketsReady && !isLoading && placement && placementItems.length > 0 && items.length === 0) {
+      const unresolvedRefIds = placementItems.map(item => item.ref.id).filter(id => !markets[id]);
+      const diagnosticKey = unresolvedRefIds.join(',');
+
+      if (diagnosticKey !== lastPerpsPlacementDiagnosticKey) {
+        lastPerpsPlacementDiagnosticKey = diagnosticKey;
+
+        logger.warn('[discoverPlacements]: Perps placement refs did not resolve to markets', {
+          configuredRefIdsCount: placementItems.length,
+          placementId: PLACEMENT_IDS.DISCOVER_PERPS_CAROUSEL,
+          tags: {
+            feature: 'discover_placements',
+            placementId: PLACEMENT_IDS.DISCOVER_PERPS_CAROUSEL,
+            provider: 'hyperliquid',
+            reason: 'unresolved_refs',
+          },
+          type: 'query',
+          unresolvedRefIds: unresolvedRefIds.slice(0, 8),
+          unresolvedRefIdsCount: unresolvedRefIds.length,
+        });
+      }
+    }
 
     return { isLoading, items, placement: resolvedPlacement };
   },
