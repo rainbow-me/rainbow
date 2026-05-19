@@ -24,6 +24,7 @@ const chainsIdByNetwork: Record<Network, ChainId> = {
   [Network.gnosis]: ChainId.gnosis,
   [Network.blast]: ChainId.blast,
   [Network.goerli]: ChainId.goerli,
+  [Network.tea]: ChainId.tea,
 };
 
 export interface AppSessionV0 {

@@ -29,6 +29,7 @@ export enum Network {
   scroll = 'scroll',
   zksync = 'zksync',
   zora = 'zora',
+  tea = 'tea',
 }
 
 export enum ChainId {
@@ -66,6 +67,7 @@ export enum ChainId {
   sanko = chain.sanko.id,
   scroll = chain.scroll.id,
   sepolia = chain.sepolia.id,
+  tea = 6122,
   zksync = chain.zksync.id,
   zora = chain.zora.id,
   zoraSepolia = chain.zoraSepolia.id,
@@ -106,6 +108,7 @@ export enum ChainName {
   sanko = 'sanko',
   scroll = 'scroll',
   sepolia = 'sepolia',
+  tea = 'tea',
   zksync = 'zksync',
   zora = 'zora',
   zoraSepolia = 'zora-sepolia',
