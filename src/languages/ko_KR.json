@@ -2396,6 +2396,9 @@
       "network_fee": "네트워크 수수료",
       "hash_copied": "􀁣 거래 해시 복사됨",
       "address_copied": "􀁣 주소 복사됨",
+      "link_copied": "􀁣 Link copied",
+      "view_details": "상세 정보 보기",
+      "copy_link": "Copy Link",
       "smart_account": "스마트 계정",
       "try_again": "􀅉 다시 시도",
       "context_menu": {
