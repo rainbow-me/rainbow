@@ -463,14 +463,14 @@ const DevSection = () => {
             })}
           </Menu>
           <Menu header={i18n.t(i18n.l.developer_settings.headers.feature_flags)}>
-            {(Object.keys(config) as ExperimentalConfigKey[])
+            {(Object.keys(defaultConfig) as ExperimentalConfigKey[])
               .sort()
               .filter(key => defaultConfig[key]?.settings)
               .map(key => (
                 <MenuItem
                   key={key}
                   onPress={() => onExperimentalKeyChange(key)}
-                  rightComponent={!!config[key] && <MenuItem.StatusIcon status="selected" />}
+                  rightComponent={!!(config[key] ?? defaultConfig[key].value) && <MenuItem.StatusIcon status="selected" />}
                   size={52}
                   titleComponent={<MenuItem.Title text={key} />}
                 />

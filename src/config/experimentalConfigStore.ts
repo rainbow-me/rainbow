@@ -18,7 +18,7 @@ export const useExperimentalConfigStore = createRainbowStore<ExperimentalConfigS
     },
 
     toggleFlag: key => {
-      set(state => ({ config: { ...state.config, [key]: !state.config[key] } }));
+      set(state => ({ config: { ...state.config, [key]: !(state.config[key] ?? defaultConfig[key].value) } }));
     },
   }),
 
