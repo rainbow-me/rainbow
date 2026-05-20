@@ -2396,6 +2396,9 @@
       "network_fee": "नेटवर्क शुल्क",
       "hash_copied": "􀁣 लेनदेन हैश कॉपी किया गया",
       "address_copied": "􀁣 पता कॉपी किया गया",
+      "link_copied": "􀁣 लिंक कॉपी किया",
+      "view_details": "विवरण देखें",
+      "copy_link": "लिंक कॉपी करें",
       "smart_account": "स्मार्ट अकाउंट",
       "try_again": "􀅉 पुन: प्रयास करें",
       "context_menu": {
