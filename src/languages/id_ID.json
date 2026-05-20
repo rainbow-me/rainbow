@@ -2396,6 +2396,9 @@
       "network_fee": "Biaya Jaringan",
       "hash_copied": "􀁣 Hash transaksi disalin",
       "address_copied": "􀁣 Alamat disalin",
+      "link_copied": "􀁣 Tautan Tersalin",
+      "view_details": "Lihat Detail",
+      "copy_link": "Salin Tautan",
       "smart_account": "Akun Pintar",
       "try_again": "􀅉 Coba lagi",
       "context_menu": {
