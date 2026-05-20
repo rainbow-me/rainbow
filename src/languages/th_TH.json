@@ -2396,6 +2396,9 @@
       "network_fee": "ค่าธรรมเนียมเครือข่าย",
       "hash_copied": "􀁣 คัดลอกฮาชธุรกรรมแล้ว",
       "address_copied": "􀁣 คัดลอกที่อยู่แล้ว",
+      "link_copied": "􀁣 Link copied",
+      "view_details": "ดูรายละเอียด",
+      "copy_link": "Copy Link",
       "smart_account": "บัญชีอัจฉริยะ",
       "try_again": "􀅉 ลองอีกครั้ง",
       "context_menu": {
