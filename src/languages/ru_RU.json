@@ -2396,6 +2396,9 @@
       "network_fee": "Сетевая комиссия",
       "hash_copied": "􀁣 Скопирован хэш транзакции",
       "address_copied": "􀁣 Скопирован адрес",
+      "link_copied": "􀁣 Link copied",
+      "view_details": "Просмотреть детали",
+      "copy_link": "Copy Link",
       "smart_account": "Smart Account",
       "try_again": "􀅉 Попробуйте снова",
       "context_menu": {
