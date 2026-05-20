@@ -2396,6 +2396,9 @@
       "network_fee": "ネットワーク手数料",
       "hash_copied": "􀁣 トランザクションハッシュがコピーされました",
       "address_copied": "􀁣 アドレスがコピーされました",
+      "link_copied": "􀁣 Link copied",
+      "view_details": "詳細を表示",
+      "copy_link": "Copy Link",
       "smart_account": "スマートアカウント",
       "try_again": "􀅉 もう一度試してください",
       "context_menu": {
