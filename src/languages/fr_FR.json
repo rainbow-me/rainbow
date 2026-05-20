@@ -2396,6 +2396,9 @@
       "network_fee": "Frais de réseau",
       "hash_copied": "􀁣 Hash de transaction copié",
       "address_copied": "􀁣 Adresse copiée",
+      "link_copied": "􀁣 Link copied",
+      "view_details": "Voir les détails",
+      "copy_link": "Copy Link",
       "smart_account": "Compte intelligent",
       "try_again": "􀅉 Essayez de nouveau",
       "context_menu": {
