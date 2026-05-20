@@ -80,7 +80,7 @@ export const TransactionDetailsHashAndActionsSection: React.FC<Props> = ({ trans
   return (
     <>
       <TransactionDetailsDivider />
-      <Box paddingTop="8px">
+      <Box paddingTop="8px" paddingBottom="20px">
         <Stack space="20px">
           {formattedHash && (
             <ButtonPressAnimation onPress={onHashPress} scaleTo={0.96}>

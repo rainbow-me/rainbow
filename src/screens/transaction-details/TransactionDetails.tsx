@@ -5,7 +5,7 @@ import { useRoute, type RouteProp } from '@react-navigation/native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 import { rainbowToastsActions } from '@/components/rainbow-toast/useRainbowToastsStore';
-import { SheetHandleFixedToTopHeight, SlackSheet } from '@/components/sheet';
+import { SlackSheet } from '@/components/sheet';
 import { Toast, ToastPositionContainer } from '@/components/toasts';
 import { BackgroundProvider, Box } from '@/design-system';
 import useDimensions from '@/hooks/useDimensions';
@@ -45,9 +45,9 @@ export const TransactionDetails = () => {
     (event: LayoutChangeEvent) => {
       const contentHeight = event.nativeEvent.layout.height;
       if (contentHeight > deviceHeight) setStatusIconHidden(true);
-      setSheetHeight(contentHeight + SheetHandleFixedToTopHeight);
+      setSheetHeight(contentHeight + (Platform.OS === 'android' ? insets.bottom : 0));
     },
-    [deviceHeight]
+    [deviceHeight, insets.bottom]
   );
 
   const presentAddressToast = useCallback(() => {
@@ -72,7 +72,7 @@ export const TransactionDetails = () => {
           deferredHeight={Platform.OS === 'android'}
           showsVerticalScrollIndicator={false}
         >
-          <Box paddingHorizontal="20px" onLayout={onSheetContentLayout} paddingBottom={{ custom: insets.bottom }}>
+          <Box paddingHorizontal="20px" paddingBottom="20px" onLayout={onSheetContentLayout}>
             <TransactionDetailsStatusActionsAndTimestampSection hideIcon={statusIconHidden} transaction={transaction} />
             <TransactionDetailsFromToSection transaction={transaction} presentToast={presentAddressToast} />
             <TransactionDetailsValueAndFeeSection transaction={transaction} />
