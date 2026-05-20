@@ -1,7 +1,7 @@
 import {
+  PLATFORM_API_KEY,
   PLATFORM_BASE_URL,
   RAINBOW_RELAY_API_KEY,
-  RAINBOW_RELAY_GO_BACKEND_API_KEY,
   RAINBOW_RELAY_GO_BACKEND_QUOTE_SIGNER,
   RAINBOW_RELAY_QUOTE_SIGNER,
   RAINBOW_RELAY_URL,
@@ -17,7 +17,7 @@ export type RelayStatusResponse = Awaited<ReturnType<typeof relayService.getStat
 export const relayService = createRelayService(
   getExperimentalFlag(GO_RELAY_BACKEND)
     ? {
-        apiKey: RAINBOW_RELAY_GO_BACKEND_API_KEY,
+        apiKey: PLATFORM_API_KEY,
         baseUrl: PLATFORM_BASE_URL,
         quoteSigner: getAddress(RAINBOW_RELAY_GO_BACKEND_QUOTE_SIGNER),
       }
