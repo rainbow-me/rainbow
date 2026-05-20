@@ -2396,6 +2396,9 @@
       "network_fee": "网络费用",
       "hash_copied": "􀁣 已复制交易哈希",
       "address_copied": "􀁣 已复制地址",
+      "link_copied": "􀁣 链接已复制",
+      "view_details": "查看详情",
+      "copy_link": "复制链接",
       "smart_account": "智能账户",
       "try_again": "􀅉 重试",
       "context_menu": {
