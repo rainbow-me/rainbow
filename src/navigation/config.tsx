@@ -191,6 +191,7 @@ export const swapDetailsSheetConfig = {
 export const transactionDetailsConfig: PartialNavigatorConfigOptions = {
   options: ({ route }) => {
     return buildCoolModalConfig({
+      longFormHeight: 0,
       ...route.params,
       scrollEnabled: false,
     });
