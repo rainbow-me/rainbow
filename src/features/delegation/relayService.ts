@@ -1,8 +1,8 @@
 import {
+  PLATFORM_BASE_URL,
   RAINBOW_RELAY_API_KEY,
   RAINBOW_RELAY_GO_BACKEND_API_KEY,
   RAINBOW_RELAY_GO_BACKEND_QUOTE_SIGNER,
-  RAINBOW_RELAY_GO_BACKEND_URL,
   RAINBOW_RELAY_QUOTE_SIGNER,
   RAINBOW_RELAY_URL,
 } from 'react-native-dotenv';
@@ -18,7 +18,7 @@ export const relayService = createRelayService(
   getExperimentalFlag(GO_RELAY_BACKEND)
     ? {
         apiKey: RAINBOW_RELAY_GO_BACKEND_API_KEY,
-        baseUrl: RAINBOW_RELAY_GO_BACKEND_URL,
+        baseUrl: PLATFORM_BASE_URL,
         quoteSigner: getAddress(RAINBOW_RELAY_GO_BACKEND_QUOTE_SIGNER),
       }
     : {
