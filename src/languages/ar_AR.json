@@ -2396,6 +2396,9 @@
       "network_fee": "رسوم الشبكة",
       "hash_copied": "􀁣 تم نسخ هاش الحوالة",
       "address_copied": "􀁣 تم نسخ العنوان",
+      "link_copied": "􀁣 تم نسخ الرابط",
+      "view_details": "عرض التفاصيل",
+      "copy_link": "نسخ الرابط",
       "smart_account": "حساب ذكي",
       "try_again": "􀅉 حاول مرة أخرى",
       "context_menu": {
