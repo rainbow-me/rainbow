@@ -7,7 +7,7 @@ export function SportsSection() {
     <PolymarketProvider>
       <PolymarketSportsEventsScreen
         onPressLeagueHeader={navigateToPolymarketSportsLeague}
-        onScroll={() => {}}
+        renderAsStaticList
         showLeagueSelector={false}
         truncateSections
       />

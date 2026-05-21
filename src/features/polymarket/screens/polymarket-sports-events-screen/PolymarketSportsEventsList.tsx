@@ -35,6 +35,7 @@ type SportsEventsListProps = {
   listRef?: RefObject<Animated.FlatList<unknown> | null>;
   onPressLeagueHeader?: (leagueId: string) => void;
   onScroll?: (event: NativeSyntheticEvent<NativeScrollEvent>) => void;
+  renderAsStaticList?: boolean;
   truncateSections?: boolean;
 };
 
@@ -83,6 +84,7 @@ export const PolymarketSportsEventsList = memo(function PolymarketSportsEventsLi
   listRef,
   onPressLeagueHeader,
   onScroll,
+  renderAsStaticList = false,
   truncateSections = false,
 }: SportsEventsListProps) {
   const safeAreaInsets = useSafeAreaInsets();
@@ -165,6 +167,18 @@ export const PolymarketSportsEventsList = memo(function PolymarketSportsEventsLi
     },
     [expandSection, onPressLeagueHeader]
   );
+
+  if (renderAsStaticList) {
+    const content = isLoading ? (
+      <ListLoadingSkeleton />
+    ) : listData.length ? (
+      listData.map(item => <View key={item.key}>{renderItem({ item })}</View>)
+    ) : (
+      <EmptyState />
+    );
+
+    return <View style={[styles.list, listStyles.contentContainerStyle]}>{content}</View>;
+  }
 
   return (
     <Animated.FlatList

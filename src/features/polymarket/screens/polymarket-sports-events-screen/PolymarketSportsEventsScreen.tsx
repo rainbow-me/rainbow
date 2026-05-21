@@ -9,7 +9,8 @@ import { useListen } from '@/state/internal/hooks/useListen';
 
 type PolymarketSportsEventsScreenProps = {
   onPressLeagueHeader?: (leagueId: string) => void;
-  onScroll: (event: NativeSyntheticEvent<NativeScrollEvent>) => void;
+  onScroll?: (event: NativeSyntheticEvent<NativeScrollEvent>) => void;
+  renderAsStaticList?: boolean;
   showLeagueSelector?: boolean;
   truncateSections?: boolean;
 };
@@ -17,6 +18,7 @@ type PolymarketSportsEventsScreenProps = {
 export const PolymarketSportsEventsScreen = memo(function PolymarketSportsEventsScreen({
   onPressLeagueHeader,
   onScroll,
+  renderAsStaticList = false,
   showLeagueSelector = true,
   truncateSections = false,
 }: PolymarketSportsEventsScreenProps) {
@@ -41,6 +43,7 @@ export const PolymarketSportsEventsScreen = memo(function PolymarketSportsEvents
         listRef={listRef}
         onPressLeagueHeader={onPressLeagueHeader}
         onScroll={onScroll}
+        renderAsStaticList={renderAsStaticList}
         truncateSections={truncateSections}
       />
     </View>
