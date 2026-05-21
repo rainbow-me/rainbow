@@ -9,7 +9,7 @@ import ButtonPressAnimation from '@/components/animations/ButtonPressAnimation';
 import { ShowMoreCellEnterAnimation } from '@/components/animations/ShowMoreCellEnterAnimation';
 import { ShowMoreButton } from '@/components/buttons/ShowMoreButton';
 import { Skeleton } from '@/components/Skeleton';
-import { Text, useForegroundColor } from '@/design-system';
+import { Text, useBackgroundColor, useForegroundColor } from '@/design-system';
 import { LeagueIcon } from '@/features/polymarket/components/league-icon/LeagueIcon';
 import {
   HEIGHT as ITEM_HEIGHT,
@@ -33,6 +33,9 @@ import { DEVICE_HEIGHT } from '@/utils/deviceUtils';
 
 const ITEM_GAP = 8;
 const EMPTY_EVENTS: PolymarketEvent[] = [];
+const LIVE_INDICATOR_SIZE = 28;
+const LIVE_INDICATOR_CUTOUT_SIZE = 16;
+const LIVE_INDICATOR_DOT_SIZE = 8;
 const SKELETON_SECTIONS = [
   { key: 'live', titleWidth: 54, itemCount: 1, showLiveIndicator: true },
   { key: 'today', titleWidth: 74, itemCount: 2, showLiveIndicator: false },
@@ -212,7 +215,7 @@ const SectionHeader = memo(function SectionHeader({ title, count, isLive }: { ti
   return (
     <View style={styles.sectionHeader}>
       <View style={styles.sectionHeaderContent}>
-        {isLive ? <View style={[styles.liveIndicator, { backgroundColor: '#FF584D' }]} /> : null}
+        {isLive ? <LiveSectionIndicator /> : null}
         <Text align="left" color="label" size="20pt" weight="heavy">
           {title}
         </Text>
@@ -223,6 +226,17 @@ const SectionHeader = memo(function SectionHeader({ title, count, isLive }: { ti
             </Text>
           </View>
         ) : null}
+      </View>
+    </View>
+  );
+});
+
+const LiveSectionIndicator = memo(function LiveSectionIndicator() {
+  const backgroundColor = useBackgroundColor('surfacePrimary');
+  return (
+    <View style={styles.liveIndicatorOuter}>
+      <View style={[styles.liveIndicatorCutout, { backgroundColor }]}>
+        <View style={styles.liveIndicatorDot} />
       </View>
     </View>
   );
@@ -308,10 +322,26 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     gap: 6,
   },
-  liveIndicator: {
-    height: 8,
-    width: 8,
-    borderRadius: 4,
+  liveIndicatorCutout: {
+    alignItems: 'center',
+    borderRadius: LIVE_INDICATOR_CUTOUT_SIZE / 2,
+    height: LIVE_INDICATOR_CUTOUT_SIZE,
+    justifyContent: 'center',
+    width: LIVE_INDICATOR_CUTOUT_SIZE,
+  },
+  liveIndicatorDot: {
+    backgroundColor: '#F04F4B',
+    borderRadius: LIVE_INDICATOR_DOT_SIZE / 2,
+    height: LIVE_INDICATOR_DOT_SIZE,
+    width: LIVE_INDICATOR_DOT_SIZE,
+  },
+  liveIndicatorOuter: {
+    alignItems: 'center',
+    backgroundColor: 'rgba(240, 79, 75, 0.34)',
+    borderRadius: LIVE_INDICATOR_SIZE / 2,
+    height: LIVE_INDICATOR_SIZE,
+    justifyContent: 'center',
+    width: LIVE_INDICATOR_SIZE,
   },
   countBadge: {
     alignItems: 'center',
