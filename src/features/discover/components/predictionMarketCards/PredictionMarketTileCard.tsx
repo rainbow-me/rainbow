@@ -21,8 +21,8 @@ import { getPolymarketTokenId } from '@/state/liveTokens/polymarketAdapter';
 import { DEVICE_WIDTH } from '@/utils/deviceUtils';
 import { createOpacityPalette } from '@/worklets/colors';
 
-export const PREDICTION_MARKET_TILE_CARD_WIDTH = Math.min(280, DEVICE_WIDTH - 40);
-export const PREDICTION_MARKET_TILE_CARD_HEIGHT = 300;
+export const PREDICTION_MARKET_TILE_CARD_WIDTH = Math.min(300, DEVICE_WIDTH - 40);
+export const PREDICTION_MARKET_TILE_CARD_HEIGHT = Math.round(PREDICTION_MARKET_TILE_CARD_WIDTH * (16 / 15));
 export const PREDICTION_MARKET_TILE_CARD_BORDER_RADIUS = 24;
 
 const OUTCOME_ROW_COUNT = 2;
@@ -31,7 +31,7 @@ const CARD_GRADIENT_CONFIG = {
   end: { x: 0.64, y: 0.68 },
   start: { x: -0.08, y: -0.08 },
 };
-const OUTCOME_ROW_WIDTH = 256;
+const OUTCOME_ROW_WIDTH = PREDICTION_MARKET_TILE_CARD_WIDTH - 24;
 const ODDS_PILL_BORDER_RADIUS = 15;
 const ASSET_ACCENT_COLORS = [
   { color: '#F8931A', pattern: /\b(bitcoin|btc)\b/i },
@@ -192,9 +192,15 @@ const OutcomeRow = memo(function OutcomeRow({
 
   return (
     <GradientBorderView
-      borderGradientColors={[opacity(eventColor, 0.56), opacity(eventColor, 0.18)]}
+      borderGradientColors={
+        isDarkMode
+          ? ([opacity(eventColor, 0.52), globalColors.grey100] as const)
+          : ([opacity(eventColor, 0.56), opacity(eventColor, 0.18)] as const)
+      }
       borderRadius={22}
       borderWidth={2}
+      end={{ x: 0.9, y: 0 }}
+      start={{ x: 0, y: 0 }}
       style={styles.outcomeRowFrame}
     >
       <LinearGradient
