@@ -15,15 +15,23 @@ import { DEVICE_WIDTH } from '@/utils/deviceUtils';
 const ITEM_GAP = 8;
 const TILE_WIDTH = (DEVICE_WIDTH - SCREEN_HORIZONTAL_PADDING * 2 - ITEM_GAP) / 2;
 
-type Props = { tagSlug: string; title: string };
+type Props = {
+  onPressSeeAll?: () => void;
+  tagSlug: string;
+  title: string;
+};
 
-export const TaggedPolymarketCarousel = memo(function TaggedPolymarketCarousel({ tagSlug, title }: Props) {
+export const TaggedPolymarketCarousel = memo(function TaggedPolymarketCarousel({
+  onPressSeeAll = navigateToPolymarket,
+  tagSlug,
+  title,
+}: Props) {
   const useStore = getPolymarketEventsByTagStore(tagSlug);
   const events = useStore(state => state.getData()) ?? [];
 
   return (
     <Box gap={20}>
-      <CarouselHeader title={title} onPress={() => navigateToPolymarket()} />
+      <CarouselHeader title={title} onPress={onPressSeeAll} />
       <View style={styles.container}>
         <ScrollView
           contentContainerStyle={styles.contentContainer}
