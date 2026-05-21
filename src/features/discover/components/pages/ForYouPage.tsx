@@ -14,6 +14,7 @@ import {
   usePredictionsPlacementStore,
   usePredictionsSportsPlacementStore,
 } from '@/features/placements/stores/derived/predictionsPlacementStore';
+import { LeagueIcon } from '@/features/polymarket/components/league-icon/LeagueIcon';
 import {
   HEIGHT as POLYMARKET_SPORT_EVENT_LIST_ITEM_HEIGHT,
   PolymarketSportEventListItem,
@@ -97,7 +98,11 @@ function ForYouNbaSection() {
 
   return (
     <View style={styles.nbaSection}>
-      <CarouselHeader title="NBA" onPress={() => navigateToPolymarketSportsLeague('nba')} />
+      <CarouselHeader
+        leadingAccessory={<LeagueIcon leagueId="nba" size={28} />}
+        title="NBA"
+        onPress={() => navigateToPolymarketSportsLeague('nba')}
+      />
       <View style={styles.nbaList}>
         {isLoading && !nbaEvents.length
           ? Array.from({ length: NBA_PREVIEW_EVENT_COUNT }).map((_, index) => (
