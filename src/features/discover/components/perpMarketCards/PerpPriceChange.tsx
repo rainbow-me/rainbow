@@ -7,7 +7,7 @@ import { useLiveTokenSharedValue } from '@/components/live-token-text/LiveTokenT
 import { AnimatedText } from '@/design-system';
 import { type TextSize, type TextWeight } from '@/design-system/components/Text/Text';
 import { DOWN_ARROW, UP_ARROW } from '@/features/perps/constants';
-import { convertStoredPerpPriceChangeToPercent, formatCompactPerpPercentChange, getHyperliquidTokenId } from '@/features/perps/utils';
+import { formatCompactPriceChange, getHyperliquidTokenId } from '@/features/perps/utils';
 import { type TokenData } from '@/state/liveTokens/liveTokensStore';
 
 import { type PriceChangeColors } from './perpMarketCardChrome';
@@ -75,5 +75,5 @@ function selectPriceChangeArrow(priceChange: SharedValue<string>): string {
 
 function selectPriceChangeText(priceChange: SharedValue<string>): string {
   'worklet';
-  return formatCompactPerpPercentChange(convertStoredPerpPriceChangeToPercent(priceChange.value));
+  return formatCompactPriceChange(priceChange.value);
 }

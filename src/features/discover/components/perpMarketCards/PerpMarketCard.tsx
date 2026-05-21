@@ -21,7 +21,7 @@ import { useHyperliquidLineChartsStore } from '@/features/perps/stores/hyperliqu
 import { type PerpMarketWithMetadata } from '@/features/perps/types';
 import {
   convertStoredPerpPriceChangeToPercent,
-  formatCompactPerpPercentChange,
+  formatCompactPriceChange,
   getHyperliquidTokenId,
   navigateToPerpDetailScreen,
 } from '@/features/perps/utils';
@@ -205,7 +205,7 @@ export const PerpMarketCard = memo(function PerpMarketCard({ market, style }: Pe
 
 function selectPriceChangeText(priceChange: SharedValue<string>): string {
   'worklet';
-  return formatCompactPerpPercentChange(convertStoredPerpPriceChangeToPercent(priceChange.value));
+  return formatCompactPriceChange(priceChange.value);
 }
 
 function selectPriceChangeArrow(priceChange: SharedValue<string>): string {
