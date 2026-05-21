@@ -122,7 +122,8 @@ async function fetchPredictionEvents(
   abortController: AbortController | null
 ): Promise<PolymarketEvent[]> {
   const rawEvents = await fetchPolymarketEventsByIds(eventIds, abortController);
-  return Promise.all(rawEvents.map(event => processRawPolymarketEvent(event)));
+  const events = await Promise.all(rawEvents.map(event => processRawPolymarketEvent(event)));
+  return events.filter(isUnresolvedPredictionEvent);
 }
 
 // ============ Utilities ====================================================== //
@@ -151,7 +152,7 @@ function parsePredictionItems(placementItems: PlacementItem<'polymarket'>[], eve
 
   for (const item of placementItems) {
     const event = eventsById[item.ref.id];
-    if (event) items.push({ ...item, event });
+    if (event && isUnresolvedPredictionEvent(event)) items.push({ ...item, event });
   }
 
   return items.length ? items : EMPTY_PREDICTION_PLACEMENT_ITEMS;
@@ -172,6 +173,12 @@ function indexEvents(events: PolymarketEvent[]): EventsById {
   const eventsById: EventsById = {};
   for (const event of events) eventsById[event.id] = event;
   return eventsById;
+}
+
+function isUnresolvedPredictionEvent(event: PolymarketEvent): boolean {
+  if (event.closed === true || event.ended === true) return false;
+
+  return event.markets.some(market => market.active !== false && market.closed !== true && market.umaResolutionStatus !== 'resolved');
 }
 
 function arePredictionSportsGroupsEqual(current: PredictionSportsGroupsState, next: PredictionSportsGroupsState): boolean {

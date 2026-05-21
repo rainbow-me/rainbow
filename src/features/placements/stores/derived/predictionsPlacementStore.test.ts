@@ -62,7 +62,9 @@ jest.mock('@/features/polymarket/utils/transforms', () => ({
 
 describe('predictionsPlacementStore', () => {
   beforeEach(() => {
-    (fetchPolymarketEventsByIds as jest.Mock).mockImplementation((eventIds: string[]) => Promise.resolve(eventIds.map(createEvent)));
+    (fetchPolymarketEventsByIds as jest.Mock).mockImplementation((eventIds: string[]) =>
+      Promise.resolve(eventIds.map(eventId => createEvent(eventId)))
+    );
   });
 
   afterEach(() => {
@@ -120,6 +122,77 @@ describe('predictionsPlacementStore', () => {
     const placement = usePredictionsPlacementStore.getState();
     expect(placement.placement?.id).toBe(PLACEMENT_IDS.PREDICTIONS);
     expect(placement.items).toHaveLength(FIXTURE_V2_PLACEMENTS_BY_ID[PLACEMENT_IDS.PREDICTIONS].items.length);
+  });
+
+  it('filters resolved prediction events out of placements', async () => {
+    useRemoteConfigStore.setState(state => ({
+      config: {
+        ...state.config,
+        discover_placements_enabled: true,
+        polymarket_enabled: true,
+      },
+    }));
+    usePlacementsStore.setState({ placementsById: FIXTURE_V2_PLACEMENTS_BY_ID });
+    (fetchPolymarketEventsByIds as jest.Mock).mockImplementation((eventIds: string[]) =>
+      Promise.resolve(
+        eventIds.map(eventId =>
+          createEvent(
+            eventId,
+            undefined,
+            eventId === FIXTURE_V2_PLACEMENTS_BY_ID[PLACEMENT_IDS.PREDICTIONS].items[0].ref.id ? { closed: true } : {}
+          )
+        )
+      )
+    );
+
+    const eventIds = usePlacementsStore.getState().getAllRefIds({ source: 'polymarket', type: 'prediction' });
+    await usePredictionEventsStore.getState().fetch({ eventIds }, { force: true });
+
+    expect(usePredictionsPlacementStore.getState().items).toHaveLength(
+      FIXTURE_V2_PLACEMENTS_BY_ID[PLACEMENT_IDS.PREDICTIONS].items.length - 1
+    );
+    expect(usePredictionsPlacementStore.getState().items).toEqual(
+      expect.not.arrayContaining([expect.objectContaining({ event: expect.objectContaining({ closed: true }) })])
+    );
+  });
+
+  it('filters events with only resolved markets out of placements', async () => {
+    useRemoteConfigStore.setState(state => ({
+      config: {
+        ...state.config,
+        discover_placements_enabled: true,
+        polymarket_enabled: true,
+      },
+    }));
+    usePlacementsStore.setState({ placementsById: FIXTURE_V2_PLACEMENTS_BY_ID });
+    (fetchPolymarketEventsByIds as jest.Mock).mockImplementation((eventIds: string[]) =>
+      Promise.resolve(
+        eventIds.map(eventId =>
+          createEvent(
+            eventId,
+            eventId === FIXTURE_V2_PLACEMENTS_BY_ID[PLACEMENT_IDS.PREDICTIONS].items[0].ref.id
+              ? [
+                  {
+                    id: eventId,
+                    question: `Market ${eventId}`,
+                    slug: eventId,
+                    active: false,
+                    closed: true,
+                    umaResolutionStatus: 'resolved',
+                  },
+                ]
+              : undefined
+          )
+        )
+      )
+    );
+
+    const eventIds = usePlacementsStore.getState().getAllRefIds({ source: 'polymarket', type: 'prediction' });
+    await usePredictionEventsStore.getState().fetch({ eventIds }, { force: true });
+
+    expect(usePredictionsPlacementStore.getState().items).toHaveLength(
+      FIXTURE_V2_PLACEMENTS_BY_ID[PLACEMENT_IDS.PREDICTIONS].items.length - 1
+    );
   });
 
   it('returns an empty placement result when the polymarket gate is off', () => {
@@ -185,7 +258,7 @@ describe('predictionsPlacementStore', () => {
       isLoading: true,
     });
 
-    resolveEvents(eventIds.map(createEvent));
+    resolveEvents(eventIds.map(eventId => createEvent(eventId)));
     await fetchPromise;
   });
 
@@ -276,13 +349,21 @@ describe('predictionsPlacementStore', () => {
   });
 });
 
-function createEvent(id: string): PolymarketEvent {
+function createEvent(
+  id: string,
+  markets?: Partial<PolymarketEvent['markets'][number]>[],
+  overrides: Partial<PolymarketEvent> = {}
+): PolymarketEvent {
   return {
     id,
+    active: true,
+    closed: false,
+    ended: false,
     slug: id,
     ticker: id,
     title: `Event ${id}`,
-    markets: [{ id, question: `Market ${id}`, slug: id }],
+    markets: (markets ?? [{ id, question: `Market ${id}`, slug: id, active: true, closed: false }]) as PolymarketEvent['markets'],
+    ...overrides,
   } as PolymarketEvent;
 }
 
