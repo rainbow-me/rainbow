@@ -1,5 +1,7 @@
 import { StyleSheet, View } from 'react-native';
 
+import { useDiscoverScreenContext } from '@/components/Discover/DiscoverScreenContext';
+import { CarouselHeader } from '@/features/discover/components/carousel/CarouselHeader';
 import { PerpMarketsCarousel } from '@/features/discover/components/carousels/PerpMarketsCarousel';
 import { PredictionsCarousel } from '@/features/discover/components/carousels/PredictionsCarousel';
 import { TokenList } from '@/features/discover/components/TokenList';
@@ -14,7 +16,7 @@ export function ForYouPage() {
     <View style={styles.container}>
       <ForYouPerpsCarousel />
       <ForYouPredictionsCarousel />
-      <TokenList />
+      <ForYouTokensSection />
     </View>
   );
 }
@@ -45,10 +47,23 @@ function ForYouPredictionsCarousel() {
   );
 }
 
+function ForYouTokensSection() {
+  const { onTapSearch } = useDiscoverScreenContext();
+  return (
+    <View style={styles.tokensSection}>
+      <CarouselHeader title="Tokens" onPress={onTapSearch} />
+      <TokenList />
+    </View>
+  );
+}
+
 const styles = StyleSheet.create({
   container: {
     flex: 1,
     paddingTop: 20,
     gap: SECTION_VERTICAL_GAP,
+  },
+  tokensSection: {
+    gap: 20,
   },
 });

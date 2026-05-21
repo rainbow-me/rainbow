@@ -4,8 +4,11 @@ import { PerpMarketPillsCarousel } from '@/features/discover/components/carousel
 import { TaggedPolymarketCarousel } from '@/features/discover/components/carousels/TaggedPolymarketCarousel';
 import { LargePerpMarketsGrid } from '@/features/discover/components/grids/LargePerpMarketsGrid';
 import { SECTION_VERTICAL_GAP } from '@/features/discover/constants';
+import { navigateToPolymarketCategory } from '@/features/discover/utils/navigation';
+import { navigateToPerpsSearch } from '@/features/perps/utils/navigateToPerps';
 import { PLACEMENT_IDS } from '@/features/placements/constants';
 import { usePerpsCryptoMajorsPlacementStore, usePerpsPlacementStore } from '@/features/placements/stores/derived/perpsPlacementStore';
+import { CATEGORIES } from '@/features/polymarket/constants';
 import * as i18n from '@/languages';
 
 export function CryptoPage() {
@@ -13,7 +16,11 @@ export function CryptoPage() {
     <View style={styles.container}>
       <FeaturedCryptoPerpsCarousel />
       <CryptoMajorsGrid />
-      <TaggedPolymarketCarousel tagSlug="crypto" title="Predictions" />
+      <TaggedPolymarketCarousel
+        onPressSeeAll={() => navigateToPolymarketCategory(CATEGORIES.crypto.tagId)}
+        tagSlug={CATEGORIES.crypto.tagId}
+        title="Predictions"
+      />
     </View>
   );
 }
@@ -37,6 +44,7 @@ function CryptoMajorsGrid() {
     <LargePerpMarketsGrid
       isLoading={isLoading}
       items={items}
+      onPressSeeAll={navigateToPerpsSearch}
       placement={placement}
       placementId={PLACEMENT_IDS.PERPS_CRYPTO_MAJORS}
       title={i18n.t(i18n.l.discover.placements.majors_title)}
