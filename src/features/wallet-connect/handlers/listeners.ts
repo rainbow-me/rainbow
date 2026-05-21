@@ -1,7 +1,6 @@
 import messaging from '@react-native-firebase/messaging';
 import { gretch } from 'gretchen';
 
-import { IS_DEV } from '@/env';
 import { events } from '@/handlers/appEvents';
 import { logger, RainbowError } from '@/logger';
 import { getFCMToken } from '@/notifications/tokens';
@@ -37,31 +36,19 @@ export async function initListeners() {
 export async function initWalletConnectPushNotifications() {
   try {
     const token = await getFCMToken();
-
-    if (token) {
-      const client = await getWalletKitClient();
-      const client_id = await client.core.crypto.getClientId();
-
-      // initial subscription
-      await subscribeToEchoServer({ token, client_id });
-
-      /**
-       * Ensure that if the FCM token changes we update the echo server
-       */
-      messaging().onTokenRefresh(async (token: string) => {
-        await subscribeToEchoServer({ token, client_id });
-      });
-    } else {
-      if (!IS_DEV) {
-        /*
-         * If we failed to fetch an FCM token, this will fail too. You should
-         * see these errors increase proportionally if something goes wrong,
-         * which could be due to network flakiness, SSL server error (has
-         * happened), etc. Things out of our control.
-         */
-        logger.warn(`[walletConnect]: FCM token not found, push notifications will not be received`);
-      }
+    if (!token) {
+      // No token here means push isn't available for this user; nothing to subscribe.
+      return;
     }
+
+    const client = await getWalletKitClient();
+    const client_id = await client.core.crypto.getClientId();
+
+    await subscribeToEchoServer({ token, client_id });
+
+    messaging().onTokenRefresh(async (token: string) => {
+      await subscribeToEchoServer({ token, client_id });
+    });
   } catch (e) {
     logger.error(new RainbowError(`[walletConnect]: initListeners failed`), { error: e });
   }
