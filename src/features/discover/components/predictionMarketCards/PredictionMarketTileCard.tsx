@@ -5,9 +5,10 @@ import { LinearGradient } from 'expo-linear-gradient';
 
 import { getColorValueForThemeWorklet } from '@/__swaps__/utils/swaps';
 import ButtonPressAnimation from '@/components/animations/ButtonPressAnimation';
+import { GradientBorderView } from '@/components/gradient-border/GradientBorderView';
 import ImgixImage from '@/components/images/ImgixImage';
 import { LiveTokenText } from '@/components/live-token-text/LiveTokenText';
-import { Text, useColorMode } from '@/design-system';
+import { globalColors, Text, useColorMode } from '@/design-system';
 import { type PolymarketEvent, type PolymarketMarket } from '@/features/polymarket/types/polymarket-event';
 import { getOutcomeColor } from '@/features/polymarket/utils/getMarketColor';
 import { roundWorklet, toPercentageWorklet } from '@/framework/core/safeMath';
@@ -21,10 +22,22 @@ import { createOpacityPalette } from '@/worklets/colors';
 
 export const PREDICTION_MARKET_TILE_CARD_WIDTH = Math.min(280, DEVICE_WIDTH - 40);
 export const PREDICTION_MARKET_TILE_CARD_HEIGHT = 300;
-export const PREDICTION_MARKET_TILE_CARD_BORDER_RADIUS = 28;
+export const PREDICTION_MARKET_TILE_CARD_BORDER_RADIUS = 24;
 
 const OUTCOME_ROW_COUNT = 2;
 const LAST_TRADE_PRICE_THRESHOLDS = [0.05, 0.01];
+const CARD_GRADIENT_CONFIG = {
+  end: { x: 0.64, y: 0.68 },
+  start: { x: -0.08, y: -0.08 },
+};
+const OUTCOME_ROW_WIDTH = 256;
+const ASSET_ACCENT_COLORS = [
+  { color: '#F8931A', pattern: /\b(bitcoin|btc)\b/i },
+  { color: '#9CA4AD', pattern: /\b(ethereum|eth)\b/i },
+  { color: '#C0C1CC', pattern: /\b(silver|xagusd|xag)\b/i },
+  { color: '#D6A438', pattern: /\b(gold|xauusd|xau)\b/i },
+  { color: '#7A70FF', pattern: /\b(solana|sol)\b/i },
+] as const;
 
 type PredictionMarketTileCardProps = {
   event: PolymarketEvent;
@@ -48,15 +61,23 @@ export const PredictionMarketTileCard = memo(function PredictionMarketTileCard({
   width = PREDICTION_MARKET_TILE_CARD_WIDTH,
 }: PredictionMarketTileCardProps) {
   const { isDarkMode } = useColorMode();
-  const eventColor = getColorValueForThemeWorklet(event.color, isDarkMode);
+  const eventColor = useMemo(() => getTileAccentColor(event, isDarkMode), [event, isDarkMode]);
   const rows = useMemo(() => getOutcomeRows(event), [event]);
   const iconSource = useMemo(() => ({ uri: event.icon ?? event.image }), [event.icon, event.image]);
   const volumeText = useMemo(() => formatNumber(String(event.volume), { useOrderSuffix: true, decimals: 1, style: '$' }), [event.volume]);
   const priceChange = rows[0]?.market.oneDayPriceChange;
   const priceChangeText = useMemo(() => formatPriceChange(priceChange), [priceChange]);
   const priceChangeIsPositive = priceChange !== undefined && priceChange > 0;
-  const colorPalette = useMemo(() => createOpacityPalette(eventColor, [0, 8, 14, 20, 28, 48]), [eventColor]);
-  const mutedWhite = opacity('#FFFFFF', 0.82);
+  const colorPalette = useMemo(() => createOpacityPalette(eventColor, [0, 8, 10, 16, 24]), [eventColor]);
+  const cardBorderGradientColors = useMemo(
+    () => (isDarkMode ? ([eventColor, colorPalette.opacity16] as const) : ([globalColors.white100, globalColors.white100] as const)),
+    [colorPalette.opacity16, eventColor, isDarkMode]
+  );
+  const cardGradientColors = useMemo(
+    () =>
+      isDarkMode ? ([colorPalette.opacity24, colorPalette.opacity0] as const) : ([colorPalette.opacity10, colorPalette.opacity0] as const),
+    [colorPalette.opacity0, colorPalette.opacity10, colorPalette.opacity24, isDarkMode]
+  );
 
   const handlePress = useCallback(() => {
     if (onPress) {
@@ -69,29 +90,30 @@ export const PredictionMarketTileCard = memo(function PredictionMarketTileCard({
   return (
     <View style={[{ height: PREDICTION_MARKET_TILE_CARD_HEIGHT, width }, style]}>
       <ButtonPressAnimation onPress={handlePress} scaleTo={0.96} style={styles.flex} wrapperStyle={styles.flex}>
-        <View style={[styles.card, { backgroundColor: eventColor }]}>
+        <GradientBorderView
+          backgroundColor={isDarkMode ? globalColors.grey100 : opacity(globalColors.white100, 0.9)}
+          borderGradientColors={cardBorderGradientColors}
+          borderRadius={PREDICTION_MARKET_TILE_CARD_BORDER_RADIUS}
+          borderWidth={2}
+          end={CARD_GRADIENT_CONFIG.end}
+          start={CARD_GRADIENT_CONFIG.start}
+          style={styles.card}
+        >
           <LinearGradient
-            colors={[colorPalette.opacity0, colorPalette.opacity28, colorPalette.opacity0]}
+            colors={cardGradientColors}
             pointerEvents="none"
-            start={{ x: 0, y: 0.02 }}
-            end={{ x: 0.98, y: 1 }}
-            style={StyleSheet.absoluteFill}
-          />
-          <LinearGradient
-            colors={[opacity('#FFFFFF', isDarkMode ? 0.08 : 0.18), opacity('#000000', isDarkMode ? 0.12 : 0.04)]}
-            pointerEvents="none"
-            start={{ x: 0, y: 0 }}
-            end={{ x: 1, y: 1 }}
+            start={CARD_GRADIENT_CONFIG.start}
+            end={CARD_GRADIENT_CONFIG.end}
             style={StyleSheet.absoluteFill}
           />
           <View style={styles.content}>
-            <ImgixImage enableFasterImage source={iconSource} size={38} style={styles.icon} />
+            <ImgixImage enableFasterImage source={iconSource} size={42} style={styles.icon} />
             <View style={styles.headerText}>
-              <Text align="left" color={{ custom: '#FFFFFF' }} numberOfLines={3} size="22pt" weight="heavy">
+              <Text align="left" color="label" numberOfLines={2} size="20pt / 135%" style={styles.title} weight="heavy">
                 {event.title}
               </Text>
               <View style={styles.statsRow}>
-                <Text align="left" color={{ custom: '#FFFFFF' }} size="17pt" weight="heavy">
+                <Text align="left" color="labelTertiary" size="15pt" weight="bold">
                   {`VOL ${volumeText}`}
                 </Text>
                 {priceChangeText ? (
@@ -99,7 +121,7 @@ export const PredictionMarketTileCard = memo(function PredictionMarketTileCard({
                     <Text
                       align="left"
                       color={priceChangeIsPositive ? { custom: '#2BEA69' } : { custom: '#FF4D57' }}
-                      size="icon 13px"
+                      size="icon 11px"
                       weight="heavy"
                       style={{ transform: priceChangeIsPositive ? [{ rotate: '180deg' }] : [] }}
                     >
@@ -108,8 +130,8 @@ export const PredictionMarketTileCard = memo(function PredictionMarketTileCard({
                     <Text
                       align="left"
                       color={priceChangeIsPositive ? { custom: '#2BEA69' } : { custom: '#FF4D57' }}
-                      size="17pt"
-                      weight="heavy"
+                      size="15pt"
+                      weight="bold"
                     >
                       {priceChangeText}
                     </Text>
@@ -118,20 +140,18 @@ export const PredictionMarketTileCard = memo(function PredictionMarketTileCard({
               </View>
             </View>
             <View style={styles.outcomes}>
-              {rows.map((row, index) => (
+              {rows.map(row => (
                 <OutcomeRow
                   event={event}
                   eventColor={eventColor}
                   isDarkMode={isDarkMode}
                   key={`${row.market.id}:${row.outcomeIndex}`}
                   row={row}
-                  showSeparator={index < rows.length - 1}
-                  textColor={mutedWhite}
                 />
               ))}
             </View>
           </View>
-        </View>
+        </GradientBorderView>
       </ButtonPressAnimation>
     </View>
   );
@@ -142,15 +162,11 @@ const OutcomeRow = memo(function OutcomeRow({
   eventColor,
   isDarkMode,
   row,
-  showSeparator,
-  textColor,
 }: {
   event: PolymarketEvent;
   eventColor: string;
   isDarkMode: boolean;
   row: OutcomeRowData;
-  showSeparator: boolean;
-  textColor: string;
 }) {
   const outcomeColor = getOutcomeColor({
     market: row.market,
@@ -171,17 +187,23 @@ const OutcomeRow = memo(function OutcomeRow({
   }, [event, outcomeColor, row.market, row.outcomeIndex]);
 
   return (
-    <View>
-      <View style={styles.outcomeRow}>
+    <GradientBorderView
+      borderGradientColors={[eventColor, opacity(eventColor, 0.18)]}
+      borderRadius={22}
+      borderWidth={2}
+      style={styles.outcomeRowFrame}
+    >
+      <LinearGradient
+        colors={[opacity(eventColor, isDarkMode ? 0.1 : 0.08), opacity(eventColor, 0)]}
+        pointerEvents="none"
+        start={{ x: 0, y: 0 }}
+        end={{ x: 0.9, y: 0 }}
+        style={StyleSheet.absoluteFill}
+      />
+      <View style={styles.outcomeRowContent}>
         <ButtonPressAnimation onPress={onPress} scaleTo={0.92}>
-          <View style={[styles.oddsPill, { backgroundColor: opacity('#000000', isDarkMode ? 0.22 : 0.18) }]}>
-            <LinearGradient
-              colors={[opacity('#FFFFFF', 0.14), opacity(eventColor, 0.22)]}
-              pointerEvents="none"
-              start={{ x: 0, y: 0 }}
-              end={{ x: 0, y: 1 }}
-              style={StyleSheet.absoluteFill}
-            />
+          <View style={[styles.oddsPill, { backgroundColor: eventColor, shadowColor: eventColor }]}>
+            <View style={styles.oddsPillOverlay} pointerEvents="none" />
             <LiveTokenText
               align="center"
               autoSubscriptionEnabled={false}
@@ -189,18 +211,17 @@ const OutcomeRow = memo(function OutcomeRow({
               initialValue={formatOdds(row.initialPrice)}
               numberOfLines={1}
               selector={token => formatOdds(token.price)}
-              size="22pt"
+              size="17pt"
               tokenId={row.tokenId}
               weight="heavy"
             />
           </View>
         </ButtonPressAnimation>
-        <Text align="left" color={{ custom: textColor }} numberOfLines={1} size="22pt" style={styles.outcomeTitle} weight="heavy">
+        <Text align="left" color="label" numberOfLines={1} size="17pt" style={styles.outcomeTitle} weight="bold">
           {row.title}
         </Text>
       </View>
-      {showSeparator ? <View style={styles.outcomeSeparator} /> : null}
-    </View>
+    </GradientBorderView>
   );
 });
 
@@ -278,67 +299,86 @@ function formatPriceChange(priceChange: number | undefined): string {
   return `${toPercentageWorklet(Math.abs(roundedPriceChange))}%`;
 }
 
+function getTileAccentColor(event: PolymarketEvent, isDarkMode: boolean): string {
+  const semanticMatchTarget = `${event.title} ${event.ticker} ${event.slug} ${event.subtitle}`;
+  const semanticAccentColor = ASSET_ACCENT_COLORS.find(({ pattern }) => pattern.test(semanticMatchTarget))?.color;
+  return semanticAccentColor ?? getColorValueForThemeWorklet(event.color, isDarkMode);
+}
+
 const styles = StyleSheet.create({
   card: {
-    borderRadius: PREDICTION_MARKET_TILE_CARD_BORDER_RADIUS,
     flex: 1,
     overflow: 'hidden',
   },
   content: {
     flex: 1,
     justifyContent: 'space-between',
-    paddingBottom: 18,
-    paddingHorizontal: 22,
-    paddingTop: 28,
+    paddingBottom: 12,
+    paddingHorizontal: 12,
+    paddingTop: 22,
   },
   flex: {
     flex: 1,
   },
   headerText: {
-    gap: 8,
+    gap: 12,
+    paddingHorizontal: 10,
   },
   icon: {
-    borderRadius: 10,
-    height: 38,
-    marginBottom: 24,
-    width: 38,
+    borderRadius: 14,
+    height: 42,
+    marginBottom: 14,
+    width: 42,
   },
   oddsPill: {
     alignItems: 'center',
-    borderRadius: 18,
-    height: 48,
+    borderColor: opacity('#FFFFFF', 0.1),
+    borderRadius: 15,
+    borderWidth: 2,
+    height: 42,
     justifyContent: 'center',
     overflow: 'hidden',
-    paddingHorizontal: 12,
-    width: 78,
+    paddingHorizontal: 8,
+    shadowOffset: { height: 0, width: 0 },
+    shadowOpacity: 0.3,
+    shadowRadius: 24,
+    width: 62,
   },
-  outcomeRow: {
-    alignItems: 'center',
-    flexDirection: 'row',
-    gap: 14,
-    minHeight: 56,
-  },
-  outcomeSeparator: {
-    alignSelf: 'flex-end',
-    backgroundColor: opacity('#000000', 0.22),
-    height: 1,
-    marginVertical: 8,
-    width: 158,
+  oddsPillOverlay: {
+    ...StyleSheet.absoluteFillObject,
+    backgroundColor: opacity('#000000', 0.3),
   },
   outcomeTitle: {
     flex: 1,
   },
   outcomes: {
-    gap: 0,
+    alignItems: 'center',
+    gap: 4,
+  },
+  outcomeRowContent: {
+    alignItems: 'center',
+    flex: 1,
+    flexDirection: 'row',
+    gap: 12,
+    paddingLeft: 8,
+    paddingRight: 12,
+  },
+  outcomeRowFrame: {
+    height: 58,
+    overflow: 'hidden',
+    width: OUTCOME_ROW_WIDTH,
   },
   priceChangeRow: {
     alignItems: 'center',
     flexDirection: 'row',
-    gap: 4,
+    gap: 2,
   },
   statsRow: {
     alignItems: 'center',
     flexDirection: 'row',
     gap: 8,
+  },
+  title: {
+    height: 54,
   },
 });
