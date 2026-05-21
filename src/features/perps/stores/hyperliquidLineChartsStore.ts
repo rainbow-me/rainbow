@@ -3,8 +3,6 @@ import { createLineChartDataStore, type FetchedLineChartData } from '@/features/
 import { CandleResolution, type HyperliquidCandle } from '@/features/charts/types';
 import { msToSeconds, toHyperliquidInterval } from '@/features/charts/utils';
 import { infoClient } from '@/features/perps/services/hyperliquid-info-client';
-import { hyperliquidMarketsActions } from '@/features/perps/stores/hyperliquidMarketsStore';
-import type { PerpMarketWithMetadata } from '@/features/perps/types';
 import Routes from '@/navigation/routesNames';
 import { time } from '@/utils/time';
 
@@ -23,8 +21,7 @@ async function fetchHyperliquidLineCharts(
   symbols: readonly string[],
   abortController: AbortController | null
 ): Promise<FetchedLineChartData> {
-  const markets = hyperliquidMarketsActions.getMarkets();
-  const chartFetches = symbols.map(symbol => fetchHyperliquidChartData(symbol, markets[symbol], abortController));
+  const chartFetches = symbols.map(symbol => fetchHyperliquidChartData(symbol, abortController));
 
   const results = await Promise.allSettled(chartFetches);
 
@@ -48,13 +45,7 @@ async function fetchHyperliquidLineCharts(
   return chartsById;
 }
 
-async function fetchHyperliquidChartData(
-  symbol: string,
-  market: PerpMarketWithMetadata | undefined,
-  abortController: AbortController | null
-): Promise<CompactLineChartData | null> {
-  if (!market) return null;
-
+async function fetchHyperliquidChartData(symbol: string, abortController: AbortController | null): Promise<CompactLineChartData | null> {
   const endTime = Date.now();
   const startTime = endTime - time.days(1);
   const candles = await infoClient.candleSnapshot(
