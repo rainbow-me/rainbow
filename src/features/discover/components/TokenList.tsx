@@ -26,7 +26,7 @@ import { type TokenData } from '@/state/liveTokens/liveTokensStore';
 import { getUniqueId } from '@/utils/ethereumUtils';
 
 const INITIAL_VISIBLE_TOKEN_COUNT = 5;
-const TOKEN_SPARKLINE_LAYOUT = { height: 34, width: 44 };
+const TOKEN_SPARKLINE_LAYOUT = { height: 34, width: 64 };
 const PRICE_CHANGE_ARROW_WIDTH = 12;
 const PRICE_CHANGE_COLORS = {
   dark: { positive: '#3ECF5B', negative: '#FF584D', neutral: 'rgba(255, 255, 255, 0.5)' },
@@ -90,6 +90,13 @@ function TokenCard({ asset }: { asset: FormattedExternalAsset }) {
         <View style={styles.contentRow}>
           {asset.iconUrl && <ImgixImage size={40} source={{ uri: asset.iconUrl }} style={styles.icon} />}
           <View style={styles.cardBody}>
+            <SparklineChart
+              chartId={tokenLineChartId}
+              color={sparklineColor}
+              height={TOKEN_SPARKLINE_LAYOUT.height}
+              store={useTokenLineChartsStore}
+              width={TOKEN_SPARKLINE_LAYOUT.width}
+            />
             <View style={styles.namePriceColumn}>
               <Text size="17pt" weight="heavy" color="label" numberOfLines={1}>
                 {asset.name}
@@ -108,13 +115,6 @@ function TokenCard({ asset }: { asset: FormattedExternalAsset }) {
                 <TokenPriceChange initialPriceChange={initialPriceChange} priceChangeColors={priceChangeColors} tokenId={tokenId} />
               </View>
             </View>
-            <SparklineChart
-              chartId={tokenLineChartId}
-              color={sparklineColor}
-              height={TOKEN_SPARKLINE_LAYOUT.height}
-              store={useTokenLineChartsStore}
-              width={TOKEN_SPARKLINE_LAYOUT.width}
-            />
           </View>
         </View>
       </Box>

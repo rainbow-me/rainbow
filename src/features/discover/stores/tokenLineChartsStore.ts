@@ -6,6 +6,7 @@ import Routes from '@/navigation/routesNames';
 import { type ChainId } from '@/state/backendNetworks/types';
 
 const CHART_ID_SEPARATOR = '|';
+const MAX_SPARKLINE_POINTS = 24;
 
 type TokenChartParams = {
   address: string;
@@ -81,7 +82,7 @@ function parseTokenLineChartId(chartId: string): TokenChartParams | null {
 }
 
 function buildLineChartData(priceChart: TokenPriceChart | undefined): CompactLineChartData | null {
-  const points = priceChart?.points?.filter(isPricePoint) ?? [];
+  const points = downsamplePoints(priceChart?.points?.filter(isPricePoint) ?? [], MAX_SPARKLINE_POINTS);
   if (!points.length) return null;
 
   const prices = new Float32Array(points.length);
@@ -94,6 +95,20 @@ function buildLineChartData(priceChart: TokenPriceChart | undefined): CompactLin
   }
 
   return { prices, timestamps };
+}
+
+function downsamplePoints(points: [number, number][], maxPointCount: number): [number, number][] {
+  if (points.length <= maxPointCount) return points;
+  if (maxPointCount <= 1) return [points[points.length - 1]];
+
+  const lastIndex = points.length - 1;
+  const sampledPoints: [number, number][] = [];
+
+  for (let i = 0; i < maxPointCount; i++) {
+    sampledPoints.push(points[Math.round((i * lastIndex) / (maxPointCount - 1))]);
+  }
+
+  return sampledPoints;
 }
 
 function isPricePoint(point: unknown): point is [number, number] {
