@@ -117,6 +117,16 @@ export const SPORT_LEAGUES = {
     },
     gammaLeagueId: 'valorant',
   },
+  lol: {
+    name: 'LOL',
+    fullName: 'League of Legends',
+    sportId: 'esports',
+    color: {
+      dark: '#C8AA6E',
+      light: '#A9822A',
+    },
+    gammaLeagueId: 'league-of-legends',
+  },
   sc2: {
     name: 'SC2',
     fullName: 'StarCraft II',
@@ -191,7 +201,7 @@ export const SPORT_LEAGUES = {
 
 export const LEAGUE_SELECTOR_ORDER: LeagueId[] = ['nfl', 'nba', 'cfb', 'cbb', 'epl', 'nhl', 'atp', 'ufc', 'cs2', 'crint'];
 
-export const LEAGUE_LIST_ORDER: LeagueId[] = [...LEAGUE_SELECTOR_ORDER, 'mlb', 'dota2', 'val'];
+export const LEAGUE_LIST_ORDER: LeagueId[] = [...LEAGUE_SELECTOR_ORDER, 'mlb', 'dota2', 'val', 'lol'];
 
 export type LeagueId = keyof typeof SPORT_LEAGUES;
 export type League = (typeof SPORT_LEAGUES)[LeagueId];
