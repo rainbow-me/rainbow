@@ -1,4 +1,4 @@
-import { memo } from 'react';
+import { memo, useMemo } from 'react';
 import { ScrollView, StyleSheet, View } from 'react-native';
 
 import { Box } from '@/design-system';
@@ -32,6 +32,13 @@ export const TaggedPolymarketCarousel = memo(function TaggedPolymarketCarousel({
   const events = useStore(state => state.getData()) ?? [];
   const isInitialLoad = useStore(state => state.getStatus('isInitialLoad'));
   const showSkeletons = isInitialLoad && events.length === 0;
+  const snapToOffsets = useMemo(
+    () =>
+      Array.from({ length: showSkeletons ? SKELETON_COUNT : events.length }).map((_, index) =>
+        index === 0 ? 0 : SCREEN_HORIZONTAL_PADDING + index * (PREDICTION_MARKET_TILE_CARD_WIDTH + ITEM_GAP)
+      ),
+    [events.length, showSkeletons]
+  );
 
   return (
     <Box gap={20}>
@@ -40,9 +47,10 @@ export const TaggedPolymarketCarousel = memo(function TaggedPolymarketCarousel({
         <ScrollView
           contentContainerStyle={styles.contentContainer}
           decelerationRate="fast"
+          disableIntervalMomentum
           horizontal
           showsHorizontalScrollIndicator={false}
-          snapToInterval={PREDICTION_MARKET_TILE_CARD_WIDTH + ITEM_GAP}
+          snapToOffsets={snapToOffsets}
         >
           {showSkeletons
             ? Array.from({ length: SKELETON_COUNT }).map((_, index) => <TaggedPolymarketCarouselSkeleton key={index} />)

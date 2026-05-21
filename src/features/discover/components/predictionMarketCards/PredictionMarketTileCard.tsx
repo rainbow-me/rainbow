@@ -9,6 +9,7 @@ import { GradientBorderView } from '@/components/gradient-border/GradientBorderV
 import ImgixImage from '@/components/images/ImgixImage';
 import { LiveTokenText } from '@/components/live-token-text/LiveTokenText';
 import { globalColors, Text, useColorMode } from '@/design-system';
+import { DOWN_ARROW, UP_ARROW } from '@/features/perps/constants';
 import { type PolymarketEvent, type PolymarketMarket } from '@/features/polymarket/types/polymarket-event';
 import { getOutcomeColor } from '@/features/polymarket/utils/getMarketColor';
 import { roundWorklet, toPercentageWorklet } from '@/framework/core/safeMath';
@@ -31,6 +32,7 @@ const CARD_GRADIENT_CONFIG = {
   start: { x: -0.08, y: -0.08 },
 };
 const OUTCOME_ROW_WIDTH = 256;
+const ODDS_PILL_BORDER_RADIUS = 15;
 const ASSET_ACCENT_COLORS = [
   { color: '#F8931A', pattern: /\b(bitcoin|btc)\b/i },
   { color: '#9CA4AD', pattern: /\b(ethereum|eth)\b/i },
@@ -70,7 +72,10 @@ export const PredictionMarketTileCard = memo(function PredictionMarketTileCard({
   const priceChangeIsPositive = priceChange !== undefined && priceChange > 0;
   const colorPalette = useMemo(() => createOpacityPalette(eventColor, [0, 8, 10, 16, 24]), [eventColor]);
   const cardBorderGradientColors = useMemo(
-    () => (isDarkMode ? ([eventColor, colorPalette.opacity16] as const) : ([globalColors.white100, globalColors.white100] as const)),
+    () =>
+      isDarkMode
+        ? ([opacity(eventColor, 0.46), colorPalette.opacity16] as const)
+        : ([opacity(globalColors.white100, 0.78), opacity(globalColors.white100, 0.78)] as const),
     [colorPalette.opacity16, eventColor, isDarkMode]
   );
   const cardGradientColors = useMemo(
@@ -123,9 +128,8 @@ export const PredictionMarketTileCard = memo(function PredictionMarketTileCard({
                       color={priceChangeIsPositive ? { custom: '#2BEA69' } : { custom: '#FF4D57' }}
                       size="icon 11px"
                       weight="heavy"
-                      style={{ transform: priceChangeIsPositive ? [{ rotate: '180deg' }] : [] }}
                     >
-                      {'􀄱'}
+                      {priceChangeIsPositive ? UP_ARROW : DOWN_ARROW}
                     </Text>
                     <Text
                       align="left"
@@ -188,7 +192,7 @@ const OutcomeRow = memo(function OutcomeRow({
 
   return (
     <GradientBorderView
-      borderGradientColors={[eventColor, opacity(eventColor, 0.18)]}
+      borderGradientColors={[opacity(eventColor, 0.56), opacity(eventColor, 0.18)]}
       borderRadius={22}
       borderWidth={2}
       style={styles.outcomeRowFrame}
@@ -201,7 +205,7 @@ const OutcomeRow = memo(function OutcomeRow({
         style={StyleSheet.absoluteFill}
       />
       <View style={styles.outcomeRowContent}>
-        <ButtonPressAnimation onPress={onPress} scaleTo={0.92}>
+        <ButtonPressAnimation onPress={onPress} scaleTo={0.92} style={styles.oddsButton}>
           <View style={[styles.oddsPill, { backgroundColor: eventColor, shadowColor: eventColor }]}>
             <View style={styles.oddsPillOverlay} pointerEvents="none" />
             <LiveTokenText
@@ -286,7 +290,10 @@ function calculateOddsPrice(market: PolymarketMarket): number {
 }
 
 function formatOutcomeTitle(title: string): string {
-  return title.replace(/^([↑↓])\s*(?!\$)/, '$1 $$');
+  const match = title.match(/^([↑↓])\s*(\$)?\s*(.+)$/);
+  if (!match) return title;
+
+  return `${match[1]} $${match[3]}`;
 }
 
 function formatOdds(value: string | number): string {
@@ -333,7 +340,7 @@ const styles = StyleSheet.create({
   oddsPill: {
     alignItems: 'center',
     borderColor: opacity('#FFFFFF', 0.1),
-    borderRadius: 15,
+    borderRadius: ODDS_PILL_BORDER_RADIUS,
     borderWidth: 2,
     height: 42,
     justifyContent: 'center',
@@ -344,9 +351,15 @@ const styles = StyleSheet.create({
     shadowRadius: 24,
     width: 62,
   },
+  oddsButton: {
+    borderRadius: ODDS_PILL_BORDER_RADIUS,
+    height: 42,
+    width: 62,
+  },
   oddsPillOverlay: {
     ...StyleSheet.absoluteFillObject,
     backgroundColor: opacity('#000000', 0.3),
+    borderRadius: ODDS_PILL_BORDER_RADIUS,
   },
   outcomeTitle: {
     flex: 1,
