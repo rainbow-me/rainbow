@@ -4,6 +4,7 @@ import { StyleSheet, View } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
 
 import ButtonPressAnimation from '@/components/animations/ButtonPressAnimation';
+import { ShowMoreCellEnterAnimation } from '@/components/animations/ShowMoreCellEnterAnimation';
 import { ShowMoreButton } from '@/components/buttons/ShowMoreButton';
 import { ImgixImage } from '@/components/images';
 import { LiveTokenText, useLiveTokenValue } from '@/components/live-token-text/LiveTokenText';
@@ -39,9 +40,18 @@ export function TokenList() {
 
   return (
     <Box gap={8} paddingHorizontal={{ custom: SCREEN_HORIZONTAL_PADDING }}>
-      {visibleItems.map(item => (
-        <TokenCard key={item.ref.id} asset={item.asset} />
-      ))}
+      {visibleItems.map((item, index) => {
+        const shouldAnimateEntry = isExpanded && index >= INITIAL_VISIBLE_TOKEN_COUNT;
+        const tokenCard = <TokenCard asset={item.asset} />;
+
+        if (!shouldAnimateEntry) return <TokenCard key={item.ref.id} asset={item.asset} />;
+
+        return (
+          <ShowMoreCellEnterAnimation key={item.ref.id} index={index - INITIAL_VISIBLE_TOKEN_COUNT}>
+            {tokenCard}
+          </ShowMoreCellEnterAnimation>
+        );
+      })}
       {remainingTokenCount > 0 && <ShowMoreButton count={remainingTokenCount} onPress={() => setIsExpanded(true)} />}
     </Box>
   );

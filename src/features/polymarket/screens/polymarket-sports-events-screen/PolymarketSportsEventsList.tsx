@@ -7,6 +7,7 @@ import Animated from 'react-native-reanimated';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 import ButtonPressAnimation from '@/components/animations/ButtonPressAnimation';
+import { ShowMoreCellEnterAnimation } from '@/components/animations/ShowMoreCellEnterAnimation';
 import { ShowMoreButton } from '@/components/buttons/ShowMoreButton';
 import { Text, useForegroundColor } from '@/design-system';
 import { LeagueIcon } from '@/features/polymarket/components/league-icon/LeagueIcon';
@@ -44,6 +45,7 @@ type EventItem = {
   type: 'event';
   key: string;
   event: PolymarketEvent;
+  enterAnimationIndex?: number;
 };
 
 type SectionHeaderItem = {
@@ -164,7 +166,10 @@ export const PolymarketSportsEventsList = memo(function PolymarketSportsEventsLi
       if (item.type === 'show-more') {
         return <ShowMoreButton count={item.count} onPress={() => expandSection(item.expansionKey)} />;
       }
-      return <PolymarketSportEventListItem event={item.event} style={styles.eventItemWrapper} />;
+      const eventItem = <PolymarketSportEventListItem event={item.event} style={styles.eventItemWrapper} />;
+      if (item.enterAnimationIndex === undefined) return eventItem;
+
+      return <ShowMoreCellEnterAnimation index={item.enterAnimationIndex}>{eventItem}</ShowMoreCellEnterAnimation>;
     },
     [expandSection, onPressLeagueHeader]
   );
@@ -447,7 +452,9 @@ function pushPreviewEvents({
 }) {
   const shouldTruncate = expandedKeys != null && !expandedKeys.has(expansionKey) && events.length > DISCOVER_PREVIEW_EVENT_COUNT;
   const visibleEvents = shouldTruncate ? events.slice(0, DISCOVER_PREVIEW_EVENT_COUNT) : events;
-  items.push(...buildEventItems(visibleEvents, sectionKey));
+  const shouldAnimateExpandedEvents =
+    expandedKeys != null && expandedKeys.has(expansionKey) && events.length > DISCOVER_PREVIEW_EVENT_COUNT;
+  items.push(...buildEventItems(visibleEvents, sectionKey, shouldAnimateExpandedEvents ? DISCOVER_PREVIEW_EVENT_COUNT : null));
 
   const remainingCount = events.length - visibleEvents.length;
   if (remainingCount > 0) {
@@ -455,11 +462,12 @@ function pushPreviewEvents({
   }
 }
 
-function buildEventItems(events: PolymarketEvent[], sectionKey: string): EventItem[] {
+function buildEventItems(events: PolymarketEvent[], sectionKey: string, animatedStartIndex: number | null): EventItem[] {
   return events.map((event, index) => ({
     type: 'event',
     key: `event-${sectionKey}-${event.id}-${index}`,
     event,
+    ...(animatedStartIndex != null && index >= animatedStartIndex ? { enterAnimationIndex: index - animatedStartIndex } : {}),
   }));
 }
 
