@@ -45,7 +45,7 @@ export const usePlacementsStore = createQueryStore<PlacementsById, never, Placem
 
         return { placementsById };
       }),
-    staleTime: time.hours(1),
+    staleTime: time.minutes(15),
     cacheTime: time.days(2),
   },
 
