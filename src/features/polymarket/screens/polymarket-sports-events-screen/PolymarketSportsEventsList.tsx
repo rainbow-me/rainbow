@@ -8,6 +8,7 @@ import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import ButtonPressAnimation from '@/components/animations/ButtonPressAnimation';
 import { ShowMoreCellEnterAnimation } from '@/components/animations/ShowMoreCellEnterAnimation';
 import { ShowMoreButton } from '@/components/buttons/ShowMoreButton';
+import { Skeleton } from '@/components/Skeleton';
 import { Text, useForegroundColor } from '@/design-system';
 import { LeagueIcon } from '@/features/polymarket/components/league-icon/LeagueIcon';
 import {
@@ -32,6 +33,11 @@ import { DEVICE_HEIGHT } from '@/utils/deviceUtils';
 
 const ITEM_GAP = 8;
 const EMPTY_EVENTS: PolymarketEvent[] = [];
+const SKELETON_SECTIONS = [
+  { key: 'live', titleWidth: 54, itemCount: 1, showLiveIndicator: true },
+  { key: 'today', titleWidth: 74, itemCount: 2, showLiveIndicator: false },
+  { key: 'this-week', titleWidth: 118, itemCount: 2, showLiveIndicator: false },
+] as const;
 const VIEWABILITY_CONFIG = { itemVisiblePercentThreshold: 50, minimumViewTime: 100 };
 
 type SportsEventsListProps = {
@@ -56,6 +62,7 @@ export const PolymarketSportsEventsList = memo(function PolymarketSportsEventsLi
   const storeSelectedLeagueId = usePolymarketSportsEventsStore(state => state.selectedLeagueId);
   const selectedLeagueId = selectedLeagueIdOverride ?? storeSelectedLeagueId;
   const isLoading = usePolymarketSportsEventsStore(state => state.getStatus('isLoading'));
+  const isIdle = usePolymarketSportsEventsStore(state => state.getStatus('isIdle'));
   const showLeagueHeaders = !selectedLeagueId || selectedLeagueId === DEFAULT_SPORTS_LEAGUE_KEY;
   const [expandedKeys, setExpandedKeys] = useState<ReadonlySet<string>>(() => new Set());
 
@@ -68,6 +75,7 @@ export const PolymarketSportsEventsList = memo(function PolymarketSportsEventsLi
     () => buildPolymarketSportsEventsListData(filteredEvents, showLeagueHeaders, { expandedKeys, truncateSections }),
     [expandedKeys, filteredEvents, showLeagueHeaders, truncateSections]
   );
+  const showLoadingSkeleton = !listData.length && (isLoading || isIdle);
 
   const listStyles = useMemo(() => {
     const paddingBottom = safeAreaInsets.bottom + NAVIGATOR_FOOTER_HEIGHT + NAVIGATOR_FOOTER_CLEARANCE;
@@ -137,7 +145,7 @@ export const PolymarketSportsEventsList = memo(function PolymarketSportsEventsLi
   );
 
   if (renderAsStaticList) {
-    const content = isLoading ? (
+    const content = showLoadingSkeleton ? (
       <ListLoadingSkeleton />
     ) : listData.length ? (
       listData.map(item => <View key={item.key}>{renderItem({ item })}</View>)
@@ -150,10 +158,10 @@ export const PolymarketSportsEventsList = memo(function PolymarketSportsEventsLi
 
   return (
     <Animated.FlatList
-      ListEmptyComponent={isLoading ? <ListLoadingSkeleton /> : <EmptyState />}
+      ListEmptyComponent={showLoadingSkeleton ? <ListLoadingSkeleton /> : <EmptyState />}
       contentContainerStyle={listStyles.contentContainerStyle}
       data={listData}
-      scrollEnabled={listData.length > 0 && !isLoading}
+      scrollEnabled={listData.length > 0 && !showLoadingSkeleton}
       initialNumToRender={10}
       keyExtractor={keyExtractor}
       maxToRenderPerBatch={10}
@@ -172,9 +180,18 @@ export const PolymarketSportsEventsList = memo(function PolymarketSportsEventsLi
 const ListLoadingSkeleton = memo(function ListLoadingSkeleton() {
   return (
     <View style={styles.skeletonContainer}>
-      {Array.from({ length: 6 }).map((_, index) => (
-        <View key={index} style={styles.skeletonItemWrapper}>
-          <LoadingSkeleton />
+      {SKELETON_SECTIONS.map((section, sectionIndex) => (
+        <View key={section.key} style={sectionIndex > 0 && styles.skeletonSectionSpacing}>
+          <View style={styles.skeletonSectionHeader}>
+            {section.showLiveIndicator ? <Skeleton height={8} width={8} /> : null}
+            <Skeleton height={24} width={section.titleWidth} />
+            <Skeleton height={23} width={24} />
+          </View>
+          {Array.from({ length: section.itemCount }).map((_, index) => (
+            <View key={index} style={styles.skeletonItemWrapper}>
+              <LoadingSkeleton />
+            </View>
+          ))}
         </View>
       ))}
     </View>
@@ -325,7 +342,6 @@ const styles = StyleSheet.create({
   },
   skeletonContainer: {
     flex: 1,
-    gap: ITEM_GAP,
   },
   emptyStateContainer: {
     alignItems: 'center',
@@ -335,7 +351,18 @@ const styles = StyleSheet.create({
   },
   skeletonItemWrapper: {
     height: ITEM_HEIGHT,
+    marginBottom: ITEM_GAP,
     width: '100%',
+  },
+  skeletonSectionHeader: {
+    alignItems: 'center',
+    flexDirection: 'row',
+    gap: 6,
+    marginBottom: 16,
+    paddingLeft: 12,
+  },
+  skeletonSectionSpacing: {
+    paddingTop: 20 - ITEM_GAP,
   },
   sectionSeparatorContainer: {
     paddingTop: 20 - ITEM_GAP,

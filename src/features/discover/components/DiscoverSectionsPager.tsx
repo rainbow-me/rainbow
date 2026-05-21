@@ -38,6 +38,8 @@ const INITIAL_SECTION_SCROLL_OFFSETS: SectionScrollOffsets = {
   sports: 0,
 };
 
+const EAGER_MOUNTED_SECTIONS = new Set<DiscoverSection>(['forYou', 'sports']);
+
 export const DiscoverSectionsPager = memo(function DiscoverSectionsPager({
   renderRefreshControl,
   scrollOffset,
@@ -75,7 +77,7 @@ export const DiscoverSectionsPager = memo(function DiscoverSectionsPager({
           springConfig={SPRING_CONFIGS.snappyMediumSpringConfig}
           verticalPageAlignment="top"
         >
-          {DISCOVER_SECTION_ORDER.map((section, index) => (
+          {DISCOVER_SECTION_ORDER.map(section => (
             <SmoothPager.Page
               component={
                 <DiscoverSectionScrollView
@@ -88,7 +90,7 @@ export const DiscoverSectionsPager = memo(function DiscoverSectionsPager({
               }
               id={section}
               key={section}
-              lazy={index !== 0}
+              lazy={!EAGER_MOUNTED_SECTIONS.has(section)}
             />
           ))}
         </SmoothPager>
