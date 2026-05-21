@@ -12,6 +12,7 @@ import { getValueForColorMode } from '@/design-system/color/palettes';
 import { SparklineChart } from '@/features/charts/line/components/SparklineChart';
 import { SCREEN_HORIZONTAL_PADDING } from '@/features/discover/constants';
 import { buildTokenLineChartId, useTokenLineChartsStore } from '@/features/discover/stores/tokenLineChartsStore';
+import { getTokenChartAddress, getTokenIconUrl } from '@/features/discover/utils/tokenAssetDisplay';
 import { useTokensPlacementStore } from '@/features/placements/stores/derived/tokensPlacementStore';
 import { opacity } from '@/framework/ui/utils/opacity';
 import { formatCurrency } from '@/helpers/strings';
@@ -59,12 +60,17 @@ function TokenCard({ asset }: { asset: FormattedExternalAsset }) {
   const initialPriceChange = asset.price.relativeChange24h ? String(asset.price.relativeChange24h) : '0';
   const priceChangeColors = getValueForColorMode(PRICE_CHANGE_COLORS, colorMode);
   const tokenId = getUniqueId(asset.address, asset.chainId);
+  const iconUrl = getTokenIconUrl(asset);
   const livePriceChange = useLiveTokenValue({
     initialValue: initialPriceChange,
     selector: selectLivePriceChange24h,
     tokenId,
   });
-  const tokenLineChartId = buildTokenLineChartId({ address: asset.address, chainId: asset.chainId, currency: nativeCurrency });
+  const tokenLineChartId = buildTokenLineChartId({
+    address: getTokenChartAddress(asset),
+    chainId: asset.chainId,
+    currency: nativeCurrency,
+  });
   const roundedPriceChange = getRoundedPriceChange(livePriceChange);
   const priceChangeColor = getPriceChangeColor(roundedPriceChange, priceChangeColors);
 
@@ -92,7 +98,7 @@ function TokenCard({ asset }: { asset: FormattedExternalAsset }) {
           end={{ x: 1, y: 1 }}
         />
         <View style={styles.contentRow}>
-          {asset.iconUrl && <ImgixImage size={40} source={{ uri: asset.iconUrl }} style={styles.icon} />}
+          {iconUrl && <ImgixImage size={40} source={{ uri: iconUrl }} style={styles.icon} />}
           <View style={styles.cardBody}>
             <View style={styles.namePriceColumn}>
               <Text size="17pt" weight="heavy" color="label" numberOfLines={1}>
