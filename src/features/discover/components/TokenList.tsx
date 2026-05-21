@@ -76,6 +76,7 @@ function TokenCard({ asset }: { asset: FormattedExternalAsset }) {
         borderColor={{ custom: isDarkMode ? 'rgba(255,255,255,0.05)' : 'rgba(0,0,0,0.05)' }}
         borderRadius={24}
         padding="12px"
+        paddingRight={{ custom: 18 }}
         backgroundColor={opacity('#202429', 0.4)}
       >
         <LinearGradient
@@ -156,7 +157,7 @@ function ShowMoreButton({ count, onPress }: { count: number; onPress: () => void
     <ButtonPressAnimation onPress={onPress} scaleTo={0.96} style={styles.showMoreButton}>
       <Box flexDirection="row" alignItems="center" justifyContent="center" gap={6} height={{ custom: 44 }}>
         <Text size="17pt" weight="heavy" color="label">
-          {`Show ${count} more`}
+          {getShowMoreLabel(count)}
         </Text>
         <TextIcon size="icon 14px" weight="heavy" color="labelQuaternary">
           {'􀆈'}
@@ -164,6 +165,10 @@ function ShowMoreButton({ count, onPress }: { count: number; onPress: () => void
       </Box>
     </ButtonPressAnimation>
   );
+}
+
+function getShowMoreLabel(count: number): string {
+  return count === 2 ? 'Show 2 more' : 'Show more';
 }
 
 function selectLivePriceChange24h(state: TokenData): string {
@@ -178,7 +183,7 @@ function selectPriceChangeText(priceChange: SharedValue<string>): string {
 
 function getPriceChangeColor(value: string | number, priceChangeColors: { negative: string; positive: string; neutral: string }): string {
   'worklet';
-  const numericValue = Number(value);
+  const numericValue = Math.round(Number(value) * 100) / 100;
   if (numericValue > 0) return priceChangeColors.positive;
   if (numericValue < 0) return priceChangeColors.negative;
   return priceChangeColors.neutral;
@@ -213,6 +218,7 @@ const styles = StyleSheet.create({
   },
   sparklineContainer: {
     alignItems: 'flex-end',
+    marginRight: 4,
     width: TOKEN_SPARKLINE_LAYOUT.width,
   },
   icon: {

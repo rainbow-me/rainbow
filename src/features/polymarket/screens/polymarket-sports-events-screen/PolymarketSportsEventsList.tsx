@@ -262,11 +262,15 @@ const ShowMoreButton = memo(function ShowMoreButton({ count, onPress }: { count:
   return (
     <ButtonPressAnimation onPress={onPress} scaleTo={0.96} style={styles.showMoreButton}>
       <Text align="center" color="label" size="17pt" weight="heavy">
-        {`Show ${count} more`}
+        {getShowMoreLabel(count)}
       </Text>
     </ButtonPressAnimation>
   );
 });
+
+function getShowMoreLabel(count: number): string {
+  return count === 2 ? 'Show 2 more' : 'Show more';
+}
 
 const SectionSeparator = memo(function SectionSeparator() {
   const separatorColor = useForegroundColor('separatorSecondary');
