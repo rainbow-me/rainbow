@@ -115,7 +115,7 @@ export const PerpMarketPill = memo(function PerpMarketPill({ market, style }: Pe
           <View style={styles.contentRow}>
             <PerpMarketIcon
               accentColor={accentColor}
-              baseSymbol={market.baseSymbol}
+              baseSymbol={displayName}
               borderColor={accentColor}
               fallbackTextSize="15pt"
               iconUrl={iconUrl}

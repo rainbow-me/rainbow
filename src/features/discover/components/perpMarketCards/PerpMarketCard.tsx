@@ -25,6 +25,7 @@ import {
   getHyperliquidTokenId,
   navigateToPerpDetailScreen,
 } from '@/features/perps/utils';
+import { extractBaseSymbol } from '@/features/perps/utils/hyperliquidSymbols';
 import { opacity } from '@/framework/ui/utils/opacity';
 import { type TokenData } from '@/state/liveTokens/liveTokensStore';
 import { THICK_BORDER_WIDTH, THICKER_BORDER_WIDTH } from '@/styles/constants';
@@ -101,16 +102,17 @@ const CARD_COLORS = {
 export const PerpMarketCard = memo(function PerpMarketCard({ market, style }: PerpMarketCardProps) {
   const { colorMode, isDarkMode } = useColorMode();
   const symbol = market.symbol;
+  const displayBaseSymbol = extractBaseSymbol(market.baseSymbol);
   const trackPress = usePlacementCardTrackPress();
 
   const onPress = useCallback(() => {
     navigateToPerpDetailScreen(symbol);
     trackPress?.({
       marketId: symbol,
-      marketName: market.metadata?.name ?? market.baseSymbol,
-      marketSymbol: market.baseSymbol,
+      marketName: market.metadata?.name ?? displayBaseSymbol,
+      marketSymbol: displayBaseSymbol,
     });
-  }, [market.baseSymbol, market.metadata?.name, trackPress, symbol]);
+  }, [displayBaseSymbol, market.metadata?.name, trackPress, symbol]);
 
   const { accentColor, badgeTextColor, cardColors, chartColor, iconUrl, priceChangeColors } = useMemo(
     () => buildPerpMarketCardDisplay(market, colorMode),
@@ -139,7 +141,7 @@ export const PerpMarketCard = memo(function PerpMarketCard({ market, style }: Pe
                     <ImgixImage enableFasterImage size={styles.iconImage.height} source={{ uri: iconUrl }} style={styles.iconImage} />
                   ) : (
                     <Text align="center" size="15pt" weight="heavy" color={{ custom: accentColor }}>
-                      {market.baseSymbol.slice(0, 1)}
+                      {displayBaseSymbol.slice(0, 1)}
                     </Text>
                   )}
                 </View>
@@ -153,7 +155,7 @@ export const PerpMarketCard = memo(function PerpMarketCard({ market, style }: Pe
                   numberOfLines={1}
                   style={styles.symbolText}
                 >
-                  {market.baseSymbol}
+                  {displayBaseSymbol}
                 </Text>
 
                 <View style={styles.changeRow}>
@@ -275,7 +277,8 @@ export function PerpMarketCardSkeleton() {
 export function computePerpCardWidth(market: PerpMarketWithMetadata): number {
   const percentChange = convertStoredPerpPriceChangeToPercent(market.priceChange['24h']);
   const priceChangeWidth = UP_DOWN_ARROW_WIDTH + PRICE_CHANGE_ROW_GAP + getStablePercentChangeWidth(percentChange);
-  const textWidth = Math.max(PERP_MARKET_CARD_TEXT_MIN_WIDTH, measureTextSync(market.baseSymbol, SYMBOL_TEXT_STYLE), priceChangeWidth);
+  const displayBaseSymbol = extractBaseSymbol(market.baseSymbol);
+  const textWidth = Math.max(PERP_MARKET_CARD_TEXT_MIN_WIDTH, measureTextSync(displayBaseSymbol, SYMBOL_TEXT_STYLE), priceChangeWidth);
 
   return Math.min(CARD_LAYOUT.maxWidth, Math.ceil(CARD_WIDTH_BASE + textWidth));
 }

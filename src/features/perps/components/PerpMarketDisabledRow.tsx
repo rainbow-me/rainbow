@@ -4,6 +4,7 @@ import { View } from 'react-native';
 import { Box, Text } from '@/design-system';
 import { HyperliquidTokenIcon } from '@/features/perps/components/HyperliquidTokenIcon';
 import { type PerpMarket } from '@/features/perps/types';
+import { extractBaseSymbol } from '@/features/perps/utils/hyperliquidSymbols';
 import * as i18n from '@/languages';
 
 type PerpMarketDisabledRowProps = {
@@ -12,6 +13,8 @@ type PerpMarketDisabledRowProps = {
 };
 
 export const PerpMarketDisabledRow = function PerpMarketDisabledRow({ market, paddingVertical }: PerpMarketDisabledRowProps) {
+  const displayBaseSymbol = extractBaseSymbol(market.baseSymbol);
+
   return (
     <Box
       width="full"
@@ -26,7 +29,7 @@ export const PerpMarketDisabledRow = function PerpMarketDisabledRow({ market, pa
       <Box style={{ flex: 1 }} gap={12}>
         <Box flexDirection="row" alignItems="center" gap={6}>
           <Text size="17pt" weight="bold" color="labelQuinary">
-            {market.baseSymbol}
+            {displayBaseSymbol}
           </Text>
         </Box>
         <Text size="11pt" weight="heavy" color="labelQuinary" uppercase>

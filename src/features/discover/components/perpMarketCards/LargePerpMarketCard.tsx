@@ -19,6 +19,7 @@ import { useHyperliquidLineChartsStore } from '@/features/perps/stores/hyperliqu
 import { type PerpMarketWithMetadata } from '@/features/perps/types';
 import { getHyperliquidTokenId } from '@/features/perps/utils';
 import { formatPerpAssetPrice, selectFormattedMarkPrice } from '@/features/perps/utils/formatPerpsAssetPrice';
+import { extractBaseSymbol } from '@/features/perps/utils/hyperliquidSymbols';
 import { opacity } from '@/framework/ui/utils/opacity';
 import { THICKER_BORDER_WIDTH } from '@/styles/constants';
 import { getHighContrastTextColorWorklet } from '@/worklets/colors';
@@ -92,6 +93,7 @@ export const LargePerpMarketCard = memo(function LargePerpMarketCard({
 }: LargePerpMarketCardProps) {
   const { colorMode, isDarkMode } = useColorMode();
   const symbol = market.symbol;
+  const displayBaseSymbol = extractBaseSymbol(market.baseSymbol);
   const initialPrice = market.midPrice ?? market.price;
 
   const trackPress = usePlacementCardTrackPress();
@@ -119,7 +121,7 @@ export const LargePerpMarketCard = memo(function LargePerpMarketCard({
           <View style={styles.topRow}>
             <PerpMarketIcon
               accentColor={accentColor}
-              baseSymbol={market.baseSymbol}
+              baseSymbol={displayBaseSymbol}
               borderColor={accentColor}
               imageBorderGap={4 / 3}
               fallbackTextSize="17pt"
@@ -157,7 +159,7 @@ export const LargePerpMarketCard = memo(function LargePerpMarketCard({
 
           <View style={styles.textColumn}>
             <Text color="label" numberOfLines={1} size={SYMBOL_TEXT_STYLE.size} weight={SYMBOL_TEXT_STYLE.weight}>
-              {market.baseSymbol}
+              {displayBaseSymbol}
             </Text>
             <LiveTokenText
               autoSubscriptionEnabled

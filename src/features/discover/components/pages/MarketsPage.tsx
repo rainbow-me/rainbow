@@ -21,6 +21,7 @@ import { navigateToPolymarketCategory } from '@/features/discover/utils/navigati
 import { useHyperliquidLineChartsStore } from '@/features/perps/stores/hyperliquidLineChartsStore';
 import { getHyperliquidTokenId } from '@/features/perps/utils';
 import { formatPerpAssetPrice, selectFormattedMarkPrice } from '@/features/perps/utils/formatPerpsAssetPrice';
+import { extractBaseSymbol } from '@/features/perps/utils/hyperliquidSymbols';
 import { navigateToPerpsSearch } from '@/features/perps/utils/navigateToPerps';
 import { PLACEMENT_IDS } from '@/features/placements/constants';
 import {
@@ -126,7 +127,7 @@ function NewMarketRow({ item }: { item: PerpMarketPlacementItem }) {
     () => buildPerpMarketBaseDisplay(item.market, colorMode),
     [colorMode, item.market]
   );
-  const displayName = item.market.metadata?.name ?? item.market.baseSymbol;
+  const displayName = extractBaseSymbol(item.market.baseSymbol);
   const symbol = item.market.symbol;
   const initialPrice = useMemo(
     () => formatPerpAssetPrice(item.market.midPrice ?? item.market.price),
@@ -161,7 +162,7 @@ function NewMarketRow({ item }: { item: PerpMarketPlacementItem }) {
           accentColor={accentColor}
           badgePosition="top-right"
           badgeBorderColor={isDarkMode ? 'rgba(255, 255, 255, 0.24)' : 'rgba(0, 0, 0, 0.07)'}
-          baseSymbol={item.market.baseSymbol}
+          baseSymbol={displayName}
           borderColor={accentColor}
           fallbackTextSize="13pt"
           iconUrl={iconUrl}
