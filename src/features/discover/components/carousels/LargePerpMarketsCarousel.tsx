@@ -15,6 +15,7 @@ type LargePerpMarketsCarouselProps = PlacementStoreResult<PerpMarketPlacementIte
   placementId: PlacementId;
   title: string;
   onPressSeeAll?: () => void;
+  showHeaderCaret?: boolean;
 };
 
 export function LargePerpMarketsCarousel({
@@ -24,6 +25,7 @@ export function LargePerpMarketsCarousel({
   placementId,
   title,
   onPressSeeAll,
+  showHeaderCaret,
 }: LargePerpMarketsCarouselProps) {
   return (
     <MarketCarousel
@@ -36,6 +38,7 @@ export function LargePerpMarketsCarousel({
       placementId={placementId}
       renderItem={renderLargePerpCard}
       renderSkeleton={LargePerpMarketCardSkeleton}
+      showHeaderCaret={showHeaderCaret}
       title={title}
     />
   );

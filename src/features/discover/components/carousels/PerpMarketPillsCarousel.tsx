@@ -18,6 +18,7 @@ type PerpMarketPillsCarouselProps = PlacementStoreResult<PerpMarketPlacementItem
   placementId: PlacementId;
   title: string;
   onPressSeeAll?: () => void;
+  showHeaderCaret?: boolean;
 };
 
 export function PerpMarketPillsCarousel({
@@ -27,6 +28,7 @@ export function PerpMarketPillsCarousel({
   placementId,
   title,
   onPressSeeAll = navigateToPerps,
+  showHeaderCaret,
 }: PerpMarketPillsCarouselProps) {
   return (
     <MarketCarousel
@@ -40,6 +42,7 @@ export function PerpMarketPillsCarousel({
       placementId={placementId}
       renderItem={renderPerpPill}
       renderSkeleton={PerpMarketPillSkeleton}
+      showHeaderCaret={showHeaderCaret}
       title={title}
     />
   );

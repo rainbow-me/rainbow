@@ -68,6 +68,7 @@ function IndicesCarousel() {
       onPressSeeAll={navigateToPerpsSearch}
       placement={placement}
       placementId={PLACEMENT_IDS.PERPS_INDICES}
+      showHeaderCaret={false}
       title={i18n.t(i18n.l.discover.placements.indices_title)}
     />
   );
@@ -82,6 +83,7 @@ function CommoditiesCarousel() {
       onPressSeeAll={navigateToPerpsSearch}
       placement={placement}
       placementId={PLACEMENT_IDS.PERPS_COMMODITIES}
+      showHeaderCaret={false}
       title={i18n.t(i18n.l.discover.placements.commodities_title)}
     />
   );
@@ -96,6 +98,7 @@ function StocksCarousel() {
       onPressSeeAll={navigateToPerpsSearch}
       placement={placement}
       placementId={PLACEMENT_IDS.PERPS_STOCKS}
+      showHeaderCaret={false}
       title="Stocks"
     />
   );

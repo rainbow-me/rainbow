@@ -34,6 +34,7 @@ type MarketCarouselProps<T extends PlacementItem> = {
   placementId: PlacementId;
   renderItem: (item: T) => ReactNode;
   renderSkeleton: () => ReactNode;
+  showHeaderCaret?: boolean;
   title: string;
 };
 
@@ -48,6 +49,7 @@ export function MarketCarousel<T extends PlacementItem>({
   placementId,
   renderItem,
   renderSkeleton,
+  showHeaderCaret,
   title,
 }: MarketCarouselProps<T>) {
   const placementScreen = getPlacementScreen(placement);
@@ -104,7 +106,7 @@ export function MarketCarousel<T extends PlacementItem>({
 
   return (
     <Box gap={20}>
-      <CarouselHeader title={title} onPress={onPressSeeAll ? handleSeeAllPress : undefined} />
+      <CarouselHeader title={title} onPress={onPressSeeAll ? handleSeeAllPress : undefined} showCaret={showHeaderCaret} />
 
       {showSkeletons ? (
         <View style={styles.skeletonRow}>

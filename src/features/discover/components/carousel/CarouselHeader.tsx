@@ -6,10 +6,12 @@ import { SCREEN_HORIZONTAL_PADDING } from '@/features/discover/constants';
 
 export function CarouselHeader({
   leadingAccessory,
-  title,
   onPress,
+  showCaret = !!onPress,
+  title,
 }: {
   leadingAccessory?: ReactNode;
+  showCaret?: boolean;
   title: string;
   onPress?: () => void;
 }) {
@@ -21,7 +23,7 @@ export function CarouselHeader({
           <Text size="22pt" weight="heavy" color="label">
             {title}
           </Text>
-          {onPress && (
+          {showCaret && onPress && (
             <TextIcon size="icon 15px" weight="heavy" color="labelQuaternary">
               {'􀯻'}
             </TextIcon>
