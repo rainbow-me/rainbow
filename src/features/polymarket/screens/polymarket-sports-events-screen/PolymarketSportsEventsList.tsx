@@ -7,6 +7,7 @@ import Animated from 'react-native-reanimated';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 import ButtonPressAnimation from '@/components/animations/ButtonPressAnimation';
+import { ShowMoreButton } from '@/components/buttons/ShowMoreButton';
 import { Text, useForegroundColor } from '@/design-system';
 import { LeagueIcon } from '@/features/polymarket/components/league-icon/LeagueIcon';
 import {
@@ -271,20 +272,6 @@ const LeagueHeader = memo(function LeagueHeader({
     </ButtonPressAnimation>
   );
 });
-
-const ShowMoreButton = memo(function ShowMoreButton({ count, onPress }: { count: number; onPress: () => void }) {
-  return (
-    <ButtonPressAnimation onPress={onPress} scaleTo={0.96} style={styles.showMoreButton}>
-      <Text align="center" color="label" size="17pt" weight="heavy">
-        {getShowMoreLabel(count)}
-      </Text>
-    </ButtonPressAnimation>
-  );
-});
-
-function getShowMoreLabel(count: number): string {
-  return count === 2 ? 'Show 2 more' : 'Show more';
-}
 
 const SectionSeparator = memo(function SectionSeparator() {
   const separatorColor = useForegroundColor('separatorSecondary');
@@ -584,14 +571,6 @@ const styles = StyleSheet.create({
   skeletonItemWrapper: {
     height: ITEM_HEIGHT,
     width: '100%',
-  },
-  showMoreButton: {
-    alignItems: 'center',
-    alignSelf: 'center',
-    height: 40,
-    justifyContent: 'center',
-    marginBottom: ITEM_GAP,
-    paddingHorizontal: 20,
   },
   sectionSeparatorContainer: {
     paddingTop: 20 - ITEM_GAP,

@@ -4,9 +4,10 @@ import { StyleSheet, View } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
 
 import ButtonPressAnimation from '@/components/animations/ButtonPressAnimation';
+import { ShowMoreButton } from '@/components/buttons/ShowMoreButton';
 import { ImgixImage } from '@/components/images';
 import { LiveTokenText, useLiveTokenValue } from '@/components/live-token-text/LiveTokenText';
-import { Box, Text, TextIcon, useColorMode } from '@/design-system';
+import { Box, Text, useColorMode } from '@/design-system';
 import { getValueForColorMode } from '@/design-system/color/palettes';
 import { SparklineChart } from '@/features/charts/line/components/SparklineChart';
 import { SCREEN_HORIZONTAL_PADDING } from '@/features/discover/constants';
@@ -137,25 +138,6 @@ function TokenPriceChange({ color, priceChange }: { color: string; priceChange: 
   );
 }
 
-function ShowMoreButton({ count, onPress }: { count: number; onPress: () => void }) {
-  return (
-    <ButtonPressAnimation onPress={onPress} scaleTo={0.96} style={styles.showMoreButton}>
-      <Box flexDirection="row" alignItems="center" justifyContent="center" gap={6} height={{ custom: 44 }}>
-        <Text size="17pt" weight="heavy" color="label">
-          {getShowMoreLabel(count)}
-        </Text>
-        <TextIcon size="icon 14px" weight="heavy" color="labelQuaternary">
-          {'􀆈'}
-        </TextIcon>
-      </Box>
-    </ButtonPressAnimation>
-  );
-}
-
-function getShowMoreLabel(count: number): string {
-  return count === 2 ? 'Show 2 more' : 'Show more';
-}
-
 function selectLivePriceChange24h(state: TokenData): string {
   return state.change.change24hPct;
 }
@@ -212,8 +194,5 @@ const styles = StyleSheet.create({
     width: 40,
     height: 40,
     borderRadius: 40 / 2,
-  },
-  showMoreButton: {
-    alignSelf: 'center',
   },
 });
