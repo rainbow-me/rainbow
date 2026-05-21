@@ -1,7 +1,7 @@
 import { createRainbowStore } from '@/state/internal/createRainbowStore';
 import { createStoreActions } from '@/state/internal/utils/createStoreActions';
 
-export const DISCOVER_SECTION_ORDER = ['forYou', 'crypto', 'markets', 'sports'] as const;
+export const DISCOVER_SECTION_ORDER = ['forYou', 'markets', 'crypto', 'sports'] as const;
 
 export type DiscoverSection = (typeof DISCOVER_SECTION_ORDER)[number];
 
@@ -18,12 +18,12 @@ export const DISCOVER_SECTIONS: Record<DiscoverSection, DiscoverSectionConfig> =
     value: 'forYou',
   },
   crypto: {
-    index: 1,
+    index: 2,
     label: 'Crypto',
     value: 'crypto',
   },
   markets: {
-    index: 2,
+    index: 1,
     label: 'Markets',
     value: 'markets',
   },
