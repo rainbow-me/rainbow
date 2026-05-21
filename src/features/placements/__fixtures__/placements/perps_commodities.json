@@ -5,7 +5,13 @@
   "version": 2,
   "updatedAt": "2026-05-15T15:59:08.920Z",
   "items": [
-    { "order": 0, "ref": { "source": "hyperliquid", "type": "perp", "id": "xyz:CL" } },
-    { "order": 1, "ref": { "source": "hyperliquid", "type": "perp", "id": "PAXG" } }
+    { "order": 0, "ref": { "source": "hyperliquid", "type": "perp", "id": "xyz:GOLD" } },
+    { "order": 1, "ref": { "source": "hyperliquid", "type": "perp", "id": "xyz:SILVER" } },
+    { "order": 2, "ref": { "source": "hyperliquid", "type": "perp", "id": "xyz:CL" } },
+    { "order": 3, "ref": { "source": "hyperliquid", "type": "perp", "id": "xyz:BRENTOIL" } },
+    { "order": 4, "ref": { "source": "hyperliquid", "type": "perp", "id": "xyz:NATGAS" } },
+    { "order": 5, "ref": { "source": "hyperliquid", "type": "perp", "id": "xyz:COPPER" } },
+    { "order": 6, "ref": { "source": "hyperliquid", "type": "perp", "id": "xyz:PLATINUM" } },
+    { "order": 7, "ref": { "source": "hyperliquid", "type": "perp", "id": "xyz:PALLADIUM" } }
   ]
 }

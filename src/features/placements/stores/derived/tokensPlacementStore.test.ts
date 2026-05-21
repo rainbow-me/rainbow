@@ -96,8 +96,13 @@ describe('tokensPlacementStore', () => {
 
     expect(fetchExternalToken).toHaveBeenCalledTimes(tokensPlacement.items.length);
     expect(fetchExternalToken).toHaveBeenCalledWith({
-      address: '0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48',
+      address: 'eth',
       chainId: 1,
+      currency: 'USD',
+    });
+    expect(fetchExternalToken).toHaveBeenCalledWith({
+      address: '0xa53887f7e7c1bf5010b8627f1c1ba94fe7a5d6e0',
+      chainId: 8453,
       currency: 'USD',
     });
   });
