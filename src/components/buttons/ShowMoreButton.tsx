@@ -16,7 +16,7 @@ export const ShowMoreButton = memo(function ShowMoreButton({ count, onPress, sty
     <ButtonPressAnimation onPress={onPress} scaleTo={0.96} style={[styles.button, style]}>
       <Box flexDirection="row" alignItems="center" justifyContent="center" gap={8} height={{ custom: 44 }}>
         <View style={styles.iconBadge}>
-          <TextIcon align="center" color="labelQuaternary" opacity={0.4} size="icon 10px" weight="black">
+          <TextIcon align="center" color="labelQuaternary" opacity={0.4} size="icon 10px" textStyle={styles.iconGlyph} weight="black">
             {'\u{100188}'}
           </TextIcon>
         </View>
@@ -43,5 +43,8 @@ const styles = StyleSheet.create({
     height: 20,
     justifyContent: 'center',
     width: 20,
+  },
+  iconGlyph: {
+    transform: [{ translateY: 1 }],
   },
 });
