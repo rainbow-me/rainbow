@@ -143,9 +143,33 @@ export const SPORT_LEAGUES = {
     sportId: 'basketball',
     color: SPORTS.basketball.color,
   },
+  wnba: {
+    name: 'WNBA',
+    fullName: "Women's National Basketball Association",
+    sportId: 'basketball',
+    color: SPORTS.basketball.color,
+  },
+  wcbb: {
+    name: 'NCAAW',
+    fullName: "NCAA Women's Basketball",
+    sportId: 'basketball',
+    color: SPORTS.basketball.color,
+  },
+  bkaba: {
+    name: 'ABA League',
+    fullName: 'ABA League',
+    sportId: 'basketball',
+    color: SPORTS.basketball.color,
+  },
   nhl: {
     name: 'NHL',
     fullName: 'National Hockey League',
+    sportId: 'hockey',
+    color: SPORTS.hockey.color,
+  },
+  wch: {
+    name: 'World Championship',
+    fullName: 'Ice Hockey World Championship',
     sportId: 'hockey',
     color: SPORTS.hockey.color,
   },
@@ -161,6 +185,24 @@ export const SPORT_LEAGUES = {
     sportId: 'soccer',
     color: SPORTS.soccer.color,
   },
+  ucl: {
+    name: 'UCL',
+    fullName: 'UEFA Champions League',
+    sportId: 'soccer',
+    color: SPORTS.soccer.color,
+  },
+  mls: {
+    name: 'MLS',
+    fullName: 'Major League Soccer',
+    sportId: 'soccer',
+    color: SPORTS.soccer.color,
+  },
+  bun: {
+    name: 'Bundesliga',
+    fullName: 'Bundesliga',
+    sportId: 'soccer',
+    color: SPORTS.soccer.color,
+  },
   lal: {
     name: 'La Liga',
     fullName: 'Spanish La Liga',
@@ -168,8 +210,32 @@ export const SPORT_LEAGUES = {
     color: SPORTS.soccer.color,
   },
   sea: {
-    name: 'SEA',
-    fullName: 'SEA',
+    name: 'Serie A',
+    fullName: 'Serie A',
+    sportId: 'soccer',
+    color: SPORTS.soccer.color,
+  },
+  egy1: {
+    name: 'EGY1',
+    fullName: 'Egyptian Premier League',
+    sportId: 'soccer',
+    color: SPORTS.soccer.color,
+  },
+  lib: {
+    name: 'Libertadores',
+    fullName: 'CONMEBOL Libertadores',
+    sportId: 'soccer',
+    color: SPORTS.soccer.color,
+  },
+  cde: {
+    name: 'Copa del Rey',
+    fullName: 'Copa del Rey',
+    sportId: 'soccer',
+    color: SPORTS.soccer.color,
+  },
+  ere: {
+    name: 'Eredivisie',
+    fullName: 'Eredivisie',
     sportId: 'soccer',
     color: SPORTS.soccer.color,
   },
@@ -179,9 +245,21 @@ export const SPORT_LEAGUES = {
     sportId: 'cricket',
     color: SPORTS.cricket.color,
   },
+  ipl: {
+    name: 'IPL',
+    fullName: 'Indian Premier League',
+    sportId: 'cricket',
+    color: SPORTS.cricket.color,
+  },
   atp: {
     name: 'ATP',
     fullName: 'Association of Tennis Professionals',
+    sportId: 'tennis',
+    color: SPORTS.tennis.color,
+  },
+  wta: {
+    name: 'WTA',
+    fullName: "Women's Tennis Association",
     sportId: 'tennis',
     color: SPORTS.tennis.color,
   },
@@ -201,7 +279,28 @@ export const SPORT_LEAGUES = {
 
 export const LEAGUE_SELECTOR_ORDER: LeagueId[] = ['nfl', 'nba', 'cfb', 'cbb', 'epl', 'nhl', 'atp', 'ufc', 'cs2', 'crint'];
 
-export const LEAGUE_LIST_ORDER: LeagueId[] = [...LEAGUE_SELECTOR_ORDER, 'mlb', 'dota2', 'val', 'lol'];
+export const LEAGUE_LIST_ORDER: LeagueId[] = [
+  ...LEAGUE_SELECTOR_ORDER,
+  'wnba',
+  'wcbb',
+  'bkaba',
+  'mlb',
+  'wch',
+  'ucl',
+  'mls',
+  'bun',
+  'lal',
+  'sea',
+  'egy1',
+  'lib',
+  'cde',
+  'ere',
+  'ipl',
+  'wta',
+  'dota2',
+  'val',
+  'lol',
+];
 
 export type LeagueId = keyof typeof SPORT_LEAGUES;
 export type League = (typeof SPORT_LEAGUES)[LeagueId];
@@ -209,7 +308,7 @@ export type SportId = League['sportId'];
 
 export function getLeagueSlugId(value: string): string | undefined {
   const [slugId] = value.split('-');
-  return slugId || undefined;
+  return slugId?.toLowerCase() || undefined;
 }
 
 function isLeagueId(value: string): value is LeagueId {
