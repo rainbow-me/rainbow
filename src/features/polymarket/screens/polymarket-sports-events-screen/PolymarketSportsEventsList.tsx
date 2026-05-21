@@ -234,7 +234,7 @@ const SectionHeader = memo(function SectionHeader({ title, count, isLive }: { ti
         </Text>
         {typeof count === 'number' ? (
           <View style={styles.countBadge}>
-            <Text color="labelSecondary" size="13pt" weight="heavy">
+            <Text color={{ custom: '#FFFFFF' }} size="13pt" style={styles.countBadgeText} weight="heavy">
               {count}
             </Text>
           </View>
@@ -540,12 +540,19 @@ const styles = StyleSheet.create({
   },
   countBadge: {
     alignItems: 'center',
-    backgroundColor: 'rgba(255, 255, 255, 0.08)',
-    borderRadius: 9,
-    height: 18,
+    backgroundColor: 'rgba(255, 255, 255, 0.19)',
+    borderColor: 'rgba(255, 255, 255, 0.06)',
+    borderRadius: 8,
+    borderWidth: 1.333,
+    height: 23,
     justifyContent: 'center',
-    minWidth: 18,
-    paddingHorizontal: 6,
+    minWidth: 24,
+    paddingHorizontal: 7,
+  },
+  countBadgeText: {
+    fontSize: 14,
+    letterSpacing: 0,
+    lineHeight: 14,
   },
   leagueHeaderButton: {
     alignSelf: 'flex-start',
