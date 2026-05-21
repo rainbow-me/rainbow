@@ -43,14 +43,7 @@ export function CloudBackupOptionRow() {
   const disabled = status !== CloudBackupState.Ready && status !== CloudBackupState.NotAvailable;
 
   const { color, text } = useMemo<{ text: string; color: TextColor | CustomColor }>(() => {
-    if (status === CloudBackupState.FailedToInitialize || status === CloudBackupState.NotAvailable) {
-      return {
-        text: i18n.t(i18n.l.back_up.cloud.statuses.not_enabled),
-        color: 'primary (Deprecated)',
-      };
-    }
-
-    if (status === CloudBackupState.Ready) {
+    if (status === CloudBackupState.FailedToInitialize || status === CloudBackupState.NotAvailable || status === CloudBackupState.Ready) {
       return {
         text: i18n.t(i18n.l.back_up.cloud.cloud_backup),
         color: 'primary (Deprecated)',
