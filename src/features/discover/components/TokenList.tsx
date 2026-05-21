@@ -2,12 +2,11 @@ import { useCallback, useState } from 'react';
 import { StyleSheet, View } from 'react-native';
 
 import { LinearGradient } from 'expo-linear-gradient';
-import { useAnimatedStyle, type SharedValue } from 'react-native-reanimated';
 
 import ButtonPressAnimation from '@/components/animations/ButtonPressAnimation';
 import { ImgixImage } from '@/components/images';
-import { LiveTokenText, useLiveTokenSharedValue } from '@/components/live-token-text/LiveTokenText';
-import { AnimatedText, Box, Text, TextIcon, useColorMode } from '@/design-system';
+import { LiveTokenText, useLiveTokenValue } from '@/components/live-token-text/LiveTokenText';
+import { Box, Text, TextIcon, useColorMode } from '@/design-system';
 import { getValueForColorMode } from '@/design-system/color/palettes';
 import { SparklineChart } from '@/features/charts/line/components/SparklineChart';
 import { SCREEN_HORIZONTAL_PADDING } from '@/features/discover/constants';
@@ -59,8 +58,13 @@ function TokenCard({ asset }: { asset: FormattedExternalAsset }) {
   const initialPriceChange = asset.price.relativeChange24h ? String(asset.price.relativeChange24h) : '0';
   const priceChangeColors = getValueForColorMode(PRICE_CHANGE_COLORS, colorMode);
   const tokenId = getUniqueId(asset.address, asset.chainId);
+  const livePriceChange = useLiveTokenValue({
+    initialValue: initialPriceChange,
+    selector: selectLivePriceChange24h,
+    tokenId,
+  });
   const tokenLineChartId = buildTokenLineChartId({ address: asset.address, chainId: asset.chainId, currency: nativeCurrency });
-  const sparklineColor = getPriceChangeColor(initialPriceChange, priceChangeColors);
+  const priceChangeColor = getPriceChangeColor(livePriceChange, priceChangeColors);
 
   const openTokenDetails = useCallback(() => {
     Navigation.handleAction(Routes.EXPANDED_ASSET_SHEET_V2, {
@@ -103,13 +107,13 @@ function TokenCard({ asset }: { asset: FormattedExternalAsset }) {
                   size="15pt"
                   weight="bold"
                 />
-                <TokenPriceChange initialPriceChange={initialPriceChange} priceChangeColors={priceChangeColors} tokenId={tokenId} />
+                <TokenPriceChange color={priceChangeColor} priceChange={livePriceChange} />
               </View>
             </View>
             <View style={styles.sparklineContainer}>
               <SparklineChart
                 chartId={tokenLineChartId}
-                color={sparklineColor}
+                color={priceChangeColor}
                 height={TOKEN_SPARKLINE_LAYOUT.height}
                 store={useTokenLineChartsStore}
                 width={TOKEN_SPARKLINE_LAYOUT.width}
@@ -122,32 +126,12 @@ function TokenCard({ asset }: { asset: FormattedExternalAsset }) {
   );
 }
 
-function TokenPriceChange({
-  initialPriceChange,
-  priceChangeColors,
-  tokenId,
-}: {
-  initialPriceChange: string;
-  priceChangeColors: { negative: string; positive: string; neutral: string };
-  tokenId: string;
-}) {
-  const livePriceChange = useLiveTokenSharedValue({
-    initialValue: initialPriceChange,
-    selector: selectLivePriceChange24h,
-    tokenId,
-  });
-
-  const priceChangeStyle = useAnimatedStyle(() => {
-    return {
-      color: getPriceChangeColor(livePriceChange.value, priceChangeColors),
-    };
-  });
-
+function TokenPriceChange({ color, priceChange }: { color: string; priceChange: string }) {
   return (
     <View style={styles.priceChangeRow}>
-      <AnimatedText numberOfLines={1} selector={selectPriceChangeText} size="15pt" style={priceChangeStyle} weight="bold">
-        {livePriceChange}
-      </AnimatedText>
+      <Text numberOfLines={1} size="15pt" color={{ custom: color }} weight="bold">
+        {formatPriceChangeText(priceChange)}
+      </Text>
     </View>
   );
 }
@@ -175,9 +159,8 @@ function selectLivePriceChange24h(state: TokenData): string {
   return state.change.change24hPct;
 }
 
-function selectPriceChangeText(priceChange: SharedValue<string>): string {
-  'worklet';
-  const numericValue = Number(priceChange.value || 0);
+function formatPriceChangeText(priceChange: string): string {
+  const numericValue = Number(priceChange || 0);
   return `${Math.abs(numericValue).toFixed(2)}%`;
 }
 
