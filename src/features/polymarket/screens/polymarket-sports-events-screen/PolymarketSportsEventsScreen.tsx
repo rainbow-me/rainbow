@@ -8,10 +8,18 @@ import { usePolymarketSportsEventsStore } from '@/features/polymarket/stores/pol
 import { useListen } from '@/state/internal/hooks/useListen';
 
 type PolymarketSportsEventsScreenProps = {
+  onPressLeagueHeader?: (leagueId: string) => void;
   onScroll: (event: NativeSyntheticEvent<NativeScrollEvent>) => void;
+  showLeagueSelector?: boolean;
+  truncateSections?: boolean;
 };
 
-export const PolymarketSportsEventsScreen = memo(function PolymarketSportsEventsScreen({ onScroll }: PolymarketSportsEventsScreenProps) {
+export const PolymarketSportsEventsScreen = memo(function PolymarketSportsEventsScreen({
+  onPressLeagueHeader,
+  onScroll,
+  showLeagueSelector = true,
+  truncateSections = false,
+}: PolymarketSportsEventsScreenProps) {
   const { eventsListRef: listRef } = usePolymarketContext();
 
   useListen(
@@ -24,10 +32,17 @@ export const PolymarketSportsEventsScreen = memo(function PolymarketSportsEvents
 
   return (
     <View style={styles.container}>
-      <View style={styles.leagueSelectorContainer}>
-        <PolymarketLeagueSelector />
-      </View>
-      <PolymarketSportsEventsList listRef={listRef} onScroll={onScroll} />
+      {showLeagueSelector ? (
+        <View style={styles.leagueSelectorContainer}>
+          <PolymarketLeagueSelector />
+        </View>
+      ) : null}
+      <PolymarketSportsEventsList
+        listRef={listRef}
+        onPressLeagueHeader={onPressLeagueHeader}
+        onScroll={onScroll}
+        truncateSections={truncateSections}
+      />
     </View>
   );
 });

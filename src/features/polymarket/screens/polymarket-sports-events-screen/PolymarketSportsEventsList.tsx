@@ -1,4 +1,4 @@
-import { memo, useCallback, useMemo, type RefObject } from 'react';
+import { memo, useCallback, useMemo, useState, type RefObject } from 'react';
 import { StyleSheet, View, type NativeScrollEvent, type NativeSyntheticEvent, type ViewToken } from 'react-native';
 
 import { format } from 'date-fns';
@@ -6,6 +6,7 @@ import { debounce } from 'lodash';
 import Animated from 'react-native-reanimated';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
+import ButtonPressAnimation from '@/components/animations/ButtonPressAnimation';
 import { Text, useForegroundColor } from '@/design-system';
 import { LeagueIcon } from '@/features/polymarket/components/league-icon/LeagueIcon';
 import {
@@ -14,7 +15,7 @@ import {
   PolymarketSportEventListItem,
 } from '@/features/polymarket/components/polymarket-sport-event-list-item/PolymarketSportEventListItem';
 import { DEFAULT_SPORTS_LEAGUE_KEY, NAVIGATOR_FOOTER_CLEARANCE, NAVIGATOR_FOOTER_HEIGHT } from '@/features/polymarket/constants';
-import { getLeague, getLeagueId, getLeagueSlugId, LEAGUE_LIST_ORDER } from '@/features/polymarket/leagues';
+import { getLeague, getLeagueId, getLeagueSlugId, LEAGUE_LIST_ORDER, type LeagueId } from '@/features/polymarket/leagues';
 import { usePolymarketSportsEventsStore } from '@/features/polymarket/stores/polymarketSportsEventsStore';
 import { type PolymarketEvent } from '@/features/polymarket/types/polymarket-event';
 import { getSportsEventsDayBoundaries } from '@/features/polymarket/utils/getSportsEventsDateRange';
@@ -26,12 +27,15 @@ import { addSubscribedTokens, removeSubscribedTokens, useLiveTokensStore } from 
 import { DEVICE_HEIGHT } from '@/utils/deviceUtils';
 
 const ITEM_GAP = 8;
+const DISCOVER_PREVIEW_EVENT_COUNT = 2;
 const EMPTY_EVENTS: PolymarketEvent[] = [];
 const VIEWABILITY_CONFIG = { itemVisiblePercentThreshold: 50, minimumViewTime: 100 };
 
 type SportsEventsListProps = {
   listRef?: RefObject<Animated.FlatList<unknown> | null>;
+  onPressLeagueHeader?: (leagueId: string) => void;
   onScroll?: (event: NativeSyntheticEvent<NativeScrollEvent>) => void;
+  truncateSections?: boolean;
 };
 
 type EventItem = {
@@ -44,6 +48,7 @@ type SectionHeaderItem = {
   type: 'header';
   key: string;
   title: string;
+  count?: number;
   isLive?: boolean;
 };
 
@@ -52,6 +57,7 @@ type LeagueHeaderItem = {
   key: string;
   title: string;
   eventSlug: string;
+  leagueId?: LeagueId;
 };
 
 type SectionSeparatorItem = {
@@ -64,21 +70,37 @@ type LeagueSeparatorItem = {
   key: string;
 };
 
-export type SportsListItem = EventItem | SectionHeaderItem | LeagueHeaderItem | SectionSeparatorItem | LeagueSeparatorItem;
+type ShowMoreItem = {
+  type: 'show-more';
+  key: string;
+  count: number;
+  expansionKey: string;
+};
 
-export const PolymarketSportsEventsList = memo(function PolymarketSportsEventsList({ listRef, onScroll }: SportsEventsListProps) {
+export type SportsListItem = EventItem | SectionHeaderItem | LeagueHeaderItem | SectionSeparatorItem | LeagueSeparatorItem | ShowMoreItem;
+
+export const PolymarketSportsEventsList = memo(function PolymarketSportsEventsList({
+  listRef,
+  onPressLeagueHeader,
+  onScroll,
+  truncateSections = false,
+}: SportsEventsListProps) {
   const safeAreaInsets = useSafeAreaInsets();
   const events = usePolymarketSportsEventsStore(state => state.getData() ?? EMPTY_EVENTS);
   const selectedLeagueId = usePolymarketSportsEventsStore(state => state.selectedLeagueId);
   const isLoading = usePolymarketSportsEventsStore(state => state.getStatus('isLoading'));
   const showLeagueHeaders = !selectedLeagueId || selectedLeagueId === DEFAULT_SPORTS_LEAGUE_KEY;
+  const [expandedKeys, setExpandedKeys] = useState<ReadonlySet<string>>(() => new Set());
 
   const filteredEvents = useMemo(() => {
     if (showLeagueHeaders) return events;
     return events.filter(event => getLeagueId(event.slug) === selectedLeagueId);
   }, [events, showLeagueHeaders, selectedLeagueId]);
 
-  const listData = useMemo(() => buildListData(filteredEvents, showLeagueHeaders), [filteredEvents, showLeagueHeaders]);
+  const listData = useMemo(
+    () => buildListData(filteredEvents, showLeagueHeaders, { expandedKeys, truncateSections }),
+    [expandedKeys, filteredEvents, showLeagueHeaders, truncateSections]
+  );
 
   const listStyles = useMemo(() => {
     const paddingBottom = safeAreaInsets.bottom + NAVIGATOR_FOOTER_HEIGHT + NAVIGATOR_FOOTER_CLEARANCE;
@@ -112,21 +134,37 @@ export const PolymarketSportsEventsList = memo(function PolymarketSportsEventsLi
     [debouncedAddSubscribedTokens]
   );
 
-  const renderItem = useCallback(({ item }: { item: SportsListItem }) => {
-    if (item.type === 'header') {
-      return <SectionHeader isLive={item.isLive} title={item.title} />;
-    }
-    if (item.type === 'league-header') {
-      return <LeagueHeader title={item.title} eventSlug={item.eventSlug} />;
-    }
-    if (item.type === 'separator') {
-      return <SectionSeparator />;
-    }
-    if (item.type === 'league-separator') {
-      return <LeagueSeparator />;
-    }
-    return <PolymarketSportEventListItem event={item.event} style={styles.eventItemWrapper} />;
+  const expandSection = useCallback((expansionKey: string) => {
+    setExpandedKeys(currentExpandedKeys => {
+      if (currentExpandedKeys.has(expansionKey)) return currentExpandedKeys;
+
+      const nextExpandedKeys = new Set(currentExpandedKeys);
+      nextExpandedKeys.add(expansionKey);
+      return nextExpandedKeys;
+    });
   }, []);
+
+  const renderItem = useCallback(
+    ({ item }: { item: SportsListItem }) => {
+      if (item.type === 'header') {
+        return <SectionHeader count={item.count} isLive={item.isLive} title={item.title} />;
+      }
+      if (item.type === 'league-header') {
+        return <LeagueHeader eventSlug={item.eventSlug} leagueId={item.leagueId} onPress={onPressLeagueHeader} title={item.title} />;
+      }
+      if (item.type === 'separator') {
+        return <SectionSeparator />;
+      }
+      if (item.type === 'league-separator') {
+        return <LeagueSeparator />;
+      }
+      if (item.type === 'show-more') {
+        return <ShowMoreButton count={item.count} onPress={() => expandSection(item.expansionKey)} />;
+      }
+      return <PolymarketSportEventListItem event={item.event} style={styles.eventItemWrapper} />;
+    },
+    [expandSection, onPressLeagueHeader]
+  );
 
   return (
     <Animated.FlatList
@@ -171,7 +209,7 @@ const EmptyState = memo(function EmptyState() {
   );
 });
 
-const SectionHeader = memo(function SectionHeader({ title, isLive }: { title: string; isLive?: boolean }) {
+const SectionHeader = memo(function SectionHeader({ title, count, isLive }: { title: string; count?: number; isLive?: boolean }) {
   return (
     <View style={styles.sectionHeader}>
       <View style={styles.sectionHeaderContent}>
@@ -179,19 +217,54 @@ const SectionHeader = memo(function SectionHeader({ title, isLive }: { title: st
         <Text align="left" color="label" size="20pt" weight="heavy">
           {title}
         </Text>
+        {typeof count === 'number' ? (
+          <View style={styles.countBadge}>
+            <Text color="labelSecondary" size="13pt" weight="heavy">
+              {count}
+            </Text>
+          </View>
+        ) : null}
       </View>
     </View>
   );
 });
 
-const LeagueHeader = memo(function LeagueHeader({ title, eventSlug }: { title: string; eventSlug: string }) {
-  return (
+const LeagueHeader = memo(function LeagueHeader({
+  title,
+  eventSlug,
+  leagueId,
+  onPress,
+}: {
+  title: string;
+  eventSlug: string;
+  leagueId?: LeagueId;
+  onPress?: (leagueId: string) => void;
+}) {
+  const content = (
     <View style={styles.leagueHeader}>
       <LeagueIcon eventSlug={eventSlug} size={28} />
       <Text align="left" color="label" size="22pt" weight="heavy">
         {title}
       </Text>
     </View>
+  );
+
+  if (!leagueId || !onPress) return content;
+
+  return (
+    <ButtonPressAnimation onPress={() => onPress(leagueId)} scaleTo={0.96} style={styles.leagueHeaderButton}>
+      {content}
+    </ButtonPressAnimation>
+  );
+});
+
+const ShowMoreButton = memo(function ShowMoreButton({ count, onPress }: { count: number; onPress: () => void }) {
+  return (
+    <ButtonPressAnimation onPress={onPress} scaleTo={0.96} style={styles.showMoreButton}>
+      <Text align="center" color="label" size="17pt" weight="heavy">
+        {`Show ${count} more`}
+      </Text>
+    </ButtonPressAnimation>
   );
 });
 
@@ -230,7 +303,11 @@ function extractEventTokenIds(viewTokens: Array<ViewToken<SportsListItem>>): str
   return Array.from(tokenIds);
 }
 
-function buildListData(events: PolymarketEvent[], showLeagueHeaders: boolean): SportsListItem[] {
+function buildListData(
+  events: PolymarketEvent[],
+  showLeagueHeaders: boolean,
+  options: { expandedKeys: ReadonlySet<string>; truncateSections: boolean }
+): SportsListItem[] {
   if (!events.length) return [];
 
   const { startOfToday, startOfTomorrow, startOfDayAfterTomorrow } = getSportsEventsDayBoundaries();
@@ -290,7 +367,7 @@ function buildListData(events: PolymarketEvent[], showLeagueHeaders: boolean): S
     if (items.length) {
       items.push({ type: 'separator', key: `separator-${section.key}` });
     }
-    pushSection({ items, title: section.title, events: section.events, sectionKey: section.key, showLeagueHeaders });
+    pushSection({ items, title: section.title, events: section.events, sectionKey: section.key, showLeagueHeaders, ...options });
   }
 
   return items;
@@ -302,25 +379,74 @@ function pushSection({
   events,
   sectionKey,
   showLeagueHeaders,
+  expandedKeys,
+  truncateSections,
 }: {
   items: SportsListItem[];
   title: string;
   events: PolymarketEvent[];
   sectionKey: string;
   showLeagueHeaders: boolean;
+  expandedKeys: ReadonlySet<string>;
+  truncateSections: boolean;
 }) {
   if (!events.length) return;
-  items.push({ type: 'header', key: `header-${sectionKey}`, title, isLive: sectionKey === 'live' });
+  items.push({ type: 'header', key: `header-${sectionKey}`, title, count: events.length, isLive: sectionKey === 'live' });
+
+  if (truncateSections && sectionKey === 'live') {
+    pushPreviewEvents({ events, expansionKey: sectionKey, items, sectionKey, expandedKeys });
+    return;
+  }
+
+  if (!showLeagueHeaders) {
+    pushPreviewEvents({ events, expansionKey: sectionKey, items, sectionKey, expandedKeys: truncateSections ? expandedKeys : null });
+    return;
+  }
+
   const leagueGroups = groupEventsByLeague(events);
   for (let i = 0; i < leagueGroups.length; i++) {
     const group = leagueGroups[i];
-    if (showLeagueHeaders) {
-      if (i > 0) {
-        items.push({ type: 'league-separator', key: `league-separator-${sectionKey}-${group.key}` });
-      }
-      items.push({ type: 'league-header', key: `league-${sectionKey}-${group.key}`, title: group.title, eventSlug: group.events[0].slug });
+    if (i > 0) {
+      items.push({ type: 'league-separator', key: `league-separator-${sectionKey}-${group.key}` });
     }
-    items.push(...buildEventItems(group.events, `${sectionKey}-${group.key}`));
+    items.push({
+      type: 'league-header',
+      key: `league-${sectionKey}-${group.key}`,
+      title: group.title,
+      eventSlug: group.events[0].slug,
+      leagueId: group.leagueId,
+    });
+    const expansionKey = `${sectionKey}-${group.key}`;
+    pushPreviewEvents({
+      events: group.events,
+      expansionKey,
+      items,
+      sectionKey: expansionKey,
+      expandedKeys: truncateSections ? expandedKeys : null,
+    });
+  }
+}
+
+function pushPreviewEvents({
+  events,
+  expansionKey,
+  items,
+  sectionKey,
+  expandedKeys,
+}: {
+  events: PolymarketEvent[];
+  expansionKey: string;
+  items: SportsListItem[];
+  sectionKey: string;
+  expandedKeys: ReadonlySet<string> | null;
+}) {
+  const shouldTruncate = expandedKeys != null && !expandedKeys.has(expansionKey) && events.length > DISCOVER_PREVIEW_EVENT_COUNT;
+  const visibleEvents = shouldTruncate ? events.slice(0, DISCOVER_PREVIEW_EVENT_COUNT) : events;
+  items.push(...buildEventItems(visibleEvents, sectionKey));
+
+  const remainingCount = events.length - visibleEvents.length;
+  if (remainingCount > 0) {
+    items.push({ type: 'show-more', key: `show-more-${expansionKey}`, count: remainingCount, expansionKey });
   }
 }
 
@@ -333,14 +459,14 @@ function buildEventItems(events: PolymarketEvent[], sectionKey: string): EventIt
 }
 
 function groupEventsByLeague(events: PolymarketEvent[]) {
-  const groups = new Map<string, { key: string; title: string; events: PolymarketEvent[] }>();
+  const groups = new Map<string, { key: string; title: string; events: PolymarketEvent[]; leagueId?: LeagueId }>();
   for (const event of events) {
     const leagueId = getLeagueId(event.slug);
     const league = getLeague(event.slug);
     const leagueSlugId = getLeagueSlugId(event.slug);
     const key = leagueId ?? leagueSlugId ?? 'unknown';
     const title = league?.name ?? (leagueSlugId ? leagueSlugId.toUpperCase() : i18n.t(i18n.l.predictions.bet_types.other));
-    const existing = groups.get(key) ?? { key, title, events: [] };
+    const existing = groups.get(key) ?? { key, title, events: [], leagueId };
     existing.events.push(event);
     groups.set(key, existing);
   }
@@ -407,6 +533,18 @@ const styles = StyleSheet.create({
     width: 8,
     borderRadius: 4,
   },
+  countBadge: {
+    alignItems: 'center',
+    backgroundColor: 'rgba(255, 255, 255, 0.08)',
+    borderRadius: 9,
+    height: 18,
+    justifyContent: 'center',
+    minWidth: 18,
+    paddingHorizontal: 6,
+  },
+  leagueHeaderButton: {
+    alignSelf: 'flex-start',
+  },
   leagueHeader: {
     flexDirection: 'row',
     alignItems: 'center',
@@ -428,6 +566,14 @@ const styles = StyleSheet.create({
   skeletonItemWrapper: {
     height: ITEM_HEIGHT,
     width: '100%',
+  },
+  showMoreButton: {
+    alignItems: 'center',
+    alignSelf: 'center',
+    height: 40,
+    justifyContent: 'center',
+    marginBottom: ITEM_GAP,
+    paddingHorizontal: 20,
   },
   sectionSeparatorContainer: {
     paddingTop: 20 - ITEM_GAP,
