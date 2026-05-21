@@ -6,7 +6,6 @@ import { logger, RainbowError } from '@/logger';
 import { trackPushNotificationPermissionStatus } from '@/notifications/analytics';
 import { subscribeExistingNotificationsSettings } from '@/notifications/settings/initialization';
 import { notificationSettingsStorage } from '@/notifications/settings/storage';
-import { saveFCMToken } from '@/notifications/tokens';
 
 const HAS_SHOWN_PERMISSION_SCREEN_KEY = 'hasShownNotificationPermissionScreen';
 
@@ -49,7 +48,6 @@ export const checkPushNotificationPermissions = async () => {
                 const status = await requestNotificationPermission();
                 const enabled = isNotificationPermissionGranted(status);
                 trackPushNotificationPermissionStatus(enabled ? 'enabled' : 'disabled');
-                await saveFCMToken();
               } catch (error) {
                 logger.error(new RainbowError('[notifications]: Error while getting permissions'), { error });
               } finally {

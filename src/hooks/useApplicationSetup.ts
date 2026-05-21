@@ -9,7 +9,6 @@ import {
 import { loadAddress } from '@/model/wallet';
 import { type InitialRoute } from '@/navigation/initialRoute';
 import Routes from '@/navigation/routesNames';
-import { saveFCMToken } from '@/notifications/tokens';
 import { PerformanceReports, PerformanceTracking } from '@/performance/tracking';
 import { initializeWallet } from '@/state/wallets/initializeWallet';
 
@@ -26,9 +25,7 @@ export function useApplicationSetup() {
 async function runSetup(setInitialRoute: Dispatch<SetStateAction<InitialRoute>>): Promise<void> {
   const address = await loadAddress();
 
-  Promise.all([initWalletConnectListeners(), saveFCMToken()]).then(() => {
-    initWalletConnectPushNotifications();
-  });
+  initWalletConnectListeners().then(initWalletConnectPushNotifications);
 
   if (address) {
     void initializeWallet({ shouldRunMigrations: true });

@@ -7,7 +7,7 @@ import {
   type NotificationSubscriptionWalletsType,
   type WalletNotificationSettings,
 } from '@/notifications/settings/types';
-import { getFCMToken, saveFCMToken } from '@/notifications/tokens';
+import { getFCMToken } from '@/notifications/tokens';
 
 const NOTIFICATION_SUBSCRIPTIONS_URL = 'https://notifications.p.rainbow.me/api/v1/subscriptions';
 
@@ -82,7 +82,7 @@ const updateNotificationSubscriptionWithRetry = async ({
     return true;
   } else if (subscriptionResponse.shouldRetry) {
     // retry with an updated FCM token
-    const refreshedFirebaseToken = await saveFCMToken();
+    const refreshedFirebaseToken = await getFCMToken();
     if (!refreshedFirebaseToken) return false;
 
     const subscriptionRetryResponse = await updateNotificationSubscription({
@@ -107,13 +107,8 @@ export const publishWalletSettings = async ({
   try {
     const wallets = parseWalletSettings(walletSettings);
     const marketingTopics = Object.keys(globalSettings).filter(topic => globalSettings[topic]);
-    let firebaseToken = await getFCMToken();
-
-    // refresh the FCM token if not found
-    if (!firebaseToken) {
-      firebaseToken = await saveFCMToken();
-      if (!firebaseToken) return;
-    }
+    const firebaseToken = await getFCMToken();
+    if (!firebaseToken) return;
 
     const success = await updateNotificationSubscriptionWithRetry({ firebaseToken, marketingTopics, wallets });
     if (success) {

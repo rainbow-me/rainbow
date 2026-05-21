@@ -25,7 +25,6 @@ import { WalletNotificationRelationship } from '@/notifications/settings/constan
 import { initializeNotificationSettingsForAllAddresses } from '@/notifications/settings/initialization';
 import type { AddressWithRelationship } from '@/notifications/settings/types';
 import { setupAndroidChannels } from '@/notifications/setupAndroidChannels';
-import { registerTokenRefreshListener, saveFCMToken } from '@/notifications/tokens';
 import {
   NotificationTypes,
   type FixedRemoteMessage,
@@ -47,7 +46,6 @@ export const NotificationsHandler = () => {
   const wallets = useWallets();
   const dispatch: ThunkDispatch<AppState, unknown, AnyAction> = useDispatch();
   const subscriptionChangesListener = useRef<NotificationSubscriptionChangesListener>(undefined);
-  const onTokenRefreshListener = useRef<Callback>(undefined);
   const foregroundNotificationListener = useRef<Callback>(undefined);
   const notificationOpenedListener = useRef<Callback>(undefined);
   const appStateListener = useRef<NativeEventSubscription>(undefined);
@@ -182,10 +180,8 @@ export const NotificationsHandler = () => {
     };
 
     setupAndroidChannels();
-    saveFCMToken();
     trackWalletsSubscribedForNotifications();
     subscriptionChangesListener.current = registerNotificationSubscriptionChangesListener();
-    onTokenRefreshListener.current = registerTokenRefreshListener();
     foregroundNotificationListener.current = messaging().onMessage(onForegroundRemoteNotification);
     messaging().getInitialNotification().then(handleAppOpenedWithNotification);
     notificationOpenedListener.current = messaging().onNotificationOpenedApp(handleAppOpenedWithNotification);
@@ -200,7 +196,6 @@ export const NotificationsHandler = () => {
 
     return () => {
       subscriptionChangesListener.current?.remove();
-      onTokenRefreshListener.current?.();
       foregroundNotificationListener.current?.();
       notificationOpenedListener.current?.();
       appStateListener.current?.remove();
