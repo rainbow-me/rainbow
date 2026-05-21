@@ -17,6 +17,7 @@ import { usePerpMarketPress } from '@/features/discover/components/perpMarketCar
 import { type PerpMarketWithMetadata } from '@/features/perps/types';
 import { convertStoredPerpPriceChangeToPercent, getHyperliquidTokenId } from '@/features/perps/utils';
 import { formatPerpAssetPrice, selectFormattedMarkPrice } from '@/features/perps/utils/formatPerpsAssetPrice';
+import { extractBaseSymbol } from '@/features/perps/utils/hyperliquidSymbols';
 import { opacity } from '@/framework/ui/utils/opacity';
 import { THICKER_BORDER_WIDTH } from '@/styles/constants';
 import { measureTextSync, type MeasureTextProps } from '@/utils/measureText';
@@ -81,7 +82,7 @@ const PILL_COLORS = {
 export const PerpMarketPill = memo(function PerpMarketPill({ market, style }: PerpMarketPillProps) {
   const { colorMode, isDarkMode } = useColorMode();
   const symbol = market.symbol;
-  const displayName = market.metadata?.name ?? market.baseSymbol;
+  const displayName = extractBaseSymbol(market.baseSymbol);
 
   const trackPress = usePlacementCardTrackPress();
   const onPress = usePerpMarketPress(market, trackPress);
@@ -203,7 +204,7 @@ const PILL_TEXT_STATS = {
 };
 
 export function computePerpPillWidth(market: PerpMarketWithMetadata): number {
-  const displayName = market.metadata?.name ?? market.baseSymbol;
+  const displayName = extractBaseSymbol(market.baseSymbol);
   const nameWidth = measureTextSync(displayName, NAME_TEXT_STYLE);
 
   const priceFormatted = formatPerpAssetPrice(market.midPrice ?? market.price);
