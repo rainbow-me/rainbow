@@ -16,9 +16,11 @@ export type DirectTransferStrategy = {
 
 export type ExecutionStrategy = DirectTransferStrategy | SwapStrategy;
 
+type StrategyConfig = Pick<DepositConfig, 'directTransferEnabled' | 'to'>;
+
 // ============ Strategy Determination ======================================== //
 
-export function determineStrategy(config: DepositConfig, quote: Quote, walletAddress: string): ExecutionStrategy {
+export function determineStrategy(config: StrategyConfig, quote: Quote, walletAddress: string): ExecutionStrategy {
   const isSameChain = Number(quote.chainId) === config.to.chainId;
   const isSameToken = quote.sellTokenAddress.toLowerCase() === config.to.token.address.toLowerCase();
   const isSameAsset = isSameChain && isSameToken;
