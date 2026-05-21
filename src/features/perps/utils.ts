@@ -26,6 +26,7 @@ export function convertHyperliquidPerpAssetIdToSpotAssetId(assetId: number): num
 }
 
 export function formatPriceChange(priceChange: string) {
+  'worklet';
   return `${toFixedWorklet(Number(priceChange) * 10_000, 2)}%`;
 }
 
