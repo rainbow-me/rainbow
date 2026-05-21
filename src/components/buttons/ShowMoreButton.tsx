@@ -1,8 +1,9 @@
 import { memo } from 'react';
-import { StyleSheet, type StyleProp, type ViewStyle } from 'react-native';
+import { StyleSheet, View, type StyleProp, type ViewStyle } from 'react-native';
 
 import ButtonPressAnimation from '@/components/animations/ButtonPressAnimation';
 import { Box, Text, TextIcon } from '@/design-system';
+import { opacity } from '@/framework/ui/utils/opacity';
 
 type ShowMoreButtonProps = {
   count: number;
@@ -13,13 +14,15 @@ type ShowMoreButtonProps = {
 export const ShowMoreButton = memo(function ShowMoreButton({ count, onPress, style }: ShowMoreButtonProps) {
   return (
     <ButtonPressAnimation onPress={onPress} scaleTo={0.96} style={[styles.button, style]}>
-      <Box flexDirection="row" alignItems="center" justifyContent="center" gap={6} height={{ custom: 44 }}>
-        <Text size="17pt" weight="heavy" color="label">
+      <Box flexDirection="row" alignItems="center" justifyContent="center" gap={8} height={{ custom: 44 }}>
+        <View style={styles.iconBadge}>
+          <TextIcon align="center" color="labelQuaternary" opacity={0.4} size="icon 10px" weight="black">
+            {'\u{100188}'}
+          </TextIcon>
+        </View>
+        <Text size="17pt" weight="bold" color="labelTertiary">
           {getShowMoreLabel(count)}
         </Text>
-        <TextIcon size="icon 14px" weight="heavy" color="labelQuaternary">
-          {'􀆈'}
-        </TextIcon>
       </Box>
     </ButtonPressAnimation>
   );
@@ -32,5 +35,13 @@ function getShowMoreLabel(count: number): string {
 const styles = StyleSheet.create({
   button: {
     alignSelf: 'center',
+  },
+  iconBadge: {
+    alignItems: 'center',
+    backgroundColor: opacity('#FFFFFF', 0.16),
+    borderRadius: 38,
+    height: 20,
+    justifyContent: 'center',
+    width: 20,
   },
 });
