@@ -64,7 +64,8 @@ function TokenCard({ asset }: { asset: FormattedExternalAsset }) {
     tokenId,
   });
   const tokenLineChartId = buildTokenLineChartId({ address: asset.address, chainId: asset.chainId, currency: nativeCurrency });
-  const priceChangeColor = getPriceChangeColor(livePriceChange, priceChangeColors);
+  const roundedPriceChange = getRoundedPriceChange(livePriceChange);
+  const priceChangeColor = getPriceChangeColor(roundedPriceChange, priceChangeColors);
 
   const openTokenDetails = useCallback(() => {
     Navigation.handleAction(Routes.EXPANDED_ASSET_SHEET_V2, {
@@ -107,7 +108,7 @@ function TokenCard({ asset }: { asset: FormattedExternalAsset }) {
                   size="15pt"
                   weight="bold"
                 />
-                <TokenPriceChange color={priceChangeColor} priceChange={livePriceChange} />
+                <TokenPriceChange color={priceChangeColor} priceChange={roundedPriceChange} />
               </View>
             </View>
             <View style={styles.sparklineContainer}>
@@ -126,7 +127,7 @@ function TokenCard({ asset }: { asset: FormattedExternalAsset }) {
   );
 }
 
-function TokenPriceChange({ color, priceChange }: { color: string; priceChange: string }) {
+function TokenPriceChange({ color, priceChange }: { color: string; priceChange: number }) {
   return (
     <View style={styles.priceChangeRow}>
       <Text numberOfLines={1} size="15pt" color={{ custom: color }} weight="bold">
@@ -159,16 +160,19 @@ function selectLivePriceChange24h(state: TokenData): string {
   return state.change.change24hPct;
 }
 
-function formatPriceChangeText(priceChange: string): string {
-  const numericValue = Number(priceChange || 0);
-  return `${Math.abs(numericValue).toFixed(2)}%`;
+function getRoundedPriceChange(value: string | number): number {
+  const numericValue = Number(value || 0);
+  if (!Number.isFinite(numericValue)) return 0;
+  return Number(numericValue.toFixed(2));
 }
 
-function getPriceChangeColor(value: string | number, priceChangeColors: { negative: string; positive: string; neutral: string }): string {
-  'worklet';
-  const numericValue = Math.round(Number(value) * 100) / 100;
-  if (numericValue > 0) return priceChangeColors.positive;
-  if (numericValue < 0) return priceChangeColors.negative;
+function formatPriceChangeText(priceChange: number): string {
+  return `${Math.abs(priceChange).toFixed(2)}%`;
+}
+
+function getPriceChangeColor(priceChange: number, priceChangeColors: { negative: string; positive: string; neutral: string }): string {
+  if (priceChange > 0) return priceChangeColors.positive;
+  if (priceChange < 0) return priceChangeColors.negative;
   return priceChangeColors.neutral;
 }
 
