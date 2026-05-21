@@ -11,6 +11,7 @@ import { LiveTokenText, useLiveTokenValue } from '@/components/live-token-text/L
 import { Box, Text, useColorMode } from '@/design-system';
 import { getValueForColorMode } from '@/design-system/color/palettes';
 import { SparklineChart } from '@/features/charts/line/components/SparklineChart';
+import { CarouselCardSkeleton } from '@/features/discover/components/carousel/CarouselCardSkeleton';
 import { SCREEN_HORIZONTAL_PADDING } from '@/features/discover/constants';
 import { buildTokenLineChartId, useTokenLineChartsStore } from '@/features/discover/stores/tokenLineChartsStore';
 import { getTokenChartAddress, getTokenDisplayAsset, getTokenIconUrl } from '@/features/discover/utils/tokenAssetDisplay';
@@ -23,9 +24,13 @@ import Routes from '@/navigation/routesNames';
 import type { FormattedExternalAsset } from '@/resources/assets/externalAssetsQuery';
 import { userAssetsStoreManager } from '@/state/assets/userAssetsStoreManager';
 import { type TokenData } from '@/state/liveTokens/liveTokensStore';
+import { DEVICE_WIDTH } from '@/utils/deviceUtils';
 import { getUniqueId } from '@/utils/ethereumUtils';
 
 const INITIAL_VISIBLE_TOKEN_COUNT = 5;
+const TOKEN_CARD_BORDER_RADIUS = 24;
+const TOKEN_CARD_HEIGHT = 64;
+const TOKEN_CARD_WIDTH = DEVICE_WIDTH - SCREEN_HORIZONTAL_PADDING * 2;
 const TOKEN_SPARKLINE_MAX_POINTS = 24;
 const TOKEN_SPARKLINE_LAYOUT = { height: 34, width: 64 };
 const PRICE_CHANGE_COLORS = {
@@ -34,28 +39,35 @@ const PRICE_CHANGE_COLORS = {
 };
 
 export function TokenList() {
-  const { items } = useTokensPlacementStore();
+  const { isLoading, items } = useTokensPlacementStore();
   const [isExpanded, setIsExpanded] = useState(false);
+  const showSkeletons = isLoading && items.length === 0;
   const visibleItems = isExpanded ? items : items.slice(0, INITIAL_VISIBLE_TOKEN_COUNT);
   const remainingTokenCount = items.length - visibleItems.length;
 
   return (
     <Box gap={8} paddingHorizontal={{ custom: SCREEN_HORIZONTAL_PADDING }}>
-      {visibleItems.map((item, index) => {
-        const shouldAnimateEntry = isExpanded && index >= INITIAL_VISIBLE_TOKEN_COUNT;
-        const tokenCard = <TokenCard asset={item.asset} />;
+      {showSkeletons
+        ? Array.from({ length: INITIAL_VISIBLE_TOKEN_COUNT }).map((_, index) => <TokenCardSkeleton key={index} />)
+        : visibleItems.map((item, index) => {
+            const shouldAnimateEntry = isExpanded && index >= INITIAL_VISIBLE_TOKEN_COUNT;
+            const tokenCard = <TokenCard asset={item.asset} />;
 
-        if (!shouldAnimateEntry) return <TokenCard key={item.ref.id} asset={item.asset} />;
+            if (!shouldAnimateEntry) return <TokenCard key={item.ref.id} asset={item.asset} />;
 
-        return (
-          <ShowMoreCellEnterAnimation key={item.ref.id} index={index - INITIAL_VISIBLE_TOKEN_COUNT}>
-            {tokenCard}
-          </ShowMoreCellEnterAnimation>
-        );
-      })}
-      {remainingTokenCount > 0 && <ShowMoreButton count={remainingTokenCount} onPress={() => setIsExpanded(true)} />}
+            return (
+              <ShowMoreCellEnterAnimation key={item.ref.id} index={index - INITIAL_VISIBLE_TOKEN_COUNT}>
+                {tokenCard}
+              </ShowMoreCellEnterAnimation>
+            );
+          })}
+      {!showSkeletons && remainingTokenCount > 0 && <ShowMoreButton count={remainingTokenCount} onPress={() => setIsExpanded(true)} />}
     </Box>
   );
+}
+
+function TokenCardSkeleton() {
+  return <CarouselCardSkeleton borderRadius={TOKEN_CARD_BORDER_RADIUS} height={TOKEN_CARD_HEIGHT} width={TOKEN_CARD_WIDTH} />;
 }
 
 function TokenCard({ asset }: { asset: FormattedExternalAsset }) {

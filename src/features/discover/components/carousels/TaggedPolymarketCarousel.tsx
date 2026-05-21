@@ -2,8 +2,10 @@ import { memo } from 'react';
 import { ScrollView, StyleSheet, View } from 'react-native';
 
 import { Box } from '@/design-system';
+import { CarouselCardSkeleton } from '@/features/discover/components/carousel/CarouselCardSkeleton';
 import { CarouselHeader } from '@/features/discover/components/carousel/CarouselHeader';
 import {
+  PREDICTION_MARKET_TILE_CARD_BORDER_RADIUS,
   PREDICTION_MARKET_TILE_CARD_HEIGHT,
   PREDICTION_MARKET_TILE_CARD_WIDTH,
   PredictionMarketTileCard,
@@ -13,6 +15,7 @@ import { getPolymarketEventsByTagStore } from '@/features/discover/stores/polyma
 import { navigateToPolymarket } from '@/features/polymarket/utils/navigateToPolymarket';
 
 const ITEM_GAP = 8;
+const SKELETON_COUNT = 3;
 
 type Props = {
   onPressSeeAll?: () => void;
@@ -27,6 +30,8 @@ export const TaggedPolymarketCarousel = memo(function TaggedPolymarketCarousel({
 }: Props) {
   const useStore = getPolymarketEventsByTagStore(tagSlug);
   const events = useStore(state => state.getData()) ?? [];
+  const isInitialLoad = useStore(state => state.getStatus('isInitialLoad'));
+  const showSkeletons = isInitialLoad && events.length === 0;
 
   return (
     <Box gap={20}>
@@ -39,14 +44,24 @@ export const TaggedPolymarketCarousel = memo(function TaggedPolymarketCarousel({
           showsHorizontalScrollIndicator={false}
           snapToInterval={PREDICTION_MARKET_TILE_CARD_WIDTH + ITEM_GAP}
         >
-          {events.map(event => (
-            <PredictionMarketTileCard key={event.id} event={event} />
-          ))}
+          {showSkeletons
+            ? Array.from({ length: SKELETON_COUNT }).map((_, index) => <TaggedPolymarketCarouselSkeleton key={index} />)
+            : events.map(event => <PredictionMarketTileCard key={event.id} event={event} />)}
         </ScrollView>
       </View>
     </Box>
   );
 });
+
+function TaggedPolymarketCarouselSkeleton() {
+  return (
+    <CarouselCardSkeleton
+      borderRadius={PREDICTION_MARKET_TILE_CARD_BORDER_RADIUS}
+      height={PREDICTION_MARKET_TILE_CARD_HEIGHT}
+      width={PREDICTION_MARKET_TILE_CARD_WIDTH}
+    />
+  );
+}
 
 const styles = StyleSheet.create({
   container: {

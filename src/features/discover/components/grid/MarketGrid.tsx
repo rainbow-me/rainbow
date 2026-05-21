@@ -42,20 +42,21 @@ export function MarketGrid<T extends PlacementItem>({
   const placementScreen = getPlacementScreen(placement);
   const { width: screenWidth } = useWindowDimensions();
   const cellWidth = (screenWidth - 2 * SCREEN_HORIZONTAL_PADDING - (columns - 1) * spacing) / columns;
+  const showSkeletons = loading && data.length === 0;
 
   const handleSeeAllPress = useCallback(() => {
     trackPlacementSeeAllPress({ placementId, placementScreen, title });
     onPressSeeAll?.();
   }, [onPressSeeAll, placementId, placementScreen, title]);
 
-  if (!loading && data.length === 0) return null;
+  if (!showSkeletons && data.length === 0) return null;
 
   return (
     <Box gap={20}>
       <CarouselHeader title={title} onPress={onPressSeeAll ? handleSeeAllPress : undefined} />
 
       <View style={styles.gridContainer}>
-        {loading ? (
+        {showSkeletons ? (
           <Grid columns={columns} spacing={spacing}>
             {Array.from({ length: columns * DEFAULT_SKELETON_ROWS }, (_, index) => (
               <View key={index} style={{ height: itemHeight }}>

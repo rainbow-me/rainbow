@@ -51,6 +51,7 @@ export function MarketCarousel<T extends PlacementItem>({
   title,
 }: MarketCarouselProps<T>) {
   const placementScreen = getPlacementScreen(placement);
+  const showSkeletons = loading && data.length === 0;
 
   const itemWidths = useMemo(() => (getItemWidth ? data.map(item => getItemWidth(item)) : undefined), [data, getItemWidth]);
 
@@ -99,13 +100,13 @@ export function MarketCarousel<T extends PlacementItem>({
     SCROLL_DEBOUNCE_OPTIONS
   );
 
-  if (!loading && data.length === 0) return null;
+  if (!showSkeletons && data.length === 0) return null;
 
   return (
     <Box gap={20}>
       <CarouselHeader title={title} onPress={onPressSeeAll ? handleSeeAllPress : undefined} />
 
-      {loading ? (
+      {showSkeletons ? (
         <View style={styles.skeletonRow}>
           {Array.from({ length: SKELETON_COUNT }, (_, index) => (
             <Fragment key={index}>{renderSkeleton()}</Fragment>
