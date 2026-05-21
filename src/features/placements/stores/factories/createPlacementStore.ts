@@ -21,6 +21,11 @@ type PlacementStoreConfig<Source extends PlacementSource, Hydrated> = {
   placementId: PlacementId;
   source: Source;
   enabled: DerivedStore<boolean>;
+  /**
+   * When true, the store holds its last resolved state instead of returning `emptyState`. Used to avoid empty-state
+   * flicker while the remote config bootstrap is in flight and `enabled` cannot yet be trusted.
+   */
+  pending?: DerivedStore<boolean>;
   select: ($: DeriveGetter, items: PlacementItem<Source>[]) => PlacementResolverResult<Hydrated>;
 };
 
@@ -34,26 +39,36 @@ export function createPlacementStore<Source extends PlacementSource, Hydrated>(
     items: [],
     placement: undefined,
   };
+  const loadingState: PlacementStoreResult<Hydrated> = {
+    isLoading: true,
+    items: [],
+    placement: undefined,
+  };
+  let lastResolvedState: PlacementStoreResult<Hydrated> | null = null;
 
   return createDerivedStore<PlacementStoreResult<Hydrated>>(
     $ => {
       const enabled = $(config.enabled);
+      const pending = config.pending ? $(config.pending) : false;
       const placement = $(usePlacementsStore, state => state.getPlacement(config.placementId));
       const placementItems = $(usePlacementsStore, state => selectPlacementItems(state, config.placementId, config.source), shallowEqual);
       const placementsLoading = $(usePlacementsStore, state => state.getStatus('isInitialLoad'));
       // Keep resolver dependencies subscribed in fastMode, even while the placement is disabled.
       const resolved = config.select($, placementItems);
 
+      if (pending) return lastResolvedState ?? loadingState;
       if (!enabled) return emptyState;
 
       const items = resolved.items;
       const isLoading = placementsLoading || (resolved.isLoading && placement !== undefined && items.length === 0);
-
-      return {
+      const result: PlacementStoreResult<Hydrated> = {
         isLoading,
         items,
         placement: items.length ? placement : undefined,
       };
+
+      if (items.length > 0) lastResolvedState = result;
+      return result;
     },
     { equalityFn: isPlacementStoreResultEqual, fastMode: true }
   );
