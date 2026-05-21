@@ -1,10 +1,24 @@
+import { useMemo } from 'react';
 import { StyleSheet, View } from 'react-native';
 
+import { LinearGradient } from 'expo-linear-gradient';
+
+import ButtonPressAnimation from '@/components/animations/ButtonPressAnimation';
+import { useLiveTokenSharedValue } from '@/components/live-token-text/LiveTokenText';
+import { AnimatedText, Box, Text, useColorMode } from '@/design-system';
+import { CarouselCardSkeleton } from '@/features/discover/components/carousel/CarouselCardSkeleton';
+import { CarouselHeader } from '@/features/discover/components/carousel/CarouselHeader';
 import { LargePerpMarketsCarousel } from '@/features/discover/components/carousels/LargePerpMarketsCarousel';
 import { PerpMarketPillsCarousel } from '@/features/discover/components/carousels/PerpMarketPillsCarousel';
-import { PerpMarketsCarousel } from '@/features/discover/components/carousels/PerpMarketsCarousel';
 import { TaggedPolymarketCarousel } from '@/features/discover/components/carousels/TaggedPolymarketCarousel';
+import { buildPerpMarketBaseDisplay } from '@/features/discover/components/perpMarketCards/perpMarketCardChrome';
+import { PerpMarketIcon } from '@/features/discover/components/perpMarketCards/PerpMarketIcon';
+import { PerpPriceChange } from '@/features/discover/components/perpMarketCards/PerpPriceChange';
+import { usePerpMarketPress } from '@/features/discover/components/perpMarketCards/usePerpMarketPress';
+import { SCREEN_HORIZONTAL_PADDING } from '@/features/discover/constants';
 import { navigateToPolymarketCategory } from '@/features/discover/utils/navigation';
+import { getHyperliquidTokenId } from '@/features/perps/utils';
+import { formatPerpAssetPrice, selectFormattedMarkPrice } from '@/features/perps/utils/formatPerpsAssetPrice';
 import { navigateToPerpsSearch } from '@/features/perps/utils/navigateToPerps';
 import { PLACEMENT_IDS } from '@/features/placements/constants';
 import {
@@ -12,9 +26,18 @@ import {
   usePerpsIndicesPlacementStore,
   usePerpsStocksNewPlacementStore,
   usePerpsStocksPlacementStore,
+  type PerpMarketPlacementItem,
 } from '@/features/placements/stores/derived/perpsPlacementStore';
 import { CATEGORIES } from '@/features/polymarket/constants';
+import { opacity } from '@/framework/ui/utils/opacity';
 import * as i18n from '@/languages';
+import { DEVICE_WIDTH } from '@/utils/deviceUtils';
+import { getHighContrastTextColorWorklet } from '@/worklets/colors';
+
+const NEW_MARKET_ROW_HEIGHT = 76;
+const NEW_MARKET_ICON_SIZE = 40;
+const NEW_MARKET_ROW_PREVIEW_COUNT = 5;
+const NEW_MARKET_ROW_WIDTH = DEVICE_WIDTH - SCREEN_HORIZONTAL_PADDING * 2;
 
 export function MarketsPage() {
   return (
@@ -75,17 +98,91 @@ function StocksCarousel() {
 }
 
 function NewMarketsCarousel() {
-  const { isLoading, items, placement } = usePerpsStocksNewPlacementStore();
+  const { isLoading, items } = usePerpsStocksNewPlacementStore();
+  if (!isLoading && !items.length) return null;
+
   return (
-    <PerpMarketsCarousel
-      isLoading={isLoading}
-      items={items}
-      onPressSeeAll={navigateToPerpsSearch}
-      placement={placement}
-      placementId={PLACEMENT_IDS.PERPS_STOCKS_NEW}
-      title="New"
-    />
+    <Box gap={20}>
+      <CarouselHeader title="New" onPress={navigateToPerpsSearch} />
+      <View style={styles.newMarketsList}>
+        {isLoading && !items.length
+          ? Array.from({ length: 3 }).map((_, index) => <NewMarketRowSkeleton key={index} />)
+          : items.slice(0, NEW_MARKET_ROW_PREVIEW_COUNT).map(item => <NewMarketRow key={item.ref.id} item={item} />)}
+      </View>
+    </Box>
   );
+}
+
+function NewMarketRow({ item }: { item: PerpMarketPlacementItem }) {
+  const { colorMode, isDarkMode } = useColorMode();
+  const { accentColor, iconUrl, priceChangeColors } = useMemo(
+    () => buildPerpMarketBaseDisplay(item.market, colorMode),
+    [colorMode, item.market]
+  );
+  const displayName = item.market.metadata?.name ?? item.market.baseSymbol;
+  const initialPrice = useMemo(
+    () => formatPerpAssetPrice(item.market.midPrice ?? item.market.price),
+    [item.market.midPrice, item.market.price]
+  );
+  const livePrice = useLiveTokenSharedValue({
+    initialValue: initialPrice,
+    selector: selectFormattedMarkPrice,
+    tokenId: getHyperliquidTokenId(item.market.symbol),
+  });
+  const onPress = usePerpMarketPress(item.market);
+
+  return (
+    <ButtonPressAnimation onPress={onPress} scaleTo={0.96}>
+      <View style={[styles.newMarketRow, { backgroundColor: opacity('#202429', 0.4) }]}>
+        <LinearGradient
+          colors={[opacity(accentColor, isDarkMode ? 0.16 : 0.06), opacity(accentColor, 0)]}
+          end={{ x: 1, y: 1 }}
+          pointerEvents="none"
+          start={{ x: 0, y: 0 }}
+          style={StyleSheet.absoluteFill}
+        />
+        <PerpMarketIcon
+          accentColor={accentColor}
+          badgePosition="top-right"
+          badgeBorderColor={isDarkMode ? 'rgba(255, 255, 255, 0.24)' : 'rgba(0, 0, 0, 0.07)'}
+          baseSymbol={item.market.baseSymbol}
+          borderColor={accentColor}
+          fallbackTextSize="13pt"
+          iconUrl={iconUrl}
+          leverage={item.market.maxLeverage}
+          badgeShadowColor={isDarkMode ? '#000000' : accentColor}
+          badgeShadowOpacity={isDarkMode ? 0.5 : 0.25}
+          badgeTextColor={getHighContrastTextColorWorklet(accentColor, 4)}
+          size={NEW_MARKET_ICON_SIZE}
+        />
+        <View style={styles.newMarketTextColumn}>
+          <Text color="label" numberOfLines={1} size="17pt" weight="heavy">
+            {displayName}
+          </Text>
+          <View style={styles.newMarketPriceRow}>
+            <AnimatedText color="labelSecondary" numberOfLines={1} size="15pt" weight="bold">
+              {livePrice}
+            </AnimatedText>
+            <View style={styles.newMarketChangeRow}>
+              <PerpPriceChange
+                arrowHeight={8}
+                arrowSize="icon 12px"
+                arrowWidth={12}
+                initialPriceChange={item.market.priceChange['24h']}
+                priceChangeColors={priceChangeColors}
+                symbol={item.market.symbol}
+                textSize="15pt"
+              />
+            </View>
+          </View>
+        </View>
+      </View>
+    </ButtonPressAnimation>
+  );
+}
+
+function NewMarketRowSkeleton() {
+  return <CarouselCardSkeleton borderRadius={24} height={NEW_MARKET_ROW_HEIGHT} width={NEW_MARKET_ROW_WIDTH} />;
 }
 
 const styles = StyleSheet.create({
@@ -93,5 +190,33 @@ const styles = StyleSheet.create({
     flex: 1,
     gap: 32,
     paddingTop: 20,
+  },
+  newMarketsList: {
+    gap: 8,
+    paddingHorizontal: SCREEN_HORIZONTAL_PADDING,
+  },
+  newMarketRow: {
+    alignItems: 'center',
+    borderRadius: 24,
+    flexDirection: 'row',
+    gap: 12,
+    height: NEW_MARKET_ROW_HEIGHT,
+    overflow: 'hidden',
+    paddingHorizontal: 12,
+  },
+  newMarketTextColumn: {
+    alignItems: 'flex-start',
+    flex: 1,
+    gap: 12,
+  },
+  newMarketPriceRow: {
+    alignItems: 'center',
+    flexDirection: 'row',
+    gap: 8,
+  },
+  newMarketChangeRow: {
+    alignItems: 'center',
+    flexDirection: 'row',
+    gap: 3,
   },
 });
