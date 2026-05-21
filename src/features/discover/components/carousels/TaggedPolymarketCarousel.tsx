@@ -3,17 +3,16 @@ import { ScrollView, StyleSheet, View } from 'react-native';
 
 import { Box } from '@/design-system';
 import { CarouselHeader } from '@/features/discover/components/carousel/CarouselHeader';
+import {
+  PREDICTION_MARKET_TILE_CARD_HEIGHT,
+  PREDICTION_MARKET_TILE_CARD_WIDTH,
+  PredictionMarketTileCard,
+} from '@/features/discover/components/predictionMarketCards/PredictionMarketTileCard';
 import { SCREEN_HORIZONTAL_PADDING } from '@/features/discover/constants';
 import { getPolymarketEventsByTagStore } from '@/features/discover/stores/polymarketEventsByTagStore';
-import {
-  HEIGHT as POLYMARKET_EVENTS_LIST_ITEM_HEIGHT,
-  PolymarketEventsListItem,
-} from '@/features/polymarket/components/polymarket-events-list/PolymarketEventsListItem';
 import { navigateToPolymarket } from '@/features/polymarket/utils/navigateToPolymarket';
-import { DEVICE_WIDTH } from '@/utils/deviceUtils';
 
 const ITEM_GAP = 8;
-const TILE_WIDTH = (DEVICE_WIDTH - SCREEN_HORIZONTAL_PADDING * 2 - ITEM_GAP) / 2;
 
 type Props = {
   onPressSeeAll?: () => void;
@@ -38,10 +37,10 @@ export const TaggedPolymarketCarousel = memo(function TaggedPolymarketCarousel({
           decelerationRate="fast"
           horizontal
           showsHorizontalScrollIndicator={false}
-          snapToInterval={TILE_WIDTH + ITEM_GAP}
+          snapToInterval={PREDICTION_MARKET_TILE_CARD_WIDTH + ITEM_GAP}
         >
           {events.map(event => (
-            <PolymarketEventsListItem key={event.id} event={event} style={styles.tile} />
+            <PredictionMarketTileCard key={event.id} event={event} />
           ))}
         </ScrollView>
       </View>
@@ -51,14 +50,10 @@ export const TaggedPolymarketCarousel = memo(function TaggedPolymarketCarousel({
 
 const styles = StyleSheet.create({
   container: {
-    height: POLYMARKET_EVENTS_LIST_ITEM_HEIGHT,
+    height: PREDICTION_MARKET_TILE_CARD_HEIGHT,
   },
   contentContainer: {
     gap: ITEM_GAP,
     paddingHorizontal: SCREEN_HORIZONTAL_PADDING,
-  },
-  tile: {
-    height: POLYMARKET_EVENTS_LIST_ITEM_HEIGHT,
-    width: TILE_WIDTH,
   },
 });
