@@ -135,6 +135,19 @@ describe('createPlacementStore', () => {
     });
   });
 
+  it('shows loading while placements have not started fetching', () => {
+    usePlacementsStore.setState({
+      placementsById: {},
+      status: QueryStatuses.Idle,
+    });
+
+    expect(useTestPlacementStore.getState()).toEqual({
+      isLoading: true,
+      items: [],
+      placement: undefined,
+    });
+  });
+
   it('composes loading state from placements and the resolver', () => {
     usePlacementsStore.setState({
       placementsById: { [PLACEMENT_IDS.TOKENS]: createTokenPlacement() },

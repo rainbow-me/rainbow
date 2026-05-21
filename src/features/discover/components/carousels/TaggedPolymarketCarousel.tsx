@@ -31,7 +31,8 @@ export const TaggedPolymarketCarousel = memo(function TaggedPolymarketCarousel({
   const useStore = getPolymarketEventsByTagStore(tagSlug);
   const events = useStore(state => state.getData()) ?? [];
   const isInitialLoad = useStore(state => state.getStatus('isInitialLoad'));
-  const showSkeletons = isInitialLoad && events.length === 0;
+  const isIdle = useStore(state => state.getStatus('isIdle'));
+  const showSkeletons = (isInitialLoad || isIdle) && events.length === 0;
   const snapToOffsets = useMemo(
     () =>
       Array.from({ length: showSkeletons ? SKELETON_COUNT : events.length }).map((_, index) =>

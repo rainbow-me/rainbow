@@ -52,7 +52,14 @@ export function createPlacementStore<Source extends PlacementSource, Hydrated>(
       const pending = config.pending ? $(config.pending) : false;
       const placement = $(usePlacementsStore, state => state.getPlacement(config.placementId));
       const placementItems = $(usePlacementsStore, state => selectPlacementItems(state, config.placementId, config.source), shallowEqual);
-      const placementsLoading = $(usePlacementsStore, state => state.getStatus('isInitialLoad'));
+      const placementsLoading = $(usePlacementsStore, state => {
+        const isInitialLoad = state.getStatus('isInitialLoad');
+        const isIdleWithoutCachedPlacement =
+          state.getStatus('isIdle') &&
+          state.getPlacement(config.placementId) === undefined &&
+          !selectPlacementItems(state, config.placementId, config.source).length;
+        return isInitialLoad || isIdleWithoutCachedPlacement;
+      });
       // Keep resolver dependencies subscribed in fastMode, even while the placement is disabled.
       const resolved = config.select($, placementItems);
 
