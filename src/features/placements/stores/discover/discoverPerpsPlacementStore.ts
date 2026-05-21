@@ -51,7 +51,7 @@ let lastResolvedPerpsPlacementState: DiscoverPerpsPlacementState | null = null;
 export const useDiscoverPerpsPlacement = createDerivedStore<DiscoverPerpsPlacementState>(
   $ => {
     const remoteConfigEnabled = $(useRemoteConfigStore, shouldEnablePerpsPlacements);
-    const remoteConfigLoading = $(useRemoteConfigStore, s => s.getStatus('isInitialLoad'));
+    const configReady = $(useRemoteConfigStore, s => s.isConfigReady());
     const placementsLoading = $(usePlacementsStore, s => s.getStatus('isInitialLoad'));
     const marketsError = $(useHyperliquidMarketsStore, s => s.getStatus('isError'));
     const marketsReady = $(useHyperliquidMarketsStore, s => s.getStatus('isSuccess'));
@@ -62,7 +62,7 @@ export const useDiscoverPerpsPlacement = createDerivedStore<DiscoverPerpsPlaceme
     if (IS_TEST) return EMPTY_DISCOVER_PERPS_PLACEMENT_STATE;
 
     if (!remoteConfigEnabled) {
-      if (remoteConfigLoading) return lastResolvedPerpsPlacementState ?? LOADING_DISCOVER_PERPS_PLACEMENT_STATE;
+      if (!configReady) return lastResolvedPerpsPlacementState ?? LOADING_DISCOVER_PERPS_PLACEMENT_STATE;
       return EMPTY_DISCOVER_PERPS_PLACEMENT_STATE;
     }
 
