@@ -2,23 +2,36 @@ import { useCallback, useState } from 'react';
 import { StyleSheet, View } from 'react-native';
 
 import { LinearGradient } from 'expo-linear-gradient';
+import { useAnimatedStyle, type SharedValue } from 'react-native-reanimated';
 
+import { AnimatedTextIcon } from '@/components/AnimatedComponents/AnimatedTextIcon';
 import ButtonPressAnimation from '@/components/animations/ButtonPressAnimation';
 import { ImgixImage } from '@/components/images';
-import { LiveTokenText } from '@/components/live-token-text/LiveTokenText';
-import { Box, Text, TextIcon, useColorMode } from '@/design-system';
+import { LiveTokenText, useLiveTokenSharedValue } from '@/components/live-token-text/LiveTokenText';
+import { AnimatedText, Box, Text, TextIcon, useColorMode } from '@/design-system';
+import { getValueForColorMode } from '@/design-system/color/palettes';
+import { SparklineChart } from '@/features/charts/line/components/SparklineChart';
 import { SCREEN_HORIZONTAL_PADDING } from '@/features/discover/constants';
+import { buildTokenLineChartId, useTokenLineChartsStore } from '@/features/discover/stores/tokenLineChartsStore';
+import { DOWN_ARROW, UP_ARROW } from '@/features/perps/constants';
 import { useTokensPlacementStore } from '@/features/placements/stores/derived/tokensPlacementStore';
 import { opacity } from '@/framework/ui/utils/opacity';
-import { formatCurrency, formatNumber } from '@/helpers/strings';
+import { formatCurrency } from '@/helpers/strings';
 import useColorForAsset from '@/hooks/useColorForAsset';
 import Navigation from '@/navigation/Navigation';
 import Routes from '@/navigation/routesNames';
 import type { FormattedExternalAsset } from '@/resources/assets/externalAssetsQuery';
 import { userAssetsStoreManager } from '@/state/assets/userAssetsStoreManager';
+import { type TokenData } from '@/state/liveTokens/liveTokensStore';
 import { getUniqueId } from '@/utils/ethereumUtils';
 
 const INITIAL_VISIBLE_TOKEN_COUNT = 5;
+const TOKEN_SPARKLINE_LAYOUT = { height: 34, width: 44 };
+const PRICE_CHANGE_ARROW_WIDTH = 12;
+const PRICE_CHANGE_COLORS = {
+  dark: { positive: '#3ECF5B', negative: '#FF584D', neutral: 'rgba(255, 255, 255, 0.5)' },
+  light: { positive: '#1DB847', negative: '#FA423C', neutral: 'rgba(0, 0, 0, 0.5)' },
+};
 
 export function TokenList() {
   const { items } = useTokensPlacementStore();
@@ -38,7 +51,7 @@ export function TokenList() {
 
 function TokenCard({ asset }: { asset: FormattedExternalAsset }) {
   const nativeCurrency = userAssetsStoreManager(state => state.currency);
-  const { isDarkMode } = useColorMode();
+  const { colorMode, isDarkMode } = useColorMode();
   const assetAccentColor = useColorForAsset({
     address: asset.address,
     name: asset.name,
@@ -47,7 +60,10 @@ function TokenCard({ asset }: { asset: FormattedExternalAsset }) {
 
   const initialPrice = asset.price.value ? String(asset.price.value) : '0';
   const initialPriceChange = asset.price.relativeChange24h ? String(asset.price.relativeChange24h) : '0';
+  const priceChangeColors = getValueForColorMode(PRICE_CHANGE_COLORS, colorMode);
   const tokenId = getUniqueId(asset.address, asset.chainId);
+  const tokenLineChartId = buildTokenLineChartId({ address: asset.address, chainId: asset.chainId, currency: nativeCurrency });
+  const sparklineColor = Number(initialPriceChange) >= 0 ? priceChangeColors.positive : priceChangeColors.negative;
 
   const openTokenDetails = useCallback(() => {
     Navigation.handleAction(Routes.EXPANDED_ASSET_SHEET_V2, {
@@ -73,36 +89,78 @@ function TokenCard({ asset }: { asset: FormattedExternalAsset }) {
         />
         <View style={styles.contentRow}>
           {asset.iconUrl && <ImgixImage size={40} source={{ uri: asset.iconUrl }} style={styles.icon} />}
-          <View style={styles.namePriceColumn}>
-            <Text size="17pt" weight="heavy" color="label">
-              {asset.name}
-            </Text>
-            <View style={styles.priceRow}>
-              <LiveTokenText
-                tokenId={tokenId}
-                initialValueLastUpdated={asset.price.updatedAt}
-                initialValue={formatCurrency(initialPrice, { currency: nativeCurrency })}
-                selector={token => formatCurrency(token.price, { currency: nativeCurrency })}
-                color="labelSecondary"
-                numberOfLines={1}
-                size="15pt"
-                weight="bold"
-              />
-              <LiveTokenText
-                tokenId={tokenId}
-                initialValue={formatPriceChange(initialPriceChange)}
-                selector={token => formatPriceChange(token.change.change24hPct)}
-                color="label"
-                numberOfLines={1}
-                size="15pt"
-                weight="bold"
-                isPriceChangeColorEnabled
-              />
+          <View style={styles.cardBody}>
+            <View style={styles.namePriceColumn}>
+              <Text size="17pt" weight="heavy" color="label" numberOfLines={1}>
+                {asset.name}
+              </Text>
+              <View style={styles.priceRow}>
+                <LiveTokenText
+                  tokenId={tokenId}
+                  initialValueLastUpdated={asset.price.updatedAt}
+                  initialValue={formatCurrency(initialPrice, { currency: nativeCurrency })}
+                  selector={token => formatCurrency(token.price, { currency: nativeCurrency })}
+                  color="labelSecondary"
+                  numberOfLines={1}
+                  size="15pt"
+                  weight="bold"
+                />
+                <TokenPriceChange initialPriceChange={initialPriceChange} priceChangeColors={priceChangeColors} tokenId={tokenId} />
+              </View>
             </View>
+            <SparklineChart
+              chartId={tokenLineChartId}
+              color={sparklineColor}
+              height={TOKEN_SPARKLINE_LAYOUT.height}
+              store={useTokenLineChartsStore}
+              width={TOKEN_SPARKLINE_LAYOUT.width}
+            />
           </View>
         </View>
       </Box>
     </ButtonPressAnimation>
+  );
+}
+
+function TokenPriceChange({
+  initialPriceChange,
+  priceChangeColors,
+  tokenId,
+}: {
+  initialPriceChange: string;
+  priceChangeColors: { negative: string; positive: string; neutral: string };
+  tokenId: string;
+}) {
+  const livePriceChange = useLiveTokenSharedValue({
+    initialValue: initialPriceChange,
+    selector: selectLivePriceChange24h,
+    tokenId,
+  });
+
+  const priceChangeStyle = useAnimatedStyle(() => {
+    const numericValue = Number(livePriceChange.value);
+    return {
+      color: numericValue > 0 ? priceChangeColors.positive : numericValue < 0 ? priceChangeColors.negative : priceChangeColors.neutral,
+    };
+  });
+
+  return (
+    <View style={styles.priceChangeRow}>
+      <AnimatedTextIcon
+        containerSize={PRICE_CHANGE_ARROW_WIDTH}
+        height={8}
+        selector={selectPriceChangeArrow}
+        size="icon 12px"
+        textStyle={priceChangeStyle}
+        weight="heavy"
+        width={PRICE_CHANGE_ARROW_WIDTH}
+      >
+        {livePriceChange}
+      </AnimatedTextIcon>
+      <AnimatedText numberOfLines={1} selector={selectPriceChangeText} size="15pt" style={priceChangeStyle} weight="bold">
+        {livePriceChange}
+      </AnimatedText>
+    </View>
   );
 }
 
@@ -121,10 +179,19 @@ function ShowMoreButton({ count, onPress }: { count: number; onPress: () => void
   );
 }
 
-function formatPriceChange(value: string | number | null | undefined): string {
-  const numericValue = Number(value ?? 0);
-  const arrow = numericValue >= 0 ? '􀄨' : '􀄩';
-  return `${arrow} ${formatNumber(numericValue, { decimals: 2, useOrderSuffix: true })}%`;
+function selectLivePriceChange24h(state: TokenData): string {
+  return state.change.change24hPct;
+}
+
+function selectPriceChangeArrow(priceChange: SharedValue<string>): string {
+  'worklet';
+  return Number(priceChange.value) >= 0 ? UP_ARROW : DOWN_ARROW;
+}
+
+function selectPriceChangeText(priceChange: SharedValue<string>): string {
+  'worklet';
+  const numericValue = Number(priceChange.value || 0);
+  return `${Math.abs(numericValue).toFixed(2)}%`;
 }
 
 const styles = StyleSheet.create({
@@ -133,14 +200,27 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     gap: 12,
   },
+  cardBody: {
+    alignItems: 'center',
+    flex: 1,
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    gap: 12,
+  },
   namePriceColumn: {
     alignItems: 'flex-start',
+    flex: 1,
     gap: 12,
   },
   priceRow: {
     flexDirection: 'row',
     alignItems: 'center',
     gap: 8,
+  },
+  priceChangeRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 3,
   },
   icon: {
     width: 40,
