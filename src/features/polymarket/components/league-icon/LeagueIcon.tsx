@@ -9,8 +9,9 @@ import { CfbIcon } from './icons/CfbIcon';
 import { CricketIcon } from './icons/CricketIcon';
 import { Cs2Icon } from './icons/Cs2Icon';
 import { Dota2Icon } from './icons/Dota2Icon';
+import { EsportsIcon } from './icons/EsportsIcon';
 import { HockeyIcon } from './icons/HockeyIcon';
-import { LolIcon } from './icons/LolIcon';
+import { MotorsportsIcon } from './icons/MotorsportsIcon';
 import { NbaIcon } from './icons/NbaIcon';
 import { NflIcon } from './icons/NflIcon';
 import { NhlIcon } from './icons/NhlIcon';
@@ -32,7 +33,6 @@ const LEAGUE_ICONS: Partial<Record<LeagueId, IconComponent>> = {
   dota2: Dota2Icon,
   nba: NbaIcon,
   nhl: NhlIcon,
-  lol: LolIcon,
   ufc: UfcIcon,
   val: ValorantIcon,
   nfl: NflIcon,
@@ -45,6 +45,8 @@ const SPORT_ICONS: Partial<Record<SportId, IconComponent>> = {
   tennis: TennisIcon,
   baseball: BaseballIcon,
   basketball: NbaIcon,
+  esports: EsportsIcon,
+  motorsports: MotorsportsIcon,
 };
 
 export function getIconByLeagueId(leagueId: LeagueId): IconComponent | undefined {

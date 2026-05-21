@@ -255,7 +255,7 @@ const LeagueHeader = memo(function LeagueHeader({
 }) {
   const content = (
     <View style={styles.leagueHeader}>
-      <LeagueIcon eventSlug={eventSlug} size={28} />
+      {leagueId ? <LeagueIcon leagueId={leagueId} size={28} /> : <LeagueIcon eventSlug={eventSlug} size={28} />}
       <Text align="left" color="label" size="22pt" weight="heavy">
         {title}
       </Text>
