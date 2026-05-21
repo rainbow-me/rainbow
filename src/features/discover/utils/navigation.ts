@@ -5,10 +5,7 @@ import { navigateToPolymarket } from '@/features/polymarket/utils/navigateToPoly
 
 export function navigateToPolymarketCategory(tagId: string) {
   usePolymarketCategoryStore.getState().setTagId(tagId);
-
-  if (tagId !== CATEGORIES.sports.tagId) {
-    usePolymarketSportsEventsStore.getState().setSelectedLeagueId(DEFAULT_SPORTS_LEAGUE_KEY);
-  }
+  usePolymarketSportsEventsStore.getState().setSelectedLeagueId(DEFAULT_SPORTS_LEAGUE_KEY);
 
   navigateToPolymarket();
 }

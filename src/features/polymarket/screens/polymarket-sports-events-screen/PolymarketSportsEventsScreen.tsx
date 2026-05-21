@@ -11,6 +11,7 @@ type PolymarketSportsEventsScreenProps = {
   onPressLeagueHeader?: (leagueId: string) => void;
   onScroll?: (event: NativeSyntheticEvent<NativeScrollEvent>) => void;
   renderAsStaticList?: boolean;
+  selectedLeagueId?: string;
   showLeagueSelector?: boolean;
   truncateSections?: boolean;
 };
@@ -19,6 +20,7 @@ export const PolymarketSportsEventsScreen = memo(function PolymarketSportsEvents
   onPressLeagueHeader,
   onScroll,
   renderAsStaticList = false,
+  selectedLeagueId,
   showLeagueSelector = true,
   truncateSections = false,
 }: PolymarketSportsEventsScreenProps) {
@@ -29,7 +31,8 @@ export const PolymarketSportsEventsScreen = memo(function PolymarketSportsEvents
     state => state.selectedLeagueId,
     () => {
       listRef?.current?.scrollToOffset({ offset: 0, animated: true });
-    }
+    },
+    { enabled: selectedLeagueId === undefined }
   );
 
   return (
@@ -44,6 +47,7 @@ export const PolymarketSportsEventsScreen = memo(function PolymarketSportsEvents
         onPressLeagueHeader={onPressLeagueHeader}
         onScroll={onScroll}
         renderAsStaticList={renderAsStaticList}
+        selectedLeagueId={selectedLeagueId}
         truncateSections={truncateSections}
       />
     </View>

@@ -3404,9 +3404,10 @@
       "sports": {
         "vs": "vs",
         "live": "Live",
+        "this_week": "This week",
         "game_best_of": "Game %{currentPeriod} - Best of %{bestOf}",
         "final": "Final",
-        "no_games": "No games today or tomorrow"
+        "no_games": "No games this week"
       },
       "outcomes": {
         "yes": "Yes",
