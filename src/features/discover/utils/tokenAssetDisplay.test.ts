@@ -2,7 +2,7 @@ import { ETH_ADDRESS, WETH_ADDRESS } from '@/references/constants';
 import type { FormattedExternalAsset } from '@/resources/assets/externalAssetsQuery';
 import { ChainId } from '@/state/backendNetworks/types';
 
-import { getTokenChartAddress, getTokenIconUrl } from './tokenAssetDisplay';
+import { getTokenChartAddress, getTokenDisplayAsset, getTokenFetchAddress, getTokenIconUrl } from './tokenAssetDisplay';
 
 describe('tokenAssetDisplay', () => {
   it('falls back to the native ETH icon and WETH chart address for mainnet ETH', () => {
@@ -17,6 +17,29 @@ describe('tokenAssetDisplay', () => {
 
     expect(getTokenIconUrl(asset)).toBe('https://rainbowme-res.cloudinary.com/image/upload/v1668565116/assets/ethereum/eth.png');
     expect(getTokenChartAddress(asset)).toBe(WETH_ADDRESS);
+    expect(getTokenDisplayAsset(asset)).toEqual({
+      ...asset,
+      iconUrl: 'https://rainbowme-res.cloudinary.com/image/upload/v1668565116/assets/ethereum/eth.png',
+      icon_url: 'https://rainbowme-res.cloudinary.com/image/upload/v1668565116/assets/ethereum/eth.png',
+    });
+    expect(getTokenFetchAddress({ address: ETH_ADDRESS, chainId: ChainId.mainnet })).toBe(ETH_ADDRESS);
+  });
+
+  it('normalizes mainnet ETH aliases before fetching and rendering', () => {
+    const asset = createAsset({
+      address: 'ethereum',
+      chainId: ChainId.mainnet,
+      iconUrl: undefined,
+      icon_url: undefined,
+      isNativeAsset: false,
+      name: 'Ethereum',
+      symbol: 'ETH',
+    });
+
+    expect(getTokenFetchAddress({ address: 'ethereum', chainId: ChainId.mainnet })).toBe(ETH_ADDRESS);
+    expect(getTokenIconUrl(asset)).toBe('https://rainbowme-res.cloudinary.com/image/upload/v1668565116/assets/ethereum/eth.png');
+    expect(getTokenChartAddress(asset)).toBe(WETH_ADDRESS);
+    expect(getTokenDisplayAsset(asset).address).toBe(ETH_ADDRESS);
   });
 
   it('preserves explicit icon and chart addresses for ERC-20 tokens', () => {

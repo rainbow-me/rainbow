@@ -5,6 +5,7 @@ import { createPlacementStore } from '@/features/placements/stores/factories/cre
 import { usePlacementsStore } from '@/features/placements/stores/placementsStore';
 import { type PlacementItem } from '@/features/placements/types';
 import { useRemoteConfigStore } from '@/model/remoteConfig';
+import { getMainnetEthFetchAddress } from '@/resources/assets/ethereumAsset';
 import { fetchExternalToken, type FormattedExternalAsset } from '@/resources/assets/externalAssetsQuery';
 import { userAssetsStoreManager } from '@/state/assets/userAssetsStoreManager';
 import { type ChainId } from '@/state/backendNetworks/types';
@@ -90,7 +91,7 @@ async function fetchTokenRef(tokenRef: string, currency: TokenRefsParams['curren
   const params = parseTokenRef(tokenRef);
   if (!params) return null;
 
-  const asset = await fetchExternalToken({ ...params, currency });
+  const asset = await fetchExternalToken({ ...params, address: getMainnetEthFetchAddress(params), currency });
   return asset ? { asset, tokenRef } : null;
 }
 

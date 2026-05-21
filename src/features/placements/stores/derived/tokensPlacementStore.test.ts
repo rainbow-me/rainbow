@@ -107,6 +107,16 @@ describe('tokensPlacementStore', () => {
     });
   });
 
+  it('normalizes mainnet ETH aliases before fetching token refs', async () => {
+    await useTokenRefsStore.getState().fetch({ currency: 'USD', tokenRefs: ['ethereum:1'] }, { force: true });
+
+    expect(fetchExternalToken).toHaveBeenCalledWith({
+      address: 'eth',
+      chainId: 1,
+      currency: 'USD',
+    });
+  });
+
   it('hydrates the tokens placement from fetched token assets', async () => {
     usePlacementsStore.setState({ placementsById: FIXTURE_V2_PLACEMENTS_BY_ID });
 

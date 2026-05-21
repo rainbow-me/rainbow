@@ -2,7 +2,9 @@ import { useQuery } from '@tanstack/react-query';
 
 import { metadataClient } from '@/graphql';
 import { createQueryKey } from '@/react-query';
+import { WETH_ADDRESS } from '@/references/constants';
 import type { SupportedCurrencyKey } from '@/references/supportedCurrencies';
+import { isMainnetEthAddress } from '@/resources/assets/ethereumAsset';
 import { ChainId } from '@/state/backendNetworks/types';
 import { time } from '@/utils/time';
 
@@ -52,7 +54,8 @@ export const usePriceChart = ({
 }) => {
   return useQuery({
     queryFn: async () => {
-      const chart = await fetchPriceChart({ address, chainId, currency, time: timespan });
+      const chartAddress = getChartAddress({ address, chainId });
+      const chart = await fetchPriceChart({ address: chartAddress, chainId, currency, time: timespan });
       if (!chart && mainnetAddress) return fetchPriceChart({ address: mainnetAddress, chainId: ChainId.mainnet, currency, time: timespan });
       return chart || [];
     },
@@ -62,3 +65,7 @@ export const usePriceChart = ({
     staleTime: time.zero,
   });
 };
+
+function getChartAddress({ address, chainId }: { address: string; chainId: ChainId }): string {
+  return isMainnetEthAddress(address, chainId) ? WETH_ADDRESS : address;
+}

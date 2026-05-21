@@ -13,7 +13,7 @@ import { getValueForColorMode } from '@/design-system/color/palettes';
 import { SparklineChart } from '@/features/charts/line/components/SparklineChart';
 import { SCREEN_HORIZONTAL_PADDING } from '@/features/discover/constants';
 import { buildTokenLineChartId, useTokenLineChartsStore } from '@/features/discover/stores/tokenLineChartsStore';
-import { getTokenChartAddress, getTokenIconUrl } from '@/features/discover/utils/tokenAssetDisplay';
+import { getTokenChartAddress, getTokenDisplayAsset, getTokenIconUrl } from '@/features/discover/utils/tokenAssetDisplay';
 import { useTokensPlacementStore } from '@/features/placements/stores/derived/tokensPlacementStore';
 import { opacity } from '@/framework/ui/utils/opacity';
 import { formatCurrency } from '@/helpers/strings';
@@ -59,27 +59,28 @@ export function TokenList() {
 }
 
 function TokenCard({ asset }: { asset: FormattedExternalAsset }) {
+  const displayAsset = getTokenDisplayAsset(asset);
   const nativeCurrency = userAssetsStoreManager(state => state.currency);
   const { colorMode, isDarkMode } = useColorMode();
   const assetAccentColor = useColorForAsset({
-    address: asset.address,
-    name: asset.name,
-    symbol: asset.symbol,
+    address: displayAsset.address,
+    name: displayAsset.name,
+    symbol: displayAsset.symbol,
   });
 
-  const initialPrice = asset.price.value ? String(asset.price.value) : '0';
-  const initialPriceChange = asset.price.relativeChange24h ? String(asset.price.relativeChange24h) : '0';
+  const initialPrice = displayAsset.price.value ? String(displayAsset.price.value) : '0';
+  const initialPriceChange = displayAsset.price.relativeChange24h ? String(displayAsset.price.relativeChange24h) : '0';
   const priceChangeColors = getValueForColorMode(PRICE_CHANGE_COLORS, colorMode);
-  const tokenId = getUniqueId(asset.address, asset.chainId);
-  const iconUrl = getTokenIconUrl(asset);
+  const tokenId = getUniqueId(displayAsset.address, displayAsset.chainId);
+  const iconUrl = getTokenIconUrl(displayAsset);
   const livePriceChange = useLiveTokenValue({
     initialValue: initialPriceChange,
     selector: selectLivePriceChange24h,
     tokenId,
   });
   const tokenLineChartId = buildTokenLineChartId({
-    address: getTokenChartAddress(asset),
-    chainId: asset.chainId,
+    address: getTokenChartAddress(displayAsset),
+    chainId: displayAsset.chainId,
     currency: nativeCurrency,
   });
   const roundedPriceChange = getRoundedPriceChange(livePriceChange);
@@ -87,11 +88,11 @@ function TokenCard({ asset }: { asset: FormattedExternalAsset }) {
 
   const openTokenDetails = useCallback(() => {
     Navigation.handleAction(Routes.EXPANDED_ASSET_SHEET_V2, {
-      asset,
-      address: asset.address,
-      chainId: asset.chainId,
+      asset: displayAsset,
+      address: displayAsset.address,
+      chainId: displayAsset.chainId,
     });
-  }, [asset]);
+  }, [displayAsset]);
 
   return (
     <ButtonPressAnimation onPress={openTokenDetails} scaleTo={0.96}>
@@ -113,12 +114,12 @@ function TokenCard({ asset }: { asset: FormattedExternalAsset }) {
           <View style={styles.cardBody}>
             <View style={styles.namePriceColumn}>
               <Text size="17pt" weight="heavy" color="label" numberOfLines={1}>
-                {asset.name}
+                {displayAsset.name}
               </Text>
               <View style={styles.priceRow}>
                 <LiveTokenText
                   tokenId={tokenId}
-                  initialValueLastUpdated={asset.price.updatedAt}
+                  initialValueLastUpdated={displayAsset.price.updatedAt}
                   initialValue={formatCurrency(initialPrice, { currency: nativeCurrency })}
                   selector={token => formatCurrency(token.price, { currency: nativeCurrency })}
                   color="labelSecondary"
