@@ -2,7 +2,9 @@ import { memo, useCallback, useMemo } from 'react';
 import { Platform, StyleSheet, View, type StyleProp, type ViewStyle } from 'react-native';
 
 import ConditionalWrap from 'conditional-wrap';
+import { LinearGradient } from 'expo-linear-gradient';
 
+import { getColorValueForThemeWorklet } from '@/__swaps__/utils/swaps';
 import ButtonPressAnimation from '@/components/animations/ButtonPressAnimation';
 import ShimmerAnimation from '@/components/animations/ShimmerAnimation';
 import { LiveTokenText } from '@/components/live-token-text/LiveTokenText';
@@ -19,6 +21,7 @@ import * as i18n from '@/languages';
 import Navigation from '@/navigation/Navigation';
 import Routes from '@/navigation/routesNames';
 import { getPolymarketTokenId } from '@/state/liveTokens/polymarketAdapter';
+import { createOpacityPalette } from '@/worklets/colors';
 import { formatTimestamp, toUnixTime } from '@/worklets/dates';
 
 const BET_ROW_HEIGHT = 38;
@@ -68,6 +71,13 @@ export const PolymarketSportEventListItem = memo(function PolymarketSportEventLi
   const totalsUnderColor = getBetCellColor(event.markets, totals.under?.outcomeTokenId, isDarkMode, event.teams);
   const awayMoneylineColor = getBetCellColor(event.markets, awayBets.moneyline?.outcomeTokenId, isDarkMode, event.teams);
   const homeMoneylineColor = getBetCellColor(event.markets, homeBets.moneyline?.outcomeTokenId, isDarkMode, event.teams);
+  const eventColor = getColorValueForThemeWorklet(event.color, isDarkMode);
+  const accentColor =
+    awayMoneylineColor ?? homeMoneylineColor ?? awaySpreadColor ?? homeSpreadColor ?? totalsOverColor ?? totalsUnderColor ?? eventColor;
+  const accentPalette = createOpacityPalette(accentColor, [0, 8, 12, 18]);
+  const cardGradientColors = isDarkMode
+    ? ([accentPalette.opacity18, accentPalette.opacity8, accentPalette.opacity0] as const)
+    : ([accentPalette.opacity12, accentPalette.opacity8, accentPalette.opacity0] as const);
 
   const teamLabelFontSize = useMemo(() => (teamLabels[0].length > 14 || teamLabels[1].length > 14 ? '10pt' : '13pt'), [teamLabels]);
 
@@ -163,6 +173,13 @@ export const PolymarketSportEventListItem = memo(function PolymarketSportEventLi
         )}
         <ButtonPressAnimation onPress={() => navigateToEvent(event)} scaleTo={0.98} style={Platform.OS === 'ios' ? style : undefined}>
           <View style={[styles.card, { backgroundColor: cardBackground, borderColor }]}>
+            <LinearGradient
+              colors={cardGradientColors}
+              pointerEvents="none"
+              start={{ x: 0, y: 0 }}
+              end={{ x: 0.85, y: 1 }}
+              style={StyleSheet.absoluteFill}
+            />
             <View style={styles.header}>
               <Text align="left" color="label" size="13pt" weight="heavy" numberOfLines={2}>
                 {title}
