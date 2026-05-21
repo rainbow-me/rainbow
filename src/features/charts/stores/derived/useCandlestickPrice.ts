@@ -1,6 +1,7 @@
+import { createDerivedStore } from '@storesjs/stores';
+
 import { type Price } from '@/features/charts/candlestick/types';
 import { arePricesEqual } from '@/features/charts/candlestick/utils';
-import { createDerivedStore } from '@/state/internal/createDerivedStore';
 
 import { calculatePercentChange, getTokenId, useCandlestickStore } from '../candlestickStore';
 import { useChartsStore } from '../chartsStore';
@@ -19,5 +20,5 @@ export const useCandlestickPrice = createDerivedStore<CandlestickPrice | undefin
     return { percentChange: calculatePercentChange(candles), price };
   },
 
-  { equalityFn: arePricesEqual, fastMode: true }
+  { equalityFn: arePricesEqual, lockDependencies: true }
 );

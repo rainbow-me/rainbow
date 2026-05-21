@@ -1,7 +1,8 @@
+import { createQueryStore } from '@storesjs/stores';
+
 import { formatUrl } from '@/components/DappBrowser/utils';
 import { metadataClient } from '@/graphql';
 import { logger, RainbowError } from '@/logger';
-import { createQueryStore } from '@/state/internal/createQueryStore';
 import { time } from '@/utils/time';
 
 export type Dapp = {

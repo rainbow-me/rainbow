@@ -1,3 +1,5 @@
+import { createDerivedStore } from '@storesjs/stores';
+
 import { IS_TEST } from '@/env';
 import { useHyperliquidMarketsStore } from '@/features/perps/stores/hyperliquidMarketsStore';
 import { type PerpMarketsBySymbol, type PerpMarketWithMetadata } from '@/features/perps/types';
@@ -5,7 +7,6 @@ import { PLACEMENT_IDS } from '@/features/placements/constants';
 import { usePlacementsStore, type PlacementsState } from '@/features/placements/stores/placementsStore';
 import { type Placement, type PlacementItem } from '@/features/placements/types';
 import { useRemoteConfigStore, type RemoteConfigState } from '@/model/remoteConfig';
-import { createDerivedStore } from '@/state/internal/createDerivedStore';
 import { shallowEqual } from '@/worklets/comparisons';
 
 // ============ Types ========================================================== //
@@ -56,7 +57,7 @@ export const useDiscoverPerpsPlacement = createDerivedStore<DiscoverPerpsPlaceme
     return { isLoading, items, placement: resolvedPlacement };
   },
 
-  { equalityFn: isDiscoverPerpsPlacementStateEqual, fastMode: true }
+  { equalityFn: isDiscoverPerpsPlacementStateEqual, lockDependencies: true }
 );
 
 // ============ Selectors ====================================================== //

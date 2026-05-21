@@ -1,10 +1,10 @@
 import { getApp } from '@react-native-firebase/app';
 import { collection, getDocs, getFirestore, orderBy, query, where, type FirebaseFirestoreTypes } from '@react-native-firebase/firestore';
+import { createQueryStore } from '@storesjs/stores';
 
 import { PLACEMENT_IDS } from '@/features/placements/constants';
 import { type Placement, type PlacementId, type PlacementItem, type PlacementSource } from '@/features/placements/types';
 import { getConsistentArray } from '@/helpers/getConsistentArray';
-import { createQueryStore } from '@/state/internal/createQueryStore';
 import { time } from '@/utils/time';
 
 // ============ Types ========================================================== //

@@ -1,6 +1,7 @@
 import React, { memo, useMemo } from 'react';
 import { Platform, StyleSheet, View } from 'react-native';
 
+import { type BaseStore, type QueryStoreState } from '@storesjs/stores';
 import { LinearGradient } from 'expo-linear-gradient';
 import Animated, { useAnimatedStyle, useDerivedValue, withTiming, type DerivedValue, type SharedValue } from 'react-native-reanimated';
 
@@ -9,8 +10,6 @@ import { easing, TIMING_CONFIGS } from '@/components/animations/animationConfigs
 import { EasingGradient } from '@/components/easing-gradient/EasingGradient';
 import { AnimatedText, Text, TextShadow, useColorMode } from '@/design-system';
 import { opacity } from '@/framework/ui/utils/opacity';
-import { type StoreState } from '@/state/internal/queryStore/types';
-import { type BaseRainbowStore } from '@/state/internal/types';
 import { THICKER_BORDER_WIDTH } from '@/styles/constants';
 import { formatTimestamp, type FormatTimestampOptions } from '@/worklets/dates';
 
@@ -36,9 +35,9 @@ const TIME_FORMAT_OPTIONS: FormatTimestampOptions = Object.freeze({ useTodayYest
 
 // ============ Types ========================================================== //
 
-type ChartsStoreType = BaseRainbowStore<{
+type ChartsStoreType = BaseStore<{
   getData: () => PolymarketChartData;
-  getStatus: StoreState<unknown, Record<string, unknown>>['getStatus'];
+  getStatus: QueryStoreState<unknown, Record<string, unknown>>['getStatus'];
 }>;
 
 type LegendEntry = {

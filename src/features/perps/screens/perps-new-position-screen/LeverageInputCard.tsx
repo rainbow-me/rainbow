@@ -1,5 +1,6 @@
 import React, { memo, useCallback } from 'react';
 
+import { useListen } from '@storesjs/stores';
 import {
   runOnJS,
   runOnUI,
@@ -21,7 +22,6 @@ import { hlNewPositionStoreActions, useHlNewPositionStore } from '@/features/per
 import { useAnimatedTimeout } from '@/hooks/reanimated/useAnimatedTimeout';
 import { useStableValue } from '@/hooks/useStableValue';
 import * as i18n from '@/languages';
-import { useListen } from '@/state/internal/hooks/useListen';
 import { useStoreSharedValue } from '@/state/internal/hooks/useStoreSharedValue';
 import { time } from '@/utils/time';
 

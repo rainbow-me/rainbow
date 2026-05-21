@@ -2,6 +2,7 @@ import { useCallback } from 'react';
 import { Alert, InteractionManager } from 'react-native';
 
 import { Logger } from '@ethersproject/logger';
+import { type StoreActions } from '@storesjs/stores';
 import { ethers } from 'ethers';
 import { type SharedValue } from 'react-native-reanimated';
 import { triggerHaptics } from 'react-native-turbo-haptics';
@@ -18,7 +19,6 @@ import { rapTypes, type RapSwapActionParameters } from '@/raps/references';
 import erc20ABI from '@/references/erc20-abi.json';
 import { useBackendNetworksStore } from '@/state/backendNetworks/backendNetworks';
 import { type ChainId } from '@/state/backendNetworks/types';
-import { type StoreActions } from '@/state/internal/utils/createStoreActions';
 import { getNextNonce } from '@/state/nonces';
 import { executeFn, Screens, startTimeToSignTracking, TimeToSignOperation } from '@/state/performance/performance';
 import { useWalletsStore } from '@/state/wallets/walletsStore';

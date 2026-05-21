@@ -1,6 +1,7 @@
 import React, { memo, useCallback } from 'react';
 import { Platform, StyleSheet, View } from 'react-native';
 
+import { useListen } from '@storesjs/stores';
 import { LinearGradient } from 'expo-linear-gradient';
 import { BlurView } from 'react-native-blur-view';
 import Animated, {
@@ -23,7 +24,6 @@ import { PolymarketNavigation, usePolymarketNavigationStore } from '@/features/p
 import { opacity } from '@/framework/ui/utils/opacity';
 import * as i18n from '@/languages';
 import Routes from '@/navigation/routesNames';
-import { useListen } from '@/state/internal/hooks/useListen';
 import { THICKER_BORDER_WIDTH } from '@/styles/constants';
 
 const TABS = Object.freeze({

@@ -1,3 +1,4 @@
+import { createQueryStore } from '@storesjs/stores';
 import { type Address } from 'viem';
 
 import type { NativeCurrencyKey } from '@/entities/nativeCurrencyTypes';
@@ -5,8 +6,6 @@ import { getAddysHttpClient } from '@/resources/addys/client';
 import { userAssetsStoreManager } from '@/state/assets/userAssetsStoreManager';
 import { getWalletAddresses, useWalletsStore } from '@/state/wallets/walletsStore';
 import { time } from '@/utils/time';
-
-import { createQueryStore } from '../internal/createQueryStore';
 
 export type WalletSummaryArgs = {
   addresses: Address[];

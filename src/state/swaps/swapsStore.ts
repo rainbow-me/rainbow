@@ -1,3 +1,5 @@
+import { createBaseStore, type StorageValue } from '@storesjs/stores';
+
 import { INITIAL_SLIDER_POSITION } from '@/__swaps__/screens/Swap/constants';
 import { type ExtendedAnimatedAssetWithColors, type UniqueId } from '@/__swaps__/types/assets';
 import { type RecentSwap } from '@/__swaps__/types/swap';
@@ -6,7 +8,6 @@ import { type EstimateRewardResult } from '@/features/rnbw-rewards/utils/estimat
 import { logger, RainbowError } from '@/logger';
 import { getRemoteConfig } from '@/model/remoteConfig';
 import { ChainId } from '@/state/backendNetworks/types';
-import { createRainbowStore } from '@/state/internal/createRainbowStore';
 import { time } from '@/utils/time';
 import { type CrosschainQuote, type Quote, type QuoteError, type Source } from '@rainbow-me/swaps';
 
@@ -58,7 +59,7 @@ type PersistedSwapsState = Omit<SwapsStateToPersist, 'latestSwapAt' | 'recentSwa
   recentSwaps: Array<[ChainId, RecentSwap[]]>;
 };
 
-function serialize(state: SwapsStateToPersist, version?: number) {
+function serialize({ state, version }: StorageValue<SwapsStateToPersist>): string {
   try {
     const transformedStateToPersist: PersistedSwapsState = {
       ...state,
@@ -76,9 +77,10 @@ function serialize(state: SwapsStateToPersist, version?: number) {
   }
 }
 
-function deserialize(serializedState: string) {
+function deserialize<SerializedState>(serializedState: SerializedState): StorageValue<SwapsStateToPersist> {
   let parsedState: { state: PersistedSwapsState; version: number };
   try {
+    if (typeof serializedState !== 'string') throw new Error(`Expected string serialized state`);
     parsedState = JSON.parse(serializedState);
   } catch (error) {
     logger.error(new RainbowError(`[swapsStore]: Failed to parse serialized state from swaps storage`), { error });
@@ -115,7 +117,7 @@ function deserialize(serializedState: string) {
   };
 }
 
-export const swapsStore = createRainbowStore<SwapsState, SwapsStateToPersist>(
+export const swapsStore = createBaseStore<SwapsState, SwapsStateToPersist>(
   (set, get) => ({
     isSwapsOpen: false,
     setIsSwapsOpen: (isSwapsOpen: boolean) => set(state => (state.isSwapsOpen !== isSwapsOpen ? { isSwapsOpen } : state)),

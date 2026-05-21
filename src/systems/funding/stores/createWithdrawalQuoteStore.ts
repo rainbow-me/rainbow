@@ -1,3 +1,4 @@
+import { createDerivedStore, createQueryStore } from '@storesjs/stores';
 import { getAddress } from 'viem';
 
 import { stripNonDecimalNumbers } from '@/__swaps__/utils/swaps';
@@ -5,8 +6,6 @@ import { equalWorklet, greaterThanWorklet } from '@/framework/core/safeMath';
 import { isNativeAsset } from '@/handlers/assets';
 import { convertAmountToRawAmount } from '@/helpers/utilities';
 import { userAssetsStoreManager } from '@/state/assets/userAssetsStoreManager';
-import { createDerivedStore } from '@/state/internal/createDerivedStore';
-import { createQueryStore } from '@/state/internal/createQueryStore';
 import { useWalletsStore } from '@/state/wallets/walletsStore';
 import { time } from '@/utils/time';
 import { ETH_ADDRESS, Source, type CrosschainQuote, type Quote, type QuoteParams } from '@rainbow-me/swaps';
@@ -48,7 +47,7 @@ export function createWithdrawalQuoteStore<TBalanceStore extends BalanceQuerySto
       if (!address || !selectedChainId) return null;
       return isNativeAsset(address, selectedChainId) ? ETH_ADDRESS : getAddress(address);
     },
-    { fastMode: true }
+    { lockDependencies: true }
   );
 
   return createQueryStore<QuoteResult, WithdrawalQuoteStoreParams>({

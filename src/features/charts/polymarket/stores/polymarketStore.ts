@@ -1,5 +1,4 @@
-import { createRainbowStore } from '@/state/internal/createRainbowStore';
-import { createStoreActions } from '@/state/internal/utils/createStoreActions';
+import { createBaseStore, createStoreActions } from '@storesjs/stores';
 
 import { type MarketFilter, type PolymarketInterval } from '../types';
 
@@ -19,7 +18,7 @@ export type PolymarketStoreState = {
 
 // ============ Store ========================================================== //
 
-export const usePolymarketStore = createRainbowStore<PolymarketStoreState>(
+export const usePolymarketStore = createBaseStore<PolymarketStoreState>(
   set => ({
     chartInterval: '1d',
     highlightedSeriesId: null,

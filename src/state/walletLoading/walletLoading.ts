@@ -1,11 +1,11 @@
-import { type WalletLoadingStates } from '@/helpers/walletLoadingStates';
+import { createBaseStore } from '@storesjs/stores';
 
-import { createRainbowStore } from '../internal/createRainbowStore';
+import { type WalletLoadingStates } from '@/helpers/walletLoadingStates';
 
 type WalletLoadingState = {
   loadingState: WalletLoadingStates | null;
 };
 
-export const walletLoadingStore = createRainbowStore<WalletLoadingState>(() => ({
+export const walletLoadingStore = createBaseStore<WalletLoadingState>(() => ({
   loadingState: null,
 }));

@@ -1,3 +1,5 @@
+import { createDerivedStore, createQueryStore } from '@storesjs/stores';
+
 import { POLYMARKET } from '@/config/experimental';
 import { useExperimentalConfigStore } from '@/config/experimentalConfigStore';
 import { IS_TEST } from '@/env';
@@ -8,8 +10,6 @@ import { fetchPolymarketEventsByIds } from '@/features/polymarket/stores/polymar
 import { type PolymarketEvent } from '@/features/polymarket/types/polymarket-event';
 import { processRawPolymarketEvent } from '@/features/polymarket/utils/transforms';
 import { useRemoteConfigStore } from '@/model/remoteConfig';
-import { createDerivedStore } from '@/state/internal/createDerivedStore';
-import { createQueryStore } from '@/state/internal/createQueryStore';
 import { time } from '@/utils/time';
 import { shallowEqual } from '@/worklets/comparisons';
 
@@ -42,7 +42,7 @@ const useDiscoverPredictionsEnabled = createDerivedStore<boolean>(
 
     return polymarketEnabled || polymarketEnabledLocally;
   },
-  { fastMode: true }
+  { lockDependencies: true }
 );
 
 const useDiscoverPredictionsStore = createQueryStore<PolymarketEvent[], DiscoverPredictionsParams>({
@@ -74,7 +74,7 @@ export const useDiscoverPredictions = createDerivedStore(
       placement: resolvedPlacement,
     };
   },
-  { equalityFn: shallowEqual, fastMode: true }
+  { equalityFn: shallowEqual, lockDependencies: true }
 );
 
 // ============ Fetcher ======================================================== //

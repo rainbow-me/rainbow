@@ -1,7 +1,8 @@
+import { createDerivedStore } from '@storesjs/stores';
+
 import { useHlNewPositionStore } from '@/features/perps/stores/hlNewPositionStore';
 import { useHyperliquidAccountStore } from '@/features/perps/stores/hyperliquidAccountStore';
 import { buildOrderAmountValidation } from '@/features/perps/utils/buildOrderAmountValidation';
-import { createDerivedStore } from '@/state/internal/createDerivedStore';
 import { shallowEqual } from '@/worklets/comparisons';
 
 export const useOrderAmountValidation = createDerivedStore(
@@ -20,6 +21,6 @@ export const useOrderAmountValidation = createDerivedStore(
   },
   {
     equalityFn: shallowEqual,
-    fastMode: true,
+    lockDependencies: true,
   }
 );

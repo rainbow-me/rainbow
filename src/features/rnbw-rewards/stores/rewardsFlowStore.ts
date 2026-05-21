@@ -1,10 +1,10 @@
+import { createBaseStore, createStoreActions } from '@storesjs/stores';
+
 import { RnbwRewardsScenes, type RnbwRewardsScene } from '@/features/rnbw-rewards/screens/rnbw-rewards-screen/constants/rewardsScenes';
 import { submitAirdropClaim, type PreparedAirdropClaim } from '@/features/rnbw-rewards/utils/claimAirdrop';
 import { submitRewardsClaim, type PreparedRewardsClaim } from '@/features/rnbw-rewards/utils/claimRewards';
 import { ensureError } from '@/logger';
 import { userAssetsStoreManager } from '@/state/assets/userAssetsStoreManager';
-import { createRainbowStore } from '@/state/internal/createRainbowStore';
-import { createStoreActions } from '@/state/internal/utils/createStoreActions';
 import { delay } from '@/utils/delay';
 import { time } from '@/utils/time';
 
@@ -29,7 +29,7 @@ type RewardsFlowStore = {
 
 const createIdleAction = <T>(): AsyncActionState<T> => ({ status: 'idle', runId: 0 });
 
-export const useRewardsFlowStore = createRainbowStore<RewardsFlowStore>((set, get) => ({
+export const useRewardsFlowStore = createBaseStore<RewardsFlowStore>((set, get) => ({
   activeScene: RnbwRewardsScenes.AirdropIntro,
   airdropEligibilityRequest: createIdleAction(),
   airdropClaimRequest: createIdleAction(),

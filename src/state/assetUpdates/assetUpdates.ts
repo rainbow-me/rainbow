@@ -1,3 +1,4 @@
+import { createBaseStore } from '@storesjs/stores';
 import type { Address } from 'viem';
 
 import { type ParsedSearchAsset } from '@/__swaps__/types/assets';
@@ -5,8 +6,6 @@ import { type RainbowTransaction } from '@/entities/transactions';
 import { convertAmountToRawAmount } from '@/helpers/utilities';
 import { useUserAssetsStore } from '@/state/assets/userAssets';
 import { getUniqueId } from '@/utils/ethereumUtils';
-
-import { createRainbowStore } from '../internal/createRainbowStore';
 
 // ============ Types ========================================================== //
 
@@ -39,7 +38,7 @@ const EMPTY_WATCHED_TRANSACTIONS: WatchedAssetUpdateTransaction[] = [];
 
 // ============ Asset Updates Store ============================================ //
 
-export const useAssetUpdatesStore = createRainbowStore<AssetUpdatesStore>(set => ({
+export const useAssetUpdatesStore = createBaseStore<AssetUpdatesStore>(set => ({
   watchedTransactions: {},
 
   addWatchedTransactions: ({ address, transactions }) => {

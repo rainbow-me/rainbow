@@ -1,5 +1,6 @@
+import { createBaseStore } from '@storesjs/stores';
+
 import { type TokenLink, type TokenLinks } from '@/graphql/__generated__/metadata';
-import { createRainbowStore } from '@/state/internal/createRainbowStore';
 
 export interface SuperToken {
   address: string;
@@ -37,7 +38,7 @@ export type SuperTokenStoreState = {
 export const getSuperTokenKey = (address: string, chainId: number): string => `${address.toLowerCase()}_${chainId}`;
 // Cache expiration duration in milliseconds (30 minutes)
 const TOKEN_CACHE_DURATION = 30 * 60 * 1000;
-export const useSuperTokenStore = createRainbowStore<SuperTokenStoreState>(
+export const useSuperTokenStore = createBaseStore<SuperTokenStoreState>(
   (set, get) => ({
     tokens: {},
     getSuperToken: (address?: string, chainId?: number) => {

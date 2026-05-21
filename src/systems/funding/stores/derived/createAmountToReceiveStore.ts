@@ -1,8 +1,8 @@
+import { createDerivedStore, type InferStoreState } from '@storesjs/stores';
+
 import { equalWorklet } from '@/framework/core/safeMath';
 import { getNumberFormatter } from '@/helpers/intl';
 import { convertRawAmountToDecimalFormat } from '@/helpers/utilities';
-import { createDerivedStore } from '@/state/internal/createDerivedStore';
-import { type InferStoreState } from '@/state/internal/types';
 import { shallowEqual } from '@/worklets/comparisons';
 
 import {
@@ -68,7 +68,7 @@ export function createAmountToReceiveStore(
           };
       }
     },
-    { equalityFn: shallowEqual, fastMode: true }
+    { equalityFn: shallowEqual, lockDependencies: true }
   );
 }
 

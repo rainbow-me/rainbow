@@ -1,7 +1,7 @@
 import React, { memo, useCallback, useEffect, useMemo } from 'react';
 import { Platform, StyleSheet, View } from 'react-native';
 
-import { createDerivedStore } from '@storesjs/stores';
+import { createDerivedStore, useListen } from '@storesjs/stores';
 import { LinearGradient } from 'expo-linear-gradient';
 import { Gesture, GestureDetector } from 'react-native-gesture-handler';
 import Animated, {
@@ -50,7 +50,6 @@ import { TransactionStatus } from '@/entities/transactions';
 import { IS_TEST } from '@/env';
 import useAccountSettings from '@/hooks/useAccountSettings';
 import useDimensions from '@/hooks/useDimensions';
-import { useListen } from '@/state/internal/hooks/useListen';
 import { useStoreSharedValue, type ReadOnlySharedValue } from '@/state/internal/hooks/useStoreSharedValue';
 import { useWalletsStore } from '@/state/wallets/walletsStore';
 
