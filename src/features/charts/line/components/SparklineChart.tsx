@@ -22,6 +22,7 @@ type SparklineChartProps<S extends LineChartDataStore> = {
   chartId: string;
   color: string;
   height: number;
+  maxPoints?: number;
   store: BaseRainbowStore<S>;
   width: number;
 };
@@ -38,6 +39,7 @@ export const SparklineChart = memo(function SparklineChart<S extends LineChartDa
   chartId,
   color,
   height,
+  maxPoints,
   store,
   width,
 }: SparklineChartProps<S>) {
@@ -63,6 +65,8 @@ export const SparklineChart = memo(function SparklineChart<S extends LineChartDa
 
   const drawChart = useCallback(
     (nextData: CompactLineChartData | undefined, nextColor: string) => {
+      const chartData = maxPoints === undefined ? nextData : downsampleCompactLineChartData(nextData, maxPoints);
+
       runOnUI((data: CompactLineChartData | undefined, lineColor: string) => {
         const hasData = data !== undefined;
         const shouldAnimateIn = hasData && !hasRenderedData.value;
@@ -72,9 +76,9 @@ export const SparklineChart = memo(function SparklineChart<S extends LineChartDa
 
         if (shouldAnimateIn) entranceProgress.value = 0;
         entranceProgress.value = withSpring(hasData ? 1 : 0, SPRING_CONFIGS.softerSpringConfig);
-      })(nextData, nextColor);
+      })(chartData, nextColor);
     },
-    [entranceProgress, hasRenderedData, renderer]
+    [entranceProgress, hasRenderedData, maxPoints, renderer]
   );
 
   useListen(
@@ -116,6 +120,55 @@ export const SparklineChart = memo(function SparklineChart<S extends LineChartDa
     </View>
   );
 });
+
+function downsampleCompactLineChartData(data: CompactLineChartData | undefined, maxPoints: number): CompactLineChartData | undefined {
+  if (!data || maxPoints <= 0) return data;
+
+  const pointCount = Math.min(data.prices.length, data.timestamps.length);
+  if (pointCount <= maxPoints) return data;
+
+  if (maxPoints === 1) {
+    return {
+      prices: data.prices.slice(pointCount - 1),
+      timestamps: data.timestamps.slice(pointCount - 1),
+    };
+  }
+
+  const prices = new Float32Array(maxPoints);
+  const timestamps = new Uint32Array(maxPoints);
+  const sourceLastIndex = pointCount - 1;
+  const targetLastIndex = maxPoints - 1;
+
+  prices[0] = data.prices[0];
+  timestamps[0] = data.timestamps[0];
+  prices[targetLastIndex] = data.prices[sourceLastIndex];
+  timestamps[targetLastIndex] = data.timestamps[sourceLastIndex];
+
+  for (let targetIndex = 1; targetIndex < targetLastIndex; targetIndex++) {
+    const bucketStart = Math.floor((targetIndex * sourceLastIndex) / targetLastIndex);
+    const bucketEnd = Math.max(bucketStart + 1, Math.floor(((targetIndex + 1) * sourceLastIndex) / targetLastIndex));
+    let priceTotal = 0;
+    let timestampTotal = 0;
+    let bucketSize = 0;
+
+    for (let sourceIndex = bucketStart; sourceIndex <= bucketEnd && sourceIndex < sourceLastIndex; sourceIndex++) {
+      priceTotal += data.prices[sourceIndex];
+      timestampTotal += data.timestamps[sourceIndex];
+      bucketSize += 1;
+    }
+
+    if (bucketSize === 0) {
+      const fallbackIndex = Math.round((targetIndex * sourceLastIndex) / targetLastIndex);
+      prices[targetIndex] = data.prices[fallbackIndex];
+      timestamps[targetIndex] = data.timestamps[fallbackIndex];
+    } else {
+      prices[targetIndex] = priceTotal / bucketSize;
+      timestamps[targetIndex] = Math.round(timestampTotal / bucketSize);
+    }
+  }
+
+  return { prices, timestamps };
+}
 
 // ============ Styles ========================================================= //
 

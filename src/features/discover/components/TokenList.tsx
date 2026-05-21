@@ -26,6 +26,7 @@ import { type TokenData } from '@/state/liveTokens/liveTokensStore';
 import { getUniqueId } from '@/utils/ethereumUtils';
 
 const INITIAL_VISIBLE_TOKEN_COUNT = 5;
+const TOKEN_SPARKLINE_MAX_POINTS = 24;
 const TOKEN_SPARKLINE_LAYOUT = { height: 34, width: 64 };
 const PRICE_CHANGE_COLORS = {
   dark: { positive: '#3ECF5B', negative: '#FF584D', neutral: 'rgba(255, 255, 255, 0.5)' },
@@ -133,6 +134,7 @@ function TokenCard({ asset }: { asset: FormattedExternalAsset }) {
                 chartId={tokenLineChartId}
                 color={priceChangeColor}
                 height={TOKEN_SPARKLINE_LAYOUT.height}
+                maxPoints={TOKEN_SPARKLINE_MAX_POINTS}
                 store={useTokenLineChartsStore}
                 width={TOKEN_SPARKLINE_LAYOUT.width}
               />
