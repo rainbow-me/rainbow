@@ -25,6 +25,11 @@ type CompactLineChartRendererConfig = {
   height: number;
 };
 
+export type CompactLineChartPoint = {
+  x: number;
+  y: number;
+};
+
 // ============ Constants ====================================================== //
 
 const LINE_WIDTH = 2.25;
@@ -35,6 +40,27 @@ export const COMPACT_LINE_CHART_HORIZONTAL_OVERDRAW = LINE_WIDTH;
 const GRADIENT_FILL_TOP_ALPHA = 0.35;
 const FLAT_PRICE_PADDING_FACTOR = 0.02;
 const PRICE_RANGE_PADDING_FACTOR = 0.08;
+
+export function getCompactLineChartEndPoint(
+  data: CompactLineChartData | undefined,
+  contentWidth: number,
+  height: number
+): CompactLineChartPoint | undefined {
+  'worklet';
+
+  const pointCount = data ? Math.min(data.prices.length, data.timestamps.length) : 0;
+  if (!data || pointCount < 2) return undefined;
+
+  const { minPrice, maxPrice } = computeCompactLineChartBounds(data.prices, pointCount);
+  const priceRange = maxPrice - minPrice || 1;
+  const plotHeight = getCompactLineChartPlotHeight(height);
+  const lastPrice = data.prices[pointCount - 1];
+
+  return {
+    x: COMPACT_LINE_CHART_HORIZONTAL_OVERDRAW + contentWidth,
+    y: LINE_WIDTH + plotHeight - ((lastPrice - minPrice) / priceRange) * plotHeight,
+  };
+}
 
 // ============ Renderer ======================================================= //
 
@@ -225,4 +251,39 @@ export class CompactLineChartRenderer {
       minPrice: min - padding,
     };
   }
+}
+
+function getCompactLineChartPlotHeight(height: number): number {
+  'worklet';
+
+  return height - LINE_WIDTH * 2;
+}
+
+function computeCompactLineChartBounds(prices: Float32Array, count: number): { maxPrice: number; minPrice: number } {
+  'worklet';
+
+  let min = Number.POSITIVE_INFINITY;
+  let max = Number.NEGATIVE_INFINITY;
+
+  for (let i = 0; i < count; i++) {
+    const value = prices[i];
+    if (value < min) min = value;
+    if (value > max) max = value;
+  }
+
+  if (!Number.isFinite(min) || !Number.isFinite(max)) {
+    return { maxPrice: 1, minPrice: 0 };
+  }
+
+  const range = max - min;
+  if (range === 0) {
+    const fallback = Math.max(Math.abs(max) * FLAT_PRICE_PADDING_FACTOR, Number.EPSILON);
+    return { maxPrice: max + fallback, minPrice: min - fallback };
+  }
+
+  const padding = range * PRICE_RANGE_PADDING_FACTOR;
+  return {
+    maxPrice: max + padding,
+    minPrice: min - padding,
+  };
 }

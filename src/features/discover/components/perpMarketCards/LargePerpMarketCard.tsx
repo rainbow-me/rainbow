@@ -152,6 +152,7 @@ export const LargePerpMarketCard = memo(function LargePerpMarketCard({
               chartId={symbol}
               color={chartColor}
               height={CHART_HEIGHT}
+              showLivePointer
               store={useHyperliquidLineChartsStore}
               width={chartWidth}
             />
