@@ -320,7 +320,7 @@ const styles = StyleSheet.create({
   sectionHeaderContent: {
     flexDirection: 'row',
     alignItems: 'center',
-    gap: 6,
+    gap: 10,
   },
   liveIndicatorCutout: {
     alignItems: 'center',
@@ -358,6 +358,7 @@ const styles = StyleSheet.create({
     fontSize: 14,
     letterSpacing: 0,
     lineHeight: 14,
+    transform: [{ translateY: 1 }],
   },
   leagueHeaderButton: {
     alignSelf: 'flex-start',
