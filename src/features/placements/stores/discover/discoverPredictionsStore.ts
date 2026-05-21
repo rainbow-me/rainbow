@@ -3,7 +3,7 @@ import { useExperimentalConfigStore } from '@/config/experimentalConfigStore';
 import { IS_TEST } from '@/env';
 import { PLACEMENT_IDS } from '@/features/placements/constants';
 import { usePlacementsStore, type PlacementsState } from '@/features/placements/stores/placementsStore';
-import { type PlacementItem } from '@/features/placements/types';
+import { type Placement, type PlacementItem } from '@/features/placements/types';
 import { fetchPolymarketEventsByIds } from '@/features/polymarket/stores/polymarketEventsStore';
 import { type PolymarketEvent } from '@/features/polymarket/types/polymarket-event';
 import { processRawPolymarketEvent } from '@/features/polymarket/utils/transforms';
@@ -25,9 +25,31 @@ type DiscoverPredictionsParams = {
 
 type EventsById = Record<string, PolymarketEvent>;
 
+// ============ Types (internal) ================================================ //
+
+type DiscoverPredictionsState = {
+  isLoading: boolean;
+  items: PredictionItem[];
+  placement: Placement | undefined;
+};
+
 // ============ Constants ====================================================== //
 
 const EMPTY_ITEMS: PredictionItem[] = [];
+
+const EMPTY_PREDICTIONS_STATE: DiscoverPredictionsState = {
+  isLoading: false,
+  items: EMPTY_ITEMS,
+  placement: undefined,
+};
+
+const LOADING_PREDICTIONS_STATE: DiscoverPredictionsState = {
+  isLoading: true,
+  items: EMPTY_ITEMS,
+  placement: undefined,
+};
+
+let lastResolvedPredictionsState: DiscoverPredictionsState | null = null;
 
 // ============ Stores ========================================================= //
 
@@ -56,23 +78,33 @@ const useDiscoverPredictionsStore = createQueryStore<PolymarketEvent[], Discover
   cacheTime: time.minutes(10),
 });
 
-export const useDiscoverPredictions = createDerivedStore(
+export const useDiscoverPredictions = createDerivedStore<DiscoverPredictionsState>(
   $ => {
+    const configReady = $(useRemoteConfigStore, s => s.isConfigReady());
+    const enabled = $(useDiscoverPredictionsEnabled);
     const placement = $(usePlacementsStore, s => s.getPlacement(PLACEMENT_IDS.DISCOVER_PREDICTIONS_CAROUSEL));
     const placementItems = $(usePlacementsStore, selectPredictionsPlacementItems, shallowEqual);
     const events = $(useDiscoverPredictionsStore, s => s.getData());
     const placementsLoading = $(usePlacementsStore, s => s.getStatus('isInitialLoad'));
     const eventsLoading = $(useDiscoverPredictionsStore, s => s.enabled && s.getStatus('isInitialLoad'));
 
+    if (!enabled) {
+      if (!configReady) return lastResolvedPredictionsState ?? LOADING_PREDICTIONS_STATE;
+      return EMPTY_PREDICTIONS_STATE;
+    }
+
     const parsedEvents = events ? parsePredictionItems(placementItems, events) : undefined;
     const isLoading = !events && (placementsLoading || eventsLoading);
     const resolvedPlacement = parsedEvents?.length ? placement : undefined;
 
-    return {
+    const state: DiscoverPredictionsState = {
       isLoading,
       items: parsedEvents ?? EMPTY_ITEMS,
       placement: resolvedPlacement,
     };
+
+    if (state.items.length > 0) lastResolvedPredictionsState = state;
+    return state;
   },
   { equalityFn: shallowEqual, fastMode: true }
 );
