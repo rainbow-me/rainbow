@@ -14,9 +14,18 @@ type LargePerpMarketsGridProps = PlacementStoreResult<PerpMarketPlacementItem> &
   placementId: PlacementId;
   title: string;
   onPressSeeAll?: () => void;
+  showHeaderCaret?: boolean;
 };
 
-export function LargePerpMarketsGrid({ isLoading, items, placement, placementId, title, onPressSeeAll }: LargePerpMarketsGridProps) {
+export function LargePerpMarketsGrid({
+  isLoading,
+  items,
+  placement,
+  placementId,
+  title,
+  onPressSeeAll,
+  showHeaderCaret,
+}: LargePerpMarketsGridProps) {
   const renderItem = useCallback(
     (item: PerpMarketPlacementItem, cellWidth: number) => <LargePerpMarketCard market={item.market} width={cellWidth} />,
     []
@@ -34,6 +43,7 @@ export function LargePerpMarketsGrid({ isLoading, items, placement, placementId,
       placementId={placementId}
       renderItem={renderItem}
       renderSkeleton={renderSkeleton}
+      showHeaderCaret={showHeaderCaret}
       title={title}
     />
   );

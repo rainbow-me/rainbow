@@ -32,6 +32,7 @@ function CryptoMajorsGrid() {
       onPressSeeAll={navigateToPerpsSearch}
       placement={placement}
       placementId={PLACEMENT_IDS.PERPS_CRYPTO_MAJORS}
+      showHeaderCaret={false}
       title={i18n.t(i18n.l.discover.placements.majors_title)}
     />
   );
