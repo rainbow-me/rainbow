@@ -28,9 +28,11 @@ export const PREDICTION_MARKET_TILE_CARD_BORDER_RADIUS = 24;
 const OUTCOME_ROW_COUNT = 2;
 const LAST_TRADE_PRICE_THRESHOLDS = [0.05, 0.01];
 const CARD_GRADIENT_CONFIG = {
-  end: { x: 0.64, y: 0.68 },
+  end: { x: 1, y: 1 },
   start: { x: -0.08, y: -0.08 },
 };
+const DARK_BORDER_GRADIENT_LOCATIONS = [0, 0.38, 0.72, 1] as const;
+const DARK_OUTCOME_ROW_BORDER_GRADIENT_LOCATIONS = [0, 0.32, 0.64, 1] as const;
 const OUTCOME_ROW_WIDTH = PREDICTION_MARKET_TILE_CARD_WIDTH - 24;
 const ODDS_PILL_BORDER_RADIUS = 15;
 const ASSET_ACCENT_COLORS = [
@@ -74,9 +76,9 @@ export const PredictionMarketTileCard = memo(function PredictionMarketTileCard({
   const cardBorderGradientColors = useMemo(
     () =>
       isDarkMode
-        ? ([opacity(eventColor, 0.46), colorPalette.opacity16] as const)
+        ? ([opacity(eventColor, 0.38), colorPalette.opacity8, globalColors.grey100, globalColors.grey100] as const)
         : ([opacity(globalColors.white100, 0.78), opacity(globalColors.white100, 0.78)] as const),
-    [colorPalette.opacity16, eventColor, isDarkMode]
+    [colorPalette.opacity8, eventColor, isDarkMode]
   );
   const cardGradientColors = useMemo(
     () =>
@@ -101,6 +103,7 @@ export const PredictionMarketTileCard = memo(function PredictionMarketTileCard({
           borderRadius={PREDICTION_MARKET_TILE_CARD_BORDER_RADIUS}
           borderWidth={2}
           end={CARD_GRADIENT_CONFIG.end}
+          locations={isDarkMode ? DARK_BORDER_GRADIENT_LOCATIONS : undefined}
           start={CARD_GRADIENT_CONFIG.start}
           style={styles.card}
         >
@@ -194,12 +197,13 @@ const OutcomeRow = memo(function OutcomeRow({
     <GradientBorderView
       borderGradientColors={
         isDarkMode
-          ? ([opacity(eventColor, 0.52), globalColors.grey100] as const)
+          ? ([opacity(eventColor, 0.34), opacity(eventColor, 0.08), globalColors.grey100, globalColors.grey100] as const)
           : ([opacity(eventColor, 0.56), opacity(eventColor, 0.18)] as const)
       }
       borderRadius={22}
       borderWidth={2}
-      end={{ x: 0.9, y: 0 }}
+      end={isDarkMode ? { x: 1, y: 1 } : { x: 0.9, y: 0 }}
+      locations={isDarkMode ? DARK_OUTCOME_ROW_BORDER_GRADIENT_LOCATIONS : undefined}
       start={{ x: 0, y: 0 }}
       style={styles.outcomeRowFrame}
     >
