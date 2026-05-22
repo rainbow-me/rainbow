@@ -1,0 +1,33 @@
+{
+  "id": "perps_stocks",
+  "version": 2,
+  "source": "hyperliquid",
+  "type": "perp",
+  "updatedAt": "2026-05-15T15:59:08.930Z",
+  "items": [
+    {
+      "id": "xyz:NVDA"
+    },
+    {
+      "id": "xyz:COIN"
+    },
+    {
+      "id": "xyz:MSTR"
+    },
+    {
+      "id": "xyz:TSM"
+    },
+    {
+      "id": "xyz:RKLB"
+    },
+    {
+      "id": "xyz:CBRS"
+    },
+    {
+      "id": "xyz:SKHX"
+    },
+    {
+      "id": "xyz:CRWV"
+    }
+  ]
+}

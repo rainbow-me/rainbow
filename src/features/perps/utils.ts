@@ -26,7 +26,18 @@ export function convertHyperliquidPerpAssetIdToSpotAssetId(assetId: number): num
 }
 
 export function formatPriceChange(priceChange: string) {
+  'worklet';
   return `${toFixedWorklet(Number(priceChange) * 10_000, 2)}%`;
+}
+
+/**
+ * Formats the same 24h price-change value as `formatPriceChange`, with direction
+ * represented externally by compact UI arrows/colors.
+ */
+export function formatCompactPriceChange(priceChange: string) {
+  'worklet';
+  const formattedPriceChange = formatPriceChange(priceChange);
+  return formattedPriceChange.startsWith('-') ? formattedPriceChange.slice(1) : formattedPriceChange;
 }
 
 /**
@@ -35,16 +46,6 @@ export function formatPriceChange(priceChange: string) {
 export function convertStoredPerpPriceChangeToPercent(priceChange: string): number {
   'worklet';
   return Number(priceChange) * 10_000;
-}
-
-/**
- * Formats a compact percentage change string for display.
- */
-export function formatCompactPerpPercentChange(percentChange: number): string {
-  'worklet';
-  const numericValue = Math.abs(percentChange);
-  if (!Number.isFinite(numericValue)) return '0.00%';
-  return `${numericValue.toFixed(2)}%`;
 }
 
 export function navigateToNewPositionScreen(market: PerpMarket) {

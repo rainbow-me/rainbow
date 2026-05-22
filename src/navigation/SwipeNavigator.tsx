@@ -141,7 +141,8 @@ const TabBar = memo(function TabBar({ activeIndex, descriptorsRef, getIsFocused,
   });
 
   const backgroundPillStyle = useAnimatedStyle(() => {
-    const isDappBrowserTab = showDappBrowserTab && reanimatedPosition.value === 2 && showBrowserNavButtons.value;
+    const route = getRouteFromTabIndex(reanimatedPosition.value, showRnbwMembership, showDappBrowserTab, showRnbwRewardsOrMembershipTab);
+    const isDappBrowserTab = route === Routes.DAPP_BROWSER_SCREEN && showBrowserNavButtons.value;
     const backgroundOpacity = isDappBrowserTab ? 0 : 1;
     const translateX = interpolate(reanimatedPosition.value, tabPositions.value.inputRange, tabPositions.value.outputRange, 'clamp');
 
@@ -152,7 +153,8 @@ const TabBar = memo(function TabBar({ activeIndex, descriptorsRef, getIsFocused,
   });
 
   const dappBrowserTabBarStyle = useAnimatedStyle(() => {
-    const shouldUseBrowserStyle = showDappBrowserTab && reanimatedPosition.value === 2;
+    const route = getRouteFromTabIndex(reanimatedPosition.value, showRnbwMembership, showDappBrowserTab, showRnbwRewardsOrMembershipTab);
+    const shouldUseBrowserStyle = route === Routes.DAPP_BROWSER_SCREEN;
     return {
       opacity: withTiming(shouldUseBrowserStyle ? 1 : 0, TIMING_CONFIGS.slowFadeConfig),
     };
@@ -312,21 +314,22 @@ const TabBar = memo(function TabBar({ activeIndex, descriptorsRef, getIsFocused,
   );
 
   const shadowStyle = useAnimatedStyle(() => {
-    const isDappBrowserTab = showDappBrowserTab && reanimatedPosition.value === 2;
+    const route = getRouteFromTabIndex(reanimatedPosition.value, showRnbwMembership, showDappBrowserTab, showRnbwRewardsOrMembershipTab);
+    const isDappBrowserTab = route === Routes.DAPP_BROWSER_SCREEN;
     return {
       shadowOpacity: withSpring(isDarkMode ? 0.6 : isDappBrowserTab ? 0 : 0.16, SPRING_CONFIGS.snappyMediumSpringConfig),
     };
   });
 
   const gradientBackgroundStyle = useAnimatedStyle(() => {
-    const route = getRouteFromTabIndex(reanimatedPosition.value, showRnbwMembership);
+    const route = getRouteFromTabIndex(reanimatedPosition.value, showRnbwMembership, showDappBrowserTab, showRnbwRewardsOrMembershipTab);
     return {
       backgroundColor: route === Routes.DAPP_BROWSER_SCREEN ? 'transparent' : getTabBackgroundColor(route, isDarkMode),
     };
   });
 
   const gradientVisibilityStyle = useAnimatedStyle(() => {
-    const route = getRouteFromTabIndex(reanimatedPosition.value, showRnbwMembership);
+    const route = getRouteFromTabIndex(reanimatedPosition.value, showRnbwMembership, showDappBrowserTab, showRnbwRewardsOrMembershipTab);
     return {
       opacity: withTiming(route === Routes.RNBW_REWARDS_SCREEN ? 0 : 1, TIMING_CONFIGS.slowFadeConfig),
     };
@@ -493,7 +496,7 @@ export const BrowserTabIconWrapper = memo(function BrowserTabIconWrapper({
   });
 
   useAnimatedReaction(
-    () => activeIndex.value === 2 && canGoBackOrForward.value,
+    () => activeIndex.value === index && canGoBackOrForward.value,
     (current, previous) => {
       if (current !== previous) {
         showBrowserNavButtons.value = current;
@@ -547,22 +550,34 @@ export const BrowserTabIconWrapper = memo(function BrowserTabIconWrapper({
   );
 });
 
-function getRouteFromTabIndex(index: number, isMembership: boolean): RouteProp<ParamListBase, string>['name'] {
+function getRouteFromTabIndex(
+  index: number,
+  isMembership: boolean,
+  showDappBrowserTab: boolean,
+  showRnbwRewardsOrMembershipTab: boolean
+): RouteProp<ParamListBase, string>['name'] {
   'worklet';
-  switch (index) {
-    case 0:
-      return Routes.WALLET_SCREEN;
-    case 1:
-      return Routes.DISCOVER_SCREEN;
-    case 2:
-      return Routes.DAPP_BROWSER_SCREEN;
-    case 3:
-      return Routes.PROFILE_SCREEN;
-    case 4:
-      return isMembership ? Routes.RNBW_MEMBERSHIP_SCREEN : Routes.RNBW_REWARDS_SCREEN;
-    default:
-      return Routes.WALLET_SCREEN;
+  let routeIndex = 0;
+
+  if (index === routeIndex) return Routes.WALLET_SCREEN;
+  routeIndex += 1;
+
+  if (index === routeIndex) return Routes.DISCOVER_SCREEN;
+  routeIndex += 1;
+
+  if (showDappBrowserTab) {
+    if (index === routeIndex) return Routes.DAPP_BROWSER_SCREEN;
+    routeIndex += 1;
   }
+
+  if (index === routeIndex) return Routes.PROFILE_SCREEN;
+  routeIndex += 1;
+
+  if (showRnbwRewardsOrMembershipTab && index === routeIndex) {
+    return isMembership ? Routes.RNBW_MEMBERSHIP_SCREEN : Routes.RNBW_REWARDS_SCREEN;
+  }
+
+  return Routes.WALLET_SCREEN;
 }
 
 function getTabBackgroundColor(route: RouteProp<ParamListBase, string>['name'], isDarkMode: boolean): string {

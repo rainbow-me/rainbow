@@ -1,0 +1,27 @@
+{
+  "id": "predictions_crypto",
+  "version": 2,
+  "source": "polymarket",
+  "type": "prediction",
+  "updatedAt": "2026-05-15T15:59:08.970Z",
+  "items": [
+    {
+      "id": "36173"
+    },
+    {
+      "id": "438065"
+    },
+    {
+      "id": "462397"
+    },
+    {
+      "id": "438066"
+    },
+    {
+      "id": "16167"
+    },
+    {
+      "id": "472488"
+    }
+  ]
+}

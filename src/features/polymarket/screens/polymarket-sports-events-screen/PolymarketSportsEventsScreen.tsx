@@ -8,10 +8,22 @@ import { usePolymarketSportsEventsStore } from '@/features/polymarket/stores/pol
 import { useListen } from '@/state/internal/hooks/useListen';
 
 type PolymarketSportsEventsScreenProps = {
-  onScroll: (event: NativeSyntheticEvent<NativeScrollEvent>) => void;
+  onPressLeagueHeader?: (leagueId: string) => void;
+  onScroll?: (event: NativeSyntheticEvent<NativeScrollEvent>) => void;
+  renderAsStaticList?: boolean;
+  selectedLeagueId?: string;
+  showLeagueSelector?: boolean;
+  truncateSections?: boolean;
 };
 
-export const PolymarketSportsEventsScreen = memo(function PolymarketSportsEventsScreen({ onScroll }: PolymarketSportsEventsScreenProps) {
+export const PolymarketSportsEventsScreen = memo(function PolymarketSportsEventsScreen({
+  onPressLeagueHeader,
+  onScroll,
+  renderAsStaticList = false,
+  selectedLeagueId,
+  showLeagueSelector = true,
+  truncateSections = false,
+}: PolymarketSportsEventsScreenProps) {
   const { eventsListRef: listRef } = usePolymarketContext();
 
   useListen(
@@ -19,15 +31,25 @@ export const PolymarketSportsEventsScreen = memo(function PolymarketSportsEvents
     state => state.selectedLeagueId,
     () => {
       listRef?.current?.scrollToOffset({ offset: 0, animated: true });
-    }
+    },
+    { enabled: selectedLeagueId === undefined }
   );
 
   return (
-    <View style={styles.container}>
-      <View style={styles.leagueSelectorContainer}>
-        <PolymarketLeagueSelector />
-      </View>
-      <PolymarketSportsEventsList listRef={listRef} onScroll={onScroll} />
+    <View style={[styles.container, renderAsStaticList && styles.staticContainer]}>
+      {showLeagueSelector ? (
+        <View style={styles.leagueSelectorContainer}>
+          <PolymarketLeagueSelector />
+        </View>
+      ) : null}
+      <PolymarketSportsEventsList
+        listRef={listRef}
+        onPressLeagueHeader={onPressLeagueHeader}
+        onScroll={onScroll}
+        renderAsStaticList={renderAsStaticList}
+        selectedLeagueId={selectedLeagueId}
+        truncateSections={truncateSections}
+      />
     </View>
   );
 });
@@ -36,6 +58,9 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     paddingTop: 16,
+  },
+  staticContainer: {
+    paddingTop: 0,
   },
   leagueSelectorContainer: {
     alignSelf: 'center',

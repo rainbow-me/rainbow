@@ -525,6 +525,26 @@
       }
     },
     "discover": {
+      "for_you": "For You",
+      "markets": "Markets",
+      "crypto": "Crypto",
+      "sports": "Sports",
+      "featured": "Featured",
+      "preds": "Predictions",
+      "tokens": "Tokens",
+      "nba_today": "NBA",
+      "sports_nba": "NBA",
+      "sports_today": "Sports",
+      "indices": "Indices",
+      "commodities": "Commodities",
+      "stocks": "Stocks",
+      "new": "New",
+      "tradfi_preds": "Predictions",
+      "majors": "Majors",
+      "crypto_preds": "Predictions",
+      "live": "Live",
+      "today": "Today",
+      "week": "This Week",
       "search": {
         "search_ethereum": "Search all of Ethereum",
         "search_ethereum_short": "Search Ethereum",
@@ -537,7 +557,9 @@
       "placements": {
         "perps_title": "Perps",
         "predictions_title": "Predictions",
-        "see_all": "See all"
+        "indices_title": "Indices",
+        "commodities_title": "Commodities",
+        "majors_title": "Majors"
       },
       "strategies": {
         "strategies_title": "Strategies",
@@ -3405,9 +3427,10 @@
       "sports": {
         "vs": "vs",
         "live": "Live",
+        "this_week": "This week",
         "game_best_of": "Game %{currentPeriod} - Best of %{bestOf}",
         "final": "Final",
-        "no_games": "No games today or tomorrow"
+        "no_games": "No games this week"
       },
       "outcomes": {
         "yes": "Yes",

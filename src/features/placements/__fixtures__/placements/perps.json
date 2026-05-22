@@ -1,0 +1,45 @@
+{
+  "id": "perps_top",
+  "version": 2,
+  "source": "hyperliquid",
+  "type": "perp",
+  "updatedAt": "2026-05-15T15:59:08.862Z",
+  "items": [
+    {
+      "id": "BTC"
+    },
+    {
+      "id": "ETH"
+    },
+    {
+      "id": "SOL"
+    },
+    {
+      "id": "HYPE"
+    },
+    {
+      "id": "XRP"
+    },
+    {
+      "id": "DOGE"
+    },
+    {
+      "id": "LINK"
+    },
+    {
+      "id": "SUI"
+    },
+    {
+      "id": "AVAX"
+    },
+    {
+      "id": "ONDO"
+    },
+    {
+      "id": "AAVE"
+    },
+    {
+      "id": "TAO"
+    }
+  ]
+}

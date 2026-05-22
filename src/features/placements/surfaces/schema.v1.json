@@ -1,0 +1,126 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "Surface v1",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["id", "version", "enabled", "items"],
+  "properties": {
+    "id": {
+      "type": "string",
+      "pattern": "^[a-z][a-z0-9_]*$"
+    },
+    "version": {
+      "const": 1
+    },
+    "label": {
+      "type": "string",
+      "minLength": 1
+    },
+    "enabled": {
+      "$ref": "#/definitions/enabled"
+    },
+    "updatedAt": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "items": {
+      "type": "array",
+      "items": {
+        "$ref": "#/definitions/surfaceNode"
+      }
+    }
+  },
+  "definitions": {
+    "enabled": {
+      "oneOf": [
+        { "type": "boolean" },
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "startsAt": { "type": "string", "format": "date-time" },
+            "endsAt": { "type": "string", "format": "date-time" }
+          },
+          "anyOf": [{ "required": ["startsAt"] }, { "required": ["endsAt"] }]
+        }
+      ]
+    },
+    "destination": {
+      "oneOf": [
+        { "type": "null" },
+        {
+          "type": "array",
+          "minItems": 1,
+          "items": [{ "enum": ["perps", "predictions", "tokens", "dapps"] }],
+          "additionalItems": { "type": "string", "minLength": 1 }
+        }
+      ]
+    },
+    "surfaceNode": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["id", "label", "enabled"],
+      "properties": {
+        "id": {
+          "type": "string",
+          "pattern": "^[a-z][a-z0-9_]*$"
+        },
+        "label": {
+          "type": "string",
+          "minLength": 1
+        },
+        "enabled": {
+          "$ref": "#/definitions/enabled"
+        },
+        "items": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/surfaceNode"
+          }
+        },
+        "placement": {
+          "type": "string",
+          "pattern": "^[a-z][a-z0-9_]*$"
+        },
+        "display": {
+          "enum": [
+            "perp_pill.carousel",
+            "perp_tile.carousel",
+            "perp_tile.grid",
+            "perp_row.list",
+            "prediction_tile.carousel",
+            "prediction_tile.grid",
+            "prediction_tile_widget.carousel",
+            "prediction_sport_widget.carousel",
+            "prediction_sport_widget.list",
+            "token_cell.list"
+          ]
+        },
+        "destination": {
+          "$ref": "#/definitions/destination"
+        },
+        "limit": {
+          "type": "integer",
+          "minimum": 1
+        }
+      },
+      "oneOf": [
+        {
+          "required": ["items"],
+          "not": {
+            "anyOf": [
+              { "required": ["placement"] },
+              { "required": ["display"] },
+              { "required": ["destination"] },
+              { "required": ["limit"] }
+            ]
+          }
+        },
+        {
+          "required": ["placement", "display", "destination"],
+          "not": { "required": ["items"] }
+        }
+      ]
+    }
+  }
+}

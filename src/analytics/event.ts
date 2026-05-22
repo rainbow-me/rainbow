@@ -8,7 +8,6 @@ import { type UnlockableAppIconKey } from '@/features/app-icon/models/appIcons';
 import { type CandleResolution, type ChartType } from '@/features/charts/types';
 import { type ENSRapActionType } from '@/features/ens/raps/common';
 import { type PerpPositionSide, type TriggerOrderType } from '@/features/perps/types';
-import { type Placement, type PlacementItem, type PlacementItemAnalyticsMetadata } from '@/features/placements/types';
 import { type EthereumWalletType } from '@/helpers/walletTypes';
 import { type WalletLibraryType } from '@/model/wallet';
 import { type PairHardwareWalletNavigatorParams } from '@/navigation/types';
@@ -244,6 +243,8 @@ export const event = {
   timeSpentOnDiscoverScreen: 'Time spent on the Discover screen',
   discoverPlacementCardPressed: 'discover.placement_card_pressed',
   discoverPlacementSeeAllPressed: 'discover.placement_see_all_pressed',
+  discoverPredictionOutcomePressed: 'discover.prediction_outcome_pressed',
+  discoverTabSelected: 'discover.tab_selected',
   placementInteraction: 'placement.interaction',
 
   // ens
@@ -996,30 +997,46 @@ export type EventProperties = {
     durationInMs: number;
   };
   [event.discoverPlacementCardPressed]: {
-    placementId: Placement['id'];
-    placementScreen?: Placement['screen'];
+    placementId: string;
+    surfaceId: string;
     placementTitle: string;
-    itemOrder: PlacementItem['order'];
+    itemOrder: number;
+    itemId: string;
     marketId: string;
-    marketName?: PlacementItemAnalyticsMetadata['marketName'];
-    marketSlug?: PlacementItemAnalyticsMetadata['marketSlug'];
-    marketSymbol?: PlacementItemAnalyticsMetadata['marketSymbol'];
-    marketType: PlacementItem['ref']['source'];
+    marketName?: string;
+    marketSlug?: string;
+    marketSymbol?: string;
+    marketType?: string;
   };
   [event.discoverPlacementSeeAllPressed]: {
-    placementId: Placement['id'];
-    placementScreen?: Placement['screen'];
+    placementId: string;
+    surfaceId: string;
     placementTitle: string;
+    destination: unknown;
+  };
+  [event.discoverPredictionOutcomePressed]: {
+    placementId: string;
+    surfaceId: string;
+    itemId: string;
+    marketId: string;
+    marketName?: string;
+    marketSlug?: string;
+    outcome: string;
+  };
+  [event.discoverTabSelected]: {
+    tabId: string;
+    surfaceId: string;
   };
   [event.placementInteraction]: {
-    id: Placement['id'];
+    id: string;
     interactionType: 'carousel_scroll';
-    screen: Placement['screen'];
-    order: Placement['order'];
-    version: Placement['version'];
-    itemRefSource?: PlacementItem['ref']['source'];
-    itemRefId?: PlacementItem['ref']['id'];
-    itemOrder?: PlacementItem['order'];
+    surfaceId?: string;
+    source?: string;
+    type?: string;
+    version: number;
+    itemRefSource?: string;
+    itemRefId?: string;
+    itemOrder?: number;
   };
 
   [event.ensInitiatedRegistration]: { category: string };

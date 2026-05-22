@@ -98,7 +98,6 @@ export interface RainbowConfig extends Record<
   delegation_enabled: boolean;
   sponsored_sends_enabled: boolean;
   sponsored_swaps_enabled: boolean;
-  discover_placements_enabled: boolean;
 }
 
 const Bips = {
@@ -231,7 +230,6 @@ export const DEFAULT_CONFIG = {
   delegation_enabled: false,
   sponsored_sends_enabled: true,
   sponsored_swaps_enabled: true,
-  discover_placements_enabled: true,
 } as const satisfies Readonly<RainbowConfig>;
 
 type RemoteConfigKey = keyof typeof DEFAULT_CONFIG;
@@ -269,6 +267,7 @@ export type RemoteConfigState = {
   config: RainbowConfig;
   lastFetchedVersion: number;
   getRemoteConfigKey: <K extends RemoteConfigKey>(key: K) => RainbowConfig[K];
+  isConfigReady: () => boolean;
 };
 
 export const useRemoteConfigStore = createQueryStore<RainbowConfig, never, RemoteConfigState>(
@@ -297,6 +296,7 @@ export const useRemoteConfigStore = createQueryStore<RainbowConfig, never, Remot
     config: DEFAULT_CONFIG,
     lastFetchedVersion: 0,
     getRemoteConfigKey: key => get().config[key] ?? DEFAULT_CONFIG[key],
+    isConfigReady: () => get().lastFetchedVersion === REMOTE_CONFIG_VERSION,
   }),
 
   { storageKey: 'remoteConfig', version: REMOTE_CONFIG_VERSION }

@@ -1,29 +1,26 @@
-import React, { memo, useEffect } from 'react';
-import { Keyboard, Platform } from 'react-native';
+import React, { memo, useCallback, useEffect, useState } from 'react';
+import { Keyboard, RefreshControl } from 'react-native';
 
 import { useIsFocused } from '@react-navigation/native';
-import Animated, { useSharedValue } from 'react-native-reanimated';
+import { useSharedValue } from 'react-native-reanimated';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 import { useDiscoverSearchQueryStore } from '@/__swaps__/screens/Swap/resources/search/searchV2';
-import ButtonPressAnimation from '@/components/animations/ButtonPressAnimation';
-import { ContactAvatar } from '@/components/contacts';
-import ImageAvatar from '@/components/contacts/ImageAvatar';
 import { DiscoverScreenContent } from '@/components/Discover/DiscoverScreenContent';
-import { DiscoverScreenProvider, useDiscoverScreenContext } from '@/components/Discover/DiscoverScreenContext';
+import { DiscoverScreenProvider } from '@/components/Discover/DiscoverScreenContext';
 import { DiscoverSearchBar } from '@/components/Discover/DiscoverSearchBar';
-import { Navbar, navbarHeight } from '@/components/navbar/Navbar';
 import { ScrollHeaderFade } from '@/components/scroll-header-fade/ScrollHeaderFade';
-import { useScrollFadeHandler } from '@/components/scroll-header-fade/useScrollFadeHandler';
-import { Box, globalColors, TextIcon, useColorMode } from '@/design-system';
-import * as i18n from '@/languages';
-import Navigation from '@/navigation/Navigation';
-import Routes from '@/navigation/routesNames';
-import { useAccountProfileInfo } from '@/state/wallets/walletsStore';
-import { THICK_BORDER_WIDTH } from '@/styles/constants';
-import safeAreaInsetValues from '@/utils/safeAreaInsetValues';
-
-import { PullToRefresh } from './Airdrops/AirdropsSheet';
+import { Box, useColorMode } from '@/design-system';
+import { getValueForColorMode } from '@/design-system/color/palettes';
+import { DISCOVER_HEADER_HEIGHT, DiscoverHeader } from '@/features/discover/components/DiscoverHeader';
+import { DISCOVER_SCREEN_BACKGROUND_COLOR } from '@/features/discover/constants';
+import { useHyperliquidMarketsStore } from '@/features/perps/stores/hyperliquidMarketsStore';
+import { usePredictionEventsStore } from '@/features/placements/stores/derived/predictionsPlacementStore';
+import { useTokenRefsStore } from '@/features/placements/stores/derived/tokensPlacementStore';
+import { usePlacementsStore } from '@/features/placements/stores/placementsStore';
+import { SURFACE_SCHEDULE_REEVALUATE_MS, useSurfaceClockStore } from '@/features/placements/surfaces/stores/surfaceClockStore';
+import { getSurfaceStore } from '@/features/placements/surfaces/stores/surfaceStore';
+import { usePolymarketEventsStore } from '@/features/polymarket/stores/polymarketEventsStore';
 
 export const DiscoverScreen = () => {
   return (
@@ -34,70 +31,47 @@ export const DiscoverScreen = () => {
 };
 
 const Content = () => {
-  const { isDarkMode } = useColorMode();
+  const { colorMode } = useColorMode();
   const { top: topInset } = useSafeAreaInsets();
-  const { accountSymbol, accountColor, accountImage } = useAccountProfileInfo();
-  const { scrollViewRef, onTapSearch } = useDiscoverScreenContext();
   const isSearching = useDiscoverSearchQueryStore(state => state.isSearching);
 
-  const backgroundColor = isDarkMode ? globalColors.grey100 : '#FBFCFD';
-  const headerFadeTopInset = topInset + navbarHeight;
+  const backgroundColor = getValueForColorMode(DISCOVER_SCREEN_BACKGROUND_COLOR, colorMode);
+  const headerFadeTopInset = topInset + DISCOVER_HEADER_HEIGHT;
   const scrollOffset = useSharedValue(0);
+  const [isRefreshing, setIsRefreshing] = useState(false);
 
-  const onScroll = useScrollFadeHandler(scrollOffset);
+  useEffect(() => {
+    useSurfaceClockStore.getState().updateNow();
+    const interval = setInterval(() => useSurfaceClockStore.getState().updateNow(), SURFACE_SCHEDULE_REEVALUATE_MS);
+    return () => clearInterval(interval);
+  }, []);
+
+  const refreshDiscover = useCallback(async () => {
+    setIsRefreshing(true);
+
+    await Promise.allSettled([
+      getSurfaceStore('discover').getState().fetch(undefined, { force: true }),
+      usePlacementsStore.getState().fetch(undefined, { force: true }),
+      useHyperliquidMarketsStore.getState().fetch(undefined, { force: true }),
+      usePredictionEventsStore.getState().fetch(undefined, { force: true }),
+      useTokenRefsStore.getState().fetch(undefined, { force: true }),
+      usePolymarketEventsStore.getState().fetch(undefined, { force: true }),
+    ]);
+
+    setIsRefreshing(false);
+  }, []);
+
+  const renderRefreshControl = useCallback(
+    () => <RefreshControl onRefresh={refreshDiscover} refreshing={isRefreshing} tintColor={colorMode === 'dark' ? '#FFFFFF' : '#000000'} />,
+    [colorMode, isRefreshing, refreshDiscover]
+  );
 
   return (
     <Box height="full" style={{ flex: 1, backgroundColor }}>
-      <Box paddingTop={{ custom: topInset }}>
-        {isSearching ? (
-          <DiscoverSearchBar />
-        ) : (
-          <Navbar
-            leftComponent={
-              <ButtonPressAnimation onPress={onChangeWallet} scaleTo={0.8} overflowMargin={50}>
-                {accountImage ? (
-                  <ImageAvatar image={accountImage} marginRight={10} size="header" />
-                ) : (
-                  <ContactAvatar color={accountColor} marginRight={10} size="small" value={accountSymbol} />
-                )}
-              </ButtonPressAnimation>
-            }
-            rightComponent={
-              <ButtonPressAnimation onPress={onTapSearch} scaleTo={0.8} overflowMargin={50} testID="discover-search-icon">
-                <Box
-                  background="fillSecondary"
-                  width={36}
-                  height={36}
-                  borderRadius={18}
-                  alignItems="center"
-                  justifyContent="center"
-                  borderWidth={THICK_BORDER_WIDTH}
-                  borderColor="buttonStroke"
-                >
-                  <TextIcon size="icon 16px" color="label" weight="heavy" containerSize={36}>
-                    {'􀊫'}
-                  </TextIcon>
-                </Box>
-              </ButtonPressAnimation>
-            }
-            testID="discover-header"
-            title={i18n.t(i18n.l.discover.search.discover)}
-          />
-        )}
-      </Box>
+      <Box paddingTop={{ custom: topInset }}>{isSearching ? <DiscoverSearchBar /> : <DiscoverHeader />}</Box>
 
-      <Box
-        as={Animated.ScrollView}
-        automaticallyAdjustsScrollIndicatorInsets={false}
-        onScroll={onScroll}
-        ref={scrollViewRef}
-        refreshControl={Platform.OS === 'ios' ? <PullToRefresh /> : undefined}
-        removeClippedSubviews
-        scrollEnabled={!isSearching}
-        scrollIndicatorInsets={{ bottom: safeAreaInsetValues.bottom + 167, top: 16 }}
-        testID="discover-sheet"
-      >
-        <DiscoverScreenContent />
+      <Box style={{ flex: 1 }} testID="discover-sheet">
+        <DiscoverScreenContent renderRefreshControl={renderRefreshControl} scrollOffset={scrollOffset} />
       </Box>
 
       {!isSearching ? <ScrollHeaderFade color={backgroundColor} scrollOffset={scrollOffset} topInset={headerFadeTopInset} /> : null}
@@ -118,7 +92,3 @@ const KeyboardDismissHandler = memo(function KeyboardDismissHandler() {
 
   return null;
 });
-
-function onChangeWallet(): void {
-  Navigation.handleAction(Routes.CHANGE_WALLET_SHEET);
-}

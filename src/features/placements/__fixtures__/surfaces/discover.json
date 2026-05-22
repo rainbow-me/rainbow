@@ -1,0 +1,168 @@
+{
+  "id": "discover",
+  "version": 1,
+  "enabled": true,
+  "items": [
+    {
+      "id": "for_you",
+      "label": "For You",
+      "enabled": true,
+      "items": [
+        {
+          "id": "featured",
+          "label": "Featured",
+          "placement": "perps_top",
+          "display": "perp_tile.carousel",
+          "destination": ["perps"],
+          "enabled": true
+        },
+        {
+          "id": "preds",
+          "label": "Predictions",
+          "placement": "predictions_crypto",
+          "display": "prediction_tile.carousel",
+          "destination": ["predictions", "crypto"],
+          "enabled": true
+        },
+        {
+          "id": "tokens",
+          "label": "Tokens",
+          "placement": "tokens_top",
+          "display": "token_cell.list",
+          "destination": ["tokens"],
+          "limit": 5,
+          "enabled": true
+        },
+        {
+          "id": "nba_today",
+          "label": "NBA",
+          "placement": "predictions_sports_nba",
+          "display": "prediction_tile.carousel",
+          "destination": ["predictions", "sports", "nba"],
+          "limit": 2,
+          "enabled": true
+        },
+        {
+          "id": "sports_today",
+          "label": "Sports",
+          "placement": "predictions_sports_today",
+          "display": "prediction_sport_widget.carousel",
+          "destination": ["predictions", "sports"],
+          "enabled": true
+        }
+      ]
+    },
+    {
+      "id": "markets",
+      "label": "Markets",
+      "enabled": true,
+      "items": [
+        {
+          "id": "indices",
+          "label": "Indices",
+          "placement": "perps_indices",
+          "display": "perp_pill.carousel",
+          "destination": ["perps", "indices"],
+          "enabled": true
+        },
+        {
+          "id": "commodities",
+          "label": "Commodities",
+          "placement": "perps_commodities",
+          "display": "perp_pill.carousel",
+          "destination": ["perps", "commodities"],
+          "enabled": true
+        },
+        {
+          "id": "stocks",
+          "label": "Stocks",
+          "placement": "perps_stocks",
+          "display": "perp_pill.carousel",
+          "destination": ["perps", "stocks"],
+          "enabled": true
+        },
+        {
+          "id": "new",
+          "label": "New",
+          "placement": "perps_stocks_new",
+          "display": "perp_row.list",
+          "destination": ["perps", "stocks"],
+          "limit": 5,
+          "enabled": true
+        },
+        {
+          "id": "tradfi_preds",
+          "label": "Predictions",
+          "placement": "predictions_tradfi",
+          "display": "prediction_tile_widget.carousel",
+          "destination": ["predictions", "tradfi"],
+          "enabled": true
+        }
+      ]
+    },
+    {
+      "id": "crypto",
+      "label": "Crypto",
+      "enabled": true,
+      "items": [
+        {
+          "id": "majors",
+          "label": "Majors",
+          "placement": "perps_crypto_majors",
+          "display": "perp_tile.grid",
+          "destination": null,
+          "enabled": true
+        },
+        {
+          "id": "crypto_preds",
+          "label": "Predictions",
+          "placement": "predictions_crypto",
+          "display": "prediction_tile_widget.carousel",
+          "destination": ["predictions", "crypto"],
+          "enabled": true
+        }
+      ]
+    },
+    {
+      "id": "sports",
+      "label": "Sports",
+      "enabled": true,
+      "items": [
+        {
+          "id": "sports_nba",
+          "label": "NBA",
+          "placement": "predictions_sports_nba",
+          "display": "prediction_tile.carousel",
+          "destination": ["predictions", "sports", "nba"],
+          "limit": 4,
+          "enabled": true
+        },
+        {
+          "id": "live",
+          "label": "Live",
+          "placement": "predictions_sports_live",
+          "display": "prediction_sport_widget.list",
+          "destination": ["predictions", "sports"],
+          "limit": 4,
+          "enabled": true
+        },
+        {
+          "id": "today",
+          "label": "Today",
+          "placement": "predictions_sports_today",
+          "display": "prediction_sport_widget.carousel",
+          "destination": ["predictions", "sports"],
+          "enabled": true
+        },
+        {
+          "id": "week",
+          "label": "This Week",
+          "placement": "predictions_sports_week",
+          "display": "prediction_tile.carousel",
+          "destination": ["predictions", "sports"],
+          "enabled": true
+        }
+      ]
+    }
+  ]
+}

@@ -1,0 +1,54 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "Placement v2",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["id", "version", "source", "type", "items"],
+  "properties": {
+    "id": {
+      "type": "string",
+      "pattern": "^[a-z][a-z0-9_]*$"
+    },
+    "version": {
+      "const": 2
+    },
+    "source": {
+      "enum": ["hyperliquid", "polymarket", "rainbow"]
+    },
+    "type": {
+      "enum": ["perp", "prediction", "token"]
+    },
+    "updatedAt": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "items": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["id"],
+        "properties": {
+          "id": {
+            "type": "string",
+            "minLength": 1
+          }
+        }
+      }
+    }
+  },
+  "allOf": [
+    {
+      "if": { "properties": { "source": { "const": "hyperliquid" } }, "required": ["source"] },
+      "then": { "properties": { "type": { "const": "perp" } } }
+    },
+    {
+      "if": { "properties": { "source": { "const": "polymarket" } }, "required": ["source"] },
+      "then": { "properties": { "type": { "const": "prediction" } } }
+    },
+    {
+      "if": { "properties": { "source": { "const": "rainbow" } }, "required": ["source"] },
+      "then": { "properties": { "type": { "const": "token" } } }
+    }
+  ]
+}

@@ -1,6 +1,7 @@
 import { type OrderSuccessResponse } from '@nktkas/hyperliquid/api/exchange';
 import { type Address } from 'viem';
 
+import { isValidAddress } from '@/features/address/core/address';
 import { USD_DECIMALS } from '@/features/perps/constants';
 import type { OrderStatusResponse } from '@/features/perps/services/hyperliquid-exchange-client';
 import { hlOpenOrdersStoreActions } from '@/features/perps/stores/hlOpenOrdersStore';
@@ -47,6 +48,7 @@ export const useHyperliquidAccountStore = createQueryStore<
   {
     fetcher: fetchHyperliquidAccount,
     cacheTime: time.days(1),
+    enabled: $ => $(useHyperliquidClients, state => isValidAddress(state.address)),
     params: { address: $ => $(useHyperliquidClients).address },
     staleTime: time.seconds(10),
   },
