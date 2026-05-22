@@ -54,15 +54,15 @@ export const DiscoverSectionsPager = memo(function DiscoverSectionsPager({
   const handlePagerIndexChange = useCallback(
     (index: number) => {
       const section = tabs[index]?.id;
-      if (section) DiscoverSectionNavigation.navigate(section, surface?.id);
+      if (section) DiscoverSectionNavigation.navigate(section);
     },
-    [surface?.id, tabs]
+    [tabs]
   );
 
   useEffect(() => {
     const firstTab = tabs[0];
     if (surface && firstTab && !tabs.some(tab => tab.id === activeSectionId)) {
-      DiscoverSectionNavigation.navigate(firstTab.id, surface.id);
+      DiscoverSectionNavigation.navigate(firstTab.id);
     }
   }, [activeSectionId, surface, tabs]);
 

@@ -137,7 +137,7 @@ function DiscoverCategorySelector() {
       if (wasActive) {
         scrollToSectionTop(section.id);
       } else {
-        DiscoverSectionNavigation.navigate(section.id, surface?.id);
+        DiscoverSectionNavigation.navigate(section.id);
       }
     },
     [scrollToSectionTop, surface?.id]
