@@ -363,6 +363,7 @@ const styles = StyleSheet.create({
     flex: 1,
   },
   cardShadowLight: {
+    backgroundColor: opacity(globalColors.white100, 0.92),
     elevation: 4,
     shadowColor: '#000000',
     shadowOffset: { width: 0, height: 4 },

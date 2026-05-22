@@ -15,7 +15,7 @@ import { getPolymarketEventsByTagStore } from '@/features/discover/stores/polyma
 import { navigateToPolymarket } from '@/features/polymarket/utils/navigateToPolymarket';
 
 const ITEM_GAP = 8;
-const ITEM_VERTICAL_BLEED = 8;
+const ITEM_VERTICAL_BLEED = 28;
 const SKELETON_COUNT = 3;
 
 type Props = {
