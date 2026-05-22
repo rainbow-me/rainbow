@@ -26,7 +26,7 @@ import { getPolymarketTokenId } from '@/state/liveTokens/polymarketAdapter';
 import { DEVICE_WIDTH } from '@/utils/deviceUtils';
 import { formatTimestamp, toUnixTime } from '@/worklets/dates';
 
-export const SPORTS_EVENT_WIDGET_CARD_WIDTH = Math.min(356, DEVICE_WIDTH - 64);
+export const SPORTS_EVENT_WIDGET_CARD_WIDTH = Math.min(384, DEVICE_WIDTH - 32);
 export const SPORTS_EVENT_WIDGET_CARD_HEIGHT = 162;
 export const SPORTS_EVENT_WIDGET_CARD_BORDER_RADIUS = 24;
 
@@ -43,6 +43,7 @@ const CARD_FILL_GRADIENT_CONFIG = {
 const LINE_CELL_HEIGHT = 42;
 const LINE_CELL_WIDTH = 76;
 const MONEYLINE_CELL_WIDTH = 62;
+const BET_CELL_BORDER_RADIUS = 15;
 const TEAM_LOGO_SIZE = 36;
 
 type SportsEventWidgetCardProps = {
@@ -180,9 +181,13 @@ const TeamRow = memo(function TeamRow({
           {score ?? ''}
         </Text>
         <View style={styles.betCells}>
-          {lineBet ? <LineBetCell event={event} data={lineBet} backgroundColor={lineColor} /> : <View style={styles.lineCellSpacer} />}
+          {lineBet ? (
+            <WidgetBetCell event={event} data={lineBet} backgroundColor={lineColor} variant="line" />
+          ) : (
+            <View style={styles.lineCellSpacer} />
+          )}
           {moneylineBet ? (
-            <MoneylineBetCell event={event} data={moneylineBet} backgroundColor={moneylineColor} />
+            <WidgetBetCell event={event} data={moneylineBet} backgroundColor={moneylineColor} variant="moneyline" />
           ) : (
             <View style={styles.moneylineCellSpacer} />
           )}
@@ -192,32 +197,43 @@ const TeamRow = memo(function TeamRow({
   );
 });
 
-const LineBetCell = memo(function LineBetCell({
+const WidgetBetCell = memo(function WidgetBetCell({
   backgroundColor,
   data,
   event,
+  variant,
 }: {
   backgroundColor?: string;
   data: BetCellData;
   event: PolymarketEvent;
+  variant: 'line' | 'moneyline';
 }) {
   const tokenId = getPolymarketTokenId(data.outcomeTokenId, 'sell');
   const color = backgroundColor ?? '#717784';
   const onPress = useOutcomePress({ event, outcomeTokenId: data.outcomeTokenId });
+  const isLine = variant === 'line';
+  const buttonStyle = isLine ? styles.lineCellButton : styles.moneylineCellButton;
+  const cellStyle = isLine
+    ? [styles.betCell, styles.lineCell, { backgroundColor: opacity(color, 0.22), borderColor: opacity(color, 0.12), shadowColor: color }]
+    : [styles.betCell, styles.moneylineCell, { backgroundColor: color }];
+  const oddsSize = isLine ? '15pt' : '17pt';
 
   return (
-    <ButtonPressAnimation onPress={onPress} scaleTo={0.92}>
-      <View style={[styles.lineCell, { backgroundColor: opacity(color, 0.2), borderColor: opacity(color, 0.06), shadowColor: color }]}>
-        <Text
-          align="center"
-          color={{ custom: opacity(globalColors.white100, 0.6) }}
-          numberOfLines={1}
-          size="13pt"
-          style={styles.lineLabel}
-          weight="heavy"
-        >
-          {data.label}
-        </Text>
+    <ButtonPressAnimation onPress={onPress} scaleTo={0.92} style={buttonStyle}>
+      <View style={cellStyle}>
+        {isLine ? null : <View style={styles.betCellOverlay} pointerEvents="none" />}
+        {data.label ? (
+          <Text
+            align="center"
+            color={{ custom: opacity(globalColors.white100, isLine ? 0.6 : 0.72) }}
+            numberOfLines={1}
+            size={isLine ? '13pt' : '12pt'}
+            style={styles.lineLabel}
+            weight="heavy"
+          >
+            {data.label}
+          </Text>
+        ) : null}
         <LiveTokenText
           align="center"
           autoSubscriptionEnabled={false}
@@ -225,42 +241,8 @@ const LineBetCell = memo(function LineBetCell({
           initialValue={data.odds}
           numberOfLines={1}
           selector={token => formatOdds(token.price)}
-          size="15pt"
-          style={styles.lineOdds}
-          tokenId={tokenId}
-          weight="heavy"
-        />
-      </View>
-    </ButtonPressAnimation>
-  );
-});
-
-const MoneylineBetCell = memo(function MoneylineBetCell({
-  backgroundColor,
-  data,
-  event,
-}: {
-  backgroundColor?: string;
-  data: BetCellData;
-  event: PolymarketEvent;
-}) {
-  const tokenId = getPolymarketTokenId(data.outcomeTokenId, 'sell');
-  const color = backgroundColor ?? '#717784';
-  const onPress = useOutcomePress({ event, outcomeTokenId: data.outcomeTokenId });
-
-  return (
-    <ButtonPressAnimation onPress={onPress} scaleTo={0.92}>
-      <View style={[styles.moneylineCell, { backgroundColor: color }]}>
-        <View style={styles.moneylineOverlay} pointerEvents="none" />
-        <LiveTokenText
-          align="center"
-          autoSubscriptionEnabled={false}
-          color={{ custom: '#FFFFFF' }}
-          initialValue={data.odds}
-          numberOfLines={1}
-          selector={token => formatOdds(token.price)}
-          size="17pt"
-          style={styles.moneylineOdds}
+          size={oddsSize}
+          style={isLine ? styles.lineOdds : styles.moneylineOdds}
           tokenId={tokenId}
           weight="heavy"
         />
@@ -481,35 +463,43 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     gap: 6,
   },
-  lineCell: {
+  betCell: {
     alignItems: 'center',
-    borderRadius: 15,
-    borderWidth: 2,
-    height: LINE_CELL_HEIGHT,
-    justifyContent: 'center',
-    position: 'relative',
-    shadowOffset: { width: 0, height: 0 },
-    shadowOpacity: 0.35,
-    shadowRadius: 12,
-    width: LINE_CELL_WIDTH,
-  },
-  moneylineCell: {
-    alignItems: 'center',
-    borderColor: opacity(globalColors.white100, 0.1),
-    borderRadius: 15,
+    borderRadius: BET_CELL_BORDER_RADIUS,
     borderWidth: 2,
     height: LINE_CELL_HEIGHT,
     justifyContent: 'center',
     overflow: 'hidden',
+    position: 'relative',
+    shadowOffset: { width: 0, height: 0 },
+    shadowOpacity: 0.28,
+    shadowRadius: 16,
+  },
+  lineCell: {
+    width: LINE_CELL_WIDTH,
+  },
+  lineCellButton: {
+    borderRadius: BET_CELL_BORDER_RADIUS,
+    height: LINE_CELL_HEIGHT,
+    width: LINE_CELL_WIDTH,
+  },
+  moneylineCell: {
+    borderColor: opacity(globalColors.white100, 0.1),
     shadowColor: globalColors.grey100,
     shadowOffset: { width: 0, height: 4 },
     shadowOpacity: 0.06,
     shadowRadius: 6,
     width: MONEYLINE_CELL_WIDTH,
   },
-  moneylineOverlay: {
+  moneylineCellButton: {
+    borderRadius: BET_CELL_BORDER_RADIUS,
+    height: LINE_CELL_HEIGHT,
+    width: MONEYLINE_CELL_WIDTH,
+  },
+  betCellOverlay: {
     ...StyleSheet.absoluteFillObject,
     backgroundColor: opacity(globalColors.grey100, 0.3),
+    borderRadius: BET_CELL_BORDER_RADIUS,
   },
   lineCellSpacer: {
     height: LINE_CELL_HEIGHT,
