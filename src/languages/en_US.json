@@ -525,26 +525,6 @@
       }
     },
     "discover": {
-      "for_you": "For You",
-      "markets": "Markets",
-      "crypto": "Crypto",
-      "sports": "Sports",
-      "featured": "Featured",
-      "preds": "Predictions",
-      "tokens": "Tokens",
-      "nba_today": "NBA",
-      "sports_nba": "NBA",
-      "sports_today": "Sports",
-      "indices": "Indices",
-      "commodities": "Commodities",
-      "stocks": "Stocks",
-      "new": "New",
-      "tradfi_preds": "Predictions",
-      "majors": "Majors",
-      "crypto_preds": "Predictions",
-      "live": "Live",
-      "today": "Today",
-      "week": "This Week",
       "search": {
         "search_ethereum": "Search all of Ethereum",
         "search_ethereum_short": "Search Ethereum",
@@ -553,13 +533,6 @@
       },
       "sections": {
         "tokens": "Tokens"
-      },
-      "placements": {
-        "perps_title": "Perps",
-        "predictions_title": "Predictions",
-        "indices_title": "Indices",
-        "commodities_title": "Commodities",
-        "majors_title": "Majors"
       },
       "strategies": {
         "strategies_title": "Strategies",

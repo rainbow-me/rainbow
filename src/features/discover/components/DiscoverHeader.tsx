@@ -13,9 +13,9 @@ import {
   useDiscoverNavigationStore,
   type DiscoverSection,
 } from '@/features/discover/stores/discoverNavigationStore';
+import { resolveSurfaceLabel } from '@/features/discover/utils/resolveSurfaceLabel';
 import { useDiscoverSurface } from '@/features/placements/surfaces/hooks/useSurface';
 import { type Surface } from '@/features/placements/surfaces/types';
-import { resolveLabel } from '@/features/placements/surfaces/utils/resolveLabel';
 import { isSurfaceContainer } from '@/features/placements/surfaces/utils/surfaceGuards';
 import { THICK_BORDER_WIDTH } from '@/styles/constants';
 
@@ -130,7 +130,7 @@ function DiscoverCategorySelector() {
       const wasActive = DiscoverSectionNavigation.isSectionActive(section.id);
       trackDiscoverTabPress({
         sectionId: section.id,
-        sectionTitle: resolveLabel(section),
+        sectionTitle: resolveSurfaceLabel(section),
         surfaceId: surface?.id ?? 'discover',
         wasActive,
       });
@@ -181,7 +181,7 @@ function DiscoverCategorySelector() {
                 testID={`discover-section-tab-${section.id}`}
               >
                 <Text color={isSelected ? 'label' : unselectedColor} size="22pt" weight="heavy">
-                  {resolveLabel(section)}
+                  {resolveSurfaceLabel(section)}
                 </Text>
               </ButtonPressAnimation>
             </View>

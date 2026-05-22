@@ -35,11 +35,11 @@ import {
 import { TokenCell, TokenCellSkeleton } from '@/features/discover/components/token/TokenCell';
 import { SECTION_VERTICAL_GAP } from '@/features/discover/constants';
 import { navigateDiscoverDestination } from '@/features/discover/utils/navigation';
+import { resolveSurfaceLabel } from '@/features/discover/utils/resolveSurfaceLabel';
 import { getPerpsPlacementStore, type PerpMarketPlacementItem } from '@/features/placements/stores/derived/perpsPlacementStore';
 import { getPredictionsPlacementStore, type PredictionPlacementItem } from '@/features/placements/stores/derived/predictionsPlacementStore';
 import { getTokensPlacementStore, type TokenPlacementItem } from '@/features/placements/stores/derived/tokensPlacementStore';
 import { type Surface, type SurfaceLeaf } from '@/features/placements/surfaces/types';
-import { resolveLabel } from '@/features/placements/surfaces/utils/resolveLabel';
 import { isSurfaceContainer } from '@/features/placements/surfaces/utils/surfaceGuards';
 import {
   HEIGHT as POLYMARKET_EVENTS_LIST_ITEM_HEIGHT,
@@ -122,7 +122,7 @@ function PerpPillCarouselSection({ surface, surfaceId }: { surface: SurfaceLeaf;
       sectionId={surface.id}
       showHeaderCaret={surface.destination !== null}
       surfaceId={surfaceId}
-      title={resolveLabel(surface)}
+      title={resolveSurfaceLabel(surface)}
     />
   );
 }
@@ -148,7 +148,7 @@ function PerpTileCarouselSection({ surface, surfaceId }: { surface: SurfaceLeaf;
       sectionId={surface.id}
       showHeaderCaret={surface.destination !== null}
       surfaceId={surfaceId}
-      title={resolveLabel(surface)}
+      title={resolveSurfaceLabel(surface)}
     />
   );
 }
@@ -173,7 +173,7 @@ function PerpTileGridSection({ surface, surfaceId }: { surface: SurfaceLeaf; sur
       sectionId={surface.id}
       showHeaderCaret={surface.destination !== null}
       surfaceId={surfaceId}
-      title={resolveLabel(surface)}
+      title={resolveSurfaceLabel(surface)}
     />
   );
 }
@@ -196,7 +196,7 @@ function PerpRowListSection({ surface, surfaceId }: { surface: SurfaceLeaf; surf
       renderSkeleton={PerpMarketRowCardSkeleton}
       sectionId={surface.id}
       surfaceId={surfaceId}
-      title={resolveLabel(surface)}
+      title={resolveSurfaceLabel(surface)}
     />
   );
 }
@@ -221,7 +221,7 @@ function PredictionTileCarouselSection({ surface, surfaceId }: { surface: Surfac
       renderSkeleton={renderPredictionSkeleton}
       sectionId={surface.id}
       surfaceId={surfaceId}
-      title={resolveLabel(surface)}
+      title={resolveSurfaceLabel(surface)}
     />
   );
 }
@@ -245,7 +245,7 @@ function PredictionTileGridSection({ surface, surfaceId }: { surface: SurfaceLea
       renderSkeleton={renderPredictionSkeleton}
       sectionId={surface.id}
       surfaceId={surfaceId}
-      title={resolveLabel(surface)}
+      title={resolveSurfaceLabel(surface)}
     />
   );
 }
@@ -271,7 +271,7 @@ function PredictionTileWidgetCarouselSection({ surface, surfaceId }: { surface: 
       renderSkeleton={renderPredictionWidgetSkeleton}
       sectionId={surface.id}
       surfaceId={surfaceId}
-      title={resolveLabel(surface)}
+      title={resolveSurfaceLabel(surface)}
     />
   );
 }
@@ -296,7 +296,7 @@ function PredictionSportWidgetCarouselSection({ surface, surfaceId }: { surface:
       renderSkeleton={renderSportsWidgetSkeleton}
       sectionId={surface.id}
       surfaceId={surfaceId}
-      title={resolveLabel(surface)}
+      title={resolveSurfaceLabel(surface)}
     />
   );
 }
@@ -319,7 +319,7 @@ function PredictionSportWidgetListSection({ surface, surfaceId }: { surface: Sur
       renderSkeleton={renderSportsWidgetSkeleton}
       sectionId={surface.id}
       surfaceId={surfaceId}
-      title={resolveLabel(surface)}
+      title={resolveSurfaceLabel(surface)}
     />
   );
 }
@@ -350,7 +350,7 @@ function TokenCellListSection({ surface, surfaceId }: { surface: SurfaceLeaf; su
       renderSkeleton={TokenCellSkeleton}
       sectionId={surface.id}
       surfaceId={surfaceId}
-      title={resolveLabel(surface)}
+      title={resolveSurfaceLabel(surface)}
     />
   );
 }
