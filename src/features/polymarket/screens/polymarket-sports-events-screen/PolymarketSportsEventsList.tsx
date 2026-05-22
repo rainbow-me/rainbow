@@ -9,7 +9,7 @@ import ButtonPressAnimation from '@/components/animations/ButtonPressAnimation';
 import { ShowMoreCellEnterAnimation } from '@/components/animations/ShowMoreCellEnterAnimation';
 import { ShowMoreButton } from '@/components/buttons/ShowMoreButton';
 import { Skeleton } from '@/components/Skeleton';
-import { Text, useBackgroundColor, useForegroundColor } from '@/design-system';
+import { Text, useBackgroundColor } from '@/design-system';
 import { LeagueIcon } from '@/features/polymarket/components/league-icon/LeagueIcon';
 import {
   HEIGHT as ITEM_HEIGHT,
@@ -273,21 +273,11 @@ const LeagueHeader = memo(function LeagueHeader({
 });
 
 const SectionSeparator = memo(function SectionSeparator() {
-  const separatorColor = useForegroundColor('separatorSecondary');
-  return (
-    <View style={styles.sectionSeparatorContainer}>
-      <View style={[styles.sectionSeparatorLine, { backgroundColor: separatorColor }]} />
-    </View>
-  );
+  return <View style={styles.sectionSeparatorContainer} />;
 });
 
 const LeagueSeparator = memo(function LeagueSeparator({ compact }: { compact?: boolean }) {
-  const separatorColor = useForegroundColor('separatorSecondary');
-  return (
-    <View style={compact ? styles.compactLeagueSeparatorContainer : styles.leagueSeparatorContainer}>
-      <View style={[styles.sectionSeparatorLine, { backgroundColor: separatorColor }]} />
-    </View>
-  );
+  return <View style={compact ? styles.compactLeagueSeparatorContainer : styles.leagueSeparatorContainer} />;
 });
 
 function keyExtractor(item: SportsListItem): string {
@@ -410,9 +400,5 @@ const styles = StyleSheet.create({
     paddingTop: 0,
     paddingBottom: 8,
     paddingHorizontal: 12,
-  },
-  sectionSeparatorLine: {
-    height: 1,
-    width: '100%',
   },
 });
