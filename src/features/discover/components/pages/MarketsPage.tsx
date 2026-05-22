@@ -6,6 +6,7 @@ import { LinearGradient } from 'expo-linear-gradient';
 import ButtonPressAnimation from '@/components/animations/ButtonPressAnimation';
 import { useLiveTokenSharedValue, useLiveTokenValue } from '@/components/live-token-text/LiveTokenText';
 import { AnimatedText, Box, Text, useColorMode } from '@/design-system';
+import { getValueForColorMode, globalColors } from '@/design-system/color/palettes';
 import { SparklineChart } from '@/features/charts/line/components/SparklineChart';
 import { CarouselCardSkeleton } from '@/features/discover/components/carousel/CarouselCardSkeleton';
 import { CarouselHeader } from '@/features/discover/components/carousel/CarouselHeader';
@@ -43,6 +44,10 @@ const NEW_MARKET_ICON_SIZE = 40;
 const NEW_MARKET_ROW_PREVIEW_COUNT = 5;
 const NEW_MARKET_ROW_WIDTH = DEVICE_WIDTH - SCREEN_HORIZONTAL_PADDING * 2;
 const NEW_MARKET_SPARKLINE_LAYOUT = { height: 34, width: 64 };
+const NEW_MARKET_ROW_BACKGROUND_COLORS = {
+  dark: opacity('#202429', 0.4),
+  light: globalColors.grey60,
+};
 
 export function MarketsPage() {
   return (
@@ -147,12 +152,14 @@ function NewMarketRow({ item }: { item: PerpMarketPlacementItem }) {
   });
   const onPress = usePerpMarketPress(item.market);
   const priceChangeColor = getPerpPriceChangeColor(livePriceChange, priceChangeColors);
+  const rowBackgroundColor = getValueForColorMode(NEW_MARKET_ROW_BACKGROUND_COLORS, colorMode);
+  const rowGradientColors = [opacity(accentColor, isDarkMode ? 0.16 : 0.1), opacity(accentColor, 0)];
 
   return (
     <ButtonPressAnimation onPress={onPress} scaleTo={0.96}>
-      <View style={[styles.newMarketRow, { backgroundColor: opacity('#202429', 0.4) }]}>
+      <View style={[styles.newMarketRow, { backgroundColor: rowBackgroundColor }]}>
         <LinearGradient
-          colors={[opacity(accentColor, isDarkMode ? 0.16 : 0.06), opacity(accentColor, 0)]}
+          colors={rowGradientColors}
           end={{ x: 1, y: 1 }}
           pointerEvents="none"
           start={{ x: 0, y: 0 }}
