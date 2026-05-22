@@ -15,6 +15,7 @@ import { getPolymarketEventsByTagStore } from '@/features/discover/stores/polyma
 import { navigateToPolymarket } from '@/features/polymarket/utils/navigateToPolymarket';
 
 const ITEM_GAP = 8;
+const ITEM_VERTICAL_BLEED = 8;
 const SKELETON_COUNT = 3;
 
 type Props = {
@@ -74,10 +75,12 @@ function TaggedPolymarketCarouselSkeleton() {
 
 const styles = StyleSheet.create({
   container: {
-    height: PREDICTION_MARKET_TILE_CARD_HEIGHT,
+    height: PREDICTION_MARKET_TILE_CARD_HEIGHT + ITEM_VERTICAL_BLEED * 2,
+    marginVertical: -ITEM_VERTICAL_BLEED,
   },
   contentContainer: {
     gap: ITEM_GAP,
     paddingHorizontal: SCREEN_HORIZONTAL_PADDING,
+    paddingVertical: ITEM_VERTICAL_BLEED,
   },
 });

@@ -32,6 +32,10 @@ const CARD_FILL_GRADIENT_CONFIG = {
   locations: [0.17824, 0.58889] as const,
   start: { x: 0, y: 0 },
 };
+const CARD_FILL_LIGHT_GRADIENT_CONFIG = {
+  end: { x: 1, y: 0.72 },
+  start: { x: 0, y: 0 },
+};
 const CARD_BORDER_GRADIENT_CONFIG = {
   end: { x: 1, y: 1 },
   locations: [0, 0.94] as const,
@@ -86,13 +90,15 @@ export const PredictionMarketTileCard = memo(function PredictionMarketTileCard({
     () =>
       isDarkMode
         ? ([opacity(eventColor, 0.08), opacity(eventColor, 0)] as const)
-        : ([opacity(globalColors.white100, 0.78), opacity(globalColors.white100, 0.78)] as const),
+        : ([opacity(globalColors.white100, 0.8), opacity(globalColors.white100, 0.8)] as const),
     [eventColor, isDarkMode]
   );
   const cardGradientColors = useMemo(
     () =>
-      isDarkMode ? ([colorPalette.opacity24, colorPalette.opacity0] as const) : ([colorPalette.opacity10, colorPalette.opacity0] as const),
-    [colorPalette.opacity0, colorPalette.opacity10, colorPalette.opacity24, isDarkMode]
+      isDarkMode
+        ? ([colorPalette.opacity24, colorPalette.opacity0] as const)
+        : ([opacity(eventColor, 0.06), opacity(eventColor, 0)] as const),
+    [colorPalette.opacity0, colorPalette.opacity24, eventColor, isDarkMode]
   );
 
   const handlePress = useCallback(() => {
@@ -106,69 +112,71 @@ export const PredictionMarketTileCard = memo(function PredictionMarketTileCard({
   return (
     <View style={[{ height: PREDICTION_MARKET_TILE_CARD_HEIGHT, width }, style]}>
       <ButtonPressAnimation onPress={handlePress} scaleTo={0.96} style={styles.flex} wrapperStyle={styles.flex}>
-        <GradientBorderView
-          backgroundColor={isDarkMode ? globalColors.grey100 : opacity(globalColors.white100, 0.9)}
-          borderGradientColors={cardBorderGradientColors}
-          borderRadius={PREDICTION_MARKET_TILE_CARD_BORDER_RADIUS}
-          borderWidth={2}
-          end={CARD_BORDER_GRADIENT_CONFIG.end}
-          locations={isDarkMode ? CARD_BORDER_GRADIENT_CONFIG.locations : undefined}
-          start={CARD_BORDER_GRADIENT_CONFIG.start}
-          style={styles.card}
-        >
-          <LinearGradient
-            colors={cardGradientColors}
-            pointerEvents="none"
-            start={CARD_FILL_GRADIENT_CONFIG.start}
-            end={CARD_FILL_GRADIENT_CONFIG.end}
-            locations={isDarkMode ? CARD_FILL_GRADIENT_CONFIG.locations : undefined}
-            style={StyleSheet.absoluteFill}
-          />
-          <View style={styles.content}>
-            <ImgixImage enableFasterImage source={iconSource} size={42} style={styles.icon} />
-            <View style={styles.headerText}>
-              <Text align="left" color="label" numberOfLines={2} size="20pt / 135%" style={styles.title} weight="heavy">
-                {event.title}
-              </Text>
-              <View style={styles.statsRow}>
-                <Text align="left" color="labelTertiary" size="15pt" weight="bold">
-                  {`VOL ${volumeText}`}
+        <View style={[styles.cardShadow, !isDarkMode && styles.cardShadowLight]}>
+          <GradientBorderView
+            backgroundColor={isDarkMode ? globalColors.grey100 : opacity(globalColors.white100, 0.92)}
+            borderGradientColors={cardBorderGradientColors}
+            borderRadius={PREDICTION_MARKET_TILE_CARD_BORDER_RADIUS}
+            borderWidth={2}
+            end={CARD_BORDER_GRADIENT_CONFIG.end}
+            locations={isDarkMode ? CARD_BORDER_GRADIENT_CONFIG.locations : undefined}
+            start={CARD_BORDER_GRADIENT_CONFIG.start}
+            style={styles.card}
+          >
+            <LinearGradient
+              colors={cardGradientColors}
+              pointerEvents="none"
+              start={isDarkMode ? CARD_FILL_GRADIENT_CONFIG.start : CARD_FILL_LIGHT_GRADIENT_CONFIG.start}
+              end={isDarkMode ? CARD_FILL_GRADIENT_CONFIG.end : CARD_FILL_LIGHT_GRADIENT_CONFIG.end}
+              locations={isDarkMode ? CARD_FILL_GRADIENT_CONFIG.locations : undefined}
+              style={StyleSheet.absoluteFill}
+            />
+            <View style={styles.content}>
+              <ImgixImage enableFasterImage source={iconSource} size={42} style={styles.icon} />
+              <View style={styles.headerText}>
+                <Text align="left" color="label" numberOfLines={2} size="20pt / 135%" style={styles.title} weight="heavy">
+                  {event.title}
                 </Text>
-                {priceChangeText ? (
-                  <View style={styles.priceChangeRow}>
-                    <Text
-                      align="left"
-                      color={priceChangeIsPositive ? { custom: '#2BEA69' } : { custom: '#FF4D57' }}
-                      size="icon 11px"
-                      weight="heavy"
-                    >
-                      {priceChangeIsPositive ? UP_ARROW : DOWN_ARROW}
-                    </Text>
-                    <Text
-                      align="left"
-                      color={priceChangeIsPositive ? { custom: '#2BEA69' } : { custom: '#FF4D57' }}
-                      size="15pt"
-                      weight="bold"
-                    >
-                      {priceChangeText}
-                    </Text>
-                  </View>
-                ) : null}
+                <View style={styles.statsRow}>
+                  <Text align="left" color="labelTertiary" size="15pt" weight="bold">
+                    {`VOL ${volumeText}`}
+                  </Text>
+                  {priceChangeText ? (
+                    <View style={styles.priceChangeRow}>
+                      <Text
+                        align="left"
+                        color={priceChangeIsPositive ? { custom: '#2BEA69' } : { custom: '#FF4D57' }}
+                        size="icon 11px"
+                        weight="heavy"
+                      >
+                        {priceChangeIsPositive ? UP_ARROW : DOWN_ARROW}
+                      </Text>
+                      <Text
+                        align="left"
+                        color={priceChangeIsPositive ? { custom: '#2BEA69' } : { custom: '#FF4D57' }}
+                        size="15pt"
+                        weight="bold"
+                      >
+                        {priceChangeText}
+                      </Text>
+                    </View>
+                  ) : null}
+                </View>
+              </View>
+              <View style={styles.outcomes}>
+                {rows.map(row => (
+                  <OutcomeRow
+                    event={event}
+                    eventColor={eventColor}
+                    isDarkMode={isDarkMode}
+                    key={`${row.market.id}:${row.outcomeIndex}`}
+                    row={row}
+                  />
+                ))}
               </View>
             </View>
-            <View style={styles.outcomes}>
-              {rows.map(row => (
-                <OutcomeRow
-                  event={event}
-                  eventColor={eventColor}
-                  isDarkMode={isDarkMode}
-                  key={`${row.market.id}:${row.outcomeIndex}`}
-                  row={row}
-                />
-              ))}
-            </View>
-          </View>
-        </GradientBorderView>
+          </GradientBorderView>
+        </View>
       </ButtonPressAnimation>
     </View>
   );
@@ -206,32 +214,40 @@ const OutcomeRow = memo(function OutcomeRow({
   return (
     <GradientBorderView
       borderGradientColors={
-        isDarkMode
-          ? ([opacity(eventColor, 0.08), opacity(eventColor, 0)] as const)
-          : ([opacity(eventColor, 0.56), opacity(eventColor, 0.18)] as const)
+        isDarkMode ? ([opacity(eventColor, 0.08), opacity(eventColor, 0)] as const) : ([eventColor, eventColor] as const)
       }
       borderBottomLeftRadius={22}
       borderBottomRightRadius={20}
       borderTopLeftRadius={22}
       borderTopRightRadius={20}
       borderWidth={2}
-      end={isDarkMode ? OUTCOME_ROW_GRADIENT_CONFIG.end : { x: 0.9, y: 0 }}
+      end={OUTCOME_ROW_GRADIENT_CONFIG.end}
       locations={isDarkMode ? OUTCOME_ROW_GRADIENT_CONFIG.locations : undefined}
-      start={isDarkMode ? OUTCOME_ROW_GRADIENT_CONFIG.start : { x: 0, y: 0 }}
+      start={OUTCOME_ROW_GRADIENT_CONFIG.start}
       style={styles.outcomeRowFrame}
     >
       <LinearGradient
-        colors={[opacity(eventColor, isDarkMode ? 0.1 : 0.08), opacity(eventColor, 0)]}
+        colors={[opacity(eventColor, 0.1), opacity(eventColor, 0)]}
         pointerEvents="none"
-        start={isDarkMode ? OUTCOME_ROW_GRADIENT_CONFIG.start : { x: 0, y: 0 }}
-        end={isDarkMode ? OUTCOME_ROW_GRADIENT_CONFIG.end : { x: 0.9, y: 0 }}
+        start={OUTCOME_ROW_GRADIENT_CONFIG.start}
+        end={OUTCOME_ROW_GRADIENT_CONFIG.end}
         locations={isDarkMode ? OUTCOME_ROW_GRADIENT_CONFIG.locations : undefined}
         style={StyleSheet.absoluteFill}
       />
       <View style={styles.outcomeRowContent}>
         <ButtonPressAnimation onPress={onPress} scaleTo={0.92} style={styles.oddsButton}>
-          <View style={[styles.oddsPill, { backgroundColor: eventColor, shadowColor: eventColor }]}>
-            <View style={styles.oddsPillOverlay} pointerEvents="none" />
+          <View
+            style={[
+              styles.oddsPill,
+              {
+                backgroundColor: eventColor,
+                borderColor: opacity(isDarkMode ? '#FFFFFF' : '#000000', 0.1),
+                shadowColor: isDarkMode ? eventColor : '#000000',
+                shadowOpacity: isDarkMode ? 0.3 : 0.06,
+              },
+            ]}
+          >
+            <View style={[styles.oddsPillOverlay, { backgroundColor: opacity('#000000', isDarkMode ? 0.3 : 0.1) }]} pointerEvents="none" />
             <LiveTokenText
               align="center"
               autoSubscriptionEnabled={false}
@@ -341,6 +357,18 @@ const styles = StyleSheet.create({
     flex: 1,
     overflow: 'hidden',
   },
+  cardShadow: {
+    borderCurve: 'continuous',
+    borderRadius: PREDICTION_MARKET_TILE_CARD_BORDER_RADIUS,
+    flex: 1,
+  },
+  cardShadowLight: {
+    elevation: 4,
+    shadowColor: '#000000',
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.06,
+    shadowRadius: 24,
+  },
   content: {
     flex: 1,
     justifyContent: 'space-between',
@@ -363,7 +391,6 @@ const styles = StyleSheet.create({
   },
   oddsPill: {
     alignItems: 'center',
-    borderColor: opacity('#FFFFFF', 0.1),
     borderRadius: ODDS_PILL_BORDER_RADIUS,
     borderWidth: 2,
     height: 42,
@@ -371,7 +398,6 @@ const styles = StyleSheet.create({
     overflow: 'hidden',
     paddingHorizontal: 8,
     shadowOffset: { height: 0, width: 0 },
-    shadowOpacity: 0.3,
     shadowRadius: 24,
     width: 62,
   },
@@ -382,7 +408,6 @@ const styles = StyleSheet.create({
   },
   oddsPillOverlay: {
     ...StyleSheet.absoluteFillObject,
-    backgroundColor: opacity('#000000', 0.3),
     borderRadius: ODDS_PILL_BORDER_RADIUS,
   },
   outcomeTitle: {
