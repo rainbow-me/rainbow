@@ -1,13 +1,7 @@
 import { collection, getDocs, getFirestore, query, where } from '@react-native-firebase/firestore';
 
-import { FIXTURE_V2_PLACEMENTS, FIXTURE_V2_PLACEMENTS_BY_ID } from '../__fixtures__/placements';
 import { type Placement } from '../types';
 import { fetchPlacements, usePlacementsStore, type PlacementsById } from './placementsStore';
-
-jest.mock('@/env', () => ({
-  ...jest.requireActual('@/env'),
-  IS_DEV: true,
-}));
 
 jest.mock('@react-native-firebase/app', () => ({
   getApp: jest.fn(() => 'app'),
@@ -29,7 +23,7 @@ describe('placementsStore', () => {
   });
 
   it('fetches v2 placement documents from Firestore', async () => {
-    const perps = getFixture('perps_top');
+    const perps = getPlacement('perps_top');
 
     (getDocs as jest.Mock).mockResolvedValueOnce({
       docs: [createPlacementDoc(perps)],
@@ -44,19 +38,19 @@ describe('placementsStore', () => {
     expect(placementsById.perps_top?.id).toBe('perps_top');
   });
 
-  it('projects live-shaped v2 fixtures keyed by placement id', async () => {
+  it('projects live-shaped v2 documents keyed by placement id', async () => {
     (getDocs as jest.Mock).mockResolvedValueOnce({
-      docs: FIXTURE_V2_PLACEMENTS.map(placement => createPlacementDoc(placement)),
+      docs: Object.values(TEST_PLACEMENTS_BY_ID).map(placement => createPlacementDoc(placement)),
     });
 
     const placementsById = await fetchPlacements();
 
-    expect(Object.keys(placementsById).sort()).toEqual(FIXTURE_V2_PLACEMENTS.map(placement => placement.id).sort());
+    expect(Object.keys(placementsById).sort()).toEqual(Object.keys(TEST_PLACEMENTS_BY_ID).sort());
     expect(placementsById.perps_top?.items.slice(0, 3)).toEqual([{ id: 'BTC' }, { id: 'ETH' }, { id: 'SOL' }]);
   });
 
   it('filters ref ids by placement source and type', () => {
-    usePlacementsStore.setState({ placementsById: FIXTURE_V2_PLACEMENTS_BY_ID });
+    usePlacementsStore.setState({ placementsById: TEST_PLACEMENTS_BY_ID });
 
     expect(usePlacementsStore.getState().getRefIds('perps_top', { source: 'hyperliquid' })).toEqual(
       expect.arrayContaining(['BTC', 'ETH', 'SOL'])
@@ -68,10 +62,10 @@ describe('placementsStore', () => {
   });
 
   it('unions and dedupes ref ids across all placements', () => {
-    const duplicatePrediction = '27830';
-    const predictions = getFixture('predictions');
+    const duplicatePrediction = 'event-1';
+    const predictions = getPlacement('predictions');
     const placementsById: PlacementsById = {
-      ...FIXTURE_V2_PLACEMENTS_BY_ID,
+      ...TEST_PLACEMENTS_BY_ID,
       predictions: {
         ...predictions,
         items: [...predictions.items, { id: duplicatePrediction }],
@@ -86,7 +80,7 @@ describe('placementsStore', () => {
   });
 
   it('ignores stale v1, mismatched, malformed, and future cached placements', () => {
-    const perps = getFixture('perps_top');
+    const perps = getPlacement('perps_top');
     const placementsById = {
       perps_top: { ...perps, id: 'other_id' },
       v1_predictions: createV1Placement(),
@@ -102,7 +96,7 @@ describe('placementsStore', () => {
   });
 
   it('drops malformed live document items before storing a placement', async () => {
-    const perps = getFixture('perps_top');
+    const perps = getPlacement('perps_top');
     const placement = {
       ...perps,
       items: [{ id: 'ETH' }, null, { id: '' }, { id: 'BTC' }, { ref: { id: 'OLD' } }],
@@ -117,18 +111,18 @@ describe('placementsStore', () => {
     expect(placementsById.perps_top?.items).toEqual([{ id: 'ETH' }, { id: 'BTC' }]);
   });
 
-  it('uses v2 fixtures in dev when Firestore has no valid placement documents', async () => {
+  it('returns an empty map when Firestore has no valid placement documents', async () => {
     (getDocs as jest.Mock).mockResolvedValueOnce({
       docs: [createPlacementDoc({ id: 'bad_pair', version: 2, source: 'hyperliquid', type: 'prediction', items: [{ id: 'BTC' }] })],
     });
 
     const placementsById = await fetchPlacements();
 
-    expect(placementsById).toBe(FIXTURE_V2_PLACEMENTS_BY_ID);
+    expect(placementsById).toEqual({});
   });
 
   it('ignores documents whose source/type pair is not part of the v2 schema', async () => {
-    const perps = getFixture('perps_top');
+    const perps = getPlacement('perps_top');
 
     (getDocs as jest.Mock).mockResolvedValueOnce({
       docs: [
@@ -146,9 +140,33 @@ describe('placementsStore', () => {
   });
 });
 
-function getFixture(id: string): Placement {
-  const placement = FIXTURE_V2_PLACEMENTS_BY_ID[id];
-  if (!placement) throw new Error(`Missing placement fixture: ${id}`);
+const TEST_PLACEMENTS_BY_ID: PlacementsById = {
+  perps_top: {
+    id: 'perps_top',
+    version: 2,
+    source: 'hyperliquid',
+    type: 'perp',
+    items: [{ id: 'BTC' }, { id: 'ETH' }, { id: 'SOL' }],
+  },
+  predictions: {
+    id: 'predictions',
+    version: 2,
+    source: 'polymarket',
+    type: 'prediction',
+    items: [{ id: 'event-1' }, { id: 'event-2' }],
+  },
+  tokens_top: {
+    id: 'tokens_top',
+    version: 2,
+    source: 'rainbow',
+    type: 'token',
+    items: [{ id: 'eth:1' }],
+  },
+};
+
+function getPlacement(id: string): Placement {
+  const placement = TEST_PLACEMENTS_BY_ID[id];
+  if (!placement) throw new Error(`Missing test placement: ${id}`);
   return placement;
 }
 

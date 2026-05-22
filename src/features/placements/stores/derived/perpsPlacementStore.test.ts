@@ -2,8 +2,7 @@ import { useHyperliquidMarketsStore } from '@/features/perps/stores/hyperliquidM
 import { type PerpMarketWithMetadata } from '@/features/perps/types';
 import { useRemoteConfigStore } from '@/model/remoteConfig';
 
-import { FIXTURE_V2_PLACEMENTS_BY_ID } from '../../__fixtures__/placements';
-import { usePlacementsStore } from '../placementsStore';
+import { usePlacementsStore, type PlacementsById } from '../placementsStore';
 import { getPerpsPlacementStore } from './perpsPlacementStore';
 
 jest.mock('@/env', () => ({
@@ -66,7 +65,7 @@ describe('perpsPlacementStore', () => {
         perps_enabled: true,
       },
     }));
-    usePlacementsStore.setState({ placementsById: FIXTURE_V2_PLACEMENTS_BY_ID });
+    usePlacementsStore.setState({ placementsById: TEST_PLACEMENTS_BY_ID });
     useHyperliquidMarketsStore.setState({
       markets: {
         BTC: createPerpMarket('BTC'),
@@ -82,7 +81,7 @@ describe('perpsPlacementStore', () => {
   });
 
   it('returns an empty placement result when the perps gate is off', () => {
-    usePlacementsStore.setState({ placementsById: FIXTURE_V2_PLACEMENTS_BY_ID });
+    usePlacementsStore.setState({ placementsById: TEST_PLACEMENTS_BY_ID });
     useHyperliquidMarketsStore.setState({
       markets: {
         BTC: createPerpMarket('BTC'),
@@ -96,6 +95,16 @@ describe('perpsPlacementStore', () => {
     });
   });
 });
+
+const TEST_PLACEMENTS_BY_ID: PlacementsById = {
+  perps_top: {
+    id: 'perps_top',
+    version: 2,
+    source: 'hyperliquid',
+    type: 'perp',
+    items: [{ id: 'BTC' }, { id: 'ETH' }],
+  },
+};
 
 function createPerpMarket(symbol: string): PerpMarketWithMetadata {
   return {

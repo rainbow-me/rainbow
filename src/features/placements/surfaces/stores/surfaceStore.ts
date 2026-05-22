@@ -1,8 +1,6 @@
 import { getApp } from '@react-native-firebase/app';
 import { doc, getDoc, getFirestore } from '@react-native-firebase/firestore';
 
-import { IS_DEV } from '@/env';
-import discoverSurfaceFixture from '@/features/placements/__fixtures__/surfaces/discover.json';
 import { DESTINATION_ROOTS, DISPLAYS } from '@/features/placements/surfaces/constants';
 import { type DestinationRoot, type Display, type Surface } from '@/features/placements/surfaces/types';
 import { createQueryStore } from '@/state/internal/createQueryStore';
@@ -38,23 +36,10 @@ function createSurfaceStore(surfaceId: string) {
 async function fetchSurface(surfaceId: string): Promise<Surface | undefined> {
   const db = getFirestore(getApp());
   const surfaceRef = doc(db, 'surfaces', surfaceId);
+  const snap = await getDoc(surfaceRef);
+  const surface = snap.data();
 
-  try {
-    const snap = await getDoc(surfaceRef);
-    const surface = snap.data();
-
-    if (isSurfaceDocument(surfaceId, surface)) return surface;
-    return getDevSurfaceFixture(surfaceId);
-  } catch (error) {
-    const fixture = getDevSurfaceFixture(surfaceId);
-    if (fixture) return fixture;
-    throw error;
-  }
-}
-
-function getDevSurfaceFixture(surfaceId: string): Surface | undefined {
-  if (!IS_DEV || surfaceId !== 'discover') return undefined;
-  return isSurfaceDocument(surfaceId, discoverSurfaceFixture) ? discoverSurfaceFixture : undefined;
+  return isSurfaceDocument(surfaceId, surface) ? surface : undefined;
 }
 
 function isSurfaceDocument(surfaceId: string, surface: unknown): surface is Surface {

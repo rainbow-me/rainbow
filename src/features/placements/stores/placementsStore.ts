@@ -1,8 +1,6 @@
 import { getApp } from '@react-native-firebase/app';
 import { collection, getDocs, getFirestore, query, where, type FirebaseFirestoreTypes } from '@react-native-firebase/firestore';
 
-import { IS_DEV } from '@/env';
-import { FIXTURE_V2_PLACEMENTS_BY_ID } from '@/features/placements/__fixtures__/placements';
 import {
   type Placement,
   type PlacementId,
@@ -102,17 +100,12 @@ export async function fetchPlacements(): Promise<PlacementsById> {
   const placementsRef = collection(db, 'placements');
   const q = query(placementsRef, where('version', '==', 2));
 
-  try {
-    const snap: FirebaseFirestoreTypes.QuerySnapshot<PlacementDocument> = await getDocs<
-      PlacementDocument,
-      FirebaseFirestoreTypes.DocumentData
-    >(q);
+  const snap: FirebaseFirestoreTypes.QuerySnapshot<PlacementDocument> = await getDocs<
+    PlacementDocument,
+    FirebaseFirestoreTypes.DocumentData
+  >(q);
 
-    return withDevFixtureFallback(buildPlacementsById(snap.docs));
-  } catch (error) {
-    if (IS_DEV) return FIXTURE_V2_PLACEMENTS_BY_ID;
-    throw error;
-  }
+  return buildPlacementsById(snap.docs);
 }
 
 // ============ Utilities ====================================================== //
@@ -129,11 +122,6 @@ function buildPlacementsById(placements: PlacementDocumentSnapshot[]): Placement
   }
 
   return placementsById;
-}
-
-function withDevFixtureFallback(placementsById: PlacementsById): PlacementsById {
-  if (Object.keys(placementsById).length || !IS_DEV) return placementsById;
-  return FIXTURE_V2_PLACEMENTS_BY_ID;
 }
 
 function buildPlacement(id: PlacementId, placement: Placement): Placement {
