@@ -741,7 +741,7 @@ function SwipeNavigatorScreens() {
       // required to force re-render when showKingOfTheHillTab, showRnbwRewardsTab or language changes
       key={key}
       initialLayout={deviceUtils.dimensions}
-      initialRouteName={Routes.WALLET_SCREEN}
+      initialRouteName={Routes.DISCOVER_SCREEN}
       screenOptions={getScreenOptions}
       tabBar={TabBarContainer}
       tabBarPosition="bottom"
