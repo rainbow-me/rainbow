@@ -2127,6 +2127,9 @@
         }
       }
     },
+    "send": {
+      "sponsorship_unavailable": "Envios gratuitos estão temporariamente indisponíveis nesta rede. Tente novamente com as taxas de rede."
+    },
     "swap": {
       "actions": {
         "hold_to_swap": "Segure para Trocar",
