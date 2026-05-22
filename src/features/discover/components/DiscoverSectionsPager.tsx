@@ -38,7 +38,7 @@ const INITIAL_SECTION_SCROLL_OFFSETS: SectionScrollOffsets = {
   sports: 0,
 };
 
-const EAGER_MOUNTED_SECTIONS = new Set<DiscoverSection>(['forYou', 'sports']);
+const EAGER_MOUNTED_SECTIONS = new Set<DiscoverSection>(['forYou', 'crypto', 'sports']);
 
 export const DiscoverSectionsPager = memo(function DiscoverSectionsPager({
   renderRefreshControl,
