@@ -69,7 +69,7 @@ const PILL_COLORS = {
     gradientOpacity: 0.16,
   },
   light: {
-    backgroundColor: 'rgba(255, 255, 255, 0.92)',
+    backgroundColor: 'transparent',
     badgeBorderColor: 'rgba(0, 0, 0, 0.07)',
     badgeShadowOpacity: 0.25,
     borderColor: 'rgba(255, 255, 255, 0.8)',
