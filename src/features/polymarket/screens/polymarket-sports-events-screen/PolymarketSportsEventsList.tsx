@@ -29,7 +29,6 @@ import { useStableValue } from '@/hooks/useStableValue';
 import * as i18n from '@/languages';
 import Routes from '@/navigation/routesNames';
 import { addSubscribedTokens, removeSubscribedTokens, useLiveTokensStore } from '@/state/liveTokens/liveTokensStore';
-import { DEVICE_HEIGHT } from '@/utils/deviceUtils';
 
 const ITEM_GAP = 8;
 const EMPTY_EVENTS: PolymarketEvent[] = [];
@@ -82,11 +81,12 @@ export const PolymarketSportsEventsList = memo(function PolymarketSportsEventsLi
 
   const listStyles = useMemo(() => {
     const paddingBottom = safeAreaInsets.bottom + NAVIGATOR_FOOTER_HEIGHT + NAVIGATOR_FOOTER_CLEARANCE;
+    const shouldFillViewport = showLoadingSkeleton || listData.length === 0;
     return {
-      contentContainerStyle: { minHeight: DEVICE_HEIGHT, paddingBottom, paddingHorizontal: 12, paddingTop: 28 },
+      contentContainerStyle: { flexGrow: shouldFillViewport ? 1 : undefined, paddingBottom, paddingHorizontal: 12, paddingTop: 28 },
       scrollIndicatorInsets: { bottom: paddingBottom },
     };
-  }, [safeAreaInsets.bottom]);
+  }, [listData.length, safeAreaInsets.bottom, showLoadingSkeleton]);
 
   const debouncedAddSubscribedTokens = useStableValue(() =>
     debounce((viewableItems: Array<ViewToken<SportsListItem>>) => {
