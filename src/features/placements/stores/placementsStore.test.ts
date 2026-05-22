@@ -79,6 +79,33 @@ describe('placementsStore', () => {
     expect(eventIds).toEqual([...eventIds].sort((a, b) => a.toLowerCase().localeCompare(b.toLowerCase())));
   });
 
+  it('preserves omitted cached placements when a successful refresh returns a partial v2 set', async () => {
+    const cachedPerps = getPlacement('perps_top');
+    const cachedPredictions = getPlacement('predictions');
+    const refreshedPerps: Placement = {
+      ...cachedPerps,
+      items: [{ id: 'HYPE' }, { id: 'BTC' }],
+    };
+
+    usePlacementsStore.setState({
+      placementsById: {
+        [cachedPerps.id]: cachedPerps,
+        [cachedPredictions.id]: cachedPredictions,
+      },
+    });
+    (getDocs as jest.Mock).mockResolvedValueOnce({
+      docs: [createPlacementDoc(refreshedPerps)],
+    });
+
+    await usePlacementsStore.getState().fetch(undefined, { force: true });
+
+    expect(usePlacementsStore.getState().getRefIds('perps_top', { source: 'hyperliquid', type: 'perp' })).toEqual(['BTC', 'HYPE']);
+    expect(usePlacementsStore.getState().getRefIds('predictions', { source: 'polymarket', type: 'prediction' })).toEqual([
+      'event-1',
+      'event-2',
+    ]);
+  });
+
   it('ignores stale v1, mismatched, malformed, and future cached placements', () => {
     const perps = getPlacement('perps_top');
     const placementsById = {

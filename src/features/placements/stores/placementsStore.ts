@@ -46,7 +46,7 @@ const PLACEMENT_TYPE_SET = new Set<PlacementType>(['perp', 'prediction', 'token'
 export const usePlacementsStore = createQueryStore<PlacementsById, never, PlacementsState>(
   {
     fetcher: fetchPlacements,
-    setData: ({ data, set }) => set({ placementsById: data }),
+    setData: ({ data, set }) => set(state => ({ placementsById: { ...state.placementsById, ...data } })),
     staleTime: time.minutes(15),
     cacheTime: time.days(2),
   },
