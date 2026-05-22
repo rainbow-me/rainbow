@@ -2128,7 +2128,7 @@
       }
     },
     "send": {
-      "sponsorship_unavailable": "Free sends are temporarily unavailable on this network. Please try again with network fees."
+      "sponsorship_unavailable": "Бесплатные отправки временно недоступны в этой сети. Пожалуйста, попробуйте снова с сетевой комиссией."
     },
     "swap": {
       "actions": {
