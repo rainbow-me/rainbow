@@ -13,6 +13,7 @@ import { type PlacementStoreResult } from '@/features/placements/stores/factorie
 import { type PlacementId } from '@/features/placements/types';
 
 const PERP_MARKET_PILL_INITIAL_SLOT_WIDTH = 220;
+const PERP_MARKET_PILL_VERTICAL_BLEED = 8;
 
 type PerpMarketPillsCarouselProps = PlacementStoreResult<PerpMarketPlacementItem> & {
   placementId: PlacementId;
@@ -35,6 +36,7 @@ export function PerpMarketPillsCarousel({
       data={items}
       getItemWidth={getPerpPillItemWidth}
       itemHeight={PERP_MARKET_PILL_HEIGHT}
+      itemVerticalBleed={PERP_MARKET_PILL_VERTICAL_BLEED}
       itemWidth={PERP_MARKET_PILL_INITIAL_SLOT_WIDTH}
       loading={isLoading}
       onPressSeeAll={onPressSeeAll}

@@ -27,6 +27,7 @@ type MarketCarouselProps<T extends PlacementItem> = {
   data: T[];
   getItemWidth?: (item: T) => number;
   itemHeight: number;
+  itemVerticalBleed?: number;
   itemWidth: number;
   loading?: boolean;
   onPressSeeAll?: () => void;
@@ -42,6 +43,7 @@ export function MarketCarousel<T extends PlacementItem>({
   data,
   getItemWidth,
   itemHeight,
+  itemVerticalBleed = 0,
   itemWidth,
   loading,
   onPressSeeAll,
@@ -80,12 +82,19 @@ export function MarketCarousel<T extends PlacementItem>({
         });
 
       return (
-        <View style={{ height: itemHeight, overflow: 'visible', width: itemWidths?.[index] ?? itemWidth }}>
+        <View
+          style={{
+            height: itemHeight + itemVerticalBleed * 2,
+            justifyContent: 'center',
+            overflow: 'visible',
+            width: itemWidths?.[index] ?? itemWidth,
+          }}
+        >
           <PlacementCardProvider value={trackPress}>{renderItem(item)}</PlacementCardProvider>
         </View>
       );
     },
-    [itemHeight, itemWidth, itemWidths, placementId, placementScreen, renderItem, title]
+    [itemHeight, itemVerticalBleed, itemWidth, itemWidths, placementId, placementScreen, renderItem, title]
   );
 
   const handleSeeAllPress = useCallback(() => {
@@ -122,6 +131,7 @@ export function MarketCarousel<T extends PlacementItem>({
           showsHorizontalScrollIndicator={false}
           contentContainerStyle={styles.contentContainer}
           decelerationRate="fast"
+          style={itemVerticalBleed ? { marginVertical: -itemVerticalBleed } : undefined}
           snapToInterval={snapToOffsets ? undefined : itemWidth + CARD_GAP}
           snapToOffsets={snapToOffsets}
           snapToAlignment="start"
