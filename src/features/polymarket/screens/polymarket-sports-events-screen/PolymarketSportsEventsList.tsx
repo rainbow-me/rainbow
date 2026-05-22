@@ -79,13 +79,13 @@ export const PolymarketSportsEventsList = memo(function PolymarketSportsEventsLi
   const showLoadingSkeleton = !listData.length && (isLoading || isIdle);
 
   const listStyles = useMemo(() => {
-    const paddingBottom = safeAreaInsets.bottom + NAVIGATOR_FOOTER_HEIGHT + NAVIGATOR_FOOTER_CLEARANCE;
+    const paddingBottom = renderAsStaticList ? 0 : safeAreaInsets.bottom + NAVIGATOR_FOOTER_HEIGHT + NAVIGATOR_FOOTER_CLEARANCE;
     const shouldFillViewport = showLoadingSkeleton || listData.length === 0;
     return {
       contentContainerStyle: { flexGrow: shouldFillViewport ? 1 : undefined, paddingBottom, paddingHorizontal: 12, paddingTop: 28 },
       scrollIndicatorInsets: { bottom: paddingBottom },
     };
-  }, [listData.length, safeAreaInsets.bottom, showLoadingSkeleton]);
+  }, [listData.length, renderAsStaticList, safeAreaInsets.bottom, showLoadingSkeleton]);
 
   const debouncedAddSubscribedTokens = useStableValue(() =>
     debounce((viewableItems: Array<ViewToken<SportsListItem>>) => {
