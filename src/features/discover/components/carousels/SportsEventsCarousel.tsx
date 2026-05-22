@@ -37,10 +37,7 @@ export const SportsEventsCarousel = memo(function SportsEventsCarousel({
   const showSkeletons = isLoading && events.length === 0;
   const itemCount = showSkeletons ? SKELETON_COUNT : events.length;
   const snapToOffsets = useMemo(
-    () =>
-      Array.from({ length: itemCount }).map((_, index) =>
-        index === 0 ? 0 : SCREEN_HORIZONTAL_PADDING + index * (SPORTS_EVENT_WIDGET_CARD_WIDTH + ITEM_GAP)
-      ),
+    () => Array.from({ length: itemCount }).map((_, index) => index * (SPORTS_EVENT_WIDGET_CARD_WIDTH + ITEM_GAP)),
     [itemCount]
   );
 
