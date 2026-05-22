@@ -2128,7 +2128,7 @@
       }
     },
     "send": {
-      "sponsorship_unavailable": "Free sends are temporarily unavailable on this network. Please try again with network fees."
+      "sponsorship_unavailable": "Les envois gratuits sont temporairement indisponibles sur ce réseau. Veuillez réessayer avec des frais de réseau."
     },
     "swap": {
       "actions": {
