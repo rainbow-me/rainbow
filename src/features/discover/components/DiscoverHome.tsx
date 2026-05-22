@@ -6,7 +6,7 @@ export function DiscoverHome() {
   const surface = useDiscoverSurface();
   const firstTab = surface && isSurfaceContainer(surface) ? surface.items[0] : undefined;
 
-  if (!firstTab) return null;
+  if (!surface || !firstTab) return null;
 
   return isSurfaceContainer(firstTab) ? (
     <DiscoverSurfaceSections items={firstTab.items} surfaceId={surface.id} />
