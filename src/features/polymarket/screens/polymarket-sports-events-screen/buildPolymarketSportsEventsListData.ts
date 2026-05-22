@@ -98,27 +98,27 @@ export function buildPolymarketSportsEventsListData(
   }
 
   const items: SportsListItem[] = [];
+  const upcomingEvents = [...todayEvents, ...thisWeekEvents].sort(sortEventsByStartTime);
 
-  const sections = [
-    { key: 'live', title: i18n.t(i18n.l.predictions.sports.live), events: liveEvents },
-    { key: 'today', title: i18n.t(i18n.l.time.today_caps), events: todayEvents },
-    { key: 'this-week', title: i18n.t(i18n.l.predictions.sports.this_week), events: thisWeekEvents },
-  ];
-
-  for (const section of sections) {
-    if (!section.events.length) continue;
-    if (items.length) {
-      items.push({ type: 'separator', key: `separator-${section.key}` });
-    }
-    pushSection({ items, title: section.title, events: section.events, sectionKey: section.key, showLeagueHeaders, ...options });
+  if (liveEvents.length) {
+    pushSection({
+      events: liveEvents,
+      header: { title: i18n.t(i18n.l.predictions.sports.live), count: liveEvents.length, isLive: true },
+      items,
+      sectionKey: 'live',
+      showLeagueHeaders,
+      ...options,
+    });
   }
+
+  pushSection({ items, events: upcomingEvents, sectionKey: 'upcoming', showLeagueHeaders, ...options });
 
   return items;
 }
 
 function pushSection({
   items,
-  title,
+  header,
   events,
   sectionKey,
   showLeagueHeaders,
@@ -126,7 +126,7 @@ function pushSection({
   truncateSections,
 }: {
   items: SportsListItem[];
-  title: string;
+  header?: { title: string; count?: number; isLive?: boolean };
   events: PolymarketEvent[];
   sectionKey: string;
   showLeagueHeaders: boolean;
@@ -134,7 +134,9 @@ function pushSection({
   truncateSections: boolean;
 }) {
   if (!events.length) return;
-  items.push({ type: 'header', key: `header-${sectionKey}`, title, count: events.length, isLive: sectionKey === 'live' });
+  if (header) {
+    items.push({ type: 'header', key: `header-${sectionKey}`, title: header.title, count: header.count, isLive: header.isLive });
+  }
 
   if (truncateSections && sectionKey === 'live') {
     pushPreviewEvents({ events, expansionKey: sectionKey, items, sectionKey, expandedKeys });
@@ -202,6 +204,12 @@ function buildEventItems(events: PolymarketEvent[], sectionKey: string, animated
     event,
     ...(animatedStartIndex != null && index >= animatedStartIndex ? { enterAnimationIndex: index - animatedStartIndex } : {}),
   }));
+}
+
+function sortEventsByStartTime(a: PolymarketEvent, b: PolymarketEvent) {
+  const aTime = getTimestamp(a.startTime) ?? getTimestamp(a.endDate) ?? Infinity;
+  const bTime = getTimestamp(b.startTime) ?? getTimestamp(b.endDate) ?? Infinity;
+  return aTime - bTime;
 }
 
 function groupEventsByLeague(events: PolymarketEvent[]) {

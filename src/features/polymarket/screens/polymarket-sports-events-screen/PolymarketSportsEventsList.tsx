@@ -36,9 +36,8 @@ const LIVE_INDICATOR_SIZE = 28;
 const LIVE_INDICATOR_CUTOUT_SIZE = 16;
 const LIVE_INDICATOR_DOT_SIZE = 8;
 const SKELETON_SECTIONS = [
-  { key: 'live', titleWidth: 54, itemCount: 1, showLiveIndicator: true },
-  { key: 'today', titleWidth: 74, itemCount: 2, showLiveIndicator: false },
-  { key: 'this-week', titleWidth: 118, itemCount: 2, showLiveIndicator: false },
+  { key: 'live', titleWidth: 54, itemCount: 1, showHeader: true, showLiveIndicator: true },
+  { key: 'upcoming', itemCount: 2, showHeader: false, showLiveIndicator: false },
 ] as const;
 const VIEWABILITY_CONFIG = { itemVisiblePercentThreshold: 50, minimumViewTime: 100 };
 
@@ -185,11 +184,13 @@ const ListLoadingSkeleton = memo(function ListLoadingSkeleton() {
     <View style={styles.skeletonContainer}>
       {SKELETON_SECTIONS.map((section, sectionIndex) => (
         <View key={section.key} style={sectionIndex > 0 && styles.skeletonSectionSpacing}>
-          <View style={styles.skeletonSectionHeader}>
-            {section.showLiveIndicator ? <Skeleton height={8} width={8} /> : null}
-            <Skeleton height={24} width={section.titleWidth} />
-            <Skeleton height={23} width={24} />
-          </View>
+          {section.showHeader ? (
+            <View style={styles.skeletonSectionHeader}>
+              {section.showLiveIndicator ? <Skeleton height={8} width={8} /> : null}
+              <Skeleton height={24} width={section.titleWidth} />
+              <Skeleton height={23} width={24} />
+            </View>
+          ) : null}
           {Array.from({ length: section.itemCount }).map((_, index) => (
             <View key={index} style={styles.skeletonItemWrapper}>
               <LoadingSkeleton />
