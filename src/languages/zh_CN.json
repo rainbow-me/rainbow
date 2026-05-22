@@ -2127,6 +2127,9 @@
         }
       }
     },
+    "send": {
+      "sponsorship_unavailable": "此网络暂时无法使用免费转账。请使用网络费用重试。"
+    },
     "swap": {
       "actions": {
         "hold_to_swap": "按住以交换",
