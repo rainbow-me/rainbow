@@ -23,6 +23,7 @@ import { usePolymarketSportsEventsStore } from '@/features/polymarket/stores/pol
 import * as i18n from '@/languages';
 
 const NBA_PREVIEW_EVENT_COUNT = 2;
+const FOR_YOU_BOTTOM_PADDING = 24;
 const SPORTS_WIDGET_EVENT_COUNT = 8;
 
 export function ForYouPage() {
@@ -116,6 +117,7 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     paddingTop: 20,
+    paddingBottom: FOR_YOU_BOTTOM_PADDING,
     gap: SECTION_VERTICAL_GAP,
   },
   tokensSection: {

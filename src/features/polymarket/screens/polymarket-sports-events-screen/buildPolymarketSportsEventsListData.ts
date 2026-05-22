@@ -36,6 +36,7 @@ type SectionSeparatorItem = {
 type LeagueSeparatorItem = {
   type: 'league-separator';
   key: string;
+  compact?: boolean;
 };
 
 type ShowMoreItem = {
@@ -152,7 +153,12 @@ function pushSection({
   for (let i = 0; i < leagueGroups.length; i++) {
     const group = leagueGroups[i];
     if (i > 0) {
-      items.push({ type: 'league-separator', key: `league-separator-${sectionKey}-${group.key}` });
+      const previousItem = items[items.length - 1];
+      items.push({
+        type: 'league-separator',
+        key: `league-separator-${sectionKey}-${group.key}`,
+        ...(previousItem?.type === 'show-more' ? { compact: true } : {}),
+      });
     }
     items.push({
       type: 'league-header',

@@ -133,7 +133,7 @@ export const PolymarketSportsEventsList = memo(function PolymarketSportsEventsLi
         return <SectionSeparator />;
       }
       if (item.type === 'league-separator') {
-        return <LeagueSeparator />;
+        return <LeagueSeparator compact={item.compact} />;
       }
       if (item.type === 'show-more') {
         return <ShowMoreButton count={item.count} onPress={() => expandSection(item.expansionKey)} />;
@@ -281,10 +281,10 @@ const SectionSeparator = memo(function SectionSeparator() {
   );
 });
 
-const LeagueSeparator = memo(function LeagueSeparator() {
+const LeagueSeparator = memo(function LeagueSeparator({ compact }: { compact?: boolean }) {
   const separatorColor = useForegroundColor('separatorSecondary');
   return (
-    <View style={styles.leagueSeparatorContainer}>
+    <View style={compact ? styles.compactLeagueSeparatorContainer : styles.leagueSeparatorContainer}>
       <View style={[styles.sectionSeparatorLine, { backgroundColor: separatorColor }]} />
     </View>
   );
@@ -404,6 +404,11 @@ const styles = StyleSheet.create({
   leagueSeparatorContainer: {
     paddingTop: 12 - ITEM_GAP / 2,
     paddingBottom: 12,
+    paddingHorizontal: 12,
+  },
+  compactLeagueSeparatorContainer: {
+    paddingTop: 0,
+    paddingBottom: 8,
     paddingHorizontal: 12,
   },
   sectionSeparatorLine: {
