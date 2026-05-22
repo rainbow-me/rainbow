@@ -3,17 +3,8 @@ import { StyleSheet, useWindowDimensions, View } from 'react-native';
 
 import { Box } from '@/design-system';
 import { CarouselHeader } from '@/features/discover/components/carousel/CarouselHeader';
-import {
-  PlacementCardProvider,
-  PlacementPredictionOutcomeProvider,
-  type TrackPlacementCardPress,
-  type TrackPredictionOutcomePress,
-} from '@/features/discover/components/carousel/placementCardContext';
-import {
-  trackPlacementCardPress,
-  trackPredictionOutcomePress,
-  trackSurfaceSectionDrilldownPress,
-} from '@/features/discover/components/placementTracking';
+import { PlacementTrackedItem } from '@/features/discover/components/PlacementTrackedItem';
+import { trackSurfaceSectionDrilldownPress } from '@/features/discover/components/placementTracking';
 import { SCREEN_HORIZONTAL_PADDING } from '@/features/discover/constants';
 import { type Destination, type Display } from '@/features/placements/surfaces/types';
 import { type Placement, type PlacementId, type PlacementItem } from '@/features/placements/types';
@@ -86,31 +77,18 @@ export function MarketGrid<T extends PlacementItem>({
         ) : (
           <Grid columns={columns} spacing={spacing}>
             {data.map((item, index) => {
-              const trackPress: TrackPlacementCardPress = metadata =>
-                trackPlacementCardPress({
-                  item,
-                  itemIndex: index,
-                  metadata,
-                  placement,
-                  placementId,
-                  surfaceId,
-                  title,
-                });
-              const trackOutcomePress: TrackPredictionOutcomePress = metadata =>
-                trackPredictionOutcomePress({
-                  item,
-                  metadata,
-                  placementId,
-                  surfaceId,
-                });
-
               return (
                 <View key={item.id} style={{ height: itemHeight }}>
-                  <PlacementCardProvider value={trackPress}>
-                    <PlacementPredictionOutcomeProvider value={trackOutcomePress}>
-                      {renderItem(item, cellWidth)}
-                    </PlacementPredictionOutcomeProvider>
-                  </PlacementCardProvider>
+                  <PlacementTrackedItem
+                    item={item}
+                    itemIndex={index}
+                    placement={placement}
+                    placementId={placementId}
+                    surfaceId={surfaceId}
+                    title={title}
+                  >
+                    {renderItem(item, cellWidth)}
+                  </PlacementTrackedItem>
                 </View>
               );
             })}

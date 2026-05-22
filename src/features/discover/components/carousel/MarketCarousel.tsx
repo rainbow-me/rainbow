@@ -6,17 +6,10 @@ import { useDebouncedCallback } from 'use-debounce';
 
 import { Box } from '@/design-system';
 import { CarouselHeader } from '@/features/discover/components/carousel/CarouselHeader';
-import {
-  PlacementCardProvider,
-  PlacementPredictionOutcomeProvider,
-  type TrackPlacementCardPress,
-  type TrackPredictionOutcomePress,
-} from '@/features/discover/components/carousel/placementCardContext';
+import { PlacementTrackedItem } from '@/features/discover/components/PlacementTrackedItem';
 import {
   defaultPlacementItemKey,
-  trackPlacementCardPress,
   trackPlacementInteraction,
-  trackPredictionOutcomePress,
   trackSurfaceSectionDrilldownPress,
 } from '@/features/discover/components/placementTracking';
 import { SCREEN_HORIZONTAL_PADDING } from '@/features/discover/constants';
@@ -85,24 +78,6 @@ export function MarketCarousel<T extends PlacementItem>({
 
   const renderCarouselItem = useCallback(
     ({ item, index }: { item: T; index: number }) => {
-      const trackPress: TrackPlacementCardPress = metadata =>
-        trackPlacementCardPress({
-          item,
-          itemIndex: index,
-          metadata,
-          placement,
-          placementId,
-          surfaceId,
-          title,
-        });
-      const trackOutcomePress: TrackPredictionOutcomePress = metadata =>
-        trackPredictionOutcomePress({
-          item,
-          metadata,
-          placementId,
-          surfaceId,
-        });
-
       return (
         <View
           style={{
@@ -112,9 +87,16 @@ export function MarketCarousel<T extends PlacementItem>({
             width: itemWidths?.[index] ?? itemWidth,
           }}
         >
-          <PlacementCardProvider value={trackPress}>
-            <PlacementPredictionOutcomeProvider value={trackOutcomePress}>{renderItem(item)}</PlacementPredictionOutcomeProvider>
-          </PlacementCardProvider>
+          <PlacementTrackedItem
+            item={item}
+            itemIndex={index}
+            placement={placement}
+            placementId={placementId}
+            surfaceId={surfaceId}
+            title={title}
+          >
+            {renderItem(item)}
+          </PlacementTrackedItem>
         </View>
       );
     },

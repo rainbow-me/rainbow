@@ -5,17 +5,8 @@ import { ShowMoreCellEnterAnimation } from '@/components/animations/ShowMoreCell
 import { ShowMoreButton } from '@/components/buttons/ShowMoreButton';
 import { Box } from '@/design-system';
 import { CarouselHeader } from '@/features/discover/components/carousel/CarouselHeader';
-import {
-  PlacementCardProvider,
-  PlacementPredictionOutcomeProvider,
-  type TrackPlacementCardPress,
-  type TrackPredictionOutcomePress,
-} from '@/features/discover/components/carousel/placementCardContext';
-import {
-  trackPlacementCardPress,
-  trackPredictionOutcomePress,
-  trackSurfaceSectionDrilldownPress,
-} from '@/features/discover/components/placementTracking';
+import { PlacementTrackedItem } from '@/features/discover/components/PlacementTrackedItem';
+import { trackSurfaceSectionDrilldownPress } from '@/features/discover/components/placementTracking';
 import { SCREEN_HORIZONTAL_PADDING } from '@/features/discover/constants';
 import { type Destination, type Display } from '@/features/placements/surfaces/types';
 import { type Placement, type PlacementId, type PlacementItem } from '@/features/placements/types';
@@ -72,29 +63,17 @@ export function MarketList<T extends PlacementItem>({
         {showSkeletons
           ? Array.from({ length: initialVisibleItemCount }).map((_, index) => <Fragment key={index}>{renderSkeleton()}</Fragment>)
           : visibleItems.map((item, index) => {
-              const trackPress: TrackPlacementCardPress = metadata =>
-                trackPlacementCardPress({
-                  item,
-                  itemIndex: index,
-                  metadata,
-                  placement,
-                  placementId,
-                  surfaceId,
-                  title,
-                });
-              const trackOutcomePress: TrackPredictionOutcomePress = metadata =>
-                trackPredictionOutcomePress({
-                  item,
-                  metadata,
-                  placementId,
-                  surfaceId,
-                });
               const listItem = (
-                <PlacementCardProvider value={trackPress}>
-                  <PlacementPredictionOutcomeProvider value={trackOutcomePress}>
-                    <View>{renderItem(item)}</View>
-                  </PlacementPredictionOutcomeProvider>
-                </PlacementCardProvider>
+                <PlacementTrackedItem
+                  item={item}
+                  itemIndex={index}
+                  placement={placement}
+                  placementId={placementId}
+                  surfaceId={surfaceId}
+                  title={title}
+                >
+                  <View>{renderItem(item)}</View>
+                </PlacementTrackedItem>
               );
 
               if (!isExpanded || index < initialVisibleItemCount) return <Fragment key={item.id}>{listItem}</Fragment>;
