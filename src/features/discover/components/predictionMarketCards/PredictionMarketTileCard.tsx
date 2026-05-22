@@ -27,12 +27,21 @@ export const PREDICTION_MARKET_TILE_CARD_BORDER_RADIUS = 24;
 
 const OUTCOME_ROW_COUNT = 2;
 const LAST_TRADE_PRICE_THRESHOLDS = [0.05, 0.01];
-const CARD_GRADIENT_CONFIG = {
+const CARD_FILL_GRADIENT_CONFIG = {
   end: { x: 1, y: 1 },
-  start: { x: -0.08, y: -0.08 },
+  locations: [0.17824, 0.58889] as const,
+  start: { x: 0, y: 0 },
 };
-const DARK_BORDER_GRADIENT_LOCATIONS = [0, 0.38, 0.72, 1] as const;
-const DARK_OUTCOME_ROW_BORDER_GRADIENT_LOCATIONS = [0, 0.32, 0.64, 1] as const;
+const CARD_BORDER_GRADIENT_CONFIG = {
+  end: { x: 1, y: 1 },
+  locations: [0, 0.94] as const,
+  start: { x: 0, y: 0 },
+};
+const OUTCOME_ROW_GRADIENT_CONFIG = {
+  end: { x: 0.89062, y: 0.5 },
+  locations: [0, 1] as const,
+  start: { x: 0, y: 0.5 },
+};
 const OUTCOME_ROW_WIDTH = PREDICTION_MARKET_TILE_CARD_WIDTH - 24;
 const ODDS_PILL_BORDER_RADIUS = 15;
 const ASSET_ACCENT_COLORS = [
@@ -76,9 +85,9 @@ export const PredictionMarketTileCard = memo(function PredictionMarketTileCard({
   const cardBorderGradientColors = useMemo(
     () =>
       isDarkMode
-        ? ([opacity(eventColor, 0.38), colorPalette.opacity8, globalColors.grey100, globalColors.grey100] as const)
+        ? ([opacity(eventColor, 0.08), opacity(eventColor, 0)] as const)
         : ([opacity(globalColors.white100, 0.78), opacity(globalColors.white100, 0.78)] as const),
-    [colorPalette.opacity8, eventColor, isDarkMode]
+    [eventColor, isDarkMode]
   );
   const cardGradientColors = useMemo(
     () =>
@@ -102,16 +111,17 @@ export const PredictionMarketTileCard = memo(function PredictionMarketTileCard({
           borderGradientColors={cardBorderGradientColors}
           borderRadius={PREDICTION_MARKET_TILE_CARD_BORDER_RADIUS}
           borderWidth={2}
-          end={CARD_GRADIENT_CONFIG.end}
-          locations={isDarkMode ? DARK_BORDER_GRADIENT_LOCATIONS : undefined}
-          start={CARD_GRADIENT_CONFIG.start}
+          end={CARD_BORDER_GRADIENT_CONFIG.end}
+          locations={isDarkMode ? CARD_BORDER_GRADIENT_CONFIG.locations : undefined}
+          start={CARD_BORDER_GRADIENT_CONFIG.start}
           style={styles.card}
         >
           <LinearGradient
             colors={cardGradientColors}
             pointerEvents="none"
-            start={CARD_GRADIENT_CONFIG.start}
-            end={CARD_GRADIENT_CONFIG.end}
+            start={CARD_FILL_GRADIENT_CONFIG.start}
+            end={CARD_FILL_GRADIENT_CONFIG.end}
+            locations={isDarkMode ? CARD_FILL_GRADIENT_CONFIG.locations : undefined}
             style={StyleSheet.absoluteFill}
           />
           <View style={styles.content}>
@@ -197,21 +207,25 @@ const OutcomeRow = memo(function OutcomeRow({
     <GradientBorderView
       borderGradientColors={
         isDarkMode
-          ? ([opacity(eventColor, 0.34), opacity(eventColor, 0.08), globalColors.grey100, globalColors.grey100] as const)
+          ? ([opacity(eventColor, 0.08), opacity(eventColor, 0)] as const)
           : ([opacity(eventColor, 0.56), opacity(eventColor, 0.18)] as const)
       }
-      borderRadius={22}
+      borderBottomLeftRadius={22}
+      borderBottomRightRadius={20}
+      borderTopLeftRadius={22}
+      borderTopRightRadius={20}
       borderWidth={2}
-      end={isDarkMode ? { x: 1, y: 1 } : { x: 0.9, y: 0 }}
-      locations={isDarkMode ? DARK_OUTCOME_ROW_BORDER_GRADIENT_LOCATIONS : undefined}
-      start={{ x: 0, y: 0 }}
+      end={isDarkMode ? OUTCOME_ROW_GRADIENT_CONFIG.end : { x: 0.9, y: 0 }}
+      locations={isDarkMode ? OUTCOME_ROW_GRADIENT_CONFIG.locations : undefined}
+      start={isDarkMode ? OUTCOME_ROW_GRADIENT_CONFIG.start : { x: 0, y: 0 }}
       style={styles.outcomeRowFrame}
     >
       <LinearGradient
         colors={[opacity(eventColor, isDarkMode ? 0.1 : 0.08), opacity(eventColor, 0)]}
         pointerEvents="none"
-        start={{ x: 0, y: 0 }}
-        end={{ x: 0.9, y: 0 }}
+        start={isDarkMode ? OUTCOME_ROW_GRADIENT_CONFIG.start : { x: 0, y: 0 }}
+        end={isDarkMode ? OUTCOME_ROW_GRADIENT_CONFIG.end : { x: 0.9, y: 0 }}
+        locations={isDarkMode ? OUTCOME_ROW_GRADIENT_CONFIG.locations : undefined}
         style={StyleSheet.absoluteFill}
       />
       <View style={styles.outcomeRowContent}>
