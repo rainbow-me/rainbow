@@ -5,11 +5,15 @@ import { events } from '@/handlers/appEvents';
 import { logger, RainbowError } from '@/logger';
 import { getFCMToken } from '@/notifications/tokens';
 import { PerformanceReports, PerformanceReportSegments, PerformanceTracking } from '@/performance/tracking';
+import { delay } from '@/utils/delay';
 
 import { getWalletKitClient } from '../services/client';
 import { setSyncWalletKitClient } from '../services/syncClient';
 import { onSessionProposal } from './onSessionProposal';
 import { onSessionRequest } from './onSessionRequest';
+
+const ECHO_SERVER_SUBSCRIPTION_MAX_ATTEMPTS = 3;
+const ECHO_SERVER_SUBSCRIPTION_RETRY_DELAY_MS = 1_000;
 
 export async function initListeners() {
   PerformanceTracking.startReportSegment(PerformanceReports.appStartup, PerformanceReportSegments.appStartup.initWalletConnect);
@@ -55,23 +59,44 @@ export async function initWalletConnectPushNotifications() {
 }
 
 async function subscribeToEchoServer({ client_id, token }: { client_id: string; token: string }) {
-  const res = await gretch(`https://wcpush.p.rainbow.me/clients`, {
-    method: 'POST',
-    json: {
-      type: 'FCM',
-      client_id,
-      token,
-    },
-  }).json();
+  let error: unknown;
 
-  if (res.error) {
+  for (let attempt = 0; attempt < ECHO_SERVER_SUBSCRIPTION_MAX_ATTEMPTS; attempt++) {
+    if (attempt) {
+      await delay(ECHO_SERVER_SUBSCRIPTION_RETRY_DELAY_MS * attempt);
+    }
+
+    const res = await gretch(`https://wcpush.p.rainbow.me/clients`, {
+      method: 'POST',
+      json: {
+        type: 'FCM',
+        client_id,
+        token,
+      },
+    }).json();
+
+    if (!res.error) return;
+
+    if (!isRetryableEchoServerSubscriptionError(res.error)) {
+      error = res.error;
+      break;
+    }
+  }
+
+  if (error) {
     /*
-     * Most of these appear to be network errors and timeouts. So our backend
-     * should report these to Datadog, and we can leave this as a warn to
-     * continue to monitor.
+     * Network errors and timeouts are expected to be transient and are retried
+     * above. Keep this warning for unexpected response/parsing failures.
      */
     logger.warn(`[walletConnect]: echo server subscription failed`, {
-      error: res.error,
+      error,
     });
   }
+}
+
+function isRetryableEchoServerSubscriptionError(error: unknown): boolean {
+  return (
+    error instanceof Error &&
+    (error.name.includes('HTTPTimeout') || error.message.includes('Request timed out') || error.message.includes('Network request failed'))
+  );
 }
