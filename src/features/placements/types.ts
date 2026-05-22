@@ -6,7 +6,7 @@ export type PlacementSource = (typeof PLACEMENT_SOURCES)[keyof typeof PLACEMENT_
 
 export type PlacementType = (typeof PLACEMENT_TYPES)[keyof typeof PLACEMENT_TYPES];
 
-export type PlacementTypeForSource<Source extends PlacementSource> = Source extends 'hyperliquid'
+export type PlacementContentTypeForSource<Source extends PlacementSource> = Source extends 'hyperliquid'
   ? 'perp'
   : Source extends 'polymarket'
     ? 'prediction'
@@ -29,7 +29,7 @@ export type Placement<Source extends PlacementSource = PlacementSource> = {
   id: PlacementId;
   version: 2;
   source: Source;
-  type: PlacementTypeForSource<Source>;
+  type: PlacementContentTypeForSource<Source>;
   items: PlacementItem[];
   updatedAt?: string;
 };
