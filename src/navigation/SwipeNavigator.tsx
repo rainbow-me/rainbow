@@ -117,17 +117,19 @@ const TabBar = memo(function TabBar({ activeIndex, descriptorsRef, getIsFocused,
   const recyclerList = useRecyclerListViewScrollToTopContext();
   const mainList = useMainList();
 
-  const { dapp_browser, rnbw_rewards_enabled, rnbw_membership_enabled } = useRemoteConfig(
+  const { dapp_browser, discover_enabled, rnbw_rewards_enabled, rnbw_membership_enabled } = useRemoteConfig(
     'dapp_browser',
+    'discover_enabled',
     'rnbw_rewards_enabled',
     'rnbw_membership_enabled'
   );
+  const showDiscoverTab = discover_enabled;
   const showDappBrowserTab = useExperimentalFlag(DAPP_BROWSER) || dapp_browser;
   const showRnbwRewardsTab = useExperimentalFlag(RNBW_REWARDS) || rnbw_rewards_enabled;
   const showRnbwMembership = useExperimentalFlag(RNBW_MEMBERSHIP) || rnbw_membership_enabled || IS_TEST;
   const showRnbwRewardsOrMembershipTab = showRnbwRewardsTab || showRnbwMembership;
 
-  const numberOfTabs = 3 + (showRnbwRewardsOrMembershipTab ? 1 : 0) + (showDappBrowserTab ? 1 : 0);
+  const numberOfTabs = 2 + (showDiscoverTab ? 1 : 0) + (showRnbwRewardsOrMembershipTab ? 1 : 0) + (showDappBrowserTab ? 1 : 0);
   const tabWidth = (deviceWidth - TAB_BAR_HORIZONTAL_INSET * 2 - TAB_BAR_INNER_PADDING * 2) / numberOfTabs;
   const tabPillStartPosition = (tabWidth - TAB_BAR_PILL_WIDTH) / 2 + TAB_BAR_INNER_PADDING;
 
@@ -141,7 +143,13 @@ const TabBar = memo(function TabBar({ activeIndex, descriptorsRef, getIsFocused,
   });
 
   const backgroundPillStyle = useAnimatedStyle(() => {
-    const route = getRouteFromTabIndex(reanimatedPosition.value, showRnbwMembership, showDappBrowserTab, showRnbwRewardsOrMembershipTab);
+    const route = getRouteFromTabIndex(
+      reanimatedPosition.value,
+      showDiscoverTab,
+      showRnbwMembership,
+      showDappBrowserTab,
+      showRnbwRewardsOrMembershipTab
+    );
     const isDappBrowserTab = route === Routes.DAPP_BROWSER_SCREEN && showBrowserNavButtons.value;
     const backgroundOpacity = isDappBrowserTab ? 0 : 1;
     const translateX = interpolate(reanimatedPosition.value, tabPositions.value.inputRange, tabPositions.value.outputRange, 'clamp');
@@ -153,7 +161,13 @@ const TabBar = memo(function TabBar({ activeIndex, descriptorsRef, getIsFocused,
   });
 
   const dappBrowserTabBarStyle = useAnimatedStyle(() => {
-    const route = getRouteFromTabIndex(reanimatedPosition.value, showRnbwMembership, showDappBrowserTab, showRnbwRewardsOrMembershipTab);
+    const route = getRouteFromTabIndex(
+      reanimatedPosition.value,
+      showDiscoverTab,
+      showRnbwMembership,
+      showDappBrowserTab,
+      showRnbwRewardsOrMembershipTab
+    );
     const shouldUseBrowserStyle = route === Routes.DAPP_BROWSER_SCREEN;
     return {
       opacity: withTiming(shouldUseBrowserStyle ? 1 : 0, TIMING_CONFIGS.slowFadeConfig),
@@ -262,6 +276,7 @@ const TabBar = memo(function TabBar({ activeIndex, descriptorsRef, getIsFocused,
       stateRef.current.routes.map((route: RouteProp<ParamListBase, string>, index: number) => {
         if (
           (!showDappBrowserTab && route.name === Routes.DAPP_BROWSER_SCREEN) ||
+          (!showDiscoverTab && route.name === Routes.DISCOVER_SCREEN) ||
           (!showRnbwRewardsTab && route.name === Routes.RNBW_REWARDS_SCREEN) ||
           (!showRnbwMembership && route.name === Routes.RNBW_MEMBERSHIP_SCREEN)
         ) {
@@ -307,6 +322,7 @@ const TabBar = memo(function TabBar({ activeIndex, descriptorsRef, getIsFocused,
       reanimatedPosition,
       showBrowserNavButtons,
       showDappBrowserTab,
+      showDiscoverTab,
       showRnbwMembership,
       showRnbwRewardsTab,
       stateRef,
@@ -314,7 +330,13 @@ const TabBar = memo(function TabBar({ activeIndex, descriptorsRef, getIsFocused,
   );
 
   const shadowStyle = useAnimatedStyle(() => {
-    const route = getRouteFromTabIndex(reanimatedPosition.value, showRnbwMembership, showDappBrowserTab, showRnbwRewardsOrMembershipTab);
+    const route = getRouteFromTabIndex(
+      reanimatedPosition.value,
+      showDiscoverTab,
+      showRnbwMembership,
+      showDappBrowserTab,
+      showRnbwRewardsOrMembershipTab
+    );
     const isDappBrowserTab = route === Routes.DAPP_BROWSER_SCREEN;
     return {
       shadowOpacity: withSpring(isDarkMode ? 0.6 : isDappBrowserTab ? 0 : 0.16, SPRING_CONFIGS.snappyMediumSpringConfig),
@@ -322,14 +344,26 @@ const TabBar = memo(function TabBar({ activeIndex, descriptorsRef, getIsFocused,
   });
 
   const gradientBackgroundStyle = useAnimatedStyle(() => {
-    const route = getRouteFromTabIndex(reanimatedPosition.value, showRnbwMembership, showDappBrowserTab, showRnbwRewardsOrMembershipTab);
+    const route = getRouteFromTabIndex(
+      reanimatedPosition.value,
+      showDiscoverTab,
+      showRnbwMembership,
+      showDappBrowserTab,
+      showRnbwRewardsOrMembershipTab
+    );
     return {
       backgroundColor: route === Routes.DAPP_BROWSER_SCREEN ? 'transparent' : getTabBackgroundColor(route, isDarkMode),
     };
   });
 
   const gradientVisibilityStyle = useAnimatedStyle(() => {
-    const route = getRouteFromTabIndex(reanimatedPosition.value, showRnbwMembership, showDappBrowserTab, showRnbwRewardsOrMembershipTab);
+    const route = getRouteFromTabIndex(
+      reanimatedPosition.value,
+      showDiscoverTab,
+      showRnbwMembership,
+      showDappBrowserTab,
+      showRnbwRewardsOrMembershipTab
+    );
     return {
       opacity: withTiming(route === Routes.RNBW_REWARDS_SCREEN ? 0 : 1, TIMING_CONFIGS.slowFadeConfig),
     };
@@ -552,6 +586,7 @@ export const BrowserTabIconWrapper = memo(function BrowserTabIconWrapper({
 
 function getRouteFromTabIndex(
   index: number,
+  showDiscoverTab: boolean,
   isMembership: boolean,
   showDappBrowserTab: boolean,
   showRnbwRewardsOrMembershipTab: boolean
@@ -562,8 +597,10 @@ function getRouteFromTabIndex(
   if (index === routeIndex) return Routes.WALLET_SCREEN;
   routeIndex += 1;
 
-  if (index === routeIndex) return Routes.DISCOVER_SCREEN;
-  routeIndex += 1;
+  if (showDiscoverTab) {
+    if (index === routeIndex) return Routes.DISCOVER_SCREEN;
+    routeIndex += 1;
+  }
 
   if (showDappBrowserTab) {
     if (index === routeIndex) return Routes.DAPP_BROWSER_SCREEN;
@@ -651,11 +688,13 @@ function SwipeNavigatorScreens() {
   const enableLazyTabs = useExperimentalFlag(LAZY_TABS);
   const lazy = useNavigationStore(state => enableLazyTabs || !state.isWalletScreenMounted);
 
-  const { dapp_browser, rnbw_rewards_enabled, rnbw_membership_enabled } = useRemoteConfig(
+  const { dapp_browser, discover_enabled, rnbw_rewards_enabled, rnbw_membership_enabled } = useRemoteConfig(
     'dapp_browser',
+    'discover_enabled',
     'rnbw_rewards_enabled',
     'rnbw_membership_enabled'
   );
+  const showDiscoverTab = discover_enabled;
   const showDappBrowserTab = useExperimentalFlag(DAPP_BROWSER) || dapp_browser;
   const showKingOfTheHillTab = useShowKingOfTheHill();
   const showRnbwRewardsTab = useExperimentalFlag(RNBW_REWARDS) || rnbw_rewards_enabled || IS_TEST;
@@ -682,6 +721,9 @@ function SwipeNavigatorScreens() {
     if (showKingOfTheHillTab) {
       key += '-koth';
     }
+    if (showDiscoverTab) {
+      key += '-discover';
+    }
     if (showRnbwRewardsTab) {
       key += '-rnbw-rewards';
     }
@@ -692,7 +734,7 @@ function SwipeNavigatorScreens() {
       key += `-${language}`;
     }
     return key;
-  }, [showKingOfTheHillTab, showRnbwRewardsTab, showRnbwMembership, language]);
+  }, [showKingOfTheHillTab, showDiscoverTab, showRnbwRewardsTab, showRnbwMembership, language]);
 
   return (
     <Swipe.Navigator
@@ -705,7 +747,9 @@ function SwipeNavigatorScreens() {
       tabBarPosition="bottom"
     >
       <Swipe.Screen component={WalletScreen} name={Routes.WALLET_SCREEN} options={{ title: TAB_BAR_ICONS[Routes.WALLET_SCREEN] }} />
-      <Swipe.Screen component={DiscoverScreen} name={Routes.DISCOVER_SCREEN} options={{ title: TAB_BAR_ICONS[Routes.DISCOVER_SCREEN] }} />
+      {showDiscoverTab && (
+        <Swipe.Screen component={DiscoverScreen} name={Routes.DISCOVER_SCREEN} options={{ title: TAB_BAR_ICONS[Routes.DISCOVER_SCREEN] }} />
+      )}
       {showDappBrowserTab && (
         <Swipe.Screen component={DappBrowser} name={Routes.DAPP_BROWSER_SCREEN} options={{ title: 'tabDappBrowser' }} />
       )}
