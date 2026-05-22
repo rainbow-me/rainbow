@@ -34,7 +34,7 @@ export function trackPlacementCardPress({
   });
 }
 
-export function trackDiscoverTabPress({
+export function trackDiscoverSurfaceTabPress({
   sectionId,
   sectionTitle,
   surfaceId,
@@ -45,7 +45,7 @@ export function trackDiscoverTabPress({
   surfaceId: string;
   wasActive: boolean;
 }): void {
-  analytics.track(event.discoverTabPressed, {
+  analytics.track(event.discoverSurfaceTabPressed, {
     sectionId,
     sectionTitle,
     surfaceId,

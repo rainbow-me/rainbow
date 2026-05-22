@@ -6,7 +6,7 @@ import { useDiscoverScreenContext } from '@/components/Discover/DiscoverScreenCo
 import { EasingGradient } from '@/components/easing-gradient/EasingGradient';
 import { Box, Text, TextIcon, useColorMode, useForegroundColor } from '@/design-system';
 import { getValueForColorMode } from '@/design-system/color/palettes';
-import { trackDiscoverTabPress } from '@/features/discover/components/placementTracking';
+import { trackDiscoverSurfaceTabPress } from '@/features/discover/components/placementTracking';
 import { DISCOVER_SCREEN_BACKGROUND_COLOR } from '@/features/discover/constants';
 import {
   DiscoverSectionNavigation,
@@ -127,7 +127,7 @@ function DiscoverCategorySelector() {
     (section: Surface) => {
       const wasActive = DiscoverSectionNavigation.isSectionActive(section.id);
       const sectionTitle = section.label || section.id;
-      trackDiscoverTabPress({
+      trackDiscoverSurfaceTabPress({
         sectionId: section.id,
         sectionTitle,
         surfaceId: surface?.id ?? 'discover',

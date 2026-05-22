@@ -243,7 +243,7 @@ export const event = {
   timeSpentOnDiscoverScreen: 'Time spent on the Discover screen',
   discoverPlacementCardPressed: 'discover.placement_card_pressed',
   discoverPredictionOutcomePressed: 'discover.prediction_outcome_pressed',
-  discoverTabPressed: 'discover.tab_pressed',
+  discoverSurfaceTabPressed: 'discover.surface_tab_pressed',
   placementInteraction: 'placement.interaction',
   surfaceSectionDrilldownPressed: 'surface.section_drilldown_pressed',
   surfaceInteraction: 'surface.interaction',
@@ -1009,7 +1009,7 @@ export type EventProperties = {
     marketSymbol?: string;
     marketType?: string;
   };
-  [event.discoverTabPressed]: {
+  [event.discoverSurfaceTabPressed]: {
     sectionTitle: string;
     sectionId: string;
     surfaceId: string;
