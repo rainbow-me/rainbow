@@ -33,6 +33,14 @@ const TOKEN_CARD_HEIGHT = 64;
 const TOKEN_CARD_WIDTH = DEVICE_WIDTH - SCREEN_HORIZONTAL_PADDING * 2;
 const TOKEN_SPARKLINE_MAX_POINTS = 24;
 const TOKEN_SPARKLINE_LAYOUT = { height: 34, width: 64 };
+const TOKEN_CARD_BACKGROUND_COLORS = {
+  dark: opacity('#202429', 0.4),
+  light: 'rgba(255, 255, 255, 0.92)',
+};
+const TOKEN_CARD_BORDER_COLORS = {
+  dark: 'rgba(255, 255, 255, 0.05)',
+  light: 'rgba(255, 255, 255, 0.8)',
+};
 const PRICE_CHANGE_COLORS = {
   dark: { positive: '#3ECF5B', negative: '#FF584D', neutral: 'rgba(255, 255, 255, 0.5)' },
   light: { positive: '#1DB847', negative: '#FA423C', neutral: 'rgba(0, 0, 0, 0.5)' },
@@ -97,6 +105,11 @@ function TokenCard({ asset }: { asset: FormattedExternalAsset }) {
   });
   const roundedPriceChange = getRoundedPriceChange(livePriceChange);
   const priceChangeColor = getPriceChangeColor(roundedPriceChange, priceChangeColors);
+  const tokenCardBackgroundColor = getValueForColorMode(TOKEN_CARD_BACKGROUND_COLORS, colorMode);
+  const tokenCardBorderColor = getValueForColorMode(TOKEN_CARD_BORDER_COLORS, colorMode);
+  const gradientColors = isDarkMode
+    ? [opacity(assetAccentColor, 0.16), opacity(assetAccentColor, 0)]
+    : ['rgba(131, 142, 153, 0.06)', 'rgba(131, 142, 153, 0)'];
 
   const openTokenDetails = useCallback(() => {
     Navigation.handleAction(Routes.EXPANDED_ASSET_SHEET_V2, {
@@ -109,18 +122,14 @@ function TokenCard({ asset }: { asset: FormattedExternalAsset }) {
   return (
     <ButtonPressAnimation onPress={openTokenDetails} scaleTo={0.96}>
       <Box
-        borderColor={{ custom: isDarkMode ? 'rgba(255,255,255,0.05)' : 'rgba(0,0,0,0.05)' }}
+        borderColor={{ custom: tokenCardBorderColor }}
         borderRadius={24}
+        borderWidth={isDarkMode ? 1 : 2}
         padding="12px"
         paddingRight={{ custom: 18 }}
-        backgroundColor={opacity('#202429', 0.4)}
+        backgroundColor={tokenCardBackgroundColor}
       >
-        <LinearGradient
-          colors={[opacity(assetAccentColor, 0.16), opacity(assetAccentColor, 0)]}
-          style={StyleSheet.absoluteFill}
-          start={{ x: 0, y: 0 }}
-          end={{ x: 1, y: 1 }}
-        />
+        <LinearGradient colors={gradientColors} style={StyleSheet.absoluteFill} start={{ x: 0, y: 0 }} end={{ x: 1, y: 1 }} />
         <View style={styles.contentRow}>
           {iconUrl && <ImgixImage size={40} source={{ uri: iconUrl }} style={styles.icon} />}
           <View style={styles.cardBody}>

@@ -2,7 +2,7 @@ import { memo } from 'react';
 import { StyleSheet, View, type StyleProp, type ViewStyle } from 'react-native';
 
 import ButtonPressAnimation from '@/components/animations/ButtonPressAnimation';
-import { Box, Text, TextIcon } from '@/design-system';
+import { Box, Text, TextIcon, useColorMode } from '@/design-system';
 import { opacity } from '@/framework/ui/utils/opacity';
 
 type ShowMoreButtonProps = {
@@ -12,11 +12,14 @@ type ShowMoreButtonProps = {
 };
 
 export const ShowMoreButton = memo(function ShowMoreButton({ count, onPress, style }: ShowMoreButtonProps) {
+  const { isDarkMode } = useColorMode();
+  const iconBadgeBackgroundColor = isDarkMode ? opacity('#FFFFFF', 0.16) : 'rgba(9, 17, 31, 0.05)';
+
   return (
     <ButtonPressAnimation onPress={onPress} scaleTo={0.96} style={[styles.button, style]}>
       <Box flexDirection="row" alignItems="center" justifyContent="center" gap={8} height={{ custom: 44 }}>
-        <View style={styles.iconBadge}>
-          <TextIcon align="center" color="labelTertiary" size="icon 10px" textStyle={styles.iconGlyph} weight="black">
+        <View style={[styles.iconBadge, { backgroundColor: iconBadgeBackgroundColor }]}>
+          <TextIcon align="center" color="labelQuaternary" size="icon 10px" textStyle={styles.iconGlyph} weight="black">
             {'\u{100188}'}
           </TextIcon>
         </View>
@@ -38,7 +41,6 @@ const styles = StyleSheet.create({
   },
   iconBadge: {
     alignItems: 'center',
-    backgroundColor: opacity('#FFFFFF', 0.16),
     borderRadius: 38,
     height: 20,
     justifyContent: 'center',
