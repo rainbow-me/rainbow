@@ -14,7 +14,6 @@ import {
   useDiscoverNavigationStore,
   type DiscoverSection,
 } from '@/features/discover/stores/discoverNavigationStore';
-import { resolveSurfaceLabel } from '@/features/discover/utils/resolveSurfaceLabel';
 import { useDiscoverSurface } from '@/features/placements/surfaces/hooks/useSurface';
 import { type Surface } from '@/features/placements/surfaces/types';
 import { useTabBarOffset } from '@/hooks/useTabBarOffset';
@@ -170,7 +169,7 @@ function getInitialSection(tabs: Surface[], activeSectionId: string): string {
 }
 
 export function getDiscoverTabLabel(tab: Surface): string {
-  return resolveSurfaceLabel(tab);
+  return tab.label || tab.id;
 }
 
 const styles = StyleSheet.create({

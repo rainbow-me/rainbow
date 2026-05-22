@@ -13,7 +13,6 @@ import {
   useDiscoverNavigationStore,
   type DiscoverSection,
 } from '@/features/discover/stores/discoverNavigationStore';
-import { resolveSurfaceLabel } from '@/features/discover/utils/resolveSurfaceLabel';
 import { useDiscoverSurface } from '@/features/placements/surfaces/hooks/useSurface';
 import { type Surface } from '@/features/placements/surfaces/types';
 import { THICK_BORDER_WIDTH } from '@/styles/constants';
@@ -127,9 +126,10 @@ function DiscoverCategorySelector() {
   const handlePress = useCallback(
     (section: Surface) => {
       const wasActive = DiscoverSectionNavigation.isSectionActive(section.id);
+      const sectionTitle = section.label || section.id;
       trackDiscoverTabPress({
         sectionId: section.id,
-        sectionTitle: resolveSurfaceLabel(section),
+        sectionTitle,
         surfaceId: surface?.id ?? 'discover',
         wasActive,
       });
@@ -165,6 +165,7 @@ function DiscoverCategorySelector() {
       >
         {tabs.map(section => {
           const isSelected = section.id === activeSection;
+          const sectionLabel = section.label || section.id;
           return (
             <View
               key={section.id}
@@ -180,7 +181,7 @@ function DiscoverCategorySelector() {
                 testID={`discover-section-tab-${section.id}`}
               >
                 <Text color={isSelected ? 'label' : unselectedColor} size="22pt" weight="heavy">
-                  {resolveSurfaceLabel(section)}
+                  {sectionLabel}
                 </Text>
               </ButtonPressAnimation>
             </View>

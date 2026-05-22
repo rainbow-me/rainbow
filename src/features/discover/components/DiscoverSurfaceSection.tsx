@@ -35,7 +35,6 @@ import {
 import { TokenCell, TokenCellSkeleton } from '@/features/discover/components/token/TokenCell';
 import { SECTION_VERTICAL_GAP } from '@/features/discover/constants';
 import { navigateDiscoverDestination } from '@/features/discover/utils/navigation';
-import { resolveSurfaceLabel } from '@/features/discover/utils/resolveSurfaceLabel';
 import { getPerpsPlacementStore, type PerpMarketPlacementItem } from '@/features/placements/stores/derived/perpsPlacementStore';
 import { getPredictionsPlacementStore, type PredictionPlacementItem } from '@/features/placements/stores/derived/predictionsPlacementStore';
 import { getTokensPlacementStore, type TokenPlacementItem } from '@/features/placements/stores/derived/tokensPlacementStore';
@@ -324,7 +323,7 @@ function renderSurfaceLayoutSection<T extends PlacementItem>({
     placementId: surface.placement,
     sectionId: surface.id,
     surfaceId,
-    title: resolveSurfaceLabel(surface),
+    title: surface.label || surface.id,
   };
 
   switch (descriptor.layout) {
