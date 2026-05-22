@@ -2127,6 +2127,9 @@
         }
       }
     },
+    "send": {
+      "sponsorship_unavailable": "Free sends are temporarily unavailable on this network. Please try again with network fees."
+    },
     "swap": {
       "actions": {
         "hold_to_swap": "Удерживайте для обмена",
