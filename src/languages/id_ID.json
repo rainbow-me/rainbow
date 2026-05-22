@@ -2127,6 +2127,9 @@
         }
       }
     },
+    "send": {
+      "sponsorship_unavailable": "Pengiriman gratis sementara tidak tersedia di jaringan ini. Silakan coba lagi dengan membayar biaya jaringan."
+    },
     "swap": {
       "actions": {
         "hold_to_swap": "Tahan untuk Tukar",
