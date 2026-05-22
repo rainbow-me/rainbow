@@ -2127,6 +2127,9 @@
         }
       }
     },
+    "send": {
+      "sponsorship_unavailable": "Los envíos gratis no están disponibles temporalmente en esta red. Inténtalo de nuevo con comisiones de red."
+    },
     "swap": {
       "actions": {
         "hold_to_swap": "Mantener para Intercambiar",
