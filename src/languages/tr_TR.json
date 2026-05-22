@@ -2128,7 +2128,7 @@
       }
     },
     "send": {
-      "sponsorship_unavailable": "Free sends are temporarily unavailable on this network. Please try again with network fees."
+      "sponsorship_unavailable": "Bu ağda ücretsiz gönderimler geçici olarak kullanılamıyor. Lütfen ağ ücretleriyle tekrar deneyin."
     },
     "swap": {
       "actions": {
