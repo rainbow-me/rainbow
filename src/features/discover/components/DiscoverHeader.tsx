@@ -16,7 +16,6 @@ import {
 import { resolveSurfaceLabel } from '@/features/discover/utils/resolveSurfaceLabel';
 import { useDiscoverSurface } from '@/features/placements/surfaces/hooks/useSurface';
 import { type Surface } from '@/features/placements/surfaces/types';
-import { isSurfaceContainer } from '@/features/placements/surfaces/utils/surfaceGuards';
 import { THICK_BORDER_WIDTH } from '@/styles/constants';
 
 export const DISCOVER_HEADER_HEIGHT = 80;
@@ -73,7 +72,7 @@ function DiscoverSearchButton() {
 function DiscoverCategorySelector() {
   const activeSection = useDiscoverNavigationStore(state => state.activeSection);
   const surface = useDiscoverSurface();
-  const tabs = surface && isSurfaceContainer(surface) ? surface.items : [];
+  const tabs = surface?.items !== undefined ? surface.items : [];
   const { scrollToSectionTop } = useDiscoverScreenContext();
   const { isDarkMode, colorMode } = useColorMode();
   const screenBackgroundColor = getValueForColorMode(DISCOVER_SCREEN_BACKGROUND_COLOR, colorMode);

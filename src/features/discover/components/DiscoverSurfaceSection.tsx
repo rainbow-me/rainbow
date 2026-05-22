@@ -40,7 +40,6 @@ import { getPerpsPlacementStore, type PerpMarketPlacementItem } from '@/features
 import { getPredictionsPlacementStore, type PredictionPlacementItem } from '@/features/placements/stores/derived/predictionsPlacementStore';
 import { getTokensPlacementStore, type TokenPlacementItem } from '@/features/placements/stores/derived/tokensPlacementStore';
 import { type Surface, type SurfaceLeaf } from '@/features/placements/surfaces/types';
-import { isSurfaceContainer } from '@/features/placements/surfaces/utils/surfaceGuards';
 import {
   HEIGHT as POLYMARKET_EVENTS_LIST_ITEM_HEIGHT,
   PolymarketEventsListItem,
@@ -71,7 +70,7 @@ export const DiscoverSurfaceSection = memo(function DiscoverSurfaceSection({
   surface: Surface;
   surfaceId: string;
 }) {
-  if (isSurfaceContainer(surface)) return <DiscoverSurfaceSections items={surface.items} surfaceId={surfaceId} />;
+  if (surface.items !== undefined) return <DiscoverSurfaceSections items={surface.items} surfaceId={surfaceId} />;
 
   switch (surface.display) {
     case 'perp_pill.carousel':

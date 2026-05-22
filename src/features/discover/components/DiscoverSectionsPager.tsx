@@ -17,7 +17,6 @@ import {
 import { resolveSurfaceLabel } from '@/features/discover/utils/resolveSurfaceLabel';
 import { useDiscoverSurface } from '@/features/placements/surfaces/hooks/useSurface';
 import { type Surface } from '@/features/placements/surfaces/types';
-import { isSurfaceContainer } from '@/features/placements/surfaces/utils/surfaceGuards';
 import { useTabBarOffset } from '@/hooks/useTabBarOffset';
 import { useListen } from '@/state/internal/hooks/useListen';
 import { clamp } from '@/worklets/numbers';
@@ -34,7 +33,7 @@ export const DiscoverSectionsPager = memo(function DiscoverSectionsPager({
   scrollOffset,
 }: DiscoverSectionsPagerProps) {
   const surface = useDiscoverSurface();
-  const tabs = useMemo(() => (surface && isSurfaceContainer(surface) ? surface.items : []), [surface]);
+  const tabs = useMemo(() => (surface?.items !== undefined ? surface.items : []), [surface]);
   const activeSectionId = useDiscoverNavigationStore(state => state.activeSection);
   const { ref, goToPage } = usePagerNavigation<DiscoverSection>();
   const initialSection = getInitialSection(tabs, activeSectionId);
@@ -157,7 +156,7 @@ const DiscoverSectionScrollView = memo(function DiscoverSectionScrollView({
       style={[styles.scrollView, { paddingBottom: Platform.OS === 'android' ? bottomInset : 0 }]}
       testID={`discover-section-${section.id}`}
     >
-      {isSurfaceContainer(section) ? (
+      {section.items !== undefined ? (
         <DiscoverSurfaceSections items={section.items} surfaceId={surfaceId} />
       ) : (
         <DiscoverSurfaceSections items={[section]} surfaceId={surfaceId} />

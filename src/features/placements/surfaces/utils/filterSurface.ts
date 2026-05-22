@@ -2,12 +2,11 @@ import { type PlacementsById } from '@/features/placements/stores/placementsStor
 import { SOURCE_BY_DISPLAY } from '@/features/placements/surfaces/constants';
 import { type Surface } from '@/features/placements/surfaces/types';
 import { isEnabled } from '@/features/placements/surfaces/utils/isEnabled';
-import { isSurfaceContainer } from '@/features/placements/surfaces/utils/surfaceGuards';
 
 export function filterSurface(surface: Surface, placementsById: PlacementsById, now: number): Surface | undefined {
   if (!isEnabled(surface.enabled, now)) return undefined;
 
-  if (isSurfaceContainer(surface)) {
+  if (surface.items !== undefined) {
     const filteredItems: Surface[] = [];
     let didChange = false;
 
