@@ -1,6 +1,7 @@
 import { useRemoteConfigStore } from '@/model/remoteConfig';
 import { fetchExternalToken } from '@/resources/assets/externalAssetsQuery';
 import { userAssetsStoreManager } from '@/state/assets/userAssetsStoreManager';
+import { QueryStatuses } from '@/state/internal/queryStore/types';
 
 import { FIXTURE_V2_PLACEMENTS_BY_ID } from '../../__fixtures__/placements';
 import { PLACEMENT_IDS } from '../../constants';
@@ -127,6 +128,19 @@ describe('tokensPlacementStore', () => {
     const placement = useTokensPlacementStore.getState();
     expect(placement.placement?.id).toBe(PLACEMENT_IDS.TOKENS);
     expect(placement.items).toHaveLength(FIXTURE_V2_PLACEMENTS_BY_ID[PLACEMENT_IDS.TOKENS].items.length);
+  });
+
+  it('shows loading while token placement refs have not hydrated yet', () => {
+    usePlacementsStore.setState({
+      placementsById: {},
+      status: QueryStatuses.Idle,
+    });
+
+    expect(useTokensPlacementStore.getState()).toEqual({
+      isLoading: true,
+      items: [],
+      placement: undefined,
+    });
   });
 
   it('returns an empty placement result when the placements gate is off', () => {

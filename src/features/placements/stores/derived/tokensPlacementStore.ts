@@ -36,9 +36,9 @@ const EMPTY_TOKEN_PLACEMENT_ITEMS: TokenPlacementItem[] = [];
 export const useTokensEnabled = createDerivedStore<boolean>(
   $ => {
     const placementsEnabled = $(useRemoteConfigStore, state => state.getRemoteConfigKey('discover_placements_enabled'));
-    const hasTokenRefs = $(usePlacementsStore, state => state.getAllRefIds({ source: 'rainbow', type: 'token' }).length > 0);
+    const hasTokenRefsOrPendingPlacements = $(usePlacementsStore, hasTokenRefsOrPendingPlacementsHydration);
 
-    return placementsEnabled && hasTokenRefs && !IS_TEST;
+    return placementsEnabled && hasTokenRefsOrPendingPlacements && !IS_TEST;
   },
   { fastMode: true }
 );
@@ -118,4 +118,9 @@ function parseTokenRef(tokenRef: string): { address: string; chainId: ChainId } 
     address,
     chainId: numericChainId as ChainId,
   };
+}
+
+function hasTokenRefsOrPendingPlacementsHydration(state: ReturnType<typeof usePlacementsStore.getState>): boolean {
+  if (state.getAllRefIds({ source: 'rainbow', type: 'token' }).length > 0) return true;
+  return state.getStatus('isIdle') || state.getStatus('isInitialLoad');
 }

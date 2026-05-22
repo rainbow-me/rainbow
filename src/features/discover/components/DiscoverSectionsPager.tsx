@@ -38,8 +38,6 @@ const INITIAL_SECTION_SCROLL_OFFSETS: SectionScrollOffsets = {
   sports: 0,
 };
 
-const EAGER_MOUNTED_SECTIONS = new Set<DiscoverSection>(['forYou', 'markets', 'crypto', 'sports']);
-
 export const DiscoverSectionsPager = memo(function DiscoverSectionsPager({
   renderRefreshControl,
   scrollOffset,
@@ -90,7 +88,7 @@ export const DiscoverSectionsPager = memo(function DiscoverSectionsPager({
               }
               id={section}
               key={section}
-              lazy={!EAGER_MOUNTED_SECTIONS.has(section)}
+              lazy
             />
           ))}
         </SmoothPager>

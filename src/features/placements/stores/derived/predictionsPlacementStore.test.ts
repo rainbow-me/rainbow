@@ -4,12 +4,18 @@ import { fetchPolymarketEventsByIds } from '@/features/polymarket/stores/polymar
 import { type PolymarketEvent } from '@/features/polymarket/types/polymarket-event';
 import { processRawPolymarketEvent } from '@/features/polymarket/utils/transforms';
 import { useRemoteConfigStore } from '@/model/remoteConfig';
+import { QueryStatuses } from '@/state/internal/queryStore/types';
 
 import { FIXTURE_V2_PLACEMENTS_BY_ID } from '../../__fixtures__/placements';
 import { PLACEMENT_IDS } from '../../constants';
 import { type Placement } from '../../types';
 import { fetchPlacements, usePlacementsStore } from '../placementsStore';
-import { usePredictionEventsStore, usePredictionsPlacementStore, usePredictionsSportsGroupsStore } from './predictionsPlacementStore';
+import {
+  usePredictionEventsStore,
+  usePredictionsEnabled,
+  usePredictionsPlacementStore,
+  usePredictionsSportsGroupsStore,
+} from './predictionsPlacementStore';
 
 jest.mock('@/env', () => ({
   ...jest.requireActual('@/env'),
@@ -200,6 +206,35 @@ describe('predictionsPlacementStore', () => {
 
     expect(usePredictionsPlacementStore.getState()).toEqual({
       isLoading: false,
+      items: [],
+      placement: undefined,
+    });
+  });
+
+  it('shows loading while prediction placement refs have not hydrated yet', () => {
+    useRemoteConfigStore.setState(state => ({
+      config: {
+        ...state.config,
+        discover_placements_enabled: true,
+        polymarket_enabled: true,
+      },
+    }));
+    useExperimentalConfigStore.setState(state => ({
+      config: {
+        ...state.config,
+        [POLYMARKET]: true,
+      },
+    }));
+    usePlacementsStore.setState({
+      placementsById: {},
+      status: QueryStatuses.Idle,
+    });
+    usePredictionsEnabled.destroy();
+    usePredictionsPlacementStore.destroy();
+
+    expect(usePredictionsEnabled.getState()).toBe(true);
+    expect(usePredictionsPlacementStore.getState()).toEqual({
+      isLoading: true,
       items: [],
       placement: undefined,
     });

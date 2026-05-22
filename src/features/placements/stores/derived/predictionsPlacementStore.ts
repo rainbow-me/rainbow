@@ -55,9 +55,9 @@ export const usePredictionsEnabled = createDerivedStore<boolean>(
     const placementsEnabled = $(useRemoteConfigStore, state => state.getRemoteConfigKey('discover_placements_enabled'));
     const polymarketEnabled = $(useRemoteConfigStore, state => state.getRemoteConfigKey('polymarket_enabled'));
     const polymarketEnabledLocally = $(useExperimentalConfigStore, state => state.getFlag(POLYMARKET));
-    const hasEventIds = $(usePlacementsStore, state => state.getAllRefIds({ source: 'polymarket', type: 'prediction' }).length > 0);
+    const hasEventIdsOrPendingPlacements = $(usePlacementsStore, hasPredictionRefsOrPendingPlacementsHydration);
 
-    if (!hasEventIds || !placementsEnabled || IS_TEST) return false;
+    if (!hasEventIdsOrPendingPlacements || !placementsEnabled || IS_TEST) return false;
 
     return polymarketEnabled || polymarketEnabledLocally;
   },
@@ -179,6 +179,11 @@ function isUnresolvedPredictionEvent(event: PolymarketEvent): boolean {
   if (event.closed === true || event.ended === true) return false;
 
   return event.markets.some(market => market.active !== false && market.closed !== true && market.umaResolutionStatus !== 'resolved');
+}
+
+function hasPredictionRefsOrPendingPlacementsHydration(state: ReturnType<typeof usePlacementsStore.getState>): boolean {
+  if (state.getAllRefIds({ source: 'polymarket', type: 'prediction' }).length > 0) return true;
+  return state.getStatus('isIdle') || state.getStatus('isInitialLoad');
 }
 
 function arePredictionSportsGroupsEqual(current: PredictionSportsGroupsState, next: PredictionSportsGroupsState): boolean {
