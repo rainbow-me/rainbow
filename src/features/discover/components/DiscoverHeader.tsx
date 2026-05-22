@@ -1,5 +1,5 @@
-import { useCallback } from 'react';
-import { ScrollView, View } from 'react-native';
+import { useCallback, useEffect, useRef } from 'react';
+import { ScrollView, View, type LayoutChangeEvent, type NativeScrollEvent, type NativeSyntheticEvent } from 'react-native';
 
 import ButtonPressAnimation from '@/components/animations/ButtonPressAnimation';
 import { useDiscoverScreenContext } from '@/components/Discover/DiscoverScreenContext';
@@ -70,8 +70,53 @@ function DiscoverCategorySelector() {
   const activeSection = useDiscoverNavigationStore(state => state.activeSection);
   const { scrollToSectionTop } = useDiscoverScreenContext();
   const { isDarkMode, colorMode } = useColorMode();
+  const scrollViewRef = useRef<ScrollView>(null);
+  const scrollOffsetRef = useRef(0);
+  const scrollViewWidthRef = useRef(0);
+  const tabLayoutsRef = useRef<Partial<Record<DiscoverSection, { width: number; x: number }>>>({});
 
   const unselectedColor = isDarkMode ? { custom: '#4D4D4D' } : { custom: '#999999' };
+
+  const scrollSelectedTabIntoView = useCallback((section: DiscoverSection, animated = true) => {
+    const tabLayout = tabLayoutsRef.current[section];
+    const scrollViewWidth = scrollViewWidthRef.current;
+    if (!tabLayout || !scrollViewWidth) return;
+
+    const visibleWidth = scrollViewWidth - CONTENT_RIGHT_INSET;
+    const leftEdge = scrollOffsetRef.current;
+    const rightEdge = leftEdge + visibleWidth;
+    const tabLeft = tabLayout.x;
+    const tabRight = tabLayout.x + tabLayout.width;
+
+    if (tabLeft < leftEdge) {
+      const nextOffset = Math.max(0, tabLeft - 24);
+      scrollOffsetRef.current = nextOffset;
+      scrollViewRef.current?.scrollTo({ animated, x: nextOffset });
+      return;
+    }
+
+    if (tabRight > rightEdge) {
+      const nextOffset = Math.max(0, tabRight - visibleWidth + 16);
+      scrollOffsetRef.current = nextOffset;
+      scrollViewRef.current?.scrollTo({ animated, x: nextOffset });
+    }
+  }, []);
+
+  useEffect(() => {
+    requestAnimationFrame(() => scrollSelectedTabIntoView(activeSection));
+  }, [activeSection, scrollSelectedTabIntoView]);
+
+  const handleScroll = useCallback((event: NativeSyntheticEvent<NativeScrollEvent>) => {
+    scrollOffsetRef.current = event.nativeEvent.contentOffset.x;
+  }, []);
+
+  const handleScrollViewLayout = useCallback(
+    (event: LayoutChangeEvent) => {
+      scrollViewWidthRef.current = event.nativeEvent.layout.width;
+      scrollSelectedTabIntoView(activeSection, false);
+    },
+    [activeSection, scrollSelectedTabIntoView]
+  );
 
   const handlePress = useCallback(
     (section: DiscoverSection) => {
@@ -87,27 +132,38 @@ function DiscoverCategorySelector() {
   return (
     <Box width="full" height="full">
       <ScrollView
+        ref={scrollViewRef}
         horizontal
         contentContainerStyle={{ height: '100%', gap: 16, paddingTop: CONTENT_TOP_INSET, paddingLeft: 24 }}
         style={{ height: '100%' }}
         contentInset={{ right: CONTENT_RIGHT_INSET + 32 }}
+        onLayout={handleScrollViewLayout}
+        onScroll={handleScroll}
+        scrollEventThrottle={16}
         showsHorizontalScrollIndicator={false}
       >
         {DISCOVER_SECTION_ORDER.map(section => {
           const category = DISCOVER_SECTIONS[section];
           const isSelected = section === activeSection;
           return (
-            <ButtonPressAnimation
-              hitSlop={4}
+            <View
               key={section}
-              onPress={() => handlePress(section)}
-              scaleTo={0.92}
-              testID={`discover-section-tab-${section}`}
+              onLayout={event => {
+                tabLayoutsRef.current[section] = event.nativeEvent.layout;
+                if (section === activeSection) scrollSelectedTabIntoView(section, false);
+              }}
             >
-              <Text color={isSelected ? 'label' : unselectedColor} size="22pt" weight="heavy">
-                {category.label}
-              </Text>
-            </ButtonPressAnimation>
+              <ButtonPressAnimation
+                hitSlop={4}
+                onPress={() => handlePress(section)}
+                scaleTo={0.92}
+                testID={`discover-section-tab-${section}`}
+              >
+                <Text color={isSelected ? 'label' : unselectedColor} size="22pt" weight="heavy">
+                  {category.label}
+                </Text>
+              </ButtonPressAnimation>
+            </View>
           );
         })}
       </ScrollView>
