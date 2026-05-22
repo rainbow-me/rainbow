@@ -1,6 +1,6 @@
 import { analytics } from '@/analytics';
 import { event } from '@/analytics/event';
-import { type Destination } from '@/features/placements/surfaces/types';
+import { type Destination, type Display } from '@/features/placements/surfaces/types';
 import { type Placement, type PlacementId, type PlacementItem, type PlacementItemAnalyticsMetadata } from '@/features/placements/types';
 
 export function trackPlacementCardPress({
@@ -34,22 +34,52 @@ export function trackPlacementCardPress({
   });
 }
 
-export function trackPlacementSeeAllPress({
+export function trackDiscoverTabPress({
+  sectionId,
+  sectionTitle,
+  surfaceId,
+  wasActive,
+}: {
+  sectionId: string;
+  sectionTitle: string;
+  surfaceId: string;
+  wasActive: boolean;
+}): void {
+  analytics.track(event.discoverTabPressed, {
+    sectionId,
+    sectionTitle,
+    surfaceId,
+    wasActive,
+  });
+}
+
+export function trackSurfaceSectionDrilldownPress({
   destination,
+  display,
+  placement,
   placementId,
+  sectionId,
   surfaceId,
   title,
 }: {
   destination: Destination;
-  placementId: PlacementId;
+  display: Display;
+  placement: Placement | undefined;
+  placementId?: PlacementId;
+  sectionId: string;
   surfaceId: string;
   title: string;
 }): void {
-  analytics.track(event.discoverPlacementSeeAllPressed, {
-    placementId,
-    surfaceId,
-    placementTitle: title,
+  analytics.track(event.surfaceSectionDrilldownPressed, {
     destination,
+    display,
+    placementId,
+    placementSource: placement?.source,
+    placementType: placement?.type,
+    placementVersion: placement?.version,
+    sectionId,
+    sectionTitle: title,
+    surfaceId,
   });
 }
 
@@ -78,19 +108,55 @@ export function trackPredictionOutcomePress({
 export function trackPlacementInteraction({
   interactionType,
   placement,
+  display,
+  sectionId,
   surfaceId,
 }: {
   interactionType: 'carousel_scroll';
   placement: Placement;
+  display: Display;
+  sectionId: string;
   surfaceId: string;
 }): void {
   analytics.track(event.placementInteraction, {
-    id: placement.id,
+    placementId: placement.id,
     interactionType,
     surfaceId,
     source: placement.source,
     type: placement.type,
     version: placement.version,
+  });
+  trackSurfaceInteraction({
+    display,
+    interactionType,
+    placement,
+    sectionId,
+    surfaceId,
+  });
+}
+
+export function trackSurfaceInteraction({
+  display,
+  interactionType,
+  placement,
+  sectionId,
+  surfaceId,
+}: {
+  display?: Display;
+  interactionType: 'carousel_scroll';
+  placement?: Placement;
+  sectionId?: string;
+  surfaceId: string;
+}): void {
+  analytics.track(event.surfaceInteraction, {
+    display,
+    interactionType,
+    placementId: placement?.id,
+    placementSource: placement?.source,
+    placementType: placement?.type,
+    placementVersion: placement?.version,
+    sectionId,
+    surfaceId,
   });
 }
 

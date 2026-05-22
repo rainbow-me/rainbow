@@ -6,6 +6,7 @@ import { useDiscoverScreenContext } from '@/components/Discover/DiscoverScreenCo
 import { EasingGradient } from '@/components/easing-gradient/EasingGradient';
 import { Box, Text, TextIcon, useColorMode, useForegroundColor } from '@/design-system';
 import { getValueForColorMode } from '@/design-system/color/palettes';
+import { trackDiscoverTabPress } from '@/features/discover/components/placementTracking';
 import { DISCOVER_SCREEN_BACKGROUND_COLOR } from '@/features/discover/constants';
 import {
   DiscoverSectionNavigation,
@@ -13,6 +14,7 @@ import {
   type DiscoverSection,
 } from '@/features/discover/stores/discoverNavigationStore';
 import { useDiscoverSurface } from '@/features/placements/surfaces/hooks/useSurface';
+import { type Surface } from '@/features/placements/surfaces/types';
 import { resolveLabel } from '@/features/placements/surfaces/utils/resolveLabel';
 import { isSurfaceContainer } from '@/features/placements/surfaces/utils/surfaceGuards';
 import { THICK_BORDER_WIDTH } from '@/styles/constants';
@@ -124,11 +126,19 @@ function DiscoverCategorySelector() {
   );
 
   const handlePress = useCallback(
-    (section: DiscoverSection) => {
-      if (DiscoverSectionNavigation.isSectionActive(section)) {
-        scrollToSectionTop(section);
+    (section: Surface) => {
+      const wasActive = DiscoverSectionNavigation.isSectionActive(section.id);
+      trackDiscoverTabPress({
+        sectionId: section.id,
+        sectionTitle: resolveLabel(section),
+        surfaceId: surface?.id ?? 'discover',
+        wasActive,
+      });
+
+      if (wasActive) {
+        scrollToSectionTop(section.id);
       } else {
-        DiscoverSectionNavigation.navigate(section, surface?.id);
+        DiscoverSectionNavigation.navigate(section.id, surface?.id);
       }
     },
     [scrollToSectionTop, surface?.id]
@@ -166,7 +176,7 @@ function DiscoverCategorySelector() {
             >
               <ButtonPressAnimation
                 hitSlop={4}
-                onPress={() => handlePress(section.id)}
+                onPress={() => handlePress(section)}
                 scaleTo={0.92}
                 testID={`discover-section-tab-${section.id}`}
               >

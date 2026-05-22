@@ -16,11 +16,11 @@ import {
   defaultPlacementItemKey,
   trackPlacementCardPress,
   trackPlacementInteraction,
-  trackPlacementSeeAllPress,
   trackPredictionOutcomePress,
+  trackSurfaceSectionDrilldownPress,
 } from '@/features/discover/components/placementTracking';
 import { SCREEN_HORIZONTAL_PADDING } from '@/features/discover/constants';
-import { type Destination } from '@/features/placements/surfaces/types';
+import { type Destination, type Display } from '@/features/placements/surfaces/types';
 import { type Placement, type PlacementId, type PlacementItem } from '@/features/placements/types';
 import { time } from '@/utils/time';
 
@@ -32,6 +32,7 @@ const SCROLL_DEBOUNCE_OPTIONS = Object.freeze({ leading: false, trailing: true }
 type MarketCarouselProps<T extends PlacementItem> = {
   data: T[];
   destination: Destination;
+  display: Display;
   getItemWidth?: (item: T) => number;
   itemHeight: number;
   itemVerticalBleed?: number;
@@ -42,6 +43,7 @@ type MarketCarouselProps<T extends PlacementItem> = {
   placementId: PlacementId;
   renderItem: (item: T) => ReactNode;
   renderSkeleton: () => ReactNode;
+  sectionId: string;
   showHeaderCaret?: boolean;
   surfaceId: string;
   title: string;
@@ -50,6 +52,7 @@ type MarketCarouselProps<T extends PlacementItem> = {
 export function MarketCarousel<T extends PlacementItem>({
   data,
   destination,
+  display,
   getItemWidth,
   itemHeight,
   itemVerticalBleed = 0,
@@ -60,6 +63,7 @@ export function MarketCarousel<T extends PlacementItem>({
   placementId,
   renderItem,
   renderSkeleton,
+  sectionId,
   showHeaderCaret,
   surfaceId,
   title,
@@ -118,14 +122,14 @@ export function MarketCarousel<T extends PlacementItem>({
   );
 
   const handleSeeAllPress = useCallback(() => {
-    trackPlacementSeeAllPress({ destination, placementId, surfaceId, title });
+    trackSurfaceSectionDrilldownPress({ destination, display, placement, placementId, sectionId, surfaceId, title });
     onPressSeeAll?.();
-  }, [destination, onPressSeeAll, placementId, surfaceId, title]);
+  }, [destination, display, onPressSeeAll, placement, placementId, sectionId, surfaceId, title]);
 
   const onScrollSettle = useDebouncedCallback(
     () => {
       if (!placement) return;
-      trackPlacementInteraction({ interactionType: 'carousel_scroll', placement, surfaceId });
+      trackPlacementInteraction({ display, interactionType: 'carousel_scroll', placement, sectionId, surfaceId });
     },
     SCROLL_DEBOUNCE_MS,
     SCROLL_DEBOUNCE_OPTIONS

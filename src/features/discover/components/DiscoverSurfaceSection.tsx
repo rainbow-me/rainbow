@@ -51,48 +51,55 @@ import { DEVICE_WIDTH } from '@/utils/deviceUtils';
 
 type DiscoverSurfaceSectionsProps = {
   items: Surface[];
+  surfaceId: string;
 };
 
-export function DiscoverSurfaceSections({ items }: DiscoverSurfaceSectionsProps) {
+export function DiscoverSurfaceSections({ items, surfaceId }: DiscoverSurfaceSectionsProps) {
   return (
     <View style={styles.container}>
       {items.map(item => (
-        <DiscoverSurfaceSection key={item.id} surface={item} />
+        <DiscoverSurfaceSection key={item.id} surface={item} surfaceId={surfaceId} />
       ))}
     </View>
   );
 }
 
-export const DiscoverSurfaceSection = memo(function DiscoverSurfaceSection({ surface }: { surface: Surface }) {
-  if (isSurfaceContainer(surface)) return <DiscoverSurfaceSections items={surface.items} />;
+export const DiscoverSurfaceSection = memo(function DiscoverSurfaceSection({
+  surface,
+  surfaceId,
+}: {
+  surface: Surface;
+  surfaceId: string;
+}) {
+  if (isSurfaceContainer(surface)) return <DiscoverSurfaceSections items={surface.items} surfaceId={surfaceId} />;
 
   switch (surface.display) {
     case 'perp_pill.carousel':
-      return <PerpPillCarouselSection surface={surface} />;
+      return <PerpPillCarouselSection surface={surface} surfaceId={surfaceId} />;
     case 'perp_tile.carousel':
-      return <PerpTileCarouselSection surface={surface} />;
+      return <PerpTileCarouselSection surface={surface} surfaceId={surfaceId} />;
     case 'perp_tile.grid':
-      return <PerpTileGridSection surface={surface} />;
+      return <PerpTileGridSection surface={surface} surfaceId={surfaceId} />;
     case 'perp_row.list':
-      return <PerpRowListSection surface={surface} />;
+      return <PerpRowListSection surface={surface} surfaceId={surfaceId} />;
     case 'prediction_tile.carousel':
-      return <PredictionTileCarouselSection surface={surface} />;
+      return <PredictionTileCarouselSection surface={surface} surfaceId={surfaceId} />;
     case 'prediction_tile.grid':
-      return <PredictionTileGridSection surface={surface} />;
+      return <PredictionTileGridSection surface={surface} surfaceId={surfaceId} />;
     case 'prediction_tile_widget.carousel':
-      return <PredictionTileWidgetCarouselSection surface={surface} />;
+      return <PredictionTileWidgetCarouselSection surface={surface} surfaceId={surfaceId} />;
     case 'prediction_sport_widget.carousel':
-      return <PredictionSportWidgetCarouselSection surface={surface} />;
+      return <PredictionSportWidgetCarouselSection surface={surface} surfaceId={surfaceId} />;
     case 'prediction_sport_widget.list':
-      return <PredictionSportWidgetListSection surface={surface} />;
+      return <PredictionSportWidgetListSection surface={surface} surfaceId={surfaceId} />;
     case 'token_cell.list':
-      return <TokenCellListSection surface={surface} />;
+      return <TokenCellListSection surface={surface} surfaceId={surfaceId} />;
     default:
       return assertNever(surface);
   }
 });
 
-function PerpPillCarouselSection({ surface }: { surface: SurfaceLeaf }) {
+function PerpPillCarouselSection({ surface, surfaceId }: { surface: SurfaceLeaf; surfaceId: string }) {
   const useStore = useMemo(() => getPerpsPlacementStore(surface.placement), [surface.placement]);
   const result = useStore();
   const data = useLimitedItems(result.items, surface.limit);
@@ -101,6 +108,7 @@ function PerpPillCarouselSection({ surface }: { surface: SurfaceLeaf }) {
     <MarketCarousel
       data={data}
       destination={surface.destination}
+      display={surface.display}
       getItemWidth={getPerpPillItemWidth}
       itemHeight={PERP_MARKET_PILL_HEIGHT}
       itemVerticalBleed={8}
@@ -111,14 +119,15 @@ function PerpPillCarouselSection({ surface }: { surface: SurfaceLeaf }) {
       placementId={surface.placement}
       renderItem={renderPerpPill}
       renderSkeleton={PerpMarketPillSkeleton}
+      sectionId={surface.id}
       showHeaderCaret={surface.destination !== null}
-      surfaceId={surface.id}
+      surfaceId={surfaceId}
       title={resolveLabel(surface)}
     />
   );
 }
 
-function PerpTileCarouselSection({ surface }: { surface: SurfaceLeaf }) {
+function PerpTileCarouselSection({ surface, surfaceId }: { surface: SurfaceLeaf; surfaceId: string }) {
   const useStore = useMemo(() => getPerpsPlacementStore(surface.placement), [surface.placement]);
   const result = useStore();
   const data = useLimitedItems(result.items, surface.limit);
@@ -127,6 +136,7 @@ function PerpTileCarouselSection({ surface }: { surface: SurfaceLeaf }) {
     <MarketCarousel
       data={data}
       destination={surface.destination}
+      display={surface.display}
       itemHeight={LARGE_PERP_MARKET_CARD_HEIGHT}
       itemWidth={LARGE_PERP_MARKET_CARD_WIDTH}
       loading={result.isLoading}
@@ -135,14 +145,15 @@ function PerpTileCarouselSection({ surface }: { surface: SurfaceLeaf }) {
       placementId={surface.placement}
       renderItem={renderLargePerpCard}
       renderSkeleton={LargePerpMarketCardSkeleton}
+      sectionId={surface.id}
       showHeaderCaret={surface.destination !== null}
-      surfaceId={surface.id}
+      surfaceId={surfaceId}
       title={resolveLabel(surface)}
     />
   );
 }
 
-function PerpTileGridSection({ surface }: { surface: SurfaceLeaf }) {
+function PerpTileGridSection({ surface, surfaceId }: { surface: SurfaceLeaf; surfaceId: string }) {
   const useStore = useMemo(() => getPerpsPlacementStore(surface.placement), [surface.placement]);
   const result = useStore();
   const data = useLimitedItems(result.items, surface.limit);
@@ -151,6 +162,7 @@ function PerpTileGridSection({ surface }: { surface: SurfaceLeaf }) {
     <MarketGrid
       data={data}
       destination={surface.destination}
+      display={surface.display}
       itemHeight={LARGE_PERP_MARKET_CARD_HEIGHT}
       loading={result.isLoading}
       onPressSeeAll={getHeaderPress(surface.destination)}
@@ -158,14 +170,15 @@ function PerpTileGridSection({ surface }: { surface: SurfaceLeaf }) {
       placementId={surface.placement}
       renderItem={renderLargePerpGridCard}
       renderSkeleton={renderLargePerpGridSkeleton}
+      sectionId={surface.id}
       showHeaderCaret={surface.destination !== null}
-      surfaceId={surface.id}
+      surfaceId={surfaceId}
       title={resolveLabel(surface)}
     />
   );
 }
 
-function PerpRowListSection({ surface }: { surface: SurfaceLeaf }) {
+function PerpRowListSection({ surface, surfaceId }: { surface: SurfaceLeaf; surfaceId: string }) {
   const useStore = useMemo(() => getPerpsPlacementStore(surface.placement), [surface.placement]);
   const result = useStore();
 
@@ -173,6 +186,7 @@ function PerpRowListSection({ surface }: { surface: SurfaceLeaf }) {
     <MarketList
       data={result.items}
       destination={surface.destination}
+      display={surface.display}
       initialVisibleItemCount={surface.limit}
       loading={result.isLoading}
       onPressSeeAll={getHeaderPress(surface.destination)}
@@ -180,13 +194,14 @@ function PerpRowListSection({ surface }: { surface: SurfaceLeaf }) {
       placementId={surface.placement}
       renderItem={renderPerpRow}
       renderSkeleton={PerpMarketRowCardSkeleton}
-      surfaceId={surface.id}
+      sectionId={surface.id}
+      surfaceId={surfaceId}
       title={resolveLabel(surface)}
     />
   );
 }
 
-function PredictionTileCarouselSection({ surface }: { surface: SurfaceLeaf }) {
+function PredictionTileCarouselSection({ surface, surfaceId }: { surface: SurfaceLeaf; surfaceId: string }) {
   const useStore = useMemo(() => getPredictionsPlacementStore(surface.placement), [surface.placement]);
   const result = useStore();
   const data = useLimitedItems(result.items, surface.limit);
@@ -195,6 +210,7 @@ function PredictionTileCarouselSection({ surface }: { surface: SurfaceLeaf }) {
     <MarketCarousel
       data={data}
       destination={surface.destination}
+      display={surface.display}
       itemHeight={POLYMARKET_EVENTS_LIST_ITEM_HEIGHT}
       itemWidth={PREDICTION_TILE_WIDTH}
       loading={result.isLoading}
@@ -203,13 +219,14 @@ function PredictionTileCarouselSection({ surface }: { surface: SurfaceLeaf }) {
       placementId={surface.placement}
       renderItem={renderPredictionTile}
       renderSkeleton={renderPredictionSkeleton}
-      surfaceId={surface.id}
+      sectionId={surface.id}
+      surfaceId={surfaceId}
       title={resolveLabel(surface)}
     />
   );
 }
 
-function PredictionTileGridSection({ surface }: { surface: SurfaceLeaf }) {
+function PredictionTileGridSection({ surface, surfaceId }: { surface: SurfaceLeaf; surfaceId: string }) {
   const useStore = useMemo(() => getPredictionsPlacementStore(surface.placement), [surface.placement]);
   const result = useStore();
   const data = useLimitedItems(result.items, surface.limit);
@@ -218,6 +235,7 @@ function PredictionTileGridSection({ surface }: { surface: SurfaceLeaf }) {
     <MarketGrid
       data={data}
       destination={surface.destination}
+      display={surface.display}
       itemHeight={POLYMARKET_EVENTS_LIST_ITEM_HEIGHT}
       loading={result.isLoading}
       onPressSeeAll={getHeaderPress(surface.destination)}
@@ -225,13 +243,14 @@ function PredictionTileGridSection({ surface }: { surface: SurfaceLeaf }) {
       placementId={surface.placement}
       renderItem={renderPredictionGridTile}
       renderSkeleton={renderPredictionSkeleton}
-      surfaceId={surface.id}
+      sectionId={surface.id}
+      surfaceId={surfaceId}
       title={resolveLabel(surface)}
     />
   );
 }
 
-function PredictionTileWidgetCarouselSection({ surface }: { surface: SurfaceLeaf }) {
+function PredictionTileWidgetCarouselSection({ surface, surfaceId }: { surface: SurfaceLeaf; surfaceId: string }) {
   const useStore = useMemo(() => getPredictionsPlacementStore(surface.placement), [surface.placement]);
   const result = useStore();
   const data = useLimitedItems(result.items, surface.limit);
@@ -240,6 +259,7 @@ function PredictionTileWidgetCarouselSection({ surface }: { surface: SurfaceLeaf
     <MarketCarousel
       data={data}
       destination={surface.destination}
+      display={surface.display}
       itemHeight={PREDICTION_MARKET_TILE_CARD_HEIGHT}
       itemVerticalBleed={28}
       itemWidth={PREDICTION_MARKET_TILE_CARD_WIDTH}
@@ -249,13 +269,14 @@ function PredictionTileWidgetCarouselSection({ surface }: { surface: SurfaceLeaf
       placementId={surface.placement}
       renderItem={renderPredictionWidget}
       renderSkeleton={renderPredictionWidgetSkeleton}
-      surfaceId={surface.id}
+      sectionId={surface.id}
+      surfaceId={surfaceId}
       title={resolveLabel(surface)}
     />
   );
 }
 
-function PredictionSportWidgetCarouselSection({ surface }: { surface: SurfaceLeaf }) {
+function PredictionSportWidgetCarouselSection({ surface, surfaceId }: { surface: SurfaceLeaf; surfaceId: string }) {
   const useStore = useMemo(() => getPredictionsPlacementStore(surface.placement), [surface.placement]);
   const result = useStore();
   const data = useLimitedItems(result.items, surface.limit);
@@ -264,6 +285,7 @@ function PredictionSportWidgetCarouselSection({ surface }: { surface: SurfaceLea
     <MarketCarousel
       data={data}
       destination={surface.destination}
+      display={surface.display}
       itemHeight={SPORTS_EVENT_WIDGET_CARD_HEIGHT}
       itemWidth={SPORTS_EVENT_WIDGET_CARD_WIDTH}
       loading={result.isLoading}
@@ -272,13 +294,14 @@ function PredictionSportWidgetCarouselSection({ surface }: { surface: SurfaceLea
       placementId={surface.placement}
       renderItem={renderSportsWidget}
       renderSkeleton={renderSportsWidgetSkeleton}
-      surfaceId={surface.id}
+      sectionId={surface.id}
+      surfaceId={surfaceId}
       title={resolveLabel(surface)}
     />
   );
 }
 
-function PredictionSportWidgetListSection({ surface }: { surface: SurfaceLeaf }) {
+function PredictionSportWidgetListSection({ surface, surfaceId }: { surface: SurfaceLeaf; surfaceId: string }) {
   const useStore = useMemo(() => getPredictionsPlacementStore(surface.placement), [surface.placement]);
   const result = useStore();
 
@@ -286,6 +309,7 @@ function PredictionSportWidgetListSection({ surface }: { surface: SurfaceLeaf })
     <MarketList
       data={result.items}
       destination={surface.destination}
+      display={surface.display}
       initialVisibleItemCount={surface.limit}
       loading={result.isLoading}
       onPressSeeAll={getHeaderPress(surface.destination)}
@@ -293,13 +317,14 @@ function PredictionSportWidgetListSection({ surface }: { surface: SurfaceLeaf })
       placementId={surface.placement}
       renderItem={renderSportsWidget}
       renderSkeleton={renderSportsWidgetSkeleton}
-      surfaceId={surface.id}
+      sectionId={surface.id}
+      surfaceId={surfaceId}
       title={resolveLabel(surface)}
     />
   );
 }
 
-function TokenCellListSection({ surface }: { surface: SurfaceLeaf }) {
+function TokenCellListSection({ surface, surfaceId }: { surface: SurfaceLeaf; surfaceId: string }) {
   const { onTapSearch } = useDiscoverScreenContext();
   const useStore = useMemo(() => getTokensPlacementStore(surface.placement), [surface.placement]);
   const result = useStore();
@@ -315,6 +340,7 @@ function TokenCellListSection({ surface }: { surface: SurfaceLeaf }) {
     <MarketList
       data={result.items}
       destination={surface.destination}
+      display={surface.display}
       initialVisibleItemCount={surface.limit}
       loading={result.isLoading}
       onPressSeeAll={surface.destination ? onPressSeeAll : undefined}
@@ -322,7 +348,8 @@ function TokenCellListSection({ surface }: { surface: SurfaceLeaf }) {
       placementId={surface.placement}
       renderItem={renderTokenCell}
       renderSkeleton={TokenCellSkeleton}
-      surfaceId={surface.id}
+      sectionId={surface.id}
+      surfaceId={surfaceId}
       title={resolveLabel(surface)}
     />
   );

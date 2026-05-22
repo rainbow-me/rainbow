@@ -1,5 +1,3 @@
-import { analytics } from '@/analytics';
-import { event } from '@/analytics/event';
 import { createRainbowStore } from '@/state/internal/createRainbowStore';
 import { createStoreActions } from '@/state/internal/utils/createStoreActions';
 
@@ -21,8 +19,8 @@ export const useDiscoverNavigationStore = createRainbowStore<DiscoverNavigationS
 
   navigate: (section, surfaceId = 'discover') => {
     if (get().activeSection === section) return;
+    void surfaceId;
     set({ activeSection: section });
-    analytics.track(event.discoverTabSelected, { tabId: section, surfaceId });
   },
 }));
 

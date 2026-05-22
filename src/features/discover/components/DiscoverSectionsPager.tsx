@@ -1,4 +1,4 @@
-import React, { memo, useCallback, useEffect, type ReactElement } from 'react';
+import React, { memo, useCallback, useEffect, useMemo, type ReactElement } from 'react';
 import { Platform, StyleSheet, type RefreshControlProps } from 'react-native';
 
 import Animated, { useAnimatedScrollHandler, useSharedValue, type SharedValue } from 'react-native-reanimated';
@@ -34,7 +34,7 @@ export const DiscoverSectionsPager = memo(function DiscoverSectionsPager({
   scrollOffset,
 }: DiscoverSectionsPagerProps) {
   const surface = useDiscoverSurface();
-  const tabs = surface && isSurfaceContainer(surface) ? surface.items : [];
+  const tabs = useMemo(() => (surface && isSurfaceContainer(surface) ? surface.items : []), [surface]);
   const activeSectionId = useDiscoverNavigationStore(state => state.activeSection);
   const { ref, goToPage } = usePagerNavigation<DiscoverSection>();
   const initialSection = getInitialSection(tabs, activeSectionId);
@@ -92,6 +92,7 @@ export const DiscoverSectionsPager = memo(function DiscoverSectionsPager({
                 scrollOffset={scrollOffset}
                 section={section}
                 sectionScrollOffsets={sectionScrollOffsets}
+                surfaceId={surface.id}
               />
             }
             id={section.id}
@@ -110,12 +111,14 @@ const DiscoverSectionScrollView = memo(function DiscoverSectionScrollView({
   scrollOffset,
   section,
   sectionScrollOffsets,
+  surfaceId,
 }: {
   activeSection: SharedValue<DiscoverSection>;
   renderRefreshControl?: () => ReactElement<RefreshControlProps>;
   scrollOffset: SharedValue<number>;
   section: Surface;
   sectionScrollOffsets: SharedValue<SectionScrollOffsets>;
+  surfaceId: string;
 }) {
   const { registerSectionScrollView } = useDiscoverScreenContext();
   const tabBarOffset = useTabBarOffset();
@@ -154,7 +157,11 @@ const DiscoverSectionScrollView = memo(function DiscoverSectionScrollView({
       style={[styles.scrollView, { paddingBottom: Platform.OS === 'android' ? bottomInset : 0 }]}
       testID={`discover-section-${section.id}`}
     >
-      {isSurfaceContainer(section) ? <DiscoverSurfaceSections items={section.items} /> : <DiscoverSurfaceSections items={[section]} />}
+      {isSurfaceContainer(section) ? (
+        <DiscoverSurfaceSections items={section.items} surfaceId={surfaceId} />
+      ) : (
+        <DiscoverSurfaceSections items={[section]} surfaceId={surfaceId} />
+      )}
     </Animated.ScrollView>
   );
 });

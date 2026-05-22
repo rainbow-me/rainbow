@@ -8,5 +8,9 @@ export function DiscoverHome() {
 
   if (!firstTab) return null;
 
-  return isSurfaceContainer(firstTab) ? <DiscoverSurfaceSections items={firstTab.items} /> : <DiscoverSurfaceSections items={[firstTab]} />;
+  return isSurfaceContainer(firstTab) ? (
+    <DiscoverSurfaceSections items={firstTab.items} surfaceId={surface.id} />
+  ) : (
+    <DiscoverSurfaceSections items={[firstTab]} surfaceId={surface.id} />
+  );
 }

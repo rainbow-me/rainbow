@@ -242,10 +242,11 @@ export const event = {
   // discover screen
   timeSpentOnDiscoverScreen: 'Time spent on the Discover screen',
   discoverPlacementCardPressed: 'discover.placement_card_pressed',
-  discoverPlacementSeeAllPressed: 'discover.placement_see_all_pressed',
   discoverPredictionOutcomePressed: 'discover.prediction_outcome_pressed',
-  discoverTabSelected: 'discover.tab_selected',
+  discoverTabPressed: 'discover.tab_pressed',
   placementInteraction: 'placement.interaction',
+  surfaceSectionDrilldownPressed: 'surface.section_drilldown_pressed',
+  surfaceInteraction: 'surface.interaction',
 
   // ens
   ensInitiatedRegistration: 'Initiated ENS registration',
@@ -1008,11 +1009,11 @@ export type EventProperties = {
     marketSymbol?: string;
     marketType?: string;
   };
-  [event.discoverPlacementSeeAllPressed]: {
-    placementId: string;
+  [event.discoverTabPressed]: {
+    sectionTitle: string;
+    sectionId: string;
     surfaceId: string;
-    placementTitle: string;
-    destination: unknown;
+    wasActive: boolean;
   };
   [event.discoverPredictionOutcomePressed]: {
     placementId: string;
@@ -1023,12 +1024,8 @@ export type EventProperties = {
     marketSlug?: string;
     outcome: string;
   };
-  [event.discoverTabSelected]: {
-    tabId: string;
-    surfaceId: string;
-  };
   [event.placementInteraction]: {
-    id: string;
+    placementId: string;
     interactionType: 'carousel_scroll';
     surfaceId?: string;
     source?: string;
@@ -1037,6 +1034,30 @@ export type EventProperties = {
     itemRefSource?: string;
     itemRefId?: string;
     itemOrder?: number;
+  };
+  [event.surfaceSectionDrilldownPressed]: {
+    destination: unknown;
+    display: string;
+    placementId?: string;
+    placementSource?: string;
+    placementType?: string;
+    placementVersion?: number;
+    sectionId: string;
+    sectionTitle: string;
+    surfaceId: string;
+  };
+  [event.surfaceInteraction]: {
+    display?: string;
+    interactionType: 'carousel_scroll';
+    itemOrder?: number;
+    itemRefId?: string;
+    itemRefSource?: string;
+    placementId?: string;
+    placementSource?: string;
+    placementType?: string;
+    placementVersion?: number;
+    sectionId?: string;
+    surfaceId: string;
   };
 
   [event.ensInitiatedRegistration]: { category: string };

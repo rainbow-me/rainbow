@@ -13,11 +13,11 @@ import {
 } from '@/features/discover/components/carousel/placementCardContext';
 import {
   trackPlacementCardPress,
-  trackPlacementSeeAllPress,
   trackPredictionOutcomePress,
+  trackSurfaceSectionDrilldownPress,
 } from '@/features/discover/components/placementTracking';
 import { SCREEN_HORIZONTAL_PADDING } from '@/features/discover/constants';
-import { type Destination } from '@/features/placements/surfaces/types';
+import { type Destination, type Display } from '@/features/placements/surfaces/types';
 import { type Placement, type PlacementId, type PlacementItem } from '@/features/placements/types';
 
 const DEFAULT_VISIBLE_ITEM_COUNT = 5;
@@ -25,6 +25,7 @@ const DEFAULT_VISIBLE_ITEM_COUNT = 5;
 type MarketListProps<T extends PlacementItem> = {
   data: T[];
   destination: Destination;
+  display: Display;
   initialVisibleItemCount?: number;
   loading?: boolean;
   onPressSeeAll?: () => void;
@@ -32,6 +33,7 @@ type MarketListProps<T extends PlacementItem> = {
   placementId: PlacementId;
   renderItem: (item: T) => ReactNode;
   renderSkeleton: () => ReactNode;
+  sectionId: string;
   surfaceId: string;
   title: string;
 };
@@ -39,6 +41,7 @@ type MarketListProps<T extends PlacementItem> = {
 export function MarketList<T extends PlacementItem>({
   data,
   destination,
+  display,
   initialVisibleItemCount = DEFAULT_VISIBLE_ITEM_COUNT,
   loading,
   onPressSeeAll,
@@ -46,6 +49,7 @@ export function MarketList<T extends PlacementItem>({
   placementId,
   renderItem,
   renderSkeleton,
+  sectionId,
   surfaceId,
   title,
 }: MarketListProps<T>) {
@@ -55,9 +59,9 @@ export function MarketList<T extends PlacementItem>({
   const remainingItemCount = data.length - visibleItems.length;
 
   const handleSeeAllPress = useCallback(() => {
-    trackPlacementSeeAllPress({ destination, placementId, surfaceId, title });
+    trackSurfaceSectionDrilldownPress({ destination, display, placement, placementId, sectionId, surfaceId, title });
     onPressSeeAll?.();
-  }, [destination, onPressSeeAll, placementId, surfaceId, title]);
+  }, [destination, display, onPressSeeAll, placement, placementId, sectionId, surfaceId, title]);
 
   if (!showSkeletons && data.length === 0) return null;
 
