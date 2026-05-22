@@ -33,7 +33,6 @@ jest.mock('@/model/remoteConfig', () => ({
     getRemoteConfigKey(this: { config: Record<string, boolean> }, key: string) {
       return this.config[key];
     },
-    isConfigReady: () => true,
   }),
 }));
 

@@ -269,7 +269,6 @@ export type RemoteConfigState = {
   config: RainbowConfig;
   lastFetchedVersion: number;
   getRemoteConfigKey: <K extends RemoteConfigKey>(key: K) => RainbowConfig[K];
-  isConfigReady: () => boolean;
 };
 
 export const useRemoteConfigStore = createQueryStore<RainbowConfig, never, RemoteConfigState>(
@@ -298,7 +297,6 @@ export const useRemoteConfigStore = createQueryStore<RainbowConfig, never, Remot
     config: DEFAULT_CONFIG,
     lastFetchedVersion: 0,
     getRemoteConfigKey: key => get().config[key] ?? DEFAULT_CONFIG[key],
-    isConfigReady: () => get().lastFetchedVersion === REMOTE_CONFIG_VERSION,
   }),
 
   { storageKey: 'remoteConfig', version: REMOTE_CONFIG_VERSION }

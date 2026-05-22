@@ -4,7 +4,7 @@ import { type PerpMarketsBySymbol, type PerpMarketWithMetadata } from '@/feature
 import { createPlacementStore } from '@/features/placements/stores/factories/createPlacementStore';
 import { type PlacementId, type PlacementItem } from '@/features/placements/types';
 import { logger } from '@/logger';
-import { useRemoteConfigStore, type RemoteConfigState } from '@/model/remoteConfig';
+import { useRemoteConfigStore } from '@/model/remoteConfig';
 import { createDerivedStore } from '@/state/internal/createDerivedStore';
 
 // ============ Types ========================================================== //
@@ -24,21 +24,8 @@ const storesByPlacementId = new Map<PlacementId, ReturnType<typeof createPerpsPl
 
 // ============ Derived Stores ================================================= //
 
-const usePerpsEnabled = createDerivedStore<boolean>($ => $(useRemoteConfigStore, shouldEnablePerpsPlacements) && !IS_TEST, {
-  fastMode: true,
-});
-
-/**
- * True while perps placements are disabled by remote config but the config bootstrap has not yet completed —
- * lets each placement store hold its last resolved state instead of flashing empty before the real value arrives.
- */
-const usePerpsPending = createDerivedStore<boolean>(
-  $ => {
-    if (IS_TEST) return false;
-    const enabled = $(useRemoteConfigStore, shouldEnablePerpsPlacements);
-    if (enabled) return false;
-    return !$(useRemoteConfigStore, state => state.isConfigReady());
-  },
+const usePerpsEnabled = createDerivedStore<boolean>(
+  $ => $(useRemoteConfigStore, state => state.getRemoteConfigKey('perps_enabled')) && !IS_TEST,
   { fastMode: true }
 );
 
@@ -51,12 +38,6 @@ export function getPerpsPlacementStore(placementId: PlacementId) {
   return store;
 }
 
-// ============ Selectors ====================================================== //
-
-function shouldEnablePerpsPlacements(state: RemoteConfigState): boolean {
-  return state.getRemoteConfigKey('perps_enabled');
-}
-
 // ============ Utilities ====================================================== //
 
 function createPerpsPlacementStore(placementId: PlacementId) {
@@ -64,7 +45,6 @@ function createPerpsPlacementStore(placementId: PlacementId) {
     placementId,
     source: 'hyperliquid',
     enabled: usePerpsEnabled,
-    pending: usePerpsPending,
     select: ($, placementItems) => {
       const markets = $(useHyperliquidMarketsStore, state => state.markets);
       const marketsReady = $(useHyperliquidMarketsStore, state => state.getStatus('isSuccess'));

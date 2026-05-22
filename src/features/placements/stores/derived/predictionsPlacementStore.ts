@@ -44,15 +44,6 @@ export const usePredictionsEnabled = createDerivedStore<boolean>(
   { fastMode: true }
 );
 
-const usePredictionsPending = createDerivedStore<boolean>(
-  $ => {
-    if (IS_TEST) return false;
-    if ($(usePredictionsEnabled)) return false;
-    return !$(useRemoteConfigStore, state => state.isConfigReady());
-  },
-  { fastMode: true }
-);
-
 export const usePredictionEventsStore = createQueryStore<PolymarketEvent[], PredictionEventsParams>({
   fetcher: fetchPredictionEvents,
   enabled: $ => $(usePredictionsEnabled),
@@ -91,7 +82,6 @@ function createPredictionsPlacementStore(placementId: PlacementId) {
     placementId,
     source: 'polymarket',
     enabled: usePredictionsEnabled,
-    pending: usePredictionsPending,
     select: ($, placementItems) => {
       const events = $(usePredictionEventsStore, state => state.getData());
       const isLoading = $(usePredictionEventsStore, state => state.enabled && state.getStatus('isInitialLoad'));
