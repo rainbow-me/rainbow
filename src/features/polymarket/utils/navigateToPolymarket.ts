@@ -1,3 +1,6 @@
+import { CATEGORIES, DEFAULT_SPORTS_LEAGUE_KEY } from '@/features/polymarket/constants';
+import { usePolymarketSportsEventsStore } from '@/features/polymarket/stores/polymarketSportsEventsStore';
+import { usePolymarketCategoryStore } from '@/features/polymarket/stores/usePolymarketCategoryStore';
 import Navigation from '@/navigation/Navigation';
 import Routes from '@/navigation/routesNames';
 import { type RootStackParamList } from '@/navigation/types';
@@ -9,6 +12,38 @@ export function navigateToPolymarket(params?: RootStackParamList[typeof Routes.P
 
 export function navigateToPolymarketEvent(params: RootStackParamList[typeof Routes.POLYMARKET_EVENT_SCREEN]) {
   Navigation.handleAction(Routes.POLYMARKET_EVENT_SCREEN, params);
+}
+
+export function navigateToPolymarketDestination(segments: string[]): void {
+  const [category, league] = segments;
+
+  if (category === 'sports') {
+    navigateToPolymarketSportsLeague(league ?? DEFAULT_SPORTS_LEAGUE_KEY);
+    return;
+  }
+
+  if (category) {
+    navigateToPolymarketCategory(category);
+    return;
+  }
+
+  navigateToPolymarket();
+}
+
+export function navigateToPolymarketCategory(tagId: string): void {
+  usePolymarketCategoryStore.getState().setTagId(tagId);
+  usePolymarketSportsEventsStore.getState().setSelectedLeagueId(DEFAULT_SPORTS_LEAGUE_KEY);
+
+  navigateToPolymarket();
+}
+
+export function navigateToPolymarketSportsLeague(leagueId: string): void {
+  const sportsTagId = CATEGORIES.sports.tagId;
+  if (!sportsTagId) return;
+
+  usePolymarketCategoryStore.getState().setTagId(sportsTagId);
+  usePolymarketSportsEventsStore.getState().setSelectedLeagueId(leagueId);
+  navigateToPolymarket();
 }
 
 function navigateToPolymarketSection(params?: RootStackParamList[typeof Routes.POLYMARKET_NAVIGATOR]) {
