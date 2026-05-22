@@ -370,7 +370,7 @@ export const SPORT_LEAGUES = {
     name: 'F1',
     fullName: 'Formula 1',
     sportId: 'motorsports',
-    color: SPORTS.motorsports.color,
+    color: { dark: '#FF1E00', light: '#E10600' },
   },
   scop: {
     name: 'SCOP',
