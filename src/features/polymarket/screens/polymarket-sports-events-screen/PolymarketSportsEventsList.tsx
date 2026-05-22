@@ -50,6 +50,12 @@ type SportsEventsListProps = {
   truncateSections?: boolean;
 };
 
+type SportsEventsListContentProps = SportsEventsListProps & {
+  events: PolymarketEvent[];
+  isIdle: boolean;
+  isLoading: boolean;
+};
+
 export const PolymarketSportsEventsList = memo(function PolymarketSportsEventsList({
   listRef,
   onPressLeagueHeader,
@@ -58,12 +64,39 @@ export const PolymarketSportsEventsList = memo(function PolymarketSportsEventsLi
   selectedLeagueId: selectedLeagueIdOverride,
   truncateSections = false,
 }: SportsEventsListProps) {
-  const safeAreaInsets = useSafeAreaInsets();
   const events = usePolymarketSportsEventsStore(state => state.getData() ?? EMPTY_EVENTS);
   const storeSelectedLeagueId = usePolymarketSportsEventsStore(state => state.selectedLeagueId);
   const selectedLeagueId = selectedLeagueIdOverride ?? storeSelectedLeagueId;
   const isLoading = usePolymarketSportsEventsStore(state => state.getStatus('isLoading'));
   const isIdle = usePolymarketSportsEventsStore(state => state.getStatus('isIdle'));
+
+  return (
+    <PolymarketSportsEventsListContent
+      events={events}
+      isIdle={isIdle}
+      isLoading={isLoading}
+      listRef={listRef}
+      onPressLeagueHeader={onPressLeagueHeader}
+      onScroll={onScroll}
+      renderAsStaticList={renderAsStaticList}
+      selectedLeagueId={selectedLeagueId}
+      truncateSections={truncateSections}
+    />
+  );
+});
+
+export const PolymarketSportsEventsListContent = memo(function PolymarketSportsEventsListContent({
+  events,
+  isIdle,
+  isLoading,
+  listRef,
+  onPressLeagueHeader,
+  onScroll,
+  renderAsStaticList = false,
+  selectedLeagueId,
+  truncateSections = false,
+}: SportsEventsListContentProps) {
+  const safeAreaInsets = useSafeAreaInsets();
   const showLeagueHeaders = !selectedLeagueId || selectedLeagueId === DEFAULT_SPORTS_LEAGUE_KEY;
   const [expandedKeys, setExpandedKeys] = useState<ReadonlySet<string>>(() => new Set());
 
