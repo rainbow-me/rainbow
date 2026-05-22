@@ -71,6 +71,7 @@ function DiscoverCategorySelector() {
   const activeSection = useDiscoverNavigationStore(state => state.activeSection);
   const { scrollToSectionTop } = useDiscoverScreenContext();
   const { isDarkMode, colorMode } = useColorMode();
+  const screenBackgroundColor = getValueForColorMode(DISCOVER_SCREEN_BACKGROUND_COLOR, colorMode);
   const scrollViewRef = useRef<ScrollView>(null);
   const scrollOffsetRef = useRef(0);
   const scrollViewWidthRef = useRef(0);
@@ -175,8 +176,8 @@ function DiscoverCategorySelector() {
       </ScrollView>
       <View style={{ position: 'absolute', right: 0, top: 0, bottom: 0, flexDirection: 'row' }} pointerEvents="none">
         <EasingGradient
-          startColor="rgba(0, 0, 0, 1)"
-          endColor="rgba(0, 0, 0, 1)"
+          startColor={screenBackgroundColor}
+          endColor={screenBackgroundColor}
           startPosition="right"
           endPosition="left"
           startOpacity={1}
@@ -187,7 +188,7 @@ function DiscoverCategorySelector() {
           style={{
             height: '100%',
             width: SEARCH_BUTTON_RIGHT_INSET,
-            backgroundColor: getValueForColorMode(DISCOVER_SCREEN_BACKGROUND_COLOR, colorMode),
+            backgroundColor: screenBackgroundColor,
           }}
         />
       </View>
