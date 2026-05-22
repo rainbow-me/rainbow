@@ -41,13 +41,6 @@ const SPORTS = {
       light: '#AF403D',
     },
   },
-  motorsports: {
-    name: 'Motorsports',
-    color: {
-      dark: '#E10600',
-      light: '#E10600',
-    },
-  },
   esports: {
     name: 'Esports',
     color: {
@@ -124,16 +117,6 @@ export const SPORT_LEAGUES = {
     },
     gammaLeagueId: 'valorant',
   },
-  lol: {
-    name: 'LOL',
-    fullName: 'League of Legends',
-    sportId: 'esports',
-    color: {
-      dark: '#C8AA6E',
-      light: '#A9822A',
-    },
-    gammaLeagueId: 'league-of-legends',
-  },
   sc2: {
     name: 'SC2',
     fullName: 'StarCraft II',
@@ -150,45 +133,9 @@ export const SPORT_LEAGUES = {
     sportId: 'basketball',
     color: SPORTS.basketball.color,
   },
-  ahl: {
-    name: 'AHL',
-    fullName: 'American Hockey League',
-    sportId: 'hockey',
-    color: SPORTS.hockey.color,
-  },
-  wnba: {
-    name: 'WNBA',
-    fullName: "Women's National Basketball Association",
-    sportId: 'basketball',
-    color: SPORTS.basketball.color,
-  },
-  wcbb: {
-    name: 'NCAAW',
-    fullName: "NCAA Women's Basketball",
-    sportId: 'basketball',
-    color: SPORTS.basketball.color,
-  },
-  bkaba: {
-    name: 'ABA League',
-    fullName: 'ABA League',
-    sportId: 'basketball',
-    color: SPORTS.basketball.color,
-  },
-  bkseriea: {
-    name: 'Serie A Basket',
-    fullName: 'Lega Basket Serie A',
-    sportId: 'basketball',
-    color: SPORTS.basketball.color,
-  },
   nhl: {
     name: 'NHL',
     fullName: 'National Hockey League',
-    sportId: 'hockey',
-    color: SPORTS.hockey.color,
-  },
-  wch: {
-    name: 'World Championship',
-    fullName: 'Ice Hockey World Championship',
     sportId: 'hockey',
     color: SPORTS.hockey.color,
   },
@@ -204,24 +151,6 @@ export const SPORT_LEAGUES = {
     sportId: 'soccer',
     color: SPORTS.soccer.color,
   },
-  ucl: {
-    name: 'UCL',
-    fullName: 'UEFA Champions League',
-    sportId: 'soccer',
-    color: SPORTS.soccer.color,
-  },
-  mls: {
-    name: 'MLS',
-    fullName: 'Major League Soccer',
-    sportId: 'soccer',
-    color: SPORTS.soccer.color,
-  },
-  bun: {
-    name: 'Bundesliga',
-    fullName: 'Bundesliga',
-    sportId: 'soccer',
-    color: SPORTS.soccer.color,
-  },
   lal: {
     name: 'La Liga',
     fullName: 'Spanish La Liga',
@@ -229,110 +158,8 @@ export const SPORT_LEAGUES = {
     color: SPORTS.soccer.color,
   },
   sea: {
-    name: 'Serie A',
-    fullName: 'Serie A',
-    sportId: 'soccer',
-    color: SPORTS.soccer.color,
-  },
-  bra1: {
-    name: 'Brazil Serie A',
-    fullName: 'Brazil Serie A',
-    sportId: 'soccer',
-    color: SPORTS.soccer.color,
-  },
-  bra2: {
-    name: 'Brazil Serie B',
-    fullName: 'Brazil Serie B',
-    sportId: 'soccer',
-    color: SPORTS.soccer.color,
-  },
-  bsseriea: {
-    name: 'Brazil Serie A',
-    fullName: 'Brazil Serie A',
-    sportId: 'soccer',
-    color: SPORTS.soccer.color,
-  },
-  cze1: {
-    name: 'Czech First League',
-    fullName: 'Czech First League',
-    sportId: 'soccer',
-    color: SPORTS.soccer.color,
-  },
-  dfb: {
-    name: 'DFB-Pokal',
-    fullName: 'DFB-Pokal',
-    sportId: 'soccer',
-    color: SPORTS.soccer.color,
-  },
-  egy1: {
-    name: 'EGY1',
-    fullName: 'Egyptian Premier League',
-    sportId: 'soccer',
-    color: SPORTS.soccer.color,
-  },
-  fif: {
-    name: 'FIFA',
-    fullName: 'FIFA International',
-    sportId: 'soccer',
-    color: SPORTS.soccer.color,
-  },
-  fifwc: {
-    name: 'FIFA World Cup',
-    fullName: 'FIFA World Cup',
-    sportId: 'soccer',
-    color: SPORTS.soccer.color,
-  },
-  fl1: {
-    name: 'Ligue 1',
-    fullName: 'French Ligue 1',
-    sportId: 'soccer',
-    color: SPORTS.soccer.color,
-  },
-  j2100: {
-    name: 'J2 League',
-    fullName: 'J2 League',
-    sportId: 'soccer',
-    color: SPORTS.soccer.color,
-  },
-  tur: {
-    name: 'Super Lig',
-    fullName: 'Turkish Super Lig',
-    sportId: 'soccer',
-    color: SPORTS.soccer.color,
-  },
-  lib: {
-    name: 'Libertadores',
-    fullName: 'CONMEBOL Libertadores',
-    sportId: 'soccer',
-    color: SPORTS.soccer.color,
-  },
-  cde: {
-    name: 'Copa del Rey',
-    fullName: 'Copa del Rey',
-    sportId: 'soccer',
-    color: SPORTS.soccer.color,
-  },
-  ere: {
-    name: 'Eredivisie',
-    fullName: 'Eredivisie',
-    sportId: 'soccer',
-    color: SPORTS.soccer.color,
-  },
-  mex: {
-    name: 'Liga MX',
-    fullName: 'Liga MX',
-    sportId: 'soccer',
-    color: SPORTS.soccer.color,
-  },
-  nor: {
-    name: 'Eliteserien',
-    fullName: 'Norwegian Eliteserien',
-    sportId: 'soccer',
-    color: SPORTS.soccer.color,
-  },
-  sud: {
-    name: 'Sudamericana',
-    fullName: 'CONMEBOL Sudamericana',
+    name: 'SEA',
+    fullName: 'SEA',
     sportId: 'soccer',
     color: SPORTS.soccer.color,
   },
@@ -342,35 +169,11 @@ export const SPORT_LEAGUES = {
     sportId: 'cricket',
     color: SPORTS.cricket.color,
   },
-  ipl: {
-    name: 'IPL',
-    fullName: 'Indian Premier League',
-    sportId: 'cricket',
-    color: SPORTS.cricket.color,
-  },
   atp: {
     name: 'ATP',
     fullName: 'Association of Tennis Professionals',
     sportId: 'tennis',
     color: SPORTS.tennis.color,
-  },
-  wta: {
-    name: 'WTA',
-    fullName: "Women's Tennis Association",
-    sportId: 'tennis',
-    color: SPORTS.tennis.color,
-  },
-  itf: {
-    name: 'ITF',
-    fullName: 'International Tennis Federation',
-    sportId: 'tennis',
-    color: SPORTS.tennis.color,
-  },
-  f1: {
-    name: 'F1',
-    fullName: 'Formula 1',
-    sportId: 'motorsports',
-    color: { dark: '#FF1E00', light: '#E10600' },
   },
   scop: {
     name: 'SCOP',
@@ -388,45 +191,7 @@ export const SPORT_LEAGUES = {
 
 export const LEAGUE_SELECTOR_ORDER: LeagueId[] = ['nfl', 'nba', 'cfb', 'cbb', 'epl', 'nhl', 'atp', 'ufc', 'cs2', 'crint'];
 
-export const LEAGUE_LIST_ORDER: LeagueId[] = [
-  ...LEAGUE_SELECTOR_ORDER,
-  'ahl',
-  'wnba',
-  'wcbb',
-  'bkaba',
-  'bkseriea',
-  'mlb',
-  'wch',
-  'ucl',
-  'mls',
-  'bun',
-  'lal',
-  'sea',
-  'bra1',
-  'bra2',
-  'bsseriea',
-  'cze1',
-  'dfb',
-  'egy1',
-  'fif',
-  'fifwc',
-  'fl1',
-  'j2100',
-  'tur',
-  'lib',
-  'cde',
-  'ere',
-  'mex',
-  'nor',
-  'sud',
-  'ipl',
-  'wta',
-  'itf',
-  'f1',
-  'dota2',
-  'val',
-  'lol',
-];
+export const LEAGUE_LIST_ORDER: LeagueId[] = [...LEAGUE_SELECTOR_ORDER, 'mlb', 'dota2', 'val'];
 
 export type LeagueId = keyof typeof SPORT_LEAGUES;
 export type League = (typeof SPORT_LEAGUES)[LeagueId];
@@ -434,7 +199,7 @@ export type SportId = League['sportId'];
 
 export function getLeagueSlugId(value: string): string | undefined {
   const [slugId] = value.split('-');
-  return slugId?.toLowerCase() || undefined;
+  return slugId || undefined;
 }
 
 function isLeagueId(value: string): value is LeagueId {
