@@ -8,12 +8,12 @@ import { AnimatedTextIcon } from '@/components/AnimatedComponents/AnimatedTextIc
 import ButtonPressAnimation from '@/components/animations/ButtonPressAnimation';
 import ImgixImage from '@/components/images/ImgixImage';
 import { useLiveTokenSharedValue } from '@/components/live-token-text/LiveTokenText';
+import { Skeleton } from '@/components/Skeleton';
 import { AnimatedText, Text, useColorMode } from '@/design-system';
 import { getValueForColorMode, type ColorMode, type ContextualColorValue } from '@/design-system/color/palettes';
 import { Border } from '@/design-system/components/Border/Border';
 import { COMPACT_LINE_CHART_HORIZONTAL_OVERDRAW } from '@/features/charts/line/compact/CompactLineChartRenderer';
 import { SparklineChart } from '@/features/charts/line/components/SparklineChart';
-import { CarouselCardSkeleton } from '@/features/discover/components/carousel/CarouselCardSkeleton';
 import { usePlacementCardTrackPress } from '@/features/discover/components/carousel/placementCardContext';
 import { buildPerpMarketBaseDisplay, type PriceChangeColors } from '@/features/discover/components/perpMarketCards/perpMarketCardChrome';
 import { DOWN_ARROW, UP_ARROW } from '@/features/perps/constants';
@@ -261,11 +261,7 @@ const PerpMarketPriceChange = memo(function PerpMarketPriceChange({
 
 export function PerpMarketCardSkeleton() {
   return (
-    <CarouselCardSkeleton
-      borderRadius={CARD_LAYOUT.borderRadius}
-      height={PERP_MARKET_CARD_HEIGHT}
-      width={PERP_MARKET_CARD_SLOT_WIDTH_WITH_CHART}
-    />
+    <Skeleton borderRadius={CARD_LAYOUT.borderRadius} height={PERP_MARKET_CARD_HEIGHT} width={PERP_MARKET_CARD_SLOT_WIDTH_WITH_CHART} />
   );
 }
 

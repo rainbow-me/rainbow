@@ -5,11 +5,11 @@ import { LinearGradient } from 'expo-linear-gradient';
 
 import ButtonPressAnimation from '@/components/animations/ButtonPressAnimation';
 import { LiveTokenText } from '@/components/live-token-text/LiveTokenText';
+import { Skeleton } from '@/components/Skeleton';
 import { Text, useColorMode } from '@/design-system';
 import { getValueForColorMode, type ColorMode, type ContextualColorValue } from '@/design-system/color/palettes';
 import { Border } from '@/design-system/components/Border/Border';
 import { SparklineChart } from '@/features/charts/line/components/SparklineChart';
-import { CarouselCardSkeleton } from '@/features/discover/components/carousel/CarouselCardSkeleton';
 import { usePlacementCardTrackPress } from '@/features/discover/components/carousel/placementCardContext';
 import { buildPerpMarketBaseDisplay } from '@/features/discover/components/perpMarketCards/perpMarketCardChrome';
 import { PerpMarketIcon } from '@/features/discover/components/perpMarketCards/PerpMarketIcon';
@@ -190,7 +190,7 @@ export const LargePerpMarketCard = memo(function LargePerpMarketCard({
 // ============ Skeleton ======================================================= //
 
 export function LargePerpMarketCardSkeleton({ width = LARGE_PERP_MARKET_CARD_WIDTH }: { width?: number } = {}) {
-  return <CarouselCardSkeleton borderRadius={CARD_LAYOUT.borderRadius} height={LARGE_PERP_MARKET_CARD_HEIGHT} width={width} />;
+  return <Skeleton borderRadius={CARD_LAYOUT.borderRadius} height={LARGE_PERP_MARKET_CARD_HEIGHT} width={width} />;
 }
 
 // ============ Display Helpers =============================================== //

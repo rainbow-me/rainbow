@@ -6,10 +6,10 @@ import { LinearGradient } from 'expo-linear-gradient';
 import ButtonPressAnimation from '@/components/animations/ButtonPressAnimation';
 import { ImgixImage } from '@/components/images';
 import { LiveTokenText, useLiveTokenValue } from '@/components/live-token-text/LiveTokenText';
+import { Skeleton } from '@/components/Skeleton';
 import { Box, Text, useColorMode } from '@/design-system';
 import { getValueForColorMode } from '@/design-system/color/palettes';
 import { SparklineChart } from '@/features/charts/line/components/SparklineChart';
-import { CarouselCardSkeleton } from '@/features/discover/components/carousel/CarouselCardSkeleton';
 import { usePlacementCardTrackPress } from '@/features/discover/components/carousel/placementCardContext';
 import { SCREEN_HORIZONTAL_PADDING } from '@/features/discover/constants';
 import { buildTokenLineChartId, useTokenLineChartsStore } from '@/features/discover/stores/tokenLineChartsStore';
@@ -48,7 +48,7 @@ export function TokenCell({ item }: { item: TokenPlacementItem }) {
 }
 
 export function TokenCellSkeleton() {
-  return <CarouselCardSkeleton borderRadius={TOKEN_CARD_BORDER_RADIUS} height={TOKEN_CARD_HEIGHT} width={TOKEN_CARD_WIDTH} />;
+  return <Skeleton borderRadius={TOKEN_CARD_BORDER_RADIUS} height={TOKEN_CARD_HEIGHT} width={TOKEN_CARD_WIDTH} />;
 }
 
 function TokenCard({ asset, itemId }: { asset: FormattedExternalAsset; itemId: string }) {

@@ -2,7 +2,7 @@ import { memo, useCallback, useMemo, type ReactNode } from 'react';
 import { StyleSheet, View, type StyleProp, type ViewStyle } from 'react-native';
 
 import { useDiscoverScreenContext } from '@/components/Discover/DiscoverScreenContext';
-import { CarouselCardSkeleton } from '@/features/discover/components/carousel/CarouselCardSkeleton';
+import { Skeleton } from '@/components/Skeleton';
 import { MarketCarousel } from '@/features/discover/components/carousel/MarketCarousel';
 import { usePlacementCardTrackPress } from '@/features/discover/components/carousel/placementCardContext';
 import { MarketGrid } from '@/features/discover/components/grid/MarketGrid';
@@ -425,11 +425,7 @@ function PredictionListItem({ item, style }: { item: PredictionPlacementItem; st
 
 function renderPredictionSkeleton() {
   return (
-    <CarouselCardSkeleton
-      borderRadius={PREDICTION_CARD_BORDER_RADIUS}
-      height={POLYMARKET_EVENTS_LIST_ITEM_HEIGHT}
-      width={PREDICTION_TILE_WIDTH}
-    />
+    <Skeleton borderRadius={PREDICTION_CARD_BORDER_RADIUS} height={POLYMARKET_EVENTS_LIST_ITEM_HEIGHT} width={PREDICTION_TILE_WIDTH} />
   );
 }
 
@@ -439,7 +435,7 @@ function renderPredictionWidget(item: PredictionPlacementItem) {
 
 function renderPredictionWidgetSkeleton() {
   return (
-    <CarouselCardSkeleton
+    <Skeleton
       borderRadius={PREDICTION_MARKET_TILE_CARD_BORDER_RADIUS}
       height={PREDICTION_MARKET_TILE_CARD_HEIGHT}
       width={PREDICTION_MARKET_TILE_CARD_WIDTH}
@@ -453,7 +449,7 @@ function renderSportsWidget(item: PredictionPlacementItem) {
 
 function renderSportsWidgetSkeleton() {
   return (
-    <CarouselCardSkeleton
+    <Skeleton
       borderRadius={SPORTS_EVENT_WIDGET_CARD_BORDER_RADIUS}
       height={SPORTS_EVENT_WIDGET_CARD_HEIGHT}
       width={SPORTS_EVENT_WIDGET_CARD_WIDTH}

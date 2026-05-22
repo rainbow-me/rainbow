@@ -5,10 +5,10 @@ import { LinearGradient } from 'expo-linear-gradient';
 
 import ButtonPressAnimation from '@/components/animations/ButtonPressAnimation';
 import { useLiveTokenSharedValue } from '@/components/live-token-text/LiveTokenText';
+import { Skeleton } from '@/components/Skeleton';
 import { AnimatedText, Text, useColorMode } from '@/design-system';
 import { getValueForColorMode, type ColorMode, type ContextualColorValue } from '@/design-system/color/palettes';
 import { Border } from '@/design-system/components/Border/Border';
-import { CarouselCardSkeleton } from '@/features/discover/components/carousel/CarouselCardSkeleton';
 import { usePlacementCardTrackPress } from '@/features/discover/components/carousel/placementCardContext';
 import { buildPerpMarketBaseDisplay } from '@/features/discover/components/perpMarketCards/perpMarketCardChrome';
 import { PerpMarketIcon } from '@/features/discover/components/perpMarketCards/PerpMarketIcon';
@@ -167,13 +167,7 @@ export const PerpMarketPill = memo(function PerpMarketPill({ market, style }: Pe
 // ============ Skeleton ======================================================= //
 
 export function PerpMarketPillSkeleton() {
-  return (
-    <CarouselCardSkeleton
-      borderRadius={PILL_LAYOUT.borderRadius}
-      height={PERP_MARKET_PILL_HEIGHT}
-      width={PERP_MARKET_PILL_SKELETON_WIDTH}
-    />
-  );
+  return <Skeleton borderRadius={PILL_LAYOUT.borderRadius} height={PERP_MARKET_PILL_HEIGHT} width={PERP_MARKET_PILL_SKELETON_WIDTH} />;
 }
 
 // ============ Display Helpers ================================================ //

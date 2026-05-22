@@ -5,10 +5,10 @@ import { LinearGradient } from 'expo-linear-gradient';
 
 import ButtonPressAnimation from '@/components/animations/ButtonPressAnimation';
 import { useLiveTokenSharedValue, useLiveTokenValue } from '@/components/live-token-text/LiveTokenText';
+import { Skeleton } from '@/components/Skeleton';
 import { AnimatedText, Text, useColorMode } from '@/design-system';
 import { getValueForColorMode } from '@/design-system/color/palettes';
 import { SparklineChart } from '@/features/charts/line/components/SparklineChart';
-import { CarouselCardSkeleton } from '@/features/discover/components/carousel/CarouselCardSkeleton';
 import { usePlacementCardTrackPress } from '@/features/discover/components/carousel/placementCardContext';
 import { buildPerpMarketBaseDisplay, type PriceChangeColors } from '@/features/discover/components/perpMarketCards/perpMarketCardChrome';
 import { PerpMarketIcon } from '@/features/discover/components/perpMarketCards/PerpMarketIcon';
@@ -125,7 +125,7 @@ export function PerpMarketRowCard({ item }: { item: PerpMarketPlacementItem }) {
 }
 
 export function PerpMarketRowCardSkeleton() {
-  return <CarouselCardSkeleton borderRadius={24} height={ROW_HEIGHT} width={ROW_WIDTH} />;
+  return <Skeleton borderRadius={24} height={ROW_HEIGHT} width={ROW_WIDTH} />;
 }
 
 function selectLivePriceChange24h(state: TokenData): string {
