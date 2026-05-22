@@ -19,17 +19,11 @@
 
 ### Prerequisites
 
-1. Install nvm: https://github.com/creationix/nvm
-2. Install the required Node.js version: `nvm install`
-3. Install Ruby (version specified in `.ruby-version`). macOS system Ruby is
-   too old and will not work. Use a version manager such as
-   [rbenv](https://github.com/rbenv/rbenv) or [rvm](https://rvm.io/).
-4. Enable yarn: `corepack enable`
-
-**Note:** On future terminal sessions, run `nvm use` to activate the correct
-Node.js version. Alternatively, set up
-[automatic nvm switching](https://github.com/nvm-sh/nvm#deeper-shell-integration)
-in your shell.
+1. Install [mise](https://mise.jdx.dev): `curl https://mise.run | sh`. See the
+   [installation docs](https://mise.jdx.dev/getting-started.html) for shell
+   activation (required so tool versions auto-switch when you `cd` into the repo).
+2. From the repo root: `mise install`. This installs all pinned tools.
+3. Enable yarn: `corepack enable`
 
 ### Internal developers
 
@@ -119,7 +113,7 @@ patched by the postinstall script from `GOOGLE_SERVICE_API_KEY` in your `.env`.
    open -a "Android Studio"  # macOS
    ```
    Always launch Android Studio this way so it inherits your shell PATH
-   (including `node` from nvm). Launching from Spotlight or the Dock will
+   (including `node` from mise). Launching from Spotlight or the Dock will
    cause Gradle sync to fail with "Cannot run program node".
 
 ## Developing
