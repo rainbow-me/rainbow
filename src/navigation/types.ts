@@ -383,6 +383,7 @@ type RouteParams = {
     ensProfile: ENSProfile;
     isENS: boolean;
     isL2: boolean;
+    isSponsored?: boolean;
     isUniqueAsset: boolean;
     chainId: ChainId;
     profilesEnabled: boolean;

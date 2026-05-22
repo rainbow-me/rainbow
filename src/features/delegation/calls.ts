@@ -16,7 +16,7 @@ export const SPONSORED_CALLS_REQUIREMENTS = {
 /**
  * Creates a viem public client for a Rainbow-supported chain.
  */
-export function createDelegationPublicClient(chainId: ChainId): PublicClient {
+export function createDelegationPublicClient(chainId: ChainId, options?: { signal?: AbortSignal }): PublicClient {
   const chain = backendNetworksActions.getDefaultChains()[chainId];
   if (!chain) {
     throw new RainbowError(`[createDelegationPublicClient]: Unsupported chain ${chainId}`);
@@ -26,7 +26,7 @@ export function createDelegationPublicClient(chainId: ChainId): PublicClient {
 
   return createPublicClient({
     chain,
-    transport: http(rpcUrl),
+    transport: http(rpcUrl, options?.signal ? { fetchOptions: { signal: options.signal } } : undefined),
   });
 }
 
