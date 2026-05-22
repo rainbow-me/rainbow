@@ -6,14 +6,6 @@ export type PlacementSource = (typeof PLACEMENT_SOURCES)[keyof typeof PLACEMENT_
 
 export type PlacementType = (typeof PLACEMENT_TYPES)[keyof typeof PLACEMENT_TYPES];
 
-export type PlacementContentTypeForSource<Source extends PlacementSource> = Source extends 'hyperliquid'
-  ? 'perp'
-  : Source extends 'polymarket'
-    ? 'prediction'
-    : Source extends 'rainbow'
-      ? 'token'
-      : never;
-
 export type PlacementItem = {
   id: string;
 };
@@ -25,11 +17,11 @@ export type PlacementItemAnalyticsMetadata = {
   marketSymbol?: string;
 };
 
-export type Placement<Source extends PlacementSource = PlacementSource> = {
+export type Placement = {
   id: PlacementId;
   version: 2;
-  source: Source;
-  type: PlacementContentTypeForSource<Source>;
+  source: PlacementSource;
+  type: PlacementType;
   items: PlacementItem[];
   updatedAt?: string;
 };
