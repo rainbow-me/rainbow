@@ -5,27 +5,25 @@ import { useDiscoverScreenContext } from '@/components/Discover/DiscoverScreenCo
 import { CarouselHeader } from '@/features/discover/components/carousel/CarouselHeader';
 import { PerpMarketsCarousel } from '@/features/discover/components/carousels/PerpMarketsCarousel';
 import { PredictionsCarousel } from '@/features/discover/components/carousels/PredictionsCarousel';
+import { SportsEventsCarousel } from '@/features/discover/components/carousels/SportsEventsCarousel';
 import { TokenList } from '@/features/discover/components/TokenList';
 import { SECTION_VERTICAL_GAP } from '@/features/discover/constants';
-import { navigateToPolymarketCategory, navigateToPolymarketSportsLeague } from '@/features/discover/utils/navigation';
+import { navigateToPolymarketSportsLeague } from '@/features/discover/utils/navigation';
 import { PLACEMENT_IDS } from '@/features/placements/constants';
 import { usePerpsPlacementStore } from '@/features/placements/stores/derived/perpsPlacementStore';
-import {
-  usePredictionsPlacementStore,
-  usePredictionsSportsPlacementStore,
-} from '@/features/placements/stores/derived/predictionsPlacementStore';
+import { usePredictionsPlacementStore } from '@/features/placements/stores/derived/predictionsPlacementStore';
 import { LeagueIcon } from '@/features/polymarket/components/league-icon/LeagueIcon';
 import {
   HEIGHT as POLYMARKET_SPORT_EVENT_LIST_ITEM_HEIGHT,
   PolymarketSportEventListItem,
   LoadingSkeleton as PolymarketSportEventListItemSkeleton,
 } from '@/features/polymarket/components/polymarket-sport-event-list-item/PolymarketSportEventListItem';
-import { CATEGORIES } from '@/features/polymarket/constants';
 import { getLeagueId } from '@/features/polymarket/leagues';
 import { usePolymarketSportsEventsStore } from '@/features/polymarket/stores/polymarketSportsEventsStore';
 import * as i18n from '@/languages';
 
 const NBA_PREVIEW_EVENT_COUNT = 2;
+const SPORTS_WIDGET_EVENT_COUNT = 8;
 
 export function ForYouPage() {
   return (
@@ -66,17 +64,15 @@ function ForYouPredictionsCarousel() {
 }
 
 function ForYouSportsCarousel() {
-  const { isLoading, items, placement } = usePredictionsSportsPlacementStore();
-  return (
-    <PredictionsCarousel
-      isLoading={isLoading}
-      items={items}
-      onPressSeeAll={() => navigateToPolymarketCategory(CATEGORIES.sports.tagId)}
-      placement={placement}
-      placementId={PLACEMENT_IDS.PREDICTIONS_SPORTS}
-      title="Sports"
-    />
+  const events = usePolymarketSportsEventsStore(state => state.getData() ?? []);
+  const isLoading = usePolymarketSportsEventsStore(state => state.getStatus('isLoading'));
+  const isIdle = usePolymarketSportsEventsStore(state => state.getStatus('isIdle'));
+  const sportsEvents = useMemo(
+    () => events.filter(event => getLeagueId(event.slug) !== 'nba').slice(0, SPORTS_WIDGET_EVENT_COUNT),
+    [events]
   );
+
+  return <SportsEventsCarousel events={sportsEvents} isLoading={isLoading || isIdle} title="Sports" />;
 }
 
 function ForYouTokensSection() {
