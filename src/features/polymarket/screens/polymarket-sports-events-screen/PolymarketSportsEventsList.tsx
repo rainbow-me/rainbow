@@ -82,7 +82,12 @@ export const PolymarketSportsEventsList = memo(function PolymarketSportsEventsLi
     const paddingBottom = renderAsStaticList ? 0 : safeAreaInsets.bottom + NAVIGATOR_FOOTER_HEIGHT + NAVIGATOR_FOOTER_CLEARANCE;
     const shouldFillViewport = showLoadingSkeleton || listData.length === 0;
     return {
-      contentContainerStyle: { flexGrow: shouldFillViewport ? 1 : undefined, paddingBottom, paddingHorizontal: 12, paddingTop: 28 },
+      contentContainerStyle: {
+        flexGrow: shouldFillViewport ? 1 : undefined,
+        paddingBottom,
+        paddingHorizontal: 12,
+        paddingTop: renderAsStaticList ? 20 : 28,
+      },
       scrollIndicatorInsets: { bottom: paddingBottom },
     };
   }, [listData.length, renderAsStaticList, safeAreaInsets.bottom, showLoadingSkeleton]);

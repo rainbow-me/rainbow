@@ -36,7 +36,7 @@ export const PolymarketSportsEventsScreen = memo(function PolymarketSportsEvents
   );
 
   return (
-    <View style={styles.container}>
+    <View style={[styles.container, renderAsStaticList && styles.staticContainer]}>
       {showLeagueSelector ? (
         <View style={styles.leagueSelectorContainer}>
           <PolymarketLeagueSelector />
@@ -58,6 +58,9 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     paddingTop: 16,
+  },
+  staticContainer: {
+    paddingTop: 0,
   },
   leagueSelectorContainer: {
     alignSelf: 'center',
