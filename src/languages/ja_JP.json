@@ -2128,7 +2128,7 @@
       }
     },
     "send": {
-      "sponsorship_unavailable": "Free sends are temporarily unavailable on this network. Please try again with network fees."
+      "sponsorship_unavailable": "このネットワークでは現在、無料送金をご利用いただけません。ネットワーク手数料を付けてもう一度お試しください。"
     },
     "swap": {
       "actions": {
