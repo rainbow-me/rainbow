@@ -19,8 +19,9 @@ import { THICK_BORDER_WIDTH } from '@/styles/constants';
 export const DISCOVER_HEADER_HEIGHT = 80;
 const SEARCH_BUTTON_RIGHT_INSET = 19;
 const SEARCH_BUTTON_SIZE = 36;
-const CONTENT_RIGHT_INSET = SEARCH_BUTTON_RIGHT_INSET + SEARCH_BUTTON_SIZE;
 const CONTENT_TOP_INSET = 40;
+const RIGHT_FADE_WIDTH = SEARCH_BUTTON_RIGHT_INSET + 100;
+const SELECTED_TAB_RIGHT_INSET = SEARCH_BUTTON_RIGHT_INSET + SEARCH_BUTTON_SIZE + 40;
 
 export function DiscoverHeader() {
   const separatorColor = useForegroundColor('separator');
@@ -82,7 +83,7 @@ function DiscoverCategorySelector() {
     const scrollViewWidth = scrollViewWidthRef.current;
     if (!tabLayout || !scrollViewWidth) return;
 
-    const visibleWidth = scrollViewWidth - CONTENT_RIGHT_INSET;
+    const visibleWidth = scrollViewWidth - SELECTED_TAB_RIGHT_INSET;
     const leftEdge = scrollOffsetRef.current;
     const rightEdge = leftEdge + visibleWidth;
     const tabLeft = tabLayout.x;
@@ -134,9 +135,14 @@ function DiscoverCategorySelector() {
       <ScrollView
         ref={scrollViewRef}
         horizontal
-        contentContainerStyle={{ height: '100%', gap: 16, paddingTop: CONTENT_TOP_INSET, paddingLeft: 24 }}
+        contentContainerStyle={{
+          height: '100%',
+          gap: 16,
+          paddingTop: CONTENT_TOP_INSET,
+          paddingLeft: 24,
+          paddingRight: SELECTED_TAB_RIGHT_INSET + 32,
+        }}
         style={{ height: '100%' }}
-        contentInset={{ right: CONTENT_RIGHT_INSET + 32 }}
         onLayout={handleScrollViewLayout}
         onScroll={handleScroll}
         scrollEventThrottle={16}
@@ -175,7 +181,7 @@ function DiscoverCategorySelector() {
           endPosition="left"
           startOpacity={1}
           endOpacity={0}
-          style={{ width: SEARCH_BUTTON_RIGHT_INSET + 100 }}
+          style={{ width: RIGHT_FADE_WIDTH }}
         />
         <View
           style={{
