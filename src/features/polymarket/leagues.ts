@@ -348,6 +348,12 @@ export const SPORT_LEAGUES = {
     sportId: 'soccer',
     color: SPORTS.soccer.color,
   },
+  chi: {
+    name: 'Chile Primera',
+    fullName: 'Chile Primera Division',
+    sportId: 'soccer',
+    color: SPORTS.soccer.color,
+  },
   sud: {
     name: 'Sudamericana',
     fullName: 'CONMEBOL Sudamericana',
@@ -413,7 +419,6 @@ export const LEAGUE_LIST_ORDER: LeagueId[] = [
   'wcbb',
   'bkaba',
   'bkseriea',
-  'mlb',
   'wch',
   'ucl',
   'mls',
@@ -438,6 +443,7 @@ export const LEAGUE_LIST_ORDER: LeagueId[] = [
   'mex',
   'nor',
   'elc',
+  'chi',
   'chi1',
   'sud',
   'ipl',
