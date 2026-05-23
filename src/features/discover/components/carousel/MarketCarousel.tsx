@@ -15,8 +15,8 @@ import { type Destination, type Display } from '@/features/placements/surfaces/t
 import { type Placement, type PlacementId, type PlacementItem } from '@/features/placements/types';
 import { time } from '@/utils/time';
 
-const CARD_GAP = 8;
 const HORIZONTAL_PADDING = 12;
+const CARD_GAP = HORIZONTAL_PADDING;
 const SKELETON_COUNT = 5;
 const SCROLL_DEBOUNCE_MS = time.seconds(30);
 const SCROLL_DEBOUNCE_OPTIONS = Object.freeze({ leading: false, trailing: true });
@@ -66,11 +66,9 @@ export function MarketCarousel<T extends PlacementItem>({
 }: MarketCarouselProps<T>) {
   const showSkeletons = loading && data.length === 0;
 
-  const itemWidths = useMemo(() => (getItemWidth ? data.map(item => getItemWidth(item)) : undefined), [data, getItemWidth]);
+  const itemWidths = useMemo(() => data.map(item => (getItemWidth ? getItemWidth(item) : itemWidth)), [data, getItemWidth, itemWidth]);
 
   const snapToOffsets = useMemo(() => {
-    if (!itemWidths) return undefined;
-
     let offset = 0;
     return itemWidths.map(width => {
       const currentOffset = offset;
@@ -138,32 +136,35 @@ export function MarketCarousel<T extends PlacementItem>({
           ))}
         </View>
       ) : (
-        <FlatList
-          data={data}
-          horizontal
-          disallowInterruption
-          showsHorizontalScrollIndicator={false}
-          contentContainerStyle={styles.contentContainer}
-          decelerationRate="fast"
-          style={itemVerticalBleed ? { marginVertical: -itemVerticalBleed } : undefined}
-          snapToInterval={snapToOffsets ? undefined : itemWidth + CARD_GAP}
-          snapToOffsets={snapToOffsets}
-          snapToAlignment="start"
-          renderItem={renderCarouselItem}
-          keyExtractor={item => item.id}
-          onMomentumScrollEnd={onScrollSettle}
-          initialNumToRender={6}
-          windowSize={8}
-        />
+        <View style={[styles.carouselViewport, itemVerticalBleed ? { marginVertical: -itemVerticalBleed } : undefined]}>
+          <FlatList
+            data={data}
+            horizontal
+            disallowInterruption
+            showsHorizontalScrollIndicator={false}
+            contentContainerStyle={styles.contentContainer}
+            decelerationRate="fast"
+            snapToOffsets={snapToOffsets}
+            snapToAlignment="start"
+            renderItem={renderCarouselItem}
+            keyExtractor={item => item.id}
+            onMomentumScrollEnd={onScrollSettle}
+            initialNumToRender={6}
+            windowSize={8}
+          />
+        </View>
       )}
     </Box>
   );
 }
 
 const styles = StyleSheet.create({
+  carouselViewport: {
+    marginHorizontal: HORIZONTAL_PADDING,
+    overflow: 'hidden',
+  },
   contentContainer: {
     gap: CARD_GAP,
-    paddingHorizontal: HORIZONTAL_PADDING,
   },
   skeletonRow: {
     flexDirection: 'row',
