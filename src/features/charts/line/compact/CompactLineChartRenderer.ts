@@ -25,22 +25,6 @@ type CompactLineChartRendererConfig = {
   height: number;
 };
 
-export type CompactLineChartPoint = {
-  x: number;
-  y: number;
-};
-
-type CompactLineChartBounds = {
-  maxPrice: number;
-  minPrice: number;
-};
-
-type CompactLineChartGeometry = {
-  contentWidth: number;
-  height: number;
-  plotHeight: number;
-};
-
 // ============ Constants ====================================================== //
 
 const LINE_WIDTH = 2.25;
@@ -56,7 +40,7 @@ export function getCompactLineChartEndPoint(
   data: CompactLineChartData | undefined,
   contentWidth: number,
   height: number
-): CompactLineChartPoint | undefined {
+): { x: number; y: number } | undefined {
   'worklet';
 
   const pointCount = data ? Math.min(data.prices.length, data.timestamps.length) : 0;
@@ -240,7 +224,7 @@ export class CompactLineChartRenderer {
     return this.height - LINE_WIDTH * 2;
   }
 
-  private computeBounds(prices: Float32Array, count: number): CompactLineChartBounds {
+  private computeBounds(prices: Float32Array, count: number): { maxPrice: number; minPrice: number } {
     let min = Number.POSITIVE_INFINITY;
     let max = Number.NEGATIVE_INFINITY;
 
@@ -268,12 +252,11 @@ export class CompactLineChartRenderer {
   }
 }
 
-function getCompactLineChartGeometry(contentWidth: number, height: number): CompactLineChartGeometry {
+function getCompactLineChartGeometry(contentWidth: number, height: number): { contentWidth: number; plotHeight: number } {
   'worklet';
 
   return {
     contentWidth,
-    height,
     plotHeight: height - LINE_WIDTH * 2,
   };
 }
@@ -288,9 +271,11 @@ function projectCompactLineChartPoint(
     maxPrice,
     minPrice,
   }: {
-    geometry: CompactLineChartGeometry;
-  } & CompactLineChartBounds
-): CompactLineChartPoint {
+    geometry: { contentWidth: number; plotHeight: number };
+    maxPrice: number;
+    minPrice: number;
+  }
+): { x: number; y: number } {
   'worklet';
 
   const timeRange = endTimestamp - startTimestamp || 1;
@@ -302,7 +287,7 @@ function projectCompactLineChartPoint(
   };
 }
 
-function computeCompactLineChartBounds(prices: Float32Array, count: number): CompactLineChartBounds {
+function computeCompactLineChartBounds(prices: Float32Array, count: number): { maxPrice: number; minPrice: number } {
   'worklet';
 
   let min = Number.POSITIVE_INFINITY;

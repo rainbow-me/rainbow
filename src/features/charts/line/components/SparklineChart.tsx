@@ -26,7 +26,6 @@ import {
   COMPACT_LINE_CHART_HORIZONTAL_OVERDRAW,
   CompactLineChartRenderer,
   getCompactLineChartEndPoint,
-  type CompactLineChartPoint,
 } from '../compact/CompactLineChartRenderer';
 import { type CompactLineChartData, type LineChartDataStore } from '../compact/types';
 
@@ -204,7 +203,7 @@ const SparklineLivePointer = memo(function SparklineLivePointer<S extends LineCh
       const chartData = maxPoints === undefined ? nextData : downsampleCompactLineChartData(nextData, maxPoints);
       const pointerPoint = getCompactLineChartEndPoint(chartData, width, height);
 
-      runOnUI((point: CompactLineChartPoint | undefined) => {
+      runOnUI((point: { x: number; y: number } | undefined) => {
         opacity.value = point ? 1 : 0;
         if (!point) return;
 
