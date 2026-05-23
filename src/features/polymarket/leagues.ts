@@ -386,7 +386,7 @@ export const SPORT_LEAGUES = {
   },
 } as const;
 
-export const LEAGUE_SELECTOR_ORDER: LeagueId[] = ['nfl', 'nba', 'cfb', 'cbb', 'epl', 'nhl', 'atp', 'ufc', 'cs2', 'crint'];
+export const LEAGUE_SELECTOR_ORDER: LeagueId[] = ['nfl', 'nba', 'mlb', 'cfb', 'cbb', 'epl', 'nhl', 'atp', 'ufc', 'cs2', 'crint'];
 
 export const LEAGUE_LIST_ORDER: LeagueId[] = [
   ...LEAGUE_SELECTOR_ORDER,
