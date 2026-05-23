@@ -409,7 +409,7 @@ function renderSurfaceLayoutSection<T extends PlacementItem>({
       return (
         <MarketList
           {...commonProps}
-          data={renderedData}
+          data={data}
           initialVisibleItemCount={surface.limit}
           renderItem={descriptor.renderItem}
           renderSkeleton={descriptor.renderSkeleton}
