@@ -134,6 +134,7 @@ export const PredictionMarketEventCard = memo(function PredictionMarketEventCard
                   moneylineBet={rows.away.moneyline}
                   compact={rows.away.isFallback}
                   interactiveBetCells={Platform.OS === 'ios'}
+                  leagueId={leagueId}
                 />
                 <InsetSeparator />
                 <TeamRow
@@ -145,6 +146,7 @@ export const PredictionMarketEventCard = memo(function PredictionMarketEventCard
                   moneylineBet={rows.home.moneyline}
                   compact={rows.home.isFallback}
                   interactiveBetCells={Platform.OS === 'ios'}
+                  leagueId={leagueId}
                 />
               </GradientBorderView>
             </ButtonPressAnimation>
@@ -170,6 +172,7 @@ function getPredictionEventCardGradientColors(eventAccentColor: string, isDarkMo
 const TeamRow = memo(function TeamRow({
   event,
   label,
+  leagueId,
   lineBet,
   moneylineBet,
   compact,
@@ -181,6 +184,7 @@ const TeamRow = memo(function TeamRow({
   compact?: boolean;
   interactiveBetCells?: boolean;
   label: string;
+  leagueId: LeagueId | undefined;
   lineBet?: BetCellData;
   moneylineBet?: BetCellData;
   score?: string;
@@ -189,7 +193,11 @@ const TeamRow = memo(function TeamRow({
   return (
     <View style={styles.teamRow}>
       <View style={styles.teamInfo}>
-        {team ? <TeamLogo team={team} size={TEAM_LOGO_SIZE} borderRadius={2} /> : <TeamFallbackIcon eventSlug={event.slug} />}
+        {team ? (
+          <TeamLogo team={team} size={TEAM_LOGO_SIZE} borderRadius={2} />
+        ) : (
+          <TeamFallbackIcon eventSlug={event.slug} leagueId={leagueId} />
+        )}
         <Text align="left" color="label" numberOfLines={1} size="17pt" style={styles.teamName} weight="bold">
           {label}
         </Text>
@@ -206,10 +214,10 @@ const TeamRow = memo(function TeamRow({
   );
 });
 
-function TeamFallbackIcon({ eventSlug }: { eventSlug: string }) {
+function TeamFallbackIcon({ eventSlug, leagueId }: { eventSlug: string; leagueId: LeagueId | undefined }) {
   return (
     <View style={styles.teamFallbackIcon}>
-      <LeagueIcon eventSlug={eventSlug} size={26} />
+      {leagueId ? <LeagueIcon leagueId={leagueId} size={26} /> : <LeagueIcon eventSlug={eventSlug} size={26} />}
     </View>
   );
 }

@@ -73,7 +73,10 @@ function useSportsEventContentState(event: PolymarketEvent) {
     : ([accentPalette.opacity12, accentPalette.opacity8, accentPalette.opacity0] as const);
 
   const rows = useMemo(() => getRows(event, betGrid), [betGrid, event]);
-  const leagueId = useMemo(() => getLeagueId(event.slug), [event.slug]);
+  const leagueId = useMemo(
+    () => getLeagueId(event.slug) ?? getLeagueId(event.ticker ?? '') ?? getLeagueIdFromTags(event.tags),
+    [event.slug, event.tags, event.ticker]
+  );
   const eventAccentColor = useMemo(() => getEventAccentColor({ event, isDarkMode, leagueId }), [event, isDarkMode, leagueId]);
   const gameStatusTitle = useMemo(() => getGameStatusTitle({ event, gameInfo, isLive }), [event, gameInfo, isLive]);
   const teamLabelFontSize = useMemo(() => {
@@ -120,6 +123,13 @@ function useSportsEventContentState(event: PolymarketEvent) {
     totalsOverColor,
     totalsUnderColor,
   };
+}
+
+function getLeagueIdFromTags(tags: PolymarketEvent['tags']): LeagueId | undefined {
+  for (const tag of tags) {
+    const leagueId = getLeagueId(tag.slug);
+    if (leagueId) return leagueId;
+  }
 }
 
 function getRows(event: PolymarketEvent, betGrid: EventBetGrid): SportsEventRows {
