@@ -1,7 +1,7 @@
 {
   "$schema": "http://json-schema.org/draft-07/schema#",
   "$id": "https://rainbow.me/schemas/placements-v2.schema.json",
-  "$comment": "Mirrors /Users/daniel/Documents/GitHub/placements-agent/placements-v2-design.md. Keep this client-side defensive parser in sync with the CMS/write-time schema spec.",
+  "$comment": "Mirrors the placement v2 CMS/write-time schema spec. Keep this client-side defensive parser in sync with the write-time contract.",
   "title": "Placement v2",
   "description": "A server-curated, typed list of item ids. Presentation, labels, scheduling, and destination live on surfaces; placements are pure data.",
   "type": "object",
