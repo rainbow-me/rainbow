@@ -3,13 +3,10 @@ import { type PolymarketEvent } from '@/features/polymarket/types/polymarket-eve
 import { getSportsEventsDayBoundaries } from '@/features/polymarket/utils/getSportsEventsDateRange';
 import * as i18n from '@/languages';
 
-const DISCOVER_PREVIEW_EVENT_COUNT = 2;
-
 type EventItem = {
   type: 'event';
   key: string;
   event: PolymarketEvent;
-  enterAnimationIndex?: number;
 };
 
 type SectionHeaderItem = {
@@ -36,22 +33,14 @@ type SectionSeparatorItem = {
 type LeagueSeparatorItem = {
   type: 'league-separator';
   key: string;
-  compact?: boolean;
 };
 
-type ShowMoreItem = {
-  type: 'show-more';
-  key: string;
-  count: number;
-  expansionKey: string;
-};
-
-export type SportsListItem = EventItem | SectionHeaderItem | LeagueHeaderItem | SectionSeparatorItem | LeagueSeparatorItem | ShowMoreItem;
+export type SportsListItem = EventItem | SectionHeaderItem | LeagueHeaderItem | SectionSeparatorItem | LeagueSeparatorItem;
 
 export function buildPolymarketSportsEventsListData(
   events: PolymarketEvent[],
   showLeagueHeaders: boolean,
-  options: { expandedKeys: ReadonlySet<string>; referenceDate?: Date; truncateSections: boolean }
+  options: { referenceDate?: Date } = {}
 ): SportsListItem[] {
   if (!events.length) return [];
 
@@ -108,11 +97,10 @@ export function buildPolymarketSportsEventsListData(
       items,
       sectionKey: 'live',
       showLeagueHeaders,
-      ...options,
     });
   }
 
-  pushSection({ items, events: upcomingEvents, sectionKey: 'upcoming', showLeagueHeaders, ...options });
+  pushSection({ items, events: upcomingEvents, sectionKey: 'upcoming', showLeagueHeaders });
 
   return items;
 }
@@ -123,29 +111,20 @@ function pushSection({
   events,
   sectionKey,
   showLeagueHeaders,
-  expandedKeys,
-  truncateSections,
 }: {
   items: SportsListItem[];
   header?: { title: string; count?: number; isLive?: boolean };
   events: PolymarketEvent[];
   sectionKey: string;
   showLeagueHeaders: boolean;
-  expandedKeys: ReadonlySet<string>;
-  truncateSections: boolean;
 }) {
   if (!events.length) return;
   if (header) {
     items.push({ type: 'header', key: `header-${sectionKey}`, title: header.title, count: header.count, isLive: header.isLive });
   }
 
-  if (truncateSections && sectionKey === 'live') {
-    pushPreviewEvents({ events, expansionKey: sectionKey, items, sectionKey, expandedKeys });
-    return;
-  }
-
   if (!showLeagueHeaders) {
-    pushPreviewEvents({ events, expansionKey: sectionKey, items, sectionKey, expandedKeys: truncateSections ? expandedKeys : null });
+    items.push(...buildEventItems(events, sectionKey));
     return;
   }
 
@@ -153,11 +132,9 @@ function pushSection({
   for (let i = 0; i < leagueGroups.length; i++) {
     const group = leagueGroups[i];
     if (i > 0) {
-      const previousItem = items[items.length - 1];
       items.push({
         type: 'league-separator',
         key: `league-separator-${sectionKey}-${group.key}`,
-        ...(previousItem?.type === 'show-more' ? { compact: true } : {}),
       });
     }
     items.push({
@@ -168,47 +145,15 @@ function pushSection({
       leagueId: group.leagueId,
     });
     const expansionKey = `${sectionKey}-${group.key}`;
-    pushPreviewEvents({
-      events: group.events,
-      expansionKey,
-      items,
-      sectionKey: expansionKey,
-      expandedKeys: truncateSections ? expandedKeys : null,
-    });
+    items.push(...buildEventItems(group.events, expansionKey));
   }
 }
 
-function pushPreviewEvents({
-  events,
-  expansionKey,
-  items,
-  sectionKey,
-  expandedKeys,
-}: {
-  events: PolymarketEvent[];
-  expansionKey: string;
-  items: SportsListItem[];
-  sectionKey: string;
-  expandedKeys: ReadonlySet<string> | null;
-}) {
-  const shouldTruncate = expandedKeys != null && !expandedKeys.has(expansionKey) && events.length > DISCOVER_PREVIEW_EVENT_COUNT;
-  const visibleEvents = shouldTruncate ? events.slice(0, DISCOVER_PREVIEW_EVENT_COUNT) : events;
-  const shouldAnimateExpandedEvents =
-    expandedKeys != null && expandedKeys.has(expansionKey) && events.length > DISCOVER_PREVIEW_EVENT_COUNT;
-  items.push(...buildEventItems(visibleEvents, sectionKey, shouldAnimateExpandedEvents ? DISCOVER_PREVIEW_EVENT_COUNT : null));
-
-  const remainingCount = events.length - visibleEvents.length;
-  if (remainingCount > 0) {
-    items.push({ type: 'show-more', key: `show-more-${expansionKey}`, count: remainingCount, expansionKey });
-  }
-}
-
-function buildEventItems(events: PolymarketEvent[], sectionKey: string, animatedStartIndex: number | null): EventItem[] {
+function buildEventItems(events: PolymarketEvent[], sectionKey: string): EventItem[] {
   return events.map((event, index) => ({
     type: 'event',
     key: `event-${sectionKey}-${event.id}-${index}`,
     event,
-    ...(animatedStartIndex != null && index >= animatedStartIndex ? { enterAnimationIndex: index - animatedStartIndex } : {}),
   }));
 }
 

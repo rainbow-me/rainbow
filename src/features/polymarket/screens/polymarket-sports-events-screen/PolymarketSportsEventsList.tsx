@@ -1,13 +1,10 @@
-import { memo, useCallback, useMemo, useState, type RefObject } from 'react';
+import { memo, useCallback, useMemo, type RefObject } from 'react';
 import { StyleSheet, View, type NativeScrollEvent, type NativeSyntheticEvent, type ViewToken } from 'react-native';
 
 import { debounce } from 'lodash';
 import Animated from 'react-native-reanimated';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
-import ButtonPressAnimation from '@/components/animations/ButtonPressAnimation';
-import { ShowMoreCellEnterAnimation } from '@/components/animations/ShowMoreCellEnterAnimation';
-import { ShowMoreButton } from '@/components/buttons/ShowMoreButton';
 import { Skeleton } from '@/components/Skeleton';
 import { Text, useBackgroundColor } from '@/design-system';
 import { LeagueIcon } from '@/features/polymarket/components/league-icon/LeagueIcon';
@@ -43,30 +40,19 @@ const VIEWABILITY_CONFIG = { itemVisiblePercentThreshold: 50, minimumViewTime: 1
 
 type SportsEventsListProps = {
   listRef?: RefObject<Animated.FlatList<unknown> | null>;
-  onPressLeagueHeader?: (leagueId: string) => void;
   onScroll?: (event: NativeSyntheticEvent<NativeScrollEvent>) => void;
-  renderAsStaticList?: boolean;
-  selectedLeagueId?: string;
-  truncateSections?: boolean;
 };
 
 type SportsEventsListContentProps = SportsEventsListProps & {
   events: PolymarketEvent[];
   isIdle: boolean;
   isLoading: boolean;
+  selectedLeagueId: string;
 };
 
-export const PolymarketSportsEventsList = memo(function PolymarketSportsEventsList({
-  listRef,
-  onPressLeagueHeader,
-  onScroll,
-  renderAsStaticList = false,
-  selectedLeagueId: selectedLeagueIdOverride,
-  truncateSections = false,
-}: SportsEventsListProps) {
+export const PolymarketSportsEventsList = memo(function PolymarketSportsEventsList({ listRef, onScroll }: SportsEventsListProps) {
   const events = usePolymarketSportsEventsStore(state => state.getData() ?? EMPTY_EVENTS);
-  const storeSelectedLeagueId = usePolymarketSportsEventsStore(state => state.selectedLeagueId);
-  const selectedLeagueId = selectedLeagueIdOverride ?? storeSelectedLeagueId;
+  const selectedLeagueId = usePolymarketSportsEventsStore(state => state.selectedLeagueId);
   const isLoading = usePolymarketSportsEventsStore(state => state.getStatus('isLoading'));
   const isIdle = usePolymarketSportsEventsStore(state => state.getStatus('isIdle'));
 
@@ -76,11 +62,8 @@ export const PolymarketSportsEventsList = memo(function PolymarketSportsEventsLi
       isIdle={isIdle}
       isLoading={isLoading}
       listRef={listRef}
-      onPressLeagueHeader={onPressLeagueHeader}
       onScroll={onScroll}
-      renderAsStaticList={renderAsStaticList}
       selectedLeagueId={selectedLeagueId}
-      truncateSections={truncateSections}
     />
   );
 });
@@ -90,15 +73,11 @@ export const PolymarketSportsEventsListContent = memo(function PolymarketSportsE
   isIdle,
   isLoading,
   listRef,
-  onPressLeagueHeader,
   onScroll,
-  renderAsStaticList = false,
   selectedLeagueId,
-  truncateSections = false,
 }: SportsEventsListContentProps) {
   const safeAreaInsets = useSafeAreaInsets();
   const showLeagueHeaders = !selectedLeagueId || selectedLeagueId === DEFAULT_SPORTS_LEAGUE_KEY;
-  const [expandedKeys, setExpandedKeys] = useState<ReadonlySet<string>>(() => new Set());
 
   const filteredEvents = useMemo(() => {
     if (showLeagueHeaders) return events;
@@ -106,24 +85,24 @@ export const PolymarketSportsEventsListContent = memo(function PolymarketSportsE
   }, [events, showLeagueHeaders, selectedLeagueId]);
 
   const listData = useMemo(
-    () => buildPolymarketSportsEventsListData(filteredEvents, showLeagueHeaders, { expandedKeys, truncateSections }),
-    [expandedKeys, filteredEvents, showLeagueHeaders, truncateSections]
+    () => buildPolymarketSportsEventsListData(filteredEvents, showLeagueHeaders),
+    [filteredEvents, showLeagueHeaders]
   );
   const showLoadingSkeleton = !listData.length && (isLoading || isIdle);
 
   const listStyles = useMemo(() => {
-    const paddingBottom = renderAsStaticList ? 0 : safeAreaInsets.bottom + NAVIGATOR_FOOTER_HEIGHT + NAVIGATOR_FOOTER_CLEARANCE;
+    const paddingBottom = safeAreaInsets.bottom + NAVIGATOR_FOOTER_HEIGHT + NAVIGATOR_FOOTER_CLEARANCE;
     const shouldFillViewport = showLoadingSkeleton || listData.length === 0;
     return {
       contentContainerStyle: {
         flexGrow: shouldFillViewport ? 1 : undefined,
         paddingBottom,
         paddingHorizontal: 12,
-        paddingTop: renderAsStaticList ? 20 : 28,
+        paddingTop: 28,
       },
       scrollIndicatorInsets: { bottom: paddingBottom },
     };
-  }, [listData.length, renderAsStaticList, safeAreaInsets.bottom, showLoadingSkeleton]);
+  }, [listData.length, safeAreaInsets.bottom, showLoadingSkeleton]);
 
   const debouncedAddSubscribedTokens = useStableValue(() =>
     debounce((viewableItems: Array<ViewToken<SportsListItem>>) => {
@@ -149,52 +128,21 @@ export const PolymarketSportsEventsListContent = memo(function PolymarketSportsE
     [debouncedAddSubscribedTokens]
   );
 
-  const expandSection = useCallback((expansionKey: string) => {
-    setExpandedKeys(currentExpandedKeys => {
-      if (currentExpandedKeys.has(expansionKey)) return currentExpandedKeys;
-
-      const nextExpandedKeys = new Set(currentExpandedKeys);
-      nextExpandedKeys.add(expansionKey);
-      return nextExpandedKeys;
-    });
+  const renderItem = useCallback(({ item }: { item: SportsListItem }) => {
+    if (item.type === 'header') {
+      return <SectionHeader count={item.count} isLive={item.isLive} title={item.title} />;
+    }
+    if (item.type === 'league-header') {
+      return <LeagueHeader eventSlug={item.eventSlug} leagueId={item.leagueId} title={item.title} />;
+    }
+    if (item.type === 'separator') {
+      return <SectionSeparator />;
+    }
+    if (item.type === 'league-separator') {
+      return <LeagueSeparator />;
+    }
+    return <PolymarketSportEventListItem event={item.event} style={styles.eventItemWrapper} />;
   }, []);
-
-  const renderItem = useCallback(
-    ({ item }: { item: SportsListItem }) => {
-      if (item.type === 'header') {
-        return <SectionHeader count={item.count} isLive={item.isLive} title={item.title} />;
-      }
-      if (item.type === 'league-header') {
-        return <LeagueHeader eventSlug={item.eventSlug} leagueId={item.leagueId} onPress={onPressLeagueHeader} title={item.title} />;
-      }
-      if (item.type === 'separator') {
-        return <SectionSeparator />;
-      }
-      if (item.type === 'league-separator') {
-        return <LeagueSeparator compact={item.compact} />;
-      }
-      if (item.type === 'show-more') {
-        return <ShowMoreButton count={item.count} onPress={() => expandSection(item.expansionKey)} />;
-      }
-      const eventItem = <PolymarketSportEventListItem event={item.event} style={styles.eventItemWrapper} />;
-      if (item.enterAnimationIndex === undefined) return eventItem;
-
-      return <ShowMoreCellEnterAnimation index={item.enterAnimationIndex}>{eventItem}</ShowMoreCellEnterAnimation>;
-    },
-    [expandSection, onPressLeagueHeader]
-  );
-
-  if (renderAsStaticList) {
-    const content = showLoadingSkeleton ? (
-      <ListLoadingSkeleton />
-    ) : listData.length ? (
-      listData.map(item => <View key={item.key}>{renderItem({ item })}</View>)
-    ) : (
-      <EmptyState />
-    );
-
-    return <View style={[styles.list, listStyles.contentContainerStyle]}>{content}</View>;
-  }
 
   return (
     <Animated.FlatList
@@ -281,18 +229,8 @@ const LiveSectionIndicator = memo(function LiveSectionIndicator() {
   );
 });
 
-const LeagueHeader = memo(function LeagueHeader({
-  title,
-  eventSlug,
-  leagueId,
-  onPress,
-}: {
-  title: string;
-  eventSlug: string;
-  leagueId?: LeagueId;
-  onPress?: (leagueId: string) => void;
-}) {
-  const content = (
+const LeagueHeader = memo(function LeagueHeader({ title, eventSlug, leagueId }: { title: string; eventSlug: string; leagueId?: LeagueId }) {
+  return (
     <View style={styles.leagueHeader}>
       {leagueId ? <LeagueIcon leagueId={leagueId} size={28} /> : <LeagueIcon eventSlug={eventSlug} size={28} />}
       <Text align="left" color="label" size="22pt" weight="heavy">
@@ -300,22 +238,14 @@ const LeagueHeader = memo(function LeagueHeader({
       </Text>
     </View>
   );
-
-  if (!leagueId || !onPress) return content;
-
-  return (
-    <ButtonPressAnimation onPress={() => onPress(leagueId)} scaleTo={0.96} style={styles.leagueHeaderButton}>
-      {content}
-    </ButtonPressAnimation>
-  );
 });
 
 const SectionSeparator = memo(function SectionSeparator() {
   return <View style={styles.sectionSeparatorContainer} />;
 });
 
-const LeagueSeparator = memo(function LeagueSeparator({ compact }: { compact?: boolean }) {
-  return <View style={compact ? styles.compactLeagueSeparatorContainer : styles.leagueSeparatorContainer} />;
+const LeagueSeparator = memo(function LeagueSeparator() {
+  return <View style={styles.leagueSeparatorContainer} />;
 });
 
 function keyExtractor(item: SportsListItem): string {
@@ -389,9 +319,6 @@ const styles = StyleSheet.create({
     lineHeight: 14,
     transform: [{ translateY: 1 }],
   },
-  leagueHeaderButton: {
-    alignSelf: 'flex-start',
-  },
   leagueHeader: {
     flexDirection: 'row',
     alignItems: 'center',
@@ -432,11 +359,6 @@ const styles = StyleSheet.create({
   leagueSeparatorContainer: {
     paddingTop: 12 - ITEM_GAP / 2,
     paddingBottom: 12,
-    paddingHorizontal: 12,
-  },
-  compactLeagueSeparatorContainer: {
-    paddingTop: 0,
-    paddingBottom: 8,
     paddingHorizontal: 12,
   },
 });

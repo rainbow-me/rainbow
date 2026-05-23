@@ -35,7 +35,7 @@ describe('PolymarketSportsEventsList', () => {
         event({ id: 'today-game', startTime: new Date(2026, 4, 21, 20) }),
       ],
       false,
-      { expandedKeys: new Set(), referenceDate, truncateSections: false }
+      { referenceDate }
     );
 
     expect(getHeaders(items)).toEqual(['Live']);

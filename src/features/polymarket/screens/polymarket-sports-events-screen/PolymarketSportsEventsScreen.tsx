@@ -8,22 +8,10 @@ import { usePolymarketSportsEventsStore } from '@/features/polymarket/stores/pol
 import { useListen } from '@/state/internal/hooks/useListen';
 
 type PolymarketSportsEventsScreenProps = {
-  onPressLeagueHeader?: (leagueId: string) => void;
   onScroll?: (event: NativeSyntheticEvent<NativeScrollEvent>) => void;
-  renderAsStaticList?: boolean;
-  selectedLeagueId?: string;
-  showLeagueSelector?: boolean;
-  truncateSections?: boolean;
 };
 
-export const PolymarketSportsEventsScreen = memo(function PolymarketSportsEventsScreen({
-  onPressLeagueHeader,
-  onScroll,
-  renderAsStaticList = false,
-  selectedLeagueId,
-  showLeagueSelector = true,
-  truncateSections = false,
-}: PolymarketSportsEventsScreenProps) {
+export const PolymarketSportsEventsScreen = memo(function PolymarketSportsEventsScreen({ onScroll }: PolymarketSportsEventsScreenProps) {
   const { eventsListRef: listRef } = usePolymarketContext();
 
   useListen(
@@ -32,24 +20,15 @@ export const PolymarketSportsEventsScreen = memo(function PolymarketSportsEvents
     () => {
       listRef?.current?.scrollToOffset({ offset: 0, animated: true });
     },
-    { enabled: selectedLeagueId === undefined }
+    { enabled: true }
   );
 
   return (
-    <View style={[styles.container, renderAsStaticList && styles.staticContainer]}>
-      {showLeagueSelector ? (
-        <View style={styles.leagueSelectorContainer}>
-          <PolymarketLeagueSelector />
-        </View>
-      ) : null}
-      <PolymarketSportsEventsList
-        listRef={listRef}
-        onPressLeagueHeader={onPressLeagueHeader}
-        onScroll={onScroll}
-        renderAsStaticList={renderAsStaticList}
-        selectedLeagueId={selectedLeagueId}
-        truncateSections={truncateSections}
-      />
+    <View style={styles.container}>
+      <View style={styles.leagueSelectorContainer}>
+        <PolymarketLeagueSelector />
+      </View>
+      <PolymarketSportsEventsList listRef={listRef} onScroll={onScroll} />
     </View>
   );
 });
@@ -58,9 +37,6 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     paddingTop: 16,
-  },
-  staticContainer: {
-    paddingTop: 0,
   },
   leagueSelectorContainer: {
     alignSelf: 'center',
