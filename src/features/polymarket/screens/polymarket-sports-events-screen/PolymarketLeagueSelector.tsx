@@ -13,6 +13,7 @@ import { LEAGUE_SELECTOR_ORDER, SPORT_LEAGUES, type LeagueId } from '@/features/
 import { usePolymarketContext } from '@/features/polymarket/screens/polymarket-navigator/PolymarketContext';
 import { usePolymarketSportsEventsStore } from '@/features/polymarket/stores/polymarketSportsEventsStore';
 import { opacity } from '@/framework/ui/utils/opacity';
+import { useListen } from '@/state/internal/hooks/useListen';
 import { THICK_BORDER_WIDTH, THICKER_BORDER_WIDTH } from '@/styles/constants';
 import { deepFreeze } from '@/utils/deepFreeze';
 import { DEVICE_WIDTH } from '@/utils/deviceUtils';
@@ -60,6 +61,15 @@ export const PolymarketLeagueSelector = memo(function PolymarketLeagueSelector()
     const scrollX = calculateCenteredScrollX(itemLayouts.current, index);
     leagueSelectorRef.current?.scrollTo({ x: scrollX, y: 0, animated: false });
   }, [leagueSelectorRef, selectedLeagueKey]);
+
+  useListen(
+    usePolymarketSportsEventsStore,
+    state => state.selectedLeagueId,
+    leagueId => {
+      selectedLeagueKey.value = leagueId as LeagueItemKey;
+      if (allItemsMeasured(itemLayouts.current)) scrollToSelectedLeague();
+    }
+  );
 
   const onItemLayout = useCallback(
     (event: LayoutChangeEvent, index: number) => {

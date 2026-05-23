@@ -12,6 +12,7 @@ import { CATEGORIES, type Category } from '@/features/polymarket/constants';
 import { usePolymarketContext } from '@/features/polymarket/screens/polymarket-navigator/PolymarketContext';
 import { usePolymarketCategoryStore } from '@/features/polymarket/stores/usePolymarketCategoryStore';
 import { opacity } from '@/framework/ui/utils/opacity';
+import { useListen } from '@/state/internal/hooks/useListen';
 import { THICKER_BORDER_WIDTH } from '@/styles/constants';
 import { deepFreeze } from '@/utils/deepFreeze';
 import { DEVICE_WIDTH } from '@/utils/deviceUtils';
@@ -44,6 +45,16 @@ export const PolymarketEventCategorySelector = memo(function PolymarketEventCate
     const scrollX = calculateCenteredScrollX(itemLayouts.current, index);
     categorySelectorRef.current?.scrollTo({ x: scrollX, y: 0, animated: false });
   }, [categorySelectorRef, selectedCategoryKey]);
+
+  useListen(
+    usePolymarketCategoryStore,
+    state => state.tagId,
+    tagId => {
+      if (!(tagId in CATEGORIES)) return;
+      selectedCategoryKey.value = tagId as CategoryKey;
+      if (allItemsMeasured(itemLayouts.current)) scrollToSelectedCategory();
+    }
+  );
 
   const onItemLayout = useCallback(
     (event: LayoutChangeEvent, index: number) => {
