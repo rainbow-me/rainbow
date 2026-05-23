@@ -54,7 +54,7 @@ export const usePredictionEventsStore = createQueryStore<PolymarketEvent[], Pred
   },
   keepPreviousData: true,
   staleTime: time.minutes(2),
-  cacheTime: time.minutes(10),
+  cacheTime: time.minutes(15),
 });
 
 export function getPredictionsPlacementStore(placementId: PlacementId) {

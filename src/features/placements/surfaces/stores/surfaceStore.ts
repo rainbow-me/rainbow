@@ -25,7 +25,7 @@ function createSurfaceStore(surfaceId: string) {
     {
       fetcher: () => fetchSurface(surfaceId),
       staleTime: time.minutes(10),
-      cacheTime: time.days(2),
+      cacheTime: time.minutes(15),
     },
     { storageKey: `surfaceStore:${surfaceId}`, version: 4 }
   );
