@@ -1,5 +1,5 @@
 import { memo, useCallback, useMemo } from 'react';
-import { StyleSheet, View } from 'react-native';
+import { Platform, StyleSheet, View } from 'react-native';
 
 import { LinearGradient } from 'expo-linear-gradient';
 
@@ -92,6 +92,7 @@ export const SportsEventWidgetCard = memo(function SportsEventWidgetCard({ event
 
   return (
     <View style={styles.container}>
+      {Platform.OS === 'android' ? <WidgetBetCellsOverlay event={event} rows={rows} /> : null}
       <ButtonPressAnimation onPress={handlePress} scaleTo={0.96} style={styles.flex} wrapperStyle={styles.flex}>
         <GradientBorderView
           backgroundColor={isDarkMode ? globalColors.grey100 : globalColors.white100}
@@ -141,6 +142,7 @@ export const SportsEventWidgetCard = memo(function SportsEventWidgetCard({ event
             team={event.teams?.[0]}
             lineBet={rows.away.line}
             moneylineBet={rows.away.moneyline}
+            interactiveBetCells={Platform.OS === 'ios'}
           />
           <InsetSeparator />
           <TeamRow
@@ -150,6 +152,7 @@ export const SportsEventWidgetCard = memo(function SportsEventWidgetCard({ event
             team={event.teams?.[1]}
             lineBet={rows.home.line}
             moneylineBet={rows.home.moneyline}
+            interactiveBetCells={Platform.OS === 'ios'}
           />
         </GradientBorderView>
       </ButtonPressAnimation>
@@ -164,18 +167,16 @@ const TeamRow = memo(function TeamRow({
   moneylineBet,
   score,
   team,
+  interactiveBetCells = true,
 }: {
   event: PolymarketEvent;
+  interactiveBetCells?: boolean;
   label: string;
   lineBet?: BetCellData;
   moneylineBet?: BetCellData;
   score?: string;
   team?: PolymarketTeamInfo;
 }) {
-  const { isDarkMode } = useColorMode();
-  const lineColor = getSportsEventOutcomeCellColor(event.markets, lineBet?.outcomeTokenId, isDarkMode, event.teams);
-  const moneylineColor = getSportsEventOutcomeCellColor(event.markets, moneylineBet?.outcomeTokenId, isDarkMode, event.teams);
-
   return (
     <View style={styles.teamRow}>
       <View style={styles.teamInfo}>
@@ -188,19 +189,63 @@ const TeamRow = memo(function TeamRow({
         <Text align="right" color="label" size="17pt" style={styles.score} weight="heavy">
           {score ?? ''}
         </Text>
-        <View style={styles.betCells}>
-          {lineBet ? (
-            <WidgetBetCell event={event} data={lineBet} backgroundColor={lineColor} variant="line" />
-          ) : (
-            <View style={styles.lineCellSpacer} />
-          )}
-          {moneylineBet ? (
-            <WidgetBetCell event={event} data={moneylineBet} backgroundColor={moneylineColor} variant="moneyline" />
-          ) : (
-            <View style={styles.moneylineCellSpacer} />
-          )}
-        </View>
+        <TeamBetCells event={event} interactive={interactiveBetCells} lineBet={lineBet} moneylineBet={moneylineBet} />
       </View>
+    </View>
+  );
+});
+
+const WidgetBetCellsOverlay = memo(function WidgetBetCellsOverlay({
+  event,
+  rows,
+}: {
+  event: PolymarketEvent;
+  rows: ReturnType<typeof getRows>;
+}) {
+  return (
+    <View pointerEvents="box-none" style={styles.betCellsOverlay}>
+      <TeamBetCells event={event} lineBet={rows.away.line} moneylineBet={rows.away.moneyline} />
+      <TeamBetCells event={event} lineBet={rows.home.line} moneylineBet={rows.home.moneyline} />
+    </View>
+  );
+});
+
+const TeamBetCells = memo(function TeamBetCells({
+  event,
+  interactive = true,
+  lineBet,
+  moneylineBet,
+}: {
+  event: PolymarketEvent;
+  interactive?: boolean;
+  lineBet?: BetCellData;
+  moneylineBet?: BetCellData;
+}) {
+  const { isDarkMode } = useColorMode();
+  const lineColor = getSportsEventOutcomeCellColor(event.markets, lineBet?.outcomeTokenId, isDarkMode, event.teams);
+  const moneylineColor = getSportsEventOutcomeCellColor(event.markets, moneylineBet?.outcomeTokenId, isDarkMode, event.teams);
+
+  if (!interactive) {
+    return (
+      <View style={styles.betCells}>
+        {lineBet ? <View style={styles.lineCellButton} /> : <View style={styles.lineCellSpacer} />}
+        {moneylineBet ? <View style={styles.moneylineCellButton} /> : <View style={styles.moneylineCellSpacer} />}
+      </View>
+    );
+  }
+
+  return (
+    <View style={styles.betCells}>
+      {lineBet ? (
+        <WidgetBetCell event={event} data={lineBet} backgroundColor={lineColor} variant="line" />
+      ) : (
+        <View style={styles.lineCellSpacer} />
+      )}
+      {moneylineBet ? (
+        <WidgetBetCell event={event} data={moneylineBet} backgroundColor={moneylineColor} variant="moneyline" />
+      ) : (
+        <View style={styles.moneylineCellSpacer} />
+      )}
     </View>
   );
 });
@@ -226,35 +271,39 @@ const WidgetBetCell = memo(function WidgetBetCell({
     : [styles.betCell, styles.moneylineCell, { backgroundColor: color }];
   const oddsSize = isLine ? '15pt' : '17pt';
 
+  const content = (
+    <View style={cellStyle}>
+      {isLine ? null : <View style={styles.betCellOverlay} pointerEvents="none" />}
+      {data.label ? (
+        <Text
+          align="center"
+          color={{ custom: opacity(globalColors.white100, isLine ? 0.6 : 0.72) }}
+          numberOfLines={1}
+          size={isLine ? '13pt' : '12pt'}
+          style={styles.lineLabel}
+          weight="heavy"
+        >
+          {data.label}
+        </Text>
+      ) : null}
+      <LiveTokenText
+        align="center"
+        autoSubscriptionEnabled={false}
+        color={{ custom: '#FFFFFF' }}
+        initialValue={data.odds}
+        numberOfLines={1}
+        selector={token => formatOdds(token.price)}
+        size={oddsSize}
+        style={isLine ? styles.lineOdds : styles.moneylineOdds}
+        tokenId={tokenId}
+        weight="heavy"
+      />
+    </View>
+  );
+
   return (
     <ButtonPressAnimation onPress={onPress} scaleTo={0.92} style={buttonStyle}>
-      <View style={cellStyle}>
-        {isLine ? null : <View style={styles.betCellOverlay} pointerEvents="none" />}
-        {data.label ? (
-          <Text
-            align="center"
-            color={{ custom: opacity(globalColors.white100, isLine ? 0.6 : 0.72) }}
-            numberOfLines={1}
-            size={isLine ? '13pt' : '12pt'}
-            style={styles.lineLabel}
-            weight="heavy"
-          >
-            {data.label}
-          </Text>
-        ) : null}
-        <LiveTokenText
-          align="center"
-          autoSubscriptionEnabled={false}
-          color={{ custom: '#FFFFFF' }}
-          initialValue={data.odds}
-          numberOfLines={1}
-          selector={token => formatOdds(token.price)}
-          size={oddsSize}
-          style={isLine ? styles.lineOdds : styles.moneylineOdds}
-          tokenId={tokenId}
-          weight="heavy"
-        />
-      </View>
+      {content}
     </ButtonPressAnimation>
   );
 });
@@ -339,6 +388,7 @@ function getEventAccentColor({ event, isDarkMode, leagueId }: { event: Polymarke
 const styles = StyleSheet.create({
   container: {
     height: SPORTS_EVENT_WIDGET_CARD_HEIGHT,
+    position: 'relative',
     width: SPORTS_EVENT_WIDGET_CARD_WIDTH,
   },
   flex: {
@@ -432,6 +482,13 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     flexDirection: 'row',
     gap: 6,
+  },
+  betCellsOverlay: {
+    gap: 13,
+    position: 'absolute',
+    right: 12,
+    top: 51,
+    zIndex: 1,
   },
   betCell: {
     alignItems: 'center',
