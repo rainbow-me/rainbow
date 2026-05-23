@@ -1,5 +1,7 @@
 {
   "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://rainbow.me/schemas/surfaces-v1.schema.json",
+  "$comment": "Mirrors the surface v1 CMS/write-time schema spec. Keep this client-side defensive parser in sync with the write-time contract.",
   "title": "Surface v1",
   "type": "object",
   "additionalProperties": false,
