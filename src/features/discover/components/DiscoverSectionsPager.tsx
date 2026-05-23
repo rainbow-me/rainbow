@@ -168,10 +168,6 @@ function getInitialSection(tabs: Surface[], activeSectionId: string): string {
   return tabs.some(tab => tab.id === activeSectionId) ? activeSectionId : (tabs[0]?.id ?? activeSectionId);
 }
 
-export function getDiscoverTabLabel(tab: Surface): string {
-  return tab.label || tab.id;
-}
-
 const styles = StyleSheet.create({
   container: {
     flex: 1,

@@ -7,7 +7,7 @@ import { THICK_BORDER_WIDTH } from '@/styles/constants';
 
 const LEVERAGE_BADGE_BORDER_RADIUS = 8;
 
-export type LeverageBadgeProps = {
+type LeverageBadgeProps = {
   backgroundColor: string;
   borderColor: string;
   leverage: number;

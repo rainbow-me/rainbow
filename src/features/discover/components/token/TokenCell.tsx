@@ -1,4 +1,4 @@
-import { useCallback } from 'react';
+import { useCallback, useMemo } from 'react';
 import { StyleSheet, View } from 'react-native';
 
 import { LinearGradient } from 'expo-linear-gradient';
@@ -10,8 +10,8 @@ import { Skeleton } from '@/components/Skeleton';
 import { Box, Text, useColorMode } from '@/design-system';
 import { getValueForColorMode } from '@/design-system/color/palettes';
 import { SparklineChart } from '@/features/charts/line/components/SparklineChart';
-import { usePlacementCardTrackPress } from '@/features/discover/components/carousel/placementCardContext';
-import { SCREEN_HORIZONTAL_PADDING } from '@/features/discover/constants';
+import { usePlacementCardTrackPress } from '@/features/discover/components/marketPress/marketPressContext';
+import { useMarketCardPress } from '@/features/discover/components/marketPress/useMarketCardPress';
 import { buildTokenLineChartId, useTokenLineChartsStore } from '@/features/discover/stores/tokenLineChartsStore';
 import { type TokenPlacementItem } from '@/features/placements/stores/derived/tokensPlacementStore';
 import { opacity } from '@/framework/ui/utils/opacity';
@@ -27,7 +27,8 @@ import { getUniqueId } from '@/utils/ethereumUtils';
 
 const TOKEN_CARD_BORDER_RADIUS = 24;
 const TOKEN_CARD_HEIGHT = 64;
-const TOKEN_CARD_WIDTH = DEVICE_WIDTH - SCREEN_HORIZONTAL_PADDING * 2;
+const HORIZONTAL_PADDING = 12;
+const TOKEN_CARD_WIDTH = DEVICE_WIDTH - HORIZONTAL_PADDING * 2;
 const TOKEN_SPARKLINE_MAX_POINTS = 24;
 const TOKEN_SPARKLINE_LAYOUT = { height: 34, width: 64 };
 const TOKEN_CARD_BACKGROUND_COLORS = {
@@ -84,18 +85,22 @@ function TokenCard({ asset, itemId }: { asset: FormattedExternalAsset; itemId: s
     ? ([opacity(assetAccentColor, 0.16), opacity(assetAccentColor, 0)] as const)
     : (['rgba(131, 142, 153, 0.06)', 'rgba(131, 142, 153, 0)'] as const);
 
-  const openTokenDetails = useCallback(() => {
-    trackPress?.({
-      marketId: itemId,
-      marketName: asset.name,
-      marketSymbol: asset.symbol,
-    });
+  const navigateToToken = useCallback(() => {
     Navigation.handleAction(Routes.EXPANDED_ASSET_SHEET_V2, {
       asset,
       address: asset.address,
       chainId: asset.chainId,
     });
-  }, [asset, itemId, trackPress]);
+  }, [asset]);
+  const pressMetadata = useMemo(
+    () => ({
+      marketId: itemId,
+      marketName: asset.name,
+      marketSymbol: asset.symbol,
+    }),
+    [asset.name, asset.symbol, itemId]
+  );
+  const openTokenDetails = useMarketCardPress({ metadata: pressMetadata, onPress: navigateToToken, trackPress });
 
   return (
     <ButtonPressAnimation onPress={openTokenDetails} scaleTo={0.96}>

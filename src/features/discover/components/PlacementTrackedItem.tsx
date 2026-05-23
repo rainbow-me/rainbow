@@ -3,10 +3,11 @@ import { useCallback, type ReactNode } from 'react';
 import {
   PlacementCardProvider,
   PlacementPredictionOutcomeProvider,
+  trackPlacementCardPress,
+  trackPredictionOutcomePress,
   type TrackPlacementCardPress,
   type TrackPredictionOutcomePress,
-} from '@/features/discover/components/carousel/placementCardContext';
-import { trackPlacementCardPress, trackPredictionOutcomePress } from '@/features/discover/components/placementTracking';
+} from '@/features/discover/components/marketPress/marketPressContext';
 import { type Placement, type PlacementId, type PlacementItem } from '@/features/placements/types';
 
 type PlacementTrackedItemProps<T extends PlacementItem> = {

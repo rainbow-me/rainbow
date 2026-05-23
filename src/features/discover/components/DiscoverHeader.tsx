@@ -6,8 +6,7 @@ import { useDiscoverScreenContext } from '@/components/Discover/DiscoverScreenCo
 import { EasingGradient } from '@/components/easing-gradient/EasingGradient';
 import { Box, Text, TextIcon, useColorMode, useForegroundColor } from '@/design-system';
 import { getValueForColorMode } from '@/design-system/color/palettes';
-import { trackDiscoverSurfaceTabPress } from '@/features/discover/components/placementTracking';
-import { DISCOVER_SCREEN_BACKGROUND_COLOR } from '@/features/discover/constants';
+import { trackDiscoverSurfaceTabPress } from '@/features/discover/components/marketPress/marketPressContext';
 import {
   DiscoverSectionNavigation,
   useDiscoverNavigationStore,
@@ -23,6 +22,10 @@ const SEARCH_BUTTON_SIZE = 36;
 const CONTENT_TOP_INSET = 40;
 const RIGHT_FADE_WIDTH = SEARCH_BUTTON_RIGHT_INSET + 100;
 const SELECTED_TAB_RIGHT_INSET = SEARCH_BUTTON_RIGHT_INSET + SEARCH_BUTTON_SIZE + 12;
+const SCREEN_BACKGROUND_COLOR = {
+  light: '#FBFCFD',
+  dark: '#000000',
+};
 
 export function DiscoverHeader() {
   const separatorColor = useForegroundColor('separator');
@@ -74,7 +77,7 @@ function DiscoverCategorySelector() {
   const tabs = surface?.items !== undefined ? surface.items : [];
   const { scrollToSectionTop } = useDiscoverScreenContext();
   const { isDarkMode, colorMode } = useColorMode();
-  const screenBackgroundColor = getValueForColorMode(DISCOVER_SCREEN_BACKGROUND_COLOR, colorMode);
+  const screenBackgroundColor = getValueForColorMode(SCREEN_BACKGROUND_COLOR, colorMode);
   const scrollViewRef = useRef<ScrollView>(null);
   const scrollOffsetRef = useRef(0);
   const scrollViewWidthRef = useRef(0);

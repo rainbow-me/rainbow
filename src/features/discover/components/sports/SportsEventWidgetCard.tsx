@@ -1,5 +1,5 @@
 import { memo, useCallback, useMemo } from 'react';
-import { StyleSheet, View, type StyleProp, type ViewStyle } from 'react-native';
+import { StyleSheet, View } from 'react-native';
 
 import { LinearGradient } from 'expo-linear-gradient';
 
@@ -11,7 +11,7 @@ import { globalColors, Text, TextShadow, useColorMode } from '@/design-system';
 import {
   usePlacementCardTrackPress,
   usePlacementPredictionOutcomeTrackPress,
-} from '@/features/discover/components/carousel/placementCardContext';
+} from '@/features/discover/components/marketPress/marketPressContext';
 import { LeagueIcon } from '@/features/polymarket/components/league-icon/LeagueIcon';
 import { TeamLogo } from '@/features/polymarket/components/TeamLogo';
 import { usePolymarketLiveGame } from '@/features/polymarket/hooks/usePolymarketLiveGame';
@@ -53,10 +53,9 @@ const TEAM_LOGO_SIZE = 36;
 
 type SportsEventWidgetCardProps = {
   event: PolymarketEvent;
-  style?: StyleProp<ViewStyle>;
 };
 
-export const SportsEventWidgetCard = memo(function SportsEventWidgetCard({ event, style }: SportsEventWidgetCardProps) {
+export const SportsEventWidgetCard = memo(function SportsEventWidgetCard({ event }: SportsEventWidgetCardProps) {
   const { isDarkMode } = useColorMode();
   const trackPress = usePlacementCardTrackPress();
   const leagueId = useMemo(() => getLeagueId(event.slug), [event.slug]);
@@ -95,7 +94,7 @@ export const SportsEventWidgetCard = memo(function SportsEventWidgetCard({ event
   }, [event, trackPress]);
 
   return (
-    <View style={[styles.container, style]}>
+    <View style={styles.container}>
       <ButtonPressAnimation onPress={handlePress} scaleTo={0.96} style={styles.flex} wrapperStyle={styles.flex}>
         <GradientBorderView
           backgroundColor={isDarkMode ? globalColors.grey100 : globalColors.white100}

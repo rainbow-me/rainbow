@@ -2,6 +2,7 @@ import { type DestinationRoot, type Display } from '@/features/placements/surfac
 import { type PlacementSource } from '@/features/placements/types';
 
 export const DISPLAYS = {
+  PERP_CARD_CAROUSEL: 'perp_card.carousel',
   PERP_PILL_CAROUSEL: 'perp_pill.carousel',
   PERP_TILE_CAROUSEL: 'perp_tile.carousel',
   PERP_TILE_GRID: 'perp_tile.grid',
@@ -22,6 +23,7 @@ export const DESTINATION_ROOTS = {
 } as const satisfies Record<string, DestinationRoot>;
 
 export const SOURCE_BY_DISPLAY = {
+  [DISPLAYS.PERP_CARD_CAROUSEL]: 'hyperliquid',
   [DISPLAYS.PERP_PILL_CAROUSEL]: 'hyperliquid',
   [DISPLAYS.PERP_TILE_CAROUSEL]: 'hyperliquid',
   [DISPLAYS.PERP_TILE_GRID]: 'hyperliquid',

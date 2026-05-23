@@ -12,7 +12,7 @@ import { type TokenData } from '@/state/liveTokens/liveTokensStore';
 
 import { type PriceChangeColors } from './perpMarketCardChrome';
 
-export type PerpPriceChangeProps = {
+type PerpPriceChangeProps = {
   arrowHeight: number;
   arrowSize: TextSize;
   arrowWidth: number;

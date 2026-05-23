@@ -6,18 +6,17 @@ import { useDebouncedCallback } from 'use-debounce';
 
 import { Box } from '@/design-system';
 import { CarouselHeader } from '@/features/discover/components/carousel/CarouselHeader';
-import { PlacementTrackedItem } from '@/features/discover/components/PlacementTrackedItem';
 import {
-  defaultPlacementItemKey,
   trackPlacementInteraction,
   trackSurfaceSectionDrilldownPress,
-} from '@/features/discover/components/placementTracking';
-import { SCREEN_HORIZONTAL_PADDING } from '@/features/discover/constants';
+} from '@/features/discover/components/marketPress/marketPressContext';
+import { PlacementTrackedItem } from '@/features/discover/components/PlacementTrackedItem';
 import { type Destination, type Display } from '@/features/placements/surfaces/types';
 import { type Placement, type PlacementId, type PlacementItem } from '@/features/placements/types';
 import { time } from '@/utils/time';
 
 const CARD_GAP = 8;
+const HORIZONTAL_PADDING = 12;
 const SKELETON_COUNT = 5;
 const SCROLL_DEBOUNCE_MS = time.seconds(30);
 const SCROLL_DEBOUNCE_OPTIONS = Object.freeze({ leading: false, trailing: true });
@@ -142,7 +141,7 @@ export function MarketCarousel<T extends PlacementItem>({
           snapToOffsets={snapToOffsets}
           snapToAlignment="start"
           renderItem={renderCarouselItem}
-          keyExtractor={defaultPlacementItemKey}
+          keyExtractor={item => item.id}
           onMomentumScrollEnd={onScrollSettle}
           initialNumToRender={6}
           windowSize={8}
@@ -155,11 +154,11 @@ export function MarketCarousel<T extends PlacementItem>({
 const styles = StyleSheet.create({
   contentContainer: {
     gap: CARD_GAP,
-    paddingHorizontal: SCREEN_HORIZONTAL_PADDING,
+    paddingHorizontal: HORIZONTAL_PADDING,
   },
   skeletonRow: {
     flexDirection: 'row',
     gap: CARD_GAP,
-    paddingHorizontal: SCREEN_HORIZONTAL_PADDING,
+    paddingHorizontal: HORIZONTAL_PADDING,
   },
 });

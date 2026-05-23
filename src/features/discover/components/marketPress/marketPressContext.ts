@@ -1,7 +1,26 @@
+import { createContext, useContext } from 'react';
+
 import { analytics } from '@/analytics';
 import { event } from '@/analytics/event';
 import { type Destination, type Display } from '@/features/placements/surfaces/types';
 import { type Placement, type PlacementId, type PlacementItem, type PlacementItemAnalyticsMetadata } from '@/features/placements/types';
+
+export type TrackPlacementCardPress = (metadata?: PlacementItemAnalyticsMetadata) => void;
+export type TrackPredictionOutcomePress = (metadata: PlacementItemAnalyticsMetadata & { outcome: string }) => void;
+
+const PlacementCardContext = createContext<TrackPlacementCardPress | undefined>(undefined);
+const PlacementPredictionOutcomeContext = createContext<TrackPredictionOutcomePress | undefined>(undefined);
+
+export const PlacementCardProvider = PlacementCardContext.Provider;
+export const PlacementPredictionOutcomeProvider = PlacementPredictionOutcomeContext.Provider;
+
+export function usePlacementCardTrackPress(): TrackPlacementCardPress | undefined {
+  return useContext(PlacementCardContext);
+}
+
+export function usePlacementPredictionOutcomeTrackPress(): TrackPredictionOutcomePress | undefined {
+  return useContext(PlacementPredictionOutcomeContext);
+}
 
 export function trackPlacementCardPress({
   item,
@@ -135,7 +154,7 @@ export function trackPlacementInteraction({
   });
 }
 
-export function trackSurfaceInteraction({
+function trackSurfaceInteraction({
   display,
   interactionType,
   placement,
@@ -158,8 +177,4 @@ export function trackSurfaceInteraction({
     sectionId,
     surfaceId,
   });
-}
-
-export function defaultPlacementItemKey(item: PlacementItem): string {
-  return item.id;
 }

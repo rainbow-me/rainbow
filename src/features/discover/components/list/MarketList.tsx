@@ -5,13 +5,13 @@ import { ShowMoreCellEnterAnimation } from '@/components/animations/ShowMoreCell
 import { ShowMoreButton } from '@/components/buttons/ShowMoreButton';
 import { Box } from '@/design-system';
 import { CarouselHeader } from '@/features/discover/components/carousel/CarouselHeader';
+import { trackSurfaceSectionDrilldownPress } from '@/features/discover/components/marketPress/marketPressContext';
 import { PlacementTrackedItem } from '@/features/discover/components/PlacementTrackedItem';
-import { trackSurfaceSectionDrilldownPress } from '@/features/discover/components/placementTracking';
-import { SCREEN_HORIZONTAL_PADDING } from '@/features/discover/constants';
 import { type Destination, type Display } from '@/features/placements/surfaces/types';
 import { type Placement, type PlacementId, type PlacementItem } from '@/features/placements/types';
 
 const DEFAULT_VISIBLE_ITEM_COUNT = 5;
+const HORIZONTAL_PADDING = 12;
 
 type MarketListProps<T extends PlacementItem> = {
   data: T[];
@@ -59,7 +59,7 @@ export function MarketList<T extends PlacementItem>({
   return (
     <Box gap={20}>
       <CarouselHeader title={title} onPress={onPressSeeAll ? handleSeeAllPress : undefined} />
-      <Box gap={8} paddingHorizontal={{ custom: SCREEN_HORIZONTAL_PADDING }}>
+      <Box gap={8} paddingHorizontal={{ custom: HORIZONTAL_PADDING }}>
         {showSkeletons
           ? Array.from({ length: initialVisibleItemCount }).map((_, index) => <Fragment key={index}>{renderSkeleton()}</Fragment>)
           : visibleItems.map((item, index) => {

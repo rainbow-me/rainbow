@@ -13,7 +13,6 @@ import { ScrollHeaderFade } from '@/components/scroll-header-fade/ScrollHeaderFa
 import { Box, useColorMode } from '@/design-system';
 import { getValueForColorMode } from '@/design-system/color/palettes';
 import { DISCOVER_HEADER_HEIGHT, DiscoverHeader } from '@/features/discover/components/DiscoverHeader';
-import { DISCOVER_SCREEN_BACKGROUND_COLOR } from '@/features/discover/constants';
 import { useHyperliquidMarketsStore } from '@/features/perps/stores/hyperliquidMarketsStore';
 import { usePredictionEventsStore } from '@/features/placements/stores/derived/predictionsPlacementStore';
 import { useTokenRefsStore } from '@/features/placements/stores/derived/tokensPlacementStore';
@@ -21,6 +20,11 @@ import { usePlacementsStore } from '@/features/placements/stores/placementsStore
 import { SURFACE_SCHEDULE_REEVALUATE_MS, useSurfaceClockStore } from '@/features/placements/surfaces/stores/surfaceClockStore';
 import { getSurfaceStore } from '@/features/placements/surfaces/stores/surfaceStore';
 import { usePolymarketEventsStore } from '@/features/polymarket/stores/polymarketEventsStore';
+
+const SCREEN_BACKGROUND_COLOR = {
+  light: '#FBFCFD',
+  dark: '#000000',
+};
 
 export const DiscoverScreen = () => {
   return (
@@ -35,7 +39,7 @@ const Content = () => {
   const { top: topInset } = useSafeAreaInsets();
   const isSearching = useDiscoverSearchQueryStore(state => state.isSearching);
 
-  const backgroundColor = getValueForColorMode(DISCOVER_SCREEN_BACKGROUND_COLOR, colorMode);
+  const backgroundColor = getValueForColorMode(SCREEN_BACKGROUND_COLOR, colorMode);
   const headerFadeTopInset = topInset + DISCOVER_HEADER_HEIGHT;
   const scrollOffset = useSharedValue(0);
   const [isRefreshing, setIsRefreshing] = useState(false);

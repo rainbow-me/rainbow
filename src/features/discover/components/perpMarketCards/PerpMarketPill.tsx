@@ -1,5 +1,5 @@
-import React, { memo, useMemo } from 'react';
-import { StyleSheet, View, type StyleProp, type ViewStyle } from 'react-native';
+import React, { memo, useCallback, useMemo } from 'react';
+import { StyleSheet, View } from 'react-native';
 
 import { LinearGradient } from 'expo-linear-gradient';
 
@@ -9,13 +9,13 @@ import { Skeleton } from '@/components/Skeleton';
 import { AnimatedText, Text, useColorMode } from '@/design-system';
 import { getValueForColorMode, type ColorMode, type ContextualColorValue } from '@/design-system/color/palettes';
 import { Border } from '@/design-system/components/Border/Border';
-import { usePlacementCardTrackPress } from '@/features/discover/components/carousel/placementCardContext';
+import { usePlacementCardTrackPress } from '@/features/discover/components/marketPress/marketPressContext';
+import { useMarketCardPress } from '@/features/discover/components/marketPress/useMarketCardPress';
 import { buildPerpMarketBaseDisplay } from '@/features/discover/components/perpMarketCards/perpMarketCardChrome';
 import { PerpMarketIcon } from '@/features/discover/components/perpMarketCards/PerpMarketIcon';
 import { PerpPriceChange } from '@/features/discover/components/perpMarketCards/PerpPriceChange';
-import { usePerpMarketPress } from '@/features/discover/components/perpMarketCards/usePerpMarketPress';
 import { type PerpMarketWithMetadata } from '@/features/perps/types';
-import { convertStoredPerpPriceChangeToPercent, getHyperliquidTokenId } from '@/features/perps/utils';
+import { convertStoredPerpPriceChangeToPercent, getHyperliquidTokenId, navigateToPerpDetailScreen } from '@/features/perps/utils';
 import { formatPerpAssetPrice, selectFormattedMarkPrice } from '@/features/perps/utils/formatPerpsAssetPrice';
 import { extractBaseSymbol } from '@/features/perps/utils/hyperliquidSymbols';
 import { opacity } from '@/framework/ui/utils/opacity';
@@ -25,9 +25,8 @@ import { getHighContrastTextColorWorklet } from '@/worklets/colors';
 
 // ============ Types ========================================================== //
 
-export type PerpMarketPillProps = {
+type PerpMarketPillProps = {
   market: PerpMarketWithMetadata;
-  style?: StyleProp<ViewStyle>;
 };
 
 type PillColors = {
@@ -40,7 +39,6 @@ type PillColors = {
 
 // ============ Layout ========================================================= //
 
-const ICON_IMAGE_PADDING = 4;
 const ICON_SIZE = 48;
 const UP_DOWN_ARROW_WIDTH = 10;
 
@@ -79,13 +77,22 @@ const PILL_COLORS = {
 
 // ============ Component ====================================================== //
 
-export const PerpMarketPill = memo(function PerpMarketPill({ market, style }: PerpMarketPillProps) {
+export const PerpMarketPill = memo(function PerpMarketPill({ market }: PerpMarketPillProps) {
   const { colorMode, isDarkMode } = useColorMode();
   const symbol = market.symbol;
   const displayName = extractBaseSymbol(market.baseSymbol);
 
   const trackPress = usePlacementCardTrackPress();
-  const onPress = usePerpMarketPress(market, trackPress);
+  const navigateToMarket = useCallback(() => navigateToPerpDetailScreen(symbol), [symbol]);
+  const pressMetadata = useMemo(
+    () => ({
+      marketId: symbol,
+      marketName: market.metadata?.name ?? displayName,
+      marketSymbol: displayName,
+    }),
+    [displayName, market.metadata?.name, symbol]
+  );
+  const onPress = useMarketCardPress({ metadata: pressMetadata, onPress: navigateToMarket, trackPress });
 
   const { accentColor, badgeTextColor, iconUrl, pillColors, priceChangeColors } = useMemo(
     () => buildPerpMarketPillDisplay(market, colorMode),
@@ -101,7 +108,7 @@ export const PerpMarketPill = memo(function PerpMarketPill({ market, style }: Pe
   });
 
   return (
-    <ButtonPressAnimation onPress={onPress} scaleTo={0.96} style={[styles.pressable, style]}>
+    <ButtonPressAnimation onPress={onPress} scaleTo={0.96} style={styles.pressable}>
       <View style={[styles.pillShadow, isDarkMode ? styles.pillShadowDark : styles.pillShadowLight]}>
         <View style={[styles.pill, { backgroundColor: pillColors.backgroundColor }]}>
           <LinearGradient
@@ -221,11 +228,6 @@ function getStablePerpPillPercentChangeWidth(percentChange: number): number {
 // ============ Styles ========================================================= //
 
 const styles = StyleSheet.create({
-  badgePosition: {
-    shadowRadius: 5,
-    top: -ICON_IMAGE_PADDING - 3.5,
-    right: -ICON_IMAGE_PADDING - 4,
-  },
   changeRow: {
     alignItems: 'center',
     flexDirection: 'row',

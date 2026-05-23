@@ -1,5 +1,5 @@
 import React, { memo, useCallback, useMemo } from 'react';
-import { StyleSheet, View, type StyleProp, type ViewStyle } from 'react-native';
+import { StyleSheet, View } from 'react-native';
 
 import { LinearGradient } from 'expo-linear-gradient';
 import { useAnimatedStyle, type SharedValue } from 'react-native-reanimated';
@@ -14,7 +14,8 @@ import { getValueForColorMode, type ColorMode, type ContextualColorValue } from 
 import { Border } from '@/design-system/components/Border/Border';
 import { COMPACT_LINE_CHART_HORIZONTAL_OVERDRAW } from '@/features/charts/line/compact/CompactLineChartRenderer';
 import { SparklineChart } from '@/features/charts/line/components/SparklineChart';
-import { usePlacementCardTrackPress } from '@/features/discover/components/carousel/placementCardContext';
+import { usePlacementCardTrackPress } from '@/features/discover/components/marketPress/marketPressContext';
+import { useMarketCardPress } from '@/features/discover/components/marketPress/useMarketCardPress';
 import { buildPerpMarketBaseDisplay, type PriceChangeColors } from '@/features/discover/components/perpMarketCards/perpMarketCardChrome';
 import { DOWN_ARROW, UP_ARROW } from '@/features/perps/constants';
 import { useHyperliquidLineChartsStore } from '@/features/perps/stores/hyperliquidLineChartsStore';
@@ -34,9 +35,8 @@ import { getHighContrastTextColorWorklet } from '@/worklets/colors';
 
 // ============ Types ========================================================== //
 
-export type PerpMarketCardProps = {
+type PerpMarketCardProps = {
   market: PerpMarketWithMetadata;
-  style?: StyleProp<ViewStyle>;
 };
 
 type CardColors = {
@@ -99,20 +99,22 @@ const CARD_COLORS = {
 
 // ============ Component ====================================================== //
 
-export const PerpMarketCard = memo(function PerpMarketCard({ market, style }: PerpMarketCardProps) {
+export const PerpMarketCard = memo(function PerpMarketCard({ market }: PerpMarketCardProps) {
   const { colorMode, isDarkMode } = useColorMode();
   const symbol = market.symbol;
   const displayBaseSymbol = extractBaseSymbol(market.baseSymbol);
   const trackPress = usePlacementCardTrackPress();
 
-  const onPress = useCallback(() => {
-    navigateToPerpDetailScreen(symbol);
-    trackPress?.({
+  const navigateToMarket = useCallback(() => navigateToPerpDetailScreen(symbol), [symbol]);
+  const pressMetadata = useMemo(
+    () => ({
       marketId: symbol,
       marketName: market.metadata?.name ?? displayBaseSymbol,
       marketSymbol: displayBaseSymbol,
-    });
-  }, [displayBaseSymbol, market.metadata?.name, trackPress, symbol]);
+    }),
+    [displayBaseSymbol, market.metadata?.name, symbol]
+  );
+  const onPress = useMarketCardPress({ metadata: pressMetadata, onPress: navigateToMarket, trackPress });
 
   const { accentColor, badgeTextColor, cardColors, chartColor, iconUrl, priceChangeColors } = useMemo(
     () => buildPerpMarketCardDisplay(market, colorMode),
@@ -122,7 +124,7 @@ export const PerpMarketCard = memo(function PerpMarketCard({ market, style }: Pe
   const initialPriceChange = market.priceChange['24h'];
 
   return (
-    <ButtonPressAnimation onPress={onPress} scaleTo={0.96} style={[styles.pressable, style]}>
+    <ButtonPressAnimation onPress={onPress} scaleTo={0.96} style={styles.pressable}>
       <View style={[styles.cardShadow, isDarkMode ? styles.cardShadowDark : styles.cardShadowLight]}>
         <View style={[styles.card, { backgroundColor: cardColors.backgroundColor }]}>
           <LinearGradient

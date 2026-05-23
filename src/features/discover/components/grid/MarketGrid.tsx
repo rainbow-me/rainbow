@@ -3,18 +3,17 @@ import { StyleSheet, useWindowDimensions, View } from 'react-native';
 
 import { Box } from '@/design-system';
 import { CarouselHeader } from '@/features/discover/components/carousel/CarouselHeader';
+import { trackSurfaceSectionDrilldownPress } from '@/features/discover/components/marketPress/marketPressContext';
 import { PlacementTrackedItem } from '@/features/discover/components/PlacementTrackedItem';
-import { trackSurfaceSectionDrilldownPress } from '@/features/discover/components/placementTracking';
-import { SCREEN_HORIZONTAL_PADDING } from '@/features/discover/constants';
 import { type Destination, type Display } from '@/features/placements/surfaces/types';
 import { type Placement, type PlacementId, type PlacementItem } from '@/features/placements/types';
 import { Grid } from '@/screens/token-launcher/components/Grid';
 
-const DEFAULT_COLUMNS = 2;
+const GRID_COLUMNS = 2;
+const GRID_SPACING = 12;
 const DEFAULT_SKELETON_ROWS = 2;
 
 type MarketGridProps<T extends PlacementItem> = {
-  columns?: number;
   data: T[];
   destination: Destination;
   display: Display;
@@ -27,13 +26,11 @@ type MarketGridProps<T extends PlacementItem> = {
   renderSkeleton: (cellWidth: number) => ReactNode;
   sectionId: string;
   showHeaderCaret?: boolean;
-  spacing?: number;
   surfaceId: string;
   title: string;
 };
 
 export function MarketGrid<T extends PlacementItem>({
-  columns = DEFAULT_COLUMNS,
   data,
   destination,
   display,
@@ -46,12 +43,11 @@ export function MarketGrid<T extends PlacementItem>({
   renderSkeleton,
   sectionId,
   showHeaderCaret,
-  spacing = SCREEN_HORIZONTAL_PADDING,
   surfaceId,
   title,
 }: MarketGridProps<T>) {
   const { width: screenWidth } = useWindowDimensions();
-  const cellWidth = (screenWidth - 2 * SCREEN_HORIZONTAL_PADDING - (columns - 1) * spacing) / columns;
+  const cellWidth = (screenWidth - 2 * GRID_SPACING - (GRID_COLUMNS - 1) * GRID_SPACING) / GRID_COLUMNS;
   const showSkeletons = loading && data.length === 0;
 
   const handleSeeAllPress = useCallback(() => {
@@ -67,15 +63,15 @@ export function MarketGrid<T extends PlacementItem>({
 
       <View style={styles.gridContainer}>
         {showSkeletons ? (
-          <Grid columns={columns} spacing={spacing}>
-            {Array.from({ length: columns * DEFAULT_SKELETON_ROWS }, (_, index) => (
+          <Grid columns={GRID_COLUMNS} spacing={GRID_SPACING}>
+            {Array.from({ length: GRID_COLUMNS * DEFAULT_SKELETON_ROWS }, (_, index) => (
               <View key={index} style={{ height: itemHeight }}>
                 <Fragment>{renderSkeleton(cellWidth)}</Fragment>
               </View>
             ))}
           </Grid>
         ) : (
-          <Grid columns={columns} spacing={spacing}>
+          <Grid columns={GRID_COLUMNS} spacing={GRID_SPACING}>
             {data.map((item, index) => {
               return (
                 <View key={item.id} style={{ height: itemHeight }}>
@@ -101,6 +97,6 @@ export function MarketGrid<T extends PlacementItem>({
 
 const styles = StyleSheet.create({
   gridContainer: {
-    paddingHorizontal: SCREEN_HORIZONTAL_PADDING,
+    paddingHorizontal: GRID_SPACING,
   },
 });

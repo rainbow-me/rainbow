@@ -1,5 +1,5 @@
 import { memo, useCallback, useMemo } from 'react';
-import { StyleSheet, View, type StyleProp, type ViewStyle } from 'react-native';
+import { StyleSheet, View } from 'react-native';
 
 import { LinearGradient } from 'expo-linear-gradient';
 
@@ -12,7 +12,7 @@ import { globalColors, Text, useColorMode } from '@/design-system';
 import {
   usePlacementCardTrackPress,
   usePlacementPredictionOutcomeTrackPress,
-} from '@/features/discover/components/carousel/placementCardContext';
+} from '@/features/discover/components/marketPress/marketPressContext';
 import { DOWN_ARROW, UP_ARROW } from '@/features/perps/constants';
 import { type PolymarketEvent, type PolymarketMarket } from '@/features/polymarket/types/polymarket-event';
 import { getOutcomeColor } from '@/features/polymarket/utils/getMarketColor';
@@ -62,9 +62,6 @@ const ASSET_ACCENT_COLORS = [
 
 type PredictionMarketTileCardProps = {
   event: PolymarketEvent;
-  onPress?: () => void;
-  style?: StyleProp<ViewStyle>;
-  width?: number;
 };
 
 type OutcomeRowData = {
@@ -75,12 +72,7 @@ type OutcomeRowData = {
   tokenId: string;
 };
 
-export const PredictionMarketTileCard = memo(function PredictionMarketTileCard({
-  event,
-  onPress,
-  style,
-  width = PREDICTION_MARKET_TILE_CARD_WIDTH,
-}: PredictionMarketTileCardProps) {
+export const PredictionMarketTileCard = memo(function PredictionMarketTileCard({ event }: PredictionMarketTileCardProps) {
   const { isDarkMode } = useColorMode();
   const trackPress = usePlacementCardTrackPress();
   const eventColor = useMemo(() => getTileAccentColor(event, isDarkMode), [event, isDarkMode]);
@@ -113,15 +105,11 @@ export const PredictionMarketTileCard = memo(function PredictionMarketTileCard({
       marketSlug: event.slug,
       marketSymbol: event.ticker,
     });
-    if (onPress) {
-      onPress();
-      return;
-    }
     Navigation.handleAction(Routes.POLYMARKET_EVENT_SCREEN, { event, eventId: event.id });
-  }, [event, onPress, trackPress]);
+  }, [event, trackPress]);
 
   return (
-    <View style={[{ height: PREDICTION_MARKET_TILE_CARD_HEIGHT, width }, style]}>
+    <View style={styles.container}>
       <ButtonPressAnimation onPress={handlePress} scaleTo={0.96} style={styles.flex} wrapperStyle={styles.flex}>
         <View style={[styles.cardShadow, !isDarkMode && styles.cardShadowLight]}>
           <GradientBorderView
@@ -371,6 +359,10 @@ function getTileAccentColor(event: PolymarketEvent, isDarkMode: boolean): string
 }
 
 const styles = StyleSheet.create({
+  container: {
+    height: PREDICTION_MARKET_TILE_CARD_HEIGHT,
+    width: PREDICTION_MARKET_TILE_CARD_WIDTH,
+  },
   card: {
     flex: 1,
     overflow: 'hidden',

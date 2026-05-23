@@ -1,4 +1,4 @@
-import { useMemo } from 'react';
+import { useCallback, useMemo } from 'react';
 import { StyleSheet, View } from 'react-native';
 
 import { LinearGradient } from 'expo-linear-gradient';
@@ -9,14 +9,13 @@ import { Skeleton } from '@/components/Skeleton';
 import { AnimatedText, Text, useColorMode } from '@/design-system';
 import { getValueForColorMode } from '@/design-system/color/palettes';
 import { SparklineChart } from '@/features/charts/line/components/SparklineChart';
-import { usePlacementCardTrackPress } from '@/features/discover/components/carousel/placementCardContext';
+import { usePlacementCardTrackPress } from '@/features/discover/components/marketPress/marketPressContext';
+import { useMarketCardPress } from '@/features/discover/components/marketPress/useMarketCardPress';
 import { buildPerpMarketBaseDisplay, type PriceChangeColors } from '@/features/discover/components/perpMarketCards/perpMarketCardChrome';
 import { PerpMarketIcon } from '@/features/discover/components/perpMarketCards/PerpMarketIcon';
 import { PerpPriceChange } from '@/features/discover/components/perpMarketCards/PerpPriceChange';
-import { usePerpMarketPress } from '@/features/discover/components/perpMarketCards/usePerpMarketPress';
-import { SCREEN_HORIZONTAL_PADDING } from '@/features/discover/constants';
 import { useHyperliquidLineChartsStore } from '@/features/perps/stores/hyperliquidLineChartsStore';
-import { getHyperliquidTokenId } from '@/features/perps/utils';
+import { getHyperliquidTokenId, navigateToPerpDetailScreen } from '@/features/perps/utils';
 import { formatPerpAssetPrice, selectFormattedMarkPrice } from '@/features/perps/utils/formatPerpsAssetPrice';
 import { extractBaseSymbol } from '@/features/perps/utils/hyperliquidSymbols';
 import { type PerpMarketPlacementItem } from '@/features/placements/stores/derived/perpsPlacementStore';
@@ -27,8 +26,9 @@ import { getHighContrastTextColorWorklet } from '@/worklets/colors';
 
 const ROW_HEIGHT = 76;
 const ICON_SIZE = 40;
+const HORIZONTAL_PADDING = 12;
 const SPARKLINE_LAYOUT = { height: 34, width: 64 };
-const ROW_WIDTH = DEVICE_WIDTH - SCREEN_HORIZONTAL_PADDING * 2;
+const ROW_WIDTH = DEVICE_WIDTH - HORIZONTAL_PADDING * 2;
 const ROW_BACKGROUND_COLORS = {
   dark: opacity('#202429', 0.4),
   light: 'rgba(255, 255, 255, 0.92)',
@@ -60,7 +60,16 @@ export function PerpMarketRowCard({ item }: { item: PerpMarketPlacementItem }) {
     tokenId,
   });
   const trackPress = usePlacementCardTrackPress();
-  const onPress = usePerpMarketPress(item.market, trackPress);
+  const navigateToMarket = useCallback(() => navigateToPerpDetailScreen(symbol), [symbol]);
+  const pressMetadata = useMemo(
+    () => ({
+      marketId: symbol,
+      marketName: item.market.metadata?.name ?? displayName,
+      marketSymbol: displayName,
+    }),
+    [displayName, item.market.metadata?.name, symbol]
+  );
+  const onPress = useMarketCardPress({ metadata: pressMetadata, onPress: navigateToMarket, trackPress });
   const priceChangeColor = getPerpPriceChangeColor(livePriceChange, priceChangeColors);
   const rowBackgroundColor = getValueForColorMode(ROW_BACKGROUND_COLORS, colorMode);
   const rowGradientColors = isDarkMode ? ([opacity(accentColor, 0.16), opacity(accentColor, 0)] as const) : ROW_LIGHT_GRADIENT_COLORS;
