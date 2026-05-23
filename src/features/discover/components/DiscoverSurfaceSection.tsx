@@ -140,6 +140,7 @@ const LIVE_INDICATOR_CUTOUT_SIZE = 16;
 const LIVE_INDICATOR_DOT_SIZE = 8;
 const LIVE_INDICATOR_HEADER_GAP = 10;
 const HEADER_ACCESSORY_GAP = 4;
+const EMPTY_MARKET_DISPLAY_ITEMS: MarketDisplayItem[] = [];
 const EMPTY_PREDICTION_PLACEMENT_ITEMS: PredictionPlacementItem[] = [];
 const hasDestination = (surface: SurfaceLeaf) => surface.destination !== null;
 const PREDICTION_TILE_WIDTH = Math.round((DEVICE_WIDTH - 20 * 2 - 8) / 2);
@@ -234,9 +235,24 @@ function PlacementBackedMarketSurfaceSection({
   surfaceId: string;
 }) {
   const source = usePlacementsStore(state => state.getPlacement(surface.placement)?.source);
+  const isLoadingPlacementSource = usePlacementsStore(state => {
+    if (state.getPlacement(surface.placement) !== undefined) return false;
+    return state.getStatus('isInitialLoad') || state.getStatus('isIdle') || state.getStatus('isLoading');
+  });
 
   if (source === 'hyperliquid') return <PerpsMarketSurfaceSection surface={surface} surfaceId={surfaceId} />;
   if (source === 'rainbow') return <TokensMarketSurfaceSection surface={surface} surfaceId={surfaceId} />;
+  if (isLoadingPlacementSource) {
+    return renderSurfaceLayoutSection({
+      data: EMPTY_MARKET_DISPLAY_ITEMS,
+      descriptor: MARKET_SECTION_DESCRIPTORS[surface.display],
+      loading: true,
+      onPressSeeAll: getHeaderPress(surface.destination),
+      placement: undefined,
+      surface,
+      surfaceId,
+    });
+  }
 
   return null;
 }
