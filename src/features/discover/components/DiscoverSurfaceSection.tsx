@@ -134,6 +134,8 @@ const SECTION_VERTICAL_GAP = 32;
 const LIVE_INDICATOR_SIZE = 28;
 const LIVE_INDICATOR_CUTOUT_SIZE = 16;
 const LIVE_INDICATOR_DOT_SIZE = 8;
+const LIVE_INDICATOR_HEADER_GAP = 10;
+const HEADER_ACCESSORY_GAP = 4;
 const EMPTY_PREDICTION_PLACEMENT_ITEMS: PredictionPlacementItem[] = [];
 const hasDestination = (surface: SurfaceLeaf) => surface.destination !== null;
 const PREDICTION_TILE_WIDTH = Math.round((DEVICE_WIDTH - 20 * 2 - 8) / 2);
@@ -503,16 +505,16 @@ function renderSportsWidgetSkeleton() {
 }
 
 function renderSurfaceHeaderLeadingAccessory(surface: SurfaceLeaf) {
-  if (isLiveSportsSurface(surface)) return <LiveSectionIndicator />;
+  if (isLiveSportsSurface(surface)) return <LiveSectionIndicator style={styles.liveHeaderIndicator} />;
 
   const leagueId = getSurfaceLeagueId(surface);
   return leagueId ? <LeagueIcon leagueId={leagueId} size={28} /> : null;
 }
 
-function LiveSectionIndicator() {
+function LiveSectionIndicator({ style }: { style?: StyleProp<ViewStyle> }) {
   const backgroundColor = useBackgroundColor('surfacePrimary');
   return (
-    <View style={styles.liveIndicatorOuter}>
+    <View style={[styles.liveIndicatorOuter, style]}>
       <View style={[styles.liveIndicatorCutout, { backgroundColor }]}>
         <View style={styles.liveIndicatorDot} />
       </View>
@@ -579,6 +581,9 @@ const styles = StyleSheet.create({
     borderRadius: LIVE_INDICATOR_DOT_SIZE / 2,
     height: LIVE_INDICATOR_DOT_SIZE,
     width: LIVE_INDICATOR_DOT_SIZE,
+  },
+  liveHeaderIndicator: {
+    marginRight: LIVE_INDICATOR_HEADER_GAP - HEADER_ACCESSORY_GAP,
   },
   liveIndicatorOuter: {
     alignItems: 'center',
