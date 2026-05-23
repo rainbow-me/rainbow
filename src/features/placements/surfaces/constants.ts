@@ -1,4 +1,3 @@
-import { type DestinationRoot, type Display } from '@/features/placements/surfaces/types';
 import { type PlacementSource } from '@/features/placements/types';
 
 export const DISPLAYS = {
@@ -11,14 +10,14 @@ export const DISPLAYS = {
   PREDICTION_TILE_WIDGET_CAROUSEL: 'prediction_tile_widget.carousel',
   PREDICTION_SPORT_WIDGET_CAROUSEL: 'prediction_sport_widget.carousel',
   TOKEN_CELL_LIST: 'token_cell.list',
-} as const satisfies Record<string, Display>;
+} as const;
 
 export const DESTINATION_ROOTS = {
   PERPS: 'perps',
   PREDICTIONS: 'predictions',
   TOKENS: 'tokens',
   DAPPS: 'dapps',
-} as const satisfies Record<string, DestinationRoot>;
+} as const;
 
 export const SOURCE_BY_DISPLAY = {
   [DISPLAYS.PERP_PILL_CAROUSEL]: 'hyperliquid',
@@ -30,4 +29,7 @@ export const SOURCE_BY_DISPLAY = {
   [DISPLAYS.PREDICTION_TILE_WIDGET_CAROUSEL]: 'polymarket',
   [DISPLAYS.PREDICTION_SPORT_WIDGET_CAROUSEL]: 'polymarket',
   [DISPLAYS.TOKEN_CELL_LIST]: 'rainbow',
-} as const satisfies Record<Display, PlacementSource>;
+} as const satisfies Record<(typeof DISPLAYS)[keyof typeof DISPLAYS], PlacementSource>;
+
+export const DISPLAY_VALUES = Object.keys(SOURCE_BY_DISPLAY);
+export const DESTINATION_ROOT_VALUES = Object.values(DESTINATION_ROOTS);

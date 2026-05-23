@@ -1,19 +1,12 @@
+import { type DESTINATION_ROOTS, type SOURCE_BY_DISPLAY } from '@/features/placements/surfaces/constants';
+
 export type Enabled = boolean | { startsAt?: string; endsAt?: string };
 
-export type DestinationRoot = 'perps' | 'predictions' | 'tokens' | 'dapps';
+export type DestinationRoot = (typeof DESTINATION_ROOTS)[keyof typeof DESTINATION_ROOTS];
 
 export type Destination = [DestinationRoot, ...string[]] | null;
 
-export type Display =
-  | 'perp_pill.carousel'
-  | 'perp_tile.carousel'
-  | 'perp_tile.grid'
-  | 'perp_row.list'
-  | 'prediction_tile.carousel'
-  | 'prediction_tile.grid'
-  | 'prediction_tile_widget.carousel'
-  | 'prediction_sport_widget.carousel'
-  | 'token_cell.list';
+export type Display = keyof typeof SOURCE_BY_DISPLAY;
 
 export type SurfaceBase = {
   id: string;

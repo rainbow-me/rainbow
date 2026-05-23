@@ -1,7 +1,7 @@
 import { getApp } from '@react-native-firebase/app';
 import { doc, getDoc, getFirestore } from '@react-native-firebase/firestore';
 
-import { DESTINATION_ROOTS, DISPLAYS } from '@/features/placements/surfaces/constants';
+import { DESTINATION_ROOT_VALUES, DISPLAY_VALUES } from '@/features/placements/surfaces/constants';
 import { type DestinationRoot, type Display, type Surface } from '@/features/placements/surfaces/types';
 import { createQueryStore } from '@/state/internal/createQueryStore';
 import { time } from '@/utils/time';
@@ -9,8 +9,6 @@ import { time } from '@/utils/time';
 type SurfaceStore = ReturnType<typeof createSurfaceStore>;
 
 const storesBySurfaceId = new Map<string, SurfaceStore>();
-const DISPLAY_VALUES = Object.values(DISPLAYS) as string[];
-const DESTINATION_ROOT_VALUES = Object.values(DESTINATION_ROOTS) as string[];
 const SURFACE_ID_PATTERN = /^[a-z][a-z0-9_]*$/;
 
 export function getSurfaceStore(surfaceId: string): SurfaceStore {
@@ -106,7 +104,7 @@ function isSurfaceId(value: unknown): value is string {
 }
 
 function isDestinationRoot(root: unknown): root is DestinationRoot {
-  return typeof root === 'string' && DESTINATION_ROOT_VALUES.includes(root);
+  return typeof root === 'string' && DESTINATION_ROOT_VALUES.includes(root as DestinationRoot);
 }
 
 function isNonEmptyString(value: unknown): value is string {
