@@ -27,6 +27,7 @@ type MarketGridProps<T extends PlacementItem> = {
   renderSkeleton: (cellWidth: number) => ReactNode;
   sectionId: string;
   showHeaderCaret?: boolean;
+  skeletonCount?: number;
   surfaceId: string;
   title: string;
 };
@@ -45,6 +46,7 @@ export function MarketGrid<T extends PlacementItem>({
   renderSkeleton,
   sectionId,
   showHeaderCaret,
+  skeletonCount = GRID_COLUMNS * DEFAULT_SKELETON_ROWS,
   surfaceId,
   title,
 }: MarketGridProps<T>) {
@@ -71,7 +73,7 @@ export function MarketGrid<T extends PlacementItem>({
       <View style={styles.gridContainer}>
         {showSkeletons ? (
           <Grid columns={GRID_COLUMNS} spacing={GRID_SPACING}>
-            {Array.from({ length: GRID_COLUMNS * DEFAULT_SKELETON_ROWS }, (_, index) => (
+            {Array.from({ length: skeletonCount }, (_, index) => (
               <View key={index} style={{ height: itemHeight }}>
                 <Fragment>{renderSkeleton(cellWidth)}</Fragment>
               </View>

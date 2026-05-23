@@ -223,10 +223,9 @@ function PerpsSurfaceSection({ surface, surfaceId }: { surface: SurfaceLeafWithD
   const useStore = useMemo(() => getPerpsPlacementStore(surface.placement), [surface.placement]);
   const result = useStore();
   const descriptor = PERPS_SECTION_DESCRIPTORS[surface.display];
-  const limitedData = useLimitedItems(result.items, surface.limit);
 
   return renderSurfaceLayoutSection({
-    data: descriptor.layout === 'list' ? result.items : limitedData,
+    data: result.items,
     descriptor,
     loading: result.isLoading,
     onPressSeeAll: getHeaderPress(surface.destination),
@@ -240,10 +239,9 @@ function PredictionsSurfaceSection({ surface, surfaceId }: { surface: SurfaceLea
   const useStore = useMemo(() => getPredictionsPlacementStore(surface.placement), [surface.placement]);
   const result = useStore();
   const descriptor = PREDICTIONS_SECTION_DESCRIPTORS[surface.display];
-  const limitedData = useLimitedItems(result.items, surface.limit);
 
   return renderSurfaceLayoutSection({
-    data: descriptor.layout === 'list' ? result.items : limitedData,
+    data: result.items,
     descriptor,
     loading: result.isLoading,
     onPressSeeAll: getHeaderPress(surface.destination),
@@ -286,6 +284,9 @@ function renderSurfaceLayoutSection<T extends PlacementItem>({
   surfaceId,
 }: SurfaceLayoutProps<T>) {
   const leadingAccessory = renderSurfaceHeaderLeadingAccessory(surface);
+  const hasLimit = surface.limit !== undefined;
+  const renderedData = hasLimit ? data.slice(0, surface.limit) : data;
+  const skeletonCount = hasLimit ? surface.limit : undefined;
   const commonProps = {
     destination: surface.destination,
     display: surface.display,
@@ -304,7 +305,7 @@ function renderSurfaceLayoutSection<T extends PlacementItem>({
       return (
         <MarketCarousel
           {...commonProps}
-          data={data}
+          data={renderedData}
           getItemWidth={descriptor.getItemWidth}
           itemHeight={descriptor.itemHeight}
           itemVerticalBleed={descriptor.itemVerticalBleed}
@@ -312,24 +313,26 @@ function renderSurfaceLayoutSection<T extends PlacementItem>({
           renderItem={descriptor.renderItem}
           renderSkeleton={descriptor.renderSkeleton}
           showHeaderCaret={descriptor.showHeaderCaret?.(surface)}
+          skeletonCount={skeletonCount}
         />
       );
     case 'grid':
       return (
         <MarketGrid
           {...commonProps}
-          data={data}
+          data={renderedData}
           itemHeight={descriptor.itemHeight}
           renderItem={descriptor.renderItem}
           renderSkeleton={descriptor.renderSkeleton}
           showHeaderCaret={descriptor.showHeaderCaret?.(surface)}
+          skeletonCount={skeletonCount}
         />
       );
     case 'list':
       return (
         <MarketList
           {...commonProps}
-          data={data}
+          data={renderedData}
           initialVisibleItemCount={surface.limit}
           renderItem={descriptor.renderItem}
           renderSkeleton={descriptor.renderSkeleton}
@@ -338,10 +341,6 @@ function renderSurfaceLayoutSection<T extends PlacementItem>({
     default:
       return assertNever(descriptor);
   }
-}
-
-function useLimitedItems<T>(items: T[], limit: number | undefined): T[] {
-  return useMemo(() => (limit ? items.slice(0, limit) : items), [items, limit]);
 }
 
 function getHeaderPress(destination: SurfaceLeaf['destination']): (() => void) | undefined {

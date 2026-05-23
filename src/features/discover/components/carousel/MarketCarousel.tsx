@@ -38,6 +38,7 @@ type MarketCarouselProps<T extends PlacementItem> = {
   renderSkeleton: () => ReactNode;
   sectionId: string;
   showHeaderCaret?: boolean;
+  skeletonCount?: number;
   surfaceId: string;
   title: string;
 };
@@ -59,6 +60,7 @@ export function MarketCarousel<T extends PlacementItem>({
   renderSkeleton,
   sectionId,
   showHeaderCaret,
+  skeletonCount = SKELETON_COUNT,
   surfaceId,
   title,
 }: MarketCarouselProps<T>) {
@@ -131,7 +133,7 @@ export function MarketCarousel<T extends PlacementItem>({
 
       {showSkeletons ? (
         <View style={styles.skeletonRow}>
-          {Array.from({ length: SKELETON_COUNT }, (_, index) => (
+          {Array.from({ length: skeletonCount }, (_, index) => (
             <Fragment key={index}>{renderSkeleton()}</Fragment>
           ))}
         </View>
