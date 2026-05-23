@@ -82,7 +82,7 @@ export const DiscoverSurfaceSection = memo(function DiscoverSurfaceSection({
 });
 
 type SectionDescriptorBase<T extends PlacementItem> = {
-  renderHeaderLeadingAccessory?: (items: T[], surface: SurfaceLeaf) => ReactNode;
+  renderHeaderLeadingAccessory?: (surface: SurfaceLeaf) => ReactNode;
 };
 
 type CarouselSectionDescriptor<T extends PlacementItem> = SectionDescriptorBase<T> & {
@@ -291,7 +291,7 @@ function renderSurfaceLayoutSection<T extends PlacementItem>({
   surface,
   surfaceId,
 }: SurfaceLayoutProps<T>) {
-  const leadingAccessory = descriptor.renderHeaderLeadingAccessory?.(data, surface) ?? renderSurfaceHeaderLeadingAccessory(surface);
+  const leadingAccessory = descriptor.renderHeaderLeadingAccessory?.(surface) ?? renderSurfaceHeaderLeadingAccessory(surface);
   const commonProps = {
     destination: surface.destination,
     display: surface.display,
@@ -436,33 +436,33 @@ function renderSportsWidgetSkeleton() {
   );
 }
 
-function renderSportsHeaderIcon(items: PredictionPlacementItem[], surface: SurfaceLeaf) {
-  const leagueId = getSportsSurfaceLeagueId(items, surface);
+function renderSportsHeaderIcon(surface: SurfaceLeaf) {
+  const leagueId = getSurfaceLeagueId(surface);
   return leagueId ? <LeagueIcon leagueId={leagueId} size={28} /> : null;
 }
 
 function renderSurfaceHeaderLeadingAccessory(surface: SurfaceLeaf) {
-  const leagueId = getLeagueIdByName(surface.label) ?? getLeagueId(surface.id);
+  const leagueId = getSurfaceLeagueId(surface);
   return leagueId ? <LeagueIcon leagueId={leagueId} size={28} /> : null;
 }
 
-function getSportsSurfaceLeagueId(items: PredictionPlacementItem[], surface: SurfaceLeaf): LeagueId | undefined {
-  const eventLeagueId = getLeagueId(items[0]?.event.slug ?? '');
-  if (eventLeagueId) return eventLeagueId;
-
-  const surfaceIdLeagueId = getLeagueId(surface.id);
-  if (surfaceIdLeagueId) return surfaceIdLeagueId;
-
-  return getLeagueIdByName(surface.label);
+function getSurfaceLeagueId(surface: SurfaceLeaf): LeagueId | undefined {
+  return getLeagueIdBySurfaceValue(surface.label) ?? getLeagueIdBySurfaceValue(surface.id);
 }
 
-function getLeagueIdByName(label: string | undefined): LeagueId | undefined {
-  if (!label) return undefined;
-  const normalizedLabel = label.toLowerCase();
+function getLeagueIdBySurfaceValue(value: string | undefined): LeagueId | undefined {
+  if (!value) return undefined;
+  const normalizedValue = value.trim().toLowerCase();
+  const leagueId = getLeagueId(normalizedValue);
+  if (leagueId) return leagueId;
+
   const entry = Object.entries(SPORT_LEAGUES).find(
-    ([leagueId, league]) => leagueId === normalizedLabel || league.name.toLowerCase() === normalizedLabel
+    ([leagueId, league]) => leagueId === normalizedValue || league.name.toLowerCase() === normalizedValue
   );
-  return entry?.[0] as LeagueId | undefined;
+  if (entry) return entry[0] as LeagueId;
+
+  const leagueToken = normalizedValue.split(/[^a-z0-9]+/).find(token => token in SPORT_LEAGUES);
+  return leagueToken as LeagueId | undefined;
 }
 
 function renderTokenCell(item: TokenPlacementItem) {
