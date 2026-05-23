@@ -79,7 +79,7 @@ describe('placementsStore', () => {
     expect(eventIds).toEqual([...eventIds].sort((a, b) => a.toLowerCase().localeCompare(b.toLowerCase())));
   });
 
-  it('preserves omitted cached placements when a successful refresh returns a partial v2 set', async () => {
+  it('replaces cached placements with the latest successful v2 fetch', async () => {
     const cachedPerps = getPlacement('perps_top');
     const cachedPredictions = getPlacement('predictions');
     const refreshedPerps: Placement = {
@@ -100,10 +100,7 @@ describe('placementsStore', () => {
     await usePlacementsStore.getState().fetch(undefined, { force: true });
 
     expect(usePlacementsStore.getState().getRefIds('perps_top', { source: 'hyperliquid', type: 'perp' })).toEqual(['BTC', 'HYPE']);
-    expect(usePlacementsStore.getState().getRefIds('predictions', { source: 'polymarket', type: 'prediction' })).toEqual([
-      'event-1',
-      'event-2',
-    ]);
+    expect(usePlacementsStore.getState().getPlacement('predictions')).toBeUndefined();
   });
 
   it('ignores stale v1, mismatched, malformed, and future cached placements', () => {
