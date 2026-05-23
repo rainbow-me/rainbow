@@ -6,6 +6,7 @@ import { usePlacementsStore } from '@/features/placements/stores/placementsStore
 import { type PlacementId, type PlacementItem } from '@/features/placements/types';
 import { fetchPolymarketEventsByIds } from '@/features/polymarket/stores/polymarketEventsStore';
 import { type PolymarketEvent } from '@/features/polymarket/types/polymarket-event';
+import { fetchTeamsForGameEvents } from '@/features/polymarket/utils/sports';
 import { processRawPolymarketEvent } from '@/features/polymarket/utils/transforms';
 import { logger } from '@/logger';
 import { useRemoteConfigStore } from '@/model/remoteConfig';
@@ -73,7 +74,14 @@ async function fetchPredictionEvents(
   abortController: AbortController | null
 ): Promise<PolymarketEvent[]> {
   const rawEvents = await fetchPolymarketEventsByIds(eventIds, abortController);
-  return Promise.all(rawEvents.map(event => processRawPolymarketEvent(event)));
+  const teamsByTicker = await fetchTeamsForGameEvents(rawEvents);
+
+  return Promise.all(
+    rawEvents.map(event => {
+      const teamMetadata = event.ticker ? teamsByTicker.get(event.ticker) : undefined;
+      return processRawPolymarketEvent(event, teamMetadata?.teams);
+    })
+  );
 }
 
 // ============ Utilities ====================================================== //
