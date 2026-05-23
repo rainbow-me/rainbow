@@ -14,13 +14,6 @@ import {
   LargePerpMarketCardSkeleton,
 } from '@/features/discover/components/perpMarketCards/LargePerpMarketCard';
 import {
-  computePerpCardWidth,
-  PERP_MARKET_CARD_HEIGHT,
-  PERP_MARKET_CARD_SLOT_WIDTH_WITH_CHART,
-  PerpMarketCard,
-  PerpMarketCardSkeleton,
-} from '@/features/discover/components/perpMarketCards/PerpMarketCard';
-import {
   computePerpPillWidth,
   PERP_MARKET_PILL_HEIGHT,
   PerpMarketPill,
@@ -121,10 +114,7 @@ type ListSectionDescriptor<T extends PlacementItem> = {
 
 type SectionDescriptor<T extends PlacementItem> = CarouselSectionDescriptor<T> | GridSectionDescriptor<T> | ListSectionDescriptor<T>;
 
-type PerpsDisplay = Extract<
-  SurfaceLeaf['display'],
-  'perp_card.carousel' | 'perp_pill.carousel' | 'perp_tile.carousel' | 'perp_tile.grid' | 'perp_row.list'
->;
+type PerpsDisplay = Extract<SurfaceLeaf['display'], 'perp_pill.carousel' | 'perp_tile.carousel' | 'perp_tile.grid' | 'perp_row.list'>;
 type PredictionsDisplay = Extract<
   SurfaceLeaf['display'],
   | 'prediction_tile.carousel'
@@ -150,15 +140,6 @@ const hasDestination = (surface: SurfaceLeaf) => surface.destination !== null;
 const PREDICTION_TILE_WIDTH = Math.round((DEVICE_WIDTH - 20 * 2 - 8) / 2);
 
 const PERPS_SECTION_DESCRIPTORS = {
-  'perp_card.carousel': {
-    layout: 'carousel',
-    getItemWidth: getPerpCardItemWidth,
-    itemHeight: PERP_MARKET_CARD_HEIGHT,
-    itemWidth: PERP_MARKET_CARD_SLOT_WIDTH_WITH_CHART,
-    renderItem: renderPerpCard,
-    renderSkeleton: PerpMarketCardSkeleton,
-    showHeaderCaret: hasDestination,
-  },
   'perp_pill.carousel': {
     layout: 'carousel',
     getItemWidth: getPerpPillItemWidth,
@@ -237,7 +218,6 @@ const TOKENS_SECTION_DESCRIPTORS = {
 
 function getSurfaceSectionSource(display: SurfaceLeaf['display']): SectionSource {
   switch (display) {
-    case 'perp_card.carousel':
     case 'perp_pill.carousel':
     case 'perp_tile.carousel':
     case 'perp_tile.grid':
@@ -398,14 +378,6 @@ function getHeaderPress(destination: SurfaceLeaf['destination']): (() => void) |
 
 function getPerpPillItemWidth(item: PerpMarketPlacementItem): number {
   return computePerpPillWidth(item.market);
-}
-
-function getPerpCardItemWidth(item: PerpMarketPlacementItem): number {
-  return computePerpCardWidth(item.market);
-}
-
-function renderPerpCard(item: PerpMarketPlacementItem) {
-  return <PerpMarketCard market={item.market} />;
 }
 
 function renderPerpPill(item: PerpMarketPlacementItem) {

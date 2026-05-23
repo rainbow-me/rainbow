@@ -5,7 +5,6 @@ export type DestinationRoot = 'perps' | 'predictions' | 'tokens' | 'dapps';
 export type Destination = [DestinationRoot, ...string[]] | null;
 
 export type Display =
-  | 'perp_card.carousel'
   | 'perp_pill.carousel'
   | 'perp_tile.carousel'
   | 'perp_tile.grid'

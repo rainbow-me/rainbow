@@ -84,7 +84,6 @@
         },
         "display": {
           "enum": [
-            "perp_card.carousel",
             "perp_pill.carousel",
             "perp_tile.carousel",
             "perp_tile.grid",
