@@ -17,7 +17,6 @@ export const DESTINATION_ROOTS = {
   PERPS: 'perps',
   PREDICTIONS: 'predictions',
   TOKENS: 'tokens',
-  DAPPS: 'dapps',
 } as const;
 
 export const SOURCE_BY_DISPLAY = {
