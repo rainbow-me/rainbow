@@ -37,8 +37,9 @@ import { navigateDiscoverDestination } from '@/features/discover/utils/navigatio
 import { getPerpsPlacementStore, type PerpMarketPlacementItem } from '@/features/placements/stores/derived/perpsPlacementStore';
 import { getPredictionsPlacementStore, type PredictionPlacementItem } from '@/features/placements/stores/derived/predictionsPlacementStore';
 import { getTokensPlacementStore, type TokenPlacementItem } from '@/features/placements/stores/derived/tokensPlacementStore';
-import { type Surface, type SurfaceLeaf } from '@/features/placements/surfaces/types';
-import { type Placement, type PlacementItem } from '@/features/placements/types';
+import type { SOURCE_BY_DISPLAY } from '@/features/placements/surfaces/constants';
+import { type Display, type Surface, type SurfaceLeaf } from '@/features/placements/surfaces/types';
+import type { Placement, PlacementItem, PlacementSource } from '@/features/placements/types';
 import { LeagueIcon } from '@/features/polymarket/components/league-icon/LeagueIcon';
 import {
   HEIGHT as POLYMARKET_EVENTS_LIST_ITEM_HEIGHT,
@@ -111,17 +112,13 @@ type ListSectionDescriptor<T extends PlacementItem> = SectionDescriptorBase<T> &
 
 type SectionDescriptor<T extends PlacementItem> = CarouselSectionDescriptor<T> | GridSectionDescriptor<T> | ListSectionDescriptor<T>;
 
-type PerpsDisplay = Extract<SurfaceLeaf['display'], 'perp_pill.carousel' | 'perp_tile.carousel' | 'perp_tile.grid' | 'perp_row.list'>;
-type PredictionsDisplay = Extract<
-  SurfaceLeaf['display'],
-  | 'prediction_tile.carousel'
-  | 'prediction_tile.grid'
-  | 'prediction_tile_widget.carousel'
-  | 'prediction_sport_widget.carousel'
-  | 'prediction_sport_widget.list'
->;
-type TokensDisplay = Extract<SurfaceLeaf['display'], 'token_cell.list'>;
-type SurfaceLeafWithDisplay<TDisplay extends SurfaceLeaf['display']> = SurfaceLeaf & { display: TDisplay };
+type DisplayForSource<TSource extends PlacementSource> = {
+  [TDisplay in Display]: (typeof SOURCE_BY_DISPLAY)[TDisplay] extends TSource ? TDisplay : never;
+}[Display];
+type PerpsDisplay = DisplayForSource<'hyperliquid'>;
+type PredictionsDisplay = DisplayForSource<'polymarket'>;
+type TokensDisplay = DisplayForSource<'rainbow'>;
+type SurfaceLeafWithDisplay<TDisplay extends Display> = SurfaceLeaf & { display: TDisplay };
 
 type SurfaceLayoutProps<T extends PlacementItem> = {
   data: T[];
