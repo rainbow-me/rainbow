@@ -14,19 +14,21 @@ import {
 } from '@/features/discover/components/marketPress/marketPressContext';
 import { LeagueIcon } from '@/features/polymarket/components/league-icon/LeagueIcon';
 import { TeamLogo } from '@/features/polymarket/components/TeamLogo';
+import {
+  getPolymarketSportsBetCellTokenId,
+  usePolymarketSportsBetCellPress,
+} from '@/features/polymarket/hooks/usePolymarketSportsBetCellPress';
 import { usePolymarketSportsEventDisplay } from '@/features/polymarket/hooks/usePolymarketSportsEventDisplay';
 import { getLeagueId, SPORT_LEAGUES, type LeagueId } from '@/features/polymarket/leagues';
 import { type PolymarketTeamInfo } from '@/features/polymarket/types';
 import { type PolymarketEvent } from '@/features/polymarket/types/polymarket-event';
-import { getOutcomeColor } from '@/features/polymarket/utils/getMarketColor';
 import { parsePeriod, parseScore } from '@/features/polymarket/utils/sports';
 import { formatOdds, type BetCellData, type EventBetGrid } from '@/features/polymarket/utils/sportsEventBetData';
-import { findSportsEventOutcome, getSportsEventOutcomeCellColor } from '@/features/polymarket/utils/sportsEventOutcome';
+import { getSportsEventOutcomeCellColor, type SportsEventOutcomeInfo } from '@/features/polymarket/utils/sportsEventOutcome';
 import { opacity } from '@/framework/ui/utils/opacity';
 import * as i18n from '@/languages';
 import Navigation from '@/navigation/Navigation';
 import Routes from '@/navigation/routesNames';
-import { getPolymarketTokenId } from '@/state/liveTokens/polymarketAdapter';
 import { DEVICE_WIDTH } from '@/utils/deviceUtils';
 import { formatTimestamp, toUnixTime } from '@/worklets/dates';
 
@@ -214,7 +216,7 @@ const WidgetBetCell = memo(function WidgetBetCell({
   event: PolymarketEvent;
   variant: 'line' | 'moneyline';
 }) {
-  const tokenId = getPolymarketTokenId(data.outcomeTokenId, 'sell');
+  const tokenId = getPolymarketSportsBetCellTokenId(data.outcomeTokenId);
   const color = backgroundColor ?? '#717784';
   const onPress = useOutcomePress({ event, outcomeTokenId: data.outcomeTokenId });
   const isLine = variant === 'line';
@@ -270,34 +272,20 @@ function InsetSeparator() {
 }
 
 function useOutcomePress({ event, outcomeTokenId }: { event: PolymarketEvent; outcomeTokenId?: string }) {
-  const { isDarkMode } = useColorMode();
   const trackOutcomePress = usePlacementPredictionOutcomeTrackPress();
+  const onResolvedOutcomePress = useCallback(
+    (outcomeInfo: SportsEventOutcomeInfo) => {
+      trackOutcomePress?.({
+        marketId: outcomeInfo.market.id,
+        marketName: outcomeInfo.market.question,
+        marketSlug: outcomeInfo.market.slug,
+        outcome: outcomeInfo.outcome,
+      });
+    },
+    [trackOutcomePress]
+  );
 
-  return useCallback(() => {
-    const outcomeInfo = findSportsEventOutcome(event.markets, outcomeTokenId);
-    if (!outcomeInfo) return;
-    trackOutcomePress?.({
-      marketId: outcomeInfo.market.id,
-      marketName: outcomeInfo.market.question,
-      marketSlug: outcomeInfo.market.slug,
-      outcome: outcomeInfo.outcome,
-    });
-
-    const outcomeColor = getOutcomeColor({
-      market: outcomeInfo.market,
-      outcome: outcomeInfo.outcome,
-      outcomeIndex: outcomeInfo.outcomeIndex,
-      isDarkMode,
-      teams: event.teams,
-    });
-    Navigation.handleAction(Routes.POLYMARKET_NEW_POSITION_SHEET, {
-      market: outcomeInfo.market,
-      event,
-      outcomeIndex: outcomeInfo.outcomeIndex,
-      outcomeColor,
-      fromRoute: Routes.POLYMARKET_BROWSE_EVENTS_SCREEN,
-    });
-  }, [event, isDarkMode, outcomeTokenId, trackOutcomePress]);
+  return usePolymarketSportsBetCellPress({ event, outcomeTokenId, onResolvedOutcomePress });
 }
 
 function getRows(betGrid: EventBetGrid) {

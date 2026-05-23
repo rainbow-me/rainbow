@@ -1,4 +1,4 @@
-import { memo, useCallback, useMemo } from 'react';
+import { memo, useMemo } from 'react';
 import { Platform, StyleSheet, View, type StyleProp, type ViewStyle } from 'react-native';
 
 import ConditionalWrap from 'conditional-wrap';
@@ -10,17 +10,19 @@ import ShimmerAnimation from '@/components/animations/ShimmerAnimation';
 import { LiveTokenText } from '@/components/live-token-text/LiveTokenText';
 import { Text, TextShadow, useBackgroundColor, useColorMode, useForegroundColor } from '@/design-system';
 import { TeamLogo } from '@/features/polymarket/components/TeamLogo';
+import {
+  getPolymarketSportsBetCellTokenId,
+  usePolymarketSportsBetCellPress,
+} from '@/features/polymarket/hooks/usePolymarketSportsBetCellPress';
 import { usePolymarketSportsEventDisplay } from '@/features/polymarket/hooks/usePolymarketSportsEventDisplay';
 import { type PolymarketEvent } from '@/features/polymarket/types/polymarket-event';
-import { getOutcomeColor } from '@/features/polymarket/utils/getMarketColor';
 import { parsePeriod, parseScore, type PolymarketEventGameInfo } from '@/features/polymarket/utils/sports';
 import { formatOdds, type BetCellData } from '@/features/polymarket/utils/sportsEventBetData';
-import { findSportsEventOutcome, getSportsEventOutcomeCellColor } from '@/features/polymarket/utils/sportsEventOutcome';
+import { getSportsEventOutcomeCellColor } from '@/features/polymarket/utils/sportsEventOutcome';
 import { opacity } from '@/framework/ui/utils/opacity';
 import * as i18n from '@/languages';
 import Navigation from '@/navigation/Navigation';
 import Routes from '@/navigation/routesNames';
-import { getPolymarketTokenId } from '@/state/liveTokens/polymarketAdapter';
 import { createOpacityPalette } from '@/worklets/colors';
 import { formatTimestamp, toUnixTime } from '@/worklets/dates';
 
@@ -85,31 +87,6 @@ export const PolymarketSportEventListItem = memo(function PolymarketSportEventLi
     return { width, height };
   }, [awayBets.spread, awayBets.moneyline, homeBets.spread, homeBets.moneyline, totals.over, totals.under]);
 
-  const createBetCellPressHandler = useCallback(
-    (outcomeTokenId: string) => {
-      const outcomeInfo = findSportsEventOutcome(event.markets, outcomeTokenId);
-      if (!outcomeInfo) return undefined;
-
-      return () => {
-        const outcomeColor = getOutcomeColor({
-          market: outcomeInfo.market,
-          outcome: outcomeInfo.outcome,
-          outcomeIndex: outcomeInfo.outcomeIndex,
-          isDarkMode,
-          teams: event.teams,
-        });
-        Navigation.handleAction(Routes.POLYMARKET_NEW_POSITION_SHEET, {
-          market: outcomeInfo.market,
-          event,
-          outcomeIndex: outcomeInfo.outcomeIndex,
-          outcomeColor,
-          fromRoute: Routes.POLYMARKET_BROWSE_EVENTS_SCREEN,
-        });
-      };
-    },
-    [event, isDarkMode]
-  );
-
   return (
     <ConditionalWrap condition={Platform.OS === 'android'} wrap={children => <View style={[styles.container, style]}>{children}</View>}>
       <>
@@ -117,50 +94,14 @@ export const PolymarketSportEventListItem = memo(function PolymarketSportEventLi
           <View style={styles.betCellsOverlay}>
             <View style={styles.betsColumn}>
               <View style={styles.betRow}>
-                {awayBets.spread && (
-                  <BetCell
-                    data={awayBets.spread}
-                    backgroundColor={awaySpreadColor}
-                    onPress={createBetCellPressHandler(awayBets.spread.outcomeTokenId)}
-                  />
-                )}
-                {totals.over && (
-                  <BetCell
-                    data={totals.over}
-                    backgroundColor={totalsOverColor}
-                    onPress={createBetCellPressHandler(totals.over.outcomeTokenId)}
-                  />
-                )}
-                {awayBets.moneyline && (
-                  <BetCell
-                    data={awayBets.moneyline}
-                    backgroundColor={awayMoneylineColor}
-                    onPress={createBetCellPressHandler(awayBets.moneyline.outcomeTokenId)}
-                  />
-                )}
+                {awayBets.spread && <BetCell event={event} data={awayBets.spread} backgroundColor={awaySpreadColor} />}
+                {totals.over && <BetCell event={event} data={totals.over} backgroundColor={totalsOverColor} />}
+                {awayBets.moneyline && <BetCell event={event} data={awayBets.moneyline} backgroundColor={awayMoneylineColor} />}
               </View>
               <View style={styles.betRow}>
-                {homeBets.spread && (
-                  <BetCell
-                    data={homeBets.spread}
-                    backgroundColor={homeSpreadColor}
-                    onPress={createBetCellPressHandler(homeBets.spread.outcomeTokenId)}
-                  />
-                )}
-                {totals.under && (
-                  <BetCell
-                    data={totals.under}
-                    backgroundColor={totalsUnderColor}
-                    onPress={createBetCellPressHandler(totals.under.outcomeTokenId)}
-                  />
-                )}
-                {homeBets.moneyline && (
-                  <BetCell
-                    data={homeBets.moneyline}
-                    backgroundColor={homeMoneylineColor}
-                    onPress={createBetCellPressHandler(homeBets.moneyline.outcomeTokenId)}
-                  />
-                )}
+                {homeBets.spread && <BetCell event={event} data={homeBets.spread} backgroundColor={homeSpreadColor} />}
+                {totals.under && <BetCell event={event} data={totals.under} backgroundColor={totalsUnderColor} />}
+                {homeBets.moneyline && <BetCell event={event} data={homeBets.moneyline} backgroundColor={homeMoneylineColor} />}
               </View>
             </View>
           </View>
@@ -233,50 +174,14 @@ export const PolymarketSportEventListItem = memo(function PolymarketSportEventLi
                 {Platform.OS === 'ios' ? (
                   <View style={styles.betsColumn}>
                     <View style={styles.betRow}>
-                      {awayBets.spread && (
-                        <BetCell
-                          data={awayBets.spread}
-                          backgroundColor={awaySpreadColor}
-                          onPress={createBetCellPressHandler(awayBets.spread.outcomeTokenId)}
-                        />
-                      )}
-                      {totals.over && (
-                        <BetCell
-                          data={totals.over}
-                          backgroundColor={totalsOverColor}
-                          onPress={createBetCellPressHandler(totals.over.outcomeTokenId)}
-                        />
-                      )}
-                      {awayBets.moneyline && (
-                        <BetCell
-                          data={awayBets.moneyline}
-                          backgroundColor={awayMoneylineColor}
-                          onPress={createBetCellPressHandler(awayBets.moneyline.outcomeTokenId)}
-                        />
-                      )}
+                      {awayBets.spread && <BetCell event={event} data={awayBets.spread} backgroundColor={awaySpreadColor} />}
+                      {totals.over && <BetCell event={event} data={totals.over} backgroundColor={totalsOverColor} />}
+                      {awayBets.moneyline && <BetCell event={event} data={awayBets.moneyline} backgroundColor={awayMoneylineColor} />}
                     </View>
                     <View style={styles.betRow}>
-                      {homeBets.spread && (
-                        <BetCell
-                          data={homeBets.spread}
-                          backgroundColor={homeSpreadColor}
-                          onPress={createBetCellPressHandler(homeBets.spread.outcomeTokenId)}
-                        />
-                      )}
-                      {totals.under && (
-                        <BetCell
-                          data={totals.under}
-                          backgroundColor={totalsUnderColor}
-                          onPress={createBetCellPressHandler(totals.under.outcomeTokenId)}
-                        />
-                      )}
-                      {homeBets.moneyline && (
-                        <BetCell
-                          data={homeBets.moneyline}
-                          backgroundColor={homeMoneylineColor}
-                          onPress={createBetCellPressHandler(homeBets.moneyline.outcomeTokenId)}
-                        />
-                      )}
+                      {homeBets.spread && <BetCell event={event} data={homeBets.spread} backgroundColor={homeSpreadColor} />}
+                      {totals.under && <BetCell event={event} data={totals.under} backgroundColor={totalsUnderColor} />}
+                      {homeBets.moneyline && <BetCell event={event} data={homeBets.moneyline} backgroundColor={homeMoneylineColor} />}
                     </View>
                   </View>
                 ) : (
@@ -294,15 +199,16 @@ export const PolymarketSportEventListItem = memo(function PolymarketSportEventLi
 const BetCell = memo(function BetCell({
   data,
   backgroundColor,
-  onPress,
+  event,
 }: {
   data: BetCellData;
   backgroundColor?: string;
-  onPress?: () => void;
+  event: PolymarketEvent;
 }) {
   const fillTertiary = useBackgroundColor('fillTertiary');
   const hasLabel = Boolean(data.label);
-  const tokenId = getPolymarketTokenId(data.outcomeTokenId, 'sell');
+  const tokenId = getPolymarketSportsBetCellTokenId(data.outcomeTokenId);
+  const onPress = usePolymarketSportsBetCellPress({ event, outcomeTokenId: data.outcomeTokenId });
 
   const content = (
     <View style={[styles.betCell, { backgroundColor: backgroundColor ?? fillTertiary }]}>
