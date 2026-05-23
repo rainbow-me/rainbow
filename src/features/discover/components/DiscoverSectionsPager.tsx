@@ -6,6 +6,7 @@ import Animated, { useAnimatedScrollHandler, useSharedValue, type SharedValue } 
 import { SPRING_CONFIGS } from '@/components/animations/animationConfigs';
 import { useDiscoverScreenContext } from '@/components/Discover/DiscoverScreenContext';
 import { DEFAULT_SCROLL_FADE_DISTANCE } from '@/components/scroll-header-fade/ScrollHeaderFade';
+import { Skeleton } from '@/components/Skeleton';
 import { SmoothPager, usePagerNavigation } from '@/components/SmoothPager/SmoothPager';
 import { Box } from '@/design-system';
 import { DiscoverSurfaceSections } from '@/features/discover/components/DiscoverSurfaceSection';
@@ -26,6 +27,9 @@ type DiscoverSectionsPagerProps = {
 };
 
 type SectionScrollOffsets = Partial<Record<DiscoverSection, number>>;
+
+const FALLBACK_SECTION_COUNT = 3;
+const FALLBACK_TILE_COUNT = 2;
 
 export const DiscoverSectionsPager = memo(function DiscoverSectionsPager({
   renderRefreshControl,
@@ -65,7 +69,13 @@ export const DiscoverSectionsPager = memo(function DiscoverSectionsPager({
     }
   }, [activeSectionId, surface, tabs]);
 
-  if (!surface || !tabs.length) return <Box style={styles.container} testID="discover-sections-pager" />;
+  if (!surface || !tabs.length) {
+    return (
+      <Box style={styles.container} testID="discover-sections-pager">
+        <DiscoverSectionsFallback renderRefreshControl={renderRefreshControl} scrollOffset={scrollOffset} />
+      </Box>
+    );
+  }
 
   return (
     <Box style={styles.container} testID="discover-sections-pager">
@@ -100,6 +110,49 @@ export const DiscoverSectionsPager = memo(function DiscoverSectionsPager({
         ))}
       </SmoothPager>
     </Box>
+  );
+});
+
+const DiscoverSectionsFallback = memo(function DiscoverSectionsFallback({
+  renderRefreshControl,
+  scrollOffset,
+}: {
+  renderRefreshControl?: () => ReactElement<RefreshControlProps>;
+  scrollOffset: SharedValue<number>;
+}) {
+  const tabBarOffset = useTabBarOffset();
+  const bottomInset = tabBarOffset + 12;
+
+  const onScroll = useAnimatedScrollHandler({
+    onScroll: event => {
+      const clampedPosition = clamp(event.contentOffset.y, 0, DEFAULT_SCROLL_FADE_DISTANCE);
+      if (scrollOffset.value !== clampedPosition) scrollOffset.value = clampedPosition;
+    },
+  });
+
+  return (
+    <Animated.ScrollView
+      automaticallyAdjustsScrollIndicatorInsets={false}
+      contentContainerStyle={styles.fallbackContent}
+      onScroll={onScroll}
+      refreshControl={renderRefreshControl?.()}
+      scrollEventThrottle={16}
+      showsVerticalScrollIndicator={false}
+      contentInset={{ bottom: bottomInset }}
+      style={[styles.scrollView, { paddingBottom: Platform.OS === 'android' ? bottomInset : 0 }]}
+      testID="discover-section-fallback"
+    >
+      {Array.from({ length: FALLBACK_SECTION_COUNT }, (_, sectionIndex) => (
+        <Box key={sectionIndex} gap={20}>
+          <Skeleton borderRadius={12} height={30} width={sectionIndex === 0 ? 96 : 148} />
+          <Box flexDirection="row" gap={12}>
+            {Array.from({ length: FALLBACK_TILE_COUNT }, (_, tileIndex) => (
+              <Skeleton key={tileIndex} borderRadius={20} height={166} width="48%" />
+            ))}
+          </Box>
+        </Box>
+      ))}
+    </Animated.ScrollView>
   );
 });
 
@@ -171,6 +224,12 @@ function getInitialSection(tabs: Surface[], activeSectionId: string): string {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
+  },
+  fallbackContent: {
+    flexGrow: 1,
+    gap: 32,
+    paddingHorizontal: 20,
+    paddingTop: 20,
   },
   scrollContent: {
     flexGrow: 1,

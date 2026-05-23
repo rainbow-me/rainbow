@@ -4,6 +4,7 @@ import { ScrollView, View, type LayoutChangeEvent, type NativeScrollEvent, type 
 import ButtonPressAnimation from '@/components/animations/ButtonPressAnimation';
 import { useDiscoverScreenContext } from '@/components/Discover/DiscoverScreenContext';
 import { EasingGradient } from '@/components/easing-gradient/EasingGradient';
+import { Skeleton } from '@/components/Skeleton';
 import { Box, Text, TextIcon, useColorMode, useForegroundColor } from '@/design-system';
 import { getValueForColorMode } from '@/design-system/color/palettes';
 import { trackDiscoverSurfaceTabPress } from '@/features/discover/components/marketPress/marketPressContext';
@@ -22,6 +23,7 @@ const SEARCH_BUTTON_SIZE = 36;
 const CONTENT_TOP_INSET = 40;
 const RIGHT_FADE_WIDTH = SEARCH_BUTTON_RIGHT_INSET + 100;
 const SELECTED_TAB_RIGHT_INSET = SEARCH_BUTTON_RIGHT_INSET + SEARCH_BUTTON_SIZE + 12;
+const FALLBACK_TAB_WIDTHS = [72, 84, 92, 76];
 const SCREEN_BACKGROUND_COLOR = {
   light: '#FBFCFD',
   dark: '#000000',
@@ -146,7 +148,7 @@ function DiscoverCategorySelector() {
     [scrollToSectionTop, surface?.id]
   );
 
-  if (!tabs.length) return null;
+  if (!tabs.length) return <DiscoverCategorySelectorFallback />;
 
   return (
     <Box width="full" height="full">
@@ -209,6 +211,16 @@ function DiscoverCategorySelector() {
           }}
         />
       </View>
+    </Box>
+  );
+}
+
+function DiscoverCategorySelectorFallback() {
+  return (
+    <Box width="full" height="full" flexDirection="row" gap={16} paddingLeft={{ custom: 24 }} paddingTop={{ custom: CONTENT_TOP_INSET }}>
+      {FALLBACK_TAB_WIDTHS.map((width, index) => (
+        <Skeleton key={index} borderRadius={12} height={26} width={width} />
+      ))}
     </Box>
   );
 }
