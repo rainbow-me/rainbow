@@ -1,4 +1,4 @@
-import { type DESTINATION_ROOTS, type SOURCE_BY_DISPLAY } from '@/features/placements/surfaces/constants';
+import { type DESTINATION_ROOTS, type DISPLAY_VALUES } from '@/features/placements/surfaces/constants';
 
 export type Enabled = boolean | { startsAt?: string; endsAt?: string };
 
@@ -6,7 +6,7 @@ export type DestinationRoot = (typeof DESTINATION_ROOTS)[keyof typeof DESTINATIO
 
 export type Destination = [DestinationRoot, ...string[]] | null;
 
-export type Display = keyof typeof SOURCE_BY_DISPLAY;
+export type Display = (typeof DISPLAY_VALUES)[number];
 
 export type SurfaceBase = {
   id: string;

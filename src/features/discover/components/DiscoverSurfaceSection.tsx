@@ -4,23 +4,25 @@ import { StyleSheet, View, type StyleProp, type ViewStyle } from 'react-native';
 import { useDiscoverScreenContext } from '@/components/Discover/DiscoverScreenContext';
 import { Skeleton } from '@/components/Skeleton';
 import { useBackgroundColor } from '@/design-system';
+import { perpToMarketDisplayItem, tokenToMarketDisplayItem } from '@/features/discover/adapters/toMarketDisplayItem';
 import { MarketCarousel } from '@/features/discover/components/carousel/MarketCarousel';
 import { MarketGrid } from '@/features/discover/components/grid/MarketGrid';
 import { MarketList } from '@/features/discover/components/list/MarketList';
+import { MarketCell, MarketCellSkeleton } from '@/features/discover/components/marketCards/MarketCell';
+import {
+  computeMarketPillWidth,
+  MARKET_PILL_HEIGHT,
+  MarketPill,
+  MarketPillSkeleton,
+} from '@/features/discover/components/marketCards/MarketPill';
+import { MarketRowCard, MarketRowCardSkeleton } from '@/features/discover/components/marketCards/MarketRowCard';
+import {
+  MARKET_TILE_CARD_HEIGHT,
+  MARKET_TILE_CARD_WIDTH,
+  MarketTileCard,
+  MarketTileCardSkeleton,
+} from '@/features/discover/components/marketCards/MarketTileCard';
 import { usePlacementCardTrackPress } from '@/features/discover/components/marketPress/marketPressContext';
-import {
-  LARGE_PERP_MARKET_CARD_HEIGHT,
-  LARGE_PERP_MARKET_CARD_WIDTH,
-  LargePerpMarketCard,
-  LargePerpMarketCardSkeleton,
-} from '@/features/discover/components/perpMarketCards/LargePerpMarketCard';
-import {
-  computePerpPillWidth,
-  PERP_MARKET_PILL_HEIGHT,
-  PerpMarketPill,
-  PerpMarketPillSkeleton,
-} from '@/features/discover/components/perpMarketCards/PerpMarketPill';
-import { PerpMarketRowCard, PerpMarketRowCardSkeleton } from '@/features/discover/components/perpMarketCards/PerpMarketRowCard';
 import {
   PREDICTION_MARKET_TILE_CARD_BORDER_RADIUS,
   PREDICTION_MARKET_TILE_CARD_HEIGHT,
@@ -33,14 +35,15 @@ import {
   SPORTS_EVENT_WIDGET_CARD_WIDTH,
   SportsEventWidgetCard,
 } from '@/features/discover/components/sports/SportsEventWidgetCard';
-import { TokenCell, TokenCellSkeleton } from '@/features/discover/components/token/TokenCell';
+import { type MarketDisplayItem } from '@/features/discover/types/marketDisplayItem';
 import { navigateDiscoverDestination } from '@/features/discover/utils/navigation';
-import { getPerpsPlacementStore, type PerpMarketPlacementItem } from '@/features/placements/stores/derived/perpsPlacementStore';
+import { getPerpsPlacementStore } from '@/features/placements/stores/derived/perpsPlacementStore';
 import { getPredictionsPlacementStore, type PredictionPlacementItem } from '@/features/placements/stores/derived/predictionsPlacementStore';
 import { getTokensPlacementStore, type TokenPlacementItem } from '@/features/placements/stores/derived/tokensPlacementStore';
-import type { SOURCE_BY_DISPLAY } from '@/features/placements/surfaces/constants';
+import { usePlacementsStore } from '@/features/placements/stores/placementsStore';
+import { MARKET_DISPLAY_VALUES, PREDICTION_DISPLAY_VALUES } from '@/features/placements/surfaces/constants';
 import { type Display, type Surface, type SurfaceLeaf } from '@/features/placements/surfaces/types';
-import type { Placement, PlacementItem, PlacementSource } from '@/features/placements/types';
+import type { Placement, PlacementItem } from '@/features/placements/types';
 import { LeagueIcon } from '@/features/polymarket/components/league-icon/LeagueIcon';
 import {
   HEIGHT as POLYMARKET_EVENTS_LIST_ITEM_HEIGHT,
@@ -51,6 +54,8 @@ import { getLeagueId, SPORT_LEAGUES, type LeagueId } from '@/features/polymarket
 import { isLiveSportsEvent } from '@/features/polymarket/screens/polymarket-sports-events-screen/buildPolymarketSportsEventsListData';
 import { usePolymarketSportsEventsStore } from '@/features/polymarket/stores/polymarketSportsEventsStore';
 import { navigateToPolymarketEvent } from '@/features/polymarket/utils/navigateToPolymarket';
+import useColorForAsset from '@/hooks/useColorForAsset';
+import { userAssetsStoreManager } from '@/state/assets/userAssetsStoreManager';
 import { DEVICE_WIDTH } from '@/utils/deviceUtils';
 
 type DiscoverSurfaceSectionsProps = {
@@ -77,9 +82,8 @@ export const DiscoverSurfaceSection = memo(function DiscoverSurfaceSection({
 }) {
   if (surface.items !== undefined) return <DiscoverSurfaceSections items={surface.items} surfaceId={surfaceId} />;
 
-  if (isPerpsSurface(surface)) return <PerpsSurfaceSection surface={surface} surfaceId={surfaceId} />;
+  if (isMarketSurface(surface)) return <MarketSurfaceSection surface={surface} surfaceId={surfaceId} />;
   if (isPredictionsSurface(surface)) return <PredictionsSurfaceSection surface={surface} surfaceId={surfaceId} />;
-  if (isTokensSurface(surface)) return <TokensSurfaceSection surface={surface} surfaceId={surfaceId} />;
 
   return unsupportedDisplay(surface.display);
 });
@@ -111,12 +115,8 @@ type ListSectionDescriptor<T extends PlacementItem> = {
 
 type SectionDescriptor<T extends PlacementItem> = CarouselSectionDescriptor<T> | GridSectionDescriptor<T> | ListSectionDescriptor<T>;
 
-type DisplayForSource<TSource extends PlacementSource> = {
-  [TDisplay in Display]: (typeof SOURCE_BY_DISPLAY)[TDisplay] extends TSource ? TDisplay : never;
-}[Display];
-type PerpsDisplay = DisplayForSource<'hyperliquid'>;
-type PredictionsDisplay = DisplayForSource<'polymarket'>;
-type TokensDisplay = DisplayForSource<'rainbow'>;
+type MarketDisplay = (typeof MARKET_DISPLAY_VALUES)[number];
+type PredictionsDisplay = (typeof PREDICTION_DISPLAY_VALUES)[number];
 type SurfaceLeafWithDisplay<TDisplay extends Display> = SurfaceLeaf & { display: TDisplay };
 type PlacementBackedSurfaceLeafWithDisplay<TDisplay extends Display> = SurfaceLeafWithDisplay<TDisplay> & { placement: string };
 
@@ -140,38 +140,43 @@ const EMPTY_PREDICTION_PLACEMENT_ITEMS: PredictionPlacementItem[] = [];
 const hasDestination = (surface: SurfaceLeaf) => surface.destination !== null;
 const PREDICTION_TILE_WIDTH = Math.round((DEVICE_WIDTH - 20 * 2 - 8) / 2);
 
-const PERPS_SECTION_DESCRIPTORS = {
-  'perp_pill.carousel': {
+const MARKET_SECTION_DESCRIPTORS = {
+  'market_pill.carousel': {
     layout: 'carousel',
-    getItemWidth: getPerpPillItemWidth,
-    itemHeight: PERP_MARKET_PILL_HEIGHT,
+    getItemWidth: computeMarketPillWidth,
+    itemHeight: MARKET_PILL_HEIGHT,
     itemVerticalBleed: 8,
     itemWidth: 220,
-    renderItem: renderPerpPill,
-    renderSkeleton: PerpMarketPillSkeleton,
+    renderItem: renderMarketPill,
+    renderSkeleton: MarketPillSkeleton,
     showHeaderCaret: hasDestination,
   },
-  'perp_tile.carousel': {
+  'market_tile.carousel': {
     layout: 'carousel',
-    itemHeight: LARGE_PERP_MARKET_CARD_HEIGHT,
-    itemWidth: LARGE_PERP_MARKET_CARD_WIDTH,
-    renderItem: renderLargePerpCard,
-    renderSkeleton: LargePerpMarketCardSkeleton,
+    itemHeight: MARKET_TILE_CARD_HEIGHT,
+    itemWidth: MARKET_TILE_CARD_WIDTH,
+    renderItem: renderMarketTile,
+    renderSkeleton: MarketTileCardSkeleton,
     showHeaderCaret: hasDestination,
   },
-  'perp_tile.grid': {
+  'market_tile.grid': {
     layout: 'grid',
-    itemHeight: LARGE_PERP_MARKET_CARD_HEIGHT,
-    renderItem: renderLargePerpGridCard,
-    renderSkeleton: renderLargePerpGridSkeleton,
+    itemHeight: MARKET_TILE_CARD_HEIGHT,
+    renderItem: renderMarketGridTile,
+    renderSkeleton: renderMarketGridTileSkeleton,
     showHeaderCaret: hasDestination,
   },
-  'perp_row.list': {
+  'market_row.list': {
     layout: 'list',
-    renderItem: renderPerpRow,
-    renderSkeleton: PerpMarketRowCardSkeleton,
+    renderItem: renderMarketRow,
+    renderSkeleton: MarketRowCardSkeleton,
   },
-} satisfies Record<PerpsDisplay, SectionDescriptor<PerpMarketPlacementItem>>;
+  'market_cell.list': {
+    layout: 'list',
+    renderItem: renderMarketCell,
+    renderSkeleton: MarketCellSkeleton,
+  },
+} satisfies Record<MarketDisplay, SectionDescriptor<MarketDisplayItem>>;
 
 const PREDICTIONS_SECTION_DESCRIPTORS = {
   'prediction_tile.carousel': {
@@ -195,61 +200,96 @@ const PREDICTIONS_SECTION_DESCRIPTORS = {
     renderItem: renderPredictionWidget,
     renderSkeleton: renderPredictionWidgetSkeleton,
   },
-  'prediction_sport_widget.carousel': {
+  'prediction_event_card.carousel': {
     layout: 'carousel',
     itemHeight: SPORTS_EVENT_WIDGET_CARD_HEIGHT,
     itemWidth: SPORTS_EVENT_WIDGET_CARD_WIDTH,
     renderItem: renderSportsWidget,
     renderSkeleton: renderSportsWidgetSkeleton,
   },
-  'prediction_sport_widget.list': {
+  'prediction_event_card.list': {
     layout: 'list',
     renderItem: renderSportsWidget,
     renderSkeleton: renderSportsWidgetSkeleton,
   },
 } satisfies Record<PredictionsDisplay, SectionDescriptor<PredictionPlacementItem>>;
 
-const TOKENS_SECTION_DESCRIPTORS = {
-  'token_cell.list': {
-    layout: 'list',
-    renderItem: renderTokenCell,
-    renderSkeleton: TokenCellSkeleton,
-  },
-} satisfies Record<TokensDisplay, SectionDescriptor<TokenPlacementItem>>;
-
-function isPerpsSurface(surface: SurfaceLeaf): surface is SurfaceLeafWithDisplay<PerpsDisplay> {
-  return surface.display in PERPS_SECTION_DESCRIPTORS;
+function isMarketSurface(surface: SurfaceLeaf): surface is SurfaceLeafWithDisplay<MarketDisplay> {
+  return (MARKET_DISPLAY_VALUES as readonly string[]).includes(surface.display);
 }
 
 function isPredictionsSurface(surface: SurfaceLeaf): surface is SurfaceLeafWithDisplay<PredictionsDisplay> {
-  return surface.display in PREDICTIONS_SECTION_DESCRIPTORS;
+  return (PREDICTION_DISPLAY_VALUES as readonly string[]).includes(surface.display);
 }
 
-function isTokensSurface(surface: SurfaceLeaf): surface is SurfaceLeafWithDisplay<TokensDisplay> {
-  return surface.display in TOKENS_SECTION_DESCRIPTORS;
-}
-
-function PerpsSurfaceSection({ surface, surfaceId }: { surface: SurfaceLeafWithDisplay<PerpsDisplay>; surfaceId: string }) {
+function MarketSurfaceSection({ surface, surfaceId }: { surface: SurfaceLeafWithDisplay<MarketDisplay>; surfaceId: string }) {
   if (!hasPlacement(surface)) return null;
-  return <PerpsPlacementSurfaceSection surface={surface} surfaceId={surfaceId} />;
+  return <PlacementBackedMarketSurfaceSection surface={surface} surfaceId={surfaceId} />;
 }
 
-function PerpsPlacementSurfaceSection({
+function PlacementBackedMarketSurfaceSection({
   surface,
   surfaceId,
 }: {
-  surface: PlacementBackedSurfaceLeafWithDisplay<PerpsDisplay>;
+  surface: PlacementBackedSurfaceLeafWithDisplay<MarketDisplay>;
+  surfaceId: string;
+}) {
+  const source = usePlacementsStore(state => state.getPlacement(surface.placement)?.source);
+
+  if (source === 'hyperliquid') return <PerpsMarketSurfaceSection surface={surface} surfaceId={surfaceId} />;
+  if (source === 'rainbow') return <TokensMarketSurfaceSection surface={surface} surfaceId={surfaceId} />;
+
+  return null;
+}
+
+function PerpsMarketSurfaceSection({
+  surface,
+  surfaceId,
+}: {
+  surface: PlacementBackedSurfaceLeafWithDisplay<MarketDisplay>;
   surfaceId: string;
 }) {
   const useStore = useMemo(() => getPerpsPlacementStore(surface.placement), [surface.placement]);
   const result = useStore();
-  const descriptor = PERPS_SECTION_DESCRIPTORS[surface.display];
+  const descriptor = MARKET_SECTION_DESCRIPTORS[surface.display];
+  const items = useMemo(() => result.items.map(perpToMarketDisplayItem), [result.items]);
+
+  return renderSurfaceLayoutSection({
+    data: items,
+    descriptor,
+    loading: result.isLoading,
+    onPressSeeAll: getHeaderPress(surface.destination),
+    placement: result.placement,
+    surface,
+    surfaceId,
+  });
+}
+
+function TokensMarketSurfaceSection({
+  surface,
+  surfaceId,
+}: {
+  surface: PlacementBackedSurfaceLeafWithDisplay<MarketDisplay>;
+  surfaceId: string;
+}) {
+  const { onTapSearch } = useDiscoverScreenContext();
+  const nativeCurrency = userAssetsStoreManager(state => state.currency);
+  const useStore = useMemo(() => getTokensPlacementStore(surface.placement), [surface.placement]);
+  const result = useStore();
+  const descriptor = useMemo(() => getTokenMarketSectionDescriptor(surface.display, nativeCurrency), [nativeCurrency, surface.display]);
+  const onPressSeeAll = useCallback(() => {
+    if (surface.destination?.[0] === 'tokens') {
+      onTapSearch();
+      return;
+    }
+    navigateDiscoverDestination(surface.destination);
+  }, [onTapSearch, surface.destination]);
 
   return renderSurfaceLayoutSection({
     data: result.items,
     descriptor,
     loading: result.isLoading,
-    onPressSeeAll: getHeaderPress(surface.destination),
+    onPressSeeAll: surface.destination ? onPressSeeAll : undefined,
     placement: result.placement,
     surface,
     surfaceId,
@@ -304,40 +344,6 @@ function SportsLiveSurfaceSection({ surface, surfaceId }: { surface: SurfaceLeaf
     loading: isLoading,
     onPressSeeAll: getHeaderPress(surface.destination),
     placement: undefined,
-    surface,
-    surfaceId,
-  });
-}
-
-function TokensSurfaceSection({ surface, surfaceId }: { surface: SurfaceLeafWithDisplay<TokensDisplay>; surfaceId: string }) {
-  if (!hasPlacement(surface)) return null;
-  return <TokensPlacementSurfaceSection surface={surface} surfaceId={surfaceId} />;
-}
-
-function TokensPlacementSurfaceSection({
-  surface,
-  surfaceId,
-}: {
-  surface: PlacementBackedSurfaceLeafWithDisplay<TokensDisplay>;
-  surfaceId: string;
-}) {
-  const { onTapSearch } = useDiscoverScreenContext();
-  const useStore = useMemo(() => getTokensPlacementStore(surface.placement), [surface.placement]);
-  const result = useStore();
-  const onPressSeeAll = useCallback(() => {
-    if (surface.destination?.[0] === 'tokens') {
-      onTapSearch();
-      return;
-    }
-    navigateDiscoverDestination(surface.destination);
-  }, [onTapSearch, surface.destination]);
-
-  return renderSurfaceLayoutSection({
-    data: result.items,
-    descriptor: TOKENS_SECTION_DESCRIPTORS[surface.display],
-    loading: result.isLoading,
-    onPressSeeAll: surface.destination ? onPressSeeAll : undefined,
-    placement: result.placement,
     surface,
     surfaceId,
   });
@@ -423,28 +429,126 @@ function getHeaderPress(destination: SurfaceLeaf['destination']): (() => void) |
   return () => navigateDiscoverDestination(destination);
 }
 
-function getPerpPillItemWidth(item: PerpMarketPlacementItem): number {
-  return computePerpPillWidth(item.market);
+function renderMarketPill(item: MarketDisplayItem) {
+  return <MarketPill item={item} />;
 }
 
-function renderPerpPill(item: PerpMarketPlacementItem) {
-  return <PerpMarketPill market={item.market} />;
+function renderMarketTile(item: MarketDisplayItem) {
+  return <MarketTileCard item={item} />;
 }
 
-function renderLargePerpCard(item: PerpMarketPlacementItem) {
-  return <LargePerpMarketCard market={item.market} />;
+function renderMarketGridTile(item: MarketDisplayItem, width: number) {
+  return <MarketTileCard item={item} width={width} />;
 }
 
-function renderLargePerpGridCard(item: PerpMarketPlacementItem, width: number) {
-  return <LargePerpMarketCard market={item.market} width={width} />;
+function renderMarketGridTileSkeleton(width: number) {
+  return <MarketTileCardSkeleton width={width} />;
 }
 
-function renderLargePerpGridSkeleton(width: number) {
-  return <LargePerpMarketCardSkeleton width={width} />;
+function renderMarketRow(item: MarketDisplayItem) {
+  return <MarketRowCard item={item} />;
 }
 
-function renderPerpRow(item: PerpMarketPlacementItem) {
-  return <PerpMarketRowCard item={item} />;
+function renderMarketCell(item: MarketDisplayItem) {
+  return <MarketCell item={item} />;
+}
+
+function getTokenMarketSectionDescriptor(
+  display: MarketDisplay,
+  nativeCurrency: ReturnType<typeof userAssetsStoreManager.getState>['currency']
+): SectionDescriptor<TokenPlacementItem> {
+  switch (display) {
+    case 'market_pill.carousel':
+      return {
+        ...MARKET_SECTION_DESCRIPTORS[display],
+        getItemWidth: (item: TokenPlacementItem) =>
+          computeMarketPillWidth(tokenToMarketDisplayItem({ accentColor: '#000000', item, nativeCurrency })),
+        renderItem: (item: TokenPlacementItem) => <TokenMarketPill item={item} nativeCurrency={nativeCurrency} />,
+      };
+    case 'market_tile.carousel':
+      return {
+        ...MARKET_SECTION_DESCRIPTORS[display],
+        renderItem: (item: TokenPlacementItem) => <TokenMarketTile item={item} nativeCurrency={nativeCurrency} />,
+      };
+    case 'market_tile.grid':
+      return {
+        ...MARKET_SECTION_DESCRIPTORS[display],
+        renderItem: (item: TokenPlacementItem, width: number) => (
+          <TokenMarketTile item={item} nativeCurrency={nativeCurrency} width={width} />
+        ),
+      };
+    case 'market_row.list':
+      return {
+        ...MARKET_SECTION_DESCRIPTORS[display],
+        renderItem: (item: TokenPlacementItem) => <TokenMarketRow item={item} nativeCurrency={nativeCurrency} />,
+      };
+    case 'market_cell.list':
+      return {
+        ...MARKET_SECTION_DESCRIPTORS[display],
+        renderItem: (item: TokenPlacementItem) => <TokenMarketCell item={item} nativeCurrency={nativeCurrency} />,
+      };
+    default:
+      return assertNever(display);
+  }
+}
+
+function TokenMarketPill({
+  item,
+  nativeCurrency,
+}: {
+  item: TokenPlacementItem;
+  nativeCurrency: ReturnType<typeof userAssetsStoreManager.getState>['currency'];
+}) {
+  const displayItem = useTokenMarketDisplayItem(item, nativeCurrency);
+  return <MarketPill item={displayItem} />;
+}
+
+function TokenMarketTile({
+  item,
+  nativeCurrency,
+  width,
+}: {
+  item: TokenPlacementItem;
+  nativeCurrency: ReturnType<typeof userAssetsStoreManager.getState>['currency'];
+  width?: number;
+}) {
+  const displayItem = useTokenMarketDisplayItem(item, nativeCurrency);
+  return <MarketTileCard item={displayItem} width={width} />;
+}
+
+function TokenMarketRow({
+  item,
+  nativeCurrency,
+}: {
+  item: TokenPlacementItem;
+  nativeCurrency: ReturnType<typeof userAssetsStoreManager.getState>['currency'];
+}) {
+  const displayItem = useTokenMarketDisplayItem(item, nativeCurrency);
+  return <MarketRowCard item={displayItem} />;
+}
+
+function TokenMarketCell({
+  item,
+  nativeCurrency,
+}: {
+  item: TokenPlacementItem;
+  nativeCurrency: ReturnType<typeof userAssetsStoreManager.getState>['currency'];
+}) {
+  const displayItem = useTokenMarketDisplayItem(item, nativeCurrency);
+  return <MarketCell item={displayItem} />;
+}
+
+function useTokenMarketDisplayItem(
+  item: TokenPlacementItem,
+  nativeCurrency: ReturnType<typeof userAssetsStoreManager.getState>['currency']
+): MarketDisplayItem {
+  const accentColor = useColorForAsset({
+    address: item.asset.address,
+    name: item.asset.name,
+    symbol: item.asset.symbol,
+  });
+
+  return useMemo(() => tokenToMarketDisplayItem({ accentColor, item, nativeCurrency }), [accentColor, item, nativeCurrency]);
 }
 
 function renderPredictionTile(item: PredictionPlacementItem) {
@@ -523,7 +627,7 @@ function LiveSectionIndicator({ style }: { style?: StyleProp<ViewStyle> }) {
 }
 
 function isLiveSportsSurface(surface: SurfaceLeaf): boolean {
-  if (surface.display !== 'prediction_sport_widget.carousel' && surface.display !== 'prediction_sport_widget.list') return false;
+  if (surface.display !== 'prediction_event_card.carousel' && surface.display !== 'prediction_event_card.list') return false;
   return getNormalizedSurfaceValue(surface.id) === 'live' || getNormalizedSurfaceValue(surface.label) === 'live';
 }
 
@@ -548,10 +652,6 @@ function getLeagueIdBySurfaceValue(value: string | undefined): LeagueId | undefi
 
 function getNormalizedSurfaceValue(value: string | undefined): string {
   return value?.trim().toLowerCase() ?? '';
-}
-
-function renderTokenCell(item: TokenPlacementItem) {
-  return <TokenCell item={item} />;
 }
 
 function assertNever(value: never): never {

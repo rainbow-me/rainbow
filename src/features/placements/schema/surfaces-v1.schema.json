@@ -81,21 +81,26 @@
           }
         },
         "placement": {
-          "type": "string",
-          "pattern": "^[a-z][a-z0-9_]*$"
+          "oneOf": [
+            {
+              "type": "string",
+              "pattern": "^[a-z][a-z0-9_]*$"
+            },
+            { "type": "null" }
+          ]
         },
         "display": {
           "enum": [
-            "perp_pill.carousel",
-            "perp_tile.carousel",
-            "perp_tile.grid",
-            "perp_row.list",
+            "market_pill.carousel",
+            "market_tile.carousel",
+            "market_tile.grid",
+            "market_row.list",
+            "market_cell.list",
             "prediction_tile.carousel",
             "prediction_tile.grid",
             "prediction_tile_widget.carousel",
-            "prediction_sport_widget.carousel",
-            "prediction_sport_widget.list",
-            "token_cell.list"
+            "prediction_event_card.carousel",
+            "prediction_event_card.list"
           ]
         },
         "destination": {
@@ -119,7 +124,7 @@
           }
         },
         {
-          "required": ["placement", "display", "destination"],
+          "required": ["display", "destination"],
           "not": { "required": ["items"] }
         }
       ]

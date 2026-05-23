@@ -7,34 +7,36 @@ import { useLiveTokenSharedValue } from '@/components/live-token-text/LiveTokenT
 import { AnimatedText } from '@/design-system';
 import { type TextSize } from '@/design-system/components/Text/Text';
 import { DOWN_ARROW, UP_ARROW } from '@/features/perps/constants';
-import { formatCompactPriceChange, getHyperliquidTokenId } from '@/features/perps/utils';
+import { formatCompactPriceChange } from '@/features/perps/utils';
 import { type TokenData } from '@/state/liveTokens/liveTokensStore';
 
-import { type PriceChangeColors } from './perpMarketCardChrome';
+import { type PriceChangeColors } from './marketCardChrome';
 
-type PerpPriceChangeProps = {
+type MarketPriceChangeProps = {
   arrowHeight: number;
   arrowSize: TextSize;
   arrowWidth: number;
   initialPriceChange: string;
   priceChangeColors: PriceChangeColors;
-  symbol: string;
+  priceChangeSelector: (token: TokenData) => string;
   textSize: TextSize;
+  tokenId: string;
 };
 
-export const PerpPriceChange = memo(function PerpPriceChange({
+export const MarketPriceChange = memo(function MarketPriceChange({
   arrowHeight,
   arrowSize,
   arrowWidth,
   initialPriceChange,
   priceChangeColors,
-  symbol,
+  priceChangeSelector,
   textSize,
-}: PerpPriceChangeProps) {
+  tokenId,
+}: MarketPriceChangeProps) {
   const livePriceChange = useLiveTokenSharedValue({
     initialValue: initialPriceChange,
-    selector: selectLivePriceChange24h,
-    tokenId: getHyperliquidTokenId(symbol),
+    selector: priceChangeSelector,
+    tokenId,
   });
 
   const priceChangeStyle = useAnimatedStyle(() => ({
@@ -61,10 +63,6 @@ export const PerpPriceChange = memo(function PerpPriceChange({
     </>
   );
 });
-
-function selectLivePriceChange24h(state: TokenData): string {
-  return state.change.change24hPct;
-}
 
 function selectPriceChangeArrow(priceChange: SharedValue<string>): string {
   'worklet';

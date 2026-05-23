@@ -1,16 +1,14 @@
-import { type PlacementSource } from '@/features/placements/types';
-
 export const DISPLAYS = {
-  PERP_PILL_CAROUSEL: 'perp_pill.carousel',
-  PERP_TILE_CAROUSEL: 'perp_tile.carousel',
-  PERP_TILE_GRID: 'perp_tile.grid',
-  PERP_ROW_LIST: 'perp_row.list',
+  MARKET_PILL_CAROUSEL: 'market_pill.carousel',
+  MARKET_TILE_CAROUSEL: 'market_tile.carousel',
+  MARKET_TILE_GRID: 'market_tile.grid',
+  MARKET_ROW_LIST: 'market_row.list',
+  MARKET_CELL_LIST: 'market_cell.list',
   PREDICTION_TILE_CAROUSEL: 'prediction_tile.carousel',
   PREDICTION_TILE_GRID: 'prediction_tile.grid',
   PREDICTION_TILE_WIDGET_CAROUSEL: 'prediction_tile_widget.carousel',
-  PREDICTION_SPORT_WIDGET_CAROUSEL: 'prediction_sport_widget.carousel',
-  PREDICTION_SPORT_WIDGET_LIST: 'prediction_sport_widget.list',
-  TOKEN_CELL_LIST: 'token_cell.list',
+  PREDICTION_EVENT_CARD_CAROUSEL: 'prediction_event_card.carousel',
+  PREDICTION_EVENT_CARD_LIST: 'prediction_event_card.list',
 } as const;
 
 export const DESTINATION_ROOTS = {
@@ -19,18 +17,21 @@ export const DESTINATION_ROOTS = {
   TOKENS: 'tokens',
 } as const;
 
-export const SOURCE_BY_DISPLAY = {
-  [DISPLAYS.PERP_PILL_CAROUSEL]: 'hyperliquid',
-  [DISPLAYS.PERP_TILE_CAROUSEL]: 'hyperliquid',
-  [DISPLAYS.PERP_TILE_GRID]: 'hyperliquid',
-  [DISPLAYS.PERP_ROW_LIST]: 'hyperliquid',
-  [DISPLAYS.PREDICTION_TILE_CAROUSEL]: 'polymarket',
-  [DISPLAYS.PREDICTION_TILE_GRID]: 'polymarket',
-  [DISPLAYS.PREDICTION_TILE_WIDGET_CAROUSEL]: 'polymarket',
-  [DISPLAYS.PREDICTION_SPORT_WIDGET_CAROUSEL]: 'polymarket',
-  [DISPLAYS.PREDICTION_SPORT_WIDGET_LIST]: 'polymarket',
-  [DISPLAYS.TOKEN_CELL_LIST]: 'rainbow',
-} as const satisfies Record<(typeof DISPLAYS)[keyof typeof DISPLAYS], PlacementSource>;
+export const MARKET_DISPLAY_VALUES = [
+  DISPLAYS.MARKET_PILL_CAROUSEL,
+  DISPLAYS.MARKET_TILE_CAROUSEL,
+  DISPLAYS.MARKET_TILE_GRID,
+  DISPLAYS.MARKET_ROW_LIST,
+  DISPLAYS.MARKET_CELL_LIST,
+] as const;
 
-export const DISPLAY_VALUES = Object.keys(SOURCE_BY_DISPLAY);
+export const PREDICTION_DISPLAY_VALUES = [
+  DISPLAYS.PREDICTION_TILE_CAROUSEL,
+  DISPLAYS.PREDICTION_TILE_GRID,
+  DISPLAYS.PREDICTION_TILE_WIDGET_CAROUSEL,
+  DISPLAYS.PREDICTION_EVENT_CARD_CAROUSEL,
+  DISPLAYS.PREDICTION_EVENT_CARD_LIST,
+] as const;
+
+export const DISPLAY_VALUES = [...MARKET_DISPLAY_VALUES, ...PREDICTION_DISPLAY_VALUES] as const;
 export const DESTINATION_ROOT_VALUES = Object.values(DESTINATION_ROOTS);

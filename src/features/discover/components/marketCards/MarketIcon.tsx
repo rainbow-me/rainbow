@@ -4,33 +4,33 @@ import { StyleSheet, View } from 'react-native';
 import ImgixImage from '@/components/images/ImgixImage';
 import { Border, Text } from '@/design-system';
 import { type TextSize } from '@/design-system/components/Text/Text';
-import { LeverageBadge } from '@/features/discover/components/perpMarketCards/LeverageBadge';
+import { LeverageBadge } from '@/features/discover/components/marketCards/LeverageBadge';
 
 const DEFAULT_BORDER_WIDTH = 8 / 3;
 const DEFAULT_IMAGE_BORDER_GAP = 4 / 3;
 const DEFAULT_BADGE_POSITION = 'top-left';
 const BADGE_OFFSET = 4;
 
-type PerpMarketIconProps = {
+type MarketIconProps = {
   accentColor: string;
   borderColor: string;
-  baseSymbol: string;
+  fallbackText: string;
   fallbackTextSize: TextSize;
   iconUrl: string | undefined;
   size: number;
   imageBorderGap?: number;
   badgePosition?: 'top-left' | 'top-right';
-  leverage: number;
+  leverage: number | undefined;
   badgeBorderColor: string;
   badgeShadowColor: string;
   badgeShadowOpacity: number;
   badgeTextColor: string;
 };
 
-export const PerpMarketIcon = memo(function PerpMarketIcon({
+export const MarketIcon = memo(function MarketIcon({
   accentColor,
   borderColor,
-  baseSymbol,
+  fallbackText,
   fallbackTextSize,
   iconUrl,
   size,
@@ -41,7 +41,7 @@ export const PerpMarketIcon = memo(function PerpMarketIcon({
   badgeShadowColor,
   badgeShadowOpacity,
   badgeTextColor,
-}: PerpMarketIconProps) {
+}: MarketIconProps) {
   const borderWidth = DEFAULT_BORDER_WIDTH;
   const imageSize = size - borderWidth * 2 - imageBorderGap * 2;
   const badgePositionStyle =
@@ -60,19 +60,21 @@ export const PerpMarketIcon = memo(function PerpMarketIcon({
           />
         ) : (
           <Text align="center" color={{ custom: accentColor }} size={fallbackTextSize} weight="heavy">
-            {baseSymbol.slice(0, 1)}
+            {fallbackText.slice(0, 1)}
           </Text>
         )}
       </View>
-      <LeverageBadge
-        backgroundColor={accentColor}
-        borderColor={badgeBorderColor}
-        leverage={leverage}
-        shadowColor={badgeShadowColor}
-        shadowOpacity={badgeShadowOpacity}
-        style={[styles.badgePosition, badgePositionStyle]}
-        textColor={badgeTextColor}
-      />
+      {leverage !== undefined ? (
+        <LeverageBadge
+          backgroundColor={accentColor}
+          borderColor={badgeBorderColor}
+          leverage={leverage}
+          shadowColor={badgeShadowColor}
+          shadowOpacity={badgeShadowOpacity}
+          style={[styles.badgePosition, badgePositionStyle]}
+          textColor={badgeTextColor}
+        />
+      ) : null}
     </View>
   );
 });

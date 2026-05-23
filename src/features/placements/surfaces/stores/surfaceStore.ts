@@ -112,7 +112,7 @@ function isSurfaceDestination(destination: unknown): boolean {
 }
 
 function isSurfaceDisplay(display: unknown): display is Display {
-  return typeof display === 'string' && DISPLAY_VALUES.includes(display);
+  return typeof display === 'string' && (DISPLAY_VALUES as readonly string[]).includes(display);
 }
 
 function isSurfaceId(value: unknown): value is string {

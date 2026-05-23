@@ -1,4 +1,4 @@
-import React, { memo, useCallback, useMemo } from 'react';
+import React, { memo, useMemo } from 'react';
 import { StyleSheet, View } from 'react-native';
 
 import { LinearGradient } from 'expo-linear-gradient';
@@ -9,15 +9,13 @@ import { Skeleton } from '@/components/Skeleton';
 import { AnimatedText, Text, useColorMode } from '@/design-system';
 import { getValueForColorMode, type ColorMode, type ContextualColorValue } from '@/design-system/color/palettes';
 import { Border } from '@/design-system/components/Border/Border';
+import { buildMarketBaseDisplay } from '@/features/discover/components/marketCards/marketCardChrome';
+import { MarketIcon } from '@/features/discover/components/marketCards/MarketIcon';
+import { MarketPriceChange } from '@/features/discover/components/marketCards/MarketPriceChange';
 import { usePlacementCardTrackPress } from '@/features/discover/components/marketPress/marketPressContext';
 import { useMarketCardPress } from '@/features/discover/components/marketPress/useMarketCardPress';
-import { buildPerpMarketBaseDisplay } from '@/features/discover/components/perpMarketCards/perpMarketCardChrome';
-import { PerpMarketIcon } from '@/features/discover/components/perpMarketCards/PerpMarketIcon';
-import { PerpPriceChange } from '@/features/discover/components/perpMarketCards/PerpPriceChange';
-import { type PerpMarketWithMetadata } from '@/features/perps/types';
-import { convertStoredPerpPriceChangeToPercent, getHyperliquidTokenId, navigateToPerpDetailScreen } from '@/features/perps/utils';
-import { formatPerpAssetPrice, selectFormattedMarkPrice } from '@/features/perps/utils/formatPerpsAssetPrice';
-import { extractBaseSymbol } from '@/features/perps/utils/hyperliquidSymbols';
+import { type MarketDisplayItem } from '@/features/discover/types/marketDisplayItem';
+import { convertStoredPerpPriceChangeToPercent } from '@/features/perps/utils';
 import { opacity } from '@/framework/ui/utils/opacity';
 import { THICKER_BORDER_WIDTH } from '@/styles/constants';
 import { measureTextSync, type MeasureTextProps } from '@/utils/measureText';
@@ -25,8 +23,8 @@ import { getHighContrastTextColorWorklet } from '@/worklets/colors';
 
 // ============ Types ========================================================== //
 
-type PerpMarketPillProps = {
-  market: PerpMarketWithMetadata;
+type MarketPillProps = {
+  item: MarketDisplayItem;
 };
 
 type PillColors = {
@@ -51,10 +49,10 @@ const PILL_LAYOUT = {
   paddingVertical: 10,
 };
 
-export const PERP_MARKET_PILL_HEIGHT = ICON_SIZE + PILL_LAYOUT.paddingVertical * 2;
+export const MARKET_PILL_HEIGHT = ICON_SIZE + PILL_LAYOUT.paddingVertical * 2;
 
 /** Width used by the skeleton placeholder before any real pills are measured. */
-const PERP_MARKET_PILL_SKELETON_WIDTH = 220;
+const MARKET_PILL_SKELETON_WIDTH = 220;
 
 // ============ Colors ========================================================= //
 
@@ -77,34 +75,22 @@ const PILL_COLORS = {
 
 // ============ Component ====================================================== //
 
-export const PerpMarketPill = memo(function PerpMarketPill({ market }: PerpMarketPillProps) {
+export const MarketPill = memo(function MarketPill({ item }: MarketPillProps) {
   const { colorMode, isDarkMode } = useColorMode();
-  const symbol = market.symbol;
-  const displayName = extractBaseSymbol(market.baseSymbol);
 
   const trackPress = usePlacementCardTrackPress();
-  const navigateToMarket = useCallback(() => navigateToPerpDetailScreen(symbol), [symbol]);
-  const pressMetadata = useMemo(
-    () => ({
-      marketId: symbol,
-      marketName: market.metadata?.name ?? displayName,
-      marketSymbol: displayName,
-    }),
-    [displayName, market.metadata?.name, symbol]
-  );
-  const onPress = useMarketCardPress({ metadata: pressMetadata, onPress: navigateToMarket, trackPress });
+  const onPress = useMarketCardPress({ metadata: item.pressMetadata, onPress: item.onNavigate, trackPress });
 
   const { accentColor, badgeTextColor, iconUrl, pillColors, priceChangeColors } = useMemo(
-    () => buildPerpMarketPillDisplay(market, colorMode),
-    [colorMode, market]
+    () => buildMarketPillDisplay(item, colorMode),
+    [colorMode, item]
   );
 
-  const initialPrice = useMemo(() => formatPerpAssetPrice(market.midPrice ?? market.price), [market.midPrice, market.price]);
-
   const livePrice = useLiveTokenSharedValue({
-    initialValue: initialPrice,
-    selector: selectFormattedMarkPrice,
-    tokenId: getHyperliquidTokenId(symbol),
+    initialValue: item.initialPrice,
+    initialValueLastUpdated: item.initialPriceLastUpdated,
+    selector: item.priceSelector,
+    tokenId: item.liveTokenId,
   });
 
   return (
@@ -120,14 +106,14 @@ export const PerpMarketPill = memo(function PerpMarketPill({ market }: PerpMarke
           />
 
           <View style={styles.contentRow}>
-            <PerpMarketIcon
+            <MarketIcon
               accentColor={accentColor}
-              baseSymbol={displayName}
               borderColor={accentColor}
+              fallbackText={item.displayName}
               fallbackTextSize="15pt"
               iconUrl={iconUrl}
               size={ICON_SIZE}
-              leverage={market.maxLeverage}
+              leverage={item.leverage}
               badgeBorderColor={pillColors.badgeBorderColor}
               badgeShadowColor={isDarkMode ? '#000000' : accentColor}
               badgeShadowOpacity={pillColors.badgeShadowOpacity}
@@ -136,7 +122,7 @@ export const PerpMarketPill = memo(function PerpMarketPill({ market }: PerpMarke
             />
             <View style={styles.textColumn}>
               <Text color="label" numberOfLines={1} size="17pt" weight="bold">
-                {displayName}
+                {item.displayName}
               </Text>
 
               <View style={styles.priceRow}>
@@ -145,14 +131,15 @@ export const PerpMarketPill = memo(function PerpMarketPill({ market }: PerpMarke
                 </AnimatedText>
 
                 <View style={styles.changeRow}>
-                  <PerpPriceChange
+                  <MarketPriceChange
                     arrowHeight={7}
                     arrowSize="icon 10px"
                     arrowWidth={UP_DOWN_ARROW_WIDTH}
-                    initialPriceChange={market.priceChange['24h']}
+                    initialPriceChange={item.initialPriceChange}
+                    priceChangeSelector={item.priceChangeSelector}
                     priceChangeColors={priceChangeColors}
-                    symbol={symbol}
                     textSize="13pt"
+                    tokenId={item.liveTokenId}
                   />
                 </View>
               </View>
@@ -173,14 +160,14 @@ export const PerpMarketPill = memo(function PerpMarketPill({ market }: PerpMarke
 
 // ============ Skeleton ======================================================= //
 
-export function PerpMarketPillSkeleton() {
-  return <Skeleton borderRadius={PILL_LAYOUT.borderRadius} height={PERP_MARKET_PILL_HEIGHT} width={PERP_MARKET_PILL_SKELETON_WIDTH} />;
+export function MarketPillSkeleton() {
+  return <Skeleton borderRadius={PILL_LAYOUT.borderRadius} height={MARKET_PILL_HEIGHT} width={MARKET_PILL_SKELETON_WIDTH} />;
 }
 
 // ============ Display Helpers ================================================ //
 
-function buildPerpMarketPillDisplay(market: PerpMarketWithMetadata, colorMode: ColorMode) {
-  const base = buildPerpMarketBaseDisplay(market, colorMode);
+function buildMarketPillDisplay(item: MarketDisplayItem, colorMode: ColorMode) {
+  const base = buildMarketBaseDisplay(item, colorMode);
   return {
     ...base,
     badgeTextColor: getHighContrastTextColorWorklet(base.accentColor, 4),
@@ -204,21 +191,19 @@ const PILL_TEXT_STATS = {
   percentageSymbolWidth: measureTextSync('%', PRICE_TEXT_STYLE),
 };
 
-export function computePerpPillWidth(market: PerpMarketWithMetadata): number {
-  const displayName = extractBaseSymbol(market.baseSymbol);
-  const nameWidth = measureTextSync(displayName, NAME_TEXT_STYLE);
+export function computeMarketPillWidth(item: MarketDisplayItem): number {
+  const nameWidth = measureTextSync(item.displayName, NAME_TEXT_STYLE);
 
-  const priceFormatted = formatPerpAssetPrice(market.midPrice ?? market.price);
-  const priceWidth = measureTextSync(priceFormatted, PRICE_TEXT_STYLE);
+  const priceWidth = measureTextSync(item.initialPrice, PRICE_TEXT_STYLE);
 
-  const percentChange = convertStoredPerpPriceChangeToPercent(market.priceChange['24h']);
-  const priceChangeWidth = UP_DOWN_ARROW_WIDTH + CHANGE_ROW_GAP + getStablePerpPillPercentChangeWidth(percentChange);
+  const priceChange = convertStoredPerpPriceChangeToPercent(item.initialPriceChange);
+  const priceChangeWidth = UP_DOWN_ARROW_WIDTH + CHANGE_ROW_GAP + getStableMarketPillPercentChangeWidth(priceChange);
 
   const textWidth = Math.max(nameWidth, priceWidth + PRICE_ROW_GAP + priceChangeWidth);
   return Math.ceil(PILL_WIDTH_BASE + textWidth);
 }
 
-function getStablePerpPillPercentChangeWidth(percentChange: number): number {
+function getStableMarketPillPercentChangeWidth(percentChange: number): number {
   const leftOfDecimalDigits = Math.floor(Math.abs(percentChange)).toString().length;
   const leftDigitsWidth = leftOfDecimalDigits * PILL_TEXT_STATS.maxDigitWidth;
   const rightDigitsWidth = PILL_TEXT_STATS.maxDigitWidth * 2;
@@ -243,7 +228,7 @@ const styles = StyleSheet.create({
     borderCurve: 'continuous',
     borderRadius: PILL_LAYOUT.borderRadius,
     flexDirection: 'row',
-    height: PERP_MARKET_PILL_HEIGHT,
+    height: MARKET_PILL_HEIGHT,
     paddingLeft: PILL_LAYOUT.paddingLeft,
     paddingRight: PILL_LAYOUT.paddingRight,
     paddingVertical: PILL_LAYOUT.paddingVertical,
@@ -256,7 +241,7 @@ const styles = StyleSheet.create({
   pillShadow: {
     borderCurve: 'continuous',
     borderRadius: PILL_LAYOUT.borderRadius,
-    height: PERP_MARKET_PILL_HEIGHT,
+    height: MARKET_PILL_HEIGHT,
   },
   pillShadowDark: {
     shadowColor: '#000000',

@@ -1,4 +1,4 @@
-import { useCallback, useMemo } from 'react';
+import { useMemo } from 'react';
 import { StyleSheet, View } from 'react-native';
 
 import { LinearGradient } from 'expo-linear-gradient';
@@ -9,18 +9,13 @@ import { Skeleton } from '@/components/Skeleton';
 import { AnimatedText, Text, useColorMode } from '@/design-system';
 import { getValueForColorMode } from '@/design-system/color/palettes';
 import { SparklineChart } from '@/features/charts/line/components/SparklineChart';
+import { buildMarketBaseDisplay, getMarketPriceChangeColor } from '@/features/discover/components/marketCards/marketCardChrome';
+import { MarketIcon } from '@/features/discover/components/marketCards/MarketIcon';
+import { MarketPriceChange } from '@/features/discover/components/marketCards/MarketPriceChange';
 import { usePlacementCardTrackPress } from '@/features/discover/components/marketPress/marketPressContext';
 import { useMarketCardPress } from '@/features/discover/components/marketPress/useMarketCardPress';
-import { buildPerpMarketBaseDisplay, type PriceChangeColors } from '@/features/discover/components/perpMarketCards/perpMarketCardChrome';
-import { PerpMarketIcon } from '@/features/discover/components/perpMarketCards/PerpMarketIcon';
-import { PerpPriceChange } from '@/features/discover/components/perpMarketCards/PerpPriceChange';
-import { useHyperliquidLineChartsStore } from '@/features/perps/stores/hyperliquidLineChartsStore';
-import { getHyperliquidTokenId, navigateToPerpDetailScreen } from '@/features/perps/utils';
-import { formatPerpAssetPrice, selectFormattedMarkPrice } from '@/features/perps/utils/formatPerpsAssetPrice';
-import { extractBaseSymbol } from '@/features/perps/utils/hyperliquidSymbols';
-import { type PerpMarketPlacementItem } from '@/features/placements/stores/derived/perpsPlacementStore';
+import { type MarketDisplayItem } from '@/features/discover/types/marketDisplayItem';
 import { opacity } from '@/framework/ui/utils/opacity';
-import { type TokenData } from '@/state/liveTokens/liveTokensStore';
 import { DEVICE_WIDTH } from '@/utils/deviceUtils';
 import { getHighContrastTextColorWorklet } from '@/worklets/colors';
 
@@ -35,42 +30,23 @@ const ROW_BACKGROUND_COLORS = {
 };
 const ROW_LIGHT_GRADIENT_COLORS = ['rgba(131, 142, 153, 0.06)', 'rgba(131, 142, 153, 0)'] as const;
 
-export function PerpMarketRowCard({ item }: { item: PerpMarketPlacementItem }) {
+export function MarketRowCard({ item }: { item: MarketDisplayItem }) {
   const { colorMode, isDarkMode } = useColorMode();
-  const { accentColor, iconUrl, priceChangeColors } = useMemo(
-    () => buildPerpMarketBaseDisplay(item.market, colorMode),
-    [colorMode, item.market]
-  );
-  const displayName = extractBaseSymbol(item.market.baseSymbol);
-  const symbol = item.market.symbol;
-  const initialPrice = useMemo(
-    () => formatPerpAssetPrice(item.market.midPrice ?? item.market.price),
-    [item.market.midPrice, item.market.price]
-  );
-  const initialPriceChange = item.market.priceChange['24h'];
-  const tokenId = getHyperliquidTokenId(symbol);
+  const { accentColor, iconUrl, priceChangeColors } = useMemo(() => buildMarketBaseDisplay(item, colorMode), [colorMode, item]);
   const livePrice = useLiveTokenSharedValue({
-    initialValue: initialPrice,
-    selector: selectFormattedMarkPrice,
-    tokenId,
+    initialValue: item.initialPrice,
+    initialValueLastUpdated: item.initialPriceLastUpdated,
+    selector: item.priceSelector,
+    tokenId: item.liveTokenId,
   });
   const livePriceChange = useLiveTokenValue({
-    initialValue: initialPriceChange,
-    selector: selectLivePriceChange24h,
-    tokenId,
+    initialValue: item.initialPriceChange,
+    selector: item.priceChangeSelector,
+    tokenId: item.liveTokenId,
   });
   const trackPress = usePlacementCardTrackPress();
-  const navigateToMarket = useCallback(() => navigateToPerpDetailScreen(symbol), [symbol]);
-  const pressMetadata = useMemo(
-    () => ({
-      marketId: symbol,
-      marketName: item.market.metadata?.name ?? displayName,
-      marketSymbol: displayName,
-    }),
-    [displayName, item.market.metadata?.name, symbol]
-  );
-  const onPress = useMarketCardPress({ metadata: pressMetadata, onPress: navigateToMarket, trackPress });
-  const priceChangeColor = getPerpPriceChangeColor(livePriceChange, priceChangeColors);
+  const onPress = useMarketCardPress({ metadata: item.pressMetadata, onPress: item.onNavigate, trackPress });
+  const priceChangeColor = getMarketPriceChangeColor(livePriceChange, priceChangeColors);
   const rowBackgroundColor = getValueForColorMode(ROW_BACKGROUND_COLORS, colorMode);
   const rowGradientColors = isDarkMode ? ([opacity(accentColor, 0.16), opacity(accentColor, 0)] as const) : ROW_LIGHT_GRADIENT_COLORS;
 
@@ -84,15 +60,15 @@ export function PerpMarketRowCard({ item }: { item: PerpMarketPlacementItem }) {
           start={{ x: 0, y: 0 }}
           style={StyleSheet.absoluteFill}
         />
-        <PerpMarketIcon
+        <MarketIcon
           accentColor={accentColor}
           badgePosition="top-right"
           badgeBorderColor={isDarkMode ? 'rgba(255, 255, 255, 0.24)' : 'rgba(0, 0, 0, 0.07)'}
-          baseSymbol={displayName}
           borderColor={accentColor}
+          fallbackText={item.displayName}
           fallbackTextSize="13pt"
           iconUrl={iconUrl}
-          leverage={item.market.maxLeverage}
+          leverage={item.leverage}
           badgeShadowColor={isDarkMode ? '#000000' : accentColor}
           badgeShadowOpacity={isDarkMode ? 0.5 : 0.25}
           badgeTextColor={getHighContrastTextColorWorklet(accentColor, 4)}
@@ -100,31 +76,33 @@ export function PerpMarketRowCard({ item }: { item: PerpMarketPlacementItem }) {
         />
         <View style={styles.textColumn}>
           <Text color="label" numberOfLines={1} size="17pt" weight="heavy">
-            {displayName}
+            {item.displayName}
           </Text>
           <View style={styles.priceRow}>
             <AnimatedText color="labelSecondary" numberOfLines={1} size="15pt" weight="bold">
               {livePrice}
             </AnimatedText>
             <View style={styles.changeRow}>
-              <PerpPriceChange
+              <MarketPriceChange
                 arrowHeight={8}
                 arrowSize="icon 12px"
                 arrowWidth={12}
-                initialPriceChange={initialPriceChange}
+                initialPriceChange={item.initialPriceChange}
+                priceChangeSelector={item.priceChangeSelector}
                 priceChangeColors={priceChangeColors}
-                symbol={symbol}
                 textSize="15pt"
+                tokenId={item.liveTokenId}
               />
             </View>
           </View>
         </View>
         <View pointerEvents="none" style={styles.sparklineContainer}>
           <SparklineChart
-            chartId={symbol}
+            chartId={item.chartId}
             color={priceChangeColor}
             height={SPARKLINE_LAYOUT.height}
-            store={useHyperliquidLineChartsStore}
+            maxPoints={item.chartMaxPoints}
+            store={item.chartStore}
             width={SPARKLINE_LAYOUT.width}
           />
         </View>
@@ -133,16 +111,8 @@ export function PerpMarketRowCard({ item }: { item: PerpMarketPlacementItem }) {
   );
 }
 
-export function PerpMarketRowCardSkeleton() {
+export function MarketRowCardSkeleton() {
   return <Skeleton borderRadius={24} height={ROW_HEIGHT} width={ROW_WIDTH} />;
-}
-
-function selectLivePriceChange24h(state: TokenData): string {
-  return state.change.change24hPct;
-}
-
-function getPerpPriceChangeColor(priceChange: string, priceChangeColors: PriceChangeColors): string {
-  return Number(priceChange) >= 0 ? priceChangeColors.positive : priceChangeColors.negative;
 }
 
 const styles = StyleSheet.create({
