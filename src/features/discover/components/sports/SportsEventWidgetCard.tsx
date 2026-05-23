@@ -21,7 +21,7 @@ import {
 import { usePolymarketSportsEventDisplay } from '@/features/polymarket/hooks/usePolymarketSportsEventDisplay';
 import { getLeagueId, SPORT_LEAGUES, type LeagueId } from '@/features/polymarket/leagues';
 import { type PolymarketTeamInfo } from '@/features/polymarket/types';
-import { type PolymarketEvent } from '@/features/polymarket/types/polymarket-event';
+import { type PolymarketEvent, type PolymarketMarket } from '@/features/polymarket/types/polymarket-event';
 import { parsePeriod, parseScore } from '@/features/polymarket/utils/sports';
 import { formatOdds, type BetCellData, type EventBetGrid } from '@/features/polymarket/utils/sportsEventBetData';
 import { getSportsEventOutcomeCellColor, type SportsEventOutcomeInfo } from '@/features/polymarket/utils/sportsEventOutcome';
@@ -56,6 +56,18 @@ type SportsEventWidgetCardProps = {
   event: PolymarketEvent;
 };
 
+type WidgetTeamRow = {
+  isFallback?: boolean;
+  label?: string;
+  line?: BetCellData;
+  moneyline?: BetCellData;
+};
+
+type WidgetRows = {
+  away: WidgetTeamRow;
+  home: WidgetTeamRow;
+};
+
 export const SportsEventWidgetCard = memo(function SportsEventWidgetCard({ event }: SportsEventWidgetCardProps) {
   const { isDarkMode } = useColorMode();
   const trackPress = usePlacementCardTrackPress();
@@ -63,7 +75,7 @@ export const SportsEventWidgetCard = memo(function SportsEventWidgetCard({ event
   const accentColor = useMemo(() => getEventAccentColor({ event, leagueId, isDarkMode }), [event, isDarkMode, leagueId]);
   const { betGrid, gameInfo, isLive, scores, teamLabels } = usePolymarketSportsEventDisplay(event);
   const periodTitle = useMemo(() => getGameStatusTitle({ event, gameInfo, isLive }), [event, gameInfo, isLive]);
-  const rows = useMemo(() => getRows(betGrid), [betGrid]);
+  const rows = useMemo(() => getRows(event, betGrid), [betGrid, event]);
 
   const cardBorderGradientColors = useMemo(
     () =>
@@ -137,21 +149,23 @@ export const SportsEventWidgetCard = memo(function SportsEventWidgetCard({ event
           <Separator />
           <TeamRow
             event={event}
-            label={teamLabels[0]}
+            label={rows.away.label ?? teamLabels[0]}
             score={scores?.teamAScore}
             team={event.teams?.[0]}
             lineBet={rows.away.line}
             moneylineBet={rows.away.moneyline}
+            compact={rows.away.isFallback}
             interactiveBetCells={Platform.OS === 'ios'}
           />
           <InsetSeparator />
           <TeamRow
             event={event}
-            label={teamLabels[1]}
+            label={rows.home.label ?? teamLabels[1]}
             score={scores?.teamBScore}
             team={event.teams?.[1]}
             lineBet={rows.home.line}
             moneylineBet={rows.home.moneyline}
+            compact={rows.home.isFallback}
             interactiveBetCells={Platform.OS === 'ios'}
           />
         </GradientBorderView>
@@ -165,11 +179,13 @@ const TeamRow = memo(function TeamRow({
   label,
   lineBet,
   moneylineBet,
+  compact,
   score,
   team,
   interactiveBetCells = true,
 }: {
   event: PolymarketEvent;
+  compact?: boolean;
   interactiveBetCells?: boolean;
   label: string;
   lineBet?: BetCellData;
@@ -180,16 +196,18 @@ const TeamRow = memo(function TeamRow({
   return (
     <View style={styles.teamRow}>
       <View style={styles.teamInfo}>
-        {team ? <TeamLogo team={team} size={TEAM_LOGO_SIZE} borderRadius={2} /> : <View style={styles.logoPlaceholder} />}
+        {team ? <TeamLogo team={team} size={TEAM_LOGO_SIZE} borderRadius={2} /> : compact ? null : <View style={styles.logoPlaceholder} />}
         <Text align="left" color="label" numberOfLines={1} size="17pt" style={styles.teamName} weight="bold">
           {label}
         </Text>
       </View>
       <View style={styles.betInfo}>
-        <Text align="right" color="label" size="17pt" style={styles.score} weight="heavy">
-          {score ?? ''}
-        </Text>
-        <TeamBetCells event={event} interactive={interactiveBetCells} lineBet={lineBet} moneylineBet={moneylineBet} />
+        {score || !compact ? (
+          <Text align="right" color="label" size="17pt" style={styles.score} weight="heavy">
+            {score ?? ''}
+          </Text>
+        ) : null}
+        <TeamBetCells event={event} compact={compact} interactive={interactiveBetCells} lineBet={lineBet} moneylineBet={moneylineBet} />
       </View>
     </View>
   );
@@ -204,19 +222,21 @@ const WidgetBetCellsOverlay = memo(function WidgetBetCellsOverlay({
 }) {
   return (
     <View pointerEvents="box-none" style={styles.betCellsOverlay}>
-      <TeamBetCells event={event} lineBet={rows.away.line} moneylineBet={rows.away.moneyline} />
-      <TeamBetCells event={event} lineBet={rows.home.line} moneylineBet={rows.home.moneyline} />
+      <TeamBetCells event={event} compact={rows.away.isFallback} lineBet={rows.away.line} moneylineBet={rows.away.moneyline} />
+      <TeamBetCells event={event} compact={rows.home.isFallback} lineBet={rows.home.line} moneylineBet={rows.home.moneyline} />
     </View>
   );
 });
 
 const TeamBetCells = memo(function TeamBetCells({
   event,
+  compact,
   interactive = true,
   lineBet,
   moneylineBet,
 }: {
   event: PolymarketEvent;
+  compact?: boolean;
   interactive?: boolean;
   lineBet?: BetCellData;
   moneylineBet?: BetCellData;
@@ -228,8 +248,8 @@ const TeamBetCells = memo(function TeamBetCells({
   if (!interactive) {
     return (
       <View style={styles.betCells}>
-        {lineBet ? <View style={styles.lineCellButton} /> : <View style={styles.lineCellSpacer} />}
-        {moneylineBet ? <View style={styles.moneylineCellButton} /> : <View style={styles.moneylineCellSpacer} />}
+        {lineBet ? <View style={styles.lineCellButton} /> : compact ? null : <View style={styles.lineCellSpacer} />}
+        {moneylineBet ? <View style={styles.moneylineCellButton} /> : compact ? null : <View style={styles.moneylineCellSpacer} />}
       </View>
     );
   }
@@ -238,12 +258,12 @@ const TeamBetCells = memo(function TeamBetCells({
     <View style={styles.betCells}>
       {lineBet ? (
         <WidgetBetCell event={event} data={lineBet} backgroundColor={lineColor} variant="line" />
-      ) : (
+      ) : compact ? null : (
         <View style={styles.lineCellSpacer} />
       )}
       {moneylineBet ? (
         <WidgetBetCell event={event} data={moneylineBet} backgroundColor={moneylineColor} variant="moneyline" />
-      ) : (
+      ) : compact ? null : (
         <View style={styles.moneylineCellSpacer} />
       )}
     </View>
@@ -337,8 +357,8 @@ function useOutcomePress({ event, outcomeTokenId }: { event: PolymarketEvent; ou
   return usePolymarketSportsBetCellPress({ event, outcomeTokenId, onResolvedOutcomePress });
 }
 
-function getRows(betGrid: EventBetGrid) {
-  return {
+function getRows(event: PolymarketEvent, betGrid: EventBetGrid): WidgetRows {
+  const rows: WidgetRows = {
     away: {
       line: betGrid.totals.over ?? betGrid.teamBets.away.spread,
       moneyline: betGrid.teamBets.away.moneyline,
@@ -346,6 +366,52 @@ function getRows(betGrid: EventBetGrid) {
     home: {
       line: betGrid.totals.under ?? betGrid.teamBets.home.spread,
       moneyline: betGrid.teamBets.home.moneyline,
+    },
+  };
+
+  if (hasBetCells(rows)) return rows;
+
+  return getFallbackMarketRows(event) ?? rows;
+}
+
+function hasBetCells(rows: WidgetRows) {
+  return !!(rows.away.line || rows.away.moneyline || rows.home.line || rows.home.moneyline);
+}
+
+function getFallbackMarketRows(event: PolymarketEvent): WidgetRows | null {
+  const markets = event.markets
+    .filter(isRenderableFallbackMarket)
+    .sort((a, b) => Number(b.outcomePrices[0] ?? 0) - Number(a.outcomePrices[0] ?? 0))
+    .slice(0, 2);
+
+  if (markets.length < 2) return null;
+
+  return {
+    away: getFallbackMarketRow(markets[0]),
+    home: getFallbackMarketRow(markets[1]),
+  };
+}
+
+function isRenderableFallbackMarket(market: PolymarketMarket) {
+  return (
+    market.active !== false &&
+    market.closed !== true &&
+    market.umaResolutionStatus !== 'resolved' &&
+    !!market.groupItemTitle &&
+    market.outcomePrices[0] != null &&
+    market.outcomePrices[0] !== '' &&
+    !!market.clobTokenIds[0]
+  );
+}
+
+function getFallbackMarketRow(market: PolymarketMarket): WidgetTeamRow {
+  return {
+    isFallback: true,
+    label: market.groupItemTitle,
+    moneyline: {
+      label: '',
+      odds: formatOdds(market.outcomePrices[0]),
+      outcomeTokenId: market.clobTokenIds[0],
     },
   };
 }
