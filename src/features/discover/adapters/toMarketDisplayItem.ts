@@ -1,7 +1,7 @@
 import { type NativeCurrencyKey } from '@/entities/nativeCurrencyTypes';
 import { buildTokenLineChartId, useTokenLineChartsStore } from '@/features/discover/stores/tokenLineChartsStore';
 import { type MarketDisplayItem } from '@/features/discover/types/marketDisplayItem';
-import { HYPERLIQUID_COLORS } from '@/features/perps/constants';
+import { HYPERCORE_PSEUDO_CHAIN_ID, HYPERLIQUID_COLORS } from '@/features/perps/constants';
 import { useHyperliquidLineChartsStore } from '@/features/perps/stores/hyperliquidLineChartsStore';
 import { type PerpMarketWithMetadata } from '@/features/perps/types';
 import { getHyperliquidTokenId, navigateToPerpDetailScreen } from '@/features/perps/utils';
@@ -47,12 +47,16 @@ export function perpToMarketDisplayItem(item: PerpMarketPlacementItem): MarketDi
 export function tokenToMarketDisplayItem({
   accentColor,
   item,
+  perpMarket,
   nativeCurrency,
 }: {
   accentColor: string;
   item: TokenPlacementItem;
+  perpMarket?: PerpMarketWithMetadata;
   nativeCurrency: NativeCurrencyKey;
 }): MarketDisplayItem {
+  if (perpMarket) return perpToMarketDisplayItem({ id: item.id, market: perpMarket });
+
   const { asset } = item;
   const initialPriceChange = normalizeTokenPriceChange(asset.price.relativeChange24h);
   const liveTokenId = getUniqueId(asset.address, asset.chainId);
@@ -86,6 +90,11 @@ export function tokenToMarketDisplayItem({
     priceChangeSelector: token => normalizeTokenPriceChange(token.change.change24hPct),
     priceSelector: token => formatCurrency(token.price, { currency: nativeCurrency }),
   };
+}
+
+export function getTokenPerpMarketSymbol(item: TokenPlacementItem): string | undefined {
+  if (item.asset.chainId !== HYPERCORE_PSEUDO_CHAIN_ID) return undefined;
+  return item.asset.symbol.toUpperCase();
 }
 
 function getPerpMarketAccentColor(market: PerpMarketWithMetadata): string {

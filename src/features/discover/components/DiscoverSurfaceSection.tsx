@@ -4,7 +4,11 @@ import { StyleSheet, View, type StyleProp, type ViewStyle } from 'react-native';
 import { useDiscoverScreenContext } from '@/components/Discover/DiscoverScreenContext';
 import { Skeleton } from '@/components/Skeleton';
 import { useBackgroundColor } from '@/design-system';
-import { perpToMarketDisplayItem, tokenToMarketDisplayItem } from '@/features/discover/adapters/toMarketDisplayItem';
+import {
+  getTokenPerpMarketSymbol,
+  perpToMarketDisplayItem,
+  tokenToMarketDisplayItem,
+} from '@/features/discover/adapters/toMarketDisplayItem';
 import { MarketCarousel } from '@/features/discover/components/carousel/MarketCarousel';
 import { MarketGrid } from '@/features/discover/components/grid/MarketGrid';
 import { MarketList } from '@/features/discover/components/list/MarketList';
@@ -36,6 +40,7 @@ import {
 } from '@/features/discover/components/predictionMarketCards/PredictionMarketTileCard';
 import { type MarketDisplayItem } from '@/features/discover/types/marketDisplayItem';
 import { navigateDiscoverDestination } from '@/features/discover/utils/navigation';
+import { useHyperliquidMarketsStore } from '@/features/perps/stores/hyperliquidMarketsStore';
 import { getPerpsPlacementStore } from '@/features/placements/stores/derived/perpsPlacementStore';
 import { getPredictionsPlacementStore, type PredictionPlacementItem } from '@/features/placements/stores/derived/predictionsPlacementStore';
 import { getTokensPlacementStore, type TokenPlacementItem } from '@/features/placements/stores/derived/tokensPlacementStore';
@@ -518,13 +523,18 @@ function useTokenMarketDisplayItem(
   item: TokenPlacementItem,
   nativeCurrency: ReturnType<typeof userAssetsStoreManager.getState>['currency']
 ): MarketDisplayItem {
+  const perpMarketSymbol = getTokenPerpMarketSymbol(item);
+  const perpMarket = useHyperliquidMarketsStore(state => (perpMarketSymbol ? state.getMarket(perpMarketSymbol) : undefined));
   const accentColor = useColorForAsset({
     address: item.asset.address,
     name: item.asset.name,
     symbol: item.asset.symbol,
   });
 
-  return useMemo(() => tokenToMarketDisplayItem({ accentColor, item, nativeCurrency }), [accentColor, item, nativeCurrency]);
+  return useMemo(
+    () => tokenToMarketDisplayItem({ accentColor, item, nativeCurrency, perpMarket }),
+    [accentColor, item, nativeCurrency, perpMarket]
+  );
 }
 
 function renderPredictionTile(item: PredictionPlacementItem) {
