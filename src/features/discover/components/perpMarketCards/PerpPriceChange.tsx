@@ -5,7 +5,7 @@ import { useAnimatedStyle, type SharedValue } from 'react-native-reanimated';
 import { AnimatedTextIcon } from '@/components/AnimatedComponents/AnimatedTextIcon';
 import { useLiveTokenSharedValue } from '@/components/live-token-text/LiveTokenText';
 import { AnimatedText } from '@/design-system';
-import { type TextSize, type TextWeight } from '@/design-system/components/Text/Text';
+import { type TextSize } from '@/design-system/components/Text/Text';
 import { DOWN_ARROW, UP_ARROW } from '@/features/perps/constants';
 import { formatCompactPriceChange, getHyperliquidTokenId } from '@/features/perps/utils';
 import { type TokenData } from '@/state/liveTokens/liveTokensStore';
@@ -20,7 +20,6 @@ type PerpPriceChangeProps = {
   priceChangeColors: PriceChangeColors;
   symbol: string;
   textSize: TextSize;
-  textWeight?: TextWeight;
 };
 
 export const PerpPriceChange = memo(function PerpPriceChange({
@@ -31,7 +30,6 @@ export const PerpPriceChange = memo(function PerpPriceChange({
   priceChangeColors,
   symbol,
   textSize,
-  textWeight = 'bold',
 }: PerpPriceChangeProps) {
   const livePriceChange = useLiveTokenSharedValue({
     initialValue: initialPriceChange,
@@ -57,7 +55,7 @@ export const PerpPriceChange = memo(function PerpPriceChange({
         {livePriceChange}
       </AnimatedTextIcon>
 
-      <AnimatedText numberOfLines={1} selector={selectPriceChangeText} size={textSize} style={priceChangeStyle} weight={textWeight}>
+      <AnimatedText numberOfLines={1} selector={selectPriceChangeText} size={textSize} style={priceChangeStyle} weight="bold">
         {livePriceChange}
       </AnimatedText>
     </>

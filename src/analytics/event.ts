@@ -1049,9 +1049,6 @@ export type EventProperties = {
   [event.surfaceInteraction]: {
     display?: string;
     interactionType: 'carousel_scroll';
-    itemOrder?: number;
-    itemRefId?: string;
-    itemRefSource?: string;
     placementId?: string;
     placementSource?: string;
     placementType?: string;

@@ -34,7 +34,7 @@ const storesByPlacementId = new Map<PlacementId, ReturnType<typeof createPredict
 
 // ============ Stores ========================================================= //
 
-export const usePredictionsEnabled = createDerivedStore<boolean>(
+const usePredictionsEnabled = createDerivedStore<boolean>(
   $ => {
     const polymarketEnabled = $(useRemoteConfigStore, state => state.getRemoteConfigKey('polymarket_enabled'));
     const polymarketEnabledLocally = $(useExperimentalConfigStore, state => state.getFlag(POLYMARKET));

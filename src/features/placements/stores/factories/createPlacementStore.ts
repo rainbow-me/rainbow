@@ -6,7 +6,7 @@ import { shallowEqual } from '@/worklets/comparisons';
 
 // ============ Types ========================================================== //
 
-export type PlacementStoreResult<Hydrated> = {
+type PlacementStoreResult<Hydrated> = {
   isLoading: boolean;
   items: Hydrated[];
   placement: Placement | undefined;

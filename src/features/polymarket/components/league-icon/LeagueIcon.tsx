@@ -13,7 +13,6 @@ import { EsportsIcon } from './icons/EsportsIcon';
 import { F1Icon } from './icons/F1Icon';
 import { HockeyIcon } from './icons/HockeyIcon';
 import { LolIcon } from './icons/LolIcon';
-import { MotorsportsIcon } from './icons/MotorsportsIcon';
 import { NbaIcon } from './icons/NbaIcon';
 import { NflIcon } from './icons/NflIcon';
 import { NhlIcon } from './icons/NhlIcon';
@@ -50,7 +49,6 @@ const SPORT_ICONS: Partial<Record<SportId, IconComponent>> = {
   baseball: BaseballIcon,
   basketball: NbaIcon,
   esports: EsportsIcon,
-  motorsports: MotorsportsIcon,
 };
 
 export function getIconByLeagueId(leagueId: LeagueId): IconComponent | undefined {

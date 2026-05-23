@@ -31,7 +31,7 @@ const storesByPlacementId = new Map<PlacementId, ReturnType<typeof createTokensP
 
 // ============ Stores ========================================================= //
 
-export const useTokensEnabled = createDerivedStore<boolean>(
+const useTokensEnabled = createDerivedStore<boolean>(
   $ => {
     const hasTokenRefsOrPendingPlacements = $(usePlacementsStore, hasTokenRefsOrPendingPlacementsHydration);
 

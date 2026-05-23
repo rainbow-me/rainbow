@@ -9,19 +9,17 @@ import { LeverageBadge } from '@/features/discover/components/perpMarketCards/Le
 const DEFAULT_BORDER_WIDTH = 8 / 3;
 const DEFAULT_IMAGE_BORDER_GAP = 4 / 3;
 const DEFAULT_BADGE_POSITION = 'top-left';
-const DEFAULT_BADGE_OFFSET = 4;
+const BADGE_OFFSET = 4;
 
 type PerpMarketIconProps = {
   accentColor: string;
   borderColor: string;
-  borderWidth?: number;
   baseSymbol: string;
   fallbackTextSize: TextSize;
   iconUrl: string | undefined;
   size: number;
   imageBorderGap?: number;
   badgePosition?: 'top-left' | 'top-right';
-  badgeOffset?: number;
   leverage: number;
   badgeBorderColor: string;
   badgeShadowColor: string;
@@ -32,23 +30,22 @@ type PerpMarketIconProps = {
 export const PerpMarketIcon = memo(function PerpMarketIcon({
   accentColor,
   borderColor,
-  borderWidth = DEFAULT_BORDER_WIDTH,
   baseSymbol,
   fallbackTextSize,
   iconUrl,
   size,
   imageBorderGap = DEFAULT_IMAGE_BORDER_GAP,
   badgePosition = DEFAULT_BADGE_POSITION,
-  badgeOffset = DEFAULT_BADGE_OFFSET,
   leverage,
   badgeBorderColor,
   badgeShadowColor,
   badgeShadowOpacity,
   badgeTextColor,
 }: PerpMarketIconProps) {
+  const borderWidth = DEFAULT_BORDER_WIDTH;
   const imageSize = size - borderWidth * 2 - imageBorderGap * 2;
   const badgePositionStyle =
-    badgePosition === 'top-left' ? { top: -badgeOffset, left: -badgeOffset } : { top: -badgeOffset, right: -badgeOffset };
+    badgePosition === 'top-left' ? { top: -BADGE_OFFSET, left: -BADGE_OFFSET } : { top: -BADGE_OFFSET, right: -BADGE_OFFSET };
 
   return (
     <View style={{ width: size, height: size }}>

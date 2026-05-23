@@ -68,7 +68,7 @@ export const PolymarketSportsEventsList = memo(function PolymarketSportsEventsLi
   );
 });
 
-export const PolymarketSportsEventsListContent = memo(function PolymarketSportsEventsListContent({
+const PolymarketSportsEventsListContent = memo(function PolymarketSportsEventsListContent({
   events,
   isIdle,
   isLoading,

@@ -18,12 +18,10 @@ export type PlacementsState = {
   placementsById: PlacementsById;
   getPlacement: (id: PlacementId) => Placement | undefined;
   getItemsBySource: <Source extends PlacementSource>(id: PlacementId, source: Source) => PlacementItem[];
-  getRefIds: (id: PlacementId, filter: PlacementItemFilter) => string[];
-  hasRefIds: (id: PlacementId, filter: PlacementItemFilter) => boolean;
   getAllRefIds: (filter: PlacementItemFilter) => string[];
 };
 
-export type PlacementsById = Record<PlacementId, Placement>;
+type PlacementsById = Record<PlacementId, Placement>;
 
 type PlacementDocument = Partial<Placement>;
 type PlacementItemFilter = {
@@ -64,16 +62,6 @@ export const usePlacementsStore = createQueryStore<PlacementsById, never, Placem
       return getItems(placement);
     },
 
-    getRefIds: (id, filter) => {
-      const placement = getCachedV2Placement(id, get().placementsById);
-      return buildStableRefIds(placement, filter);
-    },
-
-    hasRefIds: (id, filter) => {
-      const placement = getCachedV2Placement(id, get().placementsById);
-      return getItems(placement).some(item => isPlacementMatch(placement, item, filter));
-    },
-
     getAllRefIds: filter => {
       const refIds: string[] = [];
       const placementsById = get().placementsById;
@@ -95,7 +83,7 @@ export const usePlacementsStore = createQueryStore<PlacementsById, never, Placem
 
 // ============ Fetcher ======================================================== //
 
-export async function fetchPlacements(): Promise<PlacementsById> {
+async function fetchPlacements(): Promise<PlacementsById> {
   const db = getFirestore(getApp());
   const placementsRef = collection(db, 'placements');
   const q = query(placementsRef, where('version', '==', 2));
@@ -140,15 +128,6 @@ function getCachedV2Placement(id: PlacementId, placementsById: PlacementsById): 
 function getItems(placement: Placement | undefined): PlacementItem[] {
   const items = placement?.items.filter(isPlacementItem) ?? EMPTY_PLACEMENT_ITEMS;
   return items.length ? items : EMPTY_PLACEMENT_ITEMS;
-}
-
-function buildStableRefIds(placement: Placement | undefined, filter: PlacementItemFilter): string[] {
-  if (!placement || !isPlacementFilterMatch(placement, filter)) return [];
-  return getConsistentArray(placement.items.filter(isPlacementItem).map(item => item.id));
-}
-
-function isPlacementMatch(placement: Placement | undefined, item: unknown, filter: PlacementItemFilter): item is PlacementItem {
-  return isPlacementItem(item) && isPlacementFilterMatch(placement, filter);
 }
 
 function isPlacementFilterMatch(placement: Placement | undefined, filter: PlacementItemFilter): placement is Placement {
