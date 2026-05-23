@@ -1,9 +1,7 @@
-import { type PlacementsById } from '@/features/placements/stores/placementsStore';
-import { SOURCE_BY_DISPLAY } from '@/features/placements/surfaces/constants';
 import { type Surface } from '@/features/placements/surfaces/types';
 import { isEnabled } from '@/features/placements/surfaces/utils/isEnabled';
 
-export function filterSurface(surface: Surface, placementsById: PlacementsById, now: number): Surface | undefined {
+export function filterEnabledSurface(surface: Surface, now: number): Surface | undefined {
   if (!isEnabled(surface.enabled, now)) return undefined;
 
   if (surface.items !== undefined) {
@@ -11,7 +9,7 @@ export function filterSurface(surface: Surface, placementsById: PlacementsById, 
     let didChange = false;
 
     for (const item of surface.items) {
-      const filteredItem = filterSurface(item, placementsById, now);
+      const filteredItem = filterEnabledSurface(item, now);
       if (!filteredItem) {
         didChange = true;
         continue;
@@ -23,11 +21,6 @@ export function filterSurface(surface: Surface, placementsById: PlacementsById, 
     if (!filteredItems.length) return undefined;
     return didChange ? { ...surface, items: filteredItems } : surface;
   }
-
-  const placement = placementsById[surface.placement];
-  if (!placement) return undefined;
-  if (placement.source !== SOURCE_BY_DISPLAY[surface.display]) return undefined;
-  if (!placement.items.length) return undefined;
 
   return surface;
 }
