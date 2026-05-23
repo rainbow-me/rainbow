@@ -10,13 +10,12 @@ import ShimmerAnimation from '@/components/animations/ShimmerAnimation';
 import { LiveTokenText } from '@/components/live-token-text/LiveTokenText';
 import { Text, TextShadow, useBackgroundColor, useColorMode, useForegroundColor } from '@/design-system';
 import { TeamLogo } from '@/features/polymarket/components/TeamLogo';
-import { usePolymarketLiveGame } from '@/features/polymarket/hooks/usePolymarketLiveGame';
+import { usePolymarketSportsEventDisplay } from '@/features/polymarket/hooks/usePolymarketSportsEventDisplay';
 import { type PolymarketEvent } from '@/features/polymarket/types/polymarket-event';
 import { getOutcomeColor } from '@/features/polymarket/utils/getMarketColor';
-import { parsePeriod, parseScore, selectGameInfo, type PolymarketEventGameInfo } from '@/features/polymarket/utils/sports';
-import { buildEventBetGrid, formatOdds, type BetCellData } from '@/features/polymarket/utils/sportsEventBetData';
+import { parsePeriod, parseScore, type PolymarketEventGameInfo } from '@/features/polymarket/utils/sports';
+import { formatOdds, type BetCellData } from '@/features/polymarket/utils/sportsEventBetData';
 import { findSportsEventOutcome, getSportsEventOutcomeCellColor } from '@/features/polymarket/utils/sportsEventOutcome';
-import { getTeamDisplayInfo } from '@/features/polymarket/utils/sportsEventTeams';
 import { opacity } from '@/framework/ui/utils/opacity';
 import * as i18n from '@/languages';
 import Navigation from '@/navigation/Navigation';
@@ -44,10 +43,7 @@ export const PolymarketSportEventListItem = memo(function PolymarketSportEventLi
   const borderColor = useForegroundColor('separatorSecondary');
   const { isDarkMode } = useColorMode();
 
-  const liveGame = usePolymarketLiveGame(event.live && !event.ended ? event.gameId : undefined);
-  const gameInfo = useMemo(() => selectGameInfo({ event, liveGame }), [event, liveGame]);
-  const isLive = gameInfo.live && !gameInfo.ended;
-  const { labels: teamLabels, title } = useMemo(() => getTeamDisplayInfo(event), [event]);
+  const { betGrid, gameInfo, isLive, scores, showScores, teamLabels, title } = usePolymarketSportsEventDisplay(event);
   const periodTitle = useMemo(
     () =>
       isLive
@@ -60,12 +56,9 @@ export const PolymarketSportEventListItem = memo(function PolymarketSportEventLi
     [isLive, gameInfo.period, gameInfo.elapsed, gameInfo.score]
   );
   const subtitle = useMemo(() => (isLive ? undefined : getSubtitle({ event, gameInfo })), [event, gameInfo, isLive]);
-  const betGrid = useMemo(() => buildEventBetGrid(event), [event]);
   const awayBets = betGrid.teamBets.away;
   const homeBets = betGrid.teamBets.home;
   const totals = betGrid.totals;
-  const showScores = isLive || gameInfo.ended;
-  const scores = useMemo(() => (showScores ? (gameInfo.score ? parseScore(gameInfo.score) : null) : null), [gameInfo.score, showScores]);
   const awaySpreadColor = getSportsEventOutcomeCellColor(event.markets, awayBets.spread?.outcomeTokenId, isDarkMode, event.teams);
   const homeSpreadColor = getSportsEventOutcomeCellColor(event.markets, homeBets.spread?.outcomeTokenId, isDarkMode, event.teams);
   const totalsOverColor = getSportsEventOutcomeCellColor(event.markets, totals.over?.outcomeTokenId, isDarkMode, event.teams);

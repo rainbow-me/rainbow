@@ -14,15 +14,14 @@ import {
 } from '@/features/discover/components/marketPress/marketPressContext';
 import { LeagueIcon } from '@/features/polymarket/components/league-icon/LeagueIcon';
 import { TeamLogo } from '@/features/polymarket/components/TeamLogo';
-import { usePolymarketLiveGame } from '@/features/polymarket/hooks/usePolymarketLiveGame';
+import { usePolymarketSportsEventDisplay } from '@/features/polymarket/hooks/usePolymarketSportsEventDisplay';
 import { getLeagueId, SPORT_LEAGUES, type LeagueId } from '@/features/polymarket/leagues';
 import { type PolymarketTeamInfo } from '@/features/polymarket/types';
 import { type PolymarketEvent } from '@/features/polymarket/types/polymarket-event';
 import { getOutcomeColor } from '@/features/polymarket/utils/getMarketColor';
-import { parsePeriod, parseScore, selectGameInfo } from '@/features/polymarket/utils/sports';
-import { buildEventBetGrid, formatOdds, type BetCellData } from '@/features/polymarket/utils/sportsEventBetData';
+import { parsePeriod, parseScore } from '@/features/polymarket/utils/sports';
+import { formatOdds, type BetCellData, type EventBetGrid } from '@/features/polymarket/utils/sportsEventBetData';
 import { findSportsEventOutcome, getSportsEventOutcomeCellColor } from '@/features/polymarket/utils/sportsEventOutcome';
-import { getTeamDisplayInfo } from '@/features/polymarket/utils/sportsEventTeams';
 import { opacity } from '@/framework/ui/utils/opacity';
 import * as i18n from '@/languages';
 import Navigation from '@/navigation/Navigation';
@@ -60,13 +59,9 @@ export const SportsEventWidgetCard = memo(function SportsEventWidgetCard({ event
   const trackPress = usePlacementCardTrackPress();
   const leagueId = useMemo(() => getLeagueId(event.slug), [event.slug]);
   const accentColor = useMemo(() => getEventAccentColor({ event, leagueId, isDarkMode }), [event, isDarkMode, leagueId]);
-  const liveGame = usePolymarketLiveGame(event.live && !event.ended ? event.gameId : undefined);
-  const gameInfo = useMemo(() => selectGameInfo({ event, liveGame }), [event, liveGame]);
-  const isLive = gameInfo.live && !gameInfo.ended;
-  const { labels: teamLabels } = useMemo(() => getTeamDisplayInfo(event), [event]);
-  const scores = useMemo(() => (gameInfo.score ? parseScore(gameInfo.score) : null), [gameInfo.score]);
+  const { betGrid, gameInfo, isLive, scores, teamLabels } = usePolymarketSportsEventDisplay(event);
   const periodTitle = useMemo(() => getGameStatusTitle({ event, gameInfo, isLive }), [event, gameInfo, isLive]);
-  const rows = useMemo(() => getRows(event), [event]);
+  const rows = useMemo(() => getRows(betGrid), [betGrid]);
 
   const cardBorderGradientColors = useMemo(
     () =>
@@ -305,8 +300,7 @@ function useOutcomePress({ event, outcomeTokenId }: { event: PolymarketEvent; ou
   }, [event, isDarkMode, outcomeTokenId, trackOutcomePress]);
 }
 
-function getRows(event: PolymarketEvent) {
-  const betGrid = buildEventBetGrid(event);
+function getRows(betGrid: EventBetGrid) {
   return {
     away: {
       line: betGrid.totals.over ?? betGrid.teamBets.away.spread,
@@ -325,7 +319,7 @@ function getGameStatusTitle({
   isLive,
 }: {
   event: PolymarketEvent;
-  gameInfo: ReturnType<typeof selectGameInfo>;
+  gameInfo: ReturnType<typeof usePolymarketSportsEventDisplay>['gameInfo'];
   isLive: boolean;
 }) {
   if (isLive) {
