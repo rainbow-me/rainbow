@@ -18,6 +18,7 @@ type MarketGridProps<T extends PlacementItem> = {
   destination: Destination;
   display: Display;
   itemHeight: number;
+  leadingAccessory?: ReactNode;
   loading?: boolean;
   onPressSeeAll?: () => void;
   placement: Placement | undefined;
@@ -35,6 +36,7 @@ export function MarketGrid<T extends PlacementItem>({
   destination,
   display,
   itemHeight,
+  leadingAccessory,
   loading,
   onPressSeeAll,
   placement,
@@ -59,7 +61,12 @@ export function MarketGrid<T extends PlacementItem>({
 
   return (
     <Box gap={20}>
-      <CarouselHeader title={title} onPress={onPressSeeAll ? handleSeeAllPress : undefined} showCaret={showHeaderCaret} />
+      <CarouselHeader
+        leadingAccessory={leadingAccessory}
+        title={title}
+        onPress={onPressSeeAll ? handleSeeAllPress : undefined}
+        showCaret={showHeaderCaret}
+      />
 
       <View style={styles.gridContainer}>
         {showSkeletons ? (

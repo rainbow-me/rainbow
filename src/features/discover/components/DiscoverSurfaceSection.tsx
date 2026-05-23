@@ -39,11 +39,13 @@ import { getPredictionsPlacementStore, type PredictionPlacementItem } from '@/fe
 import { getTokensPlacementStore, type TokenPlacementItem } from '@/features/placements/stores/derived/tokensPlacementStore';
 import { type Surface, type SurfaceLeaf } from '@/features/placements/surfaces/types';
 import { type Placement, type PlacementItem } from '@/features/placements/types';
+import { LeagueIcon } from '@/features/polymarket/components/league-icon/LeagueIcon';
 import {
   HEIGHT as POLYMARKET_EVENTS_LIST_ITEM_HEIGHT,
   PolymarketEventsListItem,
   PREDICTION_CARD_BORDER_RADIUS,
 } from '@/features/polymarket/components/polymarket-events-list/PolymarketEventsListItem';
+import { getLeagueId, SPORT_LEAGUES, type LeagueId } from '@/features/polymarket/leagues';
 import { navigateToPolymarketEvent } from '@/features/polymarket/utils/navigateToPolymarket';
 import { DEVICE_WIDTH } from '@/utils/deviceUtils';
 
@@ -78,7 +80,11 @@ export const DiscoverSurfaceSection = memo(function DiscoverSurfaceSection({
   return unsupportedDisplay(surface.display);
 });
 
-type CarouselSectionDescriptor<T extends PlacementItem> = {
+type SectionDescriptorBase<T extends PlacementItem> = {
+  renderHeaderLeadingAccessory?: (items: T[], surface: SurfaceLeaf) => ReactNode;
+};
+
+type CarouselSectionDescriptor<T extends PlacementItem> = SectionDescriptorBase<T> & {
   layout: 'carousel';
   getItemWidth?: (item: T) => number;
   itemHeight: number;
@@ -89,7 +95,7 @@ type CarouselSectionDescriptor<T extends PlacementItem> = {
   showHeaderCaret?: (surface: SurfaceLeaf) => boolean;
 };
 
-type GridSectionDescriptor<T extends PlacementItem> = {
+type GridSectionDescriptor<T extends PlacementItem> = SectionDescriptorBase<T> & {
   layout: 'grid';
   itemHeight: number;
   renderItem: (item: T, width: number) => ReactNode;
@@ -97,7 +103,7 @@ type GridSectionDescriptor<T extends PlacementItem> = {
   showHeaderCaret?: (surface: SurfaceLeaf) => boolean;
 };
 
-type ListSectionDescriptor<T extends PlacementItem> = {
+type ListSectionDescriptor<T extends PlacementItem> = SectionDescriptorBase<T> & {
   layout: 'list';
   renderItem: (item: T) => ReactNode;
   renderSkeleton: () => ReactNode;
@@ -108,7 +114,11 @@ type SectionDescriptor<T extends PlacementItem> = CarouselSectionDescriptor<T> |
 type PerpsDisplay = Extract<SurfaceLeaf['display'], 'perp_pill.carousel' | 'perp_tile.carousel' | 'perp_tile.grid' | 'perp_row.list'>;
 type PredictionsDisplay = Extract<
   SurfaceLeaf['display'],
-  'prediction_tile.carousel' | 'prediction_tile.grid' | 'prediction_tile_widget.carousel' | 'prediction_sport_widget.carousel'
+  | 'prediction_tile.carousel'
+  | 'prediction_tile.grid'
+  | 'prediction_tile_widget.carousel'
+  | 'prediction_sport_widget.carousel'
+  | 'prediction_sport_widget.list'
 >;
 type TokensDisplay = Extract<SurfaceLeaf['display'], 'token_cell.list'>;
 type SurfaceLeafWithDisplay<TDisplay extends SurfaceLeaf['display']> = SurfaceLeaf & { display: TDisplay };
@@ -186,6 +196,13 @@ const PREDICTIONS_SECTION_DESCRIPTORS = {
     layout: 'carousel',
     itemHeight: SPORTS_EVENT_WIDGET_CARD_HEIGHT,
     itemWidth: SPORTS_EVENT_WIDGET_CARD_WIDTH,
+    renderHeaderLeadingAccessory: renderSportsHeaderIcon,
+    renderItem: renderSportsWidget,
+    renderSkeleton: renderSportsWidgetSkeleton,
+  },
+  'prediction_sport_widget.list': {
+    layout: 'list',
+    renderHeaderLeadingAccessory: renderSportsHeaderIcon,
     renderItem: renderSportsWidget,
     renderSkeleton: renderSportsWidgetSkeleton,
   },
@@ -218,7 +235,7 @@ function PerpsSurfaceSection({ surface, surfaceId }: { surface: SurfaceLeafWithD
   const limitedData = useLimitedItems(result.items, surface.limit);
 
   return renderSurfaceLayoutSection({
-    data: limitedData,
+    data: descriptor.layout === 'list' ? result.items : limitedData,
     descriptor,
     loading: result.isLoading,
     onPressSeeAll: getHeaderPress(surface.destination),
@@ -235,7 +252,7 @@ function PredictionsSurfaceSection({ surface, surfaceId }: { surface: SurfaceLea
   const limitedData = useLimitedItems(result.items, surface.limit);
 
   return renderSurfaceLayoutSection({
-    data: limitedData,
+    data: descriptor.layout === 'list' ? result.items : limitedData,
     descriptor,
     loading: result.isLoading,
     onPressSeeAll: getHeaderPress(surface.destination),
@@ -277,9 +294,11 @@ function renderSurfaceLayoutSection<T extends PlacementItem>({
   surface,
   surfaceId,
 }: SurfaceLayoutProps<T>) {
+  const leadingAccessory = descriptor.renderHeaderLeadingAccessory?.(data, surface) ?? renderSurfaceHeaderLeadingAccessory(surface);
   const commonProps = {
     destination: surface.destination,
     display: surface.display,
+    leadingAccessory,
     loading,
     onPressSeeAll,
     placement,
@@ -418,6 +437,35 @@ function renderSportsWidgetSkeleton() {
       width={SPORTS_EVENT_WIDGET_CARD_WIDTH}
     />
   );
+}
+
+function renderSportsHeaderIcon(items: PredictionPlacementItem[], surface: SurfaceLeaf) {
+  const leagueId = getSportsSurfaceLeagueId(items, surface);
+  return leagueId ? <LeagueIcon leagueId={leagueId} size={28} /> : null;
+}
+
+function renderSurfaceHeaderLeadingAccessory(surface: SurfaceLeaf) {
+  const leagueId = getLeagueIdByName(surface.label) ?? getLeagueId(surface.id);
+  return leagueId ? <LeagueIcon leagueId={leagueId} size={28} /> : null;
+}
+
+function getSportsSurfaceLeagueId(items: PredictionPlacementItem[], surface: SurfaceLeaf): LeagueId | undefined {
+  const eventLeagueId = getLeagueId(items[0]?.event.slug ?? '');
+  if (eventLeagueId) return eventLeagueId;
+
+  const surfaceIdLeagueId = getLeagueId(surface.id);
+  if (surfaceIdLeagueId) return surfaceIdLeagueId;
+
+  return getLeagueIdByName(surface.label);
+}
+
+function getLeagueIdByName(label: string | undefined): LeagueId | undefined {
+  if (!label) return undefined;
+  const normalizedLabel = label.toLowerCase();
+  const entry = Object.entries(SPORT_LEAGUES).find(
+    ([leagueId, league]) => leagueId === normalizedLabel || league.name.toLowerCase() === normalizedLabel
+  );
+  return entry?.[0] as LeagueId | undefined;
 }
 
 function renderTokenCell(item: TokenPlacementItem) {

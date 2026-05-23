@@ -29,6 +29,7 @@ type MarketCarouselProps<T extends PlacementItem> = {
   itemHeight: number;
   itemVerticalBleed?: number;
   itemWidth: number;
+  leadingAccessory?: ReactNode;
   loading?: boolean;
   onPressSeeAll?: () => void;
   placement: Placement | undefined;
@@ -49,6 +50,7 @@ export function MarketCarousel<T extends PlacementItem>({
   itemHeight,
   itemVerticalBleed = 0,
   itemWidth,
+  leadingAccessory,
   loading,
   onPressSeeAll,
   placement,
@@ -120,7 +122,12 @@ export function MarketCarousel<T extends PlacementItem>({
 
   return (
     <Box gap={20}>
-      <CarouselHeader title={title} onPress={onPressSeeAll ? handleSeeAllPress : undefined} showCaret={showHeaderCaret} />
+      <CarouselHeader
+        leadingAccessory={leadingAccessory}
+        title={title}
+        onPress={onPressSeeAll ? handleSeeAllPress : undefined}
+        showCaret={showHeaderCaret}
+      />
 
       {showSkeletons ? (
         <View style={styles.skeletonRow}>

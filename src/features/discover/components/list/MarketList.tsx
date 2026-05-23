@@ -18,6 +18,7 @@ type MarketListProps<T extends PlacementItem> = {
   destination: Destination;
   display: Display;
   initialVisibleItemCount?: number;
+  leadingAccessory?: ReactNode;
   loading?: boolean;
   onPressSeeAll?: () => void;
   placement: Placement | undefined;
@@ -34,6 +35,7 @@ export function MarketList<T extends PlacementItem>({
   destination,
   display,
   initialVisibleItemCount = DEFAULT_VISIBLE_ITEM_COUNT,
+  leadingAccessory,
   loading,
   onPressSeeAll,
   placement,
@@ -58,7 +60,7 @@ export function MarketList<T extends PlacementItem>({
 
   return (
     <Box gap={20}>
-      <CarouselHeader title={title} onPress={onPressSeeAll ? handleSeeAllPress : undefined} />
+      <CarouselHeader leadingAccessory={leadingAccessory} title={title} onPress={onPressSeeAll ? handleSeeAllPress : undefined} />
       <Box gap={8} paddingHorizontal={{ custom: HORIZONTAL_PADDING }}>
         {showSkeletons
           ? Array.from({ length: initialVisibleItemCount }).map((_, index) => <Fragment key={index}>{renderSkeleton()}</Fragment>)

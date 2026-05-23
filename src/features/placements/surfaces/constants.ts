@@ -9,6 +9,7 @@ export const DISPLAYS = {
   PREDICTION_TILE_GRID: 'prediction_tile.grid',
   PREDICTION_TILE_WIDGET_CAROUSEL: 'prediction_tile_widget.carousel',
   PREDICTION_SPORT_WIDGET_CAROUSEL: 'prediction_sport_widget.carousel',
+  PREDICTION_SPORT_WIDGET_LIST: 'prediction_sport_widget.list',
   TOKEN_CELL_LIST: 'token_cell.list',
 } as const;
 
@@ -28,6 +29,7 @@ export const SOURCE_BY_DISPLAY = {
   [DISPLAYS.PREDICTION_TILE_GRID]: 'polymarket',
   [DISPLAYS.PREDICTION_TILE_WIDGET_CAROUSEL]: 'polymarket',
   [DISPLAYS.PREDICTION_SPORT_WIDGET_CAROUSEL]: 'polymarket',
+  [DISPLAYS.PREDICTION_SPORT_WIDGET_LIST]: 'polymarket',
   [DISPLAYS.TOKEN_CELL_LIST]: 'rainbow',
 } as const satisfies Record<(typeof DISPLAYS)[keyof typeof DISPLAYS], PlacementSource>;
 
