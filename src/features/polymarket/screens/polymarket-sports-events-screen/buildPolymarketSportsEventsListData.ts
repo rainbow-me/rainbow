@@ -25,17 +25,12 @@ type LeagueHeaderItem = {
   leagueId?: LeagueId;
 };
 
-type SectionSeparatorItem = {
-  type: 'separator';
-  key: string;
-};
-
 type LeagueSeparatorItem = {
   type: 'league-separator';
   key: string;
 };
 
-export type SportsListItem = EventItem | SectionHeaderItem | LeagueHeaderItem | SectionSeparatorItem | LeagueSeparatorItem;
+export type SportsListItem = EventItem | SectionHeaderItem | LeagueHeaderItem | LeagueSeparatorItem;
 
 export function buildPolymarketSportsEventsListData(
   events: PolymarketEvent[],

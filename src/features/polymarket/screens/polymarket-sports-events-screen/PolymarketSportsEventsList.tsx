@@ -135,9 +135,6 @@ export const PolymarketSportsEventsListContent = memo(function PolymarketSportsE
     if (item.type === 'league-header') {
       return <LeagueHeader eventSlug={item.eventSlug} leagueId={item.leagueId} title={item.title} />;
     }
-    if (item.type === 'separator') {
-      return <SectionSeparator />;
-    }
     if (item.type === 'league-separator') {
       return <LeagueSeparator />;
     }
@@ -238,10 +235,6 @@ const LeagueHeader = memo(function LeagueHeader({ title, eventSlug, leagueId }: 
       </Text>
     </View>
   );
-});
-
-const SectionSeparator = memo(function SectionSeparator() {
-  return <View style={styles.sectionSeparatorContainer} />;
 });
 
 const LeagueSeparator = memo(function LeagueSeparator() {
@@ -350,11 +343,6 @@ const styles = StyleSheet.create({
   },
   skeletonSectionSpacing: {
     paddingTop: 20 - ITEM_GAP,
-  },
-  sectionSeparatorContainer: {
-    paddingTop: 20 - ITEM_GAP,
-    paddingBottom: 20,
-    paddingHorizontal: 12,
   },
   leagueSeparatorContainer: {
     paddingTop: 12 - ITEM_GAP / 2,
