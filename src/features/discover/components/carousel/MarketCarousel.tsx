@@ -26,6 +26,7 @@ type MarketCarouselProps<T extends PlacementItem> = {
   destination: Destination;
   display: Display;
   getItemWidth?: (item: T) => number;
+  headerCount?: number;
   itemHeight: number;
   itemVerticalBleed?: number;
   itemWidth: number;
@@ -48,6 +49,7 @@ export function MarketCarousel<T extends PlacementItem>({
   destination,
   display,
   getItemWidth,
+  headerCount,
   itemHeight,
   itemVerticalBleed = 0,
   itemWidth,
@@ -123,6 +125,7 @@ export function MarketCarousel<T extends PlacementItem>({
   return (
     <Box gap={20}>
       <CarouselHeader
+        count={headerCount}
         leadingAccessory={leadingAccessory}
         title={title}
         onPress={onPressSeeAll ? handleSeeAllPress : undefined}

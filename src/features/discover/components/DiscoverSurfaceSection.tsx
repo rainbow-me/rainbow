@@ -362,9 +362,11 @@ function renderSurfaceLayoutSection<T extends PlacementItem>({
   const hasLimit = surface.limit !== undefined;
   const renderedData = hasLimit ? data.slice(0, surface.limit) : data;
   const skeletonCount = hasLimit ? surface.limit : undefined;
+  const headerCount = isLiveSportsSurface(surface) && data.length > 0 ? data.length : undefined;
   const commonProps = {
     destination: surface.destination,
     display: surface.display,
+    headerCount,
     leadingAccessory,
     loading,
     onPressSeeAll,
