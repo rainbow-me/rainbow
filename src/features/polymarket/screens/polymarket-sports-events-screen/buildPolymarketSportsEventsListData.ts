@@ -45,6 +45,7 @@ export function buildPolymarketSportsEventsListData(
   if (!events.length) return [];
 
   const { startOfToday, startOfTomorrow, startOfNextWeek } = getSportsEventsDayBoundaries(options.referenceDate);
+  const nowMs = (options.referenceDate ?? new Date()).getTime();
   const startOfTodayMs = startOfToday.getTime();
   const startOfTomorrowMs = startOfTomorrow.getTime();
   const startOfNextWeekMs = startOfNextWeek.getTime();
@@ -54,7 +55,7 @@ export function buildPolymarketSportsEventsListData(
   const thisWeekEvents: PolymarketEvent[] = [];
 
   for (const event of events) {
-    if (event.live && !event.ended) {
+    if (isLiveEvent(event, nowMs)) {
       liveEvents.push(event);
       continue;
     }
@@ -103,6 +104,15 @@ export function buildPolymarketSportsEventsListData(
   pushSection({ items, events: upcomingEvents, sectionKey: 'upcoming', showLeagueHeaders });
 
   return items;
+}
+
+function isLiveEvent(event: PolymarketEvent, nowMs: number): boolean {
+  if (event.ended) return false;
+  if (event.live) return true;
+
+  const startTime = getTimestamp(event.startTime);
+  const endTime = getTimestamp(event.endDate);
+  return startTime != null && endTime != null && startTime <= nowMs && nowMs <= endTime;
 }
 
 function pushSection({
