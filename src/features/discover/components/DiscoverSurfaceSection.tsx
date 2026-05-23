@@ -3,6 +3,7 @@ import { StyleSheet, View, type StyleProp, type ViewStyle } from 'react-native';
 
 import { useDiscoverScreenContext } from '@/components/Discover/DiscoverScreenContext';
 import { Skeleton } from '@/components/Skeleton';
+import { useBackgroundColor } from '@/design-system';
 import { MarketCarousel } from '@/features/discover/components/carousel/MarketCarousel';
 import { MarketGrid } from '@/features/discover/components/grid/MarketGrid';
 import { MarketList } from '@/features/discover/components/list/MarketList';
@@ -127,6 +128,9 @@ type SurfaceLayoutProps<T extends PlacementItem> = {
 };
 
 const SECTION_VERTICAL_GAP = 32;
+const LIVE_INDICATOR_SIZE = 28;
+const LIVE_INDICATOR_CUTOUT_SIZE = 16;
+const LIVE_INDICATOR_DOT_SIZE = 8;
 const hasDestination = (surface: SurfaceLeaf) => surface.destination !== null;
 const PREDICTION_TILE_WIDTH = Math.round((DEVICE_WIDTH - 20 * 2 - 8) / 2);
 
@@ -430,8 +434,26 @@ function renderSportsWidgetSkeleton() {
 }
 
 function renderSurfaceHeaderLeadingAccessory(surface: SurfaceLeaf) {
+  if (isLiveSportsSurface(surface)) return <LiveSectionIndicator />;
+
   const leagueId = getSurfaceLeagueId(surface);
   return leagueId ? <LeagueIcon leagueId={leagueId} size={28} /> : null;
+}
+
+function LiveSectionIndicator() {
+  const backgroundColor = useBackgroundColor('surfacePrimary');
+  return (
+    <View style={styles.liveIndicatorOuter}>
+      <View style={[styles.liveIndicatorCutout, { backgroundColor }]}>
+        <View style={styles.liveIndicatorDot} />
+      </View>
+    </View>
+  );
+}
+
+function isLiveSportsSurface(surface: SurfaceLeaf): boolean {
+  if (surface.display !== 'prediction_sport_widget.carousel' && surface.display !== 'prediction_sport_widget.list') return false;
+  return getNormalizedSurfaceValue(surface.id) === 'live' || getNormalizedSurfaceValue(surface.label) === 'live';
 }
 
 function getSurfaceLeagueId(surface: SurfaceLeaf): LeagueId | undefined {
@@ -439,8 +461,8 @@ function getSurfaceLeagueId(surface: SurfaceLeaf): LeagueId | undefined {
 }
 
 function getLeagueIdBySurfaceValue(value: string | undefined): LeagueId | undefined {
-  if (!value) return undefined;
-  const normalizedValue = value.trim().toLowerCase();
+  const normalizedValue = getNormalizedSurfaceValue(value);
+  if (!normalizedValue) return undefined;
   const leagueId = getLeagueId(normalizedValue);
   if (leagueId) return leagueId;
 
@@ -451,6 +473,10 @@ function getLeagueIdBySurfaceValue(value: string | undefined): LeagueId | undefi
 
   const leagueToken = normalizedValue.split(/[^a-z0-9]+/).find(token => token in SPORT_LEAGUES);
   return leagueToken as LeagueId | undefined;
+}
+
+function getNormalizedSurfaceValue(value: string | undefined): string {
+  return value?.trim().toLowerCase() ?? '';
 }
 
 function renderTokenCell(item: TokenPlacementItem) {
@@ -471,6 +497,27 @@ const styles = StyleSheet.create({
     gap: SECTION_VERTICAL_GAP,
     paddingBottom: 24,
     paddingTop: 20,
+  },
+  liveIndicatorCutout: {
+    alignItems: 'center',
+    borderRadius: LIVE_INDICATOR_CUTOUT_SIZE / 2,
+    height: LIVE_INDICATOR_CUTOUT_SIZE,
+    justifyContent: 'center',
+    width: LIVE_INDICATOR_CUTOUT_SIZE,
+  },
+  liveIndicatorDot: {
+    backgroundColor: '#F04F4B',
+    borderRadius: LIVE_INDICATOR_DOT_SIZE / 2,
+    height: LIVE_INDICATOR_DOT_SIZE,
+    width: LIVE_INDICATOR_DOT_SIZE,
+  },
+  liveIndicatorOuter: {
+    alignItems: 'center',
+    backgroundColor: 'rgba(240, 79, 75, 0.34)',
+    borderRadius: LIVE_INDICATOR_SIZE / 2,
+    height: LIVE_INDICATOR_SIZE,
+    justifyContent: 'center',
+    width: LIVE_INDICATOR_SIZE,
   },
   predictionTile: {
     height: POLYMARKET_EVENTS_LIST_ITEM_HEIGHT,
