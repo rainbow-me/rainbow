@@ -5,7 +5,7 @@ import { ScrollView } from 'react-native-gesture-handler';
 import Animated, { useAnimatedStyle, useSharedValue, type SharedValue } from 'react-native-reanimated';
 
 import ButtonPressAnimation from '@/components/animations/ButtonPressAnimation';
-import { Border, globalColors, Text, useColorMode } from '@/design-system';
+import { Border, globalColors, Text, useColorMode, useForegroundColor } from '@/design-system';
 import { InnerShadow } from '@/features/polymarket/components/InnerShadow';
 import { getIconByLeagueId, LeagueIcon } from '@/features/polymarket/components/league-icon/LeagueIcon';
 import { DEFAULT_SPORTS_LEAGUE_KEY } from '@/features/polymarket/constants';
@@ -141,7 +141,10 @@ type LeagueItemProps = {
 
 const LeagueItemComponent = memo(function LeagueItemComponent({ league, onPress, selectedLeagueKey }: LeagueItemProps) {
   const { isDarkMode } = useColorMode();
+  const labelColor = useForegroundColor('label');
   const selectedColor = isDarkMode ? league.color.dark : opacity(globalColors.white100, 0.5);
+  const selectedIconColor = isDarkMode ? league.color.dark : league.color.light;
+  const unselectedIconColor = isDarkMode ? labelColor : selectedIconColor;
 
   const leagueKey = league.key;
   const accentColors = useMemo(() => createOpacityPalette(selectedColor, PALETTE_OPACITIES), [selectedColor]);
@@ -159,6 +162,14 @@ const LeagueItemComponent = memo(function LeagueItemComponent({ league, onPress,
     opacity: selectedLeagueKey.value === leagueKey ? 1 : 0,
   }));
 
+  const selectedIconStyle = useAnimatedStyle(() => ({
+    opacity: selectedLeagueKey.value === leagueKey ? 1 : 0,
+  }));
+
+  const unselectedIconStyle = useAnimatedStyle(() => ({
+    opacity: selectedLeagueKey.value === leagueKey ? 0 : 1,
+  }));
+
   const hasIcon = useMemo(() => league.key !== DEFAULT_SPORTS_LEAGUE_KEY && getIconByLeagueId(league.key) !== undefined, [league.key]);
 
   return (
@@ -171,7 +182,12 @@ const LeagueItemComponent = memo(function LeagueItemComponent({ league, onPress,
         </Animated.View>
         {hasIcon && (
           <View style={styles.iconContainer}>
-            <LeagueIcon leagueId={league.key as LeagueId} size={24} />
+            <Animated.View style={[styles.iconLayer, unselectedIconStyle]}>
+              <LeagueIcon color={unselectedIconColor} leagueId={league.key as LeagueId} size={24} />
+            </Animated.View>
+            <Animated.View style={[styles.iconLayer, selectedIconStyle]}>
+              <LeagueIcon color={selectedIconColor} leagueId={league.key as LeagueId} size={24} />
+            </Animated.View>
           </View>
         )}
         <Text align="center" color="label" size="17pt" weight="heavy">
@@ -215,6 +231,9 @@ const styles = StyleSheet.create({
     height: 16,
     justifyContent: 'center',
     width: 16,
+  },
+  iconLayer: {
+    position: 'absolute',
   },
   itemContainer: {
     alignItems: 'center',
