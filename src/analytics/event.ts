@@ -1031,9 +1031,6 @@ export type EventProperties = {
     source?: string;
     type?: string;
     version: number;
-    itemRefSource?: string;
-    itemRefId?: string;
-    itemOrder?: number;
   };
   [event.surfaceSectionDrilldownPressed]: {
     destination: unknown;
