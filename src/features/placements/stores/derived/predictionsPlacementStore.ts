@@ -73,8 +73,7 @@ async function fetchPredictionEvents(
   abortController: AbortController | null
 ): Promise<PolymarketEvent[]> {
   const rawEvents = await fetchPolymarketEventsByIds(eventIds, abortController);
-  const events = await Promise.all(rawEvents.map(event => processRawPolymarketEvent(event)));
-  return events.filter(isUnresolvedPredictionEvent);
+  return Promise.all(rawEvents.map(event => processRawPolymarketEvent(event)));
 }
 
 // ============ Utilities ====================================================== //
@@ -90,7 +89,7 @@ function createPredictionsPlacementStore(placementId: PlacementId) {
       const isLoading = $(usePredictionEventsStore, state => state.enabled && state.getStatus('isInitialLoad'));
       const items = events ? parsePredictionItems(placementItems, events) : EMPTY_PREDICTION_PLACEMENT_ITEMS;
 
-      if (eventsReady && events && placementItems.length > 0 && items.length === 0) {
+      if (eventsReady && events && placementItems.length > 0) {
         logUnresolvedPredictionRefs(placementId, placementItems, events);
       }
 
@@ -119,16 +118,32 @@ function indexEvents(events: PolymarketEvent[]): EventsById {
 
 function logUnresolvedPredictionRefs(placementId: PlacementId, placementItems: PlacementItem[], events: PolymarketEvent[]): void {
   const eventsById = indexEvents(events);
-  const unresolvedRefIds = placementItems.map(item => item.id).filter(id => !eventsById[id]);
-  if (!unresolvedRefIds.length) return;
+  const inactiveRefIds: string[] = [];
+  const missingRefIds: string[] = [];
 
-  const diagnosticKey = unresolvedRefIds.join(',');
+  for (const item of placementItems) {
+    const event = eventsById[item.id];
+    if (!event) {
+      missingRefIds.push(item.id);
+    } else if (!isUnresolvedPredictionEvent(event)) {
+      inactiveRefIds.push(item.id);
+    }
+  }
+
+  if (!inactiveRefIds.length && !missingRefIds.length) return;
+
+  const diagnosticKey = `${inactiveRefIds.join(',')}|${missingRefIds.join(',')}`;
   if (lastUnresolvedKeyByPlacement[placementId] === diagnosticKey) return;
 
   lastUnresolvedKeyByPlacement[placementId] = diagnosticKey;
   logger.warn('[placements]: Prediction placement refs did not resolve to active events', {
     configuredRefIdsCount: placementItems.length,
+    inactiveRefIds: inactiveRefIds.slice(0, 8),
+    inactiveRefIdsCount: inactiveRefIds.length,
+    missingRefIds: missingRefIds.slice(0, 8),
+    missingRefIdsCount: missingRefIds.length,
     placementId,
+    resolvedActiveRefIdsCount: placementItems.length - inactiveRefIds.length - missingRefIds.length,
     tags: {
       feature: 'discover_placements',
       placementId,
@@ -136,8 +151,6 @@ function logUnresolvedPredictionRefs(placementId: PlacementId, placementItems: P
       reason: 'unresolved_refs',
     },
     type: 'query',
-    unresolvedRefIds: unresolvedRefIds.slice(0, 8),
-    unresolvedRefIdsCount: unresolvedRefIds.length,
   });
 }
 
