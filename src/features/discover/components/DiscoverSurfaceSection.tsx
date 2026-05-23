@@ -71,21 +71,12 @@ export const DiscoverSurfaceSection = memo(function DiscoverSurfaceSection({
 }) {
   if (surface.items !== undefined) return <DiscoverSurfaceSections items={surface.items} surfaceId={surfaceId} />;
 
-  const sectionSource = getSurfaceSectionSource(surface.display);
+  if (isPerpsSurface(surface)) return <PerpsSurfaceSection surface={surface} surfaceId={surfaceId} />;
+  if (isPredictionsSurface(surface)) return <PredictionsSurfaceSection surface={surface} surfaceId={surfaceId} />;
+  if (isTokensSurface(surface)) return <TokensSurfaceSection surface={surface} surfaceId={surfaceId} />;
 
-  switch (sectionSource) {
-    case 'perps':
-      return <PerpsSurfaceSection surface={surface} surfaceId={surfaceId} />;
-    case 'predictions':
-      return <PredictionsSurfaceSection surface={surface} surfaceId={surfaceId} />;
-    case 'tokens':
-      return <TokensSurfaceSection surface={surface} surfaceId={surfaceId} />;
-    default:
-      return assertNever(sectionSource);
-  }
+  return unsupportedDisplay(surface.display);
 });
-
-type SectionSource = 'perps' | 'predictions' | 'tokens';
 
 type CarouselSectionDescriptor<T extends PlacementItem> = {
   layout: 'carousel';
@@ -120,6 +111,7 @@ type PredictionsDisplay = Extract<
   'prediction_tile.carousel' | 'prediction_tile.grid' | 'prediction_tile_widget.carousel' | 'prediction_sport_widget.carousel'
 >;
 type TokensDisplay = Extract<SurfaceLeaf['display'], 'token_cell.list'>;
+type SurfaceLeafWithDisplay<TDisplay extends SurfaceLeaf['display']> = SurfaceLeaf & { display: TDisplay };
 
 type SurfaceLayoutProps<T extends PlacementItem> = {
   data: T[];
@@ -207,45 +199,26 @@ const TOKENS_SECTION_DESCRIPTORS = {
   },
 } satisfies Record<TokensDisplay, SectionDescriptor<TokenPlacementItem>>;
 
-function getSurfaceSectionSource(display: SurfaceLeaf['display']): SectionSource {
-  switch (display) {
-    case 'perp_pill.carousel':
-    case 'perp_tile.carousel':
-    case 'perp_tile.grid':
-    case 'perp_row.list':
-      return 'perps';
-    case 'prediction_tile.carousel':
-    case 'prediction_tile.grid':
-    case 'prediction_tile_widget.carousel':
-    case 'prediction_sport_widget.carousel':
-      return 'predictions';
-    case 'token_cell.list':
-      return 'tokens';
-    default:
-      return assertNever(display);
-  }
+function isPerpsSurface(surface: SurfaceLeaf): surface is SurfaceLeafWithDisplay<PerpsDisplay> {
+  return surface.display in PERPS_SECTION_DESCRIPTORS;
 }
 
-function getPerpsSectionDescriptor(display: SurfaceLeaf['display']): SectionDescriptor<PerpMarketPlacementItem> {
-  return PERPS_SECTION_DESCRIPTORS[display as PerpsDisplay];
+function isPredictionsSurface(surface: SurfaceLeaf): surface is SurfaceLeafWithDisplay<PredictionsDisplay> {
+  return surface.display in PREDICTIONS_SECTION_DESCRIPTORS;
 }
 
-function getPredictionsSectionDescriptor(display: SurfaceLeaf['display']): SectionDescriptor<PredictionPlacementItem> {
-  return PREDICTIONS_SECTION_DESCRIPTORS[display as PredictionsDisplay];
+function isTokensSurface(surface: SurfaceLeaf): surface is SurfaceLeafWithDisplay<TokensDisplay> {
+  return surface.display in TOKENS_SECTION_DESCRIPTORS;
 }
 
-function getTokensSectionDescriptor(display: SurfaceLeaf['display']): SectionDescriptor<TokenPlacementItem> {
-  return TOKENS_SECTION_DESCRIPTORS[display as TokensDisplay];
-}
-
-function PerpsSurfaceSection({ surface, surfaceId }: { surface: SurfaceLeaf; surfaceId: string }) {
+function PerpsSurfaceSection({ surface, surfaceId }: { surface: SurfaceLeafWithDisplay<PerpsDisplay>; surfaceId: string }) {
   const useStore = useMemo(() => getPerpsPlacementStore(surface.placement), [surface.placement]);
   const result = useStore();
-  const descriptor = getPerpsSectionDescriptor(surface.display);
+  const descriptor = PERPS_SECTION_DESCRIPTORS[surface.display];
   const limitedData = useLimitedItems(result.items, surface.limit);
 
   return renderSurfaceLayoutSection({
-    data: descriptor.layout === 'list' ? result.items : limitedData,
+    data: limitedData,
     descriptor,
     loading: result.isLoading,
     onPressSeeAll: getHeaderPress(surface.destination),
@@ -255,14 +228,14 @@ function PerpsSurfaceSection({ surface, surfaceId }: { surface: SurfaceLeaf; sur
   });
 }
 
-function PredictionsSurfaceSection({ surface, surfaceId }: { surface: SurfaceLeaf; surfaceId: string }) {
+function PredictionsSurfaceSection({ surface, surfaceId }: { surface: SurfaceLeafWithDisplay<PredictionsDisplay>; surfaceId: string }) {
   const useStore = useMemo(() => getPredictionsPlacementStore(surface.placement), [surface.placement]);
   const result = useStore();
-  const descriptor = getPredictionsSectionDescriptor(surface.display);
+  const descriptor = PREDICTIONS_SECTION_DESCRIPTORS[surface.display];
   const limitedData = useLimitedItems(result.items, surface.limit);
 
   return renderSurfaceLayoutSection({
-    data: descriptor.layout === 'list' ? result.items : limitedData,
+    data: limitedData,
     descriptor,
     loading: result.isLoading,
     onPressSeeAll: getHeaderPress(surface.destination),
@@ -272,7 +245,7 @@ function PredictionsSurfaceSection({ surface, surfaceId }: { surface: SurfaceLea
   });
 }
 
-function TokensSurfaceSection({ surface, surfaceId }: { surface: SurfaceLeaf; surfaceId: string }) {
+function TokensSurfaceSection({ surface, surfaceId }: { surface: SurfaceLeafWithDisplay<TokensDisplay>; surfaceId: string }) {
   const { onTapSearch } = useDiscoverScreenContext();
   const useStore = useMemo(() => getTokensPlacementStore(surface.placement), [surface.placement]);
   const result = useStore();
@@ -286,7 +259,7 @@ function TokensSurfaceSection({ surface, surfaceId }: { surface: SurfaceLeaf; su
 
   return renderSurfaceLayoutSection({
     data: result.items,
-    descriptor: getTokensSectionDescriptor(surface.display),
+    descriptor: TOKENS_SECTION_DESCRIPTORS[surface.display],
     loading: result.isLoading,
     onPressSeeAll: surface.destination ? onPressSeeAll : undefined,
     placement: result.placement,
@@ -453,6 +426,10 @@ function renderTokenCell(item: TokenPlacementItem) {
 
 function assertNever(value: never): never {
   throw new Error(`Unsupported Discover surface display: ${JSON.stringify(value)}`);
+}
+
+function unsupportedDisplay(display: SurfaceLeaf['display']): never {
+  throw new Error(`Unsupported Discover surface display: ${JSON.stringify(display)}`);
 }
 
 const styles = StyleSheet.create({
