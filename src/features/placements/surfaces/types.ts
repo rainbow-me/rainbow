@@ -25,7 +25,7 @@ export type SurfaceContainer = SurfaceBase & {
 };
 
 export type SurfaceLeaf = SurfaceBase & {
-  placement: string;
+  placement?: string | null;
   display: Display;
   destination: Destination;
   limit?: number;

@@ -48,6 +48,8 @@ import {
   PREDICTION_CARD_BORDER_RADIUS,
 } from '@/features/polymarket/components/polymarket-events-list/PolymarketEventsListItem';
 import { getLeagueId, SPORT_LEAGUES, type LeagueId } from '@/features/polymarket/leagues';
+import { isLiveSportsEvent } from '@/features/polymarket/screens/polymarket-sports-events-screen/buildPolymarketSportsEventsListData';
+import { usePolymarketSportsEventsStore } from '@/features/polymarket/stores/polymarketSportsEventsStore';
 import { navigateToPolymarketEvent } from '@/features/polymarket/utils/navigateToPolymarket';
 import { DEVICE_WIDTH } from '@/utils/deviceUtils';
 
@@ -116,6 +118,7 @@ type PerpsDisplay = DisplayForSource<'hyperliquid'>;
 type PredictionsDisplay = DisplayForSource<'polymarket'>;
 type TokensDisplay = DisplayForSource<'rainbow'>;
 type SurfaceLeafWithDisplay<TDisplay extends Display> = SurfaceLeaf & { display: TDisplay };
+type PlacementBackedSurfaceLeafWithDisplay<TDisplay extends Display> = SurfaceLeafWithDisplay<TDisplay> & { placement: string };
 
 type SurfaceLayoutProps<T extends PlacementItem> = {
   data: T[];
@@ -131,6 +134,7 @@ const SECTION_VERTICAL_GAP = 32;
 const LIVE_INDICATOR_SIZE = 28;
 const LIVE_INDICATOR_CUTOUT_SIZE = 16;
 const LIVE_INDICATOR_DOT_SIZE = 8;
+const EMPTY_PREDICTION_PLACEMENT_ITEMS: PredictionPlacementItem[] = [];
 const hasDestination = (surface: SurfaceLeaf) => surface.destination !== null;
 const PREDICTION_TILE_WIDTH = Math.round((DEVICE_WIDTH - 20 * 2 - 8) / 2);
 
@@ -224,6 +228,17 @@ function isTokensSurface(surface: SurfaceLeaf): surface is SurfaceLeafWithDispla
 }
 
 function PerpsSurfaceSection({ surface, surfaceId }: { surface: SurfaceLeafWithDisplay<PerpsDisplay>; surfaceId: string }) {
+  if (!hasPlacement(surface)) return null;
+  return <PerpsPlacementSurfaceSection surface={surface} surfaceId={surfaceId} />;
+}
+
+function PerpsPlacementSurfaceSection({
+  surface,
+  surfaceId,
+}: {
+  surface: PlacementBackedSurfaceLeafWithDisplay<PerpsDisplay>;
+  surfaceId: string;
+}) {
   const useStore = useMemo(() => getPerpsPlacementStore(surface.placement), [surface.placement]);
   const result = useStore();
   const descriptor = PERPS_SECTION_DESCRIPTORS[surface.display];
@@ -240,6 +255,21 @@ function PerpsSurfaceSection({ surface, surfaceId }: { surface: SurfaceLeafWithD
 }
 
 function PredictionsSurfaceSection({ surface, surfaceId }: { surface: SurfaceLeafWithDisplay<PredictionsDisplay>; surfaceId: string }) {
+  if (isLiveSportsSurface(surface)) {
+    return <SportsLiveSurfaceSection surface={surface} surfaceId={surfaceId} />;
+  }
+
+  if (!hasPlacement(surface)) return null;
+  return <PredictionsPlacementSurfaceSection surface={surface} surfaceId={surfaceId} />;
+}
+
+function PredictionsPlacementSurfaceSection({
+  surface,
+  surfaceId,
+}: {
+  surface: PlacementBackedSurfaceLeafWithDisplay<PredictionsDisplay>;
+  surfaceId: string;
+}) {
   const useStore = useMemo(() => getPredictionsPlacementStore(surface.placement), [surface.placement]);
   const result = useStore();
   const descriptor = PREDICTIONS_SECTION_DESCRIPTORS[surface.display];
@@ -255,7 +285,40 @@ function PredictionsSurfaceSection({ surface, surfaceId }: { surface: SurfaceLea
   });
 }
 
+function SportsLiveSurfaceSection({ surface, surfaceId }: { surface: SurfaceLeafWithDisplay<PredictionsDisplay>; surfaceId: string }) {
+  const events = usePolymarketSportsEventsStore(state => state.getData());
+  const isLoading = usePolymarketSportsEventsStore(state => state.getStatus('isLoading') || state.getStatus('isIdle'));
+  const descriptor = PREDICTIONS_SECTION_DESCRIPTORS[surface.display];
+  const items = useMemo<PredictionPlacementItem[]>(() => {
+    if (!events) return EMPTY_PREDICTION_PLACEMENT_ITEMS;
+    const liveEvents = events.filter(isLiveSportsEvent);
+    if (!liveEvents.length) return EMPTY_PREDICTION_PLACEMENT_ITEMS;
+    return liveEvents.map(event => ({ id: event.id, event }));
+  }, [events]);
+
+  return renderSurfaceLayoutSection({
+    data: items,
+    descriptor,
+    loading: isLoading,
+    onPressSeeAll: getHeaderPress(surface.destination),
+    placement: undefined,
+    surface,
+    surfaceId,
+  });
+}
+
 function TokensSurfaceSection({ surface, surfaceId }: { surface: SurfaceLeafWithDisplay<TokensDisplay>; surfaceId: string }) {
+  if (!hasPlacement(surface)) return null;
+  return <TokensPlacementSurfaceSection surface={surface} surfaceId={surfaceId} />;
+}
+
+function TokensPlacementSurfaceSection({
+  surface,
+  surfaceId,
+}: {
+  surface: PlacementBackedSurfaceLeafWithDisplay<TokensDisplay>;
+  surfaceId: string;
+}) {
   const { onTapSearch } = useDiscoverScreenContext();
   const useStore = useMemo(() => getTokensPlacementStore(surface.placement), [surface.placement]);
   const result = useStore();
@@ -278,6 +341,12 @@ function TokensSurfaceSection({ surface, surfaceId }: { surface: SurfaceLeafWith
   });
 }
 
+function hasPlacement<TDisplay extends Display>(
+  surface: SurfaceLeafWithDisplay<TDisplay>
+): surface is PlacementBackedSurfaceLeafWithDisplay<TDisplay> {
+  return typeof surface.placement === 'string' && surface.placement.length > 0;
+}
+
 function renderSurfaceLayoutSection<T extends PlacementItem>({
   data,
   descriptor,
@@ -298,7 +367,7 @@ function renderSurfaceLayoutSection<T extends PlacementItem>({
     loading,
     onPressSeeAll,
     placement,
-    placementId: surface.placement,
+    placementId: surface.placement ?? undefined,
     sectionId: surface.id,
     surfaceId,
     title: surface.label || surface.id,

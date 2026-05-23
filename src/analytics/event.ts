@@ -998,7 +998,7 @@ export type EventProperties = {
     durationInMs: number;
   };
   [event.discoverPlacementCardPressed]: {
-    placementId: string;
+    placementId?: string;
     surfaceId: string;
     placementTitle: string;
     itemOrder: number;
@@ -1016,7 +1016,7 @@ export type EventProperties = {
     wasActive: boolean;
   };
   [event.discoverPredictionOutcomePressed]: {
-    placementId: string;
+    placementId?: string;
     surfaceId: string;
     itemId: string;
     marketId: string;

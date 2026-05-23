@@ -22,7 +22,7 @@ type MarketGridProps<T extends PlacementItem> = {
   loading?: boolean;
   onPressSeeAll?: () => void;
   placement: Placement | undefined;
-  placementId: PlacementId;
+  placementId: PlacementId | undefined;
   renderItem: (item: T, cellWidth: number) => ReactNode;
   renderSkeleton: (cellWidth: number) => ReactNode;
   sectionId: string;

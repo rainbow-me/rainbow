@@ -67,10 +67,10 @@ function isSurfaceNode(surface: unknown): surface is Surface {
     return hasOnlyKeys(document, SURFACE_CONTAINER_KEYS) && Array.isArray(document.items) && document.items.every(isSurfaceNode);
   }
 
-  if (!hasOnlyKeys(document, SURFACE_LEAF_KEYS) || !('placement' in document) || !('display' in document)) return false;
+  if (!hasOnlyKeys(document, SURFACE_LEAF_KEYS) || !('display' in document)) return false;
 
   return (
-    typeof document.placement === 'string' &&
+    (document.placement === undefined || typeof document.placement === 'string' || document.placement === null) &&
     isSurfaceDisplay(document.display) &&
     isSurfaceDestination(document.destination) &&
     (document.limit === undefined || (Number.isInteger(document.limit) && document.limit > 0))

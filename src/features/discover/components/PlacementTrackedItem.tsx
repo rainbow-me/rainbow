@@ -15,7 +15,7 @@ type PlacementTrackedItemProps<T extends PlacementItem> = {
   item: T;
   itemIndex: number;
   placement: Placement | undefined;
-  placementId: PlacementId;
+  placementId: PlacementId | undefined;
   surfaceId: string;
   title: string;
 };

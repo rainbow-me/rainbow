@@ -22,7 +22,7 @@ type MarketListProps<T extends PlacementItem> = {
   loading?: boolean;
   onPressSeeAll?: () => void;
   placement: Placement | undefined;
-  placementId: PlacementId;
+  placementId: PlacementId | undefined;
   renderItem: (item: T) => ReactNode;
   renderSkeleton: () => ReactNode;
   sectionId: string;

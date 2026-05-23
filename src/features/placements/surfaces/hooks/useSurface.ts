@@ -68,5 +68,5 @@ function collectMissingSurfacePlacementIds(
     return;
   }
 
-  if (!placementsById[surface.placement]) missingPlacementIds.add(surface.placement);
+  if (surface.placement && !placementsById[surface.placement]) missingPlacementIds.add(surface.placement);
 }

@@ -35,7 +35,7 @@ export function trackPlacementCardPress({
   itemIndex: number;
   metadata: PlacementItemAnalyticsMetadata | undefined;
   placement: Placement | undefined;
-  placementId: PlacementId;
+  placementId: PlacementId | undefined;
   surfaceId: string;
   title: string;
 }): void {
@@ -110,7 +110,7 @@ export function trackPredictionOutcomePress({
 }: {
   item: PlacementItem;
   metadata: PlacementItemAnalyticsMetadata & { outcome: string };
-  placementId: PlacementId;
+  placementId: PlacementId | undefined;
   surfaceId: string;
 }): void {
   analytics.track(event.discoverPredictionOutcomePressed, {

@@ -50,7 +50,7 @@ export function buildPolymarketSportsEventsListData(
   const thisWeekEvents: PolymarketEvent[] = [];
 
   for (const event of events) {
-    if (isLiveEvent(event, nowMs)) {
+    if (isLiveSportsEvent(event, nowMs)) {
       liveEvents.push(event);
       continue;
     }
@@ -101,7 +101,7 @@ export function buildPolymarketSportsEventsListData(
   return items;
 }
 
-function isLiveEvent(event: PolymarketEvent, nowMs: number): boolean {
+export function isLiveSportsEvent(event: PolymarketEvent, nowMs: number = Date.now()): boolean {
   if (event.ended) return false;
   if (event.live) return true;
 

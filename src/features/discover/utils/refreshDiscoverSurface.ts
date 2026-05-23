@@ -4,6 +4,7 @@ import { useTokenRefsStore } from '@/features/placements/stores/derived/tokensPl
 import { usePlacementsStore } from '@/features/placements/stores/placementsStore';
 import { getSurfaceStore } from '@/features/placements/surfaces/stores/surfaceStore';
 import { usePolymarketEventsStore } from '@/features/polymarket/stores/polymarketEventsStore';
+import { usePolymarketSportsEventsStore } from '@/features/polymarket/stores/polymarketSportsEventsStore';
 
 export async function refreshDiscoverSurface(surfaceId: string): Promise<void> {
   await Promise.allSettled([
@@ -13,5 +14,6 @@ export async function refreshDiscoverSurface(surfaceId: string): Promise<void> {
     usePredictionEventsStore.getState().fetch(undefined, { force: true }),
     useTokenRefsStore.getState().fetch(undefined, { force: true }),
     usePolymarketEventsStore.getState().fetch(undefined, { force: true }),
+    usePolymarketSportsEventsStore.getState().fetch(undefined, { force: true }),
   ]);
 }
