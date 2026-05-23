@@ -5,6 +5,7 @@ import { useSurfaceClockStore } from '@/features/placements/surfaces/stores/surf
 import { getSurfaceStore } from '@/features/placements/surfaces/stores/surfaceStore';
 import { type Surface } from '@/features/placements/surfaces/types';
 import { filterEnabledSurface } from '@/features/placements/surfaces/utils/filterSurface';
+import { type Placement } from '@/features/placements/types';
 import { createDerivedStore } from '@/state/internal/createDerivedStore';
 import { deepEqual } from '@/worklets/comparisons';
 
@@ -15,9 +16,15 @@ export const useDiscoverSurface = createDerivedStore<Surface | undefined>(
   $ => {
     const rawSurface = $(useDiscoverSurfaceStore, state => state.getData());
     const now = $(useSurfaceClockStore, state => state.now);
+    const placementsById = $(usePlacementsStore, state => state.placementsById);
+    const placementsReady = $(usePlacementsStore, state => state.getStatus('isSuccess'));
 
     if (!rawSurface) return undefined;
-    return filterEnabledSurface(rawSurface, now);
+
+    const enabledSurface = filterEnabledSurface(rawSurface, now);
+    if (!enabledSurface || !placementsReady) return enabledSurface;
+
+    return filterMissingPlacementSurface(enabledSurface, placementsById);
   },
   { equalityFn: deepEqual, fastMode: true }
 );
@@ -69,4 +76,27 @@ function collectMissingSurfacePlacementIds(
   }
 
   if (surface.placement && !placementsById[surface.placement]) missingPlacementIds.add(surface.placement);
+}
+
+function filterMissingPlacementSurface(surface: Surface, placementsById: Record<string, Placement>): Surface | undefined {
+  if (surface.items !== undefined) {
+    const filteredItems: Surface[] = [];
+    let didChange = false;
+
+    for (const item of surface.items) {
+      const filteredItem = filterMissingPlacementSurface(item, placementsById);
+      if (!filteredItem) {
+        didChange = true;
+        continue;
+      }
+      if (filteredItem !== item) didChange = true;
+      filteredItems.push(filteredItem);
+    }
+
+    if (!filteredItems.length) return undefined;
+    return didChange ? { ...surface, items: filteredItems } : surface;
+  }
+
+  if (surface.placement && !placementsById[surface.placement]) return undefined;
+  return surface;
 }
