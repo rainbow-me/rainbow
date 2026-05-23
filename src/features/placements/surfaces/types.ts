@@ -13,7 +13,6 @@ export type Display =
   | 'prediction_tile.grid'
   | 'prediction_tile_widget.carousel'
   | 'prediction_sport_widget.carousel'
-  | 'prediction_sport_widget.list'
   | 'token_cell.list';
 
 export type SurfaceBase = {

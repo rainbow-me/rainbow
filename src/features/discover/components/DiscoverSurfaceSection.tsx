@@ -117,11 +117,7 @@ type SectionDescriptor<T extends PlacementItem> = CarouselSectionDescriptor<T> |
 type PerpsDisplay = Extract<SurfaceLeaf['display'], 'perp_pill.carousel' | 'perp_tile.carousel' | 'perp_tile.grid' | 'perp_row.list'>;
 type PredictionsDisplay = Extract<
   SurfaceLeaf['display'],
-  | 'prediction_tile.carousel'
-  | 'prediction_tile.grid'
-  | 'prediction_tile_widget.carousel'
-  | 'prediction_sport_widget.carousel'
-  | 'prediction_sport_widget.list'
+  'prediction_tile.carousel' | 'prediction_tile.grid' | 'prediction_tile_widget.carousel' | 'prediction_sport_widget.carousel'
 >;
 type TokensDisplay = Extract<SurfaceLeaf['display'], 'token_cell.list'>;
 
@@ -201,11 +197,6 @@ const PREDICTIONS_SECTION_DESCRIPTORS = {
     renderItem: renderSportsWidget,
     renderSkeleton: renderSportsWidgetSkeleton,
   },
-  'prediction_sport_widget.list': {
-    layout: 'list',
-    renderItem: renderSportsWidget,
-    renderSkeleton: renderSportsWidgetSkeleton,
-  },
 } satisfies Record<PredictionsDisplay, SectionDescriptor<PredictionPlacementItem>>;
 
 const TOKENS_SECTION_DESCRIPTORS = {
@@ -227,7 +218,6 @@ function getSurfaceSectionSource(display: SurfaceLeaf['display']): SectionSource
     case 'prediction_tile.grid':
     case 'prediction_tile_widget.carousel':
     case 'prediction_sport_widget.carousel':
-    case 'prediction_sport_widget.list':
       return 'predictions';
     case 'token_cell.list':
       return 'tokens';
