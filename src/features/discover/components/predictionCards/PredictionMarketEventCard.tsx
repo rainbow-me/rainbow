@@ -1,9 +1,8 @@
-import { memo, useCallback, useMemo } from 'react';
+import { memo, useCallback } from 'react';
 import { Platform, StyleSheet, View } from 'react-native';
 
 import { LinearGradient } from 'expo-linear-gradient';
 
-import { getColorValueForThemeWorklet } from '@/__swaps__/utils/swaps';
 import ButtonPressAnimation from '@/components/animations/ButtonPressAnimation';
 import { GradientBorderView } from '@/components/gradient-border/GradientBorderView';
 import { LiveTokenText } from '@/components/live-token-text/LiveTokenText';
@@ -13,28 +12,29 @@ import {
   usePlacementPredictionOutcomeTrackPress,
 } from '@/features/discover/components/marketPress/marketPressContext';
 import { LeagueIcon } from '@/features/polymarket/components/league-icon/LeagueIcon';
+import {
+  SportsEventContent,
+  type SportsEventRows,
+} from '@/features/polymarket/components/polymarket-sport-event-list-item/SportsEventContent';
 import { TeamLogo } from '@/features/polymarket/components/TeamLogo';
 import {
   getPolymarketSportsBetCellTokenId,
   usePolymarketSportsBetCellPress,
 } from '@/features/polymarket/hooks/usePolymarketSportsBetCellPress';
-import { usePolymarketSportsEventDisplay } from '@/features/polymarket/hooks/usePolymarketSportsEventDisplay';
-import { getLeagueId, SPORT_LEAGUES, type LeagueId } from '@/features/polymarket/leagues';
+import { SPORT_LEAGUES, type LeagueId } from '@/features/polymarket/leagues';
 import { type PolymarketTeamInfo } from '@/features/polymarket/types';
-import { type PolymarketEvent, type PolymarketMarket } from '@/features/polymarket/types/polymarket-event';
-import { parsePeriod, parseScore } from '@/features/polymarket/utils/sports';
-import { formatOdds, type BetCellData, type EventBetGrid } from '@/features/polymarket/utils/sportsEventBetData';
+import { type PolymarketEvent } from '@/features/polymarket/types/polymarket-event';
+import { formatOdds, type BetCellData } from '@/features/polymarket/utils/sportsEventBetData';
 import { getSportsEventOutcomeCellColor, type SportsEventOutcomeInfo } from '@/features/polymarket/utils/sportsEventOutcome';
 import { opacity } from '@/framework/ui/utils/opacity';
 import * as i18n from '@/languages';
 import Navigation from '@/navigation/Navigation';
 import Routes from '@/navigation/routesNames';
 import { DEVICE_WIDTH } from '@/utils/deviceUtils';
-import { formatTimestamp, toUnixTime } from '@/worklets/dates';
 
-export const SPORTS_EVENT_WIDGET_CARD_WIDTH = Math.min(384, DEVICE_WIDTH - 32);
-export const SPORTS_EVENT_WIDGET_CARD_HEIGHT = 162;
-export const SPORTS_EVENT_WIDGET_CARD_BORDER_RADIUS = 24;
+export const PREDICTION_MARKET_EVENT_CARD_WIDTH = Math.min(384, DEVICE_WIDTH - 32);
+export const PREDICTION_MARKET_EVENT_CARD_HEIGHT = 162;
+export const PREDICTION_MARKET_EVENT_CARD_BORDER_RADIUS = 24;
 
 const CARD_BORDER_GRADIENT_CONFIG = {
   start: { x: 0, y: 0 },
@@ -52,46 +52,13 @@ const MONEYLINE_CELL_WIDTH = 62;
 const BET_CELL_BORDER_RADIUS = 15;
 const TEAM_LOGO_SIZE = 36;
 
-type SportsEventWidgetCardProps = {
+type PredictionMarketEventCardProps = {
   event: PolymarketEvent;
 };
 
-type WidgetTeamRow = {
-  isFallback?: boolean;
-  label?: string;
-  line?: BetCellData;
-  moneyline?: BetCellData;
-};
-
-type WidgetRows = {
-  away: WidgetTeamRow;
-  home: WidgetTeamRow;
-};
-
-export const SportsEventWidgetCard = memo(function SportsEventWidgetCard({ event }: SportsEventWidgetCardProps) {
+export const PredictionMarketEventCard = memo(function PredictionMarketEventCard({ event }: PredictionMarketEventCardProps) {
   const { isDarkMode } = useColorMode();
   const trackPress = usePlacementCardTrackPress();
-  const leagueId = useMemo(() => getLeagueId(event.slug), [event.slug]);
-  const accentColor = useMemo(() => getEventAccentColor({ event, leagueId, isDarkMode }), [event, isDarkMode, leagueId]);
-  const { betGrid, gameInfo, isLive, scores, teamLabels } = usePolymarketSportsEventDisplay(event);
-  const periodTitle = useMemo(() => getGameStatusTitle({ event, gameInfo, isLive }), [event, gameInfo, isLive]);
-  const rows = useMemo(() => getRows(event, betGrid), [betGrid, event]);
-
-  const cardBorderGradientColors = useMemo(
-    () =>
-      isDarkMode
-        ? ([opacity(accentColor, 0.54), opacity(accentColor, 0.12), opacity(accentColor, 0)] as const)
-        : ([opacity(accentColor, 0.28), opacity(accentColor, 0.1), opacity(accentColor, 0.04)] as const),
-    [accentColor, isDarkMode]
-  );
-  const cardGradientColors = useMemo(
-    () =>
-      isDarkMode
-        ? ([opacity(accentColor, 0.18), opacity(accentColor, 0)] as const)
-        : ([opacity(accentColor, 0.12), opacity(accentColor, 0.02)] as const),
-    [accentColor, isDarkMode]
-  );
-
   const handlePress = useCallback(() => {
     trackPress?.({
       marketId: event.id,
@@ -103,76 +70,97 @@ export const SportsEventWidgetCard = memo(function SportsEventWidgetCard({ event
   }, [event, trackPress]);
 
   return (
-    <View style={styles.container}>
-      {Platform.OS === 'android' ? <WidgetBetCellsOverlay event={event} rows={rows} /> : null}
-      <ButtonPressAnimation onPress={handlePress} scaleTo={0.96} style={styles.flex} wrapperStyle={styles.flex}>
-        <GradientBorderView
-          backgroundColor={isDarkMode ? globalColors.grey100 : globalColors.white100}
-          borderGradientColors={cardBorderGradientColors}
-          borderRadius={SPORTS_EVENT_WIDGET_CARD_BORDER_RADIUS}
-          borderWidth={2}
-          end={CARD_BORDER_GRADIENT_CONFIG.end}
-          locations={CARD_BORDER_GRADIENT_CONFIG.locations}
-          start={CARD_BORDER_GRADIENT_CONFIG.start}
-          style={styles.card}
-        >
-          <LinearGradient
-            colors={cardGradientColors}
-            end={CARD_FILL_GRADIENT_CONFIG.end}
-            locations={CARD_FILL_GRADIENT_CONFIG.locations}
-            pointerEvents="none"
-            start={CARD_FILL_GRADIENT_CONFIG.start}
-            style={StyleSheet.absoluteFill}
-          />
-          <View style={styles.header}>
-            <View style={styles.league}>
-              <LeagueIcon eventSlug={event.slug} size={20} />
-              <Text align="left" color="label" size="17pt" style={styles.compactText} weight="heavy">
-                {getLeagueLabel(leagueId)}
-              </Text>
-            </View>
-            <View style={styles.status}>
-              {periodTitle ? (
-                <Text align="right" color="labelTertiary" size="15pt" style={styles.statusText} weight="bold">
-                  {periodTitle.toUpperCase()}
-                </Text>
-              ) : null}
-              {isLive ? (
-                <TextShadow blur={14} shadowOpacity={0.25}>
-                  <Text align="right" color={{ custom: '#FF584D' }} size="15pt" style={styles.liveText} weight="heavy">
-                    {i18n.t(i18n.l.predictions.sports.live).toUpperCase()}
-                  </Text>
-                </TextShadow>
-              ) : null}
-            </View>
+    <SportsEventContent event={event}>
+      {({ eventAccentColor, gameStatusTitle, isLive, leagueId, rows, scores, teamLabels }) => {
+        const cardBorderGradientColors = getPredictionEventCardBorderGradientColors(eventAccentColor, isDarkMode);
+        const cardGradientColors = getPredictionEventCardGradientColors(eventAccentColor, isDarkMode);
+
+        return (
+          <View style={styles.container}>
+            {Platform.OS === 'android' ? <WidgetBetCellsOverlay event={event} rows={rows} /> : null}
+            <ButtonPressAnimation onPress={handlePress} scaleTo={0.96} style={styles.flex} wrapperStyle={styles.flex}>
+              <GradientBorderView
+                backgroundColor={isDarkMode ? globalColors.grey100 : globalColors.white100}
+                borderGradientColors={cardBorderGradientColors}
+                borderRadius={PREDICTION_MARKET_EVENT_CARD_BORDER_RADIUS}
+                borderWidth={2}
+                end={CARD_BORDER_GRADIENT_CONFIG.end}
+                locations={CARD_BORDER_GRADIENT_CONFIG.locations}
+                start={CARD_BORDER_GRADIENT_CONFIG.start}
+                style={styles.card}
+              >
+                <LinearGradient
+                  colors={cardGradientColors}
+                  end={CARD_FILL_GRADIENT_CONFIG.end}
+                  locations={CARD_FILL_GRADIENT_CONFIG.locations}
+                  pointerEvents="none"
+                  start={CARD_FILL_GRADIENT_CONFIG.start}
+                  style={StyleSheet.absoluteFill}
+                />
+                <View style={styles.header}>
+                  <View style={styles.league}>
+                    <LeagueIcon eventSlug={event.slug} size={20} />
+                    <Text align="left" color="label" size="17pt" style={styles.compactText} weight="heavy">
+                      {getLeagueLabel(leagueId)}
+                    </Text>
+                  </View>
+                  <View style={styles.status}>
+                    {gameStatusTitle ? (
+                      <Text align="right" color="labelTertiary" size="15pt" style={styles.statusText} weight="bold">
+                        {gameStatusTitle.toUpperCase()}
+                      </Text>
+                    ) : null}
+                    {isLive ? (
+                      <TextShadow blur={14} shadowOpacity={0.25}>
+                        <Text align="right" color={{ custom: '#FF584D' }} size="15pt" style={styles.liveText} weight="heavy">
+                          {i18n.t(i18n.l.predictions.sports.live).toUpperCase()}
+                        </Text>
+                      </TextShadow>
+                    ) : null}
+                  </View>
+                </View>
+                <Separator />
+                <TeamRow
+                  event={event}
+                  label={rows.away.label ?? teamLabels[0]}
+                  score={scores?.teamAScore}
+                  team={event.teams?.[0]}
+                  lineBet={rows.away.line}
+                  moneylineBet={rows.away.moneyline}
+                  compact={rows.away.isFallback}
+                  interactiveBetCells={Platform.OS === 'ios'}
+                />
+                <InsetSeparator />
+                <TeamRow
+                  event={event}
+                  label={rows.home.label ?? teamLabels[1]}
+                  score={scores?.teamBScore}
+                  team={event.teams?.[1]}
+                  lineBet={rows.home.line}
+                  moneylineBet={rows.home.moneyline}
+                  compact={rows.home.isFallback}
+                  interactiveBetCells={Platform.OS === 'ios'}
+                />
+              </GradientBorderView>
+            </ButtonPressAnimation>
           </View>
-          <Separator />
-          <TeamRow
-            event={event}
-            label={rows.away.label ?? teamLabels[0]}
-            score={scores?.teamAScore}
-            team={event.teams?.[0]}
-            lineBet={rows.away.line}
-            moneylineBet={rows.away.moneyline}
-            compact={rows.away.isFallback}
-            interactiveBetCells={Platform.OS === 'ios'}
-          />
-          <InsetSeparator />
-          <TeamRow
-            event={event}
-            label={rows.home.label ?? teamLabels[1]}
-            score={scores?.teamBScore}
-            team={event.teams?.[1]}
-            lineBet={rows.home.line}
-            moneylineBet={rows.home.moneyline}
-            compact={rows.home.isFallback}
-            interactiveBetCells={Platform.OS === 'ios'}
-          />
-        </GradientBorderView>
-      </ButtonPressAnimation>
-    </View>
+        );
+      }}
+    </SportsEventContent>
   );
 });
+
+function getPredictionEventCardBorderGradientColors(eventAccentColor: string, isDarkMode: boolean) {
+  return isDarkMode
+    ? ([opacity(eventAccentColor, 0.54), opacity(eventAccentColor, 0.12), opacity(eventAccentColor, 0)] as const)
+    : ([opacity(eventAccentColor, 0.28), opacity(eventAccentColor, 0.1), opacity(eventAccentColor, 0.04)] as const);
+}
+
+function getPredictionEventCardGradientColors(eventAccentColor: string, isDarkMode: boolean) {
+  return isDarkMode
+    ? ([opacity(eventAccentColor, 0.18), opacity(eventAccentColor, 0)] as const)
+    : ([opacity(eventAccentColor, 0.12), opacity(eventAccentColor, 0.02)] as const);
+}
 
 const TeamRow = memo(function TeamRow({
   event,
@@ -213,13 +201,7 @@ const TeamRow = memo(function TeamRow({
   );
 });
 
-const WidgetBetCellsOverlay = memo(function WidgetBetCellsOverlay({
-  event,
-  rows,
-}: {
-  event: PolymarketEvent;
-  rows: ReturnType<typeof getRows>;
-}) {
+const WidgetBetCellsOverlay = memo(function WidgetBetCellsOverlay({ event, rows }: { event: PolymarketEvent; rows: SportsEventRows }) {
   return (
     <View pointerEvents="box-none" style={styles.betCellsOverlay}>
       <TeamBetCells event={event} compact={rows.away.isFallback} lineBet={rows.away.line} moneylineBet={rows.away.moneyline} />
@@ -357,105 +339,16 @@ function useOutcomePress({ event, outcomeTokenId }: { event: PolymarketEvent; ou
   return usePolymarketSportsBetCellPress({ event, outcomeTokenId, onResolvedOutcomePress });
 }
 
-function getRows(event: PolymarketEvent, betGrid: EventBetGrid): WidgetRows {
-  const rows: WidgetRows = {
-    away: {
-      line: betGrid.totals.over ?? betGrid.teamBets.away.spread,
-      moneyline: betGrid.teamBets.away.moneyline,
-    },
-    home: {
-      line: betGrid.totals.under ?? betGrid.teamBets.home.spread,
-      moneyline: betGrid.teamBets.home.moneyline,
-    },
-  };
-
-  if (hasBetCells(rows)) return rows;
-
-  return getFallbackMarketRows(event) ?? rows;
-}
-
-function hasBetCells(rows: WidgetRows) {
-  return !!(rows.away.line || rows.away.moneyline || rows.home.line || rows.home.moneyline);
-}
-
-function getFallbackMarketRows(event: PolymarketEvent): WidgetRows | null {
-  const markets = event.markets
-    .filter(isRenderableFallbackMarket)
-    .sort((a, b) => Number(b.outcomePrices[0] ?? 0) - Number(a.outcomePrices[0] ?? 0))
-    .slice(0, 2);
-
-  if (markets.length < 2) return null;
-
-  return {
-    away: getFallbackMarketRow(markets[0]),
-    home: getFallbackMarketRow(markets[1]),
-  };
-}
-
-function isRenderableFallbackMarket(market: PolymarketMarket) {
-  return (
-    market.active !== false &&
-    market.closed !== true &&
-    market.umaResolutionStatus !== 'resolved' &&
-    !!market.groupItemTitle &&
-    market.outcomePrices[0] != null &&
-    market.outcomePrices[0] !== '' &&
-    !!market.clobTokenIds[0]
-  );
-}
-
-function getFallbackMarketRow(market: PolymarketMarket): WidgetTeamRow {
-  return {
-    isFallback: true,
-    label: market.groupItemTitle,
-    moneyline: {
-      label: '',
-      odds: formatOdds(market.outcomePrices[0]),
-      outcomeTokenId: market.clobTokenIds[0],
-    },
-  };
-}
-
-function getGameStatusTitle({
-  event,
-  gameInfo,
-  isLive,
-}: {
-  event: PolymarketEvent;
-  gameInfo: ReturnType<typeof usePolymarketSportsEventDisplay>['gameInfo'];
-  isLive: boolean;
-}) {
-  if (isLive) {
-    const { currentPeriod } = parsePeriod(gameInfo.period ?? '');
-    const parsedScore = parseScore(gameInfo.score ?? '');
-    if ('bestOf' in parsedScore && parsedScore.bestOf !== undefined && currentPeriod) {
-      return i18n.t(i18n.l.predictions.sports.game_best_of, { currentPeriod, bestOf: String(parsedScore.bestOf) });
-    }
-    return currentPeriod || gameInfo.elapsed || undefined;
-  }
-
-  if (gameInfo.ended) return i18n.t(i18n.l.predictions.sports.final);
-
-  const startTime = gameInfo.startTime ?? event.startDate;
-  return startTime ? formatTimestamp(toUnixTime(startTime)) : undefined;
-}
-
 function getLeagueLabel(leagueId: LeagueId | undefined) {
   if (!leagueId) return '';
   return SPORT_LEAGUES[leagueId]?.name ?? leagueId.toUpperCase();
 }
 
-function getEventAccentColor({ event, isDarkMode, leagueId }: { event: PolymarketEvent; isDarkMode: boolean; leagueId?: LeagueId }) {
-  const leagueColor = leagueId ? SPORT_LEAGUES[leagueId]?.color : undefined;
-  if (leagueColor) return getColorValueForThemeWorklet(leagueColor, isDarkMode);
-  return getColorValueForThemeWorklet(event.color, isDarkMode);
-}
-
 const styles = StyleSheet.create({
   container: {
-    height: SPORTS_EVENT_WIDGET_CARD_HEIGHT,
+    height: PREDICTION_MARKET_EVENT_CARD_HEIGHT,
     position: 'relative',
-    width: SPORTS_EVENT_WIDGET_CARD_WIDTH,
+    width: PREDICTION_MARKET_EVENT_CARD_WIDTH,
   },
   flex: {
     flex: 1,

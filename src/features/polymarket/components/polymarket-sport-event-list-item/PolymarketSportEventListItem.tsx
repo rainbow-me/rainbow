@@ -1,30 +1,25 @@
-import { memo, useMemo } from 'react';
+import { memo } from 'react';
 import { Platform, StyleSheet, View, type StyleProp, type ViewStyle } from 'react-native';
 
 import ConditionalWrap from 'conditional-wrap';
 import { LinearGradient } from 'expo-linear-gradient';
 
-import { getColorValueForThemeWorklet } from '@/__swaps__/utils/swaps';
 import ButtonPressAnimation from '@/components/animations/ButtonPressAnimation';
 import ShimmerAnimation from '@/components/animations/ShimmerAnimation';
 import { LiveTokenText } from '@/components/live-token-text/LiveTokenText';
-import { Text, TextShadow, useBackgroundColor, useColorMode, useForegroundColor } from '@/design-system';
+import { Text, TextShadow, useBackgroundColor, useColorMode } from '@/design-system';
+import { SportsEventContent } from '@/features/polymarket/components/polymarket-sport-event-list-item/SportsEventContent';
 import { TeamLogo } from '@/features/polymarket/components/TeamLogo';
 import {
   getPolymarketSportsBetCellTokenId,
   usePolymarketSportsBetCellPress,
 } from '@/features/polymarket/hooks/usePolymarketSportsBetCellPress';
-import { usePolymarketSportsEventDisplay } from '@/features/polymarket/hooks/usePolymarketSportsEventDisplay';
 import { type PolymarketEvent } from '@/features/polymarket/types/polymarket-event';
-import { parsePeriod, parseScore, type PolymarketEventGameInfo } from '@/features/polymarket/utils/sports';
 import { formatOdds, type BetCellData } from '@/features/polymarket/utils/sportsEventBetData';
-import { getSportsEventOutcomeCellColor } from '@/features/polymarket/utils/sportsEventOutcome';
 import { opacity } from '@/framework/ui/utils/opacity';
 import * as i18n from '@/languages';
 import Navigation from '@/navigation/Navigation';
 import Routes from '@/navigation/routesNames';
-import { createOpacityPalette } from '@/worklets/colors';
-import { formatTimestamp, toUnixTime } from '@/worklets/dates';
 
 const BET_ROW_HEIGHT = 38;
 const BET_ROW_WIDTH = 60;
@@ -40,159 +35,139 @@ export const PolymarketSportEventListItem = memo(function PolymarketSportEventLi
   event: PolymarketEvent;
   style?: StyleProp<ViewStyle>;
 }) {
-  const cardBackground = useBackgroundColor('fillQuaternary');
-  const fillTertiary = useBackgroundColor('fillTertiary');
-  const borderColor = useForegroundColor('separatorSecondary');
-  const { isDarkMode } = useColorMode();
-
-  const { betGrid, gameInfo, isLive, scores, showScores, teamLabels, title } = usePolymarketSportsEventDisplay(event);
-  const periodTitle = useMemo(
-    () =>
-      isLive
-        ? getPeriodTitle({
-            period: gameInfo.period ?? '',
-            elapsed: gameInfo.elapsed,
-            score: gameInfo.score ?? '',
-          })
-        : undefined,
-    [isLive, gameInfo.period, gameInfo.elapsed, gameInfo.score]
-  );
-  const subtitle = useMemo(() => (isLive ? undefined : getSubtitle({ event, gameInfo })), [event, gameInfo, isLive]);
-  const awayBets = betGrid.teamBets.away;
-  const homeBets = betGrid.teamBets.home;
-  const totals = betGrid.totals;
-  const awaySpreadColor = getSportsEventOutcomeCellColor(event.markets, awayBets.spread?.outcomeTokenId, isDarkMode, event.teams);
-  const homeSpreadColor = getSportsEventOutcomeCellColor(event.markets, homeBets.spread?.outcomeTokenId, isDarkMode, event.teams);
-  const totalsOverColor = getSportsEventOutcomeCellColor(event.markets, totals.over?.outcomeTokenId, isDarkMode, event.teams);
-  const totalsUnderColor = getSportsEventOutcomeCellColor(event.markets, totals.under?.outcomeTokenId, isDarkMode, event.teams);
-  const awayMoneylineColor = getSportsEventOutcomeCellColor(event.markets, awayBets.moneyline?.outcomeTokenId, isDarkMode, event.teams);
-  const homeMoneylineColor = getSportsEventOutcomeCellColor(event.markets, homeBets.moneyline?.outcomeTokenId, isDarkMode, event.teams);
-  const eventColor = getColorValueForThemeWorklet(event.color, isDarkMode);
-  const accentColor =
-    awayMoneylineColor ?? homeMoneylineColor ?? awaySpreadColor ?? homeSpreadColor ?? totalsOverColor ?? totalsUnderColor ?? eventColor;
-  const accentPalette = createOpacityPalette(accentColor, [0, 8, 12, 18]);
-  const cardGradientColors = isDarkMode
-    ? ([accentPalette.opacity18, accentPalette.opacity8, accentPalette.opacity0] as const)
-    : ([accentPalette.opacity12, accentPalette.opacity8, accentPalette.opacity0] as const);
-
-  const teamLabelFontSize = useMemo(() => (teamLabels[0].length > 14 || teamLabels[1].length > 14 ? '10pt' : '13pt'), [teamLabels]);
-
-  // Calculate placeholder dimensions for Android to hack around no nested button support.
-  const betCellsPlaceholder = useMemo(() => {
-    const awayRowCellCount = [awayBets.spread, totals.over, awayBets.moneyline].filter(Boolean).length;
-    const homeRowCellCount = [homeBets.spread, totals.under, homeBets.moneyline].filter(Boolean).length;
-    const maxCellCount = Math.max(awayRowCellCount, homeRowCellCount);
-    const width = maxCellCount > 0 ? maxCellCount * BET_ROW_WIDTH + (maxCellCount - 1) * BET_CELL_GAP : 0;
-    const height = 2 * BET_ROW_HEIGHT + 8;
-    return { width, height };
-  }, [awayBets.spread, awayBets.moneyline, homeBets.spread, homeBets.moneyline, totals.over, totals.under]);
-
   return (
-    <ConditionalWrap condition={Platform.OS === 'android'} wrap={children => <View style={[styles.container, style]}>{children}</View>}>
-      <>
-        {Platform.OS === 'android' && (
-          <View style={styles.betCellsOverlay}>
-            <View style={styles.betsColumn}>
-              <View style={styles.betRow}>
-                {awayBets.spread && <BetCell event={event} data={awayBets.spread} backgroundColor={awaySpreadColor} />}
-                {totals.over && <BetCell event={event} data={totals.over} backgroundColor={totalsOverColor} />}
-                {awayBets.moneyline && <BetCell event={event} data={awayBets.moneyline} backgroundColor={awayMoneylineColor} />}
-              </View>
-              <View style={styles.betRow}>
-                {homeBets.spread && <BetCell event={event} data={homeBets.spread} backgroundColor={homeSpreadColor} />}
-                {totals.under && <BetCell event={event} data={totals.under} backgroundColor={totalsUnderColor} />}
-                {homeBets.moneyline && <BetCell event={event} data={homeBets.moneyline} backgroundColor={homeMoneylineColor} />}
-              </View>
-            </View>
-          </View>
-        )}
-        <ButtonPressAnimation onPress={() => navigateToEvent(event)} scaleTo={0.98} style={Platform.OS === 'ios' ? style : undefined}>
-          <View style={[styles.card, { backgroundColor: cardBackground, borderColor }]}>
-            <LinearGradient
-              colors={cardGradientColors}
-              pointerEvents="none"
-              start={{ x: 0, y: 0 }}
-              end={{ x: 0.85, y: 1 }}
-              style={StyleSheet.absoluteFill}
-            />
-            <View style={styles.header}>
-              <Text align="left" color="label" size="13pt" weight="heavy" numberOfLines={2}>
-                {title}
-              </Text>
-              {isLive ? (
-                <View style={styles.liveIndicator}>
-                  <View style={styles.liveIndicatorLeft}>
-                    <View style={styles.liveDot} />
-                    <TextShadow blur={10} shadowOpacity={0.5}>
-                      <Text align="center" size="10pt" style={{ letterSpacing: 0.6 }} weight="heavy" color={{ custom: '#FF584D' }}>
-                        {i18n.t(i18n.l.predictions.sports.live).toUpperCase()}
-                      </Text>
-                    </TextShadow>
+    <SportsEventContent event={event}>
+      {({
+        awayBets,
+        awayMoneylineColor,
+        awaySpreadColor,
+        betCellsPlaceholder,
+        borderColor,
+        cardBackground,
+        cardGradientColors,
+        fillTertiary,
+        homeBets,
+        homeMoneylineColor,
+        homeSpreadColor,
+        isLive,
+        periodTitle,
+        scores,
+        showScores,
+        subtitle,
+        teamLabelFontSize,
+        teamLabels,
+        title,
+        totals,
+        totalsOverColor,
+        totalsUnderColor,
+      }) => (
+        <ConditionalWrap condition={Platform.OS === 'android'} wrap={children => <View style={[styles.container, style]}>{children}</View>}>
+          <>
+            {Platform.OS === 'android' && (
+              <View style={styles.betCellsOverlay}>
+                <View style={styles.betsColumn}>
+                  <View style={styles.betRow}>
+                    {awayBets.spread && <BetCell event={event} data={awayBets.spread} backgroundColor={awaySpreadColor} />}
+                    {totals.over && <BetCell event={event} data={totals.over} backgroundColor={totalsOverColor} />}
+                    {awayBets.moneyline && <BetCell event={event} data={awayBets.moneyline} backgroundColor={awayMoneylineColor} />}
                   </View>
-                  <View style={[styles.periodPill, { backgroundColor: fillTertiary, borderColor }]}>
-                    <Text align="right" size="10pt" weight="bold" color="labelTertiary">
-                      {periodTitle}
+                  <View style={styles.betRow}>
+                    {homeBets.spread && <BetCell event={event} data={homeBets.spread} backgroundColor={homeSpreadColor} />}
+                    {totals.under && <BetCell event={event} data={totals.under} backgroundColor={totalsUnderColor} />}
+                    {homeBets.moneyline && <BetCell event={event} data={homeBets.moneyline} backgroundColor={homeMoneylineColor} />}
+                  </View>
+                </View>
+              </View>
+            )}
+            <ButtonPressAnimation onPress={() => navigateToEvent(event)} scaleTo={0.98} style={Platform.OS === 'ios' ? style : undefined}>
+              <View style={[styles.card, { backgroundColor: cardBackground, borderColor }]}>
+                <LinearGradient
+                  colors={cardGradientColors}
+                  pointerEvents="none"
+                  start={{ x: 0, y: 0 }}
+                  end={{ x: 0.85, y: 1 }}
+                  style={StyleSheet.absoluteFill}
+                />
+                <View style={styles.header}>
+                  <Text align="left" color="label" size="13pt" weight="heavy" numberOfLines={2}>
+                    {title}
+                  </Text>
+                  {isLive ? (
+                    <View style={styles.liveIndicator}>
+                      <View style={styles.liveIndicatorLeft}>
+                        <View style={styles.liveDot} />
+                        <TextShadow blur={10} shadowOpacity={0.5}>
+                          <Text align="center" size="10pt" style={{ letterSpacing: 0.6 }} weight="heavy" color={{ custom: '#FF584D' }}>
+                            {i18n.t(i18n.l.predictions.sports.live).toUpperCase()}
+                          </Text>
+                        </TextShadow>
+                      </View>
+                      <View style={[styles.periodPill, { backgroundColor: fillTertiary, borderColor }]}>
+                        <Text align="right" size="10pt" weight="bold" color="labelTertiary">
+                          {periodTitle}
+                        </Text>
+                      </View>
+                    </View>
+                  ) : subtitle ? (
+                    <Text align="left" color="labelSecondary" size="10pt" weight="bold" numberOfLines={1}>
+                      {subtitle}
                     </Text>
-                  </View>
+                  ) : null}
                 </View>
-              ) : subtitle ? (
-                <Text align="left" color="labelSecondary" size="10pt" weight="bold" numberOfLines={1}>
-                  {subtitle}
-                </Text>
-              ) : null}
-            </View>
-            <View style={styles.body}>
-              <View style={styles.teamColumn}>
-                <View style={styles.teamRow}>
-                  {event.teams?.[0] && <TeamLogo team={event.teams?.[0]} size={LOGO_SIZE} borderRadius={4} />}
-                  <Text align="left" color="label" size={teamLabelFontSize} weight="bold" numberOfLines={1}>
-                    {teamLabels[0]}
-                  </Text>
-                </View>
-                <View style={styles.teamRow}>
-                  {event.teams?.[1] && <TeamLogo team={event.teams?.[1]} size={LOGO_SIZE} borderRadius={4} />}
-                  <Text align="left" color="label" size={teamLabelFontSize} weight="bold" numberOfLines={1}>
-                    {teamLabels[1]}
-                  </Text>
-                </View>
-              </View>
-              <View style={styles.rightColumn}>
-                {showScores ? (
-                  <View style={styles.scoreColumn}>
-                    <View style={styles.scoreRow}>
-                      <Text align="right" color="label" size="13pt" weight="heavy" numberOfLines={1}>
-                        {scores?.teamAScore ?? '--'}
+                <View style={styles.body}>
+                  <View style={styles.teamColumn}>
+                    <View style={styles.teamRow}>
+                      {event.teams?.[0] && <TeamLogo team={event.teams?.[0]} size={LOGO_SIZE} borderRadius={4} />}
+                      <Text align="left" color="label" size={teamLabelFontSize} weight="bold" numberOfLines={1}>
+                        {teamLabels[0]}
                       </Text>
                     </View>
-                    <View style={styles.scoreRow}>
-                      <Text align="right" color="label" size="13pt" weight="heavy" numberOfLines={1}>
-                        {scores?.teamBScore ?? '--'}
+                    <View style={styles.teamRow}>
+                      {event.teams?.[1] && <TeamLogo team={event.teams?.[1]} size={LOGO_SIZE} borderRadius={4} />}
+                      <Text align="left" color="label" size={teamLabelFontSize} weight="bold" numberOfLines={1}>
+                        {teamLabels[1]}
                       </Text>
                     </View>
                   </View>
-                ) : null}
-                {Platform.OS === 'ios' ? (
-                  <View style={styles.betsColumn}>
-                    <View style={styles.betRow}>
-                      {awayBets.spread && <BetCell event={event} data={awayBets.spread} backgroundColor={awaySpreadColor} />}
-                      {totals.over && <BetCell event={event} data={totals.over} backgroundColor={totalsOverColor} />}
-                      {awayBets.moneyline && <BetCell event={event} data={awayBets.moneyline} backgroundColor={awayMoneylineColor} />}
-                    </View>
-                    <View style={styles.betRow}>
-                      {homeBets.spread && <BetCell event={event} data={homeBets.spread} backgroundColor={homeSpreadColor} />}
-                      {totals.under && <BetCell event={event} data={totals.under} backgroundColor={totalsUnderColor} />}
-                      {homeBets.moneyline && <BetCell event={event} data={homeBets.moneyline} backgroundColor={homeMoneylineColor} />}
-                    </View>
+                  <View style={styles.rightColumn}>
+                    {showScores ? (
+                      <View style={styles.scoreColumn}>
+                        <View style={styles.scoreRow}>
+                          <Text align="right" color="label" size="13pt" weight="heavy" numberOfLines={1}>
+                            {scores?.teamAScore ?? '--'}
+                          </Text>
+                        </View>
+                        <View style={styles.scoreRow}>
+                          <Text align="right" color="label" size="13pt" weight="heavy" numberOfLines={1}>
+                            {scores?.teamBScore ?? '--'}
+                          </Text>
+                        </View>
+                      </View>
+                    ) : null}
+                    {Platform.OS === 'ios' ? (
+                      <View style={styles.betsColumn}>
+                        <View style={styles.betRow}>
+                          {awayBets.spread && <BetCell event={event} data={awayBets.spread} backgroundColor={awaySpreadColor} />}
+                          {totals.over && <BetCell event={event} data={totals.over} backgroundColor={totalsOverColor} />}
+                          {awayBets.moneyline && <BetCell event={event} data={awayBets.moneyline} backgroundColor={awayMoneylineColor} />}
+                        </View>
+                        <View style={styles.betRow}>
+                          {homeBets.spread && <BetCell event={event} data={homeBets.spread} backgroundColor={homeSpreadColor} />}
+                          {totals.under && <BetCell event={event} data={totals.under} backgroundColor={totalsUnderColor} />}
+                          {homeBets.moneyline && <BetCell event={event} data={homeBets.moneyline} backgroundColor={homeMoneylineColor} />}
+                        </View>
+                      </View>
+                    ) : (
+                      <View style={{ width: betCellsPlaceholder.width, height: betCellsPlaceholder.height }} />
+                    )}
                   </View>
-                ) : (
-                  <View style={{ width: betCellsPlaceholder.width, height: betCellsPlaceholder.height }} />
-                )}
+                </View>
               </View>
-            </View>
-          </View>
-        </ButtonPressAnimation>
-      </>
-    </ConditionalWrap>
+            </ButtonPressAnimation>
+          </>
+        </ConditionalWrap>
+      )}
+    </SportsEventContent>
   );
 });
 
@@ -258,26 +233,6 @@ export const LoadingSkeleton = memo(function LoadingSkeleton() {
 
 function navigateToEvent(event: PolymarketEvent): void {
   Navigation.handleAction(Routes.POLYMARKET_EVENT_SCREEN, { event, eventId: event.id });
-}
-
-function getSubtitle({ event, gameInfo }: { event: PolymarketEvent; gameInfo: PolymarketEventGameInfo }) {
-  if (gameInfo.ended) {
-    return i18n.t(i18n.l.predictions.sports.final).toUpperCase();
-  }
-
-  const startTime = gameInfo.startTime ?? event.startDate;
-  return startTime ? formatTimestamp(toUnixTime(startTime)) : '';
-}
-
-function getPeriodTitle({ score, period, elapsed }: { score: string; period: string; elapsed?: string }) {
-  const { currentPeriod } = parsePeriod(period);
-  const parsedScore = parseScore(score);
-  if ('bestOf' in parsedScore && parsedScore.bestOf !== undefined && currentPeriod) {
-    return i18n.t(i18n.l.predictions.sports.game_best_of, { currentPeriod, bestOf: String(parsedScore.bestOf) });
-  }
-  if (currentPeriod && elapsed) return `${currentPeriod} - ${elapsed}`;
-  if (currentPeriod) return currentPeriod;
-  return elapsed ?? '';
 }
 
 const styles = StyleSheet.create({

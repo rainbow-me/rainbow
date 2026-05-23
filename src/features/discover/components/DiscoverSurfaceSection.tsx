@@ -15,7 +15,6 @@ import {
   MarketPill,
   MarketPillSkeleton,
 } from '@/features/discover/components/marketCards/MarketPill';
-import { MarketRowCard, MarketRowCardSkeleton } from '@/features/discover/components/marketCards/MarketRowCard';
 import {
   MARKET_TILE_CARD_HEIGHT,
   MARKET_TILE_CARD_WIDTH,
@@ -24,17 +23,17 @@ import {
 } from '@/features/discover/components/marketCards/MarketTileCard';
 import { usePlacementCardTrackPress } from '@/features/discover/components/marketPress/marketPressContext';
 import {
+  PREDICTION_MARKET_EVENT_CARD_BORDER_RADIUS,
+  PREDICTION_MARKET_EVENT_CARD_HEIGHT,
+  PREDICTION_MARKET_EVENT_CARD_WIDTH,
+  PredictionMarketEventCard,
+} from '@/features/discover/components/predictionCards/PredictionMarketEventCard';
+import {
   PREDICTION_MARKET_TILE_CARD_BORDER_RADIUS,
   PREDICTION_MARKET_TILE_CARD_HEIGHT,
   PREDICTION_MARKET_TILE_CARD_WIDTH,
   PredictionMarketTileCard,
 } from '@/features/discover/components/predictionMarketCards/PredictionMarketTileCard';
-import {
-  SPORTS_EVENT_WIDGET_CARD_BORDER_RADIUS,
-  SPORTS_EVENT_WIDGET_CARD_HEIGHT,
-  SPORTS_EVENT_WIDGET_CARD_WIDTH,
-  SportsEventWidgetCard,
-} from '@/features/discover/components/sports/SportsEventWidgetCard';
 import { type MarketDisplayItem } from '@/features/discover/types/marketDisplayItem';
 import { navigateDiscoverDestination } from '@/features/discover/utils/navigation';
 import { getPerpsPlacementStore } from '@/features/placements/stores/derived/perpsPlacementStore';
@@ -166,11 +165,6 @@ const MARKET_SECTION_DESCRIPTORS = {
     renderSkeleton: renderMarketGridTileSkeleton,
     showHeaderCaret: hasDestination,
   },
-  'market_row.list': {
-    layout: 'list',
-    renderItem: renderMarketRow,
-    renderSkeleton: MarketRowCardSkeleton,
-  },
   'market_cell.list': {
     layout: 'list',
     renderItem: renderMarketCell,
@@ -202,15 +196,15 @@ const PREDICTIONS_SECTION_DESCRIPTORS = {
   },
   'prediction_event_card.carousel': {
     layout: 'carousel',
-    itemHeight: SPORTS_EVENT_WIDGET_CARD_HEIGHT,
-    itemWidth: SPORTS_EVENT_WIDGET_CARD_WIDTH,
-    renderItem: renderSportsWidget,
-    renderSkeleton: renderSportsWidgetSkeleton,
+    itemHeight: PREDICTION_MARKET_EVENT_CARD_HEIGHT,
+    itemWidth: PREDICTION_MARKET_EVENT_CARD_WIDTH,
+    renderItem: renderPredictionEventCard,
+    renderSkeleton: renderPredictionEventCardSkeleton,
   },
   'prediction_event_card.list': {
     layout: 'list',
-    renderItem: renderSportsWidget,
-    renderSkeleton: renderSportsWidgetSkeleton,
+    renderItem: renderPredictionEventCard,
+    renderSkeleton: renderPredictionEventCardSkeleton,
   },
 } satisfies Record<PredictionsDisplay, SectionDescriptor<PredictionPlacementItem>>;
 
@@ -445,10 +439,6 @@ function renderMarketGridTileSkeleton(width: number) {
   return <MarketTileCardSkeleton width={width} />;
 }
 
-function renderMarketRow(item: MarketDisplayItem) {
-  return <MarketRowCard item={item} />;
-}
-
 function renderMarketCell(item: MarketDisplayItem) {
   return <MarketCell item={item} />;
 }
@@ -476,11 +466,6 @@ function getTokenMarketSectionDescriptor(
         renderItem: (item: TokenPlacementItem, width: number) => (
           <TokenMarketTile item={item} nativeCurrency={nativeCurrency} width={width} />
         ),
-      };
-    case 'market_row.list':
-      return {
-        ...MARKET_SECTION_DESCRIPTORS[display],
-        renderItem: (item: TokenPlacementItem) => <TokenMarketRow item={item} nativeCurrency={nativeCurrency} />,
       };
     case 'market_cell.list':
       return {
@@ -514,17 +499,6 @@ function TokenMarketTile({
 }) {
   const displayItem = useTokenMarketDisplayItem(item, nativeCurrency);
   return <MarketTileCard item={displayItem} width={width} />;
-}
-
-function TokenMarketRow({
-  item,
-  nativeCurrency,
-}: {
-  item: TokenPlacementItem;
-  nativeCurrency: ReturnType<typeof userAssetsStoreManager.getState>['currency'];
-}) {
-  const displayItem = useTokenMarketDisplayItem(item, nativeCurrency);
-  return <MarketRowCard item={displayItem} />;
 }
 
 function TokenMarketCell({
@@ -594,16 +568,16 @@ function renderPredictionWidgetSkeleton() {
   );
 }
 
-function renderSportsWidget(item: PredictionPlacementItem) {
-  return <SportsEventWidgetCard event={item.event} />;
+function renderPredictionEventCard(item: PredictionPlacementItem) {
+  return <PredictionMarketEventCard event={item.event} />;
 }
 
-function renderSportsWidgetSkeleton() {
+function renderPredictionEventCardSkeleton() {
   return (
     <Skeleton
-      borderRadius={SPORTS_EVENT_WIDGET_CARD_BORDER_RADIUS}
-      height={SPORTS_EVENT_WIDGET_CARD_HEIGHT}
-      width={SPORTS_EVENT_WIDGET_CARD_WIDTH}
+      borderRadius={PREDICTION_MARKET_EVENT_CARD_BORDER_RADIUS}
+      height={PREDICTION_MARKET_EVENT_CARD_HEIGHT}
+      width={PREDICTION_MARKET_EVENT_CARD_WIDTH}
     />
   );
 }

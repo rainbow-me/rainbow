@@ -94,7 +94,6 @@
             "market_pill.carousel",
             "market_tile.carousel",
             "market_tile.grid",
-            "market_row.list",
             "market_cell.list",
             "prediction_tile.carousel",
             "prediction_tile.grid",

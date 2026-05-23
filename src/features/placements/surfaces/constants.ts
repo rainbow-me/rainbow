@@ -2,7 +2,6 @@ export const DISPLAYS = {
   MARKET_PILL_CAROUSEL: 'market_pill.carousel',
   MARKET_TILE_CAROUSEL: 'market_tile.carousel',
   MARKET_TILE_GRID: 'market_tile.grid',
-  MARKET_ROW_LIST: 'market_row.list',
   MARKET_CELL_LIST: 'market_cell.list',
   PREDICTION_TILE_CAROUSEL: 'prediction_tile.carousel',
   PREDICTION_TILE_GRID: 'prediction_tile.grid',
@@ -21,7 +20,6 @@ export const MARKET_DISPLAY_VALUES = [
   DISPLAYS.MARKET_PILL_CAROUSEL,
   DISPLAYS.MARKET_TILE_CAROUSEL,
   DISPLAYS.MARKET_TILE_GRID,
-  DISPLAYS.MARKET_ROW_LIST,
   DISPLAYS.MARKET_CELL_LIST,
 ] as const;
 
