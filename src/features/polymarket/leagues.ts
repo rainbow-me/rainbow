@@ -294,6 +294,12 @@ export const SPORT_LEAGUES = {
     sportId: 'soccer',
     color: SPORTS.soccer.color,
   },
+  j1100: {
+    name: 'J1 League',
+    fullName: 'Japan J League',
+    sportId: 'soccer',
+    color: SPORTS.soccer.color,
+  },
   tur: {
     name: 'Super Lig',
     fullName: 'Turkish Super Lig',
@@ -327,6 +333,18 @@ export const SPORT_LEAGUES = {
   nor: {
     name: 'Eliteserien',
     fullName: 'Norwegian Eliteserien',
+    sportId: 'soccer',
+    color: SPORTS.soccer.color,
+  },
+  elc: {
+    name: 'EFL Championship',
+    fullName: 'EFL Championship',
+    sportId: 'soccer',
+    color: SPORTS.soccer.color,
+  },
+  chi1: {
+    name: 'Chile Primera',
+    fullName: 'Chile Primera Division',
     sportId: 'soccer',
     color: SPORTS.soccer.color,
   },
@@ -411,6 +429,7 @@ export const LEAGUE_LIST_ORDER: LeagueId[] = [
   'fif',
   'fifwc',
   'fl1',
+  'j1100',
   'j2100',
   'tur',
   'lib',
@@ -418,6 +437,8 @@ export const LEAGUE_LIST_ORDER: LeagueId[] = [
   'ere',
   'mex',
   'nor',
+  'elc',
+  'chi1',
   'sud',
   'ipl',
   'wta',

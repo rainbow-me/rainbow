@@ -189,7 +189,7 @@ const TeamRow = memo(function TeamRow({
   return (
     <View style={styles.teamRow}>
       <View style={styles.teamInfo}>
-        {team ? <TeamLogo team={team} size={TEAM_LOGO_SIZE} borderRadius={2} /> : compact ? null : <View style={styles.logoPlaceholder} />}
+        {team ? <TeamLogo team={team} size={TEAM_LOGO_SIZE} borderRadius={2} /> : <TeamFallbackIcon eventSlug={event.slug} />}
         <Text align="left" color="label" numberOfLines={1} size="17pt" style={styles.teamName} weight="bold">
           {label}
         </Text>
@@ -205,6 +205,14 @@ const TeamRow = memo(function TeamRow({
     </View>
   );
 });
+
+function TeamFallbackIcon({ eventSlug }: { eventSlug: string }) {
+  return (
+    <View style={styles.teamFallbackIcon}>
+      <LeagueIcon eventSlug={eventSlug} size={26} />
+    </View>
+  );
+}
 
 const WidgetBetCellsOverlay = memo(function WidgetBetCellsOverlay({ event, rows }: { event: PolymarketEvent; rows: SportsEventRows }) {
   return (
@@ -423,8 +431,10 @@ const styles = StyleSheet.create({
     gap: 10,
     minWidth: 0,
   },
-  logoPlaceholder: {
+  teamFallbackIcon: {
+    alignItems: 'center',
     height: TEAM_LOGO_SIZE,
+    justifyContent: 'center',
     width: TEAM_LOGO_SIZE,
   },
   teamName: {
