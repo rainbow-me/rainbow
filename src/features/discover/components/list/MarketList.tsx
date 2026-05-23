@@ -2,13 +2,14 @@ import { Fragment, useCallback, useState, type ReactNode } from 'react';
 import { View } from 'react-native';
 
 import { ShowMoreCellEnterAnimation } from '@/components/animations/ShowMoreCellEnterAnimation';
-import { ShowMoreButton } from '@/components/buttons/ShowMoreButton';
 import { Box } from '@/design-system';
 import { CarouselHeader } from '@/features/discover/components/carousel/CarouselHeader';
 import { trackSurfaceSectionDrilldownPress } from '@/features/discover/components/marketPress/marketPressContext';
 import { PlacementTrackedItem } from '@/features/discover/components/PlacementTrackedItem';
 import { type Destination, type Display } from '@/features/placements/surfaces/types';
 import { type Placement, type PlacementId, type PlacementItem } from '@/features/placements/types';
+
+import { ShowMoreButton } from './ShowMoreButton';
 
 const DEFAULT_VISIBLE_ITEM_COUNT = 5;
 const HORIZONTAL_PADDING = 12;
