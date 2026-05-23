@@ -127,14 +127,10 @@ export function trackPredictionOutcomePress({
 export function trackPlacementInteraction({
   interactionType,
   placement,
-  display,
-  sectionId,
   surfaceId,
 }: {
   interactionType: 'carousel_scroll';
   placement: Placement;
-  display: Display;
-  sectionId: string;
   surfaceId: string;
 }): void {
   analytics.track(event.placementInteraction, {
@@ -145,16 +141,9 @@ export function trackPlacementInteraction({
     type: placement.type,
     version: placement.version,
   });
-  trackSurfaceInteraction({
-    display,
-    interactionType,
-    placement,
-    sectionId,
-    surfaceId,
-  });
 }
 
-function trackSurfaceInteraction({
+export function trackSurfaceInteraction({
   display,
   interactionType,
   placement,

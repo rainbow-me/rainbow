@@ -8,6 +8,7 @@ import { Box } from '@/design-system';
 import { CarouselHeader } from '@/features/discover/components/carousel/CarouselHeader';
 import {
   trackPlacementInteraction,
+  trackSurfaceInteraction,
   trackSurfaceSectionDrilldownPress,
 } from '@/features/discover/components/marketPress/marketPressContext';
 import { PlacementTrackedItem } from '@/features/discover/components/PlacementTrackedItem';
@@ -113,8 +114,8 @@ export function MarketCarousel<T extends PlacementItem>({
 
   const onScrollSettle = useDebouncedCallback(
     () => {
-      if (!placement) return;
-      trackPlacementInteraction({ display, interactionType: 'carousel_scroll', placement, sectionId, surfaceId });
+      trackSurfaceInteraction({ display, interactionType: 'carousel_scroll', placement, sectionId, surfaceId });
+      if (placement) trackPlacementInteraction({ interactionType: 'carousel_scroll', placement, surfaceId });
     },
     SCROLL_DEBOUNCE_MS,
     SCROLL_DEBOUNCE_OPTIONS
