@@ -81,11 +81,7 @@ export const DiscoverSurfaceSection = memo(function DiscoverSurfaceSection({
   return unsupportedDisplay(surface.display);
 });
 
-type SectionDescriptorBase<T extends PlacementItem> = {
-  renderHeaderLeadingAccessory?: (surface: SurfaceLeaf) => ReactNode;
-};
-
-type CarouselSectionDescriptor<T extends PlacementItem> = SectionDescriptorBase<T> & {
+type CarouselSectionDescriptor<T extends PlacementItem> = {
   layout: 'carousel';
   getItemWidth?: (item: T) => number;
   itemHeight: number;
@@ -96,7 +92,7 @@ type CarouselSectionDescriptor<T extends PlacementItem> = SectionDescriptorBase<
   showHeaderCaret?: (surface: SurfaceLeaf) => boolean;
 };
 
-type GridSectionDescriptor<T extends PlacementItem> = SectionDescriptorBase<T> & {
+type GridSectionDescriptor<T extends PlacementItem> = {
   layout: 'grid';
   itemHeight: number;
   renderItem: (item: T, width: number) => ReactNode;
@@ -104,7 +100,7 @@ type GridSectionDescriptor<T extends PlacementItem> = SectionDescriptorBase<T> &
   showHeaderCaret?: (surface: SurfaceLeaf) => boolean;
 };
 
-type ListSectionDescriptor<T extends PlacementItem> = SectionDescriptorBase<T> & {
+type ListSectionDescriptor<T extends PlacementItem> = {
   layout: 'list';
   renderItem: (item: T) => ReactNode;
   renderSkeleton: () => ReactNode;
@@ -193,13 +189,11 @@ const PREDICTIONS_SECTION_DESCRIPTORS = {
     layout: 'carousel',
     itemHeight: SPORTS_EVENT_WIDGET_CARD_HEIGHT,
     itemWidth: SPORTS_EVENT_WIDGET_CARD_WIDTH,
-    renderHeaderLeadingAccessory: renderSportsHeaderIcon,
     renderItem: renderSportsWidget,
     renderSkeleton: renderSportsWidgetSkeleton,
   },
   'prediction_sport_widget.list': {
     layout: 'list',
-    renderHeaderLeadingAccessory: renderSportsHeaderIcon,
     renderItem: renderSportsWidget,
     renderSkeleton: renderSportsWidgetSkeleton,
   },
@@ -291,7 +285,7 @@ function renderSurfaceLayoutSection<T extends PlacementItem>({
   surface,
   surfaceId,
 }: SurfaceLayoutProps<T>) {
-  const leadingAccessory = descriptor.renderHeaderLeadingAccessory?.(surface) ?? renderSurfaceHeaderLeadingAccessory(surface);
+  const leadingAccessory = renderSurfaceHeaderLeadingAccessory(surface);
   const commonProps = {
     destination: surface.destination,
     display: surface.display,
@@ -434,11 +428,6 @@ function renderSportsWidgetSkeleton() {
       width={SPORTS_EVENT_WIDGET_CARD_WIDTH}
     />
   );
-}
-
-function renderSportsHeaderIcon(surface: SurfaceLeaf) {
-  const leagueId = getSurfaceLeagueId(surface);
-  return leagueId ? <LeagueIcon leagueId={leagueId} size={28} /> : null;
 }
 
 function renderSurfaceHeaderLeadingAccessory(surface: SurfaceLeaf) {
