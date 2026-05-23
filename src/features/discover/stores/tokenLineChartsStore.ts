@@ -25,8 +25,7 @@ export function buildTokenLineChartId({ address, chainId, currency }: TokenChart
   return [address, chainId, currency].join(CHART_ID_SEPARATOR);
 }
 
-async function fetchTokenLineCharts(chartIds: readonly string[], _abortController: AbortController | null): Promise<FetchedLineChartData> {
-  void _abortController;
+async function fetchTokenLineCharts(chartIds: readonly string[]): Promise<FetchedLineChartData> {
   const chartFetches = chartIds.map(chartId => fetchTokenLineChart(chartId));
   const results = await Promise.allSettled(chartFetches);
 
