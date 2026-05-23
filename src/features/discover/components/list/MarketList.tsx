@@ -28,6 +28,7 @@ type MarketListProps<T extends PlacementItem> = {
   renderItem: (item: T) => ReactNode;
   renderSkeleton: () => ReactNode;
   sectionId: string;
+  showHeaderCaret?: boolean;
   surfaceId: string;
   title: string;
 };
@@ -46,6 +47,7 @@ export function MarketList<T extends PlacementItem>({
   renderItem,
   renderSkeleton,
   sectionId,
+  showHeaderCaret,
   surfaceId,
   title,
 }: MarketListProps<T>) {
@@ -68,6 +70,7 @@ export function MarketList<T extends PlacementItem>({
         leadingAccessory={leadingAccessory}
         title={title}
         onPress={onPressSeeAll ? handleSeeAllPress : undefined}
+        showCaret={showHeaderCaret}
       />
       <Box gap={8} paddingHorizontal={{ custom: HORIZONTAL_PADDING }}>
         {showSkeletons

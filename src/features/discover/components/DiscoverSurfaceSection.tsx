@@ -384,7 +384,8 @@ function renderSurfaceLayoutSection<T extends PlacementItem>({
   const hasLimit = surface.limit !== undefined;
   const renderedData = hasLimit ? data.slice(0, surface.limit) : data;
   const skeletonCount = hasLimit ? surface.limit : undefined;
-  const headerCount = isLiveSportsSurface(surface) && data.length > 0 ? data.length : undefined;
+  const headerCount = isSportsEventCardSurface(surface) && data.length > 0 ? data.length : undefined;
+  const showHeaderCaret = getSurfaceHeaderCaret(surface);
   const commonProps = {
     destination: surface.destination,
     display: surface.display,
@@ -411,7 +412,7 @@ function renderSurfaceLayoutSection<T extends PlacementItem>({
           itemWidth={descriptor.itemWidth}
           renderItem={descriptor.renderItem}
           renderSkeleton={descriptor.renderSkeleton}
-          showHeaderCaret={descriptor.showHeaderCaret?.(surface)}
+          showHeaderCaret={showHeaderCaret ?? descriptor.showHeaderCaret?.(surface)}
           skeletonCount={skeletonCount}
         />
       );
@@ -423,7 +424,7 @@ function renderSurfaceLayoutSection<T extends PlacementItem>({
           itemHeight={descriptor.itemHeight}
           renderItem={descriptor.renderItem}
           renderSkeleton={descriptor.renderSkeleton}
-          showHeaderCaret={descriptor.showHeaderCaret?.(surface)}
+          showHeaderCaret={showHeaderCaret ?? descriptor.showHeaderCaret?.(surface)}
           skeletonCount={skeletonCount}
         />
       );
@@ -435,6 +436,7 @@ function renderSurfaceLayoutSection<T extends PlacementItem>({
           initialVisibleItemCount={surface.limit}
           renderItem={descriptor.renderItem}
           renderSkeleton={descriptor.renderSkeleton}
+          showHeaderCaret={showHeaderCaret}
         />
       );
     default:
@@ -445,6 +447,11 @@ function renderSurfaceLayoutSection<T extends PlacementItem>({
 function getHeaderPress(destination: SurfaceLeaf['destination']): (() => void) | undefined {
   if (!destination) return undefined;
   return () => navigateDiscoverDestination(destination);
+}
+
+function getSurfaceHeaderCaret(surface: SurfaceLeaf): boolean | undefined {
+  if (isLiveSportsSurface(surface)) return false;
+  if (isSportsEventCardSurface(surface)) return hasDestination(surface);
 }
 
 function renderMarketPill(item: MarketDisplayItem) {
@@ -646,6 +653,10 @@ function LiveSectionIndicator({ style }: { style?: StyleProp<ViewStyle> }) {
 function isLiveSportsSurface(surface: SurfaceLeaf): boolean {
   if (surface.display !== 'prediction_event_card.carousel' && surface.display !== 'prediction_event_card.list') return false;
   return getNormalizedSurfaceValue(surface.id) === 'live' || getNormalizedSurfaceValue(surface.label) === 'live';
+}
+
+function isSportsEventCardSurface(surface: SurfaceLeaf): boolean {
+  return surface.display === 'prediction_event_card.carousel' || surface.display === 'prediction_event_card.list';
 }
 
 function getSurfaceLeagueId(surface: SurfaceLeaf): LeagueId | undefined {
