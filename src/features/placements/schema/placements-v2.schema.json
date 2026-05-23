@@ -39,7 +39,7 @@
         "required": ["id"],
         "properties": {
           "id": {
-            "description": "Provider lookup key, such as BTC, xyz:SP500, a Polymarket event id or slug, or address:chainId for tokens.",
+            "description": "Provider lookup key, such as BTC, xyz:SP500, a Polymarket event id, or address:chainId for tokens.",
             "type": "string",
             "minLength": 1
           }

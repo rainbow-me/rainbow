@@ -27,7 +27,7 @@ function createSurfaceStore(surfaceId: string) {
       staleTime: time.minutes(10),
       cacheTime: time.minutes(15),
     },
-    { storageKey: `surfaceStore:${surfaceId}`, version: 4 }
+    { storageKey: `surfaceStore:${surfaceId}`, version: 5 }
   );
 }
 

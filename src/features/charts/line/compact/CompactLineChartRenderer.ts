@@ -30,6 +30,17 @@ export type CompactLineChartPoint = {
   y: number;
 };
 
+type CompactLineChartBounds = {
+  maxPrice: number;
+  minPrice: number;
+};
+
+type CompactLineChartGeometry = {
+  contentWidth: number;
+  height: number;
+  plotHeight: number;
+};
+
 // ============ Constants ====================================================== //
 
 const LINE_WIDTH = 2.25;
@@ -52,14 +63,18 @@ export function getCompactLineChartEndPoint(
   if (!data || pointCount < 2) return undefined;
 
   const { minPrice, maxPrice } = computeCompactLineChartBounds(data.prices, pointCount);
-  const priceRange = maxPrice - minPrice || 1;
-  const plotHeight = getCompactLineChartPlotHeight(height);
-  const lastPrice = data.prices[pointCount - 1];
-
-  return {
-    x: COMPACT_LINE_CHART_HORIZONTAL_OVERDRAW + contentWidth,
-    y: LINE_WIDTH + plotHeight - ((lastPrice - minPrice) / priceRange) * plotHeight,
-  };
+  const geometry = getCompactLineChartGeometry(contentWidth, height);
+  return projectCompactLineChartPoint(
+    data.timestamps[0],
+    data.timestamps[pointCount - 1],
+    data.timestamps[pointCount - 1],
+    data.prices[pointCount - 1],
+    {
+      geometry,
+      maxPrice,
+      minPrice,
+    }
+  );
 }
 
 // ============ Renderer ======================================================= //
@@ -206,60 +221,56 @@ export class CompactLineChartRenderer {
   private buildTargetPoints(data: CompactLineChartData, count: number): Float32Array {
     const startTs = data.timestamps[0];
     const endTs = data.timestamps[count - 1];
-    const timeRange = endTs - startTs || 1;
-    const { minPrice, maxPrice } = this.computeBounds(data.prices, count);
-    const priceRange = maxPrice - minPrice || 1;
-    const plotHeight = this.getPlotHeight();
+    const bounds = computeCompactLineChartBounds(data.prices, count);
+    const geometry = getCompactLineChartGeometry(this.contentWidth, this.height);
     const points = new Float32Array(count * 2);
 
     for (let i = 0; i < count; i++) {
       const idx = i * 2;
-      points[idx] = COMPACT_LINE_CHART_HORIZONTAL_OVERDRAW + ((data.timestamps[i] - startTs) / timeRange) * this.contentWidth;
-      points[idx + 1] = LINE_WIDTH + plotHeight - ((data.prices[i] - minPrice) / priceRange) * plotHeight;
+      const point = projectCompactLineChartPoint(startTs, endTs, data.timestamps[i], data.prices[i], { geometry, ...bounds });
+      points[idx] = point.x;
+      points[idx + 1] = point.y;
     }
 
     return points;
   }
-
-  private getPlotHeight(): number {
-    return this.height - LINE_WIDTH * 2;
-  }
-
-  private computeBounds(prices: Float32Array, count: number): { maxPrice: number; minPrice: number } {
-    let min = Number.POSITIVE_INFINITY;
-    let max = Number.NEGATIVE_INFINITY;
-
-    for (let i = 0; i < count; i++) {
-      const value = prices[i];
-      if (value < min) min = value;
-      if (value > max) max = value;
-    }
-
-    if (!Number.isFinite(min) || !Number.isFinite(max)) {
-      return { maxPrice: 1, minPrice: 0 };
-    }
-
-    const range = max - min;
-    if (range === 0) {
-      const fallback = Math.max(Math.abs(max) * FLAT_PRICE_PADDING_FACTOR, Number.EPSILON);
-      return { maxPrice: max + fallback, minPrice: min - fallback };
-    }
-
-    const padding = range * PRICE_RANGE_PADDING_FACTOR;
-    return {
-      maxPrice: max + padding,
-      minPrice: min - padding,
-    };
-  }
 }
 
-function getCompactLineChartPlotHeight(height: number): number {
+function getCompactLineChartGeometry(contentWidth: number, height: number): CompactLineChartGeometry {
   'worklet';
 
-  return height - LINE_WIDTH * 2;
+  return {
+    contentWidth,
+    height,
+    plotHeight: height - LINE_WIDTH * 2,
+  };
 }
 
-function computeCompactLineChartBounds(prices: Float32Array, count: number): { maxPrice: number; minPrice: number } {
+function projectCompactLineChartPoint(
+  startTimestamp: number,
+  endTimestamp: number,
+  timestamp: number,
+  price: number,
+  {
+    geometry,
+    maxPrice,
+    minPrice,
+  }: {
+    geometry: CompactLineChartGeometry;
+  } & CompactLineChartBounds
+): CompactLineChartPoint {
+  'worklet';
+
+  const timeRange = endTimestamp - startTimestamp || 1;
+  const priceRange = maxPrice - minPrice || 1;
+
+  return {
+    x: COMPACT_LINE_CHART_HORIZONTAL_OVERDRAW + ((timestamp - startTimestamp) / timeRange) * geometry.contentWidth,
+    y: LINE_WIDTH + geometry.plotHeight - ((price - minPrice) / priceRange) * geometry.plotHeight,
+  };
+}
+
+function computeCompactLineChartBounds(prices: Float32Array, count: number): CompactLineChartBounds {
   'worklet';
 
   let min = Number.POSITIVE_INFINITY;
