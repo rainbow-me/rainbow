@@ -6,11 +6,10 @@ import { Box, Text, TextIcon, useColorMode } from '@/design-system';
 import { opacity } from '@/framework/ui/utils/opacity';
 
 type ShowMoreButtonProps = {
-  count: number;
   onPress: () => void;
 };
 
-export const ShowMoreButton = memo(function ShowMoreButton({ count, onPress }: ShowMoreButtonProps) {
+export const ShowMoreButton = memo(function ShowMoreButton({ onPress }: ShowMoreButtonProps) {
   const { isDarkMode } = useColorMode();
   const iconBadgeBackgroundColor = isDarkMode ? opacity('#FFFFFF', 0.16) : 'rgba(9, 17, 31, 0.05)';
 
@@ -23,16 +22,12 @@ export const ShowMoreButton = memo(function ShowMoreButton({ count, onPress }: S
           </TextIcon>
         </View>
         <Text size="17pt" weight="bold" color="labelTertiary">
-          {getShowMoreLabel(count)}
+          Show more
         </Text>
       </Box>
     </ButtonPressAnimation>
   );
 });
-
-function getShowMoreLabel(count: number): string {
-  return count === 2 ? 'Show 2 more' : 'Show more';
-}
 
 const styles = StyleSheet.create({
   button: {

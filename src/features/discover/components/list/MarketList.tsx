@@ -93,7 +93,7 @@ export function MarketList<T extends PlacementItem>({
                 </ShowMoreCellEnterAnimation>
               );
             })}
-        {!showSkeletons && remainingItemCount > 0 && <ShowMoreButton count={remainingItemCount} onPress={() => setIsExpanded(true)} />}
+        {!showSkeletons && remainingItemCount > 0 && <ShowMoreButton onPress={() => setIsExpanded(true)} />}
       </Box>
     </Box>
   );
