@@ -28,6 +28,7 @@ import {
 import { usePlacementCardTrackPress } from '@/features/discover/components/marketPress/marketPressContext';
 import {
   PREDICTION_MARKET_EVENT_CARD_BORDER_RADIUS,
+  PREDICTION_MARKET_EVENT_CARD_CAROUSEL_WIDTH,
   PREDICTION_MARKET_EVENT_CARD_HEIGHT,
   PREDICTION_MARKET_EVENT_CARD_WIDTH,
   PredictionMarketEventCard,
@@ -203,9 +204,9 @@ const PREDICTIONS_SECTION_DESCRIPTORS = {
   'prediction_event_card.carousel': {
     layout: 'carousel',
     itemHeight: PREDICTION_MARKET_EVENT_CARD_HEIGHT,
-    itemWidth: PREDICTION_MARKET_EVENT_CARD_WIDTH,
-    renderItem: renderPredictionEventCard,
-    renderSkeleton: renderPredictionEventCardSkeleton,
+    itemWidth: PREDICTION_MARKET_EVENT_CARD_CAROUSEL_WIDTH,
+    renderItem: renderPredictionEventCarouselCard,
+    renderSkeleton: renderPredictionEventCarouselCardSkeleton,
   },
   'prediction_event_card.list': {
     layout: 'list',
@@ -600,12 +601,26 @@ function renderPredictionEventCard(item: PredictionPlacementItem) {
   return <PredictionMarketEventCard event={item.event} />;
 }
 
+function renderPredictionEventCarouselCard(item: PredictionPlacementItem) {
+  return <PredictionMarketEventCard event={item.event} width={PREDICTION_MARKET_EVENT_CARD_CAROUSEL_WIDTH} />;
+}
+
 function renderPredictionEventCardSkeleton() {
   return (
     <Skeleton
       borderRadius={PREDICTION_MARKET_EVENT_CARD_BORDER_RADIUS}
       height={PREDICTION_MARKET_EVENT_CARD_HEIGHT}
       width={PREDICTION_MARKET_EVENT_CARD_WIDTH}
+    />
+  );
+}
+
+function renderPredictionEventCarouselCardSkeleton() {
+  return (
+    <Skeleton
+      borderRadius={PREDICTION_MARKET_EVENT_CARD_BORDER_RADIUS}
+      height={PREDICTION_MARKET_EVENT_CARD_HEIGHT}
+      width={PREDICTION_MARKET_EVENT_CARD_CAROUSEL_WIDTH}
     />
   );
 }

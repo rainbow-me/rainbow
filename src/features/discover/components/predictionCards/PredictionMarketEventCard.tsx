@@ -33,6 +33,7 @@ import Routes from '@/navigation/routesNames';
 import { DEVICE_WIDTH } from '@/utils/deviceUtils';
 
 export const PREDICTION_MARKET_EVENT_CARD_WIDTH = Math.min(384, DEVICE_WIDTH - 32);
+export const PREDICTION_MARKET_EVENT_CARD_CAROUSEL_WIDTH = Math.min(356, DEVICE_WIDTH - 64);
 export const PREDICTION_MARKET_EVENT_CARD_HEIGHT = 162;
 export const PREDICTION_MARKET_EVENT_CARD_BORDER_RADIUS = 24;
 
@@ -54,9 +55,13 @@ const TEAM_LOGO_SIZE = 36;
 
 type PredictionMarketEventCardProps = {
   event: PolymarketEvent;
+  width?: number;
 };
 
-export const PredictionMarketEventCard = memo(function PredictionMarketEventCard({ event }: PredictionMarketEventCardProps) {
+export const PredictionMarketEventCard = memo(function PredictionMarketEventCard({
+  event,
+  width = PREDICTION_MARKET_EVENT_CARD_WIDTH,
+}: PredictionMarketEventCardProps) {
   const { isDarkMode } = useColorMode();
   const trackPress = usePlacementCardTrackPress();
   const handlePress = useCallback(() => {
@@ -76,7 +81,7 @@ export const PredictionMarketEventCard = memo(function PredictionMarketEventCard
         const cardGradientColors = getPredictionEventCardGradientColors(eventAccentColor, isDarkMode);
 
         return (
-          <View style={styles.container}>
+          <View style={[styles.container, { width }]}>
             {Platform.OS === 'android' ? <WidgetBetCellsOverlay event={event} rows={rows} /> : null}
             <ButtonPressAnimation onPress={handlePress} scaleTo={0.96} style={styles.flex} wrapperStyle={styles.flex}>
               <GradientBorderView
