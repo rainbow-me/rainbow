@@ -7,6 +7,7 @@ import { type PlacementId, type PlacementItem } from '@/features/placements/type
 import { fetchPolymarketEventsByIds } from '@/features/polymarket/stores/polymarketEventsStore';
 import { type PolymarketEvent } from '@/features/polymarket/types/polymarket-event';
 import { processRawPolymarketEvent } from '@/features/polymarket/utils/transforms';
+import { logger } from '@/logger';
 import { useRemoteConfigStore } from '@/model/remoteConfig';
 import { createDerivedStore } from '@/state/internal/createDerivedStore';
 import { createQueryStore } from '@/state/internal/createQueryStore';
@@ -27,6 +28,7 @@ type EventsById = Record<string, PolymarketEvent>;
 // ============ Constants ====================================================== //
 
 const EMPTY_PREDICTION_PLACEMENT_ITEMS: PredictionPlacementItem[] = [];
+const lastUnresolvedKeyByPlacement: Partial<Record<PlacementId, string>> = {};
 const storesByPlacementId = new Map<PlacementId, ReturnType<typeof createPredictionsPlacementStore>>();
 
 // ============ Stores ========================================================= //
@@ -84,12 +86,15 @@ function createPredictionsPlacementStore(placementId: PlacementId) {
     enabled: usePredictionsEnabled,
     select: ($, placementItems) => {
       const events = $(usePredictionEventsStore, state => state.getData());
+      const eventsReady = $(usePredictionEventsStore, state => state.getStatus('isSuccess'));
       const isLoading = $(usePredictionEventsStore, state => state.enabled && state.getStatus('isInitialLoad'));
+      const items = events ? parsePredictionItems(placementItems, events) : EMPTY_PREDICTION_PLACEMENT_ITEMS;
 
-      return {
-        isLoading,
-        items: events ? parsePredictionItems(placementItems, events) : EMPTY_PREDICTION_PLACEMENT_ITEMS,
-      };
+      if (eventsReady && events && placementItems.length > 0 && items.length === 0) {
+        logUnresolvedPredictionRefs(placementId, placementItems, events);
+      }
+
+      return { isLoading, items };
     },
   });
 }
@@ -110,6 +115,30 @@ function indexEvents(events: PolymarketEvent[]): EventsById {
   const eventsById: EventsById = {};
   for (const event of events) eventsById[event.id] = event;
   return eventsById;
+}
+
+function logUnresolvedPredictionRefs(placementId: PlacementId, placementItems: PlacementItem[], events: PolymarketEvent[]): void {
+  const eventsById = indexEvents(events);
+  const unresolvedRefIds = placementItems.map(item => item.id).filter(id => !eventsById[id]);
+  if (!unresolvedRefIds.length) return;
+
+  const diagnosticKey = unresolvedRefIds.join(',');
+  if (lastUnresolvedKeyByPlacement[placementId] === diagnosticKey) return;
+
+  lastUnresolvedKeyByPlacement[placementId] = diagnosticKey;
+  logger.warn('[placements]: Prediction placement refs did not resolve to active events', {
+    configuredRefIdsCount: placementItems.length,
+    placementId,
+    tags: {
+      feature: 'discover_placements',
+      placementId,
+      provider: 'polymarket',
+      reason: 'unresolved_refs',
+    },
+    type: 'query',
+    unresolvedRefIds: unresolvedRefIds.slice(0, 8),
+    unresolvedRefIdsCount: unresolvedRefIds.length,
+  });
 }
 
 function isUnresolvedPredictionEvent(event: PolymarketEvent): boolean {
