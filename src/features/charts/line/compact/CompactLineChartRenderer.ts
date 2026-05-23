@@ -221,18 +221,50 @@ export class CompactLineChartRenderer {
   private buildTargetPoints(data: CompactLineChartData, count: number): Float32Array {
     const startTs = data.timestamps[0];
     const endTs = data.timestamps[count - 1];
-    const bounds = computeCompactLineChartBounds(data.prices, count);
-    const geometry = getCompactLineChartGeometry(this.contentWidth, this.height);
+    const timeRange = endTs - startTs || 1;
+    const { minPrice, maxPrice } = this.computeBounds(data.prices, count);
+    const priceRange = maxPrice - minPrice || 1;
+    const plotHeight = this.getPlotHeight();
     const points = new Float32Array(count * 2);
 
     for (let i = 0; i < count; i++) {
       const idx = i * 2;
-      const point = projectCompactLineChartPoint(startTs, endTs, data.timestamps[i], data.prices[i], { geometry, ...bounds });
-      points[idx] = point.x;
-      points[idx + 1] = point.y;
+      points[idx] = COMPACT_LINE_CHART_HORIZONTAL_OVERDRAW + ((data.timestamps[i] - startTs) / timeRange) * this.contentWidth;
+      points[idx + 1] = LINE_WIDTH + plotHeight - ((data.prices[i] - minPrice) / priceRange) * plotHeight;
     }
 
     return points;
+  }
+
+  private getPlotHeight(): number {
+    return this.height - LINE_WIDTH * 2;
+  }
+
+  private computeBounds(prices: Float32Array, count: number): CompactLineChartBounds {
+    let min = Number.POSITIVE_INFINITY;
+    let max = Number.NEGATIVE_INFINITY;
+
+    for (let i = 0; i < count; i++) {
+      const value = prices[i];
+      if (value < min) min = value;
+      if (value > max) max = value;
+    }
+
+    if (!Number.isFinite(min) || !Number.isFinite(max)) {
+      return { maxPrice: 1, minPrice: 0 };
+    }
+
+    const range = max - min;
+    if (range === 0) {
+      const fallback = Math.max(Math.abs(max) * FLAT_PRICE_PADDING_FACTOR, Number.EPSILON);
+      return { maxPrice: max + fallback, minPrice: min - fallback };
+    }
+
+    const padding = range * PRICE_RANGE_PADDING_FACTOR;
+    return {
+      maxPrice: max + padding,
+      minPrice: min - padding,
+    };
   }
 }
 
