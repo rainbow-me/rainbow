@@ -13,13 +13,8 @@ import { ScrollHeaderFade } from '@/components/scroll-header-fade/ScrollHeaderFa
 import { Box, useColorMode } from '@/design-system';
 import { getValueForColorMode } from '@/design-system/color/palettes';
 import { DISCOVER_HEADER_HEIGHT, DiscoverHeader } from '@/features/discover/components/DiscoverHeader';
-import { useHyperliquidMarketsStore } from '@/features/perps/stores/hyperliquidMarketsStore';
-import { usePredictionEventsStore } from '@/features/placements/stores/derived/predictionsPlacementStore';
-import { useTokenRefsStore } from '@/features/placements/stores/derived/tokensPlacementStore';
-import { usePlacementsStore } from '@/features/placements/stores/placementsStore';
+import { refreshDiscoverSurface } from '@/features/discover/utils/refreshDiscoverSurface';
 import { SURFACE_SCHEDULE_REEVALUATE_MS, useSurfaceClockStore } from '@/features/placements/surfaces/stores/surfaceClockStore';
-import { getSurfaceStore } from '@/features/placements/surfaces/stores/surfaceStore';
-import { usePolymarketEventsStore } from '@/features/polymarket/stores/polymarketEventsStore';
 
 const SCREEN_BACKGROUND_COLOR = {
   light: '#FBFCFD',
@@ -52,17 +47,11 @@ const Content = () => {
 
   const refreshDiscover = useCallback(async () => {
     setIsRefreshing(true);
-
-    await Promise.allSettled([
-      getSurfaceStore('discover').getState().fetch(undefined, { force: true }),
-      usePlacementsStore.getState().fetch(undefined, { force: true }),
-      useHyperliquidMarketsStore.getState().fetch(undefined, { force: true }),
-      usePredictionEventsStore.getState().fetch(undefined, { force: true }),
-      useTokenRefsStore.getState().fetch(undefined, { force: true }),
-      usePolymarketEventsStore.getState().fetch(undefined, { force: true }),
-    ]);
-
-    setIsRefreshing(false);
+    try {
+      await refreshDiscoverSurface('discover');
+    } finally {
+      setIsRefreshing(false);
+    }
   }, []);
 
   const renderRefreshControl = useCallback(
