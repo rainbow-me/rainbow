@@ -8,6 +8,8 @@ import { type UnlockableAppIconKey } from '@/features/app-icon/models/appIcons';
 import { type CandleResolution, type ChartType } from '@/features/charts/types';
 import { type ENSRapActionType } from '@/features/ens/raps/common';
 import { type PerpPositionSide, type TriggerOrderType } from '@/features/perps/types';
+import { type Destination, type Display } from '@/features/placements/surfaces/types';
+import { type PlacementId, type PlacementSource, type PlacementType } from '@/features/placements/types';
 import { type EthereumWalletType } from '@/helpers/walletTypes';
 import { type WalletLibraryType } from '@/model/wallet';
 import { type PairHardwareWalletNavigatorParams } from '@/navigation/types';
@@ -244,8 +246,8 @@ export const event = {
   discoverPlacementCardPressed: 'discover.placement_card_pressed',
   discoverPredictionOutcomePressed: 'discover.prediction_outcome_pressed',
   discoverSurfaceTabPressed: 'discover.surface_tab_pressed',
-  placementInteraction: 'placement.interaction',
   surfaceSectionPressed: 'surface.section_pressed',
+  placementInteraction: 'placement.interaction',
   surfaceInteraction: 'surface.interaction',
 
   // ens
@@ -998,7 +1000,7 @@ export type EventProperties = {
     durationInMs: number;
   };
   [event.discoverPlacementCardPressed]: {
-    placementId?: string;
+    placementId?: PlacementId;
     surfaceId: string;
     placementTitle: string;
     itemOrder: number;
@@ -1007,7 +1009,7 @@ export type EventProperties = {
     marketName?: string;
     marketSlug?: string;
     marketSymbol?: string;
-    marketType?: string;
+    marketType?: PlacementSource;
   };
   [event.discoverSurfaceTabPressed]: {
     sectionTitle: string;
@@ -1016,7 +1018,7 @@ export type EventProperties = {
     wasActive: boolean;
   };
   [event.discoverPredictionOutcomePressed]: {
-    placementId?: string;
+    placementId?: PlacementId;
     surfaceId: string;
     itemId: string;
     marketId: string;
@@ -1024,31 +1026,31 @@ export type EventProperties = {
     marketSlug?: string;
     outcome: string;
   };
-  [event.placementInteraction]: {
-    placementId: string;
-    interactionType: 'carousel_scroll';
-    surfaceId?: string;
-    source?: string;
-    type?: string;
-    version: number;
-  };
   [event.surfaceSectionPressed]: {
-    destination: unknown;
-    display: string;
-    placementId?: string;
-    placementSource?: string;
-    placementType?: string;
+    destination: Destination;
+    display: Display;
+    placementId?: PlacementId;
+    placementSource?: PlacementSource;
+    placementType?: PlacementType;
     placementVersion?: number;
     sectionId: string;
     sectionTitle: string;
     surfaceId: string;
   };
-  [event.surfaceInteraction]: {
-    display?: string;
+  [event.placementInteraction]: {
+    placementId: PlacementId;
     interactionType: 'carousel_scroll';
-    placementId?: string;
-    placementSource?: string;
-    placementType?: string;
+    surfaceId?: string;
+    source?: PlacementSource;
+    type?: PlacementType;
+    version: number;
+  };
+  [event.surfaceInteraction]: {
+    display?: Display;
+    interactionType: 'carousel_scroll';
+    placementId?: PlacementId;
+    placementSource?: PlacementSource;
+    placementType?: PlacementType;
     placementVersion?: number;
     sectionId?: string;
     surfaceId: string;
