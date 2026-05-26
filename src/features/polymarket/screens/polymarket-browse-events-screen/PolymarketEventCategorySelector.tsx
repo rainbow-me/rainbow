@@ -4,14 +4,14 @@ import { StyleSheet, View, type LayoutChangeEvent } from 'react-native';
 import { ScrollView } from 'react-native-gesture-handler';
 import Animated, { useAnimatedStyle, useSharedValue, type SharedValue } from 'react-native-reanimated';
 
-import { AnimatedTextIcon } from '@/components/AnimatedComponents/AnimatedTextIcon';
 import ButtonPressAnimation from '@/components/animations/ButtonPressAnimation';
-import { Border, globalColors, Text, useColorMode, useForegroundColor } from '@/design-system';
+import { Border, globalColors, Text, TextIcon, useColorMode, useForegroundColor } from '@/design-system';
 import { InnerShadow } from '@/features/polymarket/components/InnerShadow';
 import { CATEGORIES, type Category } from '@/features/polymarket/constants';
 import { usePolymarketContext } from '@/features/polymarket/screens/polymarket-navigator/PolymarketContext';
 import { usePolymarketCategoryStore } from '@/features/polymarket/stores/usePolymarketCategoryStore';
 import { opacity } from '@/framework/ui/utils/opacity';
+import { useListen } from '@/state/internal/hooks/useListen';
 import { THICKER_BORDER_WIDTH } from '@/styles/constants';
 import { deepFreeze } from '@/utils/deepFreeze';
 import { DEVICE_WIDTH } from '@/utils/deviceUtils';
@@ -39,11 +39,32 @@ export const PolymarketEventCategorySelector = memo(function PolymarketEventCate
 
   const selectedCategoryKey = useSharedValue<CategoryKey>(usePolymarketCategoryStore.getState().tagId as CategoryKey);
 
+  const scrollToCategory = useCallback(
+    (categoryKey: CategoryKey) => {
+      const index = CATEGORY_ITEMS.findIndex(category => category.key === categoryKey);
+      const scrollX = calculateCenteredScrollX(itemLayouts.current, index);
+      categorySelectorRef.current?.scrollTo({ x: scrollX, y: 0, animated: false });
+    },
+    [categorySelectorRef]
+  );
+
   const scrollToSelectedCategory = useCallback(() => {
-    const index = CATEGORY_ITEMS.findIndex(category => category.key === selectedCategoryKey.value);
-    const scrollX = calculateCenteredScrollX(itemLayouts.current, index);
-    categorySelectorRef.current?.scrollTo({ x: scrollX, y: 0, animated: false });
-  }, [categorySelectorRef, selectedCategoryKey]);
+    scrollToCategory(selectedCategoryKey.value);
+  }, [scrollToCategory, selectedCategoryKey]);
+
+  const syncExternalCategorySelection = useCallback(
+    (tagId: string) => {
+      if (!(tagId in CATEGORIES)) return;
+      const nextCategoryKey = tagId as CategoryKey;
+      if (selectedCategoryKey.value === nextCategoryKey) return;
+
+      selectedCategoryKey.value = nextCategoryKey;
+      if (allItemsMeasured(itemLayouts.current)) scrollToCategory(nextCategoryKey);
+    },
+    [scrollToCategory, selectedCategoryKey]
+  );
+
+  useListen(usePolymarketCategoryStore, state => state.tagId, syncExternalCategorySelection);
 
   const onItemLayout = useCallback(
     (event: LayoutChangeEvent, index: number) => {
@@ -112,8 +133,12 @@ const CategoryItem = memo(function CategoryItem({ category, onPress, selectedCat
     opacity: selectedCategoryKey.value === categoryKey ? 1 : 0,
   }));
 
-  const iconStyle = useAnimatedStyle(() => ({
-    color: selectedCategoryKey.value === categoryKey ? selectedColor : unselectedIconColor,
+  const selectedIconStyle = useAnimatedStyle(() => ({
+    opacity: selectedCategoryKey.value === categoryKey ? 1 : 0,
+  }));
+
+  const unselectedIconStyle = useAnimatedStyle(() => ({
+    opacity: selectedCategoryKey.value === categoryKey ? 0 : 1,
   }));
 
   return (
@@ -125,9 +150,16 @@ const CategoryItem = memo(function CategoryItem({ category, onPress, selectedCat
           {isDarkMode && <InnerShadow blur={16} borderRadius={CONTAINER_HEIGHT / 2} color={accentColors.opacity28} dx={0} dy={8} />}
         </Animated.View>
         <View style={styles.iconContainer}>
-          <AnimatedTextIcon align="center" color="label" size="icon 16px" textStyle={iconStyle} weight="heavy">
-            {category.icon}
-          </AnimatedTextIcon>
+          <Animated.View style={[styles.iconLayer, unselectedIconStyle]}>
+            <TextIcon align="center" color={{ custom: unselectedIconColor }} size="icon 16px" weight="heavy">
+              {category.icon}
+            </TextIcon>
+          </Animated.View>
+          <Animated.View style={[styles.iconLayer, selectedIconStyle]}>
+            <TextIcon align="center" color={{ custom: selectedColor }} size="icon 16px" weight="heavy">
+              {category.icon}
+            </TextIcon>
+          </Animated.View>
         </View>
         <Text align="center" color="label" size="17pt" weight="heavy">
           {category.label}
@@ -168,6 +200,9 @@ const styles = StyleSheet.create({
     height: 20,
     justifyContent: 'center',
     width: 24,
+  },
+  iconLayer: {
+    position: 'absolute',
   },
   itemContainer: {
     alignItems: 'center',
