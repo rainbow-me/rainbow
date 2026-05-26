@@ -1,5 +1,5 @@
 import { useCallback, useEffect, useRef } from 'react';
-import { ScrollView, View, type LayoutChangeEvent, type NativeScrollEvent, type NativeSyntheticEvent } from 'react-native';
+import { ScrollView, StyleSheet, View, type LayoutChangeEvent, type NativeScrollEvent, type NativeSyntheticEvent } from 'react-native';
 
 import ButtonPressAnimation from '@/components/animations/ButtonPressAnimation';
 import { useDiscoverScreenContext } from '@/components/Discover/DiscoverScreenContext';
@@ -53,7 +53,7 @@ function DiscoverSearchButton() {
   const { onTapSearch } = useDiscoverScreenContext();
   const { isDarkMode } = useColorMode();
   return (
-    <View style={{ position: 'absolute', top: 28, right: SEARCH_BUTTON_RIGHT_INSET }}>
+    <View style={styles.searchButtonContainer}>
       <ButtonPressAnimation onPress={onTapSearch} scaleTo={0.8} testID="discover-search-icon">
         <Box
           backgroundColor={isDarkMode ? '#1D1E1F' : '#F5F5F7'}
@@ -156,14 +156,8 @@ function DiscoverCategorySelector() {
       <ScrollView
         ref={scrollViewRef}
         horizontal
-        contentContainerStyle={{
-          height: '100%',
-          gap: 16,
-          paddingTop: CONTENT_TOP_INSET,
-          paddingLeft: 24,
-          paddingRight: SELECTED_TAB_RIGHT_INSET + 32,
-        }}
-        style={{ height: '100%' }}
+        contentContainerStyle={styles.tabScrollContent}
+        style={styles.fullHeight}
         onLayout={handleScrollViewLayout}
         onScroll={handleScroll}
         scrollEventThrottle={16}
@@ -194,7 +188,7 @@ function DiscoverCategorySelector() {
           );
         })}
       </ScrollView>
-      <View style={{ position: 'absolute', right: 0, top: 0, bottom: 0, flexDirection: 'row' }} pointerEvents="none">
+      <View style={styles.fadeContainer} pointerEvents="none">
         <EasingGradient
           startColor={screenBackgroundColor}
           endColor={screenBackgroundColor}
@@ -238,3 +232,28 @@ function DiscoverCategorySelectorFallback() {
     </Box>
   );
 }
+
+const styles = StyleSheet.create({
+  fadeContainer: {
+    bottom: 0,
+    flexDirection: 'row',
+    position: 'absolute',
+    right: 0,
+    top: 0,
+  },
+  fullHeight: {
+    height: '100%',
+  },
+  searchButtonContainer: {
+    position: 'absolute',
+    right: SEARCH_BUTTON_RIGHT_INSET,
+    top: 28,
+  },
+  tabScrollContent: {
+    gap: 16,
+    height: '100%',
+    paddingLeft: 24,
+    paddingRight: SELECTED_TAB_RIGHT_INSET + 32,
+    paddingTop: CONTENT_TOP_INSET,
+  },
+});

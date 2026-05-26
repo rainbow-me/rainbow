@@ -19,7 +19,7 @@ export function CarouselHeader({
 }) {
   return (
     <Box paddingLeft={{ custom: 24 }}>
-      <ButtonPressAnimation onPress={onPress} scaleTo={0.9} style={{ alignSelf: 'flex-start' }} disabled={!onPress}>
+      <ButtonPressAnimation onPress={onPress} scaleTo={0.9} style={styles.button} disabled={!onPress}>
         <Box flexDirection="row" alignItems="center" gap={4}>
           {leadingAccessory}
           <Text size="22pt" weight="heavy" color="label">
@@ -44,6 +44,9 @@ export function CarouselHeader({
 }
 
 const styles = StyleSheet.create({
+  button: {
+    alignSelf: 'flex-start',
+  },
   countBadge: {
     alignItems: 'center',
     backgroundColor: 'rgba(255, 255, 255, 0.19)',
