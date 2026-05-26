@@ -11,7 +11,6 @@ import { useHyperliquidLineChartsStore } from '@/features/perps/stores/hyperliqu
 import { type PerpMarketWithMetadata } from '@/features/perps/types';
 import { getHyperliquidTokenId, navigateToPerpDetailScreen } from '@/features/perps/utils';
 import { formatPerpAssetPrice, selectFormattedMarkPrice } from '@/features/perps/utils/formatPerpsAssetPrice';
-import { extractBaseSymbol } from '@/features/perps/utils/hyperliquidSymbols';
 import { type PerpMarketPlacementItem } from '@/features/placements/stores/derived/perpsPlacementStore';
 import { type TokenPlacementItem } from '@/features/placements/stores/derived/tokensPlacementStore';
 import { formatCurrency } from '@/helpers/strings';
@@ -23,7 +22,7 @@ const TOKEN_SPARKLINE_MAX_POINTS = 24;
 
 export function perpToMarketDisplayItem(item: PerpMarketPlacementItem): MarketDisplayItem {
   const { market } = item;
-  const displayName = extractBaseSymbol(market.baseSymbol);
+  const displayName = market.baseSymbol;
   const initialPriceChange = market.priceChange['24h'];
 
   return {

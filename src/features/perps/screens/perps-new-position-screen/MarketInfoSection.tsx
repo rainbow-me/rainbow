@@ -7,7 +7,6 @@ import { HYPERLIQUID_TOKEN_ID_SUFFIX } from '@/features/perps/constants';
 import { type PerpMarket } from '@/features/perps/types';
 import { formatPriceChange } from '@/features/perps/utils';
 import { formatPerpAssetPrice } from '@/features/perps/utils/formatPerpsAssetPrice';
-import { extractBaseSymbol } from '@/features/perps/utils/hyperliquidSymbols';
 
 type MarketInfoSectionProps = {
   market: PerpMarket;
@@ -17,7 +16,6 @@ export const MarketInfoSection = memo(function MarketInfoSection({ market }: Mar
   const green = useForegroundColor('green');
   const red = useForegroundColor('red');
   const labelTertiary = useForegroundColor('labelTertiary');
-  const displayBaseSymbol = extractBaseSymbol(market.baseSymbol);
 
   return (
     <Box flexDirection="row" alignItems="center" gap={12}>
@@ -25,7 +23,7 @@ export const MarketInfoSection = memo(function MarketInfoSection({ market }: Mar
       <Box gap={12}>
         <Box flexDirection="row" alignItems="center" gap={6}>
           <Text size="17pt" weight="bold" color="label">
-            {displayBaseSymbol}
+            {market.baseSymbol}
           </Text>
         </Box>
         <Box flexDirection="row" alignItems="center" gap={8}>
