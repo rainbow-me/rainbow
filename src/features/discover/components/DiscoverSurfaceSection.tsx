@@ -66,6 +66,7 @@ import { type PolymarketEvent } from '@/features/polymarket/types/polymarket-eve
 import { navigateToPolymarketEvent } from '@/features/polymarket/utils/navigateToPolymarket';
 import useColorForAsset from '@/hooks/useColorForAsset';
 import * as i18n from '@/languages';
+import { logger } from '@/logger';
 import { userAssetsStoreManager } from '@/state/assets/userAssetsStoreManager';
 import { DEVICE_WIDTH } from '@/utils/deviceUtils';
 
@@ -813,8 +814,9 @@ function assertNever(value: never): never {
   throw new Error(`Unsupported Discover surface display: ${JSON.stringify(value)}`);
 }
 
-function unsupportedDisplay(display: SurfaceLeaf['display']): never {
-  throw new Error(`Unsupported Discover surface display: ${JSON.stringify(display)}`);
+function unsupportedDisplay(display: SurfaceLeaf['display']) {
+  logger.warn('[DiscoverSurfaceSection]: unsupported surface display', { display });
+  return null;
 }
 
 const styles = StyleSheet.create({
