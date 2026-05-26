@@ -112,7 +112,7 @@ function parsePredictionItems(placementItems: PlacementItem[], events: Polymarke
 
   for (const item of placementItems) {
     const event = eventsById[item.id];
-    if (event && isUnresolvedPredictionEvent(event)) items.push({ ...item, event });
+    if (event && isActivePredictionEvent(event)) items.push({ ...item, event });
   }
 
   return items.length ? items : EMPTY_PREDICTION_PLACEMENT_ITEMS;
@@ -133,7 +133,7 @@ function logUnresolvedPredictionRefs(placementId: PlacementId, placementItems: P
     const event = eventsById[item.id];
     if (!event) {
       missingRefIds.push(item.id);
-    } else if (!isUnresolvedPredictionEvent(event)) {
+    } else if (!isActivePredictionEvent(event)) {
       inactiveRefIds.push(item.id);
     }
   }
@@ -162,7 +162,7 @@ function logUnresolvedPredictionRefs(placementId: PlacementId, placementItems: P
   });
 }
 
-function isUnresolvedPredictionEvent(event: PolymarketEvent): boolean {
+function isActivePredictionEvent(event: PolymarketEvent): boolean {
   if (event.closed === true || event.ended === true) return false;
 
   return event.markets.some(market => market.active !== false && market.closed !== true && market.umaResolutionStatus !== 'resolved');
