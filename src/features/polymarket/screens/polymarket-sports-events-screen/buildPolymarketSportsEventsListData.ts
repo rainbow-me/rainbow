@@ -79,17 +79,13 @@ export function buildPolymarketSportsEventsListData(
   return items;
 }
 
-export function isLiveSportsEvent(event: PolymarketEvent, nowMs: number = Date.now()): boolean {
+export function isLiveSportsEvent(event: PolymarketEvent): boolean {
   if (event.ended) return false;
-  if (event.live) return true;
-
-  const startTime = getTimestamp(event.startTime);
-  const endTime = getTimestamp(event.endDate);
-  return startTime != null && endTime != null && startTime <= nowMs && nowMs <= endTime;
+  return event.live === true;
 }
 
 export function getSportsEventScheduleBucket(event: PolymarketEvent, referenceDate: Date = new Date()): SportsEventScheduleBucket | null {
-  if (isLiveSportsEvent(event, referenceDate.getTime())) return 'live';
+  if (isLiveSportsEvent(event)) return 'live';
 
   const { startOfToday, startOfTomorrow, startOfNextWeek } = getSportsEventsDayBoundaries(referenceDate);
   const startOfTodayMs = startOfToday.getTime();
