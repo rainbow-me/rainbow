@@ -51,7 +51,7 @@ async function fetchPolymarketSportsEvents(_: never, abortController: AbortContr
 
   const filteredEvents = events.filter(event => event.ended !== true && event.gameId != null);
 
-  const teamsByTicker = await fetchTeamsForGameEvents(filteredEvents);
+  const teamsByTicker = await fetchTeamsForGameEvents(filteredEvents, abortController);
 
   return await Promise.all(
     filteredEvents.map(event => {
