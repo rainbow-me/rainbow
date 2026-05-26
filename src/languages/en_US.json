@@ -532,13 +532,29 @@
         "discover": "Discover"
       },
       "sections": {
+        "ai": "AI",
+        "base": "Base",
+        "commodities": "Commodities",
+        "crypto": "Crypto",
+        "crypto_equities": "Crypto Equities",
+        "currencies": "Currencies",
+        "for_you": "For You",
+        "indices": "Indices",
+        "layer_1": "Layer 1",
+        "live": "Live",
+        "mag7": "MAG7",
+        "majors": "Majors",
+        "markets": "Markets",
+        "mlb": "MLB",
+        "nba": "NBA",
+        "nhl": "NHL",
+        "perps": "Perps",
+        "pre_ipo": "Pre-IPO",
+        "predictions": "Predictions",
+        "sports": "Sports",
         "tokens": "Tokens"
       },
-      "placements": {
-        "perps_title": "Perps",
-        "predictions_title": "Predictions",
-        "see_all": "See all"
-      },
+      "show_more": "Show more",
       "strategies": {
         "strategies_title": "Strategies",
         "yearn_finance_description": "Smart yield strategies from yearn.finance"
@@ -3405,9 +3421,10 @@
       "sports": {
         "vs": "vs",
         "live": "Live",
+        "this_week": "This week",
         "game_best_of": "Game %{currentPeriod} - Best of %{bestOf}",
         "final": "Final",
-        "no_games": "No games today or tomorrow"
+        "no_games": "No games this week"
       },
       "outcomes": {
         "yes": "Yes",
