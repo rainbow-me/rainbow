@@ -3,7 +3,7 @@ import { View } from 'react-native';
 
 import { Box } from '@/design-system';
 import { CarouselHeader } from '@/features/discover/components/markets/layouts/CarouselHeader';
-import { PlacementTrackedItem } from '@/features/discover/components/markets/PlacementTrackedItem';
+import { type DiscoverCardAnalyticsContext } from '@/features/discover/components/surfaceSectionTypes';
 import { type Placement, type PlacementId, type PlacementItem } from '@/features/placements/types';
 
 import { ShowMoreButton } from './ShowMoreButton';
@@ -21,7 +21,7 @@ type MarketListProps<T extends PlacementItem> = {
   onPress?: () => void;
   placement: Placement | undefined;
   placementId: PlacementId | undefined;
-  renderItem: (item: T) => ReactNode;
+  renderItem: (item: T, analyticsContext: DiscoverCardAnalyticsContext) => ReactNode;
   renderSkeleton: () => ReactNode;
   showHeaderCaret?: boolean;
   surfaceId: string;
@@ -59,18 +59,8 @@ export function MarketList<T extends PlacementItem>({
         {showSkeletons
           ? Array.from({ length: skeletonItemCount }).map((_, index) => <Fragment key={index}>{renderSkeleton()}</Fragment>)
           : visibleItems.map((item, index) => {
-              const listItem = (
-                <PlacementTrackedItem
-                  item={item}
-                  itemIndex={index}
-                  placement={placement}
-                  placementId={placementId}
-                  surfaceId={surfaceId}
-                  title={title}
-                >
-                  <View>{renderItem(item)}</View>
-                </PlacementTrackedItem>
-              );
+              const analyticsContext = getAnalyticsContext({ item, itemIndex: index, placement, placementId, surfaceId, title });
+              const listItem = <View>{renderItem(item, analyticsContext)}</View>;
 
               if (!hasInitialLimit || !isExpanded || index < (initialVisibleItemCount ?? 0)) {
                 return <Fragment key={item.id}>{listItem}</Fragment>;
@@ -86,4 +76,29 @@ export function MarketList<T extends PlacementItem>({
       </Box>
     </Box>
   );
+}
+
+function getAnalyticsContext<T extends PlacementItem>({
+  item,
+  itemIndex,
+  placement,
+  placementId,
+  surfaceId,
+  title,
+}: {
+  item: T;
+  itemIndex: number;
+  placement: Placement | undefined;
+  placementId: PlacementId | undefined;
+  surfaceId: string;
+  title: string;
+}): DiscoverCardAnalyticsContext {
+  return {
+    itemId: item.id,
+    itemOrder: itemIndex,
+    placementId,
+    placementSource: placement?.source,
+    placementTitle: title,
+    surfaceId,
+  };
 }

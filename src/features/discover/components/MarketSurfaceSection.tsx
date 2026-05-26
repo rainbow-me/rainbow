@@ -18,6 +18,7 @@ import { MARKET_SHADOW_COLOR } from '@/features/discover/components/markets/mark
 import { perpToMarketDisplayItem, tokenToMarketDisplayItem } from '@/features/discover/components/markets/marketDisplayItemMappers';
 import { getHeaderPress, renderSurfaceLayoutSection } from '@/features/discover/components/SurfaceLayoutSection';
 import {
+  type DiscoverCardAnalyticsContext,
   type MarketDisplay,
   type PlacementBackedSurfaceLeafWithDisplay,
   type SectionDescriptor,
@@ -168,24 +169,24 @@ function hasPlacement(surface: SurfaceLeafWithDisplay<MarketDisplay>): surface i
   return typeof surface.placement === 'string' && surface.placement.length > 0;
 }
 
-function renderMarketPill(item: MarketDisplayItem) {
-  return <MarketPill item={item} />;
+function renderMarketPill(item: MarketDisplayItem, _: number, analyticsContext: DiscoverCardAnalyticsContext) {
+  return <MarketPill analyticsContext={analyticsContext} item={item} />;
 }
 
-function renderMarketTile(item: MarketDisplayItem) {
-  return <MarketTileCard item={item} />;
+function renderMarketTile(item: MarketDisplayItem, _: number, analyticsContext: DiscoverCardAnalyticsContext) {
+  return <MarketTileCard analyticsContext={analyticsContext} item={item} />;
 }
 
-function renderMarketGridTile(item: MarketDisplayItem, width: number) {
-  return <MarketTileCard item={item} width={width} />;
+function renderMarketGridTile(item: MarketDisplayItem, width: number, analyticsContext: DiscoverCardAnalyticsContext) {
+  return <MarketTileCard analyticsContext={analyticsContext} item={item} width={width} />;
 }
 
 function renderMarketGridTileSkeleton(width: number) {
   return <MarketTileCardSkeleton width={width} />;
 }
 
-function renderMarketCell(item: MarketDisplayItem) {
-  return <MarketCell item={item} />;
+function renderMarketCell(item: MarketDisplayItem, analyticsContext: DiscoverCardAnalyticsContext) {
+  return <MarketCell analyticsContext={analyticsContext} item={item} />;
 }
 
 function getTokenMarketSectionDescriptor(
@@ -198,61 +199,73 @@ function getTokenMarketSectionDescriptor(
         ...MARKET_SECTION_DESCRIPTORS[display],
         getItemWidth: (item: TokenPlacementItem) =>
           computeMarketPillWidth(tokenToMarketDisplayItem({ accentColor: MARKET_SHADOW_COLOR, item, nativeCurrency })),
-        renderItem: (item: TokenPlacementItem) => <TokenMarketPill item={item} nativeCurrency={nativeCurrency} />,
+        renderItem: (item: TokenPlacementItem, _: number, analyticsContext: DiscoverCardAnalyticsContext) => (
+          <TokenMarketPill analyticsContext={analyticsContext} item={item} nativeCurrency={nativeCurrency} />
+        ),
       };
     case 'market_tile.carousel':
       return {
         ...MARKET_SECTION_DESCRIPTORS[display],
-        renderItem: (item: TokenPlacementItem) => <TokenMarketTile item={item} nativeCurrency={nativeCurrency} />,
+        renderItem: (item: TokenPlacementItem, _: number, analyticsContext: DiscoverCardAnalyticsContext) => (
+          <TokenMarketTile analyticsContext={analyticsContext} item={item} nativeCurrency={nativeCurrency} />
+        ),
       };
     case 'market_tile.grid':
       return {
         ...MARKET_SECTION_DESCRIPTORS[display],
-        renderItem: (item: TokenPlacementItem, width: number) => (
-          <TokenMarketTile item={item} nativeCurrency={nativeCurrency} width={width} />
+        renderItem: (item: TokenPlacementItem, width: number, analyticsContext: DiscoverCardAnalyticsContext) => (
+          <TokenMarketTile analyticsContext={analyticsContext} item={item} nativeCurrency={nativeCurrency} width={width} />
         ),
       };
     case 'market_cell.list':
       return {
         ...MARKET_SECTION_DESCRIPTORS[display],
-        renderItem: (item: TokenPlacementItem) => <TokenMarketCell item={item} nativeCurrency={nativeCurrency} />,
+        renderItem: (item: TokenPlacementItem, analyticsContext: DiscoverCardAnalyticsContext) => (
+          <TokenMarketCell analyticsContext={analyticsContext} item={item} nativeCurrency={nativeCurrency} />
+        ),
       };
   }
 }
 
 function TokenMarketPill({
+  analyticsContext,
   item,
   nativeCurrency,
 }: {
+  analyticsContext: DiscoverCardAnalyticsContext;
   item: TokenPlacementItem;
   nativeCurrency: ReturnType<typeof userAssetsStoreManager.getState>['currency'];
 }) {
   const displayItem = useTokenMarketDisplayItem(item, nativeCurrency);
-  return <MarketPill item={displayItem} />;
+  return <MarketPill analyticsContext={analyticsContext} item={displayItem} />;
 }
 
 function TokenMarketTile({
+  analyticsContext,
   item,
   nativeCurrency,
   width,
 }: {
+  analyticsContext: DiscoverCardAnalyticsContext;
   item: TokenPlacementItem;
   nativeCurrency: ReturnType<typeof userAssetsStoreManager.getState>['currency'];
   width?: number;
 }) {
   const displayItem = useTokenMarketDisplayItem(item, nativeCurrency);
-  return <MarketTileCard item={displayItem} width={width} />;
+  return <MarketTileCard analyticsContext={analyticsContext} item={displayItem} width={width} />;
 }
 
 function TokenMarketCell({
+  analyticsContext,
   item,
   nativeCurrency,
 }: {
+  analyticsContext: DiscoverCardAnalyticsContext;
   item: TokenPlacementItem;
   nativeCurrency: ReturnType<typeof userAssetsStoreManager.getState>['currency'];
 }) {
   const displayItem = useTokenMarketDisplayItem(item, nativeCurrency);
-  return <MarketCell item={displayItem} />;
+  return <MarketCell analyticsContext={analyticsContext} item={displayItem} />;
 }
 
 function useTokenMarketDisplayItem(

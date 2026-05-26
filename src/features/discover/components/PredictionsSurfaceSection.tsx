@@ -1,6 +1,8 @@
 import { useCallback, useMemo } from 'react';
 import { StyleSheet, type StyleProp, type ViewStyle } from 'react-native';
 
+import { analytics } from '@/analytics';
+import { event as analyticsEvent } from '@/analytics/event';
 import { Skeleton } from '@/components/Skeleton';
 import {
   PREDICTION_MARKET_EVENT_CARD_BORDER_RADIUS,
@@ -15,7 +17,6 @@ import {
   PREDICTION_MARKET_TILE_CARD_WIDTH,
   PredictionMarketTileCard,
 } from '@/features/discover/components/markets/cards/PredictionMarketTileCard';
-import { usePlacementCardTrackPress } from '@/features/discover/components/markets/marketPressContext';
 import {
   getHeaderPress,
   getInitialRenderedItemCount,
@@ -26,6 +27,7 @@ import {
   renderSurfaceLayoutSection,
 } from '@/features/discover/components/SurfaceLayoutSection';
 import {
+  type DiscoverCardAnalyticsContext,
   type PlacementBackedSurfaceLeafWithDisplay,
   type PredictionsDisplay,
   type SectionDescriptor,
@@ -191,25 +193,40 @@ function hasPlacement<TDisplay extends Display>(
   return typeof surface.placement === 'string' && surface.placement.length > 0;
 }
 
-function renderPredictionTile(item: PredictionPlacementItem) {
-  return <PredictionListItem item={item} style={styles.predictionTile} />;
+function renderPredictionTile(item: PredictionPlacementItem, _: number, analyticsContext: DiscoverCardAnalyticsContext) {
+  return <PredictionListItem analyticsContext={analyticsContext} item={item} style={styles.predictionTile} />;
 }
 
-function renderPredictionGridTile(item: PredictionPlacementItem, width: number) {
-  return <PredictionListItem item={item} style={{ height: POLYMARKET_EVENTS_LIST_ITEM_HEIGHT, width }} />;
+function renderPredictionGridTile(item: PredictionPlacementItem, width: number, analyticsContext: DiscoverCardAnalyticsContext) {
+  return (
+    <PredictionListItem analyticsContext={analyticsContext} item={item} style={{ height: POLYMARKET_EVENTS_LIST_ITEM_HEIGHT, width }} />
+  );
 }
 
-function PredictionListItem({ item, style }: { item: PredictionPlacementItem; style: StyleProp<ViewStyle> }) {
-  const trackPress = usePlacementCardTrackPress();
+function PredictionListItem({
+  analyticsContext,
+  item,
+  style,
+}: {
+  analyticsContext: DiscoverCardAnalyticsContext;
+  item: PredictionPlacementItem;
+  style: StyleProp<ViewStyle>;
+}) {
   const onPress = useCallback(() => {
-    trackPress?.({
+    analytics.track(analyticsEvent.discoverCardPressed, {
+      placementId: analyticsContext.placementId,
+      placementSource: analyticsContext.placementSource,
+      surfaceId: analyticsContext.surfaceId,
+      placementTitle: analyticsContext.placementTitle,
+      itemOrder: analyticsContext.itemOrder,
+      itemId: analyticsContext.itemId,
       marketId: item.event.id,
       marketName: item.event.title,
       marketSlug: item.event.slug,
       marketSymbol: item.event.ticker,
     });
     navigateToPolymarketEvent({ event: item.event, eventId: item.event.id });
-  }, [item.event, trackPress]);
+  }, [analyticsContext, item.event]);
 
   return <PolymarketEventsListItem event={item.event} onPress={onPress} shouldActivateOnStart={false} style={style} />;
 }
@@ -220,8 +237,8 @@ function renderPredictionSkeleton() {
   );
 }
 
-function renderPredictionWidget(item: PredictionPlacementItem) {
-  return <PredictionMarketTileCard event={item.event} />;
+function renderPredictionWidget(item: PredictionPlacementItem, _: number, analyticsContext: DiscoverCardAnalyticsContext) {
+  return <PredictionMarketTileCard analyticsContext={analyticsContext} event={item.event} />;
 }
 
 function renderPredictionWidgetSkeleton() {
@@ -234,12 +251,12 @@ function renderPredictionWidgetSkeleton() {
   );
 }
 
-function renderPredictionEventCard(item: PredictionPlacementItem) {
-  return <PredictionMarketEventCard event={item.event} />;
+function renderPredictionEventCard(item: PredictionPlacementItem, analyticsContext: DiscoverCardAnalyticsContext) {
+  return <PredictionMarketEventCard analyticsContext={analyticsContext} event={item.event} />;
 }
 
-function renderPredictionEventCarouselCard(item: PredictionPlacementItem, width: number) {
-  return <PredictionMarketEventCard event={item.event} width={width} />;
+function renderPredictionEventCarouselCard(item: PredictionPlacementItem, width: number, analyticsContext: DiscoverCardAnalyticsContext) {
+  return <PredictionMarketEventCard analyticsContext={analyticsContext} event={item.event} width={width} />;
 }
 
 function getSportsEventSectionDescriptor(surface: SurfaceLeafWithDisplay<PredictionsDisplay>): SectionDescriptor<PredictionPlacementItem> {
@@ -265,12 +282,16 @@ function getSportsEventSectionDescriptor(surface: SurfaceLeafWithDisplay<Predict
   }
 }
 
-function renderPredictionEventCardWithoutLeagueHeader(item: PredictionPlacementItem) {
-  return <PredictionMarketEventCard event={item.event} hideLeagueHeader />;
+function renderPredictionEventCardWithoutLeagueHeader(item: PredictionPlacementItem, analyticsContext: DiscoverCardAnalyticsContext) {
+  return <PredictionMarketEventCard analyticsContext={analyticsContext} event={item.event} hideLeagueHeader />;
 }
 
-function renderPredictionEventCarouselCardWithoutLeagueHeader(item: PredictionPlacementItem, width: number) {
-  return <PredictionMarketEventCard event={item.event} hideLeagueHeader width={width} />;
+function renderPredictionEventCarouselCardWithoutLeagueHeader(
+  item: PredictionPlacementItem,
+  width: number,
+  analyticsContext: DiscoverCardAnalyticsContext
+) {
+  return <PredictionMarketEventCard analyticsContext={analyticsContext} event={item.event} hideLeagueHeader width={width} />;
 }
 
 function renderPredictionEventCardSkeleton() {

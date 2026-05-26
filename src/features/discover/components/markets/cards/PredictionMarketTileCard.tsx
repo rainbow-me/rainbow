@@ -4,16 +4,15 @@ import { StyleSheet, View } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
 
 import { getColorValueForThemeWorklet } from '@/__swaps__/utils/swaps';
+import { analytics } from '@/analytics';
+import { event as analyticsEvent } from '@/analytics/event';
 import ButtonPressAnimation from '@/components/animations/ButtonPressAnimation';
 import { GradientBorderView } from '@/components/gradient-border/GradientBorderView';
 import ImgixImage from '@/components/images/ImgixImage';
 import { LiveTokenText } from '@/components/live-token-text/LiveTokenText';
 import { globalColors, Text, useColorMode } from '@/design-system';
 import { MARKET_ON_COLOR, MARKET_SHADOW_COLOR } from '@/features/discover/components/markets/marketCardChrome';
-import {
-  usePlacementCardTrackPress,
-  usePlacementPredictionOutcomeTrackPress,
-} from '@/features/discover/components/markets/marketPressContext';
+import { type DiscoverCardAnalyticsContext } from '@/features/discover/components/surfaceSectionTypes';
 import { DOWN_ARROW, UP_ARROW } from '@/features/perps/constants';
 import { type PolymarketEvent, type PolymarketMarket } from '@/features/polymarket/types/polymarket-event';
 import { getOutcomeColor } from '@/features/polymarket/utils/getMarketColor';
@@ -62,6 +61,7 @@ const ASSET_ACCENT_COLORS = [
 ] as const;
 
 type PredictionMarketTileCardProps = {
+  analyticsContext: DiscoverCardAnalyticsContext;
   event: PolymarketEvent;
 };
 
@@ -73,9 +73,8 @@ type OutcomeRowData = {
   tokenId: string;
 };
 
-export const PredictionMarketTileCard = memo(function PredictionMarketTileCard({ event }: PredictionMarketTileCardProps) {
+export const PredictionMarketTileCard = memo(function PredictionMarketTileCard({ analyticsContext, event }: PredictionMarketTileCardProps) {
   const { isDarkMode } = useColorMode();
-  const trackPress = usePlacementCardTrackPress();
   const eventColor = useMemo(() => getTileAccentColor(event, isDarkMode), [event, isDarkMode]);
   const rows = useMemo(() => getOutcomeRows(event), [event]);
   const iconSource = useMemo(() => ({ uri: event.icon ?? event.image }), [event.icon, event.image]);
@@ -101,14 +100,20 @@ export const PredictionMarketTileCard = memo(function PredictionMarketTileCard({
   );
 
   const handlePress = useCallback(() => {
-    trackPress?.({
+    analytics.track(analyticsEvent.discoverCardPressed, {
+      placementId: analyticsContext.placementId,
+      placementSource: analyticsContext.placementSource,
+      surfaceId: analyticsContext.surfaceId,
+      placementTitle: analyticsContext.placementTitle,
+      itemOrder: analyticsContext.itemOrder,
+      itemId: analyticsContext.itemId,
       marketId: event.id,
       marketName: event.title,
       marketSlug: event.slug,
       marketSymbol: event.ticker,
     });
     Navigation.handleAction(Routes.POLYMARKET_EVENT_SCREEN, { event, eventId: event.id });
-  }, [event, trackPress]);
+  }, [analyticsContext, event]);
 
   return (
     <View style={styles.container}>
@@ -157,6 +162,7 @@ export const PredictionMarketTileCard = memo(function PredictionMarketTileCard({
               <View style={styles.outcomes}>
                 {rows.map(row => (
                   <OutcomeRow
+                    analyticsContext={analyticsContext}
                     event={event}
                     eventColor={eventColor}
                     isDarkMode={isDarkMode}
@@ -174,17 +180,18 @@ export const PredictionMarketTileCard = memo(function PredictionMarketTileCard({
 });
 
 const OutcomeRow = memo(function OutcomeRow({
+  analyticsContext,
   event,
   eventColor,
   isDarkMode,
   row,
 }: {
+  analyticsContext: DiscoverCardAnalyticsContext;
   event: PolymarketEvent;
   eventColor: string;
   isDarkMode: boolean;
   row: OutcomeRowData;
 }) {
-  const trackOutcomePress = usePlacementPredictionOutcomeTrackPress();
   const outcomeColor = getOutcomeColor({
     market: row.market,
     outcome: row.market.outcomes[row.outcomeIndex] ?? row.title,
@@ -194,7 +201,10 @@ const OutcomeRow = memo(function OutcomeRow({
   });
 
   const onPress = useCallback(() => {
-    trackOutcomePress?.({
+    analytics.track(analyticsEvent.discoverPredictionOrderPressed, {
+      placementId: analyticsContext.placementId,
+      surfaceId: analyticsContext.surfaceId,
+      itemId: analyticsContext.itemId,
       marketId: row.market.id,
       marketName: row.market.question,
       marketSlug: row.market.slug,
@@ -207,7 +217,7 @@ const OutcomeRow = memo(function OutcomeRow({
       outcomeColor,
       fromRoute: Routes.POLYMARKET_BROWSE_EVENTS_SCREEN,
     });
-  }, [event, outcomeColor, row.market, row.outcomeIndex, row.title, trackOutcomePress]);
+  }, [analyticsContext, event, outcomeColor, row.market, row.outcomeIndex, row.title]);
 
   return (
     <GradientBorderView

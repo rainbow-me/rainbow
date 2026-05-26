@@ -3,6 +3,8 @@ import { StyleSheet, View } from 'react-native';
 
 import { LinearGradient } from 'expo-linear-gradient';
 
+import { analytics } from '@/analytics';
+import { event } from '@/analytics/event';
 import ButtonPressAnimation from '@/components/animations/ButtonPressAnimation';
 import { LiveTokenText } from '@/components/live-token-text/LiveTokenText';
 import { Skeleton } from '@/components/Skeleton';
@@ -18,8 +20,7 @@ import {
   LEVERAGE_BADGE_SHADOW_OPACITIES,
   MARKET_SHADOW_COLOR,
 } from '@/features/discover/components/markets/marketCardChrome';
-import { usePlacementCardTrackPress } from '@/features/discover/components/markets/marketPressContext';
-import { useMarketCardPress } from '@/features/discover/components/markets/useMarketCardPress';
+import { type DiscoverCardAnalyticsContext } from '@/features/discover/components/surfaceSectionTypes';
 import { type MarketDisplayItem } from '@/features/discover/types/marketDisplayItem';
 import { opacity } from '@/framework/ui/utils/opacity';
 import { THICKER_BORDER_WIDTH } from '@/styles/constants';
@@ -28,6 +29,7 @@ import { getHighContrastTextColorWorklet } from '@/worklets/colors';
 // ============ Types ========================================================== //
 
 type MarketTileCardProps = {
+  analyticsContext: DiscoverCardAnalyticsContext;
   item: MarketDisplayItem;
   width?: number;
 };
@@ -86,11 +88,28 @@ const CARD_COLORS = {
 
 // ============ Component ====================================================== //
 
-export const MarketTileCard = memo(function MarketTileCard({ item, width = MARKET_TILE_CARD_WIDTH }: MarketTileCardProps) {
+export const MarketTileCard = memo(function MarketTileCard({
+  analyticsContext,
+  item,
+  width = MARKET_TILE_CARD_WIDTH,
+}: MarketTileCardProps) {
   const { colorMode, isDarkMode } = useColorMode();
 
-  const trackPress = usePlacementCardTrackPress();
-  const onPress = useMarketCardPress({ metadata: item.pressMetadata, onPress: item.onNavigate, trackPress });
+  const onPress = () => {
+    analytics.track(event.discoverCardPressed, {
+      placementId: analyticsContext.placementId,
+      placementSource: analyticsContext.placementSource,
+      surfaceId: analyticsContext.surfaceId,
+      placementTitle: analyticsContext.placementTitle,
+      itemOrder: analyticsContext.itemOrder,
+      itemId: analyticsContext.itemId,
+      marketId: item.pressMetadata.marketId ?? item.id,
+      marketName: item.pressMetadata.marketName,
+      marketSlug: item.pressMetadata.marketSlug,
+      marketSymbol: item.pressMetadata.marketSymbol,
+    });
+    item.onNavigate();
+  };
 
   const { accentColor, badgeTextColor, cardColors, chartColor, iconUrl, priceChangeColors } = useMemo(
     () => buildMarketTileCardDisplay(item, colorMode),

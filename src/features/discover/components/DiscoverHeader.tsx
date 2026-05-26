@@ -1,13 +1,14 @@
 import { useCallback, useEffect, useRef } from 'react';
 import { ScrollView, StyleSheet, View, type LayoutChangeEvent, type NativeScrollEvent, type NativeSyntheticEvent } from 'react-native';
 
+import { analytics } from '@/analytics';
+import { event as analyticsEvent } from '@/analytics/event';
 import ButtonPressAnimation from '@/components/animations/ButtonPressAnimation';
 import { useDiscoverScreenContext } from '@/components/Discover/DiscoverScreenContext';
 import { EasingGradient } from '@/components/easing-gradient/EasingGradient';
 import { Skeleton } from '@/components/Skeleton';
 import { Box, Text, TextIcon, useColorMode, useForegroundColor } from '@/design-system';
 import { getValueForColorMode, globalColors } from '@/design-system/color/palettes';
-import { trackDiscoverSurfaceTabPress } from '@/features/discover/components/markets/marketPressContext';
 import { getSurfaceLabel } from '@/features/discover/components/surfaceLabel';
 import {
   DiscoverSectionNavigation,
@@ -131,7 +132,7 @@ function DiscoverCategorySelector() {
     (section: Surface) => {
       const wasActive = DiscoverSectionNavigation.isSectionActive(section.id);
       const sectionTitle = getSurfaceLabel(section);
-      trackDiscoverSurfaceTabPress({
+      analytics.track(analyticsEvent.discoverTabPressed, {
         sectionId: section.id,
         sectionTitle,
         surfaceId: surface?.id ?? 'discover',

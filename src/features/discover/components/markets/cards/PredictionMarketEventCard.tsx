@@ -3,15 +3,14 @@ import { Platform, StyleSheet, View } from 'react-native';
 
 import { LinearGradient } from 'expo-linear-gradient';
 
+import { analytics } from '@/analytics';
+import { event as analyticsEvent } from '@/analytics/event';
 import ButtonPressAnimation from '@/components/animations/ButtonPressAnimation';
 import { GradientBorderView } from '@/components/gradient-border/GradientBorderView';
 import { LiveTokenText } from '@/components/live-token-text/LiveTokenText';
 import { globalColors, Text, TextShadow, useBackgroundColor, useColorMode } from '@/design-system';
 import { LIVE_INDICATOR_COLOR, MARKET_ON_COLOR } from '@/features/discover/components/markets/marketCardChrome';
-import {
-  usePlacementCardTrackPress,
-  usePlacementPredictionOutcomeTrackPress,
-} from '@/features/discover/components/markets/marketPressContext';
+import { type DiscoverCardAnalyticsContext } from '@/features/discover/components/surfaceSectionTypes';
 import { LeagueIcon } from '@/features/polymarket/components/league-icon/LeagueIcon';
 import {
   useSportsEventContent,
@@ -55,34 +54,41 @@ const BET_CELL_BORDER_RADIUS = 15;
 const TEAM_LOGO_SIZE = 36;
 
 type PredictionMarketEventCardProps = {
+  analyticsContext: DiscoverCardAnalyticsContext;
   event: PolymarketEvent;
   hideLeagueHeader?: boolean;
   width?: number;
 };
 
 export const PredictionMarketEventCard = memo(function PredictionMarketEventCard({
+  analyticsContext,
   event,
   hideLeagueHeader = false,
   width = PREDICTION_MARKET_EVENT_CARD_WIDTH,
 }: PredictionMarketEventCardProps) {
   const { isDarkMode } = useColorMode();
-  const trackPress = usePlacementCardTrackPress();
   const { eventAccentColor, gameStatusTitle, isLive, leagueId, rows, scores, teamLabels } = useSportsEventContent(event);
   const cardBorderGradientColors = getPredictionEventCardBorderGradientColors(eventAccentColor, isDarkMode);
   const cardGradientColors = getPredictionEventCardGradientColors(eventAccentColor, isDarkMode);
   const handlePress = useCallback(() => {
-    trackPress?.({
+    analytics.track(analyticsEvent.discoverCardPressed, {
+      placementId: analyticsContext.placementId,
+      placementSource: analyticsContext.placementSource,
+      surfaceId: analyticsContext.surfaceId,
+      placementTitle: analyticsContext.placementTitle,
+      itemOrder: analyticsContext.itemOrder,
+      itemId: analyticsContext.itemId,
       marketId: event.id,
       marketName: event.title,
       marketSlug: event.slug,
       marketSymbol: event.ticker,
     });
     Navigation.handleAction(Routes.POLYMARKET_EVENT_SCREEN, { event, eventId: event.id });
-  }, [event, trackPress]);
+  }, [analyticsContext, event]);
 
   return (
     <View style={[styles.container, { width }]}>
-      {Platform.OS === 'android' ? <WidgetBetCellsOverlay event={event} rows={rows} /> : null}
+      {Platform.OS === 'android' ? <WidgetBetCellsOverlay analyticsContext={analyticsContext} event={event} rows={rows} /> : null}
       <ButtonPressAnimation onPress={handlePress} scaleTo={0.96} style={styles.flex} wrapperStyle={styles.flex}>
         <GradientBorderView
           backgroundColor={isDarkMode ? globalColors.grey100 : globalColors.white100}
@@ -130,6 +136,7 @@ export const PredictionMarketEventCard = memo(function PredictionMarketEventCard
           </View>
           <Separator />
           <TeamRow
+            analyticsContext={analyticsContext}
             event={event}
             label={rows.away.label ?? teamLabels[0]}
             score={scores?.teamAScore}
@@ -141,6 +148,7 @@ export const PredictionMarketEventCard = memo(function PredictionMarketEventCard
           />
           <InsetSeparator />
           <TeamRow
+            analyticsContext={analyticsContext}
             event={event}
             label={rows.home.label ?? teamLabels[1]}
             score={scores?.teamBScore}
@@ -169,6 +177,7 @@ function getPredictionEventCardGradientColors(eventAccentColor: string, isDarkMo
 }
 
 const TeamRow = memo(function TeamRow({
+  analyticsContext,
   event,
   label,
   lineBet,
@@ -178,6 +187,7 @@ const TeamRow = memo(function TeamRow({
   team,
   interactiveBetCells = true,
 }: {
+  analyticsContext: DiscoverCardAnalyticsContext;
   event: PolymarketEvent;
   compact?: boolean;
   interactiveBetCells?: boolean;
@@ -201,28 +211,57 @@ const TeamRow = memo(function TeamRow({
             {score ?? ''}
           </Text>
         ) : null}
-        <TeamBetCells event={event} compact={compact} interactive={interactiveBetCells} lineBet={lineBet} moneylineBet={moneylineBet} />
+        <TeamBetCells
+          analyticsContext={analyticsContext}
+          event={event}
+          compact={compact}
+          interactive={interactiveBetCells}
+          lineBet={lineBet}
+          moneylineBet={moneylineBet}
+        />
       </View>
     </View>
   );
 });
 
-const WidgetBetCellsOverlay = memo(function WidgetBetCellsOverlay({ event, rows }: { event: PolymarketEvent; rows: SportsEventRows }) {
+const WidgetBetCellsOverlay = memo(function WidgetBetCellsOverlay({
+  analyticsContext,
+  event,
+  rows,
+}: {
+  analyticsContext: DiscoverCardAnalyticsContext;
+  event: PolymarketEvent;
+  rows: SportsEventRows;
+}) {
   return (
     <View pointerEvents="box-none" style={styles.betCellsOverlay}>
-      <TeamBetCells event={event} compact={rows.away.isFallback} lineBet={rows.away.line} moneylineBet={rows.away.moneyline} />
-      <TeamBetCells event={event} compact={rows.home.isFallback} lineBet={rows.home.line} moneylineBet={rows.home.moneyline} />
+      <TeamBetCells
+        analyticsContext={analyticsContext}
+        event={event}
+        compact={rows.away.isFallback}
+        lineBet={rows.away.line}
+        moneylineBet={rows.away.moneyline}
+      />
+      <TeamBetCells
+        analyticsContext={analyticsContext}
+        event={event}
+        compact={rows.home.isFallback}
+        lineBet={rows.home.line}
+        moneylineBet={rows.home.moneyline}
+      />
     </View>
   );
 });
 
 const TeamBetCells = memo(function TeamBetCells({
+  analyticsContext,
   event,
   compact,
   interactive = true,
   lineBet,
   moneylineBet,
 }: {
+  analyticsContext: DiscoverCardAnalyticsContext;
   event: PolymarketEvent;
   compact?: boolean;
   interactive?: boolean;
@@ -245,12 +284,18 @@ const TeamBetCells = memo(function TeamBetCells({
   return (
     <View style={styles.betCells}>
       {lineBet ? (
-        <WidgetBetCell event={event} data={lineBet} backgroundColor={lineColor} variant="line" />
+        <WidgetBetCell analyticsContext={analyticsContext} event={event} data={lineBet} backgroundColor={lineColor} variant="line" />
       ) : compact ? null : (
         <View style={styles.lineCellSpacer} />
       )}
       {moneylineBet ? (
-        <WidgetBetCell event={event} data={moneylineBet} backgroundColor={moneylineColor} variant="moneyline" />
+        <WidgetBetCell
+          analyticsContext={analyticsContext}
+          event={event}
+          data={moneylineBet}
+          backgroundColor={moneylineColor}
+          variant="moneyline"
+        />
       ) : compact ? null : (
         <View style={styles.moneylineCellSpacer} />
       )}
@@ -259,11 +304,13 @@ const TeamBetCells = memo(function TeamBetCells({
 });
 
 const WidgetBetCell = memo(function WidgetBetCell({
+  analyticsContext,
   backgroundColor,
   data,
   event,
   variant,
 }: {
+  analyticsContext: DiscoverCardAnalyticsContext;
   backgroundColor?: string;
   data: BetCellData;
   event: PolymarketEvent;
@@ -271,7 +318,7 @@ const WidgetBetCell = memo(function WidgetBetCell({
 }) {
   const tokenId = getPolymarketSportsBetCellTokenId(data.outcomeTokenId);
   const color = backgroundColor ?? '#717784';
-  const onPress = useOutcomePress({ event, outcomeTokenId: data.outcomeTokenId });
+  const onPress = useOutcomePress({ analyticsContext, event, outcomeTokenId: data.outcomeTokenId });
   const isLine = variant === 'line';
   const buttonStyle = isLine ? styles.lineCellButton : styles.moneylineCellButton;
   const cellStyle = isLine
@@ -330,18 +377,28 @@ function InsetSeparator() {
   );
 }
 
-function useOutcomePress({ event, outcomeTokenId }: { event: PolymarketEvent; outcomeTokenId?: string }) {
-  const trackOutcomePress = usePlacementPredictionOutcomeTrackPress();
+function useOutcomePress({
+  analyticsContext,
+  event,
+  outcomeTokenId,
+}: {
+  analyticsContext: DiscoverCardAnalyticsContext;
+  event: PolymarketEvent;
+  outcomeTokenId?: string;
+}) {
   const onResolvedOutcomePress = useCallback(
     (outcomeInfo: SportsEventOutcomeInfo) => {
-      trackOutcomePress?.({
+      analytics.track(analyticsEvent.discoverPredictionOrderPressed, {
+        placementId: analyticsContext.placementId,
+        surfaceId: analyticsContext.surfaceId,
+        itemId: analyticsContext.itemId,
         marketId: outcomeInfo.market.id,
         marketName: outcomeInfo.market.question,
         marketSlug: outcomeInfo.market.slug,
         outcome: outcomeInfo.outcome,
       });
     },
-    [trackOutcomePress]
+    [analyticsContext]
   );
 
   return usePolymarketSportsBetCellPress({ event, outcomeTokenId, onResolvedOutcomePress });

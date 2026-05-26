@@ -1,11 +1,12 @@
 import { StyleSheet, View, type StyleProp, type ViewStyle } from 'react-native';
 
+import { analytics } from '@/analytics';
+import { event } from '@/analytics/event';
 import { useBackgroundColor } from '@/design-system';
 import { MarketCarousel } from '@/features/discover/components/markets/layouts/MarketCarousel';
 import { MarketGrid } from '@/features/discover/components/markets/layouts/MarketGrid';
 import { MarketList } from '@/features/discover/components/markets/layouts/MarketList';
 import { LIVE_INDICATOR_BACKGROUND_COLOR, LIVE_INDICATOR_COLOR } from '@/features/discover/components/markets/marketCardChrome';
-import { trackSurfaceSectionPress } from '@/features/discover/components/markets/marketPressContext';
 import { getSurfaceLabel } from '@/features/discover/components/surfaceLabel';
 import { navigateDiscoverDestination } from '@/features/discover/utils/navigation';
 import { type SurfaceLeaf } from '@/features/placements/surfaces/types';
@@ -46,14 +47,16 @@ export function renderSurfaceLayoutSection<T extends PlacementItem>({
   const title = getSurfaceLabel(surface);
   const onPress = onPressSeeAll
     ? () => {
-        trackSurfaceSectionPress({
+        analytics.track(event.discoverSectionPressed, {
           destination: surface.destination,
           display: surface.display,
-          placement,
           placementId: surface.placement ?? undefined,
+          placementSource: placement?.source,
+          placementType: placement?.type,
+          placementVersion: placement?.version,
           sectionId: surface.id,
+          sectionTitle: title,
           surfaceId,
-          title,
         });
         onPressSeeAll();
       }

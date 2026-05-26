@@ -3,6 +3,8 @@ import { StyleSheet, View } from 'react-native';
 
 import { LinearGradient } from 'expo-linear-gradient';
 
+import { analytics } from '@/analytics';
+import { event } from '@/analytics/event';
 import ButtonPressAnimation from '@/components/animations/ButtonPressAnimation';
 import ImgixImage from '@/components/images/ImgixImage';
 import { LiveTokenText, useLiveTokenValue } from '@/components/live-token-text/LiveTokenText';
@@ -19,8 +21,7 @@ import {
   LEVERAGE_BADGE_SHADOW_OPACITIES,
   MARKET_SHADOW_COLOR,
 } from '@/features/discover/components/markets/marketCardChrome';
-import { usePlacementCardTrackPress } from '@/features/discover/components/markets/marketPressContext';
-import { useMarketCardPress } from '@/features/discover/components/markets/useMarketCardPress';
+import { type DiscoverCardAnalyticsContext } from '@/features/discover/components/surfaceSectionTypes';
 import { type MarketDisplayItem } from '@/features/discover/types/marketDisplayItem';
 import { opacity } from '@/framework/ui/utils/opacity';
 import { DEVICE_WIDTH } from '@/utils/deviceUtils';
@@ -45,9 +46,8 @@ export function MarketCellSkeleton() {
   return <Skeleton borderRadius={TOKEN_CARD_BORDER_RADIUS} height={TOKEN_CARD_HEIGHT} width={TOKEN_CARD_WIDTH} />;
 }
 
-export function MarketCell({ item }: { item: MarketDisplayItem }) {
+export function MarketCell({ analyticsContext, item }: { analyticsContext: DiscoverCardAnalyticsContext; item: MarketDisplayItem }) {
   const { colorMode, isDarkMode } = useColorMode();
-  const trackPress = usePlacementCardTrackPress();
   const livePriceChange = useLiveTokenValue({
     initialValue: item.initialPriceChange,
     selector: item.priceChangeSelector,
@@ -63,7 +63,21 @@ export function MarketCell({ item }: { item: MarketDisplayItem }) {
   const gradientColors = isDarkMode
     ? ([opacity(item.accentColor, 0.16), opacity(item.accentColor, 0)] as const)
     : (['rgba(131, 142, 153, 0.06)', 'rgba(131, 142, 153, 0)'] as const);
-  const openMarketDetails = useMarketCardPress({ metadata: item.pressMetadata, onPress: item.onNavigate, trackPress });
+  const openMarketDetails = () => {
+    analytics.track(event.discoverCardPressed, {
+      placementId: analyticsContext.placementId,
+      placementSource: analyticsContext.placementSource,
+      surfaceId: analyticsContext.surfaceId,
+      placementTitle: analyticsContext.placementTitle,
+      itemOrder: analyticsContext.itemOrder,
+      itemId: analyticsContext.itemId,
+      marketId: item.pressMetadata.marketId ?? item.id,
+      marketName: item.pressMetadata.marketName,
+      marketSlug: item.pressMetadata.marketSlug,
+      marketSymbol: item.pressMetadata.marketSymbol,
+    });
+    item.onNavigate();
+  };
 
   return (
     <ButtonPressAnimation onPress={openMarketDetails} scaleTo={0.96}>

@@ -3,7 +3,7 @@ import { StyleSheet, useWindowDimensions, View } from 'react-native';
 
 import { Box } from '@/design-system';
 import { CarouselHeader } from '@/features/discover/components/markets/layouts/CarouselHeader';
-import { PlacementTrackedItem } from '@/features/discover/components/markets/PlacementTrackedItem';
+import { type DiscoverCardAnalyticsContext } from '@/features/discover/components/surfaceSectionTypes';
 import { type Placement, type PlacementId, type PlacementItem } from '@/features/placements/types';
 import { Grid } from '@/screens/token-launcher/components/Grid';
 
@@ -20,7 +20,7 @@ type MarketGridProps<T extends PlacementItem> = {
   onPress?: () => void;
   placement: Placement | undefined;
   placementId: PlacementId | undefined;
-  renderItem: (item: T, cellWidth: number) => ReactNode;
+  renderItem: (item: T, cellWidth: number, analyticsContext: DiscoverCardAnalyticsContext) => ReactNode;
   renderSkeleton: (cellWidth: number) => ReactNode;
   showHeaderCaret?: boolean;
   skeletonCount?: number;
@@ -66,18 +66,11 @@ export function MarketGrid<T extends PlacementItem>({
         ) : (
           <Grid columns={GRID_COLUMNS} spacing={GRID_SPACING}>
             {data.map((item, index) => {
+              const analyticsContext = getAnalyticsContext({ item, itemIndex: index, placement, placementId, surfaceId, title });
+
               return (
                 <View key={item.id} style={{ height: itemHeight }}>
-                  <PlacementTrackedItem
-                    item={item}
-                    itemIndex={index}
-                    placement={placement}
-                    placementId={placementId}
-                    surfaceId={surfaceId}
-                    title={title}
-                  >
-                    {renderItem(item, cellWidth)}
-                  </PlacementTrackedItem>
+                  {renderItem(item, cellWidth, analyticsContext)}
                 </View>
               );
             })}
@@ -86,6 +79,31 @@ export function MarketGrid<T extends PlacementItem>({
       </View>
     </Box>
   );
+}
+
+function getAnalyticsContext<T extends PlacementItem>({
+  item,
+  itemIndex,
+  placement,
+  placementId,
+  surfaceId,
+  title,
+}: {
+  item: T;
+  itemIndex: number;
+  placement: Placement | undefined;
+  placementId: PlacementId | undefined;
+  surfaceId: string;
+  title: string;
+}): DiscoverCardAnalyticsContext {
+  return {
+    itemId: item.id,
+    itemOrder: itemIndex,
+    placementId,
+    placementSource: placement?.source,
+    placementTitle: title,
+    surfaceId,
+  };
 }
 
 const styles = StyleSheet.create({

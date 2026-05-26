@@ -8,8 +8,15 @@ import { type UnlockableAppIconKey } from '@/features/app-icon/models/appIcons';
 import { type CandleResolution, type ChartType } from '@/features/charts/types';
 import { type ENSRapActionType } from '@/features/ens/raps/common';
 import { type PerpPositionSide, type TriggerOrderType } from '@/features/perps/types';
-import { type Destination, type Display } from '@/features/placements/surfaces/types';
-import { type PlacementId, type PlacementSource, type PlacementType } from '@/features/placements/types';
+import { type Destination, type Display, type SectionId, type SurfaceId } from '@/features/placements/surfaces/types';
+import {
+  type Placement,
+  type PlacementId,
+  type PlacementItem,
+  type PlacementItemAnalyticsMetadata,
+  type PlacementSource,
+  type PlacementType,
+} from '@/features/placements/types';
 import { type EthereumWalletType } from '@/helpers/walletTypes';
 import { type WalletLibraryType } from '@/model/wallet';
 import { type PairHardwareWalletNavigatorParams } from '@/navigation/types';
@@ -243,12 +250,11 @@ export const event = {
 
   // discover screen
   timeSpentOnDiscoverScreen: 'Time spent on the Discover screen',
-  discoverPlacementCardPressed: 'discover.placement_card_pressed',
-  discoverPredictionOutcomePressed: 'discover.prediction_outcome_pressed',
-  discoverSurfaceTabPressed: 'discover.surface_tab_pressed',
-  surfaceSectionPressed: 'surface.section_pressed',
-  placementInteraction: 'placement.interaction',
-  surfaceInteraction: 'surface.interaction',
+  discoverCardPressed: 'discover.card_pressed',
+  discoverPredictionOrderPressed: 'discover.prediction_order_pressed',
+  discoverTabPressed: 'discover.tab_pressed',
+  discoverSectionPressed: 'discover.section_pressed',
+  discoverCarouselScrolled: 'discover.carousel_scrolled',
 
   // ens
   ensInitiatedRegistration: 'Initiated ENS registration',
@@ -999,61 +1005,52 @@ export type EventProperties = {
   [event.timeSpentOnDiscoverScreen]: {
     durationInMs: number;
   };
-  [event.discoverPlacementCardPressed]: {
+  [event.discoverCardPressed]: {
     placementId?: PlacementId;
-    surfaceId: string;
+    placementSource?: PlacementSource;
+    surfaceId: SurfaceId;
     placementTitle: string;
     itemOrder: number;
-    itemId: string;
-    marketId: string;
-    marketName?: string;
-    marketSlug?: string;
-    marketSymbol?: string;
-    marketType?: PlacementSource;
+    itemId: PlacementItem['id'];
+    marketId: PlacementItemAnalyticsMetadata['marketId'];
+    marketName?: PlacementItemAnalyticsMetadata['marketName'];
+    marketSlug?: PlacementItemAnalyticsMetadata['marketSlug'];
+    marketSymbol?: PlacementItemAnalyticsMetadata['marketSymbol'];
   };
-  [event.discoverSurfaceTabPressed]: {
+  [event.discoverTabPressed]: {
     sectionTitle: string;
-    sectionId: string;
-    surfaceId: string;
+    sectionId: SectionId;
+    surfaceId: SurfaceId;
     wasActive: boolean;
   };
-  [event.discoverPredictionOutcomePressed]: {
+  [event.discoverPredictionOrderPressed]: {
     placementId?: PlacementId;
-    surfaceId: string;
-    itemId: string;
-    marketId: string;
-    marketName?: string;
-    marketSlug?: string;
+    surfaceId: SurfaceId;
+    itemId: PlacementItem['id'];
+    marketId: PlacementItemAnalyticsMetadata['marketId'];
+    marketName?: PlacementItemAnalyticsMetadata['marketName'];
+    marketSlug?: PlacementItemAnalyticsMetadata['marketSlug'];
     outcome: string;
   };
-  [event.surfaceSectionPressed]: {
+  [event.discoverSectionPressed]: {
     destination: Destination;
     display: Display;
     placementId?: PlacementId;
     placementSource?: PlacementSource;
     placementType?: PlacementType;
-    placementVersion?: number;
-    sectionId: string;
+    placementVersion?: Placement['version'];
+    sectionId: SectionId;
     sectionTitle: string;
-    surfaceId: string;
+    surfaceId: SurfaceId;
   };
-  [event.placementInteraction]: {
-    placementId: PlacementId;
-    interactionType: 'carousel_scroll';
-    surfaceId?: string;
-    source?: PlacementSource;
-    type?: PlacementType;
-    version: number;
-  };
-  [event.surfaceInteraction]: {
+  [event.discoverCarouselScrolled]: {
     display?: Display;
-    interactionType: 'carousel_scroll';
     placementId?: PlacementId;
     placementSource?: PlacementSource;
     placementType?: PlacementType;
-    placementVersion?: number;
-    sectionId?: string;
-    surfaceId: string;
+    placementVersion?: Placement['version'];
+    sectionId?: SectionId;
+    surfaceId: SurfaceId;
   };
 
   [event.ensInitiatedRegistration]: { category: string };

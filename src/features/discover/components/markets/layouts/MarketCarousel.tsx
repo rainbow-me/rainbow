@@ -4,10 +4,11 @@ import { StyleSheet, View } from 'react-native';
 import { FlatList } from 'react-native-gesture-handler';
 import { useDebouncedCallback } from 'use-debounce';
 
+import { analytics } from '@/analytics';
+import { event } from '@/analytics/event';
 import { Box } from '@/design-system';
 import { CarouselHeader } from '@/features/discover/components/markets/layouts/CarouselHeader';
-import { trackPlacementInteraction, trackSurfaceInteraction } from '@/features/discover/components/markets/marketPressContext';
-import { PlacementTrackedItem } from '@/features/discover/components/markets/PlacementTrackedItem';
+import { type DiscoverCardAnalyticsContext } from '@/features/discover/components/surfaceSectionTypes';
 import { type Display } from '@/features/placements/surfaces/types';
 import { type Placement, type PlacementId, type PlacementItem } from '@/features/placements/types';
 import { time } from '@/utils/time';
@@ -31,7 +32,7 @@ type MarketCarouselProps<T extends PlacementItem> = {
   onPress?: () => void;
   placement: Placement | undefined;
   placementId: PlacementId | undefined;
-  renderItem: (item: T, width: number) => ReactNode;
+  renderItem: (item: T, width: number, analyticsContext: DiscoverCardAnalyticsContext) => ReactNode;
   renderSkeleton: () => ReactNode;
   sectionId: string;
   showHeaderCaret?: boolean;
@@ -82,25 +83,19 @@ export function MarketCarousel<T extends PlacementItem>({
 
   const renderCarouselItem = useCallback(
     ({ item, index }: { item: T; index: number }) => {
+      const analyticsContext = getAnalyticsContext({ item, itemIndex: index, placement, placementId, surfaceId, title });
+      const width = itemWidths[index] ?? defaultItemWidth;
+
       return (
         <View
           style={{
             height: itemHeight + itemVerticalBleed * 2,
             justifyContent: 'center',
             overflow: 'visible',
-            width: itemWidths[index] ?? defaultItemWidth,
+            width,
           }}
         >
-          <PlacementTrackedItem
-            item={item}
-            itemIndex={index}
-            placement={placement}
-            placementId={placementId}
-            surfaceId={surfaceId}
-            title={title}
-          >
-            {renderItem(item, itemWidths[index] ?? defaultItemWidth)}
-          </PlacementTrackedItem>
+          {renderItem(item, width, analyticsContext)}
         </View>
       );
     },
@@ -109,8 +104,15 @@ export function MarketCarousel<T extends PlacementItem>({
 
   const onScrollSettle = useDebouncedCallback(
     () => {
-      trackSurfaceInteraction({ display, interactionType: 'carousel_scroll', placement, sectionId, surfaceId });
-      if (placement) trackPlacementInteraction({ interactionType: 'carousel_scroll', placement, surfaceId });
+      analytics.track(event.discoverCarouselScrolled, {
+        display,
+        placementId: placement?.id,
+        placementSource: placement?.source,
+        placementType: placement?.type,
+        placementVersion: placement?.version,
+        sectionId,
+        surfaceId,
+      });
     },
     SCROLL_DEBOUNCE_MS,
     SCROLL_DEBOUNCE_OPTIONS
@@ -149,6 +151,31 @@ export function MarketCarousel<T extends PlacementItem>({
       )}
     </Box>
   );
+}
+
+function getAnalyticsContext<T extends PlacementItem>({
+  item,
+  itemIndex,
+  placement,
+  placementId,
+  surfaceId,
+  title,
+}: {
+  item: T;
+  itemIndex: number;
+  placement: Placement | undefined;
+  placementId: PlacementId | undefined;
+  surfaceId: string;
+  title: string;
+}): DiscoverCardAnalyticsContext {
+  return {
+    itemId: item.id,
+    itemOrder: itemIndex,
+    placementId,
+    placementSource: placement?.source,
+    placementTitle: title,
+    surfaceId,
+  };
 }
 
 const styles = StyleSheet.create({

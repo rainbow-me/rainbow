@@ -3,6 +3,8 @@ import { StyleSheet, View } from 'react-native';
 
 import { LinearGradient } from 'expo-linear-gradient';
 
+import { analytics } from '@/analytics';
+import { event } from '@/analytics/event';
 import ButtonPressAnimation from '@/components/animations/ButtonPressAnimation';
 import { useLiveTokenSharedValue } from '@/components/live-token-text/LiveTokenText';
 import { Skeleton } from '@/components/Skeleton';
@@ -17,8 +19,7 @@ import {
   LEVERAGE_BADGE_SHADOW_OPACITIES,
   MARKET_SHADOW_COLOR,
 } from '@/features/discover/components/markets/marketCardChrome';
-import { usePlacementCardTrackPress } from '@/features/discover/components/markets/marketPressContext';
-import { useMarketCardPress } from '@/features/discover/components/markets/useMarketCardPress';
+import { type DiscoverCardAnalyticsContext } from '@/features/discover/components/surfaceSectionTypes';
 import { type MarketDisplayItem } from '@/features/discover/types/marketDisplayItem';
 import { convertStoredPerpPriceChangeToPercent } from '@/features/perps/utils';
 import { opacity } from '@/framework/ui/utils/opacity';
@@ -29,6 +30,7 @@ import { getHighContrastTextColorWorklet } from '@/worklets/colors';
 // ============ Types ========================================================== //
 
 type MarketPillProps = {
+  analyticsContext: DiscoverCardAnalyticsContext;
   item: MarketDisplayItem;
 };
 
@@ -80,11 +82,24 @@ const PILL_COLORS = {
 
 // ============ Component ====================================================== //
 
-export const MarketPill = memo(function MarketPill({ item }: MarketPillProps) {
+export const MarketPill = memo(function MarketPill({ analyticsContext, item }: MarketPillProps) {
   const { colorMode, isDarkMode } = useColorMode();
 
-  const trackPress = usePlacementCardTrackPress();
-  const onPress = useMarketCardPress({ metadata: item.pressMetadata, onPress: item.onNavigate, trackPress });
+  const onPress = () => {
+    analytics.track(event.discoverCardPressed, {
+      placementId: analyticsContext.placementId,
+      placementSource: analyticsContext.placementSource,
+      surfaceId: analyticsContext.surfaceId,
+      placementTitle: analyticsContext.placementTitle,
+      itemOrder: analyticsContext.itemOrder,
+      itemId: analyticsContext.itemId,
+      marketId: item.pressMetadata.marketId ?? item.id,
+      marketName: item.pressMetadata.marketName,
+      marketSlug: item.pressMetadata.marketSlug,
+      marketSymbol: item.pressMetadata.marketSymbol,
+    });
+    item.onNavigate();
+  };
 
   const { accentColor, badgeTextColor, iconUrl, pillColors, priceChangeColors } = useMemo(
     () => buildMarketPillDisplay(item, colorMode),
