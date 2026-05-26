@@ -18,7 +18,7 @@ export const DiscoverMoreButton = React.memo(function DiscoverMoreButton() {
     navigate(Routes.DISCOVER_SCREEN);
     analytics.track(analytics.event.pressedButton, {
       buttonName: 'DiscoverMoreButton',
-      action: 'Navigates from WalletScreen to Discover',
+      action: 'Navigates from WalletScreen to DiscoverHome',
     });
   }, [navigate]);
 
