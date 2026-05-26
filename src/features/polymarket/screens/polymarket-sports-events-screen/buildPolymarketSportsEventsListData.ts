@@ -3,7 +3,7 @@ import { type PolymarketEvent } from '@/features/polymarket/types/polymarket-eve
 import { getSportsEventsDayBoundaries } from '@/features/polymarket/utils/getSportsEventsDateRange';
 import * as i18n from '@/languages';
 
-export type SportsEventScheduleBucket = 'this-week' | 'today';
+export type SportsEventScheduleBucket = 'live' | 'this-week' | 'today';
 
 type EventItem = {
   type: 'event';
@@ -40,19 +40,17 @@ export function buildPolymarketSportsEventsListData(
 ): SportsListItem[] {
   if (!events.length) return [];
 
-  const { startOfToday } = getSportsEventsDayBoundaries(options.referenceDate);
-  const nowMs = (options.referenceDate ?? new Date()).getTime();
   const liveEvents: PolymarketEvent[] = [];
   const todayEvents: PolymarketEvent[] = [];
   const thisWeekEvents: PolymarketEvent[] = [];
 
   for (const event of events) {
-    if (isLiveSportsEvent(event, nowMs)) {
+    const bucket = getSportsEventScheduleBucket(event, options.referenceDate);
+
+    if (bucket === 'live') {
       liveEvents.push(event);
       continue;
     }
-
-    const bucket = getSportsEventScheduleBucket(event, startOfToday);
 
     if (bucket === 'today') {
       todayEvents.push(event);
@@ -91,6 +89,8 @@ export function isLiveSportsEvent(event: PolymarketEvent, nowMs: number = Date.n
 }
 
 export function getSportsEventScheduleBucket(event: PolymarketEvent, referenceDate: Date = new Date()): SportsEventScheduleBucket | null {
+  if (isLiveSportsEvent(event, referenceDate.getTime())) return 'live';
+
   const { startOfToday, startOfTomorrow, startOfNextWeek } = getSportsEventsDayBoundaries(referenceDate);
   const startOfTodayMs = startOfToday.getTime();
   const startOfTomorrowMs = startOfTomorrow.getTime();

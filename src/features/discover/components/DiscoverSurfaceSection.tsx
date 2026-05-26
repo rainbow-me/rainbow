@@ -65,6 +65,7 @@ import { usePolymarketSportsEventsStore } from '@/features/polymarket/stores/pol
 import { type PolymarketEvent } from '@/features/polymarket/types/polymarket-event';
 import { navigateToPolymarketEvent } from '@/features/polymarket/utils/navigateToPolymarket';
 import useColorForAsset from '@/hooks/useColorForAsset';
+import * as i18n from '@/languages';
 import { userAssetsStoreManager } from '@/state/assets/userAssetsStoreManager';
 import { DEVICE_WIDTH } from '@/utils/deviceUtils';
 
@@ -439,7 +440,7 @@ function renderSurfaceLayoutSection<T extends PlacementItem>({
     placementId: surface.placement ?? undefined,
     sectionId: surface.id,
     surfaceId,
-    title: surface.label || surface.id,
+    title: getSurfaceLabel(surface),
   };
 
   switch (descriptor.layout) {
@@ -513,7 +514,7 @@ function getSportsEventHeaderCount({
 }
 
 function getSportsEventCountForSurface(surface: SurfaceLeaf, events: PolymarketEvent[]): number | undefined {
-  if (isLiveSportsSurface(surface)) return events.filter(isLiveSportsEvent).length;
+  if (isLiveSportsSurface(surface)) return countSportsEventsForTimeBucket(events, 'live');
 
   const timeBucket = getSurfaceTimeBucket(surface);
   if (timeBucket) return countSportsEventsForTimeBucket(events, timeBucket);
@@ -524,7 +525,6 @@ function getSportsEventCountForSurface(surface: SurfaceLeaf, events: PolymarketE
 
 function countSportsEventsForTimeBucket(events: PolymarketEvent[], timeBucket: SportsEventScheduleBucket): number {
   return events.filter(event => {
-    if (isLiveSportsEvent(event)) return false;
     return getSportsEventScheduleBucket(event) === timeBucket;
   }).length;
 }
@@ -765,6 +765,11 @@ function getLeagueIdBySurfaceValue(value: string | undefined): LeagueId | undefi
 
 function getNormalizedSurfaceValue(value: string | undefined): string {
   return value?.trim().toLowerCase() ?? '';
+}
+
+function getSurfaceLabel(surface: Pick<Surface, 'id' | 'label'>): string {
+  const fallbackLabel = surface.label || surface.id;
+  return i18n.t(`discover.sections.${getNormalizedSurfaceKey(fallbackLabel)}`, { defaultValue: fallbackLabel });
 }
 
 function getNormalizedSurfaceKey(value: string | undefined): string {
