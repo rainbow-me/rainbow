@@ -9,7 +9,6 @@ import { EasingGradient } from '@/components/easing-gradient/EasingGradient';
 import { Skeleton } from '@/components/Skeleton';
 import { Box, Text, TextIcon, useColorMode, useForegroundColor } from '@/design-system';
 import { getValueForColorMode, globalColors } from '@/design-system/color/palettes';
-import { getSurfaceLabel } from '@/features/discover/components/surfaceLabel';
 import {
   DiscoverSectionNavigation,
   useDiscoverNavigationStore,
@@ -131,7 +130,7 @@ function DiscoverCategorySelector() {
   const handlePress = useCallback(
     (section: Surface) => {
       const wasActive = DiscoverSectionNavigation.isSectionActive(section.id);
-      const sectionTitle = getSurfaceLabel(section);
+      const sectionTitle = section.label || section.id;
       analytics.track(analyticsEvent.discoverTabPressed, {
         sectionId: section.id,
         sectionTitle,
@@ -164,7 +163,7 @@ function DiscoverCategorySelector() {
       >
         {tabs.map(section => {
           const isSelected = section.id === activeSection;
-          const sectionLabel = getSurfaceLabel(section);
+          const sectionLabel = section.label || section.id;
           return (
             <View
               key={section.id}

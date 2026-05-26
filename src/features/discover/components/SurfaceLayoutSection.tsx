@@ -7,7 +7,6 @@ import { MarketCarousel } from '@/features/discover/components/markets/layouts/M
 import { MarketGrid } from '@/features/discover/components/markets/layouts/MarketGrid';
 import { MarketList } from '@/features/discover/components/markets/layouts/MarketList';
 import { LIVE_INDICATOR_BACKGROUND_COLOR, LIVE_INDICATOR_COLOR } from '@/features/discover/components/markets/marketCardChrome';
-import { getSurfaceLabel } from '@/features/discover/components/surfaceLabel';
 import { navigateDiscoverDestination } from '@/features/discover/utils/navigation';
 import { type SurfaceLeaf } from '@/features/placements/surfaces/types';
 import { type PlacementItem } from '@/features/placements/types';
@@ -44,7 +43,7 @@ export function renderSurfaceLayoutSection<T extends PlacementItem>({
   const renderedData = hasLimit ? data.slice(0, surface.limit) : data;
   const skeletonCount = hasLimit ? surface.limit : undefined;
   const showHeaderCaret = getSurfaceHeaderCaret(surface);
-  const title = getSurfaceLabel(surface);
+  const title = surface.label || surface.id;
   const onPress = onPressSeeAll
     ? () => {
         analytics.track(event.discoverSectionPressed, {
