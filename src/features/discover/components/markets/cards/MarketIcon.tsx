@@ -4,7 +4,7 @@ import { StyleSheet, View } from 'react-native';
 import ImgixImage from '@/components/images/ImgixImage';
 import { Border, Text } from '@/design-system';
 import { type TextSize } from '@/design-system/components/Text/Text';
-import { LeverageBadge } from '@/features/discover/components/markets/cards/LeverageBadge';
+import { LeverageBadge } from '@/features/perps/components/LeverageBadge';
 
 const DEFAULT_BORDER_WIDTH = 8 / 3;
 const DEFAULT_IMAGE_BORDER_GAP = 4 / 3;
@@ -67,6 +67,7 @@ export const MarketIcon = memo(function MarketIcon({
       {leverage !== undefined ? (
         <LeverageBadge
           backgroundColor={accentColor}
+          bleed={false}
           borderColor={badgeBorderColor}
           leverage={leverage}
           shadowColor={badgeShadowColor}
