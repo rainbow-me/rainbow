@@ -8,6 +8,7 @@ import { LeverageBadge } from '@/features/perps/components/LeverageBadge';
 import { type PerpMarket } from '@/features/perps/types';
 import { formatPriceChange, getHyperliquidTokenId } from '@/features/perps/utils';
 import { formatPerpAssetPrice } from '@/features/perps/utils/formatPerpsAssetPrice';
+import { extractBaseSymbol } from '@/features/perps/utils/hyperliquidSymbols';
 import { formatNumber } from '@/helpers/strings';
 import * as i18n from '@/languages';
 import { type TokenData } from '@/state/liveTokens/liveTokensStore';
@@ -25,6 +26,7 @@ type PerpMarketRowProps = {
 
 export const PerpMarketRow = function PerpMarketRow({ market, onPress, paddingVertical, priceChangeColors }: PerpMarketRowProps) {
   const tokenId = getHyperliquidTokenId(market.symbol);
+  const displayBaseSymbol = extractBaseSymbol(market.baseSymbol);
   const volume = useMemo(() => {
     return formatNumber(market.volume['24h'], { useOrderSuffix: true, decimals: 1, style: '$' });
   }, [market.volume]);
@@ -42,7 +44,7 @@ export const PerpMarketRow = function PerpMarketRow({ market, onPress, paddingVe
           <Box flexDirection="row" alignItems="center" justifyContent="space-between">
             <Box flexDirection="row" alignItems="center" gap={6}>
               <Text size="17pt" weight="bold" color="label">
-                {market.baseSymbol}
+                {displayBaseSymbol}
               </Text>
             </Box>
             <LiveTokenText
