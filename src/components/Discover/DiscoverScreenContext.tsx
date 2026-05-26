@@ -52,7 +52,11 @@ export const DiscoverScreenProvider = ({ children }: { children: React.ReactNode
   }, [scrollToSectionTop]);
 
   const registerSectionScrollView = useCallback((section: DiscoverSection, scrollView: Animated.ScrollView | null) => {
-    sectionScrollViewRefs.current[section] = scrollView;
+    if (scrollView) {
+      sectionScrollViewRefs.current[section] = scrollView;
+    } else {
+      delete sectionScrollViewRefs.current[section];
+    }
   }, []);
 
   const onTapSearch = useCallback(() => {
