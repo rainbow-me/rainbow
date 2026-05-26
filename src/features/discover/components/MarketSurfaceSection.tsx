@@ -1,11 +1,6 @@
 import { useCallback, useMemo } from 'react';
 
 import { useDiscoverScreenContext } from '@/components/Discover/DiscoverScreenContext';
-import {
-  getTokenPerpMarketSymbol,
-  perpToMarketDisplayItem,
-  tokenToMarketDisplayItem,
-} from '@/features/discover/adapters/toMarketDisplayItem';
 import { MarketCell, MarketCellSkeleton } from '@/features/discover/components/markets/cards/MarketCell';
 import {
   computeMarketPillWidth,
@@ -20,6 +15,7 @@ import {
   MarketTileCardSkeleton,
 } from '@/features/discover/components/markets/cards/MarketTileCard';
 import { MARKET_SHADOW_COLOR } from '@/features/discover/components/markets/marketCardChrome';
+import { perpToMarketDisplayItem, tokenToMarketDisplayItem } from '@/features/discover/components/markets/marketDisplayItemMappers';
 import { getHeaderPress, renderSurfaceLayoutSection } from '@/features/discover/components/SurfaceLayoutSection';
 import {
   type MarketDisplay,
@@ -29,7 +25,6 @@ import {
 } from '@/features/discover/components/surfaceSectionTypes';
 import { type MarketDisplayItem } from '@/features/discover/types/marketDisplayItem';
 import { navigateDiscoverDestination } from '@/features/discover/utils/navigation';
-import { useHyperliquidMarketsStore } from '@/features/perps/stores/hyperliquidMarketsStore';
 import { getPerpsPlacementStore } from '@/features/placements/stores/derived/perpsPlacementStore';
 import { getTokensPlacementStore, type TokenPlacementItem } from '@/features/placements/stores/derived/tokensPlacementStore';
 import { usePlacementsStore } from '@/features/placements/stores/placementsStore';
@@ -264,16 +259,11 @@ function useTokenMarketDisplayItem(
   item: TokenPlacementItem,
   nativeCurrency: ReturnType<typeof userAssetsStoreManager.getState>['currency']
 ): MarketDisplayItem {
-  const perpMarketSymbol = getTokenPerpMarketSymbol(item);
-  const perpMarket = useHyperliquidMarketsStore(state => (perpMarketSymbol ? state.getMarket(perpMarketSymbol) : undefined));
   const accentColor = useColorForAsset({
     address: item.asset.address,
     name: item.asset.name,
     symbol: item.asset.symbol,
   });
 
-  return useMemo(
-    () => tokenToMarketDisplayItem({ accentColor, item, nativeCurrency, perpMarket }),
-    [accentColor, item, nativeCurrency, perpMarket]
-  );
+  return useMemo(() => tokenToMarketDisplayItem({ accentColor, item, nativeCurrency }), [accentColor, item, nativeCurrency]);
 }
