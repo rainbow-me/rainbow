@@ -69,6 +69,7 @@ export function renderSurfaceLayoutSection<T extends PlacementItem>({
           renderItem={descriptor.renderItem}
           renderSkeleton={descriptor.renderSkeleton}
           showHeaderCaret={showHeaderCaret ?? descriptor.showHeaderCaret?.(surface)}
+          singleItemWidth={descriptor.singleItemWidth}
           skeletonCount={skeletonCount}
         />
       );

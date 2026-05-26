@@ -36,10 +36,11 @@ type MarketCarouselProps<T extends PlacementItem> = {
   onPressSeeAll?: () => void;
   placement: Placement | undefined;
   placementId: PlacementId | undefined;
-  renderItem: (item: T) => ReactNode;
+  renderItem: (item: T, width: number) => ReactNode;
   renderSkeleton: () => ReactNode;
   sectionId: string;
   showHeaderCaret?: boolean;
+  singleItemWidth?: number;
   skeletonCount?: number;
   surfaceId: string;
   title: string;
@@ -63,13 +64,18 @@ export function MarketCarousel<T extends PlacementItem>({
   renderSkeleton,
   sectionId,
   showHeaderCaret,
+  singleItemWidth,
   skeletonCount = SKELETON_COUNT,
   surfaceId,
   title,
 }: MarketCarouselProps<T>) {
   const showSkeletons = loading && data.length === 0;
+  const defaultItemWidth = data.length === 1 && singleItemWidth !== undefined ? singleItemWidth : itemWidth;
 
-  const itemWidths = useMemo(() => data.map(item => (getItemWidth ? getItemWidth(item) : itemWidth)), [data, getItemWidth, itemWidth]);
+  const itemWidths = useMemo(
+    () => data.map(item => (getItemWidth ? getItemWidth(item) : defaultItemWidth)),
+    [data, defaultItemWidth, getItemWidth]
+  );
 
   const snapToOffsets = useMemo(() => {
     let offset = 0;
@@ -88,7 +94,7 @@ export function MarketCarousel<T extends PlacementItem>({
             height: itemHeight + itemVerticalBleed * 2,
             justifyContent: 'center',
             overflow: 'visible',
-            width: itemWidths?.[index] ?? itemWidth,
+            width: itemWidths[index] ?? defaultItemWidth,
           }}
         >
           <PlacementTrackedItem
@@ -99,12 +105,12 @@ export function MarketCarousel<T extends PlacementItem>({
             surfaceId={surfaceId}
             title={title}
           >
-            {renderItem(item)}
+            {renderItem(item, itemWidths[index] ?? defaultItemWidth)}
           </PlacementTrackedItem>
         </View>
       );
     },
-    [itemHeight, itemVerticalBleed, itemWidth, itemWidths, placement, placementId, renderItem, surfaceId, title]
+    [defaultItemWidth, itemHeight, itemVerticalBleed, itemWidths, placement, placementId, renderItem, surfaceId, title]
   );
 
   const handleSeeAllPress = useCallback(() => {

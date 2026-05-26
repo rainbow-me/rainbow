@@ -75,6 +75,7 @@ const PREDICTIONS_SECTION_DESCRIPTORS = {
     itemWidth: PREDICTION_MARKET_EVENT_CARD_CAROUSEL_WIDTH,
     renderItem: renderPredictionEventCarouselCard,
     renderSkeleton: renderPredictionEventCarouselCardSkeleton,
+    singleItemWidth: PREDICTION_MARKET_EVENT_CARD_WIDTH,
   },
   'prediction_event_card.list': {
     layout: 'list',
@@ -135,9 +136,10 @@ function SportsEventPlacementSurfaceSection({
   const useStore = useMemo(() => getPredictionsPlacementStore(surface.placement), [surface.placement]);
   const result = useStore();
   const sportsEvents = usePolymarketSportsEventsStore(state => state.getData());
+  const displayedItemCount = getInitialRenderedItemCount(result.items, surface.limit);
   const descriptor = getSportsEventSectionDescriptor(surface);
   const headerCount = getSportsEventHeaderCount({
-    displayedItemCount: getInitialRenderedItemCount(result.items, surface.limit),
+    displayedItemCount,
     events: sportsEvents,
     surface,
   });
@@ -157,15 +159,16 @@ function SportsEventPlacementSurfaceSection({
 function SportsLiveSurfaceSection({ surface, surfaceId }: { surface: SurfaceLeafWithDisplay<PredictionsDisplay>; surfaceId: string }) {
   const events = usePolymarketSportsEventsStore(state => state.getData());
   const isLoading = usePolymarketSportsEventsStore(state => state.getStatus('isLoading') || state.getStatus('isIdle'));
-  const descriptor = getSportsEventSectionDescriptor(surface);
   const items = useMemo<PredictionPlacementItem[]>(() => {
     if (!events) return EMPTY_PREDICTION_PLACEMENT_ITEMS;
     const liveEvents = events.filter(isLiveSportsEvent);
     if (!liveEvents.length) return EMPTY_PREDICTION_PLACEMENT_ITEMS;
     return liveEvents.map(event => ({ id: event.id, event }));
   }, [events]);
+  const displayedItemCount = getInitialRenderedItemCount(items, surface.limit);
+  const descriptor = getSportsEventSectionDescriptor(surface);
   const headerCount = getSportsEventHeaderCount({
-    displayedItemCount: getInitialRenderedItemCount(items, surface.limit),
+    displayedItemCount,
     events,
     surface,
   });
@@ -235,8 +238,8 @@ function renderPredictionEventCard(item: PredictionPlacementItem) {
   return <PredictionMarketEventCard event={item.event} />;
 }
 
-function renderPredictionEventCarouselCard(item: PredictionPlacementItem) {
-  return <PredictionMarketEventCard event={item.event} width={PREDICTION_MARKET_EVENT_CARD_CAROUSEL_WIDTH} />;
+function renderPredictionEventCarouselCard(item: PredictionPlacementItem, width: number) {
+  return <PredictionMarketEventCard event={item.event} width={width} />;
 }
 
 function getSportsEventSectionDescriptor(surface: SurfaceLeafWithDisplay<PredictionsDisplay>): SectionDescriptor<PredictionPlacementItem> {
@@ -266,8 +269,8 @@ function renderPredictionEventCardWithoutLeagueHeader(item: PredictionPlacementI
   return <PredictionMarketEventCard event={item.event} hideLeagueHeader />;
 }
 
-function renderPredictionEventCarouselCardWithoutLeagueHeader(item: PredictionPlacementItem) {
-  return <PredictionMarketEventCard event={item.event} hideLeagueHeader width={PREDICTION_MARKET_EVENT_CARD_CAROUSEL_WIDTH} />;
+function renderPredictionEventCarouselCardWithoutLeagueHeader(item: PredictionPlacementItem, width: number) {
+  return <PredictionMarketEventCard event={item.event} hideLeagueHeader width={width} />;
 }
 
 function renderPredictionEventCardSkeleton() {

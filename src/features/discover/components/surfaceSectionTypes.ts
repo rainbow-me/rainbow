@@ -10,9 +10,10 @@ export type CarouselSectionDescriptor<T extends PlacementItem> = {
   itemHeight: number;
   itemVerticalBleed?: number;
   itemWidth: number;
-  renderItem: (item: T) => ReactNode;
+  renderItem: (item: T, width: number) => ReactNode;
   renderSkeleton: () => ReactNode;
   showHeaderCaret?: (surface: SurfaceLeaf) => boolean;
+  singleItemWidth?: number;
 };
 
 export type GridSectionDescriptor<T extends PlacementItem> = {
