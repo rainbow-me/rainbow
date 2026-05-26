@@ -1,0 +1,64 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://rainbow.me/schemas/placements-v2.schema.json",
+  "$comment": "Mirrors the placement v2 CMS/write-time schema spec. Keep this client-side defensive parser in sync with the write-time contract.",
+  "title": "Placement v2",
+  "description": "A server-curated, typed list of item ids. Presentation, labels, scheduling, and destination live on surfaces; placements are pure data.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["id", "version", "source", "type", "items"],
+  "properties": {
+    "id": {
+      "description": "Stable slug matching the Firestore document id.",
+      "type": "string",
+      "pattern": "^[a-z][a-z0-9_]*$"
+    },
+    "version": {
+      "description": "Placement collection schema version. Clients query placements where version == 2 to exclude legacy documents.",
+      "const": 2
+    },
+    "source": {
+      "description": "Hydration provider. Closed enum; adding a provider requires an app release.",
+      "enum": ["hyperliquid", "polymarket", "rainbow"]
+    },
+    "type": {
+      "description": "Asset kind for every item in this placement. The source/type pair is constrained below.",
+      "enum": ["perp", "prediction", "token"]
+    },
+    "updatedAt": {
+      "description": "Optional ISO timestamp from the curator/publisher. The client does not use this for ordering.",
+      "type": "string",
+      "format": "date-time"
+    },
+    "items": {
+      "description": "Ordered list of source-specific ids. Array position is the only order signal; items do not carry labels, display hints, enabled flags, or per-item metadata.",
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["id"],
+        "properties": {
+          "id": {
+            "description": "Provider lookup key, such as BTC, xyz:SP500, a Polymarket event id, or address:chainId for tokens.",
+            "type": "string",
+            "minLength": 1
+          }
+        }
+      }
+    }
+  },
+  "allOf": [
+    {
+      "if": { "properties": { "source": { "const": "hyperliquid" } }, "required": ["source"] },
+      "then": { "properties": { "type": { "const": "perp" } } }
+    },
+    {
+      "if": { "properties": { "source": { "const": "polymarket" } }, "required": ["source"] },
+      "then": { "properties": { "type": { "const": "prediction" } } }
+    },
+    {
+      "if": { "properties": { "source": { "const": "rainbow" } }, "required": ["source"] },
+      "then": { "properties": { "type": { "const": "token" } } }
+    }
+  ]
+}
