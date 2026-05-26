@@ -1,4 +1,4 @@
-import React, { memo, useCallback, useEffect, useMemo, useState, type ReactElement } from 'react';
+import React, { memo, useCallback, useEffect, useMemo, type ReactElement } from 'react';
 import { Platform, StyleSheet, type RefreshControlProps } from 'react-native';
 
 import Animated, { useAnimatedScrollHandler, useSharedValue, type SharedValue } from 'react-native-reanimated';
@@ -174,21 +174,6 @@ const DiscoverSectionScrollView = memo(function DiscoverSectionScrollView({
   const { registerSectionScrollView } = useDiscoverScreenContext();
   const tabBarOffset = useTabBarOffset();
   const bottomInset = tabBarOffset + 12;
-  const [isContentReady, setIsContentReady] = useState(false);
-
-  useEffect(() => {
-    setIsContentReady(false);
-
-    let secondFrame: number | null = null;
-    const firstFrame = requestAnimationFrame(() => {
-      secondFrame = requestAnimationFrame(() => setIsContentReady(true));
-    });
-
-    return () => {
-      cancelAnimationFrame(firstFrame);
-      if (secondFrame !== null) cancelAnimationFrame(secondFrame);
-    };
-  }, [section.id]);
 
   const setScrollViewRef = useCallback(
     (scrollView: Animated.ScrollView | null) => {
@@ -213,10 +198,6 @@ const DiscoverSectionScrollView = memo(function DiscoverSectionScrollView({
       scrollOffset.value = clampedPosition;
     },
   });
-
-  if (!isContentReady) {
-    return <DiscoverSectionsFallback renderRefreshControl={renderRefreshControl} scrollOffset={scrollOffset} />;
-  }
 
   return (
     <Animated.ScrollView
