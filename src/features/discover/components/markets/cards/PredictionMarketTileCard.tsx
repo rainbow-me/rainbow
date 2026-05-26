@@ -276,13 +276,16 @@ function getOutcomeRows(event: PolymarketEvent): OutcomeRowData[] {
   if (!firstMarket) return [];
 
   if (activeMarkets.length === 1) {
-    return firstMarket.outcomes.slice(0, OUTCOME_ROW_COUNT).map((outcome, outcomeIndex) =>
-      buildOutcomeRow({
-        market: firstMarket,
-        outcomeIndex,
-        title: outcome,
-      })
-    );
+    return firstMarket.outcomes
+      .slice(0, OUTCOME_ROW_COUNT)
+      .map((outcome, outcomeIndex) =>
+        buildOutcomeRow({
+          market: firstMarket,
+          outcomeIndex,
+          title: outcome,
+        })
+      )
+      .filter(isOutcomeRowData);
   }
 
   const marketsAboveThreshold = LAST_TRADE_PRICE_THRESHOLDS.map(threshold =>
@@ -290,13 +293,15 @@ function getOutcomeRows(event: PolymarketEvent): OutcomeRowData[] {
   ).find(markets => markets.length >= OUTCOME_ROW_COUNT);
   const visibleMarkets = (marketsAboveThreshold ?? activeMarkets).slice(0, OUTCOME_ROW_COUNT);
 
-  return visibleMarkets.map(market =>
-    buildOutcomeRow({
-      market,
-      outcomeIndex: 0,
-      title: formatOutcomeTitle(market.groupItemTitle || market.outcomes[0] || market.question),
-    })
-  );
+  return visibleMarkets
+    .map(market =>
+      buildOutcomeRow({
+        market,
+        outcomeIndex: 0,
+        title: formatOutcomeTitle(market.groupItemTitle || market.outcomes[0] || market.question),
+      })
+    )
+    .filter(isOutcomeRowData);
 }
 
 function buildOutcomeRow({
@@ -307,15 +312,26 @@ function buildOutcomeRow({
   market: PolymarketMarket;
   outcomeIndex: number;
   title: string;
-}): OutcomeRowData {
+}): OutcomeRowData | null {
   const tokenId = market.clobTokenIds[outcomeIndex];
+  if (!tokenId) return null;
+
   return {
     market,
     outcomeIndex,
     title,
-    initialPrice: market.outcomePrices[outcomeIndex] ?? calculateOddsPrice(market),
+    initialPrice: getInitialOutcomePrice(market, outcomeIndex),
     tokenId: getPolymarketTokenId(tokenId, 'sell'),
   };
+}
+
+function isOutcomeRowData(row: OutcomeRowData | null): row is OutcomeRowData {
+  return row !== null;
+}
+
+function getInitialOutcomePrice(market: PolymarketMarket, outcomeIndex: number): string | number {
+  const outcomePrice = market.outcomePrices[outcomeIndex];
+  return outcomePrice === undefined || outcomePrice === '' ? calculateOddsPrice(market) : outcomePrice;
 }
 
 function calculateOddsPrice(market: PolymarketMarket): number {
@@ -337,7 +353,8 @@ function formatOutcomeTitle(title: string): string {
   return `${match[1]} $${match[3]}`;
 }
 
-function formatOdds(value: string | number): string {
+function formatOdds(value?: string | number | null): string {
+  if (value == null || value === '') return '--';
   return `${roundWorklet(toPercentageWorklet(value))}%`;
 }
 
