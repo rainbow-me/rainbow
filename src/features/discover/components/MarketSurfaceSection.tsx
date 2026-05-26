@@ -33,6 +33,7 @@ import { getPerpsPlacementStore } from '@/features/placements/stores/derived/per
 import { getTokensPlacementStore, type TokenPlacementItem } from '@/features/placements/stores/derived/tokensPlacementStore';
 import { usePlacementsStore } from '@/features/placements/stores/placementsStore';
 import { MARKET_DISPLAY_VALUES } from '@/features/placements/surfaces/constants';
+import { useIsDiscoverSurfacePlacementPending } from '@/features/placements/surfaces/hooks/useSurface';
 import { type SurfaceLeaf } from '@/features/placements/surfaces/types';
 import useColorForAsset from '@/hooks/useColorForAsset';
 import { userAssetsStoreManager } from '@/state/assets/userAssetsStoreManager';
@@ -90,6 +91,7 @@ function PlacementBackedMarketSurfaceSection({
   surfaceId: string;
 }) {
   const source = usePlacementsStore(state => state.getPlacement(surface.placement)?.source);
+  const isPendingSurfacePlacement = useIsDiscoverSurfacePlacementPending(surface.placement);
   const isLoadingPlacementSource = usePlacementsStore(state => {
     if (state.getPlacement(surface.placement) !== undefined) return false;
     return state.getStatus('isInitialLoad') || state.getStatus('isIdle') || state.getStatus('isLoading');
@@ -97,7 +99,7 @@ function PlacementBackedMarketSurfaceSection({
 
   if (source === 'hyperliquid') return <PerpsMarketSurfaceSection surface={surface} surfaceId={surfaceId} />;
   if (source === 'rainbow') return <TokensMarketSurfaceSection surface={surface} surfaceId={surfaceId} />;
-  if (isLoadingPlacementSource) {
+  if (isLoadingPlacementSource || isPendingSurfacePlacement) {
     return renderSurfaceLayoutSection({
       data: EMPTY_MARKET_DISPLAY_ITEMS,
       descriptor: MARKET_SECTION_DESCRIPTORS[surface.display],

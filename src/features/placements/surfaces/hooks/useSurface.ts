@@ -14,19 +14,34 @@ const EMPTY_PLACEMENT_IDS: string[] = [];
 export const useDiscoverSurface = createDerivedStore<Surface | undefined>(
   $ => {
     const rawSurface = $(useDiscoverSurfaceStore, state => state.getData());
+    const surfaceLastFetchedAt = $(useDiscoverSurfaceStore, state => state.lastFetchedAt);
     const now = $(useSurfaceClockStore, state => state.now);
     const placementsById = $(usePlacementsStore, state => state.placementsById);
+    const placementsLastFetchedAt = $(usePlacementsStore, state => state.lastFetchedAt);
     const placementsReady = $(usePlacementsStore, state => state.getStatus('isSuccess'));
 
     if (!rawSurface) return undefined;
 
     const enabledSurface = filterEnabledSurface(rawSurface, now);
     if (!enabledSurface || !placementsReady) return enabledSurface;
+    if (isSurfaceWaitingForPlacements(enabledSurface, placementsById, surfaceLastFetchedAt, placementsLastFetchedAt)) return enabledSurface;
 
     return filterMissingPlacementSurface(enabledSurface, placementsById);
   },
   { equalityFn: deepEqual, fastMode: true }
 );
+
+export function useIsDiscoverSurfacePlacementPending(placementId: string): boolean {
+  const rawSurface = useDiscoverSurfaceStore(state => state.getData());
+  const surfaceLastFetchedAt = useDiscoverSurfaceStore(state => state.lastFetchedAt);
+  const placementsById = usePlacementsStore(state => state.placementsById);
+  const placementsLastFetchedAt = usePlacementsStore(state => state.lastFetchedAt);
+  const placementsLoading = usePlacementsStore(state => state.getStatus('isLoading') || state.getStatus('isInitialLoad'));
+
+  if (!rawSurface || placementsById[placementId]) return false;
+  if (!surfaceContainsPlacement(rawSurface, placementId)) return false;
+  return placementsLoading || isSurfaceNewerThanPlacements(surfaceLastFetchedAt, placementsLastFetchedAt);
+}
 
 export function useSyncDiscoverSurfacePlacements(): void {
   const rawSurface = useDiscoverSurfaceStore(state => state.getData());
@@ -53,6 +68,25 @@ export function useSyncDiscoverSurfacePlacements(): void {
 
     usePlacementsStore.getState().fetch(undefined, { force: true });
   }, [missingPlacementIds, placementsLastFetchedAt, placementsLoading, surfaceLastFetchedAt]);
+}
+
+function isSurfaceWaitingForPlacements(
+  surface: Surface,
+  placementsById: ReturnType<typeof usePlacementsStore.getState>['placementsById'],
+  surfaceLastFetchedAt: number | null,
+  placementsLastFetchedAt: number | null
+): boolean {
+  if (!isSurfaceNewerThanPlacements(surfaceLastFetchedAt, placementsLastFetchedAt)) return false;
+  return getMissingSurfacePlacementIds(surface, placementsById).length > 0;
+}
+
+function isSurfaceNewerThanPlacements(surfaceLastFetchedAt: number | null, placementsLastFetchedAt: number | null): boolean {
+  return !!surfaceLastFetchedAt && (!placementsLastFetchedAt || surfaceLastFetchedAt > placementsLastFetchedAt);
+}
+
+function surfaceContainsPlacement(surface: Surface, placementId: string): boolean {
+  if (surface.items !== undefined) return surface.items.some(item => surfaceContainsPlacement(item, placementId));
+  return surface.placement === placementId;
 }
 
 function getMissingSurfacePlacementIds(
