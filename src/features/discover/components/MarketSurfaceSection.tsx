@@ -19,6 +19,7 @@ import {
   MarketTileCard,
   MarketTileCardSkeleton,
 } from '@/features/discover/components/markets/cards/MarketTileCard';
+import { MARKET_SHADOW_COLOR } from '@/features/discover/components/markets/marketCardChrome';
 import { getHeaderPress, renderSurfaceLayoutSection } from '@/features/discover/components/SurfaceLayoutSection';
 import {
   type MarketDisplay,
@@ -201,7 +202,7 @@ function getTokenMarketSectionDescriptor(
       return {
         ...MARKET_SECTION_DESCRIPTORS[display],
         getItemWidth: (item: TokenPlacementItem) =>
-          computeMarketPillWidth(tokenToMarketDisplayItem({ accentColor: '#000000', item, nativeCurrency })),
+          computeMarketPillWidth(tokenToMarketDisplayItem({ accentColor: MARKET_SHADOW_COLOR, item, nativeCurrency })),
         renderItem: (item: TokenPlacementItem) => <TokenMarketPill item={item} nativeCurrency={nativeCurrency} />,
       };
     case 'market_tile.carousel':

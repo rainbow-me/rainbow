@@ -11,7 +11,12 @@ import { getValueForColorMode, type ColorMode, type ContextualColorValue } from 
 import { Border } from '@/design-system/components/Border/Border';
 import { MarketIcon } from '@/features/discover/components/markets/cards/MarketIcon';
 import { MarketPriceChange } from '@/features/discover/components/markets/cards/MarketPriceChange';
-import { buildMarketBaseDisplay } from '@/features/discover/components/markets/marketCardChrome';
+import {
+  buildMarketBaseDisplay,
+  LEVERAGE_BADGE_BORDER_COLORS,
+  LEVERAGE_BADGE_SHADOW_OPACITIES,
+  MARKET_SHADOW_COLOR,
+} from '@/features/discover/components/markets/marketCardChrome';
 import { usePlacementCardTrackPress } from '@/features/discover/components/markets/marketPressContext';
 import { useMarketCardPress } from '@/features/discover/components/markets/useMarketCardPress';
 import { type MarketDisplayItem } from '@/features/discover/types/marketDisplayItem';
@@ -59,15 +64,15 @@ const MARKET_PILL_SKELETON_WIDTH = 220;
 const PILL_COLORS = {
   dark: {
     backgroundColor: 'rgba(32, 36, 41, 0.3)',
-    badgeBorderColor: 'rgba(255, 255, 255, 0.24)',
-    badgeShadowOpacity: 0.5,
+    badgeBorderColor: LEVERAGE_BADGE_BORDER_COLORS.dark,
+    badgeShadowOpacity: LEVERAGE_BADGE_SHADOW_OPACITIES.dark,
     borderColor: 'rgba(255, 255, 255, 0.05)',
     gradientOpacity: 0.16,
   },
   light: {
     backgroundColor: 'transparent',
-    badgeBorderColor: 'rgba(0, 0, 0, 0.07)',
-    badgeShadowOpacity: 0.25,
+    badgeBorderColor: LEVERAGE_BADGE_BORDER_COLORS.light,
+    badgeShadowOpacity: LEVERAGE_BADGE_SHADOW_OPACITIES.light,
     borderColor: 'rgba(255, 255, 255, 0.8)',
     gradientOpacity: 0.06,
   },
@@ -115,7 +120,7 @@ export const MarketPill = memo(function MarketPill({ item }: MarketPillProps) {
               size={ICON_SIZE}
               leverage={item.leverage}
               badgeBorderColor={pillColors.badgeBorderColor}
-              badgeShadowColor={isDarkMode ? '#000000' : accentColor}
+              badgeShadowColor={isDarkMode ? MARKET_SHADOW_COLOR : accentColor}
               badgeShadowOpacity={pillColors.badgeShadowOpacity}
               badgeTextColor={badgeTextColor}
               badgePosition="top-right"
@@ -244,14 +249,14 @@ const styles = StyleSheet.create({
     height: MARKET_PILL_HEIGHT,
   },
   pillShadowDark: {
-    shadowColor: '#000000',
+    shadowColor: MARKET_SHADOW_COLOR,
     shadowOffset: { width: 0, height: 4 },
     shadowOpacity: 0.06,
     shadowRadius: 12,
   },
   pillShadowLight: {
     elevation: 3,
-    shadowColor: '#000000',
+    shadowColor: MARKET_SHADOW_COLOR,
     shadowOffset: { width: 0, height: 2 },
     shadowOpacity: 0.04,
     shadowRadius: 6,

@@ -6,7 +6,8 @@ import { LinearGradient } from 'expo-linear-gradient';
 import ButtonPressAnimation from '@/components/animations/ButtonPressAnimation';
 import { GradientBorderView } from '@/components/gradient-border/GradientBorderView';
 import { LiveTokenText } from '@/components/live-token-text/LiveTokenText';
-import { globalColors, Text, TextShadow, useColorMode } from '@/design-system';
+import { globalColors, Text, TextShadow, useBackgroundColor, useColorMode } from '@/design-system';
+import { LIVE_INDICATOR_COLOR, MARKET_ON_COLOR } from '@/features/discover/components/markets/marketCardChrome';
 import {
   usePlacementCardTrackPress,
   usePlacementPredictionOutcomeTrackPress,
@@ -120,7 +121,7 @@ export const PredictionMarketEventCard = memo(function PredictionMarketEventCard
               ) : null}
               {isLive ? (
                 <TextShadow blur={14} shadowOpacity={0.25}>
-                  <Text align="right" color={{ custom: '#FF584D' }} size="15pt" style={styles.liveText} weight="heavy">
+                  <Text align="right" color={{ custom: LIVE_INDICATOR_COLOR }} size="15pt" style={styles.liveText} weight="heavy">
                     {i18n.t(i18n.l.predictions.sports.live).toUpperCase()}
                   </Text>
                 </TextShadow>
@@ -296,7 +297,7 @@ const WidgetBetCell = memo(function WidgetBetCell({
       <LiveTokenText
         align="center"
         autoSubscriptionEnabled={false}
-        color={{ custom: '#FFFFFF' }}
+        color={{ custom: MARKET_ON_COLOR }}
         initialValue={data.odds}
         numberOfLines={1}
         selector={token => formatOdds(token.price)}
@@ -316,13 +317,15 @@ const WidgetBetCell = memo(function WidgetBetCell({
 });
 
 function Separator() {
-  return <View style={styles.separator} />;
+  const separatorColor = useBackgroundColor('separatorSecondary');
+  return <View style={[styles.separator, { backgroundColor: separatorColor }]} />;
 }
 
 function InsetSeparator() {
+  const separatorColor = useBackgroundColor('separatorSecondary');
   return (
     <View style={styles.insetSeparator}>
-      <View style={styles.insetSeparatorLine} />
+      <View style={[styles.insetSeparatorLine, { backgroundColor: separatorColor }]} />
     </View>
   );
 }
@@ -394,7 +397,6 @@ const styles = StyleSheet.create({
     lineHeight: 16,
   },
   separator: {
-    backgroundColor: opacity('#F5F8FF', 0.06),
     height: 1,
     width: '100%',
   },
@@ -403,7 +405,6 @@ const styles = StyleSheet.create({
     paddingRight: 12,
   },
   insetSeparatorLine: {
-    backgroundColor: opacity('#F5F8FF', 0.06),
     flex: 1,
     height: 1,
     marginLeft: 64,

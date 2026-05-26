@@ -6,7 +6,7 @@ import { useDiscoverScreenContext } from '@/components/Discover/DiscoverScreenCo
 import { EasingGradient } from '@/components/easing-gradient/EasingGradient';
 import { Skeleton } from '@/components/Skeleton';
 import { Box, Text, TextIcon, useColorMode, useForegroundColor } from '@/design-system';
-import { getValueForColorMode } from '@/design-system/color/palettes';
+import { getValueForColorMode, globalColors } from '@/design-system/color/palettes';
 import { trackDiscoverSurfaceTabPress } from '@/features/discover/components/markets/marketPressContext';
 import { getSurfaceLabel } from '@/features/discover/components/surfaceLabel';
 import {
@@ -27,7 +27,7 @@ const SELECTED_TAB_RIGHT_INSET = SEARCH_BUTTON_RIGHT_INSET + SEARCH_BUTTON_SIZE 
 const FALLBACK_TAB_WIDTHS = [72, 84, 92, 76];
 const SCREEN_BACKGROUND_COLOR = {
   light: '#FBFCFD',
-  dark: '#000000',
+  dark: globalColors.grey100,
 };
 
 export function DiscoverHeader() {
@@ -79,14 +79,12 @@ function DiscoverCategorySelector() {
   const surface = useDiscoverSurface();
   const tabs = surface?.items !== undefined ? surface.items : [];
   const { scrollToSectionTop } = useDiscoverScreenContext();
-  const { isDarkMode, colorMode } = useColorMode();
+  const { colorMode } = useColorMode();
   const screenBackgroundColor = getValueForColorMode(SCREEN_BACKGROUND_COLOR, colorMode);
   const scrollViewRef = useRef<ScrollView>(null);
   const scrollOffsetRef = useRef(0);
   const scrollViewWidthRef = useRef(0);
   const tabLayoutsRef = useRef<Partial<Record<DiscoverSection, { width: number; x: number }>>>({});
-
-  const unselectedColor = isDarkMode ? { custom: '#4D4D4D' } : { custom: '#999999' };
 
   const scrollSelectedTabIntoView = useCallback((section: DiscoverSection, animated = true) => {
     const tabLayout = tabLayoutsRef.current[section];
@@ -180,7 +178,7 @@ function DiscoverCategorySelector() {
                 scaleTo={0.92}
                 testID={`discover-section-tab-${section.id}`}
               >
-                <Text color={isSelected ? 'label' : unselectedColor} size="22pt" weight="heavy">
+                <Text color={isSelected ? 'label' : 'labelTertiary'} size="22pt" weight="heavy">
                   {sectionLabel}
                 </Text>
               </ButtonPressAnimation>

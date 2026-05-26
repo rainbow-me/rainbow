@@ -2,7 +2,7 @@ import { memo } from 'react';
 import { StyleSheet, View } from 'react-native';
 
 import ButtonPressAnimation from '@/components/animations/ButtonPressAnimation';
-import { Box, Text, TextIcon, useColorMode } from '@/design-system';
+import { Box, globalColors, Text, TextIcon, useBackgroundColor, useColorMode } from '@/design-system';
 import { opacity } from '@/framework/ui/utils/opacity';
 import * as i18n from '@/languages';
 
@@ -12,7 +12,8 @@ type ShowMoreButtonProps = {
 
 export const ShowMoreButton = memo(function ShowMoreButton({ onPress }: ShowMoreButtonProps) {
   const { isDarkMode } = useColorMode();
-  const iconBadgeBackgroundColor = isDarkMode ? opacity('#FFFFFF', 0.16) : 'rgba(9, 17, 31, 0.05)';
+  const fillSecondaryColor = useBackgroundColor('fillSecondary');
+  const iconBadgeBackgroundColor = isDarkMode ? opacity(globalColors.white100, 0.16) : fillSecondaryColor;
 
   return (
     <ButtonPressAnimation onPress={onPress} scaleTo={0.96} style={styles.button}>

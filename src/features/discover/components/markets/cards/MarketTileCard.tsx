@@ -12,7 +12,12 @@ import { Border } from '@/design-system/components/Border/Border';
 import { SparklineChart } from '@/features/charts/line/components/SparklineChart';
 import { MarketIcon } from '@/features/discover/components/markets/cards/MarketIcon';
 import { MarketPriceChange } from '@/features/discover/components/markets/cards/MarketPriceChange';
-import { buildMarketBaseDisplay } from '@/features/discover/components/markets/marketCardChrome';
+import {
+  buildMarketBaseDisplay,
+  LEVERAGE_BADGE_BORDER_COLORS,
+  LEVERAGE_BADGE_SHADOW_OPACITIES,
+  MARKET_SHADOW_COLOR,
+} from '@/features/discover/components/markets/marketCardChrome';
 import { usePlacementCardTrackPress } from '@/features/discover/components/markets/marketPressContext';
 import { useMarketCardPress } from '@/features/discover/components/markets/useMarketCardPress';
 import { type MarketDisplayItem } from '@/features/discover/types/marketDisplayItem';
@@ -65,15 +70,15 @@ const MARK_PRICE_TEXT_STYLE = { size: '15pt', weight: 'bold' } as const;
 const CARD_COLORS = {
   dark: {
     backgroundColor: 'rgba(32,36,41,0.4)',
-    badgeBorderColor: 'rgba(255,255,255,0.24)',
-    badgeShadowOpacity: 0.5,
+    badgeBorderColor: LEVERAGE_BADGE_BORDER_COLORS.dark,
+    badgeShadowOpacity: LEVERAGE_BADGE_SHADOW_OPACITIES.dark,
     borderColor: 'rgba(255,255,255,0.05)',
     gradientOpacity: 0.16,
   },
   light: {
     backgroundColor: 'transparent',
-    badgeBorderColor: 'rgba(0,0,0,0.07)',
-    badgeShadowOpacity: 0.25,
+    badgeBorderColor: LEVERAGE_BADGE_BORDER_COLORS.light,
+    badgeShadowOpacity: LEVERAGE_BADGE_SHADOW_OPACITIES.light,
     borderColor: 'rgba(255,255,255,0.8)',
     gradientOpacity: 0.06,
   },
@@ -117,7 +122,7 @@ export const MarketTileCard = memo(function MarketTileCard({ item, width = MARKE
               size={ICON_SIZE}
               leverage={item.leverage}
               badgeBorderColor={cardColors.badgeBorderColor}
-              badgeShadowColor={isDarkMode ? '#000000' : accentColor}
+              badgeShadowColor={isDarkMode ? MARKET_SHADOW_COLOR : accentColor}
               badgeShadowOpacity={cardColors.badgeShadowOpacity}
               badgeTextColor={badgeTextColor}
             />
@@ -222,14 +227,14 @@ const styles = StyleSheet.create({
     width: '100%',
   },
   cardShadowDark: {
-    shadowColor: '#000000',
+    shadowColor: MARKET_SHADOW_COLOR,
     shadowOffset: { width: 0, height: 4 },
     shadowOpacity: 0.16,
     shadowRadius: 24,
   },
   cardShadowLight: {
     elevation: 4,
-    shadowColor: '#000000',
+    shadowColor: MARKET_SHADOW_COLOR,
     shadowOffset: { width: 0, height: 4 },
     shadowOpacity: 0.06,
     shadowRadius: 24,

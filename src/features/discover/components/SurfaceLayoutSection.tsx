@@ -4,6 +4,7 @@ import { useBackgroundColor } from '@/design-system';
 import { MarketCarousel } from '@/features/discover/components/markets/layouts/MarketCarousel';
 import { MarketGrid } from '@/features/discover/components/markets/layouts/MarketGrid';
 import { MarketList } from '@/features/discover/components/markets/layouts/MarketList';
+import { LIVE_INDICATOR_BACKGROUND_COLOR, LIVE_INDICATOR_COLOR } from '@/features/discover/components/markets/marketCardChrome';
 import { getSurfaceLabel } from '@/features/discover/components/surfaceLabel';
 import { navigateDiscoverDestination } from '@/features/discover/utils/navigation';
 import { type SurfaceLeaf } from '@/features/placements/surfaces/types';
@@ -228,14 +229,14 @@ const styles = StyleSheet.create({
     width: LIVE_INDICATOR_CUTOUT_SIZE,
   },
   liveIndicatorDot: {
-    backgroundColor: '#F04F4B',
+    backgroundColor: LIVE_INDICATOR_COLOR,
     borderRadius: LIVE_INDICATOR_DOT_SIZE / 2,
     height: LIVE_INDICATOR_DOT_SIZE,
     width: LIVE_INDICATOR_DOT_SIZE,
   },
   liveIndicatorOuter: {
     alignItems: 'center',
-    backgroundColor: 'rgba(240, 79, 75, 0.34)',
+    backgroundColor: LIVE_INDICATOR_BACKGROUND_COLOR,
     borderRadius: LIVE_INDICATOR_SIZE / 2,
     height: LIVE_INDICATOR_SIZE,
     justifyContent: 'center',

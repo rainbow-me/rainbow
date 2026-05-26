@@ -2,7 +2,7 @@ import { type ReactNode } from 'react';
 import { StyleSheet, View } from 'react-native';
 
 import ButtonPressAnimation from '@/components/animations/ButtonPressAnimation';
-import { Box, Text, TextIcon } from '@/design-system';
+import { Box, globalColors, Text, TextIcon } from '@/design-system';
 
 export function CarouselHeader({
   count,
@@ -27,7 +27,7 @@ export function CarouselHeader({
           </Text>
           {typeof count === 'number' ? (
             <View style={styles.countBadge}>
-              <Text color={{ custom: '#FFFFFF' }} size="13pt" style={styles.countBadgeText} weight="heavy">
+              <Text color={{ custom: globalColors.white100 }} size="13pt" style={styles.countBadgeText} weight="heavy">
                 {count}
               </Text>
             </View>

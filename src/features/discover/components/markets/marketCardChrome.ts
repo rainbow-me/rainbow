@@ -1,14 +1,31 @@
-import { getValueForColorMode, type ColorMode, type ContextualColorValue } from '@/design-system/color/palettes';
+import { getValueForColorMode, globalColors, type ColorMode, type ContextualColorValue } from '@/design-system/color/palettes';
+import { opacity } from '@/framework/ui/utils/opacity';
 
 export type PriceChangeColors = Readonly<{ negative: string; positive: string }>;
 
-const PRICE_CHANGE_COLORS = {
-  dark: { positive: '#3ECF5B', negative: '#FF584D' },
-  light: { positive: '#1DB847', negative: '#FA423C' },
+export const MARKET_SHADOW_COLOR = globalColors.grey100;
+export const MARKET_ON_COLOR = globalColors.white100;
+export const MARKET_NEUTRAL_CHART_COLOR = opacity(globalColors.white100, 0.5);
+export const LIVE_INDICATOR_COLOR = globalColors.red50;
+export const LIVE_INDICATOR_BACKGROUND_COLOR = opacity(LIVE_INDICATOR_COLOR, 0.34);
+
+export const LEVERAGE_BADGE_BORDER_COLORS = {
+  dark: opacity(globalColors.white100, 0.24),
+  light: opacity(globalColors.grey100, 0.07),
+} satisfies ContextualColorValue<string>;
+
+export const LEVERAGE_BADGE_SHADOW_OPACITIES = {
+  dark: 0.5,
+  light: 0.25,
+} satisfies ContextualColorValue<number>;
+
+export const MARKET_PRICE_CHANGE_COLORS = {
+  dark: { positive: globalColors.green50, negative: globalColors.red50 },
+  light: { positive: globalColors.green60, negative: globalColors.red60 },
 } satisfies ContextualColorValue<PriceChangeColors>;
 
 export function getMarketPriceChangeColors(colorMode: ColorMode): PriceChangeColors {
-  return getValueForColorMode(PRICE_CHANGE_COLORS, colorMode);
+  return getValueForColorMode(MARKET_PRICE_CHANGE_COLORS, colorMode);
 }
 
 export function getMarketPriceChangeColor(priceChange: string, priceChangeColors: PriceChangeColors): string {

@@ -1,4 +1,9 @@
 import { type NativeCurrencyKey } from '@/entities/nativeCurrencyTypes';
+import {
+  getMarketPriceChangeColor,
+  MARKET_NEUTRAL_CHART_COLOR,
+  MARKET_PRICE_CHANGE_COLORS,
+} from '@/features/discover/components/markets/marketCardChrome';
 import { buildTokenLineChartId, useTokenLineChartsStore } from '@/features/discover/stores/tokenLineChartsStore';
 import { type MarketDisplayItem } from '@/features/discover/types/marketDisplayItem';
 import { HYPERCORE_PSEUDO_CHAIN_ID, HYPERLIQUID_COLORS } from '@/features/perps/constants';
@@ -102,14 +107,14 @@ function getPerpMarketAccentColor(market: PerpMarketWithMetadata): string {
 }
 
 function getPerpPriceChangeChartColor(priceChange: string): string {
-  return Number(priceChange) >= 0 ? '#3ECF5B' : '#FF584D';
+  return getMarketPriceChangeColor(priceChange, MARKET_PRICE_CHANGE_COLORS.dark);
 }
 
 function getTokenPriceChangeChartColor(priceChange: number | string | null | undefined): string {
   const value = Number(priceChange || 0);
-  if (value > 0) return '#3ECF5B';
-  if (value < 0) return '#FF584D';
-  return 'rgba(255, 255, 255, 0.5)';
+  if (value > 0) return MARKET_PRICE_CHANGE_COLORS.dark.positive;
+  if (value < 0) return MARKET_PRICE_CHANGE_COLORS.dark.negative;
+  return MARKET_NEUTRAL_CHART_COLOR;
 }
 
 function normalizeTokenPriceChange(priceChange: number | string | null | undefined): string {

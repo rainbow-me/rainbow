@@ -12,7 +12,13 @@ import { getValueForColorMode } from '@/design-system/color/palettes';
 import { SparklineChart } from '@/features/charts/line/components/SparklineChart';
 import { MarketIcon } from '@/features/discover/components/markets/cards/MarketIcon';
 import { MarketPriceChange } from '@/features/discover/components/markets/cards/MarketPriceChange';
-import { getMarketPriceChangeColor, getMarketPriceChangeColors } from '@/features/discover/components/markets/marketCardChrome';
+import {
+  getMarketPriceChangeColor,
+  getMarketPriceChangeColors,
+  LEVERAGE_BADGE_BORDER_COLORS,
+  LEVERAGE_BADGE_SHADOW_OPACITIES,
+  MARKET_SHADOW_COLOR,
+} from '@/features/discover/components/markets/marketCardChrome';
 import { usePlacementCardTrackPress } from '@/features/discover/components/markets/marketPressContext';
 import { useMarketCardPress } from '@/features/discover/components/markets/useMarketCardPress';
 import { type MarketDisplayItem } from '@/features/discover/types/marketDisplayItem';
@@ -32,14 +38,6 @@ const TOKEN_CARD_BACKGROUND_COLORS = {
 const TOKEN_CARD_BORDER_COLORS = {
   dark: 'rgba(255, 255, 255, 0.05)',
   light: 'rgba(255, 255, 255, 0.8)',
-};
-const LEVERAGE_BADGE_BORDER_COLORS = {
-  dark: 'rgba(255, 255, 255, 0.24)',
-  light: 'rgba(0, 0, 0, 0.07)',
-};
-const LEVERAGE_BADGE_SHADOW_OPACITIES = {
-  dark: 0.5,
-  light: 0.25,
 };
 const UP_DOWN_ARROW_WIDTH = 12;
 
@@ -84,7 +82,7 @@ export function MarketCell({ item }: { item: MarketDisplayItem }) {
               accentColor={item.accentColor}
               badgeBorderColor={leverageBadgeBorderColor}
               badgePosition="top-right"
-              badgeShadowColor={isDarkMode ? '#000000' : item.accentColor}
+              badgeShadowColor={isDarkMode ? MARKET_SHADOW_COLOR : item.accentColor}
               badgeShadowOpacity={leverageBadgeShadowOpacity}
               badgeTextColor={leverageBadgeTextColor}
               borderColor={item.accentColor}

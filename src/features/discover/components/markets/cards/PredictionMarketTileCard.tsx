@@ -9,6 +9,7 @@ import { GradientBorderView } from '@/components/gradient-border/GradientBorderV
 import ImgixImage from '@/components/images/ImgixImage';
 import { LiveTokenText } from '@/components/live-token-text/LiveTokenText';
 import { globalColors, Text, useColorMode } from '@/design-system';
+import { MARKET_ON_COLOR, MARKET_SHADOW_COLOR } from '@/features/discover/components/markets/marketCardChrome';
 import {
   usePlacementCardTrackPress,
   usePlacementPredictionOutcomeTrackPress,
@@ -82,6 +83,7 @@ export const PredictionMarketTileCard = memo(function PredictionMarketTileCard({
   const priceChange = rows[0]?.market.oneDayPriceChange;
   const priceChangeText = useMemo(() => formatPriceChange(priceChange), [priceChange]);
   const priceChangeIsPositive = priceChange !== undefined && priceChange > 0;
+  const priceChangeColor = priceChangeIsPositive ? globalColors.green50 : globalColors.red50;
   const colorPalette = useMemo(() => createOpacityPalette(eventColor, [0, 8, 10, 16, 24]), [eventColor]);
   const cardBorderGradientColors = useMemo(
     () =>
@@ -142,20 +144,10 @@ export const PredictionMarketTileCard = memo(function PredictionMarketTileCard({
                   </Text>
                   {priceChangeText ? (
                     <View style={styles.priceChangeRow}>
-                      <Text
-                        align="left"
-                        color={priceChangeIsPositive ? { custom: '#2BEA69' } : { custom: '#FF4D57' }}
-                        size="icon 11px"
-                        weight="heavy"
-                      >
+                      <Text align="left" color={{ custom: priceChangeColor }} size="icon 11px" weight="heavy">
                         {priceChangeIsPositive ? UP_ARROW : DOWN_ARROW}
                       </Text>
-                      <Text
-                        align="left"
-                        color={priceChangeIsPositive ? { custom: '#2BEA69' } : { custom: '#FF4D57' }}
-                        size="15pt"
-                        weight="bold"
-                      >
+                      <Text align="left" color={{ custom: priceChangeColor }} size="15pt" weight="bold">
                         {priceChangeText}
                       </Text>
                     </View>
@@ -247,17 +239,20 @@ const OutcomeRow = memo(function OutcomeRow({
               styles.oddsPill,
               {
                 backgroundColor: eventColor,
-                borderColor: opacity(isDarkMode ? '#FFFFFF' : '#000000', 0.1),
-                shadowColor: isDarkMode ? eventColor : '#000000',
+                borderColor: opacity(isDarkMode ? globalColors.white100 : MARKET_SHADOW_COLOR, 0.1),
+                shadowColor: isDarkMode ? eventColor : MARKET_SHADOW_COLOR,
                 shadowOpacity: isDarkMode ? 0.3 : 0.06,
               },
             ]}
           >
-            <View style={[styles.oddsPillOverlay, { backgroundColor: opacity('#000000', isDarkMode ? 0.3 : 0.1) }]} pointerEvents="none" />
+            <View
+              style={[styles.oddsPillOverlay, { backgroundColor: opacity(MARKET_SHADOW_COLOR, isDarkMode ? 0.3 : 0.1) }]}
+              pointerEvents="none"
+            />
             <LiveTokenText
               align="center"
               autoSubscriptionEnabled={false}
-              color={{ custom: '#FFFFFF' }}
+              color={{ custom: MARKET_ON_COLOR }}
               initialValue={formatOdds(row.initialPrice)}
               numberOfLines={1}
               selector={token => formatOdds(token.price)}
@@ -375,7 +370,7 @@ const styles = StyleSheet.create({
   cardShadowLight: {
     backgroundColor: opacity(globalColors.white100, 0.92),
     elevation: 4,
-    shadowColor: '#000000',
+    shadowColor: MARKET_SHADOW_COLOR,
     shadowOffset: { width: 0, height: 4 },
     shadowOpacity: 0.06,
     shadowRadius: 24,
