@@ -496,6 +496,7 @@ function getHeaderPress(destination: SurfaceLeaf['destination']): (() => void) |
 function getSurfaceHeaderCaret(surface: SurfaceLeaf): boolean | undefined {
   if (isLiveSportsSurface(surface)) return false;
   if (isSportsEventCardSurface(surface)) return hasDestination(surface);
+  return undefined;
 }
 
 function getSportsEventHeaderCount({
@@ -522,6 +523,7 @@ function getSportsEventCountForSurface(surface: SurfaceLeaf, events: PolymarketE
 
   const leagueId = getSurfaceLeagueId(surface);
   if (leagueId) return events.filter(event => getLeagueId(event.slug) === leagueId).length;
+  return undefined;
 }
 
 function countSportsEventsForTimeBucket(events: PolymarketEvent[], timeBucket: SportsEventScheduleBucket): number {
