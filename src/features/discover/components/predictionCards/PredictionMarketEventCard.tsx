@@ -13,7 +13,7 @@ import {
 } from '@/features/discover/components/marketPress/marketPressContext';
 import { LeagueIcon } from '@/features/polymarket/components/league-icon/LeagueIcon';
 import {
-  SportsEventContent,
+  useSportsEventContent,
   type SportsEventRows,
 } from '@/features/polymarket/components/polymarket-sport-event-list-item/SportsEventContent';
 import { TeamLogo } from '@/features/polymarket/components/TeamLogo';
@@ -66,6 +66,9 @@ export const PredictionMarketEventCard = memo(function PredictionMarketEventCard
 }: PredictionMarketEventCardProps) {
   const { isDarkMode } = useColorMode();
   const trackPress = usePlacementCardTrackPress();
+  const { eventAccentColor, gameStatusTitle, isLive, leagueId, rows, scores, teamLabels } = useSportsEventContent(event);
+  const cardBorderGradientColors = getPredictionEventCardBorderGradientColors(eventAccentColor, isDarkMode);
+  const cardGradientColors = getPredictionEventCardGradientColors(eventAccentColor, isDarkMode);
   const handlePress = useCallback(() => {
     trackPress?.({
       marketId: event.id,
@@ -77,87 +80,78 @@ export const PredictionMarketEventCard = memo(function PredictionMarketEventCard
   }, [event, trackPress]);
 
   return (
-    <SportsEventContent event={event}>
-      {({ eventAccentColor, gameStatusTitle, isLive, leagueId, rows, scores, teamLabels }) => {
-        const cardBorderGradientColors = getPredictionEventCardBorderGradientColors(eventAccentColor, isDarkMode);
-        const cardGradientColors = getPredictionEventCardGradientColors(eventAccentColor, isDarkMode);
-
-        return (
-          <View style={[styles.container, { width }]}>
-            {Platform.OS === 'android' ? <WidgetBetCellsOverlay event={event} rows={rows} /> : null}
-            <ButtonPressAnimation onPress={handlePress} scaleTo={0.96} style={styles.flex} wrapperStyle={styles.flex}>
-              <GradientBorderView
-                backgroundColor={isDarkMode ? globalColors.grey100 : globalColors.white100}
-                borderGradientColors={cardBorderGradientColors}
-                borderRadius={PREDICTION_MARKET_EVENT_CARD_BORDER_RADIUS}
-                borderWidth={2}
-                end={CARD_BORDER_GRADIENT_CONFIG.end}
-                locations={CARD_BORDER_GRADIENT_CONFIG.locations}
-                start={CARD_BORDER_GRADIENT_CONFIG.start}
-                style={styles.card}
-              >
-                <LinearGradient
-                  colors={cardGradientColors}
-                  end={CARD_FILL_GRADIENT_CONFIG.end}
-                  locations={CARD_FILL_GRADIENT_CONFIG.locations}
-                  pointerEvents="none"
-                  start={CARD_FILL_GRADIENT_CONFIG.start}
-                  style={StyleSheet.absoluteFill}
-                />
-                <View style={styles.header}>
-                  {hideLeagueHeader ? (
-                    <View />
-                  ) : (
-                    <View style={styles.league}>
-                      <LeagueIcon eventSlug={event.slug} size={20} />
-                      <Text align="left" color="label" size="17pt" style={styles.compactText} weight="heavy">
-                        {getLeagueLabel(leagueId)}
-                      </Text>
-                    </View>
-                  )}
-                  <View style={styles.status}>
-                    {gameStatusTitle ? (
-                      <Text align="right" color="labelTertiary" size="15pt" style={styles.statusText} weight="bold">
-                        {gameStatusTitle.toUpperCase()}
-                      </Text>
-                    ) : null}
-                    {isLive ? (
-                      <TextShadow blur={14} shadowOpacity={0.25}>
-                        <Text align="right" color={{ custom: '#FF584D' }} size="15pt" style={styles.liveText} weight="heavy">
-                          {i18n.t(i18n.l.predictions.sports.live).toUpperCase()}
-                        </Text>
-                      </TextShadow>
-                    ) : null}
-                  </View>
-                </View>
-                <Separator />
-                <TeamRow
-                  event={event}
-                  label={rows.away.label ?? teamLabels[0]}
-                  score={scores?.teamAScore}
-                  team={event.teams?.[0]}
-                  lineBet={rows.away.line}
-                  moneylineBet={rows.away.moneyline}
-                  compact={rows.away.isFallback}
-                  interactiveBetCells={Platform.OS === 'ios'}
-                />
-                <InsetSeparator />
-                <TeamRow
-                  event={event}
-                  label={rows.home.label ?? teamLabels[1]}
-                  score={scores?.teamBScore}
-                  team={event.teams?.[1]}
-                  lineBet={rows.home.line}
-                  moneylineBet={rows.home.moneyline}
-                  compact={rows.home.isFallback}
-                  interactiveBetCells={Platform.OS === 'ios'}
-                />
-              </GradientBorderView>
-            </ButtonPressAnimation>
+    <View style={[styles.container, { width }]}>
+      {Platform.OS === 'android' ? <WidgetBetCellsOverlay event={event} rows={rows} /> : null}
+      <ButtonPressAnimation onPress={handlePress} scaleTo={0.96} style={styles.flex} wrapperStyle={styles.flex}>
+        <GradientBorderView
+          backgroundColor={isDarkMode ? globalColors.grey100 : globalColors.white100}
+          borderGradientColors={cardBorderGradientColors}
+          borderRadius={PREDICTION_MARKET_EVENT_CARD_BORDER_RADIUS}
+          borderWidth={2}
+          end={CARD_BORDER_GRADIENT_CONFIG.end}
+          locations={CARD_BORDER_GRADIENT_CONFIG.locations}
+          start={CARD_BORDER_GRADIENT_CONFIG.start}
+          style={styles.card}
+        >
+          <LinearGradient
+            colors={cardGradientColors}
+            end={CARD_FILL_GRADIENT_CONFIG.end}
+            locations={CARD_FILL_GRADIENT_CONFIG.locations}
+            pointerEvents="none"
+            start={CARD_FILL_GRADIENT_CONFIG.start}
+            style={StyleSheet.absoluteFill}
+          />
+          <View style={styles.header}>
+            {hideLeagueHeader ? (
+              <View />
+            ) : (
+              <View style={styles.league}>
+                <LeagueIcon eventSlug={event.slug} size={20} />
+                <Text align="left" color="label" size="17pt" style={styles.compactText} weight="heavy">
+                  {getLeagueLabel(leagueId)}
+                </Text>
+              </View>
+            )}
+            <View style={styles.status}>
+              {gameStatusTitle ? (
+                <Text align="right" color="labelTertiary" size="15pt" style={styles.statusText} weight="bold">
+                  {gameStatusTitle.toUpperCase()}
+                </Text>
+              ) : null}
+              {isLive ? (
+                <TextShadow blur={14} shadowOpacity={0.25}>
+                  <Text align="right" color={{ custom: '#FF584D' }} size="15pt" style={styles.liveText} weight="heavy">
+                    {i18n.t(i18n.l.predictions.sports.live).toUpperCase()}
+                  </Text>
+                </TextShadow>
+              ) : null}
+            </View>
           </View>
-        );
-      }}
-    </SportsEventContent>
+          <Separator />
+          <TeamRow
+            event={event}
+            label={rows.away.label ?? teamLabels[0]}
+            score={scores?.teamAScore}
+            team={event.teams?.[0]}
+            lineBet={rows.away.line}
+            moneylineBet={rows.away.moneyline}
+            compact={rows.away.isFallback}
+            interactiveBetCells={Platform.OS === 'ios'}
+          />
+          <InsetSeparator />
+          <TeamRow
+            event={event}
+            label={rows.home.label ?? teamLabels[1]}
+            score={scores?.teamBScore}
+            team={event.teams?.[1]}
+            lineBet={rows.home.line}
+            moneylineBet={rows.home.moneyline}
+            compact={rows.home.isFallback}
+            interactiveBetCells={Platform.OS === 'ios'}
+          />
+        </GradientBorderView>
+      </ButtonPressAnimation>
+    </View>
   );
 });
 

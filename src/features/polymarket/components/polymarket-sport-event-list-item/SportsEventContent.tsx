@@ -1,4 +1,4 @@
-import { memo, useMemo, type ReactNode } from 'react';
+import { useMemo } from 'react';
 
 import { getColorValueForThemeWorklet } from '@/__swaps__/utils/swaps';
 import { useBackgroundColor, useColorMode, useForegroundColor } from '@/design-system';
@@ -24,18 +24,9 @@ export type SportsEventRows = {
   home: SportsEventTeamRow;
 };
 
-export type SportsEventContentState = ReturnType<typeof useSportsEventContentState>;
+export type SportsEventContentState = ReturnType<typeof useSportsEventContent>;
 
-type SportsEventContentProps = {
-  children: (state: SportsEventContentState) => ReactNode;
-  event: PolymarketEvent;
-};
-
-export const SportsEventContent = memo(function SportsEventContent({ children, event }: SportsEventContentProps) {
-  return <>{children(useSportsEventContentState(event))}</>;
-});
-
-function useSportsEventContentState(event: PolymarketEvent) {
+export function useSportsEventContent(event: PolymarketEvent) {
   const cardBackground = useBackgroundColor('fillQuaternary');
   const fillTertiary = useBackgroundColor('fillTertiary');
   const borderColor = useForegroundColor('separatorSecondary');
