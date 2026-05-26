@@ -554,6 +554,7 @@
         "sports": "Sports",
         "tokens": "Tokens"
       },
+      "show_more": "Show more",
       "strategies": {
         "strategies_title": "Strategies",
         "yearn_finance_description": "Smart yield strategies from yearn.finance"

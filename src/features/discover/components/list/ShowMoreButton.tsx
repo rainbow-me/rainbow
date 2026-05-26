@@ -4,6 +4,7 @@ import { StyleSheet, View } from 'react-native';
 import ButtonPressAnimation from '@/components/animations/ButtonPressAnimation';
 import { Box, Text, TextIcon, useColorMode } from '@/design-system';
 import { opacity } from '@/framework/ui/utils/opacity';
+import * as i18n from '@/languages';
 
 type ShowMoreButtonProps = {
   onPress: () => void;
@@ -22,7 +23,7 @@ export const ShowMoreButton = memo(function ShowMoreButton({ onPress }: ShowMore
           </TextIcon>
         </View>
         <Text size="17pt" weight="bold" color="labelTertiary">
-          Show more
+          {i18n.t(i18n.l.discover.show_more)}
         </Text>
       </Box>
     </ButtonPressAnimation>
