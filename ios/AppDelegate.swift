@@ -70,17 +70,25 @@ class AppDelegate: ExpoAppDelegate, UNUserNotificationCenterDelegate {
 
   @objc func handleRsEscape(notification: Notification) {
     guard let url = notification.userInfo?["url"] as? String else { return }
-    let host = URL(string: url)?.host ?? url
+    let parsed = URL(string: url)
+    let host = parsed?.host
+    // Group by host. Hostless URLs (data:, blob:, malformed) have no host, so
+    // fall back to the scheme, then "unknown" — keeps the fingerprint bounded
+    // instead of spawning a Sentry issue per unique data: payload. The tag
+    // below stays a real host only; the full URL is preserved in the extra.
+    let groupingKey = host ?? parsed?.scheme ?? "unknown"
 
     // Per-host fingerprint so each blocked host becomes its own Sentry issue.
     // Without this, every capture call here shares the same stack and Sentry
     // collapses all hosts into one mega-issue, making per-host trends and
     // alerts impossible.
     let event = Event()
-    event.message = SentryMessage(formatted: "Escape via \(host)")
+    event.message = SentryMessage(formatted: "Escape via \(groupingKey)")
     event.level = .warning
-    event.fingerprint = ["rnsandbox-escape", host]
-    event.tags = ["sandbox.host": host]
+    event.fingerprint = ["rnsandbox-escape", groupingKey]
+    if let host {
+      event.tags = ["sandbox.host": host]
+    }
     event.extra = ["sandbox.url": url]
     SentrySDK.capture(event: event)
   }
