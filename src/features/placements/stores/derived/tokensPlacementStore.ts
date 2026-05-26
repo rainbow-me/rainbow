@@ -95,7 +95,9 @@ function createTokensPlacementStore(placementId: PlacementId) {
     enabled: useTokensEnabled,
     select: ($, placementItems) => {
       const assetsByRef = $(useTokenRefsStore, state => state.getData());
-      const isLoading = $(useTokenRefsStore, state => state.enabled && (state.getStatus('isIdle') || state.getStatus('isInitialLoad')));
+      const isLoading = $(useTokenRefsStore, state => {
+        return placementItems.length > 0 && state.enabled && (state.getStatus('isIdle') || state.getStatus('isLoading'));
+      });
 
       return {
         isLoading,
