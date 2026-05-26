@@ -245,7 +245,7 @@ export const event = {
   discoverPredictionOutcomePressed: 'discover.prediction_outcome_pressed',
   discoverSurfaceTabPressed: 'discover.surface_tab_pressed',
   placementInteraction: 'placement.interaction',
-  surfaceSectionDrilldownPressed: 'surface.section_drilldown_pressed',
+  surfaceSectionPressed: 'surface.section_pressed',
   surfaceInteraction: 'surface.interaction',
 
   // ens
@@ -1032,7 +1032,7 @@ export type EventProperties = {
     type?: string;
     version: number;
   };
-  [event.surfaceSectionDrilldownPressed]: {
+  [event.surfaceSectionPressed]: {
     destination: unknown;
     display: string;
     placementId?: string;

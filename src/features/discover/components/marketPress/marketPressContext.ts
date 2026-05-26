@@ -72,7 +72,7 @@ export function trackDiscoverSurfaceTabPress({
   });
 }
 
-export function trackSurfaceSectionDrilldownPress({
+export function trackSurfaceSectionPress({
   destination,
   display,
   placement,
@@ -89,7 +89,7 @@ export function trackSurfaceSectionDrilldownPress({
   surfaceId: string;
   title: string;
 }): void {
-  analytics.track(event.surfaceSectionDrilldownPressed, {
+  analytics.track(event.surfaceSectionPressed, {
     destination,
     display,
     placementId,

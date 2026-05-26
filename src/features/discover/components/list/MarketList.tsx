@@ -3,7 +3,7 @@ import { View } from 'react-native';
 
 import { Box } from '@/design-system';
 import { CarouselHeader } from '@/features/discover/components/carousel/CarouselHeader';
-import { trackSurfaceSectionDrilldownPress } from '@/features/discover/components/marketPress/marketPressContext';
+import { trackSurfaceSectionPress } from '@/features/discover/components/marketPress/marketPressContext';
 import { PlacementTrackedItem } from '@/features/discover/components/PlacementTrackedItem';
 import { type Destination, type Display } from '@/features/placements/surfaces/types';
 import { type Placement, type PlacementId, type PlacementItem } from '@/features/placements/types';
@@ -59,7 +59,7 @@ export function MarketList<T extends PlacementItem>({
   const skeletonItemCount = initialVisibleItemCount ?? DEFAULT_SKELETON_ITEM_COUNT;
 
   const handleSeeAllPress = useCallback(() => {
-    trackSurfaceSectionDrilldownPress({ destination, display, placement, placementId, sectionId, surfaceId, title });
+    trackSurfaceSectionPress({ destination, display, placement, placementId, sectionId, surfaceId, title });
     onPressSeeAll?.();
   }, [destination, display, onPressSeeAll, placement, placementId, sectionId, surfaceId, title]);
 

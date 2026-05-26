@@ -9,7 +9,7 @@ import { CarouselHeader } from '@/features/discover/components/carousel/Carousel
 import {
   trackPlacementInteraction,
   trackSurfaceInteraction,
-  trackSurfaceSectionDrilldownPress,
+  trackSurfaceSectionPress,
 } from '@/features/discover/components/marketPress/marketPressContext';
 import { PlacementTrackedItem } from '@/features/discover/components/PlacementTrackedItem';
 import { type Destination, type Display } from '@/features/placements/surfaces/types';
@@ -108,7 +108,7 @@ export function MarketCarousel<T extends PlacementItem>({
   );
 
   const handleSeeAllPress = useCallback(() => {
-    trackSurfaceSectionDrilldownPress({ destination, display, placement, placementId, sectionId, surfaceId, title });
+    trackSurfaceSectionPress({ destination, display, placement, placementId, sectionId, surfaceId, title });
     onPressSeeAll?.();
   }, [destination, display, onPressSeeAll, placement, placementId, sectionId, surfaceId, title]);
 
