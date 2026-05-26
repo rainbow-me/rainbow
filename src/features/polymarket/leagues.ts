@@ -412,48 +412,7 @@ export const SPORT_LEAGUES = {
 
 export const LEAGUE_SELECTOR_ORDER: LeagueId[] = ['nfl', 'nba', 'mlb', 'cfb', 'cbb', 'epl', 'nhl', 'atp', 'ufc', 'cs2', 'crint'];
 
-export const LEAGUE_LIST_ORDER: LeagueId[] = [
-  ...LEAGUE_SELECTOR_ORDER,
-  'ahl',
-  'wnba',
-  'wcbb',
-  'bkaba',
-  'bkseriea',
-  'wch',
-  'ucl',
-  'mls',
-  'bun',
-  'lal',
-  'sea',
-  'bra1',
-  'bra2',
-  'bsseriea',
-  'cze1',
-  'dfb',
-  'egy1',
-  'fif',
-  'fifwc',
-  'fl1',
-  'j1100',
-  'j2100',
-  'tur',
-  'lib',
-  'cde',
-  'ere',
-  'mex',
-  'nor',
-  'elc',
-  'chi',
-  'chi1',
-  'sud',
-  'ipl',
-  'wta',
-  'itf',
-  'f1',
-  'dota2',
-  'val',
-  'lol',
-];
+export const LEAGUE_LIST_ORDER: LeagueId[] = [...LEAGUE_SELECTOR_ORDER, 'dota2', 'val'];
 
 export type LeagueId = keyof typeof SPORT_LEAGUES;
 export type League = (typeof SPORT_LEAGUES)[LeagueId];
