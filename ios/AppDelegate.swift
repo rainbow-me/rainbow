@@ -70,11 +70,19 @@ class AppDelegate: ExpoAppDelegate, UNUserNotificationCenterDelegate {
 
   @objc func handleRsEscape(notification: Notification) {
     guard let url = notification.userInfo?["url"] as? String else { return }
-    let msg = "Escape via \(url)"
-    let breadcrumb = Breadcrumb()
-    breadcrumb.message = msg
-    SentrySDK.addBreadcrumb(breadcrumb)
-    SentrySDK.capture(message: msg)
+    let host = URL(string: url)?.host ?? url
+
+    // Per-host fingerprint so each blocked host becomes its own Sentry issue.
+    // Without this, every capture call here shares the same stack and Sentry
+    // collapses all hosts into one mega-issue, making per-host trends and
+    // alerts impossible.
+    let event = Event()
+    event.message = SentryMessage(formatted: "Escape via \(host)")
+    event.level = .warning
+    event.fingerprint = ["rnsandbox-escape", host]
+    event.tags = ["sandbox.host": host]
+    event.extra = ["sandbox.url": url]
+    SentrySDK.capture(event: event)
   }
 
   @objc func handleRapInProgress(notification: Notification) {
