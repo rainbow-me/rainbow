@@ -56,20 +56,31 @@ export const PolymarketLeagueSelector = memo(function PolymarketLeagueSelector()
 
   const selectedLeagueKey = useSharedValue<LeagueItemKey>(usePolymarketSportsEventsStore.getState().selectedLeagueId as LeagueItemKey);
 
-  const scrollToSelectedLeague = useCallback(() => {
-    const index = LEAGUE_ITEMS.findIndex(league => league.key === selectedLeagueKey.value);
-    const scrollX = calculateCenteredScrollX(itemLayouts.current, index);
-    leagueSelectorRef.current?.scrollTo({ x: scrollX, y: 0, animated: false });
-  }, [leagueSelectorRef, selectedLeagueKey]);
-
-  useListen(
-    usePolymarketSportsEventsStore,
-    state => state.selectedLeagueId,
-    leagueId => {
-      selectedLeagueKey.value = leagueId as LeagueItemKey;
-      if (allItemsMeasured(itemLayouts.current)) scrollToSelectedLeague();
-    }
+  const scrollToLeague = useCallback(
+    (leagueKey: LeagueItemKey) => {
+      const index = LEAGUE_ITEMS.findIndex(league => league.key === leagueKey);
+      const scrollX = calculateCenteredScrollX(itemLayouts.current, index);
+      leagueSelectorRef.current?.scrollTo({ x: scrollX, y: 0, animated: false });
+    },
+    [leagueSelectorRef]
   );
+
+  const scrollToSelectedLeague = useCallback(() => {
+    scrollToLeague(selectedLeagueKey.value);
+  }, [scrollToLeague, selectedLeagueKey]);
+
+  const syncExternalLeagueSelection = useCallback(
+    (leagueId: string) => {
+      const nextLeagueKey = leagueId as LeagueItemKey;
+      if (selectedLeagueKey.value === nextLeagueKey) return;
+
+      selectedLeagueKey.value = nextLeagueKey;
+      if (allItemsMeasured(itemLayouts.current)) scrollToLeague(nextLeagueKey);
+    },
+    [scrollToLeague, selectedLeagueKey]
+  );
+
+  useListen(usePolymarketSportsEventsStore, state => state.selectedLeagueId, syncExternalLeagueSelection);
 
   const onItemLayout = useCallback(
     (event: LayoutChangeEvent, index: number) => {

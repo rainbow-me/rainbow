@@ -39,21 +39,32 @@ export const PolymarketEventCategorySelector = memo(function PolymarketEventCate
 
   const selectedCategoryKey = useSharedValue<CategoryKey>(usePolymarketCategoryStore.getState().tagId as CategoryKey);
 
-  const scrollToSelectedCategory = useCallback(() => {
-    const index = CATEGORY_ITEMS.findIndex(category => category.key === selectedCategoryKey.value);
-    const scrollX = calculateCenteredScrollX(itemLayouts.current, index);
-    categorySelectorRef.current?.scrollTo({ x: scrollX, y: 0, animated: false });
-  }, [categorySelectorRef, selectedCategoryKey]);
-
-  useListen(
-    usePolymarketCategoryStore,
-    state => state.tagId,
-    tagId => {
-      if (!(tagId in CATEGORIES)) return;
-      selectedCategoryKey.value = tagId as CategoryKey;
-      if (allItemsMeasured(itemLayouts.current)) scrollToSelectedCategory();
-    }
+  const scrollToCategory = useCallback(
+    (categoryKey: CategoryKey) => {
+      const index = CATEGORY_ITEMS.findIndex(category => category.key === categoryKey);
+      const scrollX = calculateCenteredScrollX(itemLayouts.current, index);
+      categorySelectorRef.current?.scrollTo({ x: scrollX, y: 0, animated: false });
+    },
+    [categorySelectorRef]
   );
+
+  const scrollToSelectedCategory = useCallback(() => {
+    scrollToCategory(selectedCategoryKey.value);
+  }, [scrollToCategory, selectedCategoryKey]);
+
+  const syncExternalCategorySelection = useCallback(
+    (tagId: string) => {
+      if (!(tagId in CATEGORIES)) return;
+      const nextCategoryKey = tagId as CategoryKey;
+      if (selectedCategoryKey.value === nextCategoryKey) return;
+
+      selectedCategoryKey.value = nextCategoryKey;
+      if (allItemsMeasured(itemLayouts.current)) scrollToCategory(nextCategoryKey);
+    },
+    [scrollToCategory, selectedCategoryKey]
+  );
+
+  useListen(usePolymarketCategoryStore, state => state.tagId, syncExternalCategorySelection);
 
   const onItemLayout = useCallback(
     (event: LayoutChangeEvent, index: number) => {
