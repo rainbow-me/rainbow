@@ -1,3 +1,4 @@
+import { useMemo } from 'react';
 import { StyleSheet, View } from 'react-native';
 
 import { LinearGradient } from 'expo-linear-gradient';
@@ -10,12 +11,14 @@ import { Box, Text, useColorMode } from '@/design-system';
 import { getValueForColorMode } from '@/design-system/color/palettes';
 import { SparklineChart } from '@/features/charts/line/components/SparklineChart';
 import { getMarketPriceChangeColor, getMarketPriceChangeColors } from '@/features/discover/components/marketCards/marketCardChrome';
+import { MarketIcon } from '@/features/discover/components/marketCards/MarketIcon';
 import { MarketPriceChange } from '@/features/discover/components/marketCards/MarketPriceChange';
 import { usePlacementCardTrackPress } from '@/features/discover/components/marketPress/marketPressContext';
 import { useMarketCardPress } from '@/features/discover/components/marketPress/useMarketCardPress';
 import { type MarketDisplayItem } from '@/features/discover/types/marketDisplayItem';
 import { opacity } from '@/framework/ui/utils/opacity';
 import { DEVICE_WIDTH } from '@/utils/deviceUtils';
+import { getHighContrastTextColorWorklet } from '@/worklets/colors';
 
 const TOKEN_CARD_BORDER_RADIUS = 24;
 const TOKEN_CARD_HEIGHT = 64;
@@ -29,6 +32,14 @@ const TOKEN_CARD_BACKGROUND_COLORS = {
 const TOKEN_CARD_BORDER_COLORS = {
   dark: 'rgba(255, 255, 255, 0.05)',
   light: 'rgba(255, 255, 255, 0.8)',
+};
+const LEVERAGE_BADGE_BORDER_COLORS = {
+  dark: 'rgba(255, 255, 255, 0.24)',
+  light: 'rgba(0, 0, 0, 0.07)',
+};
+const LEVERAGE_BADGE_SHADOW_OPACITIES = {
+  dark: 0.5,
+  light: 0.25,
 };
 const UP_DOWN_ARROW_WIDTH = 12;
 
@@ -52,6 +63,9 @@ function MarketCellCard({ item }: { item: MarketDisplayItem }) {
   const priceChangeColor = getMarketPriceChangeColor(livePriceChange, priceChangeColors);
   const tokenCardBackgroundColor = getValueForColorMode(TOKEN_CARD_BACKGROUND_COLORS, colorMode);
   const tokenCardBorderColor = getValueForColorMode(TOKEN_CARD_BORDER_COLORS, colorMode);
+  const leverageBadgeBorderColor = getValueForColorMode(LEVERAGE_BADGE_BORDER_COLORS, colorMode);
+  const leverageBadgeShadowOpacity = getValueForColorMode(LEVERAGE_BADGE_SHADOW_OPACITIES, colorMode);
+  const leverageBadgeTextColor = useMemo(() => getHighContrastTextColorWorklet(item.accentColor, 4), [item.accentColor]);
   const gradientColors = isDarkMode
     ? ([opacity(item.accentColor, 0.16), opacity(item.accentColor, 0)] as const)
     : (['rgba(131, 142, 153, 0.06)', 'rgba(131, 142, 153, 0)'] as const);
@@ -69,7 +83,22 @@ function MarketCellCard({ item }: { item: MarketDisplayItem }) {
       >
         <LinearGradient colors={gradientColors} style={StyleSheet.absoluteFill} start={{ x: 0, y: 0 }} end={{ x: 1, y: 1 }} />
         <View style={styles.contentRow}>
-          {item.iconUrl ? (
+          {item.leverage !== undefined ? (
+            <MarketIcon
+              accentColor={item.accentColor}
+              badgeBorderColor={leverageBadgeBorderColor}
+              badgePosition="top-right"
+              badgeShadowColor={isDarkMode ? '#000000' : item.accentColor}
+              badgeShadowOpacity={leverageBadgeShadowOpacity}
+              badgeTextColor={leverageBadgeTextColor}
+              borderColor={item.accentColor}
+              fallbackText={item.displayName}
+              fallbackTextSize="13pt"
+              iconUrl={item.iconUrl}
+              leverage={item.leverage}
+              size={40}
+            />
+          ) : item.iconUrl ? (
             <ImgixImage enableFasterImage size={40} source={{ uri: item.iconUrl }} style={styles.icon} />
           ) : (
             <View style={[styles.iconFallback, { borderColor: item.accentColor }]}>
