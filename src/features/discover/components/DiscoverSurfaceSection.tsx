@@ -361,7 +361,7 @@ function SportsEventPlacementSurfaceSection({
   const useStore = useMemo(() => getPredictionsPlacementStore(surface.placement), [surface.placement]);
   const result = useStore();
   const sportsEvents = usePolymarketSportsEventsStore(state => state.getData());
-  const descriptor = PREDICTIONS_SECTION_DESCRIPTORS[surface.display];
+  const descriptor = getSportsEventSectionDescriptor(surface);
   const headerCount = getSportsEventHeaderCount({
     displayedItemCount: getInitialRenderedItemCount(result.items, surface.limit),
     events: sportsEvents,
@@ -383,7 +383,7 @@ function SportsEventPlacementSurfaceSection({
 function SportsLiveSurfaceSection({ surface, surfaceId }: { surface: SurfaceLeafWithDisplay<PredictionsDisplay>; surfaceId: string }) {
   const events = usePolymarketSportsEventsStore(state => state.getData());
   const isLoading = usePolymarketSportsEventsStore(state => state.getStatus('isLoading') || state.getStatus('isIdle'));
-  const descriptor = PREDICTIONS_SECTION_DESCRIPTORS[surface.display];
+  const descriptor = getSportsEventSectionDescriptor(surface);
   const items = useMemo<PredictionPlacementItem[]>(() => {
     if (!events) return EMPTY_PREDICTION_PLACEMENT_ITEMS;
     const liveEvents = events.filter(isLiveSportsEvent);
@@ -689,6 +689,39 @@ function renderPredictionEventCard(item: PredictionPlacementItem) {
 
 function renderPredictionEventCarouselCard(item: PredictionPlacementItem) {
   return <PredictionMarketEventCard event={item.event} width={PREDICTION_MARKET_EVENT_CARD_CAROUSEL_WIDTH} />;
+}
+
+function getSportsEventSectionDescriptor(surface: SurfaceLeafWithDisplay<PredictionsDisplay>): SectionDescriptor<PredictionPlacementItem> {
+  const shouldHideLeagueHeader = getSurfaceLeagueId(surface) !== undefined;
+
+  if (!shouldHideLeagueHeader) return PREDICTIONS_SECTION_DESCRIPTORS[surface.display];
+
+  switch (surface.display) {
+    case 'prediction_event_card.carousel':
+      return {
+        ...PREDICTIONS_SECTION_DESCRIPTORS[surface.display],
+        renderItem: renderPredictionEventCarouselCardWithoutLeagueHeader,
+      };
+    case 'prediction_event_card.list':
+      return {
+        ...PREDICTIONS_SECTION_DESCRIPTORS[surface.display],
+        renderItem: renderPredictionEventCardWithoutLeagueHeader,
+      };
+    case 'prediction_tile.carousel':
+    case 'prediction_tile.grid':
+    case 'prediction_tile_widget.carousel':
+      return PREDICTIONS_SECTION_DESCRIPTORS[surface.display];
+    default:
+      return assertNever(surface.display);
+  }
+}
+
+function renderPredictionEventCardWithoutLeagueHeader(item: PredictionPlacementItem) {
+  return <PredictionMarketEventCard event={item.event} hideLeagueHeader />;
+}
+
+function renderPredictionEventCarouselCardWithoutLeagueHeader(item: PredictionPlacementItem) {
+  return <PredictionMarketEventCard event={item.event} hideLeagueHeader width={PREDICTION_MARKET_EVENT_CARD_CAROUSEL_WIDTH} />;
 }
 
 function renderPredictionEventCardSkeleton() {

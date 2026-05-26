@@ -55,11 +55,13 @@ const TEAM_LOGO_SIZE = 36;
 
 type PredictionMarketEventCardProps = {
   event: PolymarketEvent;
+  hideLeagueHeader?: boolean;
   width?: number;
 };
 
 export const PredictionMarketEventCard = memo(function PredictionMarketEventCard({
   event,
+  hideLeagueHeader = false,
   width = PREDICTION_MARKET_EVENT_CARD_WIDTH,
 }: PredictionMarketEventCardProps) {
   const { isDarkMode } = useColorMode();
@@ -103,12 +105,16 @@ export const PredictionMarketEventCard = memo(function PredictionMarketEventCard
                   style={StyleSheet.absoluteFill}
                 />
                 <View style={styles.header}>
-                  <View style={styles.league}>
-                    <LeagueIcon eventSlug={event.slug} size={20} />
-                    <Text align="left" color="label" size="17pt" style={styles.compactText} weight="heavy">
-                      {getLeagueLabel(leagueId)}
-                    </Text>
-                  </View>
+                  {hideLeagueHeader ? (
+                    <View />
+                  ) : (
+                    <View style={styles.league}>
+                      <LeagueIcon eventSlug={event.slug} size={20} />
+                      <Text align="left" color="label" size="17pt" style={styles.compactText} weight="heavy">
+                        {getLeagueLabel(leagueId)}
+                      </Text>
+                    </View>
+                  )}
                   <View style={styles.status}>
                     {gameStatusTitle ? (
                       <Text align="right" color="labelTertiary" size="15pt" style={styles.statusText} weight="bold">
