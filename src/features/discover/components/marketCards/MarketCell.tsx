@@ -43,15 +43,11 @@ const LEVERAGE_BADGE_SHADOW_OPACITIES = {
 };
 const UP_DOWN_ARROW_WIDTH = 12;
 
-export function MarketCell({ item }: { item: MarketDisplayItem }) {
-  return <MarketCellCard item={item} />;
-}
-
 export function MarketCellSkeleton() {
   return <Skeleton borderRadius={TOKEN_CARD_BORDER_RADIUS} height={TOKEN_CARD_HEIGHT} width={TOKEN_CARD_WIDTH} />;
 }
 
-function MarketCellCard({ item }: { item: MarketDisplayItem }) {
+export function MarketCell({ item }: { item: MarketDisplayItem }) {
   const { colorMode, isDarkMode } = useColorMode();
   const trackPress = usePlacementCardTrackPress();
   const livePriceChange = useLiveTokenValue({
