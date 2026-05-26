@@ -10,11 +10,11 @@ import { getHighContrastColor } from '@/hooks/useAccountAccentColor';
 import { logger, RainbowError } from '@/logger';
 import { time } from '@/utils/time';
 
-export async function fetchGameMetadata(eventTicker: string) {
+export async function fetchGameMetadata(eventTicker: string, abortController?: AbortController | null) {
   try {
     const url = new URL(`${POLYMARKET_GAMMA_API_URL}/games`);
     url.searchParams.set('ticker', eventTicker);
-    const { data } = await rainbowFetch<PolymarketGameMetadata>(url.toString(), { timeout: time.seconds(15) });
+    const { data } = await rainbowFetch<PolymarketGameMetadata>(url.toString(), { abortController, timeout: time.seconds(15) });
     return data;
   } catch (e) {
     // For some game types this information is not available and returns an error
@@ -23,7 +23,11 @@ export async function fetchGameMetadata(eventTicker: string) {
   }
 }
 
-async function fetchTeamsByAbbreviations(abbreviations: string[], league: string | undefined): Promise<PolymarketTeamInfo[] | undefined> {
+async function fetchTeamsByAbbreviations(
+  abbreviations: string[],
+  league: string | undefined,
+  abortController?: AbortController | null
+): Promise<PolymarketTeamInfo[] | undefined> {
   try {
     const url = new URL(buildGammaUrl('teams'));
     if (league) {
@@ -32,7 +36,10 @@ async function fetchTeamsByAbbreviations(abbreviations: string[], league: string
     abbreviations.forEach(abbr => {
       url.searchParams.append('abbreviation', abbr);
     });
-    const { data: rawTeams } = await rainbowFetch<RawPolymarketTeamInfo[]>(url.toString(), { timeout: time.seconds(15) });
+    const { data: rawTeams } = await rainbowFetch<RawPolymarketTeamInfo[]>(url.toString(), {
+      abortController,
+      timeout: time.seconds(15),
+    });
     if (!rawTeams) return undefined;
     const teams = enrichTeamsWithColor(rawTeams);
     return sortTeamsByAbbreviations(teams, abbreviations);
@@ -41,7 +48,11 @@ async function fetchTeamsByAbbreviations(abbreviations: string[], league: string
   }
 }
 
-async function fetchTeamsByNames(names: string[], league: string | undefined): Promise<PolymarketTeamInfo[] | undefined> {
+async function fetchTeamsByNames(
+  names: string[],
+  league: string | undefined,
+  abortController?: AbortController | null
+): Promise<PolymarketTeamInfo[] | undefined> {
   try {
     const url = new URL(buildGammaUrl('teams'));
     if (league) {
@@ -50,7 +61,10 @@ async function fetchTeamsByNames(names: string[], league: string | undefined): P
     names.forEach(name => {
       url.searchParams.append('name', name);
     });
-    const { data: rawTeams } = await rainbowFetch<RawPolymarketTeamInfo[]>(url.toString(), { timeout: time.seconds(15) });
+    const { data: rawTeams } = await rainbowFetch<RawPolymarketTeamInfo[]>(url.toString(), {
+      abortController,
+      timeout: time.seconds(15),
+    });
     if (!rawTeams) return undefined;
     const teams = enrichTeamsWithColor(rawTeams);
     if (rawTeams.length > names.length) {
@@ -63,7 +77,10 @@ async function fetchTeamsByNames(names: string[], league: string | undefined): P
   }
 }
 
-export async function fetchTeamsForEvent(event: GameTeamsSource): Promise<PolymarketTeamInfo[] | undefined> {
+export async function fetchTeamsForEvent(
+  event: GameTeamsSource,
+  abortController?: AbortController | null
+): Promise<PolymarketTeamInfo[] | undefined> {
   if (!event.ticker) return undefined;
 
   const tickerAbbreviations = parseTeamAbbreviationsFromTicker(event.ticker);
@@ -72,7 +89,7 @@ export async function fetchTeamsForEvent(event: GameTeamsSource): Promise<Polyma
   // Try abbreviation-based query first (more reliable - some team names fail Polymarket's validation)
   if (tickerAbbreviations) {
     const abbreviations = [tickerAbbreviations.away, tickerAbbreviations.home];
-    const teams = await fetchTeamsByAbbreviations(abbreviations, gammaLeagueId);
+    const teams = await fetchTeamsByAbbreviations(abbreviations, gammaLeagueId, abortController);
     if (teams?.length === abbreviations.length) {
       return teams;
     }
@@ -81,7 +98,7 @@ export async function fetchTeamsForEvent(event: GameTeamsSource): Promise<Polyma
   let homeTeamName = event.homeTeamName;
   let awayTeamName = event.awayTeamName;
   if (!awayTeamName || !homeTeamName) {
-    const gameMetadata = await fetchGameMetadata(event.ticker);
+    const gameMetadata = await fetchGameMetadata(event.ticker, abortController);
     if (gameMetadata) {
       // The `ordering` field represents the order in which the teams are listed in the game metadata.
       // This is not indicative of how the teams should be displayed in the event, which is always away @ home.
@@ -96,7 +113,7 @@ export async function fetchTeamsForEvent(event: GameTeamsSource): Promise<Polyma
   }
 
   if (homeTeamName && awayTeamName) {
-    const teams = await fetchTeamsByNames([awayTeamName, homeTeamName], gammaLeagueId);
+    const teams = await fetchTeamsByNames([awayTeamName, homeTeamName], gammaLeagueId, abortController);
     if (teams?.length === 2) {
       return teams;
     }
@@ -117,7 +134,10 @@ type GameTeamsMetadata = {
   awayTeamName?: string;
 };
 
-export async function fetchTeamsForGameEvents(events: GameTeamsSource[]): Promise<Map<string, GameTeamsMetadata>> {
+export async function fetchTeamsForGameEvents(
+  events: GameTeamsSource[],
+  abortController?: AbortController | null
+): Promise<Map<string, GameTeamsMetadata>> {
   const teamsMap = new Map<string, GameTeamsMetadata>();
   const gameEventsByTicker = new Map<string, GameTeamsSource>();
 
@@ -130,7 +150,7 @@ export async function fetchTeamsForGameEvents(events: GameTeamsSource[]): Promis
   await Promise.all(
     Array.from(gameEventsByTicker.values()).map(async event => {
       if (!event.ticker) return;
-      const teams = await fetchTeamsForEvent(event);
+      const teams = await fetchTeamsForEvent(event, abortController);
       teamsMap.set(event.ticker, { teams, homeTeamName: event.homeTeamName, awayTeamName: event.awayTeamName });
     })
   );

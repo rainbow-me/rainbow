@@ -74,7 +74,7 @@ async function fetchPredictionEvents(
   abortController: AbortController | null
 ): Promise<PolymarketEvent[]> {
   const rawEvents = await fetchPolymarketEventsByIds(eventIds, abortController);
-  const teamsByTicker = await fetchTeamsForGameEvents(rawEvents);
+  const teamsByTicker = await fetchTeamsForGameEvents(rawEvents, abortController);
 
   return Promise.all(
     rawEvents.map(event => {

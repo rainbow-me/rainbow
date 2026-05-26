@@ -32,6 +32,10 @@ type PlacementDocumentSnapshot = {
   data: () => unknown;
   id: string;
 };
+type RefIdsCache = {
+  placementsById: PlacementsById | null;
+  resultsByFilterKey: Map<string, string[]>;
+};
 
 // ============ Constants ====================================================== //
 
@@ -50,34 +54,52 @@ export const usePlacementsStore = createQueryStore<PlacementsById, never, Placem
     cacheTime: time.days(2),
   },
 
-  (_, get) => ({
-    placementsById: {},
+  (_, get) => {
+    const refIdsCache: RefIdsCache = {
+      placementsById: null,
+      resultsByFilterKey: new Map(),
+    };
 
-    getPlacement: id => {
-      return get().placementsById[id];
-    },
+    return {
+      placementsById: {},
 
-    getItemsBySource: (id, source) => {
-      const placement = get().placementsById[id];
-      if (placement?.source !== source) return EMPTY_PLACEMENT_ITEMS;
-      return getItems(placement);
-    },
+      getPlacement: id => {
+        return get().placementsById[id];
+      },
 
-    getAllRefIds: filter => {
-      const refIds: string[] = [];
-      const placementsById = get().placementsById;
+      getItemsBySource: (id, source) => {
+        const placement = get().placementsById[id];
+        if (placement?.source !== source) return EMPTY_PLACEMENT_ITEMS;
+        return getItems(placement);
+      },
 
-      for (const id of Object.keys(placementsById)) {
-        const placement = placementsById[id];
-        if (!placement || !isPlacementFilterMatch(placement, filter)) continue;
-
-        for (const item of placement.items) {
-          refIds.push(item.id);
+      getAllRefIds: filter => {
+        const placementsById = get().placementsById;
+        const filterKey = getPlacementItemFilterKey(filter);
+        if (refIdsCache.placementsById !== placementsById) {
+          refIdsCache.placementsById = placementsById;
+          refIdsCache.resultsByFilterKey.clear();
         }
-      }
-      return getConsistentArray(refIds);
-    },
-  }),
+
+        const cachedRefIds = refIdsCache.resultsByFilterKey.get(filterKey);
+        if (cachedRefIds) return cachedRefIds;
+
+        const refIds: string[] = [];
+        for (const id of Object.keys(placementsById)) {
+          const placement = placementsById[id];
+          if (!placement || !isPlacementFilterMatch(placement, filter)) continue;
+
+          for (const item of placement.items) {
+            refIds.push(item.id);
+          }
+        }
+
+        const result = getConsistentArray(refIds);
+        refIdsCache.resultsByFilterKey.set(filterKey, result);
+        return result;
+      },
+    };
+  },
 
   { storageKey: 'placementsStore', version: 4 }
 );
@@ -131,6 +153,10 @@ function isPlacementFilterMatch(placement: Placement | undefined, filter: Placem
   if (filter.source && placement.source !== filter.source) return false;
   if (filter.type && placement.type !== filter.type) return false;
   return true;
+}
+
+function getPlacementItemFilterKey(filter: PlacementItemFilter): string {
+  return `${filter.source ?? '*'}:${filter.type ?? '*'}`;
 }
 
 // ============ Type Guards ==================================================== //
