@@ -45,7 +45,6 @@ function unsupportedDisplay(display: SurfaceLeaf['display']) {
 
 const styles = StyleSheet.create({
   container: {
-    flex: 1,
     gap: SECTION_VERTICAL_GAP,
     paddingBottom: 24,
     paddingTop: 20,
