@@ -17,6 +17,7 @@ import { DEFAULT_SPORTS_LEAGUE_KEY, NAVIGATOR_FOOTER_CLEARANCE, NAVIGATOR_FOOTER
 import { getLeagueId, type LeagueId } from '@/features/polymarket/leagues';
 import {
   buildPolymarketSportsEventsListData,
+  isLiveSportsEvent,
   type SportsListItem,
 } from '@/features/polymarket/screens/polymarket-sports-events-screen/buildPolymarketSportsEventsListData';
 import { usePolymarketSportsEventsStore } from '@/features/polymarket/stores/polymarketSportsEventsStore';
@@ -47,6 +48,7 @@ type SportsEventsListContentProps = SportsEventsListProps & {
   events: PolymarketEvent[];
   isIdle: boolean;
   isLoading: boolean;
+  isSuccess: boolean;
   selectedLeagueId: string;
 };
 
@@ -55,12 +57,14 @@ export const PolymarketSportsEventsList = memo(function PolymarketSportsEventsLi
   const selectedLeagueId = usePolymarketSportsEventsStore(state => state.selectedLeagueId);
   const isLoading = usePolymarketSportsEventsStore(state => state.getStatus('isLoading'));
   const isIdle = usePolymarketSportsEventsStore(state => state.getStatus('isIdle'));
+  const isSuccess = usePolymarketSportsEventsStore(state => state.getStatus('isSuccess'));
 
   return (
     <PolymarketSportsEventsListContent
       events={events}
       isIdle={isIdle}
       isLoading={isLoading}
+      isSuccess={isSuccess}
       listRef={listRef}
       onScroll={onScroll}
       selectedLeagueId={selectedLeagueId}
@@ -72,6 +76,7 @@ const PolymarketSportsEventsListContent = memo(function PolymarketSportsEventsLi
   events,
   isIdle,
   isLoading,
+  isSuccess,
   listRef,
   onScroll,
   selectedLeagueId,
@@ -89,6 +94,7 @@ const PolymarketSportsEventsListContent = memo(function PolymarketSportsEventsLi
     [filteredEvents, showLeagueHeaders]
   );
   const showLoadingSkeleton = !listData.length && (isLoading || isIdle);
+  const showLiveSkeleton = !isSuccess || filteredEvents.some(isLiveSportsEvent);
 
   const listStyles = useMemo(() => {
     const paddingBottom = safeAreaInsets.bottom + NAVIGATOR_FOOTER_HEIGHT + NAVIGATOR_FOOTER_CLEARANCE;
@@ -143,7 +149,7 @@ const PolymarketSportsEventsListContent = memo(function PolymarketSportsEventsLi
 
   return (
     <Animated.FlatList
-      ListEmptyComponent={showLoadingSkeleton ? <ListLoadingSkeleton /> : <EmptyState />}
+      ListEmptyComponent={showLoadingSkeleton ? <ListLoadingSkeleton showLiveSection={showLiveSkeleton} /> : <EmptyState />}
       contentContainerStyle={listStyles.contentContainerStyle}
       data={listData}
       scrollEnabled={listData.length > 0 && !showLoadingSkeleton}
@@ -162,10 +168,10 @@ const PolymarketSportsEventsListContent = memo(function PolymarketSportsEventsLi
   );
 });
 
-const ListLoadingSkeleton = memo(function ListLoadingSkeleton() {
+const ListLoadingSkeleton = memo(function ListLoadingSkeleton({ showLiveSection }: { showLiveSection: boolean }) {
   return (
     <View style={styles.skeletonContainer}>
-      {SKELETON_SECTIONS.map((section, sectionIndex) => (
+      {SKELETON_SECTIONS.filter(section => showLiveSection || section.key !== 'live').map((section, sectionIndex) => (
         <View key={section.key} style={sectionIndex > 0 && styles.skeletonSectionSpacing}>
           {section.showHeader ? (
             <View style={styles.skeletonSectionHeader}>
