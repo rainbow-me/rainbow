@@ -7,7 +7,7 @@ import { useLiveTokenSharedValue } from '@/components/live-token-text/LiveTokenT
 import { AnimatedText } from '@/design-system';
 import { type TextSize } from '@/design-system/components/Text/Text';
 import { DOWN_ARROW, UP_ARROW } from '@/features/perps/constants';
-import { formatCompactPriceChange } from '@/features/perps/utils';
+import { toFixedWorklet } from '@/framework/core/safeMath';
 import { type TokenData } from '@/state/liveTokens/liveTokensStore';
 
 import { type PriceChangeColors } from '../marketCardChrome';
@@ -72,4 +72,9 @@ function selectPriceChangeArrow(priceChange: SharedValue<string>): string {
 function selectPriceChangeText(priceChange: SharedValue<string>): string {
   'worklet';
   return formatCompactPriceChange(priceChange.value);
+}
+
+function formatCompactPriceChange(priceChange: string): string {
+  'worklet';
+  return `${toFixedWorklet(Math.abs(Number(priceChange)) * 10_000, 2)}%`;
 }
