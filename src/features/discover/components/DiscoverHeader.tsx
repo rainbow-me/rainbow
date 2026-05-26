@@ -8,6 +8,7 @@ import { Skeleton } from '@/components/Skeleton';
 import { Box, Text, TextIcon, useColorMode, useForegroundColor } from '@/design-system';
 import { getValueForColorMode } from '@/design-system/color/palettes';
 import { trackDiscoverSurfaceTabPress } from '@/features/discover/components/markets/marketPressContext';
+import { getSurfaceLabel } from '@/features/discover/components/surfaceLabel';
 import {
   DiscoverSectionNavigation,
   useDiscoverNavigationStore,
@@ -15,7 +16,6 @@ import {
 } from '@/features/discover/stores/discoverNavigationStore';
 import { useDiscoverSurface } from '@/features/placements/surfaces/hooks/useSurface';
 import { type Surface } from '@/features/placements/surfaces/types';
-import * as i18n from '@/languages';
 import { THICK_BORDER_WIDTH } from '@/styles/constants';
 
 export const DISCOVER_HEADER_HEIGHT = 80;
@@ -208,19 +208,6 @@ function DiscoverCategorySelector() {
       </View>
     </Box>
   );
-}
-
-function getSurfaceLabel(surface: Pick<Surface, 'id' | 'label'>): string {
-  const fallbackLabel = surface.label || surface.id;
-  return i18n.t(`discover.sections.${getSurfaceLabelKey(fallbackLabel)}`, { defaultValue: fallbackLabel });
-}
-
-function getSurfaceLabelKey(value: string): string {
-  return value
-    .trim()
-    .toLowerCase()
-    .replace(/[^a-z0-9]+/g, '_')
-    .replace(/^_+|_+$/g, '');
 }
 
 function DiscoverCategorySelectorFallback() {

@@ -4,8 +4,9 @@ import { useBackgroundColor } from '@/design-system';
 import { MarketCarousel } from '@/features/discover/components/markets/layouts/MarketCarousel';
 import { MarketGrid } from '@/features/discover/components/markets/layouts/MarketGrid';
 import { MarketList } from '@/features/discover/components/markets/layouts/MarketList';
+import { getSurfaceLabel } from '@/features/discover/components/surfaceLabel';
 import { navigateDiscoverDestination } from '@/features/discover/utils/navigation';
-import { type Surface, type SurfaceLeaf } from '@/features/placements/surfaces/types';
+import { type SurfaceLeaf } from '@/features/placements/surfaces/types';
 import { type PlacementItem } from '@/features/placements/types';
 import { LeagueIcon } from '@/features/polymarket/components/league-icon/LeagueIcon';
 import { getLeagueId, SPORT_LEAGUES, type LeagueId } from '@/features/polymarket/leagues';
@@ -14,7 +15,6 @@ import {
   type SportsEventScheduleBucket,
 } from '@/features/polymarket/screens/polymarket-sports-events-screen/buildPolymarketSportsEventsListData';
 import { type PolymarketEvent } from '@/features/polymarket/types/polymarket-event';
-import * as i18n from '@/languages';
 
 import { type SurfaceLayoutProps } from './surfaceSectionTypes';
 
@@ -125,7 +125,7 @@ export function getInitialRenderedItemCount<T>(items: T[], limit: number | undef
 export function isLiveSportsSurface(surface: SurfaceLeaf): boolean {
   if (!isSportsEventCardSurface(surface)) return false;
 
-  const surfaceKeys = [getNormalizedSurfaceKey(surface.id), getNormalizedSurfaceKey(surface.label)];
+  const surfaceKeys = [getSurfaceValueKey(surface.id), getSurfaceValueKey(surface.label)];
   if (surfaceKeys.some(key => key.split('_').includes('live'))) return true;
 
   return (
@@ -146,7 +146,7 @@ export function getSurfaceLeagueId(surface: SurfaceLeaf): LeagueId | undefined {
 }
 
 export function getSurfaceTimeBucket(surface: SurfaceLeaf): SportsEventScheduleBucket | undefined {
-  const values = [getNormalizedSurfaceKey(surface.id), getNormalizedSurfaceKey(surface.label)];
+  const values = [getSurfaceValueKey(surface.id), getSurfaceValueKey(surface.label)];
   if (values.includes('today')) return 'today';
   if (values.includes('this_week')) return 'this-week';
   return undefined;
@@ -208,12 +208,7 @@ function getLeagueIdBySurfaceValue(value: string | undefined): LeagueId | undefi
   return leagueToken as LeagueId | undefined;
 }
 
-function getSurfaceLabel(surface: Pick<Surface, 'id' | 'label'>): string {
-  const fallbackLabel = surface.label || surface.id;
-  return i18n.t(`discover.sections.${getNormalizedSurfaceKey(fallbackLabel)}`, { defaultValue: fallbackLabel });
-}
-
-function getNormalizedSurfaceKey(value: string | undefined): string {
+function getSurfaceValueKey(value: string | undefined): string {
   return getNormalizedSurfaceValue(value).replace(/[\s-]+/g, '_');
 }
 
