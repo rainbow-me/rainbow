@@ -1,11 +1,9 @@
-import React, { Fragment, useCallback, type ReactNode } from 'react';
+import React, { Fragment, type ReactNode } from 'react';
 import { StyleSheet, useWindowDimensions, View } from 'react-native';
 
 import { Box } from '@/design-system';
 import { CarouselHeader } from '@/features/discover/components/markets/layouts/CarouselHeader';
-import { trackSurfaceSectionPress } from '@/features/discover/components/markets/marketPressContext';
 import { PlacementTrackedItem } from '@/features/discover/components/markets/PlacementTrackedItem';
-import { type Destination, type Display } from '@/features/placements/surfaces/types';
 import { type Placement, type PlacementId, type PlacementItem } from '@/features/placements/types';
 import { Grid } from '@/screens/token-launcher/components/Grid';
 
@@ -15,18 +13,15 @@ const DEFAULT_SKELETON_ROWS = 2;
 
 type MarketGridProps<T extends PlacementItem> = {
   data: T[];
-  destination: Destination;
-  display: Display;
   headerCount?: number;
   itemHeight: number;
   leadingAccessory?: ReactNode;
   loading?: boolean;
-  onPressSeeAll?: () => void;
+  onPress?: () => void;
   placement: Placement | undefined;
   placementId: PlacementId | undefined;
   renderItem: (item: T, cellWidth: number) => ReactNode;
   renderSkeleton: (cellWidth: number) => ReactNode;
-  sectionId: string;
   showHeaderCaret?: boolean;
   skeletonCount?: number;
   surfaceId: string;
@@ -35,18 +30,15 @@ type MarketGridProps<T extends PlacementItem> = {
 
 export function MarketGrid<T extends PlacementItem>({
   data,
-  destination,
-  display,
   headerCount,
   itemHeight,
   leadingAccessory,
   loading,
-  onPressSeeAll,
+  onPress,
   placement,
   placementId,
   renderItem,
   renderSkeleton,
-  sectionId,
   showHeaderCaret,
   skeletonCount = GRID_COLUMNS * DEFAULT_SKELETON_ROWS,
   surfaceId,
@@ -56,22 +48,11 @@ export function MarketGrid<T extends PlacementItem>({
   const cellWidth = (screenWidth - 2 * GRID_SPACING - (GRID_COLUMNS - 1) * GRID_SPACING) / GRID_COLUMNS;
   const showSkeletons = loading && data.length === 0;
 
-  const handleSeeAllPress = useCallback(() => {
-    trackSurfaceSectionPress({ destination, display, placement, placementId, sectionId, surfaceId, title });
-    onPressSeeAll?.();
-  }, [destination, display, onPressSeeAll, placement, placementId, sectionId, surfaceId, title]);
-
   if (!showSkeletons && data.length === 0) return null;
 
   return (
     <Box gap={20}>
-      <CarouselHeader
-        count={headerCount}
-        leadingAccessory={leadingAccessory}
-        title={title}
-        onPress={onPressSeeAll ? handleSeeAllPress : undefined}
-        showCaret={showHeaderCaret}
-      />
+      <CarouselHeader count={headerCount} leadingAccessory={leadingAccessory} title={title} onPress={onPress} showCaret={showHeaderCaret} />
 
       <View style={styles.gridContainer}>
         {showSkeletons ? (

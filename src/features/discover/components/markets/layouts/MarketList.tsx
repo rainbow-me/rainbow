@@ -1,11 +1,9 @@
-import { Fragment, useCallback, useState, type ReactNode } from 'react';
+import { Fragment, useState, type ReactNode } from 'react';
 import { View } from 'react-native';
 
 import { Box } from '@/design-system';
 import { CarouselHeader } from '@/features/discover/components/markets/layouts/CarouselHeader';
-import { trackSurfaceSectionPress } from '@/features/discover/components/markets/marketPressContext';
 import { PlacementTrackedItem } from '@/features/discover/components/markets/PlacementTrackedItem';
-import { type Destination, type Display } from '@/features/placements/surfaces/types';
 import { type Placement, type PlacementId, type PlacementItem } from '@/features/placements/types';
 
 import { ShowMoreButton } from './ShowMoreButton';
@@ -16,18 +14,15 @@ const HORIZONTAL_PADDING = 12;
 
 type MarketListProps<T extends PlacementItem> = {
   data: T[];
-  destination: Destination;
-  display: Display;
   headerCount?: number;
   initialVisibleItemCount?: number;
   leadingAccessory?: ReactNode;
   loading?: boolean;
-  onPressSeeAll?: () => void;
+  onPress?: () => void;
   placement: Placement | undefined;
   placementId: PlacementId | undefined;
   renderItem: (item: T) => ReactNode;
   renderSkeleton: () => ReactNode;
-  sectionId: string;
   showHeaderCaret?: boolean;
   surfaceId: string;
   title: string;
@@ -35,18 +30,15 @@ type MarketListProps<T extends PlacementItem> = {
 
 export function MarketList<T extends PlacementItem>({
   data,
-  destination,
-  display,
   headerCount,
   initialVisibleItemCount,
   leadingAccessory,
   loading,
-  onPressSeeAll,
+  onPress,
   placement,
   placementId,
   renderItem,
   renderSkeleton,
-  sectionId,
   showHeaderCaret,
   surfaceId,
   title,
@@ -58,22 +50,11 @@ export function MarketList<T extends PlacementItem>({
   const remainingItemCount = hasInitialLimit ? data.length - visibleItems.length : 0;
   const skeletonItemCount = initialVisibleItemCount ?? DEFAULT_SKELETON_ITEM_COUNT;
 
-  const handleSeeAllPress = useCallback(() => {
-    trackSurfaceSectionPress({ destination, display, placement, placementId, sectionId, surfaceId, title });
-    onPressSeeAll?.();
-  }, [destination, display, onPressSeeAll, placement, placementId, sectionId, surfaceId, title]);
-
   if (!showSkeletons && data.length === 0) return null;
 
   return (
     <Box gap={20}>
-      <CarouselHeader
-        count={headerCount}
-        leadingAccessory={leadingAccessory}
-        title={title}
-        onPress={onPressSeeAll ? handleSeeAllPress : undefined}
-        showCaret={showHeaderCaret}
-      />
+      <CarouselHeader count={headerCount} leadingAccessory={leadingAccessory} title={title} onPress={onPress} showCaret={showHeaderCaret} />
       <Box gap={8} paddingHorizontal={{ custom: HORIZONTAL_PADDING }}>
         {showSkeletons
           ? Array.from({ length: skeletonItemCount }).map((_, index) => <Fragment key={index}>{renderSkeleton()}</Fragment>)

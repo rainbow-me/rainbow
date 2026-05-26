@@ -6,13 +6,9 @@ import { useDebouncedCallback } from 'use-debounce';
 
 import { Box } from '@/design-system';
 import { CarouselHeader } from '@/features/discover/components/markets/layouts/CarouselHeader';
-import {
-  trackPlacementInteraction,
-  trackSurfaceInteraction,
-  trackSurfaceSectionPress,
-} from '@/features/discover/components/markets/marketPressContext';
+import { trackPlacementInteraction, trackSurfaceInteraction } from '@/features/discover/components/markets/marketPressContext';
 import { PlacementTrackedItem } from '@/features/discover/components/markets/PlacementTrackedItem';
-import { type Destination, type Display } from '@/features/placements/surfaces/types';
+import { type Display } from '@/features/placements/surfaces/types';
 import { type Placement, type PlacementId, type PlacementItem } from '@/features/placements/types';
 import { time } from '@/utils/time';
 
@@ -24,7 +20,6 @@ const SCROLL_DEBOUNCE_OPTIONS = Object.freeze({ leading: false, trailing: true }
 
 type MarketCarouselProps<T extends PlacementItem> = {
   data: T[];
-  destination: Destination;
   display: Display;
   getItemWidth?: (item: T) => number;
   headerCount?: number;
@@ -33,7 +28,7 @@ type MarketCarouselProps<T extends PlacementItem> = {
   itemWidth: number;
   leadingAccessory?: ReactNode;
   loading?: boolean;
-  onPressSeeAll?: () => void;
+  onPress?: () => void;
   placement: Placement | undefined;
   placementId: PlacementId | undefined;
   renderItem: (item: T, width: number) => ReactNode;
@@ -48,7 +43,6 @@ type MarketCarouselProps<T extends PlacementItem> = {
 
 export function MarketCarousel<T extends PlacementItem>({
   data,
-  destination,
   display,
   getItemWidth,
   headerCount,
@@ -57,7 +51,7 @@ export function MarketCarousel<T extends PlacementItem>({
   itemWidth,
   leadingAccessory,
   loading,
-  onPressSeeAll,
+  onPress,
   placement,
   placementId,
   renderItem,
@@ -113,11 +107,6 @@ export function MarketCarousel<T extends PlacementItem>({
     [defaultItemWidth, itemHeight, itemVerticalBleed, itemWidths, placement, placementId, renderItem, surfaceId, title]
   );
 
-  const handleSeeAllPress = useCallback(() => {
-    trackSurfaceSectionPress({ destination, display, placement, placementId, sectionId, surfaceId, title });
-    onPressSeeAll?.();
-  }, [destination, display, onPressSeeAll, placement, placementId, sectionId, surfaceId, title]);
-
   const onScrollSettle = useDebouncedCallback(
     () => {
       trackSurfaceInteraction({ display, interactionType: 'carousel_scroll', placement, sectionId, surfaceId });
@@ -131,13 +120,7 @@ export function MarketCarousel<T extends PlacementItem>({
 
   return (
     <Box gap={20}>
-      <CarouselHeader
-        count={headerCount}
-        leadingAccessory={leadingAccessory}
-        title={title}
-        onPress={onPressSeeAll ? handleSeeAllPress : undefined}
-        showCaret={showHeaderCaret}
-      />
+      <CarouselHeader count={headerCount} leadingAccessory={leadingAccessory} title={title} onPress={onPress} showCaret={showHeaderCaret} />
 
       {showSkeletons ? (
         <View style={styles.skeletonRow}>

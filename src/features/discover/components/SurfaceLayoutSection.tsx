@@ -5,6 +5,7 @@ import { MarketCarousel } from '@/features/discover/components/markets/layouts/M
 import { MarketGrid } from '@/features/discover/components/markets/layouts/MarketGrid';
 import { MarketList } from '@/features/discover/components/markets/layouts/MarketList';
 import { LIVE_INDICATOR_BACKGROUND_COLOR, LIVE_INDICATOR_COLOR } from '@/features/discover/components/markets/marketCardChrome';
+import { trackSurfaceSectionPress } from '@/features/discover/components/markets/marketPressContext';
 import { getSurfaceLabel } from '@/features/discover/components/surfaceLabel';
 import { navigateDiscoverDestination } from '@/features/discover/utils/navigation';
 import { type SurfaceLeaf } from '@/features/placements/surfaces/types';
@@ -42,26 +43,40 @@ export function renderSurfaceLayoutSection<T extends PlacementItem>({
   const renderedData = hasLimit ? data.slice(0, surface.limit) : data;
   const skeletonCount = hasLimit ? surface.limit : undefined;
   const showHeaderCaret = getSurfaceHeaderCaret(surface);
-  const commonProps = {
-    destination: surface.destination,
-    display: surface.display,
+  const title = getSurfaceLabel(surface);
+  const onPress = onPressSeeAll
+    ? () => {
+        trackSurfaceSectionPress({
+          destination: surface.destination,
+          display: surface.display,
+          placement,
+          placementId: surface.placement ?? undefined,
+          sectionId: surface.id,
+          surfaceId,
+          title,
+        });
+        onPressSeeAll();
+      }
+    : undefined;
+  const sectionProps = {
     headerCount,
     leadingAccessory,
     loading,
-    onPressSeeAll,
+    onPress,
     placement,
     placementId: surface.placement ?? undefined,
     sectionId: surface.id,
     surfaceId,
-    title: getSurfaceLabel(surface),
+    title,
   };
 
   switch (descriptor.layout) {
     case 'carousel':
       return (
         <MarketCarousel
-          {...commonProps}
+          {...sectionProps}
           data={renderedData}
+          display={surface.display}
           getItemWidth={descriptor.getItemWidth}
           itemHeight={descriptor.itemHeight}
           itemVerticalBleed={descriptor.itemVerticalBleed}
@@ -76,7 +91,7 @@ export function renderSurfaceLayoutSection<T extends PlacementItem>({
     case 'grid':
       return (
         <MarketGrid
-          {...commonProps}
+          {...sectionProps}
           data={renderedData}
           itemHeight={descriptor.itemHeight}
           renderItem={descriptor.renderItem}
@@ -88,7 +103,7 @@ export function renderSurfaceLayoutSection<T extends PlacementItem>({
     case 'list':
       return (
         <MarketList
-          {...commonProps}
+          {...sectionProps}
           data={data}
           initialVisibleItemCount={surface.limit}
           renderItem={descriptor.renderItem}
