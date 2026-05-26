@@ -6,8 +6,7 @@ import { CarouselHeader } from '@/features/discover/components/markets/layouts/C
 import { type DiscoverCardAnalyticsContext } from '@/features/discover/components/surfaceSectionTypes';
 import { type Placement, type PlacementId, type PlacementItem } from '@/features/placements/types';
 
-import { ShowMoreButton } from './ShowMoreButton';
-import { ShowMoreCellEnterAnimation } from './ShowMoreCellEnterAnimation';
+import { ShowMoreButton, ShowMoreCellEnterAnimation } from './ShowMoreButton';
 
 const DEFAULT_SKELETON_ITEM_COUNT = 5;
 const HORIZONTAL_PADDING = 12;

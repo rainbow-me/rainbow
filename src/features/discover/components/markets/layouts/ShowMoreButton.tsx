@@ -1,14 +1,38 @@
-import { memo } from 'react';
+import { memo, type PropsWithChildren } from 'react';
 import { StyleSheet, View } from 'react-native';
 
+import Animated, { FadeInDown } from 'react-native-reanimated';
+
+import { easing } from '@/components/animations/animationConfigs';
 import ButtonPressAnimation from '@/components/animations/ButtonPressAnimation';
 import { Box, globalColors, Text, TextIcon, useBackgroundColor, useColorMode } from '@/design-system';
 import { opacity } from '@/framework/ui/utils/opacity';
 import * as i18n from '@/languages';
 
+const ENTER_DURATION = 220;
+const ENTER_DELAY_STEP = 35;
+const MAX_STAGGER_INDEX = 6;
+
+type ShowMoreCellEnterAnimationProps = PropsWithChildren<{
+  index: number;
+}>;
+
 type ShowMoreButtonProps = {
   onPress: () => void;
 };
+
+export const ShowMoreCellEnterAnimation = memo(function ShowMoreCellEnterAnimation({ children, index }: ShowMoreCellEnterAnimationProps) {
+  return (
+    <Animated.View
+      entering={FadeInDown.duration(ENTER_DURATION)
+        .easing(easing.bezier.fade)
+        .withInitialValues({ opacity: 0, transform: [{ translateY: 12 }] })
+        .delay(Math.min(index, MAX_STAGGER_INDEX) * ENTER_DELAY_STEP)}
+    >
+      {children}
+    </Animated.View>
+  );
+});
 
 export const ShowMoreButton = memo(function ShowMoreButton({ onPress }: ShowMoreButtonProps) {
   const { isDarkMode } = useColorMode();
