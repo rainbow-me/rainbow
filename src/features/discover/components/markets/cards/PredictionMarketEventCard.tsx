@@ -1,4 +1,4 @@
-import { memo, useCallback } from 'react';
+import { memo, useCallback, useMemo } from 'react';
 import { Platform, StyleSheet, View } from 'react-native';
 
 import { LinearGradient } from 'expo-linear-gradient';
@@ -11,6 +11,7 @@ import { LiveTokenText } from '@/components/live-token-text/LiveTokenText';
 import { globalColors, Text, TextShadow, useBackgroundColor, useColorMode } from '@/design-system';
 import { LIVE_INDICATOR_COLOR, MARKET_ON_COLOR } from '@/features/discover/components/markets/marketCardChrome';
 import { type DiscoverCardAnalyticsContext } from '@/features/discover/components/surfaceSectionTypes';
+import { getDiscoverSportsEventTeamLabels } from '@/features/discover/utils/sportsEventTeamLabels';
 import { LeagueIcon } from '@/features/polymarket/components/league-icon/LeagueIcon';
 import {
   useSportsEventContent,
@@ -67,7 +68,16 @@ export const PredictionMarketEventCard = memo(function PredictionMarketEventCard
   width = PREDICTION_MARKET_EVENT_CARD_WIDTH,
 }: PredictionMarketEventCardProps) {
   const { isDarkMode } = useColorMode();
-  const { eventAccentColor, gameStatusTitle, isLive, leagueId, rows, scores, teamLabels } = useSportsEventContent(event);
+  const {
+    eventAccentColor,
+    gameStatusTitle,
+    isLive,
+    leagueId,
+    rows,
+    scores,
+    teamLabels: upstreamTeamLabels,
+  } = useSportsEventContent(event);
+  const teamLabels = useMemo(() => getDiscoverSportsEventTeamLabels(event, upstreamTeamLabels), [event, upstreamTeamLabels]);
   const cardBorderGradientColors = getPredictionEventCardBorderGradientColors(eventAccentColor, isDarkMode);
   const cardGradientColors = getPredictionEventCardGradientColors(eventAccentColor, isDarkMode);
   const handlePress = useCallback(() => {
