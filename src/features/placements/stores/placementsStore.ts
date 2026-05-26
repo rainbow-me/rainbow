@@ -54,11 +54,11 @@ export const usePlacementsStore = createQueryStore<PlacementsById, never, Placem
     placementsById: {},
 
     getPlacement: id => {
-      return getCachedV2Placement(id, get().placementsById);
+      return get().placementsById[id];
     },
 
     getItemsBySource: (id, source) => {
-      const placement = getCachedV2Placement(id, get().placementsById);
+      const placement = get().placementsById[id];
       if (placement?.source !== source) return EMPTY_PLACEMENT_ITEMS;
       return getItems(placement);
     },
@@ -68,7 +68,7 @@ export const usePlacementsStore = createQueryStore<PlacementsById, never, Placem
       const placementsById = get().placementsById;
 
       for (const id of Object.keys(placementsById)) {
-        const placement = getCachedV2Placement(id, placementsById);
+        const placement = placementsById[id];
         if (!placement || !isPlacementFilterMatch(placement, filter)) continue;
 
         for (const item of placement.items) {
@@ -121,11 +121,6 @@ function buildPlacement(id: PlacementId, placement: Placement): Placement {
   };
 }
 
-function getCachedV2Placement(id: PlacementId, placementsById: PlacementsById): Placement | undefined {
-  const placement = placementsById[id];
-  return isV2Placement(id, placement) ? placement : undefined;
-}
-
 function getItems(placement: Placement | undefined): PlacementItem[] {
   const items = placement?.items ?? EMPTY_PLACEMENT_ITEMS;
   return items.length ? items : EMPTY_PLACEMENT_ITEMS;
@@ -152,15 +147,6 @@ function isPlacementDocument(id: string, placement: unknown): placement is Place
     document.version === 2 &&
     isPlacementRefPair(document.source, document.type) &&
     Array.isArray(document.items)
-  );
-}
-
-function isV2Placement(id: PlacementId, placement: Placement | undefined): placement is Placement {
-  return (
-    placement?.id === id &&
-    placement.version === 2 &&
-    isPlacementRefPair(placement.source, placement.type) &&
-    Array.isArray(placement.items)
   );
 }
 
