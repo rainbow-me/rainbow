@@ -150,7 +150,7 @@ const DiscoverSearchInput = ({
     });
   }, [currentChainId, placeholderText]);
 
-  const spinnerTimeout = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const spinnerTimeout = useRef<NodeJS.Timeout | null>(null);
   useEffect(() => {
     if (isLoading && !isEmpty(searchQuery)) {
       if (spinnerTimeout.current) {
