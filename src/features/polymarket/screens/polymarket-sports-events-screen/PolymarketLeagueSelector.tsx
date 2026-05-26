@@ -5,7 +5,7 @@ import { ScrollView } from 'react-native-gesture-handler';
 import Animated, { useAnimatedStyle, useSharedValue, type SharedValue } from 'react-native-reanimated';
 
 import ButtonPressAnimation from '@/components/animations/ButtonPressAnimation';
-import { Border, globalColors, Text, useColorMode } from '@/design-system';
+import { Border, globalColors, Text, useColorMode, useForegroundColor } from '@/design-system';
 import { InnerShadow } from '@/features/polymarket/components/InnerShadow';
 import { getIconByLeagueId, LeagueIcon } from '@/features/polymarket/components/league-icon/LeagueIcon';
 import { DEFAULT_SPORTS_LEAGUE_KEY } from '@/features/polymarket/constants';
@@ -13,6 +13,7 @@ import { LEAGUE_SELECTOR_ORDER, SPORT_LEAGUES, type LeagueId } from '@/features/
 import { usePolymarketContext } from '@/features/polymarket/screens/polymarket-navigator/PolymarketContext';
 import { usePolymarketSportsEventsStore } from '@/features/polymarket/stores/polymarketSportsEventsStore';
 import { opacity } from '@/framework/ui/utils/opacity';
+import { useListen } from '@/state/internal/hooks/useListen';
 import { THICK_BORDER_WIDTH, THICKER_BORDER_WIDTH } from '@/styles/constants';
 import { deepFreeze } from '@/utils/deepFreeze';
 import { DEVICE_WIDTH } from '@/utils/deviceUtils';
@@ -55,11 +56,31 @@ export const PolymarketLeagueSelector = memo(function PolymarketLeagueSelector()
 
   const selectedLeagueKey = useSharedValue<LeagueItemKey>(usePolymarketSportsEventsStore.getState().selectedLeagueId as LeagueItemKey);
 
+  const scrollToLeague = useCallback(
+    (leagueKey: LeagueItemKey) => {
+      const index = LEAGUE_ITEMS.findIndex(league => league.key === leagueKey);
+      const scrollX = calculateCenteredScrollX(itemLayouts.current, index);
+      leagueSelectorRef.current?.scrollTo({ x: scrollX, y: 0, animated: false });
+    },
+    [leagueSelectorRef]
+  );
+
   const scrollToSelectedLeague = useCallback(() => {
-    const index = LEAGUE_ITEMS.findIndex(league => league.key === selectedLeagueKey.value);
-    const scrollX = calculateCenteredScrollX(itemLayouts.current, index);
-    leagueSelectorRef.current?.scrollTo({ x: scrollX, y: 0, animated: false });
-  }, [leagueSelectorRef, selectedLeagueKey]);
+    scrollToLeague(selectedLeagueKey.value);
+  }, [scrollToLeague, selectedLeagueKey]);
+
+  const syncExternalLeagueSelection = useCallback(
+    (leagueId: string) => {
+      const nextLeagueKey = leagueId as LeagueItemKey;
+      if (selectedLeagueKey.value === nextLeagueKey) return;
+
+      selectedLeagueKey.value = nextLeagueKey;
+      if (allItemsMeasured(itemLayouts.current)) scrollToLeague(nextLeagueKey);
+    },
+    [scrollToLeague, selectedLeagueKey]
+  );
+
+  useListen(usePolymarketSportsEventsStore, state => state.selectedLeagueId, syncExternalLeagueSelection);
 
   const onItemLayout = useCallback(
     (event: LayoutChangeEvent, index: number) => {
@@ -131,7 +152,10 @@ type LeagueItemProps = {
 
 const LeagueItemComponent = memo(function LeagueItemComponent({ league, onPress, selectedLeagueKey }: LeagueItemProps) {
   const { isDarkMode } = useColorMode();
+  const labelColor = useForegroundColor('label');
   const selectedColor = isDarkMode ? league.color.dark : opacity(globalColors.white100, 0.5);
+  const selectedIconColor = isDarkMode ? league.color.dark : league.color.light;
+  const unselectedIconColor = isDarkMode ? labelColor : selectedIconColor;
 
   const leagueKey = league.key;
   const accentColors = useMemo(() => createOpacityPalette(selectedColor, PALETTE_OPACITIES), [selectedColor]);
@@ -149,6 +173,14 @@ const LeagueItemComponent = memo(function LeagueItemComponent({ league, onPress,
     opacity: selectedLeagueKey.value === leagueKey ? 1 : 0,
   }));
 
+  const selectedIconStyle = useAnimatedStyle(() => ({
+    opacity: selectedLeagueKey.value === leagueKey ? 1 : 0,
+  }));
+
+  const unselectedIconStyle = useAnimatedStyle(() => ({
+    opacity: selectedLeagueKey.value === leagueKey ? 0 : 1,
+  }));
+
   const hasIcon = useMemo(() => league.key !== DEFAULT_SPORTS_LEAGUE_KEY && getIconByLeagueId(league.key) !== undefined, [league.key]);
 
   return (
@@ -161,7 +193,12 @@ const LeagueItemComponent = memo(function LeagueItemComponent({ league, onPress,
         </Animated.View>
         {hasIcon && (
           <View style={styles.iconContainer}>
-            <LeagueIcon leagueId={league.key as LeagueId} size={24} />
+            <Animated.View style={[styles.iconLayer, unselectedIconStyle]}>
+              <LeagueIcon color={unselectedIconColor} leagueId={league.key as LeagueId} size={24} />
+            </Animated.View>
+            <Animated.View style={[styles.iconLayer, selectedIconStyle]}>
+              <LeagueIcon color={selectedIconColor} leagueId={league.key as LeagueId} size={24} />
+            </Animated.View>
           </View>
         )}
         <Text align="center" color="label" size="17pt" weight="heavy">
@@ -205,6 +242,9 @@ const styles = StyleSheet.create({
     height: 16,
     justifyContent: 'center',
     width: 16,
+  },
+  iconLayer: {
+    position: 'absolute',
   },
   itemContainer: {
     alignItems: 'center',
