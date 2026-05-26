@@ -3,6 +3,7 @@ import { useExperimentalConfigStore } from '@/config/experimentalConfigStore';
 import { IS_TEST } from '@/env';
 import { createPlacementStore } from '@/features/placements/stores/factories/createPlacementStore';
 import { usePlacementsStore } from '@/features/placements/stores/placementsStore';
+import { useDiscoverSurfacePlacementRefs } from '@/features/placements/surfaces/hooks/useSurface';
 import { type PlacementId, type PlacementItem } from '@/features/placements/types';
 import { fetchPolymarketEventsByIds } from '@/features/polymarket/stores/polymarketEventsStore';
 import { type PolymarketEvent } from '@/features/polymarket/types/polymarket-event';
@@ -38,9 +39,10 @@ const usePredictionsEnabled = createDerivedStore<boolean>(
   $ => {
     const polymarketEnabled = $(useRemoteConfigStore, state => state.getRemoteConfigKey('polymarket_enabled'));
     const polymarketEnabledLocally = $(useExperimentalConfigStore, state => state.getFlag(POLYMARKET));
-    const hasEventIdsOrPendingPlacements = $(usePlacementsStore, hasPredictionRefsOrPendingPlacementsHydration);
+    const hasEventIds = $(useDiscoverSurfacePlacementRefs, refs => refs.polymarket.length > 0);
+    const placementsPending = $(usePlacementsStore, state => state.getStatus('isIdle') || state.getStatus('isInitialLoad'));
 
-    if (!hasEventIdsOrPendingPlacements || IS_TEST) return false;
+    if ((!hasEventIds && !placementsPending) || IS_TEST) return false;
 
     return polymarketEnabled || polymarketEnabledLocally;
   },
@@ -51,7 +53,7 @@ export const usePredictionEventsStore = createQueryStore<PolymarketEvent[], Pred
   fetcher: fetchPredictionEvents,
   enabled: $ => $(usePredictionsEnabled),
   params: {
-    eventIds: $ => $(usePlacementsStore, state => state.getAllRefIds({ source: 'polymarket', type: 'prediction' })),
+    eventIds: $ => $(useDiscoverSurfacePlacementRefs, refs => refs.polymarket),
   },
   keepPreviousData: true,
   staleTime: time.minutes(2),
@@ -166,9 +168,4 @@ function isActivePredictionEvent(event: PolymarketEvent): boolean {
   if (event.closed === true || event.ended === true) return false;
 
   return event.markets.some(market => market.active !== false && market.closed !== true && market.umaResolutionStatus !== 'resolved');
-}
-
-function hasPredictionRefsOrPendingPlacementsHydration(state: ReturnType<typeof usePlacementsStore.getState>): boolean {
-  if (state.getAllRefIds({ source: 'polymarket', type: 'prediction' }).length > 0) return true;
-  return state.getStatus('isIdle') || state.getStatus('isInitialLoad');
 }

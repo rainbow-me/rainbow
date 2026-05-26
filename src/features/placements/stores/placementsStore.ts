@@ -8,7 +8,6 @@ import {
   type PlacementSource,
   type PlacementType,
 } from '@/features/placements/types';
-import { getConsistentArray } from '@/helpers/getConsistentArray';
 import { createQueryStore } from '@/state/internal/createQueryStore';
 import { time } from '@/utils/time';
 
@@ -18,23 +17,14 @@ export type PlacementsState = {
   placementsById: PlacementsById;
   getPlacement: (id: PlacementId) => Placement | undefined;
   getItemsBySource: <Source extends PlacementSource>(id: PlacementId, source: Source) => PlacementItem[];
-  getAllRefIds: (filter: PlacementItemFilter) => string[];
 };
 
 type PlacementsById = Partial<Record<PlacementId, Placement>>;
 
 type PlacementDocument = Partial<Placement>;
-type PlacementItemFilter = {
-  source?: PlacementSource;
-  type?: PlacementType;
-};
 type PlacementDocumentSnapshot = {
   data: () => unknown;
   id: string;
-};
-type RefIdsCache = {
-  placementsById: PlacementsById | null;
-  resultsByFilterKey: Map<string, string[]>;
 };
 
 // ============ Constants ====================================================== //
@@ -55,11 +45,6 @@ export const usePlacementsStore = createQueryStore<PlacementsById, never, Placem
   },
 
   (_, get) => {
-    const refIdsCache: RefIdsCache = {
-      placementsById: null,
-      resultsByFilterKey: new Map(),
-    };
-
     return {
       placementsById: {},
 
@@ -71,32 +56,6 @@ export const usePlacementsStore = createQueryStore<PlacementsById, never, Placem
         const placement = get().placementsById[id];
         if (placement?.source !== source) return EMPTY_PLACEMENT_ITEMS;
         return getItems(placement);
-      },
-
-      getAllRefIds: filter => {
-        const placementsById = get().placementsById;
-        const filterKey = getPlacementItemFilterKey(filter);
-        if (refIdsCache.placementsById !== placementsById) {
-          refIdsCache.placementsById = placementsById;
-          refIdsCache.resultsByFilterKey.clear();
-        }
-
-        const cachedRefIds = refIdsCache.resultsByFilterKey.get(filterKey);
-        if (cachedRefIds) return cachedRefIds;
-
-        const refIds: string[] = [];
-        for (const id of Object.keys(placementsById)) {
-          const placement = placementsById[id];
-          if (!placement || !isPlacementFilterMatch(placement, filter)) continue;
-
-          for (const item of placement.items) {
-            refIds.push(item.id);
-          }
-        }
-
-        const result = getConsistentArray(refIds);
-        refIdsCache.resultsByFilterKey.set(filterKey, result);
-        return result;
       },
     };
   },
@@ -146,17 +105,6 @@ function buildPlacement(id: PlacementId, placement: Placement): Placement {
 function getItems(placement: Placement | undefined): PlacementItem[] {
   const items = placement?.items ?? EMPTY_PLACEMENT_ITEMS;
   return items.length ? items : EMPTY_PLACEMENT_ITEMS;
-}
-
-function isPlacementFilterMatch(placement: Placement | undefined, filter: PlacementItemFilter): placement is Placement {
-  if (!placement) return false;
-  if (filter.source && placement.source !== filter.source) return false;
-  if (filter.type && placement.type !== filter.type) return false;
-  return true;
-}
-
-function getPlacementItemFilterKey(filter: PlacementItemFilter): string {
-  return `${filter.source ?? '*'}:${filter.type ?? '*'}`;
 }
 
 // ============ Type Guards ==================================================== //

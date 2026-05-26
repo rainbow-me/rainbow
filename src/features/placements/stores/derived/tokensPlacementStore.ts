@@ -2,6 +2,7 @@ import { type NativeCurrencyKey } from '@/entities/nativeCurrencyTypes';
 import { IS_TEST } from '@/env';
 import { createPlacementStore } from '@/features/placements/stores/factories/createPlacementStore';
 import { usePlacementsStore } from '@/features/placements/stores/placementsStore';
+import { useDiscoverSurfacePlacementRefs } from '@/features/placements/surfaces/hooks/useSurface';
 import { type PlacementId, type PlacementItem } from '@/features/placements/types';
 import { fetchExternalToken, type FormattedExternalAsset } from '@/resources/assets/externalAssetsQuery';
 import { userAssetsStoreManager } from '@/state/assets/userAssetsStoreManager';
@@ -33,9 +34,10 @@ const storesByPlacementId = new Map<PlacementId, ReturnType<typeof createTokensP
 
 const useTokensEnabled = createDerivedStore<boolean>(
   $ => {
-    const hasTokenRefsOrPendingPlacements = $(usePlacementsStore, hasTokenRefsOrPendingPlacementsHydration);
+    const hasTokenRefs = $(useDiscoverSurfacePlacementRefs, refs => refs.rainbow.length > 0);
+    const placementsPending = $(usePlacementsStore, state => state.getStatus('isIdle') || state.getStatus('isInitialLoad'));
 
-    return hasTokenRefsOrPendingPlacements && !IS_TEST;
+    return (hasTokenRefs || placementsPending) && !IS_TEST;
   },
   { fastMode: true }
 );
@@ -45,7 +47,7 @@ export const useTokenRefsStore = createQueryStore<TokenAssetsByRef, TokenRefsPar
   enabled: $ => $(useTokensEnabled),
   params: {
     currency: $ => $(userAssetsStoreManager, state => state.currency),
-    tokenRefs: $ => $(usePlacementsStore, state => state.getAllRefIds({ source: 'rainbow', type: 'token' })),
+    tokenRefs: $ => $(useDiscoverSurfacePlacementRefs, refs => refs.rainbow),
   },
   keepPreviousData: true,
   staleTime: time.minutes(2),
@@ -128,9 +130,4 @@ function parseTokenRef(tokenRef: string): { address: string; chainId: ChainId } 
     address,
     chainId: numericChainId as ChainId,
   };
-}
-
-function hasTokenRefsOrPendingPlacementsHydration(state: ReturnType<typeof usePlacementsStore.getState>): boolean {
-  if (state.getAllRefIds({ source: 'rainbow', type: 'token' }).length > 0) return true;
-  return state.getStatus('isIdle') || state.getStatus('isInitialLoad');
 }

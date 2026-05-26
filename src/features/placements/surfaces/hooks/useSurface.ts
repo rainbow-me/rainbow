@@ -5,11 +5,20 @@ import { useSurfaceClockStore } from '@/features/placements/surfaces/stores/surf
 import { getSurfaceStore } from '@/features/placements/surfaces/stores/surfaceStore';
 import { type Surface } from '@/features/placements/surfaces/types';
 import { filterEnabledSurface, filterSurfaceTree } from '@/features/placements/surfaces/utils/filterSurface';
+import { type PlacementSource } from '@/features/placements/types';
+import { getConsistentArray } from '@/helpers/getConsistentArray';
 import { createDerivedStore } from '@/state/internal/createDerivedStore';
 import { deepEqual } from '@/worklets/comparisons';
 
 const useDiscoverSurfaceStore = getSurfaceStore('discover');
 const EMPTY_PLACEMENT_IDS: string[] = [];
+const EMPTY_DISCOVER_SURFACE_PLACEMENT_REFS: DiscoverSurfacePlacementRefs = {
+  hyperliquid: EMPTY_PLACEMENT_IDS,
+  polymarket: EMPTY_PLACEMENT_IDS,
+  rainbow: EMPTY_PLACEMENT_IDS,
+};
+
+export type DiscoverSurfacePlacementRefs = Record<PlacementSource, string[]>;
 
 export const useDiscoverSurface = createDerivedStore<Surface | undefined>(
   $ => {
@@ -27,6 +36,18 @@ export const useDiscoverSurface = createDerivedStore<Surface | undefined>(
     if (isSurfaceWaitingForPlacements(enabledSurface, placementsById, surfaceLastFetchedAt, placementsLastFetchedAt)) return enabledSurface;
 
     return filterMissingPlacementSurface(enabledSurface, placementsById);
+  },
+  { equalityFn: deepEqual, fastMode: true }
+);
+
+export const useDiscoverSurfacePlacementRefs = createDerivedStore<DiscoverSurfacePlacementRefs>(
+  $ => {
+    const surface = $(useDiscoverSurface);
+    const placementsById = $(usePlacementsStore, state => state.placementsById);
+
+    if (!surface) return EMPTY_DISCOVER_SURFACE_PLACEMENT_REFS;
+
+    return getDiscoverSurfacePlacementRefs(surface, placementsById);
   },
   { equalityFn: deepEqual, fastMode: true }
 );
@@ -116,4 +137,43 @@ function filterMissingPlacementSurface(
   placementsById: ReturnType<typeof usePlacementsStore.getState>['placementsById']
 ): Surface | undefined {
   return filterSurfaceTree(surface, item => item.items !== undefined || !item.placement || placementsById[item.placement] !== undefined);
+}
+
+function getDiscoverSurfacePlacementRefs(
+  surface: Surface,
+  placementsById: ReturnType<typeof usePlacementsStore.getState>['placementsById']
+): DiscoverSurfacePlacementRefs {
+  const refIdsBySource: DiscoverSurfacePlacementRefs = {
+    hyperliquid: [],
+    polymarket: [],
+    rainbow: [],
+  };
+
+  collectDiscoverSurfacePlacementRefs(surface, placementsById, refIdsBySource);
+
+  return {
+    hyperliquid: getConsistentArray(refIdsBySource.hyperliquid),
+    polymarket: getConsistentArray(refIdsBySource.polymarket),
+    rainbow: getConsistentArray(refIdsBySource.rainbow),
+  };
+}
+
+function collectDiscoverSurfacePlacementRefs(
+  surface: Surface,
+  placementsById: ReturnType<typeof usePlacementsStore.getState>['placementsById'],
+  refIdsBySource: DiscoverSurfacePlacementRefs
+): void {
+  if (surface.items !== undefined) {
+    for (const item of surface.items) collectDiscoverSurfacePlacementRefs(item, placementsById, refIdsBySource);
+    return;
+  }
+
+  if (!surface.placement) return;
+
+  const placement = placementsById[surface.placement];
+  if (!placement) return;
+
+  for (const item of placement.items) {
+    refIdsBySource[placement.source].push(item.id);
+  }
 }
