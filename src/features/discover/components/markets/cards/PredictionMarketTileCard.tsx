@@ -12,7 +12,7 @@ import { globalColors, Text, useColorMode } from '@/design-system';
 import {
   usePlacementCardTrackPress,
   usePlacementPredictionOutcomeTrackPress,
-} from '@/features/discover/components/marketPress/marketPressContext';
+} from '@/features/discover/components/markets/marketPressContext';
 import { DOWN_ARROW, UP_ARROW } from '@/features/perps/constants';
 import { type PolymarketEvent, type PolymarketMarket } from '@/features/polymarket/types/polymarket-event';
 import { getOutcomeColor } from '@/features/polymarket/utils/getMarketColor';

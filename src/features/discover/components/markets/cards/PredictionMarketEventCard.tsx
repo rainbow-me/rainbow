@@ -10,7 +10,7 @@ import { globalColors, Text, TextShadow, useColorMode } from '@/design-system';
 import {
   usePlacementCardTrackPress,
   usePlacementPredictionOutcomeTrackPress,
-} from '@/features/discover/components/marketPress/marketPressContext';
+} from '@/features/discover/components/markets/marketPressContext';
 import { LeagueIcon } from '@/features/polymarket/components/league-icon/LeagueIcon';
 import {
   useSportsEventContent,

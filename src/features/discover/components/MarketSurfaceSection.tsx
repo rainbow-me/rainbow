@@ -6,19 +6,19 @@ import {
   perpToMarketDisplayItem,
   tokenToMarketDisplayItem,
 } from '@/features/discover/adapters/toMarketDisplayItem';
-import { MarketCell, MarketCellSkeleton } from '@/features/discover/components/marketCards/MarketCell';
+import { MarketCell, MarketCellSkeleton } from '@/features/discover/components/markets/cards/MarketCell';
 import {
   computeMarketPillWidth,
   MARKET_PILL_HEIGHT,
   MarketPill,
   MarketPillSkeleton,
-} from '@/features/discover/components/marketCards/MarketPill';
+} from '@/features/discover/components/markets/cards/MarketPill';
 import {
   MARKET_TILE_CARD_HEIGHT,
   MARKET_TILE_CARD_WIDTH,
   MarketTileCard,
   MarketTileCardSkeleton,
-} from '@/features/discover/components/marketCards/MarketTileCard';
+} from '@/features/discover/components/markets/cards/MarketTileCard';
 import { getHeaderPress, renderSurfaceLayoutSection } from '@/features/discover/components/SurfaceLayoutSection';
 import {
   type MarketDisplay,

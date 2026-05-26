@@ -2,20 +2,20 @@ import { useCallback, useMemo } from 'react';
 import { StyleSheet, type StyleProp, type ViewStyle } from 'react-native';
 
 import { Skeleton } from '@/components/Skeleton';
-import { usePlacementCardTrackPress } from '@/features/discover/components/marketPress/marketPressContext';
 import {
   PREDICTION_MARKET_EVENT_CARD_BORDER_RADIUS,
   PREDICTION_MARKET_EVENT_CARD_CAROUSEL_WIDTH,
   PREDICTION_MARKET_EVENT_CARD_HEIGHT,
   PREDICTION_MARKET_EVENT_CARD_WIDTH,
   PredictionMarketEventCard,
-} from '@/features/discover/components/predictionCards/PredictionMarketEventCard';
+} from '@/features/discover/components/markets/cards/PredictionMarketEventCard';
 import {
   PREDICTION_MARKET_TILE_CARD_BORDER_RADIUS,
   PREDICTION_MARKET_TILE_CARD_HEIGHT,
   PREDICTION_MARKET_TILE_CARD_WIDTH,
   PredictionMarketTileCard,
-} from '@/features/discover/components/predictionMarketCards/PredictionMarketTileCard';
+} from '@/features/discover/components/markets/cards/PredictionMarketTileCard';
+import { usePlacementCardTrackPress } from '@/features/discover/components/markets/marketPressContext';
 import {
   getHeaderPress,
   getInitialRenderedItemCount,

@@ -5,13 +5,13 @@ import { FlatList } from 'react-native-gesture-handler';
 import { useDebouncedCallback } from 'use-debounce';
 
 import { Box } from '@/design-system';
-import { CarouselHeader } from '@/features/discover/components/carousel/CarouselHeader';
+import { CarouselHeader } from '@/features/discover/components/markets/layouts/CarouselHeader';
 import {
   trackPlacementInteraction,
   trackSurfaceInteraction,
   trackSurfaceSectionPress,
-} from '@/features/discover/components/marketPress/marketPressContext';
-import { PlacementTrackedItem } from '@/features/discover/components/PlacementTrackedItem';
+} from '@/features/discover/components/markets/marketPressContext';
+import { PlacementTrackedItem } from '@/features/discover/components/markets/PlacementTrackedItem';
 import { type Destination, type Display } from '@/features/placements/surfaces/types';
 import { type Placement, type PlacementId, type PlacementItem } from '@/features/placements/types';
 import { time } from '@/utils/time';

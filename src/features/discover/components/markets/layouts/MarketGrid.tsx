@@ -2,9 +2,9 @@ import React, { Fragment, useCallback, type ReactNode } from 'react';
 import { StyleSheet, useWindowDimensions, View } from 'react-native';
 
 import { Box } from '@/design-system';
-import { CarouselHeader } from '@/features/discover/components/carousel/CarouselHeader';
-import { trackSurfaceSectionPress } from '@/features/discover/components/marketPress/marketPressContext';
-import { PlacementTrackedItem } from '@/features/discover/components/PlacementTrackedItem';
+import { CarouselHeader } from '@/features/discover/components/markets/layouts/CarouselHeader';
+import { trackSurfaceSectionPress } from '@/features/discover/components/markets/marketPressContext';
+import { PlacementTrackedItem } from '@/features/discover/components/markets/PlacementTrackedItem';
 import { type Destination, type Display } from '@/features/placements/surfaces/types';
 import { type Placement, type PlacementId, type PlacementItem } from '@/features/placements/types';
 import { Grid } from '@/screens/token-launcher/components/Grid';

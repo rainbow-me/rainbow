@@ -7,7 +7,7 @@ import { EasingGradient } from '@/components/easing-gradient/EasingGradient';
 import { Skeleton } from '@/components/Skeleton';
 import { Box, Text, TextIcon, useColorMode, useForegroundColor } from '@/design-system';
 import { getValueForColorMode } from '@/design-system/color/palettes';
-import { trackDiscoverSurfaceTabPress } from '@/features/discover/components/marketPress/marketPressContext';
+import { trackDiscoverSurfaceTabPress } from '@/features/discover/components/markets/marketPressContext';
 import {
   DiscoverSectionNavigation,
   useDiscoverNavigationStore,

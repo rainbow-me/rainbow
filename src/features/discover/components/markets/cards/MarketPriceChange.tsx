@@ -10,7 +10,7 @@ import { DOWN_ARROW, UP_ARROW } from '@/features/perps/constants';
 import { formatCompactPriceChange } from '@/features/perps/utils';
 import { type TokenData } from '@/state/liveTokens/liveTokensStore';
 
-import { type PriceChangeColors } from './marketCardChrome';
+import { type PriceChangeColors } from '../marketCardChrome';
 
 type MarketPriceChangeProps = {
   arrowHeight: number;

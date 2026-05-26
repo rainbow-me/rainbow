@@ -7,7 +7,7 @@ import {
   trackPredictionOutcomePress,
   type TrackPlacementCardPress,
   type TrackPredictionOutcomePress,
-} from '@/features/discover/components/marketPress/marketPressContext';
+} from '@/features/discover/components/markets/marketPressContext';
 import { type Placement, type PlacementId, type PlacementItem } from '@/features/placements/types';
 
 type PlacementTrackedItemProps<T extends PlacementItem> = {

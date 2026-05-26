@@ -1,9 +1,9 @@
 import { StyleSheet, View, type StyleProp, type ViewStyle } from 'react-native';
 
 import { useBackgroundColor } from '@/design-system';
-import { MarketCarousel } from '@/features/discover/components/carousel/MarketCarousel';
-import { MarketGrid } from '@/features/discover/components/grid/MarketGrid';
-import { MarketList } from '@/features/discover/components/list/MarketList';
+import { MarketCarousel } from '@/features/discover/components/markets/layouts/MarketCarousel';
+import { MarketGrid } from '@/features/discover/components/markets/layouts/MarketGrid';
+import { MarketList } from '@/features/discover/components/markets/layouts/MarketList';
 import { navigateDiscoverDestination } from '@/features/discover/utils/navigation';
 import { type Surface, type SurfaceLeaf } from '@/features/placements/surfaces/types';
 import { type PlacementItem } from '@/features/placements/types';

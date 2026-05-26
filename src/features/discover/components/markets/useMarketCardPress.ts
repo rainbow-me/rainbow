@@ -1,6 +1,6 @@
 import { useCallback } from 'react';
 
-import { type TrackPlacementCardPress } from '@/features/discover/components/marketPress/marketPressContext';
+import { type TrackPlacementCardPress } from '@/features/discover/components/markets/marketPressContext';
 import { type PlacementItemAnalyticsMetadata } from '@/features/placements/types';
 
 export function useMarketCardPress({
