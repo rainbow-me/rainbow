@@ -24,15 +24,6 @@ export function navigateToPerps(params?: RootStackParamList[typeof Routes.PERPS_
   maybeNavigateToPerpsExplainSheet(() => Navigation.handleAction(Routes.PERPS_NAVIGATOR, params));
 }
 
-export function navigateToPerpsDestination(segments: string[]): void {
-  if (segments.length) {
-    navigateToPerpsSearch();
-    return;
-  }
-
-  navigateToPerps();
-}
-
 export function navigateToPerpsSearch() {
   PerpsNavigation.navigate(Routes.PERPS_SEARCH_SCREEN, { type: 'search' });
   navigateToPerps({ initialPerpsPage: Routes.PERPS_SEARCH_SCREEN });

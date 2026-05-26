@@ -14,22 +14,6 @@ export function navigateToPolymarketEvent(params: RootStackParamList[typeof Rout
   Navigation.handleAction(Routes.POLYMARKET_EVENT_SCREEN, params);
 }
 
-export function navigateToPolymarketDestination(segments: string[]): void {
-  const [category, league] = segments;
-
-  if (category === 'sports') {
-    navigateToPolymarketSportsLeague(league ?? DEFAULT_SPORTS_LEAGUE_KEY);
-    return;
-  }
-
-  if (category) {
-    navigateToPolymarketCategory(category);
-    return;
-  }
-
-  navigateToPolymarket();
-}
-
 export function navigateToPolymarketCategory(tagId: string): void {
   usePolymarketCategoryStore.getState().setTagId(tagId);
   usePolymarketSportsEventsStore.getState().setSelectedLeagueId(DEFAULT_SPORTS_LEAGUE_KEY);
