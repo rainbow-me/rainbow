@@ -1,27 +1,29 @@
 import { type Enabled, type Surface } from '@/features/placements/surfaces/types';
 
 export function filterEnabledSurface(surface: Surface, now: number): Surface | undefined {
-  if (!isEnabled(surface.enabled, now)) return undefined;
+  return filterSurfaceTree(surface, item => isEnabled(item.enabled, now));
+}
 
-  if (surface.items !== undefined) {
-    const filteredItems: Surface[] = [];
-    let didChange = false;
+export function filterSurfaceTree(surface: Surface, predicate: (surface: Surface) => boolean): Surface | undefined {
+  if (!predicate(surface)) return undefined;
 
-    for (const item of surface.items) {
-      const filteredItem = filterEnabledSurface(item, now);
-      if (!filteredItem) {
-        didChange = true;
-        continue;
-      }
-      if (filteredItem !== item) didChange = true;
-      filteredItems.push(filteredItem);
+  if (surface.items === undefined) return surface;
+
+  const filteredItems: Surface[] = [];
+  let didChange = false;
+
+  for (const item of surface.items) {
+    const filteredItem = filterSurfaceTree(item, predicate);
+    if (!filteredItem) {
+      didChange = true;
+      continue;
     }
-
-    if (!filteredItems.length) return undefined;
-    return didChange ? { ...surface, items: filteredItems } : surface;
+    if (filteredItem !== item) didChange = true;
+    filteredItems.push(filteredItem);
   }
 
-  return surface;
+  if (!filteredItems.length) return undefined;
+  return didChange ? { ...surface, items: filteredItems } : surface;
 }
 
 function isEnabled(enabled: Enabled | undefined, now: number): boolean {

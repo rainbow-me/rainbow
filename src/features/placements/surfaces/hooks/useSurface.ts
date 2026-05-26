@@ -4,8 +4,7 @@ import { usePlacementsStore } from '@/features/placements/stores/placementsStore
 import { useSurfaceClockStore } from '@/features/placements/surfaces/stores/surfaceClockStore';
 import { getSurfaceStore } from '@/features/placements/surfaces/stores/surfaceStore';
 import { type Surface } from '@/features/placements/surfaces/types';
-import { filterEnabledSurface } from '@/features/placements/surfaces/utils/filterSurface';
-import { type Placement } from '@/features/placements/types';
+import { filterEnabledSurface, filterSurfaceTree } from '@/features/placements/surfaces/utils/filterSurface';
 import { createDerivedStore } from '@/state/internal/createDerivedStore';
 import { deepEqual } from '@/worklets/comparisons';
 
@@ -78,25 +77,9 @@ function collectMissingSurfacePlacementIds(
   if (surface.placement && !placementsById[surface.placement]) missingPlacementIds.add(surface.placement);
 }
 
-function filterMissingPlacementSurface(surface: Surface, placementsById: Record<string, Placement>): Surface | undefined {
-  if (surface.items !== undefined) {
-    const filteredItems: Surface[] = [];
-    let didChange = false;
-
-    for (const item of surface.items) {
-      const filteredItem = filterMissingPlacementSurface(item, placementsById);
-      if (!filteredItem) {
-        didChange = true;
-        continue;
-      }
-      if (filteredItem !== item) didChange = true;
-      filteredItems.push(filteredItem);
-    }
-
-    if (!filteredItems.length) return undefined;
-    return didChange ? { ...surface, items: filteredItems } : surface;
-  }
-
-  if (surface.placement && !placementsById[surface.placement]) return undefined;
-  return surface;
+function filterMissingPlacementSurface(
+  surface: Surface,
+  placementsById: ReturnType<typeof usePlacementsStore.getState>['placementsById']
+): Surface | undefined {
+  return filterSurfaceTree(surface, item => item.items !== undefined || !item.placement || placementsById[item.placement] !== undefined);
 }

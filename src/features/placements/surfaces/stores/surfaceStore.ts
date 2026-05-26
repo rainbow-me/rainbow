@@ -10,11 +10,6 @@ type SurfaceStore = ReturnType<typeof createSurfaceStore>;
 
 const storesBySurfaceId = new Map<string, SurfaceStore>();
 const SURFACE_ID_PATTERN = /^[a-z][a-z0-9_]*$/;
-const SURFACE_BASE_KEYS = ['id', 'label', 'enabled', 'updatedAt'] as const;
-const SURFACE_CONTAINER_KEYS = [...SURFACE_BASE_KEYS, 'items'] as const;
-const SURFACE_DOCUMENT_KEYS = [...SURFACE_CONTAINER_KEYS, 'version'] as const;
-const SURFACE_ENABLED_KEYS = ['startsAt', 'endsAt'] as const;
-const SURFACE_LEAF_KEYS = [...SURFACE_BASE_KEYS, 'placement', 'display', 'destination', 'limit'] as const;
 
 export function getSurfaceStore(surfaceId: string): SurfaceStore {
   let store = storesBySurfaceId.get(surfaceId);
@@ -49,13 +44,7 @@ function isSurfaceDocument(surfaceId: string, surface: unknown): surface is Surf
   if (!isSurfaceBase(surface, { labelRequired: false })) return false;
 
   const document = surface as Partial<Surface>;
-  return (
-    hasOnlyKeys(document, SURFACE_DOCUMENT_KEYS) &&
-    Array.isArray(document.items) &&
-    document.items.every(isSurfaceNode) &&
-    document.id === surfaceId &&
-    document.version === 1
-  );
+  return Array.isArray(document.items) && document.items.every(isSurfaceNode) && document.id === surfaceId && document.version === 1;
 }
 
 function isSurfaceNode(surface: unknown): surface is Surface {
@@ -64,10 +53,10 @@ function isSurfaceNode(surface: unknown): surface is Surface {
   const document = surface as Partial<Surface>;
 
   if ('items' in document) {
-    return hasOnlyKeys(document, SURFACE_CONTAINER_KEYS) && Array.isArray(document.items) && document.items.every(isSurfaceNode);
+    return Array.isArray(document.items) && document.items.every(isSurfaceNode);
   }
 
-  if (!hasOnlyKeys(document, SURFACE_LEAF_KEYS) || !('display' in document)) return false;
+  if (!('display' in document)) return false;
 
   return (
     (document.placement === undefined || typeof document.placement === 'string' || document.placement === null) &&
@@ -97,7 +86,6 @@ function isSurfaceEnabled(enabled: unknown): boolean {
 
   const schedule = enabled as { endsAt?: unknown; startsAt?: unknown };
   return (
-    hasOnlyKeys(schedule, SURFACE_ENABLED_KEYS) &&
     (schedule.startsAt !== undefined || schedule.endsAt !== undefined) &&
     (schedule.startsAt === undefined || isValidDateString(schedule.startsAt)) &&
     (schedule.endsAt === undefined || isValidDateString(schedule.endsAt))
@@ -129,8 +117,4 @@ function isNonEmptyString(value: unknown): value is string {
 
 function isValidDateString(value: unknown): value is string {
   return typeof value === 'string' && Number.isFinite(Date.parse(value));
-}
-
-function hasOnlyKeys(value: object, allowedKeys: readonly string[]): boolean {
-  return Object.keys(value).every(key => allowedKeys.includes(key));
 }

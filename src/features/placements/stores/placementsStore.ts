@@ -21,7 +21,7 @@ export type PlacementsState = {
   getAllRefIds: (filter: PlacementItemFilter) => string[];
 };
 
-type PlacementsById = Record<PlacementId, Placement>;
+type PlacementsById = Partial<Record<PlacementId, Placement>>;
 
 type PlacementDocument = Partial<Placement>;
 type PlacementItemFilter = {
