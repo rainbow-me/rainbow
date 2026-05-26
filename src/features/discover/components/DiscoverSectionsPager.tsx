@@ -188,7 +188,8 @@ const DiscoverSectionScrollView = memo(function DiscoverSectionScrollView({
 
       if (sectionScrollOffsets.value[section.id] !== clampedPosition) {
         sectionScrollOffsets.modify(value => {
-          value[section.id] = clampedPosition;
+          const offsets = value as SectionScrollOffsets;
+          offsets[section.id] = clampedPosition;
           return value;
         });
       }
