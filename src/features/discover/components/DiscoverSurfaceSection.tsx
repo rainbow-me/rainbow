@@ -764,8 +764,18 @@ function LiveSectionIndicator({ style }: { style?: StyleProp<ViewStyle> }) {
 }
 
 function isLiveSportsSurface(surface: SurfaceLeaf): boolean {
-  if (surface.display !== 'prediction_event_card.carousel' && surface.display !== 'prediction_event_card.list') return false;
-  return getNormalizedSurfaceValue(surface.id) === 'live' || getNormalizedSurfaceValue(surface.label) === 'live';
+  if (!isSportsEventCardSurface(surface)) return false;
+
+  const surfaceKeys = [getNormalizedSurfaceKey(surface.id), getNormalizedSurfaceKey(surface.label)];
+  if (surfaceKeys.some(key => key.split('_').includes('live'))) return true;
+
+  return (
+    surface.placement == null &&
+    surface.destination?.[0] === 'predictions' &&
+    surface.destination?.[1] === 'sports' &&
+    getSurfaceTimeBucket(surface) === undefined &&
+    getSurfaceLeagueId(surface) === undefined
+  );
 }
 
 function isSportsEventCardSurface(surface: SurfaceLeaf): boolean {
