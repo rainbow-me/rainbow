@@ -72,7 +72,7 @@ export const usePlacementsStore = createQueryStore<PlacementsById, never, Placem
         if (!placement || !isPlacementFilterMatch(placement, filter)) continue;
 
         for (const item of placement.items) {
-          if (isPlacementItem(item)) refIds.push(item.id);
+          refIds.push(item.id);
         }
       }
       return getConsistentArray(refIds);
@@ -127,7 +127,7 @@ function getCachedV2Placement(id: PlacementId, placementsById: PlacementsById): 
 }
 
 function getItems(placement: Placement | undefined): PlacementItem[] {
-  const items = placement?.items.filter(isPlacementItem) ?? EMPTY_PLACEMENT_ITEMS;
+  const items = placement?.items ?? EMPTY_PLACEMENT_ITEMS;
   return items.length ? items : EMPTY_PLACEMENT_ITEMS;
 }
 
