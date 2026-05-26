@@ -128,6 +128,7 @@ const TabBar = memo(function TabBar({ activeIndex, descriptorsRef, getIsFocused,
   const showRnbwRewardsTab = useExperimentalFlag(RNBW_REWARDS) || rnbw_rewards_enabled;
   const showRnbwMembership = useExperimentalFlag(RNBW_MEMBERSHIP) || rnbw_membership_enabled || IS_TEST;
   const showRnbwRewardsOrMembershipTab = showRnbwRewardsTab || showRnbwMembership;
+  const showKingOfTheHillTab = useShowKingOfTheHill();
 
   const numberOfTabs = 2 + (showDiscoverTab ? 1 : 0) + (showRnbwRewardsOrMembershipTab ? 1 : 0) + (showDappBrowserTab ? 1 : 0);
   const tabWidth = (deviceWidth - TAB_BAR_HORIZONTAL_INSET * 2 - TAB_BAR_INNER_PADDING * 2) / numberOfTabs;
@@ -140,12 +141,12 @@ const TabBar = memo(function TabBar({ activeIndex, descriptorsRef, getIsFocused,
     const routes: Route[] = [Routes.WALLET_SCREEN];
     if (showDiscoverTab) routes.push(Routes.DISCOVER_SCREEN);
     if (showDappBrowserTab) routes.push(Routes.DAPP_BROWSER_SCREEN);
-    routes.push(Routes.PROFILE_SCREEN);
+    routes.push(showKingOfTheHillTab ? Routes.KING_OF_THE_HILL : Routes.PROFILE_SCREEN);
     if (showRnbwRewardsOrMembershipTab) {
       routes.push(showRnbwMembership ? Routes.RNBW_MEMBERSHIP_SCREEN : Routes.RNBW_REWARDS_SCREEN);
     }
     return routes;
-  }, [showDappBrowserTab, showDiscoverTab, showRnbwMembership, showRnbwRewardsOrMembershipTab]);
+  }, [showDappBrowserTab, showDiscoverTab, showKingOfTheHillTab, showRnbwMembership, showRnbwRewardsOrMembershipTab]);
 
   const tabPositions = useDerivedValue(() => {
     const inputRange = Array.from({ length: numberOfTabs }, (_, index) => index);
