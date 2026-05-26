@@ -23,11 +23,22 @@ type TokenRefsParams = {
 };
 
 type TokenAssetsByRef = Record<string, FormattedExternalAsset>;
+type TokenRefCacheEntry = {
+  asset: FormattedExternalAsset | null;
+  fetchedAt: number;
+};
+type TokenRefFetchResult = {
+  asset: FormattedExternalAsset | null;
+  tokenRef: string;
+};
 
 // ============ Constants ====================================================== //
 
+const TOKEN_REF_FETCH_CONCURRENCY = 4;
+const TOKEN_REFS_STALE_TIME = time.minutes(2);
 const EMPTY_TOKEN_ASSETS_BY_REF: TokenAssetsByRef = {};
 const EMPTY_TOKEN_PLACEMENT_ITEMS: TokenPlacementItem[] = [];
+const tokenRefCache = new Map<string, TokenRefCacheEntry>();
 const storesByPlacementId = new Map<PlacementId, ReturnType<typeof createTokensPlacementStore>>();
 
 // ============ Stores ========================================================= //
@@ -50,7 +61,7 @@ export const useTokenRefsStore = createQueryStore<TokenAssetsByRef, TokenRefsPar
     tokenRefs: $ => $(useDiscoverSurfacePlacementRefs, refs => refs.rainbow),
   },
   keepPreviousData: true,
-  staleTime: time.minutes(2),
+  staleTime: TOKEN_REFS_STALE_TIME,
   cacheTime: time.minutes(10),
 });
 
@@ -65,27 +76,51 @@ export function getTokensPlacementStore(placementId: PlacementId) {
 
 // ============ Fetcher ======================================================== //
 
-async function fetchTokenRefs({ currency, tokenRefs }: TokenRefsParams): Promise<TokenAssetsByRef> {
+async function fetchTokenRefs(
+  { currency, tokenRefs }: TokenRefsParams,
+  abortController: AbortController | null
+): Promise<TokenAssetsByRef> {
   if (!tokenRefs.length) return EMPTY_TOKEN_ASSETS_BY_REF;
 
-  const results = await Promise.allSettled(tokenRefs.map(tokenRef => fetchTokenRef(tokenRef, currency)));
+  const now = Date.now();
   const assetsByRef: TokenAssetsByRef = {};
+  const staleTokenRefs: string[] = [];
+
+  for (const tokenRef of tokenRefs) {
+    const cached = tokenRefCache.get(getTokenRefCacheKey(tokenRef, currency));
+    if (cached && now - cached.fetchedAt < TOKEN_REFS_STALE_TIME) {
+      if (cached.asset) assetsByRef[tokenRef] = cached.asset;
+    } else {
+      staleTokenRefs.push(tokenRef);
+    }
+  }
+
+  const results = await mapWithConcurrency(staleTokenRefs, TOKEN_REF_FETCH_CONCURRENCY, tokenRef =>
+    fetchTokenRef(tokenRef, currency, abortController)
+  );
+  const fetchedAt = Date.now();
 
   for (const result of results) {
     if (result.status === 'fulfilled' && result.value) {
-      assetsByRef[result.value.tokenRef] = result.value.asset;
+      const { asset, tokenRef } = result.value;
+      tokenRefCache.set(getTokenRefCacheKey(tokenRef, currency), { asset, fetchedAt });
+      if (asset) assetsByRef[tokenRef] = asset;
     }
   }
 
   return Object.keys(assetsByRef).length ? assetsByRef : EMPTY_TOKEN_ASSETS_BY_REF;
 }
 
-async function fetchTokenRef(tokenRef: string, currency: TokenRefsParams['currency']) {
+async function fetchTokenRef(
+  tokenRef: string,
+  currency: TokenRefsParams['currency'],
+  abortController: AbortController | null
+): Promise<TokenRefFetchResult> {
   const params = parseTokenRef(tokenRef);
-  if (!params) return null;
+  if (!params) return { asset: null, tokenRef };
 
-  const asset = await fetchExternalToken({ ...params, currency });
-  return asset ? { asset, tokenRef } : null;
+  const asset = await fetchExternalToken({ ...params, abortController, currency });
+  return { asset, tokenRef };
 }
 
 // ============ Utilities ====================================================== //
@@ -130,4 +165,41 @@ function parseTokenRef(tokenRef: string): { address: string; chainId: ChainId } 
     address,
     chainId: numericChainId as ChainId,
   };
+}
+
+function getTokenRefCacheKey(tokenRef: string, currency: NativeCurrencyKey): string {
+  return `${currency}:${tokenRef}`;
+}
+
+async function mapWithConcurrency<T, Result>(
+  items: T[],
+  concurrency: number,
+  mapper: (item: T) => Promise<Result>
+): Promise<PromiseSettledResult<Result>[]> {
+  if (!items.length) return [];
+
+  const results: PromiseSettledResult<Result>[] = new Array(items.length);
+  let nextIndex = 0;
+
+  async function worker(): Promise<void> {
+    while (nextIndex < items.length) {
+      const index = nextIndex;
+      nextIndex += 1;
+
+      try {
+        results[index] = {
+          status: 'fulfilled',
+          value: await mapper(items[index]),
+        };
+      } catch (reason) {
+        results[index] = {
+          reason,
+          status: 'rejected',
+        };
+      }
+    }
+  }
+
+  await Promise.all(Array.from({ length: Math.min(concurrency, items.length) }, worker));
+  return results;
 }
