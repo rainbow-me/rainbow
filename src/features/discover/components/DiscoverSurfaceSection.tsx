@@ -56,8 +56,13 @@ import {
   PREDICTION_CARD_BORDER_RADIUS,
 } from '@/features/polymarket/components/polymarket-events-list/PolymarketEventsListItem';
 import { getLeagueId, SPORT_LEAGUES, type LeagueId } from '@/features/polymarket/leagues';
-import { isLiveSportsEvent } from '@/features/polymarket/screens/polymarket-sports-events-screen/buildPolymarketSportsEventsListData';
+import {
+  getSportsEventScheduleBucket,
+  isLiveSportsEvent,
+  type SportsEventScheduleBucket,
+} from '@/features/polymarket/screens/polymarket-sports-events-screen/buildPolymarketSportsEventsListData';
 import { usePolymarketSportsEventsStore } from '@/features/polymarket/stores/polymarketSportsEventsStore';
+import { type PolymarketEvent } from '@/features/polymarket/types/polymarket-event';
 import { navigateToPolymarketEvent } from '@/features/polymarket/utils/navigateToPolymarket';
 import useColorForAsset from '@/hooks/useColorForAsset';
 import { userAssetsStoreManager } from '@/state/assets/userAssetsStoreManager';
@@ -128,6 +133,7 @@ type PlacementBackedSurfaceLeafWithDisplay<TDisplay extends Display> = SurfaceLe
 type SurfaceLayoutProps<T extends PlacementItem> = {
   data: T[];
   descriptor: SectionDescriptor<T>;
+  headerCount?: number;
   loading: boolean;
   onPressSeeAll?: () => void;
   placement: Placement | undefined;
@@ -318,6 +324,7 @@ function PredictionsSurfaceSection({ surface, surfaceId }: { surface: SurfaceLea
   }
 
   if (!hasPlacement(surface)) return null;
+  if (isSportsEventCardSurface(surface)) return <SportsEventPlacementSurfaceSection surface={surface} surfaceId={surfaceId} />;
   return <PredictionsPlacementSurfaceSection surface={surface} surfaceId={surfaceId} />;
 }
 
@@ -343,6 +350,35 @@ function PredictionsPlacementSurfaceSection({
   });
 }
 
+function SportsEventPlacementSurfaceSection({
+  surface,
+  surfaceId,
+}: {
+  surface: PlacementBackedSurfaceLeafWithDisplay<PredictionsDisplay>;
+  surfaceId: string;
+}) {
+  const useStore = useMemo(() => getPredictionsPlacementStore(surface.placement), [surface.placement]);
+  const result = useStore();
+  const sportsEvents = usePolymarketSportsEventsStore(state => state.getData());
+  const descriptor = PREDICTIONS_SECTION_DESCRIPTORS[surface.display];
+  const headerCount = getSportsEventHeaderCount({
+    displayedItemCount: getInitialRenderedItemCount(result.items, surface.limit),
+    events: sportsEvents,
+    surface,
+  });
+
+  return renderSurfaceLayoutSection({
+    data: result.items,
+    descriptor,
+    headerCount,
+    loading: result.isLoading,
+    onPressSeeAll: getHeaderPress(surface.destination),
+    placement: result.placement,
+    surface,
+    surfaceId,
+  });
+}
+
 function SportsLiveSurfaceSection({ surface, surfaceId }: { surface: SurfaceLeafWithDisplay<PredictionsDisplay>; surfaceId: string }) {
   const events = usePolymarketSportsEventsStore(state => state.getData());
   const isLoading = usePolymarketSportsEventsStore(state => state.getStatus('isLoading') || state.getStatus('isIdle'));
@@ -353,10 +389,16 @@ function SportsLiveSurfaceSection({ surface, surfaceId }: { surface: SurfaceLeaf
     if (!liveEvents.length) return EMPTY_PREDICTION_PLACEMENT_ITEMS;
     return liveEvents.map(event => ({ id: event.id, event }));
   }, [events]);
+  const headerCount = getSportsEventHeaderCount({
+    displayedItemCount: getInitialRenderedItemCount(items, surface.limit),
+    events,
+    surface,
+  });
 
   return renderSurfaceLayoutSection({
     data: items,
     descriptor,
+    headerCount,
     loading: isLoading,
     onPressSeeAll: getHeaderPress(surface.destination),
     placement: undefined,
@@ -374,6 +416,7 @@ function hasPlacement<TDisplay extends Display>(
 function renderSurfaceLayoutSection<T extends PlacementItem>({
   data,
   descriptor,
+  headerCount,
   loading,
   onPressSeeAll,
   placement,
@@ -384,7 +427,6 @@ function renderSurfaceLayoutSection<T extends PlacementItem>({
   const hasLimit = surface.limit !== undefined;
   const renderedData = hasLimit ? data.slice(0, surface.limit) : data;
   const skeletonCount = hasLimit ? surface.limit : undefined;
-  const headerCount = isSportsEventCardSurface(surface) && data.length > 0 ? data.length : undefined;
   const showHeaderCaret = getSurfaceHeaderCaret(surface);
   const commonProps = {
     destination: surface.destination,
@@ -452,6 +494,43 @@ function getHeaderPress(destination: SurfaceLeaf['destination']): (() => void) |
 function getSurfaceHeaderCaret(surface: SurfaceLeaf): boolean | undefined {
   if (isLiveSportsSurface(surface)) return false;
   if (isSportsEventCardSurface(surface)) return hasDestination(surface);
+}
+
+function getSportsEventHeaderCount({
+  displayedItemCount,
+  events,
+  surface,
+}: {
+  displayedItemCount: number;
+  events: PolymarketEvent[] | null | undefined;
+  surface: SurfaceLeaf;
+}): number | undefined {
+  if (!isSportsEventCardSurface(surface) || !events) return undefined;
+
+  const count = getSportsEventCountForSurface(surface, events);
+  if (count === undefined || count === 0 || count === displayedItemCount) return undefined;
+  return count;
+}
+
+function getSportsEventCountForSurface(surface: SurfaceLeaf, events: PolymarketEvent[]): number | undefined {
+  if (isLiveSportsSurface(surface)) return events.filter(isLiveSportsEvent).length;
+
+  const timeBucket = getSurfaceTimeBucket(surface);
+  if (timeBucket) return countSportsEventsForTimeBucket(events, timeBucket);
+
+  const leagueId = getSurfaceLeagueId(surface);
+  if (leagueId) return events.filter(event => getLeagueId(event.slug) === leagueId).length;
+}
+
+function countSportsEventsForTimeBucket(events: PolymarketEvent[], timeBucket: SportsEventScheduleBucket): number {
+  return events.filter(event => {
+    if (isLiveSportsEvent(event)) return false;
+    return getSportsEventScheduleBucket(event) === timeBucket;
+  }).length;
+}
+
+function getInitialRenderedItemCount<T>(items: T[], limit: number | undefined): number {
+  return limit === undefined ? items.length : Math.min(items.length, limit);
 }
 
 function renderMarketPill(item: MarketDisplayItem) {
@@ -663,6 +742,12 @@ function getSurfaceLeagueId(surface: SurfaceLeaf): LeagueId | undefined {
   return getLeagueIdBySurfaceValue(surface.label) ?? getLeagueIdBySurfaceValue(surface.id);
 }
 
+function getSurfaceTimeBucket(surface: SurfaceLeaf): SportsEventScheduleBucket | undefined {
+  const values = [getNormalizedSurfaceKey(surface.id), getNormalizedSurfaceKey(surface.label)];
+  if (values.includes('today')) return 'today';
+  if (values.includes('this_week')) return 'this-week';
+}
+
 function getLeagueIdBySurfaceValue(value: string | undefined): LeagueId | undefined {
   const normalizedValue = getNormalizedSurfaceValue(value);
   if (!normalizedValue) return undefined;
@@ -680,6 +765,10 @@ function getLeagueIdBySurfaceValue(value: string | undefined): LeagueId | undefi
 
 function getNormalizedSurfaceValue(value: string | undefined): string {
   return value?.trim().toLowerCase() ?? '';
+}
+
+function getNormalizedSurfaceKey(value: string | undefined): string {
+  return getNormalizedSurfaceValue(value).replace(/[\s-]+/g, '_');
 }
 
 function assertNever(value: never): never {

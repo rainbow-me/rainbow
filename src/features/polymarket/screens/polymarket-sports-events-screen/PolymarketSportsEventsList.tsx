@@ -130,7 +130,7 @@ const PolymarketSportsEventsListContent = memo(function PolymarketSportsEventsLi
 
   const renderItem = useCallback(({ item }: { item: SportsListItem }) => {
     if (item.type === 'header') {
-      return <SectionHeader count={item.count} isLive={item.isLive} title={item.title} />;
+      return <SectionHeader isLive={item.isLive} title={item.title} />;
     }
     if (item.type === 'league-header') {
       return <LeagueHeader eventSlug={item.eventSlug} leagueId={item.leagueId} title={item.title} />;
@@ -195,7 +195,7 @@ const EmptyState = memo(function EmptyState() {
   );
 });
 
-const SectionHeader = memo(function SectionHeader({ title, count, isLive }: { title: string; count?: number; isLive?: boolean }) {
+const SectionHeader = memo(function SectionHeader({ title, isLive }: { title: string; isLive?: boolean }) {
   return (
     <View style={styles.sectionHeader}>
       <View style={styles.sectionHeaderContent}>
@@ -203,13 +203,6 @@ const SectionHeader = memo(function SectionHeader({ title, count, isLive }: { ti
         <Text align="left" color="label" size="20pt" weight="heavy">
           {title}
         </Text>
-        {typeof count === 'number' ? (
-          <View style={styles.countBadge}>
-            <Text color={{ custom: '#FFFFFF' }} size="13pt" style={styles.countBadgeText} weight="heavy">
-              {count}
-            </Text>
-          </View>
-        ) : null}
       </View>
     </View>
   );
@@ -294,23 +287,6 @@ const styles = StyleSheet.create({
     height: LIVE_INDICATOR_SIZE,
     justifyContent: 'center',
     width: LIVE_INDICATOR_SIZE,
-  },
-  countBadge: {
-    alignItems: 'center',
-    backgroundColor: 'rgba(255, 255, 255, 0.19)',
-    borderColor: 'rgba(255, 255, 255, 0.06)',
-    borderRadius: 8,
-    borderWidth: 1.333,
-    height: 23,
-    justifyContent: 'center',
-    minWidth: 24,
-    paddingHorizontal: 7,
-  },
-  countBadgeText: {
-    fontSize: 14,
-    letterSpacing: 0,
-    lineHeight: 14,
-    transform: [{ translateY: 1 }],
   },
   leagueHeader: {
     flexDirection: 'row',
