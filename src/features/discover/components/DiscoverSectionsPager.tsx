@@ -187,7 +187,10 @@ const DiscoverSectionScrollView = memo(function DiscoverSectionScrollView({
       const clampedPosition = clamp(event.contentOffset.y, 0, DEFAULT_SCROLL_FADE_DISTANCE);
 
       if (sectionScrollOffsets.value[section.id] !== clampedPosition) {
-        sectionScrollOffsets.value = { ...sectionScrollOffsets.value, [section.id]: clampedPosition };
+        sectionScrollOffsets.modify(value => {
+          value[section.id] = clampedPosition;
+          return value;
+        });
       }
 
       if (activeSection.value !== section.id || scrollOffset.value === clampedPosition) return;
