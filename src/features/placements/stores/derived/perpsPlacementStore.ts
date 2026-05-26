@@ -49,10 +49,11 @@ function createPerpsPlacementStore(placementId: PlacementId) {
       const markets = $(useHyperliquidMarketsStore, state => state.markets);
       const marketsReady = $(useHyperliquidMarketsStore, state => state.getStatus('isSuccess'));
       const marketsError = $(useHyperliquidMarketsStore, state => state.getStatus('isError'));
+      const marketsLoading = $(useHyperliquidMarketsStore, state => state.getStatus('isIdle') || state.getStatus('isLoading'));
       const items = buildPerpMarketPlacementItems(placementItems, markets);
-      const isLoading = placementItems.length > 0 && items.length === 0 && !marketsReady && !marketsError;
+      const isLoading = placementItems.length > 0 && items.length === 0 && marketsLoading && !marketsError;
 
-      if (marketsReady && placementItems.length > 0 && items.length === 0) {
+      if (!marketsLoading && marketsReady && placementItems.length > 0 && items.length === 0) {
         logUnresolvedPerpsRefs(placementId, placementItems, markets);
       }
 
