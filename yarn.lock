@@ -9047,7 +9047,6 @@ __metadata:
     browserify-zlib: "npm:0.1.4"
     buffer: "npm:4.9.2"
     chroma-js: "npm:2.1.0"
-    cloudinary: "npm:1.27.1"
     conditional-wrap: "npm:1.0.2"
     console-browserify: "npm:1.2.0"
     constants-browserify: "npm:1.0.0"
@@ -11391,27 +11390,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"cloudinary-core@npm:^2.10.2":
-  version: 2.13.1
-  resolution: "cloudinary-core@npm:2.13.1"
-  peerDependencies:
-    lodash: ">=4.0"
-  checksum: 10c0/a6a6c8fdce84ff9c5646abbd2ec320f9c0be7d1d4d754f9e7e27543ac0b43d3ecd8f432e65262de0dba9add66b00cb6d582fca0598caccab7e00ab93d3e26e54
-  languageName: node
-  linkType: hard
-
-"cloudinary@npm:1.27.1":
-  version: 1.27.1
-  resolution: "cloudinary@npm:1.27.1"
-  dependencies:
-    cloudinary-core: "npm:^2.10.2"
-    core-js: "npm:3.6.5"
-    lodash: "npm:^4.17.11"
-    q: "npm:^1.5.1"
-  checksum: 10c0/e9aa912148bdff97662a59a7ad84f41c4927eaa6a3bb07182426575bffd3234706e2a1aa2be71d1bfaec68fb2b87386fb97377aff75a9ade4da5d3a7ad432452
-  languageName: node
-  linkType: hard
-
 "cmd-shim@npm:^6.0.0":
   version: 6.0.3
   resolution: "cmd-shim@npm:6.0.3"
@@ -11758,13 +11736,6 @@ __metadata:
   dependencies:
     browserslist: "npm:^4.24.4"
   checksum: 10c0/92d2c748d3dd1c4e3b6cee6b6683b9212db9bc0a6574d933781210daf3baaeb76334ed4636eb8935b45802aa8d9235ab604c9a262694e02a2fa17ad0f6976829
-  languageName: node
-  linkType: hard
-
-"core-js@npm:3.6.5":
-  version: 3.6.5
-  resolution: "core-js@npm:3.6.5"
-  checksum: 10c0/ab5f869adda3d4dfa8e8753f5b6e6990196f585e701c5fdb2bfd780bdc57235ceefdcd156f557faf9c2d3ed6010383870d3082318f8eda3218b1908413477a04
   languageName: node
   linkType: hard
 
@@ -18508,7 +18479,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"lodash@npm:4.17.21, lodash@npm:^4.17.10, lodash@npm:^4.17.11, lodash@npm:^4.17.15, lodash@npm:^4.17.21, lodash@npm:^4.3.0":
+"lodash@npm:4.17.21, lodash@npm:^4.17.10, lodash@npm:^4.17.15, lodash@npm:^4.17.21, lodash@npm:^4.3.0":
   version: 4.17.21
   resolution: "lodash@npm:4.17.21"
   checksum: 10c0/d8cbea072bb08655bb4c989da418994b073a608dffa608b09ac04b43a791b12aeae7cd7ad919aa4c925f33b48490b5cfe6c1f71d827956071dae2e7bb3a6b74c
@@ -21826,13 +21797,6 @@ __metadata:
   version: 6.1.0
   resolution: "pure-rand@npm:6.1.0"
   checksum: 10c0/1abe217897bf74dcb3a0c9aba3555fe975023147b48db540aa2faf507aee91c03bf54f6aef0eb2bf59cc259a16d06b28eca37f0dc426d94f4692aeff02fb0e65
-  languageName: node
-  linkType: hard
-
-"q@npm:^1.5.1":
-  version: 1.5.1
-  resolution: "q@npm:1.5.1"
-  checksum: 10c0/7855fbdba126cb7e92ef3a16b47ba998c0786ec7fface236e3eb0135b65df36429d91a86b1fff3ab0927b4ac4ee88a2c44527c7c3b8e2a37efbec9fe34803df4
   languageName: node
   linkType: hard
 
