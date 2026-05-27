@@ -212,7 +212,7 @@ function SportsQuerySection({
   surfaceId: string;
 }) {
   const events = usePolymarketSportsEventsStore(state => state.getData());
-  const isLoading = usePolymarketSportsEventsStore(state => state.getStatus('isLoading') || state.getStatus('isIdle'));
+  const isLoading = usePolymarketSportsEventsStore(state => state.enabled && (state.getStatus('isLoading') || state.getStatus('isIdle')));
   const items = useMemo<PredictionPlacementItem[]>(() => {
     if (!events) return [];
     const selectedEvents = selectSportsEventsForIntent(events, sportsIntent);
