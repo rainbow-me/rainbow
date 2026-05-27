@@ -1,6 +1,6 @@
 import { defineAnimation } from 'react-native-reanimated';
 
-export default function withSpeed(userConfig: any) {
+export function withSpeed(userConfig: any) {
   'worklet';
 
   return defineAnimation(0, () => {
