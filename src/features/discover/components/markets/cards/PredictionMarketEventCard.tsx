@@ -13,15 +13,12 @@ import { LIVE_INDICATOR_COLOR, MARKET_ON_COLOR } from '@/features/discover/compo
 import { type DiscoverCardAnalyticsContext } from '@/features/discover/components/surfaceSectionTypes';
 import { getDiscoverSportsEventTeamLabels } from '@/features/discover/utils/sportsEventTeamLabels';
 import { LeagueIcon } from '@/features/polymarket/components/league-icon/LeagueIcon';
-import {
-  useSportsEventContent,
-  type SportsEventRows,
-} from '@/features/polymarket/components/polymarket-sport-event-list-item/SportsEventContent';
 import { TeamLogo } from '@/features/polymarket/components/TeamLogo';
 import {
   getPolymarketSportsBetCellTokenId,
   usePolymarketSportsBetCellPress,
 } from '@/features/polymarket/hooks/usePolymarketSportsBetCellPress';
+import { useSportsEventContent, type SportsEventRows } from '@/features/polymarket/hooks/useSportsEventContent';
 import { SPORT_LEAGUES, type LeagueId } from '@/features/polymarket/leagues';
 import { type PolymarketTeamInfo } from '@/features/polymarket/types';
 import { type PolymarketEvent } from '@/features/polymarket/types/polymarket-event';

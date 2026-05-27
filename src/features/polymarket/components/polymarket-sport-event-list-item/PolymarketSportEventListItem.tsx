@@ -8,12 +8,12 @@ import ButtonPressAnimation from '@/components/animations/ButtonPressAnimation';
 import ShimmerAnimation from '@/components/animations/ShimmerAnimation';
 import { LiveTokenText } from '@/components/live-token-text/LiveTokenText';
 import { Text, TextShadow, useBackgroundColor, useColorMode } from '@/design-system';
-import { useSportsEventContent } from '@/features/polymarket/components/polymarket-sport-event-list-item/SportsEventContent';
 import { TeamLogo } from '@/features/polymarket/components/TeamLogo';
 import {
   getPolymarketSportsBetCellTokenId,
   usePolymarketSportsBetCellPress,
 } from '@/features/polymarket/hooks/usePolymarketSportsBetCellPress';
+import { useSportsEventContent } from '@/features/polymarket/hooks/useSportsEventContent';
 import { type PolymarketEvent } from '@/features/polymarket/types/polymarket-event';
 import { formatOdds, type BetCellData } from '@/features/polymarket/utils/sportsEventBetData';
 import { opacity } from '@/framework/ui/utils/opacity';

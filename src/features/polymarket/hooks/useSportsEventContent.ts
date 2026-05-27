@@ -24,8 +24,6 @@ export type SportsEventRows = {
   home: SportsEventTeamRow;
 };
 
-export type SportsEventContentState = ReturnType<typeof useSportsEventContent>;
-
 export function useSportsEventContent(event: PolymarketEvent) {
   const cardBackground = useBackgroundColor('fillQuaternary');
   const fillTertiary = useBackgroundColor('fillTertiary');
