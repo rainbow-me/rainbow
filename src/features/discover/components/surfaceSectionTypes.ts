@@ -46,7 +46,7 @@ export type PredictionsDisplay = (typeof PREDICTION_DISPLAY_VALUES)[number];
 export type SurfaceLeafWithDisplay<TDisplay extends Display> = SurfaceLeaf & { display: TDisplay };
 export type PlacementBackedSurfaceLeafWithDisplay<TDisplay extends Display> = SurfaceLeafWithDisplay<TDisplay> & { placement: string };
 
-export type SurfaceLayoutProps<T extends PlacementItem> = {
+export type SectionLayoutProps<T extends PlacementItem> = {
   data: T[];
   descriptor: SectionDescriptor<T>;
   headerCount?: number;

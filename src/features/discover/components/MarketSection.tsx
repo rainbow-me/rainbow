@@ -16,7 +16,7 @@ import {
 } from '@/features/discover/components/markets/cards/MarketTileCard';
 import { MARKET_SHADOW_COLOR } from '@/features/discover/components/markets/marketCardChrome';
 import { perpToMarketDisplayItem, tokenToMarketDisplayItem } from '@/features/discover/components/markets/marketDisplayItemMappers';
-import { getHeaderPress, renderSurfaceLayoutSection } from '@/features/discover/components/SurfaceLayoutSection';
+import { getHeaderPress, renderSectionLayout } from '@/features/discover/components/SectionLayout';
 import {
   type DiscoverCardAnalyticsContext,
   type MarketDisplay,
@@ -75,12 +75,12 @@ export function isMarketSurface(surface: SurfaceLeaf): surface is SurfaceLeafWit
   return (MARKET_DISPLAY_VALUES as readonly string[]).includes(surface.display);
 }
 
-export function MarketSurfaceSection({ surface, surfaceId }: { surface: SurfaceLeafWithDisplay<MarketDisplay>; surfaceId: string }) {
+export function MarketSection({ surface, surfaceId }: { surface: SurfaceLeafWithDisplay<MarketDisplay>; surfaceId: string }) {
   if (!hasPlacement(surface)) return null;
-  return <PlacementBackedMarketSurfaceSection surface={surface} surfaceId={surfaceId} />;
+  return <PlacementBackedMarketSection surface={surface} surfaceId={surfaceId} />;
 }
 
-function PlacementBackedMarketSurfaceSection({
+function PlacementBackedMarketSection({
   surface,
   surfaceId,
 }: {
@@ -94,10 +94,10 @@ function PlacementBackedMarketSurfaceSection({
     return state.getStatus('isInitialLoad') || state.getStatus('isIdle') || state.getStatus('isLoading');
   });
 
-  if (source === 'hyperliquid') return <PerpsMarketSurfaceSection surface={surface} surfaceId={surfaceId} />;
-  if (source === 'rainbow') return <TokensMarketSurfaceSection surface={surface} surfaceId={surfaceId} />;
+  if (source === 'hyperliquid') return <PerpsMarketSection surface={surface} surfaceId={surfaceId} />;
+  if (source === 'rainbow') return <TokensMarketSection surface={surface} surfaceId={surfaceId} />;
   if (isLoadingPlacementSource || isPendingSurfacePlacement) {
-    return renderSurfaceLayoutSection({
+    return renderSectionLayout({
       data: EMPTY_MARKET_DISPLAY_ITEMS,
       descriptor: MARKET_SECTION_DESCRIPTORS[surface.display],
       loading: true,
@@ -111,19 +111,13 @@ function PlacementBackedMarketSurfaceSection({
   return null;
 }
 
-function PerpsMarketSurfaceSection({
-  surface,
-  surfaceId,
-}: {
-  surface: PlacementBackedSurfaceLeafWithDisplay<MarketDisplay>;
-  surfaceId: string;
-}) {
+function PerpsMarketSection({ surface, surfaceId }: { surface: PlacementBackedSurfaceLeafWithDisplay<MarketDisplay>; surfaceId: string }) {
   const useStore = useMemo(() => getPerpsPlacementStore(surface.placement), [surface.placement]);
   const result = useStore();
   const descriptor = MARKET_SECTION_DESCRIPTORS[surface.display];
   const items = useMemo(() => result.items.map(perpToMarketDisplayItem), [result.items]);
 
-  return renderSurfaceLayoutSection({
+  return renderSectionLayout({
     data: items,
     descriptor,
     loading: result.isLoading,
@@ -134,13 +128,7 @@ function PerpsMarketSurfaceSection({
   });
 }
 
-function TokensMarketSurfaceSection({
-  surface,
-  surfaceId,
-}: {
-  surface: PlacementBackedSurfaceLeafWithDisplay<MarketDisplay>;
-  surfaceId: string;
-}) {
+function TokensMarketSection({ surface, surfaceId }: { surface: PlacementBackedSurfaceLeafWithDisplay<MarketDisplay>; surfaceId: string }) {
   const { onTapSearch } = useDiscoverScreenContext();
   const nativeCurrency = userAssetsStoreManager(state => state.currency);
   const useStore = useMemo(() => getTokensPlacementStore(surface.placement), [surface.placement]);
@@ -154,7 +142,7 @@ function TokensMarketSurfaceSection({
     navigateDiscoverDestination(surface.destination);
   }, [onTapSearch, surface.destination]);
 
-  return renderSurfaceLayoutSection({
+  return renderSectionLayout({
     data: result.items,
     descriptor,
     loading: result.isLoading,

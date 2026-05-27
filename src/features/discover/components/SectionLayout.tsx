@@ -18,7 +18,7 @@ import {
 } from '@/features/polymarket/screens/polymarket-sports-events-screen/buildPolymarketSportsEventsListData';
 import { type PolymarketEvent } from '@/features/polymarket/types/polymarket-event';
 
-import { type SurfaceLayoutProps } from './surfaceSectionTypes';
+import { type SectionLayoutProps } from './surfaceSectionTypes';
 
 const LIVE_INDICATOR_SIZE = 28;
 const LIVE_INDICATOR_CUTOUT_SIZE = 16;
@@ -28,7 +28,7 @@ const HEADER_ACCESSORY_GAP = 4;
 
 const hasDestination = (surface: SurfaceLeaf) => surface.destination !== null;
 
-export function renderSurfaceLayoutSection<T extends PlacementItem>({
+export function renderSectionLayout<T extends PlacementItem>({
   data,
   descriptor,
   headerCount,
@@ -37,7 +37,7 @@ export function renderSurfaceLayoutSection<T extends PlacementItem>({
   placement,
   surface,
   surfaceId,
-}: SurfaceLayoutProps<T>) {
+}: SectionLayoutProps<T>) {
   const leadingAccessory = renderSurfaceHeaderLeadingAccessory(surface);
   const hasLimit = surface.limit !== undefined;
   const renderedData = hasLimit ? data.slice(0, surface.limit) : data;

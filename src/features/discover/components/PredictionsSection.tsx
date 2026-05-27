@@ -24,8 +24,8 @@ import {
   getSurfaceLeagueId,
   isLiveSportsSurface,
   isSportsEventCardSurface,
-  renderSurfaceLayoutSection,
-} from '@/features/discover/components/SurfaceLayoutSection';
+  renderSectionLayout,
+} from '@/features/discover/components/SectionLayout';
 import {
   type DiscoverCardAnalyticsContext,
   type PlacementBackedSurfaceLeafWithDisplay,
@@ -90,23 +90,17 @@ export function isPredictionsSurface(surface: SurfaceLeaf): surface is SurfaceLe
   return (PREDICTION_DISPLAY_VALUES as readonly string[]).includes(surface.display);
 }
 
-export function PredictionsSurfaceSection({
-  surface,
-  surfaceId,
-}: {
-  surface: SurfaceLeafWithDisplay<PredictionsDisplay>;
-  surfaceId: string;
-}) {
+export function PredictionsSection({ surface, surfaceId }: { surface: SurfaceLeafWithDisplay<PredictionsDisplay>; surfaceId: string }) {
   if (isLiveSportsSurface(surface)) {
-    return <SportsLiveSurfaceSection surface={surface} surfaceId={surfaceId} />;
+    return <SportsLiveSection surface={surface} surfaceId={surfaceId} />;
   }
 
   if (!hasPlacement(surface)) return null;
-  if (isSportsEventCardSurface(surface)) return <SportsEventPlacementSurfaceSection surface={surface} surfaceId={surfaceId} />;
-  return <PredictionsPlacementSurfaceSection surface={surface} surfaceId={surfaceId} />;
+  if (isSportsEventCardSurface(surface)) return <SportsEventPlacementSection surface={surface} surfaceId={surfaceId} />;
+  return <PredictionsPlacementSection surface={surface} surfaceId={surfaceId} />;
 }
 
-function PredictionsPlacementSurfaceSection({
+function PredictionsPlacementSection({
   surface,
   surfaceId,
 }: {
@@ -117,7 +111,7 @@ function PredictionsPlacementSurfaceSection({
   const result = useStore();
   const descriptor = PREDICTIONS_SECTION_DESCRIPTORS[surface.display];
 
-  return renderSurfaceLayoutSection({
+  return renderSectionLayout({
     data: result.items,
     descriptor,
     loading: result.isLoading,
@@ -128,7 +122,7 @@ function PredictionsPlacementSurfaceSection({
   });
 }
 
-function SportsEventPlacementSurfaceSection({
+function SportsEventPlacementSection({
   surface,
   surfaceId,
 }: {
@@ -146,7 +140,7 @@ function SportsEventPlacementSurfaceSection({
     surface,
   });
 
-  return renderSurfaceLayoutSection({
+  return renderSectionLayout({
     data: result.items,
     descriptor,
     headerCount,
@@ -158,7 +152,7 @@ function SportsEventPlacementSurfaceSection({
   });
 }
 
-function SportsLiveSurfaceSection({ surface, surfaceId }: { surface: SurfaceLeafWithDisplay<PredictionsDisplay>; surfaceId: string }) {
+function SportsLiveSection({ surface, surfaceId }: { surface: SurfaceLeafWithDisplay<PredictionsDisplay>; surfaceId: string }) {
   const events = usePolymarketSportsEventsStore(state => state.getData());
   const isLoading = usePolymarketSportsEventsStore(state => state.getStatus('isLoading') || state.getStatus('isIdle'));
   const items = useMemo<PredictionPlacementItem[]>(() => {
@@ -175,7 +169,7 @@ function SportsLiveSurfaceSection({ surface, surfaceId }: { surface: SurfaceLeaf
     surface,
   });
 
-  return renderSurfaceLayoutSection({
+  return renderSectionLayout({
     data: items,
     descriptor,
     headerCount,

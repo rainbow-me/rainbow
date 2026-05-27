@@ -9,7 +9,7 @@ import { DEFAULT_SCROLL_FADE_DISTANCE } from '@/components/scroll-header-fade/Sc
 import { Skeleton } from '@/components/Skeleton';
 import { SmoothPager, usePagerNavigation } from '@/components/SmoothPager/SmoothPager';
 import { Box } from '@/design-system';
-import { DiscoverSurfaceSections } from '@/features/discover/components/DiscoverSurfaceSection';
+import { DiscoverSections } from '@/features/discover/components/DiscoverSection';
 import {
   DiscoverSectionNavigation,
   useDiscoverNavigationStore,
@@ -213,9 +213,9 @@ const DiscoverSectionScrollView = memo(function DiscoverSectionScrollView({
       testID={`discover-section-${section.id}`}
     >
       {section.items !== undefined ? (
-        <DiscoverSurfaceSections items={section.items} surfaceId={surfaceId} />
+        <DiscoverSections items={section.items} surfaceId={surfaceId} />
       ) : (
-        <DiscoverSurfaceSections items={[section]} surfaceId={surfaceId} />
+        <DiscoverSections items={[section]} surfaceId={surfaceId} />
       )}
     </Animated.ScrollView>
   );
