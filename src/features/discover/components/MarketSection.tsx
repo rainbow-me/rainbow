@@ -1,7 +1,6 @@
 import { useCallback, useMemo } from 'react';
 
 import { useDiscoverScreenContext } from '@/components/Discover/DiscoverScreenContext';
-import { globalColors } from '@/design-system/color/palettes';
 import { MarketCell, MarketCellSkeleton } from '@/features/discover/components/markets/cards/MarketCell';
 import {
   computeMarketPillWidth,
@@ -15,7 +14,11 @@ import {
   MarketTileCard,
   MarketTileCardSkeleton,
 } from '@/features/discover/components/markets/cards/MarketTileCard';
-import { perpToMarketDisplayItem, tokenToMarketDisplayItem } from '@/features/discover/components/markets/marketDisplayItemMappers';
+import {
+  perpToMarketDisplayItem,
+  tokenToMarketDisplayItem,
+  tokenToMarketPillWidthInput,
+} from '@/features/discover/components/markets/marketDisplayItemMappers';
 import { getHeaderPress, renderSectionLayout } from '@/features/discover/components/SectionLayout';
 import {
   type DiscoverCardAnalyticsContext,
@@ -185,8 +188,7 @@ function getTokenMarketSectionDescriptor(
     case 'market_pill.carousel':
       return {
         ...MARKET_SECTION_DESCRIPTORS[display],
-        getItemWidth: (item: TokenPlacementItem) =>
-          computeMarketPillWidth(tokenToMarketDisplayItem({ accentColor: globalColors.grey100, item, nativeCurrency })),
+        getItemWidth: (item: TokenPlacementItem) => computeMarketPillWidth(tokenToMarketPillWidthInput({ item, nativeCurrency })),
         renderItem: (item: TokenPlacementItem, _: number, analyticsContext: DiscoverCardAnalyticsContext) => (
           <TokenMarketPill analyticsContext={analyticsContext} item={item} nativeCurrency={nativeCurrency} />
         ),

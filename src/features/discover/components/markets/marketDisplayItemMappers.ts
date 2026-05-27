@@ -1,6 +1,7 @@
 import { globalColors } from '@/design-system/color/palettes';
 import { getPriceChangeColor, getPriceChangeColors } from '@/design-system/color/usePriceChangeColors';
 import { type NativeCurrencyKey } from '@/entities/nativeCurrencyTypes';
+import { type MarketPillWidthInput } from '@/features/discover/components/markets/cards/MarketPill';
 import { buildTokenLineChartId, useTokenLineChartsStore } from '@/features/discover/stores/tokenLineChartsStore';
 import { type MarketDisplayItem } from '@/features/discover/types/marketDisplayItem';
 import { HYPERLIQUID_COLORS } from '@/features/perps/constants';
@@ -92,6 +93,21 @@ export function tokenToMarketDisplayItem({
     },
     priceChangeSelector: token => normalizeTokenPriceChange(token.change.change24hPct),
     priceSelector: token => formatCurrency(token.price, { currency: nativeCurrency }),
+  };
+}
+
+export function tokenToMarketPillWidthInput({
+  item,
+  nativeCurrency,
+}: {
+  item: TokenPlacementItem;
+  nativeCurrency: NativeCurrencyKey;
+}): MarketPillWidthInput {
+  const { asset } = item;
+  return {
+    displayName: asset.name,
+    initialPrice: formatCurrency(asset.price.value ? String(asset.price.value) : '0', { currency: nativeCurrency }),
+    initialPriceChange: normalizeTokenPriceChange(asset.price.relativeChange24h),
   };
 }
 

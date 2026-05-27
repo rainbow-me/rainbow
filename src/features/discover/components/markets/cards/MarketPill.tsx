@@ -29,6 +29,12 @@ type MarketPillProps = {
   item: MarketDisplayItem;
 };
 
+export type MarketPillWidthInput = {
+  displayName: string;
+  initialPrice: string;
+  initialPriceChange: string;
+};
+
 type PillColors = {
   backgroundColor: string;
   badgeBorderColor: string;
@@ -204,7 +210,7 @@ const PILL_TEXT_STATS = {
   percentageSymbolWidth: measureTextSync('%', PRICE_TEXT_STYLE),
 };
 
-export function computeMarketPillWidth(item: MarketDisplayItem): number {
+export function computeMarketPillWidth(item: MarketPillWidthInput): number {
   const nameWidth = measureTextSync(item.displayName, NAME_TEXT_STYLE);
 
   const priceWidth = measureTextSync(item.initialPrice, PRICE_TEXT_STYLE);
