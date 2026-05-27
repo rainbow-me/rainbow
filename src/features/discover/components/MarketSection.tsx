@@ -89,17 +89,67 @@ function MarketPlacementContent({
   surface: PlacementBackedSurfaceLeafWithDisplay<MarketDisplay>;
   surfaceId: string;
 }) {
-  const { onTapSearch } = useDiscoverScreenContext();
-  const nativeCurrency = userAssetsStoreManager(state => state.currency);
   const placement = usePlacementsStore(state => state.getPlacement(surface.placement));
   const isPendingSurfacePlacement = useIsDiscoverSurfacePlacementPending(surface.placement);
   const isLoadingPlacementSource = usePlacementsStore(state => {
     if (state.getPlacement(surface.placement) !== undefined) return false;
     return state.getStatus('isInitialLoad') || state.getStatus('isIdle') || state.getStatus('isLoading');
   });
+
+  if (placement?.source === 'hyperliquid') {
+    return <PerpsMarketPlacementContent surface={surface} surfaceId={surfaceId} />;
+  }
+
+  if (placement?.source === 'rainbow') {
+    return <TokenMarketPlacementContent surface={surface} surfaceId={surfaceId} />;
+  }
+
+  if (isLoadingPlacementSource || isPendingSurfacePlacement) {
+    return renderSectionLayout({
+      data: [],
+      descriptor: MARKET_SECTION_DESCRIPTORS[surface.display],
+      loading: true,
+      onPressSeeAll: getHeaderPress(surface.destination),
+      placement: undefined,
+      surface,
+      surfaceId,
+    });
+  }
+
+  return null;
+}
+
+function PerpsMarketPlacementContent({
+  surface,
+  surfaceId,
+}: {
+  surface: PlacementBackedSurfaceLeafWithDisplay<MarketDisplay>;
+  surfaceId: string;
+}) {
   const perpsResult = usePerpsPlacement(surface.placement);
-  const tokensResult = useTokensPlacement(surface.placement);
   const perpsItems = useMemo(() => perpsResult.items.map(perpToMarketDisplayItem), [perpsResult.items]);
+
+  return renderSectionLayout({
+    data: perpsItems,
+    descriptor: MARKET_SECTION_DESCRIPTORS[surface.display],
+    loading: perpsResult.isLoading,
+    onPressSeeAll: getHeaderPress(surface.destination),
+    placement: perpsResult.placement,
+    surface,
+    surfaceId,
+  });
+}
+
+function TokenMarketPlacementContent({
+  surface,
+  surfaceId,
+}: {
+  surface: PlacementBackedSurfaceLeafWithDisplay<MarketDisplay>;
+  surfaceId: string;
+}) {
+  const { onTapSearch } = useDiscoverScreenContext();
+  const nativeCurrency = userAssetsStoreManager(state => state.currency);
+  const tokensResult = useTokensPlacement(surface.placement);
   const tokenDescriptor = useMemo<SectionDescriptor<TokenPlacementItem>>(() => {
     switch (surface.display) {
       case 'market_pill.carousel':
@@ -141,43 +191,15 @@ function MarketPlacementContent({
     navigateDiscoverDestination(surface.destination);
   }, [onTapSearch, surface.destination]);
 
-  if (placement?.source === 'hyperliquid') {
-    return renderSectionLayout({
-      data: perpsItems,
-      descriptor: MARKET_SECTION_DESCRIPTORS[surface.display],
-      loading: perpsResult.isLoading,
-      onPressSeeAll: getHeaderPress(surface.destination),
-      placement: perpsResult.placement,
-      surface,
-      surfaceId,
-    });
-  }
-
-  if (placement?.source === 'rainbow') {
-    return renderSectionLayout({
-      data: tokensResult.items,
-      descriptor: tokenDescriptor,
-      loading: tokensResult.isLoading,
-      onPressSeeAll: surface.destination ? onPressSeeAll : undefined,
-      placement: tokensResult.placement,
-      surface,
-      surfaceId,
-    });
-  }
-
-  if (isLoadingPlacementSource || isPendingSurfacePlacement) {
-    return renderSectionLayout({
-      data: [],
-      descriptor: MARKET_SECTION_DESCRIPTORS[surface.display],
-      loading: true,
-      onPressSeeAll: getHeaderPress(surface.destination),
-      placement: undefined,
-      surface,
-      surfaceId,
-    });
-  }
-
-  return null;
+  return renderSectionLayout({
+    data: tokensResult.items,
+    descriptor: tokenDescriptor,
+    loading: tokensResult.isLoading,
+    onPressSeeAll: surface.destination ? onPressSeeAll : undefined,
+    placement: tokensResult.placement,
+    surface,
+    surfaceId,
+  });
 }
 
 function hasPlacement(surface: SurfaceLeafWithDisplay<MarketDisplay>): surface is PlacementBackedSurfaceLeafWithDisplay<MarketDisplay> {
