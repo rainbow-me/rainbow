@@ -11,6 +11,7 @@ import { GradientBorderView } from '@/components/gradient-border/GradientBorderV
 import ImgixImage from '@/components/images/ImgixImage';
 import { LiveTokenText } from '@/components/live-token-text/LiveTokenText';
 import { globalColors, Text, useColorMode } from '@/design-system';
+import { getPriceChangeColor, usePriceChangeColors } from '@/design-system/color/usePriceChangeColors';
 import { type DiscoverCardAnalyticsContext } from '@/features/discover/components/surfaceSectionTypes';
 import { DOWN_ARROW, UP_ARROW } from '@/features/perps/constants';
 import { type PolymarketEvent, type PolymarketMarket } from '@/features/polymarket/types/polymarket-event';
@@ -81,7 +82,9 @@ export const PredictionMarketTileCard = memo(function PredictionMarketTileCard({
   const priceChange = rows[0]?.market.oneDayPriceChange;
   const priceChangeText = useMemo(() => formatPriceChange(priceChange), [priceChange]);
   const priceChangeIsPositive = priceChange !== undefined && priceChange > 0;
-  const priceChangeColor = priceChangeIsPositive ? globalColors.green50 : globalColors.red50;
+  const priceChangeColors = usePriceChangeColors();
+  const priceChangeColor =
+    priceChange === undefined ? priceChangeColors.neutral : getPriceChangeColor(String(priceChange), priceChangeColors);
   const colorPalette = useMemo(() => createOpacityPalette(eventColor, [0, 8, 10, 16, 24]), [eventColor]);
   const cardBorderGradientColors = useMemo(
     () =>
