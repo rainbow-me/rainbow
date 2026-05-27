@@ -22,7 +22,10 @@ exports.config = {
     document: './queries/arc.graphql',
     schema: {
       method: 'GET',
-      url: 'https://arc-graphql.rainbow.me/graphql',
+      // ⚠️ TEST BUILD ONLY — DO NOT MERGE. Temporarily points prod/TestFlight builds at the dev arc
+      // to test the NFT-service migration. Restore the prod URL on the commented line before merging.
+      // url: 'https://arc-graphql.rainbow.me/graphql',
+      url: 'https://arc-graphql.rainbowdotme.workers.dev/graphql',
       headers: {
         'x-api-key': 'ARC_GRAPHQL_API_KEY',
       },
