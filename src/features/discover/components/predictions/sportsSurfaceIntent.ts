@@ -13,18 +13,22 @@ export function getSportsSurfaceIntent(surface: SurfaceLeaf): SportsSurfaceInten
   if (!isSportsEventCardDisplay(surface.display)) return null;
 
   const sportsFilters = surface.filters?.sports;
-  if (!sportsFilters) return null;
+  if (sportsFilters) {
+    const status = getStringFilterValue(sportsFilters.status);
+    if (status === 'live') return { status };
 
-  const status = getStringFilterValue(sportsFilters.status);
-  if (status === 'live') return { status };
+    const timeBucket = getStringFilterValue(sportsFilters.timeBucket);
+    if (timeBucket === 'today') return { timeBucket };
 
-  const timeBucket = getStringFilterValue(sportsFilters.timeBucket);
-  if (timeBucket === 'today') return { timeBucket };
+    const leagueId = getStringFilterValue(sportsFilters.leagueId);
+    if (leagueId && isLeagueId(leagueId)) return { leagueId };
+  }
 
-  const leagueId = getStringFilterValue(sportsFilters.leagueId);
-  if (leagueId && isLeagueId(leagueId)) return { leagueId };
+  if (surface.id === 'live') return { status: 'live' };
+  if (surface.id === 'today') return { timeBucket: 'today' };
 
-  return null;
+  const leagueId = getLeagueId(surface.id);
+  return leagueId ? { leagueId } : null;
 }
 
 export function selectSportsEventsForIntent(events: PolymarketEvent[], intent: SportsSurfaceIntent): PolymarketEvent[] {

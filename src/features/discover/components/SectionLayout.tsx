@@ -118,7 +118,7 @@ export function getInitialRenderedItemCount<T>(items: T[], limit: number | undef
 
 export function isLiveSportsSurface(surface: SurfaceLeaf): boolean {
   const intent = getSportsSurfaceIntent(surface);
-  return isSportsEventCardSurface(surface) && intent !== null && 'status' in intent && intent.status === 'live';
+  return intent !== null && 'status' in intent && intent.status === 'live';
 }
 
 export function isSportsEventCardSurface(surface: SurfaceLeaf): boolean {
