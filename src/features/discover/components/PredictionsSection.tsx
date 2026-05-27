@@ -17,11 +17,14 @@ import {
   PREDICTION_MARKET_TILE_CARD_WIDTH,
   PredictionMarketTileCard,
 } from '@/features/discover/components/markets/cards/PredictionMarketTileCard';
-import { getSportsSurfaceIntent, selectSportsEventsForIntent } from '@/features/discover/components/predictions/sportsSurfaceIntent';
+import {
+  getSportsSurfaceIntent,
+  selectSportsEventsForIntent,
+  type SportsSurfaceIntent,
+} from '@/features/discover/components/predictions/sportsSurfaceIntent';
 import {
   getHeaderPress,
   getInitialRenderedItemCount,
-  getSportsEventHeaderCount,
   isLiveSportsSurface,
   isSportsEventCardSurface,
   renderSectionLayout,
@@ -42,6 +45,7 @@ import {
   PREDICTION_CARD_BORDER_RADIUS,
 } from '@/features/polymarket/components/polymarket-events-list/PolymarketEventsListItem';
 import { usePolymarketSportsEventsStore } from '@/features/polymarket/stores/polymarketSportsEventsStore';
+import { type PolymarketEvent } from '@/features/polymarket/types/polymarket-event';
 import { navigateToPolymarketEvent } from '@/features/polymarket/utils/navigateToPolymarket';
 import { DEVICE_WIDTH } from '@/utils/deviceUtils';
 
@@ -159,6 +163,21 @@ function SportsEventPlacementSection({
   surface: PlacementBackedSurfaceLeafWithDisplay<PredictionsDisplay>;
   surfaceId: string;
 }) {
+  const sportsIntent = getSportsSurfaceIntent(surface);
+  if (!sportsIntent) return <PredictionsPlacementSection surface={surface} surfaceId={surfaceId} />;
+
+  return <SportsEventPlacementWithIntent sportsIntent={sportsIntent} surface={surface} surfaceId={surfaceId} />;
+}
+
+function SportsEventPlacementWithIntent({
+  sportsIntent,
+  surface,
+  surfaceId,
+}: {
+  sportsIntent: SportsSurfaceIntent;
+  surface: PlacementBackedSurfaceLeafWithDisplay<PredictionsDisplay>;
+  surfaceId: string;
+}) {
   const result = usePredictionsPlacement(surface.placement);
   const sportsEvents = usePolymarketSportsEventsStore(state => state.getData());
   const displayedItemCount = getInitialRenderedItemCount(result.items, surface.limit);
@@ -166,7 +185,7 @@ function SportsEventPlacementSection({
   const headerCount = getSportsEventHeaderCount({
     displayedItemCount,
     events: sportsEvents,
-    surface,
+    intent: sportsIntent,
   });
 
   return renderSectionLayout({
@@ -196,7 +215,7 @@ function SportsLiveSection({ surface, surfaceId }: { surface: SurfaceLeafWithDis
   const headerCount = getSportsEventHeaderCount({
     displayedItemCount,
     events,
-    surface,
+    intent: sportsIntent,
   });
 
   return renderSectionLayout({
@@ -209,6 +228,22 @@ function SportsLiveSection({ surface, surfaceId }: { surface: SurfaceLeafWithDis
     surface,
     surfaceId,
   });
+}
+
+function getSportsEventHeaderCount({
+  displayedItemCount,
+  events,
+  intent,
+}: {
+  displayedItemCount: number;
+  events: PolymarketEvent[] | null | undefined;
+  intent: SportsSurfaceIntent | null;
+}): number | undefined {
+  if (!events || !intent) return undefined;
+
+  const count = selectSportsEventsForIntent(events, intent).length;
+  if (count === 0 || count === displayedItemCount) return undefined;
+  return count;
 }
 
 function hasPlacement<TDisplay extends Display>(

@@ -5,13 +5,12 @@ import { event } from '@/analytics/event';
 import { MarketCarousel } from '@/features/discover/components/markets/layouts/MarketCarousel';
 import { MarketGrid } from '@/features/discover/components/markets/layouts/MarketGrid';
 import { MarketList } from '@/features/discover/components/markets/layouts/MarketList';
-import { getSportsSurfaceIntent, selectSportsEventsForIntent } from '@/features/discover/components/predictions/sportsSurfaceIntent';
+import { getSportsSurfaceIntent } from '@/features/discover/components/predictions/sportsSurfaceIntent';
 import { navigateDiscoverDestination } from '@/features/discover/utils/navigation';
 import { type SurfaceLeaf } from '@/features/placements/surfaces/types';
 import { type PlacementItem } from '@/features/placements/types';
 import { LeagueIcon } from '@/features/polymarket/components/league-icon/LeagueIcon';
 import { LiveSectionIndicator } from '@/features/polymarket/components/LiveSectionIndicator';
-import { type PolymarketEvent } from '@/features/polymarket/types/polymarket-event';
 
 import { type SectionLayoutProps } from './surfaceSectionTypes';
 
@@ -111,25 +110,6 @@ export function renderSectionLayout<T extends PlacementItem>({
 export function getHeaderPress(destination: SurfaceLeaf['destination']): (() => void) | undefined {
   if (!destination) return undefined;
   return () => navigateDiscoverDestination(destination);
-}
-
-export function getSportsEventHeaderCount({
-  displayedItemCount,
-  events,
-  surface,
-}: {
-  displayedItemCount: number;
-  events: PolymarketEvent[] | null | undefined;
-  surface: SurfaceLeaf;
-}): number | undefined {
-  if (!isSportsEventCardSurface(surface) || !events) return undefined;
-
-  const intent = getSportsSurfaceIntent(surface);
-  if (!intent) return undefined;
-
-  const count = selectSportsEventsForIntent(events, intent).length;
-  if (count === 0 || count === displayedItemCount) return undefined;
-  return count;
 }
 
 export function getInitialRenderedItemCount<T>(items: T[], limit: number | undefined): number {
