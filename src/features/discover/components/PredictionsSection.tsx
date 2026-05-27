@@ -1,4 +1,4 @@
-import { useCallback, useMemo } from 'react';
+import { useCallback, useMemo, type ReactNode } from 'react';
 import { StyleSheet, type StyleProp, type ViewStyle } from 'react-native';
 
 import { analytics } from '@/analytics';
@@ -47,6 +47,39 @@ import { navigateToPolymarketEvent } from '@/features/polymarket/utils/navigateT
 import { DEVICE_WIDTH } from '@/utils/deviceUtils';
 
 const PREDICTION_TILE_WIDTH = Math.round((DEVICE_WIDTH - 20 * 2 - 8) / 2);
+const PREDICTION_TILE_SKELETON = {
+  borderRadius: PREDICTION_CARD_BORDER_RADIUS,
+  height: POLYMARKET_EVENTS_LIST_ITEM_HEIGHT,
+  width: PREDICTION_TILE_WIDTH,
+};
+const PREDICTION_WIDGET_SKELETON = {
+  borderRadius: PREDICTION_MARKET_TILE_CARD_BORDER_RADIUS,
+  height: PREDICTION_MARKET_TILE_CARD_HEIGHT,
+  width: PREDICTION_MARKET_TILE_CARD_WIDTH,
+};
+const PREDICTION_EVENT_CARD_SKELETON = {
+  borderRadius: PREDICTION_MARKET_EVENT_CARD_BORDER_RADIUS,
+  height: PREDICTION_MARKET_EVENT_CARD_HEIGHT,
+  width: PREDICTION_MARKET_EVENT_CARD_WIDTH,
+};
+const PREDICTION_EVENT_CAROUSEL_CARD_SKELETON = {
+  borderRadius: PREDICTION_MARKET_EVENT_CARD_BORDER_RADIUS,
+  height: PREDICTION_MARKET_EVENT_CARD_HEIGHT,
+  width: PREDICTION_MARKET_EVENT_CARD_CAROUSEL_WIDTH,
+};
+const renderPredictionEventCard = renderEventCard(false);
+const renderPredictionEventCardWithoutLeagueHeader = renderEventCard(true);
+
+type PredictionSkeletonConfig = {
+  borderRadius: number;
+  height: number;
+  width: number;
+};
+
+type PredictionEventCardRenderer = {
+  (item: PredictionPlacementItem, analyticsContext: DiscoverCardAnalyticsContext): ReactNode;
+  (item: PredictionPlacementItem, width: number, analyticsContext: DiscoverCardAnalyticsContext): ReactNode;
+};
 
 const PREDICTIONS_SECTION_DESCRIPTORS = {
   'prediction_tile.carousel': {
@@ -54,13 +87,13 @@ const PREDICTIONS_SECTION_DESCRIPTORS = {
     itemHeight: POLYMARKET_EVENTS_LIST_ITEM_HEIGHT,
     itemWidth: PREDICTION_TILE_WIDTH,
     renderItem: renderPredictionTile,
-    renderSkeleton: renderPredictionSkeleton,
+    renderSkeleton: () => renderPredictionSkeleton(PREDICTION_TILE_SKELETON),
   },
   'prediction_tile.grid': {
     layout: 'grid',
     itemHeight: POLYMARKET_EVENTS_LIST_ITEM_HEIGHT,
     renderItem: renderPredictionGridTile,
-    renderSkeleton: renderPredictionSkeleton,
+    renderSkeleton: () => renderPredictionSkeleton(PREDICTION_TILE_SKELETON),
   },
   'prediction_tile_widget.carousel': {
     layout: 'carousel',
@@ -68,20 +101,20 @@ const PREDICTIONS_SECTION_DESCRIPTORS = {
     itemVerticalBleed: 28,
     itemWidth: PREDICTION_MARKET_TILE_CARD_WIDTH,
     renderItem: renderPredictionWidget,
-    renderSkeleton: renderPredictionWidgetSkeleton,
+    renderSkeleton: () => renderPredictionSkeleton(PREDICTION_WIDGET_SKELETON),
   },
   'prediction_event_card.carousel': {
     layout: 'carousel',
     itemHeight: PREDICTION_MARKET_EVENT_CARD_HEIGHT,
     itemWidth: PREDICTION_MARKET_EVENT_CARD_CAROUSEL_WIDTH,
-    renderItem: renderPredictionEventCarouselCard,
-    renderSkeleton: renderPredictionEventCarouselCardSkeleton,
+    renderItem: renderPredictionEventCard,
+    renderSkeleton: () => renderPredictionSkeleton(PREDICTION_EVENT_CAROUSEL_CARD_SKELETON),
     singleItemWidth: PREDICTION_MARKET_EVENT_CARD_WIDTH,
   },
   'prediction_event_card.list': {
     layout: 'list',
     renderItem: renderPredictionEventCard,
-    renderSkeleton: renderPredictionEventCardSkeleton,
+    renderSkeleton: () => renderPredictionSkeleton(PREDICTION_EVENT_CARD_SKELETON),
   },
 } satisfies Record<PredictionsDisplay, SectionDescriptor<PredictionPlacementItem>>;
 
@@ -224,32 +257,12 @@ function PredictionListItem({
   return <PolymarketEventsListItem event={item.event} onPress={onPress} shouldActivateOnStart={false} style={style} />;
 }
 
-function renderPredictionSkeleton() {
-  return (
-    <Skeleton borderRadius={PREDICTION_CARD_BORDER_RADIUS} height={POLYMARKET_EVENTS_LIST_ITEM_HEIGHT} width={PREDICTION_TILE_WIDTH} />
-  );
+function renderPredictionSkeleton({ borderRadius, height, width }: PredictionSkeletonConfig) {
+  return <Skeleton borderRadius={borderRadius} height={height} width={width} />;
 }
 
 function renderPredictionWidget(item: PredictionPlacementItem, _: number, analyticsContext: DiscoverCardAnalyticsContext) {
   return <PredictionMarketTileCard analyticsContext={analyticsContext} event={item.event} />;
-}
-
-function renderPredictionWidgetSkeleton() {
-  return (
-    <Skeleton
-      borderRadius={PREDICTION_MARKET_TILE_CARD_BORDER_RADIUS}
-      height={PREDICTION_MARKET_TILE_CARD_HEIGHT}
-      width={PREDICTION_MARKET_TILE_CARD_WIDTH}
-    />
-  );
-}
-
-function renderPredictionEventCard(item: PredictionPlacementItem, analyticsContext: DiscoverCardAnalyticsContext) {
-  return <PredictionMarketEventCard analyticsContext={analyticsContext} event={item.event} subscribeLiveOdds />;
-}
-
-function renderPredictionEventCarouselCard(item: PredictionPlacementItem, width: number, analyticsContext: DiscoverCardAnalyticsContext) {
-  return <PredictionMarketEventCard analyticsContext={analyticsContext} event={item.event} subscribeLiveOdds width={width} />;
 }
 
 function getSportsEventSectionDescriptor(surface: SurfaceLeafWithDisplay<PredictionsDisplay>): SectionDescriptor<PredictionPlacementItem> {
@@ -261,7 +274,7 @@ function getSportsEventSectionDescriptor(surface: SurfaceLeafWithDisplay<Predict
     case 'prediction_event_card.carousel':
       return {
         ...PREDICTIONS_SECTION_DESCRIPTORS[surface.display],
-        renderItem: renderPredictionEventCarouselCardWithoutLeagueHeader,
+        renderItem: renderPredictionEventCardWithoutLeagueHeader,
       };
     case 'prediction_event_card.list':
       return {
@@ -275,38 +288,39 @@ function getSportsEventSectionDescriptor(surface: SurfaceLeafWithDisplay<Predict
   }
 }
 
-function renderPredictionEventCardWithoutLeagueHeader(item: PredictionPlacementItem, analyticsContext: DiscoverCardAnalyticsContext) {
-  return <PredictionMarketEventCard analyticsContext={analyticsContext} event={item.event} hideLeagueHeader subscribeLiveOdds />;
-}
+function renderEventCard(hideLeagueHeader: boolean): PredictionEventCardRenderer {
+  function render(item: PredictionPlacementItem, analyticsContext: DiscoverCardAnalyticsContext): ReactNode;
+  function render(item: PredictionPlacementItem, width: number, analyticsContext: DiscoverCardAnalyticsContext): ReactNode;
+  function render(
+    item: PredictionPlacementItem,
+    widthOrAnalyticsContext: number | DiscoverCardAnalyticsContext,
+    maybeAnalyticsContext?: DiscoverCardAnalyticsContext
+  ) {
+    if (typeof widthOrAnalyticsContext !== 'number') {
+      return (
+        <PredictionMarketEventCard
+          analyticsContext={widthOrAnalyticsContext}
+          event={item.event}
+          hideLeagueHeader={hideLeagueHeader}
+          subscribeLiveOdds
+        />
+      );
+    }
 
-function renderPredictionEventCarouselCardWithoutLeagueHeader(
-  item: PredictionPlacementItem,
-  width: number,
-  analyticsContext: DiscoverCardAnalyticsContext
-) {
-  return (
-    <PredictionMarketEventCard analyticsContext={analyticsContext} event={item.event} hideLeagueHeader subscribeLiveOdds width={width} />
-  );
-}
+    if (!maybeAnalyticsContext) return null;
 
-function renderPredictionEventCardSkeleton() {
-  return (
-    <Skeleton
-      borderRadius={PREDICTION_MARKET_EVENT_CARD_BORDER_RADIUS}
-      height={PREDICTION_MARKET_EVENT_CARD_HEIGHT}
-      width={PREDICTION_MARKET_EVENT_CARD_WIDTH}
-    />
-  );
-}
+    return (
+      <PredictionMarketEventCard
+        analyticsContext={maybeAnalyticsContext}
+        event={item.event}
+        hideLeagueHeader={hideLeagueHeader}
+        subscribeLiveOdds
+        width={widthOrAnalyticsContext}
+      />
+    );
+  }
 
-function renderPredictionEventCarouselCardSkeleton() {
-  return (
-    <Skeleton
-      borderRadius={PREDICTION_MARKET_EVENT_CARD_BORDER_RADIUS}
-      height={PREDICTION_MARKET_EVENT_CARD_HEIGHT}
-      width={PREDICTION_MARKET_EVENT_CARD_CAROUSEL_WIDTH}
-    />
-  );
+  return render;
 }
 
 const styles = StyleSheet.create({
