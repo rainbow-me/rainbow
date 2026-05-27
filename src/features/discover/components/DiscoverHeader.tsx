@@ -77,7 +77,7 @@ function DiscoverSearchButton() {
 function DiscoverCategorySelector() {
   const activeSection = useDiscoverNavigationStore(state => state.activeSection);
   const surface = useDiscoverSurface();
-  const tabs = surface?.items !== undefined ? surface.items : [];
+  const tabs = surface?.items ?? [];
   const { scrollToSectionTop } = useDiscoverScreenContext();
   const { colorMode } = useColorMode();
   const screenBackgroundColor = getValueForColorMode(SCREEN_BACKGROUND_COLOR, colorMode);

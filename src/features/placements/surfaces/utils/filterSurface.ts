@@ -1,11 +1,21 @@
-import { type Enabled, type Surface } from '@/features/placements/surfaces/types';
+import { type Enabled, type SurfaceDocument, type SurfaceNode } from '@/features/placements/surfaces/types';
 
-export function filterSurfaceTree(surface: Surface, predicate: (surface: Surface) => boolean): Surface | undefined {
+type FilterableSurface = SurfaceDocument | SurfaceNode;
+
+export function filterSurfaceTree(
+  surface: SurfaceDocument,
+  predicate: (surface: FilterableSurface) => boolean
+): SurfaceDocument | undefined;
+export function filterSurfaceTree(surface: SurfaceNode, predicate: (surface: FilterableSurface) => boolean): SurfaceNode | undefined;
+export function filterSurfaceTree(
+  surface: FilterableSurface,
+  predicate: (surface: FilterableSurface) => boolean
+): FilterableSurface | undefined {
   if (!predicate(surface)) return undefined;
 
-  if (surface.items === undefined) return surface;
+  if (!('items' in surface)) return surface;
 
-  const filteredItems: Surface[] = [];
+  const filteredItems: SurfaceNode[] = [];
   let didChange = false;
 
   for (const item of surface.items) {

@@ -3,11 +3,11 @@ import { StyleSheet, View } from 'react-native';
 
 import { isMarketSurface, MarketSection } from '@/features/discover/components/MarketSection';
 import { isPredictionsSurface, PredictionsSection } from '@/features/discover/components/PredictionsSection';
-import { type Surface, type SurfaceLeaf } from '@/features/placements/surfaces/types';
+import { type SurfaceLeaf, type SurfaceNode } from '@/features/placements/surfaces/types';
 import { logger } from '@/logger';
 
 type DiscoverSectionsProps = {
-  items: Surface[];
+  items: SurfaceNode[];
   surfaceId: string;
 };
 
@@ -23,8 +23,8 @@ export function DiscoverSections({ items, surfaceId }: DiscoverSectionsProps) {
   );
 }
 
-export const DiscoverSection = memo(function DiscoverSection({ surface, surfaceId }: { surface: Surface; surfaceId: string }) {
-  if (surface.items !== undefined) return <DiscoverSections items={surface.items} surfaceId={surfaceId} />;
+export const DiscoverSection = memo(function DiscoverSection({ surface, surfaceId }: { surface: SurfaceNode; surfaceId: string }) {
+  if ('items' in surface) return <DiscoverSections items={surface.items} surfaceId={surfaceId} />;
 
   if (isMarketSurface(surface)) return <MarketSection surface={surface} surfaceId={surfaceId} />;
   if (isPredictionsSurface(surface)) return <PredictionsSection surface={surface} surfaceId={surfaceId} />;

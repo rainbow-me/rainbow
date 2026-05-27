@@ -12,28 +12,32 @@ export type SurfaceId = string;
 
 export type SectionId = string;
 
-export type SurfaceBase = {
+export type SurfaceNodeBase = {
   id: string;
   label?: string;
   enabled: Enabled;
-  version?: number;
   updatedAt?: string;
 };
 
-export type SurfaceContainer = SurfaceBase & {
-  items: Surface[];
-  placement?: never;
-  display?: never;
-  destination?: never;
-  limit?: never;
+export type SurfaceDocument = SurfaceNodeBase & {
+  version: 1;
+  items: SurfaceNode[];
 };
 
-export type SurfaceLeaf = SurfaceBase & {
+export type SurfaceContainerNode = SurfaceNodeBase & {
+  items: SurfaceNode[];
+};
+
+export type SurfaceLeafNode = SurfaceNodeBase & {
   placement?: string | null;
   display: Display;
   destination: Destination;
   limit?: number;
-  items?: never;
 };
 
-export type Surface = SurfaceContainer | SurfaceLeaf;
+export type SurfaceNode = SurfaceContainerNode | SurfaceLeafNode;
+
+export type SurfaceBase = SurfaceNodeBase;
+export type SurfaceContainer = SurfaceContainerNode;
+export type SurfaceLeaf = SurfaceLeafNode;
+export type Surface = SurfaceNode;

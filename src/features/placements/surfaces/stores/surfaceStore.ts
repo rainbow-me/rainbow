@@ -2,7 +2,13 @@ import { getApp } from '@react-native-firebase/app';
 import { doc, getDoc, getFirestore } from '@react-native-firebase/firestore';
 
 import { DESTINATION_ROOT_VALUES, DISPLAY_VALUES } from '@/features/placements/surfaces/constants';
-import { type DestinationRoot, type Display, type Surface } from '@/features/placements/surfaces/types';
+import {
+  type DestinationRoot,
+  type Display,
+  type SurfaceDocument,
+  type SurfaceNode,
+  type SurfaceNodeBase,
+} from '@/features/placements/surfaces/types';
 import { createQueryStore } from '@/state/internal/createQueryStore';
 import { time } from '@/utils/time';
 
@@ -21,7 +27,7 @@ export function getSurfaceStore(surfaceId: string): SurfaceStore {
 }
 
 function createSurfaceStore(surfaceId: string) {
-  return createQueryStore<Surface | undefined>(
+  return createQueryStore<SurfaceDocument | undefined>(
     {
       fetcher: () => fetchSurface(surfaceId),
       staleTime: time.minutes(10),
@@ -31,7 +37,7 @@ function createSurfaceStore(surfaceId: string) {
   );
 }
 
-async function fetchSurface(surfaceId: string): Promise<Surface | undefined> {
+async function fetchSurface(surfaceId: string): Promise<SurfaceDocument | undefined> {
   const db = getFirestore(getApp());
   const surfaceRef = doc(db, 'surfaces', surfaceId);
   const snap = await getDoc(surfaceRef);
@@ -40,17 +46,17 @@ async function fetchSurface(surfaceId: string): Promise<Surface | undefined> {
   return isSurfaceDocument(surfaceId, surface) ? surface : undefined;
 }
 
-function isSurfaceDocument(surfaceId: string, surface: unknown): surface is Surface {
+function isSurfaceDocument(surfaceId: string, surface: unknown): surface is SurfaceDocument {
   if (!isSurfaceBase(surface, { labelRequired: false })) return false;
 
-  const document = surface as Partial<Surface>;
+  const document = surface as Partial<SurfaceDocument>;
   return Array.isArray(document.items) && document.items.every(isSurfaceNode) && document.id === surfaceId && document.version === 1;
 }
 
-function isSurfaceNode(surface: unknown): surface is Surface {
+function isSurfaceNode(surface: unknown): surface is SurfaceNode {
   if (!isSurfaceBase(surface, { labelRequired: true })) return false;
 
-  const document = surface as Partial<Surface>;
+  const document = surface as Partial<SurfaceNode>;
 
   if ('items' in document) {
     return Array.isArray(document.items) && document.items.every(isSurfaceNode);
@@ -66,10 +72,10 @@ function isSurfaceNode(surface: unknown): surface is Surface {
   );
 }
 
-function isSurfaceBase(surface: unknown, { labelRequired }: { labelRequired: boolean }): surface is Partial<Surface> {
+function isSurfaceBase(surface: unknown, { labelRequired }: { labelRequired: boolean }): surface is Partial<SurfaceNodeBase> {
   if (typeof surface !== 'object' || surface === null) return false;
 
-  const document = surface as Partial<Surface>;
+  const document = surface as Partial<SurfaceNodeBase>;
 
   return (
     isSurfaceId(document.id) &&

@@ -2,7 +2,7 @@ import { useEffect, useMemo, useRef } from 'react';
 
 import { usePlacementsStore } from '@/features/placements/stores/placementsStore';
 import { getSurfaceStore } from '@/features/placements/surfaces/stores/surfaceStore';
-import { type Surface } from '@/features/placements/surfaces/types';
+import { type SurfaceDocument, type SurfaceNode } from '@/features/placements/surfaces/types';
 import { filterSurfaceTree, isSurfaceEnabled } from '@/features/placements/surfaces/utils/filterSurface';
 import { type PlacementSource } from '@/features/placements/types';
 import { getConsistentArray } from '@/helpers/getConsistentArray';
@@ -19,7 +19,9 @@ const EMPTY_DISCOVER_SURFACE_PLACEMENT_REFS: DiscoverSurfacePlacementRefs = {
 
 export type DiscoverSurfacePlacementRefs = Record<PlacementSource, string[]>;
 
-export const useDiscoverSurface = createDerivedStore<Surface | undefined>(
+type SurfaceTree = SurfaceDocument | SurfaceNode;
+
+export const useDiscoverSurface = createDerivedStore<SurfaceDocument | undefined>(
   $ => {
     const rawSurface = $(useDiscoverSurfaceStore, state => state.getData());
     const surfaceLastFetchedAt = $(useDiscoverSurfaceStore, state => state.lastFetchedAt);
@@ -90,7 +92,7 @@ export function useSyncDiscoverSurfacePlacements(): void {
 }
 
 function isSurfaceWaitingForPlacements(
-  surface: Surface,
+  surface: SurfaceDocument,
   placementsById: ReturnType<typeof usePlacementsStore.getState>['placementsById'],
   surfaceLastFetchedAt: number | null,
   placementsLastFetchedAt: number | null
@@ -103,13 +105,13 @@ function isSurfaceNewerThanPlacements(surfaceLastFetchedAt: number | null, place
   return !!surfaceLastFetchedAt && (!placementsLastFetchedAt || surfaceLastFetchedAt > placementsLastFetchedAt);
 }
 
-function surfaceContainsPlacement(surface: Surface, placementId: string): boolean {
-  if (surface.items !== undefined) return surface.items.some(item => surfaceContainsPlacement(item, placementId));
+function surfaceContainsPlacement(surface: SurfaceTree, placementId: string): boolean {
+  if ('items' in surface) return surface.items.some(item => surfaceContainsPlacement(item, placementId));
   return surface.placement === placementId;
 }
 
 function getMissingSurfacePlacementIds(
-  surface: Surface,
+  surface: SurfaceTree,
   placementsById: ReturnType<typeof usePlacementsStore.getState>['placementsById']
 ): string[] {
   const missingPlacementIds = new Set<string>();
@@ -118,11 +120,11 @@ function getMissingSurfacePlacementIds(
 }
 
 function collectMissingSurfacePlacementIds(
-  surface: Surface,
+  surface: SurfaceTree,
   placementsById: ReturnType<typeof usePlacementsStore.getState>['placementsById'],
   missingPlacementIds: Set<string>
 ): void {
-  if (surface.items !== undefined) {
+  if ('items' in surface) {
     for (const item of surface.items) collectMissingSurfacePlacementIds(item, placementsById, missingPlacementIds);
     return;
   }
@@ -131,14 +133,14 @@ function collectMissingSurfacePlacementIds(
 }
 
 function filterMissingPlacementSurface(
-  surface: Surface,
+  surface: SurfaceDocument,
   placementsById: ReturnType<typeof usePlacementsStore.getState>['placementsById']
-): Surface | undefined {
-  return filterSurfaceTree(surface, item => item.items !== undefined || !item.placement || placementsById[item.placement] !== undefined);
+): SurfaceDocument | undefined {
+  return filterSurfaceTree(surface, item => 'items' in item || !item.placement || placementsById[item.placement] !== undefined);
 }
 
 function getDiscoverSurfacePlacementRefs(
-  surface: Surface,
+  surface: SurfaceDocument,
   placementsById: ReturnType<typeof usePlacementsStore.getState>['placementsById']
 ): DiscoverSurfacePlacementRefs {
   const refIdsBySource: DiscoverSurfacePlacementRefs = {
@@ -157,11 +159,11 @@ function getDiscoverSurfacePlacementRefs(
 }
 
 function collectDiscoverSurfacePlacementRefs(
-  surface: Surface,
+  surface: SurfaceTree,
   placementsById: ReturnType<typeof usePlacementsStore.getState>['placementsById'],
   refIdsBySource: DiscoverSurfacePlacementRefs
 ): void {
-  if (surface.items !== undefined) {
+  if ('items' in surface) {
     for (const item of surface.items) collectDiscoverSurfacePlacementRefs(item, placementsById, refIdsBySource);
     return;
   }

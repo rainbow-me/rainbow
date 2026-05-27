@@ -7,7 +7,7 @@ import { useTokenRefsStore } from '@/features/placements/stores/derived/tokensPl
 import { usePlacementsStore } from '@/features/placements/stores/placementsStore';
 import { useDiscoverSurface, useDiscoverSurfacePlacementRefs } from '@/features/placements/surfaces/hooks/useSurface';
 import { getSurfaceStore } from '@/features/placements/surfaces/stores/surfaceStore';
-import { type Surface } from '@/features/placements/surfaces/types';
+import { type SurfaceDocument, type SurfaceNode } from '@/features/placements/surfaces/types';
 import { usePolymarketSportsEventsStore } from '@/features/polymarket/stores/polymarketSportsEventsStore';
 import { useRemoteConfigStore } from '@/model/remoteConfig';
 
@@ -48,7 +48,7 @@ export async function refreshDiscoverSurface(surfaceId: string): Promise<void> {
   await Promise.allSettled(refreshes);
 }
 
-function surfaceUsesSportsEvents(surface: Surface): boolean {
-  if (surface.items !== undefined) return surface.items.some(surfaceUsesSportsEvents);
+function surfaceUsesSportsEvents(surface: SurfaceDocument | SurfaceNode): boolean {
+  if ('items' in surface) return surface.items.some(surfaceUsesSportsEvents);
   return SPORTS_EVENT_DISPLAYS.has(surface.display);
 }
