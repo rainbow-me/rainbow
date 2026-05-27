@@ -30,11 +30,7 @@ export const DiscoverScreenProvider = ({ children }: { children: React.ReactNode
   const sectionListRef = useRef<SectionList>(null);
 
   const scrollToSectionTop = useCallback((section: DiscoverSection) => {
-    try {
-      sectionScrollViewRefs.current[section]?.scrollTo({ animated: true, y: 0 });
-    } catch (e) {
-      // Scrolling to top may fail if the section has not mounted yet.
-    }
+    sectionScrollViewRefs.current[section]?.scrollTo({ animated: true, y: 0 });
     return null;
   }, []);
 
