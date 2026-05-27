@@ -55,6 +55,7 @@ type PredictionMarketEventCardProps = {
   analyticsContext: DiscoverCardAnalyticsContext;
   event: PolymarketEvent;
   hideLeagueHeader?: boolean;
+  subscribeLiveOdds?: boolean;
   width?: number;
 };
 
@@ -62,6 +63,7 @@ export const PredictionMarketEventCard = memo(function PredictionMarketEventCard
   analyticsContext,
   event,
   hideLeagueHeader = false,
+  subscribeLiveOdds = false,
   width = PREDICTION_MARKET_EVENT_CARD_WIDTH,
 }: PredictionMarketEventCardProps) {
   const { isDarkMode } = useColorMode();
@@ -95,7 +97,9 @@ export const PredictionMarketEventCard = memo(function PredictionMarketEventCard
 
   return (
     <View style={[styles.container, { width }]}>
-      {Platform.OS === 'android' ? <WidgetBetCellsOverlay analyticsContext={analyticsContext} event={event} rows={rows} /> : null}
+      {Platform.OS === 'android' ? (
+        <WidgetBetCellsOverlay analyticsContext={analyticsContext} event={event} rows={rows} subscribeLiveOdds={subscribeLiveOdds} />
+      ) : null}
       <ButtonPressAnimation onPress={handlePress} scaleTo={0.96} style={styles.flex} wrapperStyle={styles.flex}>
         <GradientBorderView
           backgroundColor={isDarkMode ? globalColors.grey100 : globalColors.white100}
@@ -152,6 +156,7 @@ export const PredictionMarketEventCard = memo(function PredictionMarketEventCard
             moneylineBet={rows.away.moneyline}
             compact={rows.away.isFallback}
             interactiveBetCells={Platform.OS === 'ios'}
+            subscribeLiveOdds={subscribeLiveOdds}
           />
           <InsetSeparator />
           <TeamRow
@@ -164,6 +169,7 @@ export const PredictionMarketEventCard = memo(function PredictionMarketEventCard
             moneylineBet={rows.home.moneyline}
             compact={rows.home.isFallback}
             interactiveBetCells={Platform.OS === 'ios'}
+            subscribeLiveOdds={subscribeLiveOdds}
           />
         </GradientBorderView>
       </ButtonPressAnimation>
@@ -191,6 +197,7 @@ const TeamRow = memo(function TeamRow({
   moneylineBet,
   compact,
   score,
+  subscribeLiveOdds,
   team,
   interactiveBetCells = true,
 }: {
@@ -202,6 +209,7 @@ const TeamRow = memo(function TeamRow({
   lineBet?: BetCellData;
   moneylineBet?: BetCellData;
   score?: string;
+  subscribeLiveOdds?: boolean;
   team?: PolymarketTeamInfo;
 }) {
   return (
@@ -225,6 +233,7 @@ const TeamRow = memo(function TeamRow({
           interactive={interactiveBetCells}
           lineBet={lineBet}
           moneylineBet={moneylineBet}
+          subscribeLiveOdds={subscribeLiveOdds}
         />
       </View>
     </View>
@@ -235,10 +244,12 @@ const WidgetBetCellsOverlay = memo(function WidgetBetCellsOverlay({
   analyticsContext,
   event,
   rows,
+  subscribeLiveOdds,
 }: {
   analyticsContext: DiscoverCardAnalyticsContext;
   event: PolymarketEvent;
   rows: SportsEventRows;
+  subscribeLiveOdds: boolean;
 }) {
   return (
     <View pointerEvents="box-none" style={styles.betCellsOverlay}>
@@ -248,6 +259,7 @@ const WidgetBetCellsOverlay = memo(function WidgetBetCellsOverlay({
         compact={rows.away.isFallback}
         lineBet={rows.away.line}
         moneylineBet={rows.away.moneyline}
+        subscribeLiveOdds={subscribeLiveOdds}
       />
       <TeamBetCells
         analyticsContext={analyticsContext}
@@ -255,6 +267,7 @@ const WidgetBetCellsOverlay = memo(function WidgetBetCellsOverlay({
         compact={rows.home.isFallback}
         lineBet={rows.home.line}
         moneylineBet={rows.home.moneyline}
+        subscribeLiveOdds={subscribeLiveOdds}
       />
     </View>
   );
@@ -267,6 +280,7 @@ const TeamBetCells = memo(function TeamBetCells({
   interactive = true,
   lineBet,
   moneylineBet,
+  subscribeLiveOdds = false,
 }: {
   analyticsContext: DiscoverCardAnalyticsContext;
   event: PolymarketEvent;
@@ -274,6 +288,7 @@ const TeamBetCells = memo(function TeamBetCells({
   interactive?: boolean;
   lineBet?: BetCellData;
   moneylineBet?: BetCellData;
+  subscribeLiveOdds?: boolean;
 }) {
   const { isDarkMode } = useColorMode();
   const lineColor = getSportsEventOutcomeCellColor(event.markets, lineBet?.outcomeTokenId, isDarkMode, event.teams);
@@ -291,7 +306,14 @@ const TeamBetCells = memo(function TeamBetCells({
   return (
     <View style={styles.betCells}>
       {lineBet ? (
-        <WidgetBetCell analyticsContext={analyticsContext} event={event} data={lineBet} backgroundColor={lineColor} variant="line" />
+        <WidgetBetCell
+          analyticsContext={analyticsContext}
+          event={event}
+          data={lineBet}
+          backgroundColor={lineColor}
+          subscribeLiveOdds={subscribeLiveOdds}
+          variant="line"
+        />
       ) : compact ? null : (
         <View style={styles.lineCellSpacer} />
       )}
@@ -301,6 +323,7 @@ const TeamBetCells = memo(function TeamBetCells({
           event={event}
           data={moneylineBet}
           backgroundColor={moneylineColor}
+          subscribeLiveOdds={subscribeLiveOdds}
           variant="moneyline"
         />
       ) : compact ? null : (
@@ -315,12 +338,14 @@ const WidgetBetCell = memo(function WidgetBetCell({
   backgroundColor,
   data,
   event,
+  subscribeLiveOdds,
   variant,
 }: {
   analyticsContext: DiscoverCardAnalyticsContext;
   backgroundColor?: string;
   data: BetCellData;
   event: PolymarketEvent;
+  subscribeLiveOdds: boolean;
   variant: 'line' | 'moneyline';
 }) {
   const tokenId = getPolymarketSportsBetCellTokenId(data.outcomeTokenId);
@@ -350,7 +375,7 @@ const WidgetBetCell = memo(function WidgetBetCell({
       ) : null}
       <LiveTokenText
         align="center"
-        autoSubscriptionEnabled={false}
+        autoSubscriptionEnabled={subscribeLiveOdds}
         color={{ custom: MARKET_ON_COLOR }}
         initialValue={data.odds}
         numberOfLines={1}

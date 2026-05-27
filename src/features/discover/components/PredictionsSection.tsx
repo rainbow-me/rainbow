@@ -246,11 +246,11 @@ function renderPredictionWidgetSkeleton() {
 }
 
 function renderPredictionEventCard(item: PredictionPlacementItem, analyticsContext: DiscoverCardAnalyticsContext) {
-  return <PredictionMarketEventCard analyticsContext={analyticsContext} event={item.event} />;
+  return <PredictionMarketEventCard analyticsContext={analyticsContext} event={item.event} subscribeLiveOdds />;
 }
 
 function renderPredictionEventCarouselCard(item: PredictionPlacementItem, width: number, analyticsContext: DiscoverCardAnalyticsContext) {
-  return <PredictionMarketEventCard analyticsContext={analyticsContext} event={item.event} width={width} />;
+  return <PredictionMarketEventCard analyticsContext={analyticsContext} event={item.event} subscribeLiveOdds width={width} />;
 }
 
 function getSportsEventSectionDescriptor(surface: SurfaceLeafWithDisplay<PredictionsDisplay>): SectionDescriptor<PredictionPlacementItem> {
@@ -277,7 +277,7 @@ function getSportsEventSectionDescriptor(surface: SurfaceLeafWithDisplay<Predict
 }
 
 function renderPredictionEventCardWithoutLeagueHeader(item: PredictionPlacementItem, analyticsContext: DiscoverCardAnalyticsContext) {
-  return <PredictionMarketEventCard analyticsContext={analyticsContext} event={item.event} hideLeagueHeader />;
+  return <PredictionMarketEventCard analyticsContext={analyticsContext} event={item.event} hideLeagueHeader subscribeLiveOdds />;
 }
 
 function renderPredictionEventCarouselCardWithoutLeagueHeader(
@@ -285,7 +285,9 @@ function renderPredictionEventCarouselCardWithoutLeagueHeader(
   width: number,
   analyticsContext: DiscoverCardAnalyticsContext
 ) {
-  return <PredictionMarketEventCard analyticsContext={analyticsContext} event={item.event} hideLeagueHeader width={width} />;
+  return (
+    <PredictionMarketEventCard analyticsContext={analyticsContext} event={item.event} hideLeagueHeader subscribeLiveOdds width={width} />
+  );
 }
 
 function renderPredictionEventCardSkeleton() {
