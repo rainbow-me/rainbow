@@ -1,7 +1,7 @@
-import React, { memo, useCallback, useEffect, useMemo, type ReactElement } from 'react';
+import React, { memo, useCallback, useEffect, useMemo, useRef, type MutableRefObject, type ReactElement } from 'react';
 import { Platform, StyleSheet, type RefreshControlProps } from 'react-native';
 
-import Animated, { useAnimatedScrollHandler, useSharedValue, type SharedValue } from 'react-native-reanimated';
+import Animated, { runOnJS, useAnimatedScrollHandler, useSharedValue, type SharedValue } from 'react-native-reanimated';
 
 import { SPRING_CONFIGS } from '@/components/animations/animationConfigs';
 import { useDiscoverScreenContext } from '@/components/Discover/DiscoverScreenContext';
@@ -41,7 +41,7 @@ export const DiscoverSectionsPager = memo(function DiscoverSectionsPager({
   const { ref, goToPage } = usePagerNavigation<DiscoverSection>();
   const initialSection = getInitialSection(tabs, activeSectionId);
   const activeSection = useSharedValue<DiscoverSection>(initialSection);
-  const sectionScrollOffsets = useSharedValue<SectionScrollOffsets>({});
+  const sectionScrollOffsets = useRef<SectionScrollOffsets>({});
   const pagerKey = tabs.map(tab => tab.id).join('|');
 
   useListen(
@@ -49,7 +49,7 @@ export const DiscoverSectionsPager = memo(function DiscoverSectionsPager({
     state => state.activeSection,
     section => {
       activeSection.value = section;
-      scrollOffset.value = sectionScrollOffsets.value[section] ?? 0;
+      scrollOffset.value = sectionScrollOffsets.current[section] ?? 0;
       goToPage(section);
     }
   );
@@ -168,12 +168,13 @@ const DiscoverSectionScrollView = memo(function DiscoverSectionScrollView({
   renderRefreshControl?: () => ReactElement<RefreshControlProps>;
   scrollOffset: SharedValue<number>;
   section: Surface;
-  sectionScrollOffsets: SharedValue<SectionScrollOffsets>;
+  sectionScrollOffsets: MutableRefObject<SectionScrollOffsets>;
   surfaceId: string;
 }) {
   const { registerSectionScrollView } = useDiscoverScreenContext();
   const tabBarOffset = useTabBarOffset();
   const bottomInset = tabBarOffset + 12;
+  const storedScrollOffset = useSharedValue(sectionScrollOffsets.current[section.id] ?? 0);
 
   const setScrollViewRef = useCallback(
     (scrollView: Animated.ScrollView | null) => {
@@ -182,16 +183,20 @@ const DiscoverSectionScrollView = memo(function DiscoverSectionScrollView({
     [registerSectionScrollView, section]
   );
 
+  const updateSectionScrollOffset = useCallback(
+    (nextOffset: number) => {
+      sectionScrollOffsets.current[section.id] = nextOffset;
+    },
+    [section.id, sectionScrollOffsets]
+  );
+
   const onScroll = useAnimatedScrollHandler({
     onScroll: event => {
       const clampedPosition = clamp(event.contentOffset.y, 0, DEFAULT_SCROLL_FADE_DISTANCE);
 
-      if (sectionScrollOffsets.value[section.id] !== clampedPosition) {
-        sectionScrollOffsets.modify(value => {
-          const offsets = value as SectionScrollOffsets;
-          offsets[section.id] = clampedPosition;
-          return value;
-        });
+      if (storedScrollOffset.value !== clampedPosition) {
+        storedScrollOffset.value = clampedPosition;
+        runOnJS(updateSectionScrollOffset)(clampedPosition);
       }
 
       if (activeSection.value !== section.id || scrollOffset.value === clampedPosition) return;
