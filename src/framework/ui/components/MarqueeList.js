@@ -5,7 +5,7 @@ import { useFocusEffect } from '@react-navigation/native';
 import { Gesture, GestureDetector } from 'react-native-gesture-handler';
 import Animated, { cancelAnimation, runOnJS, useAnimatedStyle, useDerivedValue, useSharedValue, withDecay } from 'react-native-reanimated';
 
-import withSpeed from '@/utils/withSpeed';
+import { withSpeed } from '@/framework/ui/animations/withSpeed';
 
 const DECCELERATION = 0.998;
 
@@ -168,7 +168,7 @@ const SwipeableList = ({ components, height, speed, testID }) => {
   );
 };
 
-const MarqueeList = ({ height, items = /** @type {any[]} */ ([]), renderItem, speed, testID }) => {
+export const MarqueeList = ({ height, items = /** @type {any[]} */ ([]), renderItem, speed, testID }) => {
   return (
     <>
       <SwipeableList
@@ -192,5 +192,3 @@ const MarqueeList = ({ height, items = /** @type {any[]} */ ([]), renderItem, sp
     </>
   );
 };
-
-export default MarqueeList;
