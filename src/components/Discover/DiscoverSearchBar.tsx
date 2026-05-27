@@ -5,7 +5,7 @@ import ButtonPressAnimation from '@/components/animations/ButtonPressAnimation';
 import { useDiscoverScreenContext } from '@/components/Discover/DiscoverScreenContext';
 import DiscoverSearchInput from '@/components/Discover/DiscoverSearchInput';
 import { Box, Inline, Text } from '@/design-system';
-import { DISCOVER_HEADER_HEIGHT } from '@/features/discover/components/DiscoverHeader';
+import { DISCOVER_HEADER_HEIGHT } from '@/features/discover/components/discoverHeaderLayout';
 import useDelayedValueWithLayoutAnimation from '@/hooks/useDelayedValueWithLayoutAnimation';
 import * as i18n from '@/languages';
 import { useTheme } from '@/theme/ThemeContext';

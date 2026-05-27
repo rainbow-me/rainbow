@@ -11,7 +11,8 @@ import { DiscoverScreenProvider } from '@/components/Discover/DiscoverScreenCont
 import { DiscoverSearchBar } from '@/components/Discover/DiscoverSearchBar';
 import { ScrollHeaderFade } from '@/components/scroll-header-fade/ScrollHeaderFade';
 import { Box, useBackgroundColor, useForegroundColor } from '@/design-system';
-import { DISCOVER_HEADER_HEIGHT, DiscoverHeader } from '@/features/discover/components/DiscoverHeader';
+import { DiscoverHeader } from '@/features/discover/components/DiscoverHeader';
+import { DISCOVER_HEADER_HEIGHT } from '@/features/discover/components/discoverHeaderLayout';
 import { refreshDiscoverSurface } from '@/features/discover/utils/refreshDiscoverSurface';
 import { useSyncDiscoverSurfacePlacements } from '@/features/placements/surfaces/hooks/useSurface';
 

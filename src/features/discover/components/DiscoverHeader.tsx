@@ -8,6 +8,7 @@ import { useDiscoverScreenContext } from '@/components/Discover/DiscoverScreenCo
 import { EasingGradient } from '@/components/easing-gradient/EasingGradient';
 import { Skeleton } from '@/components/Skeleton';
 import { Box, Text, TextIcon, useBackgroundColor, useForegroundColor } from '@/design-system';
+import { DISCOVER_HEADER_HEIGHT } from '@/features/discover/components/discoverHeaderLayout';
 import {
   DiscoverSectionNavigation,
   useDiscoverNavigationStore,
@@ -17,7 +18,6 @@ import { useDiscoverSurface } from '@/features/placements/surfaces/hooks/useSurf
 import { type Surface } from '@/features/placements/surfaces/types';
 import { THICK_BORDER_WIDTH } from '@/styles/constants';
 
-export const DISCOVER_HEADER_HEIGHT = 80;
 const SEARCH_BUTTON_RIGHT_INSET = 19;
 const SEARCH_BUTTON_SIZE = 36;
 const CONTENT_TOP_INSET = 40;
