@@ -54,6 +54,7 @@ export function createDepositConfig(config: DepositConfigInput): DepositConfig {
             resolveAsset: config.source.resolveAsset,
           }
         : { mode: 'selectable' },
+    sponsoredExecution: config.sponsoredExecution,
   };
 }
 

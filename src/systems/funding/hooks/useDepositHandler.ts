@@ -5,13 +5,16 @@ import { Logger } from '@ethersproject/logger';
 import { type SharedValue } from 'react-native-reanimated';
 import { triggerHaptics } from 'react-native-turbo-haptics';
 
+import { type ExtendedAnimatedAssetWithColors } from '@/__swaps__/types/assets';
 import { crosschainQuoteTargetsRecipient, isCrosschainQuote } from '@/__swaps__/utils/quotes';
+import { isPreparedCallsExecutionSponsored } from '@/features/delegation/calls';
 import { getProvider } from '@/handlers/web3';
 import { logger, RainbowError } from '@/logger';
 import { loadWallet } from '@/model/wallet';
 import Navigation, { useRoute, type Route } from '@/navigation/Navigation';
 import Routes from '@/navigation/routesNames';
 import { rapTypes } from '@/raps/references';
+import { backendNetworksActions } from '@/state/backendNetworks/backendNetworks';
 import { type ChainId } from '@/state/backendNetworks/types';
 import { type StoreActions } from '@/state/internal/utils/createStoreActions';
 import { getNextNonce } from '@/state/nonces';
@@ -23,14 +26,18 @@ import { isRecordLike } from '@/types/guards';
 import { time } from '@/utils/time';
 import watchingAlert from '@/utils/watchingAlert';
 import { sanitizeAmount } from '@/worklets/strings';
+import { type PreparedCallsExecution } from '@rainbow-me/delegation';
+import { type CrosschainQuote, type Quote } from '@rainbow-me/swaps';
 
 import {
   type AmountStoreType,
   type DepositConfig,
   type DepositFailureMetadata,
+  type DepositGasHookParams,
   type DepositGasParams,
   type DepositGasStoresType,
   type DepositQuoteStoreType,
+  type DepositSponsorshipFailureReason,
   type DepositStoreType,
   type DepositSuccessMetadata,
 } from '../types';
@@ -58,6 +65,8 @@ type DepositExecutionErrorLabels = Pick<DepositConfig['labels'], 'insufficientGa
 type DepositExecutionFailure = {
   error: string;
   showAlert?: boolean;
+  sponsorshipAttempted?: boolean;
+  sponsorshipFailureReason?: DepositSponsorshipFailureReason;
   stage?: DepositFailureMetadata['stage'];
   success: false;
 };
@@ -67,6 +76,7 @@ type DepositExecutionSuccess = {
   executionStrategy: DepositSuccessMetadata['executionStrategy'];
   hash?: string;
   isConfirmed?: boolean;
+  sponsorship: DepositSuccessMetadata['sponsorship'];
   success: true;
   waitForConfirmation?: () => Promise<void>;
 };
@@ -103,6 +113,8 @@ async function runDepositExecutionFlow({
         assetChainId,
         assetSymbol,
         error: result.error,
+        sponsorshipAttempted: result.sponsorshipAttempted ?? false,
+        sponsorshipFailureReason: result.sponsorshipFailureReason,
         stage: result.stage ?? 'execution',
       });
 
@@ -127,6 +139,7 @@ async function runDepositExecutionFlow({
       assetChainId,
       assetSymbol,
       executionStrategy: result.executionStrategy,
+      sponsorship: result.sponsorship,
     });
   } catch (error) {
     const message = formatThrownDepositExecutionError(error, config.labels);
@@ -138,6 +151,7 @@ async function runDepositExecutionFlow({
       assetChainId,
       assetSymbol,
       error: message,
+      sponsorshipAttempted: false,
       stage: 'execution',
     });
     if (showAlertOnThrownError) {
@@ -213,6 +227,7 @@ export function useDepositHandler({
         assetChainId,
         assetSymbol,
         error: 'Missing recipient',
+        sponsorshipAttempted: false,
         stage: 'validation',
       });
       Alert.alert(config.labels.quoteError, config.labels.missingRecipientError);
@@ -227,6 +242,7 @@ export function useDepositHandler({
           assetChainId,
           assetSymbol,
           error: 'No wallet connected',
+          sponsorshipAttempted: false,
           stage: 'validation',
         });
         Alert.alert(config.labels.executionErrorTitle, config.labels.noWalletConnected);
@@ -269,6 +285,7 @@ export function useDepositHandler({
               executionStrategy: result.executionStrategy ?? 'custom',
               hash: result.hash,
               isConfirmed: result.isConfirmed,
+              sponsorship: 'walletPaid',
               success: true,
               waitForConfirmation: result.waitForConfirmation,
             };
@@ -324,6 +341,7 @@ export function useDepositHandler({
         assetChainId,
         assetSymbol,
         error: 'Crosschain quote not targeting recipient',
+        sponsorshipAttempted: false,
         stage: 'validation',
       });
       Alert.alert(config.labels.quoteError, config.labels.invalidRouteRecipientError);
@@ -357,10 +375,19 @@ export function useDepositHandler({
           return {
             error: 'Wallet load failed',
             showAlert: false,
+            sponsorshipAttempted: false,
             stage: 'wallet',
             success: false,
           };
         }
+
+        const preparedCalls = await resolveSponsoredPreparedCalls({
+          accountAddress: validQuote.from,
+          asset,
+          config,
+          quote: validQuote,
+          recipient,
+        });
 
         const nonce = await getNextNonce({ address: validQuote.from, chainId: assetChainId });
         const result = await executeDepositRap({
@@ -370,6 +397,7 @@ export function useDepositHandler({
           gasFeeParamsBySpeed,
           gasParams,
           nonce,
+          preparedCalls,
           quote: validQuote,
           wallet,
         });
@@ -377,6 +405,8 @@ export function useDepositHandler({
         if (!result.success) {
           return {
             error: result.error,
+            sponsorshipAttempted: result.sponsorshipAttempted,
+            sponsorshipFailureReason: result.sponsorshipFailureReason,
             success: false,
           };
         }
@@ -399,11 +429,53 @@ export function useDepositHandler({
           executionStrategy: result.executionStrategy,
           hash: result.hash,
           isConfirmed: result.isConfirmed,
+          sponsorship: result.sponsorship,
           success: true,
         };
       },
     });
   }, [config, depositActions, depositRoute, gasStores, isSubmitting, quoteActions, useAmountStore]);
+}
+
+// ============ Sponsored Calls =============================================== //
+
+async function resolveSponsoredPreparedCalls({
+  accountAddress,
+  asset,
+  config,
+  quote,
+  recipient,
+}: {
+  accountAddress: Quote['from'];
+  asset: ExtendedAnimatedAssetWithColors;
+  config: DepositConfig;
+  quote: Quote | CrosschainQuote;
+  recipient: DepositGasHookParams['recipient'];
+}): Promise<PreparedCallsExecution | null> {
+  if (!config.sponsoredExecution) return null;
+
+  if (!backendNetworksActions.isSponsorshipEligible(asset.chainId)) {
+    return null;
+  }
+
+  const hookParams: DepositGasHookParams = {
+    accountAddress,
+    amount: quote.sellAmount?.toString() ?? '0',
+    asset,
+    quote,
+    recipient,
+  };
+
+  try {
+    const preparedCalls = await config.sponsoredExecution.getPreparedCalls(hookParams);
+    return isPreparedCallsExecutionSponsored(preparedCalls) ? preparedCalls : null;
+  } catch (error) {
+    logger.warn('[useDepositHandler]: sponsored prepared calls unavailable', {
+      error,
+      id: config.id,
+    });
+    return null;
+  }
 }
 
 // ============ Post-Confirmation Refresh ===================================== //
