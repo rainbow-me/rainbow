@@ -2,7 +2,7 @@ import { Fragment, useState, type ReactNode } from 'react';
 import { View } from 'react-native';
 
 import { Box } from '@/design-system';
-import { CarouselHeader } from '@/features/discover/components/markets/layouts/CarouselHeader';
+import { SectionHeader } from '@/features/discover/components/markets/layouts/SectionHeader';
 import { type DiscoverCardAnalyticsContext } from '@/features/discover/components/surfaceSectionTypes';
 import { type Placement, type PlacementId, type PlacementItem } from '@/features/placements/types';
 
@@ -53,7 +53,7 @@ export function MarketList<T extends PlacementItem>({
 
   return (
     <Box gap={20}>
-      <CarouselHeader count={headerCount} leadingAccessory={leadingAccessory} title={title} onPress={onPress} showCaret={showHeaderCaret} />
+      <SectionHeader count={headerCount} leadingAccessory={leadingAccessory} title={title} onPress={onPress} showCaret={showHeaderCaret} />
       <Box gap={8} paddingHorizontal={{ custom: HORIZONTAL_PADDING }}>
         {showSkeletons
           ? Array.from({ length: skeletonItemCount }).map((_, index) => <Fragment key={index}>{renderSkeleton()}</Fragment>)

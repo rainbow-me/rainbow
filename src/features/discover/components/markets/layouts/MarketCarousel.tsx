@@ -7,7 +7,7 @@ import { useDebouncedCallback } from 'use-debounce';
 import { analytics } from '@/analytics';
 import { event } from '@/analytics/event';
 import { Box } from '@/design-system';
-import { CarouselHeader } from '@/features/discover/components/markets/layouts/CarouselHeader';
+import { SectionHeader } from '@/features/discover/components/markets/layouts/SectionHeader';
 import { type DiscoverCardAnalyticsContext } from '@/features/discover/components/surfaceSectionTypes';
 import { type Display } from '@/features/placements/surfaces/types';
 import { type Placement, type PlacementId, type PlacementItem } from '@/features/placements/types';
@@ -122,7 +122,7 @@ export function MarketCarousel<T extends PlacementItem>({
 
   return (
     <Box gap={20}>
-      <CarouselHeader count={headerCount} leadingAccessory={leadingAccessory} title={title} onPress={onPress} showCaret={showHeaderCaret} />
+      <SectionHeader count={headerCount} leadingAccessory={leadingAccessory} title={title} onPress={onPress} showCaret={showHeaderCaret} />
 
       {showSkeletons ? (
         <View style={styles.skeletonRow}>

@@ -4,7 +4,7 @@ import { StyleSheet, View } from 'react-native';
 import ButtonPressAnimation from '@/components/animations/ButtonPressAnimation';
 import { Box, globalColors, Text, TextIcon } from '@/design-system';
 
-export function CarouselHeader({
+export function SectionHeader({
   count,
   leadingAccessory,
   onPress,
