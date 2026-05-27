@@ -1,0 +1,221 @@
+import { useMemo } from 'react';
+
+import { getColorValueForThemeWorklet } from '@/__swaps__/utils/swaps';
+import { useColorMode } from '@/design-system';
+import { usePolymarketLiveGame } from '@/features/polymarket/hooks/usePolymarketLiveGame';
+import { getLeagueId, SPORT_LEAGUES, type LeagueId } from '@/features/polymarket/leagues';
+import { type PolymarketEvent, type PolymarketMarket } from '@/features/polymarket/types/polymarket-event';
+import { parsePeriod, parseScore, selectGameInfo, type PolymarketEventGameInfo } from '@/features/polymarket/utils/sports';
+import { buildEventBetGrid, formatOdds, type BetCellData, type EventBetGrid } from '@/features/polymarket/utils/sportsEventBetData';
+import { getSportsEventOutcomeCellColor } from '@/features/polymarket/utils/sportsEventOutcome';
+import * as i18n from '@/languages';
+import { createOpacityPalette } from '@/worklets/colors';
+import { formatTimestamp, toUnixTime } from '@/worklets/dates';
+
+export type SportsEventTeamRow = {
+  isFallback?: boolean;
+  label?: string;
+  line?: BetCellData;
+  moneyline?: BetCellData;
+};
+
+export type SportsEventRows = {
+  away: SportsEventTeamRow;
+  home: SportsEventTeamRow;
+};
+
+export function useSportsEventBets(event: PolymarketEvent) {
+  const { isDarkMode } = useColorMode();
+  const betGrid = useMemo(() => buildEventBetGrid(event), [event]);
+  const awayBets = betGrid.teamBets.away;
+  const homeBets = betGrid.teamBets.home;
+  const totals = betGrid.totals;
+  const awaySpreadColor = getSportsEventOutcomeCellColor(event.markets, awayBets.spread?.outcomeTokenId, isDarkMode, event.teams);
+  const homeSpreadColor = getSportsEventOutcomeCellColor(event.markets, homeBets.spread?.outcomeTokenId, isDarkMode, event.teams);
+  const totalsOverColor = getSportsEventOutcomeCellColor(event.markets, totals.over?.outcomeTokenId, isDarkMode, event.teams);
+  const totalsUnderColor = getSportsEventOutcomeCellColor(event.markets, totals.under?.outcomeTokenId, isDarkMode, event.teams);
+  const awayMoneylineColor = getSportsEventOutcomeCellColor(event.markets, awayBets.moneyline?.outcomeTokenId, isDarkMode, event.teams);
+  const homeMoneylineColor = getSportsEventOutcomeCellColor(event.markets, homeBets.moneyline?.outcomeTokenId, isDarkMode, event.teams);
+  const eventColor = getColorValueForThemeWorklet(event.color, isDarkMode);
+  const accentColor =
+    awayMoneylineColor ?? homeMoneylineColor ?? awaySpreadColor ?? homeSpreadColor ?? totalsOverColor ?? totalsUnderColor ?? eventColor;
+  const accentPalette = createOpacityPalette(accentColor, [0, 8, 12, 18]);
+  const cardGradientColors = isDarkMode
+    ? ([accentPalette.opacity18, accentPalette.opacity8, accentPalette.opacity0] as const)
+    : ([accentPalette.opacity12, accentPalette.opacity8, accentPalette.opacity0] as const);
+
+  const rows = useMemo(() => getRows(event, betGrid), [betGrid, event]);
+  const betCellsPlaceholder = useMemo(() => {
+    const awayRowCellCount = [awayBets.spread, totals.over, awayBets.moneyline].filter(Boolean).length;
+    const homeRowCellCount = [homeBets.spread, totals.under, homeBets.moneyline].filter(Boolean).length;
+    const maxCellCount = Math.max(awayRowCellCount, homeRowCellCount);
+    const width = maxCellCount > 0 ? maxCellCount * 60 + (maxCellCount - 1) * 6 : 0;
+    const height = 2 * 38 + 8;
+    return { width, height };
+  }, [awayBets.spread, awayBets.moneyline, homeBets.spread, homeBets.moneyline, totals.over, totals.under]);
+
+  return {
+    accentColor,
+    awayBets,
+    awayMoneylineColor,
+    awaySpreadColor,
+    betCellsPlaceholder,
+    betGrid,
+    cardGradientColors,
+    homeBets,
+    homeMoneylineColor,
+    homeSpreadColor,
+    rows,
+    totals,
+    totalsOverColor,
+    totalsUnderColor,
+  };
+}
+
+export function useSportsEventStatus(event: PolymarketEvent) {
+  const liveGame = usePolymarketLiveGame(event.live && !event.ended ? event.gameId : undefined);
+  const gameInfo = useMemo(() => selectGameInfo({ event, liveGame }), [event, liveGame]);
+  const isLive = gameInfo.live && !gameInfo.ended;
+  const showScores = isLive || gameInfo.ended;
+  const scores = useMemo(() => (showScores && gameInfo.score ? parseScore(gameInfo.score) : null), [gameInfo.score, showScores]);
+  const periodTitle = useMemo(
+    () =>
+      isLive
+        ? getPeriodTitle({
+            period: gameInfo.period ?? '',
+            elapsed: gameInfo.elapsed,
+            score: gameInfo.score ?? '',
+          })
+        : undefined,
+    [isLive, gameInfo.period, gameInfo.elapsed, gameInfo.score]
+  );
+  const gameStatusTitle = useMemo(() => getGameStatusTitle({ event, gameInfo, isLive }), [event, gameInfo, isLive]);
+  const subtitle = useMemo(() => (isLive ? undefined : getSubtitle({ event, gameInfo })), [event, gameInfo, isLive]);
+
+  return {
+    gameInfo,
+    gameStatusTitle,
+    isLive,
+    periodTitle,
+    scores,
+    showScores,
+    subtitle,
+  };
+}
+
+export function getSportsEventLeagueId(event: PolymarketEvent): LeagueId | undefined {
+  return getLeagueId(event.slug) ?? getLeagueId(event.ticker ?? '') ?? getLeagueIdFromTags(event.tags);
+}
+
+export function getSportsEventTeamLabelFontSize(teamLabels: readonly [string, string]) {
+  return teamLabels[0].length > 14 || teamLabels[1].length > 14 ? ('10pt' as const) : ('13pt' as const);
+}
+
+export function getSportsEventAccentColor({
+  event,
+  isDarkMode,
+  leagueId,
+}: {
+  event: PolymarketEvent;
+  isDarkMode: boolean;
+  leagueId?: LeagueId;
+}) {
+  const leagueColor = leagueId ? SPORT_LEAGUES[leagueId].color : undefined;
+  if (leagueColor) return getColorValueForThemeWorklet(leagueColor, isDarkMode);
+  return getColorValueForThemeWorklet(event.color, isDarkMode);
+}
+
+function getLeagueIdFromTags(tags: PolymarketEvent['tags']): LeagueId | undefined {
+  for (const tag of tags) {
+    const leagueId = getLeagueId(tag.slug);
+    if (leagueId) return leagueId;
+  }
+}
+
+function getRows(event: PolymarketEvent, betGrid: EventBetGrid): SportsEventRows {
+  const rows: SportsEventRows = {
+    away: {
+      line: betGrid.totals.over ?? betGrid.teamBets.away.spread,
+      moneyline: betGrid.teamBets.away.moneyline,
+    },
+    home: {
+      line: betGrid.totals.under ?? betGrid.teamBets.home.spread,
+      moneyline: betGrid.teamBets.home.moneyline,
+    },
+  };
+
+  if (rows.away.line || rows.away.moneyline || rows.home.line || rows.home.moneyline) return rows;
+
+  return getFallbackMarketRows(event) ?? rows;
+}
+
+function getFallbackMarketRows(event: PolymarketEvent): SportsEventRows | null {
+  const markets = event.markets
+    .filter(
+      market =>
+        market.active !== false &&
+        market.closed !== true &&
+        market.umaResolutionStatus !== 'resolved' &&
+        !!market.groupItemTitle &&
+        market.outcomePrices[0] != null &&
+        market.outcomePrices[0] !== '' &&
+        !!market.clobTokenIds[0]
+    )
+    .sort((a, b) => Number(b.outcomePrices[0] ?? 0) - Number(a.outcomePrices[0] ?? 0))
+    .slice(0, 2);
+
+  if (markets.length < 2) return null;
+
+  return {
+    away: getFallbackMarketRow(markets[0]),
+    home: getFallbackMarketRow(markets[1]),
+  };
+}
+
+function getFallbackMarketRow(market: PolymarketMarket): SportsEventTeamRow {
+  return {
+    isFallback: true,
+    label: market.groupItemTitle,
+    moneyline: {
+      label: '',
+      odds: formatOdds(market.outcomePrices[0]),
+      outcomeTokenId: market.clobTokenIds[0],
+    },
+  };
+}
+
+function getGameStatusTitle({ event, gameInfo, isLive }: { event: PolymarketEvent; gameInfo: PolymarketEventGameInfo; isLive: boolean }) {
+  if (isLive) {
+    const { currentPeriod } = parsePeriod(gameInfo.period ?? '');
+    const parsedScore = parseScore(gameInfo.score ?? '');
+    if ('bestOf' in parsedScore && parsedScore.bestOf !== undefined && currentPeriod) {
+      return i18n.t(i18n.l.predictions.sports.game_best_of, { currentPeriod, bestOf: String(parsedScore.bestOf) });
+    }
+    return currentPeriod || gameInfo.elapsed || undefined;
+  }
+
+  if (gameInfo.ended) return i18n.t(i18n.l.predictions.sports.final);
+
+  const startTime = gameInfo.startTime ?? event.startDate;
+  return startTime ? formatTimestamp(toUnixTime(startTime)) : undefined;
+}
+
+function getSubtitle({ event, gameInfo }: { event: PolymarketEvent; gameInfo: PolymarketEventGameInfo }) {
+  if (gameInfo.ended) {
+    return i18n.t(i18n.l.predictions.sports.final).toUpperCase();
+  }
+
+  const startTime = gameInfo.startTime ?? event.startDate;
+  return startTime ? formatTimestamp(toUnixTime(startTime)) : '';
+}
+
+function getPeriodTitle({ score, period, elapsed }: { score: string; period: string; elapsed?: string }) {
+  const { currentPeriod } = parsePeriod(period);
+  const parsedScore = parseScore(score);
+  if ('bestOf' in parsedScore && parsedScore.bestOf !== undefined && currentPeriod) {
+    return i18n.t(i18n.l.predictions.sports.game_best_of, { currentPeriod, bestOf: String(parsedScore.bestOf) });
+  }
+  if (currentPeriod && elapsed) return `${currentPeriod} - ${elapsed}`;
+  if (currentPeriod) return currentPeriod;
+  return elapsed ?? '';
+}
