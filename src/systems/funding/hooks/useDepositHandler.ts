@@ -8,6 +8,7 @@ import { triggerHaptics } from 'react-native-turbo-haptics';
 import { type ExtendedAnimatedAssetWithColors } from '@/__swaps__/types/assets';
 import { crosschainQuoteTargetsRecipient, isCrosschainQuote } from '@/__swaps__/utils/quotes';
 import { isPreparedCallsExecutionSponsored } from '@/features/delegation/calls';
+import { watchingAlert } from '@/features/wallet/utils/watchingAlert';
 import { getProvider } from '@/handlers/web3';
 import { logger, RainbowError } from '@/logger';
 import { loadWallet } from '@/model/wallet';
@@ -24,7 +25,6 @@ import { executeDepositRap } from '@/systems/funding/execution/depositRapExecuti
 import { isValidQuote } from '@/systems/funding/utils/quotes';
 import { isRecordLike } from '@/types/guards';
 import { time } from '@/utils/time';
-import watchingAlert from '@/utils/watchingAlert';
 import { sanitizeAmount } from '@/worklets/strings';
 import { type PreparedCallsExecution } from '@rainbow-me/delegation';
 import { type CrosschainQuote, type Quote } from '@rainbow-me/swaps';

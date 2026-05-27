@@ -25,6 +25,7 @@ import {
   type WalletconnectRequestData,
   type WalletconnectResultType,
 } from '@/features/wallet-connect/types';
+import { watchingAlert } from '@/features/wallet/utils/watchingAlert';
 import { maybeSignUri } from '@/handlers/imgix';
 import walletTypes from '@/helpers/walletTypes';
 import { logger, RainbowError } from '@/logger';
@@ -37,7 +38,6 @@ import { ChainId } from '@/state/backendNetworks/types';
 import { getAccountAddress, getIsReadOnlyWallet, getWalletWithAccount } from '@/state/wallets/walletsStore';
 
 import { SEND_TRANSACTION } from './signingMethods';
-import watchingAlert from './watchingAlert';
 
 export enum RequestSource {
   WALLETCONNECT = 'walletconnect',

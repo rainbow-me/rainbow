@@ -16,6 +16,7 @@ import { useAirdropBalanceStore } from '@/features/rnbw-rewards/stores/airdropBa
 import { useRewardsBalanceStore } from '@/features/rnbw-rewards/stores/rewardsBalanceStore';
 import { rewardsFlowActions } from '@/features/rnbw-rewards/stores/rewardsFlowStore';
 import { prepareRewardsClaim } from '@/features/rnbw-rewards/utils/claimRewards';
+import { watchingAlert } from '@/features/wallet/utils/watchingAlert';
 import { opacity } from '@/framework/ui/utils/opacity';
 import { useTabBarOffset } from '@/hooks/useTabBarOffset';
 import * as i18n from '@/languages';
@@ -24,7 +25,6 @@ import Routes from '@/navigation/routesNames';
 import { useAccountAddress, useIsHardwareWallet, useIsReadOnlyWallet } from '@/state/wallets/walletsStore';
 import { delay } from '@/utils/delay';
 import { time } from '@/utils/time';
-import watchingAlert from '@/utils/watchingAlert';
 
 const enterAnimation = createScaleInFadeInSlideEnterAnimation({ delay: time.ms(200) });
 

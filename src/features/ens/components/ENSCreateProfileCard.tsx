@@ -8,12 +8,12 @@ import { ORB_SIZE } from '@/components/cards/reusables/IconOrb';
 import ImgixImage from '@/components/images/ImgixImage';
 import { enableActionsOnReadOnlyWallet } from '@/config/debug';
 import { Bleed, Box, ColorModeProvider, Column, Columns, Stack, Text } from '@/design-system';
+import { watchingAlert } from '@/features/wallet/utils/watchingAlert';
 import useDimensions from '@/hooks/useDimensions';
 import * as i18n from '@/languages';
 import { useNavigation } from '@/navigation/Navigation';
 import Routes from '@/navigation/routesNames';
 import { getIsReadOnlyWallet } from '@/state/wallets/walletsStore';
-import watchingAlert from '@/utils/watchingAlert';
 
 import ENSAvatarGrid from '../assets/ensAvatarGrid.png';
 import ENSIcon from '../assets/ensIcon.png';

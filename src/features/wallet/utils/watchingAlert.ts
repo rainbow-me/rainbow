@@ -3,7 +3,7 @@ import * as i18n from '@/languages';
 import Navigation from '@/navigation/Navigation';
 import Routes from '@/navigation/routesNames';
 
-export default function watchingAlert() {
+export function watchingAlert() {
   Alert.alert(i18n.t(i18n.l.wallet.alert.this_wallet_in_watching_mode), i18n.t(i18n.l.wallet.alert.looks_like_imported_public_address), [
     {
       onPress: () => {

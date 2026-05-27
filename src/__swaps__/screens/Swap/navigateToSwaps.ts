@@ -11,6 +11,7 @@ import {
 import { enableActionsOnReadOnlyWallet } from '@/config/debug';
 import { setSelectedGasSpeed } from '@/features/gas/hooks/useSelectedGas';
 import { type GasSpeed } from '@/features/gas/types/gasSpeed';
+import { watchingAlert } from '@/features/wallet/utils/watchingAlert';
 import { divWorklet, mulWorklet, toFixedWorklet } from '@/framework/core/safeMath';
 import { getRemoteConfig } from '@/model/remoteConfig';
 import Navigation from '@/navigation/Navigation';
@@ -21,7 +22,6 @@ import { userAssetsStoreManager } from '@/state/assets/userAssetsStoreManager';
 import { ChainId } from '@/state/backendNetworks/types';
 import { useSwapsStore, type SwapsState } from '@/state/swaps/swapsStore';
 import { getIsReadOnlyWallet } from '@/state/wallets/walletsStore';
-import watchingAlert from '@/utils/watchingAlert';
 
 import { INITIAL_SLIDER_POSITION, SLIDER_WIDTH } from './constants';
 

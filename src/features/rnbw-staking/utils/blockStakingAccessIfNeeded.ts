@@ -1,5 +1,5 @@
+import { watchingAlert } from '@/features/wallet/utils/watchingAlert';
 import { getIsReadOnlyWallet } from '@/state/wallets/walletsStore';
-import watchingAlert from '@/utils/watchingAlert';
 
 /**
  * Blocks staking entry for wallets that cannot submit staking transactions.
