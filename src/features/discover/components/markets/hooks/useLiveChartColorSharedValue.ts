@@ -3,7 +3,7 @@ import { useEffect } from 'react';
 import { useAnimatedReaction, useSharedValue, type SharedValue } from 'react-native-reanimated';
 
 import { useLiveTokenSharedValue } from '@/components/live-token-text/LiveTokenText';
-import { getMarketPriceChangeColor, type PriceChangeColors } from '@/features/discover/components/markets/marketCardChrome';
+import { getPriceChangeColor, type PriceChangeColors } from '@/design-system/color/usePriceChangeColors';
 import { type MarketDisplayItem } from '@/features/discover/types/marketDisplayItem';
 
 export function useLiveChartColorSharedValue(item: MarketDisplayItem, priceChangeColors: PriceChangeColors): SharedValue<string> {
@@ -12,22 +12,27 @@ export function useLiveChartColorSharedValue(item: MarketDisplayItem, priceChang
     selector: item.priceChangeSelector,
     tokenId: item.liveTokenId,
   });
-  const chartColor = useSharedValue(getMarketPriceChangeColor(item.initialPriceChange, priceChangeColors));
+  const chartColor = useSharedValue(getPriceChangeColor(item.initialPriceChange, priceChangeColors));
   const negativeColor = priceChangeColors.negative;
+  const neutralColor = priceChangeColors.neutral;
   const positiveColor = priceChangeColors.positive;
 
   useAnimatedReaction(
-    () => getMarketPriceChangeColor(livePriceChange.value, { negative: negativeColor, positive: positiveColor }),
+    () => getPriceChangeColor(livePriceChange.value, { negative: negativeColor, neutral: neutralColor, positive: positiveColor }),
     (nextColor, previousColor) => {
       if (nextColor === previousColor) return;
       chartColor.value = nextColor;
     },
-    [livePriceChange, negativeColor, positiveColor]
+    [livePriceChange, negativeColor, neutralColor, positiveColor]
   );
 
   useEffect(() => {
-    chartColor.value = getMarketPriceChangeColor(livePriceChange.value, { negative: negativeColor, positive: positiveColor });
-  }, [chartColor, livePriceChange, negativeColor, positiveColor]);
+    chartColor.value = getPriceChangeColor(livePriceChange.value, {
+      negative: negativeColor,
+      neutral: neutralColor,
+      positive: positiveColor,
+    });
+  }, [chartColor, livePriceChange, negativeColor, neutralColor, positiveColor]);
 
   return chartColor;
 }

@@ -5,12 +5,11 @@ import { useAnimatedStyle, type SharedValue } from 'react-native-reanimated';
 import { AnimatedTextIcon } from '@/components/AnimatedComponents/AnimatedTextIcon';
 import { useLiveTokenSharedValue } from '@/components/live-token-text/LiveTokenText';
 import { AnimatedText } from '@/design-system';
+import { getPriceChangeColor, type PriceChangeColors } from '@/design-system/color/usePriceChangeColors';
 import { type TextSize } from '@/design-system/components/Text/Text';
 import { DOWN_ARROW, UP_ARROW } from '@/features/perps/constants';
 import { toFixedWorklet } from '@/framework/core/safeMath';
 import { type TokenData } from '@/state/liveTokens/liveTokensStore';
-
-import { type PriceChangeColors } from '../marketCardChrome';
 
 type MarketPriceChangeProps = {
   arrowHeight: number;
@@ -42,7 +41,7 @@ export const MarketPriceChange = memo(function MarketPriceChange({
   });
 
   const priceChangeStyle = useAnimatedStyle(() => ({
-    color: colorSharedValue?.value ?? (Number(livePriceChange.value) >= 0 ? priceChangeColors.positive : priceChangeColors.negative),
+    color: colorSharedValue?.value ?? getPriceChangeColor(livePriceChange.value, priceChangeColors),
   }));
 
   return (

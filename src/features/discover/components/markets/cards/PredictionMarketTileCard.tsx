@@ -11,7 +11,6 @@ import { GradientBorderView } from '@/components/gradient-border/GradientBorderV
 import ImgixImage from '@/components/images/ImgixImage';
 import { LiveTokenText } from '@/components/live-token-text/LiveTokenText';
 import { globalColors, Text, useColorMode } from '@/design-system';
-import { MARKET_ON_COLOR, MARKET_SHADOW_COLOR } from '@/features/discover/components/markets/marketCardChrome';
 import { type DiscoverCardAnalyticsContext } from '@/features/discover/components/surfaceSectionTypes';
 import { DOWN_ARROW, UP_ARROW } from '@/features/perps/constants';
 import { type PolymarketEvent, type PolymarketMarket } from '@/features/polymarket/types/polymarket-event';
@@ -249,20 +248,20 @@ const OutcomeRow = memo(function OutcomeRow({
               styles.oddsPill,
               {
                 backgroundColor: eventColor,
-                borderColor: opacity(isDarkMode ? globalColors.white100 : MARKET_SHADOW_COLOR, 0.1),
-                shadowColor: isDarkMode ? eventColor : MARKET_SHADOW_COLOR,
+                borderColor: opacity(isDarkMode ? globalColors.white100 : globalColors.grey100, 0.1),
+                shadowColor: isDarkMode ? eventColor : globalColors.grey100,
                 shadowOpacity: isDarkMode ? 0.3 : 0.06,
               },
             ]}
           >
             <View
-              style={[styles.oddsPillOverlay, { backgroundColor: opacity(MARKET_SHADOW_COLOR, isDarkMode ? 0.3 : 0.1) }]}
+              style={[styles.oddsPillOverlay, { backgroundColor: opacity(globalColors.grey100, isDarkMode ? 0.3 : 0.1) }]}
               pointerEvents="none"
             />
             <LiveTokenText
               align="center"
               autoSubscriptionEnabled={false}
-              color={{ custom: MARKET_ON_COLOR }}
+              color={{ custom: globalColors.white100 }}
               initialValue={formatOdds(row.initialPrice)}
               numberOfLines={1}
               selector={token => formatOdds(token.price)}
@@ -397,7 +396,7 @@ const styles = StyleSheet.create({
   cardShadowLight: {
     backgroundColor: opacity(globalColors.white100, 0.92),
     elevation: 4,
-    shadowColor: MARKET_SHADOW_COLOR,
+    shadowColor: globalColors.grey100,
     shadowOffset: { width: 0, height: 4 },
     shadowOpacity: 0.06,
     shadowRadius: 24,

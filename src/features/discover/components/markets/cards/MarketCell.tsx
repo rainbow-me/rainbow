@@ -9,18 +9,13 @@ import ButtonPressAnimation from '@/components/animations/ButtonPressAnimation';
 import ImgixImage from '@/components/images/ImgixImage';
 import { LiveTokenText } from '@/components/live-token-text/LiveTokenText';
 import { Skeleton } from '@/components/Skeleton';
-import { Box, Text, useColorMode } from '@/design-system';
-import { getValueForColorMode } from '@/design-system/color/palettes';
+import { Box, globalColors, Text, useColorMode } from '@/design-system';
+import { getValueForColorMode, type ContextualColorValue } from '@/design-system/color/palettes';
+import { usePriceChangeColors } from '@/design-system/color/usePriceChangeColors';
 import { SparklineChart } from '@/features/charts/line/components/SparklineChart';
 import { MarketIcon } from '@/features/discover/components/markets/cards/MarketIcon';
 import { MarketPriceChange } from '@/features/discover/components/markets/cards/MarketPriceChange';
 import { useLiveChartColorSharedValue } from '@/features/discover/components/markets/hooks/useLiveChartColorSharedValue';
-import {
-  getMarketPriceChangeColors,
-  LEVERAGE_BADGE_BORDER_COLORS,
-  LEVERAGE_BADGE_SHADOW_OPACITIES,
-  MARKET_SHADOW_COLOR,
-} from '@/features/discover/components/markets/marketCardChrome';
 import { type DiscoverCardAnalyticsContext } from '@/features/discover/components/surfaceSectionTypes';
 import { type MarketDisplayItem } from '@/features/discover/types/marketDisplayItem';
 import { opacity } from '@/framework/ui/utils/opacity';
@@ -32,14 +27,26 @@ const TOKEN_CARD_HEIGHT = 64;
 const HORIZONTAL_PADDING = 12;
 const TOKEN_CARD_WIDTH = DEVICE_WIDTH - HORIZONTAL_PADDING * 2;
 const TOKEN_SPARKLINE_LAYOUT = { height: 34, width: 64 };
-const TOKEN_CARD_BACKGROUND_COLORS = {
-  dark: opacity('#202429', 0.4),
-  light: 'rgba(255, 255, 255, 0.92)',
+type CellColors = {
+  badgeBorderColor: string;
+  badgeShadowOpacity: number;
+  backgroundColor: string;
+  borderColor: string;
 };
-const TOKEN_CARD_BORDER_COLORS = {
-  dark: 'rgba(255, 255, 255, 0.05)',
-  light: 'rgba(255, 255, 255, 0.8)',
-};
+const TOKEN_CARD_COLORS = {
+  dark: {
+    badgeBorderColor: opacity(globalColors.white100, 0.24),
+    badgeShadowOpacity: 0.5,
+    backgroundColor: opacity('#202429', 0.4),
+    borderColor: 'rgba(255, 255, 255, 0.05)',
+  },
+  light: {
+    badgeBorderColor: opacity(globalColors.grey100, 0.07),
+    badgeShadowOpacity: 0.25,
+    backgroundColor: 'rgba(255, 255, 255, 0.92)',
+    borderColor: 'rgba(255, 255, 255, 0.8)',
+  },
+} satisfies ContextualColorValue<CellColors>;
 const UP_DOWN_ARROW_WIDTH = 12;
 
 export function MarketCellSkeleton() {
@@ -54,12 +61,9 @@ export const MarketCell = memo(function MarketCell({
   item: MarketDisplayItem;
 }) {
   const { colorMode, isDarkMode } = useColorMode();
-  const priceChangeColors = getMarketPriceChangeColors(colorMode);
+  const priceChangeColors = usePriceChangeColors();
   const chartColorSharedValue = useLiveChartColorSharedValue(item, priceChangeColors);
-  const tokenCardBackgroundColor = getValueForColorMode(TOKEN_CARD_BACKGROUND_COLORS, colorMode);
-  const tokenCardBorderColor = getValueForColorMode(TOKEN_CARD_BORDER_COLORS, colorMode);
-  const leverageBadgeBorderColor = getValueForColorMode(LEVERAGE_BADGE_BORDER_COLORS, colorMode);
-  const leverageBadgeShadowOpacity = getValueForColorMode(LEVERAGE_BADGE_SHADOW_OPACITIES, colorMode);
+  const tokenCardColors = getValueForColorMode(TOKEN_CARD_COLORS, colorMode);
   const leverageBadgeTextColor = useMemo(() => getHighContrastTextColorWorklet(item.accentColor, 4), [item.accentColor]);
   const gradientColors = isDarkMode
     ? ([opacity(item.accentColor, 0.16), opacity(item.accentColor, 0)] as const)
@@ -83,22 +87,22 @@ export const MarketCell = memo(function MarketCell({
   return (
     <ButtonPressAnimation onPress={openMarketDetails} scaleTo={0.96}>
       <Box
-        borderColor={{ custom: tokenCardBorderColor }}
+        borderColor={{ custom: tokenCardColors.borderColor }}
         borderRadius={24}
         borderWidth={isDarkMode ? 1 : 2}
         padding="12px"
         paddingRight={{ custom: 18 }}
-        backgroundColor={tokenCardBackgroundColor}
+        backgroundColor={tokenCardColors.backgroundColor}
       >
         <LinearGradient colors={gradientColors} style={StyleSheet.absoluteFill} start={{ x: 0, y: 0 }} end={{ x: 1, y: 1 }} />
         <View style={styles.contentRow}>
           {item.leverage !== undefined ? (
             <MarketIcon
               accentColor={item.accentColor}
-              badgeBorderColor={leverageBadgeBorderColor}
+              badgeBorderColor={tokenCardColors.badgeBorderColor}
               badgePosition="top-right"
-              badgeShadowColor={isDarkMode ? MARKET_SHADOW_COLOR : item.accentColor}
-              badgeShadowOpacity={leverageBadgeShadowOpacity}
+              badgeShadowColor={isDarkMode ? globalColors.grey100 : item.accentColor}
+              badgeShadowOpacity={tokenCardColors.badgeShadowOpacity}
               badgeTextColor={leverageBadgeTextColor}
               borderColor={item.accentColor}
               fallbackText={item.displayName}

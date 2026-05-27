@@ -2,11 +2,10 @@ import { StyleSheet, View, type StyleProp, type ViewStyle } from 'react-native';
 
 import { analytics } from '@/analytics';
 import { event } from '@/analytics/event';
-import { useBackgroundColor } from '@/design-system';
+import { useBackgroundColor, useForegroundColor } from '@/design-system';
 import { MarketCarousel } from '@/features/discover/components/markets/layouts/MarketCarousel';
 import { MarketGrid } from '@/features/discover/components/markets/layouts/MarketGrid';
 import { MarketList } from '@/features/discover/components/markets/layouts/MarketList';
-import { LIVE_INDICATOR_BACKGROUND_COLOR, LIVE_INDICATOR_COLOR } from '@/features/discover/components/markets/marketCardChrome';
 import { navigateDiscoverDestination } from '@/features/discover/utils/navigation';
 import { type SurfaceLeaf } from '@/features/placements/surfaces/types';
 import { type PlacementItem } from '@/features/placements/types';
@@ -17,6 +16,7 @@ import {
   type SportsEventScheduleBucket,
 } from '@/features/polymarket/screens/polymarket-sports-events-screen/buildPolymarketSportsEventsListData';
 import { type PolymarketEvent } from '@/features/polymarket/types/polymarket-event';
+import { opacity } from '@/framework/ui/utils/opacity';
 
 import { type SectionLayoutProps } from './surfaceSectionTypes';
 
@@ -203,10 +203,11 @@ function renderSurfaceHeaderLeadingAccessory(surface: SurfaceLeaf) {
 
 function LiveSectionIndicator({ style }: { style?: StyleProp<ViewStyle> }) {
   const backgroundColor = useBackgroundColor('surfacePrimary');
+  const liveIndicatorColor = useForegroundColor('red');
   return (
-    <View style={[styles.liveIndicatorOuter, style]}>
+    <View style={[styles.liveIndicatorOuter, { backgroundColor: opacity(liveIndicatorColor, 0.34) }, style]}>
       <View style={[styles.liveIndicatorCutout, { backgroundColor }]}>
-        <View style={styles.liveIndicatorDot} />
+        <View style={[styles.liveIndicatorDot, { backgroundColor: liveIndicatorColor }]} />
       </View>
     </View>
   );
@@ -246,14 +247,12 @@ const styles = StyleSheet.create({
     width: LIVE_INDICATOR_CUTOUT_SIZE,
   },
   liveIndicatorDot: {
-    backgroundColor: LIVE_INDICATOR_COLOR,
     borderRadius: LIVE_INDICATOR_DOT_SIZE / 2,
     height: LIVE_INDICATOR_DOT_SIZE,
     width: LIVE_INDICATOR_DOT_SIZE,
   },
   liveIndicatorOuter: {
     alignItems: 'center',
-    backgroundColor: LIVE_INDICATOR_BACKGROUND_COLOR,
     borderRadius: LIVE_INDICATOR_SIZE / 2,
     height: LIVE_INDICATOR_SIZE,
     justifyContent: 'center',

@@ -8,19 +8,14 @@ import { event } from '@/analytics/event';
 import ButtonPressAnimation from '@/components/animations/ButtonPressAnimation';
 import { LiveTokenText } from '@/components/live-token-text/LiveTokenText';
 import { Skeleton } from '@/components/Skeleton';
-import { Text, useColorMode } from '@/design-system';
+import { globalColors, Text, useColorMode } from '@/design-system';
 import { getValueForColorMode, type ColorMode, type ContextualColorValue } from '@/design-system/color/palettes';
+import { usePriceChangeColors } from '@/design-system/color/usePriceChangeColors';
 import { Border } from '@/design-system/components/Border/Border';
 import { SparklineChartWithLivePointer } from '@/features/charts/line/components/SparklineChartWithLivePointer';
 import { MarketIcon } from '@/features/discover/components/markets/cards/MarketIcon';
 import { MarketPriceChange } from '@/features/discover/components/markets/cards/MarketPriceChange';
 import { useLiveChartColorSharedValue } from '@/features/discover/components/markets/hooks/useLiveChartColorSharedValue';
-import {
-  buildMarketBaseDisplay,
-  LEVERAGE_BADGE_BORDER_COLORS,
-  LEVERAGE_BADGE_SHADOW_OPACITIES,
-  MARKET_SHADOW_COLOR,
-} from '@/features/discover/components/markets/marketCardChrome';
 import { type DiscoverCardAnalyticsContext } from '@/features/discover/components/surfaceSectionTypes';
 import { type MarketDisplayItem } from '@/features/discover/types/marketDisplayItem';
 import { opacity } from '@/framework/ui/utils/opacity';
@@ -73,15 +68,15 @@ const MARK_PRICE_TEXT_STYLE = { size: '15pt', weight: 'bold' } as const;
 const CARD_COLORS = {
   dark: {
     backgroundColor: 'rgba(32,36,41,0.4)',
-    badgeBorderColor: LEVERAGE_BADGE_BORDER_COLORS.dark,
-    badgeShadowOpacity: LEVERAGE_BADGE_SHADOW_OPACITIES.dark,
+    badgeBorderColor: opacity(globalColors.white100, 0.24),
+    badgeShadowOpacity: 0.5,
     borderColor: 'rgba(255,255,255,0.05)',
     gradientOpacity: 0.16,
   },
   light: {
     backgroundColor: 'transparent',
-    badgeBorderColor: LEVERAGE_BADGE_BORDER_COLORS.light,
-    badgeShadowOpacity: LEVERAGE_BADGE_SHADOW_OPACITIES.light,
+    badgeBorderColor: opacity(globalColors.grey100, 0.07),
+    badgeShadowOpacity: 0.25,
     borderColor: 'rgba(255,255,255,0.8)',
     gradientOpacity: 0.06,
   },
@@ -112,10 +107,11 @@ export const MarketTileCard = memo(function MarketTileCard({
     item.onNavigate();
   };
 
-  const { accentColor, badgeTextColor, cardColors, chartColor, iconUrl, priceChangeColors } = useMemo(
+  const { accentColor, badgeTextColor, cardColors, chartColor, iconUrl } = useMemo(
     () => buildMarketTileCardDisplay(item, colorMode),
     [colorMode, item]
   );
+  const priceChangeColors = usePriceChangeColors();
   const chartColorSharedValue = useLiveChartColorSharedValue(item, priceChangeColors);
 
   const chartWidth = width - CARD_LAYOUT.paddingHorizontal * 2;
@@ -143,7 +139,7 @@ export const MarketTileCard = memo(function MarketTileCard({
               size={ICON_SIZE}
               leverage={item.leverage}
               badgeBorderColor={cardColors.badgeBorderColor}
-              badgeShadowColor={isDarkMode ? MARKET_SHADOW_COLOR : accentColor}
+              badgeShadowColor={isDarkMode ? globalColors.grey100 : accentColor}
               badgeShadowOpacity={cardColors.badgeShadowOpacity}
               badgeTextColor={badgeTextColor}
             />
@@ -212,14 +208,13 @@ export function MarketTileCardSkeleton({ width = MARKET_TILE_CARD_WIDTH }: { wid
 // ============ Display Helpers =============================================== //
 
 function buildMarketTileCardDisplay(item: MarketDisplayItem, colorMode: ColorMode) {
-  const { accentColor, iconUrl, priceChangeColors } = buildMarketBaseDisplay(item, colorMode);
+  const { accentColor, iconUrl } = item;
   return {
     accentColor,
     badgeTextColor: getHighContrastTextColorWorklet(accentColor, 4),
     cardColors: getValueForColorMode(CARD_COLORS, colorMode),
     chartColor: item.chartColor,
     iconUrl,
-    priceChangeColors,
   };
 }
 
@@ -249,14 +244,14 @@ const styles = StyleSheet.create({
     width: '100%',
   },
   cardShadowDark: {
-    shadowColor: MARKET_SHADOW_COLOR,
+    shadowColor: globalColors.grey100,
     shadowOffset: { width: 0, height: 4 },
     shadowOpacity: 0.16,
     shadowRadius: 24,
   },
   cardShadowLight: {
     elevation: 4,
-    shadowColor: MARKET_SHADOW_COLOR,
+    shadowColor: globalColors.grey100,
     shadowOffset: { width: 0, height: 4 },
     shadowOpacity: 0.06,
     shadowRadius: 24,

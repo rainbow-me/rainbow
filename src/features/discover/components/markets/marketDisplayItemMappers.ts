@@ -1,9 +1,6 @@
+import { globalColors } from '@/design-system/color/palettes';
+import { getPriceChangeColor, getPriceChangeColors } from '@/design-system/color/usePriceChangeColors';
 import { type NativeCurrencyKey } from '@/entities/nativeCurrencyTypes';
-import {
-  getMarketPriceChangeColor,
-  MARKET_NEUTRAL_CHART_COLOR,
-  MARKET_PRICE_CHANGE_COLORS,
-} from '@/features/discover/components/markets/marketCardChrome';
 import { buildTokenLineChartId, useTokenLineChartsStore } from '@/features/discover/stores/tokenLineChartsStore';
 import { type MarketDisplayItem } from '@/features/discover/types/marketDisplayItem';
 import { HYPERLIQUID_COLORS } from '@/features/perps/constants';
@@ -13,12 +10,18 @@ import { getHyperliquidTokenId, navigateToPerpDetailScreen } from '@/features/pe
 import { formatPerpAssetPrice } from '@/features/perps/utils/formatPerpsAssetPrice';
 import { type PerpMarketPlacementItem } from '@/features/placements/stores/derived/perpsPlacementStore';
 import { type TokenPlacementItem } from '@/features/placements/stores/derived/tokensPlacementStore';
+import { opacity } from '@/framework/ui/utils/opacity';
 import { formatCurrency } from '@/helpers/strings';
 import Navigation from '@/navigation/Navigation';
 import Routes from '@/navigation/routesNames';
 import { getUniqueId } from '@/utils/ethereumUtils';
 
 const TOKEN_SPARKLINE_MAX_POINTS = 24;
+const MARKET_NEUTRAL_CHART_COLOR = opacity(globalColors.white100, 0.5);
+const MARKET_CHART_PRICE_CHANGE_COLORS = {
+  ...getPriceChangeColors('dark'),
+  neutral: MARKET_NEUTRAL_CHART_COLOR,
+};
 
 export function perpToMarketDisplayItem(item: PerpMarketPlacementItem): MarketDisplayItem {
   const { market } = item;
@@ -97,13 +100,13 @@ function getPerpMarketAccentColor(market: PerpMarketWithMetadata): string {
 }
 
 function getPerpPriceChangeChartColor(priceChange: string): string {
-  return getMarketPriceChangeColor(priceChange, MARKET_PRICE_CHANGE_COLORS.dark);
+  return getPriceChangeColor(priceChange, MARKET_CHART_PRICE_CHANGE_COLORS);
 }
 
 function getTokenPriceChangeChartColor(priceChange: number | string | null | undefined): string {
   const value = Number(priceChange || 0);
-  if (value > 0) return MARKET_PRICE_CHANGE_COLORS.dark.positive;
-  if (value < 0) return MARKET_PRICE_CHANGE_COLORS.dark.negative;
+  if (value > 0) return MARKET_CHART_PRICE_CHANGE_COLORS.positive;
+  if (value < 0) return MARKET_CHART_PRICE_CHANGE_COLORS.negative;
   return MARKET_NEUTRAL_CHART_COLOR;
 }
 

@@ -8,8 +8,7 @@ import { event as analyticsEvent } from '@/analytics/event';
 import ButtonPressAnimation from '@/components/animations/ButtonPressAnimation';
 import { GradientBorderView } from '@/components/gradient-border/GradientBorderView';
 import { LiveTokenText } from '@/components/live-token-text/LiveTokenText';
-import { globalColors, Text, TextShadow, useBackgroundColor, useColorMode } from '@/design-system';
-import { LIVE_INDICATOR_COLOR, MARKET_ON_COLOR } from '@/features/discover/components/markets/marketCardChrome';
+import { globalColors, Text, TextShadow, useBackgroundColor, useColorMode, useForegroundColor } from '@/design-system';
 import { type DiscoverCardAnalyticsContext } from '@/features/discover/components/surfaceSectionTypes';
 import { getDiscoverSportsEventTeamLabels } from '@/features/discover/utils/sportsEventTeamLabels';
 import { LeagueIcon } from '@/features/polymarket/components/league-icon/LeagueIcon';
@@ -77,6 +76,7 @@ export const PredictionMarketEventCard = memo(function PredictionMarketEventCard
     teamLabels: upstreamTeamLabels,
   } = useSportsEventContent(event);
   const teamLabels = useMemo(() => getDiscoverSportsEventTeamLabels(event, upstreamTeamLabels), [event, upstreamTeamLabels]);
+  const liveIndicatorColor = useForegroundColor('red');
   const cardBorderGradientColors = getPredictionEventCardBorderGradientColors(eventAccentColor, isDarkMode);
   const cardGradientColors = getPredictionEventCardGradientColors(eventAccentColor, isDarkMode);
   const handlePress = useCallback(() => {
@@ -138,7 +138,7 @@ export const PredictionMarketEventCard = memo(function PredictionMarketEventCard
               ) : null}
               {isLive ? (
                 <TextShadow blur={14} shadowOpacity={0.25}>
-                  <Text align="right" color={{ custom: LIVE_INDICATOR_COLOR }} size="15pt" style={styles.liveText} weight="heavy">
+                  <Text align="right" color={{ custom: liveIndicatorColor }} size="15pt" style={styles.liveText} weight="heavy">
                     {i18n.t(i18n.l.predictions.sports.live).toUpperCase()}
                   </Text>
                 </TextShadow>
@@ -376,7 +376,7 @@ const WidgetBetCell = memo(function WidgetBetCell({
       <LiveTokenText
         align="center"
         autoSubscriptionEnabled={subscribeLiveOdds}
-        color={{ custom: MARKET_ON_COLOR }}
+        color={{ custom: globalColors.white100 }}
         initialValue={data.odds}
         numberOfLines={1}
         selector={token => formatOdds(token.price)}

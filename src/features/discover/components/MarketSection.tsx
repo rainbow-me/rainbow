@@ -1,6 +1,7 @@
 import { useCallback, useMemo } from 'react';
 
 import { useDiscoverScreenContext } from '@/components/Discover/DiscoverScreenContext';
+import { globalColors } from '@/design-system/color/palettes';
 import { MarketCell, MarketCellSkeleton } from '@/features/discover/components/markets/cards/MarketCell';
 import {
   computeMarketPillWidth,
@@ -14,7 +15,6 @@ import {
   MarketTileCard,
   MarketTileCardSkeleton,
 } from '@/features/discover/components/markets/cards/MarketTileCard';
-import { MARKET_SHADOW_COLOR } from '@/features/discover/components/markets/marketCardChrome';
 import { perpToMarketDisplayItem, tokenToMarketDisplayItem } from '@/features/discover/components/markets/marketDisplayItemMappers';
 import { getHeaderPress, renderSectionLayout } from '@/features/discover/components/SectionLayout';
 import {
@@ -186,7 +186,7 @@ function getTokenMarketSectionDescriptor(
       return {
         ...MARKET_SECTION_DESCRIPTORS[display],
         getItemWidth: (item: TokenPlacementItem) =>
-          computeMarketPillWidth(tokenToMarketDisplayItem({ accentColor: MARKET_SHADOW_COLOR, item, nativeCurrency })),
+          computeMarketPillWidth(tokenToMarketDisplayItem({ accentColor: globalColors.grey100, item, nativeCurrency })),
         renderItem: (item: TokenPlacementItem, _: number, analyticsContext: DiscoverCardAnalyticsContext) => (
           <TokenMarketPill analyticsContext={analyticsContext} item={item} nativeCurrency={nativeCurrency} />
         ),

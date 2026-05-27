@@ -8,17 +8,12 @@ import { event } from '@/analytics/event';
 import ButtonPressAnimation from '@/components/animations/ButtonPressAnimation';
 import { useLiveTokenSharedValue } from '@/components/live-token-text/LiveTokenText';
 import { Skeleton } from '@/components/Skeleton';
-import { AnimatedText, Text, useColorMode } from '@/design-system';
+import { AnimatedText, globalColors, Text, useColorMode } from '@/design-system';
 import { getValueForColorMode, type ColorMode, type ContextualColorValue } from '@/design-system/color/palettes';
+import { usePriceChangeColors } from '@/design-system/color/usePriceChangeColors';
 import { Border } from '@/design-system/components/Border/Border';
 import { MarketIcon } from '@/features/discover/components/markets/cards/MarketIcon';
 import { MarketPriceChange } from '@/features/discover/components/markets/cards/MarketPriceChange';
-import {
-  buildMarketBaseDisplay,
-  LEVERAGE_BADGE_BORDER_COLORS,
-  LEVERAGE_BADGE_SHADOW_OPACITIES,
-  MARKET_SHADOW_COLOR,
-} from '@/features/discover/components/markets/marketCardChrome';
 import { type DiscoverCardAnalyticsContext } from '@/features/discover/components/surfaceSectionTypes';
 import { type MarketDisplayItem } from '@/features/discover/types/marketDisplayItem';
 import { convertStoredPerpPriceChangeToPercent } from '@/features/perps/utils';
@@ -66,15 +61,15 @@ const MARKET_PILL_SKELETON_WIDTH = 220;
 const PILL_COLORS = {
   dark: {
     backgroundColor: 'rgba(32, 36, 41, 0.3)',
-    badgeBorderColor: LEVERAGE_BADGE_BORDER_COLORS.dark,
-    badgeShadowOpacity: LEVERAGE_BADGE_SHADOW_OPACITIES.dark,
+    badgeBorderColor: opacity(globalColors.white100, 0.24),
+    badgeShadowOpacity: 0.5,
     borderColor: 'rgba(255, 255, 255, 0.05)',
     gradientOpacity: 0.16,
   },
   light: {
     backgroundColor: 'transparent',
-    badgeBorderColor: LEVERAGE_BADGE_BORDER_COLORS.light,
-    badgeShadowOpacity: LEVERAGE_BADGE_SHADOW_OPACITIES.light,
+    badgeBorderColor: opacity(globalColors.grey100, 0.07),
+    badgeShadowOpacity: 0.25,
     borderColor: 'rgba(255, 255, 255, 0.8)',
     gradientOpacity: 0.06,
   },
@@ -84,6 +79,7 @@ const PILL_COLORS = {
 
 export const MarketPill = memo(function MarketPill({ analyticsContext, item }: MarketPillProps) {
   const { colorMode, isDarkMode } = useColorMode();
+  const priceChangeColors = usePriceChangeColors();
 
   const onPress = () => {
     analytics.track(event.discoverCardPressed, {
@@ -101,10 +97,7 @@ export const MarketPill = memo(function MarketPill({ analyticsContext, item }: M
     item.onNavigate();
   };
 
-  const { accentColor, badgeTextColor, iconUrl, pillColors, priceChangeColors } = useMemo(
-    () => buildMarketPillDisplay(item, colorMode),
-    [colorMode, item]
-  );
+  const { accentColor, badgeTextColor, iconUrl, pillColors } = useMemo(() => buildMarketPillDisplay(item, colorMode), [colorMode, item]);
 
   const livePrice = useLiveTokenSharedValue({
     initialValue: item.initialPrice,
@@ -135,7 +128,7 @@ export const MarketPill = memo(function MarketPill({ analyticsContext, item }: M
               size={ICON_SIZE}
               leverage={item.leverage}
               badgeBorderColor={pillColors.badgeBorderColor}
-              badgeShadowColor={isDarkMode ? MARKET_SHADOW_COLOR : accentColor}
+              badgeShadowColor={isDarkMode ? globalColors.grey100 : accentColor}
               badgeShadowOpacity={pillColors.badgeShadowOpacity}
               badgeTextColor={badgeTextColor}
               badgePosition="top-right"
@@ -187,10 +180,10 @@ export function MarketPillSkeleton() {
 // ============ Display Helpers ================================================ //
 
 function buildMarketPillDisplay(item: MarketDisplayItem, colorMode: ColorMode) {
-  const base = buildMarketBaseDisplay(item, colorMode);
   return {
-    ...base,
-    badgeTextColor: getHighContrastTextColorWorklet(base.accentColor, 4),
+    accentColor: item.accentColor,
+    badgeTextColor: getHighContrastTextColorWorklet(item.accentColor, 4),
+    iconUrl: item.iconUrl,
     pillColors: getValueForColorMode(PILL_COLORS, colorMode),
   };
 }
@@ -264,14 +257,14 @@ const styles = StyleSheet.create({
     height: MARKET_PILL_HEIGHT,
   },
   pillShadowDark: {
-    shadowColor: MARKET_SHADOW_COLOR,
+    shadowColor: globalColors.grey100,
     shadowOffset: { width: 0, height: 4 },
     shadowOpacity: 0.06,
     shadowRadius: 12,
   },
   pillShadowLight: {
     elevation: 3,
-    shadowColor: MARKET_SHADOW_COLOR,
+    shadowColor: globalColors.grey100,
     shadowOffset: { width: 0, height: 2 },
     shadowOpacity: 0.04,
     shadowRadius: 6,
