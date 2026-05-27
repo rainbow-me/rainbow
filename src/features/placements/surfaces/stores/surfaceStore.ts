@@ -7,6 +7,8 @@ import {
   type DestinationRoot,
   type Display,
   type SurfaceDocument,
+  type SurfaceFilters,
+  type SurfaceFilterValue,
   type SurfaceNode,
   type SurfaceNodeBase,
 } from '@/features/placements/surfaces/types';
@@ -62,7 +64,7 @@ function isSurfaceNode(surface: unknown): surface is SurfaceNode {
   const document = surface as Partial<SurfaceNode>;
 
   if ('items' in document) {
-    return Array.isArray(document.items) && document.items.every(isSurfaceNode);
+    return Array.isArray(document.items) && document.items.every(isSurfaceNode) && !('filters' in document);
   }
 
   if (!('display' in document)) return false;
@@ -71,6 +73,7 @@ function isSurfaceNode(surface: unknown): surface is SurfaceNode {
     (document.placement === undefined || typeof document.placement === 'string' || document.placement === null) &&
     isSurfaceDisplay(document.display) &&
     isSurfaceDestination(document.destination) &&
+    (document.filters === undefined || isSurfaceFilters(document.filters)) &&
     (document.limit === undefined || (Number.isInteger(document.limit) && document.limit > 0))
   );
 }
@@ -106,6 +109,21 @@ function isSurfaceDestination(destination: unknown): boolean {
   if (!Array.isArray(destination) || destination.length === 0) return false;
 
   return isDestinationRoot(destination[0]) && destination.every(isNonEmptyString);
+}
+
+function isSurfaceFilters(filters: unknown): filters is SurfaceFilters {
+  if (typeof filters !== 'object' || filters === null || Array.isArray(filters)) return false;
+
+  return Object.entries(filters).every(([namespace, namespaceFilters]) => {
+    if (!isNonEmptyString(namespace)) return false;
+    if (typeof namespaceFilters !== 'object' || namespaceFilters === null || Array.isArray(namespaceFilters)) return false;
+    return Object.entries(namespaceFilters).every(([key, value]) => isNonEmptyString(key) && isSurfaceFilterValue(value));
+  });
+}
+
+function isSurfaceFilterValue(value: unknown): value is SurfaceFilterValue {
+  if (isNonEmptyString(value)) return true;
+  return Array.isArray(value) && value.length > 0 && value.every(isNonEmptyString);
 }
 
 function isSurfaceId(value: unknown): value is string {

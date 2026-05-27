@@ -17,11 +17,11 @@ import {
   PREDICTION_MARKET_TILE_CARD_WIDTH,
   PredictionMarketTileCard,
 } from '@/features/discover/components/markets/cards/PredictionMarketTileCard';
+import { getSportsSurfaceIntent, selectSportsEventsForIntent } from '@/features/discover/components/predictions/sportsSurfaceIntent';
 import {
   getHeaderPress,
   getInitialRenderedItemCount,
   getSportsEventHeaderCount,
-  getSurfaceLeagueId,
   isLiveSportsSurface,
   isSportsEventCardSurface,
   renderSectionLayout,
@@ -41,7 +41,6 @@ import {
   PolymarketEventsListItem,
   PREDICTION_CARD_BORDER_RADIUS,
 } from '@/features/polymarket/components/polymarket-events-list/PolymarketEventsListItem';
-import { isLiveSportsEvent } from '@/features/polymarket/screens/polymarket-sports-events-screen/buildPolymarketSportsEventsListData';
 import { usePolymarketSportsEventsStore } from '@/features/polymarket/stores/polymarketSportsEventsStore';
 import { navigateToPolymarketEvent } from '@/features/polymarket/utils/navigateToPolymarket';
 import { DEVICE_WIDTH } from '@/utils/deviceUtils';
@@ -185,12 +184,13 @@ function SportsEventPlacementSection({
 function SportsLiveSection({ surface, surfaceId }: { surface: SurfaceLeafWithDisplay<PredictionsDisplay>; surfaceId: string }) {
   const events = usePolymarketSportsEventsStore(state => state.getData());
   const isLoading = usePolymarketSportsEventsStore(state => state.getStatus('isLoading') || state.getStatus('isIdle'));
+  const sportsIntent = useMemo(() => getSportsSurfaceIntent(surface), [surface]);
   const items = useMemo<PredictionPlacementItem[]>(() => {
-    if (!events) return [];
-    const liveEvents = events.filter(isLiveSportsEvent);
+    if (!events || !sportsIntent) return [];
+    const liveEvents = selectSportsEventsForIntent(events, sportsIntent);
     if (!liveEvents.length) return [];
     return liveEvents.map(event => ({ id: event.id, event }));
-  }, [events]);
+  }, [events, sportsIntent]);
   const displayedItemCount = getInitialRenderedItemCount(items, surface.limit);
   const descriptor = getSportsEventSectionDescriptor(surface);
   const headerCount = getSportsEventHeaderCount({
@@ -264,7 +264,8 @@ function renderPredictionWidget(item: PredictionPlacementItem, _: number, analyt
 }
 
 function getSportsEventSectionDescriptor(surface: SurfaceLeafWithDisplay<PredictionsDisplay>): SectionDescriptor<PredictionPlacementItem> {
-  const shouldHideLeagueHeader = getSurfaceLeagueId(surface) !== undefined;
+  const intent = getSportsSurfaceIntent(surface);
+  const shouldHideLeagueHeader = intent !== null && 'leagueId' in intent;
 
   if (!shouldHideLeagueHeader) return PREDICTIONS_SECTION_DESCRIPTORS[surface.display];
 

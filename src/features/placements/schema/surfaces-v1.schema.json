@@ -58,6 +58,36 @@
         }
       ]
     },
+    "filters": {
+      "type": "object",
+      "additionalProperties": {
+        "type": "object",
+        "additionalProperties": {
+          "$ref": "#/definitions/filterValue"
+        }
+      },
+      "properties": {
+        "sports": {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "status": { "enum": ["live"] },
+            "timeBucket": { "enum": ["today"] },
+            "leagueId": { "type": "string", "minLength": 1 }
+          }
+        }
+      }
+    },
+    "filterValue": {
+      "oneOf": [
+        { "type": "string", "minLength": 1 },
+        {
+          "type": "array",
+          "minItems": 1,
+          "items": { "type": "string", "minLength": 1 }
+        }
+      ]
+    },
     "surfaceNode": {
       "type": "object",
       "additionalProperties": false,
@@ -105,6 +135,9 @@
         "destination": {
           "$ref": "#/definitions/destination"
         },
+        "filters": {
+          "$ref": "#/definitions/filters"
+        },
         "limit": {
           "type": "integer",
           "minimum": 1
@@ -118,6 +151,7 @@
               { "required": ["placement"] },
               { "required": ["display"] },
               { "required": ["destination"] },
+              { "required": ["filters"] },
               { "required": ["limit"] }
             ]
           }

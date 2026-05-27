@@ -8,6 +8,10 @@ export type Destination = [DestinationRoot, ...string[]] | null;
 
 export type Display = (typeof DISPLAY_VALUES)[number];
 
+export type SurfaceFilterValue = string | string[];
+
+export type SurfaceFilters = Record<string, Record<string, SurfaceFilterValue>>;
+
 export type SurfaceId = string;
 
 export type SectionId = string;
@@ -32,6 +36,7 @@ export type SurfaceLeafNode = SurfaceNodeBase & {
   placement?: string | null;
   display: Display;
   destination: Destination;
+  filters?: SurfaceFilters;
   limit?: number;
 };
 
