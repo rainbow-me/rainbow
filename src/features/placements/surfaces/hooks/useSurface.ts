@@ -202,7 +202,7 @@ function buildDiscoverSurface(surface: SurfaceDocument): DiscoverSurface | undef
   for (const item of surface.items) {
     if (!('items' in item)) {
       warnInvalidDiscoverSurface(surface.id, item.id, 'top-level-leaf');
-      return undefined;
+      continue;
     }
 
     const sections: SurfaceLeafNode[] = [];
@@ -210,12 +210,12 @@ function buildDiscoverSurface(surface: SurfaceDocument): DiscoverSurface | undef
     for (const section of item.items) {
       if ('items' in section) {
         warnInvalidDiscoverSurface(surface.id, section.id, 'nested-container');
-        return undefined;
+        continue;
       }
 
       if (!(DISPLAY_VALUES as readonly string[]).includes(section.display)) {
         warnInvalidDiscoverSurface(surface.id, section.id, 'unsupported-display');
-        return undefined;
+        continue;
       }
 
       sections.push(section);
@@ -223,7 +223,7 @@ function buildDiscoverSurface(surface: SurfaceDocument): DiscoverSurface | undef
 
     if (!sections.length) {
       warnInvalidDiscoverSurface(surface.id, item.id, 'empty-tab');
-      return undefined;
+      continue;
     }
 
     tabs.push({

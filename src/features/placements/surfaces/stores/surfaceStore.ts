@@ -55,7 +55,10 @@ function isSurfaceDocument(surfaceId: string, surface: unknown): surface is Surf
   if (!isSurfaceBase(surface, { labelRequired: false })) return false;
 
   const document = surface as Partial<SurfaceDocument>;
-  return Array.isArray(document.items) && document.items.every(isSurfaceNode) && document.id === surfaceId && document.version === 1;
+  if (!Array.isArray(document.items) || document.id !== surfaceId || document.version !== 1) return false;
+
+  document.items = document.items.filter(isSurfaceNode);
+  return document.items.length > 0;
 }
 
 function isSurfaceNode(surface: unknown): surface is SurfaceNode {
@@ -64,7 +67,9 @@ function isSurfaceNode(surface: unknown): surface is SurfaceNode {
   const document = surface as Partial<SurfaceNode>;
 
   if ('items' in document) {
-    return Array.isArray(document.items) && document.items.every(isSurfaceNode) && !('filters' in document);
+    if (!Array.isArray(document.items) || 'filters' in document) return false;
+    document.items = document.items.filter(isSurfaceNode);
+    return document.items.length > 0;
   }
 
   if (!('display' in document)) return false;
