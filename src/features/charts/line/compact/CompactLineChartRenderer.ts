@@ -36,6 +36,70 @@ const GRADIENT_FILL_TOP_ALPHA = 0.35;
 const FLAT_PRICE_PADDING_FACTOR = 0.02;
 const PRICE_RANGE_PADDING_FACTOR = 0.08;
 
+function getCompactLineChartGeometry(contentWidth: number, height: number): { contentWidth: number; plotHeight: number } {
+  'worklet';
+
+  return {
+    contentWidth,
+    plotHeight: height - LINE_WIDTH * 2,
+  };
+}
+
+function projectCompactLineChartPoint(
+  startTimestamp: number,
+  endTimestamp: number,
+  timestamp: number,
+  price: number,
+  {
+    geometry,
+    maxPrice,
+    minPrice,
+  }: {
+    geometry: { contentWidth: number; plotHeight: number };
+    maxPrice: number;
+    minPrice: number;
+  }
+): { x: number; y: number } {
+  'worklet';
+
+  const timeRange = endTimestamp - startTimestamp || 1;
+  const priceRange = maxPrice - minPrice || 1;
+
+  return {
+    x: COMPACT_LINE_CHART_HORIZONTAL_OVERDRAW + ((timestamp - startTimestamp) / timeRange) * geometry.contentWidth,
+    y: LINE_WIDTH + geometry.plotHeight - ((price - minPrice) / priceRange) * geometry.plotHeight,
+  };
+}
+
+function computeCompactLineChartBounds(prices: Float32Array, count: number): { maxPrice: number; minPrice: number } {
+  'worklet';
+
+  let min = Number.POSITIVE_INFINITY;
+  let max = Number.NEGATIVE_INFINITY;
+
+  for (let i = 0; i < count; i++) {
+    const value = prices[i];
+    if (value < min) min = value;
+    if (value > max) max = value;
+  }
+
+  if (!Number.isFinite(min) || !Number.isFinite(max)) {
+    return { maxPrice: 1, minPrice: 0 };
+  }
+
+  const range = max - min;
+  if (range === 0) {
+    const fallback = Math.max(Math.abs(max) * FLAT_PRICE_PADDING_FACTOR, Number.EPSILON);
+    return { maxPrice: max + fallback, minPrice: min - fallback };
+  }
+
+  const padding = range * PRICE_RANGE_PADDING_FACTOR;
+  return {
+    maxPrice: max + padding,
+    minPrice: min - padding,
+  };
+}
+
 export function getCompactLineChartEndPoint(
   data: CompactLineChartData | undefined,
   contentWidth: number,
@@ -205,113 +269,21 @@ export class CompactLineChartRenderer {
   private buildTargetPoints(data: CompactLineChartData, count: number): Float32Array {
     const startTs = data.timestamps[0];
     const endTs = data.timestamps[count - 1];
-    const timeRange = endTs - startTs || 1;
-    const { minPrice, maxPrice } = this.computeBounds(data.prices, count);
-    const priceRange = maxPrice - minPrice || 1;
-    const plotHeight = this.getPlotHeight();
+    const { minPrice, maxPrice } = computeCompactLineChartBounds(data.prices, count);
+    const geometry = getCompactLineChartGeometry(this.contentWidth, this.height);
     const points = new Float32Array(count * 2);
 
     for (let i = 0; i < count; i++) {
       const idx = i * 2;
-      points[idx] = COMPACT_LINE_CHART_HORIZONTAL_OVERDRAW + ((data.timestamps[i] - startTs) / timeRange) * this.contentWidth;
-      points[idx + 1] = LINE_WIDTH + plotHeight - ((data.prices[i] - minPrice) / priceRange) * plotHeight;
+      const point = projectCompactLineChartPoint(startTs, endTs, data.timestamps[i], data.prices[i], {
+        geometry,
+        maxPrice,
+        minPrice,
+      });
+      points[idx] = point.x;
+      points[idx + 1] = point.y;
     }
 
     return points;
   }
-
-  private getPlotHeight(): number {
-    return this.height - LINE_WIDTH * 2;
-  }
-
-  private computeBounds(prices: Float32Array, count: number): { maxPrice: number; minPrice: number } {
-    let min = Number.POSITIVE_INFINITY;
-    let max = Number.NEGATIVE_INFINITY;
-
-    for (let i = 0; i < count; i++) {
-      const value = prices[i];
-      if (value < min) min = value;
-      if (value > max) max = value;
-    }
-
-    if (!Number.isFinite(min) || !Number.isFinite(max)) {
-      return { maxPrice: 1, minPrice: 0 };
-    }
-
-    const range = max - min;
-    if (range === 0) {
-      const fallback = Math.max(Math.abs(max) * FLAT_PRICE_PADDING_FACTOR, Number.EPSILON);
-      return { maxPrice: max + fallback, minPrice: min - fallback };
-    }
-
-    const padding = range * PRICE_RANGE_PADDING_FACTOR;
-    return {
-      maxPrice: max + padding,
-      minPrice: min - padding,
-    };
-  }
-}
-
-function getCompactLineChartGeometry(contentWidth: number, height: number): { contentWidth: number; plotHeight: number } {
-  'worklet';
-
-  return {
-    contentWidth,
-    plotHeight: height - LINE_WIDTH * 2,
-  };
-}
-
-function projectCompactLineChartPoint(
-  startTimestamp: number,
-  endTimestamp: number,
-  timestamp: number,
-  price: number,
-  {
-    geometry,
-    maxPrice,
-    minPrice,
-  }: {
-    geometry: { contentWidth: number; plotHeight: number };
-    maxPrice: number;
-    minPrice: number;
-  }
-): { x: number; y: number } {
-  'worklet';
-
-  const timeRange = endTimestamp - startTimestamp || 1;
-  const priceRange = maxPrice - minPrice || 1;
-
-  return {
-    x: COMPACT_LINE_CHART_HORIZONTAL_OVERDRAW + ((timestamp - startTimestamp) / timeRange) * geometry.contentWidth,
-    y: LINE_WIDTH + geometry.plotHeight - ((price - minPrice) / priceRange) * geometry.plotHeight,
-  };
-}
-
-function computeCompactLineChartBounds(prices: Float32Array, count: number): { maxPrice: number; minPrice: number } {
-  'worklet';
-
-  let min = Number.POSITIVE_INFINITY;
-  let max = Number.NEGATIVE_INFINITY;
-
-  for (let i = 0; i < count; i++) {
-    const value = prices[i];
-    if (value < min) min = value;
-    if (value > max) max = value;
-  }
-
-  if (!Number.isFinite(min) || !Number.isFinite(max)) {
-    return { maxPrice: 1, minPrice: 0 };
-  }
-
-  const range = max - min;
-  if (range === 0) {
-    const fallback = Math.max(Math.abs(max) * FLAT_PRICE_PADDING_FACTOR, Number.EPSILON);
-    return { maxPrice: max + fallback, minPrice: min - fallback };
-  }
-
-  const padding = range * PRICE_RANGE_PADDING_FACTOR;
-  return {
-    maxPrice: max + padding,
-    minPrice: min - padding,
-  };
 }
