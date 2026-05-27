@@ -8,7 +8,7 @@ import { TIMING_CONFIGS } from '@/components/animations/animationConfigs';
 import ButtonPressAnimation from '@/components/animations/ButtonPressAnimation';
 import { Border, globalColors, Text, TextIcon, useColorMode, useForegroundColor } from '@/design-system';
 import { InnerShadow } from '@/features/polymarket/components/InnerShadow';
-import { CATEGORIES, type Category, type CategoryKey } from '@/features/polymarket/constants';
+import { CATEGORIES, type CategoryKey } from '@/features/polymarket/constants';
 import { useHorizontalSelectorStoreSync } from '@/features/polymarket/hooks/useHorizontalSelectorStoreSync';
 import { usePolymarketContext } from '@/features/polymarket/screens/polymarket-navigator/PolymarketContext';
 import { usePolymarketCategoryStore } from '@/features/polymarket/stores/usePolymarketCategoryStore';
@@ -18,15 +18,29 @@ import { deepFreeze } from '@/utils/deepFreeze';
 import { DEVICE_WIDTH } from '@/utils/deviceUtils';
 import { createOpacityPalette } from '@/worklets/colors';
 
-type CategoryWithKey = Category & { key: CategoryKey };
-
 const VERTICAL_PADDING = 0;
 const CONTAINER_HEIGHT = 40 + VERTICAL_PADDING * 2;
 const HORIZONTAL_PADDING = 16;
-const CATEGORY_ITEMS: CategoryWithKey[] = Object.entries(CATEGORIES).map<CategoryWithKey>(([key, category]) => ({
-  ...category,
-  key: key as CategoryKey,
+const CATEGORY_ITEM_KEYS = deepFreeze([
+  'trending',
+  'sports',
+  'politics',
+  'finance',
+  'crypto',
+  'geopolitics',
+  'earnings',
+  'tech',
+  'pop-culture',
+  'world',
+  'economy',
+  'elections',
+  'mention-markets',
+] satisfies CategoryKey[]);
+const CATEGORY_ITEMS = CATEGORY_ITEM_KEYS.map(key => ({
+  ...CATEGORIES[key],
+  key,
 }));
+type CategoryWithKey = (typeof CATEGORY_ITEMS)[number];
 const PALETTE_OPACITIES = deepFreeze([6, 8, 28]);
 
 // ============ Category Selector ============================================== //

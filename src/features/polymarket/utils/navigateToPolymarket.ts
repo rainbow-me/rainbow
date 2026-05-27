@@ -29,16 +29,17 @@ export function navigateToPolymarketSportsLeague(leagueId: string): void {
   const selectedLeagueId = parseSportsLeagueKey(leagueId);
   if (!selectedLeagueId) return;
 
-  const sportsTagId = CATEGORIES.sports.tagId;
-  if (!sportsTagId) return;
-
-  usePolymarketCategoryStore.getState().setTagId(sportsTagId);
+  usePolymarketCategoryStore.getState().setTagId(CATEGORIES.sports.tagId);
   usePolymarketSportsEventsStore.getState().setSelectedLeagueId(selectedLeagueId);
   navigateToPolymarket();
 }
 
 function parseCategoryKey(tagId: string): CategoryKey | undefined {
-  return tagId in CATEGORIES ? (tagId as CategoryKey) : undefined;
+  return isCategoryKey(tagId) ? tagId : undefined;
+}
+
+function isCategoryKey(tagId: string): tagId is CategoryKey {
+  return tagId in CATEGORIES;
 }
 
 function parseSportsLeagueKey(leagueId: string): PolymarketSportsLeagueId | undefined {

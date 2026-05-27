@@ -11,7 +11,7 @@ import { InnerShadow } from '@/features/polymarket/components/InnerShadow';
 import { getIconByLeagueId, LeagueIcon } from '@/features/polymarket/components/league-icon/LeagueIcon';
 import { DEFAULT_SPORTS_LEAGUE_KEY } from '@/features/polymarket/constants';
 import { useHorizontalSelectorStoreSync } from '@/features/polymarket/hooks/useHorizontalSelectorStoreSync';
-import { LEAGUE_SELECTOR_ORDER, SPORT_LEAGUES, type LeagueId } from '@/features/polymarket/leagues';
+import { LEAGUE_SELECTOR_ORDER, SPORT_LEAGUES } from '@/features/polymarket/leagues';
 import { usePolymarketContext } from '@/features/polymarket/screens/polymarket-navigator/PolymarketContext';
 import { usePolymarketSportsEventsStore, type PolymarketSportsLeagueId } from '@/features/polymarket/stores/polymarketSportsEventsStore';
 import { opacity } from '@/framework/ui/utils/opacity';
@@ -134,7 +134,10 @@ const LeagueItemComponent = memo(function LeagueItemComponent({ league, onPress,
     opacity: withTiming(selectedLeagueKey.value === leagueKey ? 1 : 0, TIMING_CONFIGS.buttonPressConfig),
   }));
 
-  const hasIcon = useMemo(() => league.key !== DEFAULT_SPORTS_LEAGUE_KEY && getIconByLeagueId(league.key) !== undefined, [league.key]);
+  const iconLeagueId = useMemo(
+    () => (league.key !== DEFAULT_SPORTS_LEAGUE_KEY && getIconByLeagueId(league.key) !== undefined ? league.key : undefined),
+    [league.key]
+  );
 
   return (
     <ButtonPressAnimation onPress={() => onPress(league)} scaleTo={0.88}>
@@ -144,10 +147,10 @@ const LeagueItemComponent = memo(function LeagueItemComponent({ league, onPress,
           <View style={[StyleSheet.absoluteFill, backgroundFillStyle]} />
           {isDarkMode && <InnerShadow blur={16} borderRadius={CONTAINER_HEIGHT / 2} color={accentColors.opacity28} dx={0} dy={8} />}
         </Animated.View>
-        {hasIcon && (
+        {iconLeagueId && (
           <View style={styles.iconContainer}>
             <View style={styles.iconLayer}>
-              <LeagueIcon leagueId={league.key as LeagueId} size={24} />
+              <LeagueIcon leagueId={iconLeagueId} size={24} />
             </View>
           </View>
         )}
