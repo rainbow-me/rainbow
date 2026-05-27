@@ -1,9 +1,16 @@
+import { useEffect, useMemo } from 'react';
+
 import { POLYMARKET } from '@/config/experimental';
 import { useExperimentalConfigStore } from '@/config/experimentalConfigStore';
 import { IS_TEST } from '@/env';
 import { hasRefsOrPendingHydration } from '@/features/placements/stores/derived/hasRefsOrPendingHydration';
 import { warnUnresolvedRefsOnce } from '@/features/placements/stores/derived/warnUnresolvedRefsOnce';
-import { createPlacementStore } from '@/features/placements/stores/factories/createPlacementStore';
+import {
+  isPlacementHydrating,
+  selectPlacementItemsBySource,
+  usePlacementsStore,
+  type PlacementResult,
+} from '@/features/placements/stores/placementsStore';
 import { useDiscoverSurfacePlacementRefs } from '@/features/placements/surfaces/hooks/useSurface';
 import { type PlacementId, type PlacementItem } from '@/features/placements/types';
 import { fetchPolymarketEventsByIds } from '@/features/polymarket/stores/polymarketEventsStore';
@@ -14,6 +21,7 @@ import { useRemoteConfigStore } from '@/model/remoteConfig';
 import { createDerivedStore } from '@/state/internal/createDerivedStore';
 import { createQueryStore } from '@/state/internal/createQueryStore';
 import { time } from '@/utils/time';
+import { shallowEqual } from '@/worklets/comparisons';
 
 // ============ Types ========================================================== //
 
@@ -35,7 +43,6 @@ type EventsById = Record<string, PolymarketEvent>;
 // ============ Constants ====================================================== //
 
 const hasPredictionRefsOrPendingHydration = hasRefsOrPendingHydration('polymarket', 'prediction');
-const storesByPlacementId = new Map<PlacementId, ReturnType<typeof createPredictionsPlacementStore>>();
 
 // ============ Stores ========================================================= //
 
@@ -62,15 +69,6 @@ export const usePredictionEventsStore = createQueryStore<PredictionEventsData, P
   cacheTime: time.minutes(15),
 });
 
-export function getPredictionsPlacementStore(placementId: PlacementId) {
-  let store = storesByPlacementId.get(placementId);
-  if (!store) {
-    store = createPredictionsPlacementStore(placementId);
-    storesByPlacementId.set(placementId, store);
-  }
-  return store;
-}
-
 // ============ Fetcher ======================================================== //
 
 async function fetchPredictionEvents(
@@ -92,25 +90,36 @@ async function fetchPredictionEvents(
 
 // ============ Utilities ====================================================== //
 
-function createPredictionsPlacementStore(placementId: PlacementId) {
-  return createPlacementStore({
-    placementId,
-    source: 'polymarket',
-    enabled: usePredictionsEnabled,
-    select: ($, placementItems) => {
-      const events = $(usePredictionEventsStore, state => state.getData());
-      const eventsReady = $(usePredictionEventsStore, state => state.getStatus('isSuccess'));
-      const isLoading = $(usePredictionEventsStore, state => state.enabled && state.getStatus('isInitialLoad'));
-      const activeEventIds = events ? new Set(events.activeEventIds) : undefined;
-      const items = events && activeEventIds ? parsePredictionItems(placementItems, events.eventsById, activeEventIds) : [];
+export function usePredictionsPlacement(placementId: PlacementId): PlacementResult<PredictionPlacementItem> {
+  const enabled = usePredictionsEnabled();
+  const placement = usePlacementsStore(state => state.getPlacement(placementId));
+  const placementItems = usePlacementsStore(state => selectPlacementItemsBySource(state, placementId, 'polymarket'), shallowEqual);
+  const placementsLoading = usePlacementsStore(state => isPlacementHydrating(state, placementId, 'polymarket'));
+  const events = usePredictionEventsStore(state => state.getData());
+  const eventsReady = usePredictionEventsStore(state => state.getStatus('isSuccess'));
+  const eventsLoading = usePredictionEventsStore(state => state.enabled && state.getStatus('isInitialLoad'));
+  const activeEventIds = useMemo(() => (events ? new Set(events.activeEventIds) : undefined), [events]);
+  const items = useMemo(
+    () => (events && activeEventIds ? parsePredictionItems(placementItems, events.eventsById, activeEventIds) : []),
+    [activeEventIds, events, placementItems]
+  );
 
-      if (eventsReady && events && activeEventIds && placementItems.length > 0) {
-        logUnresolvedPredictionRefs(placementId, placementItems, events.eventsById, activeEventIds);
-      }
+  useEffect(() => {
+    if (eventsReady && events && activeEventIds && placementItems.length > 0) {
+      logUnresolvedPredictionRefs(placementId, placementItems, events.eventsById, activeEventIds);
+    }
+  }, [activeEventIds, events, eventsReady, placementId, placementItems]);
 
-      return { isLoading, items };
-    },
-  });
+  return useMemo(() => {
+    if (!enabled) return { isLoading: false, items: [], placement: undefined };
+
+    const isLoading = placementsLoading || (eventsLoading && placement !== undefined && items.length === 0);
+    return {
+      isLoading,
+      items,
+      placement: items.length ? placement : undefined,
+    };
+  }, [enabled, eventsLoading, items, placement, placementsLoading]);
 }
 
 function parsePredictionItems(

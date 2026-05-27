@@ -1,11 +1,19 @@
+import { useEffect, useMemo } from 'react';
+
 import { IS_TEST } from '@/env';
 import { useHyperliquidMarketsStore } from '@/features/perps/stores/hyperliquidMarketsStore';
 import { type PerpMarketsBySymbol, type PerpMarketWithMetadata } from '@/features/perps/types';
 import { warnUnresolvedRefsOnce } from '@/features/placements/stores/derived/warnUnresolvedRefsOnce';
-import { createPlacementStore } from '@/features/placements/stores/factories/createPlacementStore';
+import {
+  isPlacementHydrating,
+  selectPlacementItemsBySource,
+  usePlacementsStore,
+  type PlacementResult,
+} from '@/features/placements/stores/placementsStore';
 import { type PlacementId, type PlacementItem } from '@/features/placements/types';
 import { useRemoteConfigStore } from '@/model/remoteConfig';
 import { createDerivedStore } from '@/state/internal/createDerivedStore';
+import { shallowEqual } from '@/worklets/comparisons';
 
 // ============ Types ========================================================== //
 
@@ -16,10 +24,6 @@ export type PerpMarketPlacementItem = PlacementItem & {
   market: PerpMarketWithMetadata;
 };
 
-// ============ Constants ====================================================== //
-
-const storesByPlacementId = new Map<PlacementId, ReturnType<typeof createPerpsPlacementStore>>();
-
 // ============ Derived Stores ================================================= //
 
 const usePerpsEnabled = createDerivedStore<boolean>(
@@ -27,37 +31,36 @@ const usePerpsEnabled = createDerivedStore<boolean>(
   { fastMode: true }
 );
 
-export function getPerpsPlacementStore(placementId: PlacementId) {
-  let store = storesByPlacementId.get(placementId);
-  if (!store) {
-    store = createPerpsPlacementStore(placementId);
-    storesByPlacementId.set(placementId, store);
-  }
-  return store;
-}
-
 // ============ Utilities ====================================================== //
 
-function createPerpsPlacementStore(placementId: PlacementId) {
-  return createPlacementStore({
-    placementId,
-    source: 'hyperliquid',
-    enabled: usePerpsEnabled,
-    select: ($, placementItems) => {
-      const markets = $(useHyperliquidMarketsStore, state => state.markets);
-      const marketsReady = $(useHyperliquidMarketsStore, state => state.getStatus('isSuccess'));
-      const marketsError = $(useHyperliquidMarketsStore, state => state.getStatus('isError'));
-      const marketsLoading = $(useHyperliquidMarketsStore, state => state.getStatus('isIdle') || state.getStatus('isLoading'));
-      const items = buildPerpMarketPlacementItems(placementItems, markets);
-      const isLoading = placementItems.length > 0 && items.length === 0 && marketsLoading && !marketsError;
+export function usePerpsPlacement(placementId: PlacementId): PlacementResult<PerpMarketPlacementItem> {
+  const enabled = usePerpsEnabled();
+  const placement = usePlacementsStore(state => state.getPlacement(placementId));
+  const placementItems = usePlacementsStore(state => selectPlacementItemsBySource(state, placementId, 'hyperliquid'), shallowEqual);
+  const placementsLoading = usePlacementsStore(state => isPlacementHydrating(state, placementId, 'hyperliquid'));
+  const markets = useHyperliquidMarketsStore(state => state.markets);
+  const marketsReady = useHyperliquidMarketsStore(state => state.getStatus('isSuccess'));
+  const marketsError = useHyperliquidMarketsStore(state => state.getStatus('isError'));
+  const marketsLoading = useHyperliquidMarketsStore(state => state.getStatus('isIdle') || state.getStatus('isLoading'));
+  const items = useMemo(() => buildPerpMarketPlacementItems(placementItems, markets), [markets, placementItems]);
+  const resolvedLoading = placementItems.length > 0 && items.length === 0 && marketsLoading && !marketsError;
 
-      if (!marketsLoading && marketsReady && placementItems.length > 0 && items.length === 0) {
-        logUnresolvedPerpsRefs(placementId, placementItems, markets);
-      }
+  useEffect(() => {
+    if (!marketsLoading && marketsReady && placementItems.length > 0 && items.length === 0) {
+      logUnresolvedPerpsRefs(placementId, placementItems, markets);
+    }
+  }, [items.length, markets, marketsLoading, marketsReady, placementId, placementItems]);
 
-      return { isLoading, items };
-    },
-  });
+  return useMemo(() => {
+    if (!enabled) return { isLoading: false, items: [], placement: undefined };
+
+    const isLoading = placementsLoading || (resolvedLoading && placement !== undefined && items.length === 0);
+    return {
+      isLoading,
+      items,
+      placement: items.length ? placement : undefined,
+    };
+  }, [enabled, items, placement, placementsLoading, resolvedLoading]);
 }
 
 function buildPerpMarketPlacementItems(placementItems: PlacementItem[], markets: PerpMarketsBySymbol): PerpMarketPlacementItem[] {

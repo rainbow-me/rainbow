@@ -1,7 +1,14 @@
+import { useMemo } from 'react';
+
 import { type NativeCurrencyKey } from '@/entities/nativeCurrencyTypes';
 import { IS_TEST } from '@/env';
 import { hasRefsOrPendingHydration } from '@/features/placements/stores/derived/hasRefsOrPendingHydration';
-import { createPlacementStore } from '@/features/placements/stores/factories/createPlacementStore';
+import {
+  isPlacementHydrating,
+  selectPlacementItemsBySource,
+  usePlacementsStore,
+  type PlacementResult,
+} from '@/features/placements/stores/placementsStore';
 import { useDiscoverSurfacePlacementRefs } from '@/features/placements/surfaces/hooks/useSurface';
 import { type PlacementId, type PlacementItem } from '@/features/placements/types';
 import { fetchExternalToken, type FormattedExternalAsset } from '@/resources/assets/externalAssetsQuery';
@@ -10,6 +17,7 @@ import { type ChainId } from '@/state/backendNetworks/types';
 import { createDerivedStore } from '@/state/internal/createDerivedStore';
 import { createQueryStore } from '@/state/internal/createQueryStore';
 import { time } from '@/utils/time';
+import { shallowEqual } from '@/worklets/comparisons';
 
 // ============ Types ========================================================== //
 
@@ -40,7 +48,6 @@ const TOKEN_REFS_STALE_TIME = time.minutes(2);
 const EMPTY_TOKEN_ASSETS_BY_REF: TokenAssetsByRef = Object.freeze({});
 const hasTokenRefsOrPendingHydration = hasRefsOrPendingHydration('rainbow', 'token');
 const tokenRefCache = new Map<string, TokenRefCacheEntry>();
-const storesByPlacementId = new Map<PlacementId, ReturnType<typeof createTokensPlacementStore>>();
 
 // ============ Stores ========================================================= //
 
@@ -62,15 +69,6 @@ export const useTokenRefsStore = createQueryStore<TokenAssetsByRef, TokenRefsPar
   staleTime: TOKEN_REFS_STALE_TIME,
   cacheTime: time.minutes(10),
 });
-
-export function getTokensPlacementStore(placementId: PlacementId) {
-  let store = storesByPlacementId.get(placementId);
-  if (!store) {
-    store = createTokensPlacementStore(placementId);
-    storesByPlacementId.set(placementId, store);
-  }
-  return store;
-}
 
 // ============ Fetcher ======================================================== //
 
@@ -123,23 +121,27 @@ async function fetchTokenRef(
 
 // ============ Utilities ====================================================== //
 
-function createTokensPlacementStore(placementId: PlacementId) {
-  return createPlacementStore({
-    placementId,
-    source: 'rainbow',
-    enabled: useTokensEnabled,
-    select: ($, placementItems) => {
-      const assetsByRef = $(useTokenRefsStore, state => state.getData());
-      const isLoading = $(useTokenRefsStore, state => {
-        return placementItems.length > 0 && state.enabled && (state.getStatus('isIdle') || state.getStatus('isLoading'));
-      });
-
-      return {
-        isLoading,
-        items: assetsByRef ? parseTokenItems(placementItems, assetsByRef) : [],
-      };
-    },
+export function useTokensPlacement(placementId: PlacementId): PlacementResult<TokenPlacementItem> {
+  const enabled = useTokensEnabled();
+  const placement = usePlacementsStore(state => state.getPlacement(placementId));
+  const placementItems = usePlacementsStore(state => selectPlacementItemsBySource(state, placementId, 'rainbow'), shallowEqual);
+  const placementsLoading = usePlacementsStore(state => isPlacementHydrating(state, placementId, 'rainbow'));
+  const assetsByRef = useTokenRefsStore(state => state.getData());
+  const tokenRefsLoading = useTokenRefsStore(state => {
+    return placementItems.length > 0 && state.enabled && (state.getStatus('isIdle') || state.getStatus('isLoading'));
   });
+  const items = useMemo(() => (assetsByRef ? parseTokenItems(placementItems, assetsByRef) : []), [assetsByRef, placementItems]);
+
+  return useMemo(() => {
+    if (!enabled) return { isLoading: false, items: [], placement: undefined };
+
+    const isLoading = placementsLoading || (tokenRefsLoading && placement !== undefined && items.length === 0);
+    return {
+      isLoading,
+      items,
+      placement: items.length ? placement : undefined,
+    };
+  }, [enabled, items, placement, placementsLoading, tokenRefsLoading]);
 }
 
 function parseTokenItems(placementItems: PlacementItem[], assetsByRef: TokenAssetsByRef): TokenPlacementItem[] {

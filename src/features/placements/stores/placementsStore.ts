@@ -21,6 +21,12 @@ export type PlacementsState = {
   getItemsBySource: <Source extends PlacementSource>(id: PlacementId, source: Source) => PlacementItem[];
 };
 
+export type PlacementResult<Hydrated> = {
+  isLoading: boolean;
+  items: Hydrated[];
+  placement: Placement | undefined;
+};
+
 type PlacementsById = Partial<Record<PlacementId, Placement>>;
 
 type PlacementDocument = Partial<Placement>;
@@ -63,6 +69,26 @@ export const usePlacementsStore = createQueryStore<PlacementsById, never, Placem
 
   { storageKey: 'placementsStore', version: 4 }
 );
+
+export function selectPlacementItemsBySource<Source extends PlacementSource>(
+  state: ReturnType<typeof usePlacementsStore.getState>,
+  placementId: PlacementId,
+  source: Source
+): PlacementItem[] {
+  return state.getItemsBySource(placementId, source);
+}
+
+export function isPlacementHydrating<Source extends PlacementSource>(
+  state: ReturnType<typeof usePlacementsStore.getState>,
+  placementId: PlacementId,
+  source: Source
+): boolean {
+  const isInitialLoad = state.getStatus('isInitialLoad');
+  const isIdleWithoutCachedPlacement =
+    state.getStatus('isIdle') && state.getPlacement(placementId) === undefined && !state.getItemsBySource(placementId, source).length;
+
+  return isInitialLoad || isIdleWithoutCachedPlacement;
+}
 
 // ============ Fetcher ======================================================== //
 

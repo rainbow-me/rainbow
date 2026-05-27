@@ -29,8 +29,8 @@ import {
 } from '@/features/discover/components/surfaceSectionTypes';
 import { type MarketDisplayItem } from '@/features/discover/types/marketDisplayItem';
 import { navigateDiscoverDestination } from '@/features/discover/utils/navigation';
-import { getPerpsPlacementStore } from '@/features/placements/stores/derived/perpsPlacementStore';
-import { getTokensPlacementStore, type TokenPlacementItem } from '@/features/placements/stores/derived/tokensPlacementStore';
+import { usePerpsPlacement } from '@/features/placements/stores/derived/perpsPlacementStore';
+import { useTokensPlacement, type TokenPlacementItem } from '@/features/placements/stores/derived/tokensPlacementStore';
 import { usePlacementsStore } from '@/features/placements/stores/placementsStore';
 import { MARKET_DISPLAY_VALUES } from '@/features/placements/surfaces/constants';
 import { useIsDiscoverSurfacePlacementPending } from '@/features/placements/surfaces/hooks/useSurface';
@@ -114,8 +114,7 @@ function PlacementBackedMarketSection({
 }
 
 function PerpsMarketSection({ surface, surfaceId }: { surface: PlacementBackedSurfaceLeafWithDisplay<MarketDisplay>; surfaceId: string }) {
-  const useStore = useMemo(() => getPerpsPlacementStore(surface.placement), [surface.placement]);
-  const result = useStore();
+  const result = usePerpsPlacement(surface.placement);
   const descriptor = MARKET_SECTION_DESCRIPTORS[surface.display];
   const items = useMemo(() => result.items.map(perpToMarketDisplayItem), [result.items]);
 
@@ -133,8 +132,7 @@ function PerpsMarketSection({ surface, surfaceId }: { surface: PlacementBackedSu
 function TokensMarketSection({ surface, surfaceId }: { surface: PlacementBackedSurfaceLeafWithDisplay<MarketDisplay>; surfaceId: string }) {
   const { onTapSearch } = useDiscoverScreenContext();
   const nativeCurrency = userAssetsStoreManager(state => state.currency);
-  const useStore = useMemo(() => getTokensPlacementStore(surface.placement), [surface.placement]);
-  const result = useStore();
+  const result = useTokensPlacement(surface.placement);
   const descriptor = useMemo(() => getTokenMarketSectionDescriptor(surface.display, nativeCurrency), [nativeCurrency, surface.display]);
   const onPressSeeAll = useCallback(() => {
     if (surface.destination?.[0] === 'tokens') {

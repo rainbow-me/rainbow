@@ -33,7 +33,7 @@ import {
   type SectionDescriptor,
   type SurfaceLeafWithDisplay,
 } from '@/features/discover/components/surfaceSectionTypes';
-import { getPredictionsPlacementStore, type PredictionPlacementItem } from '@/features/placements/stores/derived/predictionsPlacementStore';
+import { usePredictionsPlacement, type PredictionPlacementItem } from '@/features/placements/stores/derived/predictionsPlacementStore';
 import { PREDICTION_DISPLAY_VALUES } from '@/features/placements/surfaces/constants';
 import { type Display, type SurfaceLeaf } from '@/features/placements/surfaces/types';
 import {
@@ -139,8 +139,7 @@ function PredictionsPlacementSection({
   surface: PlacementBackedSurfaceLeafWithDisplay<PredictionsDisplay>;
   surfaceId: string;
 }) {
-  const useStore = useMemo(() => getPredictionsPlacementStore(surface.placement), [surface.placement]);
-  const result = useStore();
+  const result = usePredictionsPlacement(surface.placement);
   const descriptor = PREDICTIONS_SECTION_DESCRIPTORS[surface.display];
 
   return renderSectionLayout({
@@ -161,8 +160,7 @@ function SportsEventPlacementSection({
   surface: PlacementBackedSurfaceLeafWithDisplay<PredictionsDisplay>;
   surfaceId: string;
 }) {
-  const useStore = useMemo(() => getPredictionsPlacementStore(surface.placement), [surface.placement]);
-  const result = useStore();
+  const result = usePredictionsPlacement(surface.placement);
   const sportsEvents = usePolymarketSportsEventsStore(state => state.getData());
   const displayedItemCount = getInitialRenderedItemCount(result.items, surface.limit);
   const descriptor = getSportsEventSectionDescriptor(surface);
