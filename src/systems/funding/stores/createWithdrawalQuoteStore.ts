@@ -2,13 +2,13 @@ import { getAddress } from 'viem';
 
 import { stripNonDecimalNumbers } from '@/__swaps__/utils/swaps';
 import { equalWorklet, greaterThanWorklet } from '@/framework/core/safeMath';
+import { time } from '@/framework/core/utils/time';
 import { isNativeAsset } from '@/handlers/assets';
 import { convertAmountToRawAmount } from '@/helpers/utilities';
 import { userAssetsStoreManager } from '@/state/assets/userAssetsStoreManager';
 import { createDerivedStore } from '@/state/internal/createDerivedStore';
 import { createQueryStore } from '@/state/internal/createQueryStore';
 import { useWalletsStore } from '@/state/wallets/walletsStore';
-import { time } from '@/utils/time';
 import { ETH_ADDRESS, Source, type CrosschainQuote, type Quote, type QuoteParams } from '@rainbow-me/swaps';
 
 import {

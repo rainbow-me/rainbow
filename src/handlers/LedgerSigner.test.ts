@@ -1,7 +1,7 @@
 import { StaticJsonRpcProvider } from '@ethersproject/providers';
 import { ledgerService } from '@ledgerhq/hw-app-eth';
 
-import { time } from '@/utils/time';
+import { time } from '@/framework/core/utils/time';
 
 import { LedgerSigner } from './LedgerSigner';
 

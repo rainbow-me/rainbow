@@ -5,8 +5,8 @@ import { msToSeconds, toHyperliquidInterval } from '@/features/charts/utils';
 import { infoClient } from '@/features/perps/services/hyperliquid-info-client';
 import { hyperliquidMarketsActions } from '@/features/perps/stores/hyperliquidMarketsStore';
 import type { PerpMarketWithMetadata } from '@/features/perps/types';
+import { time } from '@/framework/core/utils/time';
 import Routes from '@/navigation/routesNames';
-import { time } from '@/utils/time';
 
 // ============ Store ========================================================== //
 

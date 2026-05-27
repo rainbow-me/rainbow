@@ -12,9 +12,9 @@ import {
 import { RnbwRewardsScenes } from '@/features/rnbw-rewards/screens/rnbw-rewards-screen/constants/rewardsScenes';
 import { rewardsFlowActions } from '@/features/rnbw-rewards/stores/rewardsFlowStore';
 import { watchingAlert } from '@/features/wallet/utils/watchingAlert';
+import { time } from '@/framework/core/utils/time';
 import * as i18n from '@/languages';
 import { useIsReadOnlyWallet } from '@/state/wallets/walletsStore';
-import { time } from '@/utils/time';
 
 const enteringAnimation = createScaleInFadeInSlideEnterAnimation({ delay: time.ms(200) });
 

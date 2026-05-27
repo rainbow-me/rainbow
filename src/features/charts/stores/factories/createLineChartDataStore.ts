@@ -8,11 +8,11 @@ import {
   type SetDataParams,
 } from '@storesjs/stores';
 
+import { time } from '@/framework/core/utils/time';
 import { getConsistentArray } from '@/helpers/getConsistentArray';
 import { type Route } from '@/navigation/routesNames';
 import { createSelectorReadTracker } from '@/state/internal/utils/createSelectorReadTracker';
 import { useNavigationStore, type SwipeRoute } from '@/state/navigation/navigationStore';
-import { time } from '@/utils/time';
 
 import { type CompactLineChartData, type LineChartDataStore } from '../../line/compact/types';
 

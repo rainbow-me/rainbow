@@ -1,3 +1,4 @@
+import { time } from '@/framework/core/utils/time';
 import { convertAmountAndPriceToNativeDisplay, convertAmountToNativeDisplayWorklet, greaterThan, multiply } from '@/helpers/utilities';
 import Routes, { type Route } from '@/navigation/routesNames';
 import { ETH_ADDRESS, WETH_ADDRESS } from '@/references/constants';
@@ -7,7 +8,6 @@ import { userAssetsStoreManager } from '@/state/assets/userAssetsStoreManager';
 import { createQueryStore } from '@/state/internal/createQueryStore';
 import { fetchPolymarketPrices, isPolymarketToken } from '@/state/liveTokens/polymarketAdapter';
 import { useNavigationStore, type NavigationState } from '@/state/navigation/navigationStore';
-import { time } from '@/utils/time';
 
 import { useUserAssetsStore } from '../assets/userAssets';
 import { isHyperliquidToken, parseHyperliquidTokenId } from './hyperliquidAdapter';

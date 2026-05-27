@@ -54,7 +54,7 @@ jest.mock('@/utils/deviceUtils', () => ({
   },
 }));
 
-jest.mock('@/utils/time', () => ({
+jest.mock('@/framework/core/utils/time', () => ({
   time: {
     ms: ms => ms,
     seconds: seconds => seconds * 1000,

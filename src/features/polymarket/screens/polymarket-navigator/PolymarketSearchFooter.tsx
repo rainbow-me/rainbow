@@ -12,12 +12,12 @@ import { typeHierarchy } from '@/design-system/typography/typeHierarchy';
 import { POLYMARKET_BACKGROUND_LIGHT } from '@/features/polymarket/constants';
 import { PolymarketNavigation } from '@/features/polymarket/screens/polymarket-navigator/PolymarketNavigator';
 import { polymarketEventSearchActions } from '@/features/polymarket/stores/polymarketEventSearchStore';
+import { time } from '@/framework/core/utils/time';
 import { opacity } from '@/framework/ui/utils/opacity';
 import * as i18n from '@/languages';
 import { fontWithWidth } from '@/styles/buildTextStyles';
 import { THICK_BORDER_WIDTH, THICKER_BORDER_WIDTH } from '@/styles/constants';
 import font from '@/styles/fonts';
-import { time } from '@/utils/time';
 
 const SEARCH_BAR_HEIGHT = 52;
 

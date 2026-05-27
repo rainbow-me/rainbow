@@ -5,10 +5,10 @@ import { getGammaLeagueId } from '@/features/polymarket/leagues';
 import { type PolymarketGameMetadata, type PolymarketTeamInfo, type RawPolymarketTeamInfo } from '@/features/polymarket/types';
 import { type PolymarketMarket, type RawPolymarketMarket } from '@/features/polymarket/types/polymarket-event';
 import { getColorBySeed } from '@/features/polymarket/utils/getColorBySeed';
+import { time } from '@/framework/core/utils/time';
 import { rainbowFetch } from '@/framework/data/http/rainbowFetch';
 import { getHighContrastColor } from '@/hooks/useAccountAccentColor';
 import { logger, RainbowError } from '@/logger';
-import { time } from '@/utils/time';
 
 export async function fetchGameMetadata(eventTicker: string) {
   try {

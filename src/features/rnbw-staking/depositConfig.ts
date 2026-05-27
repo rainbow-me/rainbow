@@ -1,9 +1,9 @@
 import { isPreparedCallsExecutionSponsored } from '@/features/delegation/calls';
 import { type PreparedCallsStore } from '@/features/delegation/preparedCallsStore';
 import { predictSponsoredCallsExecution } from '@/features/delegation/sponsoredCalls';
+import { time } from '@/framework/core/utils/time';
 import * as i18n from '@/languages';
 import { type DepositConfigInput } from '@/systems/funding/types';
-import { time } from '@/utils/time';
 
 import { RnbwStakingSubmitButton } from './components/RnbwStakingSubmitButton';
 import { RNBW_DECIMALS, RNBW_TOKEN_ADDRESS, STAKING_CHAIN_ID } from './constants';

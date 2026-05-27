@@ -16,12 +16,12 @@ import {
   toFixedWorklet,
   trimTrailingZeros,
 } from '@/framework/core/safeMath';
+import { time } from '@/framework/core/utils/time';
 import { handleSignificantDecimalsWorklet } from '@/helpers/utilities';
 import { useStableValue } from '@/hooks/useStableValue';
 import { useListen } from '@/state/internal/hooks/useListen';
 import { useStoreSharedValue } from '@/state/internal/hooks/useStoreSharedValue';
 import { useWalletsStore } from '@/state/wallets/walletsStore';
-import { time } from '@/utils/time';
 import { sanitizeAmount } from '@/worklets/strings';
 
 import {

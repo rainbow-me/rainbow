@@ -2,9 +2,9 @@ import { QueryCache, QueryClient } from '@tanstack/react-query';
 import { type PersistedClient, type Persister, type PersistQueryClientOptions } from '@tanstack/react-query-persist-client';
 import { debounce } from 'lodash';
 
+import { time } from '@/framework/core/utils/time';
 import { logger, RainbowError } from '@/logger';
 import { queryStorage, REACT_QUERY_STORAGE_ID } from '@/storage/legacy';
-import { time } from '@/utils/time';
 
 class MMKVPersister implements Persister {
   private static readonly throttleMs = time.seconds(8);

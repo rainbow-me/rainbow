@@ -1,7 +1,7 @@
 import { predictSponsoredCallsExecution } from '@/features/delegation/sponsoredCalls';
+import { time } from '@/framework/core/utils/time';
 import { getRemoteConfig } from '@/model/remoteConfig';
 import { createDepositConfig } from '@/systems/funding/config';
-import { time } from '@/utils/time';
 
 import { HYPERCORE_PSEUDO_CHAIN_ID, HYPERLIQUID_USDC_ADDRESS, USDC_ICON_URL } from './constants';
 import { refetchHyperliquidBalance } from './utils';

@@ -10,12 +10,12 @@ import {
 } from '@/features/polymarket/constants';
 import { usePolymarketClients } from '@/features/polymarket/stores/derived/usePolymarketClients';
 import { truncateToDecimals } from '@/framework/core/safeMath';
+import { time } from '@/framework/core/utils/time';
 import { getErc20Balance } from '@/framework/data/evm/erc20Read';
 import { getProvider } from '@/handlers/web3';
 import { add } from '@/helpers/utilities';
 import { RainbowError } from '@/logger';
 import { createQueryStore } from '@/state/internal/createQueryStore';
-import { time } from '@/utils/time';
 import { ChainId } from '@rainbow-me/swaps';
 
 type PolymarketBalanceStoreActions = {

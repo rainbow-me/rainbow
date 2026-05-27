@@ -18,12 +18,12 @@ import { Slider, SLIDER_MAX, type SliderGestureState, type SliderProps } from '@
 import { INPUT_CARD_HEIGHT, SLIDER_WIDTH } from '@/features/perps/constants';
 import { usePerpsAccentColorContext } from '@/features/perps/context/PerpsAccentColorContext';
 import { hlNewPositionStoreActions, useHlNewPositionStore } from '@/features/perps/stores/hlNewPositionStore';
+import { time } from '@/framework/core/utils/time';
 import { useAnimatedTimeout } from '@/hooks/reanimated/useAnimatedTimeout';
 import { useStableValue } from '@/hooks/useStableValue';
 import * as i18n from '@/languages';
 import { useListen } from '@/state/internal/hooks/useListen';
 import { useStoreSharedValue } from '@/state/internal/hooks/useStoreSharedValue';
-import { time } from '@/utils/time';
 
 const LeverageSlider = ({
   gestureState,

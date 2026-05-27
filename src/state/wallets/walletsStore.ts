@@ -7,6 +7,7 @@ import { normalizeAddress } from '@/features/address/core/address';
 import { parseTimestampFromBackupFile } from '@/features/backup/backup';
 import { fetchENSAvatarWithRetry } from '@/features/ens/hooks/useENSAvatar';
 import { watchingAlert } from '@/features/wallet/utils/watchingAlert';
+import { time } from '@/framework/core/utils/time';
 import { ensureValidHex, isValidHex } from '@/handlers/web3';
 import { removeFirstEmojiFromString, returnStringFirstEmoji } from '@/helpers/emojiHandler';
 import { getConsistentArray } from '@/helpers/getConsistentArray';
@@ -36,7 +37,6 @@ import { useTheme } from '@/theme/ThemeContext';
 import isLowerCaseMatch from '@/utils/isLowerCaseMatch';
 import { didShowWalletErrorSheetKey } from '@/utils/keychainConstants';
 import { addressHashedColorIndex, addressHashedEmoji, fetchReverseRecordWithRetry, isValidImagePath } from '@/utils/profileUtils';
-import { time } from '@/utils/time';
 import { shallowEqual } from '@/worklets/comparisons';
 
 import { createRainbowStore } from '../internal/createRainbowStore';

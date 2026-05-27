@@ -1,9 +1,9 @@
 import type { Address } from 'viem';
 
 import type { NativeCurrencyKey } from '@/entities/nativeCurrencyTypes';
+import { time } from '@/framework/core/utils/time';
 import { logger, RainbowError } from '@/logger';
 import { getPlatformClient } from '@/resources/platform/client';
-import { time } from '@/utils/time';
 
 import type { ListPositionsResponse } from '../types/generated/positions/positions';
 import { trackPositionsResponseErrors } from './trackPositionsResponseErrors';

@@ -17,6 +17,7 @@ import { useRewardsBalanceStore } from '@/features/rnbw-rewards/stores/rewardsBa
 import { rewardsFlowActions } from '@/features/rnbw-rewards/stores/rewardsFlowStore';
 import { prepareRewardsClaim } from '@/features/rnbw-rewards/utils/claimRewards';
 import { watchingAlert } from '@/features/wallet/utils/watchingAlert';
+import { time } from '@/framework/core/utils/time';
 import { opacity } from '@/framework/ui/utils/opacity';
 import { useTabBarOffset } from '@/hooks/useTabBarOffset';
 import * as i18n from '@/languages';
@@ -24,7 +25,6 @@ import { useNavigation } from '@/navigation/Navigation';
 import Routes from '@/navigation/routesNames';
 import { useAccountAddress, useIsHardwareWallet, useIsReadOnlyWallet } from '@/state/wallets/walletsStore';
 import { delay } from '@/utils/delay';
-import { time } from '@/utils/time';
 
 const enterAnimation = createScaleInFadeInSlideEnterAnimation({ delay: time.ms(200) });
 

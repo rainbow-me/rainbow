@@ -1,5 +1,5 @@
 import { IS_TEST } from '@/env';
-import { time } from '@/utils/time';
+import { time } from '@/framework/core/utils/time';
 
 export const TOAST_ICON_SIZE = 28;
 

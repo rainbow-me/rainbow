@@ -1,6 +1,6 @@
+import { time } from '@/framework/core/utils/time';
 import type { RainbowFetchResponse } from '@/framework/data/http/rainbowFetch';
 import { delay } from '@/utils/delay';
-import { time } from '@/utils/time';
 
 const CLAIM_POLL_INTERVAL = time.seconds(1);
 const CLAIM_POLL_TIMEOUT = time.minutes(1);

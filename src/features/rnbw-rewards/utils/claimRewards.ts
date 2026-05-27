@@ -12,6 +12,7 @@ import {
 } from '@/features/rnbw-rewards/types/claimRewardsTypes';
 import { getPlatformResult } from '@/features/rnbw-rewards/utils/getPlatformResult';
 import { pollClaimStatus, type PollClaimStatusResult } from '@/features/rnbw-rewards/utils/pollClaimStatus';
+import { time } from '@/framework/core/utils/time';
 import { type RainbowFetchResponse } from '@/framework/data/http/rainbowFetch';
 import { LedgerSigner } from '@/handlers/LedgerSigner';
 import { getProvider } from '@/handlers/web3';
@@ -20,7 +21,6 @@ import { loadWallet, signTypedDataMessage } from '@/model/wallet';
 import Navigation from '@/navigation/Navigation';
 import { getPlatformClient } from '@/resources/platform/client';
 import { useUserAssetsStore } from '@/state/assets/userAssets';
-import { time } from '@/utils/time';
 import { ChainId } from '@rainbow-me/swaps';
 
 type ClaimStatusPollResult = PollClaimStatusResult<ClaimRewardsResult, ClaimRewardsResponse>;

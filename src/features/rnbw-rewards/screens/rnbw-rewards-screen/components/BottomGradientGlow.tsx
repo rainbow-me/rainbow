@@ -6,8 +6,8 @@ import { interpolate, interpolateColor, useAnimatedReaction, useDerivedValue, us
 import { RnbwRewardsScenes, type RnbwRewardsScene } from '@/features/rnbw-rewards/screens/rnbw-rewards-screen/constants/rewardsScenes';
 import { useRnbwRewardsFlowContext } from '@/features/rnbw-rewards/screens/rnbw-rewards-screen/context/RnbwRewardsFlowContext';
 import { useAirdropBalanceStore } from '@/features/rnbw-rewards/stores/airdropBalanceStore';
+import { time } from '@/framework/core/utils/time';
 import useDimensions from '@/hooks/useDimensions';
-import { time } from '@/utils/time';
 
 type GradientConfig = {
   colors: readonly string[];

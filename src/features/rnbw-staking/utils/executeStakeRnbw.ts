@@ -10,12 +10,12 @@ import { resolveManagedExecutionFailure } from '@/features/delegation/managedExe
 import { waitForManagedExecutionConfirmation } from '@/features/delegation/waitForManagedExecution';
 import { canUseDelegatedExecution } from '@/features/delegation/willDelegate';
 import type { LegacyTransactionGasParamAmounts, TransactionGasParamAmounts } from '@/features/gas/types/gas';
+import { time } from '@/framework/core/utils/time';
 import { RainbowError } from '@/logger';
 import { extractReplayableExecution } from '@/raps/replay';
 import { toTransactionAsset, type TransactionAssetSource } from '@/raps/transactionAsset';
 import { backendNetworksActions } from '@/state/backendNetworks/backendNetworks';
 import { addNewTransaction } from '@/state/pendingTransactions';
-import { time } from '@/utils/time';
 import { execute, type Call, type ExecuteCallsResult, type PreparedCallsExecution } from '@rainbow-me/delegation';
 
 import {

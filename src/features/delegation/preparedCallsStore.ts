@@ -1,6 +1,6 @@
 import { createQueryStore, getQueryKey, type QueryStore, type QueryStoreConfig } from '@storesjs/stores';
 
-import { time } from '@/utils/time';
+import { time } from '@/framework/core/utils/time';
 
 // ============ Types ========================================================= //
 

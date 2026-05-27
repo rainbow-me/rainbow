@@ -42,6 +42,7 @@ import {
   mulWorklet,
   toFixedWorklet,
 } from '@/framework/core/safeMath';
+import { time } from '@/framework/core/utils/time';
 import { opacity } from '@/framework/ui/utils/opacity';
 import { useLazyRef } from '@/hooks/useLazyRef';
 import { useOnChange } from '@/hooks/useOnChange';
@@ -49,7 +50,6 @@ import { useStableValue } from '@/hooks/useStableValue';
 import * as i18n from '@/languages';
 import { type ReadOnlySharedValue } from '@/state/internal/hooks/useStoreSharedValue';
 import { getAccountAddress } from '@/state/wallets/walletsStore';
-import { time } from '@/utils/time';
 import { sanitizeAmount } from '@/worklets/strings';
 
 import { AmountInputCardSubtitle } from './AmountInputCardSubtitle';

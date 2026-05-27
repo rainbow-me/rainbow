@@ -7,11 +7,11 @@ import { safeBigInt } from '@/features/gas/hooks/useEstimatedGasFee';
 import { useGasSettings } from '@/features/gas/hooks/useSelectedGas';
 import { GasSpeed } from '@/features/gas/types/gasSpeed';
 import { lessThanOrEqualToWorklet } from '@/framework/core/safeMath';
+import { time } from '@/framework/core/utils/time';
 import { useExternalToken } from '@/resources/assets/externalAssetsQuery';
 import { useUserAssetsStore } from '@/state/assets/userAssets';
 import { userAssetsStoreManager } from '@/state/assets/userAssetsStoreManager';
 import { useBackendNetworksStore } from '@/state/backendNetworks/backendNetworks';
-import { time } from '@/utils/time';
 
 import { TOKEN_LAUNCH_GAS_LIMIT } from '../constants';
 import { useTokenLauncherStore } from '../state/tokenLauncherStore';

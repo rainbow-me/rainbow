@@ -19,6 +19,7 @@ import type useENSProfile from '@/features/ens/hooks/useENSProfile';
 import { type ActionTypes } from '@/features/ens/hooks/useENSRegistrationActionHandler';
 import { type REGISTRATION_STEPS } from '@/features/ens/utils/helpers';
 import { parseGasParamsForTransaction } from '@/features/gas/utils/parseGas';
+import { time } from '@/framework/core/utils/time';
 import { isNativeAsset } from '@/handlers/assets';
 import {
   assetIsParsedAddressAsset,
@@ -43,7 +44,6 @@ import { useNftsStore } from '@/state/nfts/nfts';
 import { getNextNonce } from '@/state/nonces';
 import { addNewTransaction } from '@/state/pendingTransactions';
 import { executeFn, Screens, TimeToSignOperation } from '@/state/performance/performance';
-import { time } from '@/utils/time';
 import { type PreparedCallsExecution } from '@rainbow-me/delegation';
 
 type SelectedGasFeeForTx = Parameters<typeof parseGasParamsForTransaction>[0];

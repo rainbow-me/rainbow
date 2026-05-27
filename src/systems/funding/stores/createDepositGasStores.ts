@@ -12,6 +12,7 @@ import { rainbowMeteorologyGetData } from '@/features/gas/utils/gasFees';
 import { gasUnits } from '@/features/gas/utils/gasUnits';
 import { isLegacyMeteorologyFeeData } from '@/features/gas/utils/meteorologyClassification';
 import { buildGasParams, gweiToWei, weiToGwei } from '@/features/gas/utils/parseGas';
+import { time } from '@/framework/core/utils/time';
 import { convertAmountToNativeDisplayWorklet, formatNumber, multiply } from '@/helpers/utilities';
 import { logger } from '@/logger';
 import { estimateUnlockAndCrosschainSwap } from '@/raps/actions/crosschainSwap';
@@ -21,7 +22,6 @@ import { ChainId } from '@/state/backendNetworks/types';
 import { createQueryStore } from '@/state/internal/createQueryStore';
 import { type InferStoreState } from '@/state/internal/types';
 import { useWalletsStore } from '@/state/wallets/walletsStore';
-import { time } from '@/utils/time';
 import { shallowEqual } from '@/worklets/comparisons';
 
 import {

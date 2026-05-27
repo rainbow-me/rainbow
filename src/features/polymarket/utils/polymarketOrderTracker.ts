@@ -4,9 +4,9 @@ import { analytics } from '@/analytics';
 import { getPolymarketClobClient } from '@/features/polymarket/stores/derived/usePolymarketClients';
 import { type SuccessfulOrderResult } from '@/features/polymarket/types';
 import { divWorklet, mulWorklet } from '@/framework/core/safeMath';
+import { time } from '@/framework/core/utils/time';
 import { ensureError } from '@/logger';
 import { delay } from '@/utils/delay';
-import { time } from '@/utils/time';
 
 const POLL_INTERVAL = time.seconds(1);
 const POLL_TIMEOUT = time.minutes(2);

@@ -5,6 +5,7 @@ import qs from 'qs';
 import { TOKEN_SEARCH_URL } from 'react-native-dotenv';
 
 import { type SearchAsset, type TokenSearchAssetKey } from '@/__swaps__/types/search';
+import { time } from '@/framework/core/utils/time';
 import { RainbowFetchClient } from '@/framework/data/http/rainbowFetch';
 import { getProvider } from '@/handlers/web3';
 import { logger, RainbowError } from '@/logger';
@@ -15,7 +16,6 @@ import { createQueryStore } from '@/state/internal/createQueryStore';
 import { createRainbowStore } from '@/state/internal/createRainbowStore';
 import { useSwapsStore } from '@/state/swaps/swapsStore';
 import { getUniqueId } from '@/utils/ethereumUtils';
-import { time } from '@/utils/time';
 
 import { parseTokenSearchAcrossNetworks, parseTokenSearchResults } from './utils';
 

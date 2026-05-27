@@ -8,6 +8,7 @@ import { extractColorValueForColors } from '@/__swaps__/utils/swaps';
 import { type EnrichedExchangeAsset } from '@/components/ExchangeAssetList';
 import { useColorMode } from '@/design-system';
 import type { ParsedAddressAsset } from '@/entities/tokens';
+import { time } from '@/framework/core/utils/time';
 import { opacity } from '@/framework/ui/utils/opacity';
 import { type Token } from '@/graphql/__generated__/metadata';
 import { isNativeAsset } from '@/handlers/assets';
@@ -22,7 +23,6 @@ import { useBackendNetworksStore } from '@/state/backendNetworks/backendNetworks
 import { type ChainId } from '@/state/backendNetworks/types';
 import { useTheme } from '@/theme/ThemeContext';
 import { getUniqueId } from '@/utils/ethereumUtils';
-import { time } from '@/utils/time';
 
 export enum SectionId {
   PROFIT = 'profit',

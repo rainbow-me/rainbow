@@ -3,6 +3,7 @@ import { type Address } from 'viem';
 import { type AddressOrEth, type ParsedSearchAsset, type UniqueId, type UserAssetFilter, type ZerionAsset } from '@/__swaps__/types/assets';
 import { AssetType } from '@/entities/assetTypes';
 import type { ParsedAddressAsset } from '@/entities/tokens';
+import { time } from '@/framework/core/utils/time';
 import { isNativeAsset } from '@/handlers/assets';
 import {
   add,
@@ -21,7 +22,6 @@ import { getPlatformClient } from '@/resources/platform/client';
 import { useBackendNetworksStore } from '@/state/backendNetworks/backendNetworks';
 import { ChainId, ChainName } from '@/state/backendNetworks/types';
 import { getUniqueId } from '@/utils/ethereumUtils';
-import { time } from '@/utils/time';
 
 import {
   type Asset,

@@ -1,7 +1,7 @@
+import { time } from '@/framework/core/utils/time';
 import { getProvider } from '@/handlers/web3';
 import { RainbowError } from '@/logger';
 import { ChainId } from '@/state/backendNetworks/types';
-import { time } from '@/utils/time';
 
 const CONFIRMATION_TIMEOUT = time.minutes(1);
 

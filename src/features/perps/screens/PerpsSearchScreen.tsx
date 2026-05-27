@@ -12,6 +12,7 @@ import { PerpsNavigation, usePerpsNavigationStore } from '@/features/perps/scree
 import { useFilteredHyperliquidMarkets, useHyperliquidMarketsStore } from '@/features/perps/stores/hyperliquidMarketsStore';
 import { type PerpMarket } from '@/features/perps/types';
 import { navigateToNewPositionScreen, navigateToPerpDetailScreen } from '@/features/perps/utils';
+import { time } from '@/framework/core/utils/time';
 import { opacity } from '@/framework/ui/utils/opacity';
 import { useOnLeaveRoute } from '@/hooks/useOnLeaveRoute';
 import { useStableValue } from '@/hooks/useStableValue';
@@ -20,7 +21,6 @@ import { useRoute } from '@/navigation/Navigation';
 import Routes from '@/navigation/routesNames';
 import type { PerpsRoute } from '@/navigation/types';
 import { THICK_BORDER_WIDTH, THICKER_BORDER_WIDTH } from '@/styles/constants';
-import { time } from '@/utils/time';
 
 export const PerpsSearchScreen = memo(function PerpsSearchScreen() {
   const { isDarkMode } = useColorMode();
