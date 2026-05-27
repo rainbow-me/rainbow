@@ -20,7 +20,7 @@ import {
   isLiveSportsEvent,
   type SportsListItem,
 } from '@/features/polymarket/screens/polymarket-sports-events-screen/buildPolymarketSportsEventsListData';
-import { usePolymarketSportsEventsStore } from '@/features/polymarket/stores/polymarketSportsEventsStore';
+import { usePolymarketSportsEventsStore, type PolymarketSportsLeagueId } from '@/features/polymarket/stores/polymarketSportsEventsStore';
 import { type PolymarketEvent } from '@/features/polymarket/types/polymarket-event';
 import { getSportsEventTokenIds } from '@/features/polymarket/utils/sportsEventBetData';
 import { useStableValue } from '@/hooks/useStableValue';
@@ -49,7 +49,7 @@ type SportsEventsListContentProps = SportsEventsListProps & {
   isIdle: boolean;
   isLoading: boolean;
   isSuccess: boolean;
-  selectedLeagueId: string;
+  selectedLeagueId: PolymarketSportsLeagueId;
 };
 
 export const PolymarketSportsEventsList = memo(function PolymarketSportsEventsList({ listRef, onScroll }: SportsEventsListProps) {

@@ -13,16 +13,15 @@ import { DEFAULT_SPORTS_LEAGUE_KEY } from '@/features/polymarket/constants';
 import { useHorizontalSelectorStoreSync } from '@/features/polymarket/hooks/useHorizontalSelectorStoreSync';
 import { LEAGUE_SELECTOR_ORDER, SPORT_LEAGUES, type LeagueId } from '@/features/polymarket/leagues';
 import { usePolymarketContext } from '@/features/polymarket/screens/polymarket-navigator/PolymarketContext';
-import { usePolymarketSportsEventsStore } from '@/features/polymarket/stores/polymarketSportsEventsStore';
+import { usePolymarketSportsEventsStore, type PolymarketSportsLeagueId } from '@/features/polymarket/stores/polymarketSportsEventsStore';
 import { opacity } from '@/framework/ui/utils/opacity';
 import { THICK_BORDER_WIDTH, THICKER_BORDER_WIDTH } from '@/styles/constants';
 import { deepFreeze } from '@/utils/deepFreeze';
 import { DEVICE_WIDTH } from '@/utils/deviceUtils';
 import { createOpacityPalette } from '@/worklets/colors';
 
-type LeagueItemKey = LeagueId | typeof DEFAULT_SPORTS_LEAGUE_KEY;
 type LeagueItem = {
-  key: LeagueItemKey;
+  key: PolymarketSportsLeagueId;
   label: string;
   color: { dark: string; light: string };
 };
@@ -60,7 +59,6 @@ export const PolymarketLeagueSelector = memo(function PolymarketLeagueSelector()
     getItemKey: getLeagueKey,
     horizontalPadding: HORIZONTAL_PADDING,
     items: LEAGUE_ITEMS,
-    parseStoreKey: parseLeagueKey,
     scrollViewRef: leagueSelectorRef,
     selectStoreKey: state => state.selectedLeagueId,
     setStoreKey: setLeagueKey,
@@ -113,7 +111,7 @@ export const PolymarketLeagueSelector = memo(function PolymarketLeagueSelector()
 type LeagueItemProps = {
   league: LeagueItem;
   onPress: (league: LeagueItem) => void;
-  selectedLeagueKey: SharedValue<LeagueItemKey>;
+  selectedLeagueKey: SharedValue<PolymarketSportsLeagueId>;
 };
 
 const LeagueItemComponent = memo(function LeagueItemComponent({ league, onPress, selectedLeagueKey }: LeagueItemProps) {
@@ -163,15 +161,11 @@ const LeagueItemComponent = memo(function LeagueItemComponent({ league, onPress,
 
 // ============ Utilities ====================================================== //
 
-function getLeagueKey(league: LeagueItem): LeagueItemKey {
+function getLeagueKey(league: LeagueItem): PolymarketSportsLeagueId {
   return league.key;
 }
 
-function parseLeagueKey(key: string): LeagueItemKey | undefined {
-  return key as LeagueItemKey;
-}
-
-function setLeagueKey(key: LeagueItemKey): void {
+function setLeagueKey(key: PolymarketSportsLeagueId): void {
   usePolymarketSportsEventsStore.getState().setSelectedLeagueId(key);
 }
 

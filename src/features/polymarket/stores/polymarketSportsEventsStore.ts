@@ -1,4 +1,5 @@
 import { DEFAULT_SPORTS_LEAGUE_KEY, POLYMARKET_GAMMA_API_URL } from '@/features/polymarket/constants';
+import { type LeagueId } from '@/features/polymarket/leagues';
 import { type PolymarketEvent, type RawPolymarketEvent } from '@/features/polymarket/types/polymarket-event';
 import { getSportsEventsStartTimeRange } from '@/features/polymarket/utils/getSportsEventsDateRange';
 import { fetchTeamsForGameEvents } from '@/features/polymarket/utils/sports';
@@ -9,9 +10,11 @@ import { time } from '@/utils/time';
 
 const VOLUME_MIN = '1000';
 
+export type PolymarketSportsLeagueId = LeagueId | typeof DEFAULT_SPORTS_LEAGUE_KEY;
+
 type PolymarketSportsEventsStoreState = {
-  selectedLeagueId: string;
-  setSelectedLeagueId: (leagueId: string) => void;
+  selectedLeagueId: PolymarketSportsLeagueId;
+  setSelectedLeagueId: (leagueId: PolymarketSportsLeagueId) => void;
 };
 
 export const usePolymarketSportsEventsStore = createQueryStore<PolymarketEvent[], never, PolymarketSportsEventsStoreState>(
@@ -22,7 +25,7 @@ export const usePolymarketSportsEventsStore = createQueryStore<PolymarketEvent[]
   },
   set => ({
     selectedLeagueId: DEFAULT_SPORTS_LEAGUE_KEY,
-    setSelectedLeagueId: (leagueId: string) => set({ selectedLeagueId: leagueId }),
+    setSelectedLeagueId: (leagueId: PolymarketSportsLeagueId) => set({ selectedLeagueId: leagueId }),
   })
 );
 

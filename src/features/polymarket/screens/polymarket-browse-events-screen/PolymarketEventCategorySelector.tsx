@@ -8,7 +8,7 @@ import { TIMING_CONFIGS } from '@/components/animations/animationConfigs';
 import ButtonPressAnimation from '@/components/animations/ButtonPressAnimation';
 import { Border, globalColors, Text, TextIcon, useColorMode, useForegroundColor } from '@/design-system';
 import { InnerShadow } from '@/features/polymarket/components/InnerShadow';
-import { CATEGORIES, type Category } from '@/features/polymarket/constants';
+import { CATEGORIES, type Category, type CategoryKey } from '@/features/polymarket/constants';
 import { useHorizontalSelectorStoreSync } from '@/features/polymarket/hooks/useHorizontalSelectorStoreSync';
 import { usePolymarketContext } from '@/features/polymarket/screens/polymarket-navigator/PolymarketContext';
 import { usePolymarketCategoryStore } from '@/features/polymarket/stores/usePolymarketCategoryStore';
@@ -18,7 +18,6 @@ import { deepFreeze } from '@/utils/deepFreeze';
 import { DEVICE_WIDTH } from '@/utils/deviceUtils';
 import { createOpacityPalette } from '@/worklets/colors';
 
-type CategoryKey = keyof typeof CATEGORIES;
 type CategoryWithKey = Category & { key: CategoryKey };
 
 const VERTICAL_PADDING = 0;
@@ -43,7 +42,6 @@ export const PolymarketEventCategorySelector = memo(function PolymarketEventCate
     getItemKey: getCategoryKey,
     horizontalPadding: HORIZONTAL_PADDING,
     items: CATEGORY_ITEMS,
-    parseStoreKey: parseCategoryKey,
     scrollViewRef: categorySelectorRef,
     selectStoreKey: state => state.tagId,
     setStoreKey: setCategoryKey,
@@ -138,10 +136,6 @@ const CategoryItem = memo(function CategoryItem({ category, onPress, selectedCat
 
 function getCategoryKey(category: CategoryWithKey): CategoryKey {
   return category.key;
-}
-
-function parseCategoryKey(key: string): CategoryKey | undefined {
-  return key in CATEGORIES ? (key as CategoryKey) : undefined;
 }
 
 function setCategoryKey(key: CategoryKey): void {

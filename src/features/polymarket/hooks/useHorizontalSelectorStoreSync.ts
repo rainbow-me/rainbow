@@ -13,9 +13,8 @@ type UseHorizontalSelectorStoreSyncParams<StoreState, Item, Key extends string> 
   getItemKey: (item: Item) => Key;
   horizontalPadding: number;
   items: readonly Item[];
-  parseStoreKey: (key: string) => Key | undefined;
   scrollViewRef: RefObject<ScrollView | null>;
-  selectStoreKey: (state: StoreState) => string;
+  selectStoreKey: (state: StoreState) => Key;
   setStoreKey: (key: Key) => void;
   store: BaseRainbowStore<StoreState>;
 };
@@ -31,7 +30,6 @@ export function useHorizontalSelectorStoreSync<StoreState, Item, Key extends str
   getItemKey,
   horizontalPadding,
   items,
-  parseStoreKey,
   scrollViewRef,
   selectStoreKey,
   setStoreKey,
@@ -39,7 +37,7 @@ export function useHorizontalSelectorStoreSync<StoreState, Item, Key extends str
 }: UseHorizontalSelectorStoreSyncParams<StoreState, Item, Key>): UseHorizontalSelectorStoreSyncResult<Item, Key> {
   const itemLayouts = useRef<ItemLayout[]>([]);
   const didInitialScroll = useRef(false);
-  const initialKey = parseStoreKey(selectStoreKey(store.getState())) ?? getItemKey(items[0]);
+  const initialKey = selectStoreKey(store.getState());
   const selectedKey = useSharedValue<Key>(initialKey);
 
   const scrollToKey = useCallback(
@@ -56,14 +54,13 @@ export function useHorizontalSelectorStoreSync<StoreState, Item, Key extends str
   }, [scrollToKey, selectedKey]);
 
   const syncExternalSelection = useCallback(
-    (storeKey: string) => {
-      const nextKey = parseStoreKey(storeKey);
-      if (!nextKey || selectedKey.value === nextKey) return;
+    (nextKey: Key) => {
+      if (selectedKey.value === nextKey) return;
 
       selectedKey.value = nextKey;
       if (allItemsMeasured(itemLayouts.current, items.length)) scrollToKey(nextKey, true);
     },
-    [items.length, parseStoreKey, scrollToKey, selectedKey]
+    [items.length, scrollToKey, selectedKey]
   );
 
   useListen(store, selectStoreKey, syncExternalSelection);

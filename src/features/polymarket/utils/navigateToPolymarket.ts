@@ -1,5 +1,6 @@
-import { CATEGORIES, DEFAULT_SPORTS_LEAGUE_KEY } from '@/features/polymarket/constants';
-import { usePolymarketSportsEventsStore } from '@/features/polymarket/stores/polymarketSportsEventsStore';
+import { CATEGORIES, DEFAULT_SPORTS_LEAGUE_KEY, type CategoryKey } from '@/features/polymarket/constants';
+import { getLeagueId } from '@/features/polymarket/leagues';
+import { usePolymarketSportsEventsStore, type PolymarketSportsLeagueId } from '@/features/polymarket/stores/polymarketSportsEventsStore';
 import { usePolymarketCategoryStore } from '@/features/polymarket/stores/usePolymarketCategoryStore';
 import Navigation from '@/navigation/Navigation';
 import Routes from '@/navigation/routesNames';
@@ -15,19 +16,34 @@ export function navigateToPolymarketEvent(params: RootStackParamList[typeof Rout
 }
 
 export function navigateToPolymarketCategory(tagId: string): void {
-  usePolymarketCategoryStore.getState().setTagId(tagId);
+  const categoryKey = parseCategoryKey(tagId);
+  if (!categoryKey) return;
+
+  usePolymarketCategoryStore.getState().setTagId(categoryKey);
   usePolymarketSportsEventsStore.getState().setSelectedLeagueId(DEFAULT_SPORTS_LEAGUE_KEY);
 
   navigateToPolymarket();
 }
 
 export function navigateToPolymarketSportsLeague(leagueId: string): void {
+  const selectedLeagueId = parseSportsLeagueKey(leagueId);
+  if (!selectedLeagueId) return;
+
   const sportsTagId = CATEGORIES.sports.tagId;
   if (!sportsTagId) return;
 
   usePolymarketCategoryStore.getState().setTagId(sportsTagId);
-  usePolymarketSportsEventsStore.getState().setSelectedLeagueId(leagueId);
+  usePolymarketSportsEventsStore.getState().setSelectedLeagueId(selectedLeagueId);
   navigateToPolymarket();
+}
+
+function parseCategoryKey(tagId: string): CategoryKey | undefined {
+  return tagId in CATEGORIES ? (tagId as CategoryKey) : undefined;
+}
+
+function parseSportsLeagueKey(leagueId: string): PolymarketSportsLeagueId | undefined {
+  if (leagueId === DEFAULT_SPORTS_LEAGUE_KEY) return DEFAULT_SPORTS_LEAGUE_KEY;
+  return getLeagueId(leagueId);
 }
 
 function navigateToPolymarketSection(params?: RootStackParamList[typeof Routes.POLYMARKET_NAVIGATOR]) {
