@@ -79,25 +79,92 @@ export function isMarketSurface(surface: SurfaceLeaf): surface is SurfaceLeafWit
 
 export function MarketSection({ surface, surfaceId }: { surface: SurfaceLeafWithDisplay<MarketDisplay>; surfaceId: string }) {
   if (!hasPlacement(surface)) return null;
-  return <PlacementBackedMarketSection surface={surface} surfaceId={surfaceId} />;
+  return <MarketPlacementContent surface={surface} surfaceId={surfaceId} />;
 }
 
-function PlacementBackedMarketSection({
+function MarketPlacementContent({
   surface,
   surfaceId,
 }: {
   surface: PlacementBackedSurfaceLeafWithDisplay<MarketDisplay>;
   surfaceId: string;
 }) {
-  const source = usePlacementsStore(state => state.getPlacement(surface.placement)?.source);
+  const { onTapSearch } = useDiscoverScreenContext();
+  const nativeCurrency = userAssetsStoreManager(state => state.currency);
+  const placement = usePlacementsStore(state => state.getPlacement(surface.placement));
   const isPendingSurfacePlacement = useIsDiscoverSurfacePlacementPending(surface.placement);
   const isLoadingPlacementSource = usePlacementsStore(state => {
     if (state.getPlacement(surface.placement) !== undefined) return false;
     return state.getStatus('isInitialLoad') || state.getStatus('isIdle') || state.getStatus('isLoading');
   });
+  const perpsResult = usePerpsPlacement(surface.placement);
+  const tokensResult = useTokensPlacement(surface.placement);
+  const perpsItems = useMemo(() => perpsResult.items.map(perpToMarketDisplayItem), [perpsResult.items]);
+  const tokenDescriptor = useMemo<SectionDescriptor<TokenPlacementItem>>(() => {
+    switch (surface.display) {
+      case 'market_pill.carousel':
+        return {
+          ...MARKET_SECTION_DESCRIPTORS[surface.display],
+          getItemWidth: (item: TokenPlacementItem) => computeMarketPillWidth(tokenToMarketPillWidthInput({ item, nativeCurrency })),
+          renderItem: (item: TokenPlacementItem, _: number, analyticsContext: DiscoverCardAnalyticsContext) => (
+            <TokenMarketItem analyticsContext={analyticsContext} item={item} nativeCurrency={nativeCurrency} variant="pill" />
+          ),
+        };
+      case 'market_tile.carousel':
+        return {
+          ...MARKET_SECTION_DESCRIPTORS[surface.display],
+          renderItem: (item: TokenPlacementItem, _: number, analyticsContext: DiscoverCardAnalyticsContext) => (
+            <TokenMarketItem analyticsContext={analyticsContext} item={item} nativeCurrency={nativeCurrency} variant="tile" />
+          ),
+        };
+      case 'market_tile.grid':
+        return {
+          ...MARKET_SECTION_DESCRIPTORS[surface.display],
+          renderItem: (item: TokenPlacementItem, width: number, analyticsContext: DiscoverCardAnalyticsContext) => (
+            <TokenMarketItem analyticsContext={analyticsContext} item={item} nativeCurrency={nativeCurrency} variant="tile" width={width} />
+          ),
+        };
+      case 'market_cell.list':
+        return {
+          ...MARKET_SECTION_DESCRIPTORS[surface.display],
+          renderItem: (item: TokenPlacementItem, analyticsContext: DiscoverCardAnalyticsContext) => (
+            <TokenMarketItem analyticsContext={analyticsContext} item={item} nativeCurrency={nativeCurrency} variant="cell" />
+          ),
+        };
+    }
+  }, [nativeCurrency, surface.display]);
+  const onPressSeeAll = useCallback(() => {
+    if (surface.destination?.[0] === 'tokens') {
+      onTapSearch();
+      return;
+    }
+    navigateDiscoverDestination(surface.destination);
+  }, [onTapSearch, surface.destination]);
 
-  if (source === 'hyperliquid') return <PerpsMarketSection surface={surface} surfaceId={surfaceId} />;
-  if (source === 'rainbow') return <TokensMarketSection surface={surface} surfaceId={surfaceId} />;
+  if (placement?.source === 'hyperliquid') {
+    return renderSectionLayout({
+      data: perpsItems,
+      descriptor: MARKET_SECTION_DESCRIPTORS[surface.display],
+      loading: perpsResult.isLoading,
+      onPressSeeAll: getHeaderPress(surface.destination),
+      placement: perpsResult.placement,
+      surface,
+      surfaceId,
+    });
+  }
+
+  if (placement?.source === 'rainbow') {
+    return renderSectionLayout({
+      data: tokensResult.items,
+      descriptor: tokenDescriptor,
+      loading: tokensResult.isLoading,
+      onPressSeeAll: surface.destination ? onPressSeeAll : undefined,
+      placement: tokensResult.placement,
+      surface,
+      surfaceId,
+    });
+  }
+
   if (isLoadingPlacementSource || isPendingSurfacePlacement) {
     return renderSectionLayout({
       data: [],
@@ -111,46 +178,6 @@ function PlacementBackedMarketSection({
   }
 
   return null;
-}
-
-function PerpsMarketSection({ surface, surfaceId }: { surface: PlacementBackedSurfaceLeafWithDisplay<MarketDisplay>; surfaceId: string }) {
-  const result = usePerpsPlacement(surface.placement);
-  const descriptor = MARKET_SECTION_DESCRIPTORS[surface.display];
-  const items = useMemo(() => result.items.map(perpToMarketDisplayItem), [result.items]);
-
-  return renderSectionLayout({
-    data: items,
-    descriptor,
-    loading: result.isLoading,
-    onPressSeeAll: getHeaderPress(surface.destination),
-    placement: result.placement,
-    surface,
-    surfaceId,
-  });
-}
-
-function TokensMarketSection({ surface, surfaceId }: { surface: PlacementBackedSurfaceLeafWithDisplay<MarketDisplay>; surfaceId: string }) {
-  const { onTapSearch } = useDiscoverScreenContext();
-  const nativeCurrency = userAssetsStoreManager(state => state.currency);
-  const result = useTokensPlacement(surface.placement);
-  const descriptor = useMemo(() => getTokenMarketSectionDescriptor(surface.display, nativeCurrency), [nativeCurrency, surface.display]);
-  const onPressSeeAll = useCallback(() => {
-    if (surface.destination?.[0] === 'tokens') {
-      onTapSearch();
-      return;
-    }
-    navigateDiscoverDestination(surface.destination);
-  }, [onTapSearch, surface.destination]);
-
-  return renderSectionLayout({
-    data: result.items,
-    descriptor,
-    loading: result.isLoading,
-    onPressSeeAll: surface.destination ? onPressSeeAll : undefined,
-    placement: result.placement,
-    surface,
-    surfaceId,
-  });
 }
 
 function hasPlacement(surface: SurfaceLeafWithDisplay<MarketDisplay>): surface is PlacementBackedSurfaceLeafWithDisplay<MarketDisplay> {
@@ -177,93 +204,32 @@ function renderMarketCell(item: MarketDisplayItem, analyticsContext: DiscoverCar
   return <MarketCell analyticsContext={analyticsContext} item={item} />;
 }
 
-function getTokenMarketSectionDescriptor(
-  display: MarketDisplay,
-  nativeCurrency: ReturnType<typeof userAssetsStoreManager.getState>['currency']
-): SectionDescriptor<TokenPlacementItem> {
-  switch (display) {
-    case 'market_pill.carousel':
-      return {
-        ...MARKET_SECTION_DESCRIPTORS[display],
-        getItemWidth: (item: TokenPlacementItem) => computeMarketPillWidth(tokenToMarketPillWidthInput({ item, nativeCurrency })),
-        renderItem: (item: TokenPlacementItem, _: number, analyticsContext: DiscoverCardAnalyticsContext) => (
-          <TokenMarketPill analyticsContext={analyticsContext} item={item} nativeCurrency={nativeCurrency} />
-        ),
-      };
-    case 'market_tile.carousel':
-      return {
-        ...MARKET_SECTION_DESCRIPTORS[display],
-        renderItem: (item: TokenPlacementItem, _: number, analyticsContext: DiscoverCardAnalyticsContext) => (
-          <TokenMarketTile analyticsContext={analyticsContext} item={item} nativeCurrency={nativeCurrency} />
-        ),
-      };
-    case 'market_tile.grid':
-      return {
-        ...MARKET_SECTION_DESCRIPTORS[display],
-        renderItem: (item: TokenPlacementItem, width: number, analyticsContext: DiscoverCardAnalyticsContext) => (
-          <TokenMarketTile analyticsContext={analyticsContext} item={item} nativeCurrency={nativeCurrency} width={width} />
-        ),
-      };
-    case 'market_cell.list':
-      return {
-        ...MARKET_SECTION_DESCRIPTORS[display],
-        renderItem: (item: TokenPlacementItem, analyticsContext: DiscoverCardAnalyticsContext) => (
-          <TokenMarketCell analyticsContext={analyticsContext} item={item} nativeCurrency={nativeCurrency} />
-        ),
-      };
-  }
-}
-
-function TokenMarketPill({
+function TokenMarketItem({
   analyticsContext,
   item,
   nativeCurrency,
-}: {
-  analyticsContext: DiscoverCardAnalyticsContext;
-  item: TokenPlacementItem;
-  nativeCurrency: ReturnType<typeof userAssetsStoreManager.getState>['currency'];
-}) {
-  const displayItem = useTokenMarketDisplayItem(item, nativeCurrency);
-  return <MarketPill analyticsContext={analyticsContext} item={displayItem} />;
-}
-
-function TokenMarketTile({
-  analyticsContext,
-  item,
-  nativeCurrency,
+  variant,
   width,
 }: {
   analyticsContext: DiscoverCardAnalyticsContext;
   item: TokenPlacementItem;
   nativeCurrency: ReturnType<typeof userAssetsStoreManager.getState>['currency'];
+  variant: 'cell' | 'pill' | 'tile';
   width?: number;
 }) {
-  const displayItem = useTokenMarketDisplayItem(item, nativeCurrency);
-  return <MarketTileCard analyticsContext={analyticsContext} item={displayItem} width={width} />;
-}
-
-function TokenMarketCell({
-  analyticsContext,
-  item,
-  nativeCurrency,
-}: {
-  analyticsContext: DiscoverCardAnalyticsContext;
-  item: TokenPlacementItem;
-  nativeCurrency: ReturnType<typeof userAssetsStoreManager.getState>['currency'];
-}) {
-  const displayItem = useTokenMarketDisplayItem(item, nativeCurrency);
-  return <MarketCell analyticsContext={analyticsContext} item={displayItem} />;
-}
-
-function useTokenMarketDisplayItem(
-  item: TokenPlacementItem,
-  nativeCurrency: ReturnType<typeof userAssetsStoreManager.getState>['currency']
-): MarketDisplayItem {
   const accentColor = useColorForAsset({
     address: item.asset.address,
     name: item.asset.name,
     symbol: item.asset.symbol,
   });
+  const displayItem = useMemo(() => tokenToMarketDisplayItem({ accentColor, item, nativeCurrency }), [accentColor, item, nativeCurrency]);
 
-  return useMemo(() => tokenToMarketDisplayItem({ accentColor, item, nativeCurrency }), [accentColor, item, nativeCurrency]);
+  switch (variant) {
+    case 'cell':
+      return <MarketCell analyticsContext={analyticsContext} item={displayItem} />;
+    case 'pill':
+      return <MarketPill analyticsContext={analyticsContext} item={displayItem} />;
+    case 'tile':
+      return <MarketTileCard analyticsContext={analyticsContext} item={displayItem} width={width} />;
+  }
 }
