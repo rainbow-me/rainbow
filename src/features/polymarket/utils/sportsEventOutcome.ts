@@ -8,34 +8,24 @@ export type SportsEventOutcomeInfo = {
   outcome: string;
 };
 
-export function findSportsEventOutcome(markets: PolymarketMarket[], outcomeTokenId?: string): SportsEventOutcomeInfo | null {
-  if (!outcomeTokenId) return null;
-
-  for (const market of markets) {
-    const outcomeIndex = market.clobTokenIds.indexOf(outcomeTokenId);
-    if (outcomeIndex >= 0) {
-      const outcome = market.groupItemTitle || market.outcomes[outcomeIndex] || '';
-      return { market, outcomeIndex, outcome };
-    }
-  }
-
-  return null;
-}
-
 export function getSportsEventOutcomeCellColor(
   markets: PolymarketMarket[],
   outcomeTokenId: string | undefined,
   isDarkMode: boolean,
   teams?: PolymarketTeamInfo[]
 ): string | undefined {
-  const outcomeInfo = findSportsEventOutcome(markets, outcomeTokenId);
-  if (!outcomeInfo) return undefined;
+  if (!outcomeTokenId) return undefined;
 
-  return getOutcomeColor({
-    market: outcomeInfo.market,
-    outcome: outcomeInfo.outcome,
-    outcomeIndex: outcomeInfo.outcomeIndex,
-    isDarkMode,
-    teams,
-  });
+  for (const market of markets) {
+    const outcomeIndex = market.clobTokenIds.indexOf(outcomeTokenId);
+    if (outcomeIndex >= 0) {
+      return getOutcomeColor({
+        market,
+        outcome: market.groupItemTitle || market.outcomes[outcomeIndex] || '',
+        outcomeIndex,
+        isDarkMode,
+        teams,
+      });
+    }
+  }
 }

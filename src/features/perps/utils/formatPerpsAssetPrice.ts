@@ -1,5 +1,4 @@
 import { getNumberFormatter } from '@/helpers/intl';
-import { type TokenData } from '@/state/liveTokens/liveTokensStore';
 
 import { formatOrderPrice } from './formatOrderPrice';
 
@@ -48,8 +47,4 @@ export function formatPerpAssetPrice(
 
   const localizedNumber = formatter.format(Math.abs(numValue));
   return `${isNegative ? '-' : ''}$${localizedNumber}`;
-}
-
-export function selectFormattedMarkPrice(state: TokenData): string {
-  return formatPerpAssetPrice(state.midPrice ?? state.price);
 }

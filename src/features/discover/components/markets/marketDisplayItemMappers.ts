@@ -10,7 +10,7 @@ import { HYPERLIQUID_COLORS } from '@/features/perps/constants';
 import { useHyperliquidLineChartsStore } from '@/features/perps/stores/hyperliquidLineChartsStore';
 import { type PerpMarketWithMetadata } from '@/features/perps/types';
 import { getHyperliquidTokenId, navigateToPerpDetailScreen } from '@/features/perps/utils';
-import { formatPerpAssetPrice, selectFormattedMarkPrice } from '@/features/perps/utils/formatPerpsAssetPrice';
+import { formatPerpAssetPrice } from '@/features/perps/utils/formatPerpsAssetPrice';
 import { type PerpMarketPlacementItem } from '@/features/placements/stores/derived/perpsPlacementStore';
 import { type TokenPlacementItem } from '@/features/placements/stores/derived/tokensPlacementStore';
 import { formatCurrency } from '@/helpers/strings';
@@ -44,7 +44,7 @@ export function perpToMarketDisplayItem(item: PerpMarketPlacementItem): MarketDi
       marketSymbol: displayName,
     },
     priceChangeSelector: token => token.change.change24hPct,
-    priceSelector: selectFormattedMarkPrice,
+    priceSelector: token => formatPerpAssetPrice(token.midPrice ?? token.price),
   };
 }
 

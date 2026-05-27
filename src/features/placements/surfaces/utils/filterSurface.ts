@@ -1,9 +1,5 @@
 import { type Enabled, type Surface } from '@/features/placements/surfaces/types';
 
-export function filterEnabledSurface(surface: Surface, now: number): Surface | undefined {
-  return filterSurfaceTree(surface, item => isEnabled(item.enabled, now));
-}
-
 export function filterSurfaceTree(surface: Surface, predicate: (surface: Surface) => boolean): Surface | undefined {
   if (!predicate(surface)) return undefined;
 
@@ -26,7 +22,7 @@ export function filterSurfaceTree(surface: Surface, predicate: (surface: Surface
   return didChange ? { ...surface, items: filteredItems } : surface;
 }
 
-function isEnabled(enabled: Enabled | undefined, now: number): boolean {
+export function isSurfaceEnabled(enabled: Enabled | undefined, now: number): boolean {
   if (enabled === undefined || enabled === true) return true;
   if (enabled === false) return false;
 

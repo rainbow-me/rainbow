@@ -3,7 +3,7 @@ import { useCallback, useMemo } from 'react';
 import { useColorMode } from '@/design-system';
 import { type PolymarketEvent } from '@/features/polymarket/types/polymarket-event';
 import { getOutcomeColor } from '@/features/polymarket/utils/getMarketColor';
-import { findSportsEventOutcome, type SportsEventOutcomeInfo } from '@/features/polymarket/utils/sportsEventOutcome';
+import { type SportsEventOutcomeInfo } from '@/features/polymarket/utils/sportsEventOutcome';
 import Navigation from '@/navigation/Navigation';
 import Routes from '@/navigation/routesNames';
 import { getPolymarketTokenId } from '@/state/liveTokens/polymarketAdapter';
@@ -24,7 +24,19 @@ export function usePolymarketSportsBetCellPress({
   onResolvedOutcomePress,
 }: UsePolymarketSportsBetCellPressArgs): (() => void) | undefined {
   const { isDarkMode } = useColorMode();
-  const outcomeInfo = useMemo(() => findSportsEventOutcome(event.markets, outcomeTokenId), [event.markets, outcomeTokenId]);
+  const outcomeInfo = useMemo(() => {
+    if (!outcomeTokenId) return null;
+
+    for (const market of event.markets) {
+      const outcomeIndex = market.clobTokenIds.indexOf(outcomeTokenId);
+      if (outcomeIndex >= 0) {
+        const outcome = market.groupItemTitle || market.outcomes[outcomeIndex] || '';
+        return { market, outcomeIndex, outcome };
+      }
+    }
+
+    return null;
+  }, [event.markets, outcomeTokenId]);
 
   const onPress = useCallback(() => {
     if (!outcomeInfo) return;

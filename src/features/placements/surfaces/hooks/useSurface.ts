@@ -4,7 +4,7 @@ import { usePlacementsStore } from '@/features/placements/stores/placementsStore
 import { useSurfaceClockStore } from '@/features/placements/surfaces/stores/surfaceClockStore';
 import { getSurfaceStore } from '@/features/placements/surfaces/stores/surfaceStore';
 import { type Surface } from '@/features/placements/surfaces/types';
-import { filterEnabledSurface, filterSurfaceTree } from '@/features/placements/surfaces/utils/filterSurface';
+import { filterSurfaceTree, isSurfaceEnabled } from '@/features/placements/surfaces/utils/filterSurface';
 import { type PlacementSource } from '@/features/placements/types';
 import { getConsistentArray } from '@/helpers/getConsistentArray';
 import { createDerivedStore } from '@/state/internal/createDerivedStore';
@@ -31,7 +31,7 @@ export const useDiscoverSurface = createDerivedStore<Surface | undefined>(
 
     if (!rawSurface) return undefined;
 
-    const enabledSurface = filterEnabledSurface(rawSurface, now);
+    const enabledSurface = filterSurfaceTree(rawSurface, surface => isSurfaceEnabled(surface.enabled, now));
     if (!enabledSurface || !placementsReady) return enabledSurface;
     if (isSurfaceWaitingForPlacements(enabledSurface, placementsById, surfaceLastFetchedAt, placementsLastFetchedAt)) return enabledSurface;
 

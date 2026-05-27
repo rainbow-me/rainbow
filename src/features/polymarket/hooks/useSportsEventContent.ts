@@ -133,18 +133,23 @@ function getRows(event: PolymarketEvent, betGrid: EventBetGrid): SportsEventRows
     },
   };
 
-  if (hasBetCells(rows)) return rows;
+  if (rows.away.line || rows.away.moneyline || rows.home.line || rows.home.moneyline) return rows;
 
   return getFallbackMarketRows(event) ?? rows;
 }
 
-function hasBetCells(rows: SportsEventRows) {
-  return !!(rows.away.line || rows.away.moneyline || rows.home.line || rows.home.moneyline);
-}
-
 function getFallbackMarketRows(event: PolymarketEvent): SportsEventRows | null {
   const markets = event.markets
-    .filter(isRenderableFallbackMarket)
+    .filter(
+      market =>
+        market.active !== false &&
+        market.closed !== true &&
+        market.umaResolutionStatus !== 'resolved' &&
+        !!market.groupItemTitle &&
+        market.outcomePrices[0] != null &&
+        market.outcomePrices[0] !== '' &&
+        !!market.clobTokenIds[0]
+    )
     .sort((a, b) => Number(b.outcomePrices[0] ?? 0) - Number(a.outcomePrices[0] ?? 0))
     .slice(0, 2);
 
@@ -154,18 +159,6 @@ function getFallbackMarketRows(event: PolymarketEvent): SportsEventRows | null {
     away: getFallbackMarketRow(markets[0]),
     home: getFallbackMarketRow(markets[1]),
   };
-}
-
-function isRenderableFallbackMarket(market: PolymarketMarket) {
-  return (
-    market.active !== false &&
-    market.closed !== true &&
-    market.umaResolutionStatus !== 'resolved' &&
-    !!market.groupItemTitle &&
-    market.outcomePrices[0] != null &&
-    market.outcomePrices[0] !== '' &&
-    !!market.clobTokenIds[0]
-  );
 }
 
 function getFallbackMarketRow(market: PolymarketMarket): SportsEventTeamRow {

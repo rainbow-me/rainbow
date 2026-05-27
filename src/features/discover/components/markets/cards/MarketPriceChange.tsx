@@ -71,10 +71,5 @@ function selectPriceChangeArrow(priceChange: SharedValue<string>): string {
 
 function selectPriceChangeText(priceChange: SharedValue<string>): string {
   'worklet';
-  return formatCompactPriceChange(priceChange.value);
-}
-
-function formatCompactPriceChange(priceChange: string): string {
-  'worklet';
-  return `${toFixedWorklet(Math.abs(Number(priceChange)) * 10_000, 2)}%`;
+  return `${toFixedWorklet(Math.abs(Number(priceChange.value)) * 10_000, 2)}%`;
 }
