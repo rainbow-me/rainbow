@@ -7,7 +7,8 @@ import ButtonPressAnimation from '@/components/animations/ButtonPressAnimation';
 import { useDiscoverScreenContext } from '@/components/Discover/DiscoverScreenContext';
 import { EasingGradient } from '@/components/easing-gradient/EasingGradient';
 import { Skeleton } from '@/components/Skeleton';
-import { Box, Text, TextIcon, useBackgroundColor, useForegroundColor } from '@/design-system';
+import { Box, Text, TextIcon, useBackgroundColor, useColorMode, useForegroundColor } from '@/design-system';
+import { type BackgroundColor } from '@/design-system/color/palettes';
 import { DISCOVER_HEADER_HEIGHT } from '@/features/discover/components/discoverHeaderLayout';
 import {
   DiscoverSectionNavigation,
@@ -72,7 +73,9 @@ function DiscoverCategorySelector() {
   const surface = useDiscoverSurface();
   const tabs = surface?.tabs ?? [];
   const { scrollToSectionTop } = useDiscoverScreenContext();
-  const screenBackgroundColor = useBackgroundColor('surfacePrimary');
+  const { isDarkMode } = useColorMode();
+  const screenBackgroundToken: BackgroundColor = isDarkMode ? 'black' : 'surfacePrimary';
+  const screenBackgroundColor = useBackgroundColor(screenBackgroundToken);
   const scrollViewRef = useRef<ScrollView>(null);
   const scrollOffsetRef = useRef(0);
   const scrollViewWidthRef = useRef(0);

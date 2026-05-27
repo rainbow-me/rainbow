@@ -10,7 +10,8 @@ import { DiscoverScreenContent } from '@/components/Discover/DiscoverScreenConte
 import { DiscoverScreenProvider } from '@/components/Discover/DiscoverScreenContext';
 import { DiscoverSearchBar } from '@/components/Discover/DiscoverSearchBar';
 import { ScrollHeaderFade } from '@/components/scroll-header-fade/ScrollHeaderFade';
-import { Box, useBackgroundColor, useForegroundColor } from '@/design-system';
+import { Box, useBackgroundColor, useColorMode, useForegroundColor } from '@/design-system';
+import { type BackgroundColor } from '@/design-system/color/palettes';
 import { DiscoverHeader } from '@/features/discover/components/DiscoverHeader';
 import { DISCOVER_HEADER_HEIGHT } from '@/features/discover/components/discoverHeaderLayout';
 import { refreshDiscoverSurface } from '@/features/discover/utils/refreshDiscoverSurface';
@@ -25,10 +26,12 @@ export const DiscoverScreen = () => {
 };
 
 const Content = () => {
+  const { isDarkMode } = useColorMode();
   const { top: topInset } = useSafeAreaInsets();
   const isSearching = useDiscoverSearchQueryStore(state => state.isSearching);
 
-  const backgroundColor = useBackgroundColor('surfacePrimary');
+  const backgroundToken: BackgroundColor = isDarkMode ? 'black' : 'surfacePrimary';
+  const backgroundColor = useBackgroundColor(backgroundToken);
   const refreshTintColor = useForegroundColor('label');
   const headerFadeTopInset = topInset + DISCOVER_HEADER_HEIGHT;
   const scrollOffset = useSharedValue(0);
@@ -50,7 +53,7 @@ const Content = () => {
   );
 
   return (
-    <Box height="full" style={{ flex: 1, backgroundColor }}>
+    <Box background={backgroundToken} height="full" style={{ flex: 1 }}>
       <Box paddingTop={{ custom: topInset }}>{isSearching ? <DiscoverSearchBar /> : <DiscoverHeader />}</Box>
 
       <Box style={{ flex: 1 }} testID="discover-sheet">
