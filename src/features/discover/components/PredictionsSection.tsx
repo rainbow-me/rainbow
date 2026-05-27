@@ -25,7 +25,6 @@ import {
 import {
   getHeaderPress,
   getInitialRenderedItemCount,
-  isLiveSportsSurface,
   isSportsEventCardSurface,
   renderSectionLayout,
 } from '@/features/discover/components/SectionLayout';
@@ -47,6 +46,7 @@ import {
 import { usePolymarketSportsEventsStore } from '@/features/polymarket/stores/polymarketSportsEventsStore';
 import { type PolymarketEvent } from '@/features/polymarket/types/polymarket-event';
 import { navigateToPolymarketEvent } from '@/features/polymarket/utils/navigateToPolymarket';
+import { logger } from '@/logger';
 import { DEVICE_WIDTH } from '@/utils/deviceUtils';
 
 const PREDICTION_TILE_WIDTH = Math.round((DEVICE_WIDTH - 20 * 2 - 8) / 2);
@@ -126,12 +126,20 @@ export function isPredictionsSurface(surface: SurfaceLeaf): surface is SurfaceLe
 }
 
 export function PredictionsSection({ surface, surfaceId }: { surface: SurfaceLeafWithDisplay<PredictionsDisplay>; surfaceId: string }) {
-  if (isLiveSportsSurface(surface)) {
-    return <SportsLiveSection surface={surface} surfaceId={surfaceId} />;
+  const sportsIntent = useMemo(() => getSportsSurfaceIntent(surface), [surface]);
+
+  if (!hasPlacement(surface)) {
+    if (sportsIntent) return <SportsQuerySection sportsIntent={sportsIntent} surface={surface} surfaceId={surfaceId} />;
+    return unsupportedUnplacedPredictionSurface(surface, surfaceId);
   }
 
-  if (!hasPlacement(surface)) return null;
-  if (isSportsEventCardSurface(surface)) return <SportsEventPlacementSection surface={surface} surfaceId={surfaceId} />;
+  if (isSportsEventCardSurface(surface)) {
+    if (!sportsIntent && surface.filters?.sports !== undefined) {
+      logUnsupportedSportsIntent(surface, surfaceId);
+    }
+    return <SportsEventPlacementSection sportsIntent={sportsIntent} surface={surface} surfaceId={surfaceId} />;
+  }
+
   return <PredictionsPlacementSection surface={surface} surfaceId={surfaceId} />;
 }
 
@@ -157,13 +165,14 @@ function PredictionsPlacementSection({
 }
 
 function SportsEventPlacementSection({
+  sportsIntent,
   surface,
   surfaceId,
 }: {
+  sportsIntent: SportsSurfaceIntent | null;
   surface: PlacementBackedSurfaceLeafWithDisplay<PredictionsDisplay>;
   surfaceId: string;
 }) {
-  const sportsIntent = getSportsSurfaceIntent(surface);
   if (!sportsIntent) return <PredictionsPlacementSection surface={surface} surfaceId={surfaceId} />;
 
   return <SportsEventPlacementWithIntent sportsIntent={sportsIntent} surface={surface} surfaceId={surfaceId} />;
@@ -200,15 +209,22 @@ function SportsEventPlacementWithIntent({
   });
 }
 
-function SportsLiveSection({ surface, surfaceId }: { surface: SurfaceLeafWithDisplay<PredictionsDisplay>; surfaceId: string }) {
+function SportsQuerySection({
+  sportsIntent,
+  surface,
+  surfaceId,
+}: {
+  sportsIntent: SportsSurfaceIntent;
+  surface: SurfaceLeafWithDisplay<PredictionsDisplay>;
+  surfaceId: string;
+}) {
   const events = usePolymarketSportsEventsStore(state => state.getData());
   const isLoading = usePolymarketSportsEventsStore(state => state.getStatus('isLoading') || state.getStatus('isIdle'));
-  const sportsIntent = useMemo(() => getSportsSurfaceIntent(surface), [surface]);
   const items = useMemo<PredictionPlacementItem[]>(() => {
-    if (!events || !sportsIntent) return [];
-    const liveEvents = selectSportsEventsForIntent(events, sportsIntent);
-    if (!liveEvents.length) return [];
-    return liveEvents.map(event => ({ id: event.id, event }));
+    if (!events) return [];
+    const selectedEvents = selectSportsEventsForIntent(events, sportsIntent);
+    if (!selectedEvents.length) return [];
+    return selectedEvents.map(event => ({ id: event.id, event }));
   }, [events, sportsIntent]);
   const displayedItemCount = getInitialRenderedItemCount(items, surface.limit);
   const descriptor = getSportsEventSectionDescriptor(surface);
@@ -226,6 +242,24 @@ function SportsLiveSection({ surface, surfaceId }: { surface: SurfaceLeafWithDis
     onPressSeeAll: getHeaderPress(surface.destination),
     placement: undefined,
     surface,
+    surfaceId,
+  });
+}
+
+function unsupportedUnplacedPredictionSurface(surface: SurfaceLeafWithDisplay<PredictionsDisplay>, surfaceId: string) {
+  logger.warn('[PredictionsSection]: unsupported unplaced prediction surface', {
+    display: surface.display,
+    hasSportsFilters: surface.filters?.sports !== undefined,
+    sectionId: surface.id,
+    surfaceId,
+  });
+  return null;
+}
+
+function logUnsupportedSportsIntent(surface: SurfaceLeafWithDisplay<PredictionsDisplay>, surfaceId: string) {
+  logger.warn('[PredictionsSection]: unsupported sports surface filters', {
+    display: surface.display,
+    sectionId: surface.id,
     surfaceId,
   });
 }
