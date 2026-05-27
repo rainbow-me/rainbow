@@ -3,6 +3,7 @@ import React, { useMemo } from 'react';
 import ButtonPressAnimation from '@/components/animations/ButtonPressAnimation';
 import { LiveTokenText } from '@/components/live-token-text/LiveTokenText';
 import { Box, Text } from '@/design-system';
+import { usePriceChangeColors } from '@/design-system/color/usePriceChangeColors';
 import { HyperliquidTokenIcon } from '@/features/perps/components/HyperliquidTokenIcon';
 import { LeverageBadge } from '@/features/perps/components/LeverageBadge';
 import { type PerpMarket } from '@/features/perps/types';
@@ -16,15 +17,11 @@ type PerpMarketRowProps = {
   market: PerpMarket;
   onPress?: (market: PerpMarket) => void;
   paddingVertical?: number;
-  priceChangeColors: {
-    positive: string;
-    negative: string;
-    neutral: string;
-  };
 };
 
-export const PerpMarketRow = function PerpMarketRow({ market, onPress, paddingVertical, priceChangeColors }: PerpMarketRowProps) {
+export const PerpMarketRow = function PerpMarketRow({ market, onPress, paddingVertical }: PerpMarketRowProps) {
   const tokenId = getHyperliquidTokenId(market.symbol);
+  const priceChangeColors = usePriceChangeColors();
   const volume = useMemo(() => {
     return formatNumber(market.volume['24h'], { useOrderSuffix: true, decimals: 1, style: '$' });
   }, [market.volume]);
