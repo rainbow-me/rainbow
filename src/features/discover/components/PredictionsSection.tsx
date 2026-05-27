@@ -22,12 +22,7 @@ import {
   selectSportsEventsForIntent,
   type SportsSurfaceIntent,
 } from '@/features/discover/components/predictions/sportsSurfaceIntent';
-import {
-  getHeaderPress,
-  getInitialRenderedItemCount,
-  isSportsEventCardSurface,
-  renderSectionLayout,
-} from '@/features/discover/components/SectionLayout';
+import { getHeaderPress, isSportsEventCardSurface, renderSectionLayout } from '@/features/discover/components/SectionLayout';
 import {
   type DiscoverCardAnalyticsContext,
   type PlacementBackedSurfaceLeafWithDisplay,
@@ -189,10 +184,8 @@ function SportsEventPlacementWithIntent({
 }) {
   const result = usePredictionsPlacement(surface.placement);
   const sportsEvents = usePolymarketSportsEventsStore(state => state.getData());
-  const displayedItemCount = getInitialRenderedItemCount(result.items, surface.limit);
   const descriptor = getSportsEventSectionDescriptor(surface);
   const headerCount = getSportsEventHeaderCount({
-    displayedItemCount,
     events: sportsEvents,
     intent: sportsIntent,
   });
@@ -226,10 +219,8 @@ function SportsQuerySection({
     if (!selectedEvents.length) return [];
     return selectedEvents.map(event => ({ id: event.id, event }));
   }, [events, sportsIntent]);
-  const displayedItemCount = getInitialRenderedItemCount(items, surface.limit);
   const descriptor = getSportsEventSectionDescriptor(surface);
   const headerCount = getSportsEventHeaderCount({
-    displayedItemCount,
     events,
     intent: sportsIntent,
   });
@@ -265,19 +256,16 @@ function logUnsupportedSportsIntent(surface: SurfaceLeafWithDisplay<PredictionsD
 }
 
 function getSportsEventHeaderCount({
-  displayedItemCount,
   events,
   intent,
 }: {
-  displayedItemCount: number;
   events: PolymarketEvent[] | null | undefined;
   intent: SportsSurfaceIntent | null;
 }): number | undefined {
   if (!events || !intent) return undefined;
 
   const count = selectSportsEventsForIntent(events, intent).length;
-  if (count === 0 || count === displayedItemCount) return undefined;
-  return count;
+  return count > 0 ? count : undefined;
 }
 
 function hasPlacement<TDisplay extends Display>(
