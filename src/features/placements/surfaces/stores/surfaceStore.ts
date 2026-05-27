@@ -1,6 +1,7 @@
 import { getApp } from '@react-native-firebase/app';
 import { doc, getDoc, getFirestore } from '@react-native-firebase/firestore';
 
+import { isNonEmptyString, isValidDateString, oneOf } from '@/features/placements/decoders';
 import { DESTINATION_ROOT_VALUES, DISPLAY_VALUES } from '@/features/placements/surfaces/constants';
 import {
   type DestinationRoot,
@@ -16,6 +17,8 @@ type SurfaceStore = ReturnType<typeof createSurfaceStore>;
 
 const storesBySurfaceId = new Map<string, SurfaceStore>();
 const SURFACE_ID_PATTERN = /^[a-z][a-z0-9_]*$/;
+const isDestinationRoot = oneOf<DestinationRoot>(DESTINATION_ROOT_VALUES);
+const isSurfaceDisplay = oneOf<Display>(DISPLAY_VALUES);
 
 export function getSurfaceStore(surfaceId: string): SurfaceStore {
   let store = storesBySurfaceId.get(surfaceId);
@@ -105,22 +108,6 @@ function isSurfaceDestination(destination: unknown): boolean {
   return isDestinationRoot(destination[0]) && destination.every(isNonEmptyString);
 }
 
-function isSurfaceDisplay(display: unknown): display is Display {
-  return typeof display === 'string' && (DISPLAY_VALUES as readonly string[]).includes(display);
-}
-
 function isSurfaceId(value: unknown): value is string {
   return typeof value === 'string' && SURFACE_ID_PATTERN.test(value);
-}
-
-function isDestinationRoot(root: unknown): root is DestinationRoot {
-  return typeof root === 'string' && DESTINATION_ROOT_VALUES.includes(root as DestinationRoot);
-}
-
-function isNonEmptyString(value: unknown): value is string {
-  return typeof value === 'string' && value.length > 0;
-}
-
-function isValidDateString(value: unknown): value is string {
-  return typeof value === 'string' && Number.isFinite(Date.parse(value));
 }

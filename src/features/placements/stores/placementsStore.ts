@@ -1,6 +1,8 @@
 import { getApp } from '@react-native-firebase/app';
 import { collection, getDocs, getFirestore, query, where, type FirebaseFirestoreTypes } from '@react-native-firebase/firestore';
 
+import { PLACEMENT_SOURCES, PLACEMENT_TYPES } from '@/features/placements/constants';
+import { isNonEmptyString, oneOf } from '@/features/placements/decoders';
 import {
   type Placement,
   type PlacementId,
@@ -30,8 +32,8 @@ type PlacementDocumentSnapshot = {
 // ============ Constants ====================================================== //
 
 const EMPTY_PLACEMENT_ITEMS: PlacementItem[] = [];
-const PLACEMENT_SOURCE_SET = new Set<PlacementSource>(['hyperliquid', 'polymarket', 'rainbow']);
-const PLACEMENT_TYPE_SET = new Set<PlacementType>(['perp', 'prediction', 'token']);
+const isPlacementSource = oneOf<PlacementSource>(Object.values(PLACEMENT_SOURCES));
+const isPlacementType = oneOf<PlacementType>(Object.values(PLACEMENT_TYPES));
 
 // ============ Query Store ==================================================== //
 
@@ -115,8 +117,7 @@ function isPlacementDocument(id: string, placement: unknown): placement is Place
   const document = placement as Partial<Placement>;
 
   return (
-    typeof id === 'string' &&
-    id.length > 0 &&
+    isNonEmptyString(id) &&
     document.id === id &&
     document.version === 2 &&
     isPlacementRefPair(document.source, document.type) &&
@@ -128,15 +129,7 @@ function isPlacementItem(item: unknown): item is PlacementItem {
   if (typeof item !== 'object' || item === null) return false;
 
   const id = (item as Partial<PlacementItem>).id;
-  return typeof id === 'string' && id.length > 0;
-}
-
-function isPlacementSource(source: unknown): source is PlacementSource {
-  return typeof source === 'string' && PLACEMENT_SOURCE_SET.has(source as PlacementSource);
-}
-
-function isPlacementType(type: unknown): type is PlacementType {
-  return typeof type === 'string' && PLACEMENT_TYPE_SET.has(type as PlacementType);
+  return isNonEmptyString(id);
 }
 
 function isPlacementRefPair(source: unknown, type: unknown): source is PlacementSource {
