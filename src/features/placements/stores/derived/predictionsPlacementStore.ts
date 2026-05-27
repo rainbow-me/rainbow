@@ -25,6 +25,11 @@ type PredictionEventsParams = {
   eventIds: string[];
 };
 
+type PredictionEventsData = {
+  activeEventIds: string[];
+  eventsById: EventsById;
+};
+
 type EventsById = Record<string, PolymarketEvent>;
 
 // ============ Constants ====================================================== //
@@ -46,7 +51,7 @@ const usePredictionsEnabled = createDerivedStore<boolean>(
   { fastMode: true }
 );
 
-export const usePredictionEventsStore = createQueryStore<PolymarketEvent[], PredictionEventsParams>({
+export const usePredictionEventsStore = createQueryStore<PredictionEventsData, PredictionEventsParams>({
   fetcher: fetchPredictionEvents,
   enabled: $ => $(usePredictionsEnabled),
   params: {
@@ -71,16 +76,18 @@ export function getPredictionsPlacementStore(placementId: PlacementId) {
 async function fetchPredictionEvents(
   { eventIds }: PredictionEventsParams,
   abortController: AbortController | null
-): Promise<PolymarketEvent[]> {
+): Promise<PredictionEventsData> {
   const rawEvents = await fetchPolymarketEventsByIds(eventIds, abortController);
   const teamsByTicker = await fetchTeamsForGameEvents(rawEvents, abortController);
 
-  return Promise.all(
+  const events = await Promise.all(
     rawEvents.map(event => {
       const teamMetadata = event.ticker ? teamsByTicker.get(event.ticker) : undefined;
       return processRawPolymarketEvent(event, teamMetadata?.teams);
     })
   );
+
+  return normalizePredictionEvents(events);
 }
 
 // ============ Utilities ====================================================== //
@@ -94,10 +101,11 @@ function createPredictionsPlacementStore(placementId: PlacementId) {
       const events = $(usePredictionEventsStore, state => state.getData());
       const eventsReady = $(usePredictionEventsStore, state => state.getStatus('isSuccess'));
       const isLoading = $(usePredictionEventsStore, state => state.enabled && state.getStatus('isInitialLoad'));
-      const items = events ? parsePredictionItems(placementItems, events) : [];
+      const activeEventIds = events ? new Set(events.activeEventIds) : undefined;
+      const items = events && activeEventIds ? parsePredictionItems(placementItems, events.eventsById, activeEventIds) : [];
 
-      if (eventsReady && events && placementItems.length > 0) {
-        logUnresolvedPredictionRefs(placementId, placementItems, events);
+      if (eventsReady && events && activeEventIds && placementItems.length > 0) {
+        logUnresolvedPredictionRefs(placementId, placementItems, events.eventsById, activeEventIds);
       }
 
       return { isLoading, items };
@@ -105,26 +113,39 @@ function createPredictionsPlacementStore(placementId: PlacementId) {
   });
 }
 
-function parsePredictionItems(placementItems: PlacementItem[], events: PolymarketEvent[]): PredictionPlacementItem[] {
-  const eventsById = indexEvents(events);
+function parsePredictionItems(
+  placementItems: PlacementItem[],
+  eventsById: EventsById,
+  activeEventIds: ReadonlySet<string>
+): PredictionPlacementItem[] {
   const items: PredictionPlacementItem[] = [];
 
   for (const item of placementItems) {
     const event = eventsById[item.id];
-    if (event && isActivePredictionEvent(event)) items.push({ ...item, event });
+    if (event && activeEventIds.has(item.id)) items.push({ ...item, event });
   }
 
   return items.length ? items : [];
 }
 
-function indexEvents(events: PolymarketEvent[]): EventsById {
+function normalizePredictionEvents(events: PolymarketEvent[]): PredictionEventsData {
+  const activeEventIds: string[] = [];
   const eventsById: EventsById = {};
-  for (const event of events) eventsById[event.id] = event;
-  return eventsById;
+
+  for (const event of events) {
+    eventsById[event.id] = event;
+    if (isActivePredictionEvent(event)) activeEventIds.push(event.id);
+  }
+
+  return { activeEventIds, eventsById };
 }
 
-function logUnresolvedPredictionRefs(placementId: PlacementId, placementItems: PlacementItem[], events: PolymarketEvent[]): void {
-  const eventsById = indexEvents(events);
+function logUnresolvedPredictionRefs(
+  placementId: PlacementId,
+  placementItems: PlacementItem[],
+  eventsById: EventsById,
+  activeEventIds: ReadonlySet<string>
+): void {
   const inactiveRefIds: string[] = [];
   const missingRefIds: string[] = [];
 
@@ -132,7 +153,7 @@ function logUnresolvedPredictionRefs(placementId: PlacementId, placementItems: P
     const event = eventsById[item.id];
     if (!event) {
       missingRefIds.push(item.id);
-    } else if (!isActivePredictionEvent(event)) {
+    } else if (!activeEventIds.has(item.id)) {
       inactiveRefIds.push(item.id);
     }
   }
