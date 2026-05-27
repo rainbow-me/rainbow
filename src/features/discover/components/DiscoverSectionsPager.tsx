@@ -40,7 +40,6 @@ export const DiscoverSectionsPager = memo(function DiscoverSectionsPager({
   const activeSectionId = useDiscoverNavigationStore(state => state.activeSection);
   const { ref, goToPage } = usePagerNavigation<DiscoverSection>();
   const initialSection = getInitialSection(tabs, activeSectionId);
-  const activeSection = useSharedValue<DiscoverSection>(initialSection);
   const sectionScrollOffsets = useRef<SectionScrollOffsets>({});
   const pagerKey = tabs.map(tab => tab.id).join('|');
 
@@ -48,7 +47,6 @@ export const DiscoverSectionsPager = memo(function DiscoverSectionsPager({
     useDiscoverNavigationStore,
     state => state.activeSection,
     section => {
-      activeSection.value = section;
       scrollOffset.value = sectionScrollOffsets.current[section] ?? 0;
       goToPage(section);
     }
@@ -95,7 +93,7 @@ export const DiscoverSectionsPager = memo(function DiscoverSectionsPager({
           <SmoothPager.Page
             component={
               <DiscoverSectionScrollView
-                activeSection={activeSection}
+                isActive={section.id === activeSectionId}
                 renderRefreshControl={renderRefreshControl}
                 scrollOffset={scrollOffset}
                 section={section}
@@ -157,14 +155,14 @@ const DiscoverSectionsFallback = memo(function DiscoverSectionsFallback({
 });
 
 const DiscoverSectionScrollView = memo(function DiscoverSectionScrollView({
-  activeSection,
+  isActive,
   renderRefreshControl,
   scrollOffset,
   section,
   sectionScrollOffsets,
   surfaceId,
 }: {
-  activeSection: SharedValue<DiscoverSection>;
+  isActive: boolean;
   renderRefreshControl?: () => ReactElement<RefreshControlProps>;
   scrollOffset: SharedValue<number>;
   section: Surface;
@@ -199,7 +197,7 @@ const DiscoverSectionScrollView = memo(function DiscoverSectionScrollView({
         runOnJS(updateSectionScrollOffset)(clampedPosition);
       }
 
-      if (activeSection.value !== section.id || scrollOffset.value === clampedPosition) return;
+      if (!isActive || scrollOffset.value === clampedPosition) return;
       scrollOffset.value = clampedPosition;
     },
   });
@@ -209,6 +207,7 @@ const DiscoverSectionScrollView = memo(function DiscoverSectionScrollView({
       automaticallyAdjustsScrollIndicatorInsets={false}
       contentContainerStyle={styles.scrollContent}
       onScroll={onScroll}
+      pointerEvents={isActive ? 'auto' : 'none'}
       ref={setScrollViewRef}
       refreshControl={renderRefreshControl?.()}
       scrollEventThrottle={16}
