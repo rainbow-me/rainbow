@@ -2,6 +2,7 @@ type SportsEventsDayBoundaries = {
   startOfToday: Date;
   startOfTomorrow: Date;
   startOfDayAfterTomorrow: Date;
+  startOfNextWeek: Date;
 };
 
 type SportsEventsStartTimeRange = {
@@ -15,8 +16,10 @@ export function getSportsEventsDayBoundaries(referenceDate: Date = new Date()): 
   startOfTomorrow.setDate(startOfTomorrow.getDate() + 1);
   const startOfDayAfterTomorrow = new Date(startOfToday);
   startOfDayAfterTomorrow.setDate(startOfDayAfterTomorrow.getDate() + 2);
+  const startOfNextWeek = new Date(startOfToday);
+  startOfNextWeek.setDate(startOfNextWeek.getDate() + 7);
 
-  return { startOfToday, startOfTomorrow, startOfDayAfterTomorrow };
+  return { startOfToday, startOfTomorrow, startOfDayAfterTomorrow, startOfNextWeek };
 }
 
 export function getSportsEventsStartTimeRange(referenceDate: Date = new Date()): SportsEventsStartTimeRange {
