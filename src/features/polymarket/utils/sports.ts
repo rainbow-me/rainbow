@@ -10,6 +10,8 @@ import { getHighContrastColor } from '@/hooks/useAccountAccentColor';
 import { logger, RainbowError } from '@/logger';
 import { time } from '@/utils/time';
 
+const TEAM_METADATA_FETCH_CONCURRENCY = 4;
+
 export async function fetchGameMetadata(eventTicker: string, abortController?: AbortController | null) {
   try {
     const url = new URL(`${POLYMARKET_GAMMA_API_URL}/games`);
@@ -120,7 +122,7 @@ export async function fetchTeamsForEvent(
   }
 }
 
-type GameTeamsSource = {
+export type GameTeamsSource = {
   gameId?: number;
   ticker?: string;
   slug: string;
@@ -128,15 +130,27 @@ type GameTeamsSource = {
   awayTeamName?: string;
 };
 
-type GameTeamsMetadata = {
+export type GameTeamsMetadata = {
   teams?: PolymarketTeamInfo[];
   homeTeamName?: string;
   awayTeamName?: string;
 };
 
-export async function fetchTeamsForGameEvents(
-  events: GameTeamsSource[],
+export async function fetchTeamMetadataForGameEvent(
+  event: GameTeamsSource,
   abortController?: AbortController | null
+): Promise<GameTeamsMetadata | null> {
+  const teams = await fetchTeamsForEvent(event, abortController);
+  return { teams, homeTeamName: event.homeTeamName, awayTeamName: event.awayTeamName };
+}
+
+export async function fetchTeamMetadataForGameEvents(
+  events: GameTeamsSource[],
+  abortController?: AbortController | null,
+  fetchMetadata: (
+    event: GameTeamsSource,
+    abortController?: AbortController | null
+  ) => Promise<GameTeamsMetadata | null> = fetchTeamMetadataForGameEvent
 ): Promise<Map<string, GameTeamsMetadata>> {
   const teamsMap = new Map<string, GameTeamsMetadata>();
   const gameEventsByTicker = new Map<string, GameTeamsSource>();
@@ -147,20 +161,35 @@ export async function fetchTeamsForGameEvents(
     }
   }
 
-  await Promise.all(
-    Array.from(gameEventsByTicker.values()).map(async event => {
-      if (!event.ticker) return;
-      const teams = await fetchTeamsForEvent(event, abortController);
-      teamsMap.set(event.ticker, { teams, homeTeamName: event.homeTeamName, awayTeamName: event.awayTeamName });
-    })
-  );
+  const gameEvents = Array.from(gameEventsByTicker.values());
+  let nextIndex = 0;
+
+  async function worker(): Promise<void> {
+    while (nextIndex < gameEvents.length) {
+      const event = gameEvents[nextIndex];
+      nextIndex += 1;
+
+      if (!event.ticker) continue;
+      const metadata = await fetchMetadata(event, abortController);
+      if (metadata) teamsMap.set(event.ticker, metadata);
+    }
+  }
+
+  await Promise.all(Array.from({ length: Math.min(TEAM_METADATA_FETCH_CONCURRENCY, gameEvents.length) }, worker));
 
   return teamsMap;
 }
 
+export async function fetchTeamsForGameEvents(
+  events: GameTeamsSource[],
+  abortController?: AbortController | null
+): Promise<Map<string, GameTeamsMetadata>> {
+  return fetchTeamMetadataForGameEvents(events, abortController);
+}
+
 export async function fetchTeamsForGameMarkets(markets: RawPolymarketMarket[]): Promise<Map<string, PolymarketTeamInfo[]>> {
   const marketEvents = markets.map(market => market.events[0]).filter(event => Boolean(event));
-  const teamsMetadataMap = await fetchTeamsForGameEvents(marketEvents);
+  const teamsMetadataMap = await fetchTeamMetadataForGameEvents(marketEvents);
   const teamsMap = new Map<string, PolymarketTeamInfo[]>();
 
   teamsMetadataMap.forEach((metadata, ticker) => {

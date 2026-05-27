@@ -14,8 +14,8 @@ import {
 import { useDiscoverSurfacePlacementRefs } from '@/features/placements/surfaces/hooks/useSurface';
 import { type PlacementId, type PlacementItem } from '@/features/placements/types';
 import { fetchPolymarketEventsByIds } from '@/features/polymarket/stores/polymarketEventsStore';
+import { fetchPolymarketTeamMetadataForGameEvents } from '@/features/polymarket/stores/polymarketTeamMetadataStore';
 import { type PolymarketEvent } from '@/features/polymarket/types/polymarket-event';
-import { fetchTeamsForGameEvents } from '@/features/polymarket/utils/sports';
 import { processRawPolymarketEvent } from '@/features/polymarket/utils/transforms';
 import { useRemoteConfigStore } from '@/model/remoteConfig';
 import { createDerivedStore } from '@/state/internal/createDerivedStore';
@@ -76,7 +76,7 @@ async function fetchPredictionEvents(
   abortController: AbortController | null
 ): Promise<PredictionEventsData> {
   const rawEvents = await fetchPolymarketEventsByIds(eventIds, abortController);
-  const teamsByTicker = await fetchTeamsForGameEvents(rawEvents, abortController);
+  const teamsByTicker = await fetchPolymarketTeamMetadataForGameEvents(rawEvents, abortController);
 
   const events = await Promise.all(
     rawEvents.map(event => {
