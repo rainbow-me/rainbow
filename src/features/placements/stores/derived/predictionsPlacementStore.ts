@@ -1,6 +1,7 @@
 import { POLYMARKET } from '@/config/experimental';
 import { useExperimentalConfigStore } from '@/config/experimentalConfigStore';
 import { IS_TEST } from '@/env';
+import { warnUnresolvedRefsOnce } from '@/features/placements/stores/derived/warnUnresolvedRefsOnce';
 import { createPlacementStore } from '@/features/placements/stores/factories/createPlacementStore';
 import { usePlacementsStore } from '@/features/placements/stores/placementsStore';
 import { useDiscoverSurfacePlacementRefs } from '@/features/placements/surfaces/hooks/useSurface';
@@ -9,7 +10,6 @@ import { fetchPolymarketEventsByIds } from '@/features/polymarket/stores/polymar
 import { type PolymarketEvent } from '@/features/polymarket/types/polymarket-event';
 import { fetchTeamsForGameEvents } from '@/features/polymarket/utils/sports';
 import { processRawPolymarketEvent } from '@/features/polymarket/utils/transforms';
-import { logger } from '@/logger';
 import { useRemoteConfigStore } from '@/model/remoteConfig';
 import { createDerivedStore } from '@/state/internal/createDerivedStore';
 import { createQueryStore } from '@/state/internal/createQueryStore';
@@ -30,7 +30,6 @@ type EventsById = Record<string, PolymarketEvent>;
 // ============ Constants ====================================================== //
 
 const EMPTY_PREDICTION_PLACEMENT_ITEMS: PredictionPlacementItem[] = [];
-const lastUnresolvedKeyByPlacement: Partial<Record<PlacementId, string>> = {};
 const storesByPlacementId = new Map<PlacementId, ReturnType<typeof createPredictionsPlacementStore>>();
 
 // ============ Stores ========================================================= //
@@ -143,24 +142,27 @@ function logUnresolvedPredictionRefs(placementId: PlacementId, placementItems: P
   if (!inactiveRefIds.length && !missingRefIds.length) return;
 
   const diagnosticKey = `${inactiveRefIds.join(',')}|${missingRefIds.join(',')}`;
-  if (lastUnresolvedKeyByPlacement[placementId] === diagnosticKey) return;
-
-  lastUnresolvedKeyByPlacement[placementId] = diagnosticKey;
-  logger.warn('[placements]: Prediction placement refs did not resolve to active events', {
-    configuredRefIdsCount: placementItems.length,
-    inactiveRefIds: inactiveRefIds.slice(0, 8),
-    inactiveRefIdsCount: inactiveRefIds.length,
-    missingRefIds: missingRefIds.slice(0, 8),
-    missingRefIdsCount: missingRefIds.length,
-    placementId,
-    resolvedActiveRefIdsCount: placementItems.length - inactiveRefIds.length - missingRefIds.length,
-    tags: {
-      feature: 'discover_placements',
+  warnUnresolvedRefsOnce({
+    diagnosticKey,
+    message: '[placements]: Prediction placement refs did not resolve to active events',
+    metadata: {
+      configuredRefIdsCount: placementItems.length,
+      inactiveRefIds: inactiveRefIds.slice(0, 8),
+      inactiveRefIdsCount: inactiveRefIds.length,
+      missingRefIds: missingRefIds.slice(0, 8),
+      missingRefIdsCount: missingRefIds.length,
       placementId,
-      provider: 'polymarket',
-      reason: 'unresolved_refs',
+      resolvedActiveRefIdsCount: placementItems.length - inactiveRefIds.length - missingRefIds.length,
+      tags: {
+        feature: 'discover_placements',
+        placementId,
+        provider: 'polymarket',
+        reason: 'unresolved_refs',
+      },
+      type: 'query',
     },
-    type: 'query',
+    placementId,
+    source: 'polymarket',
   });
 }
 

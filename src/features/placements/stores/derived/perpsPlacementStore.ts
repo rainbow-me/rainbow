@@ -1,9 +1,9 @@
 import { IS_TEST } from '@/env';
 import { useHyperliquidMarketsStore } from '@/features/perps/stores/hyperliquidMarketsStore';
 import { type PerpMarketsBySymbol, type PerpMarketWithMetadata } from '@/features/perps/types';
+import { warnUnresolvedRefsOnce } from '@/features/placements/stores/derived/warnUnresolvedRefsOnce';
 import { createPlacementStore } from '@/features/placements/stores/factories/createPlacementStore';
 import { type PlacementId, type PlacementItem } from '@/features/placements/types';
-import { logger } from '@/logger';
 import { useRemoteConfigStore } from '@/model/remoteConfig';
 import { createDerivedStore } from '@/state/internal/createDerivedStore';
 
@@ -19,7 +19,6 @@ export type PerpMarketPlacementItem = PlacementItem & {
 // ============ Constants ====================================================== //
 
 const EMPTY_PERP_MARKET_PLACEMENT_ITEMS: PerpMarketPlacementItem[] = [];
-const lastUnresolvedKeyByPlacement: Partial<Record<PlacementId, string>> = {};
 const storesByPlacementId = new Map<PlacementId, ReturnType<typeof createPerpsPlacementStore>>();
 
 // ============ Derived Stores ================================================= //
@@ -75,20 +74,23 @@ function buildPerpMarketPlacementItems(placementItems: PlacementItem[], markets:
 function logUnresolvedPerpsRefs(placementId: PlacementId, placementItems: PlacementItem[], markets: PerpMarketsBySymbol): void {
   const unresolvedRefIds = placementItems.map(item => item.id).filter(id => !markets[id]);
   const diagnosticKey = unresolvedRefIds.join(',');
-  if (lastUnresolvedKeyByPlacement[placementId] === diagnosticKey) return;
-
-  lastUnresolvedKeyByPlacement[placementId] = diagnosticKey;
-  logger.warn('[placements]: Perps placement refs did not resolve to markets', {
-    configuredRefIdsCount: placementItems.length,
-    placementId,
-    tags: {
-      feature: 'discover_placements',
+  warnUnresolvedRefsOnce({
+    diagnosticKey,
+    message: '[placements]: Perps placement refs did not resolve to markets',
+    metadata: {
+      configuredRefIdsCount: placementItems.length,
       placementId,
-      provider: 'hyperliquid',
-      reason: 'unresolved_refs',
+      tags: {
+        feature: 'discover_placements',
+        placementId,
+        provider: 'hyperliquid',
+        reason: 'unresolved_refs',
+      },
+      type: 'query',
+      unresolvedRefIds: unresolvedRefIds.slice(0, 8),
+      unresolvedRefIdsCount: unresolvedRefIds.length,
     },
-    type: 'query',
-    unresolvedRefIds: unresolvedRefIds.slice(0, 8),
-    unresolvedRefIdsCount: unresolvedRefIds.length,
+    placementId,
+    source: 'hyperliquid',
   });
 }
