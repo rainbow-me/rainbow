@@ -29,6 +29,7 @@ export function getMarketPriceChangeColors(colorMode: ColorMode): PriceChangeCol
 }
 
 export function getMarketPriceChangeColor(priceChange: string, priceChangeColors: PriceChangeColors): string {
+  'worklet';
   return Number(priceChange) >= 0 ? priceChangeColors.positive : priceChangeColors.negative;
 }
 

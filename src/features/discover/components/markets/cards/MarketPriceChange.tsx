@@ -16,6 +16,7 @@ type MarketPriceChangeProps = {
   arrowHeight: number;
   arrowSize: TextSize;
   arrowWidth: number;
+  colorSharedValue?: SharedValue<string>;
   initialPriceChange: string;
   priceChangeColors: PriceChangeColors;
   priceChangeSelector: (token: TokenData) => string;
@@ -27,6 +28,7 @@ export const MarketPriceChange = memo(function MarketPriceChange({
   arrowHeight,
   arrowSize,
   arrowWidth,
+  colorSharedValue,
   initialPriceChange,
   priceChangeColors,
   priceChangeSelector,
@@ -40,7 +42,7 @@ export const MarketPriceChange = memo(function MarketPriceChange({
   });
 
   const priceChangeStyle = useAnimatedStyle(() => ({
-    color: Number(livePriceChange.value) >= 0 ? priceChangeColors.positive : priceChangeColors.negative,
+    color: colorSharedValue?.value ?? (Number(livePriceChange.value) >= 0 ? priceChangeColors.positive : priceChangeColors.negative),
   }));
 
   return (

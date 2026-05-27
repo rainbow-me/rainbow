@@ -2,7 +2,14 @@ import React, { memo, useCallback } from 'react';
 import { StyleSheet, View } from 'react-native';
 
 import { Canvas, Picture } from '@shopify/react-native-skia';
-import Animated, { runOnUI, useAnimatedStyle, useSharedValue, withSpring } from 'react-native-reanimated';
+import Animated, {
+  runOnUI,
+  useAnimatedReaction,
+  useAnimatedStyle,
+  useSharedValue,
+  withSpring,
+  type SharedValue,
+} from 'react-native-reanimated';
 
 import { SPRING_CONFIGS } from '@/components/animations/animationConfigs';
 import { useWorkletClass } from '@/hooks/reanimated/useWorkletClass';
@@ -21,6 +28,7 @@ import { type CompactLineChartData, type LineChartDataStore } from '../compact/t
 type SparklineChartProps<S extends LineChartDataStore> = {
   chartId: string;
   color: string;
+  colorSharedValue?: SharedValue<string>;
   height: number;
   maxPoints?: number;
   store: BaseRainbowStore<S>;
@@ -38,6 +46,7 @@ type SparklineChartProps<S extends LineChartDataStore> = {
 export const SparklineChart = memo(function SparklineChart<S extends LineChartDataStore>({
   chartId,
   color,
+  colorSharedValue,
   height,
   maxPoints,
   store,
@@ -68,17 +77,27 @@ export const SparklineChart = memo(function SparklineChart<S extends LineChartDa
       const chartData = maxPoints === undefined ? nextData : downsampleCompactLineChartData(nextData, maxPoints);
 
       runOnUI((data: CompactLineChartData | undefined, lineColor: string) => {
+        const resolvedLineColor = colorSharedValue?.value ?? lineColor;
         const hasData = data !== undefined;
         const shouldAnimateIn = hasData && !hasRenderedData.value;
 
-        renderer.value?.setData(data, lineColor);
+        renderer.value?.setData(data, resolvedLineColor);
         hasRenderedData.value = hasData;
 
         if (shouldAnimateIn) entranceProgress.value = 0;
         entranceProgress.value = withSpring(hasData ? 1 : 0, SPRING_CONFIGS.softerSpringConfig);
       })(chartData, nextColor);
     },
-    [entranceProgress, hasRenderedData, maxPoints, renderer]
+    [colorSharedValue, entranceProgress, hasRenderedData, maxPoints, renderer]
+  );
+
+  useAnimatedReaction(
+    () => colorSharedValue?.value,
+    (nextColor, previousColor) => {
+      if (nextColor === undefined || nextColor === previousColor) return;
+      renderer.value?.recolor(nextColor);
+    },
+    [colorSharedValue]
   );
 
   useListen(

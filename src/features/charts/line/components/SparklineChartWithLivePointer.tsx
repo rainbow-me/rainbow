@@ -9,6 +9,7 @@ import Animated, {
   withRepeat,
   withSequence,
   withTiming,
+  type SharedValue,
 } from 'react-native-reanimated';
 
 import {
@@ -24,6 +25,7 @@ import { type BaseRainbowStore } from '@/state/internal/types';
 type SparklineChartWithLivePointerProps<S extends LineChartDataStore> = {
   chartId: string;
   color: string;
+  colorSharedValue?: SharedValue<string>;
   height: number;
   maxPoints?: number;
   store: BaseRainbowStore<S>;
@@ -39,6 +41,7 @@ const LIVE_POINTER_PULSE_START_OPACITY = 0.5;
 export const SparklineChartWithLivePointer = memo(function SparklineChartWithLivePointer<S extends LineChartDataStore>({
   chartId,
   color,
+  colorSharedValue,
   height,
   maxPoints,
   store,
@@ -48,7 +51,15 @@ export const SparklineChartWithLivePointer = memo(function SparklineChartWithLiv
 
   return (
     <View style={[styles.frame, { height, width }]}>
-      <SparklineChart chartId={chartId} color={color} height={height} maxPoints={maxPoints} store={store} width={width} />
+      <SparklineChart
+        chartId={chartId}
+        color={color}
+        colorSharedValue={colorSharedValue}
+        height={height}
+        maxPoints={maxPoints}
+        store={store}
+        width={width}
+      />
       <View
         pointerEvents="none"
         style={[
@@ -60,7 +71,15 @@ export const SparklineChartWithLivePointer = memo(function SparklineChartWithLiv
           },
         ]}
       >
-        <SparklineLivePointer chartId={chartId} color={color} height={height} maxPoints={maxPoints} store={store} width={width} />
+        <SparklineLivePointer
+          chartId={chartId}
+          color={color}
+          colorSharedValue={colorSharedValue}
+          height={height}
+          maxPoints={maxPoints}
+          store={store}
+          width={width}
+        />
       </View>
     </View>
   );
@@ -69,6 +88,7 @@ export const SparklineChartWithLivePointer = memo(function SparklineChartWithLiv
 type SparklineLivePointerProps<S extends LineChartDataStore> = {
   chartId: string;
   color: string;
+  colorSharedValue?: SharedValue<string>;
   height: number;
   maxPoints?: number;
   store: BaseRainbowStore<S>;
@@ -78,6 +98,7 @@ type SparklineLivePointerProps<S extends LineChartDataStore> = {
 const SparklineLivePointer = memo(function SparklineLivePointer<S extends LineChartDataStore>({
   chartId,
   color,
+  colorSharedValue,
   height,
   maxPoints,
   store,
@@ -97,6 +118,10 @@ const SparklineLivePointer = memo(function SparklineLivePointer<S extends LineCh
   const pulseStyle = useAnimatedStyle(() => ({
     opacity: pulseOpacity.value,
     transform: [{ scale: pulseScale.value }],
+  }));
+
+  const colorStyle = useAnimatedStyle(() => ({
+    backgroundColor: colorSharedValue?.value ?? color,
   }));
 
   const startPulse = useCallback(() => {
@@ -152,8 +177,8 @@ const SparklineLivePointer = memo(function SparklineLivePointer<S extends LineCh
 
   return (
     <Animated.View pointerEvents="none" style={[styles.livePointerContainer, pointerStyle]}>
-      <Animated.View style={[styles.livePointerPulse, { backgroundColor: color }, pulseStyle]} />
-      <View style={[styles.livePointerDot, { backgroundColor: color }]} />
+      <Animated.View style={[styles.livePointerPulse, { backgroundColor: color }, colorStyle, pulseStyle]} />
+      <Animated.View style={[styles.livePointerDot, { backgroundColor: color }, colorStyle]} />
     </Animated.View>
   );
 });

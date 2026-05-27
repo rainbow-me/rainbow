@@ -1,4 +1,4 @@
-import { useMemo } from 'react';
+import { memo, useMemo } from 'react';
 import { StyleSheet, View } from 'react-native';
 
 import { LinearGradient } from 'expo-linear-gradient';
@@ -7,15 +7,15 @@ import { analytics } from '@/analytics';
 import { event } from '@/analytics/event';
 import ButtonPressAnimation from '@/components/animations/ButtonPressAnimation';
 import ImgixImage from '@/components/images/ImgixImage';
-import { LiveTokenText, useLiveTokenValue } from '@/components/live-token-text/LiveTokenText';
+import { LiveTokenText } from '@/components/live-token-text/LiveTokenText';
 import { Skeleton } from '@/components/Skeleton';
 import { Box, Text, useColorMode } from '@/design-system';
 import { getValueForColorMode } from '@/design-system/color/palettes';
 import { SparklineChart } from '@/features/charts/line/components/SparklineChart';
 import { MarketIcon } from '@/features/discover/components/markets/cards/MarketIcon';
 import { MarketPriceChange } from '@/features/discover/components/markets/cards/MarketPriceChange';
+import { useLiveChartColorSharedValue } from '@/features/discover/components/markets/hooks/useLiveChartColorSharedValue';
 import {
-  getMarketPriceChangeColor,
   getMarketPriceChangeColors,
   LEVERAGE_BADGE_BORDER_COLORS,
   LEVERAGE_BADGE_SHADOW_OPACITIES,
@@ -46,15 +46,16 @@ export function MarketCellSkeleton() {
   return <Skeleton borderRadius={TOKEN_CARD_BORDER_RADIUS} height={TOKEN_CARD_HEIGHT} width={TOKEN_CARD_WIDTH} />;
 }
 
-export function MarketCell({ analyticsContext, item }: { analyticsContext: DiscoverCardAnalyticsContext; item: MarketDisplayItem }) {
+export const MarketCell = memo(function MarketCell({
+  analyticsContext,
+  item,
+}: {
+  analyticsContext: DiscoverCardAnalyticsContext;
+  item: MarketDisplayItem;
+}) {
   const { colorMode, isDarkMode } = useColorMode();
-  const livePriceChange = useLiveTokenValue({
-    initialValue: item.initialPriceChange,
-    selector: item.priceChangeSelector,
-    tokenId: item.liveTokenId,
-  });
   const priceChangeColors = getMarketPriceChangeColors(colorMode);
-  const priceChangeColor = getMarketPriceChangeColor(livePriceChange, priceChangeColors);
+  const chartColorSharedValue = useLiveChartColorSharedValue(item, priceChangeColors);
   const tokenCardBackgroundColor = getValueForColorMode(TOKEN_CARD_BACKGROUND_COLORS, colorMode);
   const tokenCardBorderColor = getValueForColorMode(TOKEN_CARD_BORDER_COLORS, colorMode);
   const leverageBadgeBorderColor = getValueForColorMode(LEVERAGE_BADGE_BORDER_COLORS, colorMode);
@@ -135,6 +136,7 @@ export function MarketCell({ analyticsContext, item }: { analyticsContext: Disco
                   arrowHeight={8}
                   arrowSize="icon 12px"
                   arrowWidth={UP_DOWN_ARROW_WIDTH}
+                  colorSharedValue={chartColorSharedValue}
                   initialPriceChange={item.initialPriceChange}
                   priceChangeSelector={item.priceChangeSelector}
                   priceChangeColors={priceChangeColors}
@@ -146,7 +148,8 @@ export function MarketCell({ analyticsContext, item }: { analyticsContext: Disco
             <View style={styles.sparklineContainer}>
               <SparklineChart
                 chartId={item.chartId}
-                color={priceChangeColor}
+                color={item.chartColor}
+                colorSharedValue={chartColorSharedValue}
                 height={TOKEN_SPARKLINE_LAYOUT.height}
                 maxPoints={item.chartMaxPoints}
                 store={item.chartStore}
@@ -158,7 +161,7 @@ export function MarketCell({ analyticsContext, item }: { analyticsContext: Disco
       </Box>
     </ButtonPressAnimation>
   );
-}
+});
 
 const styles = StyleSheet.create({
   contentRow: {

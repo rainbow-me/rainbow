@@ -14,6 +14,7 @@ import { Border } from '@/design-system/components/Border/Border';
 import { SparklineChartWithLivePointer } from '@/features/charts/line/components/SparklineChartWithLivePointer';
 import { MarketIcon } from '@/features/discover/components/markets/cards/MarketIcon';
 import { MarketPriceChange } from '@/features/discover/components/markets/cards/MarketPriceChange';
+import { useLiveChartColorSharedValue } from '@/features/discover/components/markets/hooks/useLiveChartColorSharedValue';
 import {
   buildMarketBaseDisplay,
   LEVERAGE_BADGE_BORDER_COLORS,
@@ -115,6 +116,7 @@ export const MarketTileCard = memo(function MarketTileCard({
     () => buildMarketTileCardDisplay(item, colorMode),
     [colorMode, item]
   );
+  const chartColorSharedValue = useLiveChartColorSharedValue(item, priceChangeColors);
 
   const chartWidth = width - CARD_LAYOUT.paddingHorizontal * 2;
 
@@ -151,6 +153,7 @@ export const MarketTileCard = memo(function MarketTileCard({
                 arrowHeight={8}
                 arrowSize="icon 12px"
                 arrowWidth={UP_DOWN_ARROW_WIDTH}
+                colorSharedValue={chartColorSharedValue}
                 initialPriceChange={item.initialPriceChange}
                 priceChangeSelector={item.priceChangeSelector}
                 priceChangeColors={priceChangeColors}
@@ -164,6 +167,7 @@ export const MarketTileCard = memo(function MarketTileCard({
             <SparklineChartWithLivePointer
               chartId={item.chartId}
               color={chartColor}
+              colorSharedValue={chartColorSharedValue}
               height={CHART_HEIGHT}
               store={item.chartStore}
               width={chartWidth}

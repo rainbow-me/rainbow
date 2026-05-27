@@ -146,6 +146,7 @@ export class CompactLineChartRenderer {
   private readonly strokePath: SkPath;
 
   private currentColor: string | null = null;
+  private currentData: CompactLineChartData | undefined;
   private currentShader: SkShader | null = null;
 
   constructor({ blankPicture, chartPicture, contentWidth, height }: CompactLineChartRendererConfig) {
@@ -174,6 +175,8 @@ export class CompactLineChartRenderer {
   }
 
   public setData(data: CompactLineChartData | undefined, lineColor: string): void {
+    this.currentData = data;
+
     const pointCount = data ? Math.min(data.prices.length, data.timestamps.length) : 0;
     if (!data || pointCount < 2) {
       this.setBlankPicture();
@@ -185,6 +188,11 @@ export class CompactLineChartRenderer {
     }
 
     this.buildPicture(this.buildTargetPoints(data, pointCount), pointCount);
+  }
+
+  public recolor(lineColor: string): void {
+    if (lineColor === this.currentColor) return;
+    this.setData(this.currentData, lineColor);
   }
 
   public dispose(): void {
