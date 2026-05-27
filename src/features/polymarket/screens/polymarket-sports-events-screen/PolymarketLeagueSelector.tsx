@@ -1,19 +1,20 @@
-import { Fragment, memo, useCallback, useMemo, useRef } from 'react';
-import { StyleSheet, View, type LayoutChangeEvent } from 'react-native';
+import { Fragment, memo, useMemo } from 'react';
+import { StyleSheet, View } from 'react-native';
 
 import { ScrollView } from 'react-native-gesture-handler';
-import Animated, { useAnimatedStyle, useSharedValue, type SharedValue } from 'react-native-reanimated';
+import Animated, { useAnimatedStyle, withTiming, type SharedValue } from 'react-native-reanimated';
 
+import { TIMING_CONFIGS } from '@/components/animations/animationConfigs';
 import ButtonPressAnimation from '@/components/animations/ButtonPressAnimation';
 import { Border, globalColors, Text, useColorMode } from '@/design-system';
 import { InnerShadow } from '@/features/polymarket/components/InnerShadow';
 import { getIconByLeagueId, LeagueIcon } from '@/features/polymarket/components/league-icon/LeagueIcon';
 import { DEFAULT_SPORTS_LEAGUE_KEY } from '@/features/polymarket/constants';
+import { useHorizontalSelectorStoreSync } from '@/features/polymarket/hooks/useHorizontalSelectorStoreSync';
 import { LEAGUE_SELECTOR_ORDER, SPORT_LEAGUES, type LeagueId } from '@/features/polymarket/leagues';
 import { usePolymarketContext } from '@/features/polymarket/screens/polymarket-navigator/PolymarketContext';
 import { usePolymarketSportsEventsStore } from '@/features/polymarket/stores/polymarketSportsEventsStore';
 import { opacity } from '@/framework/ui/utils/opacity';
-import { useListen } from '@/state/internal/hooks/useListen';
 import { THICK_BORDER_WIDTH, THICKER_BORDER_WIDTH } from '@/styles/constants';
 import { deepFreeze } from '@/utils/deepFreeze';
 import { DEVICE_WIDTH } from '@/utils/deviceUtils';
@@ -25,7 +26,6 @@ type LeagueItem = {
   label: string;
   color: { dark: string; light: string };
 };
-type ItemLayout = { x: number; width: number };
 
 const VERTICAL_PADDING = 4;
 const CONTAINER_HEIGHT = 40 + VERTICAL_PADDING * 2;
@@ -51,55 +51,21 @@ export const LEAGUE_SELECTOR_HEIGHT = CONTAINER_HEIGHT;
 export const PolymarketLeagueSelector = memo(function PolymarketLeagueSelector() {
   const { isDarkMode } = useColorMode();
   const { leagueSelectorRef } = usePolymarketContext();
-  const itemLayouts = useRef<ItemLayout[]>([]);
-  const didInitialScroll = useRef(false);
-
-  const selectedLeagueKey = useSharedValue<LeagueItemKey>(usePolymarketSportsEventsStore.getState().selectedLeagueId as LeagueItemKey);
-
-  const scrollToLeague = useCallback(
-    (leagueKey: LeagueItemKey) => {
-      const index = LEAGUE_ITEMS.findIndex(league => league.key === leagueKey);
-      const scrollX = calculateCenteredScrollX(itemLayouts.current, index);
-      leagueSelectorRef.current?.scrollTo({ x: scrollX, y: 0, animated: false });
-    },
-    [leagueSelectorRef]
-  );
-
-  const scrollToSelectedLeague = useCallback(() => {
-    scrollToLeague(selectedLeagueKey.value);
-  }, [scrollToLeague, selectedLeagueKey]);
-
-  const syncExternalLeagueSelection = useCallback(
-    (leagueId: string) => {
-      const nextLeagueKey = leagueId as LeagueItemKey;
-      if (selectedLeagueKey.value === nextLeagueKey) return;
-
-      selectedLeagueKey.value = nextLeagueKey;
-      if (allItemsMeasured(itemLayouts.current)) scrollToLeague(nextLeagueKey);
-    },
-    [scrollToLeague, selectedLeagueKey]
-  );
-
-  useListen(usePolymarketSportsEventsStore, state => state.selectedLeagueId, syncExternalLeagueSelection);
-
-  const onItemLayout = useCallback(
-    (event: LayoutChangeEvent, index: number) => {
-      itemLayouts.current[index] = { x: event.nativeEvent.layout.x, width: event.nativeEvent.layout.width };
-      if (!didInitialScroll.current && allItemsMeasured(itemLayouts.current)) {
-        didInitialScroll.current = true;
-        scrollToSelectedLeague();
-      }
-    },
-    [scrollToSelectedLeague]
-  );
-
-  const onPress = useCallback(
-    (league: LeagueItem) => {
-      selectedLeagueKey.value = league.key;
-      usePolymarketSportsEventsStore.getState().setSelectedLeagueId(league.key);
-    },
-    [selectedLeagueKey]
-  );
+  const {
+    onItemLayout,
+    onPress,
+    selectedKey: selectedLeagueKey,
+  } = useHorizontalSelectorStoreSync({
+    containerWidth: CONTAINER_WIDTH,
+    getItemKey: getLeagueKey,
+    horizontalPadding: HORIZONTAL_PADDING,
+    items: LEAGUE_ITEMS,
+    parseStoreKey: parseLeagueKey,
+    scrollViewRef: leagueSelectorRef,
+    selectStoreKey: state => state.selectedLeagueId,
+    setStoreKey: setLeagueKey,
+    store: usePolymarketSportsEventsStore,
+  });
 
   return (
     <View
@@ -167,7 +133,7 @@ const LeagueItemComponent = memo(function LeagueItemComponent({ league, onPress,
   );
 
   const borderContainerStyle = useAnimatedStyle(() => ({
-    opacity: selectedLeagueKey.value === leagueKey ? 1 : 0,
+    opacity: withTiming(selectedLeagueKey.value === leagueKey ? 1 : 0, TIMING_CONFIGS.buttonPressConfig),
   }));
 
   const hasIcon = useMemo(() => league.key !== DEFAULT_SPORTS_LEAGUE_KEY && getIconByLeagueId(league.key) !== undefined, [league.key]);
@@ -197,20 +163,16 @@ const LeagueItemComponent = memo(function LeagueItemComponent({ league, onPress,
 
 // ============ Utilities ====================================================== //
 
-function allItemsMeasured(layouts: ItemLayout[]): boolean {
-  return layouts.filter(Boolean).length === LEAGUE_ITEMS.length;
+function getLeagueKey(league: LeagueItem): LeagueItemKey {
+  return league.key;
 }
 
-function calculateCenteredScrollX(layouts: ItemLayout[], index: number): number {
-  const layout = layouts[index];
-  const lastLayout = layouts[layouts.length - 1];
-  if (!layout || !lastLayout) return 0;
+function parseLeagueKey(key: string): LeagueItemKey | undefined {
+  return key as LeagueItemKey;
+}
 
-  const itemCenter = layout.x + layout.width / 2;
-  const contentWidth = lastLayout.x + lastLayout.width + HORIZONTAL_PADDING;
-  const maxScroll = Math.max(0, contentWidth - CONTAINER_WIDTH);
-
-  return Math.min(Math.max(0, itemCenter - CONTAINER_WIDTH / 2), maxScroll);
+function setLeagueKey(key: LeagueItemKey): void {
+  usePolymarketSportsEventsStore.getState().setSelectedLeagueId(key);
 }
 
 // ============ Styles ========================================================= //
