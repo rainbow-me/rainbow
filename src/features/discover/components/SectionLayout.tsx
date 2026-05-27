@@ -1,8 +1,7 @@
-import { StyleSheet, View, type StyleProp, type ViewStyle } from 'react-native';
+import { StyleSheet } from 'react-native';
 
 import { analytics } from '@/analytics';
 import { event } from '@/analytics/event';
-import { useBackgroundColor, useForegroundColor } from '@/design-system';
 import { MarketCarousel } from '@/features/discover/components/markets/layouts/MarketCarousel';
 import { MarketGrid } from '@/features/discover/components/markets/layouts/MarketGrid';
 import { MarketList } from '@/features/discover/components/markets/layouts/MarketList';
@@ -10,19 +9,16 @@ import { navigateDiscoverDestination } from '@/features/discover/utils/navigatio
 import { type SurfaceLeaf } from '@/features/placements/surfaces/types';
 import { type PlacementItem } from '@/features/placements/types';
 import { LeagueIcon } from '@/features/polymarket/components/league-icon/LeagueIcon';
+import { LiveSectionIndicator } from '@/features/polymarket/components/LiveSectionIndicator';
 import { getLeagueId, isLeagueId, SPORT_LEAGUES, type LeagueId } from '@/features/polymarket/leagues';
 import {
   getSportsEventScheduleBucket,
   type SportsEventScheduleBucket,
 } from '@/features/polymarket/screens/polymarket-sports-events-screen/buildPolymarketSportsEventsListData';
 import { type PolymarketEvent } from '@/features/polymarket/types/polymarket-event';
-import { opacity } from '@/framework/ui/utils/opacity';
 
 import { type SectionLayoutProps } from './surfaceSectionTypes';
 
-const LIVE_INDICATOR_SIZE = 28;
-const LIVE_INDICATOR_CUTOUT_SIZE = 16;
-const LIVE_INDICATOR_DOT_SIZE = 8;
 const LIVE_INDICATOR_HEADER_GAP = 10;
 const HEADER_ACCESSORY_GAP = 4;
 
@@ -201,18 +197,6 @@ function renderSurfaceHeaderLeadingAccessory(surface: SurfaceLeaf) {
   return leagueId ? <LeagueIcon leagueId={leagueId} size={28} /> : null;
 }
 
-function LiveSectionIndicator({ style }: { style?: StyleProp<ViewStyle> }) {
-  const backgroundColor = useBackgroundColor('surfacePrimary');
-  const liveIndicatorColor = useForegroundColor('red');
-  return (
-    <View style={[styles.liveIndicatorOuter, { backgroundColor: opacity(liveIndicatorColor, 0.34) }, style]}>
-      <View style={[styles.liveIndicatorCutout, { backgroundColor }]}>
-        <View style={[styles.liveIndicatorDot, { backgroundColor: liveIndicatorColor }]} />
-      </View>
-    </View>
-  );
-}
-
 function getLeagueIdBySurfaceValue(value: string | undefined): LeagueId | undefined {
   const normalizedValue = getNormalizedSurfaceValue(value);
   if (!normalizedValue) return undefined;
@@ -238,24 +222,5 @@ function getNormalizedSurfaceValue(value: string | undefined): string {
 const styles = StyleSheet.create({
   liveHeaderIndicator: {
     marginRight: LIVE_INDICATOR_HEADER_GAP - HEADER_ACCESSORY_GAP,
-  },
-  liveIndicatorCutout: {
-    alignItems: 'center',
-    borderRadius: LIVE_INDICATOR_CUTOUT_SIZE / 2,
-    height: LIVE_INDICATOR_CUTOUT_SIZE,
-    justifyContent: 'center',
-    width: LIVE_INDICATOR_CUTOUT_SIZE,
-  },
-  liveIndicatorDot: {
-    borderRadius: LIVE_INDICATOR_DOT_SIZE / 2,
-    height: LIVE_INDICATOR_DOT_SIZE,
-    width: LIVE_INDICATOR_DOT_SIZE,
-  },
-  liveIndicatorOuter: {
-    alignItems: 'center',
-    borderRadius: LIVE_INDICATOR_SIZE / 2,
-    height: LIVE_INDICATOR_SIZE,
-    justifyContent: 'center',
-    width: LIVE_INDICATOR_SIZE,
   },
 });
