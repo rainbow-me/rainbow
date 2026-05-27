@@ -18,7 +18,6 @@ export type PerpMarketPlacementItem = PlacementItem & {
 
 // ============ Constants ====================================================== //
 
-const EMPTY_PERP_MARKET_PLACEMENT_ITEMS: PerpMarketPlacementItem[] = [];
 const storesByPlacementId = new Map<PlacementId, ReturnType<typeof createPerpsPlacementStore>>();
 
 // ============ Derived Stores ================================================= //
@@ -68,7 +67,7 @@ function buildPerpMarketPlacementItems(placementItems: PlacementItem[], markets:
     if (market) items.push({ ...item, market });
   }
 
-  return items.length ? items : EMPTY_PERP_MARKET_PLACEMENT_ITEMS;
+  return items.length ? items : [];
 }
 
 function logUnresolvedPerpsRefs(placementId: PlacementId, placementItems: PlacementItem[], markets: PerpMarketsBySymbol): void {

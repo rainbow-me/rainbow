@@ -38,7 +38,6 @@ import { type SurfaceLeaf } from '@/features/placements/surfaces/types';
 import useColorForAsset from '@/hooks/useColorForAsset';
 import { userAssetsStoreManager } from '@/state/assets/userAssetsStoreManager';
 
-const EMPTY_MARKET_DISPLAY_ITEMS: MarketDisplayItem[] = [];
 const hasDestination = (surface: SurfaceLeaf) => surface.destination !== null;
 
 const MARKET_SECTION_DESCRIPTORS = {
@@ -101,7 +100,7 @@ function PlacementBackedMarketSection({
   if (source === 'rainbow') return <TokensMarketSection surface={surface} surfaceId={surfaceId} />;
   if (isLoadingPlacementSource || isPendingSurfacePlacement) {
     return renderSectionLayout({
-      data: EMPTY_MARKET_DISPLAY_ITEMS,
+      data: [],
       descriptor: MARKET_SECTION_DESCRIPTORS[surface.display],
       loading: true,
       onPressSeeAll: getHeaderPress(surface.destination),

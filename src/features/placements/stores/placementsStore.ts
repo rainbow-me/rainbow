@@ -31,7 +31,6 @@ type PlacementDocumentSnapshot = {
 
 // ============ Constants ====================================================== //
 
-const EMPTY_PLACEMENT_ITEMS: PlacementItem[] = [];
 const isPlacementSource = oneOf<PlacementSource>(Object.values(PLACEMENT_SOURCES));
 const isPlacementType = oneOf<PlacementType>(Object.values(PLACEMENT_TYPES));
 
@@ -56,7 +55,7 @@ export const usePlacementsStore = createQueryStore<PlacementsById, never, Placem
 
       getItemsBySource: (id, source) => {
         const placement = get().placementsById[id];
-        if (placement?.source !== source) return EMPTY_PLACEMENT_ITEMS;
+        if (placement?.source !== source) return [];
         return getItems(placement);
       },
     };
@@ -105,8 +104,7 @@ function buildPlacement(id: PlacementId, placement: Placement): Placement {
 }
 
 function getItems(placement: Placement | undefined): PlacementItem[] {
-  const items = placement?.items ?? EMPTY_PLACEMENT_ITEMS;
-  return items.length ? items : EMPTY_PLACEMENT_ITEMS;
+  return placement?.items ?? [];
 }
 
 // ============ Type Guards ==================================================== //

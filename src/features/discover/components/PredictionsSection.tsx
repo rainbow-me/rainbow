@@ -46,7 +46,6 @@ import { usePolymarketSportsEventsStore } from '@/features/polymarket/stores/pol
 import { navigateToPolymarketEvent } from '@/features/polymarket/utils/navigateToPolymarket';
 import { DEVICE_WIDTH } from '@/utils/deviceUtils';
 
-const EMPTY_PREDICTION_PLACEMENT_ITEMS: PredictionPlacementItem[] = [];
 const PREDICTION_TILE_WIDTH = Math.round((DEVICE_WIDTH - 20 * 2 - 8) / 2);
 
 const PREDICTIONS_SECTION_DESCRIPTORS = {
@@ -156,9 +155,9 @@ function SportsLiveSection({ surface, surfaceId }: { surface: SurfaceLeafWithDis
   const events = usePolymarketSportsEventsStore(state => state.getData());
   const isLoading = usePolymarketSportsEventsStore(state => state.getStatus('isLoading') || state.getStatus('isIdle'));
   const items = useMemo<PredictionPlacementItem[]>(() => {
-    if (!events) return EMPTY_PREDICTION_PLACEMENT_ITEMS;
+    if (!events) return [];
     const liveEvents = events.filter(isLiveSportsEvent);
-    if (!liveEvents.length) return EMPTY_PREDICTION_PLACEMENT_ITEMS;
+    if (!liveEvents.length) return [];
     return liveEvents.map(event => ({ id: event.id, event }));
   }, [events]);
   const displayedItemCount = getInitialRenderedItemCount(items, surface.limit);

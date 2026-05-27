@@ -10,12 +10,6 @@ import { createDerivedStore } from '@/state/internal/createDerivedStore';
 import { deepEqual } from '@/worklets/comparisons';
 
 const useDiscoverSurfaceStore = getSurfaceStore('discover');
-const EMPTY_PLACEMENT_IDS: string[] = [];
-const EMPTY_DISCOVER_SURFACE_PLACEMENT_REFS: DiscoverSurfacePlacementRefs = {
-  hyperliquid: EMPTY_PLACEMENT_IDS,
-  polymarket: EMPTY_PLACEMENT_IDS,
-  rainbow: EMPTY_PLACEMENT_IDS,
-};
 
 export type DiscoverSurfacePlacementRefs = Record<PlacementSource, string[]>;
 
@@ -45,7 +39,13 @@ export const useDiscoverSurfacePlacementRefs = createDerivedStore<DiscoverSurfac
     const surface = $(useDiscoverSurface);
     const placementsById = $(usePlacementsStore, state => state.placementsById);
 
-    if (!surface) return EMPTY_DISCOVER_SURFACE_PLACEMENT_REFS;
+    if (!surface) {
+      return {
+        hyperliquid: [],
+        polymarket: [],
+        rainbow: [],
+      };
+    }
 
     return getDiscoverSurfacePlacementRefs(surface, placementsById);
   },
@@ -73,7 +73,7 @@ export function useSyncDiscoverSurfacePlacements(): void {
   const lastRequestedKey = useRef<string | null>(null);
 
   const missingPlacementIds = useMemo(() => {
-    if (!rawSurface) return EMPTY_PLACEMENT_IDS;
+    if (!rawSurface) return [];
     return getMissingSurfacePlacementIds(rawSurface, placementsById);
   }, [placementsById, rawSurface]);
 
@@ -116,7 +116,7 @@ function getMissingSurfacePlacementIds(
 ): string[] {
   const missingPlacementIds = new Set<string>();
   collectMissingSurfacePlacementIds(surface, placementsById, missingPlacementIds);
-  return missingPlacementIds.size ? [...missingPlacementIds].sort() : EMPTY_PLACEMENT_IDS;
+  return missingPlacementIds.size ? [...missingPlacementIds].sort() : [];
 }
 
 function collectMissingSurfacePlacementIds(

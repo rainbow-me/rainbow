@@ -29,7 +29,6 @@ type EventsById = Record<string, PolymarketEvent>;
 
 // ============ Constants ====================================================== //
 
-const EMPTY_PREDICTION_PLACEMENT_ITEMS: PredictionPlacementItem[] = [];
 const hasPredictionRefsOrPendingHydration = hasRefsOrPendingHydration('polymarket', 'prediction');
 const storesByPlacementId = new Map<PlacementId, ReturnType<typeof createPredictionsPlacementStore>>();
 
@@ -95,7 +94,7 @@ function createPredictionsPlacementStore(placementId: PlacementId) {
       const events = $(usePredictionEventsStore, state => state.getData());
       const eventsReady = $(usePredictionEventsStore, state => state.getStatus('isSuccess'));
       const isLoading = $(usePredictionEventsStore, state => state.enabled && state.getStatus('isInitialLoad'));
-      const items = events ? parsePredictionItems(placementItems, events) : EMPTY_PREDICTION_PLACEMENT_ITEMS;
+      const items = events ? parsePredictionItems(placementItems, events) : [];
 
       if (eventsReady && events && placementItems.length > 0) {
         logUnresolvedPredictionRefs(placementId, placementItems, events);
@@ -115,7 +114,7 @@ function parsePredictionItems(placementItems: PlacementItem[], events: Polymarke
     if (event && isActivePredictionEvent(event)) items.push({ ...item, event });
   }
 
-  return items.length ? items : EMPTY_PREDICTION_PLACEMENT_ITEMS;
+  return items.length ? items : [];
 }
 
 function indexEvents(events: PolymarketEvent[]): EventsById {

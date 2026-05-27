@@ -36,8 +36,8 @@ type TokenRefFetchResult = {
 
 const TOKEN_REF_FETCH_CONCURRENCY = 4;
 const TOKEN_REFS_STALE_TIME = time.minutes(2);
-const EMPTY_TOKEN_ASSETS_BY_REF: TokenAssetsByRef = {};
-const EMPTY_TOKEN_PLACEMENT_ITEMS: TokenPlacementItem[] = [];
+// Keep object identity stable for Object.is store selectors; arrays are compared structurally downstream.
+const EMPTY_TOKEN_ASSETS_BY_REF: TokenAssetsByRef = Object.freeze({});
 const hasTokenRefsOrPendingHydration = hasRefsOrPendingHydration('rainbow', 'token');
 const tokenRefCache = new Map<string, TokenRefCacheEntry>();
 const storesByPlacementId = new Map<PlacementId, ReturnType<typeof createTokensPlacementStore>>();
@@ -136,7 +136,7 @@ function createTokensPlacementStore(placementId: PlacementId) {
 
       return {
         isLoading,
-        items: assetsByRef ? parseTokenItems(placementItems, assetsByRef) : EMPTY_TOKEN_PLACEMENT_ITEMS,
+        items: assetsByRef ? parseTokenItems(placementItems, assetsByRef) : [],
       };
     },
   });
@@ -150,7 +150,7 @@ function parseTokenItems(placementItems: PlacementItem[], assetsByRef: TokenAsse
     if (asset) items.push({ ...item, asset });
   }
 
-  return items.length ? items : EMPTY_TOKEN_PLACEMENT_ITEMS;
+  return items.length ? items : [];
 }
 
 function parseTokenRef(tokenRef: string): { address: string; chainId: ChainId } | null {
