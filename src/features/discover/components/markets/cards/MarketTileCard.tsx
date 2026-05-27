@@ -11,7 +11,7 @@ import { Skeleton } from '@/components/Skeleton';
 import { Text, useColorMode } from '@/design-system';
 import { getValueForColorMode, type ColorMode, type ContextualColorValue } from '@/design-system/color/palettes';
 import { Border } from '@/design-system/components/Border/Border';
-import { SparklineChart } from '@/features/charts/line/components/SparklineChart';
+import { SparklineChartWithLivePointer } from '@/features/charts/line/components/SparklineChartWithLivePointer';
 import { MarketIcon } from '@/features/discover/components/markets/cards/MarketIcon';
 import { MarketPriceChange } from '@/features/discover/components/markets/cards/MarketPriceChange';
 import {
@@ -161,11 +161,10 @@ export const MarketTileCard = memo(function MarketTileCard({
           </View>
 
           <View pointerEvents="none" style={[styles.chartContainer, { width: chartWidth }]}>
-            <SparklineChart
+            <SparklineChartWithLivePointer
               chartId={item.chartId}
               color={chartColor}
               height={CHART_HEIGHT}
-              showLivePointer
               store={item.chartStore}
               width={chartWidth}
             />
