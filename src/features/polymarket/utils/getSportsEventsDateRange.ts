@@ -23,11 +23,11 @@ export function getSportsEventsDayBoundaries(referenceDate: Date = new Date()): 
 }
 
 export function getSportsEventsStartTimeRange(referenceDate: Date = new Date()): SportsEventsStartTimeRange {
-  const { startOfToday, startOfNextWeek } = getSportsEventsDayBoundaries(referenceDate);
+  const { startOfToday, startOfDayAfterTomorrow } = getSportsEventsDayBoundaries(referenceDate);
   const startOfYesterday = new Date(startOfToday);
   startOfYesterday.setDate(startOfYesterday.getDate() - 1);
   return {
     minStartTime: startOfYesterday.toISOString(),
-    maxStartTime: startOfNextWeek.toISOString(),
+    maxStartTime: startOfDayAfterTomorrow.toISOString(),
   };
 }
