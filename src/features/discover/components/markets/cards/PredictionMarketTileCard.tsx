@@ -114,6 +114,14 @@ export const PredictionMarketTileCard = memo(function PredictionMarketTileCard({
       marketSlug: event.slug,
       marketSymbol: event.ticker,
     });
+    if (analyticsContext.placementId) {
+      analytics.track(analyticsEvent.placementInteraction, {
+        placementId: analyticsContext.placementId,
+        source: analyticsContext.placementSource,
+        surfaceId: analyticsContext.surfaceId,
+        type: analyticsContext.placementType,
+      });
+    }
     Navigation.handleAction(Routes.POLYMARKET_EVENT_SCREEN, { event, eventId: event.id });
   }, [analyticsContext, event]);
 

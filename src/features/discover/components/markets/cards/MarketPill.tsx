@@ -100,6 +100,14 @@ export const MarketPill = memo(function MarketPill({ analyticsContext, item }: M
       marketSlug: item.pressMetadata.marketSlug,
       marketSymbol: item.pressMetadata.marketSymbol,
     });
+    if (analyticsContext.placementId) {
+      analytics.track(event.placementInteraction, {
+        placementId: analyticsContext.placementId,
+        source: analyticsContext.placementSource,
+        surfaceId: analyticsContext.surfaceId,
+        type: analyticsContext.placementType,
+      });
+    }
     item.onNavigate();
   };
 

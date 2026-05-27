@@ -132,6 +132,11 @@ function DiscoverCategorySelector() {
         surfaceId: surface?.id ?? 'discover',
         wasActive,
       });
+      analytics.track(analyticsEvent.surfaceInteraction, {
+        sectionId: section.id,
+        sectionTitle,
+        surfaceId: surface?.id ?? 'discover',
+      });
 
       if (wasActive) {
         scrollToSectionTop(section.id);

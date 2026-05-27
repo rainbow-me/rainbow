@@ -255,6 +255,8 @@ export const event = {
   discoverTabPressed: 'discover.tab_pressed',
   discoverSectionPressed: 'discover.section_pressed',
   discoverCarouselScrolled: 'discover.carousel_scrolled',
+  placementInteraction: 'placement.interaction',
+  surfaceInteraction: 'surface.interaction',
 
   // ens
   ensInitiatedRegistration: 'Initiated ENS registration',
@@ -1050,6 +1052,21 @@ export type EventProperties = {
     placementType?: PlacementType;
     placementVersion?: Placement['version'];
     sectionId?: SectionId;
+    surfaceId: SurfaceId;
+  };
+  [event.placementInteraction]: {
+    placementId: PlacementId;
+    source?: PlacementSource;
+    surfaceId?: SurfaceId;
+    type?: PlacementType;
+  };
+  [event.surfaceInteraction]: {
+    display?: Display;
+    placementId?: PlacementId;
+    placementSource?: PlacementSource;
+    placementType?: PlacementType;
+    sectionId?: SectionId;
+    sectionTitle?: string;
     surfaceId: SurfaceId;
   };
 

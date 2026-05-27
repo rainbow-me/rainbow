@@ -113,6 +113,15 @@ export function MarketCarousel<T extends PlacementItem>({
         sectionId,
         surfaceId,
       });
+
+      analytics.track(event.surfaceInteraction, {
+        display,
+        placementId: placement?.id,
+        placementSource: placement?.source,
+        placementType: placement?.type,
+        sectionId,
+        surfaceId,
+      });
     },
     SCROLL_DEBOUNCE_MS,
     SCROLL_DEBOUNCE_OPTIONS
@@ -174,6 +183,7 @@ function getAnalyticsContext<T extends PlacementItem>({
     placementId,
     placementSource: placement?.source,
     placementTitle: title,
+    placementType: placement?.type,
     surfaceId,
   };
 }

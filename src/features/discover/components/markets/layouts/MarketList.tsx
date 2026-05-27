@@ -98,6 +98,7 @@ function getAnalyticsContext<T extends PlacementItem>({
     placementId,
     placementSource: placement?.source,
     placementTitle: title,
+    placementType: placement?.type,
     surfaceId,
   };
 }

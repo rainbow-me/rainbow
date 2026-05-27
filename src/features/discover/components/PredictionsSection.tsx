@@ -306,6 +306,14 @@ function PredictionListItem({
       marketSlug: item.event.slug,
       marketSymbol: item.event.ticker,
     });
+    if (analyticsContext.placementId) {
+      analytics.track(analyticsEvent.placementInteraction, {
+        placementId: analyticsContext.placementId,
+        source: analyticsContext.placementSource,
+        surfaceId: analyticsContext.surfaceId,
+        type: analyticsContext.placementType,
+      });
+    }
     navigateToPolymarketEvent({ event: item.event, eventId: item.event.id });
   }, [analyticsContext, item.event]);
 

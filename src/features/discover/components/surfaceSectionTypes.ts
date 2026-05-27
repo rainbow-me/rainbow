@@ -2,7 +2,13 @@ import { type ReactNode } from 'react';
 
 import { type MARKET_DISPLAY_VALUES, type PREDICTION_DISPLAY_VALUES } from '@/features/placements/surfaces/constants';
 import { type Display, type SurfaceLeaf } from '@/features/placements/surfaces/types';
-import { type Placement, type PlacementId, type PlacementItem, type PlacementSource } from '@/features/placements/types';
+import {
+  type Placement,
+  type PlacementId,
+  type PlacementItem,
+  type PlacementSource,
+  type PlacementType,
+} from '@/features/placements/types';
 
 export type DiscoverCardAnalyticsContext = {
   itemId: PlacementItem['id'];
@@ -10,6 +16,7 @@ export type DiscoverCardAnalyticsContext = {
   placementId: PlacementId | undefined;
   placementSource: PlacementSource | undefined;
   placementTitle: string;
+  placementType: PlacementType | undefined;
   surfaceId: string;
 };
 
