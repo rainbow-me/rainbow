@@ -91,6 +91,7 @@ export interface RainbowConfig extends Record<
   candlestick_charts_enabled: boolean;
   rainbow_toasts_enabled: boolean;
   king_of_the_hill2_enabled: boolean;
+  discover_enabled: boolean;
   perps_enabled: boolean;
   polymarket_enabled: boolean;
   rnbw_rewards_enabled: boolean;
@@ -98,7 +99,6 @@ export interface RainbowConfig extends Record<
   delegation_enabled: boolean;
   sponsored_sends_enabled: boolean;
   sponsored_swaps_enabled: boolean;
-  discover_placements_enabled: boolean;
 }
 
 const Bips = {
@@ -223,15 +223,15 @@ export const DEFAULT_CONFIG = {
   prince_of_the_hill_enabled: false,
   candlestick_charts_enabled: !IS_STORE_INSTALL,
   rainbow_toasts_enabled: !IS_STORE_INSTALL,
-  perps_enabled: false,
-  polymarket_enabled: false,
+  discover_enabled: true,
+  perps_enabled: true,
+  polymarket_enabled: true,
   dev_section_enabled: IS_DEV,
   rnbw_rewards_enabled: false,
   rnbw_membership_enabled: false,
   delegation_enabled: false,
   sponsored_sends_enabled: true,
   sponsored_swaps_enabled: true,
-  discover_placements_enabled: true,
 } as const satisfies Readonly<RainbowConfig>;
 
 type RemoteConfigKey = keyof typeof DEFAULT_CONFIG;
