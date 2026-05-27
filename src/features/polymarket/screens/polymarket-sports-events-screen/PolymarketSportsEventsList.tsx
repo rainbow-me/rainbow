@@ -6,7 +6,7 @@ import Animated from 'react-native-reanimated';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 import { Skeleton } from '@/components/Skeleton';
-import { Text, useBackgroundColor } from '@/design-system';
+import { Text, useBackgroundColor, useForegroundColor } from '@/design-system';
 import { LeagueIcon } from '@/features/polymarket/components/league-icon/LeagueIcon';
 import {
   HEIGHT as ITEM_HEIGHT,
@@ -23,6 +23,7 @@ import {
 import { usePolymarketSportsEventsStore, type PolymarketSportsLeagueId } from '@/features/polymarket/stores/polymarketSportsEventsStore';
 import { type PolymarketEvent } from '@/features/polymarket/types/polymarket-event';
 import { getSportsEventTokenIds } from '@/features/polymarket/utils/sportsEventBetData';
+import { opacity } from '@/framework/ui/utils/opacity';
 import { useStableValue } from '@/hooks/useStableValue';
 import * as i18n from '@/languages';
 import Routes from '@/navigation/routesNames';
@@ -216,10 +217,11 @@ const SectionHeader = memo(function SectionHeader({ title, isLive }: { title: st
 
 const LiveSectionIndicator = memo(function LiveSectionIndicator() {
   const backgroundColor = useBackgroundColor('surfacePrimary');
+  const liveIndicatorColor = useForegroundColor('red');
   return (
-    <View style={styles.liveIndicatorOuter}>
+    <View style={[styles.liveIndicatorOuter, { backgroundColor: opacity(liveIndicatorColor, 0.34) }]}>
       <View style={[styles.liveIndicatorCutout, { backgroundColor }]}>
-        <View style={styles.liveIndicatorDot} />
+        <View style={[styles.liveIndicatorDot, { backgroundColor: liveIndicatorColor }]} />
       </View>
     </View>
   );
@@ -281,14 +283,12 @@ const styles = StyleSheet.create({
     width: LIVE_INDICATOR_CUTOUT_SIZE,
   },
   liveIndicatorDot: {
-    backgroundColor: '#F04F4B',
     borderRadius: LIVE_INDICATOR_DOT_SIZE / 2,
     height: LIVE_INDICATOR_DOT_SIZE,
     width: LIVE_INDICATOR_DOT_SIZE,
   },
   liveIndicatorOuter: {
     alignItems: 'center',
-    backgroundColor: 'rgba(240, 79, 75, 0.34)',
     borderRadius: LIVE_INDICATOR_SIZE / 2,
     height: LIVE_INDICATOR_SIZE,
     justifyContent: 'center',

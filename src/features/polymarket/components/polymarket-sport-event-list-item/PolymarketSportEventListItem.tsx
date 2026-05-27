@@ -7,7 +7,7 @@ import { LinearGradient } from 'expo-linear-gradient';
 import ButtonPressAnimation from '@/components/animations/ButtonPressAnimation';
 import ShimmerAnimation from '@/components/animations/ShimmerAnimation';
 import { LiveTokenText } from '@/components/live-token-text/LiveTokenText';
-import { Text, TextShadow, useBackgroundColor, useColorMode } from '@/design-system';
+import { Text, TextShadow, useBackgroundColor, useColorMode, useForegroundColor } from '@/design-system';
 import { TeamLogo } from '@/features/polymarket/components/TeamLogo';
 import {
   getPolymarketSportsBetCellTokenId,
@@ -59,6 +59,7 @@ export const PolymarketSportEventListItem = memo(function PolymarketSportEventLi
     totalsOverColor,
     totalsUnderColor,
   } = useSportsEventContent(event);
+  const liveIndicatorColor = useForegroundColor('red');
 
   return (
     <ConditionalWrap condition={Platform.OS === 'android'} wrap={children => <View style={[styles.container, style]}>{children}</View>}>
@@ -95,9 +96,9 @@ export const PolymarketSportEventListItem = memo(function PolymarketSportEventLi
               {isLive ? (
                 <View style={styles.liveIndicator}>
                   <View style={styles.liveIndicatorLeft}>
-                    <View style={styles.liveDot} />
+                    <View style={[styles.liveDot, { backgroundColor: liveIndicatorColor }]} />
                     <TextShadow blur={10} shadowOpacity={0.5}>
-                      <Text align="center" size="10pt" style={{ letterSpacing: 0.6 }} weight="heavy" color={{ custom: '#FF584D' }}>
+                      <Text align="center" size="10pt" style={{ letterSpacing: 0.6 }} weight="heavy" color={{ custom: liveIndicatorColor }}>
                         {i18n.t(i18n.l.predictions.sports.live).toUpperCase()}
                       </Text>
                     </TextShadow>
@@ -252,7 +253,6 @@ const styles = StyleSheet.create({
     width: BET_ROW_WIDTH,
   },
   liveDot: {
-    backgroundColor: '#FF584D',
     borderRadius: 3,
     height: 6,
     width: 6,

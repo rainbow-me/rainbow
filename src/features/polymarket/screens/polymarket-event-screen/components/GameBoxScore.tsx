@@ -4,7 +4,7 @@ import { View } from 'react-native';
 import Animated from 'react-native-reanimated';
 
 import { DEFAULT_MOUNT_ANIMATIONS } from '@/components/utilities/MountWhenFocused';
-import { Box, globalColors, Separator, Text, TextShadow } from '@/design-system';
+import { Box, globalColors, Separator, Text, TextShadow, useForegroundColor } from '@/design-system';
 import { TeamLogo } from '@/features/polymarket/components/TeamLogo';
 import { usePolymarketLiveGame } from '@/features/polymarket/hooks/usePolymarketLiveGame';
 import { type PolymarketEvent, type PolymarketMarketEvent } from '@/features/polymarket/types/polymarket-event';
@@ -95,14 +95,15 @@ const UpcomingGameBoxScore = memo(function UpcomingGameBoxScore({ gameInfo }: { 
 const LiveGameBoxScore = memo(function LiveGameBoxScore({ gameInfo }: { gameInfo: PolymarketEventGameInfo }) {
   const { score, period, elapsed } = gameInfo;
   const { periodTitle } = getGameBoxScore({ score, period, elapsed });
+  const liveIndicatorColor = useForegroundColor('red');
 
   return (
     <Box gap={12}>
       <Box flexDirection="row" alignItems="center" justifyContent="center" gap={10}>
         <Box flexDirection="row" alignItems="center" justifyContent="center" gap={8}>
-          <Box width={8} height={8} backgroundColor={'#FF584D'} borderRadius={4} />
+          <Box width={8} height={8} backgroundColor={liveIndicatorColor} borderRadius={4} />
           <TextShadow blur={14} shadowOpacity={0.5}>
-            <Text align="center" size="15pt" style={{ letterSpacing: 0.8 }} weight="heavy" color={{ custom: '#FF584D' }}>
+            <Text align="center" size="15pt" style={{ letterSpacing: 0.8 }} weight="heavy" color={{ custom: liveIndicatorColor }}>
               {i18n.t(i18n.l.predictions.sports.live).toUpperCase()}
             </Text>
           </TextShadow>
