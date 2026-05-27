@@ -423,7 +423,7 @@ export function getLeagueSlugId(value: string): string | undefined {
   return slugId?.toLowerCase() || undefined;
 }
 
-function isLeagueId(value: string): value is LeagueId {
+export function isLeagueId(value: string): value is LeagueId {
   return value in SPORT_LEAGUES;
 }
 

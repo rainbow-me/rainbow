@@ -11,7 +11,7 @@ import { navigateDiscoverDestination } from '@/features/discover/utils/navigatio
 import { type SurfaceLeaf } from '@/features/placements/surfaces/types';
 import { type PlacementItem } from '@/features/placements/types';
 import { LeagueIcon } from '@/features/polymarket/components/league-icon/LeagueIcon';
-import { getLeagueId, SPORT_LEAGUES, type LeagueId } from '@/features/polymarket/leagues';
+import { getLeagueId, isLeagueId, SPORT_LEAGUES, type LeagueId } from '@/features/polymarket/leagues';
 import {
   getSportsEventScheduleBucket,
   type SportsEventScheduleBucket,
@@ -221,10 +221,9 @@ function getLeagueIdBySurfaceValue(value: string | undefined): LeagueId | undefi
   const entry = Object.entries(SPORT_LEAGUES).find(
     ([leagueId, league]) => leagueId === normalizedValue || league.name.toLowerCase() === normalizedValue
   );
-  if (entry) return entry[0] as LeagueId;
+  if (entry && isLeagueId(entry[0])) return entry[0];
 
-  const leagueToken = normalizedValue.split(/[^a-z0-9]+/).find(token => token in SPORT_LEAGUES);
-  return leagueToken as LeagueId | undefined;
+  return normalizedValue.split(/[^a-z0-9]+/).find(isLeagueId);
 }
 
 function getSurfaceValueKey(value: string | undefined): string {
