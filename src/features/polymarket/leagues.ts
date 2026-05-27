@@ -246,12 +246,6 @@ export const SPORT_LEAGUES = {
     sportId: 'soccer',
     color: SPORTS.soccer.color,
   },
-  bsseriea: {
-    name: 'Brazil Serie A',
-    fullName: 'Brazil Serie A',
-    sportId: 'soccer',
-    color: SPORTS.soccer.color,
-  },
   cze1: {
     name: 'Czech First League',
     fullName: 'Czech First League',
@@ -348,12 +342,6 @@ export const SPORT_LEAGUES = {
     sportId: 'soccer',
     color: SPORTS.soccer.color,
   },
-  chi: {
-    name: 'Chile Primera',
-    fullName: 'Chile Primera Division',
-    sportId: 'soccer',
-    color: SPORTS.soccer.color,
-  },
   sud: {
     name: 'Sudamericana',
     fullName: 'CONMEBOL Sudamericana',
@@ -395,18 +383,6 @@ export const SPORT_LEAGUES = {
     fullName: 'Formula 1',
     sportId: 'motorsports',
     color: { dark: '#FF1E00', light: '#E10600' },
-  },
-  scop: {
-    name: 'SCOP',
-    fullName: 'SCOP',
-    sportId: 'soccer',
-    color: SPORTS.soccer.color,
-  },
-  acn: {
-    name: 'ACN',
-    fullName: 'ACN',
-    sportId: 'soccer',
-    color: SPORTS.soccer.color,
   },
 } as const;
 
