@@ -4,12 +4,16 @@ import { getColorValueForThemeWorklet } from '@/__swaps__/utils/swaps';
 import { useColorMode } from '@/design-system';
 import { getLeagueId, SPORT_LEAGUES } from '@/features/polymarket/leagues';
 
+import { DEFAULT_SIZE, type IconProps } from './iconBase';
 import { BaseballIcon } from './icons/BaseballIcon';
 import { CfbIcon } from './icons/CfbIcon';
 import { CricketIcon } from './icons/CricketIcon';
 import { Cs2Icon } from './icons/Cs2Icon';
 import { Dota2Icon } from './icons/Dota2Icon';
+import { EsportsIcon } from './icons/EsportsIcon';
+import { F1Icon } from './icons/F1Icon';
 import { HockeyIcon } from './icons/HockeyIcon';
+import { LolIcon } from './icons/LolIcon';
 import { NbaIcon } from './icons/NbaIcon';
 import { NflIcon } from './icons/NflIcon';
 import { NhlIcon } from './icons/NhlIcon';
@@ -18,9 +22,6 @@ import { TennisIcon } from './icons/TennisIcon';
 import { UfcIcon } from './icons/UfcIcon';
 import { ValorantIcon } from './icons/ValorantIcon';
 
-export const DEFAULT_SIZE = 24;
-
-export type IconProps = { color: string; width?: number; height?: number };
 type IconComponent = React.ComponentType<IconProps>;
 type LeagueId = keyof typeof SPORT_LEAGUES;
 type SportId = (typeof SPORT_LEAGUES)[LeagueId]['sportId'];
@@ -29,6 +30,8 @@ const LEAGUE_ICONS: Partial<Record<LeagueId, IconComponent>> = {
   cfb: CfbIcon,
   cs2: Cs2Icon,
   dota2: Dota2Icon,
+  f1: F1Icon,
+  lol: LolIcon,
   nba: NbaIcon,
   nhl: NhlIcon,
   ufc: UfcIcon,
@@ -43,10 +46,11 @@ const SPORT_ICONS: Partial<Record<SportId, IconComponent>> = {
   tennis: TennisIcon,
   baseball: BaseballIcon,
   basketball: NbaIcon,
+  esports: EsportsIcon,
 };
 
 export function getIconByLeagueId(leagueId: LeagueId): IconComponent | undefined {
-  return LEAGUE_ICONS[leagueId] ?? SPORT_ICONS[SPORT_LEAGUES[leagueId]?.sportId];
+  return LEAGUE_ICONS[leagueId] ?? SPORT_ICONS[SPORT_LEAGUES[leagueId].sportId];
 }
 
 export function hasLeagueIcon(eventSlug: string): boolean {
@@ -59,7 +63,7 @@ type LeagueIconProps = {
   size?: number;
 } & ({ leagueId: LeagueId; eventSlug?: never } | { leagueId?: never; eventSlug: string });
 
-export const LeagueIcon = memo(function LeagueIcon({ leagueId, eventSlug, color, size = 24 }: LeagueIconProps) {
+export const LeagueIcon = memo(function LeagueIcon({ leagueId, eventSlug, color, size = DEFAULT_SIZE }: LeagueIconProps) {
   const { isDarkMode } = useColorMode();
 
   const resolvedLeagueId = leagueId ?? getLeagueId(eventSlug);
