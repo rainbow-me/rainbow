@@ -1,9 +1,9 @@
 import { POLYMARKET } from '@/config/experimental';
 import { useExperimentalConfigStore } from '@/config/experimentalConfigStore';
 import { IS_TEST } from '@/env';
+import { hasRefsOrPendingHydration } from '@/features/placements/stores/derived/hasRefsOrPendingHydration';
 import { warnUnresolvedRefsOnce } from '@/features/placements/stores/derived/warnUnresolvedRefsOnce';
 import { createPlacementStore } from '@/features/placements/stores/factories/createPlacementStore';
-import { usePlacementsStore } from '@/features/placements/stores/placementsStore';
 import { useDiscoverSurfacePlacementRefs } from '@/features/placements/surfaces/hooks/useSurface';
 import { type PlacementId, type PlacementItem } from '@/features/placements/types';
 import { fetchPolymarketEventsByIds } from '@/features/polymarket/stores/polymarketEventsStore';
@@ -30,6 +30,7 @@ type EventsById = Record<string, PolymarketEvent>;
 // ============ Constants ====================================================== //
 
 const EMPTY_PREDICTION_PLACEMENT_ITEMS: PredictionPlacementItem[] = [];
+const hasPredictionRefsOrPendingHydration = hasRefsOrPendingHydration('polymarket', 'prediction');
 const storesByPlacementId = new Map<PlacementId, ReturnType<typeof createPredictionsPlacementStore>>();
 
 // ============ Stores ========================================================= //
@@ -38,10 +39,8 @@ const usePredictionsEnabled = createDerivedStore<boolean>(
   $ => {
     const polymarketEnabled = $(useRemoteConfigStore, state => state.getRemoteConfigKey('polymarket_enabled'));
     const polymarketEnabledLocally = $(useExperimentalConfigStore, state => state.getFlag(POLYMARKET));
-    const hasEventIds = $(useDiscoverSurfacePlacementRefs, refs => refs.polymarket.length > 0);
-    const placementsPending = $(usePlacementsStore, state => state.getStatus('isIdle') || state.getStatus('isInitialLoad'));
 
-    if ((!hasEventIds && !placementsPending) || IS_TEST) return false;
+    if (!hasPredictionRefsOrPendingHydration($) || IS_TEST) return false;
 
     return polymarketEnabled || polymarketEnabledLocally;
   },

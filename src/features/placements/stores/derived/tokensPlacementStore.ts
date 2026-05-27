@@ -1,7 +1,7 @@
 import { type NativeCurrencyKey } from '@/entities/nativeCurrencyTypes';
 import { IS_TEST } from '@/env';
+import { hasRefsOrPendingHydration } from '@/features/placements/stores/derived/hasRefsOrPendingHydration';
 import { createPlacementStore } from '@/features/placements/stores/factories/createPlacementStore';
-import { usePlacementsStore } from '@/features/placements/stores/placementsStore';
 import { useDiscoverSurfacePlacementRefs } from '@/features/placements/surfaces/hooks/useSurface';
 import { type PlacementId, type PlacementItem } from '@/features/placements/types';
 import { fetchExternalToken, type FormattedExternalAsset } from '@/resources/assets/externalAssetsQuery';
@@ -38,6 +38,7 @@ const TOKEN_REF_FETCH_CONCURRENCY = 4;
 const TOKEN_REFS_STALE_TIME = time.minutes(2);
 const EMPTY_TOKEN_ASSETS_BY_REF: TokenAssetsByRef = {};
 const EMPTY_TOKEN_PLACEMENT_ITEMS: TokenPlacementItem[] = [];
+const hasTokenRefsOrPendingHydration = hasRefsOrPendingHydration('rainbow', 'token');
 const tokenRefCache = new Map<string, TokenRefCacheEntry>();
 const storesByPlacementId = new Map<PlacementId, ReturnType<typeof createTokensPlacementStore>>();
 
@@ -45,10 +46,7 @@ const storesByPlacementId = new Map<PlacementId, ReturnType<typeof createTokensP
 
 const useTokensEnabled = createDerivedStore<boolean>(
   $ => {
-    const hasTokenRefs = $(useDiscoverSurfacePlacementRefs, refs => refs.rainbow.length > 0);
-    const placementsPending = $(usePlacementsStore, state => state.getStatus('isIdle') || state.getStatus('isInitialLoad'));
-
-    return (hasTokenRefs || placementsPending) && !IS_TEST;
+    return hasTokenRefsOrPendingHydration($) && !IS_TEST;
   },
   { fastMode: true }
 );
