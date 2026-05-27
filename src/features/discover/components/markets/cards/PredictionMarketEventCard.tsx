@@ -3,6 +3,7 @@ import { Platform, StyleSheet, View } from 'react-native';
 
 import { LinearGradient } from 'expo-linear-gradient';
 
+import { getColorValueForThemeWorklet } from '@/__swaps__/utils/swaps';
 import { analytics } from '@/analytics';
 import { event as analyticsEvent } from '@/analytics/event';
 import ButtonPressAnimation from '@/components/animations/ButtonPressAnimation';
@@ -17,12 +18,13 @@ import {
   getPolymarketSportsBetCellTokenId,
   usePolymarketSportsBetCellPress,
 } from '@/features/polymarket/hooks/usePolymarketSportsBetCellPress';
-import { useSportsEventContent, type SportsEventRows } from '@/features/polymarket/hooks/useSportsEventContent';
-import { SPORT_LEAGUES, type LeagueId } from '@/features/polymarket/leagues';
+import { useSportsEventBets, useSportsEventStatus, type SportsEventRows } from '@/features/polymarket/hooks/useSportsEventContent';
+import { getLeagueId, SPORT_LEAGUES, type LeagueId } from '@/features/polymarket/leagues';
 import { type PolymarketTeamInfo } from '@/features/polymarket/types';
 import { type PolymarketEvent } from '@/features/polymarket/types/polymarket-event';
 import { formatOdds, type BetCellData } from '@/features/polymarket/utils/sportsEventBetData';
 import { getSportsEventOutcomeCellColor, type SportsEventOutcomeInfo } from '@/features/polymarket/utils/sportsEventOutcome';
+import { getTeamDisplayInfo } from '@/features/polymarket/utils/sportsEventTeams';
 import { opacity } from '@/framework/ui/utils/opacity';
 import * as i18n from '@/languages';
 import Navigation from '@/navigation/Navigation';
@@ -66,16 +68,12 @@ export const PredictionMarketEventCard = memo(function PredictionMarketEventCard
   width = PREDICTION_MARKET_EVENT_CARD_WIDTH,
 }: PredictionMarketEventCardProps) {
   const { isDarkMode } = useColorMode();
-  const {
-    eventAccentColor,
-    gameStatusTitle,
-    isLive,
-    leagueId,
-    rows,
-    scores,
-    teamLabels: upstreamTeamLabels,
-  } = useSportsEventContent(event);
+  const { rows } = useSportsEventBets(event);
+  const { gameStatusTitle, isLive, scores } = useSportsEventStatus(event);
+  const { labels: upstreamTeamLabels } = useMemo(() => getTeamDisplayInfo(event), [event]);
   const teamLabels = useMemo(() => getDiscoverSportsEventTeamLabels(event, upstreamTeamLabels), [event, upstreamTeamLabels]);
+  const leagueId = useMemo(() => getLeagueId(event.slug) ?? getLeagueId(event.ticker ?? '') ?? getLeagueIdFromTags(event.tags), [event]);
+  const eventAccentColor = useMemo(() => getEventAccentColor({ event, isDarkMode, leagueId }), [event, isDarkMode, leagueId]);
   const liveIndicatorColor = useForegroundColor('red');
   const cardBorderGradientColors = getPredictionEventCardBorderGradientColors(eventAccentColor, isDarkMode);
   const cardGradientColors = getPredictionEventCardGradientColors(eventAccentColor, isDarkMode);
@@ -439,6 +437,19 @@ function useOutcomePress({
 function getLeagueLabel(leagueId: LeagueId | undefined) {
   if (!leagueId) return '';
   return SPORT_LEAGUES[leagueId].name;
+}
+
+function getLeagueIdFromTags(tags: PolymarketEvent['tags']): LeagueId | undefined {
+  for (const tag of tags) {
+    const leagueId = getLeagueId(tag.slug);
+    if (leagueId) return leagueId;
+  }
+}
+
+function getEventAccentColor({ event, isDarkMode, leagueId }: { event: PolymarketEvent; isDarkMode: boolean; leagueId?: LeagueId }) {
+  const leagueColor = leagueId ? SPORT_LEAGUES[leagueId].color : undefined;
+  if (leagueColor) return getColorValueForThemeWorklet(leagueColor, isDarkMode);
+  return getColorValueForThemeWorklet(event.color, isDarkMode);
 }
 
 const styles = StyleSheet.create({

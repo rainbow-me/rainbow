@@ -1,12 +1,12 @@
 import { useMemo } from 'react';
 
 import { getColorValueForThemeWorklet } from '@/__swaps__/utils/swaps';
-import { useBackgroundColor, useColorMode, useForegroundColor } from '@/design-system';
-import { usePolymarketSportsEventDisplay } from '@/features/polymarket/hooks/usePolymarketSportsEventDisplay';
+import { useColorMode } from '@/design-system';
+import { usePolymarketLiveGame } from '@/features/polymarket/hooks/usePolymarketLiveGame';
 import { getLeagueId, SPORT_LEAGUES, type LeagueId } from '@/features/polymarket/leagues';
 import { type PolymarketEvent, type PolymarketMarket } from '@/features/polymarket/types/polymarket-event';
-import { parsePeriod, parseScore, type PolymarketEventGameInfo } from '@/features/polymarket/utils/sports';
-import { formatOdds, type BetCellData, type EventBetGrid } from '@/features/polymarket/utils/sportsEventBetData';
+import { parsePeriod, parseScore, selectGameInfo, type PolymarketEventGameInfo } from '@/features/polymarket/utils/sports';
+import { buildEventBetGrid, formatOdds, type BetCellData, type EventBetGrid } from '@/features/polymarket/utils/sportsEventBetData';
 import { getSportsEventOutcomeCellColor } from '@/features/polymarket/utils/sportsEventOutcome';
 import * as i18n from '@/languages';
 import { createOpacityPalette } from '@/worklets/colors';
@@ -24,26 +24,9 @@ export type SportsEventRows = {
   home: SportsEventTeamRow;
 };
 
-export function useSportsEventContent(event: PolymarketEvent) {
-  const cardBackground = useBackgroundColor('fillQuaternary');
-  const fillTertiary = useBackgroundColor('fillTertiary');
-  const borderColor = useForegroundColor('separatorSecondary');
+export function useSportsEventBets(event: PolymarketEvent) {
   const { isDarkMode } = useColorMode();
-
-  const { betGrid, gameInfo, isLive, scores, showScores, teamLabels, title } = usePolymarketSportsEventDisplay(event);
-  const periodTitle = useMemo(
-    () =>
-      isLive
-        ? getPeriodTitle({
-            period: gameInfo.period ?? '',
-            elapsed: gameInfo.elapsed,
-            score: gameInfo.score ?? '',
-          })
-        : undefined,
-    [isLive, gameInfo.period, gameInfo.elapsed, gameInfo.score]
-  );
-  const subtitle = useMemo(() => (isLive ? undefined : getSubtitle({ event, gameInfo })), [event, gameInfo, isLive]);
-
+  const betGrid = useMemo(() => buildEventBetGrid(event), [event]);
   const awayBets = betGrid.teamBets.away;
   const homeBets = betGrid.teamBets.home;
   const totals = betGrid.totals;
@@ -62,15 +45,6 @@ export function useSportsEventContent(event: PolymarketEvent) {
     : ([accentPalette.opacity12, accentPalette.opacity8, accentPalette.opacity0] as const);
 
   const rows = useMemo(() => getRows(event, betGrid), [betGrid, event]);
-  const leagueId = useMemo(
-    () => getLeagueId(event.slug) ?? getLeagueId(event.ticker ?? '') ?? getLeagueIdFromTags(event.tags),
-    [event.slug, event.tags, event.ticker]
-  );
-  const eventAccentColor = useMemo(() => getEventAccentColor({ event, isDarkMode, leagueId }), [event, isDarkMode, leagueId]);
-  const gameStatusTitle = useMemo(() => getGameStatusTitle({ event, gameInfo, isLive }), [event, gameInfo, isLive]);
-  const teamLabelFontSize = useMemo(() => {
-    return teamLabels[0].length > 14 || teamLabels[1].length > 14 ? ('10pt' as const) : ('13pt' as const);
-  }, [teamLabels]);
   const betCellsPlaceholder = useMemo(() => {
     const awayRowCellCount = [awayBets.spread, totals.over, awayBets.moneyline].filter(Boolean).length;
     const homeRowCellCount = [homeBets.spread, totals.under, homeBets.moneyline].filter(Boolean).length;
@@ -87,31 +61,68 @@ export function useSportsEventContent(event: PolymarketEvent) {
     awaySpreadColor,
     betCellsPlaceholder,
     betGrid,
-    borderColor,
-    cardBackground,
     cardGradientColors,
-    eventAccentColor,
-    fillTertiary,
-    gameInfo,
-    gameStatusTitle,
     homeBets,
     homeMoneylineColor,
     homeSpreadColor,
-    isDarkMode,
-    isLive,
-    leagueId,
-    periodTitle,
     rows,
-    scores,
-    showScores,
-    subtitle,
-    teamLabelFontSize,
-    teamLabels,
-    title,
     totals,
     totalsOverColor,
     totalsUnderColor,
   };
+}
+
+export function useSportsEventStatus(event: PolymarketEvent) {
+  const liveGame = usePolymarketLiveGame(event.live && !event.ended ? event.gameId : undefined);
+  const gameInfo = useMemo(() => selectGameInfo({ event, liveGame }), [event, liveGame]);
+  const isLive = gameInfo.live && !gameInfo.ended;
+  const showScores = isLive || gameInfo.ended;
+  const scores = useMemo(() => (showScores && gameInfo.score ? parseScore(gameInfo.score) : null), [gameInfo.score, showScores]);
+  const periodTitle = useMemo(
+    () =>
+      isLive
+        ? getPeriodTitle({
+            period: gameInfo.period ?? '',
+            elapsed: gameInfo.elapsed,
+            score: gameInfo.score ?? '',
+          })
+        : undefined,
+    [isLive, gameInfo.period, gameInfo.elapsed, gameInfo.score]
+  );
+  const gameStatusTitle = useMemo(() => getGameStatusTitle({ event, gameInfo, isLive }), [event, gameInfo, isLive]);
+  const subtitle = useMemo(() => (isLive ? undefined : getSubtitle({ event, gameInfo })), [event, gameInfo, isLive]);
+
+  return {
+    gameInfo,
+    gameStatusTitle,
+    isLive,
+    periodTitle,
+    scores,
+    showScores,
+    subtitle,
+  };
+}
+
+export function getSportsEventLeagueId(event: PolymarketEvent): LeagueId | undefined {
+  return getLeagueId(event.slug) ?? getLeagueId(event.ticker ?? '') ?? getLeagueIdFromTags(event.tags);
+}
+
+export function getSportsEventTeamLabelFontSize(teamLabels: readonly [string, string]) {
+  return teamLabels[0].length > 14 || teamLabels[1].length > 14 ? ('10pt' as const) : ('13pt' as const);
+}
+
+export function getSportsEventAccentColor({
+  event,
+  isDarkMode,
+  leagueId,
+}: {
+  event: PolymarketEvent;
+  isDarkMode: boolean;
+  leagueId?: LeagueId;
+}) {
+  const leagueColor = leagueId ? SPORT_LEAGUES[leagueId].color : undefined;
+  if (leagueColor) return getColorValueForThemeWorklet(leagueColor, isDarkMode);
+  return getColorValueForThemeWorklet(event.color, isDarkMode);
 }
 
 function getLeagueIdFromTags(tags: PolymarketEvent['tags']): LeagueId | undefined {
@@ -207,10 +218,4 @@ function getPeriodTitle({ score, period, elapsed }: { score: string; period: str
   if (currentPeriod && elapsed) return `${currentPeriod} - ${elapsed}`;
   if (currentPeriod) return currentPeriod;
   return elapsed ?? '';
-}
-
-function getEventAccentColor({ event, isDarkMode, leagueId }: { event: PolymarketEvent; isDarkMode: boolean; leagueId?: LeagueId }) {
-  const leagueColor = leagueId ? SPORT_LEAGUES[leagueId].color : undefined;
-  if (leagueColor) return getColorValueForThemeWorklet(leagueColor, isDarkMode);
-  return getColorValueForThemeWorklet(event.color, isDarkMode);
 }

@@ -1,4 +1,4 @@
-import { memo } from 'react';
+import { memo, useMemo } from 'react';
 import { Platform, StyleSheet, View, type StyleProp, type ViewStyle } from 'react-native';
 
 import ConditionalWrap from 'conditional-wrap';
@@ -13,9 +13,10 @@ import {
   getPolymarketSportsBetCellTokenId,
   usePolymarketSportsBetCellPress,
 } from '@/features/polymarket/hooks/usePolymarketSportsBetCellPress';
-import { useSportsEventContent } from '@/features/polymarket/hooks/useSportsEventContent';
+import { useSportsEventBets, useSportsEventStatus } from '@/features/polymarket/hooks/useSportsEventContent';
 import { type PolymarketEvent } from '@/features/polymarket/types/polymarket-event';
 import { formatOdds, type BetCellData } from '@/features/polymarket/utils/sportsEventBetData';
+import { getTeamDisplayInfo } from '@/features/polymarket/utils/sportsEventTeams';
 import { opacity } from '@/framework/ui/utils/opacity';
 import * as i18n from '@/languages';
 import Navigation from '@/navigation/Navigation';
@@ -40,25 +41,22 @@ export const PolymarketSportEventListItem = memo(function PolymarketSportEventLi
     awayMoneylineColor,
     awaySpreadColor,
     betCellsPlaceholder,
-    borderColor,
-    cardBackground,
     cardGradientColors,
-    fillTertiary,
     homeBets,
     homeMoneylineColor,
     homeSpreadColor,
-    isLive,
-    periodTitle,
-    scores,
-    showScores,
-    subtitle,
-    teamLabelFontSize,
-    teamLabels,
-    title,
     totals,
     totalsOverColor,
     totalsUnderColor,
-  } = useSportsEventContent(event);
+  } = useSportsEventBets(event);
+  const { isLive, periodTitle, scores, showScores, subtitle } = useSportsEventStatus(event);
+  const { labels: teamLabels, title } = useMemo(() => getTeamDisplayInfo(event), [event]);
+  const teamLabelFontSize = useMemo(() => {
+    return teamLabels[0].length > 14 || teamLabels[1].length > 14 ? ('10pt' as const) : ('13pt' as const);
+  }, [teamLabels]);
+  const cardBackground = useBackgroundColor('fillQuaternary');
+  const fillTertiary = useBackgroundColor('fillTertiary');
+  const borderColor = useForegroundColor('separatorSecondary');
   const liveIndicatorColor = useForegroundColor('red');
 
   return (
