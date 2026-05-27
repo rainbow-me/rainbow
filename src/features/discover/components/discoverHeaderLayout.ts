@@ -1,0 +1,1 @@
+export const DISCOVER_HEADER_HEIGHT = 80;
