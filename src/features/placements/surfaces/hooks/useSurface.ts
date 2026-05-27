@@ -10,7 +10,7 @@ import {
   type SurfaceLeafNode,
   type SurfaceNode,
 } from '@/features/placements/surfaces/types';
-import { filterSurfaceTree, isSurfaceEnabled } from '@/features/placements/surfaces/utils/filterSurface';
+import { filterSurfaceTree, isSurfaceEnabled, walkSurfaceLeaves } from '@/features/placements/surfaces/utils/filterSurface';
 import { type PlacementSource } from '@/features/placements/types';
 import { getConsistentArray } from '@/helpers/getConsistentArray';
 import { logger } from '@/logger';
@@ -129,8 +129,13 @@ function isSurfaceNewerThanPlacements(surfaceLastFetchedAt: number | null, place
 }
 
 function surfaceContainsPlacement(surface: SurfaceTree, placementId: string): boolean {
-  if ('items' in surface) return surface.items.some(item => surfaceContainsPlacement(item, placementId));
-  return surface.placement === placementId;
+  let containsPlacement = false;
+
+  walkSurfaceLeaves(surface, leaf => {
+    if (leaf.placement === placementId) containsPlacement = true;
+  });
+
+  return containsPlacement;
 }
 
 function getMissingSurfacePlacementIds(
@@ -138,21 +143,12 @@ function getMissingSurfacePlacementIds(
   placementsById: ReturnType<typeof usePlacementsStore.getState>['placementsById']
 ): string[] {
   const missingPlacementIds = new Set<string>();
-  collectMissingSurfacePlacementIds(surface, placementsById, missingPlacementIds);
+
+  walkSurfaceLeaves(surface, leaf => {
+    if (leaf.placement && !placementsById[leaf.placement]) missingPlacementIds.add(leaf.placement);
+  });
+
   return missingPlacementIds.size ? [...missingPlacementIds].sort() : [];
-}
-
-function collectMissingSurfacePlacementIds(
-  surface: SurfaceTree,
-  placementsById: ReturnType<typeof usePlacementsStore.getState>['placementsById'],
-  missingPlacementIds: Set<string>
-): void {
-  if ('items' in surface) {
-    for (const item of surface.items) collectMissingSurfacePlacementIds(item, placementsById, missingPlacementIds);
-    return;
-  }
-
-  if (surface.placement && !placementsById[surface.placement]) missingPlacementIds.add(surface.placement);
 }
 
 function filterMissingPlacementSurface(

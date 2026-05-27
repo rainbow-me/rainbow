@@ -1,4 +1,4 @@
-import { type Enabled, type SurfaceDocument, type SurfaceNode } from '@/features/placements/surfaces/types';
+import { type Enabled, type SurfaceDocument, type SurfaceLeafNode, type SurfaceNode } from '@/features/placements/surfaces/types';
 
 type FilterableSurface = SurfaceDocument | SurfaceNode;
 
@@ -30,6 +30,17 @@ export function filterSurfaceTree(
 
   if (!filteredItems.length) return undefined;
   return didChange ? { ...surface, items: filteredItems } : surface;
+}
+
+export function walkSurfaceLeaves(surface: FilterableSurface, visit: (surface: SurfaceLeafNode) => void): void {
+  if (!('items' in surface)) {
+    visit(surface);
+    return;
+  }
+
+  for (const item of surface.items) {
+    walkSurfaceLeaves(item, visit);
+  }
 }
 
 export function isSurfaceEnabled(enabled: Enabled | undefined, now: number): boolean {
