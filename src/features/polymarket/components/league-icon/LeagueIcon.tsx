@@ -52,7 +52,7 @@ const SPORT_ICONS: Partial<Record<SportId, IconComponent>> = {
 };
 
 export function getIconByLeagueId(leagueId: LeagueId): IconComponent | undefined {
-  return LEAGUE_ICONS[leagueId] ?? SPORT_ICONS[SPORT_LEAGUES[leagueId]?.sportId];
+  return LEAGUE_ICONS[leagueId] ?? SPORT_ICONS[SPORT_LEAGUES[leagueId].sportId];
 }
 
 export function hasLeagueIcon(eventSlug: string): boolean {

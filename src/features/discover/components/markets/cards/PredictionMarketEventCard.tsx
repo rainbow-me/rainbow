@@ -438,7 +438,7 @@ function useOutcomePress({
 
 function getLeagueLabel(leagueId: LeagueId | undefined) {
   if (!leagueId) return '';
-  return SPORT_LEAGUES[leagueId]?.name ?? leagueId.toUpperCase();
+  return SPORT_LEAGUES[leagueId].name;
 }
 
 const styles = StyleSheet.create({

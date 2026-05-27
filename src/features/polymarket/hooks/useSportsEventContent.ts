@@ -210,7 +210,7 @@ function getPeriodTitle({ score, period, elapsed }: { score: string; period: str
 }
 
 function getEventAccentColor({ event, isDarkMode, leagueId }: { event: PolymarketEvent; isDarkMode: boolean; leagueId?: LeagueId }) {
-  const leagueColor = leagueId ? SPORT_LEAGUES[leagueId]?.color : undefined;
+  const leagueColor = leagueId ? SPORT_LEAGUES[leagueId].color : undefined;
   if (leagueColor) return getColorValueForThemeWorklet(leagueColor, isDarkMode);
   return getColorValueForThemeWorklet(event.color, isDarkMode);
 }
