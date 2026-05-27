@@ -465,7 +465,6 @@
       "@sentry/react-native>@sentry/cli": true,
       "@sentry/react-native>@sentry/wizard>@sentry/cli": false,
       "@shopify/react-native-skia": true,
-      "cloudinary>core-js": false,
       "ethereumjs-util>ethereum-cryptography>secp256k1": false,
       "react-native-storage": false,
       "react-native-storage>opencollective>babel-polyfill>core-js": false,
