@@ -4,6 +4,7 @@ import { getColorValueForThemeWorklet } from '@/__swaps__/utils/swaps';
 import { useColorMode } from '@/design-system';
 import { getLeagueId, SPORT_LEAGUES } from '@/features/polymarket/leagues';
 
+import { DEFAULT_SIZE, type IconProps } from './iconBase';
 import { BaseballIcon } from './icons/BaseballIcon';
 import { CfbIcon } from './icons/CfbIcon';
 import { CricketIcon } from './icons/CricketIcon';
@@ -21,9 +22,6 @@ import { TennisIcon } from './icons/TennisIcon';
 import { UfcIcon } from './icons/UfcIcon';
 import { ValorantIcon } from './icons/ValorantIcon';
 
-export const DEFAULT_SIZE = 24;
-
-export type IconProps = { color: string; width?: number; height?: number };
 type IconComponent = React.ComponentType<IconProps>;
 type LeagueId = keyof typeof SPORT_LEAGUES;
 type SportId = (typeof SPORT_LEAGUES)[LeagueId]['sportId'];
@@ -65,7 +63,7 @@ type LeagueIconProps = {
   size?: number;
 } & ({ leagueId: LeagueId; eventSlug?: never } | { leagueId?: never; eventSlug: string });
 
-export const LeagueIcon = memo(function LeagueIcon({ leagueId, eventSlug, color, size = 24 }: LeagueIconProps) {
+export const LeagueIcon = memo(function LeagueIcon({ leagueId, eventSlug, color, size = DEFAULT_SIZE }: LeagueIconProps) {
   const { isDarkMode } = useColorMode();
 
   const resolvedLeagueId = leagueId ?? getLeagueId(eventSlug);
