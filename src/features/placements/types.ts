@@ -1,20 +1,13 @@
-import { type PLACEMENT_IDS, type PLACEMENT_SCREENS } from '@/features/placements/constants';
+import { type PLACEMENT_SOURCES, type PLACEMENT_TYPES } from '@/features/placements/constants';
 
-export type PlacementId = (typeof PLACEMENT_IDS)[keyof typeof PLACEMENT_IDS];
+export type PlacementId = string;
 
-export type PlacementScreen = (typeof PLACEMENT_SCREENS)[keyof typeof PLACEMENT_SCREENS];
+export type PlacementSource = (typeof PLACEMENT_SOURCES)[keyof typeof PLACEMENT_SOURCES];
 
-export type PlacementSource = 'hyperliquid' | 'polymarket';
+export type PlacementType = (typeof PLACEMENT_TYPES)[keyof typeof PLACEMENT_TYPES];
 
-export type PlacementItemRef<Source extends PlacementSource = PlacementSource> = {
-  source: Source;
+export type PlacementItem = {
   id: string;
-};
-
-export type PlacementItem<Source extends PlacementSource = PlacementSource> = {
-  ref: PlacementItemRef<Source>;
-  order: number;
-  metadata?: Record<string, unknown>;
 };
 
 export type PlacementItemAnalyticsMetadata = {
@@ -26,10 +19,9 @@ export type PlacementItemAnalyticsMetadata = {
 
 export type Placement = {
   id: PlacementId;
-  screen: PlacementScreen;
-  enabled: boolean;
-  order: number;
+  version: 2;
+  source: PlacementSource;
+  type: PlacementType;
   items: PlacementItem[];
-  version: number;
-  updatedAt: string;
+  updatedAt?: string;
 };
