@@ -1,4 +1,4 @@
-import React, { memo } from 'react';
+import React, { memo, useMemo } from 'react';
 import { StyleSheet, View } from 'react-native';
 
 import ImgixImage from '@/components/images/ImgixImage';
@@ -44,20 +44,16 @@ export const MarketIcon = memo(function MarketIcon({
 }: MarketIconProps) {
   const borderWidth = DEFAULT_BORDER_WIDTH;
   const imageSize = size - borderWidth * 2 - imageBorderGap * 2;
-  const badgePositionStyle =
-    badgePosition === 'top-left' ? { top: -BADGE_OFFSET, left: -BADGE_OFFSET } : { top: -BADGE_OFFSET, right: -BADGE_OFFSET };
+  const containerStyle = useMemo(() => ({ height: size, width: size }), [size]);
+  const imageStyle = useMemo(() => ({ borderRadius: imageSize / 2, height: imageSize, width: imageSize }), [imageSize]);
+  const badgePositionStyle = badgePosition === 'top-left' ? styles.badgeTopLeft : styles.badgeTopRight;
 
   return (
-    <View style={{ width: size, height: size }}>
+    <View style={containerStyle}>
       <Border borderColor={{ custom: borderColor }} borderRadius={size / 2} borderWidth={borderWidth} />
       <View style={styles.fill}>
         {iconUrl ? (
-          <ImgixImage
-            enableFasterImage
-            size={imageSize}
-            source={{ uri: iconUrl }}
-            style={{ borderRadius: imageSize / 2, height: imageSize, width: imageSize }}
-          />
+          <ImgixImage enableFasterImage size={imageSize} source={{ uri: iconUrl }} style={imageStyle} />
         ) : (
           <Text align="center" color={{ custom: accentColor }} size={fallbackTextSize} weight="heavy">
             {fallbackText.slice(0, 1)}
@@ -81,13 +77,21 @@ export const MarketIcon = memo(function MarketIcon({
 });
 
 const styles = StyleSheet.create({
-  fill: {
-    flex: 1,
-    justifyContent: 'center',
-    alignItems: 'center',
-  },
   badgePosition: {
     position: 'absolute',
     zIndex: 100,
+  },
+  badgeTopLeft: {
+    left: -BADGE_OFFSET,
+    top: -BADGE_OFFSET,
+  },
+  badgeTopRight: {
+    right: -BADGE_OFFSET,
+    top: -BADGE_OFFSET,
+  },
+  fill: {
+    alignItems: 'center',
+    flex: 1,
+    justifyContent: 'center',
   },
 });
