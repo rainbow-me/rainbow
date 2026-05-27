@@ -10,16 +10,10 @@ import { DiscoverScreenContent } from '@/components/Discover/DiscoverScreenConte
 import { DiscoverScreenProvider } from '@/components/Discover/DiscoverScreenContext';
 import { DiscoverSearchBar } from '@/components/Discover/DiscoverSearchBar';
 import { ScrollHeaderFade } from '@/components/scroll-header-fade/ScrollHeaderFade';
-import { Box, useColorMode } from '@/design-system';
-import { getValueForColorMode } from '@/design-system/color/palettes';
+import { Box, useBackgroundColor, useForegroundColor } from '@/design-system';
 import { DISCOVER_HEADER_HEIGHT, DiscoverHeader } from '@/features/discover/components/DiscoverHeader';
 import { refreshDiscoverSurface } from '@/features/discover/utils/refreshDiscoverSurface';
 import { useSyncDiscoverSurfacePlacements } from '@/features/placements/surfaces/hooks/useSurface';
-
-const SCREEN_BACKGROUND_COLOR = {
-  light: '#FBFCFD',
-  dark: '#000000',
-};
 
 export const DiscoverScreen = () => {
   return (
@@ -30,11 +24,11 @@ export const DiscoverScreen = () => {
 };
 
 const Content = () => {
-  const { colorMode } = useColorMode();
   const { top: topInset } = useSafeAreaInsets();
   const isSearching = useDiscoverSearchQueryStore(state => state.isSearching);
 
-  const backgroundColor = getValueForColorMode(SCREEN_BACKGROUND_COLOR, colorMode);
+  const backgroundColor = useBackgroundColor('surfacePrimary');
+  const refreshTintColor = useForegroundColor('label');
   const headerFadeTopInset = topInset + DISCOVER_HEADER_HEIGHT;
   const scrollOffset = useSharedValue(0);
   const [isRefreshing, setIsRefreshing] = useState(false);
@@ -50,8 +44,8 @@ const Content = () => {
   }, []);
 
   const renderRefreshControl = useCallback(
-    () => <RefreshControl onRefresh={refreshDiscover} refreshing={isRefreshing} tintColor={colorMode === 'dark' ? '#FFFFFF' : '#000000'} />,
-    [colorMode, isRefreshing, refreshDiscover]
+    () => <RefreshControl onRefresh={refreshDiscover} refreshing={isRefreshing} tintColor={refreshTintColor} />,
+    [isRefreshing, refreshDiscover, refreshTintColor]
   );
 
   return (

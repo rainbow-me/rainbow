@@ -7,8 +7,7 @@ import ButtonPressAnimation from '@/components/animations/ButtonPressAnimation';
 import { useDiscoverScreenContext } from '@/components/Discover/DiscoverScreenContext';
 import { EasingGradient } from '@/components/easing-gradient/EasingGradient';
 import { Skeleton } from '@/components/Skeleton';
-import { Box, Text, TextIcon, useColorMode, useForegroundColor } from '@/design-system';
-import { getValueForColorMode, globalColors } from '@/design-system/color/palettes';
+import { Box, Text, TextIcon, useBackgroundColor, useForegroundColor } from '@/design-system';
 import {
   DiscoverSectionNavigation,
   useDiscoverNavigationStore,
@@ -25,10 +24,6 @@ const CONTENT_TOP_INSET = 40;
 const RIGHT_FADE_WIDTH = SEARCH_BUTTON_RIGHT_INSET + 100;
 const SELECTED_TAB_RIGHT_INSET = SEARCH_BUTTON_RIGHT_INSET + SEARCH_BUTTON_SIZE + 12;
 const FALLBACK_TAB_WIDTHS = [72, 84, 92, 76];
-const SCREEN_BACKGROUND_COLOR = {
-  light: '#FBFCFD',
-  dark: globalColors.grey100,
-};
 
 export function DiscoverHeader() {
   const separatorColor = useForegroundColor('separator');
@@ -51,12 +46,11 @@ export function DiscoverHeader() {
 
 function DiscoverSearchButton() {
   const { onTapSearch } = useDiscoverScreenContext();
-  const { isDarkMode } = useColorMode();
   return (
     <View style={styles.searchButtonContainer}>
       <ButtonPressAnimation onPress={onTapSearch} scaleTo={0.8} testID="discover-search-icon">
         <Box
-          backgroundColor={isDarkMode ? '#1D1E1F' : '#F5F5F7'}
+          background="surfaceSecondaryElevated"
           width={SEARCH_BUTTON_SIZE}
           height={SEARCH_BUTTON_SIZE}
           borderRadius={18}
@@ -79,8 +73,7 @@ function DiscoverCategorySelector() {
   const surface = useDiscoverSurface();
   const tabs = surface?.items ?? [];
   const { scrollToSectionTop } = useDiscoverScreenContext();
-  const { colorMode } = useColorMode();
-  const screenBackgroundColor = getValueForColorMode(SCREEN_BACKGROUND_COLOR, colorMode);
+  const screenBackgroundColor = useBackgroundColor('surfacePrimary');
   const scrollViewRef = useRef<ScrollView>(null);
   const scrollOffsetRef = useRef(0);
   const scrollViewWidthRef = useRef(0);
