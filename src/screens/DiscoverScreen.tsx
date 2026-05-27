@@ -15,7 +15,6 @@ import { getValueForColorMode } from '@/design-system/color/palettes';
 import { DISCOVER_HEADER_HEIGHT, DiscoverHeader } from '@/features/discover/components/DiscoverHeader';
 import { refreshDiscoverSurface } from '@/features/discover/utils/refreshDiscoverSurface';
 import { useSyncDiscoverSurfacePlacements } from '@/features/placements/surfaces/hooks/useSurface';
-import { SURFACE_SCHEDULE_REEVALUATE_MS, useSurfaceClockStore } from '@/features/placements/surfaces/stores/surfaceClockStore';
 
 const SCREEN_BACKGROUND_COLOR = {
   light: '#FBFCFD',
@@ -40,12 +39,6 @@ const Content = () => {
   const scrollOffset = useSharedValue(0);
   const [isRefreshing, setIsRefreshing] = useState(false);
   useSyncDiscoverSurfacePlacements();
-
-  useEffect(() => {
-    useSurfaceClockStore.getState().updateNow();
-    const interval = setInterval(() => useSurfaceClockStore.getState().updateNow(), SURFACE_SCHEDULE_REEVALUATE_MS);
-    return () => clearInterval(interval);
-  }, []);
 
   const refreshDiscover = useCallback(async () => {
     setIsRefreshing(true);

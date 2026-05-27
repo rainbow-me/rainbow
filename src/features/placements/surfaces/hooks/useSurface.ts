@@ -1,7 +1,6 @@
 import { useEffect, useMemo, useRef } from 'react';
 
 import { usePlacementsStore } from '@/features/placements/stores/placementsStore';
-import { useSurfaceClockStore } from '@/features/placements/surfaces/stores/surfaceClockStore';
 import { getSurfaceStore } from '@/features/placements/surfaces/stores/surfaceStore';
 import { type Surface } from '@/features/placements/surfaces/types';
 import { filterSurfaceTree, isSurfaceEnabled } from '@/features/placements/surfaces/utils/filterSurface';
@@ -24,14 +23,13 @@ export const useDiscoverSurface = createDerivedStore<Surface | undefined>(
   $ => {
     const rawSurface = $(useDiscoverSurfaceStore, state => state.getData());
     const surfaceLastFetchedAt = $(useDiscoverSurfaceStore, state => state.lastFetchedAt);
-    const now = $(useSurfaceClockStore, state => state.now);
     const placementsById = $(usePlacementsStore, state => state.placementsById);
     const placementsLastFetchedAt = $(usePlacementsStore, state => state.lastFetchedAt);
     const placementsReady = $(usePlacementsStore, state => state.getStatus('isSuccess'));
 
     if (!rawSurface) return undefined;
 
-    const enabledSurface = filterSurfaceTree(rawSurface, surface => isSurfaceEnabled(surface.enabled, now));
+    const enabledSurface = filterSurfaceTree(rawSurface, surface => isSurfaceEnabled(surface.enabled, Date.now()));
     if (!enabledSurface || !placementsReady) return enabledSurface;
     if (isSurfaceWaitingForPlacements(enabledSurface, placementsById, surfaceLastFetchedAt, placementsLastFetchedAt)) return enabledSurface;
 
