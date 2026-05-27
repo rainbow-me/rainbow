@@ -3,11 +3,10 @@ import { StyleSheet, View } from 'react-native';
 
 import { isMarketSurface, MarketSection } from '@/features/discover/components/MarketSection';
 import { isPredictionsSurface, PredictionsSection } from '@/features/discover/components/PredictionsSection';
-import { type SurfaceLeaf, type SurfaceNode } from '@/features/placements/surfaces/types';
-import { logger } from '@/logger';
+import { type SurfaceLeafNode } from '@/features/placements/surfaces/types';
 
 type DiscoverSectionsProps = {
-  items: SurfaceNode[];
+  items: SurfaceLeafNode[];
   surfaceId: string;
 };
 
@@ -23,19 +22,11 @@ export function DiscoverSections({ items, surfaceId }: DiscoverSectionsProps) {
   );
 }
 
-export const DiscoverSection = memo(function DiscoverSection({ surface, surfaceId }: { surface: SurfaceNode; surfaceId: string }) {
-  if ('items' in surface) return <DiscoverSections items={surface.items} surfaceId={surfaceId} />;
-
+export const DiscoverSection = memo(function DiscoverSection({ surface, surfaceId }: { surface: SurfaceLeafNode; surfaceId: string }) {
   if (isMarketSurface(surface)) return <MarketSection surface={surface} surfaceId={surfaceId} />;
   if (isPredictionsSurface(surface)) return <PredictionsSection surface={surface} surfaceId={surfaceId} />;
-
-  return unsupportedDisplay(surface.display);
-});
-
-function unsupportedDisplay(display: SurfaceLeaf['display']) {
-  logger.warn('[DiscoverSection]: unsupported surface display', { display });
   return null;
-}
+});
 
 const styles = StyleSheet.create({
   container: {

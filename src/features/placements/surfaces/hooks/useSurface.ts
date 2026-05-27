@@ -1,11 +1,19 @@
 import { useEffect, useMemo, useRef } from 'react';
 
 import { usePlacementsStore } from '@/features/placements/stores/placementsStore';
+import { DISPLAY_VALUES } from '@/features/placements/surfaces/constants';
 import { getSurfaceStore } from '@/features/placements/surfaces/stores/surfaceStore';
-import { type SurfaceDocument, type SurfaceNode } from '@/features/placements/surfaces/types';
+import {
+  type SectionId,
+  type SurfaceDocument,
+  type SurfaceId,
+  type SurfaceLeafNode,
+  type SurfaceNode,
+} from '@/features/placements/surfaces/types';
 import { filterSurfaceTree, isSurfaceEnabled } from '@/features/placements/surfaces/utils/filterSurface';
 import { type PlacementSource } from '@/features/placements/types';
 import { getConsistentArray } from '@/helpers/getConsistentArray';
+import { logger } from '@/logger';
 import { createDerivedStore } from '@/state/internal/createDerivedStore';
 import { deepEqual } from '@/worklets/comparisons';
 
@@ -13,9 +21,20 @@ const useDiscoverSurfaceStore = getSurfaceStore('discover');
 
 export type DiscoverSurfacePlacementRefs = Record<PlacementSource, string[]>;
 
+export type DiscoverSurface = {
+  id: SurfaceId;
+  tabs: DiscoverTab[];
+};
+
+export type DiscoverTab = {
+  id: SectionId;
+  label?: string;
+  sections: SurfaceLeafNode[];
+};
+
 type SurfaceTree = SurfaceDocument | SurfaceNode;
 
-export const useDiscoverSurface = createDerivedStore<SurfaceDocument | undefined>(
+export const useDiscoverSurface = createDerivedStore<DiscoverSurface | undefined>(
   $ => {
     const rawSurface = $(useDiscoverSurfaceStore, state => state.getData());
     const surfaceLastFetchedAt = $(useDiscoverSurfaceStore, state => state.lastFetchedAt);
@@ -26,10 +45,14 @@ export const useDiscoverSurface = createDerivedStore<SurfaceDocument | undefined
     if (!rawSurface) return undefined;
 
     const enabledSurface = filterSurfaceTree(rawSurface, surface => isSurfaceEnabled(surface.enabled, Date.now()));
-    if (!enabledSurface || !placementsReady) return enabledSurface;
-    if (isSurfaceWaitingForPlacements(enabledSurface, placementsById, surfaceLastFetchedAt, placementsLastFetchedAt)) return enabledSurface;
+    if (!enabledSurface) return undefined;
+    if (!placementsReady) return buildDiscoverSurface(enabledSurface);
+    if (isSurfaceWaitingForPlacements(enabledSurface, placementsById, surfaceLastFetchedAt, placementsLastFetchedAt)) {
+      return buildDiscoverSurface(enabledSurface);
+    }
 
-    return filterMissingPlacementSurface(enabledSurface, placementsById);
+    const surfaceWithPlacements = filterMissingPlacementSurface(enabledSurface, placementsById);
+    return surfaceWithPlacements ? buildDiscoverSurface(surfaceWithPlacements) : undefined;
   },
   { equalityFn: deepEqual, fastMode: true }
 );
@@ -140,7 +163,7 @@ function filterMissingPlacementSurface(
 }
 
 function getDiscoverSurfacePlacementRefs(
-  surface: SurfaceDocument,
+  surface: DiscoverSurface,
   placementsById: ReturnType<typeof usePlacementsStore.getState>['placementsById']
 ): DiscoverSurfacePlacementRefs {
   const refIdsBySource: DiscoverSurfacePlacementRefs = {
@@ -149,7 +172,11 @@ function getDiscoverSurfacePlacementRefs(
     rainbow: [],
   };
 
-  collectDiscoverSurfacePlacementRefs(surface, placementsById, refIdsBySource);
+  for (const tab of surface.tabs) {
+    for (const section of tab.sections) {
+      collectDiscoverSurfacePlacementRefs(section, placementsById, refIdsBySource);
+    }
+  }
 
   return {
     hyperliquid: getConsistentArray(refIdsBySource.hyperliquid),
@@ -159,15 +186,10 @@ function getDiscoverSurfacePlacementRefs(
 }
 
 function collectDiscoverSurfacePlacementRefs(
-  surface: SurfaceTree,
+  surface: SurfaceLeafNode,
   placementsById: ReturnType<typeof usePlacementsStore.getState>['placementsById'],
   refIdsBySource: DiscoverSurfacePlacementRefs
 ): void {
-  if ('items' in surface) {
-    for (const item of surface.items) collectDiscoverSurfacePlacementRefs(item, placementsById, refIdsBySource);
-    return;
-  }
-
   if (!surface.placement) return;
 
   const placement = placementsById[surface.placement];
@@ -176,4 +198,60 @@ function collectDiscoverSurfacePlacementRefs(
   for (const item of placement.items) {
     refIdsBySource[placement.source].push(item.id);
   }
+}
+
+function buildDiscoverSurface(surface: SurfaceDocument): DiscoverSurface | undefined {
+  const tabs: DiscoverTab[] = [];
+
+  for (const item of surface.items) {
+    if (!('items' in item)) {
+      warnInvalidDiscoverSurface(surface.id, item.id, 'top-level-leaf');
+      return undefined;
+    }
+
+    const sections: SurfaceLeafNode[] = [];
+
+    for (const section of item.items) {
+      if ('items' in section) {
+        warnInvalidDiscoverSurface(surface.id, section.id, 'nested-container');
+        return undefined;
+      }
+
+      if (!(DISPLAY_VALUES as readonly string[]).includes(section.display)) {
+        warnInvalidDiscoverSurface(surface.id, section.id, 'unsupported-display');
+        return undefined;
+      }
+
+      sections.push(section);
+    }
+
+    if (!sections.length) {
+      warnInvalidDiscoverSurface(surface.id, item.id, 'empty-tab');
+      return undefined;
+    }
+
+    tabs.push({
+      id: item.id,
+      label: item.label,
+      sections,
+    });
+  }
+
+  if (!tabs.length) {
+    warnInvalidDiscoverSurface(surface.id, surface.id, 'empty-surface');
+    return undefined;
+  }
+
+  return {
+    id: surface.id,
+    tabs,
+  };
+}
+
+function warnInvalidDiscoverSurface(surfaceId: string, nodeId: string, reason: string): void {
+  logger.warn('[useDiscoverSurface]: invalid Discover surface shape', {
+    nodeId,
+    reason,
+    surfaceId,
+  });
 }

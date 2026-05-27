@@ -5,9 +5,8 @@ import { useHyperliquidMarketsStore } from '@/features/perps/stores/hyperliquidM
 import { usePredictionEventsStore } from '@/features/placements/stores/derived/predictionsPlacementStore';
 import { useTokenRefsStore } from '@/features/placements/stores/derived/tokensPlacementStore';
 import { usePlacementsStore } from '@/features/placements/stores/placementsStore';
-import { useDiscoverSurface, useDiscoverSurfacePlacementRefs } from '@/features/placements/surfaces/hooks/useSurface';
+import { useDiscoverSurface, useDiscoverSurfacePlacementRefs, type DiscoverSurface } from '@/features/placements/surfaces/hooks/useSurface';
 import { getSurfaceStore } from '@/features/placements/surfaces/stores/surfaceStore';
-import { type SurfaceDocument, type SurfaceNode } from '@/features/placements/surfaces/types';
 import { usePolymarketSportsEventsStore } from '@/features/polymarket/stores/polymarketSportsEventsStore';
 import { useRemoteConfigStore } from '@/model/remoteConfig';
 
@@ -48,7 +47,6 @@ export async function refreshDiscoverSurface(surfaceId: string): Promise<void> {
   await Promise.allSettled(refreshes);
 }
 
-function surfaceUsesSportsEvents(surface: SurfaceDocument | SurfaceNode): boolean {
-  if ('items' in surface) return surface.items.some(surfaceUsesSportsEvents);
-  return SPORTS_EVENT_DISPLAYS.has(surface.display);
+function surfaceUsesSportsEvents(surface: DiscoverSurface): boolean {
+  return surface.tabs.some(tab => tab.sections.some(section => SPORTS_EVENT_DISPLAYS.has(section.display)));
 }

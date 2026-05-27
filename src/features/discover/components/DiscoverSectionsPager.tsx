@@ -15,8 +15,7 @@ import {
   useDiscoverNavigationStore,
   type DiscoverSection,
 } from '@/features/discover/stores/discoverNavigationStore';
-import { useDiscoverSurface } from '@/features/placements/surfaces/hooks/useSurface';
-import { type SurfaceNode } from '@/features/placements/surfaces/types';
+import { useDiscoverSurface, type DiscoverTab } from '@/features/placements/surfaces/hooks/useSurface';
 import { useTabBarOffset } from '@/hooks/useTabBarOffset';
 import { useListen } from '@/state/internal/hooks/useListen';
 import { clamp } from '@/worklets/numbers';
@@ -36,7 +35,7 @@ export const DiscoverSectionsPager = memo(function DiscoverSectionsPager({
   scrollOffset,
 }: DiscoverSectionsPagerProps) {
   const surface = useDiscoverSurface();
-  const tabs = useMemo(() => surface?.items ?? [], [surface]);
+  const tabs = useMemo(() => surface?.tabs ?? [], [surface]);
   const activeSectionId = useDiscoverNavigationStore(state => state.activeSection);
   const { ref, goToPage } = usePagerNavigation<DiscoverSection>();
   const initialSection = getInitialSection(tabs, activeSectionId);
@@ -165,7 +164,7 @@ const DiscoverSectionScrollView = memo(function DiscoverSectionScrollView({
   isActive: boolean;
   renderRefreshControl?: () => ReactElement<RefreshControlProps>;
   scrollOffset: SharedValue<number>;
-  section: SurfaceNode;
+  section: DiscoverTab;
   sectionScrollOffsets: MutableRefObject<SectionScrollOffsets>;
   surfaceId: string;
 }) {
@@ -216,16 +215,12 @@ const DiscoverSectionScrollView = memo(function DiscoverSectionScrollView({
       style={[styles.scrollView, { paddingBottom: Platform.OS === 'android' ? bottomInset : 0 }]}
       testID={`discover-section-${section.id}`}
     >
-      {'items' in section ? (
-        <DiscoverSections items={section.items} surfaceId={surfaceId} />
-      ) : (
-        <DiscoverSections items={[section]} surfaceId={surfaceId} />
-      )}
+      <DiscoverSections items={section.sections} surfaceId={surfaceId} />
     </Animated.ScrollView>
   );
 });
 
-function getInitialSection(tabs: SurfaceNode[], activeSectionId: string): string {
+function getInitialSection(tabs: DiscoverTab[], activeSectionId: string): string {
   return tabs.some(tab => tab.id === activeSectionId) ? activeSectionId : (tabs[0]?.id ?? activeSectionId);
 }
 

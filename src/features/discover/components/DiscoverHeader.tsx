@@ -14,8 +14,7 @@ import {
   useDiscoverNavigationStore,
   type DiscoverSection,
 } from '@/features/discover/stores/discoverNavigationStore';
-import { useDiscoverSurface } from '@/features/placements/surfaces/hooks/useSurface';
-import { type Surface } from '@/features/placements/surfaces/types';
+import { useDiscoverSurface, type DiscoverTab } from '@/features/placements/surfaces/hooks/useSurface';
 import { THICK_BORDER_WIDTH } from '@/styles/constants';
 
 const SEARCH_BUTTON_RIGHT_INSET = 19;
@@ -71,7 +70,7 @@ function DiscoverSearchButton() {
 function DiscoverCategorySelector() {
   const activeSection = useDiscoverNavigationStore(state => state.activeSection);
   const surface = useDiscoverSurface();
-  const tabs = surface?.items ?? [];
+  const tabs = surface?.tabs ?? [];
   const { scrollToSectionTop } = useDiscoverScreenContext();
   const screenBackgroundColor = useBackgroundColor('surfacePrimary');
   const scrollViewRef = useRef<ScrollView>(null);
@@ -121,7 +120,7 @@ function DiscoverCategorySelector() {
   );
 
   const handlePress = useCallback(
-    (section: Surface) => {
+    (section: DiscoverTab) => {
       const wasActive = DiscoverSectionNavigation.isSectionActive(section.id);
       const sectionTitle = section.label || section.id;
       analytics.track(analyticsEvent.discoverTabPressed, {
