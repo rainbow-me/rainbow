@@ -1,9 +1,9 @@
 import { type Address } from 'viem';
 
 import { createPreparedCallsStore, type PreparedCallsStore } from '@/features/delegation/preparedCallsStore';
+import { time } from '@/framework/core/utils/time';
 import { getProvider } from '@/handlers/web3';
 import { type ChainId } from '@/state/backendNetworks/types';
-import { time } from '@/utils/time';
 import { type PreparedCallsExecution } from '@rainbow-me/delegation';
 
 import { type DepositConfig, type DepositGasHookParams, type DepositQuoteResult } from '../types';
