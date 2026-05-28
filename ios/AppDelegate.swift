@@ -77,6 +77,10 @@ class AppDelegate: ExpoAppDelegate, UNUserNotificationCenterDelegate {
     // instead of spawning a Sentry issue per unique data: payload. The tag
     // below stays a real host only; the full URL is preserved in the extra.
     let groupingKey = host ?? parsed?.scheme ?? "unknown"
+    // `source` is set by react-native-sandbox and is one of:
+    // "http" | "websocket" | "webview". Defaults to "unknown" if a future
+    // sandbox version emits a value we don't yet know about, or omits it.
+    let source = notification.userInfo?["source"] as? String ?? "unknown"
 
     // Per-host fingerprint so each blocked host becomes its own Sentry issue.
     // Without this, every capture call here shares the same stack and Sentry
@@ -86,9 +90,11 @@ class AppDelegate: ExpoAppDelegate, UNUserNotificationCenterDelegate {
     event.message = SentryMessage(formatted: "Escape via \(groupingKey)")
     event.level = .warning
     event.fingerprint = ["rnsandbox-escape", groupingKey]
+    var tags: [String: String] = ["sandbox.source": source]
     if let host {
-      event.tags = ["sandbox.host": host]
+      tags["sandbox.host"] = host
     }
+    event.tags = tags
     event.extra = ["sandbox.url": url]
     SentrySDK.capture(event: event)
   }
