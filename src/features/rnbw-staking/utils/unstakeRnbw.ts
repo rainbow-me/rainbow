@@ -93,7 +93,7 @@ async function submitUnstake({
 
   const data = encodeFunctionData({ abi: STAKING_ABI, functionName: 'unstakeAll' });
   const gasLimit = await estimateUnstakeGasLimit({ address, data, provider });
-  const tx = await signer.sendTransaction({
+  const transaction = await signer.sendTransaction({
     ...gasParams,
     to: STAKING_CONTRACT_ADDRESS,
     data,
