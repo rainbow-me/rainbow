@@ -1,6 +1,7 @@
 import { defaultConfig, defaultConfigValues, type ExperimentalConfigKey } from '@/config/experimental';
 import { IS_STORE_INSTALL } from '@/env';
 import { createRainbowStore } from '@/state/internal/createRainbowStore';
+import { time } from '@/utils/time';
 
 export type ExperimentalConfigState = {
   config: Record<ExperimentalConfigKey, boolean>;
@@ -18,11 +19,11 @@ export const useExperimentalConfigStore = createRainbowStore<ExperimentalConfigS
     },
 
     toggleFlag: key => {
-      set(state => ({ config: { ...state.config, [key]: !state.config[key] } }));
+      set(state => ({ config: { ...state.config, [key]: !(state.config[key] ?? defaultConfig[key].value) } }));
     },
   }),
 
-  { storageKey: 'experimentalConfig' }
+  { persistThrottleMs: time.zero, storageKey: 'experimentalConfig' }
 );
 
 export function getExperimentalFlag(key: ExperimentalConfigKey): boolean {
