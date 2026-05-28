@@ -463,7 +463,7 @@ const DevSection = () => {
             })}
           </Menu>
           <Menu header={i18n.t(i18n.l.developer_settings.headers.feature_flags)}>
-            {(Object.keys(defaultConfig) as ExperimentalConfigKey[])
+            {(Object.keys(config) as ExperimentalConfigKey[])
               .sort()
               .filter(key => defaultConfig[key]?.settings)
               .map(key => (
