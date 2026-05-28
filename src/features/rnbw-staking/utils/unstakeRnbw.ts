@@ -12,6 +12,14 @@ import { loadWallet } from '@/model/wallet';
 import { STAKING_ABI, STAKING_CHAIN_ID, STAKING_CONTRACT_ADDRESS, STAKING_UNSTAKE_GAS_LIMIT } from '../constants';
 import { useStakingPositionStore, type StakingPositionData } from '../stores/rnbwStakingPositionStore';
 import { pollForStakingUpdate } from './pollForStakingUpdate';
+import { waitForWalletTransactions } from './waitForWalletTransactions';
+
+type UnstakeAnalyticsSnapshot = {
+  stakedAmount: string;
+  expectedExitFee: string;
+  expectedReceiveAmount: string;
+  pnl: string;
+};
 
 export async function unstakeRnbw({
   address,
@@ -20,6 +28,34 @@ export async function unstakeRnbw({
   address: Address;
   gasParams: LegacyTransactionGasParamAmounts | TransactionGasParamAmounts;
 }): Promise<Hash> {
+  const positionData = await refreshAndValidatePosition();
+  const analyticsSnapshot = snapshotUnstakeAnalytics(positionData);
+
+  try {
+    const txHash = await submitAndConfirmUnstake({
+      address,
+      gasParams,
+      originalStakedRnbwShares: positionData.poolShares,
+    });
+
+    analytics.track(analytics.event.rnbwStakingUnstake, {
+      chainId: STAKING_CHAIN_ID,
+      txHash,
+      ...analyticsSnapshot,
+    });
+
+    return txHash;
+  } catch (error) {
+    analytics.track(analytics.event.rnbwStakingUnstakeFailed, {
+      chainId: STAKING_CHAIN_ID,
+      stakedAmount: analyticsSnapshot.stakedAmount,
+      errorMessage: error instanceof Error ? error.message : 'Unknown error',
+    });
+    throw error;
+  }
+}
+
+async function refreshAndValidatePosition(): Promise<StakingPositionData> {
   const initialExitFeePercentage = useStakingPositionStore.getState().getData()?.exitFeePercentage;
   await useStakingPositionStore.getState().fetch(undefined, { force: true });
   const positionData = useStakingPositionStore.getState().getData();
@@ -32,44 +68,37 @@ export async function unstakeRnbw({
     throw new RainbowError('[unstakeRnbw]: Exit fee percentage changed');
   }
 
-  const positionSnapshot = snapshotUnstakeAnalytics(positionData);
+  return positionData;
+}
 
-  try {
-    const provider = getProvider({ chainId: STAKING_CHAIN_ID });
-    const signer = await loadWallet({ address, provider });
-    if (!signer) {
-      throw new Error('Failed to load wallet');
-    }
-
-    const originalStakedRnbwShares = positionData.poolShares;
-    const data = encodeFunctionData({ abi: STAKING_ABI, functionName: 'unstakeAll' });
-    const gasLimit = await estimateUnstakeGasLimit({ address, data, provider });
-
-    const tx = await signer.sendTransaction({
-      ...gasParams,
-      to: STAKING_CONTRACT_ADDRESS,
-      data,
-      gasLimit,
-    });
-
-    await tx.wait();
-    await pollForStakingUpdate(originalStakedRnbwShares);
-
-    analytics.track(analytics.event.rnbwStakingUnstake, {
-      chainId: STAKING_CHAIN_ID,
-      txHash: tx.hash as string,
-      ...positionSnapshot,
-    });
-
-    return tx.hash as Hash;
-  } catch (error) {
-    analytics.track(analytics.event.rnbwStakingUnstakeFailed, {
-      chainId: STAKING_CHAIN_ID,
-      stakedAmount: positionSnapshot.stakedAmount,
-      errorMessage: error instanceof Error ? error.message : 'Unknown error',
-    });
-    throw error;
+async function submitAndConfirmUnstake({
+  address,
+  gasParams,
+  originalStakedRnbwShares,
+}: {
+  address: Address;
+  gasParams: LegacyTransactionGasParamAmounts | TransactionGasParamAmounts;
+  originalStakedRnbwShares: string;
+}): Promise<Hash> {
+  const provider = getProvider({ chainId: STAKING_CHAIN_ID });
+  const signer = await loadWallet({ address, provider });
+  if (!signer) {
+    throw new Error('Failed to load wallet');
   }
+
+  const data = encodeFunctionData({ abi: STAKING_ABI, functionName: 'unstakeAll' });
+  const gasLimit = await estimateUnstakeGasLimit({ address, data, provider });
+  const tx = await signer.sendTransaction({
+    ...gasParams,
+    to: STAKING_CONTRACT_ADDRESS,
+    data,
+    gasLimit,
+  });
+
+  await waitForWalletTransactions({ provider, txHashes: [tx.hash] });
+  await pollForStakingUpdate(originalStakedRnbwShares);
+
+  return tx.hash as Hash;
 }
 
 async function estimateUnstakeGasLimit({
@@ -89,7 +118,7 @@ async function estimateUnstakeGasLimit({
   }
 }
 
-function snapshotUnstakeAnalytics(positionData: StakingPositionData) {
+function snapshotUnstakeAnalytics(positionData: StakingPositionData): UnstakeAnalyticsSnapshot {
   const { stakedRnbw: stakedRnbwRaw, decimals, sessionPnl, exitFeePercentage } = positionData;
   const exitFeeRaw = mulWorklet(stakedRnbwRaw, exitFeePercentage / 100);
 
