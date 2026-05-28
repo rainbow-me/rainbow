@@ -470,7 +470,7 @@ const DevSection = () => {
                 <MenuItem
                   key={key}
                   onPress={() => onExperimentalKeyChange(key)}
-                  rightComponent={!!(config[key] ?? defaultConfig[key].value) && <MenuItem.StatusIcon status="selected" />}
+                  rightComponent={!!config[key] && <MenuItem.StatusIcon status="selected" />}
                   size={52}
                   titleComponent={<MenuItem.Title text={key} />}
                 />
