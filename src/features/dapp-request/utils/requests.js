@@ -9,7 +9,8 @@ import { logger } from '@/logger';
 import ethUnits from '@/references/ethereum-units.json';
 import smartContractMethods from '@/references/smartcontract-methods.json';
 import ethereumUtils from '@/utils/ethereumUtils';
-import { isSignTypedData, PERSONAL_SIGN, SEND_TRANSACTION, SIGN, SIGN_TRANSACTION } from '@/utils/signingMethods';
+
+import { isSignTypedData, PERSONAL_SIGN, SEND_TRANSACTION, SIGN, SIGN_TRANSACTION } from './requestMethods';
 
 export const getRequestDisplayDetails = async (payload, nativeCurrency, chainId) => {
   const timestampInMs = Date.now();
@@ -45,11 +46,7 @@ export const getRequestDisplayDetails = async (payload, nativeCurrency, chainId)
         message = toUtf8String(message);
       }
     } catch (error) {
-      logger.warn(
-        '[parsers/requests]: WC v2: getting display details, unable to decode hex message to UTF8 string',
-        { error },
-        logger.DebugContext.walletconnect
-      );
+      logger.warn('[getRequestDisplayDetails]: unable to decode hex message to UTF8 string', { error }, logger.DebugContext.dapprequest);
     }
     return getMessageDisplayDetails(message, timestampInMs);
   }

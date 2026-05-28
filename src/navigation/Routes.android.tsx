@@ -12,6 +12,7 @@ import { PROFILES } from '@/config/experimental';
 import useExperimentalFlag from '@/config/experimentalHooks';
 import AppIconUnlockSheet from '@/features/app-icon/screens/AppIconUnlockSheet';
 import BackupSheet from '@/features/backup/components/BackupSheet';
+import { SignTransactionSheet } from '@/features/dapp-request/screens/SignTransactionSheet';
 import RegisterENSNavigator from '@/features/ens/navigation/RegisterENSNavigator';
 import ENSAdditionalRecordsSheet from '@/features/ens/screens/ENSAdditionalRecordsSheet';
 import ENSConfirmRegisterSheet from '@/features/ens/screens/ENSConfirmRegisterSheet';
@@ -72,7 +73,6 @@ import QRScannerScreen from '@/screens/QRScannerScreen';
 import { RewardsSheet } from '@/screens/rewards/RewardsSheet';
 import ShowSecretView from '@/screens/SettingsSheet/components/Backups/ShowSecretView';
 import { SettingsSheet } from '@/screens/SettingsSheet/SettingsSheet';
-import { SignTransactionSheet } from '@/screens/SignTransactionSheet';
 import { TokenLauncherScreen } from '@/screens/token-launcher/TokenLauncherScreen';
 import { TransactionDetails } from '@/screens/transaction-details/TransactionDetails';
 

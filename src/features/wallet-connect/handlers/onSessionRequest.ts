@@ -4,13 +4,13 @@ import { formatJsonRpcError, formatJsonRpcResult } from '@json-rpc-tools/utils';
 import type { SignClientTypes } from '@walletconnect/types';
 
 import { analytics } from '@/analytics';
+import { getRequestDisplayDetails } from '@/features/dapp-request/utils/requests';
 import { maybeSignUri } from '@/handlers/imgix';
 import WalletTypes from '@/helpers/walletTypes';
 import * as i18n from '@/languages';
 import { logger, RainbowError } from '@/logger';
 import Navigation from '@/navigation/Navigation';
 import Routes from '@/navigation/routesNames';
-import { getRequestDisplayDetails } from '@/parsers/requests';
 import store from '@/redux/store';
 import { fetchDappMetadata } from '@/resources/metadata/dapp';
 import { getWallets, getWalletWithAccount } from '@/state/wallets/walletsStore';

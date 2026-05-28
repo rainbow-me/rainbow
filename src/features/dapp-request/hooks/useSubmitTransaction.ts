@@ -4,7 +4,8 @@ import { logger, RainbowError } from '@/logger';
 import { useNavigation } from '@/navigation/Navigation';
 import Routes from '@/navigation/routesNames';
 import { startTimeToSignTracking } from '@/state/performance/performance';
-import { type RequestSource } from '@/utils/requestNavigationHandlers';
+
+import { type RequestSource } from '../types';
 
 export const useTransactionSubmission = ({
   isMessageRequest,

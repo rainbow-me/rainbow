@@ -22,7 +22,7 @@ import abbreviations from '@/utils/abbreviations';
 import ethereumUtils from '@/utils/ethereumUtils';
 import { formatDate } from '@/utils/formatDate';
 
-interface TransactionDetailsCardProps {
+interface RequestDetailsCardProps {
   chainId: ChainId;
   expandedCardBottomInset: number;
   isBalanceEnough: boolean | undefined;
@@ -34,7 +34,7 @@ interface TransactionDetailsCardProps {
   toAddress: string;
 }
 
-export const TransactionDetailsCard = ({
+export const RequestDetailsCard = ({
   chainId,
   expandedCardBottomInset,
   isBalanceEnough,
@@ -44,7 +44,7 @@ export const TransactionDetailsCard = ({
   noChanges,
   nonce,
   toAddress,
-}: TransactionDetailsCardProps) => {
+}: RequestDetailsCardProps) => {
   const cardHeight = useSharedValue(COLLAPSED_CARD_HEIGHT);
   const contentHeight = useSharedValue(COLLAPSED_CARD_HEIGHT - CARD_BORDER_WIDTH * 2);
   const [isExpanded, setIsExpanded] = useState(false);

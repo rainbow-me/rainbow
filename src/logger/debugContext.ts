@@ -12,6 +12,7 @@ export const DebugContext = {
   migrations: 'migrations',
   notifications: 'notifications',
   walletconnect: 'walletconnect',
+  dapprequest: 'dapprequest',
   wallet: 'wallet',
   f2c: 'f2c',
   keychain: 'keychain',

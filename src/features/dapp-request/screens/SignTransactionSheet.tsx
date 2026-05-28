@@ -23,28 +23,19 @@ import {
   SCREEN_BOTTOM_INSET,
   SCREEN_FOR_REQUEST_SOURCE,
 } from '@/components/Transactions/constants';
-import { TransactionDetailsCard } from '@/components/Transactions/TransactionDetailsCard';
 import { VerifiedBadge } from '@/components/Transactions/TransactionIcons';
-import { TransactionMessageCard } from '@/components/Transactions/TransactionMessageCard';
-import { TransactionSimulationCard } from '@/components/Transactions/TransactionSimulationCard';
 import { Bleed, Box, Columns, globalColors, Inline, Inset, Stack, Text, useBackgroundColor, useForegroundColor } from '@/design-system';
 import { type ParsedAddressAsset } from '@/entities/tokens';
 import { TransactionStatus, type NewTransaction } from '@/entities/transactions';
 import GasSpeedButton from '@/features/gas/components/GasSpeedButton';
 import { useCalculateGasLimit } from '@/features/gas/hooks/useCalculateGasLimit';
 import useGas from '@/features/gas/hooks/useGas';
-import { type RequestData } from '@/features/wallet-connect/types';
 import { opacity } from '@/framework/ui/utils/opacity';
 import { TransactionScanResultType } from '@/graphql/__generated__/metadataPOST';
 import { maybeSignUri } from '@/handlers/imgix';
 import { getProvider } from '@/handlers/web3';
 import { buildTransaction } from '@/helpers/buildTransaction';
 import { delay } from '@/helpers/utilities';
-import { useConfirmTransaction } from '@/hooks/useConfirmTransaction';
-import { useHasEnoughBalance } from '@/hooks/useHasEnoughBalance';
-import { useNonceForDisplay } from '@/hooks/useNonceForDisplay';
-import { useTransactionSubmission } from '@/hooks/useSubmitTransaction';
-import { useTransactionSetup } from '@/hooks/useTransactionSetup';
 import * as i18n from '@/languages';
 import { logger, RainbowError } from '@/logger';
 import { loadWallet, sendTransaction, signPersonalMessage, signTransaction, signTypedDataMessage } from '@/model/wallet';
@@ -62,7 +53,16 @@ import { getAccountProfileInfo, getWalletWithAccount, useAccountAddress, useWall
 import { useTheme } from '@/theme/ThemeContext';
 import deviceUtils from '@/utils/deviceUtils';
 import ethereumUtils from '@/utils/ethereumUtils';
-import { RequestSource } from '@/utils/requestNavigationHandlers';
+
+import { RequestDetailsCard } from '../components/RequestDetailsCard';
+import { RequestSimulationCard } from '../components/RequestSimulationCard';
+import { SignedMessageCard } from '../components/SignedMessageCard';
+import { useConfirmTransaction } from '../hooks/useConfirmTransaction';
+import { useHasEnoughBalance } from '../hooks/useHasEnoughBalance';
+import { useNonceForDisplay } from '../hooks/useNonceForDisplay';
+import { useTransactionSubmission } from '../hooks/useSubmitTransaction';
+import { useTransactionSetup } from '../hooks/useTransactionSetup';
+import { RequestSource, type RequestData } from '../types';
 import {
   isMessageDisplayType,
   isPersonalSign,
@@ -70,7 +70,7 @@ import {
   SEND_TRANSACTION,
   SIGN_TYPED_DATA,
   SIGN_TYPED_DATA_V4,
-} from '@/utils/signingMethods';
+} from '../utils/requestMethods';
 
 type SignTransactionSheetParams = {
   transactionDetails: RequestData;
@@ -668,7 +668,7 @@ export const SignTransactionSheet = () => {
                 </Inset>
 
                 <Box style={{ gap: 14, zIndex: 2 }}>
-                  <TransactionSimulationCard
+                  <RequestSimulationCard
                     chainId={chainId}
                     expandedCardBottomInset={expandedCardBottomInset}
                     isBalanceEnough={isBalanceEnough}
@@ -682,13 +682,13 @@ export const SignTransactionSheet = () => {
                     nativeAsset={nativeAsset}
                   />
                   {isMessageRequest ? (
-                    <TransactionMessageCard
+                    <SignedMessageCard
                       expandedCardBottomInset={expandedCardBottomInset}
                       message={request.message || ''}
                       method={transactionDetails?.payload?.method}
                     />
                   ) : (
-                    <TransactionDetailsCard
+                    <RequestDetailsCard
                       chainId={chainId}
                       expandedCardBottomInset={expandedCardBottomInset}
                       isBalanceEnough={isBalanceEnough}
