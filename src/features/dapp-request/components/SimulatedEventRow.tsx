@@ -15,14 +15,14 @@ import { userAssetsStoreManager } from '@/state/assets/userAssetsStoreManager';
 import { useBackendNetworksStore } from '@/state/backendNetworks/backendNetworks';
 import { type Network } from '@/state/backendNetworks/types';
 
-type TransactionSimulatedEventRowProps = {
+type SimulatedEventRowProps = {
   amount: string | 'unlimited';
   asset: TransactionSimulationAsset | undefined;
   eventType: EventType;
   price?: number | undefined;
 };
 
-export const TransactionSimulatedEventRow = ({ amount, asset, eventType, price }: TransactionSimulatedEventRowProps) => {
+export const SimulatedEventRow = ({ amount, asset, eventType, price }: SimulatedEventRowProps) => {
   const nativeCurrency = userAssetsStoreManager(state => state.currency);
 
   const chainId = useBackendNetworksStore.getState().getChainsIdByName()[asset?.network as Network];

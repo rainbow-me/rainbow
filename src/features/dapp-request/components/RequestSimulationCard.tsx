@@ -21,7 +21,6 @@ import {
   timingConfig,
 } from '@/components/Transactions/constants';
 import { EventIcon, IconContainer } from '@/components/Transactions/TransactionIcons';
-import { TransactionSimulatedEventRow } from '@/components/Transactions/TransactionSimulatedEventRow';
 import { Box, Inline, Stack, Text } from '@/design-system';
 import { type TextColor } from '@/design-system/color/palettes';
 import {
@@ -33,7 +32,9 @@ import * as i18n from '@/languages';
 import { useBackendNetworksStore } from '@/state/backendNetworks/backendNetworks';
 import { type ChainId } from '@/state/backendNetworks/types';
 
-interface TransactionSimulationCardProps {
+import { SimulatedEventRow } from './SimulatedEventRow';
+
+interface RequestSimulationCardProps {
   chainId: ChainId;
   expandedCardBottomInset: number;
   isBalanceEnough: boolean | undefined;
@@ -47,7 +48,7 @@ interface TransactionSimulationCardProps {
   nativeAsset: ReturnType<ReturnType<typeof useBackendNetworksStore.getState>['getChainsNativeAsset']>[ChainId];
 }
 
-export const TransactionSimulationCard = ({
+export const RequestSimulationCard = ({
   chainId,
   expandedCardBottomInset,
   isBalanceEnough,
@@ -59,7 +60,7 @@ export const TransactionSimulationCard = ({
   simulationError,
   simulationScanResult,
   nativeAsset,
-}: TransactionSimulationCardProps) => {
+}: RequestSimulationCardProps) => {
   const cardHeight = useSharedValue(COLLAPSED_CARD_HEIGHT);
   const contentHeight = useSharedValue(COLLAPSED_CARD_HEIGHT - CARD_BORDER_WIDTH * 2);
   const spinnerRotation = useSharedValue(0);
@@ -104,7 +105,7 @@ export const TransactionSimulationCard = ({
       <>
         {simulation?.approvals?.map(change => {
           return (
-            <TransactionSimulatedEventRow
+            <SimulatedEventRow
               key={`${change?.asset?.assetCode}-${change?.quantityAllowed}`}
               amount={change?.quantityAllowed || '10'}
               asset={change?.asset}
@@ -114,7 +115,7 @@ export const TransactionSimulationCard = ({
         })}
         {simulation?.out?.map(change => {
           return (
-            <TransactionSimulatedEventRow
+            <SimulatedEventRow
               key={`${change?.asset?.assetCode}-${change?.quantity}`}
               amount={change?.quantity || '10'}
               asset={change?.asset}
@@ -125,7 +126,7 @@ export const TransactionSimulationCard = ({
         })}
         {simulation?.in?.map(change => {
           return (
-            <TransactionSimulatedEventRow
+            <SimulatedEventRow
               key={`${change?.asset?.assetCode}-${change?.quantity}`}
               amount={change?.quantity || '10'}
               asset={change?.asset}

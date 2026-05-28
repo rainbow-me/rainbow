@@ -6,6 +6,7 @@ import { type LearnCategory } from '@/components/cards/utils/types';
 import { type FiatProviderName } from '@/entities/f2c';
 import { type UnlockableAppIconKey } from '@/features/app-icon/models/appIcons';
 import { type CandleResolution, type ChartType } from '@/features/charts/types';
+import { type RequestSource } from '@/features/dapp-request/types';
 import { type ENSRapActionType } from '@/features/ens/raps/common';
 import { type PerpPositionSide, type TriggerOrderType } from '@/features/perps/types';
 import { type Placement, type PlacementItem, type PlacementItemAnalyticsMetadata } from '@/features/placements/types';
@@ -22,7 +23,6 @@ import {
   type WithdrawalFailureMetadata,
   type WithdrawalSuccessMetadata,
 } from '@/systems/funding/types';
-import { type RequestSource } from '@/utils/requestNavigationHandlers';
 import { type CrosschainQuote, type Quote, type QuoteError } from '@rainbow-me/swaps';
 
 import { type AnyPerformanceLog, type Screen } from '../state/performance/operations';

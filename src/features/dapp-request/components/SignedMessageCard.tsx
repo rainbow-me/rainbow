@@ -16,10 +16,11 @@ import { Bleed, Box, Inline, Text } from '@/design-system';
 import useClipboard from '@/hooks/useClipboard';
 import * as i18n from '@/languages';
 import { logger } from '@/logger';
-import { isSignTypedData } from '@/utils/signingMethods';
 import { sanitizeTypedData } from '@/utils/signingUtils';
 
-type TransactionMessageCardProps = {
+import { isSignTypedData } from '../utils/requestMethods';
+
+type SignedMessageCardProps = {
   expandedCardBottomInset: number;
   message: string;
   method: string;
@@ -79,7 +80,7 @@ function TransactionHeader({ message }: { message: string }) {
   );
 }
 
-export const TransactionMessageCard = ({ expandedCardBottomInset, message, method }: TransactionMessageCardProps) => {
+export const SignedMessageCard = ({ expandedCardBottomInset, message, method }: SignedMessageCardProps) => {
   let displayMessage = message;
   if (isSignTypedData(method)) {
     try {
@@ -87,7 +88,7 @@ export const TransactionMessageCard = ({ expandedCardBottomInset, message, metho
       const sanitizedMessage = sanitizeTypedData(parsedMessage);
       displayMessage = sanitizedMessage;
     } catch (error) {
-      logger.warn(`[TransactionMessageCard]: Error parsing signed typed data for ${method}`, {
+      logger.warn(`[SignedMessageCard]: Error parsing signed typed data for ${method}`, {
         error,
       });
     }

@@ -9,6 +9,7 @@ import { SheetHandleFixedToTopHeight } from '@/components/sheet';
 import { Text } from '@/components/text';
 import { getWalletErrorSheetHeight } from '@/components/wallet-error/WalletErrorSheet';
 import { Box } from '@/design-system';
+import { RequestSource } from '@/features/dapp-request/types';
 import { getENSAdditionalRecordsSheetHeight } from '@/features/ens/screens/ENSAdditionalRecordsSheet';
 import { ENSConfirmRegisterSheetHeight } from '@/features/ens/screens/ENSConfirmRegisterSheet';
 import { getPositionSheetHeight } from '@/features/positions/screens/PositionSheet';
@@ -30,7 +31,6 @@ import { fonts } from '@/styles';
 import colors from '@/theme/currentColors';
 import { useTheme } from '@/theme/ThemeContext';
 import deviceUtils from '@/utils/deviceUtils';
-import { RequestSource } from '@/utils/requestNavigationHandlers';
 import safeAreaInsetValues from '@/utils/safeAreaInsetValues';
 
 import type Routes from './routesNames';
