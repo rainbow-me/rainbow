@@ -1,7 +1,8 @@
 import { type Signer } from '@ethersproject/abstract-signer';
-import { ethers } from 'ethers';
+import { ethers, Wallet } from 'ethers';
 
 import { type ParsedAsset } from '@/__swaps__/types/assets';
+import { resolveManagedExecutionFailure } from '@/features/delegation/managedExecutionFailure';
 import { isInsufficientSponsorBalanceError } from '@/features/delegation/sponsoredCalls';
 import { estimateGasWithPadding, getProvider, toHex } from '@/handlers/web3';
 import { logger, RainbowError } from '@/logger';
@@ -12,7 +13,7 @@ import { useBackendNetworksStore } from '@/state/backendNetworks/backendNetworks
 import { type ChainId } from '@/state/backendNetworks/types';
 import { executeFn, Screens, TimeToSignOperation } from '@/state/performance/performance';
 import { getUniqueId } from '@/utils/ethereumUtils';
-import { type PreparedCallsExecution } from '@rainbow-me/delegation';
+import { execute, type PreparedCallsExecution } from '@rainbow-me/delegation';
 import { type CrosschainQuote, type Quote } from '@rainbow-me/swaps';
 
 import {
@@ -140,6 +141,13 @@ type ExecutionResult =
 async function executeTransaction(strategy: ExecutionStrategy, params: ExecutionParams): Promise<ExecutionResult> {
   switch (strategy.type) {
     case 'directTransfer':
+      if (params.wallet instanceof Wallet && params.preparedCalls) {
+        return executePreparedDirectTransfer({
+          wallet: params.wallet,
+          assetChainId: params.assetChainId,
+          preparedCalls: params.preparedCalls,
+        });
+      }
       return executeDirectTransfer(params, strategy.recipient);
     case 'swap':
       return executeSwap(params, strategy.rapType);
@@ -242,6 +250,44 @@ function classifySponsorshipFailure(errorMessage: string): DepositSponsorshipFai
     return 'sponsoredRelayExecutionFailed';
   }
   return 'unknownSponsorshipFailure';
+}
+
+async function executePreparedDirectTransfer(params: {
+  assetChainId: ChainId;
+  preparedCalls: PreparedCallsExecution;
+  wallet: Wallet;
+}): Promise<ExecutionResult> {
+  const provider = getProvider({ chainId: params.assetChainId });
+  const execution = await execute.calls(params.preparedCalls, {
+    chainId: params.assetChainId,
+    provider,
+    signer: params.wallet,
+  });
+
+  if (execution.kind === 'calls.managed') {
+    const failureMessage = await resolveManagedExecutionFailure({
+      executionId: execution.executionId,
+      status: execution.status,
+    });
+
+    if (failureMessage) {
+      return {
+        error: failureMessage,
+        sponsorshipAttempted: true,
+        sponsorshipFailureReason: classifySponsorshipFailure(failureMessage),
+        success: false,
+      };
+    }
+
+    return { isConfirmed: false, sponsorship: 'sponsored', success: true };
+  }
+
+  if (execution.kind !== 'calls.wallet' || execution.transactions.length !== 1) {
+    throw new RainbowError('[depositRapExecution]: direct transfer exact calls must resolve to one wallet transaction');
+  }
+
+  const transaction = execution.transactions[0];
+  return { hash: transaction.hash, isConfirmed: false, sponsorship: 'walletPaid', success: true };
 }
 
 // ============ Asset Building ================================================ //
