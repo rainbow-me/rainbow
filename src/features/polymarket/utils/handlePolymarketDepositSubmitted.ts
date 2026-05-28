@@ -6,11 +6,11 @@ import { getPolygonUsdcBalance, wrapUsdcToPusd } from '@/features/polymarket/uti
 import { refetchPolymarketBalance } from '@/features/polymarket/utils/refetchPolymarketStores';
 import { ensureTradingWalletDeployed } from '@/features/polymarket/utils/relayExecution';
 import { syncClobCollateralBalance } from '@/features/polymarket/utils/syncClobCollateralBalance';
+import { time } from '@/framework/core/utils/time';
 import { getProvider } from '@/handlers/web3';
 import { logger, RainbowError } from '@/logger';
 import { type DepositSubmitContext } from '@/systems/funding/types';
 import { delay } from '@/utils/delay';
-import { time } from '@/utils/time';
 
 async function waitForSubmittedDeposit({ confirmationChainId, hash, isConfirmed }: DepositSubmitContext): Promise<void> {
   if (!hash || isConfirmed) {

@@ -14,10 +14,10 @@ import { MEMBERSHIP_SCREEN_BACKGROUND_COLOR } from '@/features/rnbw-membership/c
 import { useAirdropBalanceStore } from '@/features/rnbw-rewards/stores/airdropBalanceStore';
 import { useRewardsBalanceStore } from '@/features/rnbw-rewards/stores/rewardsBalanceStore';
 import { useStakingPositionStore } from '@/features/rnbw-staking/stores/rnbwStakingPositionStore';
+import { time } from '@/framework/core/utils/time';
 import useDimensions from '@/hooks/useDimensions';
 import { TAB_BAR_HEIGHT } from '@/navigation/SwipeNavigator';
 import { delay } from '@/utils/delay';
-import { time } from '@/utils/time';
 
 import { MembershipTierCard } from './components/MembershipTierCard';
 import { RnbwAirdropClaimCard } from './components/RnbwAirdropClaimCard';

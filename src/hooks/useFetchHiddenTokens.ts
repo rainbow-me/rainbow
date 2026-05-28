@@ -1,12 +1,12 @@
 import { useQuery } from '@tanstack/react-query';
 
+import { time } from '@/framework/core/utils/time';
 import { EthereumWalletType } from '@/helpers/walletTypes';
 import { getPreference } from '@/model/preferences';
 import { queryClient } from '@/react-query';
 import { useNftsStore } from '@/state/nfts/nfts';
 import { isDataComplete } from '@/state/nfts/utils';
 import { getWalletWithAccount } from '@/state/wallets/walletsStore';
-import { time } from '@/utils/time';
 
 export const hiddenTokensQueryKey = ({ address }: { address: string }) => ['hidden-tokens', address];
 

@@ -11,10 +11,10 @@ import ShimmerAnimation from '@/components/animations/ShimmerAnimation';
 import { Box, Text, TextIcon, useBackgroundColor, useColorMode } from '@/design-system';
 import { trackPlacementInteraction } from '@/features/placements/engagement/trackInteraction';
 import { type Placement, type PlacementId, type PlacementItem, type PlacementItemAnalyticsMetadata } from '@/features/placements/types';
+import { time } from '@/framework/core/utils/time';
 import { opacity } from '@/framework/ui/utils/opacity';
 import * as i18n from '@/languages';
 import { DEVICE_WIDTH } from '@/utils/deviceUtils';
-import { time } from '@/utils/time';
 
 const CAROUSEL_HORIZONTAL_PADDING = 20;
 const CARD_GAP = 8;

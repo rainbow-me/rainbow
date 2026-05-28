@@ -1,8 +1,8 @@
 import { usePolymarketBalanceStore } from '@/features/polymarket/stores/polymarketBalanceStore';
 import { polymarketPositionsActions } from '@/features/polymarket/stores/polymarketPositionsStore';
+import { time } from '@/framework/core/utils/time';
 import { logger, RainbowError } from '@/logger';
 import { delay } from '@/utils/delay';
-import { time } from '@/utils/time';
 
 export async function refetchPolymarketBalance(): Promise<void> {
   await usePolymarketBalanceStore.getState().fetch(undefined, { force: true });

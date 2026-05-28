@@ -1,10 +1,10 @@
 import type { NativeCurrencyKey } from '@/entities/nativeCurrencyTypes';
+import { time } from '@/framework/core/utils/time';
 import { metadataClient } from '@/graphql';
 import { type Token } from '@/graphql/__generated__/metadata';
 import { logger, RainbowError } from '@/logger';
 import { ChainId } from '@/state/backendNetworks/types';
 import { createQueryStore } from '@/state/internal/createQueryStore';
-import { time } from '@/utils/time';
 
 // Types
 export type TokenMetadata = Pick<

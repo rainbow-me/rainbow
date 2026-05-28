@@ -3,9 +3,9 @@ import { collection, getDocs, getFirestore, orderBy, query, where, type Firebase
 
 import { PLACEMENT_IDS } from '@/features/placements/constants';
 import { type Placement, type PlacementId, type PlacementItem, type PlacementSource } from '@/features/placements/types';
+import { time } from '@/framework/core/utils/time';
 import { getConsistentArray } from '@/helpers/getConsistentArray';
 import { createQueryStore } from '@/state/internal/createQueryStore';
-import { time } from '@/utils/time';
 
 // ============ Types ========================================================== //
 

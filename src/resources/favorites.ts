@@ -7,6 +7,7 @@ import { analytics } from '@/analytics';
 import { NativeCurrencyKeys } from '@/entities/nativeCurrencyTypes';
 import type { RainbowToken } from '@/entities/tokens';
 import { IS_TEST } from '@/env';
+import { time } from '@/framework/core/utils/time';
 import { logger, RainbowError } from '@/logger';
 import { createQueryKey, queryClient } from '@/react-query';
 import { DAI_ADDRESS, ETH_ADDRESS, SOCKS_ADDRESS, WBTC_ADDRESS, WETH_ADDRESS } from '@/references/constants';
@@ -15,7 +16,6 @@ import { ChainId, type Network } from '@/state/backendNetworks/types';
 import { createRainbowStore } from '@/state/internal/createRainbowStore';
 import { getUniqueId } from '@/utils/ethereumUtils';
 import promiseUtils from '@/utils/promise';
-import { time } from '@/utils/time';
 
 import { externalTokenQueryKey, fetchExternalToken } from './assets/externalAssetsQuery';
 

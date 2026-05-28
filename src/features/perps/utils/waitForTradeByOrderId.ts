@@ -1,5 +1,5 @@
+import { time } from '@/framework/core/utils/time';
 import { delay } from '@/utils/delay';
-import { time } from '@/utils/time';
 
 import { getHyperliquidAccountClient } from '../services';
 import { hlTradesStoreActions } from '../stores/hlTradesStore';

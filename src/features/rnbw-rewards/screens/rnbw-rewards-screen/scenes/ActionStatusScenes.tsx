@@ -11,9 +11,9 @@ import { RnbwRewardsScenes, type RnbwRewardsScene } from '@/features/rnbw-reward
 import { ActionStatusScene } from '@/features/rnbw-rewards/screens/rnbw-rewards-screen/scenes/ActionStatusScene';
 import { useAirdropBalanceStore } from '@/features/rnbw-rewards/stores/airdropBalanceStore';
 import { rewardsFlowActions, useRewardsFlowStore, type AsyncActionState } from '@/features/rnbw-rewards/stores/rewardsFlowStore';
+import { time } from '@/framework/core/utils/time';
 import { opacity } from '@/framework/ui/utils/opacity';
 import * as i18n from '@/languages';
-import { time } from '@/utils/time';
 
 const LONGER_THAN_USUAL_TIME = time.seconds(10);
 

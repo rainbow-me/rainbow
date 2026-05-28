@@ -4,8 +4,8 @@ import { usePolymarketEventStore } from '@/features/polymarket/stores/polymarket
 import { getOutcomeTeamColor } from '@/features/polymarket/utils/getOutcomeTeam';
 import { isThreeWayMoneyline } from '@/features/polymarket/utils/marketClassification';
 import { isDrawMarket } from '@/features/polymarket/utils/sports';
+import { time } from '@/framework/core/utils/time';
 import { createQueryStore } from '@/state/internal/createQueryStore';
-import { time } from '@/utils/time';
 
 import { fetchPriceHistory } from '../api/clobClient';
 import { fetchGammaEvent } from '../api/gammaClient';

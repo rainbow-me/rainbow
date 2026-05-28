@@ -12,12 +12,12 @@ import type AppEth from '@ledgerhq/hw-app-eth';
 import { ledgerService } from '@ledgerhq/hw-app-eth';
 import { SignTypedDataVersion, TypedDataUtils } from '@metamask/eth-sig-util';
 
+import { time } from '@/framework/core/utils/time';
 import { ensureError, logger, RainbowError } from '@/logger';
 import Navigation from '@/navigation/Navigation';
 import Routes from '@/navigation/routesNames';
 import { getEthApp } from '@/utils/ledger';
 import { withTimeout } from '@/utils/promise';
-import { time } from '@/utils/time';
 
 type LedgerTransactionResolution = Awaited<ReturnType<typeof ledgerService.resolveTransaction>>;
 

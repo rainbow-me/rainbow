@@ -13,11 +13,11 @@ import { RnbwRewardsScenes } from '@/features/rnbw-rewards/screens/rnbw-rewards-
 import { useAirdropBalanceStore } from '@/features/rnbw-rewards/stores/airdropBalanceStore';
 import { rewardsFlowActions } from '@/features/rnbw-rewards/stores/rewardsFlowStore';
 import { prepareAirdropClaim } from '@/features/rnbw-rewards/utils/claimAirdrop';
+import { time } from '@/framework/core/utils/time';
 import * as i18n from '@/languages';
 import { useNavigation } from '@/navigation/Navigation';
 import Routes from '@/navigation/routesNames';
 import { useAccountAddress, useIsHardwareWallet } from '@/state/wallets/walletsStore';
-import { time } from '@/utils/time';
 
 const enteringAnimation = createScaleInFadeInSlideEnterAnimation({ translateY: 24, delay: time.ms(200) });
 

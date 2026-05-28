@@ -21,12 +21,12 @@ import { useAirdropFlowStore } from '@/features/rnbw-airdrop/stores/airdropFlowS
 import { transitionEasing } from '@/features/rnbw-rewards/animations/sceneTransitions';
 import concentricCircleImage from '@/features/rnbw-rewards/assets/radial-circle.png';
 import { SpinnableCoin, type SpinnableCoinHandle } from '@/features/rnbw-rewards/screens/rnbw-rewards-screen/components/SpinnableCoin';
+import { time } from '@/framework/core/utils/time';
 import { LoadingSpinner } from '@/framework/ui/components/LoadingSpinner';
 import { opacity } from '@/framework/ui/utils/opacity';
 import { useStoreSharedValue } from '@/state/internal/hooks/useStoreSharedValue';
 import { THICK_BORDER_WIDTH } from '@/styles/constants';
 import { DEVICE_WIDTH } from '@/utils/deviceUtils';
-import { time } from '@/utils/time';
 
 const COIN_SIZE = 160;
 const SMALL_COIN_SIZE = 90;

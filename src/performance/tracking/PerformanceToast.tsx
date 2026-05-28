@@ -8,6 +8,7 @@ import { getExperimentalFlag } from '@/config/experimentalConfigStore';
 import { globalColors } from '@/design-system';
 import { typeHierarchy } from '@/design-system/typography/typeHierarchy';
 import { IS_TEST } from '@/env';
+import { time } from '@/framework/core/utils/time';
 import { opacity } from '@/framework/ui/utils/opacity';
 import { getNumberFormatter } from '@/helpers/intl';
 import { fontWithWidth } from '@/styles';
@@ -15,7 +16,6 @@ import { THICK_BORDER_WIDTH } from '@/styles/constants';
 import font from '@/styles/fonts';
 import { isDarkTheme } from '@/theme/ThemeContext';
 import { DEVICE_WIDTH } from '@/utils/deviceUtils';
-import { time } from '@/utils/time';
 
 let shouldCollectStats = !IS_TEST && getExperimentalFlag(PERFORMANCE_TOAST);
 

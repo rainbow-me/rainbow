@@ -3,7 +3,7 @@ import { HttpTransport, InfoClient } from '@nktkas/hyperliquid';
 import { INITIAL_BAR_COUNT } from '@/features/charts/constants';
 import { type CandleResolution, type HyperliquidCandle, type HyperliquidSymbol } from '@/features/charts/types';
 import { msToSeconds, toHyperliquidInterval } from '@/features/charts/utils';
-import { time } from '@/utils/time';
+import { time } from '@/framework/core/utils/time';
 
 import { type Bar, type CandlestickResponse } from '../types';
 import { getResolutionMinutes } from '../utils';

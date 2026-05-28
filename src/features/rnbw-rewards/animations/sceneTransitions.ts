@@ -1,6 +1,6 @@
 import { Easing, withDelay, withTiming, type EntryAnimationsValues, type ExitAnimationsValues } from 'react-native-reanimated';
 
-import { time } from '@/utils/time';
+import { time } from '@/framework/core/utils/time';
 
 export const transitionEasing = Easing.bezier(0.2, 0.9, 0.2, 1).factory();
 const timingConfig = { duration: time.seconds(1), easing: transitionEasing };

@@ -6,8 +6,8 @@ import { createWithEqualityFn } from 'zustand/traditional';
 import { RAINBOW_HOME } from '@/components/DappBrowser/constants';
 import { type TabData, type TabId } from '@/components/DappBrowser/types';
 import { normalizeUrlWorklet } from '@/components/DappBrowser/utils';
+import { time } from '@/framework/core/utils/time';
 import { logger, RainbowError } from '@/logger';
-import { time } from '@/utils/time';
 import { generateUniqueId } from '@/worklets/strings';
 
 const BROWSER_STORAGE_ID = 'browserStore';

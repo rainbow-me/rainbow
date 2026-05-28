@@ -5,13 +5,13 @@ import { ContactAvatar } from '@/components/contacts';
 import ImageAvatar from '@/components/contacts/ImageAvatar';
 import { Navbar } from '@/components/navbar/Navbar';
 import { DelayedMount } from '@/components/utilities/DelayedMount';
+import { time } from '@/framework/core/utils/time';
 import styled from '@/framework/ui/styled-thing';
 import * as i18n from '@/languages';
 import Navigation from '@/navigation/Navigation';
 import Routes from '@/navigation/routesNames';
 import { useAccountProfileInfo } from '@/state/wallets/walletsStore';
 import { position } from '@/styles';
-import { time } from '@/utils/time';
 
 import { ActivityList } from '../components/activity-list';
 import { Page } from '../components/layout';

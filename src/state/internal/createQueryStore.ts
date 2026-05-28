@@ -4,8 +4,8 @@ import { subscribeWithSelector } from 'zustand/middleware';
 import { createWithEqualityFn } from 'zustand/traditional';
 
 import { IS_DEV, IS_TEST } from '@/env';
+import { time } from '@/framework/core/utils/time';
 import { ensureError, logger, RainbowError } from '@/logger';
-import { time } from '@/utils/time';
 
 import { createRainbowStore } from './createRainbowStore';
 import { SubscriptionManager } from './queryStore/classes/SubscriptionManager';

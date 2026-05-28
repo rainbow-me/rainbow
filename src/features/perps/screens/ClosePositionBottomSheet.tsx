@@ -25,6 +25,7 @@ import { getHyperliquidTokenId, parseHyperliquidErrorMessage } from '@/features/
 import { formatCurrency } from '@/features/perps/utils/formatCurrency';
 import { waitForTradeByOrderId } from '@/features/perps/utils/waitForTradeByOrderId';
 import { divWorklet, mulWorklet } from '@/framework/core/safeMath';
+import { time } from '@/framework/core/utils/time';
 import { opacity } from '@/framework/ui/utils/opacity';
 import * as i18n from '@/languages';
 import { logger, RainbowError } from '@/logger';
@@ -33,7 +34,6 @@ import Routes from '@/navigation/routesNames';
 import { type RootStackParamList } from '@/navigation/types';
 import { colors } from '@/styles';
 import { THICK_BORDER_WIDTH } from '@/styles/constants';
-import { time } from '@/utils/time';
 
 function PanelSheet({ children }: { children: React.ReactNode }) {
   const { isDarkMode } = useColorMode();

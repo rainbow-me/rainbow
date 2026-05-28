@@ -4,11 +4,11 @@ import { type PolymarketPosition, type RawPolymarketPosition } from '@/features/
 import { type RawPolymarketMarket } from '@/features/polymarket/types/polymarket-event';
 import { fetchTeamsForGameMarkets } from '@/features/polymarket/utils/sports';
 import { processRawPolymarketPosition } from '@/features/polymarket/utils/transforms';
+import { time } from '@/framework/core/utils/time';
 import { rainbowFetch } from '@/framework/data/http/rainbowFetch';
 import { RainbowError } from '@/logger';
 import { createQueryStore } from '@/state/internal/createQueryStore';
 import { createStoreActions } from '@/state/internal/utils/createStoreActions';
-import { time } from '@/utils/time';
 
 type PolymarketPositionsStoreActions = {
   getPositions: () => PolymarketPosition[] | undefined;

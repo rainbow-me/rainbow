@@ -1,7 +1,7 @@
 import { POLYMARKET_CLOB_PROXY_URL } from '@/features/polymarket/constants';
+import { time } from '@/framework/core/utils/time';
 import { rainbowFetch } from '@/framework/data/http/rainbowFetch';
 import { createQueryStore } from '@/state/internal/createQueryStore';
-import { time } from '@/utils/time';
 
 export type OrderBookLevel = {
   price: string;

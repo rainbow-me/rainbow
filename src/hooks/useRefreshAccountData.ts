@@ -7,6 +7,7 @@ import { hyperliquidAccountActions } from '@/features/perps/stores/hyperliquidAc
 import { usePolymarketBalanceStore } from '@/features/polymarket/stores/polymarketBalanceStore';
 import { usePolymarketPositionsStore } from '@/features/polymarket/stores/polymarketPositionsStore';
 import { usePositionsStore } from '@/features/positions/stores/positionsStore';
+import { time } from '@/framework/core/utils/time';
 import { hiddenTokensQueryKey } from '@/hooks/useFetchHiddenTokens';
 import { showcaseTokensQueryKey } from '@/hooks/useFetchShowcaseTokens';
 import { logger, RainbowError } from '@/logger';
@@ -18,7 +19,6 @@ import { PAGE_SIZE } from '@/state/nfts/createNftsStore';
 import { useNftsStore } from '@/state/nfts/nfts';
 import { refetchWalletSummary } from '@/state/wallets/useWalletSummaryStore';
 import { getAccountAddress, refreshWalletInfo } from '@/state/wallets/walletsStore';
-import { time } from '@/utils/time';
 
 // minimum duration we want the "Pull to Refresh" animation to last
 const MIN_REFRESH_DURATION = 1_250;

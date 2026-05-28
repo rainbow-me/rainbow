@@ -12,6 +12,7 @@ import { ChainImage } from '@/components/coin-icon/ChainImage';
 import { ShinyCoinIcon } from '@/components/coin-icon/ShinyCoinIcon';
 import { RainbowImage } from '@/components/RainbowImage';
 import { Box, Separator, Text } from '@/design-system';
+import { time } from '@/framework/core/utils/time';
 import { type KingOfTheHill } from '@/graphql/__generated__/metadata';
 import { getSizedImageUrl } from '@/handlers/imgix';
 import { formatCurrency } from '@/helpers/strings';
@@ -22,7 +23,6 @@ import Navigation from '@/navigation/Navigation';
 import Routes from '@/navigation/routesNames';
 import { fetchAndSetEnsData } from '@/screens/Airdrops/ClaimAirdropSheet';
 import { formatAddressForDisplay } from '@/utils/abbreviations';
-import { time } from '@/utils/time';
 
 import { CHEVRON_RIGHT_SYMBOL } from '../constants';
 import { formatPriceChange, getPriceChangeColor } from '../utils/priceChange';

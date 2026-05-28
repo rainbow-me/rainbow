@@ -21,8 +21,8 @@ import rnbwCoin from '@/assets/rnbw.png';
 import { getCoinBottomPosition, getCoinCenterPosition } from '@/features/rnbw-rewards/screens/rnbw-rewards-screen/components/RnbwHeroCoin';
 import { RnbwRewardsScenes } from '@/features/rnbw-rewards/screens/rnbw-rewards-screen/constants/rewardsScenes';
 import { useRnbwRewardsFlowContext } from '@/features/rnbw-rewards/screens/rnbw-rewards-screen/context/RnbwRewardsFlowContext';
+import { time } from '@/framework/core/utils/time';
 import useTimeout from '@/hooks/useTimeout';
-import { time } from '@/utils/time';
 
 // Original design dimensions
 const DESIGN_WIDTH = 393;

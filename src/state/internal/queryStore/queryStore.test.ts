@@ -2,7 +2,7 @@
  * @jest-environment node
  */
 
-import { time } from '@/utils/time';
+import { time } from '@/framework/core/utils/time';
 
 import { createQueryStore, getQueryKey } from '../createQueryStore';
 import { QueryStatuses } from './types';

@@ -8,7 +8,7 @@ import {
   createScaleOutFadeOutSlideExitAnimation,
 } from '@/features/rnbw-rewards/animations/sceneTransitions';
 import { type AsyncActionState } from '@/features/rnbw-rewards/stores/rewardsFlowStore';
-import { time } from '@/utils/time';
+import { time } from '@/framework/core/utils/time';
 
 const EXIT_ANIMATION_DURATION = time.ms(500);
 const LABEL_CYCLE_INTERVAL = time.seconds(2);

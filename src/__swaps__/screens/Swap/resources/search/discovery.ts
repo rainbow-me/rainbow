@@ -1,11 +1,11 @@
 import { TOKEN_SEARCH_URL } from 'react-native-dotenv';
 
 import { type SearchAsset } from '@/__swaps__/types/search';
+import { time } from '@/framework/core/utils/time';
 import { RainbowFetchClient } from '@/framework/data/http/rainbowFetch';
 import { type ChainId } from '@/state/backendNetworks/types';
 import { createQueryStore } from '@/state/internal/createQueryStore';
 import { useSwapsStore } from '@/state/swaps/swapsStore';
-import { time } from '@/utils/time';
 
 import { parseTokenSearchResults } from './utils';
 

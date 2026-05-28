@@ -1,7 +1,7 @@
 import { defaultConfig, defaultConfigValues, type ExperimentalConfigKey } from '@/config/experimental';
 import { IS_STORE_INSTALL } from '@/env';
+import { time } from '@/framework/core/utils/time';
 import { createRainbowStore } from '@/state/internal/createRainbowStore';
-import { time } from '@/utils/time';
 
 export type ExperimentalConfigState = {
   config: Record<ExperimentalConfigKey, boolean>;

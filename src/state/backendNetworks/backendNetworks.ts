@@ -3,6 +3,7 @@ import { type Chain } from 'viem/chains';
 
 import { IS_TEST } from '@/env';
 import { GasSpeed } from '@/features/gas/types/gasSpeed';
+import { time } from '@/framework/core/utils/time';
 import buildTimeNetworks from '@/references/networks.json';
 import { fetchBackendNetworks, type BackendNetworksResponse } from '@/resources/metadata/backendNetworks';
 import { chainAnvil, chainAnvilOptimism, ChainId, type BackendNetwork, type BackendNetworkServices } from '@/state/backendNetworks/types';
@@ -11,7 +12,6 @@ import { useConnectedToAnvilStore } from '@/state/connectedToAnvil';
 import { createQueryStore } from '@/state/internal/createQueryStore';
 import { createStoreActions } from '@/state/internal/utils/createStoreActions';
 import { colors as globalColors } from '@/styles';
-import { time } from '@/utils/time';
 
 const INITIAL_BACKEND_NETWORKS = buildTimeNetworks.networks as BackendNetwork[];
 const DEFAULT_PRIVATE_MEMPOOL_TIMEOUT = time.minutes(2);
