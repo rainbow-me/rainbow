@@ -8,13 +8,13 @@ import { RnbwHoldToActivateButton } from '@/features/rnbw-membership/components/
 import { RNBW_SYMBOL } from '@/features/rnbw-rewards/constants';
 import { useRewardsBalanceStore } from '@/features/rnbw-rewards/stores/rewardsBalanceStore';
 import { prepareRewardsClaim, submitRewardsClaim } from '@/features/rnbw-rewards/utils/claimRewards';
+import { watchingAlert } from '@/features/wallet/utils/watchingAlert';
 import { useStableValue } from '@/hooks/useStableValue';
 import * as i18n from '@/languages';
 import { useNavigation } from '@/navigation/Navigation';
 import Routes from '@/navigation/routesNames';
 import { userAssetsStoreManager } from '@/state/assets/userAssetsStoreManager';
 import { useAccountAddress, useIsHardwareWallet, useIsReadOnlyWallet } from '@/state/wallets/walletsStore';
-import watchingAlert from '@/utils/watchingAlert';
 
 export const RnbwRewardsClaimSheet = memo(function RnbwRewardsClaimSheet() {
   const { goBack, navigate } = useNavigation();

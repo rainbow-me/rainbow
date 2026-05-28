@@ -39,6 +39,7 @@ import { foregroundColors } from '@/design-system/color/palettes';
 import { getColorForTheme } from '@/design-system/color/useForegroundColor';
 import { fetchENSAvatar } from '@/features/ens/hooks/useENSAvatar';
 import { fetchReverseRecord } from '@/features/ens/utils/handlers';
+import { watchingAlert } from '@/features/wallet/utils/watchingAlert';
 import { opacity } from '@/framework/ui/utils/opacity';
 import { getSizedImageUrl } from '@/handlers/imgix';
 import { containsEmoji } from '@/helpers/strings';
@@ -59,7 +60,6 @@ import { DEVICE_HEIGHT, DEVICE_WIDTH } from '@/utils/deviceUtils';
 import { addressHashedColorIndex, addressHashedEmoji } from '@/utils/profileUtils';
 import safeAreaInsetValues from '@/utils/safeAreaInsetValues';
 import { time } from '@/utils/time';
-import watchingAlert from '@/utils/watchingAlert';
 import { getHighContrastTextColorWorklet } from '@/worklets/colors';
 import { getCirclePath } from '@/worklets/skia';
 

@@ -9,6 +9,7 @@ import ButtonPressAnimation from '@/components/animations/ButtonPressAnimation';
 import { CopyFloatingEmojis } from '@/components/floating-emojis';
 import { enableActionsOnReadOnlyWallet } from '@/config/debug';
 import { AccentColorProvider, Box, Column, Columns, Inset, Stack, Text, useColorMode } from '@/design-system';
+import { watchingAlert } from '@/features/wallet/utils/watchingAlert';
 import { useAccountAccentColor } from '@/hooks/useAccountAccentColor';
 import * as i18n from '@/languages';
 import { useRemoteConfig } from '@/model/remoteConfig';
@@ -16,7 +17,6 @@ import Navigation from '@/navigation/Navigation';
 import Routes from '@/navigation/routesNames';
 import { addressCopiedToastAtom } from '@/recoil/addressCopiedToastAtom';
 import { getIsDamagedWallet, getIsReadOnlyWallet, useAccountAddress, useIsDamagedWallet } from '@/state/wallets/walletsStore';
-import watchingAlert from '@/utils/watchingAlert';
 
 export const ProfileActionButtonsRowHeight = 80;
 

@@ -1,11 +1,11 @@
 import React, { useCallback, useMemo } from 'react';
 
 import { Box } from '@/design-system';
+import { watchingAlert } from '@/features/wallet/utils/watchingAlert';
 import * as i18n from '@/languages';
 import { useNavigation } from '@/navigation/Navigation';
 import { ClaimableType } from '@/resources/addys/claimables/types';
 import { useIsReadOnlyWallet } from '@/state/wallets/walletsStore';
-import watchingAlert from '@/utils/watchingAlert';
 
 import { ClaimButton } from '../../shared/components/ClaimButton';
 import { ClaimPanel } from '../../shared/components/ClaimPanel';

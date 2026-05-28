@@ -8,11 +8,11 @@ import { GenericCard, type Gradient } from '@/components/cards/GenericCard';
 import { IconOrb } from '@/components/cards/reusables/IconOrb';
 import { enableActionsOnReadOnlyWallet } from '@/config/debug';
 import { Box, ColorModeProvider, globalColors, Stack, Text } from '@/design-system';
+import { watchingAlert } from '@/features/wallet/utils/watchingAlert';
 import * as i18n from '@/languages';
 import { useNavigation } from '@/navigation/Navigation';
 import Routes from '@/navigation/routesNames';
 import { getIsReadOnlyWallet } from '@/state/wallets/walletsStore';
-import watchingAlert from '@/utils/watchingAlert';
 
 import useENSPendingRegistrations from '../hooks/useENSPendingRegistrations';
 import { REGISTRATION_MODES } from '../utils/helpers';

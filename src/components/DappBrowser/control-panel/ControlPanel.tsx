@@ -36,6 +36,7 @@ import {
   useForegroundColor,
 } from '@/design-system';
 import { type TextColor } from '@/design-system/color/palettes';
+import { watchingAlert } from '@/features/wallet/utils/watchingAlert';
 import { opacity } from '@/framework/ui/utils/opacity';
 import { removeFirstEmojiFromString, returnStringFirstEmoji } from '@/helpers/emojiHandler';
 import { greaterThan } from '@/helpers/utilities';
@@ -62,7 +63,6 @@ import { address } from '@/utils/abbreviations';
 import deviceUtils from '@/utils/deviceUtils';
 import { addressHashedEmoji } from '@/utils/profileUtils';
 import safeAreaInsetValues from '@/utils/safeAreaInsetValues';
-import watchingAlert from '@/utils/watchingAlert';
 import { getHighContrastTextColorWorklet } from '@/worklets/colors';
 
 import { RAINBOW_HOME } from '../constants';
