@@ -2,7 +2,18 @@ import type { TransactionResponse } from '@ethersproject/abstract-provider';
 import type { StaticJsonRpcProvider } from '@ethersproject/providers';
 import { encodeFunctionData, type Address } from 'viem';
 
-import { STAKING_ABI, STAKING_CHAIN_ID, STAKING_CONTRACT_ADDRESS, STAKING_UNSTAKE_GAS_LIMIT } from '../constants';
+import { TransactionDirection, TransactionStatus } from '@/entities/transactions';
+
+import {
+  RNBW_DECIMALS,
+  RNBW_TOKEN_ADDRESS,
+  RNBW_TOKEN_ICON_URL,
+  RNBW_TOKEN_UNIQUE_ID,
+  STAKING_ABI,
+  STAKING_CHAIN_ID,
+  STAKING_CONTRACT_ADDRESS,
+  STAKING_UNSTAKE_GAS_LIMIT,
+} from '../constants';
 import { type StakingPositionData } from '../stores/rnbwStakingPositionStore';
 import { unstakeRnbw } from './unstakeRnbw';
 
@@ -15,6 +26,9 @@ const mockEstimateGas = jest.fn<Promise<{ toString: () => string }>, [unknown]>(
 const mockPollForStakingUpdate = jest.fn<Promise<boolean>, [string]>();
 const mockWaitForWalletTransactions = jest.fn<Promise<void>, [unknown]>();
 const mockTrack = jest.fn();
+const mockAddNewTransaction = jest.fn();
+const mockBuildSyntheticRnbwSourceAsset = jest.fn();
+const mockGetChainsName = jest.fn();
 
 jest.mock('@/analytics', () => ({
   analytics: {
@@ -32,6 +46,20 @@ jest.mock('@/handlers/web3', () => ({
 
 jest.mock('@/model/wallet', () => ({
   loadWallet: (params: unknown) => mockLoadWallet(params),
+}));
+
+jest.mock('@/state/backendNetworks/backendNetworks', () => ({
+  backendNetworksActions: {
+    getChainsName: () => mockGetChainsName(),
+  },
+}));
+
+jest.mock('@/state/pendingTransactions', () => ({
+  addNewTransaction: (params: unknown) => mockAddNewTransaction(params),
+}));
+
+jest.mock('./syntheticRnbwSourceAsset', () => ({
+  buildSyntheticRnbwSourceAsset: () => mockBuildSyntheticRnbwSourceAsset(),
 }));
 
 jest.mock('../stores/rnbwStakingPositionStore', () => ({
@@ -60,6 +88,7 @@ const TX_HASH = '0xaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa
 const UNSTAKE_ALL_DATA = encodeFunctionData({ abi: STAKING_ABI, functionName: 'unstakeAll' });
 const GAS_PARAMS = { maxFeePerGas: '10', maxPriorityFeePerGas: '1' };
 const ESTIMATED_GAS_LIMIT = '123456';
+const TX_NONCE = 7;
 const PROVIDER = {
   estimateGas: (params: unknown) => mockEstimateGas(params),
   name: 'provider',
@@ -108,13 +137,40 @@ describe('unstakeRnbw', () => {
   beforeEach(() => {
     jest.clearAllMocks();
     mockGetProvider.mockReturnValue(PROVIDER);
+    mockGetChainsName.mockReturnValue({ [STAKING_CHAIN_ID]: 'base' });
+    mockBuildSyntheticRnbwSourceAsset.mockReturnValue({
+      address: RNBW_TOKEN_ADDRESS,
+      balance: { amount: '0', display: '0 RNBW' },
+      chainId: STAKING_CHAIN_ID,
+      chainName: 'Base',
+      colors: { fallback: '#f2c745', primary: '#f2c745' },
+      decimals: RNBW_DECIMALS,
+      icon_url: RNBW_TOKEN_ICON_URL,
+      isNativeAsset: false,
+      mainnetAddress: RNBW_TOKEN_ADDRESS,
+      name: 'Rainbow',
+      native: {
+        balance: { amount: '0', display: '$0.00' },
+        price: { amount: 1, change: '0', display: '$1.00' },
+      },
+      nativePrice: 1,
+      networks: {
+        [STAKING_CHAIN_ID]: {
+          address: RNBW_TOKEN_ADDRESS,
+          decimals: RNBW_DECIMALS,
+        },
+      },
+      price: { value: 1 },
+      symbol: 'RNBW',
+      uniqueId: RNBW_TOKEN_UNIQUE_ID,
+    });
     mockLoadWallet.mockResolvedValue({
       sendTransaction: (params: unknown) => mockSendTransaction(params),
     });
     mockGetData.mockReturnValue(POSITION);
     mockFetch.mockResolvedValue(undefined);
     mockEstimateGas.mockResolvedValue({ toString: () => ESTIMATED_GAS_LIMIT });
-    mockSendTransaction.mockResolvedValue({ hash: TX_HASH } as TransactionResponse);
+    mockSendTransaction.mockResolvedValue({ hash: TX_HASH, nonce: TX_NONCE } as TransactionResponse);
     mockPollForStakingUpdate.mockResolvedValue(true);
     mockWaitForWalletTransactions.mockResolvedValue(undefined);
   });
@@ -126,7 +182,7 @@ describe('unstakeRnbw', () => {
     });
     mockSendTransaction.mockImplementation(async () => {
       record('sendTransaction');
-      return { hash: TX_HASH } as TransactionResponse;
+      return { hash: TX_HASH, nonce: TX_NONCE } as TransactionResponse;
     });
 
     await unstakeRnbw({ address: ACCOUNT, gasParams: GAS_PARAMS });
@@ -146,6 +202,62 @@ describe('unstakeRnbw', () => {
       gasLimit: ESTIMATED_GAS_LIMIT,
     });
     expect(order).toEqual(['fetch', 'sendTransaction']);
+  });
+
+  it('adds a pending unstake transaction before waiting for confirmation', async () => {
+    const { order, record } = recordCallOrder();
+    mockAddNewTransaction.mockImplementation(() => {
+      record('addNewTransaction');
+    });
+    mockWaitForWalletTransactions.mockImplementation(async () => {
+      record('waitForWalletTransactions');
+    });
+
+    await unstakeRnbw({ address: ACCOUNT, gasParams: GAS_PARAMS });
+
+    const expectedAsset = expect.objectContaining({
+      address: RNBW_TOKEN_ADDRESS,
+      chainId: STAKING_CHAIN_ID,
+      decimals: RNBW_DECIMALS,
+      icon_url: RNBW_TOKEN_ICON_URL,
+      isNativeAsset: false,
+      mainnet_address: RNBW_TOKEN_ADDRESS,
+      name: 'Rainbow',
+      network: 'base',
+      symbol: 'RNBW',
+      uniqueId: RNBW_TOKEN_UNIQUE_ID,
+    });
+    expect(mockAddNewTransaction).toHaveBeenCalledWith({
+      address: ACCOUNT,
+      chainId: STAKING_CHAIN_ID,
+      transaction: expect.objectContaining({
+        asset: expectedAsset,
+        chainId: STAKING_CHAIN_ID,
+        changes: [
+          expect.objectContaining({
+            address_from: STAKING_CONTRACT_ADDRESS,
+            address_to: ACCOUNT,
+            asset: expectedAsset,
+            direction: TransactionDirection.IN,
+            value: '950000000000000000000',
+          }),
+        ],
+        data: UNSTAKE_ALL_DATA,
+        from: ACCOUNT,
+        gasLimit: ESTIMATED_GAS_LIMIT,
+        gasPrice: undefined,
+        hash: TX_HASH,
+        maxFeePerGas: undefined,
+        maxPriorityFeePerGas: undefined,
+        network: 'base',
+        nonce: TX_NONCE,
+        status: TransactionStatus.pending,
+        to: STAKING_CONTRACT_ADDRESS,
+        type: 'unstake',
+        value: '0',
+      }),
+    });
+    expect(order).toEqual(['addNewTransaction', 'waitForWalletTransactions']);
   });
 
   it('throws when refreshed position data is missing', async () => {
