@@ -10,7 +10,6 @@ import { resolveManagedExecutionFailure } from '@/features/delegation/managedExe
 import { waitForManagedExecutionConfirmation } from '@/features/delegation/waitForManagedExecution';
 import { canUseDelegatedExecution } from '@/features/delegation/willDelegate';
 import type { LegacyTransactionGasParamAmounts, TransactionGasParamAmounts } from '@/features/gas/types/gas';
-import { time } from '@/framework/core/utils/time';
 import { RainbowError } from '@/logger';
 import { extractReplayableExecution } from '@/raps/replay';
 import { toTransactionAsset, type TransactionAssetSource } from '@/raps/transactionAsset';
@@ -26,6 +25,7 @@ import {
   STAKING_GAS_LIMIT,
 } from '../constants';
 import { buildStakeRnbwCalls, buildStakeRnbwExecutionPlan } from './stakeRnbwCalls';
+import { waitForWalletTransactions } from './waitForWalletTransactions';
 
 // ============ Types ========================================================= //
 
@@ -260,20 +260,6 @@ function buildStakeTransaction({
     type: 'stake',
     value: 0,
   };
-}
-
-async function waitForWalletTransactions({ provider, txHashes }: { provider: StaticJsonRpcProvider; txHashes: string[] }): Promise<void> {
-  for (const hash of txHashes) {
-    const receipt = await provider.waitForTransaction(hash, 1, time.minutes(2));
-
-    if (!receipt) {
-      throw new RainbowError(`[executeStakeRnbw]: wallet staking transaction was not confirmed (${hash})`);
-    }
-
-    if (receipt.status === 0) {
-      throw new RainbowError(`[executeStakeRnbw]: wallet staking transaction failed (${hash})`);
-    }
-  }
 }
 
 async function resolveStakeRnbwCallGasLimit({
