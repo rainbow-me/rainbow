@@ -9,6 +9,9 @@ import ButtonPressAnimation from '@/components/animations/ButtonPressAnimation';
 import { PanelSheet } from '@/components/PanelSheet/PanelSheet';
 import { RnbwCoinIcon } from '@/components/RnbwCoinIcon';
 import { Box, globalColors, Separator, Stack, Text, useForegroundColor } from '@/design-system';
+import { useGasSettings } from '@/features/gas/hooks/useSelectedGas';
+import { GasSpeed } from '@/features/gas/types/gasSpeed';
+import { buildGasParams } from '@/features/gas/utils/parseGas';
 import { RnbwHoldToActivateButton } from '@/features/rnbw-membership/components/RnbwButton/RnbwHoldToActivateButton';
 import { RNBW_SYMBOL } from '@/features/rnbw-rewards/constants';
 import { UnstakePenaltySign } from '@/features/rnbw-staking/components/UnstakePenaltySign';
@@ -19,6 +22,7 @@ import { ensureError, logger, RainbowError } from '@/logger';
 import { useNavigation } from '@/navigation/Navigation';
 import { useAccountAddress } from '@/state/wallets/walletsStore';
 
+import { STAKING_CHAIN_ID } from '../../constants';
 import { useRnbwStakingBalance } from '../../stores/derived/useRnbwStakingBalance';
 import { useRnbwStakingPositionPnl } from '../../stores/derived/useRnbwStakingPositionPnl';
 import { useStakingPositionStore } from '../../stores/rnbwStakingPositionStore';
@@ -120,6 +124,7 @@ const UnstakeContent = memo(function UnstakeContent({ exitFeePercentage }: { exi
   const { netPnl, isPositivePnl, rnbwAfterUnstake } = useRnbwStakingPositionPnl();
   const { goBack } = useNavigation();
   const accountAddress = useAccountAddress();
+  const gasSettings = useGasSettings(STAKING_CHAIN_ID, GasSpeed.FAST);
   const [isProcessing, setIsProcessing] = useState(false);
   const liveDisplay = {
     tokenAmount,
@@ -135,10 +140,19 @@ const UnstakeContent = memo(function UnstakeContent({ exitFeePercentage }: { exi
   const displayValues = isProcessing && frozenDisplayRef.current ? frozenDisplayRef.current : liveDisplay;
 
   const startUnstake = async () => {
+    if (!gasSettings) {
+      Alert.alert(
+        i18n.t(i18n.l.rnbw_staking.unstake_sheet.unstake_failed_title),
+        i18n.t(i18n.l.rnbw_staking.unstake_sheet.unstake_failed_message)
+      );
+      logger.error(new RainbowError('[RnbwUnstakeSheet]: Unstake failed, gas data unavailable'));
+      return;
+    }
+
     frozenDisplayRef.current = liveDisplay;
     setIsProcessing(true);
     try {
-      await unstakeRnbw({ address: accountAddress });
+      await unstakeRnbw({ address: accountAddress, gasParams: buildGasParams(gasSettings) });
       goBack();
     } catch (e) {
       setIsProcessing(false);
@@ -209,6 +223,7 @@ const UnstakeContent = memo(function UnstakeContent({ exitFeePercentage }: { exi
           processingLabel={i18n.t(i18n.l.rnbw_staking.unstake_sheet.unstaking)}
           onActivate={handleUnstake}
           isProcessing={isProcessing}
+          disabled={!gasSettings}
           showBiometryIcon
           style={styles.fullWidthButton}
         />

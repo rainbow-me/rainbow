@@ -22,6 +22,7 @@ export const STAKING_ABI = parseAbi([
 ]);
 export const STAKING_GAS_LIMIT = 200_000;
 export const STAKING_APPROVAL_GAS_LIMIT = Number(gasUnits.basic_approval);
+export const STAKING_UNSTAKE_GAS_LIMIT = 200_000;
 
 export const MIN_CLAIM_TO_STAKING_RAW = '1000000000000000000'; // 1 RNBW (10^18)
 export const MIN_STAKE_AMOUNT = convertRawAmountToDecimalFormat(MIN_CLAIM_TO_STAKING_RAW, RNBW_DECIMALS);

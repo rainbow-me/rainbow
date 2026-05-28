@@ -1,17 +1,25 @@
-import { encodeFunctionData, type Address, type Hash } from 'viem';
+import type { StaticJsonRpcProvider } from '@ethersproject/providers';
+import { encodeFunctionData, type Address, type Hash, type Hex } from 'viem';
 
 import { analytics } from '@/analytics';
+import type { LegacyTransactionGasParamAmounts, TransactionGasParamAmounts } from '@/features/gas/types/gas';
 import { mulWorklet, subWorklet } from '@/framework/core/safeMath';
 import { getProvider } from '@/handlers/web3';
 import { convertRawAmountToDecimalFormat } from '@/helpers/utilities';
 import { RainbowError } from '@/logger';
 import { loadWallet } from '@/model/wallet';
 
-import { STAKING_ABI, STAKING_CHAIN_ID, STAKING_CONTRACT_ADDRESS } from '../constants';
+import { STAKING_ABI, STAKING_CHAIN_ID, STAKING_CONTRACT_ADDRESS, STAKING_UNSTAKE_GAS_LIMIT } from '../constants';
 import { useStakingPositionStore, type StakingPositionData } from '../stores/rnbwStakingPositionStore';
 import { pollForStakingUpdate } from './pollForStakingUpdate';
 
-export async function unstakeRnbw({ address }: { address: Address }): Promise<Hash> {
+export async function unstakeRnbw({
+  address,
+  gasParams,
+}: {
+  address: Address;
+  gasParams: LegacyTransactionGasParamAmounts | TransactionGasParamAmounts;
+}): Promise<Hash> {
   const initialExitFeePercentage = useStakingPositionStore.getState().getData()?.exitFeePercentage;
   await useStakingPositionStore.getState().fetch(undefined, { force: true });
   const positionData = useStakingPositionStore.getState().getData();
@@ -35,10 +43,13 @@ export async function unstakeRnbw({ address }: { address: Address }): Promise<Ha
 
     const originalStakedRnbwShares = positionData.poolShares;
     const data = encodeFunctionData({ abi: STAKING_ABI, functionName: 'unstakeAll' });
+    const gasLimit = await estimateUnstakeGasLimit({ address, data, provider });
 
     const tx = await signer.sendTransaction({
+      ...gasParams,
       to: STAKING_CONTRACT_ADDRESS,
       data,
+      gasLimit,
     });
 
     await tx.wait();
@@ -58,6 +69,23 @@ export async function unstakeRnbw({ address }: { address: Address }): Promise<Ha
       errorMessage: error instanceof Error ? error.message : 'Unknown error',
     });
     throw error;
+  }
+}
+
+async function estimateUnstakeGasLimit({
+  address,
+  data,
+  provider,
+}: {
+  address: Address;
+  data: Hex;
+  provider: StaticJsonRpcProvider;
+}): Promise<string> {
+  try {
+    const estimatedGasLimit = await provider.estimateGas({ data, from: address, to: STAKING_CONTRACT_ADDRESS });
+    return estimatedGasLimit.toString();
+  } catch {
+    return STAKING_UNSTAKE_GAS_LIMIT.toString();
   }
 }
 
