@@ -1,7 +1,6 @@
 import { useMemo } from 'react';
 
 import { type NativeCurrencyKey } from '@/entities/nativeCurrencyTypes';
-import { IS_TEST } from '@/env';
 import { finalizePlacementResult, pairPlacementItems } from '@/features/placements/stores/derived/finalizePlacementResult';
 import { hasRefsOrPendingHydration } from '@/features/placements/stores/derived/hasRefsOrPendingHydration';
 import {
@@ -55,7 +54,7 @@ const tokenRefCache = new Map<string, TokenRefCacheEntry>();
 
 const useTokensEnabled = createDerivedStore<boolean>(
   $ => {
-    return hasTokenRefsOrPendingHydration($) && !IS_TEST;
+    return hasTokenRefsOrPendingHydration($);
   },
   { fastMode: true }
 );
