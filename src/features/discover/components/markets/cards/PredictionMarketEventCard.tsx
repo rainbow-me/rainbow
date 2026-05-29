@@ -11,7 +11,6 @@ import { GradientBorderView } from '@/components/gradient-border/GradientBorderV
 import { LiveTokenText } from '@/components/live-token-text/LiveTokenText';
 import { globalColors, Text, TextShadow, useBackgroundColor, useColorMode, useForegroundColor } from '@/design-system';
 import { type DiscoverCardAnalyticsContext } from '@/features/discover/components/surfaceSectionTypes';
-import { getDiscoverSportsEventTeamLabels } from '@/features/discover/utils/sportsEventTeamLabels';
 import { LeagueIcon } from '@/features/polymarket/components/league-icon/LeagueIcon';
 import { TeamLogo } from '@/features/polymarket/components/TeamLogo';
 import { usePolymarketSportsBetCellPress } from '@/features/polymarket/hooks/usePolymarketSportsBetCellPress';
@@ -21,6 +20,7 @@ import { type PolymarketTeamInfo } from '@/features/polymarket/types';
 import { type PolymarketEvent } from '@/features/polymarket/types/polymarket-event';
 import { formatOdds, type BetCellData } from '@/features/polymarket/utils/sportsEventBetData';
 import { getSportsEventOutcomeCellColor, type SportsEventOutcomeInfo } from '@/features/polymarket/utils/sportsEventOutcome';
+import { getDiscoverSportsEventTeamLabels } from '@/features/polymarket/utils/sportsEventTeamLabels';
 import { getTeamDisplayInfo } from '@/features/polymarket/utils/sportsEventTeams';
 import { opacity } from '@/framework/ui/utils/opacity';
 import * as i18n from '@/languages';
