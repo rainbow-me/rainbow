@@ -7,6 +7,7 @@ import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 import { Text, useForegroundColor } from '@/design-system';
 import { LeagueIcon } from '@/features/polymarket/components/league-icon/LeagueIcon';
+import { LiveSectionIndicator } from '@/features/polymarket/components/LiveSectionIndicator';
 import {
   HEIGHT as ITEM_HEIGHT,
   LoadingSkeleton,
@@ -148,7 +149,7 @@ const SectionHeader = memo(function SectionHeader({ title, isLive }: { title: st
   return (
     <View style={styles.sectionHeader}>
       <View style={styles.sectionHeaderContent}>
-        {isLive ? <View style={[styles.liveIndicator, { backgroundColor: '#FF584D' }]} /> : null}
+        {isLive ? <LiveSectionIndicator /> : null}
         <Text align="left" color="label" size="20pt" weight="heavy">
           {title}
         </Text>
@@ -218,11 +219,6 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     gap: 6,
-  },
-  liveIndicator: {
-    height: 8,
-    width: 8,
-    borderRadius: 4,
   },
   leagueHeader: {
     flexDirection: 'row',
