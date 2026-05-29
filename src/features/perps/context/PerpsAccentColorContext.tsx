@@ -3,7 +3,6 @@ import React, { createContext, useContext, useMemo } from 'react';
 import { type LinearGradientProps } from 'expo-linear-gradient';
 
 import { useColorMode } from '@/design-system';
-import { getColorForTheme } from '@/design-system/color/useForegroundColor';
 import { opacity } from '@/framework/ui/utils/opacity';
 
 export const HYPERLIQUID_GREEN = '#3ECFAD';
@@ -38,11 +37,6 @@ type PerpsAccentColors = {
   opacity1: string;
   surfacePrimary: string;
   gradient: LinearGradientProps['colors'];
-  priceChangeColors: {
-    positive: string;
-    negative: string;
-    neutral: string;
-  };
   slider: {
     activeLeft: string;
     inactiveLeft: string;
@@ -103,11 +97,6 @@ export function PerpsAccentColorContextProvider({ children, primaryColorOverride
       opacity1: opacity(primary, 0.01),
       surfacePrimary: isDarkMode ? '#171E20' : 'white',
       gradient,
-      priceChangeColors: {
-        positive: getColorForTheme('green', isDarkMode ? 'dark' : 'light'),
-        negative: getColorForTheme('red', isDarkMode ? 'dark' : 'light'),
-        neutral: getColorForTheme('labelTertiary', isDarkMode ? 'dark' : 'light'),
-      },
       slider: {
         activeLeft: primary,
         inactiveLeft: primary,
