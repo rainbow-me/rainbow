@@ -24,30 +24,32 @@ type UnstakeAnalyticsSnapshot = {
   pnl: string;
 };
 
+type UnstakeRnbwResult = {
+  txHash: Hash;
+  waitForConfirmation: () => Promise<void>;
+};
+
 export async function unstakeRnbw({
   address,
   gasParams,
 }: {
   address: Address;
   gasParams: LegacyTransactionGasParamAmounts | TransactionGasParamAmounts;
-}): Promise<Hash> {
+}): Promise<UnstakeRnbwResult> {
   const positionData = await refreshAndValidatePosition();
   const analyticsSnapshot = snapshotUnstakeAnalytics(positionData);
 
   try {
-    const txHash = await submitAndConfirmUnstake({
+    const { provider, txHash } = await submitUnstake({
       address,
       gasParams,
       positionData,
     });
 
-    analytics.track(analytics.event.rnbwStakingUnstake, {
-      chainId: STAKING_CHAIN_ID,
+    return {
       txHash,
-      ...analyticsSnapshot,
-    });
-
-    return txHash;
+      waitForConfirmation: () => finalizeSubmittedUnstake({ analyticsSnapshot, positionData, provider, txHash }),
+    };
   } catch (error) {
     analytics.track(analytics.event.rnbwStakingUnstakeFailed, {
       chainId: STAKING_CHAIN_ID,
@@ -74,7 +76,7 @@ async function refreshAndValidatePosition(): Promise<StakingPositionData> {
   return positionData;
 }
 
-async function submitAndConfirmUnstake({
+async function submitUnstake({
   address,
   gasParams,
   positionData,
@@ -82,7 +84,7 @@ async function submitAndConfirmUnstake({
   address: Address;
   gasParams: LegacyTransactionGasParamAmounts | TransactionGasParamAmounts;
   positionData: StakingPositionData;
-}): Promise<Hash> {
+}): Promise<{ provider: StaticJsonRpcProvider; txHash: Hash }> {
   const provider = getProvider({ chainId: STAKING_CHAIN_ID });
   const signer = await loadWallet({ address, provider });
   if (!signer) {
@@ -123,10 +125,36 @@ async function submitAndConfirmUnstake({
     },
   });
 
-  await waitForWalletTransactions({ provider, txHashes: [tx.hash] });
-  await pollForStakingUpdate(positionData.poolShares);
+  return { provider, txHash: tx.hash as Hash };
+}
 
-  return tx.hash as Hash;
+async function finalizeSubmittedUnstake({
+  analyticsSnapshot,
+  positionData,
+  provider,
+  txHash,
+}: {
+  analyticsSnapshot: UnstakeAnalyticsSnapshot;
+  positionData: StakingPositionData;
+  provider: StaticJsonRpcProvider;
+  txHash: Hash;
+}): Promise<void> {
+  try {
+    await waitForWalletTransactions({ provider, txHashes: [txHash] });
+    await pollForStakingUpdate(positionData.poolShares);
+    analytics.track(analytics.event.rnbwStakingUnstake, {
+      chainId: STAKING_CHAIN_ID,
+      txHash,
+      ...analyticsSnapshot,
+    });
+  } catch (error) {
+    analytics.track(analytics.event.rnbwStakingUnstakeFailed, {
+      chainId: STAKING_CHAIN_ID,
+      stakedAmount: analyticsSnapshot.stakedAmount,
+      errorMessage: error instanceof Error ? error.message : 'Unknown error',
+    });
+    throw error;
+  }
 }
 
 async function estimateUnstakeGasLimit({

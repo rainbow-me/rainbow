@@ -213,7 +213,7 @@ describe('unstakeRnbw', () => {
       record('waitForWalletTransactions');
     });
 
-    await unstakeRnbw({ address: ACCOUNT, gasParams: GAS_PARAMS });
+    const result = await unstakeRnbw({ address: ACCOUNT, gasParams: GAS_PARAMS });
 
     const expectedAsset = expect.objectContaining({
       address: RNBW_TOKEN_ADDRESS,
@@ -257,7 +257,29 @@ describe('unstakeRnbw', () => {
         value: '0',
       }),
     });
+    expect(mockWaitForWalletTransactions).not.toHaveBeenCalled();
+    await result.waitForConfirmation();
     expect(order).toEqual(['addNewTransaction', 'waitForWalletTransactions']);
+  });
+
+  it('returns after registering the pending unstake transaction', async () => {
+    let resolveConfirmation: (() => void) | undefined;
+    const confirmationPromise = new Promise<void>(resolve => {
+      resolveConfirmation = resolve;
+    });
+    mockWaitForWalletTransactions.mockImplementation(() => confirmationPromise);
+
+    const result = await unstakeRnbw({ address: ACCOUNT, gasParams: GAS_PARAMS });
+
+    expect(result.txHash).toBe(TX_HASH);
+    expect(mockAddNewTransaction).toHaveBeenCalled();
+    expect(mockWaitForWalletTransactions).not.toHaveBeenCalled();
+
+    const waitPromise = result.waitForConfirmation();
+    expect(mockWaitForWalletTransactions).toHaveBeenCalledWith({ provider: PROVIDER, txHashes: [TX_HASH] });
+
+    resolveConfirmation?.();
+    await waitPromise;
   });
 
   it('throws when refreshed position data is missing', async () => {
@@ -277,7 +299,8 @@ describe('unstakeRnbw', () => {
   it('uses the fallback gas limit when unstake gas estimation fails', async () => {
     mockEstimateGas.mockRejectedValueOnce(new Error('estimate failed'));
 
-    await unstakeRnbw({ address: ACCOUNT, gasParams: GAS_PARAMS });
+    const result = await unstakeRnbw({ address: ACCOUNT, gasParams: GAS_PARAMS });
+    await result.waitForConfirmation();
 
     expect(mockSendTransaction).toHaveBeenCalledWith({
       ...GAS_PARAMS,
@@ -297,7 +320,8 @@ describe('unstakeRnbw', () => {
       return true;
     });
 
-    await unstakeRnbw({ address: ACCOUNT, gasParams: GAS_PARAMS });
+    const result = await unstakeRnbw({ address: ACCOUNT, gasParams: GAS_PARAMS });
+    await result.waitForConfirmation();
 
     expect(mockWaitForWalletTransactions).toHaveBeenCalledWith({ provider: PROVIDER, txHashes: [TX_HASH] });
     expect(mockPollForStakingUpdate).toHaveBeenCalledWith(POSITION.poolShares);
@@ -305,7 +329,8 @@ describe('unstakeRnbw', () => {
   });
 
   it('tracks the success analytics payload with the existing field set', async () => {
-    await unstakeRnbw({ address: ACCOUNT, gasParams: GAS_PARAMS });
+    const result = await unstakeRnbw({ address: ACCOUNT, gasParams: GAS_PARAMS });
+    await result.waitForConfirmation();
 
     expect(mockTrack).toHaveBeenCalledWith('rnbw_staking.unstake', {
       chainId: STAKING_CHAIN_ID,

@@ -152,8 +152,11 @@ const UnstakeContent = memo(function UnstakeContent({ exitFeePercentage }: { exi
     frozenDisplayRef.current = liveDisplay;
     setIsProcessing(true);
     try {
-      await unstakeRnbw({ address: accountAddress, gasParams: buildGasParams(gasSettings) });
+      const { waitForConfirmation } = await unstakeRnbw({ address: accountAddress, gasParams: buildGasParams(gasSettings) });
       goBack();
+      void waitForConfirmation().catch(error => {
+        logger.warn('[RnbwUnstakeSheet]: Unstake confirmation failed', { error });
+      });
     } catch (e) {
       setIsProcessing(false);
       frozenDisplayRef.current = null;
