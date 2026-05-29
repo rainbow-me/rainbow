@@ -177,8 +177,8 @@ const SparklineLivePointer = memo(function SparklineLivePointer<S extends LineCh
 
   return (
     <Animated.View pointerEvents="none" style={[styles.livePointerContainer, pointerStyle]}>
-      <Animated.View style={[styles.livePointerPulse, { backgroundColor: color }, colorStyle, pulseStyle]} />
-      <Animated.View style={[styles.livePointerDot, { backgroundColor: color }, colorStyle]} />
+      <Animated.View style={[styles.livePointerPulse, colorStyle, pulseStyle]} />
+      <Animated.View style={[styles.livePointerDot, colorStyle]} />
     </Animated.View>
   );
 });
