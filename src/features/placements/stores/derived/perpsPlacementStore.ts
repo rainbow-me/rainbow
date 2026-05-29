@@ -1,6 +1,5 @@
 import { useMemo } from 'react';
 
-import { IS_TEST } from '@/env';
 import { useHyperliquidMarketsStore } from '@/features/perps/stores/hyperliquidMarketsStore';
 import { type PerpMarketsBySymbol, type PerpMarketWithMetadata } from '@/features/perps/types';
 import {
@@ -27,8 +26,10 @@ export type PerpMarketPlacementItem = PlacementItemV2 & {
 // ============ Derived Stores ================================================= //
 
 export const usePerpsEnabled = createDerivedStore<boolean>(
-  $ => $(useRemoteConfigStore, state => state.getRemoteConfigKey('perps_enabled')) && !IS_TEST,
-  { fastMode: true }
+  $ => $(useRemoteConfigStore, state => state.getRemoteConfigKey('perps_enabled')),
+  {
+    fastMode: true,
+  }
 );
 
 // ============ Utilities ====================================================== //
