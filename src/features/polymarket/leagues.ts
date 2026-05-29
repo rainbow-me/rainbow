@@ -229,8 +229,8 @@ export const SPORT_LEAGUES = {
     color: SPORTS.soccer.color,
   },
   sea: {
-    name: 'SEA',
-    fullName: 'SEA',
+    name: 'Serie A',
+    fullName: 'Serie A',
     sportId: 'soccer',
     color: SPORTS.soccer.color,
   },
@@ -365,18 +365,6 @@ export const SPORT_LEAGUES = {
     fullName: 'Association of Tennis Professionals',
     sportId: 'tennis',
     color: SPORTS.tennis.color,
-  },
-  scop: {
-    name: 'SCOP',
-    fullName: 'SCOP',
-    sportId: 'soccer',
-    color: SPORTS.soccer.color,
-  },
-  acn: {
-    name: 'ACN',
-    fullName: 'ACN',
-    sportId: 'soccer',
-    color: SPORTS.soccer.color,
   },
   wta: {
     name: 'WTA',
