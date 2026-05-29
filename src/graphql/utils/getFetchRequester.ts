@@ -7,7 +7,7 @@ import { buildGetQueryParams } from '@/graphql/utils/buildGetQueryParams';
 
 const allowedOperations = ['mutation', 'query'];
 
-type Options = Pick<RainbowFetchRequestOpts, 'timeout' | 'headers'>;
+type Options = Pick<RainbowFetchRequestOpts, 'abortController' | 'timeout' | 'headers'>;
 
 type Config = {
   __name: string;
