@@ -4,8 +4,6 @@ import { getColorValueForThemeWorklet } from '@/__swaps__/utils/swaps';
 import { useColorMode } from '@/design-system';
 import { getLeagueId, SPORT_LEAGUES } from '@/features/polymarket/leagues';
 
-import { DEFAULT_SIZE, type IconProps } from './iconConstants';
-
 import { BaseballIcon } from './icons/BaseballIcon';
 import { CfbIcon } from './icons/CfbIcon';
 import { CricketIcon } from './icons/CricketIcon';
@@ -23,8 +21,7 @@ import { TennisIcon } from './icons/TennisIcon';
 import { UfcIcon } from './icons/UfcIcon';
 import { ValorantIcon } from './icons/ValorantIcon';
 
-export { DEFAULT_SIZE, type IconProps };
-
+export type IconProps = { color: string; width?: number; height?: number };
 type IconComponent = React.ComponentType<IconProps>;
 type LeagueId = keyof typeof SPORT_LEAGUES;
 type SportId = (typeof SPORT_LEAGUES)[LeagueId]['sportId'];
