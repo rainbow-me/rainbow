@@ -226,7 +226,7 @@ export const DEFAULT_CONFIG = {
   prince_of_the_hill_enabled: false,
   candlestick_charts_enabled: !IS_STORE_INSTALL,
   rainbow_toasts_enabled: !IS_STORE_INSTALL,
-  perps_enabled: false,
+  perps_enabled: true,
   polymarket_enabled: false,
   dev_section_enabled: IS_DEV,
   rnbw_rewards_enabled: false,
