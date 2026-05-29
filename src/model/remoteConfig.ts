@@ -91,6 +91,7 @@ export interface RainbowConfig extends Record<
   candlestick_charts_enabled: boolean;
   rainbow_toasts_enabled: boolean;
   king_of_the_hill2_enabled: boolean;
+  discover_enabled: boolean;
   perps_enabled: boolean;
   polymarket_enabled: boolean;
   rnbw_rewards_enabled: boolean;
@@ -100,7 +101,6 @@ export interface RainbowConfig extends Record<
   sponsored_swaps_enabled: boolean;
   sponsored_perps_deposits_enabled: boolean;
   sponsored_polymarket_deposits_enabled: boolean;
-  discover_placements_enabled: boolean;
   go_relay_backend_enabled: boolean;
 }
 
@@ -226,6 +226,7 @@ export const DEFAULT_CONFIG = {
   prince_of_the_hill_enabled: false,
   candlestick_charts_enabled: !IS_STORE_INSTALL,
   rainbow_toasts_enabled: !IS_STORE_INSTALL,
+  discover_enabled: true,
   perps_enabled: true,
   polymarket_enabled: true,
   dev_section_enabled: IS_DEV,
@@ -236,7 +237,6 @@ export const DEFAULT_CONFIG = {
   sponsored_swaps_enabled: true,
   sponsored_perps_deposits_enabled: true,
   sponsored_polymarket_deposits_enabled: true,
-  discover_placements_enabled: true,
   go_relay_backend_enabled: true,
 } as const satisfies Readonly<RainbowConfig>;
 
