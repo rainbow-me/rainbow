@@ -34,6 +34,9 @@ type ExternalTokenArgs = {
   chainId: ChainId;
   currency: NativeCurrencyKey;
 };
+type FetchExternalTokenArgs = ExternalTokenArgs & {
+  abortController?: AbortController | null;
+};
 
 // Query Key for Token Price
 export const externalTokenQueryKey = ({ address, chainId, currency }: ExternalTokenArgs) =>
@@ -62,12 +65,15 @@ const formatExternalAsset = (
 };
 
 // Query Function for Token Price
-export async function fetchExternalToken({ address, chainId, currency }: ExternalTokenArgs) {
-  const response = await metadataClient.externalToken({
-    address,
-    chainId,
-    currency,
-  });
+export async function fetchExternalToken({ abortController, address, chainId, currency }: FetchExternalTokenArgs) {
+  const response = await metadataClient.externalToken(
+    {
+      address,
+      chainId,
+      currency,
+    },
+    { abortController }
+  );
   if (response.token) {
     return formatExternalAsset(address as AddressOrEth, chainId, response.token, currency);
   } else {
