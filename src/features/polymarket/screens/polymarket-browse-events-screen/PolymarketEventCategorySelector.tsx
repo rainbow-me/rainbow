@@ -1,14 +1,15 @@
-import { memo, useCallback, useMemo, useRef } from 'react';
-import { StyleSheet, View, type LayoutChangeEvent } from 'react-native';
+import { memo, useMemo } from 'react';
+import { StyleSheet, View } from 'react-native';
 
 import { ScrollView } from 'react-native-gesture-handler';
-import Animated, { useAnimatedStyle, useSharedValue, type SharedValue } from 'react-native-reanimated';
+import Animated, { useAnimatedStyle, withTiming, type SharedValue } from 'react-native-reanimated';
 
-import { AnimatedTextIcon } from '@/components/AnimatedComponents/AnimatedTextIcon';
+import { TIMING_CONFIGS } from '@/components/animations/animationConfigs';
 import ButtonPressAnimation from '@/components/animations/ButtonPressAnimation';
-import { Border, globalColors, Text, useColorMode, useForegroundColor } from '@/design-system';
+import { Border, globalColors, Text, TextIcon, useColorMode, useForegroundColor } from '@/design-system';
 import { InnerShadow } from '@/features/polymarket/components/InnerShadow';
-import { CATEGORIES, type Category } from '@/features/polymarket/constants';
+import { CATEGORIES, DEFAULT_CATEGORY_KEY, type CategoryKey } from '@/features/polymarket/constants';
+import { useCategorySelector } from '@/features/polymarket/hooks/useCategorySelector';
 import { usePolymarketContext } from '@/features/polymarket/screens/polymarket-navigator/PolymarketContext';
 import { usePolymarketCategoryStore } from '@/features/polymarket/stores/usePolymarketCategoryStore';
 import { opacity } from '@/framework/ui/utils/opacity';
@@ -17,52 +18,36 @@ import { deepFreeze } from '@/utils/deepFreeze';
 import { DEVICE_WIDTH } from '@/utils/deviceUtils';
 import { createOpacityPalette } from '@/worklets/colors';
 
-type CategoryKey = keyof typeof CATEGORIES;
-type CategoryWithKey = Category & { key: CategoryKey };
-type ItemLayout = { x: number; width: number };
-
 const VERTICAL_PADDING = 0;
 const CONTAINER_HEIGHT = 40 + VERTICAL_PADDING * 2;
 const HORIZONTAL_PADDING = 16;
-const CATEGORY_ITEMS: CategoryWithKey[] = Object.entries(CATEGORIES).map<CategoryWithKey>(([key, category]) => ({
+const CATEGORY_ITEMS = Object.entries(CATEGORIES).map(([key, category]) => ({
   ...category,
   key: key as CategoryKey,
 }));
+type CategoryWithKey = (typeof CATEGORY_ITEMS)[number];
 const PALETTE_OPACITIES = deepFreeze([6, 8, 28]);
 
 // ============ Category Selector ============================================== //
 
 export const PolymarketEventCategorySelector = memo(function PolymarketEventCategorySelector() {
   const { categorySelectorRef } = usePolymarketContext();
-  const itemLayouts = useRef<ItemLayout[]>([]);
-  const didInitialScroll = useRef(false);
-
-  const selectedCategoryKey = useSharedValue<CategoryKey>(usePolymarketCategoryStore.getState().tagId as CategoryKey);
-
-  const scrollToSelectedCategory = useCallback(() => {
-    const index = CATEGORY_ITEMS.findIndex(category => category.key === selectedCategoryKey.value);
-    const scrollX = calculateCenteredScrollX(itemLayouts.current, index);
-    categorySelectorRef.current?.scrollTo({ x: scrollX, y: 0, animated: false });
-  }, [categorySelectorRef, selectedCategoryKey]);
-
-  const onItemLayout = useCallback(
-    (event: LayoutChangeEvent, index: number) => {
-      itemLayouts.current[index] = { x: event.nativeEvent.layout.x, width: event.nativeEvent.layout.width };
-      if (!didInitialScroll.current && allItemsMeasured(itemLayouts.current)) {
-        didInitialScroll.current = true;
-        scrollToSelectedCategory();
-      }
-    },
-    [scrollToSelectedCategory]
-  );
-
-  const onPress = useCallback(
-    (category: CategoryWithKey) => {
-      selectedCategoryKey.value = category.key;
-      usePolymarketCategoryStore.getState().setTagId(category.key);
-    },
-    [selectedCategoryKey]
-  );
+  const {
+    onItemLayout,
+    onPress,
+    selectedKey: selectedCategoryKey,
+    skipInitialAnimation,
+  } = useCategorySelector({
+    containerWidth: DEVICE_WIDTH,
+    getItemKey: getCategoryKey,
+    horizontalPadding: HORIZONTAL_PADDING,
+    isDeeplinkSeed: key => key !== DEFAULT_CATEGORY_KEY,
+    items: CATEGORY_ITEMS,
+    scrollViewRef: categorySelectorRef,
+    selectStoreKey: state => state.tagId,
+    setStoreKey: setCategoryKey,
+    store: usePolymarketCategoryStore,
+  });
 
   return (
     <View style={styles.container}>
@@ -75,7 +60,12 @@ export const PolymarketEventCategorySelector = memo(function PolymarketEventCate
       >
         {CATEGORY_ITEMS.map((category, index) => (
           <View key={category.key} onLayout={event => onItemLayout(event, index)}>
-            <CategoryItem category={category} onPress={onPress} selectedCategoryKey={selectedCategoryKey} />
+            <CategoryItem
+              category={category}
+              onPress={onPress}
+              selectedCategoryKey={selectedCategoryKey}
+              skipInitialAnimation={skipInitialAnimation}
+            />
           </View>
         ))}
       </ScrollView>
@@ -89,9 +79,10 @@ type CategoryItemProps = {
   category: CategoryWithKey;
   onPress: (category: CategoryWithKey) => void;
   selectedCategoryKey: SharedValue<CategoryKey>;
+  skipInitialAnimation: SharedValue<boolean>;
 };
 
-const CategoryItem = memo(function CategoryItem({ category, onPress, selectedCategoryKey }: CategoryItemProps) {
+const CategoryItem = memo(function CategoryItem({ category, onPress, selectedCategoryKey, skipInitialAnimation }: CategoryItemProps) {
   const { isDarkMode } = useColorMode();
   const labelColor = useForegroundColor('label');
   const selectedColor = isDarkMode ? category.color.dark : category.color.light;
@@ -108,13 +99,26 @@ const CategoryItem = memo(function CategoryItem({ category, onPress, selectedCat
     [isDarkMode, accentColors]
   );
 
-  const borderContainerStyle = useAnimatedStyle(() => ({
-    opacity: selectedCategoryKey.value === categoryKey ? 1 : 0,
-  }));
+  const borderContainerStyle = useAnimatedStyle(() => {
+    const target = selectedCategoryKey.value === categoryKey ? 1 : 0;
+    return {
+      opacity: skipInitialAnimation.value ? target : withTiming(target, TIMING_CONFIGS.buttonPressConfig),
+    };
+  });
 
-  const iconStyle = useAnimatedStyle(() => ({
-    color: selectedCategoryKey.value === categoryKey ? selectedColor : unselectedIconColor,
-  }));
+  const selectedIconStyle = useAnimatedStyle(() => {
+    const target = selectedCategoryKey.value === categoryKey ? 1 : 0;
+    return {
+      opacity: skipInitialAnimation.value ? target : withTiming(target, TIMING_CONFIGS.buttonPressConfig),
+    };
+  });
+
+  const unselectedIconStyle = useAnimatedStyle(() => {
+    const target = selectedCategoryKey.value === categoryKey ? 0 : 1;
+    return {
+      opacity: skipInitialAnimation.value ? target : withTiming(target, TIMING_CONFIGS.buttonPressConfig),
+    };
+  });
 
   return (
     <ButtonPressAnimation onPress={() => onPress(category)} scaleTo={0.88}>
@@ -125,9 +129,16 @@ const CategoryItem = memo(function CategoryItem({ category, onPress, selectedCat
           {isDarkMode && <InnerShadow blur={16} borderRadius={CONTAINER_HEIGHT / 2} color={accentColors.opacity28} dx={0} dy={8} />}
         </Animated.View>
         <View style={styles.iconContainer}>
-          <AnimatedTextIcon align="center" color="label" size="icon 16px" textStyle={iconStyle} weight="heavy">
-            {category.icon}
-          </AnimatedTextIcon>
+          <Animated.View style={[styles.iconLayer, unselectedIconStyle]}>
+            <TextIcon align="center" color={{ custom: unselectedIconColor }} size="icon 16px" weight="heavy">
+              {category.icon}
+            </TextIcon>
+          </Animated.View>
+          <Animated.View style={[styles.iconLayer, selectedIconStyle]}>
+            <TextIcon align="center" color={{ custom: selectedColor }} size="icon 16px" weight="heavy">
+              {category.icon}
+            </TextIcon>
+          </Animated.View>
         </View>
         <Text align="center" color="label" size="17pt" weight="heavy">
           {category.label}
@@ -139,20 +150,12 @@ const CategoryItem = memo(function CategoryItem({ category, onPress, selectedCat
 
 // ============ Utilities ====================================================== //
 
-function allItemsMeasured(layouts: ItemLayout[]): boolean {
-  return layouts.filter(Boolean).length === CATEGORY_ITEMS.length;
+function getCategoryKey(category: CategoryWithKey): CategoryKey {
+  return category.key;
 }
 
-function calculateCenteredScrollX(layouts: ItemLayout[], index: number): number {
-  const layout = layouts[index];
-  const lastLayout = layouts[layouts.length - 1];
-  if (!layout || !lastLayout) return 0;
-
-  const itemCenter = layout.x + layout.width / 2;
-  const contentWidth = lastLayout.x + lastLayout.width + HORIZONTAL_PADDING;
-  const maxScroll = Math.max(0, contentWidth - DEVICE_WIDTH);
-
-  return Math.min(Math.max(0, itemCenter - DEVICE_WIDTH / 2), maxScroll);
+function setCategoryKey(key: CategoryKey): void {
+  usePolymarketCategoryStore.getState().setTagId(key);
 }
 
 // ============ Styles ========================================================= //
@@ -168,6 +171,9 @@ const styles = StyleSheet.create({
     height: 20,
     justifyContent: 'center',
     width: 24,
+  },
+  iconLayer: {
+    position: 'absolute',
   },
   itemContainer: {
     alignItems: 'center',
