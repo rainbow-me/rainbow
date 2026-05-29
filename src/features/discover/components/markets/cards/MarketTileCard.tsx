@@ -9,7 +9,7 @@ import { Skeleton } from '@/components/Skeleton';
 import { globalColors, Text, useColorMode } from '@/design-system';
 import { getValueForColorMode, type ColorMode, type ContextualColorValue } from '@/design-system/color/palettes';
 import { Border } from '@/design-system/components/Border/Border';
-import { SparklineChart } from '@/features/charts/line/components/SparklineChart';
+import { SparklineChartWithLivePointer } from '@/features/charts/line/components/SparklineChartWithLivePointer';
 import { MarketIcon } from '@/features/discover/components/markets/cards/MarketIcon';
 import { MarketPriceChange } from '@/features/discover/components/markets/cards/MarketPriceChange';
 import { useLiveChartColorSharedValue } from '@/features/discover/components/markets/hooks/useLiveChartColorSharedValue';
@@ -137,7 +137,15 @@ export const MarketTileCard = memo(function MarketTileCard({ item, onPress, widt
           </View>
 
           <View pointerEvents="none" style={[styles.chartContainer, { width: chartWidth }]}>
-            <SparklineChart chartId={item.chartId} color={chartColor} height={CHART_HEIGHT} store={item.chartStore} width={chartWidth} />
+            <SparklineChartWithLivePointer
+              chartId={item.chartId}
+              color={chartColor}
+              colorSharedValue={chartColorSharedValue}
+              height={CHART_HEIGHT}
+              maxPoints={item.chartMaxPoints}
+              store={item.chartStore}
+              width={chartWidth}
+            />
           </View>
 
           <View style={styles.textColumn}>
