@@ -11,13 +11,10 @@ import { type ENSRapActionType } from '@/features/ens/raps/common';
 import { type PerpPositionSide, type TriggerOrderType } from '@/features/perps/types';
 import { type Destination, type Display, type SectionId, type SurfaceId } from '@/features/placements/surfaces/types';
 import {
-  type Placement as LegacyPlacement,
-  type PlacementItem as LegacyPlacementItem,
   type PlacementV2 as Placement,
   type PlacementIdV2 as PlacementId,
   type PlacementItemV2 as PlacementItem,
   type PlacementItemAnalyticsMetadata,
-  type PlacementScreen,
   type PlacementSourceV2 as PlacementSource,
   type PlacementTypeV2 as PlacementType,
 } from '@/features/placements/types';
@@ -253,8 +250,6 @@ export const event = {
 
   // discover screen
   timeSpentOnDiscoverScreen: 'Time spent on the Discover screen',
-  discoverPlacementCardPressed: 'discover.placement_card_pressed',
-  discoverPlacementSeeAllPressed: 'discover.placement_see_all_pressed',
   discoverCardPressed: 'discover.card_pressed',
   discoverPredictionOrderPressed: 'discover.prediction_order_pressed',
   discoverTabPressed: 'discover.tab_pressed',
@@ -1012,22 +1007,6 @@ export type EventProperties = {
   [event.timeSpentOnDiscoverScreen]: {
     durationInMs: number;
   };
-  [event.discoverPlacementCardPressed]: {
-    placementId: LegacyPlacement['id'];
-    placementScreen?: PlacementScreen;
-    placementTitle: string;
-    itemOrder: LegacyPlacementItem['order'];
-    marketId: string;
-    marketName?: PlacementItemAnalyticsMetadata['marketName'];
-    marketSlug?: PlacementItemAnalyticsMetadata['marketSlug'];
-    marketSymbol?: PlacementItemAnalyticsMetadata['marketSymbol'];
-    marketType: LegacyPlacementItem['ref']['source'];
-  };
-  [event.discoverPlacementSeeAllPressed]: {
-    placementId: LegacyPlacement['id'];
-    placementScreen?: PlacementScreen;
-    placementTitle: string;
-  };
   [event.discoverCardPressed]: {
     placementId?: PlacementId;
     placementSource?: PlacementSource;
@@ -1075,24 +1054,12 @@ export type EventProperties = {
     sectionId?: SectionId;
     surfaceId: SurfaceId;
   };
-  [event.placementInteraction]:
-    | {
-        placementId: PlacementId;
-        source?: PlacementSource;
-        surfaceId?: SurfaceId;
-        type?: PlacementType;
-      }
-    | {
-        // Legacy DiscoverHome carousel interaction shape; removed at cutover.
-        id: LegacyPlacement['id'];
-        interactionType: 'carousel_scroll';
-        screen: PlacementScreen;
-        order: LegacyPlacement['order'];
-        version: LegacyPlacement['version'];
-        itemRefSource?: LegacyPlacementItem['ref']['source'];
-        itemRefId?: LegacyPlacementItem['ref']['id'];
-        itemOrder?: LegacyPlacementItem['order'];
-      };
+  [event.placementInteraction]: {
+    placementId: PlacementId;
+    source?: PlacementSource;
+    surfaceId?: SurfaceId;
+    type?: PlacementType;
+  };
   [event.surfaceInteraction]: {
     display?: Display;
     placementId?: PlacementId;
