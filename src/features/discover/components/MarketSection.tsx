@@ -14,6 +14,7 @@ import {
   MarketTileCard,
   MarketTileCardSkeleton,
 } from '@/features/discover/components/markets/cards/MarketTileCard';
+import { perpToMarketPillWidthInput, usePerpMarketDisplay } from '@/features/discover/components/markets/hooks/usePerpMarketDisplay';
 import { tokenToMarketPillWidthInput, useTokenMarketDisplay } from '@/features/discover/components/markets/hooks/useTokenMarketDisplay';
 import { getHeaderPress, renderSectionLayout } from '@/features/discover/components/SectionLayout';
 import {
@@ -25,6 +26,7 @@ import {
 } from '@/features/discover/components/surfaceSectionTypes';
 import { type MarketDisplayItem } from '@/features/discover/types/marketDisplayItem';
 import { navigateDiscoverDestination } from '@/features/discover/utils/navigation';
+import { usePerpsPlacement, type PerpMarketPlacementItem } from '@/features/placements/stores/derived/perpsPlacementStore';
 import { useTokensPlacement, type TokenPlacementItem } from '@/features/placements/stores/derived/tokensPlacementStore';
 import { usePlacementsV2Store } from '@/features/placements/stores/placementsStore';
 import { MARKET_DISPLAY_VALUES } from '@/features/placements/surfaces/constants';
@@ -90,6 +92,10 @@ function MarketPlacementContent({
     return state.getStatus('isInitialLoad') || state.getStatus('isIdle') || state.getStatus('isLoading');
   });
 
+  if (placement?.source === 'hyperliquid') {
+    return <PerpsMarketPlacementContent surface={surface} surfaceId={surfaceId} />;
+  }
+
   if (placement?.source === 'rainbow') {
     return <TokenMarketPlacementContent surface={surface} surfaceId={surfaceId} />;
   }
@@ -107,6 +113,59 @@ function MarketPlacementContent({
   }
 
   return null;
+}
+
+function PerpsMarketPlacementContent({
+  surface,
+  surfaceId,
+}: {
+  surface: PlacementBackedSurfaceLeafWithDisplay<MarketDisplay>;
+  surfaceId: string;
+}) {
+  const perpsResult = usePerpsPlacement(surface.placement);
+  const perpDescriptor = useMemo<SectionDescriptor<PerpMarketPlacementItem>>(() => {
+    switch (surface.display) {
+      case 'market_pill.carousel':
+        return {
+          ...MARKET_SECTION_DESCRIPTORS[surface.display],
+          getItemWidth: (item: PerpMarketPlacementItem) => computeMarketPillWidth(perpToMarketPillWidthInput(item)),
+          renderItem: (item: PerpMarketPlacementItem, _: number, analyticsContext: DiscoverCardAnalyticsContext) => (
+            <PerpMarketItem analyticsContext={analyticsContext} item={item} variant="pill" />
+          ),
+        };
+      case 'market_tile.carousel':
+        return {
+          ...MARKET_SECTION_DESCRIPTORS[surface.display],
+          renderItem: (item: PerpMarketPlacementItem, _: number, analyticsContext: DiscoverCardAnalyticsContext) => (
+            <PerpMarketItem analyticsContext={analyticsContext} item={item} variant="tile" />
+          ),
+        };
+      case 'market_tile.grid':
+        return {
+          ...MARKET_SECTION_DESCRIPTORS[surface.display],
+          renderItem: (item: PerpMarketPlacementItem, width: number, analyticsContext: DiscoverCardAnalyticsContext) => (
+            <PerpMarketItem analyticsContext={analyticsContext} item={item} variant="tile" width={width} />
+          ),
+        };
+      case 'market_cell.list':
+        return {
+          ...MARKET_SECTION_DESCRIPTORS[surface.display],
+          renderItem: (item: PerpMarketPlacementItem, analyticsContext: DiscoverCardAnalyticsContext) => (
+            <PerpMarketItem analyticsContext={analyticsContext} item={item} variant="cell" />
+          ),
+        };
+    }
+  }, [surface.display]);
+
+  return renderSectionLayout({
+    data: perpsResult.items,
+    descriptor: perpDescriptor,
+    loading: perpsResult.isLoading,
+    onPressSeeAll: getHeaderPress(surface.destination),
+    placement: perpsResult.placement,
+    surface,
+    surfaceId,
+  });
 }
 
 function TokenMarketPlacementContent({
@@ -209,6 +268,29 @@ function TokenMarketItem({
   width?: number;
 }) {
   const displayItem = useTokenMarketDisplay({ item, nativeCurrency });
+
+  switch (variant) {
+    case 'cell':
+      return <MarketCell analyticsContext={analyticsContext} item={displayItem} />;
+    case 'pill':
+      return <MarketPill analyticsContext={analyticsContext} item={displayItem} />;
+    case 'tile':
+      return <MarketTileCard analyticsContext={analyticsContext} item={displayItem} width={width} />;
+  }
+}
+
+function PerpMarketItem({
+  analyticsContext,
+  item,
+  variant,
+  width,
+}: {
+  analyticsContext: DiscoverCardAnalyticsContext;
+  item: PerpMarketPlacementItem;
+  variant: 'cell' | 'pill' | 'tile';
+  width?: number;
+}) {
+  const displayItem = usePerpMarketDisplay(item);
 
   switch (variant) {
     case 'cell':
