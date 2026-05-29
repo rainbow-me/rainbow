@@ -13,11 +13,6 @@ export let discoverScrollToTopFnRef: () => number | null = () => null;
 export let discoverOpenSearchFnRef: () => void = () => null;
 
 type DiscoverScreenContextType = {
-  /**
-   * @deprecated Retained only for the legacy single-scrollview Discover screen; the surface pager
-   * uses per-section scroll views via `registerSectionScrollView`/`scrollToSectionTop`. Removed at cutover.
-   */
-  scrollViewRef: RefObject<Animated.ScrollView | null>;
   sectionListRef: RefObject<SectionList | null>;
   searchInputRef: RefObject<TextInput | null>;
   cancelSearch: () => void;
@@ -31,7 +26,6 @@ const DiscoverScreenContext = createContext<DiscoverScreenContextType | null>(nu
 
 export const DiscoverScreenProvider = ({ children }: { children: React.ReactNode }) => {
   const searchInputRef = useRef<TextInput>(null);
-  const scrollViewRef = useRef<Animated.ScrollView>(null);
   const sectionScrollViewRefs = useRef<Partial<Record<DiscoverSection, Animated.ScrollView | null>>>({});
   const sectionListRef = useRef<SectionList>(null);
 
@@ -86,7 +80,6 @@ export const DiscoverScreenProvider = ({ children }: { children: React.ReactNode
   return (
     <DiscoverScreenContext.Provider
       value={{
-        scrollViewRef,
         sectionListRef,
         searchInputRef,
         cancelSearch,
