@@ -55,12 +55,13 @@ export default function useWalletSectionsData({
   const selectedWallet = useSelectedWallet();
   const { showcaseTokens } = useShowcaseTokens();
   const { hiddenTokens } = useHiddenTokens();
-  const remoteConfig = useRemoteConfig('claimables', 'perps_enabled', 'polymarket_enabled', 'rnbw_rewards_enabled');
+  const remoteConfig = useRemoteConfig('claimables', 'discover_enabled', 'perps_enabled', 'polymarket_enabled', 'rnbw_rewards_enabled');
   const experimentalConfig = useExperimentalConfig();
   const isWalletEthZero = useIsWalletEthZero();
 
   const positionsEnabled = experimentalConfig[DEFI_POSITIONS] && !IS_TEST;
   const claimablesEnabled = (remoteConfig.claimables || experimentalConfig[CLAIMABLES]) && !IS_TEST;
+  const discoverEnabled = remoteConfig.discover_enabled;
   const perpsEnabled = remoteConfig.perps_enabled && !IS_TEST;
   const polymarketEnabled = remoteConfig.polymarket_enabled && !IS_TEST;
   const rnbwRewardsEnabled = (remoteConfig.rnbw_rewards_enabled || experimentalConfig[RNBW_REWARDS]) && !IS_TEST;
@@ -145,6 +146,7 @@ export default function useWalletSectionsData({
       listType: type,
       showcaseTokens,
       collections,
+      discoverEnabled,
       isFetchingNfts,
       experimentalConfig,
       positions,
@@ -187,6 +189,7 @@ export default function useWalletSectionsData({
     type,
     showcaseTokens,
     collections,
+    discoverEnabled,
     isFetchingNfts,
     experimentalConfig,
     positions,
