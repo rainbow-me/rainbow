@@ -74,7 +74,7 @@ async function fetchPolymarketEvent({ eventId }: FetchParams, abortController: A
   let teams: PolymarketTeamInfo[] | undefined = undefined;
 
   if (event.gameId) {
-    teams = await fetchTeamsForEvent(event);
+    teams = await fetchTeamsForEvent(event, abortController);
   }
 
   const processedEvent = await processRawPolymarketEvent(event, teams);
