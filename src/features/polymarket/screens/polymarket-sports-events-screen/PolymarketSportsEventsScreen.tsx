@@ -8,7 +8,7 @@ import { usePolymarketSportsEventsStore } from '@/features/polymarket/stores/pol
 import { useListen } from '@/state/internal/hooks/useListen';
 
 type PolymarketSportsEventsScreenProps = {
-  onScroll: (event: NativeSyntheticEvent<NativeScrollEvent>) => void;
+  onScroll?: (event: NativeSyntheticEvent<NativeScrollEvent>) => void;
 };
 
 export const PolymarketSportsEventsScreen = memo(function PolymarketSportsEventsScreen({ onScroll }: PolymarketSportsEventsScreenProps) {
@@ -19,7 +19,8 @@ export const PolymarketSportsEventsScreen = memo(function PolymarketSportsEvents
     state => state.selectedLeagueId,
     () => {
       listRef?.current?.scrollToOffset({ offset: 0, animated: true });
-    }
+    },
+    { enabled: true }
   );
 
   return (
