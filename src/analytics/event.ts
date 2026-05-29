@@ -9,7 +9,18 @@ import { type CandleResolution, type ChartType } from '@/features/charts/types';
 import { type RequestSource } from '@/features/dapp-request/types';
 import { type ENSRapActionType } from '@/features/ens/raps/common';
 import { type PerpPositionSide, type TriggerOrderType } from '@/features/perps/types';
-import { type Placement, type PlacementItem, type PlacementItemAnalyticsMetadata } from '@/features/placements/types';
+import { type Destination, type Display, type SectionId, type SurfaceId } from '@/features/placements/surfaces/types';
+import {
+  type Placement as LegacyPlacement,
+  type PlacementItem as LegacyPlacementItem,
+  type PlacementV2 as Placement,
+  type PlacementIdV2 as PlacementId,
+  type PlacementItemV2 as PlacementItem,
+  type PlacementItemAnalyticsMetadata,
+  type PlacementScreen,
+  type PlacementSourceV2 as PlacementSource,
+  type PlacementTypeV2 as PlacementType,
+} from '@/features/placements/types';
 import { type EthereumWalletType } from '@/helpers/walletTypes';
 import { type WalletLibraryType } from '@/model/wallet';
 import { type PairHardwareWalletNavigatorParams } from '@/navigation/types';
@@ -244,7 +255,13 @@ export const event = {
   timeSpentOnDiscoverScreen: 'Time spent on the Discover screen',
   discoverPlacementCardPressed: 'discover.placement_card_pressed',
   discoverPlacementSeeAllPressed: 'discover.placement_see_all_pressed',
+  discoverCardPressed: 'discover.card_pressed',
+  discoverPredictionOrderPressed: 'discover.prediction_order_pressed',
+  discoverTabPressed: 'discover.tab_pressed',
+  discoverSectionPressed: 'discover.section_pressed',
+  discoverCarouselScrolled: 'discover.carousel_scrolled',
   placementInteraction: 'placement.interaction',
+  surfaceInteraction: 'surface.interaction',
 
   // ens
   ensInitiatedRegistration: 'Initiated ENS registration',
@@ -996,30 +1013,94 @@ export type EventProperties = {
     durationInMs: number;
   };
   [event.discoverPlacementCardPressed]: {
-    placementId: Placement['id'];
-    placementScreen?: Placement['screen'];
+    placementId: LegacyPlacement['id'];
+    placementScreen?: PlacementScreen;
     placementTitle: string;
-    itemOrder: PlacementItem['order'];
+    itemOrder: LegacyPlacementItem['order'];
     marketId: string;
     marketName?: PlacementItemAnalyticsMetadata['marketName'];
     marketSlug?: PlacementItemAnalyticsMetadata['marketSlug'];
     marketSymbol?: PlacementItemAnalyticsMetadata['marketSymbol'];
-    marketType: PlacementItem['ref']['source'];
+    marketType: LegacyPlacementItem['ref']['source'];
   };
   [event.discoverPlacementSeeAllPressed]: {
-    placementId: Placement['id'];
-    placementScreen?: Placement['screen'];
+    placementId: LegacyPlacement['id'];
+    placementScreen?: PlacementScreen;
     placementTitle: string;
   };
-  [event.placementInteraction]: {
-    id: Placement['id'];
-    interactionType: 'carousel_scroll';
-    screen: Placement['screen'];
-    order: Placement['order'];
-    version: Placement['version'];
-    itemRefSource?: PlacementItem['ref']['source'];
-    itemRefId?: PlacementItem['ref']['id'];
-    itemOrder?: PlacementItem['order'];
+  [event.discoverCardPressed]: {
+    placementId?: PlacementId;
+    placementSource?: PlacementSource;
+    surfaceId: SurfaceId;
+    placementTitle: string;
+    itemOrder: number;
+    itemId: PlacementItem['id'];
+    marketId: PlacementItemAnalyticsMetadata['marketId'];
+    marketName?: PlacementItemAnalyticsMetadata['marketName'];
+    marketSlug?: PlacementItemAnalyticsMetadata['marketSlug'];
+    marketSymbol?: PlacementItemAnalyticsMetadata['marketSymbol'];
+  };
+  [event.discoverTabPressed]: {
+    sectionTitle: string;
+    sectionId: SectionId;
+    surfaceId: SurfaceId;
+    wasActive: boolean;
+  };
+  [event.discoverPredictionOrderPressed]: {
+    placementId?: PlacementId;
+    surfaceId: SurfaceId;
+    itemId: PlacementItem['id'];
+    marketId: PlacementItemAnalyticsMetadata['marketId'];
+    marketName?: PlacementItemAnalyticsMetadata['marketName'];
+    marketSlug?: PlacementItemAnalyticsMetadata['marketSlug'];
+    outcome: string;
+  };
+  [event.discoverSectionPressed]: {
+    destination: Destination;
+    display: Display;
+    placementId?: PlacementId;
+    placementSource?: PlacementSource;
+    placementType?: PlacementType;
+    placementVersion?: Placement['version'];
+    sectionId: SectionId;
+    sectionTitle: string;
+    surfaceId: SurfaceId;
+  };
+  [event.discoverCarouselScrolled]: {
+    display?: Display;
+    placementId?: PlacementId;
+    placementSource?: PlacementSource;
+    placementType?: PlacementType;
+    placementVersion?: Placement['version'];
+    sectionId?: SectionId;
+    surfaceId: SurfaceId;
+  };
+  [event.placementInteraction]:
+    | {
+        placementId: PlacementId;
+        source?: PlacementSource;
+        surfaceId?: SurfaceId;
+        type?: PlacementType;
+      }
+    | {
+        // Legacy DiscoverHome carousel interaction shape; removed at cutover.
+        id: LegacyPlacement['id'];
+        interactionType: 'carousel_scroll';
+        screen: PlacementScreen;
+        order: LegacyPlacement['order'];
+        version: LegacyPlacement['version'];
+        itemRefSource?: LegacyPlacementItem['ref']['source'];
+        itemRefId?: LegacyPlacementItem['ref']['id'];
+        itemOrder?: LegacyPlacementItem['order'];
+      };
+  [event.surfaceInteraction]: {
+    display?: Display;
+    placementId?: PlacementId;
+    placementSource?: PlacementSource;
+    placementType?: PlacementType;
+    sectionId?: SectionId;
+    sectionTitle?: string;
+    surfaceId: SurfaceId;
   };
 
   [event.ensInitiatedRegistration]: { category: string };

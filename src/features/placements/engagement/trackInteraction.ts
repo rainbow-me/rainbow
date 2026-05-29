@@ -2,7 +2,10 @@ import { analytics } from '@/analytics';
 import { event, type EventProperties } from '@/analytics/event';
 import { type Placement, type PlacementItem } from '@/features/placements/types';
 
-type PlacementInteractionType = EventProperties[typeof event.placementInteraction]['interactionType'];
+export type PlacementInteractionType = Extract<
+  EventProperties[typeof event.placementInteraction],
+  { interactionType: unknown }
+>['interactionType'];
 
 export function trackPlacementInteraction({
   interactionType,
