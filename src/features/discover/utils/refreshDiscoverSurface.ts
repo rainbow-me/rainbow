@@ -1,4 +1,6 @@
+import { useTokenRefsStore } from '@/features/placements/stores/derived/tokensPlacementStore';
 import { usePlacementsV2Store } from '@/features/placements/stores/placementsStore';
+import { useDiscoverSurfacePlacementRefs } from '@/features/placements/surfaces/stores/discoverSurfaceStore';
 import { getSurfaceStore } from '@/features/placements/surfaces/stores/surfaceStore';
 
 export async function refreshDiscoverSurface(surfaceId: string): Promise<void> {
@@ -7,5 +9,13 @@ export async function refreshDiscoverSurface(surfaceId: string): Promise<void> {
     usePlacementsV2Store.getState().fetch(undefined, { force: true }),
   ]);
 
-  // per-source refresh added by feature branches
+  const refs = useDiscoverSurfacePlacementRefs.getState();
+
+  const refreshes: Promise<unknown>[] = [];
+
+  if (refs.rainbow.length) {
+    refreshes.push(useTokenRefsStore.getState().fetch(undefined, { force: true }));
+  }
+
+  await Promise.allSettled(refreshes);
 }
