@@ -2,7 +2,6 @@ import { useMemo } from 'react';
 
 import { POLYMARKET } from '@/config/experimental';
 import { useExperimentalConfigStore } from '@/config/experimentalConfigStore';
-import { IS_TEST } from '@/env';
 import { finalizePlacementResult } from '@/features/placements/stores/derived/finalizePlacementResult';
 import { hasRefsOrPendingHydration } from '@/features/placements/stores/derived/hasRefsOrPendingHydration';
 import {
@@ -51,7 +50,7 @@ const usePredictionsEnabled = createDerivedStore<boolean>(
     const polymarketEnabled = $(useRemoteConfigStore, state => state.getRemoteConfigKey('polymarket_enabled'));
     const polymarketEnabledLocally = $(useExperimentalConfigStore, state => state.getFlag(POLYMARKET));
 
-    if (!hasPredictionRefsOrPendingHydration($) || IS_TEST) return false;
+    if (!hasPredictionRefsOrPendingHydration($)) return false;
 
     return polymarketEnabled || polymarketEnabledLocally;
   },
