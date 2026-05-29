@@ -1,0 +1,132 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://rainbow.me/schemas/surfaces-v1.schema.json",
+  "$comment": "Mirrors the surface v1 CMS/write-time schema spec. Keep this client-side defensive parser in sync with the write-time contract.",
+  "title": "Surface v1",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["id", "version", "enabled", "items"],
+  "properties": {
+    "id": {
+      "type": "string",
+      "pattern": "^[a-z][a-z0-9_]*$"
+    },
+    "version": {
+      "const": 1
+    },
+    "label": {
+      "type": "string",
+      "minLength": 1
+    },
+    "enabled": {
+      "$ref": "#/definitions/enabled"
+    },
+    "updatedAt": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "items": {
+      "type": "array",
+      "items": {
+        "$ref": "#/definitions/surfaceNode"
+      }
+    }
+  },
+  "definitions": {
+    "enabled": {
+      "oneOf": [
+        { "type": "boolean" },
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "startsAt": { "type": "string", "format": "date-time" },
+            "endsAt": { "type": "string", "format": "date-time" }
+          },
+          "anyOf": [{ "required": ["startsAt"] }, { "required": ["endsAt"] }]
+        }
+      ]
+    },
+    "destination": {
+      "oneOf": [
+        { "type": "null" },
+        {
+          "type": "array",
+          "minItems": 1,
+          "items": [{ "enum": ["perps", "predictions", "tokens"] }],
+          "additionalItems": { "type": "string", "minLength": 1 }
+        }
+      ]
+    },
+    "surfaceNode": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["id", "label", "enabled"],
+      "properties": {
+        "id": {
+          "type": "string",
+          "pattern": "^[a-z][a-z0-9_]*$"
+        },
+        "label": {
+          "type": "string",
+          "minLength": 1
+        },
+        "enabled": {
+          "$ref": "#/definitions/enabled"
+        },
+        "items": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/surfaceNode"
+          }
+        },
+        "placement": {
+          "oneOf": [
+            {
+              "type": "string",
+              "pattern": "^[a-z][a-z0-9_]*$"
+            },
+            { "type": "null" }
+          ]
+        },
+        "display": {
+          "enum": [
+            "market_pill.carousel",
+            "market_tile.carousel",
+            "market_tile.grid",
+            "market_cell.list",
+            "prediction_tile.carousel",
+            "prediction_tile.grid",
+            "prediction_tile_widget.carousel",
+            "prediction_event_card.carousel",
+            "prediction_event_card.list"
+          ]
+        },
+        "destination": {
+          "$ref": "#/definitions/destination"
+        },
+        "limit": {
+          "type": "integer",
+          "minimum": 1
+        }
+      },
+      "oneOf": [
+        {
+          "required": ["items"],
+          "not": {
+            "anyOf": [
+              { "required": ["placement"] },
+              { "required": ["display"] },
+              { "required": ["destination"] },
+              { "required": ["limit"] }
+            ]
+          }
+        },
+        {
+          "required": ["display", "destination"],
+          "not": { "required": ["items"] }
+        }
+      ]
+    }
+  }
+}
