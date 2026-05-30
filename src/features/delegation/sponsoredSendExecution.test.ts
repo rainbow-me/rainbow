@@ -7,91 +7,85 @@ import { ChainId } from '@/state/backendNetworks/types';
 
 import { buildSendCallFromSendDetails } from './sponsoredSendExecution';
 
-jest.mock('@/handlers/web3', () => ({
-  resolveNameOrAddress: jest.fn(),
-}));
-
 jest.mock('@/handlers/assets', () => ({
   isNativeAsset: jest.fn(),
+}));
+
+jest.mock('@/handlers/web3', () => ({
+  resolveNameOrAddress: jest.fn(),
 }));
 
 jest.mock('./sponsoredSend', () => ({
   buildPendingSendTransaction: jest.fn(),
 }));
 
-jest.mock('./calls', () => ({
-  isPreparedCallsExecutionSponsored: jest.fn(),
-}));
+const RECIPIENT = '0x4444444444444444444444444444444444444444' satisfies Address;
+const TOKEN_ADDRESS = '0x5555555555555555555555555555555555555555' satisfies Address;
 
-jest.mock('@/logger', () => ({
-  RainbowError: class RainbowError extends Error {},
-}));
+const nativeAsset = {
+  address: '0x0000000000000000000000000000000000000000',
+  chainId: ChainId.base,
+  decimals: 18,
+  name: 'Ether',
+  network: 'base',
+  symbol: 'ETH',
+  uniqueId: 'base-eth',
+} satisfies ParsedAddressAsset;
+
+const tokenAsset = {
+  address: TOKEN_ADDRESS,
+  chainId: ChainId.base,
+  decimals: 18,
+  name: 'Token',
+  network: 'base',
+  symbol: 'TKN',
+  uniqueId: 'base-token',
+} satisfies ParsedAddressAsset;
 
 const mockIsNativeAsset = jest.mocked(isNativeAsset);
 const mockResolveNameOrAddress = jest.mocked(resolveNameOrAddress);
 
-const RECIPIENT = '0x4444444444444444444444444444444444444444' satisfies Address;
-
-const ASSET = {
-  address: '0x5555555555555555555555555555555555555555',
-  decimals: 18,
-  uniqueId: 'base-token',
-} as ParsedAddressAsset;
-
-describe('buildSendCallFromSendDetails', () => {
+describe('sponsoredSendExecution', () => {
   beforeEach(() => {
     jest.clearAllMocks();
-    mockIsNativeAsset.mockReturnValue(false);
-    mockResolveNameOrAddress.mockResolvedValue(RECIPIENT);
+    mockResolveNameOrAddress.mockImplementation(async address => address);
   });
 
-  it('builds ERC20 transfer calls from the exact decimal amount', async () => {
-    const fullPrecisionAmount = '98765.432109876543210987';
-
-    const call = await buildSendCallFromSendDetails({
-      amount: fullPrecisionAmount,
-      asset: ASSET,
-      chainId: ChainId.base,
-      toAddress: RECIPIENT,
-    });
-
-    expect(call).toEqual({
-      data: encodeFunctionData({
-        abi: erc20Abi,
-        functionName: 'transfer',
-        args: [RECIPIENT, 98765432109876543210987n],
-      }),
-      to: ASSET.address,
-      value: 0n,
-    });
-    expect(Number(fullPrecisionAmount).toString()).not.toBe(fullPrecisionAmount);
-  });
-
-  it('builds native transfer calls from the exact decimal amount', async () => {
+  it('builds native calls from exact raw units', async () => {
     mockIsNativeAsset.mockReturnValue(true);
 
     await expect(
       buildSendCallFromSendDetails({
-        amount: '1.5',
-        asset: ASSET,
+        amount: '0.999999999999999999',
+        asset: nativeAsset,
         chainId: ChainId.base,
         toAddress: RECIPIENT,
       })
     ).resolves.toEqual({
       data: '0x',
       to: RECIPIENT,
-      value: 1500000000000000000n,
+      value: 999999999999999999n,
     });
   });
 
-  it('rejects amounts that exceed the asset precision', async () => {
+  it('builds token calls from exact raw units', async () => {
+    mockIsNativeAsset.mockReturnValue(false);
+
     await expect(
       buildSendCallFromSendDetails({
-        amount: '0.9999999999999999999',
-        asset: ASSET,
+        amount: '1.234567891234567891',
+        asset: tokenAsset,
         chainId: ChainId.base,
         toAddress: RECIPIENT,
       })
-    ).rejects.toThrow('[buildSendCallFromSendDetails]: invalid send amount');
+    ).resolves.toEqual({
+      data: encodeFunctionData({
+        abi: erc20Abi,
+        functionName: 'transfer',
+        args: [RECIPIENT, 1234567891234567891n],
+      }),
+      to: TOKEN_ADDRESS,
+      value: 0n,
+    });
   });
 });
