@@ -1,7 +1,6 @@
 import { useEffect, useMemo, useRef, useState } from 'react';
 
 import { type StaticJsonRpcProvider } from '@ethersproject/providers';
-import { parseUnits } from '@ethersproject/units';
 import { isAddress, type Address } from 'viem';
 
 import { type ParsedAddressAsset } from '@/entities/tokens';
@@ -9,16 +8,16 @@ import { isPreparedCallsExecutionSponsored } from '@/features/delegation/calls';
 import { predictSponsoredSend, prepareSponsoredSend } from '@/features/delegation/sponsoredSend';
 import { buildSendCallFromSendDetails } from '@/features/delegation/sponsoredSendExecution';
 import { supportsDelegatedExecution } from '@/features/delegation/willDelegate';
+import { parsePositiveRawAmount } from '@/framework/core/evm/units';
 import { ensureError, logger } from '@/logger';
 import { useRemoteConfig } from '@/model/remoteConfig';
 import { useBackendNetworksStore } from '@/state/backendNetworks/backendNetworks';
 import { type ChainId } from '@/state/backendNetworks/types';
-import { type PreparedCallsExecution } from '@rainbow-me/delegation';
+import { type Call, type PreparedCallsExecution } from '@rainbow-me/delegation';
 
-type PreparedSponsoredSendState = {
-  key: string;
-  preparedCalls: PreparedCallsExecution | null;
-};
+type PreparedSponsoredSendState =
+  | { call: Call; key: string; preparedCalls: PreparedCallsExecution | null }
+  | { call: null; key: string; preparedCalls: null };
 
 type DelegationSupportCache = Map<string, Promise<boolean>>;
 type DelegationSupportLoader = (params: { address: Address; chainId: ChainId }) => Promise<boolean>;
@@ -75,13 +74,8 @@ export function getSponsoredSendRequestKey({
   selected: Pick<ParsedAddressAsset, 'address' | 'decimals' | 'uniqueId'>;
   toAddress: string;
 }): string | null {
-  let rawAmount: bigint;
-  try {
-    rawAmount = BigInt(parseUnits(amount, selected.decimals).toString());
-  } catch {
-    return null;
-  }
-  if (rawAmount <= 0n) return null;
+  const rawAmount = parsePositiveRawAmount(amount, selected.decimals);
+  if (rawAmount === null) return null;
 
   return [
     accountAddress.toLowerCase(),
@@ -147,6 +141,7 @@ export function useSponsoredSendPreparation({
   const hasResolvedSponsoredSend = preparedSponsoredSend?.key === sponsoredSendRequestKey;
   const preparedCalls = hasResolvedSponsoredSend ? preparedSponsoredSend.preparedCalls : null;
   const isSponsoredSend = isPreparedCallsExecutionSponsored(preparedCalls);
+  const preparedCall = hasResolvedSponsoredSend && isSponsoredSend ? preparedSponsoredSend.call : null;
   const shouldShowSponsoredSendGas =
     canUseSponsoredSend &&
     (!sponsoredSendRequestKey || isPreparingSponsoredSend || debouncedAmount !== amount || !hasResolvedSponsoredSend || isSponsoredSend);
@@ -174,11 +169,9 @@ export function useSponsoredSendPreparation({
 
       try {
         const call = await buildSendCallFromSendDetails({
-          accountAddress,
           amount: debouncedAmount,
           asset: selected,
           chainId,
-          provider,
           toAddress,
         });
         if (abortController.signal.aborted) return;
@@ -199,14 +192,14 @@ export function useSponsoredSendPreparation({
         });
 
         if (!isStale) {
-          setPreparedSponsoredSend({ key: debouncedSponsoredSendRequestKey, preparedCalls: nextPreparedCalls });
+          setPreparedSponsoredSend({ call, key: debouncedSponsoredSendRequestKey, preparedCalls: nextPreparedCalls });
         }
       } catch (error) {
         if (abortController.signal.aborted) return;
         const message = ensureError(error).message;
         logger.warn('[useSponsoredSendPreparation]: sponsored send preparation failed', { message });
         if (!isStale) {
-          setPreparedSponsoredSend({ key: debouncedSponsoredSendRequestKey, preparedCalls: null });
+          setPreparedSponsoredSend({ call: null, key: debouncedSponsoredSendRequestKey, preparedCalls: null });
         }
       } finally {
         if (!isStale) {
@@ -248,19 +241,13 @@ export function useSponsoredSendPreparation({
   }, [accountAddress, canUseSponsoredSend, chainId]);
 
   return {
-    // [sync gate] form valid + remote config on + chain/account predicted eligible; no network call. Top-level gate for everything below.
     canUseSponsoredSend,
-    // [prep lifecycle] prepared calls match the current (live) amount's request key — i.e. preparation finished for what's on screen now.
     hasResolvedSponsoredSend,
-    // [prep lifecycle] async build → prepare is in flight (debounced amount).
     isPreparingSponsoredSend,
-    // [prep result] the resolved prepared calls are actually sponsor-paid (fees.payer === 'sponsor').
     isSponsoredSend,
-    // [async capability] network-confirmed 7702 delegation support. Drives balance math (ignoreGasFee), NOT the prep flow.
     isSponsorshipSupported,
-    // [prep result] prepared calls for the current request, or null until hasResolvedSponsoredSend is true.
+    preparedCall,
     preparedCalls,
-    // [derived UI] hide the gas selector / skip gas estimation while sponsored gas applies. Pure derivation of the gate + prep lifecycle.
     shouldShowSponsoredSendGas,
   };
 }

@@ -1,21 +1,22 @@
-import { StaticJsonRpcProvider } from '@ethersproject/providers';
-import { type Address } from 'viem';
+import { encodeFunctionData, erc20Abi, type Address } from 'viem';
 
 import { type ParsedAddressAsset } from '@/entities/tokens';
-import { buildTransferTransaction } from '@/handlers/web3';
+import { isNativeAsset } from '@/handlers/assets';
+import { resolveNameOrAddress } from '@/handlers/web3';
 import { ChainId } from '@/state/backendNetworks/types';
 
-import { buildSendCall } from './sponsoredSend';
 import { buildSendCallFromSendDetails } from './sponsoredSendExecution';
 
 jest.mock('@/handlers/web3', () => ({
-  buildTransferTransaction: jest.fn(),
+  resolveNameOrAddress: jest.fn(),
+}));
+
+jest.mock('@/handlers/assets', () => ({
+  isNativeAsset: jest.fn(),
 }));
 
 jest.mock('./sponsoredSend', () => ({
   buildPendingSendTransaction: jest.fn(),
-  buildSendCall: jest.fn(),
-  prepareSponsoredSend: jest.fn(),
 }));
 
 jest.mock('./calls', () => ({
@@ -23,14 +24,12 @@ jest.mock('./calls', () => ({
 }));
 
 jest.mock('@/logger', () => ({
-  ensureError: (error: unknown) => error,
-  logger: { warn: jest.fn() },
+  RainbowError: class RainbowError extends Error {},
 }));
 
-const mockBuildTransferTransaction = jest.mocked(buildTransferTransaction);
-const mockBuildSendCall = jest.mocked(buildSendCall);
+const mockIsNativeAsset = jest.mocked(isNativeAsset);
+const mockResolveNameOrAddress = jest.mocked(resolveNameOrAddress);
 
-const ACCOUNT = '0x3333333333333333333333333333333333333333' satisfies Address;
 const RECIPIENT = '0x4444444444444444444444444444444444444444' satisfies Address;
 
 const ASSET = {
@@ -39,39 +38,60 @@ const ASSET = {
   uniqueId: 'base-token',
 } as ParsedAddressAsset;
 
-const provider = new StaticJsonRpcProvider('http://127.0.0.1:8545', ChainId.base);
-
 describe('buildSendCallFromSendDetails', () => {
   beforeEach(() => {
     jest.clearAllMocks();
-    mockBuildTransferTransaction.mockResolvedValue({ data: '0x', to: RECIPIENT, value: '0' });
-    mockBuildSendCall.mockReturnValue({ data: '0x', to: RECIPIENT, value: 0n });
+    mockIsNativeAsset.mockReturnValue(false);
+    mockResolveNameOrAddress.mockResolvedValue(RECIPIENT);
   });
 
-  // Regression for APP-3768: a full-balance max send must reach buildTransferTransaction as the exact
-  // decimal string. Coercing through Number() drops precision on 18-decimal balances and can push
-  // the raw amount above the onchain balance ("ERC20: transfer amount exceeds balance").
-  it('forwards the full-precision amount string to buildTransferTransaction without Number() coercion', async () => {
+  it('builds ERC20 transfer calls from the exact decimal amount', async () => {
     const fullPrecisionAmount = '98765.432109876543210987';
 
-    await buildSendCallFromSendDetails({
-      accountAddress: ACCOUNT,
+    const call = await buildSendCallFromSendDetails({
       amount: fullPrecisionAmount,
       asset: ASSET,
       chainId: ChainId.base,
-      provider,
       toAddress: RECIPIENT,
     });
 
-    expect(mockBuildTransferTransaction).toHaveBeenCalledWith(
-      { address: ACCOUNT, amount: fullPrecisionAmount, asset: ASSET, recipient: RECIPIENT },
-      provider,
-      ChainId.base
-    );
+    expect(call).toEqual({
+      data: encodeFunctionData({
+        abi: erc20Abi,
+        functionName: 'transfer',
+        args: [RECIPIENT, 98765432109876543210987n],
+      }),
+      to: ASSET.address,
+      value: 0n,
+    });
+    expect(Number(fullPrecisionAmount).toString()).not.toBe(fullPrecisionAmount);
+  });
 
-    const passedAmount = mockBuildTransferTransaction.mock.calls[0][0].amount;
-    expect(typeof passedAmount).toBe('string');
-    expect(passedAmount).toBe(fullPrecisionAmount);
-    expect(Number(passedAmount).toString()).not.toBe(passedAmount);
+  it('builds native transfer calls from the exact decimal amount', async () => {
+    mockIsNativeAsset.mockReturnValue(true);
+
+    await expect(
+      buildSendCallFromSendDetails({
+        amount: '1.5',
+        asset: ASSET,
+        chainId: ChainId.base,
+        toAddress: RECIPIENT,
+      })
+    ).resolves.toEqual({
+      data: '0x',
+      to: RECIPIENT,
+      value: 1500000000000000000n,
+    });
+  });
+
+  it('rejects amounts that exceed the asset precision', async () => {
+    await expect(
+      buildSendCallFromSendDetails({
+        amount: '0.9999999999999999999',
+        asset: ASSET,
+        chainId: ChainId.base,
+        toAddress: RECIPIENT,
+      })
+    ).rejects.toThrow('[buildSendCallFromSendDetails]: invalid send amount');
   });
 });

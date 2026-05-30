@@ -1,3 +1,4 @@
+import { greaterThan } from '@/helpers/utilities';
 import * as i18n from '@/languages';
 
 type GetSendSubmitButtonStateParams = {
@@ -31,7 +32,7 @@ export function getSendSubmitButtonState({
   nativeAssetSymbol,
   sponsoredAmountIsStale,
 }: GetSendSubmitButtonStateParams) {
-  const isZeroAssetAmount = Number(assetAmount) <= 0;
+  const isZeroAssetAmount = !greaterThan(assetAmount, 0);
   const hasSufficientGasForSend = isSponsoredSend || isSufficientGas;
   const hasValidGasForSend = isSponsoredSend || isValidGas;
   const isWaitingForGas = !isSponsoredSend && !isGasFeeReady;

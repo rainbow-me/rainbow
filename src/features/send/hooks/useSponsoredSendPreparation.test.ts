@@ -4,17 +4,12 @@ import { ChainId } from '@/state/backendNetworks/types';
 
 import { getCachedDelegationSupport, getDelegationSupportRequestKey, getSponsoredSendRequestKey } from './useSponsoredSendPreparation';
 
-jest.mock('@/handlers/web3', () => ({
-  buildTransferTransaction: jest.fn(),
-}));
-
 jest.mock('@/model/remoteConfig', () => ({
   getRemoteConfig: () => ({ sponsored_sends_enabled: true }),
   useRemoteConfig: () => ({ sponsored_sends_enabled: true }),
 }));
 
 jest.mock('@/features/delegation/sponsoredSend', () => ({
-  buildSendCall: jest.fn(),
   predictSponsoredSend: jest.fn(),
   prepareSponsoredSend: jest.fn(),
 }));
