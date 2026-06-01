@@ -137,6 +137,7 @@ export function useSponsoredSendPreparation({
 
   const [preparedSponsoredSend, setPreparedSponsoredSend] = useState<PreparedSponsoredSendState | null>(null);
   const [isPreparingSponsoredSend, setIsPreparingSponsoredSend] = useState(false);
+  const [isSponsorshipSupported, setIsSponsorshipSupported] = useState(false);
   const hasResolvedSponsoredSend = preparedSponsoredSend?.key === sponsoredSendRequestKey;
   const preparedCalls = hasResolvedSponsoredSend ? preparedSponsoredSend.preparedCalls : null;
   const isSponsoredSend = isPreparedCallsExecutionSponsored(preparedCalls);
@@ -216,12 +217,44 @@ export function useSponsoredSendPreparation({
     };
   }, [accountAddress, canUseSponsoredSend, chainId, debouncedAmount, debouncedSponsoredSendRequestKey, provider, selected, toAddress]);
 
+  useEffect(() => {
+    if (!canUseSponsoredSend || !accountAddress || !isAddress(accountAddress)) {
+      setIsSponsorshipSupported(false);
+      return;
+    }
+
+    let isStale = false;
+    getCachedDelegationSupport({
+      accountAddress,
+      cache: delegationSupportCacheRef.current,
+      chainId,
+    })
+      .then(supported => {
+        if (!isStale) setIsSponsorshipSupported(supported);
+      })
+      .catch(() => {
+        if (!isStale) setIsSponsorshipSupported(false);
+      });
+
+    return () => {
+      isStale = true;
+    };
+  }, [accountAddress, canUseSponsoredSend, chainId]);
+
   return {
+    // [sync gate] form valid + remote config on + chain/account predicted eligible; no network call. Top-level gate for everything below.
     canUseSponsoredSend,
+    // [prep lifecycle] prepared calls match the current (live) amount's request key — i.e. preparation finished for what's on screen now.
     hasResolvedSponsoredSend,
+    // [prep lifecycle] async build → prepare is in flight (debounced amount).
     isPreparingSponsoredSend,
+    // [prep result] the resolved prepared calls are actually sponsor-paid (fees.payer === 'sponsor').
     isSponsoredSend,
+    // [async capability] network-confirmed 7702 delegation support. Drives balance math (ignoreGasFee), NOT the prep flow.
+    isSponsorshipSupported,
+    // [prep result] prepared calls for the current request, or null until hasResolvedSponsoredSend is true.
     preparedCalls,
+    // [derived UI] hide the gas selector / skip gas estimation while sponsored gas applies. Pure derivation of the gate + prep lifecycle.
     shouldShowSponsoredSendGas,
   };
 }
