@@ -5,7 +5,7 @@ import { ChainId } from '@/state/backendNetworks/types';
 import { getCachedDelegationSupport, getDelegationSupportRequestKey, getSponsoredSendRequestKey } from './useSponsoredSendPreparation';
 
 jest.mock('@/handlers/web3', () => ({
-  buildTransaction: jest.fn(),
+  buildTransferTransaction: jest.fn(),
 }));
 
 jest.mock('@/model/remoteConfig', () => ({
@@ -72,8 +72,34 @@ describe('getSponsoredSendRequestKey', () => {
         toAddress: '0x4444444444444444444444444444444444444444'.toUpperCase(),
       })
     ).toBe(
-      '0x3333333333333333333333333333333333333333:8453:base-eth:0x5555555555555555555555555555555555555555:18:0x4444444444444444444444444444444444444444:1.5'
+      '0x3333333333333333333333333333333333333333:8453:base-eth:0x5555555555555555555555555555555555555555:18:0x4444444444444444444444444444444444444444:1500000000000000000'
     );
+  });
+
+  it('keys by exact raw amount rather than rounded JavaScript number identity', () => {
+    const request = {
+      accountAddress: '0x3333333333333333333333333333333333333333',
+      chainId: ChainId.base,
+      selected: SELECTED_ASSET,
+      toAddress: '0x4444444444444444444444444444444444444444',
+    };
+
+    // Number('0.999999999999999999') === 1, so a Number()-based key would collide these.
+    expect(getSponsoredSendRequestKey({ ...request, amount: '0.999999999999999999' })).not.toBe(
+      getSponsoredSendRequestKey({ ...request, amount: '1' })
+    );
+  });
+
+  it('returns null for amounts that exceed asset precision', () => {
+    expect(
+      getSponsoredSendRequestKey({
+        accountAddress: '0x3333333333333333333333333333333333333333',
+        amount: '0.9999999999999999999',
+        chainId: ChainId.base,
+        selected: SELECTED_ASSET,
+        toAddress: '0x4444444444444444444444444444444444444444',
+      })
+    ).toBeNull();
   });
 
   it('separates assets with the same unique id but different token shape', () => {

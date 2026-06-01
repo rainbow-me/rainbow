@@ -4,7 +4,7 @@ import { isAddress, type Address } from 'viem';
 
 import { type ParsedAddressAsset } from '@/entities/tokens';
 import { type NewTransaction } from '@/entities/transactions';
-import { buildTransaction } from '@/handlers/web3';
+import { buildTransferTransaction } from '@/handlers/web3';
 import { ensureError, logger } from '@/logger';
 import { type ChainId } from '@/state/backendNetworks/types';
 import { type Call, type ExecuteCallsResult, type PreparedCallsExecution } from '@rainbow-me/delegation';
@@ -50,10 +50,10 @@ export async function buildSendCallFromSendDetails({
   provider,
   toAddress,
 }: BuildSendCallFromSendDetailsParams): Promise<Call> {
-  const transaction = await buildTransaction(
+  const transaction = await buildTransferTransaction(
     {
       address: accountAddress,
-      amount: Number(amount),
+      amount,
       asset,
       recipient: toAddress,
     },

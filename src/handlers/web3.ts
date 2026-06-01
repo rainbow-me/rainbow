@@ -624,14 +624,14 @@ export const getDataForNftTransfer = (
 };
 
 /**
- * @desc Builds a transaction request object.
+ * @desc Builds a transfer (native, ERC-20, or NFT) transaction request object.
  * @param [{address, amount, asset, gasLimit, recipient}] The transaction
  * initialization details.
  * @param provider The RCP provider to use.
  * @param chainId The chainId for the transaction
  * @return The transaction request.
  */
-export const buildTransaction = async (
+export const buildTransferTransaction = async (
   {
     address,
     amount,
@@ -642,14 +642,14 @@ export const buildTransaction = async (
     asset: ParsedAddressAsset | UniqueAsset;
     address: string;
     recipient: string;
-    amount: number;
+    amount: string;
     gasLimit?: string;
   },
   provider: StaticJsonRpcProvider | undefined,
   chainId: ChainId
 ): Promise<TransactionRequest> => {
   const _amount =
-    amount && Number(amount) && assetIsParsedAddressAsset(asset)
+    greaterThan(amount, 0) && assetIsParsedAddressAsset(asset)
       ? convertAmountToRawAmount(amount, asset.decimals)
       : estimateAssetBalancePortion(asset);
   const value = _amount.toString();
@@ -699,13 +699,13 @@ export const estimateGasLimit = async (
     asset: ParsedAddressAsset | UniqueAsset;
     address: string;
     recipient: string;
-    amount: number;
+    amount: string;
   },
   addPadding = false,
   provider: StaticJsonRpcProvider,
   chainId: ChainId = ChainId.mainnet
 ): Promise<string | null> => {
-  const estimateGasData = await buildTransaction({ address, amount, asset, recipient }, provider, chainId);
+  const estimateGasData = await buildTransferTransaction({ address, amount, asset, recipient }, provider, chainId);
 
   if (addPadding) {
     return estimateGasWithPadding(estimateGasData, null, null, provider);
