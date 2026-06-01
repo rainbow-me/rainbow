@@ -55,6 +55,41 @@ const SPORTS = {
       light: '#C19D4D',
     },
   },
+  chess: {
+    name: 'Chess',
+    color: {
+      dark: '#FFFFFF',
+      light: '#000000',
+    },
+  },
+  slap: {
+    name: 'Slap Fighting',
+    color: {
+      dark: '#F5443A',
+      light: '#D6271D',
+    },
+  },
+  rugby: {
+    name: 'Rugby',
+    color: {
+      dark: '#C45911',
+      light: '#C45911',
+    },
+  },
+  pickleball: {
+    name: 'Pickleball',
+    color: {
+      dark: '#4ADE80',
+      light: '#22C55E',
+    },
+  },
+  lacrosse: {
+    name: 'Lacrosse',
+    color: {
+      dark: '#60A5FA',
+      light: '#1E40AF',
+    },
+  },
 } as const;
 
 export const SPORT_LEAGUES = {
@@ -845,6 +880,66 @@ export const SPORT_LEAGUES = {
     fullName: 'Honor of Kings',
     sportId: 'esports',
     color: SPORTS.esports.color,
+  },
+  chess: {
+    name: 'Chess',
+    fullName: 'Chess',
+    sportId: 'chess',
+    color: SPORTS.chess.color,
+  },
+  powerslap: {
+    name: 'Power Slap',
+    fullName: 'Power Slap',
+    sportId: 'slap',
+    color: SPORTS.slap.color,
+  },
+  rutopft: {
+    name: 'Top 14',
+    fullName: 'Top 14',
+    sportId: 'rugby',
+    color: SPORTS.rugby.color,
+  },
+  ruurc: {
+    name: 'URC',
+    fullName: 'United Rugby Championship',
+    sportId: 'rugby',
+    color: SPORTS.rugby.color,
+  },
+  rusrp: {
+    name: 'Super Rugby',
+    fullName: 'Super Rugby Pacific',
+    sportId: 'rugby',
+    color: SPORTS.rugby.color,
+  },
+  ruprem: {
+    name: 'Premiership Rugby',
+    fullName: 'Premiership Rugby',
+    sportId: 'rugby',
+    color: SPORTS.rugby.color,
+  },
+  rueuchamp: {
+    name: 'Champions Cup',
+    fullName: 'European Rugby Champions Cup',
+    sportId: 'rugby',
+    color: SPORTS.rugby.color,
+  },
+  mlp: {
+    name: 'MLP',
+    fullName: 'Major League Pickleball',
+    sportId: 'pickleball',
+    color: SPORTS.pickleball.color,
+  },
+  pll: {
+    name: 'PLL',
+    fullName: 'Premier Lacrosse League',
+    sportId: 'lacrosse',
+    color: SPORTS.lacrosse.color,
+  },
+  wll: {
+    name: 'WLL',
+    fullName: "Women's Lacrosse League",
+    sportId: 'lacrosse',
+    color: SPORTS.lacrosse.color,
   },
 } as const;
 

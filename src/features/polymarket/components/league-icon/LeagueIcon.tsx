@@ -6,16 +6,21 @@ import { getLeagueId, SPORT_LEAGUES } from '@/features/polymarket/leagues';
 
 import { BaseballIcon } from './icons/BaseballIcon';
 import { CfbIcon } from './icons/CfbIcon';
+import { ChessIcon } from './icons/ChessIcon';
 import { CricketIcon } from './icons/CricketIcon';
 import { Cs2Icon } from './icons/Cs2Icon';
 import { Dota2Icon } from './icons/Dota2Icon';
 import { EsportsIcon } from './icons/EsportsIcon';
 import { F1Icon } from './icons/F1Icon';
 import { HockeyIcon } from './icons/HockeyIcon';
+import { LacrosseIcon } from './icons/LacrosseIcon';
 import { LolIcon } from './icons/LolIcon';
 import { NbaIcon } from './icons/NbaIcon';
 import { NflIcon } from './icons/NflIcon';
 import { NhlIcon } from './icons/NhlIcon';
+import { PickleballIcon } from './icons/PickleballIcon';
+import { RugbyIcon } from './icons/RugbyIcon';
+import { SlapIcon } from './icons/SlapIcon';
 import { SoccerIcon } from './icons/SoccerIcon';
 import { TennisIcon } from './icons/TennisIcon';
 import { UfcIcon } from './icons/UfcIcon';
@@ -47,6 +52,12 @@ const SPORT_ICONS: Partial<Record<SportId, IconComponent>> = {
   baseball: BaseballIcon,
   basketball: NbaIcon,
   esports: EsportsIcon,
+  chess: ChessIcon,
+  slap: SlapIcon,
+  rugby: RugbyIcon,
+  pickleball: PickleballIcon,
+  lacrosse: LacrosseIcon,
+  motorsports: F1Icon,
 };
 
 export function getIconByLeagueId(leagueId: LeagueId): IconComponent | undefined {
