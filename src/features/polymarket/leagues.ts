@@ -162,7 +162,7 @@ export const SPORT_LEAGUES = {
     sportId: 'basketball',
     color: SPORTS.basketball.color,
   },
-  wcbb: {
+  cwbb: {
     name: 'NCAAW',
     fullName: "NCAA Women's Basketball",
     sportId: 'basketball',
@@ -234,7 +234,7 @@ export const SPORT_LEAGUES = {
     sportId: 'soccer',
     color: SPORTS.soccer.color,
   },
-  bra1: {
+  bra: {
     name: 'Brazil Serie A',
     fullName: 'Brazil Serie A',
     sportId: 'soccer',
@@ -348,6 +348,18 @@ export const SPORT_LEAGUES = {
     sportId: 'soccer',
     color: SPORTS.soccer.color,
   },
+  acn: {
+    name: 'AFCON',
+    fullName: 'Africa Cup of Nations',
+    sportId: 'soccer',
+    color: SPORTS.soccer.color,
+  },
+  scop: {
+    name: 'Scottish Premiership',
+    fullName: 'Scottish Premiership',
+    sportId: 'soccer',
+    color: SPORTS.soccer.color,
+  },
   crint: {
     name: 'Cricket',
     fullName: 'International Cricket',
@@ -355,6 +367,12 @@ export const SPORT_LEAGUES = {
     color: SPORTS.cricket.color,
   },
   ipl: {
+    name: 'IPL',
+    fullName: 'Indian Premier League',
+    sportId: 'cricket',
+    color: SPORTS.cricket.color,
+  },
+  cricipl: {
     name: 'IPL',
     fullName: 'Indian Premier League',
     sportId: 'cricket',
