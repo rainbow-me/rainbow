@@ -13,9 +13,6 @@ import { refreshStakingData } from './utils/refreshStakingData';
 import { stakeRnbw } from './utils/stakeRnbw';
 import { buildSyntheticRnbwSourceAsset } from './utils/syntheticRnbwSourceAsset';
 
-/**
- * Builds the RNBW staking deposit config.
- */
 export function createRnbwStakingDepositConfig(
   stakePreparationStore: PreparedCallsStore<PreparedStakeRnbw, StakeRnbwPreparationParams>
 ): DepositConfigInput {
@@ -60,8 +57,11 @@ export function createRnbwStakingDepositConfig(
       estimateGasLimit: estimateStakeGasLimit,
       predictIsSponsored: ({ accountAddress }) => predictSponsoredCallsExecution({ address: accountAddress, chainId: STAKING_CHAIN_ID }),
       isSponsored: async params => {
-        const preparedStake = await stakePreparationStore.getState().fetch(params);
-        return isPreparedCallsExecutionSponsored(preparedStake?.preparedCalls ?? null);
+        const preparedStake = await stakePreparationStore
+          .getState()
+          .fetch({ accountAddress: params.accountAddress, amount: params.amount });
+        if (!preparedStake) return null;
+        return isPreparedCallsExecutionSponsored(preparedStake.preparedCalls);
       },
     },
 

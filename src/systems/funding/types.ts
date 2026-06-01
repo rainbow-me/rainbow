@@ -243,8 +243,10 @@ export type DepositGasConfig = {
   /**
    * Optional sponsorship resolver for authoritative UI state.
    * Custom flows may also use this hook to prepare sponsor-paid execution in advance.
+   * Returns `null` when the outcome can't be determined yet (e.g. an in-flight
+   * resolution was superseded) so the UI keeps the prediction instead of flipping.
    */
-  isSponsored?: (params: DepositGasHookParams) => Promise<boolean> | boolean;
+  isSponsored?: (params: DepositGasHookParams) => Promise<boolean | null> | boolean | null;
 };
 
 export type DepositRuntimeStores = {

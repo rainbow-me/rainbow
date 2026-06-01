@@ -161,7 +161,7 @@ export function createDepositGasStores(
 
   const useGasSponsorshipStore =
     hasGasSponsorshipResolver && useHasGasHookParams
-      ? createQueryStore<boolean, GasSponsorshipQueryParams>({
+      ? createQueryStore<boolean | null, GasSponsorshipQueryParams>({
           fetcher: createGasSponsorshipFetcher(config, useDepositStore, useQuoteStore),
           enabled: $ => $(useCanCheckGasSponsorship),
           params: {
@@ -314,8 +314,8 @@ function createGasSponsorshipFetcher(
   config: DepositConfig,
   useDepositStore: DepositStoreType,
   useQuoteStore: DepositQuoteStoreType
-): (params: GasSponsorshipQueryParams) => Promise<boolean> {
-  return async function fetchIsGasSponsored(queryParams: GasSponsorshipQueryParams): Promise<boolean> {
+): (params: GasSponsorshipQueryParams) => Promise<boolean | null> {
+  return async function fetchIsGasSponsored(queryParams: GasSponsorshipQueryParams): Promise<boolean | null> {
     const sponsorshipHook = config.gas?.isSponsored;
     if (!sponsorshipHook) return false;
 
@@ -330,13 +330,16 @@ function createGasSponsorshipFetcher(
     if (!params) return false;
 
     try {
-      return Boolean(await sponsorshipHook(params));
+      const resolved = await sponsorshipHook(params);
+      // Preserve `null` (unknown) so it falls back to the prediction in
+      // `useIsGasSponsored` rather than reading as "not sponsored".
+      return resolved == null ? null : Boolean(resolved);
     } catch (error) {
       logger.warn('[createDepositGasStores]: sponsorship check failed', {
         error,
         id: config.id,
       });
-      return false;
+      return null;
     }
   };
 }
