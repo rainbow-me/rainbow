@@ -5,8 +5,7 @@ import { Wallet } from '@ethersproject/wallet';
 import { type Address } from 'viem';
 
 import { TransactionDirection, TransactionStatus, type NewTransaction } from '@/entities/transactions';
-import { trackCallsExecution } from '@/features/delegation/callsExecutionTracking';
-import { resolveManagedExecutionFailure } from '@/features/delegation/managedExecutionFailure';
+import { trackCallsExecution, trackManagedCallsExecutionResult } from '@/features/delegation/callsExecutionTracking';
 import { waitForManagedExecutionConfirmation } from '@/features/delegation/waitForManagedExecution';
 import { canUseDelegatedExecution } from '@/features/delegation/willDelegate';
 import type { LegacyTransactionGasParamAmounts, TransactionGasParamAmounts } from '@/features/gas/types/gas';
@@ -93,22 +92,16 @@ export async function executeStakeRnbw({
     };
   }
 
-  const failureMessage = await resolveManagedExecutionFailure({
-    executionId: execution.executionId,
-    status: execution.status,
+  const failureMessage = await trackManagedCallsExecutionResult({
+    address,
+    batch: false,
+    execution,
+    transaction: buildStakeTransaction({ address, asset, stakeAmountRaw }),
   });
 
   if (failureMessage) {
     throw new RainbowError(`[executeStakeRnbw]: ${failureMessage}`);
   }
-
-  trackCallsExecution({
-    address,
-    batch: false,
-    chainId: STAKING_CHAIN_ID,
-    execution,
-    transaction: buildStakeTransaction({ address, asset, stakeAmountRaw }),
-  });
 
   return {
     executionMode: 'sponsored',

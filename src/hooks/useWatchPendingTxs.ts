@@ -351,7 +351,10 @@ function shouldRetainLocalTransactionOverlay({
   transaction: RainbowTransaction;
 }): boolean {
   if (transaction.status === TransactionStatus.pending) return true;
-  if (transaction.status === TransactionStatus.failed) return false;
+  // A relay send that failed before producing an onchain hash is never indexed by
+  // the backend, so the local overlay is the only place it can surface — retain it.
+  // Failed sends that did reach chain keep their real hash and are left to the backend.
+  if (transaction.status === TransactionStatus.failed) return isAwaitingRelayTransactionHash(transaction);
   if (isAwaitingRelayTransactionHash(transaction)) return false;
   return !isTransactionInHistory({ historyPages, transaction });
 }

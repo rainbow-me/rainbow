@@ -394,11 +394,42 @@ describe('watchPendingTransactions', () => {
       transactions: [pendingTransaction],
     });
 
-    expect(usePendingTransactionsStore.getState().pendingTransactions[TEST_ADDRESS]).toEqual([]);
+    // The relay reported failure without an onchain hash, so the backend can never
+    // index it — the failed send is retained in the overlay so it stays in history.
+    expect(usePendingTransactionsStore.getState().pendingTransactions[TEST_ADDRESS]).toEqual([failedTransaction]);
     expect(Object.values(useRainbowToastsStore.getState().toasts)).toHaveLength(1);
     expect(Object.values(useRainbowToastsStore.getState().toasts)[0]?.transaction).toEqual(failedTransaction);
     expect(useAssetUpdatesStore.getState().watchedTransactions[TEST_ADDRESS]).toBeUndefined();
     expect(refetchQueriesSpy).not.toHaveBeenCalled();
+  });
+
+  it('drops a failed managed overlay once it has an onchain hash for the backend to index', async () => {
+    const onchainHash: `0x${string}` = '0x3333333333333333333333333333333333333333333333333333333333333333';
+    const pendingTransaction = buildManagedPendingTransaction({ hash: 'execution-1', relayExecutionId: 'execution-1' });
+    const failedTransaction: SettledTransaction = {
+      ...pendingTransaction,
+      hash: onchainHash,
+      status: TransactionStatus.failed,
+      title: 'swap.failed',
+    };
+
+    pendingTransactionsActions.setPendingTransactions({
+      address: TEST_ADDRESS,
+      pendingTransactions: [pendingTransaction],
+    });
+    mockResolveTrackedTransaction.mockResolvedValue({
+      kind: 'settled',
+      transaction: failedTransaction,
+    });
+
+    await watchPendingTransactions({
+      abortController: new AbortController(),
+      address: TEST_ADDRESS,
+      currency: TEST_CURRENCY,
+      transactions: [pendingTransaction],
+    });
+
+    expect(usePendingTransactionsStore.getState().pendingTransactions[TEST_ADDRESS]).toEqual([]);
   });
 
   it('updates the local overlay before managed history sync finishes', async () => {

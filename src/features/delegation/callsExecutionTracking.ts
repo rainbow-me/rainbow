@@ -1,15 +1,16 @@
-import { TransactionStatus, type NewTransaction } from '@/entities/transactions';
+import { buildTransactionTitle, TransactionStatus, type NewTransaction } from '@/entities/transactions';
 import { convertNewTransactionToRainbowTransaction } from '@/parsers/transactions';
 import { extractReplayableCall } from '@/raps/replay';
 import { type ChainId } from '@/state/backendNetworks/types';
 import { addNewTransaction, pendingTransactionsActions } from '@/state/pendingTransactions';
 import { type ExecuteCallsResult, type ExecutionResult } from '@rainbow-me/delegation';
 
+import { resolveManagedExecutionFailure } from './managedExecutionFailure';
+
 type ManagedCallsExecution = Extract<ExecuteCallsResult, { kind: 'calls.managed' }>;
-type SubmittedCallsExecution = ManagedCallsExecution | ExecutionResult;
 
 /**
- * Registers a submitted SDK exact-call execution with the local pending transaction overlay.
+ * Registers a submitted wallet-owned SDK exact-call execution with the local pending transaction overlay.
  */
 export function trackCallsExecution({
   address,
@@ -21,18 +22,17 @@ export function trackCallsExecution({
   address: string;
   batch: boolean;
   chainId: ChainId;
-  execution: SubmittedCallsExecution;
+  execution: ExecutionResult;
   transaction: Omit<NewTransaction, 'hash'>;
 }): void {
-  if ('kind' in execution) {
-    trackManagedCallsExecution({ address, batch, execution, transaction });
-    return;
-  }
-
   trackWalletCallsExecution({ address, batch, chainId, execution, transaction });
 }
 
-function trackManagedCallsExecution({
+/**
+ * Records a managed relay execution in the local overlay and returns the
+ * terminal failure message, when the relay rejected it before onchain indexing.
+ */
+export async function trackManagedCallsExecutionResult({
   address,
   batch,
   execution,
@@ -42,16 +42,50 @@ function trackManagedCallsExecution({
   batch: boolean;
   execution: ManagedCallsExecution;
   transaction: Omit<NewTransaction, 'hash'>;
+}): Promise<string | null> {
+  const failureMessage = await resolveManagedExecutionFailure({
+    executionId: execution.executionId,
+    status: execution.status,
+  });
+
+  addManagedCallsTransaction({
+    address,
+    batch,
+    execution,
+    status: failureMessage ? TransactionStatus.failed : TransactionStatus.pending,
+    transaction,
+  });
+
+  return failureMessage;
+}
+
+function addManagedCallsTransaction({
+  address,
+  batch,
+  execution,
+  status,
+  transaction,
+}: {
+  address: string;
+  batch: boolean;
+  execution: ManagedCallsExecution;
+  status: TransactionStatus.failed | TransactionStatus.pending;
+  transaction: Omit<NewTransaction, 'hash'>;
 }): void {
+  const parsedTransaction = convertNewTransactionToRainbowTransaction({
+    ...transaction,
+    ...(batch ? { batch: true, delegation: false } : undefined),
+    hash: execution.executionId,
+    relayExecutionId: execution.executionId,
+  });
+
   pendingTransactionsActions.addPendingTransaction({
     address,
-    pendingTransaction: convertNewTransactionToRainbowTransaction({
-      ...transaction,
-      ...(batch ? { batch: true, delegation: false } : undefined),
-      hash: execution.executionId,
-      relayExecutionId: execution.executionId,
-      status: TransactionStatus.pending,
-    }),
+    pendingTransaction: {
+      ...parsedTransaction,
+      status,
+      title: buildTransactionTitle(parsedTransaction.type, status),
+    },
   });
 }
 

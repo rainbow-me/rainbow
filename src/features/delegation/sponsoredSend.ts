@@ -12,8 +12,7 @@ import { type ChainId } from '@/state/backendNetworks/types';
 import { execute, type Call, type ExecuteCallsResult, type ExecutionResult, type PreparedCallsExecution } from '@rainbow-me/delegation';
 
 import { createDelegationPublicClient, SPONSORED_CALLS_REQUIREMENTS } from './calls';
-import { trackCallsExecution } from './callsExecutionTracking';
-import { resolveManagedExecutionFailure } from './managedExecutionFailure';
+import { trackCallsExecution, trackManagedCallsExecutionResult } from './callsExecutionTracking';
 import { predictSponsoredCallsExecution } from './sponsoredCalls';
 import { canUseDelegatedExecution, supportsDelegatedExecution } from './willDelegate';
 
@@ -94,22 +93,17 @@ export async function executeSponsoredSend({
   const execution = await executeSendCall({ call, chainId, preparedCalls, provider, signer });
 
   if (execution.kind === 'calls.managed') {
-    const failureMessage = await resolveManagedExecutionFailure({
-      executionId: execution.executionId,
-      status: execution.status,
+    const failureMessage = await trackManagedCallsExecutionResult({
+      address: accountAddress,
+      batch: false,
+      execution,
+      transaction,
     });
 
     if (failureMessage) {
       throw new RainbowError(`[executeSponsoredSend]: ${failureMessage}`);
     }
 
-    trackCallsExecution({
-      address: accountAddress,
-      batch: false,
-      chainId,
-      execution,
-      transaction,
-    });
     return execution;
   }
 

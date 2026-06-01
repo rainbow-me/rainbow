@@ -3,8 +3,7 @@ import { Wallet } from '@ethersproject/wallet';
 
 import type { NewTransaction } from '@/entities/transactions';
 import { IS_TEST } from '@/env';
-import { trackCallsExecution } from '@/features/delegation/callsExecutionTracking';
-import { resolveManagedExecutionFailure } from '@/features/delegation/managedExecutionFailure';
+import { trackCallsExecution, trackManagedCallsExecutionResult } from '@/features/delegation/callsExecutionTracking';
 import type { LegacyTransactionGasParamAmounts, TransactionGasParamAmounts } from '@/features/gas/types/gas';
 import { getProvider } from '@/handlers/web3';
 import { ensureError, logger, RainbowError } from '@/logger';
@@ -226,9 +225,23 @@ export async function walletExecuteRap<T extends RapTypes>(
         });
 
         if (execution.kind === 'calls.managed') {
-          const failureMessage = await resolveManagedExecutionFailure({
-            executionId: execution.executionId,
-            status: execution.status,
+          if (!pendingTransaction) {
+            logger.error(new RainbowError(`[raps/execute]: ${rapName} - missing transaction metadata for managed atomic execution`), {
+              executionId: execution.executionId,
+              status: execution.status,
+            });
+            return {
+              nonce: undefined,
+              hash: null,
+              errorMessage: 'Missing transaction metadata for managed atomic execution',
+            };
+          }
+
+          const failureMessage = await trackManagedCallsExecutionResult({
+            address: fromAddress,
+            batch: true,
+            execution,
+            transaction: pendingTransaction,
           });
 
           if (failureMessage) {
@@ -238,16 +251,6 @@ export async function walletExecuteRap<T extends RapTypes>(
               failureMessage,
             });
             return { nonce: undefined, hash: null, errorMessage: failureMessage };
-          }
-
-          if (pendingTransaction) {
-            trackCallsExecution({
-              address: fromAddress,
-              batch: true,
-              chainId,
-              execution,
-              transaction: pendingTransaction,
-            });
           }
 
           logger.debug(`[${rapName}] submitted managed atomic execution`, {
