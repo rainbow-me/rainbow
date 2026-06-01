@@ -26,8 +26,19 @@ import { REGISTRATION_STEPS } from '@/features/ens/utils/helpers';
 import GasSpeedButton from '@/features/gas/components/GasSpeedButton';
 import useGas from '@/features/gas/hooks/useGas';
 import styled from '@/framework/ui/styled-thing';
-import { assetIsParsedAddressAsset, assetIsUniqueAsset, buildTransaction, estimateGasLimit, resolveNameOrAddress } from '@/handlers/web3';
-import { convertAmountAndPriceToNativeDisplay, convertAmountFromNativeValue, formatInputDecimals } from '@/helpers/utilities';
+import {
+  assetIsParsedAddressAsset,
+  assetIsUniqueAsset,
+  buildTransferTransaction,
+  estimateGasLimit,
+  resolveNameOrAddress,
+} from '@/handlers/web3';
+import {
+  convertAmountAndPriceToNativeDisplay,
+  convertAmountFromNativeValue,
+  formatInputDecimals,
+  greaterThanOrEqualTo,
+} from '@/helpers/utilities';
 import { checkIsValidAddressOrDomain, checkIsValidAddressOrDomainFormat, isENSAddressFormat } from '@/helpers/validators';
 import useAccountSettings from '@/hooks/useAccountSettings';
 import useCoinListEditOptions from '@/hooks/useCoinListEditOptions';
@@ -120,6 +131,9 @@ const validateRecipientDamagedState = (toAddress?: string) => {
   }
   return true;
 };
+
+const hasSufficientAssetBalance = (assetAmount: string, maxInputBalance: string): boolean =>
+  !assetAmount || greaterThanOrEqualTo(maxInputBalance || '0', assetAmount);
 
 export default function SendSheet() {
   const { navigate } = useNavigation();
@@ -239,7 +253,7 @@ export default function SendSheet() {
         _nativeAmount = formatInputDecimals(convertedNativeAmount, _assetAmount);
       }
 
-      const _isSufficientBalance = Number(_assetAmount) <= Number(maxInputBalance);
+      const _isSufficientBalance = hasSufficientAssetBalance(_assetAmount, maxInputBalance);
 
       setAmountDetails({
         assetAmount: _assetAmount,
@@ -281,7 +295,7 @@ export default function SendSheet() {
 
     const newMaxInputBalance = updateMaxInputBalance(selected);
     setAmountDetails(currentAmountDetails => {
-      const isSufficientBalance = Number(currentAmountDetails.assetAmount) <= Number(newMaxInputBalance);
+      const isSufficientBalance = hasSufficientAssetBalance(currentAmountDetails.assetAmount, newMaxInputBalance);
       if (currentAmountDetails.isSufficientBalance === isSufficientBalance) return currentAmountDetails;
 
       return {
@@ -333,7 +347,7 @@ export default function SendSheet() {
         _assetAmount = formatInputDecimals(convertedAssetAmount, _nativeAmount);
       }
 
-      const _isSufficientBalance = Number(_assetAmount) <= Number(maxInputBalance);
+      const _isSufficientBalance = hasSufficientAssetBalance(_assetAmount, maxInputBalance);
       setAmountDetails({
         assetAmount: _assetAmount,
         isSufficientBalance: _isSufficientBalance,
@@ -387,10 +401,10 @@ export default function SendSheet() {
     async (updatedGasLimit: string) => {
       if (!selected || !currentProvider) return;
 
-      const txData = await buildTransaction(
+      const txData = await buildTransferTransaction(
         {
           address: accountAddress,
-          amount: Number(amountDetails.assetAmount),
+          amount: amountDetails.assetAmount,
           asset: selected as ParsedAddressAsset,
           gasLimit: updatedGasLimit,
           recipient: toAddress,
@@ -609,7 +623,7 @@ export default function SendSheet() {
       estimateGasLimit(
         {
           address: accountAddress,
-          amount: Number(amountDetails.assetAmount),
+          amount: amountDetails.assetAmount,
           asset: selected as ParsedAddressAsset,
           recipient: toAddress,
         },

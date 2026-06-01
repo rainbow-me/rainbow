@@ -505,7 +505,7 @@ async function submitPaidSend({
       updatedGasLimit = await estimateGasLimit(
         {
           address: accountAddress,
-          amount: Number(amount),
+          amount,
           asset: selectedAddressAsset,
           recipient: toAddress,
         },

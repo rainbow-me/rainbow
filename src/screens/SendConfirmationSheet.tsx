@@ -239,7 +239,7 @@ export const SendConfirmationSheet = () => {
         estimateGasLimit(
           {
             address: accountAddress,
-            amount: 0,
+            amount: '0',
             asset,
             recipient: toAddress,
           },

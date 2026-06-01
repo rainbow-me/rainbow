@@ -1,6 +1,7 @@
 import { useEffect, useMemo, useRef, useState } from 'react';
 
 import { type StaticJsonRpcProvider } from '@ethersproject/providers';
+import { parseUnits } from '@ethersproject/units';
 import { isAddress, type Address } from 'viem';
 
 import { type ParsedAddressAsset } from '@/entities/tokens';
@@ -74,8 +75,13 @@ export function getSponsoredSendRequestKey({
   selected: Pick<ParsedAddressAsset, 'address' | 'decimals' | 'uniqueId'>;
   toAddress: string;
 }): string | null {
-  const parsedAmount = Number(amount);
-  if (isNaN(parsedAmount) || parsedAmount <= 0) return null;
+  let rawAmount: bigint;
+  try {
+    rawAmount = BigInt(parseUnits(amount, selected.decimals).toString());
+  } catch {
+    return null;
+  }
+  if (rawAmount <= 0n) return null;
 
   return [
     accountAddress.toLowerCase(),
@@ -84,7 +90,7 @@ export function getSponsoredSendRequestKey({
     selected.address.toLowerCase(),
     selected.decimals,
     toAddress.toLowerCase(),
-    parsedAmount,
+    rawAmount.toString(),
   ].join(':');
 }
 
