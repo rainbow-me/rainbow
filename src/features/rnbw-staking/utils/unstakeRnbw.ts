@@ -1,5 +1,4 @@
-import type { StaticJsonRpcProvider } from '@ethersproject/providers';
-import { encodeFunctionData, type Address, type Hash, type Hex } from 'viem';
+import { type Address } from 'viem';
 
 import { analytics } from '@/analytics';
 import type { LegacyTransactionGasParamAmounts, TransactionGasParamAmounts } from '@/features/gas/types/gas';
@@ -8,24 +7,22 @@ import { getProvider } from '@/handlers/web3';
 import { convertRawAmountToDecimalFormat } from '@/helpers/utilities';
 import { RainbowError } from '@/logger';
 import { loadWallet } from '@/model/wallet';
-import { extractReplayableExecution } from '@/raps/replay';
-import { addNewTransaction } from '@/state/pendingTransactions';
 
-import { STAKING_ABI, STAKING_CHAIN_ID, STAKING_CONTRACT_ADDRESS, STAKING_UNSTAKE_GAS_LIMIT } from '../constants';
+import { STAKING_CHAIN_ID } from '../constants';
 import { useStakingPositionStore, type StakingPositionData } from '../stores/rnbwStakingPositionStore';
-import { buildUnstakeTransaction } from './buildUnstakeTransaction';
+import { executeUnstakeRnbw, type UnstakeRnbwExecution } from './executeUnstakeRnbw';
 import { pollForStakingUpdate } from './pollForStakingUpdate';
-import { waitForWalletTransactions } from './waitForWalletTransactions';
 
 type UnstakeAnalyticsSnapshot = {
   stakedAmount: string;
   expectedExitFee: string;
   expectedReceiveAmount: string;
+  receiveRaw: string;
   pnl: string;
 };
 
 type UnstakeRnbwResult = {
-  txHash: Hash;
+  txHash: string;
   waitForConfirmation: () => Promise<void>;
 };
 
@@ -37,18 +34,26 @@ export async function unstakeRnbw({
   gasParams: LegacyTransactionGasParamAmounts | TransactionGasParamAmounts;
 }): Promise<UnstakeRnbwResult> {
   const positionData = await refreshAndValidatePosition();
-  const analyticsSnapshot = snapshotUnstakeAnalytics(positionData);
+  const { receiveRaw, ...analyticsSnapshot } = snapshotUnstakeAnalytics(positionData);
 
   try {
-    const { provider, txHash } = await submitUnstake({
+    const provider = getProvider({ chainId: STAKING_CHAIN_ID });
+    const signer = await loadWallet({ address, provider });
+    if (!signer) {
+      throw new Error('Failed to load wallet');
+    }
+
+    const execution = await executeUnstakeRnbw({
       address,
+      expectedReceiveAmountRaw: receiveRaw,
       gasParams,
-      positionData,
+      provider,
+      signer,
     });
 
     return {
-      txHash,
-      waitForConfirmation: () => finalizeSubmittedUnstake({ analyticsSnapshot, positionData, provider, txHash }),
+      txHash: execution.txHash,
+      waitForConfirmation: () => finalizeSubmittedUnstake({ analyticsSnapshot, execution, positionData }),
     };
   } catch (error) {
     analytics.track(analytics.event.rnbwStakingUnstakeFailed, {
@@ -65,7 +70,7 @@ async function refreshAndValidatePosition(): Promise<StakingPositionData> {
   await useStakingPositionStore.getState().fetch(undefined, { force: true });
   const positionData = useStakingPositionStore.getState().getData();
 
-  if (!positionData || !positionData.exitFeePercentage) {
+  if (!positionData || positionData.exitFeePercentage === undefined) {
     throw new RainbowError('[unstakeRnbw]: Position data missing');
   }
 
@@ -76,75 +81,21 @@ async function refreshAndValidatePosition(): Promise<StakingPositionData> {
   return positionData;
 }
 
-async function submitUnstake({
-  address,
-  gasParams,
-  positionData,
-}: {
-  address: Address;
-  gasParams: LegacyTransactionGasParamAmounts | TransactionGasParamAmounts;
-  positionData: StakingPositionData;
-}): Promise<{ provider: StaticJsonRpcProvider; txHash: Hash }> {
-  const provider = getProvider({ chainId: STAKING_CHAIN_ID });
-  const signer = await loadWallet({ address, provider });
-  if (!signer) {
-    throw new Error('Failed to load wallet');
-  }
-
-  const data = encodeFunctionData({ abi: STAKING_ABI, functionName: 'unstakeAll' });
-  const gasLimit = await estimateUnstakeGasLimit({ address, data, provider });
-  const tx = await signer.sendTransaction({
-    ...gasParams,
-    to: STAKING_CONTRACT_ADDRESS,
-    data,
-    gasLimit,
-  });
-  const { receiveRaw } = computeUnstakeAmounts(positionData);
-
-  const submittedUnstake = extractReplayableExecution(tx, {
-    to: STAKING_CONTRACT_ADDRESS,
-    data,
-    value: 0,
-  });
-  if (!submittedUnstake) {
-    throw new RainbowError('[executeUnstakeRnbw]: manual unstaking did not return replayable transaction metadata');
-  }
-
-  addNewTransaction({
-    address,
-    chainId: STAKING_CHAIN_ID,
-    transaction: {
-      ...buildUnstakeTransaction({ address, unstakeAmountRaw: receiveRaw }),
-      ...submittedUnstake.replayableCall,
-      gasLimit: tx.gasLimit ?? gasLimit,
-      gasPrice: tx.gasPrice,
-      hash: submittedUnstake.hash,
-      maxFeePerGas: tx.maxFeePerGas,
-      maxPriorityFeePerGas: tx.maxPriorityFeePerGas,
-      nonce: submittedUnstake.nonce,
-    },
-  });
-
-  return { provider, txHash: tx.hash as Hash };
-}
-
 async function finalizeSubmittedUnstake({
   analyticsSnapshot,
+  execution,
   positionData,
-  provider,
-  txHash,
 }: {
-  analyticsSnapshot: UnstakeAnalyticsSnapshot;
+  analyticsSnapshot: Omit<UnstakeAnalyticsSnapshot, 'receiveRaw'>;
+  execution: UnstakeRnbwExecution;
   positionData: StakingPositionData;
-  provider: StaticJsonRpcProvider;
-  txHash: Hash;
 }): Promise<void> {
   try {
-    await waitForWalletTransactions({ provider, txHashes: [txHash] });
+    await execution.waitForConfirmation();
     await pollForStakingUpdate(positionData.poolShares);
     analytics.track(analytics.event.rnbwStakingUnstake, {
       chainId: STAKING_CHAIN_ID,
-      txHash,
+      txHash: execution.txHash,
       ...analyticsSnapshot,
     });
   } catch (error) {
@@ -157,23 +108,6 @@ async function finalizeSubmittedUnstake({
   }
 }
 
-async function estimateUnstakeGasLimit({
-  address,
-  data,
-  provider,
-}: {
-  address: Address;
-  data: Hex;
-  provider: StaticJsonRpcProvider;
-}): Promise<string> {
-  try {
-    const estimatedGasLimit = await provider.estimateGas({ data, from: address, to: STAKING_CONTRACT_ADDRESS });
-    return estimatedGasLimit.toString();
-  } catch {
-    return STAKING_UNSTAKE_GAS_LIMIT.toString();
-  }
-}
-
 function snapshotUnstakeAnalytics(positionData: StakingPositionData): UnstakeAnalyticsSnapshot {
   const { stakedRnbw: stakedRnbwRaw, decimals, sessionPnl } = positionData;
   const { receiveRaw, exitFeeRaw } = computeUnstakeAmounts(positionData);
@@ -181,6 +115,7 @@ function snapshotUnstakeAnalytics(positionData: StakingPositionData): UnstakeAna
   return {
     stakedAmount: convertRawAmountToDecimalFormat(stakedRnbwRaw, decimals),
     expectedExitFee: convertRawAmountToDecimalFormat(exitFeeRaw, decimals),
+    receiveRaw,
     expectedReceiveAmount: convertRawAmountToDecimalFormat(receiveRaw, decimals),
     pnl: convertRawAmountToDecimalFormat(subWorklet(sessionPnl.exchangeRateGain, exitFeeRaw), decimals),
   };
