@@ -159,7 +159,6 @@ export const MarketCell = memo(function MarketCell({
                 chartId={item.chartId}
                 color={item.chartColor}
                 height={TOKEN_SPARKLINE_LAYOUT.height}
-                maxPoints={item.chartMaxPoints}
                 store={item.chartStore}
                 width={TOKEN_SPARKLINE_LAYOUT.width}
               />
