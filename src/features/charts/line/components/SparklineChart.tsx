@@ -2,14 +2,7 @@ import React, { memo, useCallback } from 'react';
 import { StyleSheet, View } from 'react-native';
 
 import { Canvas, Picture } from '@shopify/react-native-skia';
-import Animated, {
-  runOnUI,
-  useAnimatedReaction,
-  useAnimatedStyle,
-  useSharedValue,
-  withSpring,
-  type SharedValue,
-} from 'react-native-reanimated';
+import Animated, { runOnUI, useAnimatedReaction, useAnimatedStyle, useSharedValue, withSpring } from 'react-native-reanimated';
 
 import { SPRING_CONFIGS } from '@/components/animations/animationConfigs';
 import { useWorkletClass } from '@/hooks/reanimated/useWorkletClass';
@@ -17,23 +10,10 @@ import { useCleanup } from '@/hooks/useCleanup';
 import { useOnChange } from '@/hooks/useOnChange';
 import { useStableValue } from '@/hooks/useStableValue';
 import { useListen } from '@/state/internal/hooks/useListen';
-import { type BaseRainbowStore } from '@/state/internal/types';
 import { createBlankPicture } from '@/worklets/skia';
 
 import { COMPACT_LINE_CHART_HORIZONTAL_OVERDRAW, CompactLineChartRenderer } from '../compact/CompactLineChartRenderer';
-import { type CompactLineChartData, type LineChartDataStore } from '../compact/types';
-
-// ============ Types ========================================================== //
-
-type SparklineChartProps<S extends LineChartDataStore> = {
-  chartId: string;
-  color: string;
-  colorSharedValue?: SharedValue<string>;
-  height: number;
-  maxPoints?: number;
-  store: BaseRainbowStore<S>;
-  width: number;
-};
+import { type CompactLineChartData, type LineChartDataStore, type SparklineChartProps } from '../compact/types';
 
 // ============ Chart Component ================================================ //
 
