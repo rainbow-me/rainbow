@@ -22,7 +22,7 @@ export function navigateToPolymarketCategory(tagId: string): void {
   usePolymarketCategoryStore.getState().setTagId(categoryKey);
   usePolymarketSportsEventsStore.getState().setSelectedLeagueId(DEFAULT_SPORTS_LEAGUE_KEY);
 
-  navigateToPolymarket();
+  navigateToPolymarketBrowse();
 }
 
 export function navigateToPolymarketSportsLeague(leagueId: string): void {
@@ -31,7 +31,22 @@ export function navigateToPolymarketSportsLeague(leagueId: string): void {
 
   usePolymarketCategoryStore.getState().setTagId(CATEGORIES.sports.tagId);
   usePolymarketSportsEventsStore.getState().setSelectedLeagueId(selectedLeagueId);
-  navigateToPolymarket();
+  navigateToPolymarketBrowse();
+}
+
+// Monotonic key so a repeated deep link to the same inner route still re-triggers the
+// navigator's route effect even when `initialRoute` is unchanged.
+let polymarketRouteRequestKey = 0;
+
+// Opens the Polymarket navigator on the browse tab. The inner-route intent is passed through
+// the outer navigation params and applied by PolymarketNavigator, so this util never imports
+// the navigator's component/store (avoiding a screen-tree dependency).
+function navigateToPolymarketBrowse(): void {
+  polymarketRouteRequestKey += 1;
+  navigateToPolymarket({
+    initialRoute: Routes.POLYMARKET_BROWSE_EVENTS_SCREEN,
+    routeRequestKey: polymarketRouteRequestKey,
+  });
 }
 
 function parseCategoryKey(tagId: string): CategoryKey | undefined {

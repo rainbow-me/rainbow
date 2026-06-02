@@ -1,4 +1,4 @@
-import { memo } from 'react';
+import { memo, useEffect } from 'react';
 import { StyleSheet } from 'react-native';
 
 import { SPRING_CONFIGS } from '@/components/animations/animationConfigs';
@@ -15,6 +15,7 @@ import { PolymarketSearchScreen } from '@/features/polymarket/screens/polymarket
 import { useCleanup } from '@/hooks/useCleanup';
 import { useStableValue } from '@/hooks/useStableValue';
 import { createVirtualNavigator } from '@/navigation/createVirtualNavigator';
+import { useRoute } from '@/navigation/Navigation';
 import Routes from '@/navigation/routesNames';
 import { type PolymarketRoute } from '@/navigation/types';
 import { useListen } from '@/state/internal/hooks/useListen';
@@ -49,6 +50,19 @@ const PolymarketNavigatorContent = () => {
   );
 
   useCleanup(PolymarketNavigation.resetNavigationState);
+
+  // Apply a deep-link route intent passed through the outer navigation params: reset stale
+  // virtual history, then switch the virtual navigator to the requested inner tab. Keyed on
+  // routeRequestKey so a repeated request to the same route still re-applies.
+  const { params } = useRoute<typeof Routes.POLYMARKET_NAVIGATOR>();
+  const requestedRoute = params?.initialRoute;
+  const routeRequestKey = params?.routeRequestKey;
+
+  useEffect(() => {
+    if (!requestedRoute) return;
+    PolymarketNavigation.resetNavigationState();
+    PolymarketNavigation.navigate(requestedRoute);
+  }, [requestedRoute, routeRequestKey]);
 
   return (
     <>
