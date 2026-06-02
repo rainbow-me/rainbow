@@ -143,6 +143,9 @@ export async function fetchTeamMetadataForGameEvent(
   return { teams, homeTeamName: event.homeTeamName, awayTeamName: event.awayTeamName };
 }
 
+// Bounds Gamma fan-out (each event triggers up to 3 sequential lookups across hundreds of events).
+const TEAM_METADATA_FETCH_CONCURRENCY = 4;
+
 export async function fetchTeamsForGameEvents(
   events: GameTeamsSource[],
   abortController?: AbortController | null,
@@ -161,7 +164,7 @@ export async function fetchTeamsForGameEvents(
   }
 
   const gameEvents = Array.from(gameEventsByTicker.values());
-  const results = await mapWithConcurrency(gameEvents, 4, event => fetchMetadata(event, abortController));
+  const results = await mapWithConcurrency(gameEvents, TEAM_METADATA_FETCH_CONCURRENCY, event => fetchMetadata(event, abortController));
 
   results.forEach((result, index) => {
     if (result.status === 'fulfilled' && result.value) {
