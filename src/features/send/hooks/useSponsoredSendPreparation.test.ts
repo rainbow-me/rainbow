@@ -1,8 +1,6 @@
-import { getAddress, type Address } from 'viem';
-
 import { ChainId } from '@/state/backendNetworks/types';
 
-import { getCachedDelegationSupport, getDelegationSupportRequestKey, getSponsoredSendRequestKey } from './useSponsoredSendPreparation';
+import { getSponsoredSendRequestKey } from './useSponsoredSendPreparation';
 
 jest.mock('@/model/remoteConfig', () => ({
   getRemoteConfig: () => ({ sponsored_sends_enabled: true }),
@@ -18,14 +16,9 @@ jest.mock('@/features/delegation/sponsoredSendExecution', () => ({
   buildSendCallFromSendDetails: jest.fn(),
 }));
 
-const mockSupportsDelegatedExecution = jest.fn<Promise<boolean>, [unknown]>();
-
 jest.mock('@/features/delegation/willDelegate', () => ({
-  supportsDelegatedExecution: (params: unknown) => mockSupportsDelegatedExecution(params),
+  supportsDelegatedExecution: jest.fn(),
 }));
-
-const ACCOUNT = '0xaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa' satisfies Address;
-const CHECKSUM_ACCOUNT = getAddress(ACCOUNT);
 
 const SELECTED_ASSET = {
   address: '0x5555555555555555555555555555555555555555',
@@ -137,47 +130,5 @@ describe('getSponsoredSendRequestKey', () => {
         },
       })
     );
-  });
-});
-
-describe('getCachedDelegationSupport', () => {
-  beforeEach(() => {
-    jest.clearAllMocks();
-  });
-
-  it('normalizes cache keys by account and chain', () => {
-    expect(
-      getDelegationSupportRequestKey({
-        accountAddress: CHECKSUM_ACCOUNT,
-        chainId: ChainId.base,
-      })
-    ).toBe('0xaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa:8453');
-  });
-
-  it('reuses the same delegation support request for matching account and chain', async () => {
-    const cache = new Map<string, Promise<boolean>>();
-    mockSupportsDelegatedExecution.mockResolvedValue(true);
-
-    await expect(getCachedDelegationSupport({ accountAddress: ACCOUNT, cache, chainId: ChainId.base })).resolves.toBe(true);
-    await expect(
-      getCachedDelegationSupport({
-        accountAddress: CHECKSUM_ACCOUNT,
-        cache,
-        chainId: ChainId.base,
-      })
-    ).resolves.toBe(true);
-
-    expect(mockSupportsDelegatedExecution).toHaveBeenCalledTimes(1);
-    expect(mockSupportsDelegatedExecution).toHaveBeenCalledWith({ address: ACCOUNT, chainId: ChainId.base });
-  });
-
-  it('drops failed delegation support requests so the next preparation can retry', async () => {
-    const cache = new Map<string, Promise<boolean>>();
-    mockSupportsDelegatedExecution.mockRejectedValueOnce(new Error('support failed')).mockResolvedValueOnce(true);
-
-    await expect(getCachedDelegationSupport({ accountAddress: ACCOUNT, cache, chainId: ChainId.base })).rejects.toThrow('support failed');
-    await expect(getCachedDelegationSupport({ accountAddress: ACCOUNT, cache, chainId: ChainId.base })).resolves.toBe(true);
-
-    expect(mockSupportsDelegatedExecution).toHaveBeenCalledTimes(2);
   });
 });

@@ -218,7 +218,6 @@ export default function SendSheet() {
     hasResolvedSponsoredSend,
     isPreparingSponsoredSend,
     isSponsoredSend,
-    isSponsorshipSupported,
     preparedCall: sponsoredSendPreparedCall,
     preparedCalls: sponsoredSendPreparedCalls,
     shouldShowSponsoredSendGas,
@@ -228,12 +227,13 @@ export default function SendSheet() {
     chainId: currentChainId,
     debouncedAmount: debouncedAssetAmount,
     isENS,
+    isSufficientBalance: amountDetails.isSufficientBalance,
     isValidAddress,
     provider: currentProvider,
     selected: selectedAddressAsset,
     toAddress,
   });
-  const { maxInputBalance, updateMaxInputBalance } = useMaxInputBalance({ ignoreGasFee: isSponsorshipSupported });
+  const { maxInputBalance, updateMaxInputBalance } = useMaxInputBalance({ ignoreGasFee: shouldShowSponsoredSendGas });
 
   let colorForAsset = useColorForAsset(selected, undefined, false, true);
   const uniqueAssetColor = usePersistentDominantColorFromImage(isUniqueAsset ? selected?.images.lowResUrl : null) ?? colors.appleBlue;
@@ -307,7 +307,7 @@ export default function SendSheet() {
         isSufficientBalance,
       };
     });
-  }, [isUniqueAsset, isSponsorshipSupported, selected, updateMaxInputBalance]);
+  }, [isUniqueAsset, selected, shouldShowSponsoredSendGas, updateMaxInputBalance]);
 
   useEffect(() => {
     if (recipientOverride && !recipient) {
