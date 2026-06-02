@@ -145,27 +145,25 @@ function pushSection({
     items.push({ type: 'header', key: `header-${sectionKey}`, title: header.title, isLive: header.isLive });
   }
 
-  if (!showLeagueHeaders) {
-    items.push(...buildEventItems(events, sectionKey));
-    return;
-  }
-
+  // Always group (sorts each league by startTime); only header/separator rows depend on showLeagueHeaders.
   const leagueGroups = groupEventsByLeague(events);
   for (let i = 0; i < leagueGroups.length; i++) {
     const group = leagueGroups[i];
-    if (i > 0) {
+    if (showLeagueHeaders) {
+      if (i > 0) {
+        items.push({
+          type: 'league-separator',
+          key: `league-separator-${sectionKey}-${group.key}`,
+        });
+      }
       items.push({
-        type: 'league-separator',
-        key: `league-separator-${sectionKey}-${group.key}`,
+        type: 'league-header',
+        key: `league-${sectionKey}-${group.key}`,
+        title: group.title,
+        eventSlug: group.events[0].slug,
+        leagueId: group.leagueId,
       });
     }
-    items.push({
-      type: 'league-header',
-      key: `league-${sectionKey}-${group.key}`,
-      title: group.title,
-      eventSlug: group.events[0].slug,
-      leagueId: group.leagueId,
-    });
     const expansionKey = `${sectionKey}-${group.key}`;
     items.push(...buildEventItems(group.events, expansionKey));
   }
