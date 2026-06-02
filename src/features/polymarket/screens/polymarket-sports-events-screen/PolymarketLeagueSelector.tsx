@@ -165,9 +165,7 @@ const LeagueItemComponent = memo(function LeagueItemComponent({
         </Animated.View>
         {iconLeagueId && (
           <View style={styles.iconContainer}>
-            <View style={styles.iconLayer}>
-              <LeagueIcon leagueId={iconLeagueId} size={24} />
-            </View>
+            <LeagueIcon leagueId={iconLeagueId} size={24} />
           </View>
         )}
         <Text align="center" color="label" size="17pt" weight="heavy">
@@ -203,9 +201,6 @@ const styles = StyleSheet.create({
     height: 16,
     justifyContent: 'center',
     width: 16,
-  },
-  iconLayer: {
-    position: 'absolute',
   },
   itemContainer: {
     alignItems: 'center',
