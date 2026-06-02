@@ -115,7 +115,7 @@ export const MarketTileCard = memo(function MarketTileCard({
     item.onNavigate();
   };
 
-  const { accentColor, badgeTextColor, cardColors, chartColor, iconUrl } = useMemo(
+  const { accentColor, badgeTextColor, cardColors, iconUrl } = useMemo(
     () => buildMarketTileCardDisplay(item, colorMode),
     [colorMode, item]
   );
@@ -170,8 +170,7 @@ export const MarketTileCard = memo(function MarketTileCard({
           <View pointerEvents="none" style={[styles.chartContainer, { width: chartWidth }]}>
             <SparklineChart
               chartId={item.chartId}
-              color={chartColor}
-              colorSharedValue={chartColorSharedValue}
+              color={chartColorSharedValue}
               height={CHART_HEIGHT}
               livePointer
               maxPoints={item.chartMaxPoints}
@@ -223,7 +222,6 @@ function buildMarketTileCardDisplay(item: MarketDisplayItem, colorMode: ColorMod
     accentColor,
     badgeTextColor: getHighContrastTextColorWorklet(accentColor, 4),
     cardColors: getValueForColorMode(CARD_COLORS, colorMode),
-    chartColor: item.chartColor,
     iconUrl,
   };
 }
