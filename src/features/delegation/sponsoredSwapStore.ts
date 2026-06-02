@@ -52,6 +52,7 @@ export const useSponsoredSwapStore = createPreparedCallsStore<PreparedCallsExecu
     quoteKey: $ => $(useSponsoredSwapQuoteKey),
   },
   cacheTime: time.minutes(1),
+  keepPreviousData: true,
   staleTime: time.seconds(12),
 });
 
