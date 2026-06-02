@@ -1,5 +1,5 @@
-import React, { memo, useCallback, useEffect, useState } from 'react';
-import { Keyboard, RefreshControl } from 'react-native';
+import React, { memo, useEffect } from 'react';
+import { Keyboard } from 'react-native';
 
 import { useIsFocused } from '@react-navigation/native';
 import { useSharedValue } from 'react-native-reanimated';
@@ -10,10 +10,9 @@ import { DiscoverScreenContent } from '@/components/Discover/DiscoverScreenConte
 import { DiscoverScreenProvider } from '@/components/Discover/DiscoverScreenContext';
 import { DiscoverSearchBar } from '@/components/Discover/DiscoverSearchBar';
 import { ScrollHeaderFade } from '@/components/scroll-header-fade/ScrollHeaderFade';
-import { Box, useBackgroundColor, useColorMode, useForegroundColor } from '@/design-system';
+import { Box, useBackgroundColor, useColorMode } from '@/design-system';
 import { type BackgroundColor } from '@/design-system/color/palettes';
 import { DISCOVER_HEADER_HEIGHT, DiscoverHeader } from '@/features/discover/components/DiscoverHeader';
-import { refreshDiscoverSurface } from '@/features/discover/utils/refreshDiscoverSurface';
 import { useSyncDiscoverSurfacePlacements } from '@/features/placements/surfaces/hooks/useDiscoverSurfacePlacements';
 
 export const DiscoverScreen = () => {
@@ -31,32 +30,16 @@ const Content = () => {
 
   const backgroundToken: BackgroundColor = isDarkMode ? 'black' : 'surfacePrimary';
   const backgroundColor = useBackgroundColor(backgroundToken);
-  const refreshTintColor = useForegroundColor('label');
   const headerFadeTopInset = topInset + DISCOVER_HEADER_HEIGHT;
   const scrollOffset = useSharedValue(0);
-  const [isRefreshing, setIsRefreshing] = useState(false);
   useSyncDiscoverSurfacePlacements();
-
-  const refreshDiscover = useCallback(async () => {
-    setIsRefreshing(true);
-    try {
-      await refreshDiscoverSurface('discover');
-    } finally {
-      setIsRefreshing(false);
-    }
-  }, []);
-
-  const renderRefreshControl = useCallback(
-    () => <RefreshControl onRefresh={refreshDiscover} refreshing={isRefreshing} tintColor={refreshTintColor} />,
-    [isRefreshing, refreshDiscover, refreshTintColor]
-  );
 
   return (
     <Box background={backgroundToken} height="full" style={{ flex: 1 }}>
       <Box paddingTop={{ custom: topInset }}>{isSearching ? <DiscoverSearchBar /> : <DiscoverHeader />}</Box>
 
       <Box style={{ flex: 1 }} testID="discover-sheet">
-        <DiscoverScreenContent renderRefreshControl={renderRefreshControl} scrollOffset={scrollOffset} />
+        <DiscoverScreenContent scrollOffset={scrollOffset} />
       </Box>
 
       {!isSearching ? <ScrollHeaderFade color={backgroundColor} scrollOffset={scrollOffset} topInset={headerFadeTopInset} /> : null}
