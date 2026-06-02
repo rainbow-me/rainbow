@@ -1,5 +1,5 @@
-import React, { memo, useCallback, useEffect, useMemo, useRef, type MutableRefObject, type ReactElement } from 'react';
-import { Platform, StyleSheet, type RefreshControlProps } from 'react-native';
+import React, { memo, useCallback, useEffect, useMemo, useRef, type MutableRefObject } from 'react';
+import { Platform, StyleSheet } from 'react-native';
 
 import Animated, { runOnJS, useAnimatedScrollHandler, useSharedValue, type SharedValue } from 'react-native-reanimated';
 
@@ -9,6 +9,7 @@ import { DEFAULT_SCROLL_FADE_DISTANCE } from '@/components/scroll-header-fade/Sc
 import { Skeleton } from '@/components/Skeleton';
 import { SmoothPager, usePagerNavigation } from '@/components/SmoothPager/SmoothPager';
 import { Box } from '@/design-system';
+import { DiscoverRefreshControl } from '@/features/discover/components/DiscoverRefreshControl';
 import { DiscoverSections } from '@/features/discover/components/DiscoverSection';
 import {
   DiscoverSectionNavigation,
@@ -22,7 +23,6 @@ import { useListen } from '@/state/internal/hooks/useListen';
 import { clamp } from '@/worklets/numbers';
 
 type DiscoverSectionsPagerProps = {
-  renderRefreshControl?: () => ReactElement<RefreshControlProps>;
   scrollOffset: SharedValue<number>;
 };
 
@@ -31,10 +31,7 @@ type SectionScrollOffsets = Partial<Record<DiscoverSection, number>>;
 const FALLBACK_SECTION_COUNT = 3;
 const FALLBACK_TILE_COUNT = 2;
 
-export const DiscoverSectionsPager = memo(function DiscoverSectionsPager({
-  renderRefreshControl,
-  scrollOffset,
-}: DiscoverSectionsPagerProps) {
+export const DiscoverSectionsPager = memo(function DiscoverSectionsPager({ scrollOffset }: DiscoverSectionsPagerProps) {
   const surface = useDiscoverSurface();
   const tabs = useMemo(() => surface?.tabs ?? [], [surface]);
   const activeSectionId = useDiscoverNavigationStore(state => state.activeSection);
@@ -70,7 +67,7 @@ export const DiscoverSectionsPager = memo(function DiscoverSectionsPager({
   if (!surface || !tabs.length) {
     return (
       <Box style={styles.container} testID="discover-sections-pager">
-        <DiscoverSectionsFallback renderRefreshControl={renderRefreshControl} scrollOffset={scrollOffset} />
+        <DiscoverSectionsFallback scrollOffset={scrollOffset} />
       </Box>
     );
   }
@@ -94,7 +91,6 @@ export const DiscoverSectionsPager = memo(function DiscoverSectionsPager({
             component={
               <DiscoverSectionScrollView
                 isActive={section.id === activeSectionId}
-                renderRefreshControl={renderRefreshControl}
                 scrollOffset={scrollOffset}
                 section={section}
                 sectionScrollOffsets={sectionScrollOffsets}
@@ -111,13 +107,7 @@ export const DiscoverSectionsPager = memo(function DiscoverSectionsPager({
   );
 });
 
-const DiscoverSectionsFallback = memo(function DiscoverSectionsFallback({
-  renderRefreshControl,
-  scrollOffset,
-}: {
-  renderRefreshControl?: () => ReactElement<RefreshControlProps>;
-  scrollOffset: SharedValue<number>;
-}) {
+const DiscoverSectionsFallback = memo(function DiscoverSectionsFallback({ scrollOffset }: { scrollOffset: SharedValue<number> }) {
   const tabBarOffset = useTabBarOffset();
   const bottomInset = tabBarOffset + 12;
 
@@ -133,7 +123,7 @@ const DiscoverSectionsFallback = memo(function DiscoverSectionsFallback({
       automaticallyAdjustsScrollIndicatorInsets={false}
       contentContainerStyle={styles.fallbackContent}
       onScroll={onScroll}
-      refreshControl={renderRefreshControl?.()}
+      refreshControl={<DiscoverRefreshControl />}
       scrollEventThrottle={16}
       showsVerticalScrollIndicator={false}
       contentInset={{ bottom: bottomInset }}
@@ -156,14 +146,12 @@ const DiscoverSectionsFallback = memo(function DiscoverSectionsFallback({
 
 const DiscoverSectionScrollView = memo(function DiscoverSectionScrollView({
   isActive,
-  renderRefreshControl,
   scrollOffset,
   section,
   sectionScrollOffsets,
   surfaceId,
 }: {
   isActive: boolean;
-  renderRefreshControl?: () => ReactElement<RefreshControlProps>;
   scrollOffset: SharedValue<number>;
   section: DiscoverTab;
   sectionScrollOffsets: MutableRefObject<SectionScrollOffsets>;
@@ -209,7 +197,7 @@ const DiscoverSectionScrollView = memo(function DiscoverSectionScrollView({
       onScroll={onScroll}
       pointerEvents={isActive ? 'auto' : 'none'}
       ref={setScrollViewRef}
-      refreshControl={renderRefreshControl?.()}
+      refreshControl={<DiscoverRefreshControl />}
       scrollEventThrottle={16}
       showsVerticalScrollIndicator={false}
       contentInset={{ bottom: bottomInset }}
