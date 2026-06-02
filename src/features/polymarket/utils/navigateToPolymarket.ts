@@ -54,7 +54,7 @@ function parseCategoryKey(tagId: string): CategoryKey | undefined {
 }
 
 function isCategoryKey(tagId: string): tagId is CategoryKey {
-  return tagId in CATEGORIES;
+  return Object.prototype.hasOwnProperty.call(CATEGORIES, tagId);
 }
 
 function parseSportsLeagueKey(leagueId: string): PolymarketSportsLeagueId | undefined {
