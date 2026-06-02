@@ -30,13 +30,13 @@ import { LiveSparklinePointer } from './LiveSparklinePointer';
 export const SparklineChart = memo(function SparklineChart<S extends LineChartDataStore>({
   chartId,
   color,
-  colorSharedValue,
   height,
   livePointer,
   maxPoints,
   store,
   width,
 }: SparklineChartProps<S>) {
+  const isColorString = typeof color === 'string';
   const renderWidth = width + COMPACT_LINE_CHART_HORIZONTAL_OVERDRAW * 2;
   const initialPicture = useStableValue(() => createBlankPicture(renderWidth, height));
 
@@ -62,7 +62,7 @@ export const SparklineChart = memo(function SparklineChart<S extends LineChartDa
       const chartData = maxPoints === undefined ? nextData : downsampleCompactLineChartData(nextData, maxPoints);
 
       runOnUI((data: CompactLineChartData | undefined, lineColor: string) => {
-        const resolvedLineColor = colorSharedValue?.value ?? lineColor;
+        const resolvedLineColor = isColorString ? color : color.value;
         const hasData = data !== undefined;
         const shouldAnimateIn = hasData && !hasRenderedData.value;
 
@@ -73,16 +73,16 @@ export const SparklineChart = memo(function SparklineChart<S extends LineChartDa
         entranceProgress.value = withSpring(hasData ? 1 : 0, SPRING_CONFIGS.softerSpringConfig);
       })(chartData, nextColor);
     },
-    [colorSharedValue, entranceProgress, hasRenderedData, maxPoints, renderer]
+    [color, entranceProgress, hasRenderedData, isColorString, maxPoints, renderer]
   );
 
   useAnimatedReaction(
-    () => colorSharedValue?.value,
+    () => (isColorString ? color : color.value),
     (nextColor, previousColor) => {
-      if (nextColor === undefined || nextColor === previousColor) return;
+      if (previousColor === null || nextColor === previousColor) return;
       renderer.value?.recolor(nextColor);
     },
-    [colorSharedValue]
+    [color]
   );
 
   useListen(
