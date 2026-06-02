@@ -15,8 +15,6 @@ describe('parsePositiveRawAmount', () => {
   });
 
   it('throws the supplied error when requested', () => {
-    const error = new Error('invalid amount');
-
-    expect(() => parsePositiveRawAmount('0', 18, error)).toThrow(error);
+    expect(() => parsePositiveRawAmount('0', 18, 'invalid amount')).toThrow('invalid amount');
   });
 });

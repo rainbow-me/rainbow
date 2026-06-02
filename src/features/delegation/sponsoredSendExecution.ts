@@ -9,7 +9,6 @@ import { encodeErc20Transfer } from '@/framework/core/evm/erc20Calldata';
 import { parsePositiveRawAmount } from '@/framework/core/evm/units';
 import { isNativeAsset } from '@/handlers/assets';
 import { resolveNameOrAddress } from '@/handlers/web3';
-import { RainbowError } from '@/logger';
 import { type ChainId } from '@/state/backendNetworks/types';
 import { type Call, type ExecuteCallsResult, type PreparedCallsExecution } from '@rainbow-me/delegation';
 
@@ -51,7 +50,7 @@ export async function buildSendCallFromSendDetails({
   toAddress,
 }: BuildSendCallFromSendDetailsParams): Promise<Call> {
   const recipient = await resolveSendAddress(toAddress);
-  const rawAmount = parsePositiveRawAmount(amount, asset.decimals, new RainbowError('[buildSendCallFromSendDetails]: invalid send amount'));
+  const rawAmount = parsePositiveRawAmount(amount, asset.decimals, '[buildSendCallFromSendDetails]: invalid send amount');
 
   if (isNativeAsset(asset.address, chainId)) {
     return {
@@ -63,7 +62,7 @@ export async function buildSendCallFromSendDetails({
 
   return {
     data: encodeErc20Transfer({ amount: rawAmount, to: recipient }),
-    to: requireAddress(asset.address, new RainbowError('[buildSendCallFromSendDetails]: invalid token address')),
+    to: requireAddress(asset.address, '[buildSendCallFromSendDetails]: invalid token address'),
     value: 0n,
   };
 }
@@ -95,5 +94,5 @@ export async function executeSponsoredSendIfAvailable({
 
 async function resolveSendAddress(address: string): Promise<Address> {
   const resolved = await resolveNameOrAddress(address);
-  return requireAddress(resolved, new RainbowError('[buildSendCallFromSendDetails]: invalid recipient'));
+  return requireAddress(resolved, '[buildSendCallFromSendDetails]: invalid recipient');
 }

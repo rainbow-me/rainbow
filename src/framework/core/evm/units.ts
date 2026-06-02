@@ -1,18 +1,22 @@
 import { parseUnits } from '@ethersproject/units';
 
-/** Parses a positive decimal amount into raw base units without rounding. */
+import { RainbowError } from '@/logger';
+
+/**
+ * Parses a positive decimal amount into raw base units without rounding.
+ */
 export function parsePositiveRawAmount(amount: string, decimals: number): bigint | null;
-export function parsePositiveRawAmount(amount: string, decimals: number, error: Error): bigint;
-export function parsePositiveRawAmount(amount: string, decimals: number, error?: Error): bigint | null {
+export function parsePositiveRawAmount(amount: string, decimals: number, errorMessage: string): bigint;
+export function parsePositiveRawAmount(amount: string, decimals: number, errorMessage?: string): bigint | null {
   try {
     const value = BigInt(parseUnits(amount, decimals).toString());
-    return value > 0n ? value : invalidRawAmount(error);
+    return value > 0n ? value : invalidRawAmount(errorMessage);
   } catch {
-    return invalidRawAmount(error);
+    return invalidRawAmount(errorMessage);
   }
 }
 
-function invalidRawAmount(error?: Error): null {
-  if (error) throw error;
+function invalidRawAmount(errorMessage?: string): null {
+  if (errorMessage) throw new RainbowError(errorMessage);
   return null;
 }

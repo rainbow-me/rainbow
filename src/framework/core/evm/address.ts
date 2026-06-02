@@ -1,9 +1,16 @@
-import { isAddress, type Address } from 'viem';
+import { getAddress, type Address } from 'viem';
+
+import { RainbowError } from '@/logger';
 
 /**
- * Returns a validated viem `Address` value or throws the supplied error.
+ * Returns a validated viem `Address` or throws an error with the provided message.
  */
-export function requireAddress(value: string | null | undefined, error: Error): Address {
-  if (value && isAddress(value)) return value;
-  throw error;
+export function requireAddress(value: string | null | undefined, errorMessage: string): Address {
+  if (!value) throw new RainbowError(errorMessage);
+
+  try {
+    return getAddress(value);
+  } catch {
+    throw new RainbowError(errorMessage);
+  }
 }
