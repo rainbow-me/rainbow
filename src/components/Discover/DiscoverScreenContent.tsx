@@ -1,5 +1,5 @@
-import React, { type ReactElement } from 'react';
-import { StyleSheet, View, type RefreshControlProps } from 'react-native';
+import React from 'react';
+import { StyleSheet, View } from 'react-native';
 
 import { type SharedValue } from 'react-native-reanimated';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
@@ -10,11 +10,10 @@ import { Box } from '@/design-system';
 import { DiscoverSectionsPager } from '@/features/discover/components/DiscoverSectionsPager';
 
 type DiscoverScreenContentProps = {
-  renderRefreshControl?: () => ReactElement<RefreshControlProps>;
   scrollOffset: SharedValue<number>;
 };
 
-export function DiscoverScreenContent({ renderRefreshControl, scrollOffset }: DiscoverScreenContentProps) {
+export function DiscoverScreenContent({ scrollOffset }: DiscoverScreenContentProps) {
   const insets = useSafeAreaInsets();
   const isSearching = useDiscoverSearchQueryStore(state => state.isSearching);
 
@@ -26,7 +25,7 @@ export function DiscoverScreenContent({ renderRefreshControl, scrollOffset }: Di
       </View>
 
       <View style={[styles.sectionsContainer, isSearching && styles.hidden]}>
-        <DiscoverSectionsPager renderRefreshControl={renderRefreshControl} scrollOffset={scrollOffset} />
+        <DiscoverSectionsPager scrollOffset={scrollOffset} />
       </View>
     </Box>
   );
