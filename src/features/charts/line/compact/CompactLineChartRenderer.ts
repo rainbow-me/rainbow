@@ -146,7 +146,6 @@ export class CompactLineChartRenderer {
   private readonly strokePath: SkPath;
 
   private currentColor: string | null = null;
-  private currentData: CompactLineChartData | undefined;
   private currentShader: SkShader | null = null;
 
   constructor({ blankPicture, chartPicture, contentWidth, height }: CompactLineChartRendererConfig) {
@@ -175,8 +174,6 @@ export class CompactLineChartRenderer {
   }
 
   public setData(data: CompactLineChartData | undefined, lineColor: string): void {
-    this.currentData = data;
-
     const pointCount = data ? Math.min(data.prices.length, data.timestamps.length) : 0;
     if (!data || pointCount < 2) {
       this.setBlankPicture();
@@ -187,12 +184,17 @@ export class CompactLineChartRenderer {
       this.setColor(lineColor);
     }
 
-    this.buildPicture(this.buildTargetPoints(data, pointCount), pointCount);
+    this.buildSmoothedPaths(data, pointCount);
+    this.buildPicture();
   }
 
   public recolor(lineColor: string): void {
     if (lineColor === this.currentColor) return;
-    this.setData(this.currentData, lineColor);
+    this.setColor(lineColor);
+
+    // No built geometry to re-record (blank/first render) — the new color is retained for the next setData.
+    if (this.chartPicture.value === this.blankPicture) return;
+    this.buildPicture();
   }
 
   public dispose(): void {
@@ -238,16 +240,7 @@ export class CompactLineChartRenderer {
     previous?.dispose();
   }
 
-  private buildPicture(points: Float32Array, count: number): void {
-    this.strokePath.reset();
-    buildSmoothedPath(this.strokePath, points, count, LineSmoothing.Makima, 1);
-
-    this.fillPath.reset();
-    buildSmoothedPath(this.fillPath, points, count, LineSmoothing.Makima, 1);
-    this.fillPath.lineTo(points[(count - 1) * 2], this.height);
-    this.fillPath.lineTo(points[0], this.height);
-    this.fillPath.close();
-
+  private buildPicture(): void {
     const canvas = this.pictureRecorder.beginRecording({
       height: this.height,
       width: this.surfaceWidth,
@@ -274,7 +267,7 @@ export class CompactLineChartRenderer {
     }
   }
 
-  private buildTargetPoints(data: CompactLineChartData, count: number): Float32Array {
+  private buildSmoothedPaths(data: CompactLineChartData, count: number): void {
     const startTs = data.timestamps[0];
     const endTs = data.timestamps[count - 1];
     const { minPrice, maxPrice } = computeCompactLineChartBounds(data.prices, count);
@@ -292,6 +285,13 @@ export class CompactLineChartRenderer {
       points[idx + 1] = point.y;
     }
 
-    return points;
+    this.strokePath.reset();
+    buildSmoothedPath(this.strokePath, points, count, LineSmoothing.Makima, 1);
+
+    this.fillPath.reset();
+    buildSmoothedPath(this.fillPath, points, count, LineSmoothing.Makima, 1);
+    this.fillPath.lineTo(points[(count - 1) * 2], this.height);
+    this.fillPath.lineTo(points[0], this.height);
+    this.fillPath.close();
   }
 }
