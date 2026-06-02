@@ -1,4 +1,5 @@
 import { type NativeCurrencyKey } from '@/entities/nativeCurrencyTypes';
+import { downsampleCompactLineChartData } from '@/features/charts/line/compact/downsampleCompactLineChartData';
 import { type CompactLineChartData } from '@/features/charts/line/compact/types';
 import { createLineChartDataStore, type FetchedLineChartData } from '@/features/charts/stores/factories/createLineChartDataStore';
 import { metadataClient } from '@/graphql';
@@ -6,6 +7,9 @@ import Routes from '@/navigation/routesNames';
 import { type ChainId } from '@/state/backendNetworks/types';
 
 const CHART_ID_SEPARATOR = '|';
+
+/** Token sparklines are dense day charts; cap them once here so the view layer never re-samples. */
+const TOKEN_SPARKLINE_MAX_POINTS = 24;
 
 type TokenChartParams = {
   address: string;
@@ -93,7 +97,7 @@ function buildLineChartData(priceChart: TokenPriceChart | undefined): CompactLin
     timestamps[i] = timestamp > 1_000_000_000_000 ? Math.floor(timestamp / 1000) : timestamp;
   }
 
-  return { prices, timestamps };
+  return downsampleCompactLineChartData({ prices, timestamps }, TOKEN_SPARKLINE_MAX_POINTS) ?? null;
 }
 
 function isPricePoint(point: unknown): point is [number, number] {
