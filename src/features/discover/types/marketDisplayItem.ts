@@ -8,7 +8,6 @@ export type MarketDisplayItem = {
   accentColor: string;
   chartColor: string;
   chartId: string;
-  chartMaxPoints?: number;
   chartStore: BaseRainbowStore<LineChartDataStore>;
   displayName: string;
   iconUrl: string | undefined;

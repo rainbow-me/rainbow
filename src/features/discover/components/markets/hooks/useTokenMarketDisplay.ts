@@ -14,7 +14,6 @@ import Navigation from '@/navigation/Navigation';
 import Routes from '@/navigation/routesNames';
 import { getUniqueId } from '@/utils/ethereumUtils';
 
-const TOKEN_SPARKLINE_MAX_POINTS = 24;
 const MARKET_NEUTRAL_CHART_COLOR = opacity(globalColors.white100, 0.5);
 const MARKET_CHART_PRICE_CHANGE_COLORS = {
   ...getPriceChangeColors('dark'),
@@ -48,7 +47,6 @@ export function useTokenMarketDisplay({
       accentColor,
       chartColor: getTokenPriceChangeChartColor(asset.price.relativeChange24h),
       chartId: buildTokenLineChartId({ address: asset.address, chainId: asset.chainId, currency: nativeCurrency }),
-      chartMaxPoints: TOKEN_SPARKLINE_MAX_POINTS,
       chartStore: useTokenLineChartsStore,
       displayName: asset.name,
       iconUrl: asset.iconUrl || asset.icon_url,

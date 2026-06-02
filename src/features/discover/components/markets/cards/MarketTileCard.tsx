@@ -173,7 +173,6 @@ export const MarketTileCard = memo(function MarketTileCard({
               color={chartColorSharedValue}
               height={CHART_HEIGHT}
               livePointer
-              maxPoints={item.chartMaxPoints}
               store={item.chartStore}
               width={chartWidth}
             />
