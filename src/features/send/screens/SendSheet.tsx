@@ -192,6 +192,7 @@ export default function SendSheet() {
   const [debouncedAssetAmount] = useDebounce(amountDetails.assetAmount, 500);
 
   const [isValidAddress, setIsValidAddress] = useState(!!recipientOverride);
+  const [hasPaidSendGasEstimateFailed, setHasPaidSendGasEstimateFailed] = useState(false);
   const theme = useTheme();
   const { colors, isDarkMode } = theme;
 
@@ -448,6 +449,7 @@ export default function SendSheet() {
     return getSendSubmitButtonState({
       assetAmount: amountDetails.assetAmount,
       canUseSponsoredSend,
+      hasPaidSendGasEstimateFailed,
       hasResolvedSponsoredSend,
       isENS,
       isENSProfileLoaded: ensProfile.isSuccess,
@@ -468,6 +470,7 @@ export default function SendSheet() {
     isENS,
     ensProfile.isSuccess,
     gasFeeParamsBySpeed,
+    hasPaidSendGasEstimateFailed,
     selectedGasFee,
     toAddress,
     currentChainId,
@@ -607,59 +610,95 @@ export default function SendSheet() {
   }, [checkAddress, debouncedInput]);
 
   useEffect(() => {
-    if (!currentProvider?._network?.chainId) return;
+    let isStale = false;
+
+    if (!currentProvider?._network?.chainId) {
+      setHasPaidSendGasEstimateFailed(false);
+      return;
+    }
 
     const assetChainId = selected?.chainId;
     const currentProviderChainId = currentProvider._network.chainId;
 
     if (
-      selected &&
-      !!accountAddress &&
-      !isSponsoredSend &&
-      greaterThan(amountDetails.assetAmount, 0) &&
-      assetChainId === currentChainId &&
-      currentProviderChainId === currentChainId &&
-      toAddress &&
-      isValidAddress &&
-      !isEmpty(selected)
+      !selected ||
+      !accountAddress ||
+      isSponsoredSend ||
+      !greaterThan(amountDetails.assetAmount, 0) ||
+      !amountDetails.isSufficientBalance ||
+      assetChainId !== currentChainId ||
+      currentProviderChainId !== currentChainId ||
+      !toAddress ||
+      !isValidAddress
     ) {
-      estimateGasLimit(
-        {
-          address: accountAddress,
-          amount: amountDetails.assetAmount,
-          asset: selected as ParsedAddressAsset,
-          recipient: toAddress,
-        },
-        false,
-        currentProvider,
-        currentChainId
-      )
-        .then(async gasLimit => {
-          if (gasLimit && useBackendNetworksStore.getState().getNeedsL1SecurityFeeChains().includes(currentChainId)) {
-            updateTxFeeForOptimism(gasLimit);
-          } else {
-            updateTxFee(gasLimit, null);
-          }
-        })
-        .catch(e => {
-          logger.error(new RainbowError(`[SendSheet]: error calculating gas limit: ${e}`));
-          updateTxFee(null, null);
-        });
+      setHasPaidSendGasEstimateFailed(false);
+      return;
     }
+
+    const updatePaidSendFee = async () => {
+      setHasPaidSendGasEstimateFailed(false);
+
+      let gasLimit: string | null = null;
+      try {
+        gasLimit = await estimateGasLimit(
+          {
+            address: accountAddress,
+            amount: amountDetails.assetAmount,
+            asset: selected,
+            recipient: toAddress,
+          },
+          false,
+          currentProvider,
+          currentChainId
+        );
+      } catch (e) {
+        if (isStale) return;
+        logger.error(new RainbowError(`[SendSheet]: error estimating gas limit: ${e}`));
+        setHasPaidSendGasEstimateFailed(true);
+        updateTxFee(null, null);
+        return;
+      }
+
+      if (isStale) return;
+      if (!gasLimit) {
+        setHasPaidSendGasEstimateFailed(true);
+        updateTxFee(null, null);
+        return;
+      }
+
+      try {
+        if (useBackendNetworksStore.getState().getNeedsL1SecurityFeeChains().includes(currentChainId)) {
+          await updateTxFeeForOptimism(gasLimit);
+        } else {
+          updateTxFee(gasLimit, null);
+        }
+        if (isStale) return;
+        setHasPaidSendGasEstimateFailed(false);
+      } catch (e) {
+        if (isStale) return;
+        logger.error(new RainbowError(`[SendSheet]: error calculating tx fee: ${e}`));
+        setHasPaidSendGasEstimateFailed(false);
+        updateTxFee(null, null);
+      }
+    };
+
+    updatePaidSendFee();
+
+    return () => {
+      isStale = true;
+    };
   }, [
     accountAddress,
     amountDetails.assetAmount,
+    amountDetails.isSufficientBalance,
     currentProvider,
     isValidAddress,
     isSponsoredSend,
-    recipient,
     selected,
     toAddress,
     updateTxFee,
     updateTxFeeForOptimism,
-    chainId,
     currentChainId,
-    isUniqueAsset,
   ]);
 
   useEffect(() => {
@@ -783,7 +822,7 @@ export default function SendSheet() {
             sendMaxBalance={() => setMaxEnabled(true)}
             setLastFocusedInputHandle={setLastFocusedInputHandle}
             txSpeedRenderer={
-              shouldShowSponsoredSendGas ? (
+              shouldShowSponsoredSendGas || hasPaidSendGasEstimateFailed ? (
                 <View style={{ height: 18 }} />
               ) : (
                 <GasSpeedButton
