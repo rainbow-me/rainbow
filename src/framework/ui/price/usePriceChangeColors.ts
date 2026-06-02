@@ -1,8 +1,7 @@
 import { useMemo } from 'react';
 
 import { type ColorMode } from '@/design-system/color/palettes';
-
-import { getColorForTheme, useForegroundColor } from './useForegroundColor';
+import { getColorForTheme, useForegroundColor } from '@/design-system/color/useForegroundColor';
 
 export type PriceChangeColors = Readonly<{
   negative: string;

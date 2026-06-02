@@ -2,12 +2,12 @@ import React, { memo } from 'react';
 
 import { LiveTokenText } from '@/components/live-token-text/LiveTokenText';
 import { Box, Text } from '@/design-system';
-import { usePriceChangeColors } from '@/design-system/color/usePriceChangeColors';
 import { HyperliquidTokenIcon } from '@/features/perps/components/HyperliquidTokenIcon';
 import { HYPERLIQUID_TOKEN_ID_SUFFIX } from '@/features/perps/constants';
 import { type PerpMarket } from '@/features/perps/types';
 import { formatPriceChange } from '@/features/perps/utils';
 import { formatPerpAssetPrice } from '@/features/perps/utils/formatPerpsAssetPrice';
+import { usePriceChangeColors } from '@/framework/ui/price/usePriceChangeColors';
 
 type MarketInfoSectionProps = {
   market: PerpMarket;
