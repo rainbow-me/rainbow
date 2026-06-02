@@ -32,7 +32,6 @@ export const SparklineChart = memo(function SparklineChart<S extends LineChartDa
   color,
   height,
   livePointer,
-  maxPoints,
   store,
   width,
 }: SparklineChartProps<S>) {
@@ -58,10 +57,8 @@ export const SparklineChart = memo(function SparklineChart<S extends LineChartDa
   });
 
   const drawChart = useCallback(
-    (nextData: CompactLineChartData | undefined, nextColor: string) => {
-      const chartData = maxPoints === undefined ? nextData : downsampleCompactLineChartData(nextData, maxPoints);
-
-      runOnUI((data: CompactLineChartData | undefined, lineColor: string) => {
+    (nextData: CompactLineChartData | undefined) => {
+      runOnUI((data: CompactLineChartData | undefined) => {
         const resolvedLineColor = isColorString ? color : color.value;
         const hasData = data !== undefined;
         const shouldAnimateIn = hasData && !hasRenderedData.value;
@@ -71,9 +68,9 @@ export const SparklineChart = memo(function SparklineChart<S extends LineChartDa
 
         if (shouldAnimateIn) entranceProgress.value = 0;
         entranceProgress.value = withSpring(hasData ? 1 : 0, SPRING_CONFIGS.softerSpringConfig);
-      })(chartData, nextColor);
+      })(nextData);
     },
-    [color, entranceProgress, hasRenderedData, isColorString, maxPoints, renderer]
+    [color, entranceProgress, hasRenderedData, isColorString, renderer]
   );
 
   useAnimatedReaction(
@@ -88,13 +85,13 @@ export const SparklineChart = memo(function SparklineChart<S extends LineChartDa
   useListen(
     store,
     s => s.getChartData(chartId),
-    data => drawChart(data, color),
+    data => drawChart(data),
     { fireImmediately: true }
   );
 
   useOnChange(() => {
-    drawChart(store.getState().getChartData(chartId), color);
-  }, [chartId, color, drawChart, store]);
+    drawChart(store.getState().getChartData(chartId));
+  }, [chartId, drawChart, store]);
 
   useCleanup(() => {
     initialPicture.dispose();
