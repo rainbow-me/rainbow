@@ -119,6 +119,7 @@ export const event = {
   pairHwWalletNavEntered: 'pair_hw_wallet_nav.entered',
   pairHwWalletNavExited: 'pair_hw_wallet_nav.exited',
   rewardsViewedSheet: 'rewards.viewed_sheet',
+  cashDepositIntroViewed: 'cash_deposit_intro_viewed',
   rewardsPressedPendingEarningsCard: 'rewards.pressed_pending_earnings_card',
   rewardsPressedAvailableCard: 'rewards.pressed_available_card',
   rewardsPressedPositionCard: 'rewards.pressed_position_card',
@@ -523,6 +524,7 @@ export type EventProperties = {
     step: string;
   };
   [event.rewardsViewedSheet]: undefined;
+  [event.cashDepositIntroViewed]: undefined;
   [event.rewardsPressedPendingEarningsCard]: undefined;
   [event.rewardsPressedAvailableCard]: undefined;
   [event.rewardsPressedPositionCard]: { position: number };

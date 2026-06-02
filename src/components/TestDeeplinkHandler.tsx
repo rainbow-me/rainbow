@@ -3,7 +3,8 @@ import { Linking } from 'react-native';
 
 import URL from 'url-parse';
 
-import { savePIN } from '@/features/local-auth/pinAuthentication';
+import { type ExperimentalConfigKey } from '@/config/experimental';
+import { useExperimentalConfigStore } from '@/config/experimentalConfigStore';
 import { logger } from '@/logger';
 import Navigation from '@/navigation/Navigation';
 import Routes from '@/navigation/routesNames';
@@ -33,6 +34,9 @@ export function TestDeeplinkHandler() {
           Navigation.replace(Routes.SWIPE_LAYOUT, {
             screen: Routes.WALLET_SCREEN,
           });
+          break;
+        case 'setExperimentalFlag':
+          useExperimentalConfigStore.getState().setFlag(query.flag as ExperimentalConfigKey, query.value === 'true');
           break;
         default:
           logger.debug(`[TestDeeplinkHandler]: unknown path`, { url });

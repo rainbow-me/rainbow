@@ -6,6 +6,7 @@ import { createRainbowStore } from '@/state/internal/createRainbowStore';
 export type ExperimentalConfigState = {
   config: Record<ExperimentalConfigKey, boolean>;
   getFlag: (key: ExperimentalConfigKey) => boolean;
+  setFlag: (key: ExperimentalConfigKey, value: boolean) => void;
   toggleFlag: (key: ExperimentalConfigKey) => void;
 };
 
@@ -18,8 +19,12 @@ export const useExperimentalConfigStore = createRainbowStore<ExperimentalConfigS
       return get().config[key] ?? defaultConfig[key].value;
     },
 
+    setFlag: (key, value) => {
+      set(state => ({ config: { ...state.config, [key]: value } }));
+    },
+
     toggleFlag: key => {
-      set(state => ({ config: { ...state.config, [key]: !(state.config[key] ?? defaultConfig[key].value) } }));
+      get().setFlag(key, !(get().config[key] ?? defaultConfig[key].value));
     },
   }),
 
