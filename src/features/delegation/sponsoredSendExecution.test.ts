@@ -1,77 +1,91 @@
-import { StaticJsonRpcProvider } from '@ethersproject/providers';
-import { type Address } from 'viem';
+import { encodeFunctionData, erc20Abi, type Address } from 'viem';
 
 import { type ParsedAddressAsset } from '@/entities/tokens';
-import { buildTransferTransaction } from '@/handlers/web3';
+import { isNativeAsset } from '@/handlers/assets';
+import { resolveNameOrAddress } from '@/handlers/web3';
 import { ChainId } from '@/state/backendNetworks/types';
 
-import { buildSendCall } from './sponsoredSend';
 import { buildSendCallFromSendDetails } from './sponsoredSendExecution';
 
+jest.mock('@/handlers/assets', () => ({
+  isNativeAsset: jest.fn(),
+}));
+
 jest.mock('@/handlers/web3', () => ({
-  buildTransferTransaction: jest.fn(),
+  resolveNameOrAddress: jest.fn(),
 }));
 
 jest.mock('./sponsoredSend', () => ({
   buildPendingSendTransaction: jest.fn(),
-  buildSendCall: jest.fn(),
-  prepareSponsoredSend: jest.fn(),
 }));
 
-jest.mock('./calls', () => ({
-  isPreparedCallsExecutionSponsored: jest.fn(),
-}));
-
-jest.mock('@/logger', () => ({
-  ensureError: (error: unknown) => error,
-  logger: { warn: jest.fn() },
-}));
-
-const mockBuildTransferTransaction = jest.mocked(buildTransferTransaction);
-const mockBuildSendCall = jest.mocked(buildSendCall);
-
-const ACCOUNT = '0x3333333333333333333333333333333333333333' satisfies Address;
 const RECIPIENT = '0x4444444444444444444444444444444444444444' satisfies Address;
+const TOKEN_ADDRESS = '0x5555555555555555555555555555555555555555' satisfies Address;
 
-const ASSET = {
-  address: '0x5555555555555555555555555555555555555555',
+const nativeAsset = {
+  address: '0x0000000000000000000000000000000000000000',
+  chainId: ChainId.base,
   decimals: 18,
+  name: 'Ether',
+  network: 'base',
+  symbol: 'ETH',
+  uniqueId: 'base-eth',
+} satisfies ParsedAddressAsset;
+
+const tokenAsset = {
+  address: TOKEN_ADDRESS,
+  chainId: ChainId.base,
+  decimals: 18,
+  name: 'Token',
+  network: 'base',
+  symbol: 'TKN',
   uniqueId: 'base-token',
-} as ParsedAddressAsset;
+} satisfies ParsedAddressAsset;
 
-const provider = new StaticJsonRpcProvider('http://127.0.0.1:8545', ChainId.base);
+const mockIsNativeAsset = jest.mocked(isNativeAsset);
+const mockResolveNameOrAddress = jest.mocked(resolveNameOrAddress);
 
-describe('buildSendCallFromSendDetails', () => {
+describe('sponsoredSendExecution', () => {
   beforeEach(() => {
     jest.clearAllMocks();
-    mockBuildTransferTransaction.mockResolvedValue({ data: '0x', to: RECIPIENT, value: '0' });
-    mockBuildSendCall.mockReturnValue({ data: '0x', to: RECIPIENT, value: 0n });
+    mockResolveNameOrAddress.mockImplementation(async address => address);
   });
 
-  // Regression for APP-3768: a full-balance max send must reach buildTransferTransaction as the exact
-  // decimal string. Coercing through Number() drops precision on 18-decimal balances and can push
-  // the raw amount above the onchain balance ("ERC20: transfer amount exceeds balance").
-  it('forwards the full-precision amount string to buildTransferTransaction without Number() coercion', async () => {
-    const fullPrecisionAmount = '98765.432109876543210987';
+  it('builds native calls from exact raw units', async () => {
+    mockIsNativeAsset.mockReturnValue(true);
 
-    await buildSendCallFromSendDetails({
-      accountAddress: ACCOUNT,
-      amount: fullPrecisionAmount,
-      asset: ASSET,
-      chainId: ChainId.base,
-      provider,
-      toAddress: RECIPIENT,
+    await expect(
+      buildSendCallFromSendDetails({
+        amount: '0.999999999999999999',
+        asset: nativeAsset,
+        chainId: ChainId.base,
+        toAddress: RECIPIENT,
+      })
+    ).resolves.toEqual({
+      data: '0x',
+      to: RECIPIENT,
+      value: 999999999999999999n,
     });
+  });
 
-    expect(mockBuildTransferTransaction).toHaveBeenCalledWith(
-      { address: ACCOUNT, amount: fullPrecisionAmount, asset: ASSET, recipient: RECIPIENT },
-      provider,
-      ChainId.base
-    );
+  it('builds token calls from exact raw units', async () => {
+    mockIsNativeAsset.mockReturnValue(false);
 
-    const passedAmount = mockBuildTransferTransaction.mock.calls[0][0].amount;
-    expect(typeof passedAmount).toBe('string');
-    expect(passedAmount).toBe(fullPrecisionAmount);
-    expect(Number(passedAmount).toString()).not.toBe(passedAmount);
+    await expect(
+      buildSendCallFromSendDetails({
+        amount: '1.234567891234567891',
+        asset: tokenAsset,
+        chainId: ChainId.base,
+        toAddress: RECIPIENT,
+      })
+    ).resolves.toEqual({
+      data: encodeFunctionData({
+        abi: erc20Abi,
+        functionName: 'transfer',
+        args: [RECIPIENT, 1234567891234567891n],
+      }),
+      to: TOKEN_ADDRESS,
+      value: 0n,
+    });
   });
 });

@@ -6,7 +6,7 @@ import { isHexString as isEthersHexString } from '@ethersproject/bytes';
 import { type Contract } from '@ethersproject/contracts';
 import { isValidMnemonic as ethersIsValidMnemonic } from '@ethersproject/hdnode';
 import { JsonRpcBatchProvider, StaticJsonRpcProvider, type Block, type TransactionRequest } from '@ethersproject/providers';
-import { parseEther } from '@ethersproject/units';
+import { parseEther, parseUnits } from '@ethersproject/units';
 import Resolution from '@unstoppabledomains/resolution';
 import { startsWith } from 'lodash';
 import { type Address, type Hex } from 'viem';
@@ -648,10 +648,19 @@ export const buildTransferTransaction = async (
   provider: StaticJsonRpcProvider | undefined,
   chainId: ChainId
 ): Promise<TransactionRequest> => {
-  const _amount =
-    greaterThan(amount, 0) && assetIsParsedAddressAsset(asset)
-      ? convertAmountToRawAmount(amount, asset.decimals)
-      : estimateAssetBalancePortion(asset);
+  const isParsedAsset = assetIsParsedAddressAsset(asset);
+  const hasPositiveAmount = amount.length > 0 && greaterThan(amount, 0);
+  let rawAmount: string | null = null;
+
+  if (hasPositiveAmount && isParsedAsset) {
+    try {
+      rawAmount = parseUnits(amount, asset.decimals).toString();
+    } catch {
+      throw new RainbowError('[buildTransferTransaction]: invalid send amount');
+    }
+  }
+
+  const _amount = hasPositiveAmount && rawAmount !== null ? rawAmount : estimateAssetBalancePortion(asset);
   const value = _amount.toString();
   const _recipient = (await resolveNameOrAddress(recipient)) as string;
   let txData: TransactionRequest = {

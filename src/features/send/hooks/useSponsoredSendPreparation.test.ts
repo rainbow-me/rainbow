@@ -1,12 +1,8 @@
-import { type Address } from 'viem';
+import { getAddress, type Address } from 'viem';
 
 import { ChainId } from '@/state/backendNetworks/types';
 
 import { getCachedDelegationSupport, getDelegationSupportRequestKey, getSponsoredSendRequestKey } from './useSponsoredSendPreparation';
-
-jest.mock('@/handlers/web3', () => ({
-  buildTransferTransaction: jest.fn(),
-}));
 
 jest.mock('@/model/remoteConfig', () => ({
   getRemoteConfig: () => ({ sponsored_sends_enabled: true }),
@@ -14,7 +10,6 @@ jest.mock('@/model/remoteConfig', () => ({
 }));
 
 jest.mock('@/features/delegation/sponsoredSend', () => ({
-  buildSendCall: jest.fn(),
   predictSponsoredSend: jest.fn(),
   prepareSponsoredSend: jest.fn(),
 }));
@@ -29,7 +24,8 @@ jest.mock('@/features/delegation/willDelegate', () => ({
   supportsDelegatedExecution: (params: unknown) => mockSupportsDelegatedExecution(params),
 }));
 
-const ACCOUNT = '0x3333333333333333333333333333333333333333' satisfies Address;
+const ACCOUNT = '0xaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa' satisfies Address;
+const CHECKSUM_ACCOUNT = getAddress(ACCOUNT);
 
 const SELECTED_ASSET = {
   address: '0x5555555555555555555555555555555555555555',
@@ -84,7 +80,6 @@ describe('getSponsoredSendRequestKey', () => {
       toAddress: '0x4444444444444444444444444444444444444444',
     };
 
-    // Number('0.999999999999999999') === 1, so a Number()-based key would collide these.
     expect(getSponsoredSendRequestKey({ ...request, amount: '0.999999999999999999' })).not.toBe(
       getSponsoredSendRequestKey({ ...request, amount: '1' })
     );
@@ -153,10 +148,10 @@ describe('getCachedDelegationSupport', () => {
   it('normalizes cache keys by account and chain', () => {
     expect(
       getDelegationSupportRequestKey({
-        accountAddress: ACCOUNT.toUpperCase() as Address,
+        accountAddress: CHECKSUM_ACCOUNT,
         chainId: ChainId.base,
       })
-    ).toBe('0x3333333333333333333333333333333333333333:8453');
+    ).toBe('0xaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa:8453');
   });
 
   it('reuses the same delegation support request for matching account and chain', async () => {
@@ -166,7 +161,7 @@ describe('getCachedDelegationSupport', () => {
     await expect(getCachedDelegationSupport({ accountAddress: ACCOUNT, cache, chainId: ChainId.base })).resolves.toBe(true);
     await expect(
       getCachedDelegationSupport({
-        accountAddress: ACCOUNT.toUpperCase() as Address,
+        accountAddress: CHECKSUM_ACCOUNT,
         cache,
         chainId: ChainId.base,
       })

@@ -4,13 +4,16 @@ import { isAddress, type Address } from 'viem';
 
 import { type ParsedAddressAsset } from '@/entities/tokens';
 import { type NewTransaction } from '@/entities/transactions';
-import { buildTransferTransaction } from '@/handlers/web3';
-import { ensureError, logger } from '@/logger';
+import { requireAddress } from '@/framework/core/evm/address';
+import { encodeErc20Transfer } from '@/framework/core/evm/erc20Calldata';
+import { parsePositiveRawAmount } from '@/framework/core/evm/units';
+import { isNativeAsset } from '@/handlers/assets';
+import { resolveNameOrAddress } from '@/handlers/web3';
 import { type ChainId } from '@/state/backendNetworks/types';
 import { type Call, type ExecuteCallsResult, type PreparedCallsExecution } from '@rainbow-me/delegation';
 
 import { isPreparedCallsExecutionSponsored } from './calls';
-import { buildPendingSendTransaction, buildSendCall, prepareSponsoredSend } from './sponsoredSend';
+import { buildPendingSendTransaction } from './sponsoredSend';
 
 type ExecuteSponsoredSendWithTracking = (params: {
   accountAddress: Address;
@@ -23,11 +26,9 @@ type ExecuteSponsoredSendWithTracking = (params: {
 }) => Promise<ExecuteCallsResult | null>;
 
 type BuildSendCallFromSendDetailsParams = {
-  accountAddress: string;
   amount: string;
   asset: ParsedAddressAsset;
   chainId: ChainId;
-  provider: StaticJsonRpcProvider;
   toAddress: string;
 };
 
@@ -43,25 +44,27 @@ type ExecuteSponsoredSendIfAvailableParams = {
 };
 
 export async function buildSendCallFromSendDetails({
-  accountAddress,
   amount,
   asset,
   chainId,
-  provider,
   toAddress,
 }: BuildSendCallFromSendDetailsParams): Promise<Call> {
-  const transaction = await buildTransferTransaction(
-    {
-      address: accountAddress,
-      amount,
-      asset,
-      recipient: toAddress,
-    },
-    provider,
-    chainId
-  );
+  const recipient = await resolveSendAddress(toAddress);
+  const rawAmount = parsePositiveRawAmount(amount, asset.decimals, '[buildSendCallFromSendDetails]: invalid send amount');
 
-  return buildSendCall(transaction);
+  if (isNativeAsset(asset.address, chainId)) {
+    return {
+      data: '0x',
+      to: recipient,
+      value: rawAmount,
+    };
+  }
+
+  return {
+    data: encodeErc20Transfer({ amount: rawAmount, to: recipient }),
+    to: requireAddress(asset.address, '[buildSendCallFromSendDetails]: invalid token address'),
+    value: 0n,
+  };
 }
 
 export async function executeSponsoredSendIfAvailable({
@@ -74,35 +77,22 @@ export async function executeSponsoredSendIfAvailable({
   signer,
   transaction,
 }: ExecuteSponsoredSendIfAvailableParams): Promise<boolean> {
-  if (!isAddress(accountAddress)) return false;
-
-  let preparedSponsoredSendCalls = preparedCalls;
-
-  if (!preparedCalls && !isPreparedCallsExecutionSponsored(preparedSponsoredSendCalls)) {
-    try {
-      preparedSponsoredSendCalls = await prepareSponsoredSend({
-        accountAddress,
-        call,
-        chainId,
-      });
-    } catch (error) {
-      logger.warn('[executeSponsoredSendIfAvailable]: sponsored send preparation failed during submit', {
-        message: ensureError(error).message,
-      });
-    }
-  }
-
-  if (!isPreparedCallsExecutionSponsored(preparedSponsoredSendCalls)) return false;
+  if (!isAddress(accountAddress) || !isPreparedCallsExecutionSponsored(preparedCalls)) return false;
 
   const sponsoredExecution = await executeSponsoredSendWithTracking({
     accountAddress,
     call,
     chainId,
-    preparedCalls: preparedSponsoredSendCalls,
+    preparedCalls,
     provider,
     signer,
     transaction: buildPendingSendTransaction({ call, transaction }),
   });
 
   return Boolean(sponsoredExecution);
+}
+
+async function resolveSendAddress(address: string): Promise<Address> {
+  const resolved = await resolveNameOrAddress(address);
+  return requireAddress(resolved, '[buildSendCallFromSendDetails]: invalid recipient');
 }

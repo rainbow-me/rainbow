@@ -14,7 +14,7 @@ import { TransactionStatus, type NewTransaction } from '@/entities/transactions'
 import { type UniqueAsset } from '@/entities/uniqueAssets';
 import { isInsufficientSponsorBalanceError } from '@/features/delegation/sponsoredCalls';
 import { executeSponsoredSend } from '@/features/delegation/sponsoredSend';
-import { buildSendCallFromSendDetails, executeSponsoredSendIfAvailable } from '@/features/delegation/sponsoredSendExecution';
+import { executeSponsoredSendIfAvailable } from '@/features/delegation/sponsoredSendExecution';
 import type useENSProfile from '@/features/ens/hooks/useENSProfile';
 import { type ActionTypes } from '@/features/ens/hooks/useENSRegistrationActionHandler';
 import { type REGISTRATION_STEPS } from '@/features/ens/utils/helpers';
@@ -29,7 +29,7 @@ import {
   type NewTransactionNonNullable,
 } from '@/handlers/web3';
 import { WrappedAlert as Alert } from '@/helpers/alert';
-import { lessThan } from '@/helpers/utilities';
+import { greaterThan, lessThan } from '@/helpers/utilities';
 import * as i18n from '@/languages';
 import { ensureError, logger, RainbowError } from '@/logger';
 import { loadWallet, sendTransaction } from '@/model/wallet';
@@ -44,7 +44,7 @@ import { useNftsStore } from '@/state/nfts/nfts';
 import { getNextNonce } from '@/state/nonces';
 import { addNewTransaction } from '@/state/pendingTransactions';
 import { executeFn, Screens, TimeToSignOperation } from '@/state/performance/performance';
-import { type PreparedCallsExecution } from '@rainbow-me/delegation';
+import { type Call, type PreparedCallsExecution } from '@rainbow-me/delegation';
 
 type SelectedGasFeeForTx = Parameters<typeof parseGasParamsForTransaction>[0];
 type LoadedWallet = NonNullable<Awaited<ReturnType<typeof loadWallet>>>;
@@ -96,7 +96,6 @@ type EnsProps = {
 type UseSendSubmitParams = {
   accountAddress: string;
   amountDetails: AmountDetails;
-  canUseSponsoredSend: boolean;
   currentChainId: ChainId;
   currentProvider: StaticJsonRpcProvider | undefined;
   ens: EnsProps;
@@ -106,6 +105,7 @@ type UseSendSubmitParams = {
   nativeCurrency: NativeCurrencyKey;
   recipient: RecipientProps;
   selected: ParsedAddressAsset | UniqueAsset | undefined;
+  sponsoredSendPreparedCall: Call | null;
   sponsoredSendPreparedCalls: PreparedCallsExecution | null;
 };
 
@@ -116,7 +116,6 @@ type UseSendSubmitResult = {
 export function useSendSubmit({
   accountAddress,
   amountDetails,
-  canUseSponsoredSend,
   currentChainId,
   currentProvider,
   ens: { ensName, ensProfile, isENS, transferENS },
@@ -126,6 +125,7 @@ export function useSendSubmit({
   nativeCurrency,
   recipient: { isValidAddress, recipient, toAddress },
   selected,
+  sponsoredSendPreparedCall,
   sponsoredSendPreparedCalls,
 }: UseSendSubmitParams): UseSendSubmitResult {
   const queryClient = useQueryClient();
@@ -227,26 +227,26 @@ export function useSendSubmit({
       };
 
       try {
-        const didSubmitSponsoredSend = await submitSponsoredSend({
-          accountAddress,
-          amount: amountDetails.assetAmount,
-          canUseSponsoredSend,
-          chainId: currentChainId,
-          chainName: currentChainIdNetwork,
-          preparedCalls: sponsoredSendPreparedCalls,
-          provider: currentProvider,
-          screen,
-          selectedAddressAsset,
-          signer: wallet,
-          toAddress,
-        });
-
-        if (didSubmitSponsoredSend) {
-          invalidateInteractionsCount();
-          return true;
-        }
-
         if (isSponsoredSend) {
+          const didSubmitSponsoredSend = await submitSponsoredSend({
+            accountAddress,
+            amount: amountDetails.assetAmount,
+            chainId: currentChainId,
+            chainName: currentChainIdNetwork,
+            call: sponsoredSendPreparedCall,
+            preparedCalls: sponsoredSendPreparedCalls,
+            provider: currentProvider,
+            screen,
+            selectedAddressAsset,
+            signer: wallet,
+            toAddress,
+          });
+
+          if (didSubmitSponsoredSend) {
+            invalidateInteractionsCount();
+            return true;
+          }
+
           setSponsoredSendUnavailable({
             chainId: currentChainId,
             error: new RainbowError('[useSendSubmit]: submitSponsoredSend returned false even though sponsored send was selected'),
@@ -301,7 +301,6 @@ export function useSendSubmit({
       accountAddress,
       amountDetails.assetAmount,
       amountDetails.isSufficientBalance,
-      canUseSponsoredSend,
       currentChainId,
       currentProvider,
       ensName,
@@ -317,6 +316,7 @@ export function useSendSubmit({
       nativeCurrency,
       queryClient,
       selected,
+      sponsoredSendPreparedCall,
       selectedGasFee,
       sponsoredSendPreparedCalls,
       toAddress,
@@ -328,7 +328,7 @@ export function useSendSubmit({
 
   const submitTransaction = useCallback(
     async (args?: OnSubmitProps) => {
-      if (Number(amountDetails.assetAmount) <= 0) {
+      if (!greaterThan(amountDetails.assetAmount, 0)) {
         logger.error(new RainbowError(`[useSendSubmit]: preventing tx submit because amountDetails.assetAmount is <= 0`), {
           amountDetails,
         });
@@ -398,7 +398,7 @@ function getTransactionAsset(asset: ParsedAddressAsset, network: string): NonNul
 async function submitSponsoredSend({
   accountAddress,
   amount,
-  canUseSponsoredSend,
+  call,
   chainId,
   chainName,
   preparedCalls,
@@ -410,7 +410,7 @@ async function submitSponsoredSend({
 }: {
   accountAddress: string;
   amount: string;
-  canUseSponsoredSend: boolean;
+  call: Call | null;
   chainId: ChainId;
   chainName: string;
   preparedCalls: PreparedCallsExecution | null;
@@ -420,16 +420,8 @@ async function submitSponsoredSend({
   signer: LoadedWallet;
   toAddress: string;
 }): Promise<boolean> {
-  if (!canUseSponsoredSend || !selectedAddressAsset) return false;
+  if (!selectedAddressAsset || !call) return false;
 
-  const sendCall = await buildSendCallFromSendDetails({
-    accountAddress,
-    amount,
-    asset: selectedAddressAsset,
-    chainId,
-    provider,
-    toAddress,
-  });
   const sponsoredSendTransaction: SponsoredSendTransaction = {
     amount,
     asset: getTransactionAsset(selectedAddressAsset, chainName),
@@ -442,7 +434,7 @@ async function submitSponsoredSend({
 
   return executeSponsoredSendIfAvailable({
     accountAddress,
-    call: sendCall,
+    call,
     chainId,
     executeSponsoredSendWithTracking: executeFn(executeSponsoredSend, {
       screen,

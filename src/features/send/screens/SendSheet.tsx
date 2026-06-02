@@ -37,6 +37,7 @@ import {
   convertAmountAndPriceToNativeDisplay,
   convertAmountFromNativeValue,
   formatInputDecimals,
+  greaterThan,
   greaterThanOrEqualTo,
 } from '@/helpers/utilities';
 import { checkIsValidAddressOrDomain, checkIsValidAddressOrDomainFormat, isENSAddressFormat } from '@/helpers/validators';
@@ -217,6 +218,7 @@ export default function SendSheet() {
     isPreparingSponsoredSend,
     isSponsoredSend,
     isSponsorshipSupported,
+    preparedCall: sponsoredSendPreparedCall,
     preparedCalls: sponsoredSendPreparedCalls,
     shouldShowSponsoredSendGas,
   } = useSponsoredSendPreparation({
@@ -422,7 +424,6 @@ export default function SendSheet() {
   const { submitTransaction } = useSendSubmit({
     accountAddress,
     amountDetails,
-    canUseSponsoredSend,
     currentChainId,
     currentProvider,
     ens: { ensName, ensProfile, isENS, transferENS },
@@ -432,6 +433,7 @@ export default function SendSheet() {
     nativeCurrency,
     recipient: { isValidAddress, recipient, toAddress },
     selected,
+    sponsoredSendPreparedCall,
     sponsoredSendPreparedCalls,
   });
 
@@ -613,8 +615,8 @@ export default function SendSheet() {
     if (
       selected &&
       !!accountAddress &&
-      !shouldShowSponsoredSendGas &&
-      Number(amountDetails.assetAmount) > 0 &&
+      !isSponsoredSend &&
+      greaterThan(amountDetails.assetAmount, 0) &&
       assetChainId === currentChainId &&
       currentProviderChainId === currentChainId &&
       toAddress &&
@@ -649,9 +651,9 @@ export default function SendSheet() {
     amountDetails.assetAmount,
     currentProvider,
     isValidAddress,
+    isSponsoredSend,
     recipient,
     selected,
-    shouldShowSponsoredSendGas,
     toAddress,
     updateTxFee,
     updateTxFeeForOptimism,
