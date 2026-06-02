@@ -14,6 +14,7 @@ import { createBlankPicture } from '@/worklets/skia';
 
 import { COMPACT_LINE_CHART_HORIZONTAL_OVERDRAW, CompactLineChartRenderer } from '../compact/CompactLineChartRenderer';
 import { type CompactLineChartData, type LineChartDataStore, type SparklineChartProps } from '../compact/types';
+import { LiveSparklinePointer } from './LiveSparklinePointer';
 
 // ============ Chart Component ================================================ //
 
@@ -22,12 +23,16 @@ import { type CompactLineChartData, type LineChartDataStore, type SparklineChart
  *
  * Compatible with any store that implements {@link LineChartDataStore},
  * e.g. data stores created with `createLineChartDataStore(...)`.
+ *
+ * Pass `livePointer` to overlay a pulsing live-data dot at the line's end. A string
+ * `color` paints once; a shared/derived `color` additionally recolors on the UI thread.
  */
 export const SparklineChart = memo(function SparklineChart<S extends LineChartDataStore>({
   chartId,
   color,
   colorSharedValue,
   height,
+  livePointer,
   maxPoints,
   store,
   width,
@@ -116,6 +121,7 @@ export const SparklineChart = memo(function SparklineChart<S extends LineChartDa
           <Picture picture={chartPicture} />
         </Canvas>
       </Animated.View>
+      {livePointer ? <LiveSparklinePointer chartId={chartId} color={color} height={height} store={store} width={width} /> : null}
     </View>
   );
 });
