@@ -1,5 +1,5 @@
 import React, { memo, useCallback, useEffect, useMemo, useRef, type MutableRefObject, type ReactElement } from 'react';
-import { Platform, StyleSheet, type RefreshControlProps } from 'react-native';
+import { Platform, ScrollView, StyleSheet, type RefreshControlProps } from 'react-native';
 
 import Animated, { runOnJS, useAnimatedScrollHandler, useSharedValue, type SharedValue } from 'react-native-reanimated';
 
@@ -70,7 +70,7 @@ export const DiscoverSectionsPager = memo(function DiscoverSectionsPager({
   if (!surface || !tabs.length) {
     return (
       <Box style={styles.container} testID="discover-sections-pager">
-        <DiscoverSectionsFallback renderRefreshControl={renderRefreshControl} scrollOffset={scrollOffset} />
+        <DiscoverSectionsFallback renderRefreshControl={renderRefreshControl} />
       </Box>
     );
   }
@@ -113,28 +113,17 @@ export const DiscoverSectionsPager = memo(function DiscoverSectionsPager({
 
 const DiscoverSectionsFallback = memo(function DiscoverSectionsFallback({
   renderRefreshControl,
-  scrollOffset,
 }: {
   renderRefreshControl?: () => ReactElement<RefreshControlProps>;
-  scrollOffset: SharedValue<number>;
 }) {
   const tabBarOffset = useTabBarOffset();
   const bottomInset = tabBarOffset + 12;
 
-  const onScroll = useAnimatedScrollHandler({
-    onScroll: event => {
-      const clampedPosition = clamp(event.contentOffset.y, 0, DEFAULT_SCROLL_FADE_DISTANCE);
-      if (scrollOffset.value !== clampedPosition) scrollOffset.value = clampedPosition;
-    },
-  });
-
   return (
-    <Animated.ScrollView
+    <ScrollView
       automaticallyAdjustsScrollIndicatorInsets={false}
       contentContainerStyle={styles.fallbackContent}
-      onScroll={onScroll}
       refreshControl={renderRefreshControl?.()}
-      scrollEventThrottle={16}
       showsVerticalScrollIndicator={false}
       contentInset={{ bottom: bottomInset }}
       style={[styles.scrollView, { paddingBottom: Platform.OS === 'android' ? bottomInset : 0 }]}
@@ -150,7 +139,7 @@ const DiscoverSectionsFallback = memo(function DiscoverSectionsFallback({
           </Box>
         </Box>
       ))}
-    </Animated.ScrollView>
+    </ScrollView>
   );
 });
 
