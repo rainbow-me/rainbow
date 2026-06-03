@@ -5,9 +5,9 @@ import {
   type SurfaceLeafNode,
   type SurfaceNode,
 } from '@/features/placements/surfaces/types';
-import { type PlacementSourceV2 } from '@/features/placements/types';
+import { type PlacementSource } from '@/features/placements/types';
 
-export type DiscoverSurfacePlacementRefs = Record<PlacementSourceV2, string[]>;
+export type DiscoverSurfacePlacementRefs = Record<PlacementSource, string[]>;
 
 export type DiscoverSurface = {
   id: SurfaceId;

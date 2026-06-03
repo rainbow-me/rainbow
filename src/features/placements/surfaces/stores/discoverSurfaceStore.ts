@@ -1,4 +1,4 @@
-import { usePlacementsV2Store } from '@/features/placements/stores/placementsStore';
+import { usePlacementsStore } from '@/features/placements/stores/placementsStore';
 import {
   buildDiscoverSurface,
   filterMissingPlacementSurface,
@@ -17,9 +17,9 @@ export const useDiscoverSurface = createDerivedStore<DiscoverSurface | undefined
   $ => {
     const rawSurface = $(useDiscoverSurfaceStore, state => state.getData());
     const surfaceLastFetchedAt = $(useDiscoverSurfaceStore, state => state.lastFetchedAt);
-    const placementsById = $(usePlacementsV2Store, state => state.placementsById);
-    const placementsLastFetchedAt = $(usePlacementsV2Store, state => state.lastFetchedAt);
-    const placementsReady = $(usePlacementsV2Store, state => state.getStatus('isSuccess'));
+    const placementsById = $(usePlacementsStore, state => state.placementsById);
+    const placementsLastFetchedAt = $(usePlacementsStore, state => state.lastFetchedAt);
+    const placementsReady = $(usePlacementsStore, state => state.getStatus('isSuccess'));
 
     if (!rawSurface) return undefined;
 
@@ -39,7 +39,7 @@ export const useDiscoverSurface = createDerivedStore<DiscoverSurface | undefined
 export const useDiscoverSurfacePlacementRefs = createDerivedStore<DiscoverSurfacePlacementRefs>(
   $ => {
     const surface = $(useDiscoverSurface);
-    const placementsById = $(usePlacementsV2Store, state => state.placementsById);
+    const placementsById = $(usePlacementsStore, state => state.placementsById);
 
     if (!surface) {
       return {

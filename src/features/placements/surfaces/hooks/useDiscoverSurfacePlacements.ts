@@ -1,6 +1,6 @@
 import { useEffect, useMemo, useRef } from 'react';
 
-import { usePlacementsV2Store } from '@/features/placements/stores/placementsStore';
+import { usePlacementsStore } from '@/features/placements/stores/placementsStore';
 import { useDiscoverSurfaceStore } from '@/features/placements/surfaces/stores/discoverSurfaceStore';
 import {
   getMissingSurfacePlacementIds,
@@ -11,9 +11,9 @@ import {
 export function useIsDiscoverSurfacePlacementPending(placementId: string): boolean {
   const rawSurface = useDiscoverSurfaceStore(state => state.getData());
   const surfaceLastFetchedAt = useDiscoverSurfaceStore(state => state.lastFetchedAt);
-  const placementsById = usePlacementsV2Store(state => state.placementsById);
-  const placementsLastFetchedAt = usePlacementsV2Store(state => state.lastFetchedAt);
-  const placementsLoading = usePlacementsV2Store(state => state.getStatus('isLoading') || state.getStatus('isInitialLoad'));
+  const placementsById = usePlacementsStore(state => state.placementsById);
+  const placementsLastFetchedAt = usePlacementsStore(state => state.lastFetchedAt);
+  const placementsLoading = usePlacementsStore(state => state.getStatus('isLoading') || state.getStatus('isInitialLoad'));
 
   if (!rawSurface || placementsById[placementId]) return false;
   if (!surfaceContainsPlacement(rawSurface, placementId)) return false;
@@ -23,9 +23,9 @@ export function useIsDiscoverSurfacePlacementPending(placementId: string): boole
 export function useSyncDiscoverSurfacePlacements(): void {
   const rawSurface = useDiscoverSurfaceStore(state => state.getData());
   const surfaceLastFetchedAt = useDiscoverSurfaceStore(state => state.lastFetchedAt);
-  const placementsById = usePlacementsV2Store(state => state.placementsById);
-  const placementsLastFetchedAt = usePlacementsV2Store(state => state.lastFetchedAt);
-  const placementsLoading = usePlacementsV2Store(state => state.getStatus('isLoading'));
+  const placementsById = usePlacementsStore(state => state.placementsById);
+  const placementsLastFetchedAt = usePlacementsStore(state => state.lastFetchedAt);
+  const placementsLoading = usePlacementsStore(state => state.getStatus('isLoading'));
   const lastRequestedKey = useRef<string | null>(null);
 
   const missingPlacementIds = useMemo(() => {
@@ -43,6 +43,6 @@ export function useSyncDiscoverSurfacePlacements(): void {
     if (lastRequestedKey.current === requestKey) return;
     lastRequestedKey.current = requestKey;
 
-    usePlacementsV2Store.getState().fetch(undefined, { force: true });
+    usePlacementsStore.getState().fetch(undefined, { force: true });
   }, [missingPlacementIds, placementsLastFetchedAt, placementsLoading, surfaceLastFetchedAt]);
 }

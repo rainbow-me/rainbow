@@ -5,10 +5,10 @@ import { type PerpMarketsBySymbol, type PerpMarketWithMetadata } from '@/feature
 import {
   isPlacementHydrating,
   selectPlacementItemsBySource,
-  usePlacementsV2Store,
+  usePlacementsStore,
   type PlacementResult,
 } from '@/features/placements/stores/placementsStore';
-import { type PlacementIdV2, type PlacementItemV2 } from '@/features/placements/types';
+import { type PlacementId, type PlacementItem } from '@/features/placements/types';
 import { finalizePlacementResult, pairPlacementItems } from '@/features/placements/utils/finalizePlacementResult';
 import { useRemoteConfigStore } from '@/model/remoteConfig';
 import { createDerivedStore } from '@/state/internal/createDerivedStore';
@@ -19,7 +19,7 @@ import { shallowEqual } from '@/worklets/comparisons';
 /**
  * Placement item paired with its resolved perp market.
  */
-export type PerpMarketPlacementItem = PlacementItemV2 & {
+export type PerpMarketPlacementItem = PlacementItem & {
   market: PerpMarketWithMetadata;
 };
 
@@ -34,11 +34,11 @@ export const usePerpsEnabled = createDerivedStore<boolean>(
 
 // ============ Utilities ====================================================== //
 
-export function usePerpsPlacement(placementId: PlacementIdV2): PlacementResult<PerpMarketPlacementItem> {
+export function usePerpsPlacement(placementId: PlacementId): PlacementResult<PerpMarketPlacementItem> {
   const enabled = usePerpsEnabled();
-  const placement = usePlacementsV2Store(state => state.getPlacement(placementId));
-  const placementItems = usePlacementsV2Store(state => selectPlacementItemsBySource(state, placementId, 'hyperliquid'), shallowEqual);
-  const placementsLoading = usePlacementsV2Store(state => isPlacementHydrating(state, placementId, 'hyperliquid'));
+  const placement = usePlacementsStore(state => state.getPlacement(placementId));
+  const placementItems = usePlacementsStore(state => selectPlacementItemsBySource(state, placementId, 'hyperliquid'), shallowEqual);
+  const placementsLoading = usePlacementsStore(state => isPlacementHydrating(state, placementId, 'hyperliquid'));
   const markets = useHyperliquidMarketsStore(state => state.markets);
   const marketsError = useHyperliquidMarketsStore(state => state.getStatus('isError'));
   const marketsLoading = useHyperliquidMarketsStore(state => state.getStatus('isIdle') || state.getStatus('isLoading'));
@@ -58,7 +58,7 @@ export function usePerpsPlacement(placementId: PlacementIdV2): PlacementResult<P
   );
 }
 
-function buildPerpMarketPlacementItems(placementItems: PlacementItemV2[], markets: PerpMarketsBySymbol): PerpMarketPlacementItem[] {
+function buildPerpMarketPlacementItems(placementItems: PlacementItem[], markets: PerpMarketsBySymbol): PerpMarketPlacementItem[] {
   return pairPlacementItems(
     placementItems,
     id => markets[id],
