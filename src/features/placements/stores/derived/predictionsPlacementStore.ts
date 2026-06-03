@@ -96,7 +96,9 @@ export function usePredictionsPlacement(placementId: PlacementIdV2): PlacementRe
   const placementItems = usePlacementsV2Store(state => selectPlacementItemsBySource(state, placementId, 'polymarket'), shallowEqual);
   const placementsLoading = usePlacementsV2Store(state => isPlacementHydrating(state, placementId, 'polymarket'));
   const events = usePredictionEventsStore(state => state.getData());
-  const eventsLoading = usePredictionEventsStore(state => state.enabled && state.getStatus('isInitialLoad'));
+  const eventsLoading = usePredictionEventsStore(
+    state => placementItems.length > 0 && state.enabled && (state.getStatus('isIdle') || state.getStatus('isLoading'))
+  );
   const activeEventIds = useMemo(() => (events ? new Set(events.activeEventIds) : undefined), [events]);
   const items = useMemo(
     () => (events && activeEventIds ? parsePredictionItems(placementItems, events.eventsById, activeEventIds) : []),
