@@ -1,5 +1,7 @@
 import { useMemo } from 'react';
 
+import { isAddress, type Address } from 'viem';
+
 import { type NativeCurrencyKey } from '@/entities/nativeCurrencyTypes';
 import { IS_TEST } from '@/env';
 import { finalizePlacementResult, pairPlacementItems } from '@/features/placements/stores/derived/finalizePlacementResult';
@@ -157,11 +159,11 @@ function parseTokenItems(placementItems: PlacementItemV2[], assetsByRef: TokenAs
 
 // CMS authors token refs as colon-delimited `address:chainId`, distinct from the app's
 // underscore-delimited `UniqueId` (`address_chainId`) — they are not interchangeable.
-function parseTokenRef(tokenRef: string): { address: string; chainId: ChainId } | null {
+function parseTokenRef(tokenRef: string): { address: Address; chainId: ChainId } | null {
   const [address, chainId] = tokenRef.split(':');
   const numericChainId = Number(chainId);
 
-  if (!address || !Number.isInteger(numericChainId)) return null;
+  if (!address || !isAddress(address) || !Number.isInteger(numericChainId)) return null;
 
   return {
     address,
