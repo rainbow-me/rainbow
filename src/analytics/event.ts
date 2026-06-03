@@ -362,7 +362,6 @@ type SwapEventParameters<T extends 'swap' | 'crosschainSwap'> = {
   tradeAmountUSD: number;
   degenMode: boolean;
   isSwappingToPopularAsset: boolean;
-  isSwappingToTrendingAsset: boolean;
   isHardwareWallet: boolean;
   quickBuyMetadata: SwapsParams['quickBuyMetadata'];
 };

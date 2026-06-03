@@ -25,13 +25,11 @@ export function trackSwapEvent<T extends SwapEventTypes>(
   event: T,
   { errorMessage, isHardwareWallet, parameters, quickBuyMetadata, type }: SwapEventParameters<T>
 ): void {
-  const { degenMode, inputAsset, lastNavigatedTrendingToken, outputAsset } = useSwapsStore.getState();
+  const { degenMode, inputAsset, outputAsset } = useSwapsStore.getState();
   const isBridge =
     !!inputAsset?.networks && !!inputAsset.chainId && inputAsset.networks[inputAsset.chainId]?.address === outputAsset?.address;
 
   const isSwappingToPopularAsset = outputAsset?.sectionId === 'popular';
-  const isSwappingToTrendingAsset =
-    lastNavigatedTrendingToken === parameters.assetToBuy.uniqueId || lastNavigatedTrendingToken === parameters.assetToSell.uniqueId;
 
   const {
     address: inputAssetAddress = '',
@@ -61,7 +59,6 @@ export function trackSwapEvent<T extends SwapEventTypes>(
     isBridge,
     isHardwareWallet,
     isSwappingToPopularAsset,
-    isSwappingToTrendingAsset,
     mainnetAddress:
       parameters.assetToBuy.chainId === ChainId.mainnet ? parameters.assetToBuy.address : parameters.assetToSell.mainnetAddress,
     outputAssetAddress,

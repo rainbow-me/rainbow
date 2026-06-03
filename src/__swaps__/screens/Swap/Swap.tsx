@@ -106,7 +106,6 @@ const useCleanupOnUnmount = () => {
         return {
           inputAsset,
           isSwapsOpen: false,
-          lastNavigatedTrendingToken: undefined,
           outputAsset: null,
           quote: null,
           rewardsEstimate: null,
