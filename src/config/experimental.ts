@@ -21,10 +21,8 @@ export const DEGEN_MODE = 'Degen Mode';
 export const FEATURED_RESULTS = 'Featured Results';
 export const CLAIMABLES = 'Claimables';
 export const NFTS_ENABLED = 'Nfts Enabled';
-export const TRENDING_TOKENS = 'Trending Tokens';
 export const PERFORMANCE_TOAST = 'Performance Toast';
 export const RAINBOW_COIN_EFFECT = 'Rainbow Coin Effect';
-export const RAINBOW_TRENDING_TOKENS_LIST = 'Rainbow Trending Tokens List';
 export const PRINCE_OF_THE_HILL = 'Prince of the Hill';
 export const LAZY_TABS = 'Lazy Tabs';
 export const CANDLESTICK_CHARTS = 'Candlestick Charts';
@@ -63,10 +61,8 @@ const config = {
   [FEATURED_RESULTS]: { settings: true, value: false },
   [CLAIMABLES]: { settings: true, value: false },
   [NFTS_ENABLED]: { settings: true, value: IS_TEST },
-  [TRENDING_TOKENS]: { settings: true, value: false },
   [PERFORMANCE_TOAST]: { settings: true, value: false },
   [RAINBOW_COIN_EFFECT]: { settings: true, value: false },
-  [RAINBOW_TRENDING_TOKENS_LIST]: { settings: true, value: false },
   [PRINCE_OF_THE_HILL]: { settings: true, value: false },
   [LAZY_TABS]: { needsRestart: true, settings: true, value: false },
   [CANDLESTICK_CHARTS]: { settings: true, value: !IS_STORE_INSTALL },
