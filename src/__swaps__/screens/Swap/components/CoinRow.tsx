@@ -46,7 +46,6 @@ interface InputCoinRowProps {
   hideFavoriteButton?: never;
   isFavorite?: never;
   isSupportedChain?: never;
-  nativePriceChange?: string;
   onPress: (asset: ParsedSearchAsset | null) => void;
   output?: false | undefined;
   uniqueId?: never;
@@ -65,7 +64,6 @@ interface OutputCoinRowProps extends PartialAsset {
   isFavorite: boolean;
   onPress: () => void;
   output: true;
-  nativePriceChange?: string;
   isSupportedChain: boolean;
   testID?: string;
   uniqueIdOrAsset?: never;
@@ -153,16 +151,6 @@ export function CoinRow({
                       <Text color="labelTertiary" numberOfLines={1} size="13pt" weight="semibold">
                         {output ? symbol : `${inputAsset?.balance.display}`}
                       </Text>
-                      {/* {nativePriceChange && percenChange && (
-                        <Inline alignVertical="center" space={{ custom: 1 }} wrap={false}>
-                          <Text align="center" color={percentChange.color} size="12pt" weight="bold">
-                            {percentChange.prefix}
-                          </Text>
-                          <Text color={percentChange.color} size="13pt" weight="semibold">
-                            {percentChange.change}
-                          </Text>
-                        </Inline>
-                      )} */}
                     </Inline>
                   </Box>
                 </Box>
