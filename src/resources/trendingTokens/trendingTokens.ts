@@ -1,11 +1,6 @@
 import { type UniqueId } from '@/__swaps__/types/assets';
 import { type ChainId } from '@/state/backendNetworks/types';
 
-export type FarcasterUser = {
-  username: string;
-  pfp_url: string;
-};
-
 export type TrendingToken = {
   uniqueId: UniqueId;
   chainId: ChainId;
@@ -20,8 +15,6 @@ export type TrendingToken = {
   };
   marketCap: number;
   volume: number;
-  highlightedFriends: FarcasterUser[];
-  remainingFriendsCount?: number;
   colors: {
     primary: string;
   };
