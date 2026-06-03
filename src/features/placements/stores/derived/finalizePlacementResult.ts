@@ -41,7 +41,7 @@ export function finalizePlacementResult<Hydrated>({
   if (!enabled) return { isLoading: false, items: [], placement: undefined };
 
   return {
-    isLoading: hasRefs && isInitialLoad,
+    isLoading: hasRefs && isInitialLoad && items.length === 0,
     items,
     placement: items.length ? placement : undefined,
   };
