@@ -23,6 +23,7 @@ import {
   navigateToPerpDetailScreen,
 } from '@/features/perps/utils';
 import { type PlacementItemAnalyticsMetadata } from '@/features/placements/types';
+import { getPriceChangeColors, type PriceChangeColors } from '@/framework/ui/price/usePriceChangeColors';
 import { opacity } from '@/framework/ui/utils/opacity';
 import { type TokenData } from '@/state/liveTokens/liveTokensStore';
 import { THICK_BORDER_WIDTH, THICKER_BORDER_WIDTH } from '@/styles/constants';
@@ -36,8 +37,6 @@ export type PerpMarketCardProps = {
   onPressTracked?: (metadata?: PlacementItemAnalyticsMetadata) => void;
   style?: StyleProp<ViewStyle>;
 };
-
-type PriceChangeColors = Readonly<{ negative: string; positive: string }>;
 
 type CardColors = {
   backgroundColor: string;
@@ -81,11 +80,6 @@ const CARD_WIDTH_BASE =
 const PERP_MARKET_CARD_TEXT_MIN_WIDTH = PERP_MARKET_CARD_SLOT_WIDTH_WITH_CHART - CARD_WIDTH_BASE;
 
 // ============ Colors ========================================================= //
-
-const PRICE_CHANGE_COLORS = {
-  dark: { positive: '#3ECF5B', negative: '#FF584D' },
-  light: { positive: '#1DB847', negative: '#FA423C' },
-} satisfies ContextualColorValue<PriceChangeColors>;
 
 const CARD_COLORS = {
   dark: {
@@ -293,7 +287,7 @@ function buildPerpMarketCardDisplay(market: PerpMarketWithMetadata, colorMode: C
   const accentColor = market.metadata?.colors?.color || market.metadata?.colors?.fallbackColor || HYPERLIQUID_COLORS.green;
   const badgeTextColor = getHighContrastTextColorWorklet(accentColor, 4);
   const cardColors = getValueForColorMode(CARD_COLORS, colorMode);
-  const priceChangeColors = getValueForColorMode(PRICE_CHANGE_COLORS, colorMode);
+  const priceChangeColors = getPriceChangeColors(colorMode);
 
   return {
     accentColor,

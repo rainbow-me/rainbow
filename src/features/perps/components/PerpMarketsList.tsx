@@ -7,7 +7,6 @@ import { Box, Text } from '@/design-system';
 import { PerpMarketDisabledRow } from '@/features/perps/components/PerpMarketDisabledRow';
 import { PerpMarketRow } from '@/features/perps/components/PerpMarketRow';
 import { FOOTER_HEIGHT, FOOTER_HEIGHT_WITH_SAFE_AREA } from '@/features/perps/constants';
-import { usePerpsAccentColorContext } from '@/features/perps/context/PerpsAccentColorContext';
 import { useHasPositionCheck } from '@/features/perps/stores/derived/useHasPositionCheck';
 import { useFilteredHyperliquidMarkets } from '@/features/perps/stores/hyperliquidMarketsStore';
 import { type PerpMarket } from '@/features/perps/types';
@@ -21,7 +20,6 @@ const SCROLL_INSETS = { bottom: FOOTER_HEIGHT - 4 };
 
 export const PerpMarketsList = memo(function PerpMarketsList({ onPressMarket }: PerpMarketsListProps) {
   const markets = useFilteredHyperliquidMarkets();
-  const priceChangeColors = usePerpsAccentColorContext().accentColors.priceChangeColors;
   const checkIfPositionExists = useHasPositionCheck();
 
   const renderItem = useCallback(
@@ -29,10 +27,10 @@ export const PerpMarketsList = memo(function PerpMarketsList({ onPressMarket }: 
       return checkIfPositionExists(item.symbol) ? (
         <PerpMarketDisabledRow market={item} paddingVertical={12} />
       ) : (
-        <PerpMarketRow market={item} onPress={onPressMarket} paddingVertical={12} priceChangeColors={priceChangeColors} />
+        <PerpMarketRow market={item} onPress={onPressMarket} paddingVertical={12} />
       );
     },
-    [checkIfPositionExists, onPressMarket, priceChangeColors]
+    [checkIfPositionExists, onPressMarket]
   );
 
   return (

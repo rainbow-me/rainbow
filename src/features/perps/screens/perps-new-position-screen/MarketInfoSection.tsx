@@ -1,21 +1,20 @@
 import React, { memo } from 'react';
 
 import { LiveTokenText } from '@/components/live-token-text/LiveTokenText';
-import { Box, Text, useForegroundColor } from '@/design-system';
+import { Box, Text } from '@/design-system';
 import { HyperliquidTokenIcon } from '@/features/perps/components/HyperliquidTokenIcon';
 import { HYPERLIQUID_TOKEN_ID_SUFFIX } from '@/features/perps/constants';
 import { type PerpMarket } from '@/features/perps/types';
 import { formatPriceChange } from '@/features/perps/utils';
 import { formatPerpAssetPrice } from '@/features/perps/utils/formatPerpsAssetPrice';
+import { usePriceChangeColors } from '@/framework/ui/price/usePriceChangeColors';
 
 type MarketInfoSectionProps = {
   market: PerpMarket;
 };
 
 export const MarketInfoSection = memo(function MarketInfoSection({ market }: MarketInfoSectionProps) {
-  const green = useForegroundColor('green');
-  const red = useForegroundColor('red');
-  const labelTertiary = useForegroundColor('labelTertiary');
+  const priceChangeColors = usePriceChangeColors();
 
   return (
     <Box flexDirection="row" alignItems="center" gap={12}>
@@ -47,11 +46,7 @@ export const MarketInfoSection = memo(function MarketInfoSection({ market }: Mar
             initialValue={formatPriceChange(market.priceChange['24h'])}
             autoSubscriptionEnabled={false}
             isPriceChangeColorEnabled={true}
-            priceChangeChangeColors={{
-              positive: green,
-              negative: red,
-              neutral: labelTertiary,
-            }}
+            priceChangeChangeColors={priceChangeColors}
             color={'label'}
             size="15pt"
             weight="bold"
