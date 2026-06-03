@@ -94,7 +94,7 @@ export const MarketTileCard = memo(function MarketTileCard({ item, onPress, widt
   const chartWidth = width - CARD_LAYOUT.paddingHorizontal * 2;
 
   return (
-    <ButtonPressAnimation onPress={onPress} scaleTo={0.96} style={[styles.pressable, { width }]}>
+    <ButtonPressAnimation scaleTo={0.96} style={[styles.pressable, { width }]}>
       <View style={[styles.cardShadow, isDarkMode ? styles.cardShadowDark : styles.cardShadowLight]}>
         <View style={[styles.card, { backgroundColor: cardColors.backgroundColor }]}>
           <LinearGradient
