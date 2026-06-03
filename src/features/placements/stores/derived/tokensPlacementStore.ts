@@ -155,6 +155,8 @@ function parseTokenItems(placementItems: PlacementItemV2[], assetsByRef: TokenAs
   );
 }
 
+// CMS authors token refs as colon-delimited `address:chainId`, distinct from the app's
+// underscore-delimited `UniqueId` (`address_chainId`) — they are not interchangeable.
 function parseTokenRef(tokenRef: string): { address: string; chainId: ChainId } | null {
   const [address, chainId] = tokenRef.split(':');
   const numericChainId = Number(chainId);
