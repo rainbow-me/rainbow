@@ -22,6 +22,7 @@ import {
   type SectionDescriptor,
   type SurfaceLeafWithDisplay,
 } from '@/features/discover/types/sectionLayout';
+import { navigateDiscoverDestination } from '@/features/discover/utils/navigation';
 import {
   getSportsSurfaceIntent,
   selectSportsEventsForIntent,
@@ -217,7 +218,8 @@ function PredictionsPlacementSection({ surface }: { surface: PlacementBackedSurf
     data: result.items,
     descriptor,
     loading: result.isLoading || isPlacementPending,
-    onPressSeeAll: undefined,
+    // Prediction "See All" routes to the CMS destination (predictions -> Polymarket).
+    onPressSeeAll: () => navigateDiscoverDestination(surface.destination),
     surface,
   });
 }
@@ -247,7 +249,8 @@ function SportsEventPlacementSection({
     headerCount,
     leadingAccessory,
     loading: result.isLoading || isPlacementPending,
-    onPressSeeAll: undefined,
+    // Prediction "See All" routes to the CMS destination (predictions -> Polymarket).
+    onPressSeeAll: () => navigateDiscoverDestination(surface.destination),
     surface,
   });
 }
@@ -281,7 +284,8 @@ function SportsQuerySection({
     headerCount,
     leadingAccessory,
     loading: isLoading,
-    onPressSeeAll: undefined,
+    // Prediction "See All" routes to the CMS destination (predictions -> Polymarket).
+    onPressSeeAll: () => navigateDiscoverDestination(surface.destination),
     surface,
   });
 }

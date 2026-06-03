@@ -25,6 +25,7 @@ import {
   type SectionDescriptor,
   type SurfaceLeafWithDisplay,
 } from '@/features/discover/types/sectionLayout';
+import { navigateDiscoverDestination } from '@/features/discover/utils/navigation';
 import { usePerpsEnabled, usePerpsPlacement, type PerpMarketPlacementItem } from '@/features/placements/stores/derived/perpsPlacementStore';
 import { useTokensPlacement, type TokenPlacementItem } from '@/features/placements/stores/derived/tokensPlacementStore';
 import { usePlacementsV2Store } from '@/features/placements/stores/placementsStore';
@@ -121,7 +122,6 @@ function PerpsMarketPlacementContent({
   // surfaceId is threaded from MarketPlacementContent for future use (#7553)
   surfaceId: string;
 }) {
-  const { onTapSearch } = useDiscoverScreenContext();
   const perpsResult = usePerpsPlacement(surface.placement);
   const perpDescriptor = useMemo<SectionDescriptor<PerpMarketPlacementItem>>(() => {
     switch (surface.display) {
@@ -148,15 +148,15 @@ function PerpsMarketPlacementContent({
         };
     }
   }, [surface.display]);
-  // Only passed when the destination is perp-owned (`['perps']`); non-perp CMS
-  // destinations are wired in #7553.
-  const onPressSeeAll = useCallback(() => onTapSearch(), [onTapSearch]);
+  // Perp "See All" routes to the CMS destination (perps -> perps screen), gated on
+  // a destination existing.
+  const onPressSeeAll = useCallback(() => navigateDiscoverDestination(surface.destination), [surface.destination]);
 
   return renderSectionLayout({
     data: perpsResult.items,
     descriptor: perpDescriptor,
     loading: perpsResult.isLoading,
-    onPressSeeAll: surface.destination?.[0] === 'perps' ? onPressSeeAll : undefined,
+    onPressSeeAll: hasDestination(surface) ? onPressSeeAll : undefined,
     surface,
   });
 }
@@ -198,8 +198,8 @@ function TokenMarketPlacementContent({
         };
     }
   }, [nativeCurrency, surface.display]);
-  // Only passed when the destination is token-owned (`['tokens']`); non-token CMS
-  // destinations are wired in #7553.
+  // Token "See All" opens Discover search rather than routing a CMS destination;
+  // navigateDiscoverDestination('tokens') is intentionally a no-op.
   const onPressSeeAll = useCallback(() => onTapSearch(), [onTapSearch]);
 
   return renderSectionLayout({
