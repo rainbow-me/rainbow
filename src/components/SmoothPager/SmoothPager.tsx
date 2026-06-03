@@ -97,7 +97,6 @@ type SmoothPagerProps = {
   children: React.ReactElement<PageProps | GroupProps>[];
   enableSwipeToGoBack?: boolean;
   enableSwipeToGoForward?: boolean | 'always';
-  fillHeight?: boolean;
   initialPage: PageId;
   lazy?: boolean;
   onNewIndex?: (index: number) => void;
@@ -115,7 +114,6 @@ const SmoothPagerComponent = (
     children,
     enableSwipeToGoBack = true,
     enableSwipeToGoForward = true,
-    fillHeight = false,
     initialPage,
     lazy = false,
     onNewIndex,
@@ -355,7 +353,6 @@ const SmoothPagerComponent = (
         <Animated.View
           style={[
             styles.pagerWrapper,
-            fillHeight && styles.fillHeight,
             pagerWrapperStyle,
             {
               gap: pageGap,
@@ -695,9 +692,6 @@ const styles = StyleSheet.create({
   pagerWrapper: {
     flexDirection: 'row',
     pointerEvents: 'box-none',
-  },
-  fillHeight: {
-    height: '100%',
   },
   subPageStyle: {
     alignItems: 'center',

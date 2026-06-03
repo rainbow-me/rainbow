@@ -11,9 +11,8 @@ import {
   MarketTileCard,
   MarketTileCardSkeleton,
 } from '@/features/discover/components/markets/cards/MarketTileCard';
-import { getHeaderPress, renderSectionLayout } from '@/features/discover/components/SectionLayout';
+import { renderSectionLayout } from '@/features/discover/components/SectionLayout';
 import {
-  type DiscoverCardAnalyticsContext,
   type MarketDisplay,
   type PlacementBackedSurfaceLeafWithDisplay,
   type SectionDescriptor,
@@ -89,10 +88,8 @@ function MarketPlacementContent({
       data: [],
       descriptor: MARKET_SECTION_DESCRIPTORS[surface.display],
       loading: true,
-      onPressSeeAll: getHeaderPress(surface.destination),
-      placement: undefined,
+      onPressSeeAll: undefined,
       surface,
-      surfaceId,
     });
   }
 
@@ -103,22 +100,22 @@ function hasPlacement(surface: SurfaceLeafWithDisplay<MarketDisplay>): surface i
   return typeof surface.placement === 'string' && surface.placement.length > 0;
 }
 
-function renderMarketPill(item: MarketDisplayItem, _: number, analyticsContext: DiscoverCardAnalyticsContext) {
-  return <MarketPill analyticsContext={analyticsContext} item={item} />;
+function renderMarketPill(item: MarketDisplayItem) {
+  return <MarketPill item={item} />;
 }
 
-function renderMarketTile(item: MarketDisplayItem, _: number, analyticsContext: DiscoverCardAnalyticsContext) {
-  return <MarketTileCard analyticsContext={analyticsContext} item={item} />;
+function renderMarketTile(item: MarketDisplayItem) {
+  return <MarketTileCard item={item} />;
 }
 
-function renderMarketGridTile(item: MarketDisplayItem, width: number, analyticsContext: DiscoverCardAnalyticsContext) {
-  return <MarketTileCard analyticsContext={analyticsContext} item={item} width={width} />;
+function renderMarketGridTile(item: MarketDisplayItem, width: number) {
+  return <MarketTileCard item={item} width={width} />;
 }
 
 function renderMarketGridTileSkeleton(width: number) {
   return <MarketTileCardSkeleton width={width} />;
 }
 
-function renderMarketCell(item: MarketDisplayItem, analyticsContext: DiscoverCardAnalyticsContext) {
-  return <MarketCell analyticsContext={analyticsContext} item={item} />;
+function renderMarketCell(item: MarketDisplayItem) {
+  return <MarketCell item={item} />;
 }

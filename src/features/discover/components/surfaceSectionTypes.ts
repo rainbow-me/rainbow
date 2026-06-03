@@ -1,24 +1,8 @@
 import { type ReactNode } from 'react';
 
-import { type MARKET_DISPLAY_VALUES, type PREDICTION_DISPLAY_VALUES } from '@/features/placements/surfaces/constants';
+import { type MARKET_DISPLAY_VALUES } from '@/features/placements/surfaces/constants';
 import { type Display, type SurfaceLeaf } from '@/features/placements/surfaces/types';
-import {
-  type PlacementV2 as Placement,
-  type PlacementIdV2 as PlacementId,
-  type PlacementItemV2 as PlacementItem,
-  type PlacementSourceV2 as PlacementSource,
-  type PlacementTypeV2 as PlacementType,
-} from '@/features/placements/types';
-
-export type DiscoverCardAnalyticsContext = {
-  itemId: PlacementItem['id'];
-  itemOrder: number;
-  placementId: PlacementId | undefined;
-  placementSource: PlacementSource | undefined;
-  placementTitle: string;
-  placementType: PlacementType | undefined;
-  surfaceId: string;
-};
+import { type PlacementItemV2 as PlacementItem } from '@/features/placements/types';
 
 export type CarouselSectionDescriptor<T extends PlacementItem> = {
   layout: 'carousel';
@@ -26,7 +10,7 @@ export type CarouselSectionDescriptor<T extends PlacementItem> = {
   itemHeight: number;
   itemVerticalBleed?: number;
   itemWidth: number;
-  renderItem: (item: T, width: number, analyticsContext: DiscoverCardAnalyticsContext) => ReactNode;
+  renderItem: (item: T, width: number) => ReactNode;
   renderSkeleton: () => ReactNode;
   showHeaderCaret?: (surface: SurfaceLeaf) => boolean;
   singleItemWidth?: number;
@@ -35,21 +19,20 @@ export type CarouselSectionDescriptor<T extends PlacementItem> = {
 export type GridSectionDescriptor<T extends PlacementItem> = {
   layout: 'grid';
   itemHeight: number;
-  renderItem: (item: T, width: number, analyticsContext: DiscoverCardAnalyticsContext) => ReactNode;
+  renderItem: (item: T, width: number) => ReactNode;
   renderSkeleton: (width: number) => ReactNode;
   showHeaderCaret?: (surface: SurfaceLeaf) => boolean;
 };
 
 export type ListSectionDescriptor<T extends PlacementItem> = {
   layout: 'list';
-  renderItem: (item: T, analyticsContext: DiscoverCardAnalyticsContext) => ReactNode;
+  renderItem: (item: T) => ReactNode;
   renderSkeleton: () => ReactNode;
 };
 
 export type SectionDescriptor<T extends PlacementItem> = CarouselSectionDescriptor<T> | GridSectionDescriptor<T> | ListSectionDescriptor<T>;
 
 export type MarketDisplay = (typeof MARKET_DISPLAY_VALUES)[number];
-export type PredictionsDisplay = (typeof PREDICTION_DISPLAY_VALUES)[number];
 export type SurfaceLeafWithDisplay<TDisplay extends Display> = SurfaceLeaf & { display: TDisplay };
 export type PlacementBackedSurfaceLeafWithDisplay<TDisplay extends Display> = SurfaceLeafWithDisplay<TDisplay> & { placement: string };
 
@@ -59,7 +42,5 @@ export type SectionLayoutProps<T extends PlacementItem> = {
   headerCount?: number;
   loading: boolean;
   onPressSeeAll?: () => void;
-  placement: Placement | undefined;
   surface: SurfaceLeaf;
-  surfaceId: string;
 };

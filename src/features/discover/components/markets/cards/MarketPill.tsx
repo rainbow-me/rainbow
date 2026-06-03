@@ -3,8 +3,6 @@ import { StyleSheet, View } from 'react-native';
 
 import { LinearGradient } from 'expo-linear-gradient';
 
-import { analytics } from '@/analytics';
-import { event } from '@/analytics/event';
 import ButtonPressAnimation from '@/components/animations/ButtonPressAnimation';
 import { useLiveTokenSharedValue } from '@/components/live-token-text/LiveTokenText';
 import { Skeleton } from '@/components/Skeleton';
@@ -13,9 +11,8 @@ import { getValueForColorMode, type ColorMode, type ContextualColorValue } from 
 import { Border } from '@/design-system/components/Border/Border';
 import { MarketIcon } from '@/features/discover/components/markets/cards/MarketIcon';
 import { MarketPriceChange } from '@/features/discover/components/markets/cards/MarketPriceChange';
-import { type DiscoverCardAnalyticsContext } from '@/features/discover/components/surfaceSectionTypes';
 import { type MarketDisplayItem } from '@/features/discover/types/marketDisplayItem';
-import { convertStoredPerpPriceChangeToPercent } from '@/features/perps/utils';
+import { parseNormalizedPercentChange } from '@/framework/ui/price/formatPriceChange';
 import { usePriceChangeColors } from '@/framework/ui/price/usePriceChangeColors';
 import { opacity } from '@/framework/ui/utils/opacity';
 import { THICKER_BORDER_WIDTH } from '@/styles/constants';
@@ -25,7 +22,6 @@ import { getHighContrastTextColorWorklet } from '@/worklets/colors';
 // ============ Types ========================================================== //
 
 type MarketPillProps = {
-  analyticsContext: DiscoverCardAnalyticsContext;
   item: MarketDisplayItem;
 };
 
@@ -83,33 +79,9 @@ const PILL_COLORS = {
 
 // ============ Component ====================================================== //
 
-export const MarketPill = memo(function MarketPill({ analyticsContext, item }: MarketPillProps) {
+export const MarketPill = memo(function MarketPill({ item }: MarketPillProps) {
   const { colorMode, isDarkMode } = useColorMode();
   const priceChangeColors = usePriceChangeColors();
-
-  const onPress = () => {
-    analytics.track(event.discoverCardPressed, {
-      placementId: analyticsContext.placementId,
-      placementSource: analyticsContext.placementSource,
-      surfaceId: analyticsContext.surfaceId,
-      placementTitle: analyticsContext.placementTitle,
-      itemOrder: analyticsContext.itemOrder,
-      itemId: analyticsContext.itemId,
-      marketId: item.pressMetadata.marketId ?? item.id,
-      marketName: item.pressMetadata.marketName,
-      marketSlug: item.pressMetadata.marketSlug,
-      marketSymbol: item.pressMetadata.marketSymbol,
-    });
-    if (analyticsContext.placementId) {
-      analytics.track(event.placementInteraction, {
-        placementId: analyticsContext.placementId,
-        source: analyticsContext.placementSource,
-        surfaceId: analyticsContext.surfaceId,
-        type: analyticsContext.placementType,
-      });
-    }
-    item.onNavigate();
-  };
 
   const { accentColor, badgeTextColor, iconUrl, pillColors } = useMemo(() => buildMarketPillDisplay(item, colorMode), [colorMode, item]);
 
@@ -121,7 +93,7 @@ export const MarketPill = memo(function MarketPill({ analyticsContext, item }: M
   });
 
   return (
-    <ButtonPressAnimation onPress={onPress} scaleTo={0.96} style={styles.pressable}>
+    <ButtonPressAnimation scaleTo={0.96} style={styles.pressable}>
       <View style={[styles.pillShadow, isDarkMode ? styles.pillShadowDark : styles.pillShadowLight]}>
         <View style={[styles.pill, { backgroundColor: pillColors.backgroundColor }]}>
           <LinearGradient
@@ -223,7 +195,8 @@ export function computeMarketPillWidth(item: MarketPillWidthInput): number {
 
   const priceWidth = measureTextSync(item.initialPrice, PRICE_TEXT_STYLE);
 
-  const priceChange = convertStoredPerpPriceChangeToPercent(item.initialPriceChange);
+  // initialPriceChange is already in percent units (shared contract: "5.23" == 5.23%).
+  const priceChange = parseNormalizedPercentChange(item.initialPriceChange);
   const priceChangeWidth = UP_DOWN_ARROW_WIDTH + CHANGE_ROW_GAP + getStableMarketPillPercentChangeWidth(priceChange);
 
   const textWidth = Math.max(nameWidth, priceWidth + PRICE_ROW_GAP + priceChangeWidth);

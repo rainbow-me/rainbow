@@ -6,8 +6,7 @@ import { AnimatedTextIcon } from '@/components/AnimatedComponents/AnimatedTextIc
 import { useLiveTokenSharedValue } from '@/components/live-token-text/LiveTokenText';
 import { AnimatedText } from '@/design-system';
 import { type TextSize } from '@/design-system/components/Text/Text';
-import { DOWN_ARROW, UP_ARROW } from '@/features/perps/constants';
-import { toFixedWorklet } from '@/framework/core/safeMath';
+import { DOWN_ARROW, formatNormalizedPercentChange, UP_ARROW } from '@/framework/ui/price/formatPriceChange';
 import { getPriceChangeColor, type PriceChangeColors } from '@/framework/ui/price/usePriceChangeColors';
 import { type TokenData } from '@/state/liveTokens/types';
 
@@ -72,5 +71,6 @@ function selectPriceChangeArrow(priceChange: SharedValue<string>): string {
 
 function selectPriceChangeText(priceChange: SharedValue<string>): string {
   'worklet';
-  return `${toFixedWorklet(Math.abs(Number(priceChange.value)) * 10_000, 2)}%`;
+  // initialPriceChange is already in percent units — no 10_000 factor here.
+  return formatNormalizedPercentChange(priceChange.value);
 }

@@ -3,8 +3,6 @@ import { StyleSheet, View } from 'react-native';
 
 import { LinearGradient } from 'expo-linear-gradient';
 
-import { analytics } from '@/analytics';
-import { event } from '@/analytics/event';
 import ButtonPressAnimation from '@/components/animations/ButtonPressAnimation';
 import ImgixImage from '@/components/images/ImgixImage';
 import { LiveTokenText } from '@/components/live-token-text/LiveTokenText';
@@ -15,7 +13,6 @@ import { SparklineChart } from '@/features/charts/line/components/SparklineChart
 import { MarketIcon } from '@/features/discover/components/markets/cards/MarketIcon';
 import { MarketPriceChange } from '@/features/discover/components/markets/cards/MarketPriceChange';
 import { useLiveChartColorSharedValue } from '@/features/discover/components/markets/hooks/useLiveChartColorSharedValue';
-import { type DiscoverCardAnalyticsContext } from '@/features/discover/components/surfaceSectionTypes';
 import { type MarketDisplayItem } from '@/features/discover/types/marketDisplayItem';
 import { usePriceChangeColors } from '@/framework/ui/price/usePriceChangeColors';
 import { opacity } from '@/framework/ui/utils/opacity';
@@ -50,13 +47,7 @@ export function MarketCellSkeleton() {
   return <Skeleton borderRadius={TOKEN_CARD_BORDER_RADIUS} height={TOKEN_CARD_HEIGHT} width="100%" />;
 }
 
-export const MarketCell = memo(function MarketCell({
-  analyticsContext,
-  item,
-}: {
-  analyticsContext: DiscoverCardAnalyticsContext;
-  item: MarketDisplayItem;
-}) {
+export const MarketCell = memo(function MarketCell({ item }: { item: MarketDisplayItem }) {
   const { colorMode, isDarkMode } = useColorMode();
   const priceChangeColors = usePriceChangeColors();
   const chartColorSharedValue = useLiveChartColorSharedValue(item, priceChangeColors);
@@ -65,32 +56,9 @@ export const MarketCell = memo(function MarketCell({
   const gradientColors = isDarkMode
     ? ([opacity(item.accentColor, 0.16), opacity(item.accentColor, 0)] as const)
     : (['rgba(131, 142, 153, 0.06)', 'rgba(131, 142, 153, 0)'] as const);
-  const openMarketDetails = () => {
-    analytics.track(event.discoverCardPressed, {
-      placementId: analyticsContext.placementId,
-      placementSource: analyticsContext.placementSource,
-      surfaceId: analyticsContext.surfaceId,
-      placementTitle: analyticsContext.placementTitle,
-      itemOrder: analyticsContext.itemOrder,
-      itemId: analyticsContext.itemId,
-      marketId: item.pressMetadata.marketId ?? item.id,
-      marketName: item.pressMetadata.marketName,
-      marketSlug: item.pressMetadata.marketSlug,
-      marketSymbol: item.pressMetadata.marketSymbol,
-    });
-    if (analyticsContext.placementId) {
-      analytics.track(event.placementInteraction, {
-        placementId: analyticsContext.placementId,
-        source: analyticsContext.placementSource,
-        surfaceId: analyticsContext.surfaceId,
-        type: analyticsContext.placementType,
-      });
-    }
-    item.onNavigate();
-  };
 
   return (
-    <ButtonPressAnimation onPress={openMarketDetails} scaleTo={0.96}>
+    <ButtonPressAnimation scaleTo={0.96}>
       <Box
         borderColor={{ custom: tokenCardColors.borderColor }}
         borderRadius={24}

@@ -3,8 +3,6 @@ import { StyleSheet, View } from 'react-native';
 
 import { LinearGradient } from 'expo-linear-gradient';
 
-import { analytics } from '@/analytics';
-import { event } from '@/analytics/event';
 import ButtonPressAnimation from '@/components/animations/ButtonPressAnimation';
 import { LiveTokenText } from '@/components/live-token-text/LiveTokenText';
 import { Skeleton } from '@/components/Skeleton';
@@ -15,7 +13,6 @@ import { SparklineChart } from '@/features/charts/line/components/SparklineChart
 import { MarketIcon } from '@/features/discover/components/markets/cards/MarketIcon';
 import { MarketPriceChange } from '@/features/discover/components/markets/cards/MarketPriceChange';
 import { useLiveChartColorSharedValue } from '@/features/discover/components/markets/hooks/useLiveChartColorSharedValue';
-import { type DiscoverCardAnalyticsContext } from '@/features/discover/components/surfaceSectionTypes';
 import { type MarketDisplayItem } from '@/features/discover/types/marketDisplayItem';
 import { usePriceChangeColors } from '@/framework/ui/price/usePriceChangeColors';
 import { opacity } from '@/framework/ui/utils/opacity';
@@ -25,7 +22,6 @@ import { getHighContrastTextColorWorklet } from '@/worklets/colors';
 // ============ Types ========================================================== //
 
 type MarketTileCardProps = {
-  analyticsContext: DiscoverCardAnalyticsContext;
   item: MarketDisplayItem;
   width?: number;
 };
@@ -84,36 +80,8 @@ const CARD_COLORS = {
 
 // ============ Component ====================================================== //
 
-export const MarketTileCard = memo(function MarketTileCard({
-  analyticsContext,
-  item,
-  width = MARKET_TILE_CARD_WIDTH,
-}: MarketTileCardProps) {
+export const MarketTileCard = memo(function MarketTileCard({ item, width = MARKET_TILE_CARD_WIDTH }: MarketTileCardProps) {
   const { colorMode, isDarkMode } = useColorMode();
-
-  const onPress = () => {
-    analytics.track(event.discoverCardPressed, {
-      placementId: analyticsContext.placementId,
-      placementSource: analyticsContext.placementSource,
-      surfaceId: analyticsContext.surfaceId,
-      placementTitle: analyticsContext.placementTitle,
-      itemOrder: analyticsContext.itemOrder,
-      itemId: analyticsContext.itemId,
-      marketId: item.pressMetadata.marketId ?? item.id,
-      marketName: item.pressMetadata.marketName,
-      marketSlug: item.pressMetadata.marketSlug,
-      marketSymbol: item.pressMetadata.marketSymbol,
-    });
-    if (analyticsContext.placementId) {
-      analytics.track(event.placementInteraction, {
-        placementId: analyticsContext.placementId,
-        source: analyticsContext.placementSource,
-        surfaceId: analyticsContext.surfaceId,
-        type: analyticsContext.placementType,
-      });
-    }
-    item.onNavigate();
-  };
 
   const { accentColor, badgeTextColor, cardColors, chartColor, iconUrl } = useMemo(
     () => buildMarketTileCardDisplay(item, colorMode),
@@ -125,7 +93,7 @@ export const MarketTileCard = memo(function MarketTileCard({
   const chartWidth = width - CARD_LAYOUT.paddingHorizontal * 2;
 
   return (
-    <ButtonPressAnimation onPress={onPress} scaleTo={0.96} style={[styles.pressable, { width }]}>
+    <ButtonPressAnimation scaleTo={0.96} style={[styles.pressable, { width }]}>
       <View style={[styles.cardShadow, isDarkMode ? styles.cardShadowDark : styles.cardShadowLight]}>
         <View style={[styles.card, { backgroundColor: cardColors.backgroundColor }]}>
           <LinearGradient
