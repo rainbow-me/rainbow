@@ -30,7 +30,7 @@ import {
   type SportsSurfaceIntent,
 } from '@/features/discover/utils/sportsSurfaceIntent';
 import { usePredictionsPlacement, type PredictionPlacementItem } from '@/features/placements/stores/derived/predictionsPlacementStore';
-import { usePlacementsV2Store } from '@/features/placements/stores/placementsStore';
+import { usePlacementsStore } from '@/features/placements/stores/placementsStore';
 import { isEventCardDisplay, PREDICTION_DISPLAY_VALUES } from '@/features/placements/surfaces/constants';
 import { useIsDiscoverSurfacePlacementPending } from '@/features/placements/surfaces/hooks/useDiscoverSurfacePlacements';
 import { type Display, type SurfaceLeaf } from '@/features/placements/surfaces/types';
@@ -152,7 +152,7 @@ export function PredictionsSection({ surface, surfaceId }: { surface: SurfaceLea
 
 function useIsPredictionPlacementPending(surface: PlacementBackedSurfaceLeafWithDisplay<PredictionsDisplay>): boolean {
   const isPendingSurfacePlacement = useIsDiscoverSurfacePlacementPending(surface.placement);
-  const isLoadingPlacementSource = usePlacementsV2Store(state => {
+  const isLoadingPlacementSource = usePlacementsStore(state => {
     if (state.getPlacement(surface.placement) !== undefined) return false;
     return state.getStatus('isInitialLoad') || state.getStatus('isIdle') || state.getStatus('isLoading');
   });

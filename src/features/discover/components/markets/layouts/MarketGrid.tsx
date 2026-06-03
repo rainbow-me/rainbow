@@ -1,10 +1,9 @@
-import React, { Fragment, type ReactNode } from 'react';
+import React, { type ReactNode } from 'react';
 import { StyleSheet, useWindowDimensions, View } from 'react-native';
 
 import { Box } from '@/design-system';
 import { SectionHeader } from '@/features/discover/components/markets/layouts/SectionHeader';
-import { type DiscoverCardAnalyticsContext } from '@/features/discover/components/surfaceSectionTypes';
-import { type Placement, type PlacementId, type PlacementItem } from '@/features/placements/types';
+import { type PlacementItem } from '@/features/placements/types';
 import { Grid } from '@/screens/token-launcher/components/Grid';
 
 const GRID_COLUMNS = 2;
@@ -17,13 +16,10 @@ type MarketGridProps<T extends PlacementItem> = {
   leadingAccessory?: ReactNode;
   loading?: boolean;
   onPress?: () => void;
-  placement: Placement | undefined;
-  placementId: PlacementId | undefined;
-  renderItem: (item: T, cellWidth: number, analyticsContext: DiscoverCardAnalyticsContext) => ReactNode;
+  renderItem: (item: T, cellWidth: number) => ReactNode;
   renderSkeleton: (cellWidth: number) => ReactNode;
   showHeaderCaret?: boolean;
   skeletonCount?: number;
-  surfaceId: string;
   title: string;
 };
 
@@ -34,13 +30,10 @@ export function MarketGrid<T extends PlacementItem>({
   leadingAccessory,
   loading,
   onPress,
-  placement,
-  placementId,
   renderItem,
   renderSkeleton,
   showHeaderCaret,
   skeletonCount = GRID_COLUMNS * 2,
-  surfaceId,
   title,
 }: MarketGridProps<T>) {
   const { width: screenWidth } = useWindowDimensions();
@@ -58,52 +51,22 @@ export function MarketGrid<T extends PlacementItem>({
           <Grid columns={GRID_COLUMNS} spacing={GRID_SPACING}>
             {Array.from({ length: skeletonCount }, (_, index) => (
               <View key={index} style={{ height: itemHeight }}>
-                <Fragment>{renderSkeleton(cellWidth)}</Fragment>
+                {renderSkeleton(cellWidth)}
               </View>
             ))}
           </Grid>
         ) : (
           <Grid columns={GRID_COLUMNS} spacing={GRID_SPACING}>
-            {data.map((item, index) => {
-              const analyticsContext = getAnalyticsContext({ item, itemIndex: index, placement, placementId, surfaceId, title });
-
-              return (
-                <View key={item.id} style={{ height: itemHeight }}>
-                  {renderItem(item, cellWidth, analyticsContext)}
-                </View>
-              );
-            })}
+            {data.map(item => (
+              <View key={item.id} style={{ height: itemHeight }}>
+                {renderItem(item, cellWidth)}
+              </View>
+            ))}
           </Grid>
         )}
       </View>
     </Box>
   );
-}
-
-function getAnalyticsContext<T extends PlacementItem>({
-  item,
-  itemIndex,
-  placement,
-  placementId,
-  surfaceId,
-  title,
-}: {
-  item: T;
-  itemIndex: number;
-  placement: Placement | undefined;
-  placementId: PlacementId | undefined;
-  surfaceId: string;
-  title: string;
-}): DiscoverCardAnalyticsContext {
-  return {
-    itemId: item.id,
-    itemOrder: itemIndex,
-    placementId,
-    placementSource: placement?.source,
-    placementTitle: title,
-    placementType: placement?.type,
-    surfaceId,
-  };
 }
 
 const styles = StyleSheet.create({
