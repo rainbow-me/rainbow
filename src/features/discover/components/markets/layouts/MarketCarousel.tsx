@@ -2,25 +2,18 @@ import React, { Fragment, useCallback, useMemo, type ReactNode } from 'react';
 import { StyleSheet, View } from 'react-native';
 
 import { FlatList } from 'react-native-gesture-handler';
-import { useDebouncedCallback } from 'use-debounce';
 
-import { analytics } from '@/analytics';
-import { event } from '@/analytics/event';
 import { Box } from '@/design-system';
 import { SectionHeader } from '@/features/discover/components/markets/layouts/SectionHeader';
-import { type DiscoverCardAnalyticsContext } from '@/features/discover/components/surfaceSectionTypes';
-import { type Display } from '@/features/placements/surfaces/types';
-import { type Placement, type PlacementId, type PlacementItem } from '@/features/placements/types';
-import { time } from '@/framework/core/utils/time';
+import { type PlacementItem } from '@/features/placements/types';
+
+import { computeSnapToOffsets } from './carouselLayout';
 
 const HORIZONTAL_PADDING = 12;
 const CARD_GAP = HORIZONTAL_PADDING;
-const SCROLL_DEBOUNCE_MS = time.seconds(30);
-const SCROLL_DEBOUNCE_OPTIONS = Object.freeze({ leading: false, trailing: true });
 
 type MarketCarouselProps<T extends PlacementItem> = {
   data: T[];
-  display: Display;
   getItemWidth?: (item: T) => number;
   headerCount?: number;
   itemHorizontalBleed?: number;
@@ -30,21 +23,16 @@ type MarketCarouselProps<T extends PlacementItem> = {
   leadingAccessory?: ReactNode;
   loading?: boolean;
   onPress?: () => void;
-  placement: Placement | undefined;
-  placementId: PlacementId | undefined;
-  renderItem: (item: T, width: number, analyticsContext: DiscoverCardAnalyticsContext) => ReactNode;
+  renderItem: (item: T, width: number) => ReactNode;
   renderSkeleton: () => ReactNode;
-  sectionId: string;
   showHeaderCaret?: boolean;
   singleItemWidth?: number;
   skeletonCount?: number;
-  surfaceId: string;
   title: string;
 };
 
 export function MarketCarousel<T extends PlacementItem>({
   data,
-  display,
   getItemWidth,
   headerCount,
   itemHorizontalBleed = 0,
@@ -54,15 +42,11 @@ export function MarketCarousel<T extends PlacementItem>({
   leadingAccessory,
   loading,
   onPress,
-  placement,
-  placementId,
   renderItem,
   renderSkeleton,
-  sectionId,
   showHeaderCaret,
   singleItemWidth,
   skeletonCount = 5,
-  surfaceId,
   title,
 }: MarketCarouselProps<T>) {
   const showSkeletons = loading && data.length === 0;
@@ -73,18 +57,10 @@ export function MarketCarousel<T extends PlacementItem>({
     [data, defaultItemWidth, getItemWidth]
   );
 
-  const snapToOffsets = useMemo(() => {
-    let offset = 0;
-    return itemWidths.map(width => {
-      const currentOffset = offset;
-      offset += width + CARD_GAP;
-      return currentOffset;
-    });
-  }, [itemWidths]);
+  const snapToOffsets = useMemo(() => computeSnapToOffsets(itemWidths, CARD_GAP), [itemWidths]);
 
   const renderCarouselItem = useCallback(
     ({ item, index }: { item: T; index: number }) => {
-      const analyticsContext = getAnalyticsContext({ item, itemIndex: index, placement, placementId, surfaceId, title });
       const width = itemWidths[index] ?? defaultItemWidth;
 
       return (
@@ -96,36 +72,11 @@ export function MarketCarousel<T extends PlacementItem>({
             width,
           }}
         >
-          {renderItem(item, width, analyticsContext)}
+          {renderItem(item, width)}
         </View>
       );
     },
-    [defaultItemWidth, itemHeight, itemVerticalBleed, itemWidths, placement, placementId, renderItem, surfaceId, title]
-  );
-
-  const onScrollSettle = useDebouncedCallback(
-    () => {
-      analytics.track(event.discoverCarouselScrolled, {
-        display,
-        placementId: placement?.id,
-        placementSource: placement?.source,
-        placementType: placement?.type,
-        placementVersion: placement?.version,
-        sectionId,
-        surfaceId,
-      });
-
-      analytics.track(event.surfaceInteraction, {
-        display,
-        placementId: placement?.id,
-        placementSource: placement?.source,
-        placementType: placement?.type,
-        sectionId,
-        surfaceId,
-      });
-    },
-    SCROLL_DEBOUNCE_MS,
-    SCROLL_DEBOUNCE_OPTIONS
+    [defaultItemWidth, itemHeight, itemVerticalBleed, itemWidths, renderItem]
   );
 
   if (!showSkeletons && data.length === 0) return null;
@@ -159,7 +110,6 @@ export function MarketCarousel<T extends PlacementItem>({
             snapToAlignment="start"
             renderItem={renderCarouselItem}
             keyExtractor={item => item.id}
-            onMomentumScrollEnd={onScrollSettle}
             initialNumToRender={6}
             windowSize={8}
           />
@@ -167,32 +117,6 @@ export function MarketCarousel<T extends PlacementItem>({
       )}
     </Box>
   );
-}
-
-function getAnalyticsContext<T extends PlacementItem>({
-  item,
-  itemIndex,
-  placement,
-  placementId,
-  surfaceId,
-  title,
-}: {
-  item: T;
-  itemIndex: number;
-  placement: Placement | undefined;
-  placementId: PlacementId | undefined;
-  surfaceId: string;
-  title: string;
-}): DiscoverCardAnalyticsContext {
-  return {
-    itemId: item.id,
-    itemOrder: itemIndex,
-    placementId,
-    placementSource: placement?.source,
-    placementTitle: title,
-    placementType: placement?.type,
-    surfaceId,
-  };
 }
 
 const styles = StyleSheet.create({
