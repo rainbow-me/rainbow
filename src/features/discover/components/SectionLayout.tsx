@@ -9,7 +9,7 @@ import { navigateDiscoverDestination } from '@/features/discover/utils/navigatio
 import { getSportsSurfaceIntent } from '@/features/discover/utils/sportsSurfaceIntent';
 import { isEventCardDisplay } from '@/features/placements/surfaces/constants';
 import { type SurfaceLeaf } from '@/features/placements/surfaces/types';
-import { type PlacementItemV2 as PlacementItem } from '@/features/placements/types';
+import { type PlacementItem } from '@/features/placements/types';
 import { LeagueIcon } from '@/features/polymarket/components/league-icon/LeagueIcon';
 import { LiveSectionIndicator } from '@/features/polymarket/components/LiveSectionIndicator';
 import * as i18n from '@/languages';

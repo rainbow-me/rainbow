@@ -7,11 +7,11 @@ import { hasRefsOrPendingHydration } from '@/features/placements/stores/derived/
 import {
   isPlacementHydrating,
   selectPlacementItemsBySource,
-  usePlacementsV2Store,
+  usePlacementsStore,
   type PlacementResult,
 } from '@/features/placements/stores/placementsStore';
 import { useDiscoverSurfacePlacementRefs } from '@/features/placements/surfaces/stores/discoverSurfaceStore';
-import { type PlacementIdV2, type PlacementItemV2 } from '@/features/placements/types';
+import { type PlacementId, type PlacementItem } from '@/features/placements/types';
 import { fetchPolymarketEventsByIds } from '@/features/polymarket/stores/polymarketEventsStore';
 import { fetchPolymarketTeamMetadataForGameEvents } from '@/features/polymarket/stores/polymarketTeamMetadataStore';
 import { type PolymarketEvent } from '@/features/polymarket/types/polymarket-event';
@@ -24,7 +24,7 @@ import { shallowEqual } from '@/worklets/comparisons';
 
 // ============ Types ========================================================== //
 
-export type PredictionPlacementItem = PlacementItemV2 & {
+export type PredictionPlacementItem = PlacementItem & {
   event: PolymarketEvent;
 };
 
@@ -89,11 +89,11 @@ async function fetchPredictionEvents(
 
 // ============ Utilities ====================================================== //
 
-export function usePredictionsPlacement(placementId: PlacementIdV2): PlacementResult<PredictionPlacementItem> {
+export function usePredictionsPlacement(placementId: PlacementId): PlacementResult<PredictionPlacementItem> {
   const enabled = usePredictionsEnabled();
-  const placement = usePlacementsV2Store(state => state.getPlacement(placementId));
-  const placementItems = usePlacementsV2Store(state => selectPlacementItemsBySource(state, placementId, 'polymarket'), shallowEqual);
-  const placementsLoading = usePlacementsV2Store(state => isPlacementHydrating(state, placementId, 'polymarket'));
+  const placement = usePlacementsStore(state => state.getPlacement(placementId));
+  const placementItems = usePlacementsStore(state => selectPlacementItemsBySource(state, placementId, 'polymarket'), shallowEqual);
+  const placementsLoading = usePlacementsStore(state => isPlacementHydrating(state, placementId, 'polymarket'));
   const events = usePredictionEventsStore(state => state.getData());
   const eventsLoading = usePredictionEventsStore(
     state => placementItems.length > 0 && state.enabled && (state.getStatus('isIdle') || state.getStatus('isLoading'))
@@ -118,7 +118,7 @@ export function usePredictionsPlacement(placementId: PlacementIdV2): PlacementRe
 }
 
 function parsePredictionItems(
-  placementItems: PlacementItemV2[],
+  placementItems: PlacementItem[],
   eventsById: EventsById,
   activeEventIds: ReadonlySet<string>
 ): PredictionPlacementItem[] {

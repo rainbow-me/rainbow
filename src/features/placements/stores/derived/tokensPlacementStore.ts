@@ -8,11 +8,11 @@ import { hasRefsOrPendingHydration } from '@/features/placements/stores/derived/
 import {
   isPlacementHydrating,
   selectPlacementItemsBySource,
-  usePlacementsV2Store,
+  usePlacementsStore,
   type PlacementResult,
 } from '@/features/placements/stores/placementsStore';
 import { useDiscoverSurfacePlacementRefs } from '@/features/placements/surfaces/stores/discoverSurfaceStore';
-import { type PlacementIdV2, type PlacementItemV2 } from '@/features/placements/types';
+import { type PlacementId, type PlacementItem } from '@/features/placements/types';
 import { mapWithConcurrency } from '@/framework/core/utils/mapWithConcurrency';
 import { time } from '@/framework/core/utils/time';
 import { fetchExternalToken, type FormattedExternalAsset } from '@/resources/assets/externalAssetsQuery';
@@ -24,7 +24,7 @@ import { shallowEqual } from '@/worklets/comparisons';
 
 // ============ Types ========================================================== //
 
-export type TokenPlacementItem = PlacementItemV2 & {
+export type TokenPlacementItem = PlacementItem & {
   asset: FormattedExternalAsset;
 };
 
@@ -124,11 +124,11 @@ async function fetchTokenRef(
 
 // ============ Utilities ====================================================== //
 
-export function useTokensPlacement(placementId: PlacementIdV2): PlacementResult<TokenPlacementItem> {
+export function useTokensPlacement(placementId: PlacementId): PlacementResult<TokenPlacementItem> {
   const enabled = useTokensEnabled();
-  const placement = usePlacementsV2Store(state => state.getPlacement(placementId));
-  const placementItems = usePlacementsV2Store(state => selectPlacementItemsBySource(state, placementId, 'rainbow'), shallowEqual);
-  const placementsLoading = usePlacementsV2Store(state => isPlacementHydrating(state, placementId, 'rainbow'));
+  const placement = usePlacementsStore(state => state.getPlacement(placementId));
+  const placementItems = usePlacementsStore(state => selectPlacementItemsBySource(state, placementId, 'rainbow'), shallowEqual);
+  const placementsLoading = usePlacementsStore(state => isPlacementHydrating(state, placementId, 'rainbow'));
   const assetsByRef = useTokenRefsStore(state => state.getData());
   const tokenRefsLoading = useTokenRefsStore(state => {
     return placementItems.length > 0 && state.enabled && (state.getStatus('isIdle') || state.getStatus('isLoading'));
@@ -148,7 +148,7 @@ export function useTokensPlacement(placementId: PlacementIdV2): PlacementResult<
   );
 }
 
-function parseTokenItems(placementItems: PlacementItemV2[], assetsByRef: TokenAssetsByRef): TokenPlacementItem[] {
+function parseTokenItems(placementItems: PlacementItem[], assetsByRef: TokenAssetsByRef): TokenPlacementItem[] {
   return pairPlacementItems(
     placementItems,
     id => assetsByRef[id],

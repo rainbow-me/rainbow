@@ -4,11 +4,7 @@ import { StyleSheet, useWindowDimensions, View } from 'react-native';
 import { Box } from '@/design-system';
 import { SectionHeader } from '@/features/discover/components/markets/layouts/SectionHeader';
 import { type DiscoverCardAnalyticsContext } from '@/features/discover/components/surfaceSectionTypes';
-import {
-  type PlacementV2 as Placement,
-  type PlacementIdV2 as PlacementId,
-  type PlacementItemV2 as PlacementItem,
-} from '@/features/placements/types';
+import { type Placement, type PlacementId, type PlacementItem } from '@/features/placements/types';
 import { Grid } from '@/screens/token-launcher/components/Grid';
 
 const GRID_COLUMNS = 2;

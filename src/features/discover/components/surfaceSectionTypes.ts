@@ -3,11 +3,11 @@ import { type ReactNode } from 'react';
 import { type MARKET_DISPLAY_VALUES, type PREDICTION_DISPLAY_VALUES } from '@/features/placements/surfaces/constants';
 import { type Display, type SurfaceLeaf } from '@/features/placements/surfaces/types';
 import {
-  type PlacementV2 as Placement,
-  type PlacementIdV2 as PlacementId,
-  type PlacementItemV2 as PlacementItem,
-  type PlacementSourceV2 as PlacementSource,
-  type PlacementTypeV2 as PlacementType,
+  type Placement,
+  type PlacementId,
+  type PlacementItem,
+  type PlacementSource,
+  type PlacementType,
 } from '@/features/placements/types';
 
 export type DiscoverCardAnalyticsContext = {

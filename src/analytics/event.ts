@@ -11,12 +11,12 @@ import { type ENSRapActionType } from '@/features/ens/raps/common';
 import { type PerpPositionSide, type TriggerOrderType } from '@/features/perps/types';
 import { type Destination, type Display, type SectionId, type SurfaceId } from '@/features/placements/surfaces/types';
 import {
-  type PlacementV2 as Placement,
-  type PlacementIdV2 as PlacementId,
-  type PlacementItemV2 as PlacementItem,
+  type Placement,
+  type PlacementId,
+  type PlacementItem,
   type PlacementItemAnalyticsMetadata,
-  type PlacementSourceV2 as PlacementSource,
-  type PlacementTypeV2 as PlacementType,
+  type PlacementSource,
+  type PlacementType,
 } from '@/features/placements/types';
 import { type EthereumWalletType } from '@/helpers/walletTypes';
 import { type WalletLibraryType } from '@/model/wallet';
