@@ -3,7 +3,8 @@ import { View } from 'react-native';
 
 import { Box } from '@/design-system';
 import { SectionHeader } from '@/features/discover/components/markets/layouts/SectionHeader';
-import { type PlacementItemV2 as PlacementItem } from '@/features/placements/types';
+import { type DiscoverCardAnalyticsContext } from '@/features/discover/components/surfaceSectionTypes';
+import { type Placement, type PlacementId, type PlacementItem } from '@/features/placements/types';
 
 import { ShowMoreButton, ShowMoreCellEnterAnimation } from './ShowMoreButton';
 
@@ -14,9 +15,12 @@ type MarketListProps<T extends PlacementItem> = {
   leadingAccessory?: ReactNode;
   loading?: boolean;
   onPress?: () => void;
-  renderItem: (item: T) => ReactNode;
+  placement: Placement | undefined;
+  placementId: PlacementId | undefined;
+  renderItem: (item: T, analyticsContext: DiscoverCardAnalyticsContext) => ReactNode;
   renderSkeleton: () => ReactNode;
   showHeaderCaret?: boolean;
+  surfaceId: string;
   title: string;
 };
 
@@ -36,9 +40,12 @@ export function MarketList<T extends PlacementItem>({
   leadingAccessory,
   loading,
   onPress,
+  placement,
+  placementId,
   renderItem,
   renderSkeleton,
   showHeaderCaret,
+  surfaceId,
   title,
 }: MarketListProps<T>) {
   const [isExpanded, setIsExpanded] = useState(false);
@@ -57,7 +64,8 @@ export function MarketList<T extends PlacementItem>({
         {showSkeletons
           ? Array.from({ length: skeletonItemCount }).map((_, index) => <SkeletonSlot key={index} render={renderSkeleton} />)
           : visibleItems.map((item, index) => {
-              const listItem = <View>{renderItem(item)}</View>;
+              const analyticsContext = getAnalyticsContext({ item, itemIndex: index, placement, placementId, surfaceId, title });
+              const listItem = <View>{renderItem(item, analyticsContext)}</View>;
 
               if (!hasInitialLimit || !isExpanded || index < (initialVisibleItemCount ?? 0)) {
                 return <Fragment key={item.id}>{listItem}</Fragment>;
@@ -73,4 +81,30 @@ export function MarketList<T extends PlacementItem>({
       </Box>
     </Box>
   );
+}
+
+function getAnalyticsContext<T extends PlacementItem>({
+  item,
+  itemIndex,
+  placement,
+  placementId,
+  surfaceId,
+  title,
+}: {
+  item: T;
+  itemIndex: number;
+  placement: Placement | undefined;
+  placementId: PlacementId | undefined;
+  surfaceId: string;
+  title: string;
+}): DiscoverCardAnalyticsContext {
+  return {
+    itemId: item.id,
+    itemOrder: itemIndex,
+    placementId,
+    placementSource: placement?.source,
+    placementTitle: title,
+    placementType: placement?.type,
+    surfaceId,
+  };
 }

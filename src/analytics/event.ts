@@ -8,9 +8,8 @@ import { type UnlockableAppIconKey } from '@/features/app-icon/models/appIcons';
 import { type CandleResolution, type ChartType } from '@/features/charts/types';
 import { type RequestSource } from '@/features/dapp-request/types';
 import { type ENSRapActionType } from '@/features/ens/raps/common';
-import { type PerpPositionSide, type TriggerOrderType } from '@/features/perps/types';
 import { type Destination, type Display, type SectionId, type SurfaceDocument, type SurfaceId } from '@/features/placements/surfaces/types';
-import { type PlacementItemV2, type PlacementV2 } from '@/features/placements/types';
+import { type Placement, type PlacementItem } from '@/features/placements/types';
 import { type EthereumWalletType } from '@/helpers/walletTypes';
 import { type WalletLibraryType } from '@/model/wallet';
 import { type PairHardwareWalletNavigatorParams } from '@/navigation/types';
@@ -996,16 +995,16 @@ export type EventProperties = {
     durationInMs: number;
   };
   [event.placementInteraction]: {
-    id: PlacementV2['id'];
+    id: Placement['id'];
     interactionType: 'card_press' | 'carousel_scroll';
-    source?: PlacementV2['source'];
-    type?: PlacementV2['type'];
-    version?: PlacementV2['version'];
+    source?: Placement['source'];
+    type?: Placement['type'];
+    version?: Placement['version'];
     display?: Display;
     sectionId?: SectionId;
     sectionTitle?: string;
     surfaceId?: SurfaceId;
-    itemId?: PlacementItemV2['id'];
+    itemId?: PlacementItem['id'];
     itemOrder?: number;
   };
   [event.surfaceInteraction]: {

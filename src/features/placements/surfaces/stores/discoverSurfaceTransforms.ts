@@ -1,4 +1,4 @@
-import { type usePlacementsV2Store } from '@/features/placements/stores/placementsStore';
+import { type usePlacementsStore } from '@/features/placements/stores/placementsStore';
 import { DISPLAY_VALUES } from '@/features/placements/surfaces/constants';
 import {
   type DiscoverSurface,
@@ -11,7 +11,7 @@ import { filterSurfaceTree, walkSurfaceLeaves } from '@/features/placements/surf
 import { getConsistentArray } from '@/helpers/getConsistentArray';
 import { logger } from '@/logger';
 
-type PlacementsById = ReturnType<typeof usePlacementsV2Store.getState>['placementsById'];
+type PlacementsById = ReturnType<typeof usePlacementsStore.getState>['placementsById'];
 
 export function isSurfaceWaitingForPlacements(
   surface: SurfaceDocument,

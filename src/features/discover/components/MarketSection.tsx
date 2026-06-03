@@ -29,7 +29,7 @@ import { hasDestinationRoot, navigateDiscoverDestination } from '@/features/disc
 import { maybeNavigateToPerpsExplainSheet } from '@/features/perps/utils/navigateToPerps';
 import { usePerpsPlacement, type PerpMarketPlacementItem } from '@/features/placements/stores/derived/perpsPlacementStore';
 import { useTokensPlacement, type TokenPlacementItem } from '@/features/placements/stores/derived/tokensPlacementStore';
-import { usePlacementsV2Store } from '@/features/placements/stores/placementsStore';
+import { usePlacementsStore } from '@/features/placements/stores/placementsStore';
 import { MARKET_DISPLAY_VALUES } from '@/features/placements/surfaces/constants';
 import { useIsDiscoverSurfacePlacementPending } from '@/features/placements/surfaces/hooks/useDiscoverSurfacePlacements';
 import { type SurfaceLeaf } from '@/features/placements/surfaces/types';
@@ -87,9 +87,9 @@ export function MarketSection({ surface }: { surface: SurfaceLeafWithDisplay<Mar
 
 function MarketPlacementContent({ surface }: { surface: PlacementBackedSurfaceLeafWithDisplay<MarketDisplay> }) {
   const perpsEnabled = useRemoteConfig('perps_enabled').perps_enabled;
-  const placement = usePlacementsV2Store(state => state.getPlacement(surface.placement));
+  const placement = usePlacementsStore(state => state.getPlacement(surface.placement));
   const isPendingSurfacePlacement = useIsDiscoverSurfacePlacementPending(surface.placement);
-  const isLoadingPlacementSource = usePlacementsV2Store(state => {
+  const isLoadingPlacementSource = usePlacementsStore(state => {
     if (state.getPlacement(surface.placement) !== undefined) return false;
     return state.getStatus('isInitialLoad') || state.getStatus('isIdle') || state.getStatus('isLoading');
   });
