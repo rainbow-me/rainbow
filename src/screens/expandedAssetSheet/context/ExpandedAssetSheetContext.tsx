@@ -16,7 +16,6 @@ import useAccountAsset from '@/hooks/useAccountAsset';
 import useAdditionalAssetData, { type TokenMetadata } from '@/hooks/useAdditionalAssetData';
 import useColorForAsset from '@/hooks/useColorForAsset';
 import { useExternalToken, type FormattedExternalAsset } from '@/resources/assets/externalAssetsQuery';
-import { type TrendingToken } from '@/resources/trendingTokens/trendingTokens';
 import { useSuperTokenStore } from '@/screens/token-launcher/state/rainbowSuperTokenStore';
 import { userAssetsStoreManager } from '@/state/assets/userAssetsStoreManager';
 import { useBackendNetworksStore } from '@/state/backendNetworks/backendNetworks';
@@ -68,7 +67,7 @@ export interface AssetAccentColors {
   surfaceSecondary: string;
 }
 // We can receive a variety of assets as param depending on where we navigated from
-export type ExpandedSheetParamAsset = ParsedAddressAsset | TrendingToken | FormattedExternalAsset | EnrichedExchangeAsset | Token;
+export type ExpandedSheetParamAsset = ParsedAddressAsset | FormattedExternalAsset | EnrichedExchangeAsset | Token;
 
 export type BasicAsset = Pick<
   Token,
@@ -181,14 +180,6 @@ export function ExpandedAssetSheetContextProvider({
       if ('value' in asset.price) {
         base.price.value = asset.price.value ?? null;
       }
-    }
-
-    // TrendingToken format
-    if ('price' in asset && typeof asset.price === 'number') {
-      base.price.value = asset.price;
-    }
-    if ('priceChange' in asset && typeof asset.priceChange === 'object') {
-      base.price.relativeChange24h = asset.priceChange.day ?? null;
     }
 
     return base;
