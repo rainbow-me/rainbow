@@ -3,7 +3,7 @@ import { useExperimentalConfigStore } from '@/config/experimentalConfigStore';
 import { getSportsSurfaceIntent } from '@/features/discover/utils/sportsSurfaceIntent';
 import { useHyperliquidMarketsStore } from '@/features/perps/stores/hyperliquidMarketsStore';
 import { usePredictionEventsStore } from '@/features/placements/stores/derived/predictionsPlacementStore';
-import { useTokenRefsStore } from '@/features/placements/stores/derived/tokensPlacementStore';
+import { clearTokenRefCache, useTokenRefsStore } from '@/features/placements/stores/derived/tokensPlacementStore';
 import { usePlacementsStore } from '@/features/placements/stores/placementsStore';
 import { useDiscoverSurface, useDiscoverSurfacePlacementRefs } from '@/features/placements/surfaces/stores/discoverSurfaceStore';
 import { type DiscoverSurface } from '@/features/placements/surfaces/stores/discoverSurfaceTypes';
@@ -30,6 +30,9 @@ export async function refreshDiscoverSurface(surfaceId: string): Promise<void> {
   }
 
   if (refs.rainbow.length) {
+    // Clear the module-level token-ref cache so a forced refresh always fetches
+    // fresh token data from the network, even within TOKEN_REFS_STALE_TIME.
+    clearTokenRefCache();
     refreshes.push(useTokenRefsStore.getState().fetch(undefined, { force: true }));
   }
 
