@@ -67,7 +67,7 @@ export const usePlacementsStore = createQueryStore<PlacementsById, never, Placem
     };
   },
 
-  { storageKey: 'placementsStore' }
+  { storageKey: 'placementsStore', version: 1 }
 );
 
 export function selectPlacementItemsBySource<Source extends PlacementSource>(
