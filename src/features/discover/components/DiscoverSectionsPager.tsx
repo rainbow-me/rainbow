@@ -1,10 +1,10 @@
 import React, { memo, useCallback, useEffect, useMemo, useRef, type MutableRefObject } from 'react';
-import { Platform, ScrollView, StyleSheet } from 'react-native';
+import { Platform, ScrollView, StyleSheet, type NativeScrollEvent, type NativeSyntheticEvent } from 'react-native';
 
 import Animated, { runOnJS, useAnimatedScrollHandler, useSharedValue, type SharedValue } from 'react-native-reanimated';
 
 import { SPRING_CONFIGS } from '@/components/animations/animationConfigs';
-import { useDiscoverScreenContext } from '@/components/Discover/DiscoverScreenContext';
+import { useDiscoverScreenContext, type DiscoverSectionScrollViewRef } from '@/components/Discover/DiscoverScreenContext';
 import { DEFAULT_SCROLL_FADE_DISTANCE } from '@/components/scroll-header-fade/ScrollHeaderFade';
 import { Skeleton } from '@/components/Skeleton';
 import { SmoothPager, usePagerNavigation } from '@/components/SmoothPager/SmoothPager';
@@ -154,7 +154,7 @@ const DiscoverSectionScrollView = memo(function DiscoverSectionScrollView({
   const storedScrollOffset = useSharedValue(sectionScrollOffsets.current[section.id] ?? 0);
 
   const setScrollViewRef = useCallback(
-    (scrollView: Animated.ScrollView | null) => {
+    (scrollView: DiscoverSectionScrollViewRef | null) => {
       registerSectionScrollView(section.id, scrollView);
     },
     [registerSectionScrollView, section]
@@ -165,6 +165,21 @@ const DiscoverSectionScrollView = memo(function DiscoverSectionScrollView({
       sectionScrollOffsets.current[section.id] = nextOffset;
     },
     [section.id, sectionScrollOffsets]
+  );
+
+  const onAndroidScroll = useCallback(
+    (event: NativeSyntheticEvent<NativeScrollEvent>) => {
+      const clampedPosition = clamp(event.nativeEvent.contentOffset.y, 0, DEFAULT_SCROLL_FADE_DISTANCE);
+
+      if (storedScrollOffset.value !== clampedPosition) {
+        storedScrollOffset.value = clampedPosition;
+        updateSectionScrollOffset(clampedPosition);
+      }
+
+      if (!isActive || scrollOffset.value === clampedPosition) return;
+      scrollOffset.value = clampedPosition;
+    },
+    [isActive, scrollOffset, storedScrollOffset, updateSectionScrollOffset]
   );
 
   const onScroll = useAnimatedScrollHandler({
@@ -181,11 +196,14 @@ const DiscoverSectionScrollView = memo(function DiscoverSectionScrollView({
     },
   });
 
+  const SectionScrollView = Platform.OS === 'android' ? ScrollView : Animated.ScrollView;
+  const sectionScrollHandler = Platform.OS === 'android' ? onAndroidScroll : onScroll;
+
   return (
-    <Animated.ScrollView
+    <SectionScrollView
       automaticallyAdjustsScrollIndicatorInsets={false}
       contentContainerStyle={styles.scrollContent}
-      onScroll={onScroll}
+      onScroll={sectionScrollHandler}
       pointerEvents={isActive ? 'auto' : 'none'}
       ref={setScrollViewRef}
       refreshControl={<DiscoverRefreshControl />}
@@ -196,7 +214,7 @@ const DiscoverSectionScrollView = memo(function DiscoverSectionScrollView({
       testID={`discover-section-${section.id}`}
     >
       <DiscoverSections items={section.sections} surfaceId={surfaceId} />
-    </Animated.ScrollView>
+    </SectionScrollView>
   );
 });
 
