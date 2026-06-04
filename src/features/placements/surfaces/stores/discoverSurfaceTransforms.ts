@@ -1,5 +1,5 @@
 import { type usePlacementsStore } from '@/features/placements/stores/placementsStore';
-import { DISPLAY_VALUES } from '@/features/placements/surfaces/constants';
+import { DISPLAY_VALUES, isSurfacePlacementCompatible } from '@/features/placements/surfaces/constants';
 import {
   type DiscoverSurface,
   type DiscoverSurfacePlacementRefs,
@@ -49,6 +49,17 @@ export function getMissingSurfacePlacementIds(surface: SurfaceTree, placementsBy
 
 export function filterMissingPlacementSurface(surface: SurfaceDocument, placementsById: PlacementsById): SurfaceDocument | undefined {
   return filterSurfaceTree(surface, item => 'items' in item || !item.placement || placementsById[item.placement] !== undefined);
+}
+
+export function filterIncompatiblePlacementSurface(surface: SurfaceDocument, placementsById: PlacementsById): SurfaceDocument | undefined {
+  return filterSurfaceTree(surface, item => {
+    if ('items' in item || !item.placement) return true;
+
+    const placement = placementsById[item.placement];
+    if (!placement) return true;
+
+    return isSurfacePlacementCompatible(item.display, placement.source);
+  });
 }
 
 export function getDiscoverSurfacePlacementRefs(surface: DiscoverSurface, placementsById: PlacementsById): DiscoverSurfacePlacementRefs {
