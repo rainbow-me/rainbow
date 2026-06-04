@@ -71,6 +71,13 @@ export enum ChainId {
   zoraSepolia = chain.zoraSepolia.id,
 }
 
+/**
+ * Verifies a numeric chain ID is a known `ChainId`.
+ */
+export function isValidChainId(chainId: ChainId | number): chainId is ChainId {
+  return Object.hasOwn(ChainId, chainId);
+}
+
 export enum ChainName {
   apechain = 'apechain',
   arbitrum = 'arbitrum',
