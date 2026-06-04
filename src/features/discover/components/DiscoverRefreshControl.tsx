@@ -1,10 +1,12 @@
 import React, { useCallback, useState } from 'react';
-import { RefreshControl } from 'react-native';
+import { RefreshControl, type RefreshControlProps } from 'react-native';
 
 import { useForegroundColor } from '@/design-system';
 import { refreshDiscoverSurface } from '@/features/discover/utils/refreshDiscoverSurface';
 
-export function DiscoverRefreshControl() {
+type DiscoverRefreshControlProps = Pick<RefreshControlProps, 'children' | 'style'>;
+
+export function DiscoverRefreshControl({ children, style }: DiscoverRefreshControlProps) {
   const [isRefreshing, setIsRefreshing] = useState(false);
   const tintColor = useForegroundColor('label');
 
@@ -17,5 +19,9 @@ export function DiscoverRefreshControl() {
     }
   }, []);
 
-  return <RefreshControl onRefresh={onRefresh} refreshing={isRefreshing} tintColor={tintColor} />;
+  return (
+    <RefreshControl onRefresh={onRefresh} refreshing={isRefreshing} style={style} tintColor={tintColor}>
+      {children}
+    </RefreshControl>
+  );
 }
