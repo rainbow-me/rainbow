@@ -29,7 +29,7 @@ export function navigateToPolymarketSportsLeague(leagueId: string): void {
   const selectedLeagueId = parseSportsLeagueKey(leagueId);
   if (!selectedLeagueId) return;
 
-  usePolymarketCategoryStore.getState().setTagId(CATEGORIES.sports.tagId);
+  usePolymarketCategoryStore.getState().setTagId('sports');
   usePolymarketSportsEventsStore.getState().setSelectedLeagueId(selectedLeagueId);
   navigateToPolymarketBrowse();
 }
