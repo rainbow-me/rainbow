@@ -555,11 +555,6 @@
         "tokens": "Tokens"
       },
       "show_more": "Show more",
-      "placements": {
-        "perps_title": "Perps",
-        "predictions_title": "Predictions",
-        "see_all": "See all"
-      },
       "strategies": {
         "strategies_title": "Strategies",
         "yearn_finance_description": "Smart yield strategies from yearn.finance"
