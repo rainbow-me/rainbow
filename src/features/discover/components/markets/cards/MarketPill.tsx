@@ -23,6 +23,7 @@ import { getHighContrastTextColorWorklet } from '@/worklets/colors';
 
 type MarketPillProps = {
   item: MarketDisplayItem;
+  onPress?: () => void;
 };
 
 export type MarketPillWidthInput = {
@@ -79,7 +80,7 @@ const PILL_COLORS = {
 
 // ============ Component ====================================================== //
 
-export const MarketPill = memo(function MarketPill({ item }: MarketPillProps) {
+export const MarketPill = memo(function MarketPill({ item, onPress }: MarketPillProps) {
   const { colorMode, isDarkMode } = useColorMode();
   const priceChangeColors = usePriceChangeColors();
 
@@ -93,7 +94,7 @@ export const MarketPill = memo(function MarketPill({ item }: MarketPillProps) {
   });
 
   return (
-    <ButtonPressAnimation scaleTo={0.96} style={styles.pressable}>
+    <ButtonPressAnimation onPress={onPress} scaleTo={0.96} style={styles.pressable}>
       <View style={[styles.pillShadow, isDarkMode ? styles.pillShadowDark : styles.pillShadowLight]}>
         <View style={[styles.pill, { backgroundColor: pillColors.backgroundColor }]}>
           <LinearGradient

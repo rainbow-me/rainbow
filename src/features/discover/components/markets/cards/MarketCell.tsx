@@ -46,7 +46,7 @@ export function MarketCellSkeleton() {
   return <Skeleton borderRadius={24} height={64} width="100%" />;
 }
 
-export const MarketCell = memo(function MarketCell({ item }: { item: MarketDisplayItem }) {
+export const MarketCell = memo(function MarketCell({ item, onPress }: { item: MarketDisplayItem; onPress?: () => void }) {
   const { colorMode, isDarkMode } = useColorMode();
   const priceChangeColors = usePriceChangeColors();
   const chartColorSharedValue = useLiveChartColorSharedValue(item, priceChangeColors);
@@ -57,7 +57,7 @@ export const MarketCell = memo(function MarketCell({ item }: { item: MarketDispl
     : (['rgba(131, 142, 153, 0.06)', 'rgba(131, 142, 153, 0)'] as const);
 
   return (
-    <ButtonPressAnimation scaleTo={0.96}>
+    <ButtonPressAnimation onPress={onPress} scaleTo={0.96}>
       <Box
         borderColor={{ custom: tokenCardColors.borderColor }}
         borderRadius={24}

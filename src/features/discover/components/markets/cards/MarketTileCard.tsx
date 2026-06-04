@@ -23,6 +23,7 @@ import { getHighContrastTextColorWorklet } from '@/worklets/colors';
 
 type MarketTileCardProps = {
   item: MarketDisplayItem;
+  onPress?: () => void;
   width?: number;
 };
 
@@ -80,7 +81,7 @@ const CARD_COLORS = {
 
 // ============ Component ====================================================== //
 
-export const MarketTileCard = memo(function MarketTileCard({ item, width = MARKET_TILE_CARD_WIDTH }: MarketTileCardProps) {
+export const MarketTileCard = memo(function MarketTileCard({ item, onPress, width = MARKET_TILE_CARD_WIDTH }: MarketTileCardProps) {
   const { colorMode, isDarkMode } = useColorMode();
 
   const { accentColor, badgeTextColor, cardColors, chartColor, iconUrl } = useMemo(
@@ -93,7 +94,7 @@ export const MarketTileCard = memo(function MarketTileCard({ item, width = MARKE
   const chartWidth = width - CARD_LAYOUT.paddingHorizontal * 2;
 
   return (
-    <ButtonPressAnimation scaleTo={0.96} style={[styles.pressable, { width }]}>
+    <ButtonPressAnimation onPress={onPress} scaleTo={0.96} style={[styles.pressable, { width }]}>
       <View style={[styles.cardShadow, isDarkMode ? styles.cardShadowDark : styles.cardShadowLight]}>
         <View style={[styles.card, { backgroundColor: cardColors.backgroundColor }]}>
           <LinearGradient
