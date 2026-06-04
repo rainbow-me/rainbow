@@ -52,6 +52,7 @@ import { DEVICE_WIDTH } from '@/utils/deviceUtils';
 
 type PredictionsDisplay = (typeof PREDICTION_DISPLAY_VALUES)[number];
 
+const hasDestination = (surface: SurfaceLeaf) => surface.destination !== null;
 const PREDICTION_TILE_WIDTH = Math.round((DEVICE_WIDTH - 20 * 2 - 8) / 2);
 const PREDICTION_TILE_SKELETON = {
   borderRadius: PREDICTION_CARD_BORDER_RADIUS,
@@ -211,6 +212,7 @@ function PredictionsPlacementSection({ surface }: { surface: PlacementBackedSurf
   const result = usePredictionsPlacement(surface.placement);
   const isPlacementPending = useIsPredictionPlacementPending(surface);
   const descriptor = PREDICTIONS_SECTION_DESCRIPTORS[surface.display];
+  const onPressSeeAll = useCallback(() => navigateDiscoverDestination(surface.destination), [surface.destination]);
 
   usePredictionTokenSubscription({ display: surface.display, items: result.items, limit: surface.limit });
 
@@ -219,7 +221,7 @@ function PredictionsPlacementSection({ surface }: { surface: PlacementBackedSurf
     descriptor,
     loading: result.isLoading || isPlacementPending,
     // Prediction "See All" routes to the CMS destination (predictions -> Polymarket).
-    onPressSeeAll: () => navigateDiscoverDestination(surface.destination),
+    onPressSeeAll: hasDestination(surface) && result.placement ? onPressSeeAll : undefined,
     surface,
   });
 }
@@ -234,6 +236,7 @@ function SportsEventPlacementSection({
   const isPlacementPending = useIsPredictionPlacementPending(surface);
   const result = usePredictionsPlacement(surface.placement);
   const descriptor = getSportsEventSectionDescriptor(surface, sportsIntent);
+  const onPressSeeAll = useCallback(() => navigateDiscoverDestination(surface.destination), [surface.destination]);
 
   usePredictionTokenSubscription({ display: surface.display, items: result.items, limit: surface.limit });
 
@@ -250,7 +253,7 @@ function SportsEventPlacementSection({
     leadingAccessory,
     loading: result.isLoading || isPlacementPending,
     // Prediction "See All" routes to the CMS destination (predictions -> Polymarket).
-    onPressSeeAll: () => navigateDiscoverDestination(surface.destination),
+    onPressSeeAll: hasDestination(surface) && result.placement ? onPressSeeAll : undefined,
     surface,
   });
 }
@@ -272,6 +275,7 @@ function SportsQuerySection({
   }, [events, sportsIntent]);
   const descriptor = getSportsEventSectionDescriptor(surface, sportsIntent);
   const headerCount = getRenderedHeaderCount({ descriptor, itemCount: items.length, limit: surface.limit });
+  const onPressSeeAll = useCallback(() => navigateDiscoverDestination(surface.destination), [surface.destination]);
 
   usePredictionTokenSubscription({ display: surface.display, items, limit: surface.limit });
 
@@ -285,7 +289,7 @@ function SportsQuerySection({
     leadingAccessory,
     loading: isLoading,
     // Prediction "See All" routes to the CMS destination (predictions -> Polymarket).
-    onPressSeeAll: () => navigateDiscoverDestination(surface.destination),
+    onPressSeeAll: hasDestination(surface) ? onPressSeeAll : undefined,
     surface,
   });
 }
@@ -304,13 +308,13 @@ function getSportsHeaderProps(
   if ('leagueId' in sportsIntent) {
     // League section: shows league icon, caret based on destination
     return {
-      headerCaret: surface.destination !== null,
+      headerCaret: hasDestination(surface),
       leadingAccessory: <LeagueIcon leagueId={sportsIntent.leagueId} size={28} />,
     };
   }
   // Today/other bucket section: no leading accessory, caret based on destination
   return {
-    headerCaret: surface.destination !== null,
+    headerCaret: hasDestination(surface),
     leadingAccessory: undefined,
   };
 }
