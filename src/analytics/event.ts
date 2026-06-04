@@ -998,15 +998,15 @@ export type EventProperties = {
   [event.placementInteraction]: {
     id: Placement['id'];
     interactionType: 'card_press' | 'carousel_scroll';
-    source?: Placement['source'];
-    type?: Placement['type'];
-    version?: Placement['version'];
+    source: Placement['source'];
+    type: Placement['type'];
+    version: Placement['version'];
     display?: Display;
     sectionId?: SectionId;
     sectionTitle?: string;
-    surfaceId?: SurfaceId;
-    itemId?: PlacementItem['id'];
-    itemOrder?: number;
+    surfaceId: SurfaceId;
+    itemId: PlacementItem['id'];
+    itemOrder: number;
   };
   [event.surfaceInteraction]: {
     id: SurfaceId;
