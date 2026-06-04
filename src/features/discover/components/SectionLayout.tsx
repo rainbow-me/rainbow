@@ -1,11 +1,10 @@
 import { MarketCarousel } from '@/features/discover/components/markets/layouts/MarketCarousel';
 import { MarketGrid } from '@/features/discover/components/markets/layouts/MarketGrid';
 import { MarketList } from '@/features/discover/components/markets/layouts/MarketList';
+import { type SectionLayoutProps } from '@/features/discover/types/sectionLayout';
 import { type SurfaceLeaf } from '@/features/placements/surfaces/types';
 import { type PlacementItemV2 as PlacementItem } from '@/features/placements/types';
 import * as i18n from '@/languages';
-
-import { type SectionLayoutProps } from './surfaceSectionTypes';
 
 /**
  * Resolves a section's display title: a localized `discover.sections.<id>` label

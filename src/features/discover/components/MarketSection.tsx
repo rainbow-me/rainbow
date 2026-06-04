@@ -12,13 +12,13 @@ import {
   MarketTileCardSkeleton,
 } from '@/features/discover/components/markets/cards/MarketTileCard';
 import { renderSectionLayout } from '@/features/discover/components/SectionLayout';
+import { type MarketDisplayItem } from '@/features/discover/types/marketDisplayItem';
 import {
   type MarketDisplay,
   type PlacementBackedSurfaceLeafWithDisplay,
   type SectionDescriptor,
   type SurfaceLeafWithDisplay,
-} from '@/features/discover/components/surfaceSectionTypes';
-import { type MarketDisplayItem } from '@/features/discover/types/marketDisplayItem';
+} from '@/features/discover/types/sectionLayout';
 import { usePlacementsV2Store } from '@/features/placements/stores/placementsStore';
 import { MARKET_DISPLAY_VALUES } from '@/features/placements/surfaces/constants';
 import { useIsDiscoverSurfacePlacementPending } from '@/features/placements/surfaces/hooks/useDiscoverSurfacePlacements';
