@@ -7,9 +7,6 @@ import { type PlacementItemV2 as PlacementItem } from '@/features/placements/typ
 
 import { ShowMoreButton, ShowMoreCellEnterAnimation } from './ShowMoreButton';
 
-const DEFAULT_SKELETON_ITEM_COUNT = 5;
-const HORIZONTAL_PADDING = 12;
-
 type MarketListProps<T extends PlacementItem> = {
   data: T[];
   headerCount?: number;
@@ -49,14 +46,14 @@ export function MarketList<T extends PlacementItem>({
   const hasInitialLimit = initialVisibleItemCount !== undefined;
   const visibleItems = !hasInitialLimit || isExpanded ? data : data.slice(0, initialVisibleItemCount);
   const remainingItemCount = hasInitialLimit ? data.length - visibleItems.length : 0;
-  const skeletonItemCount = initialVisibleItemCount ?? DEFAULT_SKELETON_ITEM_COUNT;
+  const skeletonItemCount = initialVisibleItemCount ?? 5;
 
   if (!showSkeletons && data.length === 0) return null;
 
   return (
     <Box gap={20}>
       <SectionHeader count={headerCount} leadingAccessory={leadingAccessory} title={title} onPress={onPress} showCaret={showHeaderCaret} />
-      <Box gap={8} paddingHorizontal={{ custom: HORIZONTAL_PADDING }}>
+      <Box gap={8} paddingHorizontal={{ custom: 12 }}>
         {showSkeletons
           ? Array.from({ length: skeletonItemCount }).map((_, index) => <SkeletonSlot key={index} render={renderSkeleton} />)
           : visibleItems.map((item, index) => {

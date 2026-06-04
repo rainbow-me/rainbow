@@ -18,15 +18,15 @@ import { usePriceChangeColors } from '@/framework/ui/price/usePriceChangeColors'
 import { opacity } from '@/framework/ui/utils/opacity';
 import { getHighContrastTextColorWorklet } from '@/worklets/colors';
 
-const TOKEN_CARD_BORDER_RADIUS = 24;
-const TOKEN_CARD_HEIGHT = 64;
 const TOKEN_SPARKLINE_LAYOUT = { height: 34, width: 64 };
+
 type CellColors = {
   badgeBorderColor: string;
   badgeShadowOpacity: number;
   backgroundColor: string;
   borderColor: string;
 };
+
 const TOKEN_CARD_COLORS = {
   dark: {
     badgeBorderColor: opacity(globalColors.white100, 0.24),
@@ -41,10 +41,9 @@ const TOKEN_CARD_COLORS = {
     borderColor: 'rgba(255, 255, 255, 0.8)',
   },
 } satisfies ContextualColorValue<CellColors>;
-const UP_DOWN_ARROW_WIDTH = 12;
 
 export function MarketCellSkeleton() {
-  return <Skeleton borderRadius={TOKEN_CARD_BORDER_RADIUS} height={TOKEN_CARD_HEIGHT} width="100%" />;
+  return <Skeleton borderRadius={24} height={64} width="100%" />;
 }
 
 export const MarketCell = memo(function MarketCell({ item }: { item: MarketDisplayItem }) {
@@ -112,7 +111,7 @@ export const MarketCell = memo(function MarketCell({ item }: { item: MarketDispl
                 <MarketPriceChange
                   arrowHeight={8}
                   arrowSize="icon 12px"
-                  arrowWidth={UP_DOWN_ARROW_WIDTH}
+                  arrowWidth={12}
                   colorSharedValue={chartColorSharedValue}
                   initialPriceChange={item.initialPriceChange}
                   priceChangeSelector={item.priceChangeSelector}

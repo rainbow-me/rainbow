@@ -11,7 +11,6 @@ import { computeSnapToOffsets } from './carouselLayout';
 
 const HORIZONTAL_PADDING = 12;
 const CARD_GAP = HORIZONTAL_PADDING;
-const SKELETON_COUNT = 5;
 
 type MarketCarouselProps<T extends PlacementItem> = {
   data: T[];
@@ -45,7 +44,7 @@ export function MarketCarousel<T extends PlacementItem>({
   renderSkeleton,
   showHeaderCaret,
   singleItemWidth,
-  skeletonCount = SKELETON_COUNT,
+  skeletonCount = 5,
   title,
 }: MarketCarouselProps<T>) {
   const showSkeletons = loading && data.length === 0;

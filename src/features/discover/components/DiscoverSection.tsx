@@ -9,8 +9,6 @@ type DiscoverSectionsProps = {
   surfaceId: string;
 };
 
-const SECTION_VERTICAL_GAP = 32;
-
 export function DiscoverSections({ items, surfaceId }: DiscoverSectionsProps) {
   return (
     <View style={styles.container}>
@@ -28,7 +26,7 @@ export const DiscoverSection = memo(function DiscoverSection({ surface, surfaceI
 
 const styles = StyleSheet.create({
   container: {
-    gap: SECTION_VERTICAL_GAP,
+    gap: 32,
     paddingBottom: 24,
     paddingTop: 20,
   },

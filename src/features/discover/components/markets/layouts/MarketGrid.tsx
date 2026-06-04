@@ -8,7 +8,6 @@ import { Grid } from '@/screens/token-launcher/components/Grid';
 
 const GRID_COLUMNS = 2;
 const GRID_SPACING = 12;
-const DEFAULT_SKELETON_ROWS = 2;
 
 type MarketGridProps<T extends PlacementItem> = {
   data: T[];
@@ -34,7 +33,7 @@ export function MarketGrid<T extends PlacementItem>({
   renderItem,
   renderSkeleton,
   showHeaderCaret,
-  skeletonCount = GRID_COLUMNS * DEFAULT_SKELETON_ROWS,
+  skeletonCount = GRID_COLUMNS * 2,
   title,
 }: MarketGridProps<T>) {
   const { width: screenWidth } = useWindowDimensions();
