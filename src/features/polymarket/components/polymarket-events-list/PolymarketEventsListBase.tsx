@@ -12,7 +12,7 @@ import {
 } from '@/features/polymarket/components/polymarket-events-list/PolymarketEventsListItem';
 import { NAVIGATOR_FOOTER_CLEARANCE, NAVIGATOR_FOOTER_HEIGHT } from '@/features/polymarket/constants';
 import { type PolymarketEvent } from '@/features/polymarket/types/polymarket-event';
-import { DEVICE_HEIGHT, DEVICE_WIDTH } from '@/utils/deviceUtils';
+import { DEVICE_WIDTH } from '@/utils/deviceUtils';
 import safeAreaInsetValues from '@/utils/safeAreaInsetValues';
 
 const ITEM_GAP = 12;
@@ -43,11 +43,17 @@ export const PolymarketEventsListBase = memo(function PolymarketEventsListBase({
 
   const listStyles = useMemo(() => {
     const paddingBottom = safeAreaInsets.bottom + NAVIGATOR_FOOTER_HEIGHT + NAVIGATOR_FOOTER_CLEARANCE;
+    const shouldFillViewport = events.length === 0;
     return {
-      contentContainerStyle: { minHeight: DEVICE_HEIGHT, paddingBottom, paddingHorizontal: ITEM_GAP / 2, paddingTop: ITEM_GAP },
+      contentContainerStyle: {
+        flexGrow: shouldFillViewport ? 1 : undefined,
+        paddingBottom,
+        paddingHorizontal: ITEM_GAP / 2,
+        paddingTop: ITEM_GAP,
+      },
       scrollIndicatorInsets: { bottom: paddingBottom },
     };
-  }, [safeAreaInsets.bottom]);
+  }, [events.length, safeAreaInsets.bottom]);
 
   return (
     <Animated.FlatList
