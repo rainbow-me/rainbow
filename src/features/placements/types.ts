@@ -20,12 +20,3 @@ export type Placement = {
   items: PlacementItem[];
   updatedAt?: string;
 };
-
-// ============ Analytics ====================================================== //
-
-export type PlacementItemAnalyticsMetadata = {
-  marketId?: string;
-  marketName?: string;
-  marketSlug?: string;
-  marketSymbol?: string;
-};
