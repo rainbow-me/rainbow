@@ -1,6 +1,8 @@
 import { useCallback, useEffect, useRef } from 'react';
 import { ScrollView, StyleSheet, View, type LayoutChangeEvent, type NativeScrollEvent, type NativeSyntheticEvent } from 'react-native';
 
+import { analytics } from '@/analytics';
+import { event as analyticsEvent } from '@/analytics/event';
 import ButtonPressAnimation from '@/components/animations/ButtonPressAnimation';
 import { useDiscoverScreenContext } from '@/components/Discover/DiscoverScreenContext';
 import { EasingGradient } from '@/components/easing-gradient/EasingGradient';
@@ -13,6 +15,7 @@ import {
   useDiscoverNavigationStore,
   type DiscoverSection,
 } from '@/features/discover/stores/discoverNavigationStore';
+import { trackSurfaceInteraction } from '@/features/placements/engagement/trackInteraction';
 import { useDiscoverSurface } from '@/features/placements/surfaces/stores/discoverSurfaceStore';
 import { type DiscoverTab } from '@/features/placements/surfaces/stores/discoverSurfaceTypes';
 import { THICK_BORDER_WIDTH } from '@/styles/constants';
@@ -126,6 +129,19 @@ function DiscoverCategorySelector() {
   const handlePress = useCallback(
     (section: DiscoverTab) => {
       const wasActive = DiscoverSectionNavigation.isSectionActive(section.id);
+      const sectionTitle = resolveSectionTitle(section);
+      if (surface) {
+        analytics.track(analyticsEvent.discoverTabPressed, {
+          sectionId: section.id,
+          sectionTitle,
+          wasActive,
+        });
+        trackSurfaceInteraction({
+          id: surface.id,
+          sectionId: section.id,
+          sectionTitle,
+        });
+      }
 
       if (wasActive) {
         scrollToSectionTop(section.id);
@@ -133,7 +149,7 @@ function DiscoverCategorySelector() {
         DiscoverSectionNavigation.navigate(section.id);
       }
     },
-    [scrollToSectionTop]
+    [scrollToSectionTop, surface]
   );
 
   if (!tabs.length) return <DiscoverCategorySelectorFallback />;
