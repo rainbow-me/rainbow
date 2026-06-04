@@ -14,11 +14,7 @@ import { Grid } from '@/screens/token-launcher/components/Grid';
 const GRID_COLUMNS = 2;
 const GRID_SPACING = 12;
 
-function noopCardPress(): undefined {
-  return undefined;
-}
-
-function noopOrderPress(): undefined {
+function noopPress(): undefined {
   return undefined;
 }
 
@@ -105,7 +101,7 @@ export function MarketGrid<T extends PlacementItem>({
                       version: placement.version,
                     });
                   }
-                : noopCardPress;
+                : noopPress;
               const onOrderPress: OrderPressHandler = placement
                 ? order => {
                     analytics.track(event.discoverPredictionOrderPressed, {
@@ -117,7 +113,7 @@ export function MarketGrid<T extends PlacementItem>({
                       outcome: order.outcome,
                     });
                   }
-                : noopOrderPress;
+                : noopPress;
               return (
                 <View key={item.id} style={{ height: itemHeight }}>
                   {renderItem(item, cellWidth, onCardPress, onOrderPress)}

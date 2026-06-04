@@ -12,11 +12,7 @@ import { type Placement, type PlacementItem } from '@/features/placements/types'
 
 import { ShowMoreButton, ShowMoreCellEnterAnimation } from './ShowMoreButton';
 
-function noopCardPress(): undefined {
-  return undefined;
-}
-
-function noopOrderPress(): undefined {
+function noopPress(): undefined {
   return undefined;
 }
 
@@ -104,7 +100,7 @@ export function MarketList<T extends PlacementItem>({
                       version: placement.version,
                     });
                   }
-                : noopCardPress;
+                : noopPress;
               const onOrderPress: OrderPressHandler = placement
                 ? order => {
                     analytics.track(event.discoverPredictionOrderPressed, {
@@ -116,7 +112,7 @@ export function MarketList<T extends PlacementItem>({
                       outcome: order.outcome,
                     });
                   }
-                : noopOrderPress;
+                : noopPress;
               const listItem = <View>{renderItem(item, onCardPress, onOrderPress)}</View>;
 
               if (!hasInitialLimit || !isExpanded || index < (initialVisibleItemCount ?? 0)) {

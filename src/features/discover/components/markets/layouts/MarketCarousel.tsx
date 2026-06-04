@@ -21,11 +21,7 @@ const CARD_GAP = HORIZONTAL_PADDING;
 const SCROLL_DEBOUNCE_MS = time.ms(500);
 const SCROLL_DEBOUNCE_OPTIONS = Object.freeze({ leading: false, trailing: true });
 
-function noopCardPress(): undefined {
-  return undefined;
-}
-
-function noopOrderPress(): undefined {
+function noopPress(): undefined {
   return undefined;
 }
 
@@ -112,7 +108,7 @@ export function MarketCarousel<T extends PlacementItem>({
               version: placement.version,
             });
           }
-        : noopCardPress;
+        : noopPress;
       const onOrderPress: OrderPressHandler = placement
         ? order => {
             analytics.track(event.discoverPredictionOrderPressed, {
@@ -124,7 +120,7 @@ export function MarketCarousel<T extends PlacementItem>({
               outcome: order.outcome,
             });
           }
-        : noopOrderPress;
+        : noopPress;
       const width = itemWidths[index] ?? defaultItemWidth;
 
       return (
