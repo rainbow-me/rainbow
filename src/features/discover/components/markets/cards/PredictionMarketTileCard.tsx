@@ -9,6 +9,7 @@ import { GradientBorderView } from '@/components/gradient-border/GradientBorderV
 import ImgixImage from '@/components/images/ImgixImage';
 import { LiveTokenText } from '@/components/live-token-text/LiveTokenText';
 import { globalColors, Text, useColorMode } from '@/design-system';
+import { type CardPressHandler, type OrderPressHandler } from '@/features/discover/types/sectionLayout';
 import { DOWN_ARROW, UP_ARROW } from '@/features/perps/constants';
 import { type PolymarketEvent, type PolymarketMarket } from '@/features/polymarket/types/polymarket-event';
 import { getOutcomeColor } from '@/features/polymarket/utils/getMarketColor';
@@ -74,6 +75,8 @@ const ODDS_PILL_OVERLAY_BOTTOM = 2 * BORDER_WIDTH + CONTENT_PADDING_BOTTOM + (OU
 
 type PredictionMarketTileCardProps = {
   event: PolymarketEvent;
+  onOrderPress: OrderPressHandler;
+  onPress: CardPressHandler;
 };
 
 type OutcomeRowData = {
@@ -84,7 +87,11 @@ type OutcomeRowData = {
   tokenId: string;
 };
 
-export const PredictionMarketTileCard = memo(function PredictionMarketTileCard({ event }: PredictionMarketTileCardProps) {
+export const PredictionMarketTileCard = memo(function PredictionMarketTileCard({
+  event,
+  onOrderPress,
+  onPress,
+}: PredictionMarketTileCardProps) {
   const { isDarkMode } = useColorMode();
   const eventColor = useMemo(() => getTileAccentColor(event, isDarkMode), [event, isDarkMode]);
   const rows = useMemo(() => getOutcomeRows(event), [event]);
@@ -111,15 +118,15 @@ export const PredictionMarketTileCard = memo(function PredictionMarketTileCard({
         : ([opacity(eventColor, 0.06), opacity(eventColor, 0)] as const),
     [colorPalette.opacity0, colorPalette.opacity24, eventColor, isDarkMode]
   );
-
   const handlePress = useCallback(() => {
+    onPress({ marketId: event.id, marketName: event.title, marketSlug: event.slug, marketSymbol: event.ticker });
     Navigation.handleAction(Routes.POLYMARKET_EVENT_SCREEN, { event, eventId: event.id });
-  }, [event]);
+  }, [event, onPress]);
 
   return (
     <View style={styles.container}>
       {Platform.OS === 'android' ? (
-        <AndroidOddsPillsOverlay event={event} eventColor={eventColor} isDarkMode={isDarkMode} rows={rows} />
+        <AndroidOddsPillsOverlay event={event} eventColor={eventColor} isDarkMode={isDarkMode} onOrderPress={onOrderPress} rows={rows} />
       ) : null}
       <ButtonPressAnimation onPress={handlePress} scaleTo={0.96} style={styles.flex} wrapperStyle={styles.flex}>
         <View style={[styles.cardShadow, !isDarkMode && styles.cardShadowLight]}>
@@ -171,6 +178,7 @@ export const PredictionMarketTileCard = memo(function PredictionMarketTileCard({
                     isDarkMode={isDarkMode}
                     key={`${row.market.id}:${row.outcomeIndex}`}
                     row={row}
+                    onOrderPress={onOrderPress}
                   />
                 ))}
               </View>
@@ -187,11 +195,13 @@ const OutcomeRow = memo(function OutcomeRow({
   eventColor,
   isDarkMode,
   row,
+  onOrderPress,
 }: {
   event: PolymarketEvent;
   eventColor: string;
   isDarkMode: boolean;
   row: OutcomeRowData;
+  onOrderPress: PredictionMarketTileCardProps['onOrderPress'];
 }) {
   return (
     <GradientBorderView
@@ -220,7 +230,7 @@ const OutcomeRow = memo(function OutcomeRow({
         {Platform.OS === 'android' ? (
           <View style={styles.oddsButton} />
         ) : (
-          <OutcomeOddsPill event={event} eventColor={eventColor} isDarkMode={isDarkMode} row={row} />
+          <OutcomeOddsPill event={event} eventColor={eventColor} isDarkMode={isDarkMode} onOrderPress={onOrderPress} row={row} />
         )}
         <Text align="left" color="label" numberOfLines={1} size="17pt" style={styles.outcomeTitle} weight="bold">
           {row.title}
@@ -234,11 +244,13 @@ const OutcomeOddsPill = memo(function OutcomeOddsPill({
   event,
   eventColor,
   isDarkMode,
+  onOrderPress,
   row,
 }: {
   event: PolymarketEvent;
   eventColor: string;
   isDarkMode: boolean;
+  onOrderPress: PredictionMarketTileCardProps['onOrderPress'];
   row: OutcomeRowData;
 }) {
   const outcomeColor = getOutcomeColor({
@@ -250,6 +262,12 @@ const OutcomeOddsPill = memo(function OutcomeOddsPill({
   });
 
   const onPress = useCallback(() => {
+    onOrderPress({
+      marketId: row.market.id,
+      marketName: row.market.question,
+      marketSlug: row.market.slug,
+      outcome: row.title,
+    });
     Navigation.handleAction(Routes.POLYMARKET_NEW_POSITION_SHEET, {
       market: row.market,
       event,
@@ -257,7 +275,7 @@ const OutcomeOddsPill = memo(function OutcomeOddsPill({
       outcomeColor,
       fromRoute: Routes.POLYMARKET_BROWSE_EVENTS_SCREEN,
     });
-  }, [event, outcomeColor, row.market, row.outcomeIndex]);
+  }, [event, onOrderPress, outcomeColor, row.market, row.outcomeIndex, row.title]);
 
   return (
     <ButtonPressAnimation onPress={onPress} scaleTo={0.92} style={styles.oddsButton}>
@@ -296,11 +314,13 @@ const AndroidOddsPillsOverlay = memo(function AndroidOddsPillsOverlay({
   event,
   eventColor,
   isDarkMode,
+  onOrderPress,
   rows,
 }: {
   event: PolymarketEvent;
   eventColor: string;
   isDarkMode: boolean;
+  onOrderPress: PredictionMarketTileCardProps['onOrderPress'];
   rows: OutcomeRowData[];
 }) {
   return (
@@ -311,7 +331,7 @@ const AndroidOddsPillsOverlay = memo(function AndroidOddsPillsOverlay({
           pointerEvents="box-none"
           style={[styles.oddsPillSlot, { bottom: ODDS_PILL_OVERLAY_BOTTOM + (rows.length - 1 - index) * OUTCOME_ROW_PITCH }]}
         >
-          <OutcomeOddsPill event={event} eventColor={eventColor} isDarkMode={isDarkMode} row={row} />
+          <OutcomeOddsPill event={event} eventColor={eventColor} isDarkMode={isDarkMode} onOrderPress={onOrderPress} row={row} />
         </View>
       ))}
     </View>

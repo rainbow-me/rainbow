@@ -1,16 +1,33 @@
-import React, { Fragment, useCallback, useMemo, type ReactNode } from 'react';
+import React, { Fragment, useCallback, useEffect, useMemo, type ReactNode } from 'react';
 import { StyleSheet, View } from 'react-native';
 
 import { FlatList } from 'react-native-gesture-handler';
+import { useDebouncedCallback } from 'use-debounce';
 
+import { analytics } from '@/analytics';
+import { event } from '@/analytics/event';
 import { Box } from '@/design-system';
 import { SectionHeader } from '@/features/discover/components/markets/layouts/SectionHeader';
-import { type PlacementItem } from '@/features/placements/types';
+import { type CardPressHandler, type CarouselSectionDescriptor, type OrderPressHandler } from '@/features/discover/types/sectionLayout';
+import { trackPlacementInteraction, trackSurfaceInteraction } from '@/features/placements/engagement/trackInteraction';
+import { type SurfaceId, type SurfaceLeaf } from '@/features/placements/surfaces/types';
+import { type Placement, type PlacementItem } from '@/features/placements/types';
+import { time } from '@/framework/core/utils/time';
 
 import { computeSnapToOffsets } from './carouselLayout';
 
 const HORIZONTAL_PADDING = 12;
 const CARD_GAP = HORIZONTAL_PADDING;
+const SCROLL_DEBOUNCE_MS = time.ms(500);
+const SCROLL_DEBOUNCE_OPTIONS = Object.freeze({ leading: false, trailing: true });
+
+function noopCardPress(): undefined {
+  return undefined;
+}
+
+function noopOrderPress(): undefined {
+  return undefined;
+}
 
 type MarketCarouselProps<T extends PlacementItem> = {
   data: T[];
@@ -23,11 +40,14 @@ type MarketCarouselProps<T extends PlacementItem> = {
   leadingAccessory?: ReactNode;
   loading?: boolean;
   onPress?: () => void;
-  renderItem: (item: T, width: number) => ReactNode;
+  placement?: Placement;
+  renderItem: CarouselSectionDescriptor<T>['renderItem'];
   renderSkeleton: () => ReactNode;
   showHeaderCaret?: boolean;
   singleItemWidth?: number;
   skeletonCount?: number;
+  section: SurfaceLeaf;
+  surfaceId: SurfaceId;
   title: string;
 };
 
@@ -42,11 +62,14 @@ export function MarketCarousel<T extends PlacementItem>({
   leadingAccessory,
   loading,
   onPress,
+  placement,
   renderItem,
   renderSkeleton,
+  section,
   showHeaderCaret,
   singleItemWidth,
   skeletonCount = 5,
+  surfaceId,
   title,
 }: MarketCarouselProps<T>) {
   const showSkeletons = loading && data.length === 0;
@@ -61,6 +84,47 @@ export function MarketCarousel<T extends PlacementItem>({
 
   const renderCarouselItem = useCallback(
     ({ item, index }: { item: T; index: number }) => {
+      const onCardPress: CardPressHandler = placement
+        ? metadata => {
+            analytics.track(event.discoverCardPressed, {
+              placementId: placement.id,
+              placementSource: placement.source,
+              placementTitle: title,
+              itemOrder: index,
+              itemId: item.id,
+              marketId: metadata.marketId,
+              marketName: metadata.marketName,
+              marketSlug: metadata.marketSlug,
+              marketSymbol: metadata.marketSymbol,
+              marketType: placement.source,
+            });
+            trackPlacementInteraction({
+              display: section.display,
+              id: placement.id,
+              interactionType: 'card_press',
+              itemId: item.id,
+              itemOrder: index,
+              sectionId: section.id,
+              sectionTitle: title,
+              source: placement.source,
+              surfaceId,
+              type: placement.type,
+              version: placement.version,
+            });
+          }
+        : noopCardPress;
+      const onOrderPress: OrderPressHandler = placement
+        ? order => {
+            analytics.track(event.discoverPredictionOrderPressed, {
+              placementId: placement.id,
+              itemId: item.id,
+              marketId: order.marketId,
+              marketName: order.marketName,
+              marketSlug: order.marketSlug,
+              outcome: order.outcome,
+            });
+          }
+        : noopOrderPress;
       const width = itemWidths[index] ?? defaultItemWidth;
 
       return (
@@ -72,12 +136,32 @@ export function MarketCarousel<T extends PlacementItem>({
             width,
           }}
         >
-          {renderItem(item, width)}
+          {renderItem(item, width, onCardPress, onOrderPress)}
         </View>
       );
     },
-    [defaultItemWidth, itemHeight, itemVerticalBleed, itemWidths, renderItem]
+    [defaultItemWidth, itemHeight, itemVerticalBleed, itemWidths, placement, renderItem, section.display, section.id, surfaceId, title]
   );
+
+  const onScrollSettle = useDebouncedCallback(
+    () => {
+      analytics.track(event.discoverCarouselScrolled, {
+        display: section.display,
+        sectionId: section.id,
+      });
+
+      trackSurfaceInteraction({
+        display: section.display,
+        id: surfaceId,
+        sectionId: section.id,
+        sectionTitle: title,
+      });
+    },
+    SCROLL_DEBOUNCE_MS,
+    SCROLL_DEBOUNCE_OPTIONS
+  );
+
+  useEffect(() => () => onScrollSettle.flush(), [onScrollSettle]);
 
   if (!showSkeletons && data.length === 0) return null;
 
@@ -110,6 +194,7 @@ export function MarketCarousel<T extends PlacementItem>({
             snapToAlignment="start"
             renderItem={renderCarouselItem}
             keyExtractor={item => item.id}
+            onMomentumScrollEnd={onScrollSettle}
             initialNumToRender={6}
             windowSize={8}
           />
