@@ -18,6 +18,7 @@ import {
 } from '@/features/discover/stores/discoverNavigationStore';
 import { useDiscoverSurface } from '@/features/placements/surfaces/stores/discoverSurfaceStore';
 import { type DiscoverTab } from '@/features/placements/surfaces/stores/discoverSurfaceTypes';
+import { type SurfaceId } from '@/features/placements/surfaces/types';
 import { useTabBarOffset } from '@/hooks/useTabBarOffset';
 import { useListen } from '@/state/internal/hooks/useListen';
 import { clamp } from '@/worklets/numbers';
@@ -148,7 +149,7 @@ const DiscoverSectionScrollView = memo(function DiscoverSectionScrollView({
   section: DiscoverTab;
   sectionIndex: number;
   sectionScrollOffsets: MutableRefObject<SectionScrollOffsets>;
-  surfaceId: string;
+  surfaceId: SurfaceId;
 }) {
   const { registerSectionScrollView } = useDiscoverScreenContext();
   const tabBarOffset = useTabBarOffset();
