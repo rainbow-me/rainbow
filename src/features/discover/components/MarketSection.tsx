@@ -26,7 +26,7 @@ import {
   type SurfaceLeafWithDisplay,
 } from '@/features/discover/types/sectionLayout';
 import { navigateDiscoverDestination } from '@/features/discover/utils/navigation';
-import { navigateToPerpDetailScreen } from '@/features/perps/utils';
+import { maybeNavigateToPerpsExplainSheet } from '@/features/perps/utils/navigateToPerps';
 import { usePerpsEnabled, usePerpsPlacement, type PerpMarketPlacementItem } from '@/features/placements/stores/derived/perpsPlacementStore';
 import { useTokensPlacement, type TokenPlacementItem } from '@/features/placements/stores/derived/tokensPlacementStore';
 import { usePlacementsV2Store } from '@/features/placements/stores/placementsStore';
@@ -253,8 +253,8 @@ function TokenMarketItem({
 function PerpMarketItem({ item, variant, width }: { item: PerpMarketPlacementItem; variant: 'cell' | 'pill' | 'tile'; width?: number }) {
   const displayItem = usePerpMarketDisplay(item);
   const onPress = useCallback(() => {
-    navigateToPerpDetailScreen(item.market.symbol);
-  }, [item.market.symbol]);
+    maybeNavigateToPerpsExplainSheet(() => Navigation.handleAction(Routes.PERPS_DETAIL_SCREEN, { market: item.market }));
+  }, [item.market]);
 
   switch (variant) {
     case 'cell':
