@@ -215,4 +215,5 @@ export const CATEGORIES = {
   },
 } as const;
 
-export type Category = (typeof CATEGORIES)[keyof typeof CATEGORIES];
+export type CategoryKey = keyof typeof CATEGORIES;
+export type Category = (typeof CATEGORIES)[CategoryKey];

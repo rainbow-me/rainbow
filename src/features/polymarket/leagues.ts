@@ -957,7 +957,7 @@ export function getLeagueSlugId(value: string): string | undefined {
 }
 
 export function isLeagueId(value: string): value is LeagueId {
-  return value in SPORT_LEAGUES;
+  return Object.prototype.hasOwnProperty.call(SPORT_LEAGUES, value);
 }
 
 export function getLeagueId(value: string): LeagueId | undefined {
