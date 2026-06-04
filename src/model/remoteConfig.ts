@@ -101,6 +101,7 @@ export interface RainbowConfig extends Record<
   sponsored_swaps_enabled: boolean;
   sponsored_perps_deposits_enabled: boolean;
   sponsored_polymarket_deposits_enabled: boolean;
+  discover_placements_enabled: boolean;
   go_relay_backend_enabled: boolean;
 }
 
@@ -237,6 +238,7 @@ export const DEFAULT_CONFIG = {
   sponsored_swaps_enabled: true,
   sponsored_perps_deposits_enabled: true,
   sponsored_polymarket_deposits_enabled: true,
+  discover_placements_enabled: true,
   go_relay_backend_enabled: true,
 } as const satisfies Readonly<RainbowConfig>;
 
