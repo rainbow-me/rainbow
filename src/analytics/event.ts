@@ -1011,7 +1011,7 @@ export type EventProperties = {
     marketName: string;
     marketSlug?: string;
     marketSymbol?: string;
-    marketType: Placement['source'];
+    marketType: Placement['type'];
   };
   [event.discoverTabPressed]: {
     sectionTitle: string;

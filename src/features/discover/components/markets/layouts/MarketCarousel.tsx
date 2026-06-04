@@ -96,7 +96,7 @@ export function MarketCarousel<T extends PlacementItem>({
               marketName: metadata.marketName,
               marketSlug: metadata.marketSlug,
               marketSymbol: metadata.marketSymbol,
-              marketType: placement.source,
+              marketType: placement.type,
             });
             trackPlacementInteraction({
               display: section.display,
