@@ -505,6 +505,13 @@
       },
       "restart_app": "Restart App",
       "reset_experimental_config": "Reset Experimental Config",
+      "cash_deposit_setup_status": {
+        "title": "Cash Deposit Setup Status",
+        "needsIdentity": "Needs Identity",
+        "needsCard": "Needs Card",
+        "needsWallet": "Needs Wallet",
+        "ready": "Ready"
+      },
       "status": "Status",
       "sync_codepush": "Sync CodePush",
       "simulate_device_transfer": "Simulate Device Transfer",
@@ -512,7 +519,8 @@
         "normie_settings": "Normie Settings",
         "rainbow_developer_settings": "Rainbow Developer Settings",
         "feature_flags": "Feature Flags",
-        "delegation_settings": "Delegation Settings"
+        "delegation_settings": "Delegation Settings",
+        "cash_settings": "Cash Settings"
       },
       "delegation_settings": {
         "simulate_disable_smart_wallet": "Simulate Disable Smart Wallet",
@@ -1660,6 +1668,10 @@
         "set_up_account": "Set Up Account",
         "other_deposit_methods": "Other Deposit Methods",
         "sign_in": "Sign In"
+      },
+      "add_cash_screen": {
+        "add_from": "Add From",
+        "hold_to_add": "Hold to Add"
       }
     },
     "points": {
