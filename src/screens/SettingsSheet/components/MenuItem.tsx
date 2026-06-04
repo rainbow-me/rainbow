@@ -195,7 +195,7 @@ const MenuItem = ({
       testID={disabled ? testID : undefined}
       width="full"
     >
-      <Inline alignHorizontal="justify" alignVertical="center">
+      <Inline alignHorizontal="justify" alignVertical="center" wrap={false}>
         <Box flexShrink={1}>
           <Inline alignVertical="center" wrap={false}>
             {leftComponent && (
@@ -219,7 +219,7 @@ const MenuItem = ({
           </Inline>
         </Box>
         <Box paddingLeft="8px">
-          <Inline alignVertical="center" space={{ custom: 9 }}>
+          <Inline alignVertical="center" space={{ custom: 9 }} wrap={false}>
             {rightComponent}
             {hasRightArrow && (
               <Box

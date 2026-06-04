@@ -7,8 +7,7 @@ import { analytics } from '@/analytics';
 import { ChainImage } from '@/components/coin-icon/ChainImage';
 import { ExtremeLabels } from '@/components/value-chart/ExtremeLabels';
 import { AccentColorProvider, Bleed, Box, Inline, Stack, Text } from '@/design-system';
-import { useIsCashEnabled } from '@/features/cash/hooks/useIsCashEnabled';
-import { getAddCashRoute } from '@/features/cash/navigation/getAddCashRoute';
+import { useAddCashRoute } from '@/features/cash/navigation/useAddCashRoute';
 import { opacity } from '@/framework/ui/utils/opacity';
 import useChartThrottledPoints from '@/hooks/charts/useChartThrottledPoints';
 import { useAccountAccentColor } from '@/hooks/useAccountAccentColor';
@@ -56,7 +55,7 @@ export const EthCard = () => {
 
   const { loaded: accentColorLoaded } = useAccountAccentColor();
   const { name: routeName } = useRoute();
-  const isCashEnabled = useIsCashEnabled();
+  const { route: addCashRoute, isCashEnabled } = useAddCashRoute();
   const cardType = 'stretch';
 
   const handlePressBuy = useCallback(
@@ -70,14 +69,14 @@ export const EthCard = () => {
         return;
       }
 
-      navigate(getAddCashRoute(isCashEnabled));
+      navigate(addCashRoute);
 
       analytics.track(analytics.event.buyButtonPressed, {
         componentName: 'EthCard',
         routeName,
       });
     },
-    [isCashEnabled, navigate, routeName]
+    [addCashRoute, navigate, routeName]
   );
 
   const handleAssetPress = useCallback(() => {

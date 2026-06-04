@@ -5,6 +5,8 @@ import URL from 'url-parse';
 
 import { type ExperimentalConfigKey } from '@/config/experimental';
 import { useExperimentalConfigStore } from '@/config/experimentalConfigStore';
+import { type CashDepositSetupStatus } from '@/features/cash/stores/cashDepositSetupStatus';
+import { useCashDepositSetupStore } from '@/features/cash/stores/cashDepositSetupStore';
 import { savePIN } from '@/features/local-auth/pinAuthentication';
 import { logger } from '@/logger';
 import Navigation from '@/navigation/Navigation';
@@ -38,6 +40,9 @@ export function TestDeeplinkHandler() {
           break;
         case 'setExperimentalFlag':
           useExperimentalConfigStore.getState().setFlag(query.flag as ExperimentalConfigKey, query.value === 'true');
+          break;
+        case 'setCashDepositSetupStatus':
+          useCashDepositSetupStore.getState().setStatus(query.status as CashDepositSetupStatus);
           break;
         default:
           logger.debug(`[TestDeeplinkHandler]: unknown path`, { url });

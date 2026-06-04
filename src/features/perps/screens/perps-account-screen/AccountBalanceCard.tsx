@@ -4,6 +4,7 @@ import { View } from 'react-native';
 import ButtonPressAnimation from '@/components/animations/ButtonPressAnimation';
 import { ImgixImage } from '@/components/images';
 import { Box, Stack, Text, TextIcon, TextShadow, useColorMode } from '@/design-system';
+import { useAddCashRoute } from '@/features/cash/navigation/useAddCashRoute';
 import { formatUsd } from '@/features/currency/utils/formatUsd';
 import { HyperliquidButton } from '@/features/perps/components/HyperliquidButton';
 import { USDC_ICON_URL } from '@/features/perps/constants';
@@ -22,6 +23,7 @@ export const PerpsAccountBalanceCard = memo(function PerpsAccountBalanceCard() {
   const isBalanceZero = useHyperliquidAccountStore(state => Number(state.getBalance()) === 0);
   const hasNoAssets = useUserAssetsStore(state => !state.getFilteredUserAssetIds().length);
   const accountAddress = useWalletsStore(state => state.accountAddress);
+  const { route: addCashRoute } = useAddCashRoute();
 
   return (
     <Box
@@ -96,7 +98,7 @@ export const PerpsAccountBalanceCard = memo(function PerpsAccountBalanceCard() {
             onPress={() => {
               if (checkIfReadOnlyWallet(accountAddress)) return;
               if (hasNoAssets) {
-                Navigation.handleAction(Routes.FIAT_ON_RAMP_SHEET);
+                Navigation.handleAction(addCashRoute);
               } else {
                 Navigation.handleAction(Routes.PERPS_DEPOSIT_SCREEN);
               }

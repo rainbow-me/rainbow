@@ -13,6 +13,7 @@ import { HoldToActivateButton } from '@/components/hold-to-activate-button/HoldT
 import { DEFAULT_MOUNT_ANIMATIONS } from '@/components/utilities/MountWhenFocused';
 import { Box, Text, TextShadow, useColorMode } from '@/design-system';
 import { typeHierarchy } from '@/design-system/typography/typeHierarchy';
+import { useAddCashRoute } from '@/features/cash/navigation/useAddCashRoute';
 import { HyperliquidButton } from '@/features/perps/components/HyperliquidButton';
 import { usePerpsAccentColorContext } from '@/features/perps/context/PerpsAccentColorContext';
 import { PerpsNavigation, usePerpsNavigationStore } from '@/features/perps/screens/PerpsNavigator';
@@ -127,6 +128,7 @@ const PerpsAccountScreenFooter = () => {
   const balance = useHyperliquidAccountStore(state => state.getBalance());
   const hasZeroBalance = Number(balance) === 0;
   const hasNoAssets = useUserAssetsStore(state => !state.getFilteredUserAssetIds().length);
+  const { route: addCashRoute } = useAddCashRoute();
 
   return (
     <>
@@ -151,7 +153,7 @@ const PerpsAccountScreenFooter = () => {
       <HyperliquidButton
         onPress={() => {
           if (hasZeroBalance) {
-            Navigation.handleAction(hasNoAssets ? Routes.FIAT_ON_RAMP_SHEET : Routes.PERPS_DEPOSIT_SCREEN);
+            Navigation.handleAction(hasNoAssets ? addCashRoute : Routes.PERPS_DEPOSIT_SCREEN);
           } else {
             PerpsNavigation.navigate(Routes.PERPS_SEARCH_SCREEN, { type: 'newPosition' });
           }

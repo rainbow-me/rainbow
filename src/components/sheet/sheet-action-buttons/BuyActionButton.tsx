@@ -4,8 +4,7 @@ import { useRoute } from '@react-navigation/native';
 
 import { analytics } from '@/analytics';
 import { Text } from '@/design-system';
-import { useIsCashEnabled } from '@/features/cash/hooks/useIsCashEnabled';
-import { getAddCashRoute } from '@/features/cash/navigation/getAddCashRoute';
+import { useAddCashRoute } from '@/features/cash/navigation/useAddCashRoute';
 import useNavigationForNonReadOnlyWallets from '@/hooks/useNavigationForNonReadOnlyWallets';
 import * as i18n from '@/languages';
 import Routes from '@/navigation/routesNames';
@@ -20,7 +19,7 @@ function BuyActionButton({ color: givenColor, ...props }: BuyActionButtonProps) 
   const color = givenColor || colors.paleBlue;
   const navigate = useNavigationForNonReadOnlyWallets();
   const { name: routeName } = useRoute();
-  const isCashEnabled = useIsCashEnabled();
+  const { route: addCashRoute, isCashEnabled } = useAddCashRoute();
 
   const handlePress = useCallback(() => {
     if (getIsDamagedWallet()) {
@@ -28,13 +27,13 @@ function BuyActionButton({ color: givenColor, ...props }: BuyActionButtonProps) 
       return;
     }
 
-    navigate(getAddCashRoute(isCashEnabled));
+    navigate(addCashRoute);
 
     analytics.track(analytics.event.buyButtonPressed, {
       componentName: 'BuyActionButton',
       routeName,
     });
-  }, [isCashEnabled, navigate, routeName]);
+  }, [addCashRoute, navigate, routeName]);
 
   return (
     <SheetActionButton

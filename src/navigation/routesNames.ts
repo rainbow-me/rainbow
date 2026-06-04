@@ -1,6 +1,7 @@
 import { Platform } from 'react-native';
 
 const Routes = {
+  ADD_CASH_SHEET: 'AddCashSheet',
   ADD_WALLET_NAVIGATOR: 'AddWalletNavigator',
   ADD_WALLET_SHEET: 'AddWalletSheet',
   AIRDROPS_SHEET: 'AirdropsSheet',
