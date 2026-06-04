@@ -19,6 +19,8 @@ import {
 } from '@/features/discover/components/markets/cards/PredictionMarketTileCard';
 import { getRenderedHeaderCount, renderSectionLayout } from '@/features/discover/components/SectionLayout';
 import {
+  type CardPressHandler,
+  type OrderPressHandler,
   type PlacementBackedSurfaceLeafWithDisplay,
   type SectionDescriptor,
   type SurfaceLeafWithDisplay,
@@ -33,7 +35,7 @@ import { usePredictionsPlacement, type PredictionPlacementItem } from '@/feature
 import { usePlacementsStore } from '@/features/placements/stores/placementsStore';
 import { isEventCardDisplay, PREDICTION_DISPLAY_VALUES } from '@/features/placements/surfaces/constants';
 import { useIsDiscoverSurfacePlacementPending } from '@/features/placements/surfaces/hooks/useDiscoverSurfacePlacements';
-import { type Display, type SurfaceLeaf } from '@/features/placements/surfaces/types';
+import { type Display, type SurfaceId, type SurfaceLeaf } from '@/features/placements/surfaces/types';
 import { LeagueIcon } from '@/features/polymarket/components/league-icon/LeagueIcon';
 import { LiveSectionIndicator } from '@/features/polymarket/components/LiveSectionIndicator';
 import {
@@ -53,6 +55,7 @@ import { addSubscribedTokens, removeSubscribedTokens, useLiveTokensStore } from 
 import { DEVICE_WIDTH } from '@/utils/deviceUtils';
 
 type PredictionsDisplay = (typeof PREDICTION_DISPLAY_VALUES)[number];
+type PlacementBackedPredictionsSurface = PlacementBackedSurfaceLeafWithDisplay<PredictionsDisplay>;
 
 const hasDestination = (surface: SurfaceLeaf) => surface.destination !== null;
 const PREDICTION_TILE_SHADOW_BLEED = 28;
@@ -134,24 +137,24 @@ export function isPredictionsSurface(surface: SurfaceLeaf): surface is SurfaceLe
   return (PREDICTION_DISPLAY_VALUES as readonly string[]).includes(surface.display);
 }
 
-export function PredictionsSection({ surface, surfaceId }: { surface: SurfaceLeafWithDisplay<PredictionsDisplay>; surfaceId: string }) {
+export function PredictionsSection({ surface, surfaceId }: { surface: SurfaceLeafWithDisplay<PredictionsDisplay>; surfaceId: SurfaceId }) {
   const sportsIntent = useMemo(() => getSportsSurfaceIntent(surface), [surface]);
 
   if (!hasPlacement(surface)) {
-    if (sportsIntent) return <SportsQuerySection sportsIntent={sportsIntent} surface={surface} />;
+    if (sportsIntent) return <SportsQuerySection sportsIntent={sportsIntent} surface={surface} surfaceId={surfaceId} />;
     return unsupportedUnplacedPredictionSurface(surface, surfaceId);
   }
 
   // Only route to the sports section when there's a real sports intent — otherwise it would
   // mount, run its placement hooks/subscriptions, then immediately delegate, double-mounting.
   if (isEventCardDisplay(surface.display) && sportsIntent) {
-    return <SportsEventPlacementSection sportsIntent={sportsIntent} surface={surface} />;
+    return <SportsEventPlacementSection sportsIntent={sportsIntent} surface={surface} surfaceId={surfaceId} />;
   }
 
-  return <PredictionsPlacementSection surface={surface} />;
+  return <PredictionsPlacementSection surface={surface} surfaceId={surfaceId} />;
 }
 
-function useIsPredictionPlacementPending(surface: PlacementBackedSurfaceLeafWithDisplay<PredictionsDisplay>): boolean {
+function useIsPredictionPlacementPending(surface: PlacementBackedPredictionsSurface): boolean {
   const isPendingSurfacePlacement = useIsDiscoverSurfacePlacementPending(surface.placement);
   const isLoadingPlacementSource = usePlacementsStore(state => {
     if (state.getPlacement(surface.placement) !== undefined) return false;
@@ -213,7 +216,7 @@ function usePredictionTokenSubscription({
   }, [display, renderedItems]);
 }
 
-function PredictionsPlacementSection({ surface }: { surface: PlacementBackedSurfaceLeafWithDisplay<PredictionsDisplay> }) {
+function PredictionsPlacementSection({ surface, surfaceId }: { surface: PlacementBackedPredictionsSurface; surfaceId: SurfaceId }) {
   const result = usePredictionsPlacement(surface.placement);
   const isPlacementPending = useIsPredictionPlacementPending(surface);
   const descriptor = PREDICTIONS_SECTION_DESCRIPTORS[surface.display];
@@ -225,18 +228,21 @@ function PredictionsPlacementSection({ surface }: { surface: PlacementBackedSurf
     data: result.items,
     descriptor,
     loading: result.isLoading || isPlacementPending,
-    // Prediction "See All" routes to the CMS destination (predictions -> Polymarket).
-    onPressSeeAll: hasDestination(surface) && result.placement ? onPressSeeAll : undefined,
-    surface,
+    onPress: hasDestination(surface) && result.placement ? onPressSeeAll : undefined,
+    placement: result.placement,
+    section: surface,
+    surfaceId,
   });
 }
 
 function SportsEventPlacementSection({
   sportsIntent,
   surface,
+  surfaceId,
 }: {
   sportsIntent: SportsSurfaceIntent;
-  surface: PlacementBackedSurfaceLeafWithDisplay<PredictionsDisplay>;
+  surface: PlacementBackedPredictionsSurface;
+  surfaceId: SurfaceId;
 }) {
   const isPlacementPending = useIsPredictionPlacementPending(surface);
   const result = usePredictionsPlacement(surface.placement);
@@ -257,18 +263,21 @@ function SportsEventPlacementSection({
     headerCount,
     leadingAccessory,
     loading: result.isLoading || isPlacementPending,
-    // Prediction "See All" routes to the CMS destination (predictions -> Polymarket).
-    onPressSeeAll: hasDestination(surface) && result.placement ? onPressSeeAll : undefined,
-    surface,
+    onPress: hasDestination(surface) && result.placement ? onPressSeeAll : undefined,
+    placement: result.placement,
+    section: surface,
+    surfaceId,
   });
 }
 
 function SportsQuerySection({
   sportsIntent,
   surface,
+  surfaceId,
 }: {
   sportsIntent: SportsSurfaceIntent;
   surface: SurfaceLeafWithDisplay<PredictionsDisplay>;
+  surfaceId: SurfaceId;
 }) {
   const events = usePolymarketSportsEventsStore(state => state.getData());
   const isLoading = usePolymarketSportsEventsStore(state => state.enabled && (state.getStatus('isLoading') || state.getStatus('isIdle')));
@@ -293,9 +302,9 @@ function SportsQuerySection({
     headerCount,
     leadingAccessory,
     loading: isLoading,
-    // Prediction "See All" routes to the CMS destination (predictions -> Polymarket).
-    onPressSeeAll: hasDestination(surface) ? onPressSeeAll : undefined,
-    surface,
+    onPress: hasDestination(surface) ? onPressSeeAll : undefined,
+    section: surface,
+    surfaceId,
   });
 }
 
@@ -324,7 +333,7 @@ function getSportsHeaderProps(
   };
 }
 
-function unsupportedUnplacedPredictionSurface(surface: SurfaceLeafWithDisplay<PredictionsDisplay>, surfaceId: string) {
+function unsupportedUnplacedPredictionSurface(surface: SurfaceLeafWithDisplay<PredictionsDisplay>, surfaceId: SurfaceId) {
   logger.warn('[PredictionsSection]: unsupported unplaced prediction surface', {
     display: surface.display,
     sectionId: surface.id,
@@ -339,24 +348,34 @@ function hasPlacement<TDisplay extends Display>(
   return typeof surface.placement === 'string' && surface.placement.length > 0;
 }
 
-function renderPredictionTile(item: PredictionPlacementItem) {
-  return <PredictionListItem item={item} style={styles.predictionTile} />;
+function renderPredictionTile(item: PredictionPlacementItem, _: number, onPress: CardPressHandler) {
+  return <PredictionListItem item={item} onPress={onPress} style={styles.predictionTile} />;
 }
 
-function renderPredictionGridTile(item: PredictionPlacementItem, width: number) {
-  return <PredictionListItem item={item} style={{ height: POLYMARKET_EVENTS_LIST_ITEM_HEIGHT, width }} />;
+function renderPredictionGridTile(item: PredictionPlacementItem, width: number, onPress: CardPressHandler) {
+  return <PredictionListItem item={item} onPress={onPress} style={{ height: POLYMARKET_EVENTS_LIST_ITEM_HEIGHT, width }} />;
 }
 
-function PredictionListItem({ item, style }: { item: PredictionPlacementItem; style: StyleProp<ViewStyle> }) {
+function PredictionListItem({
+  item,
+  onPress,
+  style,
+}: {
+  item: PredictionPlacementItem;
+  onPress: CardPressHandler;
+  style: StyleProp<ViewStyle>;
+}) {
   const { isDarkMode } = useColorMode();
-  const onPress = useCallback(() => {
-    navigateToPolymarketEvent({ event: item.event, eventId: item.event.id });
-  }, [item.event]);
+  const handlePress = useCallback(() => {
+    const { event } = item;
+    onPress({ marketId: event.id, marketName: event.title, marketSlug: event.slug, marketSymbol: event.ticker });
+    navigateToPolymarketEvent({ event, eventId: event.id });
+  }, [item, onPress]);
 
   return (
     <PolymarketEventsListItem
       event={item.event}
-      onPress={onPress}
+      onPress={handlePress}
       shouldActivateOnStart={false}
       style={[style, styles.predictionTileShadow, isDarkMode ? styles.predictionTileShadowDark : styles.predictionTileShadowLight]}
     />
@@ -367,8 +386,8 @@ function renderPredictionSkeleton({ borderRadius, height, width }: PredictionSke
   return <Skeleton borderRadius={borderRadius} height={height} width={width} />;
 }
 
-function renderPredictionWidget(item: PredictionPlacementItem) {
-  return <PredictionMarketTileCard event={item.event} />;
+function renderPredictionWidget(item: PredictionPlacementItem, _: number, onPress: CardPressHandler, onOrderPress: OrderPressHandler) {
+  return <PredictionMarketTileCard event={item.event} onPress={onPress} onOrderPress={onOrderPress} />;
 }
 
 function getSportsEventSectionDescriptor(
@@ -399,14 +418,29 @@ function getSportsEventSectionDescriptor(
 }
 
 function renderEventCardList(hideLeagueHeader: boolean) {
-  return function render(item: PredictionPlacementItem): ReactNode {
-    return <PredictionMarketEventCard event={item.event} hideLeagueHeader={hideLeagueHeader} />;
+  return function render(item: PredictionPlacementItem, onPress: CardPressHandler, onOrderPress: OrderPressHandler): ReactNode {
+    return (
+      <PredictionMarketEventCard event={item.event} hideLeagueHeader={hideLeagueHeader} onPress={onPress} onOrderPress={onOrderPress} />
+    );
   };
 }
 
 function renderEventCardSized(hideLeagueHeader: boolean) {
-  return function render(item: PredictionPlacementItem, width: number): ReactNode {
-    return <PredictionMarketEventCard event={item.event} hideLeagueHeader={hideLeagueHeader} width={width} />;
+  return function render(
+    item: PredictionPlacementItem,
+    width: number,
+    onPress: CardPressHandler,
+    onOrderPress: OrderPressHandler
+  ): ReactNode {
+    return (
+      <PredictionMarketEventCard
+        event={item.event}
+        hideLeagueHeader={hideLeagueHeader}
+        onPress={onPress}
+        onOrderPress={onOrderPress}
+        width={width}
+      />
+    );
   };
 }
 
