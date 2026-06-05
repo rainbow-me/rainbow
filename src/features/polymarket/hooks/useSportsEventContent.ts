@@ -9,6 +9,7 @@ import { parsePeriod, parseScore, selectGameInfo, type PolymarketEventGameInfo }
 import { buildEventBetGrid, formatOdds, type BetCellData, type EventBetGrid } from '@/features/polymarket/utils/sportsEventBetData';
 import { getSportsEventOutcomeCellColor } from '@/features/polymarket/utils/sportsEventOutcome';
 import * as i18n from '@/languages';
+import { getPolymarketTokenId } from '@/state/liveTokens/polymarketAdapter';
 import { formatTimestamp, toUnixTime } from '@/worklets/dates';
 
 export type SportsEventTeamRow = {
@@ -112,6 +113,32 @@ function getLeagueIdFromTags(tags: PolymarketEvent['tags']): LeagueId | undefine
     const leagueId = getLeagueId(tag.slug);
     if (leagueId) return leagueId;
   }
+}
+
+/**
+ * Resolves the exact bet rows a sports event card renders (away/home line + moneyline,
+ * with the fallback-market path). Exported so live-odds subscriptions can derive token ids
+ * from the SAME resolution the card uses, keeping subscribed == rendered by construction.
+ */
+export function getSportsEventRows(event: PolymarketEvent): SportsEventRows {
+  return getRows(event, buildEventBetGrid(event));
+}
+
+/**
+ * Token ids for the cells a sports event card actually renders (line/moneyline per team,
+ * including the fallback-market rows). Mirrors getSportsEventRows so subscribed == rendered.
+ */
+export function getSportsEventRowTokenIds(event: PolymarketEvent): string[] {
+  const rows = getSportsEventRows(event);
+  const outcomeTokenIds = [
+    rows.away.line?.outcomeTokenId,
+    rows.away.moneyline?.outcomeTokenId,
+    rows.home.line?.outcomeTokenId,
+    rows.home.moneyline?.outcomeTokenId,
+  ].filter((tokenId): tokenId is string => Boolean(tokenId));
+
+  const tokenIds = outcomeTokenIds.map(tokenId => getPolymarketTokenId(tokenId, 'sell'));
+  return Array.from(new Set(tokenIds));
 }
 
 function getRows(event: PolymarketEvent, betGrid: EventBetGrid): SportsEventRows {

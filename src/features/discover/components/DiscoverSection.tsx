@@ -2,6 +2,7 @@ import { memo } from 'react';
 import { StyleSheet, View } from 'react-native';
 
 import { isMarketSurface, MarketSection } from '@/features/discover/components/MarketSection';
+import { isPredictionsSurface, PredictionsSection } from '@/features/discover/components/PredictionsSection';
 import { type SurfaceLeafNode } from '@/features/placements/surfaces/types';
 
 type DiscoverSectionsProps = {
@@ -21,6 +22,7 @@ export function DiscoverSections({ items, surfaceId }: DiscoverSectionsProps) {
 
 export const DiscoverSection = memo(function DiscoverSection({ surface, surfaceId }: { surface: SurfaceLeafNode; surfaceId: string }) {
   if (isMarketSurface(surface)) return <MarketSection surface={surface} surfaceId={surfaceId} />;
+  if (isPredictionsSurface(surface)) return <PredictionsSection surface={surface} surfaceId={surfaceId} />;
   return null;
 });
 

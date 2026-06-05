@@ -126,7 +126,7 @@ export function buildEventBetGrid(event: PolymarketEvent): EventBetGrid {
   return { teamBets, totals };
 }
 
-export function formatOdds(value?: string) {
+export function formatOdds(value?: string | number | null) {
   if (value == null || value === '') return '--';
   return `${roundWorklet(toPercentageWorklet(value))}%`;
 }
