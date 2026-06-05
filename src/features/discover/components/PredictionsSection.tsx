@@ -1,7 +1,8 @@
 import { useCallback, useEffect, useMemo, type ReactNode } from 'react';
-import { StyleSheet, type StyleProp, type ViewStyle } from 'react-native';
+import { Platform, StyleSheet, type StyleProp, type ViewStyle } from 'react-native';
 
 import { Skeleton } from '@/components/Skeleton';
+import { globalColors, useColorMode } from '@/design-system';
 import {
   PREDICTION_MARKET_EVENT_CARD_BORDER_RADIUS,
   PREDICTION_MARKET_EVENT_CARD_CAROUSEL_WIDTH,
@@ -45,6 +46,7 @@ import { getSportsEventRowTokenIds } from '@/features/polymarket/hooks/useSports
 import { usePolymarketSportsEventsStore } from '@/features/polymarket/stores/polymarketSportsEventsStore';
 import { type PolymarketEvent } from '@/features/polymarket/types/polymarket-event';
 import { navigateToPolymarketEvent } from '@/features/polymarket/utils/navigateToPolymarket';
+import { opacity } from '@/framework/ui/utils/opacity';
 import { logger } from '@/logger';
 import Routes from '@/navigation/routesNames';
 import { addSubscribedTokens, removeSubscribedTokens, useLiveTokensStore } from '@/state/liveTokens/liveTokensStore';
@@ -53,6 +55,7 @@ import { DEVICE_WIDTH } from '@/utils/deviceUtils';
 type PredictionsDisplay = (typeof PREDICTION_DISPLAY_VALUES)[number];
 
 const hasDestination = (surface: SurfaceLeaf) => surface.destination !== null;
+const PREDICTION_TILE_SHADOW_BLEED = 28;
 const PREDICTION_TILE_WIDTH = Math.round((DEVICE_WIDTH - 20 * 2 - 8) / 2);
 const PREDICTION_TILE_SKELETON = {
   borderRadius: PREDICTION_CARD_BORDER_RADIUS,
@@ -91,7 +94,9 @@ type PredictionSkeletonConfig = {
 const PREDICTIONS_SECTION_DESCRIPTORS = {
   'prediction_tile.carousel': {
     layout: 'carousel',
+    itemHorizontalBleed: PREDICTION_TILE_SHADOW_BLEED,
     itemHeight: POLYMARKET_EVENTS_LIST_ITEM_HEIGHT,
+    itemVerticalBleed: PREDICTION_TILE_SHADOW_BLEED,
     itemWidth: PREDICTION_TILE_WIDTH,
     renderItem: renderPredictionTile,
     renderSkeleton: () => renderPredictionSkeleton(PREDICTION_TILE_SKELETON),
@@ -343,11 +348,19 @@ function renderPredictionGridTile(item: PredictionPlacementItem, width: number) 
 }
 
 function PredictionListItem({ item, style }: { item: PredictionPlacementItem; style: StyleProp<ViewStyle> }) {
+  const { isDarkMode } = useColorMode();
   const onPress = useCallback(() => {
     navigateToPolymarketEvent({ event: item.event, eventId: item.event.id });
   }, [item.event]);
 
-  return <PolymarketEventsListItem event={item.event} onPress={onPress} shouldActivateOnStart={false} style={style} />;
+  return (
+    <PolymarketEventsListItem
+      event={item.event}
+      onPress={onPress}
+      shouldActivateOnStart={false}
+      style={[style, styles.predictionTileShadow, isDarkMode ? styles.predictionTileShadowDark : styles.predictionTileShadowLight]}
+    />
+  );
 }
 
 function renderPredictionSkeleton({ borderRadius, height, width }: PredictionSkeletonConfig) {
@@ -401,6 +414,24 @@ const styles = StyleSheet.create({
   predictionTile: {
     height: POLYMARKET_EVENTS_LIST_ITEM_HEIGHT,
     width: PREDICTION_TILE_WIDTH,
+  },
+  predictionTileShadow: {
+    borderCurve: 'continuous',
+    borderRadius: PREDICTION_CARD_BORDER_RADIUS,
+  },
+  predictionTileShadowDark: {
+    shadowColor: globalColors.grey100,
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.16,
+    shadowRadius: 24,
+  },
+  predictionTileShadowLight: {
+    backgroundColor: Platform.OS === 'android' ? opacity(globalColors.white100, 0.89) : undefined,
+    elevation: 4,
+    shadowColor: globalColors.grey100,
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.06,
+    shadowRadius: 24,
   },
   liveHeaderIndicator: {
     marginRight: LIVE_INDICATOR_HEADER_GAP - HEADER_ACCESSORY_GAP,
