@@ -38,6 +38,7 @@ import Routes from '@/navigation/routesNames';
 import { userAssetsStoreManager } from '@/state/assets/userAssetsStoreManager';
 
 const hasDestination = (surface: SurfaceLeaf) => surface.destination !== null;
+const MARKET_TILE_SHADOW_BLEED = 28;
 
 const MARKET_SECTION_DESCRIPTORS = {
   'market_pill.carousel': {
@@ -52,7 +53,9 @@ const MARKET_SECTION_DESCRIPTORS = {
   },
   'market_tile.carousel': {
     layout: 'carousel',
+    itemHorizontalBleed: MARKET_TILE_SHADOW_BLEED,
     itemHeight: MARKET_TILE_CARD_HEIGHT,
+    itemVerticalBleed: MARKET_TILE_SHADOW_BLEED,
     itemWidth: MARKET_TILE_CARD_WIDTH,
     renderItem: renderMarketTile,
     renderSkeleton: MarketTileCardSkeleton,

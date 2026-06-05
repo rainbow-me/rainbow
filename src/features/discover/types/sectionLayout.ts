@@ -7,6 +7,7 @@ import { type PlacementItemV2 as PlacementItem } from '@/features/placements/typ
 export type CarouselSectionDescriptor<T extends PlacementItem> = {
   layout: 'carousel';
   getItemWidth?: (item: T) => number;
+  itemHorizontalBleed?: number;
   itemHeight: number;
   itemVerticalBleed?: number;
   itemWidth: number;
