@@ -18,6 +18,7 @@ import { useSyncDiscoverSurfacePlacements } from '@/features/placements/surfaces
 export const DiscoverScreen = () => {
   return (
     <DiscoverScreenProvider>
+      <DiscoverSurfacePlacementSync />
       <Content />
     </DiscoverScreenProvider>
   );
@@ -32,7 +33,6 @@ const Content = () => {
   const backgroundColor = useBackgroundColor(backgroundToken);
   const headerFadeTopInset = topInset + DISCOVER_HEADER_HEIGHT;
   const scrollOffset = useSharedValue(0);
-  useSyncDiscoverSurfacePlacements();
 
   return (
     <Box background={backgroundToken} height="full" style={{ flex: 1 }}>
@@ -48,6 +48,11 @@ const Content = () => {
     </Box>
   );
 };
+
+const DiscoverSurfacePlacementSync = memo(function DiscoverSurfacePlacementSync() {
+  useSyncDiscoverSurfacePlacements();
+  return null;
+});
 
 const KeyboardDismissHandler = memo(function KeyboardDismissHandler() {
   const isFocused = useIsFocused();
