@@ -1,5 +1,5 @@
 import React, { memo, useMemo } from 'react';
-import { StyleSheet, View } from 'react-native';
+import { Platform, StyleSheet, View } from 'react-native';
 
 import { LinearGradient } from 'expo-linear-gradient';
 
@@ -71,7 +71,7 @@ const CARD_COLORS = {
     gradientOpacity: 0.16,
   },
   light: {
-    backgroundColor: 'rgba(255,255,255,0.92)',
+    backgroundColor: opacity(globalColors.white100, 0.92),
     badgeBorderColor: opacity(globalColors.grey100, 0.07),
     badgeShadowOpacity: 0.25,
     borderColor: 'rgba(255,255,255,0.8)',
@@ -226,6 +226,7 @@ const styles = StyleSheet.create({
     shadowRadius: 24,
   },
   cardShadowLight: {
+    backgroundColor: Platform.OS === 'android' ? opacity(globalColors.white100, 0.92) : undefined,
     elevation: 4,
     shadowColor: globalColors.grey100,
     shadowOffset: { width: 0, height: 4 },
