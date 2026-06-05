@@ -26,7 +26,7 @@ export type PerpMarketPlacementItem = PlacementItemV2 & {
 
 // ============ Derived Stores ================================================= //
 
-const usePerpsEnabled = createDerivedStore<boolean>(
+export const usePerpsEnabled = createDerivedStore<boolean>(
   $ => $(useRemoteConfigStore, state => state.getRemoteConfigKey('perps_enabled')) && !IS_TEST,
   { fastMode: true }
 );

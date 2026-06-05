@@ -1,4 +1,4 @@
-import { useMemo } from 'react';
+import { useCallback, useMemo } from 'react';
 
 import { useDiscoverScreenContext } from '@/components/Discover/DiscoverScreenContext';
 import { type NativeCurrencyKey } from '@/entities/nativeCurrencyTypes';
@@ -15,6 +15,7 @@ import {
   MarketTileCard,
   MarketTileCardSkeleton,
 } from '@/features/discover/components/markets/cards/MarketTileCard';
+import { perpToMarketPillWidthInput, usePerpMarketDisplay } from '@/features/discover/components/markets/hooks/usePerpMarketDisplay';
 import { tokenToMarketPillWidthInput, useTokenMarketDisplay } from '@/features/discover/components/markets/hooks/useTokenMarketDisplay';
 import { renderSectionLayout } from '@/features/discover/components/SectionLayout';
 import { type MarketDisplayItem } from '@/features/discover/types/marketDisplayItem';
@@ -24,6 +25,7 @@ import {
   type SectionDescriptor,
   type SurfaceLeafWithDisplay,
 } from '@/features/discover/types/sectionLayout';
+import { usePerpsEnabled, usePerpsPlacement, type PerpMarketPlacementItem } from '@/features/placements/stores/derived/perpsPlacementStore';
 import { useTokensPlacement, type TokenPlacementItem } from '@/features/placements/stores/derived/tokensPlacementStore';
 import { usePlacementsV2Store } from '@/features/placements/stores/placementsStore';
 import { MARKET_DISPLAY_VALUES } from '@/features/placements/surfaces/constants';
@@ -82,12 +84,18 @@ function MarketPlacementContent({
   surface: PlacementBackedSurfaceLeafWithDisplay<MarketDisplay>;
   surfaceId: string;
 }) {
+  const perpsEnabled = usePerpsEnabled();
   const placement = usePlacementsV2Store(state => state.getPlacement(surface.placement));
   const isPendingSurfacePlacement = useIsDiscoverSurfacePlacementPending(surface.placement);
   const isLoadingPlacementSource = usePlacementsV2Store(state => {
     if (state.getPlacement(surface.placement) !== undefined) return false;
     return state.getStatus('isInitialLoad') || state.getStatus('isIdle') || state.getStatus('isLoading');
   });
+
+  if (placement?.source === 'hyperliquid') {
+    if (!perpsEnabled) return null;
+    return <PerpsMarketPlacementContent surface={surface} surfaceId={surfaceId} />;
+  }
 
   if (placement?.source === 'rainbow') {
     return <TokenMarketPlacementContent surface={surface} surfaceId={surfaceId} />;
@@ -104,6 +112,53 @@ function MarketPlacementContent({
   }
 
   return null;
+}
+
+function PerpsMarketPlacementContent({
+  surface,
+}: {
+  surface: PlacementBackedSurfaceLeafWithDisplay<MarketDisplay>;
+  // surfaceId is threaded from MarketPlacementContent for future use (#7553)
+  surfaceId: string;
+}) {
+  const { onTapSearch } = useDiscoverScreenContext();
+  const perpsResult = usePerpsPlacement(surface.placement);
+  const perpDescriptor = useMemo<SectionDescriptor<PerpMarketPlacementItem>>(() => {
+    switch (surface.display) {
+      case 'market_pill.carousel':
+        return {
+          ...MARKET_SECTION_DESCRIPTORS[surface.display],
+          getItemWidth: (item: PerpMarketPlacementItem) => computeMarketPillWidth(perpToMarketPillWidthInput(item)),
+          renderItem: (item: PerpMarketPlacementItem) => <PerpMarketItem item={item} variant="pill" />,
+        };
+      case 'market_tile.carousel':
+        return {
+          ...MARKET_SECTION_DESCRIPTORS[surface.display],
+          renderItem: (item: PerpMarketPlacementItem) => <PerpMarketItem item={item} variant="tile" />,
+        };
+      case 'market_tile.grid':
+        return {
+          ...MARKET_SECTION_DESCRIPTORS[surface.display],
+          renderItem: (item: PerpMarketPlacementItem, width: number) => <PerpMarketItem item={item} variant="tile" width={width} />,
+        };
+      case 'market_cell.list':
+        return {
+          ...MARKET_SECTION_DESCRIPTORS[surface.display],
+          renderItem: (item: PerpMarketPlacementItem) => <PerpMarketItem item={item} variant="cell" />,
+        };
+    }
+  }, [surface.display]);
+  // Only passed when the destination is perp-owned (`['perps']`); non-perp CMS
+  // destinations are wired in #7553.
+  const onPressSeeAll = useCallback(() => onTapSearch(), [onTapSearch]);
+
+  return renderSectionLayout({
+    data: perpsResult.items,
+    descriptor: perpDescriptor,
+    loading: perpsResult.isLoading,
+    onPressSeeAll: surface.destination?.[0] === 'perps' ? onPressSeeAll : undefined,
+    surface,
+  });
 }
 
 function TokenMarketPlacementContent({
@@ -145,12 +200,13 @@ function TokenMarketPlacementContent({
   }, [nativeCurrency, surface.display]);
   // Only passed when the destination is token-owned (`['tokens']`); non-token CMS
   // destinations are wired in #7553.
+  const onPressSeeAll = useCallback(() => onTapSearch(), [onTapSearch]);
 
   return renderSectionLayout({
     data: tokensResult.items,
     descriptor: tokenDescriptor,
     loading: tokensResult.isLoading,
-    onPressSeeAll: surface.destination?.[0] === 'tokens' ? onTapSearch : undefined,
+    onPressSeeAll: surface.destination?.[0] === 'tokens' ? onPressSeeAll : undefined,
     surface,
   });
 }
@@ -191,6 +247,19 @@ function TokenMarketItem({
   width?: number;
 }) {
   const displayItem = useTokenMarketDisplay({ item, nativeCurrency });
+
+  switch (variant) {
+    case 'cell':
+      return <MarketCell item={displayItem} />;
+    case 'pill':
+      return <MarketPill item={displayItem} />;
+    case 'tile':
+      return <MarketTileCard item={displayItem} width={width} />;
+  }
+}
+
+function PerpMarketItem({ item, variant, width }: { item: PerpMarketPlacementItem; variant: 'cell' | 'pill' | 'tile'; width?: number }) {
+  const displayItem = usePerpMarketDisplay(item);
 
   switch (variant) {
     case 'cell':

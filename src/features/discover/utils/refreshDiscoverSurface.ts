@@ -1,7 +1,10 @@
+import { IS_TEST } from '@/env';
+import { useHyperliquidMarketsStore } from '@/features/perps/stores/hyperliquidMarketsStore';
 import { clearTokenRefCache, useTokenRefsStore } from '@/features/placements/stores/derived/tokensPlacementStore';
 import { usePlacementsV2Store } from '@/features/placements/stores/placementsStore';
 import { useDiscoverSurfacePlacementRefs } from '@/features/placements/surfaces/stores/discoverSurfaceStore';
 import { getSurfaceStore } from '@/features/placements/surfaces/stores/surfaceStore';
+import { useRemoteConfigStore } from '@/model/remoteConfig';
 
 export async function refreshDiscoverSurface(surfaceId: string): Promise<void> {
   await Promise.allSettled([
@@ -10,8 +13,13 @@ export async function refreshDiscoverSurface(surfaceId: string): Promise<void> {
   ]);
 
   const refs = useDiscoverSurfacePlacementRefs.getState();
+  const perpsEnabled = useRemoteConfigStore.getState().getRemoteConfigKey('perps_enabled') && !IS_TEST;
 
   const refreshes: Promise<unknown>[] = [];
+
+  if (perpsEnabled && refs.hyperliquid.length) {
+    refreshes.push(useHyperliquidMarketsStore.getState().fetch(undefined, { force: true }));
+  }
 
   if (refs.rainbow.length) {
     // Clear the module-level token-ref cache so a forced refresh always fetches
