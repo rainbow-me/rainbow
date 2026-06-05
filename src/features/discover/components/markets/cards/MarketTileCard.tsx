@@ -71,7 +71,7 @@ const CARD_COLORS = {
     gradientOpacity: 0.16,
   },
   light: {
-    backgroundColor: 'transparent',
+    backgroundColor: 'rgba(255,255,255,0.92)',
     badgeBorderColor: opacity(globalColors.grey100, 0.07),
     badgeShadowOpacity: 0.25,
     borderColor: 'rgba(255,255,255,0.8)',
