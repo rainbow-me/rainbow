@@ -103,7 +103,7 @@ export function MarketCarousel<T extends PlacementItem>({
   const onScrollSettle = useDebouncedCallback(
     () => {
       if (!placement) return;
-      trackPlacementInteraction({ interactionType: 'carousel_scroll', placement });
+      trackPlacementInteraction({ id: placement.id, interactionType: 'carousel_scroll' });
     },
     SCROLL_DEBOUNCE_MS,
     SCROLL_DEBOUNCE_OPTIONS

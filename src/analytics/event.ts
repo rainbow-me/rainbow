@@ -9,7 +9,14 @@ import { type CandleResolution, type ChartType } from '@/features/charts/types';
 import { type RequestSource } from '@/features/dapp-request/types';
 import { type ENSRapActionType } from '@/features/ens/raps/common';
 import { type PerpPositionSide, type TriggerOrderType } from '@/features/perps/types';
-import { type Placement, type PlacementItem, type PlacementItemAnalyticsMetadata } from '@/features/placements/types';
+import { type Destination, type Display, type SectionId, type SurfaceDocument, type SurfaceId } from '@/features/placements/surfaces/types';
+import {
+  type Placement as LegacyPlacement,
+  type PlacementItem as LegacyPlacementItem,
+  type PlacementItemAnalyticsMetadata,
+  type PlacementItemV2,
+  type PlacementV2,
+} from '@/features/placements/types';
 import { type EthereumWalletType } from '@/helpers/walletTypes';
 import { type WalletLibraryType } from '@/model/wallet';
 import { type PairHardwareWalletNavigatorParams } from '@/navigation/types';
@@ -245,6 +252,7 @@ export const event = {
   discoverPlacementCardPressed: 'discover.placement_card_pressed',
   discoverPlacementSeeAllPressed: 'discover.placement_see_all_pressed',
   placementInteraction: 'placement.interaction',
+  surfaceInteraction: 'surface.interaction',
 
   // ens
   ensInitiatedRegistration: 'Initiated ENS registration',
@@ -996,32 +1004,42 @@ export type EventProperties = {
     durationInMs: number;
   };
   [event.discoverPlacementCardPressed]: {
-    placementId: Placement['id'];
-    placementScreen?: Placement['screen'];
+    placementId: LegacyPlacement['id'];
+    placementScreen?: LegacyPlacement['screen'];
     placementTitle: string;
-    itemOrder: PlacementItem['order'];
+    itemOrder: LegacyPlacementItem['order'];
     marketId: string;
     marketName?: PlacementItemAnalyticsMetadata['marketName'];
     marketSlug?: PlacementItemAnalyticsMetadata['marketSlug'];
     marketSymbol?: PlacementItemAnalyticsMetadata['marketSymbol'];
-    marketType: PlacementItem['ref']['source'];
+    marketType: LegacyPlacementItem['ref']['source'];
   };
   [event.discoverPlacementSeeAllPressed]: {
-    placementId: Placement['id'];
-    placementScreen?: Placement['screen'];
+    placementId: LegacyPlacement['id'];
+    placementScreen?: LegacyPlacement['screen'];
     placementTitle: string;
   };
   [event.placementInteraction]: {
-    id: Placement['id'];
-    interactionType: 'carousel_scroll';
-    screen: Placement['screen'];
-    order: Placement['order'];
-    version: Placement['version'];
-    itemRefSource?: PlacementItem['ref']['source'];
-    itemRefId?: PlacementItem['ref']['id'];
-    itemOrder?: PlacementItem['order'];
+    id: PlacementV2['id'];
+    interactionType: 'card_press' | 'carousel_scroll';
+    source?: PlacementV2['source'];
+    type?: PlacementV2['type'];
+    version?: PlacementV2['version'];
+    display?: Display;
+    sectionId?: SectionId;
+    sectionTitle?: string;
+    surfaceId?: SurfaceId;
+    itemId?: PlacementItemV2['id'];
+    itemOrder?: number;
   };
-
+  [event.surfaceInteraction]: {
+    id: SurfaceId;
+    version: SurfaceDocument['version'];
+    display?: Display;
+    destination?: Destination;
+    sectionId?: SectionId;
+    sectionTitle?: string;
+  };
   [event.ensInitiatedRegistration]: { category: string };
   [event.ensEditedRecords]: { category: string };
   [event.ensCompletedRegistration]: { category: string };
