@@ -2,7 +2,7 @@ import React, { memo, useCallback } from 'react';
 import { StyleSheet, View } from 'react-native';
 
 import { Canvas, Picture } from '@shopify/react-native-skia';
-import Animated, { runOnUI, useAnimatedStyle, useSharedValue, withSpring } from 'react-native-reanimated';
+import Animated, { runOnUI, useAnimatedReaction, useAnimatedStyle, useSharedValue, withSpring } from 'react-native-reanimated';
 
 import { SPRING_CONFIGS } from '@/components/animations/animationConfigs';
 import { useWorkletClass } from '@/hooks/reanimated/useWorkletClass';
@@ -10,21 +10,11 @@ import { useCleanup } from '@/hooks/useCleanup';
 import { useOnChange } from '@/hooks/useOnChange';
 import { useStableValue } from '@/hooks/useStableValue';
 import { useListen } from '@/state/internal/hooks/useListen';
-import { type BaseRainbowStore } from '@/state/internal/types';
 import { createBlankPicture } from '@/worklets/skia';
 
 import { COMPACT_LINE_CHART_HORIZONTAL_OVERDRAW, CompactLineChartRenderer } from '../compact/CompactLineChartRenderer';
-import { type CompactLineChartData, type LineChartDataStore } from '../compact/types';
-
-// ============ Types ========================================================== //
-
-type SparklineChartProps<S extends LineChartDataStore> = {
-  chartId: string;
-  color: string;
-  height: number;
-  store: BaseRainbowStore<S>;
-  width: number;
-};
+import { type CompactLineChartData, type LineChartDataStore, type SparklineChartProps } from '../compact/types';
+import { LiveSparklinePointer } from './LiveSparklinePointer';
 
 // ============ Chart Component ================================================ //
 
@@ -33,14 +23,19 @@ type SparklineChartProps<S extends LineChartDataStore> = {
  *
  * Compatible with any store that implements {@link LineChartDataStore},
  * e.g. data stores created with `createLineChartDataStore(...)`.
+ *
+ * Pass `livePointer` to overlay a pulsing live-data dot at the line's end. A string
+ * `color` paints once; a shared/derived `color` additionally recolors on the UI thread.
  */
 export const SparklineChart = memo(function SparklineChart<S extends LineChartDataStore>({
   chartId,
   color,
   height,
+  livePointer,
   store,
   width,
 }: SparklineChartProps<S>) {
+  const isColorString = typeof color === 'string';
   const renderWidth = width + COMPACT_LINE_CHART_HORIZONTAL_OVERDRAW * 2;
   const initialPicture = useStableValue(() => createBlankPicture(renderWidth, height));
 
@@ -62,31 +57,41 @@ export const SparklineChart = memo(function SparklineChart<S extends LineChartDa
   });
 
   const drawChart = useCallback(
-    (nextData: CompactLineChartData | undefined, nextColor: string) => {
-      runOnUI((data: CompactLineChartData | undefined, lineColor: string) => {
+    (nextData: CompactLineChartData | undefined) => {
+      runOnUI((data: CompactLineChartData | undefined) => {
+        const resolvedLineColor = isColorString ? color : color.value;
         const hasData = data !== undefined;
         const shouldAnimateIn = hasData && !hasRenderedData.value;
 
-        renderer.value?.setData(data, lineColor);
+        renderer.value?.setData(data, resolvedLineColor);
         hasRenderedData.value = hasData;
 
         if (shouldAnimateIn) entranceProgress.value = 0;
         entranceProgress.value = withSpring(hasData ? 1 : 0, SPRING_CONFIGS.softerSpringConfig);
-      })(nextData, nextColor);
+      })(nextData);
     },
-    [entranceProgress, hasRenderedData, renderer]
+    [color, entranceProgress, hasRenderedData, isColorString, renderer]
+  );
+
+  useAnimatedReaction(
+    () => (isColorString ? color : color.value),
+    (nextColor, previousColor) => {
+      if (previousColor === null || nextColor === previousColor) return;
+      renderer.value?.recolor(nextColor);
+    },
+    [color]
   );
 
   useListen(
     store,
     s => s.getChartData(chartId),
-    data => drawChart(data, color),
+    data => drawChart(data),
     { fireImmediately: true }
   );
 
   useOnChange(() => {
-    drawChart(store.getState().getChartData(chartId), color);
-  }, [chartId, color, drawChart, store]);
+    drawChart(store.getState().getChartData(chartId));
+  }, [chartId, drawChart, store]);
 
   useCleanup(() => {
     initialPicture.dispose();
@@ -113,6 +118,7 @@ export const SparklineChart = memo(function SparklineChart<S extends LineChartDa
           <Picture picture={chartPicture} />
         </Canvas>
       </Animated.View>
+      {livePointer ? <LiveSparklinePointer chartId={chartId} color={color} height={height} store={store} width={width} /> : null}
     </View>
   );
 });

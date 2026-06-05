@@ -84,7 +84,7 @@ const CARD_COLORS = {
 export const MarketTileCard = memo(function MarketTileCard({ item, onPress, width = MARKET_TILE_CARD_WIDTH }: MarketTileCardProps) {
   const { colorMode, isDarkMode } = useColorMode();
 
-  const { accentColor, badgeTextColor, cardColors, chartColor, iconUrl } = useMemo(
+  const { accentColor, badgeTextColor, cardColors, iconUrl } = useMemo(
     () => buildMarketTileCardDisplay(item, colorMode),
     [colorMode, item]
   );
@@ -94,7 +94,7 @@ export const MarketTileCard = memo(function MarketTileCard({ item, onPress, widt
   const chartWidth = width - CARD_LAYOUT.paddingHorizontal * 2;
 
   return (
-    <ButtonPressAnimation onPress={onPress} scaleTo={0.96} style={[styles.pressable, { width }]}>
+    <ButtonPressAnimation scaleTo={0.96} style={[styles.pressable, { width }]}>
       <View style={[styles.cardShadow, isDarkMode ? styles.cardShadowDark : styles.cardShadowLight]}>
         <View style={[styles.card, { backgroundColor: cardColors.backgroundColor }]}>
           <LinearGradient
@@ -137,7 +137,14 @@ export const MarketTileCard = memo(function MarketTileCard({ item, onPress, widt
           </View>
 
           <View pointerEvents="none" style={[styles.chartContainer, { width: chartWidth }]}>
-            <SparklineChart chartId={item.chartId} color={chartColor} height={CHART_HEIGHT} store={item.chartStore} width={chartWidth} />
+            <SparklineChart
+              chartId={item.chartId}
+              color={chartColorSharedValue}
+              height={CHART_HEIGHT}
+              livePointer
+              store={item.chartStore}
+              width={chartWidth}
+            />
           </View>
 
           <View style={styles.textColumn}>
@@ -183,7 +190,6 @@ function buildMarketTileCardDisplay(item: MarketDisplayItem, colorMode: ColorMod
     accentColor,
     badgeTextColor: getHighContrastTextColorWorklet(accentColor, 4),
     cardColors: getValueForColorMode(CARD_COLORS, colorMode),
-    chartColor: item.chartColor,
     iconUrl,
   };
 }
