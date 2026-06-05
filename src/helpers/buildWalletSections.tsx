@@ -26,7 +26,7 @@ const CONTENT_PLACEHOLDER: CellTypes[] = [
   { type: CellType.LOADING_ASSETS, uid: 'loadings-asset-5' },
 ];
 
-const EMPTY_WALLET_CONTENT_BASE: CellTypes[] = [
+const EMPTY_WALLET_CONTENT: CellTypes[] = [
   {
     type: CellType.RECEIVE_CARD,
     uid: 'receive_card',
@@ -41,18 +41,16 @@ const EMPTY_WALLET_CONTENT_BASE: CellTypes[] = [
   { type: CellType.BIG_EMPTY_WALLET_SPACER, uid: 'big-empty-wallet-spacer-2' },
 ];
 
-const DISCOVER_MORE_BUTTON_CONTENT: CellTypes = {
-  type: CellType.DISCOVER_MORE_BUTTON,
-  uid: 'discover-home-button',
-};
+const EMPTY_WALLET_CONTENT_WITH_DISCOVER: CellTypes[] = [
+  ...EMPTY_WALLET_CONTENT,
+  {
+    type: CellType.DISCOVER_MORE_BUTTON,
+    uid: 'discover-home-button',
+  },
+];
 
 const ONLY_NFTS_CONTENT: CellTypes[] = [{ type: CellType.ETH_CARD, uid: 'eth-card' }];
 const EMPTY_ARRAY: CellTypes[] = [];
-
-const buildEmptyWalletContent = (discoverEnabled: boolean): CellTypes[] => {
-  if (!discoverEnabled) return EMPTY_WALLET_CONTENT_BASE;
-  return [...EMPTY_WALLET_CONTENT_BASE, DISCOVER_MORE_BUTTON_CONTENT];
-};
 
 export type WalletSectionsState = {
   sortedAssets: ParsedAddressAsset[];
@@ -509,7 +507,7 @@ const withBriefBalanceSection = (
   } else if (hasNFTsOnly) {
     content = ONLY_NFTS_CONTENT;
   } else if (isEmpty) {
-    content = buildEmptyWalletContent(discoverEnabled);
+    content = discoverEnabled ? EMPTY_WALLET_CONTENT_WITH_DISCOVER : EMPTY_WALLET_CONTENT;
   }
 
   const result = {
