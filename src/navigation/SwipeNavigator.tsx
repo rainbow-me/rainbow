@@ -378,7 +378,6 @@ const TabBar = memo(function TabBar({ activeIndex, descriptorsRef, getIsFocused,
           borderRadius={TAB_BAR_BORDER_RADIUS}
           bottom={{ custom: TAB_BAR_HEIGHT - BASE_TAB_BAR_HEIGHT }}
           height={{ custom: BASE_TAB_BAR_HEIGHT }}
-          pointerEvents="box-none"
           position="absolute"
           style={[hideForBrowserTabViewStyle, { alignSelf: 'center' }]}
         >
