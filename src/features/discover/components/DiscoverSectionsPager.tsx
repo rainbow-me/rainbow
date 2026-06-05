@@ -85,13 +85,14 @@ export const DiscoverSectionsPager = memo(function DiscoverSectionsPager({ scrol
         springConfig={SPRING_CONFIGS.snappyMediumSpringConfig}
         verticalPageAlignment="top"
       >
-        {tabs.map(section => (
+        {tabs.map((section, index) => (
           <SmoothPager.Page
             component={
               <DiscoverSectionScrollView
                 isActive={section.id === activeSectionId}
                 scrollOffset={scrollOffset}
                 section={section}
+                sectionIndex={index}
                 sectionScrollOffsets={sectionScrollOffsets}
                 surfaceId={surface.id}
               />
@@ -138,12 +139,14 @@ const DiscoverSectionScrollView = memo(function DiscoverSectionScrollView({
   isActive,
   scrollOffset,
   section,
+  sectionIndex,
   sectionScrollOffsets,
   surfaceId,
 }: {
   isActive: boolean;
   scrollOffset: SharedValue<number>;
   section: DiscoverTab;
+  sectionIndex: number;
   sectionScrollOffsets: MutableRefObject<SectionScrollOffsets>;
   surfaceId: string;
 }) {
@@ -210,9 +213,11 @@ const DiscoverSectionScrollView = memo(function DiscoverSectionScrollView({
       showsVerticalScrollIndicator={false}
       contentInset={{ bottom: bottomInset }}
       style={[styles.scrollView, { paddingBottom: Platform.OS === 'android' ? bottomInset : 0 }]}
-      testID={`discover-section-${section.id}`}
+      testID={`discover-section-page-${sectionIndex + 1}`}
     >
-      <DiscoverSections items={section.sections} surfaceId={surfaceId} />
+      <Box testID={`discover-section-${section.id}`}>
+        <DiscoverSections items={section.sections} surfaceId={surfaceId} />
+      </Box>
     </SectionScrollView>
   );
 });

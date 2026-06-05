@@ -32,10 +32,8 @@ tags:
 - assertVisible:
     id: discover-sections-pager
 
-# Navigate the Discover v2 tabs by POSITION. Number-based IDs (tab-1..tab-N) are stable
-# across the server-driven surface, so the flow doesn't depend on dynamic tab labels or
-# section ids. Only the first two pills are asserted: later pills may render off-screen
-# (e.g. Android), where assertVisible would fail.
+# Navigate the Discover v2 tabs by POSITION. Number-based IDs are stable across the
+# server-driven surface, and page assertions verify the active tab content changed.
 - extendedWaitUntil:
     visible:
       id: tab-1
@@ -43,11 +41,11 @@ tags:
 - tapOn:
     id: tab-2
 - assertVisible:
-    id: tab-2
+    id: discover-section-page-2
 - tapOn:
     id: tab-1
 - assertVisible:
-    id: tab-1
+    id: discover-section-page-1
 
 # Discover search (SOCKS + bitcoin) — search is unchanged in v2; carried over verbatim
 - tapOn:
