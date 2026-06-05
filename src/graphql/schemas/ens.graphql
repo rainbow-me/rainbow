@@ -1,0 +1,4359 @@
+"""
+creates a virtual field on the entity that may be queried but cannot be set manually through the mappings API.
+"""
+directive @derivedFrom(field: String!) on FIELD_DEFINITION
+
+"""
+Marks the GraphQL type as indexable entity.  Each type that should be an entity is required to be annotated with this directive.
+"""
+directive @entity on OBJECT
+
+"""Defined a Subgraph ID for an object type"""
+directive @subgraphId(id: String!) on OBJECT
+
+type _Block_ {
+  """The hash of the block"""
+  hash: Bytes
+
+  """The block number"""
+  number: Int!
+
+  """The hash of the parent block"""
+  parentHash: Bytes
+
+  """Integer representation of the timestamp stored in blocks for the chain"""
+  timestamp: Int
+}
+
+"""The type for the top-level _meta field"""
+type _Meta_ {
+  """
+  Information about a specific subgraph block. The hash of the block
+  will be null if the _meta field has a block constraint that asks for
+  a block number. It will be filled if the _meta field has no block constraint
+  and therefore asks for the latest  block
+  """
+  block: _Block_!
+
+  """The deployment ID"""
+  deployment: String!
+
+  """If `true`, the subgraph encountered indexing errors at some past block"""
+  hasIndexingErrors: Boolean!
+}
+
+enum _SubgraphErrorPolicy_ {
+  """Data will be returned even if the subgraph has indexing errors"""
+  allow
+
+  """
+  If the subgraph has indexing errors, data will be omitted. The default.
+  """
+  deny
+}
+
+type AbiChanged implements ResolverEvent {
+  """The block number at which the event was emitted"""
+  blockNumber: Int!
+
+  """The content type of the ABI change"""
+  contentType: BigInt!
+
+  """Concatenation of block number and log ID"""
+  id: ID!
+
+  """Used to derive relationships to Resolvers"""
+  resolver: Resolver!
+
+  """The transaction hash of the transaction in which the event was emitted"""
+  transactionID: Bytes!
+}
+
+input AbiChanged_filter {
+  """Filter for the block changed event."""
+  _change_block: BlockChangedFilter
+  and: [AbiChanged_filter]
+  blockNumber: Int
+  blockNumber_gt: Int
+  blockNumber_gte: Int
+  blockNumber_in: [Int!]
+  blockNumber_lt: Int
+  blockNumber_lte: Int
+  blockNumber_not: Int
+  blockNumber_not_in: [Int!]
+  contentType: BigInt
+  contentType_gt: BigInt
+  contentType_gte: BigInt
+  contentType_in: [BigInt!]
+  contentType_lt: BigInt
+  contentType_lte: BigInt
+  contentType_not: BigInt
+  contentType_not_in: [BigInt!]
+  id: ID
+  id_gt: ID
+  id_gte: ID
+  id_in: [ID!]
+  id_lt: ID
+  id_lte: ID
+  id_not: ID
+  id_not_in: [ID!]
+  or: [AbiChanged_filter]
+  resolver: String
+  resolver_: Resolver_filter
+  resolver_contains: String
+  resolver_contains_nocase: String
+  resolver_ends_with: String
+  resolver_ends_with_nocase: String
+  resolver_gt: String
+  resolver_gte: String
+  resolver_in: [String!]
+  resolver_lt: String
+  resolver_lte: String
+  resolver_not: String
+  resolver_not_contains: String
+  resolver_not_contains_nocase: String
+  resolver_not_ends_with: String
+  resolver_not_ends_with_nocase: String
+  resolver_not_in: [String!]
+  resolver_not_starts_with: String
+  resolver_not_starts_with_nocase: String
+  resolver_starts_with: String
+  resolver_starts_with_nocase: String
+  transactionID: Bytes
+  transactionID_contains: Bytes
+  transactionID_gt: Bytes
+  transactionID_gte: Bytes
+  transactionID_in: [Bytes!]
+  transactionID_lt: Bytes
+  transactionID_lte: Bytes
+  transactionID_not: Bytes
+  transactionID_not_contains: Bytes
+  transactionID_not_in: [Bytes!]
+}
+
+enum AbiChanged_orderBy {
+  blockNumber
+  contentType
+  id
+  resolver
+  resolver__address
+  resolver__contentHash
+  resolver__id
+  transactionID
+}
+
+type Account {
+  """The domains owned by the account"""
+  domains(first: Int = 100, orderBy: Domain_orderBy, orderDirection: OrderDirection, skip: Int = 0, where: Domain_filter): [Domain!]!
+
+  """The unique identifier for the account"""
+  id: ID!
+
+  """The Registrations made by the account"""
+  registrations(first: Int = 100, orderBy: Registration_orderBy, orderDirection: OrderDirection, skip: Int = 0, where: Registration_filter): [Registration!]
+
+  """The WrappedDomains owned by the account"""
+  wrappedDomains(first: Int = 100, orderBy: WrappedDomain_orderBy, orderDirection: OrderDirection, skip: Int = 0, where: WrappedDomain_filter): [WrappedDomain!]
+}
+
+input Account_filter {
+  """Filter for the block changed event."""
+  _change_block: BlockChangedFilter
+  and: [Account_filter]
+  domains_: Domain_filter
+  id: ID
+  id_gt: ID
+  id_gte: ID
+  id_in: [ID!]
+  id_lt: ID
+  id_lte: ID
+  id_not: ID
+  id_not_in: [ID!]
+  or: [Account_filter]
+  registrations_: Registration_filter
+  wrappedDomains_: WrappedDomain_filter
+}
+
+enum Account_orderBy {
+  domains
+  id
+  registrations
+  wrappedDomains
+}
+
+type AddrChanged implements ResolverEvent {
+  """The new address associated with the resolver"""
+  addr: Account!
+
+  """The block number at which this event occurred"""
+  blockNumber: Int!
+
+  """Unique identifier for this event"""
+  id: ID!
+
+  """The resolver associated with this event"""
+  resolver: Resolver!
+
+  """The transaction ID for the transaction in which this event occurred"""
+  transactionID: Bytes!
+}
+
+input AddrChanged_filter {
+  """Filter for the block changed event."""
+  _change_block: BlockChangedFilter
+  addr: String
+  addr_: Account_filter
+  addr_contains: String
+  addr_contains_nocase: String
+  addr_ends_with: String
+  addr_ends_with_nocase: String
+  addr_gt: String
+  addr_gte: String
+  addr_in: [String!]
+  addr_lt: String
+  addr_lte: String
+  addr_not: String
+  addr_not_contains: String
+  addr_not_contains_nocase: String
+  addr_not_ends_with: String
+  addr_not_ends_with_nocase: String
+  addr_not_in: [String!]
+  addr_not_starts_with: String
+  addr_not_starts_with_nocase: String
+  addr_starts_with: String
+  addr_starts_with_nocase: String
+  and: [AddrChanged_filter]
+  blockNumber: Int
+  blockNumber_gt: Int
+  blockNumber_gte: Int
+  blockNumber_in: [Int!]
+  blockNumber_lt: Int
+  blockNumber_lte: Int
+  blockNumber_not: Int
+  blockNumber_not_in: [Int!]
+  id: ID
+  id_gt: ID
+  id_gte: ID
+  id_in: [ID!]
+  id_lt: ID
+  id_lte: ID
+  id_not: ID
+  id_not_in: [ID!]
+  or: [AddrChanged_filter]
+  resolver: String
+  resolver_: Resolver_filter
+  resolver_contains: String
+  resolver_contains_nocase: String
+  resolver_ends_with: String
+  resolver_ends_with_nocase: String
+  resolver_gt: String
+  resolver_gte: String
+  resolver_in: [String!]
+  resolver_lt: String
+  resolver_lte: String
+  resolver_not: String
+  resolver_not_contains: String
+  resolver_not_contains_nocase: String
+  resolver_not_ends_with: String
+  resolver_not_ends_with_nocase: String
+  resolver_not_in: [String!]
+  resolver_not_starts_with: String
+  resolver_not_starts_with_nocase: String
+  resolver_starts_with: String
+  resolver_starts_with_nocase: String
+  transactionID: Bytes
+  transactionID_contains: Bytes
+  transactionID_gt: Bytes
+  transactionID_gte: Bytes
+  transactionID_in: [Bytes!]
+  transactionID_lt: Bytes
+  transactionID_lte: Bytes
+  transactionID_not: Bytes
+  transactionID_not_contains: Bytes
+  transactionID_not_in: [Bytes!]
+}
+
+enum AddrChanged_orderBy {
+  addr
+  addr__id
+  blockNumber
+  id
+  resolver
+  resolver__address
+  resolver__contentHash
+  resolver__id
+  transactionID
+}
+
+enum Aggregation_interval {
+  day
+  hour
+}
+
+type AuthorisationChanged implements ResolverEvent {
+  """The block number at which the event occurred"""
+  blockNumber: Int!
+
+  """Unique identifier for this event"""
+  id: ID!
+
+  """Whether the authorisation was added or removed"""
+  isAuthorized: Boolean!
+
+  """The owner of the authorisation"""
+  owner: Bytes!
+
+  """The resolver associated with this event"""
+  resolver: Resolver!
+
+  """The target of the authorisation"""
+  target: Bytes!
+
+  """The transaction hash associated with the event"""
+  transactionID: Bytes!
+}
+
+input AuthorisationChanged_filter {
+  """Filter for the block changed event."""
+  _change_block: BlockChangedFilter
+  and: [AuthorisationChanged_filter]
+  blockNumber: Int
+  blockNumber_gt: Int
+  blockNumber_gte: Int
+  blockNumber_in: [Int!]
+  blockNumber_lt: Int
+  blockNumber_lte: Int
+  blockNumber_not: Int
+  blockNumber_not_in: [Int!]
+  id: ID
+  id_gt: ID
+  id_gte: ID
+  id_in: [ID!]
+  id_lt: ID
+  id_lte: ID
+  id_not: ID
+  id_not_in: [ID!]
+  isAuthorized: Boolean
+  isAuthorized_in: [Boolean!]
+  isAuthorized_not: Boolean
+  isAuthorized_not_in: [Boolean!]
+  or: [AuthorisationChanged_filter]
+  owner: Bytes
+  owner_contains: Bytes
+  owner_gt: Bytes
+  owner_gte: Bytes
+  owner_in: [Bytes!]
+  owner_lt: Bytes
+  owner_lte: Bytes
+  owner_not: Bytes
+  owner_not_contains: Bytes
+  owner_not_in: [Bytes!]
+  resolver: String
+  resolver_: Resolver_filter
+  resolver_contains: String
+  resolver_contains_nocase: String
+  resolver_ends_with: String
+  resolver_ends_with_nocase: String
+  resolver_gt: String
+  resolver_gte: String
+  resolver_in: [String!]
+  resolver_lt: String
+  resolver_lte: String
+  resolver_not: String
+  resolver_not_contains: String
+  resolver_not_contains_nocase: String
+  resolver_not_ends_with: String
+  resolver_not_ends_with_nocase: String
+  resolver_not_in: [String!]
+  resolver_not_starts_with: String
+  resolver_not_starts_with_nocase: String
+  resolver_starts_with: String
+  resolver_starts_with_nocase: String
+  target: Bytes
+  target_contains: Bytes
+  target_gt: Bytes
+  target_gte: Bytes
+  target_in: [Bytes!]
+  target_lt: Bytes
+  target_lte: Bytes
+  target_not: Bytes
+  target_not_contains: Bytes
+  target_not_in: [Bytes!]
+  transactionID: Bytes
+  transactionID_contains: Bytes
+  transactionID_gt: Bytes
+  transactionID_gte: Bytes
+  transactionID_in: [Bytes!]
+  transactionID_lt: Bytes
+  transactionID_lte: Bytes
+  transactionID_not: Bytes
+  transactionID_not_contains: Bytes
+  transactionID_not_in: [Bytes!]
+}
+
+enum AuthorisationChanged_orderBy {
+  blockNumber
+  id
+  isAuthorized
+  owner
+  resolver
+  resolver__address
+  resolver__contentHash
+  resolver__id
+  target
+  transactionID
+}
+
+scalar BigDecimal
+
+scalar BigInt
+
+input Block_height {
+  hash: Bytes
+  number: Int
+  number_gte: Int
+}
+
+input BlockChangedFilter {
+  number_gte: Int!
+}
+
+scalar Bytes
+
+type ContenthashChanged implements ResolverEvent {
+  """The block number where the event occurred"""
+  blockNumber: Int!
+
+  """The new content hash for the domain"""
+  hash: Bytes!
+
+  """Concatenation of block number and log ID"""
+  id: ID!
+
+  """Used to derive relationships to Resolvers"""
+  resolver: Resolver!
+
+  """The ID of the transaction where the event occurred"""
+  transactionID: Bytes!
+}
+
+input ContenthashChanged_filter {
+  """Filter for the block changed event."""
+  _change_block: BlockChangedFilter
+  and: [ContenthashChanged_filter]
+  blockNumber: Int
+  blockNumber_gt: Int
+  blockNumber_gte: Int
+  blockNumber_in: [Int!]
+  blockNumber_lt: Int
+  blockNumber_lte: Int
+  blockNumber_not: Int
+  blockNumber_not_in: [Int!]
+  hash: Bytes
+  hash_contains: Bytes
+  hash_gt: Bytes
+  hash_gte: Bytes
+  hash_in: [Bytes!]
+  hash_lt: Bytes
+  hash_lte: Bytes
+  hash_not: Bytes
+  hash_not_contains: Bytes
+  hash_not_in: [Bytes!]
+  id: ID
+  id_gt: ID
+  id_gte: ID
+  id_in: [ID!]
+  id_lt: ID
+  id_lte: ID
+  id_not: ID
+  id_not_in: [ID!]
+  or: [ContenthashChanged_filter]
+  resolver: String
+  resolver_: Resolver_filter
+  resolver_contains: String
+  resolver_contains_nocase: String
+  resolver_ends_with: String
+  resolver_ends_with_nocase: String
+  resolver_gt: String
+  resolver_gte: String
+  resolver_in: [String!]
+  resolver_lt: String
+  resolver_lte: String
+  resolver_not: String
+  resolver_not_contains: String
+  resolver_not_contains_nocase: String
+  resolver_not_ends_with: String
+  resolver_not_ends_with_nocase: String
+  resolver_not_in: [String!]
+  resolver_not_starts_with: String
+  resolver_not_starts_with_nocase: String
+  resolver_starts_with: String
+  resolver_starts_with_nocase: String
+  transactionID: Bytes
+  transactionID_contains: Bytes
+  transactionID_gt: Bytes
+  transactionID_gte: Bytes
+  transactionID_in: [Bytes!]
+  transactionID_lt: Bytes
+  transactionID_lte: Bytes
+  transactionID_not: Bytes
+  transactionID_not_contains: Bytes
+  transactionID_not_in: [Bytes!]
+}
+
+enum ContenthashChanged_orderBy {
+  blockNumber
+  hash
+  id
+  resolver
+  resolver__address
+  resolver__contentHash
+  resolver__id
+  transactionID
+}
+
+type Domain {
+  """The time when the domain was created"""
+  createdAt: BigInt!
+
+  """The events associated with the domain"""
+  events(first: Int = 100, orderBy: DomainEvent_orderBy, orderDirection: OrderDirection, skip: Int = 0, where: DomainEvent_filter): [DomainEvent!]!
+
+  """
+  The expiry date for the domain, from either the registration, or the wrapped domain if PCC is burned
+  """
+  expiryDate: BigInt
+
+  """The namehash of the name"""
+  id: ID!
+
+  """Indicates whether the domain has been migrated to a new registrar"""
+  isMigrated: Boolean!
+
+  """keccak256(labelName)"""
+  labelhash: Bytes
+
+  """The human readable label name (imported from CSV), if known"""
+  labelName: String
+
+  """
+  The human readable name, if known. Unknown portions replaced with hash in square brackets (eg, foo.[1234].eth)
+  """
+  name: String
+
+  """The account that owns the domain"""
+  owner: Account!
+
+  """The namehash (id) of the parent name"""
+  parent: Domain
+
+  """The account that owns the ERC721 NFT for the domain"""
+  registrant: Account
+
+  """The registration associated with the domain"""
+  registration: Registration
+
+  """Address logged from current resolver, if any"""
+  resolvedAddress: Account
+
+  """The resolver that controls the domain's settings"""
+  resolver: Resolver
+
+  """The number of subdomains"""
+  subdomainCount: Int!
+
+  """Can count domains from length of array"""
+  subdomains(first: Int = 100, orderBy: Domain_orderBy, orderDirection: OrderDirection, skip: Int = 0, where: Domain_filter): [Domain!]!
+
+  """The time-to-live (TTL) value of the domain's records"""
+  ttl: BigInt
+
+  """The wrapped domain associated with the domain"""
+  wrappedDomain: WrappedDomain
+
+  """The account that owns the wrapped domain"""
+  wrappedOwner: Account
+}
+
+input Domain_filter {
+  """Filter for the block changed event."""
+  _change_block: BlockChangedFilter
+  and: [Domain_filter]
+  createdAt: BigInt
+  createdAt_gt: BigInt
+  createdAt_gte: BigInt
+  createdAt_in: [BigInt!]
+  createdAt_lt: BigInt
+  createdAt_lte: BigInt
+  createdAt_not: BigInt
+  createdAt_not_in: [BigInt!]
+  events_: DomainEvent_filter
+  expiryDate: BigInt
+  expiryDate_gt: BigInt
+  expiryDate_gte: BigInt
+  expiryDate_in: [BigInt!]
+  expiryDate_lt: BigInt
+  expiryDate_lte: BigInt
+  expiryDate_not: BigInt
+  expiryDate_not_in: [BigInt!]
+  id: ID
+  id_gt: ID
+  id_gte: ID
+  id_in: [ID!]
+  id_lt: ID
+  id_lte: ID
+  id_not: ID
+  id_not_in: [ID!]
+  isMigrated: Boolean
+  isMigrated_in: [Boolean!]
+  isMigrated_not: Boolean
+  isMigrated_not_in: [Boolean!]
+  labelhash: Bytes
+  labelhash_contains: Bytes
+  labelhash_gt: Bytes
+  labelhash_gte: Bytes
+  labelhash_in: [Bytes!]
+  labelhash_lt: Bytes
+  labelhash_lte: Bytes
+  labelhash_not: Bytes
+  labelhash_not_contains: Bytes
+  labelhash_not_in: [Bytes!]
+  labelName: String
+  labelName_contains: String
+  labelName_contains_nocase: String
+  labelName_ends_with: String
+  labelName_ends_with_nocase: String
+  labelName_gt: String
+  labelName_gte: String
+  labelName_in: [String!]
+  labelName_lt: String
+  labelName_lte: String
+  labelName_not: String
+  labelName_not_contains: String
+  labelName_not_contains_nocase: String
+  labelName_not_ends_with: String
+  labelName_not_ends_with_nocase: String
+  labelName_not_in: [String!]
+  labelName_not_starts_with: String
+  labelName_not_starts_with_nocase: String
+  labelName_starts_with: String
+  labelName_starts_with_nocase: String
+  name: String
+  name_contains: String
+  name_contains_nocase: String
+  name_ends_with: String
+  name_ends_with_nocase: String
+  name_gt: String
+  name_gte: String
+  name_in: [String!]
+  name_lt: String
+  name_lte: String
+  name_not: String
+  name_not_contains: String
+  name_not_contains_nocase: String
+  name_not_ends_with: String
+  name_not_ends_with_nocase: String
+  name_not_in: [String!]
+  name_not_starts_with: String
+  name_not_starts_with_nocase: String
+  name_starts_with: String
+  name_starts_with_nocase: String
+  or: [Domain_filter]
+  owner: String
+  owner_: Account_filter
+  owner_contains: String
+  owner_contains_nocase: String
+  owner_ends_with: String
+  owner_ends_with_nocase: String
+  owner_gt: String
+  owner_gte: String
+  owner_in: [String!]
+  owner_lt: String
+  owner_lte: String
+  owner_not: String
+  owner_not_contains: String
+  owner_not_contains_nocase: String
+  owner_not_ends_with: String
+  owner_not_ends_with_nocase: String
+  owner_not_in: [String!]
+  owner_not_starts_with: String
+  owner_not_starts_with_nocase: String
+  owner_starts_with: String
+  owner_starts_with_nocase: String
+  parent: String
+  parent_: Domain_filter
+  parent_contains: String
+  parent_contains_nocase: String
+  parent_ends_with: String
+  parent_ends_with_nocase: String
+  parent_gt: String
+  parent_gte: String
+  parent_in: [String!]
+  parent_lt: String
+  parent_lte: String
+  parent_not: String
+  parent_not_contains: String
+  parent_not_contains_nocase: String
+  parent_not_ends_with: String
+  parent_not_ends_with_nocase: String
+  parent_not_in: [String!]
+  parent_not_starts_with: String
+  parent_not_starts_with_nocase: String
+  parent_starts_with: String
+  parent_starts_with_nocase: String
+  registrant: String
+  registrant_: Account_filter
+  registrant_contains: String
+  registrant_contains_nocase: String
+  registrant_ends_with: String
+  registrant_ends_with_nocase: String
+  registrant_gt: String
+  registrant_gte: String
+  registrant_in: [String!]
+  registrant_lt: String
+  registrant_lte: String
+  registrant_not: String
+  registrant_not_contains: String
+  registrant_not_contains_nocase: String
+  registrant_not_ends_with: String
+  registrant_not_ends_with_nocase: String
+  registrant_not_in: [String!]
+  registrant_not_starts_with: String
+  registrant_not_starts_with_nocase: String
+  registrant_starts_with: String
+  registrant_starts_with_nocase: String
+  registration_: Registration_filter
+  resolvedAddress: String
+  resolvedAddress_: Account_filter
+  resolvedAddress_contains: String
+  resolvedAddress_contains_nocase: String
+  resolvedAddress_ends_with: String
+  resolvedAddress_ends_with_nocase: String
+  resolvedAddress_gt: String
+  resolvedAddress_gte: String
+  resolvedAddress_in: [String!]
+  resolvedAddress_lt: String
+  resolvedAddress_lte: String
+  resolvedAddress_not: String
+  resolvedAddress_not_contains: String
+  resolvedAddress_not_contains_nocase: String
+  resolvedAddress_not_ends_with: String
+  resolvedAddress_not_ends_with_nocase: String
+  resolvedAddress_not_in: [String!]
+  resolvedAddress_not_starts_with: String
+  resolvedAddress_not_starts_with_nocase: String
+  resolvedAddress_starts_with: String
+  resolvedAddress_starts_with_nocase: String
+  resolver: String
+  resolver_: Resolver_filter
+  resolver_contains: String
+  resolver_contains_nocase: String
+  resolver_ends_with: String
+  resolver_ends_with_nocase: String
+  resolver_gt: String
+  resolver_gte: String
+  resolver_in: [String!]
+  resolver_lt: String
+  resolver_lte: String
+  resolver_not: String
+  resolver_not_contains: String
+  resolver_not_contains_nocase: String
+  resolver_not_ends_with: String
+  resolver_not_ends_with_nocase: String
+  resolver_not_in: [String!]
+  resolver_not_starts_with: String
+  resolver_not_starts_with_nocase: String
+  resolver_starts_with: String
+  resolver_starts_with_nocase: String
+  subdomainCount: Int
+  subdomainCount_gt: Int
+  subdomainCount_gte: Int
+  subdomainCount_in: [Int!]
+  subdomainCount_lt: Int
+  subdomainCount_lte: Int
+  subdomainCount_not: Int
+  subdomainCount_not_in: [Int!]
+  subdomains_: Domain_filter
+  ttl: BigInt
+  ttl_gt: BigInt
+  ttl_gte: BigInt
+  ttl_in: [BigInt!]
+  ttl_lt: BigInt
+  ttl_lte: BigInt
+  ttl_not: BigInt
+  ttl_not_in: [BigInt!]
+  wrappedDomain_: WrappedDomain_filter
+  wrappedOwner: String
+  wrappedOwner_: Account_filter
+  wrappedOwner_contains: String
+  wrappedOwner_contains_nocase: String
+  wrappedOwner_ends_with: String
+  wrappedOwner_ends_with_nocase: String
+  wrappedOwner_gt: String
+  wrappedOwner_gte: String
+  wrappedOwner_in: [String!]
+  wrappedOwner_lt: String
+  wrappedOwner_lte: String
+  wrappedOwner_not: String
+  wrappedOwner_not_contains: String
+  wrappedOwner_not_contains_nocase: String
+  wrappedOwner_not_ends_with: String
+  wrappedOwner_not_ends_with_nocase: String
+  wrappedOwner_not_in: [String!]
+  wrappedOwner_not_starts_with: String
+  wrappedOwner_not_starts_with_nocase: String
+  wrappedOwner_starts_with: String
+  wrappedOwner_starts_with_nocase: String
+}
+
+enum Domain_orderBy {
+  createdAt
+  events
+  expiryDate
+  id
+  isMigrated
+  labelhash
+  labelName
+  name
+  owner
+  owner__id
+  parent
+  parent__createdAt
+  parent__expiryDate
+  parent__id
+  parent__isMigrated
+  parent__labelhash
+  parent__labelName
+  parent__name
+  parent__subdomainCount
+  parent__ttl
+  registrant
+  registrant__id
+  registration
+  registration__cost
+  registration__expiryDate
+  registration__id
+  registration__labelName
+  registration__registrationDate
+  resolvedAddress
+  resolvedAddress__id
+  resolver
+  resolver__address
+  resolver__contentHash
+  resolver__id
+  subdomainCount
+  subdomains
+  ttl
+  wrappedDomain
+  wrappedDomain__expiryDate
+  wrappedDomain__fuses
+  wrappedDomain__id
+  wrappedDomain__name
+  wrappedOwner
+  wrappedOwner__id
+}
+
+interface DomainEvent {
+  """The block number at which the event occurred"""
+  blockNumber: Int!
+
+  """The domain name associated with the event"""
+  domain: Domain!
+
+  """The unique identifier of the event"""
+  id: ID!
+
+  """The transaction hash of the transaction that triggered the event"""
+  transactionID: Bytes!
+}
+
+input DomainEvent_filter {
+  """Filter for the block changed event."""
+  _change_block: BlockChangedFilter
+  and: [DomainEvent_filter]
+  blockNumber: Int
+  blockNumber_gt: Int
+  blockNumber_gte: Int
+  blockNumber_in: [Int!]
+  blockNumber_lt: Int
+  blockNumber_lte: Int
+  blockNumber_not: Int
+  blockNumber_not_in: [Int!]
+  domain: String
+  domain_: Domain_filter
+  domain_contains: String
+  domain_contains_nocase: String
+  domain_ends_with: String
+  domain_ends_with_nocase: String
+  domain_gt: String
+  domain_gte: String
+  domain_in: [String!]
+  domain_lt: String
+  domain_lte: String
+  domain_not: String
+  domain_not_contains: String
+  domain_not_contains_nocase: String
+  domain_not_ends_with: String
+  domain_not_ends_with_nocase: String
+  domain_not_in: [String!]
+  domain_not_starts_with: String
+  domain_not_starts_with_nocase: String
+  domain_starts_with: String
+  domain_starts_with_nocase: String
+  id: ID
+  id_gt: ID
+  id_gte: ID
+  id_in: [ID!]
+  id_lt: ID
+  id_lte: ID
+  id_not: ID
+  id_not_in: [ID!]
+  or: [DomainEvent_filter]
+  transactionID: Bytes
+  transactionID_contains: Bytes
+  transactionID_gt: Bytes
+  transactionID_gte: Bytes
+  transactionID_in: [Bytes!]
+  transactionID_lt: Bytes
+  transactionID_lte: Bytes
+  transactionID_not: Bytes
+  transactionID_not_contains: Bytes
+  transactionID_not_in: [Bytes!]
+}
+
+enum DomainEvent_orderBy {
+  blockNumber
+  domain
+  domain__createdAt
+  domain__expiryDate
+  domain__id
+  domain__isMigrated
+  domain__labelhash
+  domain__labelName
+  domain__name
+  domain__subdomainCount
+  domain__ttl
+  id
+  transactionID
+}
+
+type ExpiryExtended implements DomainEvent {
+  """The block number at which the event occurred"""
+  blockNumber: Int!
+
+  """The domain name associated with the event"""
+  domain: Domain!
+
+  """
+  The new expiry date associated with the domain after the extension event
+  """
+  expiryDate: BigInt!
+
+  """The unique identifier of the event"""
+  id: ID!
+
+  """The transaction hash of the transaction that triggered the event"""
+  transactionID: Bytes!
+}
+
+input ExpiryExtended_filter {
+  """Filter for the block changed event."""
+  _change_block: BlockChangedFilter
+  and: [ExpiryExtended_filter]
+  blockNumber: Int
+  blockNumber_gt: Int
+  blockNumber_gte: Int
+  blockNumber_in: [Int!]
+  blockNumber_lt: Int
+  blockNumber_lte: Int
+  blockNumber_not: Int
+  blockNumber_not_in: [Int!]
+  domain: String
+  domain_: Domain_filter
+  domain_contains: String
+  domain_contains_nocase: String
+  domain_ends_with: String
+  domain_ends_with_nocase: String
+  domain_gt: String
+  domain_gte: String
+  domain_in: [String!]
+  domain_lt: String
+  domain_lte: String
+  domain_not: String
+  domain_not_contains: String
+  domain_not_contains_nocase: String
+  domain_not_ends_with: String
+  domain_not_ends_with_nocase: String
+  domain_not_in: [String!]
+  domain_not_starts_with: String
+  domain_not_starts_with_nocase: String
+  domain_starts_with: String
+  domain_starts_with_nocase: String
+  expiryDate: BigInt
+  expiryDate_gt: BigInt
+  expiryDate_gte: BigInt
+  expiryDate_in: [BigInt!]
+  expiryDate_lt: BigInt
+  expiryDate_lte: BigInt
+  expiryDate_not: BigInt
+  expiryDate_not_in: [BigInt!]
+  id: ID
+  id_gt: ID
+  id_gte: ID
+  id_in: [ID!]
+  id_lt: ID
+  id_lte: ID
+  id_not: ID
+  id_not_in: [ID!]
+  or: [ExpiryExtended_filter]
+  transactionID: Bytes
+  transactionID_contains: Bytes
+  transactionID_gt: Bytes
+  transactionID_gte: Bytes
+  transactionID_in: [Bytes!]
+  transactionID_lt: Bytes
+  transactionID_lte: Bytes
+  transactionID_not: Bytes
+  transactionID_not_contains: Bytes
+  transactionID_not_in: [Bytes!]
+}
+
+enum ExpiryExtended_orderBy {
+  blockNumber
+  domain
+  domain__createdAt
+  domain__expiryDate
+  domain__id
+  domain__isMigrated
+  domain__labelhash
+  domain__labelName
+  domain__name
+  domain__subdomainCount
+  domain__ttl
+  expiryDate
+  id
+  transactionID
+}
+
+type FusesSet implements DomainEvent {
+  """The block number at which the event occurred"""
+  blockNumber: Int!
+
+  """The domain name associated with the event"""
+  domain: Domain!
+
+  """The number of fuses associated with the domain after the set event"""
+  fuses: Int!
+
+  """The unique identifier of the event"""
+  id: ID!
+
+  """The transaction hash of the transaction that triggered the event"""
+  transactionID: Bytes!
+}
+
+input FusesSet_filter {
+  """Filter for the block changed event."""
+  _change_block: BlockChangedFilter
+  and: [FusesSet_filter]
+  blockNumber: Int
+  blockNumber_gt: Int
+  blockNumber_gte: Int
+  blockNumber_in: [Int!]
+  blockNumber_lt: Int
+  blockNumber_lte: Int
+  blockNumber_not: Int
+  blockNumber_not_in: [Int!]
+  domain: String
+  domain_: Domain_filter
+  domain_contains: String
+  domain_contains_nocase: String
+  domain_ends_with: String
+  domain_ends_with_nocase: String
+  domain_gt: String
+  domain_gte: String
+  domain_in: [String!]
+  domain_lt: String
+  domain_lte: String
+  domain_not: String
+  domain_not_contains: String
+  domain_not_contains_nocase: String
+  domain_not_ends_with: String
+  domain_not_ends_with_nocase: String
+  domain_not_in: [String!]
+  domain_not_starts_with: String
+  domain_not_starts_with_nocase: String
+  domain_starts_with: String
+  domain_starts_with_nocase: String
+  fuses: Int
+  fuses_gt: Int
+  fuses_gte: Int
+  fuses_in: [Int!]
+  fuses_lt: Int
+  fuses_lte: Int
+  fuses_not: Int
+  fuses_not_in: [Int!]
+  id: ID
+  id_gt: ID
+  id_gte: ID
+  id_in: [ID!]
+  id_lt: ID
+  id_lte: ID
+  id_not: ID
+  id_not_in: [ID!]
+  or: [FusesSet_filter]
+  transactionID: Bytes
+  transactionID_contains: Bytes
+  transactionID_gt: Bytes
+  transactionID_gte: Bytes
+  transactionID_in: [Bytes!]
+  transactionID_lt: Bytes
+  transactionID_lte: Bytes
+  transactionID_not: Bytes
+  transactionID_not_contains: Bytes
+  transactionID_not_in: [Bytes!]
+}
+
+enum FusesSet_orderBy {
+  blockNumber
+  domain
+  domain__createdAt
+  domain__expiryDate
+  domain__id
+  domain__isMigrated
+  domain__labelhash
+  domain__labelName
+  domain__name
+  domain__subdomainCount
+  domain__ttl
+  fuses
+  id
+  transactionID
+}
+
+"""8 bytes signed integer"""
+scalar Int8
+
+type InterfaceChanged implements ResolverEvent {
+  """The block number in which the event occurred"""
+  blockNumber: Int!
+
+  """Concatenation of block number and log ID"""
+  id: ID!
+
+  """The address of the contract that implements the interface"""
+  implementer: Bytes!
+
+  """The ID of the EIP-1820 interface that was changed"""
+  interfaceID: Bytes!
+
+  """Used to derive relationships to Resolvers"""
+  resolver: Resolver!
+
+  """The transaction ID for the transaction in which the event occurred"""
+  transactionID: Bytes!
+}
+
+input InterfaceChanged_filter {
+  """Filter for the block changed event."""
+  _change_block: BlockChangedFilter
+  and: [InterfaceChanged_filter]
+  blockNumber: Int
+  blockNumber_gt: Int
+  blockNumber_gte: Int
+  blockNumber_in: [Int!]
+  blockNumber_lt: Int
+  blockNumber_lte: Int
+  blockNumber_not: Int
+  blockNumber_not_in: [Int!]
+  id: ID
+  id_gt: ID
+  id_gte: ID
+  id_in: [ID!]
+  id_lt: ID
+  id_lte: ID
+  id_not: ID
+  id_not_in: [ID!]
+  implementer: Bytes
+  implementer_contains: Bytes
+  implementer_gt: Bytes
+  implementer_gte: Bytes
+  implementer_in: [Bytes!]
+  implementer_lt: Bytes
+  implementer_lte: Bytes
+  implementer_not: Bytes
+  implementer_not_contains: Bytes
+  implementer_not_in: [Bytes!]
+  interfaceID: Bytes
+  interfaceID_contains: Bytes
+  interfaceID_gt: Bytes
+  interfaceID_gte: Bytes
+  interfaceID_in: [Bytes!]
+  interfaceID_lt: Bytes
+  interfaceID_lte: Bytes
+  interfaceID_not: Bytes
+  interfaceID_not_contains: Bytes
+  interfaceID_not_in: [Bytes!]
+  or: [InterfaceChanged_filter]
+  resolver: String
+  resolver_: Resolver_filter
+  resolver_contains: String
+  resolver_contains_nocase: String
+  resolver_ends_with: String
+  resolver_ends_with_nocase: String
+  resolver_gt: String
+  resolver_gte: String
+  resolver_in: [String!]
+  resolver_lt: String
+  resolver_lte: String
+  resolver_not: String
+  resolver_not_contains: String
+  resolver_not_contains_nocase: String
+  resolver_not_ends_with: String
+  resolver_not_ends_with_nocase: String
+  resolver_not_in: [String!]
+  resolver_not_starts_with: String
+  resolver_not_starts_with_nocase: String
+  resolver_starts_with: String
+  resolver_starts_with_nocase: String
+  transactionID: Bytes
+  transactionID_contains: Bytes
+  transactionID_gt: Bytes
+  transactionID_gte: Bytes
+  transactionID_in: [Bytes!]
+  transactionID_lt: Bytes
+  transactionID_lte: Bytes
+  transactionID_not: Bytes
+  transactionID_not_contains: Bytes
+  transactionID_not_in: [Bytes!]
+}
+
+enum InterfaceChanged_orderBy {
+  blockNumber
+  id
+  implementer
+  interfaceID
+  resolver
+  resolver__address
+  resolver__contentHash
+  resolver__id
+  transactionID
+}
+
+type MulticoinAddrChanged implements ResolverEvent {
+  """The new address value for the given coin type"""
+  addr: Bytes!
+
+  """Block number in which this event was emitted"""
+  blockNumber: Int!
+
+  """The coin type of the changed address"""
+  coinType: BigInt!
+
+  """Unique identifier for the event"""
+  id: ID!
+
+  """Resolver associated with this event"""
+  resolver: Resolver!
+
+  """Transaction ID in which this event was emitted"""
+  transactionID: Bytes!
+}
+
+input MulticoinAddrChanged_filter {
+  """Filter for the block changed event."""
+  _change_block: BlockChangedFilter
+  addr: Bytes
+  addr_contains: Bytes
+  addr_gt: Bytes
+  addr_gte: Bytes
+  addr_in: [Bytes!]
+  addr_lt: Bytes
+  addr_lte: Bytes
+  addr_not: Bytes
+  addr_not_contains: Bytes
+  addr_not_in: [Bytes!]
+  and: [MulticoinAddrChanged_filter]
+  blockNumber: Int
+  blockNumber_gt: Int
+  blockNumber_gte: Int
+  blockNumber_in: [Int!]
+  blockNumber_lt: Int
+  blockNumber_lte: Int
+  blockNumber_not: Int
+  blockNumber_not_in: [Int!]
+  coinType: BigInt
+  coinType_gt: BigInt
+  coinType_gte: BigInt
+  coinType_in: [BigInt!]
+  coinType_lt: BigInt
+  coinType_lte: BigInt
+  coinType_not: BigInt
+  coinType_not_in: [BigInt!]
+  id: ID
+  id_gt: ID
+  id_gte: ID
+  id_in: [ID!]
+  id_lt: ID
+  id_lte: ID
+  id_not: ID
+  id_not_in: [ID!]
+  or: [MulticoinAddrChanged_filter]
+  resolver: String
+  resolver_: Resolver_filter
+  resolver_contains: String
+  resolver_contains_nocase: String
+  resolver_ends_with: String
+  resolver_ends_with_nocase: String
+  resolver_gt: String
+  resolver_gte: String
+  resolver_in: [String!]
+  resolver_lt: String
+  resolver_lte: String
+  resolver_not: String
+  resolver_not_contains: String
+  resolver_not_contains_nocase: String
+  resolver_not_ends_with: String
+  resolver_not_ends_with_nocase: String
+  resolver_not_in: [String!]
+  resolver_not_starts_with: String
+  resolver_not_starts_with_nocase: String
+  resolver_starts_with: String
+  resolver_starts_with_nocase: String
+  transactionID: Bytes
+  transactionID_contains: Bytes
+  transactionID_gt: Bytes
+  transactionID_gte: Bytes
+  transactionID_in: [Bytes!]
+  transactionID_lt: Bytes
+  transactionID_lte: Bytes
+  transactionID_not: Bytes
+  transactionID_not_contains: Bytes
+  transactionID_not_in: [Bytes!]
+}
+
+enum MulticoinAddrChanged_orderBy {
+  addr
+  blockNumber
+  coinType
+  id
+  resolver
+  resolver__address
+  resolver__contentHash
+  resolver__id
+  transactionID
+}
+
+type NameChanged implements ResolverEvent {
+  """Block number where event occurred"""
+  blockNumber: Int!
+
+  """Concatenation of block number and log ID"""
+  id: ID!
+
+  """New ENS name value"""
+  name: String!
+
+  """Used to derive relationships to Resolvers"""
+  resolver: Resolver!
+
+  """Unique transaction ID where event occurred"""
+  transactionID: Bytes!
+}
+
+input NameChanged_filter {
+  """Filter for the block changed event."""
+  _change_block: BlockChangedFilter
+  and: [NameChanged_filter]
+  blockNumber: Int
+  blockNumber_gt: Int
+  blockNumber_gte: Int
+  blockNumber_in: [Int!]
+  blockNumber_lt: Int
+  blockNumber_lte: Int
+  blockNumber_not: Int
+  blockNumber_not_in: [Int!]
+  id: ID
+  id_gt: ID
+  id_gte: ID
+  id_in: [ID!]
+  id_lt: ID
+  id_lte: ID
+  id_not: ID
+  id_not_in: [ID!]
+  name: String
+  name_contains: String
+  name_contains_nocase: String
+  name_ends_with: String
+  name_ends_with_nocase: String
+  name_gt: String
+  name_gte: String
+  name_in: [String!]
+  name_lt: String
+  name_lte: String
+  name_not: String
+  name_not_contains: String
+  name_not_contains_nocase: String
+  name_not_ends_with: String
+  name_not_ends_with_nocase: String
+  name_not_in: [String!]
+  name_not_starts_with: String
+  name_not_starts_with_nocase: String
+  name_starts_with: String
+  name_starts_with_nocase: String
+  or: [NameChanged_filter]
+  resolver: String
+  resolver_: Resolver_filter
+  resolver_contains: String
+  resolver_contains_nocase: String
+  resolver_ends_with: String
+  resolver_ends_with_nocase: String
+  resolver_gt: String
+  resolver_gte: String
+  resolver_in: [String!]
+  resolver_lt: String
+  resolver_lte: String
+  resolver_not: String
+  resolver_not_contains: String
+  resolver_not_contains_nocase: String
+  resolver_not_ends_with: String
+  resolver_not_ends_with_nocase: String
+  resolver_not_in: [String!]
+  resolver_not_starts_with: String
+  resolver_not_starts_with_nocase: String
+  resolver_starts_with: String
+  resolver_starts_with_nocase: String
+  transactionID: Bytes
+  transactionID_contains: Bytes
+  transactionID_gt: Bytes
+  transactionID_gte: Bytes
+  transactionID_in: [Bytes!]
+  transactionID_lt: Bytes
+  transactionID_lte: Bytes
+  transactionID_not: Bytes
+  transactionID_not_contains: Bytes
+  transactionID_not_in: [Bytes!]
+}
+
+enum NameChanged_orderBy {
+  blockNumber
+  id
+  name
+  resolver
+  resolver__address
+  resolver__contentHash
+  resolver__id
+  transactionID
+}
+
+type NameRegistered implements RegistrationEvent {
+  """The block number of the event"""
+  blockNumber: Int!
+
+  """The expiry date of the registration"""
+  expiryDate: BigInt!
+
+  """The unique identifier of the NameRegistered event"""
+  id: ID!
+
+  """The account that registered the name"""
+  registrant: Account!
+
+  """The registration associated with the event"""
+  registration: Registration!
+
+  """The transaction ID associated with the event"""
+  transactionID: Bytes!
+}
+
+input NameRegistered_filter {
+  """Filter for the block changed event."""
+  _change_block: BlockChangedFilter
+  and: [NameRegistered_filter]
+  blockNumber: Int
+  blockNumber_gt: Int
+  blockNumber_gte: Int
+  blockNumber_in: [Int!]
+  blockNumber_lt: Int
+  blockNumber_lte: Int
+  blockNumber_not: Int
+  blockNumber_not_in: [Int!]
+  expiryDate: BigInt
+  expiryDate_gt: BigInt
+  expiryDate_gte: BigInt
+  expiryDate_in: [BigInt!]
+  expiryDate_lt: BigInt
+  expiryDate_lte: BigInt
+  expiryDate_not: BigInt
+  expiryDate_not_in: [BigInt!]
+  id: ID
+  id_gt: ID
+  id_gte: ID
+  id_in: [ID!]
+  id_lt: ID
+  id_lte: ID
+  id_not: ID
+  id_not_in: [ID!]
+  or: [NameRegistered_filter]
+  registrant: String
+  registrant_: Account_filter
+  registrant_contains: String
+  registrant_contains_nocase: String
+  registrant_ends_with: String
+  registrant_ends_with_nocase: String
+  registrant_gt: String
+  registrant_gte: String
+  registrant_in: [String!]
+  registrant_lt: String
+  registrant_lte: String
+  registrant_not: String
+  registrant_not_contains: String
+  registrant_not_contains_nocase: String
+  registrant_not_ends_with: String
+  registrant_not_ends_with_nocase: String
+  registrant_not_in: [String!]
+  registrant_not_starts_with: String
+  registrant_not_starts_with_nocase: String
+  registrant_starts_with: String
+  registrant_starts_with_nocase: String
+  registration: String
+  registration_: Registration_filter
+  registration_contains: String
+  registration_contains_nocase: String
+  registration_ends_with: String
+  registration_ends_with_nocase: String
+  registration_gt: String
+  registration_gte: String
+  registration_in: [String!]
+  registration_lt: String
+  registration_lte: String
+  registration_not: String
+  registration_not_contains: String
+  registration_not_contains_nocase: String
+  registration_not_ends_with: String
+  registration_not_ends_with_nocase: String
+  registration_not_in: [String!]
+  registration_not_starts_with: String
+  registration_not_starts_with_nocase: String
+  registration_starts_with: String
+  registration_starts_with_nocase: String
+  transactionID: Bytes
+  transactionID_contains: Bytes
+  transactionID_gt: Bytes
+  transactionID_gte: Bytes
+  transactionID_in: [Bytes!]
+  transactionID_lt: Bytes
+  transactionID_lte: Bytes
+  transactionID_not: Bytes
+  transactionID_not_contains: Bytes
+  transactionID_not_in: [Bytes!]
+}
+
+enum NameRegistered_orderBy {
+  blockNumber
+  expiryDate
+  id
+  registrant
+  registrant__id
+  registration
+  registration__cost
+  registration__expiryDate
+  registration__id
+  registration__labelName
+  registration__registrationDate
+  transactionID
+}
+
+type NameRenewed implements RegistrationEvent {
+  """The block number of the event"""
+  blockNumber: Int!
+
+  """The new expiry date of the registration"""
+  expiryDate: BigInt!
+
+  """The unique identifier of the NameRenewed event"""
+  id: ID!
+
+  """The registration associated with the event"""
+  registration: Registration!
+
+  """The transaction ID associated with the event"""
+  transactionID: Bytes!
+}
+
+input NameRenewed_filter {
+  """Filter for the block changed event."""
+  _change_block: BlockChangedFilter
+  and: [NameRenewed_filter]
+  blockNumber: Int
+  blockNumber_gt: Int
+  blockNumber_gte: Int
+  blockNumber_in: [Int!]
+  blockNumber_lt: Int
+  blockNumber_lte: Int
+  blockNumber_not: Int
+  blockNumber_not_in: [Int!]
+  expiryDate: BigInt
+  expiryDate_gt: BigInt
+  expiryDate_gte: BigInt
+  expiryDate_in: [BigInt!]
+  expiryDate_lt: BigInt
+  expiryDate_lte: BigInt
+  expiryDate_not: BigInt
+  expiryDate_not_in: [BigInt!]
+  id: ID
+  id_gt: ID
+  id_gte: ID
+  id_in: [ID!]
+  id_lt: ID
+  id_lte: ID
+  id_not: ID
+  id_not_in: [ID!]
+  or: [NameRenewed_filter]
+  registration: String
+  registration_: Registration_filter
+  registration_contains: String
+  registration_contains_nocase: String
+  registration_ends_with: String
+  registration_ends_with_nocase: String
+  registration_gt: String
+  registration_gte: String
+  registration_in: [String!]
+  registration_lt: String
+  registration_lte: String
+  registration_not: String
+  registration_not_contains: String
+  registration_not_contains_nocase: String
+  registration_not_ends_with: String
+  registration_not_ends_with_nocase: String
+  registration_not_in: [String!]
+  registration_not_starts_with: String
+  registration_not_starts_with_nocase: String
+  registration_starts_with: String
+  registration_starts_with_nocase: String
+  transactionID: Bytes
+  transactionID_contains: Bytes
+  transactionID_gt: Bytes
+  transactionID_gte: Bytes
+  transactionID_in: [Bytes!]
+  transactionID_lt: Bytes
+  transactionID_lte: Bytes
+  transactionID_not: Bytes
+  transactionID_not_contains: Bytes
+  transactionID_not_in: [Bytes!]
+}
+
+enum NameRenewed_orderBy {
+  blockNumber
+  expiryDate
+  id
+  registration
+  registration__cost
+  registration__expiryDate
+  registration__id
+  registration__labelName
+  registration__registrationDate
+  transactionID
+}
+
+type NameTransferred implements RegistrationEvent {
+  """The block number of the event"""
+  blockNumber: Int!
+
+  """The ID of the event"""
+  id: ID!
+
+  """The new owner of the domain"""
+  newOwner: Account!
+
+  """The registration associated with the event"""
+  registration: Registration!
+
+  """The transaction ID of the event"""
+  transactionID: Bytes!
+}
+
+input NameTransferred_filter {
+  """Filter for the block changed event."""
+  _change_block: BlockChangedFilter
+  and: [NameTransferred_filter]
+  blockNumber: Int
+  blockNumber_gt: Int
+  blockNumber_gte: Int
+  blockNumber_in: [Int!]
+  blockNumber_lt: Int
+  blockNumber_lte: Int
+  blockNumber_not: Int
+  blockNumber_not_in: [Int!]
+  id: ID
+  id_gt: ID
+  id_gte: ID
+  id_in: [ID!]
+  id_lt: ID
+  id_lte: ID
+  id_not: ID
+  id_not_in: [ID!]
+  newOwner: String
+  newOwner_: Account_filter
+  newOwner_contains: String
+  newOwner_contains_nocase: String
+  newOwner_ends_with: String
+  newOwner_ends_with_nocase: String
+  newOwner_gt: String
+  newOwner_gte: String
+  newOwner_in: [String!]
+  newOwner_lt: String
+  newOwner_lte: String
+  newOwner_not: String
+  newOwner_not_contains: String
+  newOwner_not_contains_nocase: String
+  newOwner_not_ends_with: String
+  newOwner_not_ends_with_nocase: String
+  newOwner_not_in: [String!]
+  newOwner_not_starts_with: String
+  newOwner_not_starts_with_nocase: String
+  newOwner_starts_with: String
+  newOwner_starts_with_nocase: String
+  or: [NameTransferred_filter]
+  registration: String
+  registration_: Registration_filter
+  registration_contains: String
+  registration_contains_nocase: String
+  registration_ends_with: String
+  registration_ends_with_nocase: String
+  registration_gt: String
+  registration_gte: String
+  registration_in: [String!]
+  registration_lt: String
+  registration_lte: String
+  registration_not: String
+  registration_not_contains: String
+  registration_not_contains_nocase: String
+  registration_not_ends_with: String
+  registration_not_ends_with_nocase: String
+  registration_not_in: [String!]
+  registration_not_starts_with: String
+  registration_not_starts_with_nocase: String
+  registration_starts_with: String
+  registration_starts_with_nocase: String
+  transactionID: Bytes
+  transactionID_contains: Bytes
+  transactionID_gt: Bytes
+  transactionID_gte: Bytes
+  transactionID_in: [Bytes!]
+  transactionID_lt: Bytes
+  transactionID_lte: Bytes
+  transactionID_not: Bytes
+  transactionID_not_contains: Bytes
+  transactionID_not_in: [Bytes!]
+}
+
+enum NameTransferred_orderBy {
+  blockNumber
+  id
+  newOwner
+  newOwner__id
+  registration
+  registration__cost
+  registration__expiryDate
+  registration__id
+  registration__labelName
+  registration__registrationDate
+  transactionID
+}
+
+type NameUnwrapped implements DomainEvent {
+  """The block number at which the event occurred"""
+  blockNumber: Int!
+
+  """The domain name associated with the event"""
+  domain: Domain!
+
+  """The unique identifier of the event"""
+  id: ID!
+
+  """The account that owns the domain after it was unwrapped"""
+  owner: Account!
+
+  """The transaction hash of the transaction that triggered the event"""
+  transactionID: Bytes!
+}
+
+input NameUnwrapped_filter {
+  """Filter for the block changed event."""
+  _change_block: BlockChangedFilter
+  and: [NameUnwrapped_filter]
+  blockNumber: Int
+  blockNumber_gt: Int
+  blockNumber_gte: Int
+  blockNumber_in: [Int!]
+  blockNumber_lt: Int
+  blockNumber_lte: Int
+  blockNumber_not: Int
+  blockNumber_not_in: [Int!]
+  domain: String
+  domain_: Domain_filter
+  domain_contains: String
+  domain_contains_nocase: String
+  domain_ends_with: String
+  domain_ends_with_nocase: String
+  domain_gt: String
+  domain_gte: String
+  domain_in: [String!]
+  domain_lt: String
+  domain_lte: String
+  domain_not: String
+  domain_not_contains: String
+  domain_not_contains_nocase: String
+  domain_not_ends_with: String
+  domain_not_ends_with_nocase: String
+  domain_not_in: [String!]
+  domain_not_starts_with: String
+  domain_not_starts_with_nocase: String
+  domain_starts_with: String
+  domain_starts_with_nocase: String
+  id: ID
+  id_gt: ID
+  id_gte: ID
+  id_in: [ID!]
+  id_lt: ID
+  id_lte: ID
+  id_not: ID
+  id_not_in: [ID!]
+  or: [NameUnwrapped_filter]
+  owner: String
+  owner_: Account_filter
+  owner_contains: String
+  owner_contains_nocase: String
+  owner_ends_with: String
+  owner_ends_with_nocase: String
+  owner_gt: String
+  owner_gte: String
+  owner_in: [String!]
+  owner_lt: String
+  owner_lte: String
+  owner_not: String
+  owner_not_contains: String
+  owner_not_contains_nocase: String
+  owner_not_ends_with: String
+  owner_not_ends_with_nocase: String
+  owner_not_in: [String!]
+  owner_not_starts_with: String
+  owner_not_starts_with_nocase: String
+  owner_starts_with: String
+  owner_starts_with_nocase: String
+  transactionID: Bytes
+  transactionID_contains: Bytes
+  transactionID_gt: Bytes
+  transactionID_gte: Bytes
+  transactionID_in: [Bytes!]
+  transactionID_lt: Bytes
+  transactionID_lte: Bytes
+  transactionID_not: Bytes
+  transactionID_not_contains: Bytes
+  transactionID_not_in: [Bytes!]
+}
+
+enum NameUnwrapped_orderBy {
+  blockNumber
+  domain
+  domain__createdAt
+  domain__expiryDate
+  domain__id
+  domain__isMigrated
+  domain__labelhash
+  domain__labelName
+  domain__name
+  domain__subdomainCount
+  domain__ttl
+  id
+  owner
+  owner__id
+  transactionID
+}
+
+type NameWrapped implements DomainEvent {
+  """The block number at which the wrapped domain was wrapped"""
+  blockNumber: Int!
+
+  """The domain name associated with the wrapped domain"""
+  domain: Domain!
+
+  """The expiry date of the wrapped domain registration"""
+  expiryDate: BigInt!
+
+  """The number of fuses associated with the wrapped domain"""
+  fuses: Int!
+
+  """The unique identifier of the wrapped domain"""
+  id: ID!
+
+  """The human-readable name of the wrapped domain"""
+  name: String
+
+  """The account that owns the wrapped domain"""
+  owner: Account!
+
+  """The transaction hash of the transaction that wrapped the domain"""
+  transactionID: Bytes!
+}
+
+input NameWrapped_filter {
+  """Filter for the block changed event."""
+  _change_block: BlockChangedFilter
+  and: [NameWrapped_filter]
+  blockNumber: Int
+  blockNumber_gt: Int
+  blockNumber_gte: Int
+  blockNumber_in: [Int!]
+  blockNumber_lt: Int
+  blockNumber_lte: Int
+  blockNumber_not: Int
+  blockNumber_not_in: [Int!]
+  domain: String
+  domain_: Domain_filter
+  domain_contains: String
+  domain_contains_nocase: String
+  domain_ends_with: String
+  domain_ends_with_nocase: String
+  domain_gt: String
+  domain_gte: String
+  domain_in: [String!]
+  domain_lt: String
+  domain_lte: String
+  domain_not: String
+  domain_not_contains: String
+  domain_not_contains_nocase: String
+  domain_not_ends_with: String
+  domain_not_ends_with_nocase: String
+  domain_not_in: [String!]
+  domain_not_starts_with: String
+  domain_not_starts_with_nocase: String
+  domain_starts_with: String
+  domain_starts_with_nocase: String
+  expiryDate: BigInt
+  expiryDate_gt: BigInt
+  expiryDate_gte: BigInt
+  expiryDate_in: [BigInt!]
+  expiryDate_lt: BigInt
+  expiryDate_lte: BigInt
+  expiryDate_not: BigInt
+  expiryDate_not_in: [BigInt!]
+  fuses: Int
+  fuses_gt: Int
+  fuses_gte: Int
+  fuses_in: [Int!]
+  fuses_lt: Int
+  fuses_lte: Int
+  fuses_not: Int
+  fuses_not_in: [Int!]
+  id: ID
+  id_gt: ID
+  id_gte: ID
+  id_in: [ID!]
+  id_lt: ID
+  id_lte: ID
+  id_not: ID
+  id_not_in: [ID!]
+  name: String
+  name_contains: String
+  name_contains_nocase: String
+  name_ends_with: String
+  name_ends_with_nocase: String
+  name_gt: String
+  name_gte: String
+  name_in: [String!]
+  name_lt: String
+  name_lte: String
+  name_not: String
+  name_not_contains: String
+  name_not_contains_nocase: String
+  name_not_ends_with: String
+  name_not_ends_with_nocase: String
+  name_not_in: [String!]
+  name_not_starts_with: String
+  name_not_starts_with_nocase: String
+  name_starts_with: String
+  name_starts_with_nocase: String
+  or: [NameWrapped_filter]
+  owner: String
+  owner_: Account_filter
+  owner_contains: String
+  owner_contains_nocase: String
+  owner_ends_with: String
+  owner_ends_with_nocase: String
+  owner_gt: String
+  owner_gte: String
+  owner_in: [String!]
+  owner_lt: String
+  owner_lte: String
+  owner_not: String
+  owner_not_contains: String
+  owner_not_contains_nocase: String
+  owner_not_ends_with: String
+  owner_not_ends_with_nocase: String
+  owner_not_in: [String!]
+  owner_not_starts_with: String
+  owner_not_starts_with_nocase: String
+  owner_starts_with: String
+  owner_starts_with_nocase: String
+  transactionID: Bytes
+  transactionID_contains: Bytes
+  transactionID_gt: Bytes
+  transactionID_gte: Bytes
+  transactionID_in: [Bytes!]
+  transactionID_lt: Bytes
+  transactionID_lte: Bytes
+  transactionID_not: Bytes
+  transactionID_not_contains: Bytes
+  transactionID_not_in: [Bytes!]
+}
+
+enum NameWrapped_orderBy {
+  blockNumber
+  domain
+  domain__createdAt
+  domain__expiryDate
+  domain__id
+  domain__isMigrated
+  domain__labelhash
+  domain__labelName
+  domain__name
+  domain__subdomainCount
+  domain__ttl
+  expiryDate
+  fuses
+  id
+  name
+  owner
+  owner__id
+  transactionID
+}
+
+type NewOwner implements DomainEvent {
+  """The block number at which the event occurred"""
+  blockNumber: Int!
+
+  """The domain name associated with the event"""
+  domain: Domain!
+
+  """The unique identifier of the event"""
+  id: ID!
+
+  """The new account that owns the domain"""
+  owner: Account!
+
+  """The parent domain of the domain name associated with the event"""
+  parentDomain: Domain!
+
+  """The transaction hash of the transaction that triggered the event"""
+  transactionID: Bytes!
+}
+
+input NewOwner_filter {
+  """Filter for the block changed event."""
+  _change_block: BlockChangedFilter
+  and: [NewOwner_filter]
+  blockNumber: Int
+  blockNumber_gt: Int
+  blockNumber_gte: Int
+  blockNumber_in: [Int!]
+  blockNumber_lt: Int
+  blockNumber_lte: Int
+  blockNumber_not: Int
+  blockNumber_not_in: [Int!]
+  domain: String
+  domain_: Domain_filter
+  domain_contains: String
+  domain_contains_nocase: String
+  domain_ends_with: String
+  domain_ends_with_nocase: String
+  domain_gt: String
+  domain_gte: String
+  domain_in: [String!]
+  domain_lt: String
+  domain_lte: String
+  domain_not: String
+  domain_not_contains: String
+  domain_not_contains_nocase: String
+  domain_not_ends_with: String
+  domain_not_ends_with_nocase: String
+  domain_not_in: [String!]
+  domain_not_starts_with: String
+  domain_not_starts_with_nocase: String
+  domain_starts_with: String
+  domain_starts_with_nocase: String
+  id: ID
+  id_gt: ID
+  id_gte: ID
+  id_in: [ID!]
+  id_lt: ID
+  id_lte: ID
+  id_not: ID
+  id_not_in: [ID!]
+  or: [NewOwner_filter]
+  owner: String
+  owner_: Account_filter
+  owner_contains: String
+  owner_contains_nocase: String
+  owner_ends_with: String
+  owner_ends_with_nocase: String
+  owner_gt: String
+  owner_gte: String
+  owner_in: [String!]
+  owner_lt: String
+  owner_lte: String
+  owner_not: String
+  owner_not_contains: String
+  owner_not_contains_nocase: String
+  owner_not_ends_with: String
+  owner_not_ends_with_nocase: String
+  owner_not_in: [String!]
+  owner_not_starts_with: String
+  owner_not_starts_with_nocase: String
+  owner_starts_with: String
+  owner_starts_with_nocase: String
+  parentDomain: String
+  parentDomain_: Domain_filter
+  parentDomain_contains: String
+  parentDomain_contains_nocase: String
+  parentDomain_ends_with: String
+  parentDomain_ends_with_nocase: String
+  parentDomain_gt: String
+  parentDomain_gte: String
+  parentDomain_in: [String!]
+  parentDomain_lt: String
+  parentDomain_lte: String
+  parentDomain_not: String
+  parentDomain_not_contains: String
+  parentDomain_not_contains_nocase: String
+  parentDomain_not_ends_with: String
+  parentDomain_not_ends_with_nocase: String
+  parentDomain_not_in: [String!]
+  parentDomain_not_starts_with: String
+  parentDomain_not_starts_with_nocase: String
+  parentDomain_starts_with: String
+  parentDomain_starts_with_nocase: String
+  transactionID: Bytes
+  transactionID_contains: Bytes
+  transactionID_gt: Bytes
+  transactionID_gte: Bytes
+  transactionID_in: [Bytes!]
+  transactionID_lt: Bytes
+  transactionID_lte: Bytes
+  transactionID_not: Bytes
+  transactionID_not_contains: Bytes
+  transactionID_not_in: [Bytes!]
+}
+
+enum NewOwner_orderBy {
+  blockNumber
+  domain
+  domain__createdAt
+  domain__expiryDate
+  domain__id
+  domain__isMigrated
+  domain__labelhash
+  domain__labelName
+  domain__name
+  domain__subdomainCount
+  domain__ttl
+  id
+  owner
+  owner__id
+  parentDomain
+  parentDomain__createdAt
+  parentDomain__expiryDate
+  parentDomain__id
+  parentDomain__isMigrated
+  parentDomain__labelhash
+  parentDomain__labelName
+  parentDomain__name
+  parentDomain__subdomainCount
+  parentDomain__ttl
+  transactionID
+}
+
+type NewResolver implements DomainEvent {
+  """The block number at which the event occurred"""
+  blockNumber: Int!
+
+  """The domain name associated with the event"""
+  domain: Domain!
+
+  """The unique identifier of the event"""
+  id: ID!
+
+  """The new resolver contract address associated with the domain"""
+  resolver: Resolver!
+
+  """The transaction hash of the transaction that triggered the event"""
+  transactionID: Bytes!
+}
+
+input NewResolver_filter {
+  """Filter for the block changed event."""
+  _change_block: BlockChangedFilter
+  and: [NewResolver_filter]
+  blockNumber: Int
+  blockNumber_gt: Int
+  blockNumber_gte: Int
+  blockNumber_in: [Int!]
+  blockNumber_lt: Int
+  blockNumber_lte: Int
+  blockNumber_not: Int
+  blockNumber_not_in: [Int!]
+  domain: String
+  domain_: Domain_filter
+  domain_contains: String
+  domain_contains_nocase: String
+  domain_ends_with: String
+  domain_ends_with_nocase: String
+  domain_gt: String
+  domain_gte: String
+  domain_in: [String!]
+  domain_lt: String
+  domain_lte: String
+  domain_not: String
+  domain_not_contains: String
+  domain_not_contains_nocase: String
+  domain_not_ends_with: String
+  domain_not_ends_with_nocase: String
+  domain_not_in: [String!]
+  domain_not_starts_with: String
+  domain_not_starts_with_nocase: String
+  domain_starts_with: String
+  domain_starts_with_nocase: String
+  id: ID
+  id_gt: ID
+  id_gte: ID
+  id_in: [ID!]
+  id_lt: ID
+  id_lte: ID
+  id_not: ID
+  id_not_in: [ID!]
+  or: [NewResolver_filter]
+  resolver: String
+  resolver_: Resolver_filter
+  resolver_contains: String
+  resolver_contains_nocase: String
+  resolver_ends_with: String
+  resolver_ends_with_nocase: String
+  resolver_gt: String
+  resolver_gte: String
+  resolver_in: [String!]
+  resolver_lt: String
+  resolver_lte: String
+  resolver_not: String
+  resolver_not_contains: String
+  resolver_not_contains_nocase: String
+  resolver_not_ends_with: String
+  resolver_not_ends_with_nocase: String
+  resolver_not_in: [String!]
+  resolver_not_starts_with: String
+  resolver_not_starts_with_nocase: String
+  resolver_starts_with: String
+  resolver_starts_with_nocase: String
+  transactionID: Bytes
+  transactionID_contains: Bytes
+  transactionID_gt: Bytes
+  transactionID_gte: Bytes
+  transactionID_in: [Bytes!]
+  transactionID_lt: Bytes
+  transactionID_lte: Bytes
+  transactionID_not: Bytes
+  transactionID_not_contains: Bytes
+  transactionID_not_in: [Bytes!]
+}
+
+enum NewResolver_orderBy {
+  blockNumber
+  domain
+  domain__createdAt
+  domain__expiryDate
+  domain__id
+  domain__isMigrated
+  domain__labelhash
+  domain__labelName
+  domain__name
+  domain__subdomainCount
+  domain__ttl
+  id
+  resolver
+  resolver__address
+  resolver__contentHash
+  resolver__id
+  transactionID
+}
+
+type NewTTL implements DomainEvent {
+  """The block number at which the event occurred"""
+  blockNumber: Int!
+
+  """The domain name associated with the event"""
+  domain: Domain!
+
+  """The unique identifier of the event"""
+  id: ID!
+
+  """The transaction hash of the transaction that triggered the event"""
+  transactionID: Bytes!
+
+  """The new TTL value (in seconds) associated with the domain"""
+  ttl: BigInt!
+}
+
+input NewTTL_filter {
+  """Filter for the block changed event."""
+  _change_block: BlockChangedFilter
+  and: [NewTTL_filter]
+  blockNumber: Int
+  blockNumber_gt: Int
+  blockNumber_gte: Int
+  blockNumber_in: [Int!]
+  blockNumber_lt: Int
+  blockNumber_lte: Int
+  blockNumber_not: Int
+  blockNumber_not_in: [Int!]
+  domain: String
+  domain_: Domain_filter
+  domain_contains: String
+  domain_contains_nocase: String
+  domain_ends_with: String
+  domain_ends_with_nocase: String
+  domain_gt: String
+  domain_gte: String
+  domain_in: [String!]
+  domain_lt: String
+  domain_lte: String
+  domain_not: String
+  domain_not_contains: String
+  domain_not_contains_nocase: String
+  domain_not_ends_with: String
+  domain_not_ends_with_nocase: String
+  domain_not_in: [String!]
+  domain_not_starts_with: String
+  domain_not_starts_with_nocase: String
+  domain_starts_with: String
+  domain_starts_with_nocase: String
+  id: ID
+  id_gt: ID
+  id_gte: ID
+  id_in: [ID!]
+  id_lt: ID
+  id_lte: ID
+  id_not: ID
+  id_not_in: [ID!]
+  or: [NewTTL_filter]
+  transactionID: Bytes
+  transactionID_contains: Bytes
+  transactionID_gt: Bytes
+  transactionID_gte: Bytes
+  transactionID_in: [Bytes!]
+  transactionID_lt: Bytes
+  transactionID_lte: Bytes
+  transactionID_not: Bytes
+  transactionID_not_contains: Bytes
+  transactionID_not_in: [Bytes!]
+  ttl: BigInt
+  ttl_gt: BigInt
+  ttl_gte: BigInt
+  ttl_in: [BigInt!]
+  ttl_lt: BigInt
+  ttl_lte: BigInt
+  ttl_not: BigInt
+  ttl_not_in: [BigInt!]
+}
+
+enum NewTTL_orderBy {
+  blockNumber
+  domain
+  domain__createdAt
+  domain__expiryDate
+  domain__id
+  domain__isMigrated
+  domain__labelhash
+  domain__labelName
+  domain__name
+  domain__subdomainCount
+  domain__ttl
+  id
+  transactionID
+  ttl
+}
+
+"""Defines the order direction, either ascending or descending"""
+enum OrderDirection {
+  asc
+  desc
+}
+
+type PubkeyChanged implements ResolverEvent {
+  """Block number of the Ethereum block where the event occurred"""
+  blockNumber: Int!
+
+  """Concatenation of block number and log ID"""
+  id: ID!
+
+  """Used to derive relationships to Resolvers"""
+  resolver: Resolver!
+
+  """Transaction hash of the Ethereum transaction where the event occurred"""
+  transactionID: Bytes!
+
+  """The x-coordinate of the new public key"""
+  x: Bytes!
+
+  """The y-coordinate of the new public key"""
+  y: Bytes!
+}
+
+input PubkeyChanged_filter {
+  """Filter for the block changed event."""
+  _change_block: BlockChangedFilter
+  and: [PubkeyChanged_filter]
+  blockNumber: Int
+  blockNumber_gt: Int
+  blockNumber_gte: Int
+  blockNumber_in: [Int!]
+  blockNumber_lt: Int
+  blockNumber_lte: Int
+  blockNumber_not: Int
+  blockNumber_not_in: [Int!]
+  id: ID
+  id_gt: ID
+  id_gte: ID
+  id_in: [ID!]
+  id_lt: ID
+  id_lte: ID
+  id_not: ID
+  id_not_in: [ID!]
+  or: [PubkeyChanged_filter]
+  resolver: String
+  resolver_: Resolver_filter
+  resolver_contains: String
+  resolver_contains_nocase: String
+  resolver_ends_with: String
+  resolver_ends_with_nocase: String
+  resolver_gt: String
+  resolver_gte: String
+  resolver_in: [String!]
+  resolver_lt: String
+  resolver_lte: String
+  resolver_not: String
+  resolver_not_contains: String
+  resolver_not_contains_nocase: String
+  resolver_not_ends_with: String
+  resolver_not_ends_with_nocase: String
+  resolver_not_in: [String!]
+  resolver_not_starts_with: String
+  resolver_not_starts_with_nocase: String
+  resolver_starts_with: String
+  resolver_starts_with_nocase: String
+  transactionID: Bytes
+  transactionID_contains: Bytes
+  transactionID_gt: Bytes
+  transactionID_gte: Bytes
+  transactionID_in: [Bytes!]
+  transactionID_lt: Bytes
+  transactionID_lte: Bytes
+  transactionID_not: Bytes
+  transactionID_not_contains: Bytes
+  transactionID_not_in: [Bytes!]
+  x: Bytes
+  x_contains: Bytes
+  x_gt: Bytes
+  x_gte: Bytes
+  x_in: [Bytes!]
+  x_lt: Bytes
+  x_lte: Bytes
+  x_not: Bytes
+  x_not_contains: Bytes
+  x_not_in: [Bytes!]
+  y: Bytes
+  y_contains: Bytes
+  y_gt: Bytes
+  y_gte: Bytes
+  y_in: [Bytes!]
+  y_lt: Bytes
+  y_lte: Bytes
+  y_not: Bytes
+  y_not_contains: Bytes
+  y_not_in: [Bytes!]
+}
+
+enum PubkeyChanged_orderBy {
+  blockNumber
+  id
+  resolver
+  resolver__address
+  resolver__contentHash
+  resolver__id
+  transactionID
+  x
+  y
+}
+
+type Query {
+  """Access to subgraph metadata"""
+  _meta(block: Block_height): _Meta_
+  abiChanged(
+    """
+    The block at which the query should be executed. Can either be a `{ hash: Bytes }` value containing a block hash, a `{ number: Int }` containing the block number, or a `{ number_gte: Int }` containing the minimum block number. In the case of `number_gte`, the query will be executed on the latest block only if the subgraph has progressed to or past the minimum block number. Defaults to the latest block when omitted.
+    """
+    block: Block_height
+    id: ID!
+
+    """
+    Set to `allow` to receive data even if the subgraph has skipped over errors while syncing.
+    """
+    subgraphError: _SubgraphErrorPolicy_! = deny
+  ): AbiChanged
+  abiChangeds(
+    """
+    The block at which the query should be executed. Can either be a `{ hash: Bytes }` value containing a block hash, a `{ number: Int }` containing the block number, or a `{ number_gte: Int }` containing the minimum block number. In the case of `number_gte`, the query will be executed on the latest block only if the subgraph has progressed to or past the minimum block number. Defaults to the latest block when omitted.
+    """
+    block: Block_height
+    first: Int = 100
+    orderBy: AbiChanged_orderBy
+    orderDirection: OrderDirection
+    skip: Int = 0
+
+    """
+    Set to `allow` to receive data even if the subgraph has skipped over errors while syncing.
+    """
+    subgraphError: _SubgraphErrorPolicy_! = deny
+    where: AbiChanged_filter
+  ): [AbiChanged!]!
+  account(
+    """
+    The block at which the query should be executed. Can either be a `{ hash: Bytes }` value containing a block hash, a `{ number: Int }` containing the block number, or a `{ number_gte: Int }` containing the minimum block number. In the case of `number_gte`, the query will be executed on the latest block only if the subgraph has progressed to or past the minimum block number. Defaults to the latest block when omitted.
+    """
+    block: Block_height
+    id: ID!
+
+    """
+    Set to `allow` to receive data even if the subgraph has skipped over errors while syncing.
+    """
+    subgraphError: _SubgraphErrorPolicy_! = deny
+  ): Account
+  accounts(
+    """
+    The block at which the query should be executed. Can either be a `{ hash: Bytes }` value containing a block hash, a `{ number: Int }` containing the block number, or a `{ number_gte: Int }` containing the minimum block number. In the case of `number_gte`, the query will be executed on the latest block only if the subgraph has progressed to or past the minimum block number. Defaults to the latest block when omitted.
+    """
+    block: Block_height
+    first: Int = 100
+    orderBy: Account_orderBy
+    orderDirection: OrderDirection
+    skip: Int = 0
+
+    """
+    Set to `allow` to receive data even if the subgraph has skipped over errors while syncing.
+    """
+    subgraphError: _SubgraphErrorPolicy_! = deny
+    where: Account_filter
+  ): [Account!]!
+  addrChanged(
+    """
+    The block at which the query should be executed. Can either be a `{ hash: Bytes }` value containing a block hash, a `{ number: Int }` containing the block number, or a `{ number_gte: Int }` containing the minimum block number. In the case of `number_gte`, the query will be executed on the latest block only if the subgraph has progressed to or past the minimum block number. Defaults to the latest block when omitted.
+    """
+    block: Block_height
+    id: ID!
+
+    """
+    Set to `allow` to receive data even if the subgraph has skipped over errors while syncing.
+    """
+    subgraphError: _SubgraphErrorPolicy_! = deny
+  ): AddrChanged
+  addrChangeds(
+    """
+    The block at which the query should be executed. Can either be a `{ hash: Bytes }` value containing a block hash, a `{ number: Int }` containing the block number, or a `{ number_gte: Int }` containing the minimum block number. In the case of `number_gte`, the query will be executed on the latest block only if the subgraph has progressed to or past the minimum block number. Defaults to the latest block when omitted.
+    """
+    block: Block_height
+    first: Int = 100
+    orderBy: AddrChanged_orderBy
+    orderDirection: OrderDirection
+    skip: Int = 0
+
+    """
+    Set to `allow` to receive data even if the subgraph has skipped over errors while syncing.
+    """
+    subgraphError: _SubgraphErrorPolicy_! = deny
+    where: AddrChanged_filter
+  ): [AddrChanged!]!
+  authorisationChanged(
+    """
+    The block at which the query should be executed. Can either be a `{ hash: Bytes }` value containing a block hash, a `{ number: Int }` containing the block number, or a `{ number_gte: Int }` containing the minimum block number. In the case of `number_gte`, the query will be executed on the latest block only if the subgraph has progressed to or past the minimum block number. Defaults to the latest block when omitted.
+    """
+    block: Block_height
+    id: ID!
+
+    """
+    Set to `allow` to receive data even if the subgraph has skipped over errors while syncing.
+    """
+    subgraphError: _SubgraphErrorPolicy_! = deny
+  ): AuthorisationChanged
+  authorisationChangeds(
+    """
+    The block at which the query should be executed. Can either be a `{ hash: Bytes }` value containing a block hash, a `{ number: Int }` containing the block number, or a `{ number_gte: Int }` containing the minimum block number. In the case of `number_gte`, the query will be executed on the latest block only if the subgraph has progressed to or past the minimum block number. Defaults to the latest block when omitted.
+    """
+    block: Block_height
+    first: Int = 100
+    orderBy: AuthorisationChanged_orderBy
+    orderDirection: OrderDirection
+    skip: Int = 0
+
+    """
+    Set to `allow` to receive data even if the subgraph has skipped over errors while syncing.
+    """
+    subgraphError: _SubgraphErrorPolicy_! = deny
+    where: AuthorisationChanged_filter
+  ): [AuthorisationChanged!]!
+  contenthashChanged(
+    """
+    The block at which the query should be executed. Can either be a `{ hash: Bytes }` value containing a block hash, a `{ number: Int }` containing the block number, or a `{ number_gte: Int }` containing the minimum block number. In the case of `number_gte`, the query will be executed on the latest block only if the subgraph has progressed to or past the minimum block number. Defaults to the latest block when omitted.
+    """
+    block: Block_height
+    id: ID!
+
+    """
+    Set to `allow` to receive data even if the subgraph has skipped over errors while syncing.
+    """
+    subgraphError: _SubgraphErrorPolicy_! = deny
+  ): ContenthashChanged
+  contenthashChangeds(
+    """
+    The block at which the query should be executed. Can either be a `{ hash: Bytes }` value containing a block hash, a `{ number: Int }` containing the block number, or a `{ number_gte: Int }` containing the minimum block number. In the case of `number_gte`, the query will be executed on the latest block only if the subgraph has progressed to or past the minimum block number. Defaults to the latest block when omitted.
+    """
+    block: Block_height
+    first: Int = 100
+    orderBy: ContenthashChanged_orderBy
+    orderDirection: OrderDirection
+    skip: Int = 0
+
+    """
+    Set to `allow` to receive data even if the subgraph has skipped over errors while syncing.
+    """
+    subgraphError: _SubgraphErrorPolicy_! = deny
+    where: ContenthashChanged_filter
+  ): [ContenthashChanged!]!
+  domain(
+    """
+    The block at which the query should be executed. Can either be a `{ hash: Bytes }` value containing a block hash, a `{ number: Int }` containing the block number, or a `{ number_gte: Int }` containing the minimum block number. In the case of `number_gte`, the query will be executed on the latest block only if the subgraph has progressed to or past the minimum block number. Defaults to the latest block when omitted.
+    """
+    block: Block_height
+    id: ID!
+
+    """
+    Set to `allow` to receive data even if the subgraph has skipped over errors while syncing.
+    """
+    subgraphError: _SubgraphErrorPolicy_! = deny
+  ): Domain
+  domainEvent(
+    """
+    The block at which the query should be executed. Can either be a `{ hash: Bytes }` value containing a block hash, a `{ number: Int }` containing the block number, or a `{ number_gte: Int }` containing the minimum block number. In the case of `number_gte`, the query will be executed on the latest block only if the subgraph has progressed to or past the minimum block number. Defaults to the latest block when omitted.
+    """
+    block: Block_height
+    id: ID!
+
+    """
+    Set to `allow` to receive data even if the subgraph has skipped over errors while syncing.
+    """
+    subgraphError: _SubgraphErrorPolicy_! = deny
+  ): DomainEvent
+  domainEvents(
+    """
+    The block at which the query should be executed. Can either be a `{ hash: Bytes }` value containing a block hash, a `{ number: Int }` containing the block number, or a `{ number_gte: Int }` containing the minimum block number. In the case of `number_gte`, the query will be executed on the latest block only if the subgraph has progressed to or past the minimum block number. Defaults to the latest block when omitted.
+    """
+    block: Block_height
+    first: Int = 100
+    orderBy: DomainEvent_orderBy
+    orderDirection: OrderDirection
+    skip: Int = 0
+
+    """
+    Set to `allow` to receive data even if the subgraph has skipped over errors while syncing.
+    """
+    subgraphError: _SubgraphErrorPolicy_! = deny
+    where: DomainEvent_filter
+  ): [DomainEvent!]!
+  domains(
+    """
+    The block at which the query should be executed. Can either be a `{ hash: Bytes }` value containing a block hash, a `{ number: Int }` containing the block number, or a `{ number_gte: Int }` containing the minimum block number. In the case of `number_gte`, the query will be executed on the latest block only if the subgraph has progressed to or past the minimum block number. Defaults to the latest block when omitted.
+    """
+    block: Block_height
+    first: Int = 100
+    orderBy: Domain_orderBy
+    orderDirection: OrderDirection
+    skip: Int = 0
+
+    """
+    Set to `allow` to receive data even if the subgraph has skipped over errors while syncing.
+    """
+    subgraphError: _SubgraphErrorPolicy_! = deny
+    where: Domain_filter
+  ): [Domain!]!
+  expiryExtended(
+    """
+    The block at which the query should be executed. Can either be a `{ hash: Bytes }` value containing a block hash, a `{ number: Int }` containing the block number, or a `{ number_gte: Int }` containing the minimum block number. In the case of `number_gte`, the query will be executed on the latest block only if the subgraph has progressed to or past the minimum block number. Defaults to the latest block when omitted.
+    """
+    block: Block_height
+    id: ID!
+
+    """
+    Set to `allow` to receive data even if the subgraph has skipped over errors while syncing.
+    """
+    subgraphError: _SubgraphErrorPolicy_! = deny
+  ): ExpiryExtended
+  expiryExtendeds(
+    """
+    The block at which the query should be executed. Can either be a `{ hash: Bytes }` value containing a block hash, a `{ number: Int }` containing the block number, or a `{ number_gte: Int }` containing the minimum block number. In the case of `number_gte`, the query will be executed on the latest block only if the subgraph has progressed to or past the minimum block number. Defaults to the latest block when omitted.
+    """
+    block: Block_height
+    first: Int = 100
+    orderBy: ExpiryExtended_orderBy
+    orderDirection: OrderDirection
+    skip: Int = 0
+
+    """
+    Set to `allow` to receive data even if the subgraph has skipped over errors while syncing.
+    """
+    subgraphError: _SubgraphErrorPolicy_! = deny
+    where: ExpiryExtended_filter
+  ): [ExpiryExtended!]!
+  fusesSet(
+    """
+    The block at which the query should be executed. Can either be a `{ hash: Bytes }` value containing a block hash, a `{ number: Int }` containing the block number, or a `{ number_gte: Int }` containing the minimum block number. In the case of `number_gte`, the query will be executed on the latest block only if the subgraph has progressed to or past the minimum block number. Defaults to the latest block when omitted.
+    """
+    block: Block_height
+    id: ID!
+
+    """
+    Set to `allow` to receive data even if the subgraph has skipped over errors while syncing.
+    """
+    subgraphError: _SubgraphErrorPolicy_! = deny
+  ): FusesSet
+  fusesSets(
+    """
+    The block at which the query should be executed. Can either be a `{ hash: Bytes }` value containing a block hash, a `{ number: Int }` containing the block number, or a `{ number_gte: Int }` containing the minimum block number. In the case of `number_gte`, the query will be executed on the latest block only if the subgraph has progressed to or past the minimum block number. Defaults to the latest block when omitted.
+    """
+    block: Block_height
+    first: Int = 100
+    orderBy: FusesSet_orderBy
+    orderDirection: OrderDirection
+    skip: Int = 0
+
+    """
+    Set to `allow` to receive data even if the subgraph has skipped over errors while syncing.
+    """
+    subgraphError: _SubgraphErrorPolicy_! = deny
+    where: FusesSet_filter
+  ): [FusesSet!]!
+  interfaceChanged(
+    """
+    The block at which the query should be executed. Can either be a `{ hash: Bytes }` value containing a block hash, a `{ number: Int }` containing the block number, or a `{ number_gte: Int }` containing the minimum block number. In the case of `number_gte`, the query will be executed on the latest block only if the subgraph has progressed to or past the minimum block number. Defaults to the latest block when omitted.
+    """
+    block: Block_height
+    id: ID!
+
+    """
+    Set to `allow` to receive data even if the subgraph has skipped over errors while syncing.
+    """
+    subgraphError: _SubgraphErrorPolicy_! = deny
+  ): InterfaceChanged
+  interfaceChangeds(
+    """
+    The block at which the query should be executed. Can either be a `{ hash: Bytes }` value containing a block hash, a `{ number: Int }` containing the block number, or a `{ number_gte: Int }` containing the minimum block number. In the case of `number_gte`, the query will be executed on the latest block only if the subgraph has progressed to or past the minimum block number. Defaults to the latest block when omitted.
+    """
+    block: Block_height
+    first: Int = 100
+    orderBy: InterfaceChanged_orderBy
+    orderDirection: OrderDirection
+    skip: Int = 0
+
+    """
+    Set to `allow` to receive data even if the subgraph has skipped over errors while syncing.
+    """
+    subgraphError: _SubgraphErrorPolicy_! = deny
+    where: InterfaceChanged_filter
+  ): [InterfaceChanged!]!
+  multicoinAddrChanged(
+    """
+    The block at which the query should be executed. Can either be a `{ hash: Bytes }` value containing a block hash, a `{ number: Int }` containing the block number, or a `{ number_gte: Int }` containing the minimum block number. In the case of `number_gte`, the query will be executed on the latest block only if the subgraph has progressed to or past the minimum block number. Defaults to the latest block when omitted.
+    """
+    block: Block_height
+    id: ID!
+
+    """
+    Set to `allow` to receive data even if the subgraph has skipped over errors while syncing.
+    """
+    subgraphError: _SubgraphErrorPolicy_! = deny
+  ): MulticoinAddrChanged
+  multicoinAddrChangeds(
+    """
+    The block at which the query should be executed. Can either be a `{ hash: Bytes }` value containing a block hash, a `{ number: Int }` containing the block number, or a `{ number_gte: Int }` containing the minimum block number. In the case of `number_gte`, the query will be executed on the latest block only if the subgraph has progressed to or past the minimum block number. Defaults to the latest block when omitted.
+    """
+    block: Block_height
+    first: Int = 100
+    orderBy: MulticoinAddrChanged_orderBy
+    orderDirection: OrderDirection
+    skip: Int = 0
+
+    """
+    Set to `allow` to receive data even if the subgraph has skipped over errors while syncing.
+    """
+    subgraphError: _SubgraphErrorPolicy_! = deny
+    where: MulticoinAddrChanged_filter
+  ): [MulticoinAddrChanged!]!
+  nameChanged(
+    """
+    The block at which the query should be executed. Can either be a `{ hash: Bytes }` value containing a block hash, a `{ number: Int }` containing the block number, or a `{ number_gte: Int }` containing the minimum block number. In the case of `number_gte`, the query will be executed on the latest block only if the subgraph has progressed to or past the minimum block number. Defaults to the latest block when omitted.
+    """
+    block: Block_height
+    id: ID!
+
+    """
+    Set to `allow` to receive data even if the subgraph has skipped over errors while syncing.
+    """
+    subgraphError: _SubgraphErrorPolicy_! = deny
+  ): NameChanged
+  nameChangeds(
+    """
+    The block at which the query should be executed. Can either be a `{ hash: Bytes }` value containing a block hash, a `{ number: Int }` containing the block number, or a `{ number_gte: Int }` containing the minimum block number. In the case of `number_gte`, the query will be executed on the latest block only if the subgraph has progressed to or past the minimum block number. Defaults to the latest block when omitted.
+    """
+    block: Block_height
+    first: Int = 100
+    orderBy: NameChanged_orderBy
+    orderDirection: OrderDirection
+    skip: Int = 0
+
+    """
+    Set to `allow` to receive data even if the subgraph has skipped over errors while syncing.
+    """
+    subgraphError: _SubgraphErrorPolicy_! = deny
+    where: NameChanged_filter
+  ): [NameChanged!]!
+  nameRegistered(
+    """
+    The block at which the query should be executed. Can either be a `{ hash: Bytes }` value containing a block hash, a `{ number: Int }` containing the block number, or a `{ number_gte: Int }` containing the minimum block number. In the case of `number_gte`, the query will be executed on the latest block only if the subgraph has progressed to or past the minimum block number. Defaults to the latest block when omitted.
+    """
+    block: Block_height
+    id: ID!
+
+    """
+    Set to `allow` to receive data even if the subgraph has skipped over errors while syncing.
+    """
+    subgraphError: _SubgraphErrorPolicy_! = deny
+  ): NameRegistered
+  nameRegistereds(
+    """
+    The block at which the query should be executed. Can either be a `{ hash: Bytes }` value containing a block hash, a `{ number: Int }` containing the block number, or a `{ number_gte: Int }` containing the minimum block number. In the case of `number_gte`, the query will be executed on the latest block only if the subgraph has progressed to or past the minimum block number. Defaults to the latest block when omitted.
+    """
+    block: Block_height
+    first: Int = 100
+    orderBy: NameRegistered_orderBy
+    orderDirection: OrderDirection
+    skip: Int = 0
+
+    """
+    Set to `allow` to receive data even if the subgraph has skipped over errors while syncing.
+    """
+    subgraphError: _SubgraphErrorPolicy_! = deny
+    where: NameRegistered_filter
+  ): [NameRegistered!]!
+  nameRenewed(
+    """
+    The block at which the query should be executed. Can either be a `{ hash: Bytes }` value containing a block hash, a `{ number: Int }` containing the block number, or a `{ number_gte: Int }` containing the minimum block number. In the case of `number_gte`, the query will be executed on the latest block only if the subgraph has progressed to or past the minimum block number. Defaults to the latest block when omitted.
+    """
+    block: Block_height
+    id: ID!
+
+    """
+    Set to `allow` to receive data even if the subgraph has skipped over errors while syncing.
+    """
+    subgraphError: _SubgraphErrorPolicy_! = deny
+  ): NameRenewed
+  nameReneweds(
+    """
+    The block at which the query should be executed. Can either be a `{ hash: Bytes }` value containing a block hash, a `{ number: Int }` containing the block number, or a `{ number_gte: Int }` containing the minimum block number. In the case of `number_gte`, the query will be executed on the latest block only if the subgraph has progressed to or past the minimum block number. Defaults to the latest block when omitted.
+    """
+    block: Block_height
+    first: Int = 100
+    orderBy: NameRenewed_orderBy
+    orderDirection: OrderDirection
+    skip: Int = 0
+
+    """
+    Set to `allow` to receive data even if the subgraph has skipped over errors while syncing.
+    """
+    subgraphError: _SubgraphErrorPolicy_! = deny
+    where: NameRenewed_filter
+  ): [NameRenewed!]!
+  nameTransferred(
+    """
+    The block at which the query should be executed. Can either be a `{ hash: Bytes }` value containing a block hash, a `{ number: Int }` containing the block number, or a `{ number_gte: Int }` containing the minimum block number. In the case of `number_gte`, the query will be executed on the latest block only if the subgraph has progressed to or past the minimum block number. Defaults to the latest block when omitted.
+    """
+    block: Block_height
+    id: ID!
+
+    """
+    Set to `allow` to receive data even if the subgraph has skipped over errors while syncing.
+    """
+    subgraphError: _SubgraphErrorPolicy_! = deny
+  ): NameTransferred
+  nameTransferreds(
+    """
+    The block at which the query should be executed. Can either be a `{ hash: Bytes }` value containing a block hash, a `{ number: Int }` containing the block number, or a `{ number_gte: Int }` containing the minimum block number. In the case of `number_gte`, the query will be executed on the latest block only if the subgraph has progressed to or past the minimum block number. Defaults to the latest block when omitted.
+    """
+    block: Block_height
+    first: Int = 100
+    orderBy: NameTransferred_orderBy
+    orderDirection: OrderDirection
+    skip: Int = 0
+
+    """
+    Set to `allow` to receive data even if the subgraph has skipped over errors while syncing.
+    """
+    subgraphError: _SubgraphErrorPolicy_! = deny
+    where: NameTransferred_filter
+  ): [NameTransferred!]!
+  nameUnwrapped(
+    """
+    The block at which the query should be executed. Can either be a `{ hash: Bytes }` value containing a block hash, a `{ number: Int }` containing the block number, or a `{ number_gte: Int }` containing the minimum block number. In the case of `number_gte`, the query will be executed on the latest block only if the subgraph has progressed to or past the minimum block number. Defaults to the latest block when omitted.
+    """
+    block: Block_height
+    id: ID!
+
+    """
+    Set to `allow` to receive data even if the subgraph has skipped over errors while syncing.
+    """
+    subgraphError: _SubgraphErrorPolicy_! = deny
+  ): NameUnwrapped
+  nameUnwrappeds(
+    """
+    The block at which the query should be executed. Can either be a `{ hash: Bytes }` value containing a block hash, a `{ number: Int }` containing the block number, or a `{ number_gte: Int }` containing the minimum block number. In the case of `number_gte`, the query will be executed on the latest block only if the subgraph has progressed to or past the minimum block number. Defaults to the latest block when omitted.
+    """
+    block: Block_height
+    first: Int = 100
+    orderBy: NameUnwrapped_orderBy
+    orderDirection: OrderDirection
+    skip: Int = 0
+
+    """
+    Set to `allow` to receive data even if the subgraph has skipped over errors while syncing.
+    """
+    subgraphError: _SubgraphErrorPolicy_! = deny
+    where: NameUnwrapped_filter
+  ): [NameUnwrapped!]!
+  nameWrapped(
+    """
+    The block at which the query should be executed. Can either be a `{ hash: Bytes }` value containing a block hash, a `{ number: Int }` containing the block number, or a `{ number_gte: Int }` containing the minimum block number. In the case of `number_gte`, the query will be executed on the latest block only if the subgraph has progressed to or past the minimum block number. Defaults to the latest block when omitted.
+    """
+    block: Block_height
+    id: ID!
+
+    """
+    Set to `allow` to receive data even if the subgraph has skipped over errors while syncing.
+    """
+    subgraphError: _SubgraphErrorPolicy_! = deny
+  ): NameWrapped
+  nameWrappeds(
+    """
+    The block at which the query should be executed. Can either be a `{ hash: Bytes }` value containing a block hash, a `{ number: Int }` containing the block number, or a `{ number_gte: Int }` containing the minimum block number. In the case of `number_gte`, the query will be executed on the latest block only if the subgraph has progressed to or past the minimum block number. Defaults to the latest block when omitted.
+    """
+    block: Block_height
+    first: Int = 100
+    orderBy: NameWrapped_orderBy
+    orderDirection: OrderDirection
+    skip: Int = 0
+
+    """
+    Set to `allow` to receive data even if the subgraph has skipped over errors while syncing.
+    """
+    subgraphError: _SubgraphErrorPolicy_! = deny
+    where: NameWrapped_filter
+  ): [NameWrapped!]!
+  newOwner(
+    """
+    The block at which the query should be executed. Can either be a `{ hash: Bytes }` value containing a block hash, a `{ number: Int }` containing the block number, or a `{ number_gte: Int }` containing the minimum block number. In the case of `number_gte`, the query will be executed on the latest block only if the subgraph has progressed to or past the minimum block number. Defaults to the latest block when omitted.
+    """
+    block: Block_height
+    id: ID!
+
+    """
+    Set to `allow` to receive data even if the subgraph has skipped over errors while syncing.
+    """
+    subgraphError: _SubgraphErrorPolicy_! = deny
+  ): NewOwner
+  newOwners(
+    """
+    The block at which the query should be executed. Can either be a `{ hash: Bytes }` value containing a block hash, a `{ number: Int }` containing the block number, or a `{ number_gte: Int }` containing the minimum block number. In the case of `number_gte`, the query will be executed on the latest block only if the subgraph has progressed to or past the minimum block number. Defaults to the latest block when omitted.
+    """
+    block: Block_height
+    first: Int = 100
+    orderBy: NewOwner_orderBy
+    orderDirection: OrderDirection
+    skip: Int = 0
+
+    """
+    Set to `allow` to receive data even if the subgraph has skipped over errors while syncing.
+    """
+    subgraphError: _SubgraphErrorPolicy_! = deny
+    where: NewOwner_filter
+  ): [NewOwner!]!
+  newResolver(
+    """
+    The block at which the query should be executed. Can either be a `{ hash: Bytes }` value containing a block hash, a `{ number: Int }` containing the block number, or a `{ number_gte: Int }` containing the minimum block number. In the case of `number_gte`, the query will be executed on the latest block only if the subgraph has progressed to or past the minimum block number. Defaults to the latest block when omitted.
+    """
+    block: Block_height
+    id: ID!
+
+    """
+    Set to `allow` to receive data even if the subgraph has skipped over errors while syncing.
+    """
+    subgraphError: _SubgraphErrorPolicy_! = deny
+  ): NewResolver
+  newResolvers(
+    """
+    The block at which the query should be executed. Can either be a `{ hash: Bytes }` value containing a block hash, a `{ number: Int }` containing the block number, or a `{ number_gte: Int }` containing the minimum block number. In the case of `number_gte`, the query will be executed on the latest block only if the subgraph has progressed to or past the minimum block number. Defaults to the latest block when omitted.
+    """
+    block: Block_height
+    first: Int = 100
+    orderBy: NewResolver_orderBy
+    orderDirection: OrderDirection
+    skip: Int = 0
+
+    """
+    Set to `allow` to receive data even if the subgraph has skipped over errors while syncing.
+    """
+    subgraphError: _SubgraphErrorPolicy_! = deny
+    where: NewResolver_filter
+  ): [NewResolver!]!
+  newTTL(
+    """
+    The block at which the query should be executed. Can either be a `{ hash: Bytes }` value containing a block hash, a `{ number: Int }` containing the block number, or a `{ number_gte: Int }` containing the minimum block number. In the case of `number_gte`, the query will be executed on the latest block only if the subgraph has progressed to or past the minimum block number. Defaults to the latest block when omitted.
+    """
+    block: Block_height
+    id: ID!
+
+    """
+    Set to `allow` to receive data even if the subgraph has skipped over errors while syncing.
+    """
+    subgraphError: _SubgraphErrorPolicy_! = deny
+  ): NewTTL
+  newTTLs(
+    """
+    The block at which the query should be executed. Can either be a `{ hash: Bytes }` value containing a block hash, a `{ number: Int }` containing the block number, or a `{ number_gte: Int }` containing the minimum block number. In the case of `number_gte`, the query will be executed on the latest block only if the subgraph has progressed to or past the minimum block number. Defaults to the latest block when omitted.
+    """
+    block: Block_height
+    first: Int = 100
+    orderBy: NewTTL_orderBy
+    orderDirection: OrderDirection
+    skip: Int = 0
+
+    """
+    Set to `allow` to receive data even if the subgraph has skipped over errors while syncing.
+    """
+    subgraphError: _SubgraphErrorPolicy_! = deny
+    where: NewTTL_filter
+  ): [NewTTL!]!
+  pubkeyChanged(
+    """
+    The block at which the query should be executed. Can either be a `{ hash: Bytes }` value containing a block hash, a `{ number: Int }` containing the block number, or a `{ number_gte: Int }` containing the minimum block number. In the case of `number_gte`, the query will be executed on the latest block only if the subgraph has progressed to or past the minimum block number. Defaults to the latest block when omitted.
+    """
+    block: Block_height
+    id: ID!
+
+    """
+    Set to `allow` to receive data even if the subgraph has skipped over errors while syncing.
+    """
+    subgraphError: _SubgraphErrorPolicy_! = deny
+  ): PubkeyChanged
+  pubkeyChangeds(
+    """
+    The block at which the query should be executed. Can either be a `{ hash: Bytes }` value containing a block hash, a `{ number: Int }` containing the block number, or a `{ number_gte: Int }` containing the minimum block number. In the case of `number_gte`, the query will be executed on the latest block only if the subgraph has progressed to or past the minimum block number. Defaults to the latest block when omitted.
+    """
+    block: Block_height
+    first: Int = 100
+    orderBy: PubkeyChanged_orderBy
+    orderDirection: OrderDirection
+    skip: Int = 0
+
+    """
+    Set to `allow` to receive data even if the subgraph has skipped over errors while syncing.
+    """
+    subgraphError: _SubgraphErrorPolicy_! = deny
+    where: PubkeyChanged_filter
+  ): [PubkeyChanged!]!
+  registration(
+    """
+    The block at which the query should be executed. Can either be a `{ hash: Bytes }` value containing a block hash, a `{ number: Int }` containing the block number, or a `{ number_gte: Int }` containing the minimum block number. In the case of `number_gte`, the query will be executed on the latest block only if the subgraph has progressed to or past the minimum block number. Defaults to the latest block when omitted.
+    """
+    block: Block_height
+    id: ID!
+
+    """
+    Set to `allow` to receive data even if the subgraph has skipped over errors while syncing.
+    """
+    subgraphError: _SubgraphErrorPolicy_! = deny
+  ): Registration
+  registrationEvent(
+    """
+    The block at which the query should be executed. Can either be a `{ hash: Bytes }` value containing a block hash, a `{ number: Int }` containing the block number, or a `{ number_gte: Int }` containing the minimum block number. In the case of `number_gte`, the query will be executed on the latest block only if the subgraph has progressed to or past the minimum block number. Defaults to the latest block when omitted.
+    """
+    block: Block_height
+    id: ID!
+
+    """
+    Set to `allow` to receive data even if the subgraph has skipped over errors while syncing.
+    """
+    subgraphError: _SubgraphErrorPolicy_! = deny
+  ): RegistrationEvent
+  registrationEvents(
+    """
+    The block at which the query should be executed. Can either be a `{ hash: Bytes }` value containing a block hash, a `{ number: Int }` containing the block number, or a `{ number_gte: Int }` containing the minimum block number. In the case of `number_gte`, the query will be executed on the latest block only if the subgraph has progressed to or past the minimum block number. Defaults to the latest block when omitted.
+    """
+    block: Block_height
+    first: Int = 100
+    orderBy: RegistrationEvent_orderBy
+    orderDirection: OrderDirection
+    skip: Int = 0
+
+    """
+    Set to `allow` to receive data even if the subgraph has skipped over errors while syncing.
+    """
+    subgraphError: _SubgraphErrorPolicy_! = deny
+    where: RegistrationEvent_filter
+  ): [RegistrationEvent!]!
+  registrations(
+    """
+    The block at which the query should be executed. Can either be a `{ hash: Bytes }` value containing a block hash, a `{ number: Int }` containing the block number, or a `{ number_gte: Int }` containing the minimum block number. In the case of `number_gte`, the query will be executed on the latest block only if the subgraph has progressed to or past the minimum block number. Defaults to the latest block when omitted.
+    """
+    block: Block_height
+    first: Int = 100
+    orderBy: Registration_orderBy
+    orderDirection: OrderDirection
+    skip: Int = 0
+
+    """
+    Set to `allow` to receive data even if the subgraph has skipped over errors while syncing.
+    """
+    subgraphError: _SubgraphErrorPolicy_! = deny
+    where: Registration_filter
+  ): [Registration!]!
+  resolver(
+    """
+    The block at which the query should be executed. Can either be a `{ hash: Bytes }` value containing a block hash, a `{ number: Int }` containing the block number, or a `{ number_gte: Int }` containing the minimum block number. In the case of `number_gte`, the query will be executed on the latest block only if the subgraph has progressed to or past the minimum block number. Defaults to the latest block when omitted.
+    """
+    block: Block_height
+    id: ID!
+
+    """
+    Set to `allow` to receive data even if the subgraph has skipped over errors while syncing.
+    """
+    subgraphError: _SubgraphErrorPolicy_! = deny
+  ): Resolver
+  resolverEvent(
+    """
+    The block at which the query should be executed. Can either be a `{ hash: Bytes }` value containing a block hash, a `{ number: Int }` containing the block number, or a `{ number_gte: Int }` containing the minimum block number. In the case of `number_gte`, the query will be executed on the latest block only if the subgraph has progressed to or past the minimum block number. Defaults to the latest block when omitted.
+    """
+    block: Block_height
+    id: ID!
+
+    """
+    Set to `allow` to receive data even if the subgraph has skipped over errors while syncing.
+    """
+    subgraphError: _SubgraphErrorPolicy_! = deny
+  ): ResolverEvent
+  resolverEvents(
+    """
+    The block at which the query should be executed. Can either be a `{ hash: Bytes }` value containing a block hash, a `{ number: Int }` containing the block number, or a `{ number_gte: Int }` containing the minimum block number. In the case of `number_gte`, the query will be executed on the latest block only if the subgraph has progressed to or past the minimum block number. Defaults to the latest block when omitted.
+    """
+    block: Block_height
+    first: Int = 100
+    orderBy: ResolverEvent_orderBy
+    orderDirection: OrderDirection
+    skip: Int = 0
+
+    """
+    Set to `allow` to receive data even if the subgraph has skipped over errors while syncing.
+    """
+    subgraphError: _SubgraphErrorPolicy_! = deny
+    where: ResolverEvent_filter
+  ): [ResolverEvent!]!
+  resolvers(
+    """
+    The block at which the query should be executed. Can either be a `{ hash: Bytes }` value containing a block hash, a `{ number: Int }` containing the block number, or a `{ number_gte: Int }` containing the minimum block number. In the case of `number_gte`, the query will be executed on the latest block only if the subgraph has progressed to or past the minimum block number. Defaults to the latest block when omitted.
+    """
+    block: Block_height
+    first: Int = 100
+    orderBy: Resolver_orderBy
+    orderDirection: OrderDirection
+    skip: Int = 0
+
+    """
+    Set to `allow` to receive data even if the subgraph has skipped over errors while syncing.
+    """
+    subgraphError: _SubgraphErrorPolicy_! = deny
+    where: Resolver_filter
+  ): [Resolver!]!
+  textChanged(
+    """
+    The block at which the query should be executed. Can either be a `{ hash: Bytes }` value containing a block hash, a `{ number: Int }` containing the block number, or a `{ number_gte: Int }` containing the minimum block number. In the case of `number_gte`, the query will be executed on the latest block only if the subgraph has progressed to or past the minimum block number. Defaults to the latest block when omitted.
+    """
+    block: Block_height
+    id: ID!
+
+    """
+    Set to `allow` to receive data even if the subgraph has skipped over errors while syncing.
+    """
+    subgraphError: _SubgraphErrorPolicy_! = deny
+  ): TextChanged
+  textChangeds(
+    """
+    The block at which the query should be executed. Can either be a `{ hash: Bytes }` value containing a block hash, a `{ number: Int }` containing the block number, or a `{ number_gte: Int }` containing the minimum block number. In the case of `number_gte`, the query will be executed on the latest block only if the subgraph has progressed to or past the minimum block number. Defaults to the latest block when omitted.
+    """
+    block: Block_height
+    first: Int = 100
+    orderBy: TextChanged_orderBy
+    orderDirection: OrderDirection
+    skip: Int = 0
+
+    """
+    Set to `allow` to receive data even if the subgraph has skipped over errors while syncing.
+    """
+    subgraphError: _SubgraphErrorPolicy_! = deny
+    where: TextChanged_filter
+  ): [TextChanged!]!
+  transfer(
+    """
+    The block at which the query should be executed. Can either be a `{ hash: Bytes }` value containing a block hash, a `{ number: Int }` containing the block number, or a `{ number_gte: Int }` containing the minimum block number. In the case of `number_gte`, the query will be executed on the latest block only if the subgraph has progressed to or past the minimum block number. Defaults to the latest block when omitted.
+    """
+    block: Block_height
+    id: ID!
+
+    """
+    Set to `allow` to receive data even if the subgraph has skipped over errors while syncing.
+    """
+    subgraphError: _SubgraphErrorPolicy_! = deny
+  ): Transfer
+  transfers(
+    """
+    The block at which the query should be executed. Can either be a `{ hash: Bytes }` value containing a block hash, a `{ number: Int }` containing the block number, or a `{ number_gte: Int }` containing the minimum block number. In the case of `number_gte`, the query will be executed on the latest block only if the subgraph has progressed to or past the minimum block number. Defaults to the latest block when omitted.
+    """
+    block: Block_height
+    first: Int = 100
+    orderBy: Transfer_orderBy
+    orderDirection: OrderDirection
+    skip: Int = 0
+
+    """
+    Set to `allow` to receive data even if the subgraph has skipped over errors while syncing.
+    """
+    subgraphError: _SubgraphErrorPolicy_! = deny
+    where: Transfer_filter
+  ): [Transfer!]!
+  versionChanged(
+    """
+    The block at which the query should be executed. Can either be a `{ hash: Bytes }` value containing a block hash, a `{ number: Int }` containing the block number, or a `{ number_gte: Int }` containing the minimum block number. In the case of `number_gte`, the query will be executed on the latest block only if the subgraph has progressed to or past the minimum block number. Defaults to the latest block when omitted.
+    """
+    block: Block_height
+    id: ID!
+
+    """
+    Set to `allow` to receive data even if the subgraph has skipped over errors while syncing.
+    """
+    subgraphError: _SubgraphErrorPolicy_! = deny
+  ): VersionChanged
+  versionChangeds(
+    """
+    The block at which the query should be executed. Can either be a `{ hash: Bytes }` value containing a block hash, a `{ number: Int }` containing the block number, or a `{ number_gte: Int }` containing the minimum block number. In the case of `number_gte`, the query will be executed on the latest block only if the subgraph has progressed to or past the minimum block number. Defaults to the latest block when omitted.
+    """
+    block: Block_height
+    first: Int = 100
+    orderBy: VersionChanged_orderBy
+    orderDirection: OrderDirection
+    skip: Int = 0
+
+    """
+    Set to `allow` to receive data even if the subgraph has skipped over errors while syncing.
+    """
+    subgraphError: _SubgraphErrorPolicy_! = deny
+    where: VersionChanged_filter
+  ): [VersionChanged!]!
+  wrappedDomain(
+    """
+    The block at which the query should be executed. Can either be a `{ hash: Bytes }` value containing a block hash, a `{ number: Int }` containing the block number, or a `{ number_gte: Int }` containing the minimum block number. In the case of `number_gte`, the query will be executed on the latest block only if the subgraph has progressed to or past the minimum block number. Defaults to the latest block when omitted.
+    """
+    block: Block_height
+    id: ID!
+
+    """
+    Set to `allow` to receive data even if the subgraph has skipped over errors while syncing.
+    """
+    subgraphError: _SubgraphErrorPolicy_! = deny
+  ): WrappedDomain
+  wrappedDomains(
+    """
+    The block at which the query should be executed. Can either be a `{ hash: Bytes }` value containing a block hash, a `{ number: Int }` containing the block number, or a `{ number_gte: Int }` containing the minimum block number. In the case of `number_gte`, the query will be executed on the latest block only if the subgraph has progressed to or past the minimum block number. Defaults to the latest block when omitted.
+    """
+    block: Block_height
+    first: Int = 100
+    orderBy: WrappedDomain_orderBy
+    orderDirection: OrderDirection
+    skip: Int = 0
+
+    """
+    Set to `allow` to receive data even if the subgraph has skipped over errors while syncing.
+    """
+    subgraphError: _SubgraphErrorPolicy_! = deny
+    where: WrappedDomain_filter
+  ): [WrappedDomain!]!
+  wrappedTransfer(
+    """
+    The block at which the query should be executed. Can either be a `{ hash: Bytes }` value containing a block hash, a `{ number: Int }` containing the block number, or a `{ number_gte: Int }` containing the minimum block number. In the case of `number_gte`, the query will be executed on the latest block only if the subgraph has progressed to or past the minimum block number. Defaults to the latest block when omitted.
+    """
+    block: Block_height
+    id: ID!
+
+    """
+    Set to `allow` to receive data even if the subgraph has skipped over errors while syncing.
+    """
+    subgraphError: _SubgraphErrorPolicy_! = deny
+  ): WrappedTransfer
+  wrappedTransfers(
+    """
+    The block at which the query should be executed. Can either be a `{ hash: Bytes }` value containing a block hash, a `{ number: Int }` containing the block number, or a `{ number_gte: Int }` containing the minimum block number. In the case of `number_gte`, the query will be executed on the latest block only if the subgraph has progressed to or past the minimum block number. Defaults to the latest block when omitted.
+    """
+    block: Block_height
+    first: Int = 100
+    orderBy: WrappedTransfer_orderBy
+    orderDirection: OrderDirection
+    skip: Int = 0
+
+    """
+    Set to `allow` to receive data even if the subgraph has skipped over errors while syncing.
+    """
+    subgraphError: _SubgraphErrorPolicy_! = deny
+    where: WrappedTransfer_filter
+  ): [WrappedTransfer!]!
+}
+
+type Registration {
+  """The cost associated with the domain registration"""
+  cost: BigInt
+
+  """The domain name associated with the registration"""
+  domain: Domain!
+
+  """The events associated with the domain registration"""
+  events(first: Int = 100, orderBy: RegistrationEvent_orderBy, orderDirection: OrderDirection, skip: Int = 0, where: RegistrationEvent_filter): [RegistrationEvent!]!
+
+  """The expiry date of the domain"""
+  expiryDate: BigInt!
+
+  """The unique identifier of the registration"""
+  id: ID!
+
+  """The human-readable label name associated with the domain registration"""
+  labelName: String
+
+  """The account that registered the domain"""
+  registrant: Account!
+
+  """The registration date of the domain"""
+  registrationDate: BigInt!
+}
+
+input Registration_filter {
+  """Filter for the block changed event."""
+  _change_block: BlockChangedFilter
+  and: [Registration_filter]
+  cost: BigInt
+  cost_gt: BigInt
+  cost_gte: BigInt
+  cost_in: [BigInt!]
+  cost_lt: BigInt
+  cost_lte: BigInt
+  cost_not: BigInt
+  cost_not_in: [BigInt!]
+  domain: String
+  domain_: Domain_filter
+  domain_contains: String
+  domain_contains_nocase: String
+  domain_ends_with: String
+  domain_ends_with_nocase: String
+  domain_gt: String
+  domain_gte: String
+  domain_in: [String!]
+  domain_lt: String
+  domain_lte: String
+  domain_not: String
+  domain_not_contains: String
+  domain_not_contains_nocase: String
+  domain_not_ends_with: String
+  domain_not_ends_with_nocase: String
+  domain_not_in: [String!]
+  domain_not_starts_with: String
+  domain_not_starts_with_nocase: String
+  domain_starts_with: String
+  domain_starts_with_nocase: String
+  events_: RegistrationEvent_filter
+  expiryDate: BigInt
+  expiryDate_gt: BigInt
+  expiryDate_gte: BigInt
+  expiryDate_in: [BigInt!]
+  expiryDate_lt: BigInt
+  expiryDate_lte: BigInt
+  expiryDate_not: BigInt
+  expiryDate_not_in: [BigInt!]
+  id: ID
+  id_gt: ID
+  id_gte: ID
+  id_in: [ID!]
+  id_lt: ID
+  id_lte: ID
+  id_not: ID
+  id_not_in: [ID!]
+  labelName: String
+  labelName_contains: String
+  labelName_contains_nocase: String
+  labelName_ends_with: String
+  labelName_ends_with_nocase: String
+  labelName_gt: String
+  labelName_gte: String
+  labelName_in: [String!]
+  labelName_lt: String
+  labelName_lte: String
+  labelName_not: String
+  labelName_not_contains: String
+  labelName_not_contains_nocase: String
+  labelName_not_ends_with: String
+  labelName_not_ends_with_nocase: String
+  labelName_not_in: [String!]
+  labelName_not_starts_with: String
+  labelName_not_starts_with_nocase: String
+  labelName_starts_with: String
+  labelName_starts_with_nocase: String
+  or: [Registration_filter]
+  registrant: String
+  registrant_: Account_filter
+  registrant_contains: String
+  registrant_contains_nocase: String
+  registrant_ends_with: String
+  registrant_ends_with_nocase: String
+  registrant_gt: String
+  registrant_gte: String
+  registrant_in: [String!]
+  registrant_lt: String
+  registrant_lte: String
+  registrant_not: String
+  registrant_not_contains: String
+  registrant_not_contains_nocase: String
+  registrant_not_ends_with: String
+  registrant_not_ends_with_nocase: String
+  registrant_not_in: [String!]
+  registrant_not_starts_with: String
+  registrant_not_starts_with_nocase: String
+  registrant_starts_with: String
+  registrant_starts_with_nocase: String
+  registrationDate: BigInt
+  registrationDate_gt: BigInt
+  registrationDate_gte: BigInt
+  registrationDate_in: [BigInt!]
+  registrationDate_lt: BigInt
+  registrationDate_lte: BigInt
+  registrationDate_not: BigInt
+  registrationDate_not_in: [BigInt!]
+}
+
+enum Registration_orderBy {
+  cost
+  domain
+  domain__createdAt
+  domain__expiryDate
+  domain__id
+  domain__isMigrated
+  domain__labelhash
+  domain__labelName
+  domain__name
+  domain__subdomainCount
+  domain__ttl
+  events
+  expiryDate
+  id
+  labelName
+  registrant
+  registrant__id
+  registrationDate
+}
+
+interface RegistrationEvent {
+  """The block number of the event"""
+  blockNumber: Int!
+
+  """The unique identifier of the registration event"""
+  id: ID!
+
+  """The registration associated with the event"""
+  registration: Registration!
+
+  """The transaction ID associated with the event"""
+  transactionID: Bytes!
+}
+
+input RegistrationEvent_filter {
+  """Filter for the block changed event."""
+  _change_block: BlockChangedFilter
+  and: [RegistrationEvent_filter]
+  blockNumber: Int
+  blockNumber_gt: Int
+  blockNumber_gte: Int
+  blockNumber_in: [Int!]
+  blockNumber_lt: Int
+  blockNumber_lte: Int
+  blockNumber_not: Int
+  blockNumber_not_in: [Int!]
+  id: ID
+  id_gt: ID
+  id_gte: ID
+  id_in: [ID!]
+  id_lt: ID
+  id_lte: ID
+  id_not: ID
+  id_not_in: [ID!]
+  or: [RegistrationEvent_filter]
+  registration: String
+  registration_: Registration_filter
+  registration_contains: String
+  registration_contains_nocase: String
+  registration_ends_with: String
+  registration_ends_with_nocase: String
+  registration_gt: String
+  registration_gte: String
+  registration_in: [String!]
+  registration_lt: String
+  registration_lte: String
+  registration_not: String
+  registration_not_contains: String
+  registration_not_contains_nocase: String
+  registration_not_ends_with: String
+  registration_not_ends_with_nocase: String
+  registration_not_in: [String!]
+  registration_not_starts_with: String
+  registration_not_starts_with_nocase: String
+  registration_starts_with: String
+  registration_starts_with_nocase: String
+  transactionID: Bytes
+  transactionID_contains: Bytes
+  transactionID_gt: Bytes
+  transactionID_gte: Bytes
+  transactionID_in: [Bytes!]
+  transactionID_lt: Bytes
+  transactionID_lte: Bytes
+  transactionID_not: Bytes
+  transactionID_not_contains: Bytes
+  transactionID_not_in: [Bytes!]
+}
+
+enum RegistrationEvent_orderBy {
+  blockNumber
+  id
+  registration
+  registration__cost
+  registration__expiryDate
+  registration__id
+  registration__labelName
+  registration__registrationDate
+  transactionID
+}
+
+type Resolver {
+  """
+  The current value of the 'addr' record for this resolver, as determined by the associated events
+  """
+  addr: Account
+
+  """The address of the resolver contract"""
+  address: Bytes!
+
+  """The set of observed SLIP-44 coin types for this resolver"""
+  coinTypes: [BigInt!]
+
+  """The content hash for this resolver, in binary format"""
+  contentHash: Bytes
+
+  """The domain that this resolver is associated with"""
+  domain: Domain
+
+  """The events associated with this resolver"""
+  events(first: Int = 100, orderBy: ResolverEvent_orderBy, orderDirection: OrderDirection, skip: Int = 0, where: ResolverEvent_filter): [ResolverEvent!]!
+
+  """
+  The unique identifier for this resolver, which is a concatenation of the resolver address and the domain namehash
+  """
+  id: ID!
+
+  """The set of observed text record keys for this resolver"""
+  texts: [String!]
+}
+
+input Resolver_filter {
+  """Filter for the block changed event."""
+  _change_block: BlockChangedFilter
+  addr: String
+  addr_: Account_filter
+  addr_contains: String
+  addr_contains_nocase: String
+  addr_ends_with: String
+  addr_ends_with_nocase: String
+  addr_gt: String
+  addr_gte: String
+  addr_in: [String!]
+  addr_lt: String
+  addr_lte: String
+  addr_not: String
+  addr_not_contains: String
+  addr_not_contains_nocase: String
+  addr_not_ends_with: String
+  addr_not_ends_with_nocase: String
+  addr_not_in: [String!]
+  addr_not_starts_with: String
+  addr_not_starts_with_nocase: String
+  addr_starts_with: String
+  addr_starts_with_nocase: String
+  address: Bytes
+  address_contains: Bytes
+  address_gt: Bytes
+  address_gte: Bytes
+  address_in: [Bytes!]
+  address_lt: Bytes
+  address_lte: Bytes
+  address_not: Bytes
+  address_not_contains: Bytes
+  address_not_in: [Bytes!]
+  and: [Resolver_filter]
+  coinTypes: [BigInt!]
+  coinTypes_contains: [BigInt!]
+  coinTypes_contains_nocase: [BigInt!]
+  coinTypes_not: [BigInt!]
+  coinTypes_not_contains: [BigInt!]
+  coinTypes_not_contains_nocase: [BigInt!]
+  contentHash: Bytes
+  contentHash_contains: Bytes
+  contentHash_gt: Bytes
+  contentHash_gte: Bytes
+  contentHash_in: [Bytes!]
+  contentHash_lt: Bytes
+  contentHash_lte: Bytes
+  contentHash_not: Bytes
+  contentHash_not_contains: Bytes
+  contentHash_not_in: [Bytes!]
+  domain: String
+  domain_: Domain_filter
+  domain_contains: String
+  domain_contains_nocase: String
+  domain_ends_with: String
+  domain_ends_with_nocase: String
+  domain_gt: String
+  domain_gte: String
+  domain_in: [String!]
+  domain_lt: String
+  domain_lte: String
+  domain_not: String
+  domain_not_contains: String
+  domain_not_contains_nocase: String
+  domain_not_ends_with: String
+  domain_not_ends_with_nocase: String
+  domain_not_in: [String!]
+  domain_not_starts_with: String
+  domain_not_starts_with_nocase: String
+  domain_starts_with: String
+  domain_starts_with_nocase: String
+  events_: ResolverEvent_filter
+  id: ID
+  id_gt: ID
+  id_gte: ID
+  id_in: [ID!]
+  id_lt: ID
+  id_lte: ID
+  id_not: ID
+  id_not_in: [ID!]
+  or: [Resolver_filter]
+  texts: [String!]
+  texts_contains: [String!]
+  texts_contains_nocase: [String!]
+  texts_not: [String!]
+  texts_not_contains: [String!]
+  texts_not_contains_nocase: [String!]
+}
+
+enum Resolver_orderBy {
+  addr
+  addr__id
+  address
+  coinTypes
+  contentHash
+  domain
+  domain__createdAt
+  domain__expiryDate
+  domain__id
+  domain__isMigrated
+  domain__labelhash
+  domain__labelName
+  domain__name
+  domain__subdomainCount
+  domain__ttl
+  events
+  id
+  texts
+}
+
+interface ResolverEvent {
+  """The block number that the event occurred on"""
+  blockNumber: Int!
+
+  """Concatenation of block number and log ID"""
+  id: ID!
+
+  """Used to derive relationships to Resolvers"""
+  resolver: Resolver!
+
+  """The transaction hash of the event"""
+  transactionID: Bytes!
+}
+
+input ResolverEvent_filter {
+  """Filter for the block changed event."""
+  _change_block: BlockChangedFilter
+  and: [ResolverEvent_filter]
+  blockNumber: Int
+  blockNumber_gt: Int
+  blockNumber_gte: Int
+  blockNumber_in: [Int!]
+  blockNumber_lt: Int
+  blockNumber_lte: Int
+  blockNumber_not: Int
+  blockNumber_not_in: [Int!]
+  id: ID
+  id_gt: ID
+  id_gte: ID
+  id_in: [ID!]
+  id_lt: ID
+  id_lte: ID
+  id_not: ID
+  id_not_in: [ID!]
+  or: [ResolverEvent_filter]
+  resolver: String
+  resolver_: Resolver_filter
+  resolver_contains: String
+  resolver_contains_nocase: String
+  resolver_ends_with: String
+  resolver_ends_with_nocase: String
+  resolver_gt: String
+  resolver_gte: String
+  resolver_in: [String!]
+  resolver_lt: String
+  resolver_lte: String
+  resolver_not: String
+  resolver_not_contains: String
+  resolver_not_contains_nocase: String
+  resolver_not_ends_with: String
+  resolver_not_ends_with_nocase: String
+  resolver_not_in: [String!]
+  resolver_not_starts_with: String
+  resolver_not_starts_with_nocase: String
+  resolver_starts_with: String
+  resolver_starts_with_nocase: String
+  transactionID: Bytes
+  transactionID_contains: Bytes
+  transactionID_gt: Bytes
+  transactionID_gte: Bytes
+  transactionID_in: [Bytes!]
+  transactionID_lt: Bytes
+  transactionID_lte: Bytes
+  transactionID_not: Bytes
+  transactionID_not_contains: Bytes
+  transactionID_not_in: [Bytes!]
+}
+
+enum ResolverEvent_orderBy {
+  blockNumber
+  id
+  resolver
+  resolver__address
+  resolver__contentHash
+  resolver__id
+  transactionID
+}
+
+type TextChanged implements ResolverEvent {
+  """Block number of the Ethereum block in which the event occurred"""
+  blockNumber: Int!
+
+  """Concatenation of block number and log ID"""
+  id: ID!
+
+  """The key of the text record that was changed"""
+  key: String!
+
+  """Used to derive relationships to Resolvers"""
+  resolver: Resolver!
+
+  """Hash of the Ethereum transaction in which the event occurred"""
+  transactionID: Bytes!
+
+  """The new value of the text record that was changed"""
+  value: String
+}
+
+input TextChanged_filter {
+  """Filter for the block changed event."""
+  _change_block: BlockChangedFilter
+  and: [TextChanged_filter]
+  blockNumber: Int
+  blockNumber_gt: Int
+  blockNumber_gte: Int
+  blockNumber_in: [Int!]
+  blockNumber_lt: Int
+  blockNumber_lte: Int
+  blockNumber_not: Int
+  blockNumber_not_in: [Int!]
+  id: ID
+  id_gt: ID
+  id_gte: ID
+  id_in: [ID!]
+  id_lt: ID
+  id_lte: ID
+  id_not: ID
+  id_not_in: [ID!]
+  key: String
+  key_contains: String
+  key_contains_nocase: String
+  key_ends_with: String
+  key_ends_with_nocase: String
+  key_gt: String
+  key_gte: String
+  key_in: [String!]
+  key_lt: String
+  key_lte: String
+  key_not: String
+  key_not_contains: String
+  key_not_contains_nocase: String
+  key_not_ends_with: String
+  key_not_ends_with_nocase: String
+  key_not_in: [String!]
+  key_not_starts_with: String
+  key_not_starts_with_nocase: String
+  key_starts_with: String
+  key_starts_with_nocase: String
+  or: [TextChanged_filter]
+  resolver: String
+  resolver_: Resolver_filter
+  resolver_contains: String
+  resolver_contains_nocase: String
+  resolver_ends_with: String
+  resolver_ends_with_nocase: String
+  resolver_gt: String
+  resolver_gte: String
+  resolver_in: [String!]
+  resolver_lt: String
+  resolver_lte: String
+  resolver_not: String
+  resolver_not_contains: String
+  resolver_not_contains_nocase: String
+  resolver_not_ends_with: String
+  resolver_not_ends_with_nocase: String
+  resolver_not_in: [String!]
+  resolver_not_starts_with: String
+  resolver_not_starts_with_nocase: String
+  resolver_starts_with: String
+  resolver_starts_with_nocase: String
+  transactionID: Bytes
+  transactionID_contains: Bytes
+  transactionID_gt: Bytes
+  transactionID_gte: Bytes
+  transactionID_in: [Bytes!]
+  transactionID_lt: Bytes
+  transactionID_lte: Bytes
+  transactionID_not: Bytes
+  transactionID_not_contains: Bytes
+  transactionID_not_in: [Bytes!]
+  value: String
+  value_contains: String
+  value_contains_nocase: String
+  value_ends_with: String
+  value_ends_with_nocase: String
+  value_gt: String
+  value_gte: String
+  value_in: [String!]
+  value_lt: String
+  value_lte: String
+  value_not: String
+  value_not_contains: String
+  value_not_contains_nocase: String
+  value_not_ends_with: String
+  value_not_ends_with_nocase: String
+  value_not_in: [String!]
+  value_not_starts_with: String
+  value_not_starts_with_nocase: String
+  value_starts_with: String
+  value_starts_with_nocase: String
+}
+
+enum TextChanged_orderBy {
+  blockNumber
+  id
+  key
+  resolver
+  resolver__address
+  resolver__contentHash
+  resolver__id
+  transactionID
+  value
+}
+
+"""A string representation of microseconds UNIX timestamp (16 digits)"""
+scalar Timestamp
+
+type Transfer implements DomainEvent {
+  """The block number at which the event occurred"""
+  blockNumber: Int!
+
+  """The domain name associated with the event"""
+  domain: Domain!
+
+  """The unique identifier of the event"""
+  id: ID!
+
+  """The account that owns the domain after the transfer"""
+  owner: Account!
+
+  """The transaction hash of the transaction that triggered the event"""
+  transactionID: Bytes!
+}
+
+input Transfer_filter {
+  """Filter for the block changed event."""
+  _change_block: BlockChangedFilter
+  and: [Transfer_filter]
+  blockNumber: Int
+  blockNumber_gt: Int
+  blockNumber_gte: Int
+  blockNumber_in: [Int!]
+  blockNumber_lt: Int
+  blockNumber_lte: Int
+  blockNumber_not: Int
+  blockNumber_not_in: [Int!]
+  domain: String
+  domain_: Domain_filter
+  domain_contains: String
+  domain_contains_nocase: String
+  domain_ends_with: String
+  domain_ends_with_nocase: String
+  domain_gt: String
+  domain_gte: String
+  domain_in: [String!]
+  domain_lt: String
+  domain_lte: String
+  domain_not: String
+  domain_not_contains: String
+  domain_not_contains_nocase: String
+  domain_not_ends_with: String
+  domain_not_ends_with_nocase: String
+  domain_not_in: [String!]
+  domain_not_starts_with: String
+  domain_not_starts_with_nocase: String
+  domain_starts_with: String
+  domain_starts_with_nocase: String
+  id: ID
+  id_gt: ID
+  id_gte: ID
+  id_in: [ID!]
+  id_lt: ID
+  id_lte: ID
+  id_not: ID
+  id_not_in: [ID!]
+  or: [Transfer_filter]
+  owner: String
+  owner_: Account_filter
+  owner_contains: String
+  owner_contains_nocase: String
+  owner_ends_with: String
+  owner_ends_with_nocase: String
+  owner_gt: String
+  owner_gte: String
+  owner_in: [String!]
+  owner_lt: String
+  owner_lte: String
+  owner_not: String
+  owner_not_contains: String
+  owner_not_contains_nocase: String
+  owner_not_ends_with: String
+  owner_not_ends_with_nocase: String
+  owner_not_in: [String!]
+  owner_not_starts_with: String
+  owner_not_starts_with_nocase: String
+  owner_starts_with: String
+  owner_starts_with_nocase: String
+  transactionID: Bytes
+  transactionID_contains: Bytes
+  transactionID_gt: Bytes
+  transactionID_gte: Bytes
+  transactionID_in: [Bytes!]
+  transactionID_lt: Bytes
+  transactionID_lte: Bytes
+  transactionID_not: Bytes
+  transactionID_not_contains: Bytes
+  transactionID_not_in: [Bytes!]
+}
+
+enum Transfer_orderBy {
+  blockNumber
+  domain
+  domain__createdAt
+  domain__expiryDate
+  domain__id
+  domain__isMigrated
+  domain__labelhash
+  domain__labelName
+  domain__name
+  domain__subdomainCount
+  domain__ttl
+  id
+  owner
+  owner__id
+  transactionID
+}
+
+type VersionChanged implements ResolverEvent {
+  """The block number at which the event occurred"""
+  blockNumber: Int!
+
+  """Unique identifier for this event"""
+  id: ID!
+
+  """The resolver associated with this event"""
+  resolver: Resolver!
+
+  """The transaction hash associated with the event"""
+  transactionID: Bytes!
+
+  """The new version number of the resolver"""
+  version: BigInt!
+}
+
+input VersionChanged_filter {
+  """Filter for the block changed event."""
+  _change_block: BlockChangedFilter
+  and: [VersionChanged_filter]
+  blockNumber: Int
+  blockNumber_gt: Int
+  blockNumber_gte: Int
+  blockNumber_in: [Int!]
+  blockNumber_lt: Int
+  blockNumber_lte: Int
+  blockNumber_not: Int
+  blockNumber_not_in: [Int!]
+  id: ID
+  id_gt: ID
+  id_gte: ID
+  id_in: [ID!]
+  id_lt: ID
+  id_lte: ID
+  id_not: ID
+  id_not_in: [ID!]
+  or: [VersionChanged_filter]
+  resolver: String
+  resolver_: Resolver_filter
+  resolver_contains: String
+  resolver_contains_nocase: String
+  resolver_ends_with: String
+  resolver_ends_with_nocase: String
+  resolver_gt: String
+  resolver_gte: String
+  resolver_in: [String!]
+  resolver_lt: String
+  resolver_lte: String
+  resolver_not: String
+  resolver_not_contains: String
+  resolver_not_contains_nocase: String
+  resolver_not_ends_with: String
+  resolver_not_ends_with_nocase: String
+  resolver_not_in: [String!]
+  resolver_not_starts_with: String
+  resolver_not_starts_with_nocase: String
+  resolver_starts_with: String
+  resolver_starts_with_nocase: String
+  transactionID: Bytes
+  transactionID_contains: Bytes
+  transactionID_gt: Bytes
+  transactionID_gte: Bytes
+  transactionID_in: [Bytes!]
+  transactionID_lt: Bytes
+  transactionID_lte: Bytes
+  transactionID_not: Bytes
+  transactionID_not_contains: Bytes
+  transactionID_not_in: [Bytes!]
+  version: BigInt
+  version_gt: BigInt
+  version_gte: BigInt
+  version_in: [BigInt!]
+  version_lt: BigInt
+  version_lte: BigInt
+  version_not: BigInt
+  version_not_in: [BigInt!]
+}
+
+enum VersionChanged_orderBy {
+  blockNumber
+  id
+  resolver
+  resolver__address
+  resolver__contentHash
+  resolver__id
+  transactionID
+  version
+}
+
+type WrappedDomain {
+  """The domain that is wrapped by this WrappedDomain"""
+  domain: Domain!
+
+  """The expiry date of the wrapped domain"""
+  expiryDate: BigInt!
+
+  """The number of fuses remaining on the wrapped domain"""
+  fuses: Int!
+
+  """unique identifier for each instance of the WrappedDomain entity"""
+  id: ID!
+
+  """The name of the wrapped domain"""
+  name: String
+
+  """The account that owns this WrappedDomain"""
+  owner: Account!
+}
+
+input WrappedDomain_filter {
+  """Filter for the block changed event."""
+  _change_block: BlockChangedFilter
+  and: [WrappedDomain_filter]
+  domain: String
+  domain_: Domain_filter
+  domain_contains: String
+  domain_contains_nocase: String
+  domain_ends_with: String
+  domain_ends_with_nocase: String
+  domain_gt: String
+  domain_gte: String
+  domain_in: [String!]
+  domain_lt: String
+  domain_lte: String
+  domain_not: String
+  domain_not_contains: String
+  domain_not_contains_nocase: String
+  domain_not_ends_with: String
+  domain_not_ends_with_nocase: String
+  domain_not_in: [String!]
+  domain_not_starts_with: String
+  domain_not_starts_with_nocase: String
+  domain_starts_with: String
+  domain_starts_with_nocase: String
+  expiryDate: BigInt
+  expiryDate_gt: BigInt
+  expiryDate_gte: BigInt
+  expiryDate_in: [BigInt!]
+  expiryDate_lt: BigInt
+  expiryDate_lte: BigInt
+  expiryDate_not: BigInt
+  expiryDate_not_in: [BigInt!]
+  fuses: Int
+  fuses_gt: Int
+  fuses_gte: Int
+  fuses_in: [Int!]
+  fuses_lt: Int
+  fuses_lte: Int
+  fuses_not: Int
+  fuses_not_in: [Int!]
+  id: ID
+  id_gt: ID
+  id_gte: ID
+  id_in: [ID!]
+  id_lt: ID
+  id_lte: ID
+  id_not: ID
+  id_not_in: [ID!]
+  name: String
+  name_contains: String
+  name_contains_nocase: String
+  name_ends_with: String
+  name_ends_with_nocase: String
+  name_gt: String
+  name_gte: String
+  name_in: [String!]
+  name_lt: String
+  name_lte: String
+  name_not: String
+  name_not_contains: String
+  name_not_contains_nocase: String
+  name_not_ends_with: String
+  name_not_ends_with_nocase: String
+  name_not_in: [String!]
+  name_not_starts_with: String
+  name_not_starts_with_nocase: String
+  name_starts_with: String
+  name_starts_with_nocase: String
+  or: [WrappedDomain_filter]
+  owner: String
+  owner_: Account_filter
+  owner_contains: String
+  owner_contains_nocase: String
+  owner_ends_with: String
+  owner_ends_with_nocase: String
+  owner_gt: String
+  owner_gte: String
+  owner_in: [String!]
+  owner_lt: String
+  owner_lte: String
+  owner_not: String
+  owner_not_contains: String
+  owner_not_contains_nocase: String
+  owner_not_ends_with: String
+  owner_not_ends_with_nocase: String
+  owner_not_in: [String!]
+  owner_not_starts_with: String
+  owner_not_starts_with_nocase: String
+  owner_starts_with: String
+  owner_starts_with_nocase: String
+}
+
+enum WrappedDomain_orderBy {
+  domain
+  domain__createdAt
+  domain__expiryDate
+  domain__id
+  domain__isMigrated
+  domain__labelhash
+  domain__labelName
+  domain__name
+  domain__subdomainCount
+  domain__ttl
+  expiryDate
+  fuses
+  id
+  name
+  owner
+  owner__id
+}
+
+type WrappedTransfer implements DomainEvent {
+  """The block number at which the event occurred"""
+  blockNumber: Int!
+
+  """The domain name associated with the event"""
+  domain: Domain!
+
+  """The unique identifier of the event"""
+  id: ID!
+
+  """The account that owns the wrapped domain after the transfer"""
+  owner: Account!
+
+  """The transaction hash of the transaction that triggered the event"""
+  transactionID: Bytes!
+}
+
+input WrappedTransfer_filter {
+  """Filter for the block changed event."""
+  _change_block: BlockChangedFilter
+  and: [WrappedTransfer_filter]
+  blockNumber: Int
+  blockNumber_gt: Int
+  blockNumber_gte: Int
+  blockNumber_in: [Int!]
+  blockNumber_lt: Int
+  blockNumber_lte: Int
+  blockNumber_not: Int
+  blockNumber_not_in: [Int!]
+  domain: String
+  domain_: Domain_filter
+  domain_contains: String
+  domain_contains_nocase: String
+  domain_ends_with: String
+  domain_ends_with_nocase: String
+  domain_gt: String
+  domain_gte: String
+  domain_in: [String!]
+  domain_lt: String
+  domain_lte: String
+  domain_not: String
+  domain_not_contains: String
+  domain_not_contains_nocase: String
+  domain_not_ends_with: String
+  domain_not_ends_with_nocase: String
+  domain_not_in: [String!]
+  domain_not_starts_with: String
+  domain_not_starts_with_nocase: String
+  domain_starts_with: String
+  domain_starts_with_nocase: String
+  id: ID
+  id_gt: ID
+  id_gte: ID
+  id_in: [ID!]
+  id_lt: ID
+  id_lte: ID
+  id_not: ID
+  id_not_in: [ID!]
+  or: [WrappedTransfer_filter]
+  owner: String
+  owner_: Account_filter
+  owner_contains: String
+  owner_contains_nocase: String
+  owner_ends_with: String
+  owner_ends_with_nocase: String
+  owner_gt: String
+  owner_gte: String
+  owner_in: [String!]
+  owner_lt: String
+  owner_lte: String
+  owner_not: String
+  owner_not_contains: String
+  owner_not_contains_nocase: String
+  owner_not_ends_with: String
+  owner_not_ends_with_nocase: String
+  owner_not_in: [String!]
+  owner_not_starts_with: String
+  owner_not_starts_with_nocase: String
+  owner_starts_with: String
+  owner_starts_with_nocase: String
+  transactionID: Bytes
+  transactionID_contains: Bytes
+  transactionID_gt: Bytes
+  transactionID_gte: Bytes
+  transactionID_in: [Bytes!]
+  transactionID_lt: Bytes
+  transactionID_lte: Bytes
+  transactionID_not: Bytes
+  transactionID_not_contains: Bytes
+  transactionID_not_in: [Bytes!]
+}
+
+enum WrappedTransfer_orderBy {
+  blockNumber
+  domain
+  domain__createdAt
+  domain__expiryDate
+  domain__id
+  domain__isMigrated
+  domain__labelhash
+  domain__labelName
+  domain__name
+  domain__subdomainCount
+  domain__ttl
+  id
+  owner
+  owner__id
+  transactionID
+}

@@ -20,3 +20,4 @@ rainbow-scripts
 src/__swaps__/README.md
 InjectedJSBundle.js
 src/features/positions/types/generated/**
+src/graphql/schemas/*.graphql
