@@ -192,7 +192,7 @@ const TabBar = memo(function TabBar({ activeIndex, descriptorsRef, getIsFocused,
         },
       ],
       width: withSpring(
-        showBrowserNavButtons.value ? baseWidth + (TAB_BAR_PILL_HEIGHT * 2 - TAB_BAR_PILL_WIDTH) : baseWidth,
+        showBrowserNavButtons.value ? baseWidth + (TAB_BAR_PILL_HEIGHT * 2 - tabWidth) : baseWidth,
         SPRING_CONFIGS.snappyMediumSpringConfig
       ),
     };
@@ -299,6 +299,7 @@ const TabBar = memo(function TabBar({ activeIndex, descriptorsRef, getIsFocused,
               route={route}
               showBrowserNavButtons={showBrowserNavButtons}
               tabBarIcon={tabBarIcon}
+              tabWidth={tabWidth}
             />
           </Column>
         ) : (
@@ -502,7 +503,8 @@ export const BrowserTabIconWrapper = memo(function BrowserTabIconWrapper({
   route,
   showBrowserNavButtons,
   tabBarIcon,
-}: BaseTabIconProps & { showBrowserNavButtons: SharedValue<boolean> }) {
+  tabWidth,
+}: BaseTabIconProps & { showBrowserNavButtons: SharedValue<boolean>; tabWidth: number }) {
   const [showBrowserButtons, setShowBrowserButtons] = useState(false);
 
   const canGoBackOrForward = useStoreSharedValue(useBrowserStore, state => {
@@ -523,7 +525,7 @@ export const BrowserTabIconWrapper = memo(function BrowserTabIconWrapper({
 
   const browserPillWidthStyle = useAnimatedStyle(() => {
     return {
-      width: withTiming(showBrowserNavButtons.value ? TAB_BAR_PILL_HEIGHT * 2 : TAB_BAR_PILL_WIDTH, TIMING_CONFIGS.slowFadeConfig),
+      width: withTiming(showBrowserNavButtons.value ? TAB_BAR_PILL_HEIGHT * 2 : tabWidth, TIMING_CONFIGS.slowFadeConfig),
     };
   });
 
