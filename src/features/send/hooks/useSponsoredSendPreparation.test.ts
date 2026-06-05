@@ -16,10 +16,6 @@ jest.mock('@/features/delegation/sponsoredSendExecution', () => ({
   buildSendCallFromSendDetails: jest.fn(),
 }));
 
-jest.mock('@/features/delegation/willDelegate', () => ({
-  supportsDelegatedExecution: jest.fn(),
-}));
-
 const SELECTED_ASSET = {
   address: '0x5555555555555555555555555555555555555555',
   decimals: 18,

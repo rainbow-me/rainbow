@@ -7,7 +7,6 @@ import { type ParsedAddressAsset } from '@/entities/tokens';
 import { isPreparedCallsExecutionSponsored } from '@/features/delegation/calls';
 import { predictSponsoredSend, prepareSponsoredSend } from '@/features/delegation/sponsoredSend';
 import { buildSendCallFromSendDetails } from '@/features/delegation/sponsoredSendExecution';
-import { supportsDelegatedExecution } from '@/features/delegation/willDelegate';
 import { parsePositiveRawAmount } from '@/framework/core/evm/units';
 import { ensureError, logger } from '@/logger';
 import { useRemoteConfig } from '@/model/remoteConfig';
@@ -18,8 +17,6 @@ import { type Call, type PreparedCallsExecution } from '@rainbow-me/delegation';
 type PreparedSponsoredSendState =
   | { call: Call; key: string; preparedCalls: PreparedCallsExecution }
   | { call: null; key: string; preparedCalls: null };
-
-type DelegationSupportState = { key: string; supported: boolean };
 
 type UseSponsoredSendPreparationParams = {
   accountAddress: string | undefined;
@@ -88,9 +85,8 @@ export function useSponsoredSendPreparation({
 }: UseSponsoredSendPreparationParams) {
   const sponsorshipEligibleChainIds = useBackendNetworksStore(state => state.getSponsorshipEligibleChainIds());
   const { sponsored_sends_enabled: sponsoredSendsEnabled } = useRemoteConfig('sponsored_sends_enabled');
-  const [delegationSupport, setDelegationSupport] = useState<DelegationSupportState | null>(null);
 
-  const canPrepareSponsoredSend = useMemo(() => {
+  const canUseSponsoredSend = useMemo(() => {
     if (!sponsoredSendsEnabled || !accountAddress || !provider || !selected || isENS || !isValidAddress || !toAddress) return false;
 
     return predictSponsoredSend({
@@ -132,12 +128,8 @@ export function useSponsoredSendPreparation({
         })
       : null;
 
-  const delegationSupportKey = accountAddress && isAddress(accountAddress) ? getDelegationSupportKey({ accountAddress, chainId }) : null;
-  const canUseSponsoredSend = canPrepareSponsoredSend && (delegationSupport?.key !== delegationSupportKey || delegationSupport.supported);
   const [preparedSponsoredSend, setPreparedSponsoredSend] = useState<PreparedSponsoredSendState | null>(null);
   const [isPreparingSponsoredSend, setIsPreparingSponsoredSend] = useState(false);
-  const delegationSupportResolved = delegationSupport?.key === delegationSupportKey;
-  const delegationSupported = delegationSupportResolved && delegationSupport.supported;
   const hasResolvedSponsoredSend = preparedSponsoredSend?.key === sponsoredSendRequestKey;
   const preparedCalls = hasResolvedSponsoredSend ? preparedSponsoredSend.preparedCalls : null;
   const isSponsoredSend = isPreparedCallsExecutionSponsored(preparedCalls);
@@ -145,42 +137,7 @@ export function useSponsoredSendPreparation({
   const shouldShowSponsoredSendGas =
     canUseSponsoredSend &&
     isSufficientBalance &&
-    (!delegationSupportResolved ||
-      !sponsoredSendRequestKey ||
-      isPreparingSponsoredSend ||
-      debouncedAmount !== amount ||
-      !hasResolvedSponsoredSend ||
-      isSponsoredSend);
-
-  useEffect(() => {
-    let isStale = false;
-
-    const resolveDelegationSupport = async () => {
-      if (!canPrepareSponsoredSend || !accountAddress || !isAddress(accountAddress) || !delegationSupportKey) {
-        setDelegationSupport(null);
-        return;
-      }
-
-      try {
-        const supported = await supportsDelegatedExecution({ address: accountAddress, chainId });
-        if (!isStale) {
-          setDelegationSupport({ key: delegationSupportKey, supported });
-        }
-      } catch (error) {
-        const message = ensureError(error).message;
-        logger.warn('[useSponsoredSendPreparation]: delegation support check failed', { message });
-        if (!isStale) {
-          setDelegationSupport({ key: delegationSupportKey, supported: false });
-        }
-      }
-    };
-
-    resolveDelegationSupport();
-
-    return () => {
-      isStale = true;
-    };
-  }, [accountAddress, canPrepareSponsoredSend, chainId, delegationSupportKey]);
+    (!sponsoredSendRequestKey || isPreparingSponsoredSend || debouncedAmount !== amount || !hasResolvedSponsoredSend || isSponsoredSend);
 
   useEffect(() => {
     let isStale = false;
@@ -193,7 +150,6 @@ export function useSponsoredSendPreparation({
         !isAddress(accountAddress) ||
         !selected ||
         !provider ||
-        !delegationSupported ||
         !isSufficientBalance ||
         !sponsoredSendContextKey ||
         !debouncedSponsoredSendRequestKey
@@ -219,7 +175,6 @@ export function useSponsoredSendPreparation({
           accountAddress,
           call,
           chainId,
-          delegationSupported,
           signal: abortController.signal,
         });
 
@@ -256,7 +211,6 @@ export function useSponsoredSendPreparation({
     chainId,
     debouncedAmount,
     debouncedSponsoredSendRequestKey,
-    delegationSupported,
     isSufficientBalance,
     provider,
     selected,
@@ -273,8 +227,4 @@ export function useSponsoredSendPreparation({
     preparedCalls,
     shouldShowSponsoredSendGas,
   };
-}
-
-function getDelegationSupportKey({ accountAddress, chainId }: { accountAddress: string; chainId: ChainId }): string {
-  return [accountAddress.toLowerCase(), chainId].join(':');
 }
