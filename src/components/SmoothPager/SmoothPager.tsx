@@ -698,6 +698,7 @@ const styles = StyleSheet.create({
   },
   fillHeight: {
     height: '100%',
+    pointerEvents: 'auto',
   },
   subPageStyle: {
     alignItems: 'center',
