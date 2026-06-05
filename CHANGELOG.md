@@ -21,9 +21,9 @@ and this project adheres to [Semantic Versioning](http://semver.org/)
 
 ### Testing
 
-### Added
-
 ## [2.0.34](https://github.com/rainbow-me/rainbow/releases/tag/v2.0.34)
+
+### Added
 
 - Enable auto session tracking for release health in Sentry (https://github.com/rainbow-me/rainbow/pull/7501)
 - Add workflow for Android Play Store build (https://github.com/rainbow-me/rainbow/pull/7468)
