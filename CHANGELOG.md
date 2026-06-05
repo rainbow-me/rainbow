@@ -21,6 +21,69 @@ and this project adheres to [Semantic Versioning](http://semver.org/)
 
 ### Testing
 
+### Added
+
+## [2.0.34](https://github.com/rainbow-me/rainbow/releases/tag/v2.0.34)
+
+- Enable auto session tracking for release health in Sentry (https://github.com/rainbow-me/rainbow/pull/7501)
+- Add workflow for Android Play Store build (https://github.com/rainbow-me/rainbow/pull/7468)
+- Add copy link to transaction details sheet (https://github.com/rainbow-me/rainbow/pull/7449)
+- Add sponsored sends (https://github.com/rainbow-me/rainbow/pull/7486)
+- Add per-host Sentry grouping for RS escapes on iOS (https://github.com/rainbow-me/rainbow/pull/7514)
+- Add flag-gated sponsored perps deposit execution (https://github.com/rainbow-me/rainbow/pull/7495)
+- Add flag-gated sponsored predictions deposit execution (https://github.com/rainbow-me/rainbow/pull/7496)
+- Attribute RS escapes by source on iOS (https://github.com/rainbow-me/rainbow/pull/7531)
+- Share wallet confirmation helper between stake and unstake (https://github.com/rainbow-me/rainbow/pull/7528)
+- Close unstaking sheet once toast is visible (https://github.com/rainbow-me/rainbow/pull/7533)
+
+### Changed
+
+- Remove dead Cloudinary icon-signing fast-path (https://github.com/rainbow-me/rainbow/pull/7443)
+- Move iOS e2e to develop only with Slack notifications (https://github.com/rainbow-me/rainbow/pull/7489)
+- Move Android E2E to develop only with Slack notifications (https://github.com/rainbow-me/rainbow/pull/7490)
+- Extract Send sheet logic into feature module (https://github.com/rainbow-me/rainbow/pull/7485)
+- Bump iOS and Android to v2.0.34 (https://github.com/rainbow-me/rainbow/pull/7494)
+- Pause Android perf testing pending measurement rethink (https://github.com/rainbow-me/rainbow/pull/7491)
+- Dedupe @ethersproject/* dependencies (https://github.com/rainbow-me/rainbow/pull/7500)
+- Single-source signing cert fingerprints (https://github.com/rainbow-me/rainbow/pull/7504)
+- Split BackupWalletPrompt rows into dedicated components (https://github.com/rainbow-me/rainbow/pull/7502)
+- Remove leftover WalletConnect v1 code (https://github.com/rainbow-me/rainbow/pull/7499)
+- Extract iOS build into shared composite action (https://github.com/rainbow-me/rainbow/pull/7505)
+- Extract funding deposit execution (https://github.com/rainbow-me/rainbow/pull/7493)
+- Add asset info to asset sheet screen analytics (https://github.com/rainbow-me/rainbow/pull/7471)
+- Pin Maestro via mise for e2e testing (https://github.com/rainbow-me/rainbow/pull/7511)
+- Handle network related error on WC echo server subscription (https://github.com/rainbow-me/rainbow/pull/7512)
+- Use new svg2png API for Cloudinary URL construction (https://github.com/rainbow-me/rainbow/pull/7515)
+- Remove unused simplifyChartData helper (https://github.com/rainbow-me/rainbow/pull/7525)
+- Remove orphaned tokensListenedCache utils (https://github.com/rainbow-me/rainbow/pull/7523)
+- Remove unused uniswapAssetsCache util (https://github.com/rainbow-me/rainbow/pull/7521)
+- Remove orphaned uniqueTokens constants utils (https://github.com/rainbow-me/rainbow/pull/7522)
+- Move marquee list and speed animation into framework/ui (https://github.com/rainbow-me/rainbow/pull/7519)
+- Move watchingAlert into wallet domain (https://github.com/rainbow-me/rainbow/pull/7520)
+- Consolidate approval flow into new feature directory (https://github.com/rainbow-me/rainbow/pull/7527)
+- Default to Go relay backend (https://github.com/rainbow-me/rainbow/pull/7529)
+- Remove invalid dapp browser image URL fallbacks (https://github.com/rainbow-me/rainbow/pull/7526)
+- Move time utils to framework/core (https://github.com/rainbow-me/rainbow/pull/7524)
+- Isolate non-sponsored unstaking from general unstaking flow (https://github.com/rainbow-me/rainbow/pull/7534)
+- Expand sports league icons and names for predictions (https://github.com/rainbow-me/rainbow/pull/7545)
+
+### Fixed
+
+- Fix getClaimables Sentry noise (https://github.com/rainbow-me/rainbow/pull/7488)
+- Fix Discover v2 UI layout regressions (https://github.com/rainbow-me/rainbow/pull/7492)
+- Fix WelcomeScreen CTA shadow/text layering on Android 9 (https://github.com/rainbow-me/rainbow/pull/7498)
+- Hide Wipe App + Restart from store builds in dev settings (https://github.com/rainbow-me/rainbow/pull/7503)
+- Fix confusing "Not Enabled" cloud row label in backup (https://github.com/rainbow-me/rainbow/pull/7506)
+- Silence WC FCM token warning when permission is denied (https://github.com/rainbow-me/rainbow/pull/7508)
+- Fix Branch listener Sentry noise (https://github.com/rainbow-me/rainbow/pull/7509)
+- Add gas params to unstake (https://github.com/rainbow-me/rainbow/pull/7458)
+- Show pending unstake transaction toast (https://github.com/rainbow-me/rainbow/pull/7532)
+- Fix send max amount on non 7702 chains (https://github.com/rainbow-me/rainbow/pull/7550)
+- Fix lossy conversion of amount in Send flow (https://github.com/rainbow-me/rainbow/pull/7549)
+- Fix flicked sponsorship status on stake (https://github.com/rainbow-me/rainbow/pull/7552)
+- Fix swap max amount on non 7702 chains (https://github.com/rainbow-me/rainbow/pull/7551)
+- Fix remaining send imprecision and ensure prepared call consistency (https://github.com/rainbow-me/rainbow/pull/7547)
+
 ## [2.0.33](https://github.com/rainbow-me/rainbow/releases/tag/v2.0.33)
 
 ### Added
