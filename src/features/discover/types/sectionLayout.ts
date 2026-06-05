@@ -39,7 +39,9 @@ export type PlacementBackedSurfaceLeafWithDisplay<TDisplay extends Display> = Su
 export type SectionLayoutProps<T extends PlacementItem> = {
   data: T[];
   descriptor: SectionDescriptor<T>;
+  headerCaret?: boolean;
   headerCount?: number;
+  leadingAccessory?: ReactNode;
   loading: boolean;
   onPressSeeAll?: () => void;
   surface: SurfaceLeaf;

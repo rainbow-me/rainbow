@@ -1,7 +1,7 @@
 import { MarketCarousel } from '@/features/discover/components/markets/layouts/MarketCarousel';
 import { MarketGrid } from '@/features/discover/components/markets/layouts/MarketGrid';
 import { MarketList } from '@/features/discover/components/markets/layouts/MarketList';
-import { type SectionLayoutProps } from '@/features/discover/types/sectionLayout';
+import { type SectionDescriptor, type SectionLayoutProps } from '@/features/discover/types/sectionLayout';
 import { type SurfaceLeaf } from '@/features/placements/surfaces/types';
 import { type PlacementItemV2 as PlacementItem } from '@/features/placements/types';
 import * as i18n from '@/languages';
@@ -14,10 +14,30 @@ export function resolveSectionTitle(surface: Pick<SurfaceLeaf, 'id' | 'label'>):
   return i18n.t(`discover.sections.${surface.id}`, { defaultValue: surface.label || surface.id });
 }
 
+/**
+ * Header count that matches what the layout actually renders: list layouts show the full
+ * (expandable) item count; carousel/grid cap at `limit` exactly as renderSectionLayout slices.
+ * Returns undefined for an empty count so the header omits the badge.
+ */
+export function getRenderedHeaderCount<T extends PlacementItem>({
+  descriptor,
+  itemCount,
+  limit,
+}: {
+  descriptor: SectionDescriptor<T>;
+  itemCount: number;
+  limit: number | undefined;
+}): number | undefined {
+  const count = descriptor.layout === 'list' ? itemCount : limit !== undefined ? Math.min(itemCount, limit) : itemCount;
+  return count > 0 ? count : undefined;
+}
+
 export function renderSectionLayout<T extends PlacementItem>({
   data,
   descriptor,
+  headerCaret,
   headerCount,
+  leadingAccessory,
   loading,
   onPressSeeAll,
   surface,
@@ -25,12 +45,12 @@ export function renderSectionLayout<T extends PlacementItem>({
   const hasLimit = surface.limit !== undefined;
   const renderedData = hasLimit ? data.slice(0, surface.limit) : data;
   const skeletonCount = hasLimit ? surface.limit : undefined;
-  const showHeaderCaret = 'showHeaderCaret' in descriptor ? descriptor.showHeaderCaret?.(surface) : undefined;
+  const descriptorHeaderCaret = 'showHeaderCaret' in descriptor ? descriptor.showHeaderCaret?.(surface) : undefined;
+  const showHeaderCaret = headerCaret ?? descriptorHeaderCaret;
   const title = resolveSectionTitle(surface);
-
   const sectionProps = {
     headerCount,
-    leadingAccessory: undefined,
+    leadingAccessory,
     loading,
     onPress: onPressSeeAll,
     title,

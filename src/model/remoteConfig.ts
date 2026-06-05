@@ -227,7 +227,7 @@ export const DEFAULT_CONFIG = {
   candlestick_charts_enabled: !IS_STORE_INSTALL,
   rainbow_toasts_enabled: !IS_STORE_INSTALL,
   perps_enabled: true,
-  polymarket_enabled: false,
+  polymarket_enabled: true,
   dev_section_enabled: IS_DEV,
   rnbw_rewards_enabled: false,
   rnbw_membership_enabled: false,

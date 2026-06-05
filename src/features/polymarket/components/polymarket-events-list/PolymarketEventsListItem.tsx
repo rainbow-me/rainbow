@@ -8,6 +8,7 @@ import ButtonPressAnimation from '@/components/animations/ButtonPressAnimation';
 import ShimmerAnimation from '@/components/animations/ShimmerAnimation';
 import { GradientBorderView } from '@/components/gradient-border/GradientBorderView';
 import ImgixImage from '@/components/images/ImgixImage';
+import { LiveTokenText } from '@/components/live-token-text/LiveTokenText';
 import { globalColors, Separator, Text, useBackgroundColor, useColorMode } from '@/design-system';
 import { POLYMARKET_SPORTS_MARKET_TYPE } from '@/features/polymarket/constants';
 // import {
@@ -15,11 +16,13 @@ import { POLYMARKET_SPORTS_MARKET_TYPE } from '@/features/polymarket/constants';
 //   usePolymarketRecommendationsStore,
 // } from '@/features/polymarket/stores/polymarketRecommendationsStore';
 import { type PolymarketEvent, type PolymarketMarket } from '@/features/polymarket/types/polymarket-event';
+import { formatOdds } from '@/features/polymarket/utils/sportsEventBetData';
 import { roundWorklet, toPercentageWorklet } from '@/framework/core/safeMath';
 import { opacity } from '@/framework/ui/utils/opacity';
 import * as i18n from '@/languages';
 import Navigation from '@/navigation/Navigation';
 import Routes from '@/navigation/routesNames';
+import { getPolymarketTokenId } from '@/state/liveTokens/polymarketAdapter';
 import { THICK_BORDER_WIDTH } from '@/styles/constants';
 import { deepFreeze } from '@/utils/deepFreeze';
 import { createOpacityPalette } from '@/worklets/colors';
@@ -58,41 +61,7 @@ export const PolymarketEventsListItem = memo(function PolymarketEventsListItem({
 }) {
   const { isDarkMode } = useColorMode();
 
-  const markets = useMemo(() => {
-    const activeMarkets = event.markets.filter(m => m.active && !m.closed);
-    const firstMarket = activeMarkets[0];
-    const isGame =
-      firstMarket &&
-      firstMarket.sportsMarketType === POLYMARKET_SPORTS_MARKET_TYPE.MONEYLINE &&
-      firstMarket.outcomes[0] !== 'Yes' &&
-      firstMarket.outcomes[1] !== 'No';
-    const isSingleMarketEvent = activeMarkets.length === 1;
-    /**
-     * When the first market is a moneyline market the event represents a game
-     * For games, we show the two outcomes of this market as the first and second market (excluding three-way moneyline markets)
-     * We also do this when an even has only one market with Yes / No outcomes
-     */
-    if (isGame || isSingleMarketEvent) {
-      return [
-        { odds: `${roundWorklet(toPercentageWorklet(firstMarket.outcomePrices?.[0] ?? 0))}%`, title: firstMarket.outcomes[0] },
-        { odds: `${roundWorklet(toPercentageWorklet(firstMarket.outcomePrices?.[1] ?? 0))}%`, title: firstMarket.outcomes[1] },
-      ];
-    }
-
-    const marketsAboveThreshold = LAST_TRADE_PRICE_THRESHOLDS.map(threshold =>
-      activeMarkets.filter(m => (m.lastTradePrice ?? 0) >= threshold)
-    ).find(markets => markets.length >= 2);
-    const marketsToShow = (marketsAboveThreshold ?? activeMarkets).slice(0, 2);
-
-    if (marketsToShow.length === 0) {
-      return [{ odds: '', title: i18n.t(i18n.l.predictions.outcomes.yes) }];
-    }
-
-    return marketsToShow.map(market => ({
-      odds: `${roundWorklet(toPercentageWorklet(calculateOddsPrice(market)))}%`,
-      title: market.groupItemTitle || market.outcomes[0],
-    }));
-  }, [event]);
+  const markets = useMemo(() => getPolymarketEventsListOutcomes(event), [event]);
 
   const eventColor = getColorValueForThemeWorklet(event.color, isDarkMode);
   const colors = useMemo(() => {
@@ -164,9 +133,15 @@ export const PolymarketEventsListItem = memo(function PolymarketEventsListItem({
                 pointerEvents="none"
               />
               <View style={styles.row}>
-                <Text color={colors.textColor} size="13pt" weight="heavy">
-                  {markets[0].odds}
-                </Text>
+                <LiveTokenText
+                  autoSubscriptionEnabled={false}
+                  color={colors.textColor}
+                  initialValue={markets[0].odds}
+                  selector={token => formatOdds(token.price)}
+                  size="13pt"
+                  tokenId={markets[0].tokenId ?? ''}
+                  weight="heavy"
+                />
                 <Text color="label" numberOfLines={1} size="13pt" weight="heavy" style={styles.flex}>
                   {markets[0].title}
                 </Text>
@@ -178,9 +153,15 @@ export const PolymarketEventsListItem = memo(function PolymarketEventsListItem({
               ) : null}
               {markets[1] ? (
                 <View style={styles.row}>
-                  <Text color={colors.textColor} size="13pt" weight="heavy">
-                    {markets[1].odds}
-                  </Text>
+                  <LiveTokenText
+                    autoSubscriptionEnabled={false}
+                    color={colors.textColor}
+                    initialValue={markets[1].odds}
+                    selector={token => formatOdds(token.price)}
+                    size="13pt"
+                    tokenId={markets[1].tokenId ?? ''}
+                    weight="heavy"
+                  />
                   <Text color="labelSecondary" numberOfLines={1} size="13pt" weight="bold" style={styles.flex}>
                     {markets[1].title}
                   </Text>
@@ -226,6 +207,72 @@ export const LoadingSkeleton = memo(function LoadingSkeleton() {
     </View>
   );
 });
+
+type PolymarketEventsListOutcome = {
+  odds: string;
+  title: string;
+  tokenId: string | undefined;
+};
+
+/**
+ * The outcome rows this list item renders (odds + title + token id). Single source of
+ * truth shared by the card render and the live-odds subscription so they can't drift.
+ */
+export function getPolymarketEventsListOutcomes(event: PolymarketEvent): PolymarketEventsListOutcome[] {
+  const activeMarkets = event.markets.filter(m => m.active && !m.closed);
+  const firstMarket = activeMarkets[0];
+  const isGame =
+    firstMarket &&
+    firstMarket.sportsMarketType === POLYMARKET_SPORTS_MARKET_TYPE.MONEYLINE &&
+    firstMarket.outcomes[0] !== 'Yes' &&
+    firstMarket.outcomes[1] !== 'No';
+  const isSingleMarketEvent = activeMarkets.length === 1;
+  /**
+   * When the first market is a moneyline market the event represents a game
+   * For games, we show the two outcomes of this market as the first and second market (excluding three-way moneyline markets)
+   * We also do this when an even has only one market with Yes / No outcomes
+   */
+  if (isGame || isSingleMarketEvent) {
+    return [
+      {
+        odds: `${roundWorklet(toPercentageWorklet(firstMarket.outcomePrices?.[0] ?? 0))}%`,
+        title: firstMarket.outcomes[0],
+        tokenId: firstMarket.clobTokenIds[0] ? getPolymarketTokenId(firstMarket.clobTokenIds[0], 'sell') : undefined,
+      },
+      {
+        odds: `${roundWorklet(toPercentageWorklet(firstMarket.outcomePrices?.[1] ?? 0))}%`,
+        title: firstMarket.outcomes[1],
+        tokenId: firstMarket.clobTokenIds[1] ? getPolymarketTokenId(firstMarket.clobTokenIds[1], 'sell') : undefined,
+      },
+    ];
+  }
+
+  const marketsAboveThreshold = LAST_TRADE_PRICE_THRESHOLDS.map(threshold =>
+    activeMarkets.filter(m => (m.lastTradePrice ?? 0) >= threshold)
+  ).find(markets => markets.length >= 2);
+  const marketsToShow = (marketsAboveThreshold ?? activeMarkets).slice(0, 2);
+
+  if (marketsToShow.length === 0) {
+    return [{ odds: '', title: i18n.t(i18n.l.predictions.outcomes.yes), tokenId: undefined }];
+  }
+
+  return marketsToShow.map(market => ({
+    odds: `${roundWorklet(toPercentageWorklet(calculateOddsPrice(market)))}%`,
+    title: market.groupItemTitle || market.outcomes[0],
+    tokenId: market.clobTokenIds[0] ? getPolymarketTokenId(market.clobTokenIds[0], 'sell') : undefined,
+  }));
+}
+
+/**
+ * Token ids for the outcomes this list item renders. Derived from the SAME selection
+ * as the render, so subscribed == rendered by construction.
+ */
+export function getPolymarketEventsListTokenIds(event: PolymarketEvent): string[] {
+  const tokenIds = getPolymarketEventsListOutcomes(event)
+    .map(outcome => outcome.tokenId)
+    .filter((tokenId): tokenId is string => Boolean(tokenId));
+  return Array.from(new Set(tokenIds));
+}
 
 function navigateToEvent(event: PolymarketEvent): void {
   Navigation.handleAction(Routes.POLYMARKET_EVENT_SCREEN, { event, eventId: event.id });
