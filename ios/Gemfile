@@ -1,0 +1,3 @@
+# Bitrise runs Fastlane from ios/, so point Bundler at the root Gemfile.
+# This keeps the Fastlane step from gem-installing an unpinned dependency graph.
+eval_gemfile File.expand_path('../Gemfile', __dir__)
