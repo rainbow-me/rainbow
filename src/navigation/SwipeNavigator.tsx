@@ -155,7 +155,7 @@ const TabBar = memo(function TabBar({ activeIndex, descriptorsRef, getIsFocused,
   });
 
   const backgroundPillStyle = useAnimatedStyle(() => {
-    const route = tabRoutes.value[Math.round(reanimatedPosition.value)] ?? Routes.WALLET_SCREEN;
+    const route = tabRoutes.value[reanimatedPosition.value] ?? Routes.WALLET_SCREEN;
     const isDappBrowserTab = route === Routes.DAPP_BROWSER_SCREEN && showBrowserNavButtons.value;
     const backgroundOpacity = isDappBrowserTab ? 0 : 1;
     const translateX = interpolate(reanimatedPosition.value, tabPositions.value.inputRange, tabPositions.value.outputRange, 'clamp');
@@ -167,7 +167,7 @@ const TabBar = memo(function TabBar({ activeIndex, descriptorsRef, getIsFocused,
   });
 
   const dappBrowserTabBarStyle = useAnimatedStyle(() => {
-    const route = tabRoutes.value[Math.round(reanimatedPosition.value)] ?? Routes.WALLET_SCREEN;
+    const route = tabRoutes.value[reanimatedPosition.value] ?? Routes.WALLET_SCREEN;
     const shouldUseBrowserStyle = route === Routes.DAPP_BROWSER_SCREEN;
     return {
       opacity: withTiming(shouldUseBrowserStyle ? 1 : 0, TIMING_CONFIGS.slowFadeConfig),
@@ -330,7 +330,7 @@ const TabBar = memo(function TabBar({ activeIndex, descriptorsRef, getIsFocused,
   );
 
   const shadowStyle = useAnimatedStyle(() => {
-    const route = tabRoutes.value[Math.round(reanimatedPosition.value)] ?? Routes.WALLET_SCREEN;
+    const route = tabRoutes.value[reanimatedPosition.value] ?? Routes.WALLET_SCREEN;
     const isDappBrowserTab = route === Routes.DAPP_BROWSER_SCREEN;
     return {
       shadowOpacity: withSpring(isDarkMode ? 0.6 : isDappBrowserTab ? 0 : 0.16, SPRING_CONFIGS.snappyMediumSpringConfig),
@@ -338,14 +338,14 @@ const TabBar = memo(function TabBar({ activeIndex, descriptorsRef, getIsFocused,
   });
 
   const gradientBackgroundStyle = useAnimatedStyle(() => {
-    const route = tabRoutes.value[Math.round(reanimatedPosition.value)] ?? Routes.WALLET_SCREEN;
+    const route = tabRoutes.value[reanimatedPosition.value] ?? Routes.WALLET_SCREEN;
     return {
       backgroundColor: route === Routes.DAPP_BROWSER_SCREEN ? 'transparent' : getTabBackgroundColor(route, isDarkMode),
     };
   });
 
   const gradientVisibilityStyle = useAnimatedStyle(() => {
-    const route = tabRoutes.value[Math.round(reanimatedPosition.value)] ?? Routes.WALLET_SCREEN;
+    const route = tabRoutes.value[reanimatedPosition.value] ?? Routes.WALLET_SCREEN;
     return {
       opacity: withTiming(route === Routes.RNBW_REWARDS_SCREEN ? 0 : 1, TIMING_CONFIGS.slowFadeConfig),
     };
