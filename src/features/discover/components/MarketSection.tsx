@@ -1,3 +1,7 @@
+import { useMemo } from 'react';
+
+import { useDiscoverScreenContext } from '@/components/Discover/DiscoverScreenContext';
+import { type NativeCurrencyKey } from '@/entities/nativeCurrencyTypes';
 import { MarketCell, MarketCellSkeleton } from '@/features/discover/components/markets/cards/MarketCell';
 import {
   computeMarketPillWidth,
@@ -11,6 +15,7 @@ import {
   MarketTileCard,
   MarketTileCardSkeleton,
 } from '@/features/discover/components/markets/cards/MarketTileCard';
+import { tokenToMarketPillWidthInput, useTokenMarketDisplay } from '@/features/discover/components/markets/hooks/useTokenMarketDisplay';
 import { renderSectionLayout } from '@/features/discover/components/SectionLayout';
 import { type MarketDisplayItem } from '@/features/discover/types/marketDisplayItem';
 import {
@@ -19,10 +24,12 @@ import {
   type SectionDescriptor,
   type SurfaceLeafWithDisplay,
 } from '@/features/discover/types/sectionLayout';
+import { useTokensPlacement, type TokenPlacementItem } from '@/features/placements/stores/derived/tokensPlacementStore';
 import { usePlacementsV2Store } from '@/features/placements/stores/placementsStore';
 import { MARKET_DISPLAY_VALUES } from '@/features/placements/surfaces/constants';
 import { useIsDiscoverSurfacePlacementPending } from '@/features/placements/surfaces/hooks/useDiscoverSurfacePlacements';
 import { type SurfaceLeaf } from '@/features/placements/surfaces/types';
+import { userAssetsStoreManager } from '@/state/assets/userAssetsStoreManager';
 
 const hasDestination = (surface: SurfaceLeaf) => surface.destination !== null;
 
@@ -75,13 +82,16 @@ function MarketPlacementContent({
   surface: PlacementBackedSurfaceLeafWithDisplay<MarketDisplay>;
   surfaceId: string;
 }) {
+  const placement = usePlacementsV2Store(state => state.getPlacement(surface.placement));
   const isPendingSurfacePlacement = useIsDiscoverSurfacePlacementPending(surface.placement);
   const isLoadingPlacementSource = usePlacementsV2Store(state => {
     if (state.getPlacement(surface.placement) !== undefined) return false;
     return state.getStatus('isInitialLoad') || state.getStatus('isIdle') || state.getStatus('isLoading');
   });
 
-  // Per-source content (e.g. the `rainbow` token source) is added by feature branches.
+  if (placement?.source === 'rainbow') {
+    return <TokenMarketPlacementContent surface={surface} surfaceId={surfaceId} />;
+  }
 
   if (isLoadingPlacementSource || isPendingSurfacePlacement) {
     return renderSectionLayout({
@@ -94,6 +104,55 @@ function MarketPlacementContent({
   }
 
   return null;
+}
+
+function TokenMarketPlacementContent({
+  surface,
+  surfaceId,
+}: {
+  surface: PlacementBackedSurfaceLeafWithDisplay<MarketDisplay>;
+  surfaceId: string;
+}) {
+  const { onTapSearch } = useDiscoverScreenContext();
+  const nativeCurrency = userAssetsStoreManager(state => state.currency);
+  const tokensResult = useTokensPlacement(surface.placement);
+  const tokenDescriptor = useMemo<SectionDescriptor<TokenPlacementItem>>(() => {
+    switch (surface.display) {
+      case 'market_pill.carousel':
+        return {
+          ...MARKET_SECTION_DESCRIPTORS[surface.display],
+          getItemWidth: (item: TokenPlacementItem) => computeMarketPillWidth(tokenToMarketPillWidthInput({ item, nativeCurrency })),
+          renderItem: (item: TokenPlacementItem) => <TokenMarketItem item={item} nativeCurrency={nativeCurrency} variant="pill" />,
+        };
+      case 'market_tile.carousel':
+        return {
+          ...MARKET_SECTION_DESCRIPTORS[surface.display],
+          renderItem: (item: TokenPlacementItem) => <TokenMarketItem item={item} nativeCurrency={nativeCurrency} variant="tile" />,
+        };
+      case 'market_tile.grid':
+        return {
+          ...MARKET_SECTION_DESCRIPTORS[surface.display],
+          renderItem: (item: TokenPlacementItem, width: number) => (
+            <TokenMarketItem item={item} nativeCurrency={nativeCurrency} variant="tile" width={width} />
+          ),
+        };
+      case 'market_cell.list':
+        return {
+          ...MARKET_SECTION_DESCRIPTORS[surface.display],
+          renderItem: (item: TokenPlacementItem) => <TokenMarketItem item={item} nativeCurrency={nativeCurrency} variant="cell" />,
+        };
+    }
+  }, [nativeCurrency, surface.display]);
+  // Only passed when the destination is token-owned (`['tokens']`); non-token CMS
+  // destinations are wired in #7553.
+
+  return renderSectionLayout({
+    data: tokensResult.items,
+    descriptor: tokenDescriptor,
+    loading: tokensResult.isLoading,
+    onPressSeeAll: surface.destination?.[0] === 'tokens' ? onTapSearch : undefined,
+    surface,
+  });
 }
 
 function hasPlacement(surface: SurfaceLeafWithDisplay<MarketDisplay>): surface is PlacementBackedSurfaceLeafWithDisplay<MarketDisplay> {
@@ -118,4 +177,27 @@ function renderMarketGridTileSkeleton(width: number) {
 
 function renderMarketCell(item: MarketDisplayItem) {
   return <MarketCell item={item} />;
+}
+
+function TokenMarketItem({
+  item,
+  nativeCurrency,
+  variant,
+  width,
+}: {
+  item: TokenPlacementItem;
+  nativeCurrency: NativeCurrencyKey;
+  variant: 'cell' | 'pill' | 'tile';
+  width?: number;
+}) {
+  const displayItem = useTokenMarketDisplay({ item, nativeCurrency });
+
+  switch (variant) {
+    case 'cell':
+      return <MarketCell item={displayItem} />;
+    case 'pill':
+      return <MarketPill item={displayItem} />;
+    case 'tile':
+      return <MarketTileCard item={displayItem} width={width} />;
+  }
 }

@@ -1,5 +1,9 @@
 import { type CompactLineChartData } from '@/features/charts/line/compact/types';
-import { createLineChartDataStore, type FetchedLineChartData } from '@/features/charts/stores/factories/createLineChartDataStore';
+import {
+  aggregateLineChartFetches,
+  createLineChartDataStore,
+  type FetchedLineChartData,
+} from '@/features/charts/stores/factories/createLineChartDataStore';
 import { CandleResolution, type HyperliquidCandle } from '@/features/charts/types';
 import { msToSeconds, toHyperliquidInterval } from '@/features/charts/utils';
 import { infoClient } from '@/features/perps/services/hyperliquid-info-client';
@@ -21,28 +25,10 @@ async function fetchHyperliquidLineCharts(
   symbols: readonly string[],
   abortController: AbortController | null
 ): Promise<FetchedLineChartData> {
-  const chartFetches = symbols.map(symbol => fetchHyperliquidChartData(symbol, abortController));
-
-  const results = await Promise.allSettled(chartFetches);
-
-  const chartsById: FetchedLineChartData = {};
-  let didResolve = false;
-  let firstError: unknown;
-
-  for (let i = 0; i < symbols.length; i++) {
-    const result = results[i];
-
-    if (result.status === 'fulfilled') {
-      didResolve = true;
-      chartsById[symbols[i]] = result.value;
-    } else if (firstError === undefined) {
-      firstError = result.reason;
-    }
-  }
-
-  if (!didResolve && firstError !== undefined) throw firstError;
-
-  return chartsById;
+  return aggregateLineChartFetches(
+    symbols,
+    symbols.map(symbol => fetchHyperliquidChartData(symbol, abortController))
+  );
 }
 
 async function fetchHyperliquidChartData(symbol: string, abortController: AbortController | null): Promise<CompactLineChartData | null> {

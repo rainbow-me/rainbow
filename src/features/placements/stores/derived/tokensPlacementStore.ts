@@ -53,6 +53,17 @@ const EMPTY_TOKEN_ASSETS_BY_REF: TokenAssetsByRef = Object.freeze({});
 const hasTokenRefsOrPendingHydration = hasRefsOrPendingHydration('rainbow', 'token');
 const tokenRefCache = new Map<string, TokenRefCacheEntry>();
 
+// ============ Cache Control ================================================== //
+
+/**
+ * Clears the module-level token-ref cache so that the next {@link fetchTokenRefs}
+ * call fetches fresh assets from the network, even if refs are within
+ * {@link TOKEN_REFS_STALE_TIME}. Call this before a forced refresh.
+ */
+export function clearTokenRefCache(): void {
+  tokenRefCache.clear();
+}
+
 // ============ Stores ========================================================= //
 
 const useTokensEnabled = createDerivedStore<boolean>(
