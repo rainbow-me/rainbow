@@ -45,7 +45,7 @@ import useAccountSettings from '@/hooks/useAccountSettings';
 import useCoinListEditOptions from '@/hooks/useCoinListEditOptions';
 import useColorForAsset from '@/hooks/useColorForAsset';
 import useContacts from '@/hooks/useContacts';
-import useMaxInputBalance from '@/hooks/useMaxInputBalance';
+import { useMaxInputBalance } from '@/hooks/useMaxInputBalance';
 import { usePersistentDominantColorFromImage } from '@/hooks/usePersistentDominantColorFromImage';
 import usePrevious from '@/hooks/usePrevious';
 import useSendableUniqueTokens from '@/hooks/useSendableUniqueTokens';
@@ -233,6 +233,7 @@ export default function SendSheet() {
     selected: selectedAddressAsset,
     toAddress,
   });
+
   const getMaxInputBalance = useMaxInputBalance();
 
   let colorForAsset = useColorForAsset(selected, undefined, false, true);

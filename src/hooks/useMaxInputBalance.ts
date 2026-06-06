@@ -6,15 +6,16 @@ import useGas from '@/features/gas/hooks/useGas';
 import { assetIsUniqueAsset } from '@/handlers/web3';
 import ethereumUtils from '@/utils/ethereumUtils';
 
-export default function useMaxInputBalance() {
+export function useMaxInputBalance() {
   const { selectedGasFee, l1GasFeeOptimism } = useGas();
 
   return useCallback(
-    (inputCurrency: ParsedAddressAsset | UniqueAsset | undefined, { ignoreGasFee = false }: { ignoreGasFee?: boolean } = {}) => {
+    (inputCurrency: ParsedAddressAsset | UniqueAsset | undefined, options: { ignoreGasFee?: boolean }) => {
       if (!inputCurrency || assetIsUniqueAsset(inputCurrency)) {
         return '0';
       }
 
+      const ignoreGasFee = options?.ignoreGasFee ?? false;
       const accountAsset = ethereumUtils.getAccountAsset(inputCurrency.uniqueId);
       const newInputBalance = ignoreGasFee
         ? (inputCurrency.balance?.amount ?? accountAsset?.balance?.amount ?? '0')
