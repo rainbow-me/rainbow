@@ -185,7 +185,7 @@ export default function SendSheet() {
   const [recipient, setRecipient] = useState('');
   const [nickname, setNickname] = useState('');
   const [selected, setSelected] = useState<ParsedAddressAsset | UniqueAsset | undefined>();
-  const [maxEnabled, setMaxEnabled] = useState(false);
+  const maxAmountIgnoresGasFeeRef = useRef<boolean | null>(null);
 
   const [debouncedInput] = useDebounce(currentInput, 500);
   const [debouncedRecipient] = useDebounce(recipient, 500);
@@ -233,7 +233,7 @@ export default function SendSheet() {
     selected: selectedAddressAsset,
     toAddress,
   });
-  const { maxInputBalance, updateMaxInputBalance } = useMaxInputBalance({ ignoreGasFee: shouldShowSponsoredSendGas });
+  const getMaxInputBalance = useMaxInputBalance();
 
   let colorForAsset = useColorForAsset(selected, undefined, false, true);
   const uniqueAssetColor = usePersistentDominantColorFromImage(isUniqueAsset ? selected?.images.lowResUrl : null) ?? colors.appleBlue;
@@ -247,8 +247,22 @@ export default function SendSheet() {
     supportedRecordsOnly: false,
   });
 
-  const sendUpdateAssetAmount = useCallback(
-    (newAssetAmount: string) => {
+  const setAmountDetailsIfChanged = useCallback((nextAmountDetails: typeof amountDetails) => {
+    setAmountDetails(currentAmountDetails => {
+      if (
+        currentAmountDetails.assetAmount === nextAmountDetails.assetAmount &&
+        currentAmountDetails.isSufficientBalance === nextAmountDetails.isSufficientBalance &&
+        currentAmountDetails.nativeAmount === nextAmountDetails.nativeAmount
+      ) {
+        return currentAmountDetails;
+      }
+
+      return nextAmountDetails;
+    });
+  }, []);
+
+  const setAmountDetailsFromAssetAmount = useCallback(
+    (newAssetAmount: string, maxInputBalance: string) => {
       const _assetAmount = newAssetAmount.replace(/[^0-9.]/g, '');
       let _nativeAmount = '';
       if (_assetAmount.length) {
@@ -259,19 +273,26 @@ export default function SendSheet() {
 
       const _isSufficientBalance = hasSufficientAssetBalance(_assetAmount, maxInputBalance);
 
-      setAmountDetails({
+      setAmountDetailsIfChanged({
         assetAmount: _assetAmount,
         isSufficientBalance: _isSufficientBalance,
         nativeAmount: _nativeAmount,
       });
     },
-    [isUniqueAsset, maxInputBalance, nativeCurrency, selected]
+    [isUniqueAsset, nativeCurrency, selected, setAmountDetailsIfChanged]
+  );
+
+  const setAssetAmount = useCallback(
+    (newAssetAmount: string) => {
+      setAmountDetailsFromAssetAmount(newAssetAmount, getMaxInputBalance(selected, { ignoreGasFee: shouldShowSponsoredSendGas }));
+    },
+    [getMaxInputBalance, selected, setAmountDetailsFromAssetAmount, shouldShowSponsoredSendGas]
   );
 
   const sendUpdateSelected = useCallback(
     (newSelected: ParsedAddressAsset | UniqueAsset | undefined) => {
       if (isEqual(newSelected, selected)) return;
-      updateMaxInputBalance(newSelected);
+      maxAmountIgnoresGasFeeRef.current = null;
       if (assetIsUniqueAsset(newSelected)) {
         setAmountDetails({
           assetAmount: '1',
@@ -287,17 +308,17 @@ export default function SendSheet() {
         }
       } else {
         setSelected(newSelected);
-        sendUpdateAssetAmount('');
+        setAssetAmount('');
       }
     },
-    [selected, sendUpdateAssetAmount, updateMaxInputBalance]
+    [selected, setAssetAmount]
   );
 
   // Update all fields passed via params if needed
   useEffect(() => {
     if (!selected || isUniqueAsset) return;
 
-    const newMaxInputBalance = updateMaxInputBalance(selected);
+    const newMaxInputBalance = getMaxInputBalance(selected, { ignoreGasFee: shouldShowSponsoredSendGas });
     setAmountDetails(currentAmountDetails => {
       const isSufficientBalance = hasSufficientAssetBalance(currentAmountDetails.assetAmount, newMaxInputBalance);
       if (currentAmountDetails.isSufficientBalance === isSufficientBalance) return currentAmountDetails;
@@ -307,7 +328,7 @@ export default function SendSheet() {
         isSufficientBalance,
       };
     });
-  }, [isUniqueAsset, selected, shouldShowSponsoredSendGas, updateMaxInputBalance]);
+  }, [getMaxInputBalance, isUniqueAsset, selected, shouldShowSponsoredSendGas]);
 
   useEffect(() => {
     if (recipientOverride && !recipient) {
@@ -317,31 +338,17 @@ export default function SendSheet() {
 
     if (assetOverride && assetOverride !== prevAssetOverride) {
       sendUpdateSelected(assetOverride);
-      updateMaxInputBalance(assetOverride);
     }
 
-    if (nativeAmountOverride && maxInputBalance) {
-      sendUpdateAssetAmount(nativeAmountOverride);
+    if (nativeAmountOverride) {
+      setAssetAmount(nativeAmountOverride);
     }
-  }, [
-    amountDetails,
-    assetOverride,
-    maxInputBalance,
-    nativeAmountOverride,
-    prevAssetOverride,
-    recipient,
-    recipientOverride,
-    sendUpdateAssetAmount,
-    sendUpdateSelected,
-    updateMaxInputBalance,
-  ]);
+  }, [assetOverride, nativeAmountOverride, prevAssetOverride, recipient, recipientOverride, setAssetAmount, sendUpdateSelected]);
 
   const onChangeNativeAmount = useCallback(
     (newNativeAmount: string) => {
       if (!isString(newNativeAmount)) return;
-      if (maxEnabled) {
-        setMaxEnabled(false);
-      }
+      maxAmountIgnoresGasFeeRef.current = null;
       const _nativeAmount = newNativeAmount.replace(/[^0-9.]/g, '');
       let _assetAmount = '';
       if (_nativeAmount.length) {
@@ -351,37 +358,51 @@ export default function SendSheet() {
         _assetAmount = formatInputDecimals(convertedAssetAmount, _nativeAmount);
       }
 
+      const maxInputBalance = getMaxInputBalance(selected, { ignoreGasFee: shouldShowSponsoredSendGas });
       const _isSufficientBalance = hasSufficientAssetBalance(_assetAmount, maxInputBalance);
-      setAmountDetails({
+      setAmountDetailsIfChanged({
         assetAmount: _assetAmount,
         isSufficientBalance: _isSufficientBalance,
         nativeAmount: _nativeAmount,
       });
       analytics.track(analytics.event.changedNativeCurrencyInputSend);
     },
-    [maxEnabled, maxInputBalance, isUniqueAsset, selected]
+    [getMaxInputBalance, isUniqueAsset, selected, setAmountDetailsIfChanged, shouldShowSponsoredSendGas]
   );
 
+  const setMaxAssetAmount = useCallback(
+    (ignoreGasFee: boolean) => {
+      const maxInputBalance = getMaxInputBalance(selected, { ignoreGasFee });
+      setAmountDetailsFromAssetAmount(maxInputBalance, maxInputBalance);
+    },
+    [getMaxInputBalance, selected, setAmountDetailsFromAssetAmount]
+  );
+
+  const sendMaxBalance = useCallback(() => {
+    const ignoreGasFee = maxAmountIgnoresGasFeeRef.current ?? canUseSponsoredSend;
+    maxAmountIgnoresGasFeeRef.current = ignoreGasFee;
+    setMaxAssetAmount(ignoreGasFee);
+  }, [canUseSponsoredSend, setMaxAssetAmount]);
+
   useEffect(() => {
-    if (maxEnabled) {
-      const newBalanceAmount = updateMaxInputBalance(selected);
-      sendUpdateAssetAmount(newBalanceAmount);
-    }
-    // we want to listen to the gas fee and update when it changes
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [selected, sendUpdateAssetAmount, updateMaxInputBalance, selectedGasFee, maxEnabled]);
+    const maxAmountIgnoresGasFee = maxAmountIgnoresGasFeeRef.current;
+    if (maxAmountIgnoresGasFee === null || !selected || isUniqueAsset) return;
+
+    const ignoreGasFee = maxAmountIgnoresGasFee && !(hasResolvedSponsoredSend && !isSponsoredSend);
+    maxAmountIgnoresGasFeeRef.current = ignoreGasFee;
+
+    setMaxAssetAmount(ignoreGasFee);
+  }, [hasResolvedSponsoredSend, isSponsoredSend, isUniqueAsset, selected, selectedGasFee, setMaxAssetAmount]);
 
   const onChangeAssetAmount = useCallback(
     (newAssetAmount: string) => {
       if (isString(newAssetAmount)) {
-        if (maxEnabled) {
-          setMaxEnabled(false);
-        }
-        sendUpdateAssetAmount(newAssetAmount);
+        maxAmountIgnoresGasFeeRef.current = null;
+        setAssetAmount(newAssetAmount);
         analytics.track(analytics.event.changedTokenInputSend);
       }
     },
-    [maxEnabled, sendUpdateAssetAmount]
+    [setAssetAmount]
   );
 
   useEffect(() => {
@@ -558,7 +579,7 @@ export default function SendSheet() {
   const onResetAssetSelection = useCallback(() => {
     analytics.track(analytics.event.resetAssetSelectionSend);
     sendUpdateSelected(undefined);
-    setMaxEnabled(false);
+    maxAmountIgnoresGasFeeRef.current = null;
   }, [sendUpdateSelected]);
 
   const onChangeInput = useCallback(
@@ -819,7 +840,7 @@ export default function SendSheet() {
             onChangeNativeAmount={onChangeNativeAmount}
             onResetAssetSelection={onResetAssetSelection}
             selected={selected}
-            sendMaxBalance={() => setMaxEnabled(true)}
+            sendMaxBalance={sendMaxBalance}
             setLastFocusedInputHandle={setLastFocusedInputHandle}
             txSpeedRenderer={
               shouldShowSponsoredSendGas || hasPaidSendGasEstimateFailed ? (
