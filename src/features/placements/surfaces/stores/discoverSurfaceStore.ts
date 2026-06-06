@@ -1,6 +1,7 @@
 import { usePlacementsStore } from '@/features/placements/stores/placementsStore';
 import {
   buildDiscoverSurface,
+  filterIncompatiblePlacementSurface,
   filterMissingPlacementSurface,
   getDiscoverSurfacePlacementRefs,
   isSurfaceWaitingForPlacements,
@@ -26,11 +27,15 @@ export const useDiscoverSurface = createDerivedStore<DiscoverSurface | undefined
     const enabledSurface = filterSurfaceTree(rawSurface, surface => isSurfaceEnabled(surface.enabled, Date.now()));
     if (!enabledSurface) return undefined;
     if (!placementsReady) return buildDiscoverSurface(enabledSurface);
-    if (isSurfaceWaitingForPlacements(enabledSurface, placementsById, surfaceLastFetchedAt, placementsLastFetchedAt)) {
-      return buildDiscoverSurface(enabledSurface);
+
+    const compatibleSurface = filterIncompatiblePlacementSurface(enabledSurface, placementsById);
+    if (!compatibleSurface) return undefined;
+
+    if (isSurfaceWaitingForPlacements(compatibleSurface, placementsById, surfaceLastFetchedAt, placementsLastFetchedAt)) {
+      return buildDiscoverSurface(compatibleSurface);
     }
 
-    const surfaceWithPlacements = filterMissingPlacementSurface(enabledSurface, placementsById);
+    const surfaceWithPlacements = filterMissingPlacementSurface(compatibleSurface, placementsById);
     return surfaceWithPlacements ? buildDiscoverSurface(surfaceWithPlacements) : undefined;
   },
   { equalityFn: deepEqual, fastMode: true }

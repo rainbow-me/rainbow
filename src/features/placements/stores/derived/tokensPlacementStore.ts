@@ -17,7 +17,7 @@ import { mapWithConcurrency } from '@/framework/core/utils/mapWithConcurrency';
 import { time } from '@/framework/core/utils/time';
 import { fetchExternalToken, type FormattedExternalAsset } from '@/resources/assets/externalAssetsQuery';
 import { userAssetsStoreManager } from '@/state/assets/userAssetsStoreManager';
-import { type ChainId } from '@/state/backendNetworks/types';
+import { isValidChainId, type ChainId } from '@/state/backendNetworks/types';
 import { createDerivedStore } from '@/state/internal/createDerivedStore';
 import { createQueryStore } from '@/state/internal/createQueryStore';
 import { shallowEqual } from '@/worklets/comparisons';
@@ -49,7 +49,7 @@ const TOKEN_REF_FETCH_CONCURRENCY = 4;
 const TOKEN_REFS_STALE_TIME = time.minutes(2);
 // Keep object identity stable for Object.is store selectors; arrays are compared structurally downstream.
 const EMPTY_TOKEN_ASSETS_BY_REF: TokenAssetsByRef = Object.freeze({});
-const hasTokenRefsOrPendingHydration = hasRefsOrPendingHydration('rainbow', 'token');
+const hasTokenRefsOrPendingHydration = hasRefsOrPendingHydration('rainbow');
 const tokenRefCache = new Map<string, TokenRefCacheEntry>();
 
 // ============ Cache Control ================================================== //
@@ -170,14 +170,17 @@ function parseTokenItems(placementItems: PlacementItem[], assetsByRef: TokenAsse
 // CMS authors token refs as colon-delimited `address:chainId`, distinct from the app's
 // underscore-delimited `UniqueId` (`address_chainId`) — they are not interchangeable.
 function parseTokenRef(tokenRef: string): { address: Address; chainId: ChainId } | null {
-  const [address, chainId] = tokenRef.split(':');
+  const parts = tokenRef.split(':');
+  if (parts.length !== 2) return null;
+
+  const [address, chainId] = parts;
   const numericChainId = Number(chainId);
 
-  if (!address || !isAddress(address) || !Number.isInteger(numericChainId)) return null;
+  if (!address || !isAddress(address) || !isValidChainId(numericChainId)) return null;
 
   return {
     address,
-    chainId: numericChainId as ChainId,
+    chainId: numericChainId,
   };
 }
 

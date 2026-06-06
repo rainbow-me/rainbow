@@ -41,7 +41,7 @@ type EventsById = Record<string, PolymarketEvent>;
 
 // ============ Constants ====================================================== //
 
-const hasPredictionRefsOrPendingHydration = hasRefsOrPendingHydration('polymarket', 'prediction');
+const hasPredictionRefsOrPendingHydration = hasRefsOrPendingHydration('polymarket');
 
 // ============ Stores ========================================================= //
 
