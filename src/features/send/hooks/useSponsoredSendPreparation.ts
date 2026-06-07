@@ -72,14 +72,14 @@ export function useSponsoredSendPreparation({
   const { sponsored_sends_enabled: sponsoredSendsEnabled } = useRemoteConfig('sponsored_sends_enabled');
 
   const canUseSponsoredSend = useMemo(() => {
-    if (!sponsoredSendsEnabled || !accountAddress || !provider || !selected || isENS || !isValidAddress || !toAddress) return false;
+    if (!sponsoredSendsEnabled || !accountAddress || !provider || !selected || isENS || !isValidAddress) return false;
 
     return predictSponsoredSend({
       address: accountAddress,
       chainId,
       sponsorshipEligibleChainIds,
     });
-  }, [accountAddress, chainId, isENS, isValidAddress, provider, selected, sponsoredSendsEnabled, sponsorshipEligibleChainIds, toAddress]);
+  }, [accountAddress, chainId, isENS, isValidAddress, provider, selected, sponsoredSendsEnabled, sponsorshipEligibleChainIds]);
 
   const sponsoredSendRequest = useMemo(
     () => (accountAddress && selected && toAddress ? { accountAddress, chainId, selected, toAddress } : null),

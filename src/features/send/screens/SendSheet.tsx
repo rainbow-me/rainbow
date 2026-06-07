@@ -16,6 +16,7 @@ import useExperimentalFlag from '@/config/experimentalHooks';
 import { AssetType } from '@/entities/assetTypes';
 import { type ParsedAddressAsset } from '@/entities/tokens';
 import { type UniqueAsset } from '@/entities/uniqueAssets';
+import { isValidAddress as isValidEthereumAddress } from '@/features/address/core/address';
 import { SmartWalletActivationCallout } from '@/features/delegation/components/SmartWalletActivationCallout';
 import { prefetchENSAvatar } from '@/features/ens/hooks/useENSAvatar';
 import { prefetchENSCover } from '@/features/ens/hooks/useENSCover';
@@ -797,6 +798,7 @@ export default function SendSheet() {
             loadingEnsSuggestions={loadingEnsSuggestions}
             onPressContact={(recipient: string, nickname: string) => {
               setIsValidAddress(true);
+              setToAddress(isValidEthereumAddress(recipient) ? recipient : '');
               setRecipient(recipient);
               setNickname(nickname);
             }}
