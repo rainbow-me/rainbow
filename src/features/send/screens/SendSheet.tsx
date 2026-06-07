@@ -45,7 +45,6 @@ import useAccountSettings from '@/hooks/useAccountSettings';
 import useCoinListEditOptions from '@/hooks/useCoinListEditOptions';
 import useColorForAsset from '@/hooks/useColorForAsset';
 import useContacts from '@/hooks/useContacts';
-import { useMaxInputBalance } from '@/hooks/useMaxInputBalance';
 import { usePersistentDominantColorFromImage } from '@/hooks/usePersistentDominantColorFromImage';
 import usePrevious from '@/hooks/usePrevious';
 import useSendableUniqueTokens from '@/hooks/useSendableUniqueTokens';
@@ -69,6 +68,7 @@ import ethereumUtils from '@/utils/ethereumUtils';
 import isLowerCaseMatch from '@/utils/isLowerCaseMatch';
 import safeAreaInsetValues from '@/utils/safeAreaInsetValues';
 
+import { useGetMaxSendableAmount } from '../hooks/useGetMaxSendableAmount';
 import { useSendChainState } from '../hooks/useSendChainState';
 import { useSendSubmit } from '../hooks/useSendSubmit';
 import { useSponsoredSendPreparation } from '../hooks/useSponsoredSendPreparation';
@@ -133,8 +133,8 @@ const validateRecipientDamagedState = (toAddress?: string) => {
   return true;
 };
 
-const hasSufficientAssetBalance = (assetAmount: string, maxInputBalance: string): boolean =>
-  !assetAmount || greaterThanOrEqualTo(maxInputBalance || '0', assetAmount);
+const hasSufficientAssetBalance = (assetAmount: string, maxSendableAmount: string): boolean =>
+  !assetAmount || greaterThanOrEqualTo(maxSendableAmount || '0', assetAmount);
 
 export default function SendSheet() {
   const { navigate } = useNavigation();
@@ -238,7 +238,7 @@ export default function SendSheet() {
     toAddress,
   });
 
-  const getMaxInputBalance = useMaxInputBalance();
+  const getMaxSendableAmount = useGetMaxSendableAmount();
 
   let colorForAsset = useColorForAsset(selected, undefined, false, true);
   const uniqueAssetColor = usePersistentDominantColorFromImage(isUniqueAsset ? selected?.images.lowResUrl : null) ?? colors.appleBlue;
@@ -267,7 +267,7 @@ export default function SendSheet() {
   }, []);
 
   const setAmountDetailsFromAssetAmount = useCallback(
-    (newAssetAmount: string, maxInputBalance: string) => {
+    (newAssetAmount: string, maxSendableAmount: string) => {
       const _assetAmount = newAssetAmount.replace(/[^0-9.]/g, '');
       let _nativeAmount = '';
       if (_assetAmount.length) {
@@ -276,7 +276,7 @@ export default function SendSheet() {
         _nativeAmount = formatInputDecimals(convertedNativeAmount, _assetAmount);
       }
 
-      const _isSufficientBalance = hasSufficientAssetBalance(_assetAmount, maxInputBalance);
+      const _isSufficientBalance = hasSufficientAssetBalance(_assetAmount, maxSendableAmount);
 
       setAmountDetailsIfChanged({
         assetAmount: _assetAmount,
@@ -291,13 +291,13 @@ export default function SendSheet() {
     (newAssetAmount: string) => {
       setAmountDetailsFromAssetAmount(
         newAssetAmount,
-        getMaxInputBalance(selected, {
+        getMaxSendableAmount(selected, {
           accountBalanceAmount: selectedAccountAssetBalanceAmount,
           ignoreGasFee: shouldShowSponsoredSendGas,
         })
       );
     },
-    [getMaxInputBalance, selected, selectedAccountAssetBalanceAmount, setAmountDetailsFromAssetAmount, shouldShowSponsoredSendGas]
+    [getMaxSendableAmount, selected, selectedAccountAssetBalanceAmount, setAmountDetailsFromAssetAmount, shouldShowSponsoredSendGas]
   );
 
   const sendUpdateSelected = useCallback(
@@ -329,12 +329,12 @@ export default function SendSheet() {
   useEffect(() => {
     if (!selected || isUniqueAsset) return;
 
-    const newMaxInputBalance = getMaxInputBalance(selected, {
+    const maxSendableAmount = getMaxSendableAmount(selected, {
       accountBalanceAmount: selectedAccountAssetBalanceAmount,
       ignoreGasFee: shouldShowSponsoredSendGas,
     });
     setAmountDetails(currentAmountDetails => {
-      const isSufficientBalance = hasSufficientAssetBalance(currentAmountDetails.assetAmount, newMaxInputBalance);
+      const isSufficientBalance = hasSufficientAssetBalance(currentAmountDetails.assetAmount, maxSendableAmount);
       if (currentAmountDetails.isSufficientBalance === isSufficientBalance) return currentAmountDetails;
 
       return {
@@ -342,7 +342,7 @@ export default function SendSheet() {
         isSufficientBalance,
       };
     });
-  }, [getMaxInputBalance, isUniqueAsset, selected, selectedAccountAssetBalanceAmount, shouldShowSponsoredSendGas]);
+  }, [getMaxSendableAmount, isUniqueAsset, selected, selectedAccountAssetBalanceAmount, shouldShowSponsoredSendGas]);
 
   useEffect(() => {
     if (recipientOverride && !recipient) {
@@ -372,11 +372,11 @@ export default function SendSheet() {
         _assetAmount = formatInputDecimals(convertedAssetAmount, _nativeAmount);
       }
 
-      const maxInputBalance = getMaxInputBalance(selected, {
+      const maxSendableAmount = getMaxSendableAmount(selected, {
         accountBalanceAmount: selectedAccountAssetBalanceAmount,
         ignoreGasFee: shouldShowSponsoredSendGas,
       });
-      const _isSufficientBalance = hasSufficientAssetBalance(_assetAmount, maxInputBalance);
+      const _isSufficientBalance = hasSufficientAssetBalance(_assetAmount, maxSendableAmount);
       setAmountDetailsIfChanged({
         assetAmount: _assetAmount,
         isSufficientBalance: _isSufficientBalance,
@@ -384,18 +384,25 @@ export default function SendSheet() {
       });
       analytics.track(analytics.event.changedNativeCurrencyInputSend);
     },
-    [getMaxInputBalance, isUniqueAsset, selected, selectedAccountAssetBalanceAmount, setAmountDetailsIfChanged, shouldShowSponsoredSendGas]
+    [
+      getMaxSendableAmount,
+      isUniqueAsset,
+      selected,
+      selectedAccountAssetBalanceAmount,
+      setAmountDetailsIfChanged,
+      shouldShowSponsoredSendGas,
+    ]
   );
 
   const setMaxAssetAmount = useCallback(
     (ignoreGasFee: boolean) => {
-      const maxInputBalance = getMaxInputBalance(selected, {
+      const maxSendableAmount = getMaxSendableAmount(selected, {
         accountBalanceAmount: selectedAccountAssetBalanceAmount,
         ignoreGasFee,
       });
-      setAmountDetailsFromAssetAmount(maxInputBalance, maxInputBalance);
+      setAmountDetailsFromAssetAmount(maxSendableAmount, maxSendableAmount);
     },
-    [getMaxInputBalance, selected, selectedAccountAssetBalanceAmount, setAmountDetailsFromAssetAmount]
+    [getMaxSendableAmount, selected, selectedAccountAssetBalanceAmount, setAmountDetailsFromAssetAmount]
   );
 
   const sendMaxBalance = useCallback(() => {
