@@ -31,36 +31,20 @@ type UseSponsoredSendPreparationParams = {
   toAddress: string;
 };
 
-export function getSponsoredSendRequestKey({
-  accountAddress,
-  amount,
-  chainId,
-  selected,
-  toAddress,
-}: {
+type SponsoredSendRequest = {
   accountAddress: string;
-  amount: string;
   chainId: ChainId;
   selected: Pick<ParsedAddressAsset, 'address' | 'decimals' | 'uniqueId'>;
   toAddress: string;
-}): string | null {
+};
+
+export function getSponsoredSendRequestKey(
+  { accountAddress, chainId, selected, toAddress }: SponsoredSendRequest,
+  amount: string
+): string | null {
   const rawAmount = parsePositiveRawAmount(amount, selected.decimals);
   if (rawAmount === null) return null;
 
-  return [getSponsoredSendContextKey({ accountAddress, chainId, selected, toAddress }), rawAmount.toString()].join(':');
-}
-
-function getSponsoredSendContextKey({
-  accountAddress,
-  chainId,
-  selected,
-  toAddress,
-}: {
-  accountAddress: string;
-  chainId: ChainId;
-  selected: Pick<ParsedAddressAsset, 'address' | 'decimals' | 'uniqueId'>;
-  toAddress: string;
-}): string {
   return [
     accountAddress.toLowerCase(),
     chainId,
@@ -68,6 +52,7 @@ function getSponsoredSendContextKey({
     selected.address.toLowerCase(),
     selected.decimals,
     toAddress.toLowerCase(),
+    rawAmount.toString(),
   ].join(':');
 }
 
@@ -96,48 +81,33 @@ export function useSponsoredSendPreparation({
     });
   }, [accountAddress, chainId, isENS, isValidAddress, provider, selected, sponsoredSendsEnabled, sponsorshipEligibleChainIds, toAddress]);
 
-  const sponsoredSendContextKey =
-    accountAddress && selected && toAddress
-      ? getSponsoredSendContextKey({
-          accountAddress,
-          chainId,
-          selected,
-          toAddress,
-        })
-      : null;
+  const sponsoredSendRequest = useMemo(
+    () => (accountAddress && selected && toAddress ? { accountAddress, chainId, selected, toAddress } : null),
+    [accountAddress, chainId, selected, toAddress]
+  );
 
-  const sponsoredSendRequestKey =
-    accountAddress && selected && toAddress
-      ? getSponsoredSendRequestKey({
-          accountAddress,
-          amount,
-          chainId,
-          selected,
-          toAddress,
-        })
-      : null;
+  const currentSponsoredSendKey = useMemo(
+    () => (sponsoredSendRequest ? getSponsoredSendRequestKey(sponsoredSendRequest, amount) : null),
+    [amount, sponsoredSendRequest]
+  );
 
-  const debouncedSponsoredSendRequestKey =
-    accountAddress && selected && toAddress
-      ? getSponsoredSendRequestKey({
-          accountAddress,
-          amount: debouncedAmount,
-          chainId,
-          selected,
-          toAddress,
-        })
-      : null;
+  const debouncedSponsoredSendKey = useMemo(
+    () => (sponsoredSendRequest ? getSponsoredSendRequestKey(sponsoredSendRequest, debouncedAmount) : null),
+    [debouncedAmount, sponsoredSendRequest]
+  );
 
   const [preparedSponsoredSend, setPreparedSponsoredSend] = useState<PreparedSponsoredSendState | null>(null);
   const [isPreparingSponsoredSend, setIsPreparingSponsoredSend] = useState(false);
-  const hasResolvedSponsoredSend = preparedSponsoredSend?.key === sponsoredSendRequestKey;
+
+  const hasResolvedSponsoredSend = preparedSponsoredSend?.key === currentSponsoredSendKey;
   const preparedCalls = hasResolvedSponsoredSend ? preparedSponsoredSend.preparedCalls : null;
   const isSponsoredSend = isPreparedCallsExecutionSponsored(preparedCalls);
   const preparedCall = hasResolvedSponsoredSend && isSponsoredSend ? preparedSponsoredSend.call : null;
+
   const shouldShowSponsoredSendGas =
     canUseSponsoredSend &&
     isSufficientBalance &&
-    (!sponsoredSendRequestKey || isPreparingSponsoredSend || debouncedAmount !== amount || !hasResolvedSponsoredSend || isSponsoredSend);
+    (!currentSponsoredSendKey || isPreparingSponsoredSend || !hasResolvedSponsoredSend || isSponsoredSend);
 
   useEffect(() => {
     let isStale = false;
@@ -151,8 +121,7 @@ export function useSponsoredSendPreparation({
         !selected ||
         !provider ||
         !isSufficientBalance ||
-        !sponsoredSendContextKey ||
-        !debouncedSponsoredSendRequestKey
+        !debouncedSponsoredSendKey
       ) {
         setPreparedSponsoredSend(null);
         setIsPreparingSponsoredSend(false);
@@ -180,9 +149,9 @@ export function useSponsoredSendPreparation({
 
         if (!isStale) {
           if (nextPreparedCalls) {
-            setPreparedSponsoredSend({ call, key: debouncedSponsoredSendRequestKey, preparedCalls: nextPreparedCalls });
+            setPreparedSponsoredSend({ call, key: debouncedSponsoredSendKey, preparedCalls: nextPreparedCalls });
           } else {
-            setPreparedSponsoredSend({ call: null, key: debouncedSponsoredSendRequestKey, preparedCalls: null });
+            setPreparedSponsoredSend({ call: null, key: debouncedSponsoredSendKey, preparedCalls: null });
           }
         }
       } catch (error) {
@@ -190,7 +159,7 @@ export function useSponsoredSendPreparation({
         const message = ensureError(error).message;
         logger.warn('[useSponsoredSendPreparation]: sponsored send preparation failed', { message });
         if (!isStale) {
-          setPreparedSponsoredSend({ call: null, key: debouncedSponsoredSendRequestKey, preparedCalls: null });
+          setPreparedSponsoredSend({ call: null, key: debouncedSponsoredSendKey, preparedCalls: null });
         }
       } finally {
         if (!isStale) {
@@ -210,11 +179,10 @@ export function useSponsoredSendPreparation({
     canUseSponsoredSend,
     chainId,
     debouncedAmount,
-    debouncedSponsoredSendRequestKey,
+    debouncedSponsoredSendKey,
     isSufficientBalance,
     provider,
     selected,
-    sponsoredSendContextKey,
     toAddress,
   ]);
 

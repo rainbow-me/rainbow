@@ -15,7 +15,6 @@ type GetSendSubmitButtonStateParams = {
   isSufficientGas: boolean;
   isValidGas: boolean;
   nativeAssetSymbol: string | undefined;
-  sponsoredAmountIsStale: boolean;
 };
 
 export function getSendSubmitButtonState({
@@ -32,14 +31,12 @@ export function getSendSubmitButtonState({
   isSufficientGas,
   isValidGas,
   nativeAssetSymbol,
-  sponsoredAmountIsStale,
 }: GetSendSubmitButtonStateParams) {
   const isZeroAssetAmount = !greaterThan(assetAmount, 0);
   const hasSufficientGasForSend = isSponsoredSend || isSufficientGas;
   const hasValidGasForSend = isSponsoredSend || isValidGas;
   const isWaitingForGas = !isSponsoredSend && !isGasFeeReady;
-  const isWaitingForSponsoredSend =
-    canUseSponsoredSend && !isZeroAssetAmount && (isPreparingSponsoredSend || sponsoredAmountIsStale || !hasResolvedSponsoredSend);
+  const isWaitingForSponsoredSend = canUseSponsoredSend && !isZeroAssetAmount && (isPreparingSponsoredSend || !hasResolvedSponsoredSend);
 
   if (isZeroAssetAmount) {
     return {

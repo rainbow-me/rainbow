@@ -25,37 +25,43 @@ const SELECTED_ASSET = {
 describe('getSponsoredSendRequestKey', () => {
   it('returns null until there is a positive amount', () => {
     expect(
-      getSponsoredSendRequestKey({
-        accountAddress: '0x3333333333333333333333333333333333333333',
-        amount: '0',
-        chainId: ChainId.base,
-        selected: SELECTED_ASSET,
-        toAddress: '0x4444444444444444444444444444444444444444',
-      })
+      getSponsoredSendRequestKey(
+        {
+          accountAddress: '0x3333333333333333333333333333333333333333',
+          chainId: ChainId.base,
+          selected: SELECTED_ASSET,
+          toAddress: '0x4444444444444444444444444444444444444444',
+        },
+        '0'
+      )
     ).toBeNull();
   });
 
   it('returns null for NaN amount', () => {
     expect(
-      getSponsoredSendRequestKey({
-        accountAddress: '0x3333333333333333333333333333333333333333',
-        amount: '.',
-        chainId: ChainId.base,
-        selected: SELECTED_ASSET,
-        toAddress: '0x4444444444444444444444444444444444444444',
-      })
+      getSponsoredSendRequestKey(
+        {
+          accountAddress: '0x3333333333333333333333333333333333333333',
+          chainId: ChainId.base,
+          selected: SELECTED_ASSET,
+          toAddress: '0x4444444444444444444444444444444444444444',
+        },
+        '.'
+      )
     ).toBeNull();
   });
 
   it('normalizes addresses and includes asset, chain, and amount identity', () => {
     expect(
-      getSponsoredSendRequestKey({
-        accountAddress: '0x3333333333333333333333333333333333333333'.toUpperCase(),
-        amount: '1.5',
-        chainId: ChainId.base,
-        selected: SELECTED_ASSET,
-        toAddress: '0x4444444444444444444444444444444444444444'.toUpperCase(),
-      })
+      getSponsoredSendRequestKey(
+        {
+          accountAddress: '0x3333333333333333333333333333333333333333'.toUpperCase(),
+          chainId: ChainId.base,
+          selected: SELECTED_ASSET,
+          toAddress: '0x4444444444444444444444444444444444444444'.toUpperCase(),
+        },
+        '1.5'
+      )
     ).toBe(
       '0x3333333333333333333333333333333333333333:8453:base-eth:0x5555555555555555555555555555555555555555:18:0x4444444444444444444444444444444444444444:1500000000000000000'
     );
@@ -69,62 +75,64 @@ describe('getSponsoredSendRequestKey', () => {
       toAddress: '0x4444444444444444444444444444444444444444',
     };
 
-    expect(getSponsoredSendRequestKey({ ...request, amount: '0.999999999999999999' })).not.toBe(
-      getSponsoredSendRequestKey({ ...request, amount: '1' })
-    );
+    expect(getSponsoredSendRequestKey(request, '0.999999999999999999')).not.toBe(getSponsoredSendRequestKey(request, '1'));
   });
 
   it('returns null for amounts that exceed asset precision', () => {
     expect(
-      getSponsoredSendRequestKey({
-        accountAddress: '0x3333333333333333333333333333333333333333',
-        amount: '0.9999999999999999999',
-        chainId: ChainId.base,
-        selected: SELECTED_ASSET,
-        toAddress: '0x4444444444444444444444444444444444444444',
-      })
+      getSponsoredSendRequestKey(
+        {
+          accountAddress: '0x3333333333333333333333333333333333333333',
+          chainId: ChainId.base,
+          selected: SELECTED_ASSET,
+          toAddress: '0x4444444444444444444444444444444444444444',
+        },
+        '0.9999999999999999999'
+      )
     ).toBeNull();
   });
 
   it('separates assets with the same unique id but different token shape', () => {
     const sharedRequest = {
       accountAddress: '0x3333333333333333333333333333333333333333',
-      amount: '1.5',
       chainId: ChainId.base,
       toAddress: '0x4444444444444444444444444444444444444444',
     };
 
     expect(
-      getSponsoredSendRequestKey({
-        ...sharedRequest,
-        selected: {
-          ...SELECTED_ASSET,
-          address: '0x5555555555555555555555555555555555555555'.toUpperCase(),
+      getSponsoredSendRequestKey(
+        {
+          ...sharedRequest,
+          selected: { ...SELECTED_ASSET, address: '0x5555555555555555555555555555555555555555'.toUpperCase() },
         },
-      })
+        '1.5'
+      )
     ).not.toBe(
-      getSponsoredSendRequestKey({
-        ...sharedRequest,
-        selected: {
-          ...SELECTED_ASSET,
-          address: '0x6666666666666666666666666666666666666666',
+      getSponsoredSendRequestKey(
+        {
+          ...sharedRequest,
+          selected: { ...SELECTED_ASSET, address: '0x6666666666666666666666666666666666666666' },
         },
-      })
+        '1.5'
+      )
     );
 
     expect(
-      getSponsoredSendRequestKey({
-        ...sharedRequest,
-        selected: SELECTED_ASSET,
-      })
-    ).not.toBe(
-      getSponsoredSendRequestKey({
-        ...sharedRequest,
-        selected: {
-          ...SELECTED_ASSET,
-          decimals: 6,
+      getSponsoredSendRequestKey(
+        {
+          ...sharedRequest,
+          selected: SELECTED_ASSET,
         },
-      })
+        '1.5'
+      )
+    ).not.toBe(
+      getSponsoredSendRequestKey(
+        {
+          ...sharedRequest,
+          selected: { ...SELECTED_ASSET, decimals: 6 },
+        },
+        '1.5'
+      )
     );
   });
 });

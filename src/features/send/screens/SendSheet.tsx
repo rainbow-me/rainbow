@@ -508,13 +508,11 @@ export default function SendSheet() {
       isSufficientGas,
       isValidGas,
       nativeAssetSymbol: useBackendNetworksStore.getState().getChainsNativeAsset()[currentChainId || ChainId.mainnet]?.symbol,
-      sponsoredAmountIsStale: debouncedAssetAmount !== amountDetails.assetAmount,
     });
   }, [
     amountDetails.assetAmount,
     amountDetails.isSufficientBalance,
     canUseSponsoredSend,
-    debouncedAssetAmount,
     isENS,
     ensProfile.isSuccess,
     gasFeeParamsBySpeed,
