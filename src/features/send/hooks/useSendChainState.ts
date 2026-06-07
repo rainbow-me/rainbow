@@ -1,10 +1,8 @@
-import { useEffect, useMemo, useState } from 'react';
-import { InteractionManager } from 'react-native';
+import { useEffect, useMemo } from 'react';
 
 import { type StaticJsonRpcProvider } from '@ethersproject/providers';
 
 import { getProvider, isL2Chain } from '@/handlers/web3';
-import usePrevious from '@/hooks/usePrevious';
 import { ChainId } from '@/state/backendNetworks/types';
 
 type UseSendChainStateParams = {
@@ -26,45 +24,23 @@ export function useSendChainState({
   startPollingGasFees,
   stopPollingGasFees,
 }: UseSendChainStateParams): UseSendChainStateResult {
-  const [currentChainId, setCurrentChainId] = useState<ChainId>(ChainId.mainnet);
-  const prevChainId = usePrevious(currentChainId);
-  const [currentProvider, setCurrentProvider] = useState<StaticJsonRpcProvider | undefined>(getProvider({ chainId: ChainId.mainnet }));
+  const chainState = useMemo(() => {
+    const selectedChainId = selectedAssetChainId && accountChainId === ChainId.goerli ? ChainId.goerli : selectedAssetChainId;
+    const currentChainId = selectedChainId ?? ChainId.mainnet;
 
-  const isL2 = useMemo(() => isL2Chain({ chainId: currentChainId }), [currentChainId]);
-
-  useEffect(() => {
-    if (prevChainId !== currentChainId) {
-      InteractionManager.runAfterInteractions(() => {
-        startPollingGasFees(currentChainId);
-      });
-    }
-  }, [startPollingGasFees, prevChainId, currentChainId]);
-
-  useEffect(() => {
-    return () => {
-      InteractionManager.runAfterInteractions(() => {
-        stopPollingGasFees();
-      });
+    return {
+      currentChainId,
+      currentProvider: getProvider({ chainId: currentChainId }),
+      isL2: isL2Chain({ chainId: currentChainId }),
     };
-  }, [currentChainId, stopPollingGasFees]);
+  }, [accountChainId, selectedAssetChainId]);
 
   useEffect(() => {
-    if (selectedAssetChainId && (selectedAssetChainId !== currentChainId || !currentChainId || prevChainId !== currentChainId)) {
-      if (accountChainId === ChainId.goerli) {
-        setCurrentChainId(ChainId.goerli);
-        const provider = getProvider({ chainId: ChainId.goerli });
-        setCurrentProvider(provider);
-      } else {
-        setCurrentChainId(selectedAssetChainId);
-        const provider = getProvider({ chainId: currentChainId });
-        setCurrentProvider(provider);
-      }
-    }
-  }, [currentChainId, accountChainId, prevChainId, selectedAssetChainId]);
+    startPollingGasFees(chainState.currentChainId);
+    return () => {
+      stopPollingGasFees();
+    };
+  }, [chainState.currentChainId, startPollingGasFees, stopPollingGasFees]);
 
-  return {
-    currentChainId,
-    currentProvider,
-    isL2,
-  };
+  return chainState;
 }
