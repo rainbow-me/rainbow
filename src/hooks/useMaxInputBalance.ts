@@ -10,16 +10,16 @@ export function useMaxInputBalance() {
   const { selectedGasFee, l1GasFeeOptimism } = useGas();
 
   return useCallback(
-    (inputCurrency: ParsedAddressAsset | UniqueAsset | undefined, options: { ignoreGasFee?: boolean }) => {
+    (inputCurrency: ParsedAddressAsset | UniqueAsset | undefined, options: { accountBalanceAmount?: string; ignoreGasFee?: boolean }) => {
       if (!inputCurrency || assetIsUniqueAsset(inputCurrency)) {
         return '0';
       }
 
-      const ignoreGasFee = options?.ignoreGasFee ?? false;
-      const accountAsset = ethereumUtils.getAccountAsset(inputCurrency.uniqueId);
+      const ignoreGasFee = options.ignoreGasFee ?? false;
+      const accountBalanceAmount = options.accountBalanceAmount ?? ethereumUtils.getAccountAsset(inputCurrency.uniqueId)?.balance?.amount;
       const newInputBalance = ignoreGasFee
-        ? (inputCurrency.balance?.amount ?? accountAsset?.balance?.amount ?? '0')
-        : ethereumUtils.getBalanceAmount(selectedGasFee, inputCurrency, l1GasFeeOptimism);
+        ? (accountBalanceAmount ?? inputCurrency.balance?.amount ?? '0')
+        : ethereumUtils.getBalanceAmount(selectedGasFee, inputCurrency, l1GasFeeOptimism, accountBalanceAmount);
 
       return newInputBalance;
     },

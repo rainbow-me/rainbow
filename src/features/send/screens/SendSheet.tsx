@@ -204,6 +204,10 @@ export default function SendSheet() {
 
   const isUniqueAsset = assetIsUniqueAsset(selected);
   const selectedAddressAsset = selected && assetIsParsedAddressAsset(selected) ? selected : undefined;
+  const selectedAccountAssetBalanceAmount = useUserAssetsStore(state => {
+    if (!selectedAddressAsset) return undefined;
+    return state.getLegacyUserAsset(selectedAddressAsset.uniqueId)?.balance?.amount ?? '0';
+  });
   const isENS = selected?.type === AssetType.ens;
 
   const { currentChainId, currentProvider, isL2 } = useSendChainState({
@@ -285,9 +289,15 @@ export default function SendSheet() {
 
   const setAssetAmount = useCallback(
     (newAssetAmount: string) => {
-      setAmountDetailsFromAssetAmount(newAssetAmount, getMaxInputBalance(selected, { ignoreGasFee: shouldShowSponsoredSendGas }));
+      setAmountDetailsFromAssetAmount(
+        newAssetAmount,
+        getMaxInputBalance(selected, {
+          accountBalanceAmount: selectedAccountAssetBalanceAmount,
+          ignoreGasFee: shouldShowSponsoredSendGas,
+        })
+      );
     },
-    [getMaxInputBalance, selected, setAmountDetailsFromAssetAmount, shouldShowSponsoredSendGas]
+    [getMaxInputBalance, selected, selectedAccountAssetBalanceAmount, setAmountDetailsFromAssetAmount, shouldShowSponsoredSendGas]
   );
 
   const sendUpdateSelected = useCallback(
@@ -319,7 +329,10 @@ export default function SendSheet() {
   useEffect(() => {
     if (!selected || isUniqueAsset) return;
 
-    const newMaxInputBalance = getMaxInputBalance(selected, { ignoreGasFee: shouldShowSponsoredSendGas });
+    const newMaxInputBalance = getMaxInputBalance(selected, {
+      accountBalanceAmount: selectedAccountAssetBalanceAmount,
+      ignoreGasFee: shouldShowSponsoredSendGas,
+    });
     setAmountDetails(currentAmountDetails => {
       const isSufficientBalance = hasSufficientAssetBalance(currentAmountDetails.assetAmount, newMaxInputBalance);
       if (currentAmountDetails.isSufficientBalance === isSufficientBalance) return currentAmountDetails;
@@ -329,7 +342,7 @@ export default function SendSheet() {
         isSufficientBalance,
       };
     });
-  }, [getMaxInputBalance, isUniqueAsset, selected, shouldShowSponsoredSendGas]);
+  }, [getMaxInputBalance, isUniqueAsset, selected, selectedAccountAssetBalanceAmount, shouldShowSponsoredSendGas]);
 
   useEffect(() => {
     if (recipientOverride && !recipient) {
@@ -359,7 +372,10 @@ export default function SendSheet() {
         _assetAmount = formatInputDecimals(convertedAssetAmount, _nativeAmount);
       }
 
-      const maxInputBalance = getMaxInputBalance(selected, { ignoreGasFee: shouldShowSponsoredSendGas });
+      const maxInputBalance = getMaxInputBalance(selected, {
+        accountBalanceAmount: selectedAccountAssetBalanceAmount,
+        ignoreGasFee: shouldShowSponsoredSendGas,
+      });
       const _isSufficientBalance = hasSufficientAssetBalance(_assetAmount, maxInputBalance);
       setAmountDetailsIfChanged({
         assetAmount: _assetAmount,
@@ -368,15 +384,18 @@ export default function SendSheet() {
       });
       analytics.track(analytics.event.changedNativeCurrencyInputSend);
     },
-    [getMaxInputBalance, isUniqueAsset, selected, setAmountDetailsIfChanged, shouldShowSponsoredSendGas]
+    [getMaxInputBalance, isUniqueAsset, selected, selectedAccountAssetBalanceAmount, setAmountDetailsIfChanged, shouldShowSponsoredSendGas]
   );
 
   const setMaxAssetAmount = useCallback(
     (ignoreGasFee: boolean) => {
-      const maxInputBalance = getMaxInputBalance(selected, { ignoreGasFee });
+      const maxInputBalance = getMaxInputBalance(selected, {
+        accountBalanceAmount: selectedAccountAssetBalanceAmount,
+        ignoreGasFee,
+      });
       setAmountDetailsFromAssetAmount(maxInputBalance, maxInputBalance);
     },
-    [getMaxInputBalance, selected, setAmountDetailsFromAssetAmount]
+    [getMaxInputBalance, selected, selectedAccountAssetBalanceAmount, setAmountDetailsFromAssetAmount]
   );
 
   const sendMaxBalance = useCallback(() => {
