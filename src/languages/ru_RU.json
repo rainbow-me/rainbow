@@ -555,11 +555,6 @@
         "tokens": "Токены"
       },
       "show_more": "Показать еще",
-      "placements": {
-        "perps_title": "Perps",
-        "predictions_title": "Прогнозы",
-        "see_all": "Смотреть все"
-      },
       "strategies": {
         "strategies_title": "Стратегии",
         "yearn_finance_description": "Умные стратегии доходности от yearn.finance"
@@ -3458,10 +3453,10 @@
       "sports": {
         "vs": "против",
         "live": "В прямом эфире",
-        "this_week": "This week",
+        "this_week": "На этой неделе",
         "game_best_of": "Игра %{currentPeriod} - Лучший из %{bestOf}",
         "final": "Финал",
-        "no_games": "No games this week"
+        "no_games": "На этой неделе нет игр"
       },
       "outcomes": {
         "yes": "Да",
