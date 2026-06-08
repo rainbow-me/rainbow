@@ -18,10 +18,12 @@ export function InputValueCaret({
   disabled,
   value,
   color,
+  height = 41,
 }: {
   disabled?: SharedValue<boolean>;
   value: SharedValue<string>;
   color: string | SharedValue<string>;
+  height?: number;
 }) {
   const shouldShow = useDerivedValue(() => {
     return !disabled?.value;
@@ -58,8 +60,9 @@ export function InputValueCaret({
   const assetCaretStyle = useAnimatedStyle(() => {
     return {
       backgroundColor: typeof color === 'string' ? color : color.value,
+      height,
     };
-  });
+  }, [height]);
 
   return (
     <Animated.View style={caretStyle}>
@@ -70,7 +73,6 @@ export function InputValueCaret({
 
 export const styles = StyleSheet.create({
   inputCaret: {
-    height: 41,
     width: 2,
   },
 });
