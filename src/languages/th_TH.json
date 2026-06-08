@@ -3097,42 +3097,6 @@
         "new_tab": "แท็บใหม่"
       }
     },
-    "trending_tokens": {
-      "all": "ทั้งหมด",
-      "no_results": {
-        "title": "ไม่มีผลลัพธ์",
-        "body": "ลองเรียกดูช่วงเวลาที่กว้างขึ้นหรือเครือข่ายหรือหมวดหมู่ที่แตกต่าง"
-      },
-      "and": "และ",
-      "and_others": {
-        "one": "และ%{count} อื่น",
-        "other": "และ%{count} อื่น ๆ"
-      },
-      "filters": {
-        "categories": {
-          "TRENDING": "เทรนด์",
-          "NEW": "ใหม่"
-        },
-        "sort": {
-          "RECOMMENDED": {
-            "label": "เรียงลำดับ",
-            "menuOption": "ค่าเริ่มต้น"
-          },
-          "VOLUME": "ปริมาณ",
-          "MARKET_CAP": "มูลค่าตามตลาด",
-          "TOP_GAINERS": "ผู้ที่ได้กำไรมากที่สุด",
-          "TOP_LOSERS": "ผู้ที่ขาดทุนมากที่สุด"
-        },
-        "time": {
-          "H12": "12 ชั่วโมง",
-          "H12_ABBREVIATED": "12ชม.",
-          "H24": "24 ชั่วโมง",
-          "H24_ABBREVIATED": "24h",
-          "D7": "1 สัปดาห์",
-          "D3": "3 วัน"
-        }
-      }
-    },
     "network_selector": {
       "customize_networks_banner": {
         "title": "กำหนดค่าเครือข่าย",
