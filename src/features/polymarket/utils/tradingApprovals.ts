@@ -14,7 +14,7 @@ import { ensureTradingWalletDeployed, executeRelayTransaction } from '@/features
 import { syncClobCollateralBalance } from '@/features/polymarket/utils/syncClobCollateralBalance';
 import { requireHex } from '@/framework/core/evm/hex';
 import { getProvider } from '@/handlers/web3';
-import { logger, RainbowError } from '@/logger';
+import { logger } from '@/logger';
 import { ChainId } from '@rainbow-me/swaps';
 
 const polygonProvider = getProvider({ chainId: ChainId.polygon });
@@ -39,7 +39,7 @@ async function hasCtfApproval(owner: Address, operator: Address): Promise<boolea
   return decodeFunctionResult({
     abi: erc1155Abi,
     functionName: 'isApprovedForAll',
-    data: requireHex(result, new RainbowError('[polymarket] Provider returned non-hex call data')),
+    data: requireHex(result, '[polymarket] Provider returned non-hex call data'),
   });
 }
 
