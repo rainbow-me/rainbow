@@ -555,11 +555,6 @@
         "tokens": "Tokenler"
       },
       "show_more": "Daha fazla göster",
-      "placements": {
-        "perps_title": "Vadeli İşlemler",
-        "predictions_title": "Tahminler",
-        "see_all": "Tümünü gör"
-      },
       "strategies": {
         "strategies_title": "Stratejiler",
         "yearn_finance_description": "yearn.finance'den akıllı getiri stratejileri"
@@ -3458,10 +3453,10 @@
       "sports": {
         "vs": "vs",
         "live": "Canlı",
-        "this_week": "This week",
+        "this_week": "Bu hafta",
         "game_best_of": "Oyun %{currentPeriod} - %{bestOf} En İyi",
         "final": "Final",
-        "no_games": "No games this week"
+        "no_games": "Bu hafta maç yok"
       },
       "outcomes": {
         "yes": "Evet",
