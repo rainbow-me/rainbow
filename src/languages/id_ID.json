@@ -3097,42 +3097,6 @@
         "new_tab": "Tab Baru"
       }
     },
-    "trending_tokens": {
-      "all": "Semua",
-      "no_results": {
-        "title": "Tidak ada hasil",
-        "body": "Cobalah menjelajah dalam rentang waktu yang lebih besar atau jaringan atau kategori yang berbeda."
-      },
-      "and": "dan",
-      "and_others": {
-        "one": "dan %{count} lainnya",
-        "other": "dan %{count} lainnya"
-      },
-      "filters": {
-        "categories": {
-          "TRENDING": "Tren",
-          "NEW": "Baru"
-        },
-        "sort": {
-          "RECOMMENDED": {
-            "label": "Urutkan",
-            "menuOption": "Standar"
-          },
-          "VOLUME": "Volume",
-          "MARKET_CAP": "Kap Pasar",
-          "TOP_GAINERS": "Pemenang Tertinggi",
-          "TOP_LOSERS": "Pecundang Tertinggi"
-        },
-        "time": {
-          "H12": "12 Jam",
-          "H12_ABBREVIATED": "12h",
-          "H24": "24 Jam",
-          "H24_ABBREVIATED": "24h",
-          "D7": "1 Minggu",
-          "D3": "3 Hari"
-        }
-      }
-    },
     "network_selector": {
       "customize_networks_banner": {
         "title": "Sesuaikan Jaringan",
