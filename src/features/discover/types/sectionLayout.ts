@@ -2,7 +2,7 @@ import { type ReactNode } from 'react';
 
 import { type MARKET_DISPLAY_VALUES } from '@/features/placements/surfaces/constants';
 import { type Display, type SurfaceLeaf } from '@/features/placements/surfaces/types';
-import { type PlacementItemV2 as PlacementItem } from '@/features/placements/types';
+import { type PlacementItem } from '@/features/placements/types';
 
 export type CarouselSectionDescriptor<T extends PlacementItem> = {
   layout: 'carousel';

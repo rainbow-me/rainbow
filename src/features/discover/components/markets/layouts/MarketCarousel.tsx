@@ -5,7 +5,7 @@ import { FlatList } from 'react-native-gesture-handler';
 
 import { Box } from '@/design-system';
 import { SectionHeader } from '@/features/discover/components/markets/layouts/SectionHeader';
-import { type PlacementItemV2 as PlacementItem } from '@/features/placements/types';
+import { type PlacementItem } from '@/features/placements/types';
 
 import { computeSnapToOffsets } from './carouselLayout';
 

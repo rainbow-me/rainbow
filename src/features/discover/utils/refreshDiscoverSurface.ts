@@ -4,7 +4,7 @@ import { getSportsSurfaceIntent } from '@/features/discover/utils/sportsSurfaceI
 import { useHyperliquidMarketsStore } from '@/features/perps/stores/hyperliquidMarketsStore';
 import { usePredictionEventsStore } from '@/features/placements/stores/derived/predictionsPlacementStore';
 import { clearTokenRefCache, useTokenRefsStore } from '@/features/placements/stores/derived/tokensPlacementStore';
-import { usePlacementsV2Store } from '@/features/placements/stores/placementsStore';
+import { usePlacementsStore } from '@/features/placements/stores/placementsStore';
 import { useDiscoverSurface, useDiscoverSurfacePlacementRefs } from '@/features/placements/surfaces/stores/discoverSurfaceStore';
 import { type DiscoverSurface } from '@/features/placements/surfaces/stores/discoverSurfaceTypes';
 import { getSurfaceStore } from '@/features/placements/surfaces/stores/surfaceStore';
@@ -14,7 +14,7 @@ import { useRemoteConfigStore } from '@/model/remoteConfig';
 export async function refreshDiscoverSurface(surfaceId: string): Promise<void> {
   await Promise.allSettled([
     getSurfaceStore(surfaceId).getState().fetch(undefined, { force: true }),
-    usePlacementsV2Store.getState().fetch(undefined, { force: true }),
+    usePlacementsStore.getState().fetch(undefined, { force: true }),
   ]);
 
   const surface = useDiscoverSurface.getState();

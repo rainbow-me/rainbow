@@ -1,14 +1,14 @@
 import { type PlacementResult } from '@/features/placements/stores/placementsStore';
-import { type PlacementItemV2, type PlacementV2 } from '@/features/placements/types';
+import { type Placement, type PlacementItem } from '@/features/placements/types';
 
 /**
  * Pairs configured placement items with their resolved values, preserving the
  * placement order and dropping any items whose ref did not resolve.
  */
 export function pairPlacementItems<Resolved, Hydrated>(
-  placementItems: PlacementItemV2[],
+  placementItems: PlacementItem[],
   resolvedById: (id: string) => Resolved | undefined,
-  toItem: (item: PlacementItemV2, resolved: Resolved) => Hydrated
+  toItem: (item: PlacementItem, resolved: Resolved) => Hydrated
 ): Hydrated[] {
   const items: Hydrated[] = [];
 
@@ -36,7 +36,7 @@ export function finalizePlacementResult<Hydrated>({
   hasRefs: boolean;
   isInitialLoad: boolean;
   items: Hydrated[];
-  placement: PlacementV2 | undefined;
+  placement: Placement | undefined;
 }): PlacementResult<Hydrated> {
   if (!enabled) return { isLoading: false, items: [], placement: undefined };
 

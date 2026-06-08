@@ -10,13 +10,7 @@ import { type RequestSource } from '@/features/dapp-request/types';
 import { type ENSRapActionType } from '@/features/ens/raps/common';
 import { type PerpPositionSide, type TriggerOrderType } from '@/features/perps/types';
 import { type Destination, type Display, type SectionId, type SurfaceDocument, type SurfaceId } from '@/features/placements/surfaces/types';
-import {
-  type Placement as LegacyPlacement,
-  type PlacementItem as LegacyPlacementItem,
-  type PlacementItemAnalyticsMetadata,
-  type PlacementItemV2,
-  type PlacementV2,
-} from '@/features/placements/types';
+import { type Placement, type PlacementItem } from '@/features/placements/types';
 import { type EthereumWalletType } from '@/helpers/walletTypes';
 import { type WalletLibraryType } from '@/model/wallet';
 import { type PairHardwareWalletNavigatorParams } from '@/navigation/types';
@@ -249,8 +243,6 @@ export const event = {
 
   // discover screen
   timeSpentOnDiscoverScreen: 'Time spent on the Discover screen',
-  discoverPlacementCardPressed: 'discover.placement_card_pressed',
-  discoverPlacementSeeAllPressed: 'discover.placement_see_all_pressed',
   placementInteraction: 'placement.interaction',
   surfaceInteraction: 'surface.interaction',
 
@@ -1003,34 +995,18 @@ export type EventProperties = {
   [event.timeSpentOnDiscoverScreen]: {
     durationInMs: number;
   };
-  [event.discoverPlacementCardPressed]: {
-    placementId: LegacyPlacement['id'];
-    placementScreen?: LegacyPlacement['screen'];
-    placementTitle: string;
-    itemOrder: LegacyPlacementItem['order'];
-    marketId: string;
-    marketName?: PlacementItemAnalyticsMetadata['marketName'];
-    marketSlug?: PlacementItemAnalyticsMetadata['marketSlug'];
-    marketSymbol?: PlacementItemAnalyticsMetadata['marketSymbol'];
-    marketType: LegacyPlacementItem['ref']['source'];
-  };
-  [event.discoverPlacementSeeAllPressed]: {
-    placementId: LegacyPlacement['id'];
-    placementScreen?: LegacyPlacement['screen'];
-    placementTitle: string;
-  };
   [event.placementInteraction]: {
-    id: PlacementV2['id'];
+    id: Placement['id'];
     interactionType: 'card_press' | 'carousel_scroll';
-    source?: PlacementV2['source'];
-    type?: PlacementV2['type'];
-    version?: PlacementV2['version'];
+    source: Placement['source'];
+    type: Placement['type'];
+    version: Placement['version'];
     display?: Display;
     sectionId?: SectionId;
     sectionTitle?: string;
-    surfaceId?: SurfaceId;
-    itemId?: PlacementItemV2['id'];
-    itemOrder?: number;
+    surfaceId: SurfaceId;
+    itemId: PlacementItem['id'];
+    itemOrder: number;
   };
   [event.surfaceInteraction]: {
     id: SurfaceId;
