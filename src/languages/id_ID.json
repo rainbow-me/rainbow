@@ -3458,9 +3458,10 @@
       "sports": {
         "vs": "vs",
         "live": "Langsung",
+        "this_week": "Minggu ini",
         "game_best_of": "Permainan %{currentPeriod} - Terbaik dari %{bestOf}",
         "final": "Final",
-        "no_games": "Tidak ada permainan hari ini atau besok"
+        "no_games": "Tidak ada pertandingan minggu ini"
       },
       "outcomes": {
         "yes": "Ya",
