@@ -3097,42 +3097,6 @@
         "new_tab": "Yeni Sekme"
       }
     },
-    "trending_tokens": {
-      "all": "Tümü",
-      "no_results": {
-        "title": "Sonuç bulunamadı",
-        "body": "Daha geniş bir zaman dilimi veya farklı bir ağ ya da kategori taramayı deneyin."
-      },
-      "and": "ve",
-      "and_others": {
-        "one": "ve %{count} diğer",
-        "other": "ve %{count} diğerleri"
-      },
-      "filters": {
-        "categories": {
-          "TRENDING": "Gündemde",
-          "NEW": "Yeni"
-        },
-        "sort": {
-          "RECOMMENDED": {
-            "label": "Sırala",
-            "menuOption": "Varsayılan"
-          },
-          "VOLUME": "Hacim",
-          "MARKET_CAP": "Piyasa Değeri",
-          "TOP_GAINERS": "En Çok Kazananlar",
-          "TOP_LOSERS": "En Çok Kaybedenler"
-        },
-        "time": {
-          "H12": "12 Saat",
-          "H12_ABBREVIATED": "12s",
-          "H24": "24 Saat",
-          "H24_ABBREVIATED": "24s",
-          "D7": "1 Hafta",
-          "D3": "3 Gün"
-        }
-      }
-    },
     "network_selector": {
       "customize_networks_banner": {
         "title": "Ağları Özelleştir",
