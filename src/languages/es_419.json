@@ -3097,42 +3097,6 @@
         "new_tab": "Nueva pestaña"
       }
     },
-    "trending_tokens": {
-      "all": "Todos",
-      "no_results": {
-        "title": "No hay resultados",
-        "body": "Intenta buscar en un periodo de tiempo más largo o una red o categoría diferente."
-      },
-      "and": "y",
-      "and_others": {
-        "one": "y %{count} otro",
-        "other": "y %{count} otros"
-      },
-      "filters": {
-        "categories": {
-          "TRENDING": "Tendencia",
-          "NEW": "Nuevo"
-        },
-        "sort": {
-          "RECOMMENDED": {
-            "label": "Ordenar",
-            "menuOption": "Predeterminado"
-          },
-          "VOLUME": "Volumen",
-          "MARKET_CAP": "Capitalización de mercado",
-          "TOP_GAINERS": "Principales ganadores",
-          "TOP_LOSERS": "Principales perdedores"
-        },
-        "time": {
-          "H12": "12 Horas",
-          "H12_ABBREVIATED": "12h",
-          "H24": "24 Horas",
-          "H24_ABBREVIATED": "24h",
-          "D7": "1 Semana",
-          "D3": "3 Días"
-        }
-      }
-    },
     "network_selector": {
       "customize_networks_banner": {
         "title": "Personalizar Redes",
