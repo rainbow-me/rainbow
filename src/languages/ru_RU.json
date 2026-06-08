@@ -3097,42 +3097,6 @@
         "new_tab": "Новая вкладка"
       }
     },
-    "trending_tokens": {
-      "all": "Все",
-      "no_results": {
-        "title": "Нет результатов",
-        "body": "Попробуйте изменить временной промежуток или выбрать другую сеть или категорию."
-      },
-      "and": "и",
-      "and_others": {
-        "one": "и ещё %{count}",
-        "other": "и ещё %{count} других"
-      },
-      "filters": {
-        "categories": {
-          "TRENDING": "Популярное",
-          "NEW": "Новый"
-        },
-        "sort": {
-          "RECOMMENDED": {
-            "label": "Сортировать",
-            "menuOption": "По умолчанию"
-          },
-          "VOLUME": "Объем",
-          "MARKET_CAP": "Рыночная капитализация",
-          "TOP_GAINERS": "Топ лидеры роста",
-          "TOP_LOSERS": "Топ лидеры падения"
-        },
-        "time": {
-          "H12": "12 Часов",
-          "H12_ABBREVIATED": "12ч",
-          "H24": "24 Часа",
-          "H24_ABBREVIATED": "24ч",
-          "D7": "1 Неделя",
-          "D3": "3 Дня"
-        }
-      }
-    },
     "network_selector": {
       "customize_networks_banner": {
         "title": "Настроить сети",
