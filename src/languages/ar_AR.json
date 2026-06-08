@@ -3097,42 +3097,6 @@
         "new_tab": "تبويب جديد"
       }
     },
-    "trending_tokens": {
-      "all": "الكل",
-      "no_results": {
-        "title": "لا توجد نتائج",
-        "body": "حاول التصفح في إطار زمني أوسع أو شبكة أو فئة مختلفة."
-      },
-      "and": "و",
-      "and_others": {
-        "one": "و %{count} آخر",
-        "other": "و %{count} آخرين"
-      },
-      "filters": {
-        "categories": {
-          "TRENDING": "الشائع",
-          "NEW": "جديد"
-        },
-        "sort": {
-          "RECOMMENDED": {
-            "label": "الترتيب",
-            "menuOption": "افتراضي"
-          },
-          "VOLUME": "الحجم",
-          "MARKET_CAP": "القيمة السوقية",
-          "TOP_GAINERS": "أعلى الرابحين",
-          "TOP_LOSERS": "أعلى الخاسرين"
-        },
-        "time": {
-          "H12": "12 ساعة",
-          "H12_ABBREVIATED": "12 ساعة",
-          "H24": "24 ساعة",
-          "H24_ABBREVIATED": "24 ساعة",
-          "D7": "أسبوع واحد",
-          "D3": "3 أيام"
-        }
-      }
-    },
     "network_selector": {
       "customize_networks_banner": {
         "title": "تخصيص الشبكات",
