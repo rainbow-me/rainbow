@@ -501,9 +501,9 @@ async function submitPaidSend({
           asset: selectedAddressAsset,
           recipient: toAddress,
         },
-        true,
         provider,
-        chainId
+        chainId,
+        true
       );
 
       if (updatedGasLimit && !lessThan(updatedGasLimit, gasLimit)) {

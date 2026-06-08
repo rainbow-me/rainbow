@@ -243,8 +243,9 @@ export const SendConfirmationSheet = () => {
             asset,
             recipient: toAddress,
           },
-          true,
-          provider
+          provider,
+          chainId,
+          true
         ),
       ];
       const sendENSOptions = Object.fromEntries(checkboxes.map(option => [option.id, option.checked])) as {

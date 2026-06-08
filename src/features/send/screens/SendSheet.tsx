@@ -454,17 +454,15 @@ export default function SendSheet() {
     async (updatedGasLimit: string) => {
       if (!selected || !currentProvider) return;
 
-      const txData = await buildTransferTransaction(
-        {
-          address: accountAddress,
-          amount: amountDetails.assetAmount,
-          asset: selected as ParsedAddressAsset,
-          gasLimit: updatedGasLimit,
-          recipient: toAddress,
-        },
-        currentProvider,
-        currentChainId
-      );
+      const txData = await buildTransferTransaction({
+        address: accountAddress,
+        amount: amountDetails.assetAmount,
+        asset: selected,
+        chainId: currentChainId,
+        gasLimit: updatedGasLimit,
+        recipient: toAddress,
+      });
+
       const l1GasFeeOptimism = await ethereumUtils.calculateL1FeeOptimism(txData, currentProvider);
       updateTxFee(updatedGasLimit, null, l1GasFeeOptimism);
     },
@@ -696,9 +694,9 @@ export default function SendSheet() {
             asset: selected,
             recipient: toAddress,
           },
-          false,
           currentProvider,
-          currentChainId
+          currentChainId,
+          false
         );
       } catch (e) {
         if (isStale) return;
