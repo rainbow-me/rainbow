@@ -32,18 +32,21 @@ tags:
 - assertVisible:
     id: discover-sections-pager
 
-# Navigate the Discover v2 tabs by POSITION. Number-based IDs are stable across the
-# server-driven surface, and page assertions verify the active tab content changed.
+# Navigate the Discover v2 tabs by POSITION. Section-tab IDs are server-driven, so match
+# the discover-section-tab- prefix and select by index; page assertions verify the active
+# tab content changed.
 - extendedWaitUntil:
     visible:
-      id: tab-1
+      id: 'discover-section-tab-.*'
     timeout: 30000
 - tapOn:
-    id: tab-2
+    id: 'discover-section-tab-.*'
+    index: 1
 - assertVisible:
     id: discover-section-page-2
 - tapOn:
-    id: tab-1
+    id: 'discover-section-tab-.*'
+    index: 0
 - assertVisible:
     id: discover-section-page-1
 

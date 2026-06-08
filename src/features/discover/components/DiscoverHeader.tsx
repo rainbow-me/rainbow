@@ -156,7 +156,6 @@ function DiscoverCategorySelector() {
           return (
             <View
               key={section.id}
-              testID={`tab-${index + 1}`}
               onLayout={event => {
                 tabLayoutsRef.current[section.id] = event.nativeEvent.layout;
                 if (section.id === activeSection) scrollSelectedTabIntoView(section.id, false);
