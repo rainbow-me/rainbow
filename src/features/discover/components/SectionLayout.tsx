@@ -63,6 +63,7 @@ export function renderSectionLayout<T extends PlacementItem>({
           {...sectionProps}
           data={renderedData}
           getItemWidth={descriptor.getItemWidth}
+          itemHorizontalBleed={descriptor.itemHorizontalBleed}
           itemHeight={descriptor.itemHeight}
           itemVerticalBleed={descriptor.itemVerticalBleed}
           itemWidth={descriptor.itemWidth}

@@ -11,13 +11,14 @@ tags:
 - runFlow: ../../utils/Prepare.yaml
 - runFlow: ../../utils/ImportWalletWithKey.yaml
 
-# Check various screens exist and can be navigated to
+# Open Discover (v2 surface pager) and confirm cross-tab navigation still works.
+# The legacy navbar header (discover-header) was replaced by the v2 surface pager.
 - runScript:
     file: ../../utils/coordinates.js
 - tapOn:
     point: ${output.tabCoordinates.discoverTab}
 - assertVisible:
-    id: discover-header
+    id: discover-sections-pager
 - tapOn:
     point: ${output.tabCoordinates.activityTab}
 - assertVisible:
@@ -29,9 +30,27 @@ tags:
 - tapOn:
     point: ${output.tabCoordinates.discoverTab}
 - assertVisible:
-    id: discover-header
+    id: discover-sections-pager
 
-# Discover screen search for SOCKS and open expanded state
+# Navigate the Discover v2 tabs by POSITION. Section-tab IDs are server-driven, so match
+# the discover-section-tab- prefix and select by index; page assertions verify the active
+# tab content changed.
+- extendedWaitUntil:
+    visible:
+      id: 'discover-section-tab-.*'
+    timeout: 30000
+- tapOn:
+    id: 'discover-section-tab-.*'
+    index: 1
+- assertVisible:
+    id: discover-section-page-2
+- tapOn:
+    id: 'discover-section-tab-.*'
+    index: 0
+- assertVisible:
+    id: discover-section-page-1
+
+# Discover search (SOCKS + bitcoin) — search is unchanged in v2; carried over verbatim
 - tapOn:
     id: discover-search-icon
 - assertVisible:
@@ -49,8 +68,6 @@ tags:
     id: discover-search-clear-input
 - tapOn:
     id: discover-search-input
-
-# Bitcoin search and section verification
 - inputText: 'bitcoin'
 - assertVisible:
     id: favorites-0

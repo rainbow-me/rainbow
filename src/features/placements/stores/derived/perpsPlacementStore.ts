@@ -1,6 +1,5 @@
 import { useMemo } from 'react';
 
-import { IS_TEST } from '@/env';
 import { useHyperliquidMarketsStore } from '@/features/perps/stores/hyperliquidMarketsStore';
 import { type PerpMarketsBySymbol, type PerpMarketWithMetadata } from '@/features/perps/types';
 import {
@@ -11,8 +10,7 @@ import {
 } from '@/features/placements/stores/placementsStore';
 import { type PlacementIdV2, type PlacementItemV2 } from '@/features/placements/types';
 import { finalizePlacementResult, pairPlacementItems } from '@/features/placements/utils/finalizePlacementResult';
-import { useRemoteConfigStore } from '@/model/remoteConfig';
-import { createDerivedStore } from '@/state/internal/createDerivedStore';
+import { useRemoteConfig } from '@/model/remoteConfig';
 import { shallowEqual } from '@/worklets/comparisons';
 
 // ============ Types ========================================================== //
@@ -24,17 +22,10 @@ export type PerpMarketPlacementItem = PlacementItemV2 & {
   market: PerpMarketWithMetadata;
 };
 
-// ============ Derived Stores ================================================= //
-
-export const usePerpsEnabled = createDerivedStore<boolean>(
-  $ => $(useRemoteConfigStore, state => state.getRemoteConfigKey('perps_enabled')) && !IS_TEST,
-  { fastMode: true }
-);
-
 // ============ Utilities ====================================================== //
 
 export function usePerpsPlacement(placementId: PlacementIdV2): PlacementResult<PerpMarketPlacementItem> {
-  const enabled = usePerpsEnabled();
+  const enabled = useRemoteConfig('perps_enabled').perps_enabled;
   const placement = usePlacementsV2Store(state => state.getPlacement(placementId));
   const placementItems = usePlacementsV2Store(state => selectPlacementItemsBySource(state, placementId, 'hyperliquid'), shallowEqual);
   const placementsLoading = usePlacementsV2Store(state => isPlacementHydrating(state, placementId, 'hyperliquid'));

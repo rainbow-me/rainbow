@@ -16,6 +16,7 @@ type MarketCarouselProps<T extends PlacementItem> = {
   data: T[];
   getItemWidth?: (item: T) => number;
   headerCount?: number;
+  itemHorizontalBleed?: number;
   itemHeight: number;
   itemVerticalBleed?: number;
   itemWidth: number;
@@ -34,6 +35,7 @@ export function MarketCarousel<T extends PlacementItem>({
   data,
   getItemWidth,
   headerCount,
+  itemHorizontalBleed = 0,
   itemHeight,
   itemVerticalBleed = 0,
   itemWidth,
@@ -90,13 +92,19 @@ export function MarketCarousel<T extends PlacementItem>({
           ))}
         </View>
       ) : (
-        <View style={[styles.carouselViewport, itemVerticalBleed ? { marginVertical: -itemVerticalBleed } : undefined]}>
+        <View
+          style={[
+            styles.carouselViewport,
+            itemHorizontalBleed ? { marginHorizontal: HORIZONTAL_PADDING - itemHorizontalBleed } : undefined,
+            itemVerticalBleed ? { marginVertical: -itemVerticalBleed } : undefined,
+          ]}
+        >
           <FlatList
             data={data}
             horizontal
             disallowInterruption
             showsHorizontalScrollIndicator={false}
-            contentContainerStyle={styles.contentContainer}
+            contentContainerStyle={[styles.contentContainer, itemHorizontalBleed ? { paddingHorizontal: itemHorizontalBleed } : undefined]}
             decelerationRate="fast"
             snapToOffsets={snapToOffsets}
             snapToAlignment="start"

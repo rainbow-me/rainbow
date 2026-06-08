@@ -1,6 +1,5 @@
 import { POLYMARKET } from '@/config/experimental';
 import { useExperimentalConfigStore } from '@/config/experimentalConfigStore';
-import { IS_TEST } from '@/env';
 import { getSportsSurfaceIntent } from '@/features/discover/utils/sportsSurfaceIntent';
 import { useHyperliquidMarketsStore } from '@/features/perps/stores/hyperliquidMarketsStore';
 import { usePredictionEventsStore } from '@/features/placements/stores/derived/predictionsPlacementStore';
@@ -20,11 +19,9 @@ export async function refreshDiscoverSurface(surfaceId: string): Promise<void> {
 
   const surface = useDiscoverSurface.getState();
   const refs = useDiscoverSurfacePlacementRefs.getState();
-  const perpsEnabled = useRemoteConfigStore.getState().getRemoteConfigKey('perps_enabled') && !IS_TEST;
+  const perpsEnabled = useRemoteConfigStore.getState().getRemoteConfigKey('perps_enabled');
   const polymarketEnabled =
-    (useRemoteConfigStore.getState().getRemoteConfigKey('polymarket_enabled') ||
-      useExperimentalConfigStore.getState().getFlag(POLYMARKET)) &&
-    !IS_TEST;
+    useRemoteConfigStore.getState().getRemoteConfigKey('polymarket_enabled') || useExperimentalConfigStore.getState().getFlag(POLYMARKET);
 
   const refreshes: Promise<unknown>[] = [];
 

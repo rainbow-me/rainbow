@@ -1,7 +1,8 @@
 import { useCallback, useEffect, useMemo, type ReactNode } from 'react';
-import { StyleSheet, type StyleProp, type ViewStyle } from 'react-native';
+import { Platform, StyleSheet, type StyleProp, type ViewStyle } from 'react-native';
 
 import { Skeleton } from '@/components/Skeleton';
+import { globalColors, useColorMode } from '@/design-system';
 import {
   PREDICTION_MARKET_EVENT_CARD_BORDER_RADIUS,
   PREDICTION_MARKET_EVENT_CARD_CAROUSEL_WIDTH,
@@ -22,6 +23,7 @@ import {
   type SectionDescriptor,
   type SurfaceLeafWithDisplay,
 } from '@/features/discover/types/sectionLayout';
+import { hasDestinationRoot, navigateDiscoverDestination } from '@/features/discover/utils/navigation';
 import {
   getSportsSurfaceIntent,
   selectSportsEventsForIntent,
@@ -44,6 +46,7 @@ import { getSportsEventRowTokenIds } from '@/features/polymarket/hooks/useSports
 import { usePolymarketSportsEventsStore } from '@/features/polymarket/stores/polymarketSportsEventsStore';
 import { type PolymarketEvent } from '@/features/polymarket/types/polymarket-event';
 import { navigateToPolymarketEvent } from '@/features/polymarket/utils/navigateToPolymarket';
+import { opacity } from '@/framework/ui/utils/opacity';
 import { logger } from '@/logger';
 import Routes from '@/navigation/routesNames';
 import { addSubscribedTokens, removeSubscribedTokens, useLiveTokensStore } from '@/state/liveTokens/liveTokensStore';
@@ -51,6 +54,7 @@ import { DEVICE_WIDTH } from '@/utils/deviceUtils';
 
 type PredictionsDisplay = (typeof PREDICTION_DISPLAY_VALUES)[number];
 
+const PREDICTION_TILE_SHADOW_BLEED = 28;
 const PREDICTION_TILE_WIDTH = Math.round((DEVICE_WIDTH - 20 * 2 - 8) / 2);
 const PREDICTION_TILE_SKELETON = {
   borderRadius: PREDICTION_CARD_BORDER_RADIUS,
@@ -89,7 +93,9 @@ type PredictionSkeletonConfig = {
 const PREDICTIONS_SECTION_DESCRIPTORS = {
   'prediction_tile.carousel': {
     layout: 'carousel',
+    itemHorizontalBleed: PREDICTION_TILE_SHADOW_BLEED,
     itemHeight: POLYMARKET_EVENTS_LIST_ITEM_HEIGHT,
+    itemVerticalBleed: PREDICTION_TILE_SHADOW_BLEED,
     itemWidth: PREDICTION_TILE_WIDTH,
     renderItem: renderPredictionTile,
     renderSkeleton: () => renderPredictionSkeleton(PREDICTION_TILE_SKELETON),
@@ -210,6 +216,10 @@ function PredictionsPlacementSection({ surface }: { surface: PlacementBackedSurf
   const result = usePredictionsPlacement(surface.placement);
   const isPlacementPending = useIsPredictionPlacementPending(surface);
   const descriptor = PREDICTIONS_SECTION_DESCRIPTORS[surface.display];
+  const predictionsDestination = hasDestinationRoot(surface.destination, 'predictions') ? surface.destination : null;
+  const onPressSeeAll = useCallback(() => {
+    if (predictionsDestination) navigateDiscoverDestination(predictionsDestination);
+  }, [predictionsDestination]);
 
   usePredictionTokenSubscription({ display: surface.display, items: result.items, limit: surface.limit });
 
@@ -217,7 +227,8 @@ function PredictionsPlacementSection({ surface }: { surface: PlacementBackedSurf
     data: result.items,
     descriptor,
     loading: result.isLoading || isPlacementPending,
-    onPressSeeAll: undefined,
+    // Prediction "See All" routes to the CMS destination (predictions -> Polymarket).
+    onPressSeeAll: predictionsDestination && result.placement ? onPressSeeAll : undefined,
     surface,
   });
 }
@@ -232,6 +243,10 @@ function SportsEventPlacementSection({
   const isPlacementPending = useIsPredictionPlacementPending(surface);
   const result = usePredictionsPlacement(surface.placement);
   const descriptor = getSportsEventSectionDescriptor(surface, sportsIntent);
+  const predictionsDestination = hasDestinationRoot(surface.destination, 'predictions') ? surface.destination : null;
+  const onPressSeeAll = useCallback(() => {
+    if (predictionsDestination) navigateDiscoverDestination(predictionsDestination);
+  }, [predictionsDestination]);
 
   usePredictionTokenSubscription({ display: surface.display, items: result.items, limit: surface.limit });
 
@@ -247,7 +262,8 @@ function SportsEventPlacementSection({
     headerCount,
     leadingAccessory,
     loading: result.isLoading || isPlacementPending,
-    onPressSeeAll: undefined,
+    // Prediction "See All" routes to the CMS destination (predictions -> Polymarket).
+    onPressSeeAll: predictionsDestination && result.placement ? onPressSeeAll : undefined,
     surface,
   });
 }
@@ -269,6 +285,10 @@ function SportsQuerySection({
   }, [events, sportsIntent]);
   const descriptor = getSportsEventSectionDescriptor(surface, sportsIntent);
   const headerCount = getRenderedHeaderCount({ descriptor, itemCount: items.length, limit: surface.limit });
+  const predictionsDestination = hasDestinationRoot(surface.destination, 'predictions') ? surface.destination : null;
+  const onPressSeeAll = useCallback(() => {
+    if (predictionsDestination) navigateDiscoverDestination(predictionsDestination);
+  }, [predictionsDestination]);
 
   usePredictionTokenSubscription({ display: surface.display, items, limit: surface.limit });
 
@@ -281,7 +301,8 @@ function SportsQuerySection({
     headerCount,
     leadingAccessory,
     loading: isLoading,
-    onPressSeeAll: undefined,
+    // Prediction "See All" routes to the CMS destination (predictions -> Polymarket).
+    onPressSeeAll: predictionsDestination ? onPressSeeAll : undefined,
     surface,
   });
 }
@@ -300,13 +321,13 @@ function getSportsHeaderProps(
   if ('leagueId' in sportsIntent) {
     // League section: shows league icon, caret based on destination
     return {
-      headerCaret: surface.destination !== null,
+      headerCaret: hasDestinationRoot(surface.destination, 'predictions'),
       leadingAccessory: <LeagueIcon leagueId={sportsIntent.leagueId} size={28} />,
     };
   }
   // Today/other bucket section: no leading accessory, caret based on destination
   return {
-    headerCaret: surface.destination !== null,
+    headerCaret: hasDestinationRoot(surface.destination, 'predictions'),
     leadingAccessory: undefined,
   };
 }
@@ -335,11 +356,19 @@ function renderPredictionGridTile(item: PredictionPlacementItem, width: number) 
 }
 
 function PredictionListItem({ item, style }: { item: PredictionPlacementItem; style: StyleProp<ViewStyle> }) {
+  const { isDarkMode } = useColorMode();
   const onPress = useCallback(() => {
     navigateToPolymarketEvent({ event: item.event, eventId: item.event.id });
   }, [item.event]);
 
-  return <PolymarketEventsListItem event={item.event} onPress={onPress} shouldActivateOnStart={false} style={style} />;
+  return (
+    <PolymarketEventsListItem
+      event={item.event}
+      onPress={onPress}
+      shouldActivateOnStart={false}
+      style={[style, styles.predictionTileShadow, isDarkMode ? styles.predictionTileShadowDark : styles.predictionTileShadowLight]}
+    />
+  );
 }
 
 function renderPredictionSkeleton({ borderRadius, height, width }: PredictionSkeletonConfig) {
@@ -393,6 +422,24 @@ const styles = StyleSheet.create({
   predictionTile: {
     height: POLYMARKET_EVENTS_LIST_ITEM_HEIGHT,
     width: PREDICTION_TILE_WIDTH,
+  },
+  predictionTileShadow: {
+    borderCurve: 'continuous',
+    borderRadius: PREDICTION_CARD_BORDER_RADIUS,
+  },
+  predictionTileShadowDark: {
+    shadowColor: globalColors.grey100,
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.16,
+    shadowRadius: 24,
+  },
+  predictionTileShadowLight: {
+    backgroundColor: Platform.OS === 'android' ? opacity(globalColors.white100, 0.89) : undefined,
+    elevation: 4,
+    shadowColor: globalColors.grey100,
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.06,
+    shadowRadius: 24,
   },
   liveHeaderIndicator: {
     marginRight: LIVE_INDICATOR_HEADER_GAP - HEADER_ACCESSORY_GAP,
