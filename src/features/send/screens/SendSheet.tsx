@@ -529,6 +529,8 @@ export default function SendSheet() {
     isValidGas,
   ]);
 
+  const shouldHideGasButton = shouldShowSponsoredSendGas || (hasPaidSendGasEstimateFailed && greaterThan(amountDetails.assetAmount, 0));
+
   const showConfirmationSheet = useCallback(async () => {
     if (buttonDisabled || !selected) return;
     let toAddress = recipient;
@@ -870,7 +872,7 @@ export default function SendSheet() {
             sendMaxBalance={sendMaxBalance}
             setLastFocusedInputHandle={setLastFocusedInputHandle}
             txSpeedRenderer={
-              shouldShowSponsoredSendGas || hasPaidSendGasEstimateFailed ? (
+              shouldHideGasButton ? (
                 <View style={{ height: 18 }} />
               ) : (
                 <GasSpeedButton

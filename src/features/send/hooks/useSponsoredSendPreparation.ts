@@ -15,8 +15,8 @@ import { type ChainId } from '@/state/backendNetworks/types';
 import { type Call, type PreparedCallsExecution } from '@rainbow-me/delegation';
 
 type PreparedSponsoredSendState =
-  | { call: Call; key: string; preparedCalls: PreparedCallsExecution }
-  | { call: null; key: string; preparedCalls: null };
+  | { accountAddress: string; call: Call; chainId: ChainId; key: string; preparedCalls: PreparedCallsExecution }
+  | { accountAddress: string; call: null; chainId: ChainId; key: string; preparedCalls: null };
 
 type UseSponsoredSendPreparationParams = {
   accountAddress: string | undefined;
@@ -104,9 +104,14 @@ export function useSponsoredSendPreparation({
   const isSponsoredSend = isPreparedCallsExecutionSponsored(preparedCalls);
   const preparedCall = hasResolvedSponsoredSend && isSponsoredSend ? preparedSponsoredSend.call : null;
 
+  const sponsorshipUnavailableForCurrentChain =
+    preparedSponsoredSend?.accountAddress.toLowerCase() === accountAddress?.toLowerCase() &&
+    preparedSponsoredSend?.chainId === chainId &&
+    !isPreparedCallsExecutionSponsored(preparedSponsoredSend.preparedCalls);
+
   const shouldShowSponsoredSendGas =
     canUseSponsoredSend &&
-    isSufficientBalance &&
+    !sponsorshipUnavailableForCurrentChain &&
     (!currentSponsoredSendKey || isPreparingSponsoredSend || !hasResolvedSponsoredSend || isSponsoredSend);
 
   useEffect(() => {
@@ -123,12 +128,10 @@ export function useSponsoredSendPreparation({
         !isSufficientBalance ||
         !debouncedSponsoredSendKey
       ) {
-        setPreparedSponsoredSend(null);
         setIsPreparingSponsoredSend(false);
         return;
       }
 
-      setPreparedSponsoredSend(null);
       setIsPreparingSponsoredSend(true);
 
       try {
@@ -148,18 +151,18 @@ export function useSponsoredSendPreparation({
         });
 
         if (!isStale) {
-          if (nextPreparedCalls) {
-            setPreparedSponsoredSend({ call, key: debouncedSponsoredSendKey, preparedCalls: nextPreparedCalls });
-          } else {
-            setPreparedSponsoredSend({ call: null, key: debouncedSponsoredSendKey, preparedCalls: null });
-          }
+          setPreparedSponsoredSend(
+            nextPreparedCalls
+              ? { accountAddress, call, chainId, key: debouncedSponsoredSendKey, preparedCalls: nextPreparedCalls }
+              : { accountAddress, call: null, chainId, key: debouncedSponsoredSendKey, preparedCalls: null }
+          );
         }
       } catch (error) {
         if (abortController.signal.aborted) return;
         const message = ensureError(error).message;
         logger.warn('[useSponsoredSendPreparation]: sponsored send preparation failed', { message });
         if (!isStale) {
-          setPreparedSponsoredSend({ call: null, key: debouncedSponsoredSendKey, preparedCalls: null });
+          setPreparedSponsoredSend({ accountAddress, call: null, chainId, key: debouncedSponsoredSendKey, preparedCalls: null });
         }
       } finally {
         if (!isStale) {
