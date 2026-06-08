@@ -555,11 +555,6 @@
         "tokens": "代币"
       },
       "show_more": "显示更多",
-      "placements": {
-        "perps_title": "Perps",
-        "predictions_title": "预测",
-        "see_all": "查看全部"
-      },
       "strategies": {
         "strategies_title": "策略",
         "yearn_finance_description": "来自yearn.finance的智能收益策略"
