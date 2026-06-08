@@ -3097,42 +3097,6 @@
         "new_tab": "新标签页"
       }
     },
-    "trending_tokens": {
-      "all": "全部",
-      "no_results": {
-        "title": "没有结果",
-        "body": "尝试在更大的时间范围或不同的网络或类别中浏览。"
-      },
-      "and": "和",
-      "and_others": {
-        "one": "和%{count}个其他",
-        "other": "和%{count}个其他"
-      },
-      "filters": {
-        "categories": {
-          "TRENDING": "趋势",
-          "NEW": "新的"
-        },
-        "sort": {
-          "RECOMMENDED": {
-            "label": "排序",
-            "menuOption": "默认"
-          },
-          "VOLUME": "交易量",
-          "MARKET_CAP": "市值",
-          "TOP_GAINERS": "最高涨幅",
-          "TOP_LOSERS": "最大跌幅"
-        },
-        "time": {
-          "H12": "12小时",
-          "H12_ABBREVIATED": "12小时",
-          "H24": "24小时",
-          "H24_ABBREVIATED": "24小时",
-          "D7": "1周",
-          "D3": "3天"
-        }
-      }
-    },
     "network_selector": {
       "customize_networks_banner": {
         "title": "自定义网络",
