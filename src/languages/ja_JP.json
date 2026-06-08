@@ -555,11 +555,6 @@
         "tokens": "トークン"
       },
       "show_more": "さらに表示",
-      "placements": {
-        "perps_title": "\"Perps\"",
-        "predictions_title": "予測",
-        "see_all": "すべて表示"
-      },
       "strategies": {
         "strategies_title": "ストラテジー",
         "yearn_finance_description": "yearn.financeからのスマートイールドストラテジー"
@@ -3458,10 +3453,10 @@
       "sports": {
         "vs": "対",
         "live": "ライブ",
-        "this_week": "This week",
+        "this_week": "今週",
         "game_best_of": "ゲーム %{currentPeriod} - ベストオブ %{bestOf}",
         "final": "最終",
-        "no_games": "No games this week"
+        "no_games": "今週は試合がありません"
       },
       "outcomes": {
         "yes": "はい",
