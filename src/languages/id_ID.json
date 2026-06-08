@@ -555,11 +555,6 @@
         "tokens": "Token"
       },
       "show_more": "Tampilkan lebih banyak",
-      "placements": {
-        "perps_title": "Perps",
-        "predictions_title": "Prediksi",
-        "see_all": "Lihat semua"
-      },
       "strategies": {
         "strategies_title": "Strategi",
         "yearn_finance_description": "Strategi hasil cerdas dari yearn.finance"
