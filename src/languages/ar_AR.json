@@ -555,11 +555,6 @@
         "tokens": "رموز"
       },
       "show_more": "أظهر المزيد",
-      "placements": {
-        "perps_title": "الرافعات المالية",
-        "predictions_title": "التنبؤات",
-        "see_all": "عرض الكل"
-      },
       "strategies": {
         "strategies_title": "الاستراتيجيات",
         "yearn_finance_description": "استراتيجيات العائد الذكية من yearn.finance"
