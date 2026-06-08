@@ -760,8 +760,6 @@ export default function SendSheet() {
     analytics.track(analytics.event.tokenList, params);
   }, [isLoadingUserAssets, sortedAssets]);
 
-  const sendContactListDataKey = useMemo(() => `${ensSuggestions?.[0]?.address || '_'}`, [ensSuggestions]);
-
   const isEmptyWallet = !sortedAssets?.length && !sendableUniqueTokens?.length;
 
   const filteredUserAccountsFromContacts = useMemo(() => {
@@ -796,7 +794,6 @@ export default function SendSheet() {
             contacts={filteredContacts}
             currentInput={currentInput}
             ensSuggestions={ensSuggestions}
-            key={sendContactListDataKey}
             loadingEnsSuggestions={loadingEnsSuggestions}
             onPressContact={(recipient: string, nickname: string) => {
               setIsValidAddress(true);
@@ -872,15 +869,14 @@ export default function SendSheet() {
             sendMaxBalance={sendMaxBalance}
             setLastFocusedInputHandle={setLastFocusedInputHandle}
             txSpeedRenderer={
-              shouldHideGasButton ? (
-                <View style={{ height: 18 }} />
-              ) : (
+              shouldHideGasButton ? null : (
                 <GasSpeedButton
                   asset={selected}
                   fallbackColor={colorForAsset}
                   chainId={currentChainId}
                   horizontalPadding={0}
-                  marginBottom={17}
+                  marginBottom={0}
+                  marginTop={0}
                   theme={isDarkMode ? 'dark' : 'light'}
                 />
               )

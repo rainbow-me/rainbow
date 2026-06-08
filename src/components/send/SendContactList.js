@@ -1,11 +1,11 @@
 import React, { useCallback, useMemo, useRef } from 'react';
-import { Platform, SectionList } from 'react-native';
+import { Keyboard, Platform, SectionList } from 'react-native';
 
+import { CommonActions } from '@react-navigation/native';
 import { toChecksumAddress } from 'ethereumjs-util';
 import { LinearGradient } from 'expo-linear-gradient';
 import { sortBy } from 'lodash';
 import * as DeviceInfo from 'react-native-device-info';
-import { useDeepCompareMemo } from 'use-deep-compare';
 
 import styled from '@/framework/ui/styled-thing';
 import { opacity } from '@/framework/ui/utils/opacity';
@@ -80,7 +80,7 @@ export default function SendContactList({
   watchedAccounts,
 }) {
   const accountAddress = useAccountAddress();
-  const { navigate } = useNavigation();
+  const { dispatch } = useNavigation();
   const keyboardHeight = useKeyboardHeight();
   const { isDarkMode } = useTheme();
 
@@ -98,16 +98,21 @@ export default function SendContactList({
 
   const handleEditContact = useCallback(
     ({ address, color, ens, nickname }) => {
-      navigate(Routes.MODAL_SCREEN, {
-        additionalPadding: true,
-        address,
-        color,
-        ens,
-        nickname,
-        type: 'contact_profile',
-      });
+      Platform.OS === 'android' && Keyboard.dismiss();
+      dispatch(
+        CommonActions.navigate({
+          name: Routes.MODAL_SCREEN,
+          params: {
+            address,
+            color,
+            ens,
+            nickname,
+            type: 'contact_profile',
+          },
+        })
+      );
     },
-    [navigate]
+    [dispatch]
   );
 
   const renderItemCallback = useCallback(
@@ -191,18 +196,15 @@ export default function SendContactList({
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [currentInput, ensSuggestions, filteredAddresses, filteredContacts, isDarkMode]);
 
-  const flyInKey = useDeepCompareMemo(() => String(Date.now()), [sections]);
-
   const shouldShowEmptyState =
     filteredContacts.length === 0 && filteredAddresses.length === 0 && ensSuggestions.length === 0 && !loadingEnsSuggestions;
 
   return (
-    <FlyInAnimation key={flyInKey}>
+    <FlyInAnimation>
       {shouldShowEmptyState ? (
         <SendEmptyState />
       ) : (
         <SendContactFlatList
-          keyExtractor={(item, index) => index}
           renderItem={renderItemCallback}
           renderSectionHeader={({ section }) => (
             <SectionWrapper>

@@ -1,5 +1,7 @@
-import React, { Fragment } from 'react';
-import { Platform } from 'react-native';
+import React, { Fragment, useMemo } from 'react';
+import { Animated, Platform } from 'react-native';
+
+import { KeyboardStickyView, useKeyboardAnimation } from 'react-native-keyboard-controller';
 
 import styled from '@/framework/ui/styled-thing';
 import { opacity } from '@/framework/ui/utils/opacity';
@@ -20,9 +22,22 @@ const FooterContainer = styled(Column).attrs({
   zIndex: 3,
 });
 
+const StickyFooter = styled(KeyboardStickyView)({
+  width: '100%',
+  zIndex: 3,
+});
+
+const KeyboardBalancedFields = styled(Animated.View).attrs({
+  pointerEvents: 'box-none',
+})({
+  flex: 1,
+  width: '100%',
+});
+
 const FormContainer = styled(Column).attrs({
   align: 'center',
   justify: 'center',
+  pointerEvents: 'box-none',
 })({
   flex: 1,
   minHeight: ({ isSmallPhone, isTinyPhone }) => (isTinyPhone ? 104 : Platform.OS === 'android' || isSmallPhone ? 134 : 167),
@@ -53,44 +68,55 @@ export default function SendAssetFormToken({
 }) {
   const { isSmallPhone, isTinyPhone } = useDimensions();
   const { colors } = useTheme();
+  const { height: keyboardHeight } = useKeyboardAnimation();
 
   const { mask: nativeMask, placeholder: nativePlaceholder } = supportedNativeCurrencies[nativeCurrency];
+  const keyboardBalancedFieldsStyle = useMemo(
+    () => ({
+      transform: [{ translateY: Animated.divide(keyboardHeight, 2) }],
+    }),
+    [keyboardHeight]
+  );
 
   return (
     <Fragment>
-      <FormContainer isSmallPhone={isSmallPhone} isTinyPhone={isTinyPhone} {...props}>
-        <SendAssetFormField
-          colorForAsset={colorForAsset}
-          format={removeLeadingZeros}
-          label={selected.symbol}
-          onChange={onChangeAssetAmount}
-          onFocus={onFocusAssetInput}
-          onPressButton={sendMaxBalance}
-          placeholder="0"
-          ref={assetInputRef}
-          testID="selected-asset-field"
-          value={assetAmount}
-        />
-        <Spacer isSmallPhone={isSmallPhone} isTinyPhone={isTinyPhone} />
-        <SendAssetFormField
-          autoFocus
-          colorForAsset={opacity(colors.blueGreyDark, 0.8)}
-          label={nativeCurrency}
-          mask={nativeMask}
-          maxLabelColor={opacity(colors.blueGreyDark, 0.6)}
-          onChange={onChangeNativeAmount}
-          onFocus={onFocusNativeInput}
-          onPressButton={sendMaxBalance}
-          placeholder={nativePlaceholder}
-          ref={nativeCurrencyInputRef}
-          testID="selected-asset-quantity-field"
-          value={nativeAmount}
-        />
-      </FormContainer>
-      <FooterContainer>
-        {buttonRenderer}
-        {txSpeedRenderer}
-      </FooterContainer>
+      <KeyboardBalancedFields style={keyboardBalancedFieldsStyle}>
+        <FormContainer isSmallPhone={isSmallPhone} isTinyPhone={isTinyPhone} {...props}>
+          <SendAssetFormField
+            colorForAsset={colorForAsset}
+            format={removeLeadingZeros}
+            label={selected.symbol}
+            onChange={onChangeAssetAmount}
+            onFocus={onFocusAssetInput}
+            onPressButton={sendMaxBalance}
+            placeholder="0"
+            ref={assetInputRef}
+            testID="selected-asset-field"
+            value={assetAmount}
+          />
+          <Spacer isSmallPhone={isSmallPhone} isTinyPhone={isTinyPhone} />
+          <SendAssetFormField
+            autoFocus
+            colorForAsset={opacity(colors.blueGreyDark, 0.8)}
+            label={nativeCurrency}
+            mask={nativeMask}
+            maxLabelColor={opacity(colors.blueGreyDark, 0.6)}
+            onChange={onChangeNativeAmount}
+            onFocus={onFocusNativeInput}
+            onPressButton={sendMaxBalance}
+            placeholder={nativePlaceholder}
+            ref={nativeCurrencyInputRef}
+            testID="selected-asset-quantity-field"
+            value={nativeAmount}
+          />
+        </FormContainer>
+      </KeyboardBalancedFields>
+      <StickyFooter>
+        <FooterContainer>
+          {buttonRenderer}
+          {txSpeedRenderer}
+        </FooterContainer>
+      </StickyFooter>
     </Fragment>
   );
 }
