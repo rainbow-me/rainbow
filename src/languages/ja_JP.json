@@ -3097,42 +3097,6 @@
         "new_tab": "新しいタブ"
       }
     },
-    "trending_tokens": {
-      "all": "全て",
-      "no_results": {
-        "title": "結果がありません",
-        "body": "より大きな時間枠、または異なるネットワークやカテゴリでブラウズしてみてください。"
-      },
-      "and": "と",
-      "and_others": {
-        "one": "と%{count}その他",
-        "other": "と%{count}その他"
-      },
-      "filters": {
-        "categories": {
-          "TRENDING": "トレンド",
-          "NEW": "新しい"
-        },
-        "sort": {
-          "RECOMMENDED": {
-            "label": "ソート",
-            "menuOption": "デフォルト"
-          },
-          "VOLUME": "出来高",
-          "MARKET_CAP": "時価総額",
-          "TOP_GAINERS": "トップ上昇者",
-          "TOP_LOSERS": "トップ減少者"
-        },
-        "time": {
-          "H12": "12時間",
-          "H12_ABBREVIATED": "12時間",
-          "H24": "24時間",
-          "H24_ABBREVIATED": "24時間",
-          "D7": "1週間",
-          "D3": "3日間"
-        }
-      }
-    },
     "network_selector": {
       "customize_networks_banner": {
         "title": "ネットワークをカスタマイズする",
