@@ -3097,42 +3097,6 @@
         "new_tab": "새 탭"
       }
     },
-    "trending_tokens": {
-      "all": "모두",
-      "no_results": {
-        "title": "결과 없음",
-        "body": "더 큰 시간 프레임, 다른 네트워크 또는 카테고리를 탐색해 보세요."
-      },
-      "and": "그리고",
-      "and_others": {
-        "one": "그리고 %{count} 다름",
-        "other": "그리고 %{count} 다른"
-      },
-      "filters": {
-        "categories": {
-          "TRENDING": "트렌딩",
-          "NEW": "새로운"
-        },
-        "sort": {
-          "RECOMMENDED": {
-            "label": "정렬",
-            "menuOption": "기본"
-          },
-          "VOLUME": "거래량",
-          "MARKET_CAP": "시가 총액",
-          "TOP_GAINERS": "상승률 상위",
-          "TOP_LOSERS": "하락률 상위"
-        },
-        "time": {
-          "H12": "12 Hours",
-          "H12_ABBREVIATED": "12시간",
-          "H24": "24 Hours",
-          "H24_ABBREVIATED": "24시간",
-          "D7": "1 Week",
-          "D3": "3 Days"
-        }
-      }
-    },
     "network_selector": {
       "customize_networks_banner": {
         "title": "네트워크 사용자 정의",
