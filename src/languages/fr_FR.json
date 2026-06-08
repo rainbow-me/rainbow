@@ -3458,9 +3458,10 @@
       "sports": {
         "vs": "contre",
         "live": "En direct",
+        "this_week": "This week",
         "game_best_of": "Jeu %{currentPeriod} - Meilleur de %{bestOf}",
         "final": "Final",
-        "no_games": "Aucun jeu aujourd'hui ou demain"
+        "no_games": "No games this week"
       },
       "outcomes": {
         "yes": "Yes :)",
