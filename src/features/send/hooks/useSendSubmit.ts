@@ -4,7 +4,6 @@ import { InteractionManager } from 'react-native';
 import { type StaticJsonRpcProvider } from '@ethersproject/providers';
 import { Wallet } from '@ethersproject/wallet';
 import { useQueryClient } from '@tanstack/react-query';
-import { isEmpty } from 'lodash';
 
 import { analytics } from '@/analytics';
 import { useRainbowToastEnabled } from '@/components/rainbow-toast/useRainbowToastEnabled';
@@ -26,7 +25,7 @@ import {
   assetIsUniqueAsset,
   createSignableTransaction,
   estimateGasLimit,
-  type NewTransactionNonNullable,
+  type SignableTransaction,
 } from '@/handlers/web3';
 import { WrappedAlert as Alert } from '@/helpers/alert';
 import { greaterThan, lessThan } from '@/helpers/utilities';
@@ -49,9 +48,15 @@ import { type Call, type PreparedCallsExecution } from '@rainbow-me/delegation';
 type SelectedGasFeeForTx = Parameters<typeof parseGasParamsForTransaction>[0];
 type LoadedWallet = NonNullable<Awaited<ReturnType<typeof loadWallet>>>;
 type SendSubmitScreen = Screens.SEND | Screens.SEND_ENS;
-type SendSubmitTransaction = Partial<Omit<NewTransaction, 'asset'>> & {
+
+type SendSubmitTransaction = Required<Pick<NewTransaction, 'amount' | 'chainId' | 'network' | 'nonce'>> & {
   asset: ParsedAddressAsset | UniqueAsset;
+  data?: NewTransaction['data'];
+  from: string;
+  to: string;
+  value?: NewTransaction['value'];
 };
+
 type SponsoredSendTransaction = Omit<NewTransaction, 'hash' | 'status' | 'txTo' | 'type'>;
 
 type AmountDetails = {
@@ -519,15 +524,13 @@ async function submitPaidSend({
 
   const gasLimitToUse = updatedGasLimit && !lessThan(updatedGasLimit, gasLimit) ? updatedGasLimit : gasLimit;
   const gasParams = parseGasParamsForTransaction(selectedGasFee);
-  Object.assign(txDetails, {
-    gasLimit: gasLimitToUse,
-    ...gasParams,
-  });
+  const signableTransactionDetails: SignableTransaction = { ...txDetails, gasLimit: gasLimitToUse, ...gasParams };
 
   const signableTransaction = await executeFn(createSignableTransaction, {
     operation: TimeToSignOperation.CreateSignableTransaction,
     screen,
-  })(txDetails as NewTransactionNonNullable);
+  })(signableTransactionDetails);
+
   if (!signableTransaction.to) {
     logger.error(new RainbowError(`[useSendSubmit]: txDetails is missing the "to" field`), {
       txDetails,
@@ -549,7 +552,7 @@ async function submitPaidSend({
       data: signableTransaction.data,
       from: signableTransaction.from,
       gasLimit: signableTransaction.gasLimit,
-      chainId: signableTransaction.chainId as ChainId,
+      chainId: signableTransaction.chainId,
       value: signableTransaction.value,
       nonce: signableTransaction.nonce,
     },
@@ -573,12 +576,16 @@ async function submitPaidSend({
 
   const { hash, nonce: txNonce } = sendTransactionResult.result;
   const { data, value } = signableTransaction;
-  if (!isEmpty(hash)) {
-    const pendingTransaction = {
-      ...txDetails,
-      ...(hash ? { hash } : undefined),
+
+  if (hash) {
+    const { asset, ...pendingTransactionDetails } = signableTransactionDetails;
+
+    const pendingTransaction: NewTransaction = {
+      ...pendingTransactionDetails,
+      ...(assetIsUniqueAsset(asset) ? { nft: asset } : { asset }),
       ...(data ? { data } : undefined),
       ...(value ? { value } : undefined),
+      hash,
       nonce: txNonce,
       network: chainName,
       chainId,
@@ -590,7 +597,7 @@ async function submitPaidSend({
     addNewTransaction({
       address: accountAddress,
       chainId,
-      transaction: pendingTransaction as NewTransaction,
+      transaction: pendingTransaction,
     });
 
     return true;

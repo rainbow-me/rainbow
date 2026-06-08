@@ -58,17 +58,9 @@ type GasParamsReturned = { gasPrice: string } | { maxFeePerGas: string; maxPrior
 /**
  * Gas parameter types taken as input by `getTransactionGasParams`.
  */
-type GasParamsInput = { gasPrice: BigNumberish } & {
-  maxFeePerGas: BigNumberish;
-  maxPriorityFeePerGas: BigNumberish;
-};
-
-/**
- * The input data provied to `getTxDetails`.
- */
-type TransactionDetailsInput = Pick<NewTransactionNonNullable, 'from' | 'to' | 'data' | 'gasLimit' | 'chainId' | 'nonce'> &
-  Pick<NewTransaction, 'amount'> &
-  GasParamsInput;
+type GasParamsInput =
+  | { gasPrice: BigNumberish; maxFeePerGas?: never; maxPriorityFeePerGas?: never }
+  | { gasPrice?: never; maxFeePerGas: BigNumberish; maxPriorityFeePerGas: BigNumberish };
 
 /**
  * The format of transaction details returned by functions such as `getTxDetails`.
@@ -77,11 +69,29 @@ type TransactionDetailsReturned = {
   data?: TransactionRequest['data'];
   from?: TransactionRequest['from'];
   gasLimit?: string;
-  chainId?: ChainId | string;
+  chainId: ChainId;
   to?: TransactionRequest['to'];
   value?: TransactionRequest['value'];
   nonce?: TransactionRequest['nonce'];
 } & GasParamsReturned;
+
+/**
+ * The input data provied to `getTxDetails`.
+ */
+type SignableTransactionDetails = {
+  amount: string;
+  chainId: ChainId;
+  data?: NewTransaction['data'];
+  from: string;
+  gasLimit: BigNumberish;
+  nonce: number;
+  to: string;
+} & GasParamsInput;
+
+type SignableAddressAssetTransaction = SignableTransactionDetails & { asset: ParsedAddressAsset };
+type SignableUniqueAssetTransaction = SignableTransactionDetails & { asset: UniqueAsset };
+
+export type SignableTransaction = SignableTransactionDetails & { asset: ParsedAddressAsset | UniqueAsset };
 
 /**
  * A type with the same keys as `NewTransaction` but without nullable types.
@@ -391,8 +401,8 @@ export const toWei = (ether: string): string => {
  * get transaction gas params depending on network
  * @returns - object with `gasPrice` or `maxFeePerGas` and `maxPriorityFeePerGas`
  */
-export const getTransactionGasParams = (transaction: Pick<NewTransactionNonNullable, 'chainId'> & GasParamsInput): GasParamsReturned => {
-  return transaction.gasPrice
+export const getTransactionGasParams = (transaction: Pick<SignableTransaction, 'chainId'> & GasParamsInput): GasParamsReturned => {
+  return transaction.gasPrice !== undefined
     ? {
         gasPrice: toHex(transaction.gasPrice),
       }
@@ -409,13 +419,15 @@ export const getTransactionGasParams = (transaction: Pick<NewTransactionNonNulla
  * as well as an optional `data` field similar to a `TransactionRequest`.
  * @return The transaction details.
  */
-export const getTxDetails = async (transaction: TransactionDetailsInput): Promise<TransactionDetailsReturned> => {
-  const { nonce, to } = transaction;
+export const getTxDetails = async (transaction: SignableTransactionDetails): Promise<TransactionDetailsReturned> => {
+  const { chainId, from, nonce, to } = transaction;
   const data = transaction?.data ?? '0x';
   const value = transaction.amount ? toHex(toWei(transaction.amount)) : '0x0';
   const gasLimit = transaction.gasLimit ? toHex(transaction.gasLimit) : undefined;
   const baseTx = {
+    chainId,
     data,
+    from,
     gasLimit,
     nonce,
     to,
@@ -482,10 +494,7 @@ export const resolveNameOrAddress = async (nameOrAddress: string): Promise<strin
  * @throws If the recipient is invalid or could not be found.
  */
 export const getTransferNftTransaction = async (
-  transaction: Pick<
-    NewTransactionNonNullable,
-    'asset' | 'from' | 'to' | 'gasPrice' | 'gasLimit' | 'nonce' | 'maxFeePerGas' | 'maxPriorityFeePerGas' | 'chainId'
-  >
+  transaction: Pick<SignableUniqueAssetTransaction, 'asset' | 'chainId' | 'from' | 'gasLimit' | 'nonce' | 'to'> & GasParamsInput
 ): Promise<TransactionDetailsReturned> => {
   const recipient = await resolveNameOrAddress(transaction.to);
 
@@ -493,7 +502,11 @@ export const getTransferNftTransaction = async (
     throw new Error(`Invalid recipient "${transaction.to}"`);
   }
 
-  const { from, nonce, asset: { contractAddress } = {} } = transaction;
+  const {
+    from,
+    nonce,
+    asset: { contractAddress },
+  } = transaction;
   const data = getDataForNftTransfer(from, recipient, transaction.asset);
   const gasParams = getTransactionGasParams(transaction);
   return {
@@ -514,10 +527,7 @@ export const getTransferNftTransaction = async (
  * @return The transaction details.
  */
 export const getTransferTokenTransaction = async (
-  transaction: Pick<
-    NewTransactionNonNullable,
-    'asset' | 'from' | 'to' | 'amount' | 'gasPrice' | 'gasLimit' | 'chainId' | 'maxFeePerGas' | 'maxPriorityFeePerGas'
-  >
+  transaction: Pick<SignableAddressAssetTransaction, 'amount' | 'asset' | 'chainId' | 'from' | 'gasLimit' | 'to'> & GasParamsInput
 ): Promise<TransactionDetailsReturned> => {
   const value = convertAmountToRawAmount(transaction.amount, transaction.asset.decimals);
   const recipient = (await resolveNameOrAddress(transaction.to)) as string;
@@ -538,20 +548,16 @@ export const getTransferTokenTransaction = async (
  * @param transaction The new transaction.
  * @return The transaction details.
  */
-export const createSignableTransaction = async (transaction: NewTransactionNonNullable): Promise<TransactionDetailsReturned> => {
+export const createSignableTransaction = async (transaction: SignableTransaction): Promise<TransactionDetailsReturned> => {
+  if (assetIsUniqueAsset(transaction.asset)) {
+    return getTransferNftTransaction({ ...transaction, asset: transaction.asset });
+  }
+
   // handle native assets seperately
   if (isNativeAsset(transaction.asset.address, transaction.chainId)) {
     return getTxDetails(transaction);
   }
-  const isUniqueAsset = assetIsUniqueAsset(transaction.asset);
-  const result = isUniqueAsset ? await getTransferNftTransaction(transaction) : await getTransferTokenTransaction(transaction);
-
-  // `result` will conform to `TransactionDetailsInput`, except it will have
-  // either { gasPrice: string } | { maxFeePerGas: string; maxPriorityFeePerGas: string }
-  // due to the type of `GasParamsReturned`, not both. This is fine, since
-  // `getTxDetails` only needs to use one or the other in `getTransactionGasParams`, but
-  // must be casted to conform to the type.
-  return getTxDetails(result as TransactionDetailsInput);
+  return getTransferTokenTransaction({ ...transaction, asset: transaction.asset });
 };
 
 /**
