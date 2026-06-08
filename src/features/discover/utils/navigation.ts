@@ -1,5 +1,5 @@
 import { navigateToPerps, navigateToPerpsSearch } from '@/features/perps/utils/navigateToPerps';
-import { type Destination } from '@/features/placements/surfaces/types';
+import { type Destination, type DestinationRoot } from '@/features/placements/surfaces/types';
 import { DEFAULT_SPORTS_LEAGUE_KEY } from '@/features/polymarket/constants';
 import {
   navigateToPolymarket,
@@ -7,9 +7,11 @@ import {
   navigateToPolymarketSportsLeague,
 } from '@/features/polymarket/utils/navigateToPolymarket';
 
-export function navigateDiscoverDestination(destination: Destination): void {
-  if (!destination) return;
+export type DestinationForRoot<Root extends DestinationRoot> = [Root, ...string[]];
 
+export type NavigableDiscoverDestination = DestinationForRoot<'perps'> | DestinationForRoot<'predictions'>;
+
+export function navigateDiscoverDestination(destination: NavigableDiscoverDestination): void {
   const [root, ...segments] = destination;
 
   switch (root) {
@@ -24,7 +26,12 @@ export function navigateDiscoverDestination(destination: Destination): void {
       if (segments.length) navigateToPerpsSearch();
       else navigateToPerps();
       return;
-    case 'tokens':
-      return;
   }
+}
+
+export function hasDestinationRoot<Root extends DestinationRoot>(
+  destination: Destination,
+  root: Root
+): destination is DestinationForRoot<Root> {
+  return destination?.[0] === root;
 }

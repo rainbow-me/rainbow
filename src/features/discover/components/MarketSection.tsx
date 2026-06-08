@@ -25,7 +25,7 @@ import {
   type SectionDescriptor,
   type SurfaceLeafWithDisplay,
 } from '@/features/discover/types/sectionLayout';
-import { navigateDiscoverDestination } from '@/features/discover/utils/navigation';
+import { hasDestinationRoot, navigateDiscoverDestination } from '@/features/discover/utils/navigation';
 import { maybeNavigateToPerpsExplainSheet } from '@/features/perps/utils/navigateToPerps';
 import { usePerpsPlacement, type PerpMarketPlacementItem } from '@/features/placements/stores/derived/perpsPlacementStore';
 import { useTokensPlacement, type TokenPlacementItem } from '@/features/placements/stores/derived/tokensPlacementStore';
@@ -144,14 +144,17 @@ function PerpsMarketPlacementContent({ surface }: { surface: PlacementBackedSurf
     }
   }, [surface.display]);
   // Perp "See All" routes to the CMS destination (perps -> perps screen), gated on
-  // a destination existing.
-  const onPressSeeAll = useCallback(() => navigateDiscoverDestination(surface.destination), [surface.destination]);
+  // a perps destination existing.
+  const perpsDestination = hasDestinationRoot(surface.destination, 'perps') ? surface.destination : null;
+  const onPressSeeAll = useCallback(() => {
+    if (perpsDestination) navigateDiscoverDestination(perpsDestination);
+  }, [perpsDestination]);
 
   return renderSectionLayout({
     data: perpsResult.items,
     descriptor: perpDescriptor,
     loading: perpsResult.isLoading,
-    onPressSeeAll: hasDestination(surface) ? onPressSeeAll : undefined,
+    onPressSeeAll: perpsDestination ? onPressSeeAll : undefined,
     surface,
   });
 }
@@ -195,7 +198,7 @@ function TokenMarketPlacementContent({ surface }: { surface: PlacementBackedSurf
     data: tokensResult.items,
     descriptor: tokenDescriptor,
     loading: tokensResult.isLoading,
-    onPressSeeAll: surface.destination?.[0] === 'tokens' ? onPressSeeAll : undefined,
+    onPressSeeAll: hasDestinationRoot(surface.destination, 'tokens') ? onPressSeeAll : undefined,
     surface,
   });
 }

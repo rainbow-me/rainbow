@@ -23,7 +23,7 @@ import {
   type SectionDescriptor,
   type SurfaceLeafWithDisplay,
 } from '@/features/discover/types/sectionLayout';
-import { navigateDiscoverDestination } from '@/features/discover/utils/navigation';
+import { hasDestinationRoot, navigateDiscoverDestination } from '@/features/discover/utils/navigation';
 import {
   getSportsSurfaceIntent,
   selectSportsEventsForIntent,
@@ -54,7 +54,6 @@ import { DEVICE_WIDTH } from '@/utils/deviceUtils';
 
 type PredictionsDisplay = (typeof PREDICTION_DISPLAY_VALUES)[number];
 
-const hasDestination = (surface: SurfaceLeaf) => surface.destination !== null;
 const PREDICTION_TILE_SHADOW_BLEED = 28;
 const PREDICTION_TILE_WIDTH = Math.round((DEVICE_WIDTH - 20 * 2 - 8) / 2);
 const PREDICTION_TILE_SKELETON = {
@@ -217,7 +216,10 @@ function PredictionsPlacementSection({ surface }: { surface: PlacementBackedSurf
   const result = usePredictionsPlacement(surface.placement);
   const isPlacementPending = useIsPredictionPlacementPending(surface);
   const descriptor = PREDICTIONS_SECTION_DESCRIPTORS[surface.display];
-  const onPressSeeAll = useCallback(() => navigateDiscoverDestination(surface.destination), [surface.destination]);
+  const predictionsDestination = hasDestinationRoot(surface.destination, 'predictions') ? surface.destination : null;
+  const onPressSeeAll = useCallback(() => {
+    if (predictionsDestination) navigateDiscoverDestination(predictionsDestination);
+  }, [predictionsDestination]);
 
   usePredictionTokenSubscription({ display: surface.display, items: result.items, limit: surface.limit });
 
@@ -226,7 +228,7 @@ function PredictionsPlacementSection({ surface }: { surface: PlacementBackedSurf
     descriptor,
     loading: result.isLoading || isPlacementPending,
     // Prediction "See All" routes to the CMS destination (predictions -> Polymarket).
-    onPressSeeAll: hasDestination(surface) && result.placement ? onPressSeeAll : undefined,
+    onPressSeeAll: predictionsDestination && result.placement ? onPressSeeAll : undefined,
     surface,
   });
 }
@@ -241,7 +243,10 @@ function SportsEventPlacementSection({
   const isPlacementPending = useIsPredictionPlacementPending(surface);
   const result = usePredictionsPlacement(surface.placement);
   const descriptor = getSportsEventSectionDescriptor(surface, sportsIntent);
-  const onPressSeeAll = useCallback(() => navigateDiscoverDestination(surface.destination), [surface.destination]);
+  const predictionsDestination = hasDestinationRoot(surface.destination, 'predictions') ? surface.destination : null;
+  const onPressSeeAll = useCallback(() => {
+    if (predictionsDestination) navigateDiscoverDestination(predictionsDestination);
+  }, [predictionsDestination]);
 
   usePredictionTokenSubscription({ display: surface.display, items: result.items, limit: surface.limit });
 
@@ -258,7 +263,7 @@ function SportsEventPlacementSection({
     leadingAccessory,
     loading: result.isLoading || isPlacementPending,
     // Prediction "See All" routes to the CMS destination (predictions -> Polymarket).
-    onPressSeeAll: hasDestination(surface) && result.placement ? onPressSeeAll : undefined,
+    onPressSeeAll: predictionsDestination && result.placement ? onPressSeeAll : undefined,
     surface,
   });
 }
@@ -280,7 +285,10 @@ function SportsQuerySection({
   }, [events, sportsIntent]);
   const descriptor = getSportsEventSectionDescriptor(surface, sportsIntent);
   const headerCount = getRenderedHeaderCount({ descriptor, itemCount: items.length, limit: surface.limit });
-  const onPressSeeAll = useCallback(() => navigateDiscoverDestination(surface.destination), [surface.destination]);
+  const predictionsDestination = hasDestinationRoot(surface.destination, 'predictions') ? surface.destination : null;
+  const onPressSeeAll = useCallback(() => {
+    if (predictionsDestination) navigateDiscoverDestination(predictionsDestination);
+  }, [predictionsDestination]);
 
   usePredictionTokenSubscription({ display: surface.display, items, limit: surface.limit });
 
@@ -294,7 +302,7 @@ function SportsQuerySection({
     leadingAccessory,
     loading: isLoading,
     // Prediction "See All" routes to the CMS destination (predictions -> Polymarket).
-    onPressSeeAll: hasDestination(surface) ? onPressSeeAll : undefined,
+    onPressSeeAll: predictionsDestination ? onPressSeeAll : undefined,
     surface,
   });
 }
@@ -313,13 +321,13 @@ function getSportsHeaderProps(
   if ('leagueId' in sportsIntent) {
     // League section: shows league icon, caret based on destination
     return {
-      headerCaret: hasDestination(surface),
+      headerCaret: hasDestinationRoot(surface.destination, 'predictions'),
       leadingAccessory: <LeagueIcon leagueId={sportsIntent.leagueId} size={28} />,
     };
   }
   // Today/other bucket section: no leading accessory, caret based on destination
   return {
-    headerCaret: hasDestination(surface),
+    headerCaret: hasDestinationRoot(surface.destination, 'predictions'),
     leadingAccessory: undefined,
   };
 }
