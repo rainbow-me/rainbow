@@ -3458,9 +3458,10 @@
       "sports": {
         "vs": "vs",
         "live": "Canlı",
+        "this_week": "This week",
         "game_best_of": "Oyun %{currentPeriod} - %{bestOf} En İyi",
         "final": "Final",
-        "no_games": "Bugün veya yarın oyun yok"
+        "no_games": "No games this week"
       },
       "outcomes": {
         "yes": "Evet",
