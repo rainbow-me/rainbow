@@ -25,11 +25,13 @@ export async function getErc20Balance({
     functionName: 'balanceOf',
     args: [owner],
   });
+
   const result = await provider.call({ to: tokenAddress, data });
+
   const balance = decodeFunctionResult({
     abi: erc20Abi,
     functionName: 'balanceOf',
-    data: requireHex(result, new Error('[erc20Read]: provider returned non-hex call data')),
+    data: requireHex(result, '[getErc20Balance]: provider returned non-hex call data'),
   });
 
   return BigNumber.from(balance.toString());
@@ -54,12 +56,13 @@ export async function getErc20Allowance({
     functionName: 'allowance',
     args: [owner, spender],
   });
+
   const result = await provider.call({ to: tokenAddress, data });
 
   return decodeFunctionResult({
     abi: erc20Abi,
     functionName: 'allowance',
-    data: requireHex(result, new Error('[erc20Read]: provider returned non-hex call data')),
+    data: requireHex(result, '[getErc20Allowance]: provider returned non-hex call data'),
   });
 }
 
