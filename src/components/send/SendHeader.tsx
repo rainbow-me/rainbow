@@ -2,6 +2,7 @@ import React, { Fragment, useCallback, useEffect, useMemo, useState } from 'reac
 import { ActivityIndicator, Keyboard, Platform, type TextInput } from 'react-native';
 
 import { isHexString } from '@ethersproject/bytes';
+import { CommonActions } from '@react-navigation/native';
 import isEmpty from 'lodash/isEmpty';
 
 import ButtonPressAnimation from '@/components/animations/ButtonPressAnimation';
@@ -114,7 +115,7 @@ export default function SendHeader({
   const profilesEnabled = useExperimentalFlag(PROFILES);
   const { setClipboard } = useClipboard();
   const { isSmallPhone, isTinyPhone } = useDimensions();
-  const { navigate } = useNavigation();
+  const { dispatch } = useNavigation();
   const { colors } = useTheme();
   const [hexAddress, setHexAddress] = useState('');
 
@@ -160,17 +161,21 @@ export default function SendHeader({
     }
 
     Platform.OS === 'android' && Keyboard.dismiss();
-    navigate(Routes.MODAL_SCREEN, {
-      additionalPadding: true,
-      address: hexAddress,
-      color,
-      contact,
-      ens: recipient,
-      nickname,
-      onRefocusInput,
-      type: 'contact_profile',
-    });
-  }, [contact, hexAddress, name, navigate, onRefocusInput, profilesEnabled, recipient]);
+    dispatch(
+      CommonActions.navigate({
+        name: Routes.MODAL_SCREEN,
+        params: {
+          address: hexAddress,
+          color,
+          contact,
+          ens: recipient,
+          nickname,
+          onRefocusInput,
+          type: 'contact_profile',
+        },
+      })
+    );
+  }, [contact, dispatch, hexAddress, name, onRefocusInput, profilesEnabled, recipient]);
 
   const handleOpenContactActionSheet = useCallback(async () => {
     return showActionSheetWithOptions(
