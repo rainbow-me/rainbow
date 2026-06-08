@@ -872,15 +872,14 @@ export default function SendSheet() {
             sendMaxBalance={sendMaxBalance}
             setLastFocusedInputHandle={setLastFocusedInputHandle}
             txSpeedRenderer={
-              shouldHideGasButton ? (
-                <View style={{ height: 18 }} />
-              ) : (
+              shouldHideGasButton ? null : (
                 <GasSpeedButton
                   asset={selected}
                   fallbackColor={colorForAsset}
                   chainId={currentChainId}
                   horizontalPadding={0}
-                  marginBottom={17}
+                  marginBottom={0}
+                  marginTop={0}
                   theme={isDarkMode ? 'dark' : 'light'}
                 />
               )

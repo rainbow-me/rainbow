@@ -2,7 +2,6 @@ import React, { useCallback, useMemo, useState } from 'react';
 import { Platform } from 'react-native';
 
 import { LinearGradient } from 'expo-linear-gradient';
-import { KeyboardAwareScrollView } from 'react-native-keyboard-controller';
 
 import styled from '@/framework/ui/styled-thing';
 import { assetIsUniqueAsset } from '@/handlers/web3';
@@ -10,7 +9,6 @@ import useDimensions from '@/hooks/useDimensions';
 import ShadowStack from '@/react-native-shadow-stack';
 import { padding, position } from '@/styles';
 import { useTheme } from '@/theme/ThemeContext';
-import { NAVIGATION_BAR_HEIGHT } from '@/utils/deviceUtils';
 
 import ButtonPressAnimation from '../animations/ButtonPressAnimation';
 import { SendCoinRow } from '../coin-row';
@@ -25,11 +23,9 @@ const AssetRowShadow = colors => [
   [0, 5, 15, colors.shadow, 0.06],
 ];
 
-// FIXME: Quick fix for now, plz check if required again when react-native-keyboard-controller update
-// iOS 26 has keyboard behavior changes that require extra space
-// Footer height calculation: button (~56px) + tx speed selector (~90px) + spacing (~104px) = ~250px
-const IOS_26_FOOTER_HEIGHT = 250;
-const isIOS26OrHigher = Platform.OS === 'ios' && parseFloat(String(Platform.Version)) >= 26;
+const GAS_SPEED_ROW_HEIGHT = 40;
+const GAS_SPEED_ROW_VERTICAL_SPACING = 20;
+const GAS_SPEED_SLOT_HEIGHT = GAS_SPEED_ROW_HEIGHT + GAS_SPEED_ROW_VERTICAL_SPACING * 2;
 
 const AssetRowGradient = styled(LinearGradient).attrs(({ theme: { colors } }) => ({
   colors: colors.gradients.offWhite,
@@ -41,6 +37,13 @@ const Container = styled(Column)({
   ...position.sizeAsObject('100%'),
   backgroundColor: ({ theme: { colors } }) => colors.white,
   flex: 1,
+});
+
+const GasSpeedSlot = styled.View({
+  height: GAS_SPEED_SLOT_HEIGHT,
+  paddingBottom: GAS_SPEED_ROW_VERTICAL_SPACING,
+  paddingTop: GAS_SPEED_ROW_VERTICAL_SPACING,
+  width: '100%',
 });
 
 const FormContainer = styled(Column).attrs(
@@ -93,56 +96,51 @@ export default function SendAssetForm({
 
   const noShadows = [[0, 0, 0, colors.transparent, 0]];
   const shadows = useMemo(() => AssetRowShadow(colors), [colors]);
+  const txSpeedSlot = <GasSpeedSlot>{txSpeedRenderer}</GasSpeedSlot>;
 
   return (
-    <KeyboardAwareScrollView
-      contentContainerStyle={{ flexGrow: 1 }}
-      keyboardShouldPersistTaps="always"
-      extraKeyboardSpace={isIOS26OrHigher ? IOS_26_FOOTER_HEIGHT : Platform.OS === 'ios' ? 0 : -NAVIGATION_BAR_HEIGHT}
-    >
-      <Container>
-        <ButtonPressAnimation onPress={onResetAssetSelection} overflowMargin={30} scaleTo={0.925}>
-          <ShadowStack
-            alignSelf="center"
-            backgroundColor={colors.white}
-            borderRadius={20}
-            height={SendCoinRow.selectedHeight}
-            overflow={isTinyPhone ? 'visible' : 'hidden'}
-            shadows={isTinyPhone ? noShadows : shadows}
-            width={deviceWidth - 38}
-          >
-            {isTinyPhone ? null : <AssetRowGradient />}
-            <AssetRowElement disablePressAnimation item={selected} selected showNativeValue={showNativeValue} testID="send-asset-form">
-              <Text align="center" color={colorForAsset || colors.dark} size="large" weight="heavy">
-                􀁴
-              </Text>
-            </AssetRowElement>
-          </ShadowStack>
-        </ButtonPressAnimation>
-        <FormContainer isUniqueAsset={isUniqueAsset}>
-          {isUniqueAsset ? (
-            <SendAssetFormCollectible asset={selected} buttonRenderer={buttonRenderer} txSpeedRenderer={txSpeedRenderer} />
-          ) : (
-            <SendAssetFormToken
-              {...props}
-              assetAmount={assetAmount}
-              assetInputRef={assetInputRef}
-              buttonRenderer={buttonRenderer}
-              colorForAsset={colorForAsset}
-              nativeAmount={nativeAmount}
-              nativeCurrency={nativeCurrency}
-              nativeCurrencyInputRef={nativeCurrencyInputRef}
-              onChangeAssetAmount={onChangeAssetAmount}
-              onChangeNativeAmount={onChangeNativeAmount}
-              onFocusAssetInput={onFocusAssetInput}
-              onFocusNativeInput={onFocusNativeInput}
-              selected={selected}
-              sendMaxBalance={sendMaxBalance}
-              txSpeedRenderer={txSpeedRenderer}
-            />
-          )}
-        </FormContainer>
-      </Container>
-    </KeyboardAwareScrollView>
+    <Container>
+      <ButtonPressAnimation onPress={onResetAssetSelection} overflowMargin={30} scaleTo={0.925}>
+        <ShadowStack
+          alignSelf="center"
+          backgroundColor={colors.white}
+          borderRadius={20}
+          height={SendCoinRow.selectedHeight}
+          overflow={isTinyPhone ? 'visible' : 'hidden'}
+          shadows={isTinyPhone ? noShadows : shadows}
+          width={deviceWidth - 38}
+        >
+          {isTinyPhone ? null : <AssetRowGradient />}
+          <AssetRowElement disablePressAnimation item={selected} selected showNativeValue={showNativeValue} testID="send-asset-form">
+            <Text align="center" color={colorForAsset || colors.dark} size="large" weight="heavy">
+              􀁴
+            </Text>
+          </AssetRowElement>
+        </ShadowStack>
+      </ButtonPressAnimation>
+      <FormContainer isUniqueAsset={isUniqueAsset}>
+        {isUniqueAsset ? (
+          <SendAssetFormCollectible asset={selected} buttonRenderer={buttonRenderer} txSpeedRenderer={txSpeedSlot} />
+        ) : (
+          <SendAssetFormToken
+            {...props}
+            assetAmount={assetAmount}
+            assetInputRef={assetInputRef}
+            buttonRenderer={buttonRenderer}
+            colorForAsset={colorForAsset}
+            nativeAmount={nativeAmount}
+            nativeCurrency={nativeCurrency}
+            nativeCurrencyInputRef={nativeCurrencyInputRef}
+            onChangeAssetAmount={onChangeAssetAmount}
+            onChangeNativeAmount={onChangeNativeAmount}
+            onFocusAssetInput={onFocusAssetInput}
+            onFocusNativeInput={onFocusNativeInput}
+            selected={selected}
+            sendMaxBalance={sendMaxBalance}
+            txSpeedRenderer={txSpeedSlot}
+          />
+        )}
+      </FormContainer>
+    </Container>
   );
 }

@@ -723,6 +723,11 @@ export const stackNavigationConfig = {
   mode: 'modal',
 };
 
+export const sendFlowStackNavigationConfig = {
+  ...stackNavigationConfig,
+  keyboardHandlingEnabled: false,
+};
+
 export const defaultScreenStackOptions: StackNavigationOptions = {
   animationTypeForReplace: 'pop',
   gestureEnabled: true,

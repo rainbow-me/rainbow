@@ -9,6 +9,7 @@ import { containsEmoji } from '@/helpers/strings';
 import ShadowStack from '@/react-native-shadow-stack';
 import { position } from '@/styles';
 import { useTheme, type ThemeContextProps } from '@/theme/ThemeContext';
+import { getHighContrastTextColorWorklet } from '@/worklets/colors';
 
 import ButtonPressAnimation from '../../animations/ButtonPressAnimation';
 import { Icon } from '../../icons';
@@ -109,7 +110,12 @@ const SheetActionButton: React.FC<SheetActionButtonProps> = ({
   const { isDarkMode, colors } = useTheme();
   const color = givenColor || colors.appleBlue;
   const isWhite = color === colors.white;
-  const textColor = givenTextColor || colors.whiteLabel;
+
+  const textColor = useMemo(
+    () => givenTextColor ?? getHighContrastTextColorWorklet(color, undefined, isDarkMode),
+    [color, givenTextColor, isDarkMode]
+  );
+
   const shadowsForButtonColor = useMemo(() => {
     if (newShadows) {
       return [
@@ -170,7 +176,7 @@ const SheetActionButton: React.FC<SheetActionButtonProps> = ({
       </ShadowStack>
       <Content label={label} size={size} isSquare={isSquare}>
         {emoji && <Emoji lineHeight={23} name={emoji} size="medium" />}
-        {icon && <Icon color="white" height={18} name={icon} size={18} />}
+        {icon && <Icon color={textColor} height={18} name={icon} size={18} />}
         {label ? (
           <Text
             align="center"

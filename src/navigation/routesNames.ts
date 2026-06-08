@@ -179,7 +179,7 @@ export const NATIVE_ROUTES = new Set<Route>([
   Routes.RECEIVE_MODAL,
   Routes.SETTINGS_SHEET,
   Routes.SWAP,
-  ...(Platform.OS === 'ios' ? [Routes.SEND_SHEET_NAVIGATOR, Routes.ADD_CASH_SCREEN_NAVIGATOR] : []),
+  ...(Platform.OS === 'ios' ? [Routes.ADD_CASH_SCREEN_NAVIGATOR] : []),
 ]);
 
 const RoutesWithPlatformDifferences = {

@@ -1,18 +1,15 @@
-import React, { useCallback, useMemo, useState } from 'react';
+import React from 'react';
 import { Platform } from 'react-native';
 
 import { LinearGradient } from 'expo-linear-gradient';
+import { KeyboardStickyView } from 'react-native-keyboard-controller';
 
 import styled from '@/framework/ui/styled-thing';
 import useDimensions from '@/hooks/useDimensions';
-import useImageMetadata from '@/hooks/useImageMetadata';
 import { padding, position } from '@/styles';
 
-import OpacityToggler from '../animations/OpacityToggler';
 import { UniqueTokenExpandedStateContent } from '../expanded-state/unique-token';
 import { Column } from '../layout';
-
-const defaultImageDimensions = { height: 512, width: 512 };
 
 const ButtonWrapper = styled(Column).attrs({
   margin: 0,
@@ -24,7 +21,13 @@ const ButtonWrapper = styled(Column).attrs({
 });
 
 const Footer = styled(Column).attrs({ justify: 'end' })({
+  position: 'relative',
   width: '100%',
+});
+
+const StickyFooter = styled(KeyboardStickyView)({
+  width: '100%',
+  ...(Platform.OS === 'ios' ? { zIndex: 3 } : { elevation: 3 }),
 });
 
 const NFTWrapper = styled(Column).attrs({
@@ -35,7 +38,7 @@ const NFTWrapper = styled(Column).attrs({
   width: '100%',
 });
 
-const Gradient = styled(LinearGradient).attrs(({ isTallPhone, theme: { colors } }) => ({
+const FooterGradient = styled(LinearGradient).attrs(({ isTallPhone, theme: { colors } }) => ({
   colors: colors.gradients.sendBackground,
   end: { x: 0.5, y: isTallPhone ? 0.2 : 0.4 },
   pointerEvents: 'none',
@@ -45,77 +48,23 @@ const Gradient = styled(LinearGradient).attrs(({ isTallPhone, theme: { colors } 
   overflow: 'hidden',
 });
 
-const GradientToggler = styled(OpacityToggler).attrs({
-  tension: 500,
-})(position.coverAsObject);
-
 export default function SendAssetFormCollectible({ asset, buttonRenderer, txSpeedRenderer, ...props }) {
-  const { height: deviceHeight, isTallPhone, isTinyPhone, width: deviceWidth } = useDimensions();
-
-  const [containerHeight, setContainerHeight] = useState();
-  const [containerWidth, setContainerWidth] = useState();
-  const [isGradientVisible, setIsGradientVisible] = useState(false);
-
-  const { dimensions: cachedImageDimensions } = useImageMetadata(asset.image_preview_url);
-
-  const { height: imageHeight, width: imageWidth } = useMemo(() => {
-    const imgDims = cachedImageDimensions || defaultImageDimensions;
-
-    const defaultWidth = deviceWidth - 38;
-    const defaultHeight = (defaultWidth * imgDims.height) / imgDims.width;
-    let width = defaultWidth;
-    let height = defaultHeight;
-
-    const calculatedHeight = deviceHeight - (isTallPhone ? 440 : isTinyPhone ? 360 : 420);
-
-    if (height > calculatedHeight) {
-      height = calculatedHeight;
-      width = (height * imgDims.width) / imgDims.height;
-      if (width > defaultWidth) {
-        width = defaultWidth;
-        height = defaultHeight;
-      }
-    }
-
-    return { height, width };
-  }, [cachedImageDimensions, deviceHeight, deviceWidth, isTallPhone, isTinyPhone]);
-
-  const handleLayout = useCallback(
-    ({ nativeEvent: { layout } }) => {
-      const newContainerHeight = layout.height - layout.y * 2;
-      setIsGradientVisible(newContainerHeight < containerHeight);
-      setContainerHeight(newContainerHeight);
-      setContainerWidth(layout.width);
-    },
-    [containerHeight]
-  );
+  const { isTallPhone } = useDimensions();
 
   return (
     <Column align="end" flex={1} width="100%">
-      <NFTWrapper onLayout={handleLayout}>
-        {!!containerHeight && !!containerWidth && (
-          <UniqueTokenExpandedStateContent
-            {...props}
-            asset={asset}
-            borderRadius={20}
-            disablePreview
-            height={imageHeight}
-            horizontalPadding={24}
-            width={imageWidth}
-          />
-        )}
+      <NFTWrapper>
+        <UniqueTokenExpandedStateContent {...props} asset={asset} borderRadius={20} disablePreview horizontalPadding={24} />
       </NFTWrapper>
-      <Footer>
-        <ButtonWrapper isTallPhone={isTallPhone}>
-          {buttonRenderer}
-          {txSpeedRenderer}
-        </ButtonWrapper>
-        {Platform.OS !== 'android' && (
-          <GradientToggler isVisible={!isGradientVisible}>
-            <Gradient isTallPhone={isTallPhone} />
-          </GradientToggler>
-        )}
-      </Footer>
+      <StickyFooter>
+        <Footer>
+          {Platform.OS !== 'android' && <FooterGradient isTallPhone={isTallPhone} />}
+          <ButtonWrapper>
+            {buttonRenderer}
+            {txSpeedRenderer}
+          </ButtonWrapper>
+        </Footer>
+      </StickyFooter>
     </Column>
   );
 }
