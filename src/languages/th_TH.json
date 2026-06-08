@@ -555,11 +555,6 @@
         "tokens": "โทเคน"
       },
       "show_more": "แสดงเพิ่มเติม",
-      "placements": {
-        "perps_title": "Perps",
-        "predictions_title": "การพยากรณ์",
-        "see_all": "ดูทั้งหมด"
-      },
       "strategies": {
         "strategies_title": "กลยุทธ์",
         "yearn_finance_description": "กลยุทธ์ผลตอบแทนสมาร์ทจาก yearn.finance"
