@@ -3097,42 +3097,6 @@
         "new_tab": "नया टैब"
       }
     },
-    "trending_tokens": {
-      "all": "सभी",
-      "no_results": {
-        "title": "कोई परिणाम नहीं",
-        "body": "एक बड़े समय सीमा या एक अलग नेटवर्क या वर्ग का ब्राउज़िंग करने का प्रयास करें।"
-      },
-      "and": "और",
-      "and_others": {
-        "one": "और %{count} अन्य",
-        "other": "और %{count} अन्य"
-      },
-      "filters": {
-        "categories": {
-          "TRENDING": "ट्रेंडिंग",
-          "NEW": "नया"
-        },
-        "sort": {
-          "RECOMMENDED": {
-            "label": "Sort",
-            "menuOption": "डिफ़ॉल्ट"
-          },
-          "VOLUME": "वॉल्यूम",
-          "MARKET_CAP": "मार्केट कैप",
-          "TOP_GAINERS": "शीर्ष लाभार्थी",
-          "TOP_LOSERS": "शीर्ष हारने वाले"
-        },
-        "time": {
-          "H12": "12 घंटे",
-          "H12_ABBREVIATED": "12h",
-          "H24": "24 घंटे",
-          "H24_ABBREVIATED": "24h",
-          "D7": "1 सप्ताह",
-          "D3": "3 दिन"
-        }
-      }
-    },
     "network_selector": {
       "customize_networks_banner": {
         "title": "नेटवर्क्स को कस्टम बनाएं",
