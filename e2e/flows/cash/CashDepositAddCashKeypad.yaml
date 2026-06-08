@@ -1,0 +1,47 @@
+appId: ${APP_ID}
+tags:
+  - cash
+  - parallel
+---
+- launchApp:
+    clearState: true
+    clearKeychain: true
+    arguments:
+      isE2ETest: true
+- runFlow: ../../utils/Prepare.yaml
+- runFlow: ../../utils/ImportWalletWithKey.yaml
+- runFlow:
+    file: ../../utils/SetExperimentalFlag.yaml
+    env:
+      FLAG: Cash
+      VALUE: 'true'
+- runFlow:
+    file: ../../utils/SetCashDepositSetupStatus.yaml
+    env:
+      STATUS: ready
+# A ready member lands straight on the Add Cash presets sheet.
+- tapOn:
+    id: buy-button
+- assertVisible:
+    id: cash-deposit-add-cash-amount-more
+# Tapping the "•••" chip flips the sheet into the full-screen keypad amount entry.
+- tapOn:
+    id: cash-deposit-add-cash-amount-more
+- assertVisible:
+    id: cash-deposit-add-cash-amount-display
+# With nothing entered the action button is disabled — its label reads "Enter Amount".
+- assertVisible:
+    text: 'Enter Amount'
+- assertNotVisible:
+    text: 'Hold to Add'
+# Entering a non-zero amount updates the big-number display and enables the button.
+- tapOn:
+    id: number-pad-key-5
+- assertVisible:
+    text: '5'
+    childOf:
+      id: cash-deposit-add-cash-amount-display-container
+- assertVisible:
+    text: 'Hold to Add'
+- assertNotVisible:
+    text: 'Enter Amount'
