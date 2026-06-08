@@ -8,6 +8,7 @@ import ButtonPressAnimation from '@/components/animations/ButtonPressAnimation';
 import { GradientBorderView } from '@/components/gradient-border/GradientBorderView';
 import { LiveTokenText } from '@/components/live-token-text/LiveTokenText';
 import { globalColors, Text, TextShadow, useBackgroundColor, useColorMode, useForegroundColor } from '@/design-system';
+import { type CardPressHandler, type OrderPressHandler } from '@/features/discover/types/sectionLayout';
 import { LeagueIcon } from '@/features/polymarket/components/league-icon/LeagueIcon';
 import { TeamLogo } from '@/features/polymarket/components/TeamLogo';
 import { usePolymarketSportsBetCellPress } from '@/features/polymarket/hooks/usePolymarketSportsBetCellPress';
@@ -16,7 +17,7 @@ import { getLeagueId, SPORT_LEAGUES, type LeagueId } from '@/features/polymarket
 import { type PolymarketTeamInfo } from '@/features/polymarket/types';
 import { type PolymarketEvent } from '@/features/polymarket/types/polymarket-event';
 import { formatOdds, type BetCellData } from '@/features/polymarket/utils/sportsEventBetData';
-import { getSportsEventOutcomeCellColor } from '@/features/polymarket/utils/sportsEventOutcome';
+import { getSportsEventOutcomeCellColor, type SportsEventOutcomeInfo } from '@/features/polymarket/utils/sportsEventOutcome';
 import { getDiscoverSportsEventTeamLabels } from '@/features/polymarket/utils/sportsEventTeamLabels';
 import { getTeamDisplayInfo } from '@/features/polymarket/utils/sportsEventTeams';
 import { opacity } from '@/framework/ui/utils/opacity';
@@ -52,12 +53,16 @@ const BET_CELLS_OVERLAY_TOP_NO_LEAGUE_HEADER = 47;
 type PredictionMarketEventCardProps = {
   event: PolymarketEvent;
   hideLeagueHeader?: boolean;
+  onOrderPress: OrderPressHandler;
+  onPress: CardPressHandler;
   width?: number;
 };
 
 export const PredictionMarketEventCard = memo(function PredictionMarketEventCard({
   event,
   hideLeagueHeader = false,
+  onOrderPress,
+  onPress,
   width = PREDICTION_MARKET_EVENT_CARD_WIDTH,
 }: PredictionMarketEventCardProps) {
   const { isDarkMode } = useColorMode();
@@ -71,12 +76,15 @@ export const PredictionMarketEventCard = memo(function PredictionMarketEventCard
   const cardBorderGradientColors = getPredictionEventCardBorderGradientColors(eventAccentColor, isDarkMode);
   const cardGradientColors = getPredictionEventCardGradientColors(eventAccentColor, isDarkMode);
   const handlePress = useCallback(() => {
+    onPress({ marketId: event.id, marketName: event.title, marketSlug: event.slug, marketSymbol: event.ticker });
     Navigation.handleAction(Routes.POLYMARKET_EVENT_SCREEN, { event, eventId: event.id });
-  }, [event]);
+  }, [event, onPress]);
 
   return (
     <View style={[styles.container, { width }]}>
-      {Platform.OS === 'android' ? <WidgetBetCellsOverlay event={event} hideLeagueHeader={hideLeagueHeader} rows={rows} /> : null}
+      {Platform.OS === 'android' ? (
+        <WidgetBetCellsOverlay event={event} hideLeagueHeader={hideLeagueHeader} rows={rows} onOrderPress={onOrderPress} />
+      ) : null}
       <ButtonPressAnimation onPress={handlePress} scaleTo={0.96} style={styles.flex} wrapperStyle={styles.flex}>
         <GradientBorderView
           backgroundColor={isDarkMode ? globalColors.grey100 : globalColors.white100}
@@ -132,6 +140,7 @@ export const PredictionMarketEventCard = memo(function PredictionMarketEventCard
             moneylineBet={rows.away.moneyline}
             compact={rows.away.isFallback}
             interactiveBetCells={Platform.OS === 'ios'}
+            onOrderPress={onOrderPress}
           />
           <InsetSeparator />
           <TeamRow
@@ -143,6 +152,7 @@ export const PredictionMarketEventCard = memo(function PredictionMarketEventCard
             moneylineBet={rows.home.moneyline}
             compact={rows.home.isFallback}
             interactiveBetCells={Platform.OS === 'ios'}
+            onOrderPress={onOrderPress}
           />
         </GradientBorderView>
       </ButtonPressAnimation>
@@ -171,6 +181,7 @@ const TeamRow = memo(function TeamRow({
   score,
   team,
   interactiveBetCells = true,
+  onOrderPress,
 }: {
   event: PolymarketEvent;
   compact?: boolean;
@@ -180,6 +191,7 @@ const TeamRow = memo(function TeamRow({
   moneylineBet?: BetCellData;
   score?: string;
   team?: PolymarketTeamInfo;
+  onOrderPress: PredictionMarketEventCardProps['onOrderPress'];
 }) {
   return (
     <View style={styles.teamRow}>
@@ -195,7 +207,14 @@ const TeamRow = memo(function TeamRow({
             {score ?? ''}
           </Text>
         ) : null}
-        <TeamBetCells event={event} compact={compact} interactive={interactiveBetCells} lineBet={lineBet} moneylineBet={moneylineBet} />
+        <TeamBetCells
+          event={event}
+          compact={compact}
+          interactive={interactiveBetCells}
+          lineBet={lineBet}
+          moneylineBet={moneylineBet}
+          onOrderPress={onOrderPress}
+        />
       </View>
     </View>
   );
@@ -205,18 +224,32 @@ const WidgetBetCellsOverlay = memo(function WidgetBetCellsOverlay({
   event,
   hideLeagueHeader,
   rows,
+  onOrderPress,
 }: {
   event: PolymarketEvent;
   hideLeagueHeader: boolean;
   rows: SportsEventRows;
+  onOrderPress: PredictionMarketEventCardProps['onOrderPress'];
 }) {
   return (
     <View
       pointerEvents="box-none"
       style={[styles.betCellsOverlay, { top: hideLeagueHeader ? BET_CELLS_OVERLAY_TOP_NO_LEAGUE_HEADER : BET_CELLS_OVERLAY_TOP }]}
     >
-      <TeamBetCells event={event} compact={rows.away.isFallback} lineBet={rows.away.line} moneylineBet={rows.away.moneyline} />
-      <TeamBetCells event={event} compact={rows.home.isFallback} lineBet={rows.home.line} moneylineBet={rows.home.moneyline} />
+      <TeamBetCells
+        event={event}
+        compact={rows.away.isFallback}
+        lineBet={rows.away.line}
+        moneylineBet={rows.away.moneyline}
+        onOrderPress={onOrderPress}
+      />
+      <TeamBetCells
+        event={event}
+        compact={rows.home.isFallback}
+        lineBet={rows.home.line}
+        moneylineBet={rows.home.moneyline}
+        onOrderPress={onOrderPress}
+      />
     </View>
   );
 });
@@ -227,12 +260,14 @@ const TeamBetCells = memo(function TeamBetCells({
   interactive = true,
   lineBet,
   moneylineBet,
+  onOrderPress,
 }: {
   event: PolymarketEvent;
   compact?: boolean;
   interactive?: boolean;
   lineBet?: BetCellData;
   moneylineBet?: BetCellData;
+  onOrderPress: PredictionMarketEventCardProps['onOrderPress'];
 }) {
   const { isDarkMode } = useColorMode();
   const lineColor = getSportsEventOutcomeCellColor(event.markets, lineBet?.outcomeTokenId, isDarkMode, event.teams);
@@ -250,12 +285,12 @@ const TeamBetCells = memo(function TeamBetCells({
   return (
     <View style={styles.betCells}>
       {lineBet ? (
-        <WidgetBetCell event={event} data={lineBet} backgroundColor={lineColor} variant="line" />
+        <WidgetBetCell onOrderPress={onOrderPress} event={event} data={lineBet} backgroundColor={lineColor} variant="line" />
       ) : compact ? null : (
         <View style={styles.lineCellSpacer} />
       )}
       {moneylineBet ? (
-        <WidgetBetCell event={event} data={moneylineBet} backgroundColor={moneylineColor} variant="moneyline" />
+        <WidgetBetCell event={event} data={moneylineBet} backgroundColor={moneylineColor} onOrderPress={onOrderPress} variant="moneyline" />
       ) : compact ? null : (
         <View style={styles.moneylineCellSpacer} />
       )}
@@ -267,16 +302,33 @@ const WidgetBetCell = memo(function WidgetBetCell({
   backgroundColor,
   data,
   event,
+  onOrderPress,
   variant,
 }: {
   backgroundColor?: string;
   data: BetCellData;
   event: PolymarketEvent;
+  onOrderPress: PredictionMarketEventCardProps['onOrderPress'];
   variant: 'line' | 'moneyline';
 }) {
   const tokenId = getPolymarketTokenId(data.outcomeTokenId, 'sell');
   const color = backgroundColor ?? '#717784';
-  const onPress = usePolymarketSportsBetCellPress({ event, outcomeTokenId: data.outcomeTokenId });
+  const onResolvedOutcomePress = useCallback(
+    (outcomeInfo: SportsEventOutcomeInfo) => {
+      onOrderPress({
+        marketId: outcomeInfo.market.id,
+        marketName: outcomeInfo.market.question,
+        marketSlug: outcomeInfo.market.slug,
+        outcome: outcomeInfo.outcome,
+      });
+    },
+    [onOrderPress]
+  );
+  const onPress = usePolymarketSportsBetCellPress({
+    event,
+    outcomeTokenId: data.outcomeTokenId,
+    onResolvedOutcomePress,
+  });
   const isLine = variant === 'line';
   const buttonStyle = isLine ? styles.lineCellButton : styles.moneylineCellButton;
   const cellStyle = isLine

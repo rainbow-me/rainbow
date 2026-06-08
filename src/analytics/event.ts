@@ -11,6 +11,7 @@ import { type ENSRapActionType } from '@/features/ens/raps/common';
 import { type PerpPositionSide, type TriggerOrderType } from '@/features/perps/types';
 import { type Destination, type Display, type SectionId, type SurfaceDocument, type SurfaceId } from '@/features/placements/surfaces/types';
 import { type Placement, type PlacementItem } from '@/features/placements/types';
+import { type PolymarketMarket } from '@/features/polymarket/types/polymarket-event';
 import { type EthereumWalletType } from '@/helpers/walletTypes';
 import { type WalletLibraryType } from '@/model/wallet';
 import { type PairHardwareWalletNavigatorParams } from '@/navigation/types';
@@ -243,6 +244,11 @@ export const event = {
 
   // discover screen
   timeSpentOnDiscoverScreen: 'Time spent on the Discover screen',
+  discoverCardPressed: 'discover.card_pressed',
+  discoverPredictionOrderPressed: 'discover.prediction_order_pressed',
+  discoverTabPressed: 'discover.tab_pressed',
+  discoverSectionPressed: 'discover.section_pressed',
+  discoverCarouselScrolled: 'discover.carousel_scrolled',
   placementInteraction: 'placement.interaction',
   surfaceInteraction: 'surface.interaction',
 
@@ -994,6 +1000,41 @@ export type EventProperties = {
   // discover screen
   [event.timeSpentOnDiscoverScreen]: {
     durationInMs: number;
+  };
+  [event.discoverCardPressed]: {
+    placementId: Placement['id'];
+    placementSource: Placement['source'];
+    placementTitle: string;
+    itemOrder: number;
+    itemId: PlacementItem['id'];
+    marketId: string;
+    marketName: string;
+    marketSlug?: string;
+    marketSymbol?: string;
+    marketType: Placement['type'];
+  };
+  [event.discoverTabPressed]: {
+    sectionTitle: string;
+    sectionId: SectionId;
+    wasActive: boolean;
+  };
+  [event.discoverPredictionOrderPressed]: {
+    placementId: Placement['id'];
+    itemId: PlacementItem['id'];
+    marketId: PolymarketMarket['id'];
+    marketName: PolymarketMarket['question'];
+    marketSlug: PolymarketMarket['slug'];
+    outcome: PolymarketMarket['outcomes'][number];
+  };
+  [event.discoverSectionPressed]: {
+    destination: Destination;
+    display: Display;
+    sectionId: SectionId;
+    sectionTitle: string;
+  };
+  [event.discoverCarouselScrolled]: {
+    display: Display;
+    sectionId: SectionId;
   };
   [event.placementInteraction]: {
     id: Placement['id'];
