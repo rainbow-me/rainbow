@@ -3097,42 +3097,6 @@
         "new_tab": "Nouvel onglet"
       }
     },
-    "trending_tokens": {
-      "all": "Tout",
-      "no_results": {
-        "title": "Aucun résultat",
-        "body": "Essayez de parcourir une période plus longue ou un réseau ou une catégorie différente."
-      },
-      "and": "et",
-      "and_others": {
-        "one": "et %{count} autre",
-        "other": "et %{count} autres"
-      },
-      "filters": {
-        "categories": {
-          "TRENDING": "Tendances",
-          "NEW": "Nouveau"
-        },
-        "sort": {
-          "RECOMMENDED": {
-            "label": "Trier",
-            "menuOption": "Par défaut"
-          },
-          "VOLUME": "Volume",
-          "MARKET_CAP": "Capitalisation boursière",
-          "TOP_GAINERS": "Principaux gagnants",
-          "TOP_LOSERS": "Principaux perdants"
-        },
-        "time": {
-          "H12": "12 heures",
-          "H12_ABBREVIATED": "12h",
-          "H24": "24 heures",
-          "H24_ABBREVIATED": "24h",
-          "D7": "1 semaine",
-          "D3": "3 jours"
-        }
-      }
-    },
     "network_selector": {
       "customize_networks_banner": {
         "title": "Personnaliser les Réseaux",
