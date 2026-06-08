@@ -3458,9 +3458,10 @@
       "sports": {
         "vs": "против",
         "live": "В прямом эфире",
+        "this_week": "This week",
         "game_best_of": "Игра %{currentPeriod} - Лучший из %{bestOf}",
         "final": "Финал",
-        "no_games": "Нет игр сегодня и завтра"
+        "no_games": "No games this week"
       },
       "outcomes": {
         "yes": "Да",
