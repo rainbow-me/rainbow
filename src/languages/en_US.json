@@ -3079,42 +3079,6 @@
         "new_tab": "New Tab"
       }
     },
-    "trending_tokens": {
-      "all": "All",
-      "no_results": {
-        "title": "No results",
-        "body": "Try browsing a larger timeframe or a different network or category."
-      },
-      "and": "and",
-      "and_others": {
-        "one": "and %{count} other",
-        "other": "and %{count} others"
-      },
-      "filters": {
-        "categories": {
-          "TRENDING": "Trending",
-          "NEW": "New"
-        },
-        "sort": {
-          "RECOMMENDED": {
-            "label": "Sort",
-            "menuOption": "Default"
-          },
-          "VOLUME": "Volume",
-          "MARKET_CAP": "Market Cap",
-          "TOP_GAINERS": "Top Gainers",
-          "TOP_LOSERS": "Top Losers"
-        },
-        "time": {
-          "H12": "12 Hours",
-          "H12_ABBREVIATED": "12h",
-          "H24": "24 Hours",
-          "H24_ABBREVIATED": "24h",
-          "D7": "1 Week",
-          "D3": "3 Days"
-        }
-      }
-    },
     "network_selector": {
       "customize_networks_banner": {
         "title": "Customize Networks",

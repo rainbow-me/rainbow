@@ -410,9 +410,6 @@ export const SwapProvider = ({ children }: SwapProviderProps) => {
         data: { error, parameters, type },
       });
     }
-
-    // reset the last navigated trending token after a swap has taken place
-    swapsStore.setState({ lastNavigatedTrendingToken: undefined });
   };
 
   const executeSwap = () => {

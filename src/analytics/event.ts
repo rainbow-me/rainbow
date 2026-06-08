@@ -15,7 +15,6 @@ import { type PolymarketMarket } from '@/features/polymarket/types/polymarket-ev
 import { type EthereumWalletType } from '@/helpers/walletTypes';
 import { type WalletLibraryType } from '@/model/wallet';
 import { type PairHardwareWalletNavigatorParams } from '@/navigation/types';
-import { type TrendingToken } from '@/resources/trendingTokens/trendingTokens';
 import { type TokenLauncherAnalyticsParams } from '@/screens/token-launcher/state/tokenLauncherStore';
 import { type ChainId, type Network } from '@/state/backendNetworks/types';
 import { type FavoritedSite } from '@/state/browser/favoriteDappsStore';
@@ -212,14 +211,6 @@ export const event = {
   // token lists (wallet, swap, send)
   tokenList: 'token_list',
 
-  // trending tokens
-  viewTrendingToken: 'trending_tokens.view_trending_token',
-  viewRankedCategory: 'trending_tokens.view_ranked_category',
-  changeNetworkFilter: 'trending_tokens.change_network_filter',
-  changeTimeframeFilter: 'trending_tokens.change_timeframe_filter',
-  changeSortFilter: 'trending_tokens.change_sort_filter',
-  hasLinkedFarcaster: 'trending_tokens.has_linked_farcaster',
-
   // token launcher
   tokenLauncherStepChanged: 'token_launcher.step_changed',
   tokenLauncherTokenCreated: 'token_launcher.token_created',
@@ -371,7 +362,6 @@ type SwapEventParameters<T extends 'swap' | 'crosschainSwap'> = {
   tradeAmountUSD: number;
   degenMode: boolean;
   isSwappingToPopularAsset: boolean;
-  isSwappingToTrendingAsset: boolean;
   isHardwareWallet: boolean;
   quickBuyMetadata: SwapsParams['quickBuyMetadata'];
 };
@@ -911,39 +901,6 @@ export type EventProperties = {
     no_icon: number;
     no_price?: number;
     query?: string; // query is only sent for the swap screen
-  };
-
-  [event.viewTrendingToken]: {
-    address: TrendingToken['address'];
-    chainId: TrendingToken['chainId'];
-    symbol: TrendingToken['symbol'];
-    name: TrendingToken['name'];
-    highlightedFriends: number;
-  };
-
-  [event.viewRankedCategory]: {
-    category: string;
-    chainId: ChainId | undefined;
-    isLimited: boolean;
-    isEmpty: boolean;
-  };
-
-  [event.changeNetworkFilter]: {
-    chainId: ChainId | undefined;
-  };
-
-  [event.changeTimeframeFilter]: {
-    timeframe: string;
-  };
-
-  [event.changeSortFilter]: {
-    sort: string | undefined;
-  };
-
-  [event.hasLinkedFarcaster]: {
-    hasFarcaster: boolean;
-    personalizedTrending: boolean;
-    walletHash: string;
   };
 
   // token launcher

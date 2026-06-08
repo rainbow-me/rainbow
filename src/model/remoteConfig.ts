@@ -37,7 +37,6 @@ export interface RainbowConfig extends Record<
 
   /* Numbers */
   trace_call_block_number_offset: number;
-  trending_tokens_limit: number;
 
   /* Booleans */
   f2c_enabled: boolean;
@@ -84,8 +83,6 @@ export interface RainbowConfig extends Record<
   claimables: boolean;
   nfts_enabled: boolean;
 
-  trending_tokens_enabled: boolean;
-  rainbow_trending_tokens_list_enabled: boolean;
   prince_of_the_hill_enabled: boolean;
   king_of_the_hill_enabled: boolean;
   candlestick_charts_enabled: boolean;
@@ -171,7 +168,6 @@ export const DEFAULT_CONFIG = {
 
   /* Numbers */
   trace_call_block_number_offset: 20,
-  trending_tokens_limit: 10,
 
   /* Booleans */
   f2c_enabled: true,
@@ -219,8 +215,6 @@ export const DEFAULT_CONFIG = {
   claimables: true,
   nfts_enabled: true,
 
-  trending_tokens_enabled: false,
-  rainbow_trending_tokens_list_enabled: false,
   king_of_the_hill2_enabled: false,
   king_of_the_hill_enabled: false,
   prince_of_the_hill_enabled: false,
