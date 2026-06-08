@@ -3458,9 +3458,10 @@
       "sports": {
         "vs": "対",
         "live": "ライブ",
+        "this_week": "This week",
         "game_best_of": "ゲーム %{currentPeriod} - ベストオブ %{bestOf}",
         "final": "最終",
-        "no_games": "今日や明日のゲームはありません。"
+        "no_games": "No games this week"
       },
       "outcomes": {
         "yes": "はい",
