@@ -3458,9 +3458,10 @@
       "sports": {
         "vs": "대",
         "live": "라이브",
+        "this_week": "This week",
         "game_best_of": "게임 %{currentPeriod} - %{bestOf} 중 최고",
         "final": "최종",
-        "no_games": "오늘과 내일 경기가 없습니다."
+        "no_games": "No games this week"
       },
       "outcomes": {
         "yes": "예",
