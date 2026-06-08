@@ -3458,9 +3458,10 @@
       "sports": {
         "vs": "مقابل",
         "live": "مباشر",
+        "this_week": "هذا الأسبوع",
         "game_best_of": "اللعبة %{currentPeriod} - الأفضل من %{bestOf}",
         "final": "نهائي",
-        "no_games": "لا توجد مباريات اليوم أو غدًا"
+        "no_games": "لا توجد مباريات هذا الأسبوع"
       },
       "outcomes": {
         "yes": "نعم",
