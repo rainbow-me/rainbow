@@ -1,6 +1,8 @@
+import { Wallet } from '@ethersproject/wallet';
 import { type Address } from 'viem';
 
 import { analytics } from '@/analytics';
+import { isPreparedCallsExecutionSponsored } from '@/features/delegation/calls';
 import type { LegacyTransactionGasParamAmounts, TransactionGasParamAmounts } from '@/features/gas/types/gas';
 import { mulWorklet, subWorklet } from '@/framework/core/safeMath';
 import { getProvider } from '@/handlers/web3';
@@ -10,8 +12,10 @@ import { loadWallet } from '@/model/wallet';
 
 import { STAKING_CHAIN_ID } from '../constants';
 import { useStakingPositionStore, type StakingPositionData } from '../stores/rnbwStakingPositionStore';
-import { executeUnstakeRnbw, type UnstakeRnbwExecution } from './executeUnstakeRnbw';
+import { type RnbwStakingExecution, type RnbwStakingExecutionMode } from './executeRnbwStakingCalls';
+import { executeUnstakeRnbw } from './executeUnstakeRnbw';
 import { pollForStakingUpdate } from './pollForStakingUpdate';
+import { type PreparedUnstakeRnbw } from './prepareUnstakeRnbw';
 
 type UnstakeAnalyticsSnapshot = {
   stakedAmount: string;
@@ -22,20 +26,24 @@ type UnstakeAnalyticsSnapshot = {
 };
 
 type UnstakeRnbwResult = {
-  txHash: string;
+  executionId?: string;
+  txHash?: string;
   waitForConfirmation: () => Promise<void>;
 };
 
 export async function unstakeRnbw({
   address,
   gasParams,
+  preparedCalls: preparedCallsPromise,
 }: {
   address: Address;
   gasParams: LegacyTransactionGasParamAmounts | TransactionGasParamAmounts;
+  preparedCalls: Promise<PreparedUnstakeRnbw | null>;
 }): Promise<UnstakeRnbwResult> {
   const positionData = await refreshAndValidatePosition();
   const { receiveRaw, ...analyticsSnapshot } = snapshotUnstakeAnalytics(positionData);
 
+  let executionMode: RnbwStakingExecutionMode | undefined;
   try {
     const provider = getProvider({ chainId: STAKING_CHAIN_ID });
     const signer = await loadWallet({ address, provider });
@@ -43,21 +51,28 @@ export async function unstakeRnbw({
       throw new Error('Failed to load wallet');
     }
 
+    const resolvedPrepared = signer instanceof Wallet ? await preparedCallsPromise : null;
+    const preparedCalls = resolvedPrepared?.preparedCalls ?? null;
+    executionMode = signer instanceof Wallet && isPreparedCallsExecutionSponsored(preparedCalls) ? 'sponsored' : 'manual';
+
     const execution = await executeUnstakeRnbw({
       address,
       expectedReceiveAmountRaw: receiveRaw,
       gasParams,
+      preparedCalls,
       provider,
       signer,
     });
 
     return {
+      executionId: execution.executionId,
       txHash: execution.txHash,
       waitForConfirmation: () => finalizeSubmittedUnstake({ analyticsSnapshot, execution, positionData }),
     };
   } catch (error) {
     analytics.track(analytics.event.rnbwStakingUnstakeFailed, {
       chainId: STAKING_CHAIN_ID,
+      executionMode,
       stakedAmount: analyticsSnapshot.stakedAmount,
       errorMessage: error instanceof Error ? error.message : 'Unknown error',
     });
@@ -87,7 +102,7 @@ async function finalizeSubmittedUnstake({
   positionData,
 }: {
   analyticsSnapshot: Omit<UnstakeAnalyticsSnapshot, 'receiveRaw'>;
-  execution: UnstakeRnbwExecution;
+  execution: RnbwStakingExecution;
   positionData: StakingPositionData;
 }): Promise<void> {
   try {
@@ -95,12 +110,15 @@ async function finalizeSubmittedUnstake({
     await pollForStakingUpdate(positionData.poolShares);
     analytics.track(analytics.event.rnbwStakingUnstake, {
       chainId: STAKING_CHAIN_ID,
+      executionMode: execution.executionMode,
       txHash: execution.txHash,
+      executionId: execution.executionId,
       ...analyticsSnapshot,
     });
   } catch (error) {
     analytics.track(analytics.event.rnbwStakingUnstakeFailed, {
       chainId: STAKING_CHAIN_ID,
+      executionMode: execution.executionMode,
       stakedAmount: analyticsSnapshot.stakedAmount,
       errorMessage: error instanceof Error ? error.message : 'Unknown error',
     });

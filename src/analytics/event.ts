@@ -1436,7 +1436,9 @@ export type EventProperties = {
   };
   [event.rnbwStakingUnstake]: {
     chainId: number;
-    txHash: string;
+    executionMode: 'sponsored' | 'manual';
+    txHash?: string;
+    executionId?: string;
     stakedAmount: string;
     expectedExitFee: string;
     expectedReceiveAmount: string;
@@ -1444,6 +1446,7 @@ export type EventProperties = {
   };
   [event.rnbwStakingUnstakeFailed]: {
     chainId: number;
+    executionMode?: 'sponsored' | 'manual';
     stakedAmount?: string;
     errorMessage: string;
   };
