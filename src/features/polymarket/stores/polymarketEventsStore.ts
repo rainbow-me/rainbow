@@ -230,6 +230,7 @@ export async function fetchPolymarketEventsByIds(
 ): Promise<RawPolymarketEvent[]> {
   if (eventIds.length === 0) return [];
   const url = new URL(`${POLYMARKET_GAMMA_API_URL}/events`);
+  url.searchParams.set('limit', String(eventIds.length));
   for (const id of eventIds) url.searchParams.append('id', id);
   const { data } = await rainbowFetch<RawPolymarketEvent[]>(url.toString(), {
     abortController,
