@@ -76,7 +76,8 @@ export const DiscoverSectionsPager = memo(function DiscoverSectionsPager({ scrol
   return (
     <Box style={styles.container} testID="discover-sections-pager">
       <SmoothPager
-        enableSwipeToGoForward="always"
+        enableSwipeToGoBack={false}
+        enableSwipeToGoForward={false}
         fillHeight
         initialPage={initialSection}
         key={pagerKey}
