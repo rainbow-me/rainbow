@@ -9,8 +9,9 @@ import { type CardPressHandler, type ListSectionDescriptor, type OrderPressHandl
 import { trackPlacementInteraction } from '@/features/placements/engagement/trackInteraction';
 import { type SurfaceId, type SurfaceLeaf } from '@/features/placements/surfaces/types';
 import { type Placement, type PlacementItem } from '@/features/placements/types';
+import { useTimeoutEffect } from '@/hooks/useTimeout';
 
-import { ShowMoreButton, ShowMoreCellEnterAnimation } from './ShowMoreButton';
+import { getShowMoreCollapseAnimationDuration, ShowMoreButton, ShowMoreCellAnimation } from './ShowMoreButton';
 
 function noopPress(): undefined {
   return undefined;
@@ -57,11 +58,34 @@ export function MarketList<T extends PlacementItem>({
   title,
 }: MarketListProps<T>) {
   const [isExpanded, setIsExpanded] = useState(false);
+  const [isCollapsing, setIsCollapsing] = useState(false);
   const showSkeletons = loading && data.length === 0;
   const hasInitialLimit = initialVisibleItemCount !== undefined;
-  const visibleItems = !hasInitialLimit || isExpanded ? data : data.slice(0, initialVisibleItemCount);
+  const hiddenItemCount = hasInitialLimit ? Math.max(data.length - (initialVisibleItemCount ?? 0), 0) : 0;
+  const showExpandedItems = isExpanded || isCollapsing;
+  const visibleItems = !hasInitialLimit || showExpandedItems ? data : data.slice(0, initialVisibleItemCount);
   const remainingItemCount = hasInitialLimit ? data.length - visibleItems.length : 0;
   const skeletonItemCount = initialVisibleItemCount ?? 5;
+
+  useTimeoutEffect(
+    ({ cancelled }) => {
+      if (cancelled) return;
+      setIsExpanded(false);
+      setIsCollapsing(false);
+    },
+    { enabled: isCollapsing, timeout: getShowMoreCollapseAnimationDuration(hiddenItemCount) }
+  );
+
+  const handleShowMorePress = () => {
+    if (isCollapsing) return;
+
+    if (!isExpanded) {
+      setIsExpanded(true);
+      return;
+    }
+
+    setIsCollapsing(true);
+  };
 
   if (!showSkeletons && data.length === 0) return null;
 
@@ -115,17 +139,24 @@ export function MarketList<T extends PlacementItem>({
                 : noopPress;
               const listItem = <View>{renderItem(item, onCardPress, onOrderPress)}</View>;
 
-              if (!hasInitialLimit || !isExpanded || index < (initialVisibleItemCount ?? 0)) {
+              if (!hasInitialLimit || !showExpandedItems || index < (initialVisibleItemCount ?? 0)) {
                 return <Fragment key={item.id}>{listItem}</Fragment>;
               }
 
               return (
-                <ShowMoreCellEnterAnimation key={item.id} index={index - (initialVisibleItemCount ?? 0)}>
+                <ShowMoreCellAnimation
+                  key={item.id}
+                  index={index - (initialVisibleItemCount ?? 0)}
+                  isCollapsing={isCollapsing}
+                  overflowItemCount={hiddenItemCount}
+                >
                   {listItem}
-                </ShowMoreCellEnterAnimation>
+                </ShowMoreCellAnimation>
               );
             })}
-        {!showSkeletons && remainingItemCount > 0 && <ShowMoreButton onPress={() => setIsExpanded(true)} />}
+        {!showSkeletons && (remainingItemCount > 0 || isExpanded) && (
+          <ShowMoreButton isExpanded={isExpanded} onPress={handleShowMorePress} />
+        )}
       </Box>
     </Box>
   );
