@@ -233,6 +233,12 @@ export const SPORT_LEAGUES = {
     sportId: 'baseball',
     color: SPORTS.baseball.color,
   },
+  fifa: {
+    name: 'FIFA',
+    fullName: 'FIFA',
+    sportId: 'soccer',
+    color: SPORTS.soccer.color,
+  },
   epl: {
     name: 'Premier League',
     fullName: 'English Premier League',
@@ -943,7 +949,7 @@ export const SPORT_LEAGUES = {
   },
 } as const;
 
-export const LEAGUE_SELECTOR_ORDER: LeagueId[] = ['nfl', 'nba', 'mlb', 'cfb', 'cbb', 'epl', 'nhl', 'atp', 'ufc', 'cs2', 'crint'];
+export const LEAGUE_SELECTOR_ORDER: LeagueId[] = ['fifa', 'nfl', 'nba', 'mlb', 'cfb', 'cbb', 'epl', 'nhl', 'atp', 'ufc', 'cs2', 'crint'];
 
 export const LEAGUE_LIST_ORDER: LeagueId[] = [...LEAGUE_SELECTOR_ORDER, 'dota2', 'val'];
 
@@ -963,6 +969,8 @@ export function isLeagueId(value: string): value is LeagueId {
 export function getLeagueId(value: string): LeagueId | undefined {
   const slugId = getLeagueSlugId(value);
   if (!slugId) return undefined;
+  // FIFA World Cup events should appear under the FIFA filter.
+  if (slugId === 'fifwc') return 'fifa';
   return isLeagueId(slugId) ? slugId : undefined;
 }
 
