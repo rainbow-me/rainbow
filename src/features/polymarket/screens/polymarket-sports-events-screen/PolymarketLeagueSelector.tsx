@@ -156,7 +156,7 @@ const LeagueItemComponent = memo(function LeagueItemComponent({
   );
 
   return (
-    <ButtonPressAnimation onPress={() => onPress(league)} scaleTo={0.88}>
+    <ButtonPressAnimation onPress={() => onPress(league)} overflowMargin={0} scaleTo={0.88} style={styles.itemButton}>
       <Animated.View style={styles.itemContainer}>
         <Animated.View style={[StyleSheet.absoluteFill, borderContainerStyle]}>
           <Border borderColor={{ custom: accentColors.opacity6 }} borderRadius={CONTAINER_HEIGHT / 2} borderWidth={THICKER_BORDER_WIDTH} />
@@ -168,7 +168,7 @@ const LeagueItemComponent = memo(function LeagueItemComponent({
             <LeagueIcon leagueId={iconLeagueId} size={24} />
           </View>
         )}
-        <Text align="center" color="label" size="17pt" weight="heavy">
+        <Text align="center" color="label" ellipsizeMode="clip" numberOfLines={1} size="17pt" weight="heavy">
           {league.label}
         </Text>
       </Animated.View>
@@ -208,7 +208,11 @@ const styles = StyleSheet.create({
     gap: 8,
     height: '100%',
     justifyContent: 'center',
+    overflow: 'hidden',
     paddingHorizontal: 16,
+  },
+  itemButton: {
+    overflow: 'hidden',
   },
   scrollView: {
     height: CONTAINER_HEIGHT,
