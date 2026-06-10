@@ -14,11 +14,19 @@ class AppInstallInfo: NSObject {
 
   @objc
   func isStoreInstall() -> NSNumber {
+    // The App Store only ever distributes device builds; a simulator install is
+    // never a store install. Simulators also have no embedded.mobileprovision, so
+    // without this they fall through to the receipt heuristic and get misclassified.
+    #if targetEnvironment(simulator)
+      return false
+    #endif
+
     // Local/ad-hoc builds have a provisioning profile.
     // App Store and TestFlight do not; Apple strips it.
-    let hasProfile = Bundle.main.path(
-      forResource: "embedded", ofType: "mobileprovision"
-    ) != nil
+    let hasProfile =
+      Bundle.main.path(
+        forResource: "embedded", ofType: "mobileprovision"
+      ) != nil
     if hasProfile { return false }
 
     // No profile = went through Apple's pipeline.
