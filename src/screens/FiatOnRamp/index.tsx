@@ -23,7 +23,7 @@ import { ProviderListItem } from './ProviderListItem';
 
 const deviceHeight = deviceUtils.dimensions.height;
 
-export function AddCashSheet() {
+export function FiatOnRampSheet() {
   const { isNarrowPhone } = useDimensions();
   const insets = useSafeAreaInsets();
   const accountAddress = useAccountAddress();

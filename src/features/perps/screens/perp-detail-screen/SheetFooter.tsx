@@ -37,7 +37,7 @@ export function SheetFooter({ backgroundColor, market }: SheetFooterProps) {
     if (!hasUserAssets) {
       return {
         onPress: () => {
-          Navigation.handleAction(Routes.ADD_CASH_SHEET);
+          Navigation.handleAction(Routes.FIAT_ON_RAMP_SHEET);
         },
         text: i18n.t(i18n.l.perps.actions.fund_wallet),
       };
