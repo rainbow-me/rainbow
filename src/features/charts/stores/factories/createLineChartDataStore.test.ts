@@ -1,6 +1,6 @@
+import { time } from '@/framework/core/utils/time';
 import Routes, { type Route } from '@/navigation/routesNames';
 import { useNavigationStore, type SwipeRoute } from '@/state/navigation/navigationStore';
-import { time } from '@/utils/time';
 
 import { type CompactLineChartData } from '../../line/compact/types';
 import { createLineChartDataStore, type FetchedLineChartData } from './createLineChartDataStore';

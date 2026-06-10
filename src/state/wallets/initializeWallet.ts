@@ -6,6 +6,7 @@ import { analytics } from '@/analytics';
 import { event } from '@/analytics/event';
 import { getWalletContext } from '@/analytics/getWalletContext';
 import { getOrCreateDeviceId } from '@/analytics/utils';
+import { time } from '@/framework/core/utils/time';
 import { WrappedAlert as Alert } from '@/helpers/alert';
 import { hideSplashScreen } from '@/hooks/useHideSplashScreen';
 import * as i18n from '@/languages';
@@ -13,7 +14,6 @@ import { ensureError, logger, RainbowError } from '@/logger';
 import store from '@/redux/store';
 import { setIsSmallBalancesOpen } from '@/state/wallets/smallBalancesStore';
 import { checkKeychainIntegrity, loadWallets, setAccountAddress, setWalletReady } from '@/state/wallets/walletsStore';
-import { time } from '@/utils/time';
 
 import { ensureValidHex } from '../../handlers/web3';
 import runMigrations from '../../model/migrations';

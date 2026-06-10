@@ -6,13 +6,15 @@ import { type LearnCategory } from '@/components/cards/utils/types';
 import { type FiatProviderName } from '@/entities/f2c';
 import { type UnlockableAppIconKey } from '@/features/app-icon/models/appIcons';
 import { type CandleResolution, type ChartType } from '@/features/charts/types';
+import { type RequestSource } from '@/features/dapp-request/types';
 import { type ENSRapActionType } from '@/features/ens/raps/common';
 import { type PerpPositionSide, type TriggerOrderType } from '@/features/perps/types';
-import { type Placement, type PlacementItem, type PlacementItemAnalyticsMetadata } from '@/features/placements/types';
+import { type Destination, type Display, type SectionId, type SurfaceDocument, type SurfaceId } from '@/features/placements/surfaces/types';
+import { type Placement, type PlacementItem } from '@/features/placements/types';
+import { type PolymarketMarket } from '@/features/polymarket/types/polymarket-event';
 import { type EthereumWalletType } from '@/helpers/walletTypes';
 import { type WalletLibraryType } from '@/model/wallet';
 import { type PairHardwareWalletNavigatorParams } from '@/navigation/types';
-import { type TrendingToken } from '@/resources/trendingTokens/trendingTokens';
 import { type TokenLauncherAnalyticsParams } from '@/screens/token-launcher/state/tokenLauncherStore';
 import { type ChainId, type Network } from '@/state/backendNetworks/types';
 import { type FavoritedSite } from '@/state/browser/favoriteDappsStore';
@@ -22,7 +24,6 @@ import {
   type WithdrawalFailureMetadata,
   type WithdrawalSuccessMetadata,
 } from '@/systems/funding/types';
-import { type RequestSource } from '@/utils/requestNavigationHandlers';
 import { type CrosschainQuote, type Quote, type QuoteError } from '@rainbow-me/swaps';
 
 import { type AnyPerformanceLog, type Screen } from '../state/performance/operations';
@@ -210,14 +211,6 @@ export const event = {
   // token lists (wallet, swap, send)
   tokenList: 'token_list',
 
-  // trending tokens
-  viewTrendingToken: 'trending_tokens.view_trending_token',
-  viewRankedCategory: 'trending_tokens.view_ranked_category',
-  changeNetworkFilter: 'trending_tokens.change_network_filter',
-  changeTimeframeFilter: 'trending_tokens.change_timeframe_filter',
-  changeSortFilter: 'trending_tokens.change_sort_filter',
-  hasLinkedFarcaster: 'trending_tokens.has_linked_farcaster',
-
   // token launcher
   tokenLauncherStepChanged: 'token_launcher.step_changed',
   tokenLauncherTokenCreated: 'token_launcher.token_created',
@@ -242,9 +235,13 @@ export const event = {
 
   // discover screen
   timeSpentOnDiscoverScreen: 'Time spent on the Discover screen',
-  discoverPlacementCardPressed: 'discover.placement_card_pressed',
-  discoverPlacementSeeAllPressed: 'discover.placement_see_all_pressed',
+  discoverCardPressed: 'discover.card_pressed',
+  discoverPredictionOrderPressed: 'discover.prediction_order_pressed',
+  discoverTabPressed: 'discover.tab_pressed',
+  discoverSectionPressed: 'discover.section_pressed',
+  discoverCarouselScrolled: 'discover.carousel_scrolled',
   placementInteraction: 'placement.interaction',
+  surfaceInteraction: 'surface.interaction',
 
   // ens
   ensInitiatedRegistration: 'Initiated ENS registration',
@@ -365,7 +362,6 @@ type SwapEventParameters<T extends 'swap' | 'crosschainSwap'> = {
   tradeAmountUSD: number;
   degenMode: boolean;
   isSwappingToPopularAsset: boolean;
-  isSwappingToTrendingAsset: boolean;
   isHardwareWallet: boolean;
   quickBuyMetadata: SwapsParams['quickBuyMetadata'];
 };
@@ -907,39 +903,6 @@ export type EventProperties = {
     query?: string; // query is only sent for the swap screen
   };
 
-  [event.viewTrendingToken]: {
-    address: TrendingToken['address'];
-    chainId: TrendingToken['chainId'];
-    symbol: TrendingToken['symbol'];
-    name: TrendingToken['name'];
-    highlightedFriends: number;
-  };
-
-  [event.viewRankedCategory]: {
-    category: string;
-    chainId: ChainId | undefined;
-    isLimited: boolean;
-    isEmpty: boolean;
-  };
-
-  [event.changeNetworkFilter]: {
-    chainId: ChainId | undefined;
-  };
-
-  [event.changeTimeframeFilter]: {
-    timeframe: string;
-  };
-
-  [event.changeSortFilter]: {
-    sort: string | undefined;
-  };
-
-  [event.hasLinkedFarcaster]: {
-    hasFarcaster: boolean;
-    personalizedTrending: boolean;
-    walletHash: string;
-  };
-
   // token launcher
   [event.tokenLauncherStepChanged]: {
     step: string;
@@ -995,33 +958,62 @@ export type EventProperties = {
   [event.timeSpentOnDiscoverScreen]: {
     durationInMs: number;
   };
-  [event.discoverPlacementCardPressed]: {
+  [event.discoverCardPressed]: {
     placementId: Placement['id'];
-    placementScreen?: Placement['screen'];
+    placementSource: Placement['source'];
     placementTitle: string;
-    itemOrder: PlacementItem['order'];
+    itemOrder: number;
+    itemId: PlacementItem['id'];
     marketId: string;
-    marketName?: PlacementItemAnalyticsMetadata['marketName'];
-    marketSlug?: PlacementItemAnalyticsMetadata['marketSlug'];
-    marketSymbol?: PlacementItemAnalyticsMetadata['marketSymbol'];
-    marketType: PlacementItem['ref']['source'];
+    marketName: string;
+    marketSlug?: string;
+    marketSymbol?: string;
+    marketType: Placement['type'];
   };
-  [event.discoverPlacementSeeAllPressed]: {
+  [event.discoverTabPressed]: {
+    sectionTitle: string;
+    sectionId: SectionId;
+    wasActive: boolean;
+  };
+  [event.discoverPredictionOrderPressed]: {
     placementId: Placement['id'];
-    placementScreen?: Placement['screen'];
-    placementTitle: string;
+    itemId: PlacementItem['id'];
+    marketId: PolymarketMarket['id'];
+    marketName: PolymarketMarket['question'];
+    marketSlug: PolymarketMarket['slug'];
+    outcome: PolymarketMarket['outcomes'][number];
+  };
+  [event.discoverSectionPressed]: {
+    destination: Destination;
+    display: Display;
+    sectionId: SectionId;
+    sectionTitle: string;
+  };
+  [event.discoverCarouselScrolled]: {
+    display: Display;
+    sectionId: SectionId;
   };
   [event.placementInteraction]: {
     id: Placement['id'];
-    interactionType: 'carousel_scroll';
-    screen: Placement['screen'];
-    order: Placement['order'];
+    interactionType: 'card_press' | 'carousel_scroll';
+    source: Placement['source'];
+    type: Placement['type'];
     version: Placement['version'];
-    itemRefSource?: PlacementItem['ref']['source'];
-    itemRefId?: PlacementItem['ref']['id'];
-    itemOrder?: PlacementItem['order'];
+    display?: Display;
+    sectionId?: SectionId;
+    sectionTitle?: string;
+    surfaceId: SurfaceId;
+    itemId: PlacementItem['id'];
+    itemOrder: number;
   };
-
+  [event.surfaceInteraction]: {
+    id: SurfaceId;
+    version: SurfaceDocument['version'];
+    display?: Display;
+    destination?: Destination;
+    sectionId?: SectionId;
+    sectionTitle?: string;
+  };
   [event.ensInitiatedRegistration]: { category: string };
   [event.ensEditedRecords]: { category: string };
   [event.ensCompletedRegistration]: { category: string };
@@ -1138,8 +1130,11 @@ export type EventProperties = {
   [event.sentTransaction]: {
     assetName: string;
     network: string;
+    chainId: ChainId;
+    isSponsored: boolean;
     isRecepientENS: boolean;
     isHardwareWallet: boolean;
+    submitSuccessful: boolean;
   };
   [event.tappedDoneEditingWallet]: {
     wallet_label: string;
@@ -1441,7 +1436,9 @@ export type EventProperties = {
   };
   [event.rnbwStakingUnstake]: {
     chainId: number;
-    txHash: string;
+    executionMode: 'sponsored' | 'manual';
+    txHash?: string;
+    executionId?: string;
     stakedAmount: string;
     expectedExitFee: string;
     expectedReceiveAmount: string;
@@ -1449,6 +1446,7 @@ export type EventProperties = {
   };
   [event.rnbwStakingUnstakeFailed]: {
     chainId: number;
+    executionMode?: 'sponsored' | 'manual';
     stakedAmount?: string;
     errorMessage: string;
   };

@@ -8,11 +8,11 @@ import {
   type SetDataParams,
 } from '@storesjs/stores';
 
+import { time } from '@/framework/core/utils/time';
 import { getConsistentArray } from '@/helpers/getConsistentArray';
 import { type Route } from '@/navigation/routesNames';
 import { createSelectorReadTracker } from '@/state/internal/utils/createSelectorReadTracker';
 import { useNavigationStore, type SwipeRoute } from '@/state/navigation/navigationStore';
-import { time } from '@/utils/time';
 
 import { type CompactLineChartData, type LineChartDataStore } from '../../line/compact/types';
 
@@ -24,6 +24,47 @@ type ChartId = string;
  * Fetched line chart data by id. `null` clears a chart; omitted ids keep their current data.
  */
 export type FetchedLineChartData = Partial<Record<ChartId, CompactLineChartData | null>>;
+
+// ============ Shared Aggregation Helper ====================================== //
+
+/**
+ * Aggregates per-id fetch promises into a {@link FetchedLineChartData} result.
+ *
+ * - Keeps partial successes: a fulfilled fetch is recorded regardless of other failures.
+ * - Records the first rejection but does not throw immediately.
+ * - Throws only when EVERY fetch failed, re-throwing the first error encountered.
+ *
+ * Use this in any `LineChartDataFetcher` implementation that fans out to one
+ * backend request per id so both token and perp stores behave identically.
+ *
+ * @param ids - The chart ids that were fetched, in the same order as `promises`.
+ * @param promises - Per-id fetch promises (may resolve to `null` for missing data).
+ */
+export async function aggregateLineChartFetches<TId extends string>(
+  ids: readonly TId[],
+  promises: readonly Promise<CompactLineChartData | null>[]
+): Promise<FetchedLineChartData> {
+  const results = await Promise.allSettled(promises);
+
+  const chartsById: FetchedLineChartData = {};
+  let didResolve = false;
+  let firstError: unknown;
+
+  for (let i = 0; i < ids.length; i++) {
+    const result = results[i];
+
+    if (result.status === 'fulfilled') {
+      didResolve = true;
+      chartsById[ids[i]] = result.value;
+    } else if (firstError === undefined) {
+      firstError = result.reason;
+    }
+  }
+
+  if (!didResolve && firstError !== undefined) throw firstError;
+
+  return chartsById;
+}
 
 /**
  * Loads line chart data for ids that need fresh data.

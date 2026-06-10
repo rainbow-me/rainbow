@@ -2,10 +2,10 @@ import { useCallback } from 'react';
 import { InteractionManager } from 'react-native';
 
 import { enableActionsOnReadOnlyWallet } from '@/config/debug';
+import { watchingAlert } from '@/features/wallet/utils/watchingAlert';
 import { useNavigation, type NavigateArgs } from '@/navigation/Navigation';
 import { type Route } from '@/navigation/routesNames';
 import { getIsReadOnlyWallet } from '@/state/wallets/walletsStore';
-import watchingAlert from '@/utils/watchingAlert';
 
 export default function useNavigationForNonReadOnlyWallets() {
   const { goBack, navigate } = useNavigation();

@@ -120,19 +120,38 @@ export function onNavigationStateChange(currentState) {
   memRouteName = routeName;
 
   if (routeName !== memPrevRouteName) {
-    let paramsToTrack = null;
+    const paramsToTrack = getScreenTrackingParams(routeName);
 
-    if (routeName === Routes.EXPANDED_ASSET_SHEET) {
+    logger.info(`From ${memPrevRouteName} to ${routeName}`, { type: 'navigation', ...paramsToTrack });
+    return analytics.screen(routeName, paramsToTrack);
+  }
+}
+
+/**
+ * Builds the params to attach to the "Loaded A Screen" analytics event for the
+ * given route, derived from that route's navigation params.
+ */
+function getScreenTrackingParams(routeName) {
+  switch (routeName) {
+    case Routes.EXPANDED_ASSET_SHEET: {
       const { asset } = Navigation.getActiveRoute().params;
-      paramsToTrack = {
+      return {
         assetContractAddress: asset.address || asset?.asset_contract?.address,
         assetName: asset.name,
         assetSymbol: asset.symbol || asset?.asset_contract?.symbol,
         network: asset.network,
       };
     }
-
-    logger.info(`From ${memPrevRouteName} to ${routeName}`, { type: 'navigation', ...paramsToTrack });
-    return analytics.screen(routeName, paramsToTrack);
+    case Routes.EXPANDED_ASSET_SHEET_V2: {
+      const { asset, address, chainId } = Navigation.getActiveRoute().params;
+      return {
+        assetContractAddress: address,
+        assetName: asset?.name,
+        assetSymbol: asset?.symbol,
+        chainId,
+      };
+    }
+    default:
+      return null;
   }
 }

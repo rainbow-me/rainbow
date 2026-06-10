@@ -5,9 +5,9 @@ import { interpolate, interpolateColor, useAnimatedReaction, useDerivedValue, us
 
 import { RnbwAirdropScenes, type RnbwAirdropScene } from '@/features/rnbw-airdrop/screens/rnbw-airdrop-screen/constants/airdropScenes';
 import { useAirdropFlowStore } from '@/features/rnbw-airdrop/stores/airdropFlowStore';
+import { time } from '@/framework/core/utils/time';
 import useDimensions from '@/hooks/useDimensions';
 import { useStoreSharedValue } from '@/state/internal/hooks/useStoreSharedValue';
-import { time } from '@/utils/time';
 
 type GradientConfig = {
   colors: readonly string[];

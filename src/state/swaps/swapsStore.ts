@@ -1,13 +1,13 @@
 import { INITIAL_SLIDER_POSITION } from '@/__swaps__/screens/Swap/constants';
-import { type ExtendedAnimatedAssetWithColors, type UniqueId } from '@/__swaps__/types/assets';
+import { type ExtendedAnimatedAssetWithColors } from '@/__swaps__/types/assets';
 import { type RecentSwap } from '@/__swaps__/types/swap';
 import { clamp, getDefaultSlippage } from '@/__swaps__/utils/swaps';
 import { type EstimateRewardResult } from '@/features/rnbw-rewards/utils/estimateReward';
+import { time } from '@/framework/core/utils/time';
 import { logger, RainbowError } from '@/logger';
 import { getRemoteConfig } from '@/model/remoteConfig';
 import { ChainId } from '@/state/backendNetworks/types';
 import { createRainbowStore } from '@/state/internal/createRainbowStore';
-import { time } from '@/utils/time';
 import { type CrosschainQuote, type Quote, type QuoteError, type Source } from '@rainbow-me/swaps';
 
 export interface SwapsState {
@@ -43,9 +43,6 @@ export interface SwapsState {
   // preferred network
   preferredNetwork: ChainId | undefined;
   setPreferredNetwork: (preferredNetwork: ChainId | undefined) => void;
-
-  // analytics
-  lastNavigatedTrendingToken: UniqueId | undefined;
 }
 
 type SwapsStateToPersist = Pick<
@@ -163,8 +160,6 @@ export const swapsStore = createRainbowStore<SwapsState, SwapsStateToPersist>(
         latestSwapAt: new Map(latestSwapAt),
       });
     },
-
-    lastNavigatedTrendingToken: undefined,
   }),
   {
     deserializer: deserialize,

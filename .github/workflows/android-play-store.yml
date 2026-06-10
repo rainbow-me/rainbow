@@ -1,0 +1,223 @@
+name: Android Play Store Build
+
+on:
+  workflow_dispatch:
+    inputs:
+      ref:
+        description: 'Release candidate branch to build (must match rc-vX.Y.Z, e.g. rc-v2.0.33)'
+        required: true
+        type: string
+
+permissions:
+  contents: read
+
+jobs:
+  build:
+    name: Build
+    runs-on: blacksmith-8vcpu-ubuntu-2404
+    timeout-minutes: 60
+    environment: release-android
+
+    steps:
+      - name: Validate release ref
+        env:
+          REF: ${{ inputs.ref }}
+        run: |
+          if [[ ! "$REF" =~ ^rc-v[0-9]+\.[0-9]+\.[0-9]+$ ]]; then
+            echo "::error::Release builds must target an rc-vX.Y.Z branch (got: $REF). See the Android release runbook for the expected naming."
+            exit 1
+          fi
+
+      - name: Checkout repo
+        uses: actions/checkout@08eba0b27e820071cde6df949e0beb9ba4906955 # v4.3.0
+        with:
+          ref: ${{ inputs.ref }}
+
+      - name: Setup Node.js
+        uses: actions/setup-node@6044e13b5dc448c55e2357c09f80417699197238 # v6.2.0
+        with:
+          node-version-file: '.node-version'
+
+      - name: Setup env SSH key
+        uses: ./.github/actions/ssh/
+        with:
+          name: env
+          key: ${{ secrets.DEPLOY_PKEY_DOTENV_REPO }}
+
+      - name: Setup scripts SSH key
+        uses: ./.github/actions/ssh/
+        with:
+          name: scripts
+          key: ${{ secrets.DEPLOY_PKEY_SCRIPTS_REPO }}
+
+      - name: Setup sandbox SSH key
+        uses: ./.github/actions/ssh/
+        with:
+          name: sandbox
+          key: ${{ secrets.DEPLOY_PKEY_SANDBOX_REPO }}
+
+      - name: Fetch prod env from rainbow-env
+        env:
+          SSH_AUTH_SOCK: /tmp/ssh_agent_env.sock
+        run: |
+          git clone --depth 1 git@github.com:rainbow-me/rainbow-env.git
+          mv rainbow-env/dotenv-prod-android .env
+          mv rainbow-env/android/app/google-services.json android/app/google-services.json
+          rm -rf rainbow-env
+
+      - name: Verify prod env
+        run: |
+          set -euo pipefail
+          grep -q '^IS_TESTING=false$' .env || { echo "::error::.env missing IS_TESTING=false"; exit 1; }
+          grep -q '^ENABLE_DEV_MODE=0$' .env || { echo "::error::.env missing ENABLE_DEV_MODE=0"; exit 1; }
+          if grep -q '^IS_TESTING=true$' .env; then echo "::error::.env has IS_TESTING=true"; exit 1; fi
+          if grep -q '^ENABLE_DEV_MODE=1$' .env; then echo "::error::.env has ENABLE_DEV_MODE=1"; exit 1; fi
+
+      - name: Decode and verify upload keystore
+        env:
+          KEYSTORE_BASE64: ${{ secrets.ANDROID_PROD_KEYSTORE_BASE64 }}
+          KEYSTORE_PASSWORD: ${{ secrets.ANDROID_PROD_KEYSTORE_PASSWORD }}
+          KEY_ALIAS: ${{ vars.ANDROID_PROD_KEY_ALIAS }}
+        run: |
+          set -euo pipefail
+          echo "$KEYSTORE_BASE64" | base64 -d > "$RUNNER_TEMP/rainbow.keystore"
+
+          # Sanity check: clear errors (bad file / wrong password / missing alias)
+          # before Gradle's cryptic signing failures.
+          keytool -list \
+            -keystore "$RUNNER_TEMP/rainbow.keystore" \
+            -storepass "$KEYSTORE_PASSWORD" \
+            -alias "$KEY_ALIAS" > /dev/null
+
+          # Verify the keystore holds the Rainbow upload cert. Source of truth is
+          # the UPLOAD_CERT_SHA256 const in AppInstallInfoModule.kt — the same
+          # fingerprint the app uses at runtime to classify internal builds, so
+          # CI and runtime can't drift. Not a security boundary (Play Console
+          # rejects non-upload-key uploads); this just fails fast on accidental
+          # keystore swaps / typos / un-coordinated rotations.
+          KT_FILE="android/app/src/main/java/me/rainbow/NativeModules/AppInstallInfo/AppInstallInfoModule.kt"
+          expected_raw=$(grep -E '^[[:space:]]*private const val UPLOAD_CERT_SHA256[[:space:]]*=' "$KT_FILE" | sed -E 's/.*"([0-9A-Fa-f:]+)".*/\1/' | head -1 || true)
+          if [ -z "${expected_raw:-}" ]; then
+            echo "::error file=$KT_FILE::Could not extract UPLOAD_CERT_SHA256 from $KT_FILE. The Android Play Store build workflow reads the expected upload cert fingerprint from this const."
+            exit 1
+          fi
+          expected_sha=$(printf '%s' "$expected_raw" | tr -d ':' | tr '[:lower:]' '[:upper:]')
+
+          actual_sha=$(
+            keytool -exportcert \
+              -keystore "$RUNNER_TEMP/rainbow.keystore" \
+              -storepass "$KEYSTORE_PASSWORD" \
+              -alias "$KEY_ALIAS" 2>/dev/null \
+            | sha256sum \
+            | awk '{print toupper($1)}'
+          )
+
+          if [ "$actual_sha" != "$expected_sha" ]; then
+            echo "::error::Upload keystore certificate fingerprint mismatch."
+            echo "::error::  expected (from $KT_FILE): $expected_sha"
+            echo "::error::  actual   (from keystore):  $actual_sha"
+            echo "::error::Either the wrong keystore is configured for the release-android env, or the upload key was rotated without updating AppInstallInfoModule.kt."
+            exit 1
+          fi
+
+      - name: Run CI scripts
+        env:
+          CI_SCRIPTS: ${{ secrets.CI_SCRIPTS }}
+          SSH_AUTH_SOCK: /tmp/ssh_agent_scripts.sock
+        run: eval "$CI_SCRIPTS"
+
+      - name: Get Yarn cache directory path
+        id: yarn-cache-dir-path
+        run: echo "dir=$(yarn config get cacheFolder)" >> "$GITHUB_OUTPUT"
+
+      - name: Cache Yarn dependencies
+        uses: actions/cache@0057852bfaa89a56745cba8c7296529d2fc39830 # v4.3.0
+        with:
+          path: |
+            ${{ steps.yarn-cache-dir-path.outputs.dir }}
+            .yarn/cache
+            .yarn/install-state.gz
+          key: ${{ runner.os }}-${{ runner.arch }}-yarn-${{ hashFiles('**/yarn.lock') }}
+          # No restore-keys: release builds require an exact lockfile match or a clean install.
+
+      - name: Install dependencies
+        env:
+          SSH_AUTH_SOCK: /tmp/ssh_agent_sandbox.sock
+        run: yarn install --immutable && yarn setup
+
+      - name: Read version metadata
+        id: version
+        run: |
+          set -euo pipefail
+          versionName=$(grep -m1 -oP '^\s*versionName\s+"\K[^"]+' android/app/build.gradle)
+          versionCode=$(grep -m1 -oP '^\s*versionCode\s+\K\d+' android/app/build.gradle)
+          label="rainbow-v${versionName}-${versionCode}"
+          echo "name=$versionName" >> "$GITHUB_OUTPUT"
+          echo "code=$versionCode" >> "$GITHUB_OUTPUT"
+          echo "label=$label" >> "$GITHUB_OUTPUT"
+          echo "Building $label"
+
+      - name: Record build provenance
+        env:
+          REF: ${{ inputs.ref }}
+          VERSION_NAME: ${{ steps.version.outputs.name }}
+          VERSION_CODE: ${{ steps.version.outputs.code }}
+        run: |
+          {
+            echo "## Build provenance"
+            echo "- Ref input: \`$REF\`"
+            echo "- Resolved commit: \`$(git rev-parse HEAD)\`"
+            echo "- versionName: \`$VERSION_NAME\`"
+            echo "- versionCode: \`$VERSION_CODE\`"
+          } >> "$GITHUB_STEP_SUMMARY"
+
+      - name: Build signed AAB + APK
+        working-directory: android
+        env:
+          SENTRY_AUTH_TOKEN: ${{ secrets.SENTRY_AUTH_TOKEN }}
+          RNEF_UPLOAD_STORE_PASSWORD: ${{ secrets.ANDROID_PROD_KEYSTORE_PASSWORD }}
+          RNEF_UPLOAD_KEY_ALIAS: ${{ vars.ANDROID_PROD_KEY_ALIAS }}
+          RNEF_UPLOAD_KEY_PASSWORD: ${{ secrets.ANDROID_PROD_KEY_PASSWORD }}
+          # Short-circuits the ? in build.gradle's `def pass = ...` so getPassword()
+          # (which shells to `secret-tool` on Linux) is never called. `pass` is unused
+          # on the CI signing path anyway; this just avoids needing libsecret-tools.
+          RAINBOW_KEY_ANDROID_PASSWORD: unused
+        run: |
+          ./gradlew bundleRelease assembleRelease \
+            -PRNEF_UPLOAD_STORE_FILE="$RUNNER_TEMP/rainbow.keystore" \
+            -PRNEF_UPLOAD_STORE_PASSWORD="$RNEF_UPLOAD_STORE_PASSWORD" \
+            -PRNEF_UPLOAD_KEY_ALIAS="$RNEF_UPLOAD_KEY_ALIAS" \
+            -PRNEF_UPLOAD_KEY_PASSWORD="$RNEF_UPLOAD_KEY_PASSWORD" \
+            --no-daemon
+
+      - name: Rename artifacts
+        env:
+          LABEL: ${{ steps.version.outputs.label }}
+        run: |
+          set -euo pipefail
+          mv android/app/build/outputs/bundle/release/app-release.aab \
+             "android/app/build/outputs/bundle/release/${LABEL}.aab"
+          mv android/app/build/outputs/apk/release/app-release.apk \
+             "android/app/build/outputs/apk/release/${LABEL}.apk"
+
+      - name: Verify AAB signature
+        run: |
+          set -euo pipefail
+          aab=$(ls android/app/build/outputs/bundle/release/*.aab | head -1)
+          jarsigner -verify -verbose:summary -certs "$aab" | head -40
+
+      - name: Upload AAB
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4.6.2
+        with:
+          name: ${{ steps.version.outputs.label }}-aab
+          path: android/app/build/outputs/bundle/release/${{ steps.version.outputs.label }}.aab
+          retention-days: 30
+          if-no-files-found: error
+
+      - name: Upload APK
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4.6.2
+        with:
+          name: ${{ steps.version.outputs.label }}-apk
+          path: android/app/build/outputs/apk/release/${{ steps.version.outputs.label }}.apk
+          retention-days: 30
+          if-no-files-found: error

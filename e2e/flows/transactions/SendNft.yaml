@@ -104,6 +104,7 @@ tags:
       # Check transaction sheet
       - assertVisible: 'Sending'
       - assertVisible: '.*Tx Hash.*'
-      - assertVisible: 'View on Etherscan'
+      - assertVisible:
+          id: 'view-details-action-button'
       - swipe:
           direction: DOWN

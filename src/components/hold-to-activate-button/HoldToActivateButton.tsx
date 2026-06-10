@@ -21,10 +21,10 @@ import HoldToAuthorizeButtonIcon from '@/components/buttons/hold-to-authorize/Ho
 import { LedgerIcon } from '@/components/icons/svg/LedgerIcon';
 import { Box, Text, useColorMode, type BoxProps, type TextProps } from '@/design-system';
 import { getColorForTheme } from '@/design-system/color/useForegroundColor';
+import { time } from '@/framework/core/utils/time';
 import { useWalletsStore } from '@/state/wallets/walletsStore';
 import { colors } from '@/styles';
 import { useTheme } from '@/theme/ThemeContext';
-import { time } from '@/utils/time';
 
 const BUTTON_HEIGHT = 56;
 

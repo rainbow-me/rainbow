@@ -1,8 +1,10 @@
 import { analytics } from '@/analytics';
+import { predictSponsoredCallsExecution } from '@/features/delegation/sponsoredCalls';
 import { USDC_ICON_URL } from '@/features/perps/constants';
+import { time } from '@/framework/core/utils/time';
+import { getRemoteConfig } from '@/model/remoteConfig';
 import { ChainId } from '@/state/backendNetworks/types';
 import { createDepositConfig } from '@/systems/funding/config';
-import { time } from '@/utils/time';
 
 import { POLYGON_USDC_ADDRESS, POLYGON_USDC_DECIMALS } from './constants';
 import { usePolymarketProxyAddress } from './stores/derived/usePolymarketProxyAddress';
@@ -31,6 +33,18 @@ export const POLYMARKET_DEPOSIT_CONFIG = createDepositConfig({
       iconUrl: USDC_ICON_URL,
     },
     recipient: usePolymarketProxyAddress,
+  },
+
+  gas: {
+    predictIsSponsored: ({ accountAddress, asset }) => {
+      return (
+        getRemoteConfig().sponsored_polymarket_deposits_enabled &&
+        predictSponsoredCallsExecution({
+          address: accountAddress,
+          chainId: asset.chainId,
+        })
+      );
+    },
   },
 
   refresh: {

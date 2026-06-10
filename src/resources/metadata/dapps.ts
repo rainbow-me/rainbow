@@ -1,8 +1,8 @@
 import { formatUrl } from '@/components/DappBrowser/utils';
+import { time } from '@/framework/core/utils/time';
 import { metadataClient } from '@/graphql';
 import { logger, RainbowError } from '@/logger';
 import { createQueryStore } from '@/state/internal/createQueryStore';
-import { time } from '@/utils/time';
 
 export type Dapp = {
   colors: {

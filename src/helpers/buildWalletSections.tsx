@@ -39,6 +39,10 @@ const EMPTY_WALLET_CONTENT: CellTypes[] = [
     uid: 'learn-card',
   },
   { type: CellType.BIG_EMPTY_WALLET_SPACER, uid: 'big-empty-wallet-spacer-2' },
+];
+
+const EMPTY_WALLET_CONTENT_WITH_DISCOVER: CellTypes[] = [
+  ...EMPTY_WALLET_CONTENT,
   {
     type: CellType.DISCOVER_MORE_BUTTON,
     uid: 'discover-home-button',
@@ -67,6 +71,7 @@ export type WalletSectionsState = {
   experimentalConfig: ReturnType<typeof useExperimentalConfig>;
   showcaseTokens: string[];
   collections: Map<CollectionId, Collection> | null;
+  discoverEnabled: boolean;
   isFetchingNfts: boolean;
   positions: RainbowPositions | null;
   claimables: ClaimablesStore | null;
@@ -93,6 +98,7 @@ const sellingTokensSelector = (state: WalletSectionsState) => state.sellingToken
 const showcaseTokensSelector = (state: WalletSectionsState) => state.showcaseTokens;
 const hiddenTokensSelector = (state: WalletSectionsState) => state.hiddenTokens;
 const collectionsSelector = (state: WalletSectionsState) => state.collections;
+const discoverEnabledSelector = (state: WalletSectionsState) => state.discoverEnabled;
 const isFetchingNftsSelector = (state: WalletSectionsState) => state.isFetchingNfts;
 const positionsSelector = (state: WalletSectionsState) => state.positions;
 const claimablesSelector = (state: WalletSectionsState) => state.claimables;
@@ -413,7 +419,8 @@ const withBriefBalanceSection = (
   isCoinListEdited: boolean,
   pinnedCoins: BooleanMap,
   hiddenAssets: Set<UniqueId>,
-  collections: Map<CollectionId, Collection> | null
+  collections: Map<CollectionId, Collection> | null,
+  discoverEnabled: boolean
 ): BalanceSectionResult => {
   const { briefAssets } = buildBriefCoinsList(sortedAssets, nativeCurrency, isCoinListEdited, pinnedCoins, hiddenAssets);
 
@@ -500,7 +507,7 @@ const withBriefBalanceSection = (
   } else if (hasNFTsOnly) {
     content = ONLY_NFTS_CONTENT;
   } else if (isEmpty) {
-    content = EMPTY_WALLET_CONTENT;
+    content = discoverEnabled ? EMPTY_WALLET_CONTENT_WITH_DISCOVER : EMPTY_WALLET_CONTENT;
   }
 
   const result = {
@@ -540,6 +547,7 @@ const briefBalanceSectionSelector = createSelector(
     pinnedCoinsSelector,
     hiddenAssetsSelector,
     collectionsSelector,
+    discoverEnabledSelector,
   ],
   withBriefBalanceSection
 );

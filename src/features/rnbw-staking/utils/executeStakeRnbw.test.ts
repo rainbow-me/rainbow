@@ -8,8 +8,8 @@ import { Wallet } from '@ethersproject/wallet';
 import { type Address } from 'viem';
 
 import { TransactionDirection, TransactionStatus } from '@/entities/transactions';
+import { time } from '@/framework/core/utils/time';
 import { type TransactionAssetSource } from '@/raps/transactionAsset';
-import { time } from '@/utils/time';
 import { execute, type Call, type CallsRequirements, type PreparedCallsExecution } from '@rainbow-me/delegation';
 
 import {

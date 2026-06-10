@@ -1,26 +1,51 @@
 import { analytics } from '@/analytics';
 import { event, type EventProperties } from '@/analytics/event';
-import { type Placement, type PlacementItem } from '@/features/placements/types';
 
-type PlacementInteractionType = EventProperties[typeof event.placementInteraction]['interactionType'];
+type PlacementInteraction = EventProperties[typeof event.placementInteraction];
+type SurfaceInteraction = EventProperties[typeof event.surfaceInteraction];
 
 export function trackPlacementInteraction({
+  display,
+  id,
   interactionType,
-  item,
-  placement,
-}: {
-  interactionType: PlacementInteractionType;
-  item?: PlacementItem;
-  placement: Placement;
-}): void {
+  itemId,
+  itemOrder,
+  sectionId,
+  sectionTitle,
+  source,
+  surfaceId,
+  type,
+  version,
+}: PlacementInteraction): void {
   analytics.track(event.placementInteraction, {
-    id: placement.id,
+    display,
+    id,
     interactionType,
-    screen: placement.screen,
-    order: placement.order,
-    version: placement.version,
-    itemRefSource: item?.ref.source,
-    itemRefId: item?.ref.id,
-    itemOrder: item?.order,
+    itemId,
+    itemOrder,
+    sectionId,
+    sectionTitle,
+    source,
+    surfaceId,
+    type,
+    version,
+  });
+}
+
+export function trackSurfaceInteraction({
+  display,
+  destination,
+  id,
+  sectionId,
+  sectionTitle,
+  version = 1,
+}: Omit<SurfaceInteraction, 'version'> & { version?: SurfaceInteraction['version'] }): void {
+  analytics.track(event.surfaceInteraction, {
+    display,
+    destination,
+    id,
+    sectionId,
+    sectionTitle,
+    version,
   });
 }

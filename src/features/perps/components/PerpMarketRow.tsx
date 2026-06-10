@@ -8,6 +8,7 @@ import { LeverageBadge } from '@/features/perps/components/LeverageBadge';
 import { type PerpMarket } from '@/features/perps/types';
 import { formatPriceChange, getHyperliquidTokenId } from '@/features/perps/utils';
 import { formatPerpAssetPrice } from '@/features/perps/utils/formatPerpsAssetPrice';
+import { usePriceChangeColors } from '@/framework/ui/price/usePriceChangeColors';
 import { formatNumber } from '@/helpers/strings';
 import * as i18n from '@/languages';
 import { type TokenData } from '@/state/liveTokens/liveTokensStore';
@@ -16,15 +17,11 @@ type PerpMarketRowProps = {
   market: PerpMarket;
   onPress?: (market: PerpMarket) => void;
   paddingVertical?: number;
-  priceChangeColors: {
-    positive: string;
-    negative: string;
-    neutral: string;
-  };
 };
 
-export const PerpMarketRow = function PerpMarketRow({ market, onPress, paddingVertical, priceChangeColors }: PerpMarketRowProps) {
+export const PerpMarketRow = function PerpMarketRow({ market, onPress, paddingVertical }: PerpMarketRowProps) {
   const tokenId = getHyperliquidTokenId(market.symbol);
+  const priceChangeColors = usePriceChangeColors();
   const volume = useMemo(() => {
     return formatNumber(market.volume['24h'], { useOrderSuffix: true, decimals: 1, style: '$' });
   }, [market.volume]);

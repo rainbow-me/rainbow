@@ -3,7 +3,7 @@ import { memo, useEffect, useMemo } from 'react';
 import { Blur, Circle, Group, vec } from '@shopify/react-native-skia';
 import { Easing, makeMutable, useDerivedValue, withTiming, type SharedValue } from 'react-native-reanimated';
 
-import { time } from '@/utils/time';
+import { time } from '@/framework/core/utils/time';
 import { getRandomInt } from '@/worklets/numbers';
 
 const SPARKS_DEFAULTS = {

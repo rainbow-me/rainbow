@@ -12,12 +12,12 @@ import {
 import { formatPerpAssetPrice } from '@/features/perps/utils/formatPerpsAssetPrice';
 import { calculatePerpPriceChange24h, getAllMarketsInfo } from '@/features/perps/utils/hyperliquid';
 import { normalizeDexSymbol } from '@/features/perps/utils/hyperliquidSymbols';
+import { time } from '@/framework/core/utils/time';
 import { getPlatformClient } from '@/resources/platform/client';
 import { createDerivedStore } from '@/state/internal/createDerivedStore';
 import { createQueryStore } from '@/state/internal/createQueryStore';
 import { createRainbowStore } from '@/state/internal/createRainbowStore';
 import { createStoreActions } from '@/state/internal/utils/createStoreActions';
-import { time } from '@/utils/time';
 
 type MidPricesBySymbol = Record<string, string>;
 type DexMidPrices = { dex: string; mids: AllMidsResponse };

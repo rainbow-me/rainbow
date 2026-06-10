@@ -21,6 +21,7 @@ import useENSAvatar from '@/features/ens/hooks/useENSAvatar';
 import { fetchReverseRecord } from '@/features/ens/utils/handlers';
 import GasSpeedButton from '@/features/gas/components/GasSpeedButton';
 import useGas from '@/features/gas/hooks/useGas';
+import { watchingAlert } from '@/features/wallet/utils/watchingAlert';
 import styled from '@/framework/ui/styled-thing';
 import { metadataPOSTClient } from '@/graphql';
 import { type ReservoirCollection } from '@/graphql/__generated__/arcDev';
@@ -59,7 +60,6 @@ import abbreviations from '@/utils/abbreviations';
 import ethereumUtils, { getUniqueId } from '@/utils/ethereumUtils';
 import { openInBrowser } from '@/utils/openInBrowser';
 import { addressHashedColorIndex } from '@/utils/profileUtils';
-import watchingAlert from '@/utils/watchingAlert';
 
 import ImgixImage from '../../components/images/ImgixImage';
 import { SlackSheet } from '../../components/sheet';

@@ -12,9 +12,9 @@ import { useHoldToActivate } from '@/components/buttons/useHoldToActivate';
 import { LedgerIcon } from '@/components/icons/svg/LedgerIcon';
 import { type TextProps } from '@/design-system';
 import { RNBW_BUTTON_CONFIG } from '@/features/rnbw-membership/rnbwButtonTheme';
+import { time } from '@/framework/core/utils/time';
 import { LoadingSpinner } from '@/framework/ui/components/LoadingSpinner';
 import { useWalletsStore } from '@/state/wallets/walletsStore';
-import { time } from '@/utils/time';
 
 import { RnbwButtonSurface } from './RnbwButtonSurface';
 import { RnbwButtonText } from './RnbwButtonText';

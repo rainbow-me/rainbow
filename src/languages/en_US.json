@@ -532,13 +532,29 @@
         "discover": "Discover"
       },
       "sections": {
+        "ai": "AI",
+        "base": "Base",
+        "commodities": "Commodities",
+        "crypto": "Crypto",
+        "crypto_equities": "Crypto Equities",
+        "currencies": "Currencies",
+        "for_you": "For You",
+        "indices": "Indices",
+        "layer_1": "Layer 1",
+        "live": "Live",
+        "mag7": "MAG7",
+        "majors": "Majors",
+        "markets": "Markets",
+        "mlb": "MLB",
+        "nba": "NBA",
+        "nhl": "NHL",
+        "perps": "Perps",
+        "pre_ipo": "Pre-IPO",
+        "predictions": "Predictions",
+        "sports": "Sports",
         "tokens": "Tokens"
       },
-      "placements": {
-        "perps_title": "Perps",
-        "predictions_title": "Predictions",
-        "see_all": "See all"
-      },
+      "show_more": "Show more",
       "strategies": {
         "strategies_title": "Strategies",
         "yearn_finance_description": "Smart yield strategies from yearn.finance"
@@ -2109,6 +2125,9 @@
         }
       }
     },
+    "send": {
+      "sponsorship_unavailable": "Free sends are temporarily unavailable on this network. Please try again with network fees."
+    },
     "swap": {
       "actions": {
         "hold_to_swap": "Hold to Swap",
@@ -2378,6 +2397,9 @@
       "network_fee": "Network Fee",
       "hash_copied": "\uDBC0\uDC63 Transaction hash copied",
       "address_copied": "\uDBC0\uDC63 Address copied",
+      "link_copied": "\uDBC0\uDC63 Link copied",
+      "view_details": "View Details",
+      "copy_link": "Copy Link",
       "smart_account": "Smart Account",
       "try_again": "\uDBC0\uDD49 Try again",
       "context_menu": {
@@ -3057,42 +3079,6 @@
         "new_tab": "New Tab"
       }
     },
-    "trending_tokens": {
-      "all": "All",
-      "no_results": {
-        "title": "No results",
-        "body": "Try browsing a larger timeframe or a different network or category."
-      },
-      "and": "and",
-      "and_others": {
-        "one": "and %{count} other",
-        "other": "and %{count} others"
-      },
-      "filters": {
-        "categories": {
-          "TRENDING": "Trending",
-          "NEW": "New"
-        },
-        "sort": {
-          "RECOMMENDED": {
-            "label": "Sort",
-            "menuOption": "Default"
-          },
-          "VOLUME": "Volume",
-          "MARKET_CAP": "Market Cap",
-          "TOP_GAINERS": "Top Gainers",
-          "TOP_LOSERS": "Top Losers"
-        },
-        "time": {
-          "H12": "12 Hours",
-          "H12_ABBREVIATED": "12h",
-          "H24": "24 Hours",
-          "H24_ABBREVIATED": "24h",
-          "D7": "1 Week",
-          "D3": "3 Days"
-        }
-      }
-    },
     "network_selector": {
       "customize_networks_banner": {
         "title": "Customize Networks",
@@ -3399,9 +3385,10 @@
       "sports": {
         "vs": "vs",
         "live": "Live",
+        "this_week": "This week",
         "game_best_of": "Game %{currentPeriod} - Best of %{bestOf}",
         "final": "Final",
-        "no_games": "No games today or tomorrow"
+        "no_games": "No games this week"
       },
       "outcomes": {
         "yes": "Yes",

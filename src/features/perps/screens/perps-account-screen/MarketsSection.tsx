@@ -85,13 +85,7 @@ export const MarketsSection = memo(function MarketsSection() {
 
       <Box paddingBottom="20px">
         {markets.map(market => (
-          <PerpMarketRow
-            key={market.symbol}
-            market={market}
-            onPress={onPressMarket}
-            paddingVertical={10}
-            priceChangeColors={accentColors.priceChangeColors}
-          />
+          <PerpMarketRow key={market.symbol} market={market} onPress={onPressMarket} paddingVertical={10} />
         ))}
         <ButtonPressAnimation onPress={navigateToSearchScreen}>
           <Box

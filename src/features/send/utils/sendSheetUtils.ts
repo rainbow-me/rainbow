@@ -1,27 +1,50 @@
+import { greaterThan } from '@/helpers/utilities';
 import * as i18n from '@/languages';
 
 type GetSendSubmitButtonStateParams = {
   assetAmount: string;
+  canUseSponsoredSend: boolean;
+  hasResolvedSponsoredSend: boolean;
   isENSProfileLoaded: boolean;
   isENS: boolean;
   isGasFeeReady: boolean;
+  isPreparingSponsoredSend: boolean;
+  isSponsoredSend: boolean;
   isSufficientBalance: boolean;
   isSufficientGas: boolean;
   isValidGas: boolean;
   nativeAssetSymbol: string | undefined;
+  sponsoredAmountIsStale: boolean;
 };
 
 export function getSendSubmitButtonState({
   assetAmount,
+  canUseSponsoredSend,
+  hasResolvedSponsoredSend,
   isENS,
   isENSProfileLoaded,
   isGasFeeReady,
+  isPreparingSponsoredSend,
+  isSponsoredSend,
   isSufficientBalance,
   isSufficientGas,
   isValidGas,
   nativeAssetSymbol,
+  sponsoredAmountIsStale,
 }: GetSendSubmitButtonStateParams) {
-  const isZeroAssetAmount = Number(assetAmount) <= 0;
+  const isZeroAssetAmount = !greaterThan(assetAmount, 0);
+  const hasSufficientGasForSend = isSponsoredSend || isSufficientGas;
+  const hasValidGasForSend = isSponsoredSend || isValidGas;
+  const isWaitingForGas = !isSponsoredSend && !isGasFeeReady;
+  const isWaitingForSponsoredSend =
+    canUseSponsoredSend && !isZeroAssetAmount && (isPreparingSponsoredSend || sponsoredAmountIsStale || !hasResolvedSponsoredSend);
+
+  if (isZeroAssetAmount) {
+    return {
+      buttonDisabled: true,
+      buttonLabel: i18n.t(i18n.l.button.confirm_exchange.enter_amount),
+    };
+  }
 
   if (isENS && !isENSProfileLoaded) {
     return {
@@ -30,14 +53,14 @@ export function getSendSubmitButtonState({
     };
   }
 
-  if (!isGasFeeReady) {
+  if (isWaitingForGas || isWaitingForSponsoredSend) {
     return {
       buttonDisabled: true,
       buttonLabel: i18n.t(i18n.l.button.confirm_exchange.loading),
     };
   }
 
-  if (!isZeroAssetAmount && !isSufficientGas) {
+  if (!hasSufficientGasForSend) {
     return {
       buttonDisabled: true,
       buttonLabel: i18n.t(i18n.l.button.confirm_exchange.insufficient_token, {
@@ -46,29 +69,22 @@ export function getSendSubmitButtonState({
     };
   }
 
-  if (!isValidGas) {
+  if (!hasValidGasForSend) {
     return {
       buttonDisabled: true,
       buttonLabel: i18n.t(i18n.l.button.confirm_exchange.invalid_fee),
     };
   }
 
-  if (!isZeroAssetAmount && !isSufficientBalance) {
+  if (!isSufficientBalance) {
     return {
       buttonDisabled: true,
       buttonLabel: i18n.t(i18n.l.button.confirm_exchange.insufficient_funds),
     };
   }
 
-  if (!isZeroAssetAmount) {
-    return {
-      buttonDisabled: false,
-      buttonLabel: `􀕹 ${i18n.t(i18n.l.button.confirm_exchange.review)}`,
-    };
-  }
-
   return {
-    buttonDisabled: true,
-    buttonLabel: i18n.t(i18n.l.button.confirm_exchange.enter_amount),
+    buttonDisabled: false,
+    buttonLabel: `􀕹 ${i18n.t(i18n.l.button.confirm_exchange.review)}`,
   };
 }

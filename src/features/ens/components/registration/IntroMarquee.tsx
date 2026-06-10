@@ -4,8 +4,8 @@ import { triggerHaptics } from 'react-native-turbo-haptics';
 
 import ButtonPressAnimation from '@/components/animations/ButtonPressAnimation';
 import { ImgixImage } from '@/components/images';
-import { MarqueeList } from '@/components/list';
 import { Box, Stack, Text } from '@/design-system';
+import { MarqueeList } from '@/framework/ui/components/MarqueeList';
 import { type EnsMarqueeAccount } from '@/graphql/__generated__/metadata';
 import { useNavigation } from '@/navigation/Navigation';
 import Routes from '@/navigation/routesNames';

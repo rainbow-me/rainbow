@@ -70,11 +70,33 @@ class AppDelegate: ExpoAppDelegate, UNUserNotificationCenterDelegate {
 
   @objc func handleRsEscape(notification: Notification) {
     guard let url = notification.userInfo?["url"] as? String else { return }
-    let msg = "Escape via \(url)"
-    let breadcrumb = Breadcrumb()
-    breadcrumb.message = msg
-    SentrySDK.addBreadcrumb(breadcrumb)
-    SentrySDK.capture(message: msg)
+    let parsed = URL(string: url)
+    let host = parsed?.host
+    // Group by host. Hostless URLs (data:, blob:, malformed) have no host, so
+    // fall back to the scheme, then "unknown" — keeps the fingerprint bounded
+    // instead of spawning a Sentry issue per unique data: payload. The tag
+    // below stays a real host only; the full URL is preserved in the extra.
+    let groupingKey = host ?? parsed?.scheme ?? "unknown"
+    // `source` is set by react-native-sandbox and is one of:
+    // "http" | "websocket" | "webview". Defaults to "unknown" if a future
+    // sandbox version emits a value we don't yet know about, or omits it.
+    let source = notification.userInfo?["source"] as? String ?? "unknown"
+
+    // Per-host fingerprint so each blocked host becomes its own Sentry issue.
+    // Without this, every capture call here shares the same stack and Sentry
+    // collapses all hosts into one mega-issue, making per-host trends and
+    // alerts impossible.
+    let event = Event()
+    event.message = SentryMessage(formatted: "Escape via \(groupingKey)")
+    event.level = .warning
+    event.fingerprint = ["rnsandbox-escape", groupingKey]
+    var tags: [String: String] = ["sandbox.source": source]
+    if let host {
+      tags["sandbox.host"] = host
+    }
+    event.tags = tags
+    event.extra = ["sandbox.url": url]
+    SentrySDK.capture(event: event)
   }
 
   @objc func handleRapInProgress(notification: Notification) {

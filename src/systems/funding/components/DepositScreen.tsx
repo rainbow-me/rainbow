@@ -36,7 +36,13 @@ import { createDepositConfig } from '../config';
 import { FOOTER_HEIGHT, NavigationSteps, SLIDER_WIDTH, SLIDER_WITH_LABELS_HEIGHT } from '../constants';
 import { DepositProvider, useDepositContext } from '../contexts/DepositContext';
 import { computeMaxSwappableAmount } from '../stores/createDepositStore';
-import { DepositQuoteStatus, getAccentColor, type DepositConfigInput, type FundingScreenTheme } from '../types';
+import {
+  DepositQuoteStatus,
+  getAccentColor,
+  type DepositConfigInput,
+  type DepositRuntimeExtensions,
+  type FundingScreenTheme,
+} from '../types';
 import { amountFromSliderProgress } from '../utils/sliderWorklets';
 import { resolveInitialDepositAsset } from '../utils/sourceAsset';
 import { DepositAmountInput } from './deposit/DepositAmountInput';
@@ -48,17 +54,24 @@ import { DepositTokenList } from './deposit/DepositTokenList';
 
 type DepositScreenProps = {
   config: DepositConfigInput;
+  runtimeExtensions?: DepositRuntimeExtensions;
   theme: FundingScreenTheme;
 };
 
 // ============ Main Screen ==================================================== //
 
-export const DepositScreen = memo(function DepositScreen({ config, theme }: DepositScreenProps) {
+export const DepositScreen = memo(function DepositScreen({ config, runtimeExtensions, theme }: DepositScreenProps) {
   const resolvedConfig = useMemo(() => createDepositConfig(config), [config]);
   const resolvedInitialAsset = useStableValue(() => resolveInitialDepositAsset(resolvedConfig));
 
   return (
-    <DepositProvider config={resolvedConfig} initialAsset={resolvedInitialAsset} initialGasSpeed={GasSpeed.FAST} theme={theme}>
+    <DepositProvider
+      config={resolvedConfig}
+      initialAsset={resolvedInitialAsset}
+      initialGasSpeed={GasSpeed.FAST}
+      runtimeExtensions={runtimeExtensions}
+      theme={theme}
+    >
       <DepositScreenContent />
     </DepositProvider>
   );

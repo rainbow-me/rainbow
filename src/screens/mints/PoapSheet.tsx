@@ -11,6 +11,7 @@ import ButtonPressAnimation from '@/components/animations/ButtonPressAnimation';
 import Spinner from '@/components/Spinner';
 import { Box, ColorModeProvider, Row, Rows, Stack, Text } from '@/design-system';
 import type { UniqueAsset } from '@/entities/uniqueAssets';
+import { watchingAlert } from '@/features/wallet/utils/watchingAlert';
 import styled from '@/framework/ui/styled-thing';
 import { arcClient } from '@/graphql';
 import { maybeSignUri } from '@/handlers/imgix';
@@ -27,7 +28,6 @@ import { useTheme } from '@/theme/ThemeContext';
 import { delay } from '@/utils/delay';
 import { openInBrowser } from '@/utils/openInBrowser';
 import { type PoapMintError } from '@/utils/poaps';
-import watchingAlert from '@/utils/watchingAlert';
 
 import ImgixImage from '../../components/images/ImgixImage';
 import { SheetActionButton, SheetActionButtonRow, SlackSheet } from '../../components/sheet';

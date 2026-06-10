@@ -1,6 +1,7 @@
 import { memo, useCallback, useRef, useState } from 'react';
 import { Alert, StyleSheet, View } from 'react-native';
 
+import { destroyStore } from '@storesjs/stores';
 import { LinearGradient } from 'expo-linear-gradient';
 import { LinearTransition } from 'react-native-reanimated';
 
@@ -9,20 +10,33 @@ import ButtonPressAnimation from '@/components/animations/ButtonPressAnimation';
 import { PanelSheet } from '@/components/PanelSheet/PanelSheet';
 import { RnbwCoinIcon } from '@/components/RnbwCoinIcon';
 import { Box, globalColors, Separator, Stack, Text, useForegroundColor } from '@/design-system';
+import { SmartWalletActivationCallout } from '@/features/delegation/components/SmartWalletActivationCallout';
+import { createPreparedCallsStore, type PreparedCallsStore } from '@/features/delegation/preparedCallsStore';
+import { predictSponsoredCallsExecution } from '@/features/delegation/sponsoredCalls';
+import { useGasSettings } from '@/features/gas/hooks/useSelectedGas';
+import { GasSpeed } from '@/features/gas/types/gasSpeed';
+import { buildGasParams } from '@/features/gas/utils/parseGas';
 import { RnbwHoldToActivateButton } from '@/features/rnbw-membership/components/RnbwButton/RnbwHoldToActivateButton';
 import { RNBW_SYMBOL } from '@/features/rnbw-rewards/constants';
 import { UnstakePenaltySign } from '@/features/rnbw-staking/components/UnstakePenaltySign';
 import { LoadingSpinner } from '@/framework/ui/components/LoadingSpinner';
 import { opacity } from '@/framework/ui/utils/opacity';
+import { useCleanup } from '@/hooks/useCleanup';
+import { useStableValue } from '@/hooks/useStableValue';
 import * as i18n from '@/languages';
 import { ensureError, logger, RainbowError } from '@/logger';
+import { useRemoteConfig } from '@/model/remoteConfig';
 import { useNavigation } from '@/navigation/Navigation';
 import { useAccountAddress } from '@/state/wallets/walletsStore';
 
+import { STAKING_CHAIN_ID } from '../../constants';
 import { useRnbwStakingBalance } from '../../stores/derived/useRnbwStakingBalance';
 import { useRnbwStakingPositionPnl } from '../../stores/derived/useRnbwStakingPositionPnl';
 import { useStakingPositionStore } from '../../stores/rnbwStakingPositionStore';
+import { prepareUnstakeRnbw, type PreparedUnstakeRnbw, type UnstakeRnbwPreparationParams } from '../../utils/prepareUnstakeRnbw';
 import { unstakeRnbw } from '../../utils/unstakeRnbw';
+
+type UnstakePreparationStore = PreparedCallsStore<PreparedUnstakeRnbw, UnstakeRnbwPreparationParams>;
 
 const LAYOUT_ANIMATION_CONFIG = SPRING_CONFIGS.snappierSpringConfig;
 const LAYOUT_ANIMATION = LinearTransition.springify()
@@ -35,6 +49,11 @@ export const RnbwUnstakeSheet = memo(function RnbwUnstakeSheet() {
   const [step, setStep] = useState<'warning' | 'unstake'>('warning');
   const exitFeePercentage = useStakingPositionStore(s => s.getExitFeePercentage());
   const showSkeleton = exitFeePercentage === undefined;
+  const unstakePreparationStore = useStableValue(() => createPreparedCallsStore(prepareUnstakeRnbw));
+
+  useCleanup(() => {
+    destroyStore(unstakePreparationStore, { clearQueryCache: true });
+  }, [unstakePreparationStore]);
 
   const handleProceedToUnstake = useCallback(() => {
     setStep('unstake');
@@ -49,7 +68,7 @@ export const RnbwUnstakeSheet = memo(function RnbwUnstakeSheet() {
       ) : (
         <>
           {step === 'warning' && <WarningContent exitFeePercentage={exitFeePercentage} onProceed={handleProceedToUnstake} />}
-          {step === 'unstake' && <UnstakeContent exitFeePercentage={exitFeePercentage} />}
+          {step === 'unstake' && <UnstakeContent exitFeePercentage={exitFeePercentage} unstakePreparationStore={unstakePreparationStore} />}
         </>
       )}
     </PanelSheet>
@@ -115,12 +134,24 @@ const WarningContent = memo(function WarningContent({
   );
 });
 
-const UnstakeContent = memo(function UnstakeContent({ exitFeePercentage }: { exitFeePercentage: number }) {
+const UnstakeContent = memo(function UnstakeContent({
+  exitFeePercentage,
+  unstakePreparationStore,
+}: {
+  exitFeePercentage: number;
+  unstakePreparationStore: UnstakePreparationStore;
+}) {
   const { tokenAmount, nativeCurrencyAmount } = useRnbwStakingBalance();
   const { netPnl, isPositivePnl, rnbwAfterUnstake } = useRnbwStakingPositionPnl();
   const { goBack } = useNavigation();
   const accountAddress = useAccountAddress();
+  const gasSettings = useGasSettings(STAKING_CHAIN_ID, GasSpeed.FAST);
+  const { sponsored_rnbw_unstaking_enabled: sponsoredRnbwUnstakingEnabled } = useRemoteConfig('sponsored_rnbw_unstaking_enabled');
   const [isProcessing, setIsProcessing] = useState(false);
+  const canUseSponsoredUnstake =
+    Boolean(accountAddress) &&
+    sponsoredRnbwUnstakingEnabled &&
+    predictSponsoredCallsExecution({ address: accountAddress, chainId: STAKING_CHAIN_ID });
   const liveDisplay = {
     tokenAmount,
     nativeCurrencyAmount,
@@ -135,11 +166,29 @@ const UnstakeContent = memo(function UnstakeContent({ exitFeePercentage }: { exi
   const displayValues = isProcessing && frozenDisplayRef.current ? frozenDisplayRef.current : liveDisplay;
 
   const startUnstake = async () => {
+    if (!gasSettings) {
+      Alert.alert(
+        i18n.t(i18n.l.rnbw_staking.unstake_sheet.unstake_failed_title),
+        i18n.t(i18n.l.rnbw_staking.unstake_sheet.unstake_failed_message)
+      );
+      logger.error(new RainbowError('[RnbwUnstakeSheet]: Unstake failed, gas data unavailable'));
+      return;
+    }
+
     frozenDisplayRef.current = liveDisplay;
     setIsProcessing(true);
     try {
-      await unstakeRnbw({ address: accountAddress });
+      const preparedCalls = canUseSponsoredUnstake
+        ? unstakePreparationStore
+            .getState()
+            .getPreparedCalls({ accountAddress })
+            .catch(() => null)
+        : Promise.resolve(null);
+      const { waitForConfirmation } = await unstakeRnbw({ address: accountAddress, gasParams: buildGasParams(gasSettings), preparedCalls });
       goBack();
+      void waitForConfirmation().catch(error => {
+        logger.warn('[RnbwUnstakeSheet]: Unstake confirmation failed', { error });
+      });
     } catch (e) {
       setIsProcessing(false);
       frozenDisplayRef.current = null;
@@ -150,10 +199,6 @@ const UnstakeContent = memo(function UnstakeContent({ exitFeePercentage }: { exi
       const error = ensureError(e);
       logger.error(new RainbowError('[RnbwUnstakeSheet]: Unstake failed', error));
     }
-  };
-
-  const handleUnstake = async () => {
-    await startUnstake();
   };
 
   return (
@@ -207,11 +252,15 @@ const UnstakeContent = memo(function UnstakeContent({ exitFeePercentage }: { exi
         <RnbwHoldToActivateButton
           label={i18n.t(i18n.l.rnbw_staking.unstake_sheet.hold_to_unstake)}
           processingLabel={i18n.t(i18n.l.rnbw_staking.unstake_sheet.unstaking)}
-          onActivate={handleUnstake}
+          onActivate={startUnstake}
           isProcessing={isProcessing}
+          disabled={!gasSettings}
           showBiometryIcon
           style={styles.fullWidthButton}
         />
+        {canUseSponsoredUnstake && (
+          <SmartWalletActivationCallout address={accountAddress} chainId={STAKING_CHAIN_ID} style={styles.smartWalletActivationCallout} />
+        )}
       </Box>
     </View>
   );
@@ -229,6 +278,10 @@ const styles = StyleSheet.create({
     paddingTop: 33,
   },
   fullWidthButton: {
+    width: '100%',
+  },
+  smartWalletActivationCallout: {
+    marginTop: 8,
     width: '100%',
   },
 });

@@ -11,6 +11,7 @@ import { ImgixImage } from '@/components/images';
 import { SheetActionButtonRow, SlackSheet } from '@/components/sheet';
 import { AccentColorProvider, Box, Heading, Inset, Row, Rows, Stack, Text } from '@/design-system';
 import GasSpeedButton from '@/features/gas/components/GasSpeedButton';
+import { time } from '@/framework/core/utils/time';
 import useDimensions from '@/hooks/useDimensions';
 import { usePersistentDominantColorFromImage } from '@/hooks/usePersistentDominantColorFromImage';
 import * as i18n from '@/languages';
@@ -25,7 +26,6 @@ import { ReviewPromptAction } from '@/storage/schema';
 import { colors } from '@/styles';
 import { abbreviateEnsForDisplay } from '@/utils/abbreviations';
 import { handleReviewPromptAction } from '@/utils/reviewAlert';
-import { time } from '@/utils/time';
 
 import CommitContent from '../components/registration/CommitContent';
 import EditContent from '../components/registration/EditContent';

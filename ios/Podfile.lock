@@ -5559,7 +5559,7 @@ SPEC CHECKSUMS:
   react-native-screen-corner-radius: ebd0d3258fcc894571b41d25ee3db7569d375153
   react-native-skia: 3e9ea5846fcb75f4eaf8b92e1102c3b81514251d
   react-native-text-input-mask: b83b8b571cba4bf18fb9b7a0bb8319a14201db9e
-  react-native-udp: 33844c2b4a0430271e46cd069a6152cc4c482095
+  react-native-udp: afd81d997ff141501da6ac680667fd8319545da1
   react-native-version-number: 3d74b5224ca4e1032b1593937d86d3f3c94bf95c
   react-native-video: 3d87423fe18f14a538de3662efd03e1d9433ab41
   react-native-view-shot: b5fc41b75f8ce016389105414e7d9225bc6a7cd3

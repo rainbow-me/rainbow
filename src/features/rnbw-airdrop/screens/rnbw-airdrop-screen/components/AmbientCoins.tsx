@@ -21,9 +21,9 @@ import rnbwCoin from '@/assets/rnbw.png';
 import { getCoinCenterPosition } from '@/features/rnbw-airdrop/screens/rnbw-airdrop-screen/components/RnbwHeroCoin';
 import { RnbwAirdropScenes } from '@/features/rnbw-airdrop/screens/rnbw-airdrop-screen/constants/airdropScenes';
 import { useAirdropFlowStore } from '@/features/rnbw-airdrop/stores/airdropFlowStore';
+import { time } from '@/framework/core/utils/time';
 import useTimeout from '@/hooks/useTimeout';
 import { useStoreSharedValue } from '@/state/internal/hooks/useStoreSharedValue';
-import { time } from '@/utils/time';
 
 // Original design dimensions
 const DESIGN_WIDTH = 393;

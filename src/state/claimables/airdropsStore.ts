@@ -2,6 +2,7 @@ import { qs } from 'url-parse';
 import { type Address } from 'viem';
 
 import type { NativeCurrencyKey } from '@/entities/nativeCurrencyTypes';
+import { time } from '@/framework/core/utils/time';
 import { getSizedImageUrl } from '@/handlers/imgix';
 import { logger, RainbowError } from '@/logger';
 import Routes from '@/navigation/routesNames';
@@ -14,7 +15,6 @@ import { useBackendNetworksStore } from '@/state/backendNetworks/backendNetworks
 import { createQueryStore } from '@/state/internal/createQueryStore';
 import { type CacheEntry } from '@/state/internal/queryStore/types';
 import { useNavigationStore } from '@/state/navigation/navigationStore';
-import { time } from '@/utils/time';
 
 type PaginationInfo = {
   current_page: number;

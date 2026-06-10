@@ -9,8 +9,8 @@ import { analytics } from '@/analytics';
 import CurrencySelectionList from '@/components/CurrencySelectionList';
 import { useDiscoverScreenContext } from '@/components/Discover/DiscoverScreenContext';
 import { type EnrichedExchangeAsset } from '@/components/ExchangeAssetList';
-import { navbarHeight } from '@/components/navbar/Navbar';
 import { IS_TEST } from '@/env';
+import { DISCOVER_HEADER_HEIGHT } from '@/features/discover/components/DiscoverHeader';
 import { useHardwareBackOnFocus } from '@/hooks/useHardwareBack';
 import useSearchCurrencyList from '@/hooks/useSearchCurrencyList';
 import { useTimeoutEffect } from '@/hooks/useTimeout';
@@ -42,7 +42,7 @@ export default function DiscoverSearch() {
 
   const { swapCurrencyList, swapCurrencyListLoading } = useSearchCurrencyList();
 
-  const TOP_OFFSET = safeAreaInsets.top + navbarHeight;
+  const TOP_OFFSET = safeAreaInsets.top + DISCOVER_HEADER_HEIGHT;
 
   const currencyList = useMemo(() => {
     // order:

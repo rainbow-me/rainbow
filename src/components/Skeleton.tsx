@@ -5,7 +5,15 @@ import ShimmerAnimation from '@/components/animations/ShimmerAnimation';
 import { AccentColorProvider, Box, useBackgroundColor, useColorMode } from '@/design-system';
 import { opacity } from '@/framework/ui/utils/opacity';
 
-export const Skeleton = ({ width, height }: { width: DimensionValue; height: DimensionValue }) => {
+export const Skeleton = ({
+  borderRadius = 18,
+  height,
+  width,
+}: {
+  borderRadius?: number;
+  height: DimensionValue;
+  width: DimensionValue;
+}) => {
   const { isDarkMode } = useColorMode();
 
   const fill = useBackgroundColor('fill');
@@ -15,7 +23,7 @@ export const Skeleton = ({ width, height }: { width: DimensionValue; height: Dim
 
   return (
     <AccentColorProvider color={skeletonColor}>
-      <Box background="accent" borderRadius={18} style={{ overflow: 'hidden', width, height }}>
+      <Box background="accent" borderRadius={borderRadius} style={{ overflow: 'hidden', width, height }}>
         <ShimmerAnimation color={shimmerColor} gradientColor={shimmerColor} />
       </Box>
     </AccentColorProvider>

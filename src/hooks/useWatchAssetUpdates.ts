@@ -6,6 +6,7 @@ import { analytics } from '@/analytics';
 import { event } from '@/analytics/event';
 import { usePositionsStore } from '@/features/positions/stores/positionsStore';
 import { useRewardsBalanceStore } from '@/features/rnbw-rewards/stores/rewardsBalanceStore';
+import { time } from '@/framework/core/utils/time';
 import { logger, RainbowError } from '@/logger';
 import type { SupportedCurrencyKey } from '@/references/supportedCurrencies';
 import { invalidateAddressNftsQueries } from '@/resources/nfts';
@@ -18,7 +19,6 @@ import { useAssetUpdatesStore, type AssetUpdateTransaction, type WatchedAssetUpd
 import { useClaimablesStore } from '@/state/claimables/claimables';
 import { staleBalancesStore, type StaleBalancesByChainId } from '@/state/staleBalances';
 import { getUniqueId } from '@/utils/ethereumUtils';
-import { time } from '@/utils/time';
 
 const ASSET_DETECTION_TIMEOUT = time.seconds(30);
 const EMPTY_ASSETS: Record<string, UserAsset> = {};

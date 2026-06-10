@@ -56,6 +56,7 @@ import {
   type PerpsIndicatorData,
 } from '@/features/perps/charts-plugin/PerpsIndicatorBuilder';
 import { usePerpsIndicatorData } from '@/features/perps/charts-plugin/usePerpsIndicatorData';
+import { time } from '@/framework/core/utils/time';
 import { opacity } from '@/framework/ui/utils/opacity';
 import { useWorkletClass } from '@/hooks/reanimated/useWorkletClass';
 import { useCleanup } from '@/hooks/useCleanup';
@@ -70,7 +71,6 @@ import { useListenerRouteGuard } from '@/state/internal/hooks/useListenerRouteGu
 import { type DeepPartial } from '@/types/objects';
 import { deepFreeze } from '@/utils/deepFreeze';
 import { DEVICE_WIDTH } from '@/utils/deviceUtils';
-import { time } from '@/utils/time';
 import { normalizeSpringConfig, type DampingMassStiffnessConfig } from '@/worklets/animations';
 import { createBlankPicture } from '@/worklets/skia';
 

@@ -2,14 +2,19 @@ import React, { memo } from 'react';
 
 import { HYPERLIQUID_COLORS, PERPS_BACKGROUND_DARK, PERPS_BACKGROUND_LIGHT } from '@/features/perps/constants';
 import { PERPS_DEPOSIT_CONFIG } from '@/features/perps/depositConfig';
+import { createPerpsDepositRuntimeExtensions } from '@/features/perps/stores/perpsDepositRuntimeExtensions';
+import { useStableValue } from '@/hooks/useStableValue';
 import { DepositScreen } from '@/systems/funding/components/DepositScreen';
 
 // ============ Screen ========================================================= //
 
 export const PerpsDepositScreen = memo(function PerpsDepositScreen() {
+  const runtimeExtensions = useStableValue(createPerpsDepositRuntimeExtensions);
+
   return (
     <DepositScreen
       config={PERPS_DEPOSIT_CONFIG}
+      runtimeExtensions={runtimeExtensions}
       theme={{
         accent: HYPERLIQUID_COLORS.green,
         backgroundDark: PERPS_BACKGROUND_DARK,

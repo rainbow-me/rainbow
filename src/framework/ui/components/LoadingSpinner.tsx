@@ -3,8 +3,8 @@ import { memo, useCallback, useEffect, useMemo } from 'react';
 import { Blur, Canvas, Group, Path, RadialGradient, Skia, vec } from '@shopify/react-native-skia';
 import Animated, { Easing, runOnUI, useAnimatedStyle, useSharedValue, withRepeat, withTiming } from 'react-native-reanimated';
 
+import { time } from '@/framework/core/utils/time';
 import { opacity } from '@/framework/ui/utils/opacity';
-import { time } from '@/utils/time';
 
 const DEFAULT_ANIMATION_DURATION_MS = time.ms(700);
 const DEFAULT_GLOW_ARC_DEGREES = 10;

@@ -4,13 +4,13 @@ import { isCrosschainQuote, isQuote } from '@/__swaps__/utils/quotes';
 import { createDelegationPublicClient, isPreparedCallsExecutionSponsored } from '@/features/delegation/calls';
 import { createPreparedCallsStore } from '@/features/delegation/preparedCallsStore';
 import { predictSponsoredCallsExecution } from '@/features/delegation/sponsoredCalls';
+import { time } from '@/framework/core/utils/time';
 import { getProvider } from '@/handlers/web3';
 import { useRemoteConfigStore } from '@/model/remoteConfig';
 import { buildAtomicExecutionRequirements, prepareAtomicSwapCalls } from '@/raps/atomicSwapPreparation';
 import { useBackendNetworksStore } from '@/state/backendNetworks/backendNetworks';
 import { useSwapsStore } from '@/state/swaps/swapsStore';
 import { getAccountAddress, useWalletsStore } from '@/state/wallets/walletsStore';
-import { time } from '@/utils/time';
 import { execute, type PreparedCallsExecution } from '@rainbow-me/delegation';
 import { type CrosschainQuote, type Quote, type QuoteError } from '@rainbow-me/swaps';
 
@@ -52,6 +52,7 @@ export const useSponsoredSwapStore = createPreparedCallsStore<PreparedCallsExecu
     quoteKey: $ => $(useSponsoredSwapQuoteKey),
   },
   cacheTime: time.minutes(1),
+  keepPreviousData: true,
   staleTime: time.seconds(12),
 });
 

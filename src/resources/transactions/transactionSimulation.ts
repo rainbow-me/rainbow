@@ -1,7 +1,7 @@
 import { useQuery } from '@tanstack/react-query';
 import { isNil } from 'lodash';
 
-import { type RequestData } from '@/features/wallet-connect/types';
+import { type RequestData } from '@/features/dapp-request/types';
 import { metadataPOSTClient } from '@/graphql';
 import type {
   MessageResult,

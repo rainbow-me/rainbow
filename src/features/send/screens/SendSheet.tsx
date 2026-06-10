@@ -1,5 +1,5 @@
 import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
-import { InteractionManager, Keyboard, Platform, View, type TextInput } from 'react-native';
+import { InteractionManager, Keyboard, Platform, StyleSheet, View, type TextInput } from 'react-native';
 
 import { useRoute, type RouteProp } from '@react-navigation/native';
 import { isEmpty, isEqual, isString } from 'lodash';
@@ -16,6 +16,7 @@ import useExperimentalFlag from '@/config/experimentalHooks';
 import { AssetType } from '@/entities/assetTypes';
 import { type ParsedAddressAsset } from '@/entities/tokens';
 import { type UniqueAsset } from '@/entities/uniqueAssets';
+import { SmartWalletActivationCallout } from '@/features/delegation/components/SmartWalletActivationCallout';
 import { prefetchENSAvatar } from '@/features/ens/hooks/useENSAvatar';
 import { prefetchENSCover } from '@/features/ens/hooks/useENSCover';
 import useENSProfile from '@/features/ens/hooks/useENSProfile';
@@ -25,8 +26,20 @@ import { REGISTRATION_STEPS } from '@/features/ens/utils/helpers';
 import GasSpeedButton from '@/features/gas/components/GasSpeedButton';
 import useGas from '@/features/gas/hooks/useGas';
 import styled from '@/framework/ui/styled-thing';
-import { assetIsUniqueAsset, buildTransaction, estimateGasLimit, resolveNameOrAddress } from '@/handlers/web3';
-import { convertAmountAndPriceToNativeDisplay, convertAmountFromNativeValue, formatInputDecimals } from '@/helpers/utilities';
+import {
+  assetIsParsedAddressAsset,
+  assetIsUniqueAsset,
+  buildTransferTransaction,
+  estimateGasLimit,
+  resolveNameOrAddress,
+} from '@/handlers/web3';
+import {
+  convertAmountAndPriceToNativeDisplay,
+  convertAmountFromNativeValue,
+  formatInputDecimals,
+  greaterThan,
+  greaterThanOrEqualTo,
+} from '@/helpers/utilities';
 import { checkIsValidAddressOrDomain, checkIsValidAddressOrDomainFormat, isENSAddressFormat } from '@/helpers/validators';
 import useAccountSettings from '@/hooks/useAccountSettings';
 import useCoinListEditOptions from '@/hooks/useCoinListEditOptions';
@@ -58,6 +71,7 @@ import safeAreaInsetValues from '@/utils/safeAreaInsetValues';
 
 import { useSendChainState } from '../hooks/useSendChainState';
 import { useSendSubmit } from '../hooks/useSendSubmit';
+import { useSponsoredSendPreparation } from '../hooks/useSponsoredSendPreparation';
 import { getSendSubmitButtonState } from '../utils/sendSheetUtils';
 
 const sheetHeight = deviceUtils.dimensions.height - (Platform.OS === 'android' ? 30 : 10);
@@ -81,6 +95,17 @@ const SheetContainer = styled(Column).attrs({
   backgroundColor: ({ theme: { colors } }: ComponentPropsWithTheme) => colors.white,
   height: sheetHeight,
   width: '100%',
+});
+
+const SubmitButtonContainer = styled(View)({
+  width: '100%',
+});
+
+const styles = StyleSheet.create({
+  smartWalletActivationCallout: {
+    marginTop: 16,
+    width: '100%',
+  },
 });
 
 const validateRecipient = (toAddress?: string, tokenAddress?: string) => {
@@ -107,6 +132,9 @@ const validateRecipientDamagedState = (toAddress?: string) => {
   }
   return true;
 };
+
+const hasSufficientAssetBalance = (assetAmount: string, maxInputBalance: string): boolean =>
+  !assetAmount || greaterThanOrEqualTo(maxInputBalance || '0', assetAmount);
 
 export default function SendSheet() {
   const { navigate } = useNavigation();
@@ -161,6 +189,7 @@ export default function SendSheet() {
 
   const [debouncedInput] = useDebounce(currentInput, 500);
   const [debouncedRecipient] = useDebounce(recipient, 500);
+  const [debouncedAssetAmount] = useDebounce(amountDetails.assetAmount, 500);
 
   const [isValidAddress, setIsValidAddress] = useState(!!recipientOverride);
   const theme = useTheme();
@@ -173,6 +202,8 @@ export default function SendSheet() {
   const showAssetForm = isValidAddress && !isEmpty(selected);
 
   const isUniqueAsset = assetIsUniqueAsset(selected);
+  const selectedAddressAsset = selected && assetIsParsedAddressAsset(selected) ? selected : undefined;
+  const isENS = selected?.type === AssetType.ens;
 
   const { currentChainId, currentProvider, isL2 } = useSendChainState({
     accountChainId: chainId,
@@ -181,7 +212,27 @@ export default function SendSheet() {
     stopPollingGasFees,
   });
 
-  const { maxInputBalance, updateMaxInputBalance } = useMaxInputBalance();
+  const {
+    canUseSponsoredSend,
+    hasResolvedSponsoredSend,
+    isPreparingSponsoredSend,
+    isSponsoredSend,
+    isSponsorshipSupported,
+    preparedCall: sponsoredSendPreparedCall,
+    preparedCalls: sponsoredSendPreparedCalls,
+    shouldShowSponsoredSendGas,
+  } = useSponsoredSendPreparation({
+    accountAddress,
+    amount: amountDetails.assetAmount,
+    chainId: currentChainId,
+    debouncedAmount: debouncedAssetAmount,
+    isENS,
+    isValidAddress,
+    provider: currentProvider,
+    selected: selectedAddressAsset,
+    toAddress,
+  });
+  const { maxInputBalance, updateMaxInputBalance } = useMaxInputBalance({ ignoreGasFee: isSponsorshipSupported });
 
   let colorForAsset = useColorForAsset(selected, undefined, false, true);
   const uniqueAssetColor = usePersistentDominantColorFromImage(isUniqueAsset ? selected?.images.lowResUrl : null) ?? colors.appleBlue;
@@ -189,7 +240,6 @@ export default function SendSheet() {
     colorForAsset = uniqueAssetColor;
   }
 
-  const isENS = selected?.type === AssetType.ens;
   const ensName = isENS ? selected?.name : '';
   const ensProfile = useENSProfile(ensName, {
     enabled: isENS,
@@ -206,7 +256,7 @@ export default function SendSheet() {
         _nativeAmount = formatInputDecimals(convertedNativeAmount, _assetAmount);
       }
 
-      const _isSufficientBalance = Number(_assetAmount) <= Number(maxInputBalance);
+      const _isSufficientBalance = hasSufficientAssetBalance(_assetAmount, maxInputBalance);
 
       setAmountDetails({
         assetAmount: _assetAmount,
@@ -243,6 +293,21 @@ export default function SendSheet() {
   );
 
   // Update all fields passed via params if needed
+  useEffect(() => {
+    if (!selected || isUniqueAsset) return;
+
+    const newMaxInputBalance = updateMaxInputBalance(selected);
+    setAmountDetails(currentAmountDetails => {
+      const isSufficientBalance = hasSufficientAssetBalance(currentAmountDetails.assetAmount, newMaxInputBalance);
+      if (currentAmountDetails.isSufficientBalance === isSufficientBalance) return currentAmountDetails;
+
+      return {
+        ...currentAmountDetails,
+        isSufficientBalance,
+      };
+    });
+  }, [isUniqueAsset, isSponsorshipSupported, selected, updateMaxInputBalance]);
+
   useEffect(() => {
     if (recipientOverride && !recipient) {
       setIsValidAddress(true);
@@ -285,7 +350,7 @@ export default function SendSheet() {
         _assetAmount = formatInputDecimals(convertedAssetAmount, _nativeAmount);
       }
 
-      const _isSufficientBalance = Number(_assetAmount) <= Number(maxInputBalance);
+      const _isSufficientBalance = hasSufficientAssetBalance(_assetAmount, maxInputBalance);
       setAmountDetails({
         assetAmount: _assetAmount,
         isSufficientBalance: _isSufficientBalance,
@@ -339,10 +404,10 @@ export default function SendSheet() {
     async (updatedGasLimit: string) => {
       if (!selected || !currentProvider) return;
 
-      const txData = await buildTransaction(
+      const txData = await buildTransferTransaction(
         {
           address: accountAddress,
-          amount: Number(amountDetails.assetAmount),
+          amount: amountDetails.assetAmount,
           asset: selected as ParsedAddressAsset,
           gasLimit: updatedGasLimit,
           recipient: toAddress,
@@ -364,10 +429,12 @@ export default function SendSheet() {
     ens: { ensName, ensProfile, isENS, transferENS },
     gas: { gasLimit, isSufficientGas, isValidGas, selectedGasFee, updateTxFee, updateTxFeeForOptimism },
     isHardwareWallet,
-    isUniqueAsset,
+    isSponsoredSend,
     nativeCurrency,
     recipient: { isValidAddress, recipient, toAddress },
     selected,
+    sponsoredSendPreparedCall,
+    sponsoredSendPreparedCalls,
   });
 
   const { buttonDisabled, buttonLabel } = useMemo(() => {
@@ -380,17 +447,24 @@ export default function SendSheet() {
 
     return getSendSubmitButtonState({
       assetAmount: amountDetails.assetAmount,
+      canUseSponsoredSend,
+      hasResolvedSponsoredSend,
       isENS,
       isENSProfileLoaded: ensProfile.isSuccess,
       isGasFeeReady,
+      isPreparingSponsoredSend,
+      isSponsoredSend,
       isSufficientBalance: amountDetails.isSufficientBalance,
       isSufficientGas,
       isValidGas,
       nativeAssetSymbol: useBackendNetworksStore.getState().getChainsNativeAsset()[currentChainId || ChainId.mainnet]?.symbol,
+      sponsoredAmountIsStale: debouncedAssetAmount !== amountDetails.assetAmount,
     });
   }, [
     amountDetails.assetAmount,
     amountDetails.isSufficientBalance,
+    canUseSponsoredSend,
+    debouncedAssetAmount,
     isENS,
     ensProfile.isSuccess,
     gasFeeParamsBySpeed,
@@ -398,6 +472,9 @@ export default function SendSheet() {
     toAddress,
     currentChainId,
     l1GasFeeOptimism,
+    hasResolvedSponsoredSend,
+    isPreparingSponsoredSend,
+    isSponsoredSend,
     isSufficientGas,
     isValidGas,
   ]);
@@ -449,6 +526,7 @@ export default function SendSheet() {
       ensProfile,
       isENS,
       isL2,
+      isSponsored: isSponsoredSend,
       isUniqueAsset,
       chainId: currentChainId,
       profilesEnabled,
@@ -469,6 +547,7 @@ export default function SendSheet() {
     amountDetails,
     submitTransaction,
     isL2,
+    isSponsoredSend,
     currentChainId,
     profilesEnabled,
   ]);
@@ -536,6 +615,8 @@ export default function SendSheet() {
     if (
       selected &&
       !!accountAddress &&
+      !isSponsoredSend &&
+      greaterThan(amountDetails.assetAmount, 0) &&
       assetChainId === currentChainId &&
       currentProviderChainId === currentChainId &&
       toAddress &&
@@ -545,7 +626,7 @@ export default function SendSheet() {
       estimateGasLimit(
         {
           address: accountAddress,
-          amount: Number(amountDetails.assetAmount),
+          amount: amountDetails.assetAmount,
           asset: selected as ParsedAddressAsset,
           recipient: toAddress,
         },
@@ -570,6 +651,7 @@ export default function SendSheet() {
     amountDetails.assetAmount,
     currentProvider,
     isValidAddress,
+    isSponsoredSend,
     recipient,
     selected,
     toAddress,
@@ -669,17 +751,26 @@ export default function SendSheet() {
             assetAmount={amountDetails.assetAmount}
             assetInputRef={assetInputRef}
             buttonRenderer={
-              <SheetActionButton
-                color={colorForAsset}
-                disabled={buttonDisabled}
-                forceShadows
-                label={buttonLabel}
-                onPress={showConfirmationSheet}
-                scaleTo={buttonDisabled ? 1.025 : 0.9}
-                size="big"
-                testID="send-sheet-confirm"
-                weight="heavy"
-              />
+              <SubmitButtonContainer>
+                <SheetActionButton
+                  color={colorForAsset}
+                  disabled={buttonDisabled}
+                  forceShadows
+                  label={buttonLabel}
+                  onPress={showConfirmationSheet}
+                  scaleTo={buttonDisabled ? 1.025 : 0.9}
+                  size="big"
+                  testID="send-sheet-confirm"
+                  weight="heavy"
+                />
+                {canUseSponsoredSend && (
+                  <SmartWalletActivationCallout
+                    address={accountAddress}
+                    chainId={currentChainId}
+                    style={styles.smartWalletActivationCallout}
+                  />
+                )}
+              </SubmitButtonContainer>
             }
             colorForAsset={colorForAsset}
             nativeAmount={amountDetails.nativeAmount}
@@ -692,14 +783,18 @@ export default function SendSheet() {
             sendMaxBalance={() => setMaxEnabled(true)}
             setLastFocusedInputHandle={setLastFocusedInputHandle}
             txSpeedRenderer={
-              <GasSpeedButton
-                asset={selected}
-                fallbackColor={colorForAsset}
-                chainId={currentChainId}
-                horizontalPadding={0}
-                marginBottom={17}
-                theme={isDarkMode ? 'dark' : 'light'}
-              />
+              shouldShowSponsoredSendGas ? (
+                <View style={{ height: 18 }} />
+              ) : (
+                <GasSpeedButton
+                  asset={selected}
+                  fallbackColor={colorForAsset}
+                  chainId={currentChainId}
+                  horizontalPadding={0}
+                  marginBottom={17}
+                  theme={isDarkMode ? 'dark' : 'light'}
+                />
+              )
             }
           />
         )}

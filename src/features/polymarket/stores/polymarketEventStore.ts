@@ -3,10 +3,10 @@ import { type PolymarketTeamInfo } from '@/features/polymarket/types';
 import { type PolymarketEvent, type PolymarketMarket, type RawPolymarketEvent } from '@/features/polymarket/types/polymarket-event';
 import { fetchTeamsForEvent } from '@/features/polymarket/utils/sports';
 import { processRawPolymarketEvent } from '@/features/polymarket/utils/transforms';
+import { time } from '@/framework/core/utils/time';
 import { rainbowFetch } from '@/framework/data/http/rainbowFetch';
 import { RainbowError } from '@/logger';
 import { createQueryStore } from '@/state/internal/createQueryStore';
-import { time } from '@/utils/time';
 
 type FetchParams = { eventId: string | null };
 
@@ -74,7 +74,7 @@ async function fetchPolymarketEvent({ eventId }: FetchParams, abortController: A
   let teams: PolymarketTeamInfo[] | undefined = undefined;
 
   if (event.gameId) {
-    teams = await fetchTeamsForEvent(event);
+    teams = await fetchTeamsForEvent(event, abortController);
   }
 
   const processedEvent = await processRawPolymarketEvent(event, teams);

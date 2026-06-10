@@ -6,6 +6,7 @@ import { IS_TEST } from '@/env';
 import { unlockableAppIcons, type UnlockableAppIconKey } from '@/features/app-icon/models/appIcons';
 import { unlockableAppIconCheck } from '@/features/app-icon/utils/unlockableAppIconCheck';
 import { backupsStore, LoadingStates, oneWeekInMs } from '@/features/backup/stores/backupsStore';
+import { time } from '@/framework/core/utils/time';
 import WalletBackupStepTypes from '@/helpers/walletBackupStepTypes';
 import walletBackupTypes from '@/helpers/walletBackupTypes';
 import WalletTypes from '@/helpers/walletTypes';
@@ -18,7 +19,6 @@ import { getSelectedWallet, getWallets, useWalletsStore } from '@/state/wallets/
 import { ReviewPromptAction } from '@/storage/schema';
 import { delay } from '@/utils/delay';
 import { handleReviewPromptAction } from '@/utils/reviewAlert';
-import { time } from '@/utils/time';
 
 let hasRunSessionEntryPrompt = false;
 let runningSessionEntryPrompt: Promise<void> | null = null;

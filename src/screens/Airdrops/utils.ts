@@ -10,6 +10,7 @@ import { safeBigInt } from '@/features/gas/hooks/useEstimatedGasFee';
 import { type GasSettings } from '@/features/gas/types/gas';
 import { buildGasParams, weiToGwei } from '@/features/gas/utils/parseGas';
 import { lessThanOrEqualToWorklet } from '@/framework/core/safeMath';
+import { time } from '@/framework/core/utils/time';
 import { type LedgerSigner } from '@/handlers/LedgerSigner';
 import { getProvider, toHex } from '@/handlers/web3';
 import { convertAmountToNativeDisplayWorklet, formatNumber, multiply } from '@/helpers/utilities';
@@ -25,7 +26,6 @@ import { type ChainId } from '@/state/backendNetworks/types';
 import { getNextNonce } from '@/state/nonces';
 import { addNewTransaction } from '@/state/pendingTransactions';
 import ethereumUtils from '@/utils/ethereumUtils';
-import { time } from '@/utils/time';
 
 export interface GasInfo {
   gasFeeDisplay: string | undefined;

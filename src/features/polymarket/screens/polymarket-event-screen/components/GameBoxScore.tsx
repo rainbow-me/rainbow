@@ -9,10 +9,10 @@ import { TeamLogo } from '@/features/polymarket/components/TeamLogo';
 import { usePolymarketLiveGame } from '@/features/polymarket/hooks/usePolymarketLiveGame';
 import { type PolymarketEvent, type PolymarketMarketEvent } from '@/features/polymarket/types/polymarket-event';
 import { parsePeriod, parseScore, selectGameInfo, type PolymarketEventGameInfo } from '@/features/polymarket/utils/sports';
+import { time } from '@/framework/core/utils/time';
 import { opacity } from '@/framework/ui/utils/opacity';
 import * as i18n from '@/languages';
 import { THICKER_BORDER_WIDTH } from '@/styles/constants';
-import { time } from '@/utils/time';
 import { formatTimestampParts, toUnixTime } from '@/worklets/dates';
 
 export const GameBoxScore = memo(function GameBoxScore({ event }: { event: PolymarketMarketEvent | PolymarketEvent }) {

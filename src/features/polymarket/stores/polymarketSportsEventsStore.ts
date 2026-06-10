@@ -1,32 +1,52 @@
+import { POLYMARKET } from '@/config/experimental';
+import { useExperimentalConfigStore } from '@/config/experimentalConfigStore';
+import { IS_TEST } from '@/env';
 import { DEFAULT_SPORTS_LEAGUE_KEY, POLYMARKET_GAMMA_API_URL } from '@/features/polymarket/constants';
+import { type LeagueId } from '@/features/polymarket/leagues';
+import { fetchPolymarketTeamMetadataForGameEvents } from '@/features/polymarket/stores/polymarketTeamMetadataStore';
 import { type PolymarketEvent, type RawPolymarketEvent } from '@/features/polymarket/types/polymarket-event';
 import { getSportsEventsStartTimeRange } from '@/features/polymarket/utils/getSportsEventsDateRange';
-import { fetchTeamsForGameEvents } from '@/features/polymarket/utils/sports';
 import { processRawPolymarketEvent } from '@/features/polymarket/utils/transforms';
+import { time } from '@/framework/core/utils/time';
 import { rainbowFetch } from '@/framework/data/http/rainbowFetch';
+import { useRemoteConfigStore } from '@/model/remoteConfig';
+import { createDerivedStore } from '@/state/internal/createDerivedStore';
 import { createQueryStore } from '@/state/internal/createQueryStore';
-import { time } from '@/utils/time';
 
 const VOLUME_MIN = '1000';
 
+export type PolymarketSportsLeagueId = LeagueId | typeof DEFAULT_SPORTS_LEAGUE_KEY;
+
 type PolymarketSportsEventsStoreState = {
-  selectedLeagueId: string;
-  setSelectedLeagueId: (leagueId: string) => void;
+  selectedLeagueId: PolymarketSportsLeagueId;
+  setSelectedLeagueId: (leagueId: PolymarketSportsLeagueId) => void;
 };
+
+const usePolymarketSportsEventsEnabled = createDerivedStore<boolean>(
+  $ => {
+    const remoteEnabled = $(useRemoteConfigStore, state => state.getRemoteConfigKey('polymarket_enabled'));
+    const localEnabled = $(useExperimentalConfigStore, state => state.getFlag(POLYMARKET));
+
+    return !IS_TEST && (remoteEnabled || localEnabled);
+  },
+  { fastMode: true }
+);
 
 export const usePolymarketSportsEventsStore = createQueryStore<PolymarketEvent[], never, PolymarketSportsEventsStoreState>(
   {
     fetcher: fetchPolymarketSportsEvents,
+    enabled: $ => $(usePolymarketSportsEventsEnabled),
     staleTime: time.minutes(2),
     cacheTime: time.minutes(20),
   },
   set => ({
     selectedLeagueId: DEFAULT_SPORTS_LEAGUE_KEY,
-    setSelectedLeagueId: (leagueId: string) => set({ selectedLeagueId: leagueId }),
+    setSelectedLeagueId: (leagueId: PolymarketSportsLeagueId) => set({ selectedLeagueId: leagueId }),
   })
 );
 
 export function prefetchPolymarketSportsEvents() {
+  if (!usePolymarketSportsEventsStore.getState().enabled) return;
   usePolymarketSportsEventsStore.getState().fetch();
 }
 
@@ -51,7 +71,7 @@ async function fetchPolymarketSportsEvents(_: never, abortController: AbortContr
 
   const filteredEvents = events.filter(event => event.ended !== true && event.gameId != null);
 
-  const teamsByTicker = await fetchTeamsForGameEvents(filteredEvents);
+  const teamsByTicker = await fetchPolymarketTeamMetadataForGameEvents(filteredEvents, abortController);
 
   return await Promise.all(
     filteredEvents.map(event => {

@@ -29,7 +29,7 @@ export const TransactionDetails = () => {
   const [statusIconHidden, setStatusIconHidden] = useState(false);
   const { presentedToast, presentToastFor } = useTransactionDetailsToasts();
   const { height: deviceHeight } = useDimensions();
-  const { bottom } = useSafeAreaInsets();
+  const insets = useSafeAreaInsets();
 
   useEffect(() => {
     rainbowToastsActions.setIsShowingTransactionDetails(true);
@@ -45,9 +45,9 @@ export const TransactionDetails = () => {
     (event: LayoutChangeEvent) => {
       const contentHeight = event.nativeEvent.layout.height;
       if (contentHeight > deviceHeight) setStatusIconHidden(true);
-      setSheetHeight(contentHeight + (Platform.OS === 'android' ? bottom : 0));
+      setSheetHeight(contentHeight + (Platform.OS === 'android' ? insets.bottom : 0));
     },
-    [bottom, deviceHeight]
+    [deviceHeight, insets.bottom]
   );
 
   const presentAddressToast = useCallback(() => {
@@ -56,6 +56,10 @@ export const TransactionDetails = () => {
 
   const presentHashToast = useCallback(() => {
     presentToastFor('hash');
+  }, [presentToastFor]);
+
+  const presentLinkToast = useCallback(() => {
+    presentToastFor('link');
   }, [presentToastFor]);
 
   return (
@@ -72,7 +76,11 @@ export const TransactionDetails = () => {
             <TransactionDetailsStatusActionsAndTimestampSection hideIcon={statusIconHidden} transaction={transaction} />
             <TransactionDetailsFromToSection transaction={transaction} presentToast={presentAddressToast} />
             <TransactionDetailsValueAndFeeSection transaction={transaction} />
-            <TransactionDetailsHashAndActionsSection transaction={transaction} presentToast={presentHashToast} />
+            <TransactionDetailsHashAndActionsSection
+              transaction={transaction}
+              presentHashToast={presentHashToast}
+              presentLinkToast={presentLinkToast}
+            />
           </Box>
           <ToastPositionContainer>
             <Toast
@@ -81,6 +89,7 @@ export const TransactionDetails = () => {
               testID="address-copied-toast"
             />
             <Toast isVisible={presentedToast === 'hash'} text={i18n.t(i18n.l.transaction_details.hash_copied)} testID="hash-copied-toast" />
+            <Toast isVisible={presentedToast === 'link'} text={i18n.t(i18n.l.transaction_details.link_copied)} testID="link-copied-toast" />
           </ToastPositionContainer>
         </SlackSheet>
       )}

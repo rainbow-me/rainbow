@@ -5,9 +5,6 @@ import { Wallet } from '@ethersproject/wallet';
 import { type Address } from 'viem';
 
 import { TransactionDirection, TransactionStatus, type NewTransaction } from '@/entities/transactions';
-import { trackCallsExecution } from '@/features/delegation/callsExecutionTracking';
-import { resolveManagedExecutionFailure } from '@/features/delegation/managedExecutionFailure';
-import { waitForManagedExecutionConfirmation } from '@/features/delegation/waitForManagedExecution';
 import { canUseDelegatedExecution } from '@/features/delegation/willDelegate';
 import type { LegacyTransactionGasParamAmounts, TransactionGasParamAmounts } from '@/features/gas/types/gas';
 import { RainbowError } from '@/logger';
@@ -15,8 +12,7 @@ import { extractReplayableExecution } from '@/raps/replay';
 import { toTransactionAsset, type TransactionAssetSource } from '@/raps/transactionAsset';
 import { backendNetworksActions } from '@/state/backendNetworks/backendNetworks';
 import { addNewTransaction } from '@/state/pendingTransactions';
-import { time } from '@/utils/time';
-import { execute, type Call, type ExecuteCallsResult, type PreparedCallsExecution } from '@rainbow-me/delegation';
+import { type Call, type PreparedCallsExecution } from '@rainbow-me/delegation';
 
 import {
   RNBW_TOKEN_ADDRESS,
@@ -25,18 +21,14 @@ import {
   STAKING_CONTRACT_ADDRESS,
   STAKING_GAS_LIMIT,
 } from '../constants';
+import { executeRnbwStakingCalls, type RnbwStakingExecution } from './executeRnbwStakingCalls';
 import { buildStakeRnbwCalls, buildStakeRnbwExecutionPlan } from './stakeRnbwCalls';
+import { waitForWalletTransactions } from './waitForWalletTransactions';
 
 // ============ Types ========================================================= //
 
-/** Execution lane used for the wallet-funded or relay-sponsored stake call. */
-export type StakeRnbwExecutionMode = 'manual' | 'sponsored';
-
 /** Submitted staking execution plus the confirmation waiter for its lane. */
-export type StakeRnbwExecution = {
-  executionMode: StakeRnbwExecutionMode;
-  waitForConfirmation: () => Promise<void>;
-};
+export type StakeRnbwExecution = RnbwStakingExecution;
 
 type ExecuteStakeRnbwParams = {
   address: Address;
@@ -47,8 +39,6 @@ type ExecuteStakeRnbwParams = {
   signer: Signer;
   stakeAmountRaw: string;
 };
-
-type WalletStakeCallsExecution = Extract<ExecuteCallsResult, { kind: 'calls.wallet' }>;
 
 // ============ Execution ===================================================== //
 
@@ -68,87 +58,18 @@ export async function executeStakeRnbw({
     return executeSequentialStakeRnbw({ address, asset, gasParams, provider, signer, stakeAmountRaw });
   }
 
-  const execution = await executeSdkStakeRnbw({
+  return executeRnbwStakingCalls({
     address,
+    buildPlan: () => buildStakeRnbwExecutionPlan({ address, provider, stakeAmountRaw }),
+    errorPrefix: '[executeStakeRnbw]',
     preparedCalls,
     provider,
     signer,
-    stakeAmountRaw,
-  });
-
-  if (execution.kind === 'calls.wallet') {
-    const stakeTransaction = requireSubmittedStakeTransaction(execution);
-    const txHashes = execution.transactions.map(transaction => transaction.hash);
-    trackCallsExecution({
-      address,
-      batch: false,
-      chainId: STAKING_CHAIN_ID,
-      execution: stakeTransaction,
-      transaction: buildStakeTransaction({ address, asset, stakeAmountRaw }),
-    });
-
-    return {
-      executionMode: 'manual',
-      waitForConfirmation: () => waitForWalletTransactions({ provider, txHashes }),
-    };
-  }
-
-  const failureMessage = await resolveManagedExecutionFailure({
-    executionId: execution.executionId,
-    status: execution.status,
-  });
-
-  if (failureMessage) {
-    throw new RainbowError(`[executeStakeRnbw]: ${failureMessage}`);
-  }
-
-  trackCallsExecution({
-    address,
-    batch: false,
-    chainId: STAKING_CHAIN_ID,
-    execution,
     transaction: buildStakeTransaction({ address, asset, stakeAmountRaw }),
   });
-
-  return {
-    executionMode: 'sponsored',
-    waitForConfirmation: () => waitForManagedExecutionConfirmation(execution.executionId),
-  };
 }
 
 // ============ Local Helpers ================================================= //
-
-async function executeSdkStakeRnbw({
-  address,
-  preparedCalls,
-  provider,
-  signer,
-  stakeAmountRaw,
-}: {
-  address: Address;
-  preparedCalls: PreparedCallsExecution | null;
-  provider: StaticJsonRpcProvider;
-  signer: Wallet;
-  stakeAmountRaw: string;
-}): Promise<ExecuteCallsResult> {
-  if (preparedCalls) {
-    return execute.calls(preparedCalls, {
-      signer,
-      provider,
-      chainId: STAKING_CHAIN_ID,
-    });
-  }
-
-  const plan = await buildStakeRnbwExecutionPlan({ address, provider, stakeAmountRaw });
-  const params = {
-    ...plan,
-    signer,
-    provider,
-    chainId: STAKING_CHAIN_ID,
-  };
-
-  return execute.calls(params);
-}
 
 async function executeSequentialStakeRnbw({
   address,
@@ -215,16 +136,9 @@ async function executeSequentialStakeRnbw({
 
   return {
     executionMode: 'manual',
+    txHash: stakeTransaction.hash,
     waitForConfirmation: () => waitForWalletTransactions({ provider, txHashes: confirmationTxHashes }),
   };
-}
-
-function requireSubmittedStakeTransaction(execution: WalletStakeCallsExecution): WalletStakeCallsExecution['transactions'][number] {
-  const stakeTransaction = execution.transactions.at(-1);
-  if (!stakeTransaction) {
-    throw new RainbowError('[executeStakeRnbw]: wallet staking did not submit a transaction');
-  }
-  return stakeTransaction;
 }
 
 function buildStakeTransaction({
@@ -260,20 +174,6 @@ function buildStakeTransaction({
     type: 'stake',
     value: 0,
   };
-}
-
-async function waitForWalletTransactions({ provider, txHashes }: { provider: StaticJsonRpcProvider; txHashes: string[] }): Promise<void> {
-  for (const hash of txHashes) {
-    const receipt = await provider.waitForTransaction(hash, 1, time.minutes(2));
-
-    if (!receipt) {
-      throw new RainbowError(`[executeStakeRnbw]: wallet staking transaction was not confirmed (${hash})`);
-    }
-
-    if (receipt.status === 0) {
-      throw new RainbowError(`[executeStakeRnbw]: wallet staking transaction failed (${hash})`);
-    }
-  }
 }
 
 async function resolveStakeRnbwCallGasLimit({

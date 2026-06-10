@@ -4,13 +4,13 @@ import remoteConfig, { type FirebaseRemoteConfigTypes } from '@react-native-fire
 import { dequal } from 'dequal';
 
 import { IS_DEV, IS_STORE_INSTALL } from '@/env';
+import { time } from '@/framework/core/utils/time';
 import { CURRENT_APP_VERSION } from '@/hooks/useAppVersion';
 import * as i18n from '@/languages';
 import { logger, RainbowError } from '@/logger';
 import { ChainId, Network } from '@/state/backendNetworks/types';
 import { createQueryStore } from '@/state/internal/createQueryStore';
 import { delay } from '@/utils/delay';
-import { time } from '@/utils/time';
 import { shallowEqual } from '@/worklets/comparisons';
 
 // ============ RainbowConfig ================================================== //
@@ -37,7 +37,6 @@ export interface RainbowConfig extends Record<
 
   /* Numbers */
   trace_call_block_number_offset: number;
-  trending_tokens_limit: number;
 
   /* Booleans */
   f2c_enabled: boolean;
@@ -84,20 +83,24 @@ export interface RainbowConfig extends Record<
   claimables: boolean;
   nfts_enabled: boolean;
 
-  trending_tokens_enabled: boolean;
-  rainbow_trending_tokens_list_enabled: boolean;
   prince_of_the_hill_enabled: boolean;
   king_of_the_hill_enabled: boolean;
   candlestick_charts_enabled: boolean;
   rainbow_toasts_enabled: boolean;
   king_of_the_hill2_enabled: boolean;
+  discover_enabled: boolean;
   perps_enabled: boolean;
   polymarket_enabled: boolean;
   rnbw_rewards_enabled: boolean;
   rnbw_membership_enabled: boolean;
   delegation_enabled: boolean;
+  sponsored_sends_enabled: boolean;
   sponsored_swaps_enabled: boolean;
+  sponsored_perps_deposits_enabled: boolean;
+  sponsored_polymarket_deposits_enabled: boolean;
+  sponsored_rnbw_unstaking_enabled: boolean;
   discover_placements_enabled: boolean;
+  go_relay_backend_enabled: boolean;
 }
 
 const Bips = {
@@ -167,7 +170,6 @@ export const DEFAULT_CONFIG = {
 
   /* Numbers */
   trace_call_block_number_offset: 20,
-  trending_tokens_limit: 10,
 
   /* Booleans */
   f2c_enabled: true,
@@ -215,21 +217,25 @@ export const DEFAULT_CONFIG = {
   claimables: true,
   nfts_enabled: true,
 
-  trending_tokens_enabled: false,
-  rainbow_trending_tokens_list_enabled: false,
   king_of_the_hill2_enabled: false,
   king_of_the_hill_enabled: false,
   prince_of_the_hill_enabled: false,
   candlestick_charts_enabled: !IS_STORE_INSTALL,
   rainbow_toasts_enabled: !IS_STORE_INSTALL,
-  perps_enabled: false,
-  polymarket_enabled: false,
+  discover_enabled: true,
+  perps_enabled: true,
+  polymarket_enabled: true,
   dev_section_enabled: IS_DEV,
   rnbw_rewards_enabled: false,
   rnbw_membership_enabled: false,
   delegation_enabled: false,
+  sponsored_sends_enabled: true,
   sponsored_swaps_enabled: true,
+  sponsored_perps_deposits_enabled: true,
+  sponsored_polymarket_deposits_enabled: true,
+  sponsored_rnbw_unstaking_enabled: true,
   discover_placements_enabled: true,
+  go_relay_backend_enabled: true,
 } as const satisfies Readonly<RainbowConfig>;
 
 type RemoteConfigKey = keyof typeof DEFAULT_CONFIG;

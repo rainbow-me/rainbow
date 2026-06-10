@@ -1,7 +1,7 @@
 import { useStakingPositionStore } from '@/features/rnbw-staking/stores/rnbwStakingPositionStore';
+import { time } from '@/framework/core/utils/time';
 import { useUserAssetsStore } from '@/state/assets/userAssets';
 import { delay } from '@/utils/delay';
-import { time } from '@/utils/time';
 
 const POLL_INTERVAL_MS = time.seconds(1);
 const MAX_POLL_ATTEMPTS = 5;

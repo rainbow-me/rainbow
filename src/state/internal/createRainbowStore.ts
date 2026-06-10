@@ -5,8 +5,8 @@ import { persist, subscribeWithSelector, type PersistOptions, type PersistStorag
 import { createWithEqualityFn } from 'zustand/traditional';
 
 import { IS_TEST } from '@/env';
+import { time } from '@/framework/core/utils/time';
 import { logger, RainbowError } from '@/logger';
-import { time } from '@/utils/time';
 
 import { rainbowStorage } from './rainbowStorage';
 import {

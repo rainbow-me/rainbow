@@ -2,6 +2,7 @@ import { isEmpty } from 'lodash';
 import { type Address } from 'viem';
 
 import type { UniqueAsset } from '@/entities/uniqueAssets';
+import { time } from '@/framework/core/utils/time';
 import { arcClient } from '@/graphql';
 import { updateWebHidden, updateWebShowcase } from '@/helpers/webData';
 import { fetchHiddenTokens, getHidden } from '@/hooks/useFetchHiddenTokens';
@@ -19,7 +20,6 @@ import {
   replaceEthereumWithMainnet,
 } from '@/state/nfts/utils';
 import { getIsReadOnlyWallet } from '@/state/wallets/walletsStore';
-import { time } from '@/utils/time';
 
 import { useBackendNetworksStore } from '../backendNetworks/backendNetworks';
 import {

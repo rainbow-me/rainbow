@@ -14,18 +14,22 @@ export const registerTokenRefreshListener = () =>
 export const saveFCMToken = async (): Promise<string | null> => {
   try {
     const permissionStatus = await getPermissionStatus();
-    if (isNotificationPermissionGranted(permissionStatus)) {
-      const fcmToken = await messaging().getToken();
-      if (fcmToken) {
-        saveLocal(RAINBOW_FCM_TOKEN_KEY, { data: fcmToken });
-        return fcmToken;
-      }
+    if (!isNotificationPermissionGranted(permissionStatus)) {
+      // Expected state for users who declined permission prompt or have not yet been prompted.
+      return null;
     }
-    return null;
+
+    const fcmToken = await messaging().getToken();
+    if (!fcmToken) {
+      logger.warn('[notifications]: messaging().getToken() returned empty despite granted permission', {
+        permissionStatus,
+      });
+      return null;
+    }
+    saveLocal(RAINBOW_FCM_TOKEN_KEY, { data: fcmToken });
+    return fcmToken;
   } catch (error) {
-    logger.warn('[notifications]: Error while getting and saving FCM token', {
-      error,
-    });
+    logger.warn('[notifications]: saveFCMToken failed', { error });
     return null;
   }
 };

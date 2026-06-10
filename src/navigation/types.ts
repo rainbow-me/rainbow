@@ -18,6 +18,7 @@ import { type PendingTransaction, type RainbowTransaction } from '@/entities/tra
 import { type UniqueAsset } from '@/entities/uniqueAssets';
 import { type UnlockableAppIconKey } from '@/features/app-icon/models/appIcons';
 import { type BackupFile, type CloudBackups } from '@/features/backup/backup';
+import { type RequestData, type RequestSource } from '@/features/dapp-request/types';
 import { type ENSProfile } from '@/features/ens/types/profile';
 import { type REGISTRATION_MODES } from '@/features/ens/utils/helpers';
 import { type GasTrend } from '@/features/gas/utils/meteorology';
@@ -25,11 +26,7 @@ import { type HlTrade, type PerpMarket, type PerpsPosition, type TriggerOrderSou
 import { type PolymarketPosition } from '@/features/polymarket/types';
 import { type PolymarketEvent, type PolymarketMarket, type PolymarketMarketEvent } from '@/features/polymarket/types/polymarket-event';
 import { type RainbowPosition } from '@/features/positions/types';
-import {
-  type RequestData,
-  type WalletconnectApprovalSheetRouteParams,
-  type WalletconnectResultType,
-} from '@/features/wallet-connect/types';
+import { type WalletconnectApprovalSheetRouteParams, type WalletconnectResultType } from '@/features/wallet-connect/types';
 import { type NftOffer, type PoapEvent, type ReservoirCollection } from '@/graphql/__generated__/arc';
 import { type TokenColors } from '@/graphql/__generated__/metadata';
 import type walletBackupStepTypes from '@/helpers/walletBackupStepTypes';
@@ -48,7 +45,6 @@ import { type Checkbox } from '@/screens/SendConfirmationSheet';
 import { type ChainId } from '@/state/backendNetworks/types';
 import { type AreAllKeysOptional, type ExtractOptionalKeys } from '@/types/objects';
 import { type LEDGER_ERROR_CODES } from '@/utils/ledger';
-import { type RequestSource } from '@/utils/requestNavigationHandlers';
 
 export type PortalSheetProps = {
   children: React.FC;
@@ -383,6 +379,7 @@ type RouteParams = {
     ensProfile: ENSProfile;
     isENS: boolean;
     isL2: boolean;
+    isSponsored?: boolean;
     isUniqueAsset: boolean;
     chainId: ChainId;
     profilesEnabled: boolean;
@@ -717,6 +714,12 @@ type RouteParams = {
   };
   [Routes.POLYMARKET_EXPLAIN_SHEET]: {
     onDismiss?: () => void;
+  };
+  [Routes.POLYMARKET_NAVIGATOR]: {
+    // Deep-link intent: which inner tab to open, with a monotonic key so repeated
+    // requests to the same route still re-trigger the navigator's route effect.
+    initialRoute?: PolymarketRoute;
+    routeRequestKey?: number;
   };
   [Routes.RNBW_REWARDS_CLAIM_SHEET]: undefined;
   [Routes.RNBW_REWARDS_ESTIMATE_SHEET]: {

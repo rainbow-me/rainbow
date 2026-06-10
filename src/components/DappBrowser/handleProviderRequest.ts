@@ -5,6 +5,7 @@ import { debounce } from 'lodash';
 import { UserRejectedRequestError } from 'viem';
 
 import { type Messenger } from '@/browserMessaging/AppMessenger';
+import { time } from '@/framework/core/utils/time';
 import { getProvider } from '@/handlers/web3';
 import * as i18n from '@/languages';
 import { logger } from '@/logger';
@@ -15,7 +16,6 @@ import { useBackendNetworksStore } from '@/state/backendNetworks/backendNetworks
 import { ChainId } from '@/state/backendNetworks/types';
 import { useNavigationStore } from '@/state/navigation/navigationStore';
 import { handleDappBrowserConnectionPrompt, handleDappBrowserRequest } from '@/utils/requestNavigationHandlers';
-import { time } from '@/utils/time';
 import {
   handleProviderRequest,
   type AddEthereumChainProposedChain,

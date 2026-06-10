@@ -1,3 +1,4 @@
+import { time } from '@/framework/core/utils/time';
 import { convertAmountAndPriceToNativeDisplay, convertAmountToNativeDisplayWorklet, greaterThan, multiply } from '@/helpers/utilities';
 import Routes, { type Route } from '@/navigation/routesNames';
 import { ETH_ADDRESS, WETH_ADDRESS } from '@/references/constants';
@@ -7,11 +8,13 @@ import { userAssetsStoreManager } from '@/state/assets/userAssetsStoreManager';
 import { createQueryStore } from '@/state/internal/createQueryStore';
 import { fetchPolymarketPrices, isPolymarketToken } from '@/state/liveTokens/polymarketAdapter';
 import { useNavigationStore, type NavigationState } from '@/state/navigation/navigationStore';
-import { time } from '@/utils/time';
 
 import { useUserAssetsStore } from '../assets/userAssets';
 import { isHyperliquidToken, parseHyperliquidTokenId } from './hyperliquidAdapter';
 import { fetchHyperliquidPrices } from './hyperliquidPriceService';
+import { type LiveTokensData, type TokenData } from './types';
+
+export type { TokenData, LiveTokensData, PriceReliabilityStatus } from './types';
 
 const ETH_MAINNET_TOKEN_ID = `${ETH_ADDRESS}:1`;
 
@@ -37,38 +40,6 @@ type TokenSubscriptionCountByRoute = {
     [tokenId: string]: number | undefined;
   };
 };
-
-export type PriceReliabilityStatus =
-  | 'PRICE_RELIABILITY_STATUS_TRUSTED'
-  | 'PRICE_RELIABILITY_STATUS_NOT_TRUSTED'
-  | 'PRICE_RELIABILITY_STATUS_UNSPECIFIED';
-
-export interface TokenData {
-  price: string;
-  // This is exclusively for Hyperliquid markets
-  midPrice?: string | null;
-  change: {
-    change5mPct: string;
-    change1hPct: string;
-    change4hPct: string;
-    change12hPct: string;
-    change24hPct: string;
-  };
-  marketData: {
-    circulatingMarketCap: string;
-  };
-  reliability: {
-    metadata: {
-      liquidityCap: string;
-    };
-    status: PriceReliabilityStatus;
-  };
-  updateTime: string;
-}
-
-export interface LiveTokensData {
-  [tokenId: string]: TokenData | undefined;
-}
 
 type LiveTokensResponse = {
   metadata: {

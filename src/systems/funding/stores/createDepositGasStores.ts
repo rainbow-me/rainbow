@@ -12,6 +12,7 @@ import { rainbowMeteorologyGetData } from '@/features/gas/utils/gasFees';
 import { gasUnits } from '@/features/gas/utils/gasUnits';
 import { isLegacyMeteorologyFeeData } from '@/features/gas/utils/meteorologyClassification';
 import { buildGasParams, gweiToWei, weiToGwei } from '@/features/gas/utils/parseGas';
+import { time } from '@/framework/core/utils/time';
 import { convertAmountToNativeDisplayWorklet, formatNumber, multiply } from '@/helpers/utilities';
 import { logger } from '@/logger';
 import { estimateUnlockAndCrosschainSwap } from '@/raps/actions/crosschainSwap';
@@ -21,12 +22,12 @@ import { ChainId } from '@/state/backendNetworks/types';
 import { createQueryStore } from '@/state/internal/createQueryStore';
 import { type InferStoreState } from '@/state/internal/types';
 import { useWalletsStore } from '@/state/wallets/walletsStore';
-import { time } from '@/utils/time';
 import { shallowEqual } from '@/worklets/comparisons';
 
 import {
   type AmountStoreType,
   type DepositConfig,
+  type DepositGasConfig,
   type DepositGasHookParams,
   type DepositGasLimitParams,
   type DepositGasStoresType,
@@ -54,7 +55,7 @@ type GasSponsorshipQueryParams = {
 
 // ============ Gas Stores Factory ============================================ //
 
-const useNoGasSponsorship = createDerivedStore(() => false, { lockDependencies: true });
+const useAlwaysFalse = createDerivedStore(() => false, { lockDependencies: true });
 
 export function createDepositGasStores(
   config: DepositConfig,
@@ -133,11 +134,36 @@ export function createDepositGasStores(
     staleTime: time.seconds(30),
   });
 
+  const useCanCheckGasSponsorship =
+    hasGasSponsorshipResolver && useHasGasHookParams
+      ? createDerivedStore(
+          $ => {
+            const hasHookParams = $(useHasGasHookParams);
+            const params = buildGasHookParams({
+              accountAddress: $(useWalletsStore, s => s.accountAddress),
+              amount: $(useAmountStore, selectNormalizedAmount),
+              asset: $(useDepositStore, s => s.asset),
+              config,
+              quote: $(useQuoteStore, s => s.getData()),
+            });
+            const quoteKey = $(useQuoteKey);
+            if (!hasHookParams) return false;
+            if (!params) return false;
+
+            const predictedSponsorship = resolveGasSponsorshipPrediction(config.gas?.predictIsSponsored, params, config);
+            if (predictedSponsorship === false) return false;
+
+            return hasHookParams && isValidQuoteKey(quoteKey);
+          },
+          { lockDependencies: true }
+        )
+      : useAlwaysFalse;
+
   const useGasSponsorshipStore =
     hasGasSponsorshipResolver && useHasGasHookParams
-      ? createQueryStore<boolean, GasSponsorshipQueryParams>({
+      ? createQueryStore<boolean | null, GasSponsorshipQueryParams>({
           fetcher: createGasSponsorshipFetcher(config, useDepositStore, useQuoteStore),
-          enabled: $ => $(useHasGasHookParams),
+          enabled: $ => $(useCanCheckGasSponsorship),
           params: {
             accountAddress: $ => $(useWalletsStore, s => s.accountAddress),
             amount: $ => $(useAmountStore, selectNormalizedAmount),
@@ -187,24 +213,17 @@ export function createDepositGasStores(
           });
 
           const resolvedSponsorship = useGasSponsorshipStore ? $(useGasSponsorshipStore, s => s.getData()) : null;
+          const predictedSponsorship = resolveGasSponsorshipPrediction(config.gas?.predictIsSponsored, params, config);
+
+          if (!params) return false;
+          if (predictedSponsorship === false) return false;
           if (resolvedSponsorship !== null) return resolvedSponsorship;
 
-          const predictSponsorship = config.gas?.predictIsSponsored;
-          if (!predictSponsorship || !params) return false;
-
-          try {
-            return Boolean(predictSponsorship(params));
-          } catch (error) {
-            logger.warn('[createDepositGasStores]: sponsorship prediction failed', {
-              error,
-              id: config.id,
-            });
-            return false;
-          }
+          return predictedSponsorship ?? false;
         },
         { lockDependencies: true }
       )
-    : useNoGasSponsorship;
+    : useAlwaysFalse;
 
   const useMaxSwappableAmount = createDerivedStore(
     $ => {
@@ -295,8 +314,8 @@ function createGasSponsorshipFetcher(
   config: DepositConfig,
   useDepositStore: DepositStoreType,
   useQuoteStore: DepositQuoteStoreType
-): (params: GasSponsorshipQueryParams) => Promise<boolean> {
-  return async function fetchIsGasSponsored(queryParams: GasSponsorshipQueryParams): Promise<boolean> {
+): (params: GasSponsorshipQueryParams) => Promise<boolean | null> {
+  return async function fetchIsGasSponsored(queryParams: GasSponsorshipQueryParams): Promise<boolean | null> {
     const sponsorshipHook = config.gas?.isSponsored;
     if (!sponsorshipHook) return false;
 
@@ -311,15 +330,36 @@ function createGasSponsorshipFetcher(
     if (!params) return false;
 
     try {
-      return Boolean(await sponsorshipHook(params));
+      const resolved = await sponsorshipHook(params);
+      // Preserve `null` (unknown) so it falls back to the prediction in
+      // `useIsGasSponsored` rather than reading as "not sponsored".
+      return resolved == null ? null : Boolean(resolved);
     } catch (error) {
       logger.warn('[createDepositGasStores]: sponsorship check failed', {
         error,
         id: config.id,
       });
-      return false;
+      return null;
     }
   };
+}
+
+function resolveGasSponsorshipPrediction(
+  predictSponsorship: DepositGasConfig['predictIsSponsored'] | undefined,
+  params: DepositGasHookParams | null,
+  config: DepositConfig
+): boolean | null {
+  if (!predictSponsorship || !params) return null;
+
+  try {
+    return Boolean(predictSponsorship(params));
+  } catch (error) {
+    logger.warn('[createDepositGasStores]: sponsorship prediction failed', {
+      error,
+      id: config.id,
+    });
+    return false;
+  }
 }
 
 function buildGasHookParams({

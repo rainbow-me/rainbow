@@ -1,21 +1,25 @@
 import React, { createContext, useCallback, useEffect, useRef, type RefObject } from 'react';
 import { type SectionList, type TextInput } from 'react-native';
 
-import type Animated from 'react-native-reanimated';
-
 import { useDiscoverSearchQueryStore } from '@/__swaps__/screens/Swap/resources/search/searchV2';
 import { analytics } from '@/analytics';
+import { useDiscoverNavigationStore, type DiscoverSection } from '@/features/discover/stores/discoverNavigationStore';
 
 import { useTrackDiscoverScreenTime } from './useTrackDiscoverScreenTime';
 
 export let discoverScrollToTopFnRef: () => number | null = () => null;
 export let discoverOpenSearchFnRef: () => void = () => null;
 
+export type DiscoverSectionScrollViewRef = {
+  scrollTo: (options: { animated?: boolean; y?: number }) => void;
+};
+
 type DiscoverScreenContextType = {
-  scrollViewRef: RefObject<Animated.ScrollView | null>;
   sectionListRef: RefObject<SectionList | null>;
   searchInputRef: RefObject<TextInput | null>;
   cancelSearch: () => void;
+  registerSectionScrollView: (section: DiscoverSection, scrollView: DiscoverSectionScrollViewRef | null) => void;
+  scrollToSectionTop: (section: DiscoverSection) => number | null;
   scrollToTop: () => number | null;
   onTapSearch: () => void;
 };
@@ -24,20 +28,33 @@ const DiscoverScreenContext = createContext<DiscoverScreenContextType | null>(nu
 
 export const DiscoverScreenProvider = ({ children }: { children: React.ReactNode }) => {
   const searchInputRef = useRef<TextInput>(null);
-  const scrollViewRef = useRef<Animated.ScrollView>(null);
+  const sectionScrollViewRefs = useRef<Partial<Record<DiscoverSection, DiscoverSectionScrollViewRef | null>>>({});
   const sectionListRef = useRef<SectionList>(null);
+
+  const scrollToSectionTop = useCallback((section: DiscoverSection) => {
+    sectionScrollViewRefs.current[section]?.scrollTo({ animated: true, y: 0 });
+    return null;
+  }, []);
 
   const scrollToTop = useCallback(() => {
     try {
       if (isSearching()) {
         sectionListRef.current?.scrollToLocation({ animated: true, itemIndex: 0, sectionIndex: 0 });
       } else {
-        scrollViewRef.current?.scrollTo({ animated: true, y: 0 });
+        scrollToSectionTop(useDiscoverNavigationStore.getState().activeSection);
       }
     } catch (ex) {
       // Scrolling to top may fail if the list is empty.
     }
     return null;
+  }, [scrollToSectionTop]);
+
+  const registerSectionScrollView = useCallback((section: DiscoverSection, scrollView: DiscoverSectionScrollViewRef | null) => {
+    if (scrollView) {
+      sectionScrollViewRefs.current[section] = scrollView;
+    } else {
+      delete sectionScrollViewRefs.current[section];
+    }
   }, []);
 
   const onTapSearch = useCallback(() => {
@@ -65,10 +82,11 @@ export const DiscoverScreenProvider = ({ children }: { children: React.ReactNode
   return (
     <DiscoverScreenContext.Provider
       value={{
-        scrollViewRef,
         sectionListRef,
         searchInputRef,
         cancelSearch,
+        registerSectionScrollView,
+        scrollToSectionTop,
         scrollToTop,
         onTapSearch,
       }}

@@ -12,6 +12,7 @@ import { type ChainId } from '@/state/backendNetworks/types';
 import { type QueryStore, type StoreState } from '@/state/internal/queryStore/types';
 import { type BaseRainbowStore, type DerivedStore, type RainbowStore } from '@/state/internal/types';
 import { type StoreActions } from '@/state/internal/utils/createStoreActions';
+import { type PreparedCallsExecution } from '@rainbow-me/delegation';
 import { type CrosschainQuote, type Quote, type Source } from '@rainbow-me/swaps';
 
 // ============ Shared Types =================================================== //
@@ -64,6 +65,26 @@ export type DepositGasParams = LegacyTransactionGasParamAmounts | TransactionGas
  */
 export type OnDepositSubmit = (signer: Signer, context: DepositSubmitContext) => Promise<void>;
 
+/**
+ * Resolved sponsorship outcome for an executed deposit.
+ *
+ * - `sponsored`: relay sponsor paid for the transaction.
+ * - `walletPaid`: the user's wallet paid for the transaction (either because
+ *   sponsorship was ineligible/unavailable at prepare time, or because the
+ *   prepared sponsored calls were not used at submit time).
+ */
+export type DepositSponsorshipOutcome = 'sponsored' | 'walletPaid';
+
+/**
+ * Classification of a sponsor-paid execution failure.
+ *
+ * - `insufficientSponsorBalance`: the sponsor wallet was depleted.
+ * - `sponsoredRelayExecutionFailed`: the managed relay execution failed onchain
+ *   or otherwise reverted before broadcasting.
+ * - `unknownSponsorshipFailure`: a sponsored attempt failed for any other reason.
+ */
+export type DepositSponsorshipFailureReason = 'insufficientSponsorBalance' | 'sponsoredRelayExecutionFailed' | 'unknownSponsorshipFailure';
+
 export type DepositSuccessMetadata = {
   /** Amount deposited in source asset units */
   amount: string;
@@ -73,6 +94,8 @@ export type DepositSuccessMetadata = {
   assetSymbol: string;
   /** Execution path taken */
   executionStrategy: 'crosschainSwap' | 'directTransfer' | 'custom' | 'swap';
+  /** Whether the executed deposit was sponsor-paid or wallet-paid */
+  sponsorship: DepositSponsorshipOutcome;
 };
 
 export type DepositFailureMetadata = {
@@ -86,6 +109,10 @@ export type DepositFailureMetadata = {
   error: string;
   /** Point in the flow where failure occurred */
   stage: 'execution' | 'validation' | 'wallet';
+  /** Whether a sponsor-paid execution was attempted before failing */
+  sponsorshipAttempted: boolean;
+  /** Classification of the sponsor-paid failure when `sponsorshipAttempted` is true */
+  sponsorshipFailureReason?: DepositSponsorshipFailureReason;
 };
 
 /**
@@ -194,6 +221,14 @@ export type DepositExecutor = (params: DepositExecuteParams) => Promise<DepositE
 
 export type DepositGasHookParams = Omit<DepositExecutionBaseParams, 'gasParams'>;
 
+export type DepositSponsoredExecutionConfig = {
+  /**
+   * Returns prepared exact calls for submit-time execution.
+   * Return null to fall back to normal wallet-paid execution.
+   */
+  getPreparedCalls: (params: DepositGasHookParams) => Promise<PreparedCallsExecution | null>;
+};
+
 export type DepositGasConfig = {
   /**
    * Optional custom gas-limit estimator.
@@ -208,8 +243,24 @@ export type DepositGasConfig = {
   /**
    * Optional sponsorship resolver for authoritative UI state.
    * Custom flows may also use this hook to prepare sponsor-paid execution in advance.
+   * Returns `null` when the outcome can't be determined yet (e.g. an in-flight
+   * resolution was superseded) so the UI keeps the prediction instead of flipping.
    */
-  isSponsored?: (params: DepositGasHookParams) => Promise<boolean> | boolean;
+  isSponsored?: (params: DepositGasHookParams) => Promise<boolean | null> | boolean | null;
+};
+
+export type DepositRuntimeStores = {
+  useQuoteStore: DepositQuoteStoreType;
+};
+
+export type DepositRuntimeSponsoredExecution = {
+  cleanup?: () => void;
+  gas?: Pick<DepositGasConfig, 'isSponsored'>;
+  sponsoredExecution: DepositSponsoredExecutionConfig;
+};
+
+export type DepositRuntimeExtensions = {
+  createSponsoredExecution?: (stores: DepositRuntimeStores) => DepositRuntimeSponsoredExecution;
 };
 
 export type DepositLabels = {
@@ -309,6 +360,9 @@ type DepositConfigBaseInput = {
   /** Optional gas extension hooks */
   gas?: DepositGasConfig;
 
+  /** Optional sponsored exact-call execution hook used at submit time. */
+  sponsoredExecution?: DepositSponsoredExecutionConfig;
+
   /** Initial slider position (0–100). @default 25 */
   initialSliderProgress?: number;
 
@@ -372,11 +426,15 @@ export type DepositConfigInput = DepositConfigBaseInput & DepositExecutionCallba
 
 export type DepositSourceConfig = { mode: 'selectable' } | Extract<DepositSourceConfigInput, { mode: 'fixed' }>;
 
-type DepositConfigBase = Omit<DepositConfigBaseInput, 'gas' | 'hideReceiveAmount' | 'initialSliderProgress' | 'labels' | 'source'> & {
+type DepositConfigBase = Omit<
+  DepositConfigBaseInput,
+  'gas' | 'hideReceiveAmount' | 'initialSliderProgress' | 'labels' | 'source' | 'sponsoredExecution'
+> & {
   hideReceiveAmount: boolean;
   gas: DepositGasConfig | undefined;
   initialSliderProgress: number;
   labels: DepositLabels;
+  sponsoredExecution: DepositSponsoredExecutionConfig | undefined;
   source: DepositSourceConfig;
 };
 

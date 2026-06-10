@@ -17,33 +17,26 @@ import { type Address } from 'viem';
 import { MobileWalletProtocolUserErrors } from '@/components/MobileWalletProtocolListener';
 import { hideWalletConnectToast } from '@/components/toasts/WalletConnectToast';
 import { enableActionsOnReadOnlyWallet } from '@/config/debug';
+import { RequestSource, type RequestData } from '@/features/dapp-request/types';
+import { SEND_TRANSACTION } from '@/features/dapp-request/utils/requestMethods';
+import { getRequestDisplayDetails } from '@/features/dapp-request/utils/requests';
 import { handleSessionRequestResponse } from '@/features/wallet-connect/handlers/onSessionRequest';
 import { removeWalletConnectRequest } from '@/features/wallet-connect/stores/walletConnectRequestsStore';
 import {
-  type RequestData,
   type WalletconnectApprovalSheetRouteParams,
   type WalletconnectRequestData,
   type WalletconnectResultType,
 } from '@/features/wallet-connect/types';
+import { watchingAlert } from '@/features/wallet/utils/watchingAlert';
 import { maybeSignUri } from '@/handlers/imgix';
 import walletTypes from '@/helpers/walletTypes';
 import { logger, RainbowError } from '@/logger';
 import Navigation, { getActiveRoute } from '@/navigation/Navigation';
 import Routes from '@/navigation/routesNames';
-import { getRequestDisplayDetails } from '@/parsers/requests';
 import store from '@/redux/store';
 import { useBackendNetworksStore } from '@/state/backendNetworks/backendNetworks';
 import { ChainId } from '@/state/backendNetworks/types';
 import { getAccountAddress, getIsReadOnlyWallet, getWalletWithAccount } from '@/state/wallets/walletsStore';
-
-import { SEND_TRANSACTION } from './signingMethods';
-import watchingAlert from './watchingAlert';
-
-export enum RequestSource {
-  WALLETCONNECT = 'walletconnect',
-  BROWSER = 'browser',
-  MOBILE_WALLET_PROTOCOL = 'mobile-wallet-protocol',
-}
 
 // Mobile Wallet Protocol
 

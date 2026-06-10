@@ -1,12 +1,14 @@
 import { type CompactLineChartData } from '@/features/charts/line/compact/types';
-import { createLineChartDataStore, type FetchedLineChartData } from '@/features/charts/stores/factories/createLineChartDataStore';
+import {
+  aggregateLineChartFetches,
+  createLineChartDataStore,
+  type FetchedLineChartData,
+} from '@/features/charts/stores/factories/createLineChartDataStore';
 import { CandleResolution, type HyperliquidCandle } from '@/features/charts/types';
 import { msToSeconds, toHyperliquidInterval } from '@/features/charts/utils';
 import { infoClient } from '@/features/perps/services/hyperliquid-info-client';
-import { hyperliquidMarketsActions } from '@/features/perps/stores/hyperliquidMarketsStore';
-import type { PerpMarketWithMetadata } from '@/features/perps/types';
+import { time } from '@/framework/core/utils/time';
 import Routes from '@/navigation/routesNames';
-import { time } from '@/utils/time';
 
 // ============ Store ========================================================== //
 
@@ -23,38 +25,13 @@ async function fetchHyperliquidLineCharts(
   symbols: readonly string[],
   abortController: AbortController | null
 ): Promise<FetchedLineChartData> {
-  const markets = hyperliquidMarketsActions.getMarkets();
-  const chartFetches = symbols.map(symbol => fetchHyperliquidChartData(symbol, markets[symbol], abortController));
-
-  const results = await Promise.allSettled(chartFetches);
-
-  const chartsById: FetchedLineChartData = {};
-  let didResolve = false;
-  let firstError: unknown;
-
-  for (let i = 0; i < symbols.length; i++) {
-    const result = results[i];
-
-    if (result.status === 'fulfilled') {
-      didResolve = true;
-      chartsById[symbols[i]] = result.value;
-    } else if (firstError === undefined) {
-      firstError = result.reason;
-    }
-  }
-
-  if (!didResolve && firstError !== undefined) throw firstError;
-
-  return chartsById;
+  return aggregateLineChartFetches(
+    symbols,
+    symbols.map(symbol => fetchHyperliquidChartData(symbol, abortController))
+  );
 }
 
-async function fetchHyperliquidChartData(
-  symbol: string,
-  market: PerpMarketWithMetadata | undefined,
-  abortController: AbortController | null
-): Promise<CompactLineChartData | null> {
-  if (!market) return null;
-
+async function fetchHyperliquidChartData(symbol: string, abortController: AbortController | null): Promise<CompactLineChartData | null> {
   const endTime = Date.now();
   const startTime = endTime - time.days(1);
   const candles = await infoClient.candleSnapshot(

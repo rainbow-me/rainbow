@@ -25,8 +25,6 @@ declare module 'react-native-dotenv' {
   export const ETHEREUM_MAINNET_RPC_DEV: string;
   export const IMGIX_DOMAIN: string;
   export const IMGIX_TOKEN: string;
-  export const CLOUDINARY_API_KEY: string;
-  export const CLOUDINARY_API_SECRET: string;
   export const CLOUDINARY_CLOUD_NAME: string;
   export const NOTIFICATIONS_API_KEY: string;
   export const PINATA_API_KEY: string;
@@ -73,4 +71,5 @@ declare module 'react-native-dotenv' {
   export const RAINBOW_RELAY_URL: string;
   export const RAINBOW_RELAY_API_KEY: string;
   export const RAINBOW_RELAY_QUOTE_SIGNER: string;
+  export const RAINBOW_RELAY_GO_BACKEND_QUOTE_SIGNER: string;
 }

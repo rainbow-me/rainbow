@@ -1,9 +1,9 @@
 import { isPreparedCallsExecutionSponsored } from '@/features/delegation/calls';
 import { type PreparedCallsStore } from '@/features/delegation/preparedCallsStore';
 import { predictSponsoredCallsExecution } from '@/features/delegation/sponsoredCalls';
+import { time } from '@/framework/core/utils/time';
 import * as i18n from '@/languages';
 import { type DepositConfigInput } from '@/systems/funding/types';
-import { time } from '@/utils/time';
 
 import { RnbwStakingSubmitButton } from './components/RnbwStakingSubmitButton';
 import { RNBW_DECIMALS, RNBW_TOKEN_ADDRESS, STAKING_CHAIN_ID } from './constants';
@@ -13,9 +13,6 @@ import { refreshStakingData } from './utils/refreshStakingData';
 import { stakeRnbw } from './utils/stakeRnbw';
 import { buildSyntheticRnbwSourceAsset } from './utils/syntheticRnbwSourceAsset';
 
-/**
- * Builds the RNBW staking deposit config.
- */
 export function createRnbwStakingDepositConfig(
   stakePreparationStore: PreparedCallsStore<PreparedStakeRnbw, StakeRnbwPreparationParams>
 ): DepositConfigInput {
@@ -60,8 +57,11 @@ export function createRnbwStakingDepositConfig(
       estimateGasLimit: estimateStakeGasLimit,
       predictIsSponsored: ({ accountAddress }) => predictSponsoredCallsExecution({ address: accountAddress, chainId: STAKING_CHAIN_ID }),
       isSponsored: async params => {
-        const preparedStake = await stakePreparationStore.getState().fetch(params);
-        return isPreparedCallsExecutionSponsored(preparedStake?.preparedCalls ?? null);
+        const preparedStake = await stakePreparationStore
+          .getState()
+          .fetch({ accountAddress: params.accountAddress, amount: params.amount });
+        if (!preparedStake) return null;
+        return isPreparedCallsExecutionSponsored(preparedStake.preparedCalls);
       },
     },
 

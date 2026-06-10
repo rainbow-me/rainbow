@@ -1,14 +1,14 @@
 import React, { useCallback, useMemo } from 'react';
 
 import Clipboard from '@react-native-clipboard/clipboard';
-import startCase from 'lodash/startCase';
 import { triggerHaptics } from 'react-native-turbo-haptics';
 
 import { navigateToSwaps } from '@/__swaps__/screens/Swap/navigateToSwaps';
 import ButtonPressAnimation from '@/components/animations/ButtonPressAnimation';
 import { SheetActionButton } from '@/components/sheet';
-import { Box, Stack } from '@/design-system';
+import { Box, Columns, Stack } from '@/design-system';
 import { isAwaitingRelayTransactionHash, TransactionStatus, type RainbowTransaction } from '@/entities/transactions';
+import { opacity } from '@/framework/ui/utils/opacity';
 import * as i18n from '@/languages';
 import Navigation from '@/navigation/Navigation';
 import Routes from '@/navigation/routesNames';
@@ -24,10 +24,11 @@ import { openInBrowser } from '@/utils/openInBrowser';
 
 type Props = {
   transaction: RainbowTransaction;
-  presentToast?: () => void;
+  presentHashToast: () => void;
+  presentLinkToast: () => void;
 };
 
-export const TransactionDetailsHashAndActionsSection: React.FC<Props> = ({ transaction, presentToast }) => {
+export const TransactionDetailsHashAndActionsSection: React.FC<Props> = ({ transaction, presentHashToast, presentLinkToast }) => {
   const { colors } = useTheme();
   const hash = useMemo(() => ethereumUtils.getHash(transaction), [transaction]);
   const { network, status, chainId } = transaction;
@@ -56,19 +57,24 @@ export const TransactionDetailsHashAndActionsSection: React.FC<Props> = ({ trans
   }
 
   const onHashPress = () => {
-    presentToast?.();
+    presentHashToast();
     triggerHaptics('notificationSuccess');
     Clipboard.setString(hash);
   };
 
   const formattedHash = shortenTxHashString(hash);
 
-  const onViewOnBlockExplorerPress = () => {
-    if (transaction.explorerUrl) {
-      openInBrowser(transaction.explorerUrl);
-    } else {
-      ethereumUtils.openTransactionInBlockExplorer({ hash, chainId });
-    }
+  const explorerUrl = transaction.explorerUrl ?? ethereumUtils.getTransactionBlockExplorerUrl({ hash, chainId });
+
+  const onCopyLinkPress = () => {
+    if (!explorerUrl) return;
+    presentLinkToast();
+    triggerHaptics('notificationSuccess');
+    Clipboard.setString(explorerUrl);
+  };
+
+  const onViewDetailsPress = () => {
+    if (explorerUrl) openInBrowser(explorerUrl);
   };
 
   return (
@@ -93,15 +99,25 @@ export const TransactionDetailsHashAndActionsSection: React.FC<Props> = ({ trans
               isTransparent
             />
           )}
-          <SheetActionButton
-            color={colors.appleBlue}
-            weight="heavy"
-            onPress={onViewOnBlockExplorerPress}
-            label={i18n.t(i18n.l.wallet.action.view_on, {
-              blockExplorerName: transaction.explorerLabel ?? startCase(ethereumUtils.getBlockExplorer({ chainId: transaction.chainId })),
-            })}
-            lightShadows
-          />
+          <Columns space="8px">
+            <SheetActionButton
+              color={opacity(colors.appleBlue, 0.1)}
+              textColor={colors.appleBlue}
+              onPress={onCopyLinkPress}
+              label={`􀐅 ${i18n.t(i18n.l.transaction_details.copy_link)}`}
+              weight="heavy"
+              isTransparent
+              testID="copy-link"
+            />
+            <SheetActionButton
+              color={colors.appleBlue}
+              weight="heavy"
+              onPress={onViewDetailsPress}
+              label={i18n.t(i18n.l.transaction_details.view_details)}
+              lightShadows
+              testID="view-details"
+            />
+          </Columns>
         </Stack>
       </Box>
     </>

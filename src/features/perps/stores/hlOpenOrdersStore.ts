@@ -5,11 +5,11 @@ import { infoClient } from '@/features/perps/services/hyperliquid-info-client';
 import { hyperliquidDexActions } from '@/features/perps/stores/hyperliquidDexStore';
 import { type OrderSide } from '@/features/perps/types';
 import { convertSide } from '@/features/perps/utils';
+import { time } from '@/framework/core/utils/time';
 import { RainbowError } from '@/logger';
 import { createQueryStore } from '@/state/internal/createQueryStore';
 import { createStoreActions } from '@/state/internal/utils/createStoreActions';
 import { useWalletsStore } from '@/state/wallets/walletsStore';
-import { time } from '@/utils/time';
 
 type FrontendOpenOrder = FrontendOpenOrdersResponse[number];
 

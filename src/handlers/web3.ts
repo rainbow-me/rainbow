@@ -6,7 +6,7 @@ import { isHexString as isEthersHexString } from '@ethersproject/bytes';
 import { type Contract } from '@ethersproject/contracts';
 import { isValidMnemonic as ethersIsValidMnemonic } from '@ethersproject/hdnode';
 import { JsonRpcBatchProvider, StaticJsonRpcProvider, type Block, type TransactionRequest } from '@ethersproject/providers';
-import { parseEther } from '@ethersproject/units';
+import { parseEther, parseUnits } from '@ethersproject/units';
 import Resolution from '@unstoppabledomains/resolution';
 import { startsWith } from 'lodash';
 import { type Address, type Hex } from 'viem';
@@ -624,14 +624,14 @@ export const getDataForNftTransfer = (
 };
 
 /**
- * @desc Builds a transaction request object.
+ * @desc Builds a transfer (native, ERC-20, or NFT) transaction request object.
  * @param [{address, amount, asset, gasLimit, recipient}] The transaction
  * initialization details.
  * @param provider The RCP provider to use.
  * @param chainId The chainId for the transaction
  * @return The transaction request.
  */
-export const buildTransaction = async (
+export const buildTransferTransaction = async (
   {
     address,
     amount,
@@ -642,16 +642,25 @@ export const buildTransaction = async (
     asset: ParsedAddressAsset | UniqueAsset;
     address: string;
     recipient: string;
-    amount: number;
+    amount: string;
     gasLimit?: string;
   },
   provider: StaticJsonRpcProvider | undefined,
   chainId: ChainId
 ): Promise<TransactionRequest> => {
-  const _amount =
-    amount && Number(amount) && assetIsParsedAddressAsset(asset)
-      ? convertAmountToRawAmount(amount, asset.decimals)
-      : estimateAssetBalancePortion(asset);
+  const isParsedAsset = assetIsParsedAddressAsset(asset);
+  const hasPositiveAmount = amount.length > 0 && greaterThan(amount, 0);
+  let rawAmount: string | null = null;
+
+  if (hasPositiveAmount && isParsedAsset) {
+    try {
+      rawAmount = parseUnits(amount, asset.decimals).toString();
+    } catch {
+      throw new RainbowError('[buildTransferTransaction]: invalid send amount');
+    }
+  }
+
+  const _amount = hasPositiveAmount && rawAmount !== null ? rawAmount : estimateAssetBalancePortion(asset);
   const value = _amount.toString();
   const _recipient = (await resolveNameOrAddress(recipient)) as string;
   let txData: TransactionRequest = {
@@ -699,13 +708,13 @@ export const estimateGasLimit = async (
     asset: ParsedAddressAsset | UniqueAsset;
     address: string;
     recipient: string;
-    amount: number;
+    amount: string;
   },
   addPadding = false,
   provider: StaticJsonRpcProvider,
   chainId: ChainId = ChainId.mainnet
 ): Promise<string | null> => {
-  const estimateGasData = await buildTransaction({ address, amount, asset, recipient }, provider, chainId);
+  const estimateGasData = await buildTransferTransaction({ address, amount, asset, recipient }, provider, chainId);
 
   if (addPadding) {
     return estimateGasWithPadding(estimateGasData, null, null, provider);

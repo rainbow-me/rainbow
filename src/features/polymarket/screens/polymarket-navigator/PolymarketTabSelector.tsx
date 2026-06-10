@@ -1,4 +1,4 @@
-import React, { memo, useCallback } from 'react';
+import React, { memo, useCallback, useEffect } from 'react';
 import { Platform, StyleSheet, View } from 'react-native';
 
 import { LinearGradient } from 'expo-linear-gradient';
@@ -53,7 +53,14 @@ export const PolymarketTabSelector = memo(function PolymarketTabSelector() {
   const { accountScrollRef, eventsListRef } = usePolymarketContext();
 
   const buttonWidth = useDerivedValue<number>(() => PILL.width);
-  const selectedIndex = useSharedValue(TABS[usePolymarketNavigationStore.getState().activeRoute as Tab]?.index ?? 0);
+  const initialIndex = TABS[usePolymarketNavigationStore.getState().activeRoute as Tab]?.index ?? 0;
+  const selectedIndex = useSharedValue(initialIndex);
+  const skipInitialAnimation = useSharedValue(initialIndex !== 0);
+
+  useEffect(() => {
+    // Clear after first paint so tab changes animate normally.
+    skipInitialAnimation.value = false;
+  }, [skipInitialAnimation]);
 
   useListen(
     usePolymarketNavigationStore,
@@ -121,7 +128,12 @@ export const PolymarketTabSelector = memo(function PolymarketTabSelector() {
         )}
         {isDarkMode && <InnerShadow borderRadius={PILL.borderRadius} color={opacity('#DC91F4', 0.14)} blur={5} dx={0} dy={1} />}
       </View>
-      <SelectedHighlight buttonWidth={buttonWidth} selectedIndex={selectedIndex} paddingHorizontal={PADDING_HORIZONTAL} />
+      <SelectedHighlight
+        buttonWidth={buttonWidth}
+        selectedIndex={selectedIndex}
+        skipInitialAnimation={skipInitialAnimation}
+        paddingHorizontal={PADDING_HORIZONTAL}
+      />
       <TabButtons onPress={onPress} selectedIndex={selectedIndex} />
     </Box>
   );
@@ -130,23 +142,28 @@ export const PolymarketTabSelector = memo(function PolymarketTabSelector() {
 const SelectedHighlight = memo(function SelectedHighlight({
   buttonWidth,
   selectedIndex,
+  skipInitialAnimation,
   paddingHorizontal = 0,
 }: {
   buttonWidth: DerivedValue<number>;
   selectedIndex: SharedValue<number>;
+  skipInitialAnimation: SharedValue<boolean>;
   paddingHorizontal?: number;
 }) {
   const { isDarkMode } = useColorMode();
   const highlightBackgroundColor = isDarkMode ? opacity('#82408F', 0.3) : opacity('#FF76FF', 0.07);
   const borderColor = opacity('#DC91F4', isDarkMode ? 0.06 : 0.03);
 
-  const translateX = useAnimatedStyle(() => ({
-    transform: [
-      {
-        translateX: withSpring(selectedIndex.value * buttonWidth.value + paddingHorizontal, SPRING_CONFIGS.snappyMediumSpringConfig),
-      },
-    ],
-  }));
+  const translateX = useAnimatedStyle(() => {
+    const target = selectedIndex.value * buttonWidth.value + paddingHorizontal;
+    return {
+      transform: [
+        {
+          translateX: skipInitialAnimation.value ? target : withSpring(target, SPRING_CONFIGS.snappyMediumSpringConfig),
+        },
+      ],
+    };
+  });
 
   const width = useAnimatedStyle(() => ({
     width: withSpring(buttonWidth.value, SPRING_CONFIGS.snappyMediumSpringConfig),

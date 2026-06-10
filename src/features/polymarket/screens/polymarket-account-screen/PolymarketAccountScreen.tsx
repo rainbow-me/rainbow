@@ -17,9 +17,9 @@ import {
 } from '@/features/polymarket/constants';
 import { usePolymarketContext } from '@/features/polymarket/screens/polymarket-navigator/PolymarketContext';
 import { refetchPolymarketStores } from '@/features/polymarket/utils/refetchPolymarketStores';
+import { time } from '@/framework/core/utils/time';
 import { THICK_BORDER_WIDTH } from '@/styles/constants';
 import { delay } from '@/utils/delay';
-import { time } from '@/utils/time';
 
 export const PolymarketAccountScreen = function PolymarketAccountScreen() {
   const { isDarkMode } = useColorMode();

@@ -1,36 +1,8 @@
 import { type SignClientTypes, type Verify } from '@walletconnect/types';
 import { type Address } from 'viem';
 
+import { type RequestData, type RequestDisplayDetails, type RequestSource } from '@/features/dapp-request/types';
 import { type ChainId } from '@/state/backendNetworks/types';
-import { type RequestSource } from '@/utils/requestNavigationHandlers';
-
-/**
- * Display details loaded for a request.
- */
-interface RequestDisplayDetails {
-  /**
-   * Data loaded for the request, depending on the type of request.
-   */
-  request: any;
-
-  /**
-   * The timestamp for the request.
-   */
-  timestampInMs: number;
-}
-
-export interface RequestData {
-  dappName: string;
-  imageUrl: string | undefined;
-  address: string;
-  chainId: ChainId;
-  dappUrl: string;
-  payload: {
-    method: string;
-    params?: any[];
-  };
-  displayDetails: RequestDisplayDetails | null | Record<string, never>;
-}
 
 /**
  * A request stored in state.

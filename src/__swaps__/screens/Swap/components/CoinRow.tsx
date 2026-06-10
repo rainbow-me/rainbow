@@ -45,9 +45,7 @@ interface InputCoinRowProps {
   height?: number;
   hideFavoriteButton?: never;
   isFavorite?: never;
-  isTrending?: boolean;
   isSupportedChain?: never;
-  nativePriceChange?: string;
   onPress: (asset: ParsedSearchAsset | null) => void;
   output?: false | undefined;
   uniqueId?: never;
@@ -66,8 +64,6 @@ interface OutputCoinRowProps extends PartialAsset {
   isFavorite: boolean;
   onPress: () => void;
   output: true;
-  nativePriceChange?: string;
-  isTrending?: boolean;
   isSupportedChain: boolean;
   testID?: string;
   uniqueIdOrAsset?: never;
@@ -95,22 +91,6 @@ export function CoinRow({
 
   const asset = output ? outputAsset : inputAsset;
   const { address, chainId, colors, icon_url, isVerified, mainnetAddress, name, symbol } = asset || {};
-
-  /**
-* ⚠️ TODO: Re-enable when trending tokens are added
-*
-* const percentChange = useMemo(() => {
-*   if (isTrending && nativePriceChange) {
-*     const rawChange = parseFloat(nativePriceChange);
-*     const isNegative = rawChange < 0;
-*     const prefix = isNegative ? '-' : '+';
-*     const color: TextColor = isNegative ? 'red' : 'green';
-*     const change = `${trimTrailingZeros(Math.abs(rawChange).toFixed(1))}%`;
-
-*     return { change, color, prefix };
-*   }
-* }, [isTrending, nativePriceChange]);
-*/
 
   const favoritesIconColor = useMemo(() => {
     return isFavorite ? '#FFCB0F' : undefined;
@@ -171,16 +151,6 @@ export function CoinRow({
                       <Text color="labelTertiary" numberOfLines={1} size="13pt" weight="semibold">
                         {output ? symbol : `${inputAsset?.balance.display}`}
                       </Text>
-                      {/* {nativePriceChange && percenChange && (
-                        <Inline alignVertical="center" space={{ custom: 1 }} wrap={false}>
-                          <Text align="center" color={percentChange.color} size="12pt" weight="bold">
-                            {percentChange.prefix}
-                          </Text>
-                          <Text color={percentChange.color} size="13pt" weight="semibold">
-                            {percentChange.change}
-                          </Text>
-                        </Inline>
-                      )} */}
                     </Inline>
                   </Box>
                 </Box>
