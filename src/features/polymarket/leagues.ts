@@ -969,6 +969,7 @@ export function isLeagueId(value: string): value is LeagueId {
 export function getLeagueId(value: string): LeagueId | undefined {
   const slugId = getLeagueSlugId(value);
   if (!slugId) return undefined;
+  // FIFA World Cup events should appear under the FIFA filter.
   if (slugId === 'fifwc') return 'fifa';
   return isLeagueId(slugId) ? slugId : undefined;
 }
