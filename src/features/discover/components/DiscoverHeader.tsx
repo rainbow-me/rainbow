@@ -15,9 +15,8 @@ import {
   useDiscoverNavigationStore,
   type DiscoverSection,
 } from '@/features/discover/stores/discoverNavigationStore';
+import { useDiscoverSurface, type DiscoverTab } from '@/features/discover/stores/discoverSurfaceStore';
 import { trackSurfaceInteraction } from '@/features/placements/engagement/trackInteraction';
-import { useDiscoverSurface } from '@/features/placements/surfaces/stores/discoverSurfaceStore';
-import { type DiscoverTab } from '@/features/placements/surfaces/stores/discoverSurfaceTypes';
 import { THICK_BORDER_WIDTH } from '@/styles/constants';
 
 export const DISCOVER_HEADER_HEIGHT = 80;
@@ -74,8 +73,8 @@ function DiscoverSearchButton() {
 
 function DiscoverCategorySelector() {
   const activeSection = useDiscoverNavigationStore(state => state.activeSection);
-  const surface = useDiscoverSurface();
-  const tabs = surface?.tabs ?? [];
+  const discover = useDiscoverSurface();
+  const tabs = discover?.tabs ?? [];
   const { scrollToSectionTop } = useDiscoverScreenContext();
   const { isDarkMode } = useColorMode();
   const screenBackgroundToken: BackgroundColor = isDarkMode ? 'black' : 'surfacePrimary';
@@ -127,29 +126,29 @@ function DiscoverCategorySelector() {
   );
 
   const handlePress = useCallback(
-    (section: DiscoverTab) => {
-      const wasActive = DiscoverSectionNavigation.isSectionActive(section.id);
-      const sectionTitle = resolveSectionTitle(section);
-      if (surface) {
+    (tab: DiscoverTab) => {
+      const wasActive = DiscoverSectionNavigation.isSectionActive(tab.id);
+      const sectionTitle = resolveSectionTitle(tab);
+      if (discover) {
         analytics.track(analyticsEvent.discoverTabPressed, {
-          sectionId: section.id,
+          sectionId: tab.id,
           sectionTitle,
           wasActive,
         });
         trackSurfaceInteraction({
-          id: surface.id,
-          sectionId: section.id,
+          id: discover.id,
+          sectionId: tab.id,
           sectionTitle,
         });
       }
 
       if (wasActive) {
-        scrollToSectionTop(section.id);
+        scrollToSectionTop(tab.id);
       } else {
-        DiscoverSectionNavigation.navigate(section.id);
+        DiscoverSectionNavigation.navigate(tab.id);
       }
     },
-    [scrollToSectionTop, surface]
+    [scrollToSectionTop, discover]
   );
 
   if (!tabs.length) return <DiscoverCategorySelectorFallback />;
@@ -166,23 +165,18 @@ function DiscoverCategorySelector() {
         scrollEventThrottle={16}
         showsHorizontalScrollIndicator={false}
       >
-        {tabs.map((section, index) => {
-          const isSelected = section.id === activeSection;
-          const sectionLabel = resolveSectionTitle(section);
+        {tabs.map((tab, index) => {
+          const isSelected = tab.id === activeSection;
+          const sectionLabel = resolveSectionTitle(tab);
           return (
             <View
-              key={section.id}
+              key={tab.id}
               onLayout={event => {
-                tabLayoutsRef.current[section.id] = event.nativeEvent.layout;
-                if (section.id === activeSection) scrollSelectedTabIntoView(section.id, false);
+                tabLayoutsRef.current[tab.id] = event.nativeEvent.layout;
+                if (tab.id === activeSection) scrollSelectedTabIntoView(tab.id, false);
               }}
             >
-              <ButtonPressAnimation
-                hitSlop={4}
-                onPress={() => handlePress(section)}
-                scaleTo={0.92}
-                testID={`discover-section-tab-${section.id}`}
-              >
+              <ButtonPressAnimation hitSlop={4} onPress={() => handlePress(tab)} scaleTo={0.92} testID={`discover-section-tab-${tab.id}`}>
                 <Text color={isSelected ? 'label' : 'labelTertiary'} size="22pt" weight="heavy">
                   {sectionLabel}
                 </Text>

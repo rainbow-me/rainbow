@@ -11,6 +11,7 @@ import { type ENSRapActionType } from '@/features/ens/raps/common';
 import { type PerpPositionSide, type TriggerOrderType } from '@/features/perps/types';
 import { type Destination, type Display, type SectionId, type SurfaceDocument, type SurfaceId } from '@/features/placements/surfaces/types';
 import { type Placement, type PlacementItem } from '@/features/placements/types';
+import { type PlacementType } from '@/features/placements/utils/placementType';
 import { type PolymarketMarket } from '@/features/polymarket/types/polymarket-event';
 import { type EthereumWalletType } from '@/helpers/walletTypes';
 import { type WalletLibraryType } from '@/model/wallet';
@@ -968,7 +969,7 @@ export type EventProperties = {
     marketName: string;
     marketSlug?: string;
     marketSymbol?: string;
-    marketType: Placement['type'];
+    marketType: PlacementType;
   };
   [event.discoverTabPressed]: {
     sectionTitle: string;
@@ -997,7 +998,7 @@ export type EventProperties = {
     id: Placement['id'];
     interactionType: 'card_press' | 'carousel_scroll';
     source: Placement['source'];
-    type: Placement['type'];
+    type: PlacementType;
     version: Placement['version'];
     display?: Display;
     sectionId?: SectionId;

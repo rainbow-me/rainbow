@@ -13,12 +13,10 @@ import { ScrollHeaderFade } from '@/components/scroll-header-fade/ScrollHeaderFa
 import { Box, useBackgroundColor, useColorMode } from '@/design-system';
 import { type BackgroundColor } from '@/design-system/color/palettes';
 import { DISCOVER_HEADER_HEIGHT, DiscoverHeader } from '@/features/discover/components/DiscoverHeader';
-import { useSyncDiscoverSurfacePlacements } from '@/features/placements/surfaces/hooks/useDiscoverSurfacePlacements';
 
 export const DiscoverScreen = () => {
   return (
     <DiscoverScreenProvider>
-      <DiscoverSurfacePlacementSync />
       <Content />
     </DiscoverScreenProvider>
   );
@@ -48,11 +46,6 @@ const Content = () => {
     </Box>
   );
 };
-
-const DiscoverSurfacePlacementSync = memo(function DiscoverSurfacePlacementSync() {
-  useSyncDiscoverSurfacePlacements();
-  return null;
-});
 
 const KeyboardDismissHandler = memo(function KeyboardDismissHandler() {
   const isFocused = useIsFocused();

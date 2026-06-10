@@ -1,43 +1,14 @@
-import { type DESTINATION_ROOTS, type DISPLAY_VALUES } from '@/features/placements/surfaces/constants';
+import { type z } from 'zod';
 
-export type Enabled = boolean | { startsAt?: string; endsAt?: string };
+import { type surfaceSchema } from '@/features/placements/surfaces/schema/surfaceContract';
 
-export type DestinationRoot = (typeof DESTINATION_ROOTS)[keyof typeof DESTINATION_ROOTS];
+export type SurfaceDocument = z.infer<typeof surfaceSchema>;
+export type SurfaceSectionNode = SurfaceDocument['items'][number];
+export type SurfaceLeafNode = SurfaceSectionNode['items'][number];
 
-export type Destination = [DestinationRoot, ...string[]] | null;
+export type Destination = SurfaceLeafNode['destination'];
+export type DestinationRoot = NonNullable<Destination>[0];
+export type Display = SurfaceLeafNode['display'];
 
-export type Display = (typeof DISPLAY_VALUES)[number];
-
-export type SurfaceId = string;
-
-export type SectionId = string;
-
-export type SurfaceNodeBase = {
-  id: string;
-  label?: string;
-  enabled: Enabled;
-  updatedAt?: string;
-};
-
-export type SurfaceDocument = SurfaceNodeBase & {
-  version: 1;
-  items: SurfaceNode[];
-};
-
-export type SurfaceContainerNode = SurfaceNodeBase & {
-  items: SurfaceNode[];
-};
-
-export type SurfaceLeafNode = SurfaceNodeBase & {
-  placement?: string | null;
-  display: Display;
-  destination: Destination;
-  limit?: number;
-};
-
-export type SurfaceNode = SurfaceContainerNode | SurfaceLeafNode;
-
-export type SurfaceBase = SurfaceNodeBase;
-export type SurfaceContainer = SurfaceContainerNode;
-export type SurfaceLeaf = SurfaceLeafNode;
-export type Surface = SurfaceNode;
+export type SurfaceId = SurfaceDocument['id'];
+export type SectionId = SurfaceSectionNode['id'];

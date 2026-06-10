@@ -1,26 +1,18 @@
-import { useMemo } from 'react';
-
 import { isAddress, type Address } from 'viem';
 
 import { type NativeCurrencyKey } from '@/entities/nativeCurrencyTypes';
-import {
-  isPlacementHydrating,
-  selectPlacementItemsBySource,
-  usePlacementsStore,
-  type PlacementResult,
-} from '@/features/placements/stores/placementsStore';
-import { useDiscoverSurfacePlacementRefs } from '@/features/placements/surfaces/stores/discoverSurfaceStore';
+import { type DiscoverPlacementResult } from '@/features/discover/stores/discoverPlacementsStore';
+import { useDiscoverSurfacePlacementRefs } from '@/features/discover/stores/discoverSurfaceStore';
+import { usePlacementResolver } from '@/features/discover/stores/placementResolvers/usePlacementResolver';
 import { type PlacementId, type PlacementItem } from '@/features/placements/types';
-import { finalizePlacementResult, pairPlacementItems } from '@/features/placements/utils/finalizePlacementResult';
-import { hasRefsOrPendingHydration } from '@/features/placements/utils/hasRefsOrPendingHydration';
 import { mapWithConcurrency } from '@/framework/core/utils/mapWithConcurrency';
 import { time } from '@/framework/core/utils/time';
 import { fetchExternalToken, type FormattedExternalAsset } from '@/resources/assets/externalAssetsQuery';
 import { userAssetsStoreManager } from '@/state/assets/userAssetsStoreManager';
+import { useBackendNetworksStore } from '@/state/backendNetworks/backendNetworks';
 import { type ChainId } from '@/state/backendNetworks/types';
 import { createDerivedStore } from '@/state/internal/createDerivedStore';
 import { createQueryStore } from '@/state/internal/createQueryStore';
-import { shallowEqual } from '@/worklets/comparisons';
 
 // ============ Types ========================================================== //
 
@@ -34,10 +26,6 @@ type TokenRefsParams = {
 };
 
 type TokenAssetsByRef = Record<string, FormattedExternalAsset>;
-type TokenRefCacheEntry = {
-  asset: FormattedExternalAsset | null;
-  fetchedAt: number;
-};
 type TokenRefFetchResult = {
   asset: FormattedExternalAsset | null;
   tokenRef: string;
@@ -49,25 +37,12 @@ const TOKEN_REF_FETCH_CONCURRENCY = 4;
 const TOKEN_REFS_STALE_TIME = time.minutes(2);
 // Keep object identity stable for Object.is store selectors; arrays are compared structurally downstream.
 const EMPTY_TOKEN_ASSETS_BY_REF: TokenAssetsByRef = Object.freeze({});
-const hasTokenRefsOrPendingHydration = hasRefsOrPendingHydration('rainbow', 'token');
-const tokenRefCache = new Map<string, TokenRefCacheEntry>();
-
-// ============ Cache Control ================================================== //
-
-/**
- * Clears the module-level token-ref cache so that the next {@link fetchTokenRefs}
- * call fetches fresh assets from the network, even if refs are within
- * {@link TOKEN_REFS_STALE_TIME}. Call this before a forced refresh.
- */
-export function clearTokenRefCache(): void {
-  tokenRefCache.clear();
-}
 
 // ============ Stores ========================================================= //
 
 const useTokensEnabled = createDerivedStore<boolean>(
   $ => {
-    return hasTokenRefsOrPendingHydration($);
+    return $(useDiscoverSurfacePlacementRefs, refs => refs.rainbow.length > 0);
   },
   { fastMode: true }
 );
@@ -92,28 +67,15 @@ async function fetchTokenRefs(
 ): Promise<TokenAssetsByRef> {
   if (!tokenRefs.length) return EMPTY_TOKEN_ASSETS_BY_REF;
 
-  const now = Date.now();
   const assetsByRef: TokenAssetsByRef = {};
-  const staleTokenRefs: string[] = [];
-
-  for (const tokenRef of tokenRefs) {
-    const cached = tokenRefCache.get(getTokenRefCacheKey(tokenRef, currency));
-    if (cached && now - cached.fetchedAt < TOKEN_REFS_STALE_TIME) {
-      if (cached.asset) assetsByRef[tokenRef] = cached.asset;
-    } else {
-      staleTokenRefs.push(tokenRef);
-    }
-  }
-
-  const results = await mapWithConcurrency(staleTokenRefs, TOKEN_REF_FETCH_CONCURRENCY, tokenRef =>
-    fetchTokenRef(tokenRef, currency, abortController)
+  const supportedAssetChainIds = useBackendNetworksStore.getState().getSupportedAssetsChainIds();
+  const results = await mapWithConcurrency(tokenRefs, TOKEN_REF_FETCH_CONCURRENCY, tokenRef =>
+    fetchTokenRef(tokenRef, currency, abortController, supportedAssetChainIds)
   );
-  const fetchedAt = Date.now();
 
   for (const result of results) {
     if (result.status === 'fulfilled' && result.value) {
       const { asset, tokenRef } = result.value;
-      tokenRefCache.set(getTokenRefCacheKey(tokenRef, currency), { asset, fetchedAt });
       if (asset) assetsByRef[tokenRef] = asset;
     }
   }
@@ -124,9 +86,10 @@ async function fetchTokenRefs(
 async function fetchTokenRef(
   tokenRef: string,
   currency: TokenRefsParams['currency'],
-  abortController: AbortController | null
+  abortController: AbortController | null,
+  supportedAssetChainIds: readonly ChainId[]
 ): Promise<TokenRefFetchResult> {
-  const params = parseTokenRef(tokenRef);
+  const params = parseTokenRef(tokenRef, supportedAssetChainIds);
   if (!params) return { asset: null, tokenRef };
 
   const asset = await fetchExternalToken({ ...params, abortController, currency });
@@ -135,52 +98,50 @@ async function fetchTokenRef(
 
 // ============ Utilities ====================================================== //
 
-export function useTokensPlacement(placementId: PlacementId): PlacementResult<TokenPlacementItem> {
+export function useTokensPlacement(placementId: PlacementId): DiscoverPlacementResult<TokenPlacementItem> {
   const enabled = useTokensEnabled();
-  const placement = usePlacementsStore(state => state.getPlacement(placementId));
-  const placementItems = usePlacementsStore(state => selectPlacementItemsBySource(state, placementId, 'rainbow'), shallowEqual);
-  const placementsLoading = usePlacementsStore(state => isPlacementHydrating(state, placementId, 'rainbow'));
+
+  return usePlacementResolver(placementId, {
+    enabled,
+    pairItem: pairTokenPlacementItem,
+    source: 'rainbow',
+    useResolvedData: useTokenRefsData,
+  });
+}
+
+function useTokenRefsData(placementItems: PlacementItem[]) {
   const assetsByRef = useTokenRefsStore(state => state.getData());
   const tokenRefsLoading = useTokenRefsStore(state => {
     return placementItems.length > 0 && state.enabled && (state.getStatus('isIdle') || state.getStatus('isLoading'));
   });
-  const items = useMemo(() => (assetsByRef ? parseTokenItems(placementItems, assetsByRef) : []), [assetsByRef, placementItems]);
+  const tokenRefsError = useTokenRefsStore(state => state.getStatus('isError'));
 
-  return useMemo(
-    () =>
-      finalizePlacementResult({
-        enabled,
-        hasRefs: placementItems.length > 0,
-        isInitialLoad: placementsLoading || tokenRefsLoading,
-        items,
-        placement,
-      }),
-    [enabled, items, placement, placementItems.length, placementsLoading, tokenRefsLoading]
-  );
+  return {
+    data: assetsByRef ?? undefined,
+    isError: tokenRefsError,
+    isLoading: tokenRefsLoading,
+  };
 }
 
-function parseTokenItems(placementItems: PlacementItem[], assetsByRef: TokenAssetsByRef): TokenPlacementItem[] {
-  return pairPlacementItems(
-    placementItems,
-    id => assetsByRef[id],
-    (item, asset) => ({ ...item, asset })
-  );
+function pairTokenPlacementItem(item: PlacementItem, assetsByRef: TokenAssetsByRef): TokenPlacementItem | undefined {
+  const asset = assetsByRef[item.id];
+  return asset ? { ...item, asset } : undefined;
 }
 
 // CMS authors token refs as colon-delimited `address:chainId`, distinct from the app's
 // underscore-delimited `UniqueId` (`address_chainId`) — they are not interchangeable.
-function parseTokenRef(tokenRef: string): { address: Address; chainId: ChainId } | null {
-  const [address, chainId] = tokenRef.split(':');
-  const numericChainId = Number(chainId);
+function parseTokenRef(tokenRef: string, supportedAssetChainIds: readonly ChainId[]): { address: Address; chainId: ChainId } | null {
+  const parts = tokenRef.split(':');
+  if (parts.length !== 2) return null;
 
-  if (!address || !isAddress(address) || !Number.isInteger(numericChainId)) return null;
+  const [address, chainId] = parts;
+  const numericChainId = Number(chainId);
+  const supportedChainId = supportedAssetChainIds.find(chainId => chainId === numericChainId);
+
+  if (!address || !isAddress(address) || supportedChainId === undefined) return null;
 
   return {
     address,
-    chainId: numericChainId as ChainId,
+    chainId: supportedChainId,
   };
-}
-
-function getTokenRefCacheKey(tokenRef: string, currency: NativeCurrencyKey): string {
-  return `${currency}:${tokenRef}`;
 }

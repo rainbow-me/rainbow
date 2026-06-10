@@ -5,13 +5,11 @@
   "title": "Placement v2",
   "description": "A server-curated, typed list of item ids. Presentation, labels, scheduling, and destination live on surfaces; placements are pure data.",
   "type": "object",
-  "additionalProperties": false,
-  "required": ["id", "version", "source", "type", "items"],
+  "required": ["id", "version", "source", "items"],
   "properties": {
     "id": {
       "description": "Stable slug matching the Firestore document id.",
-      "type": "string",
-      "pattern": "^[a-z][a-z0-9_]*$"
+      "type": "string"
     },
     "version": {
       "description": "Placement collection schema version. Clients query placements where version == 2 to exclude legacy documents.",
@@ -20,10 +18,6 @@
     "source": {
       "description": "Hydration provider. Closed enum; adding a provider requires an app release.",
       "enum": ["hyperliquid", "polymarket", "rainbow"]
-    },
-    "type": {
-      "description": "Asset kind for every item in this placement. The source/type pair is constrained below.",
-      "enum": ["perp", "prediction", "token"]
     },
     "updatedAt": {
       "description": "Optional ISO timestamp from the curator/publisher. The client does not use this for ordering.",
@@ -35,30 +29,25 @@
       "type": "array",
       "items": {
         "type": "object",
-        "additionalProperties": false,
         "required": ["id"],
         "properties": {
           "id": {
             "description": "Provider lookup key, such as BTC, xyz:SP500, a Polymarket event id, or address:chainId for tokens.",
             "type": "string",
             "minLength": 1
+          },
+          "startsAt": {
+            "description": "Optional ISO timestamp for when this item becomes eligible.",
+            "type": "string",
+            "format": "date-time"
+          },
+          "endsAt": {
+            "description": "Optional ISO timestamp for when this item stops being eligible.",
+            "type": "string",
+            "format": "date-time"
           }
         }
       }
     }
-  },
-  "allOf": [
-    {
-      "if": { "properties": { "source": { "const": "hyperliquid" } }, "required": ["source"] },
-      "then": { "properties": { "type": { "const": "perp" } } }
-    },
-    {
-      "if": { "properties": { "source": { "const": "polymarket" } }, "required": ["source"] },
-      "then": { "properties": { "type": { "const": "prediction" } } }
-    },
-    {
-      "if": { "properties": { "source": { "const": "rainbow" } }, "required": ["source"] },
-      "then": { "properties": { "type": { "const": "token" } } }
-    }
-  ]
+  }
 }

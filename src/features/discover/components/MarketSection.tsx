@@ -18,6 +18,9 @@ import {
 import { perpToMarketPillWidthInput, usePerpMarketDisplay } from '@/features/discover/components/markets/hooks/usePerpMarketDisplay';
 import { tokenToMarketPillWidthInput, useTokenMarketDisplay } from '@/features/discover/components/markets/hooks/useTokenMarketDisplay';
 import { renderSectionLayout } from '@/features/discover/components/SectionLayout';
+import { isDiscoverPlacementHydrating, useDiscoverPlacementsStore } from '@/features/discover/stores/discoverPlacementsStore';
+import { usePerpsPlacement, type PerpMarketPlacementItem } from '@/features/discover/stores/placementResolvers/perpsPlacementResolver';
+import { useTokensPlacement, type TokenPlacementItem } from '@/features/discover/stores/placementResolvers/tokensPlacementResolver';
 import { type MarketDisplayItem } from '@/features/discover/types/marketDisplayItem';
 import {
   type CardPressHandler,
@@ -28,18 +31,14 @@ import {
 } from '@/features/discover/types/sectionLayout';
 import { hasDestinationRoot, navigateDiscoverDestination } from '@/features/discover/utils/navigation';
 import { maybeNavigateToPerpsExplainSheet } from '@/features/perps/utils/navigateToPerps';
-import { usePerpsPlacement, type PerpMarketPlacementItem } from '@/features/placements/stores/derived/perpsPlacementStore';
-import { useTokensPlacement, type TokenPlacementItem } from '@/features/placements/stores/derived/tokensPlacementStore';
-import { usePlacementsStore } from '@/features/placements/stores/placementsStore';
 import { MARKET_DISPLAY_VALUES } from '@/features/placements/surfaces/constants';
-import { useIsDiscoverSurfacePlacementPending } from '@/features/placements/surfaces/hooks/useDiscoverSurfacePlacements';
-import { type SurfaceId, type SurfaceLeaf } from '@/features/placements/surfaces/types';
-import { useRemoteConfig } from '@/model/remoteConfig';
+import { type SurfaceId, type SurfaceLeafNode } from '@/features/placements/surfaces/types';
+import { useRemoteConfigStore } from '@/model/remoteConfig';
 import Navigation from '@/navigation/Navigation';
 import Routes from '@/navigation/routesNames';
 import { userAssetsStoreManager } from '@/state/assets/userAssetsStoreManager';
 
-const hasDestination = (surface: SurfaceLeaf) => surface.destination !== null;
+const hasDestination = (surface: SurfaceLeafNode) => surface.destination !== null;
 const MARKET_TILE_SHADOW_BLEED = 28;
 
 const MARKET_SECTION_DESCRIPTORS = {
@@ -77,7 +76,7 @@ const MARKET_SECTION_DESCRIPTORS = {
   },
 } satisfies Record<MarketDisplay, SectionDescriptor<MarketDisplayItem>>;
 
-export function isMarketSurface(surface: SurfaceLeaf): surface is SurfaceLeafWithDisplay<MarketDisplay> {
+export function isMarketSurface(surface: SurfaceLeafNode): surface is SurfaceLeafWithDisplay<MarketDisplay> {
   return (MARKET_DISPLAY_VALUES as readonly string[]).includes(surface.display);
 }
 
@@ -93,13 +92,9 @@ function MarketPlacementContent({
   surface: PlacementBackedSurfaceLeafWithDisplay<MarketDisplay>;
   surfaceId: SurfaceId;
 }) {
-  const perpsEnabled = useRemoteConfig('perps_enabled').perps_enabled;
-  const placement = usePlacementsStore(state => state.getPlacement(surface.placement));
-  const isPendingSurfacePlacement = useIsDiscoverSurfacePlacementPending(surface.placement);
-  const isLoadingPlacementSource = usePlacementsStore(state => {
-    if (state.getPlacement(surface.placement) !== undefined) return false;
-    return state.getStatus('isInitialLoad') || state.getStatus('isIdle') || state.getStatus('isLoading');
-  });
+  const perpsEnabled = useRemoteConfigStore(state => state.getRemoteConfigKey('perps_enabled'));
+  const placement = useDiscoverPlacementsStore(state => state.getPlacement(surface.placement));
+  const placementHydrating = useDiscoverPlacementsStore(state => isDiscoverPlacementHydrating(state, surface.placement));
 
   if (placement?.source === 'hyperliquid') {
     if (!perpsEnabled) return null;
@@ -110,7 +105,7 @@ function MarketPlacementContent({
     return <TokenMarketPlacementContent surface={surface} surfaceId={surfaceId} />;
   }
 
-  if (isLoadingPlacementSource || isPendingSurfacePlacement) {
+  if (placementHydrating) {
     return renderSectionLayout({
       data: [],
       descriptor: MARKET_SECTION_DESCRIPTORS[surface.display],

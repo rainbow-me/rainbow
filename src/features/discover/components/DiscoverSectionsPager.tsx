@@ -16,8 +16,7 @@ import {
   useDiscoverNavigationStore,
   type DiscoverSection,
 } from '@/features/discover/stores/discoverNavigationStore';
-import { useDiscoverSurface } from '@/features/placements/surfaces/stores/discoverSurfaceStore';
-import { type DiscoverTab } from '@/features/placements/surfaces/stores/discoverSurfaceTypes';
+import { useDiscoverSurface, type DiscoverTab } from '@/features/discover/stores/discoverSurfaceStore';
 import { type SurfaceId } from '@/features/placements/surfaces/types';
 import { useTabBarOffset } from '@/hooks/useTabBarOffset';
 import { useListen } from '@/state/internal/hooks/useListen';
@@ -33,8 +32,8 @@ const FALLBACK_SECTION_COUNT = 3;
 const FALLBACK_TILE_COUNT = 2;
 
 export const DiscoverSectionsPager = memo(function DiscoverSectionsPager({ scrollOffset }: DiscoverSectionsPagerProps) {
-  const surface = useDiscoverSurface();
-  const tabs = useMemo(() => surface?.tabs ?? [], [surface]);
+  const discover = useDiscoverSurface();
+  const tabs = useMemo(() => discover?.tabs ?? [], [discover]);
   const activeSectionId = useDiscoverNavigationStore(state => state.activeSection);
   const { ref, goToPage } = usePagerNavigation<DiscoverSection>();
   const initialSection = getInitialSection(tabs, activeSectionId);
@@ -60,12 +59,12 @@ export const DiscoverSectionsPager = memo(function DiscoverSectionsPager({ scrol
 
   useEffect(() => {
     const firstTab = tabs[0];
-    if (surface && firstTab && !tabs.some(tab => tab.id === activeSectionId)) {
+    if (discover && firstTab && !tabs.some(tab => tab.id === activeSectionId)) {
       DiscoverSectionNavigation.navigate(firstTab.id);
     }
-  }, [activeSectionId, surface, tabs]);
+  }, [activeSectionId, discover, tabs]);
 
-  if (!surface || !tabs.length) {
+  if (!discover || !tabs.length) {
     return (
       <Box style={styles.container} testID="discover-sections-pager">
         <DiscoverSectionsFallback />
@@ -87,20 +86,20 @@ export const DiscoverSectionsPager = memo(function DiscoverSectionsPager({ scrol
         springConfig={SPRING_CONFIGS.snappyMediumSpringConfig}
         verticalPageAlignment="top"
       >
-        {tabs.map((section, index) => (
+        {tabs.map((tab, index) => (
           <SmoothPager.Page
             component={
               <DiscoverSectionScrollView
-                isActive={section.id === activeSectionId}
+                discoverId={discover.id}
+                isActive={tab.id === activeSectionId}
                 scrollOffset={scrollOffset}
-                section={section}
+                tab={tab}
                 sectionIndex={index}
                 sectionScrollOffsets={sectionScrollOffsets}
-                surfaceId={surface.id}
               />
             }
-            id={section.id}
-            key={section.id}
+            id={tab.id}
+            key={tab.id}
             lazy
           />
         ))}
@@ -138,37 +137,37 @@ const DiscoverSectionsFallback = memo(function DiscoverSectionsFallback() {
 });
 
 const DiscoverSectionScrollView = memo(function DiscoverSectionScrollView({
+  discoverId,
   isActive,
   scrollOffset,
-  section,
+  tab,
   sectionIndex,
   sectionScrollOffsets,
-  surfaceId,
 }: {
+  discoverId: SurfaceId;
   isActive: boolean;
   scrollOffset: SharedValue<number>;
-  section: DiscoverTab;
+  tab: DiscoverTab;
   sectionIndex: number;
   sectionScrollOffsets: MutableRefObject<SectionScrollOffsets>;
-  surfaceId: SurfaceId;
 }) {
   const { registerSectionScrollView } = useDiscoverScreenContext();
   const tabBarOffset = useTabBarOffset();
   const bottomInset = tabBarOffset + 12;
-  const storedScrollOffset = useSharedValue(sectionScrollOffsets.current[section.id] ?? 0);
+  const storedScrollOffset = useSharedValue(sectionScrollOffsets.current[tab.id] ?? 0);
 
   const setScrollViewRef = useCallback(
     (scrollView: DiscoverSectionScrollViewRef | null) => {
-      registerSectionScrollView(section.id, scrollView);
+      registerSectionScrollView(tab.id, scrollView);
     },
-    [registerSectionScrollView, section]
+    [registerSectionScrollView, tab]
   );
 
   const updateSectionScrollOffset = useCallback(
     (nextOffset: number) => {
-      sectionScrollOffsets.current[section.id] = nextOffset;
+      sectionScrollOffsets.current[tab.id] = nextOffset;
     },
-    [section.id, sectionScrollOffsets]
+    [tab.id, sectionScrollOffsets]
   );
 
   const onAndroidScroll = useCallback(
@@ -217,8 +216,8 @@ const DiscoverSectionScrollView = memo(function DiscoverSectionScrollView({
       style={styles.scrollView}
       testID={`discover-section-page-${sectionIndex + 1}`}
     >
-      <Box testID={`discover-section-${section.id}`}>
-        <DiscoverSections items={section.sections} surfaceId={surfaceId} />
+      <Box testID={`discover-section-${tab.id}`}>
+        <DiscoverSections items={tab.items} surfaceId={discoverId} />
       </Box>
     </SectionScrollView>
   );

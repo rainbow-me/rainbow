@@ -1,23 +1,24 @@
 import { POLYMARKET } from '@/config/experimental';
 import { useExperimentalConfigStore } from '@/config/experimentalConfigStore';
+import { useDiscoverPlacementsStore } from '@/features/discover/stores/discoverPlacementsStore';
+import {
+  useDiscoverSurface,
+  useDiscoverSurfacePlacementRefs,
+  useDiscoverSurfaceStore,
+  type DiscoverSurface,
+} from '@/features/discover/stores/discoverSurfaceStore';
+import { usePredictionEventsStore } from '@/features/discover/stores/placementResolvers/predictionsPlacementResolver';
+import { useTokenRefsStore } from '@/features/discover/stores/placementResolvers/tokensPlacementResolver';
 import { getSportsSurfaceIntent } from '@/features/discover/utils/sportsSurfaceIntent';
 import { useHyperliquidMarketsStore } from '@/features/perps/stores/hyperliquidMarketsStore';
-import { usePredictionEventsStore } from '@/features/placements/stores/derived/predictionsPlacementStore';
-import { clearTokenRefCache, useTokenRefsStore } from '@/features/placements/stores/derived/tokensPlacementStore';
-import { usePlacementsStore } from '@/features/placements/stores/placementsStore';
-import { useDiscoverSurface, useDiscoverSurfacePlacementRefs } from '@/features/placements/surfaces/stores/discoverSurfaceStore';
-import { type DiscoverSurface } from '@/features/placements/surfaces/stores/discoverSurfaceTypes';
-import { getSurfaceStore } from '@/features/placements/surfaces/stores/surfaceStore';
 import { usePolymarketSportsEventsStore } from '@/features/polymarket/stores/polymarketSportsEventsStore';
 import { useRemoteConfigStore } from '@/model/remoteConfig';
 
-export async function refreshDiscoverSurface(surfaceId: string): Promise<void> {
-  await Promise.allSettled([
-    getSurfaceStore(surfaceId).getState().fetch(undefined, { force: true }),
-    usePlacementsStore.getState().fetch(undefined, { force: true }),
-  ]);
+export async function refreshDiscover(): Promise<void> {
+  await useDiscoverSurfaceStore.getState().fetch(undefined, { force: true });
+  await useDiscoverPlacementsStore.getState().fetch(undefined, { force: true });
 
-  const surface = useDiscoverSurface.getState();
+  const discover = useDiscoverSurface.getState();
   const refs = useDiscoverSurfacePlacementRefs.getState();
   const perpsEnabled = useRemoteConfigStore.getState().getRemoteConfigKey('perps_enabled');
   const polymarketEnabled =
@@ -30,9 +31,6 @@ export async function refreshDiscoverSurface(surfaceId: string): Promise<void> {
   }
 
   if (refs.rainbow.length) {
-    // Clear the module-level token-ref cache so a forced refresh always fetches
-    // fresh token data from the network, even within TOKEN_REFS_STALE_TIME.
-    clearTokenRefCache();
     refreshes.push(useTokenRefsStore.getState().fetch(undefined, { force: true }));
   }
 
@@ -40,13 +38,13 @@ export async function refreshDiscoverSurface(surfaceId: string): Promise<void> {
     refreshes.push(usePredictionEventsStore.getState().fetch(undefined, { force: true }));
   }
 
-  if (polymarketEnabled && surface && surfaceUsesSportsEvents(surface)) {
+  if (polymarketEnabled && discover && discoverUsesSportsEvents(discover)) {
     refreshes.push(usePolymarketSportsEventsStore.getState().fetch(undefined, { force: true }));
   }
 
   await Promise.allSettled(refreshes);
 }
 
-function surfaceUsesSportsEvents(surface: DiscoverSurface): boolean {
-  return surface.tabs.some(tab => tab.sections.some(section => getSportsSurfaceIntent(section) !== null));
+function discoverUsesSportsEvents(discover: DiscoverSurface): boolean {
+  return discover.tabs.some(tab => tab.items.some(item => getSportsSurfaceIntent(item) !== null));
 }

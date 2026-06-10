@@ -2,13 +2,13 @@ import { useMemo } from 'react';
 
 import { globalColors } from '@/design-system/color/palettes';
 import { type MarketPillWidthInput } from '@/features/discover/components/markets/cards/MarketPill';
+import { type PerpMarketPlacementItem } from '@/features/discover/stores/placementResolvers/perpsPlacementResolver';
 import { type MarketDisplayItem } from '@/features/discover/types/marketDisplayItem';
 import { HYPERLIQUID_COLORS } from '@/features/perps/constants';
 import { useHyperliquidLineChartsStore } from '@/features/perps/stores/hyperliquidLineChartsStore';
 import { type PerpMarketWithMetadata } from '@/features/perps/types';
 import { convertStoredPerpPriceChangeToPercent, getHyperliquidTokenId } from '@/features/perps/utils';
 import { formatPerpAssetPrice } from '@/features/perps/utils/formatPerpsAssetPrice';
-import { type PerpMarketPlacementItem } from '@/features/placements/stores/derived/perpsPlacementStore';
 import { getPriceChangeColor, getPriceChangeColors } from '@/framework/ui/price/usePriceChangeColors';
 import { opacity } from '@/framework/ui/utils/opacity';
 

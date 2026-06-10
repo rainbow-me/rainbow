@@ -7,8 +7,9 @@ import { Box } from '@/design-system';
 import { SectionHeader } from '@/features/discover/components/markets/layouts/SectionHeader';
 import { type CardPressHandler, type ListSectionDescriptor, type OrderPressHandler } from '@/features/discover/types/sectionLayout';
 import { trackPlacementInteraction } from '@/features/placements/engagement/trackInteraction';
-import { type SurfaceId, type SurfaceLeaf } from '@/features/placements/surfaces/types';
+import { type SurfaceId, type SurfaceLeafNode } from '@/features/placements/surfaces/types';
 import { type Placement, type PlacementItem } from '@/features/placements/types';
+import { placementType } from '@/features/placements/utils/placementType';
 
 import { ShowMoreButton, ShowMoreCellEnterAnimation } from './ShowMoreButton';
 
@@ -26,7 +27,7 @@ type MarketListProps<T extends PlacementItem> = {
   placement?: Placement;
   renderItem: ListSectionDescriptor<T>['renderItem'];
   renderSkeleton: () => ReactNode;
-  section: SurfaceLeaf;
+  section: SurfaceLeafNode;
   showHeaderCaret?: boolean;
   surfaceId: SurfaceId;
   title: string;
@@ -74,6 +75,8 @@ export function MarketList<T extends PlacementItem>({
           : visibleItems.map((item, index) => {
               const onCardPress: CardPressHandler = placement
                 ? metadata => {
+                    const derivedPlacementType = placementType(placement.source);
+
                     analytics.track(event.discoverCardPressed, {
                       placementId: placement.id,
                       placementSource: placement.source,
@@ -84,7 +87,7 @@ export function MarketList<T extends PlacementItem>({
                       marketName: metadata.marketName,
                       marketSlug: metadata.marketSlug,
                       marketSymbol: metadata.marketSymbol,
-                      marketType: placement.type,
+                      marketType: derivedPlacementType,
                     });
                     trackPlacementInteraction({
                       display: section.display,
@@ -96,7 +99,7 @@ export function MarketList<T extends PlacementItem>({
                       sectionTitle: title,
                       source: placement.source,
                       surfaceId,
-                      type: placement.type,
+                      type: derivedPlacementType,
                       version: placement.version,
                     });
                   }

@@ -1,0 +1,42 @@
+{
+  "id": "discover",
+  "version": 1,
+  "label": "Discover",
+  "enabled": true,
+  "items": [
+    {
+      "id": "for_you",
+      "label": "For You",
+      "enabled": true,
+      "items": [
+        {
+          "id": "perps",
+          "label": "Perps",
+          "enabled": true,
+          "placement": "discover_perps",
+          "display": "market_tile.carousel",
+          "destination": ["perps"],
+          "limit": 3
+        },
+        {
+          "id": "predictions",
+          "label": "Predictions",
+          "enabled": true,
+          "placement": "discover_predictions",
+          "display": "prediction_event_card.carousel",
+          "destination": ["predictions"],
+          "limit": 2
+        },
+        {
+          "id": "tokens",
+          "label": "Tokens",
+          "enabled": true,
+          "placement": "discover_tokens",
+          "display": "market_cell.list",
+          "destination": ["tokens"],
+          "limit": 1
+        }
+      ]
+    }
+  ]
+}

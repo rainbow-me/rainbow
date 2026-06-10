@@ -1,5 +1,5 @@
-import { isEventCardDisplay } from '@/features/placements/surfaces/constants';
-import { type SurfaceLeaf } from '@/features/placements/surfaces/types';
+import { type SurfaceLeafNode } from '@/features/placements/surfaces/types';
+import { isEventCardDisplay } from '@/features/placements/surfaces/utils/surfaceDisplay';
 import { getLeagueId, type LeagueId } from '@/features/polymarket/leagues';
 import {
   getSportsEventScheduleBucket,
@@ -10,7 +10,7 @@ import { type PolymarketEvent } from '@/features/polymarket/types/polymarket-eve
 
 export type SportsSurfaceIntent = { status: 'live' } | { timeBucket: Extract<SportsEventScheduleBucket, 'today'> } | { leagueId: LeagueId };
 
-export function getSportsSurfaceIntent(surface: SurfaceLeaf): SportsSurfaceIntent | null {
+export function getSportsSurfaceIntent(surface: SurfaceLeafNode): SportsSurfaceIntent | null {
   if (!isEventCardDisplay(surface.display)) return null;
 
   if (surface.id === 'live') return { status: 'live' };

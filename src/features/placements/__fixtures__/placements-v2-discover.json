@@ -1,0 +1,26 @@
+[
+  {
+    "id": "discover_perps",
+    "version": 2,
+    "source": "hyperliquid",
+    "type": "perp",
+    "items": [{ "id": "BTC" }, { "id": "ETH" }, { "id": "SOL" }, { "id": "XRP" }]
+  },
+  {
+    "id": "discover_predictions",
+    "version": 2,
+    "source": "polymarket",
+    "type": "prediction",
+    "items": [{ "id": "polymarket-event-1" }, { "id": "polymarket-event-2" }, { "id": "polymarket-event-3" }]
+  },
+  {
+    "id": "discover_tokens",
+    "version": 2,
+    "source": "rainbow",
+    "type": "token",
+    "items": [
+      { "id": "0x0000000000000000000000000000000000000000:1" },
+      { "id": "0x0000000000000000000000000000000000000001:1" }
+    ]
+  }
+]

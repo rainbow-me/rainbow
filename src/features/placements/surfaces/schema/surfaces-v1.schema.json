@@ -4,7 +4,6 @@
   "$comment": "Mirrors the surface v1 CMS/write-time schema spec. Keep this client-side defensive parser in sync with the write-time contract.",
   "title": "Surface v1",
   "type": "object",
-  "additionalProperties": false,
   "required": ["id", "version", "enabled", "items"],
   "properties": {
     "id": {
@@ -28,7 +27,7 @@
     "items": {
       "type": "array",
       "items": {
-        "$ref": "#/definitions/surfaceNode"
+        "$ref": "#/definitions/surfaceSection"
       }
     }
   },
@@ -38,7 +37,6 @@
         { "type": "boolean" },
         {
           "type": "object",
-          "additionalProperties": false,
           "properties": {
             "startsAt": { "type": "string", "format": "date-time" },
             "endsAt": { "type": "string", "format": "date-time" }
@@ -58,10 +56,8 @@
         }
       ]
     },
-    "surfaceNode": {
+    "surfaceNodeBase": {
       "type": "object",
-      "additionalProperties": false,
-      "required": ["id", "label", "enabled"],
       "properties": {
         "id": {
           "type": "string",
@@ -74,57 +70,61 @@
         "enabled": {
           "$ref": "#/definitions/enabled"
         },
-        "items": {
-          "type": "array",
-          "items": {
-            "$ref": "#/definitions/surfaceNode"
-          }
-        },
-        "placement": {
-          "oneOf": [
-            {
-              "type": "string",
-              "pattern": "^[a-z][a-z0-9_]*$"
-            },
-            { "type": "null" }
-          ]
-        },
-        "display": {
-          "enum": [
-            "market_pill.carousel",
-            "market_tile.carousel",
-            "market_tile.grid",
-            "market_cell.list",
-            "prediction_tile.carousel",
-            "prediction_tile.grid",
-            "prediction_tile_widget.carousel",
-            "prediction_event_card.carousel",
-            "prediction_event_card.list"
-          ]
-        },
-        "destination": {
-          "$ref": "#/definitions/destination"
-        },
-        "limit": {
-          "type": "integer",
-          "minimum": 1
+        "updatedAt": {
+          "type": "string",
+          "format": "date-time"
         }
       },
-      "oneOf": [
+      "required": ["id", "label", "enabled"]
+    },
+    "surfaceSection": {
+      "allOf": [
+        { "$ref": "#/definitions/surfaceNodeBase" },
         {
+          "type": "object",
           "required": ["items"],
-          "not": {
-            "anyOf": [
-              { "required": ["placement"] },
-              { "required": ["display"] },
-              { "required": ["destination"] },
-              { "required": ["limit"] }
-            ]
+          "properties": {
+            "items": {
+              "type": "array",
+              "items": {
+                "$ref": "#/definitions/surfaceLeaf"
+              }
+            }
           }
-        },
+        }
+      ]
+    },
+    "surfaceLeaf": {
+      "allOf": [
+        { "$ref": "#/definitions/surfaceNodeBase" },
         {
+          "type": "object",
           "required": ["display", "destination"],
-          "not": { "required": ["items"] }
+          "properties": {
+            "placement": {
+              "oneOf": [{ "type": "string" }, { "type": "null" }]
+            },
+            "display": {
+              "enum": [
+                "market_pill.carousel",
+                "market_tile.carousel",
+                "market_tile.grid",
+                "market_cell.list",
+                "prediction_tile.carousel",
+                "prediction_tile.grid",
+                "prediction_tile_widget.carousel",
+                "prediction_event_card.carousel",
+                "prediction_event_card.list"
+              ]
+            },
+            "destination": {
+              "$ref": "#/definitions/destination"
+            },
+            "limit": {
+              "type": "integer",
+              "minimum": 1
+            }
+          }
         }
       ]
     }

@@ -1,7 +1,7 @@
 import { type ReactNode } from 'react';
 
 import { type MARKET_DISPLAY_VALUES } from '@/features/placements/surfaces/constants';
-import { type Display, type SurfaceId, type SurfaceLeaf } from '@/features/placements/surfaces/types';
+import { type Display, type SurfaceId, type SurfaceLeafNode } from '@/features/placements/surfaces/types';
 import { type Placement, type PlacementItem } from '@/features/placements/types';
 import { type PolymarketMarket } from '@/features/polymarket/types/polymarket-event';
 
@@ -23,7 +23,7 @@ export type CarouselSectionDescriptor<T extends PlacementItem> = {
   itemWidth: number;
   renderItem: (item: T, width: number, onPress: CardPressHandler, onOrderPress: OrderPressHandler) => ReactNode;
   renderSkeleton: () => ReactNode;
-  showHeaderCaret?: (surface: SurfaceLeaf) => boolean;
+  showHeaderCaret?: (surface: SurfaceLeafNode) => boolean;
   singleItemWidth?: number;
 };
 
@@ -32,7 +32,7 @@ export type GridSectionDescriptor<T extends PlacementItem> = {
   itemHeight: number;
   renderItem: (item: T, width: number, onPress: CardPressHandler, onOrderPress: OrderPressHandler) => ReactNode;
   renderSkeleton: (width: number) => ReactNode;
-  showHeaderCaret?: (surface: SurfaceLeaf) => boolean;
+  showHeaderCaret?: (surface: SurfaceLeafNode) => boolean;
 };
 
 export type ListSectionDescriptor<T extends PlacementItem> = {
@@ -44,7 +44,7 @@ export type ListSectionDescriptor<T extends PlacementItem> = {
 export type SectionDescriptor<T extends PlacementItem> = CarouselSectionDescriptor<T> | GridSectionDescriptor<T> | ListSectionDescriptor<T>;
 
 export type MarketDisplay = (typeof MARKET_DISPLAY_VALUES)[number];
-export type SurfaceLeafWithDisplay<TDisplay extends Display> = SurfaceLeaf & { display: TDisplay };
+export type SurfaceLeafWithDisplay<TDisplay extends Display> = SurfaceLeafNode & { display: TDisplay };
 export type PlacementBackedSurfaceLeafWithDisplay<TDisplay extends Display> = SurfaceLeafWithDisplay<TDisplay> & { placement: string };
 
 export type SectionLayoutProps<T extends PlacementItem> = {
@@ -56,6 +56,6 @@ export type SectionLayoutProps<T extends PlacementItem> = {
   loading: boolean;
   onPress?: () => void;
   placement?: Placement;
-  section: SurfaceLeaf;
+  section: SurfaceLeafNode;
   surfaceId: SurfaceId;
 };

@@ -18,6 +18,11 @@ import {
   PredictionMarketTileCard,
 } from '@/features/discover/components/markets/cards/PredictionMarketTileCard';
 import { getRenderedHeaderCount, renderSectionLayout } from '@/features/discover/components/SectionLayout';
+import { isDiscoverPlacementHydrating, useDiscoverPlacementsStore } from '@/features/discover/stores/discoverPlacementsStore';
+import {
+  usePredictionsPlacement,
+  type PredictionPlacementItem,
+} from '@/features/discover/stores/placementResolvers/predictionsPlacementResolver';
 import {
   type CardPressHandler,
   type OrderPressHandler,
@@ -31,11 +36,9 @@ import {
   selectSportsEventsForIntent,
   type SportsSurfaceIntent,
 } from '@/features/discover/utils/sportsSurfaceIntent';
-import { usePredictionsPlacement, type PredictionPlacementItem } from '@/features/placements/stores/derived/predictionsPlacementStore';
-import { usePlacementsStore } from '@/features/placements/stores/placementsStore';
-import { isEventCardDisplay, PREDICTION_DISPLAY_VALUES } from '@/features/placements/surfaces/constants';
-import { useIsDiscoverSurfacePlacementPending } from '@/features/placements/surfaces/hooks/useDiscoverSurfacePlacements';
-import { type Display, type SurfaceId, type SurfaceLeaf } from '@/features/placements/surfaces/types';
+import { PREDICTION_DISPLAY_VALUES } from '@/features/placements/surfaces/constants';
+import { type Display, type SurfaceId, type SurfaceLeafNode } from '@/features/placements/surfaces/types';
+import { isEventCardDisplay } from '@/features/placements/surfaces/utils/surfaceDisplay';
 import { LeagueIcon } from '@/features/polymarket/components/league-icon/LeagueIcon';
 import { LiveSectionIndicator } from '@/features/polymarket/components/LiveSectionIndicator';
 import {
@@ -49,7 +52,6 @@ import { usePolymarketSportsEventsStore } from '@/features/polymarket/stores/pol
 import { type PolymarketEvent } from '@/features/polymarket/types/polymarket-event';
 import { navigateToPolymarketEvent } from '@/features/polymarket/utils/navigateToPolymarket';
 import { opacity } from '@/framework/ui/utils/opacity';
-import { logger } from '@/logger';
 import Routes from '@/navigation/routesNames';
 import { addSubscribedTokens, removeSubscribedTokens, useLiveTokensStore } from '@/state/liveTokens/liveTokensStore';
 import { DEVICE_WIDTH } from '@/utils/deviceUtils';
@@ -132,7 +134,7 @@ const PREDICTIONS_SECTION_DESCRIPTORS = {
   },
 } satisfies Record<PredictionsDisplay, SectionDescriptor<PredictionPlacementItem>>;
 
-export function isPredictionsSurface(surface: SurfaceLeaf): surface is SurfaceLeafWithDisplay<PredictionsDisplay> {
+export function isPredictionsSurface(surface: SurfaceLeafNode): surface is SurfaceLeafWithDisplay<PredictionsDisplay> {
   return (PREDICTION_DISPLAY_VALUES as readonly string[]).includes(surface.display);
 }
 
@@ -141,7 +143,7 @@ export function PredictionsSection({ surface, surfaceId }: { surface: SurfaceLea
 
   if (!hasPlacement(surface)) {
     if (sportsIntent) return <SportsQuerySection sportsIntent={sportsIntent} surface={surface} surfaceId={surfaceId} />;
-    return unsupportedUnplacedPredictionSurface(surface, surfaceId);
+    return null;
   }
 
   // Only route to the sports section when there's a real sports intent — otherwise it would
@@ -151,15 +153,6 @@ export function PredictionsSection({ surface, surfaceId }: { surface: SurfaceLea
   }
 
   return <PredictionsPlacementSection surface={surface} surfaceId={surfaceId} />;
-}
-
-function useIsPredictionPlacementPending(surface: PlacementBackedPredictionsSurface): boolean {
-  const isPendingSurfacePlacement = useIsDiscoverSurfacePlacementPending(surface.placement);
-  const isLoadingPlacementSource = usePlacementsStore(state => {
-    if (state.getPlacement(surface.placement) !== undefined) return false;
-    return state.getStatus('isInitialLoad') || state.getStatus('isIdle') || state.getStatus('isLoading');
-  });
-  return isPendingSurfacePlacement || isLoadingPlacementSource;
 }
 
 /**
@@ -192,8 +185,6 @@ function usePredictionTokenSubscription({
   items: PredictionPlacementItem[];
   limit: number | undefined;
 }) {
-  // List displays render the full unsliced data (expandable via ShowMore), so subscribe all
-  // items. Carousel/grid slice to surface.limit, so subscribe only the capped slice.
   const isListDisplay = PREDICTIONS_SECTION_DESCRIPTORS[display].layout === 'list';
   const renderedItems = useMemo(
     () => (isListDisplay || typeof limit !== 'number' ? items : items.slice(0, limit)),
@@ -207,7 +198,7 @@ function usePredictionTokenSubscription({
     if (uniqueTokenIds.length === 0) return;
 
     addSubscribedTokens({ route: Routes.DISCOVER_SCREEN, tokenIds: uniqueTokenIds });
-    useLiveTokensStore.getState().fetch(undefined, { force: true });
+    useLiveTokensStore.getState().fetch();
 
     return () => {
       removeSubscribedTokens({ route: Routes.DISCOVER_SCREEN, tokenIds: uniqueTokenIds });
@@ -217,7 +208,7 @@ function usePredictionTokenSubscription({
 
 function PredictionsPlacementSection({ surface, surfaceId }: { surface: PlacementBackedPredictionsSurface; surfaceId: SurfaceId }) {
   const result = usePredictionsPlacement(surface.placement);
-  const isPlacementPending = useIsPredictionPlacementPending(surface);
+  const placementHydrating = useDiscoverPlacementsStore(state => isDiscoverPlacementHydrating(state, surface.placement));
   const descriptor = PREDICTIONS_SECTION_DESCRIPTORS[surface.display];
   const predictionsDestination = hasDestinationRoot(surface.destination, 'predictions') ? surface.destination : null;
   const onPressSeeAll = useCallback(() => {
@@ -229,7 +220,7 @@ function PredictionsPlacementSection({ surface, surfaceId }: { surface: Placemen
   return renderSectionLayout({
     data: result.items,
     descriptor,
-    loading: result.isLoading || isPlacementPending,
+    loading: result.isLoading || placementHydrating,
     // Prediction "See All" routes to the CMS destination (predictions -> Polymarket).
     onPress: predictionsDestination && result.placement ? onPressSeeAll : undefined,
     placement: result.placement,
@@ -247,7 +238,7 @@ function SportsEventPlacementSection({
   surface: PlacementBackedPredictionsSurface;
   surfaceId: SurfaceId;
 }) {
-  const isPlacementPending = useIsPredictionPlacementPending(surface);
+  const placementHydrating = useDiscoverPlacementsStore(state => isDiscoverPlacementHydrating(state, surface.placement));
   const result = usePredictionsPlacement(surface.placement);
   const descriptor = getSportsEventSectionDescriptor(surface, sportsIntent);
   const predictionsDestination = hasDestinationRoot(surface.destination, 'predictions') ? surface.destination : null;
@@ -257,8 +248,7 @@ function SportsEventPlacementSection({
 
   usePredictionTokenSubscription({ display: surface.display, items: result.items, limit: surface.limit });
 
-  // Header count comes from the curated placement items the layout actually renders (list shows
-  // the expandable full count; carousel/grid cap at surface.limit), not the live sports store.
+  // Header count comes from the curated placement items the layout actually renders, not the live sports store.
   const headerCount = getRenderedHeaderCount({ descriptor, itemCount: result.items.length, limit: surface.limit });
   const { headerCaret, leadingAccessory } = getSportsHeaderProps(sportsIntent, surface);
 
@@ -268,7 +258,7 @@ function SportsEventPlacementSection({
     headerCaret,
     headerCount,
     leadingAccessory,
-    loading: result.isLoading || isPlacementPending,
+    loading: result.isLoading || placementHydrating,
     // Prediction "See All" routes to the CMS destination (predictions -> Polymarket).
     onPress: predictionsDestination && result.placement ? onPressSeeAll : undefined,
     placement: result.placement,
@@ -321,7 +311,7 @@ function SportsQuerySection({
 
 function getSportsHeaderProps(
   sportsIntent: SportsSurfaceIntent,
-  surface: SurfaceLeaf
+  surface: SurfaceLeafNode
 ): { headerCaret: boolean | undefined; leadingAccessory: ReactNode } {
   if ('status' in sportsIntent) {
     // Live section: always shows live indicator, never shows caret
@@ -342,15 +332,6 @@ function getSportsHeaderProps(
     headerCaret: hasDestinationRoot(surface.destination, 'predictions'),
     leadingAccessory: undefined,
   };
-}
-
-function unsupportedUnplacedPredictionSurface(surface: SurfaceLeafWithDisplay<PredictionsDisplay>, surfaceId: SurfaceId) {
-  logger.warn('[PredictionsSection]: unsupported unplaced prediction surface', {
-    display: surface.display,
-    sectionId: surface.id,
-    surfaceId,
-  });
-  return null;
 }
 
 function hasPlacement<TDisplay extends Display>(

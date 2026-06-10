@@ -7,8 +7,9 @@ import { Box } from '@/design-system';
 import { SectionHeader } from '@/features/discover/components/markets/layouts/SectionHeader';
 import { type CardPressHandler, type GridSectionDescriptor, type OrderPressHandler } from '@/features/discover/types/sectionLayout';
 import { trackPlacementInteraction } from '@/features/placements/engagement/trackInteraction';
-import { type SurfaceId, type SurfaceLeaf } from '@/features/placements/surfaces/types';
+import { type SurfaceId, type SurfaceLeafNode } from '@/features/placements/surfaces/types';
 import { type Placement, type PlacementItem } from '@/features/placements/types';
+import { placementType } from '@/features/placements/utils/placementType';
 import { Grid } from '@/screens/token-launcher/components/Grid';
 
 const GRID_COLUMNS = 2;
@@ -28,7 +29,7 @@ type MarketGridProps<T extends PlacementItem> = {
   placement?: Placement;
   renderItem: GridSectionDescriptor<T>['renderItem'];
   renderSkeleton: (cellWidth: number) => ReactNode;
-  section: SurfaceLeaf;
+  section: SurfaceLeafNode;
   showHeaderCaret?: boolean;
   skeletonCount?: number;
   surfaceId: SurfaceId;
@@ -75,6 +76,8 @@ export function MarketGrid<T extends PlacementItem>({
             {data.map((item, index) => {
               const onCardPress: CardPressHandler = placement
                 ? metadata => {
+                    const derivedPlacementType = placementType(placement.source);
+
                     analytics.track(event.discoverCardPressed, {
                       placementId: placement.id,
                       placementSource: placement.source,
@@ -85,7 +88,7 @@ export function MarketGrid<T extends PlacementItem>({
                       marketName: metadata.marketName,
                       marketSlug: metadata.marketSlug,
                       marketSymbol: metadata.marketSymbol,
-                      marketType: placement.type,
+                      marketType: derivedPlacementType,
                     });
                     trackPlacementInteraction({
                       display: section.display,
@@ -97,7 +100,7 @@ export function MarketGrid<T extends PlacementItem>({
                       sectionTitle: title,
                       source: placement.source,
                       surfaceId,
-                      type: placement.type,
+                      type: derivedPlacementType,
                       version: placement.version,
                     });
                   }

@@ -4,21 +4,21 @@ import { MarketCarousel } from '@/features/discover/components/markets/layouts/M
 import { MarketGrid } from '@/features/discover/components/markets/layouts/MarketGrid';
 import { MarketList } from '@/features/discover/components/markets/layouts/MarketList';
 import { type SectionDescriptor, type SectionLayoutProps } from '@/features/discover/types/sectionLayout';
-import { type SurfaceLeaf } from '@/features/placements/surfaces/types';
+import { type SurfaceLeafNode } from '@/features/placements/surfaces/types';
 import { type PlacementItem } from '@/features/placements/types';
 import * as i18n from '@/languages';
 
 /**
  * Resolves a section's display title: a localized `discover.sections.<id>` label
- * when one exists, otherwise the server-provided label, falling back to the raw id.
+ * when one exists, otherwise the server-provided label.
  */
-export function resolveSectionTitle(section: Pick<SurfaceLeaf, 'id' | 'label'>): string {
-  return i18n.t(`discover.sections.${section.id}`, { defaultValue: section.label || section.id });
+export function resolveSectionTitle(section: Pick<SurfaceLeafNode, 'id' | 'label'>): string {
+  return i18n.t(`discover.sections.${section.id}`, { defaultValue: section.label });
 }
 
 /**
  * Header count that matches what the layout actually renders: list layouts show the full
- * (expandable) item count; carousel/grid cap at `limit` exactly as renderSectionLayout slices.
+ * expandable count, while carousel/grid cap at the surface limit.
  * Returns undefined for an empty count so the header omits the badge.
  */
 export function getRenderedHeaderCount<T extends PlacementItem>({
@@ -47,7 +47,7 @@ export function renderSectionLayout<T extends PlacementItem>({
   surfaceId,
 }: SectionLayoutProps<T>) {
   const hasLimit = section.limit !== undefined;
-  const renderedData = hasLimit ? data.slice(0, section.limit) : data;
+  const renderedData = hasLimit && descriptor.layout !== 'list' ? data.slice(0, section.limit) : data;
   const skeletonCount = hasLimit ? section.limit : undefined;
   const descriptorHeaderCaret = 'showHeaderCaret' in descriptor ? descriptor.showHeaderCaret?.(section) : undefined;
   const showHeaderCaret = headerCaret ?? descriptorHeaderCaret;
@@ -111,7 +111,7 @@ export function renderSectionLayout<T extends PlacementItem>({
     case 'list':
       return (
         <MarketList
-          data={data}
+          data={renderedData}
           headerCount={headerCount}
           initialVisibleItemCount={section.limit}
           leadingAccessory={leadingAccessory}

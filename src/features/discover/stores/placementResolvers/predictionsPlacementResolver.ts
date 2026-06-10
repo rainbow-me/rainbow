@@ -2,16 +2,10 @@ import { useMemo } from 'react';
 
 import { POLYMARKET } from '@/config/experimental';
 import { useExperimentalConfigStore } from '@/config/experimentalConfigStore';
-import {
-  isPlacementHydrating,
-  selectPlacementItemsBySource,
-  usePlacementsStore,
-  type PlacementResult,
-} from '@/features/placements/stores/placementsStore';
-import { useDiscoverSurfacePlacementRefs } from '@/features/placements/surfaces/stores/discoverSurfaceStore';
+import { type DiscoverPlacementResult } from '@/features/discover/stores/discoverPlacementsStore';
+import { useDiscoverSurfacePlacementRefs } from '@/features/discover/stores/discoverSurfaceStore';
+import { usePlacementResolver } from '@/features/discover/stores/placementResolvers/usePlacementResolver';
 import { type PlacementId, type PlacementItem } from '@/features/placements/types';
-import { finalizePlacementResult } from '@/features/placements/utils/finalizePlacementResult';
-import { hasRefsOrPendingHydration } from '@/features/placements/utils/hasRefsOrPendingHydration';
 import { fetchPolymarketEventsByIds } from '@/features/polymarket/stores/polymarketEventsStore';
 import { fetchPolymarketTeamMetadataForGameEvents } from '@/features/polymarket/stores/polymarketTeamMetadataStore';
 import { type PolymarketEvent } from '@/features/polymarket/types/polymarket-event';
@@ -20,7 +14,6 @@ import { time } from '@/framework/core/utils/time';
 import { useRemoteConfigStore } from '@/model/remoteConfig';
 import { createDerivedStore } from '@/state/internal/createDerivedStore';
 import { createQueryStore } from '@/state/internal/createQueryStore';
-import { shallowEqual } from '@/worklets/comparisons';
 
 // ============ Types ========================================================== //
 
@@ -38,21 +31,18 @@ type PredictionEventsData = {
 };
 
 type EventsById = Record<string, PolymarketEvent>;
-
-// ============ Constants ====================================================== //
-
-const hasPredictionRefsOrPendingHydration = hasRefsOrPendingHydration('polymarket', 'prediction');
-
-// ============ Stores ========================================================= //
+type PredictionEventsResolution = {
+  activeEventIds: ReadonlySet<string>;
+  eventsById: EventsById;
+};
 
 const usePredictionsEnabled = createDerivedStore<boolean>(
   $ => {
+    const hasRefs = $(useDiscoverSurfacePlacementRefs, refs => refs.polymarket.length > 0);
     const polymarketEnabled = $(useRemoteConfigStore, state => state.getRemoteConfigKey('polymarket_enabled'));
     const polymarketEnabledLocally = $(useExperimentalConfigStore, state => state.getFlag(POLYMARKET));
 
-    if (!hasPredictionRefsOrPendingHydration($)) return false;
-
-    return polymarketEnabled || polymarketEnabledLocally;
+    return hasRefs && (polymarketEnabled || polymarketEnabledLocally);
   },
   { fastMode: true }
 );
@@ -89,47 +79,39 @@ async function fetchPredictionEvents(
 
 // ============ Utilities ====================================================== //
 
-export function usePredictionsPlacement(placementId: PlacementId): PlacementResult<PredictionPlacementItem> {
+export function usePredictionsPlacement(placementId: PlacementId): DiscoverPlacementResult<PredictionPlacementItem> {
   const enabled = usePredictionsEnabled();
-  const placement = usePlacementsStore(state => state.getPlacement(placementId));
-  const placementItems = usePlacementsStore(state => selectPlacementItemsBySource(state, placementId, 'polymarket'), shallowEqual);
-  const placementsLoading = usePlacementsStore(state => isPlacementHydrating(state, placementId, 'polymarket'));
+
+  return usePlacementResolver(placementId, {
+    enabled,
+    pairItem: pairPredictionPlacementItem,
+    source: 'polymarket',
+    useResolvedData: usePredictionEventsResolution,
+  });
+}
+
+function usePredictionEventsResolution(placementItems: PlacementItem[]) {
   const events = usePredictionEventsStore(state => state.getData());
   const eventsLoading = usePredictionEventsStore(
     state => placementItems.length > 0 && state.enabled && (state.getStatus('isIdle') || state.getStatus('isLoading'))
   );
+  const eventsError = usePredictionEventsStore(state => state.getStatus('isError'));
   const activeEventIds = useMemo(() => (events ? new Set(events.activeEventIds) : undefined), [events]);
-  const items = useMemo(
-    () => (events && activeEventIds ? parsePredictionItems(placementItems, events.eventsById, activeEventIds) : []),
-    [activeEventIds, events, placementItems]
+  const data = useMemo<PredictionEventsResolution | undefined>(
+    () => (events && activeEventIds ? { activeEventIds, eventsById: events.eventsById } : undefined),
+    [activeEventIds, events]
   );
 
-  return useMemo(
-    () =>
-      finalizePlacementResult({
-        enabled,
-        hasRefs: placementItems.length > 0,
-        isInitialLoad: placementsLoading || eventsLoading,
-        items,
-        placement,
-      }),
-    [enabled, eventsLoading, items, placement, placementItems.length, placementsLoading]
-  );
+  return {
+    data,
+    isError: eventsError,
+    isLoading: eventsLoading,
+  };
 }
 
-function parsePredictionItems(
-  placementItems: PlacementItem[],
-  eventsById: EventsById,
-  activeEventIds: ReadonlySet<string>
-): PredictionPlacementItem[] {
-  const items: PredictionPlacementItem[] = [];
-
-  for (const item of placementItems) {
-    const event = eventsById[item.id];
-    if (event && activeEventIds.has(item.id)) items.push({ ...item, event });
-  }
-
-  return items.length ? items : [];
+function pairPredictionPlacementItem(item: PlacementItem, data: PredictionEventsResolution): PredictionPlacementItem | undefined {
+  const event = data.eventsById[item.id];
+  return event && data.activeEventIds.has(item.id) ? { ...item, event } : undefined;
 }
 
 function normalizePredictionEvents(events: PolymarketEvent[]): PredictionEventsData {

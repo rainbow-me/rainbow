@@ -10,8 +10,9 @@ import { Box } from '@/design-system';
 import { SectionHeader } from '@/features/discover/components/markets/layouts/SectionHeader';
 import { type CardPressHandler, type CarouselSectionDescriptor, type OrderPressHandler } from '@/features/discover/types/sectionLayout';
 import { trackPlacementInteraction, trackSurfaceInteraction } from '@/features/placements/engagement/trackInteraction';
-import { type SurfaceId, type SurfaceLeaf } from '@/features/placements/surfaces/types';
+import { type SurfaceId, type SurfaceLeafNode } from '@/features/placements/surfaces/types';
 import { type Placement, type PlacementItem } from '@/features/placements/types';
+import { placementType } from '@/features/placements/utils/placementType';
 import { time } from '@/framework/core/utils/time';
 
 import { computeSnapToOffsets } from './carouselLayout';
@@ -42,7 +43,7 @@ type MarketCarouselProps<T extends PlacementItem> = {
   showHeaderCaret?: boolean;
   singleItemWidth?: number;
   skeletonCount?: number;
-  section: SurfaceLeaf;
+  section: SurfaceLeafNode;
   surfaceId: SurfaceId;
   title: string;
 };
@@ -82,6 +83,8 @@ export function MarketCarousel<T extends PlacementItem>({
     ({ item, index }: { item: T; index: number }) => {
       const onCardPress: CardPressHandler = placement
         ? metadata => {
+            const derivedPlacementType = placementType(placement.source);
+
             analytics.track(event.discoverCardPressed, {
               placementId: placement.id,
               placementSource: placement.source,
@@ -92,7 +95,7 @@ export function MarketCarousel<T extends PlacementItem>({
               marketName: metadata.marketName,
               marketSlug: metadata.marketSlug,
               marketSymbol: metadata.marketSymbol,
-              marketType: placement.type,
+              marketType: derivedPlacementType,
             });
             trackPlacementInteraction({
               display: section.display,
@@ -104,7 +107,7 @@ export function MarketCarousel<T extends PlacementItem>({
               sectionTitle: title,
               source: placement.source,
               surfaceId,
-              type: placement.type,
+              type: derivedPlacementType,
               version: placement.version,
             });
           }
