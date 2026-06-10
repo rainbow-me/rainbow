@@ -12,8 +12,8 @@ import { Stripe as StripeLogo } from '@/components/icons/svg/Stripe';
 import { Bleed, Box, Inline, Text, useBackgroundColor } from '@/design-system';
 import { FiatProviderName } from '@/entities/f2c';
 import * as i18n from '@/languages';
-import { CalloutType, PaymentMethod, type ProviderConfig } from '@/screens/AddCash/types';
-import { convertAPINetworkToInternalChainIds } from '@/screens/AddCash/utils';
+import { CalloutType, PaymentMethod, type ProviderConfig } from '@/screens/FiatOnRamp/types';
+import { convertAPINetworkToInternalChainIds } from '@/screens/FiatOnRamp/utils';
 import { type ChainId } from '@/state/backendNetworks/types';
 
 type PaymentMethodConfig = {

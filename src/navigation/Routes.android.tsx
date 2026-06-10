@@ -78,13 +78,13 @@ import { SettingsSheet } from '@/screens/SettingsSheet/SettingsSheet';
 import { TokenLauncherScreen } from '@/screens/token-launcher/TokenLauncherScreen';
 import { TransactionDetails } from '@/screens/transaction-details/TransactionDetails';
 
-import { AddCashSheet } from '../screens/AddCash';
 import AvatarBuilder from '../screens/AvatarBuilder';
 import ChangeWalletSheet from '../screens/change-wallet/ChangeWalletSheet';
 import { WalletDiagnosticsSheet } from '../screens/Diagnostics';
 import ExpandedAssetSheet from '../screens/ExpandedAssetSheet';
 import ExplainSheet from '../screens/ExplainSheet';
 import ExternalLinkWarningSheet from '../screens/ExternalLinkWarningSheet';
+import { FiatOnRampSheet } from '../screens/FiatOnRamp';
 import ModalScreen from '../screens/ModalScreen';
 import ProfileSheet from '../screens/ProfileSheet';
 import ReceiveModal from '../screens/ReceiveModal';
@@ -105,7 +105,6 @@ import {
   stackNavigationConfig,
 } from './config';
 import {
-  addCashSheet,
   addWalletNavigatorPreset,
   androidRecievePreset,
   appIconUnlockSheetPreset,
@@ -114,6 +113,7 @@ import {
   exchangePreset,
   expandedPreset,
   expandedPresetWithSmallGestureResponseDistance,
+  fiatOnRampSheet,
   hardwareWalletTxNavigatorPreset,
   nftSingleOfferSheetPreset,
   sheetPreset,
@@ -156,7 +156,7 @@ function MainNavigator() {
       <Stack.Screen component={ReceiveModal} name={Routes.RECEIVE_MODAL} options={androidRecievePreset} />
 
       <Stack.Screen component={WalletConnectRedirectSheet} name={Routes.WALLET_CONNECT_REDIRECT_SHEET} options={wcPromptPreset} />
-      <Stack.Screen component={AddCashSheet} name={Routes.ADD_CASH_SHEET} options={addCashSheet} />
+      <Stack.Screen component={FiatOnRampSheet} name={Routes.FIAT_ON_RAMP_SHEET} options={fiatOnRampSheet} />
       <Stack.Screen component={RestoreSheet} name={Routes.RESTORE_SHEET} options={bottomSheetPreset} />
       <Stack.Screen component={WelcomeScreen} name={Routes.WELCOME_SCREEN} options={{ animationEnabled: false, gestureEnabled: false }} />
       <Stack.Screen component={ShowSecretView} name="ShowSecretView" options={bottomSheetPreset} />

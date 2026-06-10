@@ -3,7 +3,7 @@ import { type Address } from 'viem';
 import { type FiatProviderName } from '@/entities/f2c';
 import { IS_PROD } from '@/env';
 import { RainbowFetchClient } from '@/framework/data/http/rainbowFetch';
-import { type ProviderConfig } from '@/screens/AddCash/types';
+import { type ProviderConfig } from '@/screens/FiatOnRamp/types';
 
 export type GetWidgetURL = (
   id: FiatProviderName,

@@ -191,9 +191,8 @@ const AddFundsInterstitial = ({ network }) => {
         return;
       }
 
-      navigate(Routes.ADD_CASH_SHEET, {
+      navigate(Routes.FIAT_ON_RAMP_SHEET, {
         params: !isNaN(amount) ? { amount } : null,
-        screen: Routes.ADD_CASH_SCREEN_NAVIGATOR,
       });
       analytics.track(analytics.event.buyButtonPressed, {
         amount,

@@ -151,7 +151,7 @@ const PerpsAccountScreenFooter = () => {
       <HyperliquidButton
         onPress={() => {
           if (hasZeroBalance) {
-            Navigation.handleAction(hasNoAssets ? Routes.ADD_CASH_SHEET : Routes.PERPS_DEPOSIT_SCREEN);
+            Navigation.handleAction(hasNoAssets ? Routes.FIAT_ON_RAMP_SHEET : Routes.PERPS_DEPOSIT_SCREEN);
           } else {
             PerpsNavigation.navigate(Routes.PERPS_SEARCH_SCREEN, { type: 'newPosition' });
           }

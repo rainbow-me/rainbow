@@ -1,8 +1,6 @@
 import { Platform } from 'react-native';
 
 const Routes = {
-  ADD_CASH_SCREEN_NAVIGATOR: 'AddCashSheetNavigator',
-  ADD_CASH_SHEET: 'AddCashSheet',
   ADD_WALLET_NAVIGATOR: 'AddWalletNavigator',
   ADD_WALLET_SHEET: 'AddWalletSheet',
   AIRDROPS_SHEET: 'AirdropsSheet',
@@ -34,6 +32,7 @@ const Routes = {
   EXPANDED_ASSET_SHEET: 'ExpandedAssetSheet',
   EXPANDED_ASSET_SHEET_V2: 'ExpandedAssetSheetV2',
   EXPLAIN_SHEET: 'ExplainSheet',
+  FIAT_ON_RAMP_SHEET: 'FiatOnRampSheet',
   PORTAL: 'Portal',
   EXTERNAL_LINK_WARNING_SHEET: 'ExternalLinkWarningSheet',
   HARDWARE_WALLET_TX_NAVIGATOR: 'HardwareWalletTxNavigator',
@@ -180,7 +179,7 @@ export const NATIVE_ROUTES = new Set<Route>([
   Routes.RECEIVE_MODAL,
   Routes.SETTINGS_SHEET,
   Routes.SWAP,
-  ...(Platform.OS === 'ios' ? [Routes.SEND_SHEET_NAVIGATOR, Routes.ADD_CASH_SCREEN_NAVIGATOR] : []),
+  ...(Platform.OS === 'ios' ? [Routes.SEND_SHEET_NAVIGATOR] : []),
 ]);
 
 const RoutesWithPlatformDifferences = {

@@ -475,7 +475,7 @@ export const sheetPreset = ({ route }: any): StackNavigationOptions & BottomShee
   };
 };
 
-export const addCashSheet: StackNavigationOptions = {
+export const fiatOnRampSheet: StackNavigationOptions = {
   cardOverlayEnabled: true,
   cardShadowEnabled: true,
   cardStyle: { backgroundColor: 'transparent' },

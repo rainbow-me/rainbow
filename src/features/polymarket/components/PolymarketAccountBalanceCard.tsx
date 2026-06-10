@@ -94,7 +94,7 @@ export const PolymarketAccountBalanceCard = memo(function PolymarketAccountBalan
             onPress={() => {
               if (getIsReadOnlyWallet()) return;
               if (hasNoAssets) {
-                Navigation.handleAction(Routes.ADD_CASH_SHEET);
+                Navigation.handleAction(Routes.FIAT_ON_RAMP_SHEET);
               } else {
                 Navigation.handleAction(Routes.POLYMARKET_DEPOSIT_SCREEN);
               }
