@@ -1,8 +1,7 @@
 import { type Signer } from '@ethersproject/abstract-signer';
 import { MaxUint256 } from '@ethersproject/constants';
 import { Contract, type PopulatedTransaction } from '@ethersproject/contracts';
-import { parseUnits } from '@ethersproject/units';
-import { erc20Abi, erc721Abi, type Address } from 'viem';
+import { erc20Abi, type Address } from 'viem';
 
 import { TransactionStatus, type NewTransaction } from '@/entities/transactions';
 import { type TransactionGasParams, type TransactionLegacyGasParams } from '@/features/gas/types/gasSpeed';
@@ -237,56 +236,6 @@ function buildUnlockTransaction(
     ...gasParams,
   };
 }
-
-export const estimateERC721Approval = async ({
-  owner,
-  tokenAddress,
-  spender,
-  chainId,
-}: {
-  owner: Address;
-  tokenAddress: Address;
-  spender: Address;
-  chainId: ChainId;
-}): Promise<string> => {
-  try {
-    const provider = getProvider({ chainId });
-    const tokenContract = new Contract(tokenAddress, erc721Abi, provider);
-    const gasLimit = await tokenContract.estimateGas.setApprovalForAll(spender, false, {
-      from: owner,
-    });
-    return gasLimit ? gasLimit.toString() : `${gasUnits.basic_approval}`;
-  } catch (error) {
-    logger.error(new RainbowError('[raps/unlock]: error estimateApproval'), {
-      message: ensureError(error).message,
-    });
-    return `${gasUnits.basic_approval}`;
-  }
-};
-
-export const populateRevokeApproval = async ({
-  tokenAddress,
-  spenderAddress,
-  chainId,
-  type = 'erc20',
-}: {
-  tokenAddress?: Address;
-  spenderAddress?: Address;
-  chainId?: ChainId;
-  type: 'erc20' | 'nft';
-}): Promise<PopulatedTransaction> => {
-  if (!tokenAddress || !spenderAddress || !chainId) return {};
-  const provider = getProvider({ chainId });
-  const tokenContract = new Contract(tokenAddress, erc721Abi, provider);
-  if (type === 'erc20') {
-    const amountToApprove = parseUnits('0', 'ether');
-    const txObject = await tokenContract.populateTransaction.approve(spenderAddress, amountToApprove);
-    return txObject;
-  } else {
-    const txObject = await tokenContract.populateTransaction.setApprovalForAll(spenderAddress, false);
-    return txObject;
-  }
-};
 
 export const executeApprove = async ({
   gasLimit,
