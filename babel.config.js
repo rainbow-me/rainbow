@@ -42,7 +42,14 @@ module.exports = function (api) {
     ]);
   }
 
-  const presets = ['module:@react-native/babel-preset'];
+  const presets = [
+    [
+      'module:@react-native/babel-preset',
+      {
+        enableBabelRuntime: '^7.25.0',
+      },
+    ],
+  ];
 
   return {
     env: {
