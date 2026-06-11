@@ -3420,7 +3420,7 @@
         "this_week": "इस सप्ताह",
         "game_best_of": "गेम %{currentPeriod} - %{bestOf} में सर्वश्रेष्ठ",
         "final": "अंतिम",
-        "no_games": "इस सप्ताह कोई गेम नहीं हैं"
+        "no_games": "आज या कल कोई खेल नहीं"
       },
       "outcomes": {
         "yes": "हां",
