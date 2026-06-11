@@ -95,7 +95,7 @@ describe('createLineChartDataStore', () => {
 
       await store.getState().fetch({ chartIds: ['BTC', 'ETH'] }, { force: true });
       expect(fetchLineChartData.mock.calls[1]?.[0]).toEqual(['ETH']);
-      expect(store.getState().isStale()).toBe(false);
+      expect(store.getState().getCacheEntry({ chartIds: ['BTC', 'ETH'] })?.lastFetchedAt).toBe(now);
     } finally {
       store.getState().reset(true);
       jest.restoreAllMocks();
