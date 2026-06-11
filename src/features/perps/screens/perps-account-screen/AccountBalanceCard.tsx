@@ -4,11 +4,11 @@ import { View } from 'react-native';
 import ButtonPressAnimation from '@/components/animations/ButtonPressAnimation';
 import { ImgixImage } from '@/components/images';
 import { Box, Stack, Text, TextIcon, TextShadow, useColorMode } from '@/design-system';
+import { formatUsd } from '@/features/currency/utils/formatUsd';
 import { HyperliquidButton } from '@/features/perps/components/HyperliquidButton';
 import { USDC_ICON_URL } from '@/features/perps/constants';
 import { usePerpsAccentColorContext } from '@/features/perps/context/PerpsAccentColorContext';
 import { useHyperliquidAccountStore } from '@/features/perps/stores/hyperliquidAccountStore';
-import { formatCurrency } from '@/features/perps/utils/formatCurrency';
 import * as i18n from '@/languages';
 import Navigation from '@/navigation/Navigation';
 import Routes from '@/navigation/routesNames';
@@ -121,7 +121,7 @@ const AccountBalance = ({ accentColor }: { accentColor: string }) => {
   return (
     <TextShadow blur={16} color={accentColor} shadowOpacity={0.24}>
       <Text color={{ custom: accentColor }} size="17pt" weight="heavy">
-        {formatCurrency(balance)}
+        {formatUsd(balance)}
       </Text>
     </TextShadow>
   );

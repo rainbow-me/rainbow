@@ -25,23 +25,14 @@ import { type ExtendedAnimatedAssetWithColors } from '@/__swaps__/types/assets';
 import { type InputKeys, type InputMethods, type InputValues, type RequestNewQuoteParams } from '@/__swaps__/types/swap';
 import { valueBasedDecimalFormatter } from '@/__swaps__/utils/decimalFormatter';
 import { getInputValuesForSliderPositionWorklet } from '@/__swaps__/utils/flipAssets';
-import {
-  addCommasToNumber,
-  addSymbolToNativeDisplayWorklet,
-  buildQuoteParams,
-  clamp,
-  getQuotePrice,
-  trimTrailingZeros,
-} from '@/__swaps__/utils/swaps';
+import { buildQuoteParams, clamp, getQuotePrice, trimTrailingZeros } from '@/__swaps__/utils/swaps';
 import { analytics } from '@/analytics';
 import { SPRING_CONFIGS } from '@/components/animations/animationConfigs';
-import type { NativeCurrencyKey } from '@/entities/nativeCurrencyTypes';
+import type { NativeCurrencyKey } from '@/features/currency/types';
+import { addSymbolToNativeDisplayWorklet, convertAmountToNativeDisplayWorklet } from '@/features/currency/utils/nativeDisplay';
 import { divWorklet, equalWorklet, greaterThanWorklet, isNumberStringWorklet, mulWorklet, toFixedWorklet } from '@/framework/core/safeMath';
-import {
-  convertAmountToNativeDisplayWorklet,
-  convertRawAmountToDecimalFormat,
-  handleSignificantDecimalsWorklet,
-} from '@/helpers/utilities';
+import { addCommasToNumber } from '@/framework/ui/utils/addCommasToNumber';
+import { convertRawAmountToDecimalFormat, handleSignificantDecimalsWorklet } from '@/helpers/utilities';
 import { useAnimatedInterval } from '@/hooks/reanimated/useAnimatedInterval';
 import { logger } from '@/logger';
 import { swapsStore } from '@/state/swaps/swapsStore';

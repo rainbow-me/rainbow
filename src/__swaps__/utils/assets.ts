@@ -12,16 +12,11 @@ import {
 } from '@/__swaps__/types/assets';
 import { type SearchAsset } from '@/__swaps__/types/search';
 import type { RainbowToken } from '@/entities/tokens';
+import type { SupportedCurrencyKey } from '@/features/currency/supportedCurrencies';
+import { convertAmountAndPriceToNativeDisplay, convertAmountToNativeDisplayWorklet } from '@/features/currency/utils/nativeDisplay';
 import { isNativeAsset } from '@/handlers/assets';
-import {
-  convertAmountAndPriceToNativeDisplay,
-  convertAmountToBalanceDisplay,
-  convertAmountToNativeDisplayWorklet,
-  convertAmountToPercentageDisplay,
-  convertRawAmountToDecimalFormat,
-} from '@/helpers/utilities';
+import { convertAmountToBalanceDisplay, convertAmountToPercentageDisplay, convertRawAmountToDecimalFormat } from '@/helpers/utilities';
 import * as i18n from '@/languages';
-import type { SupportedCurrencyKey } from '@/references/supportedCurrencies';
 import { userAssetsStore } from '@/state/assets/userAssets';
 import { useBackendNetworksStore } from '@/state/backendNetworks/backendNetworks';
 import { ChainId, ChainName } from '@/state/backendNetworks/types';

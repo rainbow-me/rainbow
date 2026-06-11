@@ -4,11 +4,11 @@ import type { Address } from 'viem';
 
 import { analytics } from '@/analytics';
 import { event } from '@/analytics/event';
+import type { SupportedCurrencyKey } from '@/features/currency/supportedCurrencies';
 import { usePositionsStore } from '@/features/positions/stores/positionsStore';
 import { useRewardsBalanceStore } from '@/features/rnbw-rewards/stores/rewardsBalanceStore';
 import { time } from '@/framework/core/utils/time';
 import { logger, RainbowError } from '@/logger';
-import type { SupportedCurrencyKey } from '@/references/supportedCurrencies';
 import { invalidateAddressNftsQueries } from '@/resources/nfts';
 import { getPlatformClient } from '@/resources/platform/client';
 import { type GetAssetsResponse, type UserAsset } from '@/state/assets/types';

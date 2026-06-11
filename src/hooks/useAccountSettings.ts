@@ -4,9 +4,9 @@ import lang from 'i18n-js';
 import { useDispatch, useSelector } from 'react-redux';
 import { createSelector } from 'reselect';
 
-import type { NativeCurrencyKey } from '@/entities/nativeCurrencyTypes';
+import { supportedCurrencies as supportedNativeCurrencies } from '@/features/currency/supportedCurrencies';
+import type { NativeCurrencyKey } from '@/features/currency/types';
 import { type AppState } from '@/redux/store';
-import { supportedCurrencies as supportedNativeCurrencies } from '@/references/supportedCurrencies';
 import { userAssetsStoreManager } from '@/state/assets/userAssetsStoreManager';
 import { useConnectedToAnvilStore } from '@/state/connectedToAnvil';
 

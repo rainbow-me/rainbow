@@ -1,4 +1,4 @@
-import { useCurrencyConversionStore } from '@/features/perps/stores/currencyConversionStore';
+import { useCurrencyConversionStore } from '@/features/currency/stores/currencyConversionStore';
 import { usePerpsPositionsInfo } from '@/features/perps/stores/derived/usePerpsPositionsInfo';
 import { createDerivedStore } from '@/state/internal/createDerivedStore';
 

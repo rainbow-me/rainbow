@@ -3,14 +3,14 @@ import { chunk, compact, groupBy, isEmpty, slice, sortBy } from 'lodash';
 import { type UniqueId } from '@/__swaps__/types/assets';
 import { type AssetListType } from '@/components/asset-list/RecyclerAssetList2';
 import { CellType, type CellTypes } from '@/components/asset-list/RecyclerAssetList2/core/ViewTypes';
-import type { NativeCurrencyKey } from '@/entities/nativeCurrencyTypes';
 import type { ParsedAddressAsset } from '@/entities/tokens';
 import type { UniqueAsset } from '@/entities/uniqueAssets';
+import { supportedCurrencies as supportedNativeCurrencies } from '@/features/currency/supportedCurrencies';
+import type { NativeCurrencyKey } from '@/features/currency/types';
 import { NftCollectionSortCriterion } from '@/graphql/__generated__/arc';
 import { assetIsUniqueAsset } from '@/handlers/web3';
 import { type BooleanMap } from '@/hooks/useCoinListEditOptions';
 import * as i18n from '@/languages';
-import { supportedCurrencies as supportedNativeCurrencies } from '@/references/supportedCurrencies';
 import { parseUniqueId } from '@/resources/nfts/utils';
 import { type Collection, type CollectionId } from '@/state/nfts/types';
 

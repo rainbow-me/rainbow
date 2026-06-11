@@ -1,5 +1,6 @@
-import type { NativeCurrencyKey } from '@/entities/nativeCurrencyTypes';
-import { add, convertAmountToNativeDisplayWorklet, convertRawAmountToBalanceWorklet } from '@/helpers/utilities';
+import type { NativeCurrencyKey } from '@/features/currency/types';
+import { convertAmountToNativeDisplayWorklet } from '@/features/currency/utils/nativeDisplay';
+import { add, convertRawAmountToBalanceWorklet } from '@/helpers/utilities';
 import * as i18n from '@/languages';
 import { parseAsset } from '@/resources/assets/assets';
 import { useBackendNetworksStore } from '@/state/backendNetworks/backendNetworks';

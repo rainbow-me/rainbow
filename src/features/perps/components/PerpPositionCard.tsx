@@ -4,13 +4,13 @@ import { ETH_COLOR_DARK } from '@/__swaps__/screens/Swap/constants';
 import { getColorValueForThemeWorklet, getHighContrastColor } from '@/__swaps__/utils/swaps';
 import { LiveTokenText } from '@/components/live-token-text/LiveTokenText';
 import { Bleed, Box, globalColors, Separator, Stack, Text, useColorMode, type BoxProps } from '@/design-system';
+import { formatUsd } from '@/features/currency/utils/formatUsd';
 import { HyperliquidTokenIcon } from '@/features/perps/components/HyperliquidTokenIcon';
 import { LeverageBadge } from '@/features/perps/components/LeverageBadge';
 import { PositionSideBadge } from '@/features/perps/components/PositionSideBadge';
 import { useHyperliquidMarketsStore } from '@/features/perps/stores/hyperliquidMarketsStore';
 import { type PerpsPosition } from '@/features/perps/types';
 import { getHyperliquidTokenId } from '@/features/perps/utils';
-import { formatCurrency } from '@/features/perps/utils/formatCurrency';
 import { formatPerpAssetPrice } from '@/features/perps/utils/formatPerpsAssetPrice';
 import { extractBaseSymbol } from '@/features/perps/utils/hyperliquidSymbols';
 import { opacity } from '@/framework/ui/utils/opacity';
@@ -42,8 +42,8 @@ export const PerpPositionCard = memo(function PerpPositionCard({ position }: Per
       liquidationPrice: position.liquidationPrice
         ? formatPerpAssetPrice(position.liquidationPrice)
         : i18n.t(i18n.l.perps.common.not_available),
-      unrealizedPnl: `${position.unrealizedPnl.includes('-') ? '-' : '+'} ${formatCurrency(abs(position.unrealizedPnl))}`,
-      positionEquity: formatCurrency(position.equity),
+      unrealizedPnl: `${position.unrealizedPnl.includes('-') ? '-' : '+'} ${formatUsd(abs(position.unrealizedPnl))}`,
+      positionEquity: formatUsd(position.equity),
     };
   }, [position]);
 

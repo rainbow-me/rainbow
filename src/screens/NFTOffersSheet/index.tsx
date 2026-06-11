@@ -19,8 +19,8 @@ import {
   Text,
   useForegroundColor,
 } from '@/design-system';
+import { convertAmountToNativeDisplay } from '@/features/currency/utils/nativeDisplay';
 import { type NftOffer } from '@/graphql/__generated__/arc';
-import { convertAmountToNativeDisplay } from '@/helpers/utilities';
 import useDimensions from '@/hooks/useDimensions';
 import * as i18n from '@/languages';
 import { queryClient } from '@/react-query';

@@ -1,7 +1,8 @@
 import { type Address } from 'viem';
 
-import { type NativeCurrencyKey } from '@/entities/nativeCurrencyTypes';
-import { convertAmountToNativeDisplayWorklet, truncateToDecimalsWithThreshold } from '@/helpers/utilities';
+import { type NativeCurrencyKey } from '@/features/currency/types';
+import { convertAmountToNativeDisplayWorklet } from '@/features/currency/utils/nativeDisplay';
+import { truncateToDecimalsWithThreshold } from '@/helpers/utilities';
 import { getPlatformClient } from '@/resources/platform/client';
 import { type PlatformResponse } from '@/resources/platform/types';
 import { userAssetsStoreManager } from '@/state/assets/userAssetsStoreManager';

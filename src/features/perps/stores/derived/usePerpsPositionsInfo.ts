@@ -1,7 +1,7 @@
 import { type TextColor } from '@/design-system/color/palettes';
-import { USD_DECIMALS } from '@/features/perps/constants';
+import { USD_DECIMALS } from '@/features/currency/constants';
+import { formatUsd } from '@/features/currency/utils/formatUsd';
 import { type PerpsPosition } from '@/features/perps/types';
-import { formatCurrency } from '@/features/perps/utils/formatCurrency';
 import { toFixedWorklet, truncateToDecimals } from '@/framework/core/safeMath';
 import { abs, add, divide, greaterThan, isEqual, isZero, multiply, subtract } from '@/helpers/utilities';
 import { createDerivedStore } from '@/state/internal/createDerivedStore';
@@ -24,14 +24,14 @@ export type PerpsPositionsInfo = {
 
 const EMPTY_POSITIONS_INFO = Object.freeze<PerpsPositionsInfo>({
   balance: PERPS_EMPTY_ACCOUNT_DATA.balance,
-  equity: formatCurrency('0'),
+  equity: formatUsd('0'),
   hasBalance: false,
   hasPositions: false,
   isNeutralPnl: true,
   isPositivePnl: false,
   textColor: 'labelTertiary',
   positions: [],
-  unrealizedPnl: formatCurrency(abs('0')),
+  unrealizedPnl: formatUsd(abs('0')),
   unrealizedPnlPercent: `${toFixedWorklet('0', 2)}%`,
   value: PERPS_EMPTY_ACCOUNT_DATA.value,
 });
@@ -62,14 +62,14 @@ export const usePerpsPositionsInfo = createDerivedStore<PerpsPositionsInfo>(
 
     return {
       balance,
-      equity: formatCurrency(totalPositionsEquity),
+      equity: formatUsd(totalPositionsEquity),
       hasBalance: !isZero(accountData.balance),
       hasPositions: positions.length > 0,
       positions,
       isNeutralPnl,
       isPositivePnl,
       textColor: textColor satisfies TextColor,
-      unrealizedPnl: formatCurrency(abs(totalPositionsPnl)),
+      unrealizedPnl: formatUsd(abs(totalPositionsPnl)),
       unrealizedPnlPercent: `${toFixedWorklet(abs(unrealizedPnlPercent), 2)}%`,
       value: accountData.value,
     };

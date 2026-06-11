@@ -2,9 +2,10 @@ import { throttle } from 'lodash';
 import { type Address } from 'viem';
 
 import { analytics } from '@/analytics';
-import type { NativeCurrencyKey } from '@/entities/nativeCurrencyTypes';
+import type { NativeCurrencyKey } from '@/features/currency/types';
+import { convertAmountToNativeDisplay } from '@/features/currency/utils/nativeDisplay';
 import { time } from '@/framework/core/utils/time';
-import { add, convertAmountToNativeDisplay, greaterThan } from '@/helpers/utilities';
+import { add, greaterThan } from '@/helpers/utilities';
 import { logger, RainbowError } from '@/logger';
 import { useBackendNetworksStore } from '@/state/backendNetworks/backendNetworks';
 import { type ClaimablesStore } from '@/state/claimables/claimables';

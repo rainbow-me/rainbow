@@ -5,12 +5,12 @@ import { reloadTimelines } from 'react-native-widgetkit';
 
 import { analytics } from '@/analytics';
 import RainbowCoinIcon from '@/components/coin-icon/RainbowCoinIcon';
-import type { NativeCurrencyKey } from '@/entities/nativeCurrencyTypes';
+import { supportedCurrencies as supportedNativeCurrencies } from '@/features/currency/supportedCurrencies';
+import type { NativeCurrencyKey } from '@/features/currency/types';
 import { resolveCurrencyFlagEmoji } from '@/framework/core/emoji/currencyFlagEmoji';
 import useAccountSettings from '@/hooks/useAccountSettings';
 import * as i18n from '@/languages';
 import { ETH_ADDRESS, WBTC_ADDRESS } from '@/references/constants';
-import { supportedCurrencies as supportedNativeCurrencies } from '@/references/supportedCurrencies';
 import { useExternalToken } from '@/resources/assets/externalAssetsQuery';
 import { userAssetsStoreManager } from '@/state/assets/userAssetsStoreManager';
 import { ChainId } from '@/state/backendNetworks/types';

@@ -29,13 +29,14 @@ import {
   useForegroundColor,
 } from '@/design-system';
 import { TransactionDirection, TransactionStatus, type NewTransaction } from '@/entities/transactions';
+import { convertAmountToNativeDisplay } from '@/features/currency/utils/nativeDisplay';
 import GasSpeedButton from '@/features/gas/components/GasSpeedButton';
 import useGas from '@/features/gas/hooks/useGas';
 import { metadataPOSTClient } from '@/graphql';
 import { type NftOffer } from '@/graphql/__generated__/arc';
 import { type Transaction } from '@/graphql/__generated__/metadataPOST';
 import { WrappedAlert as Alert } from '@/helpers/alert';
-import { convertAmountToNativeDisplay, getFormattedTimeQuantity, handleSignificantDecimals } from '@/helpers/utilities';
+import { getFormattedTimeQuantity, handleSignificantDecimals } from '@/helpers/utilities';
 import * as i18n from '@/languages';
 import { logger, RainbowError } from '@/logger';
 import { loadPrivateKey } from '@/model/wallet';

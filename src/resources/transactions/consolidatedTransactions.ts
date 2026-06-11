@@ -1,8 +1,8 @@
 import { useInfiniteQuery } from '@tanstack/react-query';
 
-import { type NativeCurrencyKey } from '@/entities/nativeCurrencyTypes';
 import { type RainbowTransaction } from '@/entities/transactions';
 import { IS_TEST } from '@/env';
+import { type NativeCurrencyKey } from '@/features/currency/types';
 import { type ListTransactionsResponse, type Transaction } from '@/features/positions/types/generated/transaction/transaction';
 import { logger, RainbowError } from '@/logger';
 import { parseTransaction } from '@/parsers/transactions';

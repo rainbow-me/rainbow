@@ -7,8 +7,8 @@ import ButtonPressAnimation from '@/components/animations/ButtonPressAnimation';
 import { GradientBorderView } from '@/components/gradient-border/GradientBorderView';
 import { ImgixImage } from '@/components/images';
 import { Box, Text } from '@/design-system';
+import { formatUsd } from '@/features/currency/utils/formatUsd';
 import { USDC_COLORS, USDC_ICON_URL } from '@/features/perps/constants';
-import { formatCurrency } from '@/features/perps/utils/formatCurrency';
 import { opacity } from '@/framework/ui/utils/opacity';
 import * as i18n from '@/languages';
 
@@ -58,7 +58,7 @@ export const SectionAvailableBalance = memo(function SectionAvailableBalance({
             <Box flexDirection="row" gap={5} alignItems="center">
               <ImgixImage enableFasterImage source={{ uri: USDC_ICON_URL }} size={16} style={{ width: 16, height: 16 }} />
               <Text align="right" color="labelSecondary" size="17pt" weight="semibold">
-                {formatCurrency(balance)}
+                {formatUsd(balance)}
               </Text>
             </Box>
           </Box>

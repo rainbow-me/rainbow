@@ -4,9 +4,9 @@ import { useQuery } from '@tanstack/react-query';
 import { createPublicClient, http, isHash, type PublicClient } from 'viem';
 import { foundry } from 'viem/chains';
 
-import { type NativeCurrencyKey } from '@/entities/nativeCurrencyTypes';
 import { TransactionStatus, type MinedTransaction, type RainbowTransaction, type TransactionType } from '@/entities/transactions';
 import { IS_TEST } from '@/env';
+import { type NativeCurrencyKey } from '@/features/currency/types';
 import { type GetTransactionByHashResponse } from '@/features/positions/types/generated/transaction/transaction';
 import { RainbowFetchError } from '@/framework/data/http/rainbowFetch';
 import { ensureError, logger, RainbowError } from '@/logger';

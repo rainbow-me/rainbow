@@ -2,8 +2,9 @@ import React, { useCallback, useEffect, useState } from 'react';
 
 import { Columns } from '@/design-system';
 import type { UniqueAsset } from '@/entities/uniqueAssets';
+import { convertAmountToNativeDisplay } from '@/features/currency/utils/nativeDisplay';
 import { opacity } from '@/framework/ui/utils/opacity';
-import { convertAmountToNativeDisplay, convertRawAmountToRoundedDecimal } from '@/helpers/utilities';
+import { convertRawAmountToRoundedDecimal } from '@/helpers/utilities';
 import * as i18n from '@/languages';
 import { useNavigation } from '@/navigation/Navigation';
 import Routes from '@/navigation/routesNames';

@@ -7,17 +7,10 @@ import { atom } from 'recoil';
 
 import { type InlineFieldProps } from '@/components/inputs/InlineField';
 import type { EthereumAddress } from '@/entities/wallet';
+import { convertAmountAndPriceToNativeDisplay } from '@/features/currency/utils/nativeDisplay';
 import { gweiToWei } from '@/features/gas/utils/parseGas';
 import { getProvider, toHex } from '@/handlers/web3';
-import {
-  add,
-  addBuffer,
-  convertAmountAndPriceToNativeDisplay,
-  divide,
-  fromWei,
-  handleSignificantDecimals,
-  multiply,
-} from '@/helpers/utilities';
+import { add, addBuffer, divide, fromWei, handleSignificantDecimals, multiply } from '@/helpers/utilities';
 import * as i18n from '@/languages';
 import { ChainId } from '@/state/backendNetworks/types';
 import { colors } from '@/styles';

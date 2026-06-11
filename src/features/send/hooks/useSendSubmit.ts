@@ -8,10 +8,10 @@ import { isEmpty } from 'lodash';
 
 import { analytics } from '@/analytics';
 import { useRainbowToastEnabled } from '@/components/rainbow-toast/useRainbowToastEnabled';
-import { type NativeCurrencyKey } from '@/entities/nativeCurrencyTypes';
 import { type ParsedAddressAsset } from '@/entities/tokens';
 import { TransactionStatus, type NewTransaction } from '@/entities/transactions';
 import { type UniqueAsset } from '@/entities/uniqueAssets';
+import { type NativeCurrencyKey } from '@/features/currency/types';
 import { isInsufficientSponsorBalanceError } from '@/features/delegation/sponsoredCalls';
 import { executeSponsoredSend } from '@/features/delegation/sponsoredSend';
 import { executeSponsoredSendIfAvailable } from '@/features/delegation/sponsoredSendExecution';

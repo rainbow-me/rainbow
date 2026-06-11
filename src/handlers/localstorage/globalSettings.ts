@@ -1,4 +1,4 @@
-import { NativeCurrencyKeys } from '@/entities/nativeCurrencyTypes';
+import { NativeCurrencyKeys } from '@/features/currency/types';
 import { Language } from '@/languages';
 import { ChainId } from '@/state/backendNetworks/types';
 

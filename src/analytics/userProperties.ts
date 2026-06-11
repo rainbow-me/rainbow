@@ -1,5 +1,5 @@
-import type { NativeCurrencyKey } from '@/entities/nativeCurrencyTypes';
 import { type CandleResolution, type ChartType } from '@/features/charts/types';
+import type { NativeCurrencyKey } from '@/features/currency/types';
 import type { TierId } from '@/features/rnbw-membership/types';
 import { type Language } from '@/languages';
 import { type ChainId } from '@/state/backendNetworks/types';

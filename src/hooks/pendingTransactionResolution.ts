@@ -10,10 +10,10 @@ import {
   type SettledTransaction,
   type TransactionType,
 } from '@/entities/transactions';
+import type { SupportedCurrencyKey } from '@/features/currency/supportedCurrencies';
 import { applyManagedExecutionStatus } from '@/features/delegation/managedExecutionStatus';
 import { relayService } from '@/features/delegation/relayService';
 import { logger, RainbowError } from '@/logger';
-import type { SupportedCurrencyKey } from '@/references/supportedCurrencies';
 import { fetchRawTransaction } from '@/resources/transactions/transaction';
 import { RelayExecutionStatus, type RelayStatusSnapshot } from '@rainbow-me/delegation';
 

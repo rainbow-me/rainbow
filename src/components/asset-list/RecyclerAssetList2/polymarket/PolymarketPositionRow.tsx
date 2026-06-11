@@ -9,7 +9,7 @@ import { GradientBorderView } from '@/components/gradient-border/GradientBorderV
 import ImgixImage from '@/components/images/ImgixImage';
 import { useLiveTokenValue } from '@/components/live-token-text/LiveTokenText';
 import { Bleed, Box, Text, useColorMode } from '@/design-system';
-import { formatCurrency } from '@/features/perps/utils/formatCurrency';
+import { formatUsd } from '@/features/currency/utils/formatUsd';
 import { CheckOrXBadge } from '@/features/polymarket/components/CheckOrXBadge';
 import { OutcomeBadge } from '@/features/polymarket/components/OutcomeBadge';
 import { WinOrLossBadge } from '@/features/polymarket/components/WinOrLossBadge';
@@ -119,10 +119,10 @@ export const PolymarketPositionRow = memo(function PolymarketPositionRow({ posit
               </Box>
               <Box gap={12} alignItems="flex-end" marginLeft={{ custom: 8 }}>
                 <Text color="label" size="15pt" weight="bold">
-                  {formatCurrency(livePositionValue)}
+                  {formatUsd(livePositionValue)}
                 </Text>
                 <Text color={pnlColor} size="13pt" weight="bold">
-                  {isPositivePnl ? '+' : '-'} {formatCurrency(String(Math.abs(displayPnl)))}
+                  {isPositivePnl ? '+' : '-'} {formatUsd(String(Math.abs(displayPnl)))}
                 </Text>
               </Box>
             </Box>

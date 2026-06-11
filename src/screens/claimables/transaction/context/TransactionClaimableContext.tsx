@@ -8,6 +8,7 @@ import { calculateGasFeeWorklet } from '@/__swaps__/screens/Swap/providers/SyncS
 import { transformRainbowTokenToParsedSearchAsset } from '@/__swaps__/utils/assets';
 import { getDefaultSlippageWorklet } from '@/__swaps__/utils/swaps';
 import { analytics } from '@/analytics';
+import { convertAmountToNativeDisplay, convertAmountToNativeDisplayWorklet } from '@/features/currency/utils/nativeDisplay';
 import { safeBigInt } from '@/features/gas/hooks/useEstimatedGasFee';
 import { getGasSettingsBySpeed, useGasSettings } from '@/features/gas/hooks/useSelectedGas';
 import { GasSpeed } from '@/features/gas/types/gasSpeed';
@@ -16,8 +17,6 @@ import { lessThanOrEqualToWorklet } from '@/framework/core/safeMath';
 import { getProvider } from '@/handlers/web3';
 import {
   convertAmountToBalanceDisplay,
-  convertAmountToNativeDisplay,
-  convertAmountToNativeDisplayWorklet,
   convertAmountToRawAmount,
   convertRawAmountToDecimalFormat,
   formatNumber,

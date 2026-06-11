@@ -6,9 +6,10 @@ import { CARD_ROW_HEIGHT, infoForEventType } from '@/components/Transactions/con
 import { EventIcon } from '@/components/Transactions/TransactionIcons';
 import { type EventInfo, type EventType } from '@/components/Transactions/types';
 import { Bleed, Box, Inline, Text } from '@/design-system';
+import { convertAmountToNativeDisplay } from '@/features/currency/utils/nativeDisplay';
 import { TransactionAssetType, type TransactionSimulationAsset } from '@/graphql/__generated__/metadataPOST';
 import { maybeSignUri } from '@/handlers/imgix';
-import { convertAmountToNativeDisplay, convertRawAmountToBalance } from '@/helpers/utilities';
+import { convertRawAmountToBalance } from '@/helpers/utilities';
 import * as i18n from '@/languages';
 import { useExternalToken } from '@/resources/assets/externalAssetsQuery';
 import { userAssetsStoreManager } from '@/state/assets/userAssetsStoreManager';

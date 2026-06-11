@@ -1,6 +1,6 @@
 import { type TextColor } from '@/design-system/color/palettes';
-import { USD_DECIMALS } from '@/features/perps/constants';
-import { formatCurrency } from '@/features/perps/utils/formatCurrency';
+import { USD_DECIMALS } from '@/features/currency/constants';
+import { formatUsd } from '@/features/currency/utils/formatUsd';
 import { usePolymarketPositions } from '@/features/polymarket/stores/derived/usePolymarketPositions';
 import { getPositionTokenId } from '@/features/polymarket/utils/getPositionTokenId';
 import { toFixedWorklet, truncateToDecimals } from '@/framework/core/safeMath';
@@ -22,12 +22,12 @@ export type PolymarketPositionsSummary = {
 
 const EMPTY_VALUE: PolymarketPositionsSummary = {
   value: '0',
-  valueFormatted: formatCurrency('0'),
+  valueFormatted: formatUsd('0'),
   hasActivePositions: false,
   isNeutralPnl: true,
   isPositivePnl: false,
   textColor: 'labelTertiary',
-  unrealizedPnl: formatCurrency('0'),
+  unrealizedPnl: formatUsd('0'),
   unrealizedPnlPercent: `${toFixedWorklet('0', 2)}%`,
 };
 
@@ -62,12 +62,12 @@ export const usePolymarketPositionsSummary = createDerivedStore<PolymarketPositi
 
     return {
       value: truncateToDecimals(totalLiveValue, USD_DECIMALS),
-      valueFormatted: formatCurrency(totalLiveValue),
+      valueFormatted: formatUsd(totalLiveValue),
       hasActivePositions: true,
       isNeutralPnl,
       isPositivePnl,
       textColor,
-      unrealizedPnl: formatCurrency(abs(totalPnl)),
+      unrealizedPnl: formatUsd(abs(totalPnl)),
       unrealizedPnlPercent: `${toFixedWorklet(abs(pnlPercent), 2)}%`,
     };
   },
