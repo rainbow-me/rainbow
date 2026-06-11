@@ -236,10 +236,10 @@ const getPriceOfNativeAssetForNetwork = ({ chainId }: { chainId: ChainId }) => {
 const getBalanceAmount = (
   selectedGasFee: SelectedGasFee | LegacySelectedGasFee,
   selected: ParsedAddressAsset,
-  l1GasFeeOptimism?: BigNumberish
+  l1GasFeeOptimism?: BigNumberish,
+  accountBalanceAmount?: string
 ) => {
-  const accountAsset = getAccountAsset(selected?.uniqueId);
-  let amount = selected?.balance?.amount ?? accountAsset?.balance?.amount ?? '0';
+  let amount = accountBalanceAmount ?? getAccountAsset(selected?.uniqueId)?.balance?.amount ?? selected?.balance?.amount ?? '0';
   if (selected?.isNativeAsset) {
     if (!isEmpty(selectedGasFee)) {
       const gasFee = selectedGasFee?.gasFee as GasFee;

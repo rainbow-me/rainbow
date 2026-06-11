@@ -262,6 +262,7 @@
         "bridge": "Hold to Bridge",
         "swap_anyway": "Swap Anyway",
         "symbol_balance_too_low": "%{symbol} balance too low",
+        "unable_to_send": "Unable to Send",
         "view_details": "View Details",
         "withdraw": "Hold to Withdraw"
       },

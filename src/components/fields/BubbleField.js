@@ -92,8 +92,10 @@ const BubbleField = (
   );
 
   useEffect(() => {
-    if (valueProp !== value && (!ref.current?.isFocused?.() || wasButtonPressed)) {
-      setValue(valueProp);
+    const shouldSyncPropValue = valueProp !== value && (!ref.current?.isFocused?.() || wasButtonPressed);
+    if (shouldSyncPropValue) setValue(valueProp);
+
+    if (wasButtonPressed && (shouldSyncPropValue || valueProp === value)) {
       setWasButtonPressed(false);
     }
   }, [ref, value, valueProp, wasButtonPressed]);

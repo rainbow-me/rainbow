@@ -5,6 +5,7 @@ type GetSendSubmitButtonStateParams = {
   assetAmount: string;
   canUseSponsoredSend: boolean;
   hasResolvedSponsoredSend: boolean;
+  hasPaidSendGasEstimateFailed: boolean;
   isENSProfileLoaded: boolean;
   isENS: boolean;
   isGasFeeReady: boolean;
@@ -14,13 +15,13 @@ type GetSendSubmitButtonStateParams = {
   isSufficientGas: boolean;
   isValidGas: boolean;
   nativeAssetSymbol: string | undefined;
-  sponsoredAmountIsStale: boolean;
 };
 
 export function getSendSubmitButtonState({
   assetAmount,
   canUseSponsoredSend,
   hasResolvedSponsoredSend,
+  hasPaidSendGasEstimateFailed,
   isENS,
   isENSProfileLoaded,
   isGasFeeReady,
@@ -30,14 +31,12 @@ export function getSendSubmitButtonState({
   isSufficientGas,
   isValidGas,
   nativeAssetSymbol,
-  sponsoredAmountIsStale,
 }: GetSendSubmitButtonStateParams) {
   const isZeroAssetAmount = !greaterThan(assetAmount, 0);
   const hasSufficientGasForSend = isSponsoredSend || isSufficientGas;
   const hasValidGasForSend = isSponsoredSend || isValidGas;
   const isWaitingForGas = !isSponsoredSend && !isGasFeeReady;
-  const isWaitingForSponsoredSend =
-    canUseSponsoredSend && !isZeroAssetAmount && (isPreparingSponsoredSend || sponsoredAmountIsStale || !hasResolvedSponsoredSend);
+  const isWaitingForSponsoredSend = canUseSponsoredSend && !isZeroAssetAmount && (isPreparingSponsoredSend || !hasResolvedSponsoredSend);
 
   if (isZeroAssetAmount) {
     return {
@@ -53,10 +52,24 @@ export function getSendSubmitButtonState({
     };
   }
 
-  if (isWaitingForGas || isWaitingForSponsoredSend) {
+  if (!isSufficientBalance) {
+    return {
+      buttonDisabled: true,
+      buttonLabel: i18n.t(i18n.l.button.confirm_exchange.insufficient_funds),
+    };
+  }
+
+  if (isWaitingForSponsoredSend || (isWaitingForGas && !hasPaidSendGasEstimateFailed)) {
     return {
       buttonDisabled: true,
       buttonLabel: i18n.t(i18n.l.button.confirm_exchange.loading),
+    };
+  }
+
+  if (!isSponsoredSend && hasPaidSendGasEstimateFailed) {
+    return {
+      buttonDisabled: true,
+      buttonLabel: i18n.t(i18n.l.button.confirm_exchange.unable_to_send),
     };
   }
 
@@ -73,13 +86,6 @@ export function getSendSubmitButtonState({
     return {
       buttonDisabled: true,
       buttonLabel: i18n.t(i18n.l.button.confirm_exchange.invalid_fee),
-    };
-  }
-
-  if (!isSufficientBalance) {
-    return {
-      buttonDisabled: true,
-      buttonLabel: i18n.t(i18n.l.button.confirm_exchange.insufficient_funds),
     };
   }
 

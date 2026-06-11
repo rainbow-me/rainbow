@@ -16,6 +16,7 @@ import useExperimentalFlag from '@/config/experimentalHooks';
 import { AssetType } from '@/entities/assetTypes';
 import { type ParsedAddressAsset } from '@/entities/tokens';
 import { type UniqueAsset } from '@/entities/uniqueAssets';
+import { isValidAddress as isValidEthereumAddress } from '@/features/address/core/address';
 import { SmartWalletActivationCallout } from '@/features/delegation/components/SmartWalletActivationCallout';
 import { prefetchENSAvatar } from '@/features/ens/hooks/useENSAvatar';
 import { prefetchENSCover } from '@/features/ens/hooks/useENSCover';
@@ -45,7 +46,6 @@ import useAccountSettings from '@/hooks/useAccountSettings';
 import useCoinListEditOptions from '@/hooks/useCoinListEditOptions';
 import useColorForAsset from '@/hooks/useColorForAsset';
 import useContacts from '@/hooks/useContacts';
-import useMaxInputBalance from '@/hooks/useMaxInputBalance';
 import { usePersistentDominantColorFromImage } from '@/hooks/usePersistentDominantColorFromImage';
 import usePrevious from '@/hooks/usePrevious';
 import useSendableUniqueTokens from '@/hooks/useSendableUniqueTokens';
@@ -69,6 +69,7 @@ import ethereumUtils from '@/utils/ethereumUtils';
 import isLowerCaseMatch from '@/utils/isLowerCaseMatch';
 import safeAreaInsetValues from '@/utils/safeAreaInsetValues';
 
+import { useGetMaxSendableAmount } from '../hooks/useGetMaxSendableAmount';
 import { useSendChainState } from '../hooks/useSendChainState';
 import { useSendSubmit } from '../hooks/useSendSubmit';
 import { useSponsoredSendPreparation } from '../hooks/useSponsoredSendPreparation';
@@ -133,8 +134,8 @@ const validateRecipientDamagedState = (toAddress?: string) => {
   return true;
 };
 
-const hasSufficientAssetBalance = (assetAmount: string, maxInputBalance: string): boolean =>
-  !assetAmount || greaterThanOrEqualTo(maxInputBalance || '0', assetAmount);
+const hasSufficientAssetBalance = (assetAmount: string, maxSendableAmount: string): boolean =>
+  !assetAmount || greaterThanOrEqualTo(maxSendableAmount || '0', assetAmount);
 
 export default function SendSheet() {
   const { navigate } = useNavigation();
@@ -185,13 +186,14 @@ export default function SendSheet() {
   const [recipient, setRecipient] = useState('');
   const [nickname, setNickname] = useState('');
   const [selected, setSelected] = useState<ParsedAddressAsset | UniqueAsset | undefined>();
-  const [maxEnabled, setMaxEnabled] = useState(false);
+  const maxAmountIgnoresGasFeeRef = useRef<boolean | null>(null);
 
   const [debouncedInput] = useDebounce(currentInput, 500);
   const [debouncedRecipient] = useDebounce(recipient, 500);
   const [debouncedAssetAmount] = useDebounce(amountDetails.assetAmount, 500);
 
   const [isValidAddress, setIsValidAddress] = useState(!!recipientOverride);
+  const [hasPaidSendGasEstimateFailed, setHasPaidSendGasEstimateFailed] = useState(false);
   const theme = useTheme();
   const { colors, isDarkMode } = theme;
 
@@ -203,6 +205,10 @@ export default function SendSheet() {
 
   const isUniqueAsset = assetIsUniqueAsset(selected);
   const selectedAddressAsset = selected && assetIsParsedAddressAsset(selected) ? selected : undefined;
+  const selectedAccountAssetBalanceAmount = useUserAssetsStore(state => {
+    if (!selectedAddressAsset) return undefined;
+    return state.getLegacyUserAsset(selectedAddressAsset.uniqueId)?.balance?.amount ?? '0';
+  });
   const isENS = selected?.type === AssetType.ens;
 
   const { currentChainId, currentProvider, isL2 } = useSendChainState({
@@ -217,7 +223,6 @@ export default function SendSheet() {
     hasResolvedSponsoredSend,
     isPreparingSponsoredSend,
     isSponsoredSend,
-    isSponsorshipSupported,
     preparedCall: sponsoredSendPreparedCall,
     preparedCalls: sponsoredSendPreparedCalls,
     shouldShowSponsoredSendGas,
@@ -227,12 +232,14 @@ export default function SendSheet() {
     chainId: currentChainId,
     debouncedAmount: debouncedAssetAmount,
     isENS,
+    isSufficientBalance: amountDetails.isSufficientBalance,
     isValidAddress,
     provider: currentProvider,
     selected: selectedAddressAsset,
     toAddress,
   });
-  const { maxInputBalance, updateMaxInputBalance } = useMaxInputBalance({ ignoreGasFee: isSponsorshipSupported });
+
+  const getMaxSendableAmount = useGetMaxSendableAmount();
 
   let colorForAsset = useColorForAsset(selected, undefined, false, true);
   const uniqueAssetColor = usePersistentDominantColorFromImage(isUniqueAsset ? selected?.images.lowResUrl : null) ?? colors.appleBlue;
@@ -246,8 +253,22 @@ export default function SendSheet() {
     supportedRecordsOnly: false,
   });
 
-  const sendUpdateAssetAmount = useCallback(
-    (newAssetAmount: string) => {
+  const setAmountDetailsIfChanged = useCallback((nextAmountDetails: typeof amountDetails) => {
+    setAmountDetails(currentAmountDetails => {
+      if (
+        currentAmountDetails.assetAmount === nextAmountDetails.assetAmount &&
+        currentAmountDetails.isSufficientBalance === nextAmountDetails.isSufficientBalance &&
+        currentAmountDetails.nativeAmount === nextAmountDetails.nativeAmount
+      ) {
+        return currentAmountDetails;
+      }
+
+      return nextAmountDetails;
+    });
+  }, []);
+
+  const setAmountDetailsFromAssetAmount = useCallback(
+    (newAssetAmount: string, maxSendableAmount: string) => {
       const _assetAmount = newAssetAmount.replace(/[^0-9.]/g, '');
       let _nativeAmount = '';
       if (_assetAmount.length) {
@@ -256,21 +277,34 @@ export default function SendSheet() {
         _nativeAmount = formatInputDecimals(convertedNativeAmount, _assetAmount);
       }
 
-      const _isSufficientBalance = hasSufficientAssetBalance(_assetAmount, maxInputBalance);
+      const _isSufficientBalance = hasSufficientAssetBalance(_assetAmount, maxSendableAmount);
 
-      setAmountDetails({
+      setAmountDetailsIfChanged({
         assetAmount: _assetAmount,
         isSufficientBalance: _isSufficientBalance,
         nativeAmount: _nativeAmount,
       });
     },
-    [isUniqueAsset, maxInputBalance, nativeCurrency, selected]
+    [isUniqueAsset, nativeCurrency, selected, setAmountDetailsIfChanged]
+  );
+
+  const setAssetAmount = useCallback(
+    (newAssetAmount: string) => {
+      setAmountDetailsFromAssetAmount(
+        newAssetAmount,
+        getMaxSendableAmount(selected, {
+          accountBalanceAmount: selectedAccountAssetBalanceAmount,
+          ignoreGasFee: shouldShowSponsoredSendGas,
+        })
+      );
+    },
+    [getMaxSendableAmount, selected, selectedAccountAssetBalanceAmount, setAmountDetailsFromAssetAmount, shouldShowSponsoredSendGas]
   );
 
   const sendUpdateSelected = useCallback(
     (newSelected: ParsedAddressAsset | UniqueAsset | undefined) => {
       if (isEqual(newSelected, selected)) return;
-      updateMaxInputBalance(newSelected);
+      maxAmountIgnoresGasFeeRef.current = null;
       if (assetIsUniqueAsset(newSelected)) {
         setAmountDetails({
           assetAmount: '1',
@@ -286,19 +320,22 @@ export default function SendSheet() {
         }
       } else {
         setSelected(newSelected);
-        sendUpdateAssetAmount('');
+        setAssetAmount('');
       }
     },
-    [selected, sendUpdateAssetAmount, updateMaxInputBalance]
+    [selected, setAssetAmount]
   );
 
   // Update all fields passed via params if needed
   useEffect(() => {
     if (!selected || isUniqueAsset) return;
 
-    const newMaxInputBalance = updateMaxInputBalance(selected);
+    const maxSendableAmount = getMaxSendableAmount(selected, {
+      accountBalanceAmount: selectedAccountAssetBalanceAmount,
+      ignoreGasFee: shouldShowSponsoredSendGas,
+    });
     setAmountDetails(currentAmountDetails => {
-      const isSufficientBalance = hasSufficientAssetBalance(currentAmountDetails.assetAmount, newMaxInputBalance);
+      const isSufficientBalance = hasSufficientAssetBalance(currentAmountDetails.assetAmount, maxSendableAmount);
       if (currentAmountDetails.isSufficientBalance === isSufficientBalance) return currentAmountDetails;
 
       return {
@@ -306,7 +343,7 @@ export default function SendSheet() {
         isSufficientBalance,
       };
     });
-  }, [isUniqueAsset, isSponsorshipSupported, selected, updateMaxInputBalance]);
+  }, [getMaxSendableAmount, isUniqueAsset, selected, selectedAccountAssetBalanceAmount, shouldShowSponsoredSendGas]);
 
   useEffect(() => {
     if (recipientOverride && !recipient) {
@@ -316,31 +353,17 @@ export default function SendSheet() {
 
     if (assetOverride && assetOverride !== prevAssetOverride) {
       sendUpdateSelected(assetOverride);
-      updateMaxInputBalance(assetOverride);
     }
 
-    if (nativeAmountOverride && maxInputBalance) {
-      sendUpdateAssetAmount(nativeAmountOverride);
+    if (nativeAmountOverride) {
+      setAssetAmount(nativeAmountOverride);
     }
-  }, [
-    amountDetails,
-    assetOverride,
-    maxInputBalance,
-    nativeAmountOverride,
-    prevAssetOverride,
-    recipient,
-    recipientOverride,
-    sendUpdateAssetAmount,
-    sendUpdateSelected,
-    updateMaxInputBalance,
-  ]);
+  }, [assetOverride, nativeAmountOverride, prevAssetOverride, recipient, recipientOverride, setAssetAmount, sendUpdateSelected]);
 
   const onChangeNativeAmount = useCallback(
     (newNativeAmount: string) => {
       if (!isString(newNativeAmount)) return;
-      if (maxEnabled) {
-        setMaxEnabled(false);
-      }
+      maxAmountIgnoresGasFeeRef.current = null;
       const _nativeAmount = newNativeAmount.replace(/[^0-9.]/g, '');
       let _assetAmount = '';
       if (_nativeAmount.length) {
@@ -350,37 +373,64 @@ export default function SendSheet() {
         _assetAmount = formatInputDecimals(convertedAssetAmount, _nativeAmount);
       }
 
-      const _isSufficientBalance = hasSufficientAssetBalance(_assetAmount, maxInputBalance);
-      setAmountDetails({
+      const maxSendableAmount = getMaxSendableAmount(selected, {
+        accountBalanceAmount: selectedAccountAssetBalanceAmount,
+        ignoreGasFee: shouldShowSponsoredSendGas,
+      });
+      const _isSufficientBalance = hasSufficientAssetBalance(_assetAmount, maxSendableAmount);
+      setAmountDetailsIfChanged({
         assetAmount: _assetAmount,
         isSufficientBalance: _isSufficientBalance,
         nativeAmount: _nativeAmount,
       });
       analytics.track(analytics.event.changedNativeCurrencyInputSend);
     },
-    [maxEnabled, maxInputBalance, isUniqueAsset, selected]
+    [
+      getMaxSendableAmount,
+      isUniqueAsset,
+      selected,
+      selectedAccountAssetBalanceAmount,
+      setAmountDetailsIfChanged,
+      shouldShowSponsoredSendGas,
+    ]
   );
 
+  const setMaxAssetAmount = useCallback(
+    (ignoreGasFee: boolean) => {
+      const maxSendableAmount = getMaxSendableAmount(selected, {
+        accountBalanceAmount: selectedAccountAssetBalanceAmount,
+        ignoreGasFee,
+      });
+      setAmountDetailsFromAssetAmount(maxSendableAmount, maxSendableAmount);
+    },
+    [getMaxSendableAmount, selected, selectedAccountAssetBalanceAmount, setAmountDetailsFromAssetAmount]
+  );
+
+  const sendMaxBalance = useCallback(() => {
+    const ignoreGasFee = maxAmountIgnoresGasFeeRef.current ?? canUseSponsoredSend;
+    maxAmountIgnoresGasFeeRef.current = ignoreGasFee;
+    setMaxAssetAmount(ignoreGasFee);
+  }, [canUseSponsoredSend, setMaxAssetAmount]);
+
   useEffect(() => {
-    if (maxEnabled) {
-      const newBalanceAmount = updateMaxInputBalance(selected);
-      sendUpdateAssetAmount(newBalanceAmount);
-    }
-    // we want to listen to the gas fee and update when it changes
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [selected, sendUpdateAssetAmount, updateMaxInputBalance, selectedGasFee, maxEnabled]);
+    const maxAmountIgnoresGasFee = maxAmountIgnoresGasFeeRef.current;
+    if (maxAmountIgnoresGasFee === null || !selected || isUniqueAsset) return;
+
+    const ignoreGasFee = maxAmountIgnoresGasFee && !(hasResolvedSponsoredSend && !isSponsoredSend);
+    maxAmountIgnoresGasFeeRef.current = ignoreGasFee;
+
+    setMaxAssetAmount(ignoreGasFee);
+  }, [hasResolvedSponsoredSend, isSponsoredSend, isUniqueAsset, selected, selectedGasFee, setMaxAssetAmount]);
 
   const onChangeAssetAmount = useCallback(
     (newAssetAmount: string) => {
       if (isString(newAssetAmount)) {
-        if (maxEnabled) {
-          setMaxEnabled(false);
-        }
-        sendUpdateAssetAmount(newAssetAmount);
+        maxAmountIgnoresGasFeeRef.current = null;
+        setAssetAmount(newAssetAmount);
         analytics.track(analytics.event.changedTokenInputSend);
       }
     },
-    [maxEnabled, sendUpdateAssetAmount]
+    [setAssetAmount]
   );
 
   useEffect(() => {
@@ -448,6 +498,7 @@ export default function SendSheet() {
     return getSendSubmitButtonState({
       assetAmount: amountDetails.assetAmount,
       canUseSponsoredSend,
+      hasPaidSendGasEstimateFailed,
       hasResolvedSponsoredSend,
       isENS,
       isENSProfileLoaded: ensProfile.isSuccess,
@@ -458,16 +509,15 @@ export default function SendSheet() {
       isSufficientGas,
       isValidGas,
       nativeAssetSymbol: useBackendNetworksStore.getState().getChainsNativeAsset()[currentChainId || ChainId.mainnet]?.symbol,
-      sponsoredAmountIsStale: debouncedAssetAmount !== amountDetails.assetAmount,
     });
   }, [
     amountDetails.assetAmount,
     amountDetails.isSufficientBalance,
     canUseSponsoredSend,
-    debouncedAssetAmount,
     isENS,
     ensProfile.isSuccess,
     gasFeeParamsBySpeed,
+    hasPaidSendGasEstimateFailed,
     selectedGasFee,
     toAddress,
     currentChainId,
@@ -478,6 +528,8 @@ export default function SendSheet() {
     isSufficientGas,
     isValidGas,
   ]);
+
+  const shouldHideGasButton = shouldShowSponsoredSendGas || (hasPaidSendGasEstimateFailed && greaterThan(amountDetails.assetAmount, 0));
 
   const showConfirmationSheet = useCallback(async () => {
     if (buttonDisabled || !selected) return;
@@ -555,7 +607,7 @@ export default function SendSheet() {
   const onResetAssetSelection = useCallback(() => {
     analytics.track(analytics.event.resetAssetSelectionSend);
     sendUpdateSelected(undefined);
-    setMaxEnabled(false);
+    maxAmountIgnoresGasFeeRef.current = null;
   }, [sendUpdateSelected]);
 
   const onChangeInput = useCallback(
@@ -607,59 +659,95 @@ export default function SendSheet() {
   }, [checkAddress, debouncedInput]);
 
   useEffect(() => {
-    if (!currentProvider?._network?.chainId) return;
+    let isStale = false;
+
+    if (!currentProvider?._network?.chainId) {
+      setHasPaidSendGasEstimateFailed(false);
+      return;
+    }
 
     const assetChainId = selected?.chainId;
     const currentProviderChainId = currentProvider._network.chainId;
 
     if (
-      selected &&
-      !!accountAddress &&
-      !isSponsoredSend &&
-      greaterThan(amountDetails.assetAmount, 0) &&
-      assetChainId === currentChainId &&
-      currentProviderChainId === currentChainId &&
-      toAddress &&
-      isValidAddress &&
-      !isEmpty(selected)
+      !selected ||
+      !accountAddress ||
+      isSponsoredSend ||
+      !greaterThan(amountDetails.assetAmount, 0) ||
+      !amountDetails.isSufficientBalance ||
+      assetChainId !== currentChainId ||
+      currentProviderChainId !== currentChainId ||
+      !toAddress ||
+      !isValidAddress
     ) {
-      estimateGasLimit(
-        {
-          address: accountAddress,
-          amount: amountDetails.assetAmount,
-          asset: selected as ParsedAddressAsset,
-          recipient: toAddress,
-        },
-        false,
-        currentProvider,
-        currentChainId
-      )
-        .then(async gasLimit => {
-          if (gasLimit && useBackendNetworksStore.getState().getNeedsL1SecurityFeeChains().includes(currentChainId)) {
-            updateTxFeeForOptimism(gasLimit);
-          } else {
-            updateTxFee(gasLimit, null);
-          }
-        })
-        .catch(e => {
-          logger.error(new RainbowError(`[SendSheet]: error calculating gas limit: ${e}`));
-          updateTxFee(null, null);
-        });
+      setHasPaidSendGasEstimateFailed(false);
+      return;
     }
+
+    const updatePaidSendFee = async () => {
+      setHasPaidSendGasEstimateFailed(false);
+
+      let gasLimit: string | null = null;
+      try {
+        gasLimit = await estimateGasLimit(
+          {
+            address: accountAddress,
+            amount: amountDetails.assetAmount,
+            asset: selected,
+            recipient: toAddress,
+          },
+          false,
+          currentProvider,
+          currentChainId
+        );
+      } catch (e) {
+        if (isStale) return;
+        logger.error(new RainbowError(`[SendSheet]: error estimating gas limit: ${e}`));
+        setHasPaidSendGasEstimateFailed(true);
+        updateTxFee(null, null);
+        return;
+      }
+
+      if (isStale) return;
+      if (!gasLimit) {
+        setHasPaidSendGasEstimateFailed(true);
+        updateTxFee(null, null);
+        return;
+      }
+
+      try {
+        if (useBackendNetworksStore.getState().getNeedsL1SecurityFeeChains().includes(currentChainId)) {
+          await updateTxFeeForOptimism(gasLimit);
+        } else {
+          updateTxFee(gasLimit, null);
+        }
+        if (isStale) return;
+        setHasPaidSendGasEstimateFailed(false);
+      } catch (e) {
+        if (isStale) return;
+        logger.error(new RainbowError(`[SendSheet]: error calculating tx fee: ${e}`));
+        setHasPaidSendGasEstimateFailed(false);
+        updateTxFee(null, null);
+      }
+    };
+
+    updatePaidSendFee();
+
+    return () => {
+      isStale = true;
+    };
   }, [
     accountAddress,
     amountDetails.assetAmount,
+    amountDetails.isSufficientBalance,
     currentProvider,
     isValidAddress,
     isSponsoredSend,
-    recipient,
     selected,
     toAddress,
     updateTxFee,
     updateTxFeeForOptimism,
-    chainId,
     currentChainId,
-    isUniqueAsset,
   ]);
 
   useEffect(() => {
@@ -712,6 +800,7 @@ export default function SendSheet() {
             loadingEnsSuggestions={loadingEnsSuggestions}
             onPressContact={(recipient: string, nickname: string) => {
               setIsValidAddress(true);
+              setToAddress(isValidEthereumAddress(recipient) ? recipient : '');
               setRecipient(recipient);
               setNickname(nickname);
             }}
@@ -780,10 +869,10 @@ export default function SendSheet() {
             onChangeNativeAmount={onChangeNativeAmount}
             onResetAssetSelection={onResetAssetSelection}
             selected={selected}
-            sendMaxBalance={() => setMaxEnabled(true)}
+            sendMaxBalance={sendMaxBalance}
             setLastFocusedInputHandle={setLastFocusedInputHandle}
             txSpeedRenderer={
-              shouldShowSponsoredSendGas ? (
+              shouldHideGasButton ? (
                 <View style={{ height: 18 }} />
               ) : (
                 <GasSpeedButton

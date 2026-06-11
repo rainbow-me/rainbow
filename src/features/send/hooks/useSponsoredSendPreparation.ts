@@ -1,13 +1,12 @@
-import { useEffect, useMemo, useRef, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 
 import { type StaticJsonRpcProvider } from '@ethersproject/providers';
-import { isAddress, type Address } from 'viem';
+import { isAddress } from 'viem';
 
 import { type ParsedAddressAsset } from '@/entities/tokens';
 import { isPreparedCallsExecutionSponsored } from '@/features/delegation/calls';
 import { predictSponsoredSend, prepareSponsoredSend } from '@/features/delegation/sponsoredSend';
 import { buildSendCallFromSendDetails } from '@/features/delegation/sponsoredSendExecution';
-import { supportsDelegatedExecution } from '@/features/delegation/willDelegate';
 import { parsePositiveRawAmount } from '@/framework/core/evm/units';
 import { ensureError, logger } from '@/logger';
 import { useRemoteConfig } from '@/model/remoteConfig';
@@ -16,11 +15,8 @@ import { type ChainId } from '@/state/backendNetworks/types';
 import { type Call, type PreparedCallsExecution } from '@rainbow-me/delegation';
 
 type PreparedSponsoredSendState =
-  | { call: Call; key: string; preparedCalls: PreparedCallsExecution | null }
-  | { call: null; key: string; preparedCalls: null };
-
-type DelegationSupportCache = Map<string, Promise<boolean>>;
-type DelegationSupportLoader = (params: { address: Address; chainId: ChainId }) => Promise<boolean>;
+  | { accountAddress: string; call: Call; chainId: ChainId; key: string; preparedCalls: PreparedCallsExecution }
+  | { accountAddress: string; call: null; chainId: ChainId; key: string; preparedCalls: null };
 
 type UseSponsoredSendPreparationParams = {
   accountAddress: string | undefined;
@@ -28,52 +24,24 @@ type UseSponsoredSendPreparationParams = {
   chainId: ChainId;
   debouncedAmount: string;
   isENS: boolean;
+  isSufficientBalance: boolean;
   isValidAddress: boolean;
   provider: StaticJsonRpcProvider | undefined;
   selected: ParsedAddressAsset | undefined;
   toAddress: string;
 };
 
-export function getDelegationSupportRequestKey({ accountAddress, chainId }: { accountAddress: Address; chainId: ChainId }): string {
-  return [accountAddress.toLowerCase(), chainId].join(':');
-}
-
-export function getCachedDelegationSupport({
-  accountAddress,
-  cache,
-  chainId,
-  loadSupport = supportsDelegatedExecution,
-}: {
-  accountAddress: Address;
-  cache: DelegationSupportCache;
-  chainId: ChainId;
-  loadSupport?: DelegationSupportLoader;
-}): Promise<boolean> {
-  const cacheKey = getDelegationSupportRequestKey({ accountAddress, chainId });
-  const cachedSupport = cache.get(cacheKey);
-  if (cachedSupport) return cachedSupport;
-
-  const supportRequest = loadSupport({ address: accountAddress, chainId }).catch(error => {
-    cache.delete(cacheKey);
-    throw error;
-  });
-  cache.set(cacheKey, supportRequest);
-  return supportRequest;
-}
-
-export function getSponsoredSendRequestKey({
-  accountAddress,
-  amount,
-  chainId,
-  selected,
-  toAddress,
-}: {
+type SponsoredSendRequest = {
   accountAddress: string;
-  amount: string;
   chainId: ChainId;
   selected: Pick<ParsedAddressAsset, 'address' | 'decimals' | 'uniqueId'>;
   toAddress: string;
-}): string | null {
+};
+
+export function getSponsoredSendRequestKey(
+  { accountAddress, chainId, selected, toAddress }: SponsoredSendRequest,
+  amount: string
+): string | null {
   const rawAmount = parsePositiveRawAmount(amount, selected.decimals);
   if (rawAmount === null) return null;
 
@@ -94,6 +62,7 @@ export function useSponsoredSendPreparation({
   chainId,
   debouncedAmount,
   isENS,
+  isSufficientBalance,
   isValidAddress,
   provider,
   selected,
@@ -101,50 +70,49 @@ export function useSponsoredSendPreparation({
 }: UseSponsoredSendPreparationParams) {
   const sponsorshipEligibleChainIds = useBackendNetworksStore(state => state.getSponsorshipEligibleChainIds());
   const { sponsored_sends_enabled: sponsoredSendsEnabled } = useRemoteConfig('sponsored_sends_enabled');
-  const delegationSupportCacheRef = useRef<DelegationSupportCache>(new Map());
 
   const canUseSponsoredSend = useMemo(() => {
-    if (!sponsoredSendsEnabled || !accountAddress || !provider || !selected || isENS || !isValidAddress || !toAddress) return false;
+    if (!sponsoredSendsEnabled || !accountAddress || !provider || !selected || isENS || !isValidAddress) return false;
 
     return predictSponsoredSend({
       address: accountAddress,
       chainId,
       sponsorshipEligibleChainIds,
     });
-  }, [accountAddress, chainId, isENS, isValidAddress, provider, selected, sponsoredSendsEnabled, sponsorshipEligibleChainIds, toAddress]);
+  }, [accountAddress, chainId, isENS, isValidAddress, provider, selected, sponsoredSendsEnabled, sponsorshipEligibleChainIds]);
 
-  const sponsoredSendRequestKey =
-    accountAddress && selected && toAddress
-      ? getSponsoredSendRequestKey({
-          accountAddress,
-          amount,
-          chainId,
-          selected,
-          toAddress,
-        })
-      : null;
+  const sponsoredSendRequest = useMemo(
+    () => (accountAddress && selected && toAddress ? { accountAddress, chainId, selected, toAddress } : null),
+    [accountAddress, chainId, selected, toAddress]
+  );
 
-  const debouncedSponsoredSendRequestKey =
-    accountAddress && selected && toAddress
-      ? getSponsoredSendRequestKey({
-          accountAddress,
-          amount: debouncedAmount,
-          chainId,
-          selected,
-          toAddress,
-        })
-      : null;
+  const currentSponsoredSendKey = useMemo(
+    () => (sponsoredSendRequest ? getSponsoredSendRequestKey(sponsoredSendRequest, amount) : null),
+    [amount, sponsoredSendRequest]
+  );
+
+  const debouncedSponsoredSendKey = useMemo(
+    () => (sponsoredSendRequest ? getSponsoredSendRequestKey(sponsoredSendRequest, debouncedAmount) : null),
+    [debouncedAmount, sponsoredSendRequest]
+  );
 
   const [preparedSponsoredSend, setPreparedSponsoredSend] = useState<PreparedSponsoredSendState | null>(null);
   const [isPreparingSponsoredSend, setIsPreparingSponsoredSend] = useState(false);
-  const [isSponsorshipSupported, setIsSponsorshipSupported] = useState(false);
-  const hasResolvedSponsoredSend = preparedSponsoredSend?.key === sponsoredSendRequestKey;
+
+  const hasResolvedSponsoredSend = preparedSponsoredSend?.key === currentSponsoredSendKey;
   const preparedCalls = hasResolvedSponsoredSend ? preparedSponsoredSend.preparedCalls : null;
   const isSponsoredSend = isPreparedCallsExecutionSponsored(preparedCalls);
   const preparedCall = hasResolvedSponsoredSend && isSponsoredSend ? preparedSponsoredSend.call : null;
+
+  const sponsorshipUnavailableForCurrentChain =
+    preparedSponsoredSend?.accountAddress.toLowerCase() === accountAddress?.toLowerCase() &&
+    preparedSponsoredSend?.chainId === chainId &&
+    !isPreparedCallsExecutionSponsored(preparedSponsoredSend.preparedCalls);
+
   const shouldShowSponsoredSendGas =
     canUseSponsoredSend &&
-    (!sponsoredSendRequestKey || isPreparingSponsoredSend || debouncedAmount !== amount || !hasResolvedSponsoredSend || isSponsoredSend);
+    !sponsorshipUnavailableForCurrentChain &&
+    (!currentSponsoredSendKey || isPreparingSponsoredSend || !hasResolvedSponsoredSend || isSponsoredSend);
 
   useEffect(() => {
     let isStale = false;
@@ -157,14 +125,13 @@ export function useSponsoredSendPreparation({
         !isAddress(accountAddress) ||
         !selected ||
         !provider ||
-        !debouncedSponsoredSendRequestKey
+        !isSufficientBalance ||
+        !debouncedSponsoredSendKey
       ) {
-        setPreparedSponsoredSend(null);
         setIsPreparingSponsoredSend(false);
         return;
       }
 
-      setPreparedSponsoredSend(null);
       setIsPreparingSponsoredSend(true);
 
       try {
@@ -176,30 +143,26 @@ export function useSponsoredSendPreparation({
         });
         if (abortController.signal.aborted) return;
 
-        const delegationSupported = await getCachedDelegationSupport({
-          accountAddress,
-          cache: delegationSupportCacheRef.current,
-          chainId,
-        });
-        if (abortController.signal.aborted) return;
-
         const nextPreparedCalls = await prepareSponsoredSend({
           accountAddress,
           call,
           chainId,
-          delegationSupported,
           signal: abortController.signal,
         });
 
         if (!isStale) {
-          setPreparedSponsoredSend({ call, key: debouncedSponsoredSendRequestKey, preparedCalls: nextPreparedCalls });
+          setPreparedSponsoredSend(
+            nextPreparedCalls
+              ? { accountAddress, call, chainId, key: debouncedSponsoredSendKey, preparedCalls: nextPreparedCalls }
+              : { accountAddress, call: null, chainId, key: debouncedSponsoredSendKey, preparedCalls: null }
+          );
         }
       } catch (error) {
         if (abortController.signal.aborted) return;
         const message = ensureError(error).message;
         logger.warn('[useSponsoredSendPreparation]: sponsored send preparation failed', { message });
         if (!isStale) {
-          setPreparedSponsoredSend({ call: null, key: debouncedSponsoredSendRequestKey, preparedCalls: null });
+          setPreparedSponsoredSend({ accountAddress, call: null, chainId, key: debouncedSponsoredSendKey, preparedCalls: null });
         }
       } finally {
         if (!isStale) {
@@ -214,38 +177,23 @@ export function useSponsoredSendPreparation({
       isStale = true;
       abortController.abort();
     };
-  }, [accountAddress, canUseSponsoredSend, chainId, debouncedAmount, debouncedSponsoredSendRequestKey, provider, selected, toAddress]);
-
-  useEffect(() => {
-    if (!canUseSponsoredSend || !accountAddress || !isAddress(accountAddress)) {
-      setIsSponsorshipSupported(false);
-      return;
-    }
-
-    let isStale = false;
-    getCachedDelegationSupport({
-      accountAddress,
-      cache: delegationSupportCacheRef.current,
-      chainId,
-    })
-      .then(supported => {
-        if (!isStale) setIsSponsorshipSupported(supported);
-      })
-      .catch(() => {
-        if (!isStale) setIsSponsorshipSupported(false);
-      });
-
-    return () => {
-      isStale = true;
-    };
-  }, [accountAddress, canUseSponsoredSend, chainId]);
+  }, [
+    accountAddress,
+    canUseSponsoredSend,
+    chainId,
+    debouncedAmount,
+    debouncedSponsoredSendKey,
+    isSufficientBalance,
+    provider,
+    selected,
+    toAddress,
+  ]);
 
   return {
     canUseSponsoredSend,
     hasResolvedSponsoredSend,
     isPreparingSponsoredSend,
     isSponsoredSend,
-    isSponsorshipSupported,
     preparedCall,
     preparedCalls,
     shouldShowSponsoredSendGas,
