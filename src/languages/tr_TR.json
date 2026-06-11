@@ -3420,7 +3420,7 @@
         "this_week": "Bu hafta",
         "game_best_of": "Oyun %{currentPeriod} - %{bestOf} En İyi",
         "final": "Final",
-        "no_games": "Bu hafta maç yok"
+        "no_games": "Bugün veya yarın oyun yok"
       },
       "outcomes": {
         "yes": "Evet",
