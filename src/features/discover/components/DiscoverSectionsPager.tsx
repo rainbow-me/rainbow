@@ -76,7 +76,8 @@ export const DiscoverSectionsPager = memo(function DiscoverSectionsPager({ scrol
   return (
     <Box style={styles.container} testID="discover-sections-pager">
       <SmoothPager
-        enableSwipeToGoForward="always"
+        enableSwipeToGoBack={false}
+        enableSwipeToGoForward={false}
         fillHeight
         initialPage={initialSection}
         key={pagerKey}
@@ -115,11 +116,11 @@ const DiscoverSectionsFallback = memo(function DiscoverSectionsFallback() {
   return (
     <ScrollView
       automaticallyAdjustsScrollIndicatorInsets={false}
-      contentContainerStyle={styles.fallbackContent}
+      contentContainerStyle={[styles.fallbackContent, Platform.OS === 'android' && { paddingBottom: bottomInset }]}
       refreshControl={<DiscoverRefreshControl />}
       showsVerticalScrollIndicator={false}
       contentInset={{ bottom: bottomInset }}
-      style={[styles.scrollView, { paddingBottom: Platform.OS === 'android' ? bottomInset : 0 }]}
+      style={styles.scrollView}
       testID="discover-section-fallback"
     >
       {Array.from({ length: FALLBACK_SECTION_COUNT }, (_, sectionIndex) => (
@@ -205,7 +206,7 @@ const DiscoverSectionScrollView = memo(function DiscoverSectionScrollView({
   return (
     <SectionScrollView
       automaticallyAdjustsScrollIndicatorInsets={false}
-      contentContainerStyle={styles.scrollContent}
+      contentContainerStyle={[styles.scrollContent, Platform.OS === 'android' && { paddingBottom: bottomInset }]}
       onScroll={sectionScrollHandler}
       pointerEvents={isActive ? 'auto' : 'none'}
       ref={setScrollViewRef}
@@ -213,7 +214,7 @@ const DiscoverSectionScrollView = memo(function DiscoverSectionScrollView({
       scrollEventThrottle={16}
       showsVerticalScrollIndicator={false}
       contentInset={{ bottom: bottomInset }}
-      style={[styles.scrollView, { paddingBottom: Platform.OS === 'android' ? bottomInset : 0 }]}
+      style={styles.scrollView}
       testID={`discover-section-page-${sectionIndex + 1}`}
     >
       <Box testID={`discover-section-${section.id}`}>

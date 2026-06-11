@@ -25,13 +25,6 @@ export enum Source {
   Socket = 'socket',
 }
 
-export interface UnlockActionParameters {
-  amount: string;
-  assetToUnlock: ParsedAsset;
-  contractAddress: Address;
-  chainId: number;
-}
-
 export type SwapMetadata = {
   slippage: number;
   route: Source;
@@ -82,12 +75,6 @@ export interface RapUnlockActionParameters {
 }
 
 export type RapClaimClaimableActionParameters = { claimTx: TransactionClaimableTxPayload; asset: ParsedAsset };
-
-export type RapActionParameters =
-  | RapSwapActionParameters<'swap'>
-  | RapSwapActionParameters<'crosschainSwap'>
-  | RapUnlockActionParameters
-  | RapClaimClaimableActionParameters;
 
 export interface RapActionTransaction {
   hash: string | null;
@@ -159,9 +146,4 @@ export interface PrepareActionProps<T extends RapActionTypes> {
   parameters: RapActionParameterMap[T];
   wallet: Signer;
   quote: PrepareActionQuoteMap[T];
-}
-
-export interface WalletExecuteRapProps {
-  rapActionParameters: RapSwapActionParameters<'swap' | 'crosschainSwap' | 'claimClaimable'>;
-  type: RapTypes;
 }

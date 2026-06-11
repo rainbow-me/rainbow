@@ -43,7 +43,6 @@ export const calculateTimestampOfThisYear = () => {
   return d.getTime();
 };
 
-export const timestampsCalculation = new Date();
 export const todayTimestamp = calculateTimestampOfToday();
 export const yesterdayTimestamp = calculateTimestampOfYesterday();
 export const thisMonthTimestamp = calculateTimestampOfThisMonth();

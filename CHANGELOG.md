@@ -21,6 +21,38 @@ and this project adheres to [Semantic Versioning](http://semver.org/)
 
 ### Testing
 
+## [2.0.35](https://github.com/rainbow-me/rainbow/releases/tag/v2.0.35)
+
+### Added
+
+- Add sports league deep links to predictions (https://github.com/rainbow-me/rainbow/pull/7537)
+- Add v2 placements and surface schema support (https://github.com/rainbow-me/rainbow/pull/7538)
+- Add dynamic market surfaces with list and carousel layouts to discover (https://github.com/rainbow-me/rainbow/pull/7539)
+- Add dynamic token market placements to discover (https://github.com/rainbow-me/rainbow/pull/7540)
+- Add dynamic perp market placements to discover (https://github.com/rainbow-me/rainbow/pull/7541)
+- Add dynamic prediction and sports placements to discover (https://github.com/rainbow-me/rainbow/pull/7542)
+- Add live sparkline pulsed chart to charts (https://github.com/rainbow-me/rainbow/pull/7543)
+- Add discover v2 swipe navigation and cutover (https://github.com/rainbow-me/rainbow/pull/7553)
+- Add Discover v2 card and section analytics (https://github.com/rainbow-me/rainbow/pull/7557)
+- Add sponsorship to Unstake (https://github.com/rainbow-me/rainbow/pull/7530)
+- Add FIFA sports league filter to predictions (https://github.com/rainbow-me/rainbow/pull/7580)
+
+### Changed
+
+- Refactor perps to share price-change colors, leverage badge, and chart fetch (https://github.com/rainbow-me/rainbow/pull/7535)
+- Refactor predictions to extract reusable sports event content (https://github.com/rainbow-me/rainbow/pull/7536)
+- Bump iOS and Android to v2.0.35 (https://github.com/rainbow-me/rainbow/pull/7561)
+- Deprecate placements v1 (https://github.com/rainbow-me/rainbow/pull/7554)
+- Deprecate trending tokens (https://github.com/rainbow-me/rainbow/pull/7555)
+- Remove unused Zerion transaction types (https://github.com/rainbow-me/rainbow/pull/7574)
+
+### Fixed
+
+- Fix stale JS bundle in iOS E2E runs on develop (https://github.com/rainbow-me/rainbow/pull/7581)
+- Treat test builds as non-store installs in iOS E2E (https://github.com/rainbow-me/rainbow/pull/7559)
+- Show all predictions in large placements in discover (https://github.com/rainbow-me/rainbow/pull/7578)
+- Disable swipe navigation and fix tab bar padding in discover (https://github.com/rainbow-me/rainbow/pull/7579)
+
 ## [2.0.34](https://github.com/rainbow-me/rainbow/releases/tag/v2.0.34)
 
 ### Added
