@@ -4,6 +4,7 @@ import Animated from 'react-native-reanimated';
 
 import { useLiveTokenValue } from '@/components/live-token-text/LiveTokenText';
 import { Box } from '@/design-system';
+import { formatUsd } from '@/features/currency/utils/formatUsd';
 import { AddTriggerOrderButton } from '@/features/perps/components/AddTriggerOrderButton';
 import { TriggerOrderCard } from '@/features/perps/components/TriggerOrderCard';
 import { LAYOUT_ANIMATION } from '@/features/perps/constants';
@@ -11,7 +12,6 @@ import { hlNewPositionStoreActions, useHlNewPositionStore } from '@/features/per
 import { PerpPositionSide, TriggerOrderSource, TriggerOrderType } from '@/features/perps/types';
 import { getHyperliquidTokenId } from '@/features/perps/utils';
 import { estimatePnl } from '@/features/perps/utils/estimatePnl';
-import { formatCurrency } from '@/features/perps/utils/formatCurrency';
 import { mulWorklet } from '@/framework/core/safeMath';
 
 export const TriggerOrdersSection = function TriggerOrdersSection() {
@@ -44,7 +44,7 @@ export const TriggerOrdersSection = function TriggerOrdersSection() {
 
         const fraction = order.orderFraction ?? '1';
         const pnlForFraction = fraction === '1' ? estimatedPnl : mulWorklet(estimatedPnl, fraction);
-        acc[order.localId] = formatCurrency(pnlForFraction);
+        acc[order.localId] = formatUsd(pnlForFraction);
         return acc;
       },
       {} as Record<string, string>

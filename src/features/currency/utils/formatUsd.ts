@@ -9,8 +9,8 @@ import {
 } from '@/framework/core/safeMath';
 import { getNumberFormatter } from '@/helpers/intl';
 
-// There are many other formatCurrency functions, but this is simplified for hyperliquid which is all USD
-export function formatCurrency(
+// Simplified USD-only counterpart to formatCurrency
+export function formatUsd(
   value: string,
   options: {
     minValue?: number;

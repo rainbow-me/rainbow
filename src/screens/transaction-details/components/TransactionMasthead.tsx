@@ -19,6 +19,7 @@ import RowWithMargins from '@/components/layout/RowWithMargins';
 import { Bleed, Box, Columns, Cover, Row, Rows, Separator, Stack, Text, type TextProps } from '@/design-system';
 import { type ParsedAddressAsset } from '@/entities/tokens';
 import { type RainbowTransaction } from '@/entities/transactions';
+import { convertAmountAndPriceToNativeDisplay } from '@/features/currency/utils/nativeDisplay';
 import { getDelegationContractAddress, isRainbowDelegated } from '@/features/delegation/status';
 import { fetchENSAvatar } from '@/features/ens/hooks/useENSAvatar';
 import { fetchReverseRecord } from '@/features/ens/utils/handlers';
@@ -26,12 +27,7 @@ import styled from '@/framework/ui/styled-thing';
 import { opacity } from '@/framework/ui/utils/opacity';
 import { removeFirstEmojiFromString, returnStringFirstEmoji } from '@/helpers/emojiHandler';
 import { checkForPendingSwap } from '@/helpers/transactions';
-import {
-  convertAmountAndPriceToNativeDisplay,
-  convertAmountToBalanceDisplay,
-  convertRawAmountToDecimalFormat,
-  handleSignificantDecimals,
-} from '@/helpers/utilities';
+import { convertAmountToBalanceDisplay, convertRawAmountToDecimalFormat, handleSignificantDecimals } from '@/helpers/utilities';
 import useContacts from '@/hooks/useContacts';
 import { usePersistentDominantColorFromImage } from '@/hooks/usePersistentDominantColorFromImage';
 import usePrevious from '@/hooks/usePrevious';

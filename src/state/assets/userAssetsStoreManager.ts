@@ -1,7 +1,7 @@
 import { type Address } from 'viem';
 
+import type { SupportedCurrencyKey } from '@/features/currency/supportedCurrencies';
 import reduxStore from '@/redux/store';
-import type { SupportedCurrencyKey } from '@/references/supportedCurrencies';
 import { createRainbowStore } from '@/state/internal/createRainbowStore';
 
 import { type UserAssetsStoreType } from './types';

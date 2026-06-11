@@ -5,7 +5,7 @@ import { type Dispatch } from 'redux';
 import { type ThunkDispatch } from 'redux-thunk';
 
 import { analytics } from '@/analytics';
-import { NativeCurrencyKeys, type NativeCurrencyKey } from '@/entities/nativeCurrencyTypes';
+import { NativeCurrencyKeys, type NativeCurrencyKey } from '@/features/currency/types';
 import {
   getAppIcon,
   getChainId,

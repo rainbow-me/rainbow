@@ -16,6 +16,7 @@ import useExperimentalFlag from '@/config/experimentalHooks';
 import { AssetType } from '@/entities/assetTypes';
 import { type ParsedAddressAsset } from '@/entities/tokens';
 import { type UniqueAsset } from '@/entities/uniqueAssets';
+import { convertAmountAndPriceToNativeDisplay } from '@/features/currency/utils/nativeDisplay';
 import { SmartWalletActivationCallout } from '@/features/delegation/components/SmartWalletActivationCallout';
 import { prefetchENSAvatar } from '@/features/ens/hooks/useENSAvatar';
 import { prefetchENSCover } from '@/features/ens/hooks/useENSCover';
@@ -33,13 +34,7 @@ import {
   estimateGasLimit,
   resolveNameOrAddress,
 } from '@/handlers/web3';
-import {
-  convertAmountAndPriceToNativeDisplay,
-  convertAmountFromNativeValue,
-  formatInputDecimals,
-  greaterThan,
-  greaterThanOrEqualTo,
-} from '@/helpers/utilities';
+import { convertAmountFromNativeValue, formatInputDecimals, greaterThan, greaterThanOrEqualTo } from '@/helpers/utilities';
 import { checkIsValidAddressOrDomain, checkIsValidAddressOrDomainFormat, isENSAddressFormat } from '@/helpers/validators';
 import useAccountSettings from '@/hooks/useAccountSettings';
 import useCoinListEditOptions from '@/hooks/useCoinListEditOptions';

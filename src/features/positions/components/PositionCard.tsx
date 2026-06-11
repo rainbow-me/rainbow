@@ -9,7 +9,7 @@ import { GenericCard } from '@/components/cards/GenericCard';
 import RainbowCoinIcon from '@/components/coin-icon/RainbowCoinIcon';
 import RequestVendorLogoIcon from '@/components/coin-icon/RequestVendorLogoIcon';
 import { Box, Column, Columns, globalColors, Inline, Stack, Text } from '@/design-system';
-import { NativeCurrencyKeys } from '@/entities/nativeCurrencyTypes';
+import { NativeCurrencyKeys } from '@/features/currency/types';
 import { type PositionAsset, type RainbowPosition } from '@/features/positions/types';
 import { opacity } from '@/framework/ui/utils/opacity';
 import { useNavigation } from '@/navigation/Navigation';

@@ -1,4 +1,4 @@
-import type { NativeCurrencyKey } from '@/entities/nativeCurrencyTypes';
+import type { NativeCurrencyKey } from '@/features/currency/types';
 import { time } from '@/framework/core/utils/time';
 import { metadataClient } from '@/graphql';
 import { type Token } from '@/graphql/__generated__/metadata';

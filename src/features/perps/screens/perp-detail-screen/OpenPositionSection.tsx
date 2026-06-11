@@ -2,12 +2,12 @@ import { Fragment, memo, useMemo } from 'react';
 
 import { useLiveTokenValue } from '@/components/live-token-text/LiveTokenText';
 import { Box, Separator, Text, TextShadow, useColorMode } from '@/design-system';
+import { formatUsd } from '@/features/currency/utils/formatUsd';
 import { DOWN_ARROW, UP_ARROW } from '@/features/perps/constants';
 import { usePerpsAccentColorContext } from '@/features/perps/context/PerpsAccentColorContext';
 import { useHyperliquidAccountStore } from '@/features/perps/stores/hyperliquidAccountStore';
 import { type PerpMarket, type PerpsPosition } from '@/features/perps/types';
 import { getHyperliquidTokenId } from '@/features/perps/utils';
-import { formatCurrency } from '@/features/perps/utils/formatCurrency';
 import { formatPerpAssetPrice } from '@/features/perps/utils/formatPerpsAssetPrice';
 import { getPercentageDifferenceWorklet, toFixedWorklet } from '@/framework/core/safeMath';
 import { opacity } from '@/framework/ui/utils/opacity';
@@ -26,9 +26,9 @@ export const PositionValueCard = memo(function PositionValueCard({ position }: {
 
   const formattedValues = useMemo(() => {
     return {
-      unrealizedPnl: formatCurrency(abs(unrealizedPnl)),
+      unrealizedPnl: formatUsd(abs(unrealizedPnl)),
       returnOnEquity: `${toFixedWorklet(multiply(abs(returnOnEquity), 100), 2)}%`,
-      equity: formatCurrency(equity),
+      equity: formatUsd(equity),
     };
   }, [unrealizedPnl, equity, returnOnEquity]);
 
@@ -110,7 +110,7 @@ const PositionDetailsCard = memo(function PositionDetailsCard({ market, position
     },
     {
       title: i18n.t(i18n.l.perps.positions.funding),
-      value: `${isPositive(position.funding) ? '-' : ''}${formatCurrency(position.funding)}`,
+      value: `${isPositive(position.funding) ? '-' : ''}${formatUsd(position.funding)}`,
     },
   ];
 

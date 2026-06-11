@@ -4,9 +4,9 @@ import isEqual from 'react-fast-compare';
 
 import { type AddressOrEth, type UniqueId } from '@/__swaps__/types/assets';
 import { analytics } from '@/analytics';
-import { NativeCurrencyKeys } from '@/entities/nativeCurrencyTypes';
 import type { RainbowToken } from '@/entities/tokens';
 import { IS_TEST } from '@/env';
+import { NativeCurrencyKeys } from '@/features/currency/types';
 import { time } from '@/framework/core/utils/time';
 import { logger, RainbowError } from '@/logger';
 import { createQueryKey, queryClient } from '@/react-query';

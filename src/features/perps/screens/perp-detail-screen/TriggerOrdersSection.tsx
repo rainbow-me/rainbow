@@ -6,6 +6,7 @@ import Animated, { FadeIn, FadeOut } from 'react-native-reanimated';
 import { analytics } from '@/analytics';
 import { TIMING_CONFIGS } from '@/components/animations/animationConfigs';
 import { Box, IconContainer, Inline, Text, TextShadow } from '@/design-system';
+import { formatUsd } from '@/features/currency/utils/formatUsd';
 import { AddTriggerOrderButton } from '@/features/perps/components/AddTriggerOrderButton';
 import { TriggerOrderCard } from '@/features/perps/components/TriggerOrderCard';
 import { LAYOUT_ANIMATION } from '@/features/perps/constants';
@@ -14,7 +15,6 @@ import { useHlOpenOrdersStore, type HlOpenOrder } from '@/features/perps/stores/
 import { hyperliquidAccountActions, useHyperliquidAccountStore } from '@/features/perps/stores/hyperliquidAccountStore';
 import { PerpPositionSide, TriggerOrderSource, TriggerOrderType } from '@/features/perps/types';
 import { parseHyperliquidErrorMessage } from '@/features/perps/utils';
-import { formatCurrency } from '@/features/perps/utils/formatCurrency';
 import { mulWorklet, subWorklet, toFixedWorklet } from '@/framework/core/safeMath';
 import { abs, isZero } from '@/helpers/utilities';
 import * as i18n from '@/languages';
@@ -42,7 +42,7 @@ const ExistingTriggerOrderCard = memo(function ExistingTriggerOrderCard({ order 
     const directionalDifference = position.side === PerpPositionSide.LONG ? priceDifference : mulWorklet('-1', priceDifference);
     const pnl = mulWorklet(orderSize, directionalDifference);
 
-    return formatCurrency(pnl);
+    return formatUsd(pnl);
   }, [isFullOrder, order, position]);
 
   const onPressDelete = useCallback(async () => {

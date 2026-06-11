@@ -3,19 +3,12 @@ import { type Address } from 'viem';
 import { type AddressOrEth, type ParsedSearchAsset, type UniqueId, type UserAssetFilter, type ZerionAsset } from '@/__swaps__/types/assets';
 import { AssetType } from '@/entities/assetTypes';
 import type { ParsedAddressAsset } from '@/entities/tokens';
+import { supportedCurrencies as supportedNativeCurrencies } from '@/features/currency/supportedCurrencies';
+import { convertAmountAndPriceToNativeDisplay, convertAmountToNativeDisplayWorklet } from '@/features/currency/utils/nativeDisplay';
 import { time } from '@/framework/core/utils/time';
 import { isNativeAsset } from '@/handlers/assets';
-import {
-  add,
-  convertAmountAndPriceToNativeDisplay,
-  convertAmountToBalanceDisplay,
-  convertAmountToNativeDisplayWorklet,
-  convertRawAmountToDecimalFormat,
-  greaterThan,
-  multiply,
-} from '@/helpers/utilities';
+import { add, convertAmountToBalanceDisplay, convertRawAmountToDecimalFormat, greaterThan, multiply } from '@/helpers/utilities';
 import { logger, RainbowError } from '@/logger';
-import { supportedCurrencies as supportedNativeCurrencies } from '@/references/supportedCurrencies';
 import { isStaging } from '@/resources/addys/client';
 import { fetchAnvilBalancesByChainId } from '@/resources/assets/anvilAssets';
 import { getPlatformClient } from '@/resources/platform/client';

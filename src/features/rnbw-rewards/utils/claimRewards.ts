@@ -2,7 +2,7 @@ import { type Signer } from '@ethersproject/abstract-signer';
 import { type Address } from 'viem';
 
 import { analytics } from '@/analytics';
-import { type NativeCurrencyKey } from '@/entities/nativeCurrencyTypes';
+import { type NativeCurrencyKey } from '@/features/currency/types';
 import { useRewardsBalanceStore } from '@/features/rnbw-rewards/stores/rewardsBalanceStore';
 import {
   type ClaimRewardsResponse,

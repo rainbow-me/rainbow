@@ -4,7 +4,7 @@ import { View } from 'react-native';
 import Animated, { useDerivedValue, type SharedValue } from 'react-native-reanimated';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
-import { addCommasToNumber, stripNonDecimalNumbers } from '@/__swaps__/utils/swaps';
+import { stripNonDecimalNumbers } from '@/__swaps__/utils/swaps';
 import { AccountImage } from '@/components/AccountImage';
 import RainbowCoinIcon from '@/components/coin-icon/RainbowCoinIcon';
 import Page from '@/components/layout/Page';
@@ -20,6 +20,7 @@ import { SliderWithLabels } from '@/features/perps/components/Slider/SliderWithL
 import { USDC_ASSET } from '@/features/perps/constants';
 import { PerpsAccentColorContextProvider } from '@/features/perps/context/PerpsAccentColorContext';
 import { toFixedWorklet } from '@/framework/core/safeMath';
+import { addCommasToNumber } from '@/framework/ui/utils/addCommasToNumber';
 import { opacity } from '@/framework/ui/utils/opacity';
 import * as i18n from '@/languages';
 import Navigation from '@/navigation/Navigation';

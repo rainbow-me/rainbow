@@ -1,19 +1,11 @@
 import BigNumber from 'bignumber.js';
 import zipObject from 'lodash/zipObject';
 
-import { type NativeCurrencyKey } from '@/entities/nativeCurrencyTypes';
+import { type NativeCurrencyKey } from '@/features/currency/types';
+import { convertRawAmountToNativeDisplay } from '@/features/currency/utils/nativeDisplay';
 import { toHex } from '@/handlers/web3';
 import { getMinimalTimeUnitStringForMs } from '@/helpers/time';
-import {
-  add,
-  convertRawAmountToBalance,
-  convertRawAmountToNativeDisplay,
-  divide,
-  greaterThan,
-  lessThan,
-  multiply,
-  toFixedDecimals,
-} from '@/helpers/utilities';
+import { add, convertRawAmountToBalance, divide, greaterThan, lessThan, multiply, toFixedDecimals } from '@/helpers/utilities';
 import ethUnits from '@/references/ethereum-units.json';
 import timeUnits from '@/references/time-units.json';
 

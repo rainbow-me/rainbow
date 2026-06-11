@@ -15,12 +15,10 @@ import {
 } from '@/__swaps__/screens/Swap/constants';
 import { globalColors } from '@/design-system';
 import { palettes, type ForegroundColor } from '@/design-system/color/palettes';
-import type { NativeCurrencyKey } from '@/entities/nativeCurrencyTypes';
 import { IS_TEST } from '@/env';
 import {
   divWorklet,
   equalWorklet,
-  greaterThanOrEqualToWorklet,
   isNumberStringWorklet,
   lessThanOrEqualToWorklet,
   mulWorklet,
@@ -34,7 +32,6 @@ import { convertAmountToRawAmount } from '@/helpers/utilities';
 import * as i18n from '@/languages';
 import { DEFAULT_SLIPPAGE_BIPS_CHAINID, type RainbowConfig } from '@/model/remoteConfig';
 import store from '@/redux/store';
-import { supportedCurrencies as supportedNativeCurrencies } from '@/references/supportedCurrencies';
 import { useUserAssetsStore } from '@/state/assets/userAssets';
 import { ChainId } from '@/state/backendNetworks/types';
 import { colors } from '@/styles';
@@ -202,39 +199,6 @@ export const findNiceIncrement = (availableBalance: string | number | undefined)
 
 // /---- 🔵 Worklet utils 🔵 ----/ //
 //
-type nativeCurrencyType = typeof supportedNativeCurrencies;
-
-export function addCommasToNumber<T extends 0 | '0' | '0.00'>(number: string | number, fallbackValue: T = 0 as T): T | string {
-  'worklet';
-  if (isNaN(Number(number))) {
-    return fallbackValue;
-  }
-  const numberString = number.toString();
-
-  if (numberString.includes(',')) {
-    return numberString;
-  }
-
-  if (greaterThanOrEqualToWorklet(number, 1000)) {
-    const parts = numberString.split('.');
-    parts[0] = parts[0].replace(/\B(?=(\d{3})+(?!\d))/g, ',');
-    return parts.join('.');
-  } else {
-    return numberString;
-  }
-}
-
-export const addSymbolToNativeDisplayWorklet = (value: number | string, nativeCurrency: keyof nativeCurrencyType): string => {
-  'worklet';
-
-  const nativeSelected = supportedNativeCurrencies?.[nativeCurrency];
-  const { symbol } = nativeSelected;
-
-  const nativeValueWithCommas = addCommasToNumber(value, '0');
-
-  return `${symbol}${nativeValueWithCommas}`;
-};
-
 export function clamp(value: number, lowerBound: number, upperBound: number) {
   'worklet';
   return Math.min(Math.max(lowerBound, value), upperBound);
@@ -250,30 +214,6 @@ export function trimTrailingZeros(value: string): string {
   if (!value.includes('.')) return value;
   const withTrimmedZeros = value.replace(/\.?0+$/, '');
   return withTrimmedZeros.endsWith('.') ? withTrimmedZeros.slice(0, -1) : withTrimmedZeros;
-}
-
-/**
- * Trims redundant trailing zeros from a currency string's fractional part.
- * Accommodates both native currencies and ETH values.
- *
- * - Removes `.00` entirely (e.g. `2.00` → `2`).
- * - Leaves two decimals intact when needed (e.g. `2.10` → `2.10`).
- * - For values with more than two decimals, trims trailing zeros (e.g. `2.100` → `2.1`, `2.5000` → `2.5`).
- *
- * @example
- * trimCurrencyZeros('2.00')  // '2'
- * trimCurrencyZeros('2.10')  // '2.10'
- * trimCurrencyZeros('2.100') // '2.1'
- *
- * @param value - The currency value as a string.
- * @param currency - The currency to use to format the value.
- * @returns The trimmed currency string.
- */
-export function trimCurrencyZeros(value: string | number, currency: NativeCurrencyKey): string {
-  'worklet';
-  const currencyDecimals = Math.min(supportedNativeCurrencies[currency].decimals, 6);
-  const valueToTrim = toFixedWorklet(value, currencyDecimals);
-  return valueToTrim.replace(/(\.(?=\d{3,})\d*?[1-9])0+$|\.0{2,}$/, '$1');
 }
 
 export function niceIncrementFormatter({

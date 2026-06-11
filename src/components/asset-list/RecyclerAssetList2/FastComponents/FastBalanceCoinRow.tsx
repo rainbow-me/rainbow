@@ -7,7 +7,7 @@ import RainbowCoinIcon from '@/components/coin-icon/RainbowCoinIcon';
 import { Icon } from '@/components/icons';
 import { LiveTokenText } from '@/components/live-token-text/LiveTokenText';
 import { Text } from '@/design-system';
-import type { NativeCurrencyKey } from '@/entities/nativeCurrencyTypes';
+import type { NativeCurrencyKey } from '@/features/currency/types';
 import { opacity } from '@/framework/ui/utils/opacity';
 import { toSignificantDigits } from '@/helpers/utilities';
 import useAccountAsset from '@/hooks/useAccountAsset';

@@ -1,11 +1,11 @@
 import { analytics } from '@/analytics';
+import { USD_DECIMALS } from '@/features/currency/constants';
 import { time } from '@/framework/core/utils/time';
 import * as i18n from '@/languages';
 import { logger, RainbowError } from '@/logger';
 import { createWithdrawalConfig } from '@/systems/funding/config';
 import { type WithdrawalExecutionResult, type WithdrawalExecutorParams } from '@/systems/funding/types';
 
-import { USD_DECIMALS } from './constants';
 import { getHyperliquidExchangeClient } from './services';
 import { useHyperliquidAccountStore } from './stores/hyperliquidAccountStore';
 import { refetchHyperliquidBalance } from './utils';

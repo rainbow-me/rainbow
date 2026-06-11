@@ -10,7 +10,7 @@ import { GradientBorderView } from '@/components/gradient-border/GradientBorderV
 import ImgixImage from '@/components/images/ImgixImage';
 import { LiveTokenText, useLiveTokenValue } from '@/components/live-token-text/LiveTokenText';
 import { Bleed, Box, Separator, Text, useColorMode } from '@/design-system';
-import { formatCurrency } from '@/features/perps/utils/formatCurrency';
+import { formatUsd } from '@/features/currency/utils/formatUsd';
 import { CheckOrXBadge } from '@/features/polymarket/components/CheckOrXBadge';
 import { InnerShadow } from '@/features/polymarket/components/InnerShadow';
 import { OutcomeBadge } from '@/features/polymarket/components/OutcomeBadge';
@@ -202,7 +202,7 @@ export const PolymarketPositionCard = memo(function PolymarketPositionCard({
                         </Bleed>
                       ) : (
                         <Text size="17pt" weight="bold" color="label">
-                          {formatCurrency(livePositionValue)}
+                          {formatUsd(livePositionValue)}
                         </Text>
                       )}
                     </Box>
@@ -242,7 +242,7 @@ export const PolymarketPositionCard = memo(function PolymarketPositionCard({
                           numberOfLines={1}
                           style={styles.flexShrink0}
                         >
-                          {formatCurrency(livePnl)}
+                          {formatUsd(livePnl)}
                         </Text>
                       )}
                     </Box>

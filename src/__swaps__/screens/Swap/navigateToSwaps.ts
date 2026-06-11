@@ -1,14 +1,9 @@
 import { type ExtendedAnimatedAssetWithColors, type ParsedSearchAsset } from '@/__swaps__/types/assets';
 import { type InputKeys, type InputMethods } from '@/__swaps__/types/swap';
 import { getInputValuesForSliderPositionWorklet } from '@/__swaps__/utils/flipAssets';
-import {
-  getDefaultSlippage,
-  parseAssetAndExtend,
-  slippageInBipsToString,
-  trimCurrencyZeros,
-  trimTrailingZeros,
-} from '@/__swaps__/utils/swaps';
+import { getDefaultSlippage, parseAssetAndExtend, slippageInBipsToString, trimTrailingZeros } from '@/__swaps__/utils/swaps';
 import { enableActionsOnReadOnlyWallet } from '@/config/debug';
+import { trimCurrencyZeros } from '@/features/currency/utils/nativeDisplay';
 import { setSelectedGasSpeed } from '@/features/gas/hooks/useSelectedGas';
 import { type GasSpeed } from '@/features/gas/types/gasSpeed';
 import { watchingAlert } from '@/features/wallet/utils/watchingAlert';

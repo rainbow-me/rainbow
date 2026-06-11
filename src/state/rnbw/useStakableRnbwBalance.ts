@@ -1,8 +1,8 @@
+import { convertAmountToNativeDisplayWorklet } from '@/features/currency/utils/nativeDisplay';
 import { useRewardsBalanceStore } from '@/features/rnbw-rewards/stores/rewardsBalanceStore';
 import { MIN_STAKE_AMOUNT, RNBW_DECIMALS, RNBW_TOKEN_UNIQUE_ID } from '@/features/rnbw-staking/constants';
 import {
   add,
-  convertAmountToNativeDisplayWorklet,
   convertRawAmountToDecimalFormat,
   greaterThanOrEqualTo,
   isPositive,

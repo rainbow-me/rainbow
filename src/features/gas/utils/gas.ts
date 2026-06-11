@@ -1,8 +1,8 @@
 import { Platform } from 'react-native';
 
 import { type TextColor } from '@/design-system/color/palettes';
-import type { NativeCurrencyKey } from '@/entities/nativeCurrencyTypes';
-import { convertAmountToNativeDisplay } from '@/helpers/utilities';
+import type { NativeCurrencyKey } from '@/features/currency/types';
+import { convertAmountToNativeDisplay } from '@/features/currency/utils/nativeDisplay';
 import * as i18n from '@/languages';
 import { colors } from '@/styles';
 

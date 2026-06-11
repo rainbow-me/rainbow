@@ -1,5 +1,5 @@
-import { USD_DECIMALS } from '@/features/perps/constants';
-import { useCurrencyConversionStore } from '@/features/perps/stores/currencyConversionStore';
+import { USD_DECIMALS } from '@/features/currency/constants';
+import { useCurrencyConversionStore } from '@/features/currency/stores/currencyConversionStore';
 import { usePolymarketPositionsSummary } from '@/features/polymarket/stores/derived/usePolymarketPositionsSummary';
 import { usePolymarketBalanceStore } from '@/features/polymarket/stores/polymarketBalanceStore';
 import { truncateToDecimals } from '@/framework/core/safeMath';

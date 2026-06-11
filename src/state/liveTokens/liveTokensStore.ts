@@ -1,8 +1,9 @@
+import type { SupportedCurrencyKey } from '@/features/currency/supportedCurrencies';
+import { convertAmountAndPriceToNativeDisplay, convertAmountToNativeDisplayWorklet } from '@/features/currency/utils/nativeDisplay';
 import { time } from '@/framework/core/utils/time';
-import { convertAmountAndPriceToNativeDisplay, convertAmountToNativeDisplayWorklet, greaterThan, multiply } from '@/helpers/utilities';
+import { greaterThan, multiply } from '@/helpers/utilities';
 import Routes, { type Route } from '@/navigation/routesNames';
 import { ETH_ADDRESS, WETH_ADDRESS } from '@/references/constants';
-import type { SupportedCurrencyKey } from '@/references/supportedCurrencies';
 import { getPlatformClient } from '@/resources/platform/client';
 import { userAssetsStoreManager } from '@/state/assets/userAssetsStoreManager';
 import { createQueryStore } from '@/state/internal/createQueryStore';

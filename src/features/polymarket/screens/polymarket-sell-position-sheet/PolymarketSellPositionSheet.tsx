@@ -10,7 +10,7 @@ import { analytics } from '@/analytics';
 import { HoldToActivateButton } from '@/components/hold-to-activate-button/HoldToActivateButton';
 import { PanelSheet } from '@/components/PanelSheet/PanelSheet';
 import { Box, globalColors, Separator, Text, useColorMode, useForegroundColor } from '@/design-system';
-import { formatCurrency } from '@/features/perps/utils/formatCurrency';
+import { formatUsd } from '@/features/currency/utils/formatUsd';
 import { PolymarketNoLiquidityCard } from '@/features/polymarket/components/PolymarketNoLiquidityCard';
 import { PolymarketOutcomeCard } from '@/features/polymarket/components/PolymarketOutcomeCard';
 import { POLYMARKET_BACKGROUND_LIGHT } from '@/features/polymarket/constants';
@@ -196,7 +196,7 @@ export const PolymarketSellPositionSheet = memo(function PolymarketSellPositionS
                 </Text>
                 <Text size="17pt" weight="bold" color={{ custom: pnlColor }}>
                   {pnlSign}
-                  {formatCurrency(String(absPnl))}
+                  {formatUsd(String(absPnl))}
                 </Text>
               </Box>
             </Box>
@@ -209,7 +209,7 @@ export const PolymarketSellPositionSheet = memo(function PolymarketSellPositionS
                   {i18n.t(i18n.l.predictions.cash_out.receive)}
                 </Text>
                 <Text size="17pt" weight="heavy" color="label">
-                  {formatCurrency(expectedPayoutUsd)}
+                  {formatUsd(expectedPayoutUsd)}
                 </Text>
               </Box>
             </Box>

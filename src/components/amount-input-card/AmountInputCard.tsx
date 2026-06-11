@@ -13,10 +13,12 @@ import {
 import { triggerHaptics } from 'react-native-turbo-haptics';
 import { useDebouncedCallback } from 'use-debounce';
 
-import { addCommasToNumber, clamp, trimCurrencyZeros } from '@/__swaps__/utils/swaps';
+import { clamp } from '@/__swaps__/utils/swaps';
 import { SPRING_CONFIGS } from '@/components/animations/animationConfigs';
 import { CurrencyInput, type CurrencyInputRef } from '@/components/CurrencyInput/CurrencyInput';
 import { Box, Text, useColorMode } from '@/design-system';
+import { USD_CURRENCY, USD_DECIMALS } from '@/features/currency/constants';
+import { trimCurrencyZeros } from '@/features/currency/utils/nativeDisplay';
 import {
   Slider,
   SLIDER_DEFAULT_SNAP_POINTS,
@@ -25,14 +27,7 @@ import {
   type SliderChangeSource,
   type SliderGestureState,
 } from '@/features/perps/components/Slider/Slider';
-import {
-  INPUT_CARD_HEIGHT,
-  SLIDER_EXPANDED_HEIGHT,
-  SLIDER_HEIGHT,
-  SLIDER_WIDTH,
-  USD_CURRENCY,
-  USD_DECIMALS,
-} from '@/features/perps/constants';
+import { INPUT_CARD_HEIGHT, SLIDER_EXPANDED_HEIGHT, SLIDER_HEIGHT, SLIDER_WIDTH } from '@/features/perps/constants';
 import { type OrderAmountValidation } from '@/features/perps/utils/buildOrderAmountValidation';
 import {
   divWorklet,
@@ -43,6 +38,7 @@ import {
   toFixedWorklet,
 } from '@/framework/core/safeMath';
 import { time } from '@/framework/core/utils/time';
+import { addCommasToNumber } from '@/framework/ui/utils/addCommasToNumber';
 import { opacity } from '@/framework/ui/utils/opacity';
 import { useLazyRef } from '@/hooks/useLazyRef';
 import { useOnChange } from '@/hooks/useOnChange';

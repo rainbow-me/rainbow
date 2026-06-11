@@ -1,9 +1,9 @@
 import { useQuery } from '@tanstack/react-query';
 
+import type { SupportedCurrencyKey } from '@/features/currency/supportedCurrencies';
 import { time } from '@/framework/core/utils/time';
 import { metadataClient } from '@/graphql';
 import { createQueryKey } from '@/react-query';
-import type { SupportedCurrencyKey } from '@/references/supportedCurrencies';
 import { ChainId } from '@/state/backendNetworks/types';
 
 const chartTimes = ['hour', 'day', 'week', 'month', 'year'] as const;

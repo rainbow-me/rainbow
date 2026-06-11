@@ -4,7 +4,7 @@ import { parseUnits } from 'ethers/lib/utils';
 import { getAddress, type Address } from 'viem';
 
 import { analytics } from '@/analytics';
-import { USD_DECIMALS } from '@/features/perps/constants';
+import { USD_DECIMALS } from '@/features/currency/constants';
 import { encodeErc20Transfer } from '@/framework/core/evm/erc20Calldata';
 import { time } from '@/framework/core/utils/time';
 import { logger, RainbowError } from '@/logger';

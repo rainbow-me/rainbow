@@ -9,7 +9,7 @@ import { getColorValueForThemeWorklet } from '@/__swaps__/utils/swaps';
 import { HoldToActivateButton } from '@/components/hold-to-activate-button/HoldToActivateButton';
 import { PanelSheet } from '@/components/PanelSheet/PanelSheet';
 import { Box, globalColors, Text, useColorMode, useForegroundColor } from '@/design-system';
-import { formatCurrency } from '@/features/perps/utils/formatCurrency';
+import { formatUsd } from '@/features/currency/utils/formatUsd';
 import { PolymarketPositionCard } from '@/features/polymarket/components/PolymarketPositionCard';
 import { POLYMARKET_BACKGROUND_LIGHT } from '@/features/polymarket/constants';
 import { usePolymarketClients } from '@/features/polymarket/stores/derived/usePolymarketClients';
@@ -107,11 +107,11 @@ export const PolymarketRedeemPositionSheet = memo(function PolymarketRedeemPosit
             {i18n.t(i18n.l.predictions.manage_position.position_value)}
           </Text>
           <Text size="44pt" weight="heavy" color="label">
-            {formatCurrency(String(position.currentValue))}
+            {formatUsd(String(position.currentValue))}
           </Text>
           <Text size="20pt" weight="bold" color={{ custom: pnlColor }}>
             {pnlSign}
-            {formatCurrency(String(absPnl))}
+            {formatUsd(String(absPnl))}
           </Text>
         </Box>
         <Box gap={24}>

@@ -12,10 +12,10 @@ import {
   type RainbowTransaction,
   type SettledTransaction,
 } from '@/entities/transactions';
+import type { SupportedCurrencyKey } from '@/features/currency/supportedCurrencies';
 import { areDestinationTxHashesEqual } from '@/features/delegation/managedExecutionStatus';
 import { logger, RainbowError } from '@/logger';
 import { queryClient } from '@/react-query';
-import type { SupportedCurrencyKey } from '@/references/supportedCurrencies';
 import { consolidatedTransactionsQueryKey } from '@/resources/transactions/consolidatedTransactions';
 import { fetchRawTransaction, type PaginatedTransactions } from '@/resources/transactions/transaction';
 import { userAssetsStoreManager } from '@/state/assets/userAssetsStoreManager';

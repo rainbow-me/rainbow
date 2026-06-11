@@ -1,7 +1,8 @@
 import { createDerivedStore, shallowEqual } from '@storesjs/stores';
 
+import { convertAmountToNativeDisplayWorklet } from '@/features/currency/utils/nativeDisplay';
 import { RNBW_DECIMALS } from '@/features/rnbw-staking/constants';
-import { convertAmountToNativeDisplayWorklet, convertRawAmountToDecimalFormat, truncateToDecimalsWithThreshold } from '@/helpers/utilities';
+import { convertRawAmountToDecimalFormat, truncateToDecimalsWithThreshold } from '@/helpers/utilities';
 import { userAssetsStoreManager } from '@/state/assets/userAssetsStoreManager';
 
 import { useStakingPositionStore } from '../rnbwStakingPositionStore';

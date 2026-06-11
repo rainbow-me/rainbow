@@ -1,4 +1,3 @@
-import { type NativeCurrencyKey } from '@/entities/nativeCurrencyTypes';
 import { downsampleCompactLineChartData } from '@/features/charts/line/compact/downsampleCompactLineChartData';
 import { type CompactLineChartData } from '@/features/charts/line/compact/types';
 import {
@@ -6,6 +5,7 @@ import {
   createLineChartDataStore,
   type FetchedLineChartData,
 } from '@/features/charts/stores/factories/createLineChartDataStore';
+import { type NativeCurrencyKey } from '@/features/currency/types';
 import { metadataClient } from '@/graphql';
 import Routes from '@/navigation/routesNames';
 import { type ChainId } from '@/state/backendNetworks/types';

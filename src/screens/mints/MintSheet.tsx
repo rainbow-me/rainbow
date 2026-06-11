@@ -17,6 +17,7 @@ import { ContactAvatar } from '@/components/contacts';
 import { useRainbowToastEnabled } from '@/components/rainbow-toast/useRainbowToastEnabled';
 import { Bleed, Box, ColorModeProvider, Column, Columns, Inline, Inset, Separator, Stack, Text } from '@/design-system';
 import { TransactionStatus, type NewTransaction } from '@/entities/transactions';
+import { convertAmountToNativeDisplay } from '@/features/currency/utils/nativeDisplay';
 import useENSAvatar from '@/features/ens/hooks/useENSAvatar';
 import { fetchReverseRecord } from '@/features/ens/utils/handlers';
 import GasSpeedButton from '@/features/gas/components/GasSpeedButton';
@@ -28,15 +29,7 @@ import { type ReservoirCollection } from '@/graphql/__generated__/arcDev';
 import { type Transaction } from '@/graphql/__generated__/metadataPOST';
 import { maybeSignUri } from '@/handlers/imgix';
 import { WrappedAlert as Alert } from '@/helpers/alert';
-import {
-  add,
-  convertAmountToBalanceDisplay,
-  convertAmountToNativeDisplay,
-  convertRawAmountToBalance,
-  greaterThanOrEqualTo,
-  isZero,
-  multiply,
-} from '@/helpers/utilities';
+import { add, convertAmountToBalanceDisplay, convertRawAmountToBalance, greaterThanOrEqualTo, isZero, multiply } from '@/helpers/utilities';
 import useDimensions from '@/hooks/useDimensions';
 import usePersistentAspectRatio from '@/hooks/usePersistentAspectRatio';
 import { usePersistentDominantColorFromImage } from '@/hooks/usePersistentDominantColorFromImage';

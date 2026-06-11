@@ -1,7 +1,7 @@
 import { type Address } from 'viem';
 
 import { analytics } from '@/analytics';
-import { type NativeCurrencyKey } from '@/entities/nativeCurrencyTypes';
+import { type NativeCurrencyKey } from '@/features/currency/types';
 import { useAirdropBalanceStore } from '@/features/rnbw-rewards/stores/airdropBalanceStore';
 import { type ClaimAirdropResponse, type ClaimAirdropResult } from '@/features/rnbw-rewards/types/claimAirdropTypes';
 import { getPlatformResult } from '@/features/rnbw-rewards/utils/getPlatformResult';

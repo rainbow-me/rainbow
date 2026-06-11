@@ -10,16 +10,16 @@ import Animated, {
   type SharedValue,
 } from 'react-native-reanimated';
 
-import { addCommasToNumber } from '@/__swaps__/utils/swaps';
 import { SPRING_CONFIGS, TIMING_CONFIGS } from '@/components/animations/animationConfigs';
 import { AnimatedText, Box, Text, TextShadow, useColorMode, type AnimatedTextProps, type BoxProps, type TextProps } from '@/design-system';
 import { foregroundColors, globalColors } from '@/design-system/color/palettes';
-import type { NativeCurrencyKey } from '@/entities/nativeCurrencyTypes';
+import { supportedCurrencies as supportedNativeCurrencies, type SupportedCurrencyKey } from '@/features/currency/supportedCurrencies';
+import type { NativeCurrencyKey } from '@/features/currency/types';
+import { addCommasToNumber } from '@/framework/ui/utils/addCommasToNumber';
 import { opacity } from '@/framework/ui/utils/opacity';
 import { formatAssetPrice } from '@/helpers/formatAssetPrice';
 import { abbreviateNumberWorklet } from '@/helpers/utilities';
 import * as i18n from '@/languages';
-import { supportedCurrencies as supportedNativeCurrencies, type SupportedCurrencyKey } from '@/references/supportedCurrencies';
 import { DEVICE_WIDTH } from '@/utils/deviceUtils';
 import { getSolidColorEquivalent } from '@/worklets/colors';
 import { formatTimestamp, type FormatTimestampOptions } from '@/worklets/dates';

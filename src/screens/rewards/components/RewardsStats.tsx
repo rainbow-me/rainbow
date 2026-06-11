@@ -4,8 +4,8 @@ import { useSelector } from 'react-redux';
 
 import { analytics } from '@/analytics';
 import { Box, Stack, Text } from '@/design-system';
+import { convertAmountAndPriceToNativeDisplay, convertAmountToNativeDisplay } from '@/features/currency/utils/nativeDisplay';
 import { RewardStatsActionType, type RewardStatsAction } from '@/graphql/__generated__/metadata';
-import { convertAmountAndPriceToNativeDisplay, convertAmountToNativeDisplay } from '@/helpers/utilities';
 import * as i18n from '@/languages';
 import { useNavigation } from '@/navigation/Navigation';
 import Routes from '@/navigation/routesNames';

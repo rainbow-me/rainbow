@@ -4,9 +4,7 @@ import type { Address } from 'viem';
 import { type ParsedAsset } from '@/__swaps__/types/assets';
 import { type SearchAsset } from '@/__swaps__/types/search';
 import { SPRING_CONFIGS } from '@/components/animations/animationConfigs';
-import { NativeCurrencyKeys, type NativeCurrencyKey } from '@/entities/nativeCurrencyTypes';
 import { type HlBuilderSettings } from '@/features/perps/types';
-import { supportedCurrencies as supportedNativeCurrencies } from '@/references/supportedCurrencies';
 import { ChainId } from '@/state/backendNetworks/types';
 import { DEVICE_WIDTH } from '@/utils/deviceUtils';
 import { getUniqueId } from '@/utils/ethereumUtils';
@@ -80,9 +78,6 @@ export const USDC_COLORS = {
 export const MAX_SIG_FIGS = 5;
 export const MAX_DECIMALS_PERP = 6;
 export const MAX_DECIMALS_SPOT = 8;
-
-export const USD_CURRENCY = NativeCurrencyKeys.USD satisfies NativeCurrencyKey;
-export const USD_DECIMALS = supportedNativeCurrencies[USD_CURRENCY].decimals;
 
 export const USDC_ASSET = {
   address: '0xEeeeeEeeeEeEeeEeEeEeeEEEeeeeEeeeeeeeEEeE',

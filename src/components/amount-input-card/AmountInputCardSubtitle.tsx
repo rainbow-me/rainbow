@@ -5,10 +5,10 @@ import Animated, { interpolate, interpolateColor, useAnimatedStyle, useDerivedVa
 import { AnimatedTextIcon } from '@/components/AnimatedComponents/AnimatedTextIcon';
 import { TIMING_CONFIGS } from '@/components/animations/animationConfigs';
 import { AnimatedText, Box, Inline, useForegroundColor } from '@/design-system';
-import { USD_DECIMALS } from '@/features/perps/constants';
+import { USD_DECIMALS } from '@/features/currency/constants';
+import { formatUsd } from '@/features/currency/utils/formatUsd';
 import { useOrderAmountValidation } from '@/features/perps/stores/derived/useOrderAmountValidation';
 import { type OrderAmountValidation } from '@/features/perps/utils/buildOrderAmountValidation';
-import { formatCurrency } from '@/features/perps/utils/formatCurrency';
 import { equalWorklet, truncateToDecimals } from '@/framework/core/safeMath';
 import * as i18n from '@/languages';
 import { useStoreSharedValue, type ReadOnlySharedValue } from '@/state/internal/hooks/useStoreSharedValue';
@@ -34,8 +34,8 @@ export const AmountInputCardSubtitle = ({ availableBalanceString, validation: va
 
   const leftHandText = useDerivedValue(() => {
     if (!hasBalance.value) return translations.noBalance;
-    if (validation.value.isBelowMin) return formatCurrency(truncateToDecimals(validation.value.minAmount, USD_DECIMALS));
-    return formatCurrency(truncateToDecimals(availableBalanceString.value, USD_DECIMALS));
+    if (validation.value.isBelowMin) return formatUsd(truncateToDecimals(validation.value.minAmount, USD_DECIMALS));
+    return formatUsd(truncateToDecimals(availableBalanceString.value, USD_DECIMALS));
   });
 
   const rightHandText = useDerivedValue(() => {
