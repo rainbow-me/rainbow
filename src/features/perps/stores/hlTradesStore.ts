@@ -1,5 +1,6 @@
 import { type Address } from 'viem';
 
+import { isValidAddress } from '@/features/address/core/address';
 import { getHyperliquidAccountClient, useHyperliquidClients } from '@/features/perps/services';
 import { decodeLeverageFromCloid } from '@/features/perps/utils/hyperliquidCloid';
 import { subWorklet } from '@/framework/core/safeMath';
@@ -43,6 +44,7 @@ export const useHlTradesStore = createQueryStore<FetchHlTradesResponse, HlTrades
   {
     fetcher: fetchHlTrades,
     cacheTime: time.days(1),
+    enabled: $ => $(useHyperliquidClients, state => isValidAddress(state.address)),
     params: { address: $ => $(useHyperliquidClients).address },
     staleTime: time.minutes(1),
   },
