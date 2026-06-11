@@ -42,7 +42,17 @@ module.exports = function (api) {
     ]);
   }
 
-  const presets = ['module:@react-native/babel-preset'];
+  const presets = [
+    [
+      'module:@react-native/babel-preset',
+      {
+        // Matches the @babel/runtime version range in package.json. Lets
+        // transform-runtime import helpers added after 7.0 instead of
+        // inlining a copy into every module (reduces bundle size).
+        enableBabelRuntime: '^7.25.0',
+      },
+    ],
+  ];
 
   return {
     env: {
@@ -51,7 +61,7 @@ module.exports = function (api) {
         presets: presets,
       },
       production: {
-        plugins: [...plugins, '@babel/plugin-transform-runtime', ['transform-remove-console', { exclude: ['error'] }]],
+        plugins: [...plugins, ['transform-remove-console', { exclude: ['error'] }]],
         presets: presets,
       },
     },
