@@ -3420,7 +3420,7 @@
         "this_week": "今週",
         "game_best_of": "ゲーム %{currentPeriod} - ベストオブ %{bestOf}",
         "final": "最終",
-        "no_games": "今週は試合がありません"
+        "no_games": "今日や明日のゲームはありません。"
       },
       "outcomes": {
         "yes": "はい",
