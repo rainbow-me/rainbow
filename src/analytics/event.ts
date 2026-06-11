@@ -1129,6 +1129,9 @@ export type EventProperties = {
   [event.changedTokenInputSend]: undefined;
   [event.sentTransaction]: {
     assetName: string;
+    assetSymbol: string | undefined;
+    assetAmount: number | undefined;
+    usdValue: number | undefined;
     network: string;
     chainId: ChainId;
     isSponsored: boolean;

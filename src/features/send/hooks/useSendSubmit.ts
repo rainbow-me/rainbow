@@ -6,7 +6,6 @@ import { Wallet } from '@ethersproject/wallet';
 import { useQueryClient } from '@tanstack/react-query';
 import { isEmpty } from 'lodash';
 
-import { analytics } from '@/analytics';
 import { useRainbowToastEnabled } from '@/components/rainbow-toast/useRainbowToastEnabled';
 import { type ParsedAddressAsset } from '@/entities/tokens';
 import { TransactionStatus, type NewTransaction } from '@/entities/transactions';
@@ -19,6 +18,7 @@ import type useENSProfile from '@/features/ens/hooks/useENSProfile';
 import { type ActionTypes } from '@/features/ens/hooks/useENSRegistrationActionHandler';
 import { type REGISTRATION_STEPS } from '@/features/ens/utils/helpers';
 import { parseGasParamsForTransaction } from '@/features/gas/utils/parseGas';
+import { trackSentTransaction } from '@/features/send/utils/trackSentTransaction';
 import { time } from '@/framework/core/utils/time';
 import { isNativeAsset } from '@/handlers/assets';
 import {
@@ -335,13 +335,14 @@ export function useSendSubmit({
         return false;
       }
       const submitSuccessful = await onSubmit(args);
-      analytics.track(analytics.event.sentTransaction, {
-        assetName: selected?.name || '',
-        network: selected?.network || '',
+      void trackSentTransaction({
+        asset: selected,
+        assetAmount: amountDetails.assetAmount,
         chainId: currentChainId,
-        isSponsored: isSponsoredSend,
-        isRecepientENS: recipient.slice(-4).toLowerCase() === '.eth',
         isHardwareWallet,
+        isSponsored: isSponsoredSend,
+        nativeAmount: amountDetails.nativeAmount,
+        recipient,
         submitSuccessful: submitSuccessful === true,
       });
 

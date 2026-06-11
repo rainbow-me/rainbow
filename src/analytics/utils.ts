@@ -81,3 +81,15 @@ export function securelyHashWalletAddress(walletAddress: Address): string | unde
     logger.error(new RainbowError(`[securelyHashWalletAddress]: Wallet address hashing failed`));
   }
 }
+
+/**
+ * Rounds an amount to 3 significant figures before it leaves the app, so
+ * exact values cannot be used to fingerprint on-chain transactions.
+ */
+export function toAnalyticsAmount(value: string | number): number | undefined {
+  const amount = typeof value === 'string' ? (value ? Number(value) : NaN) : value;
+  if (!Number.isFinite(amount)) {
+    return undefined;
+  }
+  return Number(amount.toPrecision(3));
+}
