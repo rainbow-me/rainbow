@@ -10,7 +10,7 @@ import { useTheme } from '@/theme/ThemeContext';
 import { NAVIGATION_BAR_HEIGHT } from '@/utils/deviceUtils';
 import { removeLeadingZeros } from '@/utils/formatters';
 
-import SendAssetFormField from './SendAssetFormField';
+import { SendAssetFormField } from './SendAssetFormField';
 
 const FooterContainer = styled(Column).attrs({
   justify: 'end',
@@ -34,7 +34,7 @@ const Spacer = styled.View({
   width: '100%',
 });
 
-export default function SendAssetFormToken({
+export function SendAssetFormToken({
   assetAmount,
   assetInputRef,
   buttonRenderer,

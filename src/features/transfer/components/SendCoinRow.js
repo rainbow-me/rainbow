@@ -77,7 +77,7 @@ const TopRow = ({ item, name, selected }) => {
   );
 };
 
-const SendCoinRow = ({
+export const SendCoinRow = ({
   children,
   disablePressAnimation,
   item,
@@ -142,5 +142,3 @@ const SendCoinRow = ({
 
 SendCoinRow.displayName = 'SendCoinRow';
 SendCoinRow.selectedHeight = selectedHeight;
-
-export default SendCoinRow;

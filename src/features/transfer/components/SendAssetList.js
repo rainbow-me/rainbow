@@ -14,8 +14,8 @@ import { buildCoinsList } from '@/helpers/assets';
 import deviceUtils from '@/utils/deviceUtils';
 import safeAreaInsetValues from '@/utils/safeAreaInsetValues';
 
-import CollectiblesSendRow from './CollectiblesSendRow';
-import SendCoinRow from './SendCoinRow';
+import { CollectiblesSendRow } from './CollectiblesSendRow';
+import { SendCoinRow } from './SendCoinRow';
 
 const dividerMargin = 5;
 const dividerHeight = DividerSize + dividerMargin * 4;
@@ -41,7 +41,7 @@ const SendAssetListFooter = () => {
   return <View style={{ height: safeAreaInsetValues.bottom, width: '100%' }} />;
 };
 
-export default class SendAssetList extends React.Component {
+export class SendAssetList extends React.Component {
   constructor(props) {
     super(props);
 
