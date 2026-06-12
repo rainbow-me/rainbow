@@ -4,8 +4,8 @@ import Animated, { useAnimatedStyle, withDelay, withSpring } from 'react-native-
 
 import { SPRING_CONFIGS } from '@/components/animations/animationConfigs';
 import { GestureHandlerButton } from '@/components/buttons/GestureHandlerButton';
-import { NetworkSelectorButton } from '@/components/buttons/NetworkSelectorButton';
 import { Bleed, Border, Box, Column, Columns, Separator, Stack, Text, TextIcon, useColorMode, useForegroundColor } from '@/design-system';
+import { NetworkSelectorButton } from '@/features/network/components/NetworkSelectorButton';
 import { opacity } from '@/framework/ui/utils/opacity';
 import * as i18n from '@/languages';
 import { useUserAssetsStore } from '@/state/assets/userAssets';

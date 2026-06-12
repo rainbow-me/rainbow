@@ -8,7 +8,6 @@ import { type Address } from 'viem';
 
 import { analytics } from '@/analytics';
 import ButtonPressAnimation from '@/components/animations/ButtonPressAnimation';
-import { ChainImage } from '@/components/coin-icon/ChainImage';
 import RequestVendorLogoIcon from '@/components/coin-icon/RequestVendorLogoIcon';
 import { ContactAvatar } from '@/components/contacts';
 import ImageAvatar from '@/components/contacts/ImageAvatar';
@@ -18,6 +17,7 @@ import { Centered, Column, Flex, Row } from '@/components/layout';
 import { Sheet, SheetActionButton, SheetActionButtonRow } from '@/components/sheet';
 import Spinner from '@/components/Spinner';
 import { Box, Columns, Inline, Column as RDSColumn, Text, type TextProps } from '@/design-system';
+import { ChainImage } from '@/features/network/components/ChainImage';
 import { type WalletconnectMeta } from '@/features/wallet-connect/types';
 import styled from '@/framework/ui/styled-thing';
 import { opacity } from '@/framework/ui/utils/opacity';
