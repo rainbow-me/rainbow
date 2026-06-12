@@ -1,5 +1,5 @@
 import { isQuoteError } from '@/__swaps__/utils/quotes';
-import { type ChainId } from '@/state/backendNetworks/types';
+import { type ChainId } from '@/features/network/types/backendNetworks';
 import { ChainId as SwapsChainId, type CrosschainQuote, type Quote, type QuoteError } from '@rainbow-me/swaps';
 
 import { DepositQuoteStatus } from '../types';

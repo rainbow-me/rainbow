@@ -1,9 +1,9 @@
 import { encodeFunctionData, erc20Abi, type Address } from 'viem';
 
 import { type ParsedAddressAsset } from '@/entities/tokens';
+import { ChainId } from '@/features/network/types/backendNetworks';
 import { isNativeAsset } from '@/handlers/assets';
 import { resolveNameOrAddress } from '@/handlers/web3';
-import { ChainId } from '@/state/backendNetworks/types';
 
 import { buildSendCallFromSendDetails } from './sponsoredSendExecution';
 

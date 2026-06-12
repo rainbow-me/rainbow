@@ -3,11 +3,11 @@ import { type BytesLike } from '@ethersproject/bytes';
 import { type TransactionResponse } from '@ethersproject/providers';
 import { type Hash } from 'viem';
 
+import { type ChainId, type Network } from '@/features/network/types/backendNetworks';
 import { type Transaction } from '@/features/positions/types/generated/transaction/transaction';
 import { type SwapMetadata } from '@/raps/references';
 import type { AddCashCurrencyAsset } from '@/references/constants';
 import { type AddysAsset, type ParsedAsset } from '@/resources/assets/types';
-import { type ChainId, type Network } from '@/state/backendNetworks/types';
 import { type SwapType } from '@rainbow-me/swaps';
 
 import { type ProtocolType } from '../protocolTypes';

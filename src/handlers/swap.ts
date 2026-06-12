@@ -4,12 +4,12 @@ import { Contract } from '@ethersproject/contracts';
 import { type StaticJsonRpcProvider } from '@ethersproject/providers';
 
 import { IS_TEST } from '@/env';
+import { ChainId } from '@/features/network/types/backendNetworks';
 import { lessThan } from '@/helpers/utilities';
 import { logger, RainbowError } from '@/logger';
 import { getRemoteConfig } from '@/model/remoteConfig';
 import erc20ABI from '@/references/erc20-abi.json';
 import ethUnits from '@/references/ethereum-units.json';
-import { ChainId } from '@/state/backendNetworks/types';
 import ethereumUtils from '@/utils/ethereumUtils';
 import { getQuoteExecutionDetails, getTargetAddress, type CrosschainQuote, type Quote } from '@rainbow-me/swaps';
 

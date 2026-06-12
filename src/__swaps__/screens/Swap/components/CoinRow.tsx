@@ -13,13 +13,13 @@ import ButtonPressAnimation from '@/components/animations/ButtonPressAnimation';
 import RainbowCoinIcon from '@/components/coin-icon/RainbowCoinIcon';
 import { ContextMenuButton } from '@/components/context-menu';
 import { Box, Column, Columns, HitSlop, Inline, Text } from '@/design-system';
+import { ChainId } from '@/features/network/types/backendNetworks';
 import { showActionSheetWithOptions } from '@/framework/ui/utils/actionsheet';
 import { setClipboard } from '@/hooks/useClipboard';
 import * as i18n from '@/languages';
 import { ETH_ADDRESS } from '@/references/constants';
 import { toggleFavorite } from '@/resources/favorites';
 import { useUserAssetsStore } from '@/state/assets/userAssets';
-import { ChainId } from '@/state/backendNetworks/types';
 import ethereumUtils from '@/utils/ethereumUtils';
 
 export const COIN_ROW_WITH_PADDING_HEIGHT = 56;

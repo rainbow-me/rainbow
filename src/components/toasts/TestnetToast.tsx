@@ -3,8 +3,8 @@ import React, { useEffect, useState } from 'react';
 import { useNetInfo } from '@react-native-community/netinfo';
 
 import { useColorMode } from '@/design-system';
-import { useBackendNetworksStore } from '@/state/backendNetworks/backendNetworks';
-import { ChainId } from '@/state/backendNetworks/types';
+import { useBackendNetworksStore } from '@/features/network/stores/backendNetworksStore';
+import { ChainId } from '@/features/network/types/backendNetworks';
 import { useConnectedToAnvilStore } from '@/state/connectedToAnvil';
 import { useTheme } from '@/theme/ThemeContext';
 

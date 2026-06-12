@@ -7,8 +7,8 @@ import { DetailBadge, DetailIcon, IconContainer } from '@/components/Transaction
 import { type DetailInfo, type DetailType } from '@/components/Transactions/types';
 import { Box, Inline, Text } from '@/design-system';
 import { ChainImage } from '@/features/network/components/ChainImage';
+import { type ChainId } from '@/features/network/types/backendNetworks';
 import * as i18n from '@/languages';
-import { type ChainId } from '@/state/backendNetworks/types';
 
 interface TransactionDetailsRowProps {
   chainId?: ChainId;

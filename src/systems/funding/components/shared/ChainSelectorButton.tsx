@@ -3,9 +3,9 @@ import React, { memo } from 'react';
 import ButtonPressAnimation from '@/components/animations/ButtonPressAnimation';
 import { Box, Inline, Text, TextIcon } from '@/design-system';
 import { ChainImage } from '@/features/network/components/ChainImage';
+import { useBackendNetworksStore } from '@/features/network/stores/backendNetworksStore';
+import { type ChainId } from '@/features/network/types/backendNetworks';
 import { opacity } from '@/framework/ui/utils/opacity';
-import { useBackendNetworksStore } from '@/state/backendNetworks/backendNetworks';
-import { type ChainId } from '@/state/backendNetworks/types';
 
 // ============ Types ========================================================= //
 

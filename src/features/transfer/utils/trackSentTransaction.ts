@@ -3,9 +3,9 @@ import { toAnalyticsAmount } from '@/analytics/utils';
 import { type ParsedAddressAsset } from '@/entities/tokens';
 import { type UniqueAsset } from '@/entities/uniqueAssets';
 import { useCurrencyConversionStore } from '@/features/currency/stores/currencyConversionStore';
+import { type ChainId } from '@/features/network/types/backendNetworks';
 import { assetIsParsedAddressAsset } from '@/handlers/web3';
 import { ensureError, logger } from '@/logger';
-import { type ChainId } from '@/state/backendNetworks/types';
 
 type TrackSentTransactionParams = {
   asset: ParsedAddressAsset | UniqueAsset | undefined;

@@ -4,6 +4,7 @@ import RainbowCoinIcon from '@/components/coin-icon/RainbowCoinIcon';
 import { Box, Stack } from '@/design-system';
 import { type RainbowTransaction } from '@/entities/transactions/transaction';
 import { convertAmountAndPriceToNativeDisplay } from '@/features/currency/utils/nativeDisplay';
+import { ChainId } from '@/features/network/types/backendNetworks';
 import { checkForPendingSwap } from '@/helpers/transactions';
 import { convertRawAmountToBalance } from '@/helpers/utilities';
 import * as i18n from '@/languages';
@@ -11,7 +12,6 @@ import { DoubleLineTransactionDetailsRow } from '@/screens/transaction-details/c
 import { TransactionDetailsDivider } from '@/screens/transaction-details/components/TransactionDetailsDivider';
 import { TransactionDetailsSymbol } from '@/screens/transaction-details/components/TransactionDetailsSymbol';
 import { userAssetsStoreManager } from '@/state/assets/userAssetsStoreManager';
-import { ChainId } from '@/state/backendNetworks/types';
 
 type Props = {
   transaction: RainbowTransaction;

@@ -38,6 +38,8 @@ import {
 } from '@/features/ens/utils/handlers';
 import GasSpeedButton from '@/features/gas/components/GasSpeedButton';
 import useGas from '@/features/gas/hooks/useGas';
+import { useBackendNetworksStore } from '@/features/network/stores/backendNetworksStore';
+import { type ChainId } from '@/features/network/types/backendNetworks';
 import styled from '@/framework/ui/styled-thing';
 import { opacity } from '@/framework/ui/utils/opacity';
 import svgToPngIfNeeded from '@/handlers/svgs';
@@ -56,8 +58,6 @@ import Routes from '@/navigation/routesNames';
 import { type RootStackParamList } from '@/navigation/types';
 import { useInteractionsCount } from '@/resources/addys/interactions';
 import { userAssetsStoreManager } from '@/state/assets/userAssetsStoreManager';
-import { useBackendNetworksStore } from '@/state/backendNetworks/backendNetworks';
-import { type ChainId } from '@/state/backendNetworks/types';
 import { startTimeToSignTracking } from '@/state/performance/performance';
 import { useAccountAddress, useWalletsStore } from '@/state/wallets/walletsStore';
 import { position } from '@/styles';

@@ -10,7 +10,7 @@ import { type RainbowToast } from '@/components/rainbow-toast/types';
 import { RainbowImage } from '@/components/RainbowImage';
 import { TransactionStatus } from '@/entities/transactions';
 import { ChainImage } from '@/features/network/components/ChainImage';
-import { ChainId } from '@/state/backendNetworks/types';
+import { ChainId } from '@/features/network/types/backendNetworks';
 
 export const isWideSwapIcon = (toast: RainbowToast) => {
   return toast.transaction.status === TransactionStatus.pending;

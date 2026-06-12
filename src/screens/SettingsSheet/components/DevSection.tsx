@@ -22,6 +22,7 @@ import { useCashDepositSetupStore } from '@/features/cash/stores/cashDepositSetu
 import { getDelegationContractAddress, isRainbowDelegated, isThirdPartyDelegated } from '@/features/delegation/status';
 import { isAuthenticated } from '@/features/local-auth/isAuthenticated';
 import { wipeKeychain } from '@/features/local-auth/legacyKeychain';
+import { ChainId } from '@/features/network/types/backendNetworks';
 import { WrappedAlert as Alert } from '@/helpers/alert';
 import { getPublicKeyOfTheSigningWalletAndCreateWalletIfNeeded } from '@/helpers/signingWallet';
 import * as i18n from '@/languages';
@@ -36,7 +37,6 @@ import { analyzeReactQueryStore, clearReactQueryCache } from '@/react-query/reac
 import { clearImageMetadataCache } from '@/redux/imageMetadata';
 import { RevokeReason } from '@/screens/delegation/RevokeDelegationPanel';
 import { SettingsLoadingIndicator } from '@/screens/SettingsSheet/components/SettingsLoadingIndicator';
-import { ChainId } from '@/state/backendNetworks/types';
 import { useConnectedToAnvilStore } from '@/state/connectedToAnvil';
 import { analyzeUserAssets } from '@/state/debug/analyzeUserAssets';
 import { nonceActions } from '@/state/nonces';

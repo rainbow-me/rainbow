@@ -8,9 +8,9 @@ import * as i18n from '@/languages';
 import { useNavigation } from '@/navigation/Navigation';
 import Routes from '@/navigation/routesNames';
 import { type RootStackParamList } from '@/navigation/types';
-import { useBackendNetworksStore } from '@/state/backendNetworks/backendNetworks';
-import { type ChainId } from '@/state/backendNetworks/types';
 
+import { useBackendNetworksStore } from '../stores/backendNetworksStore';
+import { type ChainId } from '../types/backendNetworks';
 import { ChainImage } from './ChainImage';
 
 interface DefaultButtonOptions {

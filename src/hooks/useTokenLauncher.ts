@@ -1,6 +1,6 @@
 import { useEffect } from 'react';
 
-import { useBackendNetworksStore } from '@/state/backendNetworks/backendNetworks';
+import { useBackendNetworksStore } from '@/features/network/stores/backendNetworksStore';
 import { TokenLauncher, type SDKConfig } from '@rainbow-me/token-launcher';
 
 const config: SDKConfig = {

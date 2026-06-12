@@ -5,10 +5,10 @@ import ButtonPressAnimation from '@/components/animations/ButtonPressAnimation';
 import RainbowCoinIcon from '@/components/coin-icon/RainbowCoinIcon';
 import { TwoCoinsIcon } from '@/components/coin-icon/TwoCoinsIcon';
 import { Box, Column, Columns, Inline, Stack, Text, useForegroundColor } from '@/design-system';
+import { useBackendNetworksStore } from '@/features/network/stores/backendNetworksStore';
+import { ChainId } from '@/features/network/types/backendNetworks';
 import { type LpAllocation, type RainbowUnderlyingAsset, type RangeStatus } from '@/features/positions/types';
 import * as i18n from '@/languages';
-import { useBackendNetworksStore } from '@/state/backendNetworks/backendNetworks';
-import { ChainId } from '@/state/backendNetworks/types';
 import { useTheme } from '@/theme/ThemeContext';
 
 import { LpPositionRangeBadge } from './LpPositionRangeBadge';

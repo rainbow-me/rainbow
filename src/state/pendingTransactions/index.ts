@@ -1,7 +1,7 @@
 import { rainbowToastsActions } from '@/components/rainbow-toast/useRainbowToastsStore';
 import { isPendingTransaction, type NewTransaction, type PendingTransaction, type RainbowTransaction } from '@/entities/transactions';
+import { type ChainId } from '@/features/network/types/backendNetworks';
 import { convertNewTransactionToRainbowTransaction } from '@/parsers/transactions';
-import { type ChainId } from '@/state/backendNetworks/types';
 import { createRainbowStore } from '@/state/internal/createRainbowStore';
 import { createStoreActions } from '@/state/internal/utils/createStoreActions';
 import { nonceActions } from '@/state/nonces';

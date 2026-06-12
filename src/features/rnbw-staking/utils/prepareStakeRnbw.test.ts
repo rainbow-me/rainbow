@@ -27,7 +27,7 @@ jest.mock('@/features/delegation/willDelegate', () => ({
   canUseDelegatedExecution: (address: Address) => mockCanUseDelegatedExecution(address),
 }));
 
-jest.mock('@/state/backendNetworks/backendNetworks', () => ({
+jest.mock('@/features/network/stores/backendNetworksStore', () => ({
   backendNetworksActions: {
     getChainDefaultRpc: () => 'http://127.0.0.1:8545',
     getDefaultChains: () => ({

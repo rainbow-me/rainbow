@@ -4,12 +4,12 @@ import { isAddress, type Address } from 'viem';
 
 import { type ParsedAddressAsset } from '@/entities/tokens';
 import { type NewTransaction } from '@/entities/transactions';
+import { type ChainId } from '@/features/network/types/backendNetworks';
 import { requireAddress } from '@/framework/core/evm/address';
 import { encodeErc20Transfer } from '@/framework/core/evm/erc20Calldata';
 import { parsePositiveRawAmount } from '@/framework/core/evm/units';
 import { isNativeAsset } from '@/handlers/assets';
 import { resolveNameOrAddress } from '@/handlers/web3';
-import { type ChainId } from '@/state/backendNetworks/types';
 import { type Call, type ExecuteCallsResult, type PreparedCallsExecution } from '@rainbow-me/delegation';
 
 import { isPreparedCallsExecutionSponsored } from './calls';

@@ -14,14 +14,14 @@ import {
 } from '@/entities/transactions';
 import type { SupportedCurrencyKey } from '@/features/currency/supportedCurrencies';
 import { areDestinationTxHashesEqual } from '@/features/delegation/managedExecutionStatus';
+import { backendNetworksActions } from '@/features/network/stores/backendNetworksStore';
+import { type ChainId } from '@/features/network/types/backendNetworks';
 import { logger, RainbowError } from '@/logger';
 import { queryClient } from '@/react-query';
 import { consolidatedTransactionsQueryKey } from '@/resources/transactions/consolidatedTransactions';
 import { fetchRawTransaction, type PaginatedTransactions } from '@/resources/transactions/transaction';
 import { userAssetsStoreManager } from '@/state/assets/userAssetsStoreManager';
 import { useAssetUpdatesStore } from '@/state/assetUpdates/assetUpdates';
-import { backendNetworksActions } from '@/state/backendNetworks/backendNetworks';
-import { type ChainId } from '@/state/backendNetworks/types';
 import { pendingTransactionsActions, usePendingTransactionsStore } from '@/state/pendingTransactions';
 import { type RelayStatusSnapshot } from '@rainbow-me/delegation';
 

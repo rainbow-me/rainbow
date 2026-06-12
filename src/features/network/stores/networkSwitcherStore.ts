@@ -1,8 +1,9 @@
 import { analytics } from '@/analytics';
 import { logger } from '@/logger';
-import { ChainId } from '@/state/backendNetworks/types';
 import { createRainbowStore } from '@/state/internal/createRainbowStore';
 import { useNonceStore } from '@/state/nonces';
+
+import { ChainId } from '../types/backendNetworks';
 
 export const defaultPinnedNetworks = [ChainId.base, ChainId.mainnet, ChainId.optimism, ChainId.arbitrum, ChainId.polygon, ChainId.zora];
 

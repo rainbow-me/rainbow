@@ -6,11 +6,11 @@ import { TransactionStatus, type NewTransaction } from '@/entities/transactions'
 import { IS_TEST } from '@/env';
 import { type TransactionGasParamAmounts } from '@/features/gas/types/gas';
 import { parseGasParamAmounts } from '@/features/gas/utils/parseGas';
+import { ChainId, Network } from '@/features/network/types/backendNetworks';
 import { toHex } from '@/handlers/web3';
 import * as i18n from '@/languages';
 import { logger, RainbowError } from '@/logger';
 import store from '@/redux/store';
-import { ChainId, Network } from '@/state/backendNetworks/types';
 import { addNewTransaction } from '@/state/pendingTransactions';
 import { executeFn, Screens, TimeToSignOperation } from '@/state/performance/performance';
 import { getAccountAddress } from '@/state/wallets/walletsStore';

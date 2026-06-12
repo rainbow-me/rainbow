@@ -25,6 +25,8 @@ import { debouncedFetchSuggestions } from '@/features/ens/utils/handlers';
 import { REGISTRATION_STEPS } from '@/features/ens/utils/helpers';
 import GasSpeedButton from '@/features/gas/components/GasSpeedButton';
 import useGas from '@/features/gas/hooks/useGas';
+import { useBackendNetworksStore } from '@/features/network/stores/backendNetworksStore';
+import { ChainId } from '@/features/network/types/backendNetworks';
 import styled from '@/framework/ui/styled-thing';
 import {
   assetIsParsedAddressAsset,
@@ -49,8 +51,6 @@ import { type RootStackParamList } from '@/navigation/types';
 import { type Contact } from '@/redux/contacts';
 import { rainbowTokenList } from '@/references/rainbow-token-list';
 import { useUserAssetsStore } from '@/state/assets/userAssets';
-import { useBackendNetworksStore } from '@/state/backendNetworks/backendNetworks';
-import { ChainId } from '@/state/backendNetworks/types';
 import { getWallets, useAccountAddress, useIsHardwareWallet } from '@/state/wallets/walletsStore';
 import { borders } from '@/styles';
 import { useTheme, type ThemeContextProps } from '@/theme/ThemeContext';

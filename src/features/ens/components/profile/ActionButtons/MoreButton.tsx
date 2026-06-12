@@ -3,6 +3,7 @@ import { Keyboard, Platform, Share } from 'react-native';
 
 import { showDeleteContactActionSheet } from '@/components/contacts';
 import ContextMenuButton from '@/components/native-context-menu/contextMenu';
+import { ChainId } from '@/features/network/types/backendNetworks';
 import useClipboard from '@/hooks/useClipboard';
 import useContacts from '@/hooks/useContacts';
 import useWatchWallet from '@/hooks/useWatchWallet';
@@ -10,7 +11,6 @@ import * as i18n from '@/languages';
 import { useNavigation } from '@/navigation/Navigation';
 import Routes from '@/navigation/routesNames';
 import { RAINBOW_PROFILES_BASE_URL } from '@/references/constants';
-import { ChainId } from '@/state/backendNetworks/types';
 import { switchWallet } from '@/state/wallets/switchWallet';
 import { useSelectedWallet } from '@/state/wallets/walletsStore';
 import { formatAddressForDisplay } from '@/utils/abbreviations';

@@ -3,11 +3,11 @@ import { Platform, type NativeSyntheticEvent } from 'react-native';
 import { startCase } from 'lodash';
 import { triggerHaptics } from 'react-native-turbo-haptics';
 
+import { useBackendNetworksStore } from '@/features/network/stores/backendNetworksStore';
+import { type ChainId } from '@/features/network/types/backendNetworks';
 import { showActionSheetWithOptions } from '@/framework/ui/utils/actionsheet';
 import { setClipboard } from '@/hooks/useClipboard';
 import * as i18n from '@/languages';
-import { useBackendNetworksStore } from '@/state/backendNetworks/backendNetworks';
-import { type ChainId } from '@/state/backendNetworks/types';
 import abbreviations from '@/utils/abbreviations';
 import ethereumUtils from '@/utils/ethereumUtils';
 

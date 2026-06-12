@@ -1,4 +1,4 @@
-import { ChainId } from '@/state/backendNetworks/types';
+import { ChainId } from '@/features/network/types/backendNetworks';
 
 export const gasUnits = {
   basic_approval: '55000',

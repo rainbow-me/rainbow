@@ -3,6 +3,7 @@ import { useMemo } from 'react';
 import { isAddress, type Address } from 'viem';
 
 import { type NativeCurrencyKey } from '@/features/currency/types';
+import { type ChainId } from '@/features/network/types/backendNetworks';
 import {
   isPlacementHydrating,
   selectPlacementItemsBySource,
@@ -17,7 +18,6 @@ import { mapWithConcurrency } from '@/framework/core/utils/mapWithConcurrency';
 import { time } from '@/framework/core/utils/time';
 import { fetchExternalToken, type FormattedExternalAsset } from '@/resources/assets/externalAssetsQuery';
 import { userAssetsStoreManager } from '@/state/assets/userAssetsStoreManager';
-import { type ChainId } from '@/state/backendNetworks/types';
 import { createDerivedStore } from '@/state/internal/createDerivedStore';
 import { createQueryStore } from '@/state/internal/createQueryStore';
 import { shallowEqual } from '@/worklets/comparisons';

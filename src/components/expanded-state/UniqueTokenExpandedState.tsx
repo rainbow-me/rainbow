@@ -37,6 +37,7 @@ import ProfileInfoSection from '@/features/ens/components/expanded-state/Profile
 import useENSProfile from '@/features/ens/hooks/useENSProfile';
 import useENSRegistration from '@/features/ens/hooks/useENSRegistration';
 import { ENS_RECORDS, REGISTRATION_MODES } from '@/features/ens/utils/helpers';
+import { ChainId } from '@/features/network/types/backendNetworks';
 import { SendActionButton } from '@/features/transfer/components/SendActionButton';
 import styled from '@/framework/ui/styled-thing';
 import { opacity } from '@/framework/ui/utils/opacity';
@@ -52,7 +53,6 @@ import * as i18n from '@/languages';
 import { useNavigation } from '@/navigation/Navigation';
 import Routes from '@/navigation/routesNames';
 import useUntrustedUrlOpener from '@/navigation/useUntrustedUrlOpener';
-import { ChainId } from '@/state/backendNetworks/types';
 import { useAccountAddress, useIsReadOnlyWallet } from '@/state/wallets/walletsStore';
 import { lightModeThemeColors, position } from '@/styles';
 import { useTheme } from '@/theme/ThemeContext';

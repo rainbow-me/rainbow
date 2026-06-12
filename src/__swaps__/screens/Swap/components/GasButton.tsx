@@ -15,9 +15,9 @@ import { GasSpeed } from '@/features/gas/types/gasSpeed';
 import gasUtils from '@/features/gas/utils/gas';
 import { getCachedCurrentBaseFee, useMeteorologySuggestions } from '@/features/gas/utils/meteorology';
 import { weiToGwei } from '@/features/gas/utils/parseGas';
+import { ChainId } from '@/features/network/types/backendNetworks';
 import { add, formatNumber } from '@/helpers/utilities';
 import * as i18n from '@/languages';
-import { ChainId } from '@/state/backendNetworks/types';
 import { swapsStore } from '@/state/swaps/swapsStore';
 import { THICK_BORDER_WIDTH } from '@/styles/constants';
 

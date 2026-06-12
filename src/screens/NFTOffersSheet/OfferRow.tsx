@@ -12,6 +12,8 @@ import { ImgixImage } from '@/components/images';
 import { CardSize } from '@/components/unique-token/CardSize';
 import { Bleed, Box, Column, Columns, globalColors, Inline, Inset, Stack, Text, useBackgroundColor, useColorMode } from '@/design-system';
 import { convertAmountToNativeDisplay } from '@/features/currency/utils/nativeDisplay';
+import { useBackendNetworksStore } from '@/features/network/stores/backendNetworksStore';
+import { type Network } from '@/features/network/types/backendNetworks';
 import { type NftOffer } from '@/graphql/__generated__/arc';
 import { handleSignificantDecimals } from '@/helpers/utilities';
 import * as i18n from '@/languages';
@@ -19,8 +21,6 @@ import { useNavigation } from '@/navigation/Navigation';
 import Routes from '@/navigation/routesNames';
 import { useExternalToken } from '@/resources/assets/externalAssetsQuery';
 import { userAssetsStoreManager } from '@/state/assets/userAssetsStoreManager';
-import { useBackendNetworksStore } from '@/state/backendNetworks/backendNetworks';
-import { type Network } from '@/state/backendNetworks/types';
 import { useTheme } from '@/theme/ThemeContext';
 
 const NFT_SIZE = 50;

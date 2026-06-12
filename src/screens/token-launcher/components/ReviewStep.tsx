@@ -8,10 +8,10 @@ import { Box, Text, TextShadow } from '@/design-system';
 import { type TextSize } from '@/design-system/components/Text/Text';
 import { convertAmountToNativeDisplay } from '@/features/currency/utils/nativeDisplay';
 import { ChainImage } from '@/features/network/components/ChainImage';
+import { useBackendNetworksStore } from '@/features/network/stores/backendNetworksStore';
 import { abbreviateNumber, convertAmountToBalanceDisplay } from '@/helpers/utilities';
 import * as i18n from '@/languages';
 import { userAssetsStoreManager } from '@/state/assets/userAssetsStoreManager';
-import { useBackendNetworksStore } from '@/state/backendNetworks/backendNetworks';
 import { THICK_BORDER_WIDTH } from '@/styles/constants';
 import formatURLForDisplay from '@/utils/formatURLForDisplay';
 

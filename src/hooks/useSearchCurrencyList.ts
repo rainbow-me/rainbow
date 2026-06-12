@@ -6,11 +6,11 @@ import { rankings } from 'match-sorter';
 import { useDiscoverSearchQueryStore, useDiscoverSearchStore } from '@/__swaps__/screens/Swap/resources/search/searchV2';
 import { type SearchAsset, type TokenSearchAssetKey, type TokenSearchThreshold } from '@/__swaps__/types/search';
 import { IS_TEST } from '@/env';
+import { ChainId } from '@/features/network/types/backendNetworks';
 import { addHexPrefix } from '@/handlers/web3';
 import tokenSectionTypes from '@/helpers/tokenSectionTypes';
 import * as i18n from '@/languages';
 import { useFavorites } from '@/resources/favorites';
-import { ChainId } from '@/state/backendNetworks/types';
 import { getUniqueId } from '@/utils/ethereumUtils';
 import { filterList } from '@/utils/search';
 

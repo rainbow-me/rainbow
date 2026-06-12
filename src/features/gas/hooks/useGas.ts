@@ -5,6 +5,8 @@ import { useDispatch, useSelector } from 'react-redux';
 
 import { analytics } from '@/analytics';
 import type { ParsedAddressAsset } from '@/entities/tokens';
+import { useBackendNetworksStore } from '@/features/network/stores/backendNetworksStore';
+import { ChainId } from '@/features/network/types/backendNetworks';
 import { fromWei, greaterThan, greaterThanOrEqualTo } from '@/helpers/utilities';
 import usePrevious from '@/hooks/usePrevious';
 import { useRoute } from '@/navigation/Navigation';
@@ -17,8 +19,6 @@ import {
   fetchExternalToken,
 } from '@/resources/assets/externalAssetsQuery';
 import { userAssetsStoreManager } from '@/state/assets/userAssetsStoreManager';
-import { useBackendNetworksStore } from '@/state/backendNetworks/backendNetworks';
-import { ChainId } from '@/state/backendNetworks/types';
 import ethereumUtils from '@/utils/ethereumUtils';
 import isLowerCaseMatch from '@/utils/isLowerCaseMatch';
 

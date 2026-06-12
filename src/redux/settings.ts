@@ -6,6 +6,7 @@ import { type ThunkDispatch } from 'redux-thunk';
 
 import { analytics } from '@/analytics';
 import { NativeCurrencyKeys, type NativeCurrencyKey } from '@/features/currency/types';
+import { Network, type ChainId } from '@/features/network/types/backendNetworks';
 import {
   getAppIcon,
   getChainId,
@@ -23,7 +24,6 @@ import { WrappedAlert as Alert } from '@/helpers/alert';
 import * as i18n from '@/languages';
 import { logger, RainbowError } from '@/logger';
 import { type AppState } from '@/redux/store';
-import { Network, type ChainId } from '@/state/backendNetworks/types';
 
 import { Language, updateLanguageLocale } from '../languages';
 

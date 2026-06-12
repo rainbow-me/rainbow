@@ -2,6 +2,7 @@ import { Platform } from 'react-native';
 
 import type { WalletKitTypes } from '@reown/walletkit';
 
+import { ChainId } from '@/features/network/types/backendNetworks';
 import { DAppStatus } from '@/graphql/__generated__/metadata';
 import { getProvider } from '@/handlers/web3';
 import WalletTypes from '@/helpers/walletTypes';
@@ -11,7 +12,6 @@ import Navigation from '@/navigation/Navigation';
 import Routes from '@/navigation/routesNames';
 import { fetchDappMetadata } from '@/resources/metadata/dapp';
 import * as portal from '@/screens/Portal';
-import { ChainId } from '@/state/backendNetworks/types';
 import { getWalletWithAccount } from '@/state/wallets/walletsStore';
 
 import { AuthRequest } from '../screens/AuthRequest';

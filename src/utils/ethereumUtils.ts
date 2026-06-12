@@ -12,6 +12,8 @@ import { type ParsedAddressAsset } from '@/entities/tokens';
 import { type NewTransaction, type RainbowTransaction } from '@/entities/transactions';
 import { type EthereumAddress } from '@/entities/wallet';
 import { type GasFee, type LegacySelectedGasFee, type SelectedGasFee } from '@/features/gas/types/gas';
+import { useBackendNetworksStore } from '@/features/network/stores/backendNetworksStore';
+import { ChainId, type Network } from '@/features/network/types/backendNetworks';
 import { getOnchainAssetBalance } from '@/handlers/assets';
 import { getProvider, isTestnetChain, toHex } from '@/handlers/web3';
 import { add, fromWei, greaterThan, isZero, subtract } from '@/helpers/utilities';
@@ -28,8 +30,6 @@ import {
   type FormattedExternalAsset,
 } from '@/resources/assets/externalAssetsQuery';
 import { userAssetsStore } from '@/state/assets/userAssets';
-import { useBackendNetworksStore } from '@/state/backendNetworks/backendNetworks';
-import { ChainId, type Network } from '@/state/backendNetworks/types';
 import { getAccountAddress } from '@/state/wallets/walletsStore';
 
 import { openInBrowser } from './openInBrowser';

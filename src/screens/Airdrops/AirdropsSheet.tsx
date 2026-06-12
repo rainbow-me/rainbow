@@ -25,13 +25,13 @@ import {
   type TextProps,
 } from '@/design-system';
 import { getColorForTheme } from '@/design-system/color/useForegroundColor';
+import { type ChainId } from '@/features/network/types/backendNetworks';
 import { time } from '@/framework/core/utils/time';
 import { opacity } from '@/framework/ui/utils/opacity';
 import * as i18n from '@/languages';
 import { useNavigation } from '@/navigation/Navigation';
 import Routes from '@/navigation/routesNames';
 import { type RainbowClaimable } from '@/resources/addys/claimables/types';
-import { type ChainId } from '@/state/backendNetworks/types';
 import { FULL_PAGE_SIZE, INITIAL_PAGE_SIZE, useAirdropsStore } from '@/state/claimables/airdropsStore';
 import { THICK_BORDER_WIDTH } from '@/styles/constants';
 import { DEVICE_HEIGHT, DEVICE_WIDTH } from '@/utils/deviceUtils';

@@ -3,12 +3,12 @@ import React from 'react';
 import ButtonPressAnimation from '@/components/animations/ButtonPressAnimation';
 import { Bleed, Box, Inline, Text } from '@/design-system';
 import { ChainImage } from '@/features/network/components/ChainImage';
+import { useBackendNetworksStore } from '@/features/network/stores/backendNetworksStore';
+import { type ChainId } from '@/features/network/types/backendNetworks';
 import * as i18n from '@/languages';
 import { useNavigation } from '@/navigation/Navigation';
 import Routes from '@/navigation/routesNames';
 import { useUserAssetsStore } from '@/state/assets/userAssets';
-import { useBackendNetworksStore } from '@/state/backendNetworks/backendNetworks';
-import { type ChainId } from '@/state/backendNetworks/types';
 
 import { ERROR_RED, FIELD_BORDER_COLOR, FIELD_BORDER_WIDTH, INPUT_HEIGHT } from '../constants';
 import { useTokenLauncherContext } from '../context/TokenLauncherContext';

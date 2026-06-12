@@ -8,12 +8,12 @@ import { Bleed, Box, globalColors, Inline, Text, useForegroundColor } from '@/de
 import { TransactionStatus, type RainbowTransaction, type TransactionType } from '@/entities/transactions';
 import { type NativeCurrencyKey } from '@/features/currency/types';
 import { ChainImage } from '@/features/network/components/ChainImage';
+import { ChainId } from '@/features/network/types/backendNetworks';
 import { opacity } from '@/framework/ui/utils/opacity';
 import { activityValues, useTransactionLaunchToken } from '@/helpers/transactions';
 import * as i18n from '@/languages';
 import { useNavigation } from '@/navigation/Navigation';
 import { useSuperTokenStore } from '@/screens/token-launcher/state/rainbowSuperTokenStore';
-import { ChainId } from '@/state/backendNetworks/types';
 import { type ThemeContextProps } from '@/theme/ThemeContext';
 import { address } from '@/utils/abbreviations';
 import Routes from '@rainbow-me/routes';

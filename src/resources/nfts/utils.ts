@@ -6,10 +6,10 @@ import { isAddress, type Address } from 'viem';
 import { type AssetType } from '@/entities/assetTypes';
 import type { UniqueAsset } from '@/entities/uniqueAssets';
 import { IS_PROD } from '@/env';
+import { Network, type ChainId } from '@/features/network/types/backendNetworks';
 import { type GetNftsByCollectionQuery } from '@/graphql/__generated__/arc';
 import { handleSignificantDecimals } from '@/helpers/utilities';
 import { logger, RainbowError } from '@/logger';
-import { Network, type ChainId } from '@/state/backendNetworks/types';
 import { handleNFTImages } from '@/utils/handleNFTImages';
 
 const SUPPORTED_NETWORKS = [Network.mainnet, Network.polygon, Network.bsc, Network.arbitrum, Network.optimism, Network.base, Network.zora];

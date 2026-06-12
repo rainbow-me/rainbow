@@ -19,10 +19,10 @@ import { useSwapContext } from '@/__swaps__/screens/Swap/providers/swap-provider
 import { GestureHandlerButton } from '@/components/buttons/GestureHandlerButton';
 import { TOKEN_SEARCH_INPUT_HORIZONTAL_PADDING } from '@/components/token-search/constants';
 import { AnimatedText, Box, Column, Columns, Stack, useColorMode } from '@/design-system';
+import { ChainId } from '@/features/network/types/backendNetworks';
 import * as i18n from '@/languages';
 import Navigation from '@/navigation/Navigation';
 import Routes from '@/navigation/routesNames';
-import { ChainId } from '@/state/backendNetworks/types';
 import { useSwapsStore } from '@/state/swaps/swapsStore';
 import { THICK_BORDER_WIDTH } from '@/styles/constants';
 

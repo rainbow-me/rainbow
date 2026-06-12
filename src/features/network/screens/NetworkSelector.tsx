@@ -54,14 +54,13 @@ import * as i18n from '@/languages';
 import Navigation, { useNavigation } from '@/navigation/Navigation';
 import type Routes from '@/navigation/routesNames';
 import { type RootStackParamList } from '@/navigation/types';
-import { useBackendNetworksStore } from '@/state/backendNetworks/backendNetworks';
-import { ChainId } from '@/state/backendNetworks/types';
 import { THICK_BORDER_WIDTH, THICKER_BORDER_WIDTH } from '@/styles/constants';
 import deviceUtils, { DEVICE_WIDTH } from '@/utils/deviceUtils';
 import safeAreaInsetValues from '@/utils/safeAreaInsetValues';
 
 import { ChainImage } from '../components/ChainImage';
 import { SEARCH_BAR_HEIGHT, SearchBar } from '../components/SearchBar';
+import { useBackendNetworksStore } from '../stores/backendNetworksStore';
 import {
   customizeNetworksBannerStore,
   defaultPinnedNetworks,
@@ -69,6 +68,7 @@ import {
   networkSwitcherStore,
   shouldShowCustomizeNetworksBanner,
 } from '../stores/networkSwitcherStore';
+import { ChainId } from '../types/backendNetworks';
 
 type RouteParams = RouteProp<RootStackParamList, 'NetworkSelector'>['params'];
 

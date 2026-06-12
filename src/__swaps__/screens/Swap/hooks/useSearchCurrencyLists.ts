@@ -16,11 +16,11 @@ import { type AddressOrEth, type AssetType, type ExtendedAnimatedAssetWithColors
 import { type AssetToBuySectionId, type FavoritedAsset, type SearchAsset, type TokenToBuyListItem } from '@/__swaps__/types/search';
 import { type RecentSwap } from '@/__swaps__/types/swap';
 import { analytics } from '@/analytics';
+import { ChainId } from '@/features/network/types/backendNetworks';
 import { time } from '@/framework/core/utils/time';
 import { isNativeAsset } from '@/handlers/assets';
 import { addHexPrefix } from '@/handlers/web3';
 import { useFavorites } from '@/resources/favorites';
-import { ChainId } from '@/state/backendNetworks/types';
 import { useSwapsStore } from '@/state/swaps/swapsStore';
 import { getUniqueId } from '@/utils/ethereumUtils';
 import isLowerCaseMatch from '@/utils/isLowerCaseMatch';
