@@ -67,7 +67,7 @@ import { addressHashedColorIndex, addressHashedEmoji } from '@/utils/profileUtil
 import promiseUtils from '@/utils/promise';
 import safeAreaInsetValues from '@/utils/safeAreaInsetValues';
 
-import SendButton from '../components/SendButton';
+import { SendButton } from '../components/SendButton';
 
 const Container = styled(Centered).attrs({
   direction: 'column',

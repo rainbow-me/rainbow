@@ -4,7 +4,7 @@ import { HoldToAuthorizeButton } from '@/components/buttons';
 import * as i18n from '@/languages';
 import { useWalletsStore } from '@/state/wallets/walletsStore';
 
-export default function SendButton({
+export function SendButton({
   backgroundColor,
   disabled,
   insufficientEth,

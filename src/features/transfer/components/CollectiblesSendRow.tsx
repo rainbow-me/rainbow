@@ -75,7 +75,7 @@ const UniqueTokenCoinIcon = magicMemo(
   ['backgroundColor', 'images.lowResUrl', 'images.highResUrl']
 );
 
-const CollectiblesSendRow = React.memo(
+export const CollectiblesSendRow = React.memo(
   ({
     disablePressAnimation,
     item,
@@ -130,5 +130,3 @@ CollectiblesSendRow.displayName = 'CollectiblesSendRow';
 CollectiblesSendRow.dividerHeight = dividerHeight;
 // @ts-expect-error
 CollectiblesSendRow.selectedHeight = selectedHeight;
-
-export default CollectiblesSendRow;

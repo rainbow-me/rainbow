@@ -7,7 +7,7 @@ import { opacity } from '@/framework/ui/utils/opacity';
 import { sheetVerticalOffset } from '@/navigation/effects';
 import { useTheme } from '@/theme/ThemeContext';
 
-const SendEmptyState = () => {
+export const SendEmptyState = () => {
   const { colors } = useTheme();
 
   const icon = <Icon color={opacity(colors.blueGreyDark, 0.06)} height={88} name="send" style={sx.icon} width={91} />;
@@ -22,8 +22,6 @@ const SendEmptyState = () => {
     </Centered>
   );
 };
-
-export default SendEmptyState;
 
 const sx = StyleSheet.create({
   androidContainer: { alignItems: 'center', flex: 1 },
