@@ -13,8 +13,8 @@ import { AnimatedSpinner } from '@/components/animations/AnimatedSpinner';
 import { TIMING_CONFIGS } from '@/components/animations/animationConfigs';
 import { GestureHandlerButton } from '@/components/buttons/GestureHandlerButton';
 import { Bleed, Box, globalColors, IconContainer, Text, useColorMode } from '@/design-system';
+import { ChainId } from '@/features/network/types/backendNetworks';
 import { opacity } from '@/framework/ui/utils/opacity';
-import { ChainId } from '@/state/backendNetworks/types';
 import { useSwapsStore } from '@/state/swaps/swapsStore';
 import { SEPARATOR_COLOR } from '@/styles/constants';
 

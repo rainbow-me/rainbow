@@ -1,4 +1,4 @@
-import { ChainId } from '@/state/backendNetworks/types';
+import { ChainId } from '@/features/network/types/backendNetworks';
 
 import { useAppSessionsStore } from '.';
 

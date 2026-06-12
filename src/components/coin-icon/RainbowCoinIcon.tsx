@@ -2,7 +2,7 @@ import React from 'react';
 import { StyleSheet, View } from 'react-native';
 
 import { ChainImage } from '@/features/network/components/ChainImage';
-import { ChainId } from '@/state/backendNetworks/types';
+import { ChainId } from '@/features/network/types/backendNetworks';
 import { borders, fonts } from '@/styles';
 import { useTheme } from '@/theme/ThemeContext';
 import FallbackIcon from '@/utils/CoinIcons/FallbackIcon';

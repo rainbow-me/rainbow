@@ -1,6 +1,6 @@
 import { StaticJsonRpcProvider } from '@ethersproject/providers';
 
-import { backendNetworksActions } from '@/state/backendNetworks/backendNetworks';
+import { backendNetworksActions } from '@/features/network/stores/backendNetworksStore';
 import { type Call } from '@rainbow-me/delegation';
 import { SwapType, type CrosschainQuote, type Quote } from '@rainbow-me/swaps';
 
@@ -24,7 +24,7 @@ jest.mock('@/model/remoteConfig', () => ({
   getRemoteConfig: () => mockGetRemoteConfig(),
 }));
 
-jest.mock('@/state/backendNetworks/backendNetworks', () => ({
+jest.mock('@/features/network/stores/backendNetworksStore', () => ({
   backendNetworksActions: {
     isSponsorshipEligible: jest.fn(),
   },

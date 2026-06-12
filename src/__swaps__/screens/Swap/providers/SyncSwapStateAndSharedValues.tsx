@@ -10,6 +10,8 @@ import { analytics } from '@/analytics';
 import { useIsSponsoredSwap } from '@/features/delegation/sponsoredSwapStore';
 import { type GasSettings } from '@/features/gas/hooks/useCustomGas';
 import { useSelectedGas } from '@/features/gas/hooks/useSelectedGas';
+import { useBackendNetworksStore } from '@/features/network/stores/backendNetworksStore';
+import { ChainId } from '@/features/network/types/backendNetworks';
 import {
   divWorklet,
   equalWorklet,
@@ -26,8 +28,6 @@ import {
 } from '@/framework/core/safeMath';
 import Routes from '@/navigation/routesNames';
 import { useUserAssetsStore } from '@/state/assets/userAssets';
-import { useBackendNetworksStore } from '@/state/backendNetworks/backendNetworks';
-import { ChainId } from '@/state/backendNetworks/types';
 import { useStoreSharedValue } from '@/state/internal/hooks/useStoreSharedValue';
 import { useSwapsStore } from '@/state/swaps/swapsStore';
 import { getUniqueId } from '@/utils/ethereumUtils';

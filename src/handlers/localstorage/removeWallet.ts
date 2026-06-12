@@ -1,9 +1,9 @@
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { keys } from 'lodash';
 
+import { Network } from '@/features/network/types/backendNetworks';
 import { logger, RainbowError } from '@/logger';
 import { removeNotificationSettingsForWallet } from '@/notifications/settings/settings';
-import { Network } from '@/state/backendNetworks/types';
 
 import { accountLocalKeys } from './accountLocal';
 import { getKey } from './common';

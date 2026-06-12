@@ -16,6 +16,7 @@ import {
 import { globalColors } from '@/design-system';
 import { palettes, type ForegroundColor } from '@/design-system/color/palettes';
 import { IS_TEST } from '@/env';
+import { ChainId } from '@/features/network/types/backendNetworks';
 import {
   divWorklet,
   equalWorklet,
@@ -33,7 +34,6 @@ import * as i18n from '@/languages';
 import { DEFAULT_SLIPPAGE_BIPS_CHAINID, type RainbowConfig } from '@/model/remoteConfig';
 import store from '@/redux/store';
 import { useUserAssetsStore } from '@/state/assets/userAssets';
-import { ChainId } from '@/state/backendNetworks/types';
 import { colors } from '@/styles';
 import { getUniqueId } from '@/utils/ethereumUtils';
 import { ETH_ADDRESS, type CrosschainQuote, type Quote, type QuoteError, type QuoteParams } from '@rainbow-me/swaps';

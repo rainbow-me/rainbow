@@ -10,10 +10,10 @@ import {
   type RainbowTransaction,
   type SettledTransaction,
 } from '@/entities/transactions';
+import { backendNetworksActions } from '@/features/network/stores/backendNetworksStore';
 import { queryClient } from '@/react-query';
 import { fetchRawTransaction } from '@/resources/transactions/transaction';
 import { useAssetUpdatesStore } from '@/state/assetUpdates/assetUpdates';
-import { backendNetworksActions } from '@/state/backendNetworks/backendNetworks';
 import { pendingTransactionsActions, usePendingTransactionsStore } from '@/state/pendingTransactions';
 import { RelayExecutionStatus } from '@rainbow-me/delegation';
 import { SwapType } from '@rainbow-me/swaps';

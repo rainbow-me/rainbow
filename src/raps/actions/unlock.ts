@@ -6,11 +6,11 @@ import { erc20Abi, type Address } from 'viem';
 import { TransactionStatus, type NewTransaction } from '@/entities/transactions';
 import { type TransactionGasParams, type TransactionLegacyGasParams } from '@/features/gas/types/gasSpeed';
 import { gasUnits } from '@/features/gas/utils/gasUnits';
+import { useBackendNetworksStore } from '@/features/network/stores/backendNetworksStore';
+import { type ChainId } from '@/features/network/types/backendNetworks';
 import { getProvider, toHex } from '@/handlers/web3';
 import { ensureError, logger, RainbowError } from '@/logger';
 import { ETH_ADDRESS } from '@/references/constants';
-import { useBackendNetworksStore } from '@/state/backendNetworks/backendNetworks';
-import { type ChainId } from '@/state/backendNetworks/types';
 import { addNewTransaction } from '@/state/pendingTransactions';
 import { type Call } from '@rainbow-me/delegation';
 

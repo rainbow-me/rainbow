@@ -16,6 +16,8 @@ import { CardSize } from '@/components/unique-token/CardSize';
 import { AccentColorProvider, Box, Inline, Inset, Text, useBackgroundColor, useColorMode } from '@/design-system';
 import { globalColors, type TextColor } from '@/design-system/color/palettes';
 import { convertAmountToNativeDisplay } from '@/features/currency/utils/nativeDisplay';
+import { useBackendNetworksStore } from '@/features/network/stores/backendNetworksStore';
+import { type Network } from '@/features/network/types/backendNetworks';
 import { SortCriterion, type NftOffer } from '@/graphql/__generated__/arc';
 import { getFormattedTimeQuantity, handleSignificantDecimals } from '@/helpers/utilities';
 import * as i18n from '@/languages';
@@ -24,8 +26,6 @@ import Navigation from '@/navigation/Navigation';
 import Routes from '@/navigation/routesNames';
 import { useExternalToken } from '@/resources/assets/externalAssetsQuery';
 import { userAssetsStoreManager } from '@/state/assets/userAssetsStoreManager';
-import { useBackendNetworksStore } from '@/state/backendNetworks/backendNetworks';
-import { type Network } from '@/state/backendNetworks/types';
 import { useTheme } from '@/theme/ThemeContext';
 
 const TWO_HOURS_MS = 2 * 60 * 60 * 1000;

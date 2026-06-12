@@ -1,9 +1,9 @@
 import { analytics } from '@/analytics';
 import { predictSponsoredCallsExecution } from '@/features/delegation/sponsoredCalls';
+import { ChainId } from '@/features/network/types/backendNetworks';
 import { USDC_ICON_URL } from '@/features/perps/constants';
 import { time } from '@/framework/core/utils/time';
 import { getRemoteConfig } from '@/model/remoteConfig';
-import { ChainId } from '@/state/backendNetworks/types';
 import { createDepositConfig } from '@/systems/funding/config';
 
 import { POLYGON_USDC_ADDRESS, POLYGON_USDC_DECIMALS } from './constants';

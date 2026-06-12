@@ -13,6 +13,7 @@ import { defaultConfig, defaultConfigValues, type ExperimentalConfigKey } from '
 import { useExperimentalConfigStore } from '@/config/experimentalConfigStore';
 import { IS_STORE_INSTALL } from '@/env';
 import { getDelegationContractAddress, isRainbowDelegated, isThirdPartyDelegated } from '@/features/delegation/status';
+import { ChainId } from '@/features/network/types/backendNetworks';
 import { WrappedAlert as Alert } from '@/helpers/alert';
 import { getPublicKeyOfTheSigningWalletAndCreateWalletIfNeeded } from '@/helpers/signingWallet';
 import * as i18n from '@/languages';
@@ -28,7 +29,6 @@ import { analyzeReactQueryStore, clearReactQueryCache } from '@/react-query/reac
 import { clearImageMetadataCache } from '@/redux/imageMetadata';
 import { RevokeReason } from '@/screens/delegation/RevokeDelegationPanel';
 import { SettingsLoadingIndicator } from '@/screens/SettingsSheet/components/SettingsLoadingIndicator';
-import { ChainId } from '@/state/backendNetworks/types';
 import { useConnectedToAnvilStore } from '@/state/connectedToAnvil';
 import { analyzeUserAssets } from '@/state/debug/analyzeUserAssets';
 import { nonceActions } from '@/state/nonces';

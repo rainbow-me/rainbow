@@ -1,5 +1,5 @@
 import { type AddressOrEth } from '@/__swaps__/types/assets';
-import { type ChainId } from '@/state/backendNetworks/types';
+import { type ChainId } from '@/features/network/types/backendNetworks';
 
 import { type RouteConfig, type WithdrawalTokenData } from '../types';
 

@@ -23,14 +23,14 @@ import {
 import { EventIcon, IconContainer } from '@/components/Transactions/TransactionIcons';
 import { Box, Inline, Stack, Text } from '@/design-system';
 import { type TextColor } from '@/design-system/color/palettes';
+import { useBackendNetworksStore } from '@/features/network/stores/backendNetworksStore';
+import { type ChainId } from '@/features/network/types/backendNetworks';
 import {
   TransactionScanResultType,
   type TransactionErrorType,
   type TransactionSimulationResult,
 } from '@/graphql/__generated__/metadataPOST';
 import * as i18n from '@/languages';
-import { useBackendNetworksStore } from '@/state/backendNetworks/backendNetworks';
-import { type ChainId } from '@/state/backendNetworks/types';
 
 import { SimulatedEventRow } from './SimulatedEventRow';
 

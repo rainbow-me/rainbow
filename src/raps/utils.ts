@@ -14,12 +14,12 @@ import type {
 } from '@/features/gas/types/gas';
 import gasUtils from '@/features/gas/utils/gas';
 import { gasUnits } from '@/features/gas/utils/gasUnits';
+import { ChainId } from '@/features/network/types/backendNetworks';
 import type { Transaction } from '@/graphql/__generated__/metadataPOST';
 import { toHexNoLeadingZeros } from '@/handlers/web3';
 import { add, greaterThan, multiply } from '@/helpers/utilities';
 import { ensureError, logger, RainbowError } from '@/logger';
 import { simulateTransactions } from '@/resources/transactions/transactionSimulation';
-import { ChainId } from '@/state/backendNetworks/types';
 import { getQuoteExecutionDetails, type CrosschainQuote, type Quote } from '@rainbow-me/swaps';
 
 import { getQuoteAllowanceTargetAddress } from './validation';

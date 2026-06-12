@@ -5,13 +5,13 @@ import qs from 'qs';
 import { TOKEN_SEARCH_URL } from 'react-native-dotenv';
 
 import { type SearchAsset, type TokenSearchAssetKey } from '@/__swaps__/types/search';
+import { useBackendNetworksStore } from '@/features/network/stores/backendNetworksStore';
+import { ChainId } from '@/features/network/types/backendNetworks';
 import { time } from '@/framework/core/utils/time';
 import { RainbowFetchClient } from '@/framework/data/http/rainbowFetch';
 import { getProvider } from '@/handlers/web3';
 import { logger, RainbowError } from '@/logger';
 import erc20ABI from '@/references/erc20-abi.json';
-import { useBackendNetworksStore } from '@/state/backendNetworks/backendNetworks';
-import { ChainId } from '@/state/backendNetworks/types';
 import { createQueryStore } from '@/state/internal/createQueryStore';
 import { createRainbowStore } from '@/state/internal/createRainbowStore';
 import { useSwapsStore } from '@/state/swaps/swapsStore';

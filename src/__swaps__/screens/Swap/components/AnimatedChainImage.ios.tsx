@@ -8,8 +8,8 @@ import { BLANK_BASE64_PIXEL } from '@/components/DappBrowser/constants';
 import { DEFAULT_FASTER_IMAGE_CONFIG } from '@/components/images/ImgixImage';
 import { useColorMode } from '@/design-system';
 import { getChainBadgeStyles } from '@/features/network/components/ChainImage';
-import { useBackendNetworksStore } from '@/state/backendNetworks/backendNetworks';
-import { ChainId } from '@/state/backendNetworks/types';
+import { useBackendNetworksStore } from '@/features/network/stores/backendNetworksStore';
+import { ChainId } from '@/features/network/types/backendNetworks';
 
 import { useSwapContext } from '../providers/swap-provider';
 

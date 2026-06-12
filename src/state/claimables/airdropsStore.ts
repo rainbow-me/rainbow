@@ -2,6 +2,7 @@ import { qs } from 'url-parse';
 import { type Address } from 'viem';
 
 import type { NativeCurrencyKey } from '@/features/currency/types';
+import { useBackendNetworksStore } from '@/features/network/stores/backendNetworksStore';
 import { time } from '@/framework/core/utils/time';
 import { getSizedImageUrl } from '@/handlers/imgix';
 import { logger, RainbowError } from '@/logger';
@@ -11,7 +12,6 @@ import { parseClaimables } from '@/resources/addys/claimables/utils';
 import { getAddysHttpClient } from '@/resources/addys/client';
 import { type AddysConsolidatedError } from '@/resources/addys/types';
 import { userAssetsStoreManager } from '@/state/assets/userAssetsStoreManager';
-import { useBackendNetworksStore } from '@/state/backendNetworks/backendNetworks';
 import { createQueryStore } from '@/state/internal/createQueryStore';
 import { type CacheEntry } from '@/state/internal/queryStore/types';
 import { useNavigationStore } from '@/state/navigation/navigationStore';

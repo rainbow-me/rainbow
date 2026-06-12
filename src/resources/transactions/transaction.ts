@@ -7,6 +7,8 @@ import { foundry } from 'viem/chains';
 import { TransactionStatus, type MinedTransaction, type RainbowTransaction, type TransactionType } from '@/entities/transactions';
 import { IS_TEST } from '@/env';
 import { type NativeCurrencyKey } from '@/features/currency/types';
+import { backendNetworksActions } from '@/features/network/stores/backendNetworksStore';
+import { type ChainId } from '@/features/network/types/backendNetworks';
 import { type GetTransactionByHashResponse } from '@/features/positions/types/generated/transaction/transaction';
 import { RainbowFetchError } from '@/framework/data/http/rainbowFetch';
 import { ensureError, logger, RainbowError } from '@/logger';
@@ -14,8 +16,6 @@ import { parseTransaction } from '@/parsers/transactions';
 import { createQueryKey, queryClient, type QueryFunctionArgs, type QueryFunctionResult } from '@/react-query';
 import { getPlatformClient } from '@/resources/platform/client';
 import { userAssetsStoreManager } from '@/state/assets/userAssetsStoreManager';
-import { backendNetworksActions } from '@/state/backendNetworks/backendNetworks';
-import { type ChainId } from '@/state/backendNetworks/types';
 import { useAccountAddress } from '@/state/wallets/walletsStore';
 
 import { consolidatedTransactionsQueryKey, type consolidatedTransactionsQueryFunction } from './consolidatedTransactions';

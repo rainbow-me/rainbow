@@ -7,10 +7,10 @@ import { type Address } from 'viem';
 import { TransactionDirection, TransactionStatus, type NewTransaction } from '@/entities/transactions';
 import { canUseDelegatedExecution } from '@/features/delegation/willDelegate';
 import type { LegacyTransactionGasParamAmounts, TransactionGasParamAmounts } from '@/features/gas/types/gas';
+import { backendNetworksActions } from '@/features/network/stores/backendNetworksStore';
 import { RainbowError } from '@/logger';
 import { extractReplayableExecution } from '@/raps/replay';
 import { toTransactionAsset, type TransactionAssetSource } from '@/raps/transactionAsset';
-import { backendNetworksActions } from '@/state/backendNetworks/backendNetworks';
 import { addNewTransaction } from '@/state/pendingTransactions';
 import { type Call, type PreparedCallsExecution } from '@rainbow-me/delegation';
 

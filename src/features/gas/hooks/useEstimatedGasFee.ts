@@ -4,9 +4,9 @@ import { formatUnits } from 'viem';
 
 import { calculateGasFeeWorklet } from '@/__swaps__/screens/Swap/providers/SyncSwapStateAndSharedValues';
 import { convertAmountToNativeDisplayWorklet } from '@/features/currency/utils/nativeDisplay';
+import { type ChainId } from '@/features/network/types/backendNetworks';
 import { formatNumber, multiply } from '@/helpers/utilities';
 import { userAssetsStoreManager } from '@/state/assets/userAssetsStoreManager';
-import { type ChainId } from '@/state/backendNetworks/types';
 import { useNativeAsset } from '@/utils/ethereumUtils';
 
 import { weiToGwei } from '../utils/parseGas';

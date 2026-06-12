@@ -3,9 +3,9 @@ import { useMemo } from 'react';
 import { useSelector } from 'react-redux';
 import { type Address } from 'viem';
 
+import { type ChainId } from '@/features/network/types/backendNetworks';
 import { type AppState } from '@/redux/store';
 import { useExternalToken } from '@/resources/assets/externalAssetsQuery';
-import { type ChainId } from '@/state/backendNetworks/types';
 import { getUniqueId } from '@/utils/ethereumUtils';
 
 import useAccountAsset from './useAccountAsset';

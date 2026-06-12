@@ -35,7 +35,7 @@ jest.mock('@/state/swaps/swapsStore', () => ({
   },
 }));
 
-jest.mock('@/state/backendNetworks/backendNetworks', () => ({
+jest.mock('@/features/network/stores/backendNetworksStore', () => ({
   useBackendNetworksStore: {
     getState: jest.fn(),
   },

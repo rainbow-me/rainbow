@@ -8,6 +8,8 @@ import { extractColorValueForColors } from '@/__swaps__/utils/swaps';
 import { type EnrichedExchangeAsset } from '@/components/ExchangeAssetList';
 import { useColorMode } from '@/design-system';
 import type { ParsedAddressAsset } from '@/entities/tokens';
+import { useBackendNetworksStore } from '@/features/network/stores/backendNetworksStore';
+import { type ChainId } from '@/features/network/types/backendNetworks';
 import { time } from '@/framework/core/utils/time';
 import { opacity } from '@/framework/ui/utils/opacity';
 import { type Token } from '@/graphql/__generated__/metadata';
@@ -18,8 +20,6 @@ import useColorForAsset from '@/hooks/useColorForAsset';
 import { useExternalToken, type FormattedExternalAsset } from '@/resources/assets/externalAssetsQuery';
 import { useSuperTokenStore } from '@/screens/token-launcher/state/rainbowSuperTokenStore';
 import { userAssetsStoreManager } from '@/state/assets/userAssetsStoreManager';
-import { useBackendNetworksStore } from '@/state/backendNetworks/backendNetworks';
-import { type ChainId } from '@/state/backendNetworks/types';
 import { useTheme } from '@/theme/ThemeContext';
 import { getUniqueId } from '@/utils/ethereumUtils';
 

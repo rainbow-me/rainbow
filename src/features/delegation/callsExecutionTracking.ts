@@ -1,7 +1,7 @@
 import { TransactionStatus, type NewTransaction } from '@/entities/transactions';
+import { type ChainId } from '@/features/network/types/backendNetworks';
 import { convertNewTransactionToRainbowTransaction } from '@/parsers/transactions';
 import { extractReplayableCall } from '@/raps/replay';
-import { type ChainId } from '@/state/backendNetworks/types';
 import { addNewTransaction, pendingTransactionsActions } from '@/state/pendingTransactions';
 import { type ExecuteCallsResult, type ExecutionResult } from '@rainbow-me/delegation';
 

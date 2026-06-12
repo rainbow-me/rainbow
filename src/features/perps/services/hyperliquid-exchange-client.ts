@@ -2,6 +2,7 @@ import { type Wallet } from '@ethersproject/wallet';
 import * as hl from '@nktkas/hyperliquid';
 import { type Address, type Hex } from 'viem';
 
+import { ChainId } from '@/features/network/types/backendNetworks';
 import { getOppositePositionSide } from '@/features/perps/utils';
 import { formatOrderPrice } from '@/features/perps/utils/formatOrderPrice';
 import { generateCloid } from '@/features/perps/utils/hyperliquidCloid';
@@ -16,7 +17,6 @@ import { getProvider } from '@/handlers/web3';
 import { multiply } from '@/helpers/utilities';
 import { logger, RainbowError } from '@/logger';
 import { loadWallet } from '@/model/wallet';
-import { ChainId } from '@/state/backendNetworks/types';
 import { checkIfReadOnlyWallet } from '@/state/wallets/walletsStore';
 
 import { DEFAULT_SLIPPAGE_BIPS, RAINBOW_BUILDER_SETTINGS, RAINBOW_REFERRAL_CODE } from '../constants';

@@ -1,7 +1,7 @@
+import { ChainId } from '@/features/network/types/backendNetworks';
 import { time } from '@/framework/core/utils/time';
 import { getProvider } from '@/handlers/web3';
 import { RainbowError } from '@/logger';
-import { ChainId } from '@/state/backendNetworks/types';
 
 const CONFIRMATION_TIMEOUT = time.minutes(1);
 

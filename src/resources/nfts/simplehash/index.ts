@@ -2,11 +2,11 @@ import { NFT_API_KEY, NFT_API_URL } from 'react-native-dotenv';
 
 import { AssetType } from '@/entities/assetTypes';
 import { type UniqueAsset } from '@/entities/uniqueAssets';
+import { useBackendNetworksStore } from '@/features/network/stores/backendNetworksStore';
+import { ChainId } from '@/features/network/types/backendNetworks';
 import { RainbowFetchClient } from '@/framework/data/http/rainbowFetch';
 import { logger, RainbowError } from '@/logger';
 import { SimpleHashMarketplaceId, type SimpleHashListing, type SimpleHashNFT } from '@/resources/nfts/simplehash/types';
-import { useBackendNetworksStore } from '@/state/backendNetworks/backendNetworks';
-import { ChainId } from '@/state/backendNetworks/types';
 
 export const START_CURSOR = 'start';
 

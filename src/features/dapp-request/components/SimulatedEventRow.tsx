@@ -7,14 +7,14 @@ import { EventIcon } from '@/components/Transactions/TransactionIcons';
 import { type EventInfo, type EventType } from '@/components/Transactions/types';
 import { Bleed, Box, Inline, Text } from '@/design-system';
 import { convertAmountToNativeDisplay } from '@/features/currency/utils/nativeDisplay';
+import { useBackendNetworksStore } from '@/features/network/stores/backendNetworksStore';
+import { type Network } from '@/features/network/types/backendNetworks';
 import { TransactionAssetType, type TransactionSimulationAsset } from '@/graphql/__generated__/metadataPOST';
 import { maybeSignUri } from '@/handlers/imgix';
 import { convertRawAmountToBalance } from '@/helpers/utilities';
 import * as i18n from '@/languages';
 import { useExternalToken } from '@/resources/assets/externalAssetsQuery';
 import { userAssetsStoreManager } from '@/state/assets/userAssetsStoreManager';
-import { useBackendNetworksStore } from '@/state/backendNetworks/backendNetworks';
-import { type Network } from '@/state/backendNetworks/types';
 
 type SimulatedEventRowProps = {
   amount: string | 'unlimited';

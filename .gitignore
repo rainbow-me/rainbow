@@ -125,7 +125,7 @@ InjectedJSBundle.js.LICENSE.txt
 !.yarn/sdks
 !.yarn/versions
 
-src/references/networks.json
+src/features/network/constants/networks.json
 # Expo
 .expo
 dist/

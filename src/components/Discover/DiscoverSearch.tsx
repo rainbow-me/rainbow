@@ -11,6 +11,8 @@ import { useDiscoverScreenContext } from '@/components/Discover/DiscoverScreenCo
 import { type EnrichedExchangeAsset } from '@/components/ExchangeAssetList';
 import { IS_TEST } from '@/env';
 import { DISCOVER_HEADER_HEIGHT } from '@/features/discover/components/DiscoverHeader';
+import { useBackendNetworksStore } from '@/features/network/stores/backendNetworksStore';
+import { ChainId, Network } from '@/features/network/types/backendNetworks';
 import { useHardwareBackOnFocus } from '@/hooks/useHardwareBack';
 import useSearchCurrencyList from '@/hooks/useSearchCurrencyList';
 import { useTimeoutEffect } from '@/hooks/useTimeout';
@@ -18,8 +20,6 @@ import Navigation from '@/navigation/Navigation';
 import Routes from '@/navigation/routesNames';
 import { TAB_BAR_HEIGHT } from '@/navigation/SwipeNavigator';
 import { navigateToMintCollection } from '@/resources/reservoir/mints';
-import { useBackendNetworksStore } from '@/state/backendNetworks/backendNetworks';
-import { ChainId, Network } from '@/state/backendNetworks/types';
 import { useAccountAddress } from '@/state/wallets/walletsStore';
 import deviceUtils from '@/utils/deviceUtils';
 import ethereumUtils from '@/utils/ethereumUtils';

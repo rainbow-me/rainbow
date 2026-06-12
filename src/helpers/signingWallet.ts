@@ -3,10 +3,10 @@ import { generateMnemonic } from 'bip39';
 import { RAINBOW_MASTER_KEY } from 'react-native-dotenv';
 
 import type { EthereumAddress } from '@/entities/wallet';
+import { ChainId } from '@/features/network/types/backendNetworks';
 import AesEncryptor from '@/handlers/aesEncryption';
 import { addHexPrefix, getProvider } from '@/handlers/web3';
 import { logger, RainbowError } from '@/logger';
-import { ChainId } from '@/state/backendNetworks/types';
 import { deriveAccountFromWalletInput } from '@/utils/wallet';
 
 import { loadString, publicAccessControlOptions, saveString } from '../model/keychain';

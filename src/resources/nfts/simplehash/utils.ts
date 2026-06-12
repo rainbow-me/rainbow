@@ -3,11 +3,11 @@ import { type Address } from 'viem';
 import { AssetType } from '@/entities/assetTypes';
 import type { UniqueAsset } from '@/entities/uniqueAssets';
 import { ENS_NFT_CONTRACT_ADDRESS } from '@/features/ens/references';
+import { useBackendNetworksStore } from '@/features/network/stores/backendNetworksStore';
+import { type Network } from '@/features/network/types/backendNetworks';
 import { NftTokenType, type SimpleHashNft } from '@/graphql/__generated__/arc';
 import { convertRawAmountToRoundedDecimal } from '@/helpers/utilities';
 import { POAP_NFT_ADDRESS } from '@/references/constants';
-import { useBackendNetworksStore } from '@/state/backendNetworks/backendNetworks';
-import { type Network } from '@/state/backendNetworks/types';
 import { handleNFTImages } from '@/utils/handleNFTImages';
 
 /**

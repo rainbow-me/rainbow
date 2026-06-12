@@ -14,12 +14,12 @@ import { type SearchAsset } from '@/__swaps__/types/search';
 import type { RainbowToken } from '@/entities/tokens';
 import type { SupportedCurrencyKey } from '@/features/currency/supportedCurrencies';
 import { convertAmountAndPriceToNativeDisplay, convertAmountToNativeDisplayWorklet } from '@/features/currency/utils/nativeDisplay';
+import { useBackendNetworksStore } from '@/features/network/stores/backendNetworksStore';
+import { ChainId, ChainName } from '@/features/network/types/backendNetworks';
 import { isNativeAsset } from '@/handlers/assets';
 import { convertAmountToBalanceDisplay, convertAmountToPercentageDisplay, convertRawAmountToDecimalFormat } from '@/helpers/utilities';
 import * as i18n from '@/languages';
 import { userAssetsStore } from '@/state/assets/userAssets';
-import { useBackendNetworksStore } from '@/state/backendNetworks/backendNetworks';
-import { ChainId, ChainName } from '@/state/backendNetworks/types';
 import isLowerCaseMatch from '@/utils/isLowerCaseMatch';
 
 export const isSameAsset = (a1: Pick<ParsedAsset, 'chainId' | 'address'>, a2: Pick<ParsedAsset, 'chainId' | 'address'>) =>

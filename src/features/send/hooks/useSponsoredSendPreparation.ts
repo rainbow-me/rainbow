@@ -8,11 +8,11 @@ import { isPreparedCallsExecutionSponsored } from '@/features/delegation/calls';
 import { predictSponsoredSend, prepareSponsoredSend } from '@/features/delegation/sponsoredSend';
 import { buildSendCallFromSendDetails } from '@/features/delegation/sponsoredSendExecution';
 import { supportsDelegatedExecution } from '@/features/delegation/willDelegate';
+import { useBackendNetworksStore } from '@/features/network/stores/backendNetworksStore';
+import { type ChainId } from '@/features/network/types/backendNetworks';
 import { parsePositiveRawAmount } from '@/framework/core/evm/units';
 import { ensureError, logger } from '@/logger';
 import { useRemoteConfig } from '@/model/remoteConfig';
-import { useBackendNetworksStore } from '@/state/backendNetworks/backendNetworks';
-import { type ChainId } from '@/state/backendNetworks/types';
 import { type Call, type PreparedCallsExecution } from '@rainbow-me/delegation';
 
 type PreparedSponsoredSendState =

@@ -63,7 +63,7 @@ jest.mock('@/state/pendingTransactions', () => ({
   addNewTransaction: (params: unknown) => mockAddNewTransaction(params),
 }));
 
-jest.mock('@/state/backendNetworks/backendNetworks', () => ({
+jest.mock('@/features/network/stores/backendNetworksStore', () => ({
   backendNetworksActions: {
     getChainsName: () => ({ 8453: 'Base' }),
   },

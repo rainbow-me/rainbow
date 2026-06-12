@@ -1,6 +1,6 @@
 import { type ParsedAssetsDict, type ParsedAssetsDictByChain, type ParsedUserAsset, type UniqueId } from '@/__swaps__/types/assets';
+import { ChainId } from '@/features/network/types/backendNetworks';
 import { add } from '@/helpers/utilities';
-import { ChainId } from '@/state/backendNetworks/types';
 import { getAddressAndChainIdFromUniqueId } from '@/utils/ethereumUtils';
 
 // selectors

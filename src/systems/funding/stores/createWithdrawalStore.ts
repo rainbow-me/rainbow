@@ -1,5 +1,5 @@
+import { type ChainId } from '@/features/network/types/backendNetworks';
 import { time } from '@/framework/core/utils/time';
-import { type ChainId } from '@/state/backendNetworks/types';
 import { createRainbowStore } from '@/state/internal/createRainbowStore';
 import { type RainbowPersistConfig } from '@/state/internal/types';
 

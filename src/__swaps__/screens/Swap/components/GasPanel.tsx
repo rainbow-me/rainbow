@@ -23,13 +23,13 @@ import {
   useMeteorologySuggestions,
 } from '@/features/gas/utils/meteorology';
 import { gweiToWei, weiToGwei } from '@/features/gas/utils/parseGas';
+import { ChainId } from '@/features/network/types/backendNetworks';
 import { opacity } from '@/framework/ui/utils/opacity';
 import { add, formatNumber, greaterThan, lessThan, multiply, subtract } from '@/helpers/utilities';
 import * as i18n from '@/languages';
 import { useNavigation } from '@/navigation/Navigation';
 import Routes from '@/navigation/routesNames';
 import { gasTrendToTrendType, type ExplainSheetParams } from '@/navigation/types';
-import { ChainId } from '@/state/backendNetworks/types';
 import { createRainbowStore } from '@/state/internal/createRainbowStore';
 import { swapsStore, useSwapsStore } from '@/state/swaps/swapsStore';
 import { THICK_BORDER_WIDTH } from '@/styles/constants';
