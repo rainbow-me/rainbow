@@ -18,7 +18,7 @@ import type useENSProfile from '@/features/ens/hooks/useENSProfile';
 import { type ActionTypes } from '@/features/ens/hooks/useENSRegistrationActionHandler';
 import { type REGISTRATION_STEPS } from '@/features/ens/utils/helpers';
 import { parseGasParamsForTransaction } from '@/features/gas/utils/parseGas';
-import { trackSentTransaction } from '@/features/send/utils/trackSentTransaction';
+import { trackSentTransaction } from '@/features/transfer/utils/trackSentTransaction';
 import { time } from '@/framework/core/utils/time';
 import { isNativeAsset } from '@/handlers/assets';
 import {
