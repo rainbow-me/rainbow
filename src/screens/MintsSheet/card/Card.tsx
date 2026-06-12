@@ -5,11 +5,11 @@ import { analytics } from '@/analytics';
 import ButtonPressAnimation from '@/components/animations/ButtonPressAnimation';
 import { Bleed, Box, Cover, Inline, Inset, Stack, Text, useForegroundColor } from '@/design-system';
 import { ChainImage } from '@/features/network/components/ChainImage';
+import { useBackendNetworksStore } from '@/features/network/stores/backendNetworksStore';
 import { type MintableCollection, type MintedNft } from '@/graphql/__generated__/arc';
 import { abbreviateNumber, convertRawAmountToRoundedDecimal } from '@/helpers/utilities';
 import * as i18n from '@/languages';
 import { navigateToMintCollection } from '@/resources/reservoir/mints';
-import { useBackendNetworksStore } from '@/state/backendNetworks/backendNetworks';
 import { useTheme } from '@/theme/ThemeContext';
 
 import { getTimeElapsedFromDate } from '../utils';

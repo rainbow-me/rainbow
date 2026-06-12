@@ -32,6 +32,8 @@ import { TransactionDirection, TransactionStatus, type NewTransaction } from '@/
 import { convertAmountToNativeDisplay } from '@/features/currency/utils/nativeDisplay';
 import GasSpeedButton from '@/features/gas/components/GasSpeedButton';
 import useGas from '@/features/gas/hooks/useGas';
+import { useBackendNetworksStore } from '@/features/network/stores/backendNetworksStore';
+import { ChainId, type Network } from '@/features/network/types/backendNetworks';
 import { metadataPOSTClient } from '@/graphql';
 import { type NftOffer } from '@/graphql/__generated__/arc';
 import { type Transaction } from '@/graphql/__generated__/metadataPOST';
@@ -50,8 +52,6 @@ import { useLegacyNFTs } from '@/resources/nfts';
 import { nftOffersQueryKey } from '@/resources/reservoir/nftOffersQuery';
 import { getRainbowFeeAddress } from '@/resources/reservoir/utils';
 import { userAssetsStoreManager } from '@/state/assets/userAssetsStoreManager';
-import { useBackendNetworksStore } from '@/state/backendNetworks/backendNetworks';
-import { ChainId, type Network } from '@/state/backendNetworks/types';
 import { getNextNonce } from '@/state/nonces';
 import { addNewTransaction } from '@/state/pendingTransactions';
 import { useAccountAddress, useIsReadOnlyWallet } from '@/state/wallets/walletsStore';

@@ -2,11 +2,11 @@ import { INITIAL_SLIDER_POSITION } from '@/__swaps__/screens/Swap/constants';
 import { type ExtendedAnimatedAssetWithColors } from '@/__swaps__/types/assets';
 import { type RecentSwap } from '@/__swaps__/types/swap';
 import { clamp, getDefaultSlippage } from '@/__swaps__/utils/swaps';
+import { ChainId } from '@/features/network/types/backendNetworks';
 import { type EstimateRewardResult } from '@/features/rnbw-rewards/utils/estimateReward';
 import { time } from '@/framework/core/utils/time';
 import { logger, RainbowError } from '@/logger';
 import { getRemoteConfig } from '@/model/remoteConfig';
-import { ChainId } from '@/state/backendNetworks/types';
 import { createRainbowStore } from '@/state/internal/createRainbowStore';
 import { type CrosschainQuote, type Quote, type QuoteError, type Source } from '@rainbow-me/swaps';
 

@@ -2,10 +2,10 @@ import { type Dispatch } from 'react';
 
 import { subDays } from 'date-fns';
 
+import { Network } from '@/features/network/types/backendNetworks';
 import { getLocalENSRegistrations, saveLocalENSRegistrations } from '@/handlers/localstorage/accountLocal';
 import { omitFlatten } from '@/helpers/utilities';
 import { type AppDispatch, type AppGetState } from '@/redux/store';
-import { Network } from '@/state/backendNetworks/types';
 import { getAccountAddress } from '@/state/wallets/walletsStore';
 
 import type {

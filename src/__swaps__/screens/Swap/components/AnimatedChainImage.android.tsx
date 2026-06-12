@@ -3,8 +3,8 @@ import { Image, View } from 'react-native';
 
 import { useColorMode } from '@/design-system';
 import { getChainBadgeStyles } from '@/features/network/components/ChainImage';
-import { useBackendNetworksStore } from '@/state/backendNetworks/backendNetworks';
-import { ChainId } from '@/state/backendNetworks/types';
+import { useBackendNetworksStore } from '@/features/network/stores/backendNetworksStore';
+import { ChainId } from '@/features/network/types/backendNetworks';
 import { useSwapsStore } from '@/state/swaps/swapsStore';
 
 export function AnimatedChainImage({

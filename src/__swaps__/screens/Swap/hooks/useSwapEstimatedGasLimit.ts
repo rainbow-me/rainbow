@@ -2,10 +2,10 @@ import { useQuery } from '@tanstack/react-query';
 
 import { type ParsedSearchAsset } from '@/__swaps__/types/assets';
 import { gasUnits } from '@/features/gas/utils/gasUnits';
+import { type ChainId } from '@/features/network/types/backendNetworks';
 import { estimateUnlockAndCrosschainSwap } from '@/raps/actions/crosschainSwap';
 import { estimateUnlockAndSwap } from '@/raps/actions/swap';
 import { createQueryKey, type QueryConfigWithSelect, type QueryFunctionArgs, type QueryFunctionResult } from '@/react-query';
-import { type ChainId } from '@/state/backendNetworks/types';
 import { SwapType, type CrosschainQuote, type Quote, type QuoteError } from '@rainbow-me/swaps';
 
 // ///////////////////////////////////////////////

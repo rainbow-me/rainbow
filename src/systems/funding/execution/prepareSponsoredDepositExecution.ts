@@ -5,9 +5,9 @@ import { isCrosschainQuote } from '@/__swaps__/utils/quotes';
 import { createDelegationPublicClient, SPONSORED_CALLS_REQUIREMENTS } from '@/features/delegation/calls';
 import { predictSponsoredCallsExecution } from '@/features/delegation/sponsoredCalls';
 import { supportsDelegatedExecution } from '@/features/delegation/willDelegate';
+import { type ChainId } from '@/features/network/types/backendNetworks';
 import { RainbowError } from '@/logger';
 import { prepareAtomicSwapCalls } from '@/raps/atomicSwapPreparation';
-import { type ChainId } from '@/state/backendNetworks/types';
 import { execute, type Call, type PreparedCallsExecution } from '@rainbow-me/delegation';
 import { type CrosschainQuote, type Quote } from '@rainbow-me/swaps';
 

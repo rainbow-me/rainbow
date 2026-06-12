@@ -7,6 +7,7 @@ import { analytics } from '@/analytics';
 import { ExtremeLabels } from '@/components/value-chart/ExtremeLabels';
 import { AccentColorProvider, Bleed, Box, Inline, Stack, Text } from '@/design-system';
 import { ChainImage } from '@/features/network/components/ChainImage';
+import { ChainId, Network } from '@/features/network/types/backendNetworks';
 import { opacity } from '@/framework/ui/utils/opacity';
 import useChartThrottledPoints from '@/hooks/charts/useChartThrottledPoints';
 import { useAccountAccentColor } from '@/hooks/useAccountAccentColor';
@@ -19,7 +20,6 @@ import { ChartDot, ChartPath, ChartPathProvider } from '@/react-native-animated-
 import { ETH_ADDRESS } from '@/references/constants';
 import { useExternalToken, type FormattedExternalAsset } from '@/resources/assets/externalAssetsQuery';
 import { userAssetsStoreManager } from '@/state/assets/userAssetsStoreManager';
-import { ChainId, Network } from '@/state/backendNetworks/types';
 import { getIsDamagedWallet } from '@/state/wallets/walletsStore';
 import { useTheme } from '@/theme/ThemeContext';
 import deviceUtils from '@/utils/deviceUtils';

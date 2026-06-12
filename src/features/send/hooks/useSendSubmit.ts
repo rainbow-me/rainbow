@@ -19,6 +19,8 @@ import type useENSProfile from '@/features/ens/hooks/useENSProfile';
 import { type ActionTypes } from '@/features/ens/hooks/useENSRegistrationActionHandler';
 import { type REGISTRATION_STEPS } from '@/features/ens/utils/helpers';
 import { parseGasParamsForTransaction } from '@/features/gas/utils/parseGas';
+import { backendNetworksActions, useBackendNetworksStore } from '@/features/network/stores/backendNetworksStore';
+import { ChainId } from '@/features/network/types/backendNetworks';
 import { time } from '@/framework/core/utils/time';
 import { isNativeAsset } from '@/handlers/assets';
 import {
@@ -37,8 +39,6 @@ import { setHardwareTXError } from '@/navigation/HardwareWalletTxNavigator';
 import { useNavigation } from '@/navigation/Navigation';
 import Routes from '@/navigation/routesNames';
 import { interactionsCountQueryKey } from '@/resources/addys/interactions';
-import { backendNetworksActions, useBackendNetworksStore } from '@/state/backendNetworks/backendNetworks';
-import { ChainId } from '@/state/backendNetworks/types';
 import { PAGE_SIZE } from '@/state/nfts/createNftsStore';
 import { useNftsStore } from '@/state/nfts/nfts';
 import { getNextNonce } from '@/state/nonces';

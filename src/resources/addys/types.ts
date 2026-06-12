@@ -1,6 +1,6 @@
 import { type Address } from 'viem';
 
-import { type ChainId } from '@/state/backendNetworks/types';
+import { type ChainId } from '@/features/network/types/backendNetworks';
 
 interface BridgeableNetwork {
   bridgeable: boolean;

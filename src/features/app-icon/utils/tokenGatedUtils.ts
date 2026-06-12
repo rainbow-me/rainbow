@@ -1,10 +1,10 @@
 import { Interface } from '@ethersproject/abi';
 
 import type { EthereumAddress } from '@/entities/wallet';
+import { useBackendNetworksStore } from '@/features/network/stores/backendNetworksStore';
+import { Network } from '@/features/network/types/backendNetworks';
 import { getProvider } from '@/handlers/web3';
 import tokenGateCheckerAbi from '@/references/token-gate-checker-abi.json';
-import { useBackendNetworksStore } from '@/state/backendNetworks/backendNetworks';
-import { Network } from '@/state/backendNetworks/types';
 
 export type TokenGateCheckerNetwork =
   | Network.arbitrum

@@ -1,9 +1,9 @@
 import { METADATA_BASE_URL } from 'react-native-dotenv';
 
 import { IS_TEST } from '@/env';
+import { useBackendNetworksStore } from '@/features/network/stores/backendNetworksStore';
+import { type ChainId } from '@/features/network/types/backendNetworks';
 import { RainbowFetchClient } from '@/framework/data/http/rainbowFetch';
-import { useBackendNetworksStore } from '@/state/backendNetworks/backendNetworks';
-import { type ChainId } from '@/state/backendNetworks/types';
 import { useConnectedToAnvilStore } from '@/state/connectedToAnvil';
 
 import { mockMeteorologyData } from './meteorologyMock';

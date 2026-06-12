@@ -2,7 +2,7 @@ import { useMemo } from 'react';
 
 import { type NotifyOnChangeProps } from '@tanstack/react-query';
 
-import { type ChainId } from '@/state/backendNetworks/types';
+import { type ChainId } from '@/features/network/types/backendNetworks';
 import { createRainbowStore } from '@/state/internal/createRainbowStore';
 
 import { GasSpeed } from '../types/gasSpeed';

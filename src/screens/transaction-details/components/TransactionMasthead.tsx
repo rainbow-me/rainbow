@@ -23,6 +23,7 @@ import { getDelegationContractAddress, isRainbowDelegated } from '@/features/del
 import { fetchENSAvatar } from '@/features/ens/hooks/useENSAvatar';
 import { fetchReverseRecord } from '@/features/ens/utils/handlers';
 import { ChainImage } from '@/features/network/components/ChainImage';
+import { ChainId } from '@/features/network/types/backendNetworks';
 import styled from '@/framework/ui/styled-thing';
 import { opacity } from '@/framework/ui/utils/opacity';
 import { removeFirstEmojiFromString, returnStringFirstEmoji } from '@/helpers/emojiHandler';
@@ -34,7 +35,6 @@ import usePrevious from '@/hooks/usePrevious';
 import useUserAccounts from '@/hooks/useUserAccounts';
 import * as i18n from '@/languages';
 import { type AppState } from '@/redux/store';
-import { ChainId } from '@/state/backendNetworks/types';
 import { useAccountAddress } from '@/state/wallets/walletsStore';
 import { position } from '@/styles';
 import { useTheme, type ThemeContextProps } from '@/theme/ThemeContext';

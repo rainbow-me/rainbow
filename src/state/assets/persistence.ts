@@ -1,6 +1,6 @@
 import { type ParsedSearchAsset, type UniqueId, type UserAssetFilter } from '@/__swaps__/types/assets';
+import { type ChainId } from '@/features/network/types/backendNetworks';
 import { logger, RainbowError } from '@/logger';
-import { type ChainId } from '@/state/backendNetworks/types';
 
 import { type UserAssetsState } from './types';
 

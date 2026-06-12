@@ -3,9 +3,9 @@ import { InteractionManager } from 'react-native';
 
 import { type StaticJsonRpcProvider } from '@ethersproject/providers';
 
+import { ChainId } from '@/features/network/types/backendNetworks';
 import { getProvider, isL2Chain } from '@/handlers/web3';
 import usePrevious from '@/hooks/usePrevious';
-import { ChainId } from '@/state/backendNetworks/types';
 
 type UseSendChainStateParams = {
   accountChainId: ChainId;

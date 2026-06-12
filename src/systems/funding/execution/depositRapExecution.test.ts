@@ -50,7 +50,7 @@ jest.mock('@/handlers/web3', () => ({
   toHex: (...args: unknown[]) => mockToHex(...args),
 }));
 
-jest.mock('@/state/backendNetworks/backendNetworks', () => ({
+jest.mock('@/features/network/stores/backendNetworksStore', () => ({
   useBackendNetworksStore: {
     getState: () => ({
       getChainsName: () => ({

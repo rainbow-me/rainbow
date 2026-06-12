@@ -20,6 +20,8 @@ import { enableActionsOnReadOnlyWallet } from '@/config/debug';
 import { RequestSource, type RequestData } from '@/features/dapp-request/types';
 import { SEND_TRANSACTION } from '@/features/dapp-request/utils/requestMethods';
 import { getRequestDisplayDetails } from '@/features/dapp-request/utils/requests';
+import { useBackendNetworksStore } from '@/features/network/stores/backendNetworksStore';
+import { ChainId } from '@/features/network/types/backendNetworks';
 import { handleSessionRequestResponse } from '@/features/wallet-connect/handlers/onSessionRequest';
 import { removeWalletConnectRequest } from '@/features/wallet-connect/stores/walletConnectRequestsStore';
 import {
@@ -34,8 +36,6 @@ import { logger, RainbowError } from '@/logger';
 import Navigation, { getActiveRoute } from '@/navigation/Navigation';
 import Routes from '@/navigation/routesNames';
 import store from '@/redux/store';
-import { useBackendNetworksStore } from '@/state/backendNetworks/backendNetworks';
-import { ChainId } from '@/state/backendNetworks/types';
 import { getAccountAddress, getIsReadOnlyWallet, getWalletWithAccount } from '@/state/wallets/walletsStore';
 
 // Mobile Wallet Protocol

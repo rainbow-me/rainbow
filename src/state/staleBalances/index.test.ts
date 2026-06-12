@@ -1,7 +1,7 @@
 import { type Address } from 'viem';
 
+import { ChainId } from '@/features/network/types/backendNetworks';
 import { DAI_ADDRESS } from '@/references/constants';
-import { ChainId } from '@/state/backendNetworks/types';
 import { ETH_ADDRESS } from '@rainbow-me/swaps';
 
 import { staleBalancesStore } from '.';

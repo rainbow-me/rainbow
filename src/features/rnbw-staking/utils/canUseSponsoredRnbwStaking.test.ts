@@ -1,6 +1,6 @@
 import { type Address } from 'viem';
 
-import { ChainId } from '@/state/backendNetworks/types';
+import { ChainId } from '@/features/network/types/backendNetworks';
 
 import { canUseSponsoredRnbwStaking } from './canUseSponsoredRnbwStaking';
 
@@ -13,7 +13,7 @@ jest.mock('@/features/delegation/willDelegate', () => ({
   supportsDelegatedExecution: (params: unknown) => mockSupportsDelegatedExecution(params),
 }));
 
-jest.mock('@/state/backendNetworks/backendNetworks', () => ({
+jest.mock('@/features/network/stores/backendNetworksStore', () => ({
   backendNetworksActions: {
     isSponsorshipEligible: (chainId: ChainId) => mockIsSponsorshipEligible(chainId),
   },

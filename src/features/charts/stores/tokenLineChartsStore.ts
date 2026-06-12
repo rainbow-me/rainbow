@@ -6,9 +6,9 @@ import {
   type FetchedLineChartData,
 } from '@/features/charts/stores/factories/createLineChartDataStore';
 import { type NativeCurrencyKey } from '@/features/currency/types';
+import { type ChainId } from '@/features/network/types/backendNetworks';
 import { metadataClient } from '@/graphql';
 import Routes from '@/navigation/routesNames';
-import { type ChainId } from '@/state/backendNetworks/types';
 
 const CHART_ID_SEPARATOR = '|';
 

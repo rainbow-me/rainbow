@@ -2,13 +2,13 @@ import { type Signer } from '@ethersproject/abstract-signer';
 
 import { type ParsedAsset as SwapsParsedAsset } from '@/__swaps__/types/assets';
 import { TransactionStatus, type NewTransaction } from '@/entities/transactions';
+import { useBackendNetworksStore } from '@/features/network/stores/backendNetworksStore';
 import { getProvider } from '@/handlers/web3';
 import { logger, RainbowError } from '@/logger';
 import { sendTransaction } from '@/model/wallet';
 import { type RapActionResult } from '@/raps/references';
 import { toTransactionAsset } from '@/raps/transactionAsset';
 import { type ParsedAsset } from '@/resources/assets/types';
-import { useBackendNetworksStore } from '@/state/backendNetworks/backendNetworks';
 import { addNewTransaction } from '@/state/pendingTransactions';
 
 import { type TransactionClaimableTxPayload } from './types';

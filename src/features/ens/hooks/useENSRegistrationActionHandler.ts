@@ -8,6 +8,7 @@ import { useRecoilValue } from 'recoil';
 import { type Hex } from 'viem';
 
 import { type PendingTransaction } from '@/entities/transactions';
+import { ChainId } from '@/features/network/types/backendNetworks';
 import { uploadImage } from '@/handlers/pinata';
 import { getProvider } from '@/handlers/web3';
 import usePendingTransactions from '@/hooks/usePendingTransactions';
@@ -17,7 +18,6 @@ import { useNavigation } from '@/navigation/Navigation';
 import Routes from '@/navigation/routesNames';
 import store from '@/redux/store';
 import timeUnits from '@/references/time-units.json';
-import { ChainId } from '@/state/backendNetworks/types';
 import { getNextNonce } from '@/state/nonces';
 import { executeFn, Screens, TimeToSignOperation } from '@/state/performance/performance';
 import { refreshWalletInfo, useAccountAddress, useIsHardwareWallet } from '@/state/wallets/walletsStore';

@@ -6,6 +6,7 @@ import { enableActionsOnReadOnlyWallet } from '@/config/debug';
 import { trimCurrencyZeros } from '@/features/currency/utils/nativeDisplay';
 import { setSelectedGasSpeed } from '@/features/gas/hooks/useSelectedGas';
 import { type GasSpeed } from '@/features/gas/types/gasSpeed';
+import { ChainId } from '@/features/network/types/backendNetworks';
 import { watchingAlert } from '@/features/wallet/utils/watchingAlert';
 import { divWorklet, mulWorklet, toFixedWorklet } from '@/framework/core/safeMath';
 import { getRemoteConfig } from '@/model/remoteConfig';
@@ -14,7 +15,6 @@ import Routes from '@/navigation/routesNames';
 import store from '@/redux/store';
 import { useUserAssetsStore } from '@/state/assets/userAssets';
 import { userAssetsStoreManager } from '@/state/assets/userAssetsStoreManager';
-import { ChainId } from '@/state/backendNetworks/types';
 import { useSwapsStore, type SwapsState } from '@/state/swaps/swapsStore';
 import { getIsReadOnlyWallet } from '@/state/wallets/walletsStore';
 

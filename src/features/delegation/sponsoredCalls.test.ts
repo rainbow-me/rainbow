@@ -1,6 +1,6 @@
 import { type Address } from 'viem';
 
-import { ChainId } from '@/state/backendNetworks/types';
+import { ChainId } from '@/features/network/types/backendNetworks';
 
 import { isInsufficientSponsorBalanceError, predictSponsoredCallsExecution } from './sponsoredCalls';
 
@@ -11,7 +11,7 @@ jest.mock('./willDelegate', () => ({
   canUseDelegatedExecution: (address: Address) => mockCanUseDelegatedExecution(address),
 }));
 
-jest.mock('@/state/backendNetworks/backendNetworks', () => ({
+jest.mock('@/features/network/stores/backendNetworksStore', () => ({
   backendNetworksActions: {
     isSponsorshipEligible: (chainId: ChainId) => mockIsSponsorshipEligible(chainId),
   },

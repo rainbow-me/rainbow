@@ -51,6 +51,7 @@ import { useChartsStore } from '@/features/charts/stores/chartsStore';
 import { isHyperliquidToken } from '@/features/charts/utils';
 import { supportedCurrencies as supportedNativeCurrencies } from '@/features/currency/supportedCurrencies';
 import { NativeCurrencyKeys, type NativeCurrencyKey } from '@/features/currency/types';
+import { type ChainId } from '@/features/network/types/backendNetworks';
 import {
   PerpsIndicatorBuilder,
   type IndicatorPosition,
@@ -65,7 +66,6 @@ import { useOnChange } from '@/hooks/useOnChange';
 import { useStableValue } from '@/hooks/useStableValue';
 import Routes from '@/navigation/routesNames';
 import { userAssetsStoreManager } from '@/state/assets/userAssetsStoreManager';
-import { type ChainId } from '@/state/backendNetworks/types';
 import { useListen } from '@/state/internal/hooks/useListen';
 import { useListenerRouteGuard } from '@/state/internal/hooks/useListenerRouteGuard';
 import { type DeepPartial } from '@/types/objects';

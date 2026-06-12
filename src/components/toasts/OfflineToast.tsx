@@ -1,10 +1,10 @@
 import React from 'react';
 
+import { ChainId } from '@/features/network/types/backendNetworks';
 import { time } from '@/framework/core/utils/time';
 import useAccountSettings from '@/hooks/useAccountSettings';
 import useIsOffline from '@/hooks/useIsOffline';
 import * as i18n from '@/languages';
-import { ChainId } from '@/state/backendNetworks/types';
 import { useConnectedToAnvilStore } from '@/state/connectedToAnvil';
 
 import Toast from './Toast';

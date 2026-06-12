@@ -9,6 +9,8 @@ import { TransactionStatus, type NewTransaction } from '@/entities/transactions/
 import { IS_STORE_INSTALL } from '@/env';
 import { formatCurrency } from '@/features/currency/utils/formatCurrency';
 import { convertAmountToNativeDisplay } from '@/features/currency/utils/nativeDisplay';
+import { useBackendNetworksStore } from '@/features/network/stores/backendNetworksStore';
+import { type Network } from '@/features/network/types/backendNetworks';
 import { trimTrailingZeros, truncateToDecimals } from '@/framework/core/safeMath';
 import { abbreviateNumber, convertNumberToString } from '@/helpers/utilities';
 import { calculateAndCacheDominantColor } from '@/hooks/usePersistentDominantColorFromImage';
@@ -17,8 +19,6 @@ import * as i18n from '@/languages';
 import { logger, RainbowError } from '@/logger';
 import store from '@/redux/store';
 import { type ParsedAsset } from '@/resources/assets/types';
-import { useBackendNetworksStore } from '@/state/backendNetworks/backendNetworks';
-import { type Network } from '@/state/backendNetworks/types';
 import { createRainbowStore } from '@/state/internal/createRainbowStore';
 import { addNewTransaction } from '@/state/pendingTransactions';
 import { getUniqueId } from '@/utils/ethereumUtils';

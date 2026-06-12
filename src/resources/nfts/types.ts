@@ -1,6 +1,6 @@
 import { type AssetType } from '@/entities/assetTypes';
 import type { Asset, AssetContract } from '@/entities/tokens';
-import { type Network } from '@/state/backendNetworks/types';
+import { type Network } from '@/features/network/types/backendNetworks';
 
 export enum NFTMarketplaceId {
   OpenSea = 'opensea',

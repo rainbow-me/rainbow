@@ -13,6 +13,8 @@ import { safeBigInt } from '@/features/gas/hooks/useEstimatedGasFee';
 import { getGasSettingsBySpeed, useGasSettings } from '@/features/gas/hooks/useSelectedGas';
 import { GasSpeed } from '@/features/gas/types/gasSpeed';
 import { buildGasParams, weiToGwei } from '@/features/gas/utils/parseGas';
+import { useBackendNetworksStore } from '@/features/network/stores/backendNetworksStore';
+import { type ChainId } from '@/features/network/types/backendNetworks';
 import { lessThanOrEqualToWorklet } from '@/framework/core/safeMath';
 import { getProvider } from '@/handlers/web3';
 import {
@@ -33,8 +35,6 @@ import { ClaimableType, type Claimable, type TransactionClaimable } from '@/reso
 import { externalTokenQueryFunction, externalTokenQueryKey } from '@/resources/assets/externalAssetsQuery';
 import { userAssetsStore } from '@/state/assets/userAssets';
 import { userAssetsStoreManager } from '@/state/assets/userAssetsStoreManager';
-import { useBackendNetworksStore } from '@/state/backendNetworks/backendNetworks';
-import { type ChainId } from '@/state/backendNetworks/types';
 import { useClaimablesStore } from '@/state/claimables/claimables';
 import { getNextNonce } from '@/state/nonces';
 import { useAccountAddress } from '@/state/wallets/walletsStore';

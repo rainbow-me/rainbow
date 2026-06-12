@@ -11,6 +11,7 @@ import Page from '@/components/layout/Page';
 import { Navbar } from '@/components/navbar/Navbar';
 import { AnimatedText, Box, Inline, Inset, Text, TextIcon, useColorMode, useForegroundColor } from '@/design-system';
 import { palettes } from '@/design-system/color/palettes';
+import { type ChainId } from '@/features/network/types/backendNetworks';
 import { InputValueCaret } from '@/features/perps/components/InputValueCaret';
 import { NumberPad } from '@/features/perps/components/NumberPad/NumberPad';
 import { PerpsSwapButton } from '@/features/perps/components/PerpsSwapButton';
@@ -25,7 +26,6 @@ import { opacity } from '@/framework/ui/utils/opacity';
 import * as i18n from '@/languages';
 import Navigation from '@/navigation/Navigation';
 import Routes from '@/navigation/routesNames';
-import { type ChainId } from '@/state/backendNetworks/types';
 import { useStoreSharedValue } from '@/state/internal/hooks/useStoreSharedValue';
 import { SEPARATOR_COLOR, THICKER_BORDER_WIDTH } from '@/styles/constants';
 

@@ -6,12 +6,12 @@ import Clipboard from '@react-native-clipboard/clipboard';
 import { DropdownMenu, type MenuConfig, type MenuItem } from '@/components/DropdownMenu';
 import { SheetActionButton } from '@/components/sheet';
 import { Box, TextIcon } from '@/design-system';
+import { useBackendNetworksStore } from '@/features/network/stores/backendNetworksStore';
 import { buildTokenDeeplink } from '@/handlers/deeplinks';
 import EditAction from '@/helpers/EditAction';
 import useCoinListEditOptions, { useCoinListFinishEditingOptions } from '@/hooks/useCoinListEditOptions';
 import * as i18n from '@/languages';
 import { useUserAssetsStore } from '@/state/assets/userAssets';
-import { useBackendNetworksStore } from '@/state/backendNetworks/backendNetworks';
 import ethereumUtils from '@/utils/ethereumUtils';
 
 import { useExpandedAssetSheetContext } from '../context/ExpandedAssetSheetContext';

@@ -3,10 +3,10 @@ import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { differenceInSeconds } from 'date-fns';
 import { useDispatch } from 'react-redux';
 
+import { ChainId } from '@/features/network/types/backendNetworks';
 import { getProvider } from '@/handlers/web3';
 import useInterval from '@/hooks/useInterval';
 import usePrevious from '@/hooks/usePrevious';
-import { ChainId } from '@/state/backendNetworks/types';
 import { useConnectedToAnvilStore } from '@/state/connectedToAnvil';
 
 import { updateTransactionRegistrationParameters } from '../redux/registration';

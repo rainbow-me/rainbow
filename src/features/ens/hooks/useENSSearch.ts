@@ -3,9 +3,9 @@ import { useCallback, useEffect, useMemo, useState } from 'react';
 import { useQuery } from '@tanstack/react-query';
 import { format } from 'date-fns';
 
+import { ChainId } from '@/features/network/types/backendNetworks';
 import timeUnits from '@/references/time-units.json';
 import { userAssetsStoreManager } from '@/state/assets/userAssetsStoreManager';
-import { ChainId } from '@/state/backendNetworks/types';
 import { useAccountAddress } from '@/state/wallets/walletsStore';
 import ethereumUtils from '@/utils/ethereumUtils';
 

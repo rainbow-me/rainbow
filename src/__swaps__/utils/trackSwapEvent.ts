@@ -1,7 +1,7 @@
 import { analytics } from '@/analytics';
 import { type EventProperties } from '@/analytics/event';
+import { ChainId } from '@/features/network/types/backendNetworks';
 import { type RapSwapActionParameters } from '@/raps/references';
-import { ChainId } from '@/state/backendNetworks/types';
 import { useSwapsStore } from '@/state/swaps/swapsStore';
 
 import { type SwapsParams } from '../screens/Swap/navigateToSwaps';

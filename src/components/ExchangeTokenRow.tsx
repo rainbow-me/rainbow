@@ -9,9 +9,9 @@ import RainbowCoinIcon from '@/components/coin-icon/RainbowCoinIcon';
 import { FloatingEmojis } from '@/components/floating-emojis';
 import { Box, Column, Columns, Inline, Stack, Text } from '@/design-system';
 import type { ParsedAddressAsset } from '@/entities/tokens';
+import { ChainId } from '@/features/network/types/backendNetworks';
 import { isNativeAsset } from '@/handlers/assets';
 import useAsset from '@/hooks/useAsset';
-import { ChainId } from '@/state/backendNetworks/types';
 
 interface ExchangeTokenRowProps {
   item: any;

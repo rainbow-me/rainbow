@@ -4,13 +4,13 @@ import { isEmpty } from 'lodash';
 
 import { analytics } from '@/analytics';
 import type { NativeCurrencyKey } from '@/features/currency/types';
+import { useBackendNetworksStore } from '@/features/network/stores/backendNetworksStore';
+import { ChainId } from '@/features/network/types/backendNetworks';
 import { getProvider } from '@/handlers/web3';
 import { addBuffer } from '@/helpers/utilities';
 import { logger, RainbowError } from '@/logger';
 import { type AppDispatch, type AppGetState } from '@/redux/store';
 import ethUnits from '@/references/ethereum-units.json';
-import { useBackendNetworksStore } from '@/state/backendNetworks/backendNetworks';
-import { ChainId } from '@/state/backendNetworks/types';
 import ethereumUtils from '@/utils/ethereumUtils';
 
 import type {
