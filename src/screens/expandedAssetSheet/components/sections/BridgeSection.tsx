@@ -9,8 +9,8 @@ import { transformRainbowTokenToParsedSearchAsset } from '@/__swaps__/utils/asse
 import { SPRING_CONFIGS } from '@/components/animations/animationConfigs';
 import ButtonPressAnimation from '@/components/animations/ButtonPressAnimation';
 import { GestureHandlerButton } from '@/components/buttons/GestureHandlerButton';
-import { ChainImage } from '@/components/coin-icon/ChainImage';
 import { AccentColorProvider, Bleed, Box, Cover, IconContainer, Separator, Text, TextShadow } from '@/design-system';
+import { ChainImage } from '@/features/network/components/ChainImage';
 import useAsset from '@/hooks/useAsset';
 import { useBackendNetworksStore } from '@/state/backendNetworks/backendNetworks';
 import { type ChainId } from '@/state/backendNetworks/types';

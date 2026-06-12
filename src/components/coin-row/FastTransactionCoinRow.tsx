@@ -7,6 +7,7 @@ import RainbowCoinIcon from '@/components/coin-icon/RainbowCoinIcon';
 import { Bleed, Box, globalColors, Inline, Text, useForegroundColor } from '@/design-system';
 import { TransactionStatus, type RainbowTransaction, type TransactionType } from '@/entities/transactions';
 import { type NativeCurrencyKey } from '@/features/currency/types';
+import { ChainImage } from '@/features/network/components/ChainImage';
 import { opacity } from '@/framework/ui/utils/opacity';
 import { activityValues, useTransactionLaunchToken } from '@/helpers/transactions';
 import * as i18n from '@/languages';
@@ -18,7 +19,6 @@ import { address } from '@/utils/abbreviations';
 import Routes from '@rainbow-me/routes';
 
 import ButtonPressAnimation from '../animations/ButtonPressAnimation';
-import { ChainImage } from '../coin-icon/ChainImage';
 import { TwoCoinsIcon } from '../coin-icon/TwoCoinsIcon';
 import { ImgixImage } from '../images';
 import Spinner from '../Spinner';

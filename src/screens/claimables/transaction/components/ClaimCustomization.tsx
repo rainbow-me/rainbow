@@ -5,9 +5,9 @@ import { triggerHaptics } from 'react-native-turbo-haptics';
 
 import { searchVerifiedTokens, TokenLists } from '@/__swaps__/screens/Swap/resources/search/searchV2';
 import { type SearchAsset } from '@/__swaps__/types/search';
-import { NetworkSelectorButton } from '@/components/buttons/NetworkSelectorButton';
 import { type MenuItem } from '@/components/DropdownMenu';
 import { Box, Text, useColorMode } from '@/design-system';
+import { NetworkSelectorButton } from '@/features/network/components/NetworkSelectorButton';
 import * as i18n from '@/languages';
 import { ETH_SYMBOL, USDC_ADDRESS } from '@/references/constants';
 import { useUserAssetsStore } from '@/state/assets/userAssets';

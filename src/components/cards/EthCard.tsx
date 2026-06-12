@@ -4,9 +4,9 @@ import { Platform, type GestureResponderEvent } from 'react-native';
 import { useRoute } from '@react-navigation/native';
 
 import { analytics } from '@/analytics';
-import { ChainImage } from '@/components/coin-icon/ChainImage';
 import { ExtremeLabels } from '@/components/value-chart/ExtremeLabels';
 import { AccentColorProvider, Bleed, Box, Inline, Stack, Text } from '@/design-system';
+import { ChainImage } from '@/features/network/components/ChainImage';
 import { useAddCashRoute } from '@/features/cash/navigation/useAddCashRoute';
 import { opacity } from '@/framework/ui/utils/opacity';
 import useChartThrottledPoints from '@/hooks/charts/useChartThrottledPoints';

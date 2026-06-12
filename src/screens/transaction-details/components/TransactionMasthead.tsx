@@ -10,7 +10,6 @@ import type { Address } from 'viem';
 
 import rainbowIcon from '@/assets/rainbow-icon-circle.png';
 import smartWalletIcon from '@/assets/smartWalletIcon.png';
-import { ChainImage } from '@/components/coin-icon/ChainImage';
 import RainbowCoinIcon from '@/components/coin-icon/RainbowCoinIcon';
 import { ContactAvatar } from '@/components/contacts';
 import ImageAvatar from '@/components/contacts/ImageAvatar';
@@ -23,6 +22,7 @@ import { convertAmountAndPriceToNativeDisplay } from '@/features/currency/utils/
 import { getDelegationContractAddress, isRainbowDelegated } from '@/features/delegation/status';
 import { fetchENSAvatar } from '@/features/ens/hooks/useENSAvatar';
 import { fetchReverseRecord } from '@/features/ens/utils/handlers';
+import { ChainImage } from '@/features/network/components/ChainImage';
 import styled from '@/framework/ui/styled-thing';
 import { opacity } from '@/framework/ui/utils/opacity';
 import { removeFirstEmojiFromString, returnStringFirstEmoji } from '@/helpers/emojiHandler';

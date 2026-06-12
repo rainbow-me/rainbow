@@ -3,7 +3,6 @@ import React, { useCallback, useMemo } from 'react';
 import { type RouteProp } from '@react-navigation/native';
 
 import ButtonPressAnimation from '@/components/animations/ButtonPressAnimation';
-import { ChainImage } from '@/components/coin-icon/ChainImage';
 import { Bleed, Inline, Text, type TextProps } from '@/design-system';
 import * as i18n from '@/languages';
 import { useNavigation } from '@/navigation/Navigation';
@@ -11,6 +10,8 @@ import Routes from '@/navigation/routesNames';
 import { type RootStackParamList } from '@/navigation/types';
 import { useBackendNetworksStore } from '@/state/backendNetworks/backendNetworks';
 import { type ChainId } from '@/state/backendNetworks/types';
+
+import { ChainImage } from './ChainImage';
 
 interface DefaultButtonOptions {
   iconColor?: TextProps['color'];

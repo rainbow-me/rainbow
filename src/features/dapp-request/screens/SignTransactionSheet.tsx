@@ -11,7 +11,6 @@ import Animated from 'react-native-reanimated';
 import { type Address } from 'viem';
 
 import { analytics } from '@/analytics';
-import { ChainImage } from '@/components/coin-icon/ChainImage';
 import { ContactAvatar } from '@/components/contacts';
 import ImageAvatar from '@/components/contacts/ImageAvatar';
 import { SheetActionButton } from '@/components/sheet';
@@ -30,6 +29,7 @@ import { TransactionStatus, type NewTransaction } from '@/entities/transactions'
 import GasSpeedButton from '@/features/gas/components/GasSpeedButton';
 import { useCalculateGasLimit } from '@/features/gas/hooks/useCalculateGasLimit';
 import useGas from '@/features/gas/hooks/useGas';
+import { ChainImage } from '@/features/network/components/ChainImage';
 import { opacity } from '@/framework/ui/utils/opacity';
 import { TransactionScanResultType } from '@/graphql/__generated__/metadataPOST';
 import { maybeSignUri } from '@/handlers/imgix';

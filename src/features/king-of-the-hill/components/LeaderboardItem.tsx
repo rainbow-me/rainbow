@@ -2,10 +2,10 @@ import React, { memo, useMemo } from 'react';
 import { StyleSheet, View } from 'react-native';
 
 import ButtonPressAnimation from '@/components/animations/ButtonPressAnimation';
-import { ChainImage } from '@/components/coin-icon/ChainImage';
 import RainbowCoinIcon from '@/components/coin-icon/RainbowCoinIcon';
 import { RainbowImage } from '@/components/RainbowImage';
 import { Inline, Text, useColorMode } from '@/design-system';
+import { ChainImage } from '@/features/network/components/ChainImage';
 import { type Token } from '@/graphql/__generated__/metadata';
 import { getSizedImageUrl } from '@/handlers/imgix';
 import * as i18n from '@/languages';

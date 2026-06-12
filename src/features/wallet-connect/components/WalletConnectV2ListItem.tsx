@@ -5,7 +5,6 @@ import { type SessionTypes } from '@walletconnect/types';
 import RadialGradient from 'react-native-radial-gradient';
 
 import { analytics } from '@/analytics';
-import { ChainImage } from '@/components/coin-icon/ChainImage';
 import RequestVendorLogoIcon from '@/components/coin-icon/RequestVendorLogoIcon';
 import { ContactAvatar } from '@/components/contacts';
 import ImageAvatar from '@/components/contacts/ImageAvatar';
@@ -13,6 +12,7 @@ import { ContextMenuButton } from '@/components/context-menu';
 import { Centered, ColumnWithMargins, Row } from '@/components/layout';
 import { TruncatedText } from '@/components/text';
 import { Box, Inline } from '@/design-system';
+import { ChainImage } from '@/features/network/components/ChainImage';
 import styled from '@/framework/ui/styled-thing';
 import { showActionSheetWithOptions } from '@/framework/ui/utils/actionsheet';
 import { opacity } from '@/framework/ui/utils/opacity';

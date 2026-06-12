@@ -3,11 +3,11 @@ import React, { useCallback, useMemo } from 'react';
 import { useRoute, type NavigationProp, type RouteProp } from '@react-navigation/native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
-import { ChainImage } from '@/components/coin-icon/ChainImage';
 import RainbowCoinIcon from '@/components/coin-icon/RainbowCoinIcon';
 import { DoubleChevron } from '@/components/icons';
 import { Box, Text as DSText, Separator } from '@/design-system';
 import gasUtils from '@/features/gas/utils/gas';
+import { ChainImage } from '@/features/network/components/ChainImage';
 import styled from '@/framework/ui/styled-thing';
 import { opacity } from '@/framework/ui/utils/opacity';
 import useDimensions from '@/hooks/useDimensions';

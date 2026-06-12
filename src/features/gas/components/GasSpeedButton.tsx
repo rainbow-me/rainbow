@@ -9,13 +9,13 @@ import { AnimatePresence, MotiView } from 'moti';
 import { Easing } from 'react-native-reanimated';
 
 import ButtonPressAnimation from '@/components/animations/ButtonPressAnimation';
-import { ChainImage } from '@/components/coin-icon/ChainImage';
 import { ContextMenu } from '@/components/context-menu';
 import { Centered, Column, Row } from '@/components/layout';
 import ContextMenuButton from '@/components/native-context-menu/contextMenu';
 import { Text } from '@/components/text';
 import type { ParsedAddressAsset } from '@/entities/tokens';
 import { convertAmountToNativeDisplayWorklet } from '@/features/currency/utils/nativeDisplay';
+import { ChainImage } from '@/features/network/components/ChainImage';
 import styled from '@/framework/ui/styled-thing';
 import { opacity } from '@/framework/ui/utils/opacity';
 import { isL2Chain } from '@/handlers/web3';
