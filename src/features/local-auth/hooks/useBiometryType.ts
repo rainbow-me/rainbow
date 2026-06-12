@@ -3,12 +3,12 @@ import { useEffect, useState } from 'react';
 import { isNil } from 'lodash';
 import { isPinOrFingerprintSet } from 'react-native-device-info';
 
-import { BiometryTypes } from '@/helpers';
-import * as keychain from '@/keychain';
+import useAppState from '@/hooks/useAppState';
+import useIsMounted from '@/hooks/useIsMounted';
+import usePrevious from '@/hooks/usePrevious';
 
-import useAppState from './useAppState';
-import useIsMounted from './useIsMounted';
-import usePrevious from './usePrevious';
+import * as keychain from '../keychain';
+import BiometryTypes from '../types/biometryTypes';
 
 type BiometryType = keyof typeof BiometryTypes;
 

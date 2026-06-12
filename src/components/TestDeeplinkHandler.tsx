@@ -3,7 +3,7 @@ import { Linking } from 'react-native';
 
 import URL from 'url-parse';
 
-import { savePIN } from '@/handlers/authentication';
+import { savePIN } from '@/features/local-auth/pinAuthentication';
 import { logger } from '@/logger';
 import Navigation from '@/navigation/Navigation';
 import Routes from '@/navigation/routesNames';

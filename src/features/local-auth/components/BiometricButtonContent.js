@@ -1,15 +1,15 @@
 import React from 'react';
 import { Platform } from 'react-native';
 
+import { LedgerIcon } from '@/components/icons/svg/LedgerIcon';
+import { Text } from '@/components/text';
 import styled from '@/framework/ui/styled-thing';
-import { BiometryTypes } from '@/helpers';
-import useBiometryType from '@/hooks/useBiometryType';
 import { useIsHardwareWallet } from '@/state/wallets/walletsStore';
 import { fonts } from '@/styles';
 import { useTheme } from '@/theme/ThemeContext';
 
-import { LedgerIcon } from '../icons/svg/LedgerIcon';
-import { Text } from '../text';
+import useBiometryType from '../hooks/useBiometryType';
+import BiometryTypes from '../types/biometryTypes';
 
 const { Face, FaceID, Fingerprint, none, passcode, TouchID } = BiometryTypes;
 

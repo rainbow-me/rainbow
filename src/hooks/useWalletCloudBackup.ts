@@ -6,7 +6,7 @@ import { values } from 'lodash';
 import { analytics } from '@/analytics';
 import { addWalletToCloudBackup, backupWalletToCloud } from '@/features/backup/backup';
 import { backupsStore } from '@/features/backup/stores/backupsStore';
-import { maybeAuthenticateWithPIN } from '@/handlers/authentication';
+import { maybeAuthenticateWithPIN } from '@/features/local-auth/pinAuthentication';
 import { CLOUD_BACKUP_ERRORS, getGoogleAccountUserData, isCloudBackupAvailable, login } from '@/handlers/cloudBackup';
 import { WrappedAlert as Alert } from '@/helpers/alert';
 import WalletBackupTypes from '@/helpers/walletBackupTypes';

@@ -13,11 +13,12 @@ import { defaultConfig, defaultConfigValues, type ExperimentalConfigKey } from '
 import { useExperimentalConfigStore } from '@/config/experimentalConfigStore';
 import { IS_STORE_INSTALL } from '@/env';
 import { getDelegationContractAddress, isRainbowDelegated, isThirdPartyDelegated } from '@/features/delegation/status';
+import { isAuthenticated } from '@/features/local-auth/isAuthenticated';
+import { wipeKeychain } from '@/features/local-auth/legacyKeychain';
 import { WrappedAlert as Alert } from '@/helpers/alert';
 import { getPublicKeyOfTheSigningWalletAndCreateWalletIfNeeded } from '@/helpers/signingWallet';
 import * as i18n from '@/languages';
 import { logger, RainbowError } from '@/logger';
-import { wipeKeychain } from '@/model/keychain';
 import { clearAllStorages } from '@/model/mmkv';
 import Navigation, { useNavigation } from '@/navigation/Navigation';
 import Routes from '@/navigation/routesNames';
@@ -34,7 +35,6 @@ import { analyzeUserAssets } from '@/state/debug/analyzeUserAssets';
 import { nonceActions } from '@/state/nonces';
 import { pendingTransactionsActions } from '@/state/pendingTransactions';
 import { clearWalletState, useWalletsStore } from '@/state/wallets/walletsStore';
-import { isAuthenticated } from '@/utils/authentication';
 import { delegation, type DelegationWithChainId } from '@rainbow-me/delegation';
 
 import Menu from './Menu';

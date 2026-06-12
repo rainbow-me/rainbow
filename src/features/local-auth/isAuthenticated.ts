@@ -1,6 +1,7 @@
 import { IS_DEV } from '@/env';
-import { authenticateWithPINAndCreateIfNeeded, getExistingPIN, shouldAuthenticateWithPIN } from '@/handlers/authentication';
-import * as keychain from '@/keychain';
+
+import * as keychain from './keychain';
+import { authenticateWithPINAndCreateIfNeeded, getExistingPIN, shouldAuthenticateWithPIN } from './pinAuthentication';
 
 const FAKE_LOCAL_AUTH_KEY = `fake-local-auth-key`;
 const FAKE_LOCAL_AUTH_VALUE = `fake-local-auth-value`;

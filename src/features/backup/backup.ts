@@ -7,8 +7,11 @@ import { endsWith } from 'lodash';
 import { analytics } from '@/analytics';
 import { Alert as NativeAlert } from '@/components/alerts';
 import { IS_DEV } from '@/env';
+import * as kc from '@/features/local-auth/keychain';
+import { identifierForVendorKey, pinKey, privateKeyKey, seedPhraseKey } from '@/features/local-auth/keychainConstants';
+import * as keychain from '@/features/local-auth/legacyKeychain';
+import { authenticateWithPIN, decryptPIN, maybeAuthenticateWithPINAndCreateIfNeeded } from '@/features/local-auth/pinAuthentication';
 import AesEncryptor from '@/handlers/aesEncryption';
-import { authenticateWithPIN, decryptPIN, maybeAuthenticateWithPINAndCreateIfNeeded } from '@/handlers/authentication';
 import {
   CLOUD_BACKUP_ERRORS,
   encryptAndSaveDataToCloud,
@@ -23,17 +26,14 @@ import { WrappedAlert as Alert } from '@/helpers/alert';
 import walletBackupStepTypes from '@/helpers/walletBackupStepTypes';
 import WalletBackupTypes from '@/helpers/walletBackupTypes';
 import { getUserError } from '@/hooks/useWalletCloudBackup';
-import * as kc from '@/keychain';
 import * as i18n from '@/languages';
 import { logger, RainbowError } from '@/logger';
-import * as keychain from '@/model/keychain';
 import { clearAllStorages } from '@/model/mmkv';
 import { getRemoteConfig } from '@/model/remoteConfig';
 import { createWallet, type AllRainbowWallets, type RainbowWallet } from '@/model/wallet';
 import Navigation from '@/navigation/Navigation';
 import Routes from '@/navigation/routesNames';
 import { loadWallets, refreshWalletInfo, setAllWalletsWithIdsAsBackedUp } from '@/state/wallets/walletsStore';
-import { identifierForVendorKey, pinKey, privateKeyKey, seedPhraseKey } from '@/utils/keychainConstants';
 import { openInBrowser } from '@/utils/openInBrowser';
 import { cloudPlatform } from '@/utils/platform';
 

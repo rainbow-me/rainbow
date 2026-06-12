@@ -1,12 +1,12 @@
 import { type GetOptions, type SetOptions, type UserCredentials } from 'react-native-keychain';
 
-import * as kc from '@/keychain';
+import * as kc from './keychain';
 
 /**
- * @deprecated use `@/keychain` instead
+ * @deprecated use `@/features/local-auth/keychain` instead
  *
  * @example
- *    import { set } from '@/keychain'
+ *    import { set } from '@/features/local-auth/keychain'
  *    await set(key, value, options)
  */
 export async function saveString(key: string, value: string, accessControlOptions: kc.KeychainOptions<SetOptions>): Promise<void> {
@@ -14,10 +14,10 @@ export async function saveString(key: string, value: string, accessControlOption
 }
 
 /**
- * @deprecated use `@/keychain` instead
+ * @deprecated use `@/features/local-auth/keychain` instead
  *
  * @example
- *    import { get } from '@/keychain'
+ *    import { get } from '@/features/local-auth/keychain'
  *    await get(key, options)
  */
 export async function loadString(key: string, options?: kc.KeychainOptions<GetOptions>): Promise<null | string | -1 | -2 | 0 | -3> {
@@ -36,10 +36,10 @@ export async function loadString(key: string, options?: kc.KeychainOptions<GetOp
 }
 
 /**
- * @deprecated use `@/keychain` instead
+ * @deprecated use `@/features/local-auth/keychain` instead
  *
  * @example
- *    import { setObject } from '@/keychain'
+ *    import { setObject } from '@/features/local-auth/keychain'
  *    await setObject(key, {}, options)
  */
 export async function saveObject(
@@ -51,10 +51,10 @@ export async function saveObject(
 }
 
 /**
- * @deprecated use `@/keychain` instead
+ * @deprecated use `@/features/local-auth/keychain` instead
  *
  * @example
- *    import { getObject } from '@/keychain'
+ *    import { getObject } from '@/features/local-auth/keychain'
  *    await getObject(key, options)
  */
 export async function loadObject(
@@ -76,10 +76,10 @@ export async function loadObject(
 }
 
 /**
- * @deprecated use `@/keychain` instead
+ * @deprecated use `@/features/local-auth/keychain` instead
  *
  * @example
- *    import { remove } from '@/keychain'
+ *    import { remove } from '@/features/local-auth/keychain'
  *    await remove(key)
  */
 export async function remove(key: string): Promise<void> {
@@ -87,10 +87,10 @@ export async function remove(key: string): Promise<void> {
 }
 
 /**
- * @deprecated use `@/keychain` instead
+ * @deprecated use `@/features/local-auth/keychain` instead
  *
  * @example
- *    import { getAllKeys } from '@/keychain'
+ *    import { getAllKeys } from '@/features/local-auth/keychain'
  *    await getAllKeys()
  */
 export async function loadAllKeys(): Promise<null | UserCredentials[]> {
@@ -98,10 +98,10 @@ export async function loadAllKeys(): Promise<null | UserCredentials[]> {
 }
 
 /**
- * @deprecated use `@/keychain` instead
+ * @deprecated use `@/features/local-auth/keychain` instead
  *
  * @example
- *    import { has } from '@/keychain'
+ *    import { has } from '@/features/local-auth/keychain'
  *    await has(key)
  */
 export async function hasKey(key: string): Promise<boolean> {
@@ -109,10 +109,10 @@ export async function hasKey(key: string): Promise<boolean> {
 }
 
 /**
- * @deprecated use `@/keychain` instead
+ * @deprecated use `@/features/local-auth/keychain` instead
  *
  * @example
- *    import { clear } from '@/keychain'
+ *    import { clear } from '@/features/local-auth/keychain'
  *    await clear()
  */
 export async function wipeKeychain(): Promise<void> {
@@ -120,18 +120,18 @@ export async function wipeKeychain(): Promise<void> {
 }
 
 /**
- * @deprecated use `@/keychain` instead
+ * @deprecated use `@/features/local-auth/keychain` instead
  *
  * @example
- *    import { publicAccessControlOptions } from '@/keychain'
+ *    import { publicAccessControlOptions } from '@/features/local-auth/keychain'
  */
 export const publicAccessControlOptions = kc.publicAccessControlOptions;
 
 /**
- * @deprecated use `@/keychain` instead
+ * @deprecated use `@/features/local-auth/keychain` instead
  *
  * @example
- *    import { getPrivateAccessControlOptions } from '@/keychain'
+ *    import { getPrivateAccessControlOptions } from '@/features/local-auth/keychain'
  *    await getPrivateAccessControlOptions()
  */
-export { getPrivateAccessControlOptions } from '@/keychain';
+export { getPrivateAccessControlOptions } from './keychain';

@@ -2,14 +2,14 @@ import { Platform } from 'react-native';
 
 import { RAINBOW_MASTER_KEY } from 'react-native-dotenv';
 
-import * as kc from '@/keychain';
+import AesEncryptor from '@/handlers/aesEncryption';
 import { logger, RainbowError } from '@/logger';
+import Navigation from '@/navigation/Navigation';
 import Routes from '@/navigation/routesNames';
-import { pinKey } from '@/utils/keychainConstants';
 
-import AesEncryptor from '../handlers/aesEncryption';
-import * as keychain from '../model/keychain';
-import Navigation from '../navigation/Navigation';
+import * as kc from './keychain';
+import { pinKey } from './keychainConstants';
+import * as keychain from './legacyKeychain';
 
 const encryptor = new AesEncryptor();
 

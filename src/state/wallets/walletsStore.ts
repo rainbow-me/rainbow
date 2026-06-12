@@ -6,13 +6,14 @@ import { type Address } from 'viem';
 import { normalizeAddress } from '@/features/address/core/address';
 import { parseTimestampFromBackupFile } from '@/features/backup/backup';
 import { fetchENSAvatarWithRetry } from '@/features/ens/hooks/useENSAvatar';
+import * as kc from '@/features/local-auth/keychain';
+import { didShowWalletErrorSheetKey } from '@/features/local-auth/keychainConstants';
 import { watchingAlert } from '@/features/wallet/utils/watchingAlert';
 import { time } from '@/framework/core/utils/time';
 import { ensureValidHex, isValidHex } from '@/handlers/web3';
 import { removeFirstEmojiFromString, returnStringFirstEmoji } from '@/helpers/emojiHandler';
 import { getConsistentArray } from '@/helpers/getConsistentArray';
 import WalletTypes from '@/helpers/walletTypes';
-import * as kc from '@/keychain';
 import { ensureError, logger, RainbowError } from '@/logger';
 import { PreferenceActionType, setPreference } from '@/model/preferences';
 import {
@@ -35,7 +36,6 @@ import Routes from '@/navigation/routesNames';
 import { lightModeThemeColors } from '@/styles';
 import { useTheme } from '@/theme/ThemeContext';
 import isLowerCaseMatch from '@/utils/isLowerCaseMatch';
-import { didShowWalletErrorSheetKey } from '@/utils/keychainConstants';
 import { addressHashedColorIndex, addressHashedEmoji, fetchReverseRecordWithRetry, isValidImagePath } from '@/utils/profileUtils';
 import { shallowEqual } from '@/worklets/comparisons';
 

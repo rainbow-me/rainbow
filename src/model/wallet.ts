@@ -16,17 +16,26 @@ import { type GetOptions, type SetOptions } from 'react-native-keychain';
 
 import { analytics } from '@/analytics';
 import type { EthereumAddress } from '@/entities/wallet';
-import { maybeAuthenticateWithPIN, maybeAuthenticateWithPINAndCreateIfNeeded } from '@/handlers/authentication';
+import * as kc from '@/features/local-auth/keychain';
+import {
+  addressKey,
+  allWalletsKey,
+  oldSeedPhraseMigratedKey,
+  pinKey,
+  privateKeyKey,
+  seedPhraseKey,
+  selectedWalletKey,
+} from '@/features/local-auth/keychainConstants';
+import * as keychain from '@/features/local-auth/legacyKeychain';
+import { maybeAuthenticateWithPIN, maybeAuthenticateWithPINAndCreateIfNeeded } from '@/features/local-auth/pinAuthentication';
 import { LedgerSigner } from '@/handlers/LedgerSigner';
 import { addHexPrefix, isHexString, isHexStringIgnorePrefix, isValidBluetoothDeviceId, isValidMnemonic } from '@/handlers/web3';
 import { WrappedAlert as Alert } from '@/helpers/alert';
 import { createSignature } from '@/helpers/signingWallet';
 import walletTypes, { EthereumWalletType } from '@/helpers/walletTypes';
-import * as kc from '@/keychain';
 import * as i18n from '@/languages';
 import { ensureError, logger, RainbowError } from '@/logger';
 import { DebugContext } from '@/logger/debugContext';
-import * as keychain from '@/model/keychain';
 import { setHardwareTXError } from '@/navigation/HardwareWalletTxNavigator';
 import Navigation from '@/navigation/Navigation';
 import Routes from '@/navigation/routesNames';
@@ -40,15 +49,6 @@ import { sanitizeTypedData } from '@/utils/signingUtils';
 import { deriveAccountFromBluetoothHardwareWallet, deriveAccountFromMnemonic, deriveAccountFromWalletInput } from '@/utils/wallet';
 
 import { lightModeThemeColors } from '../styles/colors';
-import {
-  addressKey,
-  allWalletsKey,
-  oldSeedPhraseMigratedKey,
-  pinKey,
-  privateKeyKey,
-  seedPhraseKey,
-  selectedWalletKey,
-} from '../utils/keychainConstants';
 import profileUtils, { addressHashedColorIndex, addressHashedEmoji } from '../utils/profileUtils';
 import { PreferenceActionType, setPreference } from './preferences';
 
