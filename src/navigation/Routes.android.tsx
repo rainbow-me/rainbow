@@ -52,6 +52,7 @@ import { RnbwRewardsEstimateSheet } from '@/features/rnbw-rewards/screens/rnbw-r
 import { RnbwStakingLearnScreen } from '@/features/rnbw-staking/screens/rnbw-staking-learn-screen/RnbwStakingLearnScreen';
 import { RnbwStakingScreen } from '@/features/rnbw-staking/screens/rnbw-staking-screen/RnbwStakingScreen';
 import { RnbwUnstakeSheet } from '@/features/rnbw-staking/screens/rnbw-unstake-sheet/RnbwUnstakeSheet';
+import { SendConfirmationSheet } from '@/features/transfer/screens/SendConfirmationSheet';
 import SendSheet from '@/features/transfer/screens/SendSheet';
 import ConnectedDappsSheet from '@/features/wallet-connect/screens/ConnectedDappsSheet';
 import walletBackupStepTypes from '@/helpers/walletBackupStepTypes';
@@ -89,7 +90,6 @@ import ProfileSheet from '../screens/ProfileSheet';
 import ReceiveModal from '../screens/ReceiveModal';
 import { RestoreSheet } from '../screens/RestoreSheet';
 import SelectUniqueTokenSheet from '../screens/SelectUniqueTokenSheet';
-import { SendConfirmationSheet } from '../screens/SendConfirmationSheet';
 import SpeedUpAndCancelSheet from '../screens/SpeedUpAndCancelSheet';
 import WalletConnectApprovalSheet from '../screens/WalletConnectApprovalSheet';
 import WalletConnectRedirectSheet from '../screens/WalletConnectRedirectSheet';

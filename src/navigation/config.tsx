@@ -13,6 +13,7 @@ import { RequestSource } from '@/features/dapp-request/types';
 import { getENSAdditionalRecordsSheetHeight } from '@/features/ens/screens/ENSAdditionalRecordsSheet';
 import { ENSConfirmRegisterSheetHeight } from '@/features/ens/screens/ENSConfirmRegisterSheet';
 import { getPositionSheetHeight } from '@/features/positions/screens/PositionSheet';
+import { getSheetHeight as getSendConfirmationSheetHeight } from '@/features/transfer/screens/SendConfirmationSheet';
 import styled from '@/framework/ui/styled-thing';
 import WalletBackupStepTypes from '@/helpers/walletBackupStepTypes';
 import { type BottomSheetNavigationOptions } from '@/navigation/bottom-sheet/types';
@@ -26,7 +27,6 @@ import {
 } from '@/navigation/types';
 import { ExplainSheetHeight, getExplainSheetConfig } from '@/screens/ExplainSheet';
 import { ExternalLinkWarningSheetHeight } from '@/screens/ExternalLinkWarningSheet';
-import { getSheetHeight as getSendConfirmationSheetHeight } from '@/screens/SendConfirmationSheet';
 import { fonts } from '@/styles';
 import colors from '@/theme/currentColors';
 import { useTheme } from '@/theme/ThemeContext';
