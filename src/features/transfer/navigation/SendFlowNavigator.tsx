@@ -7,7 +7,7 @@ import { overlayExpandedPreset, sheetPreset } from '@/navigation/effects';
 import Routes from '@/navigation/routesNames';
 import ModalScreen from '@/screens/ModalScreen';
 
-import SendSheet from '../screens/SendSheet';
+import { SendSheet } from '../screens/SendSheet';
 
 const Stack = createStackNavigator();
 

@@ -48,7 +48,7 @@ const GradientToggler = styled(OpacityToggler).attrs({
   tension: 500,
 })(position.coverAsObject);
 
-export default function SendAssetFormCollectible({ asset, buttonRenderer, txSpeedRenderer, ...props }) {
+export function SendAssetFormCollectible({ asset, buttonRenderer, txSpeedRenderer, ...props }) {
   const { height: deviceHeight, isTallPhone, isTinyPhone, width: deviceWidth } = useDimensions();
 
   const [containerHeight, setContainerHeight] = useState();

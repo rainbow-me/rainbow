@@ -59,14 +59,14 @@ import ethereumUtils from '@/utils/ethereumUtils';
 import isLowerCaseMatch from '@/utils/isLowerCaseMatch';
 import safeAreaInsetValues from '@/utils/safeAreaInsetValues';
 
-import SendAssetForm from '../components/SendAssetForm';
-import SendAssetList from '../components/SendAssetList';
-import SendContactList from '../components/SendContactList';
-import SendHeader from '../components/SendHeader';
-import useMaxInputBalance from '../hooks/useMaxInputBalance';
-import useSendableUniqueTokens from '../hooks/useSendableUniqueTokens';
+import { SendAssetForm } from '../components/SendAssetForm';
+import { SendAssetList } from '../components/SendAssetList';
+import { SendContactList } from '../components/SendContactList';
+import { SendHeader } from '../components/SendHeader';
+import { useMaxSendableBalance } from '../hooks/useMaxSendableBalance';
+import { useSendableUniqueTokens } from '../hooks/useSendableUniqueTokens';
 import { useSendChainState } from '../hooks/useSendChainState';
-import useSendSheetInputRefs from '../hooks/useSendSheetInputRefs';
+import { useSendSheetInputRefs } from '../hooks/useSendSheetInputRefs';
 import { useSendSubmit } from '../hooks/useSendSubmit';
 import { useSponsoredSendPreparation } from '../hooks/useSponsoredSendPreparation';
 import { getSendSubmitButtonState } from '../utils/sendSheetUtils';
@@ -131,10 +131,10 @@ const validateRecipientDamagedState = (toAddress?: string) => {
   return true;
 };
 
-const hasSufficientAssetBalance = (assetAmount: string, maxInputBalance: string): boolean =>
-  !assetAmount || greaterThanOrEqualTo(maxInputBalance || '0', assetAmount);
+const hasSufficientAssetBalance = (assetAmount: string, maxSendableBalance: string): boolean =>
+  !assetAmount || greaterThanOrEqualTo(maxSendableBalance || '0', assetAmount);
 
-export default function SendSheet() {
+export function SendSheet() {
   const { navigate } = useNavigation();
   const sortedAssets = useUserAssetsStore(state => state.legacyUserAssets);
   const isLoadingUserAssets = useUserAssetsStore(state => state.getStatus('isInitialLoad'));
@@ -230,7 +230,7 @@ export default function SendSheet() {
     selected: selectedAddressAsset,
     toAddress,
   });
-  const { maxInputBalance, updateMaxInputBalance } = useMaxInputBalance({ ignoreGasFee: isSponsorshipSupported });
+  const { maxSendableBalance, updateMaxSendableBalance } = useMaxSendableBalance({ ignoreGasFee: isSponsorshipSupported });
 
   let colorForAsset = useColorForAsset(selected, undefined, false, true);
   const uniqueAssetColor = usePersistentDominantColorFromImage(isUniqueAsset ? selected?.images.lowResUrl : null) ?? colors.appleBlue;
@@ -254,7 +254,7 @@ export default function SendSheet() {
         _nativeAmount = formatInputDecimals(convertedNativeAmount, _assetAmount);
       }
 
-      const _isSufficientBalance = hasSufficientAssetBalance(_assetAmount, maxInputBalance);
+      const _isSufficientBalance = hasSufficientAssetBalance(_assetAmount, maxSendableBalance);
 
       setAmountDetails({
         assetAmount: _assetAmount,
@@ -262,13 +262,13 @@ export default function SendSheet() {
         nativeAmount: _nativeAmount,
       });
     },
-    [isUniqueAsset, maxInputBalance, nativeCurrency, selected]
+    [isUniqueAsset, maxSendableBalance, nativeCurrency, selected]
   );
 
   const sendUpdateSelected = useCallback(
     (newSelected: ParsedAddressAsset | UniqueAsset | undefined) => {
       if (isEqual(newSelected, selected)) return;
-      updateMaxInputBalance(newSelected);
+      updateMaxSendableBalance(newSelected);
       if (assetIsUniqueAsset(newSelected)) {
         setAmountDetails({
           assetAmount: '1',
@@ -287,16 +287,16 @@ export default function SendSheet() {
         sendUpdateAssetAmount('');
       }
     },
-    [selected, sendUpdateAssetAmount, updateMaxInputBalance]
+    [selected, sendUpdateAssetAmount, updateMaxSendableBalance]
   );
 
   // Update all fields passed via params if needed
   useEffect(() => {
     if (!selected || isUniqueAsset) return;
 
-    const newMaxInputBalance = updateMaxInputBalance(selected);
+    const newMaxSendableBalance = updateMaxSendableBalance(selected);
     setAmountDetails(currentAmountDetails => {
-      const isSufficientBalance = hasSufficientAssetBalance(currentAmountDetails.assetAmount, newMaxInputBalance);
+      const isSufficientBalance = hasSufficientAssetBalance(currentAmountDetails.assetAmount, newMaxSendableBalance);
       if (currentAmountDetails.isSufficientBalance === isSufficientBalance) return currentAmountDetails;
 
       return {
@@ -304,7 +304,7 @@ export default function SendSheet() {
         isSufficientBalance,
       };
     });
-  }, [isUniqueAsset, isSponsorshipSupported, selected, updateMaxInputBalance]);
+  }, [isUniqueAsset, isSponsorshipSupported, selected, updateMaxSendableBalance]);
 
   useEffect(() => {
     if (recipientOverride && !recipient) {
@@ -314,23 +314,23 @@ export default function SendSheet() {
 
     if (assetOverride && assetOverride !== prevAssetOverride) {
       sendUpdateSelected(assetOverride);
-      updateMaxInputBalance(assetOverride);
+      updateMaxSendableBalance(assetOverride);
     }
 
-    if (nativeAmountOverride && maxInputBalance) {
+    if (nativeAmountOverride && maxSendableBalance) {
       sendUpdateAssetAmount(nativeAmountOverride);
     }
   }, [
     amountDetails,
     assetOverride,
-    maxInputBalance,
+    maxSendableBalance,
     nativeAmountOverride,
     prevAssetOverride,
     recipient,
     recipientOverride,
     sendUpdateAssetAmount,
     sendUpdateSelected,
-    updateMaxInputBalance,
+    updateMaxSendableBalance,
   ]);
 
   const onChangeNativeAmount = useCallback(
@@ -348,7 +348,7 @@ export default function SendSheet() {
         _assetAmount = formatInputDecimals(convertedAssetAmount, _nativeAmount);
       }
 
-      const _isSufficientBalance = hasSufficientAssetBalance(_assetAmount, maxInputBalance);
+      const _isSufficientBalance = hasSufficientAssetBalance(_assetAmount, maxSendableBalance);
       setAmountDetails({
         assetAmount: _assetAmount,
         isSufficientBalance: _isSufficientBalance,
@@ -356,17 +356,17 @@ export default function SendSheet() {
       });
       analytics.track(analytics.event.changedNativeCurrencyInputSend);
     },
-    [maxEnabled, maxInputBalance, isUniqueAsset, selected]
+    [maxEnabled, maxSendableBalance, isUniqueAsset, selected]
   );
 
   useEffect(() => {
     if (maxEnabled) {
-      const newBalanceAmount = updateMaxInputBalance(selected);
+      const newBalanceAmount = updateMaxSendableBalance(selected);
       sendUpdateAssetAmount(newBalanceAmount);
     }
     // we want to listen to the gas fee and update when it changes
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [selected, sendUpdateAssetAmount, updateMaxInputBalance, selectedGasFee, maxEnabled]);
+  }, [selected, sendUpdateAssetAmount, updateMaxSendableBalance, selectedGasFee, maxEnabled]);
 
   const onChangeAssetAmount = useCallback(
     (newAssetAmount: string) => {

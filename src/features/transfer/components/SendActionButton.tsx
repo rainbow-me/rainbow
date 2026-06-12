@@ -14,7 +14,7 @@ type SendActionButtonProps = SheetActionButtonProps & {
   asset: RainbowToken | UniqueAsset | ParsedAddressAsset;
 };
 
-function SendActionButton({ asset, color: givenColor, textColor, ...props }: SendActionButtonProps) {
+function SendActionButtonComponent({ asset, color: givenColor, textColor, ...props }: SendActionButtonProps) {
   const color = givenColor || colors.paleBlue;
   const navigate = useNavigationForNonReadOnlyWallets();
 
@@ -42,4 +42,4 @@ function SendActionButton({ asset, color: givenColor, textColor, ...props }: Sen
   );
 }
 
-export default React.memo(SendActionButton);
+export const SendActionButton = React.memo(SendActionButtonComponent);

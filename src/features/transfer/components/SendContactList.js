@@ -23,7 +23,7 @@ import { useTheme } from '@/theme/ThemeContext';
 import isLowerCaseMatch from '@/utils/isLowerCaseMatch';
 import { filterList } from '@/utils/search';
 
-import SendEmptyState from './SendEmptyState';
+import { SendEmptyState } from './SendEmptyState';
 
 const KeyboardArea = styled.View({
   height: ({ keyboardHeight }) => keyboardHeight,
@@ -69,7 +69,7 @@ const SendContactFlatList = styled(SectionList).attrs({
   flex: 1,
 });
 
-export default function SendContactList({
+export function SendContactList({
   contacts,
   currentInput,
   ensSuggestions,

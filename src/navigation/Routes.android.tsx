@@ -56,7 +56,7 @@ import { RnbwStakingLearnScreen } from '@/features/rnbw-staking/screens/rnbw-sta
 import { RnbwStakingScreen } from '@/features/rnbw-staking/screens/rnbw-staking-screen/RnbwStakingScreen';
 import { RnbwUnstakeSheet } from '@/features/rnbw-staking/screens/rnbw-unstake-sheet/RnbwUnstakeSheet';
 import { SendConfirmationSheet } from '@/features/transfer/screens/SendConfirmationSheet';
-import SendSheet from '@/features/transfer/screens/SendSheet';
+import { SendSheet } from '@/features/transfer/screens/SendSheet';
 import ConnectedDappsSheet from '@/features/wallet-connect/screens/ConnectedDappsSheet';
 import walletBackupStepTypes from '@/helpers/walletBackupStepTypes';
 import { Portal as CMPortal } from '@/react-native-cool-modals/Portal';
