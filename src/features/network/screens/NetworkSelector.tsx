@@ -68,7 +68,7 @@ import {
   dismissCustomizeNetworksBanner,
   networkSwitcherStore,
   shouldShowCustomizeNetworksBanner,
-} from '../stores/networkSwitcher';
+} from '../stores/networkSwitcherStore';
 
 type RouteParams = RouteProp<RootStackParamList, 'NetworkSelector'>['params'];
 
