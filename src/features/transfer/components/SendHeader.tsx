@@ -5,8 +5,14 @@ import { isHexString } from '@ethersproject/bytes';
 import isEmpty from 'lodash/isEmpty';
 
 import ButtonPressAnimation from '@/components/animations/ButtonPressAnimation';
+import { PasteAddressButton } from '@/components/buttons';
+import showDeleteContactActionSheet from '@/components/contacts/showDeleteContactActionSheet';
 import Divider from '@/components/Divider';
+import { AddressField } from '@/components/fields';
+import { Row } from '@/components/layout';
+import { SheetHandleFixedToTop, SheetTitle } from '@/components/sheet';
 import Spinner from '@/components/Spinner';
+import { Label, Text } from '@/components/text';
 import { PROFILES } from '@/config/experimental';
 import useExperimentalFlag from '@/config/experimentalHooks';
 import styled from '@/framework/ui/styled-thing';
@@ -19,18 +25,11 @@ import type useContacts from '@/hooks/useContacts';
 import useDimensions from '@/hooks/useDimensions';
 import * as i18n from '@/languages';
 import { type RainbowAccount } from '@/model/wallet';
+import { useNavigation } from '@/navigation/Navigation';
 import Routes from '@/navigation/routesNames';
 import { padding } from '@/styles';
+import { useTheme, type ThemeContextProps } from '@/theme/ThemeContext';
 import profileUtils from '@/utils/profileUtils';
-
-import { useNavigation } from '../../navigation/Navigation';
-import { useTheme, type ThemeContextProps } from '../../theme/ThemeContext';
-import { PasteAddressButton } from '../buttons';
-import showDeleteContactActionSheet from '../contacts/showDeleteContactActionSheet';
-import { AddressField } from '../fields';
-import { Row } from '../layout';
-import { SheetHandleFixedToTop, SheetTitle } from '../sheet';
-import { Label, Text } from '../text';
 
 type ComponentPropsWithTheme = {
   theme: ThemeContextProps;

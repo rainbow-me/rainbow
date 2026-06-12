@@ -4,17 +4,18 @@ import { LayoutAnimation } from 'react-native';
 import { View } from 'react-primitives';
 import { DataProvider, LayoutProvider, RecyclerListView } from 'recyclerlistview';
 
+import FlyInAnimation from '@/components/animations/FlyInAnimation';
+import { CoinDividerOpenButton } from '@/components/coin-divider';
 import Divider, { DividerSize } from '@/components/Divider';
+import { Centered } from '@/components/layout';
+import TokenFamilyHeader from '@/components/token-family/TokenFamilyHeader';
 import styled from '@/framework/ui/styled-thing';
+import { buildCoinsList } from '@/helpers/assets';
 import deviceUtils from '@/utils/deviceUtils';
 import safeAreaInsetValues from '@/utils/safeAreaInsetValues';
 
-import { buildCoinsList } from '../../helpers/assets';
-import FlyInAnimation from '../animations/FlyInAnimation';
-import { CoinDividerOpenButton } from '../coin-divider';
-import { CollectiblesSendRow, SendCoinRow } from '../coin-row';
-import { Centered } from '../layout';
-import TokenFamilyHeader from '../token-family/TokenFamilyHeader';
+import CollectiblesSendRow from './CollectiblesSendRow';
+import SendCoinRow from './SendCoinRow';
 
 const dividerMargin = 5;
 const dividerHeight = DividerSize + dividerMargin * 4;

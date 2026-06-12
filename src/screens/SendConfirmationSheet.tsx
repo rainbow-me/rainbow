@@ -25,6 +25,7 @@ import {
 } from '@/features/ens/utils/handlers';
 import GasSpeedButton from '@/features/gas/components/GasSpeedButton';
 import useGas from '@/features/gas/hooks/useGas';
+import SendButton from '@/features/transfer/components/SendButton';
 import styled from '@/framework/ui/styled-thing';
 import { opacity } from '@/framework/ui/utils/opacity';
 import svgToPngIfNeeded from '@/handlers/svgs';
@@ -62,7 +63,6 @@ import CheckboxField from '../components/fields/CheckboxField';
 import L2Disclaimer from '../components/L2Disclaimer';
 import { Centered, Column, Row } from '../components/layout';
 import Pill from '../components/Pill';
-import { SendButton } from '../components/send';
 import { SheetHandleFixedToTopHeight, SheetTitle, SlackSheet } from '../components/sheet';
 import { Text as OldText } from '../components/text';
 import TouchableBackdrop from '../components/TouchableBackdrop';

@@ -4,6 +4,9 @@ import { Platform } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
 import { KeyboardAwareScrollView } from 'react-native-keyboard-controller';
 
+import ButtonPressAnimation from '@/components/animations/ButtonPressAnimation';
+import { Column } from '@/components/layout';
+import { Text } from '@/components/text';
 import styled from '@/framework/ui/styled-thing';
 import { assetIsUniqueAsset } from '@/handlers/web3';
 import useDimensions from '@/hooks/useDimensions';
@@ -12,13 +15,10 @@ import { padding, position } from '@/styles';
 import { useTheme } from '@/theme/ThemeContext';
 import { NAVIGATION_BAR_HEIGHT } from '@/utils/deviceUtils';
 
-import ButtonPressAnimation from '../animations/ButtonPressAnimation';
-import { SendCoinRow } from '../coin-row';
-import CollectiblesSendRow from '../coin-row/CollectiblesSendRow';
-import { Column } from '../layout';
-import { Text } from '../text';
+import CollectiblesSendRow from './CollectiblesSendRow';
 import SendAssetFormCollectible from './SendAssetFormCollectible';
 import SendAssetFormToken from './SendAssetFormToken';
+import SendCoinRow from './SendCoinRow';
 
 const AssetRowShadow = colors => [
   [0, 10, 30, colors.shadow, 0.12],

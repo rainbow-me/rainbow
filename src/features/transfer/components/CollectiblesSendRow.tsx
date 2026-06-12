@@ -1,22 +1,21 @@
 import React, { Fragment, useMemo } from 'react';
 import { TouchableWithoutFeedback } from 'react-native';
 
+import ButtonPressAnimation from '@/components/animations/ButtonPressAnimation';
+import RequestVendorLogoIcon from '@/components/coin-icon/RequestVendorLogoIcon';
+import CoinName from '@/components/coin-row/CoinName';
+import CoinRow from '@/components/coin-row/CoinRow';
 import Divider from '@/components/Divider';
+import { Centered } from '@/components/layout';
+import { TruncatedText } from '@/components/text';
 import type { UniqueAsset } from '@/entities/uniqueAssets';
 import { opacity } from '@/framework/ui/utils/opacity';
 import svgToPngIfNeeded from '@/handlers/svgs';
+import { buildAssetUniqueIdentifier } from '@/helpers/assets';
 import { padding } from '@/styles';
+import { useTheme } from '@/theme/ThemeContext';
 import deviceUtils from '@/utils/deviceUtils';
 import magicMemo from '@/utils/magicMemo';
-
-import { buildAssetUniqueIdentifier } from '../../helpers/assets';
-import { useTheme } from '../../theme/ThemeContext';
-import ButtonPressAnimation from '../animations/ButtonPressAnimation';
-import RequestVendorLogoIcon from '../coin-icon/RequestVendorLogoIcon';
-import { Centered } from '../layout';
-import { TruncatedText } from '../text';
-import CoinName from './CoinName';
-import CoinRow from './CoinRow';
 
 const dividerHeight = 22;
 const isSmallPhone = deviceUtils.dimensions.height <= 667;

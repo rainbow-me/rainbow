@@ -3,14 +3,13 @@ import { Platform } from 'react-native';
 
 import { LinearGradient } from 'expo-linear-gradient';
 
+import OpacityToggler from '@/components/animations/OpacityToggler';
+import { UniqueTokenExpandedStateContent } from '@/components/expanded-state/unique-token';
+import { Column } from '@/components/layout';
 import styled from '@/framework/ui/styled-thing';
 import useDimensions from '@/hooks/useDimensions';
 import useImageMetadata from '@/hooks/useImageMetadata';
 import { padding, position } from '@/styles';
-
-import OpacityToggler from '../animations/OpacityToggler';
-import { UniqueTokenExpandedStateContent } from '../expanded-state/unique-token';
-import { Column } from '../layout';
 
 const defaultImageDimensions = { height: 512, width: 512 };
 

@@ -7,6 +7,11 @@ import { sortBy } from 'lodash';
 import * as DeviceInfo from 'react-native-device-info';
 import { useDeepCompareMemo } from 'use-deep-compare';
 
+import FlyInAnimation from '@/components/animations/FlyInAnimation';
+import { ContactRow, SwipeableContactRow } from '@/components/contacts';
+import { SheetHandleFixedToTopHeight } from '@/components/sheet';
+import { Text } from '@/components/text';
+import { InvalidPasteToast, ToastPositionContainer } from '@/components/toasts';
 import styled from '@/framework/ui/styled-thing';
 import { opacity } from '@/framework/ui/utils/opacity';
 import useKeyboardHeight from '@/hooks/useKeyboardHeight';
@@ -18,11 +23,6 @@ import { useTheme } from '@/theme/ThemeContext';
 import isLowerCaseMatch from '@/utils/isLowerCaseMatch';
 import { filterList } from '@/utils/search';
 
-import FlyInAnimation from '../animations/FlyInAnimation';
-import { ContactRow, SwipeableContactRow } from '../contacts';
-import { SheetHandleFixedToTopHeight } from '../sheet';
-import { Text } from '../text';
-import { InvalidPasteToast, ToastPositionContainer } from '../toasts';
 import SendEmptyState from './SendEmptyState';
 
 const KeyboardArea = styled.View({
