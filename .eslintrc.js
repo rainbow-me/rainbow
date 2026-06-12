@@ -60,7 +60,6 @@ const allowedBarrelFiles = [
   'src/features/positions/stores/transform/index.ts',
   'src/features/positions/types/index.ts',
   'src/helpers/index.ts',
-  'src/keychain/index.ts',
   'src/languages/index.ts',
   'src/logger/index.ts',
   'src/migrations/index.ts',

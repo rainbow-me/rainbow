@@ -3,10 +3,10 @@ import { nanoid } from 'nanoid/non-secure';
 import { SECURE_WALLET_HASH_KEY } from 'react-native-dotenv';
 import type { Address } from 'viem';
 
+import { analyticsUserIdentifier } from '@/features/local-auth/keychainConstants';
+import * as keychain from '@/features/local-auth/legacyKeychain';
 import { logger, RainbowError } from '@/logger';
-import * as keychain from '@/model/keychain';
 import * as ls from '@/storage';
-import { analyticsUserIdentifier } from '@/utils/keychainConstants';
 
 /**
  * Returns the device id in a type-safe manner. It will throw if no device ID

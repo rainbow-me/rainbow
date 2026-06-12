@@ -10,6 +10,7 @@ import {
 import Animated, { runOnJS, useAnimatedStyle, useSharedValue, withTiming } from 'react-native-reanimated';
 import { triggerHaptics } from 'react-native-turbo-haptics';
 
+import BiometricButtonContent from '@/features/local-auth/components/BiometricButtonContent';
 import styled from '@/framework/ui/styled-thing';
 import useDimensions from '@/hooks/useDimensions';
 import * as i18n from '@/languages';
@@ -22,7 +23,6 @@ import ShadowStack from 'react-native-shadow-stack';
 import ShimmerAnimation from '../../animations/ShimmerAnimation';
 import { Centered, InnerBorder } from '../../layout';
 import Spinner from '../../Spinner';
-import BiometricButtonContent from '../BiometricButtonContent';
 import {
   BUTTON_HEIGHT,
   BUTTON_SCALE_DURATION_IN_MS,

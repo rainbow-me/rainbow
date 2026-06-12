@@ -4,8 +4,9 @@ import { Platform } from 'react-native';
 import { useDispatch } from 'react-redux';
 
 import { backupsStore, CloudBackupState } from '@/features/backup/stores/backupsStore';
+import * as keychain from '@/features/local-auth/keychain';
+import { maybeAuthenticateWithPIN } from '@/features/local-auth/pinAuthentication';
 import { showActionSheetWithOptions } from '@/framework/ui/utils/actionsheet';
-import { maybeAuthenticateWithPIN } from '@/handlers/authentication';
 import {
   deleteAllBackups,
   getGoogleAccountUserData,
@@ -14,7 +15,6 @@ import {
   type GoogleDriveUserData,
 } from '@/handlers/cloudBackup';
 import { WrappedAlert as Alert } from '@/helpers/alert';
-import * as keychain from '@/keychain';
 import * as i18n from '@/languages';
 import { logger, RainbowError } from '@/logger';
 import { clearAllWalletsBackupStatus } from '@/state/wallets/walletsStore';

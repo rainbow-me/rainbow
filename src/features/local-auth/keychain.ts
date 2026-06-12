@@ -1,3 +1,18 @@
+/**
+ * A wrapper around `react-native-keychain` providing type safety and codified
+ * error handling. Use this module instead of `react-native-keychain` directly:
+ * it keeps our interface independent of the base library (easier to swap or
+ * mock) and smooths over the library's polymorphic return types and thrown
+ * exceptions.
+ *
+ * Reads never throw. They return a discriminated union (`Result`) carrying
+ * either the value or a pre-defined `ErrorType` code (stable; the `-1`/`-2`
+ * values are legacy-compatible).
+ *
+ * Non-private values are also cached in MMKV for fast reads, while the
+ * keychain copy persists between app installs. Private values (saved with
+ * access control) only ever live in the keychain.
+ */
 import { Platform } from 'react-native';
 
 import DeviceInfo from 'react-native-device-info';
@@ -24,10 +39,11 @@ import { createMMKV } from 'react-native-mmkv';
 
 import { IS_DEV } from '@/env';
 import AesEncryptor from '@/handlers/aesEncryption';
-import { authenticateWithPIN, authenticateWithPINAndCreateIfNeeded, shouldAuthenticateWithPIN } from '@/handlers/authentication';
 import { logger, RainbowError } from '@/logger';
 import { delay } from '@/utils/delay';
-import * as keychainConstants from '@/utils/keychainConstants';
+
+import * as keychainConstants from './keychainConstants';
+import { authenticateWithPIN, authenticateWithPINAndCreateIfNeeded, shouldAuthenticateWithPIN } from './pinAuthentication';
 
 export const encryptor = new AesEncryptor();
 

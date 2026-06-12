@@ -14,11 +14,22 @@ import type { RainbowToken } from '@/entities/tokens';
 import type { EthereumAddress } from '@/entities/wallet';
 import { unlockableAppIcons, type UnlockableAppIconKey } from '@/features/app-icon/models/appIcons';
 import { unlockableAppIconStorage } from '@/features/app-icon/utils/unlockableAppIconCheck';
+import * as kc from '@/features/local-auth/keychain';
+import {
+  addressKey,
+  allWalletsKey,
+  analyticsUserIdentifier,
+  oldSeedPhraseMigratedKey,
+  seedPhraseKey,
+  selectedWalletKey,
+  signingWallet,
+  signingWalletAddress,
+} from '@/features/local-auth/keychainConstants';
+import { hasKey, loadString, publicAccessControlOptions, saveString } from '@/features/local-auth/legacyKeychain';
 import { getAssets, getHiddenCoins, getPinnedCoins, saveHiddenCoins, savePinnedCoins } from '@/handlers/localstorage/accountLocal';
 import { getContacts, saveContacts } from '@/handlers/localstorage/contacts';
 import { resolveNameOrAddress } from '@/handlers/web3';
 import { removeFirstEmojiFromString, returnStringFirstEmoji } from '@/helpers/emojiHandler';
-import * as kc from '@/keychain';
 import { logger, RainbowError } from '@/logger';
 import { queryClient } from '@/react-query';
 import { clearReactQueryCache } from '@/react-query/reactQueryUtils';
@@ -40,17 +51,6 @@ import { type BooleanMap } from '../hooks/useCoinListEditOptions';
 import store from '../redux/store';
 import { RB_TOKEN_LIST_CACHE, RB_TOKEN_LIST_ETAG } from '../references/rainbow-token-list';
 import colors, { getRandomColor } from '../styles/colors';
-import {
-  addressKey,
-  allWalletsKey,
-  analyticsUserIdentifier,
-  oldSeedPhraseMigratedKey,
-  seedPhraseKey,
-  selectedWalletKey,
-  signingWallet,
-  signingWalletAddress,
-} from '../utils/keychainConstants';
-import { hasKey, loadString, publicAccessControlOptions, saveString } from './keychain';
 import {
   DEFAULT_WALLET_NAME,
   EncryptionType,

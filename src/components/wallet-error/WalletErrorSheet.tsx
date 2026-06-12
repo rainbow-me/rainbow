@@ -7,7 +7,7 @@ import restoreWalletIcon from '@/assets/restoreWalletIcon.png';
 import ButtonPressAnimation from '@/components/animations/ButtonPressAnimation';
 import { SimpleSheet } from '@/components/sheet/SimpleSheet';
 import { BackgroundProvider, Box, Separator, Text } from '@/design-system';
-import useBiometryType from '@/hooks/useBiometryType';
+import useBiometryType from '@/features/local-auth/hooks/useBiometryType';
 import * as i18n from '@/languages';
 import { useNavigation } from '@/navigation/Navigation';
 import Routes from '@/navigation/routesNames';

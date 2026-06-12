@@ -4,7 +4,7 @@ import { InteractionManager } from 'react-native';
 
 import { analytics } from '@/analytics';
 import { DelayedAlert } from '@/components/alerts';
-import { maybeAuthenticateWithPIN } from '@/handlers/authentication';
+import { maybeAuthenticateWithPIN } from '@/features/local-auth/pinAuthentication';
 import walletBackupStepTypes from '@/helpers/walletBackupStepTypes';
 import useWalletCloudBackup from '@/hooks/useWalletCloudBackup';
 import * as i18n from '@/languages';

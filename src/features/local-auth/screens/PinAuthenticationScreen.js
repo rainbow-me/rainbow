@@ -4,26 +4,20 @@ import { Keyboard, Platform } from 'react-native';
 import { useRoute } from '@react-navigation/native';
 import { triggerHaptics } from 'react-native-turbo-haptics';
 
+import RainbowLogo from '@/assets/rainbows/light.png';
 import { ImgixImage } from '@/components/images';
+import { Centered, Column, ColumnWithMargins } from '@/components/layout';
+import { Numpad, PinValue } from '@/components/numpad';
+import { SheetTitle } from '@/components/sheet';
 import styled from '@/framework/ui/styled-thing';
+import { getAuthTimelock, getPinAuthAttemptsLeft, saveAuthTimelock, savePinAuthAttemptsLeft } from '@/handlers/localstorage/globalSettings';
 import { WrappedAlert as Alert } from '@/helpers/alert';
 import { useBlockBackButton } from '@/hooks/useBlockBackButton';
 import useDimensions from '@/hooks/useDimensions';
 import useShakeAnimation from '@/hooks/useShakeAnimation';
 import * as i18n from '@/languages';
+import { useNavigation } from '@/navigation/Navigation';
 import { padding } from '@/styles';
-
-import RainbowLogo from '../assets/rainbows/light.png';
-import { Centered, Column, ColumnWithMargins } from '../components/layout';
-import { Numpad, PinValue } from '../components/numpad';
-import { SheetTitle } from '../components/sheet';
-import {
-  getAuthTimelock,
-  getPinAuthAttemptsLeft,
-  saveAuthTimelock,
-  savePinAuthAttemptsLeft,
-} from '../handlers/localstorage/globalSettings';
-import { useNavigation } from '../navigation/Navigation';
 
 const Logo = styled(ImgixImage).attrs({
   source: RainbowLogo,

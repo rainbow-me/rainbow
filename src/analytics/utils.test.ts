@@ -1,10 +1,10 @@
 import { beforeEach, describe, expect, test } from '@jest/globals';
 
 import { getOrCreateDeviceId } from '@/analytics/utils';
-import * as keychain from '@/model/keychain';
+import * as keychain from '@/features/local-auth/legacyKeychain';
 import * as ls from '@/storage';
 
-jest.mock('@/model/keychain', () => ({
+jest.mock('@/features/local-auth/legacyKeychain', () => ({
   loadString: jest.fn(),
 }));
 
