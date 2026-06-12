@@ -6,9 +6,22 @@ import { useRoute, type RouteProp } from '@react-navigation/native';
 import { toChecksumAddress } from 'ethereumjs-util';
 import { isEmpty } from 'lodash';
 
+import ButtonPressAnimation from '@/components/animations/ButtonPressAnimation';
 import ShimmerAnimation from '@/components/animations/ShimmerAnimation';
+import Callout from '@/components/callout/Callout';
 import RainbowCoinIcon from '@/components/coin-icon/RainbowCoinIcon';
+import RequestVendorLogoIcon from '@/components/coin-icon/RequestVendorLogoIcon';
+import ContactRowInfoButton from '@/components/ContactRowInfoButton';
+import { ContactAvatar } from '@/components/contacts';
+import ImageAvatar from '@/components/contacts/ImageAvatar';
 import Divider from '@/components/Divider';
+import CheckboxField from '@/components/fields/CheckboxField';
+import L2Disclaimer from '@/components/L2Disclaimer';
+import { Centered, Column, Row } from '@/components/layout';
+import Pill from '@/components/Pill';
+import { SheetHandleFixedToTopHeight, SheetTitle, SlackSheet } from '@/components/sheet';
+import { Text as OldText } from '@/components/text';
+import TouchableBackdrop from '@/components/TouchableBackdrop';
 import { PROFILES } from '@/config/experimental';
 import useExperimentalFlag from '@/config/experimentalHooks';
 import { Box, Heading, Inset, Stack, Text, useBackgroundColor, useColorMode } from '@/design-system';
@@ -25,7 +38,6 @@ import {
 } from '@/features/ens/utils/handlers';
 import GasSpeedButton from '@/features/gas/components/GasSpeedButton';
 import useGas from '@/features/gas/hooks/useGas';
-import SendButton from '@/features/transfer/components/SendButton';
 import styled from '@/framework/ui/styled-thing';
 import { opacity } from '@/framework/ui/utils/opacity';
 import svgToPngIfNeeded from '@/handlers/svgs';
@@ -50,24 +62,12 @@ import { startTimeToSignTracking } from '@/state/performance/performance';
 import { useAccountAddress, useWalletsStore } from '@/state/wallets/walletsStore';
 import { position } from '@/styles';
 import { useTheme } from '@/theme/ThemeContext';
+import { address } from '@/utils/abbreviations';
+import { addressHashedColorIndex, addressHashedEmoji } from '@/utils/profileUtils';
 import promiseUtils from '@/utils/promise';
 import safeAreaInsetValues from '@/utils/safeAreaInsetValues';
 
-import ButtonPressAnimation from '../components/animations/ButtonPressAnimation';
-import Callout from '../components/callout/Callout';
-import RequestVendorLogoIcon from '../components/coin-icon/RequestVendorLogoIcon';
-import ContactRowInfoButton from '../components/ContactRowInfoButton';
-import { ContactAvatar } from '../components/contacts';
-import ImageAvatar from '../components/contacts/ImageAvatar';
-import CheckboxField from '../components/fields/CheckboxField';
-import L2Disclaimer from '../components/L2Disclaimer';
-import { Centered, Column, Row } from '../components/layout';
-import Pill from '../components/Pill';
-import { SheetHandleFixedToTopHeight, SheetTitle, SlackSheet } from '../components/sheet';
-import { Text as OldText } from '../components/text';
-import TouchableBackdrop from '../components/TouchableBackdrop';
-import { address } from '../utils/abbreviations';
-import { addressHashedColorIndex, addressHashedEmoji } from '../utils/profileUtils';
+import SendButton from '../components/SendButton';
 
 const Container = styled(Centered).attrs({
   direction: 'column',
