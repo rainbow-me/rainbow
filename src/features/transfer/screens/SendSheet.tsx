@@ -9,7 +9,6 @@ import { analytics } from '@/analytics';
 import { Column } from '@/components/layout';
 import { NoResults } from '@/components/list';
 import { NoResultsType } from '@/components/list/NoResults';
-import { SendAssetForm, SendAssetList, SendContactList, SendHeader } from '@/components/send';
 import { SheetActionButton } from '@/components/sheet';
 import { PROFILES } from '@/config/experimental';
 import useExperimentalFlag from '@/config/experimentalHooks';
@@ -64,6 +63,10 @@ import ethereumUtils from '@/utils/ethereumUtils';
 import isLowerCaseMatch from '@/utils/isLowerCaseMatch';
 import safeAreaInsetValues from '@/utils/safeAreaInsetValues';
 
+import SendAssetForm from '../components/SendAssetForm';
+import SendAssetList from '../components/SendAssetList';
+import SendContactList from '../components/SendContactList';
+import SendHeader from '../components/SendHeader';
 import { useSendChainState } from '../hooks/useSendChainState';
 import { useSendSubmit } from '../hooks/useSendSubmit';
 import { useSponsoredSendPreparation } from '../hooks/useSponsoredSendPreparation';
