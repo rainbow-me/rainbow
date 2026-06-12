@@ -1,9 +1,8 @@
 import React from 'react';
 
+import { HoldToAuthorizeButton } from '@/components/buttons';
 import * as i18n from '@/languages';
 import { useWalletsStore } from '@/state/wallets/walletsStore';
-
-import { HoldToAuthorizeButton } from '../buttons';
 
 export default function SendButton({
   backgroundColor,

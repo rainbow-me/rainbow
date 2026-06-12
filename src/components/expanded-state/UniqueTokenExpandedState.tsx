@@ -37,6 +37,7 @@ import ProfileInfoSection from '@/features/ens/components/expanded-state/Profile
 import useENSProfile from '@/features/ens/hooks/useENSProfile';
 import useENSRegistration from '@/features/ens/hooks/useENSRegistration';
 import { ENS_RECORDS, REGISTRATION_MODES } from '@/features/ens/utils/helpers';
+import SendActionButton from '@/features/transfer/components/SendActionButton';
 import styled from '@/framework/ui/styled-thing';
 import { opacity } from '@/framework/ui/utils/opacity';
 import { buildUniqueTokenName } from '@/helpers/assets';
@@ -68,7 +69,7 @@ import ImagePreviewOverlay from '../images/ImagePreviewOverlay';
 import ImgixImage from '../images/ImgixImage';
 import L2Disclaimer from '../L2Disclaimer';
 import Link from '../Link';
-import { SendActionButton, SheetActionButton, SheetHandle, SlackSheet } from '../sheet';
+import { SheetActionButton, SheetHandle, SlackSheet } from '../sheet';
 import { Toast, ToastPositionContainer, ToggleStateToast } from '../toasts';
 import { UniqueTokenAttributes, UniqueTokenImage } from '../unique-token';
 import { UniqueTokenExpandedStateContent, UniqueTokenExpandedStateHeader } from './unique-token';
