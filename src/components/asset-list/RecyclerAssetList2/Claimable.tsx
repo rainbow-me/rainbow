@@ -4,8 +4,8 @@ import { FasterImageView } from '@candlefinance/faster-image';
 
 import { analytics } from '@/analytics';
 import ButtonPressAnimation from '@/components/animations/ButtonPressAnimation';
-import { ChainImage } from '@/components/coin-icon/ChainImage';
 import { Box, Inline, Stack, Text } from '@/design-system';
+import { ChainImage } from '@/features/network/components/ChainImage';
 import Navigation from '@/navigation/Navigation';
 import Routes from '@/navigation/routesNames';
 import { type Claimable as ClaimableType } from '@/resources/addys/claimables/types';

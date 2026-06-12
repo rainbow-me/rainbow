@@ -5,7 +5,6 @@ import { useRoute, type RouteProp } from '@react-navigation/native';
 import { LinearGradient } from 'expo-linear-gradient';
 import type { Address } from 'viem';
 
-import { ChainImage } from '@/components/coin-icon/ChainImage';
 import { ContextCircleButton } from '@/components/context-menu';
 import { GradientBorderView } from '@/components/gradient-border/GradientBorderView';
 import ContextMenuButton from '@/components/native-context-menu/contextMenu';
@@ -17,6 +16,7 @@ import {
   isRainbowDelegated as hasRainbowDelegation,
   isThirdPartyDelegated as hasThirdPartyDelegation,
 } from '@/features/delegation/status';
+import { ChainImage } from '@/features/network/components/ChainImage';
 import * as i18n from '@/languages';
 import { navigate } from '@/navigation/Navigation';
 import Routes from '@/navigation/routesNames';

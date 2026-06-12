@@ -4,12 +4,12 @@ import { StyleSheet, View } from 'react-native';
 import MaskedView from '@react-native-masked-view/masked-view';
 import Svg, { Path } from 'react-native-svg';
 
-import { ChainImage } from '@/components/coin-icon/ChainImage';
 import { SWAP_ICON_INTERSECT, SWAP_ICON_WIDTH, TOAST_ICON_SIZE } from '@/components/rainbow-toast/constants';
 import { ToastSFSymbolIcon } from '@/components/rainbow-toast/ToastSFSymbolIcon';
 import { type RainbowToast } from '@/components/rainbow-toast/types';
 import { RainbowImage } from '@/components/RainbowImage';
 import { TransactionStatus } from '@/entities/transactions';
+import { ChainImage } from '@/features/network/components/ChainImage';
 import { ChainId } from '@/state/backendNetworks/types';
 
 export const isWideSwapIcon = (toast: RainbowToast) => {

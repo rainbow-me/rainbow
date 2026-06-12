@@ -4,13 +4,13 @@ import { Platform, ScrollView } from 'react-native';
 import chroma from 'chroma-js';
 import { LinearGradient } from 'expo-linear-gradient';
 
-import { ChainImage } from '@/components/coin-icon/ChainImage';
 import { Coinbase as CoinbaseLogo } from '@/components/icons/svg/Coinbase';
 import { Moonpay as MoonpayLogo } from '@/components/icons/svg/Moonpay';
 import { Ramp as RampLogo } from '@/components/icons/svg/Ramp';
 import { Stripe as StripeLogo } from '@/components/icons/svg/Stripe';
 import { Bleed, Box, Inline, Text, useBackgroundColor } from '@/design-system';
 import { FiatProviderName } from '@/entities/f2c';
+import { ChainImage } from '@/features/network/components/ChainImage';
 import * as i18n from '@/languages';
 import { CalloutType, PaymentMethod, type ProviderConfig } from '@/screens/AddCash/types';
 import { convertAPINetworkToInternalChainIds } from '@/screens/AddCash/utils';

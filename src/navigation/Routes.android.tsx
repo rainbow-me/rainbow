@@ -19,6 +19,7 @@ import ENSConfirmRegisterSheet from '@/features/ens/screens/ENSConfirmRegisterSh
 import SelectENSSheet from '@/features/ens/screens/SelectENSSheet';
 import { useShowKingOfTheHill } from '@/features/king-of-the-hill/hooks/useShowKingOfTheHill';
 import { KingOfTheHillExplainSheet } from '@/features/king-of-the-hill/screens/KingOfTheHillExplainSheet';
+import { NetworkSelector } from '@/features/network/screens/NetworkSelector';
 import { NotificationPermissionScreen } from '@/features/notifications/screens/NotificationPermissionScreen';
 import { ClosePositionBottomSheet } from '@/features/perps/screens/ClosePositionBottomSheet';
 import { CreateTriggerOrderBottomSheet } from '@/features/perps/screens/CreateTriggerOrderBottomSheet';
@@ -65,7 +66,6 @@ import LearnWebViewScreen from '@/screens/LearnWebViewScreen';
 import MintSheet from '@/screens/mints/MintSheet';
 import PoapSheet from '@/screens/mints/PoapSheet';
 import { MintsSheet } from '@/screens/MintsSheet/MintsSheet';
-import { NetworkSelector } from '@/screens/network-selector/NetworkSelector';
 import { NFTOffersSheet } from '@/screens/NFTOffersSheet';
 import { NFTSingleOfferSheet } from '@/screens/NFTSingleOfferSheet';
 import { Portal } from '@/screens/Portal';
