@@ -112,6 +112,8 @@ export const NumberPadKey = <K extends string>({
     };
   }, [isDarkMode, transparent]);
 
+  const keyTestId = char === 'backspace' ? 'backspace' : char === '.' ? 'decimal' : String(char);
+
   return (
     <HitSlop space="3px">
       <GestureHandlerButton
@@ -140,6 +142,7 @@ export const NumberPadKey = <K extends string>({
             pressProgress.value = withDelay(500, withTiming(0, { duration: 0 }));
           }
         }}
+        testID={`number-pad-key-${keyTestId}`}
       >
         <Animated.View
           style={[
