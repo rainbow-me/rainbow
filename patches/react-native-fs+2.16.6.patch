@@ -1,0 +1,24 @@
+# PATCH CONTEXT
+# Why: RN 0.81 marks PromiseImpl.reject(code, message) `code` as
+#   @NonNull, so RNFSManager.reject(null, ex.getMessage()) throws
+#   NPE on every exception — fires on `unlink` during the wallet
+#   creation flow and crashes the app. Patch passes "ERROR".
+# Upstream Issue: none — react-native-fs is unmaintained (last
+#   meaningful release 2023, no RN 0.81 support coming).
+# Linear Issue: FEPLAT-93
+# Remove when: codebase migrated off react-native-fs to
+#   expo-file-system. Draft PR: rainbow-me/rainbow#7428.
+
+diff --git a/node_modules/react-native-fs/android/src/main/java/com/rnfs/RNFSManager.java b/node_modules/react-native-fs/android/src/main/java/com/rnfs/RNFSManager.java
+index 0000000..0000001 100644
+--- a/node_modules/react-native-fs/android/src/main/java/com/rnfs/RNFSManager.java
++++ b/node_modules/react-native-fs/android/src/main/java/com/rnfs/RNFSManager.java
+@@ -960,7 +960,7 @@ public class RNFSManager extends ReactContextBaseJavaModule {
+       return;
+     }
+
+-    promise.reject(null, ex.getMessage());
++    promise.reject("ERROR", ex.getMessage(), ex);
+   }
+
+   private void rejectFileNotFound(Promise promise, String filepath) {
