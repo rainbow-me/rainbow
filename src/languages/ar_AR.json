@@ -1668,6 +1668,18 @@
       "leverage": "الرافعة المالية",
       "up_to": "حتى"
     },
+    "cash": {
+      "add_cash": "أضف نقود",
+      "deposit_intro": {
+        "introducing": "تقديم",
+        "title": "إيداعات نقدية",
+        "encrypted_feature": "معلوماتك مُشفَّرة ومحمية.",
+        "visa_feature": "متاح للعملاء المقيمين في الولايات المتحدة باستخدام بطاقة Visa.",
+        "set_up_account": "إعداد الحساب",
+        "other_deposit_methods": "طرق إيداع أخرى",
+        "sign_in": "تسجيل الدخول"
+      }
+    },
     "points": {
       "points": {
         "try_again": "حاول مرة أخرى"
