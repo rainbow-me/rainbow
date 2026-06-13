@@ -4,6 +4,7 @@ import { View } from 'react-native';
 import ButtonPressAnimation from '@/components/animations/ButtonPressAnimation';
 import { ImgixImage } from '@/components/images';
 import { Box, Stack, Text, TextIcon, TextShadow, useColorMode } from '@/design-system';
+import { useAddCashRoute } from '@/features/cash/navigation/useAddCashRoute';
 import { formatUsd } from '@/features/currency/utils/formatUsd';
 import { USDC_ICON_URL } from '@/features/perps/constants';
 import { PolymarketButton } from '@/features/polymarket/components/PolymarketButton';
@@ -21,6 +22,7 @@ export const PolymarketAccountBalanceCard = memo(function PolymarketAccountBalan
   const isBalanceZero = usePolymarketBalanceStore(state => state.isBalanceZero());
   const balance = usePolymarketBalanceStore(state => state.getBalance());
   const hasNoAssets = useUserAssetsStore(state => !state.getFilteredUserAssetIds().length);
+  const { route: addCashRoute } = useAddCashRoute();
 
   return (
     <Box
@@ -94,7 +96,7 @@ export const PolymarketAccountBalanceCard = memo(function PolymarketAccountBalan
             onPress={() => {
               if (getIsReadOnlyWallet()) return;
               if (hasNoAssets) {
-                Navigation.handleAction(Routes.FIAT_ON_RAMP_SHEET);
+                Navigation.handleAction(addCashRoute);
               } else {
                 Navigation.handleAction(Routes.POLYMARKET_DEPOSIT_SCREEN);
               }
