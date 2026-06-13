@@ -1668,6 +1668,18 @@
       "leverage": "레버리지",
       "up_to": "최대"
     },
+    "cash": {
+      "add_cash": "현금 추가",
+      "deposit_intro": {
+        "introducing": "소개",
+        "title": "Cash Deposits",
+        "encrypted_feature": "Your information is encrypted and protected.",
+        "visa_feature": "Available for US-based customers using a Visa card.",
+        "set_up_account": "Set Up Account",
+        "other_deposit_methods": "Other Deposit Methods",
+        "sign_in": "로그인"
+      }
+    },
     "points": {
       "points": {
         "try_again": "다시 시도하기"
