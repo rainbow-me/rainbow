@@ -1,0 +1,5 @@
+[tools]
+maestro = "cli-2.0.10"
+
+[settings]
+idiomatic_version_file_enable_tools = ["node"]
