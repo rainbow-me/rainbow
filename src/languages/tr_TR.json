@@ -1668,6 +1668,18 @@
       "leverage": "Kaldıraç",
       "up_to": "Kadarcık"
     },
+    "cash": {
+      "add_cash": "Nakit Ekle",
+      "deposit_intro": {
+        "introducing": "Tanışın",
+        "title": "Cash Deposits",
+        "encrypted_feature": "Your information is encrypted and protected.",
+        "visa_feature": "Available for US-based customers using a Visa card.",
+        "set_up_account": "Set Up Account",
+        "other_deposit_methods": "Other Deposit Methods",
+        "sign_in": "Oturum Aç"
+      }
+    },
     "points": {
       "points": {
         "try_again": "Tekrar Deneyin"
