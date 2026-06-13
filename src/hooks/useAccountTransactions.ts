@@ -6,7 +6,7 @@ import { userAssetsStoreManager } from '@/state/assets/userAssetsStoreManager';
 import { usePendingTransactionsStore } from '@/state/pendingTransactions';
 import { useAccountAddress } from '@/state/wallets/walletsStore';
 
-import { buildTransactionsSections } from '../helpers/buildTransactionsSectionsSelector';
+import { buildTransactionsSections } from '../helpers/buildTransactionsSections';
 import useContacts from './useContacts';
 
 export const NOE_PAGE = 30;
@@ -36,11 +36,7 @@ export default function useAccountTransactions() {
   );
 
   const { contacts } = useContacts();
-
-  const { sections } = buildTransactionsSections({
-    contacts,
-    transactions,
-  });
+  const sections = buildTransactionsSections({ contacts, transactions });
 
   return {
     isLoadingTransactions: isLoading,
