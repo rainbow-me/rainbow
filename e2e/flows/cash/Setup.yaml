@@ -1,0 +1,27 @@
+appId: ${APP_ID}
+tags:
+  - cash
+  - parallel
+---
+- launchApp:
+    clearState: true
+    clearKeychain: true
+    arguments:
+      isE2ETest: true
+- runFlow: ../../utils/Prepare.yaml
+- runFlow: ../../utils/ImportWalletWithKey.yaml
+- runFlow:
+    file: ../../utils/SetExperimentalFlag.yaml
+    env:
+      FLAG: Cash
+      VALUE: 'true'
+- tapOn:
+    id: buy-button
+- assertVisible:
+    text: 'Cash Deposits'
+- assertVisible:
+    id: cash-deposit-intro-set-up-account
+- assertVisible:
+    id: cash-deposit-intro-other-deposit-methods
+- assertVisible:
+    id: cash-deposit-intro-sign-in
