@@ -96,7 +96,7 @@ export const PerpsAccountBalanceCard = memo(function PerpsAccountBalanceCard() {
             onPress={() => {
               if (checkIfReadOnlyWallet(accountAddress)) return;
               if (hasNoAssets) {
-                Navigation.handleAction(Routes.ADD_CASH_SHEET);
+                Navigation.handleAction(Routes.FIAT_ON_RAMP_SHEET);
               } else {
                 Navigation.handleAction(Routes.PERPS_DEPOSIT_SCREEN);
               }
