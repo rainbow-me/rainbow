@@ -1,0 +1,2143 @@
+"""
+Indicates exactly one field must be supplied and this field must not be `null`.
+"""
+directive @oneOf on INPUT_OBJECT
+
+type Asset {
+  address: String!
+  decimals: Int!
+  name: String!
+  symbol: String!
+}
+
+type AssetAmount {
+  decimal: Float!
+  raw: String!
+  usd: Float!
+}
+
+type AssetCollection {
+  items: [ContentfulAsset]!
+  limit: Int!
+  skip: Int!
+  total: Int!
+}
+
+input AssetFilter {
+  AND: [AssetFilter]
+  contentfulMetadata: ContentfulMetadataFilter
+  contentType: String
+  contentType_contains: String
+  contentType_exists: Boolean
+  contentType_in: [String]
+  contentType_not: String
+  contentType_not_contains: String
+  contentType_not_in: [String]
+  description: String
+  description_contains: String
+  description_exists: Boolean
+  description_in: [String]
+  description_not: String
+  description_not_contains: String
+  description_not_in: [String]
+  fileName: String
+  fileName_contains: String
+  fileName_exists: Boolean
+  fileName_in: [String]
+  fileName_not: String
+  fileName_not_contains: String
+  fileName_not_in: [String]
+  height: Int
+  height_exists: Boolean
+  height_gt: Int
+  height_gte: Int
+  height_in: [Int]
+  height_lt: Int
+  height_lte: Int
+  height_not: Int
+  height_not_in: [Int]
+  OR: [AssetFilter]
+  size: Int
+  size_exists: Boolean
+  size_gt: Int
+  size_gte: Int
+  size_in: [Int]
+  size_lt: Int
+  size_lte: Int
+  size_not: Int
+  size_not_in: [Int]
+  sys: SysFilter
+  title: String
+  title_contains: String
+  title_exists: Boolean
+  title_in: [String]
+  title_not: String
+  title_not_contains: String
+  title_not_in: [String]
+  url: String
+  url_contains: String
+  url_exists: Boolean
+  url_in: [String]
+  url_not: String
+  url_not_contains: String
+  url_not_in: [String]
+  width: Int
+  width_exists: Boolean
+  width_gt: Int
+  width_gte: Int
+  width_in: [Int]
+  width_lt: Int
+  width_lte: Int
+  width_not: Int
+  width_not_in: [Int]
+}
+
+type AssetLinkingCollections {
+  dropCollection(limit: Int = 100, locale: String, order: [AssetLinkingCollectionsDropCollectionOrder], preview: Boolean, skip: Int = 0): DropCollection
+  entryCollection(limit: Int = 100, locale: String, preview: Boolean, skip: Int = 0): EntryCollection
+  personCollection(limit: Int = 100, locale: String, order: [AssetLinkingCollectionsPersonCollectionOrder], preview: Boolean, skip: Int = 0): PersonCollection
+  postCollection(limit: Int = 100, locale: String, order: [AssetLinkingCollectionsPostCollectionOrder], preview: Boolean, skip: Int = 0): PostCollection
+  promoSheetCollection(limit: Int = 100, locale: String, order: [AssetLinkingCollectionsPromoSheetCollectionOrder], preview: Boolean, skip: Int = 0): PromoSheetCollection
+}
+
+enum AssetLinkingCollectionsDropCollectionOrder {
+  backgroundColor_ASC
+  backgroundColor_DESC
+  buttonColor_ASC
+  buttonColor_DESC
+  buttonShadowColor_ASC
+  buttonShadowColor_DESC
+  buttonTextColor_ASC
+  buttonTextColor_DESC
+  contractAddress_ASC
+  contractAddress_DESC
+  downloadLink_ASC
+  downloadLink_DESC
+  firstProductHighlightBackground_ASC
+  firstProductHighlightBackground_DESC
+  firstProductHighlightTextColor_ASC
+  firstProductHighlightTextColor_DESC
+  firstProductHighlightTitle_ASC
+  firstProductHighlightTitle_DESC
+  gradientColor_ASC
+  gradientColor_DESC
+  linearGradientColor_ASC
+  linearGradientColor_DESC
+  linkColor_ASC
+  linkColor_DESC
+  partnerLink_ASC
+  partnerLink_DESC
+  partnerTitle_ASC
+  partnerTitle_DESC
+  presaleName_ASC
+  presaleName_DESC
+  radialGradientColor_ASC
+  radialGradientColor_DESC
+  secondProductHighlightBackground_ASC
+  secondProductHighlightBackground_DESC
+  secondProductHighlightTextColor_ASC
+  secondProductHighlightTextColor_DESC
+  secondProductHighlightTitle_ASC
+  secondProductHighlightTitle_DESC
+  showFooter_ASC
+  showFooter_DESC
+  slug_ASC
+  slug_DESC
+  sys_firstPublishedAt_ASC
+  sys_firstPublishedAt_DESC
+  sys_id_ASC
+  sys_id_DESC
+  sys_publishedAt_ASC
+  sys_publishedAt_DESC
+  sys_publishedVersion_ASC
+  sys_publishedVersion_DESC
+  textColor_ASC
+  textColor_DESC
+  title_ASC
+  title_DESC
+  unlockableTitle_ASC
+  unlockableTitle_DESC
+}
+
+enum AssetLinkingCollectionsPersonCollectionOrder {
+  name_ASC
+  name_DESC
+  sys_firstPublishedAt_ASC
+  sys_firstPublishedAt_DESC
+  sys_id_ASC
+  sys_id_DESC
+  sys_publishedAt_ASC
+  sys_publishedAt_DESC
+  sys_publishedVersion_ASC
+  sys_publishedVersion_DESC
+}
+
+enum AssetLinkingCollectionsPostCollectionOrder {
+  date_ASC
+  date_DESC
+  seoTitle_ASC
+  seoTitle_DESC
+  slug_ASC
+  slug_DESC
+  sys_firstPublishedAt_ASC
+  sys_firstPublishedAt_DESC
+  sys_id_ASC
+  sys_id_DESC
+  sys_publishedAt_ASC
+  sys_publishedAt_DESC
+  sys_publishedVersion_ASC
+  sys_publishedVersion_DESC
+  title_ASC
+  title_DESC
+}
+
+enum AssetLinkingCollectionsPromoSheetCollectionOrder {
+  accentColor_ASC
+  accentColor_DESC
+  backgroundColor_ASC
+  backgroundColor_DESC
+  campaignKey_ASC
+  campaignKey_DESC
+  headerImageAspectRatio_ASC
+  headerImageAspectRatio_DESC
+  launchDate_ASC
+  launchDate_DESC
+  priority_ASC
+  priority_DESC
+  sheetHandleColor_ASC
+  sheetHandleColor_DESC
+  sys_firstPublishedAt_ASC
+  sys_firstPublishedAt_DESC
+  sys_id_ASC
+  sys_id_DESC
+  sys_publishedAt_ASC
+  sys_publishedAt_DESC
+  sys_publishedVersion_ASC
+  sys_publishedVersion_DESC
+}
+
+enum AssetOrder {
+  contentType_ASC
+  contentType_DESC
+  fileName_ASC
+  fileName_DESC
+  height_ASC
+  height_DESC
+  size_ASC
+  size_DESC
+  sys_firstPublishedAt_ASC
+  sys_firstPublishedAt_DESC
+  sys_id_ASC
+  sys_id_DESC
+  sys_publishedAt_ASC
+  sys_publishedAt_DESC
+  sys_publishedVersion_ASC
+  sys_publishedVersion_DESC
+  url_ASC
+  url_DESC
+  width_ASC
+  width_DESC
+}
+
+type Bridging {
+  bridgeable: Boolean!
+  networks: Networks
+}
+
+type Card implements Entry {
+  accentColor(locale: String): String
+  backgroundColor(locale: String): String
+  borderRadius(locale: String): Int
+  cardKey(locale: String): String
+  contentfulMetadata: ContentfulMetadata!
+  dismissable(locale: String): Boolean
+  imageCollection(limit: Int = 100, locale: String, preview: Boolean, skip: Int = 0): AssetCollection
+  imageIcon(locale: String): String
+  imageRadius(locale: String): Int
+  index(locale: String): Int
+  linkedFrom(allowedLocales: [String]): CardLinkingCollections
+  padding(locale: String): Int
+  placement(locale: String): String
+  primaryButton(locale: String): JSON
+  subtitle(locale: String): JSON
+  subtitleColor(locale: String): String
+  sys: Sys!
+  title(locale: String): JSON
+  titleColor(locale: String): String
+}
+
+type CardCollection {
+  items: [Card]!
+  limit: Int!
+  skip: Int!
+  total: Int!
+}
+
+input CardFilter {
+  accentColor: String
+  accentColor_contains: String
+  accentColor_exists: Boolean
+  accentColor_in: [String]
+  accentColor_not: String
+  accentColor_not_contains: String
+  accentColor_not_in: [String]
+  AND: [CardFilter]
+  backgroundColor: String
+  backgroundColor_contains: String
+  backgroundColor_exists: Boolean
+  backgroundColor_in: [String]
+  backgroundColor_not: String
+  backgroundColor_not_contains: String
+  backgroundColor_not_in: [String]
+  borderRadius: Int
+  borderRadius_exists: Boolean
+  borderRadius_gt: Int
+  borderRadius_gte: Int
+  borderRadius_in: [Int]
+  borderRadius_lt: Int
+  borderRadius_lte: Int
+  borderRadius_not: Int
+  borderRadius_not_in: [Int]
+  cardKey: String
+  cardKey_contains: String
+  cardKey_exists: Boolean
+  cardKey_in: [String]
+  cardKey_not: String
+  cardKey_not_contains: String
+  cardKey_not_in: [String]
+  contentfulMetadata: ContentfulMetadataFilter
+  dismissable: Boolean
+  dismissable_exists: Boolean
+  dismissable_not: Boolean
+  imageCollection_exists: Boolean
+  imageIcon: String
+  imageIcon_contains: String
+  imageIcon_exists: Boolean
+  imageIcon_in: [String]
+  imageIcon_not: String
+  imageIcon_not_contains: String
+  imageIcon_not_in: [String]
+  imageRadius: Int
+  imageRadius_exists: Boolean
+  imageRadius_gt: Int
+  imageRadius_gte: Int
+  imageRadius_in: [Int]
+  imageRadius_lt: Int
+  imageRadius_lte: Int
+  imageRadius_not: Int
+  imageRadius_not_in: [Int]
+  index: Int
+  index_exists: Boolean
+  index_gt: Int
+  index_gte: Int
+  index_in: [Int]
+  index_lt: Int
+  index_lte: Int
+  index_not: Int
+  index_not_in: [Int]
+  OR: [CardFilter]
+  padding: Int
+  padding_exists: Boolean
+  padding_gt: Int
+  padding_gte: Int
+  padding_in: [Int]
+  padding_lt: Int
+  padding_lte: Int
+  padding_not: Int
+  padding_not_in: [Int]
+  placement: String
+  placement_contains: String
+  placement_exists: Boolean
+  placement_in: [String]
+  placement_not: String
+  placement_not_contains: String
+  placement_not_in: [String]
+  primaryButton_exists: Boolean
+  subtitle_exists: Boolean
+  subtitleColor: String
+  subtitleColor_contains: String
+  subtitleColor_exists: Boolean
+  subtitleColor_in: [String]
+  subtitleColor_not: String
+  subtitleColor_not_contains: String
+  subtitleColor_not_in: [String]
+  sys: SysFilter
+  title_exists: Boolean
+  titleColor: String
+  titleColor_contains: String
+  titleColor_exists: Boolean
+  titleColor_in: [String]
+  titleColor_not: String
+  titleColor_not_contains: String
+  titleColor_not_in: [String]
+}
+
+type CardLinkingCollections {
+  entryCollection(limit: Int = 100, locale: String, preview: Boolean, skip: Int = 0): EntryCollection
+}
+
+enum CardOrder {
+  accentColor_ASC
+  accentColor_DESC
+  backgroundColor_ASC
+  backgroundColor_DESC
+  borderRadius_ASC
+  borderRadius_DESC
+  cardKey_ASC
+  cardKey_DESC
+  dismissable_ASC
+  dismissable_DESC
+  imageIcon_ASC
+  imageIcon_DESC
+  imageRadius_ASC
+  imageRadius_DESC
+  index_ASC
+  index_DESC
+  padding_ASC
+  padding_DESC
+  placement_ASC
+  placement_DESC
+  subtitleColor_ASC
+  subtitleColor_DESC
+  sys_firstPublishedAt_ASC
+  sys_firstPublishedAt_DESC
+  sys_id_ASC
+  sys_id_DESC
+  sys_publishedAt_ASC
+  sys_publishedAt_DESC
+  sys_publishedVersion_ASC
+  sys_publishedVersion_DESC
+  titleColor_ASC
+  titleColor_DESC
+}
+
+type CollectionsForAddressResponse {
+  data: [NftCollectionData]!
+  nextPageKey: String
+  totalCollections: Int!
+}
+
+type Colors {
+  fallback: String
+  primary: String!
+  shadow: String
+}
+
+type ContentfulAsset {
+  contentfulMetadata: ContentfulMetadata!
+  contentType(locale: String): String
+  description(locale: String): String
+  fileName(locale: String): String
+  height(locale: String): Int
+  linkedFrom(allowedLocales: [String]): AssetLinkingCollections
+  size(locale: String): Int
+  sys: Sys!
+  title(locale: String): String
+  url(locale: String, transform: ImageTransformOptions): String
+  width(locale: String): Int
+}
+
+type ContentfulMetadata {
+  tags: [ContentfulTag]!
+}
+
+input ContentfulMetadataFilter {
+  tags: ContentfulMetadataTagsFilter
+  tags_exists: Boolean
+}
+
+input ContentfulMetadataTagsFilter {
+  id_contains_all: [String]
+  id_contains_none: [String]
+  id_contains_some: [String]
+}
+
+type ContentfulTag {
+  id: String
+  name: String
+}
+
+"""Custom scalar type for handling DateTime strings in ISO 8601 format"""
+scalar DateTime
+
+scalar Dimension
+
+type Drop implements Entry {
+  backgroundColor(locale: String): String
+  backgroundImage(locale: String, preview: Boolean): ContentfulAsset
+  buttonColor(locale: String): String
+  buttonShadowColor(locale: String): String
+  buttonTextColor(locale: String): String
+  contentfulMetadata: ContentfulMetadata!
+  contractAddress(locale: String): String
+  description(locale: String): String
+  downloadLink(locale: String): String
+  dropAsset(locale: String, preview: Boolean): ContentfulAsset
+  firstProductHighlightBackground(locale: String): String
+  firstProductHighlightDescription(locale: String): String
+  firstProductHighlightImage(locale: String, preview: Boolean): ContentfulAsset
+  firstProductHighlightTextColor(locale: String): String
+  firstProductHighlightTitle(locale: String): String
+  gradientColor(locale: String): String
+  linearGradientColor(locale: String): String
+  linkColor(locale: String): String
+  linkedFrom(allowedLocales: [String]): DropLinkingCollections
+  metaImage(locale: String, preview: Boolean): ContentfulAsset
+  partnerAsset(locale: String, preview: Boolean): ContentfulAsset
+  partnerDescription(locale: String): String
+  partnerLink(locale: String): String
+  partnerTitle(locale: String): String
+  presaleName(locale: String): String
+  radialGradientColor(locale: String): String
+  secondProductHighlightBackground(locale: String): String
+  secondProductHighlightDescription(locale: String): String
+  secondProductHighlightImage(locale: String, preview: Boolean): ContentfulAsset
+  secondProductHighlightTextColor(locale: String): String
+  secondProductHighlightTitle(locale: String): String
+  showFooter(locale: String): Boolean
+  slug(locale: String): String
+  sys: Sys!
+  textColor(locale: String): String
+  title(locale: String): String
+  unlockableAsset(locale: String, preview: Boolean): ContentfulAsset
+  unlockableDescription(locale: String): String
+  unlockableTitle(locale: String): String
+}
+
+type DropCollection {
+  items: [Drop]!
+  limit: Int!
+  skip: Int!
+  total: Int!
+}
+
+input DropFilter {
+  AND: [DropFilter]
+  backgroundColor: String
+  backgroundColor_contains: String
+  backgroundColor_exists: Boolean
+  backgroundColor_in: [String]
+  backgroundColor_not: String
+  backgroundColor_not_contains: String
+  backgroundColor_not_in: [String]
+  backgroundImage_exists: Boolean
+  buttonColor: String
+  buttonColor_contains: String
+  buttonColor_exists: Boolean
+  buttonColor_in: [String]
+  buttonColor_not: String
+  buttonColor_not_contains: String
+  buttonColor_not_in: [String]
+  buttonShadowColor: String
+  buttonShadowColor_contains: String
+  buttonShadowColor_exists: Boolean
+  buttonShadowColor_in: [String]
+  buttonShadowColor_not: String
+  buttonShadowColor_not_contains: String
+  buttonShadowColor_not_in: [String]
+  buttonTextColor: String
+  buttonTextColor_contains: String
+  buttonTextColor_exists: Boolean
+  buttonTextColor_in: [String]
+  buttonTextColor_not: String
+  buttonTextColor_not_contains: String
+  buttonTextColor_not_in: [String]
+  contentfulMetadata: ContentfulMetadataFilter
+  contractAddress: String
+  contractAddress_contains: String
+  contractAddress_exists: Boolean
+  contractAddress_in: [String]
+  contractAddress_not: String
+  contractAddress_not_contains: String
+  contractAddress_not_in: [String]
+  description: String
+  description_contains: String
+  description_exists: Boolean
+  description_in: [String]
+  description_not: String
+  description_not_contains: String
+  description_not_in: [String]
+  downloadLink: String
+  downloadLink_contains: String
+  downloadLink_exists: Boolean
+  downloadLink_in: [String]
+  downloadLink_not: String
+  downloadLink_not_contains: String
+  downloadLink_not_in: [String]
+  dropAsset_exists: Boolean
+  firstProductHighlightBackground: String
+  firstProductHighlightBackground_contains: String
+  firstProductHighlightBackground_exists: Boolean
+  firstProductHighlightBackground_in: [String]
+  firstProductHighlightBackground_not: String
+  firstProductHighlightBackground_not_contains: String
+  firstProductHighlightBackground_not_in: [String]
+  firstProductHighlightDescription: String
+  firstProductHighlightDescription_contains: String
+  firstProductHighlightDescription_exists: Boolean
+  firstProductHighlightDescription_in: [String]
+  firstProductHighlightDescription_not: String
+  firstProductHighlightDescription_not_contains: String
+  firstProductHighlightDescription_not_in: [String]
+  firstProductHighlightImage_exists: Boolean
+  firstProductHighlightTextColor: String
+  firstProductHighlightTextColor_contains: String
+  firstProductHighlightTextColor_exists: Boolean
+  firstProductHighlightTextColor_in: [String]
+  firstProductHighlightTextColor_not: String
+  firstProductHighlightTextColor_not_contains: String
+  firstProductHighlightTextColor_not_in: [String]
+  firstProductHighlightTitle: String
+  firstProductHighlightTitle_contains: String
+  firstProductHighlightTitle_exists: Boolean
+  firstProductHighlightTitle_in: [String]
+  firstProductHighlightTitle_not: String
+  firstProductHighlightTitle_not_contains: String
+  firstProductHighlightTitle_not_in: [String]
+  gradientColor: String
+  gradientColor_contains: String
+  gradientColor_exists: Boolean
+  gradientColor_in: [String]
+  gradientColor_not: String
+  gradientColor_not_contains: String
+  gradientColor_not_in: [String]
+  linearGradientColor: String
+  linearGradientColor_contains: String
+  linearGradientColor_exists: Boolean
+  linearGradientColor_in: [String]
+  linearGradientColor_not: String
+  linearGradientColor_not_contains: String
+  linearGradientColor_not_in: [String]
+  linkColor: String
+  linkColor_contains: String
+  linkColor_exists: Boolean
+  linkColor_in: [String]
+  linkColor_not: String
+  linkColor_not_contains: String
+  linkColor_not_in: [String]
+  metaImage_exists: Boolean
+  OR: [DropFilter]
+  partnerAsset_exists: Boolean
+  partnerDescription: String
+  partnerDescription_contains: String
+  partnerDescription_exists: Boolean
+  partnerDescription_in: [String]
+  partnerDescription_not: String
+  partnerDescription_not_contains: String
+  partnerDescription_not_in: [String]
+  partnerLink: String
+  partnerLink_contains: String
+  partnerLink_exists: Boolean
+  partnerLink_in: [String]
+  partnerLink_not: String
+  partnerLink_not_contains: String
+  partnerLink_not_in: [String]
+  partnerTitle: String
+  partnerTitle_contains: String
+  partnerTitle_exists: Boolean
+  partnerTitle_in: [String]
+  partnerTitle_not: String
+  partnerTitle_not_contains: String
+  partnerTitle_not_in: [String]
+  presaleName: String
+  presaleName_contains: String
+  presaleName_exists: Boolean
+  presaleName_in: [String]
+  presaleName_not: String
+  presaleName_not_contains: String
+  presaleName_not_in: [String]
+  radialGradientColor: String
+  radialGradientColor_contains: String
+  radialGradientColor_exists: Boolean
+  radialGradientColor_in: [String]
+  radialGradientColor_not: String
+  radialGradientColor_not_contains: String
+  radialGradientColor_not_in: [String]
+  secondProductHighlightBackground: String
+  secondProductHighlightBackground_contains: String
+  secondProductHighlightBackground_exists: Boolean
+  secondProductHighlightBackground_in: [String]
+  secondProductHighlightBackground_not: String
+  secondProductHighlightBackground_not_contains: String
+  secondProductHighlightBackground_not_in: [String]
+  secondProductHighlightDescription: String
+  secondProductHighlightDescription_contains: String
+  secondProductHighlightDescription_exists: Boolean
+  secondProductHighlightDescription_in: [String]
+  secondProductHighlightDescription_not: String
+  secondProductHighlightDescription_not_contains: String
+  secondProductHighlightDescription_not_in: [String]
+  secondProductHighlightImage_exists: Boolean
+  secondProductHighlightTextColor: String
+  secondProductHighlightTextColor_contains: String
+  secondProductHighlightTextColor_exists: Boolean
+  secondProductHighlightTextColor_in: [String]
+  secondProductHighlightTextColor_not: String
+  secondProductHighlightTextColor_not_contains: String
+  secondProductHighlightTextColor_not_in: [String]
+  secondProductHighlightTitle: String
+  secondProductHighlightTitle_contains: String
+  secondProductHighlightTitle_exists: Boolean
+  secondProductHighlightTitle_in: [String]
+  secondProductHighlightTitle_not: String
+  secondProductHighlightTitle_not_contains: String
+  secondProductHighlightTitle_not_in: [String]
+  showFooter: Boolean
+  showFooter_exists: Boolean
+  showFooter_not: Boolean
+  slug: String
+  slug_contains: String
+  slug_exists: Boolean
+  slug_in: [String]
+  slug_not: String
+  slug_not_contains: String
+  slug_not_in: [String]
+  sys: SysFilter
+  textColor: String
+  textColor_contains: String
+  textColor_exists: Boolean
+  textColor_in: [String]
+  textColor_not: String
+  textColor_not_contains: String
+  textColor_not_in: [String]
+  title: String
+  title_contains: String
+  title_exists: Boolean
+  title_in: [String]
+  title_not: String
+  title_not_contains: String
+  title_not_in: [String]
+  unlockableAsset_exists: Boolean
+  unlockableDescription: String
+  unlockableDescription_contains: String
+  unlockableDescription_exists: Boolean
+  unlockableDescription_in: [String]
+  unlockableDescription_not: String
+  unlockableDescription_not_contains: String
+  unlockableDescription_not_in: [String]
+  unlockableTitle: String
+  unlockableTitle_contains: String
+  unlockableTitle_exists: Boolean
+  unlockableTitle_in: [String]
+  unlockableTitle_not: String
+  unlockableTitle_not_contains: String
+  unlockableTitle_not_in: [String]
+}
+
+type DropLinkingCollections {
+  entryCollection(limit: Int = 100, locale: String, preview: Boolean, skip: Int = 0): EntryCollection
+}
+
+enum DropOrder {
+  backgroundColor_ASC
+  backgroundColor_DESC
+  buttonColor_ASC
+  buttonColor_DESC
+  buttonShadowColor_ASC
+  buttonShadowColor_DESC
+  buttonTextColor_ASC
+  buttonTextColor_DESC
+  contractAddress_ASC
+  contractAddress_DESC
+  downloadLink_ASC
+  downloadLink_DESC
+  firstProductHighlightBackground_ASC
+  firstProductHighlightBackground_DESC
+  firstProductHighlightTextColor_ASC
+  firstProductHighlightTextColor_DESC
+  firstProductHighlightTitle_ASC
+  firstProductHighlightTitle_DESC
+  gradientColor_ASC
+  gradientColor_DESC
+  linearGradientColor_ASC
+  linearGradientColor_DESC
+  linkColor_ASC
+  linkColor_DESC
+  partnerLink_ASC
+  partnerLink_DESC
+  partnerTitle_ASC
+  partnerTitle_DESC
+  presaleName_ASC
+  presaleName_DESC
+  radialGradientColor_ASC
+  radialGradientColor_DESC
+  secondProductHighlightBackground_ASC
+  secondProductHighlightBackground_DESC
+  secondProductHighlightTextColor_ASC
+  secondProductHighlightTextColor_DESC
+  secondProductHighlightTitle_ASC
+  secondProductHighlightTitle_DESC
+  showFooter_ASC
+  showFooter_DESC
+  slug_ASC
+  slug_DESC
+  sys_firstPublishedAt_ASC
+  sys_firstPublishedAt_DESC
+  sys_id_ASC
+  sys_id_DESC
+  sys_publishedAt_ASC
+  sys_publishedAt_DESC
+  sys_publishedVersion_ASC
+  sys_publishedVersion_DESC
+  textColor_ASC
+  textColor_DESC
+  title_ASC
+  title_DESC
+  unlockableTitle_ASC
+  unlockableTitle_DESC
+}
+
+interface Entry {
+  contentfulMetadata: ContentfulMetadata!
+  sys: Sys!
+}
+
+type EntryCollection {
+  items: [Entry]!
+  limit: Int!
+  skip: Int!
+  total: Int!
+}
+
+input EntryFilter {
+  AND: [EntryFilter]
+  contentfulMetadata: ContentfulMetadataFilter
+  OR: [EntryFilter]
+  sys: SysFilter
+}
+
+enum EntryOrder {
+  sys_firstPublishedAt_ASC
+  sys_firstPublishedAt_DESC
+  sys_id_ASC
+  sys_id_DESC
+  sys_publishedAt_ASC
+  sys_publishedAt_DESC
+  sys_publishedVersion_ASC
+  sys_publishedVersion_DESC
+}
+
+type FaqEntry implements Entry {
+  answer(locale: String): FaqEntryAnswer
+  contentfulMetadata: ContentfulMetadata!
+  featured(locale: String): Boolean
+  linkedFrom(allowedLocales: [String]): FaqEntryLinkingCollections
+  order(locale: String): Int
+  question(locale: String): String
+  sys: Sys!
+}
+
+type FaqEntryAnswer {
+  json: JSON!
+  links: FaqEntryAnswerLinks!
+}
+
+type FaqEntryAnswerAssets {
+  block: [ContentfulAsset]!
+  hyperlink: [ContentfulAsset]!
+}
+
+type FaqEntryAnswerEntries {
+  block: [Entry]!
+  hyperlink: [Entry]!
+  inline: [Entry]!
+}
+
+type FaqEntryAnswerLinks {
+  assets: FaqEntryAnswerAssets!
+  entries: FaqEntryAnswerEntries!
+  resources: FaqEntryAnswerResources!
+}
+
+type FaqEntryAnswerResources {
+  block: [ResourceLink!]!
+  hyperlink: [ResourceLink!]!
+  inline: [ResourceLink!]!
+}
+
+type FaqEntryCollection {
+  items: [FaqEntry]!
+  limit: Int!
+  skip: Int!
+  total: Int!
+}
+
+input FaqEntryFilter {
+  AND: [FaqEntryFilter]
+  answer_contains: String
+  answer_exists: Boolean
+  answer_not_contains: String
+  contentfulMetadata: ContentfulMetadataFilter
+  featured: Boolean
+  featured_exists: Boolean
+  featured_not: Boolean
+  OR: [FaqEntryFilter]
+  order: Int
+  order_exists: Boolean
+  order_gt: Int
+  order_gte: Int
+  order_in: [Int]
+  order_lt: Int
+  order_lte: Int
+  order_not: Int
+  order_not_in: [Int]
+  question: String
+  question_contains: String
+  question_exists: Boolean
+  question_in: [String]
+  question_not: String
+  question_not_contains: String
+  question_not_in: [String]
+  sys: SysFilter
+}
+
+type FaqEntryLinkingCollections {
+  entryCollection(limit: Int = 100, locale: String, preview: Boolean, skip: Int = 0): EntryCollection
+}
+
+enum FaqEntryOrder {
+  featured_ASC
+  featured_DESC
+  order_ASC
+  order_DESC
+  sys_firstPublishedAt_ASC
+  sys_firstPublishedAt_DESC
+  sys_id_ASC
+  sys_id_DESC
+  sys_publishedAt_ASC
+  sys_publishedAt_DESC
+  sys_publishedVersion_ASC
+  sys_publishedVersion_DESC
+}
+
+type FarcasterUser {
+  fid: Int!
+  follower_count: Int!
+  following_count: Int!
+  pfp_url: String
+  power_badge: Boolean!
+  username: String
+}
+
+type FeaturedMint implements Entry {
+  chainId(locale: String): Int
+  contentfulMetadata: ContentfulMetadata!
+  contractAddress(locale: String): String
+  linkedFrom(allowedLocales: [String]): FeaturedMintLinkingCollections
+  name(locale: String): String
+  sys: Sys!
+}
+
+type FeaturedMintCollection {
+  items: [FeaturedMint]!
+  limit: Int!
+  skip: Int!
+  total: Int!
+}
+
+input FeaturedMintFilter {
+  AND: [FeaturedMintFilter]
+  chainId: Int
+  chainId_exists: Boolean
+  chainId_gt: Int
+  chainId_gte: Int
+  chainId_in: [Int]
+  chainId_lt: Int
+  chainId_lte: Int
+  chainId_not: Int
+  chainId_not_in: [Int]
+  contentfulMetadata: ContentfulMetadataFilter
+  contractAddress: String
+  contractAddress_contains: String
+  contractAddress_exists: Boolean
+  contractAddress_in: [String]
+  contractAddress_not: String
+  contractAddress_not_contains: String
+  contractAddress_not_in: [String]
+  name: String
+  name_contains: String
+  name_exists: Boolean
+  name_in: [String]
+  name_not: String
+  name_not_contains: String
+  name_not_in: [String]
+  OR: [FeaturedMintFilter]
+  sys: SysFilter
+}
+
+type FeaturedMintLinkingCollections {
+  entryCollection(limit: Int = 100, locale: String, preview: Boolean, skip: Int = 0): EntryCollection
+}
+
+enum FeaturedMintOrder {
+  chainId_ASC
+  chainId_DESC
+  contractAddress_ASC
+  contractAddress_DESC
+  name_ASC
+  name_DESC
+  sys_firstPublishedAt_ASC
+  sys_firstPublishedAt_DESC
+  sys_id_ASC
+  sys_id_DESC
+  sys_publishedAt_ASC
+  sys_publishedAt_DESC
+  sys_publishedVersion_ASC
+  sys_publishedVersion_DESC
+}
+
+type FeaturedResult {
+  advertiserId: String!
+  category: String
+  context: FeaturedResultContext
+  ctas: [FeaturedResultCallToAction!]
+  description: String!
+  id: String!
+  imageAltText: String!
+  imageUrl: String!
+  imageVariants: ImageVariants
+  impressionId: String!
+  placementSlug: String!
+  title: String!
+  type: FeaturedResultType!
+}
+
+type FeaturedResultCallToAction {
+  href: String!
+  title: String!
+}
+
+type FeaturedResultContext {
+  text: String!
+}
+
+type FeaturedResultsResponse {
+  items: [FeaturedResult!]
+}
+
+enum FeaturedResultType {
+  CARD
+  DISCORD
+  IFRAME
+}
+
+scalar HexColor
+
+enum ImageFormat {
+  AVIF
+  JPG
+  JPG_PROGRESSIVE
+  PNG
+  PNG8
+  WEBP
+}
+
+enum ImageResizeFocus {
+  BOTTOM
+  BOTTOM_LEFT
+  BOTTOM_RIGHT
+  CENTER
+  FACE
+  FACES
+  LEFT
+  RIGHT
+  TOP
+  TOP_LEFT
+  TOP_RIGHT
+}
+
+enum ImageResizeStrategy {
+  CROP
+  FILL
+  FIT
+  PAD
+  SCALE
+  THUMB
+}
+
+input ImageTransformOptions {
+  backgroundColor: HexColor
+  cornerRadius: Int
+  format: ImageFormat
+  height: Dimension
+  quality: Quality
+  resizeFocus: ImageResizeFocus
+  resizeStrategy: ImageResizeStrategy
+  width: Dimension
+}
+
+type ImageVariant {
+  url: String
+}
+
+type ImageVariants {
+  orig: ImageVariant
+  x1: ImageVariant
+  x2: ImageVariant
+  x3: ImageVariant
+}
+
+scalar JSON
+
+type Market {
+  ath: PricePoint
+  atl: PricePoint
+  circulating_supply: Float
+  currency_used: String
+  fdv: Float
+  market_cap: MarketCap
+  max_supply: Float
+  price: Price
+  total_supply: Float
+  updated_at: DateTime
+  volume_24h: Float
+}
+
+type MarketCap {
+  change_24h: Float
+  value: Float
+}
+
+type MintableCollection {
+  addressesLastHour: Int
+  chainId: Int!
+  contract: String!
+  contractAddress: String!
+  deployer: String
+  externalURL: String!
+  firstEvent: String!
+  imageMimeType: String
+  imageURL: String
+  lastEvent: String
+  maxSupply: String
+  mintsLastHour: Int!
+  mintStatus: MintStatus!
+  name: String!
+  recentMints: [MintedNFT!]!
+  totalMints: Int!
+}
+
+type MintableCollectionResult {
+  collection: MintableCollection!
+}
+
+type MintableCollectionsResult {
+  collections: [MintableCollection!]!
+}
+
+type MintedNFT {
+  imageURI: String
+  mimeType: String
+  mintTime: String
+  title: String
+  tokenID: String!
+  value: String
+}
+
+type MintStatus {
+  isMintable: Boolean!
+  price: String!
+}
+
+type Mutation {
+  trackFeaturedResult(featuredResultCreativeId: String!, impressionId: String!, placementId: String!, type: TrackFeaturedResultType!): TrackFeaturedResultResponse
+}
+
+type NetworkInfo {
+  address: String!
+  decimals: Int!
+}
+
+type Networks {
+  """Chain IDs as keys (e.g. '8453')"""
+  _: NetworkInfo
+}
+
+type NftCollectionData {
+  id: String!
+  imageUrl: String!
+  name: String!
+  totalCount: String!
+}
+
+enum NFTCollectionSortCriterion {
+  ABC
+  FLOOR_PRICE
+  MOST_RECENT
+}
+
+type NFTFloorPrice {
+  amount: AssetAmount!
+  paymentToken: Asset!
+}
+
+type NFTMarketplace {
+  imageUrl: String!
+  name: String!
+}
+
+type NFTOffer {
+  createdAt: Int!
+  feesPercentage: Float!
+  floorDifferencePercentage: Float!
+  floorPrice: NFTFloorPrice!
+  grossAmount: AssetAmount!
+  marketplace: NFTMarketplace!
+  netAmount: AssetAmount!
+  network: String!
+  nft: PartialNFT!
+  paymentToken: Asset!
+  royaltiesPercentage: Float!
+  url: String!
+  validUntil: Int!
+}
+
+type NFTs {
+  data: [SimpleHashNFT!]!
+  nextCursor: String
+  previousCursor: String
+}
+
+enum NftTokenType {
+  ERC1155
+  ERC721
+  NO_SUPPORTED_NFT_STANDARD
+  NOT_A_CONTRACT
+  UNKNOWN
+}
+
+type PartialNFT {
+  aspectRatio: Float
+  collectionName: String!
+  contractAddress: String!
+  imageUrl: String!
+  name: String!
+  predominantColor: String
+  tokenId: String!
+  uniqueId: String!
+}
+
+type Person implements Entry {
+  contentfulMetadata: ContentfulMetadata!
+  linkedFrom(allowedLocales: [String]): PersonLinkingCollections
+  name(locale: String): String
+  profilePic(locale: String, preview: Boolean): ContentfulAsset
+  sys: Sys!
+}
+
+type PersonCollection {
+  items: [Person]!
+  limit: Int!
+  skip: Int!
+  total: Int!
+}
+
+input PersonFilter {
+  AND: [PersonFilter]
+  contentfulMetadata: ContentfulMetadataFilter
+  name: String
+  name_contains: String
+  name_exists: Boolean
+  name_in: [String]
+  name_not: String
+  name_not_contains: String
+  name_not_in: [String]
+  OR: [PersonFilter]
+  profilePic_exists: Boolean
+  sys: SysFilter
+}
+
+type PersonLinkingCollections {
+  entryCollection(limit: Int = 100, locale: String, preview: Boolean, skip: Int = 0): EntryCollection
+}
+
+enum PersonOrder {
+  name_ASC
+  name_DESC
+  sys_firstPublishedAt_ASC
+  sys_firstPublishedAt_DESC
+  sys_id_ASC
+  sys_id_DESC
+  sys_publishedAt_ASC
+  sys_publishedAt_DESC
+  sys_publishedVersion_ASC
+  sys_publishedVersion_DESC
+}
+
+type PoapClaimResult {
+  error: String
+  success: Boolean!
+}
+
+type PoapEvent {
+  createdAt: String!
+  id: Int!
+  imageUrl: String!
+  name: String!
+  qrHash: String
+  secret: String
+  secretWord: String
+}
+
+type PointsTweetIntent implements Entry {
+  contentfulMetadata: ContentfulMetadata!
+  key(locale: String): String
+  linkedFrom(allowedLocales: [String]): PointsTweetIntentLinkingCollections
+  sys: Sys!
+  text(locale: String): String
+  url(locale: String): String
+  via(locale: String): String
+}
+
+type PointsTweetIntentCollection {
+  items: [PointsTweetIntent]!
+  limit: Int!
+  skip: Int!
+  total: Int!
+}
+
+input PointsTweetIntentFilter {
+  AND: [PointsTweetIntentFilter]
+  contentfulMetadata: ContentfulMetadataFilter
+  key: String
+  key_contains: String
+  key_exists: Boolean
+  key_in: [String]
+  key_not: String
+  key_not_contains: String
+  key_not_in: [String]
+  OR: [PointsTweetIntentFilter]
+  sys: SysFilter
+  text: String
+  text_contains: String
+  text_exists: Boolean
+  text_in: [String]
+  text_not: String
+  text_not_contains: String
+  text_not_in: [String]
+  url: String
+  url_contains: String
+  url_exists: Boolean
+  url_in: [String]
+  url_not: String
+  url_not_contains: String
+  url_not_in: [String]
+  via: String
+  via_contains: String
+  via_exists: Boolean
+  via_in: [String]
+  via_not: String
+  via_not_contains: String
+  via_not_in: [String]
+}
+
+type PointsTweetIntentLinkingCollections {
+  entryCollection(limit: Int = 100, locale: String, preview: Boolean, skip: Int = 0): EntryCollection
+}
+
+enum PointsTweetIntentOrder {
+  key_ASC
+  key_DESC
+  sys_firstPublishedAt_ASC
+  sys_firstPublishedAt_DESC
+  sys_id_ASC
+  sys_id_DESC
+  sys_publishedAt_ASC
+  sys_publishedAt_DESC
+  sys_publishedVersion_ASC
+  sys_publishedVersion_DESC
+  text_ASC
+  text_DESC
+  url_ASC
+  url_DESC
+  via_ASC
+  via_DESC
+}
+
+type PoolData {
+  currency_used: String!
+  h1_price_change: Float
+  h1_volume: Float
+  h24_price_change: Float
+  h24_volume: Float
+  h6_price_change: Float
+  h6_volume: Float
+  m5_price_change: Float
+  m5_volume: Float
+  reserve: Float
+}
+
+type Post implements Entry {
+  content(locale: String): PostContent
+  contentfulMetadata: ContentfulMetadata!
+  coverImage(locale: String, preview: Boolean): ContentfulAsset
+  date(locale: String): DateTime
+  excerpt(locale: String): String
+  linkedFrom(allowedLocales: [String]): PostLinkingCollections
+  person(locale: String, preview: Boolean): Entry
+  seoTitle(locale: String): String
+  slug(locale: String): String
+  sys: Sys!
+  title(locale: String): String
+}
+
+type PostCollection {
+  items: [Post]!
+  limit: Int!
+  skip: Int!
+  total: Int!
+}
+
+type PostContent {
+  json: JSON!
+  links: PostContentLinks!
+}
+
+type PostContentAssets {
+  block: [ContentfulAsset]!
+  hyperlink: [ContentfulAsset]!
+}
+
+type PostContentEntries {
+  block: [Entry]!
+  hyperlink: [Entry]!
+  inline: [Entry]!
+}
+
+type PostContentLinks {
+  assets: PostContentAssets!
+  entries: PostContentEntries!
+  resources: PostContentResources!
+}
+
+type PostContentResources {
+  block: [ResourceLink!]!
+  hyperlink: [ResourceLink!]!
+  inline: [ResourceLink!]!
+}
+
+input PostFilter {
+  AND: [PostFilter]
+  content_contains: String
+  content_exists: Boolean
+  content_not_contains: String
+  contentfulMetadata: ContentfulMetadataFilter
+  coverImage_exists: Boolean
+  date: DateTime
+  date_exists: Boolean
+  date_gt: DateTime
+  date_gte: DateTime
+  date_in: [DateTime]
+  date_lt: DateTime
+  date_lte: DateTime
+  date_not: DateTime
+  date_not_in: [DateTime]
+  excerpt: String
+  excerpt_contains: String
+  excerpt_exists: Boolean
+  excerpt_in: [String]
+  excerpt_not: String
+  excerpt_not_contains: String
+  excerpt_not_in: [String]
+  OR: [PostFilter]
+  person_exists: Boolean
+  seoTitle: String
+  seoTitle_contains: String
+  seoTitle_exists: Boolean
+  seoTitle_in: [String]
+  seoTitle_not: String
+  seoTitle_not_contains: String
+  seoTitle_not_in: [String]
+  slug: String
+  slug_contains: String
+  slug_exists: Boolean
+  slug_in: [String]
+  slug_not: String
+  slug_not_contains: String
+  slug_not_in: [String]
+  sys: SysFilter
+  title: String
+  title_contains: String
+  title_exists: Boolean
+  title_in: [String]
+  title_not: String
+  title_not_contains: String
+  title_not_in: [String]
+}
+
+type PostLinkingCollections {
+  entryCollection(limit: Int = 100, locale: String, preview: Boolean, skip: Int = 0): EntryCollection
+}
+
+enum PostOrder {
+  date_ASC
+  date_DESC
+  seoTitle_ASC
+  seoTitle_DESC
+  slug_ASC
+  slug_DESC
+  sys_firstPublishedAt_ASC
+  sys_firstPublishedAt_DESC
+  sys_id_ASC
+  sys_id_DESC
+  sys_publishedAt_ASC
+  sys_publishedAt_DESC
+  sys_publishedVersion_ASC
+  sys_publishedVersion_DESC
+  title_ASC
+  title_DESC
+}
+
+type Price {
+  change_24h: Float
+  value: Float
+}
+
+type PricePoint {
+  change_percentage: Float
+  date: DateTime
+  value: Float
+}
+
+type PromoSheet implements Entry {
+  accentColor(locale: String): String
+  actions(locale: String): JSON
+  backgroundColor(locale: String): String
+  backgroundImage(locale: String, preview: Boolean): ContentfulAsset
+  campaignKey(locale: String): String
+  contentfulMetadata: ContentfulMetadata!
+  header(locale: String): JSON
+  headerImage(locale: String, preview: Boolean): ContentfulAsset
+  headerImageAspectRatio(locale: String): Float
+  items(locale: String): JSON
+  launchDate(locale: String): DateTime
+  linkedFrom(allowedLocales: [String]): PromoSheetLinkingCollections
+  primaryButtonProps(locale: String): JSON
+  priority(locale: String): Int
+  secondaryButtonProps(locale: String): JSON
+  sheetHandleColor(locale: String): String
+  subHeader(locale: String): JSON
+  sys: Sys!
+}
+
+type PromoSheetCollection {
+  items: [PromoSheet]!
+  limit: Int!
+  skip: Int!
+  total: Int!
+}
+
+input PromoSheetFilter {
+  accentColor: String
+  accentColor_contains: String
+  accentColor_exists: Boolean
+  accentColor_in: [String]
+  accentColor_not: String
+  accentColor_not_contains: String
+  accentColor_not_in: [String]
+  actions_exists: Boolean
+  AND: [PromoSheetFilter]
+  backgroundColor: String
+  backgroundColor_contains: String
+  backgroundColor_exists: Boolean
+  backgroundColor_in: [String]
+  backgroundColor_not: String
+  backgroundColor_not_contains: String
+  backgroundColor_not_in: [String]
+  backgroundImage_exists: Boolean
+  campaignKey: String
+  campaignKey_contains: String
+  campaignKey_exists: Boolean
+  campaignKey_in: [String]
+  campaignKey_not: String
+  campaignKey_not_contains: String
+  campaignKey_not_in: [String]
+  contentfulMetadata: ContentfulMetadataFilter
+  header_exists: Boolean
+  headerImage_exists: Boolean
+  headerImageAspectRatio: Float
+  headerImageAspectRatio_exists: Boolean
+  headerImageAspectRatio_gt: Float
+  headerImageAspectRatio_gte: Float
+  headerImageAspectRatio_in: [Float]
+  headerImageAspectRatio_lt: Float
+  headerImageAspectRatio_lte: Float
+  headerImageAspectRatio_not: Float
+  headerImageAspectRatio_not_in: [Float]
+  items_exists: Boolean
+  launchDate: DateTime
+  launchDate_exists: Boolean
+  launchDate_gt: DateTime
+  launchDate_gte: DateTime
+  launchDate_in: [DateTime]
+  launchDate_lt: DateTime
+  launchDate_lte: DateTime
+  launchDate_not: DateTime
+  launchDate_not_in: [DateTime]
+  OR: [PromoSheetFilter]
+  primaryButtonProps_exists: Boolean
+  priority: Int
+  priority_exists: Boolean
+  priority_gt: Int
+  priority_gte: Int
+  priority_in: [Int]
+  priority_lt: Int
+  priority_lte: Int
+  priority_not: Int
+  priority_not_in: [Int]
+  secondaryButtonProps_exists: Boolean
+  sheetHandleColor: String
+  sheetHandleColor_contains: String
+  sheetHandleColor_exists: Boolean
+  sheetHandleColor_in: [String]
+  sheetHandleColor_not: String
+  sheetHandleColor_not_contains: String
+  sheetHandleColor_not_in: [String]
+  subHeader_exists: Boolean
+  sys: SysFilter
+}
+
+type PromoSheetLinkingCollections {
+  entryCollection(limit: Int = 100, locale: String, preview: Boolean, skip: Int = 0): EntryCollection
+}
+
+enum PromoSheetOrder {
+  accentColor_ASC
+  accentColor_DESC
+  backgroundColor_ASC
+  backgroundColor_DESC
+  campaignKey_ASC
+  campaignKey_DESC
+  headerImageAspectRatio_ASC
+  headerImageAspectRatio_DESC
+  launchDate_ASC
+  launchDate_DESC
+  priority_ASC
+  priority_DESC
+  sheetHandleColor_ASC
+  sheetHandleColor_DESC
+  sys_firstPublishedAt_ASC
+  sys_firstPublishedAt_DESC
+  sys_id_ASC
+  sys_id_DESC
+  sys_publishedAt_ASC
+  sys_publishedAt_DESC
+  sys_publishedVersion_ASC
+  sys_publishedVersion_DESC
+}
+
+scalar Quality
+
+type Query {
+  asset(id: String!, locale: String, preview: Boolean): ContentfulAsset
+  assetCollection(limit: Int = 100, locale: String, order: [AssetOrder], preview: Boolean, skip: Int = 0, where: AssetFilter): AssetCollection
+  card(id: String!, locale: String, preview: Boolean): Card
+  cardCollection(limit: Int = 100, locale: String, order: [CardOrder], preview: Boolean, skip: Int = 0, where: CardFilter): CardCollection
+  claimPoapByQrHash(qrHash: String!, secret: String!, walletAddress: String!): PoapClaimResult
+  claimPoapBySecretWord(secretWord: String!, walletAddress: String!): PoapClaimResult
+  drop(id: String!, locale: String, preview: Boolean): Drop
+  dropCollection(limit: Int = 100, locale: String, order: [DropOrder], preview: Boolean, skip: Int = 0, where: DropFilter): DropCollection
+  entryCollection(limit: Int = 100, locale: String, order: [EntryOrder], preview: Boolean, skip: Int = 0, where: EntryFilter): EntryCollection
+  faqEntry(id: String!, locale: String, preview: Boolean): FaqEntry
+  faqEntryCollection(limit: Int = 100, locale: String, order: [FaqEntryOrder], preview: Boolean, skip: Int = 0, where: FaqEntryFilter): FaqEntryCollection
+  featuredResults(country: String, limit: Int, placementId: String!, walletAddress: String!): FeaturedResultsResponse!
+  getMintableCollection(chain: Int!, contractAddress: String!, walletAddress: String!): MintableCollectionResult
+  getMintableCollections(walletAddress: String!): MintableCollectionsResult
+  getNftsMetadata(tokens: JSON!, walletAddress: String!): [UniqueAsset!]!
+  getPoapEventByQrHash(qrHash: String!): PoapEvent
+  getPoapEventBySecretWord(secretWord: String!): PoapEvent
+  getReservoirCollection(chainId: Int!, contractAddress: String!): ReservoirCollectionResult
+  nftCollections(limit: Int, pageKey: String, walletAddress: String!): CollectionsForAddressResponse!
+  nftOffers(sortBy: SortCriterion!, walletAddress: String!): [NFTOffer!]
+  nfts(walletAddress: String!): [SimpleHashNFT!]
+  nftsByCollection(collectionId: String!, walletAddress: String!): [UniqueAsset!]!
+  nftsByPage(cursor: String, limit: Int, networks: [String!], walletAddress: String!): NFTs
+  nftsV2(sortBy: NFTCollectionSortCriterion, sortDirection: SortDirection, walletAddress: String!): [SimpleHashNFT!]
+  person(id: String!, locale: String, preview: Boolean): Person
+  personCollection(limit: Int = 100, locale: String, order: [PersonOrder], preview: Boolean, skip: Int = 0, where: PersonFilter): PersonCollection
+  pointsTweetIntent(id: String!, locale: String, preview: Boolean): PointsTweetIntent
+  pointsTweetIntentCollection(limit: Int = 100, locale: String, order: [PointsTweetIntentOrder], preview: Boolean, skip: Int = 0, where: PointsTweetIntentFilter): PointsTweetIntentCollection
+  post(id: String!, locale: String, preview: Boolean): Post
+  postCollection(limit: Int = 100, locale: String, order: [PostOrder], preview: Boolean, skip: Int = 0, where: PostFilter): PostCollection
+  promoSheet(id: String!, locale: String, preview: Boolean): PromoSheet
+  promoSheetCollection(limit: Int = 100, locale: String, order: [PromoSheetOrder], preview: Boolean, skip: Int = 0, where: PromoSheetFilter): PromoSheetCollection
+  trendingTokens(category: TrendingCategory! = TRENDING, chainId: Int = 0, currency: String! = "usd", limit: Int, sortBy: TrendingSort! = RECOMMENDED, sortDirection: SortDirection, timeframe: Timeframe! = H12, walletAddress: String): TrendingTokens!
+}
+
+type RainbowCollectionWithDetails {
+  collection_details: SimpleHashCollectionDetails!
+  collection_id: String!
+  distinct_nfts_owned: String!
+  last_acquired_date: String
+  nft_ids: [String!]!
+  total_copies_owned: String!
+}
+
+type ReservoirCollection {
+  chainId: Int!
+  createdAt: String
+  creator: String
+  description: String
+  id: String
+  image: String
+  isMintingPublicSale: Boolean
+  name: String
+  ownerCount: Int
+  publicMintInfo: ReservoirMintStages
+  sampleImages: [String]
+  tokenCount: String
+}
+
+type ReservoirCollectionResult {
+  collection: ReservoirCollection
+}
+
+type ReservoirCurrency {
+  contract: String
+  decimals: Int
+  name: String
+  symbol: String
+}
+
+type ReservoirMintStages {
+  endTime: String
+  kind: String
+  maxMintsPerWallet: String
+  price: ReservoirPrice
+  stage: String
+  startTime: String
+}
+
+type ReservoirNumber {
+  decimal: Float
+  native: Float
+  raw: String
+  usd: Float
+}
+
+type ReservoirPrice {
+  amount: ReservoirNumber
+  currency: ReservoirCurrency
+  netAmount: ReservoirNumber
+}
+
+type ResourceLink {
+  sys: ResourceSys!
+}
+
+type ResourceSys {
+  linkType: String!
+  type: String!
+  urn: String!
+}
+
+type schema {
+  query: Query
+}
+
+type SimpleHashAttributes {
+  display_type: String
+  trait_type: String
+  value: String
+}
+
+type SimpleHashAudioProperties {
+  audio_coding: String
+  duration: Float
+  mime_type: String
+  size: Float
+}
+
+type SimpleHashCollection {
+  banner_image_url: String
+  category: String
+  chains: [String!]
+  collection_id: String
+  collection_royalties: [SimpleHashRoyalty!]
+  description: String
+  discord_url: String
+  distinct_nft_count: Float
+  distinct_owner_count: Float
+  external_url: String
+  floor_prices: [SimpleHashCollectionFloorPrice!]
+  image_url: String
+  instagram_url: String
+  is_nsfw: Boolean
+  marketplace_pages: [SimpleHashCollectionMarketplacePage!]
+  medium_username: String
+  metaplex_candy_machine: String
+  metaplex_first_verified_creator: String
+  metaplex_mint: String
+  name: String!
+  spam_score: Float
+  telegram_url: String
+  top_bids: [SimpleHashCollectionTopBid!]
+  top_contracts: [String!]
+  total_quantity: Float
+  twitter_username: String
+}
+
+type SimpleHashCollectionDetails {
+  banner_image_url: String
+  category: String
+  chains: [String!]!
+  collection_id: String!
+  collection_royalties: [SimpleHashRoyalty!]!
+  description: String
+  discord_url: String
+  distinct_nft_count: Int!
+  distinct_owner_count: Int!
+  external_url: String
+  floor_prices: [SimpleHashCollectionFloorPrice!]!
+  image_url: String
+  instagram_username: String
+  is_nsfw: Boolean!
+  marketplace_pages: [SimpleHashCollectionMarketplacePage!]!
+  medium_username: String
+  metaplex_first_verified_creator: String
+  metaplex_mint: String
+  name: String!
+  spam_score: Float!
+  telegram_url: String
+  top_contracts: [String!]!
+  total_quantity: Int!
+  twitter_username: String
+}
+
+type SimpleHashCollectionFloorPrice {
+  marketplace_id: String
+  payment_token: SimpleHashPaymentToken
+  value: Float
+  value_usd_cents: Float
+}
+
+type SimpleHashCollectionMarketplacePage {
+  collection_url: String
+  marketplace_collection_id: String
+  marketplace_id: String
+  marketplace_name: String
+  nft_url: String
+  verified: Boolean
+}
+
+type SimpleHashCollectionTopBid {
+  marketplace_id: String
+  payment_token: SimpleHashPaymentToken
+  value: Float
+  value_usd_cents: Float
+}
+
+type SimpleHashContract {
+  deployed_by: String
+  deployed_via_contract: String
+  has_multiple_collections: Boolean
+  name: String
+  owned_by: String
+  symbol: String
+  type: String
+}
+
+type SimpleHashExtraMetadata {
+  animation_original_url: String
+  attributes: [SimpleHashAttributes!]
+  image_original_url: String
+  metadata_original_url: String
+}
+
+type SimpleHashFirstCreated {
+  block_number: Float
+  minted_to: String
+  quantity: Float
+  quantity_string: String
+  timestamp: String
+  transaction: String
+  transaction_initiator: String
+}
+
+type SimpleHashImageProperties {
+  height: Float
+  mime_type: String
+  size: Float
+  width: Float
+}
+
+type SimpleHashLastSale {
+  from_address: String
+  is_bundle_sale: Boolean
+  marketplace_id: String
+  marketplace_name: String
+  payment_token: SimpleHashPaymentToken
+  quantity: Float
+  quantity_string: String
+  timestamp: String
+  to_address: String
+  total_price: Float
+  transaction: String
+  unit_price: Float
+  unit_price_usd_cents: Float
+}
+
+type SimpleHashModelProperties {
+  mime_type: String
+  size: Float
+}
+
+type SimpleHashNFT {
+  audio_properties: SimpleHashAudioProperties
+  audio_url: String
+  background_color: String
+  chain: String!
+  collection: SimpleHashCollection!
+  contract: SimpleHashContract
+  contract_address: String!
+  created_date: String
+  description: String
+  external_url: String
+  extra_metadata: SimpleHashExtraMetadata
+  first_created: SimpleHashFirstCreated
+  image_properties: SimpleHashImageProperties
+  image_url: String
+  last_sale: SimpleHashLastSale
+  model_properties: SimpleHashModelProperties
+  model_url: String
+  name: String!
+  nft_id: String
+  owner_count: Float
+  owners: [SimpleHashOwners!]
+  previews: SimpleHashPreviews
+  queried_wallet_balances: [SimpleHashQueriedWalletBalance]
+  rarity: SimpleHashRarity
+  royalty: [SimpleHashRoyalty!]
+  status: String
+  token_count: Float
+  token_id: String!
+  video_properties: SimpleHashVideoProperties
+  video_url: String
+}
+
+type SimpleHashOwners {
+  first_acquired_date: String
+  last_acquired_date: String
+  owner_address: String
+  quantity: Float
+}
+
+type SimpleHashPaymentToken {
+  address: String
+  decimals: Float
+  name: String
+  payment_token_id: String
+  symbol: String
+}
+
+type SimpleHashPreviews {
+  blurhash: String
+  image_large_url: String
+  image_medium_url: String
+  image_opengraph_url: String
+  image_small_url: String
+  predominant_color: String
+}
+
+type SimpleHashQueriedWalletBalance {
+  address: String
+  first_acquired_date: String
+  last_acquired_date: String
+  quantity: Int
+  quantity_string: String
+}
+
+type SimpleHashRarity {
+  rank: Float
+  score: Float
+  unique_attributes: Float
+}
+
+type SimpleHashRoyalty {
+  recipients: [SimpleHashRoyaltyRecipient!]
+  source: String
+  total_creator_fee_basis_points: Float
+}
+
+type SimpleHashRoyaltyRecipient {
+  address: String
+  basis_points: Float
+  percentage: Float
+}
+
+type SimpleHashVideoProperties {
+  audio_coding: String
+  duration: Float
+  height: Float
+  mime_type: String
+  size: Float
+  video_coding: String
+  width: Float
+}
+
+enum SortCriterion {
+  DATE_CREATED
+  FLOOR_DIFFERENCE_PERCENTAGE
+  TOP_BID_VALUE
+}
+
+enum SortDirection {
+  ASC
+  DESC
+}
+
+type SwapData {
+  bought_stats: SwapStats!
+  currency_used: String!
+  sold_stats: SwapStats!
+}
+
+type SwapStats {
+  farcaster_users: [FarcasterUser!]
+  total_transactions: Int
+  total_volume: Float
+  unique_users: Int
+}
+
+type Sys {
+  environmentId: String!
+  firstPublishedAt: DateTime
+  id: String!
+  publishedAt: DateTime
+  publishedVersion: Int
+  spaceId: String!
+}
+
+input SysFilter {
+  firstPublishedAt: DateTime
+  firstPublishedAt_exists: Boolean
+  firstPublishedAt_gt: DateTime
+  firstPublishedAt_gte: DateTime
+  firstPublishedAt_in: [DateTime]
+  firstPublishedAt_lt: DateTime
+  firstPublishedAt_lte: DateTime
+  firstPublishedAt_not: DateTime
+  firstPublishedAt_not_in: [DateTime]
+  id: String
+  id_contains: String
+  id_exists: Boolean
+  id_in: [String]
+  id_not: String
+  id_not_contains: String
+  id_not_in: [String]
+  publishedAt: DateTime
+  publishedAt_exists: Boolean
+  publishedAt_gt: DateTime
+  publishedAt_gte: DateTime
+  publishedAt_in: [DateTime]
+  publishedAt_lt: DateTime
+  publishedAt_lte: DateTime
+  publishedAt_not: DateTime
+  publishedAt_not_in: [DateTime]
+  publishedVersion: Float
+  publishedVersion_exists: Boolean
+  publishedVersion_gt: Float
+  publishedVersion_gte: Float
+  publishedVersion_in: [Float]
+  publishedVersion_lt: Float
+  publishedVersion_lte: Float
+  publishedVersion_not: Float
+  publishedVersion_not_in: [Float]
+}
+
+enum Timeframe {
+  D3
+  D7
+  H12
+  H24
+}
+
+type TrackFeaturedResultResponse {
+  message: String!
+}
+
+enum TrackFeaturedResultType {
+  CLICK
+  IMPRESSION
+}
+
+enum TrendingCategory {
+  FARCASTER
+  NEW
+  TRENDING
+}
+
+type TrendingData {
+  pool_data: PoolData!
+  rank: Int!
+  swap_data: SwapData!
+  trending_since: DateTime!
+}
+
+enum TrendingSort {
+  MARKET_CAP
+  RECOMMENDED
+  TOP_GAINERS
+  TOP_LOSERS
+  VOLUME
+}
+
+type TrendingToken {
+  address: String!
+  bridging: Bridging!
+  chainId: Int!
+  colors: Colors!
+  creationDate: DateTime
+  decimals: Int!
+  highLiquidity: Boolean!
+  icon_url: String!
+  isRainbowCurated: Boolean!
+  isVerified: Boolean!
+  market: Market!
+  name: String!
+  networks: Networks!
+  symbol: String!
+  transferable: Boolean!
+  trending: TrendingData!
+  uniqueId: String!
+}
+
+type TrendingTokens {
+  data: [TrendingToken!]!
+}
+
+type UniqueAsset {
+  acquiredAt: String
+  backgroundColor: String
+  collectionDescription: String
+  collectionImageUrl: String
+  collectionName: String
+  collectionUrl: String
+  description: String
+  discordUrl: String
+  floorPrice: Float
+  images: UniqueAssetImages!
+  isSendable: Boolean!
+  marketplaceName: String
+  marketplaceUrl: String
+  name: String!
+  standard: NftTokenType!
+  traits: [UniqueAssetTrait!]!
+  twitterUrl: String
+  type: String!
+  uniqueId: String!
+  websiteUrl: String
+}
+
+type UniqueAssetImages {
+  animatedMimeType: String
+  animatedUrl: String
+  highResUrl: String
+  lowResUrl: String
+  mimeType: String
+}
+
+type UniqueAssetTrait {
+  trait_type: String!
+  value: String!
+}

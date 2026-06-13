@@ -1,0 +1,1243 @@
+directive @cacheControl(maxAge: Int, scope: CacheControlScope) on FIELD_DEFINITION | INTERFACE | OBJECT | UNION
+
+"""
+Directs the executor to defer this fragment when the `if` argument is true or undefined.
+"""
+directive @defer(
+  """Deferred when true or undefined."""
+  if: Boolean = true
+
+  """Unique name"""
+  label: String
+) on FRAGMENT_SPREAD | INLINE_FRAGMENT
+
+"""
+Indicates exactly one field must be supplied and this field must not be `null`.
+"""
+directive @oneOf on INPUT_OBJECT
+
+directive @requireAuth on FIELD_DEFINITION
+
+scalar Any
+
+input Authorization {
+  address: String!
+  chainId: String!
+  nonce: String!
+}
+
+enum CacheControlScope {
+  PRIVATE
+  PUBLIC
+}
+
+type ClaimablePoints {
+  error: PointsError
+  meta: PointsMeta!
+  user: UserClaimablePoints!
+}
+
+type Colors {
+  """Fallback color for secondary UI elements"""
+  fallback: String!
+
+  """Primary brand color in hex format (e.g., #FF0000)"""
+  primary: String!
+
+  """Shadow color for depth and emphasis"""
+  shadow: String!
+}
+
+"""
+CompetitionWindow defines a time period for the King of the Hill competition
+"""
+type CompetitionWindow {
+  """Total duration of the window in seconds"""
+  durationSeconds: Int!
+
+  """UTC timestamp when the competition window ends"""
+  end: Int!
+
+  """Time interval representation (e.g., "1h", "24h")"""
+  interval: String!
+
+  """Whether this is the currently active competition window"""
+  isActive: Boolean!
+
+  """How much time is left in the current window"""
+  secondsRemaining: Int!
+
+  """UTC timestamp when the competition window begins"""
+  start: Int!
+}
+
+type Contract {
+  address: String!
+  chainID: Int!
+  created: Time
+  iconURL: String!
+  name: String!
+  sourceCodeVerified: Boolean
+  type: Int!
+  typeLabel: String!
+}
+
+type ContractFunction {
+  address: String
+  chainID: Int!
+  hex: String!
+  humanText: String!
+  text: String!
+}
+
+type CustomNetwork {
+  defaultExplorerURL: String!
+  defaultRPCURL: String!
+  iconURL: String!
+  id: Int!
+  name: String!
+  nativeAsset: CustomNetworkNativeAsset!
+  testnet: CustomNetworkTestnet!
+}
+
+type CustomNetworkNativeAsset {
+  address: String!
+  decimals: Int!
+  iconURL: String!
+  symbol: String!
+}
+
+type CustomNetworkTestnet {
+  FaucetURL: String!
+  isTestnet: Boolean!
+  mainnetChainID: Int!
+}
+
+type DApp {
+  colors: DAppColors!
+  description: String!
+  iconURL: String!
+  name: String!
+  report: DAppReport!
+  shortName: String!
+  status: DAppStatus!
+  trending: Boolean
+  url: String!
+}
+
+type DAppColors {
+  fallback: String
+  primary: String!
+  shadow: String
+}
+
+enum DAppRankingPeriod {
+  DAY
+  WEEK
+}
+
+type DAppReport {
+  url: String!
+}
+
+enum DAppStatus {
+  SCAM
+  UNVERIFIED
+  VERIFIED
+}
+
+type DAppV2 {
+  """Canonical name of the DApp protocol"""
+  canonicalProtocolName: String!
+
+  """Blockchain network ID where the DApp is deployed"""
+  chainId: Int!
+
+  """Color theme configuration for the DApp"""
+  colors: Colors!
+
+  """URL to the DApp's logo/icon image"""
+  iconURL: String!
+
+  """Unique identifier for the DApp"""
+  protocolID: String!
+
+  """Display name of the DApp"""
+  protocolName: String!
+
+  """Normalized identifier for the DApp (e.g., 'uniswap', 'aave')"""
+  protocolNameID: String!
+
+  """Version of the DApp protocol"""
+  protocolVersion: String!
+
+  """Website URL of the DApp"""
+  siteURL: String!
+}
+
+type DAppV2Result {
+  count: Int!
+  result: [DAppV2!]!
+}
+
+enum Device {
+  APP
+  BX
+}
+
+type DurationSummary {
+  """The duration period this summary covers"""
+  duration: String!
+
+  """End timestamp of the summary period (Unix timestamp)"""
+  end: Time!
+
+  """Start timestamp of the summary period (Unix timestamp)"""
+  start: Time!
+
+  """Detailed trade statistics for this duration"""
+  stats: Stats!
+}
+
+type ENSMarquee {
+  accounts: [ENSMarqueeAccount!]
+}
+
+type ENSMarqueeAccount {
+  address: String!
+  avatar: String!
+  name: String!
+}
+
+type ENSProfile {
+  address: String!
+  chainID: Int!
+  fields: [ENSProfileField!]!
+  name: String!
+  resolverAddress: String!
+  reverseResolverAddress: String!
+}
+
+type ENSProfileField {
+  key: String!
+  value: String!
+}
+
+type KingOfTheHill {
+  """The current token in the King of the Hill competition"""
+  current: KingOfTheHillToken!
+
+  """The previous token that held the title"""
+  lastWinner: KingOfTheHillToken
+}
+
+""" KingOfTheHill represents token in the King of the Hill competition"""
+type KingOfTheHillRankingElem {
+  """Ranking position of the token in the competition"""
+  rank: Int!
+
+  """
+  Token details.
+  Note: This object may not resolve all fields defined in the Token type,
+  as only a subset of data is available in this context.
+  """
+  token: Token!
+
+  """Current time window for the competition"""
+  windowTradingVolume: String!
+}
+
+type KingOfTheHillRankings {
+  """The leaderboard of the King of the Hill competition"""
+  rankings: [KingOfTheHillRankingElem!]!
+
+  """Current time window for the competition"""
+  window: CompetitionWindow!
+}
+
+"""
+KingOfTheHillToken represents a token in the King of the Hill competition.
+"""
+type KingOfTheHillToken {
+  """Ranking details for the token in the competition"""
+  rankingDetails: RankingDetails!
+
+  """
+  Token details.
+  Note: This object may not resolve all fields defined in the Token type,
+  as only a subset of data is available in this context.
+  """
+  token: Token!
+
+  """Current time window for the competition"""
+  window: CompetitionWindow!
+}
+
+type Launchpad {
+  """The name of the launchpad or associated launch platform."""
+  name: String!
+
+  """Platform associated with the launchpad."""
+  platform: String!
+
+  """URL to the platform's icon or logo."""
+  platformIconURL: String!
+
+  """The protocol or platform powering the launchpad."""
+  protocol: String!
+
+  """URL to the protocol's icon or logo."""
+  protocolIconURL: String!
+
+  """
+  The social interface or community platform associated with the launchpad.
+  """
+  socialInterface: String!
+
+  """URL to the social interface's icon or logo."""
+  socialInterfaceIconURL: String!
+}
+
+type LaunchpadResult {
+  """Token Creator address."""
+  creatorAddress: String!
+
+  """Indicates whether launchpad information is available for this token."""
+  isLaunchpadAvailable: Boolean!
+
+  """launchpad associated with tokens."""
+  launchpad: Launchpad
+}
+
+"""
+Represents a liquidity pool of Rainbow token, typically pairing the token with another asset.
+"""
+type LiquidityPool {
+  """The contract address of the liquidity pool."""
+  address: ID!
+  chainId: Int!
+
+  """The contract address of the first token in the pair."""
+  token0Address: String!
+
+  """
+  The contract address of the second token in the pair (often the base currency like WETH).
+  """
+  token1Address: String!
+}
+
+"""Represents market data for a token."""
+type MarketData {
+  """Number of unique holders of the token."""
+  holders: Int
+
+  """The fully diluted market cap."""
+  marketCapFDV: String!
+
+  """Trading volume for the last 24 hours in USD."""
+  volume24h: String!
+}
+
+input Message {
+  method: String!
+  params: [String!]!
+}
+
+type MessageResult {
+  error: TransactionError
+  report: TransactionReport
+  scanning: TransactionScanningResult
+  simulation: TransactionSimulationResult
+}
+
+type Mutation {
+  onboardPoints(address: String!, referral: String, signature: String!): Points
+  redeemCode(address: String!, code: String!): RedeemedPoints
+}
+
+type Network {
+  colors: NetworkColors!
+  defaultExplorer: NetworkExplorer!
+  defaultRPC: NetworkRPC!
+  enabledServices: NetworkEnabledServices!
+  favorites: [NetworkTokenFavorites]!
+  gasUnits: NetworkGasUnits!
+  icons: NetworkIcons!
+  id: ID!
+  internal: Boolean!
+  label: String!
+  mainnetId: ID!
+  name: String!
+  nativeAsset: NetworkAsset!
+  nativeAssetNeedsApproval: Boolean!
+  nativeWrappedAsset: NetworkAsset!
+  opStack: Boolean!
+  testnet: Boolean!
+}
+
+type NetworkAddys {
+  approvals: Boolean!
+  assets: Boolean!
+  interactionsWith: Boolean!
+  positions: Boolean!
+  summary: Boolean!
+  transactions: Boolean!
+}
+
+type NetworkAsset {
+  address: String!
+  colors: NetworkAssetColors!
+  decimals: Int!
+  iconURL: String!
+  name: String!
+  symbol: String!
+}
+
+type NetworkAssetColors {
+  fallback: String!
+  primary: String!
+  shadow: String!
+}
+
+type NetworkColors {
+  dark: String!
+  light: String!
+}
+
+type NetworkDelegation {
+  enabled7702: Boolean!
+}
+
+type NetworkEnabledServices {
+  addys: NetworkAddys!
+  delegation: NetworkDelegation!
+  launcher: NetworkLauncher!
+  meteorology: NetworkMeteorology!
+  nftProxy: NetworkNFTProxy!
+  notifications: NetworkNotifications!
+  sponsorship: NetworkSponsorship!
+  swap: NetworkSwap!
+  tokenSearch: NetworkTokenSearch!
+}
+
+type NetworkExplorer {
+  label: String!
+  tokenURL: String!
+  transactionURL: String!
+  url: String!
+}
+
+type NetworkGasBasicUnits {
+  approval: String!
+  eoaTransfer: String!
+  swap: String!
+  swapPermit: String!
+  tokenTransfer: String!
+}
+
+type NetworkGasUnits {
+  basic: NetworkGasBasicUnits!
+  wrapped: NetworkGasWrappedUnits!
+}
+
+type NetworkGasWrappedUnits {
+  unwrap: String!
+  wrap: String!
+}
+
+type NetworkIcon {
+  largeURL: String!
+  smallURL: String!
+}
+
+type NetworkIcons {
+  badge: NetworkIcon!
+  badgeURL: String!
+  dark: NetworkIcon!
+  light: NetworkIcon!
+  uncropped: NetworkIcon!
+}
+
+type NetworkLauncher {
+  v1: NetworkLauncherVersion!
+}
+
+type NetworkLauncherVersion {
+  contractAddress: String!
+  enabled: Boolean!
+}
+
+type NetworkMeteorology {
+  eip1559: Boolean!
+  enabled: Boolean!
+  legacy: Boolean!
+}
+
+type NetworkNFTProxy {
+  enabled: Boolean!
+}
+
+type NetworkNotifications {
+  enabled: Boolean!
+  transactions: Boolean!
+}
+
+type NetworkRPC {
+  enabledDevices: [Device]!
+  url: String!
+}
+
+type NetworkSponsorship {
+  enabled: Boolean!
+}
+
+type NetworkSwap {
+  bridge: Boolean!
+  bridgeExactOutput: Boolean!
+  enabled: Boolean!
+  swap: Boolean!
+  swapExactOutput: Boolean!
+}
+
+type NetworkTokenFavorites {
+  address: String!
+}
+
+type NetworkTokenSearch {
+  enabled: Boolean!
+}
+
+type NFTAllowlist {
+  addresses: [String!]
+  chainID: Int!
+}
+
+type Points {
+  error: PointsError
+  leaderboard: PointsLeaderboard!
+  meta: PointsMeta!
+  user: PointsUser!
+}
+
+type PointsEarnings {
+  total: Int!
+}
+
+type PointsError {
+  message: String!
+  type: PointsErrorType!
+}
+
+enum PointsErrorType {
+  ALREADY_CLAIMED
+  ALREADY_USED_CODE
+  AWARDING_NOT_ONGOING
+  BLOCKED_USER
+  EXISTING_USER
+  INVALID_REDEMPTION_CODE
+  INVALID_REFERRAL_CODE
+  NO_BALANCE
+  NO_CLAIM
+  NON_EXISTING_USER
+}
+
+type PointsLeaderboard {
+  accounts: [PointsLeaderboardAccount!]
+  stats: PointsLeaderboardStats!
+}
+
+type PointsLeaderboardAccount {
+  address: String!
+  avatarURL: String!
+  earnings: PointsLeaderboardEarnings!
+  ens: String!
+}
+
+type PointsLeaderboardEarnings {
+  total: Int!
+}
+
+type PointsLeaderboardStats {
+  rank_cutoff: Int!
+  total_points: Int!
+  total_users: Int!
+}
+
+type PointsMeta {
+  distribution: PointsMetaDistribution!
+  rewards: PointsMetaRewards!
+  status: PointsMetaStatus!
+}
+
+type PointsMetaDistribution {
+  last: PointsMetaLastDistribution!
+  next: Int!
+}
+
+type PointsMetaLastDistribution {
+  ended_at: Int!
+  started_at: Int!
+}
+
+type PointsMetaRewards {
+  total: String!
+}
+
+enum PointsMetaStatus {
+  FINISHED
+  ONGOING
+  PAUSED
+}
+
+enum PointsOnboardDisplayType {
+  BONUS
+  NFT_COLLECTION
+  USD_AMOUNT
+}
+
+type PointsOnboarding {
+  categories: [PointsOnboardingCategory!]
+  earnings: PointsOnboardingEarnings!
+}
+
+type PointsOnboardingCategory {
+  data: PointsOnboardingCategoryData!
+  display_type: PointsOnboardDisplayType!
+  earnings: PointsOnboardingEarnings!
+  type: String!
+}
+
+type PointsOnboardingCategoryData {
+  owned_collections: Int!
+  total_collections: Int!
+  usd_amount: Float!
+}
+
+type PointsOnboardingEarnings {
+  total: Int!
+}
+
+type PointsRewards {
+  claimable: String!
+  claimed: String!
+  total: String!
+}
+
+type PointsStats {
+  last_airdrop: PointsStatsPositionLastAirdrop!
+  last_period: PointsStatsPositionLastPeriod!
+  onboarding: PointsStatsOnboarding!
+  position: PointsStatsPosition!
+  referral: PointsStatsReferral!
+}
+
+type PointsStatsOnboarding {
+  onboarded_at: Time!
+}
+
+type PointsStatsPosition {
+  current: Int!
+  unranked: Boolean!
+}
+
+type PointsStatsPositionLastAirdrop {
+  differences: [PointsStatsPositionLastAirdropDifference]!
+  earnings: PointsEarnings!
+  position: PointsStatsPosition!
+}
+
+type PointsStatsPositionLastAirdropDifference {
+  earnings: PointsEarnings!
+  group_id: String!
+  type: String!
+}
+
+type PointsStatsPositionLastPeriod {
+  earnings: PointsEarnings!
+  position: PointsStatsPosition!
+}
+
+type PointsStatsReferral {
+  qualified_referees: Int!
+  total_referees: Int!
+}
+
+type PointsUser {
+  earnings: PointsEarnings!
+  earnings_by_type: [PointsUserEarningByType]!
+  onboarding: PointsOnboarding!
+  referralCode: String!
+  rewards: PointsRewards!
+  stats: PointsStats!
+}
+
+type PointsUserEarningByType {
+  earnings: PointsEarnings!
+  type: String!
+}
+
+type Query {
+  claimablePoints(address: String): ClaimablePoints
+  contract(address: String!, chainID: Int!): Contract
+  contractFunction(address: String, chainID: Int!, hex: String!): ContractFunction
+  contracts(chainID: Int, limit: Int, offset: Int, typeID: Int): [Contract]
+  customNetworks(includeTestnets: Boolean): [CustomNetwork]
+  dApp(shortName: String, url: String): DApp
+  dApps(period: DAppRankingPeriod, trending: Boolean): [DApp]
+  dAppsV2(limit: Int, offset: Int, protocolIDs: [String!]): DAppV2Result
+  ensMarquee: ENSMarquee
+  kingOfTheHill(currency: String): KingOfTheHill
+  kingOfTheHillLeaderBoard(currency: String): KingOfTheHillRankings
+  network(chainID: Int!): Network
+  networks(device: Device, includeTestnets: Boolean): [Network]
+  nftAllowlist(chainID: Int!): NFTAllowlist
+  points(address: String): Points
+  pointsOnboardChallenge(address: String!, referral: String): String!
+  redemptionCode(code: String!): RedemptionCodeInfo
+  resolveENSProfile(chainID: Int!, fields: [String!], name: String!): ENSProfile
+  reverseResolveENSProfile(address: String!, chainID: Int!, fields: [String!]): ENSProfile
+  rewards(address: String, project: RewardsProject!): Rewards
+  simulateMessage(address: String!, chainID: Int!, currency: String, domain: String, message: Message!): MessageResult
+  simulateTransactions(chainID: Int!, currency: String, domain: String, transactions: [Transaction!]): [TransactionResult]
+  stats(address: String!, chainID: Int!, currency: String): RainbowTokenStats
+  token(address: String!, chainID: Int!, currency: String): Token
+  tokenInteractions(address: String!, chainID: Int!, currency: String, tokenAddress: String!): [TokenInteraction]
+  validateReferral(referral: String!): ValidatedReferral
+}
+
+type RainbowTokenDetails {
+  """
+  Information about the primary liquidity pool associated with this token, if available.
+  """
+  liquidityPool: LiquidityPool
+
+  """Descriptive metadata associated with the token."""
+  metadata: RainbowTokenMetadata
+
+  """Data retrieved directly from the blockchain regarding the token."""
+  onchainData: RainbowTokenOnchainData
+}
+
+"""Contains descriptive metadata for a token."""
+type RainbowTokenMetadata {
+  """A text description of the token."""
+  description: String
+
+  """A URL pointing to the token's logo image."""
+  logoUrl: String
+
+  """
+  A URI (often IPFS or HTTP) pointing to more detailed token metadata conforming to a standard (e.g., ERC721/ERC1155).
+  """
+  tokenUri: String
+}
+
+"""Contains data about the token fetched directly from the blockchain."""
+type RainbowTokenOnchainData {
+  """
+  The address of the account that originally deployed the token contract.
+  """
+  creatorAddress: String
+
+  """
+  The Merkle root hash, often used for verified airdrop distributions.
+  May be zero if not applicable. (Included for completeness, might be niche)
+  """
+  merkleRoot: String
+
+  """
+  The total supply of the token currently in existence (as a string to handle large numbers).
+  """
+  totalSupply: String!
+}
+
+type RainbowTokenStats {
+  """
+  Number of data buckets used (meaning might need clarification from source)
+  """
+  bucketCount: Int!
+
+  """
+  Timestamp of the last known transaction included in the summary (Unix timestamp)
+  """
+  lastTransaction: Time!
+
+  """liquidity pool"""
+  liquidityPool: LiquidityPool!
+
+  """An array of summaries for different predefined time durations"""
+  summary: [DurationSummary]!
+}
+
+type RankingDetails {
+  """Timestamp when this market data was last refreshed"""
+  lastUpdated: Int!
+
+  """
+  Metric that determined the winner , supported values are "volume", "latestTransaction", "volume24h" 
+  """
+  rankingCriteria: String!
+
+  """Reason for the token's victory (e.g., "highest volume")"""
+  rankingCriteriaDesc: String!
+
+  """Trading volume specific to the current competition window"""
+  windowTradingVolume: String!
+}
+
+type RedeemedPoints {
+  earnings: RedeemedPointsEarnings!
+  error: PointsError
+  redemption_code: RedemptionCode!
+}
+
+type RedeemedPointsEarnings {
+  total: Int!
+}
+
+type RedemptionCode {
+  code: String!
+}
+
+type RedemptionCodeEarnings {
+  max: Int!
+  min: Int!
+  type: RedemptionCodeScoringType!
+}
+
+type RedemptionCodeInfo {
+  earnings: RedemptionCodeEarnings!
+  error: PointsError
+  redemption_code: RedemptionCode!
+}
+
+enum RedemptionCodeScoringType {
+  FIXED
+  RANGE
+  UNKNOWN
+}
+
+type Rewards {
+  earnings: RewardsEarnings
+  leaderboard: RewardsLeaderboard!
+  meta: RewardsMeta!
+  stats: RewardStats
+}
+
+type RewardsAmount {
+  token: Float!
+  usd: Float!
+}
+
+type RewardsAsset {
+  assetCode: String!
+  chainID: Int!
+  colors: TokenColors!
+  decimals: Int!
+  iconURL: String
+  name: String!
+  symbol: String!
+}
+
+type RewardsDailyAmount {
+  day: Int!
+  token: Float!
+  usd: Float!
+}
+
+type RewardsEarnings {
+  daily: [RewardsDailyAmount!]
+  multiplier: RewardsEarningsMultiplierMultiplier!
+  pending: RewardsAmount!
+  total: RewardsAmount!
+  updatedAt: Int!
+}
+
+type RewardsEarningsMultiplierBreakdown {
+  amount: Float!
+  qualifier: String!
+}
+
+type RewardsEarningsMultiplierMultiplier {
+  amount: Float!
+  breakdown: [RewardsEarningsMultiplierBreakdown!]!
+}
+
+type RewardsLeaderboard {
+  accounts: [RewardsLeaderboardAccount!]
+  updatedAt: Int!
+}
+
+type RewardsLeaderboardAccount {
+  address: String!
+  avatarURL: String
+  earnings: RewardsLeaderboardEarnings!
+  ens: String
+}
+
+type RewardsLeaderboardEarnings {
+  base: RewardsAmount!
+  bonus: RewardsAmount!
+}
+
+type RewardsMeta {
+  color: String!
+  distribution: RewardsMetaDistribution!
+  end: Int!
+  status: RewardsMetaStatus!
+  title: String!
+  token: RewardsMetaToken!
+}
+
+type RewardsMetaDistribution {
+  left: Float!
+  next: Int!
+  total: Float!
+}
+
+enum RewardsMetaStatus {
+  FINISHED
+  ONGOING
+  PAUSED
+}
+
+type RewardsMetaToken {
+  asset: RewardsAsset!
+}
+
+enum RewardsProject {
+  OPTIMISM
+}
+
+type RewardsStatsPosition {
+  change: RewardsStatsPositionChange!
+  current: Int!
+}
+
+type RewardsStatsPositionChange {
+  h24: Int
+}
+
+type RewardStats {
+  actions: [RewardStatsAction!]!
+  position: RewardsStatsPosition!
+}
+
+type RewardStatsAction {
+  amount: RewardsAmount!
+  rewardPercent: Float!
+  type: RewardStatsActionType!
+}
+
+enum RewardStatsActionType {
+  BRIDGE
+  SWAP
+}
+
+type Stats {
+  """Number of unique wallets that bought"""
+  buyers: Int!
+
+  """Number of buy transactions"""
+  buys: Int!
+
+  """Volume attributed to buy transactions"""
+  buyVolume: Float!
+
+  """Price change in percentage (e.g., 5.0 means +5%, -3.2 means -3.2%)"""
+  priceChangePct: Float!
+
+  """Number of unique wallets that sold"""
+  sellers: Int!
+
+  """Number of sell transactions"""
+  sells: Int!
+
+  """Volume attributed to sell transactions"""
+  sellVolume: Float!
+
+  """Total number of transactions (buys + sells)"""
+  transactions: Int!
+
+  """Number of unique wallets that traded"""
+  uniques: Int!
+
+  """Total volume of trades in the specified currency"""
+  volume: Float!
+}
+
+scalar Time
+
+type Token {
+  address: String!
+  allTime: TokenAllTime!
+  bridging: TokenBridging!
+  chainId: Int!
+  circulatingSupply: Float
+  colors: TokenColors!
+  creationDate: Time
+  decimals: Int!
+  description: String
+  fullyDilutedValuation: Float
+  iconUrl: String
+  launchpad: LaunchpadResult
+  links: TokenLinks
+  marketCap: Float
+
+  """
+  Grouped market-related for the token.
+  
+  Note: All internal fields related to market performance (e.g., market cap, volume, holders)
+  are being consolidated under this object for better structure and maintainability.
+  Prefer accessing market-related values through this field going forward.
+  """
+  marketData: MarketData
+  name: String!
+  networks: TokenNetworks!
+  price: TokenPrice!
+  priceCharts: TokenPriceCharts!
+  rainbow: Boolean!
+  rainbowTokenDetails: RainbowTokenDetails
+  status: TokenStatus!
+  symbol: String!
+  totalSupply: Float
+  transferable: Boolean!
+  type: String!
+  volume1d: Float
+}
+
+type TokenAllTime {
+  highDate: Time
+  highValue: Float
+  lowDate: Time
+  lowValue: Float
+}
+
+scalar TokenBridging
+
+type TokenColors {
+  fallback: String
+  primary: String!
+  shadow: String
+}
+
+type TokenInteraction {
+  amount: String!
+  chainID: Int!
+  direction: TokenInteractionDirection!
+  explorerLabel: String!
+  explorerURL: String!
+  interactedAt: Int!
+  price: Float!
+  transactionHash: String!
+  type: TokenInteractionType!
+}
+
+enum TokenInteractionDirection {
+  IN
+  OUT
+  UNKNOWN
+}
+
+enum TokenInteractionType {
+  BOUGHT
+  RECEIVED
+  SENT
+  SOLD
+  UNKNOWN
+}
+
+type TokenLink {
+  url: String!
+}
+
+type TokenLinks {
+  coingecko: TokenLink
+  facebook: TokenLink
+  farcaster: TokenLink
+  homepage: TokenLink
+  other: TokenLink
+  rainbow: TokenLink
+  reddit: TokenLink
+  telegram: TokenLink
+  twitter: TokenLink
+}
+
+scalar TokenNetworks
+
+type TokenPrice {
+  relativeChange24h: Float
+  updatedAt: Time
+  value: Float
+}
+
+type TokenPriceChart {
+  aggregates: TokenPriceChartAggregates
+
+  """
+  points is an array of [Int, Float] pairs
+      where the first element is the timestamp and the second is the price
+  """
+  points: [[Any]]
+
+  """pricePresentAt time when the price is present for the first time"""
+  pricePresentAt: Time
+  timeEnd: Time
+  timeStart: Time
+}
+
+type TokenPriceChartAggregates {
+  avg: Float
+  first: Float
+  last: Float
+  max: Float
+  min: Float
+}
+
+type TokenPriceCharts {
+  day: TokenPriceChart
+  hour: TokenPriceChart
+  max: TokenPriceChart
+  month: TokenPriceChart
+  week: TokenPriceChart
+  year: TokenPriceChart
+}
+
+enum TokenStatus {
+  SCAM
+  UNKNOWN
+  UNVERIFIED
+  VERIFIED
+}
+
+input Transaction {
+  authorization_list: [Authorization]
+  data: String!
+  from: String!
+  to: String!
+  value: String!
+}
+
+enum TransactionAssetInterface {
+  ERC1155
+  ERC20
+  ERC721
+}
+
+enum TransactionAssetType {
+  NATIVE
+  NFT
+  TOKEN
+}
+
+type TransactionError {
+  message: String!
+  type: TransactionErrorType!
+}
+
+enum TransactionErrorType {
+  INSUFFICIENT_BALANCE
+  REVERT
+  UNSUPPORTED
+}
+
+type TransactionGasResult {
+  estimate: String!
+  used: String!
+}
+
+type TransactionReport {
+  url: String!
+}
+
+type TransactionResult {
+  error: TransactionError
+  gas: TransactionGasResult
+  report: TransactionReport
+  scanning: TransactionScanningResult
+  simulation: TransactionSimulationResult
+}
+
+type TransactionScanningResult {
+  description: String!
+  result: TransactionScanResultType!
+}
+
+enum TransactionScanResultType {
+  MALICIOUS
+  OK
+  WARNING
+}
+
+type TransactionSimulationApproval {
+  asset: TransactionSimulationAsset!
+  expiration: Time
+  quantityAllowed: String!
+  quantityAtRisk: String!
+  spender: TransactionSimulationTarget!
+}
+
+type TransactionSimulationAsset {
+  assetCode: String!
+  creationDate: Time
+  decimals: Int!
+  iconURL: String!
+  interface: TransactionAssetInterface!
+  name: String!
+  network: String!
+  status: VerificationStatus!
+  symbol: String!
+  tokenId: String!
+  type: TransactionAssetType!
+}
+
+type TransactionSimulationChange {
+  asset: TransactionSimulationAsset!
+  price: Float!
+  quantity: String!
+}
+
+type TransactionSimulationDelegation {
+  address: String!
+  created: Time
+  iconURL: String!
+  name: String!
+  sourceCodeStatus: VerificationStatus
+}
+
+type TransactionSimulationMeta {
+  to: TransactionSimulationTarget
+  transferTo: TransactionSimulationTarget
+}
+
+type TransactionSimulationResult {
+  approvals: [TransactionSimulationApproval]
+  delegation: TransactionSimulationDelegation
+  in: [TransactionSimulationChange]
+  meta: TransactionSimulationMeta
+  out: [TransactionSimulationChange]
+}
+
+type TransactionSimulationTarget {
+  address: String!
+  created: Time
+  function: String!
+  iconURL: String!
+  name: String!
+  sourceCodeStatus: VerificationStatus
+}
+
+type UserClaimablePoints {
+  earnings: PointsEarnings!
+}
+
+type ValidatedReferral {
+  error: PointsError
+  valid: Boolean!
+}
+
+enum VerificationStatus {
+  UNKNOWN
+  UNVERIFIED
+  VERIFIED
+}

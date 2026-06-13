@@ -17,3 +17,4 @@ InjectedJSBundle.js
 src/languages/*.json
 !src/languages/en_US.json
 **/__fixtures__/*.json
+src/graphql/schemas/*.graphql

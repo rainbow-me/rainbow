@@ -787,7 +787,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@graphql-codegen/schema-ast@npm:^2.5.1":
+"@graphql-codegen/schema-ast@npm:2.5.1, @graphql-codegen/schema-ast@npm:^2.5.1":
   version: 2.5.1
   resolution: "@graphql-codegen/schema-ast@npm:2.5.1"
   dependencies:
@@ -1362,6 +1362,7 @@ __metadata:
   resolution: "@rainbow-me/graphql-client@workspace:."
   dependencies:
     "@graphql-codegen/cli": "npm:2.11.7"
+    "@graphql-codegen/schema-ast": "npm:2.5.1"
     "@graphql-codegen/typescript": "npm:2.7.3"
     "@graphql-codegen/typescript-generic-sdk": "npm:3.0.1"
     "@graphql-codegen/typescript-operations": "npm:2.5.3"

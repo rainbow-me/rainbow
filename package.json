@@ -89,6 +89,7 @@
     "gradle": "cd android && ./gradlew",
     "graphql-codegen": "yarn graphql-prepare && cd src/graphql && yarn codegen",
     "graphql-codegen:install": "cd src/graphql && yarn install",
+    "graphql-introspect": "yarn graphql-prepare && cd src/graphql && yarn graphql-codegen --config introspection.config.js",
     "graphql-prepare": "./scripts/graph-ens-key.sh",
     "postinstall": "./scripts/postinstall.sh",
     "install-all": "yarn install && yarn setup && yarn install-pods",

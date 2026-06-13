@@ -2,6 +2,18 @@
 
 Here, you will find our GraphQL clients & query/mutation definitions!
 
+## Schema introspection
+
+GraphQL codegen uses checked-in SDL files from `src/graphql/schemas`. It does not introspect live services during setup, CI, or `yarn graphql-codegen`.
+
+When remote schemas change, introspect them explicitly from the root directory of the `rainbow` repository:
+
+```
+> yarn graphql-introspect
+```
+
+Then run `yarn graphql-codegen` when generated clients need to be updated.
+
 ## Adding a new query
 
 - If you are adding a new query to an existing GraphQL client, [follow these steps](#existing-graphql-client).
@@ -44,6 +56,8 @@ Ensure you are in the root directory of the `rainbow` repository.
 ```
 > yarn graphql-codegen
 ```
+
+If the query depends on schema fields that are not in the checked-in schemas, run `yarn graphql-introspect` first, then run `yarn graphql-codegen`.
 
 #### 3. Consume!
 
@@ -90,7 +104,11 @@ exports.config = {
 };
 ```
 
-#### 3. Run the codegen
+#### 3. Add a checked-in schema
+
+Add a schema for the new client under `src/graphql/schemas` and map it in `codegen.config.js`. If the schema should be refreshed by `yarn graphql-introspect`, add it to `introspection.config.js` too.
+
+#### 4. Run the codegen
 
 Run the codegen tool to generate types & a fetcher for your newly defined query.
 
@@ -100,7 +118,7 @@ Ensure you are in the root directory of the `rainbow` repository.
 > yarn graphql-codegen
 ```
 
-#### 4. Create a new client in `index.ts`:
+#### 5. Create a new client in `index.ts`:
 
 ```diff
 import { config } from './config';
@@ -116,7 +134,7 @@ export const metadataClient = getMetadataSdk(
 + export const exampleClient = getEnsSdk(getFetchRequester(config.example.schema.url));
 ```
 
-#### 5. Consume!
+#### 6. Consume!
 
 ```tsx
 import { exampleClient } from '@/graphql';
