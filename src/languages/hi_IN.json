@@ -1668,6 +1668,18 @@
       "leverage": "लीवरेज",
       "up_to": "ऊपर तक"
     },
+    "cash": {
+      "add_cash": "नकद जोड़ें",
+      "deposit_intro": {
+        "introducing": "परिचय",
+        "title": "नकद जमा",
+        "encrypted_feature": "आपकी जानकारी एन्क्रिप्ट की गई है और सुरक्षित है।",
+        "visa_feature": "Visa कार्ड का उपयोग करने वाले अमेरिका-आधारित ग्राहकों के लिए उपलब्ध।",
+        "set_up_account": "खाता सेट अप करें",
+        "other_deposit_methods": "अन्य जमा करने के तरीके",
+        "sign_in": "लॉग इन करें"
+      }
+    },
     "points": {
       "points": {
         "try_again": "फिर से प्रयास करें"
