@@ -1668,6 +1668,18 @@
       "leverage": "杠杆",
       "up_to": "最多"
     },
+    "cash": {
+      "add_cash": "添加现金",
+      "deposit_intro": {
+        "introducing": "介绍",
+        "title": "现金存款",
+        "encrypted_feature": "您的信息已加密并受到保护。",
+        "visa_feature": "仅面向使用 Visa 卡的美国客户提供。",
+        "set_up_account": "设置账户",
+        "other_deposit_methods": "其他存款方式",
+        "sign_in": "登陆"
+      }
+    },
     "points": {
       "points": {
         "try_again": "再试一次"
