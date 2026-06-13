@@ -1668,6 +1668,18 @@
       "leverage": "Apalancamiento",
       "up_to": "Hasta"
     },
+    "cash": {
+      "add_cash": "Agregar Dinero en Efectivo",
+      "deposit_intro": {
+        "introducing": "Presentamos",
+        "title": "Cash Deposits",
+        "encrypted_feature": "Your information is encrypted and protected.",
+        "visa_feature": "Available for US-based customers using a Visa card.",
+        "set_up_account": "Set Up Account",
+        "other_deposit_methods": "Other Deposit Methods",
+        "sign_in": "Iniciar Sesión"
+      }
+    },
     "points": {
       "points": {
         "try_again": "Intenta de Nuevo"
