@@ -1,27 +1,9 @@
 {
   "translation": {
     "account": {
-      "hide": "ซ่อน",
-      "label_24h": "24h",
-      "label_asset": "สินทรัพย์",
-      "label_price": "ราคา",
-      "label_quantity": "ปริมาณ",
-      "label_status": "สถานะ",
-      "label_total": "ทั้งหมด",
-      "low_market_value": "ที่มีมูลค่าตลาดต่ำ",
-      "no_market_value": "ไม่มีมูลค่าตลาด",
-      "show": "แสดง",
-      "show_all": "แสดงทั้งหมด",
-      "show_less": "แสดงน้อยลง",
       "tab_tokens": "โทเคน",
-      "tab_balances_empty_state": "ยอดคงเหลือ",
-      "tab_balances_tooltip": "Ethereum และยอดคงเหลือ Token",
       "tab_claimables": "รายการที่ต้องเคลม",
       "tab_collectibles": "สะสม",
-      "tab_interactions": "การต่อสู้",
-      "tab_interactions_tooltip": "การโต้ตอบของสัญญาอัจฉริยะ",
-      "tab_investments": "สระน้ำ",
-      "tab_savings": "เงินออม",
       "tab_showcase": "โชว์เคส",
       "tab_perps": "Perps",
       "tab_polymarket": "การพยากรณ์",
@@ -50,9 +32,7 @@
     "activity_list": {
       "title": "กิจกรรม",
       "empty_state": {
-        "default_label": "ยังไม่มีการทำธุรกรรม",
-        "recycler_label": "ยังไม่มีการทำธุรกรรม",
-        "testnet_label": "ประวัติการทำธุรกรรมทดสอบของคุณเริ่มต้นที่นี่!"
+        "default_label": "ยังไม่มีการทำธุรกรรม"
       }
     },
     "add_funds": {
@@ -60,8 +40,6 @@
         "or_send_eth": "หรือส่ง ETH ไปยังกระเป๋าเงินของคุณ",
         "send_from_another_source": "ส่งจาก Coinbase หรือแลกเปลี่ยนอื่น ๆ —หรือขอจากเพื่อน!"
       },
-      "limit_left_this_week": "$%{remainingLimit} ที่เหลือในสัปดาห์นี้",
-      "limit_left_this_year": "$%{remainingLimit} ที่เหลือในปีนี้",
       "test_eth": {
         "add_from_faucet": "เพิ่มจากฟอสเซ็ท",
         "or_send_test_eth": "หรือส่ง ETH ทดสอบไปยังกระเป๋าเงินของคุณ",
@@ -69,12 +47,7 @@
         "send_test_eth_from_another_source": "ส่งทดสอบ ETH จาก %{testnetName} wallet อื่น หรือขอความช่วยเหลือจากเพื่อน!"
       },
       "to_get_started_android": "เริ่มต้นด้วยการซื้อ ETH บางส่วน",
-      "to_get_started_ios": "เริ่มต้นด้วยการซื้อ ETH ด้วย Apple Pay",
-      "weekly_limit_reached": "ถึงขีดจำกัดสัปดาห์แล้ว",
-      "yearly_limit_reached": "ถึงขีดจำกัดประจำปีแล้ว"
-    },
-    "assets": {
-      "unkown_token": "โทเคนที่ไม่รู้จัก"
+      "to_get_started_ios": "เริ่มต้นด้วยการซื้อ ETH ด้วย Apple Pay"
     },
     "avatar_builder": {
       "emoji_categories": {
@@ -102,13 +75,6 @@
         "damaged_wallet": "ไม่สามารถสำรองกระเป๋าเงินได้ ข้อมูลพวงกุญแจหายไป"
       },
       "wrong_pin": "รหัส PIN ที่คุณป้อนไม่ถูกต้องและเราไม่สามารถสำรองข้อมูลได้ โปรดลองใหม่ด้วยรหัสที่ถูกต้อง",
-      "already_backed_up": {
-        "backed_up": "สำรองข้อมูลแล้ว",
-        "backed_up_manually": "สำรองข้อมูลด้วยตนเอง",
-        "backed_up_message": "กระเป๋าเงินของคุณสำรองข้อมูลแล้ว",
-        "imported": "นำเข้าแล้ว",
-        "imported_message": "กระเป๋าเงินของคุณถูกนำเข้า"
-      },
       "wallet_group_title_plural": "กลุ่ม Wallet %{walletGroupNumber}",
       "wallet_group_title_singular": "กลุ่ม Wallet",
       "private_key_plural": "กุญแจส่วนตัว %{privateKeyNumber}",
@@ -215,8 +181,6 @@
         "create_new_secret_phrase": "สร้างวลีลับใหม่"
       },
       "needs_backup": {
-        "back_up_your_wallet": "สำรองข้อมูลกระเป๋าเงินของคุณ",
-        "dont_risk": "อย่าเสี่ยงด้วยเงินของคุณ! ทำการสำรองกระเป๋าเงินของคุณให้สามารถกู้คืนได้หากคุณทำอุปกรณ์นี้หาย",
         "not_backed_up": "ยังไม่ได้สำรองข้อมูล"
       },
       "restore_cloud": {
@@ -486,24 +450,15 @@
         "creator_lp_fees": "ค่าธรรมเนียมผู้สร้าง LP",
         "rainbow_token_launcher": "Rainbow Token Launcher",
         "claim_amount": "เคลม %{amount}",
-        "done": "เสร็จสิ้น",
-        "try_again": "ลองใหม่",
         "tokens_on_the_way": "โทเคนกำลังมาถึง!",
         "a_token": "โทเค็นหนึ่ง",
-        "a_network": "เครือข่ายหนึ่ง",
         "swap_failed": "แลกเปลี่ยนล้มเหลว",
         "receive": "รับ",
         "on": "เปิด",
         "reset": "ตั้งค่าใหม่"
       }
     },
-    "cloud": {
-      "backup_success": "กระเป๋าเงินของคุณได้รับการสำรองข้อมูลเรียบร้อยแล้ว!"
-    },
     "contacts": {
-      "contact_row": {
-        "balance_eth": "%{balanceEth} ETH"
-      },
       "contacts_title": "รายชื่อติดต่อ",
       "input_placeholder": "ชื่อ",
       "my_wallets": "กระเป๋าเงินของฉัน",
@@ -511,26 +466,18 @@
         "add": "เพิ่มรายชื่อติดต่อ",
         "cancel": "ยกเลิก",
         "delete": "ลบรายชื่อติดต่อ",
-        "edit": "แก้ไขรายชื่อติดต่อ",
-        "view": "ดูโปรไฟล์"
+        "edit": "แก้ไขรายชื่อติดต่อ"
       },
       "send_header": "ส่ง",
       "suggestions": "ข้อเสนอแนะ",
       "to_header": "ต่อ",
       "watching": "กำลังดู"
     },
-    "deeplinks": {
-      "couldnt_recognize_url": "ยู้หือ! เราไม่สามารถรู้จัก URL นี้ได้!",
-      "tried_to_use_android": "พยายามใช้ Android bundle",
-      "tried_to_use_ios": "พยายามใช้ iOS bundle"
-    },
     "developer_settings": {
       "alert": "เตือน",
-      "analyze_env_variables": "วิเคราะห์ตัวแปร ENV",
       "analyze_react_query": "วิเคราะห์ React Query",
       "analyze_user_assets_query": "วิเคราะห์ Query ผู้ใช้งานสินทรัพย์",
       "applied": "ที่ปรับใช้แล้ว",
-      "backups_deleted_successfully": "ลบการสำรองข้อมูลเรียบร้อยแล้ว",
       "clear_async_storage": "ล้างข้อมูล AsyncStorage",
       "clear_pending_txs": "ล้างธุรกรรมที่รอดำเนินการ",
       "clear_image_cache": "ล้างแคชภาพ",
@@ -540,7 +487,6 @@
       "clear_react_query_cache": "ล้างแคช React Query",
       "connect_to_anvil": "เชื่อมต่อกับ Anvil",
       "copy_fcm_token": "คัดลอก FCM Token",
-      "copy_log_lines": "คัดลอกบรรทัดบันทึก",
       "copy_signing_wallet_address": "คัดลอกที่อยู่กระเป๋าเงินในการลงนาม",
       "disconnect_to_anvil": "ยกเลิกการเชื่อมต่อจาก Anvil",
       "crash_app_render_error": "แอปล้มเหลว (Render Error)",
@@ -569,7 +515,6 @@
         "delegation_settings": "การตั้งค่าการมอบสิทธิ์"
       },
       "delegation_settings": {
-        "clear_store": "ล้างที่เก็บข้อมูลการมอบสิทธิ์",
         "simulate_disable_smart_wallet": "จำลองการปิดใช้งาน Smart Wallet",
         "simulate_disable_single_network": "จำลองการปิดใช้งานเครือข่ายเดียว",
         "simulate_disable_third_party": "จำลองการปิดใช้งานบุคคลที่สาม",
@@ -580,17 +525,36 @@
       }
     },
     "discover": {
-      "pulse": {
-        "pulse_description": "ท็อกเค็น DeFi ยอดนิยมทั้งหมดในหนึ่ง",
-        "today_suffix": "วันนี้",
-        "trading_at_prefix": "การซื้อขายที่"
-      },
       "search": {
         "search_ethereum": "ค้นหาเอเธอเรียมทั้งหมด",
         "search_ethereum_short": "ค้นหาเอเธอเรียม",
         "search": "ค้นหา",
         "discover": "ค้นพบ"
       },
+      "sections": {
+        "ai": "AI",
+        "base": "Base",
+        "commodities": "สินค้าโภคภัณฑ์",
+        "crypto": "คริปโต",
+        "crypto_equities": "หุ้นคริปโต",
+        "currencies": "สกุลเงิน",
+        "for_you": "สำหรับคุณ",
+        "indices": "ดัชนี",
+        "layer_1": "เลเยอร์ 1",
+        "live": "ถ่ายทอดสด",
+        "mag7": "MAG7",
+        "majors": "กลุ่มหลัก",
+        "markets": "ตลาด",
+        "mlb": "MLB",
+        "nba": "NBA",
+        "nhl": "NHL",
+        "perps": "Perps",
+        "pre_ipo": "ก่อน IPO",
+        "predictions": "การพยากรณ์",
+        "sports": "กีฬา",
+        "tokens": "โทเคน"
+      },
+      "show_more": "แสดงเพิ่มเติม",
       "strategies": {
         "strategies_title": "กลยุทธ์",
         "yearn_finance_description": "กลยุทธ์ผลตอบแทนสมาร์ทจาก yearn.finance"
@@ -627,9 +591,6 @@
     },
     "exchange": {
       "coin_row": {
-        "expires_in": "หมดอายุใน %{minutes}นาที",
-        "from_divider": "จาก",
-        "to_divider": "ไปยัง",
         "token": "โทเค็น",
         "view_on": "ดูบน %{blockExplorerName}",
         "view_on_etherscan": "ดูบน Etherscan",
@@ -706,6 +667,9 @@
         "verifiedTokenSection": "􀇻 ได้รับการตรวจสอบ",
         "unswappableTokenSection": "􀘰 ไม่มีเส้นทางการค้า"
       }
+    },
+    "ens": {
+      "registered_on": "ลงทะเบียนเมื่อ"
     },
     "expanded_state": {
       "asset": {
@@ -847,6 +811,7 @@
       },
       "nft_brief_token_info": {
         "for_sale": "สำหรับการขาย",
+        "floor_price": "ราคาพื้น",
         "last_sale": "ราคาการขายล่าสุด"
       },
       "swap": {
@@ -1246,13 +1211,6 @@
         "text": "เมื่อส่งชื่อ ENS ให้กับผู้อื่นและทำให้พวกเขาเป็นเจ้าของชื่อ ENS ใหม่ คุณอาจต้องการกำหนดค่าให้พวกเขาล่วงหน้าและประหยัดธุรกรรมในภายหน้า Rainbow ช่วยให้คุณล้างข้อมูลโปรไฟล์ที่ตั้งไว้สำหรับชื่อ ปรับชื่อ ENS ให้ชี้ไปยังที่อยู่ผู้รับ และทำให้ที่อยู่ผู้รับเป็นผู้จัดการของชื่อ"
       }
     },
-    "fedora": {
-      "cannot_verify_bundle": "ไม่สามารถตรวจสอบชุดโปรแกรม! นี่อาจเป็นการหลอกลวง การติดตั้งถูกบล็อก.",
-      "error": "ข้อผิดพลาด",
-      "fedora": "เฟดอรา",
-      "this_will_override_bundle": "สิ่งนี้จะแทนที่กองหมายของคุณ ระวัง คุณเป็นพนักงานของ Rainbow หรือไม่?",
-      "wait": "รอ"
-    },
     "fields": {
       "address": {
         "long_placeholder": "ชื่อ, ENS, หรือที่อยู่",
@@ -1281,7 +1239,6 @@
       "miner_tip": "ค่าเทิปของนักขุด",
       "gas_price": "ราคาก๊าซ",
       "max_transaction_fee": "ค่าธรรมเนียมการทำธุรกรรมสูงสุด",
-      "warning_separator": "·",
       "lower_than_suggested": "ต่ำ · อาจติดขัด",
       "higher_than_suggested": "สูง · จ่ายเกิน",
       "likely_to_fail": "ต่ำ · มีโอกาสล้มเหลว",
@@ -1292,64 +1249,12 @@
       "alert_message_lower": "ตรวจสอบให้แน่ใจว่าคุณได้ป้อนจำนวนที่ถูกต้อง - คุณอาจจะจ่ายเงินมากกว่าจำเป็น!",
       "alert_title_higher_max_base_fee_needed": "ฐานค่าธรรมเนียมสูงสุดต่ำ - ธุรกรรมอาจติดขัด!",
       "alert_title_higher_miner_tip_needed": "เคล็ดคุณภาพขุดเหมืองต่ำ - ธุรกรรมอาจติดขัด!",
-      "alert_title_lower_max_base_fee_needed": "ฐานค่าธรรมเนียมสูงสุดสูง!",
       "alert_title_lower_miner_tip_needed": "เคล็ดคุณภาพขุดเหมืองสูง!",
       "proceed_anyway": "ดำเนินการต่อ",
       "edit_max_bass_fee": "แก้ไขฐานค่าธรรมเนียมสูงสุด",
       "edit_miner_tip": "แก้ไขเคล็ดคุณภาพขุดเหมือง"
     },
     "homepage": {
-      "back": "กลับไปที่ rainbow.me",
-      "coming_soon": "เร็วๆ นี้.",
-      "connect_ledger": {
-        "button": "เชื่อมต่อกับ Ledger",
-        "description": "เชื่อมต่อและลงชื่อด้วย ",
-        "link_text": "กระเป๋าสตางค์ฮาร์ดแวร์ Ledger",
-        "link_title": "ซื้อ Ledger hardware wallet"
-      },
-      "connect_metamask": {
-        "button": "เชื่อมต่อกับ MetaMask",
-        "description": "เชื่อมต่อกับ ",
-        "link_text": "กระเป๋าสตางค์บนเบราว์เซอร์ MetaMask",
-        "link_title": "กระเป๋าสตางค์บนเว็บ MetaMask"
-      },
-      "connect_trezor": {
-        "button": "เชื่อมต่อกับ Trezor",
-        "description": "เชื่อมต่อและลงชื่อด้วย ",
-        "link_text": "Trezor hardware wallet",
-        "link_title": "ซื้อ Trezor hardware wallet"
-      },
-      "connect_trustwallet": {
-        "button": "เชื่อมต่อกับ Trust Wallet",
-        "description_part_one": "ใช้ ",
-        "description_part_three": " แอพพลิเคชันเพื่อเชื่อมต่อ.",
-        "description_part_two": " Ethereum ",
-        "link_text_browser": "dapp browser",
-        "link_text_wallet": "Trust Wallet",
-        "link_title_browser": "ค้นพบ Trust DApp Browser",
-        "link_title_wallet": "ค้นพบ Trust Wallet"
-      },
-      "connect_walletconnect": {
-        "button": "ใช้ WalletConnect",
-        "button_mobile": "เชื่อมต่อกับ WalletConnect",
-        "description": "สแกนรหัส QR เพื่อเชื่อมต่อกับวอลเล็ตมือถือของคุณ ",
-        "description_mobile": "เชื่อมต่อกับวอลเล็ตที่สนับสนุน ",
-        "link_text": "โดยใช้ WalletConnect",
-        "link_text_mobile": "WalletConnect",
-        "link_title": "ใช้ WalletConnect",
-        "link_title_mobile": "เชื่อมต่อด้วย WalletConnect"
-      },
-      "reassurance": {
-        "access_link": "ไม่สามารถเข้าถึงเงินของคุณ",
-        "assessment": "ผลการประเมินความปลอดภัยของเรา",
-        "security": "เราทำงานหนักเพื่อให้แน่ใจว่าเงินของคุณปลอดภัย โปรแกรมนี้ไม่สัมผัสไปยังคีย์ส่วนตัวของคุณ ทำให้การโจมตีมีพื้นที่ลดลง ถ้าคุณคุ้นเคยกับการเขียนโปรแกรม คุณสามารถดูโค้ดของเราบน GitHub.",
-        "security_title": "Manager มีความปลอดภัยแค่ไหน?",
-        "source": "ดูโค้ดที่มาของเรา",
-        "text_mobile": "คุณจำเป็นต้องใช้ Ethereum Wallet เพื่อเข้าถึง Balance Manager เพื่อดู ส่ง และแลกเปลี่ยน Ether และโทเค็นที่มีฐานบน Ethereum ของคุณ.",
-        "tracking_link": "เราไม่ติดตามคุณ",
-        "work": "นี่เป็นเครื่องมือบนเว็บที่ช่วยคุณจัดการเงินในกระเป๋าเงินของคุณ โดยทำงานผ่าน Application Programming Interface (API) ของกระเป๋าเงินของคุณ ที่นี่คือข้อเสนอจำเป็นเกี่ยวกับวิธีการที่เราออกแบบ Balance Manager:",
-        "work_title": "Manager ทำงานอย่างไร?"
-      },
       "discover_web3": "ค้นพบ Web3"
     },
     "image_picker": {
@@ -1357,18 +1262,6 @@
       "confirm": "เปิดใช้งานการเข้าถึงไลบรารี",
       "message": "นี้ช่วยให้ Rainbow ใช้ภาพของคุณจากไลบรารี",
       "title": "Rainbow ต้องการเข้าถึงรูปภาพของคุณ"
-    },
-    "input": {
-      "asset_amount": "จำนวน",
-      "donation_address": "ที่อยู่ Balance Manager",
-      "email": "อีเมล",
-      "email_placeholder": "your@email.com",
-      "input_placeholder": "พิมพ์ที่นี่",
-      "input_text": "ข้อมูลอินพุต",
-      "password": "รหัสผ่าน",
-      "password_placeholder": "••••••••••",
-      "private_key": "กุญแจส่วนตัว",
-      "recipient_address": "ที่อยู่ผู้รับ"
     },
     "list": {
       "share": {
@@ -1381,29 +1274,6 @@
       "creating_wallet": "สร้างกระเป๋าเงิน...",
       "importing_wallet": "นำเข้า...",
       "restoring": "กำลังเรียกคืน..."
-    },
-    "message": {
-      "click_to_copy_to_clipboard": "คลิกเพื่อคัดลอกไปยังคลิปบอร์ด",
-      "coming_soon": "เร็วๆ นี้...",
-      "exchange_not_available": "เราไม่สนับสนุน Shapeshift อีกต่อไปเนื่องจากความต้องการ KYC ใหม่ของพวกเขา เรากำลังทำงานเพื่อสนับสนุนผู้ให้บริการแลกเปลี่ยนต่างๆ",
-      "failed_ledger_connection": "การเชื่อมต่อกับ Ledger ล้มเหลว โปรดตรวจสอบอุปกรณ์ของคุณ",
-      "failed_request": "การร้องขอล้มเหลว โปรดรีเฟรช",
-      "failed_trezor_connection": "การเชื่อมต่อกับ Trezor ล้มเหลว โปรดตรวจสอบอุปกรณ์ของคุณ",
-      "failed_trezor_popup_blocked": "โปรดอนุญาตป๊อปอัปบน Balance เพื่อใช้ Trezor ของคุณ",
-      "learn_more": "เรียนรู้เพิ่มเติม",
-      "no_interactions": "ไม่พบการโต้ตอบสำหรับบัญชีนี้",
-      "no_transactions": "ไม่พบการทำธุรกรรมสำหรับบัญชีนี้",
-      "no_unique_tokens": "ไม่พบโทเค็นที่ไม่ซ้ำกันสำหรับบัญชีนี้",
-      "opensea_footer": " เป็นตลาดสำหรับโทเค็นที่ไม่ซ้ำกัน (หรือ 'non-fungible') คนๆ ค้าขายในตลาดและทำให้พวกเขามีค่า คุณสามารถจำนำโทเค็นของคุณเพื่อรับเงิน ทุกสิ่งนี้ทำงานบน Ethereum. ",
-      "opensea_header": "สิ่งนี้ทำงานอย่างไรที่ด้านใต้ฝาปิด?",
-      "page_not_found": "404 ไม่พบหน้านี้",
-      "please_connect_ledger": "โปรดเชื่อมต่อและปลดล็อก Ledger แล้วเลือก Ethereum",
-      "please_connect_trezor": "โปรดเชื่อมต่อ Trezor ของคุณและปฏิบัติตามคำแนะนำ",
-      "power_by": "สนับสนุนโดย",
-      "walletconnect_not_unlocked": "โปรดเชื่อมต่อโดยใช้ WalletConnect",
-      "web3_not_available": "โปรดติดตั้งส่วนขยาย Chrome ของ MetaMask",
-      "web3_not_unlocked": "โปรดปลดล็อคสกระเป๋าเงิน MetaMask ของคุณ",
-      "web3_unknown_network": "เครือข่ายที่ไม่รู้จัก, โปรดสลับไปยังอีกหนึ่ง"
     },
     "mints": {
       "mints_sheet": {
@@ -1438,7 +1308,6 @@
       }
     },
     "modal": {
-      "approve_tx": "อนุมัติธุรกรรมบน %{walletType}",
       "back_up": {
         "alerts": {
           "cloud_not_enabled": {
@@ -1448,29 +1317,12 @@
             "show_me": "ใช่ โชว์ให้ฉันดู"
           }
         },
-        "default": {
-          "button": {
-            "cloud": "สำรองข้อมูลกระเป๋าเงินของคุณ",
-            "cloud_platform": "สำรองข้อมูลถึง %{cloudPlatformName}",
-            "manual": "สำรองข้อมูลด้วยตนเอง"
-          },
-          "description": "อย่าทำหายกระเป๋าเงินของคุณ! บันทึกสำเนาที่ถูกเข้ารหัสลับไปยัง %{cloudPlatformName}",
-          "title": "คุณต้องการสำรองข้อมูลกระเป๋าเงินของคุณอย่างไร?"
-        },
         "existing": {
           "button": {
             "later": "อาจทำในภายหลัง",
             "now": "สำรองข้อมูลเดี๋ยวนี้"
           },
           "description": "คุณมีกระเป๋าเงินที่ยังไม่ได้สำรองข้อมูลในระบบ สำรองข้อมูลกระเป๋าเงินเพื่อความปลอดภัยหากคุณทำอุปกรณ์นี้หาย",
-          "title": "คุณต้องการสำรองข้อมูลหรือไม่?"
-        },
-        "imported": {
-          "button": {
-            "back_up": "สำรองข้อมูลถึง %{cloudPlatformName}",
-            "no_thanks": "ไม่ ขอบคุณ"
-          },
-          "description": "อย่าทำหายกระเป๋าเงินของคุณ! บันทึกสำเนาที่ถูกเข้ารหัสลับไปยัง %{cloudPlatformName}.",
           "title": "คุณต้องการสำรองข้อมูลหรือไม่?"
         }
       },
@@ -1516,7 +1368,6 @@
       "hold_to_mint": "กดถือเพื่อเริ่มการสร้างเหรียญ",
       "minting": "กำลังสร้างเหรียญ...",
       "minted": "สร้าง",
-      "mint_unavailable": "ไม่สามารถสร้างเหรียญได้",
       "mint_on_mintdotfun": "􀮶 สร้างเหรียญบน mint.fun",
       "error_minting": "ผิดพลาดในการสร้างเหรียญ",
       "mint_price": "ราคาการสร้างเหรียญ",
@@ -1528,8 +1379,6 @@
       "description": "คำอธิบาย",
       "total_minted": "ผลิตทั้งหมด",
       "first_event": "เหตุการณ์แรก",
-      "last_event": "เหตุการณ์ล่าสุด",
-      "max_supply": "ปริมาณสูงสุด",
       "contract": "สัญญา",
       "network": "เครือข่าย",
       "could_not_find_collection": "ไม่พบคอลเลกชัน",
@@ -1593,24 +1442,6 @@
           "title": "ข้อผิดพลาดในการขาย NFT",
           "message": "กรุณาติดต่อฝ่ายสนับสนุน Rainbow เพื่อขอความช่วยเหลือ."
         }
-      }
-    },
-    "notification": {
-      "error": {
-        "failed_get_account_tx": "ไม่สามารถเข้าถึงรายการทำรายการของบัญชี",
-        "failed_get_gas_prices": "ไม่สามารถรับราคาการ์ส Ethereum",
-        "failed_get_tx_fee": "ไม่สามารถประเมินค่าธรรมเนียมการทำธุรกรรม",
-        "failed_scanning_qr_code": "การสแกน QR code ล้มเหลว, โปรดลองอีกครั้ง",
-        "generic_error": "เกิดข้อผิดพลาดบางอย่าง, โปรดลองอีกครั้ง",
-        "insufficient_balance": "ยอดเงินในบัญชีนี้ไม่เพียงพอ",
-        "insufficient_for_fees": "ยอดเงินไม่เพียงพอสำหรับค่าธรรมเนียมการทำธุรกรรม",
-        "invalid_address": "ที่อยู่ไม่ถูกต้อง, โปรดตรวจสอบอีกครั้ง",
-        "invalid_address_scanned": "ที่อยู่ที่สแกนไม่ถูกต้อง, โปรดลองอีกครั้ง",
-        "invalid_private_key_scanned": "คีย์ส่วนตัวที่สแกนไม่ถูกต้อง, โปรดลองอีกครั้ง",
-        "no_accounts_found": "ไม่พบบัญชี Ethereum"
-      },
-      "info": {
-        "address_copied_to_clipboard": "ได้คัดลอกที่อยู่ไปยังคลิปบอร์ดแล้ว"
       }
     },
     "perps": {
@@ -1842,11 +1673,6 @@
         "try_again": "ลองใหม่"
       }
     },
-    "pools": {
-      "deposit": "ฝาก",
-      "pools_title": "สระ",
-      "withdraw": "ถอน"
-    },
     "profiles": {
       "actions": {
         "edit_profile": "แก้ไขโปรไฟล์",
@@ -2040,16 +1866,7 @@
           "title": "ปรับแต่งได้",
           "description": "การส่ง, การรับ, การขาย, การสร้าง, การแลกเปลี่ยน, และอื่น ๆ อีกมากมาย คุณเลือกสิ่งที่คุณต้องการ"
         },
-        "header": "การแจ้งเตือน",
-        "subheader": "เราขอแนะนำ"
-      }
-    },
-    "review": {
-      "alert": {
-        "are_you_enjoying_rainbow": "คุณสนุกกับ Rainbow หรือไม่? 🥰",
-        "leave_a_review": "ไปเขียนรีวิวใน App Store!",
-        "no": "ไม่",
-        "yes": "ใช่"
+        "header": "การแจ้งเตือน"
       }
     },
     "poaps": {
@@ -2061,8 +1878,7 @@
       "error": "ผิดพลาดในการสร้างเหรียญ",
       "error_messages": {
         "limit_exceeded": "POAP นี้ถูกสร้างเหรียญออกไปทั้งหมดแล้ว!",
-        "event_expired": "การสร้างเหรียญ POAP นี้หมดอายุแล้ว!",
-        "unknown": "ข้อผิดพลาดที่ไม่รู้จัก"
+        "event_expired": "การสร้างเหรียญ POAP นี้หมดอายุแล้ว!"
       }
     },
     "rewards": {
@@ -2090,11 +1906,8 @@
       "rainbow_users_claimed": "ผู้ใช้รุ่น Rainbow เคลม %{amount}",
       "refreshes_in_with_days": "รีเฟรชในอีก %{days} วัน %{hours} ชั่วโมง",
       "refreshes_in_without_days": "รีเฟรชในอีก %{hours} ชั่วโมง",
-      "percent": "รางวัล %{percent}%",
       "error_title": "มีบางอย่างผิดพลาด",
       "error_text": "โปรดตรวจสอบการเชื่อมต่ออินเทอร์เน็ตของคุณและตรวจสอบใหม่ภายหลัง.",
-      "ended_title": "โปรแกรมสิ้นสุด",
-      "ended_text": "เตรียมตัวเพื่อสิ่งที่เรามีให้คุณครั้งถัดไป!",
       "info": {
         "title": "รับคะแนน OP โดยการสลับและสะสม",
         "description": "รับเงินคืนโดยสลับหรือเชื่อมต่อกับ Optimism รางวัลจะแจกจ่ายรายเดือน"
@@ -2140,31 +1953,6 @@
     },
     "profile": {
       "title": "กิจกรรม"
-    },
-    "savings": {
-      "deposit": "ฝาก",
-      "deposit_from_wallet": "ฝากจากกระเป๋าเงิน",
-      "earned_lifetime_interest": "รับได้ %{lifetimeAccruedInterest}",
-      "earnings": {
-        "100_year": "100 ปี",
-        "10_year": "10 ปี",
-        "20_year": "20 ปี",
-        "50_year": "50 ปี",
-        "5_year": "5 ปี",
-        "est": "ประมาณ",
-        "label": "รายได้",
-        "monthly": "รายเดือน",
-        "yearly": "รายปี"
-      },
-      "get_prefix": "รับ",
-      "label": "เงินออม",
-      "on_your_dollars_suffix": "บนเงินของคุณ",
-      "percentage": "%{percentage}%",
-      "percentage_apy": "%{percentage}% APY",
-      "with_digital_dollars_line_1": "ด้วยดอลลาร์ดิจิตอลเช่น Dai, การออม",
-      "with_digital_dollars_line_2": "ทำให้คุณได้รายได้มากกว่าที่เคยมีมาก่อน",
-      "withdraw": "ถอน",
-      "zero_currency": "$0.00"
     },
     "send_feedback": {
       "copy_email": "คัดลอกที่อยู่อีเมล",
@@ -2248,7 +2036,6 @@
       "app_icon": "ไอคอนแอป",
       "developer": "การตั้งค่าของผู้พัฒนา",
       "done": "เสร็จสิ้น",
-      "feedback_and_reports": "ข้อเสนอแนะและรายงานข้อผิดพลาด",
       "follow_us_on_twitter": "ติดตามเราบน X",
       "hey_friend_message": "👋️ สวัสดีเพื่อน! คุณควรดาวน์โหลด Rainbow, มันเป็นกระเป๋า Ethereum ที่ชื่นชอบ 🌈️🌈️🌈️🌈️🌈️🌈️🌈️🌈️🌈️🌈️",
       "label": "การตั้งค่า",
@@ -2258,7 +2045,6 @@
       "notifications": "การแจ้งเตือน",
       "notifications_section": {
         "my_wallets": "กระเป๋าของฉัน",
-        "points": "แต้ม",
         "watched_wallets": "กระเป๋าที่สังเกต",
         "allow_notifications": "อนุญาตการแจ้งเตือน",
         "sent": "ส่งแล้ว",
@@ -2357,19 +2143,14 @@
         }
       }
     },
-    "subscribe_form": {
-      "email_already_subscribed": "ขออภัย, คุณได้สมัครด้วยอีเมลนี้แล้ว",
-      "generic_error": "อุ๊ย, เกิดข้อผิดพลาดบางอย่าง",
-      "sending": "กำลังส่ง...",
-      "successful": "ตรวจสอบอีเมลของคุณ",
-      "too_many_signup_request": "คำขอสมัครเยอะเกินไป, โปรดลองอีกครั้งในภายหลัง"
+    "send": {
+      "sponsorship_unavailable": "การส่งฟรีไม่พร้อมใช้งานชั่วคราวบนเครือข่ายนี้ โปรดลองอีกครั้งโดยใช้ค่าธรรมเนียมเครือข่าย"
     },
     "swap": {
       "actions": {
         "hold_to_swap": "กดแลกเปลี่ยน",
         "hold_to_bridge": "กดที่สะพาน",
         "earning_rewards": "รับรางวัล",
-        "save": "บันทึก",
         "enter_amount": "ป้อนจำนวน",
         "review": "รีวิว",
         "fetching_prices": "กำลังดึงข้อมูล",
@@ -2379,10 +2160,6 @@
         "insufficient": "ไม่เพียงพอ",
         "quote_error": "ข้อผิดพลาดของราคาที่เสนอ"
       },
-      "aggregators": {
-        "rainbow": "ค่าธรรมเนียม Rainbow"
-      },
-      "bridging": "กำลังสร้างสะพาน",
       "swapping": "กำลังแลกเปลี่ยน",
       "max": "สูงสุด",
       "select": "เลือก",
@@ -2407,7 +2184,6 @@
       },
       "choose_token": "เลือก Token",
       "gas": {
-        "custom": "กำหนดเอง",
         "edit_price": "แก้ไขราคาแก๊ส",
         "enter_price": "กรอกราคาแก๊ส",
         "estimated_fee": "ค่าธรรมเนียมที่คาดว่าจะได้",
@@ -2415,7 +2191,8 @@
         "network_fee": "ค่าธรรมเนียมเครือข่าย",
         "normal": "ปกติ",
         "slow": "ช้า",
-        "gas_sponsored": "ฟรี"
+        "gas_sponsored": "ฟรี",
+        "loading": "กำลังโหลด…"
       },
       "loading": "กำลังโหลด...",
       "modal_types": {
@@ -2638,6 +2415,9 @@
       "network_fee": "ค่าธรรมเนียมเครือข่าย",
       "hash_copied": "􀁣 คัดลอกฮาชธุรกรรมแล้ว",
       "address_copied": "􀁣 คัดลอกที่อยู่แล้ว",
+      "link_copied": "􀁣 คัดลอกลิงก์แล้ว",
+      "view_details": "ดูรายละเอียด",
+      "copy_link": "คัดลอกลิงก์",
       "smart_account": "บัญชีอัจฉริยะ",
       "try_again": "􀅉 ลองอีกครั้ง",
       "context_menu": {
@@ -2663,7 +2443,6 @@
           "plural": "วัน",
           "singular": "วัน"
         },
-        "micro": "ว",
         "short": {
           "plural": "วัน",
           "singular": "วัน"
@@ -2674,21 +2453,9 @@
           "plural": "ชั่วโมง",
           "singular": "ชั่วโมง"
         },
-        "micro": "ชม",
         "short": {
           "plural": "ชม",
           "singular": "ชม"
-        }
-      },
-      "milliseconds": {
-        "long": {
-          "plural": "มิลลิวินาที",
-          "singular": "มิลลิวินาที"
-        },
-        "micro": "มิลลิวินา",
-        "short": {
-          "plural": "มิลลิวินาที",
-          "singular": "มิลลิวินาที"
         }
       },
       "minutes": {
@@ -2696,19 +2463,16 @@
           "plural": "นาที",
           "singular": "นาที"
         },
-        "micro": "น.",
         "short": {
           "plural": "นาที",
           "singular": "น."
         }
       },
-      "now": "ตอนนี้",
       "seconds": {
         "long": {
           "plural": "วินาที",
           "singular": "วินาที"
         },
-        "micro": "ว.",
         "short": {
           "plural": "วินาที",
           "singular": "ว."
@@ -2800,25 +2564,9 @@
         "view_on": "ดูใน %{blockExplorerName}"
       },
       "add_cash": {
-        "card_notice": "ทำงานได้กับรูปแบบบัตรเดบิตทั่วไป",
         "interstitial": {
           "other_amount": "จำนวนเงินอื่นๆ"
-        },
-        "need_help_button_email_subject": "สนับสนุน",
-        "need_help_button_label": "รับการสนับสนุน",
-        "on_the_way_line_1": "%{currencySymbol} ของคุณกำลังจะถึง",
-        "on_the_way_line_2": "และจะถึงในไม่ช้า",
-        "purchase_failed_order_id": "รหัสการสั่งซื้อ: %{orderId}",
-        "purchase_failed_subtitle": "คุณไม่ได้รับค่าใช้จ่าย.",
-        "purchase_failed_support_subject": "การซื้อไม่สำเร็จ",
-        "purchase_failed_support_subject_with_order_id": "การซื้อไม่สำเร็จ - การสั่งซื้อ %{orderId}",
-        "purchase_failed_title": "ขออภัย, การซื้อของคุณไม่สำเร็จ.",
-        "purchasing_dai_requires_eth_message": "ก่อนที่คุณจะซื้อ DAI คุณต้องมี ETH บางส่วนในกระเป๋าเงินของคุณ!",
-        "purchasing_dai_requires_eth_title": "คุณไม่มี ETH!",
-        "running_checks": "กำลังตรวจสอบ...",
-        "success_message": "มาแล้ว 🥳",
-        "watching_mode_confirm_message": "กระเป๋าสตางค์ที่คุณเปิดอยู่มีการอ่านอย่างเดียว ดังนั้นคุณไม่สามารถควบคุมสิ่งที่อยู่ภายใน คุณแน่ใจหรือไม่ว่าต้องการเพิ่มเงินสดใน %{truncatedAddress}?",
-        "watching_mode_confirm_title": "คุณอยู่ในโหมดตรวจสอบ"
+        }
       },
       "add_cash_v2": {
         "sheet_title": "เลือกวิธีการชำระเงินเพื่อซื้อคริปโต",
@@ -2864,16 +2612,12 @@
         "ooops": "อุ๊ย!",
         "this_action_not_supported": "การดำเนินการนี้ไม่ได้รับการสนับสนุนในขณะนี้ :("
       },
-      "assets": {
-        "no_price": "ยอดเงินคงเหลือเล็กน้อย"
-      },
       "authenticate": {
         "please": "กรุณายืนยันตัวตน"
       },
       "back_ups": {
         "wallet_count": "%{numAccounts} กระเป๋าเงิน",
         "wallet_count_gt_one": "%{numAccounts} กระเป๋าเงิน",
-        "and_more_wallets": "และ %{moreWalletCount} วอลเล็ตอื่น ๆ",
         "create_new_wallet": "สร้างกระเป๋าเงินใหม่",
         "create_new_wallet_description": "สร้างกระเป๋าเงินใหม่โดยใช้คำลับนี้",
         "backed_up": "สำรองข้อมูลแล้ว",
@@ -2936,11 +2680,9 @@
           "gas_fee": "เพื่อเพิกถอนบน %{chainName}"
         }
       },
-      "balance_title": "ยอดคงเหลือ",
       "buy": "ซื้อ",
       "change_wallet": {
         "loading_balance": "กำลังโหลดยอดคงเหลือ...",
-        "balance_eth": "%{balanceEth} ETH",
         "watching": "กำลังรับชม",
         "ledger": "เลเจอร์",
         "delegated": "มอบสิทธิ์แล้ว",
@@ -2995,47 +2737,22 @@
         "loading": "กำลังโหลด...",
         "app_state_diagnostics_title": "สถานะแอปพลิเคชัน",
         "app_state_diagnostics_description": "ช่วยให้คุณสามารถทำสแน็ปช็อตของสถานะแอปพลิเคชันเพื่อแบ่งปันกับทีมสนับสนุนของเรา.",
-        "wallet_diagnostics_title": "กระเป๋าสตางค์",
         "sheet_title": "การวินิจฉัย",
         "pin_auth_title": "การตรวจสอบ PIN",
         "you_need_to_authenticate_with_your_pin": "คุณต้องรับรองความถูกต้องด้วย PIN ของคุณเพื่อเข้าถึงความลับของ Wallet",
         "share_application_state": "แบ่งปันสถานะการสลักลายของแอพพลิเคชัน",
-        "wallet_details_title": "รายละเอียดกระเป๋าสตางค์",
-        "wallet_details_description": "ด้านล่างนี้คือรายละเอียดของกระเป๋าสตางค์ทั้งหมดที่เพิ่มเข้าไปใน Rainbow."
+        "wallet_details_title": "รายละเอียดกระเป๋าสตางค์"
       },
       "error_displaying_address": "ข้อผิดพลาดในการแสดงที่อยู่",
-      "feedback": {
-        "cancel": "ไม่ ขอบคุณ",
-        "choice": "คุณต้องการคัดลอกที่อยู่อีเมลของเราไปยังคลิปบอร์ดด้วยตนเองหรือไม่?",
-        "copy_email_address": "คัดลอกที่อยู่อีเมล",
-        "email_subject": "📱 คำติชม Rainbow Beta",
-        "error": "ข้อผิดพลาดในการเปิดแอปพลิเคชันอีเมล",
-        "send": "ส่งคำติชม"
-      },
       "import_failed_invalid_private_key": "การนำเข้าล้มเหลวเนื่องจากคีย์ส่วนตัวไม่ถูกต้อง กรุณาลองอีกครั้ง.",
-      "intro": {
-        "create_wallet": "สร้างกระเป๋าเงิน",
-        "instructions": "กรุณาไม่เก็บเงินในกระเป๋าเงินของคุณมากกว่าที่คุณพร้อมที่จะสูญเสีย.",
-        "warning": "นี่เป็นซอฟต์แวร์แบบ alpha.",
-        "welcome": "ยินดีต้อนรับสู่ Rainbow"
-      },
       "invalid_address_title": "ที่อยู่ไม่ถูกต้อง",
       "invalid_address_message": "ตรวจสอบตัวพิมพ์เล็ก-ใหญ่ให้ถูกต้องแล้วลองอีกครั้ง",
       "invalid_ens_name": "นี่ไม่ใช่ชื่อ ENS ที่ถูกต้อง",
       "invalid_unstoppable_name": "นี่ไม่ใช่ชื่อ Unstoppable ที่ถูกต้อง",
-      "label": "กระเป๋าเงิน",
-      "loading": {
-        "error": "เกิดข้อผิดพลาดในการโหลดกระเป๋าเงิน กรุณาปิดแอปและลองอีกครั้ง.",
-        "message": "กำลังโหลด"
-      },
       "message_signing": {
-        "failed_signing": "ล้มเหลวในการลงชื่อข้อความ",
-        "message": "ข้อความ",
-        "request": "คำขอการเซ็นข้อความ",
-        "sign": "เซ็นข้อความ"
+        "request": "คำขอการเซ็นข้อความ"
       },
       "my_account_address": "ที่อยู่บัญชีของฉัน:",
-      "network_title": "เครือข่าย",
       "new": {
         "choose_wallet_group": {
           "title": "เลือกกลุ่มกระเป๋าเงิน",
@@ -3049,10 +2766,7 @@
           "options": {
             "cloud": {
               "description_restore_sheet": "ถ้าคุณเคยสำรองข้อมูลไปที่ %{cloudPlatform} ให้แตะที่นี่เพื่อกู้คืน",
-              "description_with_latest_backup_date": "สำรองข้อมูลล่าสุด %{fromNow} ที่ %{time}",
-              "title": "คืนค่าจาก %{platform}",
-              "no_backups": "ไม่พบการสำรองข้อมูล",
-              "no_google_backups": "เราไม่พบการสำรองข้อมูลใดๆ บน Google Drive ตรวจสอบว่าคุณได้เข้าสู่ระบบด้วยบัญชีที่ถูกต้อง"
+              "title": "คืนค่าจาก %{platform}"
             },
             "create_new": {
               "description": "สร้างกระเป๋าสตางค์ใหม่บนวลีคีย์การสร้างของคุณ",
@@ -3070,14 +2784,6 @@
               "description": "ดูชื่อ ENS หรือที่อยู่สาธารณะ",
               "title": "ดูกระเป๋าเงิน"
             }
-          },
-          "first_wallet": {
-            "description": "นำเข้ากระเป๋าเงินของคุณเองหรือดูของคนอื่น",
-            "title": "เพิ่มกระเป๋าเงินครั้งแรกของคุณ"
-          },
-          "additional_wallet": {
-            "description": "สร้างกระเป๋าเงินใหม่หรือเพิ่มกระเป๋าเงินที่มีอยู่แล้ว",
-            "title": "เพิ่มกระเป๋าเงินอื่น"
           }
         },
         "import_or_watch_wallet_sheet": {
@@ -3086,17 +2792,11 @@
           "import": {
             "title": "กู้คืนกระเป๋าเงิน",
             "description": "คืนค่าด้วยวลีการกู้คืนหรือคีย์ส่วนตัวจาก Rainbow หรือกระเป๋าสตางค์คริปโตคู่หนึ่ง",
-            "placeholder": "ป้อนเฟรชการกู้คืนหรือคีย์ส่วนตัว",
-            "button": "นำเข้า"
+            "placeholder": "ป้อนเฟรชการกู้คืนหรือคีย์ส่วนตัว"
           },
           "watch": {
             "title": "ดูที่อยู่",
-            "placeholder": "ป้อนที่อยู่ Ethereum หรือชื่อ ENS",
-            "button": "ดู"
-          },
-          "watch_or_import": {
-            "title": "เพิ่มกระเป๋าสตางค์",
-            "placeholder": "ป้อนวลีลับ, คีย์ส่วนตัว, ที่อยู่ Ethereum, หรือชื่อ ENS"
+            "placeholder": "ป้อนที่อยู่ Ethereum หรือชื่อ ENS"
           }
         },
         "alert": {
@@ -3105,7 +2805,6 @@
         },
         "already_have_wallet": "ฉันมีอยู่แล้ว",
         "create_wallet": "สร้าง Wallet",
-        "enter_seeds_placeholder": "วลีลับ, คีย์ส่วนตัว, ที่อยู่ Ethereum, หรือชื่อ ENS",
         "get_new_wallet": "รับกระเป๋าสตางค์ใหม่",
         "import_wallet": "นำเข้า Wallet",
         "name_wallet": "ตั้งชื่อสำหรับกระเป๋าเงินของคุณ",
@@ -3129,21 +2828,14 @@
         "camera_access_needed": "ต้องการการเข้าถึงกล้องเพื่อสแกน!",
         "enable_camera_access": "เปิดใช้งานการเข้าถึงกล้อง",
         "error_mounting_camera": "ข้อผิดพลาดในการติดตั้งกล้อง",
-        "find_a_code": "ค้นหารหัสเพื่อสแกน",
-        "qr_1_app_connected": "1 แอพที่เชื่อมต่อ",
-        "qr_multiple_apps_connected": "%{appsConnectedCount} แอพที่เชื่อมต่อ",
         "scan_to_connect": "สแกนเพื่อเชื่อมต่อ",
         "scan_to_pay_or_connect": "สแกนเพื่อจ่ายเงินหรือเชื่อมต่อ",
-        "simulator_mode": "โหมดจำลอง",
         "sorry_could_not_be_recognized": "ขออภัย, ไม่สามารถรู้จำรหัส QR นี้ได้.",
         "unrecognized_qr_code_title": "รหัส QR ที่ไม่รู้จัก"
       },
       "settings": {
         "copy_address": "คัดลอกที่อยู่",
-        "copy_address_capitalized": "คัดลอกที่อยู่",
-        "copy_seed_phrase": "คัดลอกวลีลับ",
-        "hide_seed_phrase": "ซ่อนวลีลับ",
-        "show_seed_phrase": "แสดงวลีลับ"
+        "copy_address_capitalized": "คัดลอกที่อยู่"
       },
       "something_went_wrong_importing": "เกิดข้อผิดพลาดขณะนำเข้า กรุณาลองอีกครั้ง!",
       "sorry_cannot_add_ens": "ขออภัย ขณะนี้เราไม่สามารถเพิ่มชื่อ ENS นี้ กรุณาลองอีกครั้งในภายหลัง!",
@@ -3195,30 +2887,7 @@
         "previous_send": "%{number} ครั้งที่ส่งก่อนหน้านี้",
         "previous_sends": "%{number} ครั้งที่ส่งก่อนหน้านี้"
       },
-      "wallet_connect": {
-        "error": "เกิดข้อผิดพลาดในการเริ่มต้นกับ WalletConnect",
-        "failed_to_disconnect": "ล้มเหลวในการตัดการเชื่อมต่อทุกเซสชัน WalletConnect",
-        "failed_to_send_request_status": "ล้มเหลวในการส่งสถานะคำขอไปยัง WalletConnect.",
-        "missing_fcm": "ไม่สามารถเริ่มต้น WalletConnect: ขาดโทเค็นการแจ้งเตือน push กรุณาลองอีกครั้ง.",
-        "walletconnect_session_has_expired_while_trying_to_send": "เซสชัน WalletConnect หมดอายุขณะพยายามส่งสถานะคำขอ กรุณาเชื่อมต่อใหม่."
-      },
       "wallet_title": "กระเป๋าสตางค์"
-    },
-    "support": {
-      "error_alert": {
-        "copy_email_address": "คัดลอกที่อยู่อีเมล",
-        "no_thanks": "ไม่ ขอบคุณ",
-        "message": "คุณต้องการคัดลอกที่อยู่อีเมล์สนับสนุนของเราไปยังคลิปบอร์ดหรือไม่?",
-        "title": "ข้อผิดพลาดในการเปิดอีเมลไคลเอ็นต์",
-        "subject": "สนับสนุน Rainbow"
-      },
-      "wallet_alert": {
-        "message_support": "ข้อความสนับสนุน",
-        "close": "ปิด",
-        "learn_more": "เรียนรู้เพิ่มเติม",
-        "message": "สำหรับความช่วยเหลือ, กรุณาติดต่อฝ่ายสนับสนุน! \nเราจะติดต่อกลับคุณในเร็ววัน!",
-        "title": "เกิดข้อผิดพลาด"
-      }
     },
     "walletconnect": {
       "connecting": "กำลังเชื่อมต่อ",
@@ -3374,10 +3043,6 @@
         }
       }
     },
-    "warning": {
-      "user_is_offline": "การเชื่อมต่อออฟไลน์ โปรดตรวจสอบการเชื่อมต่ออินเทอร์เน็ตของคุณ",
-      "user_is_online": "เชื่อมต่อแล้ว! คุณกลับไปออนไลน์อีกครั้ง"
-    },
     "dapp_browser": {
       "address_bar": {
         "input_placeholder": "ค้นหาหรือใส่เว็บไซต์"
@@ -3392,8 +3057,7 @@
         "undo_favorite": "เลิกทำ",
         "connect": "เชื่อมต่อ",
         "swap": "สลับ",
-        "bridge": "สะพาน",
-        "more": "เพิ่มเติม"
+        "bridge": "สะพาน"
       },
       "error": {
         "title": "มีบางอย่างผิดพลาด",
@@ -3433,44 +3097,6 @@
         "new_tab": "แท็บใหม่"
       }
     },
-    "trending_tokens": {
-      "all": "ทั้งหมด",
-      "no_results": {
-        "title": "ไม่มีผลลัพธ์",
-        "body": "ลองเรียกดูช่วงเวลาที่กว้างขึ้นหรือเครือข่ายหรือหมวดหมู่ที่แตกต่าง"
-      },
-      "and": "และ",
-      "and_others": {
-        "one": "และ%{count} อื่น",
-        "other": "และ%{count} อื่น ๆ"
-      },
-      "filters": {
-        "categories": {
-          "TRENDING": "เทรนด์",
-          "RAINBOW": "ค่าธรรมเนียม Rainbow",
-          "NEW": "ใหม่",
-          "FARCASTER": "ฟาร์คาสเตอร์"
-        },
-        "sort": {
-          "RECOMMENDED": {
-            "label": "เรียงลำดับ",
-            "menuOption": "ค่าเริ่มต้น"
-          },
-          "VOLUME": "ปริมาณ",
-          "MARKET_CAP": "มูลค่าตามตลาด",
-          "TOP_GAINERS": "ผู้ที่ได้กำไรมากที่สุด",
-          "TOP_LOSERS": "ผู้ที่ขาดทุนมากที่สุด"
-        },
-        "time": {
-          "H12": "12 ชั่วโมง",
-          "H12_ABBREVIATED": "12ชม.",
-          "H24": "24 ชั่วโมง",
-          "H24_ABBREVIATED": "24h",
-          "D7": "1 สัปดาห์",
-          "D3": "3 วัน"
-        }
-      }
-    },
     "network_selector": {
       "customize_networks_banner": {
         "title": "กำหนดค่าเครือข่าย",
@@ -3489,12 +3115,6 @@
       "search": "ค้นหา"
     },
     "token_launcher": {
-      "airdrop": {
-        "address_or_ens": "ที่อยู่หรือ ENS",
-        "suggested_users": "ผู้ใช้ที่แนะนำ",
-        "airdrop_lists": "รายการ Airdrop",
-        "max_recipients_reached": "จำนวนผู้รับสูงสุด %{maxRecipientCount} คนถูกใช้แล้ว"
-      },
       "image_upload_error": {
         "title": "ขออภัย เกิดข้อผิดพลาดในการอัปโหลดรูปภาพของคุณ.",
         "subtitle": "กรุณาลองอีกครั้ง."
@@ -3508,9 +3128,6 @@
         "title": "ซื้อโทเค็นล่วงหน้า"
       },
       "review": {
-        "token_allocation": "การจัดสรรโทเค็น",
-        "your_share": "ส่วนที่คุณถือครอง",
-        "airdropping": "การกระจายทางอากาศ",
         "about": "เกี่ยวกับ",
         "total_cost": "ค่าใช้จ่ายทั้งหมด",
         "initial_price": "ราคาเริ่มต้น",
@@ -3534,34 +3151,30 @@
         "must_be_greater_than_0": "ต้องมากกว่า 0",
         "amount_is_greater_than_balance": "จำนวนมากกว่ายอดคงเหลือ",
         "amount_is_greater_than_max_prebuy_amount": "เกินจำนวนการซื้อสูงสุดล่วงหน้า %{maxPrebuyAmount} %{chainNativeAssetSymbol}",
-        "amount_is_less_than_min_prebuy_amount": "ต้องมากกว่าจำนวนการซื้อล่วงหน้าขั้นต่ำ %{minPrebuyAmount} %{chainNativeAssetSymbol}",
         "amount_too_small": "จำนวนเงินน้อยเกินไป! ลองเพิ่มอีกเล็กน้อย!"
       },
       "titles": {
-        "total_supply": "อุปทานทั้งหมด",
         "ticker": "สัญลักษณ์",
         "name": "ชื่อ",
         "network": "เครือข่าย",
         "description": "คำอธิบาย",
-        "airdrop": "Airdrop ให้เพื่อน",
         "required_info": "ข้อมูลที่จำเป็น",
         "about": "เกี่ยวกับ",
-        "token_allocation": "การจัดสรรโทเค็น",
         "token_allocation_breakdown": "รายละเอียดการจัดสรรโทเค็น",
-        "mcap": "มูลค่าตลาด"
+        "mcap": "มูลค่าตลาด",
+        "links": "ลิงก์"
       },
       "placeholders": {
         "ticker": "$NAME",
         "enter_coin_name": "ใส่ชื่อเหรียญ",
-        "describe_your_coin": "อธิบายเหรียญของคุณ"
+        "describe_your_coin": "อธิบายเหรียญของคุณ",
+        "custom_amount": "จำนวนที่กำหนดเอง"
       },
       "buttons": {
         "hold_to_create": "กดค้างเพื่อสร้าง",
         "creating": "กำลังสร้าง...",
         "share_link": "แชร์ลิงค์",
-        "token_allocation_info": "ข้อมูลเพิ่มเติม",
-        "got_it": "รับทราบ",
-        "cancel": "ยกเลิก"
+        "got_it": "รับทราบ"
       },
       "header": {
         "new_coin": "เหรียญใหม่",
@@ -3593,27 +3206,12 @@
       },
       "discard_and_exit": "ยกเลิก & ออกจากการ",
       "airdrops_sheet": {
-        "claim_button_text": "เคลม",
         "empty_state_title": "ยังไม่มี Airdrop",
         "title": "ขอรับเหรียญ Rainbow"
-      },
-      "cards": {
-        "airdrops": {
-          "subtitle_loading": "กำลังโหลด",
-          "subtitle_has_airdrops": "พร้อมที่จะรับ",
-          "subtitle_no_airdrops": "ยังไม่มี Airdrop",
-          "title": "Airdrops",
-          "title_singular": "Airdrop"
-        },
-        "launch": {
-          "line_one": "เปิดตัว\n",
-          "line_two": "เหรียญของคุณ"
-        }
       },
       "claim_airdrop_sheet": {
         "by": "โดย",
         "claiming": "กำลังเรียกร้อง",
-        "created_by": "สร้างโดย %{name}",
         "gifted_to": "มอบให้แก่",
         "hold_to_claim": "กดค้างเพื่อรับแบบอัตโนมัติ",
         "hold_to_retry": "กดค้างเพื่อทดลองใหม่",
@@ -3636,19 +3234,25 @@
         "unsupported_network": "เครือข่ายนี้ไม่รองรับการเปิดตัวโทเค็น"
       }
     },
-    "done": "เสร็จสิ้น",
     "copy": "คัดลอก",
     "paste": "วาง",
     "new": "ใหม่",
     "market_data": {
       "vol": "VOL",
-      "price": "ราคา",
-      "mcap": "มูลค่าตลาด"
+      "mcap": "มูลค่าตลาด",
+      "transactions": "การทำธุรกรรม",
+      "volume": "ปริมาณ",
+      "makers": "ผู้สร้าง",
+      "buys": "การซื้อ",
+      "sells": "ขาย",
+      "bought": "ซื้อแล้ว",
+      "sold": "ขายแล้ว",
+      "buyers": "ผู้ซื้อ",
+      "sellers": "ผู้ขาย"
     },
     "king_of_hill": {
       "title": "เปิดตัว",
       "launch": "เปิดตัว",
-      "current_king": "ราชาปัจจุบัน",
       "last_winner": "ผู้ชนะครั้งล่าสุด",
       "no_previous_winner": "ไม่มีผู้ชนะก่อนหน้านี้",
       "round_ends_in": "สิ้นสุดรอบใน",
@@ -3752,7 +3356,6 @@
       },
       "cash_out": {
         "title": "ขึ้นเงินออกเดิมพัน",
-        "current_price": "ราคาปัจจุบัน",
         "average_price": "ราคาเฉลี่ย",
         "profit_loss": "กำไร / ขาดทุน",
         "receive": "รับ",
@@ -3780,7 +3383,6 @@
         "show_resolved": "แสดงไอเทมที่แก้ไขแล้ว",
         "open_positions": "ตำแหน่งที่เปิดอยู่",
         "market_resolved": "ตลาดที่แก้ไขแล้ว",
-        "volume_suffix": "VOL",
         "show_less": "แสดงน้อยลง",
         "show_more": "แสดงเพิ่มเติม",
         "resolved": "แก้ไขแล้ว"
@@ -3815,6 +3417,7 @@
       "sports": {
         "vs": "เทียบกับ",
         "live": "ถ่ายทอดสด",
+        "this_week": "สัปดาห์นี้",
         "game_best_of": "เกม %{currentPeriod} - ดีที่สุดจาก %{bestOf}",
         "final": "รอบชิงชนะเลิศ",
         "no_games": "ไม่มีการแข่งขันวันนี้หรือพรุ่งนี้"
@@ -3850,13 +3453,11 @@
       },
       "claim": {
         "claim_title": "รับ $RNBW",
-        "available_to_claim": "พร้อมสำหรับการรับ",
         "your_airdrop": "Airdrop ของคุณ",
         "your_airdrop_description": "ขอบคุณที่ใช้ Rainbow Airdrop ของคุณถูกคำนวณจากกิจกรรมก่อนหน้าของคุณ",
         "claim_failed_title": "เกิดข้อผิดพลาดในการขอรับรางวัล",
         "claim_failed_message": "กรุณาลองอีกครั้ง.",
-        "claim_later": "ขอรับภายหลัง",
-        "almost_there": "ใกล้แล้ว..."
+        "claim_later": "ขอรับภายหลัง"
       },
       "airdrop_claim_finished": {
         "airdrop_claimed": "ขอรับ Airdrop แล้ว",
@@ -3881,7 +3482,6 @@
       },
       "loading_labels": {
         "checking_historical_activity": "กำลังตรวจสอบกิจกรรมย้อนหลัง...",
-        "checking_eligibility": "กำลังตรวจสอบสิทธิ์...",
         "claiming_rewards": "กำลังขอรับรางวัล...",
         "submitting_transaction": "กำลังส่งธุรกรรม...",
         "claiming_airdrop": "กำลังขอรับ Airdrop...",
@@ -3909,11 +3509,13 @@
       "staking_card": {
         "stake": "สเตก",
         "enable_staking": "เปิดใช้งานการสเตก",
-        "buy_rnbw": "ซื้อ RNBW",
+        "buy": "ซื้อ",
         "unstake": "ถอนสเตก",
         "available_to_stake": "พร้อมสำหรับการสเตก",
         "available_to_add": "พร้อมสำหรับการเพิ่ม",
-        "minimum_stake_amount_required": "คุณต้องมีอย่างน้อย %{minStakeAmount} RNBW เพื่อทำการสเตก"
+        "to_add_to_stake": "เพื่อเพิ่มเข้าไปในสเตค",
+        "to_stake": "เพื่อสเตค",
+        "buy_more": "ซื้อเพิ่ม"
       },
       "staking_earnings_card": {
         "lifetime_earnings": "รายได้ตลอดอายุการใช้งาน",
