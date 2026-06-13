@@ -9,6 +9,8 @@ import ButtonPressAnimation from '@/components/animations/ButtonPressAnimation';
 import { CopyFloatingEmojis } from '@/components/floating-emojis';
 import { enableActionsOnReadOnlyWallet } from '@/config/debug';
 import { AccentColorProvider, Box, Column, Columns, Inset, Stack, Text, useColorMode } from '@/design-system';
+import { useIsCashEnabled } from '@/features/cash/hooks/useIsCashEnabled';
+import { getAddCashRoute } from '@/features/cash/navigation/getAddCashRoute';
 import { watchingAlert } from '@/features/wallet/utils/watchingAlert';
 import { useAccountAccentColor } from '@/hooks/useAccountAccentColor';
 import * as i18n from '@/languages';
@@ -128,6 +130,7 @@ function ActionButton({ children, icon, onPress, testID }: { children: string; i
 }
 
 function BuyButton() {
+  const isCashEnabled = useIsCashEnabled();
   const handlePress = React.useCallback(() => {
     if (getIsDamagedWallet()) {
       Navigation.handleAction(Routes.WALLET_ERROR_SHEET);
@@ -136,13 +139,13 @@ function BuyButton() {
 
     analytics.track(analytics.event.navigationAddCash, { category: 'home screen' });
 
-    Navigation.handleAction(Routes.ADD_CASH_SHEET);
-  }, []);
+    Navigation.handleAction(getAddCashRoute(isCashEnabled));
+  }, [isCashEnabled]);
 
   return (
     <Box>
       <ActionButton icon="􀁌" onPress={handlePress} testID="buy-button">
-        {i18n.t(i18n.l.wallet.buy)}
+        {isCashEnabled ? i18n.t(i18n.l.cash.add_cash) : i18n.t(i18n.l.wallet.buy)}
       </ActionButton>
     </Box>
   );
