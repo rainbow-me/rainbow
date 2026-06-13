@@ -1668,6 +1668,18 @@
       "leverage": "Leverage",
       "up_to": "Hingga"
     },
+    "cash": {
+      "add_cash": "Tambahkan Uang",
+      "deposit_intro": {
+        "introducing": "Memperkenalkan",
+        "title": "Deposit Tunai",
+        "encrypted_feature": "Informasi Anda dienkripsi dan dilindungi.",
+        "visa_feature": "Tersedia untuk pelanggan berbasis di AS yang menggunakan kartu Visa.",
+        "set_up_account": "Siapkan Akun",
+        "other_deposit_methods": "Metode Deposit Lainnya",
+        "sign_in": "Masuk"
+      }
+    },
     "points": {
       "points": {
         "try_again": "Coba Lagi"
