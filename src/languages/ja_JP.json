@@ -1668,6 +1668,18 @@
       "leverage": "レバレッジ",
       "up_to": "最大"
     },
+    "cash": {
+      "add_cash": "現金を追加",
+      "deposit_intro": {
+        "introducing": "ご紹介",
+        "title": "Cash Deposits",
+        "encrypted_feature": "Your information is encrypted and protected.",
+        "visa_feature": "Available for US-based customers using a Visa card.",
+        "set_up_account": "Set Up Account",
+        "other_deposit_methods": "Other Deposit Methods",
+        "sign_in": "サインインする"
+      }
+    },
     "points": {
       "points": {
         "try_again": "再試行"
