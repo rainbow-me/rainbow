@@ -1671,7 +1671,10 @@
       },
       "add_cash_screen": {
         "add_from": "Add From",
-        "hold_to_add": "Hold to Add"
+        "hold_to_add": "Hold to Add",
+        "enter_amount": "Enter Amount",
+        "money_is_added_in": "Money is added in",
+        "usdc": "USDC"
       }
     },
     "points": {
