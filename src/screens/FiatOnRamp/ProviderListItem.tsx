@@ -10,8 +10,8 @@ import { WrappedAlert } from '@/helpers/alert';
 import * as i18n from '@/languages';
 import { logger, RainbowError } from '@/logger';
 import { type GetWidgetURL } from '@/resources/f2c';
-import { ProviderCard } from '@/screens/AddCash/components/ProviderCard';
-import { type ProviderConfig } from '@/screens/AddCash/types';
+import { ProviderCard } from '@/screens/FiatOnRamp/components/ProviderCard';
+import { type ProviderConfig } from '@/screens/FiatOnRamp/types';
 import { openInBrowser } from '@/utils/openInBrowser';
 
 interface ProviderListItemProps {

@@ -76,13 +76,13 @@ import { RewardsSheet } from '@/screens/rewards/RewardsSheet';
 import { TokenLauncherScreen } from '@/screens/token-launcher/TokenLauncherScreen';
 import { TransactionDetails } from '@/screens/transaction-details/TransactionDetails';
 
-import { AddCashSheet } from '../screens/AddCash';
 import AvatarBuilder from '../screens/AvatarBuilder';
 import ChangeWalletSheet from '../screens/change-wallet/ChangeWalletSheet';
 import { WalletDiagnosticsSheet } from '../screens/Diagnostics';
 import ExpandedAssetSheet from '../screens/ExpandedAssetSheet';
 import ExplainSheet from '../screens/ExplainSheet';
 import ExternalLinkWarningSheet from '../screens/ExternalLinkWarningSheet';
+import { FiatOnRampSheet } from '../screens/FiatOnRamp';
 import ModalScreen from '../screens/ModalScreen';
 import NoNeedWCSheet from '../screens/NoNeedWCSheet';
 import ProfileSheet from '../screens/ProfileSheet';
@@ -144,7 +144,7 @@ import {
   walletDiagnosticsSheetConfig,
   walletErrorSheetConfig,
 } from './config';
-import { addCashSheet, emojiPreset, emojiPresetWallet, overlayExpandedPreset, sheetPreset } from './effects';
+import { emojiPreset, emojiPresetWallet, fiatOnRampSheet, overlayExpandedPreset, sheetPreset } from './effects';
 import { HardwareWalletTxNavigator } from './HardwareWalletTxNavigator';
 import { InitialRouteContext } from './initialRoute';
 import { nativeStackConfig } from './nativeStackConfig';
@@ -175,7 +175,7 @@ function MainNavigator() {
       <Stack.Screen component={WelcomeScreen} name={Routes.WELCOME_SCREEN} options={{ animationEnabled: false, gestureEnabled: false }} />
       <Stack.Screen component={AvatarBuilder} name={Routes.AVATAR_BUILDER} options={emojiPreset} />
       <Stack.Screen component={AvatarBuilder} name={Routes.AVATAR_BUILDER_WALLET} options={emojiPresetWallet} />
-      <Stack.Screen component={AddCashSheet} name={Routes.ADD_CASH_SHEET} options={addCashSheet} />
+      <Stack.Screen component={FiatOnRampSheet} name={Routes.FIAT_ON_RAMP_SHEET} options={fiatOnRampSheet} />
     </Stack.Navigator>
   );
 }

@@ -37,7 +37,7 @@ export const useTransactionSubmission = ({
 
   const submitFn = useCallback(() => {
     if (!isBalanceEnough && !isMessageRequest) {
-      return navigate(Routes.ADD_CASH_SHEET);
+      return navigate(Routes.FIAT_ON_RAMP_SHEET);
     }
 
     if (accountInfo.isHardwareWallet) {

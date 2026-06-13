@@ -51,7 +51,7 @@ export const CashDepositIntroPanel = memo(function CashDepositIntroPanel() {
 
   // Other Deposit Methods → legacy third-party provider widgets.
   const handleOtherDepositMethods = useCallback(() => {
-    navigate(Routes.ADD_CASH_SHEET);
+    navigate(Routes.FIAT_ON_RAMP_SHEET);
   }, [navigate]);
 
   // Sign In → passkey login. Destination lands in a later unit; inert for now.
