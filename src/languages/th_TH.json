@@ -1668,6 +1668,18 @@
       "leverage": "เลเวอเรจ",
       "up_to": "สูงสุดถึง"
     },
+    "cash": {
+      "add_cash": "เพิ่มเงินสด",
+      "deposit_intro": {
+        "introducing": "ขอแนะนำ",
+        "title": "Cash Deposits",
+        "encrypted_feature": "Your information is encrypted and protected.",
+        "visa_feature": "Available for US-based customers using a Visa card.",
+        "set_up_account": "Set Up Account",
+        "other_deposit_methods": "Other Deposit Methods",
+        "sign_in": "เข้าสู่ระบบ"
+      }
+    },
     "points": {
       "points": {
         "try_again": "ลองใหม่"
