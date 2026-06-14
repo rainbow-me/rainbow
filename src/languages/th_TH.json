@@ -505,6 +505,13 @@
       },
       "restart_app": "เริ่มแอปใหม่",
       "reset_experimental_config": "ตั้งค่าคอนฟิกการทดลองใหม่",
+      "cash_deposit_setup_status": {
+        "title": "สถานะการตั้งค่าการฝากเงินสด",
+        "needsIdentity": "ต้องยืนยันตัวตน",
+        "needsCard": "ต้องมีบัตร",
+        "needsWallet": "ต้องมีกระเป๋าเงิน",
+        "ready": "พร้อม"
+      },
       "status": "สถานะ",
       "sync_codepush": "ซิงค์ CodePush",
       "simulate_device_transfer": "จำลองการโอนถ่ายอุปกรณ์",
@@ -512,7 +519,8 @@
         "normie_settings": "การตั้งค่าสำหรับผู้ใช้ทั่วไป",
         "rainbow_developer_settings": "การตั้งค่าของผู้พัฒนา Rainbow",
         "feature_flags": "แฟล็กคุณสมบัติ",
-        "delegation_settings": "การตั้งค่าการมอบสิทธิ์"
+        "delegation_settings": "การตั้งค่าการมอบสิทธิ์",
+        "cash_settings": "การตั้งค่าเงินสด"
       },
       "delegation_settings": {
         "simulate_disable_smart_wallet": "จำลองการปิดใช้งาน Smart Wallet",
@@ -1672,12 +1680,16 @@
       "add_cash": "เพิ่มเงินสด",
       "deposit_intro": {
         "introducing": "ขอแนะนำ",
-        "title": "Cash Deposits",
-        "encrypted_feature": "Your information is encrypted and protected.",
-        "visa_feature": "Available for US-based customers using a Visa card.",
-        "set_up_account": "Set Up Account",
-        "other_deposit_methods": "Other Deposit Methods",
+        "title": "การฝากเงินสด",
+        "encrypted_feature": "ข้อมูลของคุณถูกเข้ารหัสและได้รับการปกป้อง",
+        "visa_feature": "ใช้งานได้สำหรับลูกค้าที่อยู่ในสหรัฐฯ ที่ใช้บัตร Visa",
+        "set_up_account": "ตั้งค่าบัญชี",
+        "other_deposit_methods": "วิธีการฝากเงินอื่นๆ",
         "sign_in": "เข้าสู่ระบบ"
+      },
+      "add_cash_screen": {
+        "add_from": "เพิ่มจาก",
+        "hold_to_add": "กดค้างเพื่อเพิ่ม"
       }
     },
     "points": {
