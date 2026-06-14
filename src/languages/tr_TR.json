@@ -505,6 +505,13 @@
       },
       "restart_app": "Uygulamayı Yeniden Başlat",
       "reset_experimental_config": "Deneysel Yapılandırmayı Sıfırla",
+      "cash_deposit_setup_status": {
+        "title": "Nakit Yatırma Kurulum Durumu",
+        "needsIdentity": "Kimlik Gerekli",
+        "needsCard": "Kart Gerekli",
+        "needsWallet": "Cüzdan Gerekli",
+        "ready": "Hazır"
+      },
       "status": "Durum",
       "sync_codepush": "CodePush'u Senkronize Et",
       "simulate_device_transfer": "Cihaz Transferini Simüle Et",
@@ -512,7 +519,8 @@
         "normie_settings": "Normie Ayarları",
         "rainbow_developer_settings": "Rainbow Geliştirici Ayarları",
         "feature_flags": "Özellik Bayrakları",
-        "delegation_settings": "Delegasyon Ayarları"
+        "delegation_settings": "Delegasyon Ayarları",
+        "cash_settings": "Nakit Ayarları"
       },
       "delegation_settings": {
         "simulate_disable_smart_wallet": "Akıllı Cüzdanı Devre Dışı Bırakmayı Simüle Et",
@@ -1672,12 +1680,16 @@
       "add_cash": "Nakit Ekle",
       "deposit_intro": {
         "introducing": "Tanışın",
-        "title": "Cash Deposits",
-        "encrypted_feature": "Your information is encrypted and protected.",
-        "visa_feature": "Available for US-based customers using a Visa card.",
-        "set_up_account": "Set Up Account",
-        "other_deposit_methods": "Other Deposit Methods",
+        "title": "Nakit Para Yatırma",
+        "encrypted_feature": "Bilgileriniz şifrelenir ve korunur.",
+        "visa_feature": "Visa kartı kullanan ABD merkezli müşteriler için kullanılabilir.",
+        "set_up_account": "Hesap Kur",
+        "other_deposit_methods": "Diğer Para Yatırma Yöntemleri",
         "sign_in": "Oturum Aç"
+      },
+      "add_cash_screen": {
+        "add_from": "Şuradan Ekle",
+        "hold_to_add": "Eklemek için Basılı Tut"
       }
     },
     "points": {
