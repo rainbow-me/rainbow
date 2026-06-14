@@ -12,6 +12,7 @@ import { PROFILES } from '@/config/experimental';
 import useExperimentalFlag from '@/config/experimentalHooks';
 import AppIconUnlockSheet from '@/features/app-icon/screens/AppIconUnlockSheet';
 import BackupSheet from '@/features/backup/components/BackupSheet';
+import { AddCashSheet } from '@/features/cash/screens/add-cash-sheet/AddCashSheet';
 import { CashDepositIntroPanel } from '@/features/cash/screens/cash-deposit-intro-panel/CashDepositIntroPanel';
 import { SignTransactionSheet } from '@/features/dapp-request/screens/SignTransactionSheet';
 import RegisterENSNavigator from '@/features/ens/navigation/RegisterENSNavigator';
@@ -339,6 +340,7 @@ function NativeStackNavigator() {
       <NativeStack.Screen component={PerpsExplainSheet} name={Routes.PERPS_EXPLAIN_SHEET} {...perpsExplainSheetConfig} />
       <NativeStack.Screen component={PerpsAboutSheet} name={Routes.PERPS_ABOUT_SHEET} {...panelConfig} />
       <NativeStack.Screen component={CashDepositIntroPanel} name={Routes.CASH_DEPOSIT_INTRO_PANEL} {...panelConfig} />
+      <NativeStack.Screen component={AddCashSheet} name={Routes.ADD_CASH_SHEET} {...panelConfig} />
       <NativeStack.Screen
         component={PerpsTradeDetailsSheet}
         name={Routes.PERPS_TRADE_DETAILS_SHEET}

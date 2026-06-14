@@ -9,8 +9,7 @@ import ButtonPressAnimation from '@/components/animations/ButtonPressAnimation';
 import { CopyFloatingEmojis } from '@/components/floating-emojis';
 import { enableActionsOnReadOnlyWallet } from '@/config/debug';
 import { AccentColorProvider, Box, Column, Columns, Inset, Stack, Text, useColorMode } from '@/design-system';
-import { useIsCashEnabled } from '@/features/cash/hooks/useIsCashEnabled';
-import { getAddCashRoute } from '@/features/cash/navigation/getAddCashRoute';
+import { useAddCashRoute } from '@/features/cash/navigation/useAddCashRoute';
 import { watchingAlert } from '@/features/wallet/utils/watchingAlert';
 import { useAccountAccentColor } from '@/hooks/useAccountAccentColor';
 import * as i18n from '@/languages';
@@ -130,7 +129,7 @@ function ActionButton({ children, icon, onPress, testID }: { children: string; i
 }
 
 function BuyButton() {
-  const isCashEnabled = useIsCashEnabled();
+  const { route: addCashRoute, isCashEnabled } = useAddCashRoute();
   const handlePress = React.useCallback(() => {
     if (getIsDamagedWallet()) {
       Navigation.handleAction(Routes.WALLET_ERROR_SHEET);
@@ -139,8 +138,8 @@ function BuyButton() {
 
     analytics.track(analytics.event.navigationAddCash, { category: 'home screen' });
 
-    Navigation.handleAction(getAddCashRoute(isCashEnabled));
-  }, [isCashEnabled]);
+    Navigation.handleAction(addCashRoute);
+  }, [addCashRoute]);
 
   return (
     <Box>
