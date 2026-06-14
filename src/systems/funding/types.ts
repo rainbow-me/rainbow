@@ -5,9 +5,9 @@ import { type DerivedValue, type SharedValue } from 'react-native-reanimated';
 import { type Address } from 'viem';
 
 import { type AddressOrEth, type ExtendedAnimatedAssetWithColors } from '@/__swaps__/types/assets';
+import { type NumberPadField } from '@/components/number-pad/NumberPadKey';
 import type { GasSettings, LegacyTransactionGasParamAmounts, TransactionGasParamAmounts } from '@/features/gas/types/gas';
 import { type GasSpeed } from '@/features/gas/types/gasSpeed';
-import { type NumberPadField } from '@/features/perps/components/NumberPad/NumberPadKey';
 import { type ChainId } from '@/state/backendNetworks/types';
 import { type QueryStore, type StoreState } from '@/state/internal/queryStore/types';
 import { type BaseRainbowStore, type DerivedStore, type RainbowStore } from '@/state/internal/types';

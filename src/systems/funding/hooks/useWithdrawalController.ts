@@ -3,7 +3,7 @@ import { useCallback, useEffect, useRef } from 'react';
 import { runOnJS, runOnUI, useAnimatedReaction, useSharedValue, withSpring } from 'react-native-reanimated';
 
 import { SPRING_CONFIGS } from '@/components/animations/animationConfigs';
-import { type NumberPadField } from '@/features/perps/components/NumberPad/NumberPadKey';
+import { type NumberPadField } from '@/components/number-pad/NumberPadKey';
 import { SLIDER_MAX } from '@/features/perps/components/Slider/Slider';
 import { equalWorklet, greaterThanOrEqualToWorklet } from '@/framework/core/safeMath';
 import { useListen } from '@/state/internal/hooks/useListen';
