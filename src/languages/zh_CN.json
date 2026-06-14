@@ -505,6 +505,13 @@
       },
       "restart_app": "重新启动应用",
       "reset_experimental_config": "重置实验配置",
+      "cash_deposit_setup_status": {
+        "title": "现金存入设置状态",
+        "needsIdentity": "需要身份验证",
+        "needsCard": "需要卡片",
+        "needsWallet": "需要钱包",
+        "ready": "就绪"
+      },
       "status": "状态",
       "sync_codepush": "同步 CodePush",
       "simulate_device_transfer": "模拟设备传输",
@@ -512,7 +519,8 @@
         "normie_settings": "普通用户设置",
         "rainbow_developer_settings": "Rainbow 开发者设置",
         "feature_flags": "功能标志",
-        "delegation_settings": "委托设置"
+        "delegation_settings": "委托设置",
+        "cash_settings": "现金设置"
       },
       "delegation_settings": {
         "simulate_disable_smart_wallet": "模拟禁用智能钱包",
@@ -1678,6 +1686,10 @@
         "set_up_account": "设置账户",
         "other_deposit_methods": "其他存款方式",
         "sign_in": "登陆"
+      },
+      "add_cash_screen": {
+        "add_from": "添加来源",
+        "hold_to_add": "长按以添加"
       }
     },
     "points": {
