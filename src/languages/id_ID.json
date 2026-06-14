@@ -505,6 +505,13 @@
       },
       "restart_app": "Mulai Ulang Aplikasi",
       "reset_experimental_config": "Atur Ulang Konfigurasi Eksperimental",
+      "cash_deposit_setup_status": {
+        "title": "Status Penyiapan Setoran Tunai",
+        "needsIdentity": "Perlu Identitas",
+        "needsCard": "Perlu Kartu",
+        "needsWallet": "Perlu Dompet",
+        "ready": "Siap"
+      },
       "status": "Status",
       "sync_codepush": "Sinkronisasi CodePush",
       "simulate_device_transfer": "Simulasikan Transfer Perangkat",
@@ -512,7 +519,8 @@
         "normie_settings": "Pengaturan Normie",
         "rainbow_developer_settings": "Pengaturan Pengembang Rainbow",
         "feature_flags": "Flag Fitur",
-        "delegation_settings": "Pengaturan Delegasi"
+        "delegation_settings": "Pengaturan Delegasi",
+        "cash_settings": "Pengaturan Tunai"
       },
       "delegation_settings": {
         "simulate_disable_smart_wallet": "Simulasikan Nonaktifkan Smart Wallet",
@@ -1678,6 +1686,10 @@
         "set_up_account": "Siapkan Akun",
         "other_deposit_methods": "Metode Deposit Lainnya",
         "sign_in": "Masuk"
+      },
+      "add_cash_screen": {
+        "add_from": "Tambahkan Dari",
+        "hold_to_add": "Tahan untuk Menambahkan"
       }
     },
     "points": {
