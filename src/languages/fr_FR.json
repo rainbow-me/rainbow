@@ -505,6 +505,13 @@
       },
       "restart_app": "Redémarrer l'Appli",
       "reset_experimental_config": "Réinitialiser la Conf Expérimentale",
+      "cash_deposit_setup_status": {
+        "title": "Statut de configuration du dépôt d’espèces",
+        "needsIdentity": "Identité requise",
+        "needsCard": "Carte requise",
+        "needsWallet": "Portefeuille requis",
+        "ready": "Prêt"
+      },
       "status": "Statut",
       "sync_codepush": "Synchroniser CodePush",
       "simulate_device_transfer": "Simuler le transfert d'appareil",
@@ -512,7 +519,8 @@
         "normie_settings": "Réglages Normie",
         "rainbow_developer_settings": "Paramètres du développeur Rainbow",
         "feature_flags": "Indicateurs de fonctionnalités",
-        "delegation_settings": "Paramètres de délégation"
+        "delegation_settings": "Paramètres de délégation",
+        "cash_settings": "Paramètres d’espèces"
       },
       "delegation_settings": {
         "simulate_disable_smart_wallet": "Simuler la désactivation du Smart Wallet",
@@ -1672,12 +1680,16 @@
       "add_cash": "Ajouter de l'argent",
       "deposit_intro": {
         "introducing": "Présentation",
-        "title": "Cash Deposits",
-        "encrypted_feature": "Your information is encrypted and protected.",
-        "visa_feature": "Available for US-based customers using a Visa card.",
-        "set_up_account": "Set Up Account",
-        "other_deposit_methods": "Other Deposit Methods",
+        "title": "Dépôts en espèces",
+        "encrypted_feature": "Vos informations sont chiffrées et protégées.",
+        "visa_feature": "Disponible pour les clients basés aux États-Unis utilisant une carte Visa.",
+        "set_up_account": "Configurer le compte",
+        "other_deposit_methods": "Autres méthodes de dépôt",
         "sign_in": "Se connecter"
+      },
+      "add_cash_screen": {
+        "add_from": "Ajouter depuis",
+        "hold_to_add": "Maintenez pour ajouter"
       }
     },
     "points": {
