@@ -505,6 +505,13 @@
       },
       "restart_app": "앱 재시작",
       "reset_experimental_config": "실험 설정 재설정",
+      "cash_deposit_setup_status": {
+        "title": "현금 입금 설정 상태",
+        "needsIdentity": "신원 확인 필요",
+        "needsCard": "카드 필요",
+        "needsWallet": "지갑 필요",
+        "ready": "준비됨"
+      },
       "status": "상태",
       "sync_codepush": "CodePush 동기화",
       "simulate_device_transfer": "디바이스 전송 시뮬레이션",
@@ -512,7 +519,8 @@
         "normie_settings": "일반 설정",
         "rainbow_developer_settings": "Rainbow 개발자 설정",
         "feature_flags": "기능 플래그",
-        "delegation_settings": "위임 설정"
+        "delegation_settings": "위임 설정",
+        "cash_settings": "현금 설정"
       },
       "delegation_settings": {
         "simulate_disable_smart_wallet": "스마트 월렛 비활성화 시뮬레이션",
@@ -1672,12 +1680,16 @@
       "add_cash": "현금 추가",
       "deposit_intro": {
         "introducing": "소개",
-        "title": "Cash Deposits",
-        "encrypted_feature": "Your information is encrypted and protected.",
-        "visa_feature": "Available for US-based customers using a Visa card.",
-        "set_up_account": "Set Up Account",
-        "other_deposit_methods": "Other Deposit Methods",
+        "title": "현금 입금",
+        "encrypted_feature": "귀하의 정보는 암호화되어 보호됩니다.",
+        "visa_feature": "Visa 카드를 사용하는 미국 기반 고객에게 제공됩니다.",
+        "set_up_account": "계정 설정",
+        "other_deposit_methods": "기타 입금 방법",
         "sign_in": "로그인"
+      },
+      "add_cash_screen": {
+        "add_from": "추가 출처",
+        "hold_to_add": "길게 눌러 추가"
       }
     },
     "points": {
