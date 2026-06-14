@@ -505,6 +505,13 @@
       },
       "restart_app": "إعادة تشغيل التطبيق",
       "reset_experimental_config": "إعادة تعيين التكوين التجريبي",
+      "cash_deposit_setup_status": {
+        "title": "حالة إعداد الإيداع النقدي",
+        "needsIdentity": "يتطلب التحقق من الهوية",
+        "needsCard": "يتطلب بطاقة",
+        "needsWallet": "يتطلب محفظة",
+        "ready": "جاهز"
+      },
       "status": "الحالة",
       "sync_codepush": "مز synchrony CodePush",
       "simulate_device_transfer": "محاكاة نقل الجهاز",
@@ -512,7 +519,8 @@
         "normie_settings": "إعدادات المستخدم العادي",
         "rainbow_developer_settings": "إعدادات مطوّر Rainbow",
         "feature_flags": "أعلام الميزات",
-        "delegation_settings": "إعدادات التفويض"
+        "delegation_settings": "إعدادات التفويض",
+        "cash_settings": "إعدادات النقد"
       },
       "delegation_settings": {
         "simulate_disable_smart_wallet": "محاكاة تعطيل المحفظة الذكية",
@@ -1678,6 +1686,10 @@
         "set_up_account": "إعداد الحساب",
         "other_deposit_methods": "طرق إيداع أخرى",
         "sign_in": "تسجيل الدخول"
+      },
+      "add_cash_screen": {
+        "add_from": "إضافة من",
+        "hold_to_add": "اضغط مطولاً للإضافة"
       }
     },
     "points": {
