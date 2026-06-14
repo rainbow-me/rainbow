@@ -505,6 +505,13 @@
       },
       "restart_app": "Перезагрузить приложение",
       "reset_experimental_config": "Сбросить экспериментальную конфигурацию",
+      "cash_deposit_setup_status": {
+        "title": "Статус настройки пополнения наличными",
+        "needsIdentity": "Требуется подтверждение личности",
+        "needsCard": "Требуется карта",
+        "needsWallet": "Требуется кошелек",
+        "ready": "Готово"
+      },
       "status": "Статус",
       "sync_codepush": "Синхронизировать CodePush",
       "simulate_device_transfer": "Симуляция передачи устройства",
@@ -512,7 +519,8 @@
         "normie_settings": "Настройки для новичков",
         "rainbow_developer_settings": "Настройки разработчика Rainbow",
         "feature_flags": "Флаги функций",
-        "delegation_settings": "Настройки делегирования"
+        "delegation_settings": "Настройки делегирования",
+        "cash_settings": "Настройки наличных"
       },
       "delegation_settings": {
         "simulate_disable_smart_wallet": "Симулировать отключение Smart Wallet",
@@ -1672,12 +1680,16 @@
       "add_cash": "Добавить наличные",
       "deposit_intro": {
         "introducing": "Представляем",
-        "title": "Cash Deposits",
-        "encrypted_feature": "Your information is encrypted and protected.",
-        "visa_feature": "Available for US-based customers using a Visa card.",
-        "set_up_account": "Set Up Account",
-        "other_deposit_methods": "Other Deposit Methods",
+        "title": "Денежные депозиты",
+        "encrypted_feature": "Ваша информация зашифрована и защищена.",
+        "visa_feature": "Доступно для клиентов из США при использовании карты Visa.",
+        "set_up_account": "Настроить аккаунт",
+        "other_deposit_methods": "Другие способы депозита",
         "sign_in": "Войти"
+      },
+      "add_cash_screen": {
+        "add_from": "Добавить из",
+        "hold_to_add": "Удерживайте, чтобы добавить"
       }
     },
     "points": {
