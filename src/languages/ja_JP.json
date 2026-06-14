@@ -505,6 +505,13 @@
       },
       "restart_app": "アプリを再起動",
       "reset_experimental_config": "実験的なコンフィグをリセット",
+      "cash_deposit_setup_status": {
+        "title": "現金入金セットアップのステータス",
+        "needsIdentity": "本人確認が必要",
+        "needsCard": "カードが必要",
+        "needsWallet": "ウォレットが必要",
+        "ready": "準備完了"
+      },
       "status": "ステータス",
       "sync_codepush": "CodePushを同期",
       "simulate_device_transfer": "デバイス転送をシミュレートする",
@@ -512,7 +519,8 @@
         "normie_settings": "一般ユーザー設定",
         "rainbow_developer_settings": "Rainbow 開発者設定",
         "feature_flags": "機能フラグ",
-        "delegation_settings": "委任設定"
+        "delegation_settings": "委任設定",
+        "cash_settings": "現金設定"
       },
       "delegation_settings": {
         "simulate_disable_smart_wallet": "スマートウォレットの無効化をシミュレート",
@@ -1672,12 +1680,16 @@
       "add_cash": "現金を追加",
       "deposit_intro": {
         "introducing": "ご紹介",
-        "title": "Cash Deposits",
-        "encrypted_feature": "Your information is encrypted and protected.",
-        "visa_feature": "Available for US-based customers using a Visa card.",
-        "set_up_account": "Set Up Account",
-        "other_deposit_methods": "Other Deposit Methods",
+        "title": "現金の入金",
+        "encrypted_feature": "お客様の情報は暗号化され、保護されています。",
+        "visa_feature": "Visaカードを利用する米国在住のお客様がご利用いただけます。",
+        "set_up_account": "アカウントを設定",
+        "other_deposit_methods": "その他の入金方法",
         "sign_in": "サインインする"
+      },
+      "add_cash_screen": {
+        "add_from": "追加元",
+        "hold_to_add": "長押しして追加"
       }
     },
     "points": {
