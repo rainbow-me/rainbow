@@ -505,6 +505,13 @@
       },
       "restart_app": "Reiniciar Aplicación",
       "reset_experimental_config": "Reiniciar Configuración Experimental",
+      "cash_deposit_setup_status": {
+        "title": "Estado de configuración del depósito en efectivo",
+        "needsIdentity": "Necesita verificación de identidad",
+        "needsCard": "Necesita una tarjeta",
+        "needsWallet": "Necesita una billetera",
+        "ready": "Listo"
+      },
       "status": "Estado",
       "sync_codepush": "Sincronizar CodePush",
       "simulate_device_transfer": "Simular transferencia de dispositivo",
@@ -512,7 +519,8 @@
         "normie_settings": "Configuración para normies",
         "rainbow_developer_settings": "Configuración de desarrollador de Rainbow",
         "feature_flags": "Flags de funciones",
-        "delegation_settings": "Configuración de delegación"
+        "delegation_settings": "Configuración de delegación",
+        "cash_settings": "Configuración de efectivo"
       },
       "delegation_settings": {
         "simulate_disable_smart_wallet": "Simular deshabilitar Smart Wallet",
@@ -1672,12 +1680,16 @@
       "add_cash": "Agregar Dinero en Efectivo",
       "deposit_intro": {
         "introducing": "Presentamos",
-        "title": "Cash Deposits",
-        "encrypted_feature": "Your information is encrypted and protected.",
-        "visa_feature": "Available for US-based customers using a Visa card.",
-        "set_up_account": "Set Up Account",
-        "other_deposit_methods": "Other Deposit Methods",
+        "title": "Depósitos de efectivo",
+        "encrypted_feature": "Tu información está cifrada y protegida.",
+        "visa_feature": "Disponible para clientes en EE. UU. que usen una tarjeta Visa.",
+        "set_up_account": "Configurar cuenta",
+        "other_deposit_methods": "Otros métodos de depósito",
         "sign_in": "Iniciar Sesión"
+      },
+      "add_cash_screen": {
+        "add_from": "Agregar desde",
+        "hold_to_add": "Mantén presionado para agregar"
       }
     },
     "points": {
