@@ -8,6 +8,7 @@ import { triggerHaptics } from 'react-native-turbo-haptics';
 import URL from 'url-parse';
 
 import { analytics } from '@/analytics';
+import { startSendFromEthereumUrl } from '@/features/transfer/utils/startSendFromEthereumUrl';
 import { pair as pairWalletConnect } from '@/features/wallet-connect/services/pair';
 import { checkIsValidAddressOrDomain, isENSAddressFormat } from '@/helpers/validators';
 import * as i18n from '@/languages';
@@ -16,7 +17,6 @@ import Routes from '@/navigation/routesNames';
 import { checkPushNotificationPermissions } from '@/notifications/permissions';
 import { POAP_BASE_URL, RAINBOW_PROFILES_BASE_URL } from '@/references/constants';
 import addressUtils from '@/utils/address';
-import ethereumUtils from '@/utils/ethereumUtils';
 import { getPoapAndOpenSheetWithQRHash, getPoapAndOpenSheetWithSecretWord } from '@/utils/poaps';
 import { fetchReverseRecordWithRetry } from '@/utils/profileUtils';
 
@@ -48,7 +48,7 @@ export default function useScanner(enabled: boolean, onSuccess: () => unknown) {
   }, [enabled, disableScanning, enableScanning]);
 
   const handleScanEthereumUrl = useCallback((data: string) => {
-    ethereumUtils.parseEthereumUrl(data);
+    startSendFromEthereumUrl(data);
   }, []);
 
   const handleScanAddress = useCallback(
