@@ -11,7 +11,7 @@ import ButtonPressAnimation from '@/components/animations/ButtonPressAnimation';
 import { HoldToActivateButton } from '@/components/hold-to-activate-button/HoldToActivateButton';
 import { PanelSheet } from '@/components/PanelSheet/PanelSheet';
 import { Box, globalColors, Text, TextShadow, useColorMode } from '@/design-system';
-import { formatCurrency } from '@/features/perps/utils/formatCurrency';
+import { formatUsd } from '@/features/currency/utils/formatUsd';
 import { PolymarketNoLiquidityCard } from '@/features/polymarket/components/PolymarketNoLiquidityCard';
 import { PolymarketOutcomeCard } from '@/features/polymarket/components/PolymarketOutcomeCard';
 import { POLYMARKET_BACKGROUND_LIGHT } from '@/features/polymarket/constants';
@@ -205,7 +205,7 @@ export const PolymarketNewPositionSheet = memo(function PolymarketNewPositionShe
               </Text>
               <TextShadow blur={6} shadowOpacity={0.24}>
                 <Text size="17pt" weight="heavy" color="green">
-                  {formatCurrency(fee)}
+                  {formatUsd(fee)}
                 </Text>
               </TextShadow>
             </Box> */}
@@ -233,7 +233,7 @@ export const PolymarketNewPositionSheet = memo(function PolymarketNewPositionShe
               </Text>
               <TextShadow blur={6} shadowOpacity={0.24}>
                 <Text size="17pt" weight="heavy" color="green">
-                  {formatCurrency(amountToWin)}
+                  {formatUsd(amountToWin)}
                 </Text>
               </TextShadow>
             </Box>

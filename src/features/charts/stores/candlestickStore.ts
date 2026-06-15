@@ -1,6 +1,5 @@
 import qs from 'qs';
 
-import type { NativeCurrencyKey } from '@/entities/nativeCurrencyTypes';
 import { IS_DEV } from '@/env';
 import {
   fetchHyperliquidChart,
@@ -9,6 +8,7 @@ import {
 } from '@/features/charts/candlestick/hyperliquid/hyperliquidCharts';
 import { chartsActions, useChartsStore, type ChartsState } from '@/features/charts/stores/chartsStore';
 import { isHyperliquidToken } from '@/features/charts/utils';
+import type { NativeCurrencyKey } from '@/features/currency/types';
 import { time } from '@/framework/core/utils/time';
 import { ensureError } from '@/logger';
 import { getPlatformClient } from '@/resources/platform/client';

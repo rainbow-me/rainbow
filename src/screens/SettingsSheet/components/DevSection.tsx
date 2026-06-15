@@ -1,4 +1,4 @@
-import React, { useCallback, useState } from 'react';
+import React, { useCallback, useMemo, useState } from 'react';
 import { Platform } from 'react-native';
 
 import AsyncStorage from '@react-native-async-storage/async-storage';
@@ -9,15 +9,23 @@ import { getAllInternetCredentials, resetInternetCredentials } from 'react-nativ
 import Restart from 'react-native-restart';
 
 import { ImgixImage } from '@/components/images';
+import ContextMenuButton, { type MenuConfig } from '@/components/native-context-menu/contextMenu';
 import { defaultConfig, defaultConfigValues, type ExperimentalConfigKey } from '@/config/experimental';
 import { useExperimentalConfigStore } from '@/config/experimentalConfigStore';
 import { IS_STORE_INSTALL } from '@/env';
+import {
+  CASH_DEPOSIT_SETUP_STATUSES,
+  isCashDepositSetupStatus,
+  type CashDepositSetupStatus,
+} from '@/features/cash/stores/cashDepositSetupStatus';
+import { useCashDepositSetupStore } from '@/features/cash/stores/cashDepositSetupStore';
 import { getDelegationContractAddress, isRainbowDelegated, isThirdPartyDelegated } from '@/features/delegation/status';
+import { isAuthenticated } from '@/features/local-auth/isAuthenticated';
+import { wipeKeychain } from '@/features/local-auth/legacyKeychain';
 import { WrappedAlert as Alert } from '@/helpers/alert';
 import { getPublicKeyOfTheSigningWalletAndCreateWalletIfNeeded } from '@/helpers/signingWallet';
 import * as i18n from '@/languages';
 import { logger, RainbowError } from '@/logger';
-import { wipeKeychain } from '@/model/keychain';
 import { clearAllStorages } from '@/model/mmkv';
 import Navigation, { useNavigation } from '@/navigation/Navigation';
 import Routes from '@/navigation/routesNames';
@@ -34,12 +42,56 @@ import { analyzeUserAssets } from '@/state/debug/analyzeUserAssets';
 import { nonceActions } from '@/state/nonces';
 import { pendingTransactionsActions } from '@/state/pendingTransactions';
 import { clearWalletState, useWalletsStore } from '@/state/wallets/walletsStore';
-import { isAuthenticated } from '@/utils/authentication';
 import { delegation, type DelegationWithChainId } from '@rainbow-me/delegation';
 
 import Menu from './Menu';
 import MenuContainer from './MenuContainer';
 import MenuItem from './MenuItem';
+
+// Dev-only select that drives the mock CashDepositSetupStatus, so QA can exercise every entry-point branch.
+function CashDepositSetupStatusMenuItem() {
+  const cachedStatus = useCashDepositSetupStore(state => state.cachedStatus);
+  const setStatus = useCashDepositSetupStore(state => state.setStatus);
+
+  const statusLabel = useCallback(
+    (status: CashDepositSetupStatus) => i18n.t(i18n.l.developer_settings.cash_deposit_setup_status[status]),
+    []
+  );
+
+  const menuConfig = useMemo<MenuConfig>(
+    () => ({
+      menuTitle: i18n.t(i18n.l.developer_settings.cash_deposit_setup_status.title),
+      menuItems: CASH_DEPOSIT_SETUP_STATUSES.map(status => ({
+        actionKey: status,
+        actionTitle: statusLabel(status),
+        menuState: status === cachedStatus ? 'on' : 'off',
+      })),
+    }),
+    [cachedStatus, statusLabel]
+  );
+
+  const onPressMenuItem = useCallback(
+    ({ nativeEvent: { actionKey } }: { nativeEvent: { actionKey: string } }) => {
+      if (isCashDepositSetupStatus(actionKey)) {
+        setStatus(actionKey);
+      }
+    },
+    [setStatus]
+  );
+
+  return (
+    <ContextMenuButton menuConfig={menuConfig} isMenuPrimaryAction onPressMenuItem={onPressMenuItem} useActionSheetFallback={false}>
+      <MenuItem
+        hasChevron
+        leftComponent={<MenuItem.TextIcon icon="💵" isEmoji />}
+        rightComponent={<MenuItem.Selection>{statusLabel(cachedStatus)}</MenuItem.Selection>}
+        size={52}
+        testID="cash-deposit-setup-status-select"
+        titleComponent={<MenuItem.Title text={i18n.t(i18n.l.developer_settings.cash_deposit_setup_status.title)} />}
+      />
+    </ContextMenuButton>
+  );
+}
 
 const DevSection = () => {
   const { navigate } = useNavigation();
@@ -461,6 +513,9 @@ const DevSection = () => {
                 />
               );
             })}
+          </Menu>
+          <Menu header={i18n.t(i18n.l.developer_settings.headers.cash_settings)}>
+            <CashDepositSetupStatusMenuItem />
           </Menu>
           <Menu header={i18n.t(i18n.l.developer_settings.headers.feature_flags)}>
             {(Object.keys(config) as ExperimentalConfigKey[])

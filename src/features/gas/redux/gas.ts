@@ -3,7 +3,7 @@ import type BigNumber from 'bignumber.js';
 import { isEmpty } from 'lodash';
 
 import { analytics } from '@/analytics';
-import type { NativeCurrencyKey } from '@/entities/nativeCurrencyTypes';
+import type { NativeCurrencyKey } from '@/features/currency/types';
 import { getProvider } from '@/handlers/web3';
 import { addBuffer } from '@/helpers/utilities';
 import { logger, RainbowError } from '@/logger';

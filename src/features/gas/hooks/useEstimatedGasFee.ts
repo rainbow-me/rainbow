@@ -3,7 +3,8 @@ import { useMemo } from 'react';
 import { formatUnits } from 'viem';
 
 import { calculateGasFeeWorklet } from '@/__swaps__/screens/Swap/providers/SyncSwapStateAndSharedValues';
-import { convertAmountToNativeDisplayWorklet, formatNumber, multiply } from '@/helpers/utilities';
+import { convertAmountToNativeDisplayWorklet } from '@/features/currency/utils/nativeDisplay';
+import { formatNumber, multiply } from '@/helpers/utilities';
 import { userAssetsStoreManager } from '@/state/assets/userAssetsStoreManager';
 import { type ChainId } from '@/state/backendNetworks/types';
 import { useNativeAsset } from '@/utils/ethereumUtils';

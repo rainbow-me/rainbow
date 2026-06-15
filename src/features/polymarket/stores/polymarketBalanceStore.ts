@@ -1,7 +1,7 @@
 import { ethers } from 'ethers';
 import { type Address } from 'viem';
 
-import { USD_DECIMALS } from '@/features/perps/constants';
+import { USD_DECIMALS } from '@/features/currency/constants';
 import {
   POLYGON_USDC_ADDRESS,
   POLYGON_USDC_DECIMALS,

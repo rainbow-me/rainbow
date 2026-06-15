@@ -3,8 +3,9 @@ import { toUtf8String } from '@ethersproject/strings';
 import BigNumber from 'bignumber.js';
 import { isNil } from 'lodash';
 
+import { convertAmountAndPriceToNativeDisplay } from '@/features/currency/utils/nativeDisplay';
 import { isHexString } from '@/handlers/web3';
-import { convertAmountAndPriceToNativeDisplay, convertHexToString, convertRawAmountToDecimalFormat, fromWei } from '@/helpers/utilities';
+import { convertHexToString, convertRawAmountToDecimalFormat, fromWei } from '@/helpers/utilities';
 import { logger } from '@/logger';
 import ethUnits from '@/references/ethereum-units.json';
 import smartContractMethods from '@/references/smartcontract-methods.json';

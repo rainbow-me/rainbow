@@ -2,6 +2,7 @@ import React, { memo, useCallback, useMemo } from 'react';
 
 import ButtonPressAnimation from '@/components/animations/ButtonPressAnimation';
 import { Bleed, Box, Separator, Text, TextShadow, useForegroundColor } from '@/design-system';
+import { formatUsd } from '@/features/currency/utils/formatUsd';
 import { HyperliquidTokenIcon } from '@/features/perps/components/HyperliquidTokenIcon';
 import { LeverageBadge } from '@/features/perps/components/LeverageBadge';
 import { PositionSideBadge } from '@/features/perps/components/PositionSideBadge';
@@ -9,7 +10,6 @@ import { DOWN_ARROW, UP_ARROW } from '@/features/perps/constants';
 import { useHyperliquidMarketsStore } from '@/features/perps/stores/hyperliquidMarketsStore';
 import { type PerpsPosition } from '@/features/perps/types';
 import { navigateToPerpDetailScreen } from '@/features/perps/utils';
-import { formatCurrency } from '@/features/perps/utils/formatCurrency';
 import { formatPerpAssetPrice } from '@/features/perps/utils/formatPerpsAssetPrice';
 import { extractBaseSymbol } from '@/features/perps/utils/hyperliquidSymbols';
 import { opacity } from '@/framework/ui/utils/opacity';
@@ -28,11 +28,11 @@ export const PerpsPositionRow = memo(function PerpsPositionRow({ position }: { p
 
   const formattedValues = useMemo(() => {
     return {
-      equity: formatCurrency(position.equity),
+      equity: formatUsd(position.equity),
       liquidationPrice: position.liquidationPrice
         ? formatPerpAssetPrice(position.liquidationPrice)
         : i18n.t(i18n.l.perps.common.not_available),
-      unrealizedPnl: formatCurrency(abs(position.unrealizedPnl)),
+      unrealizedPnl: formatUsd(abs(position.unrealizedPnl)),
     };
   }, [position]);
 

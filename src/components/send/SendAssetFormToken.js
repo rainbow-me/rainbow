@@ -1,10 +1,10 @@
 import React, { Fragment } from 'react';
 import { Platform } from 'react-native';
 
+import { supportedCurrencies as supportedNativeCurrencies } from '@/features/currency/supportedCurrencies';
 import styled from '@/framework/ui/styled-thing';
 import { opacity } from '@/framework/ui/utils/opacity';
 import useDimensions from '@/hooks/useDimensions';
-import { supportedCurrencies as supportedNativeCurrencies } from '@/references/supportedCurrencies';
 import { useTheme } from '@/theme/ThemeContext';
 import { NAVIGATION_BAR_HEIGHT } from '@/utils/deviceUtils';
 import { removeLeadingZeros } from '@/utils/formatters';

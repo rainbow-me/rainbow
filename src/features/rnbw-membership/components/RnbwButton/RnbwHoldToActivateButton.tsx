@@ -5,12 +5,12 @@ import chroma from 'chroma-js';
 import Animated, { FadeIn, FadeOut, LinearTransition } from 'react-native-reanimated';
 
 import { SPRING_CONFIGS } from '@/components/animations/animationConfigs';
-import { useBiometryIconString } from '@/components/buttons/BiometricButtonContent';
 import { GestureHandlerButton } from '@/components/buttons/GestureHandlerButton';
 import { HoldToActivateProgress } from '@/components/buttons/HoldToActivateProgress';
 import { useHoldToActivate } from '@/components/buttons/useHoldToActivate';
 import { LedgerIcon } from '@/components/icons/svg/LedgerIcon';
 import { type TextProps } from '@/design-system';
+import { useBiometryIconString } from '@/features/local-auth/components/BiometricButtonContent';
 import { RNBW_BUTTON_CONFIG } from '@/features/rnbw-membership/rnbwButtonTheme';
 import { time } from '@/framework/core/utils/time';
 import { LoadingSpinner } from '@/framework/ui/components/LoadingSpinner';

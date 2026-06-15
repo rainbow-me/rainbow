@@ -3,7 +3,8 @@ import { useMemo } from 'react';
 import mapValues from 'lodash/mapValues';
 import { type Address } from 'viem';
 
-import { convertAmountToNativeDisplay, subtract } from '@/helpers/utilities';
+import { convertAmountToNativeDisplay } from '@/features/currency/utils/nativeDisplay';
+import { subtract } from '@/helpers/utilities';
 import { userAssetsStoreManager } from '@/state/assets/userAssetsStoreManager';
 import { useWallets } from '@/state/wallets/walletsStore';
 

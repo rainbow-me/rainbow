@@ -1,10 +1,10 @@
 import React, { memo, useCallback, useMemo } from 'react';
 
 import { Box, Text, TextIcon, useColorMode } from '@/design-system';
+import { formatUsd } from '@/features/currency/utils/formatUsd';
 import { HYPERLIQUID_COLORS, PERPS_BACKGROUND_DARK, PERPS_BACKGROUND_LIGHT } from '@/features/perps/constants';
 import { usePerpAnnotationsStore } from '@/features/perps/stores/perpAnnotationsStore';
 import { type PerpMarket } from '@/features/perps/types';
-import { formatCurrency } from '@/features/perps/utils/formatCurrency';
 import { ExpandableDescriptionCard } from '@/framework/ui/components/ExpandableDescriptionCard';
 import { opacity } from '@/framework/ui/utils/opacity';
 import { multiply } from '@/helpers/utilities';
@@ -83,9 +83,9 @@ const DescriptionBox = memo(function DescriptionBox({ description }: Description
 
 export const AboutSection = memo(function AboutSection({ market }: { market: PerpMarket }) {
   const description = usePerpAnnotationsStore(state => state.getAnnotation()?.description);
-  const volume = useMemo(() => formatCurrency(market.volume['24h'], { useCompactNotation: true, decimals: 2 }), [market.volume]);
+  const volume = useMemo(() => formatUsd(market.volume['24h'], { useCompactNotation: true, decimals: 2 }), [market.volume]);
   const openInterest = useMemo(
-    () => formatCurrency(multiply(market.openInterest, market.price), { useCompactNotation: true, decimals: 2 }),
+    () => formatUsd(multiply(market.openInterest, market.price), { useCompactNotation: true, decimals: 2 }),
     [market.openInterest, market.price]
   );
   const funding = useMemo(() => `${multiply(market.fundingRate, 100)}%`, [market.fundingRate]);

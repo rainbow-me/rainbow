@@ -1,5 +1,5 @@
-import type { NativeCurrencyKey } from '@/entities/nativeCurrencyTypes';
-import { convertAmountToNativeDisplay } from '@/helpers/utilities';
+import type { NativeCurrencyKey } from '@/features/currency/types';
+import { convertAmountToNativeDisplay } from '@/features/currency/utils/nativeDisplay';
 
 import {
   type PositionsTotals,

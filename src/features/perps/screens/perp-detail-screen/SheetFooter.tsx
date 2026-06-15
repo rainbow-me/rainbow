@@ -6,6 +6,7 @@ import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 import { EasingGradient } from '@/components/easing-gradient/EasingGradient';
 import { Box, Text, useColorMode } from '@/design-system';
+import { useAddCashRoute } from '@/features/cash/navigation/useAddCashRoute';
 import { HyperliquidButton } from '@/features/perps/components/HyperliquidButton';
 import { useHyperliquidAccountStore } from '@/features/perps/stores/hyperliquidAccountStore';
 import { type PerpMarket } from '@/features/perps/types';
@@ -32,12 +33,13 @@ export function SheetFooter({ backgroundColor, market }: SheetFooterProps) {
   const hasPosition = !!position;
   const hasPerpsBalance = useHyperliquidAccountStore(state => Number(state.getBalance()) !== 0);
   const hasUserAssets = useUserAssetsStore(state => state.getFilteredUserAssetIds().length > 0);
+  const { route: addCashRoute } = useAddCashRoute();
 
   const noPositionButton = useMemo(() => {
     if (!hasUserAssets) {
       return {
         onPress: () => {
-          Navigation.handleAction(Routes.ADD_CASH_SHEET);
+          Navigation.handleAction(addCashRoute);
         },
         text: i18n.t(i18n.l.perps.actions.fund_wallet),
       };
@@ -63,7 +65,7 @@ export function SheetFooter({ backgroundColor, market }: SheetFooterProps) {
       },
       text: i18n.t(i18n.l.perps.actions.open_position),
     };
-  }, [hasUserAssets, hasPerpsBalance, market, navigation]);
+  }, [addCashRoute, hasUserAssets, hasPerpsBalance, market, navigation]);
 
   return (
     <Box pointerEvents="box-none" position="absolute" bottom="0px" width="full">

@@ -5,7 +5,6 @@ import { KeyboardProvider, KeyboardStickyView } from 'react-native-keyboard-cont
 import { useAnimatedStyle, useDerivedValue, useSharedValue } from 'react-native-reanimated';
 
 import { ETH_COLOR_DARK } from '@/__swaps__/screens/Swap/constants';
-import { addCommasToNumber } from '@/__swaps__/utils/swaps';
 import { analytics } from '@/analytics';
 import { CurrencyInput, type CurrencyInputRef } from '@/components/CurrencyInput/CurrencyInput';
 import { TapToDismiss } from '@/components/DappBrowser/control-panel/ControlPanel';
@@ -13,6 +12,7 @@ import { useLiveTokenSharedValue } from '@/components/live-token-text/LiveTokenT
 import { SheetHandleFixedToTop } from '@/components/sheet';
 import { Panel } from '@/components/SmoothPager/ListPanel';
 import { AnimatedText, Box, Separator, Text, useColorMode, useForegroundColor } from '@/design-system';
+import { formatUsd } from '@/features/currency/utils/formatUsd';
 import { PerpBottomSheetHeader } from '@/features/perps/components/PerpBottomSheetHeader';
 import { PerpsSheetActionButtons } from '@/features/perps/components/PerpsSheetActionButtons';
 import { PerpsAccentColorContextProvider, usePerpsAccentColorContext } from '@/features/perps/context/PerpsAccentColorContext';
@@ -23,7 +23,6 @@ import { PerpPositionSide, TriggerOrderSource, TriggerOrderType, type PerpMarket
 import { getHyperliquidTokenId, parseHyperliquidErrorMessage } from '@/features/perps/utils';
 import { calculateIsolatedLiquidationPriceFromMargin } from '@/features/perps/utils/calculateLiquidationPrice';
 import { estimatePnl } from '@/features/perps/utils/estimatePnl';
-import { formatCurrency } from '@/features/perps/utils/formatCurrency';
 import { formatPerpAssetPrice } from '@/features/perps/utils/formatPerpsAssetPrice';
 import { formatTriggerOrderInput } from '@/features/perps/utils/formatTriggerOrderInput';
 import {
@@ -34,6 +33,7 @@ import {
   mulWorklet,
   subWorklet,
 } from '@/framework/core/safeMath';
+import { addCommasToNumber } from '@/framework/ui/utils/addCommasToNumber';
 import { opacity } from '@/framework/ui/utils/opacity';
 import { abbreviateNumberWorklet } from '@/helpers/utilities';
 import { useSharedValueState } from '@/hooks/reanimated/useSharedValueState';
@@ -195,7 +195,7 @@ function PanelContent({ triggerOrderType, market, source, position }: PanelConte
       const absolutePriceDifference = Math.abs(Number(subWorklet(targetPrice, position.entryPrice)));
       const absolutePositionSize = Math.abs(Number(position.size));
       const pnl = mulWorklet(mulWorklet(absolutePositionSize, absolutePriceDifference), isStopLoss ? -1 : 1);
-      return formatCurrency(pnl);
+      return formatUsd(pnl);
     }
 
     if (!leverage) return '-';
@@ -209,7 +209,7 @@ function PanelContent({ triggerOrderType, market, source, position }: PanelConte
       // We don't include fees because it can be confusing for the user to see a negative projected PnL despite setting a price higher/lower than the current price
       includeFees: false,
     });
-    return formatCurrency(projectedPnlValue);
+    return formatUsd(projectedPnlValue);
   });
 
   const targetPriceDifferentialLabelStyle = useAnimatedStyle(() => {

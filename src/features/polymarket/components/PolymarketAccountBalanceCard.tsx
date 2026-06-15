@@ -4,8 +4,9 @@ import { View } from 'react-native';
 import ButtonPressAnimation from '@/components/animations/ButtonPressAnimation';
 import { ImgixImage } from '@/components/images';
 import { Box, Stack, Text, TextIcon, TextShadow, useColorMode } from '@/design-system';
+import { useAddCashRoute } from '@/features/cash/navigation/useAddCashRoute';
+import { formatUsd } from '@/features/currency/utils/formatUsd';
 import { USDC_ICON_URL } from '@/features/perps/constants';
-import { formatCurrency } from '@/features/perps/utils/formatCurrency';
 import { PolymarketButton } from '@/features/polymarket/components/PolymarketButton';
 import { usePolymarketBalanceStore } from '@/features/polymarket/stores/polymarketBalanceStore';
 import { opacity } from '@/framework/ui/utils/opacity';
@@ -21,6 +22,7 @@ export const PolymarketAccountBalanceCard = memo(function PolymarketAccountBalan
   const isBalanceZero = usePolymarketBalanceStore(state => state.isBalanceZero());
   const balance = usePolymarketBalanceStore(state => state.getBalance());
   const hasNoAssets = useUserAssetsStore(state => !state.getFilteredUserAssetIds().length);
+  const { route: addCashRoute } = useAddCashRoute();
 
   return (
     <Box
@@ -42,7 +44,7 @@ export const PolymarketAccountBalanceCard = memo(function PolymarketAccountBalan
             <View style={{ opacity: isBalanceZero ? 0.4 : 1 }}>
               <TextShadow blur={16} color={accentColor} shadowOpacity={0.24}>
                 <Text color={'label'} size="17pt" weight="heavy">
-                  {formatCurrency(balance)}
+                  {formatUsd(balance)}
                 </Text>
               </TextShadow>
             </View>
@@ -94,7 +96,7 @@ export const PolymarketAccountBalanceCard = memo(function PolymarketAccountBalan
             onPress={() => {
               if (getIsReadOnlyWallet()) return;
               if (hasNoAssets) {
-                Navigation.handleAction(Routes.ADD_CASH_SHEET);
+                Navigation.handleAction(addCashRoute);
               } else {
                 Navigation.handleAction(Routes.POLYMARKET_DEPOSIT_SCREEN);
               }

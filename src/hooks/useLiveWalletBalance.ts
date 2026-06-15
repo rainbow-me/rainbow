@@ -1,7 +1,8 @@
+import { convertAmountToNativeDisplay } from '@/features/currency/utils/nativeDisplay';
 import { useHyperliquidBalance } from '@/features/perps/stores/derived/useHyperliquidBalance';
 import { usePolymarketAccountValueSummary } from '@/features/polymarket/stores/derived/usePolymarketAccountValueSummary';
 import { usePositionsStore } from '@/features/positions/stores/positionsStore';
-import { add, convertAmountToNativeDisplay, greaterThan, multiply, subtract } from '@/helpers/utilities';
+import { add, greaterThan, multiply, subtract } from '@/helpers/utilities';
 import { useUserAssetsStore } from '@/state/assets/userAssets';
 import { userAssetsStoreManager } from '@/state/assets/userAssetsStoreManager';
 import { useClaimablesStore } from '@/state/claimables/claimables';

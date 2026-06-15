@@ -4,9 +4,9 @@ import { StyleSheet } from 'react-native';
 import { format } from 'date-fns';
 
 import { Box, Text, TextIcon } from '@/design-system';
+import { formatUsd } from '@/features/currency/utils/formatUsd';
 import { HyperliquidTokenIcon } from '@/features/perps/components/HyperliquidTokenIcon';
 import { TradeExecutionType, type HlTrade } from '@/features/perps/types';
-import { formatCurrency } from '@/features/perps/utils/formatCurrency';
 import { formatPerpAssetPrice } from '@/features/perps/utils/formatPerpsAssetPrice';
 import { divWorklet, mulWorklet, toFixedWorklet } from '@/framework/core/safeMath';
 import { abs } from '@/helpers/utilities';
@@ -43,13 +43,13 @@ export const TradeListItem = memo(function TradeListItem({ trade, showMarketIcon
       return `${toFixedWorklet(abs(mulWorklet(divWorklet(trade.fillStartSize, trade.size), 100)), 0)}%`;
     }
 
-    return formatCurrency(mulWorklet(trade.size, trade.price), {
+    return formatUsd(mulWorklet(trade.size, trade.price), {
       useCompactNotation: false,
     });
   }, [trade]);
 
   const pnl = useMemo(() => {
-    return `${isPositivePnl ? '+' : ''} ${formatCurrency(trade.netPnl)}`;
+    return `${isPositivePnl ? '+' : ''} ${formatUsd(trade.netPnl)}`;
   }, [trade.netPnl, isPositivePnl]);
 
   const formattedPrice = useMemo(() => {

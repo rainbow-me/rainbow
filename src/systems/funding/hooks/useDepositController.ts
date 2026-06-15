@@ -4,9 +4,8 @@ import { runOnJS, runOnUI, useAnimatedReaction, useDerivedValue, useSharedValue,
 import { useDebouncedCallback } from 'use-debounce';
 
 import { type ExtendedAnimatedAssetWithColors } from '@/__swaps__/types/assets';
-import { addCommasToNumber } from '@/__swaps__/utils/swaps';
 import { SPRING_CONFIGS } from '@/components/animations/animationConfigs';
-import { type NumberPadField } from '@/features/perps/components/NumberPad/NumberPadKey';
+import { type NumberPadField } from '@/components/number-pad/NumberPadKey';
 import { SLIDER_MAX } from '@/features/perps/components/Slider/Slider';
 import {
   divWorklet,
@@ -17,6 +16,7 @@ import {
   trimTrailingZeros,
 } from '@/framework/core/safeMath';
 import { time } from '@/framework/core/utils/time';
+import { addCommasToNumber } from '@/framework/ui/utils/addCommasToNumber';
 import { handleSignificantDecimalsWorklet } from '@/helpers/utilities';
 import { useStableValue } from '@/hooks/useStableValue';
 import { useListen } from '@/state/internal/hooks/useListen';

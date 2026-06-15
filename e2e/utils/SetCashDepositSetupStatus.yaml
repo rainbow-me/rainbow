@@ -1,0 +1,9 @@
+appId: ${APP_ID}
+---
+- openLink: rainbow://e2e/setCashDepositSetupStatus?status=${STATUS}
+- runFlow:
+    when:
+      visible: 'Open in .*'
+      platform: iOS
+    commands:
+      - tapOn: 'Open'

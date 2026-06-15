@@ -1,10 +1,10 @@
 import { useMemo } from 'react';
 
 import { AssetType } from '@/entities/assetTypes';
-import { type NativeCurrencyKey } from '@/entities/nativeCurrencyTypes';
 import { TransactionStatus, type RainbowTransaction } from '@/entities/transactions';
+import { type NativeCurrencyKey } from '@/features/currency/types';
+import { convertAmountAndPriceToNativeDisplay } from '@/features/currency/utils/nativeDisplay';
 import {
-  convertAmountAndPriceToNativeDisplay,
   convertAmountToBalanceDisplay,
   convertRawAmountToBalance,
   convertRawAmountToDecimalFormat,

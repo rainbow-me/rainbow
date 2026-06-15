@@ -11,7 +11,6 @@ import {
   truncateToDecimals,
 } from '@/framework/core/safeMath';
 import { getNumberFormatter } from '@/helpers/intl';
-import { supportedCurrencies as supportedNativeCurrencies } from '@/references/supportedCurrencies';
 
 export type BigNumberish = number | string | BigNumber;
 
@@ -20,7 +19,6 @@ interface Dictionary<T> {
 }
 
 type ValueKeyIteratee<T> = (value: T, key: string) => unknown;
-type nativeCurrencyType = typeof supportedNativeCurrencies;
 
 export const abs = (value: BigNumberish): string => new BigNumber(value).abs().toFixed();
 
@@ -314,36 +312,6 @@ export const handleSignificantDecimals = (
 export const convertAmountToNativeAmount = (amount: BigNumberish, priceUnit: BigNumberish): string => multiply(amount, priceUnit);
 
 /**
- * @desc convert from amount to display formatted string
- */
-export const convertAmountAndPriceToNativeDisplay = (
-  amount: BigNumberish,
-  priceUnit: BigNumberish,
-  nativeCurrency: keyof nativeCurrencyType,
-  useThreshold = false
-): { amount: string; display: string } => {
-  const nativeBalanceRaw = convertAmountToNativeAmount(amount, priceUnit);
-  const nativeDisplay = convertAmountToNativeDisplayWorklet(nativeBalanceRaw, nativeCurrency, useThreshold);
-  return {
-    amount: nativeBalanceRaw,
-    display: nativeDisplay,
-  };
-};
-
-/**
- * @desc convert from raw amount to display formatted string
- */
-export const convertRawAmountToNativeDisplay = (
-  rawAmount: BigNumberish,
-  assetDecimals: number,
-  priceUnit: BigNumberish,
-  nativeCurrency: keyof nativeCurrencyType
-) => {
-  const assetBalance = convertRawAmountToDecimalFormat(rawAmount, assetDecimals);
-  return convertAmountAndPriceToNativeDisplay(assetBalance, priceUnit, nativeCurrency);
-};
-
-/**
  * @worklet
  * @desc convert from raw amount to decimal format
  */
@@ -442,61 +410,6 @@ export const convertAmountToPercentageDisplayWithThreshold = (value: BigNumberis
 export const convertBipsToPercentage = (value: BigNumberish | null, decimals = 2): string => {
   if (value === null) return '0';
   return new BigNumber(value || 0).shiftedBy(-2).toFixed(decimals);
-};
-
-/**
- * @desc convert from amount value to display formatted string
- */
-export const convertAmountToNativeDisplayWorklet = (
-  value: number | string,
-  nativeCurrency: keyof nativeCurrencyType,
-  useThreshold = false,
-  ignoreAlignment = false,
-  decimalPlaces?: number
-) => {
-  'worklet';
-
-  const { alignment, decimals: rawDecimals, symbol } = supportedNativeCurrencies[nativeCurrency];
-  const decimals = decimalPlaces ?? Math.min(rawDecimals, 6);
-
-  const valueNumber = Number(value);
-  const threshold = decimals < 4 ? 0.01 : 0.0001;
-  let thresholdReached = false;
-
-  if (useThreshold && valueNumber < threshold) {
-    thresholdReached = true;
-  }
-
-  const nativeValue = thresholdReached
-    ? threshold
-    : getNumberFormatter('en-US', {
-        maximumFractionDigits: decimals,
-        minimumFractionDigits: nativeCurrency === 'ETH' ? undefined : decimals,
-        useGrouping: true,
-      }).format(valueNumber);
-
-  const nativeDisplay = `${thresholdReached ? '<' : ''}${alignment === 'left' || ignoreAlignment ? symbol : ''}${nativeValue}${!ignoreAlignment && alignment === 'right' ? symbol : ''}`;
-
-  return nativeDisplay;
-};
-
-/**
- * @desc convert from amount value to display formatted string
- */
-export const convertAmountToNativeDisplay = (
-  value: BigNumberish,
-  nativeCurrency: keyof nativeCurrencyType,
-  buffer?: number,
-  skipDecimals?: boolean,
-  abbreviate?: boolean
-) => {
-  const nativeSelected = supportedNativeCurrencies?.[nativeCurrency];
-  const { decimals } = nativeSelected;
-  const display = handleSignificantDecimals(value, decimals, buffer, skipDecimals, abbreviate);
-  if (nativeSelected.alignment === 'left') {
-    return `${nativeSelected.symbol}${display}`;
-  }
-  return `${display} ${nativeSelected.symbol}`;
 };
 
 /**

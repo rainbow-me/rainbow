@@ -3,7 +3,11 @@ import { Linking } from 'react-native';
 
 import URL from 'url-parse';
 
-import { savePIN } from '@/handlers/authentication';
+import { type ExperimentalConfigKey } from '@/config/experimental';
+import { useExperimentalConfigStore } from '@/config/experimentalConfigStore';
+import { type CashDepositSetupStatus } from '@/features/cash/stores/cashDepositSetupStatus';
+import { useCashDepositSetupStore } from '@/features/cash/stores/cashDepositSetupStore';
+import { savePIN } from '@/features/local-auth/pinAuthentication';
 import { logger } from '@/logger';
 import Navigation from '@/navigation/Navigation';
 import Routes from '@/navigation/routesNames';
@@ -33,6 +37,12 @@ export function TestDeeplinkHandler() {
           Navigation.replace(Routes.SWIPE_LAYOUT, {
             screen: Routes.WALLET_SCREEN,
           });
+          break;
+        case 'setExperimentalFlag':
+          useExperimentalConfigStore.getState().setFlag(query.flag as ExperimentalConfigKey, query.value === 'true');
+          break;
+        case 'setCashDepositSetupStatus':
+          useCashDepositSetupStore.getState().setStatus(query.status as CashDepositSetupStatus);
           break;
         default:
           logger.debug(`[TestDeeplinkHandler]: unknown path`, { url });

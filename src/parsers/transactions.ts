@@ -1,7 +1,6 @@
 import { BigNumber } from '@ethersproject/bignumber';
 import { hexlify } from '@ethersproject/bytes';
 
-import { type NativeCurrencyKey } from '@/entities/nativeCurrencyTypes';
 import {
   TransactionDirection,
   TransactionStatus,
@@ -13,13 +12,10 @@ import {
   type TransactionWithoutChangesType,
 } from '@/entities/transactions';
 import { buildTransactionTitle, type NewTransaction, type RainbowTransactionFee } from '@/entities/transactions/transaction';
+import { type NativeCurrencyKey } from '@/features/currency/types';
+import { convertAmountAndPriceToNativeDisplay, convertRawAmountToNativeDisplay } from '@/features/currency/utils/nativeDisplay';
 import { type Meta, type Transaction } from '@/features/positions/types/generated/transaction/transaction';
-import {
-  convertAmountAndPriceToNativeDisplay,
-  convertRawAmountToBalance,
-  convertRawAmountToNativeDisplay,
-  toFixedDecimals,
-} from '@/helpers/utilities';
+import { convertRawAmountToBalance, toFixedDecimals } from '@/helpers/utilities';
 import { parseGoldskyAddressAsset, parseGoldskyAsset } from '@/resources/assets/assets';
 import { type ParsedAsset } from '@/resources/assets/types';
 import { useBackendNetworksStore } from '@/state/backendNetworks/backendNetworks';

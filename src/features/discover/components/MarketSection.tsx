@@ -1,7 +1,7 @@
 import { useCallback, useMemo } from 'react';
 
 import { useDiscoverScreenContext } from '@/components/Discover/DiscoverScreenContext';
-import { type NativeCurrencyKey } from '@/entities/nativeCurrencyTypes';
+import { type NativeCurrencyKey } from '@/features/currency/types';
 import { MarketCell, MarketCellSkeleton } from '@/features/discover/components/markets/cards/MarketCell';
 import {
   computeMarketPillWidth,

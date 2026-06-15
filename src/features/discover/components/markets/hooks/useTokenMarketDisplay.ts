@@ -1,14 +1,14 @@
 import { useMemo } from 'react';
 
 import { globalColors } from '@/design-system/color/palettes';
-import { type NativeCurrencyKey } from '@/entities/nativeCurrencyTypes';
 import { buildTokenLineChartId, useTokenLineChartsStore } from '@/features/charts/stores/tokenLineChartsStore';
+import { type NativeCurrencyKey } from '@/features/currency/types';
+import { formatCurrency } from '@/features/currency/utils/formatCurrency';
 import { type MarketPillWidthInput } from '@/features/discover/components/markets/cards/MarketPill';
 import { type MarketDisplayItem } from '@/features/discover/types/marketDisplayItem';
 import { type TokenPlacementItem } from '@/features/placements/stores/derived/tokensPlacementStore';
 import { getPriceChangeColor, getPriceChangeColors } from '@/framework/ui/price/usePriceChangeColors';
 import { opacity } from '@/framework/ui/utils/opacity';
-import { formatCurrency } from '@/helpers/strings';
 import useColorForAsset from '@/hooks/useColorForAsset';
 import { getUniqueId } from '@/utils/ethereumUtils';
 

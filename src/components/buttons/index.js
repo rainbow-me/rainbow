@@ -1,4 +1,3 @@
-export { default as BiometricButtonContent } from './BiometricButtonContent';
 export { default as Button } from './Button';
 export { GestureHandlerButton } from './GestureHandlerButton';
 export { HoldToAuthorizeButton, HoldToAuthorizeButtonIcon } from './hold-to-authorize';

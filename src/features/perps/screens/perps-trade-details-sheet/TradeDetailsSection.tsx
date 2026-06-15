@@ -4,9 +4,9 @@ import { format } from 'date-fns';
 
 import ButtonPressAnimation from '@/components/animations/ButtonPressAnimation';
 import { Box, Text, TextIcon, useColorMode } from '@/design-system';
+import { formatUsd } from '@/features/currency/utils/formatUsd';
 import { HyperliquidTokenIcon } from '@/features/perps/components/HyperliquidTokenIcon';
 import { TradeExecutionType, type HlTrade } from '@/features/perps/types';
-import { formatCurrency } from '@/features/perps/utils/formatCurrency';
 import { formatPerpAssetPrice } from '@/features/perps/utils/formatPerpsAssetPrice';
 import { extractBaseSymbol } from '@/features/perps/utils/hyperliquidSymbols';
 import { opacity } from '@/framework/ui/utils/opacity';
@@ -83,7 +83,7 @@ const PnlTradeDetailsRow = memo(function NetProfitTradeDetailsRow({ trade }: { t
                 {'􀸓􀸓􀸓􀸓􀸓'}
               </Text>
             ) : (
-              <RowValue text={formatCurrency(trade.netPnl)} />
+              <RowValue text={formatUsd(trade.netPnl)} />
             )}
             <TextIcon size="icon 15px" weight="bold" color="labelTertiary">
               {hidden ? '􀋯' : '􀋭'}

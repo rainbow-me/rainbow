@@ -1,4 +1,6 @@
-import type { NativeCurrencyKey } from '@/entities/nativeCurrencyTypes';
+import { supportedCurrencies as supportedNativeCurrencies } from '@/features/currency/supportedCurrencies';
+import type { NativeCurrencyKey } from '@/features/currency/types';
+import { convertAmountToNativeDisplayWorklet } from '@/features/currency/utils/nativeDisplay';
 import {
   divWorklet as safeDivWorklet,
   equalWorklet as safeEqualWorklet,
@@ -12,10 +14,8 @@ import {
   toFixedWorklet as safeToFixedWorklet,
   toStringWorklet as safeToStringWorklet,
 } from '@/framework/core/safeMath';
-import { supportedCurrencies as supportedNativeCurrencies } from '@/references/supportedCurrencies';
 
 import { toSubscript, toSuperscript } from './strings';
-import { convertAmountToNativeDisplayWorklet } from './utilities';
 
 interface ThresholdConfig {
   threshold: number;

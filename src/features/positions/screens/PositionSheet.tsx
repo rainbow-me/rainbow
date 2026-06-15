@@ -11,7 +11,7 @@ import ButtonPressAnimation from '@/components/animations/ButtonPressAnimation';
 import RequestVendorLogoIcon from '@/components/coin-icon/RequestVendorLogoIcon';
 import { SimpleSheet } from '@/components/sheet/SimpleSheet';
 import { BackgroundProvider, Box, globalColors, Inline, Separator, Stack, Text, useColorMode } from '@/design-system';
-import { NativeCurrencyKeys } from '@/entities/nativeCurrencyTypes';
+import { NativeCurrencyKeys } from '@/features/currency/types';
 import type { PositionAsset, RainbowPosition } from '@/features/positions/types';
 import { opacity } from '@/framework/ui/utils/opacity';
 import useDimensions from '@/hooks/useDimensions';

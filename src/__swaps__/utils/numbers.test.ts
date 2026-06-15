@@ -1,5 +1,5 @@
-import { convertAmountToNativeDisplayWorklet } from '@/helpers/utilities';
-import { supportedCurrencies } from '@/references/supportedCurrencies';
+import { supportedCurrencies } from '@/features/currency/supportedCurrencies';
+import { convertAmountToNativeDisplayWorklet } from '@/features/currency/utils/nativeDisplay';
 
 const testCases = [
   { value: 1234.56, currency: supportedCurrencies.USD, expected: '$1,234.56' },

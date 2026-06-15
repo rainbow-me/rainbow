@@ -1,0 +1,64 @@
+import React from 'react';
+
+import { nanoid } from 'nanoid/non-secure';
+import { type Address } from 'viem';
+
+import { analytics } from '@/analytics';
+import ButtonPressAnimation from '@/components/animations/ButtonPressAnimation';
+import { FiatProviderName } from '@/entities/f2c';
+import { WrappedAlert } from '@/helpers/alert';
+import * as i18n from '@/languages';
+import { logger, RainbowError } from '@/logger';
+import { type GetWidgetURL } from '@/resources/f2c';
+import { ProviderCard } from '@/screens/FiatOnRamp/components/ProviderCard';
+import { type ProviderConfig } from '@/screens/FiatOnRamp/types';
+import { openInBrowser } from '@/utils/openInBrowser';
+
+interface ProviderListItemProps {
+  config: ProviderConfig;
+  accountAddress: Address;
+  getWidgetURL: GetWidgetURL;
+}
+
+export function ProviderListItem({ accountAddress, config, getWidgetURL }: ProviderListItemProps) {
+  const onPress = async () => {
+    try {
+      const sessionId = nanoid();
+      // TODO: replace hardcoded rnbw.app link
+      const redirectUri = `https://rnbw.app/f2c?provider=${config.id}&sessionId=${sessionId}`;
+      // we're only passing redirect URL to Moonpay for now
+      const query = { destinationAddress: accountAddress, ...(config.id === FiatProviderName.Moonpay ? { redirectUri } : {}) };
+      const { data } = await getWidgetURL(config.id, query);
+
+      const { url } = data;
+
+      analytics.track(analytics.event.f2cProviderFlowStarted, {
+        provider: config.id,
+        sessionId,
+      });
+
+      logger.debug('[AddCash]: opening provider', {
+        provider: config.id,
+      });
+
+      openInBrowser(url, false, true);
+    } catch (e) {
+      logger.error(new RainbowError('[AddCash]: failed to open provider'), {
+        provider: config.id,
+        message: (e as Error).message,
+      });
+
+      WrappedAlert.alert(i18n.t(i18n.l.wallet.add_cash_v2.generic_error.title), i18n.t(i18n.l.wallet.add_cash_v2.generic_error.message), [
+        {
+          text: i18n.t(i18n.l.wallet.add_cash_v2.generic_error.button),
+        },
+      ]);
+    }
+  };
+
+  return (
+    <ButtonPressAnimation onPress={onPress} overflowMargin={30}>
+      <ProviderCard config={config} />
+    </ButtonPressAnimation>
+  );
+}

@@ -1,7 +1,7 @@
 import { getAddress } from 'viem';
 
 import { type ResponseByTheme } from '@/__swaps__/utils/swaps';
-import { useCurrencyConversionStore } from '@/features/perps/stores/currencyConversionStore';
+import { useCurrencyConversionStore } from '@/features/currency/stores/currencyConversionStore';
 import { getLeague } from '@/features/polymarket/leagues';
 import { type PolymarketPosition, type PolymarketTeamInfo, type RawPolymarketPosition } from '@/features/polymarket/types';
 import {

@@ -1,4 +1,4 @@
-import type { NativeCurrencyKey } from '@/entities/nativeCurrencyTypes';
+import type { NativeCurrencyKey } from '@/features/currency/types';
 import { type TokenColors } from '@/graphql/__generated__/metadata';
 import { type Network } from '@/state/backendNetworks/types';
 

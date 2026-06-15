@@ -9,6 +9,7 @@ import { analytics } from '@/analytics';
 import { AmountInputCard } from '@/components/amount-input-card/AmountInputCard';
 import { PanelSheet } from '@/components/PanelSheet/PanelSheet';
 import { Box, Separator, Text, TextIcon, useForegroundColor } from '@/design-system';
+import { formatUsd } from '@/features/currency/utils/formatUsd';
 import { PerpBottomSheetHeader } from '@/features/perps/components/PerpBottomSheetHeader';
 import { PerpsSheetActionButtons } from '@/features/perps/components/PerpsSheetActionButtons';
 import { PerpsAccentColorContextProvider, usePerpsAccentColorContext } from '@/features/perps/context/PerpsAccentColorContext';
@@ -18,7 +19,6 @@ import { type PerpMarket, type PerpsPosition } from '@/features/perps/types';
 import { getHyperliquidTokenId, parseHyperliquidErrorMessage } from '@/features/perps/utils';
 import { buildLiquidationInfo } from '@/features/perps/utils/buildLiquidationInfo';
 import { buildOrderAmountValidation } from '@/features/perps/utils/buildOrderAmountValidation';
-import { formatCurrency } from '@/features/perps/utils/formatCurrency';
 import { divWorklet, greaterThanWorklet, mulWorklet, sumWorklet, toFixedWorklet } from '@/framework/core/safeMath';
 import { opacity } from '@/framework/ui/utils/opacity';
 import { divide } from '@/helpers/utilities';
@@ -154,7 +154,7 @@ const NewTotalDisplay = memo(function NewTotalDisplay({ newTotal }: { newTotal: 
         </Text>
       </Box>
       <Text size="17pt" weight="semibold" color={'labelSecondary'}>
-        {formatCurrency(newTotal)}
+        {formatUsd(newTotal)}
       </Text>
     </Box>
   );

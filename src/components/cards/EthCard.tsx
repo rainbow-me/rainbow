@@ -7,6 +7,7 @@ import { analytics } from '@/analytics';
 import { ChainImage } from '@/components/coin-icon/ChainImage';
 import { ExtremeLabels } from '@/components/value-chart/ExtremeLabels';
 import { AccentColorProvider, Bleed, Box, Inline, Stack, Text } from '@/design-system';
+import { useAddCashRoute } from '@/features/cash/navigation/useAddCashRoute';
 import { opacity } from '@/framework/ui/utils/opacity';
 import useChartThrottledPoints from '@/hooks/charts/useChartThrottledPoints';
 import { useAccountAccentColor } from '@/hooks/useAccountAccentColor';
@@ -54,6 +55,7 @@ export const EthCard = () => {
 
   const { loaded: accentColorLoaded } = useAccountAccentColor();
   const { name: routeName } = useRoute();
+  const { route: addCashRoute, isCashEnabled } = useAddCashRoute();
   const cardType = 'stretch';
 
   const handlePressBuy = useCallback(
@@ -67,14 +69,14 @@ export const EthCard = () => {
         return;
       }
 
-      navigate(Routes.ADD_CASH_SHEET);
+      navigate(addCashRoute);
 
       analytics.track(analytics.event.buyButtonPressed, {
         componentName: 'EthCard',
         routeName,
       });
     },
-    [navigate, routeName]
+    [addCashRoute, navigate, routeName]
   );
 
   const handleAssetPress = useCallback(() => {
@@ -262,7 +264,7 @@ export const EthCard = () => {
             <AccentColorProvider color={opacity(colorForAsset, 0.1)}>
               <Box width="full" height={{ custom: 36 }} borderRadius={99} alignItems="center" justifyContent="center" background="accent">
                 <Text color={{ custom: colorForAsset }} containsEmoji size="15pt" weight="bold">
-                  {`􀍯 ${i18n.t(i18n.l.button.buy_eth)}`}
+                  {`􀍯 ${isCashEnabled ? i18n.t(i18n.l.cash.add_cash) : i18n.t(i18n.l.button.buy_eth)}`}
                 </Text>
               </Box>
             </AccentColorProvider>

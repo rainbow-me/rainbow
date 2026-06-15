@@ -1,6 +1,6 @@
+import { convertAmountToNativeDisplayWorklet } from '@/features/currency/utils/nativeDisplay';
 import { sumWorklet } from '@/framework/core/safeMath';
 import { time } from '@/framework/core/utils/time';
-import { convertAmountToNativeDisplayWorklet } from '@/helpers/utilities';
 import { getClaimables, type ClaimablesArgs } from '@/resources/addys/claimables/query';
 import { type Claimable } from '@/resources/addys/claimables/types';
 import { userAssetsStoreManager } from '@/state/assets/userAssetsStoreManager';

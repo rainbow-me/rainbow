@@ -2,9 +2,9 @@ import { type Provider } from '@ethersproject/providers';
 import { createWalletClient, http, type Hex } from 'viem';
 import { privateKeyToAccount } from 'viem/accounts';
 
+import * as kc from '@/features/local-auth/keychain';
 import { LedgerSigner } from '@/handlers/LedgerSigner';
 import walletTypes from '@/helpers/walletTypes';
-import * as kc from '@/keychain';
 import { logger, RainbowError } from '@/logger';
 import { getHdPath, isHardwareWalletKey, loadPrivateKey, WalletLibraryType } from '@/model/wallet';
 import { useBackendNetworksStore } from '@/state/backendNetworks/backendNetworks';

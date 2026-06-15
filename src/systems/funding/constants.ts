@@ -1,5 +1,5 @@
 import { navbarHeight } from '@/components/navbar/Navbar';
-import { CUSTOM_KEYBOARD_HEIGHT } from '@/features/perps/components/NumberPad/NumberPad';
+import { CUSTOM_KEYBOARD_HEIGHT } from '@/components/number-pad/NumberPad';
 import { DEVICE_HEIGHT, DEVICE_WIDTH } from '@/utils/deviceUtils';
 import safeAreaInsetValues from '@/utils/safeAreaInsetValues';
 

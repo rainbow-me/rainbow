@@ -12,6 +12,7 @@ import { useLiveTokenValue } from '@/components/live-token-text/LiveTokenText';
 import { SheetHandleFixedToTop } from '@/components/sheet';
 import { controlPanelStyles, Panel, PANEL_BOTTOM_OFFSET } from '@/components/SmoothPager/ListPanel';
 import { AnimatedText, Box, Inline, Text, TextIcon, useColorMode, useForegroundColor } from '@/design-system';
+import { formatUsd } from '@/features/currency/utils/formatUsd';
 import { PerpBottomSheetHeader } from '@/features/perps/components/PerpBottomSheetHeader';
 import { PositionPercentageSlider } from '@/features/perps/components/PositionPercentageSlider';
 import { SLIDER_MAX } from '@/features/perps/components/Slider/Slider';
@@ -22,7 +23,6 @@ import { useHlOpenOrdersStore } from '@/features/perps/stores/hlOpenOrdersStore'
 import { hyperliquidAccountActions, useHyperliquidAccountStore } from '@/features/perps/stores/hyperliquidAccountStore';
 import { TriggerOrderType } from '@/features/perps/types';
 import { getHyperliquidTokenId, parseHyperliquidErrorMessage } from '@/features/perps/utils';
-import { formatCurrency } from '@/features/perps/utils/formatCurrency';
 import { waitForTradeByOrderId } from '@/features/perps/utils/waitForTradeByOrderId';
 import { divWorklet, mulWorklet } from '@/framework/core/safeMath';
 import { time } from '@/framework/core/utils/time';
@@ -109,13 +109,13 @@ function PanelContent({ symbol }: PanelContentProps) {
   const positionEquity = position ? position.equity : '0';
   const receivedAmount = useDerivedValue(() => {
     const ratio = closeProgress.value / SLIDER_MAX;
-    return formatCurrency(mulWorklet(positionEquity, ratio));
+    return formatUsd(mulWorklet(positionEquity, ratio));
   });
 
   const projectedPnl = useDerivedValue(() => {
     if (!position) return '-';
     const ratio = closeProgress.value / SLIDER_MAX;
-    return `${isNegativePnl ? '' : '+'}${formatCurrency(mulWorklet(position.unrealizedPnl, ratio))}`;
+    return `${isNegativePnl ? '' : '+'}${formatUsd(mulWorklet(position.unrealizedPnl, ratio))}`;
   }, [position, closeProgress, isNegativePnl]);
 
   const closePosition = useCallback(async () => {
@@ -209,7 +209,7 @@ function PanelContent({ symbol }: PanelContentProps) {
             </Box>
           )}
           <PositionPercentageSlider
-            totalValue={formatCurrency(positionEquity)}
+            totalValue={formatUsd(positionEquity)}
             title={i18n.t(i18n.l.perps.inputs.amount)}
             progressValue={closeProgress}
             sliderWidth={SLIDER_WIDTH - 8 * 2}

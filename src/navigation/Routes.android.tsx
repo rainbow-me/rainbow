@@ -12,6 +12,8 @@ import { PROFILES } from '@/config/experimental';
 import useExperimentalFlag from '@/config/experimentalHooks';
 import AppIconUnlockSheet from '@/features/app-icon/screens/AppIconUnlockSheet';
 import BackupSheet from '@/features/backup/components/BackupSheet';
+import { AddCashSheet } from '@/features/cash/screens/add-cash-sheet/AddCashSheet';
+import { CashDepositIntroPanel } from '@/features/cash/screens/cash-deposit-intro-panel/CashDepositIntroPanel';
 import { SignTransactionSheet } from '@/features/dapp-request/screens/SignTransactionSheet';
 import RegisterENSNavigator from '@/features/ens/navigation/RegisterENSNavigator';
 import ENSAdditionalRecordsSheet from '@/features/ens/screens/ENSAdditionalRecordsSheet';
@@ -19,6 +21,7 @@ import ENSConfirmRegisterSheet from '@/features/ens/screens/ENSConfirmRegisterSh
 import SelectENSSheet from '@/features/ens/screens/SelectENSSheet';
 import { useShowKingOfTheHill } from '@/features/king-of-the-hill/hooks/useShowKingOfTheHill';
 import { KingOfTheHillExplainSheet } from '@/features/king-of-the-hill/screens/KingOfTheHillExplainSheet';
+import PinAuthenticationScreen from '@/features/local-auth/screens/PinAuthenticationScreen';
 import { NotificationPermissionScreen } from '@/features/notifications/screens/NotificationPermissionScreen';
 import { ClosePositionBottomSheet } from '@/features/perps/screens/ClosePositionBottomSheet';
 import { CreateTriggerOrderBottomSheet } from '@/features/perps/screens/CreateTriggerOrderBottomSheet';
@@ -76,15 +79,14 @@ import { SettingsSheet } from '@/screens/SettingsSheet/SettingsSheet';
 import { TokenLauncherScreen } from '@/screens/token-launcher/TokenLauncherScreen';
 import { TransactionDetails } from '@/screens/transaction-details/TransactionDetails';
 
-import { AddCashSheet } from '../screens/AddCash';
 import AvatarBuilder from '../screens/AvatarBuilder';
 import ChangeWalletSheet from '../screens/change-wallet/ChangeWalletSheet';
 import { WalletDiagnosticsSheet } from '../screens/Diagnostics';
 import ExpandedAssetSheet from '../screens/ExpandedAssetSheet';
 import ExplainSheet from '../screens/ExplainSheet';
 import ExternalLinkWarningSheet from '../screens/ExternalLinkWarningSheet';
+import { FiatOnRampSheet } from '../screens/FiatOnRamp';
 import ModalScreen from '../screens/ModalScreen';
-import PinAuthenticationScreen from '../screens/PinAuthenticationScreen';
 import ProfileSheet from '../screens/ProfileSheet';
 import ReceiveModal from '../screens/ReceiveModal';
 import { RestoreSheet } from '../screens/RestoreSheet';
@@ -104,7 +106,6 @@ import {
   stackNavigationConfig,
 } from './config';
 import {
-  addCashSheet,
   addWalletNavigatorPreset,
   androidRecievePreset,
   appIconUnlockSheetPreset,
@@ -113,6 +114,7 @@ import {
   exchangePreset,
   expandedPreset,
   expandedPresetWithSmallGestureResponseDistance,
+  fiatOnRampSheet,
   hardwareWalletTxNavigatorPreset,
   nftSingleOfferSheetPreset,
   sheetPreset,
@@ -155,7 +157,7 @@ function MainNavigator() {
       <Stack.Screen component={ReceiveModal} name={Routes.RECEIVE_MODAL} options={androidRecievePreset} />
 
       <Stack.Screen component={WalletConnectRedirectSheet} name={Routes.WALLET_CONNECT_REDIRECT_SHEET} options={wcPromptPreset} />
-      <Stack.Screen component={AddCashSheet} name={Routes.ADD_CASH_SHEET} options={addCashSheet} />
+      <Stack.Screen component={FiatOnRampSheet} name={Routes.FIAT_ON_RAMP_SHEET} options={fiatOnRampSheet} />
       <Stack.Screen component={RestoreSheet} name={Routes.RESTORE_SHEET} options={bottomSheetPreset} />
       <Stack.Screen component={WelcomeScreen} name={Routes.WELCOME_SCREEN} options={{ animationEnabled: false, gestureEnabled: false }} />
       <Stack.Screen component={ShowSecretView} name="ShowSecretView" options={bottomSheetPreset} />
@@ -303,6 +305,8 @@ function BSNavigator() {
       <BSStack.Screen component={PerpsExplainSheet} name={Routes.PERPS_EXPLAIN_SHEET} />
       <BSStack.Screen component={PerpsAddToPositionSheet} name={Routes.PERPS_ADD_TO_POSITION_SHEET} />
       <BSStack.Screen component={PerpsAboutSheet} name={Routes.PERPS_ABOUT_SHEET} />
+      <BSStack.Screen component={CashDepositIntroPanel} name={Routes.CASH_DEPOSIT_INTRO_PANEL} />
+      <BSStack.Screen component={AddCashSheet} name={Routes.ADD_CASH_SHEET} />
       <BSStack.Screen component={PerpsTradeDetailsSheet} name={Routes.PERPS_TRADE_DETAILS_SHEET} />
       <BSStack.Screen component={PolymarketEventScreen} name={Routes.POLYMARKET_EVENT_SCREEN} />
       <BSStack.Screen component={PolymarketRedeemPositionSheet} name={Routes.POLYMARKET_MANAGE_POSITION_SHEET} />

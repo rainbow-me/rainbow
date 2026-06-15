@@ -2,7 +2,8 @@ import { useMemo } from 'react';
 
 import { type Address } from 'viem';
 
-import { add, convertAmountToNativeDisplay } from '@/helpers/utilities';
+import { convertAmountToNativeDisplay } from '@/features/currency/utils/nativeDisplay';
+import { add } from '@/helpers/utilities';
 import { type AllRainbowWallets } from '@/model/wallet';
 import { userAssetsStoreManager } from '@/state/assets/userAssetsStoreManager';
 import { useWalletSummary } from '@/state/wallets/useWalletSummaryStore';

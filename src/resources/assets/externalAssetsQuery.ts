@@ -1,11 +1,12 @@
 import { useQuery } from '@tanstack/react-query';
 
 import { type AddressOrEth } from '@/__swaps__/types/assets';
-import type { NativeCurrencyKey } from '@/entities/nativeCurrencyTypes';
+import type { NativeCurrencyKey } from '@/features/currency/types';
+import { convertAmountAndPriceToNativeDisplay } from '@/features/currency/utils/nativeDisplay';
 import { metadataClient } from '@/graphql';
 import { type Token } from '@/graphql/__generated__/metadata';
 import { isNativeAsset } from '@/handlers/assets';
-import { convertAmountAndPriceToNativeDisplay, convertAmountToPercentageDisplay } from '@/helpers/utilities';
+import { convertAmountToPercentageDisplay } from '@/helpers/utilities';
 import { createQueryKey, queryClient, type QueryConfig, type QueryFunctionArgs, type QueryFunctionResult } from '@/react-query';
 import { type ChainId } from '@/state/backendNetworks/types';
 

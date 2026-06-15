@@ -12,6 +12,8 @@ import { PROFILES } from '@/config/experimental';
 import useExperimentalFlag from '@/config/experimentalHooks';
 import AppIconUnlockSheet from '@/features/app-icon/screens/AppIconUnlockSheet';
 import BackupSheet from '@/features/backup/components/BackupSheet';
+import { AddCashSheet } from '@/features/cash/screens/add-cash-sheet/AddCashSheet';
+import { CashDepositIntroPanel } from '@/features/cash/screens/cash-deposit-intro-panel/CashDepositIntroPanel';
 import { SignTransactionSheet } from '@/features/dapp-request/screens/SignTransactionSheet';
 import RegisterENSNavigator from '@/features/ens/navigation/RegisterENSNavigator';
 import ENSAdditionalRecordsSheet from '@/features/ens/screens/ENSAdditionalRecordsSheet';
@@ -75,13 +77,13 @@ import { RewardsSheet } from '@/screens/rewards/RewardsSheet';
 import { TokenLauncherScreen } from '@/screens/token-launcher/TokenLauncherScreen';
 import { TransactionDetails } from '@/screens/transaction-details/TransactionDetails';
 
-import { AddCashSheet } from '../screens/AddCash';
 import AvatarBuilder from '../screens/AvatarBuilder';
 import ChangeWalletSheet from '../screens/change-wallet/ChangeWalletSheet';
 import { WalletDiagnosticsSheet } from '../screens/Diagnostics';
 import ExpandedAssetSheet from '../screens/ExpandedAssetSheet';
 import ExplainSheet from '../screens/ExplainSheet';
 import ExternalLinkWarningSheet from '../screens/ExternalLinkWarningSheet';
+import { FiatOnRampSheet } from '../screens/FiatOnRamp';
 import ModalScreen from '../screens/ModalScreen';
 import NoNeedWCSheet from '../screens/NoNeedWCSheet';
 import ProfileSheet from '../screens/ProfileSheet';
@@ -143,7 +145,7 @@ import {
   walletDiagnosticsSheetConfig,
   walletErrorSheetConfig,
 } from './config';
-import { addCashSheet, emojiPreset, emojiPresetWallet, overlayExpandedPreset, sheetPreset } from './effects';
+import { emojiPreset, emojiPresetWallet, fiatOnRampSheet, overlayExpandedPreset, sheetPreset } from './effects';
 import { HardwareWalletTxNavigator } from './HardwareWalletTxNavigator';
 import { InitialRouteContext } from './initialRoute';
 import { nativeStackConfig } from './nativeStackConfig';
@@ -174,7 +176,7 @@ function MainNavigator() {
       <Stack.Screen component={WelcomeScreen} name={Routes.WELCOME_SCREEN} options={{ animationEnabled: false, gestureEnabled: false }} />
       <Stack.Screen component={AvatarBuilder} name={Routes.AVATAR_BUILDER} options={emojiPreset} />
       <Stack.Screen component={AvatarBuilder} name={Routes.AVATAR_BUILDER_WALLET} options={emojiPresetWallet} />
-      <Stack.Screen component={AddCashSheet} name={Routes.ADD_CASH_SHEET} options={addCashSheet} />
+      <Stack.Screen component={FiatOnRampSheet} name={Routes.FIAT_ON_RAMP_SHEET} options={fiatOnRampSheet} />
     </Stack.Navigator>
   );
 }
@@ -337,6 +339,8 @@ function NativeStackNavigator() {
       <NativeStack.Screen component={KingOfTheHillExplainSheet} name={Routes.KING_OF_THE_HILL_EXPLAIN_SHEET} {...learnSheetConfig} />
       <NativeStack.Screen component={PerpsExplainSheet} name={Routes.PERPS_EXPLAIN_SHEET} {...perpsExplainSheetConfig} />
       <NativeStack.Screen component={PerpsAboutSheet} name={Routes.PERPS_ABOUT_SHEET} {...panelConfig} />
+      <NativeStack.Screen component={CashDepositIntroPanel} name={Routes.CASH_DEPOSIT_INTRO_PANEL} {...panelConfig} />
+      <NativeStack.Screen component={AddCashSheet} name={Routes.ADD_CASH_SHEET} {...panelConfig} />
       <NativeStack.Screen
         component={PerpsTradeDetailsSheet}
         name={Routes.PERPS_TRADE_DETAILS_SHEET}

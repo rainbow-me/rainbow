@@ -7,8 +7,8 @@ import { useMemoOne } from 'use-memo-one';
 
 import { type UniqueId } from '@/__swaps__/types/assets';
 import { useExperimentalConfig } from '@/config/experimentalHooks';
-import type { NativeCurrencyKey } from '@/entities/nativeCurrencyTypes';
 import type { UniqueAsset } from '@/entities/uniqueAssets';
+import type { NativeCurrencyKey } from '@/features/currency/types';
 import {
   ExternalENSProfileScrollViewWithRef,
   ExternalSelectNFTScrollViewWithRef,
