@@ -52,12 +52,14 @@ async function getUsdValue(nativeAmount: string): Promise<number | undefined> {
     return undefined;
   }
 
+  const store = useCurrencyConversionStore.getState();
   // fetch() returns null on a failed refetch even when a cached rate exists,
   // so fall back to the cached data before treating the rate as unavailable.
-  const data = (await useCurrencyConversionStore.getState().fetch()) ?? useCurrencyConversionStore.getState().getData();
-  if (!data) {
+  const data = (await store.fetch()) ?? store.getData();
+  const rate = data?.usdToNativeCurrencyConversionRate;
+  if (rate == null || !Number.isFinite(rate) || rate <= 0) {
     return undefined;
   }
 
-  return toAnalyticsAmount(useCurrencyConversionStore.getState().convertToUsd(amount));
+  return toAnalyticsAmount(store.convertToUsd(amount));
 }
