@@ -1689,7 +1689,10 @@
       },
       "add_cash_screen": {
         "add_from": "यहाँ से जोड़ें",
-        "hold_to_add": "जोड़ने के लिए रोकें"
+        "hold_to_add": "जोड़ने के लिए रोकें",
+        "enter_amount": "राशि दर्ज करें",
+        "money_is_added_in": "पैसे इसमें जोड़े जाते हैं",
+        "usdc": "USDC"
       }
     },
     "points": {
