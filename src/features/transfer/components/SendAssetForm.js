@@ -15,10 +15,10 @@ import { padding, position } from '@/styles';
 import { useTheme } from '@/theme/ThemeContext';
 import { NAVIGATION_BAR_HEIGHT } from '@/utils/deviceUtils';
 
-import CollectiblesSendRow from './CollectiblesSendRow';
-import SendAssetFormCollectible from './SendAssetFormCollectible';
-import SendAssetFormToken from './SendAssetFormToken';
-import SendCoinRow from './SendCoinRow';
+import { CollectiblesSendRow } from './CollectiblesSendRow';
+import { SendAssetFormCollectible } from './SendAssetFormCollectible';
+import { SendAssetFormToken } from './SendAssetFormToken';
+import { SendCoinRow } from './SendCoinRow';
 
 const AssetRowShadow = colors => [
   [0, 10, 30, colors.shadow, 0.12],
@@ -55,7 +55,7 @@ const FormContainer = styled(Column).attrs(
   ...(isUniqueAsset ? padding.object(0) : padding.object(0, 19)),
 }));
 
-export default function SendAssetForm({
+export function SendAssetForm({
   assetAmount,
   buttonRenderer,
   colorForAsset,

@@ -9,7 +9,7 @@ import { BuyActionButton, SwapActionButton } from '@/components/sheet';
 import { Box, ColorModeProvider, Column, Columns, useColorMode } from '@/design-system';
 import { globalColors, type ColorMode } from '@/design-system/color/palettes';
 import type { ParsedAddressAsset } from '@/entities/tokens';
-import SendActionButton from '@/features/transfer/components/SendActionButton';
+import { SendActionButton } from '@/features/transfer/components/SendActionButton';
 import { isTestnetChain } from '@/handlers/web3';
 import * as i18n from '@/languages';
 import { useRemoteConfig } from '@/model/remoteConfig';

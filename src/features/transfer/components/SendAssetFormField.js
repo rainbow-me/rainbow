@@ -44,7 +44,7 @@ const Wrapper = styled(Platform.OS === 'android' ? Row : ButtonPressAnimation).a
   width: ({ width }) => (Platform.OS === 'android' ? width - 38 : '100%'),
 });
 
-const SendAssetFormField = (
+const SendAssetFormFieldComponent = (
   {
     autoFocus,
     colorForAsset,
@@ -120,4 +120,4 @@ const SendAssetFormField = (
   );
 };
 
-export default React.forwardRef(SendAssetFormField);
+export const SendAssetFormField = React.forwardRef(SendAssetFormFieldComponent);

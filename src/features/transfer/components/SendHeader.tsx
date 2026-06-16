@@ -93,7 +93,7 @@ type SendHeaderProps = {
   watchedAccounts: RainbowAccount[];
 };
 
-export default function SendHeader({
+export function SendHeader({
   contacts,
   hideDivider,
   isValidAddress,
