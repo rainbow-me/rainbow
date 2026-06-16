@@ -5,10 +5,11 @@ import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 import { SwapAssetType } from '@/__swaps__/types/swap';
 import { EasingGradient } from '@/components/easing-gradient/EasingGradient';
-import { BuyActionButton, SendActionButton, SwapActionButton } from '@/components/sheet';
+import { BuyActionButton, SwapActionButton } from '@/components/sheet';
 import { Box, ColorModeProvider, Column, Columns, useColorMode } from '@/design-system';
 import { globalColors, type ColorMode } from '@/design-system/color/palettes';
 import type { ParsedAddressAsset } from '@/entities/tokens';
+import SendActionButton from '@/features/transfer/components/SendActionButton';
 import { isTestnetChain } from '@/handlers/web3';
 import * as i18n from '@/languages';
 import { useRemoteConfig } from '@/model/remoteConfig';

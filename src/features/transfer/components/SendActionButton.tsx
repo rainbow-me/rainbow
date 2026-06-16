@@ -1,6 +1,7 @@
 import React, { useCallback } from 'react';
 import { Platform } from 'react-native';
 
+import SheetActionButton, { type SheetActionButtonProps } from '@/components/sheet/sheet-action-buttons/SheetActionButton';
 import { Text } from '@/design-system';
 import type { ParsedAddressAsset, RainbowToken } from '@/entities/tokens';
 import type { UniqueAsset } from '@/entities/uniqueAssets';
@@ -8,8 +9,6 @@ import useNavigationForNonReadOnlyWallets from '@/hooks/useNavigationForNonReadO
 import * as i18n from '@/languages';
 import Routes from '@/navigation/routesNames';
 import { colors } from '@/styles';
-
-import SheetActionButton, { type SheetActionButtonProps } from './SheetActionButton';
 
 type SendActionButtonProps = SheetActionButtonProps & {
   asset: RainbowToken | UniqueAsset | ParsedAddressAsset;
