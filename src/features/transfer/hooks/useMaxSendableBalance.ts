@@ -12,18 +12,18 @@ export function useMaxSendableBalance({ ignoreGasFee = false }: { ignoreGasFee?:
   const { selectedGasFee, l1GasFeeOptimism } = useGas();
 
   const updateMaxSendableBalance = useCallback(
-    (inputCurrency: ParsedAddressAsset | UniqueAsset | undefined) => {
-      if (!inputCurrency || assetIsUniqueAsset(inputCurrency)) {
+    (asset: ParsedAddressAsset | UniqueAsset | undefined) => {
+      if (!asset || assetIsUniqueAsset(asset)) {
         return '0';
       }
 
-      const accountAsset = ethereumUtils.getAccountAsset(inputCurrency.uniqueId);
-      const newInputBalance = ignoreGasFee
-        ? (inputCurrency.balance?.amount ?? accountAsset?.balance?.amount ?? '0')
-        : ethereumUtils.getBalanceAmount(selectedGasFee, inputCurrency, l1GasFeeOptimism);
+      const accountAsset = ethereumUtils.getAccountAsset(asset.uniqueId);
+      const newBalance = ignoreGasFee
+        ? (asset.balance?.amount ?? accountAsset?.balance?.amount ?? '0')
+        : ethereumUtils.getBalanceAmount(selectedGasFee, asset, l1GasFeeOptimism);
 
-      setMaxSendableBalance(newInputBalance);
-      return newInputBalance;
+      setMaxSendableBalance(newBalance);
+      return newBalance;
     },
     [ignoreGasFee, l1GasFeeOptimism, selectedGasFee]
   );
