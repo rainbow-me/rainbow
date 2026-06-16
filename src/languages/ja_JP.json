@@ -1689,7 +1689,10 @@
       },
       "add_cash_screen": {
         "add_from": "追加元",
-        "hold_to_add": "長押しして追加"
+        "hold_to_add": "長押しして追加",
+        "enter_amount": "金額を入力してください",
+        "money_is_added_in": "Money is added in",
+        "usdc": "USDC"
       }
     },
     "points": {
