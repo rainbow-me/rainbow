@@ -1689,7 +1689,10 @@
       },
       "add_cash_screen": {
         "add_from": "إضافة من",
-        "hold_to_add": "اضغط مطولاً للإضافة"
+        "hold_to_add": "اضغط مطولاً للإضافة",
+        "enter_amount": "أدخل كمية",
+        "money_is_added_in": "تُضاف الأموال بعملة",
+        "usdc": "USDC"
       }
     },
     "points": {
