@@ -1,12 +1,8 @@
-import { InteractionManager, Platform } from 'react-native';
-
 import { type BigNumberish } from '@ethersproject/bignumber';
 import { Contract } from '@ethersproject/contracts';
 import { type StaticJsonRpcProvider, type TransactionRequest } from '@ethersproject/providers';
 import { serialize } from '@ethersproject/transactions';
 import AsyncStorage from '@react-native-async-storage/async-storage';
-// @ts-expect-error ts-migrate(7016) FIXME: Could not find a declaration file for module 'eth-... Remove this comment to see the full error message
-import { parse } from 'eth-url-parser';
 import { addHexPrefix, isValidAddress, toChecksumAddress } from 'ethereumjs-util';
 import { cloneDeep, isEmpty, isString, replace } from 'lodash';
 import { ETHERSCAN_API_KEY } from 'react-native-dotenv';
@@ -18,13 +14,8 @@ import { type EthereumAddress } from '@/entities/wallet';
 import { type GasFee, type LegacySelectedGasFee, type SelectedGasFee } from '@/features/gas/types/gas';
 import { getOnchainAssetBalance } from '@/handlers/assets';
 import { getProvider, isTestnetChain, toHex } from '@/handlers/web3';
-import { WrappedAlert as Alert } from '@/helpers/alert';
-import { add, convertRawAmountToDecimalFormat, fromWei, greaterThan, isZero, subtract } from '@/helpers/utilities';
-import * as i18n from '@/languages';
+import { add, fromWei, greaterThan, isZero, subtract } from '@/helpers/utilities';
 import { logger, RainbowError } from '@/logger';
-import Navigation from '@/navigation/Navigation';
-import Routes from '@/navigation/routesNames';
-import { parseAssetNative } from '@/parsers/accounts';
 import { queryClient } from '@/react-query';
 import store from '@/redux/store';
 import { ETH_ADDRESS, OVM_GAS_PRICE_ORACLE } from '@/references/constants';
@@ -411,64 +402,6 @@ function openTransactionInBlockExplorer({ hash, chainId }: { hash: string; chain
   if (url) openInBrowser(url);
 }
 
-async function parseEthereumUrl(data: string) {
-  let ethUrl;
-  try {
-    ethUrl = parse(data);
-  } catch (e) {
-    Alert.alert(i18n.t(i18n.l.wallet.alerts.invalid_ethereum_url));
-    return;
-  }
-
-  const functionName = ethUrl.function_name;
-  let asset = null;
-  const chainId = (ethUrl.chain_id as ChainId) || ChainId.mainnet;
-  const network = useBackendNetworksStore.getState().getChainsName()[chainId];
-  let address: any = null;
-  let nativeAmount: any = null;
-  const { nativeCurrency } = store.getState().settings;
-
-  if (!functionName) {
-    // Send native asset
-    const chainId = useBackendNetworksStore.getState().getChainsIdByName()[network];
-    asset = getNetworkNativeAsset({ chainId });
-
-    if (!asset || isZero(asset?.balance?.amount ?? '0')) {
-      Alert.alert(i18n.t(i18n.l.wallet.alerts.ooops), i18n.t(i18n.l.wallet.alerts.dont_have_asset_in_wallet));
-      return;
-    }
-    address = ethUrl.target_address;
-    nativeAmount = ethUrl.parameters?.value && fromWei(ethUrl.parameters.value);
-  } else if (functionName === 'transfer') {
-    // Send ERC-20
-    const targetUniqueId = getUniqueId(ethUrl.target_address, chainId);
-    asset = getAccountAsset(targetUniqueId);
-    if (!asset || isZero(asset?.balance?.amount ?? '0')) {
-      Alert.alert(i18n.t(i18n.l.wallet.alerts.ooops), i18n.t(i18n.l.wallet.alerts.dont_have_asset_in_wallet));
-      return;
-    }
-    address = ethUrl.parameters?.address;
-    nativeAmount = ethUrl.parameters?.uint256 && convertRawAmountToDecimalFormat(ethUrl.parameters.uint256, asset.decimals);
-  } else {
-    Alert.alert(i18n.t(i18n.l.wallet.alerts.this_action_not_supported));
-    return;
-  }
-
-  const assetWithPrice = parseAssetNative(asset, nativeCurrency);
-
-  InteractionManager.runAfterInteractions(() => {
-    const params = { address, asset: assetWithPrice, nativeAmount };
-    if (Platform.OS === 'ios') {
-      Navigation.handleAction(Routes.SEND_FLOW, {
-        params,
-        screen: Routes.SEND_SHEET,
-      });
-    } else {
-      Navigation.handleAction(Routes.SEND_FLOW, params);
-    }
-  });
-}
-
 const calculateL1FeeOptimism = async (
   tx: RainbowTransaction | TransactionRequest,
   provider: StaticJsonRpcProvider
@@ -545,6 +478,5 @@ export default {
   openTokenEtherscanURL,
   openTransactionInBlockExplorer,
   padLeft,
-  parseEthereumUrl,
   removeHexPrefix,
 };
