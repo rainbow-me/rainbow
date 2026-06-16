@@ -1689,7 +1689,10 @@
       },
       "add_cash_screen": {
         "add_from": "Şuradan Ekle",
-        "hold_to_add": "Eklemek için Basılı Tut"
+        "hold_to_add": "Eklemek için Basılı Tut",
+        "enter_amount": "Miktar Girin",
+        "money_is_added_in": "Money is added in",
+        "usdc": "USDC"
       }
     },
     "points": {
