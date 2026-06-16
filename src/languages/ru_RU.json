@@ -1689,7 +1689,10 @@
       },
       "add_cash_screen": {
         "add_from": "Добавить из",
-        "hold_to_add": "Удерживайте, чтобы добавить"
+        "hold_to_add": "Удерживайте, чтобы добавить",
+        "enter_amount": "Введите сумму",
+        "money_is_added_in": "Money is added in",
+        "usdc": "USDC"
       }
     },
     "points": {
