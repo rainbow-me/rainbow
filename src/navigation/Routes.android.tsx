@@ -21,8 +21,8 @@ import ENSConfirmRegisterSheet from '@/features/ens/screens/ENSConfirmRegisterSh
 import SelectENSSheet from '@/features/ens/screens/SelectENSSheet';
 import { useShowKingOfTheHill } from '@/features/king-of-the-hill/hooks/useShowKingOfTheHill';
 import { KingOfTheHillExplainSheet } from '@/features/king-of-the-hill/screens/KingOfTheHillExplainSheet';
-import { NetworkSelector } from '@/features/network/screens/NetworkSelector';
 import PinAuthenticationScreen from '@/features/local-auth/screens/PinAuthenticationScreen';
+import { NetworkSelector } from '@/features/network/screens/NetworkSelector';
 import { NotificationPermissionScreen } from '@/features/notifications/screens/NotificationPermissionScreen';
 import { ClosePositionBottomSheet } from '@/features/perps/screens/ClosePositionBottomSheet';
 import { CreateTriggerOrderBottomSheet } from '@/features/perps/screens/CreateTriggerOrderBottomSheet';
