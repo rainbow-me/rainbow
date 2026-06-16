@@ -1689,7 +1689,10 @@
       },
       "add_cash_screen": {
         "add_from": "Adicionar de",
-        "hold_to_add": "Segurar para Adicionar"
+        "hold_to_add": "Segurar para Adicionar",
+        "enter_amount": "Insira um valor",
+        "money_is_added_in": "Money is added in",
+        "usdc": "USDC"
       }
     },
     "points": {
