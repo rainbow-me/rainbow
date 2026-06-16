@@ -1,7 +1,7 @@
 import { POLYMARKET } from '@/config/experimental';
 import { useExperimentalConfigStore } from '@/config/experimentalConfigStore';
 import { IS_TEST } from '@/env';
-import { DEFAULT_SPORTS_LEAGUE_KEY, POLYMARKET_GAMMA_API_URL } from '@/features/polymarket/constants';
+import { DEFAULT_SPORTS_LEAGUE_KEY, POLYMARKET_GAMMA_API_URL, POLYMARKET_SPORTS_MARKET_TYPE } from '@/features/polymarket/constants';
 import { type LeagueId } from '@/features/polymarket/leagues';
 import { fetchPolymarketTeamMetadataForGameEvents } from '@/features/polymarket/stores/polymarketTeamMetadataStore';
 import { type PolymarketEvent, type RawPolymarketEvent } from '@/features/polymarket/types/polymarket-event';
@@ -50,7 +50,7 @@ export function prefetchPolymarketSportsEvents() {
   usePolymarketSportsEventsStore.getState().fetch();
 }
 
-async function fetchPolymarketSportsEvents(_: never, abortController: AbortController | null): Promise<PolymarketEvent[]> {
+export async function fetchPolymarketSportsEvents(_: never, abortController: AbortController | null): Promise<PolymarketEvent[]> {
   const { minStartTime, maxStartTime } = getSportsEventsStartTimeRange();
   const url = new URL(`${POLYMARKET_GAMMA_API_URL}/events`);
   url.searchParams.set('limit', '500');
@@ -69,7 +69,18 @@ async function fetchPolymarketSportsEvents(_: never, abortController: AbortContr
     timeout: time.seconds(30),
   });
 
-  const filteredEvents = events.filter(event => event.ended !== true && event.gameId != null);
+  const filteredEvents = events.filter(event => {
+    if (event.ended === true || event.gameId == null) return false;
+
+    const hasActiveMoneylineMarket = event.markets.some(
+      market =>
+        market.active !== false &&
+        market.closed !== true &&
+        market.umaResolutionStatus !== 'resolved' &&
+        market.sportsMarketType === POLYMARKET_SPORTS_MARKET_TYPE.MONEYLINE
+    );
+    return hasActiveMoneylineMarket;
+  });
 
   const teamsByTicker = await fetchPolymarketTeamMetadataForGameEvents(filteredEvents, abortController);
 
