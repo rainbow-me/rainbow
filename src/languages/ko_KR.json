@@ -1689,7 +1689,10 @@
       },
       "add_cash_screen": {
         "add_from": "추가 출처",
-        "hold_to_add": "길게 눌러 추가"
+        "hold_to_add": "길게 눌러 추가",
+        "enter_amount": "금액 입력",
+        "money_is_added_in": "Money is added in",
+        "usdc": "USDC"
       }
     },
     "points": {
