@@ -8,11 +8,14 @@ import { createQueryStore } from '@/state/internal/createQueryStore';
 
 import { NativeCurrencyKeys, type NativeCurrencyKey } from '../types';
 
+type CurrencyConverter = {
+  (value: number): number;
+  (value: string): string;
+};
+
 type CurrencyConversionStore = {
-  convertToNativeCurrency: {
-    (usdValue: number): number;
-    (usdValue: string): string;
-  };
+  convertToNativeCurrency: CurrencyConverter;
+  convertToUsd: CurrencyConverter;
   getConversionRate: () => number;
 };
 
@@ -36,6 +39,7 @@ export const useCurrencyConversionStore = createQueryStore<CurrencyConversionDat
 
   (_, get) => ({
     convertToNativeCurrency: buildCurrencyConverter(() => get().getConversionRate()),
+    convertToUsd: buildCurrencyConverter(() => 1 / get().getConversionRate()),
     getConversionRate: () => get().getData()?.usdToNativeCurrencyConversionRate || 1,
   }),
 
@@ -46,20 +50,20 @@ export const useCurrencyConversionStore = createQueryStore<CurrencyConversionDat
  * Builds an overloaded currency converter that works equivalently with
  * strings and numbers, respecting the type of the input in its output.
  */
-function buildCurrencyConverter(getConversionRate: () => number): CurrencyConversionStore['convertToNativeCurrency'] {
-  function convertToNativeCurrency(usdValue: number): number;
-  function convertToNativeCurrency(usdValue: string): string;
-  function convertToNativeCurrency(usdValue: number | string): number | string {
-    const conversionRate = getConversionRate();
-    const skipConversion = conversionRate === 1;
-    switch (typeof usdValue) {
+function buildCurrencyConverter(getRate: () => number): CurrencyConverter {
+  function convert(value: number): number;
+  function convert(value: string): string;
+  function convert(value: number | string): number | string {
+    const rate = getRate();
+    const skipConversion = rate === 1;
+    switch (typeof value) {
       case 'number':
-        return skipConversion ? usdValue : multiply(usdValue, conversionRate);
+        return skipConversion ? value : multiply(value, rate);
       case 'string':
-        return skipConversion ? usdValue : multiply(stripNonDecimalNumbers(usdValue), conversionRate);
+        return skipConversion ? value : multiply(stripNonDecimalNumbers(value), rate);
     }
   }
-  return convertToNativeCurrency;
+  return convert;
 }
 
 type CurrencyConversionResponse = PlatformResponse<{
