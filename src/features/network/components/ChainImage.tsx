@@ -3,12 +3,11 @@ import { View, type StyleProp, type ViewStyle } from 'react-native';
 
 import { FasterImageView } from '@candlefinance/faster-image';
 
+import { BLANK_BASE64_PIXEL } from '@/components/DappBrowser/constants';
+import { DEFAULT_FASTER_IMAGE_CONFIG } from '@/components/images/ImgixImage';
 import { useColorMode } from '@/design-system';
 import { useBackendNetworksStore } from '@/state/backendNetworks/backendNetworks';
 import { type ChainId } from '@/state/backendNetworks/types';
-
-import { BLANK_BASE64_PIXEL } from '../DappBrowser/constants';
-import { DEFAULT_FASTER_IMAGE_CONFIG } from '../images/ImgixImage';
 
 type ChainImageProps = {
   badgeXPosition?: number;

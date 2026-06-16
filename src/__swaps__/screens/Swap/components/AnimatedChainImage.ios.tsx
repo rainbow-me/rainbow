@@ -4,10 +4,10 @@ import { View } from 'react-native';
 import { useAnimatedProps, useDerivedValue } from 'react-native-reanimated';
 
 import { AnimatedFasterImage } from '@/components/AnimatedComponents/AnimatedFasterImage';
-import { getChainBadgeStyles } from '@/components/coin-icon/ChainImage';
 import { BLANK_BASE64_PIXEL } from '@/components/DappBrowser/constants';
 import { DEFAULT_FASTER_IMAGE_CONFIG } from '@/components/images/ImgixImage';
 import { useColorMode } from '@/design-system';
+import { getChainBadgeStyles } from '@/features/network/components/ChainImage';
 import { useBackendNetworksStore } from '@/state/backendNetworks/backendNetworks';
 import { ChainId } from '@/state/backendNetworks/types';
 

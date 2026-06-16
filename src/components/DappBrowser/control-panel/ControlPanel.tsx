@@ -17,7 +17,6 @@ import { navigateToSwaps } from '@/__swaps__/screens/Swap/navigateToSwaps';
 import { TIMING_CONFIGS } from '@/components/animations/animationConfigs';
 import ButtonPressAnimation from '@/components/animations/ButtonPressAnimation';
 import { GestureHandlerButton } from '@/components/buttons/GestureHandlerButton';
-import { ChainImage } from '@/components/coin-icon/ChainImage';
 import { ImgixImage } from '@/components/images';
 import { SmoothPager, usePagerNavigation } from '@/components/SmoothPager/SmoothPager';
 import {
@@ -36,6 +35,7 @@ import {
   useForegroundColor,
 } from '@/design-system';
 import { type TextColor } from '@/design-system/color/palettes';
+import { ChainImage } from '@/features/network/components/ChainImage';
 import { watchingAlert } from '@/features/wallet/utils/watchingAlert';
 import { opacity } from '@/framework/ui/utils/opacity';
 import { removeFirstEmojiFromString, returnStringFirstEmoji } from '@/helpers/emojiHandler';

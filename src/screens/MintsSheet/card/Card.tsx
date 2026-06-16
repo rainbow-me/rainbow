@@ -3,8 +3,8 @@ import { View } from 'react-native';
 
 import { analytics } from '@/analytics';
 import ButtonPressAnimation from '@/components/animations/ButtonPressAnimation';
-import { ChainImage } from '@/components/coin-icon/ChainImage';
 import { Bleed, Box, Cover, Inline, Inset, Stack, Text, useForegroundColor } from '@/design-system';
+import { ChainImage } from '@/features/network/components/ChainImage';
 import { type MintableCollection, type MintedNft } from '@/graphql/__generated__/arc';
 import { abbreviateNumber, convertRawAmountToRoundedDecimal } from '@/helpers/utilities';
 import * as i18n from '@/languages';

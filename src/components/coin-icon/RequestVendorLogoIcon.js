@@ -2,6 +2,7 @@ import React, { useMemo, useState } from 'react';
 import { View } from 'react-native';
 
 import { ImgixImage } from '@/components/images';
+import { ChainImage } from '@/features/network/components/ChainImage';
 import styled from '@/framework/ui/styled-thing';
 import ShadowStack from '@/react-native-shadow-stack';
 import { position } from '@/styles';
@@ -10,7 +11,6 @@ import { initials } from '@/utils/formatters';
 import { useTheme } from '../../theme/ThemeContext';
 import { Centered } from '../layout';
 import { Text } from '../text';
-import { ChainImage } from './ChainImage';
 
 const RequestVendorLogoIconSize = 40;
 
