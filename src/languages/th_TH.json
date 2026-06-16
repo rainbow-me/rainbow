@@ -1691,7 +1691,7 @@
         "add_from": "เพิ่มจาก",
         "hold_to_add": "กดค้างเพื่อเพิ่ม",
         "enter_amount": "ป้อนจำนวน",
-        "money_is_added_in": "Money is added in",
+        "money_is_added_in": "เพิ่มเงินในสกุล",
         "usdc": "USDC"
       }
     },
