@@ -56,25 +56,30 @@ const mockRainbowFetch = rainbowFetch as jest.MockedFunction<typeof rainbowFetch
 
 type EventOptions = {
   id: string;
+  endDate?: string;
   ended?: boolean;
   gameId?: number | null;
-  startTime?: string;
+  startTime?: string | null;
   sportsMarketType?: string;
   umaResolutionStatus?: string;
 };
 
 function makeEvent({
   id,
+  endDate,
   ended = false,
   gameId = 1,
-  startTime = '2026-06-15T20:00:00Z',
+  startTime,
   sportsMarketType = 'moneyline',
   umaResolutionStatus,
 }: EventOptions): RawPolymarketEvent {
+  const eventStartTime = startTime === undefined ? '2026-06-15T20:00:00Z' : startTime;
+  const eventEndDate = endDate ?? eventStartTime ?? '2026-06-15T20:00:00Z';
+
   return {
     id,
     ended,
-    endDate: startTime,
+    endDate: eventEndDate,
     gameId,
     markets: [
       {
@@ -85,13 +90,16 @@ function makeEvent({
         umaResolutionStatus,
       },
     ],
-    startTime,
+    startTime: eventStartTime ?? undefined,
     ticker: id,
   } as RawPolymarketEvent;
 }
 
 describe('fetchPolymarketSportsEvents', () => {
   beforeEach(() => {
+    jest.useFakeTimers();
+    jest.setSystemTime(new Date('2026-06-15T12:00:00Z'));
+
     mockRainbowFetch.mockResolvedValue({
       data: [],
       headers: new Headers(),
@@ -102,6 +110,7 @@ describe('fetchPolymarketSportsEvents', () => {
   });
 
   afterEach(() => {
+    jest.useRealTimers();
     jest.clearAllMocks();
   });
 
@@ -122,5 +131,48 @@ describe('fetchPolymarketSportsEvents', () => {
     expect(mockFetchPolymarketTeamMetadataForGameEvents).toHaveBeenCalledWith([primaryGameEvent], null);
     expect(mockProcessRawPolymarketEvent).toHaveBeenCalledTimes(1);
     expect(events).toEqual([{ id: 'primary-game-event' }]);
+  });
+
+  it('keeps same-day finals and drops finals from previous days', async () => {
+    const sameDayFinal = makeEvent({ id: 'same-day-final', ended: true, startTime: '2026-06-15T10:00:00Z' });
+    const oldFinal = makeEvent({ id: 'old-final', ended: true, startTime: '2026-06-14T10:00:00Z' });
+
+    mockRainbowFetch.mockResolvedValueOnce({
+      data: [oldFinal, sameDayFinal],
+      headers: new Headers(),
+      status: 200,
+    });
+
+    const events = await fetchPolymarketSportsEvents(undefined as never, null);
+
+    expect(mockFetchPolymarketTeamMetadataForGameEvents).toHaveBeenCalledWith([sameDayFinal], null);
+    expect(mockProcessRawPolymarketEvent).toHaveBeenCalledTimes(1);
+    expect(events).toEqual([{ id: 'same-day-final' }]);
+  });
+
+  it('keeps same-day finals when Gamma omits startTime but sends endDate', async () => {
+    const sameDayFinalWithoutStartTime = makeEvent({
+      id: 'same-day-final-without-start-time',
+      ended: true,
+      startTime: null,
+      endDate: '2026-06-15T10:00:00Z',
+    });
+    const oldFinalWithoutStartTime = makeEvent({
+      id: 'old-final-without-start-time',
+      ended: true,
+      startTime: null,
+      endDate: '2026-06-14T10:00:00Z',
+    });
+
+    mockRainbowFetch.mockResolvedValueOnce({
+      data: [oldFinalWithoutStartTime, sameDayFinalWithoutStartTime],
+      headers: new Headers(),
+      status: 200,
+    });
+
+    const events = await fetchPolymarketSportsEvents(undefined as never, null);
+
+    expect(mockFetchPolymarketTeamMetadataForGameEvents).toHaveBeenCalledWith([sameDayFinalWithoutStartTime], null);
+    expect(events).toEqual([{ id: 'same-day-final-without-start-time' }]);
   });
 });

@@ -5,7 +5,7 @@ import { DEFAULT_SPORTS_LEAGUE_KEY, POLYMARKET_GAMMA_API_URL, POLYMARKET_SPORTS_
 import { type LeagueId } from '@/features/polymarket/leagues';
 import { fetchPolymarketTeamMetadataForGameEvents } from '@/features/polymarket/stores/polymarketTeamMetadataStore';
 import { type PolymarketEvent, type RawPolymarketEvent } from '@/features/polymarket/types/polymarket-event';
-import { getSportsEventsStartTimeRange } from '@/features/polymarket/utils/getSportsEventsDateRange';
+import { getSportsEventsDayBoundaries, getSportsEventsStartTimeRange } from '@/features/polymarket/utils/getSportsEventsDateRange';
 import { processRawPolymarketEvent } from '@/features/polymarket/utils/transforms';
 import { time } from '@/framework/core/utils/time';
 import { rainbowFetch } from '@/framework/data/http/rainbowFetch';
@@ -52,6 +52,7 @@ export function prefetchPolymarketSportsEvents() {
 
 export async function fetchPolymarketSportsEvents(_: never, abortController: AbortController | null): Promise<PolymarketEvent[]> {
   const { minStartTime, maxStartTime } = getSportsEventsStartTimeRange();
+  const { startOfToday, startOfTomorrow } = getSportsEventsDayBoundaries();
   const url = new URL(`${POLYMARKET_GAMMA_API_URL}/events`);
   url.searchParams.set('limit', '500');
   url.searchParams.set('tag_slug', 'games');
@@ -70,7 +71,7 @@ export async function fetchPolymarketSportsEvents(_: never, abortController: Abo
   });
 
   const filteredEvents = events.filter(event => {
-    if (event.ended === true || event.gameId == null) return false;
+    if (event.gameId == null) return false;
 
     const hasActiveMoneylineMarket = event.markets.some(
       market =>
@@ -79,7 +80,11 @@ export async function fetchPolymarketSportsEvents(_: never, abortController: Abo
         market.umaResolutionStatus !== 'resolved' &&
         market.sportsMarketType === POLYMARKET_SPORTS_MARKET_TYPE.MONEYLINE
     );
-    return hasActiveMoneylineMarket;
+    if (!hasActiveMoneylineMarket) return false;
+    if (event.ended !== true) return true;
+
+    const timestamp = new Date(event.startTime || event.endDate).getTime();
+    return timestamp >= startOfToday.getTime() && timestamp < startOfTomorrow.getTime();
   });
 
   const teamsByTicker = await fetchPolymarketTeamMetadataForGameEvents(filteredEvents, abortController);
