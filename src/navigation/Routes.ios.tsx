@@ -54,7 +54,8 @@ import { RnbwRewardsEstimateSheet } from '@/features/rnbw-rewards/screens/rnbw-r
 import { RnbwStakingLearnScreen } from '@/features/rnbw-staking/screens/rnbw-staking-learn-screen/RnbwStakingLearnScreen';
 import { RnbwStakingScreen } from '@/features/rnbw-staking/screens/rnbw-staking-screen/RnbwStakingScreen';
 import { RnbwUnstakeSheet } from '@/features/rnbw-staking/screens/rnbw-unstake-sheet/RnbwUnstakeSheet';
-import SendSheet from '@/features/transfer/screens/SendSheet';
+import { SendFlowNavigator } from '@/features/transfer/navigation/SendFlowNavigator';
+import { SendConfirmationSheet } from '@/features/transfer/screens/SendConfirmationSheet';
 import ConnectedDappsSheet from '@/features/wallet-connect/screens/ConnectedDappsSheet';
 import createNativeStackCoolModalNavigator from '@/react-native-cool-modals/createNativeStackNavigator';
 import { Portal as CMPortal } from '@/react-native-cool-modals/Portal';
@@ -90,7 +91,6 @@ import ProfileSheet from '../screens/ProfileSheet';
 import ReceiveModal from '../screens/ReceiveModal';
 import { RestoreSheet } from '../screens/RestoreSheet';
 import SelectUniqueTokenSheet from '../screens/SelectUniqueTokenSheet';
-import { SendConfirmationSheet } from '../screens/SendConfirmationSheet';
 import { SettingsSheet } from '../screens/SettingsSheet/SettingsSheet';
 import SpeedUpAndCancelSheet from '../screens/SpeedUpAndCancelSheet';
 import WalletConnectApprovalSheet from '../screens/WalletConnectApprovalSheet';
@@ -145,7 +145,7 @@ import {
   walletDiagnosticsSheetConfig,
   walletErrorSheetConfig,
 } from './config';
-import { emojiPreset, emojiPresetWallet, fiatOnRampSheet, overlayExpandedPreset, sheetPreset } from './effects';
+import { emojiPreset, emojiPresetWallet, fiatOnRampSheet } from './effects';
 import { HardwareWalletTxNavigator } from './HardwareWalletTxNavigator';
 import { InitialRouteContext } from './initialRoute';
 import { nativeStackConfig } from './nativeStackConfig';
@@ -157,15 +157,6 @@ import { type RootStackParamList } from './types';
 
 const Stack = createStackNavigator();
 const NativeStack = createNativeStackCoolModalNavigator();
-
-function SendFlowNavigator() {
-  return (
-    <Stack.Navigator {...stackNavigationConfig} initialRouteName={Routes.SEND_SHEET}>
-      <Stack.Screen component={ModalScreen} name={Routes.MODAL_SCREEN} options={overlayExpandedPreset} />
-      <Stack.Screen component={SendSheet} name={Routes.SEND_SHEET} options={sheetPreset} />
-    </Stack.Navigator>
-  );
-}
 
 function MainNavigator() {
   const initialRoute = useContext(InitialRouteContext) as unknown as string;

@@ -1,7 +1,7 @@
 import { useRef } from 'react';
 import { type TextInput } from 'react-native';
 
-import useMagicAutofocus from './useMagicAutofocus';
+import useMagicAutofocus from '@/hooks/useMagicAutofocus';
 
 export default function useSendSheetInputRefs() {
   const assetInputRef = useRef<TextInput>(undefined);
