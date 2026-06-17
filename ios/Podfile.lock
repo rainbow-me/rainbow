@@ -1188,6 +1188,9 @@ PODS:
     - abseil/meta/type_traits
     - abseil/xcprivacy
   - abseil/xcprivacy (1.20240722.0)
+  - AppsFlyerFramework (6.18.0):
+    - AppsFlyerFramework/Main (= 6.18.0)
+  - AppsFlyerFramework/Main (6.18.0)
   - boost (1.84.0)
   - BoringSSL-GRPC (0.0.37):
     - BoringSSL-GRPC/Implementation (= 0.0.37)
@@ -2985,6 +2988,9 @@ PODS:
     - ReactCommon/turbomodule/bridging
     - ReactCommon/turbomodule/core
     - Yoga
+  - react-native-appsflyer (6.18.0):
+    - AppsFlyerFramework (= 6.18.0)
+    - React
   - react-native-ble-plx (3.4.0):
     - DoubleConversion
     - glog
@@ -4211,6 +4217,7 @@ DEPENDENCIES:
   - React-microtasksnativemodule (from `../node_modules/react-native/ReactCommon/react/nativemodule/microtasks`)
   - react-native-aes-crypto (from `../node_modules/react-native-aes-crypto`)
   - react-native-animateable-text (from `../node_modules/react-native-animateable-text`)
+  - react-native-appsflyer (from `../node_modules/react-native-appsflyer`)
   - react-native-ble-plx (from `../node_modules/react-native-ble-plx`)
   - react-native-blur-view (from `../node_modules/react-native-blur-view`)
   - react-native-branch (from `../node_modules/react-native-branch`)
@@ -4312,6 +4319,7 @@ DEPENDENCIES:
 SPEC REPOS:
   https://github.com/CocoaPods/Specs.git:
     - abseil
+    - AppsFlyerFramework
     - BoringSSL-GRPC
     - Branch
     - CocoaAsyncSocket
@@ -4484,6 +4492,8 @@ EXTERNAL SOURCES:
     :path: "../node_modules/react-native-aes-crypto"
   react-native-animateable-text:
     :path: "../node_modules/react-native-animateable-text"
+  react-native-appsflyer:
+    :path: "../node_modules/react-native-appsflyer"
   react-native-ble-plx:
     :path: "../node_modules/react-native-ble-plx"
   react-native-blur-view:
@@ -4680,6 +4690,7 @@ CHECKOUT OPTIONS:
 
 SPEC CHECKSUMS:
   abseil: a05cc83bf02079535e17169a73c5be5ba47f714b
+  AppsFlyerFramework: c1e1e4cd3b98ffdca2fe32b17ae93909e409b6ab
   boost: 7e761d76ca2ce687f7cc98e698152abd03a18f90
   BoringSSL-GRPC: dded2a44897e45f28f08ae87a55ee4bcd19bc508
   Branch: d99436c6f3d5b2529ba948d273e47e732830f207
@@ -4775,6 +4786,7 @@ SPEC CHECKSUMS:
   React-microtasksnativemodule: bda561d2648e1e52bd9e5a87f8889836bdbde2e2
   react-native-aes-crypto: 598b531c1dcdec9830e0475459c53e13e01fcbf0
   react-native-animateable-text: 601c0df62a50bf2d603e4c6800e7db4ab9c581eb
+  react-native-appsflyer: 4e82e778b32d759713a2028412e75b80113cfb64
   react-native-ble-plx: b29d777cab9d3a6c0f03bce86b414c864a71725d
   react-native-blur-view: fae19bca8ac76a4ca6a8a6f101cf37c8ec1ad4f5
   react-native-branch: 46dc8cb067af50455db675370c3cd63425f85bea
