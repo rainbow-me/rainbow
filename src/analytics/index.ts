@@ -4,6 +4,7 @@ import rudderClient from '@rudderstack/rudder-sdk-react-native';
 import * as DeviceInfo from 'react-native-device-info';
 import { REACT_NATIVE_RUDDERSTACK_WRITE_KEY, RUDDERSTACK_DATA_PLANE_URL } from 'react-native-dotenv';
 
+import { initAppsFlyer } from '@/analytics/appsflyer';
 import { event, type EventProperties } from '@/analytics/event';
 import { type UserProperties } from '@/analytics/userProperties';
 import { IS_TEST } from '@/env';
@@ -62,6 +63,7 @@ export class Analytics {
     if (this.disabled) return;
     logger.debug('[Analytics]: Initialized with deviceId');
     this.ensureInit();
+    initAppsFlyer();
   }
 
   /**
