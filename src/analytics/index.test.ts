@@ -14,6 +14,10 @@ jest.mock('@/storage', () => ({
   device: { get: jest.fn(() => undefined) },
 }));
 
+jest.mock('@/analytics/appsflyer', () => ({
+  initAppsFlyer: jest.fn(),
+}));
+
 jest.mock('@rudderstack/rudder-sdk-react-native', () => ({
   setup: jest.fn().mockResolvedValue(undefined),
   track: jest.fn(),
