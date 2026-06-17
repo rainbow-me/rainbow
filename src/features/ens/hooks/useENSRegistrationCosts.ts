@@ -6,12 +6,12 @@ import { isEmpty } from 'lodash';
 
 import useGas from '@/features/gas/hooks/useGas';
 import gasUtils from '@/features/gas/utils/gas';
+import { ChainId } from '@/features/network/types/backendNetworks';
 import { add, addBuffer, addDisplay, fromWei, greaterThanOrEqualTo, multiply } from '@/helpers/utilities';
 import usePrevious from '@/hooks/usePrevious';
 import ethUnits from '@/references/ethereum-units.json';
 import timeUnits from '@/references/time-units.json';
 import { userAssetsStoreManager } from '@/state/assets/userAssetsStoreManager';
-import { ChainId } from '@/state/backendNetworks/types';
 import { useAccountAddress } from '@/state/wallets/walletsStore';
 import ethereumUtils from '@/utils/ethereumUtils';
 

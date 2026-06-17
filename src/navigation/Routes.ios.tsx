@@ -21,6 +21,7 @@ import ENSConfirmRegisterSheet from '@/features/ens/screens/ENSConfirmRegisterSh
 import SelectENSSheet from '@/features/ens/screens/SelectENSSheet';
 import { useShowKingOfTheHill } from '@/features/king-of-the-hill/hooks/useShowKingOfTheHill';
 import { KingOfTheHillExplainSheet } from '@/features/king-of-the-hill/screens/KingOfTheHillExplainSheet';
+import { NetworkSelector } from '@/features/network/screens/NetworkSelector';
 import { NotificationPermissionScreen } from '@/features/notifications/screens/NotificationPermissionScreen';
 import { ClosePositionBottomSheet } from '@/features/perps/screens/ClosePositionBottomSheet';
 import { CreateTriggerOrderBottomSheet } from '@/features/perps/screens/CreateTriggerOrderBottomSheet';
@@ -53,7 +54,8 @@ import { RnbwRewardsEstimateSheet } from '@/features/rnbw-rewards/screens/rnbw-r
 import { RnbwStakingLearnScreen } from '@/features/rnbw-staking/screens/rnbw-staking-learn-screen/RnbwStakingLearnScreen';
 import { RnbwStakingScreen } from '@/features/rnbw-staking/screens/rnbw-staking-screen/RnbwStakingScreen';
 import { RnbwUnstakeSheet } from '@/features/rnbw-staking/screens/rnbw-unstake-sheet/RnbwUnstakeSheet';
-import SendSheet from '@/features/send/screens/SendSheet';
+import { SendFlowNavigator } from '@/features/transfer/navigation/SendFlowNavigator';
+import { SendConfirmationSheet } from '@/features/transfer/screens/SendConfirmationSheet';
 import ConnectedDappsSheet from '@/features/wallet-connect/screens/ConnectedDappsSheet';
 import createNativeStackCoolModalNavigator from '@/react-native-cool-modals/createNativeStackNavigator';
 import { Portal as CMPortal } from '@/react-native-cool-modals/Portal';
@@ -68,7 +70,6 @@ import LearnWebViewScreen from '@/screens/LearnWebViewScreen';
 import MintSheet from '@/screens/mints/MintSheet';
 import PoapSheet from '@/screens/mints/PoapSheet';
 import { MintsSheet } from '@/screens/MintsSheet/MintsSheet';
-import { NetworkSelector } from '@/screens/network-selector/NetworkSelector';
 import { NFTOffersSheet } from '@/screens/NFTOffersSheet';
 import { NFTSingleOfferSheet } from '@/screens/NFTSingleOfferSheet';
 import { Portal } from '@/screens/Portal';
@@ -90,7 +91,6 @@ import ProfileSheet from '../screens/ProfileSheet';
 import ReceiveModal from '../screens/ReceiveModal';
 import { RestoreSheet } from '../screens/RestoreSheet';
 import SelectUniqueTokenSheet from '../screens/SelectUniqueTokenSheet';
-import { SendConfirmationSheet } from '../screens/SendConfirmationSheet';
 import { SettingsSheet } from '../screens/SettingsSheet/SettingsSheet';
 import SpeedUpAndCancelSheet from '../screens/SpeedUpAndCancelSheet';
 import WalletConnectApprovalSheet from '../screens/WalletConnectApprovalSheet';
@@ -145,7 +145,7 @@ import {
   walletDiagnosticsSheetConfig,
   walletErrorSheetConfig,
 } from './config';
-import { emojiPreset, emojiPresetWallet, fiatOnRampSheet, overlayExpandedPreset, sheetPreset } from './effects';
+import { emojiPreset, emojiPresetWallet, fiatOnRampSheet } from './effects';
 import { HardwareWalletTxNavigator } from './HardwareWalletTxNavigator';
 import { InitialRouteContext } from './initialRoute';
 import { nativeStackConfig } from './nativeStackConfig';
@@ -157,15 +157,6 @@ import { type RootStackParamList } from './types';
 
 const Stack = createStackNavigator();
 const NativeStack = createNativeStackCoolModalNavigator();
-
-function SendFlowNavigator() {
-  return (
-    <Stack.Navigator {...stackNavigationConfig} initialRouteName={Routes.SEND_SHEET}>
-      <Stack.Screen component={ModalScreen} name={Routes.MODAL_SCREEN} options={overlayExpandedPreset} />
-      <Stack.Screen component={SendSheet} name={Routes.SEND_SHEET} options={sheetPreset} />
-    </Stack.Navigator>
-  );
-}
 
 function MainNavigator() {
   const initialRoute = useContext(InitialRouteContext) as unknown as string;

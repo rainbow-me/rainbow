@@ -1,9 +1,9 @@
 import { type Address } from 'viem';
 
 import { TransactionDirection, TransactionStatus, type NewTransaction } from '@/entities/transactions';
+import { backendNetworksActions } from '@/features/network/stores/backendNetworksStore';
 import { RainbowError } from '@/logger';
 import { toTransactionAsset } from '@/raps/transactionAsset';
-import { backendNetworksActions } from '@/state/backendNetworks/backendNetworks';
 
 import { STAKING_CHAIN_ID, STAKING_CONTRACT_ADDRESS } from '../constants';
 import { buildSyntheticRnbwSourceAsset } from './syntheticRnbwSourceAsset';

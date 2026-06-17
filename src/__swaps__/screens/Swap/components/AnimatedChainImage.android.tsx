@@ -1,10 +1,10 @@
 import React, { useMemo } from 'react';
 import { Image, View } from 'react-native';
 
-import { getChainBadgeStyles } from '@/components/coin-icon/ChainImage';
 import { useColorMode } from '@/design-system';
-import { useBackendNetworksStore } from '@/state/backendNetworks/backendNetworks';
-import { ChainId } from '@/state/backendNetworks/types';
+import { getChainBadgeStyles } from '@/features/network/components/ChainImage';
+import { useBackendNetworksStore } from '@/features/network/stores/backendNetworksStore';
+import { ChainId } from '@/features/network/types/backendNetworks';
 import { useSwapsStore } from '@/state/swaps/swapsStore';
 
 export function AnimatedChainImage({

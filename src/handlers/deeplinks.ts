@@ -12,6 +12,8 @@ import { analytics } from '@/analytics';
 import { showWalletConnectToast } from '@/components/toasts/WalletConnectToast';
 import { FiatProviderName } from '@/entities/f2c';
 import { GasSpeed } from '@/features/gas/types/gasSpeed';
+import { useBackendNetworksStore } from '@/features/network/stores/backendNetworksStore';
+import { startSendFromEthereumUrl } from '@/features/transfer/utils/startSendFromEthereumUrl';
 import { pair as pairWalletConnect, setHasPendingDeeplinkPendingRedirect } from '@/features/wallet-connect/services/pair';
 import { checkIsValidAddressOrDomain, isENSAddressFormat } from '@/helpers/validators';
 import { logger } from '@/logger';
@@ -21,10 +23,9 @@ import Routes from '@/navigation/routesNames';
 import store from '@/redux/store';
 import { fetchExternalToken } from '@/resources/assets/externalAssetsQuery';
 import { userAssetsStore } from '@/state/assets/userAssets';
-import { useBackendNetworksStore } from '@/state/backendNetworks/backendNetworks';
 import { getWalletReady, getWallets, setSelectedWallet } from '@/state/wallets/walletsStore';
 import { delay } from '@/utils/delay';
-import ethereumUtils, { getAddressAndChainIdFromUniqueId, getUniqueId } from '@/utils/ethereumUtils';
+import { getAddressAndChainIdFromUniqueId, getUniqueId } from '@/utils/ethereumUtils';
 import { getPoapAndOpenSheetWithQRHash, getPoapAndOpenSheetWithSecretWord } from '@/utils/poaps';
 import { fetchReverseRecordWithRetry } from '@/utils/profileUtils';
 
@@ -68,7 +69,7 @@ export default async function handleDeeplink({ url, initialRoute, handleRequestU
      * Handling send deep links
      */
     logger.debug(`[handleDeeplink]: ethereum:// protocol`);
-    ethereumUtils.parseEthereumUrl(url);
+    startSendFromEthereumUrl(url);
   } else if (protocol === 'https:' || protocol === 'rainbow:') {
     /**
      * Any native iOS deep link OR universal links via HTTPS

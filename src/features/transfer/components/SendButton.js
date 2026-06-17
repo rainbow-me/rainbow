@@ -1,0 +1,56 @@
+import React from 'react';
+
+import { HoldToAuthorizeButton } from '@/components/buttons';
+import * as i18n from '@/languages';
+import { useWalletsStore } from '@/state/wallets/walletsStore';
+
+export function SendButton({
+  backgroundColor,
+  disabled,
+  insufficientEth,
+  isAuthorizing,
+  isNft,
+  onLongPress,
+  requiresChecks,
+  testID,
+  ...props
+}) {
+  const { colors, isDarkMode } = useTheme();
+  const isHardwareWallet = useWalletsStore(state => state.getIsHardwareWallet());
+  const colorForAsset = isNft ? colors.appleBlue : backgroundColor;
+
+  const shadows = {
+    colored: [
+      [0, 10, 30, colors.shadow, 0.2],
+      [0, 5, 15, isDarkMode ? colors.shadow : colorForAsset, 0.4],
+    ],
+    disabled: [
+      [0, 10, 30, colors.shadow, 0.2],
+      [0, 5, 15, isDarkMode ? colors.shadow : colorForAsset, 0.4],
+    ],
+  };
+
+  return (
+    <HoldToAuthorizeButton
+      {...props}
+      backgroundColor={colorForAsset}
+      disabled={disabled}
+      disabledBackgroundColor={colorForAsset}
+      hideInnerBorder
+      isAuthorizing={isAuthorizing}
+      label={
+        disabled && requiresChecks
+          ? `􀄨 ${i18n.t(i18n.l.wallet.transaction.complete_check)}`
+          : insufficientEth
+            ? i18n.t(i18n.l.button.confirm_exchange.insufficient_funds)
+            : i18n.t(i18n.l.button.hold_to_send)
+      }
+      onLongPress={onLongPress}
+      parentHorizontalPadding={19}
+      shadows={disabled ? shadows.disabled : shadows.colored}
+      showBiometryIcon={!disabled}
+      testID={testID}
+      isHardwareWallet={isHardwareWallet}
+    />
+  );
+}

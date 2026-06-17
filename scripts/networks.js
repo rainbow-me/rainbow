@@ -1,6 +1,6 @@
 /* eslint-disable @typescript-eslint/no-var-requires */
 const path = require('path');
-const { BACKEND_NETWORKS_QUERY } = require('../src/resources/metadata/sharedQueries');
+const { BACKEND_NETWORKS_QUERY } = require('../src/features/network/api/backendNetworksQuery');
 require('dotenv').config();
 const fs = require('fs-extra');
 
@@ -20,7 +20,7 @@ async function fetchData() {
   });
 
   const { data } = await response.json();
-  const filePath = path.join(__dirname, '../src/references/networks.json');
+  const filePath = path.join(__dirname, '../src/features/network/constants/networks.json');
 
   await fs.ensureFile(filePath);
   await fs.writeJson(filePath, data);

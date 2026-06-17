@@ -1,10 +1,10 @@
 import { Contract } from '@ethersproject/contracts';
 
 import { type AddressOrEth } from '@/__swaps__/types/assets';
+import { useBackendNetworksStore } from '@/features/network/stores/backendNetworksStore';
+import { type ChainId } from '@/features/network/types/backendNetworks';
 import { convertAmountToBalanceDisplay, convertRawAmountToDecimalFormat } from '@/helpers/utilities';
 import erc20ABI from '@/references/erc20-abi.json';
-import { useBackendNetworksStore } from '@/state/backendNetworks/backendNetworks';
-import { type ChainId } from '@/state/backendNetworks/types';
 import isLowerCaseMatch from '@/utils/isLowerCaseMatch';
 
 export function isNativeAsset(address: AddressOrEth | string, chainId: ChainId) {

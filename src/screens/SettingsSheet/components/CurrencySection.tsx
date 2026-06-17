@@ -7,13 +7,13 @@ import { analytics } from '@/analytics';
 import RainbowCoinIcon from '@/components/coin-icon/RainbowCoinIcon';
 import { supportedCurrencies as supportedNativeCurrencies } from '@/features/currency/supportedCurrencies';
 import type { NativeCurrencyKey } from '@/features/currency/types';
+import { ChainId } from '@/features/network/types/backendNetworks';
 import { resolveCurrencyFlagEmoji } from '@/framework/core/emoji/currencyFlagEmoji';
 import useAccountSettings from '@/hooks/useAccountSettings';
 import * as i18n from '@/languages';
 import { ETH_ADDRESS, WBTC_ADDRESS } from '@/references/constants';
 import { useExternalToken } from '@/resources/assets/externalAssetsQuery';
 import { userAssetsStoreManager } from '@/state/assets/userAssetsStoreManager';
-import { ChainId } from '@/state/backendNetworks/types';
 
 import Menu from './Menu';
 import MenuContainer from './MenuContainer';

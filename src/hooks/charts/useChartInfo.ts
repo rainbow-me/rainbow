@@ -1,10 +1,10 @@
 import { useQuery } from '@tanstack/react-query';
 
 import type { SupportedCurrencyKey } from '@/features/currency/supportedCurrencies';
+import { ChainId } from '@/features/network/types/backendNetworks';
 import { time } from '@/framework/core/utils/time';
 import { metadataClient } from '@/graphql';
 import { createQueryKey } from '@/react-query';
-import { ChainId } from '@/state/backendNetworks/types';
 
 const chartTimes = ['hour', 'day', 'week', 'month', 'year'] as const;
 export type ChartTime = (typeof chartTimes)[number];

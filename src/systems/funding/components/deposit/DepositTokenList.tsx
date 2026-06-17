@@ -13,14 +13,14 @@ import { TOKEN_SEARCH_FOCUSED_INPUT_HEIGHT } from '@/components/token-search/con
 import { TokenSearchNotFound } from '@/components/token-search/TokenSearchNotFound';
 import { DelayedMount } from '@/components/utilities/DelayedMount';
 import { AnimatedText, Bleed, Box, globalColors, Inline, Separator, Stack, Text, useColorMode } from '@/design-system';
+import { useBackendNetworksStore } from '@/features/network/stores/backendNetworksStore';
+import { type ChainId } from '@/features/network/types/backendNetworks';
 import { opacity } from '@/framework/ui/utils/opacity';
 import { useAccountAccentColor } from '@/hooks/useAccountAccentColor';
 import * as i18n from '@/languages';
 import Navigation from '@/navigation/Navigation';
 import Routes from '@/navigation/routesNames';
 import { useUserAssetsStore } from '@/state/assets/userAssets';
-import { useBackendNetworksStore } from '@/state/backendNetworks/backendNetworks';
-import { type ChainId } from '@/state/backendNetworks/types';
 import { useAccountAddress } from '@/state/wallets/walletsStore';
 import { DEVICE_WIDTH } from '@/utils/deviceUtils';
 import safeAreaInsetValues from '@/utils/safeAreaInsetValues';

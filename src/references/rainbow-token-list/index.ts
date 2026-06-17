@@ -4,9 +4,9 @@ import { keyBy } from 'lodash';
 import { createMMKV } from 'react-native-mmkv';
 
 import { type RainbowToken } from '@/entities/tokens';
+import { ChainId, Network } from '@/features/network/types/backendNetworks';
 import { logger, RainbowError } from '@/logger';
 import { STORAGE_IDS } from '@/model/mmkv';
-import { ChainId, Network } from '@/state/backendNetworks/types';
 
 import { ETH_ADDRESS } from '../constants';
 import RAINBOW_TOKEN_LIST_DATA from './rainbow-token-list.json';

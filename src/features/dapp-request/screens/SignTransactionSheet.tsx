@@ -11,7 +11,6 @@ import Animated from 'react-native-reanimated';
 import { type Address } from 'viem';
 
 import { analytics } from '@/analytics';
-import { ChainImage } from '@/components/coin-icon/ChainImage';
 import { ContactAvatar } from '@/components/contacts';
 import ImageAvatar from '@/components/contacts/ImageAvatar';
 import { SheetActionButton } from '@/components/sheet';
@@ -30,6 +29,9 @@ import { TransactionStatus, type NewTransaction } from '@/entities/transactions'
 import GasSpeedButton from '@/features/gas/components/GasSpeedButton';
 import { useCalculateGasLimit } from '@/features/gas/hooks/useCalculateGasLimit';
 import useGas from '@/features/gas/hooks/useGas';
+import { ChainImage } from '@/features/network/components/ChainImage';
+import { useBackendNetworksStore } from '@/features/network/stores/backendNetworksStore';
+import { type ChainId, type Network } from '@/features/network/types/backendNetworks';
 import { opacity } from '@/framework/ui/utils/opacity';
 import { TransactionScanResultType } from '@/graphql/__generated__/metadataPOST';
 import { maybeSignUri } from '@/handlers/imgix';
@@ -44,8 +46,6 @@ import type Routes from '@/navigation/routesNames';
 import { type RootStackParamList } from '@/navigation/types';
 import { useSimulation } from '@/resources/transactions/transactionSimulation';
 import { userAssetsStoreManager } from '@/state/assets/userAssetsStoreManager';
-import { useBackendNetworksStore } from '@/state/backendNetworks/backendNetworks';
-import { type ChainId, type Network } from '@/state/backendNetworks/types';
 import { addNewTransaction } from '@/state/pendingTransactions';
 import { executeFn, TimeToSignOperation } from '@/state/performance/performance';
 import { switchWallet } from '@/state/wallets/switchWallet';

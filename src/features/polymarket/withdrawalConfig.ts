@@ -5,11 +5,11 @@ import { getAddress, type Address } from 'viem';
 
 import { analytics } from '@/analytics';
 import { USD_DECIMALS } from '@/features/currency/constants';
+import { ChainId } from '@/features/network/types/backendNetworks';
 import { encodeErc20Transfer } from '@/framework/core/evm/erc20Calldata';
 import { time } from '@/framework/core/utils/time';
 import { logger, RainbowError } from '@/logger';
 import { USDC_ADDRESS } from '@/references/constants';
-import { ChainId } from '@/state/backendNetworks/types';
 import { createWithdrawalConfig } from '@/systems/funding/config';
 import { type WithdrawalExecutionResult, type WithdrawalExecutorParams, type WithdrawalSwapQuote } from '@/systems/funding/types';
 

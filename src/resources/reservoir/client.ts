@@ -2,7 +2,7 @@ import { createClient } from '@reservoir0x/reservoir-sdk';
 import { RESERVOIR_API_KEY_DEV, RESERVOIR_API_KEY_PROD } from 'react-native-dotenv';
 
 import { IS_PROD } from '@/env';
-import { ChainId, Network } from '@/state/backendNetworks/types';
+import { ChainId, Network } from '@/features/network/types/backendNetworks';
 
 const RESERVOIR_API_KEY = IS_PROD ? RESERVOIR_API_KEY_PROD : RESERVOIR_API_KEY_DEV;
 

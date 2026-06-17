@@ -1,6 +1,7 @@
 import { decodeFunctionResult, encodeFunctionData, type Address, type Hex } from 'viem';
 
 import { type NativeCurrencyKey } from '@/features/currency/types';
+import { ChainId } from '@/features/network/types/backendNetworks';
 import { rnbwMembershipAnalyticsActions } from '@/features/rnbw-membership/stores/rnbwMembershipAnalyticsStore';
 import type { Tier } from '@/features/rnbw-membership/types';
 import { getProvider } from '@/handlers/web3';
@@ -8,7 +9,6 @@ import { logger, RainbowError } from '@/logger';
 import { getPlatformClient } from '@/resources/platform/client';
 import { type PlatformResponse } from '@/resources/platform/types';
 import { userAssetsStoreManager } from '@/state/assets/userAssetsStoreManager';
-import { ChainId } from '@/state/backendNetworks/types';
 import { createQueryStore } from '@/state/internal/createQueryStore';
 import { useWalletsStore } from '@/state/wallets/walletsStore';
 

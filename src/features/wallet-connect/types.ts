@@ -2,7 +2,7 @@ import { type SignClientTypes, type Verify } from '@walletconnect/types';
 import { type Address } from 'viem';
 
 import { type RequestData, type RequestDisplayDetails, type RequestSource } from '@/features/dapp-request/types';
-import { type ChainId } from '@/state/backendNetworks/types';
+import { type ChainId } from '@/features/network/types/backendNetworks';
 
 /**
  * A request stored in state.

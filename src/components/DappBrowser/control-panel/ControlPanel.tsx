@@ -17,7 +17,6 @@ import { navigateToSwaps } from '@/__swaps__/screens/Swap/navigateToSwaps';
 import { TIMING_CONFIGS } from '@/components/animations/animationConfigs';
 import ButtonPressAnimation from '@/components/animations/ButtonPressAnimation';
 import { GestureHandlerButton } from '@/components/buttons/GestureHandlerButton';
-import { ChainImage } from '@/components/coin-icon/ChainImage';
 import { ImgixImage } from '@/components/images';
 import { SmoothPager, usePagerNavigation } from '@/components/SmoothPager/SmoothPager';
 import {
@@ -36,6 +35,9 @@ import {
   useForegroundColor,
 } from '@/design-system';
 import { type TextColor } from '@/design-system/color/palettes';
+import { ChainImage } from '@/features/network/components/ChainImage';
+import { useBackendNetworksStore } from '@/features/network/stores/backendNetworksStore';
+import { ChainId } from '@/features/network/types/backendNetworks';
 import { watchingAlert } from '@/features/wallet/utils/watchingAlert';
 import { opacity } from '@/framework/ui/utils/opacity';
 import { removeFirstEmojiFromString, returnStringFirstEmoji } from '@/helpers/emojiHandler';
@@ -50,8 +52,6 @@ import type Routes from '@/navigation/routesNames';
 import { type RootStackParamList } from '@/navigation/types';
 import store from '@/redux/store';
 import { useAppSessionsStore } from '@/state/appSessions';
-import { useBackendNetworksStore } from '@/state/backendNetworks/backendNetworks';
-import { ChainId } from '@/state/backendNetworks/types';
 import { useBrowserStore } from '@/state/browser/browserStore';
 import { useFavoriteDappsStore, type FavoritedSite } from '@/state/browser/favoriteDappsStore';
 import { initializeWallet } from '@/state/wallets/initializeWallet';

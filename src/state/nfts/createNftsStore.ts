@@ -2,6 +2,7 @@ import { isEmpty } from 'lodash';
 import { type Address } from 'viem';
 
 import type { UniqueAsset } from '@/entities/uniqueAssets';
+import { useBackendNetworksStore } from '@/features/network/stores/backendNetworksStore';
 import { time } from '@/framework/core/utils/time';
 import { arcClient } from '@/graphql';
 import { updateWebHidden, updateWebShowcase } from '@/helpers/webData';
@@ -21,7 +22,6 @@ import {
 } from '@/state/nfts/utils';
 import { getIsReadOnlyWallet } from '@/state/wallets/walletsStore';
 
-import { useBackendNetworksStore } from '../backendNetworks/backendNetworks';
 import {
   type Collection,
   type CollectionId,

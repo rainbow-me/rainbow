@@ -3,11 +3,11 @@ import { Platform } from 'react-native';
 
 import RadialGradient from 'react-native-radial-gradient';
 
-import { ChainImage } from '@/components/coin-icon/ChainImage';
 import Divider from '@/components/Divider';
+import { ChainImage } from '@/features/network/components/ChainImage';
+import { useBackendNetworksStore } from '@/features/network/stores/backendNetworksStore';
 import { opacity } from '@/framework/ui/utils/opacity';
 import * as i18n from '@/languages';
-import { useBackendNetworksStore } from '@/state/backendNetworks/backendNetworks';
 import { padding, position } from '@/styles';
 import { darkModeThemeColors } from '@/styles/colors';
 

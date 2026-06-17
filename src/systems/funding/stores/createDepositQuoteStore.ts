@@ -1,12 +1,12 @@
 import { getAddress, type Address } from 'viem';
 
 import { stripNonDecimalNumbers } from '@/__swaps__/utils/swaps';
+import { type ChainId } from '@/features/network/types/backendNetworks';
 import { equalWorklet, greaterThanWorklet } from '@/framework/core/safeMath';
 import { time } from '@/framework/core/utils/time';
 import { isNativeAsset } from '@/handlers/assets';
 import { convertAmountToRawAmount } from '@/helpers/utilities';
 import { userAssetsStoreManager } from '@/state/assets/userAssetsStoreManager';
-import { type ChainId } from '@/state/backendNetworks/types';
 import { createQueryStore } from '@/state/internal/createQueryStore';
 import { type InferStoreState } from '@/state/internal/types';
 import { useWalletsStore } from '@/state/wallets/walletsStore';

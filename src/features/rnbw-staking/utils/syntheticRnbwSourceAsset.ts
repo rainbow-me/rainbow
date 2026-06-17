@@ -3,6 +3,7 @@ import { formatUnits, parseUnits } from 'viem';
 import { type ExtendedAnimatedAssetWithColors, type ParsedSearchAsset } from '@/__swaps__/types/assets';
 import { parseAssetAndExtend } from '@/__swaps__/utils/swaps';
 import { convertAmountToNativeDisplayWorklet } from '@/features/currency/utils/nativeDisplay';
+import { useBackendNetworksStore } from '@/features/network/stores/backendNetworksStore';
 import { useRewardsBalanceStore } from '@/features/rnbw-rewards/stores/rewardsBalanceStore';
 import {
   RNBW_CHAIN_ID,
@@ -14,7 +15,6 @@ import {
 import { convertAmountToBalanceDisplay } from '@/helpers/utilities';
 import { useUserAssetsStore } from '@/state/assets/userAssets';
 import { userAssetsStoreManager } from '@/state/assets/userAssetsStoreManager';
-import { useBackendNetworksStore } from '@/state/backendNetworks/backendNetworks';
 
 type SyntheticRnbwSourceStaticConfig = Pick<
   ParsedSearchAsset,

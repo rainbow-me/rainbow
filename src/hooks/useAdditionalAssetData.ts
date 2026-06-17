@@ -1,10 +1,10 @@
 import { useQuery } from '@tanstack/react-query';
 
 import type { NativeCurrencyKey } from '@/features/currency/types';
+import { type ChainId } from '@/features/network/types/backendNetworks';
 import { time } from '@/framework/core/utils/time';
 import { metadataClient } from '@/graphql';
 import { type Token } from '@/graphql/__generated__/metadata';
-import { type ChainId } from '@/state/backendNetworks/types';
 
 // Types
 export type TokenMetadata = Pick<

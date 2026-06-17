@@ -8,11 +8,11 @@ import { type Address } from 'viem';
 
 import crownImage from '@/assets/crown.png';
 import ButtonPressAnimation from '@/components/animations/ButtonPressAnimation';
-import { ChainImage } from '@/components/coin-icon/ChainImage';
 import { ShinyCoinIcon } from '@/components/coin-icon/ShinyCoinIcon';
 import { RainbowImage } from '@/components/RainbowImage';
 import { Box, Separator, Text } from '@/design-system';
 import { formatCurrency } from '@/features/currency/utils/formatCurrency';
+import { ChainImage } from '@/features/network/components/ChainImage';
 import { time } from '@/framework/core/utils/time';
 import { type KingOfTheHill } from '@/graphql/__generated__/metadata';
 import { getSizedImageUrl } from '@/handlers/imgix';

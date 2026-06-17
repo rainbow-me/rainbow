@@ -1,10 +1,10 @@
+import { type ChainId } from '@/features/network/types/backendNetworks';
 import { getProvider } from '@/handlers/web3';
 import { logger, RainbowError } from '@/logger';
 import { estimateSwapGasLimit } from '@/raps/actions/swap';
 import { estimateApprove, needsTokenApproval, populateApprove } from '@/raps/actions/unlock';
 import { estimateTransactionsGasLimit, populateSwap } from '@/raps/utils';
 import { getQuoteAllowanceTargetAddress } from '@/raps/validation';
-import { type ChainId } from '@/state/backendNetworks/types';
 import { type CrosschainQuote, type Quote } from '@rainbow-me/swaps';
 
 /**

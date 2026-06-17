@@ -982,10 +982,11 @@ export function getLeague(value: string): League | undefined {
 export function getGammaLeagueId(value: string): string | undefined {
   const slugId = getLeagueSlugId(value);
   if (!slugId) return undefined;
-  const leagueId = getLeagueId(value);
-  if (leagueId) {
-    const league = SPORT_LEAGUES[leagueId];
-    return 'gammaLeagueId' in league ? league.gammaLeagueId : leagueId;
-  }
-  return slugId;
+
+  // Preserve the event prefix for fetchTeamsForEvent; `fifwc` groups as `fifa`
+  // but Gamma team lookup expects `fifwc`.
+  if (!isLeagueId(slugId)) return slugId;
+
+  const league = SPORT_LEAGUES[slugId];
+  return 'gammaLeagueId' in league ? league.gammaLeagueId : slugId;
 }

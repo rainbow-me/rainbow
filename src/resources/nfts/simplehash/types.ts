@@ -1,4 +1,4 @@
-import { type Network } from '@/state/backendNetworks/types';
+import { type Network } from '@/features/network/types/backendNetworks';
 
 /**
  * @see https://docs.simplehash.com/reference/sale-model

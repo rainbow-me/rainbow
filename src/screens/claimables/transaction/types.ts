@@ -1,6 +1,6 @@
 import { type TransactionRequest } from '@ethersproject/providers';
 
-import { type ChainId } from '@/state/backendNetworks/types';
+import { type ChainId } from '@/features/network/types/backendNetworks';
 
 // supports legacy and new gas types
 export type TransactionClaimableTxPayload = TransactionRequest &

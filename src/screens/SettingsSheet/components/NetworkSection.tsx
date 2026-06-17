@@ -5,11 +5,11 @@ import { useDispatch } from 'react-redux';
 
 import { analytics } from '@/analytics';
 import { Separator, Stack } from '@/design-system';
+import { useBackendNetworksStore } from '@/features/network/stores/backendNetworksStore';
+import { type ChainId } from '@/features/network/types/backendNetworks';
 import { isL2Chain } from '@/handlers/web3';
 import useAccountSettings from '@/hooks/useAccountSettings';
 import { settingsUpdateNetwork } from '@/redux/settings';
-import { useBackendNetworksStore } from '@/state/backendNetworks/backendNetworks';
-import { type ChainId } from '@/state/backendNetworks/types';
 
 import Menu from './Menu';
 import MenuContainer from './MenuContainer';

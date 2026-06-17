@@ -1,9 +1,9 @@
 import React from 'react';
 
-import { ChainImage } from '@/components/coin-icon/ChainImage';
 import { Box } from '@/design-system';
 import type { ParsedAddressAsset } from '@/entities/tokens';
-import { type ChainId } from '@/state/backendNetworks/types';
+import { ChainImage } from '@/features/network/components/ChainImage';
+import { type ChainId } from '@/features/network/types/backendNetworks';
 import { useTheme } from '@/theme/ThemeContext';
 
 import RainbowCoinIcon from './RainbowCoinIcon';

@@ -9,8 +9,10 @@ import { type UserAssetFilter } from '@/__swaps__/types/assets';
 import { type TokenToBuyListItem } from '@/__swaps__/types/search';
 import { analytics } from '@/analytics';
 import { GestureHandlerButton } from '@/components/buttons/GestureHandlerButton';
-import { ChainImage } from '@/components/coin-icon/ChainImage';
 import { AnimatedText, Bleed, Box, globalColors, Inline, Text, TextIcon, useColorMode } from '@/design-system';
+import { ChainImage } from '@/features/network/components/ChainImage';
+import { useBackendNetworksStore } from '@/features/network/stores/backendNetworksStore';
+import { ChainId } from '@/features/network/types/backendNetworks';
 import { opacity } from '@/framework/ui/utils/opacity';
 import { useSharedValueState } from '@/hooks/reanimated/useSharedValueState';
 import { useAccountAccentColor } from '@/hooks/useAccountAccentColor';
@@ -18,8 +20,6 @@ import * as i18n from '@/languages';
 import Navigation from '@/navigation/Navigation';
 import Routes from '@/navigation/routesNames';
 import { userAssetsStore, useUserAssetsStore } from '@/state/assets/userAssets';
-import { useBackendNetworksStore } from '@/state/backendNetworks/backendNetworks';
-import { ChainId } from '@/state/backendNetworks/types';
 import { swapsStore } from '@/state/swaps/swapsStore';
 
 type ChainSelectionProps = {

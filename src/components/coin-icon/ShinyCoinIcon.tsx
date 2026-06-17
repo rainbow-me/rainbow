@@ -15,8 +15,8 @@ import {
 import { type SharedValue } from 'react-native-reanimated';
 
 import RainbowCoinIcon from '@/components/coin-icon/RainbowCoinIcon';
+import { type ChainId } from '@/features/network/types/backendNetworks';
 import { opacity } from '@/framework/ui/utils/opacity';
-import { type ChainId } from '@/state/backendNetworks/types';
 
 type ShinyCoinIconProps = {
   chainId: ChainId;

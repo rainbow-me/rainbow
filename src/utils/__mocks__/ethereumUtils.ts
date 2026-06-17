@@ -25,6 +25,5 @@ export default {
   openTokenEtherscanURL: jest.fn(),
   openTransactionInBlockExplorer: jest.fn(),
   padLeft: jest.fn(),
-  parseEthereumUrl: jest.fn(),
   removeHexPrefix: jest.fn(),
 };

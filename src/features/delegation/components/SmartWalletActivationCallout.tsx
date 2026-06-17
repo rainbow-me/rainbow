@@ -4,8 +4,8 @@ import { type StyleProp, type ViewStyle } from 'react-native';
 import { type Address } from 'viem';
 
 import { Box, Text } from '@/design-system';
+import { type ChainId } from '@/features/network/types/backendNetworks';
 import * as i18n from '@/languages';
-import { type ChainId } from '@/state/backendNetworks/types';
 
 import { useWillExecuteDelegation } from '../willDelegate';
 

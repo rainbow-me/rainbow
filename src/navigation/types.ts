@@ -22,10 +22,12 @@ import { type RequestData, type RequestSource } from '@/features/dapp-request/ty
 import { type ENSProfile } from '@/features/ens/types/profile';
 import { type REGISTRATION_MODES } from '@/features/ens/utils/helpers';
 import { type GasTrend } from '@/features/gas/utils/meteorology';
+import { type ChainId } from '@/features/network/types/backendNetworks';
 import { type HlTrade, type PerpMarket, type PerpsPosition, type TriggerOrderSource, type TriggerOrderType } from '@/features/perps/types';
 import { type PolymarketPosition } from '@/features/polymarket/types';
 import { type PolymarketEvent, type PolymarketMarket, type PolymarketMarketEvent } from '@/features/polymarket/types/polymarket-event';
 import { type RainbowPosition } from '@/features/positions/types';
+import { type Checkbox } from '@/features/transfer/screens/SendConfirmationSheet';
 import { type WalletconnectApprovalSheetRouteParams, type WalletconnectResultType } from '@/features/wallet-connect/types';
 import { type NftOffer, type PoapEvent, type ReservoirCollection } from '@/graphql/__generated__/arc';
 import { type TokenColors } from '@/graphql/__generated__/metadata';
@@ -41,8 +43,6 @@ import { type Contact } from '@/redux/contacts';
 import { type Claimable, type RainbowClaimable } from '@/resources/addys/claimables/types';
 import { type RevokeReason } from '@/screens/delegation/RevokeDelegationPanel';
 import { type ExpandedSheetParamAsset } from '@/screens/expandedAssetSheet/context/ExpandedAssetSheetContext';
-import { type Checkbox } from '@/screens/SendConfirmationSheet';
-import { type ChainId } from '@/state/backendNetworks/types';
 import { type AreAllKeysOptional, type ExtractOptionalKeys } from '@/types/objects';
 import { type LEDGER_ERROR_CODES } from '@/utils/ledger';
 

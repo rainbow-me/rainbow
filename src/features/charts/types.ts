@@ -1,6 +1,6 @@
 import { type CandleSnapshotRequest, type CandleSnapshotResponse } from '@nktkas/hyperliquid/api/info';
 
-import { type ChainId } from '@/state/backendNetworks/types';
+import { type ChainId } from '@/features/network/types/backendNetworks';
 
 // ============ Types ========================================================== //
 

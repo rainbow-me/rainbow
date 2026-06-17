@@ -62,7 +62,6 @@ if [ -e .env ]; then
 
     rewrite_xcode_configs "BRANCH"
     rewrite_xcode_configs "GOOGLE"
-    rewrite_xcode_configs "CODE_PUSH_DEPLOYMENT_KEY_IOS"
     rewrite_xcode_configs_native_prefix "METADATA_BASE_URL"
     # Override Google Services API Key
     if [ -n "$GOOGLE_SERVICE_API_KEY" ]; then

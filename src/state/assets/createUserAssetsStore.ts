@@ -2,10 +2,10 @@ import { type Address } from 'viem';
 
 import { type ParsedSearchAsset, type UniqueId, type UserAssetFilter } from '@/__swaps__/types/assets';
 import { convertAmountToNativeDisplayWorklet } from '@/features/currency/utils/nativeDisplay';
+import { useBackendNetworksStore } from '@/features/network/stores/backendNetworksStore';
+import { type ChainId } from '@/features/network/types/backendNetworks';
 import { usePositionsStore } from '@/features/positions/stores/positionsStore';
 import { time } from '@/framework/core/utils/time';
-import { useBackendNetworksStore } from '@/state/backendNetworks/backendNetworks';
-import { type ChainId } from '@/state/backendNetworks/types';
 import { useConnectedToAnvilStore } from '@/state/connectedToAnvil';
 import { createQueryStore } from '@/state/internal/createQueryStore';
 import { type LiveTokensData } from '@/state/liveTokens/liveTokensStore';

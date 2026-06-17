@@ -1,13 +1,13 @@
 import React, { useCallback, useMemo } from 'react';
 
-import { ChainImage } from '@/components/coin-icon/ChainImage';
 import { ContextMenuButton } from '@/components/context-menu';
 import { Bleed, Box, Inline, Text, type TextProps } from '@/design-system';
+import { ChainImage } from '@/features/network/components/ChainImage';
+import { useBackendNetworksStore } from '@/features/network/stores/backendNetworksStore';
+import { ChainId } from '@/features/network/types/backendNetworks';
 import { showActionSheetWithOptions } from '@/framework/ui/utils/actionsheet';
 import * as i18n from '@/languages';
 import { useUserAssetsStore } from '@/state/assets/userAssets';
-import { useBackendNetworksStore } from '@/state/backendNetworks/backendNetworks';
-import { ChainId } from '@/state/backendNetworks/types';
 
 interface DefaultButtonOptions {
   iconColor?: TextProps['color'];

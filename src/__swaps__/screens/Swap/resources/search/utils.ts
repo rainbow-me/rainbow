@@ -2,8 +2,8 @@ import { uniqBy } from 'lodash';
 import { type Address } from 'viem';
 
 import { type SearchAsset } from '@/__swaps__/types/search';
+import { ChainId } from '@/features/network/types/backendNetworks';
 import { isNativeAsset } from '@/handlers/assets';
-import { ChainId } from '@/state/backendNetworks/types';
 
 export function parseTokenSearchResults(assets: SearchAsset[], chainId?: ChainId): SearchAsset[] {
   const results: SearchAsset[] = [];

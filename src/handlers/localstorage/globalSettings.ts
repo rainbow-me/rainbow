@@ -1,6 +1,6 @@
 import { NativeCurrencyKeys } from '@/features/currency/types';
+import { ChainId } from '@/features/network/types/backendNetworks';
 import { Language } from '@/languages';
-import { ChainId } from '@/state/backendNetworks/types';
 
 import { getGlobal, saveGlobal } from './common';
 

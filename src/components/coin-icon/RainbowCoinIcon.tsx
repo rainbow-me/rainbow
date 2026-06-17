@@ -1,13 +1,13 @@
 import React from 'react';
 import { StyleSheet, View } from 'react-native';
 
-import { ChainId } from '@/state/backendNetworks/types';
+import { ChainImage } from '@/features/network/components/ChainImage';
+import { ChainId } from '@/features/network/types/backendNetworks';
 import { borders, fonts } from '@/styles';
 import { useTheme } from '@/theme/ThemeContext';
 import FallbackIcon from '@/utils/CoinIcons/FallbackIcon';
 
 import { FastFallbackCoinIconImage } from '../asset-list/RecyclerAssetList2/FastComponents/FastFallbackCoinIconImage';
-import { ChainImage } from './ChainImage';
 
 const fallbackTextStyles = {
   fontFamily: fonts.family.SFProRounded,

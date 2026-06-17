@@ -4,10 +4,10 @@ import { type AddressOrEth, type AssetType, type ParsedSearchAsset } from '@/__s
 import { SwapAssetType } from '@/__swaps__/types/swap';
 import { isSameAsset, parseSearchAsset } from '@/__swaps__/utils/assets';
 import type { RainbowToken } from '@/entities/tokens';
+import { useBackendNetworksStore } from '@/features/network/stores/backendNetworksStore';
 import { containsEmoji } from '@/helpers/strings';
 import * as i18n from '@/languages';
 import { userAssetsStore } from '@/state/assets/userAssets';
-import { useBackendNetworksStore } from '@/state/backendNetworks/backendNetworks';
 import { useTheme } from '@/theme/ThemeContext';
 import ethereumUtils from '@/utils/ethereumUtils';
 

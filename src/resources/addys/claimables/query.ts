@@ -4,10 +4,10 @@ import { type Address } from 'viem';
 import { analytics } from '@/analytics';
 import type { NativeCurrencyKey } from '@/features/currency/types';
 import { convertAmountToNativeDisplay } from '@/features/currency/utils/nativeDisplay';
+import { useBackendNetworksStore } from '@/features/network/stores/backendNetworksStore';
 import { time } from '@/framework/core/utils/time';
 import { add, greaterThan } from '@/helpers/utilities';
 import { logger, RainbowError } from '@/logger';
-import { useBackendNetworksStore } from '@/state/backendNetworks/backendNetworks';
 import { type ClaimablesStore } from '@/state/claimables/claimables';
 
 import { getAddysHttpClient } from '../client';

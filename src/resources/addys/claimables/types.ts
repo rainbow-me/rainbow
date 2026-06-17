@@ -1,7 +1,7 @@
 import { type Address } from 'viem';
 
 import type { ParsedAddressAsset } from '@/entities/tokens';
-import { type ChainId } from '@/state/backendNetworks/types';
+import { type ChainId } from '@/features/network/types/backendNetworks';
 
 import { type AddysAsset, type AddysConsolidatedError, type AddysResponseStatus } from '../types';
 

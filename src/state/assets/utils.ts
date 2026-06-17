@@ -5,6 +5,8 @@ import { AssetType } from '@/entities/assetTypes';
 import type { ParsedAddressAsset } from '@/entities/tokens';
 import { supportedCurrencies as supportedNativeCurrencies } from '@/features/currency/supportedCurrencies';
 import { convertAmountAndPriceToNativeDisplay, convertAmountToNativeDisplayWorklet } from '@/features/currency/utils/nativeDisplay';
+import { useBackendNetworksStore } from '@/features/network/stores/backendNetworksStore';
+import { ChainId, ChainName } from '@/features/network/types/backendNetworks';
 import { time } from '@/framework/core/utils/time';
 import { isNativeAsset } from '@/handlers/assets';
 import { add, convertAmountToBalanceDisplay, convertRawAmountToDecimalFormat, greaterThan, multiply } from '@/helpers/utilities';
@@ -12,8 +14,6 @@ import { logger, RainbowError } from '@/logger';
 import { isStaging } from '@/resources/addys/client';
 import { fetchAnvilBalancesByChainId } from '@/resources/assets/anvilAssets';
 import { getPlatformClient } from '@/resources/platform/client';
-import { useBackendNetworksStore } from '@/state/backendNetworks/backendNetworks';
-import { ChainId, ChainName } from '@/state/backendNetworks/types';
 import { getUniqueId } from '@/utils/ethereumUtils';
 
 import {

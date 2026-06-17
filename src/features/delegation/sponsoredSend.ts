@@ -5,10 +5,10 @@ import { Wallet } from '@ethersproject/wallet';
 import { isAddress, isHex, type Address, type Hex } from 'viem';
 
 import { TransactionStatus, type NewTransaction } from '@/entities/transactions/transaction';
+import { backendNetworksActions } from '@/features/network/stores/backendNetworksStore';
+import { type ChainId } from '@/features/network/types/backendNetworks';
 import { RainbowError } from '@/logger';
 import { getRemoteConfig } from '@/model/remoteConfig';
-import { backendNetworksActions } from '@/state/backendNetworks/backendNetworks';
-import { type ChainId } from '@/state/backendNetworks/types';
 import { execute, type Call, type ExecuteCallsResult, type ExecutionResult, type PreparedCallsExecution } from '@rainbow-me/delegation';
 
 import { createDelegationPublicClient, SPONSORED_CALLS_REQUIREMENTS } from './calls';

@@ -1,0 +1,123 @@
+import React, { useCallback } from 'react';
+import { Platform } from 'react-native';
+
+import RadialGradient from 'react-native-radial-gradient';
+
+import { analytics } from '@/analytics';
+import ButtonPressAnimation from '@/components/animations/ButtonPressAnimation';
+import { BubbleField } from '@/components/fields';
+import { Row, RowWithMargins } from '@/components/layout';
+import { Text } from '@/components/text';
+import styled from '@/framework/ui/styled-thing';
+import { opacity } from '@/framework/ui/utils/opacity';
+import useDimensions from '@/hooks/useDimensions';
+import * as i18n from '@/languages';
+import { useTheme } from '@/theme/ThemeContext';
+
+const GradientBackground = styled(RadialGradient).attrs(({ colorForAsset, theme: { colors }, width }) => {
+  const FieldWidth = width - 38;
+
+  return {
+    center: [0, (FieldWidth - 38) / 2],
+    colors: [opacity(colorForAsset, 0), opacity(colorForAsset, 0.06)],
+    stops: [0, 1],
+  };
+})({
+  height: ({ width }) => width - 38,
+  left: 0,
+  position: 'absolute',
+  top: ({ isSmallPhone, isTinyPhone, width }) => -((width - 38 - (isTinyPhone ? 40 : isSmallPhone ? 46 : 59)) / 2),
+  transform: [{ scaleY: 0.175074184 }],
+  width: ({ width }) => width - 38,
+});
+
+const Wrapper = styled(Platform.OS === 'android' ? Row : ButtonPressAnimation).attrs({
+  scaleTo: 1.05,
+})({
+  borderRadius: 29.5,
+  height: ({ isSmallPhone, isTinyPhone }) => (isTinyPhone ? 40 : isSmallPhone ? 46 : 59),
+  overflow: 'hidden',
+  paddingBottom: ({ isSmallPhone, isTinyPhone }) => (isTinyPhone ? 7 : isSmallPhone ? 8 : 11),
+  paddingHorizontal: ({ isSmallPhone, isTinyPhone }) => (isTinyPhone ? 12 : isSmallPhone ? 15 : 19),
+  paddingTop: ({ isSmallPhone, isTinyPhone }) => (isTinyPhone ? 6 : isSmallPhone ? 7 : 10),
+  position: 'relative',
+  width: ({ width }) => (Platform.OS === 'android' ? width - 38 : '100%'),
+});
+
+const SendAssetFormFieldComponent = (
+  {
+    autoFocus,
+    colorForAsset,
+    format,
+    label,
+    labelMaxLength = 6,
+    mask,
+    maxLabelColor,
+    onChange,
+    onFocus,
+    onPressButton,
+    placeholder,
+    value,
+    testID,
+    ...props
+  },
+  ref
+) => {
+  const { isTinyPhone, isSmallPhone, width } = useDimensions();
+  const { colors } = useTheme();
+
+  const handlePressMax = useCallback(
+    e => {
+      analytics.track(analytics.event.sendMaxPressed);
+      onPressButton?.(e);
+    },
+    [onPressButton]
+  );
+
+  return (
+    <Wrapper
+      isSmallPhone={Platform.OS === 'android' || isSmallPhone}
+      isTinyPhone={isTinyPhone}
+      onPress={() => Platform.OS !== 'android' && ref?.current.focus()}
+      width={width}
+      accessible={false}
+    >
+      <GradientBackground
+        colorForAsset={colorForAsset || colors.dark}
+        isSmallPhone={Platform.OS === 'android' || isSmallPhone}
+        isTinyPhone={isTinyPhone}
+        width={width}
+      />
+      <RowWithMargins align="center" flex={1} justify="space-between" margin={12} {...props}>
+        <BubbleField
+          autoFocus={autoFocus}
+          buttonText={i18n.t(i18n.l.wallet.transaction.max)}
+          colorForAsset={colorForAsset || colors.dark}
+          format={format}
+          keyboardType="decimal-pad"
+          mask={mask}
+          maxLabelColor={maxLabelColor}
+          onChange={onChange}
+          onFocus={onFocus}
+          onPressButton={handlePressMax}
+          placeholder={placeholder}
+          ref={ref}
+          testID={testID}
+          value={value}
+        />
+        <Text
+          align="right"
+          color={colorForAsset || colors.dark}
+          letterSpacing="roundedTight"
+          lineHeight={Platform.OS === 'android' ? (isTinyPhone ? 27 : Platform.OS === 'android' || isSmallPhone ? 31 : 38) : null}
+          size={isTinyPhone ? 'big' : Platform.OS === 'android' || isSmallPhone ? 'bigger' : 'h3'}
+          weight="medium"
+        >
+          {label.length > labelMaxLength ? label.substring(0, labelMaxLength) : label}
+        </Text>
+      </RowWithMargins>
+    </Wrapper>
+  );
+};
+
+export const SendAssetFormField = React.forwardRef(SendAssetFormFieldComponent);

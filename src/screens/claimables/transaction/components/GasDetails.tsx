@@ -3,8 +3,8 @@ import React, { useEffect } from 'react';
 import Animated, { useAnimatedStyle, useSharedValue, withTiming } from 'react-native-reanimated';
 
 import { Box, Inline, Text } from '@/design-system';
+import { useBackendNetworksStore } from '@/features/network/stores/backendNetworksStore';
 import * as i18n from '@/languages';
-import { useBackendNetworksStore } from '@/state/backendNetworks/backendNetworks';
 
 import { useTransactionClaimableContext } from '../context/TransactionClaimableContext';
 

@@ -1,7 +1,7 @@
 import { isValidAddress } from 'ethereumjs-util';
 
+import { ChainId } from '@/features/network/types/backendNetworks';
 import { getProvider, isHexStringIgnorePrefix, isValidMnemonic, resolveUnstoppableDomain } from '@/handlers/web3';
-import { ChainId } from '@/state/backendNetworks/types';
 import { sanitizeSeedPhrase } from '@/utils/formatters';
 
 // Currently supported Top Level Domains from Unstoppable Domains

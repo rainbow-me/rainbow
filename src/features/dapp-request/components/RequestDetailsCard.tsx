@@ -14,10 +14,10 @@ import { TransactionDetailsRow } from '@/components/Transactions/TransactionDeta
 import { IconContainer } from '@/components/Transactions/TransactionIcons';
 import { Box, Inline, Stack, Text } from '@/design-system';
 import { type TextColor } from '@/design-system/color/palettes';
+import { useBackendNetworksStore } from '@/features/network/stores/backendNetworksStore';
+import { type ChainId } from '@/features/network/types/backendNetworks';
 import { type TransactionSimulationMeta } from '@/graphql/__generated__/metadataPOST';
 import * as i18n from '@/languages';
-import { useBackendNetworksStore } from '@/state/backendNetworks/backendNetworks';
-import { type ChainId } from '@/state/backendNetworks/types';
 import abbreviations from '@/utils/abbreviations';
 import ethereumUtils from '@/utils/ethereumUtils';
 import { formatDate } from '@/utils/formatDate';

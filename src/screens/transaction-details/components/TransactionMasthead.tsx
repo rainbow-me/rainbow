@@ -10,7 +10,6 @@ import type { Address } from 'viem';
 
 import rainbowIcon from '@/assets/rainbow-icon-circle.png';
 import smartWalletIcon from '@/assets/smartWalletIcon.png';
-import { ChainImage } from '@/components/coin-icon/ChainImage';
 import RainbowCoinIcon from '@/components/coin-icon/RainbowCoinIcon';
 import { ContactAvatar } from '@/components/contacts';
 import ImageAvatar from '@/components/contacts/ImageAvatar';
@@ -23,6 +22,8 @@ import { convertAmountAndPriceToNativeDisplay } from '@/features/currency/utils/
 import { getDelegationContractAddress, isRainbowDelegated } from '@/features/delegation/status';
 import { fetchENSAvatar } from '@/features/ens/hooks/useENSAvatar';
 import { fetchReverseRecord } from '@/features/ens/utils/handlers';
+import { ChainImage } from '@/features/network/components/ChainImage';
+import { ChainId } from '@/features/network/types/backendNetworks';
 import styled from '@/framework/ui/styled-thing';
 import { opacity } from '@/framework/ui/utils/opacity';
 import { removeFirstEmojiFromString, returnStringFirstEmoji } from '@/helpers/emojiHandler';
@@ -34,7 +35,6 @@ import usePrevious from '@/hooks/usePrevious';
 import useUserAccounts from '@/hooks/useUserAccounts';
 import * as i18n from '@/languages';
 import { type AppState } from '@/redux/store';
-import { ChainId } from '@/state/backendNetworks/types';
 import { useAccountAddress } from '@/state/wallets/walletsStore';
 import { position } from '@/styles';
 import { useTheme, type ThemeContextProps } from '@/theme/ThemeContext';

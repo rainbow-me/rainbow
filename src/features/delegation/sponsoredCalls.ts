@@ -1,7 +1,7 @@
 import { type Address } from 'viem';
 
-import { backendNetworksActions } from '@/state/backendNetworks/backendNetworks';
-import { type ChainId } from '@/state/backendNetworks/types';
+import { backendNetworksActions } from '@/features/network/stores/backendNetworksStore';
+import { type ChainId } from '@/features/network/types/backendNetworks';
 
 import { canUseDelegatedExecution } from './willDelegate';
 

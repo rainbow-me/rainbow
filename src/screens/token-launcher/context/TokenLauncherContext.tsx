@@ -5,14 +5,14 @@ import { type KeyboardAwareScrollViewRef } from 'react-native-keyboard-controlle
 import { type SharedValue } from 'react-native-reanimated';
 
 import { useColorMode } from '@/design-system';
+import { useBackendNetworksStore } from '@/features/network/stores/backendNetworksStore';
+import { type BackendNetwork } from '@/features/network/types/backendNetworks';
 import { opacity } from '@/framework/ui/utils/opacity';
 import { getHighContrastColor } from '@/hooks/useAccountAccentColor';
 import { useCleanup } from '@/hooks/useCleanup';
 import useCoinListEditOptions from '@/hooks/useCoinListEditOptions';
 import { usePersistentDominantColorFromImage } from '@/hooks/usePersistentDominantColorFromImage';
 import { logger, RainbowError } from '@/logger';
-import { useBackendNetworksStore } from '@/state/backendNetworks/backendNetworks';
-import { type BackendNetwork } from '@/state/backendNetworks/types';
 import { useTheme } from '@/theme/ThemeContext';
 import { getUniqueId } from '@/utils/ethereumUtils';
 import { getHighContrastTextColorWorklet } from '@/worklets/colors';

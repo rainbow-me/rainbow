@@ -5,11 +5,11 @@ import { type StaticJsonRpcProvider } from '@ethersproject/providers';
 import { isEmpty } from 'lodash';
 import { hexToNumber, isHex } from 'viem';
 
+import { useBackendNetworksStore } from '@/features/network/stores/backendNetworksStore';
+import { type ChainId } from '@/features/network/types/backendNetworks';
 import { estimateGas, toHex } from '@/handlers/web3';
 import { convertHexToString, omitFlatten } from '@/helpers/utilities';
 import { logger, RainbowError } from '@/logger';
-import { useBackendNetworksStore } from '@/state/backendNetworks/backendNetworks';
-import { type ChainId } from '@/state/backendNetworks/types';
 import ethereumUtils from '@/utils/ethereumUtils';
 
 import type { GasFeeParamsBySpeed } from '../types/gas';

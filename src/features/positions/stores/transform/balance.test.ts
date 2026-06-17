@@ -10,7 +10,7 @@ jest.mock('@/config/experimentalConfigStore', () => ({
   getExperimentalFlag: jest.fn(() => false),
 }));
 
-jest.mock('@/state/backendNetworks/backendNetworks', () => ({
+jest.mock('@/features/network/stores/backendNetworksStore', () => ({
   useBackendNetworksStore: {
     getState: () => ({
       getSupportedPositionsChainIds: () => [1, 10, 137],
