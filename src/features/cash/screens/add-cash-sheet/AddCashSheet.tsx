@@ -14,10 +14,10 @@ import { HoldToActivateButton } from '@/components/hold-to-activate-button/HoldT
 import { NumberPad } from '@/components/number-pad/NumberPad';
 import { DEFAULT_HANDLE_COLOR_DARK, DEFAULT_HANDLE_COLOR_LIGHT, PanelSheet } from '@/components/PanelSheet/PanelSheet';
 import { Box, Inline, Text, useColorMode, useForegroundColor } from '@/design-system';
+import { ChainId } from '@/features/network/types/backendNetworks';
 import { opacity } from '@/framework/ui/utils/opacity';
 import * as i18n from '@/languages';
 import { USDC_ADDRESS } from '@/references/constants';
-import { ChainId } from '@/state/backendNetworks/types';
 import { useAccountProfileInfo } from '@/state/wallets/walletsStore';
 import { DEVICE_HEIGHT, DEVICE_WIDTH } from '@/utils/deviceUtils';
 import getUrlForTrustIconFallback from '@/utils/getUrlForTrustIconFallback';

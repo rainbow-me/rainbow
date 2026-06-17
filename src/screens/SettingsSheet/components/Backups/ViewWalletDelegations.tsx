@@ -17,12 +17,12 @@ import {
   isThirdPartyDelegated as hasThirdPartyDelegation,
 } from '@/features/delegation/status';
 import { ChainImage } from '@/features/network/components/ChainImage';
+import { backendNetworksActions } from '@/features/network/stores/backendNetworksStore';
+import { type ChainId } from '@/features/network/types/backendNetworks';
 import * as i18n from '@/languages';
 import { navigate } from '@/navigation/Navigation';
 import Routes from '@/navigation/routesNames';
 import { RevokeReason } from '@/screens/delegation/RevokeDelegationPanel';
-import { backendNetworksActions } from '@/state/backendNetworks/backendNetworks';
-import { type ChainId } from '@/state/backendNetworks/types';
 import { useTheme } from '@/theme/ThemeContext';
 import { formatAddressForDisplay } from '@/utils/abbreviations';
 import * as ethereumUtils from '@/utils/ethereumUtils';

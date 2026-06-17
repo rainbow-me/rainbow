@@ -1,10 +1,10 @@
 import type { NativeCurrencyKey } from '@/features/currency/types';
 import { convertAmountToNativeDisplayWorklet } from '@/features/currency/utils/nativeDisplay';
+import { useBackendNetworksStore } from '@/features/network/stores/backendNetworksStore';
+import { type Network } from '@/features/network/types/backendNetworks';
 import { add, convertRawAmountToBalanceWorklet } from '@/helpers/utilities';
 import * as i18n from '@/languages';
 import { parseAsset } from '@/resources/assets/assets';
-import { useBackendNetworksStore } from '@/state/backendNetworks/backendNetworks';
-import { type Network } from '@/state/backendNetworks/types';
 
 import {
   acceptedClaimableTypes,

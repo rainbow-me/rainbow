@@ -1,4 +1,4 @@
-import { type ChainId } from '@/state/backendNetworks/types';
+import { type ChainId } from '@/features/network/types/backendNetworks';
 
 export enum RequestSource {
   WALLETCONNECT = 'walletconnect',

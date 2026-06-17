@@ -1,7 +1,7 @@
 import { StaticJsonRpcProvider } from '@ethersproject/providers';
 import { encodeFunctionData, erc20Abi, type Address } from 'viem';
 
-import { ChainId } from '@/state/backendNetworks/types';
+import { ChainId } from '@/features/network/types/backendNetworks';
 import { type Call, type PreparedCallsExecution } from '@rainbow-me/delegation';
 import { SwapType, type Quote } from '@rainbow-me/swaps';
 

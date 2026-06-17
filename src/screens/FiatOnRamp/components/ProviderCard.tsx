@@ -11,10 +11,10 @@ import { Stripe as StripeLogo } from '@/components/icons/svg/Stripe';
 import { Bleed, Box, Inline, Text, useBackgroundColor } from '@/design-system';
 import { FiatProviderName } from '@/entities/f2c';
 import { ChainImage } from '@/features/network/components/ChainImage';
+import { type ChainId } from '@/features/network/types/backendNetworks';
 import * as i18n from '@/languages';
 import { CalloutType, PaymentMethod, type ProviderConfig } from '@/screens/FiatOnRamp/types';
 import { convertAPINetworkToInternalChainIds } from '@/screens/FiatOnRamp/utils';
-import { type ChainId } from '@/state/backendNetworks/types';
 
 type PaymentMethodConfig = {
   name: string;

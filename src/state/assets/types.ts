@@ -3,7 +3,7 @@ import { type Address, type Prettify } from 'viem';
 import { type ParsedSearchAsset, type UniqueId, type UserAssetFilter } from '@/__swaps__/types/assets';
 import type { ParsedAddressAsset } from '@/entities/tokens';
 import type { SupportedCurrencyKey } from '@/features/currency/supportedCurrencies';
-import { type ChainId } from '@/state/backendNetworks/types';
+import { type ChainId } from '@/features/network/types/backendNetworks';
 import { type QueryStoreState } from '@/state/internal/queryStore/types';
 import { type OptionallyPersistedRainbowStore } from '@/state/internal/types';
 

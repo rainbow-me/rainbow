@@ -1,7 +1,7 @@
 import { useDerivedValue, type SharedValue } from 'react-native-reanimated';
 
 import { type ExtendedAnimatedAssetWithColors } from '@/__swaps__/types/assets';
-import { useBackendNetworksStore } from '@/state/backendNetworks/backendNetworks';
+import { useBackendNetworksStore } from '@/features/network/stores/backendNetworksStore';
 
 export const useSwapOutputQuotesDisabled = ({
   inputAsset,

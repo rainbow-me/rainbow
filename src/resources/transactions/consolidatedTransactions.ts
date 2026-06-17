@@ -3,12 +3,12 @@ import { useInfiniteQuery } from '@tanstack/react-query';
 import { type RainbowTransaction } from '@/entities/transactions';
 import { IS_TEST } from '@/env';
 import { type NativeCurrencyKey } from '@/features/currency/types';
+import { backendNetworksActions } from '@/features/network/stores/backendNetworksStore';
 import { type ListTransactionsResponse, type Transaction } from '@/features/positions/types/generated/transaction/transaction';
 import { logger, RainbowError } from '@/logger';
 import { parseTransaction } from '@/parsers/transactions';
 import { createQueryKey, queryClient, type InfiniteQueryConfig, type QueryConfig, type QueryFunctionArgs } from '@/react-query';
 import { getPlatformClient } from '@/resources/platform/client';
-import { backendNetworksActions } from '@/state/backendNetworks/backendNetworks';
 
 import { anvilChain, e2eAnvilConfirmedTransactions } from './transaction';
 

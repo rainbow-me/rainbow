@@ -1,7 +1,7 @@
 import React from 'react';
 
 import RainbowCoinIcon from '@/components/coin-icon/RainbowCoinIcon';
-import { ChainId } from '@/state/backendNetworks/types';
+import { ChainId } from '@/features/network/types/backendNetworks';
 
 import { useDepositContext } from '../../contexts/DepositContext';
 

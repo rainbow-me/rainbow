@@ -3,6 +3,7 @@ import { useCallback, useState } from 'react';
 import delay from 'delay';
 
 import { analytics } from '@/analytics';
+import { useBackendNetworksStore } from '@/features/network/stores/backendNetworksStore';
 import { hyperliquidAccountActions } from '@/features/perps/stores/hyperliquidAccountStore';
 import { usePolymarketBalanceStore } from '@/features/polymarket/stores/polymarketBalanceStore';
 import { usePolymarketPositionsStore } from '@/features/polymarket/stores/polymarketPositionsStore';
@@ -13,7 +14,6 @@ import { showcaseTokensQueryKey } from '@/hooks/useFetchShowcaseTokens';
 import { logger, RainbowError } from '@/logger';
 import { createQueryKey, queryClient } from '@/react-query';
 import { useUserAssetsStore } from '@/state/assets/userAssets';
-import { useBackendNetworksStore } from '@/state/backendNetworks/backendNetworks';
 import { useClaimablesStore } from '@/state/claimables/claimables';
 import { PAGE_SIZE } from '@/state/nfts/createNftsStore';
 import { useNftsStore } from '@/state/nfts/nfts';

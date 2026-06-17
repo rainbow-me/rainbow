@@ -3,9 +3,9 @@ import { type Address } from 'viem';
 
 import { isCrosschainQuote } from '@/__swaps__/utils/quotes';
 import { SPONSORED_CALLS_REQUIREMENTS } from '@/features/delegation/calls';
+import { backendNetworksActions } from '@/features/network/stores/backendNetworksStore';
+import { type ChainId } from '@/features/network/types/backendNetworks';
 import { getRemoteConfig } from '@/model/remoteConfig';
-import { backendNetworksActions } from '@/state/backendNetworks/backendNetworks';
-import { type ChainId } from '@/state/backendNetworks/types';
 import { type Call } from '@rainbow-me/delegation';
 import { type CrosschainQuote, type Quote } from '@rainbow-me/swaps';
 

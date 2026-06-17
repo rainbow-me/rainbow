@@ -1,12 +1,12 @@
 import { useQuery, type QueryFunction } from '@tanstack/react-query';
 
 import { type UniqueAsset } from '@/entities/uniqueAssets';
+import { type ChainId } from '@/features/network/types/backendNetworks';
 import { time } from '@/framework/core/utils/time';
 import { arcClient } from '@/graphql';
 import { createQueryKey, queryClient, type QueryConfigWithSelect } from '@/react-query';
 import { type SimpleHashListing } from '@/resources/nfts/simplehash/types';
 import { simpleHashNFTToUniqueAsset } from '@/resources/nfts/simplehash/utils';
-import { type ChainId } from '@/state/backendNetworks/types';
 
 const NFTS_STALE_TIME = time.minutes(10);
 const NFTS_CACHE_TIME = time.minutes(10);

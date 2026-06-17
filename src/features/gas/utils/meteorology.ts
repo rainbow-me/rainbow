@@ -3,10 +3,10 @@ import { useCallback } from 'react';
 import { useQuery, type NotifyOnChangeProps } from '@tanstack/react-query';
 
 import { IS_TEST } from '@/env';
+import { type ChainId } from '@/features/network/types/backendNetworks';
 import { getMinimalTimeUnitStringForMs } from '@/helpers/time';
 import { abs, isZero, lessThan, subtract } from '@/helpers/utilities';
 import { createQueryKey, queryClient, type QueryConfig, type QueryFunctionArgs, type QueryFunctionResult } from '@/react-query';
-import { type ChainId } from '@/state/backendNetworks/types';
 import { useConnectedToAnvilStore } from '@/state/connectedToAnvil';
 
 import { type GasSettings } from '../hooks/useCustomGas';

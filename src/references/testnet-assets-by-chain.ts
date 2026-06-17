@@ -1,5 +1,5 @@
 import { type UniqueId, type ZerionAsset } from '@/__swaps__/types/assets';
-import { ChainId, ChainName } from '@/state/backendNetworks/types';
+import { ChainId, ChainName } from '@/features/network/types/backendNetworks';
 
 type ChainAssets = {
   [uniqueId: UniqueId]: {

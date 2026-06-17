@@ -3,7 +3,7 @@ import React from 'react';
 import { Box } from '@/design-system';
 import type { ParsedAddressAsset } from '@/entities/tokens';
 import { ChainImage } from '@/features/network/components/ChainImage';
-import { type ChainId } from '@/state/backendNetworks/types';
+import { type ChainId } from '@/features/network/types/backendNetworks';
 import { useTheme } from '@/theme/ThemeContext';
 
 import RainbowCoinIcon from './RainbowCoinIcon';

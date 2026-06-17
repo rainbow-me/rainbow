@@ -10,6 +10,8 @@ import { convertAmountToNativeDisplayWorklet } from '@/features/currency/utils/n
 import { safeBigInt } from '@/features/gas/hooks/useEstimatedGasFee';
 import { type GasSettings } from '@/features/gas/types/gas';
 import { buildGasParams, weiToGwei } from '@/features/gas/utils/parseGas';
+import { useBackendNetworksStore } from '@/features/network/stores/backendNetworksStore';
+import { type ChainId } from '@/features/network/types/backendNetworks';
 import { lessThanOrEqualToWorklet } from '@/framework/core/safeMath';
 import { time } from '@/framework/core/utils/time';
 import { type LedgerSigner } from '@/handlers/LedgerSigner';
@@ -22,8 +24,6 @@ import Routes from '@/navigation/routesNames';
 import { type RainbowClaimable } from '@/resources/addys/claimables/types';
 import { isStaging } from '@/resources/addys/client';
 import { userAssetsStore } from '@/state/assets/userAssets';
-import { useBackendNetworksStore } from '@/state/backendNetworks/backendNetworks';
-import { type ChainId } from '@/state/backendNetworks/types';
 import { getNextNonce } from '@/state/nonces';
 import { addNewTransaction } from '@/state/pendingTransactions';
 import ethereumUtils from '@/utils/ethereumUtils';

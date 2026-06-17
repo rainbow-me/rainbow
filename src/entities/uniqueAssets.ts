@@ -1,7 +1,7 @@
 import { type Address } from 'viem';
 
+import { type ChainId, type Network } from '@/features/network/types/backendNetworks';
 import { type NftTokenType } from '@/graphql/__generated__/arc';
-import { type ChainId, type Network } from '@/state/backendNetworks/types';
 
 import { type AssetType } from './assetTypes';
 

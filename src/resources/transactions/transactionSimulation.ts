@@ -2,6 +2,7 @@ import { useQuery } from '@tanstack/react-query';
 import { isNil } from 'lodash';
 
 import { type RequestData } from '@/features/dapp-request/types';
+import { type ChainId } from '@/features/network/types/backendNetworks';
 import { metadataPOSTClient } from '@/graphql';
 import type {
   MessageResult,
@@ -15,7 +16,6 @@ import type {
 } from '@/graphql/__generated__/metadataPOST';
 import { logger, RainbowError } from '@/logger';
 import { createQueryKey, type QueryConfig, type QueryFunctionArgs } from '@/react-query';
-import { type ChainId } from '@/state/backendNetworks/types';
 
 // ///////////////////////////////////////////////
 // Types

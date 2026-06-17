@@ -1,7 +1,7 @@
 import { type GasSettings } from '@/features/gas/hooks/useCustomGas';
 import { useEstimatedGasFee } from '@/features/gas/hooks/useEstimatedGasFee';
 import { useSelectedGas } from '@/features/gas/hooks/useSelectedGas';
-import { ChainId } from '@/state/backendNetworks/types';
+import { ChainId } from '@/features/network/types/backendNetworks';
 import { useSwapsStore } from '@/state/swaps/swapsStore';
 
 import { useSyncedSwapQuoteStore } from '../providers/SyncSwapStateAndSharedValues';

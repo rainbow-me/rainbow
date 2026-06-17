@@ -8,7 +8,7 @@ import { type AddressOrEth, type ExtendedAnimatedAssetWithColors } from '@/__swa
 import { type NumberPadField } from '@/components/number-pad/NumberPadKey';
 import type { GasSettings, LegacyTransactionGasParamAmounts, TransactionGasParamAmounts } from '@/features/gas/types/gas';
 import { type GasSpeed } from '@/features/gas/types/gasSpeed';
-import { type ChainId } from '@/state/backendNetworks/types';
+import { type ChainId } from '@/features/network/types/backendNetworks';
 import { type QueryStore, type StoreState } from '@/state/internal/queryStore/types';
 import { type BaseRainbowStore, type DerivedStore, type RainbowStore } from '@/state/internal/types';
 import { type StoreActions } from '@/state/internal/utils/createStoreActions';

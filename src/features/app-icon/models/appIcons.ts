@@ -20,7 +20,7 @@ import AppIconZora from '@/assets/appIconZora.png';
 import AppIconZorb from '@/assets/appIconZorb.png';
 import { globalColors } from '@/design-system';
 import type { EthereumAddress } from '@/entities/wallet';
-import { Network } from '@/state/backendNetworks/types';
+import { Network } from '@/features/network/types/backendNetworks';
 
 import { type TokenGateCheckerNetwork, type TokenInfo } from '../utils/tokenGatedUtils';
 

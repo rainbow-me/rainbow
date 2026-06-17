@@ -11,6 +11,7 @@ import { isValidAddress, looksLikeAddress } from '@/features/address/core/addres
 import { backupsStore } from '@/features/backup/stores/backupsStore';
 import { fetchENSAvatar } from '@/features/ens/hooks/useENSAvatar';
 import { fetchReverseRecord } from '@/features/ens/utils/handlers';
+import { ChainId } from '@/features/network/types/backendNetworks';
 import { getProvider, isValidBluetoothDeviceId, resolveUnstoppableDomain } from '@/handlers/web3';
 import { WrappedAlert as Alert } from '@/helpers/alert';
 import { isENSAddressFormat, isUnstoppableAddressFormat, isValidWallet } from '@/helpers/validators';
@@ -23,7 +24,6 @@ import Navigation, { useNavigation } from '@/navigation/Navigation';
 import { navigateAfterOnboarding } from '@/navigation/onboardingNavigation';
 import Routes from '@/navigation/routesNames';
 import { type ImportFlowContext } from '@/navigation/types';
-import { ChainId } from '@/state/backendNetworks/types';
 import { walletLoadingStore } from '@/state/walletLoading/walletLoading';
 import { useAccountAddress, useWallets } from '@/state/wallets/walletsStore';
 import { sanitizeSeedPhrase } from '@/utils/formatters';

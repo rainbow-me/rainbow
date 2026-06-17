@@ -12,7 +12,7 @@
 // import { parseUserAssets } from '@/__swaps__/screens/Swap/resources/assets/userAssets';
 // import { ParsedAssetsDictByChain } from '@/__swaps__/types/assets';
 // import { AddressAssetsReceivedMessage } from '@/__swaps__/types/refraction';
-// import { useBackendNetworksStore } from '@/state/backendNetworks/backendNetworks';
+// import { useBackendNetworksStore } from '@/features/network/stores/backendNetworksStore';
 // import { time } from '@/utils';
 // import { createQueryStore } from '../createQueryStore';
 // import { createRainbowStore } from '../createRainbowStore';

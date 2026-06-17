@@ -13,6 +13,7 @@ import { Box, globalColors, Separator, Text } from '@/design-system';
 import { convertAmountToNativeDisplayWorklet } from '@/features/currency/utils/nativeDisplay';
 import useGas from '@/features/gas/hooks/useGas';
 import { type GasFee, type LegacySelectedGasFee, type SelectedGasFee } from '@/features/gas/types/gas';
+import { backendNetworksActions } from '@/features/network/stores/backendNetworksStore';
 import { opacity } from '@/framework/ui/utils/opacity';
 import { getProvider } from '@/handlers/web3';
 import * as i18n from '@/languages';
@@ -23,7 +24,6 @@ import type Routes from '@/navigation/routesNames';
 import { type RootStackParamList } from '@/navigation/types';
 import reduxStore from '@/redux/store';
 import { userAssetsStoreManager } from '@/state/assets/userAssetsStoreManager';
-import { backendNetworksActions } from '@/state/backendNetworks/backendNetworks';
 import { getNextNonce } from '@/state/nonces';
 import { delegation } from '@rainbow-me/delegation';
 

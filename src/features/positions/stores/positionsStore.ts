@@ -1,10 +1,10 @@
 import { throttle } from 'lodash';
 
 import { analytics } from '@/analytics';
+import { useBackendNetworksStore } from '@/features/network/stores/backendNetworksStore';
 import { time } from '@/framework/core/utils/time';
 import { greaterThan, subtract } from '@/helpers/utilities';
 import { userAssetsStoreManager } from '@/state/assets/userAssetsStoreManager';
-import { useBackendNetworksStore } from '@/state/backendNetworks/backendNetworks';
 import { createQueryStore } from '@/state/internal/createQueryStore';
 
 import type { RainbowDeposit, RainbowPool, RainbowPosition, RainbowPositions } from '../types';

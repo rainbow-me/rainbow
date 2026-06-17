@@ -4,9 +4,9 @@ import { hexToNumber } from 'viem';
 
 import type { SelectedGasFee } from '@/features/gas/types/gas';
 import { parseGasParamsForTransaction } from '@/features/gas/utils/parseGas';
+import { type ChainId } from '@/features/network/types/backendNetworks';
 import { estimateGasWithPadding, toHex } from '@/handlers/web3';
 import { logger, RainbowError } from '@/logger';
-import { type ChainId } from '@/state/backendNetworks/types';
 import { getNextNonce } from '@/state/nonces';
 
 import { convertHexToString, greaterThan } from './utilities';

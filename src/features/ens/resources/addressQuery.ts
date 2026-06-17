@@ -1,8 +1,8 @@
 import { useQuery } from '@tanstack/react-query';
 
+import { ChainId } from '@/features/network/types/backendNetworks';
 import { getProvider } from '@/handlers/web3';
 import { createQueryKey, queryClient, type QueryFunctionArgs } from '@/react-query';
-import { ChainId } from '@/state/backendNetworks/types';
 
 // Set a default stale time of 10 seconds so we don't over-fetch
 // (query will serve cached data & invalidate after 10s).

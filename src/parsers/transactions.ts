@@ -14,12 +14,12 @@ import {
 import { buildTransactionTitle, type NewTransaction, type RainbowTransactionFee } from '@/entities/transactions/transaction';
 import { type NativeCurrencyKey } from '@/features/currency/types';
 import { convertAmountAndPriceToNativeDisplay, convertRawAmountToNativeDisplay } from '@/features/currency/utils/nativeDisplay';
+import { useBackendNetworksStore } from '@/features/network/stores/backendNetworksStore';
+import { type ChainId } from '@/features/network/types/backendNetworks';
 import { type Meta, type Transaction } from '@/features/positions/types/generated/transaction/transaction';
 import { convertRawAmountToBalance, toFixedDecimals } from '@/helpers/utilities';
 import { parseGoldskyAddressAsset, parseGoldskyAsset } from '@/resources/assets/assets';
 import { type ParsedAsset } from '@/resources/assets/types';
-import { useBackendNetworksStore } from '@/state/backendNetworks/backendNetworks';
-import { type ChainId } from '@/state/backendNetworks/types';
 
 const TransactionOutTypes = [
   'burn',

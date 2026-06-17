@@ -3,8 +3,8 @@ import { InteractionManager } from 'react-native';
 
 import { analytics } from '@/analytics';
 import type useGas from '@/features/gas/hooks/useGas';
+import { type ChainId } from '@/features/network/types/backendNetworks';
 import * as i18n from '@/languages';
-import { type ChainId } from '@/state/backendNetworks/types';
 import { methodRegistryLookupAndParse } from '@/utils/methodRegistry';
 
 import { type RequestSource } from '../types';

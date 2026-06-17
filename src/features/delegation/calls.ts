@@ -1,8 +1,8 @@
 import { createPublicClient, http, type PublicClient } from 'viem';
 
+import { backendNetworksActions } from '@/features/network/stores/backendNetworksStore';
+import { type ChainId } from '@/features/network/types/backendNetworks';
 import { RainbowError } from '@/logger';
-import { backendNetworksActions } from '@/state/backendNetworks/backendNetworks';
-import { type ChainId } from '@/state/backendNetworks/types';
 import { type CallsRequirements, type PreparedCallsExecution } from '@rainbow-me/delegation';
 
 /**

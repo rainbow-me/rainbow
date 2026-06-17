@@ -1,8 +1,8 @@
 import { parseAbi, type Address } from 'viem';
 
 import { gasUnits } from '@/features/gas/utils/gasUnits';
+import { ChainId } from '@/features/network/types/backendNetworks';
 import { convertRawAmountToDecimalFormat } from '@/helpers/utilities';
-import { ChainId } from '@/state/backendNetworks/types';
 import { getUniqueId } from '@/utils/ethereumUtils';
 
 export const RNBW_TOKEN_ADDRESS: Address = '0xa53887f7e7c1bf5010b8627f1c1ba94fe7a5d6e0';

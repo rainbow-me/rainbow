@@ -3,12 +3,12 @@ import { createWalletClient, http, type Hex } from 'viem';
 import { privateKeyToAccount } from 'viem/accounts';
 
 import * as kc from '@/features/local-auth/keychain';
+import { useBackendNetworksStore } from '@/features/network/stores/backendNetworksStore';
+import { ChainId } from '@/features/network/types/backendNetworks';
 import { LedgerSigner } from '@/handlers/LedgerSigner';
 import walletTypes from '@/helpers/walletTypes';
 import { logger, RainbowError } from '@/logger';
 import { getHdPath, isHardwareWalletKey, loadPrivateKey, WalletLibraryType } from '@/model/wallet';
-import { useBackendNetworksStore } from '@/state/backendNetworks/backendNetworks';
-import { ChainId } from '@/state/backendNetworks/types';
 import { getWalletWithAccount } from '@/state/wallets/walletsStore';
 
 export async function loadViemWallet(address: Hex, provider: Provider) {

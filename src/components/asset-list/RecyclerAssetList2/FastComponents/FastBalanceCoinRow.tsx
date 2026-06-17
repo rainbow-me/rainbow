@@ -8,13 +8,13 @@ import { Icon } from '@/components/icons';
 import { LiveTokenText } from '@/components/live-token-text/LiveTokenText';
 import { Text } from '@/design-system';
 import type { NativeCurrencyKey } from '@/features/currency/types';
+import { ChainId } from '@/features/network/types/backendNetworks';
 import { opacity } from '@/framework/ui/utils/opacity';
 import { toSignificantDigits } from '@/helpers/utilities';
 import useAccountAsset from '@/hooks/useAccountAsset';
 import { useCoinListFinishEditingOptions } from '@/hooks/useCoinListEditOptions';
 import Navigation from '@/navigation/Navigation';
 import Routes from '@/navigation/routesNames';
-import { ChainId } from '@/state/backendNetworks/types';
 import { getLiquidityCappedBalance, type TokenData } from '@/state/liveTokens/liveTokensStore';
 import { borders, colors, padding, shadow } from '@/styles';
 

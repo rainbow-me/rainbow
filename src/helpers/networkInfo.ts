@@ -1,4 +1,4 @@
-import { Network } from '@/state/backendNetworks/types';
+import { Network } from '@/features/network/types/backendNetworks';
 
 // TODO: networkInfo is DEPRECATED after the new network support changes
 const networkInfo = {

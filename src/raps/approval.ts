@@ -1,6 +1,6 @@
 import type { Address } from 'viem';
 
-import { type ChainId } from '@/state/backendNetworks/types';
+import { type ChainId } from '@/features/network/types/backendNetworks';
 import { ETH_ADDRESS, SwapType, type CrosschainQuote, type Quote } from '@rainbow-me/swaps';
 
 import { needsTokenApproval } from './actions/unlock';
