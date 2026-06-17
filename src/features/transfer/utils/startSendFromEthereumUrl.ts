@@ -3,6 +3,8 @@ import { InteractionManager, Platform } from 'react-native';
 // @ts-expect-error eth-url-parser ships no type declarations
 import { parse } from 'eth-url-parser';
 
+import { useBackendNetworksStore } from '@/features/network/stores/backendNetworksStore';
+import { ChainId } from '@/features/network/types/backendNetworks';
 import { WrappedAlert as Alert } from '@/helpers/alert';
 import { convertRawAmountToDecimalFormat, fromWei, isZero } from '@/helpers/utilities';
 import * as i18n from '@/languages';
@@ -10,8 +12,6 @@ import Navigation from '@/navigation/Navigation';
 import Routes from '@/navigation/routesNames';
 import { parseAssetNative } from '@/parsers/accounts';
 import store from '@/redux/store';
-import { useBackendNetworksStore } from '@/state/backendNetworks/backendNetworks';
-import { ChainId } from '@/state/backendNetworks/types';
 import ethereumUtils from '@/utils/ethereumUtils';
 
 export async function startSendFromEthereumUrl(data: string) {
