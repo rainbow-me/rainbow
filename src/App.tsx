@@ -17,8 +17,9 @@ import { Toaster } from 'sonner-native';
 
 import { analytics } from '@/analytics';
 import { getOrCreateDeviceId } from '@/analytics/utils';
-import { DeeplinkHandler } from '@/components/DeeplinkHandler';
-import ErrorBoundary from '@/components/error-boundary/ErrorBoundary';
+import { ErrorBoundary } from '@/app/error-boundary/ErrorBoundary';
+import { DeeplinkHandler } from '@/app/navigation/DeeplinkHandler';
+import { TestDeeplinkHandler } from '@/app/navigation/TestDeeplinkHandler';
 import { RainbowToastDisplay } from '@/components/rainbow-toast/RainbowToast';
 import { OfflineToast } from '@/components/toasts';
 import { reactNativeDisableYellowBox, showNetworkRequests, showNetworkResponses } from '@/config/debug';
@@ -43,7 +44,6 @@ import * as ls from '@/storage';
 import { MainThemeProvider } from '@/theme/ThemeContext';
 
 import { AbsolutePortalRoot } from './components/AbsolutePortal';
-import { TestDeeplinkHandler } from './components/TestDeeplinkHandler';
 import { PerformanceReports, PerformanceReportSegments, PerformanceTracking } from './performance/tracking';
 
 if (IS_DEV) {

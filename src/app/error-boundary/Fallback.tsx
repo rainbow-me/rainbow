@@ -1,15 +1,14 @@
 import React from 'react';
 import { View } from 'react-native';
 
+import { Centered } from '@/components/layout';
+import { SheetActionButton } from '@/components/sheet';
+import Text from '@/components/text/Text';
 import styled from '@/framework/ui/styled-thing';
 import { opacity } from '@/framework/ui/utils/opacity';
 import * as i18n from '@/languages';
 import { logger, RainbowError } from '@/logger';
 import { type Colors } from '@/styles';
-
-import { Centered } from '../layout';
-import { SheetActionButton } from '../sheet';
-import Text from '../text/Text';
 
 const Spacer = styled(View)({
   height: ({ height }: { height: number }) => height,
@@ -27,7 +26,7 @@ const Message = styled(View)({
   textAlign: 'center',
 });
 
-export default function Fallback({
+export function Fallback({
   colors,
   error,
   componentStack,
