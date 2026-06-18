@@ -17,7 +17,7 @@ import {
   PREDICTION_MARKET_TILE_CARD_WIDTH,
   PredictionMarketTileCard,
 } from '@/features/discover/components/markets/cards/PredictionMarketTileCard';
-import { getRenderedHeaderCount, renderSectionLayout } from '@/features/discover/components/SectionLayout';
+import { renderSectionLayout } from '@/features/discover/components/SectionLayout';
 import {
   type CardPressHandler,
   type OrderPressHandler,
@@ -257,16 +257,12 @@ function SportsEventPlacementSection({
 
   usePredictionTokenSubscription({ display: surface.display, items: result.items, limit: surface.limit });
 
-  // Header count comes from the curated placement items the layout actually renders (list shows
-  // the expandable full count; carousel/grid cap at surface.limit), not the live sports store.
-  const headerCount = getRenderedHeaderCount({ descriptor, itemCount: result.items.length, limit: surface.limit });
   const { headerCaret, leadingAccessory } = getSportsHeaderProps(sportsIntent, surface);
 
   return renderSectionLayout({
     data: result.items,
     descriptor,
     headerCaret,
-    headerCount,
     leadingAccessory,
     loading: result.isLoading || isPlacementPending,
     // Prediction "See All" routes to the CMS destination (predictions -> Polymarket).
@@ -295,7 +291,6 @@ function SportsQuerySection({
     return selectedEvents.map(event => ({ id: event.id, event }));
   }, [events, sportsIntent]);
   const descriptor = getSportsEventSectionDescriptor(surface, sportsIntent);
-  const headerCount = getRenderedHeaderCount({ descriptor, itemCount: items.length, limit: surface.limit });
   const predictionsDestination = hasDestinationRoot(surface.destination, 'predictions') ? surface.destination : null;
   const onPressSeeAll = useCallback(() => {
     if (predictionsDestination) navigateDiscoverDestination(predictionsDestination);
@@ -309,7 +304,6 @@ function SportsQuerySection({
     data: items,
     descriptor,
     headerCaret,
-    headerCount,
     leadingAccessory,
     loading: isLoading,
     // Prediction "See All" routes to the CMS destination (predictions -> Polymarket).
