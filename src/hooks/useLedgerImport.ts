@@ -4,8 +4,12 @@ import { Platform } from 'react-native';
 import { type Subscription } from '@ledgerhq/hw-transport';
 import TransportBLE from '@ledgerhq/react-native-hw-transport-ble';
 
+import {
+  checkAndRequestAndroidBluetooth,
+  showBluetoothPermissionsAlert,
+  showBluetoothPoweredOffAlert,
+} from '@/framework/ui/utils/bluetoothPermissions';
 import { logger, RainbowError } from '@/logger';
-import { checkAndRequestAndroidBluetooth, showBluetoothPermissionsAlert, showBluetoothPoweredOffAlert } from '@/utils/bluetoothPermissions';
 import { ledgerErrorHandler, type LEDGER_ERROR_CODES } from '@/utils/ledger';
 
 /**
