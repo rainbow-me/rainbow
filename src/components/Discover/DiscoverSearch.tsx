@@ -13,7 +13,7 @@ import { IS_TEST } from '@/env';
 import { DISCOVER_HEADER_HEIGHT } from '@/features/discover/components/DiscoverHeader';
 import { useBackendNetworksStore } from '@/features/network/stores/backendNetworksStore';
 import { ChainId, Network } from '@/features/network/types/backendNetworks';
-import { useHardwareBackOnFocus } from '@/hooks/useHardwareBack';
+import { useHardwareBackOnFocus } from '@/framework/ui/hooks/useHardwareBack';
 import useSearchCurrencyList from '@/hooks/useSearchCurrencyList';
 import { useTimeoutEffect } from '@/hooks/useTimeout';
 import Navigation from '@/navigation/Navigation';
