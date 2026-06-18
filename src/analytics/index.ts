@@ -64,7 +64,6 @@ export class Analytics {
     if (this.disabled) return;
     logger.debug('[Analytics]: Initialized with deviceId');
     this.ensureInit();
-    this.appsFlyer.init();
   }
 
   /**
@@ -146,6 +145,8 @@ export class Analytics {
 
   private ensureInit(): void {
     if (this.disabled || this.initPromise) return;
+
+    this.appsFlyer.init();
 
     this.initPromise = this.client
       .setup(REACT_NATIVE_RUDDERSTACK_WRITE_KEY, {

@@ -1,7 +1,9 @@
 import { expect, test } from '@jest/globals';
 
 import { Analytics } from '@/analytics';
+import { AppsFlyer } from '@/analytics/appsflyer';
 import Routes from '@/navigation/routesNames';
+import { device } from '@/storage';
 
 jest.mock('@/env', () => ({
   IS_DEV: false,
@@ -26,10 +28,18 @@ jest.mock('@rudderstack/rudder-sdk-react-native', () => ({
 }));
 
 const flushPromises = () => new Promise(resolve => setImmediate(resolve));
+const mockAppsFlyerClass = AppsFlyer as jest.MockedClass<typeof AppsFlyer>;
+const mockDeviceGet = device.get as jest.Mock;
+
+function getLatestAppsFlyerInstance(): { init: jest.Mock } {
+  const latestInstance = mockAppsFlyerClass.mock.results.at(-1)?.value;
+  return latestInstance as { init: jest.Mock };
+}
 
 describe('@/analytics', () => {
   beforeEach(() => {
     jest.clearAllMocks();
+    mockDeviceGet.mockReturnValue(undefined);
   });
 
   test('track', async () => {
@@ -93,5 +103,17 @@ describe('@/analytics', () => {
     expect(analytics.client.track).not.toHaveBeenCalled();
     expect(analytics.client.identify).not.toHaveBeenCalled();
     expect(analytics.client.screen).not.toHaveBeenCalled();
+  });
+
+  test('initializes AppsFlyer after re-enabling analytics', () => {
+    mockDeviceGet.mockReturnValue(true);
+
+    const analytics = new Analytics();
+    const appsFlyer = getLatestAppsFlyerInstance();
+
+    analytics.init({ deviceId: 'test-device' });
+    analytics.enable();
+
+    expect(appsFlyer.init).toHaveBeenCalledTimes(1);
   });
 });
