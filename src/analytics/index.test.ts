@@ -15,7 +15,7 @@ jest.mock('@/storage', () => ({
 }));
 
 jest.mock('@/analytics/appsflyer', () => ({
-  initAppsFlyer: jest.fn(),
+  AppsFlyer: jest.fn().mockImplementation(() => ({ init: jest.fn() })),
 }));
 
 jest.mock('@rudderstack/rudder-sdk-react-native', () => ({

@@ -4,7 +4,7 @@ import rudderClient from '@rudderstack/rudder-sdk-react-native';
 import * as DeviceInfo from 'react-native-device-info';
 import { REACT_NATIVE_RUDDERSTACK_WRITE_KEY, RUDDERSTACK_DATA_PLANE_URL } from 'react-native-dotenv';
 
-import { initAppsFlyer } from '@/analytics/appsflyer';
+import { AppsFlyer } from '@/analytics/appsflyer';
 import { event, type EventProperties } from '@/analytics/event';
 import { type UserProperties } from '@/analytics/userProperties';
 import { IS_TEST } from '@/env';
@@ -27,6 +27,7 @@ export class Analytics {
   client = rudderClient;
   event = event;
 
+  private appsFlyer = new AppsFlyer();
   private disabled: boolean;
   private initPromise: Promise<void> | null = null;
   private pending: (() => void)[] = [];
@@ -63,7 +64,7 @@ export class Analytics {
     if (this.disabled) return;
     logger.debug('[Analytics]: Initialized with deviceId');
     this.ensureInit();
-    initAppsFlyer();
+    this.appsFlyer.init();
   }
 
   /**
