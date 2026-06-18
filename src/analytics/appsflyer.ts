@@ -33,7 +33,7 @@ export class AppsFlyer {
     appsFlyerClient.initSdk(
       this.options,
       () => logger.debug('[Analytics] AppsFlyer initialized'),
-      error => logger.warn('[Analytics]: AppsFlyer initialization failed', { error })
+      error => logger.warn('[Analytics] AppsFlyer initialization failed', { error })
     );
   }
 }
