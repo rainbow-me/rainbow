@@ -9123,6 +9123,7 @@ __metadata:
     react-native-actionsheet: "npm:2.4.2"
     react-native-aes-crypto: "rainbow-me/react-native-aes#65c49f7e70266615b2999eaa7db654d3fe4f2e3b"
     react-native-animateable-text: "npm:0.16.0-beta.0"
+    react-native-appsflyer: "npm:6.18.0"
     react-native-ble-plx: "npm:3.4.0"
     react-native-blur-view: "christianbaroni/react-native-blur-view#2548117e37750f2c08ef0ec8c7e1c38e1294c9a8"
     react-native-bootsplash: "npm:6.3.7"
@@ -22103,6 +22104,13 @@ __metadata:
     react-native: ">=0.74.0"
     react-native-reanimated: ">=3"
   checksum: 10c0/29399df6e3bd095358e0e57ae9a701274c9e6814ac9f2fa4999caa21b6933458b24c94cf4816bbbebacb25e0b150aadf75e85e90b4414f936f4fd631cb52c53d
+  languageName: node
+  linkType: hard
+
+"react-native-appsflyer@npm:6.18.0":
+  version: 6.18.0
+  resolution: "react-native-appsflyer@npm:6.18.0"
+  checksum: 10c0/8a11f566686aab7551e0a71fcdda1c7f58a478ade736f328df0dc707be81787424f79386d948b406ab3215dd9e3bbb5a3999bf957a4f029b4c10e9dbd4b67561
   languageName: node
   linkType: hard
 

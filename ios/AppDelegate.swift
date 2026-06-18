@@ -31,6 +31,9 @@ class AppDelegate: ExpoAppDelegate, UNUserNotificationCenterDelegate {
     NSLog("Rainbow internals are \(internalsStatus).")
 
     FirebaseApp.configure()
+
+    // AppsFlyer owns SKAN; opt Branch out before initSession.
+    Branch.getInstance().disableAdNetworkCallouts(true)
     RNBranch.initSession(launchOptions: launchOptions, isReferrable: true)
 
     UNUserNotificationCenter.current().delegate = self

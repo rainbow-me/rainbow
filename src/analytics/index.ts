@@ -4,6 +4,7 @@ import rudderClient from '@rudderstack/rudder-sdk-react-native';
 import * as DeviceInfo from 'react-native-device-info';
 import { REACT_NATIVE_RUDDERSTACK_WRITE_KEY, RUDDERSTACK_DATA_PLANE_URL } from 'react-native-dotenv';
 
+import { AppsFlyer } from '@/analytics/appsflyer';
 import { event, type EventProperties } from '@/analytics/event';
 import { type UserProperties } from '@/analytics/userProperties';
 import { IS_TEST } from '@/env';
@@ -22,10 +23,13 @@ type DefaultMetadata = {
   device_model?: string;
 };
 
+type ExternalIds = { externalId?: { id: string; type: string }[] };
+
 export class Analytics {
   client = rudderClient;
   event = event;
 
+  private appsFlyer = new AppsFlyer();
   private disabled: boolean;
   private initPromise: Promise<void> | null = null;
   private pending: (() => void)[] = [];
@@ -97,7 +101,8 @@ export class Analytics {
   track<T extends keyof EventProperties>(event: T, params?: EventProperties[T], walletContext?: WalletContext): void {
     if (this.disabled) return;
     const metadata = this.getDefaultMetadata();
-    this.enqueue(() => this.client.track(event, { ...metadata, ...walletContext, ...params }));
+    const externalIds = this.getExternalIds();
+    this.enqueue(() => this.client.track(event, { ...metadata, ...walletContext, ...params }, externalIds));
   }
 
   /**
@@ -116,6 +121,7 @@ export class Analytics {
   enable(): void {
     if (!this.disabled) return;
     this.disabled = false;
+    this.appsFlyer.stop(false);
     this.ensureInit();
   }
 
@@ -124,6 +130,7 @@ export class Analytics {
    */
   disable(): void {
     this.disabled = true;
+    this.appsFlyer.stop(true);
   }
 
   private getDefaultMetadata(): DefaultMetadata {
@@ -141,8 +148,15 @@ export class Analytics {
     return metadata;
   }
 
+  private getExternalIds(): ExternalIds {
+    const uid = this.appsFlyer.uid;
+    return uid ? { externalId: [{ type: 'appsflyerExternalId', id: uid }] } : {};
+  }
+
   private ensureInit(): void {
     if (this.disabled || this.initPromise) return;
+
+    this.appsFlyer.init(this.deviceId);
 
     this.initPromise = this.client
       .setup(REACT_NATIVE_RUDDERSTACK_WRITE_KEY, {
