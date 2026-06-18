@@ -18,9 +18,13 @@ export const branchListener = async (handleOpenLinkingURL: (url: string) => void
    */
   const unsubscribe = branch.subscribe(({ error, params, uri }) => {
     if (error) {
-      const isNetworkNoise = error.includes('poor network connectivity') || error.includes('Trouble reaching the Branch servers');
-      if (isNetworkNoise) {
-        logger.debug(`[branchListener]: network noise`, { error }, logger.DebugContext.deeplinks);
+      const isNoise =
+        error.includes('poor network connectivity') ||
+        error.includes('Trouble reaching the Branch servers') ||
+        error.includes('Request to Branch server timed out') || // init timeout
+        error.includes('Session initialization already happened'); // benign re-foreground re-init
+      if (isNoise) {
+        logger.debug(`[branchListener]: error (noise)`, { error }, logger.DebugContext.deeplinks);
       } else {
         logger.warn(`[branchListener]: error when handling event`, { error });
       }
