@@ -118,6 +118,7 @@ export class Analytics {
   enable(): void {
     if (!this.disabled) return;
     this.disabled = false;
+    this.appsFlyer.stop(false);
     this.ensureInit();
   }
 
@@ -126,6 +127,7 @@ export class Analytics {
    */
   disable(): void {
     this.disabled = true;
+    this.appsFlyer.stop(true);
   }
 
   private getDefaultMetadata(): DefaultMetadata {

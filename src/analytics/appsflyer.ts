@@ -20,6 +20,10 @@ export const defaultOptions: InitSDKOptions = {
 export class AppsFlyer {
   constructor(private readonly options: InitSDKOptions = defaultOptions) {}
 
+  stop(isStopped: boolean): void {
+    appsFlyerClient.stop(isStopped);
+  }
+
   init(): void {
     if (!this.options.devKey) {
       logger.warn('[Analytics] AppsFlyer dev key missing; skipping AppsFlyer init');

@@ -17,7 +17,10 @@ jest.mock('@/storage', () => ({
 }));
 
 jest.mock('@/analytics/appsflyer', () => ({
-  AppsFlyer: jest.fn().mockImplementation(() => ({ init: jest.fn() })),
+  AppsFlyer: jest.fn().mockImplementation(() => ({
+    init: jest.fn(),
+    stop: jest.fn(),
+  })),
 }));
 
 jest.mock('@rudderstack/rudder-sdk-react-native', () => ({
@@ -30,10 +33,11 @@ jest.mock('@rudderstack/rudder-sdk-react-native', () => ({
 const flushPromises = () => new Promise(resolve => setImmediate(resolve));
 const mockAppsFlyerClass = AppsFlyer as jest.MockedClass<typeof AppsFlyer>;
 const mockDeviceGet = device.get as jest.Mock;
+type MockAppsFlyer = { init: jest.Mock; stop: jest.Mock };
 
-function getLatestAppsFlyerInstance(): { init: jest.Mock } {
+function getLatestAppsFlyerInstance(): MockAppsFlyer {
   const latestInstance = mockAppsFlyerClass.mock.results.at(-1)?.value;
-  return latestInstance as { init: jest.Mock };
+  return latestInstance as MockAppsFlyer;
 }
 
 describe('@/analytics', () => {
@@ -103,6 +107,7 @@ describe('@/analytics', () => {
     expect(analytics.client.track).not.toHaveBeenCalled();
     expect(analytics.client.identify).not.toHaveBeenCalled();
     expect(analytics.client.screen).not.toHaveBeenCalled();
+    expect(getLatestAppsFlyerInstance().stop).toHaveBeenCalledWith(true);
   });
 
   test('initializes AppsFlyer after re-enabling analytics', () => {
@@ -114,6 +119,7 @@ describe('@/analytics', () => {
     analytics.init({ deviceId: 'test-device' });
     analytics.enable();
 
+    expect(appsFlyer.stop).toHaveBeenCalledWith(false);
     expect(appsFlyer.init).toHaveBeenCalledTimes(1);
   });
 });
