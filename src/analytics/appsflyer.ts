@@ -4,7 +4,7 @@ import appsFlyer from 'react-native-appsflyer';
 import { APPSFLYER_DEV_KEY } from 'react-native-dotenv';
 
 import { IS_DEV } from '@/env';
-import { logger, RainbowError } from '@/logger';
+import { logger } from '@/logger';
 
 const APPSFLYER_IOS_APP_ID = '1457119021';
 
@@ -24,6 +24,6 @@ export function initAppsFlyer(): void {
       timeToWaitForATTUserAuthorization: 0,
     },
     () => logger.debug('[Analytics] AppsFlyer initialized'),
-    error => logger.error(new RainbowError('[Analytics]: AppsFlyer initialization failed', error))
+    error => logger.warn('[Analytics]: AppsFlyer initialization failed', { error })
   );
 }
