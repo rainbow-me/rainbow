@@ -18,21 +18,31 @@ export const defaultOptions: InitSDKOptions = {
 };
 
 export class AppsFlyer {
+  uid?: string;
+
   constructor(private readonly options: InitSDKOptions = defaultOptions) {}
 
   stop(isStopped: boolean): void {
     appsFlyerClient.stop(isStopped);
   }
 
-  init(): void {
+  init(cuid?: string): void {
     if (!this.options.devKey) {
       logger.warn('[Analytics] AppsFlyer dev key missing; skipping AppsFlyer init');
       return;
     }
 
+    if (cuid) appsFlyerClient.setCustomerUserId(cuid);
+
     appsFlyerClient.initSdk(
       this.options,
-      () => logger.debug('[Analytics] AppsFlyer initialized'),
+      () => {
+        logger.debug('[Analytics] AppsFlyer initialized');
+        appsFlyerClient.getAppsFlyerUID((error, uid) => {
+          if (uid) this.uid = uid;
+          else logger.warn('[Analytics] AppsFlyer ID unavailable', { error });
+        });
+      },
       error => logger.warn('[Analytics] AppsFlyer initialization failed', { error })
     );
   }
