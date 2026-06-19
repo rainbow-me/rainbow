@@ -18,7 +18,7 @@ import { useNavigation } from '@/navigation/Navigation';
 import Routes from '@/navigation/routesNames';
 import { padding, position } from '@/styles';
 import { useTheme, type ThemeContextProps } from '@/theme/ThemeContext';
-import ShadowStack from 'react-native-shadow-stack';
+import { ShadowStack } from '@/vendor/react-native-shadow-stack';
 
 import ShimmerAnimation from '../../animations/ShimmerAnimation';
 import { Centered, InnerBorder } from '../../layout';

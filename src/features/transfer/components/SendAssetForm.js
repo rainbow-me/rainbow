@@ -10,10 +10,10 @@ import { Text } from '@/components/text';
 import styled from '@/framework/ui/styled-thing';
 import { assetIsUniqueAsset } from '@/handlers/web3';
 import useDimensions from '@/hooks/useDimensions';
-import ShadowStack from '@/react-native-shadow-stack';
 import { padding, position } from '@/styles';
 import { useTheme } from '@/theme/ThemeContext';
 import { NAVIGATION_BAR_HEIGHT } from '@/utils/deviceUtils';
+import { ShadowStack } from '@/vendor/react-native-shadow-stack';
 
 import { CollectiblesSendRow } from './CollectiblesSendRow';
 import { SendAssetFormCollectible } from './SendAssetFormCollectible';
