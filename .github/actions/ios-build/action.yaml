@@ -154,8 +154,6 @@ runs:
       shell: bash
       env:
         SSH_AUTH_SOCK: /tmp/ssh_agent_sandbox.sock
-        # TEMP: test against the sandbox RN 0.81 branch; remove before merging
-        SANDBOX_BRANCH: '@janic/rn-0.81'
       run: yarn install --immutable && yarn setup
 
     - name: Set up Ruby
