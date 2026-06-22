@@ -22,6 +22,7 @@
       android:icon="@mipmap/og"
       android:roundIcon="@mipmap/og_round"
       android:allowBackup="false"
+      tools:replace="android:allowBackup"
       android:theme="@style/BootTheme"
       android:usesCleartextTraffic="${usesCleartextTraffic}"
       android:networkSecurityConfig="@xml/network_security_config"

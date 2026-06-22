@@ -4,9 +4,9 @@ import { View } from 'react-native';
 import { ImgixImage } from '@/components/images';
 import { ChainImage } from '@/features/network/components/ChainImage';
 import styled from '@/framework/ui/styled-thing';
-import ShadowStack from '@/react-native-shadow-stack';
 import { position } from '@/styles';
 import { initials } from '@/utils/formatters';
+import { ShadowStack } from '@/vendor/react-native-shadow-stack';
 
 import { useTheme } from '../../theme/ThemeContext';
 import { Centered } from '../layout';

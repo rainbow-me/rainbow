@@ -5,8 +5,8 @@ import { ImgixImage } from '@/components/images';
 import { useColorMode } from '@/design-system';
 import styled from '@/framework/ui/styled-thing';
 import { useAccountAccentColor } from '@/hooks/useAccountAccentColor';
-import ShadowStack from '@/react-native-shadow-stack';
 import { borders } from '@/styles';
+import { ShadowStack } from '@/vendor/react-native-shadow-stack';
 
 import { Centered } from '../layout';
 

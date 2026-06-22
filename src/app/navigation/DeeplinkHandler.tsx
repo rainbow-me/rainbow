@@ -7,9 +7,8 @@ import branch from 'react-native-branch';
 import handleDeeplink from '@/handlers/deeplinks';
 import { logger, RainbowError } from '@/logger';
 import { type InitialRoute } from '@/navigation/initialRoute';
+import { useWalletsStore } from '@/state/wallets/walletsStore';
 import { branchListener } from '@/utils/branch';
-
-import { useWalletsStore } from '../state/wallets/walletsStore';
 
 type DeeplinkHandlerProps = {
   initialRoute: InitialRoute;

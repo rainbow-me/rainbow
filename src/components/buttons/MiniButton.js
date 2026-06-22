@@ -2,8 +2,8 @@ import React from 'react';
 import { Platform, View } from 'react-native';
 
 import styled from '@/framework/ui/styled-thing';
-import ShadowStack from '@/react-native-shadow-stack';
 import { padding, position } from '@/styles';
+import { ShadowStack } from '@/vendor/react-native-shadow-stack';
 
 import { darkModeThemeColors, lightModeThemeColors } from '../../styles/colors';
 import { useTheme } from '../../theme/ThemeContext';

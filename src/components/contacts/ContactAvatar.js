@@ -4,9 +4,9 @@ import { Platform } from 'react-native';
 import { toUpper } from 'lodash';
 
 import { useColorMode } from '@/design-system';
-import ShadowStack from '@/react-native-shadow-stack';
 import { borders } from '@/styles';
 import { getFirstGrapheme } from '@/utils/formatters';
+import { ShadowStack } from '@/vendor/react-native-shadow-stack';
 
 import { darkModeThemeColors } from '../../styles/colors';
 import { useTheme } from '../../theme/ThemeContext';

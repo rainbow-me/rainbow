@@ -6,8 +6,8 @@ import styled from '@/framework/ui/styled-thing';
 import { opacity } from '@/framework/ui/utils/opacity';
 import { cloudBackupPasswordMinLength } from '@/handlers/cloudBackup';
 import useDimensions from '@/hooks/useDimensions';
-import ShadowStack from '@/react-native-shadow-stack';
 import { padding, position } from '@/styles';
+import { ShadowStack } from '@/vendor/react-native-shadow-stack';
 
 import { useTheme, type ThemeContextProps } from '../../theme/ThemeContext';
 import { Icon } from '../icons';

@@ -23,6 +23,16 @@ jest.mock('@rudderstack/rudder-sdk-react-native', () => ({
   setup: jest.fn(),
 }));
 
+jest.mock('react-native-appsflyer', () => ({
+  __esModule: true,
+  default: {
+    initSdk: jest.fn((_options, successC) => successC && successC('success')),
+    logEvent: jest.fn(),
+    setCustomerUserId: jest.fn(),
+    getAppsFlyerUID: jest.fn(cb => cb && cb(null, 'mock-appsflyer-id')),
+  },
+}));
+
 jest.mock('@sentry/react-native', () => ({
   captureException: () => null,
 }));
