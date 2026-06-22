@@ -6,7 +6,7 @@ import { analytics } from '@/analytics';
 import { IS_TEST } from '@/env';
 import { useTheme } from '@/theme/ThemeContext';
 
-import Fallback from './Fallback';
+import { Fallback } from './Fallback';
 
 const NoErrorBoundary = ({ children }: { children: React.ReactNode }) => children;
 
@@ -39,6 +39,4 @@ const ErrorBoundaryWithSentry = ({ children }: { children: React.ReactNode }) =>
   );
 };
 
-const ErrorBoundaryForEnvironment = IS_TEST ? NoErrorBoundary : ErrorBoundaryWithSentry;
-
-export default ErrorBoundaryForEnvironment;
+export const ErrorBoundary = IS_TEST ? NoErrorBoundary : ErrorBoundaryWithSentry;
