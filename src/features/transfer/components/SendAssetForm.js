@@ -96,6 +96,7 @@ export function SendAssetForm({
 
   return (
     <KeyboardAwareScrollView
+      mode="layout"
       contentContainerStyle={{ flexGrow: 1 }}
       keyboardShouldPersistTaps="always"
       extraKeyboardSpace={isIOS26OrHigher ? IOS_26_FOOTER_HEIGHT : Platform.OS === 'ios' ? 0 : -NAVIGATION_BAR_HEIGHT}

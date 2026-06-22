@@ -24,6 +24,7 @@
       android:allowBackup="false"
       tools:replace="android:allowBackup"
       android:theme="@style/BootTheme"
+      android:usesCleartextTraffic="${usesCleartextTraffic}"
       android:networkSecurityConfig="@xml/network_security_config"
       android:requestLegacyExternalStorage="true"
       android:resizeableActivity="false"
@@ -51,7 +52,7 @@
         android:exported="true"
         android:configChanges="keyboard|keyboardHidden|orientation|screenSize|smallestScreenSize|uiMode"
         android:launchMode="singleTask"
-        android:windowSoftInputMode="adjustPan">
+        android:windowSoftInputMode="adjustResize">
         <intent-filter>
             <category android:name="android.intent.category.LAUNCHER" />
             <action android:name="android.intent.action.DOWNLOAD_COMPLETE"/>

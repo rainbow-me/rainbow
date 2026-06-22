@@ -1,3 +1,30 @@
+# PATCH CONTEXT
+# Why: RN 0.81 changed the return type of
+#   getExportedCustomDirectEventTypeConstants from MutableMap to
+#   Map. Without this patch PerformanceMarker fails to compile on
+#   Android because the override signature no longer matches the
+#   supertype. (A second hunk patches BlankAreaEvent for an
+#   unrelated RN 0.74 change and predates this PR.)
+# Upstream Issue: none — @shopify/react-native-performance is
+#   deprecated by Shopify, no plans for RN 0.81 support.
+# Linear Issue: FEPLAT-94
+# Remove when: library replaced. PoCs in rainbow-me/rainbow#7424
+#   (RN built-in performance.rnStartupTiming) and #7426 (Sentry
+#   auto-instrumentation).
+
+diff --git a/node_modules/@shopify/react-native-performance/android/src/main/kotlin/com/shopify/reactnativeperformance/PerformanceMarker.kt b/node_modules/@shopify/react-native-performance/android/src/main/kotlin/com/shopify/reactnativeperformance/PerformanceMarker.kt
+index 19b8fb4..9096d34 100644
+--- a/node_modules/@shopify/react-native-performance/android/src/main/kotlin/com/shopify/reactnativeperformance/PerformanceMarker.kt
++++ b/node_modules/@shopify/react-native-performance/android/src/main/kotlin/com/shopify/reactnativeperformance/PerformanceMarker.kt
+@@ -121,7 +121,7 @@ class PerformanceMarkerManager : SimpleViewManager<PerformanceMarker>() {
+         view.componentInstanceId = componentInstanceId
+     }
+
+-    override fun getExportedCustomDirectEventTypeConstants(): MutableMap<String, Any> {
++    override fun getExportedCustomDirectEventTypeConstants(): Map<String, Any> {
+         return MapBuilder.builder<String, Any>().put(
+                 "onRenderComplete",
+                 MapBuilder.of(
 diff --git a/node_modules/@shopify/react-native-performance/android/src/main/kotlin/com/shopify/reactnativeperformance/ReactNativePerformanceModule.kt b/node_modules/@shopify/react-native-performance/android/src/main/kotlin/com/shopify/reactnativeperformance/ReactNativePerformanceModule.kt
 index 13fa3f6..6f9879c 100644
 --- a/node_modules/@shopify/react-native-performance/android/src/main/kotlin/com/shopify/reactnativeperformance/ReactNativePerformanceModule.kt
@@ -17,7 +44,7 @@ index db07d54..a0f43e2 100644
 @@ -26,6 +26,10 @@ class ReactNativePerformanceModule: NSObject {
          resolve(NSUUID().uuidString)
      }
- 
+
 +    @objc func constantsToExport() -> [String: Any] {
 +        return ["startupTimestamp": String(ReactNativePerformance.startupTimestamp())]
 +    }

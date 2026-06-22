@@ -1,3 +1,18 @@
+# PATCH CONTEXT
+# Why: Three Android-only behaviors missing upstream that already
+#   exist on iOS — adds Kotlin parity:
+#     1. MenuViewModule.dismiss() so JS can close the menu
+#        programmatically.
+#     2. `disabled` prop support for individual menu items.
+#     3. Modal tracking so opening a second menu auto-dismisses
+#        the first instead of stacking.
+# Upstream Issue: none filed yet — partly covered by the closed
+#   react-native-menu/menu#57 "Destructive, Hidden, Disabled"
+#   thread.
+# Linear Issue: FEPLAT-95
+# Remove when: upstream PR merged and @react-native-menu/menu
+#   released with the additions (likely a 2.x minor bump).
+
 diff --git a/node_modules/@react-native-menu/menu/android/src/main/java/com/reactnativemenu/MenuPackage.kt b/node_modules/@react-native-menu/menu/android/src/main/java/com/reactnativemenu/MenuPackage.kt
 index 81b77bf..858a0e6 100644
 --- a/node_modules/@react-native-menu/menu/android/src/main/java/com/reactnativemenu/MenuPackage.kt
