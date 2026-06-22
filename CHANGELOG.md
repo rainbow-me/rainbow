@@ -21,6 +21,43 @@ and this project adheres to [Semantic Versioning](http://semver.org/)
 
 ### Testing
 
+## [2.0.36](https://github.com/rainbow-me/rainbow/releases/tag/v2.0.36)
+
+### Added
+
+- Add Cash Deposits intro panel entry point (APP-3775) (https://github.com/rainbow-me/rainbow/pull/7556)
+- Add Add Cash screen and routing based on user's ramp status (https://github.com/rainbow-me/rainbow/pull/7558)
+- Add custom amount view with keypad (https://github.com/rainbow-me/rainbow/pull/7568)
+- Add USD and token amounts to the Sent transaction event (https://github.com/rainbow-me/rainbow/pull/7587)
+- Add AppsFlyer SDK for install attribution (https://github.com/rainbow-me/rainbow/pull/7601)
+
+### Changed
+
+- Remove unused LoadingState component (https://github.com/rainbow-me/rainbow/pull/7573)
+- Remove unused timestampsCalculation (https://github.com/rainbow-me/rainbow/pull/7575)
+- Remove unused revoke-approval helpers and rap types (https://github.com/rainbow-me/rainbow/pull/7576)
+- Remove unused AnimatedScrollView and props allowlists (https://github.com/rainbow-me/rainbow/pull/7577)
+- Bump iOS and Android to v2.0.36 (https://github.com/rainbow-me/rainbow/pull/7585)
+- Extract currency domain from perps and legacy helpers (https://github.com/rainbow-me/rainbow/pull/7584)
+- Dedupe runtime helpers across the production bundle (https://github.com/rainbow-me/rainbow/pull/7588)
+- Bump webview fork to include the blocked-nav host callback (https://github.com/rainbow-me/rainbow/pull/7589)
+- Consolidate keychain and device auth into a local-auth domain (https://github.com/rainbow-me/rainbow/pull/7590)
+- Rename legacy third-party fiat on-ramp flow (https://github.com/rainbow-me/rainbow/pull/7583)
+- Move NumberPad into shared components (https://github.com/rainbow-me/rainbow/pull/7567)
+- Remove dead CodePush/AppCenter env vars (https://github.com/rainbow-me/rainbow/pull/7597)
+- Rename the send domain to transfer (https://github.com/rainbow-me/rainbow/pull/7593)
+- Introduce network domain for related files (https://github.com/rainbow-me/rainbow/pull/7591)
+- Move send flow components into the transfer domain (https://github.com/rainbow-me/rainbow/pull/7594)
+- Finish consolidating the send flow into the transfer domain (https://github.com/rainbow-me/rainbow/pull/7595)
+- Convert the transfer domain to named exports (https://github.com/rainbow-me/rainbow/pull/7596)
+- Move EIP-681 send launcher into the transfer domain (https://github.com/rainbow-me/rainbow/pull/7598)
+- Move network chain metadata into new domain module (https://github.com/rainbow-me/rainbow/pull/7592)
+
+### Fixed
+
+- Fix consistent league slug grouping and filtering (https://github.com/rainbow-me/rainbow/pull/7599)
+- Use the project-pinned Node version in Xcode builds (https://github.com/rainbow-me/rainbow/pull/7600)
+
 ## [2.0.35](https://github.com/rainbow-me/rainbow/releases/tag/v2.0.35)
 
 ### Added
