@@ -14,12 +14,12 @@ import { opacity } from '@/framework/ui/utils/opacity';
 import useDimensions from '@/hooks/useDimensions';
 import * as i18n from '@/languages';
 import Routes from '@/navigation/routesNames';
-import ShadowStack from '@/react-native-shadow-stack';
 import { getIsDamagedWallet, useAccountAddress } from '@/state/wallets/walletsStore';
 import { padding, position } from '@/styles';
 import deviceUtils from '@/utils/deviceUtils';
 import magicMemo from '@/utils/magicMemo';
 import { openInBrowser } from '@/utils/openInBrowser';
+import { ShadowStack } from '@/vendor/react-native-shadow-stack';
 
 import networkInfo from '../helpers/networkInfo';
 import { useNavigation } from '../navigation/Navigation';

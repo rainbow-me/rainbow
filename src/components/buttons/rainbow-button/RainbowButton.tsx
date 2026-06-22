@@ -7,8 +7,8 @@ import { ImgixImage } from '@/components/images';
 import styled from '@/framework/ui/styled-thing';
 import useDimensions from '@/hooks/useDimensions';
 import * as i18n from '@/languages';
-import ShadowView from '@/react-native-shadow-stack/ShadowView';
 import { position, shadow } from '@/styles';
+import { ShadowView } from '@/vendor/react-native-shadow-stack';
 
 import AddCashIconSource from '../../../assets/addCashIcon.png';
 import { useTheme } from '../../../theme/ThemeContext';

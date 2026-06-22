@@ -492,7 +492,6 @@
       "rainbow-scripts/**/*.*",
       "src/react-native-animated-charts/**/*.*",
       "src/react-native-cool-modals/**/*.*",
-      "src/react-native-shadow-stack/**/*.*",
       "src/vendor/**/*.*"
     ]
   }

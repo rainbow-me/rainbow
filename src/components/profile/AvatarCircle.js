@@ -6,9 +6,9 @@ import styled from '@/framework/ui/styled-thing';
 import { opacity } from '@/framework/ui/utils/opacity';
 import useLatestCallback from '@/hooks/useLatestCallback';
 import useOnAvatarPress from '@/hooks/useOnAvatarPress';
-import ShadowStack from '@/react-native-shadow-stack';
 import { useAccountProfileInfo } from '@/state/wallets/walletsStore';
 import { position } from '@/styles';
+import { ShadowStack } from '@/vendor/react-native-shadow-stack';
 
 import { useTheme } from '../../theme/ThemeContext';
 import ButtonPressAnimation from '../animations/ButtonPressAnimation';

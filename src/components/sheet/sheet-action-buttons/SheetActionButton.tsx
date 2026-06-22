@@ -6,9 +6,9 @@ import { LinearGradient } from 'expo-linear-gradient';
 import styled from '@/framework/ui/styled-thing';
 import { opacity } from '@/framework/ui/utils/opacity';
 import { containsEmoji } from '@/helpers/strings';
-import ShadowStack from '@/react-native-shadow-stack';
 import { position } from '@/styles';
 import { useTheme, type ThemeContextProps } from '@/theme/ThemeContext';
+import { ShadowStack } from '@/vendor/react-native-shadow-stack';
 
 import ButtonPressAnimation from '../../animations/ButtonPressAnimation';
 import { Icon } from '../../icons';

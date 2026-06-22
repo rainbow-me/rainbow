@@ -18,7 +18,6 @@ module.exports = {
     '^@rainbow-me/(.*)$',
     '^logger$',
     '^react-native-cool-modals$',
-    '^react-native-shadow-stack$',
     '',
     '^[.]',
   ],

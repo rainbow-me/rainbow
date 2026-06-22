@@ -3,10 +3,10 @@ import { Platform } from 'react-native';
 
 import styled from '@/framework/ui/styled-thing';
 import { opacity } from '@/framework/ui/utils/opacity';
-import ShadowStack from '@/react-native-shadow-stack';
 import { borders, position } from '@/styles';
 import magicMemo from '@/utils/magicMemo';
 import safeAreaInsetValues from '@/utils/safeAreaInsetValues';
+import { ShadowStack } from '@/vendor/react-native-shadow-stack';
 
 import { darkModeThemeColors } from '../../styles/colors';
 import { useTheme } from '../../theme/ThemeContext';

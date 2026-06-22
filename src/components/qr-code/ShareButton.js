@@ -3,7 +3,7 @@ import { Share } from 'react-native';
 
 import styled from '@/framework/ui/styled-thing';
 import * as i18n from '@/languages';
-import ShadowStack from '@/react-native-shadow-stack';
+import { ShadowStack } from '@/vendor/react-native-shadow-stack';
 
 import { useTheme } from '../../theme/ThemeContext';
 import ButtonPressAnimation from '../animations/ButtonPressAnimation';
