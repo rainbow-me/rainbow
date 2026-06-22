@@ -13,7 +13,10 @@
       "Bash(grep:*)",
       "Bash(npm view:*)",
       "Bash(yarn graphql-codegen:*)",
-      "Bash(yarn lint:*)"
+      "Bash(yarn lint:*)",
+      "Bash(mkdir -p .claude/hooks)",
+      "Bash(cat)",
+      "Bash(chmod +x .claude/hooks/session-start.sh)"
     ],
     "deny": []
   }
