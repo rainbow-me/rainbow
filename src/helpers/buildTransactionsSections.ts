@@ -50,10 +50,11 @@ export function buildTransactionsSections({
   for (const transaction of transactions) {
     const timestampMs = transactionTimestampMs(transaction);
     let newestTimestampMs = timestampMs ?? 0;
-    let rank = SectionRank.Pending;
+    let rank: SectionRank;
     let title: string;
 
     if (transaction.status === TransactionStatus.pending) {
+      rank = SectionRank.Pending;
       title = i18n.t(i18n.l.transactions.pending_title);
     } else {
       if (timestampMs === null) continue;
