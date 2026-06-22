@@ -1,7 +1,7 @@
-import { useCallback, useEffect, useRef } from 'react';
+import { useCallback } from 'react';
 
 import { time } from '@/framework/core/utils/time';
-import { logger, RainbowError } from '@/logger';
+import { useWatcher } from '@/framework/ui/hooks/useWatcher';
 
 interface UseTransactionWatcherProps<T> {
   interval?: number;
@@ -9,54 +9,17 @@ interface UseTransactionWatcherProps<T> {
   watchFunction: (transactions: T[], abortController: AbortController) => Promise<void>;
 }
 
+/**
+ * Watches a set of transactions: polls `watchFunction` with the latest `transactions` while there
+ * are any, stopping when the set empties. A thin wrapper over `useWatcher`.
+ */
 export function useTransactionWatcher<T>({ interval = time.seconds(1), transactions, watchFunction }: UseTransactionWatcherProps<T>) {
-  const abortRef = useRef<AbortController | null>(null);
-  const timeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
-  const transactionsRef = useRef<T[]>(transactions);
-
-  transactionsRef.current = transactions;
-
-  const runWatcher = useCallback(
-    async (abortController: AbortController) => {
-      if (abortController.signal.aborted) return;
-
-      const currentTransactions = transactionsRef.current;
-      if (currentTransactions.length) {
-        try {
-          await watchFunction(currentTransactions, abortController);
-        } catch (e) {
-          if (!abortController.signal.aborted) logger.error(new RainbowError('[useTransactionWatcher]: Error watching transactions', e));
-        }
-      }
-
-      if (!abortController.signal.aborted) {
-        timeoutRef.current = setTimeout(() => runWatcher(abortController), interval);
-      }
-    },
-    [interval, watchFunction]
-  );
-
-  useEffect(() => {
-    if (timeoutRef.current) {
-      clearTimeout(timeoutRef.current);
-      timeoutRef.current = null;
-    }
-    abortRef.current?.abort();
-
-    if (!transactions.length) return;
-
-    const controller = new AbortController();
-    abortRef.current = controller;
-
-    runWatcher(controller);
-
-    return () => {
-      if (timeoutRef.current) {
-        clearTimeout(timeoutRef.current);
-        timeoutRef.current = null;
-      }
-      controller.abort();
-      abortRef.current = null;
-    };
-  }, [interval, runWatcher, transactions]);
+  useWatcher({
+    enabled: transactions.length > 0,
+    interval,
+    watchFunction: useCallback(
+      (abortController: AbortController) => watchFunction(transactions, abortController),
+      [watchFunction, transactions]
+    ),
+  });
 }
