@@ -62,9 +62,9 @@ export function createSelectorReadTracker<Key extends string | number>(): Select
     if (didInstall) throw new Error('[createSelectorReadTracker] Tracker is already installed');
     didInstall = true;
 
-    const originalSubscribe: SubscribeOverloads<S, true> = store.subscribe;
+    const originalSubscribe: SubscribeOverloads<S> = store.subscribe;
 
-    store.subscribe = (...args: SubscribeArgs<S>): UnsubscribeFn<true> => {
+    store.subscribe = (...args: SubscribeArgs<S>): UnsubscribeFn => {
       if (args.length === 1) return originalSubscribe(args[0]);
 
       const [selector, listener, options] = args;
@@ -74,11 +74,10 @@ export function createSelectorReadTracker<Key extends string | number>(): Select
       const unsubscribe = originalSubscribe(trackedSelector.select, listener, options);
 
       let didUnsubscribe = false;
-      return skipAbortFetch => {
+      return () => {
         if (didUnsubscribe) return;
         didUnsubscribe = true;
-
-        unsubscribe(skipAbortFetch);
+        unsubscribe();
         trackedSelector.release();
       };
     };
