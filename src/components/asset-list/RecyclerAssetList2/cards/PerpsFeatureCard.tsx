@@ -8,12 +8,12 @@ import infinityIcon from '@/assets/infinity.png';
 import ButtonPressAnimation from '@/components/animations/ButtonPressAnimation';
 import { GradientBorderView } from '@/components/gradient-border/GradientBorderView';
 import { AccentColorProvider, Box, Inline, Stack, Text, TextIcon, useColorMode } from '@/design-system';
+import { useRemoteConfig } from '@/features/config/stores/remoteConfig';
 import { usePerpsFeatureCard } from '@/features/perps/hooks/usePerpsFeatureCard';
 import { navigateToPerps } from '@/features/perps/utils/navigateToPerps';
 import { opacity } from '@/framework/ui/utils/opacity';
 import { useAccountAccentColor } from '@/hooks/useAccountAccentColor';
 import * as i18n from '@/languages';
-import { useRemoteConfig } from '@/model/remoteConfig';
 import { THICKER_BORDER_WIDTH } from '@/styles/constants';
 
 export const PERPS_FEATURE_CARD_HEIGHT = 92;

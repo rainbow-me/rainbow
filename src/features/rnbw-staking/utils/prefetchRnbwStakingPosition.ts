@@ -1,6 +1,6 @@
-import { RNBW_MEMBERSHIP } from '@/config/experimental';
-import { getExperimentalFlag } from '@/config/experimentalConfigStore';
-import { getRemoteConfig } from '@/model/remoteConfig';
+import { RNBW_MEMBERSHIP } from '@/features/config/constants/experimental';
+import { getExperimentalFlag } from '@/features/config/stores/experimentalConfigStore';
+import { getRemoteConfig } from '@/features/config/stores/remoteConfig';
 
 import { useStakingPositionStore } from '../stores/rnbwStakingPositionStore';
 

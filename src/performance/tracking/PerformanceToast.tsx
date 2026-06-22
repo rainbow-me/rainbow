@@ -3,11 +3,11 @@ import { Platform, StyleSheet, View } from 'react-native';
 
 import { toast } from 'sonner-native';
 
-import { PERFORMANCE_TOAST } from '@/config/experimental';
-import { getExperimentalFlag } from '@/config/experimentalConfigStore';
 import { globalColors } from '@/design-system';
 import { typeHierarchy } from '@/design-system/typography/typeHierarchy';
 import { IS_TEST } from '@/env';
+import { PERFORMANCE_TOAST } from '@/features/config/constants/experimental';
+import { getExperimentalFlag } from '@/features/config/stores/experimentalConfigStore';
 import { time } from '@/framework/core/utils/time';
 import { opacity } from '@/framework/ui/utils/opacity';
 import { getNumberFormatter } from '@/helpers/intl';

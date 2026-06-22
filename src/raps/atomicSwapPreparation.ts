@@ -2,10 +2,10 @@ import type { StaticJsonRpcProvider } from '@ethersproject/providers';
 import { type Address } from 'viem';
 
 import { isCrosschainQuote } from '@/__swaps__/utils/quotes';
+import { getRemoteConfig } from '@/features/config/stores/remoteConfig';
 import { SPONSORED_CALLS_REQUIREMENTS } from '@/features/delegation/calls';
 import { backendNetworksActions } from '@/features/network/stores/backendNetworksStore';
 import { type ChainId } from '@/features/network/types/backendNetworks';
-import { getRemoteConfig } from '@/model/remoteConfig';
 import { type Call } from '@rainbow-me/delegation';
 import { type CrosschainQuote, type Quote } from '@rainbow-me/swaps';
 

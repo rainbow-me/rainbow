@@ -5,9 +5,9 @@ import { format, formatDistanceStrict } from 'date-fns';
 
 import ButtonPressAnimation from '@/components/animations/ButtonPressAnimation';
 import { TokenInfoItem, TokenInfoValue } from '@/components/token-info';
-import { PROFILES } from '@/config/experimental';
-import useExperimentalFlag from '@/config/experimentalHooks';
 import { Column, Columns, Inset } from '@/design-system';
+import { PROFILES } from '@/features/config/constants/experimental';
+import { useExperimentalFlag } from '@/features/config/hooks/experimentalHooks';
 import * as i18n from '@/languages';
 import { useNavigation } from '@/navigation/Navigation';
 import Routes from '@/navigation/routesNames';

@@ -1,11 +1,11 @@
 import React from 'react';
 import { StyleSheet, View } from 'react-native';
 
-import { NFTS_ENABLED } from '@/config/experimental';
-import useExperimentalFlag from '@/config/experimentalHooks';
 import { useForegroundColor } from '@/design-system';
+import { NFTS_ENABLED } from '@/features/config/constants/experimental';
+import { useExperimentalFlag } from '@/features/config/hooks/experimentalHooks';
+import { useRemoteConfig } from '@/features/config/stores/remoteConfig';
 import { opacity } from '@/framework/ui/utils/opacity';
-import { useRemoteConfig } from '@/model/remoteConfig';
 import { useTheme } from '@/theme/ThemeContext';
 import deviceUtils from '@/utils/deviceUtils';
 

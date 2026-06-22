@@ -1,6 +1,6 @@
-import { CASH } from '@/config/experimental';
-import useExperimentalFlag from '@/config/experimentalHooks';
-import { useRemoteConfig } from '@/model/remoteConfig';
+import { CASH } from '@/features/config/constants/experimental';
+import { useExperimentalFlag } from '@/features/config/hooks/experimentalHooks';
+import { useRemoteConfig } from '@/features/config/stores/remoteConfig';
 
 /**
  * Cash is gated by the remote `cash_enabled` flag in production. The `CASH`

@@ -9,8 +9,6 @@ import { GestureHandlerButton } from '@/components/buttons/GestureHandlerButton'
 import { ContactAvatar } from '@/components/contacts';
 import ImageAvatar from '@/components/contacts/ImageAvatar';
 import { Navbar } from '@/components/navbar/Navbar';
-import { DEGEN_MODE } from '@/config/experimental';
-import useExperimentalFlag from '@/config/experimentalHooks';
 import {
   AnimatedText,
   Bleed,
@@ -23,9 +21,11 @@ import {
   useColorMode,
   useForegroundColor,
 } from '@/design-system';
+import { DEGEN_MODE } from '@/features/config/constants/experimental';
+import { useExperimentalFlag } from '@/features/config/hooks/experimentalHooks';
+import { useRemoteConfig } from '@/features/config/stores/remoteConfig';
 import { opacity } from '@/framework/ui/utils/opacity';
 import * as i18n from '@/languages';
-import { useRemoteConfig } from '@/model/remoteConfig';
 import { useNavigation } from '@/navigation/Navigation';
 import Routes from '@/navigation/routesNames';
 import { useAccountProfileInfo } from '@/state/wallets/walletsStore';

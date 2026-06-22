@@ -5,12 +5,12 @@ import Animated from 'react-native-reanimated';
 
 import { analytics } from '@/analytics';
 import { GestureHandlerButton } from '@/components/buttons/GestureHandlerButton';
-import { MINTS, NFTS_ENABLED } from '@/config/experimental';
-import useExperimentalFlag from '@/config/experimentalHooks';
 import { Box, Stack, Text, useColorMode } from '@/design-system';
+import { MINTS, NFTS_ENABLED } from '@/features/config/constants/experimental';
+import { useExperimentalFlag } from '@/features/config/hooks/experimentalHooks';
+import { useRemoteConfig } from '@/features/config/stores/remoteConfig';
 import { convertRawAmountToRoundedDecimal } from '@/helpers/utilities';
 import * as i18n from '@/languages';
-import { useRemoteConfig } from '@/model/remoteConfig';
 import { useMints } from '@/resources/mints';
 import { navigateToMintCollection } from '@/resources/reservoir/mints';
 import { useAccountAddress } from '@/state/wallets/walletsStore';

@@ -1,7 +1,7 @@
-import { RAINBOW_TOASTS } from '@/config/experimental';
-import useExperimentalFlag from '@/config/experimentalHooks';
 import { IS_TEST } from '@/env';
-import { useRemoteConfig } from '@/model/remoteConfig';
+import { RAINBOW_TOASTS } from '@/features/config/constants/experimental';
+import { useExperimentalFlag } from '@/features/config/hooks/experimentalHooks';
+import { useRemoteConfig } from '@/features/config/stores/remoteConfig';
 
 export const useRainbowToastEnabled = () => {
   const { rainbow_toasts_enabled } = useRemoteConfig('rainbow_toasts_enabled');

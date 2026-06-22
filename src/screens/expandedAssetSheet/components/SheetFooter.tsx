@@ -9,11 +9,11 @@ import { BuyActionButton, SwapActionButton } from '@/components/sheet';
 import { Box, ColorModeProvider, Column, Columns, useColorMode } from '@/design-system';
 import { globalColors, type ColorMode } from '@/design-system/color/palettes';
 import type { ParsedAddressAsset } from '@/entities/tokens';
+import { useRemoteConfig } from '@/features/config/stores/remoteConfig';
 import { useBackendNetworksStore } from '@/features/network/stores/backendNetworksStore';
 import { SendActionButton } from '@/features/transfer/components/SendActionButton';
 import { isTestnetChain } from '@/handlers/web3';
 import * as i18n from '@/languages';
-import { useRemoteConfig } from '@/model/remoteConfig';
 import { useUserAssetsStore } from '@/state/assets/userAssets';
 
 import { useExpandedAssetSheetContext } from '../context/ExpandedAssetSheetContext';

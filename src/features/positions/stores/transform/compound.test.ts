@@ -5,7 +5,7 @@ import { createMockPosition, createMockResponse, createMockStats } from '../../_
 import { DetailType, PositionName } from '../../types/generated/positions/positions';
 
 // Mock config to avoid React Native gesture handler imports
-jest.mock('@/config/experimentalConfigStore', () => ({
+jest.mock('@/features/config/stores/experimentalConfigStore', () => ({
   getExperimentalFlag: jest.fn(() => false),
 }));
 

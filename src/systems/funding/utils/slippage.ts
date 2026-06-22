@@ -1,6 +1,6 @@
 import { getDefaultSlippage } from '@/__swaps__/utils/swaps';
+import { getRemoteConfig } from '@/features/config/stores/remoteConfig';
 import { type ChainId } from '@/features/network/types/backendNetworks';
-import { getRemoteConfig } from '@/model/remoteConfig';
 
 export function resolveDefaultSlippage(chainId: ChainId): number {
   const slippageString = getDefaultSlippage(chainId, getRemoteConfig().default_slippage_bips_chainId);

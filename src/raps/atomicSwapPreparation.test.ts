@@ -20,7 +20,7 @@ jest.mock('@rainbow-me/delegation', () => ({
   },
 }));
 
-jest.mock('@/model/remoteConfig', () => ({
+jest.mock('@/features/config/stores/remoteConfig', () => ({
   getRemoteConfig: () => mockGetRemoteConfig(),
 }));
 

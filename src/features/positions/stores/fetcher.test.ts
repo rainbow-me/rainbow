@@ -1,7 +1,7 @@
 import { FIXTURE_LIST_POSITIONS_SUCCESS, FIXTURE_PARAMS } from '../__fixtures__/ListPositions';
 import { fetchPositions } from './fetcher';
 
-jest.mock('@/config/experimentalConfigStore', () => ({
+jest.mock('@/features/config/stores/experimentalConfigStore', () => ({
   getExperimentalFlag: jest.fn(() => false),
 }));
 jest.mock('./fetcher', () => ({

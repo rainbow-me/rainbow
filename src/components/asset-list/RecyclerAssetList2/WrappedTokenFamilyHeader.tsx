@@ -1,9 +1,9 @@
 import React from 'react';
 
-import { NFTS_ENABLED } from '@/config/experimental';
-import useExperimentalFlag from '@/config/experimentalHooks';
+import { NFTS_ENABLED } from '@/features/config/constants/experimental';
+import { useExperimentalFlag } from '@/features/config/hooks/experimentalHooks';
+import { useRemoteConfig } from '@/features/config/stores/remoteConfig';
 import useLatestCallback from '@/hooks/useLatestCallback';
-import { useRemoteConfig } from '@/model/remoteConfig';
 import { useNftsStore } from '@/state/nfts/nfts';
 import { useOpenCollectionsStore } from '@/state/nfts/openCollectionsStore';
 import { type ThemeContextProps } from '@/theme/ThemeContext';

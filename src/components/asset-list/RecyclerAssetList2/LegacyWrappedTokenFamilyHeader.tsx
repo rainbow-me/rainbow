@@ -7,12 +7,12 @@ import CaretImageSource from '@/assets/family-dropdown-arrow.png';
 import ButtonPressAnimation from '@/components/animations/ButtonPressAnimation';
 import { ImgixImage } from '@/components/images';
 import TokenFamilyHeaderIcon from '@/components/token-family/TokenFamilyHeaderIcon';
-import { NFTS_ENABLED } from '@/config/experimental';
-import useExperimentalFlag from '@/config/experimentalHooks';
 import { Text } from '@/design-system';
+import { NFTS_ENABLED } from '@/features/config/constants/experimental';
+import { useExperimentalFlag } from '@/features/config/hooks/experimentalHooks';
+import { useRemoteConfig } from '@/features/config/stores/remoteConfig';
 import useLatestCallback from '@/hooks/useLatestCallback';
 import * as i18n from '@/languages';
-import { useRemoteConfig } from '@/model/remoteConfig';
 import { useOpenCollectionsStore } from '@/state/nfts/openCollectionsStore';
 import { type ThemeContextProps } from '@/theme/ThemeContext';
 

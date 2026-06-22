@@ -6,8 +6,9 @@ import { DataProvider, RecyclerListView } from 'recyclerlistview';
 import { useMemoOne } from 'use-memo-one';
 
 import { type UniqueId } from '@/__swaps__/types/assets';
-import { useExperimentalConfig } from '@/config/experimentalHooks';
 import type { UniqueAsset } from '@/entities/uniqueAssets';
+import { useExperimentalConfig } from '@/features/config/hooks/experimentalHooks';
+import { useRemoteConfig } from '@/features/config/stores/remoteConfig';
 import type { NativeCurrencyKey } from '@/features/currency/types';
 import {
   ExternalENSProfileScrollViewWithRef,
@@ -17,7 +18,6 @@ import useAccountSettings from '@/hooks/useAccountSettings';
 import useCoinListEdited from '@/hooks/useCoinListEdited';
 import useCoinListEditOptions, { type BooleanMap } from '@/hooks/useCoinListEditOptions';
 import usePrevious from '@/hooks/usePrevious';
-import { useRemoteConfig } from '@/model/remoteConfig';
 import { useRecyclerListViewScrollToTopContext } from '@/navigation/RecyclerListViewScrollToTopContext';
 import { useUserAssetsStore } from '@/state/assets/userAssets';
 import { useListen } from '@/state/internal/hooks/useListen';

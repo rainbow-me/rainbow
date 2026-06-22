@@ -4,7 +4,7 @@ import { ChainId } from '@/features/network/types/backendNetworks';
 
 import { getCachedDelegationSupport, getDelegationSupportRequestKey, getSponsoredSendRequestKey } from './useSponsoredSendPreparation';
 
-jest.mock('@/model/remoteConfig', () => ({
+jest.mock('@/features/config/stores/remoteConfig', () => ({
   getRemoteConfig: () => ({ sponsored_sends_enabled: true }),
   useRemoteConfig: () => ({ sponsored_sends_enabled: true }),
 }));

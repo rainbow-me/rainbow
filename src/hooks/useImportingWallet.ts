@@ -4,11 +4,11 @@ import { InteractionManager, Keyboard, Platform, type TextInput } from 'react-na
 import { useDispatch } from 'react-redux';
 
 import { analytics } from '@/analytics';
-import { PROFILES } from '@/config/experimental';
-import useExperimentalFlag from '@/config/experimentalHooks';
 import { IS_TEST } from '@/env';
 import { isValidAddress, looksLikeAddress } from '@/features/address/core/address';
 import { backupsStore } from '@/features/backup/stores/backupsStore';
+import { PROFILES } from '@/features/config/constants/experimental';
+import { useExperimentalFlag } from '@/features/config/hooks/experimentalHooks';
 import { fetchENSAvatar } from '@/features/ens/hooks/useENSAvatar';
 import { fetchReverseRecord } from '@/features/ens/utils/handlers';
 import { ChainId } from '@/features/network/types/backendNetworks';

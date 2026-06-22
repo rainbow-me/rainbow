@@ -1,5 +1,6 @@
-import { POLYMARKET } from '@/config/experimental';
-import { useExperimentalConfigStore } from '@/config/experimentalConfigStore';
+import { POLYMARKET } from '@/features/config/constants/experimental';
+import { useExperimentalConfigStore } from '@/features/config/stores/experimentalConfigStore';
+import { useRemoteConfigStore } from '@/features/config/stores/remoteConfig';
 import { getSportsSurfaceIntent } from '@/features/discover/utils/sportsSurfaceIntent';
 import { useHyperliquidMarketsStore } from '@/features/perps/stores/hyperliquidMarketsStore';
 import { usePredictionEventsStore } from '@/features/placements/stores/derived/predictionsPlacementStore';
@@ -9,7 +10,6 @@ import { useDiscoverSurface, useDiscoverSurfacePlacementRefs } from '@/features/
 import { type DiscoverSurface } from '@/features/placements/surfaces/stores/discoverSurfaceTypes';
 import { getSurfaceStore } from '@/features/placements/surfaces/stores/surfaceStore';
 import { usePolymarketSportsEventsStore } from '@/features/polymarket/stores/polymarketSportsEventsStore';
-import { useRemoteConfigStore } from '@/model/remoteConfig';
 
 export async function refreshDiscoverSurface(surfaceId: string): Promise<void> {
   await Promise.allSettled([

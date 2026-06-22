@@ -1,6 +1,7 @@
 import { useCallback, useMemo } from 'react';
 
 import { useDiscoverScreenContext } from '@/components/Discover/DiscoverScreenContext';
+import { useRemoteConfig } from '@/features/config/stores/remoteConfig';
 import { type NativeCurrencyKey } from '@/features/currency/types';
 import { MarketCell, MarketCellSkeleton } from '@/features/discover/components/markets/cards/MarketCell';
 import {
@@ -34,7 +35,6 @@ import { usePlacementsStore } from '@/features/placements/stores/placementsStore
 import { MARKET_DISPLAY_VALUES } from '@/features/placements/surfaces/constants';
 import { useIsDiscoverSurfacePlacementPending } from '@/features/placements/surfaces/hooks/useDiscoverSurfacePlacements';
 import { type SurfaceId, type SurfaceLeaf } from '@/features/placements/surfaces/types';
-import { useRemoteConfig } from '@/model/remoteConfig';
 import Navigation from '@/navigation/Navigation';
 import Routes from '@/navigation/routesNames';
 import { userAssetsStoreManager } from '@/state/assets/userAssetsStoreManager';

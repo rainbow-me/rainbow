@@ -17,7 +17,7 @@ import { createMockAsset } from '../../__fixtures__/mocks/assets';
 import { createSimpleDapp } from '../../__fixtures__/mocks/positions';
 import { DetailType, PositionName, type ListPositionsResponse, type PortfolioItem } from '../../types/generated/positions/positions';
 
-jest.mock('@/config/experimentalConfigStore', () => ({
+jest.mock('@/features/config/stores/experimentalConfigStore', () => ({
   getExperimentalFlag: jest.fn(() => true),
 }));
 

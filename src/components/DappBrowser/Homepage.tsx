@@ -12,8 +12,6 @@ import ButtonPressAnimation from '@/components/animations/ButtonPressAnimation';
 import { FeaturedResultStack, type FeaturedResultStackProps } from '@/components/FeaturedResult/FeaturedResultStack';
 import { ImgixImage } from '@/components/images';
 import ContextMenuButton from '@/components/native-context-menu/contextMenu';
-import { FEATURED_RESULTS } from '@/config/experimental';
-import useExperimentalFlag from '@/config/experimentalHooks';
 import {
   Bleed,
   Border,
@@ -29,10 +27,12 @@ import {
   useColorMode,
 } from '@/design-system';
 import { IS_TEST } from '@/env';
+import { FEATURED_RESULTS } from '@/features/config/constants/experimental';
+import { useExperimentalFlag } from '@/features/config/hooks/experimentalHooks';
+import { useRemoteConfig } from '@/features/config/stores/remoteConfig';
 import { opacity } from '@/framework/ui/utils/opacity';
 import { type DApp } from '@/graphql/__generated__/metadata';
 import * as i18n from '@/languages';
-import { useRemoteConfig } from '@/model/remoteConfig';
 import { useTrendingDApps } from '@/resources/metadata/trendingDapps';
 import { useBrowserStore } from '@/state/browser/browserStore';
 import { useFavoriteDappsStore, type FavoritedSite } from '@/state/browser/favoriteDappsStore';

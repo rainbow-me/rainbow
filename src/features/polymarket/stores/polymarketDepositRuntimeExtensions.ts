@@ -1,7 +1,7 @@
 import { destroyStore } from '@storesjs/stores';
 
+import { getRemoteConfig } from '@/features/config/stores/remoteConfig';
 import { isPreparedCallsExecutionSponsored } from '@/features/delegation/calls';
-import { getRemoteConfig } from '@/model/remoteConfig';
 import { createDepositPreparedCallsStore, getDepositPreparedCalls } from '@/systems/funding/execution/depositPreparedCallsStore';
 import { type DepositRuntimeExtensions } from '@/systems/funding/types';
 

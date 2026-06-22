@@ -29,8 +29,8 @@ jest.mock('@/resources/transactions/transaction', () => ({
   fetchRawTransaction: jest.fn(),
 }));
 
-jest.mock('@/config/experimentalHooks', () => ({}));
-jest.mock('@/config/experimentalConfigStore', () => ({
+jest.mock('@/features/config/hooks/experimentalHooks', () => ({}));
+jest.mock('@/features/config/stores/experimentalConfigStore', () => ({
   getExperimentalFlag: jest.fn(() => false),
 }));
 

@@ -1,7 +1,7 @@
 import { createMMKV } from 'react-native-mmkv';
 
-import { defaultConfigValues, type ExperimentalConfigKey } from '@/config/experimental';
-import { useExperimentalConfigStore } from '@/config/experimentalConfigStore';
+import { defaultConfigValues, type ExperimentalConfigKey } from '@/features/config/constants/experimental';
+import { useExperimentalConfigStore } from '@/features/config/stores/experimentalConfigStore';
 import { logger, RainbowError } from '@/logger';
 import { MigrationName, type Migration } from '@/migrations/types';
 

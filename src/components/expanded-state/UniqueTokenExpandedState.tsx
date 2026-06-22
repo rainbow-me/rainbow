@@ -9,8 +9,6 @@ import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import URL from 'url-parse';
 
 import { analytics } from '@/analytics';
-import { PROFILES } from '@/config/experimental';
-import useExperimentalFlag from '@/config/experimentalHooks';
 import {
   AccentColorProvider,
   Bleed,
@@ -31,6 +29,8 @@ import {
 } from '@/design-system';
 import { AssetType } from '@/entities/assetTypes';
 import type { UniqueAsset } from '@/entities/uniqueAssets';
+import { PROFILES } from '@/features/config/constants/experimental';
+import { useExperimentalFlag } from '@/features/config/hooks/experimentalHooks';
 import ENSBriefTokenInfoRow from '@/features/ens/components/ENSBriefTokenInfoRow';
 import ConfigurationSection from '@/features/ens/components/expanded-state/ConfigurationSection';
 import ProfileInfoSection from '@/features/ens/components/expanded-state/ProfileInfoSection';
