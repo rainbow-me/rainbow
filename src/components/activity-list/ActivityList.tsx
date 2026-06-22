@@ -10,7 +10,7 @@ import { Skeleton } from '@/components/Skeleton';
 import { type RainbowTransaction } from '@/entities/transactions';
 import styled from '@/framework/ui/styled-thing';
 import { opacity } from '@/framework/ui/utils/opacity';
-import { type TransactionSection } from '@/helpers/buildTransactionsSectionsSelector';
+import { type TransactionSection } from '@/helpers/buildTransactionsSections';
 import useAccountTransactions from '@/hooks/useAccountTransactions';
 import { useLegendListNavBarScrollToTop } from '@/navigation/MainListContext';
 import { userAssetsStoreManager } from '@/state/assets/userAssetsStoreManager';
