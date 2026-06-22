@@ -17,7 +17,7 @@ import { useFocusEffect } from '@react-navigation/native';
  *
  * @param {Function} cb - optional callback which will be executed
  */
-export default function useHardwareBack(cb: () => boolean | void, shouldSkip = false, deps: unknown[] = []) {
+export function useHardwareBack(cb: () => boolean | void, shouldSkip = false, deps: unknown[] = []) {
   const callback = useCallback(() => {
     if (shouldSkip) {
       return;
