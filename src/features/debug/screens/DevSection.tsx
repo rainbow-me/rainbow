@@ -30,6 +30,7 @@ import { getDelegationContractAddress, isRainbowDelegated, isThirdPartyDelegated
 import { isAuthenticated } from '@/features/local-auth/isAuthenticated';
 import { wipeKeychain } from '@/features/local-auth/legacyKeychain';
 import { ChainId } from '@/features/network/types/backendNetworks';
+import { useSandboxDiagnosticsStore } from '@/features/sandbox/data/stores/sandboxDiagnosticsStore';
 import { WrappedAlert as Alert } from '@/helpers/alert';
 import { getPublicKeyOfTheSigningWalletAndCreateWalletIfNeeded } from '@/helpers/signingWallet';
 import * as i18n from '@/languages';
@@ -380,6 +381,13 @@ export const DevSection = () => {
               onPress={() => Restart.Restart()}
               size={52}
               titleComponent={<MenuItem.Title text={i18n.t(i18n.l.developer_settings.restart_app)} />}
+            />
+            <MenuItem
+              leftComponent={<MenuItem.TextIcon icon="🏝️" isEmoji />}
+              onPress={() => useSandboxDiagnosticsStore.getState().open()}
+              size={52}
+              testID="sandbox-diagnostics-section"
+              titleComponent={<MenuItem.Title text="Sandbox diagnostics" />}
             />
             <MenuItem
               leftComponent={<MenuItem.TextIcon icon="🧨" isEmoji />}

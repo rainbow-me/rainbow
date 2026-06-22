@@ -8,6 +8,7 @@ import { useCashDepositSetupStore } from '@/features/cash/stores/cashDepositSetu
 import { type ExperimentalConfigKey } from '@/features/config/constants/experimental';
 import { useExperimentalConfigStore } from '@/features/config/stores/experimentalConfigStore';
 import { savePIN } from '@/features/local-auth/pinAuthentication';
+import { useSandboxDiagnosticsStore } from '@/features/sandbox/data/stores/sandboxDiagnosticsStore';
 import { logger } from '@/logger';
 import Navigation from '@/navigation/Navigation';
 import Routes from '@/navigation/routesNames';
@@ -43,6 +44,9 @@ export function TestDeeplinkHandler() {
           break;
         case 'setCashDepositSetupStatus':
           useCashDepositSetupStore.getState().setStatus(query.status as CashDepositSetupStatus);
+          break;
+        case 'sandbox-test':
+          useSandboxDiagnosticsStore.getState().open();
           break;
         default:
           logger.debug(`[TestDeeplinkHandler]: unknown path`, { url });

@@ -27,6 +27,7 @@ import { IS_DEV, IS_PROD, IS_STORE_INSTALL, IS_TEST } from '@/env';
 import { initializeRemoteConfig } from '@/features/config/stores/remoteConfig';
 import { monitorNetwork } from '@/features/debug/utils/network';
 import { configureDelegationSdk } from '@/features/delegation/utils/configureClient';
+import { SandboxDiagnosticsOverlay } from '@/features/sandbox/ui/components/SandboxDiagnosticsOverlay';
 import RainbowContextWrapper from '@/helpers/RainbowContext';
 import { useApplicationSetup } from '@/hooks/useApplicationSetup';
 import { logger, RainbowError } from '@/logger';
@@ -84,6 +85,7 @@ function AppComponent() {
       <NotificationsHandler />
       <DeeplinkHandler initialRoute={initialRoute} />
       {IS_TEST && <TestDeeplinkHandler />}
+      {(!IS_STORE_INSTALL || IS_TEST) && <SandboxDiagnosticsOverlay />}
       <BackupsSync />
       <AbsolutePortalRoot />
     </>
