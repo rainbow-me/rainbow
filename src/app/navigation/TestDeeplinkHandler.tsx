@@ -3,10 +3,10 @@ import { Linking } from 'react-native';
 
 import URL from 'url-parse';
 
-import { type ExperimentalConfigKey } from '@/config/experimental';
-import { useExperimentalConfigStore } from '@/config/experimentalConfigStore';
 import { type CashDepositSetupStatus } from '@/features/cash/stores/cashDepositSetupStatus';
 import { useCashDepositSetupStore } from '@/features/cash/stores/cashDepositSetupStore';
+import { type ExperimentalConfigKey } from '@/features/config/constants/experimental';
+import { useExperimentalConfigStore } from '@/features/config/stores/experimentalConfigStore';
 import { savePIN } from '@/features/local-auth/pinAuthentication';
 import { logger } from '@/logger';
 import Navigation from '@/navigation/Navigation';

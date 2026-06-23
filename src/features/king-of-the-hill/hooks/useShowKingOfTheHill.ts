@@ -1,7 +1,7 @@
-import { KING_OF_THE_HILL_TAB } from '@/config/experimental';
-import useExperimentalFlag from '@/config/experimentalHooks';
 import { IS_TEST } from '@/env';
-import { useRemoteConfig } from '@/model/remoteConfig';
+import { KING_OF_THE_HILL_TAB } from '@/features/config/constants/experimental';
+import { useExperimentalFlag } from '@/features/config/hooks/experimentalHooks';
+import { useRemoteConfig } from '@/features/config/stores/remoteConfig';
 
 export const useShowKingOfTheHill = () => {
   const { king_of_the_hill2_enabled } = useRemoteConfig('king_of_the_hill2_enabled');

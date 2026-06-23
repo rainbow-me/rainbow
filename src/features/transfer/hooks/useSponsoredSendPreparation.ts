@@ -4,6 +4,7 @@ import { type StaticJsonRpcProvider } from '@ethersproject/providers';
 import { isAddress, type Address } from 'viem';
 
 import { type ParsedAddressAsset } from '@/entities/tokens';
+import { useRemoteConfig } from '@/features/config/stores/remoteConfig';
 import { isPreparedCallsExecutionSponsored } from '@/features/delegation/calls';
 import { predictSponsoredSend, prepareSponsoredSend } from '@/features/delegation/sponsoredSend';
 import { buildSendCallFromSendDetails } from '@/features/delegation/sponsoredSendExecution';
@@ -12,7 +13,6 @@ import { useBackendNetworksStore } from '@/features/network/stores/backendNetwor
 import { type ChainId } from '@/features/network/types/backendNetworks';
 import { parsePositiveRawAmount } from '@/framework/core/evm/units';
 import { ensureError, logger } from '@/logger';
-import { useRemoteConfig } from '@/model/remoteConfig';
 import { type Call, type PreparedCallsExecution } from '@rainbow-me/delegation';
 
 type PreparedSponsoredSendState =

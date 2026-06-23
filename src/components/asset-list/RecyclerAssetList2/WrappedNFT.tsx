@@ -1,10 +1,10 @@
 import React, { useCallback } from 'react';
 
-import { NFTS_ENABLED } from '@/config/experimental';
-import useExperimentalFlag from '@/config/experimentalHooks';
 import { Box, type BoxProps } from '@/design-system';
 import type { UniqueAsset } from '@/entities/uniqueAssets';
-import { useRemoteConfig } from '@/model/remoteConfig';
+import { NFTS_ENABLED } from '@/features/config/constants/experimental';
+import { useExperimentalFlag } from '@/features/config/hooks/experimentalHooks';
+import { useRemoteConfig } from '@/features/config/stores/remoteConfig';
 import Navigation from '@/navigation/Navigation';
 import Routes from '@/navigation/routesNames';
 import { useNftsStore } from '@/state/nfts/nfts';

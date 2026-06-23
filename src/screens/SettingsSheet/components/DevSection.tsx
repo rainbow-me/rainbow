@@ -10,8 +10,6 @@ import Restart from 'react-native-restart';
 
 import { ImgixImage } from '@/components/images';
 import ContextMenuButton, { type MenuConfig } from '@/components/native-context-menu/contextMenu';
-import { defaultConfig, defaultConfigValues, type ExperimentalConfigKey } from '@/config/experimental';
-import { useExperimentalConfigStore } from '@/config/experimentalConfigStore';
 import { IS_STORE_INSTALL } from '@/env';
 import {
   CASH_DEPOSIT_SETUP_STATUSES,
@@ -19,6 +17,8 @@ import {
   type CashDepositSetupStatus,
 } from '@/features/cash/stores/cashDepositSetupStatus';
 import { useCashDepositSetupStore } from '@/features/cash/stores/cashDepositSetupStore';
+import { defaultConfig, defaultConfigValues, type ExperimentalConfigKey } from '@/features/config/constants/experimental';
+import { useExperimentalConfigStore } from '@/features/config/stores/experimentalConfigStore';
 import { getDelegationContractAddress, isRainbowDelegated, isThirdPartyDelegated } from '@/features/delegation/status';
 import { isAuthenticated } from '@/features/local-auth/isAuthenticated';
 import { wipeKeychain } from '@/features/local-auth/legacyKeychain';

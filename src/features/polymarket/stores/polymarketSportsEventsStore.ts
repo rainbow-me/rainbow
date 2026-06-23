@@ -1,6 +1,7 @@
-import { POLYMARKET } from '@/config/experimental';
-import { useExperimentalConfigStore } from '@/config/experimentalConfigStore';
 import { IS_TEST } from '@/env';
+import { POLYMARKET } from '@/features/config/constants/experimental';
+import { useExperimentalConfigStore } from '@/features/config/stores/experimentalConfigStore';
+import { useRemoteConfigStore } from '@/features/config/stores/remoteConfig';
 import { DEFAULT_SPORTS_LEAGUE_KEY, POLYMARKET_GAMMA_API_URL, POLYMARKET_SPORTS_MARKET_TYPE } from '@/features/polymarket/constants';
 import { type LeagueId } from '@/features/polymarket/leagues';
 import { fetchPolymarketTeamMetadataForGameEvents } from '@/features/polymarket/stores/polymarketTeamMetadataStore';
@@ -9,7 +10,6 @@ import { getSportsEventsDayBoundaries, getSportsEventsStartTimeRange } from '@/f
 import { processRawPolymarketEvent } from '@/features/polymarket/utils/transforms';
 import { time } from '@/framework/core/utils/time';
 import { rainbowFetch } from '@/framework/data/http/rainbowFetch';
-import { useRemoteConfigStore } from '@/model/remoteConfig';
 import { createDerivedStore } from '@/state/internal/createDerivedStore';
 import { createQueryStore } from '@/state/internal/createQueryStore';
 

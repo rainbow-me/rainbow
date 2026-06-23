@@ -39,8 +39,6 @@ import ButtonPressAnimation from '@/components/animations/ButtonPressAnimation';
 import { EasingGradient } from '@/components/easing-gradient/EasingGradient';
 import { DelayedMount } from '@/components/utilities/DelayedMount';
 import { MountWhenFocused } from '@/components/utilities/MountWhenFocused';
-import { CANDLESTICK_DATA_MONITOR } from '@/config/experimental';
-import useExperimentalFlag from '@/config/experimentalHooks';
 import { globalColors, Text, TextIcon, useColorMode, useForegroundColor } from '@/design-system';
 import { getColorForTheme } from '@/design-system/color/useForegroundColor';
 import { useSkiaText, type TextSegment } from '@/design-system/components/SkiaText/useSkiaText';
@@ -49,6 +47,8 @@ import { areCandlesEqual, formatCandlestickPrice } from '@/features/charts/candl
 import { candlestickActions, fetchHistoricalCandles, useCandlestickStore } from '@/features/charts/stores/candlestickStore';
 import { useChartsStore } from '@/features/charts/stores/chartsStore';
 import { isHyperliquidToken } from '@/features/charts/utils';
+import { CANDLESTICK_DATA_MONITOR } from '@/features/config/constants/experimental';
+import { useExperimentalFlag } from '@/features/config/hooks/experimentalHooks';
 import { supportedCurrencies as supportedNativeCurrencies } from '@/features/currency/supportedCurrencies';
 import { NativeCurrencyKeys, type NativeCurrencyKey } from '@/features/currency/types';
 import { type ChainId } from '@/features/network/types/backendNetworks';

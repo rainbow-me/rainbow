@@ -16,6 +16,7 @@ import {
 import { globalColors } from '@/design-system';
 import { palettes, type ForegroundColor } from '@/design-system/color/palettes';
 import { IS_TEST } from '@/env';
+import { DEFAULT_SLIPPAGE_BIPS_CHAINID, type RainbowConfig } from '@/features/config/stores/remoteConfig';
 import { ChainId } from '@/features/network/types/backendNetworks';
 import {
   divWorklet,
@@ -31,7 +32,6 @@ import {
 import { type TokenColors } from '@/graphql/__generated__/metadata';
 import { convertAmountToRawAmount } from '@/helpers/utilities';
 import * as i18n from '@/languages';
-import { DEFAULT_SLIPPAGE_BIPS_CHAINID, type RainbowConfig } from '@/model/remoteConfig';
 import store from '@/redux/store';
 import { useUserAssetsStore } from '@/state/assets/userAssets';
 import { colors } from '@/styles';

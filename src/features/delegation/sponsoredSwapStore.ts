@@ -1,13 +1,13 @@
 import { createDerivedStore } from '@storesjs/stores';
 
 import { isCrosschainQuote, isQuote } from '@/__swaps__/utils/quotes';
+import { useRemoteConfigStore } from '@/features/config/stores/remoteConfig';
 import { createDelegationPublicClient, isPreparedCallsExecutionSponsored } from '@/features/delegation/calls';
 import { createPreparedCallsStore } from '@/features/delegation/preparedCallsStore';
 import { predictSponsoredCallsExecution } from '@/features/delegation/sponsoredCalls';
 import { useBackendNetworksStore } from '@/features/network/stores/backendNetworksStore';
 import { time } from '@/framework/core/utils/time';
 import { getProvider } from '@/handlers/web3';
-import { useRemoteConfigStore } from '@/model/remoteConfig';
 import { buildAtomicExecutionRequirements, prepareAtomicSwapCalls } from '@/raps/atomicSwapPreparation';
 import { useSwapsStore } from '@/state/swaps/swapsStore';
 import { getAccountAddress, useWalletsStore } from '@/state/wallets/walletsStore';

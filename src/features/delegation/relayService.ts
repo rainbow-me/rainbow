@@ -8,9 +8,9 @@ import {
 } from 'react-native-dotenv';
 import { getAddress } from 'viem';
 
-import { GO_RELAY_BACKEND } from '@/config/experimental';
-import { getExperimentalFlag } from '@/config/experimentalConfigStore';
-import { useRemoteConfigStore } from '@/model/remoteConfig';
+import { GO_RELAY_BACKEND } from '@/features/config/constants/experimental';
+import { getExperimentalFlag } from '@/features/config/stores/experimentalConfigStore';
+import { useRemoteConfigStore } from '@/features/config/stores/remoteConfig';
 import { createRelayService } from '@rainbow-me/delegation';
 
 export type RelayStatusResponse = Awaited<ReturnType<typeof relayService.getStatus>>;

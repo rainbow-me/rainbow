@@ -4,9 +4,9 @@ import { Platform } from 'react-native';
 import { useRoute, type RouteProp } from '@react-navigation/native';
 
 import Skeleton from '@/components/skeleton/Skeleton';
-import { PROFILES } from '@/config/experimental';
-import useExperimentalFlag from '@/config/experimentalHooks';
 import { Bleed, Box, Column, Columns, Heading, Inset, Separator, Stack } from '@/design-system';
+import { PROFILES } from '@/features/config/constants/experimental';
+import { useExperimentalFlag } from '@/features/config/hooks/experimentalHooks';
 import type Routes from '@/navigation/routesNames';
 import { type RootStackParamList } from '@/navigation/types';
 import { ModalContext } from '@/react-native-cool-modals/NativeStackView';

@@ -10,6 +10,7 @@ import ButtonPressAnimation from '@/components/animations/ButtonPressAnimation';
 import { PanelSheet } from '@/components/PanelSheet/PanelSheet';
 import { RnbwCoinIcon } from '@/components/RnbwCoinIcon';
 import { Box, globalColors, Separator, Stack, Text, useForegroundColor } from '@/design-system';
+import { useRemoteConfig } from '@/features/config/stores/remoteConfig';
 import { SmartWalletActivationCallout } from '@/features/delegation/components/SmartWalletActivationCallout';
 import { createPreparedCallsStore, type PreparedCallsStore } from '@/features/delegation/preparedCallsStore';
 import { predictSponsoredCallsExecution } from '@/features/delegation/sponsoredCalls';
@@ -25,7 +26,6 @@ import { useCleanup } from '@/hooks/useCleanup';
 import { useStableValue } from '@/hooks/useStableValue';
 import * as i18n from '@/languages';
 import { ensureError, logger, RainbowError } from '@/logger';
-import { useRemoteConfig } from '@/model/remoteConfig';
 import { useNavigation } from '@/navigation/Navigation';
 import { useAccountAddress } from '@/state/wallets/walletsStore';
 

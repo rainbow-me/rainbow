@@ -1,7 +1,7 @@
-import { CANDLESTICK_CHARTS } from '@/config/experimental';
-import useExperimentalFlag from '@/config/experimentalHooks';
 import { isHyperliquidToken } from '@/features/charts/utils';
-import { useRemoteConfig } from '@/model/remoteConfig';
+import { CANDLESTICK_CHARTS } from '@/features/config/constants/experimental';
+import { useExperimentalFlag } from '@/features/config/hooks/experimentalHooks';
+import { useRemoteConfig } from '@/features/config/stores/remoteConfig';
 import { createRainbowStore } from '@/state/internal/createRainbowStore';
 import { createStoreActions } from '@/state/internal/utils/createStoreActions';
 import { type Exact } from '@/types/objects';

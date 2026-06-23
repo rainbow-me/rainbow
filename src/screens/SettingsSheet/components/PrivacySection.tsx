@@ -3,8 +3,8 @@ import React, { useCallback, useReducer } from 'react';
 import { Switch } from 'react-native-gesture-handler';
 
 import { analytics } from '@/analytics';
-import { PROFILES } from '@/config/experimental';
-import useExperimentalFlag from '@/config/experimentalHooks';
+import { PROFILES } from '@/features/config/constants/experimental';
+import { useExperimentalFlag } from '@/features/config/hooks/experimentalHooks';
 import { initWebData, wipeWebData } from '@/helpers/webData';
 import useHiddenTokens from '@/hooks/useHiddenTokens';
 import useShowcaseTokens from '@/hooks/useShowcaseTokens';

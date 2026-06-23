@@ -2,7 +2,7 @@ import { createMockDeposit, createMockPortfolioItem, createMockRainbowPosition }
 import { DetailType, PositionName } from '../../types/generated/positions/positions';
 import { shouldFilterPortfolioItem, shouldFilterPosition } from './filter';
 
-jest.mock('@/config/experimentalConfigStore', () => ({
+jest.mock('@/features/config/stores/experimentalConfigStore', () => ({
   getExperimentalFlag: jest.fn(() => true),
 }));
 

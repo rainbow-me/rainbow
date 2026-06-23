@@ -12,7 +12,7 @@ jest.mock('./canUseSponsoredRnbwStaking', () => ({
   canUseSponsoredRnbwStaking: (address: Address, chainId: number) => mockCanUseSponsoredRnbwStaking(address, chainId),
 }));
 
-jest.mock('@/model/remoteConfig', () => ({
+jest.mock('@/features/config/stores/remoteConfig', () => ({
   getRemoteConfig: () => mockGetRemoteConfig(),
 }));
 

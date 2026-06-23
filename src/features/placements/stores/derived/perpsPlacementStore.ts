@@ -1,5 +1,6 @@
 import { useMemo } from 'react';
 
+import { useRemoteConfig } from '@/features/config/stores/remoteConfig';
 import { useHyperliquidMarketsStore } from '@/features/perps/stores/hyperliquidMarketsStore';
 import { type PerpMarketsBySymbol, type PerpMarketWithMetadata } from '@/features/perps/types';
 import {
@@ -10,7 +11,6 @@ import {
 } from '@/features/placements/stores/placementsStore';
 import { type PlacementId, type PlacementItem } from '@/features/placements/types';
 import { finalizePlacementResult, pairPlacementItems } from '@/features/placements/utils/finalizePlacementResult';
-import { useRemoteConfig } from '@/model/remoteConfig';
 import { shallowEqual } from '@/worklets/comparisons';
 
 // ============ Types ========================================================== //

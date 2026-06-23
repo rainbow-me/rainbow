@@ -48,10 +48,11 @@ import {
   TAB_BAR_WIDTH,
 } from '@/components/tab-bar/dimensions';
 import { TabBarIcon } from '@/components/tab-bar/TabBarIcon';
-import { DAPP_BROWSER, LAZY_TABS, RNBW_MEMBERSHIP, RNBW_REWARDS } from '@/config/experimental';
-import useExperimentalFlag from '@/config/experimentalHooks';
 import { Box, ColorModeProvider, Column, Columns, globalColors, useColorMode } from '@/design-system';
 import { IS_TEST } from '@/env';
+import { DAPP_BROWSER, LAZY_TABS, RNBW_MEMBERSHIP, RNBW_REWARDS } from '@/features/config/constants/experimental';
+import { useExperimentalFlag } from '@/features/config/hooks/experimentalHooks';
+import { useRemoteConfig } from '@/features/config/stores/remoteConfig';
 import { useShowKingOfTheHill } from '@/features/king-of-the-hill/hooks/useShowKingOfTheHill';
 import { KingOfTheHillScreen } from '@/features/king-of-the-hill/screens/KingOfTheHillScreen';
 import { RnbwMembershipScreen } from '@/features/rnbw-membership/screens/rnbw-membership-screen/RnbwMembershipScreen';
@@ -60,7 +61,6 @@ import { opacity } from '@/framework/ui/utils/opacity';
 import { useAccountAccentColor } from '@/hooks/useAccountAccentColor';
 import useAccountSettings from '@/hooks/useAccountSettings';
 import useDimensions from '@/hooks/useDimensions';
-import { useRemoteConfig } from '@/model/remoteConfig';
 import { BASE_TAB_BAR_HEIGHT } from '@/navigation/constants';
 import {
   RecyclerListViewScrollToTopProvider,

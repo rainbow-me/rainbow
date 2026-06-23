@@ -1,7 +1,8 @@
 import { useMemo } from 'react';
 
-import { POLYMARKET } from '@/config/experimental';
-import { useExperimentalConfigStore } from '@/config/experimentalConfigStore';
+import { POLYMARKET } from '@/features/config/constants/experimental';
+import { useExperimentalConfigStore } from '@/features/config/stores/experimentalConfigStore';
+import { useRemoteConfigStore } from '@/features/config/stores/remoteConfig';
 import {
   isPlacementHydrating,
   selectPlacementItemsBySource,
@@ -17,7 +18,6 @@ import { fetchPolymarketTeamMetadataForGameEvents } from '@/features/polymarket/
 import { type PolymarketEvent } from '@/features/polymarket/types/polymarket-event';
 import { processRawPolymarketEvent } from '@/features/polymarket/utils/transforms';
 import { time } from '@/framework/core/utils/time';
-import { useRemoteConfigStore } from '@/model/remoteConfig';
 import { createDerivedStore } from '@/state/internal/createDerivedStore';
 import { createQueryStore } from '@/state/internal/createQueryStore';
 import { shallowEqual } from '@/worklets/comparisons';

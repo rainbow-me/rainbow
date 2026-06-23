@@ -7,8 +7,8 @@ import { fetchPositions, type PositionsParams } from './fetcher';
 import { usePositionsStore } from './positionsStore';
 
 jest.mock('@/resources/platform/client');
-jest.mock('@/config/experimentalHooks', () => ({}));
-jest.mock('@/config/experimentalConfigStore', () => ({
+jest.mock('@/features/config/hooks/experimentalHooks', () => ({}));
+jest.mock('@/features/config/stores/experimentalConfigStore', () => ({
   getExperimentalFlag: jest.fn(() => false),
 }));
 jest.mock('@/features/network/stores/backendNetworksStore', () => ({

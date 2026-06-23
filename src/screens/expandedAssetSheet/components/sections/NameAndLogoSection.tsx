@@ -2,9 +2,9 @@ import React, { memo } from 'react';
 
 import RainbowCoinIcon from '@/components/coin-icon/RainbowCoinIcon';
 import { RainbowCoinEffect } from '@/components/rainbow-coin-effect/RainbowCoinEffect';
-import { RAINBOW_COIN_EFFECT } from '@/config/experimental';
-import useExperimentalFlag from '@/config/experimentalHooks';
 import { Box, Text, TextShadow } from '@/design-system';
+import { RAINBOW_COIN_EFFECT } from '@/features/config/constants/experimental';
+import { useExperimentalFlag } from '@/features/config/hooks/experimentalHooks';
 
 import { useExpandedAssetSheetContext } from '../../context/ExpandedAssetSheetContext';
 

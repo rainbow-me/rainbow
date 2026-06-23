@@ -8,6 +8,7 @@ import { calculateGasFeeWorklet } from '@/__swaps__/screens/Swap/providers/SyncS
 import { transformRainbowTokenToParsedSearchAsset } from '@/__swaps__/utils/assets';
 import { getDefaultSlippageWorklet } from '@/__swaps__/utils/swaps';
 import { analytics } from '@/analytics';
+import { getRemoteConfig } from '@/features/config/stores/remoteConfig';
 import { convertAmountToNativeDisplay, convertAmountToNativeDisplayWorklet } from '@/features/currency/utils/nativeDisplay';
 import { safeBigInt } from '@/features/gas/hooks/useEstimatedGasFee';
 import { getGasSettingsBySpeed, useGasSettings } from '@/features/gas/hooks/useSelectedGas';
@@ -25,7 +26,6 @@ import {
   multiply,
 } from '@/helpers/utilities';
 import { logger, RainbowError } from '@/logger';
-import { getRemoteConfig } from '@/model/remoteConfig';
 import { loadWallet } from '@/model/wallet';
 import Navigation from '@/navigation/Navigation';
 import Routes from '@/navigation/routesNames';

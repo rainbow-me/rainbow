@@ -3,9 +3,9 @@ import React, { useCallback } from 'react';
 import { analytics } from '@/analytics';
 import { TintButton } from '@/components/cards/reusables/TintButton';
 import { AccentColorProvider } from '@/design-system';
+import { useRemoteConfig } from '@/features/config/stores/remoteConfig';
 import { useAccountAccentColor } from '@/hooks/useAccountAccentColor';
 import * as i18n from '@/languages';
-import { useRemoteConfig } from '@/model/remoteConfig';
 import { useNavigation } from '@/navigation/Navigation';
 import Routes from '@/navigation/routesNames';
 

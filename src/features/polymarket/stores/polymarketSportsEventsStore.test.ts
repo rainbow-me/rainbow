@@ -5,11 +5,11 @@ import { rainbowFetch } from '@/framework/data/http/rainbowFetch';
 
 import { fetchPolymarketSportsEvents } from './polymarketSportsEventsStore';
 
-jest.mock('@/config/experimental', () => ({
+jest.mock('@/features/config/constants/experimental', () => ({
   POLYMARKET: 'polymarket',
 }));
 
-jest.mock('@/config/experimentalConfigStore', () => ({
+jest.mock('@/features/config/stores/experimentalConfigStore', () => ({
   useExperimentalConfigStore: mockStore({
     getFlag: jest.fn(() => false),
   }),
@@ -35,7 +35,7 @@ jest.mock('@/framework/data/http/rainbowFetch', () => ({
   rainbowFetch: jest.fn(),
 }));
 
-jest.mock('@/model/remoteConfig', () => ({
+jest.mock('@/features/config/stores/remoteConfig', () => ({
   useRemoteConfigStore: mockStore({
     getRemoteConfigKey: jest.fn(() => false),
   }),
