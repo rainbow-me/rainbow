@@ -437,10 +437,6 @@
           "navigating_your_wallet": "Menavigasi Dompet Anda"
         }
       },
-      "ledger": {
-        "title": "Pasangkan Dompet Perangkat Keras",
-        "body": "Hubungkan Ledger Nano X Anda ke Rainbow melalui Bluetooth."
-      },
       "receive": {
         "receive_assets": "Terima aset",
         "copy_address": "Salin Alamat",

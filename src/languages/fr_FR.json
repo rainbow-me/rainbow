@@ -437,10 +437,6 @@
           "navigating_your_wallet": "Navigating your Wallet :)"
         }
       },
-      "ledger": {
-        "title": "Associez un portefeuille matériel",
-        "body": "Connectez votre Ledger Nano X à Rainbow via Bluetooth."
-      },
       "receive": {
         "receive_assets": "Recevoir des actifs",
         "copy_address": "Copier l'adresse",

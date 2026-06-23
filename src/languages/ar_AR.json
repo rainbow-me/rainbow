@@ -437,10 +437,6 @@
           "navigating_your_wallet": "التنقل في محفظتك"
         }
       },
-      "ledger": {
-        "title": "قم بربط محفظة الأجهزة",
-        "body": "قم بتوصيل Ledger Nano X الخاص بك بـ Rainbow عبر البلوتوث."
-      },
       "receive": {
         "receive_assets": "تلقي الأصول",
         "copy_address": "نسخ العنوان",
