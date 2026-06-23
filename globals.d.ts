@@ -22,7 +22,6 @@ declare module 'react-native-dotenv' {
   export const ENABLE_DEV_MODE: '0' | '1';
   export const SENTRY_ENDPOINT: string;
   export const ADDYS_API_KEY: string;
-  export const ETHEREUM_MAINNET_RPC_DEV: string;
   export const IMGIX_DOMAIN: string;
   export const IMGIX_TOKEN: string;
   export const CLOUDINARY_CLOUD_NAME: string;
