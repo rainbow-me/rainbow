@@ -9,12 +9,15 @@ import {
   type PolymarketFeeInfo,
 } from '@/features/polymarket/utils/fees';
 import { calculateOrderBookSpread, getBestOrderBookPrice, simulateMarketFills } from '@/features/polymarket/utils/orderBookFills';
+import { calculatePolymarketManualFeeUsd } from '@/features/polymarket/utils/polymarketManualFee';
 import { ceilWorklet, divWorklet, mulWorklet } from '@/framework/core/safeMath';
 
 export type BuyOrderExecution = {
   averagePrice: string;
   worstPrice: string;
   fee: string;
+  orderSpendCap: string;
+  rainbowFee: string;
   tokensBought: string;
   hasInsufficientLiquidity: boolean;
   hasNoLiquidityAtMarketPrice: boolean;
@@ -23,12 +26,17 @@ export type BuyOrderExecution = {
   bestPrice: string;
 };
 
+const BUY_SPEND_CAP_SEARCH_ITERATION_LIMIT = 24;
+const NO_BUILDER_TAKER_FEE_RATE = 0;
 const PRICE_LIMIT_STABILIZATION_ITERATION_LIMIT = 4;
+const SPEND_CAP_EPSILON = 1e-9;
 
 const EMPTY_EXECUTION: BuyOrderExecution = {
   averagePrice: '0',
   worstPrice: '0',
   fee: '0',
+  orderSpendCap: '0',
+  rainbowFee: '0',
   tokensBought: '0',
   hasInsufficientLiquidity: false,
   hasNoLiquidityAtMarketPrice: false,
@@ -70,6 +78,8 @@ export function calculateBuyOrderExecution({
     worstPrice: String(execution.priceLimit),
     bestPrice: bestAskPrice,
     fee: String(execution.feeAmountUsd),
+    orderSpendCap: String(execution.orderSpendCapUsd),
+    rainbowFee: String(execution.rainbowFeeAmountUsd),
     tokensBought: String(execution.tokensBought),
     hasInsufficientLiquidity: execution.hasInsufficientLiquidity,
     hasNoLiquidityAtMarketPrice: !hasAskLiquidity,
@@ -92,26 +102,66 @@ function resolveBuyExecution({
       averagePrice: 0,
       feeAmountUsd: 0,
       hasInsufficientLiquidity: false,
+      orderSpendCapUsd: 0,
       priceLimit: 0,
+      rainbowFeeAmountUsd: 0,
       tokensBought: 0,
+    };
+  }
+
+  let bestExecution = quoteBuySpendCap({ asks, feeInfo, spendCapUsd: 0 });
+  let lowSpendCapUsd = 0;
+  let highSpendCapUsd = Math.max(buyAmountUsd, 0);
+
+  for (let i = 0; i < BUY_SPEND_CAP_SEARCH_ITERATION_LIMIT; i++) {
+    const spendCapUsd = (lowSpendCapUsd + highSpendCapUsd) / 2;
+    const execution = quoteBuySpendCap({ asks, feeInfo, spendCapUsd });
+
+    if (execution.totalSpendUsd <= buyAmountUsd + SPEND_CAP_EPSILON) {
+      bestExecution = execution;
+      lowSpendCapUsd = spendCapUsd;
+    } else {
+      highSpendCapUsd = spendCapUsd;
+    }
+  }
+
+  return bestExecution;
+}
+
+function quoteBuySpendCap({ asks, feeInfo, spendCapUsd }: { asks: OrderBookLevel[]; feeInfo: PolymarketFeeInfo; spendCapUsd: number }) {
+  if (spendCapUsd <= 0) {
+    return {
+      averagePrice: 0,
+      feeAmountUsd: 0,
+      hasInsufficientLiquidity: false,
+      orderSpendCapUsd: 0,
+      priceLimit: 0,
+      rainbowFeeAmountUsd: 0,
+      tokensBought: 0,
+      totalSpendUsd: 0,
     };
   }
 
   const { sdkAdjustedOrderNotionalUsd, priceLimit } = resolveSdkAdjustedBuyOrderNotional({
     asks,
     feeInfo,
-    spendCapUsd: buyAmountUsd,
+    spendCapUsd,
   });
 
   const execution = simulateMarketFills({ levels: asks, targetAmount: sdkAdjustedOrderNotionalUsd, targetType: 'notionalUsd' });
-  const estimatedMatchFeeAmountUsd = calculateFillFeesUsd({ feeInfo, fills: execution.fills });
+  const providerFeeAmountUsd = calculateFillFeesUsd({ feeInfo, fills: execution.fills });
+  const rainbowFeeAmountUsd = Number(calculatePolymarketManualFeeUsd(execution.totalShares));
+  const feeAmountUsd = providerFeeAmountUsd + rainbowFeeAmountUsd;
 
   return {
     averagePrice: execution.totalShares > 0 ? execution.totalNotionalUsd / execution.totalShares : 0,
-    feeAmountUsd: estimatedMatchFeeAmountUsd,
+    feeAmountUsd,
     hasInsufficientLiquidity: execution.hasInsufficientLiquidity,
+    orderSpendCapUsd: spendCapUsd,
     priceLimit,
+    rainbowFeeAmountUsd,
     tokensBought: execution.totalShares,
+    totalSpendUsd: execution.totalNotionalUsd + feeAmountUsd,
   };
 }
 
@@ -161,17 +211,17 @@ function findWorstAskPriceForNotional(asks: OrderBookLevel[], notionalUsd: numbe
 }
 
 function calculateMinimumBuySpendUsd({ bestAskPrice, feeInfo }: { bestAskPrice: number; feeInfo: PolymarketFeeInfo }): number {
-  const minimumNotionalUsd = DEFAULT_MINIMUM_ORDER_SIZE_USD;
+  const minimumNotionalUsd = Math.max(DEFAULT_MINIMUM_ORDER_SIZE_USD, feeInfo.minimumOrderSize);
   const minimumShares = minimumNotionalUsd / bestAskPrice;
 
   return (
     minimumNotionalUsd +
     calculateTakerFeeUsd({
       feeInfo,
-      notionalUsd: minimumNotionalUsd,
       price: bestAskPrice,
       shares: minimumShares,
-    })
+    }) +
+    Number(calculatePolymarketManualFeeUsd(minimumShares))
   );
 }
 
@@ -192,7 +242,7 @@ function calculateSdkAdjustedBuyOrderNotionalUsd({
     spendCapUsd,
     feeInfo.platformFeeRate,
     feeInfo.platformFeeExponent,
-    feeInfo.builderTakerFeeRate
+    NO_BUILDER_TAKER_FEE_RATE
   );
 }
 

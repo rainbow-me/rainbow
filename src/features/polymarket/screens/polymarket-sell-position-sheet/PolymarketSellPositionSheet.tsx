@@ -17,11 +17,10 @@ import { POLYMARKET_BACKGROUND_LIGHT } from '@/features/polymarket/constants';
 import { createSellExecutionStore } from '@/features/polymarket/screens/polymarket-sell-position-sheet/stores/createSellExecutionStore';
 import { usePolymarketClients } from '@/features/polymarket/stores/derived/usePolymarketClients';
 import { usePolymarketPositionsStore } from '@/features/polymarket/stores/polymarketPositionsStore';
+import { executePolymarketSellPosition } from '@/features/polymarket/utils/executePolymarketOrder';
 import { getPositionAccentColor } from '@/features/polymarket/utils/getMarketColor';
 import { getOutcomeDescriptions } from '@/features/polymarket/utils/getOutcomeDescriptions';
-import { trackPolymarketOrder } from '@/features/polymarket/utils/polymarketOrderTracker';
 import { waitForPositionSizeUpdate } from '@/features/polymarket/utils/refetchPolymarketStores';
-import { marketSellTotalPosition } from '@/features/polymarket/utils/sellPosition';
 import { mulWorklet, subWorklet, toFixedWorklet, trimTrailingZeros } from '@/framework/core/safeMath';
 import { opacity } from '@/framework/ui/utils/opacity';
 import * as i18n from '@/languages';
@@ -60,16 +59,25 @@ export const PolymarketSellPositionSheet = memo(function PolymarketSellPositionS
     foreground: '#000000',
     opacity: 0.4,
   });
-  const gradientFillColors = isDarkMode
-    ? ([opacity(accentColor, 0.22), opacity(accentColor, 0)] as const)
-    : ([opacity(accentColor, 0), opacity(accentColor, 0.06)] as const);
+  const gradientFillColors: [string, string] = isDarkMode
+    ? [opacity(accentColor, 0.22), opacity(accentColor, 0)]
+    : [opacity(accentColor, 0), opacity(accentColor, 0.06)];
 
   const executionStore = useMemo(
     () => createSellExecutionStore(tokenId, sellAmountTokens, position.conditionId),
     [position.conditionId, sellAmountTokens, tokenId]
   );
-  const { worstPrice, bestPrice, expectedPayoutUsd, averagePrice, fee, spread, hasNoLiquidityAtMarketPrice, hasInsufficientLiquidity } =
-    executionStore(state => state);
+  const {
+    worstPrice,
+    bestPrice,
+    expectedPayoutUsd,
+    averagePrice,
+    fee,
+    rainbowFee,
+    spread,
+    hasNoLiquidityAtMarketPrice,
+    hasInsufficientLiquidity,
+  } = executionStore(state => state);
   const hasBlockedLiquidity = hasNoLiquidityAtMarketPrice || hasInsufficientLiquidity;
   const noLiquidityTitle = hasNoLiquidityAtMarketPrice
     ? i18n.t(i18n.l.predictions.cash_out.no_liquidity_title)
@@ -93,16 +101,15 @@ export const PolymarketSellPositionSheet = memo(function PolymarketSellPositionS
       if (checkIfReadOnlyWallet(usePolymarketClients.getState().address)) return;
       setIsProcessing(true);
       setProcessingLabel(i18n.t(i18n.l.predictions.manage_position.confirming_order));
-      const orderResult = await marketSellTotalPosition({ position, price: worstPrice });
-      trackPolymarketOrder({
-        orderResult,
-        context: {
+      await executePolymarketSellPosition({
+        position,
+        price: worstPrice,
+        matchedOrderMetadata: {
           eventSlug: position.eventSlug,
           marketSlug: position.slug,
           outcome: position.outcome,
-          tokenId: position.asset,
-          side: 'sell',
           estimatedFeeAmountUsd: fee,
+          manualFeeCapUsd: rainbowFee,
           spread,
           orderPriceUsd: worstPrice,
           bestPriceUsd: bestPrice,
@@ -128,7 +135,7 @@ export const PolymarketSellPositionSheet = memo(function PolymarketSellPositionS
     } finally {
       setIsProcessing(false);
     }
-  }, [bestPrice, fee, hasBlockedLiquidity, position, spread, worstPrice]);
+  }, [bestPrice, fee, hasBlockedLiquidity, position, rainbowFee, spread, worstPrice]);
 
   return (
     <PanelSheet innerBorderWidth={1} panelStyle={{ backgroundColor: isDarkMode ? globalColors.grey100 : POLYMARKET_BACKGROUND_LIGHT }}>

@@ -19,9 +19,8 @@ import { getPolymarketClobOrderErrorReason, PolymarketBuyPositionError } from '@
 import { useNewPositionForm } from '@/features/polymarket/screens/polymarket-new-position-sheet/hooks/useNewPositionForm';
 import { usePolymarketClients } from '@/features/polymarket/stores/derived/usePolymarketClients';
 import { usePolymarketBalanceStore } from '@/features/polymarket/stores/polymarketBalanceStore';
-import { executePolymarketBuyPosition, type PolymarketBuyPositionStep } from '@/features/polymarket/utils/executePolymarketBuyPosition';
+import { executePolymarketBuyPosition, type PolymarketBuyPositionStep } from '@/features/polymarket/utils/executePolymarketOrder';
 import { getOutcomeDescriptions } from '@/features/polymarket/utils/getOutcomeDescriptions';
-import { trackPolymarketOrder } from '@/features/polymarket/utils/polymarketOrderTracker';
 import { waitForPositionSizeUpdate } from '@/features/polymarket/utils/refetchPolymarketStores';
 import { mulWorklet, toFixedWorklet, trimTrailingZeros } from '@/framework/core/safeMath';
 import { opacity } from '@/framework/ui/utils/opacity';
@@ -61,6 +60,8 @@ export const PolymarketNewPositionSheet = memo(function PolymarketNewPositionShe
     isValidOrderAmount,
     amountToWin,
     fee,
+    orderSpendCap,
+    rainbowFee,
     spread,
     setBuyAmount,
     buyAmount,
@@ -93,26 +94,22 @@ export const PolymarketNewPositionSheet = memo(function PolymarketNewPositionShe
     setIsProcessing(true);
     setProcessingLabel(getBuyPositionProcessingLabel('preparing'));
     try {
-      const orderResult = await executePolymarketBuyPosition({
+      await executePolymarketBuyPosition({
         tokenId,
-        amount: buyAmount,
+        amount: orderSpendCap,
         price: worstPrice,
         negRisk: market.negRisk,
-        onStep: step => setProcessingLabel(getBuyPositionProcessingLabel(step)),
-      });
-      trackPolymarketOrder({
-        orderResult,
-        context: {
+        matchedOrderMetadata: {
           eventSlug: event.slug,
           marketSlug: market.slug,
           outcome,
-          tokenId,
-          side: 'buy',
           estimatedFeeAmountUsd: fee,
+          manualFeeCapUsd: rainbowFee,
           spread,
           bestPriceUsd: bestPrice,
           orderPriceUsd: worstPrice,
         },
+        onStep: step => setProcessingLabel(getBuyPositionProcessingLabel(step)),
       });
       setProcessingLabel(getBuyPositionProcessingLabel('confirming_order'));
       await waitForPositionSizeUpdate(tokenId);
@@ -149,7 +146,9 @@ export const PolymarketNewPositionSheet = memo(function PolymarketNewPositionShe
     fee,
     market.negRisk,
     market.slug,
+    orderSpendCap,
     outcome,
+    rainbowFee,
     spread,
     tokenId,
     worstPrice,
