@@ -6,7 +6,6 @@ import { createStackNavigator } from '@react-navigation/stack';
 
 import { SwapScreen } from '@/__swaps__/screens/Swap/Swap';
 import { ControlPanel } from '@/components/DappBrowser/control-panel/ControlPanel';
-import { LogSheet } from '@/components/debugging/LogSheet';
 import WalletErrorSheet from '@/components/wallet-error/WalletErrorSheet';
 import AppIconUnlockSheet from '@/features/app-icon/screens/AppIconUnlockSheet';
 import BackupSheet from '@/features/backup/components/BackupSheet';
@@ -15,6 +14,8 @@ import { CashDepositIntroPanel } from '@/features/cash/screens/cash-deposit-intr
 import { PROFILES } from '@/features/config/constants/experimental';
 import { useExperimentalFlag } from '@/features/config/hooks/experimentalHooks';
 import { SignTransactionSheet } from '@/features/dapp-request/screens/SignTransactionSheet';
+import { LogSheet } from '@/features/debug/screens/LogSheet';
+import { WalletDiagnosticsSheet } from '@/features/debug/screens/WalletDiagnosticsSheet';
 import RegisterENSNavigator from '@/features/ens/navigation/RegisterENSNavigator';
 import ENSAdditionalRecordsSheet from '@/features/ens/screens/ENSAdditionalRecordsSheet';
 import ENSConfirmRegisterSheet from '@/features/ens/screens/ENSConfirmRegisterSheet';
@@ -80,7 +81,6 @@ import { TransactionDetails } from '@/screens/transaction-details/TransactionDet
 
 import AvatarBuilder from '../screens/AvatarBuilder';
 import ChangeWalletSheet from '../screens/change-wallet/ChangeWalletSheet';
-import { WalletDiagnosticsSheet } from '../screens/Diagnostics';
 import ExpandedAssetSheet from '../screens/ExpandedAssetSheet';
 import ExplainSheet from '../screens/ExplainSheet';
 import ExternalLinkWarningSheet from '../screens/ExternalLinkWarningSheet';

@@ -9,8 +9,9 @@ import { WrappedAlert as Alert } from '@/helpers/alert';
 import useImportingWallet from '@/hooks/useImportingWallet';
 import * as i18n from '@/languages';
 import { logger, RainbowError } from '@/logger';
-import { DiagnosticsSecretInput } from '@/screens/Diagnostics/DiagnosticsSecretInput';
 import { useTheme } from '@/theme/ThemeContext';
+
+import { DiagnosticsSecretInput } from './DiagnosticsSecretInput';
 
 export const DiagnosticsItemRow = ({ data }: any) => {
   const { colors } = useTheme();

@@ -1,10 +1,10 @@
 import AppIconSettingsSection from '@/features/app-icon/components/AppIconSettingsSection';
+import { DevSection } from '@/features/debug/screens/DevSection';
 import * as i18n from '@/languages';
 import Routes from '@/navigation/routesNames';
 
 import WalletsAndBackup from './components/Backups/WalletsAndBackup';
 import CurrencySection from './components/CurrencySection';
-import DevSection from './components/DevSection';
 import LanguageSection from './components/LanguageSection';
 import NetworkSection from './components/NetworkSection';
 import NotificationsSection from './components/NotificationsSection';

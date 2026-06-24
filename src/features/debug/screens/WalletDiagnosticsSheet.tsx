@@ -19,10 +19,10 @@ import { logger, RainbowError } from '@/logger';
 import { useNavigation } from '@/navigation/Navigation';
 import Routes from '@/navigation/routesNames';
 import { type RootStackParamList } from '@/navigation/types';
-import { DiagnosticsContent } from '@/screens/Diagnostics/DiagnosticsContent';
 import { deriveAccountFromWalletInput } from '@/utils/wallet';
 
-import { createAndShareStateDumpFile } from './helpers/createAndShareStateDumpFile';
+import { DiagnosticsContent } from '../components/diagnostics/DiagnosticsContent';
+import { createAndShareStateDumpFile } from '../utils/createAndShareStateDumpFile';
 
 const encryptor = new AesEncryptor();
 

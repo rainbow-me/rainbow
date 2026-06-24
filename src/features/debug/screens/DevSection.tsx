@@ -36,17 +36,17 @@ import { getFCMToken } from '@/notifications/tokens';
 import { analyzeReactQueryStore, clearReactQueryCache } from '@/react-query/reactQueryUtils';
 import { clearImageMetadataCache } from '@/redux/imageMetadata';
 import { RevokeReason } from '@/screens/delegation/RevokeDelegationPanel';
+import Menu from '@/screens/SettingsSheet/components/Menu';
+import MenuContainer from '@/screens/SettingsSheet/components/MenuContainer';
+import MenuItem from '@/screens/SettingsSheet/components/MenuItem';
 import { SettingsLoadingIndicator } from '@/screens/SettingsSheet/components/SettingsLoadingIndicator';
 import { useConnectedToAnvilStore } from '@/state/connectedToAnvil';
-import { analyzeUserAssets } from '@/state/debug/analyzeUserAssets';
 import { nonceActions } from '@/state/nonces';
 import { pendingTransactionsActions } from '@/state/pendingTransactions';
 import { clearWalletState, useWalletsStore } from '@/state/wallets/walletsStore';
 import { delegation, type DelegationWithChainId } from '@rainbow-me/delegation';
 
-import Menu from './Menu';
-import MenuContainer from './MenuContainer';
-import MenuItem from './MenuItem';
+import { analyzeUserAssets } from '../utils/analyzeUserAssets';
 
 // Dev-only select that drives the mock CashDepositSetupStatus, so QA can exercise every entry-point branch.
 function CashDepositSetupStatusMenuItem() {
@@ -93,7 +93,7 @@ function CashDepositSetupStatusMenuItem() {
   );
 }
 
-const DevSection = () => {
+export const DevSection = () => {
   const { navigate } = useNavigation();
   const config = useExperimentalConfigStore(state => state.config);
   const setConnectedToAnvil = useConnectedToAnvilStore.getState().setConnectedToAnvil;
@@ -556,5 +556,3 @@ function confirmKeychainAlert(): Promise<boolean> {
     ]);
   });
 }
-
-export default DevSection;
