@@ -29,7 +29,7 @@ jobs:
           fi
 
       - name: Checkout repo
-        uses: actions/checkout@08eba0b27e820071cde6df949e0beb9ba4906955 # v4.3.0
+        uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v7.0.0
         with:
           ref: ${{ inputs.ref }}
 
@@ -131,7 +131,7 @@ jobs:
         run: echo "dir=$(yarn config get cacheFolder)" >> "$GITHUB_OUTPUT"
 
       - name: Cache Yarn dependencies
-        uses: actions/cache@0057852bfaa89a56745cba8c7296529d2fc39830 # v4.3.0
+        uses: actions/cache@2c8a9bd7457de244a408f35966fab2fb45fda9c8 # v6.0.0
         with:
           path: |
             ${{ steps.yarn-cache-dir-path.outputs.dir }}
@@ -207,7 +207,7 @@ jobs:
           jarsigner -verify -verbose:summary -certs "$aab" | head -40
 
       - name: Upload AAB
-        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4.6.2
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
         with:
           name: ${{ steps.version.outputs.label }}-aab
           path: android/app/build/outputs/bundle/release/${{ steps.version.outputs.label }}.aab
@@ -215,7 +215,7 @@ jobs:
           if-no-files-found: error
 
       - name: Upload APK
-        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4.6.2
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
         with:
           name: ${{ steps.version.outputs.label }}-apk
           path: android/app/build/outputs/apk/release/${{ steps.version.outputs.label }}.apk

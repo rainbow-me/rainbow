@@ -29,7 +29,7 @@ runs:
         sudo udevadm trigger --name-match=kvm
 
     - name: AVD cache
-      uses: actions/cache@0057852bfaa89a56745cba8c7296529d2fc39830
+      uses: actions/cache@2c8a9bd7457de244a408f35966fab2fb45fda9c8 # v6.0.0
       id: avd-cache
       with:
         path: |
