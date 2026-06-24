@@ -16,11 +16,11 @@ import { useSwapEstimatedGasFee } from '@/__swaps__/screens/Swap/hooks/useEstima
 import { useSwapContext } from '@/__swaps__/screens/Swap/providers/swap-provider';
 import { TIMING_CONFIGS } from '@/components/animations/animationConfigs';
 import { AnimatedText, useForegroundColor, type TextProps } from '@/design-system';
-import { useIsSponsoredSwap } from '@/features/delegation/sponsoredSwapStore';
 import { type GasSettings } from '@/features/gas/hooks/useCustomGas';
 import { opacity } from '@/framework/ui/utils/opacity';
 import { useDelayedValue } from '@/hooks/reanimated/useDelayedValue';
 import { useStoreSharedValue } from '@/state/internal/hooks/useStoreSharedValue';
+import { useIsSponsoredSwap } from '@/state/swaps/sponsoredSwapStore';
 
 type EstimatedSwapGasFeeProps = { gasSettings?: GasSettings } & Partial<
   Pick<TextProps, 'align' | 'color' | 'size' | 'style' | 'weight' | 'tabularNumbers'>

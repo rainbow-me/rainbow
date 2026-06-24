@@ -7,7 +7,6 @@ import { getColorValueForThemeWorklet } from '@/__swaps__/utils/swaps';
 import ButtonPressAnimation from '@/components/animations/ButtonPressAnimation';
 import { GestureHandlerButton } from '@/components/buttons/GestureHandlerButton';
 import { Box, Inline, Text, TextIcon, useColorMode, useForegroundColor } from '@/design-system';
-import { useIsSponsoredSwap } from '@/features/delegation/sponsoredSwapStore';
 import { GasSpeedMenu } from '@/features/gas/components/GasSpeedMenu';
 import { useCustomGasSettings, type GasSettings } from '@/features/gas/hooks/useCustomGas';
 import { setSelectedGasSpeed, useSelectedGasSpeed } from '@/features/gas/hooks/useSelectedGas';
@@ -18,6 +17,7 @@ import { weiToGwei } from '@/features/gas/utils/parseGas';
 import { ChainId } from '@/features/network/types/backendNetworks';
 import { add, formatNumber } from '@/helpers/utilities';
 import * as i18n from '@/languages';
+import { useIsSponsoredSwap } from '@/state/swaps/sponsoredSwapStore';
 import { swapsStore } from '@/state/swaps/swapsStore';
 import { THICK_BORDER_WIDTH } from '@/styles/constants';
 

@@ -5,6 +5,7 @@ import { useRemoteConfigStore } from '@/features/config/stores/remoteConfig';
 import { createDelegationPublicClient, isPreparedCallsExecutionSponsored } from '@/features/delegation/calls';
 import { createPreparedCallsStore } from '@/features/delegation/preparedCallsStore';
 import { predictSponsoredCallsExecution } from '@/features/delegation/sponsoredCalls';
+import { supportsDelegatedExecution } from '@/features/delegation/willDelegate';
 import { useBackendNetworksStore } from '@/features/network/stores/backendNetworksStore';
 import { time } from '@/framework/core/utils/time';
 import { getProvider } from '@/handlers/web3';
@@ -13,8 +14,6 @@ import { useSwapsStore } from '@/state/swaps/swapsStore';
 import { getAccountAddress, useWalletsStore } from '@/state/wallets/walletsStore';
 import { execute, type PreparedCallsExecution } from '@rainbow-me/delegation';
 import { type CrosschainQuote, type Quote, type QuoteError } from '@rainbow-me/swaps';
-
-import { supportsDelegatedExecution } from './willDelegate';
 
 // ============ Types ========================================================== //
 
