@@ -401,10 +401,6 @@
           "navigating_your_wallet": "Navegando en tu billetera"
         }
       },
-      "ledger": {
-        "title": "Asociar una billetera de hardware",
-        "body": "Conecte su Ledger Nano X a Rainbow a través de Bluetooth."
-      },
       "receive": {
         "receive_assets": "Recibir activos",
         "copy_address": "Copiar dirección",
