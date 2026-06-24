@@ -437,6 +437,10 @@
           "navigating_your_wallet": "अपने वॉलेट को नेविगेट करना"
         }
       },
+      "ledger": {
+        "title": "हार्डवेयर वॉलेट को जोड़ें",
+        "body": "अपना Ledger Nano X को Rainbow से Bluetooth के माध्यम से जोड़ें।"
+      },
       "receive": {
         "receive_assets": "संपत्ति प्राप्त करें",
         "copy_address": "पता कॉपी करें",

@@ -437,6 +437,10 @@
           "navigating_your_wallet": "Cüzdanınızı Kullanma"
         }
       },
+      "ledger": {
+        "title": "Donanım Cüzdanı Eşleştirme",
+        "body": "Ledger Nano X'inizi Rainbow ile Bluetooth üzerinden bağlayın."
+      },
       "receive": {
         "receive_assets": "Varlıklar al",
         "copy_address": "Adresi Kopyala",

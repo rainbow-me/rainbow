@@ -437,6 +437,10 @@
           "navigating_your_wallet": "지갑 탐색하기"
         }
       },
+      "ledger": {
+        "title": "하드웨어 지갑 페어링",
+        "body": "당신의 렛저 나노 X를 블루투스를 통해 Rainbow에 연결하세요."
+      },
       "receive": {
         "receive_assets": "자산 받기",
         "copy_address": "주소 복사",

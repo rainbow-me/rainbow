@@ -437,6 +437,10 @@
           "navigating_your_wallet": "การนำทางกระเป๋าของคุณ"
         }
       },
+      "ledger": {
+        "title": "จับคู่กระเป๋าเงินฮาร์ดแวร์",
+        "body": "เชื่อมต่อ Ledger Nano X ของคุณกับ Rainbow ผ่าน Bluetooth."
+      },
       "receive": {
         "receive_assets": "รับสินทรัพย์",
         "copy_address": "คัดลอกที่อยู่",

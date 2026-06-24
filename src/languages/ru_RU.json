@@ -437,6 +437,10 @@
           "navigating_your_wallet": "Навигация в вашем кошельке"
         }
       },
+      "ledger": {
+        "title": "Сопоставьте аппаратный кошелек",
+        "body": "Подключите ваш Ledger Nano X к Rainbow через Bluetooth."
+      },
       "receive": {
         "receive_assets": "Получить активы",
         "copy_address": "Скопировать адрес",
