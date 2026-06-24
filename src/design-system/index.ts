@@ -8,7 +8,6 @@ export { ColorModeProvider } from './color/ColorMode';
 export { Columns, Column } from './components/Columns/Columns';
 export { DesignSystemProvider } from './context/DesignSystemContext';
 export { Cover } from './components/Cover/Cover';
-export { DebugLayout } from './components/DebugLayout/DebugLayout';
 export { globalColors } from './color/palettes';
 export { Heading } from './components/Heading/Heading';
 export { HitSlop } from './components/HitSlop/HitSlop';
