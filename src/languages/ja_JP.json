@@ -401,10 +401,6 @@
           "navigating_your_wallet": "ウォレットの操作方法"
         }
       },
-      "ledger": {
-        "title": "ハードウェアウォレットをペアリングする",
-        "body": "ブルートゥース経由であなたのレジャーナノエックスをレインボーに接続する"
-      },
       "receive": {
         "receive_assets": "アセットを受け取る",
         "copy_address": "アドレスをコピー",
