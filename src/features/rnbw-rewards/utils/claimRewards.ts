@@ -3,6 +3,7 @@ import { type Address } from 'viem';
 
 import { analytics } from '@/analytics';
 import { type NativeCurrencyKey } from '@/features/currency/types';
+import { LedgerSigner } from '@/features/hardware-wallet/utils/LedgerSigner';
 import { useRewardsBalanceStore } from '@/features/rnbw-rewards/stores/rewardsBalanceStore';
 import {
   type ClaimRewardsResponse,
@@ -14,7 +15,6 @@ import { getPlatformResult } from '@/features/rnbw-rewards/utils/getPlatformResu
 import { pollClaimStatus, type PollClaimStatusResult } from '@/features/rnbw-rewards/utils/pollClaimStatus';
 import { time } from '@/framework/core/utils/time';
 import { type RainbowFetchResponse } from '@/framework/data/http/rainbowFetch';
-import { LedgerSigner } from '@/handlers/LedgerSigner';
 import { getProvider } from '@/handlers/web3';
 import { logger, RainbowError } from '@/logger';
 import { loadWallet, signTypedDataMessage } from '@/model/wallet';

@@ -5,9 +5,10 @@ import { Box, Inset, Stack, Text } from '@/design-system';
 import * as i18n from '@/languages';
 import { useNavigation } from '@/navigation/Navigation';
 import Routes from '@/navigation/routesNames';
-import { ActionButton } from '@/screens/hardware-wallets/components/ActionButton';
-import { Layout } from '@/screens/hardware-wallets/components/Layout';
-import { TRANSLATIONS } from '@/screens/hardware-wallets/constants';
+
+import { ActionButton } from '../components/ActionButton';
+import { Layout } from '../components/Layout';
+import { TRANSLATIONS } from './constants';
 
 export const PairHardwareWalletSuccessSheet = () => {
   const { navigate } = useNavigation();

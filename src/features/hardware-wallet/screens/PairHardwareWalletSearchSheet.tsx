@@ -3,16 +3,16 @@ import React from 'react';
 import { useSetRecoilState } from 'recoil';
 
 import { Box, Inset, Stack, Text } from '@/design-system';
-import { useLedgerImport } from '@/hooks/useLedgerImport';
 import * as i18n from '@/languages';
 import { useNavigation } from '@/navigation/Navigation';
-import { LedgerImportDeviceIdAtom } from '@/navigation/PairHardwareWalletNavigator';
 import Routes from '@/navigation/routesNames';
-import { ActionButton } from '@/screens/hardware-wallets/components/ActionButton';
-import { Layout } from '@/screens/hardware-wallets/components/Layout';
-import { TRANSLATIONS } from '@/screens/hardware-wallets/constants';
 
-import { CancelButton } from './components/CancelButton';
+import { ActionButton } from '../components/ActionButton';
+import { CancelButton } from '../components/CancelButton';
+import { Layout } from '../components/Layout';
+import { useLedgerImport } from '../hooks/useLedgerImport';
+import { LedgerImportDeviceIdAtom } from '../navigation/PairHardwareWalletNavigator';
+import { TRANSLATIONS } from './constants';
 
 export const PairHardwareWalletSearchSheet = () => {
   const { navigate, goBack } = useNavigation();

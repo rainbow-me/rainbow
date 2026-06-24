@@ -10,6 +10,10 @@ import gridDotsLight from '@/assets/dot-grid-light.png';
 import ledgerNano from '@/assets/ledger-nano.png';
 import { Box, Inline, Inset, Stack, Text } from '@/design-system';
 import * as i18n from '@/languages';
+import { useTheme } from '@/theme/ThemeContext';
+
+import { GRID_DOTS_SIZE, LEDGER_NANO_HEIGHT, LEDGER_NANO_WIDTH } from '../components/NanoXDeviceAnimation';
+import { TryAgainButton } from '../components/TryAgainButton';
 import {
   HARDWARE_TX_ERROR_KEY,
   HARDWARE_WALLET_TX_NAVIGATOR_SHEET_HEIGHT,
@@ -17,12 +21,8 @@ import {
   ledgerStorage,
   readyForPollingAtom,
   triggerPollerCleanupAtom,
-} from '@/navigation/HardwareWalletTxNavigator';
-import { GRID_DOTS_SIZE, LEDGER_NANO_HEIGHT, LEDGER_NANO_WIDTH } from '@/screens/hardware-wallets/components/NanoXDeviceAnimation';
-import { TRANSLATIONS } from '@/screens/hardware-wallets/constants';
-import { useTheme } from '@/theme/ThemeContext';
-
-import { TryAgainButton } from './components/TryAgainButton';
+} from '../navigation/HardwareWalletTxNavigator';
+import { TRANSLATIONS } from './constants';
 
 const INDICATOR_SIZE = 9;
 

@@ -8,14 +8,15 @@ import ledgerNanoUnlock from '@/assets/ledger-nano-unlock.png';
 import { ImgixImage } from '@/components/images';
 import { Box, Inset, Stack, Text } from '@/design-system';
 import useDimensions from '@/hooks/useDimensions';
-import { useLedgerConnect } from '@/hooks/useLedgerConnect';
 import * as i18n from '@/languages';
 import { useNavigation } from '@/navigation/Navigation';
 import Routes from '@/navigation/routesNames';
 import { type RootStackParamList } from '@/navigation/types';
-import { Layout } from '@/screens/hardware-wallets/components/Layout';
-import { TRANSLATIONS } from '@/screens/hardware-wallets/constants';
-import { LEDGER_ERROR_CODES } from '@/utils/ledger';
+
+import { Layout } from '../components/Layout';
+import { useLedgerConnect } from '../hooks/useLedgerConnect';
+import { LEDGER_ERROR_CODES } from '../utils/ledger';
+import { TRANSLATIONS } from './constants';
 
 const IMAGE_ASPECT_RATIO = 1.547;
 const IMAGE_LEFT_OFFSET = 36;

@@ -4,8 +4,9 @@ import TransportBLE from '@ledgerhq/react-native-hw-transport-ble';
 import { useRecoilState, useRecoilValue, useSetRecoilState } from 'recoil';
 
 import { logger, RainbowError } from '@/logger';
-import { LedgerIsReadyAtom, readyForPollingAtom, triggerPollerCleanupAtom } from '@/navigation/HardwareWalletTxNavigator';
-import { checkLedgerConnection, LEDGER_ERROR_CODES } from '@/utils/ledger';
+
+import { LedgerIsReadyAtom, readyForPollingAtom, triggerPollerCleanupAtom } from '../navigation/HardwareWalletTxNavigator';
+import { checkLedgerConnection, LEDGER_ERROR_CODES } from '../utils/ledger';
 
 /**
  * React hook used for checking ledger connections and handling connnection error states

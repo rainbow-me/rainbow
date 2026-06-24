@@ -12,14 +12,15 @@ import useImportingWallet from '@/hooks/useImportingWallet';
 import * as i18n from '@/languages';
 import { logger, RainbowError } from '@/logger';
 import { useNavigation } from '@/navigation/Navigation';
-import { LedgerImportDeviceIdAtom } from '@/navigation/PairHardwareWalletNavigator';
 import Routes from '@/navigation/routesNames';
 import { type RootStackParamList } from '@/navigation/types';
-import { ActionButton } from '@/screens/hardware-wallets/components/ActionButton';
-import { Layout } from '@/screens/hardware-wallets/components/Layout';
-import { TRANSLATIONS } from '@/screens/hardware-wallets/constants';
-import { checkLedgerConnection, LEDGER_ERROR_CODES } from '@/utils/ledger';
 import { openInBrowser } from '@/utils/openInBrowser';
+
+import { ActionButton } from '../components/ActionButton';
+import { Layout } from '../components/Layout';
+import { LedgerImportDeviceIdAtom } from '../navigation/PairHardwareWalletNavigator';
+import { checkLedgerConnection, LEDGER_ERROR_CODES } from '../utils/ledger';
+import { TRANSLATIONS } from './constants';
 
 const NUMBER_BOX_SIZE = 28;
 const HORIZONTAL_INSET = 36;
