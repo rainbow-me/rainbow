@@ -10,7 +10,7 @@ const EXCLUDED_URLS = [
   'https://clients3.google.com/generate_204', // Offline connection detection
 ];
 
-export default function monitorNetwork(showNetworkRequests, showNetworkResponses) {
+export function monitorNetwork(showNetworkRequests, showNetworkResponses) {
   const requestCache = {};
 
   const getEmojiForStatusCode = status => {

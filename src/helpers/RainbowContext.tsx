@@ -7,6 +7,7 @@ import { Wallet } from '@ethersproject/wallet';
 import { useSharedValue } from 'react-native-reanimated';
 
 import { IS_DEV, IS_TEST } from '@/env';
+import { DevButton } from '@/features/debug/components/DevButton';
 import Emoji from '@/framework/ui/components/Emoji';
 import { logger, RainbowError } from '@/logger';
 import Navigation from '@/navigation/Navigation';
@@ -14,7 +15,6 @@ import { getFavorites } from '@/resources/favorites';
 import { useConnectedToAnvilStore } from '@/state/connectedToAnvil';
 import Routes from '@rainbow-me/routes';
 
-import DevButton from '../components/dev-buttons/DevButton';
 import { showConnectToAnvilButton, showReloadButton, showSwitchModeButton } from '../config/debug';
 import { useTheme } from '../theme/ThemeContext';
 

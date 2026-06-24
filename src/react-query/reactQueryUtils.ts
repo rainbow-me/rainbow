@@ -1,8 +1,8 @@
 import { hydrate } from '@tanstack/react-query';
 import { createMMKV } from 'react-native-mmkv';
 
-import { showLogSheet, type LogEntry } from '@/components/debugging/LogSheet';
 import { IS_DEV, IS_STORE_INSTALL } from '@/env';
+import { showLogSheet, type LogEntry } from '@/features/debug/screens/LogSheet';
 import { getDateFormatter } from '@/helpers/intl';
 import { logger, RainbowError } from '@/logger';
 import { persistOptions, queryClient } from '@/react-query';

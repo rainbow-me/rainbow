@@ -6,7 +6,8 @@ import RNShare from 'react-native-share';
 import { getAllActiveSessions } from '@/features/wallet-connect/services/sessions';
 import { logger, RainbowError } from '@/logger';
 import store from '@/redux/store';
-import { APP_STATE_DUMP_FILE_NAME } from '@/screens/Diagnostics/constants';
+
+import { APP_STATE_DUMP_FILE_NAME } from '../constants/diagnostics';
 
 // function partially developed by ChatGPT that helps remove and trace cyclic references in javascript objects
 function cyclicReplacer() {

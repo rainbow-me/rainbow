@@ -11,8 +11,9 @@ import Spinner from '@/components/Spinner';
 import { Box, Stack, Text } from '@/design-system';
 import { opacity } from '@/framework/ui/utils/opacity';
 import * as i18n from '@/languages';
-import { DiagnosticsItemRow } from '@/screens/Diagnostics/DiagnosticsItemRow';
 import { useTheme } from '@/theme/ThemeContext';
+
+import { DiagnosticsItemRow } from './DiagnosticsItemRow';
 
 const LoadingSpinner = Platform.OS === 'android' ? Spinner : ActivityIndicator;
 

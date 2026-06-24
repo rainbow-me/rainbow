@@ -5,10 +5,9 @@ import { Gesture, GestureDetector } from 'react-native-gesture-handler';
 import Animated, { useAnimatedStyle, useSharedValue, withDecay, withSpring } from 'react-native-reanimated';
 import RNRestart from 'react-native-restart';
 
+import ButtonPressAnimation from '@/components/animations/ButtonPressAnimation';
+import { Icon } from '@/components/icons';
 import styled from '@/framework/ui/styled-thing';
-
-import ButtonPressAnimation from '../animations/ButtonPressAnimation';
-import { Icon } from '../icons';
 
 const Button = styled(ButtonPressAnimation)(({ size, color }) => ({
   alignItems: 'center',
@@ -29,7 +28,7 @@ const Wrapper = styled(Animated.View)(({ size }) => ({
   width: size,
 }));
 
-export default function DevButton({
+export function DevButton({
   color: givenColor,
   onPress = () => RNRestart.Restart(),
   children = <Icon color="white" name="warning" size="lmedium" />,

@@ -1,5 +1,6 @@
-import { showLogSheet } from '@/components/debugging/LogSheet';
 import { userAssetsStore } from '@/state/assets/userAssets';
+
+import { showLogSheet } from '../screens/LogSheet';
 
 function getRelativeTime(date: string | number | Date): string {
   const now = Date.now();
