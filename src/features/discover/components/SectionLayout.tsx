@@ -3,7 +3,7 @@ import { event } from '@/analytics/event';
 import { MarketCarousel } from '@/features/discover/components/markets/layouts/MarketCarousel';
 import { MarketGrid } from '@/features/discover/components/markets/layouts/MarketGrid';
 import { MarketList } from '@/features/discover/components/markets/layouts/MarketList';
-import { type SectionDescriptor, type SectionLayoutProps } from '@/features/discover/types/sectionLayout';
+import { type SectionLayoutProps } from '@/features/discover/types/sectionLayout';
 import { type SurfaceLeaf } from '@/features/placements/surfaces/types';
 import { type PlacementItem } from '@/features/placements/types';
 import * as i18n from '@/languages';
@@ -14,24 +14,6 @@ import * as i18n from '@/languages';
  */
 export function resolveSectionTitle(section: Pick<SurfaceLeaf, 'id' | 'label'>): string {
   return i18n.t(`discover.sections.${section.id}`, { defaultValue: section.label || section.id });
-}
-
-/**
- * Header count that matches what the layout actually renders: list layouts show the full
- * (expandable) item count; carousel/grid cap at `limit` exactly as renderSectionLayout slices.
- * Returns undefined for an empty count so the header omits the badge.
- */
-export function getRenderedHeaderCount<T extends PlacementItem>({
-  descriptor,
-  itemCount,
-  limit,
-}: {
-  descriptor: SectionDescriptor<T>;
-  itemCount: number;
-  limit: number | undefined;
-}): number | undefined {
-  const count = descriptor.layout === 'list' ? itemCount : limit !== undefined ? Math.min(itemCount, limit) : itemCount;
-  return count > 0 ? count : undefined;
 }
 
 export function renderSectionLayout<T extends PlacementItem>({
