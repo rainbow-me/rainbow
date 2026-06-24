@@ -401,10 +401,6 @@
           "navigating_your_wallet": "导航您的钱包"
         }
       },
-      "ledger": {
-        "title": "配对硬件钱包",
-        "body": "通过蓝牙将您的Ledger Nano X连接到Rainbow。"
-      },
       "receive": {
         "receive_assets": "接收资产",
         "copy_address": "复制地址",
