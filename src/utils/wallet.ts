@@ -4,6 +4,7 @@ import { Wallet } from '@ethersproject/wallet';
 import { mnemonicToSeed } from 'bip39';
 import { hdkey } from 'ethereumjs-wallet';
 
+import { getEthApp } from '@/features/hardware-wallet/utils/ledger';
 import { addHexPrefix, ensureChecksumAddress } from '@/handlers/web3';
 import WalletTypes from '@/helpers/walletTypes';
 import {
@@ -16,8 +17,6 @@ import {
   type EthereumWalletSeed,
   type ReadOnlyWallet,
 } from '@/model/wallet';
-
-import { getEthApp } from './ledger';
 
 const { RNBip39 } = NativeModules;
 
