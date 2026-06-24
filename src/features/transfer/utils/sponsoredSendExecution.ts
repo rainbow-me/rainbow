@@ -4,6 +4,7 @@ import { isAddress, type Address } from 'viem';
 
 import { type ParsedAddressAsset } from '@/entities/tokens';
 import { type NewTransaction } from '@/entities/transactions';
+import { isPreparedCallsExecutionSponsored } from '@/features/delegation/calls';
 import { type ChainId } from '@/features/network/types/backendNetworks';
 import { requireAddress } from '@/framework/core/evm/address';
 import { encodeErc20Transfer } from '@/framework/core/evm/erc20Calldata';
@@ -12,7 +13,6 @@ import { isNativeAsset } from '@/handlers/assets';
 import { resolveNameOrAddress } from '@/handlers/web3';
 import { type Call, type ExecuteCallsResult, type PreparedCallsExecution } from '@rainbow-me/delegation';
 
-import { isPreparedCallsExecutionSponsored } from './calls';
 import { buildPendingSendTransaction } from './sponsoredSend';
 
 type ExecuteSponsoredSendWithTracking = (params: {

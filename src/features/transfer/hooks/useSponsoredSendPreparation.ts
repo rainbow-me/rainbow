@@ -6,14 +6,15 @@ import { isAddress, type Address } from 'viem';
 import { type ParsedAddressAsset } from '@/entities/tokens';
 import { useRemoteConfig } from '@/features/config/stores/remoteConfig';
 import { isPreparedCallsExecutionSponsored } from '@/features/delegation/calls';
-import { predictSponsoredSend, prepareSponsoredSend } from '@/features/delegation/sponsoredSend';
-import { buildSendCallFromSendDetails } from '@/features/delegation/sponsoredSendExecution';
 import { supportsDelegatedExecution } from '@/features/delegation/willDelegate';
 import { useBackendNetworksStore } from '@/features/network/stores/backendNetworksStore';
 import { type ChainId } from '@/features/network/types/backendNetworks';
 import { parsePositiveRawAmount } from '@/framework/core/evm/units';
 import { ensureError, logger } from '@/logger';
 import { type Call, type PreparedCallsExecution } from '@rainbow-me/delegation';
+
+import { predictSponsoredSend, prepareSponsoredSend } from '../utils/sponsoredSend';
+import { buildSendCallFromSendDetails } from '../utils/sponsoredSendExecution';
 
 type PreparedSponsoredSendState =
   | { call: Call; key: string; preparedCalls: PreparedCallsExecution | null }
