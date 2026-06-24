@@ -20,7 +20,7 @@ jest.mock('@ledgerhq/hw-app-eth', () => ({
   },
 }));
 
-jest.mock('@/utils/ledger', () => ({
+jest.mock('./ledger', () => ({
   getEthApp: (deviceId: string) => mockGetEthApp(deviceId),
 }));
 

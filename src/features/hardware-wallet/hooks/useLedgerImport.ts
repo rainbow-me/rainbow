@@ -10,7 +10,8 @@ import {
   showBluetoothPoweredOffAlert,
 } from '@/framework/ui/utils/bluetoothPermissions';
 import { logger, RainbowError } from '@/logger';
-import { ledgerErrorHandler, type LEDGER_ERROR_CODES } from '@/utils/ledger';
+
+import { ledgerErrorHandler, type LEDGER_ERROR_CODES } from '../utils/ledger';
 
 /**
  * React hook used for checking connecting to a ledger device for the first time

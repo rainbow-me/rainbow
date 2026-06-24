@@ -10,11 +10,11 @@ import { convertAmountToNativeDisplayWorklet } from '@/features/currency/utils/n
 import { safeBigInt } from '@/features/gas/hooks/useEstimatedGasFee';
 import { type GasSettings } from '@/features/gas/types/gas';
 import { buildGasParams, weiToGwei } from '@/features/gas/utils/parseGas';
+import { type LedgerSigner } from '@/features/hardware-wallet/utils/LedgerSigner';
 import { useBackendNetworksStore } from '@/features/network/stores/backendNetworksStore';
 import { type ChainId } from '@/features/network/types/backendNetworks';
 import { lessThanOrEqualToWorklet } from '@/framework/core/safeMath';
 import { time } from '@/framework/core/utils/time';
-import { type LedgerSigner } from '@/handlers/LedgerSigner';
 import { getProvider, toHex } from '@/handlers/web3';
 import { formatNumber, multiply } from '@/helpers/utilities';
 import { logger, RainbowError } from '@/logger';

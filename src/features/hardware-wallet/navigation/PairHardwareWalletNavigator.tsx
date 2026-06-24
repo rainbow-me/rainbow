@@ -9,12 +9,12 @@ import { SimpleSheet } from '@/components/sheet/SimpleSheet';
 import { BackgroundProvider } from '@/design-system';
 import useDimensions from '@/hooks/useDimensions';
 import Routes from '@/navigation/routesNames';
-import { NanoXDeviceAnimation } from '@/screens/hardware-wallets/components/NanoXDeviceAnimation';
-import { PairHardwareWalletIntroSheet } from '@/screens/hardware-wallets/PairHardwareWalletIntroSheet';
-import { PairHardwareWalletSearchSheet } from '@/screens/hardware-wallets/PairHardwareWalletSearchSheet';
-import { PairHardwareWalletSigningSheet } from '@/screens/hardware-wallets/PairHardwareWalletSigningSheet';
+import { type RootStackParamList } from '@/navigation/types';
 
-import { type RootStackParamList } from './types';
+import { NanoXDeviceAnimation } from '../components/NanoXDeviceAnimation';
+import { PairHardwareWalletIntroSheet } from '../screens/PairHardwareWalletIntroSheet';
+import { PairHardwareWalletSearchSheet } from '../screens/PairHardwareWalletSearchSheet';
+import { PairHardwareWalletSigningSheet } from '../screens/PairHardwareWalletSigningSheet';
 
 const Swipe = createMaterialTopTabNavigator();
 

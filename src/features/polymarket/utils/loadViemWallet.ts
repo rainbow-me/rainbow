@@ -2,10 +2,10 @@ import { type Provider } from '@ethersproject/providers';
 import { createWalletClient, http, type Hex } from 'viem';
 import { privateKeyToAccount } from 'viem/accounts';
 
+import { LedgerSigner } from '@/features/hardware-wallet/utils/LedgerSigner';
 import * as kc from '@/features/local-auth/keychain';
 import { useBackendNetworksStore } from '@/features/network/stores/backendNetworksStore';
 import { ChainId } from '@/features/network/types/backendNetworks';
-import { LedgerSigner } from '@/handlers/LedgerSigner';
 import walletTypes from '@/helpers/walletTypes';
 import { logger, RainbowError } from '@/logger';
 import { getHdPath, isHardwareWalletKey, loadPrivateKey, WalletLibraryType } from '@/model/wallet';

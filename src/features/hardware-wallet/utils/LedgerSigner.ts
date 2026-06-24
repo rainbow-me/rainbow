@@ -16,8 +16,9 @@ import { time } from '@/framework/core/utils/time';
 import { ensureError, logger, RainbowError } from '@/logger';
 import Navigation from '@/navigation/Navigation';
 import Routes from '@/navigation/routesNames';
-import { getEthApp } from '@/utils/ledger';
 import { withTimeout } from '@/utils/promise';
+
+import { getEthApp } from './ledger';
 
 type LedgerTransactionResolution = Awaited<ReturnType<typeof ledgerService.resolveTransaction>>;
 

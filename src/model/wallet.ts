@@ -16,6 +16,8 @@ import { type GetOptions, type SetOptions } from 'react-native-keychain';
 
 import { analytics } from '@/analytics';
 import type { EthereumAddress } from '@/entities/wallet';
+import { setHardwareTXError } from '@/features/hardware-wallet/navigation/HardwareWalletTxNavigator';
+import { LedgerSigner } from '@/features/hardware-wallet/utils/LedgerSigner';
 import * as kc from '@/features/local-auth/keychain';
 import {
   addressKey,
@@ -28,7 +30,6 @@ import {
 } from '@/features/local-auth/keychainConstants';
 import * as keychain from '@/features/local-auth/legacyKeychain';
 import { maybeAuthenticateWithPIN, maybeAuthenticateWithPINAndCreateIfNeeded } from '@/features/local-auth/pinAuthentication';
-import { LedgerSigner } from '@/handlers/LedgerSigner';
 import { addHexPrefix, isHexString, isHexStringIgnorePrefix, isValidBluetoothDeviceId, isValidMnemonic } from '@/handlers/web3';
 import { WrappedAlert as Alert } from '@/helpers/alert';
 import { createSignature } from '@/helpers/signingWallet';
@@ -36,7 +37,6 @@ import walletTypes, { EthereumWalletType } from '@/helpers/walletTypes';
 import * as i18n from '@/languages';
 import { ensureError, logger, RainbowError } from '@/logger';
 import { DebugContext } from '@/logger/debugContext';
-import { setHardwareTXError } from '@/navigation/HardwareWalletTxNavigator';
 import Navigation from '@/navigation/Navigation';
 import Routes from '@/navigation/routesNames';
 import { WalletNotificationRelationship } from '@/notifications/settings/constants';

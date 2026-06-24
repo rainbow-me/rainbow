@@ -12,12 +12,12 @@ import { Box } from '@/design-system';
 import { RequestSource } from '@/features/dapp-request/types';
 import { getENSAdditionalRecordsSheetHeight } from '@/features/ens/screens/ENSAdditionalRecordsSheet';
 import { ENSConfirmRegisterSheetHeight } from '@/features/ens/screens/ENSConfirmRegisterSheet';
+import { HARDWARE_WALLET_TX_NAVIGATOR_SHEET_HEIGHT } from '@/features/hardware-wallet/navigation/HardwareWalletTxNavigator';
 import { getPositionSheetHeight } from '@/features/positions/screens/PositionSheet';
 import { getSheetHeight as getSendConfirmationSheetHeight } from '@/features/transfer/screens/SendConfirmationSheet';
 import styled from '@/framework/ui/styled-thing';
 import WalletBackupStepTypes from '@/helpers/walletBackupStepTypes';
 import { type BottomSheetNavigationOptions } from '@/navigation/bottom-sheet/types';
-import { HARDWARE_WALLET_TX_NAVIGATOR_SHEET_HEIGHT } from '@/navigation/HardwareWalletTxNavigator';
 import { onWillPop } from '@/navigation/Navigation';
 import {
   type ExplainSheetRouteParams,

@@ -8,16 +8,16 @@ import { atom, useRecoilState, useSetRecoilState } from 'recoil';
 import { SimpleSheet } from '@/components/sheet/SimpleSheet';
 import { BackgroundProvider } from '@/design-system';
 import useDimensions from '@/hooks/useDimensions';
-import { useLedgerConnect } from '@/hooks/useLedgerConnect';
 import { logger } from '@/logger';
 import { useNavigation } from '@/navigation/Navigation';
 import Routes from '@/navigation/routesNames';
-import { PairHardwareWalletAgainSheet } from '@/screens/hardware-wallets/PairHardwareWalletAgainSheet';
-import { PairHardwareWalletErrorSheet } from '@/screens/hardware-wallets/PairHardwareWalletErrorSheet';
+import { type RootStackParamList } from '@/navigation/types';
 import { useSelectedWallet } from '@/state/wallets/walletsStore';
-import { LEDGER_ERROR_CODES } from '@/utils/ledger';
 
-import { type RootStackParamList } from './types';
+import { useLedgerConnect } from '../hooks/useLedgerConnect';
+import { PairHardwareWalletAgainSheet } from '../screens/PairHardwareWalletAgainSheet';
+import { PairHardwareWalletErrorSheet } from '../screens/PairHardwareWalletErrorSheet';
+import { LEDGER_ERROR_CODES } from '../utils/ledger';
 
 export const ledgerStorage = createMMKV({
   id: 'ledgerStorage',

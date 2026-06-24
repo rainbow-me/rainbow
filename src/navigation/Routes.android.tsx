@@ -20,6 +20,8 @@ import RegisterENSNavigator from '@/features/ens/navigation/RegisterENSNavigator
 import ENSAdditionalRecordsSheet from '@/features/ens/screens/ENSAdditionalRecordsSheet';
 import ENSConfirmRegisterSheet from '@/features/ens/screens/ENSConfirmRegisterSheet';
 import SelectENSSheet from '@/features/ens/screens/SelectENSSheet';
+import { HardwareWalletTxNavigator } from '@/features/hardware-wallet/navigation/HardwareWalletTxNavigator';
+import { PairHardwareWalletNavigator } from '@/features/hardware-wallet/navigation/PairHardwareWalletNavigator';
 import { useShowKingOfTheHill } from '@/features/king-of-the-hill/hooks/useShowKingOfTheHill';
 import { KingOfTheHillExplainSheet } from '@/features/king-of-the-hill/screens/KingOfTheHillExplainSheet';
 import PinAuthenticationScreen from '@/features/local-auth/screens/PinAuthenticationScreen';
@@ -124,10 +126,8 @@ import {
   walletconnectBottomSheetPreset,
   wcPromptPreset,
 } from './effects';
-import { HardwareWalletTxNavigator } from './HardwareWalletTxNavigator';
 import { InitialRouteContext } from './initialRoute';
 import { onNavigationStateChange } from './onNavigationStateChange';
-import { PairHardwareWalletNavigator } from './PairHardwareWalletNavigator';
 import Routes from './routesNames';
 import { SwipeNavigator } from './SwipeNavigator';
 import { type RootStackParamList } from './types';
