@@ -25,7 +25,7 @@ jobs:
       artifact-id: ${{ steps.build.outputs.artifact-id }}
     steps:
       - name: Checkout repo
-        uses: actions/checkout@08eba0b27e820071cde6df949e0beb9ba4906955
+        uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v7.0.0
 
       - name: Build
         id: build
@@ -60,7 +60,7 @@ jobs:
       ARTIFACTS_FOLDER: e2e-artifacts
     steps:
       - name: Checkout repo
-        uses: actions/checkout@08eba0b27e820071cde6df949e0beb9ba4906955
+        uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v7.0.0
 
       - name: Setup env key
         uses: ./.github/actions/ssh/
@@ -109,7 +109,7 @@ jobs:
 
       - name: Upload artifacts
         if: ${{ always() }}
-        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
         with:
           name: artifacts-${{ matrix.shard-index }}
           path: ${{ env.ARTIFACTS_FOLDER }}
@@ -125,7 +125,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout repo
-        uses: actions/checkout@08eba0b27e820071cde6df949e0beb9ba4906955
+        uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v7.0.0
 
       - name: Notify Slack
         uses: ./.github/actions/slack-notify-failure

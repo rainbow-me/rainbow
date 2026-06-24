@@ -139,7 +139,7 @@ runs:
       run: echo "dir=$(yarn config get cacheFolder)" >> $GITHUB_OUTPUT
 
     - name: Cache Yarn dependencies
-      uses: actions/cache@0057852bfaa89a56745cba8c7296529d2fc39830
+      uses: actions/cache@2c8a9bd7457de244a408f35966fab2fb45fda9c8 # v6.0.0
       with:
         path: |
           ${{ steps.yarn-cache-dir-path.outputs.dir }}
