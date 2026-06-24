@@ -30,7 +30,6 @@ import {
   useColorMode,
   useForegroundColor,
 } from '@/design-system';
-import { useIsSponsoredSwap } from '@/features/delegation/sponsoredSwapStore';
 import { useWillExecuteDelegation, willExecuteDelegation } from '@/features/delegation/willDelegate';
 import { useSelectedGasSpeed } from '@/features/gas/hooks/useSelectedGas';
 import { useEstimatedTime } from '@/features/gas/utils/meteorology';
@@ -41,6 +40,7 @@ import { convertRawAmountToBalance, convertRawAmountToBalanceWorklet, handleSign
 import * as i18n from '@/languages';
 import { useNavigation } from '@/navigation/Navigation';
 import Routes from '@/navigation/routesNames';
+import { useIsSponsoredSwap } from '@/state/swaps/sponsoredSwapStore';
 import { swapsStore, useSwapsStore } from '@/state/swaps/swapsStore';
 import { getAccountAddress, useAccountAddress } from '@/state/wallets/walletsStore';
 import { THICK_BORDER_WIDTH } from '@/styles/constants';

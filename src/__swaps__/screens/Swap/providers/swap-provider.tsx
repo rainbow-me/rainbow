@@ -38,7 +38,6 @@ import { trackSwapEvent } from '@/__swaps__/utils/trackSwapEvent';
 import { analytics } from '@/analytics';
 import { getRemoteConfig } from '@/features/config/stores/remoteConfig';
 import { isInsufficientSponsorBalanceError } from '@/features/delegation/sponsoredCalls';
-import { getPreparedSponsoredSwap } from '@/features/delegation/sponsoredSwapStore';
 import { supportsDelegatedExecution } from '@/features/delegation/willDelegate';
 import { clearCustomGasSettings } from '@/features/gas/hooks/useCustomGas';
 import { getGasSettingsBySpeed, getSelectedGas } from '@/features/gas/hooks/useSelectedGas';
@@ -62,6 +61,7 @@ import { userAssetsStoreManager } from '@/state/assets/userAssetsStoreManager';
 import { useConnectedToAnvilStore } from '@/state/connectedToAnvil';
 import { getNextNonce } from '@/state/nonces';
 import { executeFn, Screens, startTimeToSignTracking, TimeToSignOperation } from '@/state/performance/performance';
+import { getPreparedSponsoredSwap } from '@/state/swaps/sponsoredSwapStore';
 import { swapsStore } from '@/state/swaps/swapsStore';
 import { SwapType, type CrosschainQuote, type Quote, type QuoteError } from '@rainbow-me/swaps';
 
