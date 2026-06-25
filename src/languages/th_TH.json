@@ -508,6 +508,11 @@
         "needsWallet": "ต้องมีกระเป๋าเงิน",
         "ready": "พร้อม"
       },
+      "cash_order_outcome": {
+        "title": "ผลลัพธ์ของคำสั่งซื้อเงินสด",
+        "succeed": "จะสำเร็จ",
+        "fail": "จะล้มเหลว"
+      },
       "status": "สถานะ",
       "sync_codepush": "ซิงค์ CodePush",
       "simulate_device_transfer": "จำลองการโอนถ่ายอุปกรณ์",
@@ -1688,7 +1693,11 @@
         "hold_to_add": "กดค้างเพื่อเพิ่ม",
         "enter_amount": "ป้อนจำนวน",
         "money_is_added_in": "เพิ่มเงินในสกุล",
-        "usdc": "USDC"
+        "usdc": "USDC",
+        "adding_cash": "กำลังเพิ่มเงินสด",
+        "buy_error_title": "การซื้อไม่สำเร็จ",
+        "buy_error_generic": "เกิดข้อผิดพลาดบางอย่าง ลองอีกครั้ง",
+        "payment_rejected": "บัตรของคุณปฏิเสธการชำระเงินนี้"
       }
     },
     "points": {
