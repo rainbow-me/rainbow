@@ -508,6 +508,11 @@
         "needsWallet": "يتطلب محفظة",
         "ready": "جاهز"
       },
+      "cash_order_outcome": {
+        "title": "نتيجة طلب النقد",
+        "succeed": "سينجح",
+        "fail": "سيفشل"
+      },
       "status": "الحالة",
       "sync_codepush": "مز synchrony CodePush",
       "simulate_device_transfer": "محاكاة نقل الجهاز",
@@ -1688,7 +1693,11 @@
         "hold_to_add": "اضغط مطولاً للإضافة",
         "enter_amount": "أدخل كمية",
         "money_is_added_in": "تُضاف الأموال بعملة",
-        "usdc": "USDC"
+        "usdc": "USDC",
+        "adding_cash": "إضافة نقود",
+        "buy_error_title": "فشل الشراء",
+        "buy_error_generic": "حدث خطأ ما. حاول مرة أخرى",
+        "payment_rejected": "رفضت بطاقتك هذه الدفعة"
       }
     },
     "points": {
