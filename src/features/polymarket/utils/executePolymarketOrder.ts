@@ -7,7 +7,7 @@ import { getPolymarketClobClient } from '@/features/polymarket/stores/derived/us
 import { usePolymarketBalanceStore } from '@/features/polymarket/stores/polymarketBalanceStore';
 import { type PolymarketOrderResult, type SuccessfulOrderResult } from '@/features/polymarket/types';
 import { getPolygonUsdcBalance, wrapUsdcAmountToPusd } from '@/features/polymarket/utils/collateral';
-import { collectPolymarketManualTradeFee } from '@/features/polymarket/utils/collectPolymarketManualTradeFee';
+import { collectPolymarketTradeFee } from '@/features/polymarket/utils/collectPolymarketTradeFee';
 import { getPolymarketWallet } from '@/features/polymarket/utils/polymarketWallet';
 import { ensureTradingApprovals } from '@/features/polymarket/utils/tradingApprovals';
 import { divWorklet, mulWorklet } from '@/framework/core/safeMath';
@@ -34,7 +34,7 @@ type MatchedOrderMetadata = {
   marketSlug: string;
   outcome: string;
   estimatedFeeAmountUsd?: number | string;
-  manualFeeCapUsd?: number | string;
+  quotedTradeFeeUsd: number | string;
   bestPriceUsd: number | string;
   orderPriceUsd: number | string;
   spread?: number | string;
@@ -77,7 +77,7 @@ const TERMINAL_FAILURE_STATUSES: readonly string[] = ['canceled', 'expired', 'fa
 
 /**
  * Executes a Polymarket buy market order and starts matched-order analytics and
- * Rainbow manual fee collection after the CLOB accepts the order.
+ * trade fee collection after the CLOB accepts the order.
  */
 export async function executePolymarketBuyPosition({
   tokenId,
@@ -123,8 +123,8 @@ export async function executePolymarketBuyPosition({
 
 /**
  * Executes a Polymarket sell market order for the full position and starts
- * matched-order analytics and Rainbow manual fee collection after the CLOB
- * accepts the order.
+ * matched-order analytics and trade fee collection after the CLOB accepts the
+ * order.
  */
 export async function executePolymarketSellPosition({
   matchedOrderMetadata,
@@ -257,12 +257,12 @@ async function pollForMatchedOrderFeeCollection({
 }
 
 function recordMatchedOrderAndCollectFee(context: MatchedOrderContext, amounts: MatchedOrderAmounts, orderId: string) {
-  trackMatchedPolymarketOrderAnalytics(context, amounts);
+  trackMatchedOrderAnalytics(context, amounts);
 
-  void collectPolymarketManualTradeFee({
-    matchedTokenAmount: amounts.tokens,
-    maxFeeUsd: context.manualFeeCapUsd,
+  void collectPolymarketTradeFee({
+    matchedAmounts: amounts,
     orderId,
+    quotedFeeUsd: context.quotedTradeFeeUsd,
     side: context.side,
     tokenId: context.tokenId,
   });
@@ -270,7 +270,7 @@ function recordMatchedOrderAndCollectFee(context: MatchedOrderContext, amounts: 
 
 // ============ Analytics ====================================================== //
 
-function trackMatchedPolymarketOrderAnalytics(context: MatchedOrderContext, amounts: MatchedOrderAmounts) {
+function trackMatchedOrderAnalytics(context: MatchedOrderContext, amounts: MatchedOrderAmounts) {
   const feeAmountUsd = context.estimatedFeeAmountUsd !== undefined ? String(context.estimatedFeeAmountUsd) : '0';
 
   analytics.track(analytics.event.predictionsPlaceOrder, {

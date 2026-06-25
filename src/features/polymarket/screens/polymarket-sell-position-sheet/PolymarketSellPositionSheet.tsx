@@ -109,7 +109,7 @@ export const PolymarketSellPositionSheet = memo(function PolymarketSellPositionS
           marketSlug: position.slug,
           outcome: position.outcome,
           estimatedFeeAmountUsd: fee,
-          manualFeeCapUsd: rainbowFee,
+          quotedTradeFeeUsd: rainbowFee,
           spread,
           orderPriceUsd: worstPrice,
           bestPriceUsd: bestPrice,

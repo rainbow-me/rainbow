@@ -58,7 +58,6 @@ export const POLYMARKET_REFERRAL_PARAM = 'r';
 export const POLYMARKET_REFERRAL_CODE = 'rnbw';
 
 export const POLYMARKET_RAINBOW_FEE_RECIPIENT_ADDRESS: Address = '0x757758506d6a4F8a433F8BECaFd52545f9Cb050a';
-export const POLYMARKET_RAINBOW_FEE_USD_PER_TOKEN = '0.01';
 
 export const BUILDER_CONFIG = new BuilderConfig({
   remoteBuilderConfig: { url: POLYMARKET_SIGNING_PROXY_URL, token: PLATFORM_API_KEY },

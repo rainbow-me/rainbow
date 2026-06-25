@@ -104,7 +104,7 @@ export const PolymarketNewPositionSheet = memo(function PolymarketNewPositionShe
           marketSlug: market.slug,
           outcome,
           estimatedFeeAmountUsd: fee,
-          manualFeeCapUsd: rainbowFee,
+          quotedTradeFeeUsd: rainbowFee,
           spread,
           bestPriceUsd: bestPrice,
           orderPriceUsd: worstPrice,

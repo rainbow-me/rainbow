@@ -2,40 +2,39 @@ import { type Address } from 'viem';
 
 import { POLYMARKET_RAINBOW_FEE_RECIPIENT_ADDRESS } from '@/features/polymarket/constants';
 import { buildUnwrapPusdToUsdcTransactions } from '@/features/polymarket/utils/collateral';
-import {
-  calculatePolymarketManualFeeUsd,
-  capPolymarketManualFeeUsd,
-  getPolymarketManualFeeAmount,
-} from '@/features/polymarket/utils/polymarketManualFee';
+import { calculateFeeToCollectUsd, getTradeFeeAmount } from '@/features/polymarket/utils/polymarketTradeFee';
 import { getPolymarketWallet } from '@/features/polymarket/utils/polymarketWallet';
 import { executeRelayTransaction } from '@/features/polymarket/utils/relayExecution';
 import { ensureError, logger, RainbowError } from '@/logger';
 
-type CollectPolymarketManualTradeFeeParams = {
-  matchedTokenAmount: string | number;
-  maxFeeUsd?: string | number;
+type CollectTradeFeeParams = {
+  matchedAmounts: {
+    tokens: string | number;
+    usd: string | number;
+  };
   orderId: string;
+  quotedFeeUsd: string | number;
   side: 'buy' | 'sell';
   tokenId: string;
 };
 
-export async function collectPolymarketManualTradeFee({
-  matchedTokenAmount,
-  maxFeeUsd,
+/**
+ * Collects the matched order trade fee, capped by the quoted fee reservation.
+ */
+export async function collectPolymarketTradeFee({
+  matchedAmounts,
   orderId,
+  quotedFeeUsd,
   side,
   tokenId,
-}: CollectPolymarketManualTradeFeeParams): Promise<void> {
+}: CollectTradeFeeParams): Promise<void> {
   let feeAmountUsd = '0';
   let proxyAddress: Address | undefined;
 
   try {
-    feeAmountUsd = capPolymarketManualFeeUsd({
-      feeUsd: calculatePolymarketManualFeeUsd(matchedTokenAmount),
-      maxFeeUsd,
-    });
+    feeAmountUsd = calculateFeeToCollectUsd({ matchedAmounts, quotedFeeUsd });
 
-    const amount = getPolymarketManualFeeAmount(feeAmountUsd);
+    const amount = getTradeFeeAmount(feeAmountUsd);
     if (amount.isZero()) return;
 
     const wallet = await getPolymarketWallet();
@@ -51,12 +50,13 @@ export async function collectPolymarketManualTradeFee({
     await executeRelayTransaction(transactions, 'collect Rainbow Polymarket fee');
   } catch (e) {
     const error = ensureError(e);
-    logger.error(new RainbowError('[collectPolymarketManualTradeFee] Error collecting fee', error), {
+    logger.error(new RainbowError('[collectPolymarketTradeFee] Error collecting fee', error), {
       feeAmountUsd,
-      matchedTokenAmount: String(matchedTokenAmount),
-      maxFeeUsd: maxFeeUsd === undefined ? undefined : String(maxFeeUsd),
+      matchedTokens: String(matchedAmounts.tokens),
+      matchedUsd: String(matchedAmounts.usd),
       orderId,
       proxyAddress,
+      quotedFeeUsd: String(quotedFeeUsd),
       side,
       tokenId,
     });

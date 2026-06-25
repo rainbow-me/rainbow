@@ -1,7 +1,7 @@
 import { type OrderBook } from '@/features/polymarket/stores/polymarketOrderBookStore';
 import { calculateFillFeesUsd, EMPTY_POLYMARKET_FEE_INFO, type PolymarketFeeInfo } from '@/features/polymarket/utils/fees';
 import { calculateOrderBookSpread, getBestOrderBookPrice, simulateMarketFills } from '@/features/polymarket/utils/orderBookFills';
-import { calculatePolymarketManualFeeUsd } from '@/features/polymarket/utils/polymarketManualFee';
+import { calculateTradeFeeUsd } from '@/features/polymarket/utils/polymarketTradeFee';
 import { greaterThanWorklet } from '@/framework/core/safeMath';
 
 export type SellExecution = {
@@ -45,20 +45,20 @@ export function calculateSellExecution({
 
   const execution = simulateMarketFills({ levels: orderBook.bids, targetAmount: Number(sellAmountTokens), targetType: 'shares' });
   const effectiveFeeInfo = feeInfo ?? EMPTY_POLYMARKET_FEE_INFO;
+  const averagePrice = execution.totalShares > 0 ? execution.totalNotionalUsd / execution.totalShares : 0;
   const providerFee = calculateFillFeesUsd({ feeInfo: effectiveFeeInfo, fills: execution.fills });
-  const rainbowFee = Number(calculatePolymarketManualFeeUsd(execution.totalShares));
+  const rainbowFee = Number(calculateTradeFeeUsd({ notionalUsd: execution.totalNotionalUsd, price: averagePrice }));
   const fee = providerFee + rainbowFee;
   const grossProceedsUsd = String(execution.totalNotionalUsd);
   const expectedPayoutUsd = String(execution.totalNotionalUsd - fee);
   const tokensSold = String(execution.totalShares);
-  const averagePrice = execution.totalShares > 0 ? String(execution.totalNotionalUsd / execution.totalShares) : '0';
 
   const bestBidPrice = getBestOrderBookPrice(orderBook.bids);
   const hasNoLiquidityAtMarketPrice = !greaterThanWorklet(bestBidPrice, '0');
   const spread = calculateOrderBookSpread({ asks: orderBook.asks, bids: orderBook.bids });
 
   return {
-    averagePrice,
+    averagePrice: String(averagePrice),
     worstPrice: String(execution.worstPrice),
     bestPrice: bestBidPrice,
     fee: String(fee),

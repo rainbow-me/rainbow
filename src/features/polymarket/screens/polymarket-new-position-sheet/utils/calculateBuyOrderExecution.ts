@@ -9,7 +9,7 @@ import {
   type PolymarketFeeInfo,
 } from '@/features/polymarket/utils/fees';
 import { calculateOrderBookSpread, getBestOrderBookPrice, simulateMarketFills } from '@/features/polymarket/utils/orderBookFills';
-import { calculatePolymarketManualFeeUsd } from '@/features/polymarket/utils/polymarketManualFee';
+import { calculateTradeFeeUsd } from '@/features/polymarket/utils/polymarketTradeFee';
 import { ceilWorklet, divWorklet, mulWorklet } from '@/framework/core/safeMath';
 
 export type BuyOrderExecution = {
@@ -149,12 +149,13 @@ function quoteBuySpendCap({ asks, feeInfo, spendCapUsd }: { asks: OrderBookLevel
   });
 
   const execution = simulateMarketFills({ levels: asks, targetAmount: sdkAdjustedOrderNotionalUsd, targetType: 'notionalUsd' });
+  const averagePrice = execution.totalShares > 0 ? execution.totalNotionalUsd / execution.totalShares : 0;
   const providerFeeAmountUsd = calculateFillFeesUsd({ feeInfo, fills: execution.fills });
-  const rainbowFeeAmountUsd = Number(calculatePolymarketManualFeeUsd(execution.totalShares));
+  const rainbowFeeAmountUsd = Number(calculateTradeFeeUsd({ notionalUsd: execution.totalNotionalUsd, price: averagePrice }));
   const feeAmountUsd = providerFeeAmountUsd + rainbowFeeAmountUsd;
 
   return {
-    averagePrice: execution.totalShares > 0 ? execution.totalNotionalUsd / execution.totalShares : 0,
+    averagePrice,
     feeAmountUsd,
     hasInsufficientLiquidity: execution.hasInsufficientLiquidity,
     orderSpendCapUsd: spendCapUsd,
@@ -221,7 +222,7 @@ function calculateMinimumBuySpendUsd({ bestAskPrice, feeInfo }: { bestAskPrice: 
       price: bestAskPrice,
       shares: minimumShares,
     }) +
-    Number(calculatePolymarketManualFeeUsd(minimumShares))
+    Number(calculateTradeFeeUsd({ notionalUsd: minimumNotionalUsd, price: bestAskPrice }))
   );
 }
 
