@@ -5,6 +5,7 @@ import { type CardType } from '@/components/cards/GenericCard';
 import { type LearnCategory } from '@/components/cards/utils/types';
 import { type FiatProviderName } from '@/entities/f2c';
 import { type UnlockableAppIconKey } from '@/features/app-icon/models/appIcons';
+import { type OrderFailureReason, type RampNetwork } from '@/features/cash/services/rampClient';
 import { type CandleResolution, type ChartType } from '@/features/charts/types';
 import { type RequestSource } from '@/features/dapp-request/types';
 import { type ENSRapActionType } from '@/features/ens/raps/common';
@@ -121,6 +122,10 @@ export const event = {
   rewardsViewedSheet: 'rewards.viewed_sheet',
   cashDepositIntroViewed: 'cash.deposit_intro_viewed',
   addCashViewed: 'cash.add_cash_viewed',
+  cashAmountEntered: 'cash.amount_entered',
+  cashBuyOrderSubmitted: 'cash.buy_submitted',
+  cashBuyOrderCompleted: 'cash.buy_completed',
+  cashBuyOrderFailed: 'cash.buy_failed',
   rewardsPressedPendingEarningsCard: 'rewards.pressed_pending_earnings_card',
   rewardsPressedAvailableCard: 'rewards.pressed_available_card',
   rewardsPressedPositionCard: 'rewards.pressed_position_card',
@@ -527,6 +532,30 @@ export type EventProperties = {
   [event.rewardsViewedSheet]: undefined;
   [event.cashDepositIntroViewed]: undefined;
   [event.addCashViewed]: undefined;
+  [event.cashAmountEntered]: {
+    /** The chosen USD amount as a decimal string, e.g. "50". */
+    amount: string;
+    /** Which amount-entry surface the user used first. */
+    entryMode: 'preset' | 'keypad';
+  };
+  [event.cashBuyOrderSubmitted]: {
+    /** The submitted USD amount as a decimal string. */
+    amount: string;
+  };
+  [event.cashBuyOrderCompleted]: {
+    orderId: string;
+    fiatAmount: string;
+    fiatCurrency: string;
+    cryptoAmount: string;
+    network: RampNetwork;
+    /** Milliseconds from order creation to completion, derived from the backend `createdTime`/`completedTime`. */
+    timeToUsdcMs: number;
+  };
+  [event.cashBuyOrderFailed]: {
+    orderId: string;
+    failureReason: OrderFailureReason | null;
+    errorCode: 'PAYMENT_REJECTED' | 'GENERIC';
+  };
   [event.rewardsPressedPendingEarningsCard]: undefined;
   [event.rewardsPressedAvailableCard]: undefined;
   [event.rewardsPressedPositionCard]: { position: number };

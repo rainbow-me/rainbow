@@ -50,6 +50,7 @@ import {
 import { TabBarIcon } from '@/components/tab-bar/TabBarIcon';
 import { Box, ColorModeProvider, Column, Columns, globalColors, useColorMode } from '@/design-system';
 import { IS_TEST } from '@/env';
+import { CashBuyOrderWatcher } from '@/features/cash/components/CashBuyOrderWatcher';
 import { DAPP_BROWSER, LAZY_TABS, RNBW_MEMBERSHIP, RNBW_REWARDS } from '@/features/config/constants/experimental';
 import { useExperimentalFlag } from '@/features/config/hooks/experimentalHooks';
 import { useRemoteConfig } from '@/features/config/stores/remoteConfig';
@@ -743,6 +744,7 @@ export function SwipeNavigator() {
 
       <PendingTransactionWatcher />
       <AssetUpdateTransactionWatcher />
+      <CashBuyOrderWatcher />
     </FlexItem>
   );
 }

@@ -1,7 +1,7 @@
-import React, { memo, useCallback, useState } from 'react';
-import { StyleSheet } from 'react-native';
+import React, { memo, useCallback, useEffect, useState } from 'react';
+import { Platform, StyleSheet } from 'react-native';
 
-import { useFocusEffect } from '@react-navigation/native';
+import { useFocusEffect, useNavigation } from '@react-navigation/native';
 import Animated, { FadeIn, FadeOut, LinearTransition } from 'react-native-reanimated';
 
 import { analytics } from '@/analytics';
@@ -14,11 +14,16 @@ import { HoldToActivateButton } from '@/components/hold-to-activate-button/HoldT
 import { NumberPad } from '@/components/number-pad/NumberPad';
 import { DEFAULT_HANDLE_COLOR_DARK, DEFAULT_HANDLE_COLOR_LIGHT, PanelSheet } from '@/components/PanelSheet/PanelSheet';
 import { Box, Inline, Text, useColorMode, useForegroundColor } from '@/design-system';
+import { type LinkedCard } from '@/features/cash/services/authSession';
+import { cashOrderService } from '@/features/cash/services/cashOrderService';
+import { cashBuyOrderActions, useCashBuyOrderStore, useCashBuyPhase } from '@/features/cash/stores/cashBuyOrderStore';
 import { ChainId } from '@/features/network/types/backendNetworks';
 import { opacity } from '@/framework/ui/utils/opacity';
+import { WrappedAlert as Alert } from '@/helpers/alert';
+import usePrevious from '@/hooks/usePrevious';
 import * as i18n from '@/languages';
 import { USDC_ADDRESS } from '@/references/constants';
-import { useAccountProfileInfo } from '@/state/wallets/walletsStore';
+import { useAccountAddress, useAccountProfileInfo } from '@/state/wallets/walletsStore';
 import { DEVICE_HEIGHT, DEVICE_WIDTH } from '@/utils/deviceUtils';
 import getUrlForTrustIconFallback from '@/utils/getUrlForTrustIconFallback';
 import safeAreaInsetValues from '@/utils/safeAreaInsetValues';
@@ -176,25 +181,36 @@ function KeypadFundingCaption() {
   );
 }
 
-function AddCashActionButton({ canSubmit, isKeypad, onHoldToAdd }: { canSubmit: boolean; isKeypad: boolean; onHoldToAdd: () => void }) {
+function getActionButtonLabel(canSubmitAmount: boolean): string {
+  return canSubmitAmount ? `􀎽  ${i18n.t(i18n.l.cash.add_cash_screen.hold_to_add)}` : i18n.t(i18n.l.cash.add_cash_screen.enter_amount);
+}
+
+function AddCashActionButton({
+  canSubmitAmount,
+  isKeypad,
+  isProcessing,
+  onHoldToAdd,
+}: {
+  canSubmitAmount: boolean;
+  isKeypad: boolean;
+  isProcessing: boolean;
+  onHoldToAdd: () => void;
+}) {
   const { isDarkMode } = useColorMode();
   const accent = useForegroundColor('accent');
-  const buttonLabel = canSubmit
-    ? `􀎽  ${i18n.t(i18n.l.cash.add_cash_screen.hold_to_add)}`
-    : i18n.t(i18n.l.cash.add_cash_screen.enter_amount);
 
   return (
     <Box paddingHorizontal="20px" style={{ paddingBottom: isKeypad ? safeAreaInsetValues.bottom + 16 : 32 }}>
       <HoldToActivateButton
         backgroundColor="accent"
-        color={canSubmit ? 'label' : 'labelTertiary'}
-        disabled={!canSubmit}
+        color={canSubmitAmount ? 'label' : 'labelTertiary'}
+        disabled={!canSubmitAmount || isProcessing}
         disabledBackgroundColor={isDarkMode ? opacity(accent, 0.1) : 'fillTertiary'}
         height={48}
-        isProcessing={false}
-        label={buttonLabel}
+        isProcessing={isProcessing}
+        label={getActionButtonLabel(canSubmitAmount)}
         onLongPress={onHoldToAdd}
-        processingLabel={i18n.t(i18n.l.cash.add_cash_screen.hold_to_add)}
+        processingLabel={i18n.t(i18n.l.cash.add_cash_screen.adding_cash)}
         showBiometryIcon={false}
         size="22pt"
         testID="cash-deposit-add-cash-hold-to-add"
@@ -206,34 +222,48 @@ function AddCashActionButton({ canSubmit, isKeypad, onHoldToAdd }: { canSubmit: 
 
 function PresetAmountContent({
   amount,
+  canSubmitAmount,
+  isProcessing,
+  linkedCard,
   onAddFrom,
   onHoldToAdd,
   onMore,
+  onSelectPreset,
   onSettings,
 }: {
   amount: AddCashAmount;
+  canSubmitAmount: boolean;
+  isProcessing: boolean;
+  linkedCard: LinkedCard;
   onAddFrom: () => void;
   onHoldToAdd: () => void;
   onMore: () => void;
+  onSelectPreset: (amount: number) => void;
   onSettings: () => void;
 }) {
   return (
     <>
       <AddCashHeader onSettings={onSettings} topPadding="28px" />
-      <AmountPresetGrid onMore={onMore} onSelectPreset={amount.selectPresetAmount} selectedAmount={amount.selectedPresetAmount} />
-      <AddFromRow onPress={onAddFrom} />
-      <AddCashActionButton canSubmit={amount.canSubmit} isKeypad={false} onHoldToAdd={onHoldToAdd} />
+      <AmountPresetGrid onMore={onMore} onSelectPreset={onSelectPreset} selectedAmount={amount.selectedPresetAmount} />
+      <AddFromRow card={linkedCard} onPress={onAddFrom} />
+      <AddCashActionButton canSubmitAmount={canSubmitAmount} isKeypad={false} isProcessing={isProcessing} onHoldToAdd={onHoldToAdd} />
     </>
   );
 }
 
 function KeypadAmountContent({
   amount,
+  canSubmitAmount,
+  isProcessing,
+  linkedCard,
   onAddFrom,
   onHoldToAdd,
   onSettings,
 }: {
   amount: AddCashAmount;
+  canSubmitAmount: boolean;
+  isProcessing: boolean;
+  linkedCard: LinkedCard;
   onAddFrom: () => void;
   onHoldToAdd: () => void;
   onSettings: () => void;
@@ -246,7 +276,7 @@ function KeypadAmountContent({
         <AmountDisplay displayedAmount={amount.displayedAmount} />
       </Box>
       <KeypadFundingCaption />
-      <AddFromRow onPress={onAddFrom} />
+      <AddFromRow card={linkedCard} onPress={onAddFrom} />
       <Box as={Animated.View} entering={FadeIn.duration(160)} paddingBottom="8px">
         <NumberPad
           activeFieldId={amount.activeFieldId}
@@ -255,7 +285,7 @@ function KeypadAmountContent({
           stripFormatting={sanitizeAmount}
         />
       </Box>
-      <AddCashActionButton canSubmit={amount.canSubmit} isKeypad onHoldToAdd={onHoldToAdd} />
+      <AddCashActionButton canSubmitAmount={canSubmitAmount} isKeypad isProcessing={isProcessing} onHoldToAdd={onHoldToAdd} />
     </>
   );
 }
@@ -265,20 +295,74 @@ export const AddCashSheet = memo(function AddCashSheet() {
   const amount = useAddCashAmount(DEFAULT_SELECTED_AMOUNT);
   const { resetKeypadAmount } = amount;
 
+  const navigation = useNavigation();
+  const accountAddress = useAccountAddress();
+  const phase = useCashBuyPhase();
+  const previousPhase = usePrevious(phase);
+  const errorCode = useCashBuyOrderStore(state => state.errorCode);
+  const isProcessing = phase === 'pending';
+  const linkedCard = cashOrderService.getLinkedCard();
+
+  useEffect(() => {
+    if (previousPhase !== undefined) return;
+    // TODO(cash): Replace this block with the DES-133 pending-order flow once it is ready:
+    // https://linear.app/rainbow/issue/DES-133/if-when-creating-a-buy-cash-order-takes-a-lot-of-time
+    if (isProcessing) {
+      Alert.alert('Request Pending');
+      if (Platform.OS === 'android') {
+        // navigation.goBack() does not work immediately on Android,
+        // so this would do until we know for sure how pending-order flow
+        // is going to look like
+        setTimeout(() => navigation.goBack(), 500);
+      } else {
+        navigation.goBack();
+      }
+    } else {
+      cashBuyOrderActions.reset();
+    }
+  }, [isProcessing, navigation, previousPhase]);
+
+  useEffect(() => {
+    if (previousPhase === undefined) return;
+    if (phase === 'error') {
+      // TODO(cash): replace this Alert with an in-place error state once the design is ready.
+      Alert.alert(
+        i18n.t(i18n.l.cash.add_cash_screen.buy_error_title),
+        errorCode === 'PAYMENT_REJECTED'
+          ? i18n.t(i18n.l.cash.add_cash_screen.payment_rejected)
+          : i18n.t(i18n.l.cash.add_cash_screen.buy_error_generic)
+      );
+    }
+    if (phase === 'success') navigation.goBack();
+  }, [phase, errorCode, navigation, previousPhase]);
+
   useFocusEffect(
     useCallback(() => {
       analytics.track(analytics.event.addCashViewed);
     }, [])
   );
 
-  // Hold to Add -> create buy order. Buy pipeline lands in a later unit; inert for now.
-  const handleHoldToAdd = useCallback(() => {
-    // TODO(cash): createBuyOrder + register pending transaction once the Add Cash buy unit lands.
-  }, []);
+  // Sample the amount whenever the user taps a preset chip.
+  const handleSelectPreset = useCallback(
+    (presetAmount: number) => {
+      analytics.track(analytics.event.cashAmountEntered, { amount: String(presetAmount), entryMode: 'preset' });
+      amount.selectPresetAmount(presetAmount);
+    },
+    [amount]
+  );
 
-  // Add From -> payment-method picker. Lands with card linking; inert for now.
+  // Sample each keypad amount the user types; `canSubmit` skips the "0" reset and empty values.
+  useEffect(() => {
+    if (mode !== 'keypad' || !amount.canSubmit) return;
+    analytics.track(analytics.event.cashAmountEntered, { amount: amount.amount, entryMode: 'keypad' });
+  }, [mode, amount.canSubmit, amount.amount]);
+
+  const handleHoldToAdd = useCallback(() => {
+    cashBuyOrderActions.submitBuyOrder({ depositAmount: amount.amount, walletAddress: accountAddress });
+  }, [amount.amount, accountAddress]);
+
   const handleAddFrom = useCallback(() => {
-    // TODO(cash): open the payment-method picker once card linking lands.
+    // TODO(cash): open the payment-method picker once card linking lands (APP-3780).
   }, []);
 
   const handleSettings = useCallback(() => {
@@ -302,13 +386,25 @@ export const AddCashSheet = memo(function AddCashSheet() {
     >
       <Box background="surfaceSecondary" style={isKeypad ? styles.fullScreenContent : undefined}>
         {isKeypad ? (
-          <KeypadAmountContent amount={amount} onAddFrom={handleAddFrom} onHoldToAdd={handleHoldToAdd} onSettings={handleSettings} />
+          <KeypadAmountContent
+            amount={amount}
+            canSubmitAmount={amount.canSubmit}
+            isProcessing={isProcessing}
+            linkedCard={linkedCard}
+            onAddFrom={handleAddFrom}
+            onHoldToAdd={handleHoldToAdd}
+            onSettings={handleSettings}
+          />
         ) : (
           <PresetAmountContent
             amount={amount}
+            canSubmitAmount={amount.canSubmit}
+            isProcessing={isProcessing}
+            linkedCard={linkedCard}
             onAddFrom={handleAddFrom}
             onHoldToAdd={handleHoldToAdd}
             onMore={handleMore}
+            onSelectPreset={handleSelectPreset}
             onSettings={handleSettings}
           />
         )}

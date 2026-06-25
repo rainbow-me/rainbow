@@ -19,7 +19,7 @@ tags:
     file: ../../utils/SetCashDepositSetupStatus.yaml
     env:
       STATUS: ready
-# A ready member skips the intro panel and lands straight on the Add Cash sheet.
+# A ready member skips the intro panel and lands straight on the Add Cash presets sheet.
 - tapOn:
     id: buy-button
 - assertVisible:
@@ -30,3 +30,18 @@ tags:
     id: cash-deposit-add-cash-hold-to-add
 - assertNotVisible:
     id: cash-deposit-intro-set-up-account
+# Selecting a preset chip and holding the action button creates a mock Ramp buy order.
+# The mock advances one status per ~2s poll: Pending -> Processing -> Processing -> Completed (~6s total).
+- tapOn:
+    id: cash-deposit-add-cash-amount-100
+- longPressOn:
+    id: cash-deposit-add-cash-hold-to-add
+# On completion the order watcher surfaces the "Request Successful" alert; dismissing it returns to home.
+- extendedWaitUntil:
+    visible:
+      text: 'Request Successful'
+    timeout: 10000
+- tapOn:
+    text: 'OK'
+- assertVisible:
+    id: buy-button

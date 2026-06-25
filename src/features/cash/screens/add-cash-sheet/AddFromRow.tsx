@@ -3,10 +3,8 @@ import { StyleSheet } from 'react-native';
 
 import ButtonPressAnimation from '@/components/animations/ButtonPressAnimation';
 import { Box, Inline, Text, useForegroundColor } from '@/design-system';
+import { type LinkedCard } from '@/features/cash/services/authSession';
 import * as i18n from '@/languages';
-
-// Placeholder payment method — the real "Add From" source lands with card linking.
-const MOCK_PAYMENT_METHOD = { brand: 'Visa Debit', maskedNumber: '*8990' };
 
 function VisaBadge() {
   return (
@@ -25,7 +23,7 @@ function VisaBadge() {
   );
 }
 
-export function AddFromRow({ onPress }: { onPress: () => void }) {
+export function AddFromRow({ card, onPress }: { card: LinkedCard; onPress: () => void }) {
   const separatorTertiary = useForegroundColor('separatorTertiary');
 
   return (
@@ -39,10 +37,10 @@ export function AddFromRow({ onPress }: { onPress: () => void }) {
           <Inline alignVertical="center" space="8px">
             <VisaBadge />
             <Text color="label" size="17pt" weight="bold">
-              {MOCK_PAYMENT_METHOD.brand}
+              {card.brand}
             </Text>
             <Text color="labelTertiary" size="17pt" weight="semibold">
-              {MOCK_PAYMENT_METHOD.maskedNumber}
+              {`*${card.last4}`}
             </Text>
             <Text color="labelSecondary" size="13pt" weight="heavy">
               {'􀆊'}

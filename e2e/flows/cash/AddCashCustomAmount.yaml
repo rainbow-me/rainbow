@@ -47,3 +47,16 @@ tags:
     text: '.*Hold to Add'
 - assertNotVisible:
     text: 'Enter Amount'
+# Holding the action button submits the custom amount as a mock Ramp buy order.
+# The mock advances one status per ~2s poll: Pending -> Processing -> Processing -> Completed (~6s total).
+- longPressOn:
+    id: cash-deposit-add-cash-hold-to-add
+# On completion the order watcher surfaces the "Request Successful" alert; dismissing it returns to home.
+- extendedWaitUntil:
+    visible:
+      text: 'Request Successful'
+    timeout: 10000
+- tapOn:
+    text: 'OK'
+- assertVisible:
+    id: buy-button

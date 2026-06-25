@@ -17,6 +17,12 @@ import {
   type CashDepositSetupStatus,
 } from '@/features/cash/stores/cashDepositSetupStatus';
 import { useCashDepositSetupStore } from '@/features/cash/stores/cashDepositSetupStore';
+import {
+  CASH_MOCK_ORDER_OUTCOMES,
+  isCashMockOrderOutcome,
+  useCashMockOrderOutcomeStore,
+  type CashMockOrderOutcome,
+} from '@/features/cash/stores/cashMockOrderOutcomeStore';
 import { defaultConfig, defaultConfigValues, type ExperimentalConfigKey } from '@/features/config/constants/experimental';
 import { useExperimentalConfigStore } from '@/features/config/stores/experimentalConfigStore';
 import { getDelegationContractAddress, isRainbowDelegated, isThirdPartyDelegated } from '@/features/delegation/status';
@@ -88,6 +94,46 @@ function CashDepositSetupStatusMenuItem() {
         size={52}
         testID="cash-deposit-setup-status-select"
         titleComponent={<MenuItem.Title text={i18n.t(i18n.l.developer_settings.cash_deposit_setup_status.title)} />}
+      />
+    </ContextMenuButton>
+  );
+}
+
+// Dev-only select that drives the mock buy-order outcome (success vs PAYMENT_REJECTED failure).
+function CashMockOrderOutcomeMenuItem() {
+  const outcome = useCashMockOrderOutcomeStore(state => state.outcome);
+  const setOutcome = useCashMockOrderOutcomeStore(state => state.setOutcome);
+
+  const outcomeLabel = useCallback((value: CashMockOrderOutcome) => i18n.t(i18n.l.developer_settings.cash_order_outcome[value]), []);
+
+  const menuConfig = useMemo<MenuConfig>(
+    () => ({
+      menuTitle: i18n.t(i18n.l.developer_settings.cash_order_outcome.title),
+      menuItems: CASH_MOCK_ORDER_OUTCOMES.map(value => ({
+        actionKey: value,
+        actionTitle: outcomeLabel(value),
+        menuState: value === outcome ? 'on' : 'off',
+      })),
+    }),
+    [outcome, outcomeLabel]
+  );
+
+  const onPressMenuItem = useCallback(
+    ({ nativeEvent: { actionKey } }: { nativeEvent: { actionKey: string } }) => {
+      if (isCashMockOrderOutcome(actionKey)) setOutcome(actionKey);
+    },
+    [setOutcome]
+  );
+
+  return (
+    <ContextMenuButton menuConfig={menuConfig} isMenuPrimaryAction onPressMenuItem={onPressMenuItem} useActionSheetFallback={false}>
+      <MenuItem
+        hasChevron
+        leftComponent={<MenuItem.TextIcon icon="🧪" isEmoji />}
+        rightComponent={<MenuItem.Selection>{outcomeLabel(outcome)}</MenuItem.Selection>}
+        size={52}
+        testID="cash-mock-order-outcome-select"
+        titleComponent={<MenuItem.Title text={i18n.t(i18n.l.developer_settings.cash_order_outcome.title)} />}
       />
     </ContextMenuButton>
   );
@@ -516,6 +562,7 @@ export const DevSection = () => {
           </Menu>
           <Menu header={i18n.t(i18n.l.developer_settings.headers.cash_settings)}>
             <CashDepositSetupStatusMenuItem />
+            <CashMockOrderOutcomeMenuItem />
           </Menu>
           <Menu header={i18n.t(i18n.l.developer_settings.headers.feature_flags)}>
             {(Object.keys(config) as ExperimentalConfigKey[])

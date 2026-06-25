@@ -508,6 +508,11 @@
         "needsWallet": "Needs Wallet",
         "ready": "Ready"
       },
+      "cash_order_outcome": {
+        "title": "Cash order outcome",
+        "succeed": "Will succeed",
+        "fail": "Will fail"
+      },
       "status": "Status",
       "sync_codepush": "Sync CodePush",
       "simulate_device_transfer": "Simulate Device Transfer",
@@ -1670,7 +1675,11 @@
         "hold_to_add": "Hold to Add",
         "enter_amount": "Enter Amount",
         "money_is_added_in": "Money is added in",
-        "usdc": "USDC"
+        "usdc": "USDC",
+        "adding_cash": "Adding Cash",
+        "buy_error_title": "Purchase Failed",
+        "buy_error_generic": "Something went wrong. Try again",
+        "payment_rejected": "Your card declined this payment"
       }
     },
     "points": {
