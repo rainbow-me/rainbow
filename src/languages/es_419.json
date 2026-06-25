@@ -508,6 +508,11 @@
         "needsWallet": "Necesita una billetera",
         "ready": "Listo"
       },
+      "cash_order_outcome": {
+        "title": "Resultado de la orden de efectivo",
+        "succeed": "Tendrá éxito",
+        "fail": "Fallará"
+      },
       "status": "Estado",
       "sync_codepush": "Sincronizar CodePush",
       "simulate_device_transfer": "Simular transferencia de dispositivo",
@@ -1688,7 +1693,11 @@
         "hold_to_add": "Mantén presionado para agregar",
         "enter_amount": "Ingresa una cantidad",
         "money_is_added_in": "El dinero se agrega en",
-        "usdc": "USDC"
+        "usdc": "USDC",
+        "adding_cash": "Agregando dinero en efectivo",
+        "buy_error_title": "Error de compra",
+        "buy_error_generic": "Algo salió mal. Intenta nuevamente",
+        "payment_rejected": "Tu tarjeta rechazó este pago"
       }
     },
     "points": {
