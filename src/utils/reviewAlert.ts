@@ -1,3 +1,5 @@
+import { Platform } from 'react-native';
+
 import * as StoreReview from 'expo-store-review';
 
 import { analytics } from '@/analytics';
@@ -51,6 +53,11 @@ function getReviewActions() {
 
 export async function handleReviewPromptAction(action: ReviewPromptAction) {
   if (IS_TEST || (IS_DEV && action !== ReviewPromptAction.UserPrompt)) return;
+
+  // Temporarily disabled on iOS: App Store Review rejected us under Guideline 5.6.3
+  // for requesting a rating on first launch / during onboarding. Disabled until we
+  // find a store compliant way to do this (APP-3885).
+  if (Platform.OS === 'ios' && action !== ReviewPromptAction.UserPrompt) return;
 
   logger.debug(`[reviewAlert]: handleReviewPromptAction: ${action}`);
 
