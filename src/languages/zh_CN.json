@@ -508,6 +508,11 @@
         "needsWallet": "需要钱包",
         "ready": "就绪"
       },
+      "cash_order_outcome": {
+        "title": "现金订单结果",
+        "succeed": "将成功",
+        "fail": "将失败"
+      },
       "status": "状态",
       "sync_codepush": "同步 CodePush",
       "simulate_device_transfer": "模拟设备传输",
@@ -1688,7 +1693,11 @@
         "hold_to_add": "长按以添加",
         "enter_amount": "输入金额",
         "money_is_added_in": "资金将添加到",
-        "usdc": "USDC"
+        "usdc": "USDC",
+        "adding_cash": "正在添加现金",
+        "buy_error_title": "购买失败",
+        "buy_error_generic": "出了点问题。请再试一次",
+        "payment_rejected": "您的银行卡拒绝了这笔付款"
       }
     },
     "points": {
