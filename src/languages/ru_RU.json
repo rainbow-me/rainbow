@@ -508,6 +508,11 @@
         "needsWallet": "Требуется кошелек",
         "ready": "Готово"
       },
+      "cash_order_outcome": {
+        "title": "Результат покупки наличных",
+        "succeed": "Будет успешно",
+        "fail": "Будет с ошибкой"
+      },
       "status": "Статус",
       "sync_codepush": "Синхронизировать CodePush",
       "simulate_device_transfer": "Симуляция передачи устройства",
@@ -1688,7 +1693,11 @@
         "hold_to_add": "Удерживайте, чтобы добавить",
         "enter_amount": "Введите сумму",
         "money_is_added_in": "Деньги добавляются в",
-        "usdc": "USDC"
+        "usdc": "USDC",
+        "adding_cash": "Добавление наличных",
+        "buy_error_title": "Покупка не удалась",
+        "buy_error_generic": "Что-то пошло не так. Попробуйте еще раз",
+        "payment_rejected": "Ваш банк отклонил этот платеж"
       }
     },
     "points": {
