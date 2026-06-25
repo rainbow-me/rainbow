@@ -508,6 +508,11 @@
         "needsWallet": "Cüzdan Gerekli",
         "ready": "Hazır"
       },
+      "cash_order_outcome": {
+        "title": "Nakit sipariş sonucu",
+        "succeed": "Başarılı olacak",
+        "fail": "Başarısız olacak"
+      },
       "status": "Durum",
       "sync_codepush": "CodePush'u Senkronize Et",
       "simulate_device_transfer": "Cihaz Transferini Simüle Et",
@@ -1688,7 +1693,11 @@
         "hold_to_add": "Eklemek için Basılı Tut",
         "enter_amount": "Miktar Girin",
         "money_is_added_in": "Para şununla eklenir",
-        "usdc": "USDC"
+        "usdc": "USDC",
+        "adding_cash": "Nakit Ekleniyor",
+        "buy_error_title": "Satın Alma Başarısız",
+        "buy_error_generic": "Bir şeyler yanlış gitti. Tekrar deneyin",
+        "payment_rejected": "Kartınız bu ödemeyi reddetti"
       }
     },
     "points": {
