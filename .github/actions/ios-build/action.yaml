@@ -158,7 +158,7 @@ runs:
 
     - name: Set up Ruby
       if: inputs.destination == 'device'
-      uses: ruby/setup-ruby@09a7688d3b55cf0e976497ff046b70949eeaccfd
+      uses: ruby/setup-ruby@9eb537ca036ebaed86729dcb9309076e4c5c3b74 # v1.314.0
       with:
         bundler-cache: true
 
