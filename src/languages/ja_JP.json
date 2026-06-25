@@ -508,6 +508,11 @@
         "needsWallet": "ウォレットが必要",
         "ready": "準備完了"
       },
+      "cash_order_outcome": {
+        "title": "現金注文の結果",
+        "succeed": "成功します",
+        "fail": "失敗します"
+      },
       "status": "ステータス",
       "sync_codepush": "CodePushを同期",
       "simulate_device_transfer": "デバイス転送をシミュレートする",
@@ -1688,7 +1693,11 @@
         "hold_to_add": "長押しして追加",
         "enter_amount": "金額を入力してください",
         "money_is_added_in": "入金は次の通貨で行われます",
-        "usdc": "USDC"
+        "usdc": "USDC",
+        "adding_cash": "現金を追加中",
+        "buy_error_title": "購入に失敗しました",
+        "buy_error_generic": "何か問題が発生しました。もう一度お試しください",
+        "payment_rejected": "カードによりこの支払いは拒否されました"
       }
     },
     "points": {
