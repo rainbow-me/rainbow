@@ -9,12 +9,12 @@ jest.mock('@/features/config/stores/remoteConfig', () => ({
   useRemoteConfig: () => ({ sponsored_sends_enabled: true }),
 }));
 
-jest.mock('@/features/delegation/sponsoredSend', () => ({
+jest.mock('../utils/sponsoredSend', () => ({
   predictSponsoredSend: jest.fn(),
   prepareSponsoredSend: jest.fn(),
 }));
 
-jest.mock('@/features/delegation/sponsoredSendExecution', () => ({
+jest.mock('../utils/sponsoredSendExecution', () => ({
   buildSendCallFromSendDetails: jest.fn(),
 }));
 

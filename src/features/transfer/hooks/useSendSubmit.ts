@@ -12,8 +12,6 @@ import { TransactionStatus, type NewTransaction } from '@/entities/transactions'
 import { type UniqueAsset } from '@/entities/uniqueAssets';
 import { type NativeCurrencyKey } from '@/features/currency/types';
 import { isInsufficientSponsorBalanceError } from '@/features/delegation/sponsoredCalls';
-import { executeSponsoredSend } from '@/features/delegation/sponsoredSend';
-import { executeSponsoredSendIfAvailable } from '@/features/delegation/sponsoredSendExecution';
 import type useENSProfile from '@/features/ens/hooks/useENSProfile';
 import { type ActionTypes } from '@/features/ens/hooks/useENSRegistrationActionHandler';
 import { type REGISTRATION_STEPS } from '@/features/ens/utils/helpers';
@@ -45,6 +43,9 @@ import { getNextNonce } from '@/state/nonces';
 import { addNewTransaction } from '@/state/pendingTransactions';
 import { executeFn, Screens, TimeToSignOperation } from '@/state/performance/performance';
 import { type Call, type PreparedCallsExecution } from '@rainbow-me/delegation';
+
+import { executeSponsoredSend } from '../utils/sponsoredSend';
+import { executeSponsoredSendIfAvailable } from '../utils/sponsoredSendExecution';
 
 type SelectedGasFeeForTx = Parameters<typeof parseGasParamsForTransaction>[0];
 type LoadedWallet = NonNullable<Awaited<ReturnType<typeof loadWallet>>>;
