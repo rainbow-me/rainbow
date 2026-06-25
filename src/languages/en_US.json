@@ -1406,44 +1406,6 @@
       "collect_now": "Collect Now",
       "will_appear_here": "Your Collectibles Will Appear Here"
     },
-    "nft_offers": {
-      "card": {
-        "title": { "singular": "1 Offer", "plural": "%{numOffers} Offers" },
-        "button": "View All Offers",
-        "expired": "Expired"
-      },
-      "sheet": {
-        "title": "Offers",
-        "total": "Total",
-        "above_floor": "above floor",
-        "below_floor": "below floor",
-        "no_offers_found": "No offers found"
-      },
-      "sort_menu": {
-        "highest": "Highest",
-        "from_floor": "From Floor",
-        "recent": "Recent"
-      },
-      "single_offer_sheet": {
-        "title": "Offer",
-        "expires_in": "Expires in %{timeLeft}",
-        "floor_price": "Floor Price",
-        "marketplace": "Marketplace",
-        "marketplace_fees": "%{marketplace} Fees",
-        "creator_royalties": "Creator Royalties",
-        "receive": "Receive",
-        "proceeds": "Proceeds",
-        "view_offer": "View Offer",
-        "offer_expired": "Offer Expired",
-        "expired": "Expired",
-        "hold_to_sell": "Hold to Sell",
-        "selling": "Selling",
-        "error": {
-          "title": "Error selling NFT",
-          "message": "Please contact Rainbow support for assistance."
-        }
-      }
-    },
     "perps": {
       "activity": {
         "title": "Activity",

@@ -142,12 +142,6 @@ export const event = {
 
   wcRequestFailed: 'wc.failed_request',
 
-  nftOffersOpenedOffersSheet: 'Opened NFT Offers Sheet',
-  nftOffersOpenedSingleOfferSheet: 'Opened NFT Single Offer Sheet',
-  nftOffersViewedExternalOffer: 'Viewed external NFT Offer',
-  nftOffersSelectedSortCriterion: 'Selected NFT Offers Sort Criterion',
-  nftOffersAcceptedOffer: 'Accepted NFT Offer',
-
   poapsOpenedMintSheet: 'Opened POAP mint sheet',
   poapsMintedPoap: 'Minted POAP',
   poapsViewedOnPoap: 'Viewed POAP on poap.gallery',
@@ -588,50 +582,6 @@ export type EventProperties = {
     method?: string;
   };
 
-  [event.nftOffersOpenedOffersSheet]: {
-    entryPoint: string;
-  };
-  [event.nftOffersOpenedSingleOfferSheet]: {
-    entryPoint: string;
-    offerValueUSD: number;
-    offerValue: number;
-    offerCurrency: { symbol: string; contractAddress: string };
-    floorDifferencePercentage: number;
-    nft: {
-      contractAddress: string;
-      network: string;
-      tokenId: string;
-    };
-  };
-  [event.nftOffersViewedExternalOffer]: {
-    marketplace: string;
-    offerValueUSD: number;
-    offerValue: number;
-    offerCurrency: { symbol: string; contractAddress: string };
-    floorDifferencePercentage: number;
-    nft: {
-      contractAddress: string;
-      tokenId: string;
-      network: string;
-    };
-  };
-  [event.nftOffersSelectedSortCriterion]: {
-    sortCriterion: string;
-  };
-  [event.nftOffersAcceptedOffer]: {
-    status: 'in progress' | 'completed' | 'failed';
-    nft: {
-      contractAddress: string;
-      tokenId: string;
-      network: string;
-    };
-    marketplace: string;
-    offerValue: number;
-    offerValueUSD: number;
-    floorDifferencePercentage: number;
-    rainbowFee: number;
-    offerCurrency: { symbol: string; contractAddress: string };
-  };
   [event.mintsMintingNFT]: {
     contract: string;
     chainId: number;

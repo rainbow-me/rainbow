@@ -70,12 +70,6 @@ export interface UserProperties {
   // total USD value of claimable reward tokens
   positionsRewardsUSDValue?: number;
 
-  // nft offers
-  nftOffersAmount?: number;
-  nftOffersUSDValue?: number;
-  nftOffersMeanOfferVariance?: number;
-  nftOffersMedianOfferVariance?: number;
-
   // mint.fun
   numberOfMints?: number;
   numberOfFreeMints?: number;
