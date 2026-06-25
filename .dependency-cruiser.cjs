@@ -13,7 +13,25 @@
  * follows into node_modules (which dependency-cruiser skips by default) and
  * mirrors React Native / Metro platform resolution, so the check evaluates the
  * same files that actually ship. First-party-only rules won't need that.
+ *
+ * Platform resolution: dependency-cruiser builds one graph per run, resolving
+ * each platform-split import (foo.ios / foo.android) to a single variant, while
+ * Metro builds a separate graph per platform when bundling. A forbidden edge
+ * living only in an .android file is therefore invisible to a run that resolved
+ * the .ios variant, and vice versa. To cover both, the `lint:deps` script runs
+ * this config once per platform (DEPCRUISE_PLATFORM=ios|android); the platform
+ * only changes the extension order below, and the union of the two runs sees
+ * every edge that can ship on either platform.
  */
+
+const PLATFORM = process.env.DEPCRUISE_PLATFORM === 'android' ? 'android' : 'ios';
+
+// React Native / Metro extension order for the active platform: the platform
+// variant, then the shared-native variant, then the plain file. Only one
+// platform's variant is listed per run (Metro never falls back across platforms),
+// so the ios and android runs cleanly partition platform-split files.
+const BASE_EXTENSIONS = ['js', 'jsx', 'ts', 'tsx'];
+const extensions = [...BASE_EXTENSIONS.flatMap(ext => [`.${PLATFORM}.${ext}`, `.native.${ext}`, `.${ext}`]), '.json'];
 
 // Capability-sensitive native modules that nothing else should import: secure
 // storage (keychain), clipboard, and media. Extend as the boundary set grows.
@@ -53,26 +71,7 @@ module.exports = {
     doNotFollow: { path: 'node_modules/\\.(cache|bin)/' },
     tsConfig: { fileName: 'tsconfig.json' },
     enhancedResolveOptions: {
-      // Mirror React Native / Metro platform resolution.
-      extensions: [
-        '.ios.js',
-        '.android.js',
-        '.native.js',
-        '.js',
-        '.ios.jsx',
-        '.android.jsx',
-        '.native.jsx',
-        '.jsx',
-        '.ios.ts',
-        '.android.ts',
-        '.native.ts',
-        '.ts',
-        '.ios.tsx',
-        '.android.tsx',
-        '.native.tsx',
-        '.tsx',
-        '.json',
-      ],
+      extensions,
       mainFields: ['react-native', 'browser', 'module', 'main'],
     },
   },
