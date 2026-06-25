@@ -1,7 +1,7 @@
 import type { StaticJsonRpcProvider } from '@ethersproject/providers';
 import { encodeFunctionData, erc20Abi, type Address } from 'viem';
 
-import { SPONSORED_CALLS_REQUIREMENTS } from '@/features/delegation/calls';
+import { SPONSORED_CALLS_REQUIREMENTS } from '@/features/delegation/utils/calls';
 import { type Call, type CallsRequirements } from '@rainbow-me/delegation';
 
 import { RNBW_TOKEN_ADDRESS, STAKING_ABI, STAKING_CHAIN_ID, STAKING_CONTRACT_ADDRESS } from '../constants';

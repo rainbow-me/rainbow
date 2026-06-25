@@ -1,6 +1,6 @@
-import { isPreparedCallsExecutionSponsored } from '@/features/delegation/calls';
-import { type PreparedCallsStore } from '@/features/delegation/preparedCallsStore';
-import { predictSponsoredCallsExecution } from '@/features/delegation/sponsoredCalls';
+import { type PreparedCallsStore } from '@/features/delegation/stores/preparedCallsStore';
+import { isPreparedCallsExecutionSponsored } from '@/features/delegation/utils/calls';
+import { predictSponsoredCallsExecution } from '@/features/delegation/utils/sponsoredCalls';
 import { time } from '@/framework/core/utils/time';
 import * as i18n from '@/languages';
 import { type DepositConfigInput } from '@/systems/funding/types';

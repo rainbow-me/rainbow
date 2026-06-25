@@ -11,8 +11,8 @@ import {
   type TransactionType,
 } from '@/entities/transactions';
 import type { SupportedCurrencyKey } from '@/features/currency/supportedCurrencies';
-import { applyManagedExecutionStatus } from '@/features/delegation/managedExecutionStatus';
-import { relayService } from '@/features/delegation/relayService';
+import { applyManagedExecutionStatus } from '@/features/delegation/utils/managedExecutionStatus';
+import { relayService } from '@/features/delegation/utils/relayService';
 import { logger, RainbowError } from '@/logger';
 import { fetchRawTransaction } from '@/resources/transactions/transaction';
 import { RelayExecutionStatus, type RelayStatusSnapshot } from '@rainbow-me/delegation';

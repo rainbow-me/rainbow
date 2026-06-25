@@ -1,6 +1,6 @@
 import { type Address } from 'viem';
 
-import { createPreparedCallsStore, type PreparedCallsStore } from '@/features/delegation/preparedCallsStore';
+import { createPreparedCallsStore, type PreparedCallsStore } from '@/features/delegation/stores/preparedCallsStore';
 import { type ChainId } from '@/features/network/types/backendNetworks';
 import { time } from '@/framework/core/utils/time';
 import { getProvider } from '@/handlers/web3';

@@ -18,7 +18,7 @@ jest.mock('@/resources/transactions/transaction', () => ({
   fetchRawTransaction: (...args: unknown[]) => mockFetchRawTransaction(...args),
 }));
 
-jest.mock('@/features/delegation/relayService', () => ({
+jest.mock('@/features/delegation/utils/relayService', () => ({
   relayService: {
     getStatus: (...args: unknown[]) => mockGetStatus(...args),
   },

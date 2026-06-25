@@ -26,7 +26,7 @@ jest.mock('@rainbow-me/delegation', () => ({
   },
 }));
 
-jest.mock('@/features/delegation/calls', () => ({
+jest.mock('@/features/delegation/utils/calls', () => ({
   createDelegationPublicClient: (chainId: ChainId) => mockCreateDelegationPublicClient(chainId),
   SPONSORED_CALLS_REQUIREMENTS: {
     atomic: 'required',
@@ -34,11 +34,11 @@ jest.mock('@/features/delegation/calls', () => ({
   },
 }));
 
-jest.mock('@/features/delegation/sponsoredCalls', () => ({
+jest.mock('@/features/delegation/utils/sponsoredCalls', () => ({
   predictSponsoredCallsExecution: (params: unknown) => mockPredictSponsoredCallsExecution(params),
 }));
 
-jest.mock('@/features/delegation/willDelegate', () => ({
+jest.mock('@/features/delegation/utils/willDelegate', () => ({
   supportsDelegatedExecution: (params: unknown) => mockSupportsDelegatedExecution(params),
 }));
 

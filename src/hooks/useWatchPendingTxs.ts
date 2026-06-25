@@ -13,7 +13,7 @@ import {
   type SettledTransaction,
 } from '@/entities/transactions';
 import type { SupportedCurrencyKey } from '@/features/currency/supportedCurrencies';
-import { areDestinationTxHashesEqual } from '@/features/delegation/managedExecutionStatus';
+import { areDestinationTxHashesEqual } from '@/features/delegation/utils/managedExecutionStatus';
 import { backendNetworksActions } from '@/features/network/stores/backendNetworksStore';
 import { type ChainId } from '@/features/network/types/backendNetworks';
 import { logger, RainbowError } from '@/logger';

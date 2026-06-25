@@ -2,8 +2,8 @@ import { type Signer } from '@ethersproject/abstract-signer';
 import { ethers, Wallet } from 'ethers';
 
 import { type ParsedAsset } from '@/__swaps__/types/assets';
-import { resolveManagedExecutionFailure } from '@/features/delegation/managedExecutionFailure';
-import { isInsufficientSponsorBalanceError } from '@/features/delegation/sponsoredCalls';
+import { resolveManagedExecutionFailure } from '@/features/delegation/utils/managedExecutionFailure';
+import { isInsufficientSponsorBalanceError } from '@/features/delegation/utils/sponsoredCalls';
 import { useBackendNetworksStore } from '@/features/network/stores/backendNetworksStore';
 import { type ChainId } from '@/features/network/types/backendNetworks';
 import { estimateGasWithPadding, getProvider, toHex } from '@/handlers/web3';

@@ -13,8 +13,11 @@ import { DropdownMenu, type MenuItem } from '@/components/DropdownMenu';
 import { PANEL_WIDTH } from '@/components/SmoothPager/ListPanel';
 import { Box, HitSlop, Inline, Stack, Text, TextIcon } from '@/design-system';
 import { IS_STORE_INSTALL } from '@/env';
-import { useIsDelegationEnabled } from '@/features/delegation/featureFlags';
-import { isRainbowDelegated as hasRainbowDelegation, isThirdPartyDelegated as hasThirdPartyDelegation } from '@/features/delegation/status';
+import { useIsDelegationEnabled } from '@/features/delegation/utils/featureFlags';
+import {
+  isRainbowDelegated as hasRainbowDelegation,
+  isThirdPartyDelegated as hasThirdPartyDelegation,
+} from '@/features/delegation/utils/status';
 import { removeFirstEmojiFromString } from '@/helpers/emojiHandler';
 import { usePinnedWalletsStore } from '@/state/wallets/pinnedWalletsStore';
 import { useTheme } from '@/theme/ThemeContext';

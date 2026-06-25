@@ -20,7 +20,7 @@ jest.mock('../utils/sponsoredSendExecution', () => ({
 
 const mockSupportsDelegatedExecution = jest.fn<Promise<boolean>, [unknown]>();
 
-jest.mock('@/features/delegation/willDelegate', () => ({
+jest.mock('@/features/delegation/utils/willDelegate', () => ({
   supportsDelegatedExecution: (params: unknown) => mockSupportsDelegatedExecution(params),
 }));
 

@@ -1,10 +1,10 @@
-import { relayService, type RelayStatusResponse } from '@/features/delegation/relayService';
 import { time } from '@/framework/core/utils/time';
 import { ensureError, RainbowError } from '@/logger';
 import { delay } from '@/utils/delay';
 import { RelayExecutionStatus } from '@rainbow-me/delegation';
 
 import { formatManagedExecutionFailure, isManagedExecutionFailure } from './managedExecutionFailure';
+import { relayService, type RelayStatusResponse } from './relayService';
 
 // ============ Constants ===================================================== //
 

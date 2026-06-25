@@ -7,7 +7,7 @@ import { triggerHaptics } from 'react-native-turbo-haptics';
 
 import { type ExtendedAnimatedAssetWithColors } from '@/__swaps__/types/assets';
 import { crosschainQuoteTargetsRecipient, isCrosschainQuote } from '@/__swaps__/utils/quotes';
-import { isPreparedCallsExecutionSponsored } from '@/features/delegation/calls';
+import { isPreparedCallsExecutionSponsored } from '@/features/delegation/utils/calls';
 import { backendNetworksActions } from '@/features/network/stores/backendNetworksStore';
 import { type ChainId } from '@/features/network/types/backendNetworks';
 import { watchingAlert } from '@/features/wallet/utils/watchingAlert';

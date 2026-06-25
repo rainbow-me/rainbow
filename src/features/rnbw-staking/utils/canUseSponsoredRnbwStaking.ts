@@ -1,7 +1,7 @@
 import { type Address } from 'viem';
 
-import { predictSponsoredCallsExecution } from '@/features/delegation/sponsoredCalls';
-import { supportsDelegatedExecution } from '@/features/delegation/willDelegate';
+import { predictSponsoredCallsExecution } from '@/features/delegation/utils/sponsoredCalls';
+import { supportsDelegatedExecution } from '@/features/delegation/utils/willDelegate';
 import { type ChainId } from '@/features/network/types/backendNetworks';
 
 /**

@@ -26,7 +26,7 @@ import { reactNativeDisableYellowBox, showNetworkRequests, showNetworkResponses 
 import { IS_DEV, IS_PROD, IS_STORE_INSTALL, IS_TEST } from '@/env';
 import { initializeRemoteConfig } from '@/features/config/stores/remoteConfig';
 import { monitorNetwork } from '@/features/debug/utils/network';
-import { configureDelegationSdk } from '@/features/delegation/configureClient';
+import { configureDelegationSdk } from '@/features/delegation/utils/configureClient';
 import RainbowContextWrapper from '@/helpers/RainbowContext';
 import { useApplicationSetup } from '@/hooks/useApplicationSetup';
 import { logger, RainbowError } from '@/logger';

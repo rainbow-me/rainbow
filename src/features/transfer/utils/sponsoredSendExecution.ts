@@ -4,7 +4,7 @@ import { isAddress, type Address } from 'viem';
 
 import { type ParsedAddressAsset } from '@/entities/tokens';
 import { type NewTransaction } from '@/entities/transactions';
-import { isPreparedCallsExecutionSponsored } from '@/features/delegation/calls';
+import { isPreparedCallsExecutionSponsored } from '@/features/delegation/utils/calls';
 import { type ChainId } from '@/features/network/types/backendNetworks';
 import { requireAddress } from '@/framework/core/evm/address';
 import { encodeErc20Transfer } from '@/framework/core/evm/erc20Calldata';

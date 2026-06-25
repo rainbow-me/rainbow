@@ -1,5 +1,5 @@
 import { getRemoteConfig } from '@/features/config/stores/remoteConfig';
-import { predictSponsoredCallsExecution } from '@/features/delegation/sponsoredCalls';
+import { predictSponsoredCallsExecution } from '@/features/delegation/utils/sponsoredCalls';
 import { time } from '@/framework/core/utils/time';
 import { createDepositConfig } from '@/systems/funding/config';
 

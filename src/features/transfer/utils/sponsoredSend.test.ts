@@ -52,7 +52,7 @@ jest.mock('@/features/network/stores/backendNetworksStore', () => ({
   },
 }));
 
-jest.mock('@/features/delegation/calls', () => ({
+jest.mock('@/features/delegation/utils/calls', () => ({
   createDelegationPublicClient: (chainId: ChainId, options?: { signal?: AbortSignal }) =>
     options ? mockCreateDelegationPublicClient(chainId, options) : mockCreateDelegationPublicClient(chainId),
   SPONSORED_CALLS_REQUIREMENTS: {
@@ -61,15 +61,15 @@ jest.mock('@/features/delegation/calls', () => ({
   },
 }));
 
-jest.mock('@/features/delegation/callsExecutionTracking', () => ({
+jest.mock('@/features/delegation/utils/callsExecutionTracking', () => ({
   trackCallsExecution: (params: unknown) => mockTrackCallsExecution(params),
 }));
 
-jest.mock('@/features/delegation/managedExecutionFailure', () => ({
+jest.mock('@/features/delegation/utils/managedExecutionFailure', () => ({
   resolveManagedExecutionFailure: (params: unknown) => mockResolveManagedExecutionFailure(params),
 }));
 
-jest.mock('@/features/delegation/willDelegate', () => ({
+jest.mock('@/features/delegation/utils/willDelegate', () => ({
   canUseDelegatedExecution: (address: Address) => mockCanUseDelegatedExecution(address),
   supportsDelegatedExecution: (params: unknown) => mockSupportsDelegatedExecution(params),
 }));

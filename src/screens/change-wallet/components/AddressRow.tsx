@@ -11,8 +11,11 @@ import { Box, globalColors, Inline, Stack, Text, TextIcon, useColorMode, useFore
 import { type TextWeight } from '@/design-system/components/Text/Text';
 import { type TextSize } from '@/design-system/typography/typeHierarchy';
 import { IS_STORE_INSTALL } from '@/env';
-import { useIsDelegationEnabled } from '@/features/delegation/featureFlags';
-import { isRainbowDelegated as hasRainbowDelegation, isThirdPartyDelegated as hasThirdPartyDelegation } from '@/features/delegation/status';
+import { useIsDelegationEnabled } from '@/features/delegation/utils/featureFlags';
+import {
+  isRainbowDelegated as hasRainbowDelegation,
+  isThirdPartyDelegated as hasThirdPartyDelegation,
+} from '@/features/delegation/utils/status';
 import { opacity } from '@/framework/ui/utils/opacity';
 import { removeFirstEmojiFromString } from '@/helpers/emojiHandler';
 import * as i18n from '@/languages';

@@ -23,7 +23,7 @@ jest.mock('@/handlers/web3', () => ({
   getProvider: () => mockGetProvider(),
 }));
 
-jest.mock('@/features/delegation/willDelegate', () => ({
+jest.mock('@/features/delegation/utils/willDelegate', () => ({
   canUseDelegatedExecution: (address: Address) => mockCanUseDelegatedExecution(address),
 }));
 

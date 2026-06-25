@@ -30,7 +30,7 @@ import {
   useColorMode,
   useForegroundColor,
 } from '@/design-system';
-import { useWillExecuteDelegation, willExecuteDelegation } from '@/features/delegation/willDelegate';
+import { useWillExecuteDelegation, willExecuteDelegation } from '@/features/delegation/utils/willDelegate';
 import { useSelectedGasSpeed } from '@/features/gas/hooks/useSelectedGas';
 import { useEstimatedTime } from '@/features/gas/utils/meteorology';
 import { backendNetworksActions } from '@/features/network/stores/backendNetworksStore';

@@ -3,9 +3,9 @@ import type { Wallet } from '@ethersproject/wallet';
 import { type Address } from 'viem';
 
 import { type NewTransaction } from '@/entities/transactions';
-import { trackCallsExecution } from '@/features/delegation/callsExecutionTracking';
-import { resolveManagedExecutionFailure } from '@/features/delegation/managedExecutionFailure';
-import { waitForManagedExecutionConfirmation } from '@/features/delegation/waitForManagedExecution';
+import { trackCallsExecution } from '@/features/delegation/utils/callsExecutionTracking';
+import { resolveManagedExecutionFailure } from '@/features/delegation/utils/managedExecutionFailure';
+import { waitForManagedExecutionConfirmation } from '@/features/delegation/utils/waitForManagedExecution';
 import { RainbowError } from '@/logger';
 import { execute, type Call, type CallsRequirements, type ExecuteCallsResult, type PreparedCallsExecution } from '@rainbow-me/delegation';
 

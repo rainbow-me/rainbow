@@ -6,11 +6,11 @@ import { isAddress, isHex, type Address, type Hex } from 'viem';
 
 import { TransactionStatus, type NewTransaction } from '@/entities/transactions/transaction';
 import { getRemoteConfig } from '@/features/config/stores/remoteConfig';
-import { createDelegationPublicClient, SPONSORED_CALLS_REQUIREMENTS } from '@/features/delegation/calls';
-import { trackCallsExecution } from '@/features/delegation/callsExecutionTracking';
-import { resolveManagedExecutionFailure } from '@/features/delegation/managedExecutionFailure';
-import { predictSponsoredCallsExecution } from '@/features/delegation/sponsoredCalls';
-import { canUseDelegatedExecution, supportsDelegatedExecution } from '@/features/delegation/willDelegate';
+import { createDelegationPublicClient, SPONSORED_CALLS_REQUIREMENTS } from '@/features/delegation/utils/calls';
+import { trackCallsExecution } from '@/features/delegation/utils/callsExecutionTracking';
+import { resolveManagedExecutionFailure } from '@/features/delegation/utils/managedExecutionFailure';
+import { predictSponsoredCallsExecution } from '@/features/delegation/utils/sponsoredCalls';
+import { canUseDelegatedExecution, supportsDelegatedExecution } from '@/features/delegation/utils/willDelegate';
 import { backendNetworksActions } from '@/features/network/stores/backendNetworksStore';
 import { type ChainId } from '@/features/network/types/backendNetworks';
 import { RainbowError } from '@/logger';
