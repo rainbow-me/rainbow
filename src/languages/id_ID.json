@@ -508,6 +508,11 @@
         "needsWallet": "Perlu Dompet",
         "ready": "Siap"
       },
+      "cash_order_outcome": {
+        "title": "Hasil pesanan Cash",
+        "succeed": "Akan berhasil",
+        "fail": "Akan gagal"
+      },
       "status": "Status",
       "sync_codepush": "Sinkronisasi CodePush",
       "simulate_device_transfer": "Simulasikan Transfer Perangkat",
@@ -1688,7 +1693,11 @@
         "hold_to_add": "Tahan untuk Menambahkan",
         "enter_amount": "Masukkan Jumlah",
         "money_is_added_in": "Uang ditambahkan dalam",
-        "usdc": "USDC"
+        "usdc": "USDC",
+        "adding_cash": "Menambahkan Cash",
+        "buy_error_title": "Pembelian Gagal",
+        "buy_error_generic": "Terjadi kesalahan. Coba lagi",
+        "payment_rejected": "Kartu Anda menolak pembayaran ini"
       }
     },
     "points": {
