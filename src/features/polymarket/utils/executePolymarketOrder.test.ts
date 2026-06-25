@@ -2,7 +2,7 @@ import { AssetType, OrderType, Side } from '@polymarket/clob-client-v2';
 
 import { analytics } from '@/analytics';
 import { type SuccessfulOrderResult } from '@/features/polymarket/types';
-import { collectPolymarketManualTradeFee } from '@/features/polymarket/utils/collectPolymarketManualTradeFee';
+import { collectPolymarketTradeFee } from '@/features/polymarket/utils/collectPolymarketTradeFee';
 
 import { executePolymarketBuyPosition, executePolymarketSellPosition } from './executePolymarketOrder';
 
@@ -39,8 +39,8 @@ jest.mock('@/features/polymarket/utils/collateral', () => ({
   wrapUsdcAmountToPusd: jest.fn(),
 }));
 
-jest.mock('@/features/polymarket/utils/collectPolymarketManualTradeFee', () => ({
-  collectPolymarketManualTradeFee: jest.fn(),
+jest.mock('@/features/polymarket/utils/collectPolymarketTradeFee', () => ({
+  collectPolymarketTradeFee: jest.fn(),
 }));
 
 jest.mock('@/features/polymarket/utils/polymarketWallet', () => ({
@@ -56,18 +56,18 @@ jest.mock('@/utils/delay', () => ({
 }));
 
 const mockAnalyticsTrack = jest.mocked(analytics.track);
-const mockCollectPolymarketManualTradeFee = jest.mocked(collectPolymarketManualTradeFee);
+const mockCollectPolymarketTradeFee = jest.mocked(collectPolymarketTradeFee);
 
 describe('executePolymarketOrder', () => {
   beforeEach(() => {
     mockAnalyticsTrack.mockReset();
-    mockCollectPolymarketManualTradeFee.mockReset();
+    mockCollectPolymarketTradeFee.mockReset();
     mockCreateAndPostMarketOrder.mockReset();
     mockGetOrder.mockReset();
     mockUpdateBalanceAllowance.mockReset();
   });
 
-  it('executes a buy order and starts manual fee collection for an immediate match', async () => {
+  it('executes a buy order and starts trade fee collection for an immediate match', async () => {
     mockCreateAndPostMarketOrder.mockResolvedValue(
       createOrderResult({
         makingAmount: '5',
@@ -82,7 +82,7 @@ describe('executePolymarketOrder', () => {
       amount: '5',
       price: '0.5',
       negRisk: false,
-      matchedOrderMetadata: createMatchedOrderMetadata({ manualFeeCapUsd: '0.1' }),
+      matchedOrderMetadata: createMatchedOrderMetadata({ quotedTradeFeeUsd: '0.1' }),
     });
 
     expect(mockUpdateBalanceAllowance).toHaveBeenCalledWith({ asset_type: AssetType.COLLATERAL });
@@ -111,16 +111,16 @@ describe('executePolymarketOrder', () => {
       orderPriceUsd: 0.5,
       averagePriceUsd: 0.5,
     });
-    expect(mockCollectPolymarketManualTradeFee).toHaveBeenCalledWith({
-      matchedTokenAmount: '10',
-      maxFeeUsd: '0.1',
+    expect(mockCollectPolymarketTradeFee).toHaveBeenCalledWith({
+      matchedAmounts: { tokens: '10', usd: '5' },
       orderId: 'buy-order',
+      quotedFeeUsd: '0.1',
       side: 'buy',
       tokenId: 'token-1',
     });
   });
 
-  it('executes a sell order and starts manual fee collection for an immediate match', async () => {
+  it('executes a sell order and starts trade fee collection for an immediate match', async () => {
     mockCreateAndPostMarketOrder.mockResolvedValue(
       createOrderResult({
         makingAmount: '10',
@@ -133,7 +133,7 @@ describe('executePolymarketOrder', () => {
     await executePolymarketSellPosition({
       position: { asset: 'token-1', negativeRisk: true, size: 10 },
       price: '0.5',
-      matchedOrderMetadata: createMatchedOrderMetadata({ manualFeeCapUsd: '0.1' }),
+      matchedOrderMetadata: createMatchedOrderMetadata({ quotedTradeFeeUsd: '0.1' }),
     });
 
     expect(mockUpdateBalanceAllowance).toHaveBeenCalledWith({ asset_type: AssetType.CONDITIONAL, token_id: 'token-1' });
@@ -161,10 +161,10 @@ describe('executePolymarketOrder', () => {
       orderPriceUsd: 0.5,
       averagePriceUsd: 0.5,
     });
-    expect(mockCollectPolymarketManualTradeFee).toHaveBeenCalledWith({
-      matchedTokenAmount: '10',
-      maxFeeUsd: '0.1',
+    expect(mockCollectPolymarketTradeFee).toHaveBeenCalledWith({
+      matchedAmounts: { tokens: '10', usd: '5' },
       orderId: 'sell-order',
+      quotedFeeUsd: '0.1',
       side: 'sell',
       tokenId: 'token-1',
     });
@@ -179,15 +179,15 @@ describe('executePolymarketOrder', () => {
       amount: '5',
       price: '0.5',
       negRisk: false,
-      matchedOrderMetadata: createMatchedOrderMetadata({ manualFeeCapUsd: '0.1' }),
+      matchedOrderMetadata: createMatchedOrderMetadata({ quotedTradeFeeUsd: '0.1' }),
     });
     await flushPromises();
 
     expect(mockGetOrder).toHaveBeenCalledWith('polled-order');
-    expect(mockCollectPolymarketManualTradeFee).toHaveBeenCalledWith({
-      matchedTokenAmount: '10',
-      maxFeeUsd: '0.1',
+    expect(mockCollectPolymarketTradeFee).toHaveBeenCalledWith({
+      matchedAmounts: { tokens: '10', usd: '5' },
       orderId: 'polled-order',
+      quotedFeeUsd: '0.1',
       side: 'buy',
       tokenId: 'token-1',
     });
@@ -202,11 +202,11 @@ describe('executePolymarketOrder', () => {
       amount: '5',
       price: '0.5',
       negRisk: false,
-      matchedOrderMetadata: createMatchedOrderMetadata({ manualFeeCapUsd: '0.1' }),
+      matchedOrderMetadata: createMatchedOrderMetadata({ quotedTradeFeeUsd: '0.1' }),
     });
     await flushPromises();
 
-    expect(mockCollectPolymarketManualTradeFee).not.toHaveBeenCalled();
+    expect(mockCollectPolymarketTradeFee).not.toHaveBeenCalled();
     expect(mockAnalyticsTrack).toHaveBeenCalledWith('predictions.order_match.failed', {
       orderId: 'failed-order',
       eventSlug: 'event',
@@ -243,13 +243,13 @@ function createOrderResult({
   };
 }
 
-function createMatchedOrderMetadata({ manualFeeCapUsd }: { manualFeeCapUsd?: string }) {
+function createMatchedOrderMetadata({ quotedTradeFeeUsd }: { quotedTradeFeeUsd: string }) {
   return {
     eventSlug: 'event',
     marketSlug: 'market',
     outcome: 'Yes',
     estimatedFeeAmountUsd: '0.12',
-    manualFeeCapUsd,
+    quotedTradeFeeUsd,
     bestPriceUsd: '0.49',
     orderPriceUsd: '0.5',
     spread: '0.01',

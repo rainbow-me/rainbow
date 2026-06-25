@@ -4,11 +4,10 @@ import { calculateSellExecution } from './calculateSellExecution';
 
 jest.mock('@/features/polymarket/constants', () => ({
   POLYMARKET_PUSD_DECIMALS: 6,
-  POLYMARKET_RAINBOW_FEE_USD_PER_TOKEN: '0.01',
 }));
 
 describe('calculateSellExecution', () => {
-  it('subtracts provider and manual fees from expected sell payout', () => {
+  it('subtracts provider and trade fees from expected sell payout', () => {
     const execution = calculateSellExecution({
       feeInfo: {
         minimumOrderSize: 1,
@@ -23,9 +22,9 @@ describe('calculateSellExecution', () => {
     });
 
     expect(execution.grossProceedsUsd).toBe('4');
-    expect(execution.rainbowFee).toBe('0.05');
-    expect(Number(execution.fee)).toBeCloseTo(0.15, 12);
-    expect(Number(execution.expectedPayoutUsd)).toBeCloseTo(3.85, 12);
+    expect(execution.rainbowFee).toBe('0.112');
+    expect(Number(execution.fee)).toBeCloseTo(0.212, 12);
+    expect(Number(execution.expectedPayoutUsd)).toBeCloseTo(3.788, 12);
   });
 });
 

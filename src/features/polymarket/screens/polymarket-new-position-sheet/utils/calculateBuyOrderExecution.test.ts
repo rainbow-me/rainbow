@@ -6,7 +6,6 @@ import { calculateBuyOrderExecution } from './calculateBuyOrderExecution';
 
 jest.mock('@/features/polymarket/constants', () => ({
   POLYMARKET_PUSD_DECIMALS: 6,
-  POLYMARKET_RAINBOW_FEE_USD_PER_TOKEN: '0.01',
 }));
 
 jest.mock('@polymarket/clob-client-v2', () => ({
@@ -20,7 +19,7 @@ describe('calculateBuyOrderExecution', () => {
     mockAdjustBuyAmountForFees.mockClear();
   });
 
-  it('reserves the manual fee inside the user buy cap', () => {
+  it('reserves the trade fee inside the user buy cap', () => {
     const execution = calculateBuyOrderExecution({
       buyAmountUsd: '10',
       feeInfo: {
@@ -35,10 +34,10 @@ describe('calculateBuyOrderExecution', () => {
     });
 
     expect(Number(execution.orderSpendCap) + Number(execution.rainbowFee)).toBeLessThanOrEqual(10.000001);
-    expect(Number(execution.tokensBought)).toBeCloseTo(19.6078, 3);
-    expect(Number(execution.rainbowFee)).toBeCloseTo(0.196078, 6);
+    expect(Number(execution.tokensBought)).toBeCloseTo(19.4175, 3);
+    expect(Number(execution.rainbowFee)).toBeCloseTo(0.291262, 6);
     expect(execution.fee).toBe(execution.rainbowFee);
-    expect(execution.minBuyAmountUsd).toBe('1.02');
+    expect(execution.minBuyAmountUsd).toBe('1.03');
     expect(mockAdjustBuyAmountForFees).toHaveBeenCalledWith(expect.any(Number), expect.any(Number), expect.any(Number), 0, 0, 0);
   });
 });

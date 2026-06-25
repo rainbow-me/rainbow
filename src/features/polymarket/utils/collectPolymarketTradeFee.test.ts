@@ -5,14 +5,13 @@ import { getPolymarketWallet } from '@/features/polymarket/utils/polymarketWalle
 import { executeRelayTransaction } from '@/features/polymarket/utils/relayExecution';
 import { logger } from '@/logger';
 
-import { collectPolymarketManualTradeFee } from './collectPolymarketManualTradeFee';
+import { collectPolymarketTradeFee } from './collectPolymarketTradeFee';
 
 const expectedFeeRecipient = '0x757758506d6a4F8a433F8BECaFd52545f9Cb050a';
 
 jest.mock('@/features/polymarket/constants', () => ({
   POLYMARKET_PUSD_DECIMALS: 6,
   POLYMARKET_RAINBOW_FEE_RECIPIENT_ADDRESS: '0x757758506d6a4F8a433F8BECaFd52545f9Cb050a',
-  POLYMARKET_RAINBOW_FEE_USD_PER_TOKEN: '0.01',
 }));
 
 jest.mock('@/features/polymarket/utils/collateral', () => ({
@@ -38,7 +37,7 @@ const mockExecuteRelayTransaction = jest.mocked(executeRelayTransaction);
 const mockGetPolymarketWallet = jest.mocked(getPolymarketWallet);
 const mockLoggerError = jest.mocked(logger.error);
 
-describe('collectPolymarketManualTradeFee', () => {
+describe('collectPolymarketTradeFee', () => {
   beforeEach(() => {
     mockBuildUnwrapPusdToUsdcTransactions.mockReset();
     mockExecuteRelayTransaction.mockReset();
@@ -55,10 +54,10 @@ describe('collectPolymarketManualTradeFee', () => {
     };
     mockBuildUnwrapPusdToUsdcTransactions.mockResolvedValue([transaction]);
 
-    await collectPolymarketManualTradeFee({
-      matchedTokenAmount: '25',
-      maxFeeUsd: '0.1',
+    await collectPolymarketTradeFee({
+      matchedAmounts: { tokens: '25', usd: '12.5' },
       orderId: 'order-1',
+      quotedFeeUsd: '0.1',
       side: 'buy',
       tokenId: 'token-1',
     });
@@ -74,19 +73,21 @@ describe('collectPolymarketManualTradeFee', () => {
     mockBuildUnwrapPusdToUsdcTransactions.mockRejectedValue(new Error('allowance read failed'));
 
     await expect(
-      collectPolymarketManualTradeFee({
-        matchedTokenAmount: '5',
+      collectPolymarketTradeFee({
+        matchedAmounts: { tokens: '5', usd: '2.5' },
         orderId: 'order-2',
+        quotedFeeUsd: '0.1',
         side: 'sell',
         tokenId: 'token-2',
       })
     ).resolves.toBeUndefined();
 
     expect(mockLoggerError).toHaveBeenCalledWith(expect.any(Error), {
-      feeAmountUsd: '0.05',
-      matchedTokenAmount: '5',
-      maxFeeUsd: undefined,
+      feeAmountUsd: '0.075',
+      matchedTokens: '5',
+      matchedUsd: '2.5',
       orderId: 'order-2',
+      quotedFeeUsd: '0.1',
       side: 'sell',
       tokenId: 'token-2',
     });
@@ -94,9 +95,10 @@ describe('collectPolymarketManualTradeFee', () => {
   });
 
   it('skips wallet lookup and relayer work when the fee rounds to zero', async () => {
-    await collectPolymarketManualTradeFee({
-      matchedTokenAmount: '0',
+    await collectPolymarketTradeFee({
+      matchedAmounts: { tokens: '0', usd: '0' },
       orderId: 'order-3',
+      quotedFeeUsd: '0.1',
       side: 'buy',
       tokenId: 'token-3',
     });
