@@ -508,6 +508,11 @@
         "needsWallet": "Portefeuille requis",
         "ready": "Prêt"
       },
+      "cash_order_outcome": {
+        "title": "Résultat de l'ordre en espèces",
+        "succeed": "Réussira",
+        "fail": "Échouera"
+      },
       "status": "Statut",
       "sync_codepush": "Synchroniser CodePush",
       "simulate_device_transfer": "Simuler le transfert d'appareil",
@@ -1688,7 +1693,11 @@
         "hold_to_add": "Maintenez pour ajouter",
         "enter_amount": "Entrez un Montant",
         "money_is_added_in": "L’argent est ajouté en",
-        "usdc": "USDC"
+        "usdc": "USDC",
+        "adding_cash": "Ajout d'argent",
+        "buy_error_title": "Achat échoué",
+        "buy_error_generic": "Quelque chose s'est mal passé. Réessayez",
+        "payment_rejected": "Votre carte a refusé ce paiement"
       }
     },
     "points": {
