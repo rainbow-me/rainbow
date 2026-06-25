@@ -508,6 +508,11 @@
         "needsWallet": "지갑 필요",
         "ready": "준비됨"
       },
+      "cash_order_outcome": {
+        "title": "현금 주문 결과",
+        "succeed": "성공합니다",
+        "fail": "실패합니다"
+      },
       "status": "상태",
       "sync_codepush": "CodePush 동기화",
       "simulate_device_transfer": "디바이스 전송 시뮬레이션",
@@ -1688,7 +1693,11 @@
         "hold_to_add": "길게 눌러 추가",
         "enter_amount": "금액 입력",
         "money_is_added_in": "금액 추가 통화",
-        "usdc": "USDC"
+        "usdc": "USDC",
+        "adding_cash": "현금 추가 중",
+        "buy_error_title": "구매 실패",
+        "buy_error_generic": "문제가 발생했습니다. 다시 시도해 주세요",
+        "payment_rejected": "카드에서 이 결제를 거절했습니다"
       }
     },
     "points": {
