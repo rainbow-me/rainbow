@@ -11,13 +11,13 @@ import { MobileWalletProtocolListener } from '@/components/MobileWalletProtocolL
 import { navbarHeight } from '@/components/navbar/Navbar';
 import { Toast, ToastPositionContainer } from '@/components/toasts';
 import { Box } from '@/design-system';
+import { useShouldRevokeDelegation } from '@/features/delegation/hooks/useShouldRevokeDelegation';
 import { useAccountAccentColor } from '@/hooks/useAccountAccentColor';
 import useFetchOpenCollectionsOnMount from '@/hooks/useFetchOpenCollectionsOnMount';
 import { hideSplashScreen } from '@/hooks/useHideSplashScreen';
 import { useAppIconIdentify } from '@/hooks/useIdentifyAppIcon';
 import { useLoadDeferredWalletData } from '@/hooks/useLoadDeferredWalletData';
 import { useRemoveScreen } from '@/hooks/useRemoveFirstScreen';
-import { useShouldRevokeDelegation } from '@/hooks/useShouldRevokeDelegation';
 import { useStableValue } from '@/hooks/useStableValue';
 import { useWalletCohort } from '@/hooks/useWalletCohort';
 import useWalletSectionsData from '@/hooks/useWalletSectionsData';
