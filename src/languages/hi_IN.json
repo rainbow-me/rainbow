@@ -508,6 +508,11 @@
         "needsWallet": "वॉलेट आवश्यक है",
         "ready": "तैयार"
       },
+      "cash_order_outcome": {
+        "title": "नकद ऑर्डर का परिणाम",
+        "succeed": "सफल होगा",
+        "fail": "विफल होगा"
+      },
       "status": "स्थिति",
       "sync_codepush": "CodePush सिंक करें",
       "simulate_device_transfer": "उपकरण स्थानांतरण का अनुकरण करें",
@@ -1688,7 +1693,11 @@
         "hold_to_add": "जोड़ने के लिए रोकें",
         "enter_amount": "राशि दर्ज करें",
         "money_is_added_in": "पैसे इसमें जोड़े जाते हैं",
-        "usdc": "USDC"
+        "usdc": "USDC",
+        "adding_cash": "नकद जोड़ा जा रहा है",
+        "buy_error_title": "खरीदारी विफल",
+        "buy_error_generic": "कुछ गलत हो गया। फिर से प्रयास करें",
+        "payment_rejected": "आपके कार्ड ने इस भुगतान को अस्वीकार कर दिया"
       }
     },
     "points": {
