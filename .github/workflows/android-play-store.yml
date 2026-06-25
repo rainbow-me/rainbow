@@ -171,6 +171,15 @@ jobs:
             echo "- versionCode: \`$VERSION_CODE\`"
           } >> "$GITHUB_STEP_SUMMARY"
 
+      - name: Provision Android NDK
+        run: |
+          set -euo pipefail
+          NDK_VERSION=$(grep -m1 -oP 'ndkVersion\s*=\s*"\K[^"]+' android/build.gradle)
+          echo "Installing NDK ${NDK_VERSION} (source of truth: android/build.gradle)"
+          "${ANDROID_HOME}/cmdline-tools/latest/bin/sdkmanager" "ndk;${NDK_VERSION}"
+          test -d "${ANDROID_HOME}/ndk/${NDK_VERSION}" \
+            || { echo "::error::NDK ${NDK_VERSION} not present after install"; exit 1; }
+
       - name: Build signed AAB + APK
         working-directory: android
         env:
