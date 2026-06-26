@@ -818,11 +818,6 @@
         "total_value": "Valor total",
         "underlying_tokens": "Tokens subyacentes"
       },
-      "nft_brief_token_info": {
-        "for_sale": "En venta",
-        "floor_price": "Precio mínimo",
-        "last_sale": "Último precio de venta"
-      },
       "swap": {
         "swap": "Intercambiar",
         "bridge": "Puente",
@@ -903,7 +898,6 @@
         "edit": "Editar",
         "expires_in": "Expira en",
         "expires_on": "Caduca el",
-        "floor_price": "Precio mínimo",
         "for_sale": "En venta",
         "in_showcase": "En Showcase",
         "last_sale_price": "Último precio de venta",
@@ -1023,10 +1017,6 @@
       "failed_wc_invalid_chain": {
         "text": "La red especificada en esta solicitud no es compatible con Rainbow.",
         "title": "Manejo fallido"
-      },
-      "floor_price": {
-        "text": "El precio mínimo de una colección es el precio más bajo solicitado actualmente en todos los artículos en venta de una colección.",
-        "title": "Precio mínimo de la colección"
       },
       "gas": {
         "text": "Esta es la \"tarifa de gas\" utilizada por la blockchain de %{networkName} para validar de forma segura tu transacción.\n\nEsta tarifa varía dependiendo de la complejidad de tu transacción y de lo ocupada que esté la red.",
