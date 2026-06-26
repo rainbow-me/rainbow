@@ -818,11 +818,6 @@
         "total_value": "Valeur totale",
         "underlying_tokens": "Tokens sous-jacents"
       },
-      "nft_brief_token_info": {
-        "for_sale": "A vendre",
-        "floor_price": "Prix minimal",
-        "last_sale": "Dernier prix de vente"
-      },
       "swap": {
         "swap": "Échanger",
         "bridge": "Pont",
@@ -903,7 +898,6 @@
         "edit": "Modifier",
         "expires_in": "Expire dans",
         "expires_on": "Expire le",
-        "floor_price": "Prix minimal",
         "for_sale": "À vendre",
         "in_showcase": "En vitrine",
         "last_sale_price": "Dernier prix de vente",
@@ -1023,10 +1017,6 @@
       "failed_wc_invalid_chain": {
         "text": "Le réseau spécifié dans cette demande n'est pas pris en charge par Rainbow.",
         "title": "Gestion échouée :)"
-      },
-      "floor_price": {
-        "text": "Le prix plancher d'une collection est le prix demandé le plus bas parmi tous les articles actuellement en vente dans une collection.",
-        "title": "Prix plancher de la collection"
       },
       "gas": {
         "text": "Il s'agit des \"frais de gaz\" utilisés par la blockchain %{networkName} pour valider votre transaction de manière sécurisée.\n\nCes frais varient en fonction de la complexité de votre transaction et de l'encombrement du réseau !",
