@@ -1412,47 +1412,6 @@
       "collect_now": "Şimdi Koleksiyon Yap",
       "will_appear_here": "Koleksiyonlarınız Burada Görünecek"
     },
-    "nft_offers": {
-      "card": {
-        "title": {
-          "singular": "1 Teklif",
-          "plural": "%{numOffers} Teklifler"
-        },
-        "button": "Tüm Teklifleri Gör",
-        "expired": "Süresi Doldu"
-      },
-      "sheet": {
-        "title": "Teklifler",
-        "total": "Toplam",
-        "above_floor": "tabanın üzerinde",
-        "below_floor": "tabanın altında",
-        "no_offers_found": "Teklif bulunamadı"
-      },
-      "sort_menu": {
-        "highest": "En Yüksek",
-        "from_floor": "Tabandan",
-        "recent": "Son"
-      },
-      "single_offer_sheet": {
-        "title": "Teklif",
-        "expires_in": "%{timeLeft}içinde sona eriyor",
-        "floor_price": "Taban Fiyatı",
-        "marketplace": "Pazar Yeri",
-        "marketplace_fees": "%{marketplace} Ücretler",
-        "creator_royalties": "Yaratıcı Telif Hakkı",
-        "receive": "Al",
-        "proceeds": "Gelirler",
-        "view_offer": "Teklifi Görüntüle",
-        "offer_expired": "Teklif Süresi Doldu",
-        "expired": "Süresi Doldu",
-        "hold_to_sell": "Satmak için Tut",
-        "selling": "Satış",
-        "error": {
-          "title": "NFT satarken hata",
-          "message": "Lütfen yardım için Rainbow destek hattına başvurun."
-        }
-      }
-    },
     "perps": {
       "activity": {
         "title": "Aktivite",
