@@ -1,7 +1,7 @@
+import { createBaseStore } from '@storesjs/stores';
 import { type Address } from 'viem';
 
 import { type NftCollectionSortCriterion, type SortDirection } from '@/graphql/__generated__/arc';
-import { createRainbowStore } from '@/state/internal/createRainbowStore';
 
 import { type NftsStoreType } from './types';
 
@@ -12,7 +12,7 @@ interface NftsStoreManagerState {
 
 export type NftSort = `${NftCollectionSortCriterion}|${SortDirection}`;
 
-export const nftsStoreManager = createRainbowStore<NftsStoreManagerState>(
+export const nftsStoreManager = createBaseStore<NftsStoreManagerState>(
   () => ({
     address: null,
     cachedStore: null,

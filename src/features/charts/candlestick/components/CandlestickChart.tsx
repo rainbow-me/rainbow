@@ -15,6 +15,7 @@ import {
   type SkParagraph,
   type SkPicture,
 } from '@shopify/react-native-skia';
+import { useListen } from '@storesjs/stores';
 import { dequal } from 'dequal';
 import { cloneDeep, merge } from 'lodash';
 import { Gesture, GestureDetector, State as GestureState } from 'react-native-gesture-handler';
@@ -66,7 +67,6 @@ import { useOnChange } from '@/hooks/useOnChange';
 import { useStableValue } from '@/hooks/useStableValue';
 import Routes from '@/navigation/routesNames';
 import { userAssetsStoreManager } from '@/state/assets/userAssetsStoreManager';
-import { useListen } from '@/state/internal/hooks/useListen';
 import { useListenerRouteGuard } from '@/state/internal/hooks/useListenerRouteGuard';
 import { type DeepPartial } from '@/types/objects';
 import { deepFreeze } from '@/utils/deepFreeze';

@@ -1,11 +1,11 @@
 import { RelayClient } from '@polymarket/builder-relayer-client';
+import { createQueryStore } from '@storesjs/stores';
 import { type Address } from 'viem';
 
 import { BUILDER_CONFIG, POLYMARKET_RELAYER_PROXY_URL } from '@/features/polymarket/constants';
 import { deriveSafeWalletAddress } from '@/features/polymarket/utils/deriveSafeWalletAddress';
 import { time } from '@/framework/core/utils/time';
 import { RainbowError } from '@/logger';
-import { createQueryStore } from '@/state/internal/createQueryStore';
 import { useWalletsStore } from '@/state/wallets/walletsStore';
 import { ChainId } from '@rainbow-me/swaps';
 

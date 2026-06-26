@@ -33,21 +33,21 @@ const storage = new Storage<
  * All migrations should be added here IN the ORDER in which we need them to
  * run.
  */
-const migrations: Migration[] = [
-  deleteImgixMMKVCache(),
-  prepareDefaultNotificationGroupSettingsState(),
-  migrateNotificationSettingsToV2(),
-  changeLanguageKeys(),
-  fixHiddenUSDC(),
-  purgeWcConnectionsWithoutAccounts(),
-  migratePinnedAndHiddenTokenUniqueIds(),
-  migrateUnlockableAppIconStorage(),
-  migratePersistedQueriesToMMKV(),
-  migrateFavoritesV2(),
-  migrateFavoritesV3(),
-  migrateNotificationSettingsToV3(),
-  healEip55KeychainAddresses(),
-  migrateExperimentalFlags(),
+const migrations: (() => Migration)[] = [
+  deleteImgixMMKVCache,
+  prepareDefaultNotificationGroupSettingsState,
+  migrateNotificationSettingsToV2,
+  changeLanguageKeys,
+  fixHiddenUSDC,
+  purgeWcConnectionsWithoutAccounts,
+  migratePinnedAndHiddenTokenUniqueIds,
+  migrateUnlockableAppIconStorage,
+  migratePersistedQueriesToMMKV,
+  migrateFavoritesV2,
+  migrateFavoritesV3,
+  migrateNotificationSettingsToV3,
+  healEip55KeychainAddresses,
+  migrateExperimentalFlags,
 ];
 
 /**
@@ -100,10 +100,11 @@ export async function runMigration({ debug, name, migrate, defer }: Migration) {
 /**
  * @private Only exported for testing
  */
-export async function runMigrations(migrations: Migration[]) {
+export async function runMigrations(migrations: (() => Migration)[]) {
   const ranMigrations = [];
 
-  for (const migration of migrations) {
+  for (const getMigration of migrations) {
+    const migration = getMigration();
     const migratedAt = storage.get([migration.name]);
     const isDeferable = Boolean(migration.defer);
 
@@ -126,7 +127,7 @@ export async function runMigrations(migrations: Migration[]) {
 }
 
 function isFullyMigrated(): boolean {
-  const lastMigrationName = migrations[migrations.length - 1].name;
+  const lastMigrationName = migrations[migrations.length - 1]().name;
   const migratedAt = storage.get([lastMigrationName]);
   return Boolean(migratedAt);
 }

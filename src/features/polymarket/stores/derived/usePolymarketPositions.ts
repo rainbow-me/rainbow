@@ -1,6 +1,7 @@
+import { createDerivedStore } from '@storesjs/stores';
+
 import { usePolymarketPositionsStore } from '@/features/polymarket/stores/polymarketPositionsStore';
 import { type PolymarketPosition } from '@/features/polymarket/types';
-import { createDerivedStore } from '@/state/internal/createDerivedStore';
 import { shallowEqual } from '@/worklets/comparisons';
 
 export type PolymarketPositions = {
@@ -40,5 +41,5 @@ export const usePolymarketPositions = createDerivedStore<PolymarketPositions>(
     };
   },
 
-  { equalityFn: shallowEqual, fastMode: true }
+  { equalityFn: shallowEqual, lockDependencies: true }
 );

@@ -1,8 +1,8 @@
+import { createBaseStore } from '@storesjs/stores';
 import { type Address } from 'viem';
 
 import type { SupportedCurrencyKey } from '@/features/currency/supportedCurrencies';
 import reduxStore from '@/redux/store';
-import { createRainbowStore } from '@/state/internal/createRainbowStore';
 
 import { type UserAssetsStoreType } from './types';
 
@@ -14,7 +14,7 @@ export type StoreManagerState = {
   setHiddenAssetBalance: (address: Address | string, balance: string) => void;
 };
 
-export const userAssetsStoreManager = createRainbowStore<StoreManagerState>(
+export const userAssetsStoreManager = createBaseStore<StoreManagerState>(
   set => ({
     address: null,
     cachedStore: null,

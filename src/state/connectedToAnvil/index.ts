@@ -1,4 +1,4 @@
-import { createRainbowStore } from '../internal/createRainbowStore';
+import { createBaseStore } from '@storesjs/stores';
 
 export interface ConnectedToAnvilState {
   connectedToAnvil: boolean;
@@ -8,7 +8,7 @@ export interface ConnectedToAnvilState {
   setConnectedToAnvilOp: (connectedToAnvilOp: boolean) => void;
 }
 
-export const useConnectedToAnvilStore = createRainbowStore<ConnectedToAnvilState>(
+export const useConnectedToAnvilStore = createBaseStore<ConnectedToAnvilState>(
   set => ({
     connectedToAnvil: false,
     setConnectedToAnvil: connectedToAnvil => {

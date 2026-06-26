@@ -1,23 +1,22 @@
-import { identity } from 'lodash';
-
-import { useCleanup } from '@/hooks/useCleanup';
-import { useStableValue } from '@/hooks/useStableValue';
-
 import {
-  type BaseRainbowStore,
+  type BaseStore,
   type EqualityFn,
   type Selector,
   type SubscribeArgs,
   type SubscribeOverloads,
   type UnsubscribeFn,
-} from '../types';
+} from '@storesjs/stores';
+import { identity } from 'lodash';
+
+import { useCleanup } from '@/hooks/useCleanup';
+import { useStableValue } from '@/hooks/useStableValue';
 
 // ============ Types ========================================================== //
 
 type ObservedKeys<Key extends string | number> = Key | Key[] | null;
 
 type SelectorReadTracker<Key extends string | number> = {
-  install<State>(store: BaseRainbowStore<State>, onChange: (keys: Key[]) => void): BaseRainbowStore<State>;
+  install<State>(store: BaseStore<State>, onChange: (keys: Key[]) => void): BaseStore<State>;
   track(key: Key): void;
 };
 
@@ -35,7 +34,7 @@ const TRACKING_INACTIVE = Symbol();
  * to record access to a specific key.
  *
  * `tracker.install(store, onChange)` installs subscription tracking
- * and returns the store with the tracker installed. `onChange` is
+ * and returns the store with the tracker built in. `onChange` is
  * invoked any time the set of observed keys changes.
  *
  * Cleanup is handled automatically, and tracking is skipped outside
@@ -59,13 +58,13 @@ export function createSelectorReadTracker<Key extends string | number>(): Select
     }
   }
 
-  function install<S>(store: BaseRainbowStore<S>, onChange: (keys: Key[]) => void): BaseRainbowStore<S> {
+  function install<S>(store: BaseStore<S>, onChange: (keys: Key[]) => void): BaseStore<S> {
     if (didInstall) throw new Error('[createSelectorReadTracker] Tracker is already installed');
     didInstall = true;
 
-    const originalSubscribe: SubscribeOverloads<S, true> = store.subscribe;
+    const originalSubscribe: SubscribeOverloads<S> = store.subscribe;
 
-    store.subscribe = (...args: SubscribeArgs<S>): UnsubscribeFn<true> => {
+    store.subscribe = (...args: SubscribeArgs<S>): UnsubscribeFn => {
       if (args.length === 1) return originalSubscribe(args[0]);
 
       const [selector, listener, options] = args;
@@ -75,18 +74,17 @@ export function createSelectorReadTracker<Key extends string | number>(): Select
       const unsubscribe = originalSubscribe(trackedSelector.select, listener, options);
 
       let didUnsubscribe = false;
-      return skipAbortFetch => {
+      return () => {
         if (didUnsubscribe) return;
         didUnsubscribe = true;
-
-        unsubscribe(skipAbortFetch);
+        unsubscribe();
         trackedSelector.release();
       };
     };
 
     function useStore(): S;
-    function useStore<T>(selector: (state: S) => T, equalityFn?: EqualityFn<T>): T;
-    function useStore<T>(selector: (state: S) => T = identity, equalityFn: EqualityFn<T> | undefined = undefined): S | T {
+    function useStore<T>(selector: Selector<S, T>, equalityFn?: EqualityFn<T>): T;
+    function useStore<T>(selector: Selector<S, T> = identity, equalityFn: EqualityFn<T> | undefined = undefined): S | T {
       const tracker = useStableValue(() => createTrackedSelector(selector, onChange));
       tracker.setSelector(selector);
       useCleanup(() => tracker.release());

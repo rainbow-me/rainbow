@@ -1,5 +1,6 @@
 import { getAddress, isAddress } from '@ethersproject/address';
 import { Contract } from '@ethersproject/contracts';
+import { createBaseStore, createQueryStore } from '@storesjs/stores';
 import { groupBy } from 'lodash';
 import qs from 'qs';
 import { TOKEN_SEARCH_URL } from 'react-native-dotenv';
@@ -12,8 +13,6 @@ import { RainbowFetchClient } from '@/framework/data/http/rainbowFetch';
 import { getProvider } from '@/handlers/web3';
 import { logger, RainbowError } from '@/logger';
 import erc20ABI from '@/references/erc20-abi.json';
-import { createQueryStore } from '@/state/internal/createQueryStore';
-import { createRainbowStore } from '@/state/internal/createRainbowStore';
 import { useSwapsStore } from '@/state/swaps/swapsStore';
 import { getUniqueId } from '@/utils/ethereumUtils';
 
@@ -73,9 +72,9 @@ type DiscoverSearchResults = {
 
 // ============ Store Definitions ============================================== //
 
-export const useSwapsSearchStore = createRainbowStore<{ searchQuery: string }>(() => ({ searchQuery: '' }));
+export const useSwapsSearchStore = createBaseStore<{ searchQuery: string }>(() => ({ searchQuery: '' }));
 
-export const useDiscoverSearchQueryStore = createRainbowStore<DiscoverSearchQueryState>(() => ({ isSearching: false, searchQuery: '' }));
+export const useDiscoverSearchQueryStore = createBaseStore<DiscoverSearchQueryState>(() => ({ isSearching: false, searchQuery: '' }));
 
 export const useTokenSearchStore = createQueryStore<VerifiedResults, TokenSearchParams<TokenLists.Verified>>(
   {

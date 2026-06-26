@@ -1,5 +1,6 @@
+import { createDerivedStore } from '@storesjs/stores';
+
 import { buildLiquidationInfo, type LiquidationData } from '@/features/perps/utils/buildLiquidationInfo';
-import { createDerivedStore } from '@/state/internal/createDerivedStore';
 
 import { useHlNewPositionStore } from '../hlNewPositionStore';
 
@@ -20,5 +21,5 @@ export const useLiquidationInfo = createDerivedStore(
     };
   },
 
-  { fastMode: true }
+  { lockDependencies: true }
 );

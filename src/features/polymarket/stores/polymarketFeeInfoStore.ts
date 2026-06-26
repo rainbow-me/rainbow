@@ -1,9 +1,9 @@
 import { type MarketDetails } from '@polymarket/clob-client-v2';
+import { createQueryStore } from '@storesjs/stores';
 
 import { polymarketClobDataClient } from '@/features/polymarket/polymarket-clob-data-client';
 import { EMPTY_POLYMARKET_FEE_INFO, type PolymarketFeeInfo } from '@/features/polymarket/utils/fees';
 import { time } from '@/framework/core/utils/time';
-import { createQueryStore } from '@/state/internal/createQueryStore';
 
 type FetchParams = {
   conditionId: string | null;

@@ -1,10 +1,11 @@
 import React, { createContext, useContext, type ReactNode } from 'react';
 
+import { createStoreActions } from '@storesjs/stores';
+
 import { type ExtendedAnimatedAssetWithColors } from '@/__swaps__/types/assets';
 import { type GasSpeed } from '@/features/gas/types/gasSpeed';
 import { useCleanup } from '@/hooks/useCleanup';
 import { useStableValue } from '@/hooks/useStableValue';
-import { createStoreActions } from '@/state/internal/utils/createStoreActions';
 
 import { useDepositController } from '../hooks/useDepositController';
 import { useDepositHandler } from '../hooks/useDepositHandler';

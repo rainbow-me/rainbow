@@ -1,10 +1,10 @@
+import { createQueryStore, createStoreActions } from '@storesjs/stores';
+
 import { POLYMARKET_GAMMA_API_URL } from '@/features/polymarket/constants';
 import { type PolymarketEvent, type RawPolymarketEvent } from '@/features/polymarket/types/polymarket-event';
 import { processRawPolymarketEvent } from '@/features/polymarket/utils/transforms';
 import { time } from '@/framework/core/utils/time';
 import { rainbowFetch } from '@/framework/data/http/rainbowFetch';
-import { createQueryStore } from '@/state/internal/createQueryStore';
-import { createStoreActions } from '@/state/internal/utils/createStoreActions';
 
 const PAGE_SIZE = 10;
 const EMPTY_RESULT = Object.freeze({ events: [], pagination: { hasMore: false, totalResults: 0 } });

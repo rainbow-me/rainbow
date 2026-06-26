@@ -1,6 +1,6 @@
-import { analytics } from '@/analytics';
+import { createBaseStore } from '@storesjs/stores';
 
-import { createRainbowStore } from '../internal/createRainbowStore';
+import { analytics } from '@/analytics';
 
 export interface FavoritedSite {
   name: string;
@@ -38,7 +38,7 @@ export const standardizeUrl = (url: string, stripPath?: boolean) => {
   return standardizedUrl;
 };
 
-export const useFavoriteDappsStore = createRainbowStore<FavoriteDappsStore>(
+export const useFavoriteDappsStore = createBaseStore<FavoriteDappsStore>(
   (set, get) => ({
     favoriteDapps: [],
 

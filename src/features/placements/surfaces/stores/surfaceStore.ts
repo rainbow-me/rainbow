@@ -1,5 +1,6 @@
 import { getApp } from '@react-native-firebase/app';
 import { doc, getDoc, getFirestore } from '@react-native-firebase/firestore';
+import { createQueryStore } from '@storesjs/stores';
 
 import { DESTINATION_ROOT_VALUES, DISPLAY_VALUES } from '@/features/placements/surfaces/constants';
 import {
@@ -11,7 +12,6 @@ import {
 } from '@/features/placements/surfaces/types';
 import { isNonEmptyString, isValidDateString, oneOf } from '@/features/placements/utils/decoders';
 import { time } from '@/framework/core/utils/time';
-import { createQueryStore } from '@/state/internal/createQueryStore';
 
 type SurfaceStore = ReturnType<typeof createSurfaceStore>;
 

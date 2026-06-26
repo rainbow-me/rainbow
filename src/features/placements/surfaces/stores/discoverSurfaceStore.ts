@@ -1,3 +1,5 @@
+import { createDerivedStore } from '@storesjs/stores';
+
 import { usePlacementsStore } from '@/features/placements/stores/placementsStore';
 import {
   buildDiscoverSurface,
@@ -8,7 +10,6 @@ import {
 import { type DiscoverSurface, type DiscoverSurfacePlacementRefs } from '@/features/placements/surfaces/stores/discoverSurfaceTypes';
 import { getSurfaceStore } from '@/features/placements/surfaces/stores/surfaceStore';
 import { filterSurfaceTree, isSurfaceEnabled } from '@/features/placements/surfaces/utils/filterSurface';
-import { createDerivedStore } from '@/state/internal/createDerivedStore';
 import { deepEqual } from '@/worklets/comparisons';
 
 export const useDiscoverSurfaceStore = getSurfaceStore('discover');
@@ -33,7 +34,7 @@ export const useDiscoverSurface = createDerivedStore<DiscoverSurface | undefined
     const surfaceWithPlacements = filterMissingPlacementSurface(enabledSurface, placementsById);
     return surfaceWithPlacements ? buildDiscoverSurface(surfaceWithPlacements) : undefined;
   },
-  { equalityFn: deepEqual, fastMode: true }
+  { equalityFn: deepEqual, lockDependencies: true }
 );
 
 export const useDiscoverSurfacePlacementRefs = createDerivedStore<DiscoverSurfacePlacementRefs>(
@@ -51,5 +52,5 @@ export const useDiscoverSurfacePlacementRefs = createDerivedStore<DiscoverSurfac
 
     return getDiscoverSurfacePlacementRefs(surface, placementsById);
   },
-  { equalityFn: deepEqual, fastMode: true }
+  { equalityFn: deepEqual, lockDependencies: true }
 );

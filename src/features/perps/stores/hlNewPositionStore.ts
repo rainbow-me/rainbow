@@ -1,3 +1,5 @@
+import { createBaseStore, createStoreActions } from '@storesjs/stores';
+
 import { PerpsNavigation } from '@/features/perps/screens/PerpsNavigator';
 import { infoClient } from '@/features/perps/services/hyperliquid-info-client';
 import { hyperliquidAccountActions } from '@/features/perps/stores/hyperliquidAccountStore';
@@ -5,8 +7,6 @@ import { PerpPositionSide, type PerpMarket, type TriggerOrderType } from '@/feat
 import { greaterThanWorklet, toFixedWorklet } from '@/framework/core/safeMath';
 import { divide } from '@/helpers/utilities';
 import Routes from '@/navigation/routesNames';
-import { createRainbowStore } from '@/state/internal/createRainbowStore';
-import { createStoreActions } from '@/state/internal/utils/createStoreActions';
 import { useWalletsStore } from '@/state/wallets/walletsStore';
 
 type TriggerOrder = {
@@ -50,7 +50,7 @@ const initialState: HlNewPositionState = {
   triggerOrders: [],
 };
 
-export const useHlNewPositionStore = createRainbowStore<HlNewPositionStore>((set, get) => ({
+export const useHlNewPositionStore = createBaseStore<HlNewPositionStore>((set, get) => ({
   ...initialState,
 
   addTriggerOrder: triggerOrder =>

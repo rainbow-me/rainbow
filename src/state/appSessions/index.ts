@@ -1,8 +1,7 @@
+import { createBaseStore } from '@storesjs/stores';
 import { type Address } from 'viem';
 
 import { ChainId, Network } from '@/features/network/types/backendNetworks';
-
-import { createRainbowStore } from '../internal/createRainbowStore';
 
 const chainsIdByNetwork: Record<Network, ChainId> = {
   [Network.apechain]: ChainId.apechain,
@@ -53,7 +52,7 @@ export interface AppSessionsStore<T extends AppSession | AppSessionV0> {
   clearSessions: () => void;
 }
 
-export const useAppSessionsStore = createRainbowStore<AppSessionsStore<AppSession>>(
+export const useAppSessionsStore = createBaseStore<AppSessionsStore<AppSession>>(
   (set, get) => ({
     appSessions: {},
     cachedSelectors: {},

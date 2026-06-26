@@ -1,10 +1,11 @@
+import { createDerivedStore } from '@storesjs/stores';
+
 import { USD_DECIMALS } from '@/features/currency/constants';
 import { useCurrencyConversionStore } from '@/features/currency/stores/currencyConversionStore';
 import { usePolymarketPositionsSummary } from '@/features/polymarket/stores/derived/usePolymarketPositionsSummary';
 import { usePolymarketBalanceStore } from '@/features/polymarket/stores/polymarketBalanceStore';
 import { truncateToDecimals } from '@/framework/core/safeMath';
 import { add, isZero } from '@/helpers/utilities';
-import { createDerivedStore } from '@/state/internal/createDerivedStore';
 
 export type PolymarketAccountValueSummary = {
   balance: string;
@@ -28,5 +29,5 @@ export const usePolymarketAccountValueSummary = createDerivedStore<PolymarketAcc
       totalValueNative: nativeCurrencyAccountValue,
     };
   },
-  { fastMode: true }
+  { lockDependencies: true }
 );

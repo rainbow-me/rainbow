@@ -1,3 +1,5 @@
+import { createBaseStore } from '@storesjs/stores';
+
 import {
   fetchTeamMetadataForGameEvent,
   fetchTeamsForGameEvents,
@@ -5,7 +7,6 @@ import {
   type GameTeamsSource,
 } from '@/features/polymarket/utils/sports';
 import { time } from '@/framework/core/utils/time';
-import { createRainbowStore } from '@/state/internal/createRainbowStore';
 
 const TEAM_METADATA_STALE_TIME = time.minutes(15);
 
@@ -31,7 +32,7 @@ function getTeamMetadataCacheKey(event: GameTeamsSource): string | null {
   return `ticker:${ticker}:${normalizeCacheKeyPart(event.awayTeamName)}:${normalizeCacheKeyPart(event.homeTeamName)}`;
 }
 
-export const usePolymarketTeamMetadataStore = createRainbowStore<PolymarketTeamMetadataState>((set, get) => ({
+export const usePolymarketTeamMetadataStore = createBaseStore<PolymarketTeamMetadataState>((set, get) => ({
   metadataByKey: {},
 
   // Each call fetches with its own AbortController; the mapWithConcurrency pool already bounds fan-out,

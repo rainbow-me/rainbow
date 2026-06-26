@@ -1,3 +1,5 @@
+import { createDerivedStore, createQueryStore } from '@storesjs/stores';
+
 import { IS_TEST } from '@/env';
 import { POLYMARKET } from '@/features/config/constants/experimental';
 import { useExperimentalConfigStore } from '@/features/config/stores/experimentalConfigStore';
@@ -10,8 +12,6 @@ import { getSportsEventsDayBoundaries, getSportsEventsStartTimeRange } from '@/f
 import { processRawPolymarketEvent } from '@/features/polymarket/utils/transforms';
 import { time } from '@/framework/core/utils/time';
 import { rainbowFetch } from '@/framework/data/http/rainbowFetch';
-import { createDerivedStore } from '@/state/internal/createDerivedStore';
-import { createQueryStore } from '@/state/internal/createQueryStore';
 
 const VOLUME_MIN = '1000';
 
@@ -29,7 +29,7 @@ const usePolymarketSportsEventsEnabled = createDerivedStore<boolean>(
 
     return !IS_TEST && (remoteEnabled || localEnabled);
   },
-  { fastMode: true }
+  { lockDependencies: true }
 );
 
 export const usePolymarketSportsEventsStore = createQueryStore<PolymarketEvent[], never, PolymarketSportsEventsStoreState>(

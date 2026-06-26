@@ -1,3 +1,5 @@
+import { createQueryStore } from '@storesjs/stores';
+
 import type { NativeCurrencyKey } from '@/features/currency/types';
 import { convertAmountAndPriceToNativeDisplay } from '@/features/currency/utils/nativeDisplay';
 import { useBackendNetworksStore } from '@/features/network/stores/backendNetworksStore';
@@ -9,7 +11,6 @@ import { isNativeAsset } from '@/handlers/assets';
 import { convertAmountToPercentageDisplay } from '@/helpers/utilities';
 import { ETH_ADDRESS } from '@/references/constants';
 import { userAssetsStoreManager } from '@/state/assets/userAssetsStoreManager';
-import { createQueryStore } from '@/state/internal/createQueryStore';
 
 import { type DepositStoreType } from '../types';
 

@@ -1,7 +1,8 @@
+import { type DeriveGetter } from '@storesjs/stores';
+
 import { usePlacementsStore } from '@/features/placements/stores/placementsStore';
 import { useDiscoverSurfacePlacementRefs } from '@/features/placements/surfaces/stores/discoverSurfaceStore';
 import { type PlacementSource, type PlacementType } from '@/features/placements/types';
-import { type DeriveGetter } from '@/state/internal/createDerivedStore';
 
 const sourceByType: Record<PlacementType, PlacementSource> = {
   perp: 'hyperliquid',

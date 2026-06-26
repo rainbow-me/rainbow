@@ -1,3 +1,4 @@
+import { createQueryStore, createStoreActions } from '@storesjs/stores';
 import { type Address } from 'viem';
 
 import { getHyperliquidAccountClient, useHyperliquidClients } from '@/features/perps/services';
@@ -6,8 +7,6 @@ import { subWorklet } from '@/framework/core/safeMath';
 import { time } from '@/framework/core/utils/time';
 import * as i18n from '@/languages';
 import { RainbowError } from '@/logger';
-import { createQueryStore } from '@/state/internal/createQueryStore';
-import { createStoreActions } from '@/state/internal/utils/createStoreActions';
 
 import { TradeExecutionType, TriggerOrderType, type HistoricalOrder, type HlTrade, type UserFill } from '../types';
 import { convertSide } from '../utils';

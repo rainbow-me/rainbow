@@ -1,7 +1,6 @@
 import { Alert } from 'react-native';
 
 import { logger } from '@/logger';
-import { rainbowStorage } from '@/state/internal/rainbowStorage';
 
 import { cashOrderService } from '../services/cashOrderService';
 import { OrderFailureReason, OrderStatus, RampCryptoAsset, RampNetwork, type BuyOrder, type BuyOrderSpec } from '../services/rampClient';
@@ -62,7 +61,6 @@ let alertSpy: jest.SpyInstance;
 beforeEach(() => {
   jest.clearAllMocks();
   alertSpy = jest.spyOn(Alert, 'alert').mockImplementation(() => undefined);
-  rainbowStorage.remove('cashBuyOrder:cashBuyOrder');
   store.setState({ spec: null, order: null, errorCode: null });
   createBuyOrderSpec.mockImplementation(({ depositAmount, walletAddress }) => ({ depositAmount, walletAddress, id: 'order-1' }));
 });
@@ -274,24 +272,19 @@ describe('reset', () => {
 });
 
 describe('persistence', () => {
-  const STORAGE_KEY = 'cashBuyOrder:cashBuyOrder';
-  // persistThrottleMs is 0, but the write still lands on the next macrotask — let it flush.
-  const flushPersist = () =>
-    new Promise<void>(resolve => {
-      setTimeout(resolve, 5);
-    });
-  const readPersisted = (): Record<string, unknown> => {
-    const raw = rainbowStorage.getString(STORAGE_KEY);
-    if (!raw) throw new Error('nothing persisted');
-    return (JSON.parse(raw) as { state: Record<string, unknown> }).state;
-  };
+  async function readPersisted(): Promise<Record<string, unknown>> {
+    const { name, storage } = store.persist.getOptions();
+    if (!name || !storage) throw new Error('store persistence is not configured');
+
+    const persisted = await storage.getItem(name);
+    if (!persisted) throw new Error('nothing persisted');
+    return persisted.state;
+  }
 
   it('persists only spec and order — never the transient errorCode or any methods', async () => {
     store.setState({ spec: SPEC, order: PENDING_ORDER, errorCode: 'GENERIC' });
 
-    await flushPersist();
-
-    const persisted = readPersisted();
+    const persisted = await readPersisted();
     expect(Object.keys(persisted).sort()).toEqual(['order', 'spec']);
     expect(persisted).toEqual({ spec: SPEC, order: PENDING_ORDER });
   });
@@ -299,16 +292,12 @@ describe('persistence', () => {
   it('keeps the spec on disk while a submission is mid-flight (crash-during-submission recovery)', async () => {
     store.setState({ spec: SPEC, order: null, errorCode: null });
 
-    await flushPersist();
-
-    expect(readPersisted()).toEqual({ spec: SPEC, order: null });
+    await expect(readPersisted()).resolves.toEqual({ spec: SPEC, order: null });
   });
 
   it('keeps a non-terminal order on disk so polling can resume after a crash', async () => {
     store.setState({ spec: null, order: PROCESSING_ORDER, errorCode: null });
 
-    await flushPersist();
-
-    expect(readPersisted()).toEqual({ spec: null, order: PROCESSING_ORDER });
+    await expect(readPersisted()).resolves.toEqual({ spec: null, order: PROCESSING_ORDER });
   });
 });

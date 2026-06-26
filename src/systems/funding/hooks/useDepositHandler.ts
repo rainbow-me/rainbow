@@ -2,6 +2,7 @@ import { useCallback } from 'react';
 import { Alert, InteractionManager } from 'react-native';
 
 import { Logger } from '@ethersproject/logger';
+import { type StoreActions } from '@storesjs/stores';
 import { type SharedValue } from 'react-native-reanimated';
 import { triggerHaptics } from 'react-native-turbo-haptics';
 
@@ -18,7 +19,6 @@ import { loadWallet } from '@/model/wallet';
 import Navigation, { useRoute, type Route } from '@/navigation/Navigation';
 import Routes from '@/navigation/routesNames';
 import { rapTypes } from '@/raps/references';
-import { type StoreActions } from '@/state/internal/utils/createStoreActions';
 import { getNextNonce } from '@/state/nonces';
 import { executeFn, Screens, startTimeToSignTracking, TimeToSignOperation } from '@/state/performance/performance';
 import { useWalletsStore } from '@/state/wallets/walletsStore';

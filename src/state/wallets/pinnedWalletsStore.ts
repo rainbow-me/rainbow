@@ -1,4 +1,4 @@
-import { createRainbowStore } from '@/state/internal/createRainbowStore';
+import { createBaseStore } from '@storesjs/stores';
 
 export const MAX_PINNED_ADDRESSES = 6;
 
@@ -17,7 +17,7 @@ interface PinnedWalletsStore {
   isPinnedAddress: (address: Address) => boolean;
 }
 
-export const usePinnedWalletsStore = createRainbowStore<PinnedWalletsStore>(
+export const usePinnedWalletsStore = createBaseStore<PinnedWalletsStore>(
   (set, get) => ({
     pinnedAddresses: [],
     unpinnedAddresses: [],

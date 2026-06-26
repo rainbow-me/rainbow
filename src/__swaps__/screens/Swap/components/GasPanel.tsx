@@ -1,6 +1,7 @@
 import React, { useCallback, useMemo, type PropsWithChildren, type ReactNode } from 'react';
 import { Platform, type LayoutChangeEvent } from 'react-native';
 
+import { createBaseStore } from '@storesjs/stores';
 import Animated, { runOnJS, useAnimatedReaction, useAnimatedStyle, withDelay, withSpring } from 'react-native-reanimated';
 
 import { ACTION_BUTTON_HEIGHT } from '@/__swaps__/screens/Swap/constants';
@@ -30,7 +31,6 @@ import * as i18n from '@/languages';
 import { useNavigation } from '@/navigation/Navigation';
 import Routes from '@/navigation/routesNames';
 import { gasTrendToTrendType, type ExplainSheetParams } from '@/navigation/types';
-import { createRainbowStore } from '@/state/internal/createRainbowStore';
 import { swapsStore, useSwapsStore } from '@/state/swaps/swapsStore';
 import { THICK_BORDER_WIDTH } from '@/styles/constants';
 
@@ -221,7 +221,7 @@ function CurrentBaseFee() {
 }
 
 type GasPanelState = { gasPrice?: string; maxBaseFee?: string; maxPriorityFee?: string };
-const useGasPanelStore = createRainbowStore<GasPanelState | undefined>(() => undefined);
+const useGasPanelStore = createBaseStore<GasPanelState | undefined>(() => undefined);
 
 function useGasPanelState<
   Option extends 'maxBaseFee' | 'maxPriorityFee' | 'gasPrice' | undefined = undefined,

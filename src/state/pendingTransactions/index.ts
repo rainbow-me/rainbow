@@ -1,9 +1,9 @@
+import { createBaseStore, createStoreActions } from '@storesjs/stores';
+
 import { rainbowToastsActions } from '@/components/rainbow-toast/useRainbowToastsStore';
 import { isPendingTransaction, type NewTransaction, type PendingTransaction, type RainbowTransaction } from '@/entities/transactions';
 import { type ChainId } from '@/features/network/types/backendNetworks';
 import { convertNewTransactionToRainbowTransaction } from '@/parsers/transactions';
-import { createRainbowStore } from '@/state/internal/createRainbowStore';
-import { createStoreActions } from '@/state/internal/utils/createStoreActions';
 import { nonceActions } from '@/state/nonces';
 import { shallowEqual } from '@/worklets/comparisons';
 
@@ -20,7 +20,7 @@ const EMPTY_PENDING_TRANSACTIONS_BY_ADDRESS: Record<string, RainbowTransaction[]
 const EMPTY_TRANSACTIONS: RainbowTransaction[] = [];
 const EMPTY_PENDING_TRANSACTIONS: PendingTransaction[] = [];
 
-export const usePendingTransactionsStore = createRainbowStore<PendingTransactionsState>(
+export const usePendingTransactionsStore = createBaseStore<PendingTransactionsState>(
   (set, get) => ({
     pendingTransactions: EMPTY_PENDING_TRANSACTIONS_BY_ADDRESS,
 

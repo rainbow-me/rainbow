@@ -1,6 +1,7 @@
 import React, { memo, useCallback, useEffect } from 'react';
 import { StyleSheet, View } from 'react-native';
 
+import { useListen } from '@storesjs/stores';
 import Animated, {
   runOnUI,
   useAnimatedStyle,
@@ -17,7 +18,6 @@ import {
 } from '@/features/charts/line/compact/CompactLineChartRenderer';
 import { type CompactLineChartData, type LineChartDataStore, type SparklineChartProps } from '@/features/charts/line/compact/types';
 import { useOnChange } from '@/hooks/useOnChange';
-import { useListen } from '@/state/internal/hooks/useListen';
 
 const LIVE_POINTER_SIZE = 6;
 const LIVE_POINTER_PULSE_DELAY = 750;

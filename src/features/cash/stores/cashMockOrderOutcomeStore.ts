@@ -1,4 +1,4 @@
-import { createRainbowStore } from '@/state/internal/createRainbowStore';
+import { createBaseStore } from '@storesjs/stores';
 
 /** Dev-only switch for the mock buy-order outcome. Removed when real ramp endpoints land */
 export const CASH_MOCK_ORDER_OUTCOMES = ['succeed', 'fail'] as const;
@@ -13,7 +13,7 @@ type CashMockOrderOutcomeStore = {
   setOutcome: (outcome: CashMockOrderOutcome) => void;
 };
 
-export const useCashMockOrderOutcomeStore = createRainbowStore<CashMockOrderOutcomeStore>(set => ({
+export const useCashMockOrderOutcomeStore = createBaseStore<CashMockOrderOutcomeStore>(set => ({
   outcome: 'succeed',
   setOutcome: outcome => set({ outcome }),
 }));

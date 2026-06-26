@@ -1,6 +1,7 @@
+import { createBaseStore } from '@storesjs/stores';
+
 import { IS_STORE_INSTALL } from '@/env';
 import { time } from '@/framework/core/utils/time';
-import { createRainbowStore } from '@/state/internal/createRainbowStore';
 
 import { defaultConfig, defaultConfigValues, type ExperimentalConfigKey } from '../constants/experimental';
 
@@ -11,7 +12,7 @@ export type ExperimentalConfigState = {
   toggleFlag: (key: ExperimentalConfigKey) => void;
 };
 
-export const useExperimentalConfigStore = createRainbowStore<ExperimentalConfigState>(
+export const useExperimentalConfigStore = createBaseStore<ExperimentalConfigState>(
   (set, get) => ({
     config: defaultConfigValues,
 

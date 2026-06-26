@@ -1,8 +1,7 @@
+import { type OptionallyPersistedStore, type QueryStoreState } from '@storesjs/stores';
 import { type Address } from 'viem';
 
 import type { UniqueAsset } from '@/entities/uniqueAssets';
-import { type QueryStoreState } from '@/state/internal/queryStore/types';
-import { type OptionallyPersistedRainbowStore } from '@/state/internal/types';
 
 export type CollectionId = string;
 export type UniqueId = string;
@@ -56,7 +55,7 @@ export interface NftsState {
   getNextNftCollectionPageKey: () => string | null;
 }
 
-export type NftsStoreType = OptionallyPersistedRainbowStore<QueryStoreState<NftsQueryData, NftParams, NftsState>, Partial<NftsState>>;
+export type NftsStoreType = OptionallyPersistedStore<QueryStoreState<NftsQueryData, NftParams, NftsState>, Partial<NftsState>>;
 
 export type QueryEnabledNftsState = ReturnType<NftsStoreType['getState']>;
 
@@ -80,7 +79,7 @@ export interface OpenCollectionsState {
   setCollectionOpen: (collectionIdOrLegacyName: CollectionId | CollectionName, isOpen: boolean) => void;
 }
 
-export type OpenCollectionsStoreType = OptionallyPersistedRainbowStore<OpenCollectionsState, Partial<OpenCollectionsState>>;
+export type OpenCollectionsStoreType = OptionallyPersistedStore<OpenCollectionsState, Partial<OpenCollectionsState>>;
 
 export type OpenCollectionsRouter = OpenCollectionsStoreType & {
   getState(address?: Address | string): OpenCollectionsState;

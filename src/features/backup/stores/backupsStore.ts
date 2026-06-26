@@ -1,11 +1,11 @@
 import { Platform } from 'react-native';
 
+import { createBaseStore } from '@storesjs/stores';
 import { Mutex } from 'async-mutex';
 
 import { fetchAllBackups, getGoogleAccountUserData, isCloudBackupAvailable, syncCloud } from '@/handlers/cloudBackup';
 import walletBackupTypes from '@/helpers/walletBackupTypes';
 import { logger, RainbowError } from '@/logger';
-import { createRainbowStore } from '@/state/internal/createRainbowStore';
 import { getWallets } from '@/state/wallets/walletsStore';
 
 import { parseTimestampFromFilename, type BackupFile, type CloudBackups } from '../backup';
@@ -97,7 +97,7 @@ const getMostRecentCloudBackup = (backups: BackupFile[]) => {
   }, cloudBackups[0]);
 };
 
-export const backupsStore = createRainbowStore<BackupsStore>(
+export const backupsStore = createBaseStore<BackupsStore>(
   (set, get) => ({
     timesPromptedForBackup: 0,
     setTimesPromptedForBackup: timesPromptedForBackup => set({ timesPromptedForBackup }),

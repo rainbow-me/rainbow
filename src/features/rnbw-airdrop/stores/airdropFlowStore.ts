@@ -1,9 +1,9 @@
+import { createBaseStore, createStoreActions } from '@storesjs/stores';
+
 import { RnbwAirdropScenes, type RnbwAirdropScene } from '@/features/rnbw-airdrop/screens/rnbw-airdrop-screen/constants/airdropScenes';
 import { submitAirdropClaim, type PreparedAirdropClaim } from '@/features/rnbw-rewards/utils/claimAirdrop';
 import { ensureError } from '@/logger';
 import { userAssetsStoreManager } from '@/state/assets/userAssetsStoreManager';
-import { createRainbowStore } from '@/state/internal/createRainbowStore';
-import { createStoreActions } from '@/state/internal/utils/createStoreActions';
 
 type TaskIdle = { status: 'idle'; runId: number };
 type TaskRunning = { status: 'running'; runId: number };
@@ -20,7 +20,7 @@ type AirdropFlowStore = {
   startAirdropClaimSubmission: (preparedClaim: PreparedAirdropClaim) => Promise<void>;
 };
 
-export const useAirdropFlowStore = createRainbowStore<AirdropFlowStore>((set, get) => ({
+export const useAirdropFlowStore = createBaseStore<AirdropFlowStore>((set, get) => ({
   activeScene: RnbwAirdropScenes.AirdropClaimPrompt,
   airdropClaimRequest: { status: 'idle', runId: 0 },
 
