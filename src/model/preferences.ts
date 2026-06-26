@@ -4,7 +4,7 @@ import type { EthereumAddress } from '@/entities/wallet';
 import { type Network } from '@/features/network/types/backendNetworks';
 import { RainbowFetchClient } from '@/framework/data/http/rainbowFetch';
 import { getSignatureForSigningWalletAndCreateSignatureIfNeeded, signWithSigningWallet } from '@/helpers/signingWallet';
-import { logger } from '@/logger';
+import { logger, RainbowError } from '@/logger';
 
 export const PREFS_ENDPOINT = 'https://api.rainbow.me';
 const preferencesAPI = new RainbowFetchClient({
@@ -120,7 +120,7 @@ export async function setPreference<K extends keyof Omit<PreferencesDataMap, 'ad
 
     return data?.success;
   } catch (e) {
-    logger.warn(`[preferences]: Preferences API failed to set preference`, {
+    logger.error(new RainbowError(`[preferences]: Preferences API failed to set preference`, e), {
       preferenceKey: key,
     });
     return false;
@@ -146,9 +146,8 @@ export async function getPreference<K extends keyof PreferencesDataMap>(
 
     return data.data;
   } catch (e) {
-    logger.warn(`[preferences]: Preferences API failed to get preference`, {
+    logger.error(new RainbowError(`[preferences]: Preferences API failed to get preference`, e), {
       preferenceKey: key,
-      error: e,
     });
     return null;
   }
