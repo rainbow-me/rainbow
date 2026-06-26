@@ -1,5 +1,6 @@
 import { adjustBuyAmountForFees } from '@polymarket/clob-client-v2';
 
+import { POLYMARKET_PUSD_DECIMALS } from '@/features/polymarket/constants';
 import { type OrderBook, type OrderBookLevel } from '@/features/polymarket/stores/polymarketOrderBookStore';
 import {
   calculateFillFeesUsd,
@@ -26,7 +27,7 @@ export type BuyOrderExecution = {
   bestPrice: string;
 };
 
-const BUY_SPEND_CAP_SEARCH_ITERATION_LIMIT = 24;
+const BUY_SPEND_CAP_SEARCH_PRECISION_USD = 1 / 10 ** POLYMARKET_PUSD_DECIMALS;
 const NO_BUILDER_TAKER_FEE_RATE = 0;
 const PRICE_LIMIT_STABILIZATION_ITERATION_LIMIT = 4;
 const SPEND_CAP_EPSILON = 1e-9;
@@ -113,7 +114,7 @@ function resolveBuyExecution({
   let lowSpendCapUsd = 0;
   let highSpendCapUsd = Math.max(buyAmountUsd, 0);
 
-  for (let i = 0; i < BUY_SPEND_CAP_SEARCH_ITERATION_LIMIT; i++) {
+  while (highSpendCapUsd - lowSpendCapUsd > BUY_SPEND_CAP_SEARCH_PRECISION_USD) {
     const spendCapUsd = (lowSpendCapUsd + highSpendCapUsd) / 2;
     const execution = quoteBuySpendCap({ asks, feeInfo, spendCapUsd });
 

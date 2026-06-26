@@ -197,17 +197,6 @@ export const PolymarketNewPositionSheet = memo(function PolymarketNewPositionShe
             />
           </Box>
           <Box gap={24}>
-            {/* For testing purposes */}
-            {/* <Box flexDirection="row" justifyContent="space-between" paddingHorizontal="16px">
-              <Text size="15pt" weight="semibold" color="labelTertiary">
-                {'Fees'}
-              </Text>
-              <TextShadow blur={6} shadowOpacity={0.24}>
-                <Text size="17pt" weight="heavy" color="green">
-                  {formatUsd(fee)}
-                </Text>
-              </TextShadow>
-            </Box> */}
             <Box flexDirection="row" justifyContent="space-between" paddingHorizontal="16px">
               <Text size="15pt" weight="semibold" color="labelTertiary">
                 {i18n.t(i18n.l.predictions.new_position.spread)}
