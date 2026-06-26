@@ -1,37 +1,47 @@
 import { adjustBuyAmountForFees } from '@polymarket/clob-client-v2';
 
+import { POLYMARKET_PUSD_DECIMALS } from '@/features/polymarket/constants';
 import { type OrderBook, type OrderBookLevel } from '@/features/polymarket/stores/polymarketOrderBookStore';
 import {
   calculateFillFeesUsd,
   calculateTakerFeeUsd,
   DEFAULT_MINIMUM_ORDER_SIZE_USD,
-  EMPTY_POLYMARKET_FEE_INFO,
   type PolymarketFeeInfo,
 } from '@/features/polymarket/utils/fees';
 import { calculateOrderBookSpread, getBestOrderBookPrice, simulateMarketFills } from '@/features/polymarket/utils/orderBookFills';
+import { calculateTradeFeeUsd } from '@/features/polymarket/utils/polymarketTradeFee';
 import { ceilWorklet, divWorklet, mulWorklet } from '@/framework/core/safeMath';
 
 export type BuyOrderExecution = {
   averagePrice: string;
   worstPrice: string;
   fee: string;
+  orderSpendCap: string;
+  rainbowFee: string;
   tokensBought: string;
   hasInsufficientLiquidity: boolean;
   hasNoLiquidityAtMarketPrice: boolean;
+  isQuoteReady: boolean;
   spread: string;
   minBuyAmountUsd: string;
   bestPrice: string;
 };
 
+const BUY_SPEND_CAP_SEARCH_PRECISION_USD = 1 / 10 ** POLYMARKET_PUSD_DECIMALS;
+const NO_BUILDER_TAKER_FEE_RATE = 0;
 const PRICE_LIMIT_STABILIZATION_ITERATION_LIMIT = 4;
+const SPEND_CAP_EPSILON = 1e-9;
 
 const EMPTY_EXECUTION: BuyOrderExecution = {
   averagePrice: '0',
   worstPrice: '0',
   fee: '0',
+  orderSpendCap: '0',
+  rainbowFee: '0',
   tokensBought: '0',
   hasInsufficientLiquidity: false,
   hasNoLiquidityAtMarketPrice: false,
+  isQuoteReady: false,
   spread: '0',
   minBuyAmountUsd: '0',
   bestPrice: '0',
@@ -46,22 +56,21 @@ export function calculateBuyOrderExecution({
   orderBook: OrderBook | null;
   buyAmountUsd: string;
 }): BuyOrderExecution {
-  if (!orderBook) return EMPTY_EXECUTION;
+  if (!orderBook || !feeInfo) return EMPTY_EXECUTION;
 
-  const effectiveFeeInfo = feeInfo ?? EMPTY_POLYMARKET_FEE_INFO;
   const hasAskLiquidity = orderBook.asks.length > 0;
   const bestAskPrice = getBestOrderBookPrice(orderBook.asks);
 
   const execution = resolveBuyExecution({
     asks: orderBook.asks,
     buyAmountUsd: Number(buyAmountUsd),
-    feeInfo: effectiveFeeInfo,
+    feeInfo,
   });
 
   const minimumBuySpendUsd = hasAskLiquidity
     ? calculateMinimumBuySpendUsd({
         bestAskPrice: Number(bestAskPrice),
-        feeInfo: effectiveFeeInfo,
+        feeInfo,
       })
     : DEFAULT_MINIMUM_ORDER_SIZE_USD;
 
@@ -70,9 +79,12 @@ export function calculateBuyOrderExecution({
     worstPrice: String(execution.priceLimit),
     bestPrice: bestAskPrice,
     fee: String(execution.feeAmountUsd),
+    orderSpendCap: String(execution.orderSpendCapUsd),
+    rainbowFee: String(execution.rainbowFeeAmountUsd),
     tokensBought: String(execution.tokensBought),
     hasInsufficientLiquidity: execution.hasInsufficientLiquidity,
     hasNoLiquidityAtMarketPrice: !hasAskLiquidity,
+    isQuoteReady: execution.orderSpendCapUsd > 0 && execution.tokensBought > 0,
     spread: calculateOrderBookSpread({ asks: orderBook.asks, bids: orderBook.bids }),
     minBuyAmountUsd: roundUsdUpToCents(minimumBuySpendUsd),
   };
@@ -92,26 +104,67 @@ function resolveBuyExecution({
       averagePrice: 0,
       feeAmountUsd: 0,
       hasInsufficientLiquidity: false,
+      orderSpendCapUsd: 0,
       priceLimit: 0,
+      rainbowFeeAmountUsd: 0,
       tokensBought: 0,
+    };
+  }
+
+  let bestExecution = quoteBuySpendCap({ asks, feeInfo, spendCapUsd: 0 });
+  let lowSpendCapUsd = 0;
+  let highSpendCapUsd = Math.max(buyAmountUsd, 0);
+
+  while (highSpendCapUsd - lowSpendCapUsd > BUY_SPEND_CAP_SEARCH_PRECISION_USD) {
+    const spendCapUsd = (lowSpendCapUsd + highSpendCapUsd) / 2;
+    const execution = quoteBuySpendCap({ asks, feeInfo, spendCapUsd });
+
+    if (execution.totalSpendUsd <= buyAmountUsd + SPEND_CAP_EPSILON) {
+      bestExecution = execution;
+      lowSpendCapUsd = spendCapUsd;
+    } else {
+      highSpendCapUsd = spendCapUsd;
+    }
+  }
+
+  return bestExecution;
+}
+
+function quoteBuySpendCap({ asks, feeInfo, spendCapUsd }: { asks: OrderBookLevel[]; feeInfo: PolymarketFeeInfo; spendCapUsd: number }) {
+  if (spendCapUsd <= 0) {
+    return {
+      averagePrice: 0,
+      feeAmountUsd: 0,
+      hasInsufficientLiquidity: false,
+      orderSpendCapUsd: 0,
+      priceLimit: 0,
+      rainbowFeeAmountUsd: 0,
+      tokensBought: 0,
+      totalSpendUsd: 0,
     };
   }
 
   const { sdkAdjustedOrderNotionalUsd, priceLimit } = resolveSdkAdjustedBuyOrderNotional({
     asks,
     feeInfo,
-    spendCapUsd: buyAmountUsd,
+    spendCapUsd,
   });
 
   const execution = simulateMarketFills({ levels: asks, targetAmount: sdkAdjustedOrderNotionalUsd, targetType: 'notionalUsd' });
-  const estimatedMatchFeeAmountUsd = calculateFillFeesUsd({ feeInfo, fills: execution.fills });
+  const averagePrice = execution.totalShares > 0 ? execution.totalNotionalUsd / execution.totalShares : 0;
+  const providerFeeAmountUsd = calculateFillFeesUsd({ feeInfo, fills: execution.fills });
+  const rainbowFeeAmountUsd = Number(calculateTradeFeeUsd({ notionalUsd: execution.totalNotionalUsd, price: averagePrice }));
+  const feeAmountUsd = providerFeeAmountUsd + rainbowFeeAmountUsd;
 
   return {
-    averagePrice: execution.totalShares > 0 ? execution.totalNotionalUsd / execution.totalShares : 0,
-    feeAmountUsd: estimatedMatchFeeAmountUsd,
+    averagePrice,
+    feeAmountUsd,
     hasInsufficientLiquidity: execution.hasInsufficientLiquidity,
+    orderSpendCapUsd: spendCapUsd,
     priceLimit,
+    rainbowFeeAmountUsd,
     tokensBought: execution.totalShares,
+    totalSpendUsd: execution.totalNotionalUsd + feeAmountUsd,
   };
 }
 
@@ -161,17 +214,17 @@ function findWorstAskPriceForNotional(asks: OrderBookLevel[], notionalUsd: numbe
 }
 
 function calculateMinimumBuySpendUsd({ bestAskPrice, feeInfo }: { bestAskPrice: number; feeInfo: PolymarketFeeInfo }): number {
-  const minimumNotionalUsd = DEFAULT_MINIMUM_ORDER_SIZE_USD;
+  const minimumNotionalUsd = Math.max(DEFAULT_MINIMUM_ORDER_SIZE_USD, feeInfo.minimumOrderSize);
   const minimumShares = minimumNotionalUsd / bestAskPrice;
 
   return (
     minimumNotionalUsd +
     calculateTakerFeeUsd({
       feeInfo,
-      notionalUsd: minimumNotionalUsd,
       price: bestAskPrice,
       shares: minimumShares,
-    })
+    }) +
+    Number(calculateTradeFeeUsd({ notionalUsd: minimumNotionalUsd, price: bestAskPrice }))
   );
 }
 
@@ -192,7 +245,7 @@ function calculateSdkAdjustedBuyOrderNotionalUsd({
     spendCapUsd,
     feeInfo.platformFeeRate,
     feeInfo.platformFeeExponent,
-    feeInfo.builderTakerFeeRate
+    NO_BUILDER_TAKER_FEE_RATE
   );
 }
 

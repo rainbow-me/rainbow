@@ -1,45 +1,9 @@
-import { type ClobToken } from '@polymarket/clob-client-v2';
+import { type MarketDetails } from '@polymarket/clob-client-v2';
 
-import { POLYMARKET_BUILDER_CODE, POLYMARKET_CLOB_URL } from '@/features/polymarket/constants';
 import { polymarketClobDataClient } from '@/features/polymarket/polymarket-clob-data-client';
 import { EMPTY_POLYMARKET_FEE_INFO, type PolymarketFeeInfo } from '@/features/polymarket/utils/fees';
 import { time } from '@/framework/core/utils/time';
-import { rainbowFetch } from '@/framework/data/http/rainbowFetch';
 import { createQueryStore } from '@/state/internal/createQueryStore';
-
-type RawBuilderFeesResponse = {
-  builder_maker_fee_rate_bps: number;
-  builder_taker_fee_rate_bps: number;
-};
-
-type FeeDetails = {
-  r?: number;
-  e?: number;
-  to?: boolean;
-};
-
-type MarketRewardsConfig = {
-  mi?: number;
-  ma?: number;
-  e?: boolean;
-  moas?: number;
-};
-
-type MarketDetails = {
-  r?: MarketRewardsConfig;
-  t: [ClobToken | null, ClobToken | null];
-  c: string;
-  mos: number;
-  mts: number;
-  ao?: boolean;
-  nr: boolean;
-  cbos?: boolean;
-  aot?: string | null;
-  ibce?: boolean;
-  fd?: FeeDetails;
-  mbf?: number;
-  tbf?: number;
-};
 
 type FetchParams = {
   conditionId: string | null;
@@ -63,30 +27,19 @@ export const usePolymarketFeeInfoStore = createQueryStore<PolymarketFeeInfo, Fet
   })
 );
 
-async function fetchPolymarketFeeInfo({ conditionId }: FetchParams, abortController: AbortController | null): Promise<PolymarketFeeInfo> {
+async function fetchPolymarketFeeInfo({ conditionId }: FetchParams): Promise<PolymarketFeeInfo> {
   if (!conditionId) return EMPTY_POLYMARKET_FEE_INFO;
 
-  // TODO: We're casting because the SDK's type is not correct. Remove once the SDK is updated.
-  const marketInfoPromise = polymarketClobDataClient.getClobMarketInfo(conditionId) as Promise<MarketDetails>;
-  const builderFeesPromise = fetchBuilderFees(abortController);
-
-  const [marketInfo, builderFees] = await Promise.all([marketInfoPromise, builderFeesPromise]);
-  const builderTakerFeeRateBps = builderFees.builder_taker_fee_rate_bps;
+  const marketInfo = await polymarketClobDataClient.getClobMarketInfo(conditionId);
 
   return {
-    builderTakerFeeRate: builderTakerFeeRateBps / 10_000,
-    minimumOrderSize: marketInfo.mos,
+    minimumOrderSize: getMinimumOrderSize(marketInfo),
     platformFeeExponent: marketInfo.fd?.e ?? EMPTY_POLYMARKET_FEE_INFO.platformFeeExponent,
     platformFeeRate: marketInfo.fd?.r ?? EMPTY_POLYMARKET_FEE_INFO.platformFeeRate,
   };
 }
 
-async function fetchBuilderFees(abortController: AbortController | null): Promise<RawBuilderFeesResponse> {
-  const { data } = await rainbowFetch<string>(`${POLYMARKET_CLOB_URL}/fees/builder-fees/${POLYMARKET_BUILDER_CODE}`, {
-    abortController,
-    timeout: time.seconds(15),
-  });
-  const builderFees: RawBuilderFeesResponse = JSON.parse(data);
-
-  return builderFees;
+function getMinimumOrderSize(marketInfo: MarketDetails): number {
+  if (!('mos' in marketInfo)) return EMPTY_POLYMARKET_FEE_INFO.minimumOrderSize;
+  return typeof marketInfo.mos === 'number' ? marketInfo.mos : EMPTY_POLYMARKET_FEE_INFO.minimumOrderSize;
 }
