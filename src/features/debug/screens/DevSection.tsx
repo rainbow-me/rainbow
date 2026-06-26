@@ -25,6 +25,7 @@ import {
 } from '@/features/cash/stores/cashMockOrderOutcomeStore';
 import { defaultConfig, defaultConfigValues, type ExperimentalConfigKey } from '@/features/config/constants/experimental';
 import { useExperimentalConfigStore } from '@/features/config/stores/experimentalConfigStore';
+import { RevokeReason } from '@/features/delegation/screens/RevokeDelegationPanel';
 import { getDelegationContractAddress, isRainbowDelegated, isThirdPartyDelegated } from '@/features/delegation/utils/status';
 import { isAuthenticated } from '@/features/local-auth/isAuthenticated';
 import { wipeKeychain } from '@/features/local-auth/legacyKeychain';
@@ -41,7 +42,6 @@ import { unsubscribeAllNotifications } from '@/notifications/settings/settings';
 import { getFCMToken } from '@/notifications/tokens';
 import { analyzeReactQueryStore, clearReactQueryCache } from '@/react-query/reactQueryUtils';
 import { clearImageMetadataCache } from '@/redux/imageMetadata';
-import { RevokeReason } from '@/screens/delegation/RevokeDelegationPanel';
 import Menu from '@/screens/SettingsSheet/components/Menu';
 import MenuContainer from '@/screens/SettingsSheet/components/MenuContainer';
 import MenuItem from '@/screens/SettingsSheet/components/MenuItem';

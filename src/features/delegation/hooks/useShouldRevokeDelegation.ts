@@ -1,12 +1,13 @@
 import { useEffect } from 'react';
 
-import { useIsDelegationEnabled } from '@/features/delegation/utils/featureFlags';
 import { EthereumWalletType } from '@/helpers/walletTypes';
 import Navigation from '@/navigation/Navigation';
 import Routes from '@/navigation/routesNames';
-import { RevokeReason } from '@/screens/delegation/RevokeDelegationPanel';
 import { useWalletsStore } from '@/state/wallets/walletsStore';
 import { delegation } from '@rainbow-me/delegation';
+
+import { RevokeReason } from '../screens/RevokeDelegationPanel';
+import { useIsDelegationEnabled } from '../utils/featureFlags';
 
 export function useShouldRevokeDelegation() {
   const delegationEnabled = useIsDelegationEnabled();

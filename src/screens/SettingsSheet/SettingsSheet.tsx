@@ -4,6 +4,7 @@ import { createStackNavigator } from '@react-navigation/stack';
 
 import { SimpleSheet } from '@/components/sheet/SimpleSheet';
 import { BackgroundProvider } from '@/design-system';
+import { ViewWalletDelegations } from '@/features/delegation/screens/ViewWalletDelegations';
 import useAccountSettings from '@/hooks/useAccountSettings';
 import * as i18n from '@/languages';
 import { settingsOptions } from '@/navigation/config';
@@ -16,7 +17,6 @@ import SecretWarning from './components/Backups/SecretWarning';
 import ShowSecretView from './components/Backups/ShowSecretView';
 import ViewCloudBackups from './components/Backups/ViewCloudBackups';
 import WiewWalletBackup from './components/Backups/ViewWalletBackup';
-import { ViewWalletDelegations } from './components/Backups/ViewWalletDelegations';
 import SettingsSection from './components/SettingsSection';
 import { SupportCategoryPickerView } from './components/support/SupportCategoryPickerView';
 import WalletNotificationsSettings from './components/WalletNotificationsSettings';

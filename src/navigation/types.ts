@@ -19,6 +19,7 @@ import { type UniqueAsset } from '@/entities/uniqueAssets';
 import { type UnlockableAppIconKey } from '@/features/app-icon/models/appIcons';
 import { type BackupFile, type CloudBackups } from '@/features/backup/backup';
 import { type RequestData, type RequestSource } from '@/features/dapp-request/types';
+import { type RevokeReason } from '@/features/delegation/screens/RevokeDelegationPanel';
 import { type ENSProfile } from '@/features/ens/types/profile';
 import { type REGISTRATION_MODES } from '@/features/ens/utils/helpers';
 import { type GasTrend } from '@/features/gas/utils/meteorology';
@@ -42,7 +43,6 @@ import type Routes from '@/navigation/routesNames';
 import { type WalletNotificationSettings } from '@/notifications/settings/types';
 import { type Contact } from '@/redux/contacts';
 import { type Claimable, type RainbowClaimable } from '@/resources/addys/claimables/types';
-import { type RevokeReason } from '@/screens/delegation/RevokeDelegationPanel';
 import { type ExpandedSheetParamAsset } from '@/screens/expandedAssetSheet/context/ExpandedAssetSheetContext';
 import { type AreAllKeysOptional, type ExtractOptionalKeys } from '@/types/objects';
 
