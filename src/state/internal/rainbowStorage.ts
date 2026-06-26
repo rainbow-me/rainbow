@@ -1,10 +1,20 @@
 import { type SyncStorageInterface } from '@storesjs/stores';
 import { createMMKV } from 'react-native-mmkv';
 
-const RAINBOW_STORE_STORAGE_ID = 'rainbow-storage';
+const mmkvStorage = createMMKV({ id: 'rainbow-storage' });
 
-const mmkvStorage = createMMKV({ id: RAINBOW_STORE_STORAGE_ID });
-
+/**
+ * @internal
+ *
+ * #### `rainbowStorage`
+ *
+ * MMKV instance that holds persisted store state for `@storesjs/stores`.
+ *
+ * ---
+ * **🚨 Do not write to this instance directly. 🚨**
+ *
+ * Instead, use `createBaseStore` or `createQueryStore`.
+ */
 export const rainbowStorage: SyncStorageInterface<string> = {
   clearAll: mmkvStorage.clearAll.bind(mmkvStorage),
   contains: mmkvStorage.contains.bind(mmkvStorage),
