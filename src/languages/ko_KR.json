@@ -1284,38 +1284,6 @@
       "importing_wallet": "가져오는 중...",
       "restoring": "복구 중..."
     },
-    "mints": {
-      "mints_sheet": {
-        "mints": "민트",
-        "no_data_found": "데이터를 찾을 수 없습니다.",
-        "card": {
-          "x_ago": "%{timeElapsed} 전",
-          "one_mint_past_hour": "1 시간 전 민트",
-          "x_mints_past_hour": "%{numMints} 시간 전 민트",
-          "x_mints": "%{numMints} 민트",
-          "mint": "민트",
-          "free": "무료"
-        }
-      },
-      "mints_card": {
-        "view_all_mints": "모든 민트보기",
-        "mints": "민트",
-        "collection_cell": {
-          "free": "무료"
-        }
-      },
-      "featured_mint_card": {
-        "featured_mint": "특집 민트",
-        "one_mint": "1 민트",
-        "x_mints": "%{numMints} 민트",
-        "x_past_hour": "%{numMints} 지난 시간"
-      },
-      "filter": {
-        "all": "모두",
-        "free": "무료",
-        "paid": "유료"
-      }
-    },
     "modal": {
       "back_up": {
         "alerts": {
@@ -1372,27 +1340,6 @@
       "tx_verify": "여기에서 거래를 확인하십시오",
       "withdrawal_dropdown_label": "위해",
       "withdrawal_input_label": "얻다"
-    },
-    "minting": {
-      "hold_to_mint": "길게 누르면 민트가 됩니다",
-      "minting": "출하 중...",
-      "minted": "생성한",
-      "mint_on_mintdotfun": "􀮶 민트 온 mint.fun",
-      "error_minting": "출하 오류",
-      "mint_price": "민트 가격",
-      "free": "무료",
-      "by": "로",
-      "unknown": "알 수 없음",
-      "max": "최대",
-      "nft_count": "%{number} NFTs",
-      "description": "설명",
-      "total_minted": "발행 총량",
-      "first_event": "첫 번째 이벤트",
-      "contract": "계약 이름",
-      "network": "네트워크",
-      "could_not_find_collection": "컬렉션을 찾을 수 없습니다",
-      "unable_to_find_check_again": "이 컬렉션을 찾을 수 없습니다. 주소와 네트워크를 다시 확인하거나 나중에 다시 시도하세요",
-      "mintdotfun_unsupported_network": "Mint.fun은는이 네트워크를 지원하지 않습니다"
     },
     "nfts": {
       "selling": "판매",
