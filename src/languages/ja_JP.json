@@ -1412,47 +1412,6 @@
       "collect_now": "今すぐコレクト",
       "will_appear_here": "あなたのコレクティブルはこちらに表示されます"
     },
-    "nft_offers": {
-      "card": {
-        "title": {
-          "singular": "1オファー",
-          "plural": "%{numOffers} オファー"
-        },
-        "button": "すべてのオファーを見る",
-        "expired": "期限切れ"
-      },
-      "sheet": {
-        "title": "オファー",
-        "total": "合計",
-        "above_floor": "上のフロア",
-        "below_floor": "下のフロア",
-        "no_offers_found": "オファーが見つかりません"
-      },
-      "sort_menu": {
-        "highest": "最高",
-        "from_floor": "フロアから",
-        "recent": "最近の"
-      },
-      "single_offer_sheet": {
-        "title": "オファー",
-        "expires_in": "有効期限が %{timeLeft}",
-        "floor_price": "フロア価格",
-        "marketplace": "マーケットプレイス",
-        "marketplace_fees": "%{marketplace} 手数料",
-        "creator_royalties": "創造者ロイヤルティ",
-        "receive": "受け取る",
-        "proceeds": "収益",
-        "view_offer": "オファーを表示",
-        "offer_expired": "オファーの有効期限切れ",
-        "expired": "期限切れ",
-        "hold_to_sell": "売却するために保持する",
-        "selling": "販売",
-        "error": {
-          "title": "NFTの売却中にエラーが発生しました",
-          "message": "サポートにご連絡ください。"
-        }
-      }
-    },
     "perps": {
       "activity": {
         "title": "アクティビティ",
