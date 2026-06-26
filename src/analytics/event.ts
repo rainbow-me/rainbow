@@ -151,18 +151,6 @@ export const event = {
   positionsOpenedAsset: 'Opened asset from position',
   positionsError: 'positions.error',
 
-  mintsPressedFeaturedMintCard: 'Pressed featured mint card',
-  mintsPressedCollectionCell: 'Pressed collection cell in mints card',
-  mintsPressedMintButton: 'Pressed mint button in mints sheet',
-  mintsPressedViewAllMintsButton: 'Pressed view all mints button in mints card',
-  mintsChangedFilter: 'Changed mints filter',
-
-  mintsOpenedSheet: 'Opened NFT Mint Sheet',
-  mintsOpeningMintDotFun: 'Opening Mintdotfun',
-  mintsMintingNFT: 'Minting NFT',
-  mintsMintedNFT: 'Minted NFT',
-  mintsErrorMintingNFT: 'Error Minting NFT',
-
   appIconUnlockSheetViewed: 'app_icon_unlock_sheet.viewed',
   appIconUnlockSheetCTAPressed: 'app_icon_unlock_sheet.cta_pressed',
 
@@ -582,37 +570,6 @@ export type EventProperties = {
     method?: string;
   };
 
-  [event.mintsMintingNFT]: {
-    contract: string;
-    chainId: number;
-    quantity: number;
-    collectionName: string;
-    priceInEth: string;
-  };
-  [event.mintsMintedNFT]: {
-    contract: string;
-    chainId: number;
-    quantity: number;
-    collectionName: string;
-    priceInEth: string;
-  };
-  [event.mintsErrorMintingNFT]: {
-    contract: string;
-    chainId: number;
-    quantity: number;
-    collectionName: string;
-    priceInEth: string;
-  };
-  [event.mintsOpenedSheet]: {
-    contract: string;
-    chainId: number;
-    collectionName: string;
-  };
-  [event.mintsOpeningMintDotFun]: {
-    contract: string;
-    chainId: number;
-    collectionName: string;
-  };
   [event.poapsMintedPoap]: {
     eventId: number;
     type: 'qrHash' | 'secretWord';
@@ -666,25 +623,6 @@ export type EventProperties = {
     | { kind: 'price_not_found'; tokenAddress: string; chainId: number }
     | { kind: 'skipped_portfolio_item'; itemName: string; protocol: string }
     | { kind: 'unknown'; errorMessage: string };
-  [event.mintsPressedFeaturedMintCard]: {
-    contractAddress: string;
-    chainId: number;
-    totalMints: number;
-    mintsLastHour: number;
-    priceInEth: number;
-  };
-  [event.mintsPressedCollectionCell]: {
-    contractAddress: string;
-    chainId: number;
-    priceInEth: number;
-  };
-  [event.mintsPressedMintButton]: {
-    contractAddress: string;
-    chainId: number;
-    priceInEth: number;
-  };
-  [event.mintsPressedViewAllMintsButton]: undefined;
-  [event.mintsChangedFilter]: { filter: string };
 
   [event.appIconUnlockSheetViewed]: {
     appIcon: UnlockableAppIconKey;

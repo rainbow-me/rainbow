@@ -72,7 +72,6 @@ export interface RainbowConfig extends Record<
 
   base_swaps_enabled: boolean;
   blast_swaps_enabled: boolean;
-  mints_enabled: boolean;
   rpc_proxy_enabled: boolean;
   dapp_browser: boolean;
   idfa_check_enabled: boolean;
@@ -207,7 +206,6 @@ export const DEFAULT_CONFIG = {
 
   base_swaps_enabled: true,
   blast_swaps_enabled: true,
-  mints_enabled: true,
   rpc_proxy_enabled: true,
   dapp_browser: true,
   idfa_check_enabled: false,

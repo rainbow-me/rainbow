@@ -14,7 +14,6 @@ export const PROFILES = 'ENS Profiles';
 export const L2_TXS = 'L2 Transactions';
 export const OP_REWARDS = '$OP Rewards';
 export const DEFI_POSITIONS = 'Defi Positions';
-export const MINTS = 'Mints';
 export const DAPP_BROWSER = 'Dapp Browser';
 export const DEGEN_MODE = 'Degen Mode';
 export const FEATURED_RESULTS = 'Featured Results';
@@ -54,7 +53,6 @@ const config = {
   [REVIEW_ANDROID]: { settings: false, value: false },
   [OP_REWARDS]: { settings: true, value: false },
   [DEFI_POSITIONS]: { settings: true, value: true },
-  [MINTS]: { settings: true, value: false },
   [DAPP_BROWSER]: { settings: true, value: !!IS_TEST },
   [DEGEN_MODE]: { settings: true, value: false },
   [FEATURED_RESULTS]: { settings: true, value: false },

@@ -70,9 +70,7 @@ import CheckIdentifierScreen from '@/screens/CheckIdentifierScreen';
 import { ClaimClaimablePanel } from '@/screens/claimables/ClaimPanel';
 import { ExpandedAssetSheet as ExpandedAssetSheetV2 } from '@/screens/expandedAssetSheet/ExpandedAssetSheet';
 import LearnWebViewScreen from '@/screens/LearnWebViewScreen';
-import MintSheet from '@/screens/mints/MintSheet';
 import PoapSheet from '@/screens/mints/PoapSheet';
-import { MintsSheet } from '@/screens/MintsSheet/MintsSheet';
 import { Portal } from '@/screens/Portal';
 import QRScannerScreen from '@/screens/QRScannerScreen';
 import { RewardsSheet } from '@/screens/rewards/RewardsSheet';
@@ -117,7 +115,6 @@ import {
   hardwareWalletTxNavigatorConfig,
   learnSheetConfig,
   learnWebViewScreenConfig,
-  mintsSheetConfig,
   notificationPermissionSheetConfig,
   opRewardsSheetConfig,
   pairHardwareWalletNavigatorConfig,
@@ -193,7 +190,6 @@ function NativeStackNavigator() {
       <NativeStack.Screen component={SettingsSheet} name={Routes.SETTINGS_SHEET} {...settingsSheetConfig} />
       <NativeStack.Screen component={ExpandedAssetSheet} name={Routes.EXPANDED_ASSET_SHEET} {...expandedAssetSheetConfigWithLimit} />
       <NativeStack.Screen component={PoapSheet} name={Routes.POAP_SHEET} {...expandedAssetSheetConfigWithLimit} />
-      <NativeStack.Screen component={MintSheet} name={Routes.MINT_SHEET} {...expandedAssetSheetConfigWithLimit} />
       <NativeStack.Screen component={PositionSheet} name={Routes.POSITION_SHEET} {...positionSheetConfig} />
       <NativeStack.Screen
         component={SelectUniqueTokenSheet}
@@ -295,7 +291,6 @@ function NativeStackNavigator() {
       <NativeStack.Screen component={WalletConnectRedirectSheet} name={Routes.WALLET_CONNECT_REDIRECT_SHEET} {...basicSheetConfig} />
       <NativeStack.Screen name={Routes.TRANSACTION_DETAILS} component={TransactionDetails} {...transactionDetailsConfig} />
       <NativeStack.Screen name={Routes.OP_REWARDS_SHEET} component={RewardsSheet} {...opRewardsSheetConfig} />
-      <NativeStack.Screen name={Routes.MINTS_SHEET} component={MintsSheet} {...mintsSheetConfig} />
       <NativeStack.Screen component={AppIconUnlockSheet} name={Routes.APP_ICON_UNLOCK_SHEET} {...appIconUnlockSheetConfig} />
       <NativeStack.Screen component={NetworkSelector} name={Routes.NETWORK_SELECTOR} {...panelConfig} />
       <NativeStack.Screen component={ControlPanel} name={Routes.DAPP_BROWSER_CONTROL_PANEL} {...panelConfig} />

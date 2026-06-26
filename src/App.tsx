@@ -37,7 +37,6 @@ import Routes from '@/navigation/Routes';
 import { NotificationsHandler } from '@/notifications/NotificationsHandler';
 import { persistOptions, PersistQueryClientProvider, queryClient } from '@/react-query';
 import store from '@/redux/store';
-import { initializeReservoirClient } from '@/resources/reservoir/client';
 import { loadSettingsData } from '@/state/settings/loadSettingsData';
 import { BackupsSync } from '@/state/sync/BackupsSync';
 import * as ls from '@/storage';
@@ -111,8 +110,6 @@ function Root() {
       .finally(() => {
         setInitializing(false);
       });
-
-    initializeReservoirClient();
   }, [setInitializing]);
 
   return initializing ? null : (

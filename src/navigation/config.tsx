@@ -224,16 +224,6 @@ export const appIconUnlockSheetConfig = {
   }),
 };
 
-export const mintsSheetConfig = {
-  options: ({ route: { params = {} } }) => ({
-    ...buildCoolModalConfig({
-      ...params,
-      backgroundOpacity: 1,
-      scrollEnabled: true,
-    }),
-  }),
-};
-
 export const panelConfig = {
   options: ({ route: { params = {} } }) => ({
     ...buildCoolModalConfig({
