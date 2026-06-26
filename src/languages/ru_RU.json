@@ -1412,47 +1412,6 @@
       "collect_now": "Соберите сейчас",
       "will_appear_here": "Ваши коллекции появятся здесь"
     },
-    "nft_offers": {
-      "card": {
-        "title": {
-          "singular": "1 Предложение",
-          "plural": "%{numOffers} Предложений"
-        },
-        "button": "Посмотреть все предложения",
-        "expired": "Истекло"
-      },
-      "sheet": {
-        "title": "Предложения",
-        "total": "Всего",
-        "above_floor": "выше средней цены",
-        "below_floor": "ниже средней цены",
-        "no_offers_found": "Предложений не найдено"
-      },
-      "sort_menu": {
-        "highest": "Наибольшая",
-        "from_floor": "Со средней цены",
-        "recent": "Последние"
-      },
-      "single_offer_sheet": {
-        "title": "Предложение",
-        "expires_in": "Истекает через %{timeLeft}",
-        "floor_price": "Начальная цена",
-        "marketplace": "Маркетплейс",
-        "marketplace_fees": "%{marketplace} Комиссии",
-        "creator_royalties": "Отчисления создателям",
-        "receive": "Получить",
-        "proceeds": "Доходы",
-        "view_offer": "Посмотреть предложение",
-        "offer_expired": "Предложение истекло",
-        "expired": "Истекло",
-        "hold_to_sell": "Удерживайте для продажи",
-        "selling": "Продажа",
-        "error": {
-          "title": "Ошибка при продаже NFT",
-          "message": "Пожалуйста, обратитесь в службу поддержки Rainbow за помощью."
-        }
-      }
-    },
     "perps": {
       "activity": {
         "title": "Активность",
