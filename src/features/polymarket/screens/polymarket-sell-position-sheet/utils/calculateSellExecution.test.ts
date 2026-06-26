@@ -21,10 +21,25 @@ describe('calculateSellExecution', () => {
       sellAmountTokens: '5',
     });
 
+    expect(execution.isQuoteReady).toBe(true);
     expect(execution.grossProceedsUsd).toBe('4');
     expect(execution.rainbowFee).toBe('0.112');
     expect(Number(execution.fee)).toBeCloseTo(0.212, 12);
     expect(Number(execution.expectedPayoutUsd)).toBeCloseTo(3.788, 12);
+  });
+
+  it('does not quote a sell before market fee info is ready', () => {
+    const execution = calculateSellExecution({
+      feeInfo: null,
+      orderBook: createOrderBook({
+        asks: [{ price: '0.81', size: '10' }],
+        bids: [{ price: '0.8', size: '10' }],
+      }),
+      sellAmountTokens: '5',
+    });
+
+    expect(execution.isQuoteReady).toBe(false);
+    expect(execution.expectedPayoutUsd).toBe('0');
   });
 });
 
