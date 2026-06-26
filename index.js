@@ -19,6 +19,9 @@ PerformanceTracking.startReport(PerformanceReports.appStartup, APP_START_TIME);
 PerformanceTracking.logReportSegmentRelative(PerformanceReports.appStartup, PerformanceReportSegments.appStartup.loadJSBundle);
 PerformanceTracking.startReportSegment(PerformanceReports.appStartup, PerformanceReportSegments.appStartup.loadMainModule);
 
+// Must precede log-producing code for successful debug log propagation
+require('./shim');
+
 initSentry();
 initStores();
 
@@ -28,6 +31,5 @@ to the top of the file above all other calls. We want Performance tracking
 to start before all of the imports.
  */
 require('react-native-gesture-handler');
-require('./shim');
 require('./src/App');
 PerformanceTracking.finishReportSegment(PerformanceReports.appStartup, PerformanceReportSegments.appStartup.loadMainModule);
