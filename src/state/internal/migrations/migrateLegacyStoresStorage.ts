@@ -1,10 +1,10 @@
 import { rainbowStorage } from '../rainbowStorage';
 
-type StorageValue = Record<string, unknown> & { state?: unknown };
-
-type PersistedQueryStoreState = Record<string, unknown> & {
-  queryCache: Record<string, unknown>;
-  queryKey: string;
+type PersistedQueryStorage = Record<string, unknown> & {
+  state: Record<string, unknown> & {
+    queryCache: Record<string, unknown>;
+    queryKey: string;
+  };
 };
 
 const MIGRATION_KEY = 'migration_migrateLegacyStoresStorage';
@@ -40,13 +40,14 @@ export function ensureLegacyStoresMigrated(): void {
  * wiping legacy query keys built with `useParsableQueryKeys: false`.
  */
 function clearPersistedQueryState(value: string): string | null {
-  const storageValue = parseStorageValue(value);
-  if (!storageValue || !isPersistedQueryStoreState(storageValue.state)) return null;
+  const storageValue = parsePersistedQueryStorage(value);
+  if (!storageValue?.state) return null;
 
-  const state = { ...storageValue.state };
-  for (const field of QUERY_STORE_STATE_FIELDS) delete state[field];
+  for (const field of QUERY_STORE_STATE_FIELDS) {
+    delete storageValue.state[field];
+  }
 
-  return JSON.stringify({ ...storageValue, state });
+  return JSON.stringify(storageValue);
 }
 
 /**
@@ -60,17 +61,18 @@ function stripLegacyKeyDuplication(storedKey: string): string | null {
   return key === storedKey.slice(separatorIndex + 1) ? key : null;
 }
 
-function parseStorageValue(value: string): StorageValue | null {
+function parsePersistedQueryStorage(value: string): PersistedQueryStorage | null {
+  if (!value.includes('"queryKey"') || !value.includes('"queryCache"')) return null;
   try {
-    const parsed = JSON.parse(value);
-    return isRecord(parsed) ? parsed : null;
+    const parsed: unknown = JSON.parse(value);
+    return isPersistedQueryStorage(parsed) ? parsed : null;
   } catch {
     return null;
   }
 }
 
-function isPersistedQueryStoreState(value: unknown): value is PersistedQueryStoreState {
-  return isRecord(value) && typeof value.queryKey === 'string' && isRecord(value.queryCache);
+function isPersistedQueryStorage(parsed: unknown): parsed is PersistedQueryStorage {
+  return isRecord(parsed) && isRecord(parsed.state) && typeof parsed.state.queryKey === 'string' && isRecord(parsed.state.queryCache);
 }
 
 function isRecord(value: unknown): value is Record<string, unknown> {
