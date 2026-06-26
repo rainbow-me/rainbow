@@ -55,7 +55,6 @@ export async function collectPolymarketTradeFee({
       matchedTokens: String(matchedAmounts.tokens),
       matchedUsd: String(matchedAmounts.usd),
       orderId,
-      proxyAddress,
       quotedFeeUsd: String(quotedFeeUsd),
       side,
       tokenId,
