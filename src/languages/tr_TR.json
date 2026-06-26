@@ -1284,38 +1284,6 @@
       "importing_wallet": "İçe aktarıyor...",
       "restoring": "Geri yüklüyor..."
     },
-    "mints": {
-      "mints_sheet": {
-        "mints": "Naneler",
-        "no_data_found": "Veri bulunamadı.",
-        "card": {
-          "x_ago": "%{timeElapsed} önce",
-          "one_mint_past_hour": "1 saat önce nane",
-          "x_mints_past_hour": "%{numMints} naneler geçen saat",
-          "x_mints": "%{numMints} naneler",
-          "mint": "Nane",
-          "free": "ÜCRETSİZ"
-        }
-      },
-      "mints_card": {
-        "view_all_mints": "Tüm Naneleri Gör",
-        "mints": "Naneler",
-        "collection_cell": {
-          "free": "ÜCRETSİZ"
-        }
-      },
-      "featured_mint_card": {
-        "featured_mint": "Öne Çıkan Nane",
-        "one_mint": "1 nane",
-        "x_mints": "%{numMints} naneler",
-        "x_past_hour": "%{numMints} geçen saat"
-      },
-      "filter": {
-        "all": "Tümü",
-        "free": "Ücretsiz",
-        "paid": "Ücretli"
-      }
-    },
     "modal": {
       "back_up": {
         "alerts": {
@@ -1372,27 +1340,6 @@
       "tx_verify": "İşleminizi burada doğrulayın",
       "withdrawal_dropdown_label": "İçin",
       "withdrawal_input_label": "Al"
-    },
-    "minting": {
-      "hold_to_mint": "Basınca Basarak Üret",
-      "minting": "Basılıyor...",
-      "minted": "Basılmış",
-      "mint_on_mintdotfun": "􀮶 mintdotfun'da üretin",
-      "error_minting": "Basım Hatası",
-      "mint_price": "Üretim Fiyatı",
-      "free": "Ücretsiz",
-      "by": "Tarafından",
-      "unknown": "bilinmeyen",
-      "max": "Maks",
-      "nft_count": "%{number} NFT",
-      "description": "Açıklama",
-      "total_minted": "Toplam Üretilen",
-      "first_event": "İlk Olay",
-      "contract": "Sözleşme",
-      "network": "Ağ",
-      "could_not_find_collection": "Koleksiyon bulunamadı",
-      "unable_to_find_check_again": "Bu koleksiyon bulunamadı, adresi ve ağı doğrulayın veya daha sonra tekrar deneyin",
-      "mintdotfun_unsupported_network": "Mint.fun bu ağı desteklemiyor"
     },
     "nfts": {
       "selling": "Satış",
