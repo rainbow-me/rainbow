@@ -1,3 +1,5 @@
+import { logger, RainbowError } from '@/logger';
+
 import { rainbowStorage } from '../rainbowStorage';
 
 type PersistedQueryStorage = Record<string, unknown> & {
@@ -32,7 +34,11 @@ export function ensureLegacyStoresMigrated(): void {
     }
   }
 
-  rainbowStorage.set(MIGRATION_KEY, JSON.stringify({ data: new Date().toUTCString() }));
+  try {
+    rainbowStorage.set(MIGRATION_KEY, JSON.stringify({ data: new Date().toUTCString() }));
+  } catch (error) {
+    logger.error(new RainbowError('[migrateLegacyStoresStorage]: Failed to mark legacy stores migration complete', error));
+  }
 }
 
 /**
