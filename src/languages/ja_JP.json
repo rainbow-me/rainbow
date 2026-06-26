@@ -1284,38 +1284,6 @@
       "importing_wallet": "インポート中...",
       "restoring": "復元中..."
     },
-    "mints": {
-      "mints_sheet": {
-        "mints": "ミント",
-        "no_data_found": "データが見つかりません。",
-        "card": {
-          "x_ago": "%{timeElapsed} 前",
-          "one_mint_past_hour": "1時間前のミント",
-          "x_mints_past_hour": "%{numMints} 時間前のミント",
-          "x_mints": "%{numMints} ミント",
-          "mint": "ミント",
-          "free": "無料"
-        }
-      },
-      "mints_card": {
-        "view_all_mints": "すべてのミントを見る",
-        "mints": "ミント",
-        "collection_cell": {
-          "free": "無料"
-        }
-      },
-      "featured_mint_card": {
-        "featured_mint": "注目のミント",
-        "one_mint": "1ミント",
-        "x_mints": "%{numMints} ミント",
-        "x_past_hour": "%{numMints} 過去の時間"
-      },
-      "filter": {
-        "all": "全て",
-        "free": "無料",
-        "paid": "有料"
-      }
-    },
     "modal": {
       "back_up": {
         "alerts": {
@@ -1372,27 +1340,6 @@
       "tx_verify": "ここでトランザクションを検証してください",
       "withdrawal_dropdown_label": "ために",
       "withdrawal_input_label": "ゲット"
-    },
-    "minting": {
-      "hold_to_mint": "保留してミント",
-      "minting": "鋳造中...",
-      "minted": "発行済み",
-      "mint_on_mintdotfun": "􀮶 ミントはmint.funで",
-      "error_minting": "鋳造エラー",
-      "mint_price": "ミント価格",
-      "free": "無料",
-      "by": "By",
-      "unknown": "未知",
-      "max": "最大",
-      "nft_count": "%{number} NFTs",
-      "description": "Description",
-      "total_minted": "ミントされた総数",
-      "first_event": "最初のイベント",
-      "contract": "契約",
-      "network": "Network",
-      "could_not_find_collection": "コレクションが見つかりませんでした",
-      "unable_to_find_check_again": "このコレクションが見つかりませんでした。アドレスとネットワークを再確認するか、後でもう一度試してください",
-      "mintdotfun_unsupported_network": "Mint.funはこのネットワークをサポートしていません"
     },
     "nfts": {
       "selling": "販売",
