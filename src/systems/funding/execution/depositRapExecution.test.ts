@@ -36,11 +36,11 @@ jest.mock('@/raps/execute', () => ({
   walletExecuteRap: (...args: unknown[]) => mockWalletExecuteRap(...args),
 }));
 
-jest.mock('@/features/delegation/managedExecutionFailure', () => ({
+jest.mock('@/features/delegation/utils/managedExecutionFailure', () => ({
   resolveManagedExecutionFailure: (...args: unknown[]) => mockResolveManagedExecutionFailure(...args),
 }));
 
-jest.mock('@/features/delegation/sponsoredCalls', () => ({
+jest.mock('@/features/delegation/utils/sponsoredCalls', () => ({
   isInsufficientSponsorBalanceError: (message: string) => message.includes('INSUFFICIENT_SPONSOR_BALANCE'),
 }));
 

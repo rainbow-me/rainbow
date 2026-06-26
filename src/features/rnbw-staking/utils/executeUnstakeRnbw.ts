@@ -3,7 +3,7 @@ import type { StaticJsonRpcProvider } from '@ethersproject/providers';
 import { Wallet } from '@ethersproject/wallet';
 import { encodeFunctionData, type Address, type Hex } from 'viem';
 
-import { canUseDelegatedExecution } from '@/features/delegation/willDelegate';
+import { canUseDelegatedExecution } from '@/features/delegation/utils/willDelegate';
 import type { LegacyTransactionGasParamAmounts, TransactionGasParamAmounts } from '@/features/gas/types/gas';
 import { RainbowError } from '@/logger';
 import { extractReplayableExecution } from '@/raps/replay';

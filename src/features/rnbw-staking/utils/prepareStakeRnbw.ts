@@ -1,7 +1,7 @@
 import { parseUnits, type Address } from 'viem';
 
-import { createDelegationPublicClient } from '@/features/delegation/calls';
-import { canUseDelegatedExecution } from '@/features/delegation/willDelegate';
+import { createDelegationPublicClient } from '@/features/delegation/utils/calls';
+import { canUseDelegatedExecution } from '@/features/delegation/utils/willDelegate';
 import { isPositive } from '@/framework/core/safeMath';
 import { getProvider } from '@/handlers/web3';
 import { execute, type PreparedCallsExecution } from '@rainbow-me/delegation';

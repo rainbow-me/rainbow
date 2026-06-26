@@ -8,7 +8,7 @@ const mockCanUseDelegatedExecution = jest.fn<boolean, [Address]>();
 const mockSupportsDelegatedExecution = jest.fn<Promise<boolean>, [unknown]>();
 const mockIsSponsorshipEligible = jest.fn<boolean, [ChainId]>();
 
-jest.mock('@/features/delegation/willDelegate', () => ({
+jest.mock('@/features/delegation/utils/willDelegate', () => ({
   canUseDelegatedExecution: (address: Address) => mockCanUseDelegatedExecution(address),
   supportsDelegatedExecution: (params: unknown) => mockSupportsDelegatedExecution(params),
 }));

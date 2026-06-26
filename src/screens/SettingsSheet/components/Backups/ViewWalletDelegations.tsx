@@ -15,7 +15,7 @@ import {
   hasActiveDelegation,
   isRainbowDelegated as hasRainbowDelegation,
   isThirdPartyDelegated as hasThirdPartyDelegation,
-} from '@/features/delegation/status';
+} from '@/features/delegation/utils/status';
 import { ChainImage } from '@/features/network/components/ChainImage';
 import { backendNetworksActions } from '@/features/network/stores/backendNetworksStore';
 import { type ChainId } from '@/features/network/types/backendNetworks';

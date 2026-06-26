@@ -2,7 +2,7 @@ import React, { memo } from 'react';
 
 import { destroyStore } from '@storesjs/stores';
 
-import { createPreparedCallsStore } from '@/features/delegation/preparedCallsStore';
+import { createPreparedCallsStore } from '@/features/delegation/stores/preparedCallsStore';
 import { createRnbwStakingDepositConfig } from '@/features/rnbw-staking/depositConfig';
 import { prepareStakeRnbw } from '@/features/rnbw-staking/utils/prepareStakeRnbw';
 import { useCleanup } from '@/hooks/useCleanup';

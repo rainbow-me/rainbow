@@ -1,6 +1,6 @@
 import { useEffect } from 'react';
 
-import { useIsDelegationEnabled } from '@/features/delegation/featureFlags';
+import { useIsDelegationEnabled } from '@/features/delegation/utils/featureFlags';
 import { EthereumWalletType } from '@/helpers/walletTypes';
 import Navigation from '@/navigation/Navigation';
 import Routes from '@/navigation/routesNames';

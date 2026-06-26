@@ -37,8 +37,8 @@ import { clamp, getDefaultSlippageWorklet, parseAssetAndExtend, trimTrailingZero
 import { trackSwapEvent } from '@/__swaps__/utils/trackSwapEvent';
 import { analytics } from '@/analytics';
 import { getRemoteConfig } from '@/features/config/stores/remoteConfig';
-import { isInsufficientSponsorBalanceError } from '@/features/delegation/sponsoredCalls';
-import { supportsDelegatedExecution } from '@/features/delegation/willDelegate';
+import { isInsufficientSponsorBalanceError } from '@/features/delegation/utils/sponsoredCalls';
+import { supportsDelegatedExecution } from '@/features/delegation/utils/willDelegate';
 import { clearCustomGasSettings } from '@/features/gas/hooks/useCustomGas';
 import { getGasSettingsBySpeed, getSelectedGas } from '@/features/gas/hooks/useSelectedGas';
 import { buildGasParams } from '@/features/gas/utils/parseGas';

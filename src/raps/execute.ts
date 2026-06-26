@@ -3,8 +3,8 @@ import { Wallet } from '@ethersproject/wallet';
 
 import type { NewTransaction } from '@/entities/transactions';
 import { IS_TEST } from '@/env';
-import { trackCallsExecution } from '@/features/delegation/callsExecutionTracking';
-import { resolveManagedExecutionFailure } from '@/features/delegation/managedExecutionFailure';
+import { trackCallsExecution } from '@/features/delegation/utils/callsExecutionTracking';
+import { resolveManagedExecutionFailure } from '@/features/delegation/utils/managedExecutionFailure';
 import type { LegacyTransactionGasParamAmounts, TransactionGasParamAmounts } from '@/features/gas/types/gas';
 import { ChainId } from '@/features/network/types/backendNetworks';
 import { getProvider } from '@/handlers/web3';

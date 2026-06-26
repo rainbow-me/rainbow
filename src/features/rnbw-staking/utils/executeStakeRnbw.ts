@@ -5,7 +5,7 @@ import { Wallet } from '@ethersproject/wallet';
 import { type Address } from 'viem';
 
 import { TransactionDirection, TransactionStatus, type NewTransaction } from '@/entities/transactions';
-import { canUseDelegatedExecution } from '@/features/delegation/willDelegate';
+import { canUseDelegatedExecution } from '@/features/delegation/utils/willDelegate';
 import type { LegacyTransactionGasParamAmounts, TransactionGasParamAmounts } from '@/features/gas/types/gas';
 import { backendNetworksActions } from '@/features/network/stores/backendNetworksStore';
 import { RainbowError } from '@/logger';

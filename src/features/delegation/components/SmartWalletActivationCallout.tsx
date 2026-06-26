@@ -7,7 +7,7 @@ import { Box, Text } from '@/design-system';
 import { type ChainId } from '@/features/network/types/backendNetworks';
 import * as i18n from '@/languages';
 
-import { useWillExecuteDelegation } from '../willDelegate';
+import { useWillExecuteDelegation } from '../utils/willDelegate';
 
 type SmartWalletActivationCalloutProps = {
   address: Address;

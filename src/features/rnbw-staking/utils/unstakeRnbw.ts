@@ -2,7 +2,7 @@ import { Wallet } from '@ethersproject/wallet';
 import { type Address } from 'viem';
 
 import { analytics } from '@/analytics';
-import { isPreparedCallsExecutionSponsored } from '@/features/delegation/calls';
+import { isPreparedCallsExecutionSponsored } from '@/features/delegation/utils/calls';
 import type { LegacyTransactionGasParamAmounts, TransactionGasParamAmounts } from '@/features/gas/types/gas';
 import { mulWorklet, subWorklet } from '@/framework/core/safeMath';
 import { getProvider } from '@/handlers/web3';

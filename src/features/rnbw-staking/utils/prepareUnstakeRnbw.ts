@@ -1,7 +1,7 @@
 import { type Address } from 'viem';
 
-import { createDelegationPublicClient, isPreparedCallsExecutionSponsored } from '@/features/delegation/calls';
-import { canUseDelegatedExecution } from '@/features/delegation/willDelegate';
+import { createDelegationPublicClient, isPreparedCallsExecutionSponsored } from '@/features/delegation/utils/calls';
+import { canUseDelegatedExecution } from '@/features/delegation/utils/willDelegate';
 import { execute, type PreparedCallsExecution } from '@rainbow-me/delegation';
 
 import { STAKING_CHAIN_ID } from '../constants';

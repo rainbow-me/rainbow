@@ -17,7 +17,7 @@ jest.mock('@rainbow-me/delegation', () => ({
   },
 }));
 
-jest.mock('@/features/delegation/willDelegate', () => ({
+jest.mock('@/features/delegation/utils/willDelegate', () => ({
   canUseDelegatedExecution: (address: Address) => mockCanUseDelegatedExecution(address),
 }));
 

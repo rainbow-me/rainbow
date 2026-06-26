@@ -3,7 +3,7 @@ import { type Address } from 'viem';
 
 import { isCrosschainQuote } from '@/__swaps__/utils/quotes';
 import { getRemoteConfig } from '@/features/config/stores/remoteConfig';
-import { SPONSORED_CALLS_REQUIREMENTS } from '@/features/delegation/calls';
+import { SPONSORED_CALLS_REQUIREMENTS } from '@/features/delegation/utils/calls';
 import { backendNetworksActions } from '@/features/network/stores/backendNetworksStore';
 import { type ChainId } from '@/features/network/types/backendNetworks';
 import { type Call } from '@rainbow-me/delegation';

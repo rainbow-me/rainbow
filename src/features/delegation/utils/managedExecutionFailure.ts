@@ -1,5 +1,6 @@
-import { relayService } from '@/features/delegation/relayService';
 import { RelayExecutionStatus, type RelayStatusSnapshot } from '@rainbow-me/delegation';
+
+import { relayService } from './relayService';
 
 // ============ Types ========================================================= //
 

@@ -2,10 +2,10 @@ import { createDerivedStore } from '@storesjs/stores';
 
 import { isCrosschainQuote, isQuote } from '@/__swaps__/utils/quotes';
 import { useRemoteConfigStore } from '@/features/config/stores/remoteConfig';
-import { createDelegationPublicClient, isPreparedCallsExecutionSponsored } from '@/features/delegation/calls';
-import { createPreparedCallsStore } from '@/features/delegation/preparedCallsStore';
-import { predictSponsoredCallsExecution } from '@/features/delegation/sponsoredCalls';
-import { supportsDelegatedExecution } from '@/features/delegation/willDelegate';
+import { createPreparedCallsStore } from '@/features/delegation/stores/preparedCallsStore';
+import { createDelegationPublicClient, isPreparedCallsExecutionSponsored } from '@/features/delegation/utils/calls';
+import { predictSponsoredCallsExecution } from '@/features/delegation/utils/sponsoredCalls';
+import { supportsDelegatedExecution } from '@/features/delegation/utils/willDelegate';
 import { useBackendNetworksStore } from '@/features/network/stores/backendNetworksStore';
 import { time } from '@/framework/core/utils/time';
 import { getProvider } from '@/handlers/web3';

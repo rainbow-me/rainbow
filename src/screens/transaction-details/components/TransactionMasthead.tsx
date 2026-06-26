@@ -19,7 +19,7 @@ import { Bleed, Box, Columns, Cover, Row, Rows, Separator, Stack, Text, type Tex
 import { type ParsedAddressAsset } from '@/entities/tokens';
 import { type RainbowTransaction } from '@/entities/transactions';
 import { convertAmountAndPriceToNativeDisplay } from '@/features/currency/utils/nativeDisplay';
-import { getDelegationContractAddress, isRainbowDelegated } from '@/features/delegation/status';
+import { getDelegationContractAddress, isRainbowDelegated } from '@/features/delegation/utils/status';
 import { fetchENSAvatar } from '@/features/ens/hooks/useENSAvatar';
 import { fetchReverseRecord } from '@/features/ens/utils/handlers';
 import { ChainImage } from '@/features/network/components/ChainImage';

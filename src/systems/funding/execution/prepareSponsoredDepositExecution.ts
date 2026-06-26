@@ -2,9 +2,9 @@ import { type StaticJsonRpcProvider } from '@ethersproject/providers';
 import { encodeFunctionData, erc20Abi, type Address } from 'viem';
 
 import { isCrosschainQuote } from '@/__swaps__/utils/quotes';
-import { createDelegationPublicClient, SPONSORED_CALLS_REQUIREMENTS } from '@/features/delegation/calls';
-import { predictSponsoredCallsExecution } from '@/features/delegation/sponsoredCalls';
-import { supportsDelegatedExecution } from '@/features/delegation/willDelegate';
+import { createDelegationPublicClient, SPONSORED_CALLS_REQUIREMENTS } from '@/features/delegation/utils/calls';
+import { predictSponsoredCallsExecution } from '@/features/delegation/utils/sponsoredCalls';
+import { supportsDelegatedExecution } from '@/features/delegation/utils/willDelegate';
 import { type ChainId } from '@/features/network/types/backendNetworks';
 import { RainbowError } from '@/logger';
 import { prepareAtomicSwapCalls } from '@/raps/atomicSwapPreparation';

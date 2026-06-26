@@ -20,7 +20,7 @@ import { Box, Stack } from '@/design-system';
 import { executeFnIfCloudBackupAvailable } from '@/features/backup/backup';
 import { useCreateBackup } from '@/features/backup/hooks/useCreateBackup';
 import { backupsStore } from '@/features/backup/stores/backupsStore';
-import { useIsDelegationEnabled } from '@/features/delegation/featureFlags';
+import { useIsDelegationEnabled } from '@/features/delegation/utils/featureFlags';
 import useENSAvatar from '@/features/ens/hooks/useENSAvatar';
 import { removeFirstEmojiFromString } from '@/helpers/emojiHandler';
 import walletBackupTypes from '@/helpers/walletBackupTypes';

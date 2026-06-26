@@ -5,8 +5,8 @@ import { isAddress, type Address } from 'viem';
 
 import { type ParsedAddressAsset } from '@/entities/tokens';
 import { useRemoteConfig } from '@/features/config/stores/remoteConfig';
-import { isPreparedCallsExecutionSponsored } from '@/features/delegation/calls';
-import { supportsDelegatedExecution } from '@/features/delegation/willDelegate';
+import { isPreparedCallsExecutionSponsored } from '@/features/delegation/utils/calls';
+import { supportsDelegatedExecution } from '@/features/delegation/utils/willDelegate';
 import { useBackendNetworksStore } from '@/features/network/stores/backendNetworksStore';
 import { type ChainId } from '@/features/network/types/backendNetworks';
 import { parsePositiveRawAmount } from '@/framework/core/evm/units';

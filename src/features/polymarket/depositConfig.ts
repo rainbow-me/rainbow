@@ -1,6 +1,6 @@
 import { analytics } from '@/analytics';
 import { getRemoteConfig } from '@/features/config/stores/remoteConfig';
-import { predictSponsoredCallsExecution } from '@/features/delegation/sponsoredCalls';
+import { predictSponsoredCallsExecution } from '@/features/delegation/utils/sponsoredCalls';
 import { ChainId } from '@/features/network/types/backendNetworks';
 import { USDC_ICON_URL } from '@/features/perps/constants';
 import { time } from '@/framework/core/utils/time';
