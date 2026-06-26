@@ -72,7 +72,7 @@ export const PolymarketNewPositionSheet = memo(function PolymarketNewPositionShe
   } = useNewPositionForm({ tokenId, conditionId: market.conditionId });
 
   const hasBlockedLiquidity = hasNoLiquidityAtMarketPrice || hasInsufficientLiquidity;
-  const canSubmit = isQuoteReady && !hasBlockedLiquidity;
+  const canSubmit = isValidOrderAmount && isQuoteReady && !hasBlockedLiquidity;
   const noLiquidityTitle = hasNoLiquidityAtMarketPrice
     ? i18n.t(i18n.l.predictions.new_position.no_liquidity_title)
     : i18n.t(i18n.l.predictions.new_position.insufficient_liquidity_title);
@@ -238,7 +238,7 @@ export const PolymarketNewPositionSheet = memo(function PolymarketNewPositionShe
               showBiometryIcon={false}
               backgroundColor={buttonColor}
               disabledBackgroundColor={opacity(buttonColor, 0.02)}
-              disabled={!isValidOrderAmount || !canSubmit}
+              disabled={!canSubmit}
               height={48}
               borderColor={{ custom: opacity('#FFFFFF', 0.08) }}
               borderWidth={2}

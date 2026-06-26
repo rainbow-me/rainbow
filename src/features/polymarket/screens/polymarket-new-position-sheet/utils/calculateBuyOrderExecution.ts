@@ -84,7 +84,7 @@ export function calculateBuyOrderExecution({
     tokensBought: String(execution.tokensBought),
     hasInsufficientLiquidity: execution.hasInsufficientLiquidity,
     hasNoLiquidityAtMarketPrice: !hasAskLiquidity,
-    isQuoteReady: true,
+    isQuoteReady: execution.orderSpendCapUsd > 0 && execution.tokensBought > 0,
     spread: calculateOrderBookSpread({ asks: orderBook.asks, bids: orderBook.bids }),
     minBuyAmountUsd: roundUsdUpToCents(minimumBuySpendUsd),
   };
