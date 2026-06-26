@@ -1412,47 +1412,6 @@
       "collect_now": "เก็บสะสมทันที",
       "will_appear_here": "ของสะสมจะปรากฏที่นี่"
     },
-    "nft_offers": {
-      "card": {
-        "title": {
-          "singular": "1 ข้อเสนอ",
-          "plural": "%{numOffers} ข้อเสนอ"
-        },
-        "button": "ดูข้อเสนอทั้งหมด",
-        "expired": "หมดอายุ"
-      },
-      "sheet": {
-        "title": "ข้อเสนอ",
-        "total": "ทั้งหมด",
-        "above_floor": "เหนือชั้น",
-        "below_floor": "ชั้นราคาต่ำสุด",
-        "no_offers_found": "ไม่พบข้อเสนอ"
-      },
-      "sort_menu": {
-        "highest": "สูงสุด",
-        "from_floor": "จากชั้น",
-        "recent": "ล่าสุด"
-      },
-      "single_offer_sheet": {
-        "title": "ข้อเสนอ",
-        "expires_in": "หมดอายุใน %{timeLeft}",
-        "floor_price": "ราคาพื้น",
-        "marketplace": "ตลาด",
-        "marketplace_fees": "%{marketplace} ค่าธรรมเนียม",
-        "creator_royalties": "ผลตอบแทนของผู้สร้าง",
-        "receive": "รับ",
-        "proceeds": "รายได้รวม",
-        "view_offer": "ดูข้อเสนอ",
-        "offer_expired": "ข้อเสนอหมดอายุ",
-        "expired": "หมดอายุ",
-        "hold_to_sell": "ถือเพื่อขาย",
-        "selling": "ขาย",
-        "error": {
-          "title": "ข้อผิดพลาดในการขาย NFT",
-          "message": "กรุณาติดต่อฝ่ายสนับสนุน Rainbow เพื่อขอความช่วยเหลือ."
-        }
-      }
-    },
     "perps": {
       "activity": {
         "title": "กิจกรรม",
