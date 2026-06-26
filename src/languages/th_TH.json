@@ -1284,38 +1284,6 @@
       "importing_wallet": "นำเข้า...",
       "restoring": "กำลังเรียกคืน..."
     },
-    "mints": {
-      "mints_sheet": {
-        "mints": "การสร้าง",
-        "no_data_found": "ไม่พบข้อมูล.",
-        "card": {
-          "x_ago": "%{timeElapsed} ที่แล้ว",
-          "one_mint_past_hour": "สร้าง 1 ครั้งในชั่วโมงที่ผ่านมา",
-          "x_mints_past_hour": "%{numMints} การสร้างในชั่วโมงที่ผ่านมา",
-          "x_mints": "%{numMints} การสร้าง",
-          "mint": "สร้าง",
-          "free": "ฟรี"
-        }
-      },
-      "mints_card": {
-        "view_all_mints": "ดูมินต์ทั้งหมด",
-        "mints": "การสร้าง",
-        "collection_cell": {
-          "free": "ฟรี"
-        }
-      },
-      "featured_mint_card": {
-        "featured_mint": "มินต์ที่โดดเด่น",
-        "one_mint": "1 มินต์",
-        "x_mints": "%{numMints} การสร้าง",
-        "x_past_hour": "%{numMints} ชั่วโมงที่ผ่านมา"
-      },
-      "filter": {
-        "all": "ทั้งหมด",
-        "free": "ฟรี",
-        "paid": "จ่ายเงิน"
-      }
-    },
     "modal": {
       "back_up": {
         "alerts": {
@@ -1372,27 +1340,6 @@
       "tx_verify": "ตรวจสอบการทำธุรกรรมของคุณที่นี่",
       "withdrawal_dropdown_label": "สำหรับ",
       "withdrawal_input_label": "รับ"
-    },
-    "minting": {
-      "hold_to_mint": "กดถือเพื่อเริ่มการสร้างเหรียญ",
-      "minting": "กำลังสร้างเหรียญ...",
-      "minted": "สร้าง",
-      "mint_on_mintdotfun": "􀮶 สร้างเหรียญบน mint.fun",
-      "error_minting": "ผิดพลาดในการสร้างเหรียญ",
-      "mint_price": "ราคาการสร้างเหรียญ",
-      "free": "ฟรี",
-      "by": "โดย",
-      "unknown": "ไม่ทราบ",
-      "max": "สูงสุด",
-      "nft_count": "%{number} NFTs",
-      "description": "คำอธิบาย",
-      "total_minted": "ผลิตทั้งหมด",
-      "first_event": "เหตุการณ์แรก",
-      "contract": "สัญญา",
-      "network": "เครือข่าย",
-      "could_not_find_collection": "ไม่พบคอลเลกชัน",
-      "unable_to_find_check_again": "เราไม่สามารถค้นหาคอลเลกชันนี้ได้ โปรดตรวจสอบที่อยู่และเครือข่ายสองครั้งหรือลองอีกครั้งในภายหลัง",
-      "mintdotfun_unsupported_network": "Mint.fun ไม่สนับสนุนเครือข่ายนี้"
     },
     "nfts": {
       "selling": "ขาย",
