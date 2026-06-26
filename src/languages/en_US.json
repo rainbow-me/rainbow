@@ -818,11 +818,6 @@
         "total_value": "Total value",
         "underlying_tokens": "Underlying tokens"
       },
-      "nft_brief_token_info": {
-        "for_sale": "For sale",
-        "floor_price": "Floor price",
-        "last_sale": "Last sale price"
-      },
       "swap": {
         "swap": "Swap",
         "bridge": "Bridge",
@@ -903,7 +898,6 @@
         "edit": "Edit",
         "expires_in": "Expires in",
         "expires_on": "Expires on",
-        "floor_price": "Floor price",
         "for_sale": "For sale",
         "in_showcase": "In Showcase",
         "last_sale_price": "Last sale price",
@@ -1023,10 +1017,6 @@
       "failed_wc_invalid_chain": {
         "text": "The network specified in this request is not supported by Rainbow.",
         "title": "Handling failed"
-      },
-      "floor_price": {
-        "text": "A collection's floor price is the lowest asking price across all the items currently for sale in a collection.",
-        "title": "Collection floor price"
       },
       "gas": {
         "text": "This is the \"gas fee\" used by the %{networkName} blockchain to securely validate your transaction.\n\nThis fee varies depending on the complexity of your transaction and how busy the network is!",

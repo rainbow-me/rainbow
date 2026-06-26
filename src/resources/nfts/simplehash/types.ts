@@ -33,23 +33,6 @@ type SimpleHashPaymentToken = {
   decimals: number;
 };
 
-export type SimpleHashListing = {
-  id: string;
-  permalink: string;
-  bundle_item_number: number | null;
-  listing_timestamp: string;
-  expiration_timestamp: string;
-  seller_address: string;
-  auction_type: string | null;
-  quantity: number;
-  quantity_remaining: number;
-  price: number;
-  marketplace_id: SimpleHashMarketplaceId;
-  collection_id: string | null;
-  nft_id: string;
-  payment_token: SimpleHashPaymentToken | null;
-};
-
 export type SimpleHashFloorPrice = {
   marketplace_id: SimpleHashMarketplaceId;
   value: number;

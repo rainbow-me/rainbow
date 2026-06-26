@@ -6805,17 +6805,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@reservoir0x/reservoir-sdk@npm:2.3.0":
-  version: 2.3.0
-  resolution: "@reservoir0x/reservoir-sdk@npm:2.3.0"
-  dependencies:
-    axios: "npm:^1.6.7"
-  peerDependencies:
-    viem: ~2.9.31
-  checksum: 10c0/5a340603b17dfd4a5f763a352ff3b2e07b294e4e44365a5b7929b88161a792dad833eaf49037c9abb571c552404fd94c551f8b0a52e9100a3e45c0a532728fbc
-  languageName: node
-  linkType: hard
-
 "@rock-js/config@npm:^0.9.2":
   version: 0.9.2
   resolution: "@rock-js/config@npm:0.9.2"
@@ -9286,7 +9275,6 @@ __metadata:
     "@react-navigation/native": "npm:6.1.17"
     "@react-navigation/stack": "npm:6.3.29"
     "@reown/walletkit": "npm:1.1.2"
-    "@reservoir0x/reservoir-sdk": "npm:2.3.0"
     "@rock-js/platform-android": "npm:0.9.2"
     "@rock-js/platform-ios": "npm:0.9.2"
     "@rock-js/plugin-metro": "npm:0.9.2"
