@@ -28,8 +28,8 @@ import { getWithdrawalSwapRequirement, resolveTokenAddressForChain } from '../ut
 
 // ============ Quote Store Factory ============================================ //
 
-export function createWithdrawalQuoteStore<TBalanceStore extends BalanceQueryStore>(
-  config: WithdrawalConfig<TBalanceStore>,
+export function createWithdrawalQuoteStore(
+  config: WithdrawalConfig<BalanceQueryStore>,
   useAmountStore: AmountStoreType,
   useTokenStore: WithdrawalTokenStoreType,
   useWithdrawalStore: WithdrawalStoreType
@@ -38,8 +38,6 @@ export function createWithdrawalQuoteStore<TBalanceStore extends BalanceQuerySto
   if (!route) {
     throw new Error('createWithdrawalQuoteStore requires route config');
   }
-
-  const balanceStore: BalanceQueryStore = config.balanceStore;
 
   const useResolvedBuyTokenAddress = createDerivedStore(
     $ => {
@@ -56,7 +54,7 @@ export function createWithdrawalQuoteStore<TBalanceStore extends BalanceQuerySto
     fetcher: createQuoteFetcher(route),
     params: {
       amount: $ => $(useAmountStore, state => state.amount),
-      balance: $ => $(balanceStore, state => state.getBalance()),
+      balance: $ => $(config.balanceStore, state => state.getBalance()),
       buyTokenAddress: $ => $(useResolvedBuyTokenAddress),
       destReceiver: $ => $(useWalletsStore).accountAddress,
       sourceAddress: $ => $(route.from.addressStore),
