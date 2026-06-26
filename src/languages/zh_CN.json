@@ -1412,47 +1412,6 @@
       "collect_now": "立即收藏",
       "will_appear_here": "您的收藏品将会出现在这里"
     },
-    "nft_offers": {
-      "card": {
-        "title": {
-          "singular": "1个报价",
-          "plural": "%{numOffers} 个报价"
-        },
-        "button": "查看所有报价",
-        "expired": "已过期"
-      },
-      "sheet": {
-        "title": "报价",
-        "total": "总计",
-        "above_floor": "超过底价",
-        "below_floor": "低于底价",
-        "no_offers_found": "未找到报价"
-      },
-      "sort_menu": {
-        "highest": "最高",
-        "from_floor": "从底价开始",
-        "recent": "最近"
-      },
-      "single_offer_sheet": {
-        "title": "报价",
-        "expires_in": "过期在 %{timeLeft}",
-        "floor_price": "底价",
-        "marketplace": "市场",
-        "marketplace_fees": "%{marketplace} 费用",
-        "creator_royalties": "创作者版税",
-        "receive": "接收",
-        "proceeds": "收益",
-        "view_offer": "查看报价",
-        "offer_expired": "报价过期",
-        "expired": "已过期",
-        "hold_to_sell": "持有以待售",
-        "selling": "出售",
-        "error": {
-          "title": "出售NFT出错",
-          "message": "请联系Rainbow支持以获取帮助。"
-        }
-      }
-    },
     "perps": {
       "activity": {
         "title": "活动",
