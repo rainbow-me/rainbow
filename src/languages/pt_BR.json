@@ -1412,47 +1412,6 @@
       "collect_now": "Colecione Agora",
       "will_appear_here": "Suas Colecionáveis Aparecerão Aqui"
     },
-    "nft_offers": {
-      "card": {
-        "title": {
-          "singular": "1 Oferta",
-          "plural": "%{numOffers} Ofertas"
-        },
-        "button": "Ver Todas as Ofertas",
-        "expired": "Expirado"
-      },
-      "sheet": {
-        "title": "Ofertas",
-        "total": "Total",
-        "above_floor": "acima do piso",
-        "below_floor": "abaixo do piso",
-        "no_offers_found": "Nenhuma oferta encontrada"
-      },
-      "sort_menu": {
-        "highest": "Mais Alta",
-        "from_floor": "A Partir do Piso",
-        "recent": "Recente"
-      },
-      "single_offer_sheet": {
-        "title": "Oferta",
-        "expires_in": "Expira em %{timeLeft}",
-        "floor_price": "Preço do Piso",
-        "marketplace": "Mercado",
-        "marketplace_fees": "%{marketplace} Taxas",
-        "creator_royalties": "Direitos do Criador",
-        "receive": "Receber",
-        "proceeds": "Recebimentos",
-        "view_offer": "Ver Oferta",
-        "offer_expired": "Oferta Expirada",
-        "expired": "Expirado",
-        "hold_to_sell": "Segure para Vender",
-        "selling": "Vendendo",
-        "error": {
-          "title": "Erro ao vender NFT",
-          "message": "Por favor, contate o suporte do Rainbow para assistência."
-        }
-      }
-    },
     "perps": {
       "activity": {
         "title": "Atividade",
