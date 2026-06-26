@@ -1284,38 +1284,6 @@
       "importing_wallet": "Importando...",
       "restoring": "Restaurando..."
     },
-    "mints": {
-      "mints_sheet": {
-        "mints": "Menta",
-        "no_data_found": "No se encontraron datos.",
-        "card": {
-          "x_ago": "%{timeElapsed} hace",
-          "one_mint_past_hour": "1 menta pasado la hora",
-          "x_mints_past_hour": "%{numMints} mentas pasado la hora",
-          "x_mints": "%{numMints} mentas",
-          "mint": "Menta",
-          "free": "GRATIS"
-        }
-      },
-      "mints_card": {
-        "view_all_mints": "Ver todas las mentas",
-        "mints": "Menta",
-        "collection_cell": {
-          "free": "GRATIS"
-        }
-      },
-      "featured_mint_card": {
-        "featured_mint": "Menta destacada",
-        "one_mint": "1 menta",
-        "x_mints": "%{numMints} mentas",
-        "x_past_hour": "%{numMints} última hora"
-      },
-      "filter": {
-        "all": "Todos",
-        "free": "Gratis",
-        "paid": "Pago"
-      }
-    },
     "modal": {
       "back_up": {
         "alerts": {
@@ -1372,27 +1340,6 @@
       "tx_verify": "Verifica tu transacción aquí",
       "withdrawal_dropdown_label": "Para",
       "withdrawal_input_label": "Obtener"
-    },
-    "minting": {
-      "hold_to_mint": "Mantenga para Acuñar",
-      "minting": "Creando POAP...",
-      "minted": "Acuñado",
-      "mint_on_mintdotfun": "􀮶 Acuñar en mint.fun",
-      "error_minting": "Error al crear POAP",
-      "mint_price": "Precio de Acuñación",
-      "free": "Gratis",
-      "by": "Por",
-      "unknown": "desconocido",
-      "max": "Máx.",
-      "nft_count": "%{number} NFTs",
-      "description": "Descripción",
-      "total_minted": "Total Acuñado",
-      "first_event": "Primer Evento",
-      "contract": "Contrato",
-      "network": "Red",
-      "could_not_find_collection": "No se Pudo Encontrar la Colección",
-      "unable_to_find_check_again": "No podemos encontrar esta colección, verifique la dirección y la red o intente más tarde",
-      "mintdotfun_unsupported_network": "Mint.fun no admite esta red"
     },
     "nfts": {
       "selling": "Vendiendo",
