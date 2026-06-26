@@ -818,11 +818,6 @@
         "total_value": "総価値",
         "underlying_tokens": "下層トークン"
       },
-      "nft_brief_token_info": {
-        "for_sale": "売り物",
-        "floor_price": "最低価格",
-        "last_sale": "前回の売却価格"
-      },
       "swap": {
         "swap": "交換する",
         "bridge": "ブリッジ",
@@ -903,7 +898,6 @@
         "edit": "編集",
         "expires_in": "Expires in",
         "expires_on": "有効期限",
-        "floor_price": "最低価格",
         "for_sale": "売り物",
         "in_showcase": "ショーケースに含まれています",
         "last_sale_price": "前回の売却価格",
@@ -1023,10 +1017,6 @@
       "failed_wc_invalid_chain": {
         "text": "このリクエストで指定されたネットワークは、Rainbowでサポートされていません。",
         "title": "処理に失敗しました"
-      },
-      "floor_price": {
-        "text": "コレクションの最低価格は、現在販売中のすべてのアイテムの最低要求価格です。",
-        "title": "コレクションの最低価格"
       },
       "gas": {
         "text": "これは、あなたの取引を安全に検証するために %{networkName} ブロックチェーンで使用される「ガス手数料」です。\n\nこの手数料は、あなたの取引の複雑さとネットワークの混雑具合により変動します！",
