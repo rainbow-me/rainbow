@@ -6,6 +6,8 @@ on:
   pull_request:
     types: [labeled, synchronize, reopened]
 
+permissions: {}
+
 env:
   PR_NUMBER: ${{ github.event.pull_request.number }}
 
@@ -19,6 +21,8 @@ jobs:
        (github.event.action != 'labeled' || github.event.label.name == 'e2e'))
     runs-on: blacksmith-8vcpu-ubuntu-2404
     timeout-minutes: 30
+    permissions:
+      contents: read
     concurrency:
       group: e2e-android-${{ github.workflow }}-${{ github.ref }}
       cancel-in-progress: true
@@ -135,6 +139,9 @@ jobs:
     runs-on: app-e2e-runner
     needs: build
     timeout-minutes: 30
+    permissions:
+      contents: read
+      actions: read
     concurrency:
       group: e2e-android-${{ github.workflow }}-${{ github.ref }}-shard-${{ matrix.shard-index }}
       cancel-in-progress: false
@@ -226,6 +233,10 @@ jobs:
     runs-on: blacksmith-2vcpu-ubuntu-2404
     needs: build
     timeout-minutes: 30
+    permissions:
+      contents: read
+      actions: read
+      pull-requests: write
     concurrency:
       group: e2e-android-${{ github.workflow }}-${{ github.ref }}-perf
       cancel-in-progress: true
@@ -292,6 +303,10 @@ jobs:
       github.ref == 'refs/heads/develop' &&
       (needs.build.result == 'failure' || needs.e2e-tests.result == 'failure')
     runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      actions: read
+      pull-requests: read
     steps:
       - name: Checkout repo
         uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v7.0.0

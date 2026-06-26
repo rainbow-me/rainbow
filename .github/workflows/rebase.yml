@@ -2,6 +2,9 @@ name: Automatic Rebase
 on:
   issue_comment:
     types: [created]
+
+permissions: {}
+
 jobs:
   rebase:
     name: Rebase
@@ -10,6 +13,9 @@ jobs:
       contains(github.event.comment.body, '/rebase') &&
       github.event.comment.author_association == 'MEMBER'
     runs-on: ubuntu-latest
+    permissions:
+      contents: write
+      pull-requests: read
     steps:
       - name: Checkout the latest code
         uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v7.0.0

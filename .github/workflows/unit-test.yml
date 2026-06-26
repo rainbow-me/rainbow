@@ -1,9 +1,14 @@
 name: Unit tests
 
 on: [pull_request]
+
+permissions: {}
+
 jobs:
   lint-and-unit-test:
     runs-on: blacksmith-2vcpu-ubuntu-2204
+    permissions:
+      contents: read
     env:
       NODE_OPTIONS: '--max-old-space-size=6144'
     concurrency:

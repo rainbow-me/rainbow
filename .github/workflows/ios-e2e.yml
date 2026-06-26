@@ -4,6 +4,9 @@ on:
     branches: [develop]
   pull_request:
     types: [labeled, synchronize, reopened]
+
+permissions: {}
+
 env:
   NODE_OPTIONS: '--max-old-space-size=6144'
 
@@ -17,6 +20,8 @@ jobs:
        contains(github.event.pull_request.labels.*.name, 'e2e') &&
        (github.event.action != 'labeled' || github.event.label.name == 'e2e'))
     runs-on: macos-26-xlarge
+    permissions:
+      contents: read
     concurrency:
       group: e2e-ios-${{ github.workflow }}-${{ github.ref }}
       cancel-in-progress: true
@@ -46,6 +51,9 @@ jobs:
     name: E2E Tests (Shard ${{ matrix.shard-index }})
     needs: build
     runs-on: macos-26-xlarge
+    permissions:
+      contents: read
+      actions: read
     strategy:
       fail-fast: false
       matrix:
@@ -123,6 +131,10 @@ jobs:
       github.ref == 'refs/heads/develop' &&
       (needs.build.result == 'failure' || needs.e2e-tests.result == 'failure')
     runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      actions: read
+      pull-requests: read
     steps:
       - name: Checkout repo
         uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v7.0.0
