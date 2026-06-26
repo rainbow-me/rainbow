@@ -19,9 +19,8 @@ import { getPolymarketClobOrderErrorReason, PolymarketBuyPositionError } from '@
 import { useNewPositionForm } from '@/features/polymarket/screens/polymarket-new-position-sheet/hooks/useNewPositionForm';
 import { usePolymarketClients } from '@/features/polymarket/stores/derived/usePolymarketClients';
 import { usePolymarketBalanceStore } from '@/features/polymarket/stores/polymarketBalanceStore';
-import { executePolymarketBuyPosition, type PolymarketBuyPositionStep } from '@/features/polymarket/utils/executePolymarketBuyPosition';
+import { executePolymarketBuyPosition, type PolymarketBuyPositionStep } from '@/features/polymarket/utils/executePolymarketOrder';
 import { getOutcomeDescriptions } from '@/features/polymarket/utils/getOutcomeDescriptions';
-import { trackPolymarketOrder } from '@/features/polymarket/utils/polymarketOrderTracker';
 import { waitForPositionSizeUpdate } from '@/features/polymarket/utils/refetchPolymarketStores';
 import { mulWorklet, toFixedWorklet, trimTrailingZeros } from '@/framework/core/safeMath';
 import { opacity } from '@/framework/ui/utils/opacity';
@@ -61,15 +60,19 @@ export const PolymarketNewPositionSheet = memo(function PolymarketNewPositionShe
     isValidOrderAmount,
     amountToWin,
     fee,
+    orderSpendCap,
+    rainbowFee,
     spread,
     setBuyAmount,
     buyAmount,
     averagePrice,
     hasNoLiquidityAtMarketPrice,
     hasInsufficientLiquidity,
+    isQuoteReady,
   } = useNewPositionForm({ tokenId, conditionId: market.conditionId });
 
   const hasBlockedLiquidity = hasNoLiquidityAtMarketPrice || hasInsufficientLiquidity;
+  const canSubmit = isValidOrderAmount && isQuoteReady && !hasBlockedLiquidity;
   const noLiquidityTitle = hasNoLiquidityAtMarketPrice
     ? i18n.t(i18n.l.predictions.new_position.no_liquidity_title)
     : i18n.t(i18n.l.predictions.new_position.insufficient_liquidity_title);
@@ -88,31 +91,27 @@ export const PolymarketNewPositionSheet = memo(function PolymarketNewPositionShe
   const formattedSpread = `${trimTrailingZeros(toFixedWorklet(mulWorklet(spread, 100), 1))}¢`;
 
   const handleMarketBuyPosition = useCallback(async () => {
-    if (hasBlockedLiquidity) return;
+    if (!canSubmit) return;
     if (checkIfReadOnlyWallet(usePolymarketClients.getState().address)) return;
     setIsProcessing(true);
     setProcessingLabel(getBuyPositionProcessingLabel('preparing'));
     try {
-      const orderResult = await executePolymarketBuyPosition({
+      await executePolymarketBuyPosition({
         tokenId,
-        amount: buyAmount,
+        amount: orderSpendCap,
         price: worstPrice,
         negRisk: market.negRisk,
-        onStep: step => setProcessingLabel(getBuyPositionProcessingLabel(step)),
-      });
-      trackPolymarketOrder({
-        orderResult,
-        context: {
+        matchedOrderMetadata: {
           eventSlug: event.slug,
           marketSlug: market.slug,
           outcome,
-          tokenId,
-          side: 'buy',
           estimatedFeeAmountUsd: fee,
+          quotedTradeFeeUsd: rainbowFee,
           spread,
           bestPriceUsd: bestPrice,
           orderPriceUsd: worstPrice,
         },
+        onStep: step => setProcessingLabel(getBuyPositionProcessingLabel(step)),
       });
       setProcessingLabel(getBuyPositionProcessingLabel('confirming_order'));
       await waitForPositionSizeUpdate(tokenId);
@@ -149,12 +148,14 @@ export const PolymarketNewPositionSheet = memo(function PolymarketNewPositionShe
     fee,
     market.negRisk,
     market.slug,
+    orderSpendCap,
     outcome,
+    rainbowFee,
     spread,
     tokenId,
     worstPrice,
     fromRoute,
-    hasBlockedLiquidity,
+    canSubmit,
   ]);
 
   const handleDepositFunds = useCallback(() => {
@@ -198,17 +199,6 @@ export const PolymarketNewPositionSheet = memo(function PolymarketNewPositionShe
             />
           </Box>
           <Box gap={24}>
-            {/* For testing purposes */}
-            {/* <Box flexDirection="row" justifyContent="space-between" paddingHorizontal="16px">
-              <Text size="15pt" weight="semibold" color="labelTertiary">
-                {'Fees'}
-              </Text>
-              <TextShadow blur={6} shadowOpacity={0.24}>
-                <Text size="17pt" weight="heavy" color="green">
-                  {formatUsd(fee)}
-                </Text>
-              </TextShadow>
-            </Box> */}
             <Box flexDirection="row" justifyContent="space-between" paddingHorizontal="16px">
               <Text size="15pt" weight="semibold" color="labelTertiary">
                 {i18n.t(i18n.l.predictions.new_position.spread)}
@@ -248,11 +238,11 @@ export const PolymarketNewPositionSheet = memo(function PolymarketNewPositionShe
               showBiometryIcon={false}
               backgroundColor={buttonColor}
               disabledBackgroundColor={opacity(buttonColor, 0.02)}
-              disabled={!isValidOrderAmount || hasBlockedLiquidity}
+              disabled={!canSubmit}
               height={48}
               borderColor={{ custom: opacity('#FFFFFF', 0.08) }}
               borderWidth={2}
-              color={hasBlockedLiquidity ? 'labelQuaternary' : 'white'}
+              color={canSubmit ? 'white' : 'labelQuaternary'}
               progressColor="white"
             />
           ) : (

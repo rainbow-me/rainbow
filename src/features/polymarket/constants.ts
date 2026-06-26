@@ -57,7 +57,7 @@ export const POLYMARKET_HOSTNAMES: ReadonlySet<string> = new Set(['polymarket.co
 export const POLYMARKET_REFERRAL_PARAM = 'r';
 export const POLYMARKET_REFERRAL_CODE = 'rnbw';
 
-export const POLYMARKET_BUILDER_CODE = '0xabce5abdc189cba6fb85edb9170e3e6e41607e946b06d112b7f87e2f2977020c';
+export const POLYMARKET_RAINBOW_FEE_RECIPIENT_ADDRESS: Address = '0x757758506d6a4F8a433F8BECaFd52545f9Cb050a';
 
 export const BUILDER_CONFIG = new BuilderConfig({
   remoteBuilderConfig: { url: POLYMARKET_SIGNING_PROXY_URL, token: PLATFORM_API_KEY },

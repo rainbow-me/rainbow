@@ -32,10 +32,13 @@ export function useNewPositionForm({ tokenId, conditionId }: UseNewPositionFormP
     worstPrice,
     spread,
     fee,
+    orderSpendCap,
+    rainbowFee,
     tokensBought,
     minBuyAmountUsd: executionMinBuyAmountUsd,
     hasNoLiquidityAtMarketPrice,
     hasInsufficientLiquidity,
+    isQuoteReady,
   } = executionStore(state => state);
 
   const minBuyAmountUsd = executionMinBuyAmountUsd === '0' ? '1' : executionMinBuyAmountUsd;
@@ -59,11 +62,14 @@ export function useNewPositionForm({ tokenId, conditionId }: UseNewPositionFormP
     outcomeOdds,
     bestPrice,
     fee,
+    orderSpendCap,
+    rainbowFee,
     setBuyAmount,
     buyAmount,
     validation,
     isValidOrderAmount: isValid,
     hasNoLiquidityAtMarketPrice,
     hasInsufficientLiquidity,
+    isQuoteReady,
   };
 }
