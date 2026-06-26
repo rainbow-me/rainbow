@@ -1412,47 +1412,6 @@
       "collect_now": "지금 수집",
       "will_appear_here": "여기에 수집품이 나타납니다"
     },
-    "nft_offers": {
-      "card": {
-        "title": {
-          "singular": "1 제안",
-          "plural": "%{numOffers} 제안"
-        },
-        "button": "모든 제안보기",
-        "expired": "만료됨"
-      },
-      "sheet": {
-        "title": "제안",
-        "total": "총액",
-        "above_floor": "꼭대기 위",
-        "below_floor": "꼭대기 아래",
-        "no_offers_found": "제안을 찾을 수 없습니다"
-      },
-      "sort_menu": {
-        "highest": "가장 높은",
-        "from_floor": "바닥부터",
-        "recent": "최근"
-      },
-      "single_offer_sheet": {
-        "title": "제안",
-        "expires_in": "%{timeLeft}에 만료됩니다",
-        "floor_price": "최저 가격",
-        "marketplace": "마켓플레이스",
-        "marketplace_fees": "%{marketplace} 수수료",
-        "creator_royalties": "창작자 로열티",
-        "receive": "받기",
-        "proceeds": "수익금",
-        "view_offer": "제안 보기",
-        "offer_expired": "제안 만료됨",
-        "expired": "만료됨",
-        "hold_to_sell": "판매하기 위해 보류",
-        "selling": "판매",
-        "error": {
-          "title": "NFT 판매 중 오류",
-          "message": "도움이 필요하면 Rainbow 지원팀에 문의하십시오."
-        }
-      }
-    },
     "perps": {
       "activity": {
         "title": "활동",
