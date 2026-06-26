@@ -73,8 +73,6 @@ import LearnWebViewScreen from '@/screens/LearnWebViewScreen';
 import MintSheet from '@/screens/mints/MintSheet';
 import PoapSheet from '@/screens/mints/PoapSheet';
 import { MintsSheet } from '@/screens/MintsSheet/MintsSheet';
-import { NFTOffersSheet } from '@/screens/NFTOffersSheet';
-import { NFTSingleOfferSheet } from '@/screens/NFTSingleOfferSheet';
 import { Portal } from '@/screens/Portal';
 import QRScannerScreen from '@/screens/QRScannerScreen';
 import { RewardsSheet } from '@/screens/rewards/RewardsSheet';
@@ -118,7 +116,6 @@ import {
   expandedPresetWithSmallGestureResponseDistance,
   fiatOnRampSheet,
   hardwareWalletTxNavigatorPreset,
-  nftSingleOfferSheetPreset,
   sheetPreset,
   speedUpAndCancelStyleInterpolator,
   swapSheetPreset,
@@ -275,8 +272,6 @@ function BSNavigator() {
         options={{ ...bottomSheetPreset, scrollEnabled: false }}
       />
       <BSStack.Screen name={Routes.OP_REWARDS_SHEET} component={RewardsSheet} options={{ ...bottomSheetPreset }} />
-      <BSStack.Screen name={Routes.NFT_OFFERS_SHEET} component={NFTOffersSheet} options={{ ...bottomSheetPreset }} />
-      <BSStack.Screen name={Routes.NFT_SINGLE_OFFER_SHEET} component={NFTSingleOfferSheet} options={nftSingleOfferSheetPreset} />
       <BSStack.Screen name={Routes.MINTS_SHEET} component={MintsSheet} />
       <BSStack.Screen component={SignTransactionSheet} name={Routes.CONFIRM_REQUEST} options={walletconnectBottomSheetPreset} />
       <BSStack.Screen component={AppIconUnlockSheet} name={Routes.APP_ICON_UNLOCK_SHEET} options={appIconUnlockSheetPreset} />

@@ -73,8 +73,6 @@ import LearnWebViewScreen from '@/screens/LearnWebViewScreen';
 import MintSheet from '@/screens/mints/MintSheet';
 import PoapSheet from '@/screens/mints/PoapSheet';
 import { MintsSheet } from '@/screens/MintsSheet/MintsSheet';
-import { NFTOffersSheet } from '@/screens/NFTOffersSheet';
-import { NFTSingleOfferSheet } from '@/screens/NFTSingleOfferSheet';
 import { Portal } from '@/screens/Portal';
 import QRScannerScreen from '@/screens/QRScannerScreen';
 import { RewardsSheet } from '@/screens/rewards/RewardsSheet';
@@ -120,8 +118,6 @@ import {
   learnSheetConfig,
   learnWebViewScreenConfig,
   mintsSheetConfig,
-  nftOffersSheetConfig,
-  nftSingleOfferSheetConfig,
   notificationPermissionSheetConfig,
   opRewardsSheetConfig,
   pairHardwareWalletNavigatorConfig,
@@ -299,8 +295,6 @@ function NativeStackNavigator() {
       <NativeStack.Screen component={WalletConnectRedirectSheet} name={Routes.WALLET_CONNECT_REDIRECT_SHEET} {...basicSheetConfig} />
       <NativeStack.Screen name={Routes.TRANSACTION_DETAILS} component={TransactionDetails} {...transactionDetailsConfig} />
       <NativeStack.Screen name={Routes.OP_REWARDS_SHEET} component={RewardsSheet} {...opRewardsSheetConfig} />
-      <NativeStack.Screen name={Routes.NFT_OFFERS_SHEET} component={NFTOffersSheet} {...nftOffersSheetConfig} />
-      <NativeStack.Screen name={Routes.NFT_SINGLE_OFFER_SHEET} component={NFTSingleOfferSheet} {...nftSingleOfferSheetConfig} />
       <NativeStack.Screen name={Routes.MINTS_SHEET} component={MintsSheet} {...mintsSheetConfig} />
       <NativeStack.Screen component={AppIconUnlockSheet} name={Routes.APP_ICON_UNLOCK_SHEET} {...appIconUnlockSheetConfig} />
       <NativeStack.Screen component={NetworkSelector} name={Routes.NETWORK_SELECTOR} {...panelConfig} />

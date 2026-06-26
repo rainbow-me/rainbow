@@ -439,11 +439,6 @@ export const addWalletNavigatorPreset = ({ route }: any) => ({
   height: route.params?.sheetHeight,
 });
 
-export const nftSingleOfferSheetPreset = ({ route }: any) => ({
-  ...bottomSheetPreset,
-  height: (route?.params.longFormHeight || 0) + (initialWindowMetrics?.insets?.bottom || 0),
-});
-
 export const appIconUnlockSheetPreset = ({ route }: any) => ({
   ...bottomSheetPreset,
   height: (route?.params.longFormHeight || 0) + (initialWindowMetrics?.insets?.bottom || 0),

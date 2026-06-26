@@ -31,7 +31,7 @@ import { type PolymarketEvent, type PolymarketMarket, type PolymarketMarketEvent
 import { type RainbowPosition } from '@/features/positions/types';
 import { type Checkbox } from '@/features/transfer/screens/SendConfirmationSheet';
 import { type WalletconnectApprovalSheetRouteParams, type WalletconnectResultType } from '@/features/wallet-connect/types';
-import { type NftOffer, type PoapEvent, type ReservoirCollection } from '@/graphql/__generated__/arc';
+import { type PoapEvent, type ReservoirCollection } from '@/graphql/__generated__/arc';
 import { type TokenColors } from '@/graphql/__generated__/metadata';
 import type walletBackupStepTypes from '@/helpers/walletBackupStepTypes';
 import type WalletBackupTypes from '@/helpers/walletBackupTypes';
@@ -592,11 +592,6 @@ type RouteParams = {
     displayType: CardType;
     routeName: string;
     key: LearnCardKey;
-  };
-
-  [Routes.NFT_SINGLE_OFFER_SHEET]: {
-    offer: NftOffer;
-    longFormHeight?: number;
   };
 
   [Routes.VIEW_CLOUD_BACKUPS]: {

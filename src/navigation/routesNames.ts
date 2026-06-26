@@ -51,8 +51,6 @@ const Routes = {
   MODAL_SCREEN: 'ModalScreen',
   NATIVE_STACK: 'NativeStack',
   NETWORK_SWITCHER: 'NetworkSection',
-  NFT_OFFERS_SHEET: 'NFTOffersSheet',
-  NFT_SINGLE_OFFER_SHEET: 'NFTSingleOfferSheet',
   NOTIFICATION_PERMISSION_SCREEN: 'NotificationPermissionScreen',
   OP_REWARDS_SHEET: 'OpRewardsSheet',
   PAIR_HARDWARE_WALLET_AGAIN_SHEET: 'PairHardwareWalletAgainSheet',

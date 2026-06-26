@@ -209,31 +209,6 @@ export const opRewardsSheetConfig: PartialNavigatorConfigOptions = {
   },
 };
 
-export const nftOffersSheetConfig = {
-  options: ({ route: { params = {} } }) => ({
-    ...buildCoolModalConfig({
-      ...params,
-      backgroundOpacity: 1,
-      scrollEnabled: true,
-    }),
-  }),
-};
-
-export const nftSingleOfferSheetConfig = {
-  options: ({
-    route: {
-      params: { longFormHeight, ...params },
-    },
-  }: {
-    route: { params: any };
-  }) => ({
-    ...buildCoolModalConfig({
-      ...params,
-      longFormHeight: longFormHeight || -1 * safeAreaInsetValues.bottom,
-    }),
-  }),
-};
-
 export const appIconUnlockSheetConfig = {
   options: ({
     route: {
