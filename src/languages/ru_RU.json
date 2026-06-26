@@ -1284,38 +1284,6 @@
       "importing_wallet": "Импортировать...",
       "restoring": "Восстановление..."
     },
-    "mints": {
-      "mints_sheet": {
-        "mints": "Монеты",
-        "no_data_found": "Данные не найдены.",
-        "card": {
-          "x_ago": "%{timeElapsed} назад",
-          "one_mint_past_hour": "1 монета в прошедший час",
-          "x_mints_past_hour": "%{numMints} монет в прошедший час",
-          "x_mints": "%{numMints} монет",
-          "mint": "Монета",
-          "free": "БЕСПЛАТНО"
-        }
-      },
-      "mints_card": {
-        "view_all_mints": "Посмотреть все монеты",
-        "mints": "Монеты",
-        "collection_cell": {
-          "free": "БЕСПЛАТНО"
-        }
-      },
-      "featured_mint_card": {
-        "featured_mint": "Избранная Монета",
-        "one_mint": "1 монета",
-        "x_mints": "%{numMints} монет",
-        "x_past_hour": "%{numMints} в прошедший час"
-      },
-      "filter": {
-        "all": "Все",
-        "free": "Бесплатно",
-        "paid": "Платно"
-      }
-    },
     "modal": {
       "back_up": {
         "alerts": {
@@ -1372,27 +1340,6 @@
       "tx_verify": "Проверьте вашу транзакцию здесь",
       "withdrawal_dropdown_label": "Для",
       "withdrawal_input_label": "Получить"
-    },
-    "minting": {
-      "hold_to_mint": "Удерживайте для создания",
-      "minting": "Запуск...",
-      "minted": "Монетизированные",
-      "mint_on_mintdotfun": "􀮶",
-      "error_minting": "Ошибка при запуске",
-      "mint_price": "Стоимость создания",
-      "free": "Бесплатно",
-      "by": "От",
-      "unknown": "неизвестный",
-      "max": "Макс.",
-      "nft_count": "%{number} NFT",
-      "description": "Описание",
-      "total_minted": "Всего создано",
-      "first_event": "Первое событие",
-      "contract": "Контракт",
-      "network": "Сеть",
-      "could_not_find_collection": "Не удалось найти коллекцию",
-      "unable_to_find_check_again": "Мы не можем найти эту коллекцию, дважды проверьте адрес и сеть или попробуйте позже",
-      "mintdotfun_unsupported_network": "Mint.fun не поддерживает эту сеть"
     },
     "nfts": {
       "selling": "Продажа",
