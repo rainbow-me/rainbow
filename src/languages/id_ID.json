@@ -1412,47 +1412,6 @@
       "collect_now": "Koleksi Sekarang",
       "will_appear_here": "Koleksi Anda Akan Muncul di Sini"
     },
-    "nft_offers": {
-      "card": {
-        "title": {
-          "singular": "1 Penawaran",
-          "plural": "%{numOffers} Penawaran"
-        },
-        "button": "Lihat Semua Penawaran",
-        "expired": "Kadaluarsa"
-      },
-      "sheet": {
-        "title": "Penawaran",
-        "total": "Total",
-        "above_floor": "di atas lantai",
-        "below_floor": "di bawah lantai",
-        "no_offers_found": "Tidak ada penawaran yang ditemukan"
-      },
-      "sort_menu": {
-        "highest": "Tertinggi",
-        "from_floor": "Dari Lantai",
-        "recent": "Baru-baru ini"
-      },
-      "single_offer_sheet": {
-        "title": "Penawaran",
-        "expires_in": "Kadaluarsa dalam %{timeLeft}",
-        "floor_price": "Harga Dasar",
-        "marketplace": "Pasar",
-        "marketplace_fees": "%{marketplace} Biaya",
-        "creator_royalties": "Royalti Pencipta",
-        "receive": "Terima",
-        "proceeds": "Hasil",
-        "view_offer": "Lihat Penawaran",
-        "offer_expired": "Penawaran Kedaluwarsa",
-        "expired": "Kadaluarsa",
-        "hold_to_sell": "Tahan untuk Menjual",
-        "selling": "Menjual",
-        "error": {
-          "title": "Kesalahan menjual NFT",
-          "message": "Silakan hubungi dukungan Rainbow untuk bantuan."
-        }
-      }
-    },
     "perps": {
       "activity": {
         "title": "Aktivitas",
