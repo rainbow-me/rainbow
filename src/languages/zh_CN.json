@@ -818,11 +818,6 @@
         "total_value": "总价值",
         "underlying_tokens": "基础代币"
       },
-      "nft_brief_token_info": {
-        "for_sale": "出售",
-        "floor_price": "底价",
-        "last_sale": "最后售价"
-      },
       "swap": {
         "swap": "交换",
         "bridge": "桥接",
@@ -903,7 +898,6 @@
         "edit": "编辑",
         "expires_in": "过期时间",
         "expires_on": "过期日期",
-        "floor_price": "底价",
         "for_sale": "出售",
         "in_showcase": "在展示中",
         "last_sale_price": "最后售价",
@@ -1023,10 +1017,6 @@
       "failed_wc_invalid_chain": {
         "text": "该请求中指定的网络不受Rainbow支持。",
         "title": "处理失败"
-      },
-      "floor_price": {
-        "text": "一个集合的底价是该集合中目前所有待售商品中的最低要价。",
-        "title": "收藏品底价"
       },
       "gas": {
         "text": "这是 %{networkName} 区块链用来安全验证你的交易的\"燃气费\"。\n\n这个费用视你的交易复杂度和网络繁忙程度而定！",
