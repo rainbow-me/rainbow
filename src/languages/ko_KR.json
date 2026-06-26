@@ -818,11 +818,6 @@
         "total_value": "총 가치",
         "underlying_tokens": "기본 토큰"
       },
-      "nft_brief_token_info": {
-        "for_sale": "판매용",
-        "floor_price": "최저 가격",
-        "last_sale": "마지막 판매 가격"
-      },
       "swap": {
         "swap": "교환",
         "bridge": "브릿지",
@@ -903,7 +898,6 @@
         "edit": "편집",
         "expires_in": "만료 시간",
         "expires_on": "만료일",
-        "floor_price": "최저 가격",
         "for_sale": "판매용",
         "in_showcase": "쇼케이스 안",
         "last_sale_price": "마지막 판매 가격",
@@ -1023,10 +1017,6 @@
       "failed_wc_invalid_chain": {
         "text": "이 요청에서 지정한 네트워크는 Rainbow에서 지원하지 않습니다.",
         "title": "처리 실패"
-      },
-      "floor_price": {
-        "text": "컬렉션의 최저가격은 현재 판매 중인 컬렉션의 모든 상품에서 가장 낮은 판매 요청 가격입니다.",
-        "title": "컬렉션의 최저가"
       },
       "gas": {
         "text": "이것은 %{networkName} 블록체인이 귀하의 거래를 안전하게 확인하는데 사용하는 \"가스 비용\"입니다.\n\n이 비용은 거래의 복잡성과 네트워크가 얼마나 바쁜지에 따라 달라집니다!",
