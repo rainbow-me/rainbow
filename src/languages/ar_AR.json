@@ -1412,47 +1412,6 @@
       "collect_now": "اجمع الآن",
       "will_appear_here": "سوف تظهر مقتنياتك هنا"
     },
-    "nft_offers": {
-      "card": {
-        "title": {
-          "singular": "1 عرض",
-          "plural": "%{numOffers} عروض"
-        },
-        "button": "عرض جميع العروض",
-        "expired": "منتهي"
-      },
-      "sheet": {
-        "title": "عروض",
-        "total": "المجموع",
-        "above_floor": "أعلى من الأرض",
-        "below_floor": "أقل من الأرض",
-        "no_offers_found": "لم يتم العثور على عروض"
-      },
-      "sort_menu": {
-        "highest": "الأعلى",
-        "from_floor": "من الأرض",
-        "recent": "الأخير"
-      },
-      "single_offer_sheet": {
-        "title": "عرض",
-        "expires_in": "تنتهي في %{timeLeft}",
-        "floor_price": "سعر الأرضية",
-        "marketplace": "السوق",
-        "marketplace_fees": "%{marketplace} الرسوم",
-        "creator_royalties": "الرويالتي للمُنشئ",
-        "receive": "استلم",
-        "proceeds": "الإيرادات",
-        "view_offer": "عرض العرض",
-        "offer_expired": "انتهت صلاحية العرض",
-        "expired": "منتهي",
-        "hold_to_sell": "احتفظ للبيع",
-        "selling": "بيع",
-        "error": {
-          "title": "خطأ في بيع NFT",
-          "message": "يرجى الاتصال بدعم Rainbow للحصول على المساعدة."
-        }
-      }
-    },
     "perps": {
       "activity": {
         "title": "النشاط",
