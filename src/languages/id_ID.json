@@ -1284,38 +1284,6 @@
       "importing_wallet": "Impor...",
       "restoring": "Memulihkan..."
     },
-    "mints": {
-      "mints_sheet": {
-        "mints": "Permen",
-        "no_data_found": "Tidak ada data yang ditemukan.",
-        "card": {
-          "x_ago": "%{timeElapsed} lalu",
-          "one_mint_past_hour": "1 permen berlalu jam",
-          "x_mints_past_hour": "%{numMints} permen berlalu jam",
-          "x_mints": "%{numMints} permen",
-          "mint": "Permen",
-          "free": "GRATIS"
-        }
-      },
-      "mints_card": {
-        "view_all_mints": "Lihat Semua Permen",
-        "mints": "Permen",
-        "collection_cell": {
-          "free": "GRATIS"
-        }
-      },
-      "featured_mint_card": {
-        "featured_mint": "Permen Unggulan",
-        "one_mint": "1 permen",
-        "x_mints": "%{numMints} permen",
-        "x_past_hour": "%{numMints} berlalu jam"
-      },
-      "filter": {
-        "all": "Semua",
-        "free": "Gratis",
-        "paid": "Berbayar"
-      }
-    },
     "modal": {
       "back_up": {
         "alerts": {
@@ -1372,27 +1340,6 @@
       "tx_verify": "Verifikasi transaksi Anda di sini",
       "withdrawal_dropdown_label": "Untuk",
       "withdrawal_input_label": "Dapatkan"
-    },
-    "minting": {
-      "hold_to_mint": "Tahan Menghasilkan",
-      "minting": "Minting...",
-      "minted": "Dicetak",
-      "mint_on_mintdotfun": "􀮶 Pemintahan di mint.fun",
-      "error_minting": "Kesalahan Mencetak",
-      "mint_price": "Harga Pemintahan",
-      "free": "Gratis",
-      "by": "Oleh",
-      "unknown": "tidak diketahui",
-      "max": "Maks",
-      "nft_count": "%{number} NFT",
-      "description": "Deskripsi",
-      "total_minted": "Total Terpintakan",
-      "first_event": "Acara Pertama",
-      "contract": "Kontrak",
-      "network": "Jaringan",
-      "could_not_find_collection": "Tidak dapat menemukan koleksi",
-      "unable_to_find_check_again": "Kami tidak dapat menemukan koleksi ini, periksa kembali alamat dan jaringan atau coba lagi nanti",
-      "mintdotfun_unsupported_network": "Mint.fun tidak mendukung jaringan ini"
     },
     "nfts": {
       "selling": "Menjual",
