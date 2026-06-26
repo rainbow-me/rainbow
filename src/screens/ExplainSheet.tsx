@@ -134,7 +134,6 @@ export function getExplainSheetConfig(params: ExplainSheetRouteParams, theme?: T
   const chainsLabel = useBackendNetworksStore.getState().getChainsLabel();
 
   const SENDING_FUNDS_TO_CONTRACT = i18n.t(i18n.l.explain.sending_to_contract.text);
-  const FLOOR_PRICE_EXPLAINER = i18n.t(i18n.l.explain.floor_price.text);
   const CURRENT_BASE_FEE_TITLE = i18n.t(i18n.l.explain.base_fee.title);
   const BASE_CURRENT_BASE_FEE_EXPLAINER = i18n.t(i18n.l.explain.base_fee.text_prefix);
   const CURRENT_BASE_FEE_EXPLAINER_STABLE = i18n.t(i18n.l.explain.base_fee.text_stable);
@@ -270,13 +269,6 @@ export function getExplainSheetConfig(params: ExplainSheetRouteParams, theme?: T
         logo: params.fromChainId ? <ChainImage chainId={params.fromChainId} size={40} position="relative" /> : undefined,
       };
     }
-    case 'floor_price':
-      return {
-        emoji: '📊',
-        extraHeight: -102,
-        text: FLOOR_PRICE_EXPLAINER,
-        title: i18n.t(i18n.l.explain.floor_price.title),
-      };
     case 'gas': {
       const networkName = chainsLabel[params.chainId];
       return {

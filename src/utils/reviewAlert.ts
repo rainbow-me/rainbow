@@ -18,7 +18,6 @@ export const numberOfTimesBeforePrompt: {
   AddingContact: 1,
   EnsNameSearch: 1,
   EnsNameRegistration: 1,
-  NftFloorPriceVisit: 1,
 };
 
 function getReviewActions() {

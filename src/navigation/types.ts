@@ -64,7 +64,6 @@ export type ExplainSheetType =
   | 'op_rewards_swap'
   | 'op_rewards_position'
   | 'output_disabled'
-  | 'floor_price'
   | 'gas'
   | 'ens_primary_name'
   | 'ens_manager'
@@ -166,7 +165,6 @@ export interface ExplainSheetParameterMap extends CurrentBaseFeeTypes {
     fromChainId?: ChainId;
     toChainId?: ChainId;
   };
-  floor_price: Record<string, never>;
   gas: {
     chainId: ChainId;
     nativeAsset?: ExplainSheetNativeAssetInfo;

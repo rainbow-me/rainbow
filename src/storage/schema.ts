@@ -48,7 +48,6 @@ export enum ReviewPromptAction {
   AddingContact = 'AddingContact',
   EnsNameSearch = 'EnsNameSearch',
   EnsNameRegistration = 'EnsNameRegistration',
-  NftFloorPriceVisit = 'NftFloorPriceVisit',
   ViewedWalletScreen = 'ViewedWalletScreen',
 }
 

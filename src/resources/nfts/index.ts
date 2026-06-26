@@ -1,11 +1,9 @@
 import { useQuery, type QueryFunction } from '@tanstack/react-query';
 
 import { type UniqueAsset } from '@/entities/uniqueAssets';
-import { type ChainId } from '@/features/network/types/backendNetworks';
 import { time } from '@/framework/core/utils/time';
 import { arcClient } from '@/graphql';
 import { createQueryKey, queryClient, type QueryConfigWithSelect } from '@/react-query';
-import { type SimpleHashListing } from '@/resources/nfts/simplehash/types';
 import { simpleHashNFTToUniqueAsset } from '@/resources/nfts/simplehash/utils';
 
 const NFTS_STALE_TIME = time.minutes(10);
@@ -16,16 +14,6 @@ export const nftsQueryKey = ({ address }: { address: string }) => createQueryKey
 export const invalidateAddressNftsQueries = (address: string) => {
   queryClient.invalidateQueries(nftsQueryKey({ address }));
 };
-
-export const nftListingQueryKey = ({
-  contractAddress,
-  tokenId,
-  chainId,
-}: {
-  contractAddress: string;
-  tokenId: string;
-  chainId: Omit<ChainId, ChainId.goerli>;
-}) => createQueryKey('nftListing', { contractAddress, tokenId, chainId });
 
 export interface NFTData {
   nfts: UniqueAsset[];
@@ -74,25 +62,3 @@ export const useLegacyNFTs = function useLegacyNFTs<TSelected = NFTData>({
     isInitialLoading,
   };
 };
-
-const NULL_LISTING: { data: SimpleHashListing | null; error: null; isInitialLoading: false; isLoading: false } = {
-  data: null,
-  error: null,
-  isInitialLoading: false,
-  isLoading: false,
-};
-
-// Relies on SimpleHash API
-// eslint-disable-next-line @typescript-eslint/no-unused-vars
-export function useNFTListing(_: { contractAddress: string; tokenId: string; chainId: Omit<ChainId, ChainId.goerli> }) {
-  return NULL_LISTING;
-  // return useQuery(
-  //   nftListingQueryKey({ contractAddress, tokenId, chainId }),
-  //   async () => (await fetchSimpleHashNFTListing(contractAddress, tokenId, chainId)) ?? null,
-  //   {
-  //     enabled: !!chainId && !!contractAddress && !!tokenId,
-  //     staleTime: time.seconds(30),
-  //     cacheTime: time.seconds(30),
-  //   }
-  // );
-}

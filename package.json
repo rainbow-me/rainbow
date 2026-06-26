@@ -218,7 +218,6 @@
     "@react-navigation/native": "6.1.17",
     "@react-navigation/stack": "6.3.29",
     "@reown/walletkit": "1.1.2",
-    "@reservoir0x/reservoir-sdk": "2.3.0",
     "@rudderstack/rudder-sdk-react-native": "2.0.0",
     "@sentry/react-native": "7.13.0",
     "@shopify/flash-list": "1.8.3",
