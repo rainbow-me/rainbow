@@ -1284,38 +1284,6 @@
       "importing_wallet": "Importation...",
       "restoring": "Restauration..."
     },
-    "mints": {
-      "mints_sheet": {
-        "mints": "Frappés",
-        "no_data_found": "Aucune donnée trouvée.",
-        "card": {
-          "x_ago": "%{timeElapsed} auparavant",
-          "one_mint_past_hour": "1 frappé passé l'heure",
-          "x_mints_past_hour": "%{numMints} frappés passés l'heure",
-          "x_mints": "%{numMints} frappés",
-          "mint": "Frappé",
-          "free": "GRATUIT"
-        }
-      },
-      "mints_card": {
-        "view_all_mints": "Voir tous les bonbons à la menthe",
-        "mints": "Frappés",
-        "collection_cell": {
-          "free": "GRATUIT"
-        }
-      },
-      "featured_mint_card": {
-        "featured_mint": "Bonbon à la menthe en vedette",
-        "one_mint": "1 bonbon à la menthe",
-        "x_mints": "%{numMints} frappés",
-        "x_past_hour": "%{numMints} dernière heure"
-      },
-      "filter": {
-        "all": "Tous",
-        "free": "Gratuit",
-        "paid": "Payé"
-      }
-    },
     "modal": {
       "back_up": {
         "alerts": {
@@ -1372,27 +1340,6 @@
       "tx_verify": "Vérifiez votre transaction ici",
       "withdrawal_dropdown_label": "Pour",
       "withdrawal_input_label": "Obtenir"
-    },
-    "minting": {
-      "hold_to_mint": "Maintenir pour créer",
-      "minting": "Frappage...",
-      "minted": "Créé",
-      "mint_on_mintdotfun": "􀮶 Créer sur mint.fun",
-      "error_minting": "Erreur lors de la frappe",
-      "mint_price": "Prix de création",
-      "free": "Gratuit",
-      "by": "Par",
-      "unknown": "inconnu",
-      "max": "Max",
-      "nft_count": "%{number} NFTs",
-      "description": "Description",
-      "total_minted": "Total créé",
-      "first_event": "Premier évènement",
-      "contract": "Contrat",
-      "network": "Réseau",
-      "could_not_find_collection": "Impossible de trouver la collection",
-      "unable_to_find_check_again": "Nous ne sommes pas en mesure de trouver cette collection, vérifiez à nouveau l'adresse et le réseau ou essayez plus tard",
-      "mintdotfun_unsupported_network": "Mint.fun ne prend pas en charge ce réseau"
     },
     "nfts": {
       "selling": "Vente",
