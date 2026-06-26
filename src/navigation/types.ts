@@ -1,7 +1,6 @@
 import { type RefObject } from 'react';
 import { type ScrollView } from 'react-native';
 
-import { type BigNumberish } from '@ethersproject/bignumber';
 import { type NavigatorScreenParams } from '@react-navigation/native';
 import { type createStackNavigator } from '@react-navigation/stack';
 import { type SharedValue } from 'react-native-reanimated';
@@ -31,7 +30,7 @@ import { type PolymarketEvent, type PolymarketMarket, type PolymarketMarketEvent
 import { type RainbowPosition } from '@/features/positions/types';
 import { type Checkbox } from '@/features/transfer/screens/SendConfirmationSheet';
 import { type WalletconnectApprovalSheetRouteParams, type WalletconnectResultType } from '@/features/wallet-connect/types';
-import { type PoapEvent, type ReservoirCollection } from '@/graphql/__generated__/arc';
+import { type PoapEvent } from '@/graphql/__generated__/arc';
 import { type TokenColors } from '@/graphql/__generated__/metadata';
 import type walletBackupStepTypes from '@/helpers/walletBackupStepTypes';
 import type WalletBackupTypes from '@/helpers/walletBackupTypes';
@@ -427,10 +426,6 @@ type RouteParams = {
     autoFocusKey?: string;
     externalAvatarUrl?: string | null;
     sheetRef?: RefObject<ScrollView>;
-  };
-  [Routes.MINT_SHEET]: {
-    collection: ReservoirCollection;
-    pricePerMint: BigNumberish | undefined;
   };
   [Routes.SELECT_UNIQUE_TOKEN_SHEET]: {
     onSelect: (asset: UniqueAsset) => void;

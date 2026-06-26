@@ -1,76 +1,17 @@
-import React, { useCallback } from 'react';
-import { StyleSheet } from 'react-native';
-
 import Animated from 'react-native-reanimated';
 
-import { analytics } from '@/analytics';
-import { GestureHandlerButton } from '@/components/buttons/GestureHandlerButton';
-import { Box, Stack, Text, useColorMode } from '@/design-system';
-import { MINTS, NFTS_ENABLED } from '@/features/config/constants/experimental';
+import { Box, Stack, Text } from '@/design-system';
+import { NFTS_ENABLED } from '@/features/config/constants/experimental';
 import { useExperimentalFlag } from '@/features/config/hooks/experimentalHooks';
 import { useRemoteConfig } from '@/features/config/stores/remoteConfig';
-import { convertRawAmountToRoundedDecimal } from '@/helpers/utilities';
 import * as i18n from '@/languages';
-import { useMints } from '@/resources/mints';
-import { navigateToMintCollection } from '@/resources/reservoir/mints';
-import { useAccountAddress } from '@/state/wallets/walletsStore';
-import { LIGHT_SEPARATOR_COLOR, SEPARATOR_COLOR } from '@/styles/constants';
 
 import { TokenFamilyHeaderHeight } from './NFTLoadingSkeleton';
 
-type LaunchFeaturedMintButtonProps = {
-  featuredMint: ReturnType<typeof useMints>['data']['featuredMint'];
-};
-
-const LaunchFeaturedMintButton = React.memo(function LaunchFeaturedMintButton({ featuredMint }: LaunchFeaturedMintButtonProps) {
-  const { isDarkMode } = useColorMode();
-
-  const handlePress = useCallback(() => {
-    if (featuredMint) {
-      analytics.track(analytics.event.mintsPressedFeaturedMintCard, {
-        contractAddress: featuredMint.contractAddress,
-        chainId: featuredMint.chainId,
-        totalMints: featuredMint.totalMints,
-        mintsLastHour: featuredMint.totalMints,
-        priceInEth: convertRawAmountToRoundedDecimal(featuredMint.mintStatus.price, 18, 6),
-      });
-      navigateToMintCollection(featuredMint.contract, featuredMint.mintStatus.price, featuredMint.chainId);
-    }
-  }, [featuredMint]);
-
-  return (
-    <Box style={{ alignItems: 'center', paddingTop: 12 }}>
-      <GestureHandlerButton onPressJS={handlePress} scaleTo={0.9}>
-        <Box as={Animated.View} alignItems="center" justifyContent="center" style={styles.buttonPadding}>
-          <Box
-            alignItems="center"
-            as={Animated.View}
-            borderRadius={15}
-            justifyContent="center"
-            paddingVertical="12px"
-            paddingHorizontal="20px"
-            style={[{ backgroundColor: isDarkMode ? SEPARATOR_COLOR : LIGHT_SEPARATOR_COLOR }]}
-          >
-            <Text size="13pt" color={'label'} style={{ opacity: isDarkMode ? 0.6 : 0.75 }} weight="heavy">
-              {i18n.t(i18n.l.nfts.collect_now)}
-            </Text>
-          </Box>
-        </Box>
-      </GestureHandlerButton>
-    </Box>
-  );
-});
-
 export function NFTEmptyState() {
-  const { mints_enabled, nfts_enabled } = useRemoteConfig();
-  const accountAddress = useAccountAddress();
-
-  const {
-    data: { featuredMint },
-  } = useMints({ walletAddress: accountAddress });
+  const { nfts_enabled } = useRemoteConfig();
 
   const nftsEnabled = useExperimentalFlag(NFTS_ENABLED) || nfts_enabled;
-  const mintsEnabled = useExperimentalFlag(MINTS) || mints_enabled;
 
   if (!nftsEnabled) return null;
 
@@ -93,17 +34,8 @@ export function NFTEmptyState() {
           <Text color="labelQuaternary" size="14px / 19px (Deprecated)" weight="regular" align="center">
             {i18n.t(i18n.l.nfts.will_appear_here)}
           </Text>
-
-          {mintsEnabled && featuredMint && <LaunchFeaturedMintButton featuredMint={featuredMint} />}
         </Stack>
       </Box>
     </Box>
   );
 }
-
-const styles = StyleSheet.create({
-  buttonPadding: {
-    paddingHorizontal: 24,
-    paddingVertical: 12,
-  },
-});

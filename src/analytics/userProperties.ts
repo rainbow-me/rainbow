@@ -70,11 +70,6 @@ export interface UserProperties {
   // total USD value of claimable reward tokens
   positionsRewardsUSDValue?: number;
 
-  // mint.fun
-  numberOfMints?: number;
-  numberOfFreeMints?: number;
-  numberOfPaidMints?: number;
-
   // notifications:
   notificationsPermissionStatus?: PushNotificationPermissionStatus;
   numberOfImportedWalletsWithNotificationsTurnedOn?: number;

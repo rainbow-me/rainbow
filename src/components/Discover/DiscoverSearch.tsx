@@ -11,22 +11,18 @@ import { useDiscoverScreenContext } from '@/components/Discover/DiscoverScreenCo
 import { type EnrichedExchangeAsset } from '@/components/ExchangeAssetList';
 import { IS_TEST } from '@/env';
 import { DISCOVER_HEADER_HEIGHT } from '@/features/discover/components/DiscoverHeader';
-import { useBackendNetworksStore } from '@/features/network/stores/backendNetworksStore';
-import { ChainId, Network } from '@/features/network/types/backendNetworks';
+import { Network } from '@/features/network/types/backendNetworks';
 import { useHardwareBackOnFocus } from '@/framework/ui/hooks/useHardwareBack';
 import useSearchCurrencyList from '@/hooks/useSearchCurrencyList';
 import { useTimeoutEffect } from '@/hooks/useTimeout';
 import Navigation from '@/navigation/Navigation';
 import Routes from '@/navigation/routesNames';
 import { TAB_BAR_HEIGHT } from '@/navigation/SwipeNavigator';
-import { navigateToMintCollection } from '@/resources/reservoir/mints';
-import { useAccountAddress } from '@/state/wallets/walletsStore';
 import deviceUtils from '@/utils/deviceUtils';
 import ethereumUtils from '@/utils/ethereumUtils';
 import { getPoapAndOpenSheetWithQRHash, getPoapAndOpenSheetWithSecretWord } from '@/utils/poaps';
 
 export default function DiscoverSearch() {
-  const accountAddress = useAccountAddress();
   const safeAreaInsets = useSafeAreaInsets();
 
   const { cancelSearch, sectionListRef } = useDiscoverScreenContext();
@@ -77,39 +73,6 @@ export default function DiscoverSearch() {
     };
     checkAndHandlePoaps(searchQueryForPoap);
   }, [searchQueryForPoap]);
-
-  useEffect(() => {
-    // probably dont need this entry point but seems worth keeping?
-    // could do the same with zora, etc
-    const checkAndHandleMint = async (seachQueryForMint: string) => {
-      if (seachQueryForMint.includes('mint.fun')) {
-        const mintdotfunURL = seachQueryForMint.split('https://mint.fun/');
-        const query = mintdotfunURL[1];
-        const [networkName] = query.split('/');
-        let chainId = useBackendNetworksStore.getState().getChainsIdByName()[networkName];
-        if (!chainId) {
-          switch (networkName) {
-            case 'op':
-              chainId = ChainId.optimism;
-              break;
-            case 'ethereum':
-              chainId = ChainId.mainnet;
-              break;
-            case 'zora':
-              chainId = ChainId.zora;
-              break;
-            case 'base':
-              chainId = ChainId.base;
-              break;
-          }
-        }
-        const contractAddress = query.split('/')[1];
-        navigateToMintCollection(contractAddress, undefined, chainId);
-        useDiscoverSearchQueryStore.setState({ searchQuery: '' });
-      }
-    };
-    checkAndHandleMint(searchQuery);
-  }, [accountAddress, searchQuery]);
 
   const handlePress = useCallback((item: EnrichedExchangeAsset) => {
     const accountAsset = ethereumUtils.getAccountAsset(item.uniqueId);
