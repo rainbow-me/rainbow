@@ -1284,38 +1284,6 @@
       "importing_wallet": "आयात कर रहे हैं...",
       "restoring": "पुनर्स्थापित कर रहा है..."
     },
-    "mints": {
-      "mints_sheet": {
-        "mints": "मिंट्स",
-        "no_data_found": "कोई डेटा नहीं मिला।",
-        "card": {
-          "x_ago": "%{timeElapsed} पहले",
-          "one_mint_past_hour": "1 मिंट पिछले घंटे",
-          "x_mints_past_hour": "%{numMints} मिंट्स पिछले घंटे",
-          "x_mints": "%{numMints} मिंट्स",
-          "mint": "मिंट",
-          "free": "मुफ्त"
-        }
-      },
-      "mints_card": {
-        "view_all_mints": "सभी मिंट्स देखें",
-        "mints": "मिंट्स",
-        "collection_cell": {
-          "free": "मुफ्त"
-        }
-      },
-      "featured_mint_card": {
-        "featured_mint": "विशेष रुप से प्रदर्शित मिंट",
-        "one_mint": "1 मिंट",
-        "x_mints": "%{numMints} मिंट्स",
-        "x_past_hour": "%{numMints} पिछले घंटे"
-      },
-      "filter": {
-        "all": "सभी",
-        "free": "मुफ्त",
-        "paid": "भुगतान किया"
-      }
-    },
     "modal": {
       "back_up": {
         "alerts": {
@@ -1372,27 +1340,6 @@
       "tx_verify": "यहाँ अपने लेन-देन की पुष्टि करें",
       "withdrawal_dropdown_label": "के लिए",
       "withdrawal_input_label": "प्राप्त करें"
-    },
-    "minting": {
-      "hold_to_mint": "मिन्ट करने के लिए रखें",
-      "minting": "मिंटिंग...",
-      "minted": "मिंट किया",
-      "mint_on_mintdotfun": "मिंटडॉटफन पर मिंट करें",
-      "error_minting": "मिंटिंग त्रुटि",
-      "mint_price": "मिंट कीमत",
-      "free": "मुफ्त",
-      "by": "द्वारा",
-      "unknown": "अज्ञात",
-      "max": "अधिकतम",
-      "nft_count": "%{number} NFTs",
-      "description": "विवरण",
-      "total_minted": "कुल मिंट हुए",
-      "first_event": "पहली घटना",
-      "contract": "संविदा",
-      "network": "नेटवर्क",
-      "could_not_find_collection": "कलेक्शन नहीं मिला",
-      "unable_to_find_check_again": "हम इस कलेक्शन को नहीं ढूंढ पा रहे हैं, पता और नेटवर्क की जाँच करें या बाद में पुनः प्रयास करें",
-      "mintdotfun_unsupported_network": "मिंटडॉटफन इस नेटवर्क का समर्थन नहीं करता"
     },
     "nfts": {
       "selling": "बिक्री",
