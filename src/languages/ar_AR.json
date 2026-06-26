@@ -1284,38 +1284,6 @@
       "importing_wallet": "جارِ الاستيراد...",
       "restoring": "استعادة..."
     },
-    "mints": {
-      "mints_sheet": {
-        "mints": "النعناع",
-        "no_data_found": "لم يتم العثور على بيانات.",
-        "card": {
-          "x_ago": "منذ %{timeElapsed}",
-          "one_mint_past_hour": "1 نعناع في الساعة الماضية",
-          "x_mints_past_hour": "%{numMints} نعناع في الساعة الماضية",
-          "x_mints": "%{numMints} نعناع",
-          "mint": "نعناع",
-          "free": "مجانا"
-        }
-      },
-      "mints_card": {
-        "view_all_mints": "عرض جميع الطبعات",
-        "mints": "النعناع",
-        "collection_cell": {
-          "free": "مجانا"
-        }
-      },
-      "featured_mint_card": {
-        "featured_mint": "الطبعة المميزة",
-        "one_mint": "1 نعناع",
-        "x_mints": "%{numMints} نعناع",
-        "x_past_hour": "%{numMints} في الساعة الماضية"
-      },
-      "filter": {
-        "all": "الكل",
-        "free": "مجانا",
-        "paid": "مدفوع"
-      }
-    },
     "modal": {
       "back_up": {
         "alerts": {
@@ -1372,27 +1340,6 @@
       "tx_verify": "تحقق من معاملتك هنا",
       "withdrawal_dropdown_label": "لِ",
       "withdrawal_input_label": "احصل"
-    },
-    "minting": {
-      "hold_to_mint": "احتجاز للصك",
-      "minting": "ضرب...",
-      "minted": "تم الإصدار",
-      "mint_on_mintdotfun": "􀮶 صك في mint.fun",
-      "error_minting": "خطأ في الضرب",
-      "mint_price": "سعر الصك",
-      "free": "مجانا",
-      "by": "بواسطة",
-      "unknown": "غير معروف",
-      "max": "الحد الأقصى",
-      "nft_count": "%{number} NFTs",
-      "description": "الوصف",
-      "total_minted": "المجموع الصادر",
-      "first_event": "أول حدث",
-      "contract": "عقد",
-      "network": "الشبكة",
-      "could_not_find_collection": "لم يتم العثور على المجموعة",
-      "unable_to_find_check_again": "نحن غير قادرون على العثور على هذه المجموعة ، قم بالتحقق من العنوان والشبكة أو حاول مرة أخرى لاحقًا",
-      "mintdotfun_unsupported_network": "Mint.fun لا يدعم هذه الشبكة"
     },
     "nfts": {
       "selling": "بيع",
