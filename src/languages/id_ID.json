@@ -818,11 +818,6 @@
         "total_value": "Total nilai",
         "underlying_tokens": "Token yang mendasari"
       },
-      "nft_brief_token_info": {
-        "for_sale": "Dijual",
-        "floor_price": "Harga dasar",
-        "last_sale": "Harga jual terakhir"
-      },
       "swap": {
         "swap": "Tukar",
         "bridge": "Jembatan",
@@ -903,7 +898,6 @@
         "edit": "Edit",
         "expires_in": "Kadaluarsa dalam",
         "expires_on": "Kadaluarsa pada",
-        "floor_price": "Harga dasar",
         "for_sale": "Dijual",
         "in_showcase": "Dalam Showcase",
         "last_sale_price": "Harga jual terakhir",
@@ -1023,10 +1017,6 @@
       "failed_wc_invalid_chain": {
         "text": "Jaringan yang ditentukan dalam permintaan ini tidak didukung oleh Rainbow.",
         "title": "Penanganan gagal"
-      },
-      "floor_price": {
-        "text": "Harga lantai koleksi adalah harga permintaan terendah di antara semua item yang saat ini dijual dalam suatu koleksi.",
-        "title": "Harga lantai koleksi"
       },
       "gas": {
         "text": "Ini adalah \"biaya gas\" yang digunakan oleh blockchain %{networkName} untuk memvalidasi transaksi Anda dengan aman.\n\nBiaya ini bervariasi tergantung pada kompleksitas transaksi Anda dan seberapa sibuk jaringan tersebut!",
