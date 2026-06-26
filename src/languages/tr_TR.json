@@ -818,11 +818,6 @@
         "total_value": "Toplam değer",
         "underlying_tokens": "Altındaki tokenler"
       },
-      "nft_brief_token_info": {
-        "for_sale": "Satılık",
-        "floor_price": "Taban fiyat",
-        "last_sale": "Son satış fiyatı"
-      },
       "swap": {
         "swap": "Değiştir",
         "bridge": "Köprü",
@@ -903,7 +898,6 @@
         "edit": "Düzenle",
         "expires_in": "Süresi doluyor",
         "expires_on": "Süresi dolacak",
-        "floor_price": "Taban fiyat",
         "for_sale": "Satılık",
         "in_showcase": "Vitrinde",
         "last_sale_price": "Son satış fiyatı",
@@ -1023,10 +1017,6 @@
       "failed_wc_invalid_chain": {
         "text": "Bu istekte belirtilen ağ, Rainbow tarafından desteklenmiyor.",
         "title": "İşlem başarısız oldu"
-      },
-      "floor_price": {
-        "text": "Bir koleksiyonun taban fiyatı, bir koleksiyonda şu anda satışta olan tüm ürünler arasındaki en düşük isteme fiyatıdır.",
-        "title": "Koleksiyon taban fiyatı"
       },
       "gas": {
         "text": "Bu, %{networkName} blockchain'in işlemi güvenle doğrulamak için kullandığı \"gaz ücreti\"dir.\n\nBu ücret, işleminizin karmaşıklığına ve ağın ne kadar meşgul olduğuna bağlı olarak değişir!",
