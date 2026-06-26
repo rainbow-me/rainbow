@@ -38,6 +38,7 @@ export function useNewPositionForm({ tokenId, conditionId }: UseNewPositionFormP
     minBuyAmountUsd: executionMinBuyAmountUsd,
     hasNoLiquidityAtMarketPrice,
     hasInsufficientLiquidity,
+    isQuoteReady,
   } = executionStore(state => state);
 
   const minBuyAmountUsd = executionMinBuyAmountUsd === '0' ? '1' : executionMinBuyAmountUsd;
@@ -69,5 +70,6 @@ export function useNewPositionForm({ tokenId, conditionId }: UseNewPositionFormP
     isValidOrderAmount: isValid,
     hasNoLiquidityAtMarketPrice,
     hasInsufficientLiquidity,
+    isQuoteReady,
   };
 }

@@ -68,9 +68,11 @@ export const PolymarketNewPositionSheet = memo(function PolymarketNewPositionShe
     averagePrice,
     hasNoLiquidityAtMarketPrice,
     hasInsufficientLiquidity,
+    isQuoteReady,
   } = useNewPositionForm({ tokenId, conditionId: market.conditionId });
 
   const hasBlockedLiquidity = hasNoLiquidityAtMarketPrice || hasInsufficientLiquidity;
+  const canSubmit = isQuoteReady && !hasBlockedLiquidity;
   const noLiquidityTitle = hasNoLiquidityAtMarketPrice
     ? i18n.t(i18n.l.predictions.new_position.no_liquidity_title)
     : i18n.t(i18n.l.predictions.new_position.insufficient_liquidity_title);
@@ -89,7 +91,7 @@ export const PolymarketNewPositionSheet = memo(function PolymarketNewPositionShe
   const formattedSpread = `${trimTrailingZeros(toFixedWorklet(mulWorklet(spread, 100), 1))}¢`;
 
   const handleMarketBuyPosition = useCallback(async () => {
-    if (hasBlockedLiquidity) return;
+    if (!canSubmit) return;
     if (checkIfReadOnlyWallet(usePolymarketClients.getState().address)) return;
     setIsProcessing(true);
     setProcessingLabel(getBuyPositionProcessingLabel('preparing'));
@@ -153,7 +155,7 @@ export const PolymarketNewPositionSheet = memo(function PolymarketNewPositionShe
     tokenId,
     worstPrice,
     fromRoute,
-    hasBlockedLiquidity,
+    canSubmit,
   ]);
 
   const handleDepositFunds = useCallback(() => {
@@ -236,11 +238,11 @@ export const PolymarketNewPositionSheet = memo(function PolymarketNewPositionShe
               showBiometryIcon={false}
               backgroundColor={buttonColor}
               disabledBackgroundColor={opacity(buttonColor, 0.02)}
-              disabled={!isValidOrderAmount || hasBlockedLiquidity}
+              disabled={!isValidOrderAmount || !canSubmit}
               height={48}
               borderColor={{ custom: opacity('#FFFFFF', 0.08) }}
               borderWidth={2}
-              color={hasBlockedLiquidity ? 'labelQuaternary' : 'white'}
+              color={canSubmit ? 'white' : 'labelQuaternary'}
               progressColor="white"
             />
           ) : (

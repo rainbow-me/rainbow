@@ -6,7 +6,6 @@ import {
   calculateFillFeesUsd,
   calculateTakerFeeUsd,
   DEFAULT_MINIMUM_ORDER_SIZE_USD,
-  EMPTY_POLYMARKET_FEE_INFO,
   type PolymarketFeeInfo,
 } from '@/features/polymarket/utils/fees';
 import { calculateOrderBookSpread, getBestOrderBookPrice, simulateMarketFills } from '@/features/polymarket/utils/orderBookFills';
@@ -22,6 +21,7 @@ export type BuyOrderExecution = {
   tokensBought: string;
   hasInsufficientLiquidity: boolean;
   hasNoLiquidityAtMarketPrice: boolean;
+  isQuoteReady: boolean;
   spread: string;
   minBuyAmountUsd: string;
   bestPrice: string;
@@ -41,6 +41,7 @@ const EMPTY_EXECUTION: BuyOrderExecution = {
   tokensBought: '0',
   hasInsufficientLiquidity: false,
   hasNoLiquidityAtMarketPrice: false,
+  isQuoteReady: false,
   spread: '0',
   minBuyAmountUsd: '0',
   bestPrice: '0',
@@ -55,22 +56,21 @@ export function calculateBuyOrderExecution({
   orderBook: OrderBook | null;
   buyAmountUsd: string;
 }): BuyOrderExecution {
-  if (!orderBook) return EMPTY_EXECUTION;
+  if (!orderBook || !feeInfo) return EMPTY_EXECUTION;
 
-  const effectiveFeeInfo = feeInfo ?? EMPTY_POLYMARKET_FEE_INFO;
   const hasAskLiquidity = orderBook.asks.length > 0;
   const bestAskPrice = getBestOrderBookPrice(orderBook.asks);
 
   const execution = resolveBuyExecution({
     asks: orderBook.asks,
     buyAmountUsd: Number(buyAmountUsd),
-    feeInfo: effectiveFeeInfo,
+    feeInfo,
   });
 
   const minimumBuySpendUsd = hasAskLiquidity
     ? calculateMinimumBuySpendUsd({
         bestAskPrice: Number(bestAskPrice),
-        feeInfo: effectiveFeeInfo,
+        feeInfo,
       })
     : DEFAULT_MINIMUM_ORDER_SIZE_USD;
 
@@ -84,6 +84,7 @@ export function calculateBuyOrderExecution({
     tokensBought: String(execution.tokensBought),
     hasInsufficientLiquidity: execution.hasInsufficientLiquidity,
     hasNoLiquidityAtMarketPrice: !hasAskLiquidity,
+    isQuoteReady: true,
     spread: calculateOrderBookSpread({ asks: orderBook.asks, bids: orderBook.bids }),
     minBuyAmountUsd: roundUsdUpToCents(minimumBuySpendUsd),
   };

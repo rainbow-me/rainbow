@@ -77,8 +77,10 @@ export const PolymarketSellPositionSheet = memo(function PolymarketSellPositionS
     spread,
     hasNoLiquidityAtMarketPrice,
     hasInsufficientLiquidity,
+    isQuoteReady,
   } = executionStore(state => state);
   const hasBlockedLiquidity = hasNoLiquidityAtMarketPrice || hasInsufficientLiquidity;
+  const canSubmit = isQuoteReady && !hasBlockedLiquidity;
   const noLiquidityTitle = hasNoLiquidityAtMarketPrice
     ? i18n.t(i18n.l.predictions.cash_out.no_liquidity_title)
     : i18n.t(i18n.l.predictions.cash_out.insufficient_liquidity_title);
@@ -97,7 +99,7 @@ export const PolymarketSellPositionSheet = memo(function PolymarketSellPositionS
 
   const handleCashOutPosition = useCallback(async () => {
     try {
-      if (hasBlockedLiquidity) return;
+      if (!canSubmit) return;
       if (checkIfReadOnlyWallet(usePolymarketClients.getState().address)) return;
       setIsProcessing(true);
       setProcessingLabel(i18n.t(i18n.l.predictions.manage_position.confirming_order));
@@ -135,7 +137,7 @@ export const PolymarketSellPositionSheet = memo(function PolymarketSellPositionS
     } finally {
       setIsProcessing(false);
     }
-  }, [bestPrice, fee, hasBlockedLiquidity, position, rainbowFee, spread, worstPrice]);
+  }, [bestPrice, canSubmit, fee, position, rainbowFee, spread, worstPrice]);
 
   return (
     <PanelSheet innerBorderWidth={1} panelStyle={{ backgroundColor: isDarkMode ? globalColors.grey100 : POLYMARKET_BACKGROUND_LIGHT }}>
@@ -227,14 +229,14 @@ export const PolymarketSellPositionSheet = memo(function PolymarketSellPositionS
             borderColor={{ custom: opacity('#FFFFFF', 0.08) }}
             borderWidth={2}
             disabledBackgroundColor={opacity(buttonBackgroundColor, 0.02)}
-            disabled={hasBlockedLiquidity}
+            disabled={!canSubmit}
             label={i18n.t(i18n.l.predictions.cash_out.cash_out)}
             processingLabel={processingLabel}
             isProcessing={isProcessing}
             onLongPress={handleCashOutPosition}
             showBiometryIcon={false}
             height={48}
-            color={hasBlockedLiquidity ? 'labelQuaternary' : 'white'}
+            color={canSubmit ? 'white' : 'labelQuaternary'}
             progressColor={'white'}
           />
         </Box>
