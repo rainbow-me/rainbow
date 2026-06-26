@@ -1284,38 +1284,6 @@
       "importing_wallet": "正在导入...",
       "restoring": "恢复中..."
     },
-    "mints": {
-      "mints_sheet": {
-        "mints": "薄荷糖",
-        "no_data_found": "未找到数据。",
-        "card": {
-          "x_ago": "%{timeElapsed} 之前",
-          "one_mint_past_hour": "1 个小时前铸币",
-          "x_mints_past_hour": "%{numMints} 个小时前的薄荷糖",
-          "x_mints": "%{numMints} 薄荷糖",
-          "mint": "铸币",
-          "free": "免费"
-        }
-      },
-      "mints_card": {
-        "view_all_mints": "查看所有铸币",
-        "mints": "薄荷糖",
-        "collection_cell": {
-          "free": "免费"
-        }
-      },
-      "featured_mint_card": {
-        "featured_mint": "特色铸币",
-        "one_mint": "1 薄荷糖",
-        "x_mints": "%{numMints} 薄荷糖",
-        "x_past_hour": "%{numMints} 过去的小时"
-      },
-      "filter": {
-        "all": "全部",
-        "free": "免费",
-        "paid": "付费"
-      }
-    },
     "modal": {
       "back_up": {
         "alerts": {
@@ -1372,27 +1340,6 @@
       "tx_verify": "在这里验证您的交易",
       "withdrawal_dropdown_label": "对于",
       "withdrawal_input_label": "获取"
-    },
-    "minting": {
-      "hold_to_mint": "按住以造币",
-      "minting": "正在建造...",
-      "minted": "已铸造",
-      "mint_on_mintdotfun": "􀮶 在mint.fun上造币",
-      "error_minting": "建造错误",
-      "mint_price": "造币价格",
-      "free": "免费",
-      "by": "由",
-      "unknown": "未知",
-      "max": "最大",
-      "nft_count": "%{number} NFTs",
-      "description": "说明",
-      "total_minted": "总共造币",
-      "first_event": "首次事件",
-      "contract": "合约",
-      "network": "网络",
-      "could_not_find_collection": "找不到收藏品",
-      "unable_to_find_check_again": "我们无法找到这个收藏品，请再次检查地址和网络或稍后重试",
-      "mintdotfun_unsupported_network": "Mint.fun不支持此网络"
     },
     "nfts": {
       "selling": "出售",
