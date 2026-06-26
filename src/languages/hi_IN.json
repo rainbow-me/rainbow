@@ -1412,47 +1412,6 @@
       "collect_now": "अभी इकट्ठा करें",
       "will_appear_here": "आपके संग्रह योग्य सामग्री यहाँ दिखाई देंगे"
     },
-    "nft_offers": {
-      "card": {
-        "title": {
-          "singular": "1 ऑफ़र",
-          "plural": "%{numOffers} ऑफ़र"
-        },
-        "button": "सभी ऑफ़र देखें",
-        "expired": "समाप्त हो चुका"
-      },
-      "sheet": {
-        "title": "प्रस्ताव",
-        "total": "कुल",
-        "above_floor": "मंजिल के ऊपर",
-        "below_floor": "मंजिल के नीचे",
-        "no_offers_found": "कोई प्रस्ताव नहीं मिला"
-      },
-      "sort_menu": {
-        "highest": "उच्चतम",
-        "from_floor": "मंजिल से",
-        "recent": "हाल का"
-      },
-      "single_offer_sheet": {
-        "title": "प्रस्ताव",
-        "expires_in": "में समाप्त होता है %{timeLeft}",
-        "floor_price": "मंजिल मूल्य",
-        "marketplace": "बाज़ार",
-        "marketplace_fees": "%{marketplace} फीस",
-        "creator_royalties": "निर्माता रॉयल्टी",
-        "receive": "प्राप्त करें",
-        "proceeds": "आय",
-        "view_offer": "प्रस्ताव देखें",
-        "offer_expired": "प्रस्ताव समाप्त हो चुका है",
-        "expired": "समाप्त हो चुका",
-        "hold_to_sell": "बेचने के लिए रखें",
-        "selling": "बिक्री",
-        "error": {
-          "title": "NFT बेचने में त्रुटि",
-          "message": "सहायता के लिए कृपया रेनबो सपोर्ट से संपर्क करें।"
-        }
-      }
-    },
     "perps": {
       "activity": {
         "title": "गतिविधि",
