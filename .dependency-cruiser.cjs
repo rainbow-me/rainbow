@@ -57,11 +57,10 @@ module.exports = {
       name: 'no-dep-into-app-source',
       severity: 'error',
       comment:
-        "A third-party package must not import the app's own source (src/). Dependencies should point outward, not reach back into our code: an inward edge couples a library to our internals (usually a fork or patch gone wrong) and inverts the dependency graph.",
-      from: { path: 'node_modules/' },
-      // pathNot excludes nested workspaces (e.g. src/graphql/node_modules/*),
-      // which are third-party files that merely live under src/.
-      to: { path: '^src/', pathNot: 'node_modules/' },
+        "A third-party package must not import any of the app's own first-party files. Dependencies should point outward, not reach back into our code: an inward edge couples a library to our internals (usually a fork or patch gone wrong) and inverts the dependency graph.",
+      from: { path: '^node_modules/' },
+      // pathNot drops node_modules targets, incl. nested workspaces like src/graphql/node_modules/*.
+      to: { dependencyTypes: ['local'], pathNot: 'node_modules/' },
     },
     ...restrictedImportRules,
   ],
