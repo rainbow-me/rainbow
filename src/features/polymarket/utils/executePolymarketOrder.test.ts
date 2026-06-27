@@ -1,8 +1,12 @@
 import { AssetType, OrderType, Side } from '@polymarket/clob-client-v2';
+import { ethers } from 'ethers';
 
 import { analytics } from '@/analytics';
+import { PolymarketBuyPositionError } from '@/features/polymarket/errors';
 import { type SuccessfulOrderResult } from '@/features/polymarket/types';
+import { getPolygonUsdcBalance, wrapUsdcAmountToPusd } from '@/features/polymarket/utils/collateral';
 import { collectPolymarketTradeFee } from '@/features/polymarket/utils/collectPolymarketTradeFee';
+import { ensureTradingApprovals } from '@/features/polymarket/utils/tradingApprovals';
 
 import { executePolymarketBuyPosition, executePolymarketSellPosition } from './executePolymarketOrder';
 
@@ -57,14 +61,22 @@ jest.mock('@/utils/delay', () => ({
 
 const mockAnalyticsTrack = jest.mocked(analytics.track);
 const mockCollectPolymarketTradeFee = jest.mocked(collectPolymarketTradeFee);
+const mockEnsureTradingApprovals = jest.mocked(ensureTradingApprovals);
+const mockGetPolygonUsdcBalance = jest.mocked(getPolygonUsdcBalance);
+const mockWrapUsdcAmountToPusd = jest.mocked(wrapUsdcAmountToPusd);
 
 describe('executePolymarketOrder', () => {
   beforeEach(() => {
     mockAnalyticsTrack.mockReset();
     mockCollectPolymarketTradeFee.mockReset();
     mockCreateAndPostMarketOrder.mockReset();
+    mockEnsureTradingApprovals.mockReset();
+    mockGetPolygonUsdcBalance.mockReset();
     mockGetOrder.mockReset();
     mockUpdateBalanceAllowance.mockReset();
+    mockWrapUsdcAmountToPusd.mockReset();
+
+    mockGetPolygonUsdcBalance.mockResolvedValue(ethers.constants.Zero);
   });
 
   it('executes a buy order and starts trade fee collection for an immediate match', async () => {
@@ -118,6 +130,73 @@ describe('executePolymarketOrder', () => {
       side: 'buy',
       tokenId: 'token-1',
     });
+  });
+
+  it('wraps existing Polygon USDC before placing a buy order', async () => {
+    const usdcBalance = ethers.utils.parseUnits('3', 6);
+    mockGetPolygonUsdcBalance.mockResolvedValueOnce(usdcBalance);
+    mockWrapUsdcAmountToPusd.mockImplementationOnce(async () => {
+      expect(mockUpdateBalanceAllowance).not.toHaveBeenCalled();
+      expect(mockCreateAndPostMarketOrder).not.toHaveBeenCalled();
+    });
+    mockCreateAndPostMarketOrder.mockResolvedValue(
+      createOrderResult({
+        makingAmount: '5',
+        orderID: 'buy-order',
+        status: 'matched',
+        takingAmount: '10',
+      })
+    );
+
+    await executePolymarketBuyPosition({
+      tokenId: 'token-1',
+      amount: '5',
+      price: '0.5',
+      negRisk: false,
+      matchedOrderMetadata: createMatchedOrderMetadata({ quotedTradeFeeUsd: '0.1' }),
+    });
+
+    expect(mockWrapUsdcAmountToPusd).toHaveBeenCalledWith({
+      proxyAddress: '0x0000000000000000000000000000000000000001',
+      amount: usdcBalance,
+    });
+    expect(mockCreateAndPostMarketOrder).toHaveBeenCalledTimes(1);
+  });
+
+  it('wraps trading approval failures in buy position errors', async () => {
+    mockEnsureTradingApprovals.mockRejectedValueOnce(new Error('approval failed'));
+
+    const promise = executePolymarketBuyPosition({
+      tokenId: 'token-1',
+      amount: '5',
+      price: '0.5',
+      negRisk: false,
+      matchedOrderMetadata: createMatchedOrderMetadata({ quotedTradeFeeUsd: '0.1' }),
+    });
+
+    await expect(promise).rejects.toThrow(PolymarketBuyPositionError);
+    await expect(promise).rejects.toMatchObject({ reason: 'trading_approval_failed' });
+    expect(mockGetPolygonUsdcBalance).not.toHaveBeenCalled();
+    expect(mockUpdateBalanceAllowance).not.toHaveBeenCalled();
+    expect(mockCreateAndPostMarketOrder).not.toHaveBeenCalled();
+  });
+
+  it('wraps collateral conversion failures in buy position errors', async () => {
+    mockGetPolygonUsdcBalance.mockResolvedValueOnce(ethers.BigNumber.from(1));
+    mockWrapUsdcAmountToPusd.mockRejectedValueOnce(new Error('wrap failed'));
+
+    const promise = executePolymarketBuyPosition({
+      tokenId: 'token-1',
+      amount: '5',
+      price: '0.5',
+      negRisk: false,
+      matchedOrderMetadata: createMatchedOrderMetadata({ quotedTradeFeeUsd: '0.1' }),
+    });
+
+    await expect(promise).rejects.toThrow(PolymarketBuyPositionError);
+    await expect(promise).rejects.toMatchObject({ reason: 'collateral_conversion_failed' });
+    expect(mockUpdateBalanceAllowance).not.toHaveBeenCalled();
+    expect(mockCreateAndPostMarketOrder).not.toHaveBeenCalled();
   });
 
   it('executes a sell order and starts trade fee collection for an immediate match', async () => {
