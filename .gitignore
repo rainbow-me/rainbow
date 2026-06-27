@@ -47,7 +47,6 @@ android/app/src/main/java/me/rainbow/NativeModules/Internals/
 local.properties
 *.iml
 android/app/google-services.json
-android/rainbow-google-play-key.json
 android/app/src/main/java/me/rainbow/MainActivity.java-e
 
 # node.js
@@ -80,9 +79,6 @@ src/screens/ExamplePage.js
 #e2e output
 e2e/logs/*/*.xml
 artifacts/*
-
-# android playstore credentials
-pc-api-8090318172169087080-31-b8ee34328314.json
 
 # ios internal files (any additional files will be ignored)
 ios/Internals
