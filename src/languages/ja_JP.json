@@ -1,27 +1,9 @@
 {
   "translation": {
     "account": {
-      "hide": "非表示",
-      "label_24h": "24時間",
-      "label_asset": "資産",
-      "label_price": "価格",
-      "label_quantity": "数量",
-      "label_status": "ステータス",
-      "label_total": "合計",
-      "low_market_value": "市場価値が低い場合",
-      "no_market_value": "市場価値がない場合",
-      "show": "表示",
-      "show_all": "すべて表示",
-      "show_less": "表示を短縮",
       "tab_tokens": "トークン",
-      "tab_balances_empty_state": "残高",
-      "tab_balances_tooltip": "イーサリアムとトークンの残高",
       "tab_claimables": "請求可能",
       "tab_collectibles": "コレクタブル",
-      "tab_interactions": "インタラクション",
-      "tab_interactions_tooltip": "スマートコントラクトのインタラクション",
-      "tab_investments": "プール",
-      "tab_savings": "貯蓄",
       "tab_showcase": "ショーケース",
       "tab_perps": "\"Perps\"",
       "tab_polymarket": "予測",
@@ -50,9 +32,7 @@
     "activity_list": {
       "title": "アクティビティ",
       "empty_state": {
-        "default_label": "まだ取引はありません",
-        "recycler_label": "まだ取引はありません",
-        "testnet_label": "テストネットのトランザクション履歴がスタートしました！"
+        "default_label": "まだ取引はありません"
       }
     },
     "add_funds": {
@@ -60,8 +40,6 @@
         "or_send_eth": "またはウォレットにETHを送信してください",
         "send_from_another_source": "Coinbaseや他の取引所から送信するか、友人に頼んでください！"
       },
-      "limit_left_this_week": "今週の残高：$%{remainingLimit}",
-      "limit_left_this_year": "今年の残高：$%{remainingLimit}",
       "test_eth": {
         "add_from_faucet": "蛇口から追加",
         "or_send_test_eth": "またはテストETHをウォレットに送信してください",
@@ -69,12 +47,7 @@
         "send_test_eth_from_another_source": "テストETHを別の %{testnetName} ウォレットから送信するか、友人に頼んでください！"
       },
       "to_get_started_android": "始めるには、ETHを購入してください",
-      "to_get_started_ios": "始めるには、Apple PayでETHを購入してください",
-      "weekly_limit_reached": "週間の制限に達しました",
-      "yearly_limit_reached": "年間上限に達しました"
-    },
-    "assets": {
-      "unkown_token": "不明なトークン"
+      "to_get_started_ios": "始めるには、Apple PayでETHを購入してください"
     },
     "avatar_builder": {
       "emoji_categories": {
@@ -102,13 +75,6 @@
         "damaged_wallet": "ウォレットをバックアップできません。キーチェーンデータが欠落しています。"
       },
       "wrong_pin": "入力したPINコードが正しくないため、バックアップを作成できません。正しいコードで再試行してください。",
-      "already_backed_up": {
-        "backed_up": "バックアップ済み",
-        "backed_up_manually": "手動でバックアップ済み",
-        "backed_up_message": "ウォレットはバックアップされました",
-        "imported": "インポート済み",
-        "imported_message": "ウォレットはインポートされました"
-      },
       "wallet_group_title_plural": "ウォレットグループ %{walletGroupNumber}",
       "wallet_group_title_singular": "ウォレットグループ",
       "private_key_plural": "プライベートキー %{privateKeyNumber}",
@@ -215,8 +181,6 @@
         "create_new_secret_phrase": "新しいリカバリーフレーズを作成する"
       },
       "needs_backup": {
-        "back_up_your_wallet": "ウォレットのバックアップ",
-        "dont_risk": "お金を危険にさらさないでください！このデバイスを紛失した場合、ウォレットを回復するためにバックアップを作成してください。",
         "not_backed_up": "バックアップされていません"
       },
       "restore_cloud": {
@@ -437,10 +401,6 @@
           "navigating_your_wallet": "ウォレットの操作方法"
         }
       },
-      "ledger": {
-        "title": "ハードウェアウォレットをペアリングする",
-        "body": "ブルートゥース経由であなたのレジャーナノエックスをレインボーに接続する"
-      },
       "receive": {
         "receive_assets": "アセットを受け取る",
         "copy_address": "アドレスをコピー",
@@ -486,24 +446,15 @@
         "creator_lp_fees": "クリエイターLP手数料",
         "rainbow_token_launcher": "レインボートークンローンチャー",
         "claim_amount": "%{amount}を請求",
-        "done": "完了",
-        "try_again": "再試行",
         "tokens_on_the_way": "トークンが届きます！",
         "a_token": "トークン",
-        "a_network": "ネットワーク",
         "swap_failed": "交換失敗",
         "receive": "受け取る",
         "on": "オン",
         "reset": "リセット"
       }
     },
-    "cloud": {
-      "backup_success": "ウォレットは正常にバックアップされました！"
-    },
     "contacts": {
-      "contact_row": {
-        "balance_eth": "%{balanceEth} ETH"
-      },
       "contacts_title": "連絡先",
       "input_placeholder": "名前",
       "my_wallets": "マイウォレット",
@@ -511,26 +462,18 @@
         "add": "連絡先を追加",
         "cancel": "キャンセル",
         "delete": "連絡先を削除",
-        "edit": "連絡先を編集",
-        "view": "プロフィールを表示"
+        "edit": "連絡先を編集"
       },
       "send_header": "送信する",
       "suggestions": "提案",
       "to_header": "宛先",
       "watching": "ウォッチ中"
     },
-    "deeplinks": {
-      "couldnt_recognize_url": "あっと！このURLを認識できませんでした！",
-      "tried_to_use_android": "Androidバンドルを使用しようとしました",
-      "tried_to_use_ios": "iOSバンドルを使用しようとしました"
-    },
     "developer_settings": {
       "alert": "アラート",
-      "analyze_env_variables": "環境変数を解析",
       "analyze_react_query": "React Queryを解析",
       "analyze_user_assets_query": "ユーザー資産クエリを解析",
       "applied": "適用済み",
-      "backups_deleted_successfully": "バックアップは正常に削除されました",
       "clear_async_storage": "AsyncStorageをクリア",
       "clear_pending_txs": "保留中のトランザクションをクリア",
       "clear_image_cache": "画像キャッシュをクリア",
@@ -540,7 +483,6 @@
       "clear_react_query_cache": "React Queryキャッシュをクリア",
       "connect_to_anvil": "Anvilに接続する",
       "copy_fcm_token": "FCMトークンをコピー",
-      "copy_log_lines": "ログラインをコピー",
       "copy_signing_wallet_address": "署名ウォレットアドレスをコピー",
       "disconnect_to_anvil": "Anvilから切断",
       "crash_app_render_error": "アプリクラッシュ（レンダーエラー）",
@@ -559,6 +501,18 @@
       },
       "restart_app": "アプリを再起動",
       "reset_experimental_config": "実験的なコンフィグをリセット",
+      "cash_deposit_setup_status": {
+        "title": "現金入金セットアップのステータス",
+        "needsIdentity": "本人確認が必要",
+        "needsCard": "カードが必要",
+        "needsWallet": "ウォレットが必要",
+        "ready": "準備完了"
+      },
+      "cash_order_outcome": {
+        "title": "現金注文の結果",
+        "succeed": "成功します",
+        "fail": "失敗します"
+      },
       "status": "ステータス",
       "sync_codepush": "CodePushを同期",
       "simulate_device_transfer": "デバイス転送をシミュレートする",
@@ -566,10 +520,10 @@
         "normie_settings": "一般ユーザー設定",
         "rainbow_developer_settings": "Rainbow 開発者設定",
         "feature_flags": "機能フラグ",
-        "delegation_settings": "委任設定"
+        "delegation_settings": "委任設定",
+        "cash_settings": "現金設定"
       },
       "delegation_settings": {
-        "clear_store": "委任ストアをクリア",
         "simulate_disable_smart_wallet": "スマートウォレットの無効化をシミュレート",
         "simulate_disable_single_network": "単一ネットワークの無効化をシミュレート",
         "simulate_disable_third_party": "サードパーティの無効化をシミュレート",
@@ -580,17 +534,36 @@
       }
     },
     "discover": {
-      "pulse": {
-        "pulse_description": "すべての主要なDeFiトークンを集めました",
-        "today_suffix": "今日",
-        "trading_at_prefix": "取引中の"
-      },
       "search": {
         "search_ethereum": "Ethereum全体を検索",
         "search_ethereum_short": "Ethereumを検索",
         "search": "検索する",
         "discover": "発見する"
       },
+      "sections": {
+        "ai": "AI",
+        "base": "Base",
+        "commodities": "コモディティ",
+        "crypto": "暗号資産",
+        "crypto_equities": "暗号資産関連株",
+        "currencies": "通貨",
+        "for_you": "あなた向け",
+        "indices": "指数",
+        "layer_1": "レイヤー1",
+        "live": "ライブ",
+        "mag7": "MAG7",
+        "majors": "主要銘柄",
+        "markets": "マーケット",
+        "mlb": "MLB",
+        "nba": "NBA",
+        "nhl": "NHL",
+        "perps": "\"Perps\"",
+        "pre_ipo": "IPO前",
+        "predictions": "予測",
+        "sports": "スポーツ",
+        "tokens": "トークン"
+      },
+      "show_more": "さらに表示",
       "strategies": {
         "strategies_title": "ストラテジー",
         "yearn_finance_description": "yearn.financeからのスマートイールドストラテジー"
@@ -627,9 +600,6 @@
     },
     "exchange": {
       "coin_row": {
-        "expires_in": "%{minutes}分後に期限切れになります",
-        "from_divider": "送信元",
-        "to_divider": "to",
         "token": "トークン",
         "view_on": "%{blockExplorerName}で表示する",
         "view_on_etherscan": "Etherscanで見る",
@@ -706,6 +676,9 @@
         "verifiedTokenSection": "􀇻 確認済み",
         "unswappableTokenSection": "􀘰 トレードルートなし"
       }
+    },
+    "ens": {
+      "registered_on": "登録日"
     },
     "expanded_state": {
       "asset": {
@@ -845,10 +818,6 @@
         "total_value": "総価値",
         "underlying_tokens": "下層トークン"
       },
-      "nft_brief_token_info": {
-        "for_sale": "売り物",
-        "last_sale": "前回の売却価格"
-      },
       "swap": {
         "swap": "交換する",
         "bridge": "ブリッジ",
@@ -929,7 +898,6 @@
         "edit": "編集",
         "expires_in": "Expires in",
         "expires_on": "有効期限",
-        "floor_price": "最低価格",
         "for_sale": "売り物",
         "in_showcase": "ショーケースに含まれています",
         "last_sale_price": "前回の売却価格",
@@ -1049,10 +1017,6 @@
       "failed_wc_invalid_chain": {
         "text": "このリクエストで指定されたネットワークは、Rainbowでサポートされていません。",
         "title": "処理に失敗しました"
-      },
-      "floor_price": {
-        "text": "コレクションの最低価格は、現在販売中のすべてのアイテムの最低要求価格です。",
-        "title": "コレクションの最低価格"
       },
       "gas": {
         "text": "これは、あなたの取引を安全に検証するために %{networkName} ブロックチェーンで使用される「ガス手数料」です。\n\nこの手数料は、あなたの取引の複雑さとネットワークの混雑具合により変動します！",
@@ -1246,13 +1210,6 @@
         "text": "ENS 名称を他者に送信し、新しい ENS 名称所有者にする場合、事前に設定を行い、将来の取引を省くことを考えるかもしれません。Rainbow は、現在設定されているプロフィール情報をクリアし、ENS 名称を受信者のアドレスを指すように設定し、受信者アドレスを名称の管理者とすることを可能にします。"
       }
     },
-    "fedora": {
-      "cannot_verify_bundle": "バンドルを検証できません！これは詐欺かもしれません。インストールがブロックされました。",
-      "error": "エラー",
-      "fedora": "フェドラ",
-      "this_will_override_bundle": "これによりバンドルが上書きされます。ご注意ください。あなたはRainbowの従業員ですか？",
-      "wait": "待つ"
-    },
     "fields": {
       "address": {
         "long_placeholder": "名前、ENS、またはアドレス",
@@ -1281,7 +1238,6 @@
       "miner_tip": "マイナーチップ",
       "gas_price": "ガス価格",
       "max_transaction_fee": "最大取引手数料",
-      "warning_separator": "·",
       "lower_than_suggested": "低い · スタックする可能性あり",
       "higher_than_suggested": "高い · 過剰支払い",
       "likely_to_fail": "低い · 失敗する可能性が高い",
@@ -1292,64 +1248,12 @@
       "alert_message_lower": "正しい金額を入力したかどうかを再確認してください。おそらく必要以上に支払っています!",
       "alert_title_higher_max_base_fee_needed": "低い最大基本料金 -トランザクションが詰まる可能性があります!",
       "alert_title_higher_miner_tip_needed": "低いマイナーチップ -トランザクションが詰まる可能性があります!",
-      "alert_title_lower_max_base_fee_needed": "大きな最大基本料金です!",
       "alert_title_lower_miner_tip_needed": "大きなマイナーチップです!",
       "proceed_anyway": "続ける",
       "edit_max_bass_fee": "最大基本料金を編集",
       "edit_miner_tip": "マイナーチップを編集"
     },
     "homepage": {
-      "back": "rainbow.meに戻る",
-      "coming_soon": "近日公開予定です。",
-      "connect_ledger": {
-        "button": "Ledgerに接続",
-        "description": "あなたの ",
-        "link_text": "Ledgerハードウェアウォレット",
-        "link_title": "Ledgerハードウェアウォレットを購入する"
-      },
-      "connect_metamask": {
-        "button": "MetaMaskに接続",
-        "description": "次の ",
-        "link_text": "MetaMaskブラウザウォレット",
-        "link_title": "MetaMaskブラウザウォレット"
-      },
-      "connect_trezor": {
-        "button": "Trezorに接続",
-        "description": "あなたの ",
-        "link_text": "Trezorハードウェアウォレット",
-        "link_title": "Trezorハードウェアウォレットを購入する"
-      },
-      "connect_trustwallet": {
-        "button": "Trust Walletに接続",
-        "description_part_one": "ツールを使用してください ",
-        "description_part_three": " アプリを使用して接続します",
-        "description_part_two": " Ethereum ",
-        "link_text_browser": "dappブラウザ",
-        "link_text_wallet": "Trust Wallet",
-        "link_title_browser": "Trust DAppブラウザを発見します",
-        "link_title_wallet": "Trust Walletを発見します"
-      },
-      "connect_walletconnect": {
-        "button": "WalletConnectを使用する",
-        "button_mobile": "WalletConnectで接続します",
-        "description": "モバイルウォレットをリンクするためにQRコードをスキャンします ",
-        "description_mobile": "サポートするウォレットに接続します ",
-        "link_text": "WalletConnectを使用して",
-        "link_text_mobile": "WalletConnect",
-        "link_title": "WalletConnectを使用する",
-        "link_title_mobile": "WalletConnectで接続します"
-      },
-      "reassurance": {
-        "access_link": "資金へのアクセス権がありません",
-        "assessment": "セキュリティ評価の結果",
-        "security": "私たちはますます安全な資金の保護に取り組んでいます。このツールはプライベートキーに触れることは絶対にありませんので、攻撃対象の範囲が大幅に削減されます。プログラミングに詳しい方は、GitHub上で私たちのコードを確認することができます。",
-        "security_title": "Balance Managerのセキュリティはどれくらい安全ですか",
-        "source": "ソースコードを表示する",
-        "text_mobile": "EtherやEthereumベースのトークンを表示、送信、交換するには、Ethereumウォレットを使用する必要があります",
-        "tracking_link": "あなたの行動を追跡しません",
-        "work": "これはウォレット内の資金を管理するのに役立つウェブベースのツールです。これは、ウォレットにアクセスするためにそのアプリケーションプログラミングインターフェース（API）を通じて接続します。以下はBalance Managerの設計に関するいくつかの重要なポイントです。",
-        "work_title": "マネージャーはどのように動作しますか？"
-      },
       "discover_web3": "Web3を発見する"
     },
     "image_picker": {
@@ -1357,18 +1261,6 @@
       "confirm": "ライブラリのアクセスを有効にする",
       "message": "これにより、Rainbowはライブラリから写真を使用することができます",
       "title": "Rainbowがあなたの写真にアクセスすることを許可します"
-    },
-    "input": {
-      "asset_amount": "金額",
-      "donation_address": "Balance Managerのアドレス",
-      "email": "メール",
-      "email_placeholder": "your@email.com",
-      "input_placeholder": "ここに入力してください",
-      "input_text": "入力",
-      "password": "パスワード",
-      "password_placeholder": "••••••••••",
-      "private_key": "プライベートキー",
-      "recipient_address": "受取人のアドレス"
     },
     "list": {
       "share": {
@@ -1382,63 +1274,7 @@
       "importing_wallet": "インポート中...",
       "restoring": "復元中..."
     },
-    "message": {
-      "click_to_copy_to_clipboard": "クリップボードにコピーするにはクリックしてください",
-      "coming_soon": "近日公開...",
-      "exchange_not_available": "新しいKYC要件により、Shapeshiftのサポートは終了しました。異なる取引所プロバイダへのサポートに取り組んでいます。",
-      "failed_ledger_connection": "Ledgerへの接続に失敗しました。デバイスを確認してください。",
-      "failed_request": "リクエストに失敗しました。更新してください。",
-      "failed_trezor_connection": "Trezorへの接続に失敗しました。デバイスを確認してください。",
-      "failed_trezor_popup_blocked": "Trezorを使用するために、Balenceでポップアップを許可してください。",
-      "learn_more": "さらに詳しく",
-      "no_interactions": "このアカウントにはインタラクションが見つかりません。",
-      "no_transactions": "このアカウントにはトランザクションが見つかりません。",
-      "no_unique_tokens": "このアカウントにはユニークなトークンが見つかりません。",
-      "opensea_footer": " ユニーク（または'非代替可能'）トークンのマーケットです。人々がマーケットで取引することで価値が生まれます。トークンを担保にしてお金を得ることもできます。これらすべてはEthereum上で実行されます。 ",
-      "opensea_header": "このシステムは内部でどのように動作しますか？",
-      "page_not_found": "404 ページが見つかりません",
-      "please_connect_ledger": "Ledgerに接続し、Ethereumを選択してください。",
-      "please_connect_trezor": "Trezorを接続し、指示に従ってください。",
-      "power_by": "Powered by",
-      "walletconnect_not_unlocked": "WalletConnectを使用して接続してください。",
-      "web3_not_available": "MetaMask Chrome拡張機能をインストールしてください。",
-      "web3_not_unlocked": "MetaMaskウォレットをアンロックしてください。",
-      "web3_unknown_network": "不明なネットワークです。別のネットワークに切り替えてください。"
-    },
-    "mints": {
-      "mints_sheet": {
-        "mints": "ミント",
-        "no_data_found": "データが見つかりません。",
-        "card": {
-          "x_ago": "%{timeElapsed} 前",
-          "one_mint_past_hour": "1時間前のミント",
-          "x_mints_past_hour": "%{numMints} 時間前のミント",
-          "x_mints": "%{numMints} ミント",
-          "mint": "ミント",
-          "free": "無料"
-        }
-      },
-      "mints_card": {
-        "view_all_mints": "すべてのミントを見る",
-        "mints": "ミント",
-        "collection_cell": {
-          "free": "無料"
-        }
-      },
-      "featured_mint_card": {
-        "featured_mint": "注目のミント",
-        "one_mint": "1ミント",
-        "x_mints": "%{numMints} ミント",
-        "x_past_hour": "%{numMints} 過去の時間"
-      },
-      "filter": {
-        "all": "全て",
-        "free": "無料",
-        "paid": "有料"
-      }
-    },
     "modal": {
-      "approve_tx": "%{walletType}でトランザクションを承認してください。",
       "back_up": {
         "alerts": {
           "cloud_not_enabled": {
@@ -1448,29 +1284,12 @@
             "show_me": "はい、見せてください"
           }
         },
-        "default": {
-          "button": {
-            "cloud": "ウォレットのバックアップ",
-            "cloud_platform": "%{cloudPlatformName}にバックアップ",
-            "manual": "手動でバックアップする"
-          },
-          "description": "財布を失わないでください！暗号化されたコピーを %{cloudPlatformName}に保存してください",
-          "title": "ウォレットのバックアップ方法を選択してください。"
-        },
         "existing": {
           "button": {
             "later": "後で",
             "now": "今すぐバックアップする"
           },
           "description": "バックアップされていないウォレットがあります。このデバイスを紛失した場合に備えて、バックアップしてください",
-          "title": "バックアップしますか？"
-        },
-        "imported": {
-          "button": {
-            "back_up": "%{cloudPlatformName}にバックアップ",
-            "no_thanks": "いいえ、結構です"
-          },
-          "description": "財布を失わないでください！暗号化されたコピーを %{cloudPlatformName}に保存してください",
           "title": "バックアップしますか？"
         }
       },
@@ -1512,30 +1331,6 @@
       "withdrawal_dropdown_label": "ために",
       "withdrawal_input_label": "ゲット"
     },
-    "minting": {
-      "hold_to_mint": "保留してミント",
-      "minting": "鋳造中...",
-      "minted": "発行済み",
-      "mint_unavailable": "ミント不可",
-      "mint_on_mintdotfun": "􀮶 ミントはmint.funで",
-      "error_minting": "鋳造エラー",
-      "mint_price": "ミント価格",
-      "free": "無料",
-      "by": "By",
-      "unknown": "未知",
-      "max": "最大",
-      "nft_count": "%{number} NFTs",
-      "description": "Description",
-      "total_minted": "ミントされた総数",
-      "first_event": "最初のイベント",
-      "last_event": "最後のイベント",
-      "max_supply": "最大供給量",
-      "contract": "契約",
-      "network": "Network",
-      "could_not_find_collection": "コレクションが見つかりませんでした",
-      "unable_to_find_check_again": "このコレクションが見つかりませんでした。アドレスとネットワークを再確認するか、後でもう一度試してください",
-      "mintdotfun_unsupported_network": "Mint.funはこのネットワークをサポートしていません"
-    },
     "nfts": {
       "selling": "販売",
       "sort": {
@@ -1553,65 +1348,6 @@
       "empty": "コレクタブル",
       "collect_now": "今すぐコレクト",
       "will_appear_here": "あなたのコレクティブルはこちらに表示されます"
-    },
-    "nft_offers": {
-      "card": {
-        "title": {
-          "singular": "1オファー",
-          "plural": "%{numOffers} オファー"
-        },
-        "button": "すべてのオファーを見る",
-        "expired": "期限切れ"
-      },
-      "sheet": {
-        "title": "オファー",
-        "total": "合計",
-        "above_floor": "上のフロア",
-        "below_floor": "下のフロア",
-        "no_offers_found": "オファーが見つかりません"
-      },
-      "sort_menu": {
-        "highest": "最高",
-        "from_floor": "フロアから",
-        "recent": "最近の"
-      },
-      "single_offer_sheet": {
-        "title": "オファー",
-        "expires_in": "有効期限が %{timeLeft}",
-        "floor_price": "フロア価格",
-        "marketplace": "マーケットプレイス",
-        "marketplace_fees": "%{marketplace} 手数料",
-        "creator_royalties": "創造者ロイヤルティ",
-        "receive": "受け取る",
-        "proceeds": "収益",
-        "view_offer": "オファーを表示",
-        "offer_expired": "オファーの有効期限切れ",
-        "expired": "期限切れ",
-        "hold_to_sell": "売却するために保持する",
-        "selling": "販売",
-        "error": {
-          "title": "NFTの売却中にエラーが発生しました",
-          "message": "サポートにご連絡ください。"
-        }
-      }
-    },
-    "notification": {
-      "error": {
-        "failed_get_account_tx": "アカウントトランザクションの取得に失敗しました",
-        "failed_get_gas_prices": "Ethereumのガス価格の取得に失敗しました",
-        "failed_get_tx_fee": "トランザクション手数料の見積もりに失敗しました",
-        "failed_scanning_qr_code": "QRコードのスキャンに失敗しました、もう一度お試しください",
-        "generic_error": "何か問題が発生しました、もう一度お試しください",
-        "insufficient_balance": "この口座の残高が不足しています",
-        "insufficient_for_fees": "トランザクション手数料をカバーするための残高が不足しています",
-        "invalid_address": "アドレスが無効です、もう一度確認してください",
-        "invalid_address_scanned": "無効なアドレスがスキャンされました、もう一度お試しください",
-        "invalid_private_key_scanned": "無効なプライベートキーがスキャンされました、もう一度お試しください",
-        "no_accounts_found": "Ethereumアカウントが見つかりませんでした"
-      },
-      "info": {
-        "address_copied_to_clipboard": "アドレスがクリップボードにコピーされました"
-      }
     },
     "perps": {
       "activity": {
@@ -1837,15 +1573,33 @@
       "leverage": "レバレッジ",
       "up_to": "最大"
     },
+    "cash": {
+      "add_cash": "現金を追加",
+      "deposit_intro": {
+        "introducing": "ご紹介",
+        "title": "現金の入金",
+        "encrypted_feature": "お客様の情報は暗号化され、保護されています。",
+        "visa_feature": "Visaカードを利用する米国在住のお客様がご利用いただけます。",
+        "set_up_account": "アカウントを設定",
+        "other_deposit_methods": "その他の入金方法",
+        "sign_in": "サインインする"
+      },
+      "add_cash_screen": {
+        "add_from": "追加元",
+        "hold_to_add": "長押しして追加",
+        "enter_amount": "金額を入力してください",
+        "money_is_added_in": "入金は次の通貨で行われます",
+        "usdc": "USDC",
+        "adding_cash": "現金を追加中",
+        "buy_error_title": "購入に失敗しました",
+        "buy_error_generic": "何か問題が発生しました。もう一度お試しください",
+        "payment_rejected": "カードによりこの支払いは拒否されました"
+      }
+    },
     "points": {
       "points": {
         "try_again": "再試行"
       }
-    },
-    "pools": {
-      "deposit": "預金",
-      "pools_title": "プール",
-      "withdraw": "引き出す"
     },
     "profiles": {
       "actions": {
@@ -2040,16 +1794,7 @@
           "title": "カスタマイズ可能",
           "description": "送受信、販売、鋳造、交換など、自分の望むものを選択してください。"
         },
-        "header": "通知",
-        "subheader": "紹介"
-      }
-    },
-    "review": {
-      "alert": {
-        "are_you_enjoying_rainbow": "Rainbowをお楽しみいただけていますか？ 🥰",
-        "leave_a_review": "App Storeでレビューしてください！",
-        "no": "いいえ",
-        "yes": "はい"
+        "header": "通知"
       }
     },
     "poaps": {
@@ -2061,8 +1806,7 @@
       "error": "鋳造エラー",
       "error_messages": {
         "limit_exceeded": "このPOAPは完全に鋳造済みです！",
-        "event_expired": "このPOAPの鋳造は期限切れです！",
-        "unknown": "不明なエラー"
+        "event_expired": "このPOAPの鋳造は期限切れです！"
       }
     },
     "rewards": {
@@ -2090,11 +1834,8 @@
       "rainbow_users_claimed": "レインボーユーザーが %{amount}件請求済み",
       "refreshes_in_with_days": "%{days} 日 %{hours} 時間後にリフレッシュ",
       "refreshes_in_without_days": "%{hours} 時間後にリフレッシュ",
-      "percent": "%{percent}%の報酬",
       "error_title": "何か問題が発生しました",
       "error_text": "インターネット接続を確認してから、後で再試行してください",
-      "ended_title": "プログラムが終了しました",
-      "ended_text": "次回ご利用いただくためにお楽しみに！",
       "info": {
         "title": "スワップとブリッジングでOPを獲得",
         "description": "Optimismにスワップするか、Optimismにブリッジすることでキャッシュバックを受け取れます。報酬は毎月配布されます。"
@@ -2140,31 +1881,6 @@
     },
     "profile": {
       "title": "アクティビティ"
-    },
-    "savings": {
-      "deposit": "預金",
-      "deposit_from_wallet": "ウォレットからの預金",
-      "earned_lifetime_interest": "獲得済み %{lifetimeAccruedInterest}",
-      "earnings": {
-        "100_year": "100年間",
-        "10_year": "10年間",
-        "20_year": "20年間",
-        "50_year": "50年間",
-        "5_year": "5年間",
-        "est": "見積もり",
-        "label": "利益",
-        "monthly": "月次",
-        "yearly": "年次"
-      },
-      "get_prefix": "ゲット",
-      "label": "貯蓄",
-      "on_your_dollars_suffix": "ドルに対して",
-      "percentage": "%{percentage}%",
-      "percentage_apy": "%{percentage}% APY",
-      "with_digital_dollars_line_1": "With digital dollars like Dai, saving",
-      "with_digital_dollars_line_2": "earns you more than ever before",
-      "withdraw": "引き出す",
-      "zero_currency": "$0.00"
     },
     "send_feedback": {
       "copy_email": "Copy email address",
@@ -2248,7 +1964,6 @@
       "app_icon": "App Icon",
       "developer": "Developer Settings",
       "done": "完了",
-      "feedback_and_reports": "Feedback & Bug Reports",
       "follow_us_on_twitter": "Xでフォローする",
       "hey_friend_message": "👋️ Hey friend! Rainbowをダウンロードするべきです。これは私のお気に入りのイーサリアムウォレットです 🌈️🌈️🌈️🌈️🌈️🌈️🌈️🌈️🌈️🌈️",
       "label": "設定",
@@ -2258,7 +1973,6 @@
       "notifications": "通知",
       "notifications_section": {
         "my_wallets": "私の財布",
-        "points": "ポイント",
         "watched_wallets": "ウォッチリストに追加された財布",
         "allow_notifications": "通知の許可",
         "sent": "送信済み",
@@ -2357,19 +2071,14 @@
         }
       }
     },
-    "subscribe_form": {
-      "email_already_subscribed": "申し訳ありませんが、既にこのメールアドレスで登録されています",
-      "generic_error": "おっと、何か問題が発生しました",
-      "sending": "送信中...",
-      "successful": "メールを確認してください",
-      "too_many_signup_request": "登録リクエストが多すぎるため、後でもう一度お試しください"
+    "send": {
+      "sponsorship_unavailable": "このネットワークでは現在、無料送金をご利用いただけません。ネットワーク手数料を付けてもう一度お試しください。"
     },
     "swap": {
       "actions": {
         "hold_to_swap": "スワップを保持",
         "hold_to_bridge": "ブリッジを保持",
         "earning_rewards": "報酬を稼ぐ",
-        "save": "保存する",
         "enter_amount": "金額を入力してください",
         "review": "レビュー",
         "fetching_prices": "取得中",
@@ -2379,10 +2088,6 @@
         "insufficient": "不足しています",
         "quote_error": "見積りエラー"
       },
-      "aggregators": {
-        "rainbow": "Rainbow"
-      },
-      "bridging": "ブリッジング中",
       "swapping": "スワップ中",
       "max": "最大",
       "select": "選択",
@@ -2407,7 +2112,6 @@
       },
       "choose_token": "トークンを選択してください",
       "gas": {
-        "custom": "カスタム",
         "edit_price": "ガス価格を編集",
         "enter_price": "ガス価格を入力してください",
         "estimated_fee": "推定手数料",
@@ -2415,7 +2119,8 @@
         "network_fee": "ネットワーク手数料",
         "normal": "通常",
         "slow": "低速",
-        "gas_sponsored": "無料"
+        "gas_sponsored": "無料",
+        "loading": "読み込み中…"
       },
       "loading": "読み込み中...",
       "modal_types": {
@@ -2638,6 +2343,9 @@
       "network_fee": "ネットワーク手数料",
       "hash_copied": "􀁣 トランザクションハッシュがコピーされました",
       "address_copied": "􀁣 アドレスがコピーされました",
+      "link_copied": "􀁣 リンクをコピーしました",
+      "view_details": "詳細を表示",
+      "copy_link": "リンクをコピー",
       "smart_account": "スマートアカウント",
       "try_again": "􀅉 もう一度試してください",
       "context_menu": {
@@ -2663,7 +2371,6 @@
           "plural": "日",
           "singular": "日"
         },
-        "micro": "日",
         "short": {
           "plural": "日",
           "singular": "日"
@@ -2674,21 +2381,9 @@
           "plural": "時間",
           "singular": "時間"
         },
-        "micro": "h",
         "short": {
           "plural": "時間",
           "singular": "時間"
-        }
-      },
-      "milliseconds": {
-        "long": {
-          "plural": "ミリ秒",
-          "singular": "ミリ秒"
-        },
-        "micro": "ms",
-        "short": {
-          "plural": "ms",
-          "singular": "ms"
         }
       },
       "minutes": {
@@ -2696,19 +2391,16 @@
           "plural": "分",
           "singular": "分"
         },
-        "micro": "m",
         "short": {
           "plural": "分",
           "singular": "分"
         }
       },
-      "now": "今",
       "seconds": {
         "long": {
           "plural": "秒",
           "singular": "秒"
         },
-        "micro": "s",
         "short": {
           "plural": "秒",
           "singular": "秒"
@@ -2800,25 +2492,9 @@
         "view_on": "%{blockExplorerName}で表示する"
       },
       "add_cash": {
-        "card_notice": "ほとんどのデビットカードに対応しています",
         "interstitial": {
           "other_amount": "その他の金額"
-        },
-        "need_help_button_email_subject": "サポート",
-        "need_help_button_label": "サポートを受ける",
-        "on_the_way_line_1": "お使いの %{currencySymbol} が準備中です",
-        "on_the_way_line_2": "すぐに到着します",
-        "purchase_failed_order_id": "注文ID： %{orderId}",
-        "purchase_failed_subtitle": "料金は発生しませんでした。",
-        "purchase_failed_support_subject": "購入に失敗しました",
-        "purchase_failed_support_subject_with_order_id": "購入失敗 - 注文 %{orderId}",
-        "purchase_failed_title": "申し訳ありませんが、購入に失敗しました",
-        "purchasing_dai_requires_eth_message": "DAIを購入する前にウォレットにETHが必要です",
-        "purchasing_dai_requires_eth_title": "ETHがありません",
-        "running_checks": "チェックを実行中...",
-        "success_message": "おめでとうございます 🥳",
-        "watching_mode_confirm_message": "開いているウォレットは読み取り専用なので、中のものを管理することはできません。本当に %{truncatedAddress}にキャッシュを追加しますか？",
-        "watching_mode_confirm_title": "ウォッチングモードです"
+        }
       },
       "add_cash_v2": {
         "sheet_title": "クリプトを購入するための支払いオプションを選択してください",
@@ -2864,16 +2540,12 @@
         "ooops": "おっと！",
         "this_action_not_supported": "このアクションは現在サポートされていません :("
       },
-      "assets": {
-        "no_price": "小口残高"
-      },
       "authenticate": {
         "please": "認証してください"
       },
       "back_ups": {
         "wallet_count": "%{numAccounts} ウォレット",
         "wallet_count_gt_one": "%{numAccounts} ウォレット",
-        "and_more_wallets": "そして %{moreWalletCount} 以上のウォレット",
         "create_new_wallet": "新しいウォレットを作成",
         "create_new_wallet_description": "このシークレットフレーズを使用して新しいウォレットを作成",
         "backed_up": "バックアップ済み",
@@ -2936,11 +2608,9 @@
           "gas_fee": "%{chainName}で取り消すため"
         }
       },
-      "balance_title": "残高",
       "buy": "購入",
       "change_wallet": {
         "loading_balance": "残高を読み込み中...",
-        "balance_eth": "%{balanceEth} ETH",
         "watching": "ウォッチ中",
         "ledger": "Ledger",
         "delegated": "委任済み",
@@ -2995,47 +2665,22 @@
         "loading": "読み込み中...",
         "app_state_diagnostics_title": "アプリケーションの状態",
         "app_state_diagnostics_description": "アプリケーションの状態のスナップショットを取得し、サポートチームと共有することができます。",
-        "wallet_diagnostics_title": "ウォレット",
         "sheet_title": "診断",
         "pin_auth_title": "PIN認証",
         "you_need_to_authenticate_with_your_pin": "ウォレットの秘密情報にアクセスするためには、PINで認証する必要があります",
         "share_application_state": "アプリケーションの状態ダンプを共有する",
-        "wallet_details_title": "ウォレットの詳細",
-        "wallet_details_description": "すべてのRainbowに追加されたウォレットの詳細が以下に表示されます。"
+        "wallet_details_title": "ウォレットの詳細"
       },
       "error_displaying_address": "アドレスの表示エラー",
-      "feedback": {
-        "cancel": "いいえ、結構です",
-        "choice": "Would you like to manually copy our feedback email address to your clipboard?",
-        "copy_email_address": "Copy email address",
-        "email_subject": "📱 Rainbow Beta フィードバック",
-        "error": "Error launching email client",
-        "send": "フィードバックを送信する"
-      },
       "import_failed_invalid_private_key": "無効な秘密鍵のため、インポートに失敗しました。もう一度お試しください。",
-      "intro": {
-        "create_wallet": "ウォレットを作成する",
-        "instructions": "ウォレットには、失っても構わない範囲を超える金額を保存しないでください。",
-        "warning": "これはアルファ版のソフトウェアです。",
-        "welcome": "Rainbowへようこそ"
-      },
       "invalid_address_title": "無効なアドレス",
       "invalid_address_message": "大文字・小文字の区別を確認して、もう一度お試しください。",
       "invalid_ens_name": "有効なENS名ではありません",
       "invalid_unstoppable_name": "これは有効なアンストッパブルの名前ではありません",
-      "label": "財布",
-      "loading": {
-        "error": "ウォレットの読み込み中にエラーが発生しました。アプリを終了して再試行してください",
-        "message": "読み込み中"
-      },
       "message_signing": {
-        "failed_signing": "メッセージの署名に失敗しました",
-        "message": "メッセージ",
-        "request": "メッセージ署名リクエスト",
-        "sign": "メッセージを署名する"
+        "request": "メッセージ署名リクエスト"
       },
       "my_account_address": "私のアカウントのアドレス:",
-      "network_title": "Network",
       "new": {
         "choose_wallet_group": {
           "title": "ウォレットグループを選択",
@@ -3049,10 +2694,7 @@
           "options": {
             "cloud": {
               "description_restore_sheet": "以前に %{cloudPlatform} にバックアップした場合は、ここをタップして復元してください。",
-              "description_with_latest_backup_date": "最新のバックアップ %{fromNow} に %{time}",
-              "title": "%{platform}から復元する",
-              "no_backups": "バックアップが見つかりません",
-              "no_google_backups": "Google Driveにバックアップが見つかりません。正しいアカウントでログインしていることを確認してください"
+              "title": "%{platform}から復元する"
             },
             "create_new": {
               "description": "シードフレーズのいずれかで新しいウォレットを作成する",
@@ -3070,14 +2712,6 @@
               "description": "ENS 名または公開アドレスをウォッチ",
               "title": "ウォレットをウォッチ"
             }
-          },
-          "first_wallet": {
-            "description": "独自のウォレットをインポートするか、他の人のウォレットを監視する",
-            "title": "最初のウォレットを追加する"
-          },
-          "additional_wallet": {
-            "description": "新しいウォレットを作成するか、既存のウォレットを追加する",
-            "title": "別のウォレットを追加する"
           }
         },
         "import_or_watch_wallet_sheet": {
@@ -3086,17 +2720,11 @@
           "import": {
             "title": "ウォレットを復元する",
             "description": "Rainbowや他の暗号通貨ウォレットからの回復フレーズまたはプライベートキーで復元する",
-            "placeholder": "回復フレーズまたはプライベートキーを入力してください",
-            "button": "インポート"
+            "placeholder": "回復フレーズまたはプライベートキーを入力してください"
           },
           "watch": {
             "title": "アドレスを監視する",
-            "placeholder": "EthereumアドレスまたはENS名を入力してください",
-            "button": "ウォッチ"
-          },
-          "watch_or_import": {
-            "title": "ウォレットを追加する",
-            "placeholder": "シークレットフレーズ、プライベートキー、Ethereumアドレス、またはENS名を入力してください"
+            "placeholder": "EthereumアドレスまたはENS名を入力してください"
           }
         },
         "alert": {
@@ -3105,7 +2733,6 @@
         },
         "already_have_wallet": "すでに持っています",
         "create_wallet": "ウォレットを作成する",
-        "enter_seeds_placeholder": "秘密のフレーズ、プライベートキー、Ethereumアドレス、またはENS名を入力してください",
         "get_new_wallet": "新しいウォレットを取得する",
         "import_wallet": "ウォレットをインポートする",
         "name_wallet": "ウォレットに名前を付ける",
@@ -3129,21 +2756,14 @@
         "camera_access_needed": "スキャンするにはカメラにアクセスする必要があります！",
         "enable_camera_access": "カメラにアクセスを許可する",
         "error_mounting_camera": "カメラのマウントエラー",
-        "find_a_code": "スキャンするコードを見つける",
-        "qr_1_app_connected": "1つの連携アプリ",
-        "qr_multiple_apps_connected": "%{appsConnectedCount} 接続されたアプリ",
         "scan_to_connect": "スキャンして接続",
         "scan_to_pay_or_connect": "支払いまたは接続するためにスキャン",
-        "simulator_mode": "シミュレーターモード",
         "sorry_could_not_be_recognized": "申し訳ありませんが、このQRコードは認識されませんでした。",
         "unrecognized_qr_code_title": "認識されないQRコード"
       },
       "settings": {
         "copy_address": "アドレスをコピーする",
-        "copy_address_capitalized": "アドレスをコピー",
-        "copy_seed_phrase": "シークレットフレーズをコピーする",
-        "hide_seed_phrase": "シークレットフレーズを非表示にする",
-        "show_seed_phrase": "シークレットフレーズを表示する"
+        "copy_address_capitalized": "アドレスをコピー"
       },
       "something_went_wrong_importing": "インポート中に問題が発生しました。もう一度お試しください！",
       "sorry_cannot_add_ens": "申し訳ありませんが、このENS名は現在追加できません。後でもう一度お試しください！",
@@ -3195,30 +2815,7 @@
         "previous_send": "%{number} 回の前の送信",
         "previous_sends": "%{number} 回の前の送信"
       },
-      "wallet_connect": {
-        "error": "WalletConnectの初期化エラー",
-        "failed_to_disconnect": "全てのWalletConnectセッションの切断に失敗しました",
-        "failed_to_send_request_status": "WalletConnectへのリクエストステータスの送信に失敗しました",
-        "missing_fcm": "WalletConnectの初期化ができません：プッシュ通知トークンがありません。再試行してください。",
-        "walletconnect_session_has_expired_while_trying_to_send": "WalletConnectセッションが期限切れになりました。再接続してください。"
-      },
       "wallet_title": "ウォレット"
-    },
-    "support": {
-      "error_alert": {
-        "copy_email_address": "Copy email address",
-        "no_thanks": "いいえ、結構です",
-        "message": "サポートのメールアドレスを手動でクリップボードにコピーしますか？",
-        "title": "Error launching email client",
-        "subject": "レインボーサポート"
-      },
-      "wallet_alert": {
-        "message_support": "メッセージサポート",
-        "close": "閉じる",
-        "learn_more": "詳細を学ぶ",
-        "message": "助けが必要な場合は、サポートに連絡してください！ \n私たちはすぐにあなたに連絡します！",
-        "title": "エラーが発生しました"
-      }
     },
     "walletconnect": {
       "connecting": "接続中",
@@ -3374,10 +2971,6 @@
         }
       }
     },
-    "warning": {
-      "user_is_offline": "接続がオフラインです。インターネット接続を確認してください",
-      "user_is_online": "接続が確立されました！オンラインに戻りました"
-    },
     "dapp_browser": {
       "address_bar": {
         "input_placeholder": "検索またはウェブサイトを入力"
@@ -3392,8 +2985,7 @@
         "undo_favorite": "元に戻す",
         "connect": "接続",
         "swap": "交換する",
-        "bridge": "ブリッジ",
-        "more": "もっと"
+        "bridge": "ブリッジ"
       },
       "error": {
         "title": "何か問題が発生しました",
@@ -3433,44 +3025,6 @@
         "new_tab": "新しいタブ"
       }
     },
-    "trending_tokens": {
-      "all": "全て",
-      "no_results": {
-        "title": "結果がありません",
-        "body": "より大きな時間枠、または異なるネットワークやカテゴリでブラウズしてみてください。"
-      },
-      "and": "と",
-      "and_others": {
-        "one": "と%{count}その他",
-        "other": "と%{count}その他"
-      },
-      "filters": {
-        "categories": {
-          "TRENDING": "トレンド",
-          "RAINBOW": "Rainbow",
-          "NEW": "新しい",
-          "FARCASTER": "Farcaster"
-        },
-        "sort": {
-          "RECOMMENDED": {
-            "label": "ソート",
-            "menuOption": "デフォルト"
-          },
-          "VOLUME": "出来高",
-          "MARKET_CAP": "時価総額",
-          "TOP_GAINERS": "トップ上昇者",
-          "TOP_LOSERS": "トップ減少者"
-        },
-        "time": {
-          "H12": "12時間",
-          "H12_ABBREVIATED": "12時間",
-          "H24": "24時間",
-          "H24_ABBREVIATED": "24時間",
-          "D7": "1週間",
-          "D3": "3日間"
-        }
-      }
-    },
     "network_selector": {
       "customize_networks_banner": {
         "title": "ネットワークをカスタマイズする",
@@ -3489,12 +3043,6 @@
       "search": "検索する"
     },
     "token_launcher": {
-      "airdrop": {
-        "address_or_ens": "アドレスまたはENS",
-        "suggested_users": "おすすめユーザー",
-        "airdrop_lists": "エアドロップリスト",
-        "max_recipients_reached": "最大の%{maxRecipientCount}件の受信者に到達しました"
-      },
       "image_upload_error": {
         "title": "画像のアップロード中にエラーが発生しました。申し訳ありません。",
         "subtitle": "もう一度やり直してください。"
@@ -3508,9 +3056,6 @@
         "title": "プリバイでトークンを購入"
       },
       "review": {
-        "token_allocation": "トークン配分",
-        "your_share": "あなたのシェア",
-        "airdropping": "エアドロップ",
         "about": "概要",
         "total_cost": "総費用",
         "initial_price": "初期価格",
@@ -3534,34 +3079,30 @@
         "must_be_greater_than_0": "0より大きくなければなりません",
         "amount_is_greater_than_balance": "金額が残高を超えています",
         "amount_is_greater_than_max_prebuy_amount": "%{maxPrebuyAmount}%{chainNativeAssetSymbol}の最大プリバイ金額を超えています",
-        "amount_is_less_than_min_prebuy_amount": "%{minPrebuyAmount}%{chainNativeAssetSymbol}の最小プリバイ金額を超過する必要があります",
         "amount_too_small": "金額が小さすぎます！もう少し試してみてください！"
       },
       "titles": {
-        "total_supply": "総供給",
         "ticker": "ティッカー",
         "name": "名前",
         "network": "Network",
         "description": "Description",
-        "airdrop": "友人にエアドロップ",
         "required_info": "必要な情報",
         "about": "事について",
-        "token_allocation": "トークン配分",
         "token_allocation_breakdown": "トークン配分の内訳",
-        "mcap": "時価総額"
+        "mcap": "時価総額",
+        "links": "リンク"
       },
       "placeholders": {
         "ticker": "$NAME",
         "enter_coin_name": "コイン名を入力",
-        "describe_your_coin": "コインの説明を入力"
+        "describe_your_coin": "コインの説明を入力",
+        "custom_amount": "カスタム金額"
       },
       "buttons": {
         "hold_to_create": "作成するまで保持",
         "creating": "作成中…",
         "share_link": "リンクを共有する",
-        "token_allocation_info": "詳細情報",
-        "got_it": "理解しました",
-        "cancel": "キャンセル"
+        "got_it": "理解しました"
       },
       "header": {
         "new_coin": "新しいコイン",
@@ -3593,27 +3134,12 @@
       },
       "discard_and_exit": "破棄して終了",
       "airdrops_sheet": {
-        "claim_button_text": "請求",
         "empty_state_title": "まだエアドロップがありません",
         "title": "レインボーコインを主張する"
-      },
-      "cards": {
-        "airdrops": {
-          "subtitle_loading": "読み込み中",
-          "subtitle_has_airdrops": "主張可能",
-          "subtitle_no_airdrops": "まだエアドロップがありません",
-          "title": "エアドロップ",
-          "title_singular": "エアドロップ"
-        },
-        "launch": {
-          "line_one": "ローンチ\n",
-          "line_two": "コイン"
-        }
       },
       "claim_airdrop_sheet": {
         "by": "によって",
         "claiming": "主張",
-        "created_by": "%{name}によって作成",
         "gifted_to": "に贈呈",
         "hold_to_claim": "主張するまでホールド",
         "hold_to_retry": "再試行するまでホールド",
@@ -3636,19 +3162,25 @@
         "unsupported_network": "このネットワークではトークンのローンチはサポートされていません"
       }
     },
-    "done": "完了",
     "copy": "Copy",
     "paste": "貼り付け",
     "new": "新しい",
     "market_data": {
       "vol": "ボリューム",
-      "price": "価格",
-      "mcap": "時価総額"
+      "mcap": "時価総額",
+      "transactions": "取引",
+      "volume": "出来高",
+      "makers": "メーカー",
+      "buys": "購入",
+      "sells": "売却",
+      "bought": "購入済み",
+      "sold": "売却済み",
+      "buyers": "買い手",
+      "sellers": "売り手"
     },
     "king_of_hill": {
       "title": "ローンチパッド",
       "launch": "ローンチ",
-      "current_king": "現在のキング",
       "last_winner": "最後の勝者",
       "no_previous_winner": "以前の勝者はいません",
       "round_ends_in": "ラウンドが終了するまで",
@@ -3752,7 +3284,6 @@
       },
       "cash_out": {
         "title": "ベットのキャッシュアウト",
-        "current_price": "現在の価格",
         "average_price": "平均価格",
         "profit_loss": "利益 / 損失",
         "receive": "受け取る",
@@ -3780,7 +3311,6 @@
         "show_resolved": "解決済みを表示する",
         "open_positions": "オープンポジション",
         "market_resolved": "市場が解決済み",
-        "volume_suffix": "ボリューム",
         "show_less": "表示を減らす",
         "show_more": "さらに表示",
         "resolved": "解決済み"
@@ -3815,6 +3345,7 @@
       "sports": {
         "vs": "対",
         "live": "ライブ",
+        "this_week": "今週",
         "game_best_of": "ゲーム %{currentPeriod} - ベストオブ %{bestOf}",
         "final": "最終",
         "no_games": "今日や明日のゲームはありません。"
@@ -3850,13 +3381,11 @@
       },
       "claim": {
         "claim_title": "$RNBWを請求",
-        "available_to_claim": "請求可能",
         "your_airdrop": "あなたのエアドロップ",
         "your_airdrop_description": "Rainbowをご利用いただきありがとうございます。エアドロップは、これまでのアクティビティに基づいて算出されます。",
         "claim_failed_title": "報酬の請求中にエラーが発生しました",
         "claim_failed_message": "もう一度やり直してください。",
-        "claim_later": "後で請求する",
-        "almost_there": "もう少しです..."
+        "claim_later": "後で請求する"
       },
       "airdrop_claim_finished": {
         "airdrop_claimed": "エアドロップを請求しました",
@@ -3881,7 +3410,6 @@
       },
       "loading_labels": {
         "checking_historical_activity": "過去のアクティビティを確認中...",
-        "checking_eligibility": "対象状況を確認中...",
         "claiming_rewards": "報酬を請求中...",
         "submitting_transaction": "トランザクションを送信中...",
         "claiming_airdrop": "エアドロップを請求中...",
@@ -3909,11 +3437,13 @@
       "staking_card": {
         "stake": "ステーク",
         "enable_staking": "ステーキングを有効にする",
-        "buy_rnbw": "RNBWを購入",
+        "buy": "購入",
         "unstake": "アンステーク",
         "available_to_stake": "ステーク可能",
         "available_to_add": "追加可能",
-        "minimum_stake_amount_required": "ステークするには最低%{minStakeAmount} RNBWが必要です"
+        "to_add_to_stake": "追加でステークするには",
+        "to_stake": "ステークするには",
+        "buy_more": "さらに購入"
       },
       "staking_earnings_card": {
         "lifetime_earnings": "累計収益",
