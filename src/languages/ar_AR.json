@@ -1520,7 +1520,7 @@
       },
       "search": {
         "search_markets": "البحث في الأسواق",
-        "markets_count": "٪{count} أسواق ",
+        "markets_count": "%{count} أسواق ",
         "choose_a_market": "اختيار سوق",
         "no_markets_found": "لم يتم العثور على أسواق"
       },
