@@ -163,7 +163,6 @@ workflows:
                 echo "ENABLE_DEV_MODE=$ENABLE_DEV_MODE" >> .env
                 echo "GANACHE_URL_IOS=$GANACHE_URL_IOS" >> .env
                 echo "GANACHE_URL_ANDROID=$GANACHE_URL_ANDROID" >> .env
-                echo "ETH_GAS_STATION_API_KEY=$ETH_GAS_STATION_API_KEY" >> .env
                 echo "IMGIX_TOKEN=$IMGIX_TOKEN" >> .env
                 echo "IMGIX_DOMAIN=$IMGIX_DOMAIN" >> .env
                 echo "GOOGLE_SERVICE_API_KEY=$GOOGLE_SERVICE_API_KEY" >> .env
@@ -433,7 +432,6 @@ workflows:
                 echo "ENABLE_DEV_MODE=$ENABLE_DEV_MODE" >> .env
                 echo "GANACHE_URL_IOS=$GANACHE_URL_IOS" >> .env
                 echo "GANACHE_URL_ANDROID=$GANACHE_URL_ANDROID" >> .env
-                echo "ETH_GAS_STATION_API_KEY=$ETH_GAS_STATION_API_KEY" >> .env
                 echo "IMGIX_TOKEN=$IMGIX_TOKEN" >> .env
                 echo "IMGIX_DOMAIN=$IMGIX_DOMAIN" >> .env
                 echo "GOOGLE_SERVICE_API_KEY=$GOOGLE_SERVICE_API_KEY" >> .env
