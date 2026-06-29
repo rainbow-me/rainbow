@@ -6,13 +6,13 @@ import { runOnJS, useAnimatedReaction, useDerivedValue, useSharedValue } from 'r
 
 import { ETH_COLOR_DARK } from '@/__swaps__/screens/Swap/constants';
 import { analytics } from '@/analytics';
-import { TapToDismiss } from '@/components/DappBrowser/control-panel/ControlPanel';
 import { HoldToActivateButton } from '@/components/hold-to-activate-button/HoldToActivateButton';
 import { useLiveTokenValue } from '@/components/live-token-text/LiveTokenText';
 import { SheetHandleFixedToTop } from '@/components/sheet';
 import { controlPanelStyles, Panel, PANEL_BOTTOM_OFFSET } from '@/components/SmoothPager/ListPanel';
 import { AnimatedText, Box, Inline, Text, TextIcon, useColorMode, useForegroundColor } from '@/design-system';
 import { formatUsd } from '@/features/currency/utils/formatUsd';
+import { TapToDismiss } from '@/features/dapp-browser/screens/ControlPanel';
 import { PerpBottomSheetHeader } from '@/features/perps/components/PerpBottomSheetHeader';
 import { PositionPercentageSlider } from '@/features/perps/components/PositionPercentageSlider';
 import { SLIDER_MAX } from '@/features/perps/components/Slider/Slider';

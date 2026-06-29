@@ -12,6 +12,7 @@ import RequestVendorLogoIcon from '@/components/coin-icon/RequestVendorLogoIcon'
 import { SimpleSheet } from '@/components/sheet/SimpleSheet';
 import { BackgroundProvider, Box, globalColors, Inline, Separator, Stack, Text, useColorMode } from '@/design-system';
 import { NativeCurrencyKeys } from '@/features/currency/types';
+import { openInBrowser } from '@/features/dapp-browser/utils/openInBrowser';
 import type { PositionAsset, RainbowPosition } from '@/features/positions/types';
 import { opacity } from '@/framework/ui/utils/opacity';
 import useDimensions from '@/hooks/useDimensions';
@@ -21,7 +22,6 @@ import Routes from '@/navigation/routesNames';
 import { type RootStackParamList } from '@/navigation/types';
 import { userAssetsStoreManager } from '@/state/assets/userAssetsStoreManager';
 import { useTheme } from '@/theme/ThemeContext';
-import { openInBrowser } from '@/utils/openInBrowser';
 import safeAreaInsetValues from '@/utils/safeAreaInsetValues';
 
 import { LpPositionListItem } from '../components/LpPositionListItem';

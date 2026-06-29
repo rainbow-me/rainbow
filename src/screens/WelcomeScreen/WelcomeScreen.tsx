@@ -21,6 +21,7 @@ import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { analytics } from '@/analytics';
 import { Box } from '@/design-system';
 import { IS_TEST } from '@/env';
+import { openInBrowser } from '@/features/dapp-browser/utils/openInBrowser';
 import { useHardwareBackOnFocus } from '@/framework/ui/hooks/useHardwareBack';
 import { opacity } from '@/framework/ui/utils/opacity';
 import { WalletLoadingStates } from '@/helpers/walletLoadingStates';
@@ -33,7 +34,6 @@ import { WelcomeScreenRainbowButton } from '@/screens/WelcomeScreen/WelcomeScree
 import { walletLoadingStore } from '@/state/walletLoading/walletLoading';
 import { initializeWallet } from '@/state/wallets/initializeWallet';
 import { useTheme } from '@/theme/ThemeContext';
-import { openInBrowser } from '@/utils/openInBrowser';
 import Routes from '@rainbow-me/routes';
 
 import RainbowText from '../../components/icons/svg/RainbowText';

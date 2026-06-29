@@ -2,7 +2,7 @@ import { useCallback } from 'react';
 
 import URL from 'url-parse';
 
-import { openInBrowser } from '@/utils/openInBrowser';
+import { openInBrowser } from '@/features/dapp-browser/utils/openInBrowser';
 
 import { useNavigation } from './Navigation';
 import Routes from './routesNames';

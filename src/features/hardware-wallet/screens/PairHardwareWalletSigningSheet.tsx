@@ -7,6 +7,7 @@ import { useRecoilValue } from 'recoil';
 
 import ButtonPressAnimation from '@/components/animations/ButtonPressAnimation';
 import { Box, Column, Columns, Inset, Stack, Text, useForegroundColor } from '@/design-system';
+import { openInBrowser } from '@/features/dapp-browser/utils/openInBrowser';
 import useDimensions from '@/hooks/useDimensions';
 import useImportingWallet from '@/hooks/useImportingWallet';
 import * as i18n from '@/languages';
@@ -14,7 +15,6 @@ import { logger, RainbowError } from '@/logger';
 import { useNavigation } from '@/navigation/Navigation';
 import Routes from '@/navigation/routesNames';
 import { type RootStackParamList } from '@/navigation/types';
-import { openInBrowser } from '@/utils/openInBrowser';
 
 import { ActionButton } from '../components/ActionButton';
 import { Layout } from '../components/Layout';

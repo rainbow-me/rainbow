@@ -2,10 +2,10 @@ import React from 'react';
 
 import ButtonPressAnimation from '@/components/animations/ButtonPressAnimation';
 import { Inset, Stack, Text } from '@/design-system';
+import { openInBrowser } from '@/features/dapp-browser/utils/openInBrowser';
 import * as i18n from '@/languages';
 import { useNavigation } from '@/navigation/Navigation';
 import Routes from '@/navigation/routesNames';
-import { openInBrowser } from '@/utils/openInBrowser';
 
 import { ActionButton } from '../components/ActionButton';
 import { Layout } from '../components/Layout';

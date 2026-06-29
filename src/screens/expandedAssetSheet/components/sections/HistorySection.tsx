@@ -19,6 +19,7 @@ import { GestureHandlerButton } from '@/components/buttons/GestureHandlerButton'
 import { AnimatedText, Box, Text, TextShadow, useBackgroundColor, useColorMode, useForegroundColor } from '@/design-system';
 import { type NativeCurrencyKey } from '@/features/currency/types';
 import { convertRawAmountToNativeDisplay } from '@/features/currency/utils/nativeDisplay';
+import { openInBrowser } from '@/features/dapp-browser/utils/openInBrowser';
 import { minWorklet, mulWorklet, subWorklet, sumWorklet } from '@/framework/core/safeMath';
 import { opacity } from '@/framework/ui/utils/opacity';
 import { TokenInteractionDirection, TokenInteractionType, type TokenInteraction } from '@/graphql/__generated__/metadata';
@@ -29,7 +30,6 @@ import { userAssetsStoreManager } from '@/state/assets/userAssetsStoreManager';
 import { useAccountAddress } from '@/state/wallets/walletsStore';
 import { THICK_BORDER_WIDTH } from '@/styles/constants';
 import { DEVICE_WIDTH } from '@/utils/deviceUtils';
-import { openInBrowser } from '@/utils/openInBrowser';
 
 import { SectionId, useExpandedAssetSheetContext } from '../../context/ExpandedAssetSheetContext';
 import { CollapsibleSection, LAYOUT_ANIMATION } from '../shared/CollapsibleSection';

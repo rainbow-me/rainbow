@@ -31,6 +31,7 @@ import { AssetType } from '@/entities/assetTypes';
 import type { UniqueAsset } from '@/entities/uniqueAssets';
 import { PROFILES } from '@/features/config/constants/experimental';
 import { useExperimentalFlag } from '@/features/config/hooks/experimentalHooks';
+import { openInBrowser } from '@/features/dapp-browser/utils/openInBrowser';
 import ENSBriefTokenInfoRow from '@/features/ens/components/ENSBriefTokenInfoRow';
 import ConfigurationSection from '@/features/ens/components/expanded-state/ConfigurationSection';
 import ProfileInfoSection from '@/features/ens/components/expanded-state/ProfileInfoSection';
@@ -60,7 +61,6 @@ import { buildRainbowUrl } from '@/utils/buildRainbowUrl';
 import { getAddressAndChainIdFromUniqueId } from '@/utils/ethereumUtils';
 import isLowerCaseMatch from '@/utils/isLowerCaseMatch';
 import magicMemo from '@/utils/magicMemo';
-import { openInBrowser } from '@/utils/openInBrowser';
 import safeAreaInsetValues from '@/utils/safeAreaInsetValues';
 
 import partyLogo from '../../assets/partyLogo.png';

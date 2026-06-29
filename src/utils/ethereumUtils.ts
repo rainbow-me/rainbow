@@ -11,6 +11,7 @@ import { type AddressOrEth } from '@/__swaps__/types/assets';
 import { type ParsedAddressAsset } from '@/entities/tokens';
 import { type NewTransaction, type RainbowTransaction } from '@/entities/transactions';
 import { type EthereumAddress } from '@/entities/wallet';
+import { openInBrowser } from '@/features/dapp-browser/utils/openInBrowser';
 import { type GasFee, type LegacySelectedGasFee, type SelectedGasFee } from '@/features/gas/types/gas';
 import { useBackendNetworksStore } from '@/features/network/stores/backendNetworksStore';
 import { ChainId, type Network } from '@/features/network/types/backendNetworks';
@@ -31,8 +32,6 @@ import {
 } from '@/resources/assets/externalAssetsQuery';
 import { userAssetsStore } from '@/state/assets/userAssets';
 import { getAccountAddress } from '@/state/wallets/walletsStore';
-
-import { openInBrowser } from './openInBrowser';
 
 /**
  * @deprecated - use `getUniqueId` instead for chainIds

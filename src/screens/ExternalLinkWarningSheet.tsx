@@ -5,6 +5,7 @@ import { useRoute, type RouteProp } from '@react-navigation/native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import styled from 'styled-components';
 
+import { openInBrowser } from '@/features/dapp-browser/utils/openInBrowser';
 import { opacity } from '@/framework/ui/utils/opacity';
 import useDimensions from '@/hooks/useDimensions';
 import * as i18n from '@/languages';
@@ -13,7 +14,6 @@ import { type RootStackParamList } from '@/navigation/types';
 import { fonts, fontWithWidth, position } from '@/styles';
 import { useTheme } from '@/theme/ThemeContext';
 import formatURLForDisplay from '@/utils/formatURLForDisplay';
-import { openInBrowser } from '@/utils/openInBrowser';
 
 import { Centered, Column, ColumnWithMargins } from '../components/layout';
 import { SheetActionButton, SheetTitle, SlackSheet } from '../components/sheet';

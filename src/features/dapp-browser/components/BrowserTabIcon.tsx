@@ -1,0 +1,155 @@
+import React, { memo } from 'react';
+import { StyleSheet } from 'react-native';
+
+import Animated, { useAnimatedStyle, useDerivedValue, withTiming, type SharedValue } from 'react-native-reanimated';
+
+import { TIMING_CONFIGS } from '@/components/animations/animationConfigs';
+import ButtonPressAnimation from '@/components/animations/ButtonPressAnimation';
+import { TAB_BAR_PILL_HEIGHT } from '@/components/tab-bar/dimensions';
+import { TabBarIcon } from '@/components/tab-bar/TabBarIcon';
+import { Box, TextIcon, useColorMode } from '@/design-system';
+import { opacity } from '@/framework/ui/utils/opacity';
+import { THICK_BORDER_WIDTH } from '@/styles/constants';
+import { shallowEqual } from '@/worklets/comparisons';
+
+import { useBrowserTabBarContext } from '../context/BrowserContext';
+import { useBrowserStore } from '../stores/browserStore';
+
+export const BrowserTabIcon = memo(function BrowserTabIcon({
+  accentColor,
+  index,
+  reanimatedPosition,
+  showNavButtons,
+  tabBarIcon,
+}: {
+  accentColor: string;
+  index: number;
+  reanimatedPosition: SharedValue<number>;
+  showNavButtons: SharedValue<boolean>;
+  tabBarIcon: string;
+}) {
+  const { isDarkMode } = useColorMode();
+  const { goBack, goForward } = useBrowserTabBarContext();
+
+  const navState = useBrowserStore(state => state.getActiveTabNavState(), shallowEqual);
+
+  const navButtonsBackgroundOpacity = useDerivedValue(() => {
+    const navButtonsVisible = reanimatedPosition.value === 2 && (navState.canGoBack || navState.canGoForward);
+    return withTiming(navButtonsVisible ? 1 : 0, TIMING_CONFIGS.slowFadeConfig);
+  });
+
+  const navButtonsStyle = useAnimatedStyle(() => {
+    return {
+      backgroundColor: opacity(accentColor, 0.06 * navButtonsBackgroundOpacity.value),
+      opacity: withTiming(showNavButtons.value ? 1 : 0, TIMING_CONFIGS.slowFadeConfig),
+      pointerEvents: showNavButtons.value ? 'auto' : 'none',
+    };
+  });
+
+  const animatedBorderStyle = useAnimatedStyle(() => {
+    return {
+      borderColor: opacity(accentColor, (isDarkMode ? 0.08 : 0.04) * navButtonsBackgroundOpacity.value),
+    };
+  });
+
+  const backButtonStyle = useAnimatedStyle(() => {
+    const disabledOpacity = isDarkMode ? 0.2 : 0.28;
+    return {
+      opacity: withTiming(navState.canGoBack ? 1 : disabledOpacity, TIMING_CONFIGS.slowFadeConfig),
+      transform: [
+        { translateX: withTiming(showNavButtons.value ? 0 : 16, TIMING_CONFIGS.slowFadeConfig) },
+        { scale: withTiming(showNavButtons.value ? 1 : 0.75, TIMING_CONFIGS.slowFadeConfig) },
+      ],
+    };
+  });
+
+  const forwardButtonStyle = useAnimatedStyle(() => {
+    const disabledOpacity = isDarkMode ? 0.2 : 0.28;
+    return {
+      opacity: withTiming(navState.canGoForward ? 1 : disabledOpacity, TIMING_CONFIGS.slowFadeConfig),
+      transform: [
+        { translateX: withTiming(showNavButtons.value ? 0 : -16, TIMING_CONFIGS.slowFadeConfig) },
+        { scale: withTiming(showNavButtons.value ? 1 : 0.75, TIMING_CONFIGS.slowFadeConfig) },
+      ],
+    };
+  });
+
+  const tabIconStyle = useAnimatedStyle(() => {
+    return {
+      opacity: withTiming(showNavButtons.value ? 0 : 1, TIMING_CONFIGS.slowFadeConfig),
+      pointerEvents: showNavButtons.value ? 'none' : 'auto',
+      transform: [{ scale: withTiming(showNavButtons.value ? 0.75 : 1, TIMING_CONFIGS.slowFadeConfig) }],
+    };
+  });
+
+  return (
+    <Box alignItems="center" height={{ custom: TAB_BAR_PILL_HEIGHT }} justifyContent="center" testID="dapp-browser-tab-icon" width="full">
+      <Animated.View style={[styles.navButtonsPill, navButtonsStyle]}>
+        <ButtonPressAnimation
+          onPress={goBack}
+          scaleTo={0.75}
+          style={[styles.navButton, styles.backButton, { pointerEvents: navState.canGoBack ? 'auto' : 'none' }]}
+        >
+          <Animated.View style={backButtonStyle}>
+            <TextIcon color={{ custom: accentColor }} containerSize={32} size="icon 18px" weight="bold">
+              􀆉
+            </TextIcon>
+          </Animated.View>
+        </ButtonPressAnimation>
+        <ButtonPressAnimation
+          onPress={goForward}
+          scaleTo={0.75}
+          style={[styles.navButton, styles.forwardButton, { pointerEvents: navState.canGoForward ? 'auto' : 'none' }]}
+        >
+          <Animated.View style={forwardButtonStyle}>
+            <TextIcon color={{ custom: accentColor }} containerSize={32} size="icon 18px" weight="bold">
+              􀆊
+            </TextIcon>
+          </Animated.View>
+        </ButtonPressAnimation>
+        <Animated.View style={[animatedBorderStyle, styles.cover, styles.navButtonsBorder]} />
+      </Animated.View>
+      <Animated.View style={[tabIconStyle, styles.cover]}>
+        <TabBarIcon accentColor={accentColor} icon={tabBarIcon} index={index} reanimatedPosition={reanimatedPosition} />
+      </Animated.View>
+    </Box>
+  );
+});
+
+const styles = StyleSheet.create({
+  backButton: {
+    paddingLeft: 1,
+  },
+  cover: {
+    alignItems: 'center',
+    bottom: 0,
+    height: '100%',
+    justifyContent: 'center',
+    left: 0,
+    position: 'absolute',
+    right: 0,
+    top: 0,
+    width: '100%',
+  },
+  forwardButton: {
+    paddingRight: 1,
+  },
+  navButton: {
+    alignItems: 'center',
+    height: TAB_BAR_PILL_HEIGHT,
+    justifyContent: 'center',
+    width: TAB_BAR_PILL_HEIGHT,
+  },
+  navButtonsBorder: {
+    borderCurve: 'continuous',
+    borderRadius: TAB_BAR_PILL_HEIGHT / 2,
+    borderWidth: THICK_BORDER_WIDTH,
+    overflow: 'hidden',
+    pointerEvents: 'none',
+  },
+  navButtonsPill: {
+    borderRadius: TAB_BAR_PILL_HEIGHT / 2,
+    flexDirection: 'row',
+    height: TAB_BAR_PILL_HEIGHT,
+  },
+});

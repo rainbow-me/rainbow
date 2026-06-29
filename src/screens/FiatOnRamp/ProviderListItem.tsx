@@ -6,13 +6,13 @@ import { type Address } from 'viem';
 import { analytics } from '@/analytics';
 import ButtonPressAnimation from '@/components/animations/ButtonPressAnimation';
 import { FiatProviderName } from '@/entities/f2c';
+import { openInBrowser } from '@/features/dapp-browser/utils/openInBrowser';
 import { WrappedAlert } from '@/helpers/alert';
 import * as i18n from '@/languages';
 import { logger, RainbowError } from '@/logger';
 import { type GetWidgetURL } from '@/resources/f2c';
 import { ProviderCard } from '@/screens/FiatOnRamp/components/ProviderCard';
 import { type ProviderConfig } from '@/screens/FiatOnRamp/types';
-import { openInBrowser } from '@/utils/openInBrowser';
 
 interface ProviderListItemProps {
   config: ProviderConfig;

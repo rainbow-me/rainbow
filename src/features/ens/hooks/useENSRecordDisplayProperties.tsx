@@ -5,12 +5,12 @@ import { upperFirst } from 'lodash';
 import URL from 'url-parse';
 
 import ContextMenuButton from '@/components/native-context-menu/contextMenu';
+import { openInBrowser } from '@/features/dapp-browser/utils/openInBrowser';
 import useClipboard from '@/hooks/useClipboard';
 import * as i18n from '@/languages';
 import { useNavigation } from '@/navigation/Navigation';
 import Routes from '@/navigation/routesNames';
 import { formatAddressForDisplay } from '@/utils/abbreviations';
-import { openInBrowser } from '@/utils/openInBrowser';
 
 import { ENS_RECORDS, REGISTRATION_MODES, textRecordFields } from '../utils/helpers';
 import useENSRegistration from './useENSRegistration';

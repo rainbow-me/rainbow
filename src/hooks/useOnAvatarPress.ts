@@ -8,6 +8,7 @@ import { type MenuConfig } from '@/components/native-context-menu/contextMenu';
 import { enableActionsOnReadOnlyWallet } from '@/config/debug';
 import { PROFILES } from '@/features/config/constants/experimental';
 import { useExperimentalFlag } from '@/features/config/hooks/experimentalHooks';
+import { openInBrowser } from '@/features/dapp-browser/utils/openInBrowser';
 import useENSAvatar, { prefetchENSAvatar } from '@/features/ens/hooks/useENSAvatar';
 import { prefetchENSCover } from '@/features/ens/hooks/useENSCover';
 import useENSOwner from '@/features/ens/hooks/useENSOwner';
@@ -21,7 +22,6 @@ import Routes from '@/navigation/routesNames';
 import { ETH_ADDRESS } from '@/references/constants';
 import { getIsReadOnlyWallet, updateAccountInfo, useAccountProfileInfo, useWalletsStore } from '@/state/wallets/walletsStore';
 import { buildRainbowUrl } from '@/utils/buildRainbowUrl';
-import { openInBrowser } from '@/utils/openInBrowser';
 
 import { useNavigation } from '../navigation/Navigation';
 import useAccountAsset from './useAccountAsset';

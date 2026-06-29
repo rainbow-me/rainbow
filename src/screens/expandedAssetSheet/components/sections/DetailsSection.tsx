@@ -1,14 +1,14 @@
 import React, { memo, useMemo, useState } from 'react';
 
 import ButtonPressAnimation from '@/components/animations/ButtonPressAnimation';
-import { formatUrl } from '@/components/DappBrowser/utils';
 import { Icon } from '@/components/icons';
 import { Bleed, Box, IconContainer, Inline, Text, TextShadow } from '@/design-system';
+import { formatUrl } from '@/features/dapp-browser/utils/browserUtils';
+import { openInBrowser } from '@/features/dapp-browser/utils/openInBrowser';
 import * as i18n from '@/languages';
 import { logger } from '@/logger';
 import { THICK_BORDER_WIDTH } from '@/styles/constants';
 import formatURLForDisplay from '@/utils/formatURLForDisplay';
-import { openInBrowser } from '@/utils/openInBrowser';
 
 import { SectionId, useExpandedAssetSheetContext } from '../../context/ExpandedAssetSheetContext';
 import { XIcon } from '../../icons/XIcon';

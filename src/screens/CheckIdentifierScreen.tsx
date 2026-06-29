@@ -10,6 +10,7 @@ import ButtonPressAnimation from '@/components/animations/ButtonPressAnimation';
 import { ImgixImage } from '@/components/images';
 import { SimpleSheet } from '@/components/sheet/SimpleSheet';
 import { BackgroundProvider, Bleed, Box, Inline, Inset, Separator, Stack, Text } from '@/design-system';
+import { openInBrowser } from '@/features/dapp-browser/utils/openInBrowser';
 import * as kc from '@/features/local-auth/keychain';
 import walletBackupStepTypes from '@/helpers/walletBackupStepTypes';
 import * as i18n from '@/languages';
@@ -18,7 +19,6 @@ import { getHeightForStep } from '@/navigation/config';
 import { useNavigation } from '@/navigation/Navigation';
 import type Routes from '@/navigation/routesNames';
 import { type RootStackParamList } from '@/navigation/types';
-import { openInBrowser } from '@/utils/openInBrowser';
 
 const imageSize = 40;
 

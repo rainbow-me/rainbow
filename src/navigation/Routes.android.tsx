@@ -5,7 +5,6 @@ import { NavigationContainer, type NavigationContainerRef } from '@react-navigat
 import { createStackNavigator } from '@react-navigation/stack';
 
 import { SwapScreen } from '@/__swaps__/screens/Swap/Swap';
-import { ControlPanel } from '@/components/DappBrowser/control-panel/ControlPanel';
 import WalletErrorSheet from '@/components/wallet-error/WalletErrorSheet';
 import AppIconUnlockSheet from '@/features/app-icon/screens/AppIconUnlockSheet';
 import BackupSheet from '@/features/backup/components/BackupSheet';
@@ -14,6 +13,7 @@ import { CashDepositIntroPanel } from '@/features/cash/screens/cash-deposit-intr
 import { CashDepositSetupScreen } from '@/features/cash/screens/cash-deposit-setup/CashDepositSetupScreen';
 import { PROFILES } from '@/features/config/constants/experimental';
 import { useExperimentalFlag } from '@/features/config/hooks/experimentalHooks';
+import { ControlPanel } from '@/features/dapp-browser/screens/ControlPanel';
 import { SignTransactionSheet } from '@/features/dapp-request/screens/SignTransactionSheet';
 import { LogSheet } from '@/features/debug/screens/LogSheet';
 import { WalletDiagnosticsSheet } from '@/features/debug/screens/WalletDiagnosticsSheet';

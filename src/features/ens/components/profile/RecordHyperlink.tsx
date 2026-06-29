@@ -2,9 +2,9 @@ import React, { useCallback } from 'react';
 
 import ButtonPressAnimation from '@/components/animations/ButtonPressAnimation';
 import { Text } from '@/design-system';
+import { openInBrowser } from '@/features/dapp-browser/utils/openInBrowser';
 import { useNavigation } from '@/navigation/Navigation';
 import Routes from '@/navigation/routesNames';
-import { openInBrowser } from '@/utils/openInBrowser';
 
 const ENS_REGEX = /[^\s]+.eth/g;
 
