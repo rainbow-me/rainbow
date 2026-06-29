@@ -5,7 +5,9 @@ import { isValidUrl } from '@/framework/core/utils/url';
 import { metadataClient } from '@/graphql';
 import { type DAppStatus } from '@/graphql/__generated__/metadata';
 import { createQueryKey, queryClient, type QueryConfigWithSelect, type QueryFunctionArgs } from '@/react-query';
-import { getDappHost, getDappHostname, getHardcodedDappInformation } from '@/utils/connectedApps';
+
+import { getDappHost, getDappHostname } from '../utils/dappUrls';
+import { getHardcodedDappInformation } from '../utils/hardcodedDappNames';
 
 export interface DappMetadata {
   url: string;
