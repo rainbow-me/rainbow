@@ -21,6 +21,31 @@ and this project adheres to [Semantic Versioning](http://semver.org/)
 
 ### Testing
 
+## [2.0.37](https://github.com/rainbow-me/rainbow/releases/tag/v2.0.37)
+
+### Added
+
+- Introduce src/app/ for cross-domain orchestration (https://github.com/rainbow-me/rainbow/pull/7602)
+
+### Changed
+
+- Vendor the forked react-native-shadow-stack (https://github.com/rainbow-me/rainbow/pull/7607)
+- Move bluetooth permissions into the framework module (https://github.com/rainbow-me/rainbow/pull/7604)
+- Move useHardwareBack into the framework module (https://github.com/rainbow-me/rainbow/pull/7606)
+- Upgrade React Native to 0.81.6 (https://github.com/rainbow-me/rainbow/pull/7366)
+- Extract useWatcher from useTransactionWatcher (https://github.com/rainbow-me/rainbow/pull/7610)
+- Bump iOS and Android to v2.0.37 (https://github.com/rainbow-me/rainbow/pull/7612)
+- Increment versionCode (https://github.com/rainbow-me/rainbow/pull/7638)
+- Reinstate custom Polymarket fees (https://github.com/rainbow-me/rainbow/pull/7635)
+
+### Fixed
+
+- Filter remaining benign Branch noise from Sentry (https://github.com/rainbow-me/rainbow/pull/7603)
+- Fix activity list issues (https://github.com/rainbow-me/rainbow/pull/7572)
+- Fix(graphql): codegen parse failure on arc's updated schema (https://github.com/rainbow-me/rainbow/pull/7617)
+- Fix unstripped native libraries in release builds (https://github.com/rainbow-me/rainbow/commit/06adcccd90bde4208324facc608c668246496137)
+- Fix: temp disable App Store rating prompt (https://github.com/rainbow-me/rainbow/pull/7633)
+
 ## [2.0.36](https://github.com/rainbow-me/rainbow/releases/tag/v2.0.36)
 
 ### Added
