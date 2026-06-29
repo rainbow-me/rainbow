@@ -1,4 +1,4 @@
-import { createRainbowStore } from '@/state/internal/createRainbowStore';
+import { createBaseStore } from '@storesjs/stores';
 
 import { SANDBOX_TEST_CASES, type SandboxTestCase, type SandboxTestCaseId, type SandboxTestCaseResult } from '../../core/models/cases';
 import { probeHttpAllowed, probeHttpBlocked } from '../api/httpProbes';
@@ -20,7 +20,7 @@ function idleCases(): Record<SandboxTestCaseId, SandboxTestCase> {
   >;
 }
 
-export const useSandboxDiagnosticsStore = createRainbowStore<SandboxDiagnosticsState>((set, get) => ({
+export const useSandboxDiagnosticsStore = createBaseStore<SandboxDiagnosticsState>((set, get) => ({
   isOpen: false,
   cases: idleCases(),
   open: () => set({ isOpen: true }),
