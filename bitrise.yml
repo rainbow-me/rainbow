@@ -169,8 +169,6 @@ workflows:
                 echo "IMGIX_TOKEN=$IMGIX_TOKEN" >> .env
                 echo "IMGIX_DOMAIN=$IMGIX_DOMAIN" >> .env
                 echo "GOOGLE_SERVICE_API_KEY=$GOOGLE_SERVICE_API_KEY" >> .env
-                echo "COVALENT_IOS_API_KEY=$COVALENT_IOS_API_KEY" >> .env
-                echo "COVALENT_ANDROID_API_KEY=$COVALENT_ANDROID_API_KEY" >> .env
                 echo "POLYGON_MAINNET_RPC=$POLYGON_MAINNET_RPC" >> .env
                 echo "ARBITRUM_MAINNET_RPC=$ARBITRUM_MAINNET_RPC" >> .env
                 echo "OPTIMISM_MAINNET_RPC=$OPTIMISM_MAINNET_RPC" >> .env
@@ -469,8 +467,6 @@ workflows:
                 echo "IMGIX_TOKEN=$IMGIX_TOKEN" >> .env
                 echo "IMGIX_DOMAIN=$IMGIX_DOMAIN" >> .env
                 echo "GOOGLE_SERVICE_API_KEY=$GOOGLE_SERVICE_API_KEY" >> .env
-                echo "COVALENT_IOS_API_KEY=$COVALENT_IOS_API_KEY" >> .env
-                echo "COVALENT_ANDROID_API_KEY=$COVALENT_ANDROID_API_KEY" >> .env
                 echo "POLYGON_MAINNET_RPC=$POLYGON_MAINNET_RPC" >> .env
                 echo "ARBITRUM_MAINNET_RPC=$ARBITRUM_MAINNET_RPC" >> .env
                 echo "OPTIMISM_MAINNET_RPC=$OPTIMISM_MAINNET_RPC" >> .env
