@@ -3348,7 +3348,7 @@
         "this_week": "На этой неделе",
         "game_best_of": "Игра %{currentPeriod} - Лучший из %{bestOf}",
         "final": "Финал",
-        "no_games": "Нет игр сегодня и завтра"
+        "no_games": "Нет игр на этой неделе"
       },
       "outcomes": {
         "yes": "Да",
