@@ -4,10 +4,9 @@ import { type ImageOptions } from '@candlefinance/faster-image';
 import { type CaptureOptions } from 'react-native-view-shot';
 
 import { globalColors } from '@/design-system';
+import { TRANSPARENT_PIXEL_BASE64 } from '@/framework/ui/utils/transparentPixelBase64';
 
 export const GOOGLE_SEARCH_URL = 'https://www.google.com/search?q=';
-export const HTTP = 'http://';
-export const HTTPS = 'https://';
 export const RAINBOW_HOME = 'RAINBOW_HOME';
 
 export const IOS_APP_STORE_URL_PREFIXES = ['itms-apps://', 'itms-appss://', 'https://itunes.apple.com', 'https://apps.apple.com'];
@@ -21,11 +20,9 @@ export const USER_AGENT = {
 };
 export const USER_AGENT_APPLICATION_NAME = 'Rainbow';
 
-export const BLANK_BASE64_PIXEL = 'iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mNkYAAAAAYAAjCB0C8AAAAASUVORK5CYII=';
-
 export const TAB_SCREENSHOT_FASTER_IMAGE_CONFIG: Partial<ImageOptions> = {
   // This placeholder avoids an occasional loading spinner flash
-  base64Placeholder: BLANK_BASE64_PIXEL,
+  base64Placeholder: TRANSPARENT_PIXEL_BASE64,
   cachePolicy: 'memory',
   resizeMode: Platform.OS === 'ios' ? 'topContain' : 'cover',
   showActivityIndicator: false,

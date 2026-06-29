@@ -30,6 +30,7 @@ import { IS_TEST } from '@/env';
 import { FEATURED_RESULTS } from '@/features/config/constants/experimental';
 import { useExperimentalFlag } from '@/features/config/hooks/experimentalHooks';
 import { useRemoteConfig } from '@/features/config/stores/remoteConfig';
+import { HTTP_PREFIX, HTTPS_PREFIX } from '@/framework/core/utils/url';
 import { opacity } from '@/framework/ui/utils/opacity';
 import { type DApp } from '@/graphql/__generated__/metadata';
 import * as i18n from '@/languages';
@@ -43,7 +44,7 @@ import { DEVICE_WIDTH } from '@/utils/deviceUtils';
 import { DndProvider, Draggable, DraggableGrid, type DraggableGridProps, type UniqueIdentifier } from '../drag-and-drop';
 import { EasingGradient } from '../easing-gradient/EasingGradient';
 import { useBrowserContext } from './BrowserContext';
-import { HOMEPAGE_BACKGROUND_COLOR_DARK, HOMEPAGE_BACKGROUND_COLOR_LIGHT, HTTP, HTTPS } from './constants';
+import { HOMEPAGE_BACKGROUND_COLOR_DARK, HOMEPAGE_BACKGROUND_COLOR_LIGHT } from './constants';
 import { EXTRA_WEBVIEW_HEIGHT, WEBVIEW_HEIGHT } from './Dimensions';
 import { getDappHost } from './handleProviderRequest';
 import { getNameFromFormattedUrl } from './utils';
@@ -417,7 +418,7 @@ const Card = memo(function Card({
                   {site.name}
                 </Text>
                 <Text size="13pt" weight="bold" color="labelTertiary" numberOfLines={1}>
-                  {site.url.startsWith(HTTP) || site.url.startsWith(HTTPS) ? getDappHost(site.url) : site.url}
+                  {site.url.startsWith(HTTP_PREFIX) || site.url.startsWith(HTTPS_PREFIX) ? getDappHost(site.url) : site.url}
                 </Text>
               </Stack>
             </ColorModeProvider>

@@ -1,10 +1,11 @@
 import { useQuery } from '@tanstack/react-query';
 import { capitalize } from 'lodash';
 
+import { isValidUrl } from '@/framework/core/utils/url';
 import { metadataClient } from '@/graphql';
 import { type DAppStatus } from '@/graphql/__generated__/metadata';
 import { createQueryKey, queryClient, type QueryConfigWithSelect, type QueryFunctionArgs } from '@/react-query';
-import { getDappHost, getDappHostname, getHardcodedDappInformation, isValidUrl } from '@/utils/connectedApps';
+import { getDappHost, getDappHostname, getHardcodedDappInformation } from '@/utils/connectedApps';
 
 export interface DappMetadata {
   url: string;

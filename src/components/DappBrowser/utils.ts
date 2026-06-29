@@ -2,43 +2,13 @@ import { Share } from 'react-native';
 
 import { type WebViewNavigationEvent } from 'react-native-webview/lib/RNCWebViewNativeComponent';
 
+import { HTTPS_PREFIX, isMissingValidProtocolWorklet } from '@/framework/core/utils/url';
 import { ensureError, logger, RainbowError } from '@/logger';
 
-import { APP_STORE_URL_PREFIXES, HTTP, HTTPS, RAINBOW_HOME } from './constants';
-
-// ---------------------------------------------------------------------------- //
-// URL validation regex breakdown here: https://mathiasbynens.be/demo/url-regex
-//
-// This is the @diegoperini version, which is a bit long but accurate
-// Details on its validation logic: https://gist.github.com/dperini/729294
-// ---------------------------------------------------------------------------- //
-const URL_PATTERN_REGEX =
-  /^(?:(?:(?:https?):)?\/\/)(?:\S+(?::\S*)?@)?(?:(?!(?:10|127)(?:\.\d{1,3}){3})(?!(?:169\.254|192\.168)(?:\.\d{1,3}){2})(?!172\.(?:1[6-9]|2\d|3[0-1])(?:\.\d{1,3}){2})(?:[1-9]\d?|1\d\d|2[01]\d|22[0-3])(?:\.(?:1?\d{1,2}|2[0-4]\d|25[0-5])){2}(?:\.(?:[1-9]\d?|1\d\d|2[0-4]\d|25[0-4]))|(?:(?:[a-z0-9\u00a1-\uffff][a-z0-9\u00a1-\uffff_-]{0,62})?[a-z0-9\u00a1-\uffff]\.)+(?:[a-z\u00a1-\uffff]{2,}\.?))(?::\d{2,5})?(?:[/?#]\S*)?$/i;
-
-export function isMissingValidProtocol(url: string): boolean {
-  return !url.startsWith(HTTP) && !url.startsWith(HTTPS);
-}
-
-export function isMissingValidProtocolWorklet(url: string): boolean {
-  'worklet';
-  return !url.startsWith(HTTP) && !url.startsWith(HTTPS);
-}
+import { APP_STORE_URL_PREFIXES, RAINBOW_HOME } from './constants';
 
 export function isValidAppStoreUrl(url: string): boolean {
   return APP_STORE_URL_PREFIXES.some(prefix => url.startsWith(prefix));
-}
-
-export function isValidURLWorklet(url: string): boolean {
-  'worklet';
-  if (url.startsWith('blob:') || url.startsWith('data:')) {
-    return false;
-  }
-
-  let urlForValidation = url.trim();
-  if (isMissingValidProtocolWorklet(urlForValidation)) {
-    urlForValidation = HTTPS + urlForValidation;
-  }
-  return URL_PATTERN_REGEX.test(urlForValidation);
 }
 
 export const normalizeUrlWorklet = (url: string): string => {
@@ -53,7 +23,7 @@ export const normalizeUrlWorklet = (url: string): string => {
 
   let normalizedUrl = url;
   if (isMissingValidProtocolWorklet(normalizedUrl)) {
-    normalizedUrl = HTTPS + normalizedUrl;
+    normalizedUrl = HTTPS_PREFIX + normalizedUrl;
   }
   if (!normalizedUrl.endsWith('/') && !normalizedUrl.includes('?')) {
     normalizedUrl += '/';

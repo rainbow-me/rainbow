@@ -6,6 +6,7 @@ import Animated, { runOnJS, useAnimatedStyle, withSpring } from 'react-native-re
 
 import { SPRING_CONFIGS } from '@/components/animations/animationConfigs';
 import { useColorMode } from '@/design-system';
+import { HTTPS_PREFIX, isMissingValidProtocolWorklet, isValidWebUrlWorklet } from '@/framework/core/utils/url';
 import { useSharedValueState } from '@/hooks/reanimated/useSharedValueState';
 import { useSyncSharedValue } from '@/hooks/reanimated/useSyncSharedValue';
 import useKeyboardHeight from '@/hooks/useKeyboardHeight';
@@ -14,14 +15,13 @@ import { DEVICE_WIDTH } from '@/utils/deviceUtils';
 
 import { useBrowserContext } from '../BrowserContext';
 import { useBrowserWorkletsContext } from '../BrowserWorkletsContext';
-import { GOOGLE_SEARCH_URL, HOMEPAGE_BACKGROUND_COLOR_DARK, HOMEPAGE_BACKGROUND_COLOR_LIGHT, HTTPS } from '../constants';
+import { GOOGLE_SEARCH_URL, HOMEPAGE_BACKGROUND_COLOR_DARK, HOMEPAGE_BACKGROUND_COLOR_LIGHT } from '../constants';
 import { BOTTOM_BAR_HEIGHT } from '../Dimensions';
 import { useTabSwitchGestures } from '../hooks/useTabSwitchGestures';
 import { AccountIcon } from '../search-input/AccountIcon';
 import { SearchInput } from '../search-input/SearchInput';
 import { TabButton } from '../search-input/TabButton';
 import { TabViewGestureStates } from '../types';
-import { isMissingValidProtocolWorklet, isValidURLWorklet } from '../utils';
 import { SearchResults } from './results/SearchResults';
 import { useSearchContext } from './SearchContext';
 
@@ -107,10 +107,10 @@ export const Search = () => {
         newUrl = searchResults.value[0].url;
       }
 
-      if (!isValidURLWorklet(newUrl)) {
+      if (!isValidWebUrlWorklet(newUrl)) {
         newUrl = GOOGLE_SEARCH_URL + newUrl;
       } else if (isMissingValidProtocolWorklet(newUrl)) {
-        newUrl = HTTPS + newUrl;
+        newUrl = HTTPS_PREFIX + newUrl;
       }
 
       if (shouldBlur) inputRef.current?.blur();

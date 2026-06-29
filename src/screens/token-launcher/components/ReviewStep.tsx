@@ -3,12 +3,12 @@ import { ScrollView, StyleSheet } from 'react-native';
 
 import FastImage from 'react-native-fast-image';
 
-import { isValidURLWorklet } from '@/components/DappBrowser/utils';
 import { Box, Text, TextShadow } from '@/design-system';
 import { type TextSize } from '@/design-system/components/Text/Text';
 import { convertAmountToNativeDisplay } from '@/features/currency/utils/nativeDisplay';
 import { ChainImage } from '@/features/network/components/ChainImage';
 import { useBackendNetworksStore } from '@/features/network/stores/backendNetworksStore';
+import { isValidWebUrlWorklet } from '@/framework/core/utils/url';
 import { abbreviateNumber, convertAmountToBalanceDisplay } from '@/helpers/utilities';
 import * as i18n from '@/languages';
 import { userAssetsStoreManager } from '@/state/assets/userAssetsStoreManager';
@@ -60,7 +60,7 @@ function AboutCard() {
                 : linkSettings.Icon;
 
             const { displayName } = linkSettings;
-            const input = isValidURLWorklet(link.input) ? formatURLForDisplay(link.input) : link.input;
+            const input = isValidWebUrlWorklet(link.input) ? formatURLForDisplay(link.input) : link.input;
 
             return (
               <Box

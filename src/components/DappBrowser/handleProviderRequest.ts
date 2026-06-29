@@ -8,6 +8,7 @@ import { type Messenger } from '@/browserMessaging/AppMessenger';
 import { useBackendNetworksStore } from '@/features/network/stores/backendNetworksStore';
 import { ChainId } from '@/features/network/types/backendNetworks';
 import { time } from '@/framework/core/utils/time';
+import { isValidUrl } from '@/framework/core/utils/url';
 import { getProvider } from '@/handlers/web3';
 import * as i18n from '@/languages';
 import { logger } from '@/logger';
@@ -34,15 +35,6 @@ export type ProviderResponse = RequestResponse;
 export type ProviderRequestTransport = {
   send(payload: ProviderRequestPayload, { id }: { id: number }): Promise<RequestResponse>;
   reply(callback: (payload: ProviderRequestPayload, callbackOptions: CallbackOptions) => Promise<RequestResponse>): Promise<void>;
-};
-
-export const isValidUrl = (url: string) => {
-  try {
-    new URL(url);
-    return true;
-  } catch (err) {
-    return false;
-  }
 };
 
 export const getDappHost = (url?: string) => {

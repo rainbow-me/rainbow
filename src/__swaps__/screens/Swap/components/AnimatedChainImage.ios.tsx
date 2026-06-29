@@ -4,12 +4,12 @@ import { View } from 'react-native';
 import { useAnimatedProps, useDerivedValue } from 'react-native-reanimated';
 
 import { AnimatedFasterImage } from '@/components/AnimatedComponents/AnimatedFasterImage';
-import { BLANK_BASE64_PIXEL } from '@/components/DappBrowser/constants';
 import { DEFAULT_FASTER_IMAGE_CONFIG } from '@/components/images/ImgixImage';
 import { useColorMode } from '@/design-system';
 import { getChainBadgeStyles } from '@/features/network/components/ChainImage';
 import { useBackendNetworksStore } from '@/features/network/stores/backendNetworksStore';
 import { ChainId } from '@/features/network/types/backendNetworks';
+import { TRANSPARENT_PIXEL_BASE64 } from '@/framework/ui/utils/transparentPixelBase64';
 
 import { useSwapContext } from '../providers/swap-provider';
 
@@ -39,7 +39,7 @@ export function AnimatedChainImage({
   const animatedIconSource = useAnimatedProps(() => ({
     source: {
       ...DEFAULT_FASTER_IMAGE_CONFIG,
-      base64Placeholder: BLANK_BASE64_PIXEL,
+      base64Placeholder: TRANSPARENT_PIXEL_BASE64,
       url: url.value,
     },
   }));
