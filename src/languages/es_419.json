@@ -3348,7 +3348,7 @@
         "this_week": "Esta semana",
         "game_best_of": "Juego %{currentPeriod} - Mejor de %{bestOf}",
         "final": "Final",
-        "no_games": "No hay juegos hoy o mañana"
+        "no_games": "No hay juegos esta semana"
       },
       "outcomes": {
         "yes": "Sí",
