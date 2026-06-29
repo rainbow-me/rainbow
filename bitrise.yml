@@ -199,7 +199,6 @@ workflows:
                 echo "PINATA_API_SECRET=$PINATA_API_SECRET" >>.env
                 echo "PINATA_GATEWAY_URL=$PINATA_GATEWAY_URL" >>.env
                 echo "OPTIMISM_KOVAN_RPC=$OPTIMISM_KOVAN_RPC" >> .env
-                echo "SIMPLEHASH_API_KEY=$SIMPLEHASH_API_KEY" >> .env
                 echo "POAP_API_KEY=$POAP_API_KEY" >> .env
                 echo "SECURE_WALLET_HASH_KEY=$SECURE_WALLET_HASH_KEY" >> .env
                 echo "LOG_LEVEL=$LOG_LEVEL" >> .env
@@ -497,7 +496,6 @@ workflows:
                 echo "PINATA_API_SECRET=$PINATA_API_SECRET" >>.env
                 echo "PINATA_GATEWAY_URL=$PINATA_GATEWAY_URL" >>.env
                 echo "OPTIMISM_KOVAN_RPC=$OPTIMISM_KOVAN_RPC" >> .env
-                echo "SIMPLEHASH_API_KEY=$SIMPLEHASH_API_KEY" >> .env
                 echo "POAP_API_KEY=$POAP_API_KEY" >> .env
                 echo "SECURE_WALLET_HASH_KEY=$SECURE_WALLET_HASH_KEY" >> .env
                 echo "LOG_LEVEL=$LOG_LEVEL" >> .env
