@@ -205,8 +205,6 @@ workflows:
                 echo "WC_PROJECT_ID=$WC_PROJECT_ID" >> .env
                 echo "ADDYS_API_KEY=$ADDYS_API_KEY" >> .env
                 echo "METADATA_GRAPHQL_API_KEY=$METADATA_GRAPHQL_API_KEY_STAGING" >> .env
-                echo "RESERVOIR_API_KEY_PROD=$RESERVOIR_API_KEY_PROD" >> .env
-                echo "RESERVOIR_API_KEY_DEV=$RESERVOIR_API_KEY_DEV" >> .env
                 echo "RPC_PROXY_BASE_URL_PROD=$RPC_PROXY_BASE_URL_PROD" >> .env
                 echo "RPC_PROXY_BASE_URL_DEV=$RPC_PROXY_BASE_URL_DEV" >> .env
                 echo "RPC_PROXY_API_KEY_PROD=$RPC_PROXY_API_KEY_PROD" >> .env
@@ -502,8 +500,6 @@ workflows:
                 echo "WC_PROJECT_ID=$WC_PROJECT_ID" >> .env
                 echo "ADDYS_API_KEY=$ADDYS_API_KEY_STAGING" >> .env
                 echo "METADATA_GRAPHQL_API_KEY=$METADATA_GRAPHQL_API_KEY_STAGING" >> .env
-                echo "RESERVOIR_API_KEY_PROD=$RESERVOIR_API_KEY_PROD" >> .env
-                echo "RESERVOIR_API_KEY_DEV=$RESERVOIR_API_KEY_DEV" >> .env
                 echo "RPC_PROXY_BASE_URL_PROD=$RPC_PROXY_BASE_URL_PROD" >> .env
                 echo "RPC_PROXY_BASE_URL_DEV=$RPC_PROXY_BASE_URL_DEV" >> .env
                 echo "RPC_PROXY_API_KEY_PROD=$RPC_PROXY_API_KEY_PROD" >> .env
