@@ -2963,11 +2963,11 @@
           "hours_ago": "数時間前",
           "today": "今日",
           "day_ago": "1日前",
-          "days_ago": "%s日前",
+          "days_ago": "日前",
           "week_ago": "1週間前",
-          "weeks_ago": "%s週間前",
+          "weeks_ago": "週間前",
           "month_ago": "1ヵ月前",
-          "months_ago": "%sヵ月前"
+          "months_ago": "ヵ月前"
         }
       }
     },

@@ -2963,11 +2963,11 @@
           "hours_ago": "saatler önce",
           "today": "Bugün",
           "day_ago": "bir gün önce",
-          "days_ago": "{0} gün önce",
+          "days_ago": "gün önce",
           "week_ago": "bir hafta önce",
-          "weeks_ago": "{0} hafta önce",
+          "weeks_ago": "hafta önce",
           "month_ago": "bir ay önce",
-          "months_ago": "{0} ay önce"
+          "months_ago": "ay önce"
         }
       }
     },
