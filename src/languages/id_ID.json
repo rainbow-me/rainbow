@@ -1850,12 +1850,12 @@
           "text": "Hingga 67,850 OP dalam hadiah akan dibagikan setiap minggu. Jika hadiah mingguan habis, hadiah akan sementara ditunda dan dilanjutkan minggu berikutnya."
         },
         "bridge": {
-          "title": "Dapatkan 0.125% di Bridging",
-          "text": "Sementara hadiah masih berlangsung, menjembatani token yang telah diverifikasi ke Optimism akan memberi Anda sekitar 0.125% kembali dalam OP.\n\nStatistik diperbarui secara berkala sepanjang hari. Periksa kembali segera jika Anda tidak melihat penjembatan terakhir Anda tercetak di sini."
+          "title": "Dapatkan %{percent}% di Bridging",
+          "text": "Sementara hadiah masih berlangsung, menjembatani token yang telah diverifikasi ke Optimism akan memberi Anda sekitar %{percent}% kembali dalam OP.\n\nStatistik diperbarui secara berkala sepanjang hari. Periksa kembali segera jika Anda tidak melihat penjembatan terakhir Anda tercetak di sini."
         },
         "swap": {
-          "title": "Dapatkan 0.425% pada Swaps",
-          "text": "Sementara hadiah masih berlangsung, menukar token yang telah diverifikasi di Optimism akan memberi Anda sekitar 0.425% kembali dalam OP.\n\nStatistik diperbarui secara berkala sepanjang hari. Periksa kembali segera jika Anda tidak melihat penukaran terakhir Anda tercetak di sini."
+          "title": "Dapatkan %{percent}% pada Swaps",
+          "text": "Sementara hadiah masih berlangsung, menukar token yang telah diverifikasi di Optimism akan memberi Anda sekitar %{percent}% kembali dalam OP.\n\nStatistik diperbarui secara berkala sepanjang hari. Periksa kembali segera jika Anda tidak melihat penukaran terakhir Anda tercetak di sini."
         },
         "position": {
           "title": "Posisi Leaderboard",
