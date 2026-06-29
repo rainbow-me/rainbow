@@ -1850,12 +1850,12 @@
           "text": "Até 67.850 OP em recompensas serão distribuídas toda semana. Se as recompensas semanais acabarem, as recompensas serão pausadas temporariamente e retomadas na semana seguinte."
         },
         "bridge": {
-          "title": "Ganhe 0,125% em pontes",
-          "text": "Enquanto as recompensas estiverem ativas, fazer pontes de tokens verificados para a Optimism renderá aproximadamente 0,125% em OP.\n\nAs estatísticas são atualizadas periodicamente ao longo do dia. Volte em breve se você não vê sua ponte recente refletida aqui."
+          "title": "Ganhe %{percent}% em pontes",
+          "text": "Enquanto as recompensas estiverem ativas, fazer pontes de tokens verificados para a Optimism renderá aproximadamente %{percent}% em OP.\n\nAs estatísticas são atualizadas periodicamente ao longo do dia. Volte em breve se você não vê sua ponte recente refletida aqui."
         },
         "swap": {
-          "title": "Ganhe 0,425% em trocas",
-          "text": "Enquanto as recompensas estiverem ativas, trocar tokens verificados na Optimism vai te render aproximadamente 0.425% de volta em OP.\n\nAs estatísticas são atualizadas periodicamente ao longo do dia. Verifique novamente em breve se você não vê suas trocas recentes refletidas aqui."
+          "title": "Ganhe %{percent}% em trocas",
+          "text": "Enquanto as recompensas estiverem ativas, trocar tokens verificados na Optimism vai te render aproximadamente %{percent}% de volta em OP.\n\nAs estatísticas são atualizadas periodicamente ao longo do dia. Verifique novamente em breve se você não vê suas trocas recentes refletidas aqui."
         },
         "position": {
           "title": "Posição no Quadro de Líderes",
