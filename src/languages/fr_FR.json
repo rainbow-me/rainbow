@@ -1850,12 +1850,12 @@
           "text": "Jusqu'à 67,850 OP en récompenses seront distribuées chaque semaine. Si les récompenses hebdomadaires sont épuisées, les récompenses seront temporairement suspendues et reprendront la semaine suivante."
         },
         "bridge": {
-          "title": "Gagnez 0.125% sur les ponts",
-          "text": "Tant que les récompenses sont actives, le pontage de jetons vérifiés vers Optimism vous rapportera environ 0,125% de retour en OP.\n\nLes statistiques sont mises à jour périodiquement tout au long de la journée. Revenez bientôt si vous ne voyez pas votre pontage récent reflété ici."
+          "title": "Gagnez %{percent}% sur les ponts",
+          "text": "Tant que les récompenses sont actives, le pontage de jetons vérifiés vers Optimism vous rapportera environ %{percent}% de retour en OP.\n\nLes statistiques sont mises à jour périodiquement tout au long de la journée. Revenez bientôt si vous ne voyez pas votre pontage récent reflété ici."
         },
         "swap": {
-          "title": "Gagnez 0,425% sur les échanges",
-          "text": "Tant que les récompenses sont actives, l'échange de jetons vérifiés sur Optimism vous rapportera environ 0,425% de retour en OP.\n\nLes statistiques sont mises à jour périodiquement tout au long de la journée. Revenez bientôt si vous ne voyez pas vos échanges récents reflétés ici."
+          "title": "Gagnez %{percent}% sur les échanges",
+          "text": "Tant que les récompenses sont actives, l'échange de jetons vérifiés sur Optimism vous rapportera environ %{percent}% de retour en OP.\n\nLes statistiques sont mises à jour périodiquement tout au long de la journée. Revenez bientôt si vous ne voyez pas vos échanges récents reflétés ici."
         },
         "position": {
           "title": "Position au classement",
