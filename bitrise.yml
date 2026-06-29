@@ -170,8 +170,6 @@ workflows:
                 echo "POLYGON_MAINNET_RPC=$POLYGON_MAINNET_RPC" >> .env
                 echo "ARBITRUM_MAINNET_RPC=$ARBITRUM_MAINNET_RPC" >> .env
                 echo "OPTIMISM_MAINNET_RPC=$OPTIMISM_MAINNET_RPC" >> .env
-                echo "OPENSEA_API_KEY=$OPENSEA_API_KEY" >> .env
-                echo "OPENSEA_RINKEBY_API_KEY=$OPENSEA_RINKEBY_API_KEY" >> .env
                 echo "NFT_API_KEY=$NFT_API_KEY" >> .env
                 echo "NFT_API_URL=$NFT_API_URL" >> .env
                 echo "ETHEREUM_MAINNET_RPC=$ETHEREUM_MAINNET_RPC" >> .env
@@ -463,8 +461,6 @@ workflows:
                 echo "POLYGON_MAINNET_RPC=$POLYGON_MAINNET_RPC" >> .env
                 echo "ARBITRUM_MAINNET_RPC=$ARBITRUM_MAINNET_RPC" >> .env
                 echo "OPTIMISM_MAINNET_RPC=$OPTIMISM_MAINNET_RPC" >> .env
-                echo "OPENSEA_API_KEY=$OPENSEA_API_KEY" >> .env
-                echo "OPENSEA_RINKEBY_API_KEY=$OPENSEA_RINKEBY_API_KEY" >> .env
                 echo "NFT_API_KEY=$NFT_API_KEY" >> .env
                 echo "NFT_API_URL=$NFT_API_URL" >> .env
                 echo "ETHEREUM_MAINNET_RPC=$ETHEREUM_MAINNET_RPC" >> .env
