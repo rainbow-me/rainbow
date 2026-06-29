@@ -11,6 +11,7 @@ import ButtonPressAnimation from '@/components/animations/ButtonPressAnimation';
 import Spinner from '@/components/Spinner';
 import { Box, ColorModeProvider, Row, Rows, Stack, Text } from '@/design-system';
 import type { UniqueAsset } from '@/entities/uniqueAssets';
+import { openInBrowser } from '@/features/dapp-browser/utils/openInBrowser';
 import { watchingAlert } from '@/features/wallet/utils/watchingAlert';
 import styled from '@/framework/ui/styled-thing';
 import { arcClient } from '@/graphql';
@@ -26,7 +27,6 @@ import { useAccountAddress, useIsReadOnlyWallet } from '@/state/wallets/walletsS
 import { position } from '@/styles';
 import { useTheme } from '@/theme/ThemeContext';
 import { delay } from '@/utils/delay';
-import { openInBrowser } from '@/utils/openInBrowser';
 import { type PoapMintError } from '@/utils/poaps';
 
 import ImgixImage from '../../components/images/ImgixImage';

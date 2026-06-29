@@ -6,6 +6,7 @@ import { values } from 'lodash';
 import { analytics } from '@/analytics';
 import { addWalletToCloudBackup, backupWalletToCloud } from '@/features/backup/backup';
 import { backupsStore } from '@/features/backup/stores/backupsStore';
+import { openInBrowser } from '@/features/dapp-browser/utils/openInBrowser';
 import { maybeAuthenticateWithPIN } from '@/features/local-auth/pinAuthentication';
 import { CLOUD_BACKUP_ERRORS, getGoogleAccountUserData, isCloudBackupAvailable, login } from '@/handlers/cloudBackup';
 import { WrappedAlert as Alert } from '@/helpers/alert';
@@ -13,7 +14,6 @@ import WalletBackupTypes from '@/helpers/walletBackupTypes';
 import * as i18n from '@/languages';
 import { logger, RainbowError } from '@/logger';
 import { setWalletBackedUp, useWallets } from '@/state/wallets/walletsStore';
-import { openInBrowser } from '@/utils/openInBrowser';
 
 import { cloudPlatform } from '../utils/platform';
 

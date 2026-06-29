@@ -1,10 +1,10 @@
 import React, { useCallback } from 'react';
 import { Platform } from 'react-native';
 
+import { openInBrowser } from '@/features/dapp-browser/utils/openInBrowser';
 import styled from '@/framework/ui/styled-thing';
 import formatURLForDisplay from '@/utils/formatURLForDisplay';
 import magicMemo from '@/utils/magicMemo';
-import { openInBrowser } from '@/utils/openInBrowser';
 
 import { useTheme } from '../theme/ThemeContext';
 import ButtonPressAnimation from './animations/ButtonPressAnimation';

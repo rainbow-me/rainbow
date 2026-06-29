@@ -6,6 +6,7 @@ import { format } from 'date-fns';
 import { getColorValueForThemeWorklet } from '@/__swaps__/utils/swaps';
 import ButtonPressAnimation from '@/components/animations/ButtonPressAnimation';
 import { Box, globalColors, Text, TextIcon, TextShadow, useColorMode } from '@/design-system';
+import { openInBrowser } from '@/features/dapp-browser/utils/openInBrowser';
 import { CATEGORIES } from '@/features/polymarket/constants';
 import { type PolymarketEvent, type PolymarketMarketEvent } from '@/features/polymarket/types/polymarket-event';
 import { ExpandableDescriptionCard } from '@/framework/ui/components/ExpandableDescriptionCard';
@@ -14,7 +15,6 @@ import * as i18n from '@/languages';
 import Navigation from '@/navigation/Navigation';
 import Routes from '@/navigation/routesNames';
 import { THICK_BORDER_WIDTH } from '@/styles/constants';
-import { openInBrowser } from '@/utils/openInBrowser';
 import { getSolidColorEquivalent } from '@/worklets/colors';
 
 export const AboutSection = memo(function AboutSection({

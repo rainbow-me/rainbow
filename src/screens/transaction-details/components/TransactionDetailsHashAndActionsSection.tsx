@@ -8,6 +8,7 @@ import ButtonPressAnimation from '@/components/animations/ButtonPressAnimation';
 import { SheetActionButton } from '@/components/sheet';
 import { Box, Columns, Stack } from '@/design-system';
 import { isAwaitingRelayTransactionHash, TransactionStatus, type RainbowTransaction } from '@/entities/transactions';
+import { openInBrowser } from '@/features/dapp-browser/utils/openInBrowser';
 import { opacity } from '@/framework/ui/utils/opacity';
 import * as i18n from '@/languages';
 import Navigation from '@/navigation/Navigation';
@@ -20,7 +21,6 @@ import { shortenTxHashString } from '@/screens/transaction-details/helpers/short
 import { useIsReadOnlyWallet } from '@/state/wallets/walletsStore';
 import { useTheme } from '@/theme/ThemeContext';
 import ethereumUtils from '@/utils/ethereumUtils';
-import { openInBrowser } from '@/utils/openInBrowser';
 
 type Props = {
   transaction: RainbowTransaction;

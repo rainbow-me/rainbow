@@ -8,6 +8,7 @@ import { analytics } from '@/analytics';
 import ButtonPressAnimation, { ScaleButtonZoomableAndroid } from '@/components/animations/ButtonPressAnimation';
 import Divider from '@/components/Divider';
 import { Icon } from '@/components/icons';
+import { openInBrowser } from '@/features/dapp-browser/utils/openInBrowser';
 import { Network } from '@/features/network/types/backendNetworks';
 import styled from '@/framework/ui/styled-thing';
 import { opacity } from '@/framework/ui/utils/opacity';
@@ -18,7 +19,6 @@ import { getIsDamagedWallet, useAccountAddress } from '@/state/wallets/walletsSt
 import { padding, position } from '@/styles';
 import deviceUtils from '@/utils/deviceUtils';
 import magicMemo from '@/utils/magicMemo';
-import { openInBrowser } from '@/utils/openInBrowser';
 import { ShadowStack } from '@/vendor/react-native-shadow-stack';
 
 import networkInfo from '../helpers/networkInfo';

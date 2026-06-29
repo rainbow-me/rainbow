@@ -6,6 +6,7 @@ import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import RainbowCoinIcon from '@/components/coin-icon/RainbowCoinIcon';
 import { DoubleChevron } from '@/components/icons';
 import { Box, Text as DSText, Separator } from '@/design-system';
+import { openInBrowser } from '@/features/dapp-browser/utils/openInBrowser';
 import gasUtils from '@/features/gas/utils/gas';
 import { ChainImage } from '@/features/network/components/ChainImage';
 import { useBackendNetworksStore } from '@/features/network/stores/backendNetworksStore';
@@ -21,7 +22,6 @@ import { fonts, fontWithWidth, padding, position } from '@/styles';
 import { useTheme, type ThemeContextProps } from '@/theme/ThemeContext';
 import { buildRainbowLearnUrl, LearnUTMCampaign } from '@/utils/buildRainbowUrl';
 import ethereumUtils from '@/utils/ethereumUtils';
-import { openInBrowser } from '@/utils/openInBrowser';
 import { cloudPlatformAccountName } from '@/utils/platform';
 import safeAreaInsetValues from '@/utils/safeAreaInsetValues';
 

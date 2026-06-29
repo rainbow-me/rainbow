@@ -7,6 +7,7 @@ import { type FiatProviderName } from '@/entities/f2c';
 import { type UnlockableAppIconKey } from '@/features/app-icon/models/appIcons';
 import { type OrderFailureReason, type RampNetwork } from '@/features/cash/services/rampClient';
 import { type CandleResolution, type ChartType } from '@/features/charts/types';
+import { type FavoritedSite } from '@/features/dapp-browser/stores/favoriteDappsStore';
 import { type RequestSource } from '@/features/dapp-request/types';
 import { type ENSRapActionType } from '@/features/ens/raps/common';
 import { type ChainId, type Network } from '@/features/network/types/backendNetworks';
@@ -18,7 +19,6 @@ import { type EthereumWalletType } from '@/helpers/walletTypes';
 import { type WalletLibraryType } from '@/model/wallet';
 import { type PairHardwareWalletNavigatorParams } from '@/navigation/types';
 import { type TokenLauncherAnalyticsParams } from '@/screens/token-launcher/state/tokenLauncherStore';
-import { type FavoritedSite } from '@/state/browser/favoriteDappsStore';
 import {
   type DepositFailureMetadata,
   type DepositSuccessMetadata,

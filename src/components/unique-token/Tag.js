@@ -6,13 +6,13 @@ import PropTypes from 'prop-types';
 
 import ContextMenuButton from '@/components/native-context-menu/contextMenu';
 import { Inline } from '@/design-system';
+import { openInBrowser } from '@/features/dapp-browser/utils/openInBrowser';
 import styled from '@/framework/ui/styled-thing';
 import { showActionSheetWithOptions } from '@/framework/ui/utils/actionsheet';
 import { opacity } from '@/framework/ui/utils/opacity';
 import * as i18n from '@/languages';
 import { padding } from '@/styles';
 import magicMemo from '@/utils/magicMemo';
-import { openInBrowser } from '@/utils/openInBrowser';
 
 import ButtonPressAnimation from '../animations/ButtonPressAnimation';
 import { Centered, Column } from '../layout';
