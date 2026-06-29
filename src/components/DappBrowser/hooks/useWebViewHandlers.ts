@@ -9,11 +9,11 @@ import { type ShouldStartLoadRequest, type WebViewNavigation } from 'react-nativ
 
 import { appMessenger, type Messenger } from '@/browserMessaging/AppMessenger';
 import { TIMING_CONFIGS } from '@/components/animations/animationConfigs';
+import { getDappHostname } from '@/features/dapp/utils/dappUrls';
 import Navigation from '@/navigation/Navigation';
 import Routes from '@/navigation/routesNames';
 import { useBrowserStore, type BrowserState } from '@/state/browser/browserStore';
 import { type BrowserHistoryStore } from '@/state/browserHistory';
-import { getDappHostname } from '@/utils/connectedApps';
 import { openInBrowser } from '@/utils/openInBrowser';
 import { generateUniqueId } from '@/worklets/strings';
 

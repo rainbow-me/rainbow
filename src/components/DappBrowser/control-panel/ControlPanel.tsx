@@ -35,6 +35,7 @@ import {
   useForegroundColor,
 } from '@/design-system';
 import { type TextColor } from '@/design-system/color/palettes';
+import { getDappHost } from '@/features/dapp/utils/dappUrls';
 import { ChainImage } from '@/features/network/components/ChainImage';
 import { useBackendNetworksStore } from '@/features/network/stores/backendNetworksStore';
 import { ChainId } from '@/features/network/types/backendNetworks';
@@ -67,7 +68,6 @@ import { getHighContrastTextColorWorklet } from '@/worklets/colors';
 
 import { RAINBOW_HOME } from '../constants';
 import { TOP_INSET } from '../Dimensions';
-import { getDappHost } from '../handleProviderRequest';
 import { formatUrl } from '../utils';
 
 const PAGES = {

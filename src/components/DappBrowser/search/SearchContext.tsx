@@ -3,7 +3,7 @@ import { type TextInput } from 'react-native';
 
 import { useAnimatedRef, useSharedValue, type AnimatedRef, type SharedValue } from 'react-native-reanimated';
 
-import { type Dapp } from '@/resources/metadata/dapps';
+import { type Dapp } from '@/features/dapp/stores/dappsStore';
 import { getDefaultKeyboardHeight } from '@/utils/keyboardHeight';
 
 interface SearchContextType {

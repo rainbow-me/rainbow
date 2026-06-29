@@ -7,6 +7,7 @@ import { uniq } from 'lodash';
 import { analytics } from '@/analytics';
 import Alert from '@/components/alerts/Alert';
 import { hideWalletConnectToast } from '@/components/toasts/WalletConnectToast';
+import { fetchDappMetadata } from '@/features/dapp/resources/dapp';
 import { useBackendNetworksStore } from '@/features/network/stores/backendNetworksStore';
 import { events } from '@/handlers/appEvents';
 import { maybeSignUri } from '@/handlers/imgix';
@@ -14,7 +15,6 @@ import * as i18n from '@/languages';
 import { logger, RainbowError } from '@/logger';
 import Navigation, { getActiveRoute } from '@/navigation/Navigation';
 import Routes from '@/navigation/routesNames';
-import { fetchDappMetadata } from '@/resources/metadata/dapp';
 
 import { showErrorSheet } from '../components/showErrorSheet';
 import { getWalletKitClient } from '../services/client';
