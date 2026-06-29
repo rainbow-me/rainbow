@@ -11,6 +11,7 @@ import { IS_TEST } from '@/env';
 import { logger, RainbowError } from '@/logger';
 import type Routes from '@/navigation/routesNames';
 import { device } from '@/storage';
+import { isUsingButtonNavigation } from '@/utils/deviceUtils';
 
 import { type WalletContext } from './getWalletContext';
 
@@ -21,6 +22,8 @@ type DefaultMetadata = {
   device_brand?: string;
   device_manufacturer?: string;
   device_model?: string;
+  /* Android only: bottom navigation bar mode */
+  navigation_mode?: '3-button' | 'gesture';
 };
 
 type ExternalIds = { externalId?: { id: string; type: string }[] };
@@ -39,6 +42,7 @@ export class Analytics {
   private deviceId?: string;
   private deviceManufacturer?: string;
   private deviceModel?: string;
+  private navigationMode?: '3-button' | 'gesture';
 
   private walletAddressHash?: WalletContext['walletAddressHash'];
   private walletType?: WalletContext['walletType'];
@@ -54,6 +58,7 @@ export class Analytics {
       this.deviceBrand = DeviceInfo.getBrand();
       this.deviceManufacturer = DeviceInfo.getManufacturerSync();
       this.deviceModel = DeviceInfo.getModel();
+      this.navigationMode = isUsingButtonNavigation() ? '3-button' : 'gesture';
     }
   }
 
@@ -143,6 +148,7 @@ export class Analytics {
       metadata.device_brand = this.deviceBrand;
       metadata.device_manufacturer = this.deviceManufacturer;
       metadata.device_model = this.deviceModel;
+      metadata.navigation_mode = this.navigationMode;
     }
 
     return metadata;
