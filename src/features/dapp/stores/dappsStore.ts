@@ -32,7 +32,7 @@ type DappsState = {
   findDappByHostname: (hostname: string) => Dapp | undefined;
 };
 
-export const useBrowserDappsStore = createQueryStore<Dapp[], never, DappsState>(
+export const useDappsStore = createQueryStore<Dapp[], never, DappsState>(
   {
     fetcher: fetchDapps,
     setData: ({ data, set }) => set({ dapps: data }),

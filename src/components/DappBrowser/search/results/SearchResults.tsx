@@ -16,9 +16,9 @@ import { SPRING_CONFIGS } from '@/components/animations/animationConfigs';
 import ButtonPressAnimation from '@/components/animations/ButtonPressAnimation';
 import { EasingGradient } from '@/components/easing-gradient/EasingGradient';
 import { Bleed, Box, Inline, Inset, Stack, Text, TextIcon, useColorMode, useForegroundColor } from '@/design-system';
+import { useDappsStore, type Dapp } from '@/features/dapp/stores/dappsStore';
 import { isValidWebUrlWorklet } from '@/framework/core/utils/url';
 import * as i18n from '@/languages';
-import { useBrowserDappsStore, type Dapp } from '@/resources/metadata/dapps';
 import { THICK_BORDER_WIDTH } from '@/styles/constants';
 import deviceUtils, { DEVICE_HEIGHT, DEVICE_WIDTH } from '@/utils/deviceUtils';
 
@@ -285,7 +285,7 @@ const DappsDataSync = ({
   searchQuery: SharedValue<string>;
   searchResults: SharedValue<Dapp[]>;
 }) => {
-  const dapps = useBrowserDappsStore(state => state.dapps);
+  const dapps = useDappsStore(state => state.dapps);
 
   useAnimatedReaction(
     () => searchQuery.value.trim(),
