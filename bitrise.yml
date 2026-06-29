@@ -177,7 +177,6 @@ workflows:
                 echo "PINATA_API_KEY=$PINATA_API_KEY" >>.env
                 echo "PINATA_API_SECRET=$PINATA_API_SECRET" >>.env
                 echo "PINATA_GATEWAY_URL=$PINATA_GATEWAY_URL" >>.env
-                echo "POAP_API_KEY=$POAP_API_KEY" >> .env
                 echo "SECURE_WALLET_HASH_KEY=$SECURE_WALLET_HASH_KEY" >> .env
                 echo "LOG_LEVEL=$LOG_LEVEL" >> .env
                 echo "WC_PROJECT_ID=$WC_PROJECT_ID" >> .env
@@ -446,7 +445,6 @@ workflows:
                 echo "PINATA_API_KEY=$PINATA_API_KEY" >>.env
                 echo "PINATA_API_SECRET=$PINATA_API_SECRET" >>.env
                 echo "PINATA_GATEWAY_URL=$PINATA_GATEWAY_URL" >>.env
-                echo "POAP_API_KEY=$POAP_API_KEY" >> .env
                 echo "SECURE_WALLET_HASH_KEY=$SECURE_WALLET_HASH_KEY" >> .env
                 echo "LOG_LEVEL=$LOG_LEVEL" >> .env
                 echo "WC_PROJECT_ID=$WC_PROJECT_ID" >> .env
