@@ -145,6 +145,11 @@ jobs:
           SSH_AUTH_SOCK: /tmp/ssh_agent_sandbox.sock
         run: yarn install --immutable && yarn setup
 
+      - name: Dependency rules
+        env:
+          NODE_OPTIONS: --max-old-space-size=6144
+        run: yarn lint:deps
+
       - name: Read version metadata
         id: version
         run: |

@@ -32,11 +32,6 @@ const transformer = {
   }),
 };
 
-// Only run metro transforms on CI
-if (process.env.CI) {
-  transformer.babelTransformerPath = require.resolve('./metro.transform.js');
-}
-
 /**
  * Metro configuration
  * https://reactnative.dev/docs/metro
