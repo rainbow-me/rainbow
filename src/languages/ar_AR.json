@@ -1,27 +1,9 @@
 {
   "translation": {
     "account": {
-      "hide": "إخفاء",
-      "label_24h": "24 ساعة",
-      "label_asset": "أصل",
-      "label_price": "السعر",
-      "label_quantity": "الكمية",
-      "label_status": "الحالة",
-      "label_total": "المجموع",
-      "low_market_value": "مع قيمة السوق القليلة",
-      "no_market_value": "بدون قيمة السوق",
-      "show": "أظهر",
-      "show_all": "اظهر الكل",
-      "show_less": "أظهر أقل",
       "tab_tokens": "رموز",
-      "tab_balances_empty_state": "رصيد",
-      "tab_balances_tooltip": "أرصدة Ethereum والرموز",
       "tab_claimables": "المراد المطالبة بها",
       "tab_collectibles": "القطع التذكارية",
-      "tab_interactions": "التفاعلات",
-      "tab_interactions_tooltip": "تفاعلات العقود الذكية",
-      "tab_investments": "المجمعات",
-      "tab_savings": "التوفير",
       "tab_showcase": "عرض",
       "tab_perps": "الرافعات المالية",
       "tab_polymarket": "التنبؤات",
@@ -50,9 +32,7 @@
     "activity_list": {
       "title": "النشاط",
       "empty_state": {
-        "default_label": "لا توجد معاملات بعد",
-        "recycler_label": "لا توجد معاملات بعد",
-        "testnet_label": "تاريخ المعاملات الخاص بك في شبكة الاختبار يبدأ الآن!"
+        "default_label": "لا توجد معاملات بعد"
       }
     },
     "add_funds": {
@@ -60,8 +40,6 @@
         "or_send_eth": "أو أرسل ETH إلى محفظتك",
         "send_from_another_source": "أرسل من Coinbase أو من صرافة أخرى - أو اطلب من صديق!"
       },
-      "limit_left_this_week": "$%{remainingLimit} تبقى هذا الأسبوع",
-      "limit_left_this_year": "$%{remainingLimit} تبقى هذا العام",
       "test_eth": {
         "add_from_faucet": "أضف من صنبور",
         "or_send_test_eth": "أو أرسل ETH الختبار إلى محفظتك",
@@ -69,12 +47,7 @@
         "send_test_eth_from_another_source": "إرسال ETH الاختبار من محفظة %{testnetName} أخرى - أو اطلب من صديق!"
       },
       "to_get_started_android": "للبدء، اشتر بعض ETH",
-      "to_get_started_ios": "للبدء، شراء بعض ETH باستخدام Apple Pay",
-      "weekly_limit_reached": "تم الوصول إلى الحد الأسبوعي",
-      "yearly_limit_reached": "تم الوصول إلى الحد السنوي"
-    },
-    "assets": {
-      "unkown_token": "رمز غير معروف"
+      "to_get_started_ios": "للبدء، شراء بعض ETH باستخدام Apple Pay"
     },
     "avatar_builder": {
       "emoji_categories": {
@@ -102,13 +75,6 @@
         "damaged_wallet": "غير قادر على عمل نسخة احتياطية للمحفظة. بيانات المخزن مفقودة."
       },
       "wrong_pin": "رمز PIN الذي أدخلته غير صحيح ولا يمكننا إجراء نسخ احتياطي. الرجاء المحاولة مرة أخرى بكود صحيح.",
-      "already_backed_up": {
-        "backed_up": "تم النسخ الاحتياطي",
-        "backed_up_manually": "تم النسخ الاحتياطي يدويا",
-        "backed_up_message": "محفظتك معمول لها نسخ احتياطي",
-        "imported": "تم الاستيراد",
-        "imported_message": "تم استيراد محفظتك"
-      },
       "wallet_group_title_plural": "مجموعة المحفظة %{walletGroupNumber}",
       "wallet_group_title_singular": "مجموعة المحفظة",
       "private_key_plural": "المفتاح الخاص %{privateKeyNumber}",
@@ -215,8 +181,6 @@
         "create_new_secret_phrase": "إنشاء عبارة استعادة جديدة"
       },
       "needs_backup": {
-        "back_up_your_wallet": "احتفظ بنسخة احتياطية من محفظتك",
-        "dont_risk": "لا تخاطر بأموالك! احتفظ بنسخة احتياطية من محفظتك حتى تتمكن من استردادها إذا فقدت هذا الجهاز.",
         "not_backed_up": "لم يتم النسخ الاحتياطي"
       },
       "restore_cloud": {
@@ -437,10 +401,6 @@
           "navigating_your_wallet": "التنقل في محفظتك"
         }
       },
-      "ledger": {
-        "title": "قم بربط محفظة الأجهزة",
-        "body": "قم بتوصيل Ledger Nano X الخاص بك بـ Rainbow عبر البلوتوث."
-      },
       "receive": {
         "receive_assets": "تلقي الأصول",
         "copy_address": "نسخ العنوان",
@@ -486,24 +446,15 @@
         "creator_lp_fees": "رسوم LP الخاصة بالمنشئ",
         "rainbow_token_launcher": "إطلاق رمز Rainbow",
         "claim_amount": "مطالبة %{amount}",
-        "done": "تم",
-        "try_again": "حاول مرة أخرى",
         "tokens_on_the_way": "الرموز في الطريق!",
         "a_token": "رمز",
-        "a_network": "شبكة",
         "swap_failed": "فشلت العملية",
         "receive": "استلم",
         "on": "تشغيل",
         "reset": "إعادة تعيين"
       }
     },
-    "cloud": {
-      "backup_success": "تم نسخ محفظتك بنجاح!"
-    },
     "contacts": {
-      "contact_row": {
-        "balance_eth": "%{balanceEth} ETH"
-      },
       "contacts_title": "جهات الاتصال",
       "input_placeholder": "الاسم",
       "my_wallets": "محافظي",
@@ -511,26 +462,18 @@
         "add": "إضافة جهة اتصال",
         "cancel": "إلغاء",
         "delete": "حذف جهة اتصال",
-        "edit": "تعديل جهة اتصال",
-        "view": "مشاهدة الملف الشخصي"
+        "edit": "تعديل جهة اتصال"
       },
       "send_header": "ارسال",
       "suggestions": "الاقتراحات",
       "to_header": "إلى",
       "watching": "مشاهدة"
     },
-    "deeplinks": {
-      "couldnt_recognize_url": "أوه أوه! لم نتمكن من التعرف على هذا الرابط!",
-      "tried_to_use_android": "حاولت استخدام حزمة Android",
-      "tried_to_use_ios": "حاولت استخدام حزمة iOS"
-    },
     "developer_settings": {
       "alert": "تنبيه",
-      "analyze_env_variables": "تحليل متغيرات البيئة",
       "analyze_react_query": "تحليل استعلام React",
       "analyze_user_assets_query": "تحليل استعلام أصول المستخدم",
       "applied": "تم التطبيق",
-      "backups_deleted_successfully": "تم حذف النسخ الاحتياطية بنجاح",
       "clear_async_storage": "مسح التخزين غير المتزامن",
       "clear_pending_txs": "مسح المعاملات المعلقة",
       "clear_image_cache": "مسح ذاكرة التخزين المؤقت للصور",
@@ -540,7 +483,6 @@
       "clear_react_query_cache": "مسح ذاكرة استعلام React",
       "connect_to_anvil": "الاتصال ب Anvil",
       "copy_fcm_token": "نسخ رمز FCM",
-      "copy_log_lines": "نسخ أسطر السجل",
       "copy_signing_wallet_address": "نسخ عنوان توقيع المحفظة",
       "disconnect_to_anvil": "انفصال عن Anvil",
       "crash_app_render_error": "تعطل التطبيق (خطأ في العرض)",
@@ -559,6 +501,18 @@
       },
       "restart_app": "إعادة تشغيل التطبيق",
       "reset_experimental_config": "إعادة تعيين التكوين التجريبي",
+      "cash_deposit_setup_status": {
+        "title": "حالة إعداد الإيداع النقدي",
+        "needsIdentity": "يتطلب التحقق من الهوية",
+        "needsCard": "يتطلب بطاقة",
+        "needsWallet": "يتطلب محفظة",
+        "ready": "جاهز"
+      },
+      "cash_order_outcome": {
+        "title": "نتيجة طلب النقد",
+        "succeed": "سينجح",
+        "fail": "سيفشل"
+      },
       "status": "الحالة",
       "sync_codepush": "مز synchrony CodePush",
       "simulate_device_transfer": "محاكاة نقل الجهاز",
@@ -566,10 +520,10 @@
         "normie_settings": "إعدادات المستخدم العادي",
         "rainbow_developer_settings": "إعدادات مطوّر Rainbow",
         "feature_flags": "أعلام الميزات",
-        "delegation_settings": "إعدادات التفويض"
+        "delegation_settings": "إعدادات التفويض",
+        "cash_settings": "إعدادات النقد"
       },
       "delegation_settings": {
-        "clear_store": "مسح مخزن التفويض",
         "simulate_disable_smart_wallet": "محاكاة تعطيل المحفظة الذكية",
         "simulate_disable_single_network": "محاكاة تعطيل شبكة واحدة",
         "simulate_disable_third_party": "محاكاة تعطيل الطرف الثالث",
@@ -580,17 +534,36 @@
       }
     },
     "discover": {
-      "pulse": {
-        "pulse_description": "جميع الرموز الأعلى لـ DeFi في واحد",
-        "today_suffix": "اليوم",
-        "trading_at_prefix": "جار التداول في"
-      },
       "search": {
         "search_ethereum": "بحث في كل Ethereum",
         "search_ethereum_short": "بحث Ethereum",
         "search": "بحث",
         "discover": "اكتشف"
       },
+      "sections": {
+        "ai": "الذكاء الاصطناعي",
+        "base": "Base",
+        "commodities": "السلع",
+        "crypto": "العملات الرقمية",
+        "crypto_equities": "أسهم العملات الرقمية",
+        "currencies": "العملات",
+        "for_you": "مُخصص لك",
+        "indices": "المؤشرات",
+        "layer_1": "الطبقة 1",
+        "live": "مباشر",
+        "mag7": "MAG7",
+        "majors": "العملات الرئيسية",
+        "markets": "الأسواق",
+        "mlb": "MLB",
+        "nba": "NBA",
+        "nhl": "NHL",
+        "perps": "الرافعات المالية",
+        "pre_ipo": "ما قبل الطرح العام الأولي",
+        "predictions": "التنبؤات",
+        "sports": "الرياضة",
+        "tokens": "رموز"
+      },
+      "show_more": "أظهر المزيد",
       "strategies": {
         "strategies_title": "الاستراتيجيات",
         "yearn_finance_description": "استراتيجيات العائد الذكية من yearn.finance"
@@ -627,9 +600,6 @@
     },
     "exchange": {
       "coin_row": {
-        "expires_in": "تنتهي في %{minutes}دقيقة",
-        "from_divider": "من",
-        "to_divider": "إلى",
         "token": "رمز",
         "view_on": "اعرض على %{blockExplorerName}",
         "view_on_etherscan": "عرض على Etherscan",
@@ -706,6 +676,9 @@
         "verifiedTokenSection": "􀇻 تم التحقق",
         "unswappableTokenSection": "􀘰 لا توجد طرق تجارة"
       }
+    },
+    "ens": {
+      "registered_on": "مسجل في"
     },
     "expanded_state": {
       "asset": {
@@ -845,10 +818,6 @@
         "total_value": "القيمة الإجمالية",
         "underlying_tokens": "الرموز الأساسية"
       },
-      "nft_brief_token_info": {
-        "for_sale": "للبيع",
-        "last_sale": "سعر البيع الأخير"
-      },
       "swap": {
         "swap": "تبديل",
         "bridge": "جسر",
@@ -929,7 +898,6 @@
         "edit": "تحرير",
         "expires_in": "ينتهي في",
         "expires_on": "ينتهي على",
-        "floor_price": "سعر الطابق",
         "for_sale": "للبيع",
         "in_showcase": "في العرض",
         "last_sale_price": "سعر البيع الأخير",
@@ -1049,10 +1017,6 @@
       "failed_wc_invalid_chain": {
         "text": "الشبكة المحددة في هذا الطلب غير مدعومة بواسطة رينبو.",
         "title": "فشل في التعامل"
-      },
-      "floor_price": {
-        "text": "سعر الأرضية للمجموعة هو أدنى سعر طلب عبر جميع العناصر المعروضة للبيع حاليًا في المجموعة.",
-        "title": "سعر أرضية المجموعة"
       },
       "gas": {
         "text": "هذه هي \"رسوم الغاز\" التي يستخدمها بلوكشين %{networkName} للتحقق من صحة معاملتك بشكل آمن.\n\nتختلف هذه الرسوم حسب تعقيد معاملتك وحسب كثافة الشبكة!",
@@ -1246,13 +1210,6 @@
         "text": "عند إرسال اسم ENS إلى شخص آخر وتعيينه كمالك اسم ENS الجديد، قد ترغب في تكوينه لهم مسبقًا وتجنيبهم معاملة في المستقبل. يتيح لك Rainbow مسح أي معلومات ملف تعريف محددة حاليًا للاسم، وتكوين اسم ENS للإشارة إلى عنوان المستلم وجعل عنوان المستلم هو مدير الاسم."
       }
     },
-    "fedora": {
-      "cannot_verify_bundle": "لا يمكن التحقق من الحزمة! قد يكون هذا احتيال. تم حظر التثبيت.",
-      "error": "خطأ",
-      "fedora": "فيدورا",
-      "this_will_override_bundle": "سوف يتجاوز هذا حزمتك. كن حذرا. هل أنت موظف في رينبو؟",
-      "wait": "انتظر"
-    },
     "fields": {
       "address": {
         "long_placeholder": "الاسم، ENS، أو العنوان",
@@ -1281,7 +1238,6 @@
       "miner_tip": "تلميح المعدن",
       "gas_price": "سعر الغاز",
       "max_transaction_fee": "الحد الأقصى لرسوم المعاملة",
-      "warning_separator": "·",
       "lower_than_suggested": "منخفض · قد يتعثر",
       "higher_than_suggested": "مرتفع · دفع زائد",
       "likely_to_fail": "منخفض · من المحتمل أن يفشل",
@@ -1292,64 +1248,12 @@
       "alert_message_lower": "تأكد مرتين من أنك أدخلت المبلغ الصحيح - من المحتمل أنك تدفع أكثر مما تحتاج إليه!",
       "alert_title_higher_max_base_fee_needed": "الرسوم الأساسية القصوى المنخفضة - قد تتعلق العملية!",
       "alert_title_higher_miner_tip_needed": "التلميح المنخفض للمعدن - قد تتعلق العملية!",
-      "alert_title_lower_max_base_fee_needed": "الرسوم الأساسية القصوى مرتفعة!",
       "alert_title_lower_miner_tip_needed": "التلميح المعدني مرتفع!",
       "proceed_anyway": "المتابعة على أي حال",
       "edit_max_bass_fee": "تعديل الرسوم الأساسية القصوى",
       "edit_miner_tip": "تعديل تلميح المعدن"
     },
     "homepage": {
-      "back": "العودة إلى rainbow.me",
-      "coming_soon": "قريبا.",
-      "connect_ledger": {
-        "button": "الاتصال بـ Ledger",
-        "description": "الاتصال والتوقيع بواسطة ",
-        "link_text": "محفظة الأجهزة الصلبة Ledger",
-        "link_title": "اشتري محفظة Ledger الأجهزة"
-      },
-      "connect_metamask": {
-        "button": "الاتصال بـ MetaMask",
-        "description": "الاتصال بـ ",
-        "link_text": "محفظة متصفح MetaMask",
-        "link_title": "محفظة متصفح MetaMask"
-      },
-      "connect_trezor": {
-        "button": "اتصل بـ Trezor",
-        "description": "الاتصال والتوقيع بواسطة ",
-        "link_text": "محفظة الأجهزة Trezor",
-        "link_title": "اشتر محفظة الأجهزة Trezor"
-      },
-      "connect_trustwallet": {
-        "button": "الاتصال بـ Trust Wallet",
-        "description_part_one": "استخدم ",
-        "description_part_three": " التطبيق للاتصال",
-        "description_part_two": " Ethereum ",
-        "link_text_browser": "متصفح الـdapp",
-        "link_text_wallet": "محفظة الثقة",
-        "link_title_browser": "اكتشف متصفح DApp الخاص بـ Trust",
-        "link_title_wallet": "اكتشف محفظة Trust"
-      },
-      "connect_walletconnect": {
-        "button": "استخدام WalletConnect",
-        "button_mobile": "التواصل مع WalletConnect",
-        "description": "مسح رمز QR لربط محفظتك المحمولة ",
-        "description_mobile": "الاتصال بأي محفظة تدعم ",
-        "link_text": "باستخدام WalletConnect",
-        "link_text_mobile": "WalletConnect",
-        "link_title": "استخدام WalletConnect",
-        "link_title_mobile": "التواصل مع WalletConnect"
-      },
-      "reassurance": {
-        "access_link": "لا إمكانية الوصول إلى أموالك",
-        "assessment": "نتائج تقييمنا للأمان",
-        "security": "نعمل بجد للتأكد من أن أموالك آمنة. هذه الأداة لا تلمس مفاتيحك الخاصة ، مما يقلل بشكل كبير من مجال الهجوم. إذا كنت ملما بالبرمجة ، يمكنك الاطلاع على الكود الخاص بنا على GitHub.",
-        "security_title": "مدى أمان Manager؟",
-        "source": "عرض الكود المصدري الخاص بنا",
-        "text_mobile": "أنت بحاجة لاستخدام محفظة Ethereum للوصول إلى Balance Manager لمشاهدة وإرسال وتبادل Ether الخاص بك والرموز المستندة إلى Ethereum.",
-        "tracking_link": "نحن لا نتتبعك",
-        "work": "هذه أداة مبنية على الويب لمساعدتك في إدارة الأموال في محفظتك. يتم ذلك عن طريق الاتصال بمحفظتك من خلال واجهة البرمجة التطبيقية (API). هنا بعض النقاط المهمة حول كيفية تصميمنا لمدير الرصيد:",
-        "work_title": "كيف يعمل الإدارة؟"
-      },
       "discover_web3": "اكتشف الويب3"
     },
     "image_picker": {
@@ -1357,18 +1261,6 @@
       "confirm": "تمكين الوصول للمكتبة",
       "message": "هذا يسمح لـ Rainbow باستخدام صورك من مكتبتك",
       "title": "Rainbow تود الوصول إلى صورك"
-    },
-    "input": {
-      "asset_amount": "الكمية",
-      "donation_address": "عنوان مدير الرصيد",
-      "email": "البريد الإلكتروني",
-      "email_placeholder": "your@email.com",
-      "input_placeholder": "اكتب هنا",
-      "input_text": "الإدخال",
-      "password": "كلمة السر",
-      "password_placeholder": "••••••••••",
-      "private_key": "المفتاح الخاص",
-      "recipient_address": "عنوان المستلم"
     },
     "list": {
       "share": {
@@ -1382,63 +1274,7 @@
       "importing_wallet": "جارِ الاستيراد...",
       "restoring": "استعادة..."
     },
-    "message": {
-      "click_to_copy_to_clipboard": "انقر للنسخ إلى الحافظة",
-      "coming_soon": "قريباً...",
-      "exchange_not_available": "لم نعد ندعم Shapeshift بسبب متطلبات التحقق من الهوية الجديدة. نحن نعمل على دعم مزودي الصرف المختلفين.",
-      "failed_ledger_connection": "فشل في الاتصال بـ Ledger ، الرجاء التحقق من جهازك",
-      "failed_request": "طلب فشل، رجاء اعادة التحميل",
-      "failed_trezor_connection": "فشل في الاتصال بتريزور، الرجاء التحقق من جهازك",
-      "failed_trezor_popup_blocked": "الرجاء السماح بالنوافذ المنبثقة على Balance لاستخدام تريزور الخاص بك",
-      "learn_more": "تعلم المزيد",
-      "no_interactions": "لم يتم العثور على تفاعلات لهذا الحساب",
-      "no_transactions": "لم يتم العثور على معاملات لهذا الحساب",
-      "no_unique_tokens": "لم يتم العثور على رموز فريدة لهذا الحساب",
-      "opensea_footer": " هو سوق للرموز الفريدة (أو 'غير القابلة للتبادل'). الناس يتداولون في السوق وهذا يمنحهم قيمة. يمكنك رهن رموزك للحصول على المال. كل هذا يعمل على الإيثريوم. ",
-      "opensea_header": "كيف يعمل هذا تحت الغطاء؟",
-      "page_not_found": "404 الصفحة غير موجودة",
-      "please_connect_ledger": "يرجى الاتصال وفتح Ledger ثم اختيار Ethereum",
-      "please_connect_trezor": "يرجى توصيل Trezor الخاص بك واتباع التعليمات",
-      "power_by": "مدعوم من",
-      "walletconnect_not_unlocked": "يرجى الاتصال باستخدام WalletConnect",
-      "web3_not_available": "يرجى تثبيت امتداد MetaMask Chrome",
-      "web3_not_unlocked": "يرجى فتح قفل محفظتك MetaMask",
-      "web3_unknown_network": "شبكة غير معروفة ، يرجى التبديل إلى أخرى"
-    },
-    "mints": {
-      "mints_sheet": {
-        "mints": "النعناع",
-        "no_data_found": "لم يتم العثور على بيانات.",
-        "card": {
-          "x_ago": "منذ %{timeElapsed}",
-          "one_mint_past_hour": "1 نعناع في الساعة الماضية",
-          "x_mints_past_hour": "%{numMints} نعناع في الساعة الماضية",
-          "x_mints": "%{numMints} نعناع",
-          "mint": "نعناع",
-          "free": "مجانا"
-        }
-      },
-      "mints_card": {
-        "view_all_mints": "عرض جميع الطبعات",
-        "mints": "النعناع",
-        "collection_cell": {
-          "free": "مجانا"
-        }
-      },
-      "featured_mint_card": {
-        "featured_mint": "الطبعة المميزة",
-        "one_mint": "1 نعناع",
-        "x_mints": "%{numMints} نعناع",
-        "x_past_hour": "%{numMints} في الساعة الماضية"
-      },
-      "filter": {
-        "all": "الكل",
-        "free": "مجانا",
-        "paid": "مدفوع"
-      }
-    },
     "modal": {
-      "approve_tx": "الموافقة على الصفقة على %{walletType}",
       "back_up": {
         "alerts": {
           "cloud_not_enabled": {
@@ -1448,29 +1284,12 @@
             "show_me": "نعم، أرني"
           }
         },
-        "default": {
-          "button": {
-            "cloud": "احتفظ بنسخة احتياطية من محفظتك",
-            "cloud_platform": "النسخ الاحتياطي إلى %{cloudPlatformName}",
-            "manual": "النسخ الاحتياطي يدويا"
-          },
-          "description": "لا تفقد محفظتك! احفظ نسخة مشفرة في %{cloudPlatformName}",
-          "title": "كيف تود أن تقوم بعمل نسخة احتياطية لمحفظتك؟"
-        },
         "existing": {
           "button": {
             "later": "ربما لاحقا",
             "now": "احتياطي الآن"
           },
           "description": "لديك محافظ لم يتم نسخها احتياطيا بعد. احفظها في حالة فقدان هذا الجهاز.",
-          "title": "هل تود أن تقوم بعمل نسخة احتياطية؟"
-        },
-        "imported": {
-          "button": {
-            "back_up": "النسخ الاحتياطي إلى %{cloudPlatformName}",
-            "no_thanks": "لا شكرا"
-          },
-          "description": "لا تفقد محفظتك! احفظ نسخة مشفرة في %{cloudPlatformName}.",
           "title": "هل تود أن تقوم بعمل نسخة احتياطية؟"
         }
       },
@@ -1512,30 +1331,6 @@
       "withdrawal_dropdown_label": "لِ",
       "withdrawal_input_label": "احصل"
     },
-    "minting": {
-      "hold_to_mint": "احتجاز للصك",
-      "minting": "ضرب...",
-      "minted": "تم الإصدار",
-      "mint_unavailable": "عملة غير متاحة",
-      "mint_on_mintdotfun": "􀮶 صك في mint.fun",
-      "error_minting": "خطأ في الضرب",
-      "mint_price": "سعر الصك",
-      "free": "مجانا",
-      "by": "بواسطة",
-      "unknown": "غير معروف",
-      "max": "الحد الأقصى",
-      "nft_count": "%{number} NFTs",
-      "description": "الوصف",
-      "total_minted": "المجموع الصادر",
-      "first_event": "أول حدث",
-      "last_event": "آخر حدث",
-      "max_supply": "الحد الأقصى للتوريد",
-      "contract": "عقد",
-      "network": "الشبكة",
-      "could_not_find_collection": "لم يتم العثور على المجموعة",
-      "unable_to_find_check_again": "نحن غير قادرون على العثور على هذه المجموعة ، قم بالتحقق من العنوان والشبكة أو حاول مرة أخرى لاحقًا",
-      "mintdotfun_unsupported_network": "Mint.fun لا يدعم هذه الشبكة"
-    },
     "nfts": {
       "selling": "بيع",
       "sort": {
@@ -1553,65 +1348,6 @@
       "empty": "القطع التذكارية",
       "collect_now": "اجمع الآن",
       "will_appear_here": "سوف تظهر مقتنياتك هنا"
-    },
-    "nft_offers": {
-      "card": {
-        "title": {
-          "singular": "1 عرض",
-          "plural": "%{numOffers} عروض"
-        },
-        "button": "عرض جميع العروض",
-        "expired": "منتهي"
-      },
-      "sheet": {
-        "title": "عروض",
-        "total": "المجموع",
-        "above_floor": "أعلى من الأرض",
-        "below_floor": "أقل من الأرض",
-        "no_offers_found": "لم يتم العثور على عروض"
-      },
-      "sort_menu": {
-        "highest": "الأعلى",
-        "from_floor": "من الأرض",
-        "recent": "الأخير"
-      },
-      "single_offer_sheet": {
-        "title": "عرض",
-        "expires_in": "تنتهي في %{timeLeft}",
-        "floor_price": "سعر الأرضية",
-        "marketplace": "السوق",
-        "marketplace_fees": "%{marketplace} الرسوم",
-        "creator_royalties": "الرويالتي للمُنشئ",
-        "receive": "استلم",
-        "proceeds": "الإيرادات",
-        "view_offer": "عرض العرض",
-        "offer_expired": "انتهت صلاحية العرض",
-        "expired": "منتهي",
-        "hold_to_sell": "احتفظ للبيع",
-        "selling": "بيع",
-        "error": {
-          "title": "خطأ في بيع NFT",
-          "message": "يرجى الاتصال بدعم Rainbow للحصول على المساعدة."
-        }
-      }
-    },
-    "notification": {
-      "error": {
-        "failed_get_account_tx": "فشل في الحصول على معاملات الحساب",
-        "failed_get_gas_prices": "فشل في الحصول على أسعار الغاز الإيثيريوم",
-        "failed_get_tx_fee": "فشل في تقدير رسوم المعاملة",
-        "failed_scanning_qr_code": "فشل في مسح الرمز الشريطي، الرجاء المحاولة مرة أخرى",
-        "generic_error": "حدث خطأ ما، الرجاء المحاولة مرة أخرى",
-        "insufficient_balance": "الرصيد غير كاف في هذا الحساب",
-        "insufficient_for_fees": "الرصيد غير كاف لتغطية رسوم المعاملة",
-        "invalid_address": "العنوان غير صالح، يرجى التحقق مرة أخرى",
-        "invalid_address_scanned": "العنوان الذي تم مسحه غير صالح، الرجاء المحاولة مرة أخرى",
-        "invalid_private_key_scanned": "المفتاح الخاص الذي تم مسحه غير صالح، الرجاء المحاولة مرة أخرى",
-        "no_accounts_found": "لم يتم العثور على حسابات الإيثيريوم"
-      },
-      "info": {
-        "address_copied_to_clipboard": "تم نسخ العنوان إلى الحافظة"
-      }
     },
     "perps": {
       "activity": {
@@ -1837,15 +1573,33 @@
       "leverage": "الرافعة المالية",
       "up_to": "حتى"
     },
+    "cash": {
+      "add_cash": "أضف نقود",
+      "deposit_intro": {
+        "introducing": "تقديم",
+        "title": "إيداعات نقدية",
+        "encrypted_feature": "معلوماتك مُشفَّرة ومحمية.",
+        "visa_feature": "متاح للعملاء المقيمين في الولايات المتحدة باستخدام بطاقة Visa.",
+        "set_up_account": "إعداد الحساب",
+        "other_deposit_methods": "طرق إيداع أخرى",
+        "sign_in": "تسجيل الدخول"
+      },
+      "add_cash_screen": {
+        "add_from": "إضافة من",
+        "hold_to_add": "اضغط مطولاً للإضافة",
+        "enter_amount": "أدخل كمية",
+        "money_is_added_in": "تُضاف الأموال بعملة",
+        "usdc": "USDC",
+        "adding_cash": "إضافة نقود",
+        "buy_error_title": "فشل الشراء",
+        "buy_error_generic": "حدث خطأ ما. حاول مرة أخرى",
+        "payment_rejected": "رفضت بطاقتك هذه الدفعة"
+      }
+    },
     "points": {
       "points": {
         "try_again": "حاول مرة أخرى"
       }
-    },
-    "pools": {
-      "deposit": "إيداع",
-      "pools_title": "المجمعات",
-      "withdraw": "سحب"
     },
     "profiles": {
       "actions": {
@@ -2040,16 +1794,7 @@
           "title": "قابل للتخصيص",
           "description": "الإرسال، الاستقبال، المبيعات، الطبع، التبديل، وأكثر. اختر ما تريد."
         },
-        "header": "الإشعارات",
-        "subheader": "مقدمة"
-      }
-    },
-    "review": {
-      "alert": {
-        "are_you_enjoying_rainbow": "هل تستمتع بـ Rainbow? 🥰",
-        "leave_a_review": "اترك مراجعة في متجر التطبيقات!",
-        "no": "لا",
-        "yes": "نعم"
+        "header": "الإشعارات"
       }
     },
     "poaps": {
@@ -2061,8 +1806,7 @@
       "error": "خطأ في الضرب",
       "error_messages": {
         "limit_exceeded": "هذا POAP قد تم ضربه بالكامل!",
-        "event_expired": "لقد انتهت صلاحية ضرب هذا الPOAP!",
-        "unknown": "خطأ غير معروف"
+        "event_expired": "لقد انتهت صلاحية ضرب هذا الPOAP!"
       }
     },
     "rewards": {
@@ -2090,11 +1834,8 @@
       "rainbow_users_claimed": "استلم المستخدمون المطر الملون %{amount}",
       "refreshes_in_with_days": "يتجدد في %{days} أيام %{hours} ساعات",
       "refreshes_in_without_days": "يتجدد في %{hours} ساعات",
-      "percent": "%{percent}% مكافأة",
       "error_title": "حدث خطأ ما",
       "error_text": "يرجى التحقق من اتصالك بالإنترنت والعودة لاحقًا.",
-      "ended_title": "انتهى البرنامج",
-      "ended_text": "ابق على اطلاع على ما لدينا في المستقبل!",
       "info": {
         "title": "اكسب OP عند التبديل والتوصيل",
         "description": "احصل على نقود معاودة عن طريق التبديل إلى الأمل أو الربط به. يتم توزيع المكافآت شهريًا."
@@ -2140,31 +1881,6 @@
     },
     "profile": {
       "title": "النشاط"
-    },
-    "savings": {
-      "deposit": "إيداع",
-      "deposit_from_wallet": "الإيداع من المحفظة",
-      "earned_lifetime_interest": "حصلت على %{lifetimeAccruedInterest}",
-      "earnings": {
-        "100_year": "100-سنة",
-        "10_year": "10-سنة",
-        "20_year": "20-سنة",
-        "50_year": "50-سنة",
-        "5_year": "5-سنة",
-        "est": "تقدير.",
-        "label": "الأرباح",
-        "monthly": "شهري",
-        "yearly": "سنوي"
-      },
-      "get_prefix": "احصل",
-      "label": "التوفير",
-      "on_your_dollars_suffix": "على دولاراتك",
-      "percentage": "%{percentage}%",
-      "percentage_apy": "%{percentage}% APY",
-      "with_digital_dollars_line_1": "مع الدولارات الرقمية مثل داي، التوفير",
-      "with_digital_dollars_line_2": "يجني لك أكثر من أي وقت مضى",
-      "withdraw": "سحب",
-      "zero_currency": "$0.00"
     },
     "send_feedback": {
       "copy_email": "نسخ عنوان البريد الإلكتروني",
@@ -2248,7 +1964,6 @@
       "app_icon": "أيقونة التطبيق",
       "developer": "إعدادات المطور",
       "done": "تم",
-      "feedback_and_reports": "الملاحظات وتقارير الأخطاء",
       "follow_us_on_twitter": "تابعنا على X",
       "hey_friend_message": "👋️ مرحبا صديقي! يجب أن تقوم بتنزيل Rainbow، فهو المحفظة المفضلة لدي في Ethereum 🌈️🌈️🌈️🌈️🌈️🌈️🌈️🌈️🌈️🌈️",
       "label": "الإعدادات",
@@ -2258,7 +1973,6 @@
       "notifications": "الإشعارات",
       "notifications_section": {
         "my_wallets": "محافظي",
-        "points": "النقاط",
         "watched_wallets": "المحافظ المراقبة",
         "allow_notifications": "السماح بالتنبيهات",
         "sent": "تم الإرسال",
@@ -2357,19 +2071,14 @@
         }
       }
     },
-    "subscribe_form": {
-      "email_already_subscribed": "عذراً، لقد قمت بالتسجيل بالفعل بهذا البريد الإلكتروني",
-      "generic_error": "عفواً، حدث خطأ ما",
-      "sending": "الإرسال...",
-      "successful": "تحقق من بريدك الإلكتروني",
-      "too_many_signup_request": "طلبات التسجيل كثيرة جدا، يرجى المحاولة مرة أخرى لاحقا"
+    "send": {
+      "sponsorship_unavailable": "الإرسال المجاني غير متاح مؤقتًا على هذه الشبكة. يُرجى المحاولة مرة أخرى مع رسوم الشبكة."
     },
     "swap": {
       "actions": {
         "hold_to_swap": "اضغط مع الاستمرار للتبديل",
         "hold_to_bridge": "اضغط مع الاستمرار للربط",
         "earning_rewards": "كسب المكافآت",
-        "save": "حفظ",
         "enter_amount": "أدخل كمية",
         "review": "مراجعة",
         "fetching_prices": "جلب البيانات",
@@ -2379,10 +2088,6 @@
         "insufficient": "غير كافٍ",
         "quote_error": "خطأ في عرض السعر"
       },
-      "aggregators": {
-        "rainbow": "رينبو"
-      },
-      "bridging": "جسر",
       "swapping": "تبديل",
       "max": "الحد الأقصى",
       "select": "اختر",
@@ -2407,7 +2112,6 @@
       },
       "choose_token": "اختر الرمز",
       "gas": {
-        "custom": "مخصص",
         "edit_price": "تعديل سعر الغاز",
         "enter_price": "أدخل سعر الغاز",
         "estimated_fee": "الرسوم المقدرة",
@@ -2415,7 +2119,8 @@
         "network_fee": "رسوم الشبكة",
         "normal": "عادي",
         "slow": "بطيء",
-        "gas_sponsored": "مجانا"
+        "gas_sponsored": "مجانا",
+        "loading": "جار التحميل…"
       },
       "loading": "جار التحميل...",
       "modal_types": {
@@ -2638,6 +2343,9 @@
       "network_fee": "رسوم الشبكة",
       "hash_copied": "􀁣 تم نسخ هاش الحوالة",
       "address_copied": "􀁣 تم نسخ العنوان",
+      "link_copied": "􀁣 تم نسخ الرابط",
+      "view_details": "عرض التفاصيل",
+      "copy_link": "نسخ الرابط",
       "smart_account": "حساب ذكي",
       "try_again": "􀅉 حاول مرة أخرى",
       "context_menu": {
@@ -2663,7 +2371,6 @@
           "plural": "أيام",
           "singular": "يوم"
         },
-        "micro": "ي",
         "short": {
           "plural": "أيام",
           "singular": "يوم"
@@ -2674,21 +2381,9 @@
           "plural": "ساعات",
           "singular": "ساعة"
         },
-        "micro": "س",
         "short": {
           "plural": "ساعات",
           "singular": "ساعة"
-        }
-      },
-      "milliseconds": {
-        "long": {
-          "plural": "مللي ثانية",
-          "singular": "ميلي ثانية"
-        },
-        "micro": "مللي ثانية",
-        "short": {
-          "plural": "مللي ثانية",
-          "singular": "مللي ثانية"
         }
       },
       "minutes": {
@@ -2696,19 +2391,16 @@
           "plural": "دقائق",
           "singular": "دقيقة"
         },
-        "micro": "د",
         "short": {
           "plural": "دقائق",
           "singular": "دقيقة"
         }
       },
-      "now": "الآن",
       "seconds": {
         "long": {
           "plural": "ثواني",
           "singular": "ثانية"
         },
-        "micro": "ث",
         "short": {
           "plural": "ثواني",
           "singular": "ثانية"
@@ -2800,25 +2492,9 @@
         "view_on": "عرض على %{blockExplorerName}"
       },
       "add_cash": {
-        "card_notice": "يعمل مع معظم بطاقات الخصم",
         "interstitial": {
           "other_amount": "مبلغ آخر"
-        },
-        "need_help_button_email_subject": "الدعم",
-        "need_help_button_label": "احصل على الدعم",
-        "on_the_way_line_1": "%{currencySymbol} الخاص بك في الطريق",
-        "on_the_way_line_2": "وسوف يصل قريبا",
-        "purchase_failed_order_id": "رقم الطلب: %{orderId}",
-        "purchase_failed_subtitle": "لم يتم تحصيل أي رسوم منك.",
-        "purchase_failed_support_subject": "فشل الشراء",
-        "purchase_failed_support_subject_with_order_id": "فشل الشراء - الطلب %{orderId}",
-        "purchase_failed_title": "عذراً ، فشل عملية الشراء الخاصة بك.",
-        "purchasing_dai_requires_eth_message": "قبل أن تتمكن من شراء DAI ، يجب أن يكون لديك بعض ETH في محفظتك!",
-        "purchasing_dai_requires_eth_title": "ليس لديك أي ETH!",
-        "running_checks": "جارٍ الفحص...",
-        "success_message": "إنه هنا 🥳",
-        "watching_mode_confirm_message": "المحفظة التي قمت بفتحها هي للقراءة فقط، لذا لا يمكنك التحكم في محتواها. هل أنت متأكد أنك تريد إضافة نقود إلى %{truncatedAddress}؟",
-        "watching_mode_confirm_title": "أنت في وضع المشاهدة"
+        }
       },
       "add_cash_v2": {
         "sheet_title": "اختر خيار الدفع لشراء العملة المشفرة",
@@ -2864,16 +2540,12 @@
         "ooops": "أووبس!",
         "this_action_not_supported": "هذا الإجراء غير مدعوم حاليا :("
       },
-      "assets": {
-        "no_price": "الأرصدة الصغيرة"
-      },
       "authenticate": {
         "please": "يرجى المصادقة"
       },
       "back_ups": {
         "wallet_count": "%{numAccounts} محفظة",
         "wallet_count_gt_one": "%{numAccounts} محافظ",
-        "and_more_wallets": "و %{moreWalletCount} محافظ أخرى",
         "create_new_wallet": "إنشاء محفظة جديدة",
         "create_new_wallet_description": "أنشئ محفظة جديدة باستخدام هذه العبارة السرية",
         "backed_up": "تم النسخ الاحتياطي",
@@ -2936,11 +2608,9 @@
           "gas_fee": "للإلغاء على %{chainName}"
         }
       },
-      "balance_title": "رصيد",
       "buy": "شراء",
       "change_wallet": {
         "loading_balance": "جاري تحميل الرصيد...",
-        "balance_eth": "%{balanceEth} ETH",
         "watching": "مشاهدة",
         "ledger": "ليدجر",
         "delegated": "مفوَّضة",
@@ -2995,47 +2665,22 @@
         "loading": "جار التحميل...",
         "app_state_diagnostics_title": "حالة التطبيق",
         "app_state_diagnostics_description": "يتيح لك التقاط لقطة من حالة التطبيق حتى يمكنك مشاركتها مع فريق الدعم.",
-        "wallet_diagnostics_title": "المحفظة",
         "sheet_title": "تشخيص",
         "pin_auth_title": "التحقق بالرقم السري",
         "you_need_to_authenticate_with_your_pin": "تحتاج إلى التحقق بالرقم السري للوصول إلى أسرار محفظتك",
         "share_application_state": "مشاركة حالة التطبيق",
-        "wallet_details_title": "تفاصيل المحفظة",
-        "wallet_details_description": "أدناه تفاصيل جميع المحافظ المضافة إلى رينبو."
+        "wallet_details_title": "تفاصيل المحفظة"
       },
       "error_displaying_address": "خطأ في عرض العنوان",
-      "feedback": {
-        "cancel": "لا شكرا",
-        "choice": "هل ترغب في نسخ عنوان بريدنا الإلكتروني يدويًا إلى الحافظة الخاصة بك؟",
-        "copy_email_address": "نسخ عنوان البريد الإلكتروني",
-        "email_subject": "📱 ملاحظات التجربة التي تم الحصول عليها من Rainbow",
-        "error": "خطأ في تشغيل عميل البريد الإلكتروني",
-        "send": "إرسال الملاحظات"
-      },
       "import_failed_invalid_private_key": "فشل الاستيراد بسبب مفتاح خاص غير صالح. الرجاء المحاولة مرة أخرى.",
-      "intro": {
-        "create_wallet": "إنشاء محفظة",
-        "instructions": "يرجى عدم تخزين المزيد في محفظتك مما تود خسارته.",
-        "warning": "هذا هو برنامج ألفا.",
-        "welcome": "مرحبًا بك في Rainbow"
-      },
       "invalid_address_title": "عنوان غير صالح",
       "invalid_address_message": "تحقق مرة أخرى من حالة الأحرف ثم أعد المحاولة.",
       "invalid_ens_name": "هذا ليس اسم ENS صالحًا",
       "invalid_unstoppable_name": "هذا ليس اسم Unstoppable صالحًا",
-      "label": "المحافظ",
-      "loading": {
-        "error": "حدث خطأ أثناء تحميل المحفظة. يرجى إغلاق التطبيق وإعادة المحاولة.",
-        "message": "جار التحميل"
-      },
       "message_signing": {
-        "failed_signing": "فشل في توقيع الرسالة",
-        "message": "الرسالة",
-        "request": "طلب توقيع الرسالة",
-        "sign": "توقيع رسالة"
+        "request": "طلب توقيع الرسالة"
       },
       "my_account_address": "عنوان حسابي:",
-      "network_title": "الشبكة",
       "new": {
         "choose_wallet_group": {
           "title": "اختيار مجموعة محفظة",
@@ -3049,10 +2694,7 @@
           "options": {
             "cloud": {
               "description_restore_sheet": "إذا قمت بعمل نسخة احتياطية سابقاً إلى %{cloudPlatform}، انقر هنا لاستعادتها.",
-              "description_with_latest_backup_date": "آخر نسخة احتياطية %{fromNow} عند %{time}",
-              "title": "استعادة من %{platform}",
-              "no_backups": "لم يتم العثور على نسخ احتياطية",
-              "no_google_backups": "لم يتم العثور على أي نسخة احتياطية على Google Drive. تأكد من أنك مسجل الدخول بالحساب الصحيح."
+              "title": "استعادة من %{platform}"
             },
             "create_new": {
               "description": "إنشاء محفظة جديدة على واحدة من عبارات البذور الخاصة بك",
@@ -3070,14 +2712,6 @@
               "description": "مشاهدة اسم ENS أو عنوان عام",
               "title": "مشاهدة محفظة"
             }
-          },
-          "first_wallet": {
-            "description": "استورد محفظتك الخاصة أو راقب محفظة الغير",
-            "title": "أضف محفظتك الأولى"
-          },
-          "additional_wallet": {
-            "description": "أنشئ محفظة جديدة أو أضف واحدة موجودة",
-            "title": "أضف محفظة أخرى"
           }
         },
         "import_or_watch_wallet_sheet": {
@@ -3086,17 +2720,11 @@
           "import": {
             "title": "استعادة محفظة",
             "description": "استعادة باستخدام عبارة الاسترداد أو المفتاح الخاص من Rainbow أو محفظة التشفير الأخرى",
-            "placeholder": "أدخل عبارة الاسترداد أو المفتاح الخاص",
-            "button": "استيراد"
+            "placeholder": "أدخل عبارة الاسترداد أو المفتاح الخاص"
           },
           "watch": {
             "title": "مشاهدة عنوان",
-            "placeholder": "أدخل عنوان Ethereum أو اسم ENS",
-            "button": "مشاهدة"
-          },
-          "watch_or_import": {
-            "title": "أضف محفظة",
-            "placeholder": "أدخل عبارة سرية ،مفتاح خاص ،عنوان Ethereum ، أو اسم ENS"
+            "placeholder": "أدخل عنوان Ethereum أو اسم ENS"
           }
         },
         "alert": {
@@ -3105,7 +2733,6 @@
         },
         "already_have_wallet": "لدي بالفعل واحدة",
         "create_wallet": "إنشاء محفظة",
-        "enter_seeds_placeholder": "عبارة سرية ،مفتاح خاص ،عنوان Ethereum ، أو اسم ENS",
         "get_new_wallet": "احصل على محفظة جديدة",
         "import_wallet": "استيراد المحفظة",
         "name_wallet": "اسم محفظتك",
@@ -3129,21 +2756,14 @@
         "camera_access_needed": "يجب الوصول إلى الكاميرا للتحقق!",
         "enable_camera_access": "تفعيل الوصول إلى الكاميرا",
         "error_mounting_camera": "خطأ في تثبيت الكاميرا",
-        "find_a_code": "العثور على رمز للمسح",
-        "qr_1_app_connected": "تطبيق 1 متصل",
-        "qr_multiple_apps_connected": "%{appsConnectedCount} تطبيقات متصلة",
         "scan_to_connect": "مسح للاتصال",
         "scan_to_pay_or_connect": "المسح للدفع أو الاتصال",
-        "simulator_mode": "وضع المحاكاة",
         "sorry_could_not_be_recognized": "عذراً، لم يتم التعرف على هذا الرمز الشريطي QR.",
         "unrecognized_qr_code_title": "رمز QR غير متعرف عليه"
       },
       "settings": {
         "copy_address": "نسخ العنوان",
-        "copy_address_capitalized": "نسخ العنوان",
-        "copy_seed_phrase": "نسخ العبارة السرية",
-        "hide_seed_phrase": "إخفاء العبارة السرية",
-        "show_seed_phrase": "إظهار العبارة السرية"
+        "copy_address_capitalized": "نسخ العنوان"
       },
       "something_went_wrong_importing": "حدث خطأ ما أثناء الاستيراد. حاول مرة أخرى!",
       "sorry_cannot_add_ens": "عذرا، لا يمكننا إضافة هذا الاسم ENS في هذا الوقت. حاول مرة أخرى لاحقا!",
@@ -3195,30 +2815,7 @@
         "previous_send": "%{number} إرسال سابق",
         "previous_sends": "%{number} إرسال سابق"
       },
-      "wallet_connect": {
-        "error": "خطأ في التهيئة مع WalletConnect",
-        "failed_to_disconnect": "فشل في قطع الاتصال بجميع جلسات WalletConnect",
-        "failed_to_send_request_status": "فشل في إرسال حالة الطلب إلى WalletConnect.",
-        "missing_fcm": "غير قادر على تهيئة WalletConnect: مفتاح الإشعارات المفقود. الرجاء المحاولة مرة أخرى.",
-        "walletconnect_session_has_expired_while_trying_to_send": "انتهت صلاحية جلسة WalletConnect أثناء محاولة إرسال حالة الطلب. يرجى إعادة الاتصال."
-      },
       "wallet_title": "المحفظة"
-    },
-    "support": {
-      "error_alert": {
-        "copy_email_address": "نسخ عنوان البريد الإلكتروني",
-        "no_thanks": "لا شكرا",
-        "message": "هل ترغب في نسخ عنوان بريدنا الإلكتروني للدعم يدويًا إلى الحافظة؟",
-        "title": "خطأ في تشغيل عميل البريد الإلكتروني",
-        "subject": "دعم رينبو"
-      },
-      "wallet_alert": {
-        "message_support": "رسالة الدعم",
-        "close": "إغلاق",
-        "learn_more": "تعلم المزيد",
-        "message": "للمساعدة، الرجاء الاتصال بالدعم! \nسنعود إليك قريبا!",
-        "title": "حدث خطأ"
-      }
     },
     "walletconnect": {
       "connecting": "جارٍ الاتصال",
@@ -3374,10 +2971,6 @@
         }
       }
     },
-    "warning": {
-      "user_is_offline": "الاتصال غير متوفر، يرجى التحقق من اتصالك بالإنترنت",
-      "user_is_online": "متصل! أنت عادت إلى الاتصال بالشبكة"
-    },
     "dapp_browser": {
       "address_bar": {
         "input_placeholder": "ابحث أو أدخل الموقع"
@@ -3392,8 +2985,7 @@
         "undo_favorite": "تراجع",
         "connect": "اتصل",
         "swap": "تبديل",
-        "bridge": "جسر",
-        "more": "أكثر"
+        "bridge": "جسر"
       },
       "error": {
         "title": "حدث خطأ ما",
@@ -3433,44 +3025,6 @@
         "new_tab": "تبويب جديد"
       }
     },
-    "trending_tokens": {
-      "all": "الكل",
-      "no_results": {
-        "title": "لا توجد نتائج",
-        "body": "حاول التصفح في إطار زمني أوسع أو شبكة أو فئة مختلفة."
-      },
-      "and": "و",
-      "and_others": {
-        "one": "و %{count} آخر",
-        "other": "و %{count} آخرين"
-      },
-      "filters": {
-        "categories": {
-          "TRENDING": "الشائع",
-          "RAINBOW": "رينبو",
-          "NEW": "جديد",
-          "FARCASTER": "فاركاستر"
-        },
-        "sort": {
-          "RECOMMENDED": {
-            "label": "الترتيب",
-            "menuOption": "افتراضي"
-          },
-          "VOLUME": "الحجم",
-          "MARKET_CAP": "القيمة السوقية",
-          "TOP_GAINERS": "أعلى الرابحين",
-          "TOP_LOSERS": "أعلى الخاسرين"
-        },
-        "time": {
-          "H12": "12 ساعة",
-          "H12_ABBREVIATED": "12 ساعة",
-          "H24": "24 ساعة",
-          "H24_ABBREVIATED": "24 ساعة",
-          "D7": "أسبوع واحد",
-          "D3": "3 أيام"
-        }
-      }
-    },
     "network_selector": {
       "customize_networks_banner": {
         "title": "تخصيص الشبكات",
@@ -3489,12 +3043,6 @@
       "search": "بحث"
     },
     "token_launcher": {
-      "airdrop": {
-        "address_or_ens": "العنوان أو ENS",
-        "suggested_users": "المستخدمون المقترحون",
-        "airdrop_lists": "قوائم الإسقاط",
-        "max_recipients_reached": "تم الوصول إلى حد أقصى %{maxRecipientCount} للمستلمين"
-      },
       "image_upload_error": {
         "title": "عذرًا، حدث خطأ أثناء تحميل صورتك.",
         "subtitle": "يرجى المحاولة مرة أخرى."
@@ -3508,9 +3056,6 @@
         "title": "شراء الرموز مسبقاً"
       },
       "review": {
-        "token_allocation": "تخصيص الرمز",
-        "your_share": "نصيبك",
-        "airdropping": "إسقاط",
         "about": "حول",
         "total_cost": "التكلفة الإجمالية",
         "initial_price": "السعر الأولي",
@@ -3534,34 +3079,30 @@
         "must_be_greater_than_0": "يجب أن يكون أكبر من 0",
         "amount_is_greater_than_balance": "المبلغ أكبر من الرصيد",
         "amount_is_greater_than_max_prebuy_amount": "يتجاوز الحد الأقصى للشراء المسبق %{maxPrebuyAmount} %{chainNativeAssetSymbol}",
-        "amount_is_less_than_min_prebuy_amount": "يجب أن يتجاوز الحد الأدنى للشراء المسبق %{minPrebuyAmount} %{chainNativeAssetSymbol}",
         "amount_too_small": "المبلغ صغير جدًا! حاول استخدام المزيد!"
       },
       "titles": {
-        "total_supply": "الإمداد الكلي",
         "ticker": "التسمية",
         "name": "الاسم",
         "network": "الشبكة",
         "description": "الوصف",
-        "airdrop": "الإسقاط على الأصدقاء",
         "required_info": "المعلومات المطلوبة",
         "about": "حول",
-        "token_allocation": "تخصيص الرمز",
         "token_allocation_breakdown": "تفصيل تخصيص الرمز",
-        "mcap": "رأس المال السوقي"
+        "mcap": "رأس المال السوقي",
+        "links": "الروابط"
       },
       "placeholders": {
         "ticker": "$اسم",
         "enter_coin_name": "أدخل اسم العملة",
-        "describe_your_coin": "صف عملتك"
+        "describe_your_coin": "صف عملتك",
+        "custom_amount": "مبلغ مخصص"
       },
       "buttons": {
         "hold_to_create": "اضغط للمشاركة",
         "creating": "جاري الإنشاء...",
         "share_link": "شارك الرابط",
-        "token_allocation_info": "مزيد من المعلومات",
-        "got_it": "فهمت",
-        "cancel": "إلغاء"
+        "got_it": "فهمت"
       },
       "header": {
         "new_coin": "عملة جديدة",
@@ -3593,27 +3134,12 @@
       },
       "discard_and_exit": "تجاهل واخرج",
       "airdrops_sheet": {
-        "claim_button_text": "المطالبة",
         "empty_state_title": "لا توجد إسقاطات بعد",
         "title": "ادعاء عملات قوس قزح"
-      },
-      "cards": {
-        "airdrops": {
-          "subtitle_loading": "جار التحميل",
-          "subtitle_has_airdrops": "متاح للمطالبة",
-          "subtitle_no_airdrops": "لا توجد إسقاطات بعد",
-          "title": "الإسقاطات",
-          "title_singular": "إسقاط جوي"
-        },
-        "launch": {
-          "line_one": "إطلاق\n",
-          "line_two": "عملتك"
-        }
       },
       "claim_airdrop_sheet": {
         "by": "بواسطة",
         "claiming": "يتم المطالبة",
-        "created_by": "مصنوع بواسطة %{name}",
         "gifted_to": "مهدى إلى",
         "hold_to_claim": "اضغط للمطالبة",
         "hold_to_retry": "اضغط لإعادة المحاولة",
@@ -3636,19 +3162,25 @@
         "unsupported_network": "إطلاق التوكن غير مدعوم على هذه الشبكة"
       }
     },
-    "done": "تم",
     "copy": "نسخ",
     "paste": "لصق",
     "new": "جديد",
     "market_data": {
       "vol": "الحجم",
-      "price": "السعر",
-      "mcap": "رأس المال السوقي"
+      "mcap": "رأس المال السوقي",
+      "transactions": "المعاملات",
+      "volume": "الحجم",
+      "makers": "صُنّاع السوق",
+      "buys": "عمليات الشراء",
+      "sells": "عمليات البيع",
+      "bought": "تم الشراء",
+      "sold": "تم البيع",
+      "buyers": "المشترون",
+      "sellers": "البائعون"
     },
     "king_of_hill": {
       "title": "منصة الإطلاق",
       "launch": "إطلاق",
-      "current_king": "الملك الحالي",
       "last_winner": "آخر فائز",
       "no_previous_winner": "لا يوجد فائز سابق",
       "round_ends_in": "تنتهي الجولة خلال",
@@ -3752,7 +3284,6 @@
       },
       "cash_out": {
         "title": "سحب الرهان",
-        "current_price": "السعر الحالي",
         "average_price": "السعر المتوسط",
         "profit_loss": "الربح / الخسارة",
         "receive": "استلم",
@@ -3780,7 +3311,6 @@
         "show_resolved": "عرض المحلولين",
         "open_positions": "المواقع المفتوحة",
         "market_resolved": "السوق محلول",
-        "volume_suffix": "الحجم",
         "show_less": "اعرض أقل",
         "show_more": "أظهر المزيد",
         "resolved": "محلول"
@@ -3815,6 +3345,7 @@
       "sports": {
         "vs": "مقابل",
         "live": "مباشر",
+        "this_week": "هذا الأسبوع",
         "game_best_of": "اللعبة %{currentPeriod} - الأفضل من %{bestOf}",
         "final": "نهائي",
         "no_games": "لا توجد مباريات اليوم أو غدًا"
@@ -3850,13 +3381,11 @@
       },
       "claim": {
         "claim_title": "مطالبة $RNBW",
-        "available_to_claim": "متاح للمطالبة",
         "your_airdrop": "الإسقاط الجوي الخاص بك",
         "your_airdrop_description": "شكرًا لاستخدامك Rainbow. يتم احتساب الإسقاط الجوي الخاص بك بناءً على نشاطك السابق.",
         "claim_failed_title": "خطأ أثناء المطالبة بالمكافآت",
         "claim_failed_message": "يرجى المحاولة مرة أخرى.",
-        "claim_later": "المطالبة لاحقًا",
-        "almost_there": "أوشكت على الانتهاء..."
+        "claim_later": "المطالبة لاحقًا"
       },
       "airdrop_claim_finished": {
         "airdrop_claimed": "تمت المطالبة بالإسقاط الجوي",
@@ -3881,7 +3410,6 @@
       },
       "loading_labels": {
         "checking_historical_activity": "جارٍ التحقق من النشاط السابق...",
-        "checking_eligibility": "جارٍ التحقق من الأهلية...",
         "claiming_rewards": "جارٍ المطالبة بالمكافآت...",
         "submitting_transaction": "جارٍ إرسال المعاملة...",
         "claiming_airdrop": "جارٍ المطالبة بالإسقاط الجوي...",
@@ -3909,11 +3437,13 @@
       "staking_card": {
         "stake": "رهن",
         "enable_staking": "تفعيل الرهن",
-        "buy_rnbw": "شراء RNBW",
+        "buy": "شراء",
         "unstake": "إلغاء الرهن",
         "available_to_stake": "متاح للرهن",
         "available_to_add": "متاح للإضافة",
-        "minimum_stake_amount_required": "تحتاج إلى ما لا يقل عن %{minStakeAmount} RNBW للتخزين"
+        "to_add_to_stake": "لإضافة المزيد إلى الرهن",
+        "to_stake": "للرهن",
+        "buy_more": "اشترِ المزيد"
       },
       "staking_earnings_card": {
         "lifetime_earnings": "الأرباح مدى الحياة",
