@@ -17,9 +17,6 @@ import { type Address } from 'viem';
 import { MobileWalletProtocolUserErrors } from '@/components/MobileWalletProtocolListener';
 import { hideWalletConnectToast } from '@/components/toasts/WalletConnectToast';
 import { enableActionsOnReadOnlyWallet } from '@/config/debug';
-import { RequestSource, type RequestData } from '@/features/dapp-request/types';
-import { SEND_TRANSACTION } from '@/features/dapp-request/utils/requestMethods';
-import { getRequestDisplayDetails } from '@/features/dapp-request/utils/requests';
 import { useBackendNetworksStore } from '@/features/network/stores/backendNetworksStore';
 import { ChainId } from '@/features/network/types/backendNetworks';
 import { handleSessionRequestResponse } from '@/features/wallet-connect/handlers/onSessionRequest';
@@ -37,6 +34,10 @@ import Navigation, { getActiveRoute } from '@/navigation/Navigation';
 import Routes from '@/navigation/routesNames';
 import store from '@/redux/store';
 import { getAccountAddress, getIsReadOnlyWallet, getWalletWithAccount } from '@/state/wallets/walletsStore';
+
+import { RequestSource, type RequestData } from '../types';
+import { SEND_TRANSACTION } from './requestMethods';
+import { getRequestDisplayDetails } from './requests';
 
 // Mobile Wallet Protocol
 

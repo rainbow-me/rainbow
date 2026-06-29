@@ -4,6 +4,7 @@ import { formatJsonRpcError, formatJsonRpcResult } from '@json-rpc-tools/utils';
 import type { SignClientTypes } from '@walletconnect/types';
 
 import { analytics } from '@/analytics';
+import { handleWalletConnectRequest } from '@/features/dapp-request/utils/requestNavigationHandlers';
 import { getRequestDisplayDetails } from '@/features/dapp-request/utils/requests';
 import { fetchDappMetadata } from '@/features/dapp/resources/dapp';
 import { maybeSignUri } from '@/handlers/imgix';
@@ -14,7 +15,6 @@ import Navigation from '@/navigation/Navigation';
 import Routes from '@/navigation/routesNames';
 import store from '@/redux/store';
 import { getWallets, getWalletWithAccount } from '@/state/wallets/walletsStore';
-import { handleWalletConnectRequest } from '@/utils/requestNavigationHandlers';
 
 import { showErrorSheet } from '../components/showErrorSheet';
 import { getWalletKitClient } from '../services/client';
