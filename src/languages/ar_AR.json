@@ -1520,7 +1520,7 @@
       },
       "search": {
         "search_markets": "البحث في الأسواق",
-        "markets_count": "٪{count} أسواق ",
+        "markets_count": "%{count} أسواق",
         "choose_a_market": "اختيار سوق",
         "no_markets_found": "لم يتم العثور على أسواق"
       },
@@ -3348,7 +3348,7 @@
         "this_week": "هذا الأسبوع",
         "game_best_of": "اللعبة %{currentPeriod} - الأفضل من %{bestOf}",
         "final": "نهائي",
-        "no_games": "لا توجد مباريات اليوم أو غدًا"
+        "no_games": "لا توجد مباريات هذا الأسبوع"
       },
       "outcomes": {
         "yes": "نعم",
