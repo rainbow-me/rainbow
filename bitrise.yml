@@ -164,6 +164,7 @@ workflows:
                 echo "ETHERSCAN_API_KEY=$ETHERSCAN_API_KEY" >> .env
                 echo "BRANCH_APP_DOMAIN=$BRANCH_APP_DOMAIN" >> .env
                 echo "BRANCH_KEY=$BRANCH_KEY" >> .env
+                echo "APPSFLYER_DEV_KEY=$APPSFLYER_DEV_KEY" >> .env
                 echo "RAINBOW_MASTER_KEY=$RAINBOW_MASTER_KEY" >> .env
                 echo "DEV_SEEDS=\"$DEV_SEEDS_PROD\"" >> .env
                 echo "DEV_PKEY=$DEV_PKEY_PROD" >> .env
@@ -472,6 +473,7 @@ workflows:
                 echo "ETHERSCAN_API_KEY=$ETHERSCAN_API_KEY" >> .env
                 echo "BRANCH_APP_DOMAIN=$BRANCH_APP_DOMAIN" >> .env
                 echo "BRANCH_KEY=$BRANCH_KEY" >> .env
+                echo "APPSFLYER_DEV_KEY=$APPSFLYER_DEV_KEY" >> .env
                 echo "RAINBOW_MASTER_KEY=$RAINBOW_MASTER_KEY" >> .env
                 echo "DEV_SEEDS=\"$DEV_SEEDS_PROD\"" >> .env
                 echo "DEV_PKEY=$DEV_PKEY_PROD" >> .env
