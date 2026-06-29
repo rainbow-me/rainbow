@@ -1850,12 +1850,12 @@
           "text": "Se distribuirán hasta 67,850 OP en recompensas cada semana. Si las recompensas semanales se agotan, las recompensas se pausarán temporalmente y se reanudarán la semana siguiente."
         },
         "bridge": {
-          "title": "Gana 0.125% en transferencias",
-          "text": "Mientras las recompensas estén activas, transferir tokens verificados a Optimism te dará aproximadamente un 0.125% de vuelta en OP.\n\nLas estadísticas se actualizan periódicamente a lo largo del día. Vuelve pronto si no ves reflejadas tus transferencias recientes aquí."
+          "title": "Gana %{percent}% en transferencias",
+          "text": "Mientras las recompensas estén activas, transferir tokens verificados a Optimism te dará aproximadamente un %{percent}% de vuelta en OP.\n\nLas estadísticas se actualizan periódicamente a lo largo del día. Vuelve pronto si no ves reflejadas tus transferencias recientes aquí."
         },
         "swap": {
-          "title": "Gana 0.425% en intercambios",
-          "text": "Mientras las recompensas estén activas, el intercambio de tokens verificados en Optimism te hará ganar aproximadamente un 0.425% en OP.\n\nLas estadísticas se actualizan periódicamente durante el día. Vuelve pronto si no ves reflejados tus intercambios recientes aquí."
+          "title": "Gana %{percent}% en intercambios",
+          "text": "Mientras las recompensas estén activas, el intercambio de tokens verificados en Optimism te hará ganar aproximadamente un %{percent}% en OP.\n\nLas estadísticas se actualizan periódicamente durante el día. Vuelve pronto si no ves reflejados tus intercambios recientes aquí."
         },
         "position": {
           "title": "Posición en la clasificación",
