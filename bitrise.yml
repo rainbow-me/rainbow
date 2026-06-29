@@ -147,9 +147,6 @@ workflows:
 
                 # write your script here
                 touch .env
-                echo "DATA_ORIGIN=$DATA_ORIGIN" >> .env
-                echo "DATA_API_KEY=$DATA_API_KEY" >> .env
-                echo "DATA_ENDPOINT=$DATA_ENDPOINT" >> .env
                 echo "SENTRY_ENDPOINT=$SENTRY_ENDPOINT" >> .env
                 echo "SENTRY_AUTH_TOKEN=$SENTRY_AUTH_TOKEN" >> .env
                 echo "ETHERSCAN_API_KEY=$ETHERSCAN_API_KEY" >> .env
@@ -414,9 +411,6 @@ workflows:
 
                 # write your script here
                 touch .env
-                echo "DATA_ORIGIN=$DATA_ORIGIN" >> .env
-                echo "DATA_API_KEY=$DATA_API_KEY" >> .env
-                echo "DATA_ENDPOINT=$DATA_ENDPOINT" >> .env
                 echo "SENTRY_ENDPOINT=$SENTRY_ENDPOINT" >> .env
                 echo "SENTRY_AUTH_TOKEN=$SENTRY_AUTH_TOKEN" >> .env
                 echo "SENTRY_ALLOW_FAILURE=$SENTRY_ALLOW_FAILURE" >> .env
