@@ -27,6 +27,7 @@ import {
   useForegroundColor,
 } from '@/design-system';
 import { type TextColor } from '@/design-system/color/palettes';
+import { TOP_INSET } from '@/features/dapp-browser/constants/Dimensions';
 import { opacity } from '@/framework/ui/utils/opacity';
 import { returnStringFirstEmoji } from '@/helpers/emojiHandler';
 import { useAccountAccentColor } from '@/hooks/useAccountAccentColor';
@@ -37,8 +38,6 @@ import { THICK_BORDER_WIDTH } from '@/styles/constants';
 import { DEVICE_HEIGHT, DEVICE_WIDTH } from '@/utils/deviceUtils';
 import { addressHashedEmoji } from '@/utils/profileUtils';
 import safeAreaInsetValues from '@/utils/safeAreaInsetValues';
-
-import { TOP_INSET } from '../DappBrowser/Dimensions';
 
 export const TapToDismiss = memo(function TapToDismiss() {
   const { goBack } = useNavigation();

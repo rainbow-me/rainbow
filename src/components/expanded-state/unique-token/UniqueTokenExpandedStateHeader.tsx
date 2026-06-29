@@ -9,6 +9,7 @@ import { ImgixImage } from '@/components/images';
 import ContextMenuButton from '@/components/native-context-menu/contextMenu';
 import { Bleed, Column, Columns, Heading, Inline, Inset, Stack, Text, type Space } from '@/design-system';
 import type { UniqueAsset } from '@/entities/uniqueAssets';
+import { openInBrowser } from '@/features/dapp-browser/utils/openInBrowser';
 import { ChainId } from '@/features/network/types/backendNetworks';
 import styled from '@/framework/ui/styled-thing';
 import { showActionSheetWithOptions } from '@/framework/ui/utils/actionsheet';
@@ -25,7 +26,6 @@ import ethereumUtils from '@/utils/ethereumUtils';
 import { getFullResUrl } from '@/utils/getFullResUrl';
 import isLowerCaseMatch from '@/utils/isLowerCaseMatch';
 import magicMemo from '@/utils/magicMemo';
-import { openInBrowser } from '@/utils/openInBrowser';
 
 import ButtonPressAnimation from '../../animations/ButtonPressAnimation';
 import saveToCameraRoll from './saveToCameraRoll';

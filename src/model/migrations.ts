@@ -14,6 +14,8 @@ import type { RainbowToken } from '@/entities/tokens';
 import type { EthereumAddress } from '@/entities/wallet';
 import { unlockableAppIcons, type UnlockableAppIconKey } from '@/features/app-icon/models/appIcons';
 import { unlockableAppIconStorage } from '@/features/app-icon/utils/unlockableAppIconCheck';
+import { standardizeUrl, useFavoriteDappsStore } from '@/features/dapp-browser/stores/favoriteDappsStore';
+import { legacyFavoriteDappsStore } from '@/features/dapp-browser/stores/legacyFavoriteDappsStore';
 import * as kc from '@/features/local-auth/keychain';
 import {
   addressKey,
@@ -36,8 +38,6 @@ import { clearReactQueryCache } from '@/react-query/reactQueryUtils';
 import { favoritesQueryKey } from '@/resources/favorites';
 import { userAssetsStore } from '@/state/assets/userAssets';
 import { userAssetsStoreManager } from '@/state/assets/userAssetsStoreManager';
-import { standardizeUrl, useFavoriteDappsStore } from '@/state/browser/favoriteDappsStore';
-import { legacyFavoriteDappsStore } from '@/state/legacyFavoriteDapps';
 import { swapsStore } from '@/state/swaps/swapsStore';
 import { getSelectedWallet, getWallets, setSelectedWallet, updateWallets } from '@/state/wallets/walletsStore';
 import ethereumUtils, { getAddressAndChainIdFromUniqueId, getUniqueId, getUniqueIdNetwork } from '@/utils/ethereumUtils';

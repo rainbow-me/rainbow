@@ -7,12 +7,12 @@ import { useAnimatedStyle, useDerivedValue, useSharedValue } from 'react-native-
 import { ETH_COLOR_DARK } from '@/__swaps__/screens/Swap/constants';
 import { analytics } from '@/analytics';
 import { CurrencyInput, type CurrencyInputRef } from '@/components/CurrencyInput/CurrencyInput';
-import { TapToDismiss } from '@/components/DappBrowser/control-panel/ControlPanel';
 import { useLiveTokenSharedValue } from '@/components/live-token-text/LiveTokenText';
 import { SheetHandleFixedToTop } from '@/components/sheet';
 import { Panel } from '@/components/SmoothPager/ListPanel';
 import { AnimatedText, Box, Separator, Text, useColorMode, useForegroundColor } from '@/design-system';
 import { formatUsd } from '@/features/currency/utils/formatUsd';
+import { TapToDismiss } from '@/features/dapp-browser/screens/ControlPanel';
 import { PerpBottomSheetHeader } from '@/features/perps/components/PerpBottomSheetHeader';
 import { PerpsSheetActionButtons } from '@/features/perps/components/PerpsSheetActionButtons';
 import { PerpsAccentColorContextProvider, usePerpsAccentColorContext } from '@/features/perps/context/PerpsAccentColorContext';

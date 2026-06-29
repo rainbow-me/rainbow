@@ -8,6 +8,7 @@ import { analytics } from '@/analytics';
 import { Alert as NativeAlert } from '@/components/alerts';
 import { IS_DEV } from '@/env';
 import { getRemoteConfig } from '@/features/config/stores/remoteConfig';
+import { openInBrowser } from '@/features/dapp-browser/utils/openInBrowser';
 import * as kc from '@/features/local-auth/keychain';
 import { identifierForVendorKey, pinKey, privateKeyKey, seedPhraseKey } from '@/features/local-auth/keychainConstants';
 import * as keychain from '@/features/local-auth/legacyKeychain';
@@ -34,7 +35,6 @@ import { createWallet, type AllRainbowWallets, type RainbowWallet } from '@/mode
 import Navigation from '@/navigation/Navigation';
 import Routes from '@/navigation/routesNames';
 import { loadWallets, refreshWalletInfo, setAllWalletsWithIdsAsBackedUp } from '@/state/wallets/walletsStore';
-import { openInBrowser } from '@/utils/openInBrowser';
 import { cloudPlatform } from '@/utils/platform';
 
 import { backupsStore, CloudBackupState } from './stores/backupsStore';
