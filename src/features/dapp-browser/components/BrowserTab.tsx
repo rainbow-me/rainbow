@@ -30,7 +30,7 @@ import { type BrowserTabProps, type ScreenshotType } from '../types';
 import { freezeWebsite, SCRIPTS_TO_INJECT, unfreezeWebsite } from '../utils/scripts';
 import { CloseTabButton } from './CloseTabButton';
 import { WebViewShadows } from './DappBrowserShadows';
-import DappBrowserWebview from './DappBrowserWebview';
+import { DappBrowserWebview } from './DappBrowserWebview';
 import { ErrorPage } from './ErrorPage';
 import { Homepage } from './Homepage';
 import { WebViewBorder } from './WebViewBorder';

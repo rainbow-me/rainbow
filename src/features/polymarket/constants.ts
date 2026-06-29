@@ -53,9 +53,6 @@ export const POLYMARKET_DATA_API_URL = POLYMARKET_DATA_API_URL_PROD;
 export const POLYMARKET_CLOB_URL = POLYMARKET_CLOB_URL_PROD;
 
 export const POLYMARKET_SPORTS_WS_URL = 'wss://sports-api.polymarket.com/ws';
-export const POLYMARKET_HOSTNAMES: ReadonlySet<string> = new Set(['polymarket.com', 'www.polymarket.com']);
-export const POLYMARKET_REFERRAL_PARAM = 'r';
-export const POLYMARKET_REFERRAL_CODE = 'rnbw';
 
 export const POLYMARKET_RAINBOW_FEE_RECIPIENT_ADDRESS: Address = '0x757758506d6a4F8a433F8BECaFd52545f9Cb050a';
 
