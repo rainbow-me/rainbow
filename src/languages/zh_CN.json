@@ -3348,7 +3348,7 @@
         "this_week": "本周",
         "game_best_of": "游戏 %{currentPeriod} - 最佳 %{bestOf}",
         "final": "最终",
-        "no_games": "今天或明天没有比赛"
+        "no_games": "本周没有比赛"
       },
       "outcomes": {
         "yes": "是",
