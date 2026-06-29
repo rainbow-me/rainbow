@@ -1520,7 +1520,7 @@
       },
       "search": {
         "search_markets": "マーケットを検索",
-        "markets_count": "%{count} メーカー",
+        "markets_count": "%{count} マーケット",
         "choose_a_market": "マーケットを選択",
         "no_markets_found": "マーケットが見つかりません"
       },
