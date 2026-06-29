@@ -1850,12 +1850,12 @@
           "text": "Her hafta 67,850 OP ödül dağıtılacak. Haftalık ödüller bittiğinde, ödüller geçici olarak durdurulacak ve sonraki hafta devam edecek."
         },
         "bridge": {
-          "title": "Köprü Oluşturma Üzerinden %0.125 Kazanın",
-          "text": "Ödüller canlıyken, doğrulanmış tokenları Optimism'e köprü kurarak yaklaşık olarak %0.125 geri kazanabilirsiniz.\n\nİstatistikler gün boyunca periyodik olarak güncellenir. Eğer son yaptığınız köprü kurma işlemi burada gözükmüyorsa yakında tekrar kontrol edin."
+          "title": "Köprü Oluşturma Üzerinden %%{percent} Kazanın",
+          "text": "Ödüller canlıyken, doğrulanmış tokenları Optimism'e köprü kurarak yaklaşık olarak %%{percent} geri kazanabilirsiniz.\n\nİstatistikler gün boyunca periyodik olarak güncellenir. Eğer son yaptığınız köprü kurma işlemi burada gözükmüyorsa yakında tekrar kontrol edin."
         },
         "swap": {
-          "title": "Takaslarda %0.425 Kazanın",
-          "text": "Ödüller canlıyken, doğrulanmış tokenları Optimism'de takas yaparak yaklaşık olarak %0.425 geri kazanabilirsiniz.\n\nİstatistikler gün boyunca periyodik olarak güncellenir. Eğer son yaptığınız takas işlemi burada gözükmüyorsa yakında tekrar kontrol edin."
+          "title": "Takaslarda %%{percent} Kazanın",
+          "text": "Ödüller canlıyken, doğrulanmış tokenları Optimism'de takas yaparak yaklaşık olarak %%{percent} geri kazanabilirsiniz.\n\nİstatistikler gün boyunca periyodik olarak güncellenir. Eğer son yaptığınız takas işlemi burada gözükmüyorsa yakında tekrar kontrol edin."
         },
         "position": {
           "title": "Liderlik Tablosu Pozisyonu",
