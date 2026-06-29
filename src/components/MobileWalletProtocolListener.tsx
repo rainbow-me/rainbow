@@ -9,8 +9,8 @@ import {
 } from '@coinbase/mobile-wallet-protocol-host';
 
 import { IS_DEV } from '@/env';
+import { handleMobileWalletProtocolRequest } from '@/features/dapp-request/utils/requestNavigationHandlers';
 import { logger, RainbowError } from '@/logger';
-import { handleMobileWalletProtocolRequest } from '@/utils/requestNavigationHandlers';
 
 export enum MobileWalletProtocolUserErrors {
   USER_REJECTED_HANDSHAKE = 'User rejected the handshake',
