@@ -155,12 +155,6 @@ workflows:
                 echo "DATA_ENDPOINT=$DATA_ENDPOINT" >> .env
                 echo "SENTRY_ENDPOINT=$SENTRY_ENDPOINT" >> .env
                 echo "SENTRY_AUTH_TOKEN=$SENTRY_AUTH_TOKEN" >> .env
-                echo "WYRE_ENDPOINT=$WYRE_ENDPOINT" >> .env
-                echo "WYRE_ACCOUNT_ID=$WYRE_ACCOUNT_ID" >> .env
-                echo "RAINBOW_WYRE_MERCHANT_ID=$RAINBOW_WYRE_MERCHANT_ID" >> .env
-                echo "WYRE_ENDPOINT_TEST=$WYRE_ENDPOINT_TEST" >> .env
-                echo "WYRE_ACCOUNT_ID_TEST=$WYRE_ACCOUNT_ID_TEST" >> .env
-                echo "RAINBOW_WYRE_MERCHANT_ID_TEST=$RAINBOW_WYRE_MERCHANT_ID_TEST" >> .env
                 echo "ETHERSCAN_API_KEY=$ETHERSCAN_API_KEY" >> .env
                 echo "BRANCH_APP_DOMAIN=$BRANCH_APP_DOMAIN" >> .env
                 echo "BRANCH_KEY=$BRANCH_KEY" >> .env
@@ -169,8 +163,6 @@ workflows:
                 echo "DEV_SEEDS=\"$DEV_SEEDS_PROD\"" >> .env
                 echo "DEV_PKEY=$DEV_PKEY_PROD" >> .env
                 echo "IS_TESTING=$IS_TESTING" >> .env
-                echo "WYRE_TOKEN=$WYRE_TOKEN" >> .env
-                echo "WYRE_TOKEN_TEST=$WYRE_TOKEN_TEST" >> .env
                 echo "ENABLE_DEV_MODE=$ENABLE_DEV_MODE" >> .env
                 echo "GANACHE_URL_IOS=$GANACHE_URL_IOS" >> .env
                 echo "GANACHE_URL_ANDROID=$GANACHE_URL_ANDROID" >> .env
@@ -464,12 +456,6 @@ workflows:
                 echo "SENTRY_ENDPOINT=$SENTRY_ENDPOINT" >> .env
                 echo "SENTRY_AUTH_TOKEN=$SENTRY_AUTH_TOKEN" >> .env
                 echo "SENTRY_ALLOW_FAILURE=$SENTRY_ALLOW_FAILURE" >> .env
-                echo "WYRE_ENDPOINT=$WYRE_ENDPOINT" >> .env
-                echo "WYRE_ACCOUNT_ID=$WYRE_ACCOUNT_ID" >> .env
-                echo "RAINBOW_WYRE_MERCHANT_ID=$RAINBOW_WYRE_MERCHANT_ID" >> .env
-                echo "WYRE_ENDPOINT_TEST=$WYRE_ENDPOINT_TEST" >> .env
-                echo "WYRE_ACCOUNT_ID_TEST=$WYRE_ACCOUNT_ID_TEST" >> .env
-                echo "RAINBOW_WYRE_MERCHANT_ID_TEST=$RAINBOW_WYRE_MERCHANT_ID_TEST" >> .env
                 echo "ETHERSCAN_API_KEY=$ETHERSCAN_API_KEY" >> .env
                 echo "BRANCH_APP_DOMAIN=$BRANCH_APP_DOMAIN" >> .env
                 echo "BRANCH_KEY=$BRANCH_KEY" >> .env
@@ -478,8 +464,6 @@ workflows:
                 echo "DEV_SEEDS=\"$DEV_SEEDS_PROD\"" >> .env
                 echo "DEV_PKEY=$DEV_PKEY_PROD" >> .env
                 echo "IS_TESTING=$IS_TESTING" >> .env
-                echo "WYRE_TOKEN=$WYRE_TOKEN" >> .env
-                echo "WYRE_TOKEN_TEST=$WYRE_TOKEN_TEST" >> .env
                 echo "ENABLE_DEV_MODE=$ENABLE_DEV_MODE" >> .env
                 echo "GANACHE_URL_IOS=$GANACHE_URL_IOS" >> .env
                 echo "GANACHE_URL_ANDROID=$GANACHE_URL_ANDROID" >> .env
