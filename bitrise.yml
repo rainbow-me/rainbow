@@ -188,7 +188,6 @@ workflows:
                 echo "RAINBOW_LEAN_TOKEN_LIST_URL=$RAINBOW_LEAN_TOKEN_LIST_URL" >>.env
                 echo "HARDHAT_URL_IOS=$HARDHAT_URL_IOS" >>.env
                 echo "HARDHAT_URL_ANDROID=$HARDHAT_URL_ANDROID" >>.env
-                echo "COMPOUND_SUBGRAPH_ENDPOINT=$COMPOUND_SUBGRAPH_ENDPOINT" >>.env
                 echo "CLOUDINARY_CLOUD_NAME=$CLOUDINARY_CLOUD_NAME" >>.env
                 echo "PINATA_API_URL=$PINATA_API_URL" >>.env
                 echo "PINATA_API_KEY=$PINATA_API_KEY" >>.env
@@ -479,7 +478,6 @@ workflows:
                 echo "RAINBOW_LEAN_TOKEN_LIST_URL=$RAINBOW_LEAN_TOKEN_LIST_URL" >>.env
                 echo "HARDHAT_URL_IOS=$HARDHAT_URL_IOS" >>.env
                 echo "HARDHAT_URL_ANDROID=$HARDHAT_URL_ANDROID" >>.env
-                echo "COMPOUND_SUBGRAPH_ENDPOINT=$COMPOUND_SUBGRAPH_ENDPOINT" >>.env
                 echo "CLOUDINARY_CLOUD_NAME=$CLOUDINARY_CLOUD_NAME" >>.env
                 echo "PINATA_API_URL=$PINATA_API_URL" >>.env
                 echo "PINATA_API_KEY=$PINATA_API_KEY" >>.env
