@@ -1,27 +1,28 @@
-import { getDappHostname } from '@/features/dapp/utils/dappUrls';
-import { LIGHTER_HOSTNAMES } from '@/features/lighter/constants';
-import { getLighterReferralUrl } from '@/features/lighter/utils/lighterReferralUrl';
-import { POLYMARKET_HOSTNAMES } from '@/features/polymarket/constants';
-import { getPolymarketReferralUrl } from '@/features/polymarket/utils/polymarketReferralUrl';
-
 type DappReferral = {
-  getUrl: (url: string) => string | null;
   hostnames: ReadonlySet<string>;
+  param: string;
+  code: string;
 };
 
 const DAPP_REFERRALS: DappReferral[] = [
-  { hostnames: POLYMARKET_HOSTNAMES, getUrl: getPolymarketReferralUrl },
-  { hostnames: LIGHTER_HOSTNAMES, getUrl: getLighterReferralUrl },
+  { hostnames: new Set(['polymarket.com', 'www.polymarket.com']), param: 'r', code: 'rnbw' },
+  { hostnames: new Set(['app.lighter.xyz', 'lighter.xyz', 'www.lighter.xyz']), param: 'referral', code: '7228476M' },
 ];
 
 export function addReferralToDappBrowserUrl(url: string): string {
-  const hostname = getDappHostname(url);
-  if (!hostname) return url;
+  let parsedUrl: URL;
+  try {
+    parsedUrl = new URL(url);
+  } catch {
+    return url;
+  }
 
-  const referral = DAPP_REFERRALS.find(({ hostnames }) => hostnames.has(hostname));
-  const referralUrl = referral?.getUrl(url);
+  const referral = DAPP_REFERRALS.find(({ hostnames }) => hostnames.has(parsedUrl.hostname));
+  if (!referral) return url;
 
-  if (!referral || !referralUrl) return url;
+  if (!parsedUrl.searchParams.has(referral.param)) {
+    parsedUrl.searchParams.set(referral.param, referral.code);
+  }
 
-  return referralUrl;
+  return parsedUrl.toString();
 }
