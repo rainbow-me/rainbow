@@ -229,11 +229,6 @@ workflows:
                 echo "MWP_ENCRYPTION_KEY=$MWP_ENCRYPTION_KEY" >> .env
                 echo "METADATA_BASE_URL=$METADATA_BASE_URL" >> .env
                 echo "ADDYS_BASE_URL=$ADDYS_BASE_URL" >> .env
-                echo "TOKEN_LAUNCHER_URL=$TOKEN_LAUNCHER_URL" >> .env
-                echo "TOKEN_LAUNCHER_API_KEY=$TOKEN_LAUNCHER_API_KEY" >> .env
-                echo "TOKEN_LAUNCHER_FEE_ADDRESS=$TOKEN_LAUNCHER_FEE_ADDRESS" >> .env
-                echo "TOKEN_LAUNCHER_CODE=$TOKEN_LAUNCHER_CODE" >> .env
-                echo "TOKEN_LAUNCHER_PLATFORM=$TOKEN_LAUNCHER_PLATFORM" >> .env
                 echo "TOKEN_SEARCH_URL=$TOKEN_SEARCH_URL" >> .env
                 echo "PLATFORM_BASE_URL=$PLATFORM_BASE_URL" >> .env
                 echo "PLATFORM_API_KEY=$PLATFORM_API_KEY" >> .env
@@ -282,22 +277,10 @@ workflows:
         ADDYS_BASE_URL: https://addys.p.rainbow.me/v3
       - opts:
           is_expand: false
-        TOKEN_LAUNCHER_URL: https://launcher.rainbow.me
-      - opts:
-          is_expand: false
         TOKEN_SEARCH_URL: https://token-search.rainbow.me
       - opts:
           is_expand: false
         PLATFORM_BASE_URL: https://platform.p.rainbow.me
-      - TOKEN_LAUNCHER_FEE_ADDRESS: '0xE96D3027913064A16A17B27ca8b5A52120C11F91'
-        opts:
-          is_expand: false
-      - TOKEN_LAUNCHER_CODE: brownie
-        opts:
-          is_expand: false
-      - TOKEN_LAUNCHER_PLATFORM: brownie
-        opts:
-          is_expand: false
     before_run:
       - generate_dot_env_testflight
       - apply_rainbow_internals
@@ -374,22 +357,10 @@ workflows:
         ADDYS_BASE_URL: https://addys.s.rainbow.me/v3
       - opts:
           is_expand: false
-        TOKEN_LAUNCHER_URL: https://token-launcher-api.rainbowdotme.workers.dev
-      - opts:
-          is_expand: false
         TOKEN_SEARCH_URL: https://token-search.rainbow.me
       - opts:
           is_expand: false
         PLATFORM_BASE_URL: https://platform.s.rainbow.me
-      - TOKEN_LAUNCHER_FEE_ADDRESS: '0xE96D3027913064A16A17B27ca8b5A52120C11F91'
-        opts:
-          is_expand: false
-      - TOKEN_LAUNCHER_CODE: brownie
-        opts:
-          is_expand: false
-      - TOKEN_LAUNCHER_PLATFORM: brownie
-        opts:
-          is_expand: false
       - SENTRY_ALLOW_FAILURE: true
         opts:
           is_expand: false
@@ -566,11 +537,6 @@ workflows:
                 echo "MWP_ENCRYPTION_KEY=$MWP_ENCRYPTION_KEY" >> .env
                 echo "METADATA_BASE_URL=$METADATA_BASE_URL" >> .env
                 echo "ADDYS_BASE_URL=$ADDYS_BASE_URL" >> .env
-                echo "TOKEN_LAUNCHER_URL=$TOKEN_LAUNCHER_URL" >> .env
-                echo "TOKEN_LAUNCHER_API_KEY=$TOKEN_LAUNCHER_API_KEY" >> .env
-                echo "TOKEN_LAUNCHER_FEE_ADDRESS=$TOKEN_LAUNCHER_FEE_ADDRESS" >> .env
-                echo "TOKEN_LAUNCHER_CODE=$TOKEN_LAUNCHER_CODE" >> .env
-                echo "TOKEN_LAUNCHER_PLATFORM=$TOKEN_LAUNCHER_PLATFORM" >> .env
                 echo "TOKEN_SEARCH_URL=$TOKEN_SEARCH_URL" >> .env
                 echo "PLATFORM_BASE_URL=$PLATFORM_BASE_URL" >> .env
                 echo "PLATFORM_API_KEY=$PLATFORM_API_KEY_STAGING" >> .env
