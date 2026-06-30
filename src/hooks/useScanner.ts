@@ -163,7 +163,7 @@ export default function useScanner(enabled: boolean, onSuccess: () => unknown) {
       }
 
       // Rainbow profile QR code
-      if (data.startsWith(RAINBOW_PROFILES_BASE_URL)) {
+      if (data.startsWith(`${RAINBOW_PROFILES_BASE_URL}/profile/`)) {
         return handleScanRainbowProfile(data);
       }
       return handleScanInvalid(data);
