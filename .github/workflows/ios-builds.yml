@@ -4,10 +4,14 @@ on:
     types: [opened, synchronize, reopened, ready_for_review]
   workflow_dispatch:
 
+permissions: {}
+
 jobs:
   build-simulator:
     name: Simulator
     runs-on: macos-26-xlarge
+    permissions:
+      contents: read
     env:
       NODE_OPTIONS: '--max-old-space-size=6144'
     timeout-minutes: 45
@@ -36,6 +40,8 @@ jobs:
   build-device:
     name: Device
     runs-on: macos-26-xlarge
+    permissions:
+      contents: read
     env:
       NODE_OPTIONS: '--max-old-space-size=6144'
     timeout-minutes: 45
@@ -72,6 +78,9 @@ jobs:
     name: Post Builds
     needs: [build-simulator, build-device]
     runs-on: ubuntu-latest
+    permissions:
+      actions: read
+      pull-requests: write
     if: github.event_name == 'pull_request' && needs.build-simulator.result == 'success' && needs.build-device.result == 'success'
     steps:
       - name: Download simulator artifact

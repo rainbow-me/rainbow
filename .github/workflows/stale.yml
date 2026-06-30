@@ -4,6 +4,8 @@ on:
   schedule:
     - cron: '30 20 * * 1' # Runs every Monday at 20:30 UTC
 
+permissions: {}
+
 jobs:
   stale:
     runs-on: ubuntu-latest

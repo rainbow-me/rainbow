@@ -8,14 +8,15 @@ on:
         required: true
         type: string
 
-permissions:
-  contents: read
+permissions: {}
 
 jobs:
   build:
     name: Build
     runs-on: blacksmith-8vcpu-ubuntu-2404
     timeout-minutes: 60
+    permissions:
+      contents: read
     environment: release-android
 
     steps:

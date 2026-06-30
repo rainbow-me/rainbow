@@ -8,9 +8,15 @@ on:
   discussion_comment:
     types: [created]
 
+permissions: {}
+
 jobs:
   remove_spam_comments:
     runs-on: ubuntu-latest
+    permissions:
+      issues: write
+      pull-requests: write
+      discussions: write
     steps:
       - name: Set up environment
         run: |
