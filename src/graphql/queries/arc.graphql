@@ -1,39 +1,3 @@
-query getPoapEventByQrHash($qrHash: String!) {
-  getPoapEventByQrHash(qrHash: $qrHash) {
-    id
-    name
-    imageUrl
-    createdAt
-    qrHash
-    secret
-  }
-}
-
-query claimPoapByQrHash($walletAddress: String!, $qrHash: String!, $secret: String!) {
-  claimPoapByQrHash(walletAddress: $walletAddress, qrHash: $qrHash, secret: $secret) {
-    success
-    error
-  }
-}
-
-query getPoapEventBySecretWord($secretWord: String!) {
-  getPoapEventBySecretWord(secretWord: $secretWord) {
-    id
-    name
-    imageUrl
-    createdAt
-    qrHash
-    secretWord
-  }
-}
-
-query claimPoapBySecretWord($walletAddress: String!, $secretWord: String!) {
-  claimPoapBySecretWord(walletAddress: $walletAddress, secretWord: $secretWord) {
-    success
-    error
-  }
-}
-
 fragment simpleHashPaymentToken on SimpleHashPaymentToken {
   payment_token_id
   name

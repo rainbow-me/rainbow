@@ -42,7 +42,6 @@ const Routes = {
   KING_OF_THE_HILL: 'KingOfTheHill',
   LEARN_WEB_VIEW_SCREEN: 'LearnWebViewScreen',
   LOG_SHEET: 'LogSheet',
-  POAP_SHEET: 'PoapSheet',
   MAIN_NATIVE_BOTTOM_SHEET_NAVIGATOR: 'MainNativeBottomSheetNavigation',
   MAIN_NAVIGATOR: 'MainNavigator',
   MAIN_NAVIGATOR_WRAPPER: 'MainNavigatorWrapper',

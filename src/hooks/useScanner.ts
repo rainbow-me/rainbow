@@ -15,9 +15,8 @@ import * as i18n from '@/languages';
 import { logger, RainbowError } from '@/logger';
 import Routes from '@/navigation/routesNames';
 import { checkPushNotificationPermissions } from '@/notifications/permissions';
-import { POAP_BASE_URL, RAINBOW_PROFILES_BASE_URL } from '@/references/constants';
+import { RAINBOW_PROFILES_BASE_URL } from '@/references/constants';
 import addressUtils from '@/utils/address';
-import { getPoapAndOpenSheetWithQRHash, getPoapAndOpenSheetWithSecretWord } from '@/utils/poaps';
 import { fetchReverseRecordWithRetry } from '@/utils/profileUtils';
 
 import { Alert } from '../components/alerts';
@@ -161,43 +160,6 @@ export default function useScanner(enabled: boolean, onSuccess: () => unknown) {
         onSuccess();
         // @ts-expect-error The QS type is very broad. We could narrow it down but it's not worth it to not break current functionality
         return handleScanWalletConnect(uri, connector);
-      }
-
-      const lowerCaseData = data?.toLowerCase();
-
-      // poap mints
-      if (lowerCaseData.startsWith(`${POAP_BASE_URL}`)) {
-        const secretWord = lowerCaseData.split(`${POAP_BASE_URL}`)?.[1];
-        return getPoapAndOpenSheetWithSecretWord(secretWord, true);
-      }
-
-      if (lowerCaseData.startsWith(`https://collectors.poap.xyz/mint/`)) {
-        const qrHash = lowerCaseData.split('https://collectors.poap.xyz/mint/')?.[1];
-        return getPoapAndOpenSheetWithQRHash(qrHash, true);
-      }
-
-      if (lowerCaseData.startsWith(`https://poap.xyz/claim/`)) {
-        const qrHash = lowerCaseData.split('https://poap.xyz/claim/')?.[1];
-        return getPoapAndOpenSheetWithQRHash(qrHash, true);
-      }
-
-      if (lowerCaseData.startsWith(`https://app.poap.xyz/claim/`)) {
-        const qrHash = lowerCaseData.split('https://app.poap.xyz/claim/')?.[1];
-        return getPoapAndOpenSheetWithQRHash(qrHash, true);
-      }
-
-      if (lowerCaseData.startsWith(`${RAINBOW_PROFILES_BASE_URL}/poap`)) {
-        const secretWordOrQrHash = lowerCaseData.split(`${RAINBOW_PROFILES_BASE_URL}/poap/`)?.[1];
-        logger.debug('[useScanner]: handling poap scan', { secretWordOrQrHash });
-        await getPoapAndOpenSheetWithSecretWord(secretWordOrQrHash, true);
-        return getPoapAndOpenSheetWithQRHash(secretWordOrQrHash, true);
-      }
-
-      if (lowerCaseData.startsWith(`rainbow://poap`)) {
-        const secretWordOrQrHash = lowerCaseData.split(`rainbow://poap/`)?.[1];
-        logger.debug('[useScanner]: handling poap scan', { secretWordOrQrHash });
-        await getPoapAndOpenSheetWithSecretWord(secretWordOrQrHash, true);
-        return getPoapAndOpenSheetWithQRHash(secretWordOrQrHash, true);
       }
 
       // Rainbow profile QR code

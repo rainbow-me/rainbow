@@ -26,7 +26,6 @@ import { userAssetsStore } from '@/state/assets/userAssets';
 import { getWalletReady, getWallets, setSelectedWallet } from '@/state/wallets/walletsStore';
 import { delay } from '@/utils/delay';
 import { getAddressAndChainIdFromUniqueId, getUniqueId } from '@/utils/ethereumUtils';
-import { getPoapAndOpenSheetWithQRHash, getPoapAndOpenSheetWithSecretWord } from '@/utils/poaps';
 import { fetchReverseRecordWithRetry } from '@/utils/profileUtils';
 
 interface DeeplinkHandlerProps extends Pick<ReturnType<typeof useMobileWalletProtocolHost>, 'handleRequestUrl' | 'sendFailureToClient'> {
@@ -190,14 +189,6 @@ export default async function handleDeeplink({ url, initialRoute, handleRequestU
        */
       case 'plaid': {
         logger.debug(`[handleDeeplink]: handling Plaid redirect`, { url });
-        break;
-      }
-
-      case 'poap': {
-        logger.debug(`[handleDeeplink]: handling POAP`, { url });
-        const secretWordOrHash = pathname?.split('/')?.[1];
-        await getPoapAndOpenSheetWithSecretWord(secretWordOrHash, false);
-        await getPoapAndOpenSheetWithQRHash(secretWordOrHash, false);
         break;
       }
 
