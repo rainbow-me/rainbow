@@ -2,12 +2,9 @@
 
 ### Setup
 
-The Maestro version used by this repo is pinned in `.tool-versions` at the repo root. Both CI and local installs read from that file.
+The Maestro version used by this repo is pinned via mise. See the [repo README](../README.md#prerequisites) for the full setup. Both CI and local installs use the same pin.
 
-1. Install [mise](https://mise.jdx.dev): `curl https://mise.run | sh` (or via your package manager). See the [installation docs](https://mise.jdx.dev/getting-started.html) for shell activation.
-2. From the repo root: `mise install` -- installs the pinned Maestro version (and any other tools added to `.tool-versions` over time).
-
-To upgrade Maestro across the team, update the version in `.tool-versions` and open a PR. CI uses the same file, so everyone stays in sync.
+To upgrade Maestro across the team, update the version in `mise.toml`.
 
 ### Run tests locally
 

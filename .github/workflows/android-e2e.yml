@@ -176,6 +176,8 @@ jobs:
 
       - name: Install Maestro
         uses: jdx/mise-action@1648a7812b9aeae629881980618f079932869151 # v4.0.1
+        with:
+          install_args: maestro
 
       - name: Install Anvil
         uses: foundry-rs/foundry-toolchain@c7450ba673e133f5ee30098b3b54f444d3a2ca2d # v1.8.0
