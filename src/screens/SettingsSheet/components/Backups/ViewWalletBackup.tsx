@@ -127,6 +127,9 @@ const ViewWalletBackup = () => {
   const wallet = useWallet(walletId);
 
   const isSecretPhrase = WalletTypes.mnemonic === wallet?.type;
+  const backupTypeLabel = isSecretPhrase
+    ? i18n.t(i18n.l.back_up.secret.secret_phrase_title)
+    : i18n.t(i18n.l.back_up.secret.private_key_title);
   const title = wallet?.type === WalletTypes.privateKey ? wallet?.addresses[0].label : incomingTitle;
   const isBackedUp = isWalletBackedUpForCurrentAccount({
     backupType: wallet?.backupType,
@@ -330,7 +333,7 @@ const ViewWalletBackup = () => {
                   {backupProvider === walletBackupTypes.cloud && (
                     <MenuHeader.Label
                       text={i18n.t(i18n.l.wallet.back_ups.not_backed_up_to_cloud_message, {
-                        backupType: isSecretPhrase ? 'Secret Phrase' : 'Private Key',
+                        backupType: backupTypeLabel,
                         cloudPlatform,
                       })}
                     />
@@ -338,7 +341,7 @@ const ViewWalletBackup = () => {
                   {backupProvider !== walletBackupTypes.cloud && (
                     <MenuHeader.Label
                       text={i18n.t(i18n.l.wallet.back_ups.not_backed_up_message, {
-                        backupType: isSecretPhrase ? 'Secret Phrase' : 'Private Key',
+                        backupType: backupTypeLabel,
                       })}
                     />
                   )}
@@ -410,7 +413,7 @@ const ViewWalletBackup = () => {
                             cloudPlatform,
                           })
                         : i18n.t(i18n.l.wallet.back_ups.backed_up_message, {
-                            backupType: isSecretPhrase ? 'Secret Phrase' : 'Private Key',
+                            backupType: backupTypeLabel,
                           })
                     }
                   />
