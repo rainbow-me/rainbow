@@ -254,6 +254,52 @@ describe('pendingTransactionResolution', () => {
     });
   });
 
+  it('preserves local purchase display metadata when the fetched onchain transaction confirms', async () => {
+    const originalTransaction = {
+      ...buildPurchasePendingTransaction(),
+      amount: '25',
+      description: '$25',
+    };
+    mockFetchRawTransaction.mockResolvedValue({
+      ...buildPurchasePendingTransaction(),
+      asset: {
+        address: '0x833589fcd6edb6e08f4c7c32d4f71b54bda02913',
+        chainId: 8453,
+        decimals: 6,
+        name: 'USD Coin',
+        network: 'base',
+        symbol: 'USDC',
+        uniqueId: '0x833589fcd6edb6e08f4c7c32d4f71b54bda02913_8453',
+      },
+      blockNumber: 1,
+      confirmations: 1,
+      description: 'USD Coin',
+      minedAt: 100,
+      nonce: -2,
+      status: TransactionStatus.confirmed,
+      title: 'purchase.confirmed',
+    });
+
+    const resolution = await resolveTrackedTransaction({
+      abortController: null,
+      address: '0x123',
+      currency: 'ETH',
+      transaction: originalTransaction,
+    });
+
+    expect(resolution).toEqual({
+      kind: 'settled',
+      transaction: expect.objectContaining({
+        amount: '25',
+        description: '$25',
+        hash: 'mock-tx-order-1',
+        nonce: null,
+        status: TransactionStatus.confirmed,
+        title: 'purchase.confirmed',
+      }),
+    });
+  });
+
   it('settles a managed failure after an onchain hash exists', async () => {
     mockGetStatus.mockResolvedValue(
       buildRelayStatus({
@@ -434,6 +480,21 @@ function buildOnchainPendingTransaction() {
     title: 'swap.pending',
     to: null,
     type: 'swap' as const,
+  };
+}
+
+function buildPurchasePendingTransaction() {
+  return {
+    asset: null,
+    chainId: 8453,
+    from: null,
+    hash: 'mock-tx-order-1',
+    network: 'base',
+    nonce: null,
+    status: TransactionStatus.pending,
+    title: 'purchase.pending',
+    to: '0x123',
+    type: 'purchase' as const,
   };
 }
 

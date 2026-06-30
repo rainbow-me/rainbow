@@ -265,6 +265,7 @@ function shouldPreferLocalTransaction(originalType: TransactionType): boolean {
   switch (originalType) {
     case 'bridge':
     case 'cancel':
+    case 'purchase':
     case 'speed_up':
     case 'swap':
       return true;

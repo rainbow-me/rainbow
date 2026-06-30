@@ -7,7 +7,8 @@ import type { RainbowToast } from '@/components/rainbow-toast/types';
 import type { RainbowTransaction } from '@/entities/transactions';
 
 function toToastId(tx: RainbowTransaction): string {
-  const identity = tx.relayExecutionId ?? (tx.nonce !== null && tx.nonce !== undefined ? String(tx.nonce) : tx.hash);
+  const hasWalletNonce = tx.nonce !== null && tx.nonce !== undefined && tx.nonce >= 0;
+  const identity = tx.relayExecutionId ?? (hasWalletNonce ? String(tx.nonce) : tx.hash);
 
   return `${identity}-${tx.chainId || tx.asset?.chainId}`;
 }

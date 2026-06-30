@@ -126,6 +126,17 @@ function findTransactionIndex(transactions: RainbowTransaction[], nextTransactio
     );
   }
 
+  // no `relayExecutionId` and no `nonce` means an incoming tx (like in add cash flow)
+  if (nextTransaction.nonce == null) {
+    return transactions.findIndex(
+      transaction =>
+        transaction.chainId === nextTransaction.chainId &&
+        !transaction.relayExecutionId &&
+        transaction.nonce == null &&
+        transaction.hash === nextTransaction.hash
+    );
+  }
+
   return transactions.findIndex(
     transaction => transaction.chainId === nextTransaction.chainId && transaction.nonce === nextTransaction.nonce
   );

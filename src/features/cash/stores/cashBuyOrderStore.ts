@@ -1,12 +1,12 @@
-import { Alert } from 'react-native';
-
 import { createBaseStore, createStoreActions } from '@storesjs/stores';
 
 import { analytics } from '@/analytics';
 import { logger, RainbowError } from '@/logger';
+import { pendingTransactionsActions } from '@/state/pendingTransactions';
 
 import { cashOrderService } from '../services/cashOrderService';
 import { isTerminalOrderStatus, OrderFailureReason, OrderStatus, type BuyOrder, type BuyOrderSpec } from '../services/rampClient';
+import { buildCashPurchaseTransaction } from '../utils/buildCashPurchaseTransaction';
 
 export type CashBuyPhase = 'idle' | 'pending' | 'error' | 'success';
 export type CashBuyErrorCode = 'PAYMENT_REJECTED' | 'GENERIC';
@@ -61,8 +61,17 @@ export const useCashBuyOrderStore = createBaseStore<CashBuyOrderState>(
           network: order.cryptoAmount.asset.network,
           timeToUsdcMs: new Date(order.completedTime).getTime() - new Date(order.createdTime).getTime(),
         });
-        // TODO: start watching pending transaction using order transactionHash
-        Alert.alert('Request Successful');
+        try {
+          pendingTransactionsActions.addPendingTransaction({
+            address: order.walletAddress,
+            pendingTransaction: buildCashPurchaseTransaction({ order, walletAddress: order.walletAddress }),
+          });
+        } catch (error) {
+          logger.error(new RainbowError('[cashBuyOrderStore] failed to enqueue purchase transaction', { error }), {
+            orderId: order.id,
+            transactionHash: order.transactionHash,
+          });
+        }
         set({ errorCode: null, order });
       } else if (order.status === OrderStatus.Failed) {
         const errorCode: CashBuyErrorCode = order.failureReason === OrderFailureReason.PaymentRejected ? 'PAYMENT_REJECTED' : 'GENERIC';

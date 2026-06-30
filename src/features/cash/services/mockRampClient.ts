@@ -22,6 +22,7 @@ type MockOrderRecord = {
   depositAmount: string;
   path: readonly OrderStatus[];
   step: number;
+  walletAddress: string;
 };
 
 export type MockRampClientConfig = {
@@ -48,6 +49,7 @@ export class MockRampClient implements RampClient {
       depositAmount: params.depositAmount,
       path,
       step: 0,
+      walletAddress: params.walletAddress,
     });
     return Promise.resolve(this.toBuyOrder(params.id));
   }
@@ -65,7 +67,7 @@ export class MockRampClient implements RampClient {
     const fiatAmount = { amount: record.depositAmount, currency: 'USD' };
     // Mock treats USDC as 1:1 with USD; the real backend returns the quoted crypto amount.
     const cryptoAmount = { amount: record.depositAmount, asset: record.cryptoAsset };
-    const common = { id: orderId, cryptoAmount, fiatAmount, createdTime: record.createdTime };
+    const common = { id: orderId, cryptoAmount, fiatAmount, walletAddress: record.walletAddress, createdTime: record.createdTime };
     const status = record.path[record.step];
     switch (status) {
       case OrderStatus.Failed:

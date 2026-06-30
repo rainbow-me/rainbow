@@ -53,6 +53,7 @@ type BuyOrderCommon = {
   fiatAmount: FiatAmount;
   /** ISO 8601 timestamp of when the order was created. */
   createdTime: string;
+  walletAddress: string;
 };
 
 export type BuyOrder =

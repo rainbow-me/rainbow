@@ -36,12 +36,19 @@ tags:
     id: cash-deposit-add-cash-amount-100
 - longPressOn:
     id: cash-deposit-add-cash-hold-to-add
-# On completion the order watcher surfaces the "Request Successful" alert; dismissing it returns to home.
+# On completion the sheet closes back to home; wait for that before switching tabs.
 - extendedWaitUntil:
     visible:
-      text: 'Request Successful'
-    timeout: 10000
+      id: buy-button
+    timeout: 20000
+# The tab bar has no testID, so tap the Activity tab by coordinate.
+- runScript:
+    file: ../../utils/coordinates.js
 - tapOn:
-    text: 'OK'
+    point: ${output.tabCoordinates.activityTab}
+- extendedWaitUntil:
+    visible:
+      text: 'Purchased'
+    timeout: 30000
 - assertVisible:
-    id: buy-button
+    text: '.*\+\$100.*'

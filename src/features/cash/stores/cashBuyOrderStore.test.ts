@@ -1,9 +1,9 @@
-import { Alert } from 'react-native';
-
 import { logger } from '@/logger';
+import { pendingTransactionsActions } from '@/state/pendingTransactions';
 
 import { cashOrderService } from '../services/cashOrderService';
 import { OrderFailureReason, OrderStatus, RampCryptoAsset, RampNetwork, type BuyOrder, type BuyOrderSpec } from '../services/rampClient';
+import { buildCashPurchaseTransaction } from '../utils/buildCashPurchaseTransaction';
 import {
   cashBuyOrderActions,
   selectCashBuyPhase,
@@ -25,9 +25,21 @@ jest.mock('../services/cashOrderService', () => ({
   },
 }));
 
+jest.mock('@/state/pendingTransactions', () => ({
+  pendingTransactionsActions: { addPendingTransaction: jest.fn() },
+}));
+
+jest.mock('../utils/buildCashPurchaseTransaction', () => ({
+  buildCashPurchaseTransaction: jest.fn(),
+}));
+
 const createBuyOrder = cashOrderService.createBuyOrder as jest.Mock;
 const createBuyOrderSpec = cashOrderService.createBuyOrderSpec as jest.Mock;
 const getOrder = cashOrderService.getOrder as jest.Mock;
+const addPendingTransaction = pendingTransactionsActions.addPendingTransaction as jest.Mock;
+const buildPurchaseTransaction = buildCashPurchaseTransaction as jest.Mock;
+
+const PURCHASE_TRANSACTION = { hash: '0xtx', type: 'purchase' };
 
 // ---- Fixtures --------------------------------------------------------------
 
@@ -38,6 +50,7 @@ const ORDER_COMMON = {
   cryptoAmount: { amount: '50', asset: { asset: RampCryptoAsset.USDC, network: RampNetwork.Base } },
   fiatAmount: { amount: '50', currency: 'USD' },
   createdTime: '2026-06-24T18:31:25.000Z',
+  walletAddress: '0xabc',
 };
 const PENDING_ORDER: BuyOrder = { ...ORDER_COMMON, status: OrderStatus.Pending };
 const PROCESSING_ORDER: BuyOrder = { ...ORDER_COMMON, status: OrderStatus.Processing };
@@ -56,13 +69,11 @@ const store = useCashBuyOrderStore;
 const getState = () => store.getState();
 const phase = () => selectCashBuyPhase(getState());
 
-let alertSpy: jest.SpyInstance;
-
 beforeEach(() => {
   jest.clearAllMocks();
-  alertSpy = jest.spyOn(Alert, 'alert').mockImplementation(() => undefined);
   store.setState({ spec: null, order: null, errorCode: null });
   createBuyOrderSpec.mockImplementation(({ depositAmount, walletAddress }) => ({ depositAmount, walletAddress, id: 'order-1' }));
+  buildPurchaseTransaction.mockReturnValue(PURCHASE_TRANSACTION);
 });
 
 // ---------------------------------------------------------------------------
@@ -118,20 +129,20 @@ describe('submitBuyOrder', () => {
     expect(phase()).toBe('pending');
   });
 
-  // A created order that arrives already-terminal is stored verbatim: submit neither alerts nor maps an
-  // error code. Terminal presentation is deferred to the phase projection (and, for ongoing orders, polling).
+  // A created order that arrives already-terminal is stored verbatim: submit neither enqueues a pending
+  // transaction nor maps an error code. Terminal handling is deferred to polling (`syncActiveOrder`).
   const terminalOnCreate: { label: string; order: BuyOrder; expected: CashBuyPhase }[] = [
     { label: 'completed', order: COMPLETED_ORDER, expected: 'success' },
     { label: 'payment-rejected', order: FAILED_PAYMENT_ORDER, expected: 'error' },
     { label: 'generically failed', order: FAILED_GENERIC_ORDER, expected: 'error' },
   ];
 
-  it.each(terminalOnCreate)('stores a created-$label order verbatim without alerting → $expected', async ({ order, expected }) => {
+  it.each(terminalOnCreate)('stores a created-$label order verbatim without enqueuing → $expected', async ({ order, expected }) => {
     createBuyOrder.mockResolvedValue(order);
 
     await getState().submitBuyOrder(SUBMIT_INPUT);
 
-    expect(alertSpy).not.toHaveBeenCalled();
+    expect(addPendingTransaction).not.toHaveBeenCalled();
     expect(getState()).toMatchObject({ spec: null, order, errorCode: null });
     expect(phase()).toBe(expected);
   });
@@ -179,13 +190,17 @@ describe('syncActiveOrder', () => {
     expect(phase()).toBe('pending');
   });
 
-  it('alerts and surfaces the order as success when polling resolves to completed', async () => {
+  it('enqueues the purchase transaction and surfaces the order as success when polling resolves to completed', async () => {
     startPolling(PROCESSING_ORDER);
     getOrder.mockResolvedValue(COMPLETED_ORDER);
 
     await getState().syncActiveOrder();
 
-    expect(alertSpy).toHaveBeenCalledWith('Request Successful');
+    expect(buildPurchaseTransaction).toHaveBeenCalledWith({ order: COMPLETED_ORDER, walletAddress: COMPLETED_ORDER.walletAddress });
+    expect(addPendingTransaction).toHaveBeenCalledWith({
+      address: COMPLETED_ORDER.walletAddress,
+      pendingTransaction: PURCHASE_TRANSACTION,
+    });
     expect(getState()).toMatchObject({ spec: null, order: COMPLETED_ORDER, errorCode: null });
     expect(phase()).toBe('success');
   });
