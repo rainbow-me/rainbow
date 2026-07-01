@@ -1598,31 +1598,31 @@
       "deposit_setup": {
         "next": "Selanjutnya",
         "phone": {
-          "title": "Connect your phone number"
+          "title": "Hubungkan nomor telepon Anda"
         },
         "confirm_phone": {
-          "title": "Confirm your phone"
+          "title": "Konfirmasi nomor telepon Anda"
         },
         "identity": {
-          "title": "Enter your information"
+          "title": "Masukkan informasi Anda"
         },
         "ssn": {
-          "title": "Last 4 of SSN"
+          "title": "4 digit terakhir SSN"
         },
         "review": {
           "title": "Tinjau"
         },
         "passkey": {
-          "title": "Add a Passkey"
+          "title": "Tambahkan Passkey"
         },
         "email": {
-          "title": "Enter email"
+          "title": "Masukkan email"
         },
         "all_done": {
-          "title": "You're all done"
+          "title": "Semua sudah selesai"
         },
         "card_details": {
-          "title": "Enter card details"
+          "title": "Masukkan detail kartu"
         }
       }
     },
