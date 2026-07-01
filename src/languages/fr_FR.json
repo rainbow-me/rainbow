@@ -501,12 +501,12 @@
       },
       "restart_app": "Redémarrer l'Appli",
       "reset_experimental_config": "Réinitialiser la Conf Expérimentale",
-      "cash_deposit_setup_status": {
-        "title": "Statut de configuration du dépôt d’espèces",
-        "needsIdentity": "Identité requise",
-        "needsCard": "Carte requise",
-        "needsWallet": "Portefeuille requis",
-        "ready": "Prêt"
+      "cash_deposit_setup_facts": {
+        "phoneVerified": "Phone verified",
+        "kycPassed": "KYC passed",
+        "passkeyRegistered": "Passkey registered",
+        "hasLinkedCard": "Has linked card",
+        "hasLinkedWallet": "Has linked wallet"
       },
       "cash_order_outcome": {
         "title": "Résultat de l'ordre en espèces",
@@ -1594,6 +1594,36 @@
         "buy_error_title": "Achat échoué",
         "buy_error_generic": "Quelque chose s'est mal passé. Réessayez",
         "payment_rejected": "Votre carte a refusé ce paiement"
+      },
+      "deposit_setup": {
+        "next": "Suivant",
+        "phone": {
+          "title": "Connect your phone number"
+        },
+        "confirm_phone": {
+          "title": "Confirm your phone"
+        },
+        "identity": {
+          "title": "Enter your information"
+        },
+        "ssn": {
+          "title": "Last 4 of SSN"
+        },
+        "review": {
+          "title": "Revoir"
+        },
+        "passkey": {
+          "title": "Add a Passkey"
+        },
+        "email": {
+          "title": "Enter email"
+        },
+        "all_done": {
+          "title": "You're all done"
+        },
+        "card_details": {
+          "title": "Enter card details"
+        }
       }
     },
     "points": {
