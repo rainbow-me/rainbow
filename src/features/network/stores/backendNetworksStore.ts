@@ -40,7 +40,6 @@ export interface BackendNetworksState {
   getChainsGasSpeeds: () => Record<ChainId, GasSpeed[]>;
   getChainsPollingInterval: () => Record<ChainId, number>;
 
-  getChainsSimplehashNetwork: () => Record<ChainId, string>;
   filterChainIdsByService: (servicePath: (services: BackendNetworkServices) => boolean) => ChainId[];
 
   getMeteorologySupportedChainIds: () => ChainId[];
@@ -266,17 +265,6 @@ export const useBackendNetworksStore = createQueryStore<BackendNetworksResponse,
       );
     }),
 
-    getChainsSimplehashNetwork: createSelector(networks =>
-      networks.reduce(
-        (acc, backendNetwork) => {
-          const chainId = toChainId(backendNetwork.id);
-          acc[chainId] = getDefaultSimplehashNetwork(chainId);
-          return acc;
-        },
-        {} as Record<ChainId, string>
-      )
-    ),
-
     filterChainIdsByService: createParameterizedSelector(
       networks => (servicePath: (services: BackendNetworkServices) => boolean) =>
         networks.filter(network => servicePath(network.enabledServices)).map(network => toChainId(network.id))
@@ -438,59 +426,5 @@ function getDefaultPollingInterval(chainId: ChainId): number {
       return 3_000;
     default:
       return 5_000;
-  }
-}
-
-function getDefaultSimplehashNetwork(chainId: ChainId): string {
-  switch (chainId) {
-    case ChainId.apechain:
-      return 'apechain';
-    case ChainId.arbitrum:
-      return 'arbitrum';
-    case ChainId.avalanche:
-      return 'avalanche';
-    case ChainId.base:
-      return 'base';
-    case ChainId.blast:
-      return 'blast';
-    case ChainId.bsc:
-      return 'bsc';
-    case ChainId.degen:
-      return 'degen';
-    case ChainId.gnosis:
-      return 'gnosis';
-    case ChainId.goerli:
-      return 'ethereum-goerli';
-
-    // FIXME: Unsupported as of now https://docs.simplehash.com/reference/supported-chains-testnets#mainnets
-    // case ChainId.gravity:
-    //   return 'gravity';
-
-    // FIXME: Unsupported as of now https://docs.simplehash.com/reference/supported-chains-testnets#mainnets
-    // case ChainId.ink:
-    //   return 'ink';
-
-    case ChainId.mainnet:
-      return 'ethereum';
-    case ChainId.optimism:
-      return 'optimism';
-    case ChainId.polygon:
-      return 'polygon';
-
-    // FIXME: Unsupported as of now https://docs.simplehash.com/reference/supported-chains-testnets#mainnets
-    // case ChainId.sanko:
-    //   return 'sanko';
-
-    case ChainId.scroll:
-      return 'scroll';
-    case ChainId.zksync:
-      return 'zksync-era';
-    case ChainId.zora:
-      return 'zora';
-    case ChainId.linea:
-      return 'linea';
-
-    default:
-      return '';
   }
 }

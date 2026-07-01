@@ -19,7 +19,6 @@ import useHiddenTokens from '@/hooks/useHiddenTokens';
 import useShowcaseTokens from '@/hooks/useShowcaseTokens';
 import * as i18n from '@/languages';
 import { useNavigation } from '@/navigation/Navigation';
-import { refreshNFTContractMetadata, reportNFT } from '@/resources/nfts/simplehash';
 import { position } from '@/styles';
 import ethereumUtils from '@/utils/ethereumUtils';
 import { getFullResUrl } from '@/utils/getFullResUrl';
@@ -38,8 +37,6 @@ const AssetActionsEnum = {
   rainbowWeb: 'rainbowWeb',
   opensea: 'opensea',
   looksrare: 'looksrare',
-  refresh: 'refresh',
-  report: 'report',
 } as const;
 
 const getAssetActions = ({ chainId }: { chainId: ChainId }) =>
@@ -97,24 +94,6 @@ const getAssetActions = ({ chainId }: { chainId: ChainId }) =>
       icon: {
         iconType: 'ASSET',
         iconValue: 'opensea',
-      },
-    },
-
-    [AssetActionsEnum.refresh]: {
-      actionKey: AssetActionsEnum.refresh,
-      actionTitle: i18n.t(i18n.l.expanded_state.unique_expanded.refresh),
-      icon: {
-        iconType: 'SYSTEM',
-        iconValue: 'arrow.clockwise',
-      },
-    },
-
-    [AssetActionsEnum.report]: {
-      actionKey: AssetActionsEnum.report,
-      actionTitle: i18n.t(i18n.l.expanded_state.unique_expanded.report),
-      icon: {
-        iconType: 'SYSTEM',
-        iconValue: 'exclamationmark.triangle',
       },
     },
 
@@ -193,8 +172,6 @@ interface UniqueTokenExpandedStateHeaderProps {
   isSupportedOnRainbowWeb: boolean;
   rainbowWebUrl: string;
   isModificationActionsEnabled?: boolean;
-  onRefresh: () => void;
-  onReport: () => void;
 }
 
 const UniqueTokenExpandedStateHeader = ({
@@ -203,8 +180,6 @@ const UniqueTokenExpandedStateHeader = ({
   isSupportedOnRainbowWeb,
   rainbowWebUrl,
   isModificationActionsEnabled = true,
-  onRefresh,
-  onReport,
 }: UniqueTokenExpandedStateHeaderProps) => {
   const { setClipboard } = useClipboard();
   const { width: deviceWidth } = useDimensions();
@@ -274,12 +249,6 @@ const UniqueTokenExpandedStateHeader = ({
 
     return {
       menuItems: [
-        {
-          ...AssetActions[AssetActionsEnum.refresh],
-        },
-        {
-          ...AssetActions[AssetActionsEnum.report],
-        },
         ...(isModificationActionsEnabled
           ? [
               {
@@ -380,25 +349,9 @@ const UniqueTokenExpandedStateHeader = ({
         }
 
         goBack();
-      } else if (actionKey === AssetActionsEnum.refresh) {
-        refreshNFTContractMetadata(asset).then(onRefresh);
-      } else if (actionKey === AssetActionsEnum.report) {
-        reportNFT(asset).then(onReport);
       }
     },
-    [
-      asset,
-      rainbowWebUrl,
-      setClipboard,
-      isHiddenAsset,
-      goBack,
-      removeHiddenToken,
-      addHiddenToken,
-      isShowcaseAsset,
-      removeShowcaseToken,
-      onRefresh,
-      onReport,
-    ]
+    [asset, rainbowWebUrl, setClipboard, isHiddenAsset, goBack, removeHiddenToken, addHiddenToken, isShowcaseAsset, removeShowcaseToken]
   );
 
   const onPressAndroidFamily = useCallback(() => {
