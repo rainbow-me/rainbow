@@ -915,8 +915,6 @@
         "showcase": "عرض",
         "toast_added_to_showcase": "تمت الإضافة إلى العرض",
         "toast_removed_from_showcase": "تم الإزالة من العرض",
-        "refreshing": "تحديث البيانات الوصفية...",
-        "reported": "تم الإبلاغ عنه كرسالة غير مرغوب فيها",
         "twitter": "X/تويتر)",
         "view_all_with_property": "عرض الكل بالخاصية",
         "view_collection": "عرض المجموعة",
@@ -925,8 +923,6 @@
         "view_on_marketplace_name": "عرض على %{marketplaceName}",
         "view_on_platform": "عرض على %{platform}",
         "view_on_web": "عرض على الويب",
-        "refresh": "تحديث البيانات الوصفية",
-        "report": "الإبلاغ كرسالة غير مرغوب فيها",
         "hide": "إخفاء",
         "unhide": "الغاء الاخفاء"
       }
@@ -1825,18 +1821,6 @@
           "description": "الإرسال، الاستقبال، المبيعات، الطبع، التبديل، وأكثر. اختر ما تريد."
         },
         "header": "الإشعارات"
-      }
-    },
-    "poaps": {
-      "title": "لقد وجدت POAP!",
-      "view_on_poap": "عرض على POAP 􀮶",
-      "mint_poap": "􀑒 ضرب POAP",
-      "minting": "ضرب...",
-      "minted": "تم ضرب POAP!",
-      "error": "خطأ في الضرب",
-      "error_messages": {
-        "limit_exceeded": "هذا POAP قد تم ضربه بالكامل!",
-        "event_expired": "لقد انتهت صلاحية ضرب هذا الPOAP!"
       }
     },
     "rewards": {
