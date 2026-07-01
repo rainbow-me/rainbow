@@ -501,12 +501,12 @@
       },
       "restart_app": "アプリを再起動",
       "reset_experimental_config": "実験的なコンフィグをリセット",
-      "cash_deposit_setup_status": {
-        "title": "現金入金セットアップのステータス",
-        "needsIdentity": "本人確認が必要",
-        "needsCard": "カードが必要",
-        "needsWallet": "ウォレットが必要",
-        "ready": "準備完了"
+      "cash_deposit_setup_facts": {
+        "phoneVerified": "Phone verified",
+        "kycPassed": "KYC passed",
+        "passkeyRegistered": "Passkey registered",
+        "hasLinkedCard": "Has linked card",
+        "hasLinkedWallet": "Has linked wallet"
       },
       "cash_order_outcome": {
         "title": "現金注文の結果",
@@ -1594,6 +1594,36 @@
         "buy_error_title": "購入に失敗しました",
         "buy_error_generic": "何か問題が発生しました。もう一度お試しください",
         "payment_rejected": "カードによりこの支払いは拒否されました"
+      },
+      "deposit_setup": {
+        "next": "次へ",
+        "phone": {
+          "title": "Connect your phone number"
+        },
+        "confirm_phone": {
+          "title": "Confirm your phone"
+        },
+        "identity": {
+          "title": "Enter your information"
+        },
+        "ssn": {
+          "title": "Last 4 of SSN"
+        },
+        "review": {
+          "title": "レビュー"
+        },
+        "passkey": {
+          "title": "Add a Passkey"
+        },
+        "email": {
+          "title": "Enter email"
+        },
+        "all_done": {
+          "title": "You're all done"
+        },
+        "card_details": {
+          "title": "Enter card details"
+        }
       }
     },
     "points": {
