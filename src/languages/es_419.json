@@ -502,11 +502,11 @@
       "restart_app": "Reiniciar Aplicación",
       "reset_experimental_config": "Reiniciar Configuración Experimental",
       "cash_deposit_setup_facts": {
-        "phoneVerified": "Phone verified",
-        "kycPassed": "KYC passed",
-        "passkeyRegistered": "Passkey registered",
-        "hasLinkedCard": "Has linked card",
-        "hasLinkedWallet": "Has linked wallet"
+        "phoneVerified": "Teléfono verificado",
+        "kycPassed": "KYC aprobado",
+        "passkeyRegistered": "Clave de acceso registrada",
+        "hasLinkedCard": "Tiene una tarjeta vinculada",
+        "hasLinkedWallet": "Tiene una billetera vinculada"
       },
       "cash_order_outcome": {
         "title": "Resultado de la orden de efectivo",
@@ -1598,31 +1598,31 @@
       "deposit_setup": {
         "next": "Siguiente",
         "phone": {
-          "title": "Connect your phone number"
+          "title": "Conecta tu número de teléfono"
         },
         "confirm_phone": {
-          "title": "Confirm your phone"
+          "title": "Confirma tu teléfono"
         },
         "identity": {
-          "title": "Enter your information"
+          "title": "Ingresa tu información"
         },
         "ssn": {
-          "title": "Last 4 of SSN"
+          "title": "Últimos 4 dígitos del SSN"
         },
         "review": {
           "title": "Revisar"
         },
         "passkey": {
-          "title": "Add a Passkey"
+          "title": "Agrega una clave de acceso"
         },
         "email": {
-          "title": "Enter email"
+          "title": "Ingresa tu correo electrónico"
         },
         "all_done": {
-          "title": "You're all done"
+          "title": "Ya terminaste"
         },
         "card_details": {
-          "title": "Enter card details"
+          "title": "Ingresa los datos de la tarjeta"
         }
       }
     },
