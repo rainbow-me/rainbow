@@ -915,8 +915,6 @@
         "showcase": "Pameran",
         "toast_added_to_showcase": "Ditambahkan ke pameran",
         "toast_removed_from_showcase": "Dihapus dari pameran",
-        "refreshing": "Menyegarkan metadata...",
-        "reported": "Dilaporkan sebagai spam",
         "twitter": "X (Twitter)",
         "view_all_with_property": "Lihat Semua dengan Properti",
         "view_collection": "Lihat Koleksi",
@@ -925,8 +923,6 @@
         "view_on_marketplace_name": "Lihat di %{marketplaceName}",
         "view_on_platform": "Lihat di %{platform}",
         "view_on_web": "Lihat di Web",
-        "refresh": "Segarkan Metadata",
-        "report": "Laporkan sebagai Spam",
         "hide": "Sembunyikan",
         "unhide": "Batal Sembunyikan"
       }
@@ -1825,18 +1821,6 @@
           "description": "Kirim, terima, jual, cetak, tukar, dan lainnya. Pilih apa yang Anda inginkan."
         },
         "header": "Notifikasi"
-      }
-    },
-    "poaps": {
-      "title": "Anda menemukan POAP!",
-      "view_on_poap": "Lihat di POAP 􀮶",
-      "mint_poap": "􀑒 Mint POAP",
-      "minting": "Minting...",
-      "minted": "POAP Dicetak!",
-      "error": "Kesalahan Mencetak",
-      "error_messages": {
-        "limit_exceeded": "POAP ini sudah sepenuhnya dicetak!",
-        "event_expired": "Cetakan POAP ini sudah kedaluwarsa!"
       }
     },
     "rewards": {
