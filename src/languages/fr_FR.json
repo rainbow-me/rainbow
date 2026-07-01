@@ -915,8 +915,6 @@
         "showcase": "Vitrine",
         "toast_added_to_showcase": "Ajouté à la vitrine",
         "toast_removed_from_showcase": "Retiré de la vitrine",
-        "refreshing": "Actualisation des métadonnées...",
-        "reported": "Signalé comme spam",
         "twitter": "X (Twitter :)",
         "view_all_with_property": "Voir tout avec propriété",
         "view_collection": "Voir la Collection",
@@ -925,8 +923,6 @@
         "view_on_marketplace_name": "Voir sur %{marketplaceName}",
         "view_on_platform": "Voir sur %{platform}",
         "view_on_web": "Voir sur le Web",
-        "refresh": "Rafraîchir les métadonnées",
-        "report": "Signaler comme spam",
         "hide": "Cacher",
         "unhide": "Afficher"
       }
@@ -1825,18 +1821,6 @@
           "description": "Envois, réceptions, ventes, émissions, échanges, et plus encore. Choisissez ce que vous voulez."
         },
         "header": "Notifications"
-      }
-    },
-    "poaps": {
-      "title": "Vous avez trouvé un POAP!",
-      "view_on_poap": "Voir sur POAP 􀮶",
-      "mint_poap": "􀑒 Mint POAP",
-      "minting": "Frappage...",
-      "minted": "POAP frappé!",
-      "error": "Erreur lors de la frappe",
-      "error_messages": {
-        "limit_exceeded": "Ce POAP est complètement frappé!",
-        "event_expired": "Cette frappe de POAP est expirée!"
       }
     },
     "rewards": {
