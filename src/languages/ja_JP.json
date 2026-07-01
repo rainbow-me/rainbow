@@ -502,11 +502,11 @@
       "restart_app": "アプリを再起動",
       "reset_experimental_config": "実験的なコンフィグをリセット",
       "cash_deposit_setup_facts": {
-        "phoneVerified": "Phone verified",
-        "kycPassed": "KYC passed",
-        "passkeyRegistered": "Passkey registered",
-        "hasLinkedCard": "Has linked card",
-        "hasLinkedWallet": "Has linked wallet"
+        "phoneVerified": "電話番号を確認済み",
+        "kycPassed": "KYCを通過",
+        "passkeyRegistered": "パスキーを登録済み",
+        "hasLinkedCard": "カードを連携済み",
+        "hasLinkedWallet": "ウォレットを連携済み"
       },
       "cash_order_outcome": {
         "title": "現金注文の結果",
@@ -1598,31 +1598,31 @@
       "deposit_setup": {
         "next": "次へ",
         "phone": {
-          "title": "Connect your phone number"
+          "title": "電話番号を接続"
         },
         "confirm_phone": {
-          "title": "Confirm your phone"
+          "title": "電話番号を確認"
         },
         "identity": {
-          "title": "Enter your information"
+          "title": "情報を入力"
         },
         "ssn": {
-          "title": "Last 4 of SSN"
+          "title": "SSNの下4桁"
         },
         "review": {
           "title": "レビュー"
         },
         "passkey": {
-          "title": "Add a Passkey"
+          "title": "パスキーを追加"
         },
         "email": {
-          "title": "Enter email"
+          "title": "メールアドレスを入力"
         },
         "all_done": {
-          "title": "You're all done"
+          "title": "完了しました"
         },
         "card_details": {
-          "title": "Enter card details"
+          "title": "カード情報を入力"
         }
       }
     },
