@@ -1,4 +1,4 @@
-import React, { useCallback, useMemo, useRef, useState, type ReactNode } from 'react';
+import React, { useCallback, useMemo, useRef, type ReactNode } from 'react';
 import { InteractionManager, Platform, Share, View } from 'react-native';
 
 import { useFocusEffect } from '@react-navigation/native';
@@ -70,7 +70,7 @@ import ImgixImage from '../images/ImgixImage';
 import L2Disclaimer from '../L2Disclaimer';
 import Link from '../Link';
 import { SheetActionButton, SheetHandle, SlackSheet } from '../sheet';
-import { Toast, ToastPositionContainer, ToggleStateToast } from '../toasts';
+import { ToastPositionContainer, ToggleStateToast } from '../toasts';
 import { UniqueTokenAttributes, UniqueTokenImage } from '../unique-token';
 import { UniqueTokenExpandedStateContent, UniqueTokenExpandedStateHeader } from './unique-token';
 
@@ -238,27 +238,6 @@ const UniqueTokenExpandedState = ({ asset, external }: UniqueTokenExpandedStateP
   const { top: topInset } = useSafeAreaInsets();
 
   const isSupportedOnRainbowWeb = getIsSupportedOnRainbowWeb(asset.chainId);
-
-  const [isRefreshMetadataToastActive, setIsRefreshMetadataToastActive] = useState(false);
-  const [isReportSpamToastActive, setIsReportSpamToastActive] = useState(false);
-
-  const activateRefreshMetadataToast = useCallback(() => {
-    if (!isRefreshMetadataToastActive) {
-      setIsRefreshMetadataToastActive(true);
-      setTimeout(() => {
-        setIsRefreshMetadataToastActive(false);
-      }, 3000);
-    }
-  }, [isRefreshMetadataToastActive]);
-
-  const activateReportSpamToast = useCallback(() => {
-    if (!isReportSpamToastActive) {
-      setIsReportSpamToastActive(true);
-      setTimeout(() => {
-        setIsReportSpamToastActive(false);
-      }, 3000);
-    }
-  }, [isReportSpamToastActive]);
 
   const filteredTraits = asset.traits.filter(
     trait => trait.value !== undefined && trait.value !== null && trait.value !== '' && trait.trait_type && !isHttpUrl(trait.value)
@@ -493,8 +472,6 @@ const UniqueTokenExpandedState = ({ asset, external }: UniqueTokenExpandedStateP
                         isModificationActionsEnabled={isActionsEnabled}
                         isSupportedOnRainbowWeb={isSupportedOnRainbowWeb}
                         rainbowWebUrl={rainbowWebUrl}
-                        onRefresh={activateRefreshMetadataToast}
-                        onReport={activateReportSpamToast}
                       />
                     </Stack>
                     <Stack space="15px (Deprecated)">
@@ -676,8 +653,6 @@ const UniqueTokenExpandedState = ({ asset, external }: UniqueTokenExpandedStateP
           isAdded={isShowcaseAsset}
           removeCopy={i18n.t(i18n.l.expanded_state.unique_expanded.toast_removed_from_showcase)}
         />
-        <Toast isVisible={isRefreshMetadataToastActive} text={i18n.t(i18n.l.expanded_state.unique_expanded.refreshing)} />
-        <Toast isVisible={isReportSpamToastActive} text={i18n.t(i18n.l.expanded_state.unique_expanded.reported)} />
       </ToastPositionContainer>
     </>
   );

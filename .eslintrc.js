@@ -75,7 +75,6 @@ const allowedBarrelFiles = [
   'src/references/signatureRegistry/index.ts',
   'src/resources/f2c/index.ts',
   'src/resources/nfts/index.ts',
-  'src/resources/nfts/simplehash/index.ts',
   'src/screens/Diagnostics/index.tsx',
   'src/screens/expandedAssetSheet/components/sections/index.tsx',
   'src/screens/Explain/index.tsx',

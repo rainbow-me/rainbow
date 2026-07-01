@@ -4,7 +4,6 @@ import { Contract } from '@ethersproject/contracts';
 import { type BaseProvider } from '@ethersproject/providers';
 
 import svgToPngIfNeeded from '@/handlers/svgs';
-import { fetchSimpleHashNFT } from '@/resources/nfts/simplehash';
 
 import { type AvatarRequestOpts } from '..';
 import { resolveURI } from '../utils';
@@ -40,12 +39,6 @@ export default class ERC721 {
       image = svgToPngIfNeeded(data?.image, false);
     }
 
-    try {
-      const data = await fetchSimpleHashNFT(contractAddress, tokenID);
-      image = svgToPngIfNeeded(data?.previews?.image_medium_url, false);
-    } catch (error) {
-      throw new Error('no image found');
-    }
     return { image };
   }
 }
