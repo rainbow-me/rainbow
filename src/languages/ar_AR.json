@@ -501,12 +501,12 @@
       },
       "restart_app": "إعادة تشغيل التطبيق",
       "reset_experimental_config": "إعادة تعيين التكوين التجريبي",
-      "cash_deposit_setup_status": {
-        "title": "حالة إعداد الإيداع النقدي",
-        "needsIdentity": "يتطلب التحقق من الهوية",
-        "needsCard": "يتطلب بطاقة",
-        "needsWallet": "يتطلب محفظة",
-        "ready": "جاهز"
+      "cash_deposit_setup_facts": {
+        "phoneVerified": "تم التحقق من الهاتف",
+        "kycPassed": "تم اجتياز التحقق من الهوية (KYC)",
+        "passkeyRegistered": "تم تسجيل مفتاح المرور",
+        "hasLinkedCard": "بطاقة مرتبطة",
+        "hasLinkedWallet": "محفظة مرتبطة"
       },
       "cash_order_outcome": {
         "title": "نتيجة طلب النقد",
@@ -1594,6 +1594,36 @@
         "buy_error_title": "فشل الشراء",
         "buy_error_generic": "حدث خطأ ما. حاول مرة أخرى",
         "payment_rejected": "رفضت بطاقتك هذه الدفعة"
+      },
+      "deposit_setup": {
+        "next": "التالي",
+        "phone": {
+          "title": "Connect your phone number"
+        },
+        "confirm_phone": {
+          "title": "Confirm your phone"
+        },
+        "identity": {
+          "title": "Enter your information"
+        },
+        "ssn": {
+          "title": "Last 4 of SSN"
+        },
+        "review": {
+          "title": "مراجعة"
+        },
+        "passkey": {
+          "title": "Add a Passkey"
+        },
+        "email": {
+          "title": "Enter email"
+        },
+        "all_done": {
+          "title": "You're all done"
+        },
+        "card_details": {
+          "title": "Enter card details"
+        }
       }
     },
     "points": {
