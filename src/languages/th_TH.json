@@ -915,8 +915,6 @@
         "showcase": "โชว์เคส",
         "toast_added_to_showcase": "เพิ่มเข้าโชว์เคส",
         "toast_removed_from_showcase": "ลบออกจากโชว์เคส",
-        "refreshing": "กำลังรีเฟรชข้อมูลเมทาดาทา...",
-        "reported": "รายงานเป็นสแปม",
         "twitter": "X (ทวิตเตอร์)",
         "view_all_with_property": "ดูทั้งหมดด้วยคุณสมบัติ",
         "view_collection": "ดูคอลเลกชัน",
@@ -925,8 +923,6 @@
         "view_on_marketplace_name": "ดูบน %{marketplaceName}",
         "view_on_platform": "ดูบน %{platform}",
         "view_on_web": "ดูบนเว็บ",
-        "refresh": "รีเฟรช Metadata",
-        "report": "รายงานเป็นสแปม",
         "hide": "ซ่อน",
         "unhide": "เปิดซ่อน"
       }
@@ -1825,18 +1821,6 @@
           "description": "การส่ง, การรับ, การขาย, การสร้าง, การแลกเปลี่ยน, และอื่น ๆ อีกมากมาย คุณเลือกสิ่งที่คุณต้องการ"
         },
         "header": "การแจ้งเตือน"
-      }
-    },
-    "poaps": {
-      "title": "คุณพบ POAP!",
-      "view_on_poap": "ดูบน POAP 􀮶",
-      "mint_poap": "􀑒 Mint POAP",
-      "minting": "กำลังสร้างเหรียญ...",
-      "minted": "POAP สร้างแล้ว!",
-      "error": "ผิดพลาดในการสร้างเหรียญ",
-      "error_messages": {
-        "limit_exceeded": "POAP นี้ถูกสร้างเหรียญออกไปทั้งหมดแล้ว!",
-        "event_expired": "การสร้างเหรียญ POAP นี้หมดอายุแล้ว!"
       }
     },
     "rewards": {
