@@ -18,19 +18,15 @@ resolving ENS header/cover images (upstream only resolves avatars).
 
 ## Known issues
 
-The ERC-721 and ERC-1155 specs import `fetchSimpleHashNFT` and `svgToPngIfNeeded` from app code. SimpleHash has been shut down
-and the function hard-returns `undefined`, but both specs still call it unconditionally after the on-chain metadata path,
-overwriting any image that was already resolved. This means NFT-based avatars with on-chain metadata are broken. The dead
-SimpleHash code should be removed entirely.
-
-Additionally, the on-chain path only handles base64-encoded data URIs. When `tokenURI`/`uri` returns an IPFS or HTTP URL
-(the common case), there is no code to fetch the JSON metadata and extract the image. This path was never implemented because
-SimpleHash bypassed it. Fixing NFT avatar resolution requires adding this fetch step (as upstream and viem both do).
+The ERC-721 and ERC-1155 specs only resolve NFT avatars whose metadata is fully on-chain. The on-chain path handles
+base64-encoded data URIs, but when `tokenURI`/`uri` returns an IPFS or HTTP URL (the common case) there is no code to fetch
+the JSON metadata and extract the image. This fetch step was never implemented; SimpleHash used to cover it, but that
+integration has since been removed. Fixing NFT avatar resolution requires adding the fetch step (as upstream and viem both do).
 
 ## Replacing with viem (March 2026)
 
 This fork should probably be replaced rather than fixed. The header/cover support was added by us (not upstream), the
-SimpleHash integration is dead, and the IPFS/HTTP metadata fetch path was never implemented. Fixing all of this means
+SimpleHash integration has been removed, and the IPFS/HTTP metadata fetch path was never implemented. Fixing all of this means
 rewriting most of the fork anyway.
 
 Viem provides the building blocks:
