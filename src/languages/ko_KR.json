@@ -502,11 +502,11 @@
       "restart_app": "앱 재시작",
       "reset_experimental_config": "실험 설정 재설정",
       "cash_deposit_setup_facts": {
-        "phoneVerified": "Phone verified",
-        "kycPassed": "KYC passed",
-        "passkeyRegistered": "Passkey registered",
-        "hasLinkedCard": "Has linked card",
-        "hasLinkedWallet": "Has linked wallet"
+        "phoneVerified": "전화번호 인증됨",
+        "kycPassed": "KYC 통과",
+        "passkeyRegistered": "패스키 등록됨",
+        "hasLinkedCard": "연결된 카드 있음",
+        "hasLinkedWallet": "연결된 지갑 있음"
       },
       "cash_order_outcome": {
         "title": "현금 주문 결과",
@@ -1598,31 +1598,31 @@
       "deposit_setup": {
         "next": "다음",
         "phone": {
-          "title": "Connect your phone number"
+          "title": "휴대폰 번호 연결"
         },
         "confirm_phone": {
-          "title": "Confirm your phone"
+          "title": "휴대폰을 확인해 주세요"
         },
         "identity": {
-          "title": "Enter your information"
+          "title": "정보를 입력하세요"
         },
         "ssn": {
-          "title": "Last 4 of SSN"
+          "title": "SSN 마지막 4자리"
         },
         "review": {
           "title": "리뷰"
         },
         "passkey": {
-          "title": "Add a Passkey"
+          "title": "패스키 추가"
         },
         "email": {
-          "title": "Enter email"
+          "title": "이메일 입력"
         },
         "all_done": {
-          "title": "You're all done"
+          "title": "모두 완료되었습니다"
         },
         "card_details": {
-          "title": "Enter card details"
+          "title": "카드 정보를 입력하세요"
         }
       }
     },
