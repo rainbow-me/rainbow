@@ -100,9 +100,6 @@
           <!-- Fiat-on-ramp redirect -->
           <data android:scheme="https" android:host="rainbow.me"
                 android:pathPrefix="/f2c/" />
-          <!-- POAP sheet -->
-          <data android:scheme="https" android:host="rainbow.me"
-                android:pathPrefix="/poap/" />
         </intent-filter>
         <intent-filter>
           <data android:scheme="ethereum" />

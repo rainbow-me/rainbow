@@ -71,7 +71,6 @@ import { ClaimAirdropSheet } from '@/screens/Airdrops/ClaimAirdropSheet';
 import { ClaimClaimablePanel } from '@/screens/claimables/ClaimPanel';
 import { ExpandedAssetSheet as ExpandedAssetSheetV2 } from '@/screens/expandedAssetSheet/ExpandedAssetSheet';
 import LearnWebViewScreen from '@/screens/LearnWebViewScreen';
-import PoapSheet from '@/screens/mints/PoapSheet';
 import { Portal } from '@/screens/Portal';
 import QRScannerScreen from '@/screens/QRScannerScreen';
 import { RewardsSheet } from '@/screens/rewards/RewardsSheet';
@@ -193,7 +192,6 @@ function BSNavigator() {
       />
       <BSStack.Screen component={LearnWebViewScreen} name={Routes.LEARN_WEB_VIEW_SCREEN} {...learnWebViewScreenConfig} />
       <BSStack.Screen component={ExpandedAssetSheet} name={Routes.EXPANDED_ASSET_SHEET} />
-      <BSStack.Screen component={PoapSheet} name={Routes.POAP_SHEET} />
       <BSStack.Screen component={QRScannerScreen} name={Routes.QR_SCANNER_SCREEN} />
       <BSStack.Screen component={AddWalletNavigator} name={Routes.ADD_WALLET_NAVIGATOR} options={addWalletNavigatorPreset} />
       <BSStack.Screen

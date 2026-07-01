@@ -20,7 +20,6 @@ import Routes from '@/navigation/routesNames';
 import { TAB_BAR_HEIGHT } from '@/navigation/SwipeNavigator';
 import deviceUtils from '@/utils/deviceUtils';
 import ethereumUtils from '@/utils/ethereumUtils';
-import { getPoapAndOpenSheetWithQRHash, getPoapAndOpenSheetWithSecretWord } from '@/utils/poaps';
 
 export default function DiscoverSearch() {
   const safeAreaInsets = useSafeAreaInsets();
@@ -34,7 +33,6 @@ export default function DiscoverSearch() {
     };
   });
   const [searchQueryForSearch] = useDebounce(searchQuery, 350);
-  const [searchQueryForPoap] = useDebounce(searchQueryForSearch, 800);
 
   const { swapCurrencyList, swapCurrencyListLoading } = useSearchCurrencyList();
 
@@ -65,14 +63,6 @@ export default function DiscoverSearch() {
     // prevent other back handlers from firing
     return true;
   });
-
-  useEffect(() => {
-    const checkAndHandlePoaps = async (secretWordOrHash: string) => {
-      await getPoapAndOpenSheetWithSecretWord(secretWordOrHash);
-      await getPoapAndOpenSheetWithQRHash(secretWordOrHash);
-    };
-    checkAndHandlePoaps(searchQueryForPoap);
-  }, [searchQueryForPoap]);
 
   const handlePress = useCallback((item: EnrichedExchangeAsset) => {
     const accountAsset = ethereumUtils.getAccountAsset(item.uniqueId);

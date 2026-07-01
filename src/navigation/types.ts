@@ -30,7 +30,6 @@ import { type PolymarketEvent, type PolymarketMarket, type PolymarketMarketEvent
 import { type RainbowPosition } from '@/features/positions/types';
 import { type Checkbox } from '@/features/transfer/screens/SendConfirmationSheet';
 import { type WalletconnectApprovalSheetRouteParams, type WalletconnectResultType } from '@/features/wallet-connect/types';
-import { type PoapEvent } from '@/graphql/__generated__/arc';
 import { type TokenColors } from '@/graphql/__generated__/metadata';
 import type walletBackupStepTypes from '@/helpers/walletBackupStepTypes';
 import type WalletBackupTypes from '@/helpers/walletBackupTypes';
@@ -640,9 +639,6 @@ type RouteParams = {
     activeTabRef: RefObject<ActiveTabRef | null>;
   };
   [Routes.CHOOSE_WALLET_GROUP]: undefined;
-  [Routes.POAP_SHEET]: {
-    event: PoapEvent;
-  };
   [Routes.MODAL_SCREEN]: ModalParams;
   [Routes.CREATE_TRIGGER_ORDER_BOTTOM_SHEET]: {
     triggerOrderType: TriggerOrderType;

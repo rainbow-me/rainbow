@@ -8,7 +8,6 @@ export const CRYPTO_KITTIES_NFT_ADDRESS = '0x06012c8cf97bead5deae237070f9587f8e7
 export const CRYPTO_PUNKS_NFT_ADDRESS = '0xb47e3cd837ddf8e4c57f05d70ab865de6e193bbb';
 
 export const RAINBOW_PROFILES_BASE_URL = 'https://rainbow.me';
-export const POAP_BASE_URL = 'https://poap.website/';
 
 // Symbols
 export const ETH_SYMBOL = 'ETH';

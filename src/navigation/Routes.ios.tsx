@@ -71,7 +71,6 @@ import CheckIdentifierScreen from '@/screens/CheckIdentifierScreen';
 import { ClaimClaimablePanel } from '@/screens/claimables/ClaimPanel';
 import { ExpandedAssetSheet as ExpandedAssetSheetV2 } from '@/screens/expandedAssetSheet/ExpandedAssetSheet';
 import LearnWebViewScreen from '@/screens/LearnWebViewScreen';
-import PoapSheet from '@/screens/mints/PoapSheet';
 import { Portal } from '@/screens/Portal';
 import QRScannerScreen from '@/screens/QRScannerScreen';
 import { RewardsSheet } from '@/screens/rewards/RewardsSheet';
@@ -190,7 +189,6 @@ function NativeStackNavigator() {
       <NativeStack.Screen component={ReceiveModal} name={Routes.RECEIVE_MODAL} {...recieveModalSheetConfig} />
       <NativeStack.Screen component={SettingsSheet} name={Routes.SETTINGS_SHEET} {...settingsSheetConfig} />
       <NativeStack.Screen component={ExpandedAssetSheet} name={Routes.EXPANDED_ASSET_SHEET} {...expandedAssetSheetConfigWithLimit} />
-      <NativeStack.Screen component={PoapSheet} name={Routes.POAP_SHEET} {...expandedAssetSheetConfigWithLimit} />
       <NativeStack.Screen component={PositionSheet} name={Routes.POSITION_SHEET} {...positionSheetConfig} />
       <NativeStack.Screen
         component={SelectUniqueTokenSheet}

@@ -142,10 +142,6 @@ export const event = {
 
   wcRequestFailed: 'wc.failed_request',
 
-  poapsOpenedMintSheet: 'Opened POAP mint sheet',
-  poapsMintedPoap: 'Minted POAP',
-  poapsViewedOnPoap: 'Viewed POAP on poap.gallery',
-
   positionsOpenedSheet: 'Opened position Sheet',
   positionsOpenedExternalDapp: 'Viewed external dapp',
   positionsOpenedAsset: 'Opened asset from position',
@@ -570,17 +566,6 @@ export type EventProperties = {
     method?: string;
   };
 
-  [event.poapsMintedPoap]: {
-    eventId: number;
-    type: 'qrHash' | 'secretWord';
-  };
-  [event.poapsOpenedMintSheet]: {
-    eventId: number;
-    type: 'qrHash' | 'secretWord';
-  };
-  [event.poapsViewedOnPoap]: {
-    eventId: number;
-  };
   /**
    * Triggered when user opens external dapp website from position detail sheet.
    */
