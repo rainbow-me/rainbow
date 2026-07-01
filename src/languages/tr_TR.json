@@ -915,8 +915,6 @@
         "showcase": "Vitrin",
         "toast_added_to_showcase": "Vitrine eklendi",
         "toast_removed_from_showcase": "Vitrinden çıkarıldı",
-        "refreshing": "Meta veriler yenileniyor...",
-        "reported": "Spam olarak bildirildi",
         "twitter": "X (Twitter)",
         "view_all_with_property": "Tümünü Özelliği ile Görüntüle",
         "view_collection": "Koleksiyonu Görüntüle",
@@ -925,8 +923,6 @@
         "view_on_marketplace_name": "%{marketplaceName}'da Görüntüle",
         "view_on_platform": "%{platform}üzerinde görüntüle",
         "view_on_web": "Web'de Görüntüle",
-        "refresh": "Metaveriyi Yenile",
-        "report": "Spam olarak bildir",
         "hide": "Gizle",
         "unhide": "Gizlemeyi Kaldır"
       }
@@ -1825,18 +1821,6 @@
           "description": "Gönderimler, alımlar, satışlar, basım işlemleri, değișimler ve daha fazlası. İstediğinizi seçin."
         },
         "header": "Bildirimler"
-      }
-    },
-    "poaps": {
-      "title": "Bir POAP buldunuz!",
-      "view_on_poap": "POAP'ı görüntüle 􀮶",
-      "mint_poap": "􀑒 POAP Bas",
-      "minting": "Basılıyor...",
-      "minted": "POAP Basıldı!",
-      "error": "Basım Hatası",
-      "error_messages": {
-        "limit_exceeded": "Bu POAP tamamen basıldı!",
-        "event_expired": "Bu POAP basımı süresi dolmuş!"
       }
     },
     "rewards": {
