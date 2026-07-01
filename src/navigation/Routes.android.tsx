@@ -11,6 +11,7 @@ import AppIconUnlockSheet from '@/features/app-icon/screens/AppIconUnlockSheet';
 import BackupSheet from '@/features/backup/components/BackupSheet';
 import { AddCashSheet } from '@/features/cash/screens/add-cash-sheet/AddCashSheet';
 import { CashDepositIntroPanel } from '@/features/cash/screens/cash-deposit-intro-panel/CashDepositIntroPanel';
+import { CashDepositSetupScreen } from '@/features/cash/screens/cash-deposit-setup/CashDepositSetupScreen';
 import { PROFILES } from '@/features/config/constants/experimental';
 import { useExperimentalFlag } from '@/features/config/hooks/experimentalHooks';
 import { SignTransactionSheet } from '@/features/dapp-request/screens/SignTransactionSheet';
@@ -297,6 +298,7 @@ function BSNavigator() {
       <BSStack.Screen component={PerpsAddToPositionSheet} name={Routes.PERPS_ADD_TO_POSITION_SHEET} />
       <BSStack.Screen component={PerpsAboutSheet} name={Routes.PERPS_ABOUT_SHEET} />
       <BSStack.Screen component={CashDepositIntroPanel} name={Routes.CASH_DEPOSIT_INTRO_PANEL} />
+      <BSStack.Screen component={CashDepositSetupScreen} name={Routes.CASH_DEPOSIT_SETUP_SCREEN} />
       <BSStack.Screen component={AddCashSheet} name={Routes.ADD_CASH_SHEET} />
       <BSStack.Screen component={PerpsTradeDetailsSheet} name={Routes.PERPS_TRADE_DETAILS_SHEET} />
       <BSStack.Screen component={PolymarketEventScreen} name={Routes.POLYMARKET_EVENT_SCREEN} />

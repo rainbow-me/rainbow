@@ -15,10 +15,7 @@ tags:
     env:
       FLAG: Cash
       VALUE: 'true'
-- runFlow:
-    file: ../../utils/SetCashDepositSetupStatus.yaml
-    env:
-      STATUS: ready
+- runFlow: ../../utils/SetCashDepositReady.yaml
 # A ready member skips the intro panel and lands straight on the Add Cash presets sheet.
 - tapOn:
     id: buy-button

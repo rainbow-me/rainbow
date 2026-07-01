@@ -1,5 +1,6 @@
-import { isCashDepositSetupComplete, type CashDepositSetupStatus } from '@/features/cash/stores/cashDepositSetupStatus';
 import Routes from '@/navigation/routesNames';
+
+import { isCashDepositSetupComplete, type CashDepositSetupStatus } from '../stores/deriveCashDepositSetupStatus';
 
 type AddCashRoute = typeof Routes.ADD_CASH_SHEET | typeof Routes.CASH_DEPOSIT_INTRO_PANEL | typeof Routes.FIAT_ON_RAMP_SHEET;
 

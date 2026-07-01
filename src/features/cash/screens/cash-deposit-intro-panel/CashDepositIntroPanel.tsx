@@ -10,7 +10,7 @@ import { PanelSheet } from '@/components/PanelSheet/PanelSheet';
 import { Box, Stack, Text, TextShadow, useColorMode, useForegroundColor } from '@/design-system';
 import { opacity } from '@/framework/ui/utils/opacity';
 import * as i18n from '@/languages';
-import { useNavigation } from '@/navigation/Navigation';
+import { replace, useNavigation } from '@/navigation/Navigation';
 import Routes from '@/navigation/routesNames';
 import { fontWithWidth } from '@/styles/buildTextStyles';
 
@@ -44,9 +44,9 @@ export const CashDepositIntroPanel = memo(function CashDepositIntroPanel() {
     }, [])
   );
 
-  // Set Up Account → Cash Deposit Setup wizard. Destination lands in a later unit; inert for now.
+  // Set Up Account → close the intro panel, then open the Cash Deposit Setup wizard.
   const handleSetUpAccount = useCallback(() => {
-    // TODO(cash): navigate to CashDepositSetupScreen once the Setup wizard unit lands.
+    replace(Routes.CASH_DEPOSIT_SETUP_SCREEN);
   }, []);
 
   // Other Deposit Methods → legacy third-party provider widgets.

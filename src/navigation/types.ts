@@ -149,6 +149,16 @@ export type PolymarketRoute =
   | typeof Routes.POLYMARKET_ACCOUNT_SCREEN
   | typeof Routes.POLYMARKET_BROWSE_EVENTS_SCREEN
   | typeof Routes.POLYMARKET_SEARCH_SCREEN;
+export type CashDepositSetupRoute =
+  | typeof Routes.CASH_SETUP_PHONE
+  | typeof Routes.CASH_SETUP_CONFIRM_PHONE
+  | typeof Routes.CASH_SETUP_IDENTITY
+  | typeof Routes.CASH_SETUP_SSN
+  | typeof Routes.CASH_SETUP_REVIEW
+  | typeof Routes.CASH_SETUP_PASSKEY
+  | typeof Routes.CASH_SETUP_EMAIL
+  | typeof Routes.CASH_SETUP_ALL_DONE
+  | typeof Routes.CASH_SETUP_CARD_DETAILS;
 
 export interface ExplainSheetParameterMap extends CurrentBaseFeeTypes {
   network: { chainId: ChainId };
@@ -645,6 +655,11 @@ type RouteParams = {
   [Routes.PERPS_NAVIGATOR]:
     | {
         initialPerpsPage?: PerpsRoute;
+      }
+    | undefined;
+  [Routes.CASH_DEPOSIT_SETUP_SCREEN]:
+    | {
+        initialStep?: CashDepositSetupRoute;
       }
     | undefined;
   [Routes.PERPS_ACCOUNT_SCREEN]:

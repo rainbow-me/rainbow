@@ -3,8 +3,8 @@ import { Linking } from 'react-native';
 
 import URL from 'url-parse';
 
-import { type CashDepositSetupStatus } from '@/features/cash/stores/cashDepositSetupStatus';
 import { useCashDepositSetupStore } from '@/features/cash/stores/cashDepositSetupStore';
+import { isCashDepositSetupFactKey } from '@/features/cash/stores/deriveCashDepositSetupStatus';
 import { type ExperimentalConfigKey } from '@/features/config/constants/experimental';
 import { useExperimentalConfigStore } from '@/features/config/stores/experimentalConfigStore';
 import { savePIN } from '@/features/local-auth/pinAuthentication';
@@ -42,8 +42,10 @@ export function TestDeeplinkHandler() {
         case 'setExperimentalFlag':
           useExperimentalConfigStore.getState().setFlag(query.flag as ExperimentalConfigKey, query.value === 'true');
           break;
-        case 'setCashDepositSetupStatus':
-          useCashDepositSetupStore.getState().setStatus(query.status as CashDepositSetupStatus);
+        case 'setCashDepositSetupFact':
+          if (query.fact && isCashDepositSetupFactKey(query.fact)) {
+            useCashDepositSetupStore.getState().setFact(query.fact, query.value === 'true');
+          }
           break;
         case 'sandbox-test':
           useSandboxDiagnosticsStore.getState().open();

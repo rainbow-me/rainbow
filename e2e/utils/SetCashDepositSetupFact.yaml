@@ -1,6 +1,6 @@
 appId: ${APP_ID}
 ---
-- openLink: rainbow://e2e/setCashDepositSetupStatus?status=${STATUS}
+- openLink: rainbow://e2e/setCashDepositSetupFact?fact=${FACT}&value=${VALUE}
 - runFlow:
     when:
       visible: 'Open in .*'

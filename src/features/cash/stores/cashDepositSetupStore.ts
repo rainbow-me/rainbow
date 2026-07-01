@@ -1,31 +1,25 @@
 import { createBaseStore } from '@storesjs/stores';
 
-import { type CashDepositSetupStatus } from '@/features/cash/stores/cashDepositSetupStatus';
+import {
+  deriveCashDepositSetupStatus,
+  EMPTY_CASH_DEPOSIT_SETUP_FACTS,
+  type CashDepositSetupFacts,
+  type CashDepositSetupStatus,
+} from './deriveCashDepositSetupStatus';
 
 type CashDepositSetupStore = {
-  /**
-   * Cached Setup status — a fast-path hint only, never a gate. The server is authoritative
-   * once auth lands; this is a mock driven from Developer Settings until then, and becomes
-   * keyed by User (passkey identity) at that point.
-   */
-  cachedStatus: CashDepositSetupStatus;
-  setStatus: (status: CashDepositSetupStatus) => void;
+  facts: CashDepositSetupFacts;
+  setFact: (key: keyof CashDepositSetupFacts, value: boolean) => void;
 };
-
-const DEFAULT_STATUS: CashDepositSetupStatus = 'needsIdentity';
 
 export const useCashDepositSetupStore = createBaseStore<CashDepositSetupStore>(
   set => ({
-    cachedStatus: DEFAULT_STATUS,
-    setStatus: status => set({ cachedStatus: status }),
+    facts: EMPTY_CASH_DEPOSIT_SETUP_FACTS,
+    setFact: (key, value) => set(state => ({ facts: { ...state.facts, [key]: value } })),
   }),
   { storageKey: 'cashDepositSetup' }
 );
 
-/**
- * Stubbed `CashDepositSetupStatus` derivation: today it just reads the cached hint. The real
- * derivation (JWT claims + ramp GETs) lands with auth in Slice 7.
- */
 export function useCashDepositSetupStatus(): CashDepositSetupStatus {
-  return useCashDepositSetupStore(state => state.cachedStatus);
+  return useCashDepositSetupStore(state => deriveCashDepositSetupStatus(state.facts));
 }

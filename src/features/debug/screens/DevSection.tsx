@@ -11,11 +11,6 @@ import Restart from 'react-native-restart';
 import { ImgixImage } from '@/components/images';
 import ContextMenuButton, { type MenuConfig } from '@/components/native-context-menu/contextMenu';
 import { IS_STORE_INSTALL } from '@/env';
-import {
-  CASH_DEPOSIT_SETUP_STATUSES,
-  isCashDepositSetupStatus,
-  type CashDepositSetupStatus,
-} from '@/features/cash/stores/cashDepositSetupStatus';
 import { useCashDepositSetupStore } from '@/features/cash/stores/cashDepositSetupStore';
 import {
   CASH_MOCK_ORDER_OUTCOMES,
@@ -23,6 +18,7 @@ import {
   useCashMockOrderOutcomeStore,
   type CashMockOrderOutcome,
 } from '@/features/cash/stores/cashMockOrderOutcomeStore';
+import { type CashDepositSetupFacts } from '@/features/cash/stores/deriveCashDepositSetupStatus';
 import { defaultConfig, defaultConfigValues, type ExperimentalConfigKey } from '@/features/config/constants/experimental';
 import { useExperimentalConfigStore } from '@/features/config/stores/experimentalConfigStore';
 import { RevokeReason } from '@/features/delegation/screens/RevokeDelegationPanel';
@@ -55,51 +51,6 @@ import { delegation, type DelegationWithChainId } from '@rainbow-me/delegation';
 
 import { analyzeUserAssets } from '../utils/analyzeUserAssets';
 
-// Dev-only select that drives the mock CashDepositSetupStatus, so QA can exercise every entry-point branch.
-function CashDepositSetupStatusMenuItem() {
-  const cachedStatus = useCashDepositSetupStore(state => state.cachedStatus);
-  const setStatus = useCashDepositSetupStore(state => state.setStatus);
-
-  const statusLabel = useCallback(
-    (status: CashDepositSetupStatus) => i18n.t(i18n.l.developer_settings.cash_deposit_setup_status[status]),
-    []
-  );
-
-  const menuConfig = useMemo<MenuConfig>(
-    () => ({
-      menuTitle: i18n.t(i18n.l.developer_settings.cash_deposit_setup_status.title),
-      menuItems: CASH_DEPOSIT_SETUP_STATUSES.map(status => ({
-        actionKey: status,
-        actionTitle: statusLabel(status),
-        menuState: status === cachedStatus ? 'on' : 'off',
-      })),
-    }),
-    [cachedStatus, statusLabel]
-  );
-
-  const onPressMenuItem = useCallback(
-    ({ nativeEvent: { actionKey } }: { nativeEvent: { actionKey: string } }) => {
-      if (isCashDepositSetupStatus(actionKey)) {
-        setStatus(actionKey);
-      }
-    },
-    [setStatus]
-  );
-
-  return (
-    <ContextMenuButton menuConfig={menuConfig} isMenuPrimaryAction onPressMenuItem={onPressMenuItem} useActionSheetFallback={false}>
-      <MenuItem
-        hasChevron
-        leftComponent={<MenuItem.TextIcon icon="💵" isEmoji />}
-        rightComponent={<MenuItem.Selection>{statusLabel(cachedStatus)}</MenuItem.Selection>}
-        size={52}
-        testID="cash-deposit-setup-status-select"
-        titleComponent={<MenuItem.Title text={i18n.t(i18n.l.developer_settings.cash_deposit_setup_status.title)} />}
-      />
-    </ContextMenuButton>
-  );
-}
-
 // Dev-only select that drives the mock buy-order outcome (success vs PAYMENT_REJECTED failure).
 function CashMockOrderOutcomeMenuItem() {
   const outcome = useCashMockOrderOutcomeStore(state => state.outcome);
@@ -130,7 +81,6 @@ function CashMockOrderOutcomeMenuItem() {
     <ContextMenuButton menuConfig={menuConfig} isMenuPrimaryAction onPressMenuItem={onPressMenuItem} useActionSheetFallback={false}>
       <MenuItem
         hasChevron
-        leftComponent={<MenuItem.TextIcon icon="🧪" isEmoji />}
         rightComponent={<MenuItem.Selection>{outcomeLabel(outcome)}</MenuItem.Selection>}
         size={52}
         testID="cash-mock-order-outcome-select"
@@ -145,6 +95,8 @@ export const DevSection = () => {
   const config = useExperimentalConfigStore(state => state.config);
   const setConnectedToAnvil = useConnectedToAnvilStore.getState().setConnectedToAnvil;
   const accountAddress = useWalletsStore(state => state.accountAddress);
+  const cashDepositSetupFacts = useCashDepositSetupStore(state => state.facts);
+  const setCashDepositSetupFact = useCashDepositSetupStore(state => state.setFact);
 
   const [loadingStates, setLoadingStates] = useState({
     clearLocalStorage: false,
@@ -569,7 +521,15 @@ export const DevSection = () => {
             })}
           </Menu>
           <Menu header={i18n.t(i18n.l.developer_settings.headers.cash_settings)}>
-            <CashDepositSetupStatusMenuItem />
+            {(Object.keys(cashDepositSetupFacts) as (keyof CashDepositSetupFacts)[]).map(key => (
+              <MenuItem
+                key={key}
+                onPress={() => setCashDepositSetupFact(key, !cashDepositSetupFacts[key])}
+                rightComponent={cashDepositSetupFacts[key] && <MenuItem.StatusIcon status="selected" />}
+                size={52}
+                titleComponent={<MenuItem.Title text={i18n.t(i18n.l.developer_settings.cash_deposit_setup_facts[key])} />}
+              />
+            ))}
             <CashMockOrderOutcomeMenuItem />
           </Menu>
           <Menu header={i18n.t(i18n.l.developer_settings.headers.feature_flags)}>

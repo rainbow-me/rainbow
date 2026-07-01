@@ -25,3 +25,13 @@ tags:
     id: cash-deposit-intro-other-deposit-methods
 - assertVisible:
     id: cash-deposit-intro-sign-in
+- tapOn:
+    id: cash-deposit-intro-set-up-account
+# Walk all 9 Setup steps;
+- tapOn:
+    id: cash-setup-next
+    repeat: 9
+    delay: 500
+# The final Next links the wallet and drops into Add Cash.
+- assertVisible:
+    id: cash-deposit-add-cash-add-from
