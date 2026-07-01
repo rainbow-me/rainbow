@@ -501,12 +501,12 @@
       },
       "restart_app": "Перезагрузить приложение",
       "reset_experimental_config": "Сбросить экспериментальную конфигурацию",
-      "cash_deposit_setup_status": {
-        "title": "Статус настройки пополнения наличными",
-        "needsIdentity": "Требуется подтверждение личности",
-        "needsCard": "Требуется карта",
-        "needsWallet": "Требуется кошелек",
-        "ready": "Готово"
+      "cash_deposit_setup_facts": {
+        "phoneVerified": "Phone verified",
+        "kycPassed": "KYC passed",
+        "passkeyRegistered": "Passkey registered",
+        "hasLinkedCard": "Has linked card",
+        "hasLinkedWallet": "Has linked wallet"
       },
       "cash_order_outcome": {
         "title": "Результат покупки наличных",
@@ -1594,6 +1594,36 @@
         "buy_error_title": "Покупка не удалась",
         "buy_error_generic": "Что-то пошло не так. Попробуйте еще раз",
         "payment_rejected": "Ваш банк отклонил этот платеж"
+      },
+      "deposit_setup": {
+        "next": "Далее",
+        "phone": {
+          "title": "Connect your phone number"
+        },
+        "confirm_phone": {
+          "title": "Confirm your phone"
+        },
+        "identity": {
+          "title": "Enter your information"
+        },
+        "ssn": {
+          "title": "Last 4 of SSN"
+        },
+        "review": {
+          "title": "Просмотр"
+        },
+        "passkey": {
+          "title": "Add a Passkey"
+        },
+        "email": {
+          "title": "Enter email"
+        },
+        "all_done": {
+          "title": "You're all done"
+        },
+        "card_details": {
+          "title": "Enter card details"
+        }
       }
     },
     "points": {
