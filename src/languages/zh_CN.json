@@ -1598,31 +1598,31 @@
       "deposit_setup": {
         "next": "下一步",
         "phone": {
-          "title": "Connect your phone number"
+          "title": "连接您的手机号码"
         },
         "confirm_phone": {
-          "title": "Confirm your phone"
+          "title": "确认您的手机"
         },
         "identity": {
-          "title": "Enter your information"
+          "title": "输入您的信息"
         },
         "ssn": {
-          "title": "Last 4 of SSN"
+          "title": "社会安全号码后4位"
         },
         "review": {
           "title": "审阅"
         },
         "passkey": {
-          "title": "Add a Passkey"
+          "title": "添加通行密钥"
         },
         "email": {
-          "title": "Enter email"
+          "title": "输入电子邮箱"
         },
         "all_done": {
-          "title": "You're all done"
+          "title": "您已全部完成"
         },
         "card_details": {
-          "title": "Enter card details"
+          "title": "输入卡片信息"
         }
       }
     },
