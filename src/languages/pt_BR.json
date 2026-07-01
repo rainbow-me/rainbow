@@ -501,12 +501,12 @@
       },
       "restart_app": "Reiniciar App",
       "reset_experimental_config": "Redefinir Configuração Experimental",
-      "cash_deposit_setup_status": {
-        "title": "Status da Configuração de Depósito em Dinheiro",
-        "needsIdentity": "Precisa de Identidade",
-        "needsCard": "Precisa de Cartão",
-        "needsWallet": "Precisa de Carteira",
-        "ready": "Pronto"
+      "cash_deposit_setup_facts": {
+        "phoneVerified": "Phone verified",
+        "kycPassed": "KYC passed",
+        "passkeyRegistered": "Passkey registered",
+        "hasLinkedCard": "Has linked card",
+        "hasLinkedWallet": "Has linked wallet"
       },
       "cash_order_outcome": {
         "title": "Resultado da ordem de dinheiro",
@@ -1594,6 +1594,36 @@
         "buy_error_title": "Falha na Compra",
         "buy_error_generic": "Algo deu errado. Tente novamente",
         "payment_rejected": "Seu cartão recusou este pagamento"
+      },
+      "deposit_setup": {
+        "next": "Avançar",
+        "phone": {
+          "title": "Connect your phone number"
+        },
+        "confirm_phone": {
+          "title": "Confirm your phone"
+        },
+        "identity": {
+          "title": "Enter your information"
+        },
+        "ssn": {
+          "title": "Last 4 of SSN"
+        },
+        "review": {
+          "title": "Revisão"
+        },
+        "passkey": {
+          "title": "Add a Passkey"
+        },
+        "email": {
+          "title": "Enter email"
+        },
+        "all_done": {
+          "title": "You're all done"
+        },
+        "card_details": {
+          "title": "Enter card details"
+        }
       }
     },
     "points": {
