@@ -915,8 +915,6 @@
         "showcase": "쇼케이스",
         "toast_added_to_showcase": "쇼케이스에 추가됨",
         "toast_removed_from_showcase": "쇼케이스에서 제거됨",
-        "refreshing": "메타데이터 새로 고침 중...",
-        "reported": "스팸으로 신고됨",
         "twitter": "X/트위터)",
         "view_all_with_property": "속성을 가진 모든 것 보기",
         "view_collection": "컬렉션 보기",
@@ -925,8 +923,6 @@
         "view_on_marketplace_name": "보기 %{marketplaceName}에서",
         "view_on_platform": "조회 %{platform}에서",
         "view_on_web": "웹에서 보기",
-        "refresh": "메타데이터 새로 고침",
-        "report": "스팸으로 신고하기",
         "hide": "숨기다",
         "unhide": "숨김 해제"
       }
@@ -1825,18 +1821,6 @@
           "description": "보내기, 받기, 판매, 생성, 스왑 등. 원하는 것을 선택하세요."
         },
         "header": "알림"
-      }
-    },
-    "poaps": {
-      "title": "POAP을 찾았습니다!",
-      "view_on_poap": "POAP에서 보기 􀮶",
-      "mint_poap": "􀑒 POAP 출하",
-      "minting": "출하 중...",
-      "minted": "POAP 출하 완료!",
-      "error": "출하 오류",
-      "error_messages": {
-        "limit_exceeded": "이 POAP는 완전히 출하되었습니다!",
-        "event_expired": "이 POAP 출하는 만료되었습니다!"
       }
     },
     "rewards": {
