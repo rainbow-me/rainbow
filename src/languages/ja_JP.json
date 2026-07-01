@@ -915,8 +915,6 @@
         "showcase": "ショーケース",
         "toast_added_to_showcase": "ショーケースに追加されました",
         "toast_removed_from_showcase": "ショーケースから削除されました",
-        "refreshing": "メタデータを更新中...",
-        "reported": "スパムとして報告されました",
         "twitter": "Ｘ（ツイッター）",
         "view_all_with_property": "プロパティですべて表示",
         "view_collection": "コレクションを表示",
@@ -925,8 +923,6 @@
         "view_on_marketplace_name": "%{marketplaceName}で表示",
         "view_on_platform": "%{platform}で表示",
         "view_on_web": "ウェブで表示する",
-        "refresh": "メタデータを更新する",
-        "report": "スパムとして報告",
         "hide": "非表示",
         "unhide": "表示する"
       }
@@ -1825,18 +1821,6 @@
           "description": "送受信、販売、鋳造、交換など、自分の望むものを選択してください。"
         },
         "header": "通知"
-      }
-    },
-    "poaps": {
-      "title": "POAPを見つけました！",
-      "view_on_poap": "POAPで見る 􀮶",
-      "mint_poap": "􀑒 POAPを鋳造",
-      "minting": "鋳造中...",
-      "minted": "POAPが鋳造されました！",
-      "error": "鋳造エラー",
-      "error_messages": {
-        "limit_exceeded": "このPOAPは完全に鋳造済みです！",
-        "event_expired": "このPOAPの鋳造は期限切れです！"
       }
     },
     "rewards": {
