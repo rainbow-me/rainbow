@@ -1,0 +1,487 @@
+---
+format_version: 1.1.0
+default_step_lib_source: https://github.com/bitrise-io/bitrise-steplib.git
+trigger_map:
+  - push_branch: develop
+    workflow: workflow_testflight
+workflows:
+  apply_rainbow_internals:
+    after_run: []
+    steps:
+      - activate-ssh-key@4: {}
+      - script@1:
+          inputs:
+            - content: |+
+                #!/usr/bin/env bash
+                # fail if any commands fails
+                set -e
+                # debug log
+                set -x
+
+                # Forking rainbow scripts
+                git clone -b "${RAINBOW_SCRIPTS_BRANCH:-main}" git@github.com:rainbow-me/rainbow-scripts.git
+
+                # Setting permissions to execute the script
+                chmod +x "rainbow-scripts/rainbow/ios/prebuild.sh"
+
+                # Adding script to env vars
+                envman add --key RAINBOW_SCRIPTS_APP_IOS_PREBUILD_HOOK --value "./rainbow-scripts/rainbow/ios/prebuild.sh"
+
+                envman add --key RAINBOW_SCRIPTS_APP_ANDROID_PREBUILD_HOOK --value "./rainbow-scripts/rainbow/android/prebuild.sh"
+
+          title: Set Sandbox Env vars
+  build_setup:
+    steps:
+      - git-clone@8.1: {}
+      - nvm@1: {}
+      - script@1:
+          inputs:
+            - content: |-
+                #!/usr/bin/env bash
+                # fail if any commands fails
+                set -e
+                # debug log
+                set -x
+
+                # Yarn sucks and running a couple of times does the trick.
+                # See https://github.com/yarnpkg/yarn/issues/7212 before yelling at me
+
+                # yarn install
+                # yarn setup || yarn setup || yarn setup
+
+                ##### CONTEXT #####
+                # For some unknown reason METADATA_BASE_URL gets populated incorrectly on runtime
+                # So instead of using it on all these files, we just kept the prod url hardcoded
+                # and replace it to whatever the env var of this job is pointing to
+                # All the other env vars are working as expected
+
+                # Check if IS_STAGING is set to "true"
+                if [ "$IS_STAGING" = "true" ]; then
+
+                  sed -i '' "s|https://metadata.p.rainbow.me|$METADATA_BASE_URL|g" "src/graphql/config.js"
+                  echo "Replaced 'https://metadata.p.rainbow.me' with $METADATA_BASE_URL in src/graphql/config.js"
+
+                  #sed -i '' "s|https://metadata.p.rainbow.me|$METADATA_BASE_URL|g" "src/handlers/dispersion.ts"
+                  #echo "Replaced 'https://metadata.p.rainbow.me' with $METADATA_BASE_URL in src/handlers/dispersion.ts"
+
+                  #sed -i '' "s|https://metadata.p.rainbow.me|$METADATA_BASE_URL|g" "src/handlers/gasFees.ts"
+                  #echo "Replaced 'https://metadata.p.rainbow.me' with $METADATA_BASE_URL in src/handlers/gasFees.ts"
+
+                  #sed -i '' "s|https://metadata.p.rainbow.me|$METADATA_BASE_URL|g" "src/resources/metadata/backendNetworks.ts"
+                  #echo "Replaced 'https://metadata.p.rainbow.me' with $METADATA_BASE_URL in src/resources/metadata/backendNetworks.ts"
+
+                else
+                  echo "IS_STAGING is not set to true. No changes were made."
+                fi
+          title: Override METADATA_BASE_URL in source code
+      - yarn@0:
+          inputs:
+            - command: install
+      - yarn@0:
+          inputs:
+            - command: setup
+      - script@1:
+          title: Check for lockfile changes (Fake --frozen-lockfile)
+          inputs:
+            - content: |-
+                git diff yarn.lock
+                if ! git diff --exit-code yarn.lock; then
+                  echo "Changes were detected in yarn.lock file after running 'yarn install', which is not expected. Please run 'yarn install' locally and commit the changes.";
+                  exit 1;
+                fi
+      - yarn@0:
+          inputs:
+            - args: ' --config audit-ci.jsonc'
+            - command: audit-ci
+          title: Audit dependencies
+    before_run: []
+    after_run: []
+  check_dot_env:
+    steps:
+      - script@1:
+          title: Check dot env for production builds
+          inputs:
+            - content: |-
+                #!/usr/bin/env bash
+                ./scripts/check-env.sh
+
+                # Disable swap fees for testflight and internal android builds (IS_APK_BUILD=true)
+                SRCROOT=`pwd`;
+                sed -i''-e "s/About to get quote/About to get quote\n    if(isTestFlight || IS_APK_BUILD === 'true'){ quoteParams.feePercentageBasisPoints = 0} \/\/ eslint-disable-line prettier\/prettier\n    \/\/ @ts-ignore/" $SRCROOT/src/__swaps__/utils/swaps.ts;
+
+                echo "You can view the whole networks file below:"
+                cat src/features/network/constants/networks.json
+  generate_appstore_connect_key:
+    steps:
+      - script@1:
+          inputs:
+            - content: |-
+                #!/usr/bin/env bash
+                # fail if any commands fails
+                set -e
+                # debug log
+                set -x
+
+
+                APPSTORE_CONNECT_AUTH_FILE="ios/fastlane/AuthKey_AU3T8TCRLN.p8"
+
+                echo "-----BEGIN PRIVATE KEY-----" >> $APPSTORE_CONNECT_AUTH_FILE
+                echo $APPSTORE_CONNECT_PRIVATE_KEY_1 >> $APPSTORE_CONNECT_AUTH_FILE
+                echo $APPSTORE_CONNECT_PRIVATE_KEY_2 >> $APPSTORE_CONNECT_AUTH_FILE
+                echo $APPSTORE_CONNECT_PRIVATE_KEY_3 >> $APPSTORE_CONNECT_AUTH_FILE
+                echo $APPSTORE_CONNECT_PRIVATE_KEY_4 >> $APPSTORE_CONNECT_AUTH_FILE
+                echo "-----END PRIVATE KEY-----" >> $APPSTORE_CONNECT_AUTH_FILE
+
+                echo "APPSTORE CONNECT AUTH KEY CREATED SUCCESSFULLY"
+          title: Generate Appstore Connect Key
+  generate_dot_env_testflight:
+    steps:
+      - script@1.2:
+          inputs:
+            - content: |
+                #!/usr/bin/env bash
+                # fail if any commands fails
+                set -e
+                # debug log
+                set -x
+
+                # write your script here
+                touch .env
+                echo "SENTRY_ENDPOINT=$SENTRY_ENDPOINT" >> .env
+                echo "SENTRY_AUTH_TOKEN=$SENTRY_AUTH_TOKEN" >> .env
+                echo "ETHERSCAN_API_KEY=$ETHERSCAN_API_KEY" >> .env
+                echo "BRANCH_APP_DOMAIN=$BRANCH_APP_DOMAIN" >> .env
+                echo "BRANCH_KEY=$BRANCH_KEY" >> .env
+                echo "APPSFLYER_DEV_KEY=$APPSFLYER_DEV_KEY" >> .env
+                echo "RAINBOW_MASTER_KEY=$RAINBOW_MASTER_KEY" >> .env
+                echo "DEV_SEEDS=\"$DEV_SEEDS_PROD\"" >> .env
+                echo "DEV_PKEY=$DEV_PKEY_PROD" >> .env
+                echo "IS_TESTING=$IS_TESTING" >> .env
+                echo "ENABLE_DEV_MODE=$ENABLE_DEV_MODE" >> .env
+                echo "GANACHE_URL_IOS=$GANACHE_URL_IOS" >> .env
+                echo "GANACHE_URL_ANDROID=$GANACHE_URL_ANDROID" >> .env
+                echo "IMGIX_TOKEN=$IMGIX_TOKEN" >> .env
+                echo "IMGIX_DOMAIN=$IMGIX_DOMAIN" >> .env
+                echo "GOOGLE_SERVICE_API_KEY=$GOOGLE_SERVICE_API_KEY" >> .env
+                echo "NFT_API_KEY=$NFT_API_KEY" >> .env
+                echo "NFT_API_URL=$NFT_API_URL" >> .env
+                echo "RAINBOW_TOKEN_LIST_URL=$RAINBOW_TOKEN_LIST_URL" >>.env
+                echo "RAINBOW_LEAN_TOKEN_LIST_URL=$RAINBOW_LEAN_TOKEN_LIST_URL" >>.env
+                echo "HARDHAT_URL_IOS=$HARDHAT_URL_IOS" >>.env
+                echo "HARDHAT_URL_ANDROID=$HARDHAT_URL_ANDROID" >>.env
+                echo "CLOUDINARY_CLOUD_NAME=$CLOUDINARY_CLOUD_NAME" >>.env
+                echo "PINATA_API_URL=$PINATA_API_URL" >>.env
+                echo "PINATA_API_KEY=$PINATA_API_KEY" >>.env
+                echo "PINATA_API_SECRET=$PINATA_API_SECRET" >>.env
+                echo "PINATA_GATEWAY_URL=$PINATA_GATEWAY_URL" >>.env
+                echo "SECURE_WALLET_HASH_KEY=$SECURE_WALLET_HASH_KEY" >> .env
+                echo "LOG_LEVEL=$LOG_LEVEL" >> .env
+                echo "WC_PROJECT_ID=$WC_PROJECT_ID" >> .env
+                echo "ADDYS_API_KEY=$ADDYS_API_KEY" >> .env
+                echo "METADATA_GRAPHQL_API_KEY=$METADATA_GRAPHQL_API_KEY_STAGING" >> .env
+                echo "RPC_PROXY_BASE_URL_PROD=$RPC_PROXY_BASE_URL_PROD" >> .env
+                echo "RPC_PROXY_BASE_URL_DEV=$RPC_PROXY_BASE_URL_DEV" >> .env
+                echo "RPC_PROXY_API_KEY_PROD=$RPC_PROXY_API_KEY_PROD" >> .env
+                echo "RPC_PROXY_API_KEY_DEV=$RPC_PROXY_API_KEY_DEV" >> .env
+                echo "MWP_ENCRYPTION_KEY=$MWP_ENCRYPTION_KEY" >> .env
+                echo "METADATA_BASE_URL=$METADATA_BASE_URL" >> .env
+                echo "ADDYS_BASE_URL=$ADDYS_BASE_URL" >> .env
+                echo "TOKEN_SEARCH_URL=$TOKEN_SEARCH_URL" >> .env
+                echo "PLATFORM_BASE_URL=$PLATFORM_BASE_URL" >> .env
+                echo "PLATFORM_API_KEY=$PLATFORM_API_KEY" >> .env
+                echo "NPM_TOKEN=$NPM_TOKEN" >> .env
+          title: Generate .env file for testflight
+  pods_setup:
+    steps:
+      - script@1:
+          title: Update ruby-build
+          inputs:
+            - content: |
+                #!/usr/bin/env bash
+                # The preinstalled ruby-build may not know about the version in .ruby-version.
+                # Upgrading it lets cocoapods-install handle the rbenv install automatically.
+                brew upgrade ruby-build || true
+      - cocoapods-install@2.3:
+          inputs:
+            - podfile_path: './ios/Podfile'
+  update_token_list:
+    steps:
+      - yarn@0:
+          title: Update token list & metadata
+          inputs:
+            - command: update-tokens
+    before_run: []
+    after_run: []
+  workflow_testflight:
+    envs:
+      - opts:
+          is_expand: false
+        IS_TESTING: 'false'
+      - opts:
+          is_expand: false
+        ENABLE_DEV_MODE: '0'
+      - opts:
+          is_expand: false
+        GANACHE_URL: http://127.0.0.1:7545
+      - opts:
+          is_expand: false
+        IS_STAGING: 'false'
+      - opts:
+          is_expand: false
+        METADATA_BASE_URL: https://metadata.p.rainbow.me
+      - opts:
+          is_expand: false
+        ADDYS_BASE_URL: https://addys.p.rainbow.me/v3
+      - opts:
+          is_expand: false
+        TOKEN_SEARCH_URL: https://token-search.rainbow.me
+      - opts:
+          is_expand: false
+        PLATFORM_BASE_URL: https://platform.p.rainbow.me
+    before_run:
+      - generate_dot_env_testflight
+      - apply_rainbow_internals
+      - build_setup
+      - update_token_list
+      - check_dot_env
+      - pods_setup
+      - generate_appstore_connect_key
+      - debug_env
+    steps:
+      - script@1:
+          inputs:
+            - content: |-
+                #!/usr/bin/env bash
+                set -euo pipefail
+
+                # 6 GB heap (bump to 8192 if needed)
+                export NODE_OPTIONS="--max_old_space_size=6144"
+                # Persist to later steps (Fastlane/xcodebuild)
+                envman add --key NODE_OPTIONS --value "$NODE_OPTIONS"
+          title: Increase heap size
+      - script@1:
+          inputs:
+            - content: |
+                #!/usr/bin/env bash
+                # debug log
+                set -x
+
+                # write your script here
+                tmpfile=$(mktemp /tmp/wwdr-cert.cer)
+                curl -f -o $tmpfile https://www.apple.com/certificateauthority/AppleWWDRCAG3.cer && security import $tmpfile /Users/vagrant/Library/Keychains/login.keychain-db
+          title: Install Apple's WWDR Cert
+      - certificate-and-profile-installer@1: {}
+      - script@1:
+          inputs:
+            - content: |-
+                #!/usr/bin/env bash
+                set -euo pipefail
+
+                test -f "$BITRISE_SOURCE_DIR/Gemfile"
+                test -f "$BITRISE_SOURCE_DIR/Gemfile.lock"
+                cd "$BITRISE_SOURCE_DIR/ios"
+                ln -sfn ../Gemfile Gemfile
+                ln -sfn ../Gemfile.lock Gemfile.lock
+          title: Expose root Gemfile to iOS Fastlane
+      - fastlane@3:
+          inputs:
+            - work_dir: '$BITRISE_SOURCE_DIR/ios'
+            - lane: beta
+            - update_fastlane: 'false'
+            - verbose_log: 'yes'
+          title: Fastlane - Submit to Testflight
+      - bundle::send_version_to_slack:
+          title: Send message on Slack
+  workflow_testflight_staging:
+    envs:
+      - opts:
+          is_expand: false
+        IS_TESTING: 'false'
+      - opts:
+          is_expand: false
+        ENABLE_DEV_MODE: '0'
+      - opts:
+          is_expand: false
+        GANACHE_URL: http://127.0.0.1:7545
+      - opts:
+          is_expand: false
+        IS_STAGING: 'true'
+      - opts:
+          is_expand: false
+        METADATA_BASE_URL: https://metadata.s.rainbow.me
+      - opts:
+          is_expand: false
+        ADDYS_BASE_URL: https://addys.s.rainbow.me/v3
+      - opts:
+          is_expand: false
+        TOKEN_SEARCH_URL: https://token-search.rainbow.me
+      - opts:
+          is_expand: false
+        PLATFORM_BASE_URL: https://platform.s.rainbow.me
+      - SENTRY_ALLOW_FAILURE: true
+        opts:
+          is_expand: false
+    before_run:
+      - generate_dot_env_testflight
+      - debug_env
+      - apply_rainbow_internals
+      - build_setup
+      - update_token_list
+      - check_dot_env
+      - pods_setup
+      - generate_appstore_connect_key
+    steps:
+      - script@1:
+          inputs:
+            - content: |-
+                #!/usr/bin/env bash
+                set -euo pipefail
+
+                # 6 GB heap (bump to 8192 if needed)
+                export NODE_OPTIONS="--max_old_space_size=6144"
+                # Persist to later steps (Fastlane/xcodebuild)
+                envman add --key NODE_OPTIONS --value "$NODE_OPTIONS"
+          title: Increase heap size
+      - script@1:
+          inputs:
+            - content: |
+                #!/usr/bin/env bash
+                # debug log
+                set -x
+
+                # write your script here
+                tmpfile=$(mktemp /tmp/wwdr-cert.cer)
+                curl -f -o $tmpfile https://www.apple.com/certificateauthority/AppleWWDRCAG3.cer && security import $tmpfile /Users/vagrant/Library/Keychains/login.keychain-db
+          title: Install Apple's WWDR Cert
+      - certificate-and-profile-installer@1: {}
+      - script@1:
+          inputs:
+            - content: |-
+                #!/usr/bin/env bash
+                set -euo pipefail
+
+                test -f "$BITRISE_SOURCE_DIR/Gemfile"
+                test -f "$BITRISE_SOURCE_DIR/Gemfile.lock"
+                cd "$BITRISE_SOURCE_DIR/ios"
+                ln -sfn ../Gemfile Gemfile
+                ln -sfn ../Gemfile.lock Gemfile.lock
+          title: Expose root Gemfile to iOS Fastlane
+      - fastlane@3:
+          inputs:
+            - work_dir: '$BITRISE_SOURCE_DIR/ios'
+            - lane: beta
+            - update_fastlane: 'false'
+            - verbose_log: 'yes'
+          title: Fastlane - Submit to Testflight
+      - bundle::send_version_to_slack:
+          title: Send message on Slack
+  debug_env:
+    steps:
+      - script@1:
+          inputs:
+            - content: |-
+                #!/usr/bin/env bash
+                # fail if any commands fails
+                set -e
+                # make pipelines' return status equal the last command to exit with a non-zero status, or zero if all commands exit successfully
+                set -o pipefail
+                # debug log
+                set -x
+
+                source .env
+                echo "Current values of env before building:"
+
+                # write your script here
+                echo "METADATA_BASE_URL=$METADATA_BASE_URL"
+                echo "ADDYS_BASE_URL=$ADDYS_BASE_URL"
+                echo "PLATFORM_BASE_URL=$PLATFORM_BASE_URL"
+                echo "PLATFORM_API_KEY=$PLATFORM_API_KEY"
+                echo "PLATFORM_API_KEY first char: ${PLATFORM_API_KEY:0:1}"
+                echo "PLATFORM_API_KEY_STAGING first char: ${PLATFORM_API_KEY_STAGING:0:1}"
+  generate_dot_env_testflight_staging:
+    steps:
+      - script@1.2:
+          inputs:
+            - content: |
+                #!/usr/bin/env bash
+                # fail if any commands fails
+                set -e
+                # debug log
+                set -x
+
+                # write your script here
+                touch .env
+                echo "SENTRY_ENDPOINT=$SENTRY_ENDPOINT" >> .env
+                echo "SENTRY_AUTH_TOKEN=$SENTRY_AUTH_TOKEN" >> .env
+                echo "SENTRY_ALLOW_FAILURE=$SENTRY_ALLOW_FAILURE" >> .env
+                echo "ETHERSCAN_API_KEY=$ETHERSCAN_API_KEY" >> .env
+                echo "BRANCH_APP_DOMAIN=$BRANCH_APP_DOMAIN" >> .env
+                echo "BRANCH_KEY=$BRANCH_KEY" >> .env
+                echo "APPSFLYER_DEV_KEY=$APPSFLYER_DEV_KEY" >> .env
+                echo "RAINBOW_MASTER_KEY=$RAINBOW_MASTER_KEY" >> .env
+                echo "DEV_SEEDS=\"$DEV_SEEDS_PROD\"" >> .env
+                echo "DEV_PKEY=$DEV_PKEY_PROD" >> .env
+                echo "IS_TESTING=$IS_TESTING" >> .env
+                echo "ENABLE_DEV_MODE=$ENABLE_DEV_MODE" >> .env
+                echo "GANACHE_URL_IOS=$GANACHE_URL_IOS" >> .env
+                echo "GANACHE_URL_ANDROID=$GANACHE_URL_ANDROID" >> .env
+                echo "IMGIX_TOKEN=$IMGIX_TOKEN" >> .env
+                echo "IMGIX_DOMAIN=$IMGIX_DOMAIN" >> .env
+                echo "GOOGLE_SERVICE_API_KEY=$GOOGLE_SERVICE_API_KEY" >> .env
+                echo "NFT_API_KEY=$NFT_API_KEY" >> .env
+                echo "NFT_API_URL=$NFT_API_URL" >> .env
+                echo "RAINBOW_TOKEN_LIST_URL=$RAINBOW_TOKEN_LIST_URL" >>.env
+                echo "RAINBOW_LEAN_TOKEN_LIST_URL=$RAINBOW_LEAN_TOKEN_LIST_URL" >>.env
+                echo "HARDHAT_URL_IOS=$HARDHAT_URL_IOS" >>.env
+                echo "HARDHAT_URL_ANDROID=$HARDHAT_URL_ANDROID" >>.env
+                echo "CLOUDINARY_CLOUD_NAME=$CLOUDINARY_CLOUD_NAME" >>.env
+                echo "PINATA_API_URL=$PINATA_API_URL" >>.env
+                echo "PINATA_API_KEY=$PINATA_API_KEY" >>.env
+                echo "PINATA_API_SECRET=$PINATA_API_SECRET" >>.env
+                echo "PINATA_GATEWAY_URL=$PINATA_GATEWAY_URL" >>.env
+                echo "SECURE_WALLET_HASH_KEY=$SECURE_WALLET_HASH_KEY" >> .env
+                echo "LOG_LEVEL=$LOG_LEVEL" >> .env
+                echo "WC_PROJECT_ID=$WC_PROJECT_ID" >> .env
+                echo "ADDYS_API_KEY=$ADDYS_API_KEY_STAGING" >> .env
+                echo "METADATA_GRAPHQL_API_KEY=$METADATA_GRAPHQL_API_KEY_STAGING" >> .env
+                echo "RPC_PROXY_BASE_URL_PROD=$RPC_PROXY_BASE_URL_PROD" >> .env
+                echo "RPC_PROXY_BASE_URL_DEV=$RPC_PROXY_BASE_URL_DEV" >> .env
+                echo "RPC_PROXY_API_KEY_PROD=$RPC_PROXY_API_KEY_PROD" >> .env
+                echo "RPC_PROXY_API_KEY_DEV=$RPC_PROXY_API_KEY_DEV" >> .env
+                echo "MWP_ENCRYPTION_KEY=$MWP_ENCRYPTION_KEY" >> .env
+                echo "METADATA_BASE_URL=$METADATA_BASE_URL" >> .env
+                echo "ADDYS_BASE_URL=$ADDYS_BASE_URL" >> .env
+                echo "TOKEN_SEARCH_URL=$TOKEN_SEARCH_URL" >> .env
+                echo "PLATFORM_BASE_URL=$PLATFORM_BASE_URL" >> .env
+                echo "PLATFORM_API_KEY=$PLATFORM_API_KEY_STAGING" >> .env
+                echo "NPM_TOKEN=$NPM_TOKEN" >> .env
+          title: Generate .env file for testflight staging
+app:
+  envs:
+    - opts:
+        is_expand: false
+      SKIP_FLIPPER: 'true'
+meta:
+  bitrise.io:
+    stack: osx-xcode-26.3.x
+    machine_type_id: g2.mac.medium
+step_bundles:
+  send_version_to_slack:
+    steps:
+      - xcode-project-info@2:
+          inputs:
+            - target: Rainbow
+            - info_plist_path: ios/Rainbow/Info.plist
+            - xcodeproj_path: ios/Rainbow.xcodeproj
+          title: Expose Xcode project version and build number to ENV vars
+      - slack@4.0:
+          inputs:
+            - webhook_url: '$SLACK_WEBHOOK_URL'
+            - buttons: |
+                View Build|${BITRISE_BUILD_URL}
+            - fields: |
+                App|${BITRISE_APP_TITLE}
+                Branch|${BITRISE_GIT_BRANCH}
+                Workflow|${BITRISE_TRIGGERED_WORKFLOW_ID}
+                Version|${XPI_VERSION} (${XPI_BUILD})
+            - pretext: '*Build Submitted to Testflight!*'
