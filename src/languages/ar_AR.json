@@ -1598,31 +1598,31 @@
       "deposit_setup": {
         "next": "التالي",
         "phone": {
-          "title": "Connect your phone number"
+          "title": "اربط رقم هاتفك"
         },
         "confirm_phone": {
-          "title": "Confirm your phone"
+          "title": "أكد رقم هاتفك"
         },
         "identity": {
-          "title": "Enter your information"
+          "title": "أدخل معلوماتك"
         },
         "ssn": {
-          "title": "Last 4 of SSN"
+          "title": "آخر 4 أرقام من رقم الضمان الاجتماعي (SSN)"
         },
         "review": {
           "title": "مراجعة"
         },
         "passkey": {
-          "title": "Add a Passkey"
+          "title": "أضف مفتاح مرور"
         },
         "email": {
-          "title": "Enter email"
+          "title": "أدخل البريد الإلكتروني"
         },
         "all_done": {
-          "title": "You're all done"
+          "title": "انتهيت"
         },
         "card_details": {
-          "title": "Enter card details"
+          "title": "أدخل تفاصيل البطاقة"
         }
       }
     },
