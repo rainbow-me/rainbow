@@ -915,8 +915,6 @@
         "showcase": "Витрина",
         "toast_added_to_showcase": "Добавлено в витрину",
         "toast_removed_from_showcase": "Удалено из витрины",
-        "refreshing": "Обновление метаданных...",
-        "reported": "Пожаловано как спам",
         "twitter": "X (Twitter)",
         "view_all_with_property": "Просмотреть все свойства",
         "view_collection": "Просмотреть коллекцию",
@@ -925,8 +923,6 @@
         "view_on_marketplace_name": "Просмотреть на %{marketplaceName}",
         "view_on_platform": "Просмотреть на %{platform}",
         "view_on_web": "Просмотр в Интернете",
-        "refresh": "Обновить метаданные",
-        "report": "Сообщить о спаме",
         "hide": "Скрыть",
         "unhide": "Показать"
       }
@@ -1825,18 +1821,6 @@
           "description": "Отправляет, получает, продает, выпускает, меняет и другое. Выберите то, что вам нужно."
         },
         "header": "Оповещения"
-      }
-    },
-    "poaps": {
-      "title": "Вы нашли POAP!",
-      "view_on_poap": "Просмотреть на POAP 􀮶",
-      "mint_poap": "􀑒 Запустить POAP",
-      "minting": "Запуск...",
-      "minted": "POAP запущен!",
-      "error": "Ошибка при запуске",
-      "error_messages": {
-        "limit_exceeded": "Этот POAP полностью запущен!",
-        "event_expired": "Срок действия этого выпуска POAP истек!"
       }
     },
     "rewards": {
