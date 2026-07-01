@@ -915,8 +915,6 @@
         "showcase": "शोकेस",
         "toast_added_to_showcase": "शोकेस में जोड़ा गया",
         "toast_removed_from_showcase": "शोकेस से निकाला गया",
-        "refreshing": "मेटाडाटा ताज़ा किया जा रहा है...",
-        "reported": "स्पैम के रूप में रिपोर्ट किया गया",
         "twitter": "एक्स (ट्विटर)",
         "view_all_with_property": "संपत्ति के साथ सभी देखें",
         "view_collection": "संग्रह देखें",
@@ -925,8 +923,6 @@
         "view_on_marketplace_name": "देखें %{marketplaceName}पर",
         "view_on_platform": "%{platform}पर देखें",
         "view_on_web": "वेब पर देखें",
-        "refresh": "मेटाडाटा ताज़ा करें",
-        "report": "स्पैम के रूप में रिपोर्ट करें",
         "hide": "छुपाएं",
         "unhide": "अदृश्यता रद्द करें"
       }
@@ -1825,18 +1821,6 @@
           "description": "भेजे, प्राप्त करे, बेचे, मिंट, स्वैप, और बहुत कुछ। चुनें कि आप क्या चाहते हैं।"
         },
         "header": "सूचनाएं"
-      }
-    },
-    "poaps": {
-      "title": "आपने एक POAP पाया!",
-      "view_on_poap": "POAP पर देखें 􀮶",
-      "mint_poap": "􀑒 POAP मिंट",
-      "minting": "मिंटिंग...",
-      "minted": "POAP मिंटेड!",
-      "error": "मिंटिंग त्रुटि",
-      "error_messages": {
-        "limit_exceeded": "यह POAP पूरी तरह से मिंट आउट हो चुका है!",
-        "event_expired": "यह POAP मिंट समाप्त हो गया है!"
       }
     },
     "rewards": {
