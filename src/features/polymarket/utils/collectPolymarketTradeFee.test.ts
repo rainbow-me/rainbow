@@ -9,6 +9,12 @@ import { collectPolymarketTradeFee } from './collectPolymarketTradeFee';
 
 const expectedFeeRecipient = '0x757758506d6a4F8a433F8BECaFd52545f9Cb050a';
 
+jest.mock('@/state/wallets/walletsStore', () => ({
+  useWalletsStore: {
+    getState: jest.fn(() => ({ accountAddress: '0x1208C8B837F68468457c83DD256e817BD5B3E0b7' })),
+  },
+}));
+
 jest.mock('@/features/polymarket/constants', () => ({
   POLYMARKET_PUSD_DECIMALS: 6,
   POLYMARKET_RAINBOW_FEE_RECIPIENT_ADDRESS: '0x757758506d6a4F8a433F8BECaFd52545f9Cb050a',
