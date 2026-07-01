@@ -502,11 +502,11 @@
       "restart_app": "Uygulamayı Yeniden Başlat",
       "reset_experimental_config": "Deneysel Yapılandırmayı Sıfırla",
       "cash_deposit_setup_facts": {
-        "phoneVerified": "Phone verified",
-        "kycPassed": "KYC passed",
-        "passkeyRegistered": "Passkey registered",
-        "hasLinkedCard": "Has linked card",
-        "hasLinkedWallet": "Has linked wallet"
+        "phoneVerified": "Telefon doğrulandı",
+        "kycPassed": "KYC tamamlandı",
+        "passkeyRegistered": "Geçiş anahtarı kaydedildi",
+        "hasLinkedCard": "Bağlı kartı var",
+        "hasLinkedWallet": "Bağlı cüzdanı var"
       },
       "cash_order_outcome": {
         "title": "Nakit sipariş sonucu",
@@ -1598,31 +1598,31 @@
       "deposit_setup": {
         "next": "Sonraki",
         "phone": {
-          "title": "Connect your phone number"
+          "title": "Telefon numaranızı bağlayın"
         },
         "confirm_phone": {
-          "title": "Confirm your phone"
+          "title": "Telefonunuzu onaylayın"
         },
         "identity": {
-          "title": "Enter your information"
+          "title": "Bilgilerinizi girin"
         },
         "ssn": {
-          "title": "Last 4 of SSN"
+          "title": "SSN'nizin son 4 hanesi"
         },
         "review": {
           "title": "İncele"
         },
         "passkey": {
-          "title": "Add a Passkey"
+          "title": "Bir geçiş anahtarı ekleyin"
         },
         "email": {
-          "title": "Enter email"
+          "title": "E-posta adresinizi girin"
         },
         "all_done": {
-          "title": "You're all done"
+          "title": "İşlem tamam"
         },
         "card_details": {
-          "title": "Enter card details"
+          "title": "Kart bilgilerini girin"
         }
       }
     },
