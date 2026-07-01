@@ -10,7 +10,7 @@ React Native crypto wallet app (iOS & Android). Uses React Navigation, `@storesj
 - **Lint all:** `yarn lint` (format + TS + JS)
 - **Tests:** `yarn test` (Jest)
 - **Single test:** `yarn jest path/to/test`
-- **Cycle check:** `yarn check:cycles`
+- **Dependency rules + cycles:** `yarn lint:deps` (dependency-cruiser: architectural boundaries, plus circular deps checked against a grandfathered per-platform baseline -- only net-new cycles fail). After removing cycles, run `yarn lint:deps:baseline:update` to ratchet the baseline down.
 
 ## Architecture
 

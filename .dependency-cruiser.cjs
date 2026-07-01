@@ -54,6 +54,14 @@ const restrictedImportRules = RESTRICTED_PACKAGES.map(pkg => {
 module.exports = {
   forbidden: [
     {
+      name: 'no-circular',
+      severity: 'error',
+      comment:
+        "No net-new circular dependency between first-party modules. Cycles cause hard-to-debug 'undefined on import' crashes (often only in release builds) and make module load order fragile. Existing cycles are grandfathered per platform in .dependency-cruiser-known-violations.{ios,android}.json (consumed via --ignore-known), so only net-new cycles fail and removing a cycle never fails the build; run `yarn lint:deps:baseline:update` to ratchet the baselines down after eliminating cycles. Both endpoints are scoped to first-party code (node_modules cycles are not ours to fix).",
+      from: { pathNot: 'node_modules' },
+      to: { circular: true, pathNot: 'node_modules' },
+    },
+    {
       name: 'no-dep-into-app-source',
       severity: 'error',
       comment:
