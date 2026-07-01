@@ -1598,31 +1598,31 @@
       "deposit_setup": {
         "next": "अगला",
         "phone": {
-          "title": "Connect your phone number"
+          "title": "अपना फ़ोन नंबर कनेक्ट करें"
         },
         "confirm_phone": {
-          "title": "Confirm your phone"
+          "title": "अपने फ़ोन की पुष्टि करें"
         },
         "identity": {
-          "title": "Enter your information"
+          "title": "अपनी जानकारी दर्ज करें"
         },
         "ssn": {
-          "title": "Last 4 of SSN"
+          "title": "SSN के अंतिम 4 अंक"
         },
         "review": {
           "title": "समीक्षा करें"
         },
         "passkey": {
-          "title": "Add a Passkey"
+          "title": "एक पासकी जोड़ें"
         },
         "email": {
-          "title": "Enter email"
+          "title": "ईमेल दर्ज करें"
         },
         "all_done": {
-          "title": "You're all done"
+          "title": "आपका काम हो गया"
         },
         "card_details": {
-          "title": "Enter card details"
+          "title": "कार्ड विवरण दर्ज करें"
         }
       }
     },
