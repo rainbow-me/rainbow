@@ -465,7 +465,6 @@ const UniqueTokenExpandedState = ({ asset, external }: UniqueTokenExpandedStateP
                 onContentBlur={handleContentBlur}
                 onContentFocus={handleContentFocus}
                 opacity={contentOpacity}
-                textColor={textColor}
                 yPosition={yPosition}
               />
               <Animated.View style={opacityStyle}>

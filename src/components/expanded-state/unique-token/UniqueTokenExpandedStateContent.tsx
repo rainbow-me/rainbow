@@ -1,5 +1,5 @@
 import React from 'react';
-import { ActivityIndicator, Platform, StyleSheet, View } from 'react-native';
+import { ActivityIndicator, StyleSheet, View } from 'react-native';
 
 import { type DerivedValue, type SharedValue } from 'react-native-reanimated';
 
@@ -11,7 +11,6 @@ import { position } from '@/styles';
 import magicMemo from '@/utils/magicMemo';
 
 import { SimpleModelView } from '../../3d';
-import { AudioPlayer } from '../../audio';
 import { UniqueTokenImage } from '../../unique-token';
 import { SimpleVideo } from '../../video';
 import { ZoomableWrapper } from './ZoomableWrapper';
@@ -34,7 +33,6 @@ type UniqueTokenExpandedStateContentProps = {
   horizontalPadding?: number;
   imageColor: string;
   resizeMode?: 'cover' | 'contain' | 'stretch' | 'repeat';
-  textColor?: string;
   disablePreview?: boolean;
   opacity?: DerivedValue<number>;
   yPosition?: SharedValue<number>;
@@ -48,7 +46,6 @@ const UniqueTokenExpandedStateContent = ({
   borderRadius,
   horizontalPadding = 24,
   imageColor,
-  textColor,
   disablePreview,
   opacity,
   yPosition,
@@ -57,10 +54,8 @@ const UniqueTokenExpandedStateContent = ({
 }: UniqueTokenExpandedStateContentProps) => {
   const animationType = useAnimationType(asset);
 
-  const supportsAnythingExceptImageAnd3d = animationType === 'video' || animationType === 'audio';
-
   const aspectRatio = usePersistentAspectRatio(asset.images.lowResUrl);
-  const aspectRatioWithFallback = animationType === '3d' || animationType === 'audio' ? 0.88 : aspectRatio.result || 1;
+  const aspectRatioWithFallback = animationType === '3d' ? 0.88 : aspectRatio.result || 1;
 
   // default to showing a loading spinner for 3D/video assets
   const [loading, setLoading] = React.useState(animationType === '3d' || animationType === 'video');
@@ -72,7 +67,7 @@ const UniqueTokenExpandedStateContent = ({
       animationProgress={animationProgress}
       aspectRatio={aspectRatioWithFallback}
       borderRadius={borderRadius}
-      disableAnimations={disablePreview || (Platform.OS === 'ios' ? animationType === 'video' : supportsAnythingExceptImageAnd3d)}
+      disableAnimations={disablePreview || animationType === 'video'}
       horizontalPadding={horizontalPadding}
       onZoomIn={onContentFocus}
       onZoomOut={onContentBlur}
@@ -90,8 +85,6 @@ const UniqueTokenExpandedStateContent = ({
           />
         ) : animationType === '3d' ? (
           <ModelView fallbackUri={fallbackUrl} loading={loading} setLoading={setLoading} uri={asset.images.animatedUrl || ''} />
-        ) : animationType === 'audio' ? (
-          <AudioPlayer fontColor={textColor} imageColor={imageColor} uri={fallbackUrl} />
         ) : (
           <UniqueTokenImage
             collectionName={asset.collectionName ?? ''}
