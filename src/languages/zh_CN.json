@@ -915,8 +915,6 @@
         "showcase": "展示",
         "toast_added_to_showcase": "添加到展示",
         "toast_removed_from_showcase": "从展示架中移除",
-        "refreshing": "正在刷新元数据...",
-        "reported": "报告为垃圾邮件",
         "twitter": "X（推特）",
         "view_all_with_property": "查看所有带有属性的",
         "view_collection": "查看集合",
@@ -925,8 +923,6 @@
         "view_on_marketplace_name": "在 %{marketplaceName}上查看",
         "view_on_platform": "在 %{platform}平台上查看",
         "view_on_web": "在网页上查看",
-        "refresh": "刷新元数据",
-        "report": "报告为垃圾邮件",
         "hide": "隐藏",
         "unhide": "取消隐藏"
       }
@@ -1825,18 +1821,6 @@
           "description": "发送、接收、销售、铸造、交换等等。选择你想要的。"
         },
         "header": "通知"
-      }
-    },
-    "poaps": {
-      "title": "你找到了POAP！",
-      "view_on_poap": "在 POAP上查看 􀮶",
-      "mint_poap": "􀑒 建造 POAP",
-      "minting": "正在建造...",
-      "minted": "已建成的POAP！",
-      "error": "建造错误",
-      "error_messages": {
-        "limit_exceeded": "这个 POAP 已经全部建成！",
-        "event_expired": "这个 POAP 的建造已经过期！"
       }
     },
     "rewards": {
