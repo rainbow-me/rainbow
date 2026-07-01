@@ -15,7 +15,6 @@ import { PolymarketNoLiquidityCard } from '@/features/polymarket/components/Poly
 import { PolymarketOutcomeCard } from '@/features/polymarket/components/PolymarketOutcomeCard';
 import { POLYMARKET_BACKGROUND_LIGHT } from '@/features/polymarket/constants';
 import { createSellExecutionStore } from '@/features/polymarket/screens/polymarket-sell-position-sheet/stores/createSellExecutionStore';
-import { usePolymarketClients } from '@/features/polymarket/stores/derived/usePolymarketClients';
 import { usePolymarketPositionsStore } from '@/features/polymarket/stores/polymarketPositionsStore';
 import { executePolymarketSellPosition } from '@/features/polymarket/utils/executePolymarketOrder';
 import { getPositionAccentColor } from '@/features/polymarket/utils/getMarketColor';
@@ -28,7 +27,7 @@ import { ensureError, logger, RainbowError } from '@/logger';
 import Navigation from '@/navigation/Navigation';
 import type Routes from '@/navigation/routesNames';
 import { type RootStackParamList } from '@/navigation/types';
-import { checkIfReadOnlyWallet } from '@/state/wallets/walletsStore';
+import { checkIfReadOnlyWallet, getAccountAddress } from '@/state/wallets/walletsStore';
 import { getSolidColorEquivalent } from '@/worklets/colors';
 
 export const PolymarketSellPositionSheet = memo(function PolymarketSellPositionSheet() {
@@ -100,7 +99,7 @@ export const PolymarketSellPositionSheet = memo(function PolymarketSellPositionS
   const handleCashOutPosition = useCallback(async () => {
     try {
       if (!canSubmit) return;
-      if (checkIfReadOnlyWallet(usePolymarketClients.getState().address)) return;
+      if (checkIfReadOnlyWallet(getAccountAddress())) return;
       setIsProcessing(true);
       setProcessingLabel(i18n.t(i18n.l.predictions.manage_position.confirming_order));
       await executePolymarketSellPosition({

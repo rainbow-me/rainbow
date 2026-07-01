@@ -1,5 +1,4 @@
 import {
-  deriveDepositWallet,
   TransactionType,
   type DepositWalletCall,
   type RelayClient,
@@ -9,14 +8,7 @@ import {
 import { SignatureTypeV2 } from '@polymarket/clob-client-v2';
 import { type Address } from 'viem';
 
-import {
-  POLYMARKET_DEPOSIT_WALLET_FACTORY_ADDRESS,
-  POLYMARKET_DEPOSIT_WALLET_IMPLEMENTATION_ADDRESS,
-} from '@/features/polymarket/constants';
-import { usePolymarketWalletKindStore, type PolymarketWalletKind } from '@/features/polymarket/stores/polymarketWalletKindStore';
-import { deriveSafeWalletAddress } from '@/features/polymarket/utils/deriveSafeWalletAddress';
-import { RainbowError } from '@/logger';
-import { useWalletsStore } from '@/state/wallets/walletsStore';
+import { getPolymarketWalletDescriptor, type PolymarketWalletDescriptor } from '@/features/polymarket/stores/polymarketWalletKindStore';
 
 // This is a magic number from the Polymarket team. <= 600 causes problems with the relayer.
 const DEPOSIT_WALLET_BATCH_DEADLINE_SECONDS = 900;
@@ -29,22 +21,15 @@ export type PolymarketWallet = {
   executeBatch(args: { client: RelayClient; transactions: SafeTransaction[]; description: string }): Promise<RelayerTransactionResponse>;
 };
 
-export function createPolymarketWallet(owner: Address, kind: PolymarketWalletKind): PolymarketWallet {
-  return kind === 'depositWallet' ? createDepositWallet(owner) : createSafeWallet(owner);
+export function createPolymarketWallet(descriptor: PolymarketWalletDescriptor): PolymarketWallet {
+  return descriptor.kind === 'depositWallet' ? createDepositWallet(descriptor) : createSafeWallet(descriptor);
 }
 
-export async function getPolymarketWallet(): Promise<PolymarketWallet> {
-  const address = useWalletsStore.getState().accountAddress;
-  if (!address) throw new RainbowError('[Polymarket] No active account address');
-
-  const kind = usePolymarketWalletKindStore.getState().getData() ?? (await usePolymarketWalletKindStore.getState().fetch());
-  if (!kind) throw new RainbowError('[Polymarket] Failed to resolve wallet kind');
-
-  return createPolymarketWallet(address, kind);
+export async function getPolymarketWallet(owner: Address): Promise<PolymarketWallet> {
+  return createPolymarketWallet(await getPolymarketWalletDescriptor(owner));
 }
 
-function createSafeWallet(owner: Address): PolymarketWallet {
-  const address = deriveSafeWalletAddress(owner);
+function createSafeWallet({ address }: PolymarketWalletDescriptor): PolymarketWallet {
   return {
     address,
     signatureType: SignatureTypeV2.POLY_GNOSIS_SAFE,
@@ -54,13 +39,7 @@ function createSafeWallet(owner: Address): PolymarketWallet {
   };
 }
 
-function createDepositWallet(owner: Address): PolymarketWallet {
-  const address = deriveDepositWallet(
-    owner,
-    POLYMARKET_DEPOSIT_WALLET_FACTORY_ADDRESS,
-    POLYMARKET_DEPOSIT_WALLET_IMPLEMENTATION_ADDRESS
-  ) as Address;
-
+function createDepositWallet({ address }: PolymarketWalletDescriptor): PolymarketWallet {
   return {
     address,
     signatureType: SignatureTypeV2.POLY_1271,

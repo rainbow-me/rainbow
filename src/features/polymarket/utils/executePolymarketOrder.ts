@@ -13,6 +13,7 @@ import { ensureTradingApprovals } from '@/features/polymarket/utils/tradingAppro
 import { divWorklet, mulWorklet } from '@/framework/core/safeMath';
 import { time } from '@/framework/core/utils/time';
 import { ensureError, RainbowError } from '@/logger';
+import { useWalletsStore } from '@/state/wallets/walletsStore';
 import { delay } from '@/utils/delay';
 
 // ============ Types ========================================================== //
@@ -89,7 +90,10 @@ export async function executePolymarketBuyPosition({
 }: ExecutePolymarketBuyPositionParams): Promise<SuccessfulOrderResult> {
   onStep?.('preparing');
 
-  const { address: proxyAddress } = await getPolymarketWallet();
+  const owner = useWalletsStore.getState().accountAddress;
+  if (!owner) throw new RainbowError('[polymarket] No active account address');
+
+  const { address: proxyAddress } = await getPolymarketWallet(owner);
   const client = await getPolymarketClobClient();
 
   try {

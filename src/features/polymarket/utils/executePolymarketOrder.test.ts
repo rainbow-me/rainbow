@@ -14,6 +14,12 @@ const mockCreateAndPostMarketOrder = jest.fn();
 const mockGetOrder = jest.fn();
 const mockUpdateBalanceAllowance = jest.fn();
 
+jest.mock('@/state/wallets/walletsStore', () => ({
+  useWalletsStore: {
+    getState: jest.fn(() => ({ accountAddress: '0x1208C8B837F68468457c83DD256e817BD5B3E0b7' })),
+  },
+}));
+
 jest.mock('@/analytics', () => ({
   analytics: {
     event: {

@@ -12,7 +12,6 @@ import { Box, globalColors, Text, useColorMode, useForegroundColor } from '@/des
 import { formatUsd } from '@/features/currency/utils/formatUsd';
 import { PolymarketPositionCard } from '@/features/polymarket/components/PolymarketPositionCard';
 import { POLYMARKET_BACKGROUND_LIGHT } from '@/features/polymarket/constants';
-import { usePolymarketClients } from '@/features/polymarket/stores/derived/usePolymarketClients';
 import { usePolymarketPositionsStore } from '@/features/polymarket/stores/polymarketPositionsStore';
 import { getPositionAccentColor } from '@/features/polymarket/utils/getMarketColor';
 import { getPositionAction, PositionAction } from '@/features/polymarket/utils/getPositionAction';
@@ -24,7 +23,7 @@ import { logger, RainbowError } from '@/logger';
 import Navigation from '@/navigation/Navigation';
 import type Routes from '@/navigation/routesNames';
 import { type RootStackParamList } from '@/navigation/types';
-import { checkIfReadOnlyWallet } from '@/state/wallets/walletsStore';
+import { checkIfReadOnlyWallet, getAccountAddress } from '@/state/wallets/walletsStore';
 import { getSolidColorEquivalent } from '@/worklets/colors';
 
 export const PolymarketRedeemPositionSheet = memo(function PolymarketRedeemPositionSheet() {
@@ -72,7 +71,7 @@ export const PolymarketRedeemPositionSheet = memo(function PolymarketRedeemPosit
   const [processingLabel, setProcessingLabel] = useState(actionButtonLoadingLabel);
 
   const handleClaimPosition = useCallback(async () => {
-    if (checkIfReadOnlyWallet(usePolymarketClients.getState().address)) return;
+    if (checkIfReadOnlyWallet(getAccountAddress())) return;
     setIsProcessing(true);
     setProcessingLabel(actionButtonLoadingLabel);
     try {

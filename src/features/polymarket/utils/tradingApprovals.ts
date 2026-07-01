@@ -15,6 +15,7 @@ import { syncClobCollateralBalance } from '@/features/polymarket/utils/syncClobC
 import { requireHex } from '@/framework/core/evm/hex';
 import { getProvider } from '@/handlers/web3';
 import { logger, RainbowError } from '@/logger';
+import { useWalletsStore } from '@/state/wallets/walletsStore';
 import { ChainId } from '@rainbow-me/swaps';
 
 const polygonProvider = getProvider({ chainId: ChainId.polygon });
@@ -96,7 +97,10 @@ async function getMissingApprovalTransactions(polymarketWalletAddress: Address):
 }
 
 export async function getMissingCtfOperatorApprovalTransactions(operator: Address): Promise<SafeTransaction[]> {
-  const wallet = await getPolymarketWallet();
+  const owner = useWalletsStore.getState().accountAddress;
+  if (!owner) throw new RainbowError('[polymarket] No active account address');
+
+  const wallet = await getPolymarketWallet(owner);
   if (await hasCtfApproval(wallet.address, operator)) {
     return [];
   }

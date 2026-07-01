@@ -1,10 +1,10 @@
 import { type Signer } from '@ethersproject/abstract-signer';
 import type { BigNumber } from 'ethers';
-import { type Address } from 'viem';
+import { getAddress, type Address } from 'viem';
 
 import { getPolygonUsdcBalance, wrapUsdcToPusd } from '@/features/polymarket/utils/collateral';
+import { getPolymarketWallet } from '@/features/polymarket/utils/polymarketWallet';
 import { refetchPolymarketBalance } from '@/features/polymarket/utils/refetchPolymarketStores';
-import { ensureTradingWalletDeployed } from '@/features/polymarket/utils/relayExecution';
 import { syncClobCollateralBalance } from '@/features/polymarket/utils/syncClobCollateralBalance';
 import { time } from '@/framework/core/utils/time';
 import { getProvider } from '@/handlers/web3';
@@ -40,8 +40,8 @@ async function waitForUsdcBalanceIncrease(address: Address, baselineBalance: Big
   throw new RainbowError('[polymarket] Timed out waiting for USDC.e deposit to arrive');
 }
 
-export async function handlePolymarketDepositSubmitted(_: Signer, context: DepositSubmitContext): Promise<void> {
-  const proxyAddress = await ensureTradingWalletDeployed();
+export async function handlePolymarketDepositSubmitted(signer: Signer, context: DepositSubmitContext): Promise<void> {
+  const { address: proxyAddress } = await getPolymarketWallet(getAddress(await signer.getAddress()));
   const baselineBalance = await getPolygonUsdcBalance(proxyAddress);
 
   await waitForSubmittedDeposit(context);

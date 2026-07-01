@@ -9,7 +9,7 @@ export function resolveInitialDepositAsset(config: DepositConfig) {
   }
 
   const sourceAsset = useUserAssetsStore.getState().getHighestValueAsset({
-    nativeAsset: 'required',
+    nativeAsset: 'preferred',
   });
 
   return sourceAsset ? parseAssetAndExtend({ asset: sourceAsset }) : null;

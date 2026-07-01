@@ -186,6 +186,23 @@ function hasNestedErrorCode(error: unknown, code: string): boolean {
   return error.code === code || hasNestedErrorCode(error.error, code) || hasNestedErrorCode(error.cause, code);
 }
 
+async function runDepositPrerequisite(config: DepositConfig): Promise<DepositExecutionFailure | null> {
+  if (!config.prerequisite) return null;
+
+  try {
+    await config.prerequisite();
+    return null;
+  } catch (error) {
+    logger.error(new RainbowError(`[useDepositHandler]: ${config.id} prerequisite failed`, error));
+    return {
+      error: config.labels.unknownExecutionError,
+      sponsorshipAttempted: false,
+      stage: 'prerequisite',
+      success: false,
+    };
+  }
+}
+
 export function useDepositHandler({
   config,
   depositActions,
@@ -267,6 +284,9 @@ export function useDepositHandler({
             }
 
             if (!gasParams) return { error: config.labels.quoteError, stage: 'validation', success: false };
+
+            const prerequisiteFailure = await runDepositPrerequisite(config);
+            if (prerequisiteFailure) return prerequisiteFailure;
 
             const result = await executeCallback({
               accountAddress,
@@ -380,6 +400,9 @@ export function useDepositHandler({
             success: false,
           };
         }
+
+        const prerequisiteFailure = await runDepositPrerequisite(config);
+        if (prerequisiteFailure) return prerequisiteFailure;
 
         const preparedCalls = await resolveSponsoredPreparedCalls({
           accountAddress: validQuote.from,

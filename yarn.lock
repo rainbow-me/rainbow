@@ -5241,10 +5241,12 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@polymarket/builder-relayer-client@npm:0.0.9":
-  version: 0.0.9
-  resolution: "@polymarket/builder-relayer-client@npm:0.0.9"
+"@polymarket/builder-relayer-client@npm:0.0.10":
+  version: 0.0.10
+  resolution: "@polymarket/builder-relayer-client@npm:0.0.10"
   dependencies:
+    "@ethersproject/providers": "npm:5.8.0"
+    "@ethersproject/wallet": "npm:5.8.0"
     "@polymarket/builder-abstract-signer": "npm:0.0.1"
     "@polymarket/builder-signing-sdk": "npm:^0.0.8"
     axios: "npm:^0.27.2"
@@ -5253,7 +5255,7 @@ __metadata:
     tsx: "npm:^4.20.3"
     typescript: "npm:^5.8.3"
     viem: "npm:^2.31.4"
-  checksum: 10c0/69ed6f32c5ae8dd6ff568a29a77174fcb2f60ca78b6cf950f729429aa3def28a10335b0cc28ad31f19429843fa3fe463f7bb441281bbd7f2798bede1f402d1f0
+  checksum: 10c0/5d2a08372b2a137b482b5cab00341d160f0da834dd0075ca303d32c81bc017661da2d7aaf044df1ca6b2a6a47d2a1ab1659132a698afcf6b0fe5c699990d03b1
   languageName: node
   linkType: hard
 
@@ -9056,7 +9058,7 @@ __metadata:
     "@metamask/eth-sig-util": "npm:7.0.2"
     "@nktkas/hyperliquid": "npm:0.32.2"
     "@notifee/react-native": "npm:7.8.2"
-    "@polymarket/builder-relayer-client": "npm:0.0.9"
+    "@polymarket/builder-relayer-client": "npm:0.0.10"
     "@polymarket/builder-signing-sdk": "npm:0.0.8"
     "@polymarket/clob-client-v2": "npm:1.0.3"
     "@rainbow-me/delegation": "file:./rainbow-me-delegation-0.4.0.tgz"
