@@ -6,6 +6,7 @@ import { calculateFeeToCollectUsd, getTradeFeeAmount } from '@/features/polymark
 import { getPolymarketWallet } from '@/features/polymarket/utils/polymarketWallet';
 import { executeRelayTransaction } from '@/features/polymarket/utils/relayExecution';
 import { ensureError, logger, RainbowError } from '@/logger';
+import { useWalletsStore } from '@/state/wallets/walletsStore';
 
 type CollectTradeFeeParams = {
   matchedAmounts: {
@@ -37,7 +38,10 @@ export async function collectPolymarketTradeFee({
     const amount = getTradeFeeAmount(feeAmountUsd);
     if (amount.isZero()) return;
 
-    const wallet = await getPolymarketWallet();
+    const owner = useWalletsStore.getState().accountAddress;
+    if (!owner) throw new RainbowError('[polymarket] No active account address');
+
+    const wallet = await getPolymarketWallet(owner);
     proxyAddress = wallet.address;
 
     const transactions = await buildUnwrapPusdToUsdcTransactions({

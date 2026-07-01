@@ -10,6 +10,7 @@ import { type Address } from 'viem';
 import { getPolymarketRelayClient } from '@/features/polymarket/stores/derived/usePolymarketClients';
 import { getPolymarketWallet, type PolymarketWallet } from '@/features/polymarket/utils/polymarketWallet';
 import { RainbowError } from '@/logger';
+import { useWalletsStore } from '@/state/wallets/walletsStore';
 
 import { awaitPolygonConfirmation } from './confirmation';
 
@@ -20,14 +21,20 @@ export async function submitTradingWalletTransaction({
   transactions: SafeTransaction[];
   description: string;
 }): Promise<RelayerTransactionResponse> {
-  const wallet = await getPolymarketWallet();
+  const owner = useWalletsStore.getState().accountAddress;
+  if (!owner) throw new RainbowError('[polymarket] No active account address');
+
+  const wallet = await getPolymarketWallet(owner);
   const client = await getPolymarketRelayClient();
   await ensureWalletDeployed(client, wallet);
   return await wallet.executeBatch({ client, transactions, description });
 }
 
 export async function ensureTradingWalletDeployed(): Promise<Address> {
-  const wallet = await getPolymarketWallet();
+  const owner = useWalletsStore.getState().accountAddress;
+  if (!owner) throw new RainbowError('[polymarket] No active account address');
+
+  const wallet = await getPolymarketWallet(owner);
   const client = await getPolymarketRelayClient();
   await ensureWalletDeployed(client, wallet);
   return wallet.address;

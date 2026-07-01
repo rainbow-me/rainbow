@@ -10,6 +10,7 @@ import { POLYGON_USDC_ADDRESS, POLYGON_USDC_DECIMALS } from './constants';
 import { usePolymarketProxyAddress } from './stores/derived/usePolymarketProxyAddress';
 import { handlePolymarketDepositSubmitted } from './utils/handlePolymarketDepositSubmitted';
 import { refetchPolymarketBalance } from './utils/refetchPolymarketStores';
+import { ensureTradingWalletDeployed } from './utils/relayExecution';
 
 // ============ Polymarket Deposit Configuration =============================== //
 
@@ -17,6 +18,9 @@ export const POLYMARKET_DEPOSIT_CONFIG = createDepositConfig({
   id: 'polymarketDeposit',
   directTransferEnabled: true,
   onSubmit: handlePolymarketDepositSubmitted,
+  prerequisite: async () => {
+    await ensureTradingWalletDeployed();
+  },
 
   quote: {
     feeBps: 0,

@@ -5,8 +5,9 @@ import { type Wallet } from 'ethers';
 import { type Address } from 'viem';
 
 import { BUILDER_CONFIG, POLYMARKET_CLOB_PROXY_URL, POLYMARKET_RELAYER_PROXY_URL } from '@/features/polymarket/constants';
-import { usePolymarketWalletKindStore } from '@/features/polymarket/stores/polymarketWalletKindStore';
-import { createPolymarketWallet, getPolymarketWallet } from '@/features/polymarket/utils/polymarketWallet';
+import { usePolymarketWalletStore } from '@/features/polymarket/stores/polymarketWalletKindStore';
+import { getPolymarketRelayChain } from '@/features/polymarket/utils/polymarketRelayChain';
+import { getPolymarketWallet } from '@/features/polymarket/utils/polymarketWallet';
 import { getProvider } from '@/handlers/web3';
 import { logger, RainbowError } from '@/logger';
 import { loadWallet } from '@/model/wallet';
@@ -16,7 +17,6 @@ import { ChainId } from '@rainbow-me/swaps';
 // ============ Types =========================================================== //
 
 type PolymarketClientsState = {
-  address: Address;
   getClobClient: () => Promise<ClobClient | null>;
   getRelayClient: () => Promise<RelayClient | null>;
   proxyAddress: Address | null;
@@ -26,16 +26,14 @@ type PolymarketClientsState = {
 
 export const usePolymarketClients = createDerivedStore<PolymarketClientsState>(
   $ => {
-    const address = $(useWalletsStore).accountAddress;
-    const walletKind = $(usePolymarketWalletKindStore, s => s.getData());
-    const wallet = address && walletKind ? createPolymarketWallet(address, walletKind) : null;
+    const address = $(useWalletsStore, s => s.accountAddress);
+    const polymarketWallet = $(usePolymarketWalletStore, s => (address ? s.getData({ owner: address }) : null));
     const getWallet = createLazyWallet(address);
 
     return {
-      address,
-      getClobClient: createLazyClobClient(getWallet),
+      getClobClient: createLazyClobClient(getWallet, address),
       getRelayClient: createLazyRelayClient(getWallet),
-      proxyAddress: wallet?.address ?? null,
+      proxyAddress: polymarketWallet?.address ?? null,
     };
   },
   { lockDependencies: true, keepAlive: true }
@@ -111,18 +109,20 @@ function createLazyRelayClient(getWallet: () => Promise<Wallet | null>): () => P
 async function createRelayClientFromWallet(getWallet: () => Promise<Wallet | null>): Promise<RelayClient | null> {
   const wallet = await getWallet();
   if (!wallet) return null;
-  const client = new RelayClient(POLYMARKET_RELAYER_PROXY_URL, ChainId.polygon, wallet, BUILDER_CONFIG);
-  return client;
+
+  return new RelayClient(POLYMARKET_RELAYER_PROXY_URL, ChainId.polygon, wallet, BUILDER_CONFIG, undefined, {
+    chain: getPolymarketRelayChain(),
+  });
 }
 
 // ============ Lazy CLOB Client ================================================ //
 
-function createLazyClobClient(getWallet: () => Promise<Wallet | null>): () => Promise<ClobClient | null> {
+function createLazyClobClient(getWallet: () => Promise<Wallet | null>, owner: Address): () => Promise<ClobClient | null> {
   let clientPromise: Promise<ClobClient | null> | null = null;
 
   return async () => {
     if (!clientPromise) {
-      clientPromise = createClobClientFromWallet(getWallet).catch(error => {
+      clientPromise = createClobClientFromWallet(getWallet, owner).catch(error => {
         clientPromise = null;
         throw error;
       });
@@ -131,11 +131,11 @@ function createLazyClobClient(getWallet: () => Promise<Wallet | null>): () => Pr
   };
 }
 
-async function createClobClientFromWallet(getWallet: () => Promise<Wallet | null>): Promise<ClobClient | null> {
+async function createClobClientFromWallet(getWallet: () => Promise<Wallet | null>, owner: Address): Promise<ClobClient | null> {
   const wallet = await getWallet();
-  if (!wallet) return null;
+  if (!owner || !wallet) return null;
 
-  const polymarketWallet = await getPolymarketWallet();
+  const polymarketWallet = await getPolymarketWallet(owner);
 
   const credentials = await getOrCreateApiCredentials(
     new ClobClient({

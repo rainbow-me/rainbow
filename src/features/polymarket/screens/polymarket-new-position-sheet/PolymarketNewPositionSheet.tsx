@@ -17,7 +17,6 @@ import { PolymarketOutcomeCard } from '@/features/polymarket/components/Polymark
 import { POLYMARKET_BACKGROUND_LIGHT } from '@/features/polymarket/constants';
 import { getPolymarketClobOrderErrorReason, PolymarketBuyPositionError } from '@/features/polymarket/errors';
 import { useNewPositionForm } from '@/features/polymarket/screens/polymarket-new-position-sheet/hooks/useNewPositionForm';
-import { usePolymarketClients } from '@/features/polymarket/stores/derived/usePolymarketClients';
 import { usePolymarketBalanceStore } from '@/features/polymarket/stores/polymarketBalanceStore';
 import { executePolymarketBuyPosition, type PolymarketBuyPositionStep } from '@/features/polymarket/utils/executePolymarketOrder';
 import { getOutcomeDescriptions } from '@/features/polymarket/utils/getOutcomeDescriptions';
@@ -29,7 +28,7 @@ import { ensureError, logger, RainbowError } from '@/logger';
 import Navigation from '@/navigation/Navigation';
 import Routes from '@/navigation/routesNames';
 import { type RootStackParamList } from '@/navigation/types';
-import { checkIfReadOnlyWallet } from '@/state/wallets/walletsStore';
+import { checkIfReadOnlyWallet, getAccountAddress } from '@/state/wallets/walletsStore';
 import { getSolidColorEquivalent } from '@/worklets/colors';
 
 export const PolymarketNewPositionSheet = memo(function PolymarketNewPositionSheet() {
@@ -92,7 +91,7 @@ export const PolymarketNewPositionSheet = memo(function PolymarketNewPositionShe
 
   const handleMarketBuyPosition = useCallback(async () => {
     if (!canSubmit) return;
-    if (checkIfReadOnlyWallet(usePolymarketClients.getState().address)) return;
+    if (checkIfReadOnlyWallet(getAccountAddress())) return;
     setIsProcessing(true);
     setProcessingLabel(getBuyPositionProcessingLabel('preparing'));
     try {

@@ -57,11 +57,15 @@ export type DepositGasParams = LegacyTransactionGasParamAmounts | TransactionGas
 /**
  * Callback invoked immediately after transaction submission, before confirmation.
  * Runs fire-and-forget; errors are logged but do not block navigation.
- *
- * Use for setup that must happen right away, such as deploying a proxy wallet
- * or pre-approving token spending.
  */
 export type OnDepositSubmit = (signer: Signer, context: DepositSubmitContext) => Promise<void>;
+
+/**
+ * Optional async prerequisite that runs before transaction submission.
+ * Use for setup that must complete before funds can safely move.
+ * Errors thrown here abort the deposit with an error alert.
+ */
+export type DepositPrerequisite = () => Promise<void>;
 
 /**
  * Resolved sponsorship outcome for an executed deposit.
@@ -106,7 +110,7 @@ export type DepositFailureMetadata = {
   /** Internal error message */
   error: string;
   /** Point in the flow where failure occurred */
-  stage: 'execution' | 'validation' | 'wallet';
+  stage: 'execution' | 'prerequisite' | 'validation' | 'wallet';
   /** Whether a sponsor-paid execution was attempted before failing */
   sponsorshipAttempted: boolean;
   /** Classification of the sponsor-paid failure when `sponsorshipAttempted` is true */
@@ -306,7 +310,7 @@ export type DepositSubmitButtonComponent = ComponentType<DepositSubmitButtonProp
  *   },
  *   quote: { slippage: 1 },
  *   directTransferEnabled: true,
- *   onSubmit: deployProxyIfNeeded,
+ *   prerequisite: ensureProxyDeployed,
  *   refresh: {
  *     delays: [0, time.seconds(30)],
  *     handler: refetchBalanceStores,
@@ -382,6 +386,9 @@ type DepositConfigBaseInput = {
     /** Minimum deposit amount (human-readable, e.g. '1' for 1 token) */
     minAmount?: { label: string; value: string };
   };
+
+  /** Async setup before execution (e.g., deploy proxy wallet) */
+  prerequisite?: DepositPrerequisite;
 
   /** Store refresh behavior after confirmation */
   refresh?: RefreshConfig;
