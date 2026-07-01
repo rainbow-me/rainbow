@@ -915,8 +915,6 @@
         "showcase": "Escaparate",
         "toast_added_to_showcase": "Añadido al escaparate",
         "toast_removed_from_showcase": "Eliminado del escaparate",
-        "refreshing": "Actualizando metadatos...",
-        "reported": "Reportado como spam",
         "twitter": "X (Twitter)",
         "view_all_with_property": "Ver todo con propiedad",
         "view_collection": "Ver colección",
@@ -925,8 +923,6 @@
         "view_on_marketplace_name": "Ver en %{marketplaceName}",
         "view_on_platform": "Ver en %{platform}",
         "view_on_web": "Ver en la web",
-        "refresh": "Actualizar metadatos",
-        "report": "Reportar como Spam",
         "hide": "Ocultar",
         "unhide": "Mostrar"
       }
@@ -1825,18 +1821,6 @@
           "description": "Envía, recibe, vende, crea, intercambia y más. Elige lo que quieres."
         },
         "header": "Notificaciones"
-      }
-    },
-    "poaps": {
-      "title": "¡Encontraste un POAP!",
-      "view_on_poap": "Ver en POAP 􀮶",
-      "mint_poap": "􀑒 Creador de POAP",
-      "minting": "Creando POAP...",
-      "minted": "¡POAP creado!",
-      "error": "Error al crear POAP",
-      "error_messages": {
-        "limit_exceeded": "¡Este POAP se ha agotado por completo!",
-        "event_expired": "¡Esta creación de POAP ha expirado!"
       }
     },
     "rewards": {
