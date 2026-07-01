@@ -501,12 +501,12 @@
       },
       "restart_app": "重新启动应用",
       "reset_experimental_config": "重置实验配置",
-      "cash_deposit_setup_status": {
-        "title": "现金存入设置状态",
-        "needsIdentity": "需要身份验证",
-        "needsCard": "需要卡片",
-        "needsWallet": "需要钱包",
-        "ready": "就绪"
+      "cash_deposit_setup_facts": {
+        "phoneVerified": "手机号已验证",
+        "kycPassed": "KYC 已通过",
+        "passkeyRegistered": "已注册通行密钥",
+        "hasLinkedCard": "已绑定卡片",
+        "hasLinkedWallet": "已绑定钱包"
       },
       "cash_order_outcome": {
         "title": "现金订单结果",
@@ -1594,6 +1594,36 @@
         "buy_error_title": "购买失败",
         "buy_error_generic": "出了点问题。请再试一次",
         "payment_rejected": "您的银行卡拒绝了这笔付款"
+      },
+      "deposit_setup": {
+        "next": "下一步",
+        "phone": {
+          "title": "Connect your phone number"
+        },
+        "confirm_phone": {
+          "title": "Confirm your phone"
+        },
+        "identity": {
+          "title": "Enter your information"
+        },
+        "ssn": {
+          "title": "Last 4 of SSN"
+        },
+        "review": {
+          "title": "审阅"
+        },
+        "passkey": {
+          "title": "Add a Passkey"
+        },
+        "email": {
+          "title": "Enter email"
+        },
+        "all_done": {
+          "title": "You're all done"
+        },
+        "card_details": {
+          "title": "Enter card details"
+        }
       }
     },
     "points": {
