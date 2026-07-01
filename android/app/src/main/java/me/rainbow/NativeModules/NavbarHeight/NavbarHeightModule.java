@@ -16,6 +16,7 @@ import java.lang.NoSuchMethodException;
 import android.view.WindowInsets;
 import android.os.Build;
 import android.content.Context;
+import android.provider.Settings;
 
 @ReactModule(name = NavbarHeightModule.NAME)
 public class NavbarHeightModule extends ReactContextBaseJavaModule {
@@ -80,6 +81,29 @@ public class NavbarHeightModule extends ReactContextBaseJavaModule {
 
             // navigation bar is not present
             return 0;
+        }
+    }
+
+    /**
+     * Returns the device's system navigation mode, either the on-screen
+     * navigation bar (3- or 2-button), gesture navigation, or -1 if undetermined.
+     */
+    @ReactMethod(isBlockingSynchronousMethod = true)
+    public int getNavigationMode() {
+        try {
+            Context context = getReactApplicationContext();
+            // The internal resource that is authoritative of the "currently rendered"
+            // state of the navigation bar style, and is available before user settings.
+            // Since it's not public API, some OEM ROMs drop it (value 0)
+            int resourceId = context.getResources().getIdentifier("config_navBarInteractionMode", "integer", "android");
+            if (resourceId > 0) {
+                return context.getResources().getInteger(resourceId);
+            }
+            // As a fallback, read the Secure "navigation_mode" setting the system
+            // writes on mode change (API 29+) instead; throws if it was never set
+            return Settings.Secure.getInt(context.getContentResolver(), "navigation_mode");
+        } catch (Exception e) {
+            return -1;
         }
     }
 }

@@ -39,11 +39,6 @@ const deviceUtils = (function () {
   };
 })();
 
-export function isUsingButtonNavigation() {
-  if (Platform.OS !== 'android') return false;
-  return NAVIGATION_BAR_HEIGHT > 40;
-}
-
 export const DEVICE_WIDTH = deviceUtils.dimensions.width;
 export const DEVICE_HEIGHT = deviceUtils.dimensions.height;
 export const PIXEL_RATIO = PixelRatio.get();
