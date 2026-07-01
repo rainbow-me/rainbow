@@ -502,11 +502,11 @@
       "restart_app": "เริ่มแอปใหม่",
       "reset_experimental_config": "ตั้งค่าคอนฟิกการทดลองใหม่",
       "cash_deposit_setup_facts": {
-        "phoneVerified": "Phone verified",
-        "kycPassed": "KYC passed",
-        "passkeyRegistered": "Passkey registered",
-        "hasLinkedCard": "Has linked card",
-        "hasLinkedWallet": "Has linked wallet"
+        "phoneVerified": "ยืนยันหมายเลขโทรศัพท์แล้ว",
+        "kycPassed": "ผ่านการยืนยันตัวตน (KYC) แล้ว",
+        "passkeyRegistered": "ลงทะเบียนพาสคีย์แล้ว",
+        "hasLinkedCard": "เชื่อมโยงบัตรแล้ว",
+        "hasLinkedWallet": "เชื่อมโยงวอลเล็ตแล้ว"
       },
       "cash_order_outcome": {
         "title": "ผลลัพธ์ของคำสั่งซื้อเงินสด",
@@ -1598,31 +1598,31 @@
       "deposit_setup": {
         "next": "ถัดไป",
         "phone": {
-          "title": "Connect your phone number"
+          "title": "เชื่อมต่อหมายเลขโทรศัพท์ของคุณ"
         },
         "confirm_phone": {
-          "title": "Confirm your phone"
+          "title": "ยืนยันหมายเลขโทรศัพท์ของคุณ"
         },
         "identity": {
-          "title": "Enter your information"
+          "title": "กรอกข้อมูลของคุณ"
         },
         "ssn": {
-          "title": "Last 4 of SSN"
+          "title": "เลข 4 หลักท้ายของ SSN"
         },
         "review": {
           "title": "รีวิว"
         },
         "passkey": {
-          "title": "Add a Passkey"
+          "title": "เพิ่มพาสคีย์"
         },
         "email": {
-          "title": "Enter email"
+          "title": "กรอกอีเมล"
         },
         "all_done": {
-          "title": "You're all done"
+          "title": "เสร็จเรียบร้อยแล้ว"
         },
         "card_details": {
-          "title": "Enter card details"
+          "title": "กรอกรายละเอียดบัตร"
         }
       }
     },
