@@ -501,12 +501,12 @@
       },
       "restart_app": "เริ่มแอปใหม่",
       "reset_experimental_config": "ตั้งค่าคอนฟิกการทดลองใหม่",
-      "cash_deposit_setup_status": {
-        "title": "สถานะการตั้งค่าการฝากเงินสด",
-        "needsIdentity": "ต้องยืนยันตัวตน",
-        "needsCard": "ต้องมีบัตร",
-        "needsWallet": "ต้องมีกระเป๋าเงิน",
-        "ready": "พร้อม"
+      "cash_deposit_setup_facts": {
+        "phoneVerified": "Phone verified",
+        "kycPassed": "KYC passed",
+        "passkeyRegistered": "Passkey registered",
+        "hasLinkedCard": "Has linked card",
+        "hasLinkedWallet": "Has linked wallet"
       },
       "cash_order_outcome": {
         "title": "ผลลัพธ์ของคำสั่งซื้อเงินสด",
@@ -1594,6 +1594,36 @@
         "buy_error_title": "การซื้อไม่สำเร็จ",
         "buy_error_generic": "เกิดข้อผิดพลาดบางอย่าง ลองอีกครั้ง",
         "payment_rejected": "บัตรของคุณปฏิเสธการชำระเงินนี้"
+      },
+      "deposit_setup": {
+        "next": "ถัดไป",
+        "phone": {
+          "title": "Connect your phone number"
+        },
+        "confirm_phone": {
+          "title": "Confirm your phone"
+        },
+        "identity": {
+          "title": "Enter your information"
+        },
+        "ssn": {
+          "title": "Last 4 of SSN"
+        },
+        "review": {
+          "title": "รีวิว"
+        },
+        "passkey": {
+          "title": "Add a Passkey"
+        },
+        "email": {
+          "title": "Enter email"
+        },
+        "all_done": {
+          "title": "You're all done"
+        },
+        "card_details": {
+          "title": "Enter card details"
+        }
       }
     },
     "points": {
