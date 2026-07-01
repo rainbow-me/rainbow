@@ -501,12 +501,12 @@
       },
       "restart_app": "Uygulamayı Yeniden Başlat",
       "reset_experimental_config": "Deneysel Yapılandırmayı Sıfırla",
-      "cash_deposit_setup_status": {
-        "title": "Nakit Yatırma Kurulum Durumu",
-        "needsIdentity": "Kimlik Gerekli",
-        "needsCard": "Kart Gerekli",
-        "needsWallet": "Cüzdan Gerekli",
-        "ready": "Hazır"
+      "cash_deposit_setup_facts": {
+        "phoneVerified": "Phone verified",
+        "kycPassed": "KYC passed",
+        "passkeyRegistered": "Passkey registered",
+        "hasLinkedCard": "Has linked card",
+        "hasLinkedWallet": "Has linked wallet"
       },
       "cash_order_outcome": {
         "title": "Nakit sipariş sonucu",
@@ -1594,6 +1594,36 @@
         "buy_error_title": "Satın Alma Başarısız",
         "buy_error_generic": "Bir şeyler yanlış gitti. Tekrar deneyin",
         "payment_rejected": "Kartınız bu ödemeyi reddetti"
+      },
+      "deposit_setup": {
+        "next": "Sonraki",
+        "phone": {
+          "title": "Connect your phone number"
+        },
+        "confirm_phone": {
+          "title": "Confirm your phone"
+        },
+        "identity": {
+          "title": "Enter your information"
+        },
+        "ssn": {
+          "title": "Last 4 of SSN"
+        },
+        "review": {
+          "title": "İncele"
+        },
+        "passkey": {
+          "title": "Add a Passkey"
+        },
+        "email": {
+          "title": "Enter email"
+        },
+        "all_done": {
+          "title": "You're all done"
+        },
+        "card_details": {
+          "title": "Enter card details"
+        }
       }
     },
     "points": {
