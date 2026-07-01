@@ -501,12 +501,12 @@
       },
       "restart_app": "Mulai Ulang Aplikasi",
       "reset_experimental_config": "Atur Ulang Konfigurasi Eksperimental",
-      "cash_deposit_setup_status": {
-        "title": "Status Penyiapan Setoran Tunai",
-        "needsIdentity": "Perlu Identitas",
-        "needsCard": "Perlu Kartu",
-        "needsWallet": "Perlu Dompet",
-        "ready": "Siap"
+      "cash_deposit_setup_facts": {
+        "phoneVerified": "Nomor telepon terverifikasi",
+        "kycPassed": "KYC lulus",
+        "passkeyRegistered": "Passkey terdaftar",
+        "hasLinkedCard": "Kartu tertaut",
+        "hasLinkedWallet": "Wallet tertaut"
       },
       "cash_order_outcome": {
         "title": "Hasil pesanan Cash",
@@ -1594,6 +1594,36 @@
         "buy_error_title": "Pembelian Gagal",
         "buy_error_generic": "Terjadi kesalahan. Coba lagi",
         "payment_rejected": "Kartu Anda menolak pembayaran ini"
+      },
+      "deposit_setup": {
+        "next": "Selanjutnya",
+        "phone": {
+          "title": "Connect your phone number"
+        },
+        "confirm_phone": {
+          "title": "Confirm your phone"
+        },
+        "identity": {
+          "title": "Enter your information"
+        },
+        "ssn": {
+          "title": "Last 4 of SSN"
+        },
+        "review": {
+          "title": "Tinjau"
+        },
+        "passkey": {
+          "title": "Add a Passkey"
+        },
+        "email": {
+          "title": "Enter email"
+        },
+        "all_done": {
+          "title": "You're all done"
+        },
+        "card_details": {
+          "title": "Enter card details"
+        }
       }
     },
     "points": {
