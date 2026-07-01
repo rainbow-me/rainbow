@@ -502,11 +502,11 @@
       "restart_app": "Перезагрузить приложение",
       "reset_experimental_config": "Сбросить экспериментальную конфигурацию",
       "cash_deposit_setup_facts": {
-        "phoneVerified": "Phone verified",
-        "kycPassed": "KYC passed",
-        "passkeyRegistered": "Passkey registered",
-        "hasLinkedCard": "Has linked card",
-        "hasLinkedWallet": "Has linked wallet"
+        "phoneVerified": "Телефон подтверждён",
+        "kycPassed": "KYC пройден",
+        "passkeyRegistered": "Ключ доступа зарегистрирован",
+        "hasLinkedCard": "Карта привязана",
+        "hasLinkedWallet": "Кошелёк привязан"
       },
       "cash_order_outcome": {
         "title": "Результат покупки наличных",
@@ -1598,31 +1598,31 @@
       "deposit_setup": {
         "next": "Далее",
         "phone": {
-          "title": "Connect your phone number"
+          "title": "Подключите свой номер телефона"
         },
         "confirm_phone": {
-          "title": "Confirm your phone"
+          "title": "Подтвердите свой телефон"
         },
         "identity": {
-          "title": "Enter your information"
+          "title": "Введите свои данные"
         },
         "ssn": {
-          "title": "Last 4 of SSN"
+          "title": "Последние 4 цифры SSN"
         },
         "review": {
           "title": "Просмотр"
         },
         "passkey": {
-          "title": "Add a Passkey"
+          "title": "Добавьте ключ доступа"
         },
         "email": {
-          "title": "Enter email"
+          "title": "Введите email"
         },
         "all_done": {
-          "title": "You're all done"
+          "title": "Всё готово"
         },
         "card_details": {
-          "title": "Enter card details"
+          "title": "Введите данные карты"
         }
       }
     },
