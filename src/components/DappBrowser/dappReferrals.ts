@@ -1,8 +1,8 @@
+import { getDappHostname } from '@/features/dapp/utils/dappUrls';
 import { LIGHTER_HOSTNAMES } from '@/features/lighter/constants';
 import { getLighterReferralUrl } from '@/features/lighter/utils/lighterReferralUrl';
 import { POLYMARKET_HOSTNAMES } from '@/features/polymarket/constants';
 import { getPolymarketReferralUrl } from '@/features/polymarket/utils/polymarketReferralUrl';
-import { getDappHostname } from '@/utils/connectedApps';
 
 type DappReferral = {
   getUrl: (url: string) => string | null;

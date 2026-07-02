@@ -4,6 +4,7 @@ import ButtonPressAnimation from '@/components/animations/ButtonPressAnimation';
 import { ContactAvatar } from '@/components/contacts';
 import ImageAvatar from '@/components/contacts/ImageAvatar';
 import { Bleed, useColorMode } from '@/design-system';
+import { getDappHost } from '@/features/dapp/utils/dappUrls';
 import Navigation from '@/navigation/Navigation';
 import Routes from '@/navigation/routesNames';
 import { useAppSessionsStore } from '@/state/appSessions';
@@ -12,7 +13,6 @@ import { useAccountAddress, useAccountProfileInfo } from '@/state/wallets/wallet
 
 import { useBrowserContext } from '../BrowserContext';
 import { HOMEPAGE_BACKGROUND_COLOR_DARK, HOMEPAGE_BACKGROUND_COLOR_LIGHT, RAINBOW_HOME } from '../constants';
-import { getDappHost } from '../handleProviderRequest';
 
 export const AccountIcon = React.memo(function AccountIcon() {
   const { isDarkMode } = useColorMode();

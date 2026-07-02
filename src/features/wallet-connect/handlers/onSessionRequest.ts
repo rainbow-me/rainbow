@@ -5,6 +5,7 @@ import type { SignClientTypes } from '@walletconnect/types';
 
 import { analytics } from '@/analytics';
 import { getRequestDisplayDetails } from '@/features/dapp-request/utils/requests';
+import { fetchDappMetadata } from '@/features/dapp/resources/dapp';
 import { maybeSignUri } from '@/handlers/imgix';
 import WalletTypes from '@/helpers/walletTypes';
 import * as i18n from '@/languages';
@@ -12,7 +13,6 @@ import { logger, RainbowError } from '@/logger';
 import Navigation from '@/navigation/Navigation';
 import Routes from '@/navigation/routesNames';
 import store from '@/redux/store';
-import { fetchDappMetadata } from '@/resources/metadata/dapp';
 import { getWallets, getWalletWithAccount } from '@/state/wallets/walletsStore';
 import { handleWalletConnectRequest } from '@/utils/requestNavigationHandlers';
 

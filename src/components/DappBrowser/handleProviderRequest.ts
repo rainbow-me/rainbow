@@ -5,6 +5,8 @@ import { debounce } from 'lodash';
 import { UserRejectedRequestError } from 'viem';
 
 import { type Messenger } from '@/browserMessaging/AppMessenger';
+import { getDappMetadata } from '@/features/dapp/resources/dapp';
+import { getDappHost } from '@/features/dapp/utils/dappUrls';
 import { useBackendNetworksStore } from '@/features/network/stores/backendNetworksStore';
 import { ChainId } from '@/features/network/types/backendNetworks';
 import { time } from '@/framework/core/utils/time';
@@ -13,7 +15,6 @@ import { getProvider } from '@/handlers/web3';
 import * as i18n from '@/languages';
 import { logger } from '@/logger';
 import Routes from '@/navigation/routesNames';
-import { getDappMetadata } from '@/resources/metadata/dapp';
 import { useAppSessionsStore } from '@/state/appSessions';
 import { useNavigationStore } from '@/state/navigation/navigationStore';
 import { handleDappBrowserConnectionPrompt, handleDappBrowserRequest } from '@/utils/requestNavigationHandlers';
@@ -35,21 +36,6 @@ export type ProviderResponse = RequestResponse;
 export type ProviderRequestTransport = {
   send(payload: ProviderRequestPayload, { id }: { id: number }): Promise<RequestResponse>;
   reply(callback: (payload: ProviderRequestPayload, callbackOptions: CallbackOptions) => Promise<RequestResponse>): Promise<void>;
-};
-
-export const getDappHost = (url?: string) => {
-  try {
-    if (url) {
-      const host = new URL(url).host;
-      if (host.indexOf('www.') === 0) {
-        return host.replace('www.', '');
-      }
-      return host;
-    }
-    return '';
-  } catch (e) {
-    return '';
-  }
 };
 
 const skipRateLimitCheck = (method: string) =>
