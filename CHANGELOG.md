@@ -21,6 +21,20 @@ and this project adheres to [Semantic Versioning](http://semver.org/)
 
 ### Testing
 
+## [2.0.38](https://github.com/rainbow-me/rainbow/releases/tag/v2.0.38)
+
+### Changed
+
+- Removed the NFT minting flow (https://github.com/rainbow-me/rainbow/pull/7639)
+- Removed the NFT offers flow (https://github.com/rainbow-me/rainbow/pull/7634)
+- Removed the POAP claim flow (https://github.com/rainbow-me/rainbow/pull/7654)
+- Removed the game count badge from Discover sports sections (https://github.com/rainbow-me/rainbow/pull/7605)
+
+### Fixed
+
+- Fixed an issue creating Polymarket proxy wallets (https://github.com/rainbow-me/rainbow/pull/7657)
+- Fixed untranslated text in the wallet backup flow (https://github.com/rainbow-me/rainbow/pull/7652)
+
 ## [2.0.37](https://github.com/rainbow-me/rainbow/releases/tag/v2.0.37)
 
 ### Added
