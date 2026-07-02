@@ -21,18 +21,15 @@ jobs:
       - name: Checkout repo
         uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v7.0.0
 
-      - name: Setup workspace
-        uses: ./.github/actions/setup
+      - name: Setup Node.js
+        uses: actions/setup-node@6044e13b5dc448c55e2357c09f80417699197238 # v6.2.0
         with:
-          deploy-pkey-dotenv: ${{ secrets.DEPLOY_PKEY_DOTENV_REPO }}
-          deploy-pkey-scripts: ${{ secrets.DEPLOY_PKEY_SCRIPTS_REPO }}
-          deploy-pkey-sandbox: ${{ secrets.DEPLOY_PKEY_SANDBOX_REPO }}
-          ci-scripts: ${{ secrets.CI_SCRIPTS }}
-          google-services: 'true'
-          is-testing: 'true'
+          node-version-file: '.node-version'
 
+      # The audit only needs yarn.lock and the advisory API, not the workspace, so we run it
+      # via yarn dlx pinned to the version in our devDeps.
       - name: Audit CI
-        run: yarn audit-ci --config audit-ci.jsonc
+        run: yarn dlx "audit-ci@$(node -p "require('./package.json').devDependencies['audit-ci']")" --config audit-ci.jsonc
 
   lint:
     name: Lint
