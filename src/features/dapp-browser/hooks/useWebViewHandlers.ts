@@ -11,6 +11,7 @@ import { TIMING_CONFIGS } from '@/components/animations/animationConfigs';
 import { getDappHostname } from '@/features/dapp/utils/dappUrls';
 import Navigation from '@/navigation/Navigation';
 import Routes from '@/navigation/routesNames';
+import { openInBrowser } from '@/utils/openInBrowser';
 import { generateUniqueId } from '@/worklets/strings';
 
 import { useBrowserContext } from '../context/BrowserContext';
@@ -22,7 +23,6 @@ import { useBrowserStore, type BrowserState } from '../stores/browserStore';
 import { type TabId } from '../types';
 import { isValidAppStoreUrl } from '../utils/browserUtils';
 import { addReferralToDappBrowserUrl } from '../utils/dappReferrals';
-import { openInBrowser } from '../utils/openInBrowser';
 
 interface UseWebViewHandlersParams {
   addRecent: BrowserHistoryStore['addRecent'];

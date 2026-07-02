@@ -25,7 +25,6 @@ import { backupsStore } from '@/features/backup/stores/backupsStore';
 import { LANGUAGE_SETTINGS, NOTIFICATIONS } from '@/features/config/constants/experimental';
 import { useExperimentalFlag } from '@/features/config/hooks/experimentalHooks';
 import { useRemoteConfig } from '@/features/config/stores/remoteConfig';
-import { openInBrowser } from '@/features/dapp-browser/utils/openInBrowser';
 import { showActionSheetWithOptions } from '@/framework/ui/utils/actionsheet';
 import walletBackupTypes from '@/helpers/walletBackupTypes';
 import useAccountSettings from '@/hooks/useAccountSettings';
@@ -33,6 +32,7 @@ import * as i18n from '@/languages';
 import { useIsReadOnlyWallet } from '@/state/wallets/walletsStore';
 import { ReviewPromptAction } from '@/storage/schema';
 import { Themes, useTheme } from '@/theme/ThemeContext';
+import { openInBrowser } from '@/utils/openInBrowser';
 import { handleReviewPromptAction } from '@/utils/reviewAlert';
 
 import { SettingsExternalURLs } from '../constants';
