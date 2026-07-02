@@ -1,0 +1,120 @@
+name: Setup workspace
+description: Shared setup. Expects the repo to already be checked out.
+
+inputs:
+  deploy-pkey-dotenv:
+    description: SSH key for the rainbow-env repo (.env source)
+    required: true
+  deploy-pkey-scripts:
+    description: SSH key for the CI scripts repo
+    required: true
+  deploy-pkey-sandbox:
+    description: SSH key used by yarn install for sandbox-protected deps
+    required: true
+  ci-scripts:
+    description: Shell snippet evaluated to set up CI scripts
+    required: true
+  dotenv-file:
+    description: File inside rainbow-env to install as .env (e.g. dotenv-prod-android for release builds)
+    required: false
+    default: 'dotenv'
+  google-services:
+    description: When 'true', moves rainbow-env's google-services.json into android/app/
+    required: false
+    default: 'false'
+  is-testing:
+    description: When 'true', rewrites .env IS_TESTING=true. Always records '1'/'0' in the is_testing file, a Rock build-fingerprint source (see rock.config.mjs).
+    required: false
+    default: 'false'
+  enable-dev-mode:
+    description: When non-empty, rewrites .env ENABLE_DEV_MODE to this value (e.g. '0'). Empty leaves .env untouched.
+    required: false
+    default: ''
+  cache-restore-fallback:
+    description: When 'false', the yarn cache only restores on an exact lockfile match, never a stale fallback. For release builds, which require an exact match or a clean install.
+    required: false
+    default: 'true'
+
+runs:
+  using: composite
+  steps:
+    - name: Setup Node.js
+      uses: actions/setup-node@6044e13b5dc448c55e2357c09f80417699197238 # v6.2.0
+      with:
+        node-version-file: '.node-version'
+
+    - name: Install secret tools
+      if: runner.os == 'Linux'
+      shell: bash
+      run: sudo apt install libsecret-tools
+
+    - name: Setup env key
+      uses: ./.github/actions/ssh/
+      with:
+        name: env
+        key: ${{ inputs.deploy-pkey-dotenv }}
+
+    - name: Setup scripts key
+      uses: ./.github/actions/ssh/
+      with:
+        name: scripts
+        key: ${{ inputs.deploy-pkey-scripts }}
+
+    - name: Setup sandbox key
+      uses: ./.github/actions/ssh/
+      with:
+        name: sandbox
+        key: ${{ inputs.deploy-pkey-sandbox }}
+
+    - name: Setup env
+      shell: bash
+      env:
+        SSH_AUTH_SOCK: /tmp/ssh_agent_env.sock
+        DOTENV_FILE: ${{ inputs.dotenv-file }}
+        GOOGLE_SERVICES: ${{ inputs.google-services }}
+        IS_TESTING: ${{ inputs.is-testing }}
+        ENABLE_DEV_MODE: ${{ inputs.enable-dev-mode }}
+      run: |
+        git clone git@github.com:rainbow-me/rainbow-env.git
+        mv "rainbow-env/$DOTENV_FILE" .env
+        if [ "$GOOGLE_SERVICES" = "true" ]; then
+          mv rainbow-env/android/app/google-services.json android/app/google-services.json
+        fi
+        rm -rf rainbow-env
+        if [ "$IS_TESTING" = "true" ]; then
+          sed -i'' -e "s/IS_TESTING=false/IS_TESTING=true/" .env && rm -f .env-e
+          echo "1" > is_testing
+        else
+          echo "0" > is_testing
+        fi
+        if [ -n "$ENABLE_DEV_MODE" ]; then
+          sed -i'' -e "s/ENABLE_DEV_MODE=1/ENABLE_DEV_MODE=$ENABLE_DEV_MODE/" .env && rm -f .env-e
+        fi
+
+    - name: Setup scripts
+      shell: bash
+      env:
+        CI_SCRIPTS: ${{ inputs.ci-scripts }}
+        SSH_AUTH_SOCK: /tmp/ssh_agent_scripts.sock
+      run: eval "$CI_SCRIPTS"
+
+    - name: Get Yarn cache directory path
+      id: yarn-cache-dir-path
+      shell: bash
+      run: echo "dir=$(yarn config get cacheFolder)" >> $GITHUB_OUTPUT
+
+    - name: Cache Yarn dependencies
+      uses: actions/cache@2c8a9bd7457de244a408f35966fab2fb45fda9c8 # v6.0.0
+      with:
+        path: |
+          ${{ steps.yarn-cache-dir-path.outputs.dir }}
+          .yarn/cache
+          .yarn/install-state.gz
+        key: ${{ runner.os }}-${{ runner.arch }}-yarn-${{ hashFiles('**/yarn.lock') }}
+        restore-keys: ${{ inputs.cache-restore-fallback == 'true' && format('{0}-{1}-yarn-', runner.os, runner.arch) || '' }}
+
+    - name: Install dependencies
+      shell: bash
+      env:
+        SSH_AUTH_SOCK: /tmp/ssh_agent_sandbox.sock
+      run: yarn install --immutable && yarn setup

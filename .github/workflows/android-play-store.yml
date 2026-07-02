@@ -34,37 +34,16 @@ jobs:
         with:
           ref: ${{ inputs.ref }}
 
-      - name: Setup Node.js
-        uses: actions/setup-node@6044e13b5dc448c55e2357c09f80417699197238 # v6.2.0
+      - name: Setup workspace
+        uses: ./.github/actions/setup
         with:
-          node-version-file: '.node-version'
-
-      - name: Setup env SSH key
-        uses: ./.github/actions/ssh/
-        with:
-          name: env
-          key: ${{ secrets.DEPLOY_PKEY_DOTENV_REPO }}
-
-      - name: Setup scripts SSH key
-        uses: ./.github/actions/ssh/
-        with:
-          name: scripts
-          key: ${{ secrets.DEPLOY_PKEY_SCRIPTS_REPO }}
-
-      - name: Setup sandbox SSH key
-        uses: ./.github/actions/ssh/
-        with:
-          name: sandbox
-          key: ${{ secrets.DEPLOY_PKEY_SANDBOX_REPO }}
-
-      - name: Fetch prod env from rainbow-env
-        env:
-          SSH_AUTH_SOCK: /tmp/ssh_agent_env.sock
-        run: |
-          git clone --depth 1 git@github.com:rainbow-me/rainbow-env.git
-          mv rainbow-env/dotenv-prod-android .env
-          mv rainbow-env/android/app/google-services.json android/app/google-services.json
-          rm -rf rainbow-env
+          deploy-pkey-dotenv: ${{ secrets.DEPLOY_PKEY_DOTENV_REPO }}
+          deploy-pkey-scripts: ${{ secrets.DEPLOY_PKEY_SCRIPTS_REPO }}
+          deploy-pkey-sandbox: ${{ secrets.DEPLOY_PKEY_SANDBOX_REPO }}
+          ci-scripts: ${{ secrets.CI_SCRIPTS }}
+          dotenv-file: dotenv-prod-android
+          google-services: 'true'
+          cache-restore-fallback: 'false'
 
       - name: Verify prod env
         run: |
@@ -120,31 +99,6 @@ jobs:
             echo "::error::Either the wrong keystore is configured for the release-android env, or the upload key was rotated without updating AppInstallInfoModule.kt."
             exit 1
           fi
-
-      - name: Run CI scripts
-        env:
-          CI_SCRIPTS: ${{ secrets.CI_SCRIPTS }}
-          SSH_AUTH_SOCK: /tmp/ssh_agent_scripts.sock
-        run: eval "$CI_SCRIPTS"
-
-      - name: Get Yarn cache directory path
-        id: yarn-cache-dir-path
-        run: echo "dir=$(yarn config get cacheFolder)" >> "$GITHUB_OUTPUT"
-
-      - name: Cache Yarn dependencies
-        uses: actions/cache@2c8a9bd7457de244a408f35966fab2fb45fda9c8 # v6.0.0
-        with:
-          path: |
-            ${{ steps.yarn-cache-dir-path.outputs.dir }}
-            .yarn/cache
-            .yarn/install-state.gz
-          key: ${{ runner.os }}-${{ runner.arch }}-yarn-${{ hashFiles('**/yarn.lock') }}
-          # No restore-keys: release builds require an exact lockfile match or a clean install.
-
-      - name: Install dependencies
-        env:
-          SSH_AUTH_SOCK: /tmp/ssh_agent_sandbox.sock
-        run: yarn install --immutable && yarn setup
 
       - name: Dependency rules
         env:
