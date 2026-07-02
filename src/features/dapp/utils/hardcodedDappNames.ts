@@ -1,35 +1,3 @@
-export const getDappHost = (url: string) => {
-  if (!url) return '';
-  try {
-    const host = new URL(url).host;
-    if (host.indexOf('www.') === 0) {
-      return host.replace('www.', '');
-    }
-    return host;
-  } catch (err) {
-    return '';
-  }
-};
-
-export const getDappHostname = (url: string) => {
-  if (!url) return '';
-  try {
-    const urlObject = new URL(url);
-    let hostname;
-    const subdomains = urlObject.hostname.split('.');
-    if (subdomains.length === 2) {
-      hostname = urlObject.hostname;
-    } else if (subdomains.length > 2) {
-      hostname = `${subdomains[subdomains.length - 2]}.${subdomains[subdomains.length - 1]}`;
-    }
-    return hostname;
-  } catch (err) {
-    return '';
-  }
-};
-
-export const getPublicAppIcon = (host: string) => `https://icons.duckduckgo.com/ip3/${host}.ico`;
-
 const displayDappNames: {
   [name: string]: { name: string };
 } = {

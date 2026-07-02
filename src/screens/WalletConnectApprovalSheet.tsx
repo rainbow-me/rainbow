@@ -17,6 +17,7 @@ import { Centered, Column, Flex, Row } from '@/components/layout';
 import { Sheet, SheetActionButton, SheetActionButtonRow } from '@/components/sheet';
 import Spinner from '@/components/Spinner';
 import { Box, Columns, Inline, Column as RDSColumn, Text, type TextProps } from '@/design-system';
+import { useDappMetadata } from '@/features/dapp/resources/dapp';
 import { ChainImage } from '@/features/network/components/ChainImage';
 import { useBackendNetworksStore } from '@/features/network/stores/backendNetworksStore';
 import { ChainId } from '@/features/network/types/backendNetworks';
@@ -33,7 +34,6 @@ import { type RainbowWallet } from '@/model/wallet';
 import Navigation, { useNavigation } from '@/navigation/Navigation';
 import Routes from '@/navigation/routesNames';
 import { type RootStackParamList } from '@/navigation/types';
-import { useDappMetadata } from '@/resources/metadata/dapp';
 import { getAccountProfileInfo, getWalletWithAccount, useAccountAddress, useSelectedWallet } from '@/state/wallets/walletsStore';
 import { useTheme, type ThemeContextProps } from '@/theme/ThemeContext';
 
