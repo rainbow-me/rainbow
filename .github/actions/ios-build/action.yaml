@@ -226,9 +226,7 @@ runs:
 
     - name: Build
       id: build
-      # Fork of callstackincubator/ios that repacks the simulator .app on push events,
-      # fixing stale E2E bundles on develop (FEPLAT-114). Repoint upstream once fixed there.
-      uses: rainbow-me/rock-ios@81353eb09c6e6337a5c6db66feda0c86f6bc941c # fix/repack-app-on-push
+      uses: callstackincubator/ios@92fc461ea1a7c1aac198f9f5f0f76d90c25ffd14 # Latest commit on 2026-07-02
       env:
         SENTRY_AUTH_TOKEN: ${{ inputs.sentry-auth-token }}
       with:
