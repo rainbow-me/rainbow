@@ -31,8 +31,7 @@ import {
 } from '@/resources/assets/externalAssetsQuery';
 import { userAssetsStore } from '@/state/assets/userAssets';
 import { getAccountAddress } from '@/state/wallets/walletsStore';
-
-import { openInBrowser } from './openInBrowser';
+import { openInBrowser } from '@/utils/openInBrowser';
 
 /**
  * @deprecated - use `getUniqueId` instead for chainIds

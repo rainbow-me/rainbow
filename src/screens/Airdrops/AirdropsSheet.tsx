@@ -6,7 +6,6 @@ import { LegendList } from '@legendapp/list';
 
 import ButtonPressAnimation from '@/components/animations/ButtonPressAnimation';
 import RainbowCoinIcon from '@/components/coin-icon/RainbowCoinIcon';
-import { TOP_INSET } from '@/components/DappBrowser/Dimensions';
 import { EasingGradient } from '@/components/easing-gradient/EasingGradient';
 import { SheetHandleFixedToTop } from '@/components/sheet';
 import { DecoyScrollView } from '@/components/sheet/DecoyScrollView';
@@ -25,6 +24,7 @@ import {
   type TextProps,
 } from '@/design-system';
 import { getColorForTheme } from '@/design-system/color/useForegroundColor';
+import { TOP_INSET } from '@/features/dapp-browser/constants/Dimensions';
 import { type ChainId } from '@/features/network/types/backendNetworks';
 import { time } from '@/framework/core/utils/time';
 import { opacity } from '@/framework/ui/utils/opacity';

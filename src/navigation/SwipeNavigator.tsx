@@ -30,16 +30,12 @@ import { SPRING_CONFIGS, TIMING_CONFIGS } from '@/components/animations/animatio
 import ButtonPressAnimation from '@/components/animations/ButtonPressAnimation';
 import { AssetUpdateTransactionWatcher } from '@/components/asset-update-transaction-watcher/AssetUpdateTransactionWatcher';
 import { BlurGradient } from '@/components/blur/BlurGradient';
-import { BrowserTabBarContextProvider, useBrowserTabBarContext } from '@/components/DappBrowser/BrowserContext';
-import { BROWSER_BACKGROUND_COLOR_DARK, BROWSER_BACKGROUND_COLOR_LIGHT } from '@/components/DappBrowser/constants';
-import { DappBrowser } from '@/components/DappBrowser/DappBrowser';
 import { discoverOpenSearchFnRef, discoverScrollToTopFnRef } from '@/components/Discover/DiscoverScreenContext';
 import { EasingGradient } from '@/components/easing-gradient/EasingGradient';
 import { FlexItem } from '@/components/layout';
 import { PendingTransactionWatcher } from '@/components/pending-transaction-watcher/PendingTransactionWatcher';
 import { PANEL_COLOR_DARK } from '@/components/SmoothPager/ListPanel';
 import { ActivityTabIcon } from '@/components/tab-bar/ActivityTabIcon';
-import { BrowserTabIcon } from '@/components/tab-bar/BrowserTabIcon';
 import {
   TAB_BAR_HORIZONTAL_INSET,
   TAB_BAR_INNER_PADDING,
@@ -54,6 +50,11 @@ import { CashBuyOrderWatcher } from '@/features/cash/components/CashBuyOrderWatc
 import { DAPP_BROWSER, LAZY_TABS, RNBW_MEMBERSHIP, RNBW_REWARDS } from '@/features/config/constants/experimental';
 import { useExperimentalFlag } from '@/features/config/hooks/experimentalHooks';
 import { useRemoteConfig } from '@/features/config/stores/remoteConfig';
+import { BrowserTabIcon } from '@/features/dapp-browser/components/BrowserTabIcon';
+import { BROWSER_BACKGROUND_COLOR_DARK, BROWSER_BACKGROUND_COLOR_LIGHT } from '@/features/dapp-browser/constants/constants';
+import { BrowserTabBarContextProvider, useBrowserTabBarContext } from '@/features/dapp-browser/context/BrowserContext';
+import { DappBrowser } from '@/features/dapp-browser/screens/DappBrowser';
+import { useBrowserStore } from '@/features/dapp-browser/stores/browserStore';
 import { useShowKingOfTheHill } from '@/features/king-of-the-hill/hooks/useShowKingOfTheHill';
 import { KingOfTheHillScreen } from '@/features/king-of-the-hill/screens/KingOfTheHillScreen';
 import { RnbwMembershipScreen } from '@/features/rnbw-membership/screens/rnbw-membership-screen/RnbwMembershipScreen';
@@ -69,7 +70,6 @@ import {
 } from '@/navigation/RecyclerListViewScrollToTopContext';
 import { DiscoverScreen } from '@/screens/DiscoverScreen';
 import WalletScreen from '@/screens/WalletScreen/WalletScreen';
-import { useBrowserStore } from '@/state/browser/browserStore';
 import { useStoreSharedValue } from '@/state/internal/hooks/useStoreSharedValue';
 import { setActiveRoute, useNavigationStore } from '@/state/navigation/navigationStore';
 import { darkModeThemeColors, lightModeThemeColors } from '@/styles/colors';

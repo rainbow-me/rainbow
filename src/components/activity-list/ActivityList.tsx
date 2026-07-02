@@ -5,9 +5,9 @@ import { LegendList, type LegendListRef } from '@legendapp/list';
 import { type SharedValue } from 'react-native-reanimated';
 
 import { FastTransactionCoinRow } from '@/components/coin-row';
-import { TOP_INSET } from '@/components/DappBrowser/Dimensions';
 import { Skeleton } from '@/components/Skeleton';
 import { type RainbowTransaction } from '@/entities/transactions';
+import { TOP_INSET } from '@/features/dapp-browser/constants/Dimensions';
 import styled from '@/framework/ui/styled-thing';
 import { opacity } from '@/framework/ui/utils/opacity';
 import { type TransactionSection } from '@/helpers/buildTransactionsSections';
