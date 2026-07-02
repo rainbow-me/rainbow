@@ -68,11 +68,6 @@ outputs:
 runs:
   using: composite
   steps:
-    - name: Setup Node.js
-      uses: actions/setup-node@6044e13b5dc448c55e2357c09f80417699197238 # v6.2.0
-      with:
-        node-version-file: '.node-version'
-
     - name: Set Xcode version
       shell: bash
       run: |
@@ -80,23 +75,15 @@ runs:
         sudo xcode-select --switch /Applications/Xcode_${XCODE_VERSION}.app
         xcodebuild -version
 
-    - name: Setup env key
-      uses: ./.github/actions/ssh/
+    - name: Setup workspace
+      uses: ./.github/actions/setup
       with:
-        name: env
-        key: ${{ inputs.deploy-pkey-dotenv }}
-
-    - name: Setup scripts key
-      uses: ./.github/actions/ssh/
-      with:
-        name: scripts
-        key: ${{ inputs.deploy-pkey-scripts }}
-
-    - name: Setup sandbox key
-      uses: ./.github/actions/ssh/
-      with:
-        name: sandbox
-        key: ${{ inputs.deploy-pkey-sandbox }}
+        deploy-pkey-dotenv: ${{ inputs.deploy-pkey-dotenv }}
+        deploy-pkey-scripts: ${{ inputs.deploy-pkey-scripts }}
+        deploy-pkey-sandbox: ${{ inputs.deploy-pkey-sandbox }}
+        ci-scripts: ${{ inputs.ci-scripts }}
+        is-testing: ${{ inputs.is-testing }}
+        enable-dev-mode: ${{ inputs.enable-dev-mode }}
 
     - name: Setup code signing key
       if: inputs.destination == 'device'
@@ -104,57 +91,6 @@ runs:
       with:
         name: codesigning
         key: ${{ inputs.deploy-pkey-codesigning }}
-
-    - name: Setup env
-      shell: bash
-      env:
-        SSH_AUTH_SOCK: /tmp/ssh_agent_env.sock
-        IS_TESTING: ${{ inputs.is-testing }}
-        ENABLE_DEV_MODE: ${{ inputs.enable-dev-mode }}
-      run: |
-        git clone git@github.com:rainbow-me/rainbow-env.git
-        mv rainbow-env/dotenv .env
-        rm -rf rainbow-env
-        if [ "$IS_TESTING" = "true" ]; then
-          sed -i'' -e "s/IS_TESTING=false/IS_TESTING=true/" .env && rm -f .env-e
-          echo "1" > is_testing
-        else
-          echo "0" > is_testing
-        fi
-        if [ -n "$ENABLE_DEV_MODE" ]; then
-          sed -i'' -e "s/ENABLE_DEV_MODE=1/ENABLE_DEV_MODE=$ENABLE_DEV_MODE/" .env && rm -f .env-e
-        fi
-
-    - name: Setup scripts
-      shell: bash
-      env:
-        CI_SCRIPTS: ${{ inputs.ci-scripts }}
-        SSH_AUTH_SOCK: /tmp/ssh_agent_scripts.sock
-      run: |
-        eval $CI_SCRIPTS
-
-    - name: Get Yarn cache directory path
-      id: yarn-cache-dir-path
-      shell: bash
-      run: echo "dir=$(yarn config get cacheFolder)" >> $GITHUB_OUTPUT
-
-    - name: Cache Yarn dependencies
-      uses: actions/cache@2c8a9bd7457de244a408f35966fab2fb45fda9c8 # v6.0.0
-      with:
-        path: |
-          ${{ steps.yarn-cache-dir-path.outputs.dir }}
-          .yarn/cache
-          .yarn/install-state.gz
-          !.eslintcache
-        key: yarn-${{ runner.os }}-${{ hashFiles('yarn.lock') }}
-        restore-keys: |
-          ${{ runner.os }}-yarn-
-
-    - name: Install dependencies
-      shell: bash
-      env:
-        SSH_AUTH_SOCK: /tmp/ssh_agent_sandbox.sock
-      run: yarn install --immutable && yarn setup
 
     - name: Set up Ruby
       if: inputs.destination == 'device'
