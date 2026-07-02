@@ -1,0 +1,110 @@
+name: CI
+
+on:
+  pull_request:
+  push:
+    branches: [develop]
+
+permissions: {}
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: ${{ github.event_name == 'pull_request' }}
+
+jobs:
+  audit:
+    name: Audit
+    runs-on: blacksmith-2vcpu-ubuntu-2204
+    permissions:
+      contents: read
+    steps:
+      - name: Checkout repo
+        uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v7.0.0
+
+      - name: Setup workspace
+        uses: ./.github/actions/setup
+        with:
+          deploy-pkey-dotenv: ${{ secrets.DEPLOY_PKEY_DOTENV_REPO }}
+          deploy-pkey-scripts: ${{ secrets.DEPLOY_PKEY_SCRIPTS_REPO }}
+          deploy-pkey-sandbox: ${{ secrets.DEPLOY_PKEY_SANDBOX_REPO }}
+          ci-scripts: ${{ secrets.CI_SCRIPTS }}
+          google-services: 'true'
+          is-testing: 'true'
+
+      - name: Audit CI
+        run: yarn audit-ci --config audit-ci.jsonc
+
+  lint:
+    name: Lint
+    runs-on: blacksmith-2vcpu-ubuntu-2204
+    permissions:
+      contents: read
+    env:
+      NODE_OPTIONS: '--max-old-space-size=6144'
+    steps:
+      - name: Checkout repo
+        uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v7.0.0
+
+      - name: Setup workspace
+        uses: ./.github/actions/setup
+        with:
+          deploy-pkey-dotenv: ${{ secrets.DEPLOY_PKEY_DOTENV_REPO }}
+          deploy-pkey-scripts: ${{ secrets.DEPLOY_PKEY_SCRIPTS_REPO }}
+          deploy-pkey-sandbox: ${{ secrets.DEPLOY_PKEY_SANDBOX_REPO }}
+          ci-scripts: ${{ secrets.CI_SCRIPTS }}
+          google-services: 'true'
+          is-testing: 'true'
+
+      - name: Remove ESLint cache
+        run: rm -f .eslintcache
+
+      - name: Lint
+        run: yarn lint:ci
+
+  unit-tests:
+    name: Unit tests
+    runs-on: blacksmith-2vcpu-ubuntu-2204
+    permissions:
+      contents: read
+    env:
+      NODE_OPTIONS: '--max-old-space-size=6144'
+    steps:
+      - name: Checkout repo
+        uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v7.0.0
+
+      - name: Setup workspace
+        uses: ./.github/actions/setup
+        with:
+          deploy-pkey-dotenv: ${{ secrets.DEPLOY_PKEY_DOTENV_REPO }}
+          deploy-pkey-scripts: ${{ secrets.DEPLOY_PKEY_SCRIPTS_REPO }}
+          deploy-pkey-sandbox: ${{ secrets.DEPLOY_PKEY_SANDBOX_REPO }}
+          ci-scripts: ${{ secrets.CI_SCRIPTS }}
+          google-services: 'true'
+          is-testing: 'true'
+
+      - name: Unit tests
+        run: yarn test
+
+  notify-failure:
+    name: Notify Slack on failure
+    needs: [audit, lint, unit-tests]
+    if: |
+      always() &&
+      github.event_name == 'push' &&
+      github.ref == 'refs/heads/develop' &&
+      contains(needs.*.result, 'failure')
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      actions: read
+      pull-requests: read
+    steps:
+      - name: Checkout repo
+        uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v7.0.0
+
+      - name: Notify Slack
+        uses: ./.github/actions/slack-notify-failure
+        with:
+          slack-token: ${{ secrets.SLACK_BOT_TOKEN }}
+          channel-id: ${{ vars.SLACK_CHANNEL_ID_FRONTEND_ALERTS }}
+          run-url: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}
