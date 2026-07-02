@@ -1,4 +1,4 @@
-import { isValidURLWorklet } from '@/components/DappBrowser/utils';
+import { isValidWebUrlWorklet } from '@/framework/core/utils/url';
 import * as i18n from '@/languages';
 
 import { MAX_DESCRIPTION_BYTES, MAX_NAME_BYTES, MAX_SYMBOL_BYTES, MAX_TOTAL_SUPPLY } from '../constants';
@@ -138,7 +138,7 @@ export function validateLinkWorklet({ link, type }: { link: string; type: LinkTy
 
   // For website and other types that just need URL validation
   if ('requiresValidUrl' in config) {
-    if (!isValidURLWorklet(link)) {
+    if (!isValidWebUrlWorklet(link)) {
       return { error: true };
     }
     return;
@@ -150,7 +150,7 @@ export function validateLinkWorklet({ link, type }: { link: string; type: LinkTy
   const isUrl = baseUrls.some((baseUrl: string) => link.includes(baseUrl));
 
   if (isUrl) {
-    if (!isValidURLWorklet(link)) {
+    if (!isValidWebUrlWorklet(link)) {
       return { error: true };
     }
 

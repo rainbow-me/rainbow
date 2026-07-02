@@ -16,6 +16,7 @@ import { SPRING_CONFIGS } from '@/components/animations/animationConfigs';
 import ButtonPressAnimation from '@/components/animations/ButtonPressAnimation';
 import { EasingGradient } from '@/components/easing-gradient/EasingGradient';
 import { Bleed, Box, Inline, Inset, Stack, Text, TextIcon, useColorMode, useForegroundColor } from '@/design-system';
+import { isValidWebUrlWorklet } from '@/framework/core/utils/url';
 import * as i18n from '@/languages';
 import { useBrowserDappsStore, type Dapp } from '@/resources/metadata/dapps';
 import { THICK_BORDER_WIDTH } from '@/styles/constants';
@@ -24,7 +25,6 @@ import deviceUtils, { DEVICE_HEIGHT, DEVICE_WIDTH } from '@/utils/deviceUtils';
 import { useBrowserContext } from '../../BrowserContext';
 import { HOMEPAGE_BACKGROUND_COLOR_DARK, HOMEPAGE_BACKGROUND_COLOR_LIGHT } from '../../constants';
 import { SEARCH_BAR_HEIGHT } from '../../Dimensions';
-import { isValidURLWorklet } from '../../utils';
 import { useSearchContext } from '../SearchContext';
 import { GoogleSearchResult, SearchResult } from './SearchResult';
 
@@ -79,7 +79,7 @@ const search = (query: string, dapps: Dapp[], numberOfResults = 4): Dapp[] => {
     .slice(0, numberOfResults);
 
   // if the query is a valid URL and is not already in the results, add it to the results
-  if (isValidURLWorklet(query) && !filteredDapps.some(dapp => dapp?.urlDisplay.startsWith(query))) {
+  if (isValidWebUrlWorklet(query) && !filteredDapps.some(dapp => dapp?.urlDisplay.startsWith(query))) {
     const shouldTrimLastResult = filteredDapps.length === numberOfResults && DEVICE_HEIGHT <= deviceUtils.iPhone15ProHeight;
     const dappResults = shouldTrimLastResult ? filteredDapps.slice(0, numberOfResults - 1) : filteredDapps;
     return [{ url: query, urlDisplay: query, name: query, isDirect: true } as unknown as Dapp, ...(dappResults as Dapp[])];

@@ -1,12 +1,3 @@
-export const isValidUrl = (url: string) => {
-  try {
-    new URL(url);
-    return true;
-  } catch (err) {
-    return false;
-  }
-};
-
 export const getDappHost = (url: string) => {
   if (!url) return '';
   try {

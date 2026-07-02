@@ -3,9 +3,9 @@ import { View, type StyleProp, type ViewStyle } from 'react-native';
 
 import { FasterImageView } from '@candlefinance/faster-image';
 
-import { BLANK_BASE64_PIXEL } from '@/components/DappBrowser/constants';
 import { DEFAULT_FASTER_IMAGE_CONFIG } from '@/components/images/ImgixImage';
 import { useColorMode } from '@/design-system';
+import { TRANSPARENT_PIXEL_BASE64 } from '@/framework/ui/utils/transparentPixelBase64';
 
 import { useBackendNetworksStore } from '../stores/backendNetworksStore';
 import { type ChainId } from '../types/backendNetworks';
@@ -45,7 +45,7 @@ export const ChainImage = memo(function ChainImage({
       <FasterImageView
         source={{
           ...DEFAULT_FASTER_IMAGE_CONFIG,
-          base64Placeholder: BLANK_BASE64_PIXEL,
+          base64Placeholder: TRANSPARENT_PIXEL_BASE64,
           url: badgeUrl,
         }}
         style={iconStyle}
