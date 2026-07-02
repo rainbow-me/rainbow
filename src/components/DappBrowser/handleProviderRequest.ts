@@ -5,6 +5,7 @@ import { debounce } from 'lodash';
 import { UserRejectedRequestError } from 'viem';
 
 import { type Messenger } from '@/browserMessaging/AppMessenger';
+import { handleDappBrowserConnectionPrompt, handleDappBrowserRequest } from '@/features/dapp-request/utils/requestNavigationHandlers';
 import { getDappMetadata } from '@/features/dapp/resources/dapp';
 import { getDappHost } from '@/features/dapp/utils/dappUrls';
 import { useBackendNetworksStore } from '@/features/network/stores/backendNetworksStore';
@@ -17,7 +18,6 @@ import { logger } from '@/logger';
 import Routes from '@/navigation/routesNames';
 import { useAppSessionsStore } from '@/state/appSessions';
 import { useNavigationStore } from '@/state/navigation/navigationStore';
-import { handleDappBrowserConnectionPrompt, handleDappBrowserRequest } from '@/utils/requestNavigationHandlers';
 import {
   handleProviderRequest,
   type AddEthereumChainProposedChain,

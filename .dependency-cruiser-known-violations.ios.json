@@ -12359,127 +12359,6 @@
   },
   {
     "type": "cycle",
-    "from": "src/components/DappBrowser/Homepage.tsx",
-    "to": "src/components/DappBrowser/handleProviderRequest.ts",
-    "unresolvedTo": "./handleProviderRequest",
-    "dependencyTypes": [
-      "local",
-      "import"
-    ],
-    "rule": {
-      "severity": "error",
-      "name": "no-circular"
-    },
-    "cycle": [
-      {
-        "name": "src/components/DappBrowser/handleProviderRequest.ts",
-        "dependencyTypes": [
-          "local",
-          "import"
-        ]
-      },
-      {
-        "name": "src/utils/requestNavigationHandlers.ts",
-        "dependencyTypes": [
-          "aliased",
-          "aliased-tsconfig",
-          "aliased-tsconfig-paths",
-          "local",
-          "import"
-        ]
-      },
-      {
-        "name": "src/features/wallet-connect/handlers/onSessionRequest.ts",
-        "dependencyTypes": [
-          "aliased",
-          "aliased-tsconfig",
-          "aliased-tsconfig-paths",
-          "local",
-          "import"
-        ]
-      },
-      {
-        "name": "src/features/wallet-connect/components/showErrorSheet.tsx",
-        "dependencyTypes": [
-          "local",
-          "import"
-        ]
-      },
-      {
-        "name": "src/screens/Explain/index.tsx",
-        "dependencyTypes": [
-          "aliased",
-          "aliased-tsconfig",
-          "aliased-tsconfig-paths",
-          "local",
-          "import"
-        ]
-      },
-      {
-        "name": "src/screens/Portal/index.tsx",
-        "dependencyTypes": [
-          "aliased",
-          "aliased-tsconfig",
-          "aliased-tsconfig-paths",
-          "local",
-          "export"
-        ]
-      },
-      {
-        "name": "src/components/SmoothPager/ListPanel.tsx",
-        "dependencyTypes": [
-          "aliased",
-          "aliased-tsconfig",
-          "aliased-tsconfig-paths",
-          "local",
-          "import"
-        ]
-      },
-      {
-        "name": "src/components/DappBrowser/Dimensions.ts",
-        "dependencyTypes": [
-          "local",
-          "import"
-        ]
-      },
-      {
-        "name": "src/navigation/SwipeNavigator.tsx",
-        "dependencyTypes": [
-          "aliased",
-          "aliased-tsconfig",
-          "aliased-tsconfig-paths",
-          "local",
-          "import"
-        ]
-      },
-      {
-        "name": "src/components/DappBrowser/DappBrowser.tsx",
-        "dependencyTypes": [
-          "aliased",
-          "aliased-tsconfig",
-          "aliased-tsconfig-paths",
-          "local",
-          "import"
-        ]
-      },
-      {
-        "name": "src/components/DappBrowser/BrowserTab.tsx",
-        "dependencyTypes": [
-          "local",
-          "import"
-        ]
-      },
-      {
-        "name": "src/components/DappBrowser/Homepage.tsx",
-        "dependencyTypes": [
-          "local",
-          "import"
-        ]
-      }
-    ]
-  },
-  {
-    "type": "cycle",
     "from": "src/components/DappBrowser/hooks/useAnimatedTab.ts",
     "to": "src/components/DappBrowser/BrowserWorkletsContext.tsx",
     "unresolvedTo": "../BrowserWorkletsContext",
@@ -13438,7 +13317,7 @@
         ]
       },
       {
-        "name": "src/utils/requestNavigationHandlers.ts",
+        "name": "src/features/dapp-request/utils/requestNavigationHandlers.ts",
         "dependencyTypes": [
           "aliased",
           "aliased-tsconfig",
@@ -13650,127 +13529,6 @@
       {
         "name": "src/components/DappBrowser/BrowserContext.tsx",
         "dependencyTypes": [
-          "local",
-          "import"
-        ]
-      },
-      {
-        "name": "src/components/DappBrowser/Dimensions.ts",
-        "dependencyTypes": [
-          "local",
-          "import"
-        ]
-      },
-      {
-        "name": "src/navigation/SwipeNavigator.tsx",
-        "dependencyTypes": [
-          "aliased",
-          "aliased-tsconfig",
-          "aliased-tsconfig-paths",
-          "local",
-          "import"
-        ]
-      },
-      {
-        "name": "src/components/DappBrowser/DappBrowser.tsx",
-        "dependencyTypes": [
-          "aliased",
-          "aliased-tsconfig",
-          "aliased-tsconfig-paths",
-          "local",
-          "import"
-        ]
-      },
-      {
-        "name": "src/components/DappBrowser/search/Search.tsx",
-        "dependencyTypes": [
-          "local",
-          "import"
-        ]
-      },
-      {
-        "name": "src/components/DappBrowser/search-input/AccountIcon.tsx",
-        "dependencyTypes": [
-          "local",
-          "import"
-        ]
-      }
-    ]
-  },
-  {
-    "type": "cycle",
-    "from": "src/components/DappBrowser/search-input/AccountIcon.tsx",
-    "to": "src/components/DappBrowser/handleProviderRequest.ts",
-    "unresolvedTo": "../handleProviderRequest",
-    "dependencyTypes": [
-      "local",
-      "import"
-    ],
-    "rule": {
-      "severity": "error",
-      "name": "no-circular"
-    },
-    "cycle": [
-      {
-        "name": "src/components/DappBrowser/handleProviderRequest.ts",
-        "dependencyTypes": [
-          "local",
-          "import"
-        ]
-      },
-      {
-        "name": "src/utils/requestNavigationHandlers.ts",
-        "dependencyTypes": [
-          "aliased",
-          "aliased-tsconfig",
-          "aliased-tsconfig-paths",
-          "local",
-          "import"
-        ]
-      },
-      {
-        "name": "src/features/wallet-connect/handlers/onSessionRequest.ts",
-        "dependencyTypes": [
-          "aliased",
-          "aliased-tsconfig",
-          "aliased-tsconfig-paths",
-          "local",
-          "import"
-        ]
-      },
-      {
-        "name": "src/features/wallet-connect/components/showErrorSheet.tsx",
-        "dependencyTypes": [
-          "local",
-          "import"
-        ]
-      },
-      {
-        "name": "src/screens/Explain/index.tsx",
-        "dependencyTypes": [
-          "aliased",
-          "aliased-tsconfig",
-          "aliased-tsconfig-paths",
-          "local",
-          "import"
-        ]
-      },
-      {
-        "name": "src/screens/Portal/index.tsx",
-        "dependencyTypes": [
-          "aliased",
-          "aliased-tsconfig",
-          "aliased-tsconfig-paths",
-          "local",
-          "export"
-        ]
-      },
-      {
-        "name": "src/components/SmoothPager/ListPanel.tsx",
-        "dependencyTypes": [
-          "aliased",
-          "aliased-tsconfig",
-          "aliased-tsconfig-paths",
           "local",
           "import"
         ]
@@ -23843,8 +23601,8 @@
   {
     "type": "cycle",
     "from": "src/components/MobileWalletProtocolListener.tsx",
-    "to": "src/utils/requestNavigationHandlers.ts",
-    "unresolvedTo": "@/utils/requestNavigationHandlers",
+    "to": "src/features/dapp-request/utils/requestNavigationHandlers.ts",
+    "unresolvedTo": "@/features/dapp-request/utils/requestNavigationHandlers",
     "dependencyTypes": [
       "aliased",
       "aliased-tsconfig",
@@ -23858,7 +23616,7 @@
     },
     "cycle": [
       {
-        "name": "src/utils/requestNavigationHandlers.ts",
+        "name": "src/features/dapp-request/utils/requestNavigationHandlers.ts",
         "dependencyTypes": [
           "aliased",
           "aliased-tsconfig",
@@ -33887,6 +33645,45 @@
       },
       {
         "name": "src/features/currency/stores/currencyConversionStore.ts",
+        "dependencyTypes": [
+          "aliased",
+          "aliased-tsconfig",
+          "aliased-tsconfig-paths",
+          "local",
+          "import"
+        ]
+      }
+    ]
+  },
+  {
+    "type": "cycle",
+    "from": "src/features/dapp-request/utils/requestNavigationHandlers.ts",
+    "to": "src/features/wallet-connect/handlers/onSessionRequest.ts",
+    "unresolvedTo": "@/features/wallet-connect/handlers/onSessionRequest",
+    "dependencyTypes": [
+      "aliased",
+      "aliased-tsconfig",
+      "aliased-tsconfig-paths",
+      "local",
+      "import"
+    ],
+    "rule": {
+      "severity": "error",
+      "name": "no-circular"
+    },
+    "cycle": [
+      {
+        "name": "src/features/wallet-connect/handlers/onSessionRequest.ts",
+        "dependencyTypes": [
+          "aliased",
+          "aliased-tsconfig",
+          "aliased-tsconfig-paths",
+          "local",
+          "import"
+        ]
+      },
+      {
+        "name": "src/features/dapp-request/utils/requestNavigationHandlers.ts",
         "dependencyTypes": [
           "aliased",
           "aliased-tsconfig",
@@ -104728,45 +104525,6 @@
   },
   {
     "type": "cycle",
-    "from": "src/features/wallet-connect/handlers/onSessionRequest.ts",
-    "to": "src/utils/requestNavigationHandlers.ts",
-    "unresolvedTo": "@/utils/requestNavigationHandlers",
-    "dependencyTypes": [
-      "aliased",
-      "aliased-tsconfig",
-      "aliased-tsconfig-paths",
-      "local",
-      "import"
-    ],
-    "rule": {
-      "severity": "error",
-      "name": "no-circular"
-    },
-    "cycle": [
-      {
-        "name": "src/utils/requestNavigationHandlers.ts",
-        "dependencyTypes": [
-          "aliased",
-          "aliased-tsconfig",
-          "aliased-tsconfig-paths",
-          "local",
-          "import"
-        ]
-      },
-      {
-        "name": "src/features/wallet-connect/handlers/onSessionRequest.ts",
-        "dependencyTypes": [
-          "aliased",
-          "aliased-tsconfig",
-          "aliased-tsconfig-paths",
-          "local",
-          "import"
-        ]
-      }
-    ]
-  },
-  {
-    "type": "cycle",
     "from": "src/features/wallet/utils/watchingAlert.ts",
     "to": "src/navigation/Navigation.tsx",
     "unresolvedTo": "@/navigation/Navigation",
@@ -108948,7 +108706,7 @@
         ]
       },
       {
-        "name": "src/utils/requestNavigationHandlers.ts",
+        "name": "src/features/dapp-request/utils/requestNavigationHandlers.ts",
         "dependencyTypes": [
           "aliased",
           "aliased-tsconfig",
