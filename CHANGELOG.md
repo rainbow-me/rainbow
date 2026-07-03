@@ -53,7 +53,6 @@ and this project adheres to [Semantic Versioning](http://semver.org/)
 - Routed preferences API errors through Sentry's fetch-error filter — [#7627](https://github.com/rainbow-me/rainbow/pull/7627)
 - Ensured shim loading precedes log-producing code — [#7642](https://github.com/rainbow-me/rainbow/pull/7642)
 - Added Bitrise workflows; fixed CI runtime/toolchain deprecations, NDK provisioning, and native-lib stripping — [#7637](https://github.com/rainbow-me/rainbow/pull/7637), [#7622](https://github.com/rainbow-me/rainbow/pull/7622), [#7625](https://github.com/rainbow-me/rainbow/pull/7625), [#7626](https://github.com/rainbow-me/rainbow/pull/7626), [#7630](https://github.com/rainbow-me/rainbow/pull/7630), [#7631](https://github.com/rainbow-me/rainbow/pull/7631), [#7632](https://github.com/rainbow-me/rainbow/pull/7632)
-- Version and build metadata — [#7645](https://github.com/rainbow-me/rainbow/pull/7645)
 
 ### Testing
 
