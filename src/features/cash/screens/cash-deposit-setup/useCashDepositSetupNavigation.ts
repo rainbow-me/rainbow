@@ -37,5 +37,5 @@ export function useCashDepositSetupNavigation() {
     }
   }, [dismissScreen]);
 
-  return { next, back };
+  return { next, back, dismiss: dismissScreen };
 }
