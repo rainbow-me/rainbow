@@ -1,5 +1,5 @@
 diff --git a/node_modules/@polymarket/clob-client-v2/dist/index.cjs b/node_modules/@polymarket/clob-client-v2/dist/index.cjs
-index 6032b5c..0335c95 100644
+index 6032b5c..d003f57 100644
 --- a/node_modules/@polymarket/clob-client-v2/dist/index.cjs
 +++ b/node_modules/@polymarket/clob-client-v2/dist/index.cjs
 @@ -318,24 +318,10 @@ var createL2Headers = async (signer, creds, l2HeaderArgs, timestamp) => {
@@ -27,7 +27,24 @@ index 6032b5c..0335c95 100644
    return await (0, import_axios.default)({ method, url: endpoint, headers, data, params });
  };
  var sleep = (ms) => new Promise((res) => setTimeout(res, ms));
-@@ -1522,7 +1508,6 @@ var ClobClient = class {
+@@ -1219,6 +1205,16 @@ var ROUNDING_CONFIG = {
+     size: 2,
+     amount: 4
+   },
++  "0.005": {
++    price: 3,
++    size: 2,
++    amount: 5
++  },
++  "0.0025": {
++    price: 4,
++    size: 2,
++    amount: 6
++  },
+   "0.001": {
+     price: 3,
+     size: 2,
+@@ -1522,7 +1518,6 @@ var ClobClient = class {
        if (!token) continue;
        const tokenId = token.t;
        this.tokenConditionMap[tokenId] = conditionID;
@@ -35,7 +52,7 @@ index 6032b5c..0335c95 100644
        this.negRisk[tokenId] = result.nr ?? false;
        this.feeInfos[tokenId] = {
          rate: result.fd?.r ?? 0,
-@@ -1542,18 +1527,14 @@ var ClobClient = class {
+@@ -1542,18 +1537,14 @@ var ClobClient = class {
      });
    }
    async getTickSize(tokenID) {
@@ -58,7 +75,7 @@ index 6032b5c..0335c95 100644
    async getNegRisk(tokenID) {
      if (tokenID in this.negRisk) {
 diff --git a/node_modules/@polymarket/clob-client-v2/dist/index.js b/node_modules/@polymarket/clob-client-v2/dist/index.js
-index cb0ae39..b34acd9 100644
+index cb0ae39..b6e8a39 100644
 --- a/node_modules/@polymarket/clob-client-v2/dist/index.js
 +++ b/node_modules/@polymarket/clob-client-v2/dist/index.js
 @@ -262,24 +262,10 @@ var createL2Headers = async (signer, creds, l2HeaderArgs, timestamp) => {
@@ -86,7 +103,24 @@ index cb0ae39..b34acd9 100644
    return await axios({ method, url: endpoint, headers, data, params });
  };
  var sleep = (ms) => new Promise((res) => setTimeout(res, ms));
-@@ -1466,7 +1452,6 @@ var ClobClient = class {
+@@ -1163,6 +1149,16 @@ var ROUNDING_CONFIG = {
+     size: 2,
+     amount: 4
+   },
++  "0.005": {
++    price: 3,
++    size: 2,
++    amount: 5
++  },
++  "0.0025": {
++    price: 4,
++    size: 2,
++    amount: 6
++  },
+   "0.001": {
+     price: 3,
+     size: 2,
+@@ -1466,7 +1462,6 @@ var ClobClient = class {
        if (!token) continue;
        const tokenId = token.t;
        this.tokenConditionMap[tokenId] = conditionID;
@@ -94,7 +128,7 @@ index cb0ae39..b34acd9 100644
        this.negRisk[tokenId] = result.nr ?? false;
        this.feeInfos[tokenId] = {
          rate: result.fd?.r ?? 0,
-@@ -1486,18 +1471,14 @@ var ClobClient = class {
+@@ -1486,18 +1481,14 @@ var ClobClient = class {
      });
    }
    async getTickSize(tokenID) {
