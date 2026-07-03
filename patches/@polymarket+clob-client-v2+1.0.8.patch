@@ -1,3 +1,12 @@
+# PATCH CONTEXT
+# Why: Rainbow needs v1.0.8 for 0.0025 tick-size markets.
+#   This patch removes the parts of the SDK that break in our app:
+#   Node-only request headers, stale tick-size reads, and WebCrypto
+#   HMAC signing.
+# Upstream Issue: none filed yet.
+# Linear Issue: none.
+# Remove when: @polymarket/clob-client-v2 handles those cases upstream.
+
 diff --git a/node_modules/@polymarket/clob-client-v2/dist/http-helpers/index.cjs b/node_modules/@polymarket/clob-client-v2/dist/http-helpers/index.cjs
 index 946edd341a..5c8cc29f67 100644
 --- a/node_modules/@polymarket/clob-client-v2/dist/http-helpers/index.cjs
