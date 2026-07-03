@@ -21,6 +21,18 @@ and this project adheres to [Semantic Versioning](http://semver.org/)
 
 ### Testing
 
+## [2.0.39](https://github.com/rainbow-me/rainbow/releases/tag/v2.0.39)
+
+### Fixed
+
+- Fixed Polymarket orders failing on markets with certain tick sizes — [#7665](https://github.com/rainbow-me/rainbow/pull/7665)
+
+### Internal
+
+- Extracted the dapp browser into its own feature domain and consolidated its utilities, referrals, and request routing — [#7646](https://github.com/rainbow-me/rainbow/pull/7646), [#7647](https://github.com/rainbow-me/rainbow/pull/7647), [#7648](https://github.com/rainbow-me/rainbow/pull/7648), [#7649](https://github.com/rainbow-me/rainbow/pull/7649), [#7651](https://github.com/rainbow-me/rainbow/pull/7651)
+- Updated the dependency-cycle baseline — [#7660](https://github.com/rainbow-me/rainbow/pull/7660)
+- Switched iOS CI builds back to the upstream callstackincubator action — [#7659](https://github.com/rainbow-me/rainbow/pull/7659)
+
 ## [2.0.38](https://github.com/rainbow-me/rainbow/releases/tag/v2.0.38)
 
 ### Changed
