@@ -21,6 +21,44 @@ and this project adheres to [Semantic Versioning](http://semver.org/)
 
 ### Testing
 
+## [2.0.38](https://github.com/rainbow-me/rainbow/releases/tag/v2.0.38)
+
+### Changed
+
+- No longer show the game count badge on Discover sports sections — [#7605](https://github.com/rainbow-me/rainbow/pull/7605)
+
+### Removed
+
+- Removed the non-functional POAP claim flow — [#7654](https://github.com/rainbow-me/rainbow/pull/7654)
+
+### Fixed
+
+- Fixed an issue creating Polymarket proxy wallets — [#7657](https://github.com/rainbow-me/rainbow/pull/7657)
+- Fixed untranslated text in the wallet backup flow — [#7652](https://github.com/rainbow-me/rainbow/pull/7652)
+
+### Security
+
+- Scoped CI `GITHUB_TOKEN` to least privilege across all workflows — [#7643](https://github.com/rainbow-me/rainbow/pull/7643)
+
+### Internal
+
+- Migrated state/data stores to the `@storesjs/stores` package — [#7421](https://github.com/rainbow-me/rainbow/pull/7421)
+- Reorganized domains (delegation, hardware-wallet, config, debug) — [#7609](https://github.com/rainbow-me/rainbow/pull/7609), [#7619](https://github.com/rainbow-me/rainbow/pull/7619), [#7620](https://github.com/rainbow-me/rainbow/pull/7620), [#7621](https://github.com/rainbow-me/rainbow/pull/7621), [#7623](https://github.com/rainbow-me/rainbow/pull/7623), [#7624](https://github.com/rainbow-me/rainbow/pull/7624), [#7629](https://github.com/rainbow-me/rainbow/pull/7629)
+- Removed dead NFT Minting and NFT Offers code (disabled in production) — [#7639](https://github.com/rainbow-me/rainbow/pull/7639), [#7634](https://github.com/rainbow-me/rainbow/pull/7634)
+- Removed other dead NFT code (SimpleHash, audio player, floor-price/listing) — [#7656](https://github.com/rainbow-me/rainbow/pull/7656), [#7655](https://github.com/rainbow-me/rainbow/pull/7655), [#7641](https://github.com/rainbow-me/rainbow/pull/7641)
+- Removed dead Ledger UI, unused debug code, and Android Fastlane lanes — [#7613](https://github.com/rainbow-me/rainbow/pull/7613), [#7614](https://github.com/rainbow-me/rainbow/pull/7614), [#7644](https://github.com/rainbow-me/rainbow/pull/7644)
+- Groundwork for the upcoming Cash feature (behind flags) — [#7611](https://github.com/rainbow-me/rainbow/pull/7611), [#7616](https://github.com/rainbow-me/rainbow/pull/7616), [#7640](https://github.com/rainbow-me/rainbow/pull/7640)
+- Added a sandbox dev feature — [#7608](https://github.com/rainbow-me/rainbow/pull/7608)
+- Replaced bespoke cycle/dependency guards with dependency-cruiser — [#7628](https://github.com/rainbow-me/rainbow/pull/7628), [#7653](https://github.com/rainbow-me/rainbow/pull/7653)
+- Routed preferences API errors through Sentry's fetch-error filter — [#7627](https://github.com/rainbow-me/rainbow/pull/7627)
+- Ensured shim loading precedes log-producing code — [#7642](https://github.com/rainbow-me/rainbow/pull/7642)
+- Added Bitrise workflows; fixed CI runtime/toolchain deprecations, NDK provisioning, and native-lib stripping — [#7637](https://github.com/rainbow-me/rainbow/pull/7637), [#7622](https://github.com/rainbow-me/rainbow/pull/7622), [#7625](https://github.com/rainbow-me/rainbow/pull/7625), [#7626](https://github.com/rainbow-me/rainbow/pull/7626), [#7630](https://github.com/rainbow-me/rainbow/pull/7630), [#7631](https://github.com/rainbow-me/rainbow/pull/7631), [#7632](https://github.com/rainbow-me/rainbow/pull/7632)
+
+### Testing
+
+- Added tests for custom Polymarket fees — [#7636](https://github.com/rainbow-me/rainbow/pull/7636)
+- Fixed e2e Anvil forking (Alchemy issue) — [#7615](https://github.com/rainbow-me/rainbow/pull/7615)
+
 ## [2.0.37](https://github.com/rainbow-me/rainbow/releases/tag/v2.0.37)
 
 ### Added
