@@ -66,6 +66,10 @@ type MatchedOrderAmounts = {
   usd: string;
 };
 
+type MatchedOrderSettlement = {
+  transactionHashes?: string[];
+};
+
 // ============ Constants ====================================================== //
 
 const POLL_INTERVAL = time.seconds(1);
@@ -212,7 +216,7 @@ function startMatchedOrderFeeCollection({ orderResult, context }: { orderResult:
   const immediateAmounts = getMatchedAmountsFromAcceptedOrder(orderResult, context.side);
 
   if (immediateAmounts) {
-    recordMatchedOrderAndCollectFee(context, immediateAmounts, orderId);
+    recordMatchedOrderAndCollectFee(context, immediateAmounts, orderId, { transactionHashes: orderResult.transactionsHashes });
     return;
   }
 
@@ -260,14 +264,22 @@ async function pollForMatchedOrderFeeCollection({
   }
 }
 
-function recordMatchedOrderAndCollectFee(context: MatchedOrderContext, amounts: MatchedOrderAmounts, orderId: string) {
+function recordMatchedOrderAndCollectFee(
+  context: MatchedOrderContext,
+  amounts: MatchedOrderAmounts,
+  orderId: string,
+  settlement?: MatchedOrderSettlement
+) {
   trackMatchedOrderAnalytics(context, amounts);
+
+  const settlementTransactionHashes = settlement?.transactionHashes?.filter(Boolean);
 
   void collectPolymarketTradeFee({
     matchedAmounts: amounts,
     orderId,
     quotedFeeUsd: context.quotedTradeFeeUsd,
     side: context.side,
+    ...(settlementTransactionHashes?.length ? { settlementTransactionHashes } : {}),
     tokenId: context.tokenId,
   });
 }

@@ -92,6 +92,7 @@ describe('executePolymarketOrder', () => {
         orderID: 'buy-order',
         status: 'matched',
         takingAmount: '10',
+        transactionsHashes: ['0xsettlement'],
       })
     );
 
@@ -133,6 +134,7 @@ describe('executePolymarketOrder', () => {
       matchedAmounts: { tokens: '10', usd: '5' },
       orderId: 'buy-order',
       quotedFeeUsd: '0.1',
+      settlementTransactionHashes: ['0xsettlement'],
       side: 'buy',
       tokenId: 'token-1',
     });
@@ -311,11 +313,13 @@ function createOrderResult({
   orderID,
   status,
   takingAmount = '0',
+  transactionsHashes = [],
 }: {
   makingAmount?: string;
   orderID: string;
   status: string;
   takingAmount?: string;
+  transactionsHashes?: string[];
 }): SuccessfulOrderResult {
   return {
     success: true,
@@ -324,7 +328,7 @@ function createOrderResult({
     orderID,
     status,
     takingAmount,
-    transactionsHashes: [],
+    transactionsHashes,
   };
 }
 
