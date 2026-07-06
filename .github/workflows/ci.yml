@@ -85,9 +85,64 @@ jobs:
       - name: Unit tests
         run: yarn test
 
+  deps-rules:
+    name: Dependency rules
+    runs-on: blacksmith-2vcpu-ubuntu-2204
+    permissions:
+      contents: read
+      pull-requests: write
+    env:
+      NODE_OPTIONS: '--max-old-space-size=6144'
+    steps:
+      - name: Checkout repo
+        uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v7.0.0
+        with:
+          # Depth 2 reaches HEAD^1 (the PR base / previous develop commit), so
+          # the check can report what this change did to the baselines.
+          fetch-depth: 2
+
+      - name: Setup workspace
+        uses: ./.github/actions/setup
+        with:
+          deploy-pkey-dotenv: ${{ secrets.DEPLOY_PKEY_DOTENV_REPO }}
+          deploy-pkey-scripts: ${{ secrets.DEPLOY_PKEY_SCRIPTS_REPO }}
+          deploy-pkey-sandbox: ${{ secrets.DEPLOY_PKEY_SANDBOX_REPO }}
+          ci-scripts: ${{ secrets.CI_SCRIPTS }}
+          google-services: 'true'
+          is-testing: 'true'
+
+      - name: Check dependency rules
+        run: yarn lint:deps
+
+      - name: Write step summary
+        if: always()
+        run: '[ -f deps-report.md ] && cat deps-report.md >> "$GITHUB_STEP_SUMMARY" || true'
+
+      # The check writes deps-comment.md whenever there is something to surface:
+      # failures the author must act on, or baseline changes worth noting on a
+      # passing run. No file on a successful run means the sticky comment is
+      # stale; the delete is success-gated so a crash before the reporting stage
+      # leaves a still-relevant comment in place.
+      # continue-on-error: fork PRs have a read-only token and cannot comment.
+      - name: Update PR comment
+        if: always() && github.event_name == 'pull_request' && hashFiles('deps-comment.md') != ''
+        continue-on-error: true
+        uses: marocchino/sticky-pull-request-comment@0ea0beb66eb9baf113663a64ec522f60e49231c0 # v3.0.4
+        with:
+          header: deps-rules
+          path: deps-comment.md
+
+      - name: Remove stale PR comment
+        if: success() && github.event_name == 'pull_request' && hashFiles('deps-comment.md') == ''
+        continue-on-error: true
+        uses: marocchino/sticky-pull-request-comment@0ea0beb66eb9baf113663a64ec522f60e49231c0 # v3.0.4
+        with:
+          header: deps-rules
+          delete: true
+
   notify-failure:
     name: Notify Slack on failure
-    needs: [audit, lint, unit-tests]
+    needs: [audit, lint, unit-tests, deps-rules]
     if: |
       always() &&
       github.event_name == 'push' &&

@@ -9155,7 +9155,7 @@ __metadata:
     d3-shape: "npm:3.2.0"
     date-fns: "npm:2.16.1"
     delay: "npm:4.4.0"
-    dependency-cruiser: "npm:17.4.3"
+    dependency-cruiser: "npm:18.0.0"
     deprecated-react-native-prop-types: "npm:2.2.0"
     dns.js: "npm:1.0.1"
     domain-browser: "npm:1.2.0"
@@ -9476,12 +9476,12 @@ __metadata:
   languageName: node
   linkType: hard
 
-"acorn@npm:8.16.0":
-  version: 8.16.0
-  resolution: "acorn@npm:8.16.0"
+"acorn@npm:8.17.0, acorn@npm:^8.11.0, acorn@npm:^8.15.0":
+  version: 8.17.0
+  resolution: "acorn@npm:8.17.0"
   bin:
     acorn: bin/acorn
-  checksum: 10c0/c9c52697227661b68d0debaf972222d4f622aa06b185824164e153438afa7b08273432ca43ea792cadb24dada1d46f6f6bb1ef8de9956979288cc1b96bf9914e
+  checksum: 10c0/5dcefea5f8f023b6cc24cbe71fb5a8112b601d36c4fa07d14e4e6ffc2ee47383332c46b36c766d9437725aa6660156eae50efa0c838719823b50d7c327c4ed42
   languageName: node
   linkType: hard
 
@@ -9491,15 +9491,6 @@ __metadata:
   bin:
     acorn: bin/acorn
   checksum: 10c0/bd0b2c2b0f334bbee48828ff897c12bd2eb5898d03bf556dcc8942022cec795ac5bb5b6b585e2de687db6231faf07e096b59a361231dd8c9344d5df5f7f0e526
-  languageName: node
-  linkType: hard
-
-"acorn@npm:^8.11.0, acorn@npm:^8.15.0":
-  version: 8.17.0
-  resolution: "acorn@npm:8.17.0"
-  bin:
-    acorn: bin/acorn
-  checksum: 10c0/5dcefea5f8f023b6cc24cbe71fb5a8112b601d36c4fa07d14e4e6ffc2ee47383332c46b36c766d9437725aa6660156eae50efa0c838719823b50d7c327c4ed42
   languageName: node
   linkType: hard
 
@@ -11681,10 +11672,10 @@ __metadata:
   languageName: node
   linkType: hard
 
-"commander@npm:14.0.3, commander@npm:^14.0.3":
-  version: 14.0.3
-  resolution: "commander@npm:14.0.3"
-  checksum: 10c0/755652564bbf56ff2ff083313912b326450d3f8d8c85f4b71416539c9a05c3c67dbd206821ca72635bf6b160e2afdefcb458e86b317827d5cb333b69ce7f1a24
+"commander@npm:15.0.0":
+  version: 15.0.0
+  resolution: "commander@npm:15.0.0"
+  checksum: 10c0/539229c171914ea1ccd45ee5f10d924289a12a684ea3a7a44147abe54003c35ed6de9ae4ad198d88c29fdf403dca0428451a388234e6dc01b6faa978fb207206
   languageName: node
   linkType: hard
 
@@ -11706,6 +11697,13 @@ __metadata:
   version: 13.1.0
   resolution: "commander@npm:13.1.0"
   checksum: 10c0/7b8c5544bba704fbe84b7cab2e043df8586d5c114a4c5b607f83ae5060708940ed0b5bd5838cf8ce27539cde265c1cbd59ce3c8c6b017ed3eec8943e3a415164
+  languageName: node
+  linkType: hard
+
+"commander@npm:^14.0.3":
+  version: 14.0.3
+  resolution: "commander@npm:14.0.3"
+  checksum: 10c0/755652564bbf56ff2ff083313912b326450d3f8d8c85f4b71416539c9a05c3c67dbd206821ca72635bf6b160e2afdefcb458e86b317827d5cb333b69ce7f1a24
   languageName: node
   linkType: hard
 
@@ -12560,17 +12558,17 @@ __metadata:
   languageName: node
   linkType: hard
 
-"dependency-cruiser@npm:17.4.3":
-  version: 17.4.3
-  resolution: "dependency-cruiser@npm:17.4.3"
+"dependency-cruiser@npm:18.0.0":
+  version: 18.0.0
+  resolution: "dependency-cruiser@npm:18.0.0"
   dependencies:
-    acorn: "npm:8.16.0"
+    acorn: "npm:8.17.0"
     acorn-jsx: "npm:5.3.2"
     acorn-jsx-walk: "npm:2.0.0"
     acorn-loose: "npm:8.5.2"
     acorn-walk: "npm:8.3.5"
-    commander: "npm:14.0.3"
-    enhanced-resolve: "npm:5.22.1"
+    commander: "npm:15.0.0"
+    enhanced-resolve: "npm:5.24.1"
     ignore: "npm:7.0.5"
     interpret: "npm:3.1.1"
     is-installed-globally: "npm:1.0.0"
@@ -12579,9 +12577,9 @@ __metadata:
     prompts: "npm:2.4.2"
     rechoir: "npm:0.8.0"
     safe-regex: "npm:2.1.1"
-    semver: "npm:7.8.1"
+    semver: "npm:7.8.5"
     tsconfig-paths-webpack-plugin: "npm:4.2.0"
-    watskeburt: "npm:5.0.3"
+    watskeburt: "npm:6.0.0"
   bin:
     depcruise: bin/dependency-cruise.mjs
     depcruise-baseline: bin/depcruise-baseline.mjs
@@ -12589,7 +12587,7 @@ __metadata:
     depcruise-wrap-stream-in-html: bin/wrap-stream-in-html.mjs
     dependency-cruise: bin/dependency-cruise.mjs
     dependency-cruiser: bin/dependency-cruise.mjs
-  checksum: 10c0/814fc3738a0d1c64eed101590e167d2c6581b44f4e0c75062c856daa547396e554ac19b3c7ae686a3c18bdabd7b1273a4765651f155f94d3151d024bb3c55888
+  checksum: 10c0/df937ef82c266d2d0dec9ee9e3a0168cdc8aed290cf1edd2d1b4df7a31f1b841648db6b9a69739b2a59f7701bf4a1e3ead574c7c9798b3ca642a4aab23179f3f
   languageName: node
   linkType: hard
 
@@ -13022,13 +13020,13 @@ __metadata:
   languageName: node
   linkType: hard
 
-"enhanced-resolve@npm:5.22.1":
-  version: 5.22.1
-  resolution: "enhanced-resolve@npm:5.22.1"
+"enhanced-resolve@npm:5.24.1, enhanced-resolve@npm:^5.7.0":
+  version: 5.24.1
+  resolution: "enhanced-resolve@npm:5.24.1"
   dependencies:
     graceful-fs: "npm:^4.2.4"
     tapable: "npm:^2.3.3"
-  checksum: 10c0/cce628d13968c1a1e9d80fdf3bf010a121e48f075e91e05ad6eef46848e411fab447a6514a23219bff37cefc342b7e899c4beaee2a7619767eeca55b285b06c1
+  checksum: 10c0/8716005cfe61b9fd528881d4ff59298c26aeae04184f2f8ae4145886dec71295eaee40a22485e70dd70d1a1b0ef01ae143dffa10c7c0d5f71648398bc0d666ba
   languageName: node
   linkType: hard
 
@@ -13039,16 +13037,6 @@ __metadata:
     graceful-fs: "npm:^4.2.4"
     tapable: "npm:^2.2.0"
   checksum: 10c0/81a0515675eca17efdba2cf5bad87abc91a528fc1191aad50e275e74f045b41506167d420099022da7181c8d787170ea41e4a11a0b10b7a16f6237daecb15370
-  languageName: node
-  linkType: hard
-
-"enhanced-resolve@npm:^5.7.0":
-  version: 5.24.1
-  resolution: "enhanced-resolve@npm:5.24.1"
-  dependencies:
-    graceful-fs: "npm:^4.2.4"
-    tapable: "npm:^2.3.3"
-  checksum: 10c0/8716005cfe61b9fd528881d4ff59298c26aeae04184f2f8ae4145886dec71295eaee40a22485e70dd70d1a1b0ef01ae143dffa10c7c0d5f71648398bc0d666ba
   languageName: node
   linkType: hard
 
@@ -23771,12 +23759,12 @@ __metadata:
   languageName: node
   linkType: hard
 
-"semver@npm:7.8.1":
-  version: 7.8.1
-  resolution: "semver@npm:7.8.1"
+"semver@npm:7.8.5":
+  version: 7.8.5
+  resolution: "semver@npm:7.8.5"
   bin:
     semver: bin/semver.js
-  checksum: 10c0/92d6871d6347e1f99d0ba396a70f2545ccf2a032cda3d378fa0699edf7506b5c6d266aed55c8b88e72bd91a30d2351e4f39db479375374430fcdc4b58f4e3c1a
+  checksum: 10c0/b1f3127a5be8125a94f37188b361c212466c292c6910adce3ec106cff5dc211ccaedc4739c11bb70fda59d6fc1f040a9bca289f4e093451521a2372e5231fe0c
   languageName: node
   linkType: hard
 
@@ -26539,12 +26527,12 @@ __metadata:
   languageName: node
   linkType: hard
 
-"watskeburt@npm:5.0.3":
-  version: 5.0.3
-  resolution: "watskeburt@npm:5.0.3"
+"watskeburt@npm:6.0.0":
+  version: 6.0.0
+  resolution: "watskeburt@npm:6.0.0"
   bin:
     watskeburt: dist/run-cli.js
-  checksum: 10c0/2dabe9391362dfeab938c5f3ba5ea738c4dc5138056ff671da749a5e48344120d3236f01d44f3fbc0492355d5051c39d93e99254a432632b6729421942e4143f
+  checksum: 10c0/b506c3a97c8130c889ad762b6be8b6abd913f65f6f4b03dccfeee7dceff51a6404e7d9bcb0566477abf53661ad727c22c399a9c5b82cf7a5ac7aa29e6d593849
   languageName: node
   linkType: hard
 

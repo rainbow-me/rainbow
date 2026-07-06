@@ -136,3 +136,7 @@ anvil.log
 
 .rnef/
 .rock/
+
+# deps-check output consumed by CI
+deps-report.md
+deps-comment.md
