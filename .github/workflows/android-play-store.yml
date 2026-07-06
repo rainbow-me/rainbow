@@ -147,10 +147,6 @@ jobs:
           RNEF_UPLOAD_STORE_PASSWORD: ${{ secrets.ANDROID_PROD_KEYSTORE_PASSWORD }}
           RNEF_UPLOAD_KEY_ALIAS: ${{ vars.ANDROID_PROD_KEY_ALIAS }}
           RNEF_UPLOAD_KEY_PASSWORD: ${{ secrets.ANDROID_PROD_KEY_PASSWORD }}
-          # Short-circuits the ? in build.gradle's `def pass = ...` so getPassword()
-          # (which shells to `secret-tool` on Linux) is never called. `pass` is unused
-          # on the CI signing path anyway; this just avoids needing libsecret-tools.
-          RAINBOW_KEY_ANDROID_PASSWORD: unused
         run: |
           ./gradlew bundleRelease assembleRelease \
             -PRNEF_UPLOAD_STORE_FILE="$RUNNER_TEMP/rainbow.keystore" \
