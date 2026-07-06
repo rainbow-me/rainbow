@@ -507,7 +507,7 @@
         "passkeyRegistered": "Chave de acesso registrada",
         "hasLinkedWallet": "Tem carteira vinculada"
       },
-      "cash_clear_linked_card": "Clear linked card",
+      "cash_clear_linked_card": "Desvincular cartão",
       "cash_order_outcome": {
         "title": "Resultado da ordem de dinheiro",
         "succeed": "Vai ser bem-sucedido",
@@ -1620,15 +1620,15 @@
         },
         "card_details": {
           "title": "Insira os dados do cartão",
-          "card_number": "Card number",
-          "expiry": "MM / YY",
+          "card_number": "Número do cartão",
+          "expiry": "MM / AA",
           "cvc": "CVC",
-          "zip": "ZIP code",
+          "zip": "CEP",
           "try_again": "Tentar novamente",
-          "submit_error": "We couldn't link your card. Please try again."
+          "submit_error": "Não foi possível vincular seu cartão. Tente novamente."
         },
         "card_added": {
-          "title": "Card added"
+          "title": "Cartão adicionado"
         }
       }
     },
