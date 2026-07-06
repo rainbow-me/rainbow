@@ -2,7 +2,6 @@ import Routes from '@/navigation/routesNames';
 import { type CashDepositSetupRoute } from '@/navigation/types';
 
 import {
-  deriveCashDepositSetupStatus,
   isCashDepositSetupComplete,
   type CashDepositSetupFacts,
   type CashDepositSetupStatus,
@@ -24,7 +23,8 @@ export const SETUP_STEP_ORDER: readonly CashDepositSetupStep[] = [
   { id: Routes.CASH_SETUP_PASSKEY, milestone: 'passkeyRegistered' },
   { id: Routes.CASH_SETUP_EMAIL },
   { id: Routes.CASH_SETUP_ALL_DONE },
-  { id: Routes.CASH_SETUP_CARD_DETAILS, milestone: 'hasLinkedCard' },
+  { id: Routes.CASH_SETUP_CARD_DETAILS },
+  { id: Routes.CASH_SETUP_CARD_ADDED },
 ];
 
 export function getSetupStep(current: CashDepositSetupRoute): CashDepositSetupStep | undefined {
@@ -43,8 +43,7 @@ const SETUP_STEP_FOR_STATUS: Record<Exclude<CashDepositSetupStatus, 'ready'>, Ca
   needsWallet: Routes.CASH_SETUP_CARD_DETAILS,
 };
 
-export function getFirstSetupStep(facts: CashDepositSetupFacts): CashDepositSetupRoute | undefined {
-  const status = deriveCashDepositSetupStatus(facts);
+export function getFirstSetupStep(status: CashDepositSetupStatus): CashDepositSetupRoute | undefined {
   if (isCashDepositSetupComplete(status)) return;
   return SETUP_STEP_FOR_STATUS[status];
 }

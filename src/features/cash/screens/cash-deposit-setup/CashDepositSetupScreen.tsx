@@ -6,16 +6,17 @@ import { useListen } from '@storesjs/stores';
 
 import { SPRING_CONFIGS } from '@/components/animations/animationConfigs';
 import { SmoothPager, usePagerNavigation } from '@/components/SmoothPager/SmoothPager';
-import { Box, useBackgroundColor } from '@/design-system';
+import { Box } from '@/design-system';
 import { useCleanup } from '@/hooks/useCleanup';
 import { useStableValue } from '@/hooks/useStableValue';
 import Routes from '@/navigation/routesNames';
 import { type CashDepositSetupRoute, type RootStackParamList } from '@/navigation/types';
 
-import { useCashDepositSetupStore } from '../../stores/cashDepositSetupStore';
+import { useCashDepositSetupStatusStore } from '../../stores/cashDepositSetupStore';
 import { CashDepositSetupNavigation, CashDepositSetupNavigator, useCashDepositSetupNavigationStore } from './cashDepositSetupNavigator';
 import { getFirstSetupStep, SETUP_STEP_ORDER } from './steps';
 import { AllDoneStep } from './steps/AllDoneStep';
+import { CardAddedStep } from './steps/CardAddedStep';
 import { CardDetailsStep } from './steps/CardDetailsStep';
 import { ConfirmPhoneStep } from './steps/ConfirmPhoneStep';
 import { EmailStep } from './steps/EmailStep';
@@ -35,14 +36,14 @@ const STEP_COMPONENTS: Record<CashDepositSetupRoute, React.ReactElement> = {
   [Routes.CASH_SETUP_EMAIL]: <EmailStep />,
   [Routes.CASH_SETUP_ALL_DONE]: <AllDoneStep />,
   [Routes.CASH_SETUP_CARD_DETAILS]: <CardDetailsStep />,
+  [Routes.CASH_SETUP_CARD_ADDED]: <CardAddedStep />,
 };
 
 export const CashDepositSetupScreen = memo(function CashDepositSetupScreen() {
   const { params } = useRoute<RouteProp<RootStackParamList, typeof Routes.CASH_DEPOSIT_SETUP_SCREEN>>();
   const { ref, goToPage } = usePagerNavigation();
-  const backgroundColor = useBackgroundColor('surfacePrimary');
   const initialPage = useStableValue(
-    () => params?.initialStep ?? getFirstSetupStep(useCashDepositSetupStore.getState().facts) ?? SETUP_STEP_ORDER[0].id
+    () => params?.initialStep ?? getFirstSetupStep(useCashDepositSetupStatusStore.getState()) ?? SETUP_STEP_ORDER[0].id
   );
 
   // onNewIndex doesn't fire on mount, so seed the navigator with the page the pager opens on.
@@ -59,7 +60,7 @@ export const CashDepositSetupScreen = memo(function CashDepositSetupScreen() {
   useCleanup(CashDepositSetupNavigation.resetNavigationState);
 
   return (
-    <Box backgroundColor={backgroundColor} style={styles.container}>
+    <Box style={styles.container}>
       {useStableValue(() => (
         <SmoothPager
           enableSwipeToGoBack

@@ -157,7 +157,8 @@ export type CashDepositSetupRoute =
   | typeof Routes.CASH_SETUP_PASSKEY
   | typeof Routes.CASH_SETUP_EMAIL
   | typeof Routes.CASH_SETUP_ALL_DONE
-  | typeof Routes.CASH_SETUP_CARD_DETAILS;
+  | typeof Routes.CASH_SETUP_CARD_DETAILS
+  | typeof Routes.CASH_SETUP_CARD_ADDED;
 
 export interface ExplainSheetParameterMap extends CurrentBaseFeeTypes {
   network: { chainId: ChainId };

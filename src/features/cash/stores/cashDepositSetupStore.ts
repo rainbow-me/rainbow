@@ -1,5 +1,6 @@
-import { createBaseStore } from '@storesjs/stores';
+import { createBaseStore, createDerivedStore } from '@storesjs/stores';
 
+import { useCashPaymentMethodStore } from './cashPaymentMethodStore';
 import {
   deriveCashDepositSetupStatus,
   EMPTY_CASH_DEPOSIT_SETUP_FACTS,
@@ -20,6 +21,11 @@ export const useCashDepositSetupStore = createBaseStore<CashDepositSetupStore>(
   { storageKey: 'cashDepositSetup' }
 );
 
-export function useCashDepositSetupStatus(): CashDepositSetupStatus {
-  return useCashDepositSetupStore(state => deriveCashDepositSetupStatus(state.facts));
-}
+export const useCashDepositSetupStatusStore = createDerivedStore<CashDepositSetupStatus>(
+  $ => {
+    const facts = $(useCashDepositSetupStore, state => state.facts);
+    const linkedCard = $(useCashPaymentMethodStore, state => state.linkedCard);
+    return deriveCashDepositSetupStatus(facts, linkedCard != null);
+  },
+  { lockDependencies: true }
+);

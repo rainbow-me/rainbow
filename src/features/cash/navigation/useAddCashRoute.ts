@@ -1,6 +1,7 @@
-import { useIsCashEnabled } from '@/features/cash/hooks/useIsCashEnabled';
-import { getAddCashRoute } from '@/features/cash/navigation/getAddCashRoute';
-import { useCashDepositSetupStatus } from '@/features/cash/stores/cashDepositSetupStore';
+import { useCashDepositSetupStatusStore } from '@/features/cash/stores/cashDepositSetupStore';
+
+import { useIsCashEnabled } from '../hooks/useIsCashEnabled';
+import { getAddCashRoute } from './getAddCashRoute';
 
 /**
  * The Add Cash entry point: the `route` to open (given the cash flag and the member's setup
@@ -9,6 +10,6 @@ import { useCashDepositSetupStatus } from '@/features/cash/stores/cashDepositSet
  */
 export function useAddCashRoute() {
   const isCashEnabled = useIsCashEnabled();
-  const setupStatus = useCashDepositSetupStatus();
+  const setupStatus = useCashDepositSetupStatusStore();
   return { route: getAddCashRoute(isCashEnabled, setupStatus), isCashEnabled };
 }

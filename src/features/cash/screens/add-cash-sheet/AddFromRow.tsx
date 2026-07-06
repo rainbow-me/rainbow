@@ -3,7 +3,7 @@ import { StyleSheet } from 'react-native';
 
 import ButtonPressAnimation from '@/components/animations/ButtonPressAnimation';
 import { Box, Inline, Text, useForegroundColor } from '@/design-system';
-import { type LinkedCard } from '@/features/cash/services/authSession';
+import { type LinkedCard } from '@/features/cash/stores/cashPaymentMethodStore';
 import * as i18n from '@/languages';
 
 function VisaBadge() {

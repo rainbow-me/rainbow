@@ -4,6 +4,7 @@ import { StyleSheet } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 import ButtonPressAnimation from '@/components/animations/ButtonPressAnimation';
+import Spinner from '@/components/Spinner';
 import { Box, Text, useBackgroundColor, useForegroundColor } from '@/design-system';
 import * as i18n from '@/languages';
 
@@ -12,13 +13,30 @@ import { useCashDepositSetupNavigation } from '../useCashDepositSetupNavigation'
 type SetupStepLayoutProps = {
   title: string;
   children?: ReactNode;
+  /** Overrides the default "Next" CTA label. */
+  actionLabel?: string;
+  /** Overrides the default `next()` press handler. */
+  onAction?: () => void;
+  actionDisabled?: boolean;
+  actionLoading?: boolean;
+  backDisabled?: boolean;
 };
 
-export const SetupStepLayout = memo(function SetupStepLayout({ title, children }: SetupStepLayoutProps) {
+export const SetupStepLayout = memo(function SetupStepLayout({
+  title,
+  children,
+  actionLabel,
+  onAction,
+  actionDisabled = false,
+  actionLoading = false,
+  backDisabled = false,
+}: SetupStepLayoutProps) {
   const { next, back } = useCashDepositSetupNavigation();
   const blue = useForegroundColor('blue');
-  const surfaceSecondary = useBackgroundColor('surfaceSecondary');
+  const surfaceSecondaryElevated = useBackgroundColor('surfaceSecondaryElevated');
   const insets = useSafeAreaInsets();
+
+  const disabled = actionDisabled || actionLoading;
 
   return (
     <Box
@@ -28,13 +46,13 @@ export const SetupStepLayout = memo(function SetupStepLayout({ title, children }
       width="full"
       style={{ paddingBottom: insets.bottom + 16, paddingTop: insets.top + 24 }}
     >
-      <ButtonPressAnimation onPress={back} scaleTo={0.8} testID="cash-setup-back">
+      <ButtonPressAnimation disabled={backDisabled} onPress={back} scaleTo={0.8} testID="cash-setup-back">
         <Box
           alignItems="center"
           borderRadius={18}
           height={{ custom: 36 }}
           justifyContent="center"
-          style={{ backgroundColor: surfaceSecondary }}
+          style={{ backgroundColor: surfaceSecondaryElevated }}
           width={{ custom: 36 }}
         >
           <Text align="center" color="label" size="17pt" weight="heavy">
@@ -51,11 +69,21 @@ export const SetupStepLayout = memo(function SetupStepLayout({ title, children }
 
       <Box style={styles.body}>{children}</Box>
 
-      <ButtonPressAnimation onPress={next} scaleTo={0.96} testID="cash-setup-next">
-        <Box alignItems="center" borderRadius={52} height={{ custom: 48 }} justifyContent="center" style={{ backgroundColor: blue }}>
-          <Text align="center" color="white" size="20pt" weight="heavy">
-            {i18n.t(i18n.l.cash.deposit_setup.next)}
-          </Text>
+      <ButtonPressAnimation disabled={disabled} onPress={onAction ?? next} scaleTo={0.96} testID="cash-setup-next">
+        <Box
+          alignItems="center"
+          borderRadius={52}
+          height={{ custom: 48 }}
+          justifyContent="center"
+          style={[{ backgroundColor: blue }, disabled && styles.actionDisabled]}
+        >
+          {actionLoading ? (
+            <Spinner color="white" size={24} />
+          ) : (
+            <Text align="center" color="white" size="20pt" weight="heavy">
+              {actionLabel ?? i18n.t(i18n.l.cash.deposit_setup.next)}
+            </Text>
+          )}
         </Box>
       </ButtonPressAnimation>
     </Box>
@@ -63,6 +91,9 @@ export const SetupStepLayout = memo(function SetupStepLayout({ title, children }
 });
 
 const styles = StyleSheet.create({
+  actionDisabled: {
+    opacity: 0.5,
+  },
   body: {
     flex: 1,
   },

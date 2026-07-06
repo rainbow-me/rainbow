@@ -27,11 +27,31 @@ tags:
     id: cash-deposit-intro-sign-in
 - tapOn:
     id: cash-deposit-intro-set-up-account
-# Walk all 9 Setup steps;
+# Walk the Setup steps until the card details step.
+- repeat:
+    while:
+      notVisible:
+        text: 'Enter card details'
+    commands:
+      - tapOn:
+          id: cash-setup-next
+      - waitForAnimationToEnd
+# Enter fake but valid Visa card details so "Link card" enables.
+- tapOn: 'Card number'
+- inputText: '4242424242424242'
+- tapOn: 'MM / YY'
+- inputText: '1234'
+- tapOn: 'CVC'
+- inputText: '123'
+- tapOn: 'ZIP code'
+- inputText: '12345'
+- pressKey: Enter
 - tapOn:
     id: cash-setup-next
-    repeat: 9
-    delay: 500
+- assertVisible:
+    text: 'Card added'
 # The final Next links the wallet and drops into Add Cash.
+- tapOn:
+    id: cash-setup-next
 - assertVisible:
     id: cash-deposit-add-cash-add-from

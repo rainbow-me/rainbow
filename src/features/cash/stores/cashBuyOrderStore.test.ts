@@ -43,7 +43,7 @@ const PURCHASE_TRANSACTION = { hash: '0xtx', type: 'purchase' };
 
 // ---- Fixtures --------------------------------------------------------------
 
-const SPEC: BuyOrderSpec = { depositAmount: '50', id: 'order-1', walletAddress: '0xabc' };
+const SPEC: BuyOrderSpec = { cardId: 'card-1', depositAmount: '50', id: 'order-1', walletAddress: '0xabc' };
 
 const ORDER_COMMON = {
   id: 'order-1',
@@ -63,7 +63,7 @@ const COMPLETED_ORDER: BuyOrder = {
 const FAILED_PAYMENT_ORDER: BuyOrder = { ...ORDER_COMMON, status: OrderStatus.Failed, failureReason: OrderFailureReason.PaymentRejected };
 const FAILED_GENERIC_ORDER: BuyOrder = { ...ORDER_COMMON, status: OrderStatus.Failed, failureReason: OrderFailureReason.Unspecified };
 
-const SUBMIT_INPUT = { depositAmount: '50', walletAddress: '0xabc' };
+const SUBMIT_INPUT = { cardId: 'card-1', depositAmount: '50', walletAddress: '0xabc' };
 
 const store = useCashBuyOrderStore;
 const getState = () => store.getState();
@@ -72,7 +72,12 @@ const phase = () => selectCashBuyPhase(getState());
 beforeEach(() => {
   jest.clearAllMocks();
   store.setState({ spec: null, order: null, errorCode: null });
-  createBuyOrderSpec.mockImplementation(({ depositAmount, walletAddress }) => ({ depositAmount, walletAddress, id: 'order-1' }));
+  createBuyOrderSpec.mockImplementation(({ cardId, depositAmount, walletAddress }) => ({
+    cardId,
+    depositAmount,
+    walletAddress,
+    id: 'order-1',
+  }));
   buildPurchaseTransaction.mockReturnValue(PURCHASE_TRANSACTION);
 });
 

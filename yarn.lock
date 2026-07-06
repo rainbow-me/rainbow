@@ -1799,6 +1799,16 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@bivoglobal/payment-react-native@npm:0.0.2":
+  version: 0.0.2
+  resolution: "@bivoglobal/payment-react-native@npm:0.0.2"
+  peerDependencies:
+    react: "*"
+    react-native: "*"
+  checksum: 10c0/8925b5d3dfcf0c997128975ccb64ea576db93f30e8ba94e7817e0cf6a11c10e9771a8e6bbad79f9313295b5a07dd19099ad335bd34e10e2651236a9d9b65e498
+  languageName: node
+  linkType: hard
+
 "@bradgarropy/use-countdown@npm:1.4.1":
   version: 1.4.1
   resolution: "@bradgarropy/use-countdown@npm:1.4.1"
@@ -9020,6 +9030,7 @@ __metadata:
     "@babel/plugin-transform-runtime": "npm:^7.25.0"
     "@babel/runtime": "npm:^7.25.0"
     "@bankify/react-native-animate-number": "npm:0.2.1"
+    "@bivoglobal/payment-react-native": "npm:0.0.2"
     "@bradgarropy/use-countdown": "npm:1.4.1"
     "@candlefinance/faster-image": "npm:1.6.2"
     "@capsizecss/core": "npm:3.0.0"

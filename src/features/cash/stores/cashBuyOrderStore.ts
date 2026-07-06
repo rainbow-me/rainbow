@@ -16,7 +16,7 @@ type CashBuyOrderState = {
   order: BuyOrder | null;
   errorCode: CashBuyErrorCode | null;
 
-  submitBuyOrder: (input: { depositAmount: string; walletAddress: string }) => Promise<void>;
+  submitBuyOrder: (input: Omit<BuyOrderSpec, 'id'>) => Promise<void>;
   syncActiveOrder: (abortController?: AbortController) => Promise<void>;
   resumePendingSubmission: () => Promise<void>;
   reset: () => void;
@@ -94,12 +94,12 @@ export const useCashBuyOrderStore = createBaseStore<CashBuyOrderState>(
     return {
       ...INITIAL_STATE,
 
-      submitBuyOrder: async ({ depositAmount, walletAddress }) => {
+      submitBuyOrder: async ({ cardId, depositAmount, walletAddress }) => {
         if (selectCashBuyPhase(get()) === 'pending') return;
 
         analytics.track(analytics.event.cashBuyOrderSubmitted, { amount: depositAmount });
 
-        const orderSpec = cashOrderService.createBuyOrderSpec({ depositAmount, walletAddress });
+        const orderSpec = cashOrderService.createBuyOrderSpec({ cardId, depositAmount, walletAddress });
         set({ spec: orderSpec, order: null, errorCode: null });
         await submitBuyOrderSpec(orderSpec);
       },

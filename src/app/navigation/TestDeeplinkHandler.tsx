@@ -4,6 +4,7 @@ import { Linking } from 'react-native';
 import URL from 'url-parse';
 
 import { useCashDepositSetupStore } from '@/features/cash/stores/cashDepositSetupStore';
+import { MOCK_LINKED_CARD, useCashPaymentMethodStore } from '@/features/cash/stores/cashPaymentMethodStore';
 import { isCashDepositSetupFactKey } from '@/features/cash/stores/deriveCashDepositSetupStatus';
 import { type ExperimentalConfigKey } from '@/features/config/constants/experimental';
 import { useExperimentalConfigStore } from '@/features/config/stores/experimentalConfigStore';
@@ -45,6 +46,13 @@ export function TestDeeplinkHandler() {
         case 'setCashDepositSetupFact':
           if (query.fact && isCashDepositSetupFactKey(query.fact)) {
             useCashDepositSetupStore.getState().setFact(query.fact, query.value === 'true');
+          }
+          break;
+        case 'setCashLinkedCard':
+          if (query.value === 'true') {
+            useCashPaymentMethodStore.getState().setLinkedCard(MOCK_LINKED_CARD);
+          } else {
+            useCashPaymentMethodStore.getState().clearLinkedCard();
           }
           break;
         case 'sandbox-test':

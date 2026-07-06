@@ -505,9 +505,9 @@
         "phoneVerified": "Phone verified",
         "kycPassed": "KYC passed",
         "passkeyRegistered": "Passkey registered",
-        "hasLinkedCard": "Has linked card",
         "hasLinkedWallet": "Has linked wallet"
       },
+      "cash_clear_linked_card": "Clear linked card",
       "cash_order_outcome": {
         "title": "Cash order outcome",
         "succeed": "Will succeed",
@@ -1584,6 +1584,7 @@
       },
       "deposit_setup": {
         "next": "Next",
+        "finish": "Finish",
         "phone": { "title": "Connect your phone number" },
         "confirm_phone": { "title": "Confirm your phone" },
         "identity": { "title": "Enter your information" },
@@ -1592,7 +1593,16 @@
         "passkey": { "title": "Add a Passkey" },
         "email": { "title": "Enter email" },
         "all_done": { "title": "You're all done" },
-        "card_details": { "title": "Enter card details" }
+        "card_details": {
+          "title": "Enter card details",
+          "card_number": "Card number",
+          "expiry": "MM / YY",
+          "cvc": "CVC",
+          "zip": "ZIP code",
+          "try_again": "Try again",
+          "submit_error": "We couldn't link your card. Please try again."
+        },
+        "card_added": { "title": "Card added" }
       }
     },
     "points": {

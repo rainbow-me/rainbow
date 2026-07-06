@@ -16,9 +16,8 @@ appId: ${APP_ID}
       FACT: passkeyRegistered
       VALUE: 'true'
 - runFlow:
-    file: SetCashDepositSetupFact.yaml
+    file: SetCashLinkedCard.yaml
     env:
-      FACT: hasLinkedCard
       VALUE: 'true'
 - runFlow:
     file: SetCashDepositSetupFact.yaml

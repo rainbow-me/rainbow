@@ -18,7 +18,8 @@ import {
   useCashMockOrderOutcomeStore,
   type CashMockOrderOutcome,
 } from '@/features/cash/stores/cashMockOrderOutcomeStore';
-import { type CashDepositSetupFacts } from '@/features/cash/stores/deriveCashDepositSetupStatus';
+import { useCashPaymentMethodStore } from '@/features/cash/stores/cashPaymentMethodStore';
+import { EMPTY_CASH_DEPOSIT_SETUP_FACTS, type CashDepositSetupFacts } from '@/features/cash/stores/deriveCashDepositSetupStatus';
 import { defaultConfig, defaultConfigValues, type ExperimentalConfigKey } from '@/features/config/constants/experimental';
 import { useExperimentalConfigStore } from '@/features/config/stores/experimentalConfigStore';
 import { RevokeReason } from '@/features/delegation/screens/RevokeDelegationPanel';
@@ -521,7 +522,7 @@ export const DevSection = () => {
             })}
           </Menu>
           <Menu header={i18n.t(i18n.l.developer_settings.headers.cash_settings)}>
-            {(Object.keys(cashDepositSetupFacts) as (keyof CashDepositSetupFacts)[]).map(key => (
+            {(Object.keys(EMPTY_CASH_DEPOSIT_SETUP_FACTS) as (keyof CashDepositSetupFacts)[]).map(key => (
               <MenuItem
                 key={key}
                 onPress={() => setCashDepositSetupFact(key, !cashDepositSetupFacts[key])}
@@ -530,6 +531,11 @@ export const DevSection = () => {
                 titleComponent={<MenuItem.Title text={i18n.t(i18n.l.developer_settings.cash_deposit_setup_facts[key])} />}
               />
             ))}
+            <MenuItem
+              onPress={() => useCashPaymentMethodStore.getState().clearLinkedCard()}
+              size={52}
+              titleComponent={<MenuItem.Title text={i18n.t(i18n.l.developer_settings.cash_clear_linked_card)} />}
+            />
             <CashMockOrderOutcomeMenuItem />
           </Menu>
           <Menu header={i18n.t(i18n.l.developer_settings.headers.feature_flags)}>

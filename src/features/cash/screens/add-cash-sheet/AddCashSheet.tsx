@@ -1,7 +1,7 @@
 import React, { memo, useCallback, useEffect, useState } from 'react';
 import { Platform, StyleSheet } from 'react-native';
 
-import { useFocusEffect, useNavigation } from '@react-navigation/native';
+import { useFocusEffect } from '@react-navigation/native';
 import Animated, { FadeIn, FadeOut, LinearTransition } from 'react-native-reanimated';
 
 import { analytics } from '@/analytics';
@@ -14,14 +14,15 @@ import { HoldToActivateButton } from '@/components/hold-to-activate-button/HoldT
 import { NumberPad } from '@/components/number-pad/NumberPad';
 import { DEFAULT_HANDLE_COLOR_DARK, DEFAULT_HANDLE_COLOR_LIGHT, PanelSheet } from '@/components/PanelSheet/PanelSheet';
 import { Box, Inline, Text, useColorMode, useForegroundColor } from '@/design-system';
-import { type LinkedCard } from '@/features/cash/services/authSession';
-import { cashOrderService } from '@/features/cash/services/cashOrderService';
 import { cashBuyOrderActions, useCashBuyOrderStore, useCashBuyPhase } from '@/features/cash/stores/cashBuyOrderStore';
+import { useCashLinkedCard, type LinkedCard } from '@/features/cash/stores/cashPaymentMethodStore';
 import { ChainId } from '@/features/network/types/backendNetworks';
 import { opacity } from '@/framework/ui/utils/opacity';
 import { WrappedAlert as Alert } from '@/helpers/alert';
 import usePrevious from '@/hooks/usePrevious';
 import * as i18n from '@/languages';
+import { useNavigation } from '@/navigation/Navigation';
+import Routes from '@/navigation/routesNames';
 import { USDC_ADDRESS } from '@/references/constants';
 import { useAccountAddress, useAccountProfileInfo } from '@/state/wallets/walletsStore';
 import { DEVICE_HEIGHT, DEVICE_WIDTH } from '@/utils/deviceUtils';
@@ -291,6 +292,18 @@ function KeypadAmountContent({
 }
 
 export const AddCashSheet = memo(function AddCashSheet() {
+  const linkedCard = useCashLinkedCard();
+  const navigation = useNavigation();
+
+  useEffect(() => {
+    if (!linkedCard) navigation.navigate(Routes.CASH_DEPOSIT_SETUP_SCREEN);
+  }, [linkedCard, navigation]);
+
+  if (!linkedCard) return null;
+  return <AddCashSheetContent linkedCard={linkedCard} />;
+});
+
+const AddCashSheetContent = memo(function AddCashSheetContent({ linkedCard }: { linkedCard: LinkedCard }) {
   const [mode, setMode] = useState<AddCashMode>('presets');
   const amount = useAddCashAmount(DEFAULT_SELECTED_AMOUNT);
   const { resetKeypadAmount } = amount;
@@ -301,7 +314,6 @@ export const AddCashSheet = memo(function AddCashSheet() {
   const previousPhase = usePrevious(phase);
   const errorCode = useCashBuyOrderStore(state => state.errorCode);
   const isProcessing = phase === 'pending';
-  const linkedCard = cashOrderService.getLinkedCard();
 
   useEffect(() => {
     if (previousPhase !== undefined) return;
@@ -358,8 +370,8 @@ export const AddCashSheet = memo(function AddCashSheet() {
   }, [mode, amount.canSubmit, amount.amount]);
 
   const handleHoldToAdd = useCallback(() => {
-    cashBuyOrderActions.submitBuyOrder({ depositAmount: amount.amount, walletAddress: accountAddress });
-  }, [amount.amount, accountAddress]);
+    cashBuyOrderActions.submitBuyOrder({ cardId: linkedCard.id, depositAmount: amount.amount, walletAddress: accountAddress });
+  }, [accountAddress, amount.amount, linkedCard.id]);
 
   const handleAddFrom = useCallback(() => {
     // TODO(cash): open the payment-method picker once card linking lands (APP-3780).

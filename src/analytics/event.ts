@@ -126,6 +126,8 @@ export const event = {
   cashBuyOrderSubmitted: 'cash.buy_submitted',
   cashBuyOrderCompleted: 'cash.buy_completed',
   cashBuyOrderFailed: 'cash.buy_failed',
+  cashCardLinked: 'cash.card_linked',
+  cashCardLinkFailed: 'cash.card_link_failed',
   rewardsPressedPendingEarningsCard: 'rewards.pressed_pending_earnings_card',
   rewardsPressedAvailableCard: 'rewards.pressed_available_card',
   rewardsPressedPositionCard: 'rewards.pressed_position_card',
@@ -533,6 +535,13 @@ export type EventProperties = {
     orderId: string;
     failureReason: OrderFailureReason | null;
     errorCode: 'PAYMENT_REJECTED' | 'GENERIC';
+  };
+  [event.cashCardLinked]: {
+    /** Display brand of the linked card, e.g. "Visa". */
+    brand: string;
+  };
+  [event.cashCardLinkFailed]: {
+    reason: string;
   };
   [event.rewardsPressedPendingEarningsCard]: undefined;
   [event.rewardsPressedAvailableCard]: undefined;
