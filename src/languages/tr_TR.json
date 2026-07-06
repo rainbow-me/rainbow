@@ -505,9 +505,9 @@
         "phoneVerified": "Telefon doğrulandı",
         "kycPassed": "KYC tamamlandı",
         "passkeyRegistered": "Geçiş anahtarı kaydedildi",
-        "hasLinkedCard": "Bağlı kartı var",
         "hasLinkedWallet": "Bağlı cüzdanı var"
       },
+      "cash_clear_linked_card": "Clear linked card",
       "cash_order_outcome": {
         "title": "Nakit sipariş sonucu",
         "succeed": "Başarılı olacak",
@@ -1593,6 +1593,7 @@
       },
       "deposit_setup": {
         "next": "Sonraki",
+        "finish": "Bitir",
         "phone": {
           "title": "Telefon numaranızı bağlayın"
         },
@@ -1618,7 +1619,16 @@
           "title": "İşlem tamam"
         },
         "card_details": {
-          "title": "Kart bilgilerini girin"
+          "title": "Kart bilgilerini girin",
+          "card_number": "Card number",
+          "expiry": "MM / YY",
+          "cvc": "CVC",
+          "zip": "ZIP code",
+          "try_again": "Tekrar dene",
+          "submit_error": "We couldn't link your card. Please try again."
+        },
+        "card_added": {
+          "title": "Card added"
         }
       }
     },
