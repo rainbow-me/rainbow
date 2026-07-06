@@ -505,9 +505,9 @@
         "phoneVerified": "Nomor telepon terverifikasi",
         "kycPassed": "KYC lulus",
         "passkeyRegistered": "Passkey terdaftar",
-        "hasLinkedCard": "Kartu tertaut",
         "hasLinkedWallet": "Wallet tertaut"
       },
+      "cash_clear_linked_card": "Clear linked card",
       "cash_order_outcome": {
         "title": "Hasil pesanan Cash",
         "succeed": "Akan berhasil",
@@ -1593,6 +1593,7 @@
       },
       "deposit_setup": {
         "next": "Selanjutnya",
+        "finish": "Selesai",
         "phone": {
           "title": "Hubungkan nomor telepon Anda"
         },
@@ -1618,7 +1619,16 @@
           "title": "Semua sudah selesai"
         },
         "card_details": {
-          "title": "Masukkan detail kartu"
+          "title": "Masukkan detail kartu",
+          "card_number": "Card number",
+          "expiry": "MM / YY",
+          "cvc": "CVC",
+          "zip": "ZIP code",
+          "try_again": "Coba lagi",
+          "submit_error": "We couldn't link your card. Please try again."
+        },
+        "card_added": {
+          "title": "Card added"
         }
       }
     },
