@@ -505,9 +505,9 @@
         "phoneVerified": "電話番号を確認済み",
         "kycPassed": "KYCを通過",
         "passkeyRegistered": "パスキーを登録済み",
-        "hasLinkedCard": "カードを連携済み",
         "hasLinkedWallet": "ウォレットを連携済み"
       },
+      "cash_clear_linked_card": "Clear linked card",
       "cash_order_outcome": {
         "title": "現金注文の結果",
         "succeed": "成功します",
@@ -1593,6 +1593,7 @@
       },
       "deposit_setup": {
         "next": "次へ",
+        "finish": "完了",
         "phone": {
           "title": "電話番号を接続"
         },
@@ -1618,7 +1619,16 @@
           "title": "完了しました"
         },
         "card_details": {
-          "title": "カード情報を入力"
+          "title": "カード情報を入力",
+          "card_number": "Card number",
+          "expiry": "MM / YY",
+          "cvc": "CVC",
+          "zip": "ZIP code",
+          "try_again": "もう一度試す",
+          "submit_error": "We couldn't link your card. Please try again."
+        },
+        "card_added": {
+          "title": "Card added"
         }
       }
     },
