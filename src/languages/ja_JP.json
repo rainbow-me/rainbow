@@ -507,7 +507,7 @@
         "passkeyRegistered": "パスキーを登録済み",
         "hasLinkedWallet": "ウォレットを連携済み"
       },
-      "cash_clear_linked_card": "Clear linked card",
+      "cash_clear_linked_card": "リンク済みカードをクリア",
       "cash_order_outcome": {
         "title": "現金注文の結果",
         "succeed": "成功します",
@@ -1620,15 +1620,15 @@
         },
         "card_details": {
           "title": "カード情報を入力",
-          "card_number": "Card number",
+          "card_number": "カード番号",
           "expiry": "MM / YY",
           "cvc": "CVC",
-          "zip": "ZIP code",
+          "zip": "郵便番号",
           "try_again": "もう一度試す",
-          "submit_error": "We couldn't link your card. Please try again."
+          "submit_error": "カードをリンクできませんでした。もう一度お試しください。"
         },
         "card_added": {
-          "title": "Card added"
+          "title": "カードを追加しました"
         }
       }
     },
