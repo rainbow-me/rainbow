@@ -505,9 +505,9 @@
         "phoneVerified": "전화번호 인증됨",
         "kycPassed": "KYC 통과",
         "passkeyRegistered": "패스키 등록됨",
-        "hasLinkedCard": "연결된 카드 있음",
         "hasLinkedWallet": "연결된 지갑 있음"
       },
+      "cash_clear_linked_card": "Clear linked card",
       "cash_order_outcome": {
         "title": "현금 주문 결과",
         "succeed": "성공합니다",
@@ -1593,6 +1593,7 @@
       },
       "deposit_setup": {
         "next": "다음",
+        "finish": "완료",
         "phone": {
           "title": "휴대폰 번호 연결"
         },
@@ -1618,7 +1619,16 @@
           "title": "모두 완료되었습니다"
         },
         "card_details": {
-          "title": "카드 정보를 입력하세요"
+          "title": "카드 정보를 입력하세요",
+          "card_number": "Card number",
+          "expiry": "MM / YY",
+          "cvc": "CVC",
+          "zip": "ZIP code",
+          "try_again": "다시 시도",
+          "submit_error": "We couldn't link your card. Please try again."
+        },
+        "card_added": {
+          "title": "Card added"
         }
       }
     },
