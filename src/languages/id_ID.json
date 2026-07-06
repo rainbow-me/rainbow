@@ -507,7 +507,7 @@
         "passkeyRegistered": "Passkey terdaftar",
         "hasLinkedWallet": "Wallet tertaut"
       },
-      "cash_clear_linked_card": "Clear linked card",
+      "cash_clear_linked_card": "Hapus tautan kartu",
       "cash_order_outcome": {
         "title": "Hasil pesanan Cash",
         "succeed": "Akan berhasil",
@@ -1620,15 +1620,15 @@
         },
         "card_details": {
           "title": "Masukkan detail kartu",
-          "card_number": "Card number",
-          "expiry": "MM / YY",
+          "card_number": "Nomor kartu",
+          "expiry": "BB / TT",
           "cvc": "CVC",
-          "zip": "ZIP code",
+          "zip": "Kode pos",
           "try_again": "Coba lagi",
-          "submit_error": "We couldn't link your card. Please try again."
+          "submit_error": "Kami tidak dapat menautkan kartu Anda. Silakan coba lagi."
         },
         "card_added": {
-          "title": "Card added"
+          "title": "Kartu ditambahkan"
         }
       }
     },
