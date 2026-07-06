@@ -507,7 +507,7 @@
         "passkeyRegistered": "Ключ доступа зарегистрирован",
         "hasLinkedWallet": "Кошелёк привязан"
       },
-      "cash_clear_linked_card": "Clear linked card",
+      "cash_clear_linked_card": "Очистить привязанную карту",
       "cash_order_outcome": {
         "title": "Результат покупки наличных",
         "succeed": "Будет успешно",
@@ -1620,15 +1620,15 @@
         },
         "card_details": {
           "title": "Введите данные карты",
-          "card_number": "Card number",
-          "expiry": "MM / YY",
+          "card_number": "Номер карты",
+          "expiry": "ММ / ГГ",
           "cvc": "CVC",
-          "zip": "ZIP code",
+          "zip": "Почтовый индекс",
           "try_again": "Попробуйте еще раз",
-          "submit_error": "We couldn't link your card. Please try again."
+          "submit_error": "Мы не смогли привязать вашу карту. Пожалуйста, попробуйте снова."
         },
         "card_added": {
-          "title": "Card added"
+          "title": "Карта добавлена"
         }
       }
     },
