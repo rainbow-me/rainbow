@@ -17,7 +17,7 @@
 > [!TIP] > **Internal developers** can also use the [`rainbow-me/rainbow-setup`](https://github.com/rainbow-me/rainbow-setup)
 > script to install all dependencies and configure the project in one step.
 
-### Prerequisites
+### Prerequisitesd
 
 1. Install nvm: https://github.com/creationix/nvm
 2. Install the required Node.js version: `nvm install`
