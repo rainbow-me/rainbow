@@ -507,7 +507,7 @@
         "passkeyRegistered": "Geçiş anahtarı kaydedildi",
         "hasLinkedWallet": "Bağlı cüzdanı var"
       },
-      "cash_clear_linked_card": "Clear linked card",
+      "cash_clear_linked_card": "Bağlı kartı temizle",
       "cash_order_outcome": {
         "title": "Nakit sipariş sonucu",
         "succeed": "Başarılı olacak",
@@ -1620,15 +1620,15 @@
         },
         "card_details": {
           "title": "Kart bilgilerini girin",
-          "card_number": "Card number",
-          "expiry": "MM / YY",
+          "card_number": "Kart numarası",
+          "expiry": "AA / YY",
           "cvc": "CVC",
-          "zip": "ZIP code",
+          "zip": "Posta kodu",
           "try_again": "Tekrar dene",
-          "submit_error": "We couldn't link your card. Please try again."
+          "submit_error": "Kartınızı bağlayamadık. Lütfen tekrar deneyin."
         },
         "card_added": {
-          "title": "Card added"
+          "title": "Kart eklendi"
         }
       }
     },
