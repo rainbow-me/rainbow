@@ -507,7 +507,7 @@
         "passkeyRegistered": "패스키 등록됨",
         "hasLinkedWallet": "연결된 지갑 있음"
       },
-      "cash_clear_linked_card": "Clear linked card",
+      "cash_clear_linked_card": "연결된 카드 지우기",
       "cash_order_outcome": {
         "title": "현금 주문 결과",
         "succeed": "성공합니다",
@@ -1620,15 +1620,15 @@
         },
         "card_details": {
           "title": "카드 정보를 입력하세요",
-          "card_number": "Card number",
+          "card_number": "카드 번호",
           "expiry": "MM / YY",
           "cvc": "CVC",
-          "zip": "ZIP code",
+          "zip": "우편번호",
           "try_again": "다시 시도",
-          "submit_error": "We couldn't link your card. Please try again."
+          "submit_error": "카드를 연결할 수 없습니다. 다시 시도해 주세요."
         },
         "card_added": {
-          "title": "Card added"
+          "title": "카드가 추가되었습니다"
         }
       }
     },
