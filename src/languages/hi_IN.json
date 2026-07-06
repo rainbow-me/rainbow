@@ -505,9 +505,9 @@
         "phoneVerified": "फ़ोन सत्यापित",
         "kycPassed": "KYC पास",
         "passkeyRegistered": "पासकी पंजीकृत",
-        "hasLinkedCard": "लिंक किया हुआ कार्ड है",
         "hasLinkedWallet": "लिंक किया हुआ वॉलेट है"
       },
+      "cash_clear_linked_card": "लिंक किया गया कार्ड हटाएं",
       "cash_order_outcome": {
         "title": "नकद ऑर्डर का परिणाम",
         "succeed": "सफल होगा",
@@ -1593,6 +1593,7 @@
       },
       "deposit_setup": {
         "next": "अगला",
+        "finish": "समाप्त",
         "phone": {
           "title": "अपना फ़ोन नंबर कनेक्ट करें"
         },
@@ -1618,7 +1619,16 @@
           "title": "आपका काम हो गया"
         },
         "card_details": {
-          "title": "कार्ड विवरण दर्ज करें"
+          "title": "कार्ड विवरण दर्ज करें",
+          "card_number": "कार्ड नंबर",
+          "expiry": "MM / YY",
+          "cvc": "CVC",
+          "zip": "ZIP कोड",
+          "try_again": "पुनः प्रयास करें",
+          "submit_error": "हम आपका कार्ड लिंक नहीं कर सके। कृपया पुनः प्रयास करें।"
+        },
+        "card_added": {
+          "title": "कार्ड जोड़ दिया गया"
         }
       }
     },
