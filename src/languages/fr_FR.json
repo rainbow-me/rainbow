@@ -505,9 +505,9 @@
         "phoneVerified": "Téléphone vérifié",
         "kycPassed": "KYC réussi",
         "passkeyRegistered": "Clé d’accès enregistrée",
-        "hasLinkedCard": "Carte associée",
         "hasLinkedWallet": "Portefeuille associé"
       },
+      "cash_clear_linked_card": "Clear linked card",
       "cash_order_outcome": {
         "title": "Résultat de l'ordre en espèces",
         "succeed": "Réussira",
@@ -1593,6 +1593,7 @@
       },
       "deposit_setup": {
         "next": "Suivant",
+        "finish": "Finish :)",
         "phone": {
           "title": "Connectez votre numéro de téléphone"
         },
@@ -1618,7 +1619,16 @@
           "title": "Vous avez terminé"
         },
         "card_details": {
-          "title": "Saisissez les informations de la carte"
+          "title": "Saisissez les informations de la carte",
+          "card_number": "Card number",
+          "expiry": "MM / YY",
+          "cvc": "CVC",
+          "zip": "ZIP code",
+          "try_again": "Essayer encore",
+          "submit_error": "We couldn't link your card. Please try again."
+        },
+        "card_added": {
+          "title": "Card added"
         }
       }
     },
