@@ -507,7 +507,7 @@
         "passkeyRegistered": "ลงทะเบียนพาสคีย์แล้ว",
         "hasLinkedWallet": "เชื่อมโยงวอลเล็ตแล้ว"
       },
-      "cash_clear_linked_card": "Clear linked card",
+      "cash_clear_linked_card": "ล้างการ์ดที่เชื่อมโยง",
       "cash_order_outcome": {
         "title": "ผลลัพธ์ของคำสั่งซื้อเงินสด",
         "succeed": "จะสำเร็จ",
@@ -1620,15 +1620,15 @@
         },
         "card_details": {
           "title": "กรอกรายละเอียดบัตร",
-          "card_number": "Card number",
+          "card_number": "หมายเลขบัตร",
           "expiry": "MM / YY",
           "cvc": "CVC",
-          "zip": "ZIP code",
+          "zip": "รหัสไปรษณีย์",
           "try_again": "ลองอีกครั้ง",
-          "submit_error": "We couldn't link your card. Please try again."
+          "submit_error": "เราไม่สามารถเชื่อมโยงบัตรของคุณได้ โปรดลองอีกครั้ง"
         },
         "card_added": {
-          "title": "Card added"
+          "title": "เพิ่มบัตรแล้ว"
         }
       }
     },
