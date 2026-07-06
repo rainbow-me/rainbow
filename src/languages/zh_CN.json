@@ -505,9 +505,9 @@
         "phoneVerified": "手机号已验证",
         "kycPassed": "KYC 已通过",
         "passkeyRegistered": "已注册通行密钥",
-        "hasLinkedCard": "已绑定卡片",
         "hasLinkedWallet": "已绑定钱包"
       },
+      "cash_clear_linked_card": "清除已关联的卡",
       "cash_order_outcome": {
         "title": "现金订单结果",
         "succeed": "将成功",
@@ -1593,6 +1593,7 @@
       },
       "deposit_setup": {
         "next": "下一步",
+        "finish": "完成",
         "phone": {
           "title": "连接您的手机号码"
         },
@@ -1618,7 +1619,16 @@
           "title": "您已全部完成"
         },
         "card_details": {
-          "title": "输入卡片信息"
+          "title": "输入卡片信息",
+          "card_number": "卡号",
+          "expiry": "月 / 年",
+          "cvc": "CVC",
+          "zip": "邮政编码",
+          "try_again": "再试一次",
+          "submit_error": "我们无法关联你的卡。请再试一次。"
+        },
+        "card_added": {
+          "title": "已添加卡片"
         }
       }
     },
