@@ -505,9 +505,9 @@
         "phoneVerified": "تم التحقق من الهاتف",
         "kycPassed": "تم اجتياز التحقق من الهوية (KYC)",
         "passkeyRegistered": "تم تسجيل مفتاح المرور",
-        "hasLinkedCard": "بطاقة مرتبطة",
         "hasLinkedWallet": "محفظة مرتبطة"
       },
+      "cash_clear_linked_card": "مسح البطاقة المرتبطة",
       "cash_order_outcome": {
         "title": "نتيجة طلب النقد",
         "succeed": "سينجح",
@@ -1593,6 +1593,7 @@
       },
       "deposit_setup": {
         "next": "التالي",
+        "finish": "إنهاء",
         "phone": {
           "title": "اربط رقم هاتفك"
         },
@@ -1618,7 +1619,16 @@
           "title": "انتهيت"
         },
         "card_details": {
-          "title": "أدخل تفاصيل البطاقة"
+          "title": "أدخل تفاصيل البطاقة",
+          "card_number": "رقم البطاقة",
+          "expiry": "شهر / سنة",
+          "cvc": "رمز التحقق (CVC)",
+          "zip": "الرمز البريدي",
+          "try_again": "حاول مرة اخرى",
+          "submit_error": "تعذر علينا ربط بطاقتك. يرجى المحاولة مرة أخرى."
+        },
+        "card_added": {
+          "title": "Card added"
         }
       }
     },
