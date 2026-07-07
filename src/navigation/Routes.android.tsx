@@ -128,7 +128,6 @@ import { SwipeNavigator } from './SwipeNavigator';
 import { type RootStackParamList } from './types';
 
 const Stack = createStackNavigator();
-const OuterStack = createStackNavigator();
 const AuthStack = createStackNavigator();
 const BSStack = createBottomSheetNavigator();
 
@@ -161,22 +160,13 @@ function MainNavigator() {
   );
 }
 
-// FIXME do it in one navigator
-function MainOuterNavigator() {
-  return (
-    <OuterStack.Navigator initialRouteName={Routes.MAIN_NAVIGATOR} {...stackNavigationConfig} screenOptions={defaultScreenStackOptions}>
-      <OuterStack.Screen component={MainNavigator} name={Routes.MAIN_NAVIGATOR} />
-    </OuterStack.Navigator>
-  );
-}
-
 function BSNavigator() {
   const profilesEnabled = useExperimentalFlag(PROFILES);
   const showKingOfTheHillTab = useShowKingOfTheHill();
 
   return (
     <BSStack.Navigator>
-      <BSStack.Screen component={MainOuterNavigator} name={Routes.MAIN_NAVIGATOR_WRAPPER} />
+      <BSStack.Screen component={MainNavigator} name={Routes.MAIN_NAVIGATOR_WRAPPER} />
       <BSStack.Screen
         component={NotificationPermissionScreen}
         name={Routes.NOTIFICATION_PERMISSION_SCREEN}

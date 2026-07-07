@@ -165,21 +165,13 @@ function MainNavigator() {
   );
 }
 
-function MainStack() {
-  return (
-    <Stack.Navigator initialRouteName={Routes.MAIN_NAVIGATOR_WRAPPER} {...stackNavigationConfig} screenOptions={defaultScreenStackOptions}>
-      <Stack.Screen component={MainNavigator} name={Routes.MAIN_NAVIGATOR_WRAPPER} />
-    </Stack.Navigator>
-  );
-}
-
 function NativeStackNavigator() {
   const profilesEnabled = useExperimentalFlag(PROFILES);
   const showKingOfTheHillTab = useShowKingOfTheHill();
 
   return (
     <NativeStack.Navigator {...nativeStackConfig}>
-      <NativeStack.Screen component={MainStack} name={Routes.STACK} />
+      <NativeStack.Screen component={MainNavigator} name={Routes.STACK} />
       <NativeStack.Screen
         component={NotificationPermissionScreen}
         name={Routes.NOTIFICATION_PERMISSION_SCREEN}
