@@ -4,11 +4,11 @@ import { StyleSheet } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 import ButtonPressAnimation from '@/components/animations/ButtonPressAnimation';
-import Spinner from '@/components/Spinner';
-import { Box, Text, useBackgroundColor, useForegroundColor } from '@/design-system';
+import { Box, Text, useBackgroundColor } from '@/design-system';
 import * as i18n from '@/languages';
 
 import { useCashDepositSetupNavigation } from '../useCashDepositSetupNavigation';
+import { SetupActionButton } from './SetupActionButton';
 
 type SetupStepLayoutProps = {
   title: string;
@@ -32,11 +32,8 @@ export const SetupStepLayout = memo(function SetupStepLayout({
   backDisabled = false,
 }: SetupStepLayoutProps) {
   const { next, back } = useCashDepositSetupNavigation();
-  const blue = useForegroundColor('blue');
   const surfaceSecondaryElevated = useBackgroundColor('surfaceSecondaryElevated');
   const insets = useSafeAreaInsets();
-
-  const disabled = actionDisabled || actionLoading;
 
   return (
     <Box
@@ -69,31 +66,19 @@ export const SetupStepLayout = memo(function SetupStepLayout({
 
       <Box style={styles.body}>{children}</Box>
 
-      <ButtonPressAnimation disabled={disabled} onPress={onAction ?? next} scaleTo={0.96} testID="cash-setup-next">
-        <Box
-          alignItems="center"
-          borderRadius={52}
-          height={{ custom: 48 }}
-          justifyContent="center"
-          style={[{ backgroundColor: blue }, disabled && styles.actionDisabled]}
-        >
-          {actionLoading ? (
-            <Spinner color="white" size={24} />
-          ) : (
-            <Text align="center" color="white" size="20pt" weight="heavy">
-              {actionLabel ?? i18n.t(i18n.l.cash.deposit_setup.next)}
-            </Text>
-          )}
-        </Box>
-      </ButtonPressAnimation>
+      <SetupActionButton
+        disabled={actionDisabled}
+        label={actionLabel ?? i18n.t(i18n.l.cash.deposit_setup.next)}
+        loading={actionLoading}
+        onPress={onAction ?? next}
+        testID="cash-setup-next"
+        textSize="20pt"
+      />
     </Box>
   );
 });
 
 const styles = StyleSheet.create({
-  actionDisabled: {
-    opacity: 0.5,
-  },
   body: {
     flex: 1,
   },

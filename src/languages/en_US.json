@@ -1592,7 +1592,11 @@
         "review": { "title": "Review" },
         "passkey": { "title": "Add a Passkey" },
         "email": { "title": "Enter email" },
-        "all_done": { "title": "You're all done" },
+        "all_done": {
+          "title": "You’re all done!",
+          "description": "You’re good to go. Add a payment method and you’re ready.",
+          "add_bank_card": "Add Bank Card"
+        },
         "card_details": {
           "title": "Enter card details",
           "card_number": "Card number",
@@ -1602,7 +1606,10 @@
           "try_again": "Try again",
           "submit_error": "We couldn't link your card. Please try again."
         },
-        "card_added": { "title": "Card added" }
+        "card_added": {
+          "title": "Card added",
+          "description": "You’re all set. You can now deposit with your card."
+        }
       }
     },
     "points": {
