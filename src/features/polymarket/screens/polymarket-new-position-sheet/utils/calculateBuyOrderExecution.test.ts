@@ -46,7 +46,8 @@ describe('calculateBuyOrderExecution', () => {
     expect(10 - totalSpendUsd).toBeLessThan(0.00001);
     expect(Number(execution.orderSpendCap)).toBeLessThan(10);
     expect(execution.worstPrice).toBe('0.8');
-    expect(Number(execution.fee)).toBeCloseTo(Number(execution.rainbowFee) + Number(execution.tokensBought) * platformFeeRate, 9);
+    const platformFee = Number((Number(execution.tokensBought) * platformFeeRate).toFixed(5));
+    expect(Number(execution.fee)).toBeCloseTo(Number(execution.rainbowFee) + platformFee, 9);
     expect(execution.minBuyAmountUsd).toBe('1.07');
     expect(mockAdjustBuyAmountForFees).toHaveBeenCalledWith(
       expect.any(Number),

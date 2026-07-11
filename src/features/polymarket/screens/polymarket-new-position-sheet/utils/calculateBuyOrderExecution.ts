@@ -10,7 +10,7 @@ import {
 } from '@/features/polymarket/utils/fees';
 import { calculateOrderBookSpread, getBestOrderBookPrice, simulateMarketFills } from '@/features/polymarket/utils/orderBookFills';
 import { calculateTradeFeeUsd } from '@/features/polymarket/utils/polymarketTradeFee';
-import { ceilWorklet, divWorklet, mulWorklet } from '@/framework/core/safeMath';
+import { ceilWorklet, divWorklet, mulWorklet, toFixedWorklet, trimTrailingZeros } from '@/framework/core/safeMath';
 
 export type BuyOrderExecution = {
   averagePrice: string;
@@ -78,7 +78,7 @@ export function calculateBuyOrderExecution({
     averagePrice: String(execution.averagePrice),
     worstPrice: String(execution.priceLimit),
     bestPrice: bestAskPrice,
-    fee: String(execution.feeAmountUsd),
+    fee: trimTrailingZeros(toFixedWorklet(execution.feeAmountUsd, POLYMARKET_PUSD_DECIMALS)),
     orderSpendCap: String(execution.orderSpendCapUsd),
     rainbowFee: String(execution.rainbowFeeAmountUsd),
     tokensBought: String(execution.tokensBought),
@@ -108,6 +108,7 @@ function resolveBuyExecution({
       priceLimit: 0,
       rainbowFeeAmountUsd: 0,
       tokensBought: 0,
+      totalSpendUsd: 0,
     };
   }
 

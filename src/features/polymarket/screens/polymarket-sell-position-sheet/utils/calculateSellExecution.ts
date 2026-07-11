@@ -1,8 +1,9 @@
+import { POLYMARKET_PUSD_DECIMALS } from '@/features/polymarket/constants';
 import { type OrderBook } from '@/features/polymarket/stores/polymarketOrderBookStore';
 import { calculateFillFeesUsd, type PolymarketFeeInfo } from '@/features/polymarket/utils/fees';
 import { calculateOrderBookSpread, getBestOrderBookPrice, simulateMarketFills } from '@/features/polymarket/utils/orderBookFills';
 import { calculateTradeFeeUsd } from '@/features/polymarket/utils/polymarketTradeFee';
-import { greaterThanWorklet } from '@/framework/core/safeMath';
+import { greaterThanWorklet, subWorklet, sumWorklet, toFixedWorklet, trimTrailingZeros } from '@/framework/core/safeMath';
 
 export type SellExecution = {
   averagePrice: string;
@@ -48,10 +49,10 @@ export function calculateSellExecution({
   const execution = simulateMarketFills({ levels: orderBook.bids, targetAmount: Number(sellAmountTokens), targetType: 'shares' });
   const averagePrice = execution.totalShares > 0 ? execution.totalNotionalUsd / execution.totalShares : 0;
   const providerFee = calculateFillFeesUsd({ feeInfo, fills: execution.fills });
-  const rainbowFee = Number(calculateTradeFeeUsd({ notionalUsd: execution.totalNotionalUsd, price: averagePrice }));
-  const fee = providerFee + rainbowFee;
-  const grossProceedsUsd = String(execution.totalNotionalUsd);
-  const expectedPayoutUsd = String(execution.totalNotionalUsd - fee);
+  const rainbowFee = calculateTradeFeeUsd({ notionalUsd: execution.totalNotionalUsd, price: averagePrice });
+  const fee = sumWorklet(providerFee, rainbowFee);
+  const grossProceedsUsd = trimTrailingZeros(toFixedWorklet(execution.totalNotionalUsd, POLYMARKET_PUSD_DECIMALS));
+  const expectedPayoutUsd = subWorklet(grossProceedsUsd, fee);
   const tokensSold = String(execution.totalShares);
 
   const bestBidPrice = getBestOrderBookPrice(orderBook.bids);
@@ -62,8 +63,8 @@ export function calculateSellExecution({
     averagePrice: String(averagePrice),
     worstPrice: String(execution.worstPrice),
     bestPrice: bestBidPrice,
-    fee: String(fee),
-    rainbowFee: String(rainbowFee),
+    fee,
+    rainbowFee,
     tokensSold,
     grossProceedsUsd,
     expectedPayoutUsd,
