@@ -4,7 +4,7 @@ import { EthereumWalletType } from '@/helpers/walletTypes';
 import Navigation from '@/navigation/Navigation';
 import Routes from '@/navigation/routesNames';
 import { useWalletsStore } from '@/state/wallets/walletsStore';
-import { delegation } from '@rainbow-me/delegation';
+import { delegation } from '@rainbow-me/sdk';
 
 import { RevokeReason } from '../screens/RevokeDelegationPanel';
 import { useIsDelegationEnabled } from '../utils/featureFlags';

@@ -25,7 +25,7 @@ import { type RootStackParamList } from '@/navigation/types';
 import reduxStore from '@/redux/store';
 import { userAssetsStoreManager } from '@/state/assets/userAssetsStoreManager';
 import { getNextNonce } from '@/state/nonces';
-import { delegation } from '@rainbow-me/delegation';
+import { delegation } from '@rainbow-me/sdk';
 
 /**
  * Reasons for revoking delegation - determines the panel's appearance and messaging

@@ -42,7 +42,7 @@ import { useNftsStore } from '@/state/nfts/nfts';
 import { getNextNonce } from '@/state/nonces';
 import { addNewTransaction } from '@/state/pendingTransactions';
 import { executeFn, Screens, TimeToSignOperation } from '@/state/performance/performance';
-import { type Call, type PreparedCallsExecution } from '@rainbow-me/delegation';
+import { type Call, type PreparedCallsExecution } from '@rainbow-me/sdk';
 
 import { executeSponsoredSend } from '../utils/sponsoredSend';
 import { executeSponsoredSendIfAvailable } from '../utils/sponsoredSendExecution';

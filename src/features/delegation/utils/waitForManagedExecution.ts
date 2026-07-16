@@ -1,7 +1,7 @@
 import { time } from '@/framework/core/utils/time';
 import { ensureError, RainbowError } from '@/logger';
 import { delay } from '@/utils/delay';
-import { RelayExecutionStatus } from '@rainbow-me/delegation';
+import { RelayExecutionStatus } from '@rainbow-me/sdk';
 
 import { formatManagedExecutionFailure, isManagedExecutionFailure } from './managedExecutionFailure';
 import { relayService, type RelayStatusResponse } from './relayService';

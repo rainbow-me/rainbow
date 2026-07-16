@@ -7,7 +7,7 @@ import { trackCallsExecution } from '@/features/delegation/utils/callsExecutionT
 import { resolveManagedExecutionFailure } from '@/features/delegation/utils/managedExecutionFailure';
 import { waitForManagedExecutionConfirmation } from '@/features/delegation/utils/waitForManagedExecution';
 import { RainbowError } from '@/logger';
-import { execute, type Call, type CallsRequirements, type ExecuteCallsResult, type PreparedCallsExecution } from '@rainbow-me/delegation';
+import { execute, type Call, type CallsRequirements, type ExecuteCallsResult, type PreparedCallsExecution } from '@rainbow-me/sdk';
 
 import { STAKING_CHAIN_ID } from '../constants';
 import { waitForWalletTransactions } from './waitForWalletTransactions';

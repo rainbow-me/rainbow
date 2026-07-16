@@ -13,7 +13,7 @@ import { rapTypes, type RapSwapActionParameters } from '@/raps/references';
 import erc20ABI from '@/references/erc20-abi.json';
 import { executeFn, Screens, TimeToSignOperation } from '@/state/performance/performance';
 import { getUniqueId } from '@/utils/ethereumUtils';
-import { execute, type PreparedCallsExecution } from '@rainbow-me/delegation';
+import { execute, type PreparedCallsExecution } from '@rainbow-me/sdk';
 import { type CrosschainQuote, type Quote } from '@rainbow-me/swaps';
 
 import {

@@ -26,7 +26,7 @@ import { executeDepositRap } from '@/systems/funding/execution/depositRapExecuti
 import { isValidQuote } from '@/systems/funding/utils/quotes';
 import { isRecordLike } from '@/types/guards';
 import { sanitizeAmount } from '@/worklets/strings';
-import { type PreparedCallsExecution } from '@rainbow-me/delegation';
+import { type PreparedCallsExecution } from '@rainbow-me/sdk';
 import { type CrosschainQuote, type Quote } from '@rainbow-me/swaps';
 
 import {

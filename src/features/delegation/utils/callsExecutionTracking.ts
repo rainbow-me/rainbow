@@ -3,7 +3,7 @@ import { type ChainId } from '@/features/network/types/backendNetworks';
 import { convertNewTransactionToRainbowTransaction } from '@/parsers/transactions';
 import { extractReplayableCall } from '@/raps/replay';
 import { addNewTransaction, pendingTransactionsActions } from '@/state/pendingTransactions';
-import { type ExecuteCallsResult, type ExecutionResult } from '@rainbow-me/delegation';
+import { type ExecuteCallsResult, type ExecutionResult } from '@rainbow-me/sdk';
 
 type ManagedCallsExecution = Extract<ExecuteCallsResult, { kind: 'calls.managed' }>;
 type SubmittedCallsExecution = ManagedCallsExecution | ExecutionResult;

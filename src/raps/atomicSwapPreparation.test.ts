@@ -1,7 +1,7 @@
 import { StaticJsonRpcProvider } from '@ethersproject/providers';
 
 import { backendNetworksActions } from '@/features/network/stores/backendNetworksStore';
-import { type Call } from '@rainbow-me/delegation';
+import { type Call } from '@rainbow-me/sdk';
 import { SwapType, type CrosschainQuote, type Quote } from '@rainbow-me/swaps';
 
 import { prepareCrosschainSwapCall } from './actions/crosschainSwap';

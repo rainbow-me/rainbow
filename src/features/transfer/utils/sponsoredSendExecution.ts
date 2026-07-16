@@ -11,7 +11,7 @@ import { encodeErc20Transfer } from '@/framework/core/evm/erc20Calldata';
 import { parsePositiveRawAmount } from '@/framework/core/evm/units';
 import { isNativeAsset } from '@/handlers/assets';
 import { resolveNameOrAddress } from '@/handlers/web3';
-import { type Call, type ExecuteCallsResult, type PreparedCallsExecution } from '@rainbow-me/delegation';
+import { type Call, type ExecuteCallsResult, type PreparedCallsExecution } from '@rainbow-me/sdk';
 
 import { buildPendingSendTransaction } from './sponsoredSend';
 

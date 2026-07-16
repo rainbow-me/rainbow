@@ -9,7 +9,7 @@ import { encodeFunctionData, type Address } from 'viem';
 
 import { type ExtendedAnimatedAssetWithColors } from '@/__swaps__/types/assets';
 import { time } from '@/framework/core/utils/time';
-import { execute, type Call, type CallsRequirements, type PreparedCallsExecution } from '@rainbow-me/delegation';
+import { execute, type Call, type CallsRequirements, type PreparedCallsExecution } from '@rainbow-me/sdk';
 
 import {
   RNBW_DECIMALS,

@@ -15,7 +15,7 @@ import { applyManagedExecutionStatus } from '@/features/delegation/utils/managed
 import { relayService } from '@/features/delegation/utils/relayService';
 import { logger, RainbowError } from '@/logger';
 import { fetchRawTransaction } from '@/resources/transactions/transaction';
-import { RelayExecutionStatus, type RelayStatusSnapshot } from '@rainbow-me/delegation';
+import { RelayExecutionStatus, type RelayStatusSnapshot } from '@rainbow-me/sdk';
 
 // ============ Types ========================================================= //
 

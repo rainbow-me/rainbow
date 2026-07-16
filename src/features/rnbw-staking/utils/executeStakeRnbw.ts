@@ -12,7 +12,7 @@ import { RainbowError } from '@/logger';
 import { extractReplayableExecution } from '@/raps/replay';
 import { toTransactionAsset, type TransactionAssetSource } from '@/raps/transactionAsset';
 import { addNewTransaction } from '@/state/pendingTransactions';
-import { type Call, type PreparedCallsExecution } from '@rainbow-me/delegation';
+import { type Call, type PreparedCallsExecution } from '@rainbow-me/sdk';
 
 import {
   RNBW_TOKEN_ADDRESS,

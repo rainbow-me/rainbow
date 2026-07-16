@@ -1,4 +1,4 @@
-import { RelayExecutionStatus, type RelayStatusSnapshot } from '@rainbow-me/delegation';
+import { RelayExecutionStatus, type RelayStatusSnapshot } from '@rainbow-me/sdk';
 
 import { relayService } from './relayService';
 

@@ -2,7 +2,7 @@ import { encodeFunctionData, type Address } from 'viem';
 
 import { getRemoteConfig } from '@/features/config/stores/remoteConfig';
 import { SPONSORED_CALLS_REQUIREMENTS } from '@/features/delegation/utils/calls';
-import { type Call, type CallsRequirements } from '@rainbow-me/delegation';
+import { type Call, type CallsRequirements } from '@rainbow-me/sdk';
 
 import { STAKING_ABI, STAKING_CHAIN_ID, STAKING_CONTRACT_ADDRESS } from '../constants';
 import { canUseSponsoredRnbwStaking } from './canUseSponsoredRnbwStaking';

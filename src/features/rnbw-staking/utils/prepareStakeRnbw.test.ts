@@ -1,6 +1,6 @@
 import { type Address } from 'viem';
 
-import { type Call, type CallsRequirements } from '@rainbow-me/delegation';
+import { type Call, type CallsRequirements } from '@rainbow-me/sdk';
 
 import { STAKING_CHAIN_ID, STAKING_CONTRACT_ADDRESS } from '../constants';
 import { prepareStakeRnbw, type StakeRnbwPreparationParams } from './prepareStakeRnbw';

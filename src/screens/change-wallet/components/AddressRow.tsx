@@ -25,7 +25,7 @@ import { SelectedAddressBadge } from '@/screens/change-wallet/components/Selecte
 import { usePinnedWalletsStore } from '@/state/wallets/pinnedWalletsStore';
 import { useTheme } from '@/theme/ThemeContext';
 import { address as abbreviateAddress } from '@/utils/abbreviations';
-import { useDelegationDisabled, useDelegations } from '@rainbow-me/delegation';
+import { useDelegationDisabled, useDelegations } from '@rainbow-me/sdk';
 
 const ROW_HEIGHT_WITH_PADDING = 64;
 const BUTTON_SIZE = 28;

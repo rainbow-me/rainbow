@@ -10,7 +10,7 @@ import { type Address } from 'viem';
 import { TransactionDirection, TransactionStatus } from '@/entities/transactions';
 import { time } from '@/framework/core/utils/time';
 import { type TransactionAssetSource } from '@/raps/transactionAsset';
-import { execute, type Call, type CallsRequirements, type PreparedCallsExecution } from '@rainbow-me/delegation';
+import { execute, type Call, type CallsRequirements, type PreparedCallsExecution } from '@rainbow-me/sdk';
 
 import {
   RNBW_DECIMALS,

@@ -16,7 +16,7 @@ import { REFERRER } from '@/references/constants';
 import { addNewTransaction } from '@/state/pendingTransactions';
 import { executeFn, Screens, TimeToSignOperation } from '@/state/performance/performance';
 import { swapsStore } from '@/state/swaps/swapsStore';
-import type { Call } from '@rainbow-me/delegation';
+import type { Call } from '@rainbow-me/sdk';
 import {
   getQuoteExecutionDetails,
   getTargetAddress,

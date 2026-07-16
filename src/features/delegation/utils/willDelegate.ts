@@ -3,7 +3,7 @@ import { type Address } from 'viem';
 import WalletTypes from '@/helpers/walletTypes';
 import { type RainbowWallet } from '@/model/wallet';
 import { getWalletWithAccount, useWalletsStore } from '@/state/wallets/walletsStore';
-import { delegation, useWillDelegate } from '@rainbow-me/delegation';
+import { delegation, useWillDelegate } from '@rainbow-me/sdk';
 
 import { isDelegationEnabled, useIsDelegationEnabled } from './featureFlags';
 

@@ -1,7 +1,7 @@
 import { logger } from '@/logger';
 import { getPlatformClient } from '@/resources/platform/client';
 import { useWalletsStore } from '@/state/wallets/walletsStore';
-import { configure as configureDelegationClient } from '@rainbow-me/delegation';
+import { configure as configureDelegationClient } from '@rainbow-me/sdk';
 
 import { relayService } from './relayService';
 

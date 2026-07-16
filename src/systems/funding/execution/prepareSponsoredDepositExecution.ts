@@ -8,7 +8,7 @@ import { supportsDelegatedExecution } from '@/features/delegation/utils/willDele
 import { type ChainId } from '@/features/network/types/backendNetworks';
 import { RainbowError } from '@/logger';
 import { prepareAtomicSwapCalls } from '@/raps/atomicSwapPreparation';
-import { execute, type Call, type PreparedCallsExecution } from '@rainbow-me/delegation';
+import { execute, type Call, type PreparedCallsExecution } from '@rainbow-me/sdk';
 import { type CrosschainQuote, type Quote } from '@rainbow-me/swaps';
 
 import { type ExecutionStrategy } from './strategy';

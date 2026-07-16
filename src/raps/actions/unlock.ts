@@ -12,7 +12,7 @@ import { getProvider, toHex } from '@/handlers/web3';
 import { ensureError, logger, RainbowError } from '@/logger';
 import { ETH_ADDRESS } from '@/references/constants';
 import { addNewTransaction } from '@/state/pendingTransactions';
-import { type Call } from '@rainbow-me/delegation';
+import { type Call } from '@rainbow-me/sdk';
 
 import { type ActionProps, type PrepareActionProps, type RapActionResult, type RapUnlockActionParameters } from '../references';
 import { toTransactionAsset } from '../transactionAsset';

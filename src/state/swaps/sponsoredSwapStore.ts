@@ -12,7 +12,7 @@ import { getProvider } from '@/handlers/web3';
 import { buildAtomicExecutionRequirements, prepareAtomicSwapCalls } from '@/raps/atomicSwapPreparation';
 import { useSwapsStore } from '@/state/swaps/swapsStore';
 import { getAccountAddress, useWalletsStore } from '@/state/wallets/walletsStore';
-import { execute, type PreparedCallsExecution } from '@rainbow-me/delegation';
+import { execute, type PreparedCallsExecution } from '@rainbow-me/sdk';
 import { type CrosschainQuote, type Quote, type QuoteError } from '@rainbow-me/swaps';
 
 // ============ Types ========================================================== //

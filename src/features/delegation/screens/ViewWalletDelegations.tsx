@@ -23,7 +23,7 @@ import MenuItem from '@/screens/SettingsSheet/components/MenuItem';
 import { useTheme } from '@/theme/ThemeContext';
 import { formatAddressForDisplay } from '@/utils/abbreviations';
 import * as ethereumUtils from '@/utils/ethereumUtils';
-import { delegation, useDelegationDisabled, useDelegations, type DelegationWithChainId } from '@rainbow-me/delegation';
+import { delegation, useDelegationDisabled, useDelegations, type DelegationWithChainId } from '@rainbow-me/sdk';
 
 import {
   hasActiveDelegation,
