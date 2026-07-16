@@ -5833,23 +5833,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@rainbow-me/delegation@file:./rainbow-me-delegation-0.4.0.tgz::locator=Rainbow%40workspace%3A.":
-  version: 0.4.0
-  resolution: "@rainbow-me/delegation@file:./rainbow-me-delegation-0.4.0.tgz#./rainbow-me-delegation-0.4.0.tgz::hash=5bf535&locator=Rainbow%40workspace%3A."
-  peerDependencies:
-    "@storesjs/stores": ^0.8.6
-    ethers: ^5.7.0
-    react: ^18 || ^19
-    viem: ^2.38.0
-  peerDependenciesMeta:
-    ethers:
-      optional: true
-    react:
-      optional: true
-  checksum: 10c0/1ea754a620cfcd34f46b832d0e0da4f19593b909f92d4c696412c203602a3dd57c6793a58cad488a102830ec1e0044d9ec017c3b2e9ad4ef5089b8e6ceecabb2
-  languageName: node
-  linkType: hard
-
 "@rainbow-me/provider@npm:0.1.2":
   version: 0.1.2
   resolution: "@rainbow-me/provider@npm:0.1.2"
@@ -5873,6 +5856,23 @@ __metadata:
     react: "*"
     react-native: "*"
   checksum: 10c0/7222babc6ae0978d52c7091c8f8dd182fa4e1457d2c96aab06dad4dbe96fca657a788c18e286d5d0f047e583cdf710a7f91ba9496a8e7e48ccb4033b85e05425
+  languageName: node
+  linkType: hard
+
+"@rainbow-me/sdk@npm:0.4.0":
+  version: 0.4.0
+  resolution: "@rainbow-me/sdk@npm:0.4.0"
+  peerDependencies:
+    "@storesjs/stores": ^0.8.6
+    ethers: ^5.7.0
+    react: ^18 || ^19
+    viem: ^2.55.2
+  peerDependenciesMeta:
+    ethers:
+      optional: true
+    react:
+      optional: true
+  checksum: 10c0/8f86a3439ba9e33f64c740d04ae00292039202801843b59eddbb534df53fa325a5b4b41819dd9f537da2958754a9c3161071c557c9d01d9bb127110a90e74614
   languageName: node
   linkType: hard
 
@@ -9072,9 +9072,9 @@ __metadata:
     "@polymarket/builder-relayer-client": "npm:0.0.10"
     "@polymarket/builder-signing-sdk": "npm:0.0.8"
     "@polymarket/clob-client-v2": "npm:1.0.8"
-    "@rainbow-me/delegation": "file:./rainbow-me-delegation-0.4.0.tgz"
     "@rainbow-me/provider": "npm:0.1.2"
     "@rainbow-me/react-native-animated-number": "npm:0.0.2"
+    "@rainbow-me/sdk": "npm:0.4.0"
     "@rainbow-me/swaps": "npm:0.41.0"
     "@rainbow-me/token-launcher": "npm:0.3.0"
     "@react-native-async-storage/async-storage": "npm:1.23.1"
@@ -9308,7 +9308,7 @@ __metadata:
     use-debounce: "npm:10.0.0"
     use-deep-compare: "npm:1.3.0"
     use-memo-one: "npm:1.1.1"
-    viem: "npm:2.38.0"
+    viem: "npm:2.55.2"
     vm-browserify: "npm:0.0.4"
     w2t: "npm:3.0.2"
     webpack: "npm:5.94.0"
