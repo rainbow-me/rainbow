@@ -55,7 +55,7 @@ export async function willExecuteDelegation(params: WillExecuteDelegationParams)
 }
 
 /**
- * Wraps the `useWillDelegate` hook from `@rainbow-me/delegation` with
+ * Wraps the `useWillDelegate` hook from `@rainbow-me/sdk` with
  * feature flag and hardware wallet gates.
  *
  * Returns `true` if delegation is expected and executable for the

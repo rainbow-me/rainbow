@@ -11,7 +11,7 @@ const mockBuildStakeRnbwExecutionPlan = jest.fn<Promise<{ calls: Call[]; require
 const mockGetProvider = jest.fn();
 const mockResolveStakeClaimStrategy = jest.fn<Promise<unknown>, [string]>();
 
-jest.mock('@rainbow-me/delegation', () => ({
+jest.mock('@rainbow-me/sdk', () => ({
   execute: {
     prepare: {
       calls: (params: unknown) => mockPrepareCalls(params),

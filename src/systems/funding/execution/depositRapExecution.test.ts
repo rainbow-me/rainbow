@@ -26,7 +26,7 @@ jest.mock('ethers', () => ({
   Wallet: class MockWallet {},
 }));
 
-jest.mock('@rainbow-me/delegation', () => ({
+jest.mock('@rainbow-me/sdk', () => ({
   execute: {
     calls: (...args: unknown[]) => mockExecuteCalls(...args),
   },

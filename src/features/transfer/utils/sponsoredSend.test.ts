@@ -33,7 +33,7 @@ const mockSponsoredCallsRequirements = {
   fees: { payer: 'sponsor' },
 };
 
-jest.mock('@rainbow-me/delegation', () => ({
+jest.mock('@rainbow-me/sdk', () => ({
   execute: {
     calls: (params: unknown, clients?: unknown) => mockExecuteCalls(params, clients),
     prepare: {

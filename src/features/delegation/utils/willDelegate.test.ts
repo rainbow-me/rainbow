@@ -16,7 +16,7 @@ jest.mock('./featureFlags', () => ({
   useIsDelegationEnabled: jest.fn(),
 }));
 
-jest.mock('@rainbow-me/delegation', () => ({
+jest.mock('@rainbow-me/sdk', () => ({
   delegation: {
     isEnabled: jest.fn(),
     isSupported: jest.fn(),

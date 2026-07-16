@@ -9,7 +9,7 @@ const mockCanUseDelegatedExecution = jest.fn<boolean, [Address]>();
 const mockPrepareCalls = jest.fn<Promise<unknown>, [unknown]>();
 const mockBuildUnstakeRnbwExecutionPlan = jest.fn<Promise<{ calls: Call[]; requirements?: CallsRequirements }>, [unknown]>();
 
-jest.mock('@rainbow-me/delegation', () => ({
+jest.mock('@rainbow-me/sdk', () => ({
   execute: {
     prepare: {
       calls: (params: unknown) => mockPrepareCalls(params),

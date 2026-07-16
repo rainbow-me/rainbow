@@ -32,7 +32,7 @@ const mockWaitForManagedExecutionConfirmation = jest.fn<Promise<void>, [string]>
 const mockBuildSyntheticRnbwSourceAsset = jest.fn<ExtendedAnimatedAssetWithColors | null, []>();
 const mockAddNewTransaction = jest.fn<void, [unknown]>();
 
-jest.mock('@rainbow-me/delegation', () => ({
+jest.mock('@rainbow-me/sdk', () => ({
   execute: {
     calls: (params: unknown, clients?: unknown) => mockExecuteCalls(params, clients),
     prepare: {

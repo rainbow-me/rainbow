@@ -12,7 +12,7 @@ import { buildAtomicExecutionRequirements, prepareAtomicSwapCalls } from './atom
 
 const mockGetRemoteConfig = jest.fn(() => ({ sponsored_swaps_enabled: true }));
 
-jest.mock('@rainbow-me/delegation', () => ({
+jest.mock('@rainbow-me/sdk', () => ({
   execute: {
     prepare: {
       calls: jest.fn(),
