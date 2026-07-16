@@ -17,6 +17,6 @@ export const DebugContext = {
   f2c: 'f2c',
   keychain: 'keychain',
   deeplinks: 'deeplinks',
-  delegation: 'delegation',
+  sdk: 'rainbow-sdk',
   stores: 'stores',
 } as const;
