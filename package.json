@@ -136,7 +136,7 @@
     "@rainbow-me/provider/@ethersproject/abstract-provider": "5.8.0",
     "@rainbow-me/provider/@ethersproject/bignumber": "5.8.0",
     "@rainbow-me/provider/@ethersproject/providers": "5.8.0",
-    "@rainbow-me/provider/viem": "2.38.0",
+    "@rainbow-me/provider/viem": "2.55.2",
     "@rainbow-me/sdk/viem": "2.55.2",
     "@rainbow-me/swaps/@ethersproject/abi": "5.8.0",
     "@rainbow-me/swaps/@ethersproject/abstract-signer": "5.8.0",
@@ -156,9 +156,9 @@
     "axios": "^1.16.0",
     "cross-fetch": "3.1.5",
     "ethers": "5.8.0",
-    "mipd/viem": "2.38.0",
+    "mipd/viem": "2.55.2",
     "react": "19.1.4",
-    "viem": "2.38.0"
+    "viem": "2.55.2"
   },
   "dependencies": {
     "@bankify/react-native-animate-number": "0.2.1",
