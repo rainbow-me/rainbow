@@ -1,7 +1,7 @@
 import type { Hash } from 'viem';
 
 import { type RainbowTransaction } from '@/entities/transactions';
-import { type RelayStatusSnapshot } from '@rainbow-me/delegation';
+import { type RelayStatusSnapshot } from '@rainbow-me/sdk';
 
 /**
  * Applies relay onchain hashes onto a local managed transaction overlay.

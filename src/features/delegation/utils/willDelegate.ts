@@ -3,7 +3,7 @@ import { type Address } from 'viem';
 import WalletTypes from '@/helpers/walletTypes';
 import { type RainbowWallet } from '@/model/wallet';
 import { getWalletWithAccount, useWalletsStore } from '@/state/wallets/walletsStore';
-import { delegation, useWillDelegate } from '@rainbow-me/delegation';
+import { delegation, useWillDelegate } from '@rainbow-me/sdk';
 
 import { isDelegationEnabled, useIsDelegationEnabled } from './featureFlags';
 
@@ -55,7 +55,7 @@ export async function willExecuteDelegation(params: WillExecuteDelegationParams)
 }
 
 /**
- * Wraps the `useWillDelegate` hook from `@rainbow-me/delegation` with
+ * Wraps the `useWillDelegate` hook from `@rainbow-me/sdk` with
  * feature flag and hardware wallet gates.
  *
  * Returns `true` if delegation is expected and executable for the

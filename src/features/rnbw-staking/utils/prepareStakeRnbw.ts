@@ -4,7 +4,7 @@ import { createDelegationPublicClient } from '@/features/delegation/utils/calls'
 import { canUseDelegatedExecution } from '@/features/delegation/utils/willDelegate';
 import { isPositive } from '@/framework/core/safeMath';
 import { getProvider } from '@/handlers/web3';
-import { execute, type PreparedCallsExecution } from '@rainbow-me/delegation';
+import { execute, type PreparedCallsExecution } from '@rainbow-me/sdk';
 
 import { RNBW_DECIMALS, STAKING_CHAIN_ID } from '../constants';
 import { resolveStakeClaimStrategy } from './resolveStakeClaimStrategy';

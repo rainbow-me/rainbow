@@ -12,7 +12,7 @@ import { ensureError, logger, RainbowError } from '@/logger';
 import { buildAtomicExecutionRequirements } from '@/raps/atomicSwapPreparation';
 import { executeFn, Screens, TimeToSignOperation } from '@/state/performance/performance';
 import { swapsStore } from '@/state/swaps/swapsStore';
-import { execute, type Call, type ExecuteCallsResult, type ExecutionResult, type PreparedCallsExecution } from '@rainbow-me/delegation';
+import { execute, type Call, type ExecuteCallsResult, type ExecutionResult, type PreparedCallsExecution } from '@rainbow-me/sdk';
 
 import { swap, unlock } from './actions';
 import { claimClaimable } from './actions/claimClaimable';

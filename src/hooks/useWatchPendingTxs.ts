@@ -23,7 +23,7 @@ import { fetchRawTransaction, type PaginatedTransactions } from '@/resources/tra
 import { userAssetsStoreManager } from '@/state/assets/userAssetsStoreManager';
 import { useAssetUpdatesStore } from '@/state/assetUpdates/assetUpdates';
 import { pendingTransactionsActions, usePendingTransactionsStore } from '@/state/pendingTransactions';
-import { type RelayStatusSnapshot } from '@rainbow-me/delegation';
+import { type RelayStatusSnapshot } from '@rainbow-me/sdk';
 
 import { resolveTrackedTransaction } from './pendingTransactionResolution';
 

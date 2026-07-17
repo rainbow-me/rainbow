@@ -11,7 +11,7 @@ import { useBackendNetworksStore } from '@/features/network/stores/backendNetwor
 import { type ChainId } from '@/features/network/types/backendNetworks';
 import { parsePositiveRawAmount } from '@/framework/core/evm/units';
 import { ensureError, logger } from '@/logger';
-import { type Call, type PreparedCallsExecution } from '@rainbow-me/delegation';
+import { type Call, type PreparedCallsExecution } from '@rainbow-me/sdk';
 
 import { predictSponsoredSend, prepareSponsoredSend } from '../utils/sponsoredSend';
 import { buildSendCallFromSendDetails } from '../utils/sponsoredSendExecution';

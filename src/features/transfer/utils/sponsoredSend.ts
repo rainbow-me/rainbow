@@ -14,7 +14,7 @@ import { canUseDelegatedExecution, supportsDelegatedExecution } from '@/features
 import { backendNetworksActions } from '@/features/network/stores/backendNetworksStore';
 import { type ChainId } from '@/features/network/types/backendNetworks';
 import { RainbowError } from '@/logger';
-import { execute, type Call, type ExecuteCallsResult, type ExecutionResult, type PreparedCallsExecution } from '@rainbow-me/delegation';
+import { execute, type Call, type ExecuteCallsResult, type ExecutionResult, type PreparedCallsExecution } from '@rainbow-me/sdk';
 
 // ============ Types ========================================================= //
 

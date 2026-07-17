@@ -13,7 +13,7 @@ import { type ParsedAsset } from '@/resources/assets/types';
 import { addNewTransaction } from '@/state/pendingTransactions';
 import { executeFn, Screens, TimeToSignOperation } from '@/state/performance/performance';
 import { swapsStore } from '@/state/swaps/swapsStore';
-import { type Call } from '@rainbow-me/delegation';
+import { type Call } from '@rainbow-me/sdk';
 import { prepareFillCrosschainQuote, SwapType, type CrosschainQuote } from '@rainbow-me/swaps';
 
 import { type ActionProps, type PrepareActionProps, type RapActionResult, type RapSwapActionParameters } from '../references';

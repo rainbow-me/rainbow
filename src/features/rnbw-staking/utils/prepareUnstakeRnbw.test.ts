@@ -1,6 +1,6 @@
 import { type Address } from 'viem';
 
-import { type Call, type CallsRequirements } from '@rainbow-me/delegation';
+import { type Call, type CallsRequirements } from '@rainbow-me/sdk';
 
 import { STAKING_CHAIN_ID, STAKING_CONTRACT_ADDRESS } from '../constants';
 import { prepareUnstakeRnbw } from './prepareUnstakeRnbw';
@@ -9,7 +9,7 @@ const mockCanUseDelegatedExecution = jest.fn<boolean, [Address]>();
 const mockPrepareCalls = jest.fn<Promise<unknown>, [unknown]>();
 const mockBuildUnstakeRnbwExecutionPlan = jest.fn<Promise<{ calls: Call[]; requirements?: CallsRequirements }>, [unknown]>();
 
-jest.mock('@rainbow-me/delegation', () => ({
+jest.mock('@rainbow-me/sdk', () => ({
   execute: {
     prepare: {
       calls: (params: unknown) => mockPrepareCalls(params),

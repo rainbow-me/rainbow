@@ -48,7 +48,7 @@ import { useConnectedToAnvilStore } from '@/state/connectedToAnvil';
 import { nonceActions } from '@/state/nonces';
 import { pendingTransactionsActions } from '@/state/pendingTransactions';
 import { clearWalletState, useWalletsStore } from '@/state/wallets/walletsStore';
-import { delegation, type DelegationWithChainId } from '@rainbow-me/delegation';
+import { delegation, type DelegationWithChainId } from '@rainbow-me/sdk';
 
 import { analyzeUserAssets } from '../utils/analyzeUserAssets';
 

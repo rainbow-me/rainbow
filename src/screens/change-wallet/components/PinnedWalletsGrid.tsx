@@ -22,7 +22,7 @@ import { removeFirstEmojiFromString } from '@/helpers/emojiHandler';
 import { usePinnedWalletsStore } from '@/state/wallets/pinnedWalletsStore';
 import { useTheme } from '@/theme/ThemeContext';
 import { address } from '@/utils/abbreviations';
-import { useDelegationDisabled, useDelegations } from '@rainbow-me/delegation';
+import { useDelegationDisabled, useDelegations } from '@rainbow-me/sdk';
 
 import { AddressMenuAction, PANEL_INSET_HORIZONTAL, type AddressItem, type AddressMenuActionData } from '../ChangeWalletSheet';
 import { AddressAvatar } from './AddressAvatar';

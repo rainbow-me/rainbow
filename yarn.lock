@@ -5833,23 +5833,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@rainbow-me/delegation@file:./rainbow-me-delegation-0.4.0.tgz::locator=Rainbow%40workspace%3A.":
-  version: 0.4.0
-  resolution: "@rainbow-me/delegation@file:./rainbow-me-delegation-0.4.0.tgz#./rainbow-me-delegation-0.4.0.tgz::hash=5bf535&locator=Rainbow%40workspace%3A."
-  peerDependencies:
-    "@storesjs/stores": ^0.8.6
-    ethers: ^5.7.0
-    react: ^18 || ^19
-    viem: ^2.38.0
-  peerDependenciesMeta:
-    ethers:
-      optional: true
-    react:
-      optional: true
-  checksum: 10c0/1ea754a620cfcd34f46b832d0e0da4f19593b909f92d4c696412c203602a3dd57c6793a58cad488a102830ec1e0044d9ec017c3b2e9ad4ef5089b8e6ceecabb2
-  languageName: node
-  linkType: hard
-
 "@rainbow-me/provider@npm:0.1.2":
   version: 0.1.2
   resolution: "@rainbow-me/provider@npm:0.1.2"
@@ -5873,6 +5856,23 @@ __metadata:
     react: "*"
     react-native: "*"
   checksum: 10c0/7222babc6ae0978d52c7091c8f8dd182fa4e1457d2c96aab06dad4dbe96fca657a788c18e286d5d0f047e583cdf710a7f91ba9496a8e7e48ccb4033b85e05425
+  languageName: node
+  linkType: hard
+
+"@rainbow-me/sdk@npm:0.4.0":
+  version: 0.4.0
+  resolution: "@rainbow-me/sdk@npm:0.4.0"
+  peerDependencies:
+    "@storesjs/stores": ^0.8.6
+    ethers: ^5.7.0
+    react: ^18 || ^19
+    viem: ^2.55.2
+  peerDependenciesMeta:
+    ethers:
+      optional: true
+    react:
+      optional: true
+  checksum: 10c0/8f86a3439ba9e33f64c740d04ae00292039202801843b59eddbb534df53fa325a5b4b41819dd9f537da2958754a9c3161071c557c9d01d9bb127110a90e74614
   languageName: node
   linkType: hard
 
@@ -9072,9 +9072,9 @@ __metadata:
     "@polymarket/builder-relayer-client": "npm:0.0.10"
     "@polymarket/builder-signing-sdk": "npm:0.0.8"
     "@polymarket/clob-client-v2": "npm:1.0.8"
-    "@rainbow-me/delegation": "file:./rainbow-me-delegation-0.4.0.tgz"
     "@rainbow-me/provider": "npm:0.1.2"
     "@rainbow-me/react-native-animated-number": "npm:0.0.2"
+    "@rainbow-me/sdk": "npm:0.4.0"
     "@rainbow-me/swaps": "npm:0.41.0"
     "@rainbow-me/token-launcher": "npm:0.3.0"
     "@react-native-async-storage/async-storage": "npm:1.23.1"
@@ -9308,7 +9308,7 @@ __metadata:
     use-debounce: "npm:10.0.0"
     use-deep-compare: "npm:1.3.0"
     use-memo-one: "npm:1.1.1"
-    viem: "npm:2.38.0"
+    viem: "npm:2.55.2"
     vm-browserify: "npm:0.0.4"
     w2t: "npm:3.0.2"
     webpack: "npm:5.94.0"
@@ -9334,9 +9334,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"abitype@npm:1.1.0":
-  version: 1.1.0
-  resolution: "abitype@npm:1.1.0"
+"abitype@npm:1.2.3":
+  version: 1.2.3
+  resolution: "abitype@npm:1.2.3"
   peerDependencies:
     typescript: ">=5.0.4"
     zod: ^3.22.0 || ^4.0.0
@@ -9345,7 +9345,7 @@ __metadata:
       optional: true
     zod:
       optional: true
-  checksum: 10c0/99218d442951c60324fcd96a372c30d71ca8d5434cab62b95d5d80bae89e3024a445a90db323ef1fe4da0d749d86e815ca555a37719b06e6ca03ccad2116c45b
+  checksum: 10c0/c8740de1ae4961723a153224a52cb9a34a57903fb5c2ad61d5082b0b79b53033c9335381aa8c663c7ec213c9955a9853f694d51e95baceedef27356f7745c634
   languageName: node
   linkType: hard
 
@@ -9361,6 +9361,21 @@ __metadata:
     zod:
       optional: true
   checksum: 10c0/d52fd8195cb37cdb462ba4d1817dafdba8da403eeab50f144f251748d7458a43308ee29ea46889db2969c91c074780e6d1f00f86acd22dc5772570432ee56b9c
+  languageName: node
+  linkType: hard
+
+"abitype@npm:^1.2.3":
+  version: 1.3.0
+  resolution: "abitype@npm:1.3.0"
+  peerDependencies:
+    typescript: ">=5.0.4"
+    zod: ^3.22.0 || ^4.0.0
+  peerDependenciesMeta:
+    typescript:
+      optional: true
+    zod:
+      optional: true
+  checksum: 10c0/368b0209c10396952e57d0e927da0fad6c079dd23632ab463da2dfff0fe454ba218804322f6fdd6da014b3fbe96afafb4bb1da3585507f3891c2b47c69c63980
   languageName: node
   linkType: hard
 
@@ -20688,6 +20703,27 @@ __metadata:
   languageName: node
   linkType: hard
 
+"ox@npm:0.14.30":
+  version: 0.14.30
+  resolution: "ox@npm:0.14.30"
+  dependencies:
+    "@adraffy/ens-normalize": "npm:^1.11.0"
+    "@noble/ciphers": "npm:^1.3.0"
+    "@noble/curves": "npm:1.9.1"
+    "@noble/hashes": "npm:^1.8.0"
+    "@scure/bip32": "npm:^1.7.0"
+    "@scure/bip39": "npm:^1.6.0"
+    abitype: "npm:^1.2.3"
+    eventemitter3: "npm:5.0.1"
+  peerDependencies:
+    typescript: ">=5.4.0"
+  peerDependenciesMeta:
+    typescript:
+      optional: true
+  checksum: 10c0/dfefa9218269103b3da3686c4da62849aef15e4347fd21f898fa113d9b4c2b86afab7c662c94d58206257736202647ce96249405c021c4a233712ac34fa3cc1b
+  languageName: node
+  linkType: hard
+
 "ox@npm:0.9.14":
   version: 0.9.14
   resolution: "ox@npm:0.9.14"
@@ -20706,27 +20742,6 @@ __metadata:
     typescript:
       optional: true
   checksum: 10c0/287e6beb626881882aafbd9b1d12583faace4693beb46860afa183b48a3469d7ff7ab0e9f7d282efc83d57c6d71c8ed6767f864bd2578fbe4a54825b265afb2f
-  languageName: node
-  linkType: hard
-
-"ox@npm:0.9.6":
-  version: 0.9.6
-  resolution: "ox@npm:0.9.6"
-  dependencies:
-    "@adraffy/ens-normalize": "npm:^1.11.0"
-    "@noble/ciphers": "npm:^1.3.0"
-    "@noble/curves": "npm:1.9.1"
-    "@noble/hashes": "npm:^1.8.0"
-    "@scure/bip32": "npm:^1.7.0"
-    "@scure/bip39": "npm:^1.6.0"
-    abitype: "npm:^1.0.9"
-    eventemitter3: "npm:5.0.1"
-  peerDependencies:
-    typescript: ">=5.4.0"
-  peerDependenciesMeta:
-    typescript:
-      optional: true
-  checksum: 10c0/559b39051f80a25352e1ca6e7aba6e04f60c4e29f98e4ef3ec0c8d2b0432d400004ce09d2991200eaf21745179af47367dc28c553da43403dd0b69c2453ebabe
   languageName: node
   linkType: hard
 
@@ -26445,24 +26460,24 @@ __metadata:
   languageName: node
   linkType: hard
 
-"viem@npm:2.38.0":
-  version: 2.38.0
-  resolution: "viem@npm:2.38.0"
+"viem@npm:2.55.2":
+  version: 2.55.2
+  resolution: "viem@npm:2.55.2"
   dependencies:
     "@noble/curves": "npm:1.9.1"
     "@noble/hashes": "npm:1.8.0"
     "@scure/bip32": "npm:1.7.0"
     "@scure/bip39": "npm:1.6.0"
-    abitype: "npm:1.1.0"
+    abitype: "npm:1.2.3"
     isows: "npm:1.0.7"
-    ox: "npm:0.9.6"
-    ws: "npm:8.18.3"
+    ox: "npm:0.14.30"
+    ws: "npm:8.21.0"
   peerDependencies:
     typescript: ">=5.0.4"
   peerDependenciesMeta:
     typescript:
       optional: true
-  checksum: 10c0/65d13718f6dd8f2de282c147c13700b7c057d855c02641ff1268a57f57963437df1f5bb71fb93e6df547d5e0a880990a9bea497ab2cbc26e89d0bf3e65976f6d
+  checksum: 10c0/81db14ee0fcea2adc811f496ba37c984ef423fdde91599a0ceecc42c84068c7d4907af001565bbf8837ec63b36a8c5e3534d19e3ae32acf88e30c72e91d5cd10
   languageName: node
   linkType: hard
 
@@ -26910,9 +26925,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"ws@npm:8.18.3":
-  version: 8.18.3
-  resolution: "ws@npm:8.18.3"
+"ws@npm:8.21.0":
+  version: 8.21.0
+  resolution: "ws@npm:8.21.0"
   peerDependencies:
     bufferutil: ^4.0.1
     utf-8-validate: ">=5.0.2"
@@ -26921,7 +26936,7 @@ __metadata:
       optional: true
     utf-8-validate:
       optional: true
-  checksum: 10c0/eac918213de265ef7cb3d4ca348b891a51a520d839aa51cdb8ca93d4fa7ff9f6ccb339ccee89e4075324097f0a55157c89fa3f7147bde9d8d7e90335dc087b53
+  checksum: 10c0/ef4a243476283fc49bc7550966c4af4aa0eef56273837211e700de3b664e08604a760cdddcb5ba43c049140e74ccfec5b0ee0bb439e08c2adf9138902fdde5f9
   languageName: node
   linkType: hard
 

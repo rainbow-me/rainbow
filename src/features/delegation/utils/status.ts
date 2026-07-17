@@ -1,4 +1,4 @@
-import type { DelegationWithChainId } from '@rainbow-me/delegation';
+import type { DelegationWithChainId } from '@rainbow-me/sdk';
 
 // ============ Enums and Types ================================================ //
 

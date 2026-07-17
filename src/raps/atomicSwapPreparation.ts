@@ -6,7 +6,7 @@ import { getRemoteConfig } from '@/features/config/stores/remoteConfig';
 import { SPONSORED_CALLS_REQUIREMENTS } from '@/features/delegation/utils/calls';
 import { backendNetworksActions } from '@/features/network/stores/backendNetworksStore';
 import { type ChainId } from '@/features/network/types/backendNetworks';
-import { type Call } from '@rainbow-me/delegation';
+import { type Call } from '@rainbow-me/sdk';
 import { type CrosschainQuote, type Quote } from '@rainbow-me/swaps';
 
 import { prepareCrosschainSwapCall } from './actions/crosschainSwap';

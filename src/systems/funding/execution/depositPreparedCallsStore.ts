@@ -4,7 +4,7 @@ import { createPreparedCallsStore, type PreparedCallsStore } from '@/features/de
 import { type ChainId } from '@/features/network/types/backendNetworks';
 import { time } from '@/framework/core/utils/time';
 import { getProvider } from '@/handlers/web3';
-import { type PreparedCallsExecution } from '@rainbow-me/delegation';
+import { type PreparedCallsExecution } from '@rainbow-me/sdk';
 
 import { type DepositConfig, type DepositGasHookParams, type DepositQuoteResult } from '../types';
 import { buildDepositQuoteKey } from '../utils/depositQuoteKey';

@@ -8,7 +8,7 @@ import type { LegacyTransactionGasParamAmounts, TransactionGasParamAmounts } fro
 import { RainbowError } from '@/logger';
 import { extractReplayableExecution } from '@/raps/replay';
 import { addNewTransaction } from '@/state/pendingTransactions';
-import { type PreparedCallsExecution } from '@rainbow-me/delegation';
+import { type PreparedCallsExecution } from '@rainbow-me/sdk';
 
 import { STAKING_ABI, STAKING_CHAIN_ID, STAKING_CONTRACT_ADDRESS, STAKING_UNSTAKE_GAS_LIMIT } from '../constants';
 import { buildUnstakeTransaction } from './buildUnstakeTransaction';

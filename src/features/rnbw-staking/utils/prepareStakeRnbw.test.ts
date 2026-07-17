@@ -1,6 +1,6 @@
 import { type Address } from 'viem';
 
-import { type Call, type CallsRequirements } from '@rainbow-me/delegation';
+import { type Call, type CallsRequirements } from '@rainbow-me/sdk';
 
 import { STAKING_CHAIN_ID, STAKING_CONTRACT_ADDRESS } from '../constants';
 import { prepareStakeRnbw, type StakeRnbwPreparationParams } from './prepareStakeRnbw';
@@ -11,7 +11,7 @@ const mockBuildStakeRnbwExecutionPlan = jest.fn<Promise<{ calls: Call[]; require
 const mockGetProvider = jest.fn();
 const mockResolveStakeClaimStrategy = jest.fn<Promise<unknown>, [string]>();
 
-jest.mock('@rainbow-me/delegation', () => ({
+jest.mock('@rainbow-me/sdk', () => ({
   execute: {
     prepare: {
       calls: (params: unknown) => mockPrepareCalls(params),

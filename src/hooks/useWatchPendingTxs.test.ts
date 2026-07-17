@@ -15,7 +15,7 @@ import { queryClient } from '@/react-query';
 import { fetchRawTransaction } from '@/resources/transactions/transaction';
 import { useAssetUpdatesStore } from '@/state/assetUpdates/assetUpdates';
 import { pendingTransactionsActions, usePendingTransactionsStore } from '@/state/pendingTransactions';
-import { RelayExecutionStatus } from '@rainbow-me/delegation';
+import { RelayExecutionStatus } from '@rainbow-me/sdk';
 import { SwapType } from '@rainbow-me/swaps';
 
 import { resolveTrackedTransaction } from './pendingTransactionResolution';

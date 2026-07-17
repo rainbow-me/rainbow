@@ -42,7 +42,7 @@ import { formatAddressForDisplay } from '@/utils/abbreviations';
 import isLowerCaseMatch from '@/utils/isLowerCaseMatch';
 import { addressHashedColorIndex, addressHashedEmoji } from '@/utils/profileUtils';
 import { safeSum } from '@/utils/safeSum';
-import { useDelegations } from '@rainbow-me/delegation';
+import { useDelegations } from '@rainbow-me/sdk';
 
 const TransactionMastheadHeight = Platform.OS === 'android' ? 153 : 135;
 

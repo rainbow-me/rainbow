@@ -11,7 +11,7 @@ import { getAddress } from 'viem';
 import { GO_RELAY_BACKEND } from '@/features/config/constants/experimental';
 import { getExperimentalFlag } from '@/features/config/stores/experimentalConfigStore';
 import { useRemoteConfigStore } from '@/features/config/stores/remoteConfig';
-import { createRelayService } from '@rainbow-me/delegation';
+import { createRelayService } from '@rainbow-me/sdk';
 
 export type RelayStatusResponse = Awaited<ReturnType<typeof relayService.getStatus>>;
 

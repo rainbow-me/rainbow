@@ -10,7 +10,7 @@ import { type Address } from 'viem';
 import { TransactionDirection, TransactionStatus } from '@/entities/transactions';
 import { time } from '@/framework/core/utils/time';
 import { type TransactionAssetSource } from '@/raps/transactionAsset';
-import { execute, type Call, type CallsRequirements, type PreparedCallsExecution } from '@rainbow-me/delegation';
+import { execute, type Call, type CallsRequirements, type PreparedCallsExecution } from '@rainbow-me/sdk';
 
 import {
   RNBW_DECIMALS,
@@ -32,7 +32,7 @@ const mockTrackCallsExecution = jest.fn<void, [unknown]>();
 const mockWaitForManagedExecutionConfirmation = jest.fn<Promise<void>, [string]>();
 const mockAddNewTransaction = jest.fn<void, [unknown]>();
 
-jest.mock('@rainbow-me/delegation', () => ({
+jest.mock('@rainbow-me/sdk', () => ({
   execute: {
     calls: (params: unknown, clients?: unknown) => mockExecuteCalls(params, clients),
     prepare: {

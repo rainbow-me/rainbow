@@ -10,7 +10,7 @@ import { type NumberPadField } from '@/components/number-pad/NumberPadKey';
 import type { GasSettings, LegacyTransactionGasParamAmounts, TransactionGasParamAmounts } from '@/features/gas/types/gas';
 import { type GasSpeed } from '@/features/gas/types/gasSpeed';
 import { type ChainId } from '@/features/network/types/backendNetworks';
-import { type PreparedCallsExecution } from '@rainbow-me/delegation';
+import { type PreparedCallsExecution } from '@rainbow-me/sdk';
 import { type CrosschainQuote, type Quote, type Source } from '@rainbow-me/swaps';
 
 // ============ Shared Types =================================================== //

@@ -9,7 +9,7 @@ import { encodeFunctionData, type Address } from 'viem';
 
 import { type ExtendedAnimatedAssetWithColors } from '@/__swaps__/types/assets';
 import { time } from '@/framework/core/utils/time';
-import { execute, type Call, type CallsRequirements, type PreparedCallsExecution } from '@rainbow-me/delegation';
+import { execute, type Call, type CallsRequirements, type PreparedCallsExecution } from '@rainbow-me/sdk';
 
 import {
   RNBW_DECIMALS,
@@ -32,7 +32,7 @@ const mockWaitForManagedExecutionConfirmation = jest.fn<Promise<void>, [string]>
 const mockBuildSyntheticRnbwSourceAsset = jest.fn<ExtendedAnimatedAssetWithColors | null, []>();
 const mockAddNewTransaction = jest.fn<void, [unknown]>();
 
-jest.mock('@rainbow-me/delegation', () => ({
+jest.mock('@rainbow-me/sdk', () => ({
   execute: {
     calls: (params: unknown, clients?: unknown) => mockExecuteCalls(params, clients),
     prepare: {

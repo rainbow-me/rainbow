@@ -5,7 +5,7 @@ import { type Address } from 'viem';
 
 import { TransactionStatus, type NewTransaction } from '@/entities/transactions/transaction';
 import { ChainId } from '@/features/network/types/backendNetworks';
-import { type Call, type PreparedCallsExecution } from '@rainbow-me/delegation';
+import { type Call, type PreparedCallsExecution } from '@rainbow-me/sdk';
 
 import {
   buildPendingSendTransaction,
@@ -33,7 +33,7 @@ const mockSponsoredCallsRequirements = {
   fees: { payer: 'sponsor' },
 };
 
-jest.mock('@rainbow-me/delegation', () => ({
+jest.mock('@rainbow-me/sdk', () => ({
   execute: {
     calls: (params: unknown, clients?: unknown) => mockExecuteCalls(params, clients),
     prepare: {

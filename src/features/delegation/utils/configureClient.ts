@@ -1,21 +1,21 @@
 import { logger } from '@/logger';
 import { getPlatformClient } from '@/resources/platform/client';
 import { useWalletsStore } from '@/state/wallets/walletsStore';
-import { configure as configureDelegationClient } from '@rainbow-me/delegation';
+import { configure } from '@rainbow-me/sdk';
 
 import { relayService } from './relayService';
 
-// ============ Delegation Client ============================================== //
+// ============ SDK Configuration ============================================== //
 
 /**
- * Configures the `@rainbow-me/delegation` SDK client.
+ * Configures the Rainbow SDK.
  *
  * Called eagerly during app initialization — the SDK is lazy internally.
  */
-export function configureDelegationSdk(): void {
-  configureDelegationClient({
+export function configureRainbowSdk(): void {
+  configure({
     platformClient: getPlatformClient(),
-    logger: logger.createServiceLogger(logger.DebugContext.delegation),
+    logger: logger.createServiceLogger(logger.DebugContext.sdk),
     getCurrentAddress: $ => $(useWalletsStore, s => s.accountAddress),
     relayService,
   });

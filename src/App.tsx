@@ -26,7 +26,7 @@ import { reactNativeDisableYellowBox, showNetworkRequests, showNetworkResponses 
 import { IS_DEV, IS_PROD, IS_STORE_INSTALL, IS_TEST } from '@/env';
 import { initializeRemoteConfig } from '@/features/config/stores/remoteConfig';
 import { monitorNetwork } from '@/features/debug/utils/network';
-import { configureDelegationSdk } from '@/features/delegation/utils/configureClient';
+import { configureRainbowSdk } from '@/features/delegation/utils/configureClient';
 import { SandboxDiagnosticsOverlay } from '@/features/sandbox/ui/components/SandboxDiagnosticsOverlay';
 import RainbowContextWrapper from '@/helpers/RainbowContext';
 import { useApplicationSetup } from '@/hooks/useApplicationSetup';
@@ -52,6 +52,7 @@ if (IS_DEV) {
 }
 
 enableScreens();
+configureRainbowSdk();
 
 const sx = StyleSheet.create({
   container: {
@@ -173,7 +174,7 @@ async function initializeApplication() {
   // user-property delivery in Amplitude. Remove after FEPLAT-67 wraps up.
   analytics.track(analytics.event.debugIdentifyProbe, { probe: 'installSource', value: installSource });
 
-  await Promise.all([initializeRemoteConfig(), migrate(), loadSettingsData(), configureDelegationSdk()]);
+  await Promise.all([initializeRemoteConfig(), migrate(), loadSettingsData()]);
 
   /**
    * We previously relied on the existence of a deviceId on keychain to
