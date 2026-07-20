@@ -2,4 +2,7 @@
 maestro = "cli-2.0.10"
 
 [settings]
-idiomatic_version_file_enable_tools = ["node"]
+# Node and Ruby stay pinned in .node-version/.ruby-version so actions/setup-node
+# and ruby/setup-ruby can read them. Node can fold into [tools] once
+# https://github.com/actions/setup-node/pull/1421 ships.
+idiomatic_version_file_enable_tools = ["node", "ruby"]

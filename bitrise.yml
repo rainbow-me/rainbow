@@ -33,7 +33,23 @@ workflows:
   build_setup:
     steps:
       - git-clone@8.1: {}
-      - nvm@1: {}
+      - script@1:
+          inputs:
+            - content: |-
+                #!/usr/bin/env bash
+                # fail if any commands fails
+                set -e
+                # debug log
+                set -x
+
+                curl -fsSL https://mise.run | sh
+                export PATH="$HOME/.local/bin:$PATH"
+                mise trust
+                mise install node
+
+                # Expose mise and its shims (node etc.) to all subsequent steps
+                envman add --key PATH --value "$HOME/.local/share/mise/shims:$PATH"
+          title: Install Node via mise
       - script@1:
           inputs:
             - content: |-
