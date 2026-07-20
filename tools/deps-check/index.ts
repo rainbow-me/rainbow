@@ -49,7 +49,7 @@ const allowAdditions = args.includes('--allow-additions');
 function validatePolicies(summary: CruiseSummary): void {
   const unknown = unknownPolicyRules(new Set((summary.ruleSetUsed?.forbidden ?? []).map(rule => rule.name)));
   if (unknown.length > 0) {
-    console.error(`✖ scripts/deps-check/policies.ts references rules missing from .dependency-cruiser.cjs: ${unknown.join(', ')}`);
+    console.error(`✖ tools/deps-check/policies.ts references rules missing from .dependency-cruiser.cjs: ${unknown.join(', ')}`);
     process.exit(2);
   }
 }

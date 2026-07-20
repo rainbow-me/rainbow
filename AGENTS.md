@@ -10,7 +10,7 @@ React Native crypto wallet app (iOS & Android). Uses React Navigation, `@storesj
 - **Lint all:** `yarn lint` (format + TS + JS)
 - **Tests:** `yarn test` (Jest)
 - **Single test:** `yarn jest path/to/test`
-- **Dependency rules + cycles:** `yarn lint:deps` (dependency-cruiser via `scripts/deps-check/`: architectural boundaries, plus circular deps checked against a grandfathered per-platform baseline). Net-new cycles fail; removing cycles also fails until you run `yarn lint:deps:baseline:update` and commit the baselines, which keeps them exact. Per-rule policies (grandfathered vs strict) live in `scripts/deps-check/policies.ts`.
+- **Dependency rules + cycles:** `yarn lint:deps` (dependency-cruiser via `tools/deps-check/`: architectural boundaries, plus circular deps checked against a grandfathered per-platform baseline). Net-new cycles fail; removing cycles also fails until you run `yarn lint:deps:baseline:update` and commit the baselines, which keeps them exact. Per-rule policies (grandfathered vs strict) live in `tools/deps-check/policies.ts`.
 
 ## Architecture
 
@@ -38,6 +38,8 @@ Key non-obvious directories:
 - `src/framework/` -- app-agnostic infrastructure (http, safe math, UI primitives)
 - `src/__swaps__/` -- swap feature, aliased as `@/swaps` in tsconfig
 - `src/graphql/` -- separate yarn workspace for GraphQL codegen
+- `scripts/` -- flat, single-file scripts that orchestrate/wrap existing things
+- `tools/` -- standalone tooling with its own logic, modules, and tests
 
 ## Code conventions
 
