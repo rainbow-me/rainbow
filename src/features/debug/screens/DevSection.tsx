@@ -535,11 +535,15 @@ export const DevSection = () => {
             ))}
             <MenuItem
               onPress={() =>
-                useCashSetupSessionStore.getState().setPhoneVerified({
-                  userId: 'dev-user-id',
-                  phoneNationalNumber: '4155550100',
-                  token: 'bst_dev',
-                  expiresAt: Date.now() + time.hours(1),
+                useCashSetupSessionStore.setState({
+                  session: {
+                    status: 'phoneVerified',
+                    userId: 'dev-user-id',
+                    phoneNationalNumber: '4155550100',
+                    bootstrapToken: 'bst_dev',
+                    bootstrapTokenExpiresAt: Date.now() + time.hours(1),
+                    identity: null,
+                  },
                 })
               }
               size={52}

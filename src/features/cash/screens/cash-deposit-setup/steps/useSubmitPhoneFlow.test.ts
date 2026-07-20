@@ -72,7 +72,7 @@ describe('useSubmitPhoneFlowStore.submit', () => {
     expect(mockCreateUserWithPhone).toHaveBeenCalledWith({ nationalNumber: DIGITS });
     expect(session()).toEqual({
       status: 'phoneSubmitted',
-      userId: RESPONSE.userId,
+      challenge: { userId: RESPONSE.userId },
       phoneNationalNumber: DIGITS,
       resendAfter: RESPONSE.resendAfter,
     });

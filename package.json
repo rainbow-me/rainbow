@@ -210,6 +210,7 @@
     "@react-native-async-storage/async-storage": "1.23.1",
     "@react-native-camera-roll/camera-roll": "7.10.0",
     "@react-native-clipboard/clipboard": "1.16.2",
+    "@react-native-community/datetimepicker": "9.1.0",
     "@react-native-community/netinfo": "11.4.1",
     "@react-native-firebase/app": "23.8.8",
     "@react-native-firebase/firestore": "23.8.8",

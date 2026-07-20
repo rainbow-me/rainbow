@@ -1,5 +1,21 @@
 import { createBaseStore } from '@storesjs/stores';
 
+export type CashSetupDateOfBirth = {
+  year: number;
+  month: number;
+  day: number;
+};
+
+export type CashSetupIdentity = {
+  firstName: string;
+  lastName: string;
+  dateOfBirth: CashSetupDateOfBirth;
+};
+
+// Identifies one accepted phone submission by reference, so async results can
+// be checked against the submission that started them.
+export type PhoneChallenge = Readonly<{ userId: string }>;
+
 type EmptyCashSetupSession = {
   status: 'empty';
 };
@@ -7,7 +23,7 @@ type EmptyCashSetupSession = {
 type PhoneSubmittedCashSetupSession = {
   status: 'phoneSubmitted';
   phoneNationalNumber: string;
-  userId: string;
+  challenge: PhoneChallenge;
   resendAfter: number;
 };
 
@@ -17,15 +33,18 @@ type VerifiedCashSetupSession = {
   userId: string;
   bootstrapToken: string;
   bootstrapTokenExpiresAt: number;
+  identity: CashSetupIdentity | null;
 };
 
 type CashSetupSession = EmptyCashSetupSession | PhoneSubmittedCashSetupSession | VerifiedCashSetupSession;
 
 type CashSetupSessionStore = {
   session: CashSetupSession;
+  getIsCurrentChallenge: (challenge: PhoneChallenge) => boolean;
   setPhoneSubmitted: (params: { userId: string; phoneNationalNumber: string; resendAfter: number }) => void;
-  setResendAfter: (resendAfter: number) => void;
-  setPhoneVerified: (params: { userId: string; phoneNationalNumber: string; token: string; expiresAt: number }) => void;
+  setResendAfter: (challenge: PhoneChallenge, resendAfter: number) => void;
+  setPhoneVerified: (challenge: PhoneChallenge, credential: { bootstrapToken: string; expiresAt: number }) => void;
+  setIdentity: (identity: CashSetupIdentity) => void;
   reset: () => void;
 };
 
@@ -34,16 +53,39 @@ const EMPTY_SESSION: EmptyCashSetupSession = { status: 'empty' };
 // Intentionally memory-only (PII)
 export const useCashSetupSessionStore = createBaseStore<CashSetupSessionStore>((set, get) => ({
   session: EMPTY_SESSION,
-  setPhoneSubmitted: ({ userId, phoneNationalNumber, resendAfter }) =>
-    set({ session: { status: 'phoneSubmitted', userId, phoneNationalNumber, resendAfter } }),
-  setResendAfter: resendAfter => {
+  getIsCurrentChallenge: challenge => {
     const { session } = get();
-    if (session.status !== 'phoneSubmitted') return;
-    set({ session: { ...session, resendAfter } });
+    return session.status === 'phoneSubmitted' && session.challenge === challenge;
   },
-  setPhoneVerified: ({ userId, phoneNationalNumber, token, expiresAt }) =>
-    set({ session: { status: 'phoneVerified', userId, phoneNationalNumber, bootstrapToken: token, bootstrapTokenExpiresAt: expiresAt } }),
-  reset: () => set({ session: EMPTY_SESSION }),
+  setPhoneSubmitted: ({ userId, phoneNationalNumber, resendAfter }) =>
+    set({ session: { status: 'phoneSubmitted', challenge: { userId }, phoneNationalNumber, resendAfter } }),
+  setResendAfter: (challenge, resendAfter) =>
+    set(state => {
+      const { session } = state;
+      if (session.status !== 'phoneSubmitted' || session.challenge !== challenge || session.resendAfter === resendAfter) return state;
+      return { session: { ...session, resendAfter } };
+    }),
+  setPhoneVerified: (challenge, { bootstrapToken, expiresAt }) =>
+    set(state => {
+      const { session } = state;
+      if (session.status !== 'phoneSubmitted' || session.challenge !== challenge) return state;
+      return {
+        session: {
+          status: 'phoneVerified',
+          userId: challenge.userId,
+          phoneNationalNumber: session.phoneNationalNumber,
+          bootstrapToken,
+          bootstrapTokenExpiresAt: expiresAt,
+          identity: null,
+        },
+      };
+    }),
+  setIdentity: identity => {
+    const { session } = get();
+    if (session.status !== 'phoneVerified') return;
+    set({ session: { ...session, identity } });
+  },
+  reset: () => set(state => (state.session === EMPTY_SESSION ? state : { session: EMPTY_SESSION })),
 }));
 
 export function selectIsPhoneVerified(state: CashSetupSessionStore): boolean {

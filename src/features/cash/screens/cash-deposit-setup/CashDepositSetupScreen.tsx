@@ -25,6 +25,7 @@ import { PasskeyStep } from './steps/PasskeyStep';
 import { PhoneStep } from './steps/PhoneStep';
 import { ReviewStep } from './steps/ReviewStep';
 import { SsnStep } from './steps/SsnStep';
+import { useSubmitPhoneFlowStore } from './steps/useSubmitPhoneFlow';
 
 const STEP_COMPONENTS: Record<CashDepositSetupRoute, React.ReactElement> = {
   [Routes.CASH_SETUP_PHONE]: <PhoneStep />,
@@ -57,7 +58,10 @@ export const CashDepositSetupScreen = memo(function CashDepositSetupScreen() {
     route => goToPage(route)
   );
 
-  useCleanup(CashDepositSetupNavigation.resetNavigationState);
+  useCleanup(() => {
+    CashDepositSetupNavigation.resetNavigationState();
+    useSubmitPhoneFlowStore.getState().reset();
+  });
 
   return (
     <Box style={styles.container}>

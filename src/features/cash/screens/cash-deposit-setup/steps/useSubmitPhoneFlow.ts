@@ -19,6 +19,7 @@ type SubmitPhoneFlowStore = {
   digits: string;
   setDigits: (text: string) => void;
   submit: () => Promise<boolean>;
+  reset: () => void;
 };
 
 // Pasted or AutoFilled values may carry the +1 country code on top of the 10 national digits.
@@ -55,6 +56,8 @@ export const useSubmitPhoneFlowStore = createBaseStore<SubmitPhoneFlowStore>((se
       return false;
     }
   },
+
+  reset: () => set({ digits: '', state: 'entry' }),
 }));
 
 const submitPhoneFlowActions = createStoreActions(useSubmitPhoneFlowStore);

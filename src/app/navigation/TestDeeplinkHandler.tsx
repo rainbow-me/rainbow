@@ -52,11 +52,15 @@ export function TestDeeplinkHandler() {
           break;
         case 'setCashPhoneVerified':
           if (query.value === 'true') {
-            useCashSetupSessionStore.getState().setPhoneVerified({
-              userId: 'e2e-user-id',
-              phoneNationalNumber: '4155550100',
-              token: 'bst_e2e',
-              expiresAt: Date.now() + time.days(1),
+            useCashSetupSessionStore.setState({
+              session: {
+                status: 'phoneVerified',
+                userId: 'e2e-user-id',
+                phoneNationalNumber: '4155550100',
+                bootstrapToken: 'bst_e2e',
+                bootstrapTokenExpiresAt: Date.now() + time.days(1),
+                identity: null,
+              },
             });
           } else {
             useCashSetupSessionStore.getState().reset();

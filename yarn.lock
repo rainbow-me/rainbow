@@ -6253,6 +6253,25 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@react-native-community/datetimepicker@npm:9.1.0":
+  version: 9.1.0
+  resolution: "@react-native-community/datetimepicker@npm:9.1.0"
+  dependencies:
+    invariant: "npm:^2.2.4"
+  peerDependencies:
+    expo: ">=52.0.0"
+    react: "*"
+    react-native: "*"
+    react-native-windows: "*"
+  peerDependenciesMeta:
+    expo:
+      optional: true
+    react-native-windows:
+      optional: true
+  checksum: 10c0/3f31baec58c1245204a9b4057809027019aa1abb4b8caea4cb4d44ab70f5a97dfe5114a8aa315299aa47ad31971059181c355aa056d9c3a14b7892582da9f4cb
+  languageName: node
+  linkType: hard
+
 "@react-native-community/netinfo@npm:11.4.1":
   version: 11.4.1
   resolution: "@react-native-community/netinfo@npm:11.4.1"
@@ -9083,6 +9102,7 @@ __metadata:
     "@react-native-community/cli": "npm:20.0.2"
     "@react-native-community/cli-platform-android": "npm:20.0.2"
     "@react-native-community/cli-platform-ios": "npm:20.0.2"
+    "@react-native-community/datetimepicker": "npm:9.1.0"
     "@react-native-community/netinfo": "npm:11.4.1"
     "@react-native-firebase/app": "npm:23.8.8"
     "@react-native-firebase/firestore": "npm:23.8.8"

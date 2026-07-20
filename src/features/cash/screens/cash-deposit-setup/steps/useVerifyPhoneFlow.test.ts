@@ -37,6 +37,11 @@ const RESEND_AFTER = 1_750_000_030_000;
 const flow = () => useVerifyPhoneFlowStore.getState();
 const store = () => useCashSetupSessionStore.getState();
 const session = () => store().session;
+const challenge = () => {
+  const current = session();
+  if (current.status !== 'phoneSubmitted') throw new Error('expected a phoneSubmitted session');
+  return current.challenge;
+};
 
 beforeEach(() => {
   jest.clearAllMocks();
@@ -60,6 +65,7 @@ describe('useVerifyPhoneFlowStore.submit', () => {
     expect(mockVerifyPhone).toHaveBeenCalledWith({ userId: 'user-1', code: CODE });
     expect(session()).toMatchObject({
       status: 'phoneVerified',
+      userId: 'user-1',
       bootstrapToken: TOKEN.bootstrapToken,
       bootstrapTokenExpiresAt: TOKEN.expiresAt,
     });
@@ -117,8 +123,65 @@ describe('useVerifyPhoneFlowStore.submit', () => {
     resolveVerify(TOKEN);
 
     await expect(pending).resolves.toBe(false);
-    expect(session()).toMatchObject({ status: 'phoneSubmitted', userId: 'user-2' });
+    expect(session()).toMatchObject({ status: 'phoneSubmitted', challenge: { userId: 'user-2' } });
     expect(track).not.toHaveBeenCalledWith('cash.phone_verified');
+  });
+
+  it('discards a verification that resolves after a replacement submission for the same user', async () => {
+    let resolveVerify!: (value: typeof TOKEN) => void;
+    mockVerifyPhone.mockReturnValue(
+      new Promise(resolve => {
+        resolveVerify = resolve;
+      })
+    );
+    flow().setCode(CODE);
+
+    const pending = flow().submit();
+    store().setPhoneSubmitted({ userId: 'user-1', phoneNationalNumber: '4155550100', resendAfter: 0 });
+    resolveVerify(TOKEN);
+
+    await expect(pending).resolves.toBe(false);
+    expect(session().status).toBe('phoneSubmitted');
+    expect(track).not.toHaveBeenCalledWith('cash.phone_verified');
+  });
+
+  it('leaves the replacement flow untouched when an old verification rejects', async () => {
+    let rejectVerify!: (error: Error) => void;
+    mockVerifyPhone.mockReturnValue(
+      new Promise((_, reject) => {
+        rejectVerify = reject;
+      })
+    );
+    flow().setCode(CODE);
+
+    const pending = flow().submit();
+    store().setPhoneSubmitted({ userId: 'user-2', phoneNationalNumber: '4155550101', resendAfter: 0 });
+    flow().reset();
+    flow().setCode('654321');
+    rejectVerify(new Error('expired code'));
+
+    await expect(pending).resolves.toBe(false);
+    expect(flow().state).toBe('entry');
+    expect(flow().code).toBe('654321');
+    expect(track).not.toHaveBeenCalledWith('cash.phone_verify_failed', expect.anything());
+    expect(logger.error).not.toHaveBeenCalled();
+  });
+
+  it('completes a verification when only the resend cooldown changed meanwhile', async () => {
+    let resolveVerify!: (value: typeof TOKEN) => void;
+    mockVerifyPhone.mockReturnValue(
+      new Promise(resolve => {
+        resolveVerify = resolve;
+      })
+    );
+    flow().setCode(CODE);
+
+    const pending = flow().submit();
+    store().setResendAfter(challenge(), RESEND_AFTER);
+    resolveVerify(TOKEN);
+
+    await expect(pending).resolves.toBe(true);
+    expect(session()).toMatchObject({ status: 'phoneVerified', userId: 'user-1' });
   });
 
   it('ignores a second submit while verifying', async () => {
@@ -143,7 +206,7 @@ describe('useVerifyPhoneFlowStore.resend', () => {
   it('resends only after the backend resendAfter time, then stores the next backend resendAfter', async () => {
     const now = 1_750_000_000_000;
     const dateNow = jest.spyOn(Date, 'now').mockReturnValue(now);
-    store().setResendAfter(now + 1);
+    store().setResendAfter(challenge(), now + 1);
 
     await flow().resend();
     expect(mockResendPhoneCode).not.toHaveBeenCalled();
@@ -167,8 +230,40 @@ describe('useVerifyPhoneFlowStore.resend', () => {
     resolveResend({ resendAfter: RESEND_AFTER });
 
     await pending;
-    expect(session()).toMatchObject({ status: 'phoneSubmitted', userId: 'user-2', resendAfter: 0 });
-    expect(flow().resending).toBe(false);
+    expect(session()).toMatchObject({ status: 'phoneSubmitted', challenge: { userId: 'user-2' }, resendAfter: 0 });
+    expect(flow().resending).toBeNull();
+  });
+
+  it("does not clear a newer resend when an old resend's cleanup runs", async () => {
+    let resolveFirst!: (value: { resendAfter: number }) => void;
+    let resolveSecond!: (value: { resendAfter: number }) => void;
+    mockResendPhoneCode
+      .mockReturnValueOnce(
+        new Promise(resolve => {
+          resolveFirst = resolve;
+        })
+      )
+      .mockReturnValueOnce(
+        new Promise(resolve => {
+          resolveSecond = resolve;
+        })
+      );
+
+    const first = flow().resend();
+    store().setPhoneSubmitted({ userId: 'user-1', phoneNationalNumber: '4155550100', resendAfter: 0 });
+    flow().reset();
+    const second = flow().resend();
+    expect(mockResendPhoneCode).toHaveBeenCalledTimes(2);
+
+    resolveFirst({ resendAfter: RESEND_AFTER + 1 });
+    await first;
+    expect(flow().resending).not.toBeNull();
+    expect(session()).toMatchObject({ status: 'phoneSubmitted', resendAfter: 0 });
+
+    resolveSecond({ resendAfter: RESEND_AFTER });
+    await second;
+    expect(flow().resending).toBeNull();
+    expect(session()).toMatchObject({ status: 'phoneSubmitted', resendAfter: RESEND_AFTER });
   });
 
   it('ignores a second resend while one is pending', async () => {
@@ -185,6 +280,6 @@ describe('useVerifyPhoneFlowStore.resend', () => {
 
     resolveResend({ resendAfter: RESEND_AFTER });
     await first;
-    expect(flow().resending).toBe(false);
+    expect(flow().resending).toBeNull();
   });
 });

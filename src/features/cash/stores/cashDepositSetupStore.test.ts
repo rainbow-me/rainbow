@@ -10,6 +10,16 @@ const IDENTITY_DONE: CashDepositSetupFacts = {
 };
 const A_CARD: LinkedCard = { id: 'card-1', brand: 'Visa', last4: '4242' };
 
+const verifiedSession = (tokenExpiresAt: number) =>
+  ({
+    status: 'phoneVerified',
+    userId: 'user-1',
+    phoneNationalNumber: '4155550100',
+    bootstrapToken: 'bst_test',
+    bootstrapTokenExpiresAt: tokenExpiresAt,
+    identity: null,
+  }) as const;
+
 type Case = {
   name: string;
   facts: CashDepositSetupFacts;
@@ -73,9 +83,7 @@ describe('useCashDepositSetupStatusStore', () => {
   it.each(cases)('$name', ({ facts, tokenExpiresAt, linkedCard, expected }) => {
     useCashDepositSetupStore.setState({ facts });
     if (tokenExpiresAt != null) {
-      useCashSetupSessionStore
-        .getState()
-        .setPhoneVerified({ userId: 'user-1', phoneNationalNumber: '4155550100', token: 'bst_test', expiresAt: tokenExpiresAt });
+      useCashSetupSessionStore.setState({ session: verifiedSession(tokenExpiresAt) });
     }
     useCashPaymentMethodStore.setState({ linkedCard });
     expect(useCashDepositSetupStatusStore.getState()).toBe(expected);
@@ -83,9 +91,7 @@ describe('useCashDepositSetupStatusStore', () => {
 
   it('regresses from ready to needsIdentity when the session store resets', () => {
     useCashDepositSetupStore.setState({ facts: { ...IDENTITY_DONE, hasLinkedWallet: true } });
-    useCashSetupSessionStore
-      .getState()
-      .setPhoneVerified({ userId: 'user-1', phoneNationalNumber: '4155550100', token: 'bst_test', expiresAt: Date.now() + 60_000 });
+    useCashSetupSessionStore.setState({ session: verifiedSession(Date.now() + 60_000) });
     useCashPaymentMethodStore.setState({ linkedCard: A_CARD });
     expect(useCashDepositSetupStatusStore.getState()).toBe('ready');
 
