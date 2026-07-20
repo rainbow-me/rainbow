@@ -26,10 +26,10 @@ describe('Cash Deposit Setup steps', () => {
   });
 
   it('maps the milestone steps to their facts', () => {
-    expect(getSetupStep(Routes.CASH_SETUP_CONFIRM_PHONE)?.milestone).toBe('phoneVerified');
     expect(getSetupStep(Routes.CASH_SETUP_REVIEW)?.milestone).toBe('kycPassed');
     expect(getSetupStep(Routes.CASH_SETUP_PASSKEY)?.milestone).toBe('passkeyRegistered');
     expect(getSetupStep(Routes.CASH_SETUP_CARD_DETAILS)?.milestone).toBeUndefined();
+    expect(getSetupStep(Routes.CASH_SETUP_CONFIRM_PHONE)?.milestone).toBeUndefined();
     expect(getSetupStep(Routes.CASH_SETUP_PHONE)?.milestone).toBeUndefined();
   });
 });

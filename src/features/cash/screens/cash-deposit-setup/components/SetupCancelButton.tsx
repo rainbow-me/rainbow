@@ -14,7 +14,7 @@ export const SetupCancelButton = memo(function SetupCancelButton({ onPress, test
     <ButtonPressAnimation onPress={onPress} scaleTo={0.92} testID={testID}>
       <Box
         alignItems="center"
-        background="surfaceSecondary"
+        background="fillTertiary"
         borderRadius={18}
         height={{ custom: 36 }}
         justifyContent="center"

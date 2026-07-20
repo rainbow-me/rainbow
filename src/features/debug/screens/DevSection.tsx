@@ -19,6 +19,7 @@ import {
   type CashMockOrderOutcome,
 } from '@/features/cash/stores/cashMockOrderOutcomeStore';
 import { useCashPaymentMethodStore } from '@/features/cash/stores/cashPaymentMethodStore';
+import { useCashSetupSessionStore } from '@/features/cash/stores/cashSetupSessionStore';
 import { EMPTY_CASH_DEPOSIT_SETUP_FACTS, type CashDepositSetupFacts } from '@/features/cash/stores/deriveCashDepositSetupStatus';
 import { defaultConfig, defaultConfigValues, type ExperimentalConfigKey } from '@/features/config/constants/experimental';
 import { useExperimentalConfigStore } from '@/features/config/stores/experimentalConfigStore';
@@ -28,6 +29,7 @@ import { isAuthenticated } from '@/features/local-auth/isAuthenticated';
 import { wipeKeychain } from '@/features/local-auth/legacyKeychain';
 import { ChainId } from '@/features/network/types/backendNetworks';
 import { useSandboxDiagnosticsStore } from '@/features/sandbox/data/stores/sandboxDiagnosticsStore';
+import { time } from '@/framework/core/utils/time';
 import { WrappedAlert as Alert } from '@/helpers/alert';
 import { getPublicKeyOfTheSigningWalletAndCreateWalletIfNeeded } from '@/helpers/signingWallet';
 import * as i18n from '@/languages';
@@ -531,6 +533,18 @@ export const DevSection = () => {
                 titleComponent={<MenuItem.Title text={i18n.t(i18n.l.developer_settings.cash_deposit_setup_facts[key])} />}
               />
             ))}
+            <MenuItem
+              onPress={() =>
+                useCashSetupSessionStore.getState().setPhoneVerified({
+                  userId: 'dev-user-id',
+                  phoneNationalNumber: '4155550100',
+                  token: 'bst_dev',
+                  expiresAt: Date.now() + time.hours(1),
+                })
+              }
+              size={52}
+              titleComponent={<MenuItem.Title text={i18n.t(i18n.l.developer_settings.cash_set_phone_verified)} />}
+            />
             <MenuItem
               onPress={() => useCashPaymentMethodStore.getState().clearLinkedCard()}
               size={52}

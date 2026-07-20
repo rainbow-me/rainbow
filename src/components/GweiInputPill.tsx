@@ -2,7 +2,6 @@ import React, { useCallback } from 'react';
 import { Platform, type TextInput } from 'react-native';
 
 import { LinearGradient } from 'expo-linear-gradient';
-// @ts-expect-error - no declaration file
 import TextInputMask from 'react-native-text-input-mask';
 
 import ButtonPressAnimation from '@/components/animations/ButtonPressAnimation';

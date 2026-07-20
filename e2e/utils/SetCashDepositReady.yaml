@@ -1,9 +1,8 @@
 appId: ${APP_ID}
 ---
 - runFlow:
-    file: SetCashDepositSetupFact.yaml
+    file: SetCashPhoneVerified.yaml
     env:
-      FACT: phoneVerified
       VALUE: 'true'
 - runFlow:
     file: SetCashDepositSetupFact.yaml

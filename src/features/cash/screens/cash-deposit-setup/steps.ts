@@ -16,7 +16,7 @@ export type CashDepositSetupStep = {
 /** The Setup flow order and each step's milestone fact; reorder by editing this array. */
 export const SETUP_STEP_ORDER: readonly CashDepositSetupStep[] = [
   { id: Routes.CASH_SETUP_PHONE },
-  { id: Routes.CASH_SETUP_CONFIRM_PHONE, milestone: 'phoneVerified' },
+  { id: Routes.CASH_SETUP_CONFIRM_PHONE },
   { id: Routes.CASH_SETUP_IDENTITY },
   { id: Routes.CASH_SETUP_SSN },
   { id: Routes.CASH_SETUP_REVIEW, milestone: 'kycPassed' },

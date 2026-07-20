@@ -5,11 +5,13 @@ import URL from 'url-parse';
 
 import { useCashDepositSetupStore } from '@/features/cash/stores/cashDepositSetupStore';
 import { MOCK_LINKED_CARD, useCashPaymentMethodStore } from '@/features/cash/stores/cashPaymentMethodStore';
+import { useCashSetupSessionStore } from '@/features/cash/stores/cashSetupSessionStore';
 import { isCashDepositSetupFactKey } from '@/features/cash/stores/deriveCashDepositSetupStatus';
 import { type ExperimentalConfigKey } from '@/features/config/constants/experimental';
 import { useExperimentalConfigStore } from '@/features/config/stores/experimentalConfigStore';
 import { savePIN } from '@/features/local-auth/pinAuthentication';
 import { useSandboxDiagnosticsStore } from '@/features/sandbox/data/stores/sandboxDiagnosticsStore';
+import { time } from '@/framework/core/utils/time';
 import { logger } from '@/logger';
 import Navigation from '@/navigation/Navigation';
 import Routes from '@/navigation/routesNames';
@@ -46,6 +48,18 @@ export function TestDeeplinkHandler() {
         case 'setCashDepositSetupFact':
           if (query.fact && isCashDepositSetupFactKey(query.fact)) {
             useCashDepositSetupStore.getState().setFact(query.fact, query.value === 'true');
+          }
+          break;
+        case 'setCashPhoneVerified':
+          if (query.value === 'true') {
+            useCashSetupSessionStore.getState().setPhoneVerified({
+              userId: 'e2e-user-id',
+              phoneNationalNumber: '4155550100',
+              token: 'bst_e2e',
+              expiresAt: Date.now() + time.days(1),
+            });
+          } else {
+            useCashSetupSessionStore.getState().reset();
           }
           break;
         case 'setCashLinkedCard':

@@ -27,6 +27,24 @@ tags:
     id: cash-deposit-intro-sign-in
 - tapOn:
     id: cash-deposit-intro-set-up-account
+- assertVisible:
+    text: 'Connect your phone number'
+- tapOn:
+    id: cash-setup-phone-input
+- inputText: '4155550100'
+- tapOn:
+    id: cash-setup-next
+# The OTP input autofocuses; the mock verify accepts only 000000 and advances on fill.
+- extendedWaitUntil:
+    visible:
+      text: 'Confirm your phone'
+    timeout: 10000
+- waitForAnimationToEnd
+- inputText: '000000'
+- extendedWaitUntil:
+    visible:
+      text: 'Enter your information'
+    timeout: 10000
 - repeat:
     while:
       notVisible:

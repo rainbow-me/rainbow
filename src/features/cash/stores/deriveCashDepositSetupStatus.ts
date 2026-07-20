@@ -1,24 +1,24 @@
 export type CashDepositSetupStatus = 'needsIdentity' | 'needsCard' | 'needsWallet' | 'ready';
 
 export type CashDepositSetupFacts = {
-  phoneVerified: boolean;
   kycPassed: boolean;
   passkeyRegistered: boolean;
   hasLinkedWallet: boolean;
 };
 
 export const EMPTY_CASH_DEPOSIT_SETUP_FACTS: CashDepositSetupFacts = {
-  phoneVerified: false,
   kycPassed: false,
   passkeyRegistered: false,
   hasLinkedWallet: false,
 };
 
-export function deriveCashDepositSetupStatus(facts: CashDepositSetupFacts, hasLinkedCard: boolean): CashDepositSetupStatus {
-  const identityComplete = facts.phoneVerified && facts.kycPassed && facts.passkeyRegistered;
+export function deriveCashDepositSetupStatus(
+  inputs: CashDepositSetupFacts & { phoneVerified: boolean; hasLinkedCard: boolean }
+): CashDepositSetupStatus {
+  const identityComplete = inputs.phoneVerified && inputs.kycPassed && inputs.passkeyRegistered;
   if (!identityComplete) return 'needsIdentity';
-  if (!hasLinkedCard) return 'needsCard';
-  if (!facts.hasLinkedWallet) return 'needsWallet';
+  if (!inputs.hasLinkedCard) return 'needsCard';
+  if (!inputs.hasLinkedWallet) return 'needsWallet';
   return 'ready';
 }
 

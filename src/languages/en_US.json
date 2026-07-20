@@ -502,11 +502,11 @@
       "restart_app": "Restart App",
       "reset_experimental_config": "Reset Experimental Config",
       "cash_deposit_setup_facts": {
-        "phoneVerified": "Phone verified",
         "kycPassed": "KYC passed",
         "passkeyRegistered": "Passkey registered",
         "hasLinkedWallet": "Has linked wallet"
       },
+      "cash_set_phone_verified": "Set phone verified",
       "cash_clear_linked_card": "Clear linked card",
       "cash_order_outcome": {
         "title": "Cash order outcome",
@@ -1585,8 +1585,18 @@
       "deposit_setup": {
         "next": "Next",
         "finish": "Finish",
-        "phone": { "title": "Connect your phone number" },
-        "confirm_phone": { "title": "Confirm your phone" },
+        "phone": {
+          "title": "Connect your phone number",
+          "subtitle": "This will be how you login in the future.",
+          "placeholder": "Phone Number",
+          "error": "We couldn't send a code to that number. Please try again."
+        },
+        "confirm_phone": {
+          "title": "Confirm your phone",
+          "confirm": "Confirm",
+          "resend_code": "Resend code",
+          "error": "That code didn’t work. Please try again."
+        },
         "identity": { "title": "Enter your information" },
         "ssn": { "title": "Last 4 of SSN" },
         "review": { "title": "Review" },

@@ -13,6 +13,7 @@ import { SetupActionButton } from './SetupActionButton';
 
 type SetupStepLayoutProps = {
   title: string;
+  subtitle?: string;
   children?: ReactNode;
   /** Overrides the default "Next" CTA label. */
   actionLabel?: string;
@@ -25,6 +26,7 @@ type SetupStepLayoutProps = {
 
 export const SetupStepLayout = memo(function SetupStepLayout({
   title,
+  subtitle,
   children,
   actionLabel,
   onAction,
@@ -34,7 +36,6 @@ export const SetupStepLayout = memo(function SetupStepLayout({
 }: SetupStepLayoutProps) {
   const { next, back } = useCashDepositSetupNavigation();
   const surfacePrimaryElevated = useBackgroundColor('surfacePrimaryElevated');
-  const surfaceSecondaryElevated = useBackgroundColor('surfaceSecondaryElevated');
   const insets = useSafeAreaInsets();
 
   return (
@@ -54,10 +55,10 @@ export const SetupStepLayout = memo(function SetupStepLayout({
         <ButtonPressAnimation disabled={backDisabled} onPress={back} scaleTo={0.8} testID="cash-setup-back">
           <Box
             alignItems="center"
+            background="fillTertiary"
             borderRadius={18}
             height={{ custom: 36 }}
             justifyContent="center"
-            style={{ backgroundColor: surfaceSecondaryElevated }}
             width={{ custom: 36 }}
           >
             <Text align="center" color="label" size="17pt" weight="heavy">
@@ -66,10 +67,15 @@ export const SetupStepLayout = memo(function SetupStepLayout({
           </Box>
         </ButtonPressAnimation>
 
-        <Box paddingTop="24px">
+        <Box gap={24} paddingTop="24px">
           <Text color="label" size="26pt" weight="heavy">
             {title}
           </Text>
+          {subtitle != null && (
+            <Text color="labelSecondary" size="17pt / 135%" weight="bold">
+              {subtitle}
+            </Text>
+          )}
         </Box>
 
         <Box style={styles.body}>{children}</Box>

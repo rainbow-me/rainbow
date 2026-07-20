@@ -1,13 +1,12 @@
-import React, { memo, useEffect, useMemo } from 'react';
-import { type TextStyle } from 'react-native';
+import React, { memo, useEffect } from 'react';
 
 import { BivoCardInput, BivoCVCInput, BivoTextInput } from '@bivoglobal/payment-react-native';
 
-import { Box, Text, useBackgroundColor, useForegroundColor } from '@/design-system';
-import { fonts } from '@/design-system/typography/typography';
+import { Box, Text } from '@/design-system';
 import * as i18n from '@/languages';
 
 import { SetupStepLayout } from '../components/SetupStepLayout';
+import { useSetupInputTextStyle } from '../components/useSetupInputTextStyle';
 import { useCashDepositSetupNavigation } from '../useCashDepositSetupNavigation';
 import { CARD_FIELD, useCardLinkFlow } from './useCardLinkFlow';
 
@@ -16,23 +15,7 @@ const l = i18n.l.cash.deposit_setup.card_details;
 export const CardDetailsStep = memo(function CardLinkForm() {
   const { state, bivoStore, isReady, onFieldStateChange, submit, retry } = useCardLinkFlow();
   const { next } = useCashDepositSetupNavigation();
-  const surfaceSecondary = useBackgroundColor('surfaceSecondary');
-  const label = useForegroundColor('label');
-  const textStyle: TextStyle = useMemo(
-    () => ({
-      ...fonts.SFProRounded.bold,
-      backgroundColor: surfaceSecondary,
-      borderRadius: 20,
-      borderWidth: 0,
-      color: label,
-      fontSize: 17,
-      letterSpacing: 0.37,
-      paddingLeft: 14,
-      paddingRight: 16,
-      paddingVertical: 12,
-    }),
-    [label, surfaceSecondary]
-  );
+  const textStyle = useSetupInputTextStyle();
 
   useEffect(() => {
     if (state === 'success') {
