@@ -1,12 +1,12 @@
 # PATCH CONTEXT
-# Why: Rainbow needs v1.1.0 for async order settlement hash resolution and
-#   0.0025 tick-size markets.
-#   This patch removes the parts of the SDK that break in our app:
-#   Node-only request headers, stale tick-size reads, and WebCrypto
-#   HMAC signing.
+# Why: @polymarket/clob-client-v2 assumes a browser or Node runtime. In React
+#   Native it adds Node-only request headers and uses unavailable WebCrypto
+#   APIs for HMAC signing. This patch makes the package React Native compatible
+#   and bypasses cached tick sizes so orders use the market's current value.
 # Upstream Issue: none filed yet.
 # Linear Issue: none.
-# Remove when: @polymarket/clob-client-v2 handles those cases upstream.
+# Remove when: @polymarket/clob-client-v2 supports React Native requests and
+#   signing, and no longer serves cached tick sizes.
 
 diff --git a/node_modules/@polymarket/clob-client-v2/dist/http-helpers/index.cjs b/node_modules/@polymarket/clob-client-v2/dist/http-helpers/index.cjs
 index 946edd3..10a85dc 100644
