@@ -1,5 +1,6 @@
 # PATCH CONTEXT
-# Why: Rainbow needs v1.0.8 for 0.0025 tick-size markets.
+# Why: Rainbow needs v1.1.0 for async order settlement hash resolution and
+#   0.0025 tick-size markets.
 #   This patch removes the parts of the SDK that break in our app:
 #   Node-only request headers, stale tick-size reads, and WebCrypto
 #   HMAC signing.
@@ -8,7 +9,7 @@
 # Remove when: @polymarket/clob-client-v2 handles those cases upstream.
 
 diff --git a/node_modules/@polymarket/clob-client-v2/dist/http-helpers/index.cjs b/node_modules/@polymarket/clob-client-v2/dist/http-helpers/index.cjs
-index 946edd341a..5c8cc29f67 100644
+index 946edd3..10a85dc 100644
 --- a/node_modules/@polymarket/clob-client-v2/dist/http-helpers/index.cjs
 +++ b/node_modules/@polymarket/clob-client-v2/dist/http-helpers/index.cjs
 @@ -1,22 +1,12 @@
@@ -16,7 +17,8 @@ index 946edd341a..5c8cc29f67 100644
  let axios = require("axios");
  axios = require_rolldown_runtime.__toESM(axios);
 -let browser_or_node = require("browser-or-node");
- 
+-
++
  //#region src/http-helpers/index.ts
  const GET = "GET";
  const POST = "POST";
@@ -35,13 +37,14 @@ index 946edd341a..5c8cc29f67 100644
  		method,
  		url: endpoint,
 diff --git a/node_modules/@polymarket/clob-client-v2/dist/http-helpers/index.js b/node_modules/@polymarket/clob-client-v2/dist/http-helpers/index.js
-index d7e38a4b5e..4c5ef057eb 100644
+index d7e38a4..40a2358 100644
 --- a/node_modules/@polymarket/clob-client-v2/dist/http-helpers/index.js
 +++ b/node_modules/@polymarket/clob-client-v2/dist/http-helpers/index.js
 @@ -1,20 +1,10 @@
  import axios from "axios";
 -import { isBrowser } from "browser-or-node";
- 
+-
++
  //#region src/http-helpers/index.ts
  const GET = "GET";
  const POST = "POST";
@@ -60,10 +63,10 @@ index d7e38a4b5e..4c5ef057eb 100644
  		method,
  		url: endpoint,
 diff --git a/node_modules/@polymarket/clob-client-v2/dist/client.cjs b/node_modules/@polymarket/clob-client-v2/dist/client.cjs
-index 55bbc87c9a..e158a4bcfe 100644
+index fd6d479..9a3b60b 100644
 --- a/node_modules/@polymarket/clob-client-v2/dist/client.cjs
 +++ b/node_modules/@polymarket/clob-client-v2/dist/client.cjs
-@@ -102,7 +102,6 @@ var ClobClient = class {
+@@ -107,7 +107,6 @@ var ClobClient = class {
  			if (!token) continue;
  			const tokenId = token.t;
  			this.tokenConditionMap[tokenId] = conditionID;
@@ -71,7 +74,7 @@ index 55bbc87c9a..e158a4bcfe 100644
  			this.negRisk[tokenId] = result.nr ?? false;
  			this.feeInfos[tokenId] = {
  				rate: result.fd?.r ?? 0,
-@@ -118,14 +117,12 @@ var ClobClient = class {
+@@ -123,14 +122,12 @@ var ClobClient = class {
  		return this.post(`${this.host}${require_endpoints.GET_ORDER_BOOKS}`, { data: params });
  	}
  	async getTickSize(tokenID) {
@@ -90,10 +93,10 @@ index 55bbc87c9a..e158a4bcfe 100644
  	async getNegRisk(tokenID) {
  		if (tokenID in this.negRisk) return this.negRisk[tokenID];
 diff --git a/node_modules/@polymarket/clob-client-v2/dist/client.js b/node_modules/@polymarket/clob-client-v2/dist/client.js
-index a56b88ee8b..3a8cc1da1b 100644
+index 06eb6ee..d8a800e 100644
 --- a/node_modules/@polymarket/clob-client-v2/dist/client.js
 +++ b/node_modules/@polymarket/clob-client-v2/dist/client.js
-@@ -102,7 +102,6 @@ var ClobClient = class {
+@@ -107,7 +107,6 @@ var ClobClient = class {
  			if (!token) continue;
  			const tokenId = token.t;
  			this.tokenConditionMap[tokenId] = conditionID;
@@ -101,7 +104,7 @@ index a56b88ee8b..3a8cc1da1b 100644
  			this.negRisk[tokenId] = result.nr ?? false;
  			this.feeInfos[tokenId] = {
  				rate: result.fd?.r ?? 0,
-@@ -118,14 +117,12 @@ var ClobClient = class {
+@@ -123,14 +122,12 @@ var ClobClient = class {
  		return this.post(`${this.host}${GET_ORDER_BOOKS}`, { data: params });
  	}
  	async getTickSize(tokenID) {
@@ -120,11 +123,12 @@ index a56b88ee8b..3a8cc1da1b 100644
  	async getNegRisk(tokenID) {
  		if (tokenID in this.negRisk) return this.negRisk[tokenID];
 diff --git a/node_modules/@polymarket/clob-client-v2/dist/signing/hmac.cjs b/node_modules/@polymarket/clob-client-v2/dist/signing/hmac.cjs
-index 909745afcf..2fd69198ac 100644
+index 909745a..cc87ff4 100644
 --- a/node_modules/@polymarket/clob-client-v2/dist/signing/hmac.cjs
 +++ b/node_modules/@polymarket/clob-client-v2/dist/signing/hmac.cjs
 @@ -1,4 +1,8 @@
- 
+-
++
 +const require_bytes = require('@ethersproject/bytes');
 +const require_sha2 = require('@ethersproject/sha2');
 +const require_strings = require('@ethersproject/strings');
@@ -144,7 +148,7 @@ index 909745afcf..2fd69198ac 100644
  /**
  * Builds the canonical Polymarket CLOB HMAC signature
  * @param secret
-@@ -20,20 +29,12 @@ const decodeBase64Secret = (secret) => {
+@@ -20,19 +29,11 @@ const decodeBase64Secret = (secret) => {
  */
  const buildPolyHmacSignature = async (secret, timestamp, method, requestPath, body) => {
  	if (!secret) throw new Error("buildPolyHmacSignature: secret is empty");
@@ -164,11 +168,11 @@ index 909745afcf..2fd69198ac 100644
 +	const signature = require_sha2.computeHmac(require_sha2.SupportedAlgorithm.sha256, keyBytes, require_strings.toUtf8Bytes(message));
 +	return encodeBase64Url(require_bytes.arrayify(signature));
  };
- 
+-
++
  //#endregion
- exports.buildPolyHmacSignature = buildPolyHmacSignature;
 diff --git a/node_modules/@polymarket/clob-client-v2/dist/signing/hmac.js b/node_modules/@polymarket/clob-client-v2/dist/signing/hmac.js
-index fa4021a314..f468296891 100644
+index fa4021a..53a084f 100644
 --- a/node_modules/@polymarket/clob-client-v2/dist/signing/hmac.js
 +++ b/node_modules/@polymarket/clob-client-v2/dist/signing/hmac.js
 @@ -1,3 +1,7 @@
@@ -191,7 +195,7 @@ index fa4021a314..f468296891 100644
  /**
  * Builds the canonical Polymarket CLOB HMAC signature
  * @param secret
-@@ -19,20 +28,12 @@ const decodeBase64Secret = (secret) => {
+@@ -19,19 +28,11 @@ const decodeBase64Secret = (secret) => {
  */
  const buildPolyHmacSignature = async (secret, timestamp, method, requestPath, body) => {
  	if (!secret) throw new Error("buildPolyHmacSignature: secret is empty");
@@ -211,6 +215,6 @@ index fa4021a314..f468296891 100644
 +	const signature = computeHmac(SupportedAlgorithm.sha256, keyBytes, toUtf8Bytes(message));
 +	return encodeBase64Url(arrayify(signature));
  };
- 
+-
++
  //#endregion
- export { buildPolyHmacSignature };
