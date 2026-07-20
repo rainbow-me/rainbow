@@ -42,7 +42,19 @@ workflows:
                 # debug log
                 set -x
 
-                curl -fsSL https://mise.run | sh
+                # Install mise from a pinned, checksum-verified release artifact instead of
+                # piping https://mise.run into a shell. The Bitrise jobs hold signing credentials,
+                # so we don't want to execute arbitrary scripts served by a mutable endpoint.
+                MISE_VERSION="v2026.7.7"
+                # sha256 of mise-${MISE_VERSION}-macos-arm64.tar.gz from the release's SHASUMS256.txt
+                MISE_SHA256="df490dc2fff51c82bf0f64e1fcd0265b145ce80d2d15ce99b95f2adf0b1fe82c"
+
+                curl -fsSL "https://github.com/jdx/mise/releases/download/${MISE_VERSION}/mise-${MISE_VERSION}-macos-arm64.tar.gz" -o /tmp/mise.tar.gz
+                echo "${MISE_SHA256}  /tmp/mise.tar.gz" | shasum -a 256 -c -
+                tar -xzf /tmp/mise.tar.gz -C /tmp
+                mkdir -p "$HOME/.local/bin"
+                mv /tmp/mise/bin/mise "$HOME/.local/bin/mise"
+
                 export PATH="$HOME/.local/bin:$PATH"
                 mise trust
                 mise install node
