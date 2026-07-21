@@ -98,8 +98,16 @@ function stateRows(report: Report): StateRow[] {
   }
 
   return ruleOrder.flatMap((rule): StateRow[] => {
+    // Identical head sets alone don't make platforms interchangeable: a delta
+    // entry that skipped a platform means the bases diverged, and a collapsed
+    // row would attribute that platform's movement to all of them.
+    const deltasSpanAllPlatforms = [...report.grandfathered, ...report.banked]
+      .filter(tagged => tagged.violation.rule.name === rule)
+      .every(tagged => tagged.platforms.length === results.length);
     const collapsible =
-      results.length > 1 && results.every(r => r.baselineFingerprintByRule[rule] === results[0].baselineFingerprintByRule[rule]);
+      results.length > 1 &&
+      deltasSpanAllPlatforms &&
+      results.every(r => r.baselineFingerprintByRule[rule] === results[0].baselineFingerprintByRule[rule]);
     if (collapsible) {
       return [{ rule, platform: null, count: results[0].baselineCountByRule[rule] ?? 0 }];
     }

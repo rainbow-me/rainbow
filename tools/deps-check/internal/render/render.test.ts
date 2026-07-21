@@ -91,6 +91,17 @@ describe('baseline state zone', () => {
     );
   });
 
+  it('keeps rows split when divergent baselines converge, so movement stays on its platform', () => {
+    const report = check({
+      committed: onBothPlatforms(baselined),
+      occurring: onBothPlatforms(baselined),
+      baseCommitted: { ios: [...baselined, fresh], android: baselined },
+    });
+    const markdown = renderMarkdown(report);
+    expect(markdown).toContain('| `no-circular` | ios | 3 → 2 (🟢 -1 banked) |');
+    expect(markdown).toContain('| `no-circular` | android | 2 |');
+  });
+
   it('labels rows with the platform on single-platform runs', () => {
     snap(check({ committed: { ios: baselined }, occurring: { ios: baselined } }));
   });
