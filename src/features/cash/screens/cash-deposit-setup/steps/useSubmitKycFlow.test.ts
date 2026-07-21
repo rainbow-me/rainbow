@@ -66,7 +66,7 @@ const challenge = () => {
 beforeEach(() => {
   jest.clearAllMocks();
   session().reset();
-  session().setPhoneSubmitted({ userId: 'user-1', phoneNationalNumber: '4155550100', resendAfter: 0 });
+  session().setPhoneSubmitted({ challenge: { kind: 'signup', userId: 'user-1' }, phoneNationalNumber: '4155550100', resendAfter: 0 });
   session().setPhoneVerified(challenge(), { bootstrapToken: TOKEN, expiresAt: Date.now() + 60_000 });
   session().setIdentity(IDENTITY);
   session().setGovernmentId(GOVERNMENT_ID);

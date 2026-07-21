@@ -1587,7 +1587,8 @@
           "title": "Connect your phone number",
           "subtitle": "This will be how you login in the future.",
           "placeholder": "Phone Number",
-          "error": "We couldn't send a code to that number. Please try again."
+          "error": "We couldn't send a code to that number. Please try again.",
+          "already_registered": "This number is already connected to an account."
         },
         "confirm_phone": {
           "title": "Confirm your phone",

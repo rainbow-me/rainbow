@@ -9,6 +9,7 @@ type OtpInputProps = {
   length: number;
   disabled?: boolean;
   error?: boolean;
+  focused?: boolean;
   testID?: string;
 };
 
@@ -18,15 +19,16 @@ export const OtpInput = memo(function OtpInput({
   length,
   disabled = false,
   error = false,
+  focused = true,
   testID = 'otp-input',
 }: OtpInputProps) {
   const red = useForegroundColor('red');
   const inputRef = useRef<TextInput>(null);
 
   useEffect(() => {
-    if (disabled) inputRef.current?.blur();
-    else if (error) inputRef.current?.focus();
-  }, [disabled, error]);
+    if (disabled || !focused) inputRef.current?.blur();
+    else inputRef.current?.focus();
+  }, [disabled, focused]);
 
   const onChangeText = useCallback(
     (text: string) => {
@@ -59,7 +61,6 @@ export const OtpInput = memo(function OtpInput({
       ))}
       <TextInput
         autoComplete="sms-otp"
-        autoFocus
         caretHidden
         keyboardType="number-pad"
         maxLength={length}

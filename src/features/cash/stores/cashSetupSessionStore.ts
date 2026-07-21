@@ -14,7 +14,7 @@ export type CashSetupIdentity = {
 
 // Identifies one accepted phone submission by reference, so async results can
 // be checked against the submission that started them.
-export type PhoneChallenge = Readonly<{ userId: string }>;
+export type PhoneChallenge = Readonly<{ kind: 'signup'; userId: string }> | Readonly<{ kind: 'resume'; resumeId: string }>;
 
 export type CashSetupGovernmentIdKind = 'GOVERNMENT_ID_KIND_SSN_LAST4';
 
@@ -39,22 +39,31 @@ type PhoneSubmittedCashSetupSession = {
   resendAfter: number;
 };
 
+type PhoneAlreadyRegisteredCashSetupSession = {
+  status: 'phoneAlreadyRegistered';
+  phoneNationalNumber: string;
+};
+
 type VerifiedCashSetupSession = {
   status: 'phoneVerified';
   phoneNationalNumber: string;
-  userId: string;
   bootstrapToken: string;
   bootstrapTokenExpiresAt: number;
   identity: CashSetupIdentity | null;
   governmentId: CashSetupGovernmentId | null;
 };
 
-type CashSetupSession = EmptyCashSetupSession | PhoneSubmittedCashSetupSession | VerifiedCashSetupSession;
+type CashSetupSession =
+  | EmptyCashSetupSession
+  | PhoneSubmittedCashSetupSession
+  | PhoneAlreadyRegisteredCashSetupSession
+  | VerifiedCashSetupSession;
 
 type CashSetupSessionStore = {
   session: CashSetupSession;
   getIsCurrentChallenge: (challenge: PhoneChallenge) => boolean;
-  setPhoneSubmitted: (params: { userId: string; phoneNationalNumber: string; resendAfter: number }) => void;
+  setPhoneSubmitted: (params: { challenge: PhoneChallenge; phoneNationalNumber: string; resendAfter: number }) => void;
+  setPhoneAlreadyRegistered: (phoneNationalNumber: string) => void;
   setResendAfter: (challenge: PhoneChallenge, resendAfter: number) => void;
   setPhoneVerified: (challenge: PhoneChallenge, credential: { bootstrapToken: string; expiresAt: number }) => void;
   setIdentity: (identity: CashSetupIdentity) => void;
@@ -71,8 +80,9 @@ export const useCashSetupSessionStore = createBaseStore<CashSetupSessionStore>((
     const { session } = get();
     return session.status === 'phoneSubmitted' && session.challenge === challenge;
   },
-  setPhoneSubmitted: ({ userId, phoneNationalNumber, resendAfter }) =>
-    set({ session: { status: 'phoneSubmitted', challenge: { userId }, phoneNationalNumber, resendAfter } }),
+  setPhoneSubmitted: ({ challenge, phoneNationalNumber, resendAfter }) =>
+    set({ session: { status: 'phoneSubmitted', challenge, phoneNationalNumber, resendAfter } }),
+  setPhoneAlreadyRegistered: phoneNationalNumber => set({ session: { status: 'phoneAlreadyRegistered', phoneNationalNumber } }),
   setResendAfter: (challenge, resendAfter) =>
     set(state => {
       const { session } = state;
@@ -86,7 +96,6 @@ export const useCashSetupSessionStore = createBaseStore<CashSetupSessionStore>((
       return {
         session: {
           status: 'phoneVerified',
-          userId: challenge.userId,
           phoneNationalNumber: session.phoneNationalNumber,
           bootstrapToken,
           bootstrapTokenExpiresAt: expiresAt,

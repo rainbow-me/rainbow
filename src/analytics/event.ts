@@ -128,6 +128,7 @@ export const event = {
   cashBuyOrderCompleted: 'cash.buy_completed',
   cashBuyOrderFailed: 'cash.buy_failed',
   cashPhoneSubmitted: 'cash.phone_submitted',
+  cashPhoneAlreadyRegistered: 'cash.phone_already_registered',
   cashPhoneVerified: 'cash.phone_verified',
   cashPhoneVerifyFailed: 'cash.phone_verify_failed',
   cashKycSubmitted: 'cash.kyc_submitted',
@@ -550,10 +551,18 @@ export type EventProperties = {
     failureReason: OrderFailureReason | null;
     errorCode: 'PAYMENT_REJECTED' | 'GENERIC';
   };
-  [event.cashPhoneSubmitted]: undefined;
-  [event.cashPhoneVerified]: undefined;
+  [event.cashPhoneSubmitted]: {
+    mode: 'signup' | 'resume';
+  };
+  [event.cashPhoneAlreadyRegistered]: {
+    outcome: 'registeredWithPasskey' | 'alreadyRegistered' | 'signupAlreadyComplete';
+  };
+  [event.cashPhoneVerified]: {
+    mode: 'signup' | 'resume';
+  };
   [event.cashPhoneVerifyFailed]: {
     reason: string;
+    mode: 'signup' | 'resume';
   };
   [event.cashKycSubmitted]: undefined;
   [event.cashKycApproved]: undefined;

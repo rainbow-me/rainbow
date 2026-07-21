@@ -1,14 +1,18 @@
 import { analytics } from '@/analytics';
 import { logger } from '@/logger';
 
-import { resendPhoneCode, verifyPhone } from '../../../services/userClient';
-import { useCashSetupSessionStore } from '../../../stores/cashSetupSessionStore';
-import { useVerifyPhoneFlowStore } from './useVerifyPhoneFlow';
+import { finishSignupResume, resendPhoneCode, startSignupResume, verifyPhone } from '../services/userClient';
+import { useCashSetupSessionStore, type PhoneChallenge } from './cashSetupSessionStore';
+import { useVerifyPhoneFlowStore } from './verifyPhoneFlowStore';
 
 jest.mock('@/analytics', () => ({
   analytics: {
     track: jest.fn(),
-    event: { cashPhoneVerified: 'cash.phone_verified', cashPhoneVerifyFailed: 'cash.phone_verify_failed' },
+    event: {
+      cashPhoneVerified: 'cash.phone_verified',
+      cashPhoneVerifyFailed: 'cash.phone_verify_failed',
+      cashPhoneAlreadyRegistered: 'cash.phone_already_registered',
+    },
   },
 }));
 
@@ -17,17 +21,17 @@ jest.mock('@/logger', () => ({
   RainbowError: class RainbowError extends Error {},
 }));
 
-jest.mock('../../../services/userClient', () => ({
+jest.mock('../services/userClient', () => ({
+  finishSignupResume: jest.fn(),
   resendPhoneCode: jest.fn(),
+  startSignupResume: jest.fn(),
   verifyPhone: jest.fn(),
 }));
 
-jest.mock('../useCashDepositSetupNavigation', () => ({
-  useCashDepositSetupNavigation: jest.fn(),
-}));
-
 const mockVerifyPhone = verifyPhone as jest.Mock;
+const mockFinishSignupResume = finishSignupResume as jest.Mock;
 const mockResendPhoneCode = resendPhoneCode as jest.Mock;
+const mockStartSignupResume = startSignupResume as jest.Mock;
 const track = analytics.track as jest.Mock;
 
 const CODE = '123456';
@@ -42,14 +46,18 @@ const challenge = () => {
   if (current.status !== 'phoneSubmitted') throw new Error('expected a phoneSubmitted session');
   return current.challenge;
 };
+const submitPhone = (challenge: PhoneChallenge, phoneNationalNumber = '4155550100') =>
+  store().setPhoneSubmitted({ challenge, phoneNationalNumber, resendAfter: 0 });
 
 beforeEach(() => {
   jest.clearAllMocks();
   store().reset();
-  store().setPhoneSubmitted({ userId: 'user-1', phoneNationalNumber: '4155550100', resendAfter: 0 });
+  submitPhone({ kind: 'signup', userId: 'user-1' });
   useVerifyPhoneFlowStore.getState().reset();
   mockVerifyPhone.mockResolvedValue(TOKEN);
+  mockFinishSignupResume.mockResolvedValue({ outcome: 'verified', ...TOKEN });
   mockResendPhoneCode.mockResolvedValue({ resendAfter: RESEND_AFTER });
+  mockStartSignupResume.mockResolvedValue({ resumeId: 'rcv_2', resendAfter: RESEND_AFTER });
 });
 
 afterEach(() => {
@@ -60,16 +68,41 @@ describe('useVerifyPhoneFlowStore.submit', () => {
   it('verifies the code, stores the token, tracks, then resets to a clean entry state', async () => {
     flow().setCode(CODE);
 
-    await expect(flow().submit()).resolves.toBe(true);
+    await expect(flow().submit()).resolves.toBe('verified');
 
     expect(mockVerifyPhone).toHaveBeenCalledWith({ userId: 'user-1', code: CODE });
     expect(session()).toMatchObject({
       status: 'phoneVerified',
-      userId: 'user-1',
       bootstrapToken: TOKEN.bootstrapToken,
       bootstrapTokenExpiresAt: TOKEN.expiresAt,
     });
-    expect(track).toHaveBeenCalledWith('cash.phone_verified');
+    expect(track).toHaveBeenCalledWith('cash.phone_verified', { mode: 'signup' });
+    expect(flow().state).toBe('entry');
+    expect(flow().code).toBe('');
+  });
+
+  it('verifies a resume challenge through FinishSignupResume', async () => {
+    submitPhone({ kind: 'resume', resumeId: 'rcv_1' });
+    flow().setCode(CODE);
+
+    await expect(flow().submit()).resolves.toBe('verified');
+
+    expect(mockFinishSignupResume).toHaveBeenCalledWith({ resumeId: 'rcv_1', code: CODE });
+    expect(mockVerifyPhone).not.toHaveBeenCalled();
+    expect(session()).toMatchObject({ status: 'phoneVerified', bootstrapToken: TOKEN.bootstrapToken });
+    expect(track).toHaveBeenCalledWith('cash.phone_verified', { mode: 'resume' });
+  });
+
+  it('marks the phone as already registered when the resumed account turns out to have a passkey', async () => {
+    submitPhone({ kind: 'resume', resumeId: 'rcv_1' });
+    mockFinishSignupResume.mockResolvedValue({ outcome: 'signupAlreadyComplete' });
+    flow().setCode(CODE);
+
+    await expect(flow().submit()).resolves.toBe('signupAlreadyComplete');
+
+    expect(session()).toEqual({ status: 'phoneAlreadyRegistered', phoneNationalNumber: '4155550100' });
+    expect(track).toHaveBeenCalledWith('cash.phone_already_registered', { outcome: 'signupAlreadyComplete' });
+    expect(track).not.toHaveBeenCalledWith('cash.phone_verified', expect.anything());
     expect(flow().state).toBe('entry');
     expect(flow().code).toBe('');
   });
@@ -78,13 +111,13 @@ describe('useVerifyPhoneFlowStore.submit', () => {
     mockVerifyPhone.mockRejectedValue(new Error('wrong code'));
     flow().setCode(CODE);
 
-    await expect(flow().submit()).resolves.toBe(false);
+    await expect(flow().submit()).resolves.toBe('failed');
 
     expect(flow().state).toBe('error');
     expect(flow().code).toBe('');
     expect(session().status).toBe('phoneSubmitted');
-    expect(track).toHaveBeenCalledWith('cash.phone_verify_failed', { reason: 'wrong code' });
-    expect(track).not.toHaveBeenCalledWith('cash.phone_verified');
+    expect(track).toHaveBeenCalledWith('cash.phone_verify_failed', { reason: 'wrong code', mode: 'signup' });
+    expect(track).not.toHaveBeenCalledWith('cash.phone_verified', expect.anything());
     expect(logger.error).toHaveBeenCalled();
   });
 
@@ -103,7 +136,7 @@ describe('useVerifyPhoneFlowStore.submit', () => {
   it('ignores an incomplete code', async () => {
     flow().setCode('12345');
 
-    await expect(flow().submit()).resolves.toBe(false);
+    await expect(flow().submit()).resolves.toBe('failed');
 
     expect(mockVerifyPhone).not.toHaveBeenCalled();
     expect(flow().state).toBe('entry');
@@ -119,12 +152,12 @@ describe('useVerifyPhoneFlowStore.submit', () => {
     flow().setCode(CODE);
 
     const pending = flow().submit();
-    store().setPhoneSubmitted({ userId: 'user-2', phoneNationalNumber: '4155550101', resendAfter: 0 });
+    submitPhone({ kind: 'signup', userId: 'user-2' }, '4155550101');
     resolveVerify(TOKEN);
 
-    await expect(pending).resolves.toBe(false);
-    expect(session()).toMatchObject({ status: 'phoneSubmitted', challenge: { userId: 'user-2' } });
-    expect(track).not.toHaveBeenCalledWith('cash.phone_verified');
+    await expect(pending).resolves.toBe('failed');
+    expect(session()).toMatchObject({ status: 'phoneSubmitted', challenge: { kind: 'signup', userId: 'user-2' } });
+    expect(track).not.toHaveBeenCalledWith('cash.phone_verified', expect.anything());
   });
 
   it('discards a verification that resolves after a replacement submission for the same user', async () => {
@@ -137,12 +170,12 @@ describe('useVerifyPhoneFlowStore.submit', () => {
     flow().setCode(CODE);
 
     const pending = flow().submit();
-    store().setPhoneSubmitted({ userId: 'user-1', phoneNationalNumber: '4155550100', resendAfter: 0 });
+    submitPhone({ kind: 'signup', userId: 'user-1' });
     resolveVerify(TOKEN);
 
-    await expect(pending).resolves.toBe(false);
+    await expect(pending).resolves.toBe('failed');
     expect(session().status).toBe('phoneSubmitted');
-    expect(track).not.toHaveBeenCalledWith('cash.phone_verified');
+    expect(track).not.toHaveBeenCalledWith('cash.phone_verified', expect.anything());
   });
 
   it('leaves the replacement flow untouched when an old verification rejects', async () => {
@@ -155,12 +188,12 @@ describe('useVerifyPhoneFlowStore.submit', () => {
     flow().setCode(CODE);
 
     const pending = flow().submit();
-    store().setPhoneSubmitted({ userId: 'user-2', phoneNationalNumber: '4155550101', resendAfter: 0 });
+    submitPhone({ kind: 'signup', userId: 'user-2' }, '4155550101');
     flow().reset();
     flow().setCode('654321');
     rejectVerify(new Error('expired code'));
 
-    await expect(pending).resolves.toBe(false);
+    await expect(pending).resolves.toBe('failed');
     expect(flow().state).toBe('entry');
     expect(flow().code).toBe('654321');
     expect(track).not.toHaveBeenCalledWith('cash.phone_verify_failed', expect.anything());
@@ -180,8 +213,8 @@ describe('useVerifyPhoneFlowStore.submit', () => {
     store().setResendAfter(challenge(), RESEND_AFTER);
     resolveVerify(TOKEN);
 
-    await expect(pending).resolves.toBe(true);
-    expect(session()).toMatchObject({ status: 'phoneVerified', userId: 'user-1' });
+    await expect(pending).resolves.toBe('verified');
+    expect(session()).toMatchObject({ status: 'phoneVerified' });
   });
 
   it('ignores a second submit while verifying', async () => {
@@ -194,11 +227,11 @@ describe('useVerifyPhoneFlowStore.submit', () => {
     flow().setCode(CODE);
 
     const first = flow().submit();
-    await expect(flow().submit()).resolves.toBe(false);
+    await expect(flow().submit()).resolves.toBe('failed');
 
     expect(mockVerifyPhone).toHaveBeenCalledTimes(1);
     resolveVerify(TOKEN);
-    await expect(first).resolves.toBe(true);
+    await expect(first).resolves.toBe('verified');
   });
 });
 
@@ -217,6 +250,40 @@ describe('useVerifyPhoneFlowStore.resend', () => {
     expect(session()).toMatchObject({ status: 'phoneSubmitted', resendAfter: RESEND_AFTER });
   });
 
+  it('re-arms a resume challenge with a fresh StartSignupResume, replacing the resumeId', async () => {
+    submitPhone({ kind: 'resume', resumeId: 'rcv_1' });
+
+    await flow().resend();
+
+    expect(mockStartSignupResume).toHaveBeenCalledWith({ nationalNumber: '4155550100' });
+    expect(mockResendPhoneCode).not.toHaveBeenCalled();
+    expect(session()).toEqual({
+      status: 'phoneSubmitted',
+      challenge: { kind: 'resume', resumeId: 'rcv_2' },
+      phoneNationalNumber: '4155550100',
+      resendAfter: RESEND_AFTER,
+    });
+    expect(flow().resending).toBeNull();
+  });
+
+  it('discards a resume re-arm that resolves after the session was replaced', async () => {
+    submitPhone({ kind: 'resume', resumeId: 'rcv_1' });
+    let resolveStart!: (value: { resumeId: string; resendAfter: number }) => void;
+    mockStartSignupResume.mockReturnValue(
+      new Promise(resolve => {
+        resolveStart = resolve;
+      })
+    );
+
+    const pending = flow().resend();
+    submitPhone({ kind: 'signup', userId: 'user-2' }, '4155550101');
+    resolveStart({ resumeId: 'rcv_2', resendAfter: RESEND_AFTER });
+
+    await pending;
+    expect(session()).toMatchObject({ status: 'phoneSubmitted', challenge: { kind: 'signup', userId: 'user-2' }, resendAfter: 0 });
+    expect(flow().resending).toBeNull();
+  });
+
   it('discards a resend that resolves after the session was replaced', async () => {
     let resolveResend!: (value: { resendAfter: number }) => void;
     mockResendPhoneCode.mockReturnValue(
@@ -226,11 +293,11 @@ describe('useVerifyPhoneFlowStore.resend', () => {
     );
 
     const pending = flow().resend();
-    store().setPhoneSubmitted({ userId: 'user-2', phoneNationalNumber: '4155550101', resendAfter: 0 });
+    submitPhone({ kind: 'signup', userId: 'user-2' }, '4155550101');
     resolveResend({ resendAfter: RESEND_AFTER });
 
     await pending;
-    expect(session()).toMatchObject({ status: 'phoneSubmitted', challenge: { userId: 'user-2' }, resendAfter: 0 });
+    expect(session()).toMatchObject({ status: 'phoneSubmitted', challenge: { kind: 'signup', userId: 'user-2' }, resendAfter: 0 });
     expect(flow().resending).toBeNull();
   });
 
@@ -250,7 +317,7 @@ describe('useVerifyPhoneFlowStore.resend', () => {
       );
 
     const first = flow().resend();
-    store().setPhoneSubmitted({ userId: 'user-1', phoneNationalNumber: '4155550100', resendAfter: 0 });
+    submitPhone({ kind: 'signup', userId: 'user-1' });
     flow().reset();
     const second = flow().resend();
     expect(mockResendPhoneCode).toHaveBeenCalledTimes(2);

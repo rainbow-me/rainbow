@@ -5,10 +5,10 @@ import { createBaseStore, createStoreActions } from '@storesjs/stores';
 import { analytics } from '@/analytics';
 import { logger, RainbowError } from '@/logger';
 
-import { createUserWithPhone, US_COUNTRY_CALLING_CODE } from '../../../services/userClient';
-import { useCashSetupSessionStore } from '../../../stores/cashSetupSessionStore';
+import { createUserWithPhone, startSignupResume, US_COUNTRY_CALLING_CODE } from '../../../services/userClient';
+import { useCashSetupSessionStore, type PhoneChallenge } from '../../../stores/cashSetupSessionStore';
+import { useVerifyPhoneFlowStore } from '../../../stores/verifyPhoneFlowStore';
 import { useCashDepositSetupNavigation } from '../useCashDepositSetupNavigation';
-import { useVerifyPhoneFlowStore } from './useVerifyPhoneFlow';
 
 export const NATIONAL_NUMBER_LENGTH = 10;
 
@@ -22,6 +22,11 @@ type SubmitPhoneFlowStore = {
   reset: () => void;
 };
 
+async function startResume(nationalNumber: string): Promise<{ challenge: PhoneChallenge; resendAfter: number }> {
+  const { resumeId, resendAfter } = await startSignupResume({ nationalNumber });
+  return { challenge: { kind: 'resume', resumeId }, resendAfter };
+}
+
 // Pasted or AutoFilled values may carry the +1 country code on top of the 10 national digits.
 function extractNationalDigits(text: string): string {
   let digits = text.replace(/\D/g, '');
@@ -31,23 +36,44 @@ function extractNationalDigits(text: string): string {
   return digits.slice(0, NATIONAL_NUMBER_LENGTH);
 }
 
+function clearPhoneAlreadyRegistered() {
+  const sessionStore = useCashSetupSessionStore.getState();
+  if (sessionStore.session.status === 'phoneAlreadyRegistered') sessionStore.reset();
+}
+
 export const useSubmitPhoneFlowStore = createBaseStore<SubmitPhoneFlowStore>((set, get) => ({
   state: 'entry',
   digits: '',
 
-  setDigits: text => set(({ state }) => ({ digits: extractNationalDigits(text), state: state === 'error' ? 'entry' : state })),
+  setDigits: text => {
+    clearPhoneAlreadyRegistered();
+    set(({ state }) => ({ digits: extractNationalDigits(text), state: state === 'submitting' ? state : 'entry' }));
+  },
 
   submit: async () => {
     const { digits, state } = get();
     if (digits.length !== NATIONAL_NUMBER_LENGTH || state === 'submitting') return false;
 
+    clearPhoneAlreadyRegistered();
     set({ state: 'submitting' });
     try {
-      const { userId, resendAfter } = await createUserWithPhone({ nationalNumber: digits });
-      useCashSetupSessionStore.getState().setPhoneSubmitted({ userId, phoneNationalNumber: digits, resendAfter });
+      const result = await createUserWithPhone({ nationalNumber: digits });
+
+      if (result.outcome === 'registeredWithPasskey' || result.outcome === 'alreadyRegistered') {
+        analytics.track(analytics.event.cashPhoneAlreadyRegistered, { outcome: result.outcome });
+        useCashSetupSessionStore.getState().setPhoneAlreadyRegistered(digits);
+        set({ state: 'entry' });
+        return false;
+      }
+
+      const { challenge, resendAfter } =
+        result.outcome === 'created'
+          ? { challenge: { kind: 'signup', userId: result.userId } satisfies PhoneChallenge, resendAfter: result.resendAfter }
+          : await startResume(digits);
+      useCashSetupSessionStore.getState().setPhoneSubmitted({ challenge, phoneNationalNumber: digits, resendAfter });
       // A fresh code is on its way; drop any code/error left in the kept-mounted confirm step.
       useVerifyPhoneFlowStore.getState().reset();
-      analytics.track(analytics.event.cashPhoneSubmitted);
+      analytics.track(analytics.event.cashPhoneSubmitted, { mode: challenge.kind });
       set({ state: 'entry' });
       return true;
     } catch (e) {
@@ -57,7 +83,10 @@ export const useSubmitPhoneFlowStore = createBaseStore<SubmitPhoneFlowStore>((se
     }
   },
 
-  reset: () => set({ digits: '', state: 'entry' }),
+  reset: () => {
+    clearPhoneAlreadyRegistered();
+    set({ digits: '', state: 'entry' });
+  },
 }));
 
 const submitPhoneFlowActions = createStoreActions(useSubmitPhoneFlowStore);

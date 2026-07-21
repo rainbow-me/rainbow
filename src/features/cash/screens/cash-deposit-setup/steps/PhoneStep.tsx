@@ -5,6 +5,7 @@ import { Box, Text, useForegroundColor } from '@/design-system';
 import * as i18n from '@/languages';
 
 import { US_COUNTRY_CALLING_CODE } from '../../../services/userClient';
+import { useCashSetupSessionStore } from '../../../stores/cashSetupSessionStore';
 import { SetupStepLayout } from '../components/SetupStepLayout';
 import { useSetupInputTextStyle } from '../components/useSetupInputTextStyle';
 import { NATIONAL_NUMBER_LENGTH, useSubmitPhoneFlow } from './useSubmitPhoneFlow';
@@ -20,6 +21,7 @@ function formatNationalNumber(digits: string): string {
 
 export const PhoneStep = memo(function PhoneStep() {
   const { state, digits, setDigits, submit } = useSubmitPhoneFlow();
+  const alreadyRegistered = useCashSetupSessionStore(s => s.session.status === 'phoneAlreadyRegistered');
   const submitting = state === 'submitting';
 
   const labelQuaternary = useForegroundColor('labelQuaternary');
@@ -54,9 +56,9 @@ export const PhoneStep = memo(function PhoneStep() {
             value={formatNationalNumber(digits)}
           />
         </Box>
-        {state === 'error' && (
+        {(state === 'error' || alreadyRegistered) && (
           <Text color="red" size="17pt" weight="semibold">
-            {i18n.t(l.error)}
+            {i18n.t(alreadyRegistered ? l.already_registered : l.error)}
           </Text>
         )}
       </Box>

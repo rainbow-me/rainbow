@@ -1,15 +1,15 @@
 import { analytics } from '@/analytics';
 import { logger } from '@/logger';
 
-import { createUserWithPhone } from '../../../services/userClient';
+import { createUserWithPhone, startSignupResume } from '../../../services/userClient';
 import { useCashSetupSessionStore } from '../../../stores/cashSetupSessionStore';
+import { useVerifyPhoneFlowStore } from '../../../stores/verifyPhoneFlowStore';
 import { useSubmitPhoneFlowStore } from './useSubmitPhoneFlow';
-import { useVerifyPhoneFlowStore } from './useVerifyPhoneFlow';
 
 jest.mock('@/analytics', () => ({
   analytics: {
     track: jest.fn(),
-    event: { cashPhoneSubmitted: 'cash.phone_submitted' },
+    event: { cashPhoneSubmitted: 'cash.phone_submitted', cashPhoneAlreadyRegistered: 'cash.phone_already_registered' },
   },
 }));
 
@@ -22,6 +22,7 @@ jest.mock('../../../services/userClient', () => ({
   US_COUNTRY_CALLING_CODE: '1',
   createUserWithPhone: jest.fn(),
   resendPhoneCode: jest.fn(),
+  startSignupResume: jest.fn(),
   verifyPhone: jest.fn(),
 }));
 
@@ -30,10 +31,11 @@ jest.mock('../useCashDepositSetupNavigation', () => ({
 }));
 
 const mockCreateUserWithPhone = createUserWithPhone as jest.Mock;
+const mockStartSignupResume = startSignupResume as jest.Mock;
 const track = analytics.track as jest.Mock;
 
 const DIGITS = '4155550100';
-const RESPONSE = { userId: 'user-1', resendAfter: 1_750_000_030_000 };
+const RESPONSE = { outcome: 'created', userId: 'user-1', resendAfter: 1_750_000_030_000 };
 
 const flow = () => useSubmitPhoneFlowStore.getState();
 const session = () => useCashSetupSessionStore.getState().session;
@@ -63,6 +65,16 @@ describe('useSubmitPhoneFlowStore.setDigits', () => {
   });
 });
 
+describe('useSubmitPhoneFlowStore.reset', () => {
+  it('clears an already-registered phone result', () => {
+    useCashSetupSessionStore.getState().setPhoneAlreadyRegistered(DIGITS);
+
+    flow().reset();
+
+    expect(session().status).toBe('empty');
+  });
+});
+
 describe('useSubmitPhoneFlowStore.submit', () => {
   it('creates the user, stores the submitted phone session, and tracks', async () => {
     flow().setDigits(DIGITS);
@@ -72,13 +84,59 @@ describe('useSubmitPhoneFlowStore.submit', () => {
     expect(mockCreateUserWithPhone).toHaveBeenCalledWith({ nationalNumber: DIGITS });
     expect(session()).toEqual({
       status: 'phoneSubmitted',
-      challenge: { userId: RESPONSE.userId },
+      challenge: { kind: 'signup', userId: RESPONSE.userId },
       phoneNationalNumber: DIGITS,
       resendAfter: RESPONSE.resendAfter,
     });
-    expect(track).toHaveBeenCalledWith('cash.phone_submitted');
+    expect(track).toHaveBeenCalledWith('cash.phone_submitted', { mode: 'signup' });
     expect(flow().state).toBe('entry');
     expect(flow().digits).toBe(DIGITS);
+  });
+
+  it('starts a signup resume for a phone registered without a passkey', async () => {
+    mockCreateUserWithPhone.mockResolvedValue({ outcome: 'registeredWithoutPasskey' });
+    mockStartSignupResume.mockResolvedValue({ resumeId: 'rcv_1', resendAfter: 1_750_000_060_000 });
+    flow().setDigits(DIGITS);
+
+    await expect(flow().submit()).resolves.toBe(true);
+
+    expect(mockStartSignupResume).toHaveBeenCalledWith({ nationalNumber: DIGITS });
+    expect(session()).toEqual({
+      status: 'phoneSubmitted',
+      challenge: { kind: 'resume', resumeId: 'rcv_1' },
+      phoneNationalNumber: DIGITS,
+      resendAfter: 1_750_000_060_000,
+    });
+    expect(track).toHaveBeenCalledWith('cash.phone_submitted', { mode: 'resume' });
+    expect(flow().state).toBe('entry');
+  });
+
+  it('reports a generic failure when starting the resume throws', async () => {
+    mockCreateUserWithPhone.mockResolvedValue({ outcome: 'registeredWithoutPasskey' });
+    mockStartSignupResume.mockRejectedValue(new Error('network down'));
+    flow().setDigits(DIGITS);
+
+    await expect(flow().submit()).resolves.toBe(false);
+
+    expect(flow().state).toBe('error');
+    expect(session().status).toBe('empty');
+    expect(track).not.toHaveBeenCalled();
+    expect(logger.error).toHaveBeenCalled();
+  });
+
+  it.each(['registeredWithPasskey', 'alreadyRegistered'])('shows the already-registered message on the %s outcome', async outcome => {
+    mockCreateUserWithPhone.mockResolvedValue({ outcome });
+    flow().setDigits(DIGITS);
+
+    await expect(flow().submit()).resolves.toBe(false);
+
+    expect(flow().state).toBe('entry');
+    expect(session()).toEqual({ status: 'phoneAlreadyRegistered', phoneNationalNumber: DIGITS });
+    expect(track).toHaveBeenCalledWith('cash.phone_already_registered', { outcome });
+
+    flow().setDigits('415');
+    expect(flow().state).toBe('entry');
+    expect(session().status).toBe('empty');
   });
 
   it('drops any code/error left in the confirm step so a resubmitted phone starts fresh', async () => {
