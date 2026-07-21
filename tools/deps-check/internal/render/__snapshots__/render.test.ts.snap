@@ -1,0 +1,443 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`annotations annotates new and strict violations, not fixed ones 1`] = `
+[
+  "::error file=node_modules/evil/index.js,title=Third-party package importing app code::New: node_modules/evil/index.js → src/state/wallets.ts",
+  "::error file=src/new1.ts,title=Circular dependencies::New: src/new1.ts → src/new2.ts → src/new1.ts",
+]
+`;
+
+exports[`baseline state zone fits opposite movements into one cell and stacks their receipts, warning first: markdown 1`] = `
+"## Dependency rules
+
+### Baseline state
+
+| Rule | Platform | Baseline |
+|---|---|--:|
+| \`no-circular\` | all | 2 → 2 (⚠️ +1 grandfathered, 🟢 -1 banked) |
+
+#### ⚠️ Circular dependencies — 1 grandfathered
+
+- \`src/new1.ts → src/new2.ts → src/new1.ts\`
+
+Added to the baseline by this change through \`--allow-additions\`. Confirm this is intended.
+
+#### 🟢 Circular dependencies — 1 fixed and banked
+
+- \`src/c.ts → src/d.ts → src/e.ts → src/c.ts\`"
+`;
+
+exports[`baseline state zone fits opposite movements into one cell and stacks their receipts, warning first: terminal 1`] = `
+"✔ No new dependency violations.
+
+Baseline state:
+  no-circular: 2 → 2 (⚠️ +1 grandfathered, 🟢 -1 banked)"
+`;
+
+exports[`baseline state zone keeps the rule row when a baseline is banked down to zero: markdown 1`] = `
+"## Dependency rules
+
+### Baseline state
+
+| Rule | Platform | Baseline |
+|---|---|--:|
+| \`no-circular\` | all | 2 → 0 (🟢 -2 banked) |
+
+#### 🟢 Circular dependencies — 2 fixed and banked
+
+- \`src/a.ts → src/b.ts → src/a.ts\`
+- \`src/c.ts → src/d.ts → src/e.ts → src/c.ts\`"
+`;
+
+exports[`baseline state zone keeps the rule row when a baseline is banked down to zero: terminal 1`] = `
+"✔ No new dependency violations.
+
+Baseline state:
+  no-circular: 2 → 0 (🟢 -2 banked)"
+`;
+
+exports[`baseline state zone labels rows with the platform on single-platform runs: markdown 1`] = `
+"## Dependency rules
+
+### Baseline state
+
+| Rule | Platform | Baseline |
+|---|---|--:|
+| \`no-circular\` | ios | 2 |"
+`;
+
+exports[`baseline state zone labels rows with the platform on single-platform runs: terminal 1`] = `
+"✔ No new dependency violations.
+
+Baseline state:
+  no-circular [ios]: 2"
+`;
+
+exports[`baseline state zone shows banked movement as a cell arrow plus a celebration receipt: markdown 1`] = `
+"## Dependency rules
+
+### Baseline state
+
+| Rule | Platform | Baseline |
+|---|---|--:|
+| \`no-circular\` | all | 2 → 1 (🟢 -1 banked) |
+
+#### 🟢 Circular dependencies — 1 fixed and banked
+
+- \`src/c.ts → src/d.ts → src/e.ts → src/c.ts\`"
+`;
+
+exports[`baseline state zone shows banked movement as a cell arrow plus a celebration receipt: terminal 1`] = `
+"✔ No new dependency violations.
+
+Baseline state:
+  no-circular: 2 → 1 (🟢 -1 banked)"
+`;
+
+exports[`baseline state zone shows grandfathered movement as a cell arrow plus a receipt requiring confirmation: markdown 1`] = `
+"## Dependency rules
+
+### Baseline state
+
+| Rule | Platform | Baseline |
+|---|---|--:|
+| \`no-circular\` | all | 2 → 3 (⚠️ +1 grandfathered) |
+
+#### ⚠️ Circular dependencies — 1 grandfathered
+
+- \`src/new1.ts → src/new2.ts → src/new1.ts\`
+
+Added to the baseline by this change through \`--allow-additions\`. Confirm this is intended."
+`;
+
+exports[`baseline state zone shows grandfathered movement as a cell arrow plus a receipt requiring confirmation: terminal 1`] = `
+"✔ No new dependency violations.
+
+Baseline state:
+  no-circular: 2 → 3 (⚠️ +1 grandfathered)"
+`;
+
+exports[`baseline state zone splits rows when committed baselines diverge, scoping movement per platform: markdown 1`] = `
+"## Dependency rules
+
+### Baseline state
+
+| Rule | Platform | Baseline |
+|---|---|--:|
+| \`no-circular\` | ios | 2 → 3 (⚠️ +1 grandfathered) |
+| \`no-circular\` | android | 2 |
+
+#### ⚠️ Circular dependencies — 1 grandfathered
+
+- \`src/new1.ts → src/new2.ts → src/new1.ts\` (ios only)
+
+Added to the baseline by this change through \`--allow-additions\`. Confirm this is intended."
+`;
+
+exports[`baseline state zone splits rows when committed baselines diverge, scoping movement per platform: terminal 1`] = `
+"✔ No new dependency violations.
+
+Baseline state:
+  no-circular [ios]: 2 → 3 (⚠️ +1 grandfathered)
+  no-circular [android]: 2"
+`;
+
+exports[`clean report renders the all-clear line and a bare-count table: markdown 1`] = `
+"## Dependency rules
+
+### Baseline state
+
+| Rule | Platform | Baseline |
+|---|---|--:|
+| \`no-circular\` | all | 2 |"
+`;
+
+exports[`clean report renders the all-clear line and a bare-count table: terminal 1`] = `
+"✔ No new dependency violations.
+
+Baseline state:
+  no-circular: 2"
+`;
+
+exports[`everything at once orders strict and pending sections first with their remedies, the baseline ledger last: markdown 1`] = `
+"## Dependency rules
+
+### ✖ Third-party package importing app code (\`no-dep-into-app-source\`) — 1 violation (FORBIDDEN)
+
+- \`node_modules/evil/index.js → src/state/wallets.ts\`
+
+### ✖ Circular dependencies — 1 new (FORBIDDEN), 1 fixed 🎉
+
+**New:**
+
+- \`src/new1.ts → src/new2.ts → src/new1.ts\`
+
+Fix the cycle (usually: extract the shared piece into its own module). If genuinely unavoidable: \`yarn lint:deps:baseline:update --allow-additions\`.
+
+**Fixed:**
+
+- \`src/a.ts → src/b.ts → src/a.ts\`
+
+**🥳 Bank the win** (the check stays red until the baseline matches): run and commit
+\`\`\`
+yarn lint:deps:baseline:update
+\`\`\`
+
+### Baseline state
+
+| Rule | Platform | Baseline |
+|---|---|--:|
+| \`no-circular\` | all | 2 → 2 (⚠️ +1 grandfathered, 🟢 -1 banked) |
+
+#### ⚠️ Circular dependencies — 1 grandfathered
+
+- \`src/g1.ts → src/g2.ts → src/g1.ts\`
+
+Added to the baseline by this change through \`--allow-additions\`. Confirm this is intended.
+
+#### 🟢 Circular dependencies — 1 fixed and banked
+
+- \`src/c.ts → src/d.ts → src/e.ts → src/c.ts\`"
+`;
+
+exports[`everything at once orders strict and pending sections first with their remedies, the baseline ledger last: terminal 1`] = `
+"✖ Third-party package importing app code (no-dep-into-app-source): 1 violation — FORBIDDEN
+    node_modules/evil/index.js → src/state/wallets.ts
+
+✖ Circular dependencies: 1 new — FORBIDDEN, 1 fixed 🎉
+  New:
+    src/new1.ts → src/new2.ts → src/new1.ts
+  Fixed:
+    src/a.ts → src/b.ts → src/a.ts
+  Fix the cycle (usually: extract the shared piece into its own module).
+  If genuinely unavoidable, grandfather it:
+    yarn lint:deps:baseline:update --allow-additions
+
+🥳 Bank the win! Run and commit:
+  yarn lint:deps:baseline:update
+
+Baseline state:
+  no-circular: 2 → 2 (⚠️ +1 grandfathered, 🟢 -1 banked)"
+`;
+
+exports[`pending zone caps fixed listings and counts the overflow: markdown 1`] = `
+"## Dependency rules
+
+### 🎉 Circular dependencies — 12 fixed!
+
+- \`src/m0.ts → src/n0.ts → src/m0.ts\`
+- \`src/m1.ts → src/n1.ts → src/m1.ts\`
+- \`src/m2.ts → src/n2.ts → src/m2.ts\`
+- \`src/m3.ts → src/n3.ts → src/m3.ts\`
+- \`src/m4.ts → src/n4.ts → src/m4.ts\`
+- \`src/m5.ts → src/n5.ts → src/m5.ts\`
+- \`src/m6.ts → src/n6.ts → src/m6.ts\`
+- \`src/m7.ts → src/n7.ts → src/m7.ts\`
+- \`src/m8.ts → src/n8.ts → src/m8.ts\`
+- \`src/m9.ts → src/n9.ts → src/m9.ts\`
+- … and 2 more (the full list appears in the baseline diff after ratcheting)
+
+**🥳 Bank the win** (the check stays red until the baseline matches): run and commit
+\`\`\`
+yarn lint:deps:baseline:update
+\`\`\`
+
+### Baseline state
+
+| Rule | Platform | Baseline |
+|---|---|--:|
+| \`no-circular\` | all | 12 |"
+`;
+
+exports[`pending zone caps fixed listings and counts the overflow: terminal 1`] = `
+"🎉 Circular dependencies: 12 fixed!
+    src/m0.ts → src/n0.ts → src/m0.ts
+    src/m1.ts → src/n1.ts → src/m1.ts
+    src/m2.ts → src/n2.ts → src/m2.ts
+    src/m3.ts → src/n3.ts → src/m3.ts
+    src/m4.ts → src/n4.ts → src/m4.ts
+    src/m5.ts → src/n5.ts → src/m5.ts
+    src/m6.ts → src/n6.ts → src/m6.ts
+    src/m7.ts → src/n7.ts → src/m7.ts
+    src/m8.ts → src/n8.ts → src/m8.ts
+    src/m9.ts → src/n9.ts → src/m9.ts
+    … and 2 more (the full list appears in the baseline diff after ratcheting)
+
+🥳 Bank the win! Run and commit:
+  yarn lint:deps:baseline:update
+
+Baseline state:
+  no-circular: 12"
+`;
+
+exports[`pending zone celebrates fixed violations and closes with the bank-the-win footer: markdown 1`] = `
+"## Dependency rules
+
+### 🎉 Circular dependencies — 1 fixed!
+
+- \`src/c.ts → src/d.ts → src/e.ts → src/c.ts\`
+
+**🥳 Bank the win** (the check stays red until the baseline matches): run and commit
+\`\`\`
+yarn lint:deps:baseline:update
+\`\`\`
+
+### Baseline state
+
+| Rule | Platform | Baseline |
+|---|---|--:|
+| \`no-circular\` | all | 2 |"
+`;
+
+exports[`pending zone celebrates fixed violations and closes with the bank-the-win footer: terminal 1`] = `
+"🎉 Circular dependencies: 1 fixed!
+    src/c.ts → src/d.ts → src/e.ts → src/c.ts
+
+🥳 Bank the win! Run and commit:
+  yarn lint:deps:baseline:update
+
+Baseline state:
+  no-circular: 2"
+`;
+
+exports[`pending zone merges new and fixed into one section with labeled sub-lists: markdown 1`] = `
+"## Dependency rules
+
+### ✖ Circular dependencies — 1 new (FORBIDDEN), 1 fixed 🎉
+
+**New:**
+
+- \`src/new1.ts → src/new2.ts → src/new1.ts\`
+
+Fix the cycle (usually: extract the shared piece into its own module). If genuinely unavoidable: \`yarn lint:deps:baseline:update --allow-additions\`.
+
+**Fixed:**
+
+- \`src/c.ts → src/d.ts → src/e.ts → src/c.ts\`
+
+**🥳 Bank the win** (the check stays red until the baseline matches): run and commit
+\`\`\`
+yarn lint:deps:baseline:update
+\`\`\`
+
+### Baseline state
+
+| Rule | Platform | Baseline |
+|---|---|--:|
+| \`no-circular\` | all | 2 |"
+`;
+
+exports[`pending zone merges new and fixed into one section with labeled sub-lists: terminal 1`] = `
+"✖ Circular dependencies: 1 new — FORBIDDEN, 1 fixed 🎉
+  New:
+    src/new1.ts → src/new2.ts → src/new1.ts
+  Fixed:
+    src/c.ts → src/d.ts → src/e.ts → src/c.ts
+  Fix the cycle (usually: extract the shared piece into its own module).
+  If genuinely unavoidable, grandfather it:
+    yarn lint:deps:baseline:update --allow-additions
+
+🥳 Bank the win! Run and commit:
+  yarn lint:deps:baseline:update
+
+Baseline state:
+  no-circular: 2"
+`;
+
+exports[`pending zone qualifies entries that are missing from some platforms: markdown 1`] = `
+"## Dependency rules
+
+### ✖ Circular dependencies — 1 new (FORBIDDEN)
+
+- \`src/new1.ts → src/new2.ts → src/new1.ts\` (ios only)
+
+Fix the cycle (usually: extract the shared piece into its own module). If genuinely unavoidable: \`yarn lint:deps:baseline:update --allow-additions\`.
+
+### Baseline state
+
+| Rule | Platform | Baseline |
+|---|---|--:|
+| \`no-circular\` | all | 2 |"
+`;
+
+exports[`pending zone qualifies entries that are missing from some platforms: terminal 1`] = `
+"✖ Circular dependencies: 1 new — FORBIDDEN
+    src/new1.ts → src/new2.ts → src/new1.ts (ios only)
+  Fix the cycle (usually: extract the shared piece into its own module).
+  If genuinely unavoidable, grandfather it:
+    yarn lint:deps:baseline:update --allow-additions
+
+Baseline state:
+  no-circular: 2"
+`;
+
+exports[`pending zone renders new violations as a FORBIDDEN section with the hint and the grandfather escape: markdown 1`] = `
+"## Dependency rules
+
+### ✖ Circular dependencies — 1 new (FORBIDDEN)
+
+- \`src/new1.ts → src/new2.ts → src/new1.ts\`
+
+Fix the cycle (usually: extract the shared piece into its own module). If genuinely unavoidable: \`yarn lint:deps:baseline:update --allow-additions\`.
+
+### Baseline state
+
+| Rule | Platform | Baseline |
+|---|---|--:|
+| \`no-circular\` | all | 2 |"
+`;
+
+exports[`pending zone renders new violations as a FORBIDDEN section with the hint and the grandfather escape: terminal 1`] = `
+"✖ Circular dependencies: 1 new — FORBIDDEN
+    src/new1.ts → src/new2.ts → src/new1.ts
+  Fix the cycle (usually: extract the shared piece into its own module).
+  If genuinely unavoidable, grandfather it:
+    yarn lint:deps:baseline:update --allow-additions
+
+Baseline state:
+  no-circular: 2"
+`;
+
+exports[`pending zone renders strict violations as FORBIDDEN without baseline affordances: markdown 1`] = `
+"## Dependency rules
+
+### ✖ Third-party package importing app code (\`no-dep-into-app-source\`) — 1 violation (FORBIDDEN)
+
+- \`node_modules/evil/index.js → src/state/wallets.ts\`
+
+### Baseline state
+
+| Rule | Platform | Baseline |
+|---|---|--:|
+| \`no-circular\` | all | 2 |"
+`;
+
+exports[`pending zone renders strict violations as FORBIDDEN without baseline affordances: terminal 1`] = `
+"✖ Third-party package importing app code (no-dep-into-app-source): 1 violation — FORBIDDEN
+    node_modules/evil/index.js → src/state/wallets.ts
+
+Baseline state:
+  no-circular: 2"
+`;
+
+exports[`pending zone treats rules without a policy entry as strict, labeled by their bare rule name: markdown 1`] = `
+"## Dependency rules
+
+### ✖ some-future-rule — 1 violation (FORBIDDEN)
+
+- \`src/x.ts → src/y.ts\`
+
+### Baseline state
+
+| Rule | Platform | Baseline |
+|---|---|--:|
+| \`no-circular\` | all | 2 |"
+`;
+
+exports[`pending zone treats rules without a policy entry as strict, labeled by their bare rule name: terminal 1`] = `
+"✖ some-future-rule: 1 violation — FORBIDDEN
+    src/x.ts → src/y.ts
+
+Baseline state:
+  no-circular: 2"
+`;
