@@ -12,6 +12,7 @@ import { executePolymarketBuyPosition, executePolymarketSellPosition } from './e
 
 const mockCreateAndPostMarketOrder = jest.fn();
 const mockGetOrder = jest.fn();
+const mockGetTrades = jest.fn();
 const mockUpdateBalanceAllowance = jest.fn();
 
 jest.mock('@/state/wallets/walletsStore', () => ({
@@ -34,6 +35,7 @@ jest.mock('@/features/polymarket/stores/derived/usePolymarketClients', () => ({
   getPolymarketClobClient: jest.fn(async () => ({
     createAndPostMarketOrder: mockCreateAndPostMarketOrder,
     getOrder: mockGetOrder,
+    getTrades: mockGetTrades,
     updateBalanceAllowance: mockUpdateBalanceAllowance,
   })),
 }));
@@ -79,6 +81,7 @@ describe('executePolymarketOrder', () => {
     mockEnsureTradingApprovals.mockReset();
     mockGetPolygonUsdcBalance.mockReset();
     mockGetOrder.mockReset();
+    mockGetTrades.mockReset();
     mockUpdateBalanceAllowance.mockReset();
     mockWrapUsdcAmountToPusd.mockReset();
 
@@ -140,6 +143,46 @@ describe('executePolymarketOrder', () => {
     });
   });
 
+  it('resolves settlement hashes before collecting when an immediate match omits them', async () => {
+    let resolveTrades!: (trades: { id: string; status: string; transaction_hash: string }[]) => void;
+    mockCreateAndPostMarketOrder.mockResolvedValue(
+      createOrderResult({
+        makingAmount: '5',
+        orderID: 'buy-order',
+        status: 'matched',
+        takingAmount: '10',
+      })
+    );
+    mockGetOrder.mockResolvedValue({
+      associate_trades: ['trade-1'],
+      price: '0.5',
+      size_matched: '10',
+      status: 'matched',
+    });
+    mockGetTrades.mockReturnValueOnce(
+      new Promise(resolve => {
+        resolveTrades = resolve;
+      })
+    );
+
+    await executePolymarketBuyPosition({
+      tokenId: 'token-1',
+      amount: '5',
+      price: '0.5',
+      negRisk: false,
+      matchedOrderMetadata: createMatchedOrderMetadata({ quotedTradeFeeUsd: '0.1' }),
+    });
+    await flushPromises();
+
+    expect(mockGetTrades).toHaveBeenCalledWith({ id: 'trade-1' }, true);
+    expect(mockCollectPolymarketTradeFee).not.toHaveBeenCalled();
+
+    resolveTrades([{ id: 'trade-1', status: 'confirmed', transaction_hash: '0xsettlement' }]);
+    await flushPromises();
+
+    expect(mockCollectPolymarketTradeFee).toHaveBeenCalledWith(expect.objectContaining({ settlementTransactionHashes: ['0xsettlement'] }));
+  });
+
   it('wraps existing Polygon USDC before placing a buy order', async () => {
     const usdcBalance = ethers.utils.parseUnits('3', 6);
     mockGetPolygonUsdcBalance.mockResolvedValueOnce(usdcBalance);
@@ -153,6 +196,7 @@ describe('executePolymarketOrder', () => {
         orderID: 'buy-order',
         status: 'matched',
         takingAmount: '10',
+        transactionsHashes: ['0xsettlement'],
       })
     );
 
@@ -214,6 +258,7 @@ describe('executePolymarketOrder', () => {
         orderID: 'sell-order',
         status: 'matched',
         takingAmount: '5',
+        transactionsHashes: ['0xsettlement'],
       })
     );
 
@@ -252,6 +297,7 @@ describe('executePolymarketOrder', () => {
       matchedAmounts: { tokens: '10', usd: '5' },
       orderId: 'sell-order',
       quotedFeeUsd: '0.1',
+      settlementTransactionHashes: ['0xsettlement'],
       side: 'sell',
       tokenId: 'token-1',
     });
@@ -259,7 +305,8 @@ describe('executePolymarketOrder', () => {
 
   it('polls after an accepted live order and collects after the match', async () => {
     mockCreateAndPostMarketOrder.mockResolvedValue(createOrderResult({ orderID: 'polled-order', status: 'live' }));
-    mockGetOrder.mockResolvedValue({ price: '0.5', size_matched: '10', status: 'matched' });
+    mockGetOrder.mockResolvedValue({ associate_trades: ['trade-1'], price: '0.5', size_matched: '10', status: 'matched' });
+    mockGetTrades.mockResolvedValue([{ id: 'trade-1', status: 'confirmed', transaction_hash: '0xsettlement' }]);
 
     await executePolymarketBuyPosition({
       tokenId: 'token-1',
@@ -275,9 +322,36 @@ describe('executePolymarketOrder', () => {
       matchedAmounts: { tokens: '10', usd: '5' },
       orderId: 'polled-order',
       quotedFeeUsd: '0.1',
+      settlementTransactionHashes: ['0xsettlement'],
       side: 'buy',
       tokenId: 'token-1',
     });
+  });
+
+  it('does not collect fees when a matched trade fails before settlement', async () => {
+    mockCreateAndPostMarketOrder.mockResolvedValue(createOrderResult({ orderID: 'failed-trade-order', status: 'live' }));
+    mockGetOrder.mockResolvedValue({
+      associate_trades: ['trade-1'],
+      price: '0.5',
+      size_matched: '10',
+      status: 'matched',
+    });
+    mockGetTrades.mockResolvedValue([{ id: 'trade-1', status: 'failed' }]);
+
+    await executePolymarketBuyPosition({
+      tokenId: 'token-1',
+      amount: '5',
+      price: '0.5',
+      negRisk: false,
+      matchedOrderMetadata: createMatchedOrderMetadata({ quotedTradeFeeUsd: '0.1' }),
+    });
+    await flushPromises();
+
+    expect(mockCollectPolymarketTradeFee).not.toHaveBeenCalled();
+    expect(mockAnalyticsTrack).toHaveBeenCalledWith(
+      'predictions.order_match.failed',
+      expect.objectContaining({ orderId: 'failed-trade-order', reason: 'failed', status: 'failed' })
+    );
   });
 
   it('tracks a terminal match failure without collecting fees', async () => {
@@ -313,7 +387,7 @@ function createOrderResult({
   orderID,
   status,
   takingAmount = '0',
-  transactionsHashes = [],
+  transactionsHashes,
 }: {
   makingAmount?: string;
   orderID: string;
@@ -346,6 +420,7 @@ function createMatchedOrderMetadata({ quotedTradeFeeUsd }: { quotedTradeFeeUsd: 
 }
 
 async function flushPromises(): Promise<void> {
-  await Promise.resolve();
-  await Promise.resolve();
+  await new Promise<void>(resolve => {
+    setImmediate(resolve);
+  });
 }

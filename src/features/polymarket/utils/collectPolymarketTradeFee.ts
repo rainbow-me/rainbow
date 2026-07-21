@@ -9,6 +9,9 @@ import { executeRelayTransaction } from '@/features/polymarket/utils/relayExecut
 import { ensureError, logger, RainbowError } from '@/logger';
 import { useWalletsStore } from '@/state/wallets/walletsStore';
 
+/** Polygon transactions that settle a matched Polymarket order. */
+export type SettlementTransactionHashes = readonly [string, ...string[]];
+
 type CollectTradeFeeParams = {
   matchedAmounts: {
     tokens: string | number;
@@ -17,7 +20,7 @@ type CollectTradeFeeParams = {
   orderId: string;
   quotedFeeUsd: string | number;
   side: 'buy' | 'sell';
-  settlementTransactionHashes?: string[];
+  settlementTransactionHashes: SettlementTransactionHashes;
   tokenId: string;
 };
 
@@ -71,8 +74,6 @@ export async function collectPolymarketTradeFee({
   }
 }
 
-async function waitForSettlementTransactions(transactionHashes?: string[]): Promise<void> {
-  if (!transactionHashes?.length) return;
-
+async function waitForSettlementTransactions(transactionHashes: SettlementTransactionHashes): Promise<void> {
   await Promise.all(transactionHashes.map(hash => awaitPolygonConfirmation(hash)));
 }

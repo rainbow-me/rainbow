@@ -73,6 +73,7 @@ describe('collectPolymarketTradeFee', () => {
       matchedAmounts: { tokens: '25', usd: '12.5' },
       orderId: 'order-1',
       quotedFeeUsd: '0.1',
+      settlementTransactionHashes: ['0xsettlement'],
       side: 'buy',
       tokenId: 'token-1',
     });
@@ -92,7 +93,7 @@ describe('collectPolymarketTradeFee', () => {
       operation: OperationType.Call,
     };
     let confirmSettlement!: () => void;
-    mockAwaitPolygonConfirmation.mockReturnValueOnce(
+    mockAwaitPolygonConfirmation.mockResolvedValueOnce(undefined).mockReturnValueOnce(
       new Promise<void>(resolve => {
         confirmSettlement = resolve;
       })
@@ -103,13 +104,14 @@ describe('collectPolymarketTradeFee', () => {
       matchedAmounts: { tokens: '25', usd: '12.5' },
       orderId: 'order-1',
       quotedFeeUsd: '0.1',
-      settlementTransactionHashes: ['0xsettlement'],
+      settlementTransactionHashes: ['0xsettlement-1', '0xsettlement-2'],
       side: 'buy',
       tokenId: 'token-1',
     });
     await Promise.resolve();
 
-    expect(mockAwaitPolygonConfirmation).toHaveBeenCalledWith('0xsettlement');
+    expect(mockAwaitPolygonConfirmation).toHaveBeenNthCalledWith(1, '0xsettlement-1');
+    expect(mockAwaitPolygonConfirmation).toHaveBeenNthCalledWith(2, '0xsettlement-2');
     expect(mockBuildUnwrapPusdToUsdcTransactions).not.toHaveBeenCalled();
     expect(mockExecuteRelayTransaction).not.toHaveBeenCalled();
 
@@ -128,6 +130,7 @@ describe('collectPolymarketTradeFee', () => {
         matchedAmounts: { tokens: '5', usd: '2.5' },
         orderId: 'order-2',
         quotedFeeUsd: '0.1',
+        settlementTransactionHashes: ['0xsettlement'],
         side: 'sell',
         tokenId: 'token-2',
       })
@@ -150,6 +153,7 @@ describe('collectPolymarketTradeFee', () => {
       matchedAmounts: { tokens: '0', usd: '0' },
       orderId: 'order-3',
       quotedFeeUsd: '0.1',
+      settlementTransactionHashes: ['0xsettlement'],
       side: 'buy',
       tokenId: 'token-3',
     });

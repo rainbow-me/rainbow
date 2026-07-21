@@ -7,7 +7,7 @@ import { getPolymarketClobClient } from '@/features/polymarket/stores/derived/us
 import { usePolymarketBalanceStore } from '@/features/polymarket/stores/polymarketBalanceStore';
 import { type PolymarketOrderResult, type SuccessfulOrderResult } from '@/features/polymarket/types';
 import { getPolygonUsdcBalance, wrapUsdcAmountToPusd } from '@/features/polymarket/utils/collateral';
-import { collectPolymarketTradeFee } from '@/features/polymarket/utils/collectPolymarketTradeFee';
+import { collectPolymarketTradeFee, type SettlementTransactionHashes } from '@/features/polymarket/utils/collectPolymarketTradeFee';
 import { getPolymarketWallet } from '@/features/polymarket/utils/polymarketWallet';
 import { ensureTradingApprovals } from '@/features/polymarket/utils/tradingApprovals';
 import { divWorklet, mulWorklet } from '@/framework/core/safeMath';
@@ -66,9 +66,10 @@ type MatchedOrderAmounts = {
   usd: string;
 };
 
-type MatchedOrderSettlement = {
-  transactionHashes?: string[];
-};
+type MatchedOrderSettlement =
+  | { status: 'pending' }
+  | { status: 'failed' }
+  | { status: 'resolved'; transactionHashes: SettlementTransactionHashes };
 
 // ============ Constants ====================================================== //
 
@@ -214,9 +215,10 @@ function resolveSuccessfulOrderResult(result: PolymarketOrderResult): Successful
 function startMatchedOrderFeeCollection({ orderResult, context }: { orderResult: SuccessfulOrderResult; context: MatchedOrderContext }) {
   const { orderID: orderId } = orderResult;
   const immediateAmounts = getMatchedAmountsFromAcceptedOrder(orderResult, context.side);
+  const settlementTransactionHashes = toSettlementTransactionHashes(orderResult.transactionsHashes);
 
-  if (immediateAmounts) {
-    recordMatchedOrderAndCollectFee(context, immediateAmounts, orderId, { transactionHashes: orderResult.transactionsHashes });
+  if (immediateAmounts && settlementTransactionHashes) {
+    recordMatchedOrderAndCollectFee(context, immediateAmounts, orderId, settlementTransactionHashes);
     return;
   }
 
@@ -244,8 +246,14 @@ async function pollForMatchedOrderFeeCollection({
 
       if (status === MATCHED_STATUS) {
         const amounts = getMatchedAmountsFromPolledOrder(order);
-        if (amounts) {
-          recordMatchedOrderAndCollectFee(context, amounts, orderId);
+        const settlement = await getMatchedOrderSettlement(client, order.associate_trades);
+
+        if (settlement.status === 'failed') {
+          trackOrderMatchFailedAnalytics({ orderId, context, reason: settlement.status, status: settlement.status });
+          return;
+        }
+        if (amounts && settlement.status === 'resolved') {
+          recordMatchedOrderAndCollectFee(context, amounts, orderId, settlement.transactionHashes);
           return;
         }
       }
@@ -268,20 +276,44 @@ function recordMatchedOrderAndCollectFee(
   context: MatchedOrderContext,
   amounts: MatchedOrderAmounts,
   orderId: string,
-  settlement?: MatchedOrderSettlement
+  settlementTransactionHashes: SettlementTransactionHashes
 ) {
   trackMatchedOrderAnalytics(context, amounts);
-
-  const settlementTransactionHashes = settlement?.transactionHashes?.filter(Boolean);
 
   void collectPolymarketTradeFee({
     matchedAmounts: amounts,
     orderId,
     quotedFeeUsd: context.quotedTradeFeeUsd,
     side: context.side,
-    ...(settlementTransactionHashes?.length ? { settlementTransactionHashes } : {}),
+    settlementTransactionHashes,
     tokenId: context.tokenId,
   });
+}
+
+async function getMatchedOrderSettlement(client: ClobClient, associatedTradeIds: readonly string[]): Promise<MatchedOrderSettlement> {
+  const tradeIds = associatedTradeIds.filter(id => id.length > 0);
+  const trades = await Promise.all(tradeIds.map(async id => (await client.getTrades({ id }, true)).find(trade => trade.id === id)));
+  let transactionHashes: SettlementTransactionHashes | undefined;
+
+  for (const trade of trades) {
+    if (trade === undefined) return { status: 'pending' };
+    if (trade.status.toLowerCase() === 'failed') return { status: 'failed' };
+
+    const transactionHash = trade.transaction_hash;
+    if (transactionHash === undefined || transactionHash.length === 0) return { status: 'pending' };
+
+    transactionHashes = transactionHashes === undefined ? [transactionHash] : [...transactionHashes, transactionHash];
+  }
+
+  return transactionHashes === undefined ? { status: 'pending' } : { status: 'resolved', transactionHashes };
+}
+
+function toSettlementTransactionHashes(transactionHashes: readonly string[] | undefined): SettlementTransactionHashes | undefined {
+  if (!transactionHashes) return undefined;
+
+  const [firstHash, ...remainingHashes] = transactionHashes.filter(hash => hash.length > 0);
+  if (firstHash === undefined) return undefined;
+  return [firstHash, ...remainingHashes];
 }
 
 // ============ Analytics ====================================================== //
