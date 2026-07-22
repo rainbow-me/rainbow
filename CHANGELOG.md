@@ -21,6 +21,26 @@ and this project adheres to [Semantic Versioning](http://semver.org/)
 
 ### Testing
 
+## [2.0.40](https://github.com/rainbow-me/rainbow/releases/tag/v2.0.40)
+
+### Added
+
+- Add credit card linking step (https://github.com/rainbow-me/rainbow/pull/7667)
+- Add success screen component (https://github.com/rainbow-me/rainbow/pull/7668)
+- Add Rainbow SDK (https://github.com/rainbow-me/rainbow/pull/7676)
+
+### Changed
+
+- Bump iOS and Android to v2.0.40 (https://github.com/rainbow-me/rainbow/pull/7666)
+- Extract shared workspace setup into a composite action (https://github.com/rainbow-me/rainbow/pull/7661)
+- Split PR checks into per-concern jobs also running on develop (https://github.com/rainbow-me/rainbow/pull/7662)
+- Remove vestigial single-screen wrapper stack navigators (https://github.com/rainbow-me/rainbow/pull/7671)
+
+### Fixed
+
+- Fix broken Setup e2e test (https://github.com/rainbow-me/rainbow/pull/7673)
+- Fix onboarding to respect opened keyboard (https://github.com/rainbow-me/rainbow/pull/7674)
+
 ## [2.0.39](https://github.com/rainbow-me/rainbow/releases/tag/v2.0.39)
 
 ### Fixed
