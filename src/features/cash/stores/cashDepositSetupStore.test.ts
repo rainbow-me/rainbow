@@ -18,6 +18,7 @@ const verifiedSession = (tokenExpiresAt: number) =>
     bootstrapToken: 'bst_test',
     bootstrapTokenExpiresAt: tokenExpiresAt,
     identity: null,
+    governmentId: null,
   }) as const;
 
 type Case = {

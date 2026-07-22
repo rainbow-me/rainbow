@@ -1604,8 +1604,20 @@
           "date_of_birth": "Date of Birth",
           "date_of_birth_placeholder": "MM/DD/YYYY"
         },
-        "ssn": { "title": "Last 4 of SSN" },
-        "review": { "title": "Review" },
+        "ssn": {
+          "title": "Enter the last 4 digits of your SSN",
+          "helper": "All data is encrypted and secured."
+        },
+        "review": {
+          "title": "Review your information",
+          "subtitle": "Carefully review your information to ensure it is accurate and up-to-date.",
+          "confirm": "Confirm",
+          "name": "Name",
+          "date_of_birth": "Date of Birth",
+          "ssn": "Social Security Number",
+          "edit": "Edit",
+          "error": "We couldn’t verify your details. Please try again."
+        },
         "passkey": { "title": "Add a Passkey" },
         "email": { "title": "Enter email" },
         "all_done": {

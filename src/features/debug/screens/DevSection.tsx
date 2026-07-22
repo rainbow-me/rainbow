@@ -543,6 +543,7 @@ export const DevSection = () => {
                     bootstrapToken: 'bst_dev',
                     bootstrapTokenExpiresAt: Date.now() + time.hours(1),
                     identity: null,
+                    governmentId: null,
                   },
                 })
               }

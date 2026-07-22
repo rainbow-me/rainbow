@@ -60,6 +60,7 @@ export function TestDeeplinkHandler() {
                 bootstrapToken: 'bst_e2e',
                 bootstrapTokenExpiresAt: Date.now() + time.days(1),
                 identity: null,
+                governmentId: null,
               },
             });
           } else {

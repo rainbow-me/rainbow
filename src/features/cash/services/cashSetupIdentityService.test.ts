@@ -1,4 +1,4 @@
-import { isValidDateOfBirth, isValidLegalName } from './cashSetupIdentityService';
+import { formatUsSsnMasked, isValidDateOfBirth, isValidLegalName, isValidUsSsnLast4 } from './cashSetupIdentityService';
 
 const TODAY = new Date(2026, 6, 13);
 
@@ -37,5 +37,28 @@ describe('isValidDateOfBirth', () => {
 
   it.each(cases)('returns $expected for $input', ({ input, expected }) => {
     expect(isValidDateOfBirth(input, TODAY)).toBe(expected);
+  });
+});
+
+describe('isValidUsSsnLast4', () => {
+  const cases = [
+    { input: '6789', expected: true },
+    { input: '0001', expected: true },
+    { input: '678', expected: false },
+    { input: '67890', expected: false },
+    { input: '67a9', expected: false },
+    { input: '67 9', expected: false },
+    { input: '0000', expected: false },
+    { input: '', expected: false },
+  ];
+
+  it.each(cases)('returns $expected for "$input"', ({ input, expected }) => {
+    expect(isValidUsSsnLast4(input)).toBe(expected);
+  });
+});
+
+describe('formatUsSsnMasked', () => {
+  it('masks all but the last 4 digits', () => {
+    expect(formatUsSsnMasked('6789')).toBe('*** ** 6789');
   });
 });

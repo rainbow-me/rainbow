@@ -5,17 +5,13 @@ import { Box, Text, useForegroundColor } from '@/design-system';
 import { useDatePicker } from '@/framework/ui/hooks/useDatePicker';
 import * as i18n from '@/languages';
 
-import { isValidDateOfBirth, isValidLegalName, toDate, toDateOfBirth } from '../../../services/cashSetupIdentityService';
+import { formatDateOfBirth, isValidDateOfBirth, isValidLegalName, toDate, toDateOfBirth } from '../../../services/cashSetupIdentityService';
 import { useCashSetupSessionStore, type CashSetupDateOfBirth } from '../../../stores/cashSetupSessionStore';
 import { SetupStepLayout } from '../components/SetupStepLayout';
 import { useSetupInputTextStyle } from '../components/useSetupInputTextStyle';
 import { useCashDepositSetupNavigation } from '../useCashDepositSetupNavigation';
 
 const l = i18n.l.cash.deposit_setup.identity;
-
-function formatDateOfBirth({ year, month, day }: CashSetupDateOfBirth): string {
-  return `${String(month).padStart(2, '0')}/${String(day).padStart(2, '0')}/${year}`;
-}
 
 function getMaximumDateOfBirth(): Date {
   const date = new Date();

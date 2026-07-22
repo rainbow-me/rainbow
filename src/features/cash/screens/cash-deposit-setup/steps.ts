@@ -19,7 +19,7 @@ export const SETUP_STEP_ORDER: readonly CashDepositSetupStep[] = [
   { id: Routes.CASH_SETUP_CONFIRM_PHONE },
   { id: Routes.CASH_SETUP_IDENTITY },
   { id: Routes.CASH_SETUP_SSN },
-  { id: Routes.CASH_SETUP_REVIEW, milestone: 'kycPassed' },
+  { id: Routes.CASH_SETUP_REVIEW },
   { id: Routes.CASH_SETUP_PASSKEY, milestone: 'passkeyRegistered' },
   { id: Routes.CASH_SETUP_EMAIL },
   { id: Routes.CASH_SETUP_ALL_DONE },

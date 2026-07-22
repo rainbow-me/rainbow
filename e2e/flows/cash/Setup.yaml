@@ -73,7 +73,23 @@ tags:
 - tapOn:
     id: cash-setup-next
 - assertVisible:
-    text: 'Last 4 of SSN'
+    text: 'Enter the last 4 digits of your SSN'
+- tapOn:
+    id: cash-setup-ssn-input
+- inputText: '6789'
+- tapOn:
+    id: cash-setup-next
+- assertVisible:
+    text: 'Review your information'
+- assertVisible:
+    text: 'Ada Lovelace'
+# Confirm submits KYC; the mock approves after ~1s, then the repeat loop walks the placeholder steps.
+- tapOn:
+    id: cash-setup-next
+- extendedWaitUntil:
+    visible:
+      text: 'Add a Passkey'
+    timeout: 10000
 - repeat:
     while:
       notVisible:

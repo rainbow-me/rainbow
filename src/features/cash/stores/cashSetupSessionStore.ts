@@ -16,6 +16,18 @@ export type CashSetupIdentity = {
 // be checked against the submission that started them.
 export type PhoneChallenge = Readonly<{ userId: string }>;
 
+export type CashSetupGovernmentIdKind = 'GOVERNMENT_ID_KIND_SSN_LAST4';
+
+declare const cashSetupUsSsnLast4Brand: unique symbol;
+
+export type CashSetupUsSsnLast4 = string & { readonly [cashSetupUsSsnLast4Brand]: true };
+
+export type CashSetupGovernmentId = {
+  countryCode: 'US';
+  kind: CashSetupGovernmentIdKind;
+  value: CashSetupUsSsnLast4;
+};
+
 type EmptyCashSetupSession = {
   status: 'empty';
 };
@@ -34,6 +46,7 @@ type VerifiedCashSetupSession = {
   bootstrapToken: string;
   bootstrapTokenExpiresAt: number;
   identity: CashSetupIdentity | null;
+  governmentId: CashSetupGovernmentId | null;
 };
 
 type CashSetupSession = EmptyCashSetupSession | PhoneSubmittedCashSetupSession | VerifiedCashSetupSession;
@@ -45,6 +58,7 @@ type CashSetupSessionStore = {
   setResendAfter: (challenge: PhoneChallenge, resendAfter: number) => void;
   setPhoneVerified: (challenge: PhoneChallenge, credential: { bootstrapToken: string; expiresAt: number }) => void;
   setIdentity: (identity: CashSetupIdentity) => void;
+  setGovernmentId: (governmentId: CashSetupGovernmentId) => void;
   reset: () => void;
 };
 
@@ -77,6 +91,7 @@ export const useCashSetupSessionStore = createBaseStore<CashSetupSessionStore>((
           bootstrapToken,
           bootstrapTokenExpiresAt: expiresAt,
           identity: null,
+          governmentId: null,
         },
       };
     }),
@@ -84,6 +99,11 @@ export const useCashSetupSessionStore = createBaseStore<CashSetupSessionStore>((
     const { session } = get();
     if (session.status !== 'phoneVerified') return;
     set({ session: { ...session, identity } });
+  },
+  setGovernmentId: governmentId => {
+    const { session } = get();
+    if (session.status !== 'phoneVerified') return;
+    set({ session: { ...session, governmentId } });
   },
   reset: () => set(state => (state.session === EMPTY_SESSION ? state : { session: EMPTY_SESSION })),
 }));

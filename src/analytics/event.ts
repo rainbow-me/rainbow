@@ -129,6 +129,9 @@ export const event = {
   cashPhoneSubmitted: 'cash.phone_submitted',
   cashPhoneVerified: 'cash.phone_verified',
   cashPhoneVerifyFailed: 'cash.phone_verify_failed',
+  cashKycSubmitted: 'cash.kyc_submitted',
+  cashKycApproved: 'cash.kyc_approved',
+  cashKycFailed: 'cash.kyc_failed',
   cashCardLinked: 'cash.card_linked',
   cashCardLinkFailed: 'cash.card_link_failed',
   rewardsPressedPendingEarningsCard: 'rewards.pressed_pending_earnings_card',
@@ -542,6 +545,11 @@ export type EventProperties = {
   [event.cashPhoneSubmitted]: undefined;
   [event.cashPhoneVerified]: undefined;
   [event.cashPhoneVerifyFailed]: {
+    reason: string;
+  };
+  [event.cashKycSubmitted]: undefined;
+  [event.cashKycApproved]: undefined;
+  [event.cashKycFailed]: {
     reason: string;
   };
   [event.cashCardLinked]: {
