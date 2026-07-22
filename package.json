@@ -199,7 +199,7 @@
     "@notifee/react-native": "7.8.2",
     "@polymarket/builder-relayer-client": "0.0.10",
     "@polymarket/builder-signing-sdk": "0.0.8",
-    "@polymarket/clob-client-v2": "1.0.8",
+    "@polymarket/clob-client-v2": "1.1.0",
     "@rainbow-me/provider": "0.1.2",
     "@rainbow-me/react-native-animated-number": "0.0.2",
     "@rainbow-me/sdk": "0.4.0",

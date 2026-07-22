@@ -1,6 +1,7 @@
 import { OperationType } from '@polymarket/builder-relayer-client';
 
 import { buildUnwrapPusdToUsdcTransactions } from '@/features/polymarket/utils/collateral';
+import { awaitPolygonConfirmation } from '@/features/polymarket/utils/confirmation';
 import { getPolymarketWallet } from '@/features/polymarket/utils/polymarketWallet';
 import { executeRelayTransaction } from '@/features/polymarket/utils/relayExecution';
 import { logger } from '@/logger';
@@ -18,6 +19,10 @@ jest.mock('@/state/wallets/walletsStore', () => ({
 jest.mock('@/features/polymarket/constants', () => ({
   POLYMARKET_PUSD_DECIMALS: 6,
   POLYMARKET_RAINBOW_FEE_RECIPIENT_ADDRESS: '0x757758506d6a4F8a433F8BECaFd52545f9Cb050a',
+}));
+
+jest.mock('@/features/polymarket/utils/confirmation', () => ({
+  awaitPolygonConfirmation: jest.fn(),
 }));
 
 jest.mock('@/features/polymarket/utils/collateral', () => ({
@@ -41,14 +46,18 @@ jest.mock('@/logger', () => ({
 const mockBuildUnwrapPusdToUsdcTransactions = jest.mocked(buildUnwrapPusdToUsdcTransactions);
 const mockExecuteRelayTransaction = jest.mocked(executeRelayTransaction);
 const mockGetPolymarketWallet = jest.mocked(getPolymarketWallet);
+const mockAwaitPolygonConfirmation = jest.mocked(awaitPolygonConfirmation);
 const mockLoggerError = jest.mocked(logger.error);
 
 describe('collectPolymarketTradeFee', () => {
   beforeEach(() => {
+    mockAwaitPolygonConfirmation.mockReset();
     mockBuildUnwrapPusdToUsdcTransactions.mockReset();
     mockExecuteRelayTransaction.mockReset();
     mockGetPolymarketWallet.mockClear();
     mockLoggerError.mockReset();
+
+    mockAwaitPolygonConfirmation.mockResolvedValue(undefined);
   });
 
   it('submits capped fee transactions through the current relayer', async () => {
@@ -64,6 +73,7 @@ describe('collectPolymarketTradeFee', () => {
       matchedAmounts: { tokens: '25', usd: '12.5' },
       orderId: 'order-1',
       quotedFeeUsd: '0.1',
+      settlementTransactionHashes: ['0xsettlement'],
       side: 'buy',
       tokenId: 'token-1',
     });
@@ -75,6 +85,43 @@ describe('collectPolymarketTradeFee', () => {
     expect(mockExecuteRelayTransaction).toHaveBeenCalledWith([transaction], 'collect Rainbow Polymarket fee');
   });
 
+  it('waits for matched order settlement before submitting fee transactions', async () => {
+    const transaction = {
+      to: '0xRecipient',
+      data: '0x',
+      value: '0',
+      operation: OperationType.Call,
+    };
+    let confirmSettlement!: () => void;
+    mockAwaitPolygonConfirmation.mockResolvedValueOnce(undefined).mockReturnValueOnce(
+      new Promise<void>(resolve => {
+        confirmSettlement = resolve;
+      })
+    );
+    mockBuildUnwrapPusdToUsdcTransactions.mockResolvedValue([transaction]);
+
+    const promise = collectPolymarketTradeFee({
+      matchedAmounts: { tokens: '25', usd: '12.5' },
+      orderId: 'order-1',
+      quotedFeeUsd: '0.1',
+      settlementTransactionHashes: ['0xsettlement-1', '0xsettlement-2'],
+      side: 'buy',
+      tokenId: 'token-1',
+    });
+    await Promise.resolve();
+
+    expect(mockAwaitPolygonConfirmation).toHaveBeenNthCalledWith(1, '0xsettlement-1');
+    expect(mockAwaitPolygonConfirmation).toHaveBeenNthCalledWith(2, '0xsettlement-2');
+    expect(mockBuildUnwrapPusdToUsdcTransactions).not.toHaveBeenCalled();
+    expect(mockExecuteRelayTransaction).not.toHaveBeenCalled();
+
+    confirmSettlement();
+    await promise;
+
+    expect(mockBuildUnwrapPusdToUsdcTransactions).toHaveBeenCalled();
+    expect(mockExecuteRelayTransaction).toHaveBeenCalledWith([transaction], 'collect Rainbow Polymarket fee');
+  });
+
   it('logs collection failures without throwing', async () => {
     mockBuildUnwrapPusdToUsdcTransactions.mockRejectedValue(new Error('allowance read failed'));
 
@@ -83,6 +130,7 @@ describe('collectPolymarketTradeFee', () => {
         matchedAmounts: { tokens: '5', usd: '2.5' },
         orderId: 'order-2',
         quotedFeeUsd: '0.1',
+        settlementTransactionHashes: ['0xsettlement'],
         side: 'sell',
         tokenId: 'token-2',
       })
@@ -105,6 +153,7 @@ describe('collectPolymarketTradeFee', () => {
       matchedAmounts: { tokens: '0', usd: '0' },
       orderId: 'order-3',
       quotedFeeUsd: '0.1',
+      settlementTransactionHashes: ['0xsettlement'],
       side: 'buy',
       tokenId: 'token-3',
     });

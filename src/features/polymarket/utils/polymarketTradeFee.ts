@@ -8,6 +8,7 @@ import {
   mulWorklet,
   subWorklet,
   toStringWorklet,
+  trimTrailingZeros,
   truncateToDecimals,
 } from '@/framework/core/safeMath';
 
@@ -33,7 +34,7 @@ const FEE_TAPER_MULTIPLIER = '0.14';
  * Calculates the trade fee for one executed notional at one price.
  */
 export function calculateTradeFeeUsd({ notionalUsd, price }: FeeValue): string {
-  return mulWorklet(notionalUsd, calculateFeeRate(price));
+  return trimTrailingZeros(truncateToDecimals(mulWorklet(notionalUsd, calculateFeeRate(price)), POLYMARKET_PUSD_DECIMALS));
 }
 
 /**

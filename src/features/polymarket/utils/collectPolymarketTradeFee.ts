@@ -2,11 +2,15 @@ import { type Address } from 'viem';
 
 import { POLYMARKET_RAINBOW_FEE_RECIPIENT_ADDRESS } from '@/features/polymarket/constants';
 import { buildUnwrapPusdToUsdcTransactions } from '@/features/polymarket/utils/collateral';
+import { awaitPolygonConfirmation } from '@/features/polymarket/utils/confirmation';
 import { calculateFeeToCollectUsd, getTradeFeeAmount } from '@/features/polymarket/utils/polymarketTradeFee';
 import { getPolymarketWallet } from '@/features/polymarket/utils/polymarketWallet';
 import { executeRelayTransaction } from '@/features/polymarket/utils/relayExecution';
 import { ensureError, logger, RainbowError } from '@/logger';
 import { useWalletsStore } from '@/state/wallets/walletsStore';
+
+/** Polygon transactions that settle a matched Polymarket order. */
+export type SettlementTransactionHashes = readonly [string, ...string[]];
 
 type CollectTradeFeeParams = {
   matchedAmounts: {
@@ -16,6 +20,7 @@ type CollectTradeFeeParams = {
   orderId: string;
   quotedFeeUsd: string | number;
   side: 'buy' | 'sell';
+  settlementTransactionHashes: SettlementTransactionHashes;
   tokenId: string;
 };
 
@@ -27,6 +32,7 @@ export async function collectPolymarketTradeFee({
   orderId,
   quotedFeeUsd,
   side,
+  settlementTransactionHashes,
   tokenId,
 }: CollectTradeFeeParams): Promise<void> {
   let feeAmountUsd = '0';
@@ -43,6 +49,8 @@ export async function collectPolymarketTradeFee({
 
     const wallet = await getPolymarketWallet(owner);
     proxyAddress = wallet.address;
+
+    await waitForSettlementTransactions(settlementTransactionHashes);
 
     const transactions = await buildUnwrapPusdToUsdcTransactions({
       amount,
@@ -64,4 +72,8 @@ export async function collectPolymarketTradeFee({
       tokenId,
     });
   }
+}
+
+async function waitForSettlementTransactions(transactionHashes: SettlementTransactionHashes): Promise<void> {
+  await Promise.all(transactionHashes.map(hash => awaitPolygonConfirmation(hash)));
 }
