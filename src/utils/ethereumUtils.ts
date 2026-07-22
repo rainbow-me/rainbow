@@ -16,7 +16,7 @@ import { useBackendNetworksStore } from '@/features/network/stores/backendNetwor
 import { ChainId, type Network } from '@/features/network/types/backendNetworks';
 import { getOnchainAssetBalance } from '@/handlers/assets';
 import { getProvider, isTestnetChain, toHex } from '@/handlers/web3';
-import { add, fromWei, greaterThan, isZero, subtract } from '@/helpers/utilities';
+import { add, fromWei, greaterThan, subtract } from '@/helpers/utilities';
 import { logger, RainbowError } from '@/logger';
 import { queryClient } from '@/react-query';
 import store from '@/redux/store';
@@ -247,12 +247,6 @@ const getBalanceAmount = (
 };
 
 const getHash = (txn: RainbowTransaction | NewTransaction) => txn.hash?.split('-').shift();
-
-export const checkWalletEthZero = () => {
-  const ethAsset = getAccountAsset(ETH_ADDRESS);
-  const amount = ethAsset?.balance?.amount ?? 0;
-  return isZero(amount);
-};
 
 /**
  * @desc remove hex prefix

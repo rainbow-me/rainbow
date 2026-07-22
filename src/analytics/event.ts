@@ -1022,9 +1022,7 @@ export type EventProperties = {
     address: string;
     type: string;
   };
-  [event.importedSeedPhrase]: {
-    isWalletEthZero: boolean;
-  };
+  [event.importedSeedPhrase]: undefined;
   [event.iCloudNotEnabled]: {
     category: string;
   };

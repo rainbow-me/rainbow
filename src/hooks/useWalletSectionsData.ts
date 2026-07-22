@@ -32,13 +32,11 @@ import { shallowEqual } from '@/worklets/comparisons';
 import useAccountSettings from './useAccountSettings';
 import useCoinListEdited from './useCoinListEdited';
 import useCoinListEditOptions from './useCoinListEditOptions';
-import useIsWalletEthZero from './useIsWalletEthZero';
 import useWalletsWithBalancesAndNames from './useWalletsWithBalancesAndNames';
 
 export interface WalletSectionsResult {
   briefSectionsData: CellTypes[];
   isEmpty: boolean;
-  isWalletEthZero: boolean;
   isLoadingUserAssets: boolean;
   isLoadingBalance: boolean;
   hasNFTs: boolean;
@@ -57,7 +55,6 @@ export default function useWalletSectionsData({
   const { hiddenTokens } = useHiddenTokens();
   const remoteConfig = useRemoteConfig('claimables', 'discover_enabled', 'perps_enabled', 'polymarket_enabled', 'rnbw_rewards_enabled');
   const experimentalConfig = useExperimentalConfig();
-  const isWalletEthZero = useIsWalletEthZero();
 
   const positionsEnabled = experimentalConfig[DEFI_POSITIONS] && !IS_TEST;
   const claimablesEnabled = (remoteConfig.claimables || experimentalConfig[CLAIMABLES]) && !IS_TEST;
@@ -140,7 +137,6 @@ export default function useWalletSectionsData({
       sortedAssets,
       accountBalanceDisplay: accountWithBalance?.balancesMinusHiddenBalances,
       isLoadingBalance: !accountWithBalance?.balancesMinusHiddenBalances,
-      isWalletEthZero,
       hiddenTokens,
       isReadOnlyWallet,
       listType: type,
@@ -170,7 +166,6 @@ export default function useWalletSectionsData({
       isEmpty,
       isLoadingBalance: !accountWithBalance?.balancesMinusHiddenBalances,
       isLoadingUserAssets,
-      isWalletEthZero,
       briefSectionsData,
     };
   }, [
@@ -183,7 +178,6 @@ export default function useWalletSectionsData({
     pinnedCoins,
     sortedAssets,
     accountWithBalance?.balancesMinusHiddenBalances,
-    isWalletEthZero,
     hiddenTokens,
     isReadOnlyWallet,
     type,
