@@ -7,7 +7,6 @@ import { position } from '@/styles';
 
 import { Centered, Column } from '../layout';
 import { navbarHeight } from '../navbar/Navbar';
-import AssetListHeader from './AssetListHeader';
 import AssetListItemSkeleton from './AssetListItemSkeleton';
 
 const Container = styled(Column)({
@@ -18,14 +17,12 @@ const Container = styled(Column)({
 export interface EmptyAssetListProps extends ViewProps {
   descendingOpacity?: boolean;
   skeletonCount?: number;
-  title?: string;
   children?: React.ReactNode;
 }
 
-const EmptyAssetList = ({ descendingOpacity, skeletonCount = 5, title, ...props }: EmptyAssetListProps) => (
+const EmptyAssetList = ({ descendingOpacity, skeletonCount = 5, ...props }: EmptyAssetListProps) => (
   <Container {...props}>
     <Centered flex={1}>
-      {title && <AssetListHeader title={title} />}
       <Column cover>
         {times(skeletonCount, index => (
           <AssetListItemSkeleton animated descendingOpacity={descendingOpacity} index={index} key={`skeleton${index}`} />
