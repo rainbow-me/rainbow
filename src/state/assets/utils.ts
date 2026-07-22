@@ -180,13 +180,8 @@ export function setUserAssets({
   }
   const allIds: UniqueId[] = [];
 
-  // Sort all assets by chain balance first, then by individual asset value
-  allAssets.sort((a, b) => {
-    const balanceA = unsortedChainBalances.get(a.chainId) ?? 0;
-    const balanceB = unsortedChainBalances.get(b.chainId) ?? 0;
-    if (balanceA !== balanceB) return balanceB - balanceA;
-    return (Number(b.native.balance.amount) ?? 0) - (Number(a.native.balance.amount) ?? 0);
-  });
+  // Sort all assets by value, descending
+  allAssets.sort((a, b) => (Number(b.native.balance.amount) || 0) - (Number(a.native.balance.amount) || 0));
 
   // Process sorted assets in a single pass - build the map in sorted order
   newUserAssetsMap = new Map<UniqueId, ParsedSearchAsset>();
@@ -194,7 +189,7 @@ export function setUserAssets({
     newUserAssetsMap.set(asset.uniqueId, asset);
     allIds.push(asset.uniqueId);
 
-    const balance = Number(asset.native.balance.amount) ?? 0;
+    const balance = Number(asset.native.balance.amount) || 0;
     unsortedChainBalances.set(asset.chainId, (unsortedChainBalances.get(asset.chainId) ?? 0) + balance);
     idsByChain.set(asset.chainId, (idsByChain.get(asset.chainId) ?? []).concat(asset.uniqueId));
   }
