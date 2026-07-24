@@ -30,7 +30,6 @@ import { sanitizeSeedPhrase } from '@/utils/formatters';
 import { deriveAccountFromWalletInput } from '@/utils/wallet';
 
 import { initializeWallet } from '../state/wallets/initializeWallet';
-import useIsWalletEthZero from './useIsWalletEthZero';
 import usePrevious from './usePrevious';
 
 export default function useImportingWallet({
@@ -44,7 +43,6 @@ export default function useImportingWallet({
   const wallets = useWallets();
 
   const { navigate, goBack, getParent: dangerouslyGetParent } = useNavigation<typeof Routes.MODAL_SCREEN>();
-  const isWalletEthZero = useIsWalletEthZero();
   const [isImporting, setImporting] = useState(false);
   const [seedPhrase, setSeedPhrase] = useState('');
   const [color, setColor] = useState<number | null>(null);
@@ -297,7 +295,7 @@ export default function useImportingWallet({
       return;
     }
 
-    const handleImportSuccess = async (input: string, isWalletEthZero: boolean, backupProvider: string | undefined) => {
+    const handleImportSuccess = async (input: string, backupProvider: string | undefined) => {
       setImporting(false);
       setBusy(false);
       walletLoadingStore.setState({ loadingState: null });
@@ -335,9 +333,7 @@ export default function useImportingWallet({
           });
         }
 
-        analytics.track(analytics.event.importedSeedPhrase, {
-          isWalletEthZero,
-        });
+        analytics.track(analytics.event.importedSeedPhrase);
       });
     };
 
@@ -360,7 +356,7 @@ export default function useImportingWallet({
 
         if (success) {
           // Navigate to wallet screen
-          await handleImportSuccess(input, isWalletEthZero, backupProvider);
+          await handleImportSuccess(input, backupProvider);
         } else {
           // Import failed
           logger.error(new RainbowError('[useImportingWallet]: Import failed'));
@@ -386,7 +382,6 @@ export default function useImportingWallet({
   }, [
     checkedWallet,
     color,
-    isWalletEthZero,
     isImporting,
     name,
     resolvedAddress,

@@ -60,7 +60,6 @@ export type WalletSectionsState = {
   isLoadingUserAssets: boolean;
   isLoadingBalance: boolean;
   isReadOnlyWallet: boolean;
-  isWalletEthZero: boolean;
   hiddenTokens: string[];
   listType?: AssetListType;
   language: Language;
