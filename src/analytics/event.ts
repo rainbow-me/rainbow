@@ -132,6 +132,9 @@ export const event = {
   cashKycSubmitted: 'cash.kyc_submitted',
   cashKycApproved: 'cash.kyc_approved',
   cashKycFailed: 'cash.kyc_failed',
+  cashPasskeySubmitted: 'cash.passkey_submitted',
+  cashPasskeyAdded: 'cash.passkey_added',
+  cashPasskeyFailed: 'cash.passkey_failed',
   cashCardLinked: 'cash.card_linked',
   cashCardLinkFailed: 'cash.card_link_failed',
   rewardsPressedPendingEarningsCard: 'rewards.pressed_pending_earnings_card',
@@ -550,6 +553,11 @@ export type EventProperties = {
   [event.cashKycSubmitted]: undefined;
   [event.cashKycApproved]: undefined;
   [event.cashKycFailed]: {
+    reason: string;
+  };
+  [event.cashPasskeySubmitted]: undefined;
+  [event.cashPasskeyAdded]: undefined;
+  [event.cashPasskeyFailed]: {
     reason: string;
   };
   [event.cashCardLinked]: {

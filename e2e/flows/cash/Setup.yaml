@@ -90,6 +90,13 @@ tags:
     visible:
       text: 'Add a Passkey'
     timeout: 10000
+# Add Passkey runs the mock enrollment (~3s of mocked RPC + ceremony delays) before advancing.
+- tapOn:
+    id: cash-setup-next
+- extendedWaitUntil:
+    visible:
+      text: 'Enter email'
+    timeout: 10000
 - repeat:
     while:
       notVisible:

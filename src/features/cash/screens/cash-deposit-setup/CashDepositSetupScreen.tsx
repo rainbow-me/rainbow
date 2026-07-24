@@ -44,7 +44,7 @@ export const CashDepositSetupScreen = memo(function CashDepositSetupScreen() {
   const { params } = useRoute<RouteProp<RootStackParamList, typeof Routes.CASH_DEPOSIT_SETUP_SCREEN>>();
   const { ref, goToPage } = usePagerNavigation();
   const initialPage = useStableValue(
-    () => params?.initialStep ?? getFirstSetupStep(useCashDepositSetupStatusStore.getState()) ?? SETUP_STEP_ORDER[0].id
+    () => params?.initialStep ?? getFirstSetupStep(useCashDepositSetupStatusStore.getState()) ?? SETUP_STEP_ORDER[0]
   );
 
   // onNewIndex doesn't fire on mount, so seed the navigator with the page the pager opens on.
@@ -75,11 +75,11 @@ export const CashDepositSetupScreen = memo(function CashDepositSetupScreen() {
           scaleTo={1}
           springConfig={SPRING_CONFIGS.snappyMediumSpringConfig}
         >
-          {SETUP_STEP_ORDER.map(step => (
+          {SETUP_STEP_ORDER.map(route => (
             <SmoothPager.Page
-              component={<CashDepositSetupNavigator.Route name={step.id}>{STEP_COMPONENTS[step.id]}</CashDepositSetupNavigator.Route>}
-              id={step.id}
-              key={step.id}
+              component={<CashDepositSetupNavigator.Route name={route}>{STEP_COMPONENTS[route]}</CashDepositSetupNavigator.Route>}
+              id={route}
+              key={route}
             />
           ))}
         </SmoothPager>

@@ -1,40 +1,25 @@
 import Routes from '@/navigation/routesNames';
 import { type CashDepositSetupRoute } from '@/navigation/types';
 
-import {
-  isCashDepositSetupComplete,
-  type CashDepositSetupFacts,
-  type CashDepositSetupStatus,
-} from '../../stores/deriveCashDepositSetupStatus';
+import { isCashDepositSetupComplete, type CashDepositSetupStatus } from '../../stores/deriveCashDepositSetupStatus';
 
-export type CashDepositSetupStep = {
-  id: CashDepositSetupRoute;
-  /** Fact this step is responsible for. */
-  milestone?: keyof CashDepositSetupFacts;
-};
-
-/** The Setup flow order and each step's milestone fact; reorder by editing this array. */
-export const SETUP_STEP_ORDER: readonly CashDepositSetupStep[] = [
-  { id: Routes.CASH_SETUP_PHONE },
-  { id: Routes.CASH_SETUP_CONFIRM_PHONE },
-  { id: Routes.CASH_SETUP_IDENTITY },
-  { id: Routes.CASH_SETUP_SSN },
-  { id: Routes.CASH_SETUP_REVIEW },
-  { id: Routes.CASH_SETUP_PASSKEY, milestone: 'passkeyRegistered' },
-  { id: Routes.CASH_SETUP_EMAIL },
-  { id: Routes.CASH_SETUP_ALL_DONE },
-  { id: Routes.CASH_SETUP_CARD_DETAILS },
-  { id: Routes.CASH_SETUP_CARD_ADDED },
+/** The Setup flow order; reorder by editing this array. */
+export const SETUP_STEP_ORDER: readonly CashDepositSetupRoute[] = [
+  Routes.CASH_SETUP_PHONE,
+  Routes.CASH_SETUP_CONFIRM_PHONE,
+  Routes.CASH_SETUP_IDENTITY,
+  Routes.CASH_SETUP_SSN,
+  Routes.CASH_SETUP_REVIEW,
+  Routes.CASH_SETUP_PASSKEY,
+  Routes.CASH_SETUP_EMAIL,
+  Routes.CASH_SETUP_ALL_DONE,
+  Routes.CASH_SETUP_CARD_DETAILS,
+  Routes.CASH_SETUP_CARD_ADDED,
 ];
 
-export function getSetupStep(current: CashDepositSetupRoute): CashDepositSetupStep | undefined {
-  return SETUP_STEP_ORDER.find(step => step.id === current);
-}
-
 export function getNextSetupStep(current: CashDepositSetupRoute): CashDepositSetupRoute | null {
-  const index = SETUP_STEP_ORDER.findIndex(step => step.id === current);
-  const next = SETUP_STEP_ORDER[index + 1];
-  return next ? next.id : null;
+  const index = SETUP_STEP_ORDER.indexOf(current);
+  return SETUP_STEP_ORDER[index + 1] ?? null;
 }
 
 const SETUP_STEP_FOR_STATUS: Record<Exclude<CashDepositSetupStatus, 'ready'>, CashDepositSetupRoute> = {

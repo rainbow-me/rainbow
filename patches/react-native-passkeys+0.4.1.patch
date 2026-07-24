@@ -1,0 +1,23 @@
+# PATCH CONTEXT
+# Why: Rainbow's default React Native Babel profile compiles the package's
+#   native-module spread to Object.assign. Hermes does not expose the lazy JSI
+#   host methods as enumerable to Object.assign, so `this.isSupported` is
+#   undefined and create() throws before reaching native code. Check support
+#   on the native module directly.
+# Upstream Issue: https://github.com/peterferguson/react-native-passkeys/issues/13
+#   (same symptom; the issue does not establish the root cause).
+# Linear Issue: none.
+# Remove when: react-native-passkeys calls the native support method directly.
+
+diff --git a/node_modules/react-native-passkeys/build/ReactNativePasskeysModule.js b/node_modules/react-native-passkeys/build/ReactNativePasskeysModule.js
+--- a/node_modules/react-native-passkeys/build/ReactNativePasskeysModule.js
++++ b/node_modules/react-native-passkeys/build/ReactNativePasskeysModule.js
+@@ -6,7 +6,7 @@ const passkeys = requireNativeModule("ReactNativePasskeys");
+ export default {
+     ...passkeys,
+     async create(request) {
+-        if (!this.isSupported)
++        if (!passkeys.isSupported())
+             throw new NotSupportedError();
+         const credential = await passkeys.create(request);
+         return {

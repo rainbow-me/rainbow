@@ -81,6 +81,20 @@ type GetUserStatusParams = {
   bootstrapToken: string;
 };
 
+type AddPasskeyResponse = {
+  passkeyId: string;
+  /** WebAuthn PublicKeyCredentialCreationOptions, JSON-encoded. */
+  publicKeyOptionsJson: string;
+};
+
+type FinishAddPasskeyParams = {
+  bootstrapToken: string;
+  passkeyId: string;
+  /** WebAuthn attestation, JSON-encoded. */
+  credentialCreationJson: string;
+  passkeyName: string;
+};
+
 type GetUserStatusResponse = {
   status: {
     kyc: {
@@ -88,6 +102,10 @@ type GetUserStatusResponse = {
     };
   };
 };
+
+function buildAuthenticatedHeader(token: string) {
+  return { Authorization: `Bearer ${token}` };
+}
 
 export async function createUserWithPhone({ nationalNumber }: { nationalNumber: string }): Promise<CreateUserWithPhoneResponse> {
   if (IS_TESTING === 'true') {
@@ -146,9 +164,41 @@ export async function submitOnboarding({
     governmentId,
   };
   const { data } = await getCashPlatformClient().post<SubmitOnboardingResponse>('/onboarding/SubmitOnboarding', request, {
-    headers: { Authorization: `Bearer ${bootstrapToken}` },
+    headers: buildAuthenticatedHeader(bootstrapToken),
   });
   return data;
+}
+
+export async function addPasskey({ bootstrapToken }: { bootstrapToken: string }): Promise<AddPasskeyResponse> {
+  if (IS_TESTING === 'true') {
+    await delay(time.seconds(1));
+    return { passkeyId: 'e2e-passkey-id', publicKeyOptionsJson: '{}' };
+  }
+
+  const { data } = await getCashPlatformClient().post<AddPasskeyResponse>(
+    '/passkeys/AddPasskey',
+    {},
+    { headers: buildAuthenticatedHeader(bootstrapToken) }
+  );
+  return data;
+}
+
+export async function finishAddPasskey({
+  bootstrapToken,
+  passkeyId,
+  credentialCreationJson,
+  passkeyName,
+}: FinishAddPasskeyParams): Promise<void> {
+  if (IS_TESTING === 'true') {
+    await delay(time.seconds(1));
+    return;
+  }
+
+  await getCashPlatformClient().post(
+    '/passkeys/FinishAddPasskey',
+    { passkeyId, credentialCreationJson, passkeyName },
+    { headers: buildAuthenticatedHeader(bootstrapToken) }
+  );
 }
 
 export async function getUserStatus({ bootstrapToken }: GetUserStatusParams): Promise<{ kycStatus: KycStatus }> {
@@ -158,7 +208,7 @@ export async function getUserStatus({ bootstrapToken }: GetUserStatusParams): Pr
   }
 
   const { data } = await getCashPlatformClient().get<GetUserStatusResponse>('/status/GetUserStatus', {
-    headers: { Authorization: `Bearer ${bootstrapToken}` },
+    headers: buildAuthenticatedHeader(bootstrapToken),
   });
   return { kycStatus: data.status.kyc.status };
 }

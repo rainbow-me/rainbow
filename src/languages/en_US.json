@@ -1618,7 +1618,12 @@
           "edit": "Edit",
           "error": "We couldn’t verify your details. Please try again."
         },
-        "passkey": { "title": "Add a Passkey" },
+        "passkey": {
+          "title": "Add a Passkey",
+          "subtitle": "Add a secure passkey to make signing in easier and keep your account protected.",
+          "action": "Add Passkey",
+          "error": "We couldn’t add your passkey. Please try again."
+        },
         "email": { "title": "Enter email" },
         "all_done": {
           "title": "You’re all done!",

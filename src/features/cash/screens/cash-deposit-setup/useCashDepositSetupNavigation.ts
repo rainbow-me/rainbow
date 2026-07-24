@@ -5,18 +5,13 @@ import Routes from '@/navigation/routesNames';
 
 import { useCashDepositSetupStore } from '../../stores/cashDepositSetupStore';
 import { CashDepositSetupNavigation, useCashDepositSetupNavigationStore } from './cashDepositSetupNavigator';
-import { getNextSetupStep, getSetupStep } from './steps';
+import { getNextSetupStep } from './steps';
 
 export function useCashDepositSetupNavigation() {
   const { navigate, goBack: dismissScreen } = useNavigation();
 
   const next = useCallback(() => {
     const current = CashDepositSetupNavigation.getActiveRoute();
-    const step = getSetupStep(current);
-    if (step?.milestone) {
-      useCashDepositSetupStore.getState().setFact(step.milestone, true);
-    }
-
     const upcoming = getNextSetupStep(current);
     if (upcoming) {
       CashDepositSetupNavigation.navigate(upcoming);

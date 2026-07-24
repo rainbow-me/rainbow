@@ -9271,6 +9271,7 @@ __metadata:
     react-native-os: "rainbow-me/react-native-os#41a08e45260b8c1c53c77ad00e13ae954cb9337c"
     react-native-pager-view: "npm:6.8.1"
     react-native-palette-full: "npm:1.2.0"
+    react-native-passkeys: "npm:0.4.1"
     react-native-permissions: "npm:3.10.1"
     react-native-quick-md5: "npm:3.0.9"
     react-native-radial-gradient: "rainbow-me/react-native-radial-gradient#b99ab59d27dba70364ef516bd5193c37657ba95c"
@@ -22319,6 +22320,17 @@ __metadata:
     react: "*"
     react-native: ">=0.46"
   checksum: 10c0/56e1f73775f17d4cf7cbb63e73b80ed709af12f92b6c95da1151bf63baf31acc5153ed8d3a62e507b300ddf7a394d5cd1854efba23575142e4ced1c49bbb7d1d
+  languageName: node
+  linkType: hard
+
+"react-native-passkeys@npm:0.4.1":
+  version: 0.4.1
+  resolution: "react-native-passkeys@npm:0.4.1"
+  peerDependencies:
+    expo: ">=53.0.0"
+    react: "*"
+    react-native: ">=0.71.0"
+  checksum: 10c0/3651d434b806182d165035034c962d84beeca453c456e65f6eb6b943f1155a347a9ec11da35a5d228b47f33b867c0949696ec015d5fb894fa67e35a14910e89c
   languageName: node
   linkType: hard
 
