@@ -15,10 +15,6 @@ const blockList = exclusionList([
   /.*\/android\/build\/.*/,
   /.*\/android\/\.cxx\/.*/,
   /.*\/android\/.*\.xml/,
-  // react-native-animated-charts
-  /src\/react-native-animated-charts\/Example\/.*/,
-  /src\/react-native-animated-charts\/node_modules\/.*/,
-  'src.react-native-animated-charts.package.json',
   // react-native-reanimated <patch>
   /patches\/reanimated\/.*/,
 ]);

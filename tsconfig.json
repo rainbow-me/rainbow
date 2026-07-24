@@ -21,7 +21,6 @@
       "@rainbow-me/routes": ["src/navigation/routesNames"],
       "logger": ["src/utils/logger"],
       "react-native-cool-modals": ["src/react-native-cool-modals"],
-      "@rainbow-me/animated-charts": ["src/react-native-animated-charts/src"],
       "@nktkas/hyperliquid/api/info": ["node_modules/@nktkas/hyperliquid/esm/api/info/mod"],
       "@nktkas/hyperliquid/api/exchange": ["node_modules/@nktkas/hyperliquid/esm/api/exchange/mod"],
       "@nktkas/hyperliquid/api/subscription": ["node_modules/@nktkas/hyperliquid/esm/api/subscription/mod"],
@@ -31,14 +30,5 @@
     "resolveJsonModule": true
   },
   "globals": ["useTheme", "ios", "android", "web", "__DEV__", "IS_DEV"],
-  "exclude": [
-    "node_modules",
-    "rainbow-scripts",
-    "ios",
-    "android",
-    "src/browser",
-    "src/react-native-animated-charts/Example",
-    "patches",
-    "InjectedJSBundle.js"
-  ]
+  "exclude": ["node_modules", "rainbow-scripts", "ios", "android", "src/browser", "patches", "InjectedJSBundle.js"]
 }
