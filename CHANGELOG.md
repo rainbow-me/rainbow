@@ -21,6 +21,24 @@ and this project adheres to [Semantic Versioning](http://semver.org/)
 
 ### Testing
 
+## [2.0.41](https://github.com/rainbow-me/rainbow/releases/tag/v2.0.41)
+
+### Added
+
+- Add phone verification to cash (https://github.com/rainbow-me/rainbow/pull/7672)
+- Add entering firstname/lastname/dob screen to cash (https://github.com/rainbow-me/rainbow/pull/7675)
+
+### Changed
+
+- Manage tool versions via mise (https://github.com/rainbow-me/rainbow/pull/7513)
+- Redesign the dep cruiser integration with PR baseline tracking (https://github.com/rainbow-me/rainbow/pull/7670)
+- Bump iOS and Android to v2.0.41 (https://github.com/rainbow-me/rainbow/pull/7680)
+- Remove no-op chain-balance grouping from the asset sort (https://github.com/rainbow-me/rainbow/pull/7681)
+
+### Fixed
+
+- Minimize Polymarket errors, update @polymarket/clob-client-v2 (https://github.com/rainbow-me/rainbow/pull/7678)
+
 ## [2.0.40](https://github.com/rainbow-me/rainbow/releases/tag/v2.0.40)
 
 ### Added
