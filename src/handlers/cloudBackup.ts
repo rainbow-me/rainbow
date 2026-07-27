@@ -5,6 +5,7 @@ import { sortBy } from 'lodash';
 import RNCloudFs from 'react-native-cloud-fs';
 import RNFS from 'react-native-fs';
 
+import { IS_DEV } from '@/env';
 import { type BackupFile, type CloudBackups } from '@/features/backup/backup';
 import { logger, RainbowError } from '@/logger';
 
@@ -228,7 +229,16 @@ export function isCloudBackupAvailable() {
 
 export async function login() {
   if (Platform.OS === 'android') {
-    return RNCloudFs.loginIfNeeded();
+    try {
+      return await RNCloudFs.loginIfNeeded();
+    } catch (error) {
+      if (IS_DEV && /\b10\b|DEVELOPER_ERROR/.test(String(error))) {
+        logger.warn(
+          '[cloudBackup]: Google sign-in failed with DEVELOPER_ERROR: this build is not signed with a Google-registered certificate.'
+        );
+      }
+      throw error;
+    }
   }
 
   return true;

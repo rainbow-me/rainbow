@@ -3,32 +3,6 @@ apply plugin: "org.jetbrains.kotlin.android"
 apply plugin: 'com.google.gms.google-services'
 apply plugin: 'com.google.firebase.crashlytics'
 
-def getPassword(String currentUser, String keyChain) {
-    def stdout = new ByteArrayOutputStream()
-    def stderr = new ByteArrayOutputStream()
-    if (org.gradle.internal.os.OperatingSystem.current().isMacOsX()) {
-        exec {
-            commandLine 'security', '-q', 'find-generic-password', '-a', currentUser, '-s', keyChain, '-w'
-            standardOutput = stdout
-            errorOutput = stderr
-            ignoreExitValue true
-        }
-    } else if (org.gradle.internal.os.OperatingSystem.current().isLinux()) {
-        exec {
-            // In order for this to work you need to store it:
-            // secret-tool store --label='mm' server mm user mm key mm-upload-key
-            commandLine 'secret-tool', 'lookup', 'server', currentUser, 'user', currentUser, 'key', keyChain
-            standardOutput = stdout
-            errorOutput = stderr
-            ignoreExitValue true
-        }
-    } else {
-        throw new GradleException('Unsupported OS! Only MacOSx and Linux are supported')
-    }
-    //noinspection GroovyAssignabilityCheck
-    stdout.toString().trim()
-}
-
 import com.android.build.OutputFile
 
 apply plugin: "com.facebook.react"
@@ -173,14 +147,21 @@ android {
     }
 
     signingConfigs {
+        // dev.keystore (private, pulled from rainbow-env via `yarn update-dev-keystore`) is
+        // registered with Google OAuth so Drive backup/restore works in local builds. The
+        // committed debug.keystore is the public stock RN keystore and is deliberately not
+        // registered. The Play Store upload key exists only in CI, injected via the
+        // RNEF_UPLOAD_* properties below: nothing built locally can be uploaded to the store.
+        def debugKeystore = file('../keystores/debug.keystore')
+        def devKeystore = file('../keystores/dev.keystore')
+        def localKeystore = devKeystore.exists() ? devKeystore : debugKeystore
+
         debug {
-            storeFile file('../keystores/debug.keystore')
+            storeFile localKeystore
             storePassword 'android'
             keyAlias 'androiddebugkey'
             keyPassword 'android'
         }
-
-        def pass = System.getenv('RAINBOW_KEY_ANDROID_PASSWORD') ?: getPassword("rainbow","rainbow-android-key")
 
         release {
             if (project.hasProperty('RNEF_UPLOAD_STORE_FILE')) {
@@ -189,10 +170,10 @@ android {
                 keyAlias RNEF_UPLOAD_KEY_ALIAS
                 keyPassword RNEF_UPLOAD_KEY_PASSWORD
             } else {
-                storeFile file('../keystores/rainbow-key.keystore')
-                storePassword pass
-                keyAlias 'rainbow-alias'
-                keyPassword pass
+                storeFile localKeystore
+                storePassword 'android'
+                keyAlias 'androiddebugkey'
+                keyPassword 'android'
             }
         }
     }
@@ -202,8 +183,6 @@ android {
             signingConfig signingConfigs.debug
         }
         release {
-            // Caution! In production, you need to generate your own keystore file.
-            // see https://facebook.github.io/react-native/docs/signed-apk-android.
             signingConfig signingConfigs.release
             minifyEnabled enableProguardInReleaseBuilds
             proguardFiles getDefaultProguardFile("proguard-android.txt"), "proguard-rules.pro"

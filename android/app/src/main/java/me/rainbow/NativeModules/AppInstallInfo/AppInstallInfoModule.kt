@@ -38,14 +38,17 @@ class AppInstallInfoModule(reactContext: ReactApplicationContext) :
         // SHA-256 fingerprints (colon-separated hex) of Rainbow's known signing certs.
         // Any match -> internal build. No match -> store install (safe default).
         // Extracted with: keytool -list -v -keystore <keystore> -alias <alias>
-        // Upload key (rainbow-key.keystore, alias rainbow-alias).
+        // Play Store upload key (CI-held; signs release builds destined for Play Console).
         private const val UPLOAD_CERT_SHA256 = "CD:34:1C:31:91:0F:63:D7:1A:3C:FA:6D:A4:95:81:11:E8:3A:BA:CA:64:14:79:3D:DB:86:A0:F9:0D:26:42:41"
-        // Debug key (debug.keystore, alias androiddebugkey) — shared across all engineers.
+        // Stock RN debug keystore (public, committed in this repo; fallback for fresh checkouts).
         private const val DEBUG_CERT_SHA256 = "FA:C6:17:45:DC:09:03:78:6F:B9:ED:E6:2A:96:2B:39:9F:73:48:F0:BB:6F:89:9B:83:32:66:75:91:03:3B:9C"
+        // Private dev keystore (distributed via rainbow-env; signs local builds).
+        private const val DEV_CERT_SHA256 = "9C:CE:07:28:B9:15:66:9D:30:B2:96:18:D3:62:D1:CC:E6:96:20:EE:9F:9A:67:71:50:DC:C7:FC:A0:88:1C:89"
 
         private val KNOWN_INTERNAL_FINGERPRINTS: List<ByteArray> = listOf(
             UPLOAD_CERT_SHA256,
             DEBUG_CERT_SHA256,
+            DEV_CERT_SHA256,
         ).map { sha -> sha.split(":").map { it.toInt(16).toByte() }.toByteArray() }
     }
 
