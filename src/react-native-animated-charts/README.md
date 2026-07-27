@@ -109,15 +109,6 @@ Component for displaying the dot for scrubbing on the chart.
 | `size`    | `number` | `10`    | Size of the dot.                                                 |
 | ...props  | `object` | `{}`    | Rest of the props applied to `Reanimated.View` including `style` |
 
-### `ChartYLabel` & `ChartXLabel`
-
-Labels are useful while moving finger through the chart to show the exact value in given point.
-
-| Prop name | type               | default  | description                                                                                             |
-| --------- | ------------------ | -------- | ------------------------------------------------------------------------------------------------------- |
-| `format`  | reanimated worklet | `a => a` | Worklet for formatting data from the chart. It can be useful when your data is a timestamp or currency. |
-| ...props  | `object`           | `{}`     | Rest of the props applied to `TextInput` including `style`                                              |
-
 ### Candle Charts
 
 TODO
@@ -132,11 +123,8 @@ It's not essential in the library, but we have decided to include a lot of helpe
 
 ## Interpolations
 
-We have two interpolators which share the most of the API: `bSplineInterpolation` and `monotoneCubicInterpolation`.
-
 ```js
-import { bSplineInterpolation as interpolator } from '@/react-native-animated-charts/src';
-// import { monotoneCubicInterpolation as interpolator } from '@/react-native-animated-charts/src';
+import { monotoneCubicInterpolation as interpolator } from '@/react-native-animated-charts/src';
 
 const interpolatedData = interpolator({ data, range: 80 });
 ```
@@ -157,35 +145,10 @@ Generator accepts object of parameters as an argument:
 
     `o--------------Min------------o---------o---------o---------o`
 
-### `bSplineInterpolation({ degree = 3, ...params })`
-
-`bSplineInterpolation` is inspired by [victorian lib](https://github.com/networkcube/vistorian/blob/17e2be9b51267509ea67b5984421d8c03558d928/core/lib/BSpline.js)
-and uses [B-spline](https://en.wikipedia.org/wiki/B-spline) interpolation of a given `degree`.
-
 ### `monotoneCubicInterpolation({ ...params })`
 
 This curve is inspired by [d3 shape](https://github.com/d3/d3-shape/blob/master/src/curve/monotone.js).
 "Produces a cubic spline that preserves monotonicity in y, assuming monotonicity in x, as proposed by Steffen in A simple method for monotonic interpolation in one dimension: “a smooth curve with continuous first-order derivatives that passes through any given set of data points without spurious oscillations. Local extrema can occur only at grid points where they are given by the data, but not in between two adjacent grid points.”
-
-## `simplifyData(data, pickRange = 10, includeExtremes = true)`
-
-This helper takes only one point per `pickRange`. Might be useful for very dense data. If it's important, it's possible to include extremes with the `includeExtremes` flag.
-E.g.
-
-`pickRange = 3, includeExtremes = true`
-
-```
-X are equidistant in this case
-
-Y:0          1          7          2         -3          0          1          2
-  S----------o----------E----------X----------E----------o----------X----------o----------S
-```
-
-`X` - points picked because `index%3=0`
-
-`S` – the first and the last points are always included.
-
-`E` – extremes.
 
 ## `useChartData`
 
