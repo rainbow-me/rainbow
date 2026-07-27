@@ -13,7 +13,7 @@ import {
 import type { SupportedCurrencyKey } from '@/features/currency/supportedCurrencies';
 import { applyManagedExecutionStatus } from '@/features/delegation/utils/managedExecutionStatus';
 import { relayService } from '@/features/delegation/utils/relayService';
-import { logger, RainbowError } from '@/logger';
+import { logger } from '@/logger';
 import { fetchRawTransaction } from '@/resources/transactions/transaction';
 import { RelayExecutionStatus, type RelayStatusSnapshot } from '@rainbow-me/sdk';
 
@@ -32,6 +32,7 @@ type TrackedTransactionResolution =
  * Wallet-owned transactions settle by transaction hash. Managed relay
  * transactions settle by relay status and may be re-resolved after local
  * confirmation while relay-owned onchain evidence is still incomplete.
+ * Request failures reject so the watcher can back off.
  */
 export async function resolveTrackedTransaction({
   abortController,
@@ -74,27 +75,20 @@ async function fetchTransaction({
   currency: SupportedCurrencyKey;
   transaction: RainbowTransaction;
 }): Promise<PendingTransaction | SettledTransaction> {
-  try {
-    if (!transaction.chainId || !transaction.hash) {
-      throw new Error('Pending transaction missing chainId or hash');
-    }
-
-    const fetchedTransaction = await fetchRawTransaction({
-      abortController,
-      address,
-      chainId: transaction.chainId,
-      currency,
-      hash: transaction.hash,
-      originalType: transaction.type,
-    });
-
-    return applyTransactionUpdates(transaction, fetchedTransaction);
-  } catch (e) {
-    logger.error(new RainbowError('[fetchTransaction]: Failed to fetch transaction', e), {
-      transaction,
-    });
-    return toPendingTransaction(transaction);
+  if (!transaction.chainId || !transaction.hash) {
+    throw new Error('Pending transaction missing chainId or hash');
   }
+
+  const fetchedTransaction = await fetchRawTransaction({
+    abortController,
+    address,
+    chainId: transaction.chainId,
+    currency,
+    hash: transaction.hash,
+    originalType: transaction.type,
+  });
+
+  return applyTransactionUpdates(transaction, fetchedTransaction);
 }
 
 async function resolveOnchainPendingTransaction({
@@ -139,65 +133,58 @@ async function resolveManagedTrackedTransaction({
   currency: SupportedCurrencyKey;
   transaction: RainbowTransaction;
 }): Promise<TrackedTransactionResolution> {
-  try {
-    const executionId = transaction.relayExecutionId;
-    if (!executionId) return preserveTrackedTransaction(transaction);
+  const executionId = transaction.relayExecutionId;
+  if (!executionId) return preserveTrackedTransaction(transaction);
 
-    const { status: relayStatus } = await relayService.getStatus(executionId);
-    const trackedTransaction = applyManagedExecutionStatus(transaction, relayStatus);
-    const isAwaitingOriginTxHash = isAwaitingRelayTransactionHash(trackedTransaction);
+  const { status: relayStatus } = await relayService.getStatus(executionId);
+  const trackedTransaction = applyManagedExecutionStatus(transaction, relayStatus);
+  const isAwaitingOriginTxHash = isAwaitingRelayTransactionHash(trackedTransaction);
 
-    switch (relayStatus.status) {
-      case RelayExecutionStatus.Confirmed:
-        if (isAwaitingOriginTxHash) {
-          logger.warn('[resolveTrackedTransaction]: managed relay execution finished without onchain transaction evidence', {
-            executionId,
-            status: relayStatus.status,
-          });
-        }
+  switch (relayStatus.status) {
+    case RelayExecutionStatus.Confirmed:
+      if (isAwaitingOriginTxHash) {
+        logger.warn('[resolveTrackedTransaction]: managed relay execution finished without onchain transaction evidence', {
+          executionId,
+          status: relayStatus.status,
+        });
+      }
 
+      return {
+        kind: 'settled',
+        relayStatus,
+        transaction: buildSettledTransaction(trackedTransaction, TransactionStatus.confirmed),
+      };
+
+    case RelayExecutionStatus.Failed:
+    case RelayExecutionStatus.Reverted:
+      return {
+        kind: 'settled',
+        relayStatus,
+        transaction: buildSettledTransaction(trackedTransaction, TransactionStatus.failed),
+      };
+
+    default:
+      if (isSettledStatus(transaction.status)) {
         return {
           kind: 'settled',
           relayStatus,
-          transaction: buildSettledTransaction(trackedTransaction, TransactionStatus.confirmed),
+          transaction: buildSettledTransaction(trackedTransaction, transaction.status),
         };
+      }
 
-      case RelayExecutionStatus.Failed:
-      case RelayExecutionStatus.Reverted:
-        return {
-          kind: 'settled',
-          relayStatus,
-          transaction: buildSettledTransaction(trackedTransaction, TransactionStatus.failed),
-        };
+      if (isAwaitingOriginTxHash) {
+        return { kind: 'pending', relayStatus, transaction: toPendingTransaction(trackedTransaction) };
+      }
 
-      default:
-        if (isSettledStatus(transaction.status)) {
-          return {
-            kind: 'settled',
-            relayStatus,
-            transaction: buildSettledTransaction(trackedTransaction, transaction.status),
-          };
-        }
-
-        if (isAwaitingOriginTxHash) {
-          return { kind: 'pending', relayStatus, transaction: toPendingTransaction(trackedTransaction) };
-        }
-
-        return {
-          ...(await resolveOnchainPendingTransaction({
-            abortController,
-            address,
-            currency,
-            transaction: trackedTransaction,
-          })),
-          relayStatus,
-        };
-    }
-  } catch (e) {
-    logger.error(new RainbowError('[resolveTrackedTransaction]: Failed to fetch managed relay execution status', e), {
-      executionId: transaction.relayExecutionId,
-    });
-    return preserveTrackedTransaction(transaction);
+      return {
+        ...(await resolveOnchainPendingTransaction({
+          abortController,
+          address,
+          currency,
+          transaction: trackedTransaction,
+        })),
+        relayStatus,
+      };
   }
 }
 

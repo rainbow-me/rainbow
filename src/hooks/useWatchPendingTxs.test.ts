@@ -19,7 +19,13 @@ import { RelayExecutionStatus } from '@rainbow-me/sdk';
 import { SwapType } from '@rainbow-me/swaps';
 
 import { resolveTrackedTransaction } from './pendingTransactionResolution';
-import { watchPendingTransactions } from './useWatchPendingTxs';
+import { useWatchPendingTransactions } from './useWatchPendingTxs';
+
+jest.mock('react', () => ({
+  ...jest.requireActual<typeof import('react')>('react'),
+  useCallback: (callback: unknown) => callback,
+  useRef: (initialValue: unknown) => ({ current: initialValue }),
+}));
 
 jest.mock('./pendingTransactionResolution', () => ({
   resolveTrackedTransaction: jest.fn(),
@@ -52,6 +58,17 @@ jest.mock('@/state/swaps/swapsStore', () => ({
     }),
   },
 }));
+
+jest.mock('@/state/assets/userAssetsStoreManager', () => {
+  const state: { address: string; cachedStore?: unknown; currency: 'ETH' } = { address: '0x123', currency: 'ETH' };
+  return {
+    userAssetsStoreManager: Object.assign((selector: (storeState: typeof state) => unknown) => selector(state), {
+      getState: () => state,
+      setState: (nextState: Partial<typeof state>) => Object.assign(state, nextState),
+      subscribe: jest.fn(),
+    }),
+  };
+});
 
 jest.mock('@/state/wallets/walletsStore', () => ({
   getAccountAddress: () => '0x123',
@@ -97,10 +114,11 @@ type ConfirmedManagedTransaction = Omit<PendingTransaction, 'status' | 'title'> 
   title: 'swap.confirmed';
 };
 
-describe('watchPendingTransactions', () => {
+describe('useWatchPendingTransactions', () => {
   const mockResolveTrackedTransaction = jest.mocked(resolveTrackedTransaction);
   const mockFetchRawTransaction = jest.mocked(fetchRawTransaction);
   let refetchQueriesSpy: jest.SpiedFunction<typeof queryClient.refetchQueries>;
+  let watchPendingTransactions: ReturnType<typeof useWatchPendingTransactions>;
 
   beforeEach(() => {
     jest.useFakeTimers();
@@ -109,6 +127,7 @@ describe('watchPendingTransactions', () => {
     resetStores();
 
     refetchQueriesSpy = jest.spyOn(queryClient, 'refetchQueries').mockImplementation(async () => undefined);
+    watchPendingTransactions = useWatchPendingTransactions({ address: TEST_ADDRESS });
   });
 
   afterEach(() => {
@@ -161,12 +180,9 @@ describe('watchPendingTransactions', () => {
         transaction: confirmedTransaction,
       });
 
-    await watchPendingTransactions({
-      abortController: new AbortController(),
-      address: TEST_ADDRESS,
-      currency: TEST_CURRENCY,
-      transactions: [stillPendingTransaction, confirmedPendingTransaction],
-    });
+    const transactions = [stillPendingTransaction, confirmedPendingTransaction];
+    await watchPendingTransactions(transactions, new AbortController());
+    await watchPendingTransactions(transactions, new AbortController());
     await flushBackgroundSync();
 
     expect(usePendingTransactionsStore.getState().pendingTransactions[TEST_ADDRESS]).toEqual([
@@ -199,18 +215,17 @@ describe('watchPendingTransactions', () => {
   });
 
   it('drops settled overlays once history includes them', async () => {
+    const pendingTransaction = buildManagedPendingTransaction({ hash: 'execution-1', relayExecutionId: 'execution-1' });
     const settledTransaction: SettledTransaction = {
-      ...buildManagedPendingTransaction({
-        hash: '0x1111111111111111111111111111111111111111111111111111111111111111',
-        relayExecutionId: 'execution-1',
-      }),
+      ...pendingTransaction,
+      hash: '0x1111111111111111111111111111111111111111111111111111111111111111',
       status: TransactionStatus.confirmed,
       title: 'swap.confirmed',
     };
 
     pendingTransactionsActions.setPendingTransactions({
       address: TEST_ADDRESS,
-      pendingTransactions: [buildManagedPendingTransaction({ hash: 'execution-1', relayExecutionId: 'execution-1' })],
+      pendingTransactions: [pendingTransaction],
     });
     mockResolveTrackedTransaction.mockResolvedValue({
       kind: 'settled',
@@ -236,12 +251,7 @@ describe('watchPendingTransactions', () => {
       );
     });
 
-    await watchPendingTransactions({
-      abortController: new AbortController(),
-      address: TEST_ADDRESS,
-      currency: TEST_CURRENCY,
-      transactions: [buildManagedPendingTransaction({ hash: 'execution-1', relayExecutionId: 'execution-1' })],
-    });
+    await watchPendingTransactions([pendingTransaction], new AbortController());
     await flushBackgroundSync();
 
     expect(usePendingTransactionsStore.getState().pendingTransactions[TEST_ADDRESS]).toEqual([]);
@@ -263,12 +273,7 @@ describe('watchPendingTransactions', () => {
       transaction: pendingTransaction,
     });
 
-    await watchPendingTransactions({
-      abortController: new AbortController(),
-      address: TEST_ADDRESS,
-      currency: TEST_CURRENCY,
-      transactions: [pendingTransaction],
-    });
+    await watchPendingTransactions([pendingTransaction], new AbortController());
 
     expect(mockResolveTrackedTransaction).toHaveBeenCalledTimes(1);
     expect(mockResolveTrackedTransaction).toHaveBeenCalledWith(
@@ -282,11 +287,10 @@ describe('watchPendingTransactions', () => {
   });
 
   it('syncs managed destination history after a confirmed transition', async () => {
+    const pendingTransaction = buildManagedPendingTransaction({ hash: 'execution-1', relayExecutionId: 'execution-1' });
     const settledTransaction: SettledTransaction = {
-      ...buildManagedPendingTransaction({
-        hash: '0x1111111111111111111111111111111111111111111111111111111111111111',
-        relayExecutionId: 'execution-1',
-      }),
+      ...pendingTransaction,
+      hash: '0x1111111111111111111111111111111111111111111111111111111111111111',
       changes: [
         {
           asset: buildChangedAsset({
@@ -334,7 +338,7 @@ describe('watchPendingTransactions', () => {
 
     pendingTransactionsActions.setPendingTransactions({
       address: TEST_ADDRESS,
-      pendingTransactions: [buildManagedPendingTransaction({ hash: 'execution-1', relayExecutionId: 'execution-1' })],
+      pendingTransactions: [pendingTransaction],
     });
     mockResolveTrackedTransaction.mockResolvedValue({
       kind: 'settled',
@@ -342,12 +346,7 @@ describe('watchPendingTransactions', () => {
       transaction: settledTransaction,
     });
 
-    await watchPendingTransactions({
-      abortController: new AbortController(),
-      address: TEST_ADDRESS,
-      currency: TEST_CURRENCY,
-      transactions: [buildManagedPendingTransaction({ hash: 'execution-1', relayExecutionId: 'execution-1' })],
-    });
+    await watchPendingTransactions([pendingTransaction], new AbortController());
     await flushBackgroundSync();
 
     expect(mockFetchRawTransaction).toHaveBeenNthCalledWith(
@@ -387,12 +386,7 @@ describe('watchPendingTransactions', () => {
       transaction: failedTransaction,
     });
 
-    await watchPendingTransactions({
-      abortController: new AbortController(),
-      address: TEST_ADDRESS,
-      currency: TEST_CURRENCY,
-      transactions: [pendingTransaction],
-    });
+    await watchPendingTransactions([pendingTransaction], new AbortController());
 
     expect(usePendingTransactionsStore.getState().pendingTransactions[TEST_ADDRESS]).toEqual([]);
     expect(Object.values(useRainbowToastsStore.getState().toasts)).toHaveLength(1);
@@ -403,8 +397,10 @@ describe('watchPendingTransactions', () => {
 
   it('updates the local overlay before managed history sync finishes', async () => {
     const originHash: `0x${string}` = '0x1111111111111111111111111111111111111111111111111111111111111111';
+    const pendingTransaction = buildManagedPendingTransaction({ hash: 'execution-1', relayExecutionId: 'execution-1' });
     const confirmedTransaction: SettledTransaction = {
-      ...buildManagedPendingTransaction({ hash: originHash, relayExecutionId: 'execution-1' }),
+      ...pendingTransaction,
+      hash: originHash,
       status: TransactionStatus.confirmed,
       title: 'swap.confirmed',
     };
@@ -412,7 +408,7 @@ describe('watchPendingTransactions', () => {
 
     pendingTransactionsActions.setPendingTransactions({
       address: TEST_ADDRESS,
-      pendingTransactions: [buildManagedPendingTransaction({ hash: 'execution-1', relayExecutionId: 'execution-1' })],
+      pendingTransactions: [pendingTransaction],
     });
     mockResolveTrackedTransaction.mockResolvedValue({
       kind: 'settled',
@@ -431,12 +427,7 @@ describe('watchPendingTransactions', () => {
     });
     mockFetchRawTransaction.mockImplementation(() => relayFetch.promise);
 
-    await watchPendingTransactions({
-      abortController: new AbortController(),
-      address: TEST_ADDRESS,
-      currency: TEST_CURRENCY,
-      transactions: [buildManagedPendingTransaction({ hash: 'execution-1', relayExecutionId: 'execution-1' })],
-    });
+    await watchPendingTransactions([pendingTransaction], new AbortController());
 
     expect(usePendingTransactionsStore.getState().pendingTransactions[TEST_ADDRESS]).toEqual([confirmedTransaction]);
     expect(Object.values(useRainbowToastsStore.getState().toasts)[0]?.transaction).toEqual(confirmedTransaction);
@@ -469,12 +460,7 @@ describe('watchPendingTransactions', () => {
       transaction: confirmedTransaction,
     });
 
-    await watchPendingTransactions({
-      abortController: new AbortController(),
-      address: TEST_ADDRESS,
-      currency: TEST_CURRENCY,
-      transactions: [pendingTransaction],
-    });
+    await watchPendingTransactions([pendingTransaction], new AbortController());
     await flushBackgroundSync();
 
     expect(usePendingTransactionsStore.getState().pendingTransactions[TEST_ADDRESS]).toEqual([]);
